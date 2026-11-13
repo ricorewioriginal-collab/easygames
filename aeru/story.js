@@ -65,7 +65,7 @@ chestUpgrades: [
 upgrades: [
   {gems:24, id:'stamina', text:'Weite Schwingen · Flügelkraft +25'},
   {gems:48, id:'heart1', text:'Splitterherz · ein zusätzliches Herz'},
-  {gems:72, id:'range', text:'Weiter Wind · Windstoß reicht weiter'},
+  {gems:72, id:'range', text:'Heißes Feuer · Feueratem reicht weiter'},
   {gems:96, id:'heart2', text:'Zweites Splitterherz · noch ein Herz'},
   {gems:120, id:'speed', text:'Sturmschwingen · schnellerer Flug'},
   {gems:144, id:'glow', text:'Sternenglanz · unbegrenzte Flügelkraft und goldene Flugspur'}
@@ -89,7 +89,7 @@ quests: [
  steps:[
   {text:'Wach auf', goal:{type:'arrive', level:0}, dialog:'c1_intro'},
   {text:'Sprich mit Mira', hint:'Laufen: WASD / Stick · R oder REDEN', goal:{type:'talk', npc:'mira'}, dialog:'c1_mira_wake'},
-  {text:'Wecke die drei Windlaternen', hint:'Windstoß: F oder WIND in Laternenrichtung · die dritte steht oben auf der Treppe',
+  {text:'Wecke die drei Windlaternen', hint:'Feueratem: F oder FEUER in Laternenrichtung · die dritte steht oben auf der Treppe',
    goal:{type:'lantern', count:3, retro:true}, where:'lanterns'},
   {text:'Erzähl Mira von den Laternen', goal:{type:'talk', npc:'mira'}, dialog:'c1_mira_lit'}
  ]},
@@ -258,7 +258,7 @@ c1_intro:[['aeru','… Still. Kein Rascheln im Gras. So ruhig war es hier noch n
 c1_mira_wake:[['mira','Hörst du das? Nichts. Seit drei Nächten wird der Wind schwächer, und heute Morgen war die Schale des Morgenkerns leer.'],
  ['aeru','Leer? Der Kern leuchtet doch seit … immer.'],
  ['mira','Ohne ihn verlieren die Sterneninseln ihre Aufwinde. Sieh zum Horizont: Die Ostinsel ist schon ein Stück weiter weggetrieben.'],
- ['mira','Die drei Windlaternen sind die Wurzeln des Kerns. Wenn sie wieder brennen, kann ich aus ihrem Licht neue Kraft weben. Weck sie mit deinem Windstoß.'],
+ ['mira','Die drei Windlaternen sind die Wurzeln des Kerns. Wenn sie wieder brennen, kann ich aus ihrem Licht neue Kraft weben. Weck sie mit deinem Feueratem.'],
  ['aeru','Laternen wecken. Das kann ich. Wahrscheinlich.']],
 c1_mira_lit:[['mira','Alle drei brennen! Spürst du den Hauch auf den Schuppen? Das war dein Wind.'],
  ['mira','Aber das Licht zieht davon, statt hier zu bleiben. Etwas ruft es fort.'],
@@ -315,7 +315,7 @@ c3_ivo:[['ivo','Halt. Ach, du bist das, von dem Sela erzählt hat. Ich bin der l
  ['ivo','Vesper hat Sturmfunken auf die Wiese gesetzt. Die laden auf und schießen. Ich habe meinen Helm schon zweimal verloren.'],
  ['ivo','Vertreib sie, dann kommst du an die Laternen. Und pass auf: Wenn ein Funke hell aufleuchtet, flieg zur Seite.']],
 c3_ready:[['sela','Alle Laternen singen. Jetzt kann seine Rüstung deinen Wind nicht mehr schlucken.'],
- ['sela','Spring über seine Sturmwellen. Nach jeder Welle öffnet sich sein Schild für einen Moment. Dann triff ihn mit deinem Windstoß.'],
+ ['sela','Spring über seine Sturmwellen. Nach jeder Welle öffnet sich sein Schild für einen Moment. Dann triff ihn mit deinem Feueratem.'],
  ['aeru','Ich will ihn nicht besiegen. Ich will, dass er zuhört.'],
  ['sela','Dann sorg dafür, dass er stehen bleibt. Ich komme nach.']],
 c3_vesper_intro:[['vesper','Du schon wieder. Hast du nicht genug Licht in deinen Wiesen?'],['aeru','Du hast es genommen. Allen.'],['vesper','Ich habe es aufbewahrt! Bevor es die Kälte holt, so wie damals.']],

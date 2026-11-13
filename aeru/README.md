@@ -20,7 +20,7 @@ Aeru, ein junger Drache, folgt einer durchgehenden Geschichte über sechs Inseln
 | Springen / Flügelschlag / Gleiten | Leertaste (halten = höher, in der Luft halten = gleiten) | SPRUNG | ✕ / B |
 | Flug ein/aus | G (im Flug Leertaste halten = steigen) | FLUG | R2 / ZR |
 | Rammstoß / im Flug sinken | Umschalt | RAMM | □ / Y, L2 / ZL |
-| Windstoß | F | WIND | ○ / A |
+| Feueratem | F | FEUER | ○ / A |
 | Sprechen, Tor, Portal | R / Enter | REDEN oder Hinweis antippen | △ / X |
 | Tagebuch / Pause | J / Esc oder P | ☰ / Ⅱ | Share / − · Options / + |
 
