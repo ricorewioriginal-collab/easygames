@@ -75,6 +75,7 @@
       (inCity ? '' : mi('free', '🏙️', 'Stadt & Nebenaufträge', Object.keys(Save.data.quests).length + '/' + D.QUESTS.length + ' Aufträge erledigt · frei spielen, Radio hören')) +
       mi('koop', '🌐', 'Online-Koop', 'Zu zweit auf zwei Geräten: Andrew & Marco – per Link, Code oder QR') +
       mi('walk', '🚶', 'Studio betreten', 'Zu Fuß durchs Studio: Pult, Rico, Einrichten, Musikshop') +
+      (AMC.Events ? mi('week', AMC.Events.week().icon, 'Woche ' + AMC.Events.week().n + ': ' + AMC.Events.week().name, AMC.Events.week().goal + ' ' + AMC.Events.week().have + '/' + AMC.Events.week().need + ' · 📼 ' + AMC.Events.tapes() + '/20 Kassetten') : '') +
       mi('friends', '❤️', 'Freundebuch', (AMC.Social ? Object.keys((Save.data.social || {}).f || {}).length + ' Bekanntschaften · 💖 ' + AMC.Social.superfans() + ' Superfans' : '')) +
       mi('home', '🏠', 'Zuhause', 'Andrews Wohnung & Marcos Haus · ' + ['andrew', 'marco'].map(id => D.HOSTS[id].name + ' ' + Math.round(AMC.Home.mood(id) * 100) + ' % fit').join(' · ')) +
       mi('arcade', '🕹️', 'Arcade: 3D-Minispiele', AMC.Arcade.GAMES.map(g => g.name).join(' · ')) +
@@ -97,7 +98,7 @@
     el.querySelector('#mHost').onclick = swapHost;
     s.o.onKey = () => { if (I.hit('swap')) { swapHost(); return true; } return false; };
     updHost();
-    const go = { resume, arcade: arcadeMenu, walk: walkStudio, friends: () => AMC.Social.book(), home: homeMenu, music: () => AMC.Home.musicShop(), studio: studioEdit, story: storyMenu, live: startLive, jagd: () => startCity('jagd'), race: () => startCity('race'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
+    const go = { resume, arcade: arcadeMenu, walk: walkStudio, friends: () => AMC.Social.book(), week: () => AMC.Events.panel(), home: homeMenu, music: () => AMC.Home.musicShop(), studio: studioEdit, story: storyMenu, live: startLive, jagd: () => startCity('jagd'), race: () => startCity('race'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
     el.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go[b.dataset.go]());
     G.menu = s;
   }
