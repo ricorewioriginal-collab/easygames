@@ -1207,6 +1207,9 @@ const ARTS=[
  {id:'gust',ch:4,em:'🌪️',n:'Wirbelwind',mp:24,cd:5,d:'Zauber (Sturm): zieht Gegner im weiten Umkreis vor Zotik zusammen und trifft sie.'},
  {id:'frost',ch:5,em:'❄️',n:'Frostnadeln',mp:22,cd:3.5,d:'Zauber (Eis): fünf Nadeln im Fächer; Getroffene sind 4 Sekunden lang verlangsamt.'},
  {id:'glide',ch:6,em:'🪶',n:'Gleiten',d:'Sprungtaste in der Luft halten: Zotik segelt langsam abwärts und kommt viel weiter.'},
+ {id:'hijump',ch:3,em:'🦘',n:'Hochsprung',d:'Bewegung: Zotik springt deutlich höher – hohe Kanten, Dächer und Plattformen sind erreichbar.'},
+ {id:'airdash',ch:5,em:'💨',n:'Luftsprint',d:'Bewegung: Ausweichen in der Luft – Zotik schießt einmal pro Sprung waagerecht nach vorn.'},
+ {id:'wall',ch:7,em:'🧗',n:'Wandsprung',d:'Bewegung: In der Luft an einer Wand springen – Zotik stößt sich ab und kommt Stück für Stück höher.'},
  {id:'bolt',ch:7,em:'⚡',n:'Kettenblitz',mp:28,cd:4,d:'Zauber (Sturm): springt vom nächsten Gegner auf bis zu drei weitere über.'},
  {id:'shade',ch:8,em:'🌑',n:'Schattenschritt',d:'Ausweichen führt durch Gegner hindurch und trifft jeden, den Zotik dabei streift.'},
  {id:'star',ch:9,em:'🌠',n:'Sternenfall',mp:45,cd:10,d:'Zauber (Licht): Sterne schlagen auf alle Gegner im Umkreis ein.'},
@@ -1234,8 +1237,10 @@ function swimTick(dt){const L=LAKEW(pl.x,pl.z),off=()=>{if(pl.wat){pl.wat=0;pl.d
   if(pl.mv>.1&&!pl.dv&&(pl.rip=(pl.rip||0)+dt)>.4){pl.rip=0;MFX.ring(pl.x,surf+1.08,pl.z,0xd8f8ff,1.3,.7,0)}
   return y}
 function swimStroke(){if(pl.swc>0||pl.y>hgt(pl.x,pl.z)+15)return;pl.swc=.24;pl.air=true;pl.vy=Math.max(pl.vy||0,JUMPV*.55);sfx('ui');emit(pl.x,pl.y+.4,pl.z,0xd8f8ff,10,1.6,.9,.3,-3)}
-function jump(){if(naut.on||pl.dead||dlg.on||menuOpen||mode!=='play')return;if(pl.wat&&pl.dv){pl.wvy=5.5;sfx('ui');return}if(SWIM()&&pl.air)return swimStroke();const lp=skR('leap');if(pl.air){if(lp<3||pl.dj)return;pl.dj=true;pl.vy=JUMPV*.85;sfx('ui');emit(pl.x,pl.y+.1,pl.z,0xb0ffd8,12,3,.4,.5,0);return}pl.dj=false;pl.air=true;pl.vy=JUMPV*Math.sqrt(1+.05*lp)*(X.form&&X.form.on>0?1.12:1);pl.jfw=REMOTE?.75:0;sfx('jump');emit(pl.x,pl.y+.1,pl.z,0xcfe0ff,10,3,.4,.5,0)}
-function dodge(){if(naut.on||pl.dead||dlg.on)return;if(pl.wat){pl.wvy=-5.5;pl.dv=1;sfx('dodge');emit(pl.x,pl.y+1,pl.z,0xd8f8ff,8,2,.5,.3,-4);return}if(pl.cd.dg>0||pl.dash>0)return;const [ix,iy]=inputVec();let dx=Math.sin(pl.face),dz=Math.cos(pl.face);if(ix||iy){const w=worldDir(ix,iy);dx=w[0];dz=w[1]}
+function jump(){if(naut.on||pl.dead||dlg.on||menuOpen||mode!=='play')return;if(pl.wat&&pl.dv){pl.wvy=5.5;sfx('ui');return}if(SWIM()&&pl.air)return swimStroke();const lp=skR('leap');if(pl.air&&artOn('wall')&&wallNear()){const fx=Math.sin(pl.face),fz=Math.cos(pl.face);pl.face=Math.atan2(-fx,-fz);pl.dx=-fx;pl.dz=-fz;pl.dash=.18;pl.vy=JUMPV*.95;pl.dj=false;pl.ad=0;sfx('jump');emit(pl.x+fx*.5,pl.y+.8,pl.z+fz*.5,0xffe8b0,14,3,.4,.4,0);return}if(pl.air){if(lp<3||pl.dj)return;pl.dj=true;pl.vy=JUMPV*.85;sfx('ui');emit(pl.x,pl.y+.1,pl.z,0xb0ffd8,12,3,.4,.5,0);return}pl.dj=false;pl.air=true;pl.vy=JUMPV*Math.sqrt(1+.05*lp)*(X.form&&X.form.on>0?1.12:1)*(artOn('hijump')?1.25:1);pl.jfw=REMOTE?.75:0;sfx('jump');emit(pl.x,pl.y+.1,pl.z,0xcfe0ff,10,3,.4,.5,0)}
+/* Wand direkt vor oder neben Zotik (für den Wandsprung) */
+function wallNear(){for(const a of [0,.6,-.6,1.2,-1.2]){const f=pl.face+a,x=pl.x+Math.sin(f)*.9,z=pl.z+Math.cos(f)*.9;if(pBlocked(x,z)||!colFree(x,z,.15)||hgt(x,z)>pl.y+.8){pl.face=f;return true}}return false}
+function dodge(){if(naut.on||pl.dead||dlg.on)return;if(pl.wat){pl.wvy=-5.5;pl.dv=1;sfx('dodge');emit(pl.x,pl.y+1,pl.z,0xd8f8ff,8,2,.5,.3,-4);return}if(pl.cd.dg>0||pl.dash>0)return;if(pl.air){if(!artOn('airdash')||pl.ad)return;pl.ad=1;pl.vy=Math.max(pl.vy,1.2)}const [ix,iy]=inputVec();let dx=Math.sin(pl.face),dz=Math.cos(pl.face);if(ix||iy){const w=worldDir(ix,iy);dx=w[0];dz=w[1]}
   pl.dx=dx;pl.dz=dz;pl.dash=.34;pl.iframes=artOn('shade')?.56:.42;pl.shH=artOn('shade')?new Set():null;pl.cd.dg=.8;pl.atk=-1;pl.face=Math.atan2(dx,dz);sfx('dodge');emit(pl.x,pl.y+.3,pl.z,0xcfe8ff,8,2,.4,.5)}
 function skill1(){if(naut.on)return;if(S.lead&&CSK[S.lead])return cmpSkill(S.lead);if(pl.dead||dlg.on||pl.cd.s1>0)return;if(S.mp<formMp(18)){toast('Zu wenig Mana');return}S.mp-=formMp(18);pl.cd.s1=2.6;pl.spin=.55;pl.atk=-1;mpSend({t:'sk',k:1,x:r2(pl.x),z:r2(pl.z)});sfx('skill1');wrFire(pl.x,pl.z);wrEcho();fxRing(pl.x,pl.z,0xffa040,5,.5);MFX.swirl(pl.x,pl.y,pl.z,0xffa040,2.3,2.2,.6);MFX.circle(pl.x,pl.y,pl.z,0xff8a30,2.6,.7);emit(pl.x,pl.y+1,pl.z,0xffb050,40,8,.6,.7,0);camShake=.2;
   for(const e of E){if(e.dead)continue;const dx=e.x-pl.x,dz=e.z-pl.z,d=Math.hypot(dx,dz);if(d<4.8+e.rad){hurtE(e,atkV()*1.7*magV()*(.9+Math.random()*.2),dx/(d||1),dz/(d||1),false,'fire');extOnHit(e,0)}}}
@@ -1345,7 +1350,7 @@ function updatePlayer(dt){
       if(pl.vy<=0&&pl.y<=sup){pl.y=ty=sup;pl.air=false;if(pl.vy<-9)sfx('land');pl.vy=0;if(pl.slam)artSlamLand();emit(pl.x,pl.y+.1,pl.z,0xcfe0ff,8,2,.4,.5,0)}}
     else if(pl.y>sup+.7){pl.air=true;pl.vy=0}   /* über die Kante gelaufen: fallen */
     else ty=sup}else pl.air=false;
-  if(!pl.air){pl.y+=(ty-pl.y)*Math.min(1,dt*18);if(Math.abs(pl.y-ty)>1.5)pl.y=ty}
+  if(!pl.air){pl.ad=0;pl.y+=(ty-pl.y)*Math.min(1,dt*18);if(Math.abs(pl.y-ty)>1.5)pl.y=ty}
   clbTry(ix,iy);
   if(pl.atk>=0){pl.atkT+=dt*formSpd();const du=ATD[pl.combo];if(!pl.hit&&pl.atkT>du*.42){pl.hit=true;doHit()}if(pl.atkT>=du){pl.atk=-1;pl.comboT=.55;if(pl.buf>0){pl.buf=0;startAttack()}}}
   pl.buf=Math.max(0,pl.buf-dt);
