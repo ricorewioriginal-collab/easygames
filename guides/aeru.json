@@ -16,6 +16,8 @@
         "Kristalldrachen: In jedem Gebiet steht ein in Kristall gebannter Drache. Lauf zu ihm, um ihn zu befreien – er spricht mit dir und bewahrt dort deinen Rastpunkt. 4 je Welt, 28 insgesamt.",
         "Eierdieb: Im Ostgebiet flüchtet ein Dieb mit einem Drachenei. Zu Fuß ist er zu schnell – halte die Rammtaste für den Ansturm und lenke ihn auf den Dieb (auch ein Feueratem aus der Nähe trifft). Ein Ei je Welt.",
         "Weltentore: Im Nordgebiet führt das Tor in die nächste Welt, im Südgebiet zurück in die vorige. Einfach hineinlaufen – kein Menü. Das Tor nach vorn erwacht, sobald der Leuchtkern dieser Welt leuchtet.",
+        "Heimathain (Heimatwelt): In Welt 1 führt eine eigene Brücke nach Osten in den Heimathain. Dort steht Ormun, der Älteste, und für jede weitere Welt ein Levelportal. Ein Portal erwacht, sobald der Leuchtkern der Welt davor leuchtet; graue Portale schlafen noch. In jeder anderen Welt bringt dich das Heimtor (⌂) im Südgebiet zurück in den Heimathain, direkt vor das Portal dieser Welt.",
+        "Gleiten wie früher: springen und in der Luft die Sprungtaste nochmal drücken. Aeru segelt dann ohne Flügelkraft weit geradeaus, der Stick lenkt. Mit Ramm lässt du dich fallen, ein dritter Druck schlägt mit den Flügeln.",
         "Wächter: Im Westgebiet jeder Welt wartet ein großer Wächter (6 Treffer). Besiegt gibt er einen lila Edelstein (25) frei und kommt nicht wieder.",
         "Sprachausgabe: Alle Dialoge werden vorgelesen (Gerätestimme, Drachen klingen tiefer). In den Einstellungen unter „Sprachausgabe“ abschaltbar."
       ]
@@ -34,7 +36,7 @@
       "t": "Bewegen, Fliegen und Kämpfen",
       "list": [
         "Sprung: kurz antippen springt niedrig, halten springt höher. Kurz nach dem Verlassen einer Kante darfst du noch springen, und ein Druck kurz vor der Landung wird nach dem Aufsetzen ausgeführt.",
-        "Gleiten: in der Luft die Sprungtaste halten – du fällst deutlich langsamer.",
+        "Gleiten: springen und in der Luft die Sprungtaste nochmal drücken – Aeru breitet die Flügel aus und segelt ohne Flügelkraft weit geradeaus, der Stick lenkt. Ramm lässt dich fallen, ein dritter Druck schlägt mit den Flügeln (Flug). Sprung halten bremst den Fall weiterhin.",
         "Kantenhilfe: Stößt du knapp unter einer Kante an, zieht sich Aeru hinauf. An Kanten bleibt Aeru kurz stehen; wer weiter drückt, geht bewusst hinunter.",
         "Flug: G bzw. FLUG startet den Flug, erneut drücken landet. In der Luft wechselt ein Flügelschlag in den Flug. Sprung halten = steigen (kostet Flügelkraft), Umschalt bzw. ROLLE = sinken, sonst sinkst du langsam.",
         "Flügelkraft: Die Leiste FLÜGELKRAFT lädt am Boden, in türkisen Aufwinden (die dich zusätzlich anheben) und langsam im Flug ohne Steigen. Bei wenig Kraft warnt die Anzeige.",
@@ -52,7 +54,7 @@
         "PC: WASD oder Pfeile bewegen, Maus ziehen, Q/E oder Mausrad steuern die Kamera, C dreht sie hinter Aeru. Leertaste = Springen/Flügelschlag/Gleiten, G = Flug ein/aus, Umschalt = Rammstoß bzw. im Flug sinken, F = Feueratem, R oder Enter = Sprechen und Tor benutzen, J = Tagebuch, Esc oder P = Pause.",
         "Dialoge: R, Leertaste oder Enter blättert weiter; bereits gesehene Dialoge überspringst du mit X, Backspace oder „Überspringen ⏭“.",
         "Touch: linker Stick bewegt, rechts wischen dreht die Kamera. Das Aktionsrad rechts hat SPRUNG (groß, unten), FLUG (oben), FEUER (links) und RAMM/ROLLE (rechts). REDEN erscheint nur, wenn jemand in der Nähe ist. ☰ = Tagebuch, Ⅱ = Pause.",
-        "Controller (PlayStation, Nintendo Switch, Xbox – wird automatisch erkannt, die Symbole passen sich an): linker Stick läuft und fliegt analog (leicht drücken = langsam), rechter Stick dreht die Kamera, R3 dreht sie hinter Aeru, L1/R1 (L/R) drehen schrittweise. Kreuz (Switch: B) = Springen/Flügelschlag/gleiten, Kreis (Switch: A) = Feueratem, Viereck (Switch: Y) = Rammstoß, Dreieck (Switch: X) = Sprechen und Portale, R2 (ZR) = Flug ein/aus, L2 (ZL) = Rammstoß bzw. im Flug sinken, Options/+ = Pause, Share/− = Tagebuch. Treffer lassen den Controller kurz vibrieren. Select + Start öffnet die Belegung zum Umstellen."
+        "Controller (PlayStation, Nintendo Switch, Xbox – wird automatisch erkannt, die Symbole passen sich an): linker Stick läuft und fliegt analog (leicht drücken = langsam), rechter Stick dreht die Kamera, R3 dreht sie hinter Aeru, L1/R1 (L/R) drehen schrittweise. Kreuz (Switch: B) = Springen, in der Luft nochmal = Gleiten, dann Flügelschlag, Kreis (Switch: A) = Feueratem, Viereck (Switch: Y) = Rammstoß, Dreieck (Switch: X) = Sprechen und Portale, R2 (ZR) = Flug ein/aus, L2 (ZL) = Rammstoß bzw. im Flug sinken, Options/+ = Pause, Share/− = Tagebuch. Treffer lassen den Controller kurz vibrieren. Select + Start öffnet die Belegung zum Umstellen."
       ]
     },
     {
@@ -285,7 +287,8 @@
       "list": [
         "Pro Welt: rote Edelsteine auf allen vier Brücken, je Gebiet sechs grüne im Ring und zwei blaue in der Mitte, ein goldener auf dem Stufenturm (im Nordgebiet zusätzlich ein lila Edelstein auf der dritten Stufe) und zwei bis drei Schatzkörbe mit grünen oder blauen Edelsteinen.",
         "Kristalldrachen stehen jeweils gegenüber der Brücke im Gebiet: im Norden und Süden etwas links der Mitte, im Osten und Westen außen.",
-        "Eierdieb (Ostgebiet): von der Brücke aus nähern, Rammtaste halten und auf ihn zulenken. Er flieht am Rand entlang – schneide ihm den Weg zur Mitte ab."
+        "Eierdieb (Ostgebiet): von der Brücke aus nähern, Rammtaste halten und auf ihn zulenken. Er flieht am Rand entlang – schneide ihm den Weg zur Mitte ab.",
+        "Heimathain: In Welt 1 über die Ostbrücke auf Höhe der Außeninsel (rote Edelsteine) zum Heimathain. Die sechs Levelportale stehen im Halbkreis um Ormun, Portal 2 ist offen, sobald der Leuchtkern von Welt 1 leuchtet, Portal 3 mit dem Kern von Welt 2 usw. Das Heimtor (⌂) steht in jeder anderen Welt im Südgebiet westlich der Gebietsmitte."
       ]
     }
   ],
@@ -313,6 +316,10 @@
     {
       "q": "Muss ich alle Splitter sammeln?",
       "a": "Nein. Splitter, Truhen und Nebenquests sind freiwillig. Sie machen Aeru aber stärker und sind für den Sternenglanz nötig."
+    },
+    {
+      "q": "Wie komme ich schnell in eine frühere Welt?",
+      "a": "Lauf in einer beliebigen Welt im Südgebiet durch das Heimtor (⌂) in den Heimathain. Von dort führt ein Levelportal in jede Welt, deren Vorgänger-Leuchtkern du hast. Alternativ geht es über die Inselwahl im Pausenmenü."
     }
   ]
 }

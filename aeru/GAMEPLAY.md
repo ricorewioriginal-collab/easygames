@@ -7,7 +7,7 @@ Simulation mit festen 60 Hz (Akkumulator), dadurch gleiches Verhalten bei 30, 60
 - **Sprung:** Antippen springt niedrig, Halten höher (Sprunghöhe wird nach 0,08 s beim Loslassen gekappt).
 - **Coyote Time:** 0,12 s nach dem Verlassen einer Kante darf noch gesprungen werden.
 - **Sprungpuffer:** Ein Druck bis 0,14 s vor der Landung wird nach dem Aufsetzen ausgeführt (statt eines Flügelschlags knapp über dem Boden).
-- **Gleiten:** In der Luft Sprung halten – deutlich langsamerer Fall.
+- **Gleiten (wie auf der PS1):** Springen, in der Luft nochmal Sprung – Aeru segelt ohne Flügelkraft geradeaus (11 m/s, höchstens 2,4 m/s Sinken), der Stick lenkt. Ramm lässt fallen, dritter Druck = Flügelschlag/Flug. Sprung halten bremst wie bisher den Fall.
 - **Rammstoß (Umschalt / RAMM):** Am Boden ein kurzer Schub mit Unverwundbarkeit. Wer im Schub einen Gegner trifft, schlägt ihn (Reichweite 1,7 m, nach den ersten 3 Himmelstruhen 3,2 m) und zerstreut Dornenkugeln.
 - **Ansturm:** Wer die Rammtaste nach dem Stoß gedrückt hält, stürmt bis zu 3 s lenkbar mit 12,5 m/s weiter (Wendekreis 3,2 rad/s) und rammt alle 0,3 s erneut. Loslassen, Springen, Fliegen oder eine Kante (Kantenschutz) beenden ihn.
 - **Landung:** Stauchung und Geräusch je nach Fallgeschwindigkeit.
@@ -132,6 +132,8 @@ Fensterwechsel oder verdeckter Tab pausiert das Spiel und löst alle gedrückten
 - **Eierdieb:** im Ostgebiet, flieht mit 9 m/s (Laufen 7,4, Ansturm 12,5), bleibt im Gebiet und weicht am Rand entlang aus. Gefangen per Rammstoß/Ansturm oder Feueratem aus der Nähe; gespeichert in `save.eggs`.
 - **Weltentore:** Nordgebiet → nächste Welt (erst mit Leuchtkern), Südgebiet → vorige Welt. Hineinlaufen reist sofort; Ankunft 5 m vor dem passenden Tor der Zielwelt.
 - Gegner der Gebiete bleiben auf ihrem Gebiet. Wolken liegen weiter draußen (120–150 m), Nebel 85–215 m, Sichtweite 320 m.
+- **Heimathain (Heimatwelt):** nur in Welt 1, Insel (70, 36) r 22 östlich, Brücke auf z = 20. In der Mitte die Statue des Ältesten Ormun (Dialog beim ersten Besuch je Sitzung), im Halbkreis (r 14) sechs Levelportale zu den Welten 2–7; ein Portal ist offen, sobald `save.cores[Welt − 1]` gesetzt ist, sonst grau. Ankunft vor dem Heimtor der Zielwelt.
+- **Heimtor:** in den Welten 2–7 im Südgebiet bei (−36, 70), führt in den Heimathain vor das Portal dieser Welt. Bäume, Körbe und Edelsteine halten Abstand zu allen Toren.
 - **Wächter:** im Westgebiet jeder Welt ein vergrößerter Gegner der Welt (6 Treffer, größere Reichweite), gibt beim Sieg einen lila Edelstein frei; danach erscheint er nicht mehr (am Edelstein gespeichert).
 - **Feueratem:** ersetzt den Windstoß optisch und klanglich (Flammenringe, Funken, Knistern); Reichweite und Treffer bleiben gleich, Laternen werden damit entzündet.
 - **Sprachausgabe:** Dialogzeilen werden mit der deutschen Gerätestimme vorgelesen (Drachen tiefer, Pip höher); Einstellung „Sprachausgabe“, eingebettet über `cloud/anmacha-cloud.js`.

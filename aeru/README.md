@@ -17,7 +17,7 @@ Aeru, ein junger Drache, folgt einer durchgehenden Geschichte über sechs Inseln
 |---|---|---|---|
 | Bewegen | WASD / Pfeile | linker Stick | linker Stick (analog) |
 | Kamera | Maus ziehen, Q/E, Mausrad, C = hinter Aeru | rechts wischen | rechter Stick, L1/R1, R3 |
-| Springen / Flügelschlag / Gleiten | Leertaste (halten = höher, in der Luft halten = gleiten) | SPRUNG | ✕ / B |
+| Springen / Flügelschlag / Gleiten | Leertaste (halten = höher, in der Luft nochmal = gleiten, dann Flügelschlag) | SPRUNG | ✕ / B |
 | Flug ein/aus | G (im Flug Leertaste halten = steigen) | FLUG | R2 / ZR |
 | Rammstoß / im Flug sinken | Umschalt | RAMM | □ / Y, L2 / ZL |
 | Feueratem | F | FEUER | ○ / A |

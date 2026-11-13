@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "ee40b3697641",
- "generated": "2026-11-13T13:12:36+00:00",
- "commit": "734f66b17b1136ce78991740fe9d6e4b1b3568ca",
+ "version": "ab2a37687787",
+ "generated": "2026-11-13T13:18:36+00:00",
+ "commit": "5505dd725a330a9cbac64c30c2b37a8b6ca92cda",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -348,13 +348,13 @@
   },
   {
    "p": "aeru/game.js",
-   "s": 174428,
-   "h": "06d73ffc31d36d82a18054cac7f517dc6682cd93e272dc7d0d6dedc06173aa27"
+   "s": 179423,
+   "h": "c18cbcfe56433d81f4c9d58db4518d47882f8faf0af0906308da6d7d5117cf26"
   },
   {
    "p": "aeru/index.html",
-   "s": 15476,
-   "h": "6b3148a737006c34a38e7ba5904f1610a6b4757b514470a494bffbdd545da450"
+   "s": 15593,
+   "h": "e42fb9376379353bacdf70c3e2aa5e1ee3ca94c0e7b2b8db61aa834715de9848"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -6523,8 +6523,8 @@
   },
   {
    "p": "guides/aeru.json",
-   "s": 22193,
-   "h": "1eea3453cd937040948d6cfdde52798f34c768e92c5d68adb10304446c2fa058"
+   "s": 23727,
+   "h": "e8cd4bf0ba67308084658413903d0ec57029026a4000ca260320465af8d5890b"
   },
   {
    "p": "guides/anmacha-beat-surfer.json",
@@ -9734,7 +9734,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258882,
-   "h": "eb9c6835e25ee97c8775c6fc654585ebfc9148cde012db59b7b76c6ab97fc829"
+   "h": "5ef757b57e0be2d328462be3efd6f6e268e60ecea706718e7fc11b6e0e1d83f5"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

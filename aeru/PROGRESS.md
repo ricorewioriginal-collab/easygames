@@ -25,6 +25,7 @@ Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese D
 - **Spyro-Ausbau, Schritt 3 (13.11.2026):** Ansturm (Rammtaste halten), Schatzkörbe in allen Welten, Lichtfalter (heilen), Begleiter Funkel (Lebensfarbe, Splitter-Magnet), Splitter-Kette im Ton, neue Klänge für Korb, Falter und Ansturm, Hinweise beim ersten Mal. → `tests/spyro.cjs`, alle Logiktests
 - **Spyro-Ausbau, Schritt 4 (13.11.2026):** Welten etwa dreimal so groß – vier Gebiete je Welt mit Brücken, Edelsteine in fünf Farbwerten, Schatzkörbe mit Edelsteinen, 28 Kristalldrachen zum Befreien, ein Eierdieb je Welt, Weltentore (hineinlaufen = nächste/vorige Welt ohne Menü), größere Sichtweite. → `tests/welten.cjs`, alle Logiktests
 - **Spyro-Ausbau, Schritt 5 (13.11.2026):** Feueratem statt Windstoß (Flammen, Klang, Texte), Sprachausgabe für alle Dialoge (abschaltbar), ein Wächter je Welt im Westgebiet mit lila Edelstein. → `tests/welten.cjs`
+- **Spyro-Ausbau, Schritt 6 (13.11.2026):** Heimatwelt „Heimathain“ in Welt 1 mit Ältestem Ormun und sechs Levelportalen (öffnen mit dem Leuchtkern der Vorwelt), Heimtor in jeder anderen Welt, Gleiten per Doppelsprung wie auf der PS1 (ohne Flügelkraft, Ramm lässt fallen, dritter Druck = Flug). → `tests/welten.cjs`, `tests/spyro.cjs`
 
 ## Umgesetzt, aber nicht vollständig getestet
 
@@ -42,7 +43,7 @@ Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese D
 - Test auf echten Geräten (mindestens ein Android-Handy, ein iPhone, ein Notebook mit integrierter Grafik) und Eintrag der Messwerte in TESTING.md.
 - Bäume und Gras bewegen sich nicht im Wind.
 - Sprachausgabe nutzt die Stimme des Geräts (keine eigene Vertonung); Texte nur auf Deutsch.
-- Spyro-Ausbau, nächste Schritte: Aeru selbst bleibt das eigene Modell (der freie Quaternius-Drache kann nur fliegen, nicht laufen); eine eigene Heimatwelt mit Levelportalen (bisher führen die Weltentore direkt von Welt zu Welt), mehr Sound-Effekte und Animationen.
+- Spyro-Ausbau, nächste Schritte: Aeru selbst bleibt das eigene Modell (der freie Quaternius-Drache kann nur fliegen, nicht laufen); mehr Sound-Effekte und Animationen.
 
 ## Bekannte Fehler und Grenzen
 
