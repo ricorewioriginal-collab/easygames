@@ -253,7 +253,7 @@ Dateien: `js/util.js` (Geometrie-Bündelung, Figuren, Pappnase, Blitz, Partikel)
 
 
 ### 🌀 Spiel-Portale, Welten-Shows und Freundschaft (November 2026)
-- Portale zu anderen easygames-Spielen (`js/portale.js`): Regenbogenwelt → Gay Life!, Drachenwelt → AERU, Radiowelt → AnMaCha Podcast Tycoon, Stadt → Marktrausch, Taschi-Land → Taschi.
+- Portale zu anderen easygames-Spielen (`js/portale.js`): Regenbogenwelt → Gay Life!, Drachenwelt → AERU, Radiowelt → AnMaCha – Der Podcast, Stadt → Marktrausch, Taschi-Land → Taschi.
   Gemeinsame Rückfrage im Konsolen-Stil (`BI.portalAsk`, sichtbar obenauf, A/B/Escape), Reise-Übergang (`BI.portalGo`) und Portal-Modell (`BI.makePortal`). Links bleiben lokal (`../<spiel>/?from=bunteinsel`).
 - Welten-Flair (`js/flair.js`): Regenbogen-Seifenblasen + Konfetti-Kanone, Glutfunken + kreisender Drache mit Drachenhorn, Equalizer-Ring + DJ-Pult, Werbe-Luftschiff + Stadtfest-Feuerwerk. Erste Show am Tag +1 ⭐.
 - Freundschaft (`js/freunde.js`, `save.friends`): Herzen durch tägliches Reden, Geschenke (3 ⭐) und Blumen, Belohnung je Herz, Sticker 💞/💖. Tests: `tests/portale.mjs`, `tests/freunde.mjs`.

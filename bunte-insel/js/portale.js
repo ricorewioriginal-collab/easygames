@@ -1,7 +1,7 @@
 'use strict';
 /* Bunte Insel – Portale zu anderen easygames-Spielen 🌀
    Gemeinsame Rückfrage im Konsolen-Stil (BI.portalAsk), Reise-Übergang (BI.portalGo) und ein Portal-Baustein (BI.makePortal).
-   Portale stehen in der Regenbogenwelt (Gay Life!), der Drachenwelt (AERU), der Radiowelt (AnMaCha Podcast Tycoon) und der Stadt (Marktrausch).
+   Portale stehen in der Regenbogenwelt (Gay Life!), der Drachenwelt (AERU), der Radiowelt (AnMaCha – Der Podcast) und der Stadt (Marktrausch).
    Taschi-Land nutzt dieselbe Rückfrage. Links bleiben lokal (gleiches Gerät, ../<spiel>/), damit die App auch offline reist.
    Sparsam: je Portal 4 Zeichenaufrufe, nur in der Nähe sichtbar und animiert. */
 (function () {
@@ -80,7 +80,7 @@ BI.GAME_PORTALS = [
     cols: [0xe8453c, 0xff9a2a, 0xffd23f, 0x3ec46d, 0x3a7bff, 0x9a5bff], swirl: ['#ffffff', '#ffd6f4', '#ff4fa3', '#7a3bff'], glow: 0xff7ad0, sign: '#ff4fa3', who: ['Regenbogen-Romy', '🌈'] },
   { key: 'DRACHEN', game: 'aeru', name: 'AERU', icon: '🪽', color: '#ff8a2a', text: 'Durch das Drachen-Portal fliegst du zu „AERU – Die Sterneninseln“, einem Flug-Abenteuer über den Wolken.',
     cols: [0x8a3a2a, 0xd8662a, 0xffb43a], swirl: ['#ffffff', '#ffe6a0', '#ff8a2a', '#6a2aa0'], glow: 0xffa040, sign: '#d8662a', base: 0x9a8a80, base2: 0x6a5a50, who: ['Drachenwächterin Brisa', '🐉'] },
-  { key: 'RADIO', game: 'anmacha-podcast-tycoon', name: 'Podcast Tycoon', icon: '🎙️', color: '#e8253c', text: 'Das Funk-Portal bringt dich ins Studio: „AnMaCha Podcast Tycoon“ – bau dein eigenes Podcast-Imperium!',
+  { key: 'RADIO', game: 'anmacha-podcast-tycoon', name: 'AnMaCha – Der Podcast', icon: '🎙️', color: '#e8253c', text: 'Das Funk-Portal bringt dich ins Studio: „AnMaCha – Der Podcast“, das Abenteuer mit Andrew und Marco!',
     cols: [0x222230, 0xe8253c, 0xffffff], swirl: ['#ffffff', '#ffd0d6', '#e8253c', '#20202c'], glow: 0xff5060, sign: '#e8253c', base: 0x40404c, base2: 0x2a2a34, who: ['Funkmeisterin Frida', '📻'] },
   { key: 'CITY', game: 'anmacha-markthalle', name: 'Marktrausch', icon: '🛒', color: '#2aa858', text: 'Hinter dem Stadt-Portal wartet „Marktrausch“, der Supermarkt-Simulator: Regale füllen, kassieren, wachsen!',
     cols: [0x2aa858, 0xff9a2a, 0xffffff], swirl: ['#ffffff', '#dfffe6', '#2aa858', '#1a5a8a'], glow: 0x60e090, sign: '#2aa858', base: 0xd8d8d0, base2: 0xb0b0a8, who: ['Stadtführerin Luna', '🏙️'] }

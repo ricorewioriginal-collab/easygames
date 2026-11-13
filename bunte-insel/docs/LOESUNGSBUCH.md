@@ -440,7 +440,7 @@ In vier Welten steht ein leuchtendes Portal zu einem anderen easygames-Spiel. Hi
 
 - 🏳️‍🌈 Regenbogenwelt → Gay Life! (Spielesammlung)
 - 🪽 Drachenwelt → AERU – Die Sterneninseln
-- 🎙️ Radiowelt → AnMaCha Podcast Tycoon
+- 🎙️ Radiowelt → AnMaCha – Der Podcast
 - 🛒 Stadt → Marktrausch (Supermarkt-Simulator)
 - 🌀 Taschi-Land → Taschi
 

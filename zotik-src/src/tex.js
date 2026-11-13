@@ -1,10 +1,10 @@
 // Hochwertige Oberflächen: CC0-Texturen von Poly Haven (public/tex, 512 px) mit Dreiseiten-Projektion (triplanar) in Weltkoordinaten.
 // Dadurch braucht keine Form UV-Koordinaten, und skalierte Kästen/Zylinder/Felsen werden nicht verzerrt.
 // Farbe und Normalen kommen aus der Textur; die Grundfarbe tönt nur. Ohne geladene Textur bleibt die Fläche einfach einfarbig.
-export function createTex({ T, renderer }) {
-  const L = new T.TextureLoader(), cache = {}, mats = new Map(), aniso = Math.min(8, renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 4);
+export function createTex({ T, renderer, hi }) {
+  const L = new T.TextureLoader(), cache = {}, mats = new Map(), aniso = Math.min(hi ? 16 : 8, renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 4);
   const tex = (k, srgb) => { const id = k + (srgb ? 'd' : 'n'); if (cache[id]) return cache[id];
-    const t = L.load('tex/' + k + '_' + (srgb ? 'd' : 'n') + '.jpg'); t.wrapS = t.wrapT = T.RepeatWrapping; t.anisotropy = aniso; if (srgb) t.encoding = T.sRGBEncoding; return cache[id] = t; };
+    const t = L.load('tex/' + k + '_' + (srgb ? 'd' : 'n') + (hi ? '1k' : '') + '.jpg');   /* PC/TV: 1024 px für scharfe Oberflächen, Handy: 512 px */ t.wrapS = t.wrapT = T.RepeatWrapping; t.anisotropy = aniso; if (srgb) t.encoding = T.sRGBEncoding; return cache[id] = t; };
   // Kopien (z. B. zum Einfärben von Gegnern) behalten die Texturprojektion
   function cloneTri() { const c = T.MeshStandardMaterial.prototype.clone.call(this); c.onBeforeCompile = this.onBeforeCompile; c.customProgramCacheKey = this.customProgramCacheKey; c.clone = cloneTri; return c; }
   // Material mit Dreiseiten-Projektion; o: { s: Maßstab (Wiederholungen je Meter), gain: Helligkeit, n: Normalenstärke, r, m, e, ei, vc: Vertexfarben }

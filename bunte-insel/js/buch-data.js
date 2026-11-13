@@ -113,7 +113,7 @@ BI.BUCH = {
     ] },
     { id: 'portale', icon: '🌀', title: 'Spiel-Portale & Welten-Shows', body: [
       ['p', 'In vier Welten steht ein leuchtendes Portal zu einem anderen easygames-Spiel. Hingehen, Aktion-Knopf drücken, „Los geht’s!“ wählen – dein Inselspiel wird vorher gespeichert.'],
-      ['ul', ['🏳️‍🌈 Regenbogenwelt → Gay Life! (Spielesammlung)', '🪽 Drachenwelt → AERU – Die Sterneninseln', '🎙️ Radiowelt → AnMaCha Podcast Tycoon', '🛒 Stadt → Marktrausch (Supermarkt-Simulator)', '🌀 Taschi-Land → Taschi']],
+      ['ul', ['🏳️‍🌈 Regenbogenwelt → Gay Life! (Spielesammlung)', '🪽 Drachenwelt → AERU – Die Sterneninseln', '🎙️ Radiowelt → AnMaCha – Der Podcast', '🛒 Stadt → Marktrausch (Supermarkt-Simulator)', '🌀 Taschi-Land → Taschi']],
       ['p', 'Jede dieser Welten hat außerdem eine Mitmach-Show: 🎉 Konfetti-Kanone (Regenbogen), 🐉 Drachenhorn – der Drache fliegt herab und speit Feuer, 🎛️ DJ-Pult mit tanzendem Equalizer (Radio), 🎆 Stadtfest-Feuerwerk (Stadt).'],
       ['tip', 'Die erste Show jeder Welt bringt jeden Tag +1 ⭐. Alle Portale findest du auch unter 🧭 Wohin? → Spiele.']
     ] },

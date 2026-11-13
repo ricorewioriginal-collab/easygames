@@ -1,4 +1,4 @@
-/* Portale zu anderen easygames-Spielen: Taschi (Taschi-Land), Gay Life! (Regenbogenwelt), AERU (Drachenwelt), Podcast Tycoon (Radiowelt), Marktrausch (Stadt).
+/* Portale zu anderen easygames-Spielen: Taschi (Taschi-Land), Gay Life! (Regenbogenwelt), AERU (Drachenwelt), AnMaCha – Der Podcast (Radiowelt), Marktrausch (Stadt).
    Prüft: Portal steht in der Welt, Rückfrage ist SICHTBAR obenauf (echter Klick), Reise öffnet den richtigen Link, „Hierbleiben“ gibt die Steuerung frei.
    Aufruf: LANG=de_DE.UTF-8 node bunte-insel/tests/portale.mjs */
 import { chromium } from 'playwright';
