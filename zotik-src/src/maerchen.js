@@ -6,9 +6,9 @@
 import { WORLDS } from './mwdata.js';
 import { makeLand } from './mwland.js';
 import { createMwFoes } from './mwfoes.js';
-export const MW_FIRST = 21, MW_LAST = 27, MW = WORLDS;
+export const MW_FIRST = 21, MW_LAST = 28, MW = WORLDS;
 const CX = 0; let CZ = -36, R = 58; const PATHX = z => Math.sin(z * .08) * 5;
-const GTEX = { spiegel: 'forest', dschungel: 'forest', notredame: 'cobble', theben: 'sand', meer: 'sand', mauer: 'grass', camelot: 'grass' };
+const GTEX = { spiegel: 'forest', dschungel: 'forest', notredame: 'cobble', theben: 'sand', meer: 'sand', mauer: 'grass', camelot: 'grass', nimmerland: 'grass' };
 const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 const hex = n => '#' + n.toString(16).padStart(6, '0');
 
@@ -165,6 +165,7 @@ export function createMaerchen(C) {
       case 'lamp': g.add(mk(G.box, M(0x3a3a3e, { m: .5 }), 0, .45, 0, .32, .5, .32)); g.add(mk(G.sph0, M(0xffd890, { e: 0xffc060, ei: 2.4 }), 0, .45, 0, .2, .22, .2, false)); g.add(glow(0xffc060, 2.2, 0, .5, 0, .8)); break;
       case 'pearl': g.add(mk(G.sph, M(0xe0d8d0, { e: 0x6a6a7a, ei: 1, m: .4, r: .2 }), 0, .1, 0, .5, .2, .4)); g.add(mk(G.sph, M(0xffffff, { e: 0xd8e8ff, ei: 1.4, r: .1 }), 0, .3, 0, .2, .2, .2, false)); g.add(glow(0xd8f0ff, 1.8, 0, .35, 0, .8)); break;
       case 'gapple': g.add(mk(G.sph, M(0xffc830, { e: 0xa07010, ei: 1.4, m: .6, r: .25 }), 0, .32, 0, .28, .28, .28)); g.add(mk(G.cyl0, M(0x4a3a20), 0, .62, 0, .03, .12, .03, false)); g.add(glow(0xffd860, 2, 0, .35, 0, .8)); break;
+      case 'dust': g.add(mk(G.oct, M(0xffe070, { e: 0xffc830, ei: 2.6 }), 0, .45, 0, .16, .24, .16)); for (let k = 0; k < 5; k++) g.add(mk(G.sph0, M(0xfff4c0, { e: 0xffe080, ei: 3 }), Math.cos(k * 1.3) * .3, .3 + k * .1, Math.sin(k * 1.3) * .3, .04, .04, .04, false)); g.add(glow(0xffe080, 2.6, 0, .5, 0, .9)); break;
       case 'ember': g.add(mk(G.sph, M(0xff6a20, { e: 0xff4010, ei: 2.6 }), 0, .3, 0, .22, .2, .22)); g.add(glow(0xff8a30, 2.4, 0, .4, 0, .9)); break;
       case 'mask': g.add(mk(G.sph, M([0xf0e8d8, 0xd8b040, 0xc8402a, 0x4a6ac8, 0xe8e8f0][i % 5], { r: .4 }), 0, .55, 0, .3, .36, .1)); g.add(mk(G.box, M(0x1a1410), 0, .62, .06, .25, .06, .04, false)); g.add(glow(0xffe08a, 2, 0, .55, 0, .7)); break;
       case 'market': { if (i % 4 === 0) { const P = FOE.make('reiter', 0x8a5a3a, false); P.root.scale.setScalar(.75); P.body.children.forEach((c, k) => { if (k > 10) c.visible = false; }); g.add(P.root); }
@@ -195,6 +196,7 @@ export function createMaerchen(C) {
     if (look === 'goat') { const P = FOE.make('rothund', 0xf0ece0, false); P.root.scale.setScalar(.6); g.add(P.root); for (const sx of [-1, 1]) { const hn = mk(G.cone, M(0x8a7a5a), sx * .1, .85, .62, .04, .22, .04); hn.rotation.x = -.5; g.add(hn); } for (const lx of [-.14, .14]) for (const lz of [-.25, .3]) g.add(mk(G.sph0, M(0xe8c040, { m: .8 }), lx, .04, lz, .06, .06, .06, false)); }
     else if (look === 'pranger') { const P = C.folk('Quasimodo', { g: 'm', cloth: 0x6a5232, cloth2: 0x4a3a28, hair: 0xb04a22, skin: 0xe0b090, wide: 1.35, sc: .92, hood: 1 }, { pal: 1 }); g.add(P.root);   // Pranger: Holzbühne, Pfosten, Querbalken
       g.add(mk(G.box, M(0x6a4a30, { r: .9 }), 0, -.15, 0, 3, .3, 3), mk(G.box, M(0x5a3a24, { r: .9 }), 0, 1, -.35, .22, 2.6, .22), mk(G.box, M(0x5a3a24, { r: .9 }), 0, 1.75, -.2, 1.6, .22, .2)); P.root.position.y = 0; }
+    else if (look === 'shadow') { const P = C.folk('Schatten', { g: 'm', cloth: 0x0a0812, cloth2: 0x0a0812, hair: 0x0a0812, skin: 0x14101c, sc: .82, hs: 4 }, { pal: 1 }); g.add(P.root); g.add(glow(0x6a4aff, 3, 0, 1, 0, .5)); }
     else if (look === 'kaa') { const P = C.CR().makeKind('schlange', 0xb0a040, false); P.root.scale.setScalar(2.2); g.add(P.root); }
     else if (look === 'crone') { const P = C.folk('Alte', { g: 'f', cloth: 0x3a2a3a, cloth2: 0x2a2a2a, cape: 0x2a1a2a, hair: 0xd0d0d0, sc: .9 }, { pal: 1 }); g.add(P.root); g.add(mk(G.cyl, M(0x8a6a3a), .45, .75, .2, .3, .25, .3)); for (let i = 0; i < 4; i++) g.add(mk(G.sph, M(0xc8202a, { r: .3 }), .35 + (i % 2) * .2, .95, .1 + (i > 1 ? .2 : 0), .1, .1, .1)); }
     else if (look === 'lady') { const P = C.folk('Dame', { g: 'f', cloth: 0xd8e8f8, cloth2: 0x8ab0d8, hair: 0x8a5a2a, sc: 1 }, { pal: 1 }); g.add(P.root); g.add(glow(0xd8f0ff, 4, 0, 1.2, 0, .6)); }

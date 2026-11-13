@@ -87,6 +87,27 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
       case 'rothund': {   // Dhole – der Rote Hund aus Kiplings „Red Dog“: rötlich, dunkler buschiger Schwanz
         quad(.9, C(col, { r: .85 })); head.add(mk(G.sph, C(dim(col, .8)), 0, -.06, .26, .14, .11, .22)); for (const s of [-1, 1]) head.add(mk(G.cone0, C(col), s * .14, .24, -.05, .06, .16, .04)); eyes(head, .06, .24, .1, 0xffd040);
         tail.addm(mk(G.cone0, C(0x2a1a14), 0, -.3, 0, .14, .7, .14)).rotation.x = Math.PI; b.add(mk(G.sph0, C(0xe8d8c0), 0, .66, .5, .2, .14, .28, false)); break; }
+      case 'pirat': case 'hook': {   // Piraten der Jolly Roger (Barrie): Ringelhemd, Kopftuch, Entermesser; Hook: roter Rock, Dreispitz, eiserne Hand, Locken
+        const H = kind === 'hook', s = H ? 1.12 : 1, sk = C(0xe0b090), coat = H ? C(col, { r: .6, e: dim(col, .2), ei: 1 }) : C(0xf0ece4, { r: .9 }), str = C(col, { r: .8 }), pant = C(H ? 0x1a1a24 : 0x3a3a5a, { r: .9 });
+        b.add(mk(G.box, coat, 0, 1.3 * s, 0, .62 * s, .74 * s, .4 * s)); if (!H) for (let i = 0; i < 3; i++) b.add(mk(G.box, str, 0, 1.08 + i * .22, 0, .64, .07, .42, false));
+        else { b.add(mk(G.cone0, coat, 0, .82, 0, .5, .6, .4)); for (let i = 0; i < 4; i++) b.add(mk(G.sph0, C(0xd8b040, { m: .9, r: .3 }), .12, 1.12 + i * .14, .22, .035, .035, .02, false)); b.add(mk(G.box, C(0xf0ece4), 0, 1.58, .2, .2, .16, .04, false)); }
+        b.add(mk(G.box, C(0x2a1a12), 0, .98 * s, 0, .64 * s, .1, .42 * s, false));
+        head.position.set(0, 1.92 * s, 0); head.add(mk(G.sph, sk, 0, 0, 0, .24, .26, .23)); eyes(head, .04, .2, .08, H ? 0xff3030 : 0x2a1a12, .9);
+        if (H) { const hat = mk(G.cyl, C(0x14101a), 0, .22, 0, .42, .1, .34); head.add(hat); head.add(mk(G.cone0, C(0x14101a), 0, .34, 0, .2, .2, .18)); head.add(mk(G.box, C(0xf0f0f0), .02, .4, .26, .05, .05, .02, false));
+          for (const k of [-1, 1]) for (let i = 0; i < 3; i++) head.add(mk(G.sph0, C(0x0a0808), k * .22, -.08 - i * .12, -.04, .08, .1, .08, false)); head.add(mk(G.box, C(0x0a0808), 0, -.06, .21, .16, .03, .03, false)); }
+        else { head.add(mk(G.sph, C(col), 0, .12, -.02, .25, .16, .25)); head.add(mk(G.cone0, C(col), -.05, .05, -.27, .06, .2, .04)); head.add(mk(G.tor, C(0xd8b040, { m: .9 }), .23, -.04, 0, .05, .05, .02, false)); }
+        leg(-.15, .92 * s, 0, .9 * s, .1, pant, true); leg(.15, .92 * s, 0, .9 * s, .1, pant, true); arm(-1, 1.6 * s, .7, .09, coat, .4 * s); const a = arm(1, 1.6 * s, .7, .09, coat, .4 * s);
+        a.add(mk(G.box, C(0xd8dce4, { m: .95, r: .2 }), 0, -1.05, .3, .05, .9, .14)); a.add(mk(G.box, C(0xd8b040, { m: .9 }), 0, -.66, .2, .2, .05, .08));
+        if (H) { const l = legs[legs.length - 2]; l.add(mk(G.tor, C(0xc8ccd4, { m: 1, r: .15 }), 0, -.82, .12, .12, .12, .1, false)); b.add(glow(0xff4a3a, 3.6, 0, 1.4, 0, .35)); }
+        break; }
+      case 'krokodil': {   // Das Tick-Tack-Krokodil: langes Maul, Rückenzacken, im Bauch tickt der verschluckte Wecker
+        const sc = 1.1, sk = C(col, { r: .8, e: dim(col, .2), ei: 1 }), bl = C(dim(col, .7));
+        b.add(mk(G.sph, sk, 0, .5, -.1, .55, .32, 1.25)); head.position.set(0, .55, 1.15); head.add(mk(G.box, sk, 0, 0, .35, .4, .2, .9)); head.add(mk(G.box, bl, 0, -.13, .35, .38, .08, .86));
+        for (let i = 0; i < 6; i++) for (const k of [-1, 1]) head.add(mk(G.cone0, C(0xf4f0e0), k * .17, -.05, .05 + i * .14, .025, .07, .025, false)); for (const k of [-1, 1]) head.add(mk(G.sph0, sk, k * .14, .14, -.02, .09, .09, .09)); eyes(head, .2, .02, .14, 0xffd040);
+        for (let i = 0; i < 7; i++) b.add(mk(G.cone0, bl, 0, .82, .7 - i * .26, .08, .2, .1, false));
+        for (const [x, z] of [[-.42, .55], [.42, .55], [-.42, -.6], [.42, -.6]]) { const l = leg(x, .35, z, .35, .1, sk, true); l.rotation.z = x > 0 ? -.5 : .5; }
+        tail.position.set(0, .45, -1.25); tail.rotation.x = -1.45; tail.addm(mk(G.cone0, sk, 0, -.75, 0, .28, 1.6, .18)).rotation.x = Math.PI;
+        const tick = mk(G.sph0, C(0xffe080, { e: 0xffc040, ei: 2 }), 0, .45, .1, .16, .16, .16, false); b.add(tick); b.add(glow(0xffd060, 2.2, 0, .5, .1, .4)); break; }
       case 'tiger': {   // Shere Khan: großer Tiger mit schwarzen Streifen, heller Schnauze, hinkt (Lungri, der Lahme)
         const sc = 1.05, fur = C(col, { r: .7, e: dim(col, .2), ei: 1 }), st = C(0x15100c); quad(sc, fur);
         for (let i = 0; i < 7; i++) for (const s of [-1, 1]) { const r = mk(G.box, st, s * .38, .88, .55 - i * .2, .06, .34, .05, false); r.rotation.z = s * .5; b.add(r); }
@@ -176,5 +197,5 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
   }
 
   const make = (kind, col, boss) => HOVER.has(kind) ? hover(kind, col) : walker(kind, col, boss);
-  return { make, has: k => HOVER.has(k) || ['giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'wache', 'schattenritter', 'spartoi', 'riese', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf'].includes(k), HOVER };
+  return { make, has: k => HOVER.has(k) || ['pirat', 'hook', 'krokodil', 'giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'wache', 'schattenritter', 'spartoi', 'riese', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf'].includes(k), HOVER };
 }
