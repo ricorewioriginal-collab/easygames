@@ -3,23 +3,23 @@
    Nichts wird gesperrt – die Welt bleibt frei. Die Ziele hängen an Stickern (kids.earn) bzw. an Ereignissen (z. B. „mit jemandem reden“),
    bereits Geschafftes wird automatisch abgehakt. Sehr sparsam: nur eine kleine Anzeige + ein Fenster, keine 3D-Objekte. */
 BI.STORY = [
-  { icon: '🏝️', name: 'Ankommen', intro: 'Willkommen auf der Bunten Insel! Ich bin Bürgermeisterin Rosi. Schau dich um: Sag Hallo, pack deinen Rucksack aus und lass dir den Weg zeigen.',
+  { icon: '🏝️', name: 'Ankommen', intro: 'Willkommen auf der Bunten Insel! Ich bin Bürgermeisterin Rosi. Bald feiern wir das große Insel-Fest – und du sollst mir bei den Vorbereitungen helfen! Sag erst mal Hallo, pack deinen Rucksack aus und lass dir den Weg zeigen.',
     tasks: [['ev', 'talk', '💬', 'Sprich mit jemandem (tippe auf eine Person)'], ['stk', 'pack', '🎒', 'Öffne deinen Rucksack (🎒 oben links)'], ['stk', 'guide', '🧭', 'Lass dir den Weg zeigen (🧭 oben links)']] },
-  { icon: '🚗', name: 'Unterwegs', intro: 'Auf der Insel gibt es viele Fahrzeuge. Steig ein, hilf den Leuten mit einem Auftrag – und fahr einmal mit dem Zug!',
+  { icon: '🚗', name: 'Unterwegs', intro: 'Die Einladungen zum Fest müssen verteilt werden! Steig in ein Fahrzeug, erledige einen Auftrag für die Leute – und hol mit dem Zug die Festmusiker vom Bahnhof ab.',
     tasks: [['stk', 'ride', '🚗', 'Steig in ein Fahrzeug'], ['ev', 'mission', '📦', 'Erledige einen Auftrag (im Fahrzeug „Ja“ sagen)'], ['stk', 'train', '🚂', 'Fahr mit dem Zug', 'station']] },
-  { icon: '🏠', name: 'Zuhause', intro: 'Du hast eine eigene Wohnung und einen Garten! Mach es dir gemütlich, ernte etwas und ruh dich aus.',
+  { icon: '🏠', name: 'Zuhause', intro: 'Zum Fest kommen Gäste – auch zu dir nach Hause! Richte dein Zimmer schön ein, ernte etwas im Garten für die Gäste und schlaf dich gut aus.',
     tasks: [['stk', 'room', '🛋️', 'Richte dein Zimmer ein', 'home'], ['stk', 'garden', '🌻', 'Ernte etwas im Garten', 'garden'], ['stk', 'sleep', '😴', 'Schlaf in deinem Bett', 'home']] },
-  { icon: '🚜', name: 'Auf dem Bauernhof', intro: 'Bauer Heinz braucht Hilfe! Streichle die Tiere, mäh ein Feld und koch etwas Leckeres in der Hofküche.',
+  { icon: '🚜', name: 'Auf dem Bauernhof', intro: 'Ohne Essen kein Fest! Bauer Heinz braucht Hilfe: Streichle die Tiere, mäh ein Feld für frisches Heu und koch etwas Leckeres in der Hofküche.',
     tasks: [['stk', 'animal', '🐄', 'Streichle ein Tier auf dem Hof', 'zoo'], ['stk', 'farm', '🌾', 'Mäh ein Feld mit dem Traktor', 'fields'], ['stk', 'cook', '🍳', 'Koche etwas in der Hofküche', 'hof']] },
-  { icon: '🛍️', name: 'Im Ort', intro: 'Im Ort ist immer was los. Geh einkaufen, probier die Schießbude und mach ein schönes Foto.',
+  { icon: '🛍️', name: 'Im Ort', intro: 'Jetzt schmücken wir den Ort! Kauf etwas für die Deko, gewinn in der Schießbude Preise für die Tombola und mach ein schönes Foto für das Fest-Plakat.',
     tasks: [['stk', 'shopper', '🛒', 'Kaufe etwas in einem Laden', 'shop'], ['stk', 'shoot', '🎯', 'Spiel in der Schießbude', 'range'], ['stk', 'photo', '📸', 'Mach ein Foto (📷 oben links)']] },
-  { icon: '🗺️', name: 'Abenteuer', intro: 'Jetzt wird es spannend! Hau einen Baum, such einen Schatz und schaff den Himmels-Parcours hoch über der Insel.',
+  { icon: '🗺️', name: 'Abenteuer', intro: 'Für die Festbühne brauchen wir Holz – hau einen Baum! Die alte Fest-Schatzkiste ist auch verschwunden: Such einen Schatz. Und hoch über der Insel, im Himmels-Parcours, hängen wir die Fest-Fahnen auf.',
     tasks: [['stk', 'tree', '🌳', 'Hau einen Baum (geh nah ran und tippe 🪓)'], ['stk', 'treasure', '🗺️', 'Finde einen Schatz (🎉 → Spiele → Schatzsuche)'], ['stk', 'obby', '🏁', 'Schaffe den Himmels-Parcours', 'obby']] },
-  { icon: '🛡️', name: 'Mutprobe', intro: 'Zeig, wie mutig du bist: Gewinne einen Kampf in der Arena, segle aufs Meer und flieg mit dem Hubschrauber.',
+  { icon: '🛡️', name: 'Mutprobe', intro: 'Jedes Fest braucht einen mutigen Helden! Gewinne einen Kampf in der Arena, segle aufs Meer, um das Feuerwerk vom Schiff zu holen, und flieg mit dem Hubschrauber über die Insel, um alle einzuladen.',
     tasks: [['stk', 'fight', '🥊', 'Gewinne einen Kampf in der Arena', 'arena'], ['stk', 'boat', '⛵', 'Segle mit dem Boot', 'pier'], ['stk', 'heli', '🚁', 'Flieg mit dem Hubschrauber', 'heli']] },
-  { icon: '🎉', name: 'Spaß-Tag', intro: 'Du hast so viel geschafft – jetzt wird gefeiert! Fahr Karussell im Freizeitpark, schau einen Film und spring ins Freibad.',
+  { icon: '🎉', name: 'Spaß-Tag', intro: 'Fast fertig! Jetzt testen wir die Fest-Attraktionen: Fahr Karussell im Freizeitpark, schau den Festfilm im Kino und spring ins Freibad.',
     tasks: [['stk', 'park', '🎡', 'Fahr eine Attraktion im Freizeitpark', 'park'], ['stk', 'cinema', '🎬', 'Schau einen Film im Kino', 'cinema'], ['stk', 'swim', '🏊', 'Spring ins Freibad', 'pool']] },
-  { icon: '🎢', name: 'Parkdirektor', intro: 'Der Freizeitpark gehört jetzt dir! Geh ins Park-Büro am Eingang, bau Wege, Fahrgeschäfte und Buden – und mach deinen Park richtig beliebt.',
+  { icon: '🎢', name: 'Parkdirektor', intro: 'Das Fest findet im Freizeitpark statt – und der gehört jetzt dir! Geh ins Park-Büro am Eingang, bau Wege, Fahrgeschäfte und Buden und mach den Park richtig beliebt. Dann kann das Fest beginnen!',
     tasks: [['stk', 'tybuild', '🔨', 'Baue etwas im Freizeitpark (Park-Büro am Eingang)', 'park'], ['stk', 'tymis', '📋', 'Schließe eine Park-Mission ab', 'park'], ['stk', 'tystar', '🌟', 'Erreiche 3 Sterne Parkbewertung', 'park']] }
 ];
 BI.createStory = function (G) {
@@ -31,6 +31,9 @@ BI.createStory = function (G) {
   K.finished = () => S().c >= ST.length;
   K.index = () => S().c;
   K.data = () => ST.map(c => ({ icon: c.icon, name: c.name, intro: c.intro, tasks: c.tasks.map(t => ({ icon: t[2], text: t[3] })) }));
+  /* Bewohner erzählen vom Fest und geben einen Tipp zum nächsten Ziel – so hängen Gespräche und Inselreise zusammen */
+  K.hintLine = function () { const c = K.chapter(); if (!c) return null; const n = next(); if (!n) return null; const T = ['Hast du schon gehört? Bürgermeisterin Rosi bereitet das große Insel-Fest vor!', 'Ich freu mich so aufs Insel-Fest!', 'Rosi sagt, du hilfst beim Insel-Fest – toll!'];
+    return T[(Math.random() * T.length) | 0] + ' Tipp: ' + n[3].replace(/ \(.*\)$/, '') + '.'; };
   K.finish = () => { S().c = ST.length; G.persist(); renderChip(); };
   const chip = $('questChip'); BI.injectLogCss();
   /* Story-Modus: ein Ziel in einer noch gesperrten Welt (z. B. Freizeitpark) nicht als Erstes anzeigen, solange es offene Ziele gibt */
@@ -59,13 +62,13 @@ BI.createStory = function (G) {
     if (moved) { G.persist(); const c = K.chapter(); if (!quiet && c) { const n = s.last; setTimeout(() => announce(c, '✅ Kapitel geschafft! +' + n + ' ⭐ · '), 900); } else if (quiet && c) say('📖 Du warst schon fleißig! Weiter geht’s mit Kapitel ' + (s.c + 1) + ': ' + c.icon + ' ' + c.name, 4200); }
     renderChip(); if (K.open) render(); return moved;
   }
-  function announce(c, pre) { say((pre || '') + '📖 Kapitel ' + (S().c + 1) + ': ' + c.icon + ' ' + c.name, 4200); if (A.speak) A.speak(c.intro); }
+  function announce(c, pre) { const head = (pre || '').replace('👩‍💼 Bürgermeisterin Rosi: ', '') + '📖 Kapitel ' + (S().c + 1) + ': ' + c.icon + ' ' + c.name; if (G.talk) { G.talk('Bürgermeisterin Rosi', '👩‍💼', [head + ' – ' + c.intro]); return; } say((pre || '') + head, 4200); if (A.speak) A.speak(c.intro); }
   function finale(quiet) {
     const again = (save.stk || []).includes('hero'); /* wer die Reise schon vor dem Parkdirektor-Kapitel geschafft hat, bekommt den Festpreis nicht doppelt */
     if (!quiet && !again) { G.addStars(20); A.fanfare && A.fanfare(); for (let i = 0; i < 4; i++) setTimeout(() => fx.burst(P.x + (Math.random() - .5) * 8, 6 + Math.random() * 4, P.z + (Math.random() - .5) * 8, 60, [BI.C.gold, BI.C.pink, BI.C.blue, BI.C.green, BI.C.orange], 12, 1.8, 26, 6), i * 450); }
     if (G.earn) G.earn('hero');
     say('🏆 Die Inselreise ist geschafft! Großes Insel-Fest – du bist jetzt Inselheld! ' + (quiet || again ? '' : '+20 ⭐ ') + '· Weiter geht’s mit den Tagesaufgaben im 🎉-Menü', 6000);
-    if (!quiet && !again && A.speak) A.speak('Hurra! Du hast die ganze Inselreise geschafft. Die Insel feiert ein großes Fest für dich, Inselheld!');
+    if (!quiet && !again && A.speak) A.speak('Hurra! Alles ist vorbereitet – das große Insel-Fest beginnt, und du bist unser Inselheld! Jetzt warten die anderen Inseln mit ihren eigenen Geschichten auf dich.');
   }
   /* Ereignisse von außen */
   K.note = function (k) { const s = S(); if (s.ev[k]) return; const c = K.chapter(); if (!c || !c.tasks.some(t => t[0] === 'ev' && t[1] === k)) { s.ev[k] = 1; return; } s.ev[k] = 1; tick(c, k); };

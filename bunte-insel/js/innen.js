@@ -93,7 +93,7 @@ BI.createInnen = function (G) {
     bauland: ['📚 Im Bauland baust du eigene Häuser aus Blöcken. 🧱', '📚 Erst ein Boden, dann Wände, dann ein Dach – so steht dein Haus stabil!', '📚 Mit Farbe 🎨 sieht jedes Haus anders aus.'],
     dampf: ['📚 Der Dampfer fährt zu anderen Häfen – steig einfach ein! 🚢', '📚 Am Kai liegen Kisten und Fässer. Was da wohl drin ist?'],
     maerchen: ['📚 Im Märchenland gibt es einen Umzug – lauf mit! 🎠', '📚 Auf dem Basar gibt es Teppiche, Gewürze und Wunderlampen.'],
-    taschi: ['📚 Im Heilhaus werden deine Taschis wieder fit. 💖', '📚 Mit Taschibällen 🔴 fängst du neue Freunde für dein Team.'],
+    taschi: ['📚 Das Portal in der Arena führt ins Taschi-Spiel. 🌀', '📚 Professor Ulme hat das Portal gebaut, damit die Taschis mehr Platz haben.'],
     bade: ['📚 Beim Baden immer in der Nähe des Bademeisters bleiben! 🛟', '📚 Am Eis-Kiosk gibt es kühles Eis. 🍦'],
     radio: ['📚 Auf der Radio-Insel kannst du Sender hören und selbst Musik machen. 📻'],
     park: ['📚 Im Freizeitpark gibt es Karussell, Riesenrad und mehr. 🎡']
@@ -302,8 +302,8 @@ BI.createInnen = function (G) {
       /* Taschi-Heilhaus: Tresen mit Heil-Automat (Ballregal), Betten, Team-Tisch */
       fur(X0, Z0 - hd + 1.5, hw * 1.7, .9, 1.1, 0xffffff); box(X0, Z0 - hd + 1.5, hw * 1.75, 1.0, .12, 0xe8453c, 1.1); box(X0, Z0 - hd + 1.5, 1.2, .2, .14, 0xffffff, 1.2);
       fur(X0 + hw * .5, Z0 - hd + 1.5, 2.4, .9, 1.7, 0xf4f4ff); for (let k = 0; k < 6; k++) { box(X0 + hw * .5 - 1.0 + (k % 3) * 1.0, Z0 - hd + 1.9, .5, .3, .5, [0xe8453c, 0x3f8cff, 0x4cc05a][k % 3], 1.95 - (k > 2 ? .6 : 0)); }
-      it('tcenter', X0 + hw * .5, Z0 - hd + 3.1, 2.6, ['💖', 'Taschis heilen']);
-      fur(X0 - hw * .5, Z0 - hd + 1.5, 2.2, .9, 1.0, 0xffe0ea); box(X0 - hw * .5, Z0 - hd + 1.5, 1.4, .3, .1, 0xff9ac0, 1.05); it('tteam', X0 - hw * .5, Z0 - hd + 3.1, 2.4, ['🎒', 'Team & Lager ansehen']);
+      it('tcenter', X0 + hw * .5, Z0 - hd + 3.1, 2.6, ['💖', 'Ausruhen am Heil-Automaten']);
+      fur(X0 - hw * .5, Z0 - hd + 1.5, 2.2, .9, 1.0, 0xffe0ea); box(X0 - hw * .5, Z0 - hd + 1.5, 1.4, .3, .1, 0xff9ac0, 1.05); it('tteam', X0 - hw * .5, Z0 - hd + 3.1, 2.4, ['🌀', 'Portal-Karte ansehen']);
       bed(X0 - hw + 1.4, Z0 + 1.2); bed(X0 + hw - 1.4, Z0 + 1.2); plant(X0 - hw + 1, Z0 + hd - 1.2); plant(X0 + hw - 1, Z0 + hd - 1.2); lamp(X0 + 2.4, Z0 + hd - 1.2);
       R.npcAt = [X0, Z0 - hd + 2.6, 0];
     } else {
@@ -316,9 +316,9 @@ BI.createInnen = function (G) {
       if (TH.side) prop(TH.side, 'side'); if (TH.north && kind !== 'huette') prop(TH.north, 'north');
       R.npcAt = [X0 - .9, Z0 + .4, 0.8];
     }
-    grp.add(b.mesh(mat)); const [nm, lines] = NAMEN[(idx * 3 + (d.name.length | 0)) % NAMEN.length]; if (d.tshop) it('tshop', X0 + hw * .5, Z0 - hd + 3.0, 2.6, ['🔴', 'Taschiball-Laden']);
+    grp.add(b.mesh(mat)); const [nm, lines] = NAMEN[(idx * 3 + (d.name.length | 0)) % NAMEN.length]; if (d.tshop) it('tshop', X0 + hw * .5, Z0 - hd + 3.0, 2.6, ['🔴', 'Andenken-Regal ansehen']);
     const themedTalk = { labor: ['Professor Ulme', ['Willkommen in meinem Labor! Hier untersuche ich die bunten Inselpflanzen. 🧪', 'Die Tränke sind nur zum Anschauen – aber das Sternenmodell darfst du drehen!']], kapitaen: ['Kapitänin Mira', ['Willkommen an Bord! Die Karte zeigt alle Inseln, die ich schon besucht habe. 🗺️', 'Durch das Fernrohr kannst du nach neuen Abenteuern Ausschau halten. 🔭']], werkstatt: ['Tüftler Ben', ['Hier repariere ich Fahrzeuge und baue neue Spielsachen. 🛠️', 'Am Werktisch darfst du mir beim Hämmern helfen! 🔨']] };
-    R.res = TH.npc || themedTalk[d.kind] || (d.kind === 'heil' ? ['Schwester Hanna', ['Willkommen im Heilhaus! Gib mir dein Team – im Nu sind alle Taschis wieder fit. 💖', 'Tipp: Wenn dein ganzes Team müde ist, wachst du hier wieder auf.']] : [d.kind === 'laden' ? 'Verkäufer ' + nm.split(' ')[0] : d.kind === 'schloss' ? 'Wächter ' + nm.split(' ')[0] : nm, lines]);
+    R.res = TH.npc || themedTalk[d.kind] || (d.kind === 'heil' ? ['Schwester Hanna', ['Willkommen im Heilhaus! Die Taschis sind in ihre eigene Welt gezogen – hinter dem Portal in der Arena. 💖', 'Ruh dich ruhig aus, bevor du hindurchgehst!']] : [d.kind === 'laden' ? 'Verkäufer ' + nm.split(' ')[0] : d.kind === 'schloss' ? 'Wächter ' + nm.split(' ')[0] : nm, lines]);
     const sp = sprite((K0.title || '🏠') + ' ' + d.name, 3.1, 5.2, X0, Z0 - hd + .5); grp.add(sp);
     grp.visible = false; return R;
   }

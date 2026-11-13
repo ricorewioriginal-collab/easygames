@@ -7,10 +7,14 @@
   "scripts": {
     "dev": "vite --config vite.config.mjs",
     "build": "vite build --config vite.config.mjs",
-    "check": "node check-bundle.mjs"
+    "check": "node check-bundle.mjs",
+    "models": "node bake-models.mjs"
   },
-  "engines": { "node": ">=20.19" },
+  "engines": {
+    "node": ">=20.19"
+  },
   "devDependencies": {
-    "vite": "7.3.7"
+    "vite": "7.3.7",
+    "meshoptimizer": "0.22.0"
   }
 }
