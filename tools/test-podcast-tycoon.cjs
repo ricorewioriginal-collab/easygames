@@ -29,12 +29,19 @@ server.listen(0, '127.0.0.1', async () => {
     assert.ok(z1 < z0 - 1, 'Figur läuft nach vorn: ' + z0 + ' → ' + z1);
     await p.keyboard.press('Escape'); await p.waitForTimeout(800);
     // Staffel 2: Katzen-Kapitel startet mit Katze, Imbiss-Kapitel mit Imbiss
-    assert.equal(await p.evaluate(() => AMC.Data.CHAPTERS.length), 12);
+    assert.equal(await p.evaluate(() => AMC.Data.CHAPTERS.length), 17);
     assert.ok(await p.evaluate(() => typeof AMC.Net.lobby === 'function' && /\/easygames\/anmacha-podcast-tycoon\/\?koop=ABCDE$/.test(AMC.Net.link('ABCDE'))), 'Koop-Link zeigt auf die Homepage');
     await p.evaluate(() => { AMC.UI.closeAll(); AMC.Game.playChapter(9); }); await p.waitForTimeout(2500);
     assert.ok(await p.evaluate(() => !!AMC.Play.state().cat), 'Katze da');
     await p.evaluate(() => AMC.Game.playChapter(8)); await p.waitForTimeout(2500);
     assert.ok(await p.evaluate(() => !!AMC.Play.state().imbiss), 'Imbiss da');
+    // Gisela parkt in der Stadt; neue Minispiele laufen ohne Fehler; Studio-Editor öffnet und schließt
+    assert.ok(await p.evaluate(() => !!AMC.Play.state().gisela), 'Gisela da');
+    await p.evaluate(() => { AMC.Play.stop(); AMC.UI.closeAll(); AMC.Game.mode = 'show'; AMC.Show.start({ mode: 'arcade', host: 'andrew', cards: [], onEnd: () => {} }); }); await p.waitForTimeout(1500);
+    for (const k of ['rhythm', 'qte', 'cables', 'mixer', 'simon']) { await p.evaluate(k => AMC.Show._mini(k), k); await p.waitForTimeout(700); assert.ok(await p.evaluate(() => !!document.querySelector('.sh-mini canvas')), 'Minispiel ' + k); await p.evaluate(() => AMC.Show._mini(null)); }
+    await p.evaluate(() => { AMC.Show.stop(); AMC.UI.closeAll(); AMC.Game.mode = 'menu'; AMC.StudioEdit.open(() => {}); }); await p.waitForTimeout(800);
+    assert.ok(await p.evaluate(() => AMC.StudioEdit.value() > 0 && AMC.StudioEdit.bonus().hype >= 0), 'Studio-Editor');
+    await p.keyboard.press('Escape'); await p.keyboard.press('Escape'); await p.waitForTimeout(500);
     // Funk-Rennen: 10 Tore, Uhr läuft vorwärts
     await p.evaluate(() => { AMC.UI.closeAll(); AMC.Play.onEnd = () => {}; AMC.Play.start({ mode: 'race', host: 'andrew' }); }); await p.waitForTimeout(2500);
     assert.equal(await p.evaluate(() => AMC.Play.state().gates.length), 10, 'Rennen mit 10 Toren');

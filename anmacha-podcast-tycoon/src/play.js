@@ -348,6 +348,7 @@
     const env = W.makeSky(S.scene, sky); S.env = env;
     W.particles.attach(S.scene);
     buildCity(sky, rng);
+    buildGisela(FUNKHAUS.door.x + 11, FUNKHAUS.door.z + 3.5);
     spawnHosts(cfg.host || 'andrew', FUNKHAUS.door.x, FUNKHAUS.door.z + 6);
     W.cam.yaw = 0; W.cam.pitch = 0.32; W.cam.cur = null; W.cam.tx = S.pl.x; W.cam.ty = 1.6; W.cam.tz = S.pl.z;
     S.beacon = beam(0xff8a1e);
@@ -559,6 +560,7 @@
       }
     }
     for (const r of S.relays) if (!r.fixed && Math.hypot(r.x - p.x, r.z - p.z) < 2.2 && Math.abs(r.y - p.y) < 1.6) return { label: 'Verteiler reparieren (halten)', hold: r };
+    if (S.gisela && S.gisela.t <= 0 && Math.hypot(S.gisela.x - p.x, S.gisela.z - p.z) < 3.6) return { label: 'Gisela hupen 📯', run: honk };
     if (S.imbiss && Math.hypot(S.imbiss.x - p.x, S.imbiss.z - p.z) < 3.4 && S.carry < 3 && S.fed + S.carry < S.hungryNeed) return { label: 'Bestellungen abholen 🍟', run: pickOrder };
     if (S.mode === 'free' && S.net !== 'guest' && p === S.pl && Math.hypot(FUNKHAUS.door.x - p.x, FUNKHAUS.door.z - p.z) < 3.5) return { label: 'Ins Funkhaus (Menü)', run: () => finish(true) };
     return null;
@@ -713,6 +715,7 @@
     // Zeit
     if (S.left > 0 && S.mode !== 'free') { S.left -= dt; if (S.left <= 0) { S.left = 0; if (S.mode === 'jagd') return finish(true, 'time'); if (!S.done) return finish(false, 'time'); } }
     updPickups(dt); updDrones(dt); updNpcs(dt); updObjective(dt); updRings(dt);
+    if (S.gisela) { if (S.gisela.t > 0) S.gisela.t -= dt; S.gisela.g.position.y = S.gisela.t > 0 ? Math.abs(Math.sin(S.time * 18)) * 0.06 : 0; }
     if (S.boss) updBoss(dt);
     if (S.cat) updCat(dt);
     if (S.mode === 'free') updQuests(dt, sp);
@@ -829,6 +832,25 @@
     if (!S.rings) return;
     S.rings = S.rings.filter(r => { r.t += dt; const k = r.t / 0.35, s = 0.4 + k * r.max; r.m.scale.set(s, s, s); r.m.material.opacity = Math.max(0, 0.6 * (1 - k)); const e = r.e || S.pl; r.m.position.set(e.x, e.y + 0.9, e.z); if (k >= 1) { S.group.remove(r.m); r.m.geometry.dispose(); return false; } return true; });
   }
+  // ------------------------------------------------------------------ Gisela: Marcos umgebauter Camper parkt vor dem Funkhaus (hupen!)
+  function buildGisela(x, z) {
+    if (!AMC.StudioEdit) return;
+    const g = AMC.StudioEdit.camper(1); g.position.set(x, 0, z); g.rotation.y = -0.35; S.group.add(g);
+    g.traverse(o => { if (o.isMesh) { o.castShadow = W.quality > 0; o.receiveShadow = true; } });
+    const c = Math.cos(-0.35), sn = Math.sin(-0.35), hw = 1.1, hl = 2.3, xs = [], zs = [];
+    [[-hw, -hl], [hw, -hl], [-hw, hl], [hw, hl]].forEach(([a, b]) => { xs.push(x + a * c + b * sn); zs.push(z - a * sn + b * c); });
+    addBox(Math.min(...xs) + 0.4, Math.max(...xs) - 0.4, Math.min(...zs) + 0.4, Math.max(...zs) - 0.4, 2.1);
+    S.gisela = { x, z, g, t: 0, honk: 0 };
+  }
+  const HONK = [['m', 'Das ist Gisela! Umgebaut mit meinen eigenen Händen. Und etwas Panzertape.'], ['a', 'Marco, die Tür hängt schief.'], ['m', 'Das ist kein Fehler, das ist Charakter!'],
+    ['a', 'Ich glaub, Gisela hat gerade ein Kabel verloren.'], ['m', 'Gisela fährt mit Liebe. Und mit ein bisschen Diesel.'], ['a', 'Wann machen wir endlich die Podcast-Tour mit ihr?'], ['m', 'Psst, nicht so laut – sie ist empfindlich.']];
+  function honk() {
+    const G2 = S.gisela; G2.honk++; G2.t = 0.6; S.honks = (S.honks || 0) + 1;
+    AMC.Audio.sfx('horn'); W.particles.burst(G2.x, 2.6, G2.z, 0xff8a1e, 26, { speed: 5 }); W.particles.burst(G2.x, 0.6, G2.z, 0xcccccc, 14, { speed: 2, up: 1 });
+    const L = HONK[(G2.honk - 1) % HONK.length]; msg((L[0] === 'm' ? 'Marco: ' : 'Andrew: ') + L[1], 3.2);
+    if (G2.honk === 3) { S.score += 300; msg('📯 Hup-Konzert! +300 – Gisela ist begeistert.', 2.6); }
+  }
+
   // ------------------------------------------------------------------ Imbiss (Kapitel „Imbisskind“)
   function buildImbiss(x, z) {
     const g = new T.Group(); g.position.set(x, 0, z); S.group.add(g);

@@ -85,8 +85,18 @@
     boss: t => { tone(55, t, 1.2, 'sawtooth', 0.2, null, 40); noise(t, 1, 0.2, 'lowpass', 300); },
     door: t => sample('enter', t, 0.6),
     buy: t => sample('buy', t, 0.6),
-    tick: t => tone(2000, t, 0.02, 'square', 0.04)
+    tick: t => tone(2000, t, 0.02, 'square', 0.04),
+    horn: t => { tone(330, t, 0.35, 'sawtooth', 0.09); tone(415, t, 0.35, 'sawtooth', 0.08); tone(330, t + 0.42, 0.5, 'sawtooth', 0.09); tone(415, t + 0.42, 0.5, 'sawtooth', 0.08); },   // Giselas Hupe
+    laugh: t => { for (let i = 0; i < 5; i++) tone(U.rand(260, 340) - i * 12, t + i * 0.11, 0.09, 'triangle', 0.09, null, 200); noise(t, 0.6, 0.04, 'bandpass', 1200, null, 1); },
+    spark: t => { noise(t, 0.12, 0.3, 'highpass', 3000); tone(2600, t, 0.08, 'square', 0.05, null, 400); },
+    plug: t => { tone(140, t, 0.08, 'square', 0.12, null, 90); tone(900, t + 0.03, 0.05, 'triangle', 0.08); },
+    whoosh: t => { const f = noise(t, 0.35, 0.18, 'bandpass', 500, null, 1.5); f.frequency.exponentialRampToValueAtTime(3500, t + 0.3); },
+    feedback: t => tone(2900, t, 0.5, 'sine', 0.05, null, 3400),
+    drum: t => { const o = tone(150, t, 0.22, 'sine', 0.5, null, 42); o.frequency.exponentialRampToValueAtTime(42, t + 0.12); }
   };
+  /** einzelner Ton für Minispiele (MIDI-Nummer), z. B. Soundboard-Pads und Rhythmus-Treffer */
+  A.note = function (m, dur, type, peak) { if (!A.ctx || !A.ready) return; try { tone(mtof(m), A.ctx.currentTime + 0.005, dur || 0.25, type || 'triangle', peak || 0.14); } catch (e) { /* still */ } };
+  A.now = () => A.ctx ? A.ctx.currentTime : performance.now() / 1000;
   const U = AMC.U;
   function sample(n, t, v) { const b = samples[n]; if (!b) return; const s = A.ctx.createBufferSource(), g = A.ctx.createGain(); g.gain.value = v || 0.7; s.buffer = b; s.connect(g); g.connect(sfxBus); s.start(t); }
   const last = {};
