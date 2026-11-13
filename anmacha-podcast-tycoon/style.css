@@ -430,3 +430,7 @@ html:not(.dev-touch) .cv-feed { bottom: calc(110px + var(--safe-b)); }
 .cr-plan { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; } .cr-plan i { font-style: normal; padding: 1px 6px; border-radius: 99px; background: rgba(255,255,255,.1); opacity: .7; }
 .cr-plan i.ok { background: rgba(64, 208, 112, .35); opacity: 1; } .cr-plan em { font-style: normal; font-size: 11.5px; opacity: .85; }
 @media (max-height: 560px) and (orientation: landscape) { .cr-day .cr-plan em { display: none; } .cr-day { padding: 4px 8px; font-size: 11.5px; } }
+/* Tasten-Hinweise auf den neuen Knöpfen (Controller und Tastatur) */
+html.dev-pad [data-pad], html.dev-kb [data-kb] { position: relative; }
+html.dev-pad .hm-emo [data-pad]::after, html.dev-kb .hm-emo [data-kb]::after, html.dev-pad .hm-act [data-pad]::after { content: attr(data-pad); position: absolute; top: -6px; right: -6px; font: 700 10px Fredoka, system-ui, sans-serif; background: #ff8a1e; color: #111; border-radius: 7px; padding: 1px 4px; line-height: 1.2; }
+html.dev-kb .hm-emo [data-kb]::after { content: attr(data-kb); }

@@ -64,7 +64,9 @@
     KeyW: ['up'], KeyS: ['down'], KeyA: ['left'], KeyD: ['right'],
     Digit1: ['k1'], Digit2: ['k2'], Digit3: ['k3'], Digit4: ['k4'], Digit7: ['k7'], Digit8: ['k8'], Digit9: ['k9'], Digit0: ['k0']
   };
-  const PADMAP = { a: ['jump', 'ok'], b: ['back', 'dodge'], x: ['act'], y: ['swap'], rt: ['dodge'], lb: ['radioNext'], lt: ['radioToggle'], start: ['pause'], select: ['radio'], up: ['up'], down: ['down'], left: ['left'], right: ['right'] };
+  // Steuerkreuz als Emote-/Aktionstasten (Stadt, Senderhäuser, Zuhause, Gisela); R3 tanzt
+  const DPEMO = { up: 'k1', left: 'k2', right: 'k3', down: 'k4', rs: 'k1' };
+  const PADMAP = { a: ['jump', 'ok'], b: ['back', 'dodge'], x: ['act'], y: ['swap'], rt: ['dodge'], lb: ['radioNext'], lt: ['radioToggle'], start: ['pause'], select: ['radio'], rs: ['k1'], up: ['up'], down: ['down'], left: ['left'], right: ['right'] };
 
   const I = AMC.Input = {
     move: { x: 0, y: 0 }, look: { x: 0, y: 0 }, zoom: 0,
@@ -134,7 +136,7 @@
       const hits = I.padHits[pi] = [];
       for (const name in BTN) {
         const i = BTN[name];
-        if (now[i] && !prev[i]) { hits.push(name); if (pi === 0 || !AMC.multiPad) (PADMAP[name] || []).forEach(n => I._hit.add(n)); setDevice('pad'); I.padKind = /054c|sony|dualsense|dualshock|playstation/i.test(p.id) ? 'ps' : /057e|nintendo|switch|joy-con|pro controller/i.test(p.id) ? 'nin' : 'xbox'; }
+        if (now[i] && !prev[i]) { hits.push(name); const emo = I.dpadEmotes && !(AMC.UI && AMC.UI.isOpen()) && DPEMO[name]; if (pi === 0 || !AMC.multiPad) (emo ? [emo] : PADMAP[name] || []).forEach(n => I._hit.add(n)); setDevice('pad'); I.padKind = /054c|sony|dualsense|dualshock|playstation/i.test(p.id) ? 'ps' : /057e|nintendo|switch|joy-con|pro controller/i.test(p.id) ? 'nin' : 'xbox'; }
       }
       I.padPrev[pi] = now;
       if (pi === 0 || !AMC.multiPad) {
@@ -142,7 +144,7 @@
         const a0 = dz(ax[0] || 0), a1 = dz(ax[1] || 0), a2 = dz(ax[2] || 0), a3 = dz(ax[3] || 0);
         if (a0 || a1 || a2 || a3) setDevice('pad');
         mx += a0; my -= a1; lx += a2 * 1.0; ly += a3 * 1.0;
-        if (now[BTN.up]) my += 1; if (now[BTN.down]) my -= 1; if (now[BTN.left]) mx -= 1; if (now[BTN.right]) mx += 1;
+        if (!(I.dpadEmotes && !(AMC.UI && AMC.UI.isOpen()))) { if (now[BTN.up]) my += 1; if (now[BTN.down]) my -= 1; if (now[BTN.left]) mx -= 1; if (now[BTN.right]) mx += 1; }
         if (now[BTN.rb] || now[BTN.ls]) sprint = true;
         if (now[BTN.a]) jumpHeld = true;
         // Stick als Menü-Richtung (mit Wiederholung)

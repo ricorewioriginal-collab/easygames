@@ -14,14 +14,15 @@
     const hud = U.$('hud'); if (!hud) return;
     const el = V.el = U.el('div', 'cv-ui');
     el.innerHTML = '<div class="hm-emo cv-emo" id="cvEmo"><div class="cv-vibe" title="Stadt-Vibe"><span>🔥</span><i><em id="cvBar"></em></i></div>' +
-      '<button type="button" data-e="dance">💃<small>Tanzen</small></button><button type="button" data-e="yes">👋<small>Winken</small></button><button type="button" data-e="arms">🙌<small>Jubeln</small></button></div>' +
+      '<button type="button" data-e="dance" data-pad="✚↑" data-kb="1">💃<small>Tanzen</small></button><button type="button" data-e="yes" data-pad="✚←" data-kb="2">👋<small>Winken</small></button><button type="button" data-e="arms" data-pad="✚→" data-kb="3">🙌<small>Jubeln</small></button></div>' +
       '<div class="hm-feed cv-feed" id="cvFeed"></div>';
-    hud.appendChild(el);
+    hud.appendChild(el); I.dpadEmotes = true;
     el.querySelector('#cvEmo').addEventListener('click', e => { const b = e.target.closest('[data-e]'); if (b) emote(b.dataset.e); });
     draw();
   };
   CV.stop = function () {
     if (!V) return;
+    I.dpadEmotes = false;
     if (V.el) V.el.remove(); V.bubs.forEach(b => b.el.remove());
     Save.data.cityVibe = Math.round(V.vibe); V = null;
   };

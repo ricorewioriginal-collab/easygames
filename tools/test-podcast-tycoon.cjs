@@ -31,6 +31,11 @@ server.listen(0, '127.0.0.1', async () => {
     await p.evaluate(() => document.querySelector('#cvEmo [data-e=dance]').click()); await p.waitForFunction(() => AMC.Play.state().pl.anim === 'dance', null, { timeout: 8000 }).catch(() => {});
     assert.ok(await p.evaluate(() => AMC.CityVibe.state().dancing && AMC.Play.state().pl.anim === 'dance'), 'Tanzen in der Stadt');
     await p.evaluate(() => document.querySelector('#cvEmo [data-e=dance]').click());
+    // Controller: Steuerkreuz ↑ tanzt in der Stadt (simuliertes Gamepad)
+    await p.evaluate(() => { const mk = up => ({ id: 'Xbox test', connected: true, index: 0, axes: [0, 0, 0, 0], buttons: Array.from({ length: 17 }, (_, i) => ({ pressed: up && i === 12, value: up && i === 12 ? 1 : 0 })) }); window.__pad = mk(false); navigator.getGamepads = () => [window.__pad]; setTimeout(() => { window.__pad = mk(true); }, 200); setTimeout(() => { window.__pad = mk(false); }, 600); });
+    await p.waitForFunction(() => AMC.CityVibe.state().dancing, null, { timeout: 8000 }).catch(() => {});
+    assert.ok(await p.evaluate(() => AMC.Input.dpadEmotes && AMC.CityVibe.state().dancing && AMC.Input.device === 'pad'), 'Controller: Steuerkreuz tanzt in der Stadt');
+    await p.evaluate(() => { navigator.getGamepads = () => []; document.querySelector('#cvEmo [data-e=dance]').click(); });
     // Stadtbus: 8 Haltestellen, Fahrt in ein anderes Viertel
     assert.equal(await p.evaluate(() => AMC.Play.state().busStops.length), 8, '8 Bushaltestellen');
     await p.evaluate(() => AMC.Play.onAction('bus:funk')); await p.waitForSelector('[data-b=park]'); await p.click('[data-b=park]'); await p.waitForTimeout(1800);
@@ -38,6 +43,10 @@ server.listen(0, '127.0.0.1', async () => {
     // Tagesablauf und Folgen-Wirtschaft: Uhr im HUD, Aufnahme wertet aus, neuer Tag
     assert.ok(await p.evaluate(() => !!document.getElementById('crDay') && AMC.Career.plan().length === 4), 'Tagesplan im Stadt-HUD');
     assert.ok(await p.evaluate(() => { const c = AMC.Career.state(), d = c.day, a = c.abos; c.min = 18 * 60 + 10; const e = AMC.Career.episode({ listeners: 5000 }); return c.day === d + 1 && c.abos > a && e.hoerer >= 5000 && e.lines.length >= 4; }), 'Aufnahme bringt Hörer, Abos und neuen Tag');
+    // Medienstadt: Viertel und nutzbare Orte (Café gibt Energie)
+    assert.ok(await p.evaluate(() => AMC.Play.state().places.length >= 6 && AMC.District.name(22.5, -22.5).includes('Funkhaus')), 'Orte und Viertel in der Stadt');
+    await p.evaluate(() => { AMC.Save.data.fan += 50; ['andrew', 'marco'].forEach(id => { AMC.Home.needs(id).energy = 20; }); AMC.Play.onAction('place:cafe'); }); await p.waitForSelector('#diL [data-a="0"]'); await p.click('#diL [data-a="0"]'); await p.waitForTimeout(400);
+    assert.ok(await p.evaluate(() => AMC.Home.needs('andrew').energy >= 50 && AMC.Home.needs('marco').energy >= 50), 'Café gibt beiden Energie');
     // Gisela von innen: ausbauen und betreten
     await p.evaluate(() => { AMC.Save.data.fan += 400; AMC.Camper.buy('bett'); AMC.Camper.buy('studio'); AMC.Play.onAction('camper'); }); await p.waitForTimeout(1200);
     assert.ok(await p.evaluate(() => { const r = AMC.Home._state(); return r && r.kind === 'camper' && AMC.Camper.has('bett') && AMC.Camper.has('studio') && !!r.B.P.studio; }), 'Gisela innen begehbar und ausgebaut');
