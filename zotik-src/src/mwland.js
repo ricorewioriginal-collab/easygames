@@ -340,6 +340,38 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       // Zweiter Stern rechts: ein heller Stern über der Insel
       const st = b.oct(26, 46, -150, 2.2, 2.2, 2.2, 0xfff4d0, { mat: { e: 0xfff0b0, ei: 3 } }); b.glow(0xfff0c0, 22, 26, 46, -150, .9); A.spin(st, .3);
     },
+    wunderland(b, w, A) {
+      const K = kit(b), HD = 0x2a6a2a, RD = 0xd82a3a, WT = 0xf4f0e6;
+      b.tmap = { 0x6a4a2a: 'wood', 0x5a3a22: 'wood', 0xe8dcc0: 'plaster', 0x7a7470: 'rock' };
+      // Kaninchenbau unter einem alten Baum
+      K.tree(2, -8, 1.6, 0x5a3a22, 0x3a7a3a, { n: 5 }); b.ico(2, .1, -4.6, 1.6, 1.1, 1.2, 0x14100c, { cast: false }); b.ico(2, .2, -4.2, 2.2, .6, 1.6, 0x6a4a2a, { cast: false });
+      // Verrückte Teegesellschaft: langer Tisch, Stühle, Teekannen, Tassen, der große Sessel
+      b.box(-34, 0, -30, 12, .9, 2.2, 0xf4f0e6, { solid: 1 }); b.box(-34, .9, -30, 12.2, .06, 2.4, 0xe8e0f0, { cast: false });
+      for (let i = 0; i < 9; i++) { const x = -39.5 + i * 1.35; b.box(x, 0, -31.8 - (i % 2) * .2, .6, .55, .6, [0xc83a5a, 0x3a8a5a, 0x5a5ac8][i % 3]); b.box(x, .55, -32.1, .6, .9, .1, [0xc83a5a, 0x3a8a5a, 0x5a5ac8][i % 3]); }
+      for (let i = 0; i < 7; i++) { const x = -39 + i * 1.7; b.cyl(x, .95, -30, .14, .12, WT, { mat: { r: .3 } }); if (i % 3 === 0) { b.sph(x + .6, 1.15, -29.6, .3, .26, .3, [0xe8c040, 0x5ac8c8, 0xd8a0e0][i % 3], { mat: { r: .3 } }); b.cone(x + .95, 1.2, -29.6, .06, .3, 0xe8c040, { lo: 1 }); } }
+      b.box(-26, 0, -30, 1.4, 1.2, 1.4, 0x8a2a4a); b.box(-26, 1.2, -30.6, 1.4, 1.6, .25, 0x8a2a4a); b.cyl(-34, 2.2, -27, .4, .5, 0x2a2a2a, { lo: 1 }); b.cyl(-34, 2.2, -27, .65, .05, 0x2a2a2a, { lo: 1 });
+      K.lamp(-42, -24, 0xffd8a0); K.lamp(-26, -24, 0xffd8a0);
+      // Pilz der Raupe und weitere Riesenpilze
+      for (const [x, z, s, c] of [[30, -26, 2.2, 0x8a6ae0], [38, -18, 1.4, 0xe83a5a], [22, -34, 1.2, 0xf0c040], [40, -32, 1.6, 0x5ac8a0], [-14, -46, 1.5, 0xe83a5a], [48, -46, 1.8, 0x8a6ae0]]) { b.cyl(x, 0, z, .45 * s, 2.2 * s, 0xf0e8d8, { solid: 1 }); b.sph(x, 2.2 * s, z, 1.8 * s, .7 * s, 1.8 * s, c, { mat: { r: .6 } }); for (let i = 0; i < 5; i++) b.sph(x + Math.cos(i * 1.3) * s, 2.55 * s, z + Math.sin(i * 1.3) * s, .25 * s, .12 * s, .25 * s, WT, { cast: false }); }
+      b.cyl(31, 4.9, -26, .04, .6, 0x8a6a4a, { lo: 1 }); A.smoke(31, 5.6, -26);
+      // Haus der Herzogin mit Pfefferrauch
+      K.house(-62, -66, 7, 5.4, 3.2, 0xe8dcc0, 0x6a4a8a, .4, { beams: 0x5a3a22, chimney: 1 }); A.smoke(-60, 6, -67); A.smoke(-59, 6.2, -66);
+      // Rosengarten: Hecken, Bögen, Brunnen
+      for (const [x0, z0, x1, z1] of [[10, -50, 10, -74], [38, -50, 38, -74], [10, -74, 20, -74], [28, -74, 38, -74]]) { const L = Math.hypot(x1 - x0, z1 - z0), ry = Math.atan2(x1 - x0, z1 - z0) + Math.PI / 2; b.box((x0 + x1) / 2, 0, (z0 + z1) / 2, L, 1.8, 1.2, HD, { ry, solid: 1, tex: 'grass', to: { s: .6 } }); }
+      for (const z of [-56, -66]) b.tor(24, 2, z, 1.8, HD, { d: .5, rx: 0 }); b.cyl(24, 0, -62, 1.6, .6, 0xd8d0c8, { solid: 1, tex: 'marble' }); b.cyl(24, .6, -62, .2, 1.2, 0xd8d0c8); b.sph(24, 1.9, -62, .5, .3, .5, RD, { mat: { e: 0xa01020, ei: .6 } });
+      // Krocketplatz: Torbögen, Igel-Bälle, Zielstab
+      for (let i = 0; i < 6; i++) { const x = 50 + (i % 3) * 7, z = -74 - (i > 2 ? 10 : 0); b.tor(x, 0, z, .7, WT, { d: .08, rx: 0 }); b.sph(x + 1.2, .25, z + 1, .3, .26, .3, 0x6a5a4a, { mat: { r: 1 } }); }
+      b.cyl(66, 0, -80, .07, 1.4, WT, { lo: 1 }); for (let i = 0; i < 4; i++) b.cyl(66, .3 + i * .28, -80, .09, .08, [RD, 0x2a6ac8, 0xe8c040, 0x2a8a3a][i], { lo: 1 });
+      // Hinter den Spiegeln: Schachbrett mit Riesenfiguren und Spiegelrahmen
+      for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) b.box(-40 + i * 2.6, 0, -102 + j * 2.6, 2.6, .06, 2.6, (i + j) % 2 ? 0xf0ece0 : 0x2a2a30, { cast: false, mat: { r: .3 } });
+      for (const [x, z, c, k] of [[-37.4, -99.4, 0xf0ece0, 'k'], [-22, -86, 0x2a2a30, 'q'], [-32, -94, 0xc82a2a, 'k'], [-27, -99, 0xf0ece0, 'p'], [-35, -89, 0x2a2a30, 'p']]) { b.cyl(x, 0, z, .8, .5, c, { solid: 1 }); b.cyl(x, .5, z, .45, k === 'p' ? 1 : 2.2, c); b.sph(x, k === 'p' ? 1.7 : 2.9, z, .45, .45, .45, c); if (k !== 'p') b.cone(x, 3.2, z, .3, .5, c, { lo: 1 }); }
+      b.box(-44, 0, -84, 3, 4.4, .3, 0xd8b040, { solid: 1, mat: { m: .9, r: .3 } }); b.box(-44, .3, -83.82, 2.4, 3.8, .04, 0xd8e8ff, { cast: false, mat: { m: 1, r: .05 } }); b.glow(0xd8e8ff, 3, -44, 2.2, -83.5, .5);
+      // Das Herzschloss: Kartenhaus-Burg in Rot und Weiß mit Herzen
+      for (const x of [-10, 14]) { K.tower(x, -106, 2.4, 9, WT, RD, 4, { tex: 'plaster' }); b.sph(x - .3, 9.4, -103.5, .5, .5, .25, RD, { cast: false }); b.sph(x + .3, 9.4, -103.5, .5, .5, .25, RD, { cast: false }); }
+      K.wall(-8, -106, 12, -106, 6.5, 2, WT, { cren: 1, tex: 'plaster' }); b.box(2, 0, -104.9, 4, 4.4, .1, RD, { cast: false }); for (let i = 0; i < 5; i++) b.box(-6 + i * 4, 6.6, -104.7, 1.4, 2, .1, i % 2 ? RD : 0x1a1a2a, { cast: false });
+      // verstreute Riesenkarten im Gras
+      for (let i = 0; i < 10; i++) { const a = i * 2.3, x = Math.cos(a) * (30 + i * 4), z = -40 + Math.sin(a) * 34; const c = b.box(x, 0, z, 1.6, 2.4, .08, WT, { ry: a, cast: false }); c.rotation.z = .25 * Math.sin(i); b.sph(x, 1.25, z, .2, .2, .1, i % 2 ? RD : 0x1a1a2a, { cast: false }); }
+    },
     camelot(b, w, A) {
       const K = kit(b), S = 0xeae6de, B2 = 0x3a5aa8;
       b.tmap = { 0xeae6de: 'stone', 0xd8d0c0: 'plaster', 0x6a4a2a: 'wood', 0x5a3a22: 'wood', 0x8a8a8e: 'rock', 0x8a8a90: 'rock', 0x8a6a3a: 'wood' };

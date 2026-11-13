@@ -21,6 +21,7 @@ export const ISLE = {
   25: { n: 'Camelot', g: 0x4a9a4a, r: 0x6a6a6a, lf: 0x3a8a3a, h: [0xe0dcd0, 0x3a5ab8], lm: 'castle', c: 0x8ab8ff },
   26: { n: 'Theben', g: 0xc8b07a, r: 0x9a8060, lf: 0x6a9a4a, h: [0xf0ead8, 0xc85a3a], lm: 'temple', c: 0xffc060, tree: 'palm' },
   28: { n: 'Nimmerland', g: 0x4a8a3a, r: 0x7a7470, lf: 0x3ab84a, h: [0x3a2a1a, 0xf0ece4], lm: 'ship', c: 0x7ae8a0, tree: 'palm' },
+  29: { n: 'Wunderland', g: 0x5aaa52, r: 0x8a7a9a, lf: 0xd84a8a, h: [0xf4f0e6, 0xd82a3a], lm: 'mush', c: 0xff7ab0 },
   27: { n: 'Große Mauer', g: 0x6a8a4a, r: 0x7a6a5a, lf: 0x4a7a3a, h: [0xc8b8a0, 0xc83a2a], lm: 'wall', c: 0xff6a4a, tree: 'pine' },
 };
 
@@ -59,6 +60,7 @@ export function createMinis(C) {
     castle(g, d) { add(g, G.box, M(d.h[0]), 0, .25, 0, .55, .5, .4); for (const [x, z] of [[-.28, -.2], [.28, -.2], [-.28, .2], [.28, .2]]) { add(g, G.cyl, M(d.h[0]), x, .35, z, .09, .7, .09); add(g, G.cone0, M(d.h[1]), x, .8, z, .12, .22, .12); } add(g, G.cyl, M(d.h[0]), 0, .55, 0, .12, 1.1, .12); add(g, G.cone0, M(d.h[1]), 0, 1.2, 0, .15, .3, .15); },
     temple(g, d) { add(g, G.box, M(d.h[0]), 0, .05, 0, .7, .1, .45); for (let i = 0; i < 5; i++) for (const z of [-.16, .16]) add(g, G.cyl0, M(d.h[0]), (i - 2) * .15, .3, z, .035, .45, .035); add(g, G.cone0, M(d.h[1]), 0, .62, 0, .5, .2, .3, 0, Math.PI / 4, 0); },
     ship(g, d) { add(g, G.box, M(d.h[0]), 0, .14, 0, .3, .2, .8); add(g, G.cyl, M(d.h[0]), 0, .55, .05, .025, .8, .025); add(g, G.box, M(d.h[1]), 0, .62, .05, .32, .36, .02); add(g, G.box, M(0x0a0a0a), 0, .98, .05, .1, .07, .01); },
+    mush(g, d) { add(g, G.cyl, M(0xf0e8d8), 0, .3, 0, .1, .6, .1); add(g, G.sph, M(d.h[1]), 0, .62, 0, .36, .16, .36); for (let i = 0; i < 4; i++) add(g, G.sph0, M(d.h[0]), Math.cos(i * 1.6) * .2, .72, Math.sin(i * 1.6) * .2, .05, .03, .05); add(g, G.box, M(d.h[0]), .4, .2, .1, .18, .26, .02, 0, .4, .1); },
     wall(g, d) { add(g, G.box, M(d.h[0]), 0, .18, 0, 1.1, .3, .14, 0, .3, 0); for (const x of [-.45, .45]) { add(g, G.box, M(d.h[0]), x, .3, x * .3, .22, .55, .22); add(g, G.cone0, M(d.h[1]), x, .66, x * .3, .2, .18, .2, 0, Math.PI / 4, 0); } add(g, G.sph0, em(0xff6a4a, 1.5), .45, .48, .25, .05, .07, .05); },
   };
   /** Insel-Modell (Durchmesser ca. 2, Wiese bei y=0). */
