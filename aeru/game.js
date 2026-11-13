@@ -62,13 +62,13 @@ renderer.setSize(innerWidth, innerHeight);
 if (Number(T.REVISION) < 150) renderer.outputEncoding = T.sRGBEncoding; else renderer.outputColorSpace = T.SRGBColorSpace;
 renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
 renderer.shadowMap.type = T.PCFSoftShadowMap;
-const scene = new T.Scene(), camera = new T.PerspectiveCamera(innerHeight > innerWidth ? 58 : 52, innerWidth / innerHeight, .1, 240);
+const scene = new T.Scene(), camera = new T.PerspectiveCamera(innerHeight > innerWidth ? 58 : 52, innerWidth / innerHeight, .1, 320);
 // Physikalische Lichteinheiten ab r155: alte Intensitäten mal π behalten den ursprünglichen Look.
 const lightScale = Number(T.REVISION) < 150 ? 1 : Math.PI;
 const hemi = new T.HemisphereLight(0xe4f4ff, 0x40533d, .7 * lightScale); scene.add(hemi);
 const sun = new T.DirectionalLight(0xffefd5, 1.05 * lightScale); sun.position.set(-22, 45, 28); sun.castShadow = true;
 Object.assign(sun.shadow.camera, {left: -45, right: 45, top: 45, bottom: -45, near: 1, far: 110}); sun.shadow.camera.updateProjectionMatrix(); sun.shadow.bias = -.0007; scene.add(sun);
-const sky = new T.Mesh(new T.SphereGeometry(180, 24, 16), new T.ShaderMaterial({side: T.BackSide, uniforms: {top: {value: new T.Color('#397f95')}, bottom: {value: new T.Color('#d5d9bf')}, dim: {value: 0}},
+const sky = new T.Mesh(new T.SphereGeometry(280, 24, 16), new T.ShaderMaterial({side: T.BackSide, uniforms: {top: {value: new T.Color('#397f95')}, bottom: {value: new T.Color('#d5d9bf')}, dim: {value: 0}},
   vertexShader: 'varying vec3 v; void main(){v=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
   fragmentShader: 'varying vec3 v;uniform vec3 top;uniform vec3 bottom;uniform float dim;void main(){float h=clamp(normalize(v).y*.9+.3,0.,1.);gl_FragColor=vec4(mix(bottom,top,h)*(1.-dim*.55),1.);' + (Number(T.REVISION) >= 150 ? '\n#include <colorspace_fragment>' : '') + '\n}'}));
 scene.add(sky);
@@ -200,7 +200,8 @@ const sfx = {
   story: () => chord([392, 494, 587, 784], .9, .035), checkpoint: () => note(880, .35, .025), boss: () => note(85, .6, .07, 'triangle'), warn: () => note(220, .35, .03, 'sawtooth'),
   crate: () => { whoosh(.18, .07, 380); note(140, .16, .05, 'square'); setTimeout(() => note(95, .12, .04, 'triangle'), 60); },
   flutter: () => { note(1320, .08, .015); setTimeout(() => note(1560, .08, .015), 70); }, falter: () => chord([784, 988, 1175], .3, .03),
-  charge: () => { whoosh(.32, .05, 520); note(130, .25, .02, 'triangle'); }
+  charge: () => { whoosh(.32, .05, 520); note(130, .25, .02, 'triangle'); },
+  jewel: (v, n) => { const f = 560 + n * 45 + (v >= 10 ? 220 : v >= 5 ? 120 : v >= 2 ? 60 : 0); note(f, .22, .04); if (v >= 5) setTimeout(() => note(f * 1.5, .25, .03), 70); if (v >= 25) setTimeout(() => note(f * 2, .4, .03), 150); }
 };
 
 // ───────── Freie 3D-Modelle (GLB) ─────────
@@ -403,16 +404,20 @@ function buildCrates(index) {
     if (gems.some(g => Math.hypot(g.x - x, g.z - z) < 2) || torches.some(t => Math.hypot(t.x - x, t.z - z) < 3) || items.some(i => Math.hypot(i.x - x, i.z - z) < 2.5)
       || [...npcs.values()].some(n => Math.hypot(n.x - x, n.z - z) < 3) || (cfg.pond && Math.hypot(cfg.pond[0] - x, cfg.pond[1] - z) < 4.5) || GAME_PORTALS.some(p => Math.hypot(p.x - x, p.z - z) < 5)
       || treeColliders.some(t => Math.hypot(t.x - x, t.z - z) < t.crown + 1.4)) continue;
-    const g = new T.Group(); g.position.set(x, y, z); g.rotation.y = x * .37; world.add(g);
-    mesh('box', '#a8763f', 0, .5, 0, 1.1, 1, 1.1, g); mesh('box', '#e6c278', 0, .5, 0, 1.18, .16, 1.18, g); mesh('box', '#e6c278', 0, .5, 0, .16, 1.04, 1.18, g);
-    const col = {x, z, trunk: .7, trunkTop: y + 1.05, crown: 1.1, cy: -100, ch: 0, rock: true, crate: true};
-    treeColliders.push(col); crates.push({x, y, z, g, col, broken: false});
+    addCrate(x, y, z);
   }
+}
+function addCrate(x, y, z, jewel = null) {
+  const g = new T.Group(); g.position.set(x, y, z); g.rotation.y = x * .37; world.add(g);
+  mesh('box', '#a8763f', 0, .5, 0, 1.1, 1, 1.1, g); mesh('box', '#e6c278', 0, .5, 0, 1.18, .16, 1.18, g); mesh('box', '#e6c278', 0, .5, 0, .16, 1.04, 1.18, g);
+  const col = {x, z, trunk: .7, trunkTop: y + 1.05, crown: 1.1, cy: -100, ch: 0, rock: true, crate: true};
+  treeColliders.push(col); crates.push({x, y, z, g, col, broken: false, jewel});
 }
 function breakCrate(c) {
   c.broken = true; c.g.visible = false; c.col.crown = 0; c.col.trunkTop = -100;
   spark(c.x, c.y + .6, c.z, '#e6c278', 16); spark(c.x, c.y + .6, c.z, '#a8763f', 10); sfx.crate(); rumble(70, .35);
   spawnFalter(c.x, c.y + 1, c.z);
+  if (c.jewel && !c.jewel.got) { c.jewel.hidden = false; c.jewel.y = c.y + 1.4; }
   if (!breakCrate.told) { breakCrate.told = true; toast('Schatzkorb zerbrochen · Fang den Lichtfalter, er heilt ein Herz'); }
 }
 function crateHits(hit) { for (const c of crates) if (!c.broken && hit(c)) breakCrate(c); }
@@ -455,6 +460,181 @@ function updateFunkel(dt) {
   funkel.position.copy(funkelPos); funkel.material.color.setHex(funkelColor());
   funkel.visible = mode !== 'title' && (state.hp > 1 || Math.floor(time * 6) % 2 === 0);
 }
+
+// ───────── Weite Welten: vier Gebiete je Welt, Edelsteine, Kristalldrachen, Eierdieb, Weltentore ─────────
+// Jede Welt wächst um vier große Gebiete (Nord, Ost, West, Süd), zu Fuß über Brücken erreichbar. Wie in klassischen Drachen-Plattformern
+// liegen dort Edelsteine mit Farbwerten, Schatzkörbe mit Edelsteinen, eingefrorene Kristalldrachen und ein Eierdieb. Die Weltentore im
+// Nord- und Südgebiet führen ohne Menü direkt in die nächste bzw. vorige Welt (die nächste erst, wenn der Leuchtkern dieser Welt leuchtet).
+const JEWEL = {rot: {v: 1, c: '#ff5f6d'}, gruen: {v: 2, c: '#5fe08a'}, blau: {v: 5, c: '#5fa8ff'}, gold: {v: 10, c: '#ffd34f'}, lila: {v: 25, c: '#c57bff'}};
+const JEWEL_KINDS = Object.keys(JEWEL), JEWEL_MAX = 200;
+const REGION_DEFS = [{id: 'n', name: 'Nordgebiet', x: 0, z: -76, r: 20, axis: 'z', at: 0, side: -1},
+  {id: 'o', name: 'Ostgebiet', x: 70, z: -14, r: 19, axis: 'x', at: -14, side: 1},
+  {id: 'w', name: 'Westgebiet', x: -70, z: -16, r: 19, axis: 'x', at: -16, side: -1},
+  {id: 's', name: 'Südgebiet', x: -22, z: 74, r: 20, axis: 'z', at: -14, side: 1}];
+const GATE_NEXT = {x: 0, z: -91}, GATE_PREV = {x: -22, z: 89};
+// Kristalldrachen: vier je Welt, eigene Namen und Worte (Reihenfolge Nord, Ost, West, Süd).
+const RESCUE = [
+  [['Ilvar', 'Die Stille hat uns in Kristall gesperrt. Dein Wind hat den Bann gebrochen – flieg weiter, kleiner Bruder.'], ['Mora', 'Ich habe die Wiesen bewacht, bis alles still wurde. Danke, Aeru. Die Körbe hier verstecken Edelsteine.'], ['Tesk', 'Ein Dieb mit einem Ei lief vorbei. Halte die Rammtaste, dann holst du ihn ein!'], ['Nunah', 'Hinter mir öffnet sich das Weltentor, sobald dein Leuchtkern brennt.']],
+  [['Bernhal', 'Das Harz hat mich festgehalten wie eine Fliege. Frei! Danke dir.'], ['Sola', 'Die Glocken des Hains singen wieder, wenn du alle Laternen weckst.'], ['Quirin', 'Lila Edelsteine sind selten – sie liegen meist ganz oben.'], ['Elda', 'Ruh dich hier aus. Ich habe einen Rastpunkt für dich bewacht.']],
+  [['Asterion', 'Die Sterne haben mich vergessen. Du nicht. Danke.'], ['Vey', 'Funkel leuchtet blau? Dann such Lichtfalter, bevor du weiterkämpfst.'], ['Orrin', 'Vesper hat die Sternenwarte geplündert. Hol dir zurück, was glänzt.'], ['Kaali', 'Gleite von hohen Stufen, dann trägt dich der Wind weiter.']],
+  [['Nimbra', 'Die Wolkenriffe sind weit. Folge den roten Edelsteinen über die Brücken.'], ['Faro', 'Ich hörte das Ei weinen. Der Dieb ist schnell – sei schneller.'], ['Sedi', 'Hier oben ist der Wind am stärksten. Danke für die Freiheit.'], ['Tomo', 'Jeder Korb hat einen Schatz. Zerbrich sie alle!']],
+  [['Lysa', 'Mein Echo war das Einzige, was blieb. Jetzt habe ich wieder eine Stimme.'], ['Grav', 'Schatten weichen dir aus. Warte, bis sie springen, dann triff sie.'], ['Ithe', 'Die Klamm ist tief. Bleib auf den Brücken, die Kante hält dich.'], ['Run', 'Die Wahrheit klingt wie Kristall. Danke, Aeru.']],
+  [['Aurel', 'Der letzte Morgen wartet auf dich. Ich spüre ihn schon.'], ['Ninive', 'Die Ruinen erinnern sich an Drachenflügel. Lass sie wieder rauschen.'], ['Bram', 'Viele Gegner hier – ein Ansturm räumt den Weg frei.'], ['Selu', 'Leuchte, kleiner Drache. Die Stille fürchtet dein Licht.']],
+  [['Nachtwind', 'Im Nachtgarten blühen Samen, die nicht hierher gehören. Danke für die Rettung.'], ['Mirr', 'Motten fallen schon beim ersten Windstoß.'], ['Daal', 'Aus den Warnkreisen der Wurzeln musst du heraus, sonst trifft es dich.'], ['Veyla', 'Du hast uns alle gefunden? Dann ist der Himmel wieder ganz.']]];
+let regions = [], jewels = [], dragonStatues = [], thief = null, worldGates = [], gateTold = 0, jewelBatches = [];
+const regionSave = (key, index = save.level) => (save[key] ||= Array.from({length: LEVEL_COUNT}, () => []))[index] ||= [];
+const jewelValue = (index = save.level) => jewels.length && index === save.level ? jewels.filter(j => j.got).reduce((n, j) => n + j.v, 0) : 0;
+const jewelTotal = () => jewels.reduce((n, j) => n + j.v, 0);
+// Brückenbereich samt 7 m Zugang auf dem Hauptland (dort stehen keine Bäume oder Felsen im Weg).
+const nearBridge = (x, z, m = 3) => regions.some(rg => { if (!rg.bridge) return false; const a = rg.bridge.a - rg.side * 7, b = rg.bridge.b; return rg.axis === 'x' ? Math.abs(z - rg.at) < m && (x - a) * (x - b) <= 0 : Math.abs(x - rg.at) < m && (z - a) * (z - b) <= 0; });
+// Statue: ein Drachenkörper als einzige Geometrie (ein Draw Call je Statue), einmal gebaut und geteilt.
+let statueGeo = null;
+const crystalMat = new T.MeshStandardMaterial({color: linearColor('#c6ecff'), emissive: linearColor('#4f9fd6'), emissiveIntensity: .45, roughness: .15, metalness: .1, flatShading: true, transparent: true, opacity: .82});
+const freedMat = new T.MeshStandardMaterial({color: linearColor('#ffd98a'), emissive: linearColor('#d7923e'), emissiveIntensity: .35, roughness: .5, flatShading: true});
+function mergedGeometry(group) {
+  group.updateMatrixWorld(true); const pos = [], nor = [];
+  group.traverse(o => { if (!o.isMesh) return; let g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone(); g.applyMatrix4(o.matrixWorld); if (!g.attributes.normal) g.computeVertexNormals(); pos.push(...g.attributes.position.array); nor.push(...g.attributes.normal.array); g.dispose(); });
+  const out = new T.BufferGeometry(); out.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); out.setAttribute('normal', new T.Float32BufferAttribute(nor, 3)); shared.add(out); return out;
+}
+function statueGeometry() { if (!statueGeo) { const d = dragon('#ffffff', '#ffffff', 1.25); statueGeo = mergedGeometry(d); } return statueGeo; }
+function buildRegions(index) {
+  const cfg = levels[index], R = cfg.mainRadius || 27;
+  regions = []; jewels = []; dragonStatues = []; thief = null; worldGates = []; const spawned = [];
+  let seed = 9187 + index * 71; const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  const got = regionSave('jewels', index), freed = regionSave('dragons', index), egg = regionSave('eggs', index);
+  const addJewel = (kind, x, z, y = 0, hidden = false) => { const id = jewels.length; jewels.push({id, kind, v: JEWEL[kind].v, x, y: y + 1, z, got: got.includes(id), hidden}); return jewels[id]; };
+  for (const def of REGION_DEFS) {
+    const rg = {...def}; regions.push(rg);
+    island(rg.x, rg.z, rg.r, 0);
+    // Brücke vom Hauptland zum Gebiet (achsparallel, Oberkante auf Bodenhöhe, je 1,5 m Überlappung)
+    const off = rg.axis === 'x' ? rg.at : rg.at, start = Math.sqrt(R * R - off * off) - 1.5, endIn = (rg.axis === 'x' ? Math.abs(rg.x) : Math.abs(rg.z)) - Math.sqrt(rg.r * rg.r - (rg.axis === 'x' ? rg.z - rg.at : rg.x - rg.at) ** 2) + 1.5;
+    const a = rg.side * start, b = rg.side * endIn, mid = (a + b) / 2, len = Math.abs(b - a);
+    if (rg.axis === 'x') platform(mid, rg.at, len, 4, 0); else platform(rg.at, mid, 4, len, 0);
+    rg.bridge = {a, b};
+    for (let t = 3; t < len - 2; t += 4) { const p = a + rg.side * t; rg.axis === 'x' ? addJewel('rot', p, rg.at) : addJewel('rot', rg.at, p); }
+    // Rastpunkt am Gebietsrand
+    const ex = rg.axis === 'x' ? b - rg.side * 3 : rg.at, ez = rg.axis === 'x' ? rg.at : b - rg.side * 3;
+    // Stufenturm: Gold oben, im Norden zusätzlich Lila
+    const tx = rg.x + (rg.axis === 'x' ? rg.side * 9 : 8), tz = rg.z + (rg.axis === 'x' ? -8 : rg.side * 6);
+    platform(tx, tz, 5, 5, 1.1); platform(tx + 2.5, tz - 2.5, 3.4, 3.4, 2.2); addJewel('gold', tx + 2.5, tz - 2.5, 2.2);
+    if (rg.id === 'n') { platform(tx + 5, tz - 5, 3, 3, 3.3); addJewel('lila', tx + 5, tz - 5, 3.3); }
+    // Grüne Ringe und blaue Edelsteine im Gebiet
+    for (let i = 0; i < 6; i++) { const ang = i / 6 * TAU + rand(), rr = rg.r * .55; addJewel('gruen', rg.x + Math.cos(ang) * rr, rg.z + Math.sin(ang) * rr); }
+    for (let i = 0; i < 2; i++) { const ang = rand() * TAU, rr = rg.r * .3; addJewel('blau', rg.x + Math.cos(ang) * rr, rg.z + Math.sin(ang) * rr); }
+    // Kristalldrache gegenüber der Brücke
+    const di = REGION_DEFS.indexOf(def), dx = rg.axis === 'x' ? rg.x + rg.side * rg.r * .45 : rg.x - 7, dz = rg.axis === 'x' ? rg.z + 7 : rg.z + rg.side * rg.r * .4;
+    const st = new T.Mesh(statueGeometry(), freed.includes(di) ? freedMat : crystalMat); st.position.set(dx, 0, dz); st.rotation.y = Math.atan2(rg.x - dx, rg.z - dz) + Math.PI; st.castShadow = true; world.add(st);
+    mesh('cylinder', cfg.accent, dx, .15, dz, 1.6, .3, 1.6);
+    treeColliders.push({x: dx, z: dz, trunk: .9, trunkTop: 2.2, crown: 1.3, cy: -100, ch: 0, rock: true, statue: true});
+    const [name, text] = RESCUE[index][di];
+    dragonStatues.push({id: di, x: dx, z: dz, m: st, freed: freed.includes(di), name, text});
+    // Bäume (meiden Brücke, Turm, Statue, Edelsteine)
+    for (let i = 0; i < 6; i++) {
+      const ang = rand() * TAU, rr = 5 + rand() * (rg.r - 7), x = rg.x + Math.cos(ang) * rr, z = rg.z + Math.sin(ang) * rr;
+      // Weg vom Brückenende zur Gebietsmitte bleibt frei.
+      const sx = rg.x - ex, sz = rg.z - ez, k = clamp(((x - ex) * sx + (z - ez) * sz) / (sx * sx + sz * sz), 0, 1);
+      if (Math.hypot(x - ex - sx * k, z - ez - sz * k) < 3.5) continue;
+      if (nearBridge(x, z, 5) || Math.hypot(x - tx - 2.5, z - tz + 2.5) < 7 || Math.hypot(x - dx, z - dz) < 5 || Math.hypot(x - ex, z - ez) < 4 || jewels.some(j => Math.hypot(j.x - x, j.z - z) < 3)
+        || [GATE_NEXT, GATE_PREV].some(g => Math.hypot(g.x - x, g.z - z) < 7)) continue;
+      tree(x, z, .7 + rand() * .5);
+    }
+    // Gegner des Gebiets
+    for (let i = 0; i < 2; i++) { const kind = cfg.enemies[(i + di) % cfg.enemies.length], ang = di + i * 2.4, x = rg.x + Math.cos(ang) * rg.r * .5, z = rg.z + Math.sin(ang) * rg.r * .5; const e = makeEnemy(kind, x, z); e.isle = {x: rg.x, z: rg.z, r: rg.r - 2}; spawned.push(e); }
+    rg.tower = {x: tx, z: tz}; rg.statue = {x: dx, z: dz}; rg.entry = {x: ex, z: ez};
+  }
+  // Schatzkörbe im Gebiet mit Edelstein darin (erscheint beim Zerbrechen)
+  for (const rg of regions) for (let i = 0; i < 3; i++) {
+    const ang = i * 2.1 + 1, rr = rg.r * .72, x = rg.x + Math.cos(ang) * rr, z = rg.z + Math.sin(ang) * rr;
+    if (nearBridge(x, z, 4) || treeColliders.some(t => Math.hypot(t.x - x, t.z - z) < t.crown + 1.4) || jewels.some(j => Math.hypot(j.x - x, j.z - z) < 2)) continue;
+    const j = addJewel(i ? 'blau' : 'gruen', x, z, 0, true); addCrate(x, 0, z, j);
+  }
+  // Eierdieb im Ostgebiet
+  const o = regions[1];
+  if (!egg.length) {
+    const g = new T.Group(); mesh('ball', '#6fb04a', 0, .7, 0, .5, .6, .45, g); mesh('ball', '#f4e7c6', 0, 1.35, -.05, .38, .36, .36, g); for (const s of [-1, 1]) mesh('cone', '#6fb04a', s * .3, 1.75, 0, .12, .45, .12, g).rotation.z = s * -.6;
+    const e = mesh('ball', '#fff4dc', 0, 1.1, .5, .32, .42, .32, g, true); e.material = mat('#fff1c9', true);
+    g.position.set(o.x, 0, o.z); world.add(g); thief = {x: o.x, z: o.z, home: o, g, t: 0, caught: false, fled: 0};
+  }
+  // Weltentore
+  if (index < LEVEL_COUNT - 1) worldGates.push(makeWorldGate({id: 'next', ...GATE_NEXT, to: index + 1, name: '→ ' + levels[index + 1].name.split(' · ')[1], color: '#9ff3d4', rim: '#ffe3a4'}));
+  if (index > 0) worldGates.push(makeWorldGate({id: 'prev', ...GATE_PREV, to: index - 1, name: '← ' + levels[index - 1].name.split(' · ')[1], color: '#ffc9a6', rim: '#c7a6ff'}));
+  buildJewelMeshes();
+  return spawned;
+}
+function makeWorldGate(p) {
+  const {g, disc} = portalGate(p, Math.atan2(-p.x, -p.z)); return {...p, g, disc};
+}
+// Edelsteine als InstancedMesh je Farbe (fünf Draw Calls für alle Edelsteine einer Welt).
+const jewelM = new T.Matrix4(), jewelQ = new T.Quaternion(), jewelS = new T.Vector3(), jewelP = new T.Vector3(), jewelE = new T.Euler();
+function buildJewelMeshes() {
+  jewelBatches = [];
+  for (const kind of JEWEL_KINDS) {
+    const list = jewels.filter(j => j.kind === kind); if (!list.length) continue;
+    const m = new T.InstancedMesh(geos.gem, mat(JEWEL[kind].c, true), list.length); m.frustumCulled = false; m.castShadow = false; world.add(m);
+    list.forEach((j, i) => { j.batch = m; j.slot = i; }); jewelBatches.push(m);
+  }
+  updateJewelMeshes();
+}
+function updateJewelMeshes() {
+  for (const j of jewels) {
+    if (!j.batch) continue;
+    const show = !j.got && !j.hidden, sc = j.kind === 'lila' ? .5 : j.kind === 'gold' ? .42 : .32;
+    jewelE.set(0, time * 1.6 + j.id, 0); jewelQ.setFromEuler(jewelE); jewelP.set(j.x, j.y + Math.sin(time * 2 + j.id) * .15, j.z); jewelS.set(show ? sc : 0, show ? sc * 1.6 : 0, show ? sc : 0);
+    jewelM.compose(jewelP, jewelQ, jewelS); j.batch.setMatrixAt(j.slot, jewelM);
+  }
+  for (const m of jewelBatches) m.instanceMatrix.needsUpdate = true;
+}
+function updateRegions(dt) {
+  // Edelsteine: Funkel holt sie heran wie Splitter
+  for (const j of jewels) if (!j.got && !j.hidden && Math.hypot(state.x - j.x, state.z - j.z) < FUNKEL_REACH && Math.abs(state.y + .9 - j.y) < 2.2) {
+    j.got = true; regionSave('jewels').push(j.id);
+    gemCombo = elapsed - lastGemAt < 1.4 ? Math.min(gemCombo + 1, 8) : 0; lastGemAt = elapsed;
+    sfx.jewel(j.v, gemCombo); spark(j.x, j.y, j.z, JEWEL[j.kind].c, j.v >= 10 ? 14 : 6);
+    if (j.v >= 10) toast((j.kind === 'lila' ? 'Lila Edelstein' : 'Gold-Edelstein') + ` · +${j.v} · Schatz ${jewelValue()} / ${jewelTotal()}`);
+    if (jewelValue() === jewelTotal()) { sfx.story(); toast('Alle Edelsteine dieser Welt gefunden ✧'); }
+    persist(); updateHUD();
+  }
+  // Kristalldrachen befreien
+  for (const d of dragonStatues) if (!d.freed && Math.hypot(state.x - d.x, state.z - d.z) < 2.6 && state.y < 2.5 && mode === 'play') {
+    d.freed = true; d.m.material = freedMat; regionSave('dragons').push(d.id);
+    state.checkpoint = {x: d.x + 2.5 * Math.sign(state.x - d.x || 1), y: 0, z: d.z}; save.checkpoint = {level: save.level, ...state.checkpoint};
+    spark(d.x, 2, d.z, '#ffe6a6', 30); sfx.story(); rumble(160, .5); persist(); updateHUD();
+    const role = 'Kristalldrache · ' + levels[save.level].name.split(' · ')[1];
+    openDialog('drache_' + save.level + '_' + d.id, [{name: d.name, role, portrait: '✺', who: 'drache', text: d.text}, {name: d.name, role, portrait: '✺', who: 'drache', text: `Befreit: ${regionSave('dragons').length} von 4 Drachen dieser Welt. Ich bewahre hier deinen Rastpunkt.`}], () => {});
+  }
+  // Eierdieb: flieht, sobald Aeru näher kommt; nur der Ansturm ist schnell genug.
+  if (thief && !thief.caught) {
+    const h = thief.home, d = Math.hypot(state.x - thief.x, state.z - thief.z);
+    let vx = 0, vz = 0;
+    if (d < 11 && Math.abs(state.y) < 2.5) {
+      const ax = (thief.x - state.x) / (d || 1), az = (thief.z - state.z) / (d || 1), cx = thief.x - h.x, cz = thief.z - h.z, cr = Math.hypot(cx, cz) || 1;
+      // Weg vom Spieler, am Rand entlang statt hinaus
+      vx = ax; vz = az; if (cr > h.r - 5) { const tx = -cz / cr, tz = cx / cr, sgn = Math.sign(tx * ax + tz * az) || 1; vx = tx * sgn - cx / cr * .6; vz = tz * sgn - cz / cr * .6; }
+      // Nach 5 s Flucht geht ihm kurz die Puste aus (1,5 s langsamer) – die Gelegenheit für den Ansturm.
+      thief.run = (thief.run || 0) + dt; const tired = thief.run % 6.5 > 5, sp = tired ? 5.5 : 9;
+      const n = Math.hypot(vx, vz) || 1; vx = vx / n * sp; vz = vz / n * sp;
+      if (!thief.fled) { thief.fled = 1; toast('Ein Eierdieb! Halte ' + actionKey('ramm') + ' für den Ansturm und hol ihn ein'); sfx.warn(); }
+    } else { vx = (h.x - thief.x) * .3; vz = (h.z - thief.z) * .3; }
+    thief.x += vx * dt; thief.z += vz * dt;
+    const cx = thief.x - h.x, cz = thief.z - h.z, cr = Math.hypot(cx, cz), lim = h.r - 2.5; if (cr > lim) { thief.x = h.x + cx / cr * lim; thief.z = h.z + cz / cr * lim; }
+    thief.t += dt; thief.g.position.set(thief.x, Math.abs(Math.sin(thief.t * 12)) * .25, thief.z); if (Math.hypot(vx, vz) > .5) thief.g.rotation.y = Math.atan2(-vx, -vz);
+  }
+  // Weltentore: hineinlaufen genügt
+  for (const g of worldGates) if (Math.hypot(state.x - g.x, state.z - g.z) < 2 && state.y < 3 && mode === 'play') {
+    if (g.id === 'next' && !save.cores[save.level]) { if (time > gateTold) { gateTold = time + 4; toast('Das Weltentor erwacht, wenn der Leuchtkern dieser Welt leuchtet'); sfx.wrong(); } continue; }
+    sfx.portal(); retrigger($('fade'), 'on');
+    const arrive = g.id === 'next' ? {x: GATE_PREV.x, y: 0, z: GATE_PREV.z - 5} : {x: GATE_NEXT.x, y: 0, z: GATE_NEXT.z + 5};
+    travel(g.to, arrive); return;
+  }
+}
+function catchThief(hit) {
+  if (!thief || thief.caught || !hit(thief)) return;
+  thief.caught = true; thief.g.visible = false; regionSave('eggs').push(0); spark(thief.x, 1, thief.z, '#fff1c9', 26); sfx.story(); rumble(200, .6);
+  toast('Drachenei zurückgeholt! ' + totalEggs() + ' / ' + LEVEL_COUNT); persist(); updateHUD();
+}
+const totalEggs = () => (save.eggs || []).reduce((n, a) => n + (a?.length || 0), 0);
+const totalDragons = () => (save.dragons || []).reduce((n, a) => n + (a?.length || 0), 0);
+const totalJewelsSaved = () => (save.jewels || []).reduce((n, a) => n + (a?.length || 0), 0);
 
 // ───────── Inselbau ─────────
 function island(x, z, r, y = 0) { const cfg = levels[save.level]; mesh('cylinder', cfg.grass, x, y - .6, z, r, 1.2, r); const base = mesh('cone', cfg.rock, x, y - 5.2, z, r * .99, 9, r * .99); base.rotation.z = Math.PI; solids.push({x, z, r, y, thick: 9.7}); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; mesh('rock', cfg.rock, x + Math.cos(a) * r * .7, y - 2.1, z + Math.sin(a) * r * .7, 3, 4, 3); } }
@@ -505,13 +685,14 @@ function buildLevel(index, titleOnly = false) {
   for (const d of disposables) d.dispose(); disposables = [];
   world.traverse(o => { if (o.isMesh && !shared.has(o.geometry)) o.geometry.dispose(); if (o.isInstancedMesh) o.dispose?.(); });
   world = new T.Group(); scene.add(world);
-  sceneryPlan = []; crates = []; clearFalter(); chests = []; boostRings = []; gusts = []; updrafts = []; flightRings = []; solids = []; treeColliders = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
+  sceneryPlan = []; crates = []; clearFalter(); regions = []; jewels = []; jewelBatches = []; dragonStatues = []; thief = null; worldGates = []; chests = []; boostRings = []; gusts = []; updrafts = []; flightRings = []; solids = []; treeColliders = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
   clearEffects(); particlePool.forEach(p => { p.life = 0; p.m.visible = false; });
   clearInput(); accumulator = 0; save.level = index;
   const cfg = levels[index];
-  sky.material.uniforms.top.value.set(cfg.sky); sky.material.uniforms.bottom.value.set(cfg.fog); sky.material.uniforms.dim.value = 0; scene.fog = new T.Fog(linearColor(cfg.fog), 65, 155);
+  sky.material.uniforms.top.value.set(cfg.sky); sky.material.uniforms.bottom.value.set(cfg.fog); sky.material.uniforms.dim.value = 0; scene.fog = new T.Fog(linearColor(cfg.fog), 85, 215);
   sun.color.set(cfg.light.sun); sun.intensity = cfg.light.sunI * lightScale; hemi.intensity = cfg.light.hemi * lightScale;
   island(0, 0, cfg.mainRadius || 27); island(37, 2, 7, 1); island(-36, -5, 6, 2);
+  const regionEnemies = buildRegions(index);
   for (let i = 0; i < 4; i++) platform(0, -11 - i * 2.4, 5.5, 3, .75 * (i + 1)); platform(0, -20, 10, 6, 3);
   for (const [x, z, w, d, y] of cfg.extras) platform(x, z, w, d, y);
   makeUpdraft(21, 2, 0, 12); makeUpdraft(37, 6, 1, 12); makeUpdraft(-21, -5, 0, 12); makeUpdraft(-36, -1.2, 2, 12);
@@ -522,9 +703,9 @@ function buildLevel(index, titleOnly = false) {
   (cfg.rings || []).forEach(([x, y, z], id) => { const got = save.rings[index].includes(id); const m = ring(x, y, z, 2.5, '#ffe9a8'); m.material = own(new T.MeshBasicMaterial({color: got ? 0x60c4a4 : 0xffd277, toneMapped: false})); m.rotation.y = id === 1 ? Math.PI / 2 : 0; flightRings.push({x, y, z, id, m, got}); });
   for (let i = 0; i < 15; i++) { const z = 19 - i * 2.5; mesh('cylinder', '#d4c9a2', Math.sin(i * .6) * 1.4, .04, z, 1.6, .06, 1.2).rotation.y = i; }
   let seed = 5432 + index * 34; const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-  for (let i = 0; i < 38; i++) { const a = rand() * TAU, r = 17 + rand() * 8, x = Math.cos(a) * r, z = Math.sin(a) * r; if (floorAt(x, z) < -.1 || Math.abs(x) < 6 || dist({x, z}, {x: -14, z: -6}) < 4 || dist({x, z}, {x: 14, z: -7}) < 4 || dist({x, z}, {x: 20, z: 12}) < 3.5 || GAME_PORTALS.some(p => dist({x, z}, p) < 5.5) || !crateSpotFree(x, z)) continue; tree(x, z, .65 + rand() * .6); }
+  for (let i = 0; i < 38; i++) { const a = rand() * TAU, r = 17 + rand() * 8, x = Math.cos(a) * r, z = Math.sin(a) * r; if (floorAt(x, z) < -.1 || Math.abs(x) < 6 || dist({x, z}, {x: -14, z: -6}) < 4 || dist({x, z}, {x: 14, z: -7}) < 4 || dist({x, z}, {x: 20, z: 12}) < 3.5 || GAME_PORTALS.some(p => dist({x, z}, p) < 5.5) || !crateSpotFree(x, z) || nearBridge(x, z, 4.5)) continue; tree(x, z, .65 + rand() * .6); }
   for (let i = 0; i < 65; i++) { const a = rand() * TAU, r = rand() * 25, x = Math.cos(a) * r, z = Math.sin(a) * r; if (useSceneryModels()) { if (i % 3 === 0 && floorAt(x, z) > -.1) sceneryPlan.push({kind: 'grass', x, z, s: .8 + (i % 5) * .1, yaw: i}); } else mesh('cone', i % 3 ? '#b4ca9d' : cfg.accent, x, .18, z, .08, .36, .08); }
-  for (const s of [-1, 1]) for (let i = 0; i < 4; i++) { const x = s * (18 + i % 2 * 3), z = -15 + i * 7, h = 2 + rand() * 2; treeColliders.push({x, z, trunk: .8, trunkTop: h, crown: 1.45, cy: -100, ch: 0, rock: true}); if (useSceneryModels()) sceneryPlan.push({kind: 'rock', x, z, s: h / 3, yaw: i * 1.3 + s}); else mesh('box', cfg.rock, x, 1, z, 1.2, h, 1.3).rotation.z = s * .12; }
+  for (const s of [-1, 1]) for (let i = 0; i < 4; i++) { const x = s * (18 + i % 2 * 3), z = -15 + i * 7, h = 2 + rand() * 2; if (nearBridge(x, z, 3.5)) continue; treeColliders.push({x, z, trunk: .8, trunkTop: h, crown: 1.45, cy: -100, ch: 0, rock: true}); if (useSceneryModels()) sceneryPlan.push({kind: 'rock', x, z, s: h / 3, yaw: i * 1.3 + s}); else mesh('box', cfg.rock, x, 1, z, 1.2, h, 1.3).rotation.z = s * .12; }
   if (cfg.pond) { pond = new T.Mesh(geos.disc, own(new T.MeshStandardMaterial({color: linearColor('#7fd6e6'), emissive: linearColor('#3a9fb5'), emissiveIntensity: .35, roughness: .2}))); pond.rotation.x = -Math.PI / 2; pond.scale.setScalar(2.6); pond.position.set(cfg.pond[0], .06, cfg.pond[1]); world.add(pond); for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; mesh('rock', cfg.rock, cfg.pond[0] + Math.cos(a) * 2.9, .15, cfg.pond[1] + Math.sin(a) * 2.9, .5, .35, .5); } }
   arch(0, -21); portal = ring(0, 5.5, -21, 1.9, '#ffe3a4'); portal.material = own(new T.MeshStandardMaterial({color: linearColor('#ffe3a4'), emissive: linearColor('#f9c76f'), emissiveIntensity: .5}));
   buildGamePortals();
@@ -535,12 +716,12 @@ function buildLevel(index, titleOnly = false) {
   if (index === 3) { gp[18] = [34, 2, 1]; gp[19] = [-34, -5, 2]; } if (index === 4) { gp[18] = [-13, -4, 5]; gp[19] = [12, -7, 7]; } if (index === 5) { gp[18] = [-16, -4, 0]; gp[19] = [16, -6, 0]; }
   gp.forEach(([x, z, y], id) => { const m = mesh('gem', id % 3 ? '#b4f9d5' : '#ffe6b0', x, y + 1.1, z, .28, .48, .28, world, true); m.visible = !save.collected[index].includes(id); gems.push({x, y: y + 1.1, z, id, m, got: !m.visible}); });
   for (const it of story.items.filter(it => it.level === index)) { const m = mesh('gem', it.color, it.x, it.y + 1.2, it.z, .42, .62, .42, world, true); const b = new T.Mesh(beam.geometry, own(new T.MeshBasicMaterial({color: linearColor(it.color), transparent: true, opacity: .25, depthWrite: false, toneMapped: false}))); b.scale.set(1.4, .25, 1.4); b.position.set(it.x, it.y + 3.5, it.z); world.add(b); items.push({...it, m, b, y: it.y + 1.2}); }
-  cfg.enemies.forEach((kind, i) => { const x = (i % 2 ? 1 : -1) * (7 + (i % 3) * 4), z = 9 - Math.floor(i / 2) * 6; enemies.push(makeEnemy(kind, x, z)); });
+  cfg.enemies.forEach((kind, i) => { const x = (i % 2 ? 1 : -1) * (7 + (i % 3) * 4), z = 9 - Math.floor(i / 2) * 6; enemies.push(makeEnemy(kind, x, z)); }); enemies.push(...regionEnemies);
   syncNpcs(true); buildCrates(index);
   // Rastpunkte: Inselstart, oberes Tor, beide Außeninseln, inselspezifische Höhen.
-  checkpoints = [{x: 0, y: 0, z: 19, start: true}, {x: 0, y: 3, z: -17.6}, {x: 36, y: 1, z: 3}, {x: -35, y: 2, z: -5}, ...SKY.map(sk => ({x: sk.x - sk.r * .45, y: sk.y, z: sk.z - sk.r * .1})), ...cfg.checkpoints.map(([x, y, z]) => ({x, y, z}))];
+  checkpoints = [{x: 0, y: 0, z: 19, start: true}, {x: 0, y: 3, z: -17.6}, {x: 36, y: 1, z: 3}, {x: -35, y: 2, z: -5}, ...SKY.map(sk => ({x: sk.x - sk.r * .45, y: sk.y, z: sk.z - sk.r * .1})), ...cfg.checkpoints.map(([x, y, z]) => ({x, y, z})), ...regions.map(rg => ({x: rg.entry.x, y: 0, z: rg.entry.z}))];
   for (const c of checkpoints.slice(1)) { const m = mesh('cylinder', cfg.accent, c.x, c.y + .08, c.z, .55, .16, .55); m.castShadow = false; }
-  for (let i = 0; i < 14; i++) { const a = i / 14 * TAU, x = Math.cos(a) * (65 + rand() * 30), z = Math.sin(a) * (65 + rand() * 30), y = -8 + rand() * 18; const c = new T.Group(); for (let j = 0; j < 4; j++) { const m = new T.Mesh(geos.ball, mat(index === 2 ? '#94abc3' : '#e3e5d4')); m.position.set(j * 3, 0, j % 2); m.scale.set(4.6, 1.6, 2.8); c.add(m); } c.position.set(x, y - 7, z); world.add(c); clouds.push(c); if (i % 2 === 0) { const m = mesh('cone', cfg.rock, x, y - 12, z, 6 + rand() * 7, 18, 8); m.rotation.z = Math.PI; mesh('cylinder', cfg.grass, x, y - 3, z, 8, .8, 8); } }
+  for (let i = 0; i < 14; i++) { const a = i / 14 * TAU, x = Math.cos(a) * (120 + rand() * 30), z = Math.sin(a) * (120 + rand() * 30), y = -8 + rand() * 18; const c = new T.Group(); for (let j = 0; j < 4; j++) { const m = new T.Mesh(geos.ball, mat(index === 2 ? '#94abc3' : '#e3e5d4')); m.position.set(j * 3, 0, j % 2); m.scale.set(4.6, 1.6, 2.8); c.add(m); } c.position.set(x, y - 7, z); world.add(c); clouds.push(c); if (i % 2 === 0) { const m = mesh('cone', cfg.rock, x, y - 12, z, 6 + rand() * 7, 18, 8); m.rotation.z = Math.PI; mesh('cylinder', cfg.grass, x, y - 3, z, 8, .8, 8); } }
   for (const s of [-1, 1]) { ring(s * 28, 3, s === 1 ? 2 : -5, 1.3, '#ffe6a5').rotation.y = Math.PI / 2; tree(s === 1 ? 39 : -37, s === 1 ? 5 : -7, .7); }
   birds = new T.InstancedMesh(geos.cone, mat('#f6f0de'), 8); birds.castShadow = false; birds.frustumCulled = false; world.add(birds);
   const bossId = Object.keys(BOSSES).find(id => BOSSES[id].level === index);
@@ -613,6 +794,7 @@ function rammStrike() {
   for (const e of enemies) if (e.state !== 'dead' && e.rammed !== rammId && Math.abs(state.y - (e.g.position.y || 0)) < 2.4 && Math.hypot(e.x - state.x, e.z - state.z) < range) { e.rammed = rammId; hitEnemy(e, state.dodgeX, state.dodgeZ); spark(e.x, 1.1, e.z, '#ffe3a3', 12); sfx.hit(); rumble(90, .45); }
   for (const o of orbPool) if (o.life > 0 && Math.hypot(o.m.position.x - state.x, o.m.position.z - state.z) < range && Math.abs(o.m.position.y - state.y - 1) < 2) { o.life = 0; o.m.visible = false; spark(o.m.position.x, o.m.position.y, o.m.position.z, '#ffd9c2', 6); }
   crateHits(c => Math.hypot(c.x - state.x, c.z - state.z) < range + .6 && Math.abs(c.y - state.y) < 1.5);
+  catchThief(t => Math.hypot(t.x - state.x, t.z - state.z) < range + .4 && Math.abs(state.y) < 2);
 }
 function dodge() {
   if (mode !== 'play' || state.dodgeCooldown > 0 || !state.onGround || state.charge > 0) return;
@@ -843,7 +1025,7 @@ function updateEnemies(dt) {
       if (e.t <= 0) { e.state = 'recover'; e.t = 1.2; }
     } else if (e.state === 'recover' && e.t <= 0) { e.state = 'patrol'; e.cool = 1.4 + Math.random(); }
     // Auf der Insel bleiben.
-    const r = Math.hypot(e.x, e.z), maxR = (levels[save.level].mainRadius || 27) - 2; if (r > maxR) { e.x *= maxR / r; e.z *= maxR / r; }
+    const isle = e.isle || {x: 0, z: 0, r: (levels[save.level].mainRadius || 27) - 2}, ox = e.x - isle.x, oz = e.z - isle.z, r = Math.hypot(ox, oz); if (r > isle.r) { e.x = isle.x + ox * isle.r / r; e.z = isle.z + oz * isle.r / r; }
     if (e.state !== 'dash' && d < 1.1 && state.y < 1.6) { state.vx += dx * 4; state.vz += dz * 4; }
     const hover = e.def.fly ? .9 + Math.sin(time * 5 + e.homeX) * .35 : e.kind === 'funke' ? .4 + Math.sin(time * 3 + e.homeX) * .25 : .1 + Math.sin(time * 4 + e.homeX) * .15;
     e.g.position.set(e.x, hover, e.z); e.g.rotation.y = e.state === 'dash' ? Math.atan2(-e.dirX, -e.dirZ) : Math.atan2(e.x - state.x, e.z - state.z);
@@ -865,6 +1047,7 @@ function strike() {
   for (const t of torches) if (!t.lit && Math.abs(state.y - t.y) < 3 && facing(t.x, t.z, range)) { if (!lightLantern(t)) break; }
   for (const e of enemies) if (e.state !== 'dead' && Math.abs(state.y) < 2.7 && facing(e.x, e.z, range)) hitEnemy(e, fx, fz);
   crateHits(c => Math.abs(c.y - state.y) < 2 && facing(c.x, c.z, range + .6));
+  catchThief(t => Math.abs(state.y) < 2.5 && facing(t.x, t.z, range * .6));
   for (const o of orbPool) if (o.life > 0 && facing(o.m.position.x, o.m.position.z, 5) && Math.abs(o.m.position.y - state.y - 1) < 2.5) { o.life = 0; o.m.visible = false; spark(o.m.position.x, o.m.position.y, o.m.position.z, '#ffd9c2', 6); }
   if (boss) boss.strike(facing, range);
   updateHUD();
@@ -1037,16 +1220,20 @@ function canvasTexture(w, h, draw) {
 }
 function buildGamePortals() {
   gamePortals = []; portalAsk = null;
+  for (const p of GAME_PORTALS) { const {g, disc} = portalGate(p, Math.atan2(-p.x, 0) * .35); gamePortals.push({...p, g, disc}); }
+}
+// Tor mit zwei festen Säulen, Wirbelscheibe und Namensschild (Spieleportale und Weltentore).
+function portalGate(p, rot) {
+  {
   if (!swirlTex) { swirlTex = canvasTexture(128, 128, (x, w) => { const g = x.createRadialGradient(64, 64, 4, 64, 64, 64); g.addColorStop(0, '#ffffff'); g.addColorStop(.55, '#d8d8d8'); g.addColorStop(1, '#5a5a5a'); x.fillStyle = g; x.fillRect(0, 0, w, w); x.strokeStyle = '#ffffffaa'; x.lineWidth = 5; for (let i = 0; i < 4; i++) { x.beginPath(); for (let a = 0; a < 7; a += .1) { const r = a * 8.5, q = a + i * Math.PI / 2; x.lineTo(64 + Math.cos(q) * r, 64 + Math.sin(q) * r); } x.stroke(); } }); if (swirlTex) shared.add(swirlTex); }
-  for (const p of GAME_PORTALS) {
-    const g = new T.Group(); g.position.set(p.x, 0, p.z); g.rotation.y = Math.atan2(-p.x, 0) * .35; world.add(g);
+    const g = new T.Group(); g.position.set(p.x, 0, p.z); g.rotation.y = rot; world.add(g);
     for (const s of [-1, 1]) { mesh('box', p.rim, s * 2.4, 2.6, 0, .7, 5.2, .8, g); mesh('box', '#5c5470', s * 2.4, .3, 0, 1.2, .6, 1.2, g); mesh('gem', p.color, s * 2.4, 5.6, 0, .45, .7, .45, g, true); treeColliders.push({x: p.x + Math.cos(g.rotation.y) * s * 2.4, z: p.z - Math.sin(g.rotation.y) * s * 2.4, trunk: .5, trunkTop: 5.3, crown: 1.1, cy: -100, ch: 0, pillar: true}); }
     const top = ring(0, 2.9, 0, 2.3, p.rim, g); top.scale.y = 1.2;
     const disc = new T.Mesh(new T.CircleGeometry(2.1, 40), own(new T.MeshBasicMaterial({color: linearColor(p.color), map: swirlTex, transparent: true, opacity: .88, side: T.DoubleSide, depthWrite: false, toneMapped: false})));
     disposables.push(disc.geometry); disc.position.y = 2.9; disc.scale.y = 1.2; g.add(disc);
     const labelTex = canvasTexture(256, 64, (x, w, h) => { x.fillStyle = '#0b292dcc'; x.beginPath(); x.roundRect ? x.roundRect(4, 6, w - 8, h - 12, 26) : x.rect(4, 6, w - 8, h - 12); x.fill(); x.font = '900 30px Trebuchet MS, system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#fff3d3'; x.fillText(p.name, w / 2, h / 2 + 1); });
     if (labelTex) { own(labelTex); const sp = new T.Sprite(own(new T.SpriteMaterial({map: labelTex, transparent: true, depthWrite: false, toneMapped: false}))); sp.scale.set(4, 1, 1); sp.position.y = 6.7; g.add(sp); }
-    gamePortals.push({...p, g, disc});
+    return {g, disc};
   }
 }
 function findNear() {
@@ -1077,9 +1264,9 @@ function talk() {
   const n = near; n.g.rotation.y = Math.atan2(n.x - state.x, n.z - state.z);
   quests.talk(n.id);
 }
-function travel(index) {
+function travel(index, arrive = null) {
   if (index < 0 || index >= LEVEL_COUNT || !(index === 0 || save.cores[index - 1])) return false;
-  persist(); resetDialogs(); $('pauseMenu').hidden = true; save.checkpoint = null; mode = 'play'; clearInput(); buildLevel(index); persist(); quests.refresh(); return true;
+  persist(); resetDialogs(); $('pauseMenu').hidden = true; save.checkpoint = arrive ? {level: index, ...arrive} : null; mode = 'play'; clearInput(); buildLevel(index); persist(); quests.refresh(); return true;
 }
 
 // ───────── Kamera ─────────
@@ -1145,7 +1332,7 @@ function objectiveTarget(o) {
 function updateHUD() {
   if (!save || !state) return;
   setCount('gems', totalGems()); setCount('cores', save.cores.filter(Boolean).length); setCount('chests', totalChests());
-  setText('gemMax', '/' + TOTAL_GEMS); setText('coreMax', '/' + LEVEL_COUNT); setText('chestMax', '/' + TOTAL_CHESTS);
+  setCount('jewels', jewelValue()); setText('jewelMax', '/' + jewelTotal()); setText('gemMax', '/' + TOTAL_GEMS); setText('coreMax', '/' + LEVEL_COUNT); setText('chestMax', '/' + TOTAL_CHESTS);
   const max = maxHp(); setText('health', '♥'.repeat(clamp(state.hp, 0, max)) + '♡'.repeat(max - clamp(state.hp, 0, max)));
   $('health').setAttribute('aria-label', `Lebensenergie ${state.hp} von ${max}`);
   setText('region', levels[save.level].name);
@@ -1185,12 +1372,14 @@ function showHUD(on) {
 }
 let mapTimer = 0;
 function drawMap() {
-  const c = $('map').getContext('2d'), s = 1.65; if (!c.translate) return;
+  const c = $('map').getContext('2d'), s = .78; if (!c.translate) return;
   c.clearRect(0, 0, 160, 160); c.save(); c.translate(80, 80);
   c.fillStyle = '#9fc4b333'; c.beginPath(); c.arc(0, 0, (levels[save.level].mainRadius || 27) * s, 0, TAU); c.fill();
-  for (const [x, z, r] of [[37, 2, 7], [-36, -5, 6]]) { c.beginPath(); c.arc(x * s, z * s, r * s, 0, TAU); c.fill(); }
+  for (const [x, z, r] of [[37, 2, 7], [-36, -5, 6], ...regions.map(rg => [rg.x, rg.z, rg.r])]) { c.beginPath(); c.arc(x * s, z * s, r * s, 0, TAU); c.fill(); }
+  for (const rg of regions) { const {a, b} = rg.bridge; rg.axis === 'x' ? c.fillRect(Math.min(a, b) * s, (rg.at - 2) * s, Math.abs(b - a) * s, 4 * s) : c.fillRect((rg.at - 2) * s, Math.min(a, b) * s, 4 * s, Math.abs(b - a) * s); }
   const dot = (x, z, r, color) => { c.fillStyle = color; c.beginPath(); c.arc(x * s, z * s, r, 0, TAU); c.fill(); };
-  flightRings.filter(r => !r.got).forEach(r => dot(r.x, r.z, 3, '#ffe188')); gems.filter(g => !g.got).forEach(g => dot(g.x, g.z, 1.6, '#b5f7d1'));
+  flightRings.filter(r => !r.got).forEach(r => dot(r.x, r.z, 3, '#ffe188')); gems.filter(g => !g.got).forEach(g => dot(g.x, g.z, 1.6, '#b5f7d1')); jewels.filter(j => !j.got && !j.hidden).forEach(j => dot(j.x, j.z, 1.2, JEWEL[j.kind].c));
+  dragonStatues.forEach(d => dot(d.x, d.z, 2.6, d.freed ? '#ffd98a' : '#bfe6ff')); worldGates.forEach(g => dot(g.x, g.z, 3, g.color)); if (thief && !thief.caught) dot(thief.x, thief.z, 2.4, '#8fe06a');
   torches.forEach(t => dot(t.x, t.z, 3, t.lit ? '#c0fadb' : '#eeaa73')); for (const n of npcs.values()) if (n.present) dot(n.x, n.z, 2.6, npcMarker(n.id) || '#fff0b4');
   items.filter(i => i.m.visible).forEach(i => dot(i.x, i.z, 3.4, i.color)); dot(0, -21, 4, save.cores[save.level] ? '#fff0a7' : '#9e9bba');
   if (currentTarget) { c.strokeStyle = '#ffe39a'; c.lineWidth = 2; c.beginPath(); c.arc(currentTarget.x * s, currentTarget.z * s, 6, 0, TAU); c.stroke(); }
@@ -1269,7 +1458,7 @@ function renderJournal() {
     html += '</div>';
   });
   const n = totalGems();
-  html += `<div class="jChapter"><h3>Sammlung · ${n} / ${TOTAL_GEMS} Splitter</h3><ul class="jUpgrades">${story.upgrades.map(u => `<li class="${n >= u.gems ? 'done' : ''}">${n >= u.gems ? '✓' : '○'} ${u.gems} · ${esc(u.text)}</li>`).join('')}</ul><p class="jSummary">Laternen ${save.lit.flat().length} / 18 · Himmelsringe ${save.rings.flat().length} / 9</p></div>`;
+  html += `<div class="jChapter"><h3>Sammlung · ${n} / ${TOTAL_GEMS} Splitter</h3><ul class="jUpgrades">${story.upgrades.map(u => `<li class="${n >= u.gems ? 'done' : ''}">${n >= u.gems ? '✓' : '○'} ${u.gems} · ${esc(u.text)}</li>`).join('')}</ul><p class="jSummary">Laternen ${save.lit.flat().length} / 18 · Himmelsringe ${save.rings.flat().length} / 9</p><p class="jSummary">Kristalldrachen ${totalDragons()} / ${LEVEL_COUNT * 4} · Dracheneier ${totalEggs()} / ${LEVEL_COUNT} · Edelsteine dieser Welt ${jewelValue()} / ${jewelTotal()}</p></div>`;
   $('journalBody').innerHTML = html;
 }
 const SETTING_ROWS = [
@@ -1436,7 +1625,7 @@ function update(dt) {
   if (keys.has('KeyQ')) { camYaw += dt * 1.7 * settings.camSens; camManualUntil = time + 2; } if (keys.has('KeyE')) { camYaw -= dt * 1.7 * settings.camSens; camManualUntil = time + 2; }
   movePlayer(dt);
   if (mode !== 'play') return;
-  pickups(); chestPickup(); updateFalter(dt); updateEnemies(dt); updateBossEffects(dt);
+  pickups(); chestPickup(); updateFalter(dt); updateRegions(dt); if (mode !== 'play') return; updateEnemies(dt); updateBossEffects(dt);
   for (const n of npcs.values()) { if (!n.present) continue; const d = Math.hypot(n.tx - n.x, n.ty - n.y, n.tz - n.z); if (d > .05) { const step = Math.min(d, dt * 8); n.x += (n.tx - n.x) / d * step; n.y += (n.ty - n.y) / d * step; n.z += (n.tz - n.z) / d * step; } }
   near = findNear(); $('prompt').hidden = !near || mode !== 'play';
   setText('promptText', near === 'portal' ? (save.cores[save.level] ? 'Durch das Sternentor' : 'Das Sternentor schläft') : near?.url ? 'Portal: ' + near.name : near ? 'Sprechen mit ' + near.name : '');
@@ -1472,7 +1661,7 @@ function animate(now) {
   if (mode === 'play') { accumulator += dt; while (accumulator >= TICK && mode === 'play') { update(TICK); accumulator -= TICK; } } else accumulator = 0;
   for (const d of updrafts) { const ch = d.g.children; for (let i = 1; i < ch.length; i++) ch[i].position.y = (time * 3 + (i - 1) * d.height / 4) % d.height; }
   if (mode !== 'pause') animateEnemies(dt);
-  updateFunkel(dt);
+  updateFunkel(dt); updateJewelMeshes();
   for (const r of flightRings) r.m.rotation.z = time * .3;
   for (const c of chests) if (!c.opened) { c.gem.rotation.y = time * 1.4; c.gem.position.y = 2.1 + Math.sin(time * 2 + c.x) * .15; c.halo.rotation.z = time * .5; }
   for (const r of boostRings) if (r.m.visible) r.m.rotation.z = time * .8;
@@ -1556,6 +1745,10 @@ function drawCanvasFallback(c, w, h) {
   for (const it of items) if (it.m.visible) add(it.x, it.y + 1.2, it.z, ([px, py]) => { ell(px, py, s * .7, s * .7, it.color, '#fff', 2); label(it.label, px, py - s * 1.2); });
   for (const r of flightRings) if (!r.got) add(r.x, r.y, r.z, ([px, py]) => { ell(px, py, s * 2.2, s * 2.2, null, '#ffd277', 4); label('Ring', px, py - s * 2.5, '#ffeab3'); });
   for (const c of chests) add(c.x, c.y, c.z, ([px, py]) => { c_.fillStyle = '#8a5a34'; c_.fillRect(px - s * .7, py - s * .9, s * 1.4, s * .9); c_.fillStyle = '#e9c46a'; c_.fillRect(px - s * .7, py - s * 1.05, s * 1.4, s * .25); if (!c.opened) { poly([[px, py - s * 2.2], [px + s * .35, py - s * 1.7], [px, py - s * 1.2], [px - s * .35, py - s * 1.7]], '#fff0a6', '#fff'); label('Truhe', px, py - s * 2.5, '#ffe9a8'); } });
+  for (const j of jewels) if (!j.got && !j.hidden) add(j.x, j.y, j.z, ([px, py]) => poly([[px, py - s * .4], [px + s * .25, py], [px, py + s * .4], [px - s * .25, py]], JEWEL[j.kind].c, '#fff'));
+  for (const d of dragonStatues) add(d.x, 0, d.z, ([px, py]) => { ell(px, py - s * 1.2, s * .9, s * 1.2, d.freed ? '#ffd98a' : '#bfe6ffcc', '#fff', 2); label(d.name, px, py - s * 2.8, d.freed ? '#ffe4a2' : '#cfeeff'); });
+  if (thief && !thief.caught) add(thief.x, 0, thief.z, ([px, py]) => { ell(px, py - s * .6, s * .5, s * .6, '#6fb04a', '#fff1c9', 2); label('DIEB', px, py - s * 1.6, '#c8ff9e'); });
+  for (const g of worldGates) add(g.x, 0, g.z, ([px, py]) => { ell(px, py - s * 2.9, s * 2.1, s * 2.5, g.color + '88', g.rim, 4); label(g.name, px, py - s * 6); });
   for (const k of crates) if (!k.broken) add(k.x, k.y, k.z, ([px, py]) => { c.fillStyle = '#a8763f'; c.fillRect(px - s * .55, py - s * 1.1, s * 1.1, s * 1.1); c.strokeStyle = '#e6c278'; c.lineWidth = 2; c.strokeRect(px - s * .55, py - s * 1.1, s * 1.1, s * 1.1); });
   for (const f of falterPool) if (f.life > 0) add(f.x, f.y, f.z, ([px, py]) => ell(px, py, s * .35, s * .2, '#fff2a8', '#fff', 1));
   if (state) add(funkelPos.x, funkelPos.y, funkelPos.z, ([px, py]) => ell(px, py, s * .25, s * .25, '#' + funkelColor().toString(16).padStart(6, '0'), '#fff', 1));
@@ -1597,6 +1790,8 @@ if (TEST) window.aeruTest = {
   perf: () => { let objects = 0; scene.traverse(() => objects++); const info = renderer.info?.render || {}; return {...lastPerf, calls: info.calls, triangles: info.triangles, pixelRatio: renderer.getPixelRatio?.(), objects, quality: settings.quality === 'auto' ? autoLevel : settings.quality, renderScale, geometries: renderer.info?.memory?.geometries, textures: renderer.info?.memory?.textures}; },
   sky: SKY, rammId: () => rammId,
   crates: () => crates.map(c => ({x: c.x, y: c.y, z: c.z, broken: c.broken})), falter: () => falterPool.filter(f => f.life > 0).map(f => ({x: f.x, y: f.y, z: f.z})), funkel: () => ({x: funkelPos.x, y: funkelPos.y, z: funkelPos.z, color: funkelColor()}), spawnFalter, hurt,
+  regions: () => regions.map(r => ({id: r.id, x: r.x, z: r.z, r: r.r, bridge: r.bridge, axis: r.axis, at: r.at, entry: r.entry, tower: r.tower})), jewels: () => jewels.map(j => ({id: j.id, kind: j.kind, v: j.v, x: j.x, y: j.y, z: j.z, got: j.got, hidden: j.hidden})),
+  statues: () => dragonStatues.map(d => ({id: d.id, x: d.x, z: d.z, freed: d.freed})), thief: () => thief && {x: thief.x, z: thief.z, caught: thief.caught}, gates: () => worldGates.map(g => ({id: g.id, x: g.x, z: g.z, to: g.to})), jewelValue, jewelTotal,
   portals: () => gamePortals.map(p => ({id: p.id, x: p.x, z: p.z, url: p.url})), navigated: () => window.__aeruNavigate || null, cam: () => ({yaw: camYaw, pitch: camPitch}), padInput: () => ({x: padX, y: padY}),
   autoAdjust, setQuality: q => { settings.quality = q; applySettings(); }, applySettings, settings
 };

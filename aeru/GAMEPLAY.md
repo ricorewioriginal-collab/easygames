@@ -123,3 +123,13 @@ Fensterwechsel oder verdeckter Tab pausiert das Spiel und löst alle gedrückten
 - **Schatzkörbe:** bis zu fünf je Welt an festen Stellen (nur auf ebenem Boden, frei von Splittern, Laternen, Figuren, Teichen, Portalen und Bäumen; Bäume meiden diese Stellen). Fest wie Felsen; Windstoß, Rammstoß und Ansturm zerbrechen sie. Nicht gespeichert – beim nächsten Besuch stehen sie wieder.
 - **Lichtfalter:** aus jedem zerbrochenen Korb und jedem besiegten Gegner (Pool von 6). Flattern umher, weichen leicht aus, fliegen nach 12 s davon. Fangen heilt ein Herz, bei vollen Herzen füllt er die Flügelkraft.
 - **Funkel:** Begleiter-Glühwürmchen hinter Aerus Schulter. Farbe = Lebensenergie (Gold über 60 %, Blau über 30 %, sonst Rot; bei einem Herz blinkt er). Holt Splitter und Falter aus 2,4 m heran (vorher 1,2 m). Splitter-Kette: innerhalb von 1,4 s gesammelte Splitter steigen im Ton.
+
+## Weite Welten
+
+- **Gebiete:** Jede Welt hat vier zusätzliche Gebiete (Nord r 20, Ost r 19, West r 19, Süd r 20) auf Bodenhöhe, verbunden durch 4 m breite Brücken mit 1,5 m Überlappung. Der Brückenzugang auf der Hauptinsel bleibt frei von Bäumen und Felsen; Kantenschutz gilt auf den Brücken.
+- **Edelsteine:** Rot 1, Grün 2, Blau 5, Gold 10, Lila 25; 208–235 Wert je Welt, gespeichert je Welt (`save.jewels`). Gezeichnet als ein InstancedMesh je Farbe (5 Draw Calls). Funkel holt sie aus 2,4 m heran; Ton steigt mit Wert und Kette.
+- **Kristalldrachen:** eine Statue je Gebiet (eine Geometrie, ein Draw Call), Berühren befreit (Dialog, Rastpunkt), gespeichert in `save.dragons`.
+- **Eierdieb:** im Ostgebiet, flieht mit 9 m/s (Laufen 7,4, Ansturm 12,5), bleibt im Gebiet und weicht am Rand entlang aus. Gefangen per Rammstoß/Ansturm oder Windstoß aus der Nähe; gespeichert in `save.eggs`.
+- **Weltentore:** Nordgebiet → nächste Welt (erst mit Leuchtkern), Südgebiet → vorige Welt. Hineinlaufen reist sofort; Ankunft 5 m vor dem passenden Tor der Zielwelt.
+- Gegner der Gebiete bleiben auf ihrem Gebiet. Wolken liegen weiter draußen (120–150 m), Nebel 85–215 m, Sichtweite 320 m.
+
