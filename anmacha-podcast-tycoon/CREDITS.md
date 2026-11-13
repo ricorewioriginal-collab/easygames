@@ -10,3 +10,6 @@
 - Three.js r128: MIT.
 - Podcast-Folgen: offizieller Feed von anmacha.de (podcaster.de), nur gestreamt, nicht im Spiel gespeichert.
 - Radiosender: Live-Streams über laut.fm, nur gestreamt; Titelanzeige über die öffentliche laut.fm-API.
+
+## Musikwünsche
+Melodien aus Klavierlicht (`../klavierlicht/archiv`): gemeinfreie Volksweisen und Klassik, Quellen je Lied in der Datei (`lic`, `src`). Klavierklang wird im Browser erzeugt.

@@ -4,6 +4,10 @@
 //   tiers: [[x, z, r, y, fx, fz]]  Plateau (Oberkante y absolut) mit Rampe hinunter zum Fußpunkt (fx, fz)
 //   cuts:  [[x0, z0, x1, z1, breite, tiefe]]  Schlucht (Absturz = zurück an den Rand)
 //   bridges: [[x0, z0, x1, z1, y]]  Brücke (begehbar über PLAT), y = Oberkante
+//   lanes: [[x0, z0, x1, z1, hw?]]  zusätzliche Gasse
+//   quay: y  Kanalstadt: offene Flächen mindestens auf Höhe y (Kais)
+//   void: t  Schwebeinseln: statt Wänden Abgrund bis -t (keine Waldwand)
+//   piers: [[x0, z0, x1, z1, y]]  Steg vom Ufer (x0, z0) übers Wasser, endet offen bei (x1, z1)
 //   wall: DECOR-Arten der Waldwand, wz: Wizp-Bäume der vordersten Reihe [[name, höhe]], rock: Wizp-Felsen an Klippen
 //   props: { zonenId: [[datei, name, größe (>0 Höhe, <0 Maßstab), anzahl]] }
 const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
@@ -14,12 +18,14 @@ export function arealMask(w, roads, PATHX, CX, CZ, R) {
   const A = w.areal, C0 = [], S0 = [];   // Kreise [x, z, r] und Strecken [ax, az, bx, bz, hw]
   for (const q of w.zones) C0.push([q[3], q[4], q[5] + 3]);
   for (const [ax, az, bx, bz] of roads) S0.push([ax, az, bx, bz, 4.5]);
-  for (let z = 16; z > -88; z -= 6) S0.push([PATHX(z), z, PATHX(z - 6), z - 6, 6]);
+  { const [pz0, pz1, phw] = A.path || [16, -88, 6]; for (let z = pz0; z > pz1; z -= 6) S0.push([PATHX(z), z, PATHX(z - 6), z - 6, phw]); }   // Hauptweg (Kapitelwelten: länger und breiter)
   C0.push([0, 10, 14], [-7, 15, 7]);
   for (const [x, z, r] of w.pads) C0.push([x, z, r + 2]);
   for (const [x, z, r] of (w.pools || [])) C0.push([x, z, r + 3]);
+  if (A.openRects) for (const [x0, x1, z0, z1] of (w.rects || [])) { const zc = (z0 + z1) / 2, hw = (z1 - z0) / 2; S0.push([x0, zc, x1, zc, hw]); }   // Platz entlang eines Bauwerks (z. B. Mauer)
   if (w.river) { const P = w.river.pts; for (let i = 0; i < P.length - 1; i++) S0.push([P[i][0], P[i][1], P[i + 1][0], P[i + 1][1], w.river.w * .5 + 3]); }
   for (const q of (A.cuts || [])) S0.push([q[0], q[1], q[2], q[3], q[4] * .5]);
+  for (const q of (A.lanes || [])) S0.push([q[0], q[1], q[2], q[3], q[4] || 2.6]);   // feste Gassen (z. B. Teich ans Wegenetz)
   const C1 = [], S1 = [];   // Plateaus und Rampen: offen, aber keine Ziele für Gassen (sonst endet eine Gasse an der Klippe)
   const near = (x, z, C, S) => { let e = 1e9; for (const [cx, cz, r] of C) e = Math.min(e, Math.hypot(x - cx, z - cz) - r); for (const s of S) e = Math.min(e, segD(x, z, s[0], s[1], s[2], s[3])[0] - s[4]); return e; };
   const base0 = (x, z) => near(x, z, C0, S0), base = (x, z) => Math.min(base0(x, z), near(x, z, C1, S1));
@@ -27,6 +33,7 @@ export function arealMask(w, roads, PATHX, CX, CZ, R) {
   const link = (x, z) => { let bx = x, bz = z, bd = 1e9;
     for (let a = 0; a < 32; a++) for (let d = 2; d < 60; d += 2) { const px = x + Math.cos(a * .196) * d, pz = z + Math.sin(a * .196) * d; if (base0(px, pz) < -1.5) { if (d < bd) { bd = d; bx = px; bz = pz; } break; } }
     if (bd < 1e9) S0.push([x, z, bx, bz, 2.6]); };
+  if (A.maze) { const [mx, mz, n, c] = A.maze, hs = n * c / 2; link(mx - hs - 1.5, mz); C0.push([mx - hs - 1.5, mz, 2.6]); for (let k = 0; k < n; k++) { const zk = mz - hs + (k + .5) * c; S0.push([mx - hs + c * .5, zk, mx + hs - c * .5, zk, c * .72]); } }   // Irrgarten: quadratische Fläche, Eingang West mit Gasse
   // Plateaus: Rampenfuß mit Gasse ans Wegenetz, dann Plateau und Rampe selbst offen
   for (const q of (A.tiers || [])) { if (base(q[4], q[5]) > -2) link(q[4], q[5]); C0.push([q[4], q[5], 3]); }
   for (const q of (A.tiers || [])) { C1.push([q[0], q[1], q[2] + .2]); S1.push([q[0], q[1], q[4], q[5], 2.6]); }
@@ -49,7 +56,9 @@ export function arealHeight(w, M) {
     let ff = 1; for (const [cx, cz, r, , fx, fz] of T) { const d = Math.hypot(x - cx, z - cz); if (d > r + 30) continue; ff = Math.min(ff, sm(r + .5, r + 8, d), sm(2.6, 7, segD(x, z, cx, cz, fx, fz)[0])); }
     q *= ff;   // Gelände rund um Plateau und Rampe eben, damit die Rampe gleichmäßig steigt
     let e = M.E(x, z);
-    if (e > 0) { let u = 1; for (const b of BR) u = Math.min(u, sm(2.5, 4.5, segD(x, z, b[0], b[1], b[2], b[3])[0])); q += (6.5 * sm(.8, 4.5, e) + .3 * Math.max(0, e - 4.5)) * u - (1 - u) * 1.5; }
+    if (A.void && e > 0) { const k = sm(.3, 3, e); q += (-A.void - q) * k; }   // Schwebeinseln: zwischen den Arealen fällt das Land in die Wolken ab
+    else if (e > 0 && !A.city) { let u = 1; for (const b of BR) u = Math.min(u, sm(2.5, 4.5, segD(x, z, b[0], b[1], b[2], b[3])[0])); q += (6.5 * sm(.8, 4.5, e) + .3 * Math.max(0, e - 4.5)) * u - (1 - u) * 1.5; }
+    if (A.quay != null && q < A.quay) q += (A.quay - q) * (1 - sm(.2, 1.6, e));   // Kanalstadt: Gassen und Plätze als Kais über dem Wasser
     for (const [cx, cz, r, y, fx, fz] of T) { const d = Math.hypot(x - cx, z - cz); if (d > r + 30) continue;
       let k = 1 - sm(r, r + 1.3, d); const L = Math.hypot(fx - cx, fz - cz), [sd, t] = segD(x, z, cx, cz, fx, fz);
       if (sd < 2.4 && L > r) { const s = t * L; if (s > r - 1) k = Math.max(k, (1 - Math.max(0, Math.min(1, (s - r + 1) / (L - r + 1)))) * (1 - sm(1.8, 2.5, sd))); }
@@ -65,12 +74,51 @@ export function arealCutDepth(w, x, z) { let m = 0; for (const [ax, az, bx, bz, 
 export function arealDress({ C, w, b, g, h, M, R2, blk, busy, roadD, wallList, TOUCH, mk, G, MAT }) {
   const A = w.areal, KK = C.KK, wz = [], kk = [], kb = [];
   // Waldwand: dichte Bäume auf dem Rücken, vorderste Reihe aus Wizp-Bäumen (begrenzte Zahl fürs Handy)
-  const step = TOUCH ? 3.6 : 3, maxWz = TOUCH ? 70 : 150; let nwz = 0;
+  const step = TOUCH ? 3.6 : 3, maxWz = TOUCH ? 90 : 220; let nwz = 0;
   for (let j = 0; j < M.N; j += step / M.ST) for (let i = 0; i < M.N; i += step / M.ST) {
     const x = M.X0 + i * M.ST + (R2() - .5) * step * .8, z = M.Z0 + j * M.ST + (R2() - .5) * step * .8, e = M.E(x, z);
-    if (e < 1.4 || e > 12 || Math.hypot(x, z - 12) < 16) continue; if ((A.bridges || []).some(q => segD(x, z, q[0], q[1], q[2], q[3])[0] < 4)) continue;
-    if (e < 3.4 && A.wz && nwz < maxWz && R2() < .55) { const [k, hh] = A.wz[R2() * A.wz.length | 0]; wz.push({ k, x, y: h(x, z) - .1, z, ry: R2() * 6.28, h: hh * (.8 + R2() * .4) }); nwz++; continue; }
+    if (A.city || A.void || e < (A.hedge ? 3.4 : 1.4) || e > (A.wallMax || 12) || Math.hypot(x, z - 12) < 16) continue; if ((A.bridges || []).some(q => segD(x, z, q[0], q[1], q[2], q[3])[0] < 4)) continue;
+    if (e < 4.6 && A.wz && nwz < maxWz && R2() < .75) { const [k, hh] = A.wz[R2() * A.wz.length | 0]; wz.push({ k, x, y: h(x, z) - .1, z, ry: R2() * 6.28, h: hh * (.8 + R2() * .4) }); nwz++; continue; }
     const kind = A.wall[R2() * A.wall.length | 0]; wallList.push([x, z, kind, 1 + R2() * .7, R2() * 6.3, 1]); }
+  // Stadt: statt Waldwand geschlossene Häuserzeilen, Giebel zur Gasse, dahinter Dächer als Silhouette
+  if (A.city) { const T = C.T, acc = [], tx = (t, c, o) => C.TX.tri(t, c, o || { s: .5, gain: 1.5 }), win = MAT(0xffd890, { e: 0xffb050, ei: 1.3 });
+    for (let j = 0; j < M.N; j += 1.6) for (let i = 0; i < M.N; i += 1.6) { const x = M.X0 + i * M.ST, z = M.Z0 + j * M.ST, e = M.E(x, z);
+      if (!((e > 3 && e < 4.6) || (e > 9.5 && e < 11.5)) || Math.hypot(x, z - 12) < 16 || acc.some(q => Math.hypot(q[0] - x, q[1] - z) < 6.3)) continue; acc.push([x, z]);
+      const gx = M.E(x + 1, z) - M.E(x - 1, z), gz = M.E(x, z + 1) - M.E(x, z - 1), ry = Math.atan2(-gx, -gz), k = acc.length, W = 7.4, D = 5.6, H = 5 + (k * 7 % 4), y = h(x, z) - .2;
+      const wc = A.city.walls[k % A.city.walls.length], rc = A.city.roofs[(k >> 1) % A.city.roofs.length], hg = new T.Group(); hg.position.set(x, y, z); hg.rotation.y = ry; g.add(hg);
+      hg.add(mk(G.box, A.city.flat ? tx('plaster', wc, { s: .5, gain: 2.2, n: .45, e: 0x6a4a2a, ei: 1 }) : tx('plaster', wc, { s: .45, gain: 1.7, n: .6, e: 0x3a3026, ei: 1 }), 0, H / 2, 0, W, H, D));
+      if (A.city.beam) for (const bx of [-W / 2 + .15, 0, W / 2 - .15]) hg.add(mk(G.box, tx('wood', A.city.beam), bx, H / 2, D / 2 + .03, .24, H, .08, false));
+      if (A.city.flat) {   // Lehmhaus: Flachdach mit Brüstung, manche mit Kuppel
+        const pm = tx('plaster', wc, { s: .5, gain: 2.2, n: .45, e: 0x6a4a2a, ei: 1 }); for (const [px, pz, lx, lz] of [[0, D / 2, W + .3, .3], [0, -D / 2, W + .3, .3], [W / 2, 0, .3, D], [-W / 2, 0, .3, D]]) hg.add(mk(G.box, pm, px, H + .3, pz, lx, .6, lz, false));
+        if (k % 3 === 0) { hg.add(mk(G.cyl, pm, 0, H + .35, 0, 1.9, .7, 1.9, false)); hg.add(mk(G.sph, MAT(rc, { m: .5, r: .35 }), 0, H + .7, 0, 1.9, 1.7, 1.9, false)); }
+        else if (k % 3 === 1) for (const sx of [-1.6, 1.6]) hg.add(mk(G.box, MAT(rc, { r: .9 }), sx, H + 1.1, 0, 1.4, .06, 1.6, false));   // Sonnentuch
+      } else {
+      for (const s of [-1, 1]) { const r = mk(G.box, tx(A.city.slate ? 'slate' : 'roof', rc, { s: .6 }), 0, H + D * .27, s * D * .26, W + .6, .28, D * .62); r.rotation.x = s * .72; hg.add(r); }
+      hg.add(mk(G.box, tx('plaster', wc, { s: .45, gain: 1.7, n: .6, e: 0x3a3026, ei: 1 }), 0, H + D * .14, 0, W * .99, D * .3, D * .02, false)); }
+      for (const wy of [H * .38, H * .72]) for (const wx of [-W * .28, W * .28]) if ((k + wx + wy | 0) % 3) hg.add(mk(G.box, win, wx, wy, D / 2 + .04, .8, .9, .05, false));
+      hg.add(mk(G.box, MAT(0x3a2a1e), 0, .9, D / 2 + .04, 1.2, 1.8, .05, false)); }
+  }
+  // Hecken: geschnittene Heckenwand an jeder Gasse (Instanzen), Irrgarten mit festen Heckenwänden
+  if (A.hedge) { const T = C.T, acc = [], hm = C.TX.tri('grass', A.hedge, { s: .6, gain: 2 });
+    for (let j = 0; j < M.N; j += 1.4) for (let i = 0; i < M.N; i += 1.4) { const x = M.X0 + i * M.ST, z = M.Z0 + j * M.ST, e = M.E(x, z);
+      if (e < 1.5 || e > 3 || Math.hypot(x, z - 12) < 16 || acc.some(q => Math.abs(q[0] - x) < 2.2 && Math.abs(q[1] - z) < 2.2 && Math.hypot(q[0] - x, q[1] - z) < 2.2)) continue;
+      if ((A.bridges || []).some(q => segD(x, z, q[0], q[1], q[2], q[3])[0] < 4)) continue; acc.push([x, z]); }
+    const im = new T.InstancedMesh(G.box, hm, acc.length), o = new T.Object3D();
+    acc.forEach(([x, z], k) => { const gx = M.E(x + 1, z) - M.E(x - 1, z), gz = M.E(x, z + 1) - M.E(x, z - 1), H = 2.4 + (k * 7 % 5) * .12;
+      o.position.set(x, h(x, z) - .3 + H / 2, z); o.rotation.set(0, Math.atan2(-gx, -gz), 0); o.scale.set(3.4, H, 2.6); o.updateMatrix(); im.setMatrixAt(k, o.matrix); });
+    im.receiveShadow = true; g.add(im); }
+  if (A.maze) { const [mx, mz, n, c] = A.maze, hs = n * c / 2, x0 = mx - hs, z0 = mz - hs, hd = A.hedge || 0x2a6a2a, seen = new Uint8Array(n * n), H = [], V = [];
+    let sd = 7; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+    for (let j = 0; j <= n; j++) for (let i = 0; i < n; i++) H.push(1); for (let j = 0; j < n; j++) for (let i = 0; i <= n; i++) V.push(1);   // H[j*n+i]: Wand nördlich Zelle (i,j); V[j*(n+1)+i]: Wand westlich
+    const st = [[0, n >> 1]]; seen[(n >> 1) * n] = 1;
+    while (st.length) { const [i, j] = st[st.length - 1], nb = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([a, b2]) => [i + a, j + b2, a, b2]).filter(([a, b2]) => a >= 0 && b2 >= 0 && a < n && b2 < n && !seen[b2 * n + a]);
+      if (!nb.length) { st.pop(); continue; } const [a, b2, da, db] = nb[rnd() * nb.length | 0]; seen[b2 * n + a] = 1; st.push([a, b2]);
+      if (da) V[j * (n + 1) + Math.max(i, a)] = 0; else H[Math.max(j, b2) * n + i] = 0; }
+    V[(n >> 1) * (n + 1)] = 0;   // Eingang West
+    const wall = (x, z, lx, lz) => b.box(x, h(x, z) - .3, z, lx, 2.9, lz, hd, { solid: 1, tex: 'grass', to: { s: .6 } });
+    for (let j = 0; j <= n; j++) for (let i = 0; i < n; i++) if (H[j * n + i]) wall(x0 + (i + .5) * c, z0 + j * c, c + 1, 1);
+    for (let j = 0; j < n; j++) for (let i = 0; i <= n; i++) if (V[j * (n + 1) + i]) wall(x0 + i * c, z0 + (j + .5) * c, 1, c + 1);
+    for (const [x, z] of [[x0 - .9, mz - c * .5 - .2], [x0 - .9, mz + c * .5 + .2]]) lampAt(b, x, z, h(x, z)); }
   // Plateaus: Felsen an der Kante, Treppe auf der Rampe, Laternen oben und unten
   const stone = C.TX.tri('stone', A.step || 0x8a847a, { s: .6, gain: 1.5 });
   for (const [cx, cz, r, y, fx, fz] of (A.tiers || [])) { const ra = Math.atan2(fx - cx, fz - cz), L = Math.hypot(fx - cx, fz - cz);
@@ -82,10 +130,15 @@ export function arealDress({ C, w, b, g, h, M, R2, blk, busy, roadD, wallList, T
     lampAt(b, cx + ux * (r - 1) - uz * 2.8, cz + uz * (r - 1) + ux * 2.8, y); lampAt(b, fx + uz * 2.8, fz - ux * 2.8, h(fx, fz)); }
   // Brücken: Planken als Plattformen, Geländer mit Pfosten und Seilen
   const plank = C.TX.tri('wood', 0x7a5a3a, { s: .8, gain: 1.4 }), rope = MAT(0xc8b080);
-  for (const [ax, az, bx, bz, y] of (A.bridges || [])) { const L = Math.hypot(bx - ax, bz - az), ry = Math.atan2(bx - ax, bz - az), ux = (bx - ax) / L, uz = (bz - az) / L;
+  for (const [ax, az, bx, bz, y, wk] of (A.bridges || [])) { const L = Math.hypot(bx - ax, bz - az), ry = Math.atan2(bx - ax, bz - az), ux = (bx - ax) / L, uz = (bz - az) / L;
+    if (wk) { for (let s = 0; s <= L; s += 1.1) C.PLAT.push({ x: ax + ux * s, z: az + uz * s, hx: 1.25, hz: 1.25, top: y, th: .5 }); continue; }   // Wehrgang: begehbare Mauerkrone, ohne Planken
     for (let s = 0; s <= L; s += 1.1) { const x = ax + ux * s, z = az + uz * s; C.PLAT.push({ x, z, hx: 1.25, hz: 1.25, top: y, th: .5 }); const m = mk(G.box, plank, x, y - .1, z, 2.6, .2, 1); m.rotation.y = ry; g.add(m); }
     for (let s = 0; s <= L + .01; s += L / Math.max(2, Math.round(L / 2.2))) for (const sd of [-1, 1]) { const x = ax + ux * s - uz * sd * 1.35, z = az + uz * s + ux * sd * 1.35; g.add(mk(G.cyl0, MAT(0x5a4030), x, y + .5, z, .08, 1.2, .08)); }
     for (const sd of [-1, 1]) for (const yy of [.6, 1.05]) { const m = mk(G.box, rope, (ax + bx) / 2 - uz * sd * 1.35, y + yy, (az + bz) / 2 + ux * sd * 1.35, .05, .05, L, false); m.rotation.y = ry; g.add(m); } }
+  // Stege [x0, z0, x1, z1, y]: vom Ufer ins Wasser, breite Planken auf Pfählen, enden über dem Wasser
+  for (const [ax, az, bx, bz, y] of (A.piers || [])) { const L = Math.hypot(bx - ax, bz - az), ry = Math.atan2(bx - ax, bz - az), ux = (bx - ax) / L, uz = (bz - az) / L;
+    for (let s = 0; s <= L; s += 1.1) { const x = ax + ux * s, z = az + uz * s; C.PLAT.push({ x, z, hx: 1.4, hz: 1.4, top: y, th: .5 }); const m = mk(G.box, plank, x, y - .1, z, 3, .2, 1); m.rotation.y = ry; g.add(m); }
+    for (let s = 0; s <= L + .01; s += L / Math.max(2, Math.round(L / 2.6))) for (const sd of [-1, 1]) { const x = ax + ux * s - uz * sd * 1.5, z = az + uz * s + ux * sd * 1.5; g.add(mk(G.cyl0, MAT(0x4a3020), x, y - 1.2 + (s > L - .5 ? .25 : 0), z, .14, 2.6 + (s > L - .5 ? .5 : 0), .14)); } }
   // Requisiten je Ort (Instanzen, große Teile mit Kollision)
   const placed = [];
   for (const q of w.zones) { const L0 = (A.props || {})[q[0]]; if (!L0) continue; const [, , , zx, zz, zr] = q;

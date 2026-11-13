@@ -759,7 +759,7 @@
      "Heiltränke gibt es im Laden gegen Rissplitter."
     ]
    },
-   "size": 22141228,
+   "size": 22161862,
    "files": 96,
    "offline": true,
    "cloud": {
@@ -3024,7 +3024,7 @@
   {
    "id": "anmacha-podcast-tycoon",
    "title": "AnMaCha – Der Podcast (Offizielles Spiel)",
-   "desc": "Das offizielle Spiel zum AnMaCha-Podcast: Spiele Andrew und Marco in einer 3D-Stadt, jage Themen-Funken, schalte Störsender mit der Schallwelle ab und nimm eure Folgen live auf – mit Kommandomenü, Pannen und Live-Chat. Story mit 2 Staffeln und 12 Kapiteln nach echten Folgen mit Bossen, 10 Nebenaufträge, Fanshop mit Outfits und Studio-Upgrades, Live-Show mit Soundboard und Hörerfragen, Themenjagd, Funk-Rennen auf Zeit, verrückte KI-Quizshow für 1–2 Spieler und freies Erkunden. 🌐 Online-Koop: Andrew und Marco auf zwei Geräten per Link, Code oder QR. Echter Podcast und 13 AnMaCha-Sender mit Titelanzeige direkt im Spiel. Controller, Tastatur & Maus, Touch und TV.",
+   "desc": "Das offizielle Spiel zum AnMaCha-Podcast: Spiele Andrew und Marco in einer 3D-Stadt, jage Themen-Funken, schalte Störsender mit der Schallwelle ab und nimm eure Folgen live auf – mit Kommandomenü, Pannen und Live-Chat. Story mit 3 Staffeln und 17 Kapiteln nach echten Folgen und den AnMaCha-Radios, Studio frei gestalten, Minispiele mit Konsolen-Feeling, Marcos Camper Gisela, 10 Nebenaufträge, Fanshop mit Outfits und Studio-Upgrades, Live-Show mit Soundboard und Hörerfragen, Themenjagd, Funk-Rennen auf Zeit, verrückte KI-Quizshow für 1–2 Spieler und freies Erkunden. 🌐 Online-Koop: Andrew und Marco auf zwei Geräten per Link, Code oder QR. Echter Podcast und 13 AnMaCha-Sender mit Titelanzeige direkt im Spiel. Controller, Tastatur & Maus, Touch und TV.",
    "icon": "🎙️",
    "img": "anmacha-podcast-tycoon/card.svg",
    "bg": "linear-gradient(145deg,#10142a,#232a52 55%,#ff8a1e)",
@@ -3036,7 +3036,7 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Das offizielle Spiel zum AnMaCha-Podcast: Du spielst Andrew oder Marco (jederzeit wechselbar) in einer 3D-Stadt rund ums Funkhaus. Sammle Themen-Funken in fünf Rubriken, triff Gäste, repariere den Sendemast und schalte Störsender mit der Schallwelle ab. Danach nehmt ihr die Folge live im Studio auf: Im Kommandomenü wählst du Thema (Timing-Ring), Pointe (Tastenfolge), Übergabe, Jingle oder Spezial und meisterst Pannen. Die Hörer bestimmen die Sterne. Modi: Story mit 2 Staffeln und 12 Kapiteln nach echten Folgen bis zu den Bossen „Das Funkloch“ und „Das Funkloch 2.0“, Live-Show (endlos), Themenjagd (3 Minuten), verrückte KI-Quizshow für 1–2 Spieler und die Stadt mit 10 Nebenaufträgen. Fan-Punkte gibt es für alles – im Fanshop warten Outfits und Studio-Upgrades. Im Radio-Fenster laufen echte Podcast-Folgen und 13 AnMaCha-Sender mit Titelanzeige. 🌐 Online-Koop: Ein Gerät eröffnet das Spiel, der Freund tritt per Link, Code oder QR bei und spielt die andere Figur – Themenjagd, Stadt oder Kapitel zu zweit.",
+    "anleitung": "Das offizielle Spiel zum AnMaCha-Podcast: Du spielst Andrew oder Marco (jederzeit wechselbar) in einer 3D-Stadt rund ums Funkhaus. Sammle Themen-Funken in fünf Rubriken, triff Gäste, repariere den Sendemast und schalte Störsender mit der Schallwelle ab. Danach nehmt ihr die Folge live im Studio auf: Im Kommandomenü wählst du Thema, Pointe, Übergabe, Jingle oder Spezial – mit Minispielen wie Rhythmus, Soundboard, Mischpult und Kabelsalat. Die Hörer bestimmen die Sterne. Modi: Story mit 3 Staffeln und 17 Kapiteln nach echten Folgen und den AnMaCha-Radios bis zum Boss „Der Rauschkönig“, Studio frei gestalten, Live-Show (endlos), Themenjagd (3 Minuten), verrückte KI-Quizshow für 1–2 Spieler und die Stadt mit 10 Nebenaufträgen. Fan-Punkte gibt es für alles – im Fanshop warten Outfits und Studio-Upgrades. Im Radio-Fenster laufen echte Podcast-Folgen und 13 AnMaCha-Sender mit Titelanzeige. 🌐 Online-Koop: Ein Gerät eröffnet das Spiel, der Freund tritt per Link, Code oder QR bei und spielt die andere Figur – Themenjagd, Stadt oder Kapitel zu zweit.",
     "steuerung": [
      "Controller: linker Stick laufen, rechter Stick Kamera",
      "A springen / bestätigen (zweimal = Doppelsprung), B zurück",
@@ -3054,8 +3054,8 @@
      "Jingles bei sinkendem Hype einsetzen."
     ]
    },
-   "size": 1845396,
-   "files": 29,
+   "size": 2193076,
+   "files": 38,
    "offline": true,
    "cloud": {
     "game": "anmacha-podcast-tycoon",

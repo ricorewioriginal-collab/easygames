@@ -17,11 +17,19 @@
     const M = W.mat;
     // Raum
     const floorTex = W.canvasTex(256, 256, (cx, w, h) => { cx.fillStyle = '#3a2a1e'; cx.fillRect(0, 0, w, h); for (let y = 0; y < h; y += 32) { cx.fillStyle = 'rgba(0,0,0,.25)'; cx.fillRect(0, y, w, 2); for (let x = (y / 32 % 2) * 64; x < w; x += 128) cx.fillRect(x, y, 2, 32); } W.speckle(cx, w, h, 'rgba(0,0,0,0)', 0.12, 2000); }, [4, 4]);
-    const floor = new T.Mesh(new T.PlaneGeometry(16, 12), new T.MeshStandardMaterial({ map: floorTex, roughness: 0.55, metalness: 0.1 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; g.add(floor);
-    const wall = M(0x1b1c24, { r: 0.85 });
+    const floorMat = new T.MeshStandardMaterial({ map: floorTex, roughness: 0.55, metalness: 0.1 });
+    const floor = new T.Mesh(new T.PlaneGeometry(16, 12), floorMat); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; g.add(floor);
+    const wall = W.mat(0x1b1c24, { r: 0.85 }).clone();
     W.box(16, 6, 0.3, wall, 0, 3, -4.6, g); W.box(0.3, 6, 12, wall, -8, 3, 1, g); W.box(0.3, 6, 12, wall, 8, 3, 1, g);
     // Akustik-Platten
-    const pA = M(0x2b2d38, { r: 0.95 }), pB = M(0xff8a1e, { r: 0.9, e: 0x200a00 });
+    const pA = W.mat(0x2b2d38, { r: 0.95 }), pB = W.mat(0xff8a1e, { r: 0.9, e: 0x200a00 }).clone();
+    // Boden-Varianten für „Studio gestalten“
+    const floors = { _0: floorTex };
+    const floorTexOf = f => floors[f] || (floors[f] = W.canvasTex(256, 256, (cx, w, h) => {
+      if (f === 'tiles') { for (let y = 0; y < h; y += 32) for (let x = 0; x < w; x += 32) { cx.fillStyle = ((x + y) / 32) % 2 ? '#e8e2d0' : '#1d1d24'; cx.fillRect(x, y, 32, 32); } return; }
+      cx.fillStyle = f; cx.fillRect(0, 0, w, h); for (let y = 0; y < h; y += 32) { cx.fillStyle = 'rgba(0,0,0,.25)'; cx.fillRect(0, y, w, 2); for (let x = (y / 32 % 2) * 64; x < w; x += 128) cx.fillRect(x, y, 2, 32); } W.speckle(cx, w, h, 'rgba(0,0,0,0)', 0.12, 2000);
+    }, [4, 4]));
+    ST.room = { wall, accent: pB, floorMat, floorTex: f => f === '#3a2a1e' ? floorTex : floorTexOf(f) };
     for (let x = -7; x <= 7; x += 1.2) for (let y = 0.9; y < 5.6; y += 1.2) { if (Math.abs(x) < 3.2 && y > 1.4 && y < 4.8) continue; W.box(1.05, 1.05, 0.12, (Math.round(x + y * 3) % 5 === 0) ? pB : pA, x, y, -4.4, g, false); }
     for (let z = -3.6; z <= 5; z += 1.2) for (let y = 0.9; y < 5.6; y += 1.2) { W.box(0.12, 1.05, 1.05, pA, -7.8, y, z, g, false); W.box(0.12, 1.05, 1.05, pA, 7.8, y, z, g, false); }
     // LED-Wand hinter dem Tisch
@@ -51,19 +59,8 @@
     // Kopfhörer
     [-1.5, 1.4].forEach(x => { const h = new T.Mesh(new T.TorusGeometry(0.1, 0.018, 8, 20, Math.PI), M(0x111111, { r: 0.4 })); h.position.set(x, 1.12, 0.25); h.rotation.x = -Math.PI / 2; desk.add(h); });
     // Ringlichter, Neon, Pflanzen, Regal
-    [-3.4, 3.4].forEach(x => {
-      W.cyl(0.03, 0.03, 1.9, M(0x222222, { m: 0.7 }), x, 0.95, 1.2, g);
-      const ring = new T.Mesh(new T.TorusGeometry(0.42, 0.04, 8, 32), new T.MeshBasicMaterial({ color: 0xfff4e0, toneMapped: false })); ring.position.set(x, 2.1, 1.2); ring.lookAt(0, 1.6, -0.6); g.add(ring);
-    });
     const neon = W.logoTex({ w: 1024, h: 320, bg: null });
     W.sign(g, neon, 2.6, 0.8, -5.6, 4.6, -4.2, 0); W.sign(g, W.textTex(['Wir ♥ Medien'], { w: 512, h: 128, bg: '#14161f', size: 70 }), 2.2, 0.55, 5.4, 4.6, -4.2, 0);
-    const pot = M(0xeeeeee, { r: 0.6 }), leaf = M(0x2f8a3a, { r: 0.8 });
-    [[-6.6, -3.6], [6.6, -3.6], [-6.6, 3.5]].forEach(([x, z]) => { W.cyl(0.3, 0.24, 0.6, pot, x, 0.3, z, g); for (let i = 0; i < 7; i++) { const l = new T.Mesh(new T.SphereGeometry(0.28, 8, 6), leaf); l.scale.set(0.6, 1.4, 0.3); l.position.set(x + Math.cos(i) * 0.18, 0.95 + (i % 3) * 0.18, z + Math.sin(i) * 0.18); l.rotation.set(Math.cos(i) * 0.5, i, Math.sin(i) * 0.5); l.castShadow = true; g.add(l); } });
-    const shelf = new T.Group(); shelf.position.set(-7.5, 0, 0.8); shelf.rotation.y = Math.PI / 2; g.add(shelf);
-    for (let s = 0; s < 3; s++) { W.box(2.4, 0.06, 0.4, M(0x6b4a30), 0, 0.8 + s * 0.8, 0, shelf); for (let v = 0; v < 9; v++) W.box(0.04, 0.32, 0.32, M([0xff8a1e, 0x3dd6ff, 0xff3da8, 0xffd23f, 0x111111][(v + s) % 5]), -1 + v * 0.25, 1.0 + s * 0.8, 0, shelf, false); }
-    // Sofa für Gäste
-    const sofa = new T.Group(); sofa.position.set(5.3, 0, 2.2); sofa.rotation.y = -Math.PI / 2; g.add(sofa);
-    const sm = M(0x3a3f6a, { r: 0.9 }); W.box(2.4, 0.45, 0.9, sm, 0, 0.32, 0, sofa); W.box(2.4, 0.7, 0.2, sm, 0, 0.75, -0.4, sofa); W.box(0.2, 0.6, 0.9, sm, -1.2, 0.5, 0, sofa); W.box(0.2, 0.6, 0.9, sm, 1.2, 0.5, 0, sofa);
     // Farbiges Licht
     ST.keyL = new T.SpotLight(0xffe2c0, 1.5, 20, 0.6, 0.5); ST.keyL.position.set(0, 5.5, 4); ST.keyL.target.position.set(0, 1.2, -0.6); g.add(ST.keyL, ST.keyL.target);
     ST.rimA = new T.PointLight(0xff8a1e, 2.2, 9); ST.rimA.position.set(-3, 3, -3.2); g.add(ST.rimA);
@@ -82,6 +79,7 @@
     const orbW = new T.Mesh(new T.IcosahedronGeometry(0.85, 1), new T.MeshBasicMaterial({ color: 0x9fe8ff, wireframe: true, transparent: true, opacity: 0.4, toneMapped: false })); orb.add(orbW);
     W.glow(0x3dd6ff, 4, orb);
     ST.particles = W.particles;
+    if (AMC.StudioEdit) AMC.StudioEdit.apply();
   };
   ST.drawLed = function (o) {
     const g = ST.ledCtx, w = 1024, h = 512; if (!g) return;
@@ -106,6 +104,23 @@
       else { f.root.position.set(i ? 0.95 : -0.95, 0, -1.2); f.root.rotation.y = i ? -0.15 : 0.15; }
       f.play('idle', { fade: 0.3 });
     });
+    // RicoReWi steht mit Handy am Rand und plant (nicht in der Quizshow)
+    const r = W.hosts.rico;
+    if (r) { if (pos === 'quiz') { if (r.root.parent === ST.group) ST.group.remove(r.root); } else { ST.group.add(r.root); r.root.visible = true; r.root.position.set(2.45, 0, -0.35); r.root.rotation.y = -1.05; r.play('idle', { fade: 0.3 }); } }
+  };
+  /** Szenen-Regie für Dialoge: Nahaufnahme, sprechender Mund, Geste und kleine Gags nach Stichwort. who: a | m | n | null (Ende) */
+  ST.react = function (who, text) {
+    const id = who === 'a' ? 'andrew' : who === 'm' ? 'marco' : who === 'r' && W.hosts.rico ? 'rico' : null;
+    ['andrew', 'marco', 'rico'].forEach(k => { const f = W.hosts[k]; f && f.talk && f.talk(k === id); });
+    clearTimeout(ST.talkTO); ST.say = id; if (!who) return;
+    if (id) ST.talkTO = setTimeout(() => { const f = W.hosts[id]; f && f.talk && f.talk(false); }, Math.min(3200, 500 + (text || '').length * 38));
+    const f = id && W.hosts[id], t = (text || '').toLowerCase(), A = AMC.Audio;
+    let gest = /!|super|geschafft|feiert|rock/.test(t) ? 'arms' : /\?|wirklich|echt/.test(t) ? 'yes' : null;
+    if (/gisela/.test(t)) setTimeout(() => A.sfx('horn'), 350);
+    if (/haha|lach|witz|hör' mir uff|gurke|pommes|klaus/.test(t)) setTimeout(() => A.sfx('laugh'), 500);
+    if (/geschafft|feiert|jubil|frohe|konzert|im kasten/.test(t)) { gest = 'dance'; A.sfx('drum'); ST.fx = 1; }
+    if (/funkloch|rausch|stör/.test(t)) { A.sfx('feedback'); ST.glitch = 0.8; }
+    if (f && gest) { f.play(gest, { fade: 0.25 }); setTimeout(() => f.play('idle', { fade: 0.4 }), gest === 'dance' ? 2400 : 1600); }
   };
   ST.enter = function (mode) {
     ST.build(); ST.mode = mode; ST.t = 0; ST.shot = 0; ST.camT = 0;
@@ -114,21 +129,31 @@
     ST.placeHosts(mode === 'quiz' ? 'quiz' : 'desk');
     W.particles.attach(ST.scene);
   };
-  ST.leave = function () { ['andrew', 'marco'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent === ST.group) ST.group.remove(f.root); }); };
+  ST.leave = function () { ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent === ST.group) ST.group.remove(f.root); }); };
   ST.focus = null; // 'andrew' | 'marco' | null
   ST.update = function (dt, o) {
     ST.t += dt; o = o || {};
-    ['andrew', 'marco'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent === ST.group) f.update(dt); });
+    ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent === ST.group) f.update(dt); });
     if (ST.vu) ST.vu.forEach((v, i) => { const k = 0.3 + Math.abs(Math.sin(ST.t * (7 + i * 3))) * (o.talk ? 1 : 0.3); v.scale.y = k; v.position.y = 1.15 + k * 0.1; });
+    if (AMC.StudioEdit) AMC.StudioEdit.tick(ST.t);
     if (ST.orb && ST.quizGroup.visible) { ST.orb.rotation.y += dt * 0.8; ST.orb.rotation.x += dt * 0.3; ST.orb.position.y = 2.2 + Math.sin(ST.t * 1.6) * 0.12; }
     if ((ST.ledT = (ST.ledT || 0) - dt) <= 0) { ST.ledT = 0.08; ST.drawLed(o.led || { hype: 60, text: ST.mode === 'menu' ? 'BEREIT' : 'ON AIR', sub: o.ledSub }); }
     ST.rimA.intensity = 1.6 + Math.sin(ST.t * 1.3) * 0.6 + (o.flash || 0) * 3; ST.rimB.intensity = 1.4 + Math.cos(ST.t * 1.1) * 0.5 + (o.flash || 0) * 3;
     // Kamera
     const cam = W.camera;
     if (ST.mode === 'menu') {
-      const a = Math.sin(ST.t * 0.15) * 0.35, narrow = root.innerWidth < 760;
-      if (narrow) { cam.position.set(Math.sin(a) * 1.2, 1.7, 4.2); cam.lookAt(0, 1.05, -1.2); }
-      else { cam.position.set(0.4 + Math.sin(a) * 0.8, 1.75 + Math.sin(ST.t * 0.2) * 0.08, 3.1); cam.lookAt(-1.05, 1.42, -1.2); }
+      const a = Math.sin(ST.t * 0.15) * 0.35, narrow = root.innerWidth < 760, P = ST.mp || (ST.mp = [new T.Vector3(), new T.Vector3()]), k = ST.mpOk ? 1 - Math.exp(-dt * 3) : 1;
+      let pos, tgt;
+      if (ST.say === 'rico') { pos = [narrow ? 0.9 : 0.6, 1.8, narrow ? 1.6 : 1.1]; tgt = [2.45, narrow ? 1.1 : 1.3, -0.35]; }
+      else if (ST.say) { const fx = ST.say === 'marco' ? 0.95 : -0.95; pos = [fx * 1.45, narrow ? 1.95 : 1.8, narrow ? 1.5 : 0.8]; tgt = [fx * 0.9, narrow ? 1.0 : 1.2, -1.2]; }
+      else if (narrow) { pos = [Math.sin(a) * 1.2, 1.7, 4.2]; tgt = [0, 1.05, -1.2]; }
+      else { pos = [0.4 + Math.sin(a) * 0.8, 1.75 + Math.sin(ST.t * 0.2) * 0.08, 3.1]; tgt = [-1.05, 1.42, -1.2]; }
+      P[0].lerp(new T.Vector3(...pos), k); P[1].lerp(new T.Vector3(...tgt), k); ST.mpOk = true;
+      cam.position.copy(P[0]); cam.lookAt(P[1]);
+      if (ST.glitch > 0) { ST.glitch -= dt; cam.position.x += (Math.random() - 0.5) * 0.05 * ST.glitch; cam.position.y += (Math.random() - 0.5) * 0.04 * ST.glitch; }
+      if (ST.fx > 0) { ST.fx -= dt * 0.8; ST.rimA.intensity += ST.fx * 4; ST.rimB.intensity += ST.fx * 4; }
+    } else if (ST.mode === 'edit' || ST.mode === 'walk') {
+      /* Kamera setzt der Editor (AMC.StudioEdit) */
     } else if (ST.mode === 'quiz') {
       const a = Math.sin(ST.t * 0.2) * 0.25;
       cam.position.set(Math.sin(a) * 7.2, 3, 7.6); cam.lookAt(0, 1.6, 1.8);
@@ -156,27 +181,34 @@
   let S = null;
   /** cfg: { mode:'story'|'arcade', rounds, goal:[1,2,3 Sterne], cards:[{rub,power,label}] , host } */
   SH.start = function (cfg) {
-    S = { cfg, round: 0, rounds: cfg.rounds || 6, hype: 55 + (AMC.Save.has('neon') ? 10 : 0), listeners: 0, combo: 1, lastSpeaker: '', speaker: cfg.host || 'andrew', jingles: AMC.Save.has('jingle') ? 4 : 3, special: 0, swapUsed: false,
+    S = { cfg, round: 0, rounds: cfg.rounds || 6, hype: Math.min(90, 55 + (AMC.Save.has('neon') ? 10 : 0) + (AMC.StudioEdit ? AMC.StudioEdit.bonus().hype : 0)), listeners: 0, combo: 1, lastSpeaker: '', speaker: cfg.host || 'andrew', jingles: AMC.Save.has('jingle') ? 4 : 3, special: 0, swapUsed: false,
       cards: (cfg.cards || []).map(c => Object.assign({ used: false }, c)), phase: 'intro', menu: 'root', sel: 0, t: 0, mini: null, incident: null, chatT: 0, log: [], arcade: cfg.mode === 'arcade', ended: false };
+    // Sims-Teil: Stimmung der beiden und Ideen von zu Hause
+    const hb = AMC.Home && !cfg.test ? AMC.Home.showBonus() : null;
+    if (hb) { S.hype = U.clamp(S.hype + hb.hype, 20, 95); S.cards = S.cards.concat(hb.cards); S.homeNote = hb; AMC.Home.tire(null, cfg.mode === 'arcade' ? 1 : 0.8); }
     SH.active = true;
     ST.enter('show'); ST.focus = S.speaker;
     AMC.Audio.music('show');
     buildUi();
     setTimeout(() => { if (!S) return; AMC.Audio.sfx('onair'); say('n', 'Wir sind ON AIR!'); }, 300);
-    setTimeout(() => { if (!S) return; say(S.speaker, U.pick(['Hallo und herzlich willkommen zu AnMaCha – Der Podcast!', 'Seid Ihr bereit, angemacht zu werden? Willkommen!', 'Hey, willkommen zu einer neuen Folge – mit Marco und Andrew!'])); nextRound(); }, 1500);
+    setTimeout(() => { if (!S) return; say(S.speaker, U.pick(['Hallo und herzlich willkommen zu AnMaCha – Der Podcast!', 'Seid Ihr bereit, angemacht zu werden? Willkommen!', 'Hey, willkommen zu einer neuen Folge – mit Marco und Andrew!']));
+      const n = S.homeNote; if (n && n.cards.length) pop('💡 ' + n.cards.length + ' Idee' + (n.cards.length > 1 ? 'n' : '') + ' von zu Hause!<small>als Bonus-Themen</small>', 'good');
+      if (n && n.tired.length) setTimeout(() => S && pop('😴 ' + n.tired.join(' & ') + ' ist durch …<small>Zu Hause schlafen, essen, entspannen!</small>', 'miss'), 900);
+      nextRound(); }, 1500);
   };
-  SH.stop = function () { SH.active = false; S = null; const u = U.$('showUi'); if (u) u.remove(); ST.leave(); };
+  SH.stop = function () { SH.active = false; if (S && S.mini && S.mini.ctl) S.mini.ctl.destroy(); S = null; const u = U.$('showUi'); if (u) u.remove(); ST.leave(); };
 
   function buildUi() {
     const ui = U.el('div', 'show-ui'); ui.id = 'showUi';
     ui.innerHTML =
       '<div class="sh-top"><div class="sh-pill glass"><span class="rec">● REC</span> <b id="shRound"></b></div><div class="sh-pill glass big">🎧 <b id="shLis">0</b> <small>Hörer live</small></div>' +
-      '<div class="sh-hype glass"><small>Stimmung</small><i><em id="shHype"></em></i></div><div class="sh-pill glass" id="shCombo"></div></div>' +
+      '<div class="sh-hype glass"><small>Stimmung</small><i><em id="shHype"></em></i></div><div class="sh-pill glass" id="shCombo"></div><button type="button" class="sh-pause glass" id="shPause" aria-label="Pause">⏸</button></div>' +
       '<div class="sh-say" id="shSay" hidden><img id="shFace" alt=""><div><b id="shWho"></b><p id="shTxt"></p></div></div>' +
       '<div class="sh-chat glass" id="shChat"><h4>💬 Live-Chat</h4><ul id="shChatL"></ul></div>' +
       '<div class="sh-cmd" id="shCmd" hidden><div class="sh-cmdh">BEFEHLE <span id="shSpk"></span></div><ul id="shCmdL" role="menu"></ul><div class="sh-sp"><small>Spezial</small><i><em id="shSpec"></em></i></div></div>' +
       '<div class="sh-mini" id="shMini" hidden></div><div class="sh-inc" id="shInc" hidden></div><div class="sh-pop" id="shPop"></div>';
     U.$('ui').appendChild(ui);
+    ui.querySelector('#shPause').onclick = () => AMC.Game.pause && AMC.Game.pause();
     ui.querySelector('#shMini').addEventListener('pointerdown', e => { if (S && S.mini) { e.preventDefault(); S.mini.tap = true; } });
     updTop();
   }
@@ -192,11 +224,15 @@
     const box = U.$('shSay'); if (!box) return;
     box.hidden = false; box.classList.remove('pop'); void box.offsetWidth; box.classList.add('pop');
     const name = who === 'n' ? 'AnMaCha24' : D.HOSTS[who].name;
-    U.$('shWho').textContent = name; U.$('shTxt').textContent = text; U.$('shFace').src = who === 'n' ? AMC.UI.logoUrl() : AMC.UI.face(who);
+    U.$('shWho').textContent = name; U.$('shTxt').textContent = text; U.$('shFace').src = who === 'n' ? AMC.UI.podLogo : AMC.UI.face(who);
     box.style.setProperty('--hc', who === 'n' ? '#ff8a1e' : D.HOSTS[who].color);
-    if (who !== 'n') { ST.focus = who; const f = W.hosts[who]; f && f.play(U.pick(['yes', 'arms']), { fade: 0.25 }); setTimeout(() => f && f.play('idle', { fade: 0.4 }), 1800); }
+    if (who !== 'n') { ST.focus = who; const f = W.hosts[who]; f && f.play(U.pick(['yes', 'arms']), { fade: 0.25 }); f && f.talk && f.talk(true); setTimeout(() => { if (f) { f.play('idle', { fade: 0.4 }); f.talk && f.talk(false); } }, 1800); }
     AMC.Audio.sfx('talk');
     if (AMC.Save.data.settings.subtitles === false) box.hidden = true;
+  }
+  function chatLine(name, text, cls) {
+    const ul = U.$('shChatL'); if (!ul) return;
+    ul.appendChild(U.el('li', cls || 'good', '<b>' + U.esc(name) + '</b> ' + U.esc(text))); while (ul.children.length > 7) ul.firstChild.remove();
   }
   function chat(kind, n) {
     const ul = U.$('shChatL'); if (!ul) return;
@@ -215,8 +251,55 @@
     if (S.arcade) refillCards();
     // Störung?
     const p = S.round <= 1 ? 0 : S.arcade ? Math.min(0.6, 0.2 + S.round * 0.04) : 0.33;
+    // Musikwunsch läuft ab?
+    if (S.wish && --S.wish.left <= 0) { chatLine(S.wish.from, '😢 Schade, mein Wunsch „' + S.wish.t + '“ kam nicht …', 'bad'); S.hype = Math.max(0, S.hype - 6); S.wish = null; updTop(); }
+    if (!S.wish && S.round >= 2 && Math.random() < 0.5) newWish();
     if (Math.random() < p) return startIncident();
+    const ev = S.round >= 2 && Math.random() < 0.32 ? (Math.random() < 0.45 ? ricoDrop : idea) : null;
+    if (ev) return (ev === ricoDrop && !W.hosts.rico ? idea : ev)();
     openMenu();
+  }
+  // --- Hörer-Musikwünsche (freie Klavierlicht-Melodien) kommen automatisch rein
+  function newWish() {
+    const own = AMC.Home ? AMC.Home.ownedSongs() : [], pool = D.WISHES.concat(own, own), w = U.pick(pool.filter(x => !(S.wished || []).includes(x.id))) || U.pick(pool);
+    S.wished = (S.wished || []).concat(w.id);
+    S.wish = Object.assign({ from: U.pick(D.FAN_NAMES), left: 3 }, w);
+    chatLine(S.wish.from, '🎵 Wunsch: „' + w.t + '“ – ' + w.r, 'hype');
+    pop('🎵 Musikwunsch!<small>' + U.esc(w.t) + '</small>', 'good'); AMC.Audio.sfx('onair');
+    AMC.Audio.song(w.id);   // vorladen
+  }
+  function playWish() {
+    const w = S.wish; S.wish = null; closeMenu();
+    say(S.speaker, U.pick(['Musikwunsch von ' + w.from + ': „' + w.t + '“! Ab dafür!', w.from + ' wünscht sich „' + w.t + '“ – das spielen wir live!', 'Grüße an ' + w.from + '! Hier kommt „' + w.t + '“!']));
+    let hits = 0;
+    const go = song => startMini('rhythm', { song, color: '#a46bff', speed: 1, n: 12 + Math.min(10, S.round), hard: S.round > 6, label: '„' + w.t + '“ für ' + w.from,
+      onJudge: (q, combo) => { if (q >= 0.75 && ++hits % 4 === 0) chatLine(U.pick(D.FAN_NAMES), U.pick(['🎶 Ohrwurm!', 'Ich sing mit 🎤', 'Lauter!! 🔊', '💜 Schöner Wunsch!', 'Ich tanz in der Küche 💃', 'Gänsehaut 🥹']), 'good'); else if (q === 0 && Math.random() < 0.4) chatLine(U.pick(D.FAN_NAMES), U.pick(['Falscher Ton 😅', 'Huch, Taste verrutscht?', 'Klingt jazzig 🤔']), 'bad'); } },
+      q => {
+        chatLine(w.from, q >= 0.75 ? U.pick(['DANKE!!! Mein Lied! 😍', 'Ich hab geweint 🥹 Danke!', 'Bester Sender der Welt!']) : q >= 0.45 ? 'Danke! War … fast wie im Original 😄' : 'Äh … das war mein Lied? 😅', q >= 0.45 ? 'hype' : 'bad');
+        applyGain(48 * S.combo * (0.5 + q), q); if (q >= 0.75) { AMC.Audio.sfx('applause'); W.particles.burst(0, 2.6, -1, 0xa46bff, 50, { speed: 7 }); }
+        nextSoon(1600);
+      });
+    AMC.Audio.song(w.id).then(song => S && go(song && song.mel && song.mel.length ? song : null));
+  }
+  // --- RicoReWi platzt rein (Social Media, Tools, Planung) – mal hilft's, mal nervt's
+  function ricoDrop() {
+    S.phase = 'busy';
+    const r = W.hosts.rico; if (r) { r.play('arms', { fade: 0.2 }); setTimeout(() => r.play('idle', { fade: 0.4 }), 1800); }
+    say('rico', U.pick(D.RICO_LINES));
+    setTimeout(() => {
+      if (!S || S.ended) return;
+      const other = S.speaker === 'andrew' ? 'marco' : 'andrew';
+      if (Math.random() < 0.6) { const add = Math.round(S.listeners * 0.06 + 40 + S.round * 15); S.listeners += add; pop('📱 RicoReWi hat\'s geteilt!<small>+' + U.fmt(add) + ' 🎧</small>', 'good'); chatLine('RicoReWi', 'Clip ist online! #AnMaCha 🚀', 'hype'); say(other, U.pick(['Rico, wir sind LIVE!', 'Danke, Rico. Jetzt raus hier.', 'Er hat schon wieder ein Tool gebaut …'])); }
+      else { S.hype = Math.max(0, S.hype - 6); pop('🤳 Handy im Bild!<small>Stimmung −6</small>', 'miss'); chat('bad'); say(other, U.pick(['Rico! Kamera weg vom Mischpult!', 'Nicht jetzt, Rico!', 'Wer hat ihn reingelassen?!'])); }
+      updTop(); setTimeout(() => S && !S.ended && openMenu(), 1600);
+    }, 2000);
+  }
+  // --- Verrückte Idee aus dem Alltag oder dem Internet: kurzer Schlagabtausch, die Hörer lieben's
+  function idea() {
+    S.phase = 'busy';
+    const [w1, l1, w2, l2] = U.pick(D.IDEAS), id = x => x === 'a' ? 'andrew' : 'marco';
+    pop('💡 Verrückte Idee!', 'good'); say(id(w1), l1);
+    setTimeout(() => { if (!S || S.ended) return; say(id(w2), l2); AMC.Audio.sfx('laugh'); chat('good', 2); S.hype = Math.min(100, S.hype + 5); S.special = Math.min(100, S.special + 6); updTop(); setTimeout(() => S && !S.ended && openMenu(), 1700); }, 2600);
   }
   function refillCards() {
     const free = S.cards.filter(c => !c.used);
@@ -237,15 +320,15 @@
       return list;
     }
     const sp = S.special >= 100;
-    return [
+    return (S.wish ? [{ label: '🎹 Musikwunsch: ' + U.esc(S.wish.t), info: S.wish.from + ' wartet · noch ' + S.wish.left + ' Runde' + (S.wish.left > 1 ? 'n' : ''), color: '#a46bff', hot: true, run: playWish }] : []).concat([
       { label: '🎤 Thema', info: S.cards.filter(c => !c.used).length + ' Karten', run: () => openMenu('cards') },
-      { label: '😂 Pointe', info: 'Tastenfolge – hohes Risiko', run: punchline },
+      { label: '😂 Pointe', info: 'Timing-Ringe + Lacher', run: punchline },
       { label: '🔁 Übergabe an ' + D.HOSTS[S.speaker === 'andrew' ? 'marco' : 'andrew'].name, info: S.swapUsed ? 'schon gewechselt' : 'Kombo-Bonus', dis: S.swapUsed, run: swap },
       { label: '🎵 Jingle', info: S.jingles + '× übrig', dis: S.jingles <= 0, run: jingle },
-      { label: '🎛️ Soundboard', info: cool(S.sbRound) ? 'Effekte treffen' : 'lädt …', dis: !cool(S.sbRound), run: soundboard },
+      { label: '🎛️ Soundboard', info: cool(S.sbRound) ? 'Effekte nachspielen' : 'lädt …', dis: !cool(S.sbRound), run: soundboard },
       { label: '❓ Hörerfrage', info: cool(S.qRound) ? 'Quiz für Fans' : 'lädt …', dis: !cool(S.qRound), run: listenerQ },
       { label: sp ? (S.speaker === 'marco' ? '📖 Marcos Tagebuch' : '🎶 Andrews Musikmoment') : '✨ Spezial', info: sp ? 'BEREIT!' : Math.round(S.special) + ' %', dis: !sp, hot: sp, run: special }
-    ];
+    ]);
   }
   function cool(r) { return r == null || S.round - r >= 2; }
   function renderMenu() {
@@ -272,8 +355,8 @@
     c.used = true; closeMenu();
     const R = D.RUBRICS[c.rub], spk = S.speaker, strong = D.HOSTS[spk].strong.includes(c.rub);
     say(spk, U.pick(D.LINES[c.rub] || D.LINES.life));
-    const speed = 0.9 + Math.min(0.9, S.round * 0.06) + (c.power > 2 ? 0.25 : 0);
-    startMini('ring', { color: R ? R.color : '#ffd23f', speed, label: (R ? R.icon + ' ' + R.name : '🗨️ ' + c.label) }, q => {
+    const speed = 0.9 + Math.min(0.5, S.round * 0.04) + (c.power > 2 ? 0.15 : 0);
+    startMini('rhythm', { color: R ? R.color : '#ffd23f', speed, bpm: 100 + Math.min(36, S.round * 4), n: 8 + Math.min(8, S.round), hard: c.power > 2 || S.round > 5, label: (R ? R.icon + ' ' + R.name : '🗨️ ' + c.label) }, q => {
       const comboOk = S.lastSpeaker && S.lastSpeaker !== spk;
       if (q > 0.5 && comboOk) S.combo = Math.min(3, S.combo + 0.5); else if (q <= 0.3) S.combo = 1;
       S.lastSpeaker = spk;
@@ -283,7 +366,7 @@
     });
   }
   function applyGain(gain, q) {
-    const add = Math.round(gain * (8 + S.round * 1.5) * (0.6 + S.hype / 100) * (AMC.Save.has('mics') ? 1.1 : 1));
+    const add = Math.round(gain * (8 + S.round * 1.5) * (0.6 + S.hype / 100) * (AMC.Save.has('mics') ? 1.1 : 1) * (1 + (AMC.StudioEdit ? AMC.StudioEdit.bonus().lis : 0)));
     S.listeners += add; S.hype = U.clamp(S.hype + gain * 0.35 - 7, 0, 100); S.special = Math.min(100, S.special + gain * 0.45);
     const words = q >= 1 ? ['PERFEKT!', 'perfect'] : q >= 0.8 ? ['STARK!', 'good'] : q >= 0.5 ? ['Okay', 'ok'] : ['Daneben …', 'miss'];
     pop(words[0] + '<small>+' + U.fmt(add) + ' 🎧</small>', words[1]);
@@ -302,8 +385,8 @@
     const keys = ['a', 'b', 'x', 'y'], n = 3 + Math.min(3, Math.floor(S.round / 3)), seq = [];
     for (let i = 0; i < n; i++) seq.push(U.pick(keys));
     say(S.speaker, U.pick(['Und dann sag ich zu ihm …', 'Wartet, wartet – jetzt kommt der Knaller!', 'Das glaubt ihr nicht …', 'Pass auf, Pointe kommt!']));
-    startMini('seq', { seq, time: 2.2 + n * 0.45 }, q => {
-      if (q >= 1) { say(S.speaker === 'andrew' ? 'marco' : 'andrew', U.pick(['HAHAHA! Ich kann nicht mehr!', 'Ich lach mich weg!', 'Das kommt in die Highlights!'])); applyGain(48 * S.combo, 1); AMC.Audio.sfx('applause'); }
+    startMini('qte', { n, speed: 1 + Math.min(0.5, S.round * 0.05) }, q => {
+      if (q >= 0.75) { say(S.speaker === 'andrew' ? 'marco' : 'andrew', U.pick(['HAHAHA! Ich kann nicht mehr!', 'Ich lach mich weg!', 'Das kommt in die Highlights!'])); applyGain(48 * S.combo, 1); AMC.Audio.sfx('applause'); }
       else { applyGain(4, 0.2); S.hype = Math.max(0, S.hype - 8); say(S.speaker === 'andrew' ? 'marco' : 'andrew', U.pick(['… Ich hab\'s nicht verstanden.', 'Grillenzirpen …', 'Okay. Weiter im Text!'])); }
       updTop(); nextSoon();
     });
@@ -324,7 +407,7 @@
     say(S.speaker, marco ? 'Liebes Tagebuch … diese Woche war ein Kabel-Abenteuer, das ihr nicht glauben werdet!' : 'Musik-Moment! Diesen Song müsst ihr hören – Lautstärke hoch!');
     ['andrew', 'marco'].forEach(id => { const f = W.hosts[id]; f && f.play('dance', { fade: 0.3 }); });
     setTimeout(() => ['andrew', 'marco'].forEach(id => { const f = W.hosts[id]; f && f.play('idle', { fade: 0.4 }); }), 2600);
-    startMini('ring', { color: '#ffd23f', speed: 1.4, label: marco ? '📖 Marcos Tagebuch' : '🎶 Musikmoment', triple: true }, q => {
+    startMini('rhythm', { color: '#ffd23f', speed: 1.15, bpm: 128, n: 16, hard: true, label: marco ? '📖 Marcos Tagebuch' : '🎶 Musikmoment' }, q => {
       applyGain(70 * S.combo * (0.6 + q), q); AMC.Audio.sfx('applause'); W.particles.burst(0, 2.6, -1, 0xffd23f, 60, { speed: 8 }); nextSoon(1600);
     });
   }
@@ -333,7 +416,7 @@
   function soundboard() {
     S.sbRound = S.round; closeMenu();
     say(S.speaker, U.pick(['Soundboard-Zeit! Wer drückt am schnellsten?', 'Ich hab neue Effekte – hört mal!', 'Tusch, Hupe, Applaus – los geht\'s!']));
-    startMini('pads', { need: 6, time: 7, life: Math.max(0.6, 1.1 - S.round * 0.04) }, q => {
+    startMini('simon', { rounds: 3, len: 2 + Math.min(3, Math.floor(S.round / 3)) }, q => {
       applyGain(36 * S.combo * (0.4 + q), q); if (q >= 0.8) AMC.Audio.sfx('applause');
       nextSoon();
     });
@@ -368,8 +451,8 @@
   function solveIncident() {
     const inc = S.incident; U.$('shInc').hidden = true; S.phase = 'busy';
     const done = q => { S.incident = null; if (q >= 0.8) { pop('Gerettet!', 'good'); S.hype = Math.min(100, S.hype + 6); chat('good'); } else { pop('Autsch …', 'miss'); S.hype = Math.max(0, S.hype - 14); S.listeners = Math.max(0, Math.round(S.listeners * 0.95)); chat('bad', 2); } updTop(); setTimeout(() => S && openMenu(), 700); };
-    if (inc.id === 'pegel') startMini('level', {}, done);
-    else if (inc.id === 'kabel') startMini('seq', { seq: Array.from({ length: 4 }, () => U.pick(['up', 'down', 'left', 'right'])), time: 4.2, dirs: true }, done);
+    if (inc.id === 'pegel') startMini('mixer', { time: 8 + Math.min(4, S.round * 0.4) }, done);
+    else if (inc.id === 'kabel') startMini('cables', { n: S.round > 4 ? 5 : 4, time: 20 }, done);
     else {
       const fl = U.pick(D.FAN_LINES);
       startMini('pick', { q: U.pick(D.FAN_NAMES) + ': „' + fl[0] + '“', opts: U.shuffle([fl[1]].concat(U.shuffle(D.RUBRIC_IDS.filter(r => r !== fl[1])).slice(0, 2))), right: fl[1] }, done);
@@ -380,6 +463,7 @@
   function startMini(kind, o, cb) {
     S.mini = Object.assign({ kind, t: 0, cb, tap: false, done: false }, o);
     const box = U.$('shMini'); box.hidden = false; box.className = 'sh-mini k-' + kind;
+    if (AMC.Minis && /^(rhythm|qte|cables|mixer|simon)$/.test(kind)) { const m = S.mini; m.ctl = AMC.Minis.start(box, kind, o, q => { if (S && S.mini === m) endMini(q); }); return; }
     if (kind === 'ring') {
       box.innerHTML = '<div class="mg-lbl">' + U.esc(o.label) + '</div><div class="ring-wrap"><div class="ring-target" style="--c:' + o.color + '"></div><div class="ring-move" id="mgRing" style="--c:' + o.color + '"></div></div><div class="mg-help">' + AMC.glyph('a') + ' drücken, wenn sich die Ringe decken' + (o.triple ? ' (3×)' : '') + '</div>';
       S.mini.hits = []; S.mini.need = o.triple ? 3 : 1; S.mini.r = 1;
@@ -403,7 +487,7 @@
       box.querySelectorAll('.pads button').forEach(b => b.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); padPress(b.dataset.k); }));
     }
   }
-  function endMini(q) { const m = S.mini; if (!m || m.done) return; m.done = true; setTimeout(() => { if (!S) return; U.$('shMini').hidden = true; S.mini = null; m.cb(q); }, 380); }
+  function endMini(q) { const m = S.mini; if (!m || m.done) return; m.done = true; setTimeout(() => { if (!S) return; const b = U.$('shMini'); b.hidden = true; if (m.ctl) { m.ctl.destroy(); b.innerHTML = ''; } S.mini = null; m.cb(q); }, m.ctl ? 60 : 380); }
   function seqPress(k) {
     const m = S.mini; if (!m || m.kind !== 'seq' || m.done) return;
     const spans = U.$('mgSeq').children;
@@ -422,7 +506,9 @@
   }
   function pickDone() { const m = S.mini, r = m.opts[m.sel]; const ok = r === m.right; U.$('shMini').querySelectorAll('.pick-o button').forEach((b, i) => b.classList.add(m.opts[i] === m.right ? 'right' : 'wrong')); AMC.Audio.sfx(ok ? 'perfect' : 'miss'); endMini(ok ? 1 : 0.3); }
   function updMini(dt) {
-    const m = S.mini; if (!m || m.done) return;
+    const m = S.mini; if (!m) return;
+    if (m.ctl) { if (!m.done) m.ctl.update(dt); return; }
+    if (m.done) return;
     m.t += dt;
     const press = m.tap || I.hit('ok') || I.hit('jump'); m.tap = false;
     if (m.kind === 'ring') {
@@ -485,6 +571,12 @@
     setTimeout(() => { if (!S) return; const cb = S.cfg.onEnd; SH.stop(); cb && cb(res); }, 2600);
   }
 
+  /** Test/Debug: Minispiel direkt starten (kind) oder laufendes abbrechen (null) */
+  SH._mini = function (kind) {
+    if (!S) return;
+    if (!kind) { if (S.mini && S.mini.ctl) S.mini.ctl.destroy(); S.mini = null; const b = U.$('shMini'); b.hidden = true; b.innerHTML = ''; return; }
+    closeMenu(); startMini(kind, { n: kind === 'cables' ? 4 : undefined, label: 'Test', color: '#ff8a1e' }, () => {});
+  };
   SH.update = function (dt) {
     if (!S) return;
     S.t += dt;

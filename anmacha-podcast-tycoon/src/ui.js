@@ -7,6 +7,7 @@
   const UI = AMC.UI = { stack: [], faces: {}, pointerHeld: false };
 
   // ------------------------------------------------------------------ Bilder
+  UI.podLogo = 'img/podcast-logo.jpg';   // offizielles Podcast-Logo (Marco & Andrew)
   UI.logoUrl = () => 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="#111218" stroke="#ff8a1e" stroke-width="6"/><path d="M47 35 L88 60 L47 85Z" fill="#ff8a1e"/></svg>');
   UI.face = id => UI.faces[id] || 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#17181d"/><circle cx="50" cy="42" r="22" fill="#f0c8a8"/><path d="M28 38 Q50 8 72 38" fill="' + (id === 'marco' ? '#6b4528' : '#c9844a') + '"/>' + (id === 'marco' ? '<path d="M30 48 Q50 82 70 48 Q60 62 50 62 Q40 62 30 48Z" fill="#6b4528"/>' : '') + '<circle cx="50" cy="84" r="8" fill="#ff8a1e"/></svg>');
 
@@ -103,16 +104,17 @@
     const s = UI.open('<div class="dlg glass"><img class="dlg-face" alt=""><div class="dlg-body"><b class="dlg-name"></b><p class="dlg-txt"></p><div class="dlg-foot"><button type="button" class="btn small" data-nav id="dlgSkip">Überspringen</button><button type="button" class="btn primary small" data-nav data-first id="dlgNext">Weiter ' + AMC.glyph('a') + '</button></div></div></div>', { cls: 'dlg-screen', back: () => done(), noRadio: false });
     const el = s.el, face = el.querySelector('.dlg-face'), name = el.querySelector('.dlg-name'), txt = el.querySelector('.dlg-txt');
     function show() {
-      const [w, t] = lines[i], H = w === 'a' ? D.HOSTS.andrew : w === 'm' ? D.HOSTS.marco : null;
-      face.src = H ? UI.face(H.id) : UI.logoUrl(); name.textContent = H ? H.name : w === 'n' ? 'Erzähler' : w;
+      const [w, t] = lines[i], H = w === 'a' ? D.HOSTS.andrew : w === 'm' ? D.HOSTS.marco : w === 'r' ? D.HOSTS.rico : null;
+      face.src = H ? UI.face(H.id) : UI.podLogo; name.textContent = H ? H.name : w === 'n' ? 'Erzähler' : w;
       el.querySelector('.dlg').style.setProperty('--hc', H ? H.color : '#8fa0c8');
       full = fill(U.esc(t)); txt.innerHTML = '';
       let k = 0; clearInterval(typing);
       typing = setInterval(() => { k += 2; if (k >= t.length) { clearInterval(typing); typing = null; txt.innerHTML = full; return; } txt.textContent = t.slice(0, k).replace(/\{\w*\}?$/, '').replace(/\{\w+\}/g, '…'); }, 16);
       if (H) AMC.Audio.sfx('talk');
+      if (AMC.Studio && AMC.Studio.react && AMC.Studio.mode === 'menu') AMC.Studio.react(w, t);
     }
     function nextLine() { if (typing) { clearInterval(typing); typing = null; txt.innerHTML = full; return; } i++; if (i >= lines.length) done(); else show(); }
-    function done() { clearInterval(typing); if (!s.closed) { s.closed = true; UI.close(s); cb && cb(); } }
+    function done() { clearInterval(typing); if (AMC.Studio && AMC.Studio.react) AMC.Studio.react(null); if (!s.closed) { s.closed = true; UI.close(s); cb && cb(); } }
     el.querySelector('#dlgNext').onclick = nextLine; el.querySelector('#dlgSkip').onclick = done;
     el.addEventListener('pointerdown', e => { if (!e.target.closest('button')) nextLine(); });
     s.o.onKey = () => { if (I.hit('jump') || I.hit('act')) { nextLine(); return true; } return false; };

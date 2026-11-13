@@ -12,6 +12,8 @@
   const PARK = { x: -22.5, z: 22.5 }, MAST = { x: -67.5, z: -67.5 };
 
   // ------------------------------------------------------------------ Kollision
+  // Kontext für das Fahr-Modul (src/drive.js)
+  const CTX = { get S() { return S; }, solidAt: (x, y, z) => solidAt(x, y, z), addBox: (...a) => addBox(...a), msg: (...a) => msg(...a), setAnim: (...a) => setAnim(...a), moveBody: (...a) => moveBody(...a), freeSpot: (...a) => freeSpot(...a), swapHost: () => swapHost(), honk: () => honk(), drawRub: () => drawRub(), padHeld: b => padHeld(b), ROADS };
   function addBox(x0, x1, z0, z1, top, bot) { S.col.push({ x0: Math.min(x0, x1), x1: Math.max(x0, x1), z0: Math.min(z0, z1), z1: Math.max(z0, z1), top, bot: bot || 0 }); }
   function solidAt(x, y, z) { for (const c of S.col) if (x > c.x0 && x < c.x1 && z > c.z0 && z < c.z1 && y < c.top && y > c.bot) return true; return false; }
   function groundAt(x, z, y, r) {
@@ -117,6 +119,7 @@
         const pl = new T.Mesh(new T.PlaneGeometry(6, 3), new T.MeshBasicMaterial({ map: tex, toneMapped: false, side: T.DoubleSide })); pl.position.set(0, 4.2, 0); bb.add(pl);
       }
     });
+    buildVenues(g, flat);
     // Bäume (Kenney)
     if (!snow) { W.instances(g, 'tree', trees, { byHeight: true }); W.instances(g, 'tree-high-round', treesB, { byHeight: true }); }
     else {
@@ -158,10 +161,15 @@
     const F = FUNKHAUS, M = W.mat, w = F.x1 - F.x0, d = F.z1 - F.z0, cx = (F.x0 + F.x1) / 2, cz = (F.z0 + F.z1) / 2;
     const glassTex = W.canvasTex(256, 256, (c, W2, H) => { c.fillStyle = '#121826'; c.fillRect(0, 0, W2, H); for (let y = 0; y < H; y += 32) { c.fillStyle = night ? 'rgba(255,190,110,.55)' : 'rgba(120,170,230,.35)'; c.fillRect(0, y + 6, W2, 18); c.fillStyle = '#0a0d14'; for (let x = 0; x < W2; x += 32) c.fillRect(x, y, 3, 32); } }, [3, 2]);
     const glass = new T.MeshStandardMaterial({ map: glassTex, roughness: 0.15, metalness: 0.6, emissive: 0xffffff, emissiveMap: glassTex, emissiveIntensity: night ? 0.7 : 0.25 });
-    const body = W.box(w, F.h, d, glass, cx, F.h / 2, cz, g);
-    addBox(F.x0, F.x1, F.z0, F.z1, F.h);
-    W.box(w + 0.6, 0.6, d + 0.6, M(0x16171c, { r: 0.4, m: 0.4 }), cx, F.h + 0.3, cz, g);
-    W.box(w + 0.2, 0.5, d + 0.2, M(0xff8a1e, { e: 0xff6a00, ei: 0.8 }), cx, 4.4, cz, g);
+    // Begehbar: Glasfassade als vier Wände, Eingang offen, Dach drüber (wirft keinen Schatten, damit innen Tageslicht ist)
+    const inner = M(0xece4d6, { r: 0.85 }), band = M(0xff8a1e, { e: 0xff6a00, ei: 0.8 }), T2 = 0.6, dl = F.door.x - 1.6, dr = F.door.x + 1.6;
+    const wall = (x0, x1, z0, z1, y0, y1, inFace) => { const mats = [glass, glass, glass, glass, glass, glass]; mats[inFace] = inner; const m = W.box(x1 - x0, y1 - y0, z1 - z0, mats, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2, g, false); addBox(x0, x1, z0, z1, y1, y0); return m; };
+    wall(F.x0, F.x1, F.z0, F.z0 + T2, 0, F.h, 4); wall(F.x0, F.x0 + T2, F.z0 + T2, F.z1, 0, F.h, 0); wall(F.x1 - T2, F.x1, F.z0 + T2, F.z1, 0, F.h, 1);
+    wall(F.x0 + T2, dl, F.z1 - T2, F.z1, 0, F.h, 5); wall(dr, F.x1 - T2, F.z1 - T2, F.z1, 0, F.h, 5); wall(dl, dr, F.z1 - T2, F.z1, 4, F.h, 5);
+    const roof = W.box(w + 0.6, 0.6, d + 0.6, M(0x16171c, { r: 0.4, m: 0.4 }), cx, F.h + 0.3, cz, g, false); roof.castShadow = false;
+    addBox(F.x0, F.x1, F.z0, F.z1, F.h + 0.6, F.h);
+    [[cx, F.z0 - 0.1, w + 0.2, 0.2], [cx, F.z1 + 0.1, w + 0.2, 0.2], [F.x0 - 0.1, cz, 0.2, d], [F.x1 + 0.1, cz, 0.2, d]].forEach(([x, z, bw, bd]) => W.box(bw, 0.5, bd, band, x, 4.4, z, g, false));
+    buildFunkhausInside(g, night);
     // großes Logo auf dem Dach und über dem Eingang
     const logo = W.logoTex({ sub: 'FUNKHAUS · Wir ♥ Medien' });
     const sg = new T.Group(); sg.position.set(cx, F.h + 0.6, F.z1 - 2); g.add(sg);
@@ -173,7 +181,8 @@
     W.box(6, 0.3, 3.4, M(0x16171c, { r: 0.4 }), door.x, 4.2, F.z1 + 1.5, g);
     const onair = W.textTex(['ON AIR'], { w: 512, h: 160, bg: '#300808', fg: '#ff3a3a', accent: '#ff3a3a', size: 96 });
     W.sign(g, onair, 3.4, 1.05, door.x, 5.2, F.z1 + 0.05, 0);
-    const doorMesh = W.box(3, 3.6, 0.2, M(0xff8a1e, { e: 0xff7a10, ei: 1.2, r: 0.3 }), door.x, 1.8, F.z1 + 0.05, g);
+    const doorMesh = W.box(3.4, 0.4, 0.7, M(0xff8a1e, { e: 0xff7a10, ei: 1.2, r: 0.3 }), door.x, 3.8, F.z1 - 0.3, g);
+    [-1.75, 1.75].forEach(o => W.box(0.25, 3.8, 0.7, M(0x16171c, { r: 0.4 }), door.x + o, 1.9, F.z1 - 0.3, g));
     S.doorMesh = doorMesh;
     // Riesen-Mikrofon vor dem Funkhaus (Wahrzeichen)
     const mg = new T.Group(); mg.position.set(door.x - 8, 0.16, F.z1 + 6); g.add(mg);
@@ -182,6 +191,97 @@
     const head = new T.Mesh(new T.SphereGeometry(1, 24, 16), M(0x9aa0ad, { m: 0.9, r: 0.25 })); head.scale.set(0.9, 1.25, 0.9); head.position.y = 5.8; head.castShadow = true; mg.add(head);
     W.cyl(0.95, 0.95, 0.3, M(0xff8a1e, { e: 0xff6a00, ei: 0.7 }), 0, 4.9, 0, mg);
     addBox(door.x - 9.6, door.x - 6.4, F.z1 + 4.4, F.z1 + 7.6, 0.5); addBox(door.x - 8.3, door.x - 7.7, F.z1 + 5.7, F.z1 + 6.3, 9);
+  }
+  // Im Funkhaus: Empfang, Studio, Redaktion, Quiz-Bühne, Radio-Lounge, Fanshop, Koop-Terminal – jeder Menüpunkt als Ort
+  function buildFunkhausInside(g, night) {
+    const F = FUNKHAUS, M = W.mat, cx = (F.x0 + F.x1) / 2, cz = (F.z0 + F.z1) / 2;
+    const ftex = W.canvasTex(256, 256, (c, w, h) => { c.fillStyle = '#2a2c36'; c.fillRect(0, 0, w, h); c.fillStyle = '#353845'; for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) if ((x + y) % 2) c.fillRect(x * 32, y * 32, 32, 32); c.fillStyle = 'rgba(255,138,30,.6)'; c.fillRect(0, 0, w, 3); c.fillRect(0, 0, 3, h); }, [5, 5]);
+    const fl = new T.Mesh(new T.PlaneGeometry(F.x1 - F.x0 - 1.2, F.z1 - F.z0 - 1.2), new T.MeshStandardMaterial({ map: ftex, roughness: 0.6 })); fl.rotation.x = -Math.PI / 2; fl.position.set(cx, 0.175, cz); fl.receiveShadow = true; g.add(fl);
+    const B = (w, h, d, c, x, y, z, o, solid) => { const m = W.box(w, h, d, M(c, o || { r: 0.6 }), x, y, z, g, false); if (solid) addBox(x - w / 2, x + w / 2, z - d / 2, z + d / 2, y + h / 2); return m; };
+    const sign = (txt, sub, col, x, y, z, ry, w) => { const t = W.textTex([txt].concat(sub ? [sub] : []), { w: 512, h: sub ? 200 : 128, size: sub ? 62 : 70, accent: col }); const m = new T.Mesh(new T.PlaneGeometry(w || 4, (w || 4) * (sub ? 200 : 128) / 512), new T.MeshBasicMaterial({ map: t, toneMapped: false })); m.position.set(x, y, z); m.rotation.y = ry || 0; g.add(m); return m; };
+    // Empfang
+    B(5, 1.1, 1.2, 0xff8a1e, cx, 0.72, -20, { e: 0xff6a00, ei: 0.3 }, true); B(5.2, 0.08, 1.4, 0x16171c, cx, 1.31, -20);
+    sign('EMPFANG', 'Funkhaus · Wir ♥ Medien', '#ff8a1e', cx, 3.2, -20.8, 0, 4.2);
+    // Studio mit Pult an der Rückwand
+    B(9, 0.2, 6, 0x1c1e26, cx, 0.27, -32.4); B(4.2, 0.9, 1.4, 0x3a3d4a, cx, 0.82, -32.2, null, true); B(4.4, 0.08, 1.6, 0x16171c, cx, 1.3, -32.2);
+    [-1.2, 1.2].forEach(o => { W.cyl(0.03, 0.03, 0.5, M(0x222222), cx + o, 1.6, -31.8, g, 6); const h = new T.Mesh(new T.SphereGeometry(0.12, 10, 8), M(0x9aa0ad, { m: 0.8, r: 0.3 })); h.position.set(cx + o, 1.9, -31.8); g.add(h); });
+    sign('ON AIR', '', '#ff3a3a', cx, 5.2, -35.3, 0, 3.4).material.color.set(0xffd0d0);
+    const logo = W.logoTex({ sub: 'STUDIO A' }); W.sign(g, logo, 6, 2, cx, 3.4, -35.3, 0, true);
+    // Werkstatt (Studio umbauen) und Redaktion (Story)
+    B(2.6, 0.9, 1.2, 0x8a6a48, 29.4, 0.62, -33.6, null, true); B(0.8, 0.5, 0.5, 0xff8a1e, 29, 1.32, -33.6); sign('STUDIO UMBAUEN', '🛠️ Möbel, Deko, Technik', '#3dd6ff', 29.4, 3.2, -35.3, 0, 3.6);
+    B(3.6, 2.4, 0.12, 0xc8a070, 15.6, 2.2, -35.2); for (let i = 0; i < 9; i++) B(0.6, 0.45, 0.02, [0xffd23f, 0xff8a1e, 0x3dd6ff][i % 3], 14.6 + (i % 3) * 1, 1.6 + Math.floor(i / 3) * 0.6, -35.12);
+    sign('REDAKTION', '📜 Story: alle Kapitel', '#ffd23f', 15.6, 4.2, -35.2, 0, 3.6);
+    // Quiz-Bühne links
+    B(3.2, 0.24, 6, 0x5a2bb0, 14.4, 0.29, -25.5, { e: 0x3a1a80, ei: 0.4 }); [-1.5, 1.5].forEach(o => { B(0.8, 1.1, 0.6, 0x3dd6ff, 14.6, 0.95, -25.5 + o, { e: 0x2090c0, ei: 0.5 }, true); });
+    sign('KI-QUIZSHOW', '🧠 Andrew gegen Marco', '#a46bff', F.x0 + 0.65, 3.6, -25.5, Math.PI / 2, 3.8);
+    // Radio-Lounge rechts
+    B(1, 0.5, 3.2, 0x3a5a85, 31.2, 0.45, -26, null, true); B(0.3, 0.8, 3.2, 0x3a5a85, 31.9, 0.85, -26);
+    D.STATIONS.slice(0, 6).forEach((st, i) => { const t = W.textTex([st.name], { w: 256, h: 64, size: 30, accent: st.color }); const m = new T.Mesh(new T.PlaneGeometry(1.9, 0.48), new T.MeshBasicMaterial({ map: t, toneMapped: false })); m.position.set(F.x1 - 0.65, 1.7 + (i % 3) * 0.6, -27 + Math.floor(i / 3) * 2); m.rotation.y = -Math.PI / 2; g.add(m); });
+    sign('RADIO-LOUNGE', '📻 Alle Sender & Folgen', '#3dd6ff', F.x1 - 0.65, 4.2, -26, -Math.PI / 2, 3.8);
+    // Fanshop rechts vorn
+    B(0.1, 1.6, 2.6, 0x888888, 31.6, 1.0, -18.5); for (let i = 0; i < 5; i++) B(0.5, 0.7, 0.05, [0xff8a1e, 0x3a3d4a, 0xa46bff, 0x3dd6ff, 0xffd23f][i], 31.4, 1.3, -19.6 + i * 0.55);
+    B(1.6, 0.9, 0.8, 0xff8a1e, 30, 0.62, -16.6, null, true); sign('FANSHOP', '🛍️ Outfits & Upgrades', '#ff8a1e', F.x1 - 0.65, 3.4, -18.5, -Math.PI / 2, 3.6);
+    // Koop-Terminal links vorn
+    B(0.8, 1.6, 0.6, 0x16171c, 14, 1.0, -18, null, true); B(0.66, 0.8, 0.04, 0x3dd6ff, 14, 1.4, -17.68, { e: 0x3dd6ff, ei: 0.9 }); sign('ONLINE-KOOP', '🌐 per Link, Code, QR', '#3dd6ff', F.x0 + 0.65, 3.4, -18, Math.PI / 2, 3.6);
+    // Deckenlichter
+    if (S.glows) { const pts = []; for (let x = F.x0 + 3; x < F.x1 - 2; x += 4.5) for (let z = F.z0 + 3; z < F.z1 - 2; z += 4.5) pts.push([x, F.h - 1, z]); S.glows.push(glowCloud(pts, 0xfff1c8, 2.4)); }
+    addStation('menu', '☰ Empfang: Gesamtmenü & Einstellungen', cx, -18.6, 2.2);
+    addStation('live', '🎙️ Ins Studio: Live-Aufnahme starten', cx, -30.2, 2.2);
+    addStation('edit', '🛠️ Studio umbauen', 29.4, -31.6, 1.9);
+    addStation('story', '📜 Redaktion: Story-Kapitel', 15.6, -33, 2.0);
+    addStation('quiz', '🧠 KI-Quizshow-Bühne', 16.6, -25.5, 2.0);
+    addStation('radio', '📻 Radio-Lounge: Radio & Podcast', 29.6, -26, 2.0);
+    addStation('shop', '🛍️ Fanshop', 29.2, -18.5, 2.0);
+    addStation('koop', '🌐 Online-Koop-Terminal', 15.6, -18, 1.8);
+  }
+  // Orte in der Welt, die einen Menüpunkt öffnen (nur im freien Spiel; im Story-Modus bleiben sie Kulisse)
+  function addStation(id, label, x, z, r) {
+    S.stations = S.stations || [];
+    const icon = label.split(' ')[0], tx = W.textTex([icon], { w: 128, h: 128, bg: '#14161f', size: 80, accent: '#ff8a1e' });
+    const sp = new T.Sprite(new T.SpriteMaterial({ map: tx, toneMapped: false })); sp.scale.set(0.9, 0.9, 1); sp.position.set(x, 2.9, z); S.group.add(sp);
+    S.stations.push({ id, label, x, z, r: r || 2, sp });
+  }
+  // Eigene Gebäude in der Stadt: Spielhalle, Musikladen, Andrews Wohnung, Marcos Haus
+  function buildVenues(g, flat) {
+    const door = FUNKHAUS.door, list = flat.slice().sort((a, b) => Math.hypot(a.x - door.x, a.z - door.z) - Math.hypot(b.x - door.x, b.z - door.z));
+    const V = [['arcade', '🕹️', 'AnMaCha Arcade', 'Spielhalle · 3D-Minispiele', '#a46bff'], ['music', '🎹', 'Klavierlicht', 'Musikladen', '#3dd6ff'], ['home:andrew', '🏠', 'Andrews Wohnung', 'Feelgood-Zentrale', '#ff9d2e'], ['home:marco', '🏡', 'Marcos Haus', 'mit Gisela-Parkplatz', '#3aa7a0']];
+    V.forEach((v, i) => {
+      const f = list[i]; if (!f) return;
+      const zf = f.z + f.sz * (f.d / 2), ry = f.sz > 0 ? 0 : Math.PI;
+      const t = W.textTex([v[1] + ' ' + v[2], v[3]], { w: 512, h: 160, size: 56, accent: v[4] });
+      const m = new T.Mesh(new T.PlaneGeometry(4.6, 1.44), new T.MeshBasicMaterial({ map: t, toneMapped: false })); m.position.set(f.x, f.h - 0.85, zf + f.sz * 0.06); m.rotation.y = ry; g.add(m);
+      const dm = W.box(1.8, 2.3, 0.12, W.mat(new T.Color(v[4]).getHex(), { e: new T.Color(v[4]).getHex(), ei: 0.7, r: 0.4 }), f.x, 1.31, zf + f.sz * 0.07, g, false);
+      W.box(2.6, 0.15, 1.4, W.mat(0x16171c), f.x, 2.55, zf + f.sz * 0.7, g, false);
+      addStation(v[0], v[1] + ' ' + v[2] + (v[0].startsWith('home') ? ' betreten' : ' – rein da!'), f.x, zf + f.sz * 1.4, 2.0);
+      f.venue = v[0]; dm.userData.venue = v[0];
+    });
+    // Senderhäuser: die übrigen Flachbauten und vier Pavillons am Sendemast – jeder AnMaCha-Sender hat ein eigenes Haus
+    const order = ['anmacha24', 'clubradio24', 'christmasradio24', 'yourtime-fm', 'rockradio24', 'ricorewi', 'chartradio24', 'kultradio24', 'special-radio', 'zockerfm', 'rapradio24', 'schlagerpop24', 'radiofloh'];
+    const spots = list.slice(V.length).map(f => ({ x: f.x, zf: f.z + f.sz * (f.d / 2), sz: f.sz, top: f.h - 0.85 }));
+    [[-11, 11], [11, 11], [-11, -11], [11, -11]].forEach(([dx, dz]) => {
+      const x = MAST.x + dx, z = MAST.z + dz, sz = dz > 0 ? 1 : -1;
+      W.box(7, 4.6, 7, [W.mat(0xe8e1d6), W.mat(0xe8e1d6), W.mat(0x6c6a70), W.mat(0x6c6a70), W.mat(0xe8e1d6), W.mat(0xe8e1d6)], x, 2.3, z, g);
+      addBox(x - 3.5, x + 3.5, z - 3.5, z + 3.5, 4.6);
+      spots.push({ x, zf: z + sz * 3.5, sz, top: 3.75, band: true });
+    });
+    order.forEach((slug, i) => {
+      const sp = spots[i], st = D.STATIONS.find(x => x.slug === slug); if (!sp || !st) return;
+      const col = new T.Color(st.color).getHex(), ry = sp.sz > 0 ? 0 : Math.PI;
+      if (sp.band) W.box(7.2, 0.3, 7.2, W.mat(col, { e: col, ei: 0.5 }), sp.x, 4.75, sp.zf - sp.sz * 3.5, g, false);
+      const t = W.textTex([st.icon + ' ' + st.name, 'Senderhaus'], { w: 512, h: 160, size: 56, accent: st.color });
+      const m = new T.Mesh(new T.PlaneGeometry(4.6, 1.44), new T.MeshBasicMaterial({ map: t, toneMapped: false })); m.position.set(sp.x, sp.top, sp.zf + sp.sz * 0.06); m.rotation.y = ry; g.add(m);
+      W.box(1.8, 2.3, 0.12, W.mat(col, { e: col, ei: 0.7, r: 0.4 }), sp.x, 1.31, sp.zf + sp.sz * 0.07, g, false);
+      W.box(2.6, 0.15, 1.4, W.mat(0x16171c), sp.x, 2.55, sp.zf + sp.sz * 0.7, g, false);
+      addStation('sender:' + slug, '📻 ' + st.name + ': Senderhaus betreten', sp.x, sp.zf + sp.sz * 1.4, 2.0);
+    });
+  }
+  // Story: Im Senderhaus des Kapitel-Senders wartet ein Interview (Bonus-Funken, die Stadt bleibt offen)
+  function senderInterview(st) {
+    S.senderDone = true;
+    const rub = (AMC.Home && AMC.Home.SENDER_RUB[st.slug]) || 'musik', H = AMC.Home && AMC.Home.SENDER[st.slug];
+    S.got[rub] += 3; S.score += 400; drawRub();
+    AMC.UI.bubble(st.name, (H ? H.talk[0] : st.desc) + ' Schön, dass ihr vorbeischaut – das Interview geht direkt in eure Folge!', '+3 ' + D.RUBRICS[rub].icon + ' ' + D.RUBRICS[rub].name);
+    AMC.Audio.sfx('applause'); W.particles.burst(S.pl.x, S.pl.y + 2, S.pl.z, new T.Color(st.color).getHex(), 30);
   }
   function buildPark(g, sky) {
     const M = W.mat, { x, z } = PARK;
@@ -348,6 +448,10 @@
     const env = W.makeSky(S.scene, sky); S.env = env;
     W.particles.attach(S.scene);
     buildCity(sky, rng);
+    buildGisela(FUNKHAUS.door.x + 11, FUNKHAUS.door.z + 3.5);
+    buildRico(FUNKHAUS.door.x - 6.5, FUNKHAUS.door.z + 4);
+    if (AMC.Drive && !cfg.net) AMC.Drive.build(CTX);
+    if (AMC.Home && cfg.mode !== 'race') AMC.Home.tire([cfg.host || 'andrew'], 0.5);
     spawnHosts(cfg.host || 'andrew', FUNKHAUS.door.x, FUNKHAUS.door.z + 6);
     W.cam.yaw = 0; W.cam.pitch = 0.32; W.cam.cur = null; W.cam.tx = S.pl.x; W.cam.ty = 1.6; W.cam.tz = S.pl.z;
     S.beacon = beam(0xff8a1e);
@@ -355,12 +459,15 @@
     spawnFans(rng);
     P.active = true;
     buildHud();
+    if (AMC.CityVibe) AMC.CityVibe.start(S);
     AMC.Audio.music(sky === 'party' ? 'party' : ch && ch.obj.type === 'boss' ? 'city' : 'city');
     return S;
   };
   P.stop = function () {
     if (!S) return;
-    ['andrew', 'marco'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent) f.root.parent.remove(f.root); });
+    if (AMC.Drive) AMC.Drive.stop();
+    if (AMC.CityVibe) AMC.CityVibe.stop();
+    ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent) f.root.parent.remove(f.root); });
     S.npcs.forEach(n => { if (n.fig) n.fig.dispose(); n.fig = null; });
     if (S.cat) { if (S.cat.mixer) S.cat.mixer.stopAllAction(); S.group.remove(S.cat.m); }
     S.group.traverse(o => { if (o.geometry && !o.isSkinnedMesh) o.geometry.dispose(); });
@@ -439,7 +546,7 @@
     }
   }
   async function spawnFans(rng) {
-    const n = [3, 6, 9][W.quality] + (S.type === 'guest' ? 3 : 0) + (S.type === 'party' ? 3 : 0) + (S.type === 'deliver' ? S.hungryNeed : 0);
+    const n = [4, 8, 12][W.quality] + (S.mode === 'free' ? 4 : 0) + (S.type === 'guest' ? 3 : 0) + (S.type === 'party' ? 3 : 0) + (S.type === 'deliver' ? S.hungryNeed : 0);
     const myS = S;
     for (let i = 0; i < n; i++) {
       let x, y, z;
@@ -504,8 +611,9 @@
     if (t === 'boss') return [S.boss.state === 'intro' ? S.bossName + ' erscheint …' : 'Triff ' + S.bossName.replace(/^Das /, 'das ') + ', wenn der Schild offen ist', 1 - S.boss.hp / S.boss.max];
     if (t === 'race') { const k = S.gates.filter(g => g.passed).length, b = AMC.Save.data.best.race; return ['🏁 Tore ' + k + '/' + S.gates.length + ' – so schnell wie möglich!' + (b ? ' · Bestzeit ' + b.toFixed(1) + ' s' : ''), k / S.gates.length]; }
     if (t === 'jagd') return ['Sammle so viele Themen wie möglich! Punkte: ' + U.fmt(S.score), 1 - S.left / 180];
-    const q = nextQuest();
-    if (q) { const v = Math.min(q.goal, q.val(S)); return ['📋 Nebenauftrag: ' + q.icon + ' ' + q.desc + ' (' + U.fmt(v) + '/' + U.fmt(q.goal) + ') · ' + AMC.glyph('x') + ' an der Tür = Menü', v / q.goal]; }
+    const q = nextQuest(), er = AMC.Drive ? AMC.Drive.errandText() : '';
+    if (er && (S.drive || !q)) return [er + (S.drive ? '' : ' · Marco fährt Gisela'), 0.5];
+    if (q) { const v = Math.min(q.goal, q.val(S)); return ['📋 Nebenauftrag: ' + q.icon + ' ' + q.desc + ' (' + U.fmt(v) + '/' + U.fmt(q.goal) + ') · 🏢 Funkhaus & Läden betreten', v / q.goal]; }
     return ['Alle Nebenaufträge erledigt! Erkunde weiter oder geh ins Funkhaus.', 1];
   }
   function updHud(dt) {
@@ -540,6 +648,8 @@
     if (S.imbiss) { g.fillStyle = '#ff8a1e'; g.fillRect(X(S.imbiss.x) - 4, Z(S.imbiss.z) - 4, 8, 8); }
     if (S.cat) { g.font = '11px sans-serif'; g.fillText('🐈', X(S.cat.x) - 6, Z(S.cat.z) + 4); }
     const ng = S.gates.find(q => !q.passed); if (ng) { g.strokeStyle = '#3dd6ff'; g.lineWidth = 2; g.beginPath(); g.arc(X(ng.x), Z(ng.z), 5, 0, 7); g.stroke(); }
+    if (S.stations) for (const st of S.stations) { if (!st.sp.visible) continue; const sd = st.id.startsWith('sender:'); g.fillStyle = sd ? (D.STATIONS.find(x => 'sender:' + x.slug === st.id) || {}).color || '#fff' : '#ffffff'; g.fillRect(X(st.x) - 2.5, Z(st.z) - 2.5, 5, 5); }
+    if (AMC.Drive) for (const d of AMC.Drive.mapDots()) { g.fillStyle = d.c; g.beginPath(); g.arc(X(d.x), Z(d.z), d.big ? 4.5 : 2.6, 0, 7); g.fill(); if (d.big) { g.strokeStyle = '#000'; g.lineWidth = 1; g.stroke(); } }
     if (S.beacon.visible) { g.strokeStyle = '#ff8a1e'; g.lineWidth = 2.5; g.beginPath(); g.arc(X(S.beacon.position.x), Z(S.beacon.position.z), 6 + Math.sin(S.time * 6) * 1.5, 0, 7); g.stroke(); }
     // Spieler-Pfeil (Blickrichtung der Kamera)
     const p = S.pl; g.save(); g.translate(X(p.x), Z(p.z)); g.rotate(-p.yaw + Math.PI); g.fillStyle = '#fff'; g.strokeStyle = '#000'; g.lineWidth = 1;
@@ -549,6 +659,8 @@
   // ------------------------------------------------------------------ Interaktion
   function interactTarget(ent) {
     const p = ent || S.pl;
+    if (S.drive) return { label: 'Aussteigen 🚪' };
+    const dv = AMC.Drive && p === S.pl ? AMC.Drive.interact(p) : null; if (dv) return dv;
     for (const n of S.npcs) {
       const d = Math.hypot(n.x - p.x, n.z - p.z);
       if (d < 2.4) {
@@ -559,8 +671,11 @@
       }
     }
     for (const r of S.relays) if (!r.fixed && Math.hypot(r.x - p.x, r.z - p.z) < 2.2 && Math.abs(r.y - p.y) < 1.6) return { label: 'Verteiler reparieren (halten)', hold: r };
+    if (S.gisela && S.gisela.t <= 0 && Math.hypot(S.gisela.x - p.x, S.gisela.z - p.z) < 3.6) return { label: 'Gisela hupen 📯', run: honk };
+    if (S.rico && S.rico.t <= 0 && Math.hypot(S.rico.x - p.x, S.rico.z - p.z) < 2.6) return { label: 'Mit RicoReWi quatschen 📱', run: ricoTalk };
     if (S.imbiss && Math.hypot(S.imbiss.x - p.x, S.imbiss.z - p.z) < 3.4 && S.carry < 3 && S.fed + S.carry < S.hungryNeed) return { label: 'Bestellungen abholen 🍟', run: pickOrder };
-    if (S.mode === 'free' && S.net !== 'guest' && p === S.pl && Math.hypot(FUNKHAUS.door.x - p.x, FUNKHAUS.door.z - p.z) < 3.5) return { label: 'Ins Funkhaus (Menü)', run: () => finish(true) };
+    if (S.ch && S.ch.radio && !S.senderDone && p === S.pl && S.stations) { const st = S.stations.find(x => x.id === 'sender:' + S.ch.radio); if (st && Math.hypot(st.x - p.x, st.z - p.z) < st.r) { const ss = D.STATIONS.find(x => x.slug === S.ch.radio); return { label: '🎙️ Interview bei ' + ss.name + ' (Bonus)', run: () => senderInterview(ss) }; } }
+    if (S.mode === 'free' && S.net !== 'guest' && p === S.pl && S.stations) for (const st of S.stations) if (Math.hypot(st.x - p.x, st.z - p.z) < st.r && p.y < 2) return { label: st.label, run: () => { AMC.Audio.sfx('door'); if (P.onAction) P.onAction(st.id); else finish(true); } };
     return null;
   }
   function talk(n) {
@@ -643,7 +758,15 @@
   function bossDown() {
     const b = S.boss; b.state = 'dead'; b.open = 0; AMC.Audio.sfx('win'); W.cam.shake = 1;
     for (let i = 0; i < 5; i++) setTimeout(() => S && W.particles.burst(b.x + U.rand(-2, 2), b.y + U.rand(-1, 2), b.z + U.rand(-2, 2), U.pick([0x8a3dff, 0xff8a1e, 0x3dd6ff]), 40, { speed: 10 }), i * 180);
-    setTimeout(() => { if (!S) return; b.m.visible = false; S.drones.forEach(d => { if (!d.dead) killDrone(d); }); objectiveDone(); }, 1100);
+    setTimeout(() => {
+      if (!S) return; b.m.visible = false; S.drones.forEach(d => { if (!d.dead) killDrone(d); });
+      // Kein Fantasiewesen: Hinter der Störsender-Drohne steckt ein echter Mensch – jetzt wird gerangelt
+      if (AMC.Drive && !S.net && AMC.Drive.spawnRival) {
+        const name = (S.ch && S.ch.obj.rival) || 'Ralf Rauschmann';
+        msg('🎛️ Die Drohne ist down! ' + name + ' springt aus dem Störsender-Wagen – schnapp ihn dir und rangel ihn mit ' + AMC.glyph('x') + ' nieder!', 4);
+        AMC.Drive.spawnRival(name, b.x, b.z, () => { msg('🤼 ' + name + ' gibt auf: „Okay, okay! Ich mach ab jetzt auch einen Podcast. Einen netten.“', 4); objectiveDone(); });
+      } else objectiveDone();
+    }, 1100);
   }
   function objectiveDone() {
     if (S.done) return; S.done = true; AMC.Audio.sfx('star');
@@ -664,6 +787,9 @@
     if (!S || S.ended) return;
     S.time += dt;
     const p = S.pl, H = p.H, cam = W.cam;
+    const driving = !S.net && AMC.Drive ? AMC.Drive.update(dt) : false;
+    let sp = 0; const f = S.fo;
+    if (!driving) {
     // Eingaben
     if (I.hit('swap') && !S.net) swapHost();
     const fwdX = -Math.sin(cam.yaw), fwdZ = -Math.cos(cam.yaw), rX = Math.cos(cam.yaw), rZ = -Math.sin(cam.yaw);
@@ -688,13 +814,11 @@
       if (r.prog >= 1) { r.fixed = true; r.led.material.color.set(0x30ff60); r.gl.material.color.set(0x30ff60); AMC.Audio.sfx('perfect'); msg('🔧 Verteiler läuft wieder!', 2); S.score += 500; W.particles.burst(r.x, r.y + 1.2, r.z, 0x30ff60, 30); }
     }
     p.cd = Math.max(0, p.cd - dt); p.cd2 = Math.max(0, (p.cd2 || 0) - dt); p.inv = Math.max(0, p.inv - dt); p.busy = Math.max(0, p.busy - dt); p.landT = Math.max(0, p.landT - dt);
-    let sp;
     if (p.dodge > 0) { p.dodge -= dt; sp = moveBody(p, dt, p.vx / 15, p.vz / 15, 15, 30); }
     else sp = moveBody(p, dt, wx, wz, speed, p.onGround ? 12 : 4);
     animFor(p, sp);
-    if (p.fig) p.fig.root.visible = !(p.inv > 0 && Math.floor(S.time * 20) % 2);
+    if (p.fig) p.fig.root.visible = !S.drive && !(p.inv > 0 && Math.floor(S.time * 20) % 2);
     // Mitspieler: online vom anderen Gerät gesteuert
-    const f = S.fo;
     if (S.net) netRemote(dt, f);
     else {
     const tx = p.x - Math.sin(p.yaw) * 2.2 + Math.cos(p.yaw) * 1.1, tz = p.z - Math.cos(p.yaw) * 2.2 - Math.sin(p.yaw) * 1.1;
@@ -705,6 +829,7 @@
     const fsp = moveBody(f, dt, fdx, fdz, fd > 2 ? Math.min(11, H.speed * (fd > 6 ? 1.6 : 1)) : 0, 8);
     animFor(f, fsp);
     }
+    }
     if (p.fig) p.fig.update(dt); if (f.fig) f.fig.update(dt);
     if (S.foInv > 0) S.foInv -= dt;
     if (S.net === 'guest') { netGuestFrame(dt, sp); return; }
@@ -712,7 +837,9 @@
     S.hurtT += dt; if (S.hurtT > 4) S.energy = Math.min(100, S.energy + dt * 6);
     // Zeit
     if (S.left > 0 && S.mode !== 'free') { S.left -= dt; if (S.left <= 0) { S.left = 0; if (S.mode === 'jagd') return finish(true, 'time'); if (!S.done) return finish(false, 'time'); } }
-    updPickups(dt); updDrones(dt); updNpcs(dt); updObjective(dt); updRings(dt);
+    updPickups(dt); updDrones(dt); updNpcs(dt); if (AMC.CityVibe) AMC.CityVibe.update(dt, S); updObjective(dt); updRings(dt);
+    if (S.rico) { S.rico.f.update(dt); if (S.rico.t > 0) S.rico.t -= dt; }
+    if (S.gisela) { if (S.gisela.t > 0) S.gisela.t -= dt; S.gisela.g.position.y = S.gisela.t > 0 ? Math.abs(Math.sin(S.time * 18)) * 0.06 : 0; }
     if (S.boss) updBoss(dt);
     if (S.cat) updCat(dt);
     if (S.mode === 'free') updQuests(dt, sp);
@@ -720,6 +847,8 @@
     // Tür
     if (S.done && S.mode === 'story' && [p].concat(S.net === 'host' ? [S.fo] : []).some(e => Math.hypot(FUNKHAUS.door.x - e.x, FUNKHAUS.door.z - e.z) < 3 && e.y < 1.5)) return finish(true);
     // Effekte
+    if (S.ch && S.ch.radio && !S.senderHint && S.time > 8) { S.senderHint = true; const ss = D.STATIONS.find(x => x.slug === S.ch.radio); if (ss) msg('📻 Tipp: Im Senderhaus von ' + ss.name + ' wartet ein Interview – Bonus-Funken! (Quadrat auf der Karte)', 4); }
+    if (S.stations) for (const st of S.stations) { st.sp.visible = S.mode === 'free' || (!!S.ch && st.id === 'sender:' + S.ch.radio && !S.senderDone); st.sp.position.y = 2.9 + Math.sin(S.time * 2.4 + st.x) * 0.15; }
     S.beacon.rotation.y += dt; if (S.doorMesh) S.doorMesh.material.emissiveIntensity = S.done ? 1 + Math.sin(S.time * 6) * 0.6 : 0.8;
     if (S.mastBlink) S.mastBlink.material.opacity = Math.sin(S.time * 4) > 0 ? 1 : 0.15;
     if (S.snow) { const a = S.snow.geometry.attributes.position.array; for (let i = 1; i < a.length; i += 3) { a[i] -= dt * 2.2; if (a[i] < 0) a[i] = 40; } S.snow.geometry.attributes.position.needsUpdate = true; S.snow.position.set(Math.round(p.x / 10) * 10, 0, Math.round(p.z / 10) * 10); }
@@ -802,7 +931,12 @@
       } else if (!n.dancer) {
         // zum Spieler drehen, wenn nah
         const d = Math.hypot(p.x - n.x, p.z - n.z);
-        if (d < 5) n.fig.root.rotation.y += U.angDiff(n.fig.root.rotation.y, Math.atan2(p.x - n.x, p.z - n.z)) * Math.min(1, dt * 4);
+        if (d < 5) { n.fig.root.rotation.y += U.angDiff(n.fig.root.rotation.y, Math.atan2(p.x - n.x, p.z - n.z)) * Math.min(1, dt * 4); if (n.anim === 'walk') setAnim(n, 'idle'); }
+        else if (!n.guest && !n.hungry && d < 60) {   // Passanten schlendern umher
+          n.hx = n.hx == null ? n.x : n.hx; n.hz = n.hz == null ? n.z : n.hz; n.wt = (n.wt || (n.x * 7) % 6) + dt * 0.25;
+          const tx = n.hx + Math.cos(n.wt) * 4, tz = n.hz + Math.sin(n.wt * 0.8) * 4, dx = tx - n.x, dz = tz - n.z, dd = Math.hypot(dx, dz);
+          const s2 = moveBody(n, dt, dd > 0.3 ? dx / dd : 0, dd > 0.3 ? dz / dd : 0, dd > 0.3 ? 1.3 : 0, 4); setAnim(n, s2 > 0.4 ? 'walk' : 'idle');
+        }
       }
     }
   }
@@ -829,6 +963,39 @@
     if (!S.rings) return;
     S.rings = S.rings.filter(r => { r.t += dt; const k = r.t / 0.35, s = 0.4 + k * r.max; r.m.scale.set(s, s, s); r.m.material.opacity = Math.max(0, 0.6 * (1 - k)); const e = r.e || S.pl; r.m.position.set(e.x, e.y + 0.9, e.z); if (k >= 1) { S.group.remove(r.m); r.m.geometry.dispose(); return false; } return true; });
   }
+  // ------------------------------------------------------------------ Gisela: Marcos umgebauter Camper parkt vor dem Funkhaus (hupen!)
+  function buildGisela(x, z) {
+    if (!AMC.StudioEdit) return;
+    const g = AMC.StudioEdit.camper(1); g.position.set(x, 0, z); g.rotation.y = -0.35; S.group.add(g);
+    g.traverse(o => { if (o.isMesh) { o.castShadow = W.quality > 0; o.receiveShadow = true; } });
+    const c = Math.cos(-0.35), sn = Math.sin(-0.35), hw = 1.1, hl = 2.3, xs = [], zs = [];
+    [[-hw, -hl], [hw, -hl], [-hw, hl], [hw, hl]].forEach(([a, b]) => { xs.push(x + a * c + b * sn); zs.push(z - a * sn + b * c); });
+    addBox(Math.min(...xs) + 0.4, Math.max(...xs) - 0.4, Math.min(...zs) + 0.4, Math.max(...zs) - 0.4, 2.1);
+    S.gisela = { x, z, g, t: 0, honk: 0 };
+  }
+  const HONK = [['m', 'Das ist Gisela! Umgebaut mit meinen eigenen Händen. Und etwas Panzertape.'], ['a', 'Marco, die Tür hängt schief.'], ['m', 'Das ist kein Fehler, das ist Charakter!'],
+    ['a', 'Ich glaub, Gisela hat gerade ein Kabel verloren.'], ['m', 'Gisela fährt mit Liebe. Und mit ein bisschen Diesel.'], ['a', 'Wann machen wir endlich die Podcast-Tour mit ihr?'], ['m', 'Psst, nicht so laut – sie ist empfindlich.']];
+  // RicoReWi: Social-Media-Junkie vor dem Funkhaus, immer am Planen (Handy, Tools, Ideen)
+  function buildRico(x, z) {
+    const f = W.hosts.rico; if (!f) return;
+    S.group.add(f.root); f.root.position.set(x, 0, z); f.root.rotation.y = 0.6; f.root.visible = true; f.play('idle');
+    S.rico = { x, z, f, t: 0, n: 0 };
+  }
+  function ricoTalk() {
+    const R = S.rico; R.t = 1.2; R.n++;
+    R.f.root.rotation.y = Math.atan2(S.pl.x - R.x, S.pl.z - R.z); R.f.play('arms', { fade: 0.2 }); setTimeout(() => S && S.rico && R.f.play('idle', { fade: 0.4 }), 1700);
+    const first = R.n === 1, rub = U.pick(D.RUBRIC_IDS);
+    if (first) { S.got[rub] += 3; drawRub(); S.score += 200; }
+    AMC.UI.bubble('RicoReWi', U.pick(D.RICO_LINES), first ? '+3 ' + D.RUBRICS[rub].icon + ' ' + D.RUBRICS[rub].name + ' · Rico teilt euch' : null);
+    AMC.Audio.sfx('talk'); W.particles.burst(R.x, 2.2, R.z, 0xa46bff, 14);
+  }
+  function honk() {
+    const G2 = S.gisela; G2.honk++; G2.t = 0.6; S.honks = (S.honks || 0) + 1;
+    AMC.Audio.sfx('horn'); W.particles.burst(G2.x, 2.6, G2.z, 0xff8a1e, 26, { speed: 5 }); W.particles.burst(G2.x, 0.6, G2.z, 0xcccccc, 14, { speed: 2, up: 1 });
+    const L = HONK[(G2.honk - 1) % HONK.length]; msg((L[0] === 'm' ? 'Marco: ' : 'Andrew: ') + L[1], 3.2);
+    if (G2.honk === 3) { S.score += 300; msg('📯 Hup-Konzert! +300 – Gisela ist begeistert.', 2.6); }
+  }
+
   // ------------------------------------------------------------------ Imbiss (Kapitel „Imbisskind“)
   function buildImbiss(x, z) {
     const g = new T.Group(); g.position.set(x, 0, z); S.group.add(g);

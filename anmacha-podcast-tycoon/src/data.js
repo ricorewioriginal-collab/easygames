@@ -23,19 +23,60 @@
   D.HOSTS = {
     andrew: {
       id: 'andrew', name: 'Andrew', color: '#ff9d2e',
-      look: { body: 'm', skin: '#f3cdb2', hair: { style: 'short', color: '#c9844a' }, top: '#17181d', topStyle: 'tee', bottom: '#34507e', bottomStyle: 'pants', shoes: '#1d1d22', bulk: 1.0 },
+      look: { body: 'm', skin: '#ebb796', hair: { style: 'short', color: '#c4874e', quiff: 0.012 }, brow: '#b07a48', eyes: '#5b84a6', top: '#16171b', topStyle: 'tee', bottom: '#3d5a85', bottomStyle: 'pants', shoes: '#1d1d22', build: 0.95, name: 'Andrew', logo: true, badge: true, watch: 'l' },
       speed: 7.4, jump: 8.6, wave: 4.6, waveDmg: 1, strong: ['musik', 'feel'],
       perk: 'Schneller und springt höher. Feelgood-Welle: großer Radius, betäubt Störsender.',
       blurb: 'Musikgefühl, gute Laune und ein Lachen bis in die Kaffeeküche.'
     },
     marco: {
       id: 'marco', name: 'Marco', color: '#ffb35a',
-      look: { body: 'm', skin: '#f0c8a8', hair: { style: 'short', color: '#6b4528' }, beard: '#6b4528', top: '#17181d', topStyle: 'tee', bottom: '#2a2e38', bottomStyle: 'pants', shoes: '#1d1d22', bulk: 1.1 },
+      look: { body: 'm', skin: '#e8b390', hair: { style: 'short', color: '#5c3b23', vol: 1.35, part: true }, beard: '#6e4527', brow: '#4a2e1a', eyes: '#5d7f8e', top: '#16171b', topStyle: 'tee', bottom: '#2b3242', bottomStyle: 'pants', shoes: '#1d1d22', build: 1.05, belly: 0.7, name: 'Marco', logo: true, badge: true },
       speed: 6.6, jump: 7.6, wave: 3.6, waveDmg: 2, strong: ['tech', 'tv'],
       perk: 'Kräftiger. Technik-Welle: schaltet Störsender sofort ab und repariert Geräte schneller.',
       blurb: 'Technik-Herz, Serienkenner und Hüter von Marcos Tagebuch.'
+    },
+    // Kein spielbarer Host: RicoReWi, der Social-Media-Junkie hinter den Kulissen (plant, baut Tools, nervt liebevoll)
+    rico: {
+      id: 'rico', name: 'RicoReWi', color: '#a46bff', npc: true,
+      look: { body: 'm', skin: '#efc3a4', hair: { style: 'spike', color: '#5a4030', vol: 1.5, quiff: 0.02 }, beard: '#6b4a30', brow: '#4e3524', eyes: '#3c3026', top: '#5b2d8c', topStyle: 'tee', bottom: '#2a2f3a', bottomStyle: 'pants', shoes: '#1d1d22', build: 1.12, belly: 0.55, name: 'RicoReWi', piercing: true, earring: 'l' },
+      blurb: 'Social-Media-Junkie, Dauerplaner und Tool-Bastler. Nervt das Team – natürlich nur ironisch.'
     }
   };
+  // RicoReWi platzt rein: Sprüche im Studio, in der Live-Aufnahme und in der Stadt
+  D.RICO_LINES = [
+    'Leute, ich hab ein neues Tool gebaut! Es plant, wann wir planen.',
+    'Kurze Frage: Darf ich das live auf TikTok streamen? … Zu spät, läuft schon.',
+    'Ich hab eine Tabelle für unsere Tabellen angelegt.',
+    'Der Algorithmus liebt euch heute! Also … zu 3 Prozent.',
+    'Kann einer von euch mal kurz in die Kamera winken? Für die Story. Und für die Story von der Story.',
+    'Ich hab die Folge schon geschnitten. Ihr habt sie noch gar nicht aufgenommen? Egal, sieht gut aus.',
+    'Neue Idee: Ein Radiosender nur für Radiosender.',
+    'Mein Handy hat 4 % Akku und 900 Benachrichtigungen. Alles läuft nach Plan.',
+    'Ich hab den Podcast-Feed optimiert. Er ist jetzt 0,2 Sekunden schneller und komplett lila.',
+    'Psst – ich bin gar nicht da. Ich bin nur ein Hologramm aus dem Planungs-Tool.'
+  ];
+  // Verrückte Ideen von Marco und Andrew – aus dem Alltag und aus dem Internet (Live-Aufnahme, Stadt, Szenen)
+  D.IDEAS = [
+    ['m', 'Was, wenn wir die nächste Folge komplett in Gisela aufnehmen? Während der Fahrt. Auf der Autobahn.', 'a', 'Und wer fährt? Du hältst das Mikro!'],
+    ['a', 'Ich hab im Internet gelesen: Pflanzen wachsen besser mit Podcast. Ich nehm jetzt für meinen Basilikum auf.', 'm', 'Der Basilikum hat schon mehr Hörer als wir.'],
+    ['m', 'Wir brauchen einen eigenen Jingle für Werbepausen. Gesungen. Von mir.', 'a', 'Dann brauchen wir auch Ohrstöpsel als Merch.'],
+    ['a', 'Neuer Trend: Leute hören Podcasts auf doppelter Geschwindigkeit. Wir reden ab jetzt einfach halb so schnell.', 'm', 'Daaas … iiist … geeeniaaal.'],
+    ['m', 'Ich hab beim Einkaufen einen Typen gesehen, der seinen Einkaufszettel als Sprachnachricht hatte. Fünf Minuten lang.', 'a', 'Das ist kein Einkaufszettel, das ist ein Hörbuch.'],
+    ['a', 'Lass uns ein Radio-Gewinnspiel machen! Der Preis: ein Tag mit Gisela.', 'm', 'Gisela braucht Urlaub, kein Gewinnspiel.'],
+    ['m', 'Ich will einen Smart-Kühlschrank, der unsere Folgen ankündigt, wenn man ihn aufmacht.', 'a', 'Und bei Gurken schreit er.'],
+    ['a', 'Die KI hat mir ein Rezept für Köttbullar geschrieben. Mit Gummibärchen.', 'm', 'Das probieren wir live. Für die Wissenschaft.'],
+    ['m', 'Wir machen eine Folge nur mit Geräuschen. Kein einziges Wort.', 'a', '… Mmmh.', ],
+    ['a', 'Was, wenn jeder Hörer ein Wort aussucht und wir daraus die Folge bauen?', 'm', 'Dann heißt die Folge „Banane Glasfaser Oma“.']
+  ];
+  // Hörer-Musikwünsche: freie Melodien aus Klavierlicht (../klavierlicht/archiv, gemeinfrei)
+  D.WISHES = [
+    { id: 'cancan', t: 'Can-Can', r: 'Bitte was zum Tanzen! 💃' }, { id: 'tuerkisch', t: 'Türkischer Marsch', r: 'Für meine Oma, die hört mit! 👵' },
+    { id: 'korobeiniki', t: 'Korobeiniki', r: 'Das Lied aus dem Klötzchen-Spiel!! 🧱' }, { id: 'maple-leaf-rag', t: 'Maple Leaf Rag', r: 'Ragtime bitte, ich putze gerade 🧽' },
+    { id: 'donauwalzer', t: 'An der schönen blauen Donau', r: 'Walzer für die Kaffeeküche ☕' }, { id: 'bergkoenig', t: 'In der Halle des Bergkönigs', r: 'Was Spannendes für die Bahnfahrt 🚆' },
+    { id: 'nachtmusik', t: 'Eine kleine Nachtmusik', r: 'Für die Nachtschicht 🌙' }, { id: 'morgenstimmung', t: 'Morgenstimmung', r: 'Ich bin gerade erst aufgestanden 😴' },
+    { id: 'neu-drunken-sailor', t: 'Drunken Sailor', r: 'Grüße vom Campingplatz! ⛺' }, { id: 'birthday', t: 'Happy Birthday', r: 'Meine Schwester hat Geburtstag! 🎂' },
+    { id: 'kanon', t: 'Kanon in D', r: 'Was Romantisches bitte 💕' }, { id: 'volk-the-irish-washerwoman', t: 'The Irish Washerwoman', r: 'Irisch! Ich bin auf dem Weg zum Pub 🍀' }
+  ];
 
   // ---------------------------------------------------------------- Sprüche in der Live-Aufnahme (je Rubrik)
   D.LINES = {
@@ -193,13 +234,14 @@
     },
     {
       id: 'c8', title: 'LIVE vom Podfluencer Festival', when: 'Herbst 2026 · München', ep: 24,
-      sky: 'festival', obj: { type: 'boss', n: 3, t: 360 }, drones: 4, show: { rounds: 8, goal: [500, 780, 1050] },
+      sky: 'festival', obj: { type: 'boss', n: 3, t: 360, rival: 'Ralf Rauschmann' }, drones: 4, show: { rounds: 8, goal: [500, 780, 1050] },
       intro: [
         ['n', 'München, Podfluencer Festival 2026. Side-Stage, LIVE im Radio auf AnMaCha24 – der Start in die neue Staffel.'],
         ['a', 'Das ist es, Marco. Die große Bühne. Das neue Gesicht von AnMaCha.'],
         ['m', 'Und ausgerechnet jetzt taucht DAS FUNKLOCH auf. Der größte Störsender, den die Stadt je gesehen hat.'],
+        ['r', 'Leute! Ich hab recherchiert: Die Drohne gehört Ralf Rauschmann. Der betreibt den Piratensender „Radio Funkloch“ und ist neidisch auf euch.'],
         ['a', 'Dann rauschen wir zurück. Seid ihr bereit, angemacht zu werden?'],
-        ['n', 'Besiege das Funkloch: Weiche seinen Rauschwellen aus ({rt}) und triff es mit Schallwellen ({x}), wenn sein Schild offen ist.']
+        ['n', 'Hol die Störsender-Drohne „Funkloch“ runter: Weiche den Rauschwellen aus ({rt}) und triff sie mit Schallwellen ({x}), wenn ihr Schild offen ist. Danach wartet Rauschmann selbst – auf eine ordentliche Rangelei.']
       ],
       outro: [
         ['m', 'Wir haben es geschafft. LIVE. Vor allen.'],
@@ -243,10 +285,11 @@
     },
     {
       id: 'c12', season: 2, title: 'Giselas Camper', when: 'Staffel 2 · Jubiläum', ep: 20,
-      sky: 'festival', obj: { type: 'boss', n: 3, t: 380, hp: 13, name: 'Das Funkloch 2.0' }, drones: 5, show: { rounds: 8, goal: [720, 1080, 1440] },
+      sky: 'festival', obj: { type: 'boss', n: 3, t: 380, hp: 13, name: 'Das Funkloch 2.0', rival: 'Ralf Rauschmann' }, drones: 5, show: { rounds: 8, goal: [720, 1080, 1440] },
       intro: [
         ['n', 'Jubiläums-Folge 20: Camping, Urlaub und ein Wohnmobil namens Gisela. Die ganze Stadt feiert – bis der Himmel violett wird.'],
         ['m', 'Es ist zurück. DAS FUNKLOCH 2.0. Größer, lauter und mit Update.'],
+        ['r', 'Rauschmann hat seine Drohne aufgerüstet. Ich hab’s auf seinem Insta gesehen. Er hat 12 Follower. Alle Bots.'],
         ['a', 'Wir haben es einmal geschafft, wir schaffen es wieder. Gisela glaubt an uns!'],
         ['n', 'Das Funkloch 2.0 hält mehr aus und ruft mehr Drohnen. Weiche aus ({rt}), spring über Rauschwellen ({a}) und triff es mit {x}, wenn der Schild offen ist.']
       ],
@@ -254,6 +297,70 @@
         ['a', 'Zwanzig Folgen. Ein Funkloch. Zweimal besiegt.'],
         ['m', 'Und Gisela hat nicht mal einen Kratzer.'],
         ['n', 'Staffel 2 ist im Kasten. Danke an alle, die AnMaCha hören – und weiter geht es überall, wo es Podcasts gibt!']
+      ]
+    },
+    // ---------------- Staffel 3: Auf Sendung – die AnMaCha-Radios
+    {
+      id: 'c13', radio: 'anmacha24', season: 3, title: 'AnMaCha24 – Die Podcastnacht', when: 'Staffel 3 · AnMaCha24', ep: 21,
+      sky: 'night', obj: { type: 'collect', n: 16, t: 270, gold: 4 }, drones: 6, show: { rounds: 7, goal: [760, 1120, 1500] },
+      intro: [
+        ['n', 'Aus dem Podcast wird ein Sender: AnMaCha24 geht rund um die Uhr auf Sendung. Erste Nacht, erste Livesendung – und das Programm ist noch leer.'],
+        ['m', 'Wir brauchen Themen für acht Stunden. Wie viele haben wir?'],
+        ['a', 'Drei. Und eins davon ist „Marco hat Hunger“.'],
+        ['r', 'Keine Panik! Ich hab ein Tool gebaut, das Themen findet. Es hat bisher „Marco hat Hunger“ gefunden.'],
+        ['n', 'Sammle 16 Themen-Funken in der nächtlichen Stadt, dazu 4 goldene ({x} für die Schallwelle gegen Störsender).']
+      ],
+      outro: [['a', 'Acht Stunden durchgesendet. Ich höre jetzt Stimmen.'], ['m', 'Das sind die Hörer, Andrew. Die rufen an.']]
+    },
+    {
+      id: 'c14', radio: 'clubradio24', season: 3, title: 'Clubradio24', when: 'Staffel 3 · Clubradio24', ep: 22,
+      sky: 'party', obj: { type: 'party', n: 12, t: 250 }, drones: 7, show: { rounds: 7, goal: [800, 1180, 1560] },
+      intro: [
+        ['n', 'Clubradio24 legt auf – aber das Funkloch hat die Club-Mixtapes in der ganzen Stadt versteckt.'],
+        ['m', 'Ohne Mixtapes spielen wir Fahrstuhlmusik. Vier Stunden lang.'],
+        ['a', 'Ich mag Fahrstuhlmusik.'],
+        ['r', 'Ich hab schon 40 Clubnacht-Posts geplant. Mit Countdown. Der Countdown läuft seit gestern.'],
+        ['m', 'Genau deshalb suchen wir jetzt die Mixtapes!'],
+        ['n', 'Finde 12 Mixtapes 📼 zwischen den Neonlichtern, bevor die Clubnacht beginnt.']
+      ],
+      outro: [['a', 'Der Bass wackelt bis zum Funkhaus.'], ['m', 'Das ist nicht der Bass, das ist Gisela. Die tanzt mit.']]
+    },
+    {
+      id: 'c15', radio: 'christmasradio24', season: 3, title: 'Christmasradio24', when: 'Staffel 3 · Christmasradio24', ep: 23,
+      sky: 'xmas', obj: { type: 'guest', n: 4, t: 300 }, drones: 5, show: { rounds: 7, goal: [840, 1240, 1640] },
+      intro: [
+        ['n', 'Christmasradio24 sendet die große Weihnachtsshow. Es schneit, es glitzert – und die Gäste stecken im Schnee fest.'],
+        ['a', 'Marco, du hast gesagt, du fährst sie mit Gisela ab.'],
+        ['m', 'Gisela hat Sommerreifen. Und Gefühle.'],
+        ['n', 'Bring 4 Gäste rechtzeitig ins Funkhaus. Sprich sie an ({x}) und lauf mit ihnen zur Tür.']
+      ],
+      outro: [['m', 'Frohe Weihnachten an alle Hörer!'], ['a', 'Und an Gisela. Die steht jetzt mit Lichterkette vorm Haus.']]
+    },
+    {
+      id: 'c16', radio: 'yourtime-fm', season: 3, title: 'YourTime-FM – Giselas Roadtrip', when: 'Staffel 3 · YourTime-FM', ep: 24,
+      sky: 'day', obj: { type: 'train', n: 10, t: 170 }, drones: 5, show: { rounds: 7, goal: [880, 1300, 1720] },
+      intro: [
+        ['n', 'YourTime-FM schickt AnMaCha auf Tour: Eine Sendung an jeder Haltestelle der Stadt. Gisela ist leider in der Werkstatt.'],
+        ['a', 'Was ist diesmal kaputt?'],
+        ['m', 'Nichts! Sie bekommt nur … Spoiler. Und neue Blumen.'],
+        ['n', 'Erreiche alle 10 Haltestellen, bevor die Bahn weiterfährt. Sprinte mit {rb}.']
+      ],
+      outro: [['a', 'Zehn Haltestellen, zehn Sendungen. Meine Füße senden SOS.'], ['m', 'Nächstes Mal fährt Gisela. Versprochen. Vielleicht.']]
+    },
+    {
+      id: 'c17', radio: 'rockradio24', season: 3, title: 'Rockradio24 – Der Rauschkönig', when: 'Staffel 3 · Finale', ep: 25,
+      sky: 'festival', obj: { type: 'boss', n: 3, t: 400, hp: 16, name: 'Die Rauschkönig-Drohne', rival: 'Ralf „Rauschkönig“ Rauschmann' }, drones: 6, show: { rounds: 8, goal: [960, 1420, 1880] },
+      intro: [
+        ['n', 'Rockradio24 eröffnet mit einem Konzert vor dem Funkhaus. Doch über der Bühne schwebt Rauschmanns größte Störsender-Drohne aller Zeiten.'],
+        ['r', 'Rauschmann nennt sich jetzt „Rauschkönig“. Er trägt eine Krone. Aus Antennen.'],
+        ['a', 'Der hat echt eine Krone auf? Okay, die Drohne zuerst – und dann reden wir mit ihm. Mit den Händen.'],
+        ['m', 'Dann zeigen wir ihm, wie Rock klingt. Gisela, Hupe bereit!'],
+        ['n', 'Die Rauschkönig-Drohne ist stärker als alles zuvor. Weiche aus ({rt}), spring über Rauschwellen ({a}) und triff sie mit {x}, wenn der Schild offen ist. Danach: Rangelei mit dem Rauschkönig persönlich.']
+      ],
+      outro: [
+        ['m', 'Der Rauschkönig hat aufgegeben. Er moderiert jetzt eine Gartensendung. Und mein Trommelfell ist weg.'],
+        ['a', 'Podcast, Radio, Rockkonzert. Was kommt als Nächstes?'],
+        ['n', 'Staffel 3 ist im Kasten. Alle AnMaCha-Radios senden wieder – hört rein auf anmacha.de!']
       ]
     }
   ];

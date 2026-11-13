@@ -85,7 +85,44 @@
     boss: t => { tone(55, t, 1.2, 'sawtooth', 0.2, null, 40); noise(t, 1, 0.2, 'lowpass', 300); },
     door: t => sample('enter', t, 0.6),
     buy: t => sample('buy', t, 0.6),
-    tick: t => tone(2000, t, 0.02, 'square', 0.04)
+    tick: t => tone(2000, t, 0.02, 'square', 0.04),
+    horn: t => { tone(330, t, 0.35, 'sawtooth', 0.09); tone(415, t, 0.35, 'sawtooth', 0.08); tone(330, t + 0.42, 0.5, 'sawtooth', 0.09); tone(415, t + 0.42, 0.5, 'sawtooth', 0.08); },   // Giselas Hupe
+    laugh: t => { for (let i = 0; i < 5; i++) tone(U.rand(260, 340) - i * 12, t + i * 0.11, 0.09, 'triangle', 0.09, null, 200); noise(t, 0.6, 0.04, 'bandpass', 1200, null, 1); },
+    spark: t => { noise(t, 0.12, 0.3, 'highpass', 3000); tone(2600, t, 0.08, 'square', 0.05, null, 400); },
+    plug: t => { tone(140, t, 0.08, 'square', 0.12, null, 90); tone(900, t + 0.03, 0.05, 'triangle', 0.08); },
+    whoosh: t => { const f = noise(t, 0.35, 0.18, 'bandpass', 500, null, 1.5); f.frequency.exponentialRampToValueAtTime(3500, t + 0.3); },
+    feedback: t => tone(2900, t, 0.5, 'sine', 0.05, null, 3400),
+    drum: t => { const o = tone(150, t, 0.22, 'sine', 0.5, null, 42); o.frequency.exponentialRampToValueAtTime(42, t + 0.12); }
+  };
+  /** einzelner Ton für Minispiele (MIDI-Nummer), z. B. Soundboard-Pads und Rhythmus-Treffer */
+  A.note = function (m, dur, type, peak) { if (!A.ctx || !A.ready) return; try { tone(mtof(m), A.ctx.currentTime + 0.005, dur || 0.25, type || 'triangle', peak || 0.14); } catch (e) { /* still */ } };
+  A.now = () => A.ctx ? A.ctx.currentTime : performance.now() / 1000;
+  // ------------------------------------------------------------------ Klavierlicht: freie Melodien (../klavierlicht/archiv, gemeinfrei) mit Klavierklang
+  let pWave = null;
+  /** Klavierton (Obertöne wie in Klavierlicht, Filter schließt beim Abklingen). when = Audiozeit oder sofort */
+  A.piano = function (m, when, dur, vel, out) {
+    if (!A.ctx || !A.ready) return; const c = A.ctx;
+    try {
+      if (!pWave) { const h = [0, 1, 0.42, 0.2, 0.1, 0.05, 0.025]; pWave = c.createPeriodicWave(new Float32Array(h.length), new Float32Array(h)); }
+      const t = Math.max(c.currentTime + 0.005, when || 0), f = mtof(m), v = Math.max(0.05, Math.min(1, vel == null ? 0.7 : vel));
+      const decay = Math.max(0.35, 3.2 - (m - 48) * 0.04), hold = Math.min(Math.max(dur || 0.3, 0.12), decay);
+      const o = c.createOscillator(), lp = c.createBiquadFilter(), g = c.createGain();
+      lp.type = 'lowpass'; lp.frequency.setValueAtTime(Math.min(12000, f * (4 + v * 6)), t); lp.frequency.setTargetAtTime(Math.max(500, f * 1.6), t, decay / 3);
+      const pk = 0.22 * v; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(pk, t + 0.004); g.gain.setTargetAtTime(pk * 0.35, t + 0.004, 0.18); g.gain.setTargetAtTime(0, t + hold, 0.08);
+      o.setPeriodicWave(pWave); o.frequency.value = f; o.connect(lp); lp.connect(g); g.connect(out || sfxBus); o.start(t); o.stop(t + hold + 0.5);
+    } catch (e) { /* still */ }
+  };
+  const songs = {};
+  /** Lied aus Klavierlicht laden: { title, step (ms je Schritt), mel: [[schritt, midi, länge]], bass } */
+  A.song = id => songs[id] || (songs[id] = fetch('../klavierlicht/archiv/' + id + '.json').then(r => r.ok ? r.json() : null).catch(() => null));
+  /** Lied ab Schritt s0 für sec Sekunden abspielen (Melodie optional), gibt Stopp-Funktion zurück */
+  A.playSong = function (song, o) {
+    o = o || {}; if (!A.ctx || !A.ready || !song) return () => {};
+    const st = song.step / 1000 * (o.slow || 1), s0 = o.from || 0, s1 = s0 + (o.sec || 12) / st, t0 = A.ctx.currentTime + 0.1, bus = A.ctx.createGain();
+    bus.connect(sfxBus);
+    const sched = (arr, vel) => (arr || []).forEach(([s, m, l]) => { if (s >= s0 && s < s1) A.piano(m, t0 + (s - s0) * st, l * st, vel, bus); });
+    if (o.mel !== false) sched(song.mel, o.vel || 0.6); sched(song.bass, (o.vel || 0.6) * 0.55);
+    return () => { try { bus.gain.setTargetAtTime(0, A.ctx.currentTime, 0.05); setTimeout(() => bus.disconnect(), 400); } catch (e) { /* still */ } };
   };
   const U = AMC.U;
   function sample(n, t, v) { const b = samples[n]; if (!b) return; const s = A.ctx.createBufferSource(), g = A.ctx.createGain(); g.gain.value = v || 0.7; s.buffer = b; s.connect(g); g.connect(sfxBus); s.start(t); }

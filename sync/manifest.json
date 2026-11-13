@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9231d865c774",
- "generated": "2026-11-13T16:38:10+01:00",
- "commit": "09698982a6279424dd1ec2751c7eeb6cfd46183d",
+ "version": "469cf1b8425e",
+ "generated": "2026-11-13T22:16:00+00:00",
+ "commit": "51689044cf31ec88983d2df16e1f34f988535232",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2167,9 +2167,14 @@
    "h": "27e8ed4029020e9ef1fbb9af1ecef67ac0c8fbf86197d7488aa9eb78e6bdc840"
   },
   {
+   "p": "anmacha-podcast-tycoon/img/podcast-logo.jpg",
+   "s": 29774,
+   "h": "316b47334c940f04ccb592aaeb0f9734e43fbae05bb6e03a7af50b27e0402daa"
+  },
+  {
    "p": "anmacha-podcast-tycoon/index.html",
-   "s": 6359,
-   "h": "60a8302d72a953bd1b21bb297f0782d954081a8f37fada77c07dc0bc2f46e4c1"
+   "s": 6532,
+   "h": "d2e9b34b9c0d570e651f77813c2685995036297513b0e33915401d9e99f08615"
   },
   {
    "p": "anmacha-podcast-tycoon/manifest.webmanifest",
@@ -2242,9 +2247,14 @@
    "h": "8186591f1fab555f5cd8dc857597f1d8ab2036cb212f230e499007c469cd2a6e"
   },
   {
+   "p": "anmacha-podcast-tycoon/src/arcade.js",
+   "s": 31030,
+   "h": "e97d2b700e9cb6bfc0a668bc832ccaf2e0dbef29a02fd5e23ff0bcb949ecabe9"
+  },
+  {
    "p": "anmacha-podcast-tycoon/src/audio.js",
-   "s": 10390,
-   "h": "5fcf44aeb0c2778506da7ec89bbeb5756acd2614675bb7d33de0b5dc72d9ce0e"
+   "s": 14169,
+   "h": "68497ea70a60fd184ce22407936e81a43ec9367933fe7422c2b17bb196a773a6"
   },
   {
    "p": "anmacha-podcast-tycoon/src/core.js",
@@ -2253,13 +2263,23 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/data.js",
-   "s": 35431,
-   "h": "24974a417dbc2c6f1c8f6202fc669f6d3711e29ab555ca735efb4d88b3a884cb"
+   "s": 45342,
+   "h": "52adc0f3d3b1e600d8bfa5054f7ce33d44aa72455d33fe80b99b8ebd2d79551b"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/src/drive.js",
+   "s": 21785,
+   "h": "7cbe43db481798370a5fbca5429e29208381695d25c7f7baff54826435df1b3f"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/src/home.js",
+   "s": 33233,
+   "h": "fc5af9542feba25da3211fa1dcee93e1c730b571cfb620a458da109223087b8f"
   },
   {
    "p": "anmacha-podcast-tycoon/src/main.js",
-   "s": 37017,
-   "h": "b19069e0992a7a10a181d9dcdf8940d82765ce7de3d46bbb8dde4d37dd28413d"
+   "s": 44111,
+   "h": "597024cb0d3098d1342bfc75d8941b2d0da344988c5b1585c0326b18f4346de4"
   },
   {
    "p": "anmacha-podcast-tycoon/src/media.js",
@@ -2267,39 +2287,64 @@
    "h": "ba9d81702dc55d31f8cb43c20b582b3ba19a839490927b19a60afb10ef0b35a4"
   },
   {
+   "p": "anmacha-podcast-tycoon/src/minis.js",
+   "s": 30227,
+   "h": "4d3df32e2514316c1a8200c4780f1208746bb2a4d0a7491b3e3c6cd76d642102"
+  },
+  {
    "p": "anmacha-podcast-tycoon/src/net.js",
    "s": 11079,
    "h": "d596f4600213bdfbbdc43475d4ade70a842931c35bae466de60e29cf632b3da4"
   },
   {
+   "p": "anmacha-podcast-tycoon/src/people.js",
+   "s": 34326,
+   "h": "9a4a8b83a72010127e1ca075dcfc544d5bdf67ff071d26b23264c6f4e00a9fcd"
+  },
+  {
    "p": "anmacha-podcast-tycoon/src/play.js",
-   "s": 81771,
-   "h": "dc7daabd624c576b184ce991c7c5cee1fa8ba5f6b275c8fe3062906574209c21"
+   "s": 99460,
+   "h": "e9d9fceab66e70273d208cd6890d8d6218541c3a52cebf1872d2e3a7f5a91a19"
   },
   {
    "p": "anmacha-podcast-tycoon/src/quiz.js",
-   "s": 7759,
-   "h": "ba9082ff362845b297b0ad12584b1bd86a40b7b2dc7f325b6154e22f246f3ce4"
+   "s": 7959,
+   "h": "fec10feb729df74e4b11517c94cc45643ddeab3587f32dd5941451acc6e2b8bc"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/src/sender.js",
+   "s": 63871,
+   "h": "047e1b12fac06db0621d9eb891f3ca08a3371c5842d16f0a72390b3d0943ff89"
   },
   {
    "p": "anmacha-podcast-tycoon/src/show.js",
-   "s": 39285,
-   "h": "b66f49c09296c54c7053dc2bdf205b5d985cdb2ad5473bbe7fe7f2d6259360b8"
+   "s": 47848,
+   "h": "7059bc6dc71b51a6ce043050b9c32751a4c908466cbf89d2abd9cf7494d505d6"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/src/studio-edit.js",
+   "s": 31411,
+   "h": "1dee758d24d8b13ffe5117b7c0abd6e631a600ef335d65ba05234cad85f5d1af"
   },
   {
    "p": "anmacha-podcast-tycoon/src/ui.js",
-   "s": 18185,
-   "h": "560526eec0de682c6a17e0efb1d810952210d9a6ca7ecafef05679a6257db565"
+   "s": 18452,
+   "h": "69605d4e8fc97b03a9f1c3c4f92874b7b3114d002e6563b577afcbd7e07e0a93"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/src/vibe.js",
+   "s": 7480,
+   "h": "aadf0cdbcd16f6126194a92d29e92518e5a40eed0270f2a5b8a55ef0268ee060"
   },
   {
    "p": "anmacha-podcast-tycoon/src/world.js",
-   "s": 23559,
-   "h": "0f258e47ed7a88206fea5c50ec6681f5e7cfadc2e9834a6f68d5128939f71183"
+   "s": 22862,
+   "h": "ace902d85ba025827615cf31ba3afe80854878fde5806b3b7bbb93ff9b65cc4c"
   },
   {
    "p": "anmacha-podcast-tycoon/style.css",
-   "s": 38162,
-   "h": "ec6a2d497d6c27478c8d5453a56d78a3e8763b45a7903052333c2a85ab8edd71"
+   "s": 55726,
+   "h": "de3345bde67263070e60d5e26866caefcdb0ff6411e60392ba3cef1e428d8680"
   },
   {
    "p": "anmacha-podcast-tycoon/sw.js",
@@ -6208,8 +6253,8 @@
   },
   {
    "p": "games.js",
-   "s": 58582,
-   "h": "111894bbd9f6193567bdc3c84ca2eecb7d6a3c3691c675fdd2f69b57be97ea53"
+   "s": 58672,
+   "h": "84498fb9413039c14efe5e06194f1622073826ccace187207ecd09d171edb7a2"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6513,8 +6558,8 @@
   },
   {
    "p": "guides.js",
-   "s": 173573,
-   "h": "d6a3991af8fa93f4b5f1561b13dad62bfccf8da4e6e66eddeb1eaac816fc3b02"
+   "s": 173613,
+   "h": "715a2d018731573c1e40598b1575f2bf7f48f2078439295d4053eb3dfb4000e2"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6598,8 +6643,8 @@
   },
   {
    "p": "guides/anmacha-podcast-tycoon.json",
-   "s": 14927,
-   "h": "0d2158df1584826e31710835b22474417c19981f8e7d6db6db16d686fccb3736"
+   "s": 28761,
+   "h": "95d3a11a4486705fc7adf959915a12ebd3676f50be310ea5e8380b792831cd21"
   },
   {
    "p": "guides/anmacha-preisradar.json",
@@ -9738,8 +9783,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 258882,
-   "h": "6211e0683b63bfbd11b5c2951a6cea2c5da774366ee4ecf179404cf3c0498915"
+   "s": 259012,
+   "h": "79d0df20d735cbee083047b0c227aee72c06e95809c6e46f27b4b96e599f8ca8"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -12227,9 +12272,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-FPMQ_4Ly.js",
-   "s": 1877381,
-   "h": "fe029790ca74c78a713267dbc64411ea3415f79e9e70362c0901b262c7b8829f"
+   "p": "zotik/assets/index-BjKTx24y.js",
+   "s": 1898015,
+   "h": "c7602324b0c3dd3b87d0626cf7e99dffb3adc2d6082da5de7cd8f94e85fb7217"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -12249,7 +12294,7 @@
   {
    "p": "zotik/index.html",
    "s": 72608,
-   "h": "e6beeecd4de9e8fb3e376d5cf9b3b022f326857e5a374c226f645d733cfc346b"
+   "h": "91d5c0faeb4c636222af80ecab72800b0432fe466a9f3b38cca0d07632bca0ad"
   },
   {
    "p": "zotik/manifest.webmanifest",
