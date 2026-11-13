@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5f745f1fa9f1",
- "generated": "2026-11-13T12:28:50+01:00",
- "commit": "0f2b21de41b0b05ce991d73111c5dec518116122",
+ "version": "1572e3a22dfb",
+ "generated": "2026-11-13T12:19:14+00:00",
+ "commit": "122e4f60fb61adf628310cc2cc384782868d3103",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -348,8 +348,8 @@
   },
   {
    "p": "aeru/game.js",
-   "s": 171737,
-   "h": "f29b57dce6b8926de80627a535a28c292fd2c02a090075a804df93a3aa8d0758"
+   "s": 172194,
+   "h": "881add9aed5e2aeab959468b72939bca99a9811c1cd45afd2db41302133777a4"
   },
   {
    "p": "aeru/index.html",
@@ -408,8 +408,8 @@
   },
   {
    "p": "aeru/style.css",
-   "s": 34580,
-   "h": "22c97a3c8998ff149c626a5f97986c99e678d1fe81fa21725fe5e50b34b5bf06"
+   "s": 34634,
+   "h": "c79b9ba428a468e5728c5637622f21981d47c0598c078eeea64aeb50c08a8010"
   },
   {
    "p": "aeru/sw.js",
@@ -9734,7 +9734,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258882,
-   "h": "a28b34c14d6c7e396fbbc20e30064d995756ab55fb4cc69576335b3df53c9d87"
+   "h": "9f9918af5917d0c1897f956ab5c06108e0ae3bfaadd2aed76176d9979629914d"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

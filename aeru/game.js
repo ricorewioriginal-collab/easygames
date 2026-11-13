@@ -529,8 +529,11 @@ function buildRegions(index) {
     const [name, text] = RESCUE[index][di];
     dragonStatues.push({id: di, x: dx, z: dz, m: st, freed: freed.includes(di), name, text});
     // Bäume (meiden Brücke, Turm, Statue, Edelsteine)
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 6; i++) {
       const ang = rand() * TAU, rr = 5 + rand() * (rg.r - 7), x = rg.x + Math.cos(ang) * rr, z = rg.z + Math.sin(ang) * rr;
+      // Weg vom Brückenende zur Gebietsmitte bleibt frei.
+      const sx = rg.x - ex, sz = rg.z - ez, k = clamp(((x - ex) * sx + (z - ez) * sz) / (sx * sx + sz * sz), 0, 1);
+      if (Math.hypot(x - ex - sx * k, z - ez - sz * k) < 3.5) continue;
       if (nearBridge(x, z, 5) || Math.hypot(x - tx - 2.5, z - tz + 2.5) < 7 || Math.hypot(x - dx, z - dz) < 5 || Math.hypot(x - ex, z - ez) < 4 || jewels.some(j => Math.hypot(j.x - x, j.z - z) < 3)
         || [GATE_NEXT, GATE_PREV].some(g => Math.hypot(g.x - x, g.z - z) < 7)) continue;
       tree(x, z, .7 + rand() * .5);
@@ -607,7 +610,9 @@ function updateRegions(dt) {
       const ax = (thief.x - state.x) / (d || 1), az = (thief.z - state.z) / (d || 1), cx = thief.x - h.x, cz = thief.z - h.z, cr = Math.hypot(cx, cz) || 1;
       // Weg vom Spieler, am Rand entlang statt hinaus
       vx = ax; vz = az; if (cr > h.r - 5) { const tx = -cz / cr, tz = cx / cr, sgn = Math.sign(tx * ax + tz * az) || 1; vx = tx * sgn - cx / cr * .6; vz = tz * sgn - cz / cr * .6; }
-      const n = Math.hypot(vx, vz) || 1; vx = vx / n * 9; vz = vz / n * 9;
+      // Nach 5 s Flucht geht ihm kurz die Puste aus (1,5 s langsamer) – die Gelegenheit für den Ansturm.
+      thief.run = (thief.run || 0) + dt; const tired = thief.run % 6.5 > 5, sp = tired ? 5.5 : 9;
+      const n = Math.hypot(vx, vz) || 1; vx = vx / n * sp; vz = vz / n * sp;
       if (!thief.fled) { thief.fled = 1; toast('Ein Eierdieb! Halte ' + actionKey('ramm') + ' für den Ansturm und hol ihn ein'); sfx.warn(); }
     } else { vx = (h.x - thief.x) * .3; vz = (h.z - thief.z) * .3; }
     thief.x += vx * dt; thief.z += vz * dt;

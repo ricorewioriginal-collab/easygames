@@ -7,7 +7,7 @@ let now = 1000; // Bildzeit läuft über alle Läufe weiter (sonst rechnet anima
 function rig(h) {
   const pad = {connected: true, axes: [0, 0, 0, 0], buttons: []}; h.context.navigator = {getGamepads: () => [pad]};
   let minY = 9;
-  const frame = () => { now += 1000 / 60; h.api.frame(now); minY = Math.min(minY, h.snap().state.y); };
+  const frame = () => { if (h.snap().mode === 'dialog') h.api.finishDialog(); now += 1000 / 60; h.api.frame(now); minY = Math.min(minY, h.snap().state.y); };
   const walk = (x, z, max = 900) => { for (let i = 0; i < max; i++) { const s = h.snap().state, dx = x - s.x, dz = z - s.z, d = Math.hypot(dx, dz); if (d < 1.2) break; pad.axes = [dx / d, dz / d, 0, 0]; frame(); } pad.axes = [0, 0, 0, 0]; for (let i = 0; i < 20; i++) frame(); const s = h.snap().state; return Math.hypot(x - s.x, z - s.z); };
   return {pad, frame, walk, minY: () => minY};
 }
