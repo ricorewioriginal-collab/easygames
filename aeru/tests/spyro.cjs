@@ -88,4 +88,20 @@ const speed = s => Math.hypot(s.vx, s.vz);
   api.teleport(g.x + 3.1, 0, g.z, 0); h.tick(2); assert(!got(), 'Splitter in 3 m bleibt liegen');
   api.teleport(g.x + 2.1, 0, g.z, 0); h.tick(2); assert(got(), 'Funkel holt Splitter in 2 m');
 }
-console.log('PASS spyro: Schatzkörbe in allen 7 Welten auf ebenem Boden, fest, zerbrechen per Wind und Rammstoß, Lichtfalter heilen, Ansturm (halten, lenken, loslassen, Kante, Sprung), Falter aus Gegnern, Funkel mit Lebensfarbe und Splitter-Magnet.');
+// Gleiten wie auf der PS1: Sprung, in der Luft nochmal Sprung – Aeru segelt ohne Flügelkraft geradeaus, Ramm lässt fallen.
+{
+  const h = fresh(), {api} = h;
+  api.teleport(0, 0, 19, 0); h.tick(10); const st0 = h.snap().state.stamina;
+  api.jump(); h.tick(14); api.jump(); h.tick(1);
+  let s = h.snap().state; assert(s.glide && !s.flight, 'zweiter Sprung startet das Gleiten');
+  const z0 = s.z; let minVy = 0; for (let i = 0; i < 40; i++) { h.tick(1); minVy = Math.min(minVy, h.snap().state.vy); }
+  s = h.snap().state; assert(minVy >= -2.5, `Gleiten sinkt langsam (${minVy.toFixed(2)})`); assert(z0 - s.z > 3, 'Gleiten segelt ohne Eingabe geradeaus');
+  assert(s.stamina >= st0 - .01, 'Gleiten kostet keine Flügelkraft');
+  for (let i = 0; i < 120 && !h.snap().state.onGround; i++) h.tick(1);
+  api.teleport(0, 0, 19, 0); h.tick(10); api.jump(); h.tick(14); api.jump(); h.tick(4); api.jump(); h.tick(1); assert(h.snap().state.flight && !h.snap().state.glide, 'dritter Sprung: Flügelschlag und Flug'); api.flight();
+  for (let i = 0; i < 120 && !h.snap().state.onGround; i++) h.tick(1);
+  api.teleport(0, 0, 19, 0); h.tick(10); api.jump(); h.tick(14); api.jump(); h.tick(2); assert(h.snap().state.glide, 'gleitet wieder');
+  api.hold('dive', true); h.tick(2); api.hold('dive', false); assert(!h.snap().state.glide, 'Ramm lässt fallen');
+  for (let i = 0; i < 120 && !h.snap().state.onGround; i++) h.tick(1); assert(h.snap().state.onGround && !h.snap().state.glide, 'Landung beendet das Gleiten');
+}
+console.log('PASS spyro: Schatzkörbe in allen 7 Welten auf ebenem Boden, fest, zerbrechen per Wind und Rammstoß, Lichtfalter heilen, Ansturm (halten, lenken, loslassen, Kante, Sprung), Falter aus Gegnern, Funkel mit Lebensfarbe und Splitter-Magnet, Gleiten per Doppelsprung.');

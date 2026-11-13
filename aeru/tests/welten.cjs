@@ -87,9 +87,42 @@ function rig(h) {
   assert(Math.hypot(s.state.x - back.x, s.state.z - back.z) < 7 && api.floorAt(s.state.x, s.state.z, 1) > -.5, 'Ankunft vor dem passenden Tor auf festem Boden');
   h.tick(30); assert.equal(h.snap().save.level, 0, 'Ankunft löst das Tor nicht erneut aus');
 }
+// Heimathain: Heimatwelt in Welt 1 mit einem Levelportal je Welt, zu Fuß erreichbar; Heimtor in jeder anderen Welt führt zurück.
+{
+  const h = fresh(), {api} = h, w = rig(h), hub = api.hub();
+  assert(hub, 'Welt 1 hat den Heimathain');
+  const portals = api.gates().filter(g => g.id.startsWith('hub')); assert.equal(portals.length, 6, 'sechs Levelportale');
+  for (const p of portals) { assert(api.floorAt(p.x, p.z, 1) > -.5 && api.floorAt(p.arrive.x, p.arrive.z, 1) > -.5, `Portal ${p.to} auf festem Boden`); assert(Math.hypot(p.x - hub.x, p.z - hub.z) < hub.r - 4, 'Portal im Heimathain'); }
+  api.teleport(hub.bridge.a - 4, 0, hub.at, 0); h.tick(3);
+  assert(w.walk(hub.bridge.b, hub.at) < 1.5 && w.walk(hub.entry.x, hub.entry.z) < 1.5, 'Brücke zum Heimathain begehbar');
+  assert(w.walk(hub.x - 7, hub.z) < 1.5, 'Platz im Heimathain erreicht'); assert(w.minY() > -.6, 'kein Absturz auf dem Weg');
+  assert(h.snap().save.level === 0, 'noch in Welt 1');
+  const p2 = portals.find(p => p.to === 2); api.teleport(p2.x, 0, p2.z, 0); h.tick(3); assert.equal(h.snap().save.level, 0, 'Portal ohne Leuchtkern bleibt zu');
+  api.setCore(0); api.setCore(1); api.level(0, false); h.tick(2);
+  const p1 = api.gates().find(g => g.id === 'hub2'); api.teleport(p1.x, 0, p1.z, 0); h.tick(3);
+  let s = h.snap(); assert.equal(s.save.level, 2, 'Levelportal reist in Welt 3');
+  const home = api.gates().find(g => g.id === 'home'); assert(home, 'Heimtor in Welt 3');
+  assert(Math.hypot(s.state.x - home.x, s.state.z - home.z) < 7 && api.floorAt(s.state.x, s.state.z, 1) > -.5, 'Ankunft vor dem Heimtor auf festem Boden');
+  h.tick(30); assert.equal(h.snap().save.level, 2, 'Ankunft löst das Heimtor nicht aus');
+  for (let lv = 1; lv < 7; lv++) { api.level(lv, false); h.tick(2); const g = api.gates().find(g => g.id === 'home'); assert(g && api.floorAt(g.x, g.z, 1) > -.5, `Welt ${lv + 1}: Heimtor auf festem Boden`); for (const t of h.snap().layout.trees.filter(t => !t.pillar)) assert(Math.hypot(t.x - g.x, t.z - g.z) > 4, `Welt ${lv + 1}: kein Baum im Heimtor`); }
+  api.level(2, false); h.tick(2); const hg = api.gates().find(g => g.id === 'home'); api.teleport(hg.x, 0, hg.z, 0); h.tick(3);
+  s = h.snap(); assert.equal(s.save.level, 0, 'Heimtor führt in den Heimathain');
+  const back = api.gates().find(g => g.id === 'hub2'); assert(Math.hypot(s.state.x - back.x, s.state.z - back.z) < 6 && api.floorAt(s.state.x, s.state.z, 1) > -.5, 'Ankunft vor dem Portal der Welt');
+  h.tick(30); assert.equal(h.snap().save.level, 0, 'Ankunft löst das Portal nicht aus');
+}
+// Wächter im Westgebiet: sechs Treffer, gibt einen lila Edelstein frei, bleibt danach fort.
+{
+  const h = fresh(), {api} = h; let g = h.snap().enemies.find(e => e.guard);
+  assert(g && g.hp === 6, 'Wächter mit 6 Trefferpunkten');
+  for (let i = 0; i < 40 && h.snap().enemies.find(e => e.guard).state !== 'dead'; i++) { g = h.snap().enemies.find(e => e.guard); api.teleport(g.x, 0, g.z + 3.2, 0); h.tick(30); api.strike(); h.tick(2); if (h.snap().mode === 'dialog') api.finishDialog(); }
+  assert.equal(h.snap().enemies.find(e => e.guard).state, 'dead', 'Wächter besiegt');
+  const lila = api.jewels().filter(j => j.kind === 'lila' && !j.hidden && !j.got).sort((a, b) => Math.hypot(a.x - g.x, a.z - g.z) - Math.hypot(b.x - g.x, b.z - g.z))[0];
+  api.teleport(lila.x, 0, lila.z, 0); h.tick(3); assert(api.jewels().find(j => j.id === lila.id).got, 'lila Edelstein des Wächters');
+  api.level(0, false); h.tick(2); assert(!h.snap().enemies.some(e => e.guard), 'besiegter Wächter kommt nicht wieder');
+}
 // Gegner der Gebiete bleiben auf ihrem Gebiet.
 {
   const h = fresh(), {api} = h, rs = api.regions(); h.tick(600);
   for (const e of h.snap().enemies) { const d = Math.min(Math.hypot(e.x, e.z), ...rs.map(r => Math.hypot(e.x - r.x, e.z - r.z))); assert(api.floorAt(e.x, e.z, 1) > -.5, `Gegner ${e.kind} auf festem Boden (${e.x.toFixed(1)}, ${e.z.toFixed(1)})`); }
 }
-console.log('PASS welten: 7 Welten mit je 4 Gebieten zu Fuß über Brücken erreichbar, Edelsteine (Werte, Turm, Korb, Speichern), Kristalldrachen, Eierdieb (nur per Ansturm), Weltentore ohne Menü, Gegner bleiben im Gebiet.');
+console.log('PASS welten: 7 Welten mit je 4 Gebieten zu Fuß über Brücken erreichbar, Edelsteine (Werte, Turm, Korb, Speichern), Kristalldrachen, Eierdieb (nur per Ansturm), Weltentore ohne Menü, Heimathain mit 6 Levelportalen und Heimtor in jeder Welt, Wächter mit lila Edelstein, Gegner bleiben im Gebiet.');

@@ -7,7 +7,7 @@ Simulation mit festen 60 Hz (Akkumulator), dadurch gleiches Verhalten bei 30, 60
 - **Sprung:** Antippen springt niedrig, Halten höher (Sprunghöhe wird nach 0,08 s beim Loslassen gekappt).
 - **Coyote Time:** 0,12 s nach dem Verlassen einer Kante darf noch gesprungen werden.
 - **Sprungpuffer:** Ein Druck bis 0,14 s vor der Landung wird nach dem Aufsetzen ausgeführt (statt eines Flügelschlags knapp über dem Boden).
-- **Gleiten:** In der Luft Sprung halten – deutlich langsamerer Fall.
+- **Gleiten (wie auf der PS1):** Springen, in der Luft nochmal Sprung – Aeru segelt ohne Flügelkraft geradeaus (11 m/s, höchstens 2,4 m/s Sinken), der Stick lenkt. Ramm lässt fallen, dritter Druck = Flügelschlag/Flug. Sprung halten bremst wie bisher den Fall.
 - **Rammstoß (Umschalt / RAMM):** Am Boden ein kurzer Schub mit Unverwundbarkeit. Wer im Schub einen Gegner trifft, schlägt ihn (Reichweite 1,7 m, nach den ersten 3 Himmelstruhen 3,2 m) und zerstreut Dornenkugeln.
 - **Ansturm:** Wer die Rammtaste nach dem Stoß gedrückt hält, stürmt bis zu 3 s lenkbar mit 12,5 m/s weiter (Wendekreis 3,2 rad/s) und rammt alle 0,3 s erneut. Loslassen, Springen, Fliegen oder eine Kante (Kantenschutz) beenden ihn.
 - **Landung:** Stauchung und Geräusch je nach Fallgeschwindigkeit.
@@ -26,13 +26,13 @@ Simulation mit festen 60 Hz (Akkumulator), dadurch gleiches Verhalten bei 30, 60
 
 ## Touch-Steuerung
 
-Links ein großer Stick mit Totzonenring. Rechts ein Aktionsrad: SPRUNG groß unten, FLUG oben, WIND links, ROLLE rechts. REDEN erscheint nur, wenn jemand in der Nähe ist.
+Links ein großer Stick mit Totzonenring. Rechts ein Aktionsrad: SPRUNG groß unten, FLUG oben, FEUER links, ROLLE rechts. REDEN erscheint nur, wenn jemand in der Nähe ist.
 
 ## Controller
 
 PlayStation, Nintendo Switch und Xbox werden automatisch erkannt (`../gamepad.js`); Hinweise zeigen die passenden Symbole (✕ ○ □ △ bzw. B A Y X).
 Linker Stick läuft und fliegt **analog** (Totzone 0,18, halb gedrückt = halbe Geschwindigkeit), rechter Stick dreht die Kamera (Totzone 0,2), R3 = Kamera hinter Aeru, L1/R1 drehen schrittweise.
-Kreuz = Sprung, Kreis = Windstoß, Viereck = Rammstoß, Dreieck = Sprechen/Portal, R2 = Flug, L2 = Rammstoß bzw. sinken, Options = Pause, Share = Tagebuch.
+Kreuz = Sprung, Kreis = Feueratem, Viereck = Rammstoß, Dreieck = Sprechen/Portal, R2 = Flug, L2 = Rammstoß bzw. sinken, Options = Pause, Share = Tagebuch.
 Treffer und Rammstöße lassen den Controller kurz vibrieren. Im Controller-Modus ersetzt eine Symbolleiste die Tastatur- und Touch-Hinweise; Menüs bedient das Steuerkreuz.
 
 ## Spieleportale
@@ -47,7 +47,7 @@ Folgt weich, lässt sich frei drehen (Maus, Q/E, Wischen) und zoomen (Mausrad). 
 
 ## Kampf
 
-- **Windstoß** (F/WIND) trifft Gegner, Laternen, Kugeln und Bossschilde in Blickrichtung.
+- **Feueratem** (F/FEUER) trifft Gegner, Laternen, Kugeln und Bossschilde in Blickrichtung.
 - Gegner: **Nebelkäfer** (Sprungangriff), **Sturmfunke** (schießt Kugeln), **Stille-Schatten** (weicht aus, nur nach dem Angriff verwundbar), im Nachtgarten **Nachtmotte** (fliegt im Zickzack, 1 Treffer, schneller Sturzflug) und **Wurzelwächter** (3 Treffer, setzt drei Warnkreise, die nach 1 s einschlagen).
 - Jeder Angriff wird angekündigt (roter Kristall über dem Gegner), dann Angriff, dann Erholung.
 - Nach einem Treffer kurze Unverwundbarkeit. Besiegte Gegner kehren erst nach 20 s zurück und nur, wenn Aeru weit genug weg ist.
@@ -56,7 +56,7 @@ Folgt weich, lässt sich frei drehen (Maus, Q/E, Wischen) und zoomen (Mausrad). 
 ## Bosse
 
 - **Vesper** (Sternenwarte, 6 Treffer, 3 Phasen): Wellen überspringen, Warnkreisen ausweichen, bei offenem Schild zuschlagen.
-- **Die Nachtblüte** (Nachtgarten, 8 Treffer, 3 Phasen): Wellen überspringen, in Phase 2 Dornenkugeln mit dem Windstoß oder Rammstoß zerstreuen, in Phase 3 Doppelwellen und rote Kreise.
+- **Die Nachtblüte** (Nachtgarten, 8 Treffer, 3 Phasen): Wellen überspringen, in Phase 2 Dornenkugeln mit dem Feueratem oder Rammstoß zerstreuen, in Phase 3 Doppelwellen und rote Kreise.
 - **Die Stille** (Morgenruinen, 9 Treffer, 3 Phasen): In Phase 2 müssen schwebende Anker im Flug zerstört werden (temporäre Aufwinde helfen), Phase 3 mit Doppelwellen.
 - Ein Bosskampf beginnt erst, wenn der Questschritt aktiv ist und Aeru die Arena betritt. Wer stirbt, beginnt am Arenaeingang; der Boss wird nur auf den Beginn der aktuellen Phase zurückgesetzt.
 
@@ -86,7 +86,7 @@ Jede der 7 Welten hat drei kleine **Himmelsinseln** (Ost-Nord, West-Nord, Süd).
 |---|---|
 | 24 | Flügelkraft +25 |
 | 48 | zusätzliches Herz |
-| 72 | größere Windstoß-Reichweite |
+| 72 | größere Feueratem-Reichweite |
 | 96 | zusätzliches Herz |
 | 120 | 12 % schnellerer Flug |
 | 144 | Sternenglanz: unbegrenzte Flügelkraft (Steigen, Gleiten, Flügelschlag) und goldene Flugspur |
@@ -120,7 +120,7 @@ Fensterwechsel oder verdeckter Tab pausiert das Spiel und löst alle gedrückten
 
 ## Drachenkunst
 
-- **Schatzkörbe:** bis zu fünf je Welt an festen Stellen (nur auf ebenem Boden, frei von Splittern, Laternen, Figuren, Teichen, Portalen und Bäumen; Bäume meiden diese Stellen). Fest wie Felsen; Windstoß, Rammstoß und Ansturm zerbrechen sie. Nicht gespeichert – beim nächsten Besuch stehen sie wieder.
+- **Schatzkörbe:** bis zu fünf je Welt an festen Stellen (nur auf ebenem Boden, frei von Splittern, Laternen, Figuren, Teichen, Portalen und Bäumen; Bäume meiden diese Stellen). Fest wie Felsen; Feueratem, Rammstoß und Ansturm zerbrechen sie. Nicht gespeichert – beim nächsten Besuch stehen sie wieder.
 - **Lichtfalter:** aus jedem zerbrochenen Korb und jedem besiegten Gegner (Pool von 6). Flattern umher, weichen leicht aus, fliegen nach 12 s davon. Fangen heilt ein Herz, bei vollen Herzen füllt er die Flügelkraft.
 - **Funkel:** Begleiter-Glühwürmchen hinter Aerus Schulter. Farbe = Lebensenergie (Gold über 60 %, Blau über 30 %, sonst Rot; bei einem Herz blinkt er). Holt Splitter und Falter aus 2,4 m heran (vorher 1,2 m). Splitter-Kette: innerhalb von 1,4 s gesammelte Splitter steigen im Ton.
 
@@ -129,7 +129,12 @@ Fensterwechsel oder verdeckter Tab pausiert das Spiel und löst alle gedrückten
 - **Gebiete:** Jede Welt hat vier zusätzliche Gebiete (Nord r 20, Ost r 19, West r 19, Süd r 20) auf Bodenhöhe, verbunden durch 4 m breite Brücken mit 1,5 m Überlappung. Der Brückenzugang auf der Hauptinsel bleibt frei von Bäumen und Felsen; Kantenschutz gilt auf den Brücken.
 - **Edelsteine:** Rot 1, Grün 2, Blau 5, Gold 10, Lila 25; 208–235 Wert je Welt, gespeichert je Welt (`save.jewels`). Gezeichnet als ein InstancedMesh je Farbe (5 Draw Calls). Funkel holt sie aus 2,4 m heran; Ton steigt mit Wert und Kette.
 - **Kristalldrachen:** eine Statue je Gebiet (eine Geometrie, ein Draw Call), Berühren befreit (Dialog, Rastpunkt), gespeichert in `save.dragons`.
-- **Eierdieb:** im Ostgebiet, flieht mit 9 m/s (Laufen 7,4, Ansturm 12,5), bleibt im Gebiet und weicht am Rand entlang aus. Gefangen per Rammstoß/Ansturm oder Windstoß aus der Nähe; gespeichert in `save.eggs`.
+- **Eierdieb:** im Ostgebiet, flieht mit 9 m/s (Laufen 7,4, Ansturm 12,5), bleibt im Gebiet und weicht am Rand entlang aus. Gefangen per Rammstoß/Ansturm oder Feueratem aus der Nähe; gespeichert in `save.eggs`.
 - **Weltentore:** Nordgebiet → nächste Welt (erst mit Leuchtkern), Südgebiet → vorige Welt. Hineinlaufen reist sofort; Ankunft 5 m vor dem passenden Tor der Zielwelt.
 - Gegner der Gebiete bleiben auf ihrem Gebiet. Wolken liegen weiter draußen (120–150 m), Nebel 85–215 m, Sichtweite 320 m.
+- **Heimathain (Heimatwelt):** nur in Welt 1, Insel (70, 36) r 22 östlich, Brücke auf z = 20. In der Mitte die Statue des Ältesten Ormun (Dialog beim ersten Besuch je Sitzung), im Halbkreis (r 14) sechs Levelportale zu den Welten 2–7; ein Portal ist offen, sobald `save.cores[Welt − 1]` gesetzt ist, sonst grau. Ankunft vor dem Heimtor der Zielwelt.
+- **Heimtor:** in den Welten 2–7 im Südgebiet bei (−36, 70), führt in den Heimathain vor das Portal dieser Welt. Bäume, Körbe und Edelsteine halten Abstand zu allen Toren.
+- **Wächter:** im Westgebiet jeder Welt ein vergrößerter Gegner der Welt (6 Treffer, größere Reichweite), gibt beim Sieg einen lila Edelstein frei; danach erscheint er nicht mehr (am Edelstein gespeichert).
+- **Feueratem:** ersetzt den Windstoß optisch und klanglich (Flammenringe, Funken, Knistern); Reichweite und Treffer bleiben gleich, Laternen werden damit entzündet.
+- **Sprachausgabe:** Dialogzeilen werden mit der deutschen Gerätestimme vorgelesen (Drachen tiefer, Pip höher); Einstellung „Sprachausgabe“, eingebettet über `cloud/anmacha-cloud.js`.
 
