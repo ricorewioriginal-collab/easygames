@@ -230,7 +230,7 @@ export function createMaerchen(C) {
     const WD = { n, C: C.CHP[n], h, blocked: blk, zone, ims: [], edKeys: [], terr: null, story: true, mw: w, lv: Math.max(3, S.lvl - 1), grav: w.grav || 1,
       zn, path: PATHX, mbg: null, spawn: [0, 12], refresh, menuQuest, kill, zoneEnter() { }, ensureBoss() { }, sealedNow: () => false, spawnMini() { }, tick };
     C.setWLD(WD); cur = { w, h, g: null, items: [], ints: [], boss: null, guest: null, react: null, swing: null, wave: 0 };
-    C.setAtmos(w.atm);
+    C.setAtmos({ sun: [.38, .66, .66], ...w.atm });   // Sonne von vorn-oben: Fassaden zur Kamera hin beleuchtet
     // Boden: glatte Schattierung, Farbverlauf, Weg, Sand am Wasser, Schnee am Rand; feine Bodenstruktur als Textur
     const PS = 2 * R + 54, PN = Math.min(240, Math.round(PS * .8)), geo = new T.PlaneGeometry(PS, PS, PN, PN); geo.rotateX(-Math.PI / 2); geo.translate(CX, 0, CZ);
     const p = geo.attributes.position, col = new Float32Array(p.count * 3), c = new T.Color(), c1 = new T.Color(w.ground[0]), c2 = new T.Color(w.ground[1]), cp = new T.Color(w.path), cr = new T.Color(w.ridge), sn = new T.Color(0xf0f4f8), sand = new T.Color(0x8a7a5a);

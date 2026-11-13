@@ -8,7 +8,7 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       // Fachwerk-/Steinhaus mit Satteldach, Tür, leuchtenden Fenstern
       house(x, z, w, d, h, wall, roof, ry, o = {}) {
         const g = new T.Group(); g.position.set(x, 0, z); g.rotation.y = ry || 0; b.g.add(g); const bb = { g };
-        g.add(mk(G.box, b.mat(wall, 'plaster'), 0, h / 2, 0, w, h, d));
+        g.add(mk(G.box, b.mat(wall, 'plaster', o.dark ? null : { s: .45, gain: 1.7, n: .6, e: 0x3a3026, ei: 1 }), 0, h / 2, 0, w, h, d));
         if (o.beams) for (const sx of [-w / 2, w / 2]) g.add(mk(G.box, b.mat(o.beams, 'wood'), sx, h / 2, 0, .26, h, d + .05, false));
         for (const s of [-1, 1]) { const r = mk(G.box, b.mat(roof, dark(roof) ? 'slate' : 'roof', { s: .6 }), 0, h + d * .27, s * d * .26, w + .7, .28, d * .62); r.rotation.x = s * .72; g.add(r); }
         g.add(mk(G.box, M(wall), 0, h + d * .14, 0, w * .99, d * .3, d * .02, false));
