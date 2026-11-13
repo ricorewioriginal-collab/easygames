@@ -10,12 +10,17 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
   const dim = (h, k) => { const c = new T.Color(h); c.multiplyScalar(k); return c.getHex(); };
   const eyes = (g, y, z, sx, col, s) => { for (const k of [-1, 1]) g.add(mk(G.sph0, E(col || 0xffffff, 2.2), k * sx, y, z, .06 * (s || 1), .07 * (s || 1), .04, false)); };
   const fin = r => { mergeStatic(r.body, new Set([r.head, ...(r.legs || []), r.tail, ...(r.sh || [])].filter(Boolean))); return r; };
-  const HOVER = new Set(['scherbe', 'fledermaus', 'steinfratze', 'stymphal', 'hai', 'falke', 'rabe']);
+  const HOVER = new Set(['dschinn', 'scherbe', 'fledermaus', 'steinfratze', 'stymphal', 'hai', 'falke', 'rabe']);
 
   function hover(kind, col) {
     const root = new T.Group(), b = new T.Group(); root.add(b); const sh = [];
     const wings = (w, mat, y, flat) => { for (const s of [-1, 1]) { const g = mk(G.sph0, mat, s * w * .55, y, 0, w * .55, flat || .05, w * .3); g.rotation.z = s * .25; b.add(g); sh.push(g); } };
     switch (kind) {
+      case 'dschinn':   // Rauchgeist aus der Lampe: Oberkörper mit Armen, Turban, Körper läuft in eine Rauchspirale aus
+        { const sk = C(col, { r: .5, e: dim(col, .45), ei: 1.2, t: 1 }); b.add(mk(G.sph, sk, 0, .35, 0, .42, .48, .34)); const tl = mk(G.cone0, sk, 0, -.45, 0, .3, 1.1, .3); tl.rotation.x = Math.PI; b.add(tl); sh.push(tl);
+          b.add(mk(G.sph, C(0xf0e8d8), 0, 1.0, 0, .26, .2, .26)); b.add(mk(G.sph0, C(0xd8b040, { m: .9 }), 0, .95, .24, .06, .06, .04, false)); b.add(mk(G.sph, sk, 0, .82, 0, .22, .22, .22));
+          eyes(b, .86, .19, .08, 0xffe080, 1.2); for (const s2 of [-1, 1]) { const a = mk(G.cyl, sk, s2 * .5, .45, 0, .08, .55, .08); a.rotation.z = s2 * .9; b.add(a); b.add(mk(G.tor, C(0xd8b040, { m: .9 }), s2 * .68, .3, 0, .08, .08, .03, false)); }
+          b.add(glow(col, 3, 0, .2, 0, .45)); break; }
       case 'scherbe':   // Spiegelsplitter: Schwarm scharfer Spiegelscherben um ein Auge
         b.add(mk(G.oct, C(0xf0f4ff, { m: 1, r: .05, e: col, ei: .7 }), 0, 0, 0, .3, .52, .3)); eyes(b, .05, .22, .0, 0x9a6aff, 1.6);
         for (let i = 0; i < 6; i++) { const m = mk(G.box, C(0xffffff, { m: 1, r: .04, e: col, ei: .9 }), 0, 0, 0, .05, .5, .22, false); m.rotation.set(i, i * 2, i * .5); b.add(m); sh.push(m); }
@@ -45,7 +50,7 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
           b.add(glow(0x9a4aff, 1.8, 0, 0, 0, .3)); } break;
       default: return null;
     }
-    return Object.assign(fin({ root, body: b, sh }), { flap: kind !== 'scherbe' });
+    return Object.assign(fin({ root, body: b, sh }), { flap: kind !== 'scherbe' && kind !== 'dschinn' });
   }
 
   function walker(kind, col, boss) {
@@ -136,6 +141,13 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
         for (const k of [-1, 1]) { const a = arm(k, 1.36, .55, .055, wd, .3); a.add(mk(G.sph0, jn, 0, -.28, 0, .07, .07, .07, false)); }
         if (!boss) for (const x of [-.3, .3, 0]) b.add(mk(G.cyl0, M(0xd8d0c0, { e: 0x6a6a6a, ei: .5 }), x, 2.4, 0, .006, 1.4, .006, false));
         else b.add(glow(0xffb060, 3, 0, 1.2, 0, .35)); break; }
+      case 'zauberer': {   // Der Zauberer aus dem Maghreb: langer Mantel mit Sternen, Turban mit Feder, Bart, Stab mit Ring
+        const rb = C(col, { r: .6, e: dim(col, .25), ei: 1 }), gd = C(0xd8b040, { m: .9, r: .25 });
+        b.add(mk(G.cone0, rb, 0, 1.0, 0, .62, 2.0, .55)); b.add(mk(G.box, rb, 0, 1.95, 0, .6, .55, .38)); for (let i = 0; i < 7; i++) b.add(mk(G.oct, C(0xffe080, { e: 0xffc040, ei: 1.6 }), Math.sin(i * 1.7) * .45, .4 + i * .2, .3 + Math.cos(i * 1.7) * .08, .05, .07, .02, false));
+        head.position.set(0, 2.45, 0); head.add(mk(G.sph, C(0xd8a880, { e: 0x4a3020, ei: .35, r: .7 }), 0, 0, 0, .22, .25, .22)); head.add(mk(G.sph, C(0xf0ece4), 0, .22, 0, .3, .2, .3)); head.add(mk(G.oct, C(0xc83a8a, { e: 0x8a1a5a, ei: 1.2 }), 0, .22, .27, .06, .08, .03, false));
+        head.add(mk(G.cone0, C(0x1a1414), 0, -.24, .14, .14, .36, .08)); eyes(head, .04, .2, .08, 0x3a1a1a);
+        leg(-.2, .5, 0, .5, .1, C(0x2a1a2a), true); leg(.2, .5, 0, .5, .1, C(0x2a1a2a), true); arm(-1, 2.1, .75, .09, rb, .45); const a = arm(1, 2.1, .75, .09, rb, .45);
+        a.add(mk(G.cyl0, C(0x4a2a1a), 0, -.6, .15, .04, 2.2, .04)); a.add(mk(G.tor, gd, 0, .5, .15, .14, .14, .04, false)); b.add(glow(0xc070ff, 4, 0, 1.6, 0, .35)); break; }
       case 'tiger': {   // Shere Khan: großer Tiger mit schwarzen Streifen, heller Schnauze, hinkt (Lungri, der Lahme)
         const sc = 1.05, fur = C(col, { r: .7, e: dim(col, .2), ei: 1 }), st = C(0x15100c); quad(sc, fur);
         for (let i = 0; i < 7; i++) for (const s of [-1, 1]) { const r = mk(G.box, st, s * .38, .88, .55 - i * .2, .06, .34, .05, false); r.rotation.z = s * .5; b.add(r); }
@@ -225,5 +237,5 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
   }
 
   const make = (kind, col, boss) => HOVER.has(kind) ? hover(kind, col) : walker(kind, col, boss);
-  return { make, has: k => HOVER.has(k) || ['marionette', 'karte', 'hase', 'herzkoenigin', 'pirat', 'hook', 'krokodil', 'giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'wache', 'schattenritter', 'spartoi', 'riese', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf'].includes(k), HOVER };
+  return { make, has: k => HOVER.has(k) || ['zauberer', 'marionette', 'karte', 'hase', 'herzkoenigin', 'pirat', 'hook', 'krokodil', 'giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'wache', 'schattenritter', 'spartoi', 'riese', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf'].includes(k), HOVER };
 }
