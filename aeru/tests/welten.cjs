@@ -19,7 +19,7 @@ function rig(h) {
     const rs = api.regions(); assert.equal(rs.length, 4, `Welt ${lv + 1}: vier Gebiete`);
     for (const j of api.jewels()) assert(api.floorAt(j.x, j.z, j.y) > j.y - 1.25 && api.floorAt(j.x, j.z, j.y) <= j.y, `Welt ${lv + 1}: Edelstein ${j.id} (${j.kind}) über festem Boden`);
     assert(api.jewelTotal() >= 200, `Welt ${lv + 1}: Schatz ${api.jewelTotal()}`);
-    assert.equal(api.statues().length, 4, 'vier Kristalldrachen'); assert(api.thief(), 'ein Eierdieb');
+    assert.equal(api.statues().length, 4, 'vier Kristalldrachen'); assert(h.snap().layout.trees.filter(t => t.prop && /^tower/.test(t.prop)).length >= 4, `Welt ${lv + 1}: Burgtürme in den Gebieten`); assert(api.thief(), 'ein Eierdieb');
     for (const r of rs) {
       const w = rig(h), s0 = r.axis === 'x' ? {x: r.bridge.a - Math.sign(r.bridge.b) * 4, z: r.at} : {x: r.at, z: r.bridge.a - Math.sign(r.bridge.b) * 4};
       api.teleport(s0.x, 0, s0.z, 0); h.tick(3);
@@ -90,7 +90,7 @@ function rig(h) {
 // Heimathain: Heimatwelt in Welt 1 mit einem Levelportal je Welt, zu Fuß erreichbar; Heimtor in jeder anderen Welt führt zurück.
 {
   const h = fresh(), {api} = h, w = rig(h), hub = api.hub();
-  assert(hub, 'Welt 1 hat den Heimathain');
+  assert(hub, 'Welt 1 hat den Heimathain'); assert(h.snap().layout.trees.some(t => t.prop === 'castle_blue'), 'Burg im Heimathain');
   const portals = api.gates().filter(g => g.id.startsWith('hub')); assert.equal(portals.length, 6, 'sechs Levelportale');
   for (const p of portals) { assert(api.floorAt(p.x, p.z, 1) > -.5 && api.floorAt(p.arrive.x, p.arrive.z, 1) > -.5, `Portal ${p.to} auf festem Boden`); assert(Math.hypot(p.x - hub.x, p.z - hub.z) < hub.r - 4, 'Portal im Heimathain'); }
   api.teleport(hub.bridge.a - 4, 0, hub.at, 0); h.tick(3);

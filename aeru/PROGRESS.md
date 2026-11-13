@@ -26,6 +26,7 @@ Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese D
 - **Spyro-Ausbau, Schritt 4 (13.11.2026):** Welten etwa dreimal so groß – vier Gebiete je Welt mit Brücken, Edelsteine in fünf Farbwerten, Schatzkörbe mit Edelsteinen, 28 Kristalldrachen zum Befreien, ein Eierdieb je Welt, Weltentore (hineinlaufen = nächste/vorige Welt ohne Menü), größere Sichtweite. → `tests/welten.cjs`, alle Logiktests
 - **Spyro-Ausbau, Schritt 5 (13.11.2026):** Feueratem statt Windstoß (Flammen, Klang, Texte), Sprachausgabe für alle Dialoge (abschaltbar), ein Wächter je Welt im Westgebiet mit lila Edelstein. → `tests/welten.cjs`
 - **Spyro-Ausbau, Schritt 6 (13.11.2026):** Heimatwelt „Heimathain“ in Welt 1 mit Ältestem Ormun und sechs Levelportalen (öffnen mit dem Leuchtkern der Vorwelt), Heimtor in jeder anderen Welt, Gleiten per Doppelsprung wie auf der PS1 (ohne Flügelkraft, Ramm lässt fallen, dritter Druck = Flug). → `tests/welten.cjs`, `tests/spyro.cjs`
+- **Spyro-Ausbau, Schritt 7 (13.11.2026):** Freie Burgen und Türme (KayKit Medieval Hexagon, CC0): Burg des Ältesten und sieben Türme im Heimathain, ein Burgturm in jedem Gebiet (mit Kollision), Bergkulisse rund um jede Welt, dichtes Gras in den Gebieten. Die Felsen unter den Inseln ragen nicht mehr durch den Boden (vorher ohne Kollision begehbar). → `tests/welten.cjs`
 
 ## Umgesetzt, aber nicht vollständig getestet
 
