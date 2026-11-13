@@ -119,6 +119,7 @@
         const pl = new T.Mesh(new T.PlaneGeometry(6, 3), new T.MeshBasicMaterial({ map: tex, toneMapped: false, side: T.DoubleSide })); pl.position.set(0, 4.2, 0); bb.add(pl);
       }
     });
+    buildVenues(g, flat);
     // Bäume (Kenney)
     if (!snow) { W.instances(g, 'tree', trees, { byHeight: true }); W.instances(g, 'tree-high-round', treesB, { byHeight: true }); }
     else {
@@ -160,10 +161,15 @@
     const F = FUNKHAUS, M = W.mat, w = F.x1 - F.x0, d = F.z1 - F.z0, cx = (F.x0 + F.x1) / 2, cz = (F.z0 + F.z1) / 2;
     const glassTex = W.canvasTex(256, 256, (c, W2, H) => { c.fillStyle = '#121826'; c.fillRect(0, 0, W2, H); for (let y = 0; y < H; y += 32) { c.fillStyle = night ? 'rgba(255,190,110,.55)' : 'rgba(120,170,230,.35)'; c.fillRect(0, y + 6, W2, 18); c.fillStyle = '#0a0d14'; for (let x = 0; x < W2; x += 32) c.fillRect(x, y, 3, 32); } }, [3, 2]);
     const glass = new T.MeshStandardMaterial({ map: glassTex, roughness: 0.15, metalness: 0.6, emissive: 0xffffff, emissiveMap: glassTex, emissiveIntensity: night ? 0.7 : 0.25 });
-    const body = W.box(w, F.h, d, glass, cx, F.h / 2, cz, g);
-    addBox(F.x0, F.x1, F.z0, F.z1, F.h);
-    W.box(w + 0.6, 0.6, d + 0.6, M(0x16171c, { r: 0.4, m: 0.4 }), cx, F.h + 0.3, cz, g);
-    W.box(w + 0.2, 0.5, d + 0.2, M(0xff8a1e, { e: 0xff6a00, ei: 0.8 }), cx, 4.4, cz, g);
+    // Begehbar: Glasfassade als vier Wände, Eingang offen, Dach drüber (wirft keinen Schatten, damit innen Tageslicht ist)
+    const inner = M(0xece4d6, { r: 0.85 }), band = M(0xff8a1e, { e: 0xff6a00, ei: 0.8 }), T2 = 0.6, dl = F.door.x - 1.6, dr = F.door.x + 1.6;
+    const wall = (x0, x1, z0, z1, y0, y1, inFace) => { const mats = [glass, glass, glass, glass, glass, glass]; mats[inFace] = inner; const m = W.box(x1 - x0, y1 - y0, z1 - z0, mats, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2, g, false); addBox(x0, x1, z0, z1, y1, y0); return m; };
+    wall(F.x0, F.x1, F.z0, F.z0 + T2, 0, F.h, 4); wall(F.x0, F.x0 + T2, F.z0 + T2, F.z1, 0, F.h, 0); wall(F.x1 - T2, F.x1, F.z0 + T2, F.z1, 0, F.h, 1);
+    wall(F.x0 + T2, dl, F.z1 - T2, F.z1, 0, F.h, 5); wall(dr, F.x1 - T2, F.z1 - T2, F.z1, 0, F.h, 5); wall(dl, dr, F.z1 - T2, F.z1, 4, F.h, 5);
+    const roof = W.box(w + 0.6, 0.6, d + 0.6, M(0x16171c, { r: 0.4, m: 0.4 }), cx, F.h + 0.3, cz, g, false); roof.castShadow = false;
+    addBox(F.x0, F.x1, F.z0, F.z1, F.h + 0.6, F.h);
+    [[cx, F.z0 - 0.1, w + 0.2, 0.2], [cx, F.z1 + 0.1, w + 0.2, 0.2], [F.x0 - 0.1, cz, 0.2, d], [F.x1 + 0.1, cz, 0.2, d]].forEach(([x, z, bw, bd]) => W.box(bw, 0.5, bd, band, x, 4.4, z, g, false));
+    buildFunkhausInside(g, night);
     // großes Logo auf dem Dach und über dem Eingang
     const logo = W.logoTex({ sub: 'FUNKHAUS · Wir ♥ Medien' });
     const sg = new T.Group(); sg.position.set(cx, F.h + 0.6, F.z1 - 2); g.add(sg);
@@ -175,7 +181,8 @@
     W.box(6, 0.3, 3.4, M(0x16171c, { r: 0.4 }), door.x, 4.2, F.z1 + 1.5, g);
     const onair = W.textTex(['ON AIR'], { w: 512, h: 160, bg: '#300808', fg: '#ff3a3a', accent: '#ff3a3a', size: 96 });
     W.sign(g, onair, 3.4, 1.05, door.x, 5.2, F.z1 + 0.05, 0);
-    const doorMesh = W.box(3, 3.6, 0.2, M(0xff8a1e, { e: 0xff7a10, ei: 1.2, r: 0.3 }), door.x, 1.8, F.z1 + 0.05, g);
+    const doorMesh = W.box(3.4, 0.4, 0.7, M(0xff8a1e, { e: 0xff7a10, ei: 1.2, r: 0.3 }), door.x, 3.8, F.z1 - 0.3, g);
+    [-1.75, 1.75].forEach(o => W.box(0.25, 3.8, 0.7, M(0x16171c, { r: 0.4 }), door.x + o, 1.9, F.z1 - 0.3, g));
     S.doorMesh = doorMesh;
     // Riesen-Mikrofon vor dem Funkhaus (Wahrzeichen)
     const mg = new T.Group(); mg.position.set(door.x - 8, 0.16, F.z1 + 6); g.add(mg);
@@ -184,6 +191,70 @@
     const head = new T.Mesh(new T.SphereGeometry(1, 24, 16), M(0x9aa0ad, { m: 0.9, r: 0.25 })); head.scale.set(0.9, 1.25, 0.9); head.position.y = 5.8; head.castShadow = true; mg.add(head);
     W.cyl(0.95, 0.95, 0.3, M(0xff8a1e, { e: 0xff6a00, ei: 0.7 }), 0, 4.9, 0, mg);
     addBox(door.x - 9.6, door.x - 6.4, F.z1 + 4.4, F.z1 + 7.6, 0.5); addBox(door.x - 8.3, door.x - 7.7, F.z1 + 5.7, F.z1 + 6.3, 9);
+  }
+  // Im Funkhaus: Empfang, Studio, Redaktion, Quiz-Bühne, Radio-Lounge, Fanshop, Koop-Terminal – jeder Menüpunkt als Ort
+  function buildFunkhausInside(g, night) {
+    const F = FUNKHAUS, M = W.mat, cx = (F.x0 + F.x1) / 2, cz = (F.z0 + F.z1) / 2;
+    const ftex = W.canvasTex(256, 256, (c, w, h) => { c.fillStyle = '#2a2c36'; c.fillRect(0, 0, w, h); c.fillStyle = '#353845'; for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) if ((x + y) % 2) c.fillRect(x * 32, y * 32, 32, 32); c.fillStyle = 'rgba(255,138,30,.6)'; c.fillRect(0, 0, w, 3); c.fillRect(0, 0, 3, h); }, [5, 5]);
+    const fl = new T.Mesh(new T.PlaneGeometry(F.x1 - F.x0 - 1.2, F.z1 - F.z0 - 1.2), new T.MeshStandardMaterial({ map: ftex, roughness: 0.6 })); fl.rotation.x = -Math.PI / 2; fl.position.set(cx, 0.175, cz); fl.receiveShadow = true; g.add(fl);
+    const B = (w, h, d, c, x, y, z, o, solid) => { const m = W.box(w, h, d, M(c, o || { r: 0.6 }), x, y, z, g, false); if (solid) addBox(x - w / 2, x + w / 2, z - d / 2, z + d / 2, y + h / 2); return m; };
+    const sign = (txt, sub, col, x, y, z, ry, w) => { const t = W.textTex([txt].concat(sub ? [sub] : []), { w: 512, h: sub ? 200 : 128, size: sub ? 62 : 70, accent: col }); const m = new T.Mesh(new T.PlaneGeometry(w || 4, (w || 4) * (sub ? 200 : 128) / 512), new T.MeshBasicMaterial({ map: t, toneMapped: false })); m.position.set(x, y, z); m.rotation.y = ry || 0; g.add(m); return m; };
+    // Empfang
+    B(5, 1.1, 1.2, 0xff8a1e, cx, 0.72, -20, { e: 0xff6a00, ei: 0.3 }, true); B(5.2, 0.08, 1.4, 0x16171c, cx, 1.31, -20);
+    sign('EMPFANG', 'Funkhaus · Wir ♥ Medien', '#ff8a1e', cx, 3.2, -20.8, 0, 4.2);
+    // Studio mit Pult an der Rückwand
+    B(9, 0.2, 6, 0x1c1e26, cx, 0.27, -32.4); B(4.2, 0.9, 1.4, 0x3a3d4a, cx, 0.82, -32.2, null, true); B(4.4, 0.08, 1.6, 0x16171c, cx, 1.3, -32.2);
+    [-1.2, 1.2].forEach(o => { W.cyl(0.03, 0.03, 0.5, M(0x222222), cx + o, 1.6, -31.8, g, 6); const h = new T.Mesh(new T.SphereGeometry(0.12, 10, 8), M(0x9aa0ad, { m: 0.8, r: 0.3 })); h.position.set(cx + o, 1.9, -31.8); g.add(h); });
+    sign('ON AIR', '', '#ff3a3a', cx, 5.2, -35.3, 0, 3.4).material.color.set(0xffd0d0);
+    const logo = W.logoTex({ sub: 'STUDIO A' }); W.sign(g, logo, 6, 2, cx, 3.4, -35.3, 0, true);
+    // Werkstatt (Studio umbauen) und Redaktion (Story)
+    B(2.6, 0.9, 1.2, 0x8a6a48, 29.4, 0.62, -33.6, null, true); B(0.8, 0.5, 0.5, 0xff8a1e, 29, 1.32, -33.6); sign('STUDIO UMBAUEN', '🛠️ Möbel, Deko, Technik', '#3dd6ff', 29.4, 3.2, -35.3, 0, 3.6);
+    B(3.6, 2.4, 0.12, 0xc8a070, 15.6, 2.2, -35.2); for (let i = 0; i < 9; i++) B(0.6, 0.45, 0.02, [0xffd23f, 0xff8a1e, 0x3dd6ff][i % 3], 14.6 + (i % 3) * 1, 1.6 + Math.floor(i / 3) * 0.6, -35.12);
+    sign('REDAKTION', '📜 Story: alle Kapitel', '#ffd23f', 15.6, 4.2, -35.2, 0, 3.6);
+    // Quiz-Bühne links
+    B(3.2, 0.24, 6, 0x5a2bb0, 14.4, 0.29, -25.5, { e: 0x3a1a80, ei: 0.4 }); [-1.5, 1.5].forEach(o => { B(0.8, 1.1, 0.6, 0x3dd6ff, 14.6, 0.95, -25.5 + o, { e: 0x2090c0, ei: 0.5 }, true); });
+    sign('KI-QUIZSHOW', '🧠 Andrew gegen Marco', '#a46bff', F.x0 + 0.65, 3.6, -25.5, Math.PI / 2, 3.8);
+    // Radio-Lounge rechts
+    B(1, 0.5, 3.2, 0x3a5a85, 31.2, 0.45, -26, null, true); B(0.3, 0.8, 3.2, 0x3a5a85, 31.9, 0.85, -26);
+    D.STATIONS.slice(0, 6).forEach((st, i) => { const t = W.textTex([st.name], { w: 256, h: 64, size: 30, accent: st.color }); const m = new T.Mesh(new T.PlaneGeometry(1.9, 0.48), new T.MeshBasicMaterial({ map: t, toneMapped: false })); m.position.set(F.x1 - 0.65, 1.7 + (i % 3) * 0.6, -27 + Math.floor(i / 3) * 2); m.rotation.y = -Math.PI / 2; g.add(m); });
+    sign('RADIO-LOUNGE', '📻 Alle Sender & Folgen', '#3dd6ff', F.x1 - 0.65, 4.2, -26, -Math.PI / 2, 3.8);
+    // Fanshop rechts vorn
+    B(0.1, 1.6, 2.6, 0x888888, 31.6, 1.0, -18.5); for (let i = 0; i < 5; i++) B(0.5, 0.7, 0.05, [0xff8a1e, 0x3a3d4a, 0xa46bff, 0x3dd6ff, 0xffd23f][i], 31.4, 1.3, -19.6 + i * 0.55);
+    B(1.6, 0.9, 0.8, 0xff8a1e, 30, 0.62, -16.6, null, true); sign('FANSHOP', '🛍️ Outfits & Upgrades', '#ff8a1e', F.x1 - 0.65, 3.4, -18.5, -Math.PI / 2, 3.6);
+    // Koop-Terminal links vorn
+    B(0.8, 1.6, 0.6, 0x16171c, 14, 1.0, -18, null, true); B(0.66, 0.8, 0.04, 0x3dd6ff, 14, 1.4, -17.68, { e: 0x3dd6ff, ei: 0.9 }); sign('ONLINE-KOOP', '🌐 per Link, Code, QR', '#3dd6ff', F.x0 + 0.65, 3.4, -18, Math.PI / 2, 3.6);
+    // Deckenlichter
+    if (S.glows) { const pts = []; for (let x = F.x0 + 3; x < F.x1 - 2; x += 4.5) for (let z = F.z0 + 3; z < F.z1 - 2; z += 4.5) pts.push([x, F.h - 1, z]); S.glows.push(glowCloud(pts, 0xfff1c8, 2.4)); }
+    addStation('menu', '🏠 Empfang: Hauptmenü & Einstellungen', cx, -18.6, 2.2);
+    addStation('live', '🎙️ Ins Studio: Live-Aufnahme starten', cx, -30.2, 2.2);
+    addStation('edit', '🛠️ Studio umbauen', 29.4, -31.6, 1.9);
+    addStation('story', '📜 Redaktion: Story-Kapitel', 15.6, -33, 2.0);
+    addStation('quiz', '🧠 KI-Quizshow-Bühne', 16.6, -25.5, 2.0);
+    addStation('radio', '📻 Radio-Lounge: Radio & Podcast', 29.6, -26, 2.0);
+    addStation('shop', '🛍️ Fanshop', 29.2, -18.5, 2.0);
+    addStation('koop', '🌐 Online-Koop-Terminal', 15.6, -18, 1.8);
+  }
+  // Orte in der Welt, die einen Menüpunkt öffnen (nur im freien Spiel; im Story-Modus bleiben sie Kulisse)
+  function addStation(id, label, x, z, r) {
+    S.stations = S.stations || [];
+    const icon = label.split(' ')[0], tx = W.textTex([icon], { w: 128, h: 128, bg: '#14161f', size: 80, accent: '#ff8a1e' });
+    const sp = new T.Sprite(new T.SpriteMaterial({ map: tx, toneMapped: false })); sp.scale.set(0.9, 0.9, 1); sp.position.set(x, 2.9, z); S.group.add(sp);
+    S.stations.push({ id, label, x, z, r: r || 2, sp });
+  }
+  // Eigene Gebäude in der Stadt: Spielhalle, Musikladen, Andrews Wohnung, Marcos Haus
+  function buildVenues(g, flat) {
+    const door = FUNKHAUS.door, list = flat.slice().sort((a, b) => Math.hypot(a.x - door.x, a.z - door.z) - Math.hypot(b.x - door.x, b.z - door.z));
+    const V = [['arcade', '🕹️', 'AnMaCha Arcade', 'Spielhalle · 3D-Minispiele', '#a46bff'], ['music', '🎹', 'Klavierlicht', 'Musikladen', '#3dd6ff'], ['home:andrew', '🏠', 'Andrews Wohnung', 'Feelgood-Zentrale', '#ff9d2e'], ['home:marco', '🏡', 'Marcos Haus', 'mit Gisela-Parkplatz', '#3aa7a0']];
+    V.forEach((v, i) => {
+      const f = list[i]; if (!f) return;
+      const zf = f.z + f.sz * (f.d / 2), ry = f.sz > 0 ? 0 : Math.PI;
+      const t = W.textTex([v[1] + ' ' + v[2], v[3]], { w: 512, h: 160, size: 56, accent: v[4] });
+      const m = new T.Mesh(new T.PlaneGeometry(4.6, 1.44), new T.MeshBasicMaterial({ map: t, toneMapped: false })); m.position.set(f.x, f.h - 0.85, zf + f.sz * 0.06); m.rotation.y = ry; g.add(m);
+      const dm = W.box(1.8, 2.3, 0.12, W.mat(new T.Color(v[4]).getHex(), { e: new T.Color(v[4]).getHex(), ei: 0.7, r: 0.4 }), f.x, 1.31, zf + f.sz * 0.07, g, false);
+      W.box(2.6, 0.15, 1.4, W.mat(0x16171c), f.x, 2.55, zf + f.sz * 0.7, g, false);
+      addStation(v[0], v[1] + ' ' + v[2] + (v[0].startsWith('home') ? ' betreten' : ' – rein da!'), f.x, zf + f.sz * 1.4, 2.0);
+      f.venue = v[0]; dm.userData.venue = v[0];
+    });
   }
   function buildPark(g, sky) {
     const M = W.mat, { x, z } = PARK;
@@ -513,7 +584,7 @@
     if (t === 'jagd') return ['Sammle so viele Themen wie möglich! Punkte: ' + U.fmt(S.score), 1 - S.left / 180];
     const q = nextQuest(), er = AMC.Drive ? AMC.Drive.errandText() : '';
     if (er && (S.drive || !q)) return [er + (S.drive ? '' : ' · Marco fährt Gisela'), 0.5];
-    if (q) { const v = Math.min(q.goal, q.val(S)); return ['📋 Nebenauftrag: ' + q.icon + ' ' + q.desc + ' (' + U.fmt(v) + '/' + U.fmt(q.goal) + ') · ' + AMC.glyph('x') + ' an der Tür = Menü', v / q.goal]; }
+    if (q) { const v = Math.min(q.goal, q.val(S)); return ['📋 Nebenauftrag: ' + q.icon + ' ' + q.desc + ' (' + U.fmt(v) + '/' + U.fmt(q.goal) + ') · 🏢 Funkhaus & Läden betreten', v / q.goal]; }
     return ['Alle Nebenaufträge erledigt! Erkunde weiter oder geh ins Funkhaus.', 1];
   }
   function updHud(dt) {
@@ -573,7 +644,7 @@
     if (S.gisela && S.gisela.t <= 0 && Math.hypot(S.gisela.x - p.x, S.gisela.z - p.z) < 3.6) return { label: 'Gisela hupen 📯', run: honk };
     if (S.rico && S.rico.t <= 0 && Math.hypot(S.rico.x - p.x, S.rico.z - p.z) < 2.6) return { label: 'Mit RicoReWi quatschen 📱', run: ricoTalk };
     if (S.imbiss && Math.hypot(S.imbiss.x - p.x, S.imbiss.z - p.z) < 3.4 && S.carry < 3 && S.fed + S.carry < S.hungryNeed) return { label: 'Bestellungen abholen 🍟', run: pickOrder };
-    if (S.mode === 'free' && S.net !== 'guest' && p === S.pl && Math.hypot(FUNKHAUS.door.x - p.x, FUNKHAUS.door.z - p.z) < 3.5) return { label: 'Ins Funkhaus (Menü)', run: () => finish(true) };
+    if (S.mode === 'free' && S.net !== 'guest' && p === S.pl && S.stations) for (const st of S.stations) if (Math.hypot(st.x - p.x, st.z - p.z) < st.r && p.y < 2) return { label: st.label, run: () => { AMC.Audio.sfx('door'); if (st.id !== 'menu' && P.onAction) P.onAction(st.id); else finish(true); } };
     return null;
   }
   function talk(n) {
@@ -745,6 +816,7 @@
     // Tür
     if (S.done && S.mode === 'story' && [p].concat(S.net === 'host' ? [S.fo] : []).some(e => Math.hypot(FUNKHAUS.door.x - e.x, FUNKHAUS.door.z - e.z) < 3 && e.y < 1.5)) return finish(true);
     // Effekte
+    if (S.stations) for (const st of S.stations) { st.sp.visible = S.mode === 'free'; st.sp.position.y = 2.9 + Math.sin(S.time * 2.4 + st.x) * 0.15; }
     S.beacon.rotation.y += dt; if (S.doorMesh) S.doorMesh.material.emissiveIntensity = S.done ? 1 + Math.sin(S.time * 6) * 0.6 : 0.8;
     if (S.mastBlink) S.mastBlink.material.opacity = Math.sin(S.time * 4) > 0 ? 1 : 0.15;
     if (S.snow) { const a = S.snow.geometry.attributes.position.array; for (let i = 1; i < a.length; i += 3) { a[i] -= dt * 2.2; if (a[i] < 0) a[i] = 40; } S.snow.geometry.attributes.position.needsUpdate = true; S.snow.position.set(Math.round(p.x / 10) * 10, 0, Math.round(p.z / 10) * 10); }

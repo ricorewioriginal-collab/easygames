@@ -48,6 +48,19 @@
       ]
     },
     {
+      "t": "Das begehbare Funkhaus und die Läden",
+      "p": [
+        "Das Funkhaus hat ein Dach und lässt sich betreten. Drinnen ist jeder Menüpunkt ein eigener Ort, und im Spiel „Stadt & Nebenaufträge“ öffnest du ihn mit der Aktionstaste (Ⓧ, E oder 📣)."
+      ],
+      "list": [
+        "Empfang: zurück ins Hauptmenü und zu den Einstellungen.",
+        "Studio A mit Pult: Live-Aufnahme starten. Daneben die Werkstatt zum Studio-Umbauen.",
+        "Redaktion mit Pinnwand: alle Story-Kapitel.",
+        "Quiz-Bühne: KI-Quizshow. Radio-Lounge: alle Sender und Folgen. Fanshop: Outfits und Upgrades. Koop-Terminal: online zu zweit.",
+        "In der Stadt warten die Spielhalle „AnMaCha Arcade“, der Musikladen „Klavierlicht“ sowie Andrews Wohnung und Marcos Haus. Leuchtende Türen und schwebende Symbole zeigen, wo du hinein kannst."
+      ]
+    },
+    {
       "t": "Fahren, Besorgungen und Rangeleien",
       "p": [
         "In der Stadt fährt Verkehr, und am Straßenrand parken Autos. Geh an ein Auto heran und drück X/E zum Einsteigen. Gelenkt wird mit dem Stick oder WASD. A/Leertaste hupt, B/C bremst, und X/E hält an und steigt aus. Niemand wird angefahren: Passanten springen zur Seite und schimpfen.",
@@ -352,6 +365,10 @@
     {
       "q": "Wie spiele ich online mit einem Freund?",
       "a": "Hauptmenü → 🌐 Online-Koop → Spiel eröffnen. Schick den Link oder zeig den QR-Code; dein Freund kann auch den Code unter „🌐 Online-Koop“ eingeben. Sobald er verbunden ist, wählst du den Modus."
+    },
+    {
+      "q": "Wo ist das Menü in der Stadt?",
+      "a": "Geh ins Funkhaus. Am Empfang kommst du ins Hauptmenü, alle anderen Menüpunkte haben drinnen oder in der Stadt einen eigenen Ort. Die Pause (⏸, Esc oder Start) geht ebenfalls jederzeit."
     }
   ]
 }

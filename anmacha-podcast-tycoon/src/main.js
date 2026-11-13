@@ -170,6 +170,12 @@
     stopAll(); G.mode = 'play';
     AMC.Studio.leave();
     AMC.Play.onEnd = res => cityEnd(mode, ch, res);
+    // Menüpunkte als Orte in der Welt: Panels öffnen über der Stadt (Spiel pausiert), Szenenwechsel starten direkt
+    AMC.Play.onAction = mode !== 'free' ? null : id => {
+      const back = () => { UI.showTouch(false); startCity('free'); };
+      if (id.startsWith('home:')) { const h = id.slice(5); UI.closeAll(); stopAll(); G.mode = 'home'; UI.showTouch(true); AMC.Audio.music('menu'); AMC.Home.open(h, back); return; }
+      ({ live: startLive, edit: studioEdit, story: storyMenu, quiz: quizMenu, radio: () => UI.radio(), shop: () => shop(), koop: () => AMC.Net.lobby(), music: () => AMC.Home.musicShop(), arcade: arcadeMenu })[id]();
+    };
     AMC.Play.start({ mode, chapter: ch, host: G.host });
     UI.showTouch(true);
     AMC.Play.msg(mode === 'jagd' ? '🏃 Themenjagd! 3 Minuten – sammle alles!' : mode === 'race' ? '🏁 Funk-Rennen! Lauf durch alle 10 Tore – die Uhr läuft!' : mode === 'free' ? '🏙️ Willkommen im Funkhaus-Viertel!' : '🎙️ ' + ch.title + ' – los geht\'s!', 2.6);
