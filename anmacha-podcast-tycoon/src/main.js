@@ -44,7 +44,7 @@
     if (AMC.Play.active) AMC.Play.stop();
     if (AMC.Show.active) AMC.Show.stop();
     if (AMC.Quiz.active) AMC.Quiz.stop();
-    UI.closeAll(); G.paused = false;
+    UI.closeAll(); G.paused = false; G.net = null; AMC.Play.netSend = null;
   }
 
   // ------------------------------------------------------------------ Titel & Hauptmenü
@@ -52,7 +52,8 @@
     const s = UI.open('<div class="title"><div class="t-logo"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" fill="#111218" stroke="#ff8a1e" stroke-width="6"/><path d="M47 35 L88 60 L47 85Z" fill="#ff8a1e"/></svg>' +
       '<h1>AnMa<span>Cha</span></h1><h2>Der Podcast</h2><p class="t-off">Offizielles Spiel</p></div>' +
       '<p class="t-slogan">„' + D.SLOGAN + '“</p><button type="button" class="btn primary t-start" data-nav data-first id="tStart">' + startLabel() + '</button><p class="t-foot">mit Andrew &amp; Marco · Wir ♥ Medien</p></div>', { cls: 'title-screen', back: () => {} });
-    let go = false; const start = () => { if (go) return; go = true; AMC.Audio.init(); AMC.Audio.sfx('jingle'); UI.close(s); mainMenu(); };
+    const koop = (/[?&]koop=([A-Za-z0-9]{5})/.exec(location.search) || [])[1];
+    let go = false; const start = () => { if (go) return; go = true; AMC.Audio.init(); AMC.Audio.sfx('jingle'); UI.close(s); mainMenu(); if (koop) AMC.Net.lobby(koop.toUpperCase()); };
     s.el.querySelector('#tStart').onclick = start;
     s.el.addEventListener('pointerup', e => { if (e.pointerType === 'touch') start(); });
     AMC.onDevice = () => { const b = U.$('tStart'); if (b) b.innerHTML = startLabel(); };
@@ -67,8 +68,10 @@
       mi('story', '▶', 'Story: Staffel 1 & 2', chDone >= D.CHAPTERS.length ? 'Alle ' + D.CHAPTERS.length + ' Kapitel geschafft · ⭐ ' + stars + '/' + D.CHAPTERS.length * 3 : 'Kapitel ' + (chDone + 1) + ' von ' + D.CHAPTERS.length + ' · ⭐ ' + stars, true) +
       mi('live', '🎙️', 'Live-Show', 'Endlos-Aufnahme · Rekord ' + U.fmt(Save.data.best.live) + ' Hörer') +
       mi('jagd', '🏃', 'Themenjagd', '3 Minuten durch die Stadt · Rekord ' + U.fmt(Save.data.best.jagd)) +
+      mi('race', '🏁', 'Funk-Rennen', '10 Tore auf Zeit · ' + (Save.data.best.race ? 'Bestzeit ' + Save.data.best.race.toFixed(1) + ' s' : 'noch keine Bestzeit')) +
       mi('quiz', '🧠', 'KI-Quizshow', '1 Spieler oder 2 Spieler: Andrew gegen Marco') +
       mi('free', '🏙️', 'Stadt & Nebenaufträge', Object.keys(Save.data.quests).length + '/' + D.QUESTS.length + ' Aufträge erledigt · frei spielen, Radio hören') +
+      mi('koop', '🌐', 'Online-Koop', 'Zu zweit auf zwei Geräten: Andrew & Marco – per Link, Code oder QR') +
       mi('shop', '🛍️', 'Fanshop', '🎟️ ' + U.fmt(Save.data.fan) + ' Fan-Punkte · Outfits & Studio-Upgrades') +
       mi('radio', '📻', 'Radio & Podcast', 'Alle Folgen und die 13 AnMaCha-Sender') +
       '</nav><div class="m-row">' + mi('settings', '⚙️', 'Einstellungen') + mi('controls', '🎮', 'Steuerung') + mi('credits', 'ℹ️', 'Mitwirkende') + '</div></div>' +
@@ -85,7 +88,7 @@
     el.querySelector('#mHost').onclick = swapHost;
     s.o.onKey = () => { if (I.hit('swap')) { swapHost(); return true; } return false; };
     updHost();
-    const go = { story: storyMenu, live: startLive, jagd: () => startCity('jagd'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), shop, settings, controls, credits };
+    const go = { story: storyMenu, live: startLive, jagd: () => startCity('jagd'), race: () => startCity('race'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
     el.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go[b.dataset.go]());
     G.menu = s;
   }
@@ -120,7 +123,7 @@
     AMC.Play.onEnd = res => cityEnd(mode, ch, res);
     AMC.Play.start({ mode, chapter: ch, host: G.host });
     UI.showTouch(true);
-    AMC.Play.msg(mode === 'jagd' ? '🏃 Themenjagd! 3 Minuten – sammle alles!' : mode === 'free' ? '🏙️ Willkommen im Funkhaus-Viertel!' : '🎙️ ' + ch.title + ' – los geht\'s!', 2.6);
+    AMC.Play.msg(mode === 'jagd' ? '🏃 Themenjagd! 3 Minuten – sammle alles!' : mode === 'race' ? '🏁 Funk-Rennen! Lauf durch alle 10 Tore – die Uhr läuft!' : mode === 'free' ? '🏙️ Willkommen im Funkhaus-Viertel!' : '🎙️ ' + ch.title + ' – los geht\'s!', 2.6);
     if (!Save.data.seenIntro) { Save.data.seenIntro = true; Save.save(); setTimeout(() => UI.toast(I.device === 'touch' ? 'Links bewegen, rechts wischen = Kamera. ⤴ Springen, 📣 Welle, 💨 Ausweichen, ⇄ Wechsel' : I.device === 'pad' ? 'Linker Stick laufen, rechter Stick Kamera, A springen, X Welle, RT ausweichen, Y Andrew/Marco' : 'WASD laufen, Maus ziehen = Kamera, Leertaste springen, E Welle, C ausweichen, Q wechseln, Umschalt sprinten', 7000), 800); }
   }
   function cityEnd(mode, ch, res) {
@@ -131,10 +134,41 @@
       const fp = Save.earn(res.score / 40);
       return setTimeout(() => results({ title: '🏃 Themenjagd vorbei!', stars: res.score > 9000 ? 3 : res.score > 6000 ? 2 : res.score > 3000 ? 1 : 0, lines: [['Punkte', U.fmt(res.score) + (rec ? ' 🏆 Neuer Rekord!' : '')], ['Themen-Funken', sumGot(res.got)], ['Störsender abgeschaltet', res.kills], ['Goldene Erinnerungen', res.gold], fanLine(fp)], again: () => startCity('jagd') }), 400);
     }
+    if (mode === 'race') {
+      const t = res.time, best = Save.data.best.race, rec = !best || t < best; if (rec) { Save.data.best.race = Math.round(t * 10) / 10; Save.save(); }
+      const stars = t <= 50 ? 3 : t <= 70 ? 2 : t <= 100 ? 1 : 0, fp = Save.earn(30 + stars * 40);
+      return setTimeout(() => results({ title: '🏁 Ziel erreicht!', stars, lines: [['Zeit', t.toFixed(1) + ' s' + (rec ? ' 🏆 Neue Bestzeit!' : '')], ['Medaille', ['–', '🥉 Bronze (≤ 100 s)', '🥈 Silber (≤ 70 s)', '🥇 Gold (≤ 50 s)'][stars]], ['Themen-Funken', sumGot(res.got)], fanLine(fp)], again: () => startCity('race') }), 400);
+    }
     if (!res.ok) return setTimeout(() => results({ title: '⏱ Sendeschluss!', fail: true, stars: 0, lines: [['Die Zeit ist abgelaufen.', ''], ['Tipp', U.pick(D.TIPS)]], again: () => playChapterDirect(G.chapter) }), 400);
     // Ab ins Studio
     transition('🎙️ Ab ins Studio!', () => startShow('story', ch, res));
   }
+  // ------------------------------------------------------------------ Online-Koop
+  G.startNet = function (mode, ch, seed, me, role) {
+    stopAll(); G.mode = 'play'; G.net = role;
+    AMC.Studio.leave();
+    AMC.Play.onEnd = res => netEnd(mode, ch, res, role);
+    AMC.Play.netSend = m => AMC.Net.send(m);
+    AMC.Play.start({ mode, chapter: ch, host: me, seed, net: role });
+    UI.showTouch(true);
+    AMC.Play.msg('🌐 Koop: Du spielst ' + D.HOSTS[me].name + (mode === 'jagd' ? ' – Themenjagd zu zweit!' : mode === 'free' ? ' – die Stadt gehört euch!' : ' – ' + ch.title), 3, true);
+  };
+  function netEnd(mode, ch, res, role) {
+    if (role === 'host') AMC.Net.send({ t: 'end', res: { ok: !!res.ok, score: res.score | 0, kills: res.kills | 0, gold: res.gold | 0, funken: sumGot(res.got) } });
+    const funken = res.funken != null ? res.funken : sumGot(res.got || {});
+    const fp = Save.earn(mode === 'story' ? (res.ok ? 150 : 20) : (res.score || 0) / (mode === 'jagd' ? 40 : 60));
+    UI.showTouch(false);
+    setTimeout(() => results({
+      title: mode === 'story' ? (res.ok ? '✅ Koop-Kapitel geschafft!' : '⏱ Sendeschluss!') : mode === 'jagd' ? '🏃 Themenjagd zu zweit vorbei!' : '🏙️ Stadt zu zweit',
+      fail: mode === 'story' && !res.ok, stars: mode === 'jagd' ? (res.score > 12000 ? 3 : res.score > 8000 ? 2 : res.score > 4000 ? 1 : 0) : res.ok ? 3 : 0,
+      lines: [['Gemeinsame Punkte', U.fmt(res.score || 0)], ['Themen-Funken', funken], ['Störsender abgeschaltet', res.kills || 0], ['Goldene Erinnerungen', res.gold || 0], fanLine(fp)].concat(role === 'guest' ? [['🌐', 'Der Gastgeber wählt die nächste Runde.']] : []),
+      again: role === 'host' && AMC.Net.active() ? () => { AMC.Net.send({ t: 'lobby' }); AMC.Net.lobby(); } : null, againLabel: 'Zur Koop-Lobby',
+      onMenu: () => AMC.Net.close()
+    }), 400);
+  }
+  G.netLost = () => { if (G.mode === 'play' && G.net) { toMenuScene(); mainMenu(); } };
+  G.netLobby = () => { if (G.mode !== 'menu') toMenuScene(); UI.closeAll(); mainMenu(); AMC.Net.lobby(); };
+
   function playChapterDirect(i) { startCity('story', D.CHAPTERS[i]); }
   G.playChapter = i => { UI.closeAll(); G.chapter = i; playChapterDirect(i); };
   const fanLine = n => ['🎟️ Fan-Punkte', '+' + U.fmt(n) + ' (jetzt ' + U.fmt(Save.data.fan) + ')'];
@@ -209,7 +243,7 @@
     if (b('rNextCh')) b('rNextCh').onclick = () => { UI.close(s); o.next(); };
     if (b('rAgain')) b('rAgain').onclick = () => { UI.close(s); o.again(); };
     if (b('rEp')) b('rEp').onclick = () => { AMC.Media.playEpisode(o.episode); UI.radio(); };
-    b('rMenu').onclick = () => { UI.close(s); mainMenu(); };
+    b('rMenu').onclick = () => { if (o.onMenu) o.onMenu(); UI.close(s); mainMenu(); };
   }
 
   // ------------------------------------------------------------------ Weitere Modi
@@ -309,7 +343,7 @@
   // ------------------------------------------------------------------ Pause
   function pause() {
     if (G.paused) return; G.paused = true; AMC.Audio.sfx('back');
-    const canRestart = G.mode === 'play' && AMC.Play.state() && AMC.Play.state().mode !== 'free';
+    const canRestart = G.mode === 'play' && !G.net && AMC.Play.state() && AMC.Play.state().mode !== 'free';
     const s = UI.open('<div class="panel glass small pause"><h2>⏸ Pause</h2>' +
       '<button class="btn primary" data-nav data-first id="pRes">▶ Weiter</button><button class="btn" data-nav id="pRad">📻 Radio & Podcast</button><button class="btn" data-nav id="pSet">⚙️ Einstellungen</button><button class="btn" data-nav id="pCtl">🎮 Steuerung</button>' +
       (canRestart ? '<button class="btn" data-nav id="pRe">↻ Neu starten</button>' : '') + '<button class="btn" data-nav id="pMenu">🏠 Hauptmenü</button><p class="hint">💡 ' + U.pick(D.TIPS) + '</p></div>', { back: resume, pauseCloses: true });
@@ -317,7 +351,7 @@
     const b = id => s.el.querySelector('#' + id);
     b('pRes').onclick = resume; b('pRad').onclick = () => UI.radio(); b('pSet').onclick = settings; b('pCtl').onclick = controls;
     if (b('pRe')) b('pRe').onclick = () => { const st = AMC.Play.state(); resume(); startCity(st.mode, st.ch); };
-    b('pMenu').onclick = () => UI.confirm('Zurück ins Hauptmenü? Der Fortschritt in diesem Level geht verloren.', () => { toMenuScene(); mainMenu(); });
+    b('pMenu').onclick = () => UI.confirm(G.net ? 'Koop-Spiel verlassen? Die Verbindung wird getrennt.' : 'Zurück ins Hauptmenü? Der Fortschritt in diesem Level geht verloren.', () => { if (G.net) AMC.Net.close(); toMenuScene(); mainMenu(); });
   }
 
   // ------------------------------------------------------------------ Spielschleife
@@ -335,6 +369,7 @@
     try {
       if (G.mode === 'play') {
         if (!uiBusy && !G.paused) { if (I.hit('pause')) pause(); else AMC.Play.update(dt); }
+        else if (G.net) { const h = I.hit, mv = { x: I.move.x, y: I.move.y }, sp = I.sprint; I.hit = () => false; I.move.x = I.move.y = 0; I.sprint = false; try { AMC.Play.update(dt); } finally { I.hit = h; I.move.x = mv.x; I.move.y = mv.y; I.sprint = sp; } }
         else if (W.particles) W.particles.update(0);
         AMC.Play.render();
       } else if (G.mode === 'show') {
@@ -362,7 +397,7 @@
       { id: 'cheer', icon: '🎉', label: 'Applaus', run: () => { AMC.Audio.sfx('applause'); if (W.particles) W.particles.burst(0, 2.5, 0, 0xff8a1e, 40, { speed: 7 }); } }
     ]
   };
-  document.addEventListener('visibilitychange', () => { if (document.hidden && G.mode === 'play' && !G.paused && !UI.isOpen()) pause(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden && G.mode === 'play' && !G.paused && !UI.isOpen() && !G.net) pause(); });
 
   boot();
 })(typeof window !== 'undefined' ? window : globalThis);

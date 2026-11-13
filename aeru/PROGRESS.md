@@ -21,6 +21,7 @@ Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese D
 
 - **Erweiterung (Himmelsinseln, Rammstoß, Nachtgarten):** 21 Himmelsinseln mit Truhen und Schwung-Ringen, Rammstoß, siebte Welt mit eigener Geschichte (Epilog), neuen Gegnern (Nachtmotte, Wurzelwächter) und Boss (Nachtblüte). → `sky.cjs`, `neu.cjs`, `story.cjs`
 - **Spyro-Ausbau, Schritt 1 (13.11.2026):** Spieleportale zur Bunten Insel und nach Zotik in allen 7 Welten mit Rückweg-Knopf in beiden Spielen, analoge Controller-Steuerung (Sticks, Vibration, PlayStation-/Switch-Symbole), Ladebild, Weltkarte beim Betreten, modernisiertes Titelbild mit Fortschritt. → `portale.cjs`, `browser.cjs`; Controller und Rückweg zusätzlich im echten Chromium mit nachgebautem DualSense geprüft.
+- **Spyro-Ausbau, Schritt 2 (13.11.2026):** freie CC0-Modelle – Bäume, Felsen und Gras von Wizp je Welt (instanziert), alle fünf Gegnerarten als animierte Quaternius-Monster; Rückfall auf die eigenen Formen bei „Sparsam“, ohne WebGL oder bei Ladefehlern; Seitenfelsen sind jetzt fest. → `browser.cjs` (über HTTP, alle Gegner mit Modell), alle Logiktests
 
 ## Umgesetzt, aber nicht vollständig getestet
 
@@ -29,6 +30,7 @@ Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese D
 - **Audio:** Musik pro Insel, Lautstärke, Stummschaltung und Anhalten im Hintergrund sind gebaut; Klang und Lautstärkeverhältnis hat niemand angehört.
 - **Verlorener WebGL-Kontext:** löst ein Neuladen aus (Spielstand bleibt); nicht künstlich ausgelöst getestet.
 - **Einstellungen** (Empfindlichkeiten, Kamerahilfe, Textgeschwindigkeit, große Schrift, reduzierte Bewegung, Vollbild): werden gespeichert und angewendet, aber nicht jede Option einzeln automatisch geprüft.
+- **Modelle auf echten Handys:** Auf „Hoch“/„Ausgewogen“ zeichnet eine Welt jetzt ca. 120–180k Dreiecke (vorher ~22k) bei etwa gleich vielen Draw Calls; unter SwiftShader gemessen, nicht auf echter Hardware. Die Automatik fällt bei langsamen Bildern auf „Sparsam“ (eigene Formen) zurück, wirksam ab der nächsten Insel.
 - **Controller an echter Hardware:** Erkennung, Symbole und Analogsteuerung nur mit nachgebautem Controller im Browser geprüft; Vibration nur im Code (Chromium headless hat keine).
 - **Nebenquests:** Ablauf und Reihenfolge laufen über dieselbe Engine; im Story-Test wird nur Pip indirekt berührt, die übrigen fünf nicht vollständig durchgespielt.
 
@@ -37,7 +39,7 @@ Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese D
 - Test auf echten Geräten (mindestens ein Android-Handy, ein iPhone, ein Notebook mit integrierter Grafik) und Eintrag der Messwerte in TESTING.md.
 - Bäume und Gras bewegen sich nicht im Wind.
 - Keine Sprachausgabe/Vertonung; Texte nur auf Deutsch.
-- Spyro-Ausbau, nächste Schritte: freie 3D-Modelle (Quaternius-Drache für Aeru, Monster als Gegner, Wizp-Bäume und -Felsen, alle CC0 und schon im Repository), Spyro-artiges Gameplay (Halte-Ansturm, Edelsteine mit Farbwerten, Diebe, mehr Level), mehr Sound-Effekte und Animationen.
+- Spyro-Ausbau, nächste Schritte: Aeru selbst bleibt das eigene Modell (der freie Quaternius-Drache kann nur fliegen, nicht laufen); Spyro-artiges Gameplay (Halte-Ansturm, Edelsteine mit Farbwerten, Diebe, mehr Level), mehr Sound-Effekte und Animationen.
 
 ## Bekannte Fehler und Grenzen
 

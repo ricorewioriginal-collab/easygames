@@ -2,7 +2,7 @@
 /* Bunte Insel – Taschi-Land 🌀 (Portal): Fangen und Kämpfen gibt es hier nicht mehr – die Taschis leben jetzt in ihrem eigenen easygames-Spiel.
    In der Arena steht das große Taschi-Portal: hindurchgehen = Spiel speichern und das Taschi-Spiel öffnen (gleiches Gerät, darum lokaler Link ../taschi/).
    Professor Ulme und Schwester Hanna erzählen, warum die Taschis umgezogen sind. Alte Spielstände (save.taschi) bleiben unberührt gespeichert. */
-BI.TASCHI_GAME_URL = '../taschi/index.html';
+BI.TASCHI_GAME_URL = '../taschi/index.html?from=bunteinsel';
 BI.createTaschi = function (G) {
   const { scene, W, P, say, save, persist } = G, K = { ready: false, open: false }, T = BI.TASCHI, TAU = Math.PI * 2, npcs = [];
   const flags = () => save.flags || (save.flags = {}), flag = f => { flags()[f] = 1; }, has = f => !!flags()[f];
@@ -47,15 +47,13 @@ BI.createTaschi = function (G) {
   };
   /* ---- Rückfrage im Konsolen-Stil (Gamepad: Markierung springt auf „Los“) ---- */
   let box = null;
-  function closeAsk() { if (box) { box.remove(); box = null; } K.open = false; }
+  function closeAsk() { if (box) { const c = box; box = null; c(); } K.open = false; }
   K.travel = function () {
     if (box) return; K.open = true; G.setStick && G.setStick(0, 0); flag('ta_portal');
-    box = document.createElement('div'); box.id = 'taPortalAsk'; box.className = 'biAsk';
-    box.innerHTML = '<div class="biAskCard"><div class="biAskIc">🌀</div><b>Ins Taschi-Abenteuer reisen?</b><p>Das Portal öffnet das easygames-Spiel <b>Taschi</b>: fangen, tauschen, Orden holen. Dein Inselspiel wird vorher gespeichert.</p><div class="biAskRow"><button class="pill go" id="taGo">🚀 Los geht’s!</button><button class="pill" id="taStay">🏝️ Hierbleiben</button></div></div>';
-    document.body.appendChild(box);
-    box.querySelector('#taStay').onclick = closeAsk;
-    box.querySelector('#taGo').onclick = () => { flag('ta_reise'); G.earn && G.earn('taschi_meister'); try { persist(); } catch (e) { } closeAsk(); if (K.noNav) return; setTimeout(() => { location.href = BI.TASCHI_GAME_URL; }, 120); };
-    setTimeout(() => { const go = box && box.querySelector('#taGo'); if (go) try { go.focus(); } catch (e) { } }, 30);
+    box = BI.portalAsk({ id: 'taPortalAsk', goId: 'taGo', stayId: 'taStay', icon: '🌀', color: '#8a5bff', title: 'Ins Taschi-Abenteuer reisen?', text: 'Das Portal öffnet das easygames-Spiel Taschi: fangen, tauschen, Orden holen. Dein Inselspiel wird vorher gespeichert.',
+      onClose: () => { box = null; K.open = false; },
+      onGo: () => { flag('ta_reise'); G.earn && G.earn('taschi_meister'); if (K.noNav) { try { persist(); } catch (e) { } return; }
+        BI.portalGo({ url: BI.TASCHI_GAME_URL, name: 'Taschi', color: '#8a5bff', persist, onFail: () => say('🌀 Das Portal flackert … versuch es gleich noch einmal!', 3600) }); } });
   };
   K.near = function () {
     if (!K.ready || P.veh || P.y > 1.5 || box) return null; if (Math.hypot(P.x - T.x, P.z - T.z) > T.R + 6) return null;

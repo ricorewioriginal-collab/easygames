@@ -256,7 +256,7 @@
   function addPickup(kind, rub, x, y, z) {
     const m = kind === 'gold' ? goldMesh() : kind === 'tape' ? tapeMesh() : funkeMesh(rub);
     m.position.set(x, y, z); S.group.add(m);
-    const p = { kind, rub, x, y, z, m, taken: false, t: Math.random() * 6 }; S.pickups.push(p); return p;
+    const p = { kind, rub, x, y, z, m, taken: false, t: Math.random() * 6, dirty: true }; S.pickups.push(p); return p;
   }
   function beam(color) {
     const g = new T.Group();
@@ -335,11 +335,12 @@
     T = root.THREE;
     P.stop();
     const ch = cfg.chapter || null, sky = ch ? ch.sky : cfg.mode === 'jagd' ? 'sunset' : 'day';
-    const rng = U.seeded(ch ? ch.ep * 31 + 7 : (Date.now() & 0xffff));
+    const rng = U.seeded(cfg.seed != null ? cfg.seed : ch ? ch.ep * 31 + 7 : (Date.now() & 0xffff));
     S = { cfg, ch, mode: cfg.mode, sky, rng, scene: new T.Scene(), group: new T.Group(), col: [], pickups: [], drones: [], npcs: [], glows: [], gates: [], relays: [], guests: [],
       time: 0, left: ch ? ch.obj.t : cfg.mode === 'jagd' ? 180 : 0, energy: 100, hurtT: 9, got: {}, gold: 0, tapes: 0, kills: 0, talks: 0, score: 0, done: false, ended: false, phase: 'play', t0: performance.now(), hud: {}, msgT: 0 };
     D.RUBRIC_IDS.forEach(r => (S.got[r] = 0));
     S.bossName = (ch && ch.obj.name) || 'Das Funkloch';
+    S.net = cfg.net || null; S.remote = null; S.netT = 0; S.events = [];
     S.carry = 0; S.fed = 0; S.caught = 0; S.dist = 0; S.maxY = 0; S.swaps = 0; S.radioT = 0; S.qT = 0;
     S.fast = AMC.Save.has('shoes') ? 1.08 : 1;
     if (ch && cfg.mode === 'story' && AMC.Save.has('watch') && ch.obj.type !== 'train') S.left += 20;
@@ -375,7 +376,7 @@
     const pickRub = () => { const ws = D.RUBRIC_IDS.map(rubricW), sum = ws.reduce((a, b) => a + b, 0); let v = rng() * sum; for (let i = 0; i < ws.length; i++) { v -= ws[i]; if (v <= 0) return D.RUBRIC_IDS[i]; } return 'feel'; };
     const spawnFunken = n => { for (let i = 0; i < n; i++) { const [x, y, z] = freeSpot(rng); addPickup('funke', pickRub(), x, y + 1.1, z); } };
     const roofSpots = U.shuffle(S.roofs);
-    const droneN = ch ? ch.drones : S.mode === 'jagd' ? 6 : 4;
+    const droneN = ch ? ch.drones : S.mode === 'jagd' ? 6 : S.mode === 'race' ? 3 : 4;
     if (type === 'collect' || type === 'jagd' || type === 'free') {
       spawnFunken(ch ? ch.obj.n + 8 : 26);
       roofSpots.slice(0, ch && ch.obj.gold ? 4 : 2).forEach(r => addPickup('gold', null, r.x, r.y + 1.2, r.z));
@@ -395,18 +396,19 @@
       });
       roofSpots.slice(0, 2).forEach(r => addPickup('gold', null, r.x, r.y + 1.2, r.z));
     }
-    if (type === 'train') {
-      // Route über die Straßen: Haltestellen-Tore
+    if (type === 'train' || type === 'race') {
+      // Route über die Straßen: Haltestellen-Tore (Funk-Rennen: alle 10 Tore auf Zeit)
+      const race = type === 'race';
       const route = [[0, 20], [0, 42], [-30, 45], [-45, 20], [-45, -30], [-10, -45], [30, -45], [45, -10], [45, 30], [20, 45]];
-      route.slice(0, ch.obj.n).forEach(([x, z], i) => {
+      route.slice(0, race ? route.length : ch.obj.n).forEach(([x, z], i) => {
         const g = new T.Group(); g.position.set(x, 0, z); S.group.add(g);
         const ring = new T.Mesh(new T.TorusGeometry(2.6, 0.18, 10, 40), W.mat(0x3dd6ff, { e: 0x2090ff, ei: 1.2 })); ring.position.y = 2.8; g.add(ring);
-        const sgn = W.textTex(['H', 'Haltestelle ' + (i + 1)], { w: 256, h: 256, bg: '#0a5a2a', fg: '#ffd400', accent: '#ffffff', size: 110 });
+        const sgn = race ? W.textTex([String(i + 1), 'Funk-Rennen'], { w: 256, h: 256, bg: '#3a1a5a', fg: '#ff8a1e', accent: '#ffffff', size: 110 }) : W.textTex(['H', 'Haltestelle ' + (i + 1)], { w: 256, h: 256, bg: '#0a5a2a', fg: '#ffd400', accent: '#ffffff', size: 110 });
         W.sign(g, sgn, 1.3, 1.3, 3.4, 3.2, 0, 0);
         W.cyl(0.06, 0.06, 2.6, W.mat(0x888888), 3.4, 1.3, 0, g);
         S.gates.push({ x, z, g, ring, i, passed: false });
       });
-      S.left = 32; S.gateBonus = 11.5;
+      if (race) S.left = 0; else { S.left = 32; S.gateBonus = 11.5; }
       spawnFunken(8);
     }
     if (type === 'party') {
@@ -467,7 +469,7 @@
       '<div class="h-tr"><canvas id="hMap" width="180" height="180" class="glass"></canvas><div class="h-time glass" id="hTime"></div></div>' +
       '<div class="h-bl"><div class="h-host glass" id="hHost"><img id="hFace" alt=""><div><b id="hName"></b><i class="h-en"><em id="hEn"></em></i><small id="hSwap"></small></div></div></div>' +
       '<div class="h-prompt" id="hPrompt"></div><div class="h-msg" id="hMsg"></div><div class="h-boss" id="hBoss" hidden><b>📡 ' + S.bossName + '</b><i><em id="hBossBar"></em></i></div><div class="h-hit" id="hHit"></div>';
-    U.$('hTitle').textContent = ch ? 'Kapitel ' + (D.CHAPTERS.indexOf(ch) + 1) + ' · ' + ch.title : S.mode === 'jagd' ? 'Themenjagd' : 'Funkhaus-Viertel';
+    U.$('hTitle').textContent = ch ? 'Kapitel ' + (D.CHAPTERS.indexOf(ch) + 1) + ' · ' + ch.title : S.mode === 'jagd' ? 'Themenjagd' : S.mode === 'race' ? 'Funk-Rennen' : 'Funkhaus-Viertel';
     S.hud = { map: U.$('hMap').getContext('2d'), mapT: 0, txtT: 0 };
     drawRub();
     updHost();
@@ -476,7 +478,7 @@
   function updHost() {
     const H = S.pl.H, other = S.fo.H;
     U.$('hName').textContent = H.name; U.$('hFace').src = AMC.UI.face(S.pl.id);
-    U.$('hSwap').innerHTML = AMC.glyph('y') + ' ' + other.name;
+    U.$('hSwap').innerHTML = S.net ? '🌐 ' + other.name : AMC.glyph('y') + ' ' + other.name;
     U.$('hHost').style.setProperty('--hc', H.color);
   }
   function drawRub() {
@@ -484,9 +486,10 @@
     el.innerHTML = D.RUBRIC_IDS.map(r => '<span style="--c:' + D.RUBRICS[r].color + '" title="' + D.RUBRICS[r].name + '">' + D.RUBRICS[r].icon + '<b>' + S.got[r] + '</b></span>').join('') +
       (S.gold || S.type === 'collect' ? '<span style="--c:#ffd23f">🌟<b>' + S.gold + '</b></span>' : '');
   }
-  function msg(text, sec) { const m = U.$('hMsg'); if (!m) return; m.textContent = text; m.classList.add('on'); S.msgT = sec || 2.4; }
+  function msg(text, sec, local) { const m = U.$('hMsg'); if (!m) return; m.textContent = text; m.classList.add('on'); S.msgT = sec || 2.4; if (S.net === 'host' && !local) S.events.push(['msg', text]); }
   P.msg = msg;
   function objText() {
+    if (S.net === 'guest' && S.netObj) return S.netObj;
     const ch = S.ch, t = S.type;
     const total = D.RUBRIC_IDS.reduce((a, r) => a + S.got[r], 0);
     if (S.done) return ['Ab ins Funkhaus! Folge dem orangen Lichtstrahl.', 1];
@@ -499,6 +502,7 @@
     if (t === 'hunt') return ['KI-Drohnen abgeschaltet 🤖 ' + Math.min(S.kills, ch.obj.n) + '/' + ch.obj.n, S.kills / ch.obj.n];
     if (t === 'party') return ['Kassetten 📼 ' + S.tapes + '/' + ch.obj.n + ' · Tanzende mit ' + AMC.glyph('x') + ' anfeuern', S.tapes / ch.obj.n];
     if (t === 'boss') return [S.boss.state === 'intro' ? S.bossName + ' erscheint …' : 'Triff ' + S.bossName.replace(/^Das /, 'das ') + ', wenn der Schild offen ist', 1 - S.boss.hp / S.boss.max];
+    if (t === 'race') { const k = S.gates.filter(g => g.passed).length, b = AMC.Save.data.best.race; return ['🏁 Tore ' + k + '/' + S.gates.length + ' – so schnell wie möglich!' + (b ? ' · Bestzeit ' + b.toFixed(1) + ' s' : ''), k / S.gates.length]; }
     if (t === 'jagd') return ['Sammle so viele Themen wie möglich! Punkte: ' + U.fmt(S.score), 1 - S.left / 180];
     const q = nextQuest();
     if (q) { const v = Math.min(q.goal, q.val(S)); return ['📋 Nebenauftrag: ' + q.icon + ' ' + q.desc + ' (' + U.fmt(v) + '/' + U.fmt(q.goal) + ') · ' + AMC.glyph('x') + ' an der Tür = Menü', v / q.goal]; }
@@ -512,7 +516,8 @@
       const o = U.$('hObj'); if (o.innerHTML !== txt) o.innerHTML = txt;
       U.$('hObjBar').style.width = Math.round(U.clamp(frac, 0, 1) * 100) + '%';
       const te = U.$('hTime');
-      if (S.left > 0 || S.mode === 'jagd' || (S.ch && S.type !== 'free')) { te.hidden = false; te.textContent = '⏱ ' + U.time(S.left); te.classList.toggle('warn', S.left < 20); } else te.hidden = true;
+      if (S.type === 'race') { te.hidden = false; te.textContent = '⏱ ' + S.time.toFixed(1) + ' s'; te.classList.remove('warn'); }
+      else if (S.left > 0 || S.mode === 'jagd' || (S.ch && S.type !== 'free')) { te.hidden = false; te.textContent = '⏱ ' + U.time(S.left); te.classList.toggle('warn', S.left < 20); } else te.hidden = true;
       U.$('hEn').style.width = S.energy + '%';
       const pr = U.$('hPrompt'), near = interactTarget();
       pr.innerHTML = near ? AMC.glyph('x') + ' ' + near.label : '';
@@ -542,8 +547,8 @@
   }
 
   // ------------------------------------------------------------------ Interaktion
-  function interactTarget() {
-    const p = S.pl;
+  function interactTarget(ent) {
+    const p = ent || S.pl;
     for (const n of S.npcs) {
       const d = Math.hypot(n.x - p.x, n.z - p.z);
       if (d < 2.4) {
@@ -555,7 +560,7 @@
     }
     for (const r of S.relays) if (!r.fixed && Math.hypot(r.x - p.x, r.z - p.z) < 2.2 && Math.abs(r.y - p.y) < 1.6) return { label: 'Verteiler reparieren (halten)', hold: r };
     if (S.imbiss && Math.hypot(S.imbiss.x - p.x, S.imbiss.z - p.z) < 3.4 && S.carry < 3 && S.fed + S.carry < S.hungryNeed) return { label: 'Bestellungen abholen 🍟', run: pickOrder };
-    if (S.mode === 'free' && Math.hypot(FUNKHAUS.door.x - p.x, FUNKHAUS.door.z - p.z) < 3.5) return { label: 'Ins Funkhaus (Menü)', run: () => finish(true) };
+    if (S.mode === 'free' && S.net !== 'guest' && p === S.pl && Math.hypot(FUNKHAUS.door.x - p.x, FUNKHAUS.door.z - p.z) < 3.5) return { label: 'Ins Funkhaus (Menü)', run: () => finish(true) };
     return null;
   }
   function talk(n) {
@@ -576,15 +581,16 @@
   }
 
   // ------------------------------------------------------------------ Aktionen
-  function doWave() {
-    const p = S.pl, H = p.H;
-    if (p.cd > 0) return;
+  function doWave(ent, fxOnly) {
+    const p = ent || S.pl, H = p.H;
+    if (p.cd > 0 && !fxOnly) return;
     p.cd = 0.9; p.busy = 0.35; setAnim(p, 'push', { speed: 1.6, once: true, restart: true });
     AMC.Audio.sfx('wave');
     // sichtbarer Ring
     const ring = new T.Mesh(new T.RingGeometry(0.88, 1, 48), new T.MeshBasicMaterial({ color: H.id === 'marco' ? 0x3dd6ff : 0xffb02e, transparent: true, opacity: 0.6, side: T.DoubleSide, blending: T.AdditiveBlending, depthWrite: false, toneMapped: false }));
-    ring.rotation.x = -Math.PI / 2; ring.position.set(p.x, p.y + 0.9, p.z); S.group.add(ring); S.rings = S.rings || []; S.rings.push({ m: ring, t: 0, max: H.wave });
+    ring.rotation.x = -Math.PI / 2; ring.position.set(p.x, p.y + 0.9, p.z); S.group.add(ring); S.rings = S.rings || []; S.rings.push({ m: ring, t: 0, max: H.wave, e: p });
     W.particles.burst(p.x, p.y + 1.2, p.z, H.id === 'marco' ? 0x3dd6ff : 0xffb02e, 18, { speed: 7, up: 0, grav: 0, life: 0.5 });
+    if (fxOnly) return;   // Gast: Wirkung rechnet der Gastgeber
     for (const d of S.drones) {
       if (d.dead) continue;
       const dist = Math.hypot(d.x - p.x, d.z - p.z);
@@ -613,7 +619,8 @@
     AMC.Audio.sfx('hit'); W.cam.shake = 0.25;
     if (Math.random() < 0.5 && S.type !== 'boss') addPickup('funke', U.pick(D.RUBRIC_IDS), d.x, Math.max(1.2, groundAt(d.x, d.z, d.y) + 1.1), d.z);
   }
-  function hurt(dmg, fromX, fromZ) {
+  function hurt(dmg, fromX, fromZ, ent) {
+    if (ent && ent === S.fo && S.net === 'host') { if (S.foInv > 0 || S.ended) return; S.foInv = 1.2; if (AMC.Save.has('power')) dmg *= 0.7; S.energy = Math.max(0, S.energy - dmg); S.hurtT = 0; S.events.push(['hurt', fromX, fromZ]); if (S.energy <= 0) { S.energy = 70; msg('📴 Sendepause! Ihr verliert 10 Sekunden.', 2.4); if (S.left > 0) S.left = Math.max(1, S.left - 10); } return; }
     const p = S.pl; if (p.inv > 0 || p.dodge > 0 || S.ended) return;
     if (AMC.Save.has('power')) dmg *= 0.7;
     S.energy = Math.max(0, S.energy - dmg); p.inv = 1.2; S.hurtT = 0;
@@ -658,7 +665,7 @@
     S.time += dt;
     const p = S.pl, H = p.H, cam = W.cam;
     // Eingaben
-    if (I.hit('swap')) swapHost();
+    if (I.hit('swap') && !S.net) swapHost();
     const fwdX = -Math.sin(cam.yaw), fwdZ = -Math.cos(cam.yaw), rX = Math.cos(cam.yaw), rZ = -Math.sin(cam.yaw);
     let wx = rX * I.move.x + fwdX * I.move.y, wz = rZ * I.move.x + fwdZ * I.move.y;
     const mag = Math.min(1, Math.hypot(wx, wz)); if (mag > 0.01) { const l = Math.hypot(wx, wz); wx /= l; wz /= l; }
@@ -672,9 +679,10 @@
     if (I.hit('dodge') && p.dodge <= 0 && !(p.cd2 > 0)) {
       p.dodge = 0.42; p.cd2 = 0.75; const dx = mag > 0.1 ? wx : Math.sin(p.yaw), dz = mag > 0.1 ? wz : Math.cos(p.yaw); p.vx = dx * 15; p.vz = dz * 15; AMC.Audio.sfx('dash');
     }
-    const it = interactTarget();
-    if (I.hit('act')) { if (it && it.run) it.run(); else if (!it || !it.hold) doWave(); }
-    if (it && it.hold && (I.keys.has('KeyE') || I.keys.has('Enter') || padHeld(2) || AMC.UI.touchHeld('x'))) {
+    const it = interactTarget(), held = I.keys.has('KeyE') || I.keys.has('Enter') || padHeld(2) || AMC.UI.touchHeld('x');
+    if (S.net === 'guest') { if (I.hit('act')) { if (!it || !it.hold) { if (!(p.cd > 0)) { doWave(p, true); p.cd = 0.9; p.busy = 0.35; setAnim(p, 'push', { speed: 1.6, once: true, restart: true }); AMC.Audio.sfx('wave'); } } S.events.push(['act']); } S.holding = !!(it && it.hold && held); if (S.holding) { p.busy = 0.1; setAnim(p, 'knock'); } }
+    else if (I.hit('act')) { if (it && it.run) it.run(); else if (!it || !it.hold) doWave(); }
+    if (S.net !== 'guest' && it && it.hold && held) {
       const r = it.hold; r.prog += dt / (H.id === 'marco' ? 0.8 : 1.6); p.busy = 0.1; setAnim(p, 'knock');
       if (Math.random() < dt * 12) W.particles.burst(r.x, r.y + 1, r.z, 0x3dd6ff, 3, { speed: 3, life: 0.4 });
       if (r.prog >= 1) { r.fixed = true; r.led.material.color.set(0x30ff60); r.gl.material.color.set(0x30ff60); AMC.Audio.sfx('perfect'); msg('🔧 Verteiler läuft wieder!', 2); S.score += 500; W.particles.burst(r.x, r.y + 1.2, r.z, 0x30ff60, 30); }
@@ -685,15 +693,21 @@
     else sp = moveBody(p, dt, wx, wz, speed, p.onGround ? 12 : 4);
     animFor(p, sp);
     if (p.fig) p.fig.root.visible = !(p.inv > 0 && Math.floor(S.time * 20) % 2);
-    // Mitspieler folgt
-    const f = S.fo, tx = p.x - Math.sin(p.yaw) * 2.2 + Math.cos(p.yaw) * 1.1, tz = p.z - Math.cos(p.yaw) * 2.2 - Math.sin(p.yaw) * 1.1;
+    // Mitspieler: online vom anderen Gerät gesteuert
+    const f = S.fo;
+    if (S.net) netRemote(dt, f);
+    else {
+    const tx = p.x - Math.sin(p.yaw) * 2.2 + Math.cos(p.yaw) * 1.1, tz = p.z - Math.cos(p.yaw) * 2.2 - Math.sin(p.yaw) * 1.1;
     let fdx = tx - f.x, fdz = tz - f.z; const fd = Math.hypot(fdx, fdz);
     if (fd > 24 || Math.abs(p.y - f.y) > 4 && fd < 5) { f.x = tx; f.z = tz; f.y = p.y; f.vy = 0; W.particles.burst(f.x, f.y + 1, f.z, 0xff8a1e, 12); }
     if (fd > 0.01) { fdx /= fd; fdz /= fd; }
     if (p.y > f.y + 0.9 && f.onGround && fd < 6) { f.vy = 8; f.onGround = false; }
     const fsp = moveBody(f, dt, fdx, fdz, fd > 2 ? Math.min(11, H.speed * (fd > 6 ? 1.6 : 1)) : 0, 8);
     animFor(f, fsp);
+    }
     if (p.fig) p.fig.update(dt); if (f.fig) f.fig.update(dt);
+    if (S.foInv > 0) S.foInv -= dt;
+    if (S.net === 'guest') { netGuestFrame(dt, sp); return; }
     // Energie
     S.hurtT += dt; if (S.hurtT > 4) S.energy = Math.min(100, S.energy + dt * 6);
     // Zeit
@@ -702,8 +716,9 @@
     if (S.boss) updBoss(dt);
     if (S.cat) updCat(dt);
     if (S.mode === 'free') updQuests(dt, sp);
+    if (S.net === 'host') netHostFrame(dt);
     // Tür
-    if (S.done && S.mode === 'story' && Math.hypot(FUNKHAUS.door.x - p.x, FUNKHAUS.door.z - p.z) < 3 && p.y < 1.5) return finish(true);
+    if (S.done && S.mode === 'story' && [p].concat(S.net === 'host' ? [S.fo] : []).some(e => Math.hypot(FUNKHAUS.door.x - e.x, FUNKHAUS.door.z - e.z) < 3 && e.y < 1.5)) return finish(true);
     // Effekte
     S.beacon.rotation.y += dt; if (S.doorMesh) S.doorMesh.material.emissiveIntensity = S.done ? 1 + Math.sin(S.time * 6) * 0.6 : 0.8;
     if (S.mastBlink) S.mastBlink.material.opacity = Math.sin(S.time * 4) > 0 ? 1 : 0.15;
@@ -719,14 +734,15 @@
   function padHeld(btn) { const ps = I.pads(); return ps[0] && ps[0].buttons[btn] && ps[0].buttons[btn].pressed; }
 
   function updPickups(dt) {
-    const p = S.pl;
+    const who = S.net === 'host' ? [S.pl, S.fo] : [S.pl];
     for (const k of S.pickups) {
       if (k.taken) continue;
       k.t += dt; k.m.position.y = k.y + Math.sin(k.t * 2.4) * 0.18; k.m.rotation.y += dt * 2;
       if (k.m.userData.ring) k.m.userData.ring.rotation.z += dt;
-      const dx = k.x - p.x, dz = k.z - p.z, dy = k.y - (p.y + 0.9);
-      if (dx * dx + dz * dz < 1.6 && Math.abs(dy) < 1.6) {
-        k.taken = true; k.m.visible = false;
+      if (S.net === 'guest') continue;
+      const p = who.find(e => { const dx = k.x - e.x, dz = k.z - e.z, dy = k.y - (e.y + 0.9); return dx * dx + dz * dz < 1.6 && Math.abs(dy) < 1.6; });
+      if (p) {
+        k.taken = true; k.m.visible = false; k.dirty = true;
         if (k.kind === 'gold') { S.gold++; S.score += 800; AMC.Audio.sfx('gold'); msg('🌟 Goldene Erinnerung!', 1.8); W.particles.burst(k.x, k.y, k.z, 0xffd23f, 40, { speed: 7 }); }
         else if (k.kind === 'tape') { S.tapes++; S.score += 400; AMC.Audio.sfx('gold'); W.particles.burst(k.x, k.y, k.z, 0xff6ad0, 30, { speed: 6 }); msg('📼 Mixtape ' + S.tapes + ' gefunden!', 1.6); }
         else { S.got[k.rub]++; S.score += 100; AMC.Audio.sfx('collect'); W.particles.burst(k.x, k.y, k.z, D.RUBRICS[k.rub].color, 22, { speed: 5 }); if (S.mode === 'jagd' || S.mode === 'free') setTimeout(() => respawnPickup(k), 9000); }
@@ -734,13 +750,14 @@
       }
     }
   }
-  function respawnPickup(k) { if (!S || S.ended) return; const [x, y, z] = freeSpot(S.rng); k.x = x; k.y = y + 1.1; k.z = z; k.m.position.set(x, k.y, z); k.taken = false; k.m.visible = true; }
+  function respawnPickup(k) { if (!S || S.ended) return; const [x, y, z] = freeSpot(S.rng); k.x = x; k.y = y + 1.1; k.z = z; k.m.position.set(x, k.y, z); k.taken = false; k.m.visible = true; k.dirty = true; }
   function updDrones(dt) {
     const p = S.pl;
     for (const d of S.drones) {
       if (d.dead) { if ((d.respawn -= dt) <= 0) { const [x, , z] = freeSpot(S.rng, 20); Object.assign(d, { x, z, hx: x, hz: z, hp: 2, dead: false, y: 8 }); d.m.visible = true; } continue; }
       d.a += dt;
-      const dist = Math.hypot(p.x - d.x, p.z - d.z), U2 = d.m.userData;
+      const tgt = S.net === 'host' && Math.hypot(S.fo.x - d.x, S.fo.z - d.z) < Math.hypot(S.pl.x - d.x, S.pl.z - d.z) ? S.fo : S.pl;
+      const p = tgt, dist = Math.hypot(p.x - d.x, p.z - d.z), U2 = d.m.userData;
       U2.rotors.forEach((r, i) => (r.rotation.y += dt * (d.stun > 0 ? 4 : 30) * (i % 2 ? 1 : -1)));
       U2.tip.material.opacity = Math.sin(d.a * 8) > 0 ? 1 : 0.2;
       if (d.stun > 0) {
@@ -755,7 +772,7 @@
         d.vx = U.damp(d.vx, dx / l * sp, 3, dt); d.vz = U.damp(d.vz, dz / l * sp, 3, dt);
         d.x += d.vx * dt; d.z += d.vz * dt;
         d.m.rotation.y = Math.atan2(d.vx, d.vz);
-        if (dist < 1.1 && Math.abs(p.y + 1 - d.y) < 1.5) hurt(18, d.x, d.z);
+        if (dist < 1.1 && Math.abs(p.y + 1 - d.y) < 1.5) hurt(18, d.x, d.z, p);
       }
       const gy = groundAt(d.x, d.z, 50, 0.5), ty = (d.state === 'chase' ? Math.max(gy, p.y) + 1.3 : gy + 2.4) + Math.sin(d.a * 3) * 0.25;
       d.y = U.damp(d.y, ty, 3, dt);
@@ -799,17 +816,18 @@
     if (t === 'deliver') { if (S.fed >= S.hungryNeed) objectiveDone(); else { S.beacon.visible = true; const h = S.carry > 0 ? S.npcs.filter(n => n.hungry && !n.fed).sort((a, b) => Math.hypot(a.x - S.pl.x, a.z - S.pl.z) - Math.hypot(b.x - S.pl.x, b.z - S.pl.z))[0] : null; if (h) S.beacon.position.set(h.x, 0, h.z); else S.beacon.position.set(S.imbiss.x, 0, S.imbiss.z); } }
     if (t === 'cat') { if (S.caught >= ch.obj.n) objectiveDone(); else { S.beacon.visible = true; S.beacon.position.set(S.cat.x, 0, S.cat.z); } }
     if (t === 'hunt' && S.kills >= ch.obj.n) objectiveDone();
-    if (t === 'train') {
-      const g = S.gates.find(q => !q.passed);
+    if (t === 'train' || t === 'race') {
+      const g = S.gates.find(q => !q.passed), race = t === 'race';
       S.gates.forEach(q => { q.ring.material.emissive.set(q === g ? 0x2090ff : q.passed ? 0x20a040 : 0x222233); q.ring.rotation.y += 0.02; });
-      if (g) { S.beacon.visible = true; S.beacon.position.set(g.x, 0, g.z); if (Math.hypot(S.pl.x - g.x, S.pl.z - g.z) < 2.8) { g.passed = true; S.left += S.gateBonus; AMC.Audio.sfx('perfect'); msg('🚉 Haltestelle ' + (g.i + 1) + ' · +' + S.gateBonus + ' s', 1.4); W.particles.burst(g.x, 2.8, g.z, 0x3dd6ff, 30); S.score += 300; } }
+      if (g) { S.beacon.visible = true; S.beacon.position.set(g.x, 0, g.z); if (Math.hypot(S.pl.x - g.x, S.pl.z - g.z) < 2.8 || (S.net === 'host' && Math.hypot(S.fo.x - g.x, S.fo.z - g.z) < 2.8)) { g.passed = true; AMC.Audio.sfx('perfect'); W.particles.burst(g.x, 2.8, g.z, 0x3dd6ff, 30); S.score += 300; if (race) msg('🏁 Tor ' + (g.i + 1) + '/' + S.gates.length + ' · ' + S.time.toFixed(1) + ' s', 1.2); else { S.left += S.gateBonus; msg('🚉 Haltestelle ' + (g.i + 1) + ' · +' + S.gateBonus + ' s', 1.4); } } }
+      else if (race) { objectiveDone(); return finish(true, 'race'); }
       else objectiveDone();
     }
   }
   function finishSoon() { /* Gäste sind schon im Funkhaus – Tür bleibt das Ziel */ }
   function updRings(dt) {
     if (!S.rings) return;
-    S.rings = S.rings.filter(r => { r.t += dt; const k = r.t / 0.35, s = 0.4 + k * r.max; r.m.scale.set(s, s, s); r.m.material.opacity = Math.max(0, 0.6 * (1 - k)); r.m.position.set(S.pl.x, S.pl.y + 0.9, S.pl.z); if (k >= 1) { S.group.remove(r.m); r.m.geometry.dispose(); return false; } return true; });
+    S.rings = S.rings.filter(r => { r.t += dt; const k = r.t / 0.35, s = 0.4 + k * r.max; r.m.scale.set(s, s, s); r.m.material.opacity = Math.max(0, 0.6 * (1 - k)); const e = r.e || S.pl; r.m.position.set(e.x, e.y + 0.9, e.z); if (k >= 1) { S.group.remove(r.m); r.m.geometry.dispose(); return false; } return true; });
   }
   // ------------------------------------------------------------------ Imbiss (Kapitel „Imbisskind“)
   function buildImbiss(x, z) {
@@ -856,7 +874,9 @@
     S.group.add(c.m); c.m.position.set(x, c.y, z); S.cat = c;
   }
   function updCat(dt) {
-    const c = S.cat, p = S.pl; if (c.mixer) c.mixer.update(dt);
+    const c = S.cat; let p = S.pl; if (c.mixer) c.mixer.update(dt);
+    if (S.net === 'guest') { c.m.position.set(c.x, c.y, c.z); c.m.rotation.y = c.yaw; return; }
+    if (S.net === 'host' && Math.hypot(S.fo.x - c.x, S.fo.z - c.z) < Math.hypot(p.x - c.x, p.z - c.z)) p = S.fo;
     const dx = c.x - p.x, dz = c.z - p.z, d = Math.hypot(dx, dz);
     if (S.done) { moveBody(c, dt, 0, 0, 0, 8); c.play('idle'); c.m.position.set(c.x, c.y, c.z); return; }
     if (d < 1.35 && Math.abs(p.y - c.y) < 1.4) {
@@ -880,6 +900,81 @@
     if (c.onGround) { if (v > 0.6) { c.play('walk'); if (c.act && c.act.walk) c.act.walk.timeScale = Math.min(2.6, v / 3); } else c.play(c.rest > 0 ? 'no' : 'idle'); }
     c.m.position.set(c.x, c.y, c.z); c.m.rotation.y = c.yaw;
   }
+  // ------------------------------------------------------------------ Online-Koop: Gastgeber rechnet, Gast steuert seine Figur selbst
+  const r2 = v => Math.round(v * 100) / 100;
+  function netRemote(dt, f) {
+    const R = S.remote; if (!R) { animFor(f, 0); return; }
+    const k = Math.min(1, dt * 14);
+    f.x += (R.x - f.x) * k; f.y += (R.y - f.y) * k; f.z += (R.z - f.z) * k; f.yaw = R.yaw;
+    if (Math.hypot(R.x - f.x, R.z - f.z) > 8) { f.x = R.x; f.y = R.y; f.z = R.z; }
+    f.onGround = !R.air; f.vy = R.vy || 0; f.dodge = R.dodge || 0;
+    if (f.fig) { f.fig.root.position.set(f.x, f.y, f.z); f.fig.root.rotation.y += U.angDiff(f.fig.root.rotation.y, f.yaw) * Math.min(1, dt * 14); }
+    if (R.busy) { f.busy = 0.1; setAnim(f, R.busy); } else { f.busy = 0; animFor(f, R.sp); }
+  }
+  function meState(p, sp) { return [r2(p.x), r2(p.y), r2(p.z), r2(p.yaw), r2(sp || 0), p.onGround ? 0 : 1, r2(p.vy), p.dodge > 0 ? 1 : 0, p.busy > 0 ? p.anim : 0]; }
+  function readRemote(a) { if (!Array.isArray(a)) return; S.remote = { x: +a[0] || 0, y: +a[1] || 0, z: +a[2] || 0, yaw: +a[3] || 0, sp: +a[4] || 0, air: !!a[5], vy: +a[6] || 0, dodge: a[7] ? 0.2 : 0, busy: typeof a[8] === 'string' && /^[a-zA-Z]{2,12}$/.test(a[8]) ? a[8] : 0 }; }
+  function netHostFrame(dt) {
+    if ((S.netT -= dt) > 0) return; S.netT = 1 / 12;
+    const k = []; S.pickups.forEach((q, i) => { if (q.dirty) { q.dirty = false; k.push([i, q.kind, q.rub || 0, r2(q.x), r2(q.y), r2(q.z), q.taken ? 1 : 0]); } });
+    const [txt, frac] = objText();
+    const snap = {
+      t: 's', p: meState(S.pl, Math.hypot(S.pl.vx, S.pl.vz)), k,
+      d: S.drones.map(d => [r2(d.x), r2(d.y), r2(d.z), d.dead ? 1 : 0, d.stun > 0 ? 1 : 0, r2(d.m.rotation.y)]),
+      n: S.npcs.map(n => [r2(n.x), r2(n.y), r2(n.z), r2(n.fig ? n.fig.root.rotation.y : 0), (n.talked ? 1 : 0) | (n.follow ? 2 : 0) | (n.delivered ? 4 : 0) | (n.hyped ? 8 : 0) | (n.fed ? 16 : 0)]),
+      h: [txt, r2(frac), Math.ceil(S.left), Math.round(S.energy), D.RUBRIC_IDS.map(r => S.got[r]), S.gold, S.score, S.done ? 1 : 0, S.carry || 0],
+      e: S.events.splice(0)
+    };
+    if (S.boss) { const b = S.boss; snap.b = [r2(b.x), r2(b.y), r2(b.z), r2(b.hp), b.state, r2(b.open)]; }
+    if (S.cat) snap.c = [r2(S.cat.x), r2(S.cat.y), r2(S.cat.z), r2(S.cat.yaw), S.cat.cur || 'idle', S.caught];
+    if (S.gates.length) snap.g = S.gates.map(g => (g.passed ? 1 : 0));
+    if (S.relays.length) snap.r = S.relays.map(r => [r2(r.prog), r.fixed ? 1 : 0]);
+    if (S.beacon.visible) snap.bc = [r2(S.beacon.position.x), r2(S.beacon.position.z)];
+    P.netSend && P.netSend(snap);
+  }
+  function netGuestFrame(dt, sp) {
+    updRings(dt); updPickups(dt);
+    if (S.cat) updCat(dt);
+    for (const n of S.npcs) if (n.fig) { n.fig.update(dt); if (n.tx != null) { const k = Math.min(1, dt * 10); n.x += (n.tx - n.x) * k; n.y += (n.ty - n.y) * k; n.z += (n.tz - n.z) * k; n.fig.root.position.set(n.x, n.y, n.z); const s2 = Math.hypot(n.tx - n.x, n.tz - n.z) / Math.max(dt, 0.001); if (!n.dancer && !n.busyAnim) setAnim(n, s2 < 0.4 ? 'idle' : s2 < 3.4 ? 'walk' : 'jog'); } }
+    for (const d of S.drones) { if (d.tx == null) continue; const k = Math.min(1, dt * 10); d.x += (d.tx - d.x) * k; d.y += (d.ty - d.y) * k; d.z += (d.tz - d.z) * k; d.m.position.set(d.x, d.y, d.z); d.m.userData.rotors.forEach((r, i) => (r.rotation.y += dt * 30 * (i % 2 ? 1 : -1))); }
+    if (S.boss) { const b = S.boss, U2 = b.m.userData; U2.ring.rotation.z += dt * 2; if (U2.shield) U2.shield.visible = b.open <= 0; U2.eye.material.color.set(b.open > 0 ? 0x30ff90 : 0xff2a3a); b.m.position.set(b.x, b.y, b.z); b.m.visible = b.state !== 'dead'; }
+    S.shocks = (S.shocks || []).filter(s => { s.r += dt * 10; s.m.scale.set(s.r, s.r, 1); s.m.material.opacity = Math.max(0, 0.9 - s.r / 34); const p = S.pl, d = Math.hypot(p.x - s.x, p.z - s.z); if (!s.hit && Math.abs(d - s.r) < 0.7 && p.y < 1.06 && !(p.dodge > 0)) { s.hit = true; guestKnock(s.x, s.z); } if (s.r > 30) { S.group.remove(s.m); return false; } return true; });
+    S.beacon.rotation.y += dt; W.particles.update(dt);
+    const sun = S.env.sun, sp0 = W.SKIES[S.sky].sunPos, p = S.pl;
+    sun.position.set(p.x + sp0[0] * 0.5, sp0[1] * 0.5, p.z + sp0[2] * 0.5); sun.target.position.set(p.x, 0, p.z);
+    W.updateCamera(dt, p, solidAt); updHud(dt);
+    if ((S.netT -= dt) <= 0) { S.netT = 1 / 15; P.netSend && P.netSend({ t: 'i', p: meState(p, sp), hold: S.holding ? 1 : 0, e: S.events.splice(0) }); }
+  }
+  function guestKnock(fx, fz) {
+    const p = S.pl; if (p.inv > 0) return; p.inv = 1.2;
+    const dx = p.x - fx, dz = p.z - fz, l = Math.hypot(dx, dz) || 1; p.vx = dx / l * 10; p.vz = dz / l * 10; p.vy = 5;
+    AMC.Audio.sfx('static'); W.cam.shake = 0.6; const h = U.$('hHit'); if (h) { h.classList.remove('on'); void h.offsetWidth; h.classList.add('on'); }
+  }
+  /** Nachricht vom anderen Gerät */
+  P.netRecv = function (m) {
+    if (!S || !m || typeof m !== 'object') return;
+    if (S.net === 'host' && m.t === 'i') {
+      readRemote(m.p);
+      const f = S.fo;
+      (Array.isArray(m.e) ? m.e.slice(0, 8) : []).forEach(ev => { if (ev && ev[0] === 'act') { const it = interactTarget(f); if (it && it.run) it.run(); else if (!it || !it.hold) { f.cd = 0; doWave(f); } } });
+      if (m.hold) { const it = interactTarget(f); if (it && it.hold) { const r = it.hold; r.prog += (1 / 15) / (f.H.id === 'marco' ? 0.8 : 1.6); if (r.prog >= 1 && !r.fixed) { r.fixed = true; r.led.material.color.set(0x30ff60); r.gl.material.color.set(0x30ff60); AMC.Audio.sfx('perfect'); msg('🔧 Verteiler läuft wieder!', 2); S.score += 500; } } }
+      return;
+    }
+    if (S.net !== 'guest' || m.t !== 's') return;
+    readRemote(m.p);
+    (Array.isArray(m.k) ? m.k : []).forEach(a => { if (!Array.isArray(a)) return; let q = S.pickups[a[0]]; if (!q) { if (a[0] !== S.pickups.length || !/^(funke|gold|tape)$/.test(a[1])) return; q = addPickup(a[1], D.RUBRICS[a[2]] ? a[2] : 'feel', a[3], a[4], a[5]); } q.x = a[3]; q.y = a[4]; q.z = a[5]; q.m.position.set(q.x, q.y, q.z); const was = q.taken; q.taken = !!a[6]; q.m.visible = !q.taken; if (q.taken && !was && Math.hypot(q.x - S.pl.x, q.z - S.pl.z) < 3) { AMC.Audio.sfx(q.kind === 'funke' ? 'collect' : 'gold'); W.particles.burst(q.x, q.y, q.z, q.kind === 'funke' ? D.RUBRICS[q.rub].color : 0xffd23f, 18, { speed: 5 }); } });
+    (Array.isArray(m.d) ? m.d.slice(0, 40) : []).forEach((a, i) => { if (!Array.isArray(a)) return; if (!S.drones[i] && i === S.drones.length) addDrone(+a[0] || 0, +a[2] || 0, {}); const d = S.drones[i]; if (!d) return; d.tx = a[0]; d.ty = a[1]; d.tz = a[2]; if (a[3] && !d.dead) W.particles.burst(d.x, d.y, d.z, 0xff3a3a, 30, { speed: 8 }); d.dead = !!a[3]; d.m.visible = !d.dead; d.m.rotation.y = a[5]; d.m.userData.eye.material.color.set(a[4] ? 0x553333 : 0xff2a3a); if (!d.dead && d.tx != null && Math.hypot(d.x - d.tx, d.z - d.tz) > 6) { d.x = d.tx; d.y = d.ty; d.z = d.tz; } });
+    (Array.isArray(m.n) ? m.n : []).forEach((a, i) => { const n = S.npcs[i]; if (!n || !n.fig || !Array.isArray(a)) return; n.tx = a[0]; n.ty = a[1]; n.tz = a[2]; n.fig.root.rotation.y = a[3]; const f = a[4] | 0; n.talked = !!(f & 1); n.follow = !!(f & 2); n.delivered = !!(f & 4); n.hyped = !!(f & 8); n.fed = !!(f & 16);
+      if (n.icon) n.icon.visible = !(n.talked || n.follow || n.delivered || n.hyped || n.fed); if (n.mark) n.mark.visible = !(n.talked || n.fed); n.fig.root.visible = !n.delivered; });
+    if (Array.isArray(m.h)) { const h = m.h; S.netObj = [typeof h[0] === 'string' ? h[0].slice(0, 200) : '', +h[1] || 0]; S.left = +h[2] || 0; S.energy = +h[3] || 0; if (Array.isArray(h[4])) D.RUBRIC_IDS.forEach((r, i) => (S.got[r] = +h[4][i] || 0)); S.gold = +h[5] || 0; S.score = +h[6] || 0; const dn = !!h[7]; if (dn && !S.done) AMC.Audio.sfx('star'); S.done = dn; S.carry = +h[8] || 0; drawRub(); }
+    if (S.boss && Array.isArray(m.b)) { const b = S.boss, a = m.b; b.x = a[0]; b.y = a[1]; b.z = a[2]; b.hp = a[3]; if (b.state === 'intro' && a[4] !== 'intro') AMC.Audio.music('boss'); b.state = String(a[4]); b.open = a[5]; }
+    if (S.cat && Array.isArray(m.c)) { const c = S.cat, a = m.c; c.x = a[0]; c.y = a[1]; c.z = a[2]; c.yaw = a[3]; c.play(String(a[4])); S.caught = a[5] | 0; }
+    if (Array.isArray(m.g)) m.g.forEach((v, i) => { const g = S.gates[i]; if (g) { g.passed = !!v; g.ring.material.emissive.set(g.passed ? 0x20a040 : 0x2090ff); } });
+    if (Array.isArray(m.r)) m.r.forEach((a, i) => { const r = S.relays[i]; if (r && Array.isArray(a)) { r.prog = a[0]; if (a[1] && !r.fixed) { r.fixed = true; r.led.material.color.set(0x30ff60); r.gl.material.color.set(0x30ff60); AMC.Audio.sfx('perfect'); } } });
+    if (Array.isArray(m.bc)) { S.beacon.visible = true; S.beacon.position.set(m.bc[0], 0, m.bc[1]); } else S.beacon.visible = false;
+    (Array.isArray(m.e) ? m.e.slice(0, 12) : []).forEach(ev => { if (!Array.isArray(ev)) return; if (ev[0] === 'hurt') guestKnock(+ev[1], +ev[2]); if (ev[0] === 'shock') spawnShock(+ev[1], +ev[2]); if (ev[0] === 'msg' && typeof ev[1] === 'string') msg(ev[1].slice(0, 140), 2.4); });
+  };
+  P.netFinish = res => { if (S && !S.ended) { S.ended = true; P.onEnd && P.onEnd(res); } };
+
   // ------------------------------------------------------------------ Nebenaufträge (Stadt erkunden)
   function nextQuest() { const qs = AMC.Save.data.quests; return D.QUESTS.find(q => !qs[q.id]); }
   function updQuests(dt, sp) {
@@ -920,12 +1015,13 @@
     }
     b.m.position.set(b.x, b.y + Math.sin(b.t * 2) * 0.2, b.z);
     // Berührung
-    if (Math.hypot(p.x - b.x, p.z - b.z) < 2.6 && Math.abs(p.y + 1 - b.y) < 2.4) hurt(22, b.x, b.z);
+    for (const e of S.net === 'host' ? [S.pl, S.fo] : [S.pl]) if (Math.hypot(e.x - b.x, e.z - b.z) < 2.6 && Math.abs(e.y + 1 - b.y) < 2.4) hurt(22, b.x, b.z, e);
     // Schockwellen
     S.shocks = (S.shocks || []).filter(s => {
       s.r += dt * (9 + b.phase * 2); s.m.scale.set(s.r, s.r, 1); s.m.material.opacity = Math.max(0, 0.9 - s.r / 34);
       const d = Math.hypot(p.x - s.x, p.z - s.z);
       if (!s.hit && Math.abs(d - s.r) < 0.7 && p.y < 0.9 + 0.16) { s.hit = true; hurt(20, s.x, s.z); }
+      if (S.net === 'host' && !s.hitF) { const f = S.fo, df = Math.hypot(f.x - s.x, f.z - s.z); if (Math.abs(df - s.r) < 0.7 && f.y < 1.06) { s.hitF = true; hurt(20, s.x, s.z, f); } }
       if (s.r > 30) { S.group.remove(s.m); return false; } return true;
     });
   }
@@ -933,6 +1029,7 @@
     const m = new T.Mesh(new T.RingGeometry(0.92, 1, 64), new T.MeshBasicMaterial({ color: 0x9a4dff, transparent: true, opacity: 0.9, side: T.DoubleSide, blending: T.AdditiveBlending, depthWrite: false, toneMapped: false }));
     m.rotation.x = -Math.PI / 2; m.position.set(x, 0.45, z); S.group.add(m);
     S.shocks = S.shocks || []; S.shocks.push({ m, x, z, r: 1, hit: false });
+    if (S.net === 'host') S.events.push(['shock', x, z]);
   }
 
   P.render = function () { if (S) W.renderer.render(S.scene, W.camera); };

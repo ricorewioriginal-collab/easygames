@@ -30,11 +30,15 @@ server.listen(0, '127.0.0.1', async () => {
     await p.keyboard.press('Escape'); await p.waitForTimeout(800);
     // Staffel 2: Katzen-Kapitel startet mit Katze, Imbiss-Kapitel mit Imbiss
     assert.equal(await p.evaluate(() => AMC.Data.CHAPTERS.length), 12);
+    assert.ok(await p.evaluate(() => typeof AMC.Net.lobby === 'function' && /\/easygames\/anmacha-podcast-tycoon\/\?koop=ABCDE$/.test(AMC.Net.link('ABCDE'))), 'Koop-Link zeigt auf die Homepage');
     await p.evaluate(() => { AMC.UI.closeAll(); AMC.Game.playChapter(9); }); await p.waitForTimeout(2500);
     assert.ok(await p.evaluate(() => !!AMC.Play.state().cat), 'Katze da');
     await p.evaluate(() => AMC.Game.playChapter(8)); await p.waitForTimeout(2500);
     assert.ok(await p.evaluate(() => !!AMC.Play.state().imbiss), 'Imbiss da');
-    await p.evaluate(() => AMC.UI.closeAll());
+    // Funk-Rennen: 10 Tore, Uhr läuft vorwärts
+    await p.evaluate(() => { AMC.UI.closeAll(); AMC.Play.onEnd = () => {}; AMC.Play.start({ mode: 'race', host: 'andrew' }); }); await p.waitForTimeout(2500);
+    assert.equal(await p.evaluate(() => AMC.Play.state().gates.length), 10, 'Rennen mit 10 Toren');
+    await p.evaluate(() => { AMC.Play.stop(); AMC.UI.closeAll(); });
     // Radio
     await p.evaluate(() => AMC.UI.radio()); await p.waitForTimeout(800);
     assert.ok(await p.$$eval('.radio-screen button', b => b.length) > 10, 'Radio-Fenster mit Sendern/Folgen');

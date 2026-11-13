@@ -14,8 +14,10 @@
     "▶ Story: Staffel 1 & 2 – 12 Kapitel, eins nach dem anderen freigeschaltet.",
     "🎙️ Live-Show – Endlos-Aufnahme im Studio, bis der Hype auf null fällt. Rekord wird gespeichert.",
     "🏃 Themenjagd – 3 Minuten in der Stadt, so viele Punkte wie möglich.",
+    "🏁 Funk-Rennen – lauf auf Zeit durch 10 nummerierte Tore. Medaillen: Gold bis 50 s, Silber bis 70 s, Bronze bis 100 s; die Bestzeit wird gespeichert.",
     "🤖 Die verrückte KI-Quizshow – 10 Fragen, allein gegen die KI oder zu zweit an einem Gerät.",
     "🏙️ Stadt & Nebenaufträge – die Stadt ohne Zeitdruck, mit 10 Nebenaufträgen für Fan-Punkte.",
+    "🌐 Online-Koop – zu zweit auf zwei Geräten: einer spielt Andrew, einer Marco.",
     "📻 Radio & Podcast – echte Folgen und 13 AnMaCha-Sender mit Titelanzeige.",
     "🛍️ Fanshop – Outfits für Andrew und Marco und Studio-Upgrades, bezahlt mit Fan-Punkten.",
     "⚙️ Einstellungen, 🎮 Steuerung und Credits.",
@@ -52,6 +54,8 @@
     "Pointe: Drücke die angezeigte Tastenfolge rechtzeitig.",
     "Übergabe: Gib an den Co-Moderator ab und baue eine Kombo auf.",
     "Jingle: Bis zu 3 Mal pro Folge – gibt Hype.",
+    "🎛️ Soundboard: Ein Pad leuchtet auf – drück es schnell (A, B, X, Y bzw. Leertaste, Esc, E, Q oder antippen). 6 Treffer in 7 Sekunden sind perfekt, falsche Pads kosten einen Treffer. Danach 2 Runden Pause.",
+    "❓ Hörerfrage: Ein Fan stellt eine Quizfrage zum Podcast – wähle die richtige Antwort. Richtig gibt viele Hörer. Danach 2 Runden Pause.",
     "Spezial: Marcos Tagebuch oder Andrews Musikmoment, wenn die Leiste voll ist.",
     "Pannen: Pegel halten, Kabel nach Richtungsfolge stecken oder einen Anrufer der richtigen Rubrik zuordnen.",
     "Stärken: Karten in der Lieblingsrubrik des sprechenden Hosts zählen mehr."
@@ -60,7 +64,7 @@
   {
    "t": "Fanshop und Fan-Punkte",
    "p": [
-    "Fan-Punkte (🎟️) bekommst du für jedes Kapitel (beim ersten Abschluss deutlich mehr), für Live-Show, Themenjagd, Quiz und Nebenaufträge. Im Fanshop gibt es 9 Outfits pro Host – vom Studio-Polo bis zum Podcast-König – und 6 Studio-Upgrades."
+    "Fan-Punkte (🎟️) bekommst du für jedes Kapitel (beim ersten Abschluss deutlich mehr), für Live-Show, Themenjagd, Funk-Rennen, Quiz und Nebenaufträge. Im Fanshop gibt es 9 Outfits pro Host – vom Studio-Polo bis zum Podcast-König – und 6 Studio-Upgrades."
    ],
    "list": [
     "🎙️ Profi-Mikrofone: +10 % Hörer in jeder Aufnahme.",
@@ -90,6 +94,18 @@
    ]
   },
   {
+   "t": "Online-Koop",
+   "p": [
+    "Im Hauptmenü unter „🌐 Online-Koop“ eröffnet ein Gerät das Spiel und zeigt einen 5-stelligen Code, einen QR-Code und einen Link. Mitspieler können per Link, Code oder QR-Code von überall beitreten. Der Gastgeber spielt seine gewählte Figur, der Gast die andere."
+   ],
+   "list": [
+    "🏃 Themenjagd zu zweit: 3 Minuten, gemeinsame Punkte.",
+    "🏙️ Stadt zu zweit: frei spielen und Störsender jagen.",
+    "🎬 Kapitel zu zweit: jedes beim Gastgeber freigeschaltete Kapitel (Stadtteil, auch Bosskämpfe). Der Story-Fortschritt bleibt dabei unverändert, beide bekommen Fan-Punkte.",
+    "Energie und Zeit sind gemeinsam. Im Pause-Menü läuft das Spiel weiter, damit der andere nicht stehen bleibt."
+   ]
+  },
+  {
    "t": "Bedienung",
    "list": [
     "Controller: linker Stick laufen, rechter Stick Kamera, A springen/bestätigen (zweimal = Doppelsprung), X Schallwelle/sprechen, B zurück, RT ausweichen, RB sprinten, Y Andrew/Marco wechseln, LB nächster Sender, LT Radio an/aus, Start Pause, Select Radio & Podcast.",
@@ -107,7 +123,7 @@
   {
    "t": "Wertung und Speichern",
    "p": [
-    "Sterne pro Kapitel hängen von den Hörern der Live-Aufnahme ab. Rekorde für Live-Show, Themenjagd und Quiz werden gespeichert. Der Spielstand liegt lokal im Browser und wird mit Google-Anmeldung über die AnMaCha-Cloud gesichert. In den Einstellungen gibt es Lautstärken, Grafikqualität, Kamera-Empfindlichkeit, Achsen umkehren, Bildschirmwackeln und Untertitel."
+    "Sterne pro Kapitel hängen von den Hörern der Live-Aufnahme ab. Rekorde für Live-Show, Themenjagd, Funk-Rennen und Quiz werden gespeichert. Der Spielstand liegt lokal im Browser und wird mit Google-Anmeldung über die AnMaCha-Cloud gesichert. In den Einstellungen gibt es Lautstärken, Grafikqualität, Kamera-Empfindlichkeit, Achsen umkehren, Bildschirmwackeln und Untertitel."
    ]
   }
  ],
@@ -135,6 +151,7 @@
    "list": [
     "Marco repariert die Verteiler am Sendemast doppelt so schnell – wechsle vor dem Aufstieg.",
     "Andrew ist auf der Themenjagd schneller und kommt höher: ideal für Rekorde.",
+    "Funk-Rennen: Spiele Andrew, halte Sprinten gedrückt und nutze Ausweichen auf geraden Strecken. Der Lichtstrahl zeigt immer das nächste Tor, die Karte oben rechts ebenfalls.",
     "Im Quiz bringen schnelle Antworten Zusatzpunkte. Bei 2 Spielern zählt, wer zuerst richtig drückt."
    ]
   },
@@ -243,7 +260,11 @@
   },
   {
    "q": "Wie bekomme ich schnell Fan-Punkte?",
-   "a": "Neue Kapitel zum ersten Mal schaffen und die Nebenaufträge in der Stadt erledigen. Danach lohnen sich Live-Show und Themenjagd."
+   "a": "Neue Kapitel zum ersten Mal schaffen und die Nebenaufträge in der Stadt erledigen. Danach lohnen sich Live-Show, Themenjagd und Funk-Rennen (Gold bringt 150 Fan-Punkte)."
+  },
+  {
+   "q": "Wie spiele ich online mit einem Freund?",
+   "a": "Hauptmenü → 🌐 Online-Koop → Spiel eröffnen. Schick den Link oder zeig den QR-Code; dein Freund kann auch den Code unter „🌐 Online-Koop“ eingeben. Sobald er verbunden ist, wählst du den Modus."
   }
  ]
 }

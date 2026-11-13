@@ -206,6 +206,7 @@ html.dev-touch .h-prompt { bottom: calc(230px + var(--safe-b)); }
 .seq { display: flex; gap: 10px; } .seq span { font-size: 34px; } .seq span kbd { font-size: 34px; } .seq span.ok { opacity: .35; transform: scale(.85); } .seq span.bad kbd { background: #ff4a5a; }
 .k-seq .mg-bar, .k-level .mg-bar { width: min(360px, 80vw); height: 10px; }
 .seq-pad { display: grid; grid-template-columns: repeat(4, 64px); gap: 10px; } .seq-pad button { width: 64px; height: 64px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .3); background: rgba(16, 18, 28, .8); font-size: 26px; }
+.pads { display: grid; grid-template-columns: repeat(3, 70px); grid-template-rows: repeat(3, 70px); gap: 6px; margin: 6px auto; } .pads button { border-radius: 50%; border: 2px solid rgba(255, 255, 255, .3); background: rgba(16, 18, 28, .8); font-size: 24px; transition: transform .08s, background .08s; } .pads [data-k=y] { grid-area: 1/2; } .pads [data-k=x] { grid-area: 2/1; } .pads [data-k=b] { grid-area: 2/3; } .pads [data-k=a] { grid-area: 3/2; } .pads .lit { background: #ff8a1e; border-color: #ffd23f; transform: scale(1.12); box-shadow: 0 0 22px #ff8a1e; }
 .lvl { position: relative; width: min(420px, 84vw); height: 40px; border-radius: 12px; background: linear-gradient(90deg, #2a2c40, #4a2a2a); border: 1px solid var(--line); overflow: hidden; }
 .lvl-band { position: absolute; top: 0; bottom: 0; width: 24%; background: rgba(61, 220, 132, .35); border: 2px solid #3ddc84; border-radius: 8px; } .lvl-band.in { background: rgba(61, 220, 132, .65); }
 .lvl-needle { position: absolute; top: -4px; bottom: -4px; width: 6px; margin-left: -3px; background: #fff; box-shadow: 0 0 12px #fff; border-radius: 3px; }
@@ -260,3 +261,14 @@ html.eg-pad .tb, html.dev-pad #touch { display: none; }
 .shop-it .si-ic { font-size: 1.9rem; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 12px; background: rgba(0, 0, 0, .3); flex: none; }
 .shop-it .si-t { display: flex; flex-direction: column; gap: 2px; } .shop-it small { opacity: .75; }
 .shop-it.own { border-color: rgba(61, 214, 120, .5); } .shop-it.on { background: rgba(255, 138, 30, .22); border-color: var(--or); }
+
+/* Online-Koop */
+.koop .k-share { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin: 6px 0 10px; }
+.koop .k-qr { width: 150px; height: 150px; background: #fff; padding: 8px; border-radius: 12px; flex: none; }
+.koop .k-qr svg { width: 100%; height: 100%; display: block; }
+.koop .k-code { font: 800 2.4rem/1 ui-monospace, Consolas, monospace; letter-spacing: .3em; color: var(--or); margin: 4px 0 8px; }
+.koop .k-status { padding: 10px 14px; border-radius: 12px; background: rgba(255, 255, 255, .06); } .koop .k-status.ok { background: rgba(61, 214, 120, .16); color: #8ff0b0; }
+.koop .k-modes { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; } .koop .k-modes small { display: block; opacity: .75; font-weight: 400; }
+.koop .k-ch { display: flex; gap: 8px; align-items: stretch; } .koop .k-ch [data-km] { flex: 1; }
+.koop .k-join { margin-top: 14px; } .koop .k-join input { flex: 1; min-width: 0; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(0, 0, 0, .35); color: inherit; font: 700 1.3rem ui-monospace, monospace; letter-spacing: .2em; text-transform: uppercase; }
+.koop .k-err { color: #ff9aa8; }

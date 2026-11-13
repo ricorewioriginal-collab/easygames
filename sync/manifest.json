@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "46565a01fadf",
- "generated": "2026-11-13T01:44:14+00:00",
- "commit": "e2cc3a4a58461c54c03726ac94b8acf64d33364b",
+ "version": "296d7da45d6e",
+ "generated": "2026-11-13T01:53:44+00:00",
+ "commit": "60c4f0d770322941bfd1502dbc2b41eba5ac3d91",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -348,18 +348,48 @@
   },
   {
    "p": "aeru/game.js",
-   "s": 134102,
-   "h": "f802170f2a0e7cf394cbaa6d300ed14a145e02800b52a2e58841577f3cef21c4"
+   "s": 143066,
+   "h": "23a9851026206f6a267fd3f948cd05b2835eb37de4a2730e0c4b6cf4dd05a098"
   },
   {
    "p": "aeru/index.html",
-   "s": 14982,
-   "h": "6e0f40000d6e4f9c2e502c72e52cf1a3465b1eae7882456f5ef361b196e37c74"
+   "s": 15217,
+   "h": "8f970150aa7573041611a5ee1b335747ac092b3cdb51c1b287a3aef874bacb93"
   },
   {
    "p": "aeru/manifest.webmanifest",
    "s": 746,
    "h": "53725bff31c3ab36690d8e2dad525f66859fc08b2bd8e197f53306d9a9b89dd5"
+  },
+  {
+   "p": "aeru/models/armabee.glb",
+   "s": 122244,
+   "h": "38834853d05abb96819c18dfac36f4c139e0f136437e7941c9a119a0ff2c2f8b"
+  },
+  {
+   "p": "aeru/models/ghost.glb",
+   "s": 175968,
+   "h": "ba309c94ddb67f6e3d3521ca2cfaf40945baae32b51360aa3c97fd48c3f8a335"
+  },
+  {
+   "p": "aeru/models/glub.glb",
+   "s": 127496,
+   "h": "1747141e0c352607c3394e727c5a406d4328730d7a66c0a8bf4c0ed3546e7548"
+  },
+  {
+   "p": "aeru/models/goleling.glb",
+   "s": 177724,
+   "h": "d4fddb7b2ccd2cd33f26d88cc228b048f4382ab45b938e55bac57ef143791780"
+  },
+  {
+   "p": "aeru/models/hywirl.glb",
+   "s": 173492,
+   "h": "bd94ef17ad1856d77aefb47161bfe9b915f39d2fd4642c524c51b475d5efb505"
+  },
+  {
+   "p": "aeru/models/scenery.glb",
+   "s": 292172,
+   "h": "7d30b5d145b3cf89b2ce68bf78f2a5277f825b1b8d1cdfff97f28167f19dcf06"
   },
   {
    "p": "aeru/quests.js",
@@ -2133,8 +2163,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/index.html",
-   "s": 6278,
-   "h": "3c26bb506155d62797b9b1700c8f6a158ec1ce682ccb3faac0694f091b8d8e9a"
+   "s": 6359,
+   "h": "60a8302d72a953bd1b21bb297f0782d954081a8f37fada77c07dc0bc2f46e4c1"
   },
   {
    "p": "anmacha-podcast-tycoon/manifest.webmanifest",
@@ -2213,8 +2243,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/core.js",
-   "s": 12071,
-   "h": "df1db48094eea85df36f1f238602d3f0d1a692feaf405082b54e70bc35b76499"
+   "s": 12080,
+   "h": "e4244363089b76ff07dae392f8647b2dbb6559d717cb95e9297b9b78147eb0e6"
   },
   {
    "p": "anmacha-podcast-tycoon/src/data.js",
@@ -2223,8 +2253,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/main.js",
-   "s": 33330,
-   "h": "6fd548127fbaae03f019f6af732bede77f791ea9866d2d4ee3d608b9757ece14"
+   "s": 37017,
+   "h": "b19069e0992a7a10a181d9dcdf8940d82765ce7de3d46bbb8dde4d37dd28413d"
   },
   {
    "p": "anmacha-podcast-tycoon/src/media.js",
@@ -2232,9 +2262,14 @@
    "h": "ba9d81702dc55d31f8cb43c20b582b3ba19a839490927b19a60afb10ef0b35a4"
   },
   {
+   "p": "anmacha-podcast-tycoon/src/net.js",
+   "s": 11079,
+   "h": "d596f4600213bdfbbdc43475d4ade70a842931c35bae466de60e29cf632b3da4"
+  },
+  {
    "p": "anmacha-podcast-tycoon/src/play.js",
-   "s": 69300,
-   "h": "b64a2e8f70339f902d0cb86a756db33afdf68dd3184881aeb9dc2c0798370f8a"
+   "s": 81771,
+   "h": "dc7daabd624c576b184ce991c7c5cee1fa8ba5f6b275c8fe3062906574209c21"
   },
   {
    "p": "anmacha-podcast-tycoon/src/quiz.js",
@@ -2243,8 +2278,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/show.js",
-   "s": 35905,
-   "h": "ff7b3d41c2518f48687ffbbb9789820facafe86f73bfce2bbc35e940a6d8e70d"
+   "s": 39285,
+   "h": "b66f49c09296c54c7053dc2bdf205b5d985cdb2ad5473bbe7fe7f2d6259360b8"
   },
   {
    "p": "anmacha-podcast-tycoon/src/ui.js",
@@ -2258,8 +2293,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/style.css",
-   "s": 36415,
-   "h": "71983bf92c4fc83446bea3aefc3cde653e3f869ee0c8bcbf9c7939d8386fd5ef"
+   "s": 38162,
+   "h": "ec6a2d497d6c27478c8d5453a56d78a3e8763b45a7903052333c2a85ab8edd71"
   },
   {
    "p": "anmacha-podcast-tycoon/sw.js",
@@ -4608,8 +4643,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 109813,
-   "h": "0b027e51b6b05e7ddba398f4a9656333a79ce4621f6d4dbfd1890eb590aec0f5"
+   "s": 109874,
+   "h": "24099b2f879f221fbd9fcb874b278e9508ed66cfc97a714fbc44b64fd052d9eb"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -4648,8 +4683,8 @@
   },
   {
    "p": "bunte-insel/js/buch-data.js",
-   "s": 28679,
-   "h": "1a6f2940f33072160b55b9622609d987cfcd8c5c35ea8c9be10c61be6a8890ac"
+   "s": 30377,
+   "h": "b9cc930b899ee383d4683e199c9fb4b7e3a4440ef013a9cf3f66ceb990afafd3"
   },
   {
    "p": "bunte-insel/js/buch.js",
@@ -4668,8 +4703,8 @@
   },
   {
    "p": "bunte-insel/js/bunte-insel.min.js",
-   "s": 2133530,
-   "h": "8e1c0e05a5287a0823ba00cc2eac8ac2e53aa72e987efdb0171a9ef890251c9d"
+   "s": 2159976,
+   "h": "a4b48840aa41f2229320b58f00241800b96d430b0bae12bec7a0fe02e5345e07"
   },
   {
    "p": "bunte-insel/js/camp.js",
@@ -4713,8 +4748,8 @@
   },
   {
    "p": "bunte-insel/js/dialog.js",
-   "s": 4946,
-   "h": "a354c71fa39b7fe34cf5640018fc75add032b956a801934991357ce625451600"
+   "s": 5193,
+   "h": "8b1460aa7f3d4186b068ae2dfe24b3c0667e04ed14b45bde745ef75d258ac45d"
   },
   {
    "p": "bunte-insel/js/drachen.js",
@@ -4735,6 +4770,16 @@
    "p": "bunte-insel/js/farm.js",
    "s": 21560,
    "h": "9a701bc540fe681a0da13b99508522f5905d190619d874a27393f005b7e6ebbb"
+  },
+  {
+   "p": "bunte-insel/js/flair.js",
+   "s": 11514,
+   "h": "6b18dffd8223bb1e96beccc27a0f65461a38404aa5946f65326e70e6d055ed71"
+  },
+  {
+   "p": "bunte-insel/js/freunde.js",
+   "s": 3956,
+   "h": "c24a0f74e47318d735ae564a17b7753fa9793b9e6b7004de3ce37e32abe81dde"
   },
   {
    "p": "bunte-insel/js/fun.js",
@@ -4783,8 +4828,8 @@
   },
   {
    "p": "bunte-insel/js/i18n.js",
-   "s": 150766,
-   "h": "2a5f46fd3d3ef633f81c412b3e9e5bff7759c6c01318ed24cd61266fb6e93c8d"
+   "s": 153019,
+   "h": "7a261a80c91b792ce11538c15d78e76ec4bf3f1fdb7182b24abd204e17edd07e"
   },
   {
    "p": "bunte-insel/js/innen.js",
@@ -4808,8 +4853,8 @@
   },
   {
    "p": "bunte-insel/js/kids.js",
-   "s": 29771,
-   "h": "a0e031c074822f10f6bc3855f9858335d0b1146cb1caaf3174f3dbada8402f51"
+   "s": 30020,
+   "h": "65e28b5628f64cde28760800e4841927d5af813770abf0009904df58c2f13143"
   },
   {
    "p": "bunte-insel/js/kitchen.js",
@@ -4838,8 +4883,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 322358,
-   "h": "6973818706b7bd2a020006bd7ca9de96d2b29b2a679dd99358e91998cb59a5da"
+   "s": 324120,
+   "h": "54a73713e53226caf83b466b2aafc916784757dabc3aec9132bbd85c9a46a2b1"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -4900,6 +4945,11 @@
    "p": "bunte-insel/js/pool.js",
    "s": 6824,
    "h": "15138d92d8ae7d13612f7e900e3667e8752c5c5e778aa44b17b6c7e0c76a9a51"
+  },
+  {
+   "p": "bunte-insel/js/portale.js",
+   "s": 14364,
+   "h": "17fd917f330ef4447b7a7bf1b7b854e50fd90afd1635ab8ac304ffa1e6da9a70"
   },
   {
    "p": "bunte-insel/js/prisma.js",
@@ -4978,8 +5028,8 @@
   },
   {
    "p": "bunte-insel/js/taschi-game.js",
-   "s": 9738,
-   "h": "ba870e816270d8986ed011a6e3fe49367d45a29a1adff7d415c5ff6d57edc5ce"
+   "s": 9473,
+   "h": "82695a214195115c60df20dc507da4905d2e70e8f5173033793ffc913e8c3775"
   },
   {
    "p": "bunte-insel/js/taschi.js",
@@ -6153,8 +6203,8 @@
   },
   {
    "p": "games.js",
-   "s": 58451,
-   "h": "6a5a5c5c3932906fc7fc9101d739b3b0f00d24a657f359ae003699427bdcfc51"
+   "s": 58582,
+   "h": "111894bbd9f6193567bdc3c84ca2eecb7d6a3c3691c675fdd2f69b57be97ea53"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6458,8 +6508,8 @@
   },
   {
    "p": "guides.js",
-   "s": 173406,
-   "h": "5c3ee21a3ba2b7781f7731cede3d576dc276b999face0de90f20a883fa7083df"
+   "s": 173573,
+   "h": "d6a3991af8fa93f4b5f1561b13dad62bfccf8da4e6e66eddeb1eaac816fc3b02"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6543,8 +6593,8 @@
   },
   {
    "p": "guides/anmacha-podcast-tycoon.json",
-   "s": 13003,
-   "h": "775e54f6544bf02a9baf51b3fb40378650707fdcffeb9304f2a2832e2f8ca0e4"
+   "s": 14927,
+   "h": "0d2158df1584826e31710835b22474417c19981f8e7d6db6db16d686fccb3736"
   },
   {
    "p": "guides/anmacha-preisradar.json",
@@ -6623,8 +6673,8 @@
   },
   {
    "p": "guides/bunte-insel.json",
-   "s": 48698,
-   "h": "dcea0101b610887ab00603df3b92a5e03fb6f039bf0b0b750d881c3bd180ad33"
+   "s": 50065,
+   "h": "5a5c5d0283c687c0d2052f98bc81cd6f02b7b4e0626f9ac2fa5c38194b9523b9"
   },
   {
    "p": "guides/challenge-show.json",
@@ -7898,8 +7948,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3942,
-   "h": "07d1bc45cda43fe14fbeead559418d77ccd5135c6a65a4af500329628252782a"
+   "s": 3956,
+   "h": "18bdf7299740b01e39328e4827bf68838abb2cb95cf36cefe6ac10aa18c28e7a"
   },
   {
    "p": "oma-rennen/card.jpg",
@@ -9683,8 +9733,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 258564,
-   "h": "8e6abf0e60d989e225ef14675220875203700af8332e354627528ea664390a61"
+   "s": 258882,
+   "h": "011881848d56d61c60247cfc784aae0a823a0696662b4e58a968804a420d2f01"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

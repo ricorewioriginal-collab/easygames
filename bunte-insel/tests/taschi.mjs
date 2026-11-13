@@ -19,7 +19,7 @@ const r = await p.evaluate(async () => {
   const n = t.near(); out.near = !!n && n.k === 'portal'; out.found = !!b.save.flags.ta_sehen && b.save.stk.includes('taschi_fang');
   t.noNav = true; t.act(n); await sl(100); const ask = document.getElementById('taPortalAsk'); out.ask = !!ask && /Taschi/.test(ask.textContent);
   document.getElementById('taGo').click(); await sl(100); out.travel = !document.getElementById('taPortalAsk') && !!b.save.flags.ta_reise && b.save.stk.includes('taschi_meister');
-  out.url = BI.TASCHI_GAME_URL === '../taschi/index.html';
+  out.url = BI.TASCHI_GAME_URL.startsWith('../taschi/index.html');
   const pr = t.dbg.npcs.find(q => q.id === 'prof'); P.x = pr.x + 1; P.z = pr.z; await sl(200); const n2 = t.near(); out.prof = !!n2 && n2.id === 'prof'; t.act(n2); out.profFlag = !!b.save.flags.ta_ulme;
   t.act({ k: 'npc', id: 'statue' }); out.log = t.log().rows.length === 4 && t.log().rows.every(r => r.ok);
   const st = BI.INSELSTORY.find(q => q.key === 'TASCHI'); out.story = st.acts.length === 3 && st.acts.every(a => a.goal.every(g => b.istory.goalDone(g)));
