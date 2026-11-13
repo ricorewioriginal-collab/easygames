@@ -7,6 +7,8 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
     const K = {
       // Fachwerk-/Steinhaus mit Satteldach, Tür, leuchtenden Fenstern
       house(x, z, w, d, h, wall, roof, ry, o = {}) {
+        /* begehbar: dasselbe Haus wie in den Kapitelwelten (Tür, Innenraum mit Einrichtung, Dach blendet beim Eintreten aus) */
+        if (b.house && !o.solid && w >= 4.5 && d >= 3.8) return { g: b.house(x, z, w, d, Math.max(2.9, Math.min(h, 4.2)), wall, roof, ry || 0, { hs: { w: 'plaster', r: dark(roof) ? 'slate' : 'roof', f: 'gable', win: o.dark ? 0xb08aff : undefined }, chimney: o.chimney, kind: w >= 8.5 ? 'tavern' : 'home', dim: .4, rug: o.dark ? 0x3a2a5a : undefined }) };
         const g = new T.Group(); g.position.set(x, 0, z); g.rotation.y = ry || 0; b.g.add(g); const bb = { g };
         g.add(mk(G.box, b.mat(wall, 'plaster', o.dark ? null : { s: .45, gain: 1.7, n: .6, e: 0x3a3026, ei: 1 }), 0, h / 2, 0, w, h, d));
         if (o.beams) for (const sx of [-w / 2, w / 2]) g.add(mk(G.box, b.mat(o.beams, 'wood'), sx, h / 2, 0, .26, h, d + .05, false));
@@ -17,14 +19,14 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
         if (o.chimney) g.add(mk(G.box, M(0x6a5a50), w * .3, h + d * .45, -d * .15, .6, 1.4, .6));
         b.solid(x, z, w, d, ry, h, (lx, lz) => Math.max(0, d * .47 - .88 * Math.abs(lz))); return bb;
       },
-      tower(x, z, r, h, wall, roofC, roofH, o = {}) { b.cyl(x, 0, z, r, h, wall, { solid: 1, tex: o.tex || 'stone' }); if (roofC) b.cone(x, h, z, r * 1.18, roofH || r * 2, roofC, { tex: dark(roofC) ? 'slate' : 'roof', to: { s: .7 } });
+      tower(x, z, r, h, wall, roofC, roofH, o = {}) { b.cyl(x, 0, z, r, h, wall, { solid: 1, tex: o.tex || 'stone' }); if (b.enter && !o.closed) b.enter('tower', x, z, r, { h, wall, roof: roofC }); if (roofC) b.cone(x, h, z, r * 1.18, roofH || r * 2, roofC, { tex: dark(roofC) ? 'slate' : 'roof', to: { s: .7 } });
         if (o.crown) for (let i = 0; i < 8; i++) { const a = i * .785; b.box(x + Math.cos(a) * r * .9, h, z + Math.sin(a) * r * .9, .6, .7, .6, wall); }
         if (o.win) for (let i = 0; i < 3; i++) b.box(x + Math.sin(i * 2.1) * (r + .02), h * .6, z + Math.cos(i * 2.1) * (r + .02), .35, .8, .35, 0xffd890, { mat: { e: o.win, ei: 1.4 }, cast: false }); },
       // Mauer zwischen zwei Punkten, optional mit Zinnen
       wall(x0, z0, x1, z1, h, th, col, o = {}) { const dx = x1 - x0, dz = z1 - z0, L = Math.hypot(dx, dz), ry = Math.atan2(dx, dz) + Math.PI / 2, cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
         b.box(cx, 0, cz, L, h, th, col, { ry, solid: 1, tex: o.tex || 'stone' });
         if (o.cren) for (let i = 0; i < L / 2 - .5; i++) { const t = (i + .75) / (L / 2), px = x0 + dx * t, pz = z0 + dz * t; b.box(px, h, pz, 1, .8, th * .9, col, { ry }); } },
-      tent(x, z, r, h, col, o = {}) { b.cyl(x, 0, z, .1, h + .4, 0x5a4030, { lo: 1 }); const t = b.cone(x, 0, z, r, h, col, { lo: 1, solid: 1 }); t.rotation.y = o.ry || .3;
+      tent(x, z, r, h, col, o = {}) { b.cyl(x, 0, z, .1, h + .4, 0x5a4030, { lo: 1 }); const t = b.cone(x, 0, z, r, h, col, { lo: 1, solid: 1 }); t.rotation.y = o.ry || .3; if (b.enter && r >= 1.6) b.enter('tent', x, z, r * .85, { h, wall: col });
         if (o.flag) b.box(x + .35, h + .3, z, .7, .4, .03, o.flag, { cast: false }); },
       stall(x, z, cloth, ry, goods) { const g = new T.Group(); g.position.set(x, 0, z); g.rotation.y = ry || 0; b.g.add(g);
         g.add(mk(G.box, b.mat(0x7a5a3a, 'wood'), 0, .5, 0, 3, 1, 1.4)); for (const sx of [-1.4, 1.4]) for (const sz of [-.65, .65]) g.add(mk(G.cyl0, M(0x5a4030), sx, 1.25, sz, .05, 2.5, .05));
