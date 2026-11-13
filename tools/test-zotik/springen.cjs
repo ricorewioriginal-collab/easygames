@@ -24,8 +24,8 @@ const { chromium, ARGS, open, flood, skip, intro } = require('./lib.cjs');
       if (on >= i) { at = on; i = on + 1; /* zur Plattenmitte gehen, damit der nächste Absprung sauber ist */ await p.evaluate(k => { const Z = __zotik, q = Z.PLAT[Z.PLAT.length - 5 + k]; Z.pl.x = q.x; Z.pl.z = q.z; }, on); await w(120); }
       else if (on < 0) { /* heruntergefallen: zurück auf die letzte erreichte Platte bzw. an den Start */ await p.evaluate(([k, q]) => { const Z = __zotik; if (k < 0) { Z.pl.x = q[0]; Z.pl.z = q[1]; } else { const c = Z.PLAT[Z.PLAT.length - 5 + k]; Z.pl.x = c.x; Z.pl.z = c.z; Z.pl.y = c.top; } }, [at, J.q]); await w(300); } }
     const sh = await p.evaluate(() => __zotik.S().shards); let got = false;
-    if (at === 4) { await p.evaluate(() => { const Z = __zotik, c = Z.chests.find(c => c.py !== undefined); Z.pl.x = c.x - .9; Z.pl.z = c.z; }); await w(350); await p.keyboard.press('KeyE'); await w(300); got = await p.evaluate(sh => __zotik.S().shards > sh, sh); }
+    if (at === 4) { await p.evaluate(() => { const Z = __zotik, c = Z.chests.find(c => c.py !== undefined && /^(\d+jp|jp1)$/.test(c.id)); Z.pl.x = c.x - .9; Z.pl.z = c.z; }); await w(350); await p.keyboard.press('KeyE'); await w(300); got = await p.evaluate(sh => __zotik.S().shards > sh, sh); }
     /* von unten darf die Truhe nicht erreichbar sein */
-    const below = await p.evaluate(() => { const Z = __zotik, c = Z.chests.find(c => c.py !== undefined); return Z.hgt(c.x, c.z) < c.py - 3; });
+    const below = await p.evaluate(() => { const Z = __zotik, c = Z.chests.find(c => c.py !== undefined && /^(\d+jp|jp1)$/.test(c.id)); return Z.hgt(c.x, c.z) < c.py - 3; });
     ok(`Welt ${n}: Sprungpfad bis zur Truhe`, at === 4 && got && below, `Platte ${at + 1}/5 nach ${tries} Sprüngen${got ? ', Truhe geöffnet' : ''}`); }
   ok('keine Fehler', !p.errs.length, [...new Set(p.errs)].join(' | ')); console.log(`${res.filter(Boolean).length}/${res.length} bestanden`); await b.close(); })().catch(e => { console.log('ABBRUCH', e.message.slice(0, 400)); process.exit(1); });
