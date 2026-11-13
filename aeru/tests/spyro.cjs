@@ -38,9 +38,9 @@ const speed = s => Math.hypot(s.vx, s.vz);
 }
 // Rammstoß zerbricht einen Korb.
 {
-  const h = fresh(), {api} = h, c = api.crates()[1];
+  const h = fresh(), {api} = h, ri = api.crates().findIndex((k, n) => n > 0 && !k.steel), c = api.crates()[ri];
   api.teleport(c.x, c.y, c.z + 3.4, 0); h.tick(2); h.key('KeyW'); h.key('ShiftLeft'); h.tick(1); h.up('ShiftLeft'); h.tick(14); h.up('KeyW');
-  assert(api.crates()[1].broken, 'Rammstoß zerbricht den Korb');
+  assert(api.crates()[ri].broken, 'Rammstoß zerbricht den Korb');
 }
 // Ansturm: Rammknopf halten → lenkbar weiterstürmen, Loslassen beendet ihn, an der Kante bleibt Aeru stehen.
 {
@@ -101,7 +101,58 @@ const speed = s => Math.hypot(s.vx, s.vz);
   api.teleport(0, 0, 19, 0); h.tick(10); api.jump(); h.tick(14); api.jump(); h.tick(4); api.jump(); h.tick(1); assert(h.snap().state.flight && !h.snap().state.glide, 'dritter Sprung: Flügelschlag und Flug'); api.flight();
   for (let i = 0; i < 120 && !h.snap().state.onGround; i++) h.tick(1);
   api.teleport(0, 0, 19, 0); h.tick(10); api.jump(); h.tick(14); api.jump(); h.tick(2); assert(h.snap().state.glide, 'gleitet wieder');
-  api.hold('dive', true); h.tick(2); api.hold('dive', false); assert(!h.snap().state.glide, 'Ramm lässt fallen');
+  h.key('ShiftLeft'); h.tick(2); h.up('ShiftLeft'); assert(!h.snap().state.glide && h.snap().state.stomp, 'Ramm im Gleiten: Kopfstoß');
   for (let i = 0; i < 120 && !h.snap().state.onGround; i++) h.tick(1); assert(h.snap().state.onGround && !h.snap().state.glide, 'Landung beendet das Gleiten');
 }
-console.log('PASS spyro: Schatzkörbe in allen 7 Welten auf ebenem Boden, fest, zerbrechen per Wind und Rammstoß, Lichtfalter heilen, Ansturm (halten, lenken, loslassen, Kante, Sprung), Falter aus Gegnern, Funkel mit Lebensfarbe und Splitter-Magnet, Gleiten per Doppelsprung.');
+// Kopfstoß: Eisentruhen widerstehen Rammstoß und Feuer, ein Sprung mit Ramm von oben öffnet sie und gibt den Edelstein frei.
+{
+  const h = fresh(), {api} = h, steel = api.crates().filter(c => c.steel);
+  assert(steel.length >= 2, `Eisentruhen im Gebiet: ${steel.length}`);
+  const c = steel[0], i = api.crates().findIndex(k => k.x === c.x && k.z === c.z);
+  api.teleport(c.x, c.y, c.z + 2, 0); h.tick(30); api.strike(); h.tick(5);
+  assert(!api.crates()[i].broken, 'Windstoß prallt an der Eisentruhe ab');
+  api.teleport(c.x, c.y, c.z + 3.4, 0); h.tick(2); h.key('KeyW'); h.key('ShiftLeft'); h.tick(1); h.up('ShiftLeft'); h.tick(14); h.up('KeyW'); h.tick(20);
+  assert(!api.crates()[i].broken, 'Rammstoß prallt an der Eisentruhe ab');
+  // Am Boden ändert Ramm nichts am Kopfstoß; erst in der Luft stürzt Aeru herab.
+  api.teleport(c.x, c.y, c.z + 1.6, 0); h.tick(20); api.jump(); h.tick(12);
+  h.key('ShiftLeft'); h.tick(1); h.up('ShiftLeft'); assert(h.snap().state.stomp, 'Kopfstoß beginnt in der Luft');
+  for (let k = 0; k < 90 && h.snap().state.stomp; k++) h.tick(1);
+  assert(!h.snap().state.stomp && h.snap().state.onGround, 'Kopfstoß endet mit der Landung');
+  assert(api.crates()[i].broken, 'Kopfstoß öffnet die Eisentruhe');
+}
+// Schwimmen im See am Ostgebiet: langsamer, Steinrand hält, ans Ufer zieht die Kantenhilfe. Klettern an der Rankenwand am Westgebiet.
+{
+  const h = fresh(), {api} = h;
+  for (let lv = 0; lv < 7; lv++) { api.level(lv, false); h.tick(1); assert(api.water() && api.climbWall(), `Welt ${lv + 1}: See und Rankenwand`); }
+  api.level(0, false); h.tick(1);
+  const L = api.water();
+  api.teleport(L.x + 2, L.y, L.z, -Math.PI / 2); h.tick(5); assert(h.snap().state.swim, 'Aeru schwimmt im See');
+  h.key('KeyD'); let vmax = 0; for (let i = 0; i < 150; i++) { h.tick(1); vmax = Math.max(vmax, speed(h.snap().state)); } h.up('KeyD');
+  let s = h.snap().state; assert(Math.hypot(s.x - L.x, s.z - L.z) < L.r && s.y === L.y && s.swim, 'Steinrand hält Aeru im See'); assert(vmax < 6, `Schwimmen ist langsamer (${vmax.toFixed(1)})`);
+  h.key('KeyA'); for (let i = 0; i < 300 && h.snap().state.y < 0; i++) h.tick(1); h.tick(20); h.up('KeyA'); s = h.snap().state;
+  assert(s.onGround && s.y === 0 && !s.swim, 'ans Ufer geschwommen');
+  const W = api.climbWall();
+  api.teleport(W.x + .6, 0, W.z, -Math.PI / 2); h.tick(5); h.key('KeyA'); let climbed = false; for (let i = 0; i < 240; i++) { h.tick(1); const t = h.snap().state; climbed ||= t.climb; if (t.onGround && t.y === W.top) break; } h.up('KeyA'); h.tick(30);
+  s = h.snap().state; assert(climbed && s.onGround && s.y === W.top, `an der Rankenwand hinaufgeklettert (y ${s.y.toFixed(2)})`);
+}
+// Flugprüfung: Startring startet 60 s, Zeit um setzt zurück, alle Ringe und Ballons geben einen lila Edelstein (gespeichert).
+{
+  const h = fresh(), {api} = h; let tr = api.trial();
+  assert(tr && tr.items.length === 12 && !tr.active && tr.hidden, 'Flugprüfung bereit');
+  // Machbar: Rundkurs im Winkel sortiert ist deutlich kürzer als 60 s bei 11 m/s Fluggeschwindigkeit.
+  const pts = [tr.start, ...tr.items.slice().sort((a, b) => Math.atan2(a.z, a.x) - Math.atan2(b.z, b.x))]; let len = 0;
+  for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y, pts[i].z - pts[i - 1].z);
+  assert(len / 11 < 45, `Kurs machbar (${len.toFixed(0)} m)`);
+  for (let lv = 0; lv < 7; lv++) { api.level(lv, false); h.tick(1); for (const o of [api.trial().start, ...api.trial().items]) assert(api.floorAt(o.x, o.z) < o.y - 4, `Welt ${lv + 1}: Prüfungsziel frei in der Luft`); }
+  api.level(0, false); h.tick(1);
+  const at = o => { api.teleport(o.x, o.y - 1, o.z, 0); api.flight(); h.tick(2); };
+  at(tr.start); assert(api.trial().active, 'Startring startet die Prüfung');
+  at(tr.items[0]); h.tick(60 * 61);
+  assert(!api.trial().active, 'Prüfung nach 60 s beendet');
+  at(tr.start); assert(api.trial().active && !api.trial().items.some(o => o.got), 'Neustart setzt alles zurück');
+  for (const o of tr.items) at(o);
+  tr = api.trial(); assert(!tr.active && !tr.hidden, 'bestanden: Edelstein erscheint'); h.tick(5);
+  assert(api.trial().got, 'lila Edelstein eingesammelt');
+  api.level(0, false); h.tick(1); assert(api.trial().got && !api.trial().active, 'bleibt gespeichert');
+}
+console.log('PASS spyro: Schatzkörbe in allen 7 Welten auf ebenem Boden, fest, zerbrechen per Wind und Rammstoß, Lichtfalter heilen, Ansturm (halten, lenken, loslassen, Kante, Sprung), Falter aus Gegnern, Funkel mit Lebensfarbe und Splitter-Magnet, Gleiten per Doppelsprung, Kopfstoß öffnet Eisentruhen, Schwimmen im See, Klettern an der Rankenwand, Flugprüfung mit Zeitlimit.');
