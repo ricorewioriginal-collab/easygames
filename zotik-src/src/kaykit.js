@@ -9,7 +9,8 @@ const skClone = o => SkeletonUtils.clone(o);
 export function createKayKit({ T, G, TOUCH }) {
   const files = {}, load = k => files[k] || (files[k] = new Promise((res, rej) => new GLTFLoader().load('models/kk/' + k + '.glb', res, null, rej)));
   let clips = null;
-  const anims = () => load('anim').then(g => clips || (clips = Object.fromEntries(g.animations.map(a => [a.name, a]))));
+  // Die Animationsdatei benennt ihre Knochen beim Laden eindeutig um (hips → hips_1); ohne Rückbenennung landen alle Spuren auf dem Modell selbst (Figur kippt, liegt, verschwindet)
+  const anims = () => load('anim').then(g => clips || (clips = Object.fromEntries(g.animations.map(a => { for (const t of a.tracks) t.name = t.name.replace(/_1(?=\.(quaternion|position|scale)$)/, ''); return [a.name, a]; }))));
   /* Materialien: Cel-Shading mit der Farbtextur, „Glow“ (Augen der Skelette) leuchtet */
   const mats = new Map();
   function toon(src, skin) {
