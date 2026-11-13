@@ -65,8 +65,20 @@
       await W.kit.load().catch(() => {}); tick('Menschen & Bewegungen');
       for (const id of ['andrew', 'marco']) { W.hosts[id] = await makeHost(id); tick(AMC.Data.HOSTS[id].name); }
     } else { tick(); tick(); tick(); }
+    // Katze (Quaternius „Ultimate Monsters“, CC0) – mit eigenen Bewegungen für Kapitel 10
+    await new Promise(res => loader.load('models/cat.glb', g => { W.cat = g; res(); }, null, () => res()));
     W.particles = new Particles();
     W.ready = true;
+  };
+  /** Figur neu bauen (Outfit gewechselt); bleibt an derselben Stelle der Szene */
+  W.rebuildHost = async function (id) {
+    if (!W.kit) return;
+    const old = W.hosts[id], parent = old && old.root.parent, pos = old && old.root.position.clone(), rot = old ? old.root.rotation.y : 0;
+    const f = await makeHost(id);
+    if (old) { if (parent) parent.remove(old.root); old.dispose && old.dispose(); }
+    W.hosts[id] = f;
+    if (parent) { parent.add(f.root); f.root.position.copy(pos); f.root.rotation.y = rot; f.play('idle'); }
+    return f;
   };
   W.resize = function () {
     if (!W.renderer) return;
@@ -107,7 +119,9 @@
 
   // ------------------------------------------------------------------ Andrew & Marco (echte animierte 3D-Menschen) mit Polo-Logo
   async function makeHost(id) {
-    const H = AMC.Data.HOSTS[id], fig = await W.kit.make(H.look);
+    const H = AMC.Data.HOSTS[id], D = AMC.Data, oid = (AMC.Save.data.outfit || {})[id] || 'std';
+    const of = D.OUTFITS ? D.OUTFITS.find(o => o.id === oid) : null;
+    const fig = await W.kit.make(Object.assign({}, H.look, of ? of.look : {}));
     // oranges Play-Logo auf der Brust (folgt dem Oberkörper)
     const sp = fig.bones.spine_03;
     if (sp) {

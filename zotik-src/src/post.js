@@ -8,10 +8,13 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
 
 const GRADE = {
-  uniforms: { tDiffuse: { value: null }, sat: { value: 1.08 }, con: { value: 1.07 }, vig: { value: .3 }, warm: { value: new T.Vector3(1.02, 1.0, .97) } },
+  uniforms: { tDiffuse: { value: null }, sat: { value: 1.08 }, con: { value: 1.07 }, vig: { value: .3 }, shp: { value: .32 }, px: { value: new T.Vector2(1 / 1920, 1 / 1080) }, warm: { value: new T.Vector3(1.02, 1.0, .97) } },
   vertexShader: 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-  fragmentShader: 'uniform sampler2D tDiffuse;uniform float sat,con,vig;uniform vec3 warm;varying vec2 vUv;'
-    + 'void main(){vec3 c=texture2D(tDiffuse,vUv).rgb;float l=dot(c,vec3(.299,.587,.114));c=mix(vec3(l),c,sat);'
+  fragmentShader: 'uniform sampler2D tDiffuse;uniform float sat,con,vig,shp;uniform vec2 px;uniform vec3 warm;varying vec2 vUv;'
+    + 'void main(){vec3 c=texture2D(tDiffuse,vUv).rgb;'
+    + 'vec3 nb=texture2D(tDiffuse,vUv+vec2(px.x,0.)).rgb+texture2D(tDiffuse,vUv-vec2(px.x,0.)).rgb+texture2D(tDiffuse,vUv+vec2(0.,px.y)).rgb+texture2D(tDiffuse,vUv-vec2(0.,px.y)).rgb;'
+    + 'vec3 dl=c-nb*.25;c=max(c+dl*shp*(1.-smoothstep(.15,.6,abs(dl))),0.);'   /* Nachschärfen wie bei Aetherion, ohne Halos an starken Kanten */
+    + 'float l=dot(c,vec3(.299,.587,.114));c=mix(vec3(l),c,sat);'
     + 'c=(c-.5)*con+.5;c*=warm;'
     + 'vec2 d=vUv-.5;float v=1.-dot(d,d)*vig*2.2;c*=clamp(v,0.,1.);'
     + 'gl_FragColor=vec4(max(c,0.),1.);}'
@@ -42,7 +45,7 @@ export function createPost(renderer, scene, camera, opt) {
     composer.setPixelRatio(pr);
     composer.setSize(w, h);
     bloom.setSize(Math.max(2, w * pr * (level >= 1 ? .35 : .5)), Math.max(2, h * pr * (level >= 1 ? .35 : .5)));
-    fxaa.material.uniforms.resolution.value.set(1 / (w * pr), 1 / (h * pr));
+    fxaa.material.uniforms.resolution.value.set(1 / (w * pr), 1 / (h * pr)); grade.uniforms.px.value.set(1 / (w * pr), 1 / (h * pr));
   }
   return {
     get on() { return level < 2 },

@@ -17,7 +17,7 @@ const r = await p.evaluate(async () => {
   el.click(); out.closed = !vis();
   b.say('⭐ Du hast 3 Sterne gesammelt!', 1500); out.toast = !vis() && document.getElementById('toast').classList.contains('show');
   /* 2. Figur ansprechen: Textfeld mit Porträt */
-  const n = b.npcs.find(q => q.p && q.c.group.visible); P.veh = null; P.x = n.x + 1.4; P.z = n.z; P.y = 0; await sl(300); const f = b.footNow(); out.talkSlot = f.filter(Boolean).some(q => /./.test(q.nm)); b.talkNpc(n); out.npcDlg = vis() && el.querySelector('.nm').textContent === n.p.name; out.portrait = !!el.querySelector('.pt img') || el.querySelector('.pt').textContent.length > 0; el.click();
+  const n = b.npcs.find(q => q.p && q.c.group.visible); P.veh = null; P.x = n.x + 1.4; P.z = n.z; P.y = 0; await sl(300); const f = b.footNow(); out.talkSlot = f.filter(Boolean).some(q => /./.test(q.nm)); b.talkNpc(n); out.npcDlg = vis() && el.querySelector('.nm').firstChild.textContent === n.p.name; out.portrait = !!el.querySelector('.pt img') || el.querySelector('.pt').textContent.length > 0; el.click();
   /* 3. Reden bleibt erreichbar, wenn ein Auto UND ein Haus in der Nähe sind */
   const v = b.vehicles.find(q => !q.ai); const T = BI.TASCHI, hd = BI.DOORS.find(d => d.isle === 'taschi' && d.kind === 'heil');
   P.x = hd.x; P.z = hd.z; P.y = 0; const w = T.at(-33, -20); const nu = b.taschi.dbg.npcs.find(q => q.id === 'nurse'); await sl(300); const lst = b.footNow().filter(Boolean); out.door = lst.some(q => /Heilhaus/.test(q.nm));

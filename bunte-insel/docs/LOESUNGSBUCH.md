@@ -14,13 +14,15 @@
 8. 🎠 Märchenland
 9. 🌊 Weitere Welten
 10. 🌀 Taschi-Land: das Portal zum Taschi-Spiel
-11. 🌠 Wunsch-Insel (hinter dem Schlüsselreich)
-12. 🎪 Themenbereiche
-13. 🍄 Hüpfland (Insel im Westen)
-14. 📋 Alle Aufgaben der Welten
-15. 🏅 Alle Sticker
-16. 🔑 Geheimcodes
-17. 💡 Tipps und Tricks
+11. 🌀 Spiel-Portale & Welten-Shows
+12. 💞 Freundschaft mit Bewohnern
+13. 🌠 Wunsch-Insel (hinter dem Schlüsselreich)
+14. 🎪 Themenbereiche
+15. 🍄 Hüpfland (Insel im Westen)
+16. 📋 Alle Aufgaben der Welten
+17. 🏅 Alle Sticker
+18. 🔑 Geheimcodes
+19. 💡 Tipps und Tricks
 
 ---
 
@@ -432,6 +434,35 @@ Brücke im Osten. Die Taschis sind in ihr eigenes easygames-Spiel umgezogen – 
 
 ---
 
+## 🌀 Spiel-Portale & Welten-Shows
+
+In vier Welten steht ein leuchtendes Portal zu einem anderen easygames-Spiel. Hingehen, Aktion-Knopf drücken, „Los geht’s!“ wählen – dein Inselspiel wird vorher gespeichert.
+
+- 🏳️‍🌈 Regenbogenwelt → Gay Life! (Spielesammlung)
+- 🪽 Drachenwelt → AERU – Die Sterneninseln
+- 🎙️ Radiowelt → AnMaCha – Der Podcast
+- 🛒 Stadt → Marktrausch (Supermarkt-Simulator)
+- 🌀 Taschi-Land → Taschi
+
+Jede dieser Welten hat außerdem eine Mitmach-Show: 🎉 Konfetti-Kanone (Regenbogen), 🐉 Drachenhorn – der Drache fliegt herab und speit Feuer, 🎛️ DJ-Pult mit tanzendem Equalizer (Radio), 🎆 Stadtfest-Feuerwerk (Stadt).
+
+> 💡 Die erste Show jeder Welt bringt jeden Tag +1 ⭐. Alle Portale findest du auch unter 🧭 Wohin? → Spiele.
+
+---
+
+## 💞 Freundschaft mit Bewohnern
+
+Die Bewohner merken sich dich! Jedes Gespräch am Tag bringt Freundschaft, die Herzen siehst du im Gesprächsfenster (bis zu 5 ❤️).
+
+- 💬 Einmal am Tag reden: +1 Freundschaft
+- 🎁 Direkt nach dem Gespräch zeigt der Knopf „Geschenk“: für 3 ⭐ gibt es +2 Freundschaft (einmal am Tag je Bewohner)
+- 💐 Ein Blumenstrauß aus dem Garten: +3 Freundschaft
+- ❤️ Jedes neue Herz bringt Sterne, ab 3 Herzen bekommst du ein Dankeschön-Geschenk und eine persönliche Begrüßung
+
+> 💡 Sticker: 💞 Guter Freund (3 Herzen) und 💖 Beste Freunde (5 Herzen). Deine Freunde stehen im Aufgaben-Buch unter 💞 Freundschaften.
+
+---
+
 ## 🌠 Wunsch-Insel (hinter dem Schlüsselreich)
 
 Eine lange Holzbrücke an der Westküste des Schlüsselreichs führt zur Wunsch-Insel. Hier leben Kira und Silvan – und hier geht der Abend nicht ohne Abenteuer zu Ende.
@@ -471,6 +502,12 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 ---
 
 ## 📋 Alle Aufgaben der Welten
+
+### 💞 Freundschaften
+
+- 💬 Rede jeden Tag mit Bewohnern – jedes Gespräch bringt Freundschaft
+- 💞 3 Herzen mit einem Bewohner (schenk Blumen 💐 oder 🎁)
+- 💖 Beste Freunde: 5 Herzen
 
 ### 🎪 Themenbereiche
 
@@ -812,6 +849,9 @@ So bekommst du jeden Sticker:
 | 🌞 Hüpf-Held | Schaffe die Geschichte des Hüpflands (Der Sonnenstern) |
 | 🌀 Portal-Finder | Finde das Taschi-Portal in Taschi-Land |
 | 🚀 Portal-Reisender | Reise durchs Portal ins Taschi-Spiel |
+| 🌀 Weltenreisender | Reise durch ein Spiel-Portal in eine andere Welt |
+| 💞 Guter Freund | Erreiche 3 Herzen mit einem Bewohner |
+| 💖 Beste Freunde | Erreiche 5 Herzen mit einem Bewohner |
 | 🏘️ Dorfentdecker | Betritt 20 Gebäude |
 | 🗺️ Weltenbummler | Betritt 40 Gebäude |
 | 🎁 Truhenfinder | Öffne 10 Schatztruhen in Gebäuden |

@@ -5,18 +5,21 @@
    "t": "Ziel des Spiels",
    "p": [
     "AnMaCha – Der Podcast ist das offizielle Spiel zum AnMaCha-Podcast. Du spielst Andrew und Marco, die Stimmen hinter „Wir ♥ Medien“. In der 3D-Stadt rund ums Funkhaus jagst du Themen, triffst Gäste und schaltest Störsender ab. Danach geht es ins Studio: Dort nehmt ihr die Folge live auf.",
-    "Die Story „Die Staffel“ führt durch 8 Kapitel nach echten Folgen, von Folge 1 „Da muss man erstmal reinwachsen“ bis zum großen Finale „LIVE vom Podfluencer Festival“ gegen den Boss „Das Funkloch“. Jedes Kapitel bringt bis zu 3 Sterne."
+    "Die Story hat zwei Staffeln mit 12 Kapiteln nach echten Folgen. Staffel 1 reicht von Folge 1 „Da muss man erstmal reinwachsen“ bis zum Finale „LIVE vom Podfluencer Festival“ gegen den Boss „Das Funkloch“. In Staffel 2 kehrt das Funkloch zurück: Imbisskind, Die Katze und die Gurke, Hör' mir uff! und Giselas Camper mit dem Boss „Das Funkloch 2.0“. Jedes Kapitel bringt bis zu 3 Sterne."
    ]
   },
   {
    "t": "Start und Hauptmenü",
    "list": [
-    "▶ Story: Die Staffel – 8 Kapitel, eins nach dem anderen freigeschaltet.",
+    "▶ Story: Staffel 1 & 2 – 12 Kapitel, eins nach dem anderen freigeschaltet.",
     "🎙️ Live-Show – Endlos-Aufnahme im Studio, bis der Hype auf null fällt. Rekord wird gespeichert.",
     "🏃 Themenjagd – 3 Minuten in der Stadt, so viele Punkte wie möglich.",
+    "🏁 Funk-Rennen – lauf auf Zeit durch 10 nummerierte Tore. Medaillen: Gold bis 50 s, Silber bis 70 s, Bronze bis 100 s; die Bestzeit wird gespeichert.",
     "🤖 Die verrückte KI-Quizshow – 10 Fragen, allein gegen die KI oder zu zweit an einem Gerät.",
-    "🏙️ Freies Erkunden – die Stadt ohne Zeitdruck.",
+    "🏙️ Stadt & Nebenaufträge – die Stadt ohne Zeitdruck, mit 10 Nebenaufträgen für Fan-Punkte.",
+    "🌐 Online-Koop – zu zweit auf zwei Geräten: einer spielt Andrew, einer Marco.",
     "📻 Radio & Podcast – echte Folgen und 13 AnMaCha-Sender mit Titelanzeige.",
+    "🛍️ Fanshop – Outfits für Andrew und Marco und Studio-Upgrades, bezahlt mit Fan-Punkten.",
     "⚙️ Einstellungen, 🎮 Steuerung und Credits.",
     "Mit Y (Controller), Q (Tastatur) oder dem Figuren-Knopf wählst du, ob du als Andrew oder Marco startest."
    ]
@@ -51,9 +54,55 @@
     "Pointe: Drücke die angezeigte Tastenfolge rechtzeitig.",
     "Übergabe: Gib an den Co-Moderator ab und baue eine Kombo auf.",
     "Jingle: Bis zu 3 Mal pro Folge – gibt Hype.",
+    "🎛️ Soundboard: Ein Pad leuchtet auf – drück es schnell (A, B, X, Y bzw. Leertaste, Esc, E, Q oder antippen). 6 Treffer in 7 Sekunden sind perfekt, falsche Pads kosten einen Treffer. Danach 2 Runden Pause.",
+    "❓ Hörerfrage: Ein Fan stellt eine Quizfrage zum Podcast – wähle die richtige Antwort. Richtig gibt viele Hörer. Danach 2 Runden Pause.",
     "Spezial: Marcos Tagebuch oder Andrews Musikmoment, wenn die Leiste voll ist.",
     "Pannen: Pegel halten, Kabel nach Richtungsfolge stecken oder einen Anrufer der richtigen Rubrik zuordnen.",
     "Stärken: Karten in der Lieblingsrubrik des sprechenden Hosts zählen mehr."
+   ]
+  },
+  {
+   "t": "Fanshop und Fan-Punkte",
+   "p": [
+    "Fan-Punkte (🎟️) bekommst du für jedes Kapitel (beim ersten Abschluss deutlich mehr), für Live-Show, Themenjagd, Funk-Rennen, Quiz und Nebenaufträge. Im Fanshop gibt es 9 Outfits pro Host – vom Studio-Polo bis zum Podcast-König – und 6 Studio-Upgrades."
+   ],
+   "list": [
+    "🎙️ Profi-Mikrofone: +10 % Hörer in jeder Aufnahme.",
+    "🎵 Jingle-Paket: ein vierter Jingle pro Aufnahme.",
+    "💡 Studio-Neon: Aufnahmen starten mit mehr Stimmung.",
+    "👟 Turnschuhe: 8 % schneller laufen.",
+    "🔋 Powerbank: Störsender ziehen 30 % weniger Energie ab.",
+    "⏱️ Stoppuhr: +20 Sekunden in den Story-Kapiteln (außer Bahn-Kapitel)."
+   ]
+  },
+  {
+   "t": "Nebenaufträge",
+   "p": [
+    "In „Stadt & Nebenaufträge“ steht oben links immer der nächste offene Auftrag. Er muss in einem Besuch geschafft werden. Jeder Auftrag gibt 100 bis 250 Fan-Punkte."
+   ],
+   "list": [
+    "✨ 30 Themen-Funken sammeln",
+    "📡 10 Störsender abschalten",
+    "💬 Mit 5 Fans sprechen",
+    "🗼 Ganz oben auf den Sendemast klettern",
+    "🌟 2 Goldene Erinnerungen finden",
+    "🎵 10 Musik-Funken sammeln",
+    "📻 60 Sekunden Radio oder Podcast in der Stadt hören",
+    "🏢 Aufs Dach des Funkhauses springen",
+    "🏃 1.000 Meter laufen",
+    "⇄ 10-mal zwischen Andrew und Marco wechseln"
+   ]
+  },
+  {
+   "t": "Online-Koop",
+   "p": [
+    "Im Hauptmenü unter „🌐 Online-Koop“ eröffnet ein Gerät das Spiel und zeigt einen 5-stelligen Code, einen QR-Code und einen Link. Mitspieler können per Link, Code oder QR-Code von überall beitreten. Der Gastgeber spielt seine gewählte Figur, der Gast die andere."
+   ],
+   "list": [
+    "🏃 Themenjagd zu zweit: 3 Minuten, gemeinsame Punkte.",
+    "🏙️ Stadt zu zweit: frei spielen und Störsender jagen.",
+    "🎬 Kapitel zu zweit: jedes beim Gastgeber freigeschaltete Kapitel (Stadtteil, auch Bosskämpfe). Der Story-Fortschritt bleibt dabei unverändert, beide bekommen Fan-Punkte.",
+    "Energie und Zeit sind gemeinsam. Im Pause-Menü läuft das Spiel weiter, damit der andere nicht stehen bleibt."
    ]
   },
   {
@@ -74,7 +123,7 @@
   {
    "t": "Wertung und Speichern",
    "p": [
-    "Sterne pro Kapitel hängen von den Hörern der Live-Aufnahme ab. Rekorde für Live-Show, Themenjagd und Quiz werden gespeichert. Der Spielstand liegt lokal im Browser und wird mit Google-Anmeldung über die AnMaCha-Cloud gesichert. In den Einstellungen gibt es Lautstärken, Grafikqualität, Kamera-Empfindlichkeit, Achsen umkehren, Bildschirmwackeln und Untertitel."
+    "Sterne pro Kapitel hängen von den Hörern der Live-Aufnahme ab. Rekorde für Live-Show, Themenjagd, Funk-Rennen und Quiz werden gespeichert. Der Spielstand liegt lokal im Browser und wird mit Google-Anmeldung über die AnMaCha-Cloud gesichert. In den Einstellungen gibt es Lautstärken, Grafikqualität, Kamera-Empfindlichkeit, Achsen umkehren, Bildschirmwackeln und Untertitel."
    ]
   }
  ],
@@ -84,7 +133,8 @@
    "list": [
     "Sammle in der Stadt möglichst viele Funken verschiedener Farben: Jede Farbe bringt eigene Themenkarten für die Aufnahme.",
     "Mit dem Doppelsprung erreichst du Funken auf Dächern; Kisten-Treppen führen nach oben.",
-    "Weiche Störsendern mit Ausweichen aus – während der Rolle bist du kurz unverwundbar."
+    "Weiche Störsendern mit Ausweichen aus – während der Rolle bist du kurz unverwundbar.",
+    "Spar dir Fan-Punkte zuerst für Profi-Mikrofone und Jingle-Paket – sie helfen bei jedem Stern."
    ]
   },
   {
@@ -101,6 +151,7 @@
    "list": [
     "Marco repariert die Verteiler am Sendemast doppelt so schnell – wechsle vor dem Aufstieg.",
     "Andrew ist auf der Themenjagd schneller und kommt höher: ideal für Rekorde.",
+    "Funk-Rennen: Spiele Andrew, halte Sprinten gedrückt und nutze Ausweichen auf geraden Strecken. Der Lichtstrahl zeigt immer das nächste Tor, die Karte oben rechts ebenfalls.",
     "Im Quiz bringen schnelle Antworten Zusatzpunkte. Bei 2 Spielern zählt, wer zuerst richtig drückt."
    ]
   },
@@ -163,9 +214,33 @@
    ]
   },
   {
+   "t": "Kapitel 9 – Imbisskind",
+   "p": [
+    "Hol am Imbiss-Wagen im Park die Bestellungen ab (bis zu 3 Tüten) und bring sie zu den 5 hungrigen Fans mit 🍟. Der orange Lichtstrahl zeigt auf den nächsten Fan oder zurück zum Imbiss. Aufnahme: 6 Runden, 5.400 / 8.200 / 11.000 Hörer."
+   ]
+  },
+  {
+   "t": "Kapitel 10 – Die Katze und die Gurke",
+   "p": [
+    "Fang die Katze dreimal. Sie flieht, sobald du näher als etwa 11 Meter kommst, und wird nach jedem Fang schneller. Nach gut vier Sekunden Flucht verschnauft sie kurz – dann zuschlagen. Andrew mit Sprint ist am besten. Aufnahme: 6 Runden, 5.800 / 8.800 / 11.800 Hörer."
+   ]
+  },
+  {
+   "t": "Kapitel 11 – Hör' mir uff!",
+   "p": [
+    "Nachts: Schalte 12 KI-Drohnen mit der Schallwelle ab. Marco erledigt eine Drohne mit einem Treffer, Andrew betäubt sie länger. Abgeschaltete Drohnen kommen nach einiger Zeit zurück und zählen erneut. Aufnahme: 7 Runden, 6.400 / 9.600 / 12.800 Hörer."
+   ]
+  },
+  {
+   "t": "Kapitel 12 – Giselas Camper",
+   "p": [
+    "Boss „Das Funkloch 2.0“ hält mehr aus als das Original. Gleiche Taktik: über die violetten Rauschwellen springen, bei offenem Schild mit der Welle treffen, Drohnen in Phase 2 und 3 zuerst abschalten. Aufnahme: 8 Runden, 7.200 / 10.800 / 14.400 Hörer."
+   ]
+  },
+  {
    "t": "Alle Sterne",
    "list": [
-    "24 Sterne gibt es in der Story. Für 3 Sterne: viele Funken aller Farben, alle Goldenen Erinnerungen, Perfekt-Treffer im Ring und Jingles bei sinkendem Hype.",
+    "36 Sterne gibt es in der Story. Für 3 Sterne: viele Funken aller Farben, alle Goldenen Erinnerungen, Perfekt-Treffer im Ring und Jingles bei sinkendem Hype. Profi-Mikrofone und Jingle-Paket aus dem Fanshop helfen.",
     "Nach jedem Kapitel kannst du die echte Folge direkt im Spiel anhören."
    ]
   }
@@ -182,6 +257,14 @@
   {
    "q": "Wo sind meine alten Tycoon-Spielstände?",
    "a": "Das Spiel wurde komplett neu gebaut. Der Fortschritt startet neu; Rekorde und Sterne werden ab jetzt gespeichert."
+  },
+  {
+   "q": "Wie bekomme ich schnell Fan-Punkte?",
+   "a": "Neue Kapitel zum ersten Mal schaffen und die Nebenaufträge in der Stadt erledigen. Danach lohnen sich Live-Show, Themenjagd und Funk-Rennen (Gold bringt 150 Fan-Punkte)."
+  },
+  {
+   "q": "Wie spiele ich online mit einem Freund?",
+   "a": "Hauptmenü → 🌐 Online-Koop → Spiel eröffnen. Schick den Link oder zeig den QR-Code; dein Freund kann auch den Code unter „🌐 Online-Koop“ eingeben. Sobald er verbunden ist, wählst du den Modus."
   }
  ]
 }
