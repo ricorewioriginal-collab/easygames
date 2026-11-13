@@ -1,3 +1,4 @@
+import {createPolish,PROFILES,loadProfile,saveProfile} from './polish.js';
 import * as THREE from 'three';
 import { createPost } from './post.js';
 import { createExtra } from './extra.js';
@@ -135,13 +136,14 @@ const post=createPost(renderer,scene,camera,{touch:TOUCH});if(TOUCH){post.setLev
 const QPR=TOUCH?[1,1,.88,.76]:[1,1,.86,.72],   /* Schärfe zuerst halten: Stufe 1 spart nur Schatten-Takt, Fell und Bloom, erst danach sinkt die Auflösung (wie Aetherion) */
   QSH=[1,2,3,3];let qLv=0,qEma=16.7,qBad=0,qGood=0,qUp=20,qLastUp=-99,shN=0,qDowns=0;
 renderer.shadowMap.autoUpdate=false;
-function setQ(l){qLv=l;renderer.setPixelRatio(PR0*QPR[l]);renderer.setSize(innerWidth,innerHeight,false);post.setLevel(TOUCH?2:Math.min(l,2));post.resize();setFurLevel(TOUCH?0:[1,.6,.34,0][l]);const sh=l<3;if(moonL.castShadow!==sh)moonL.castShadow=sh}
+let GFX=loadProfile();
+function setQ(l){l=Math.max(PROFILES[GFX].lo,Math.min(PROFILES[GFX].hi,l));qLv=l;renderer.setPixelRatio(PR0*QPR[l]);renderer.setSize(innerWidth,innerHeight,false);post.setLevel(TOUCH?2:Math.min(l,2));post.resize();setFurLevel(TOUCH?0:[1,.6,.34,0][l]);const sh=l<3;if(moonL.castShadow!==sh)moonL.castShadow=sh}
 function qualityTick(rdt){
   if(mode!=='play'||menuOpen||rdt>.25||rdt<=0)return;
   qEma+=(rdt*1000-qEma)*.08;
   if(qEma>27){qBad+=rdt;qGood=0}else if(qEma<19){qGood+=rdt;qBad=0}else{qBad=qGood=0}
-  if(qBad>2.5&&qLv<3){if(time-qLastUp<60)qUp=Math.min(qUp*3,600);setQ(qLv+1);qBad=0;qEma=20;qDowns++}
-  else if(qGood>qUp&&qLv>0&&qDowns<3){setQ(qLv-1);qGood=0;qEma=20;qLastUp=time}}
+  if(qBad>2.5&&qLv<PROFILES[GFX].hi){if(time-qLastUp<60)qUp=Math.min(qUp*3,600);setQ(qLv+1);qBad=0;qEma=20;qDowns++}
+  else if(qGood>qUp&&qLv>PROFILES[GFX].lo&&qDowns<3){setQ(qLv-1);qGood=0;qEma=20;qLastUp=time}}
 function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=w/h<.8?70:58;camera.updateProjectionMatrix();post.resize()}
 addEventListener('resize',resize);resize();
 
@@ -597,6 +599,7 @@ const ffMat=new T.ShaderMaterial({transparent:true,depthWrite:false,blending:T.A
   vertexShader:'attribute vec3 col;varying vec3 c;varying float f;uniform float t;uniform vec3 cen;uniform float k;void main(){vec3 p=position;p.x+=sin(t*.5+p.y*3.)*1.5;p.z+=cos(t*.43+p.x)*1.5;p.y+=sin(t*.8+p.x*2.)*.8;vec3 w=vec3(100.,14.,100.);p=mod(p-cen+w*.5,w)-w*.5+cen;p.y=cen.y-1.+mod(position.y+sin(t*.3+position.x)*2.,14.);c=col;f=.55+.45*sin(t*2.+position.x*7.);vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=(.5+f*.4)*k/-mv.z;gl_Position=projectionMatrix*mv;}',
   fragmentShader:'varying vec3 c;varying float f;void main(){float d=length(gl_PointCoord-.5)*2.;float a=smoothstep(1.,0.,d);gl_FragColor=vec4(c*1.4,a*f);}'});
 const fireflies=new T.Points(ffGeo,ffMat);fireflies.frustumCulled=false;scene.add(fireflies);
+const POL=createPolish({scene,TOUCH,curCh:()=>curCh});
 
 /* ================= Figuren (nach Master-Sheets) ================= */
 const SMILE=new T.TorusGeometry(1,.14,6,12,Math.PI);
@@ -1324,6 +1327,7 @@ function renderMenu(tab){mState.tab=tab;const t=$('tabs'),c=$('mcont');menuChrom
   c.querySelectorAll('[data-es]').forEach(b=>b.onclick=()=>{sfx('ui');mState.es=b.dataset.es;mState.ep='';renderMenu('equip')});c.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{const id=b.dataset.pick;if(mState.ep===id&&gearSet()[GEAR[id].s]!==id){equip(id);renderMenu('equip');return}sfx('ui');mState.ep=id;renderMenu('equip')});{const gc=c.querySelector('#goCas');if(gc)gc.onclick=()=>travel(3)}if(tab==='coop')coopBind();extBind(c,tab);LF().bind(c,tab,()=>renderMenu(tab));if(tab==='camp')XT.bind(c,()=>renderMenu('camp'));XO.bind(c,tab,()=>renderMenu(tab));if(tab==='help')INP.bindOptions(c,()=>renderMenu('help'));{const or=$('optRem');if(or)or.onclick=()=>{setRemote(!REMOTE,true);sfx('ui');toast(REMOTE?'📺 Fernbedienung an: ↑↓ laufen · ←→ drehen · OK Angriff/Aktion · Zurück Befehle':'📺 Fernbedienung aus');renderMenu('help')}}const oc=$('optCas');if(oc)oc.onclick=()=>{S.cas.off=!S.cas.off;sfx('ui');toast(S.cas.off?'🎰 Casino ausgeschaltet':'🎰 Casino eingeschaltet');saveGame(true);renderMenu('help')}}
 $('mResume').onclick=()=>toggleMenu(false);$('saveBtn').onclick=()=>saveGame();
 {const R=createRadio({ducking:()=>dlg.on||document.body.classList.contains('cut'),muteMusic:m=>{if(musGain&&m&&musGain.gain.value)musGain.gain.value=0;if(musGain&&!m&&mode!=='pix')musGain.gain.value=.2},getVolOk:()=>{try{const a=new Audio();a.volume=.5;return a.volume===.5}catch(e){return false}}});window.ZotikRadio=R;$('mRadio').onclick=()=>{initAudio();R.open()}}
+$('mGfx').onclick=()=>{const k=Object.keys(PROFILES);GFX=k[(k.indexOf(GFX)+1)%k.length];saveProfile(GFX);$('mGfx').textContent='🖼️ Grafik: '+PROFILES[GFX].name;setQ(qLv);qBad=qGood=0};$('mGfx').textContent='🖼️ Grafik: '+PROFILES[GFX].name;
 $('mSound').onclick=()=>{sndOn=!sndOn;if(master)master.gain.value=sndOn?.85:0;$('mSound').textContent=sndOn?'🔊 Ton an':'🔇 Ton aus';initAudio()};
 
 /* ================= Spielschleife ================= */
@@ -1521,6 +1525,7 @@ function frame(now){
   if(mode==='title')titleCam(dt);else if(mode==='creator')creatorCam(dt);else if(!menuOpen||MP.on){try{update(dt)}catch(e){if(!frame.err||time-frame.err>5){frame.err=time;console.error('[Zotik]',e)}}}
   if(MP.net)mpTick(dt);
   ffMat.uniforms.t.value=time;ffMat.uniforms.cen.value.set(camTarget.x||0,(camTarget.y||2)-1.5,camTarget.z||12);ffMat.uniforms.k.value=innerHeight*.6;
+  {const a=PROFILES[GFX].amb;POL.update(time,camTarget.x||0,(camTarget.y||2)-1.5,camTarget.z||12,innerHeight,mode==='play'||mode==='title'?(a<0?[1,.8,.5,.25][qLv]:a):0)}
   if(!menuOpen||MP.on){updParticles(dt);FXH.update(dt);MFX.update(dt)}
   if(++shN>=QSH[qLv]){shN=0;renderer.shadowMap.needsUpdate=true}
   if(!frame.off)post.render(dt);   /* frame.off: nur für automatische Tests (?debug) */
