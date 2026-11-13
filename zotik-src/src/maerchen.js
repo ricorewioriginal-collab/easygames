@@ -3,6 +3,7 @@
 // Wahrzeichen, Figuren, Tiere und Leben, eine eigene Spielmechanik (Spiegel-Portale, Lianen, Kletterturm, Strömungen, Arena …),
 // ein Gast, der mitkämpft, 4–5 Aufträge, Bosse mit Reaktionsbefehl und am Ende ein Schlüsselloch zum Versiegeln.
 // Zustand: S.mw[id] = { v: 2, m: Auftrag, st: 0 frei / 1 läuft, c: Zähler, got: {Teil: 1}, done: 1, seen: 1, no: 1 (Abstecher abgelehnt) }.
+import { arealMask, arealHeight, arealCutDepth, arealDress } from './mwareal.js';
 import { WORLDS } from './mwdata.js';
 import { makeLand } from './mwland.js';
 import { createMwFoes } from './mwfoes.js';
@@ -29,12 +30,19 @@ export function createMaerchen(C) {
 
   /* ---------- Gelände: Hügel, ebene Plätze, Teiche, Fluss mit Furt/Brücke, steiler Randhang ---------- */
   function riverDist(rv, x, z) { let best = 1e9; for (let i = 0; i < rv.pts.length - 1; i++) { const [ax, az] = rv.pts[i], [bx, bz] = rv.pts[i + 1], dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz))), d = Math.hypot(x - ax - dx * t, z - az - dz * t); if (d < best) best = d; } return best; }
+  /* Wegenetz: von der Hauptstraße führt ein Weg zu jedem Ort der Welt (gerade Abschnitte, Abstand per Segment) */
+  function roads(w) { if (w._roads) return w._roads; const L = []; for (const q of w.zones) { const zx = q[3], zz = q[4], z0 = Math.max(-86, Math.min(12, zz)), x0 = PATHX(z0), dx = zx - x0, dz = zz - z0, D = Math.hypot(dx, dz), e = Math.max(0, D - q[5] * .45); if (e < 6) continue;
+      const mx = x0 + dx * .5 + (-dz / D) * Math.min(8, D * .12), mz = z0 + dz * .5 + (dx / D) * Math.min(8, D * .12), ex = x0 + dx / D * e, ez = z0 + dz / D * e; L.push([x0, z0, mx, mz], [mx, mz, ex, ez]); }
+    return (w._roads = L); }
+  const segD = (x, z, [ax, az, bx, bz]) => { const dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1))); return Math.hypot(x - ax - dx * t, z - az - dz * t); };
+  const roadD = (w, x, z) => { let b = 1e9; for (const s of roads(w)) { const d = segD(x, z, s); if (d < b) b = d; } return b; };
   function heightFn(w) {
-    const pads = w.pads, rects = w.rects || [], pools = w.pools || [], ph = w.n * 1.37, amp = w.amp, rv = w.river;
+    const pads = w.pads, rects = w.rects || [], pools = w.pools || [], ph = w.n * 1.37, amp = w.amp, rv = w.river, AM = areal(w), AH = AM && arealHeight(w, AM);
     return (x, z) => {
       const d = Math.hypot(x - CX, z - CZ);
       let q = (Math.sin(x * .07 + ph) * Math.cos(z * .06 + ph * .5) * 1.2 + Math.sin(x * .031 + z * .027 + ph) * 1.6 + Math.sin(x * .17 + z * .13) * .25) * amp;
       let f = 1 - (1 - sm(2.5, 6, Math.abs(x - PATHX(z)))) * sm(-90, -84, z) * (1 - sm(14, 18, z));
+      const rd = roadD(w, x, z); f = Math.min(f, sm(2.2, 5.5, rd)); q *= AM ? .75 : 1 + .9 * sm(9, 26, Math.min(rd, Math.abs(x - PATHX(z))));   // Wege eben, Wildnis hügeliger
       for (const [px, pz, r] of pads) f = Math.min(f, sm(r, r + 6, Math.hypot(x - px, z - pz)));
       for (const [x0, x1, z0, z1] of rects) f = Math.min(f, sm(0, 6, Math.hypot(Math.max(x0 - x, 0, x - x1), Math.max(z0 - z, 0, z - z1))));
       f = Math.min(f, sm(7, 12, Math.hypot(x, z - 10)));
@@ -42,9 +50,12 @@ export function createMaerchen(C) {
       q *= f;
       for (const [px, pz, r] of pools) { const pd = Math.hypot(x - px, z - pz); q -= 1.4 * (1 - sm(r - 1, r + 1.5, pd)); }
       if (rv) { const rd = riverDist(rv, x, z), cut = 1 - sm(rv.w * .5 - 1.2, rv.w * .5 + .8, rd), ford = x > rv.ford[0] && x < rv.ford[1]; q -= cut * (ford ? (rv.bridge ? 0 : .35) : 1.7); }
+      if (AH) q = AH(x, z, q);
       const k = Math.max(0, d - R); return q + k * k * .38;
     };
   }
+  /* Areale (KH-Gebiete mit Gassen und Waldwänden), Maske je Welt einmal berechnet */
+  const areal = w => w.areal ? (w._am || (w._am = arealMask(w, roads(w), PATHX, CX, CZ, R))) : null;
   const inRiver = (w, x, z) => { const rv = w.river; if (!rv || (x > rv.ford[0] && x < rv.ford[1])) return false; return riverDist(rv, x, z) < rv.w * .5 - .5; };
 
   /* ---------- Bausteine ---------- */
@@ -129,12 +140,12 @@ export function createMaerchen(C) {
     house: { parts: [[() => G.box, 0xd8c8a8, 4.5, 4.2, 9, 4.2], [() => G.cone, 0x4a4a5a, 9.8, 3.4, 2.4, 3.4]], col: 0 }
   };
   const offs = { jungle: [[0, 0], [1.2, .6]], bamboo: [[0, 0], [.5, .3], [-.3, .5]], coral: [[0, 0], [.3, 0], [-.5, .3]] };
-  function scatter(g, list, keep, snow) {
+  function scatter(g, list, keep, snow, wall) {
     const by = {}; for (const it of list) (by[it[2]] = by[it[2]] || []).push(it);
     for (const k in by) { const D = DECOR[k], L = by[k]; D.parts.forEach((p, pi) => { const geo = p[0](), col = snow && pi === D.parts.length - 1 && (k === 'pine' || k === 'rockbig') ? 0xe8eef4 : p[1], im = new T.InstancedMesh(geo, geo === PG.trunk ? C.TX.tri('bark', col, { s: .9, gain: 1.7 }) : geo === PG.rock ? C.TX.tri(snow && col === 0xe8eef4 ? 'snow' : 'rock', col, { s: .45, gain: 1.7 }) : k === 'column' && pi === 0 ? C.TX.tri('marble', col, { s: .6 }) : k === 'barrel' ? C.TX.tri('wood', col, { s: 1.2 }) : M(col, p[6] || {}), L.length), q = new T.Object3D(), tc = new T.Color();
       L.forEach(([x, z, , s, r], i) => { const of = (offs[k] && offs[k][pi]) || [0, 0], y = cur.h(x, z); q.position.set(x + of[0] * s, y + p[2] * s, z + of[1] * s); q.rotation.set(0, r, 0); q.scale.set(p[3] * s, p[4] * s, p[5] * s); q.updateMatrix(); im.setMatrixAt(i, q.matrix); im.setColorAt && im.setColorAt(i, tc.setHex(0xffffff).multiplyScalar(.82 + ((i * 37) % 10) * .036)); });
-      if (im.instanceColor) im.instanceColor.needsUpdate = true; im.castShadow = k !== 'flower' && k !== 'shell'; im.receiveShadow = true; im.frustumCulled = false; g.add(im); keep.push(im); });
-      if (D.col) for (const [x, z, , s] of L) if (Math.hypot(x - CX, z - CZ) < R + 1) C.addCol(x, z, D.col * s); }
+      if (im.instanceColor) im.instanceColor.needsUpdate = true; im.castShadow = !wall && k !== 'flower' && k !== 'shell'; im.receiveShadow = true; im.frustumCulled = false; g.add(im); keep.push(im); });
+      if (D.col && !wall) for (const [x, z, , s] of L) if (Math.hypot(x - CX, z - CZ) < R + 1) C.addCol(x, z, D.col * s); }
   }
 
   /* ---------- Figuren ---------- */
@@ -223,8 +234,8 @@ export function createMaerchen(C) {
 
   /* ---------- Welt aufbauen ---------- */
   function build(n) {
-    const w0 = W(n); R = w0.R || 58; CZ = w0.cz ?? -36; const AK = (R / 58) ** 2, w = w0, h = heightFn(w), S = C.S(), s = st(w.id), pools = w.pools || [];
-    const blk = (x, z) => z > 300 ? !(cur && cur.rooms.some(q => Math.abs(x - q.x) < q.hw && Math.abs(z - q.z) < q.hd)) : C.tooSteep(h, x, z) || Math.hypot(x - CX, z - CZ) > R + 6 || pools.some(([px, pz, r]) => Math.hypot(x - px, z - pz) < r - .4) || inRiver(w, x, z);
+    const w0 = W(n); R = w0.R || 58; CZ = w0.cz ?? -36; const AK = (R / 58) ** 2, w = w0, h = heightFn(w), AM = areal(w), rock = new T.Color(0x6a6460), floor = new T.Color(w.ridge), S = C.S(), s = st(w.id), pools = w.pools || [];
+    const blk = (x, z) => z > 300 ? !(cur && cur.rooms.some(q => Math.abs(x - q.x) < q.hw && Math.abs(z - q.z) < q.hd)) : C.tooSteep(h, x, z) || Math.hypot(x - CX, z - CZ) > R + 6 || pools.some(([px, pz, r]) => Math.hypot(x - px, z - pz) < r - .4) || inRiver(w, x, z) || (AM && (AM.E(x, z) > 1.2 || arealCutDepth(w, x, z)));
     const zone = (x, z) => { for (const q of w.zones) if (Math.hypot(x - q[3], z - q[4]) < q[5]) return q[0]; return 'wild'; };
     const zn = { wild: [w.name, w.sub], ruin: ['Drinnen', w.name] }; for (const q of w.zones) zn[q[0]] = [q[1], q[2]];
     const WD = { n, C: C.CHP[n], h, blocked: blk, zone, ims: [], edKeys: [], terr: null, story: true, mw: w, lv: Math.max(3, S.lvl - 1), grav: w.grav || 1,
@@ -235,7 +246,8 @@ export function createMaerchen(C) {
     const PS = 2 * R + 54, PN = Math.min(240, Math.round(PS * .8)), geo = new T.PlaneGeometry(PS, PS, PN, PN); geo.rotateX(-Math.PI / 2); geo.translate(CX, 0, CZ);
     const p = geo.attributes.position, col = new Float32Array(p.count * 3), c = new T.Color(), c1 = new T.Color(w.ground[0]), c2 = new T.Color(w.ground[1]), cp = new T.Color(w.path), cr = new T.Color(w.ridge), sn = new T.Color(0xf0f4f8), sand = new T.Color(0x8a7a5a);
     for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i), y = h(x, z); p.setY(i, y); const d = Math.hypot(x - CX, z - CZ), nz = Math.sin(x * .9) * Math.cos(z * .8) * .5 + Math.sin(x * .23 + z * .31) * .5;
-      c.copy(c1).lerp(c2, .5 + nz * .5); const pd = Math.abs(x - PATHX(z)); if (z < 16 && z > -88 && pd < 2.6) c.lerp(cp, 1 - sm(1.6, 2.6, pd)); if (y < -.5) c.lerp(sand, Math.min(1, -y - .5)); c.lerp(cr, sm(R, R + 5, d)); if (w.snow) c.lerp(sn, Math.min(1, sm(R - 2, R + 4, d) * .9 + sm(3, 6, y) * .6)); col.set([c.r, c.g, c.b], i * 3); }
+      c.copy(c1).lerp(c2, .5 + nz * .5); const pd = Math.abs(x - PATHX(z)), rdd = roadD(w, x, z); if (rdd < 2.4) c.lerp(cp, .85 * (1 - sm(1.4, 2.4, rdd))); if (z < 16 && z > -88 && pd < 2.6) c.lerp(cp, 1 - sm(1.6, 2.6, pd)); if (AM) { const e = AM.E(x, z), sl = Math.hypot(h(x + .6, z) - h(x - .6, z), h(x, z + .6) - h(x, z - .6)); c.lerp(floor, sm(.6, 3, e) * .75).lerp(rock, sm(.9, 1.6, sl) * .8 * (1 - sm(1, 3, e))); for (const q of w.zones) { const zd = Math.hypot(x - q[3], z - q[4]); if (zd < q[5] * .6) c.lerp(cp, (1 - sm(q[5] * .35, q[5] * .6, zd)) * (.3 + .1 * Math.sin(zd * 1.6))); } }
+      if (y < -.5) c.lerp(sand, Math.min(1, -y - .5)); c.lerp(cr, sm(R, R + 5, d)); if (w.snow) c.lerp(sn, Math.min(1, sm(R - 2, R + 4, d) * .9 + sm(3, 6, y) * .6)); col.set([c.r, c.g, c.b], i * 3); }
     geo.setAttribute('color', new T.BufferAttribute(col, 3)); geo.computeVertexNormals();
     const terr = new T.Mesh(geo, C.TX.tri(GTEX[w.id] || 'grass', 0xffffff, { vc: 1, s: .22, gain: 2.1, n: .8 })); terr.receiveShadow = true; C.scene.add(terr); WD.terr = terr;
     for (const [px, pz, r, wc] of pools) { const wm = mk(new T.CircleGeometry(r + .6, 64), new T.MeshStandardMaterial({ color: wc, metalness: .6, roughness: .06, transparent: true, opacity: .82 }), px, -.4, pz, 1, 1, 1, false); wm.rotation.x = -Math.PI / 2; C.scene.add(wm); }
@@ -249,10 +261,11 @@ export function createMaerchen(C) {
     for (const m of w.ms) { for (const q of (m.pts || [])) busy.push([q[0], q[1], 3]); if (m.at) busy.push([m.at[0], m.at[1], m.r || 5]); }
     for (const d of w.npcs) busy.push([d.x, d.z, 3]); for (const q of [...(w.chests || []), ...(w.pots || []), ...(w.lore || []), ...(w.portals || []), ...(w.vents || [])]) busy.push([q[0], q[1], 2.5]);
     for (const q of (w.swings || [])) busy.push([q[0], q[1], 3], [q[2], q[3], 3]); if (w.currents) for (const q of w.currents) busy.push([q[0], q[1], q[2]]); if (w.climb) busy.push([w.climb.cx, w.climb.cz, 8]);
-    for (const [kind, cnt0] of w.decor) { const cnt = Math.round(cnt0 * Math.min(AK, 2.4)); let n2 = 0, tries = 0; while (n2 < cnt && tries++ < cnt * 30) { const a = R2() * 6.283, rr = Math.sqrt(R2()) * (R - 3), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr;
-      if (Math.abs(x - PATHX(z)) < 4 && z < 16 && z > -88) continue; if (busy.some(([bx, bz, br]) => Math.hypot(x - bx, z - bz) < br + 1.5)) continue; if ((w.rects || []).some(([x0, x1, z0, z1]) => x > x0 - 2 && x < x1 + 2 && z > z0 - 2 && z < z1 + 2)) continue;
+    for (const [kind, cnt0] of w.decor) { const cnt = Math.round(cnt0 * Math.min(AK, 2.4) * (AM && DECOR[kind].col > .3 ? .35 : 1)); let n2 = 0, tries = 0; while (n2 < cnt && tries++ < cnt * 30) { const a = R2() * 6.283, rr = Math.sqrt(R2()) * (R - 3), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr;
+      if ((Math.abs(x - PATHX(z)) < 4 && z < 16 && z > -88) || roadD(w, x, z) < 3.2) continue; if (busy.some(([bx, bz, br]) => Math.hypot(x - bx, z - bz) < br + 1.5)) continue; if ((w.rects || []).some(([x0, x1, z0, z1]) => x > x0 - 2 && x < x1 + 2 && z > z0 - 2 && z < z1 + 2)) continue;
       if (blk(x, z) || C.inHouse(x, z, 1.2) || (w.river && riverDist(w.river, x, z) < w.river.w * .5 + 1.5)) continue; if (list.some(q => DECOR[q[2]].col && Math.hypot(q[0] - x, q[1] - z) < 2.6)) continue;
       list.push([x, z, kind, .8 + R2() * .5, R2() * 6.3]); n2++; } }
+    if (AM) { const wl = []; arealDress({ C, w, b, g, h, M: AM, R2, blk, busy, roadD: (x, z) => Math.min(roadD(w, x, z), z < 16 && z > -88 ? Math.abs(x - PATHX(z)) : 1e9), wallList: wl, TOUCH: C.TOUCH, mk, G, MAT: M }); scatter(g, wl, WD.ims, w.snow, 1); }
     scatter(g, list, WD.ims, w.snow);
     C.mergeStatic(g, keepSet);
     // Figuren
@@ -288,7 +301,10 @@ export function createMaerchen(C) {
       C.INT.push({ x: x0, z: z0 + (z1 > z0 ? -1.2 : 1.2), name: nm, pr: 'Schwingen', rad: 2.4, talk() { cur.swing = { x0: C.pl.x, z0: C.pl.z, x1, z1: z1 + (z1 > z0 ? 1.6 : -1.6), t: 0 }; C.sfx('jump'); } }); } });
     if (w.currents) cur.cur = w.currents.map(q => ({ x: q[0], z: q[1], r: q[2], dx: q[3], dz: q[4], id: q[5] }));
     if (w.climb) C.INT.push({ x: w.climb.cx + 1.2, z: w.climb.cz + 6, name: 'Glockenturm', pr: 'Ansehen', rad: 2.6, vis: () => C.pl.y < 1, talk() { C.say([['Zotik', 'Steinvorsprünge winden sich um den Turm nach oben. Sprung für Sprung – bis zur Glockenstube.']]); } });
-    life(w); side(w, s, folkLife(w, R2, blk, busy), R2, blk); rooms(w);
+    // Laternen entlang der Wege zu den Orten
+    { const post = M(0x3a2e24, { r: .8 }), lm = M(0xffd890, { e: 0xffc060, ei: 2 }); let k = 0; for (const [ax, az, bx, bz] of roads(w)) { const L = Math.hypot(bx - ax, bz - az), nx = -(bz - az) / L, nz = (bx - ax) / L; for (let t = 7; t < L - 3; t += 13) { const sd = (k++ % 2 ? 1 : -1) * 2.7, x = ax + (bx - ax) * t / L + nx * sd, z = az + (bz - az) * t / L + nz * sd; if (blk(x, z) || C.inHouse(x, z, .5) || !C.colFree(x, z, .6)) continue; const y = h(x, z);
+      const lg = new T.Group(); lg.position.set(x, y, z); lg.add(mk(G.cyl0, post, 0, 1.3, 0, .09, 2.6, .09)); lg.add(mk(G.box, post, 0, 2.62, 0, .34, .08, .34, false)); lg.add(mk(G.sph0, lm, 0, 2.4, 0, .17, .24, .17, false)); lg.add(glow(0xffc060, 2.4, 0, 2.4, 0, .55)); g.add(lg); C.addCol(x, z, .25); } } }
+    life(w); side(w, s, folkLife(w, R2, blk, busy), R2, blk); rooms(w); jumps(w, R2, blk);
     if (s.st === 1) arm(w, s);
     keyhole(w, s);
     WD.mbg = minimap(w); C.setMBG(WD.mbg);
@@ -310,6 +326,18 @@ export function createMaerchen(C) {
       C.animObjs.push({ fn(t) { for (const f of fl) { const a = f.ph + t * f.sp; f.g.position.set(f.cx + Math.cos(a) * f.r, f.y + Math.sin(t + f.ph) * .3, f.cz + Math.sin(a) * f.r); f.g.rotation.y = -a; } } }); }
     if (L.includes('bubbles')) C.animObjs.push({ fn() { if (cur && Math.random() < .3) C.emit(C.pl.x + (Math.random() - .5) * 30, cur.h(C.pl.x, C.pl.z) + .2, C.pl.z + (Math.random() - .5) * 30, 0xc8f4ff, 1, .3, 3, .12, -1.5); } });
     if (L.includes('snow')) C.animObjs.push({ fn() { if (cur && Math.random() < .7) C.emit(C.pl.x + (Math.random() - .5) * 34, C.pl.y + 12, C.pl.z + (Math.random() - .5) * 34, 0xffffff, 1, .4, 6, .1, 1.2); } });
+  }
+  /* ---------- Sprungaktionen: zwei Sprungpfade zu goldenen Truhen und Sprungblüten mit Splitterringen ---------- */
+  function jumps(w, R2, blk) {
+    const S = C.S(), rw = k => ({ shards: 70 + w.n * 4 + k * 40, potions: 1 });
+    C.jumpPath(w.n, { col: w.col, k0: 20, k1: 50, id: 'mw_' + w.id + '_jp0', steps: 5, reward: rw(0) });
+    C.jumpPath(w.n, { col: w.col, k0: 50, k1: 95, id: 'mw_' + w.id + '_jp1', steps: 7, mov: 1, reward: rw(1) });
+    const got = (S.mw[w.id].rings = S.mw[w.id].rings || {}); cur.pads = []; cur.rings = [];
+    for (let i = 0, t = 0; i < 4 && t < 300; t++) { const a = R2() * 6.283, rr = 14 + R2() * (R - 20), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr;
+      if (z > -2 || blk(x, z) || !C.colFree(x, z, 2) || C.inHouse(x, z, 2) || cur.pads.some(p => Math.hypot(p.x - x, p.z - z) < 25)) continue; const y = cur.h(x, z);
+      const pad = new T.Group(); pad.add(mk(G.cyl, M(w.col, { e: w.col, ei: .6 }), 0, .08, 0, 1.4, .16, 1.4)); const tr = mk(G.tor, M(0xffe08a, { e: 0xffd040, ei: .8 }), 0, .18, 0, 1.4, 1.4, .3, false); tr.rotation.x = Math.PI / 2; pad.add(tr);
+      pad.add(glow(w.col, 2.6, 0, .4, 0, .5)); pad.position.set(x, y, z); C.scene.add(pad); cur.pads.push({ x, z, y, m: pad, cd: 0 });
+      for (let k = 0; k < 4; k++) { const key = 'r' + i + k; if (got[key]) continue; const r = mk(G.tor, M(0xffe07a, { e: 0xffd040, ei: 1 }), x, y + 4 + k * 1.6, z, .7, .7, .14, false); C.scene.add(r); cur.rings.push({ key, x, z, y: y + 4 + k * 1.6, m: r }); } i++; }
   }
   /* ---------- Innenräume für Türme und Zelte: Tür am Bau, drinnen ein eigener Raum (hinter der Welt bei z≈330) ----------
      Turm: Wendeltreppe aus Steinstufen nach oben zu einer Galerie mit Truhe. Zelt: Teppiche, Kissen, Laterne, ein Krug. */
@@ -498,6 +526,8 @@ export function createMaerchen(C) {
       if (m && m.t === 'collect' && s.st === 1 && Math.hypot(pl.x - it.x, pl.z - it.z) < 1.8 && !pl.dead) { s.got[it.i] = 1; C.scene.remove(it.o); cur.items.splice(i, 1); C.sfx('pick'); C.emit(it.x, cur.h(it.x, it.z) + .6, it.z, 0xffe08a, 18, 3, .7, .5, -2);
         const got = Object.keys(s.got).length, nm = m.pts[it.i][2]; C.toast(`${cur.w.em} ${nm || m.item} (${got}/${m.pts.length})`); refresh(); if (got >= m.pts.length) done(); else C.saveGame(true); } }
     if (cur.sec) for (let i = cur.sec.length - 1; i >= 0; i--) { const q = cur.sec[i]; q.o.rotation.y += dt * 2; if (Math.hypot(pl.x - q.x, pl.z - q.z) < 1.7 && !pl.dead) { cur.side.sec[q.i] = 1; C.scene.remove(q.o); cur.sec.splice(i, 1); C.sfx('pick'); C.emit(q.x, cur.h(q.x, q.z) + .7, q.z, 0xffe08a, 22, 3, .8, .5, -2); C.toast(`🌟 Sternsplitter (${Object.keys(cur.side.sec).length}/${SIDE_N})`); C.saveGame(true); } }
+    if (cur.pads) for (const q of cur.pads) { q.cd -= dt; if (q.cd > 0) continue; if (Math.hypot(pl.x - q.x, pl.z - q.z) < 1.3 && (pl.y || 0) <= q.y + .4) { q.cd = .8; C.bounce(17); C.sfx('portal'); C.emit(q.x, q.y + .3, q.z, 0xffe08a, 16, 3, .7, .3, -6); } }
+    if (cur.rings) for (let i = cur.rings.length - 1; i >= 0; i--) { const r = cur.rings[i]; r.m.rotation.y += dt * 2; if (Math.hypot(pl.x - r.x, pl.z - r.z) < 1.1 && Math.abs((pl.y || 0) + .8 - r.y) < 1.1) { C.scene.remove(r.m); cur.rings.splice(i, 1); const S2 = C.S(); S2.mw[cur.w.id].rings[r.key] = 1; S2.shards += 8; C.sfx('pick'); C.emit(r.x, r.y, r.z, 0xffe08a, 12, 2, .5, .3, 0); C.toast('💫 Splitterring +8'); } }
     if (cur.swing) { const q = cur.swing; q.t += dt / 1.1; const k = Math.min(1, q.t), e = k * k * (3 - 2 * k); pl.x = q.x0 + (q.x1 - q.x0) * e; pl.z = q.z0 + (q.z1 - q.z0) * e; pl.y = cur.h(pl.x, pl.z) + Math.sin(k * Math.PI) * 6 + .2; pl.vy = 0; pl.air = true; pl.face = Math.atan2(q.x1 - q.x0, q.z1 - q.z0); if (k >= 1) { cur.swing = null; pl.vy = -2; } }
     if (cur.cur) for (const q of cur.cur) { if (q.off) continue; const d = Math.hypot(pl.x - q.x, pl.z - q.z); if (d < q.r) { const k = (1 - d / q.r) * 6.5 * dt, nx = pl.x + q.dx * k, nz = pl.z + q.dz * k; if (!C.W().blocked(nx, nz)) { pl.x = nx; pl.z = nz; } } }
     if (cur.w.vents && !pl.air) for (const [x, z] of cur.w.vents) if (Math.hypot(pl.x - x, pl.z - z) < 1.2) { pl.vy = 15; pl.air = true; C.sfx('jump'); C.emit(x, cur.h(x, z) + .3, z, 0xd8f8ff, 14, 2, 1, .2, -6); }
