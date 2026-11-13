@@ -139,13 +139,18 @@ export function createMaerchen(C) {
     bamboo: { parts: [[() => G.cyl0, 0x7aa04a, 2.2, .1, 4.4, .1], [() => G.cyl0, 0x8ab05a, 2, .1, 4, .1], [() => PG.canopy, 0x5a8a3a, 4.2, .8, .5, .8]], col: .2 },
     house: { parts: [[() => G.box, 0xd8c8a8, 4.5, 4.2, 9, 4.2], [() => G.cone, 0x4a4a5a, 9.8, 3.4, 2.4, 3.4]], col: 0 }
   };
+  // Begehbare Oberseiten (Baumkronen, Felsen, Säulen): [Kollisions-Oberkante, [['d', Mitte, Radius, Höhe] Kuppel | ['s', Höhe, Radius] Scheibe]]
+  const TOPS = { oak: [2.6, [['d', 3.6, 2.3, 1.9]]], olive: [1.8, [['d', 2.6, 1.9, 1.3]]], jungle: [3.8, [['d', 5, 3, 1.5]]], palm: [4, [['s', 4.8, 1.9]]], pine: [2.3, [['s', 2.8, .9], ['s', 4.1, .55], ['s', 5.2, .28]]],
+    rock: [.6, [['d', .45, 1.1, .85]]], rockbig: [2.6, [['d', 1.6, 4, 4.3]]], bush: [.5, [['d', .6, 1.1, .8]]], column: [2.6, [['s', 3.05, 1.25]]], barrel: [.6, [['s', 1, .4]]] };
   const offs = { jungle: [[0, 0], [1.2, .6]], bamboo: [[0, 0], [.5, .3], [-.3, .5]], coral: [[0, 0], [.3, 0], [-.5, .3]] };
   function scatter(g, list, keep, snow, wall) {
     const by = {}; for (const it of list) (by[it[2]] = by[it[2]] || []).push(it);
     for (const k in by) { const D = DECOR[k], L = by[k]; D.parts.forEach((p, pi) => { const geo = p[0](), col = snow && pi === D.parts.length - 1 && (k === 'pine' || k === 'rockbig') ? 0xe8eef4 : p[1], im = new T.InstancedMesh(geo, geo === PG.trunk ? C.TX.tri('bark', col, { s: .9, gain: 1.7 }) : geo === PG.rock ? C.TX.tri(snow && col === 0xe8eef4 ? 'snow' : 'rock', col, { s: .45, gain: 1.7 }) : k === 'column' && pi === 0 ? C.TX.tri('marble', col, { s: .6 }) : k === 'barrel' ? C.TX.tri('wood', col, { s: 1.2 }) : M(col, p[6] || {}), L.length), q = new T.Object3D(), tc = new T.Color();
       L.forEach(([x, z, , s, r], i) => { const of = (offs[k] && offs[k][pi]) || [0, 0], y = cur.h(x, z); q.position.set(x + of[0] * s, y + p[2] * s, z + of[1] * s); q.rotation.set(0, r, 0); q.scale.set(p[3] * s, p[4] * s, p[5] * s); q.updateMatrix(); im.setMatrixAt(i, q.matrix); im.setColorAt && im.setColorAt(i, tc.setHex(0xffffff).multiplyScalar(.82 + ((i * 37) % 10) * .036)); });
       if (im.instanceColor) im.instanceColor.needsUpdate = true; im.castShadow = !wall && k !== 'flower' && k !== 'shell'; im.receiveShadow = true; im.frustumCulled = false; g.add(im); keep.push(im); });
-      if (D.col && !wall) for (const [x, z, , s] of L) if (Math.hypot(x - CX, z - CZ) < R + 1) C.addCol(x, z, D.col * s); }
+      const tp = !wall && C.climbDome && TOPS[k];
+      if (D.col && !wall) for (const [x, z, , s] of L) if (Math.hypot(x - CX, z - CZ) < R + 1) C.addCol(x, z, D.col * s, tp ? cur.h(x, z) + tp[0] * s : undefined);
+      if (tp) for (const [x, z, , s] of L) { const y = cur.h(x, z); for (const q of tp[1]) q[0] === 'd' ? C.climbDome(x, z, y + q[1] * s, q[2] * s, q[3] * s) : C.climbDisc(x, z, y + q[1] * s, q[2] * s); } }
   }
 
   /* ---------- Figuren ---------- */
