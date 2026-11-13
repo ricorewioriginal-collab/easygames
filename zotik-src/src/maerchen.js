@@ -288,7 +288,7 @@ export function createMaerchen(C) {
       C.INT.push({ x: x0, z: z0 + (z1 > z0 ? -1.2 : 1.2), name: nm, pr: 'Schwingen', rad: 2.4, talk() { cur.swing = { x0: C.pl.x, z0: C.pl.z, x1, z1: z1 + (z1 > z0 ? 1.6 : -1.6), t: 0 }; C.sfx('jump'); } }); } });
     if (w.currents) cur.cur = w.currents.map(q => ({ x: q[0], z: q[1], r: q[2], dx: q[3], dz: q[4], id: q[5] }));
     if (w.climb) C.INT.push({ x: w.climb.cx + 1.2, z: w.climb.cz + 6, name: 'Glockenturm', pr: 'Ansehen', rad: 2.6, vis: () => C.pl.y < 1, talk() { C.say([['Zotik', 'Steinvorsprünge winden sich um den Turm nach oben. Sprung für Sprung – bis zur Glockenstube.']]); } });
-    life(w); side(w, s, folkLife(w, R2, blk, busy), R2, blk); rooms(w);
+    life(w); side(w, s, folkLife(w, R2, blk, busy), R2, blk); rooms(w); jumps(w, R2, blk);
     if (s.st === 1) arm(w, s);
     keyhole(w, s);
     WD.mbg = minimap(w); C.setMBG(WD.mbg);
@@ -310,6 +310,18 @@ export function createMaerchen(C) {
       C.animObjs.push({ fn(t) { for (const f of fl) { const a = f.ph + t * f.sp; f.g.position.set(f.cx + Math.cos(a) * f.r, f.y + Math.sin(t + f.ph) * .3, f.cz + Math.sin(a) * f.r); f.g.rotation.y = -a; } } }); }
     if (L.includes('bubbles')) C.animObjs.push({ fn() { if (cur && Math.random() < .3) C.emit(C.pl.x + (Math.random() - .5) * 30, cur.h(C.pl.x, C.pl.z) + .2, C.pl.z + (Math.random() - .5) * 30, 0xc8f4ff, 1, .3, 3, .12, -1.5); } });
     if (L.includes('snow')) C.animObjs.push({ fn() { if (cur && Math.random() < .7) C.emit(C.pl.x + (Math.random() - .5) * 34, C.pl.y + 12, C.pl.z + (Math.random() - .5) * 34, 0xffffff, 1, .4, 6, .1, 1.2); } });
+  }
+  /* ---------- Sprungaktionen: zwei Sprungpfade zu goldenen Truhen und Sprungblüten mit Splitterringen ---------- */
+  function jumps(w, R2, blk) {
+    const S = C.S(), rw = k => ({ shards: 70 + w.n * 4 + k * 40, potions: 1 });
+    C.jumpPath(w.n, { col: w.col, k0: 20, k1: 50, id: 'mw_' + w.id + '_jp0', steps: 5, reward: rw(0) });
+    C.jumpPath(w.n, { col: w.col, k0: 50, k1: 95, id: 'mw_' + w.id + '_jp1', steps: 7, mov: 1, reward: rw(1) });
+    const got = (S.mw[w.id].rings = S.mw[w.id].rings || {}); cur.pads = []; cur.rings = [];
+    for (let i = 0, t = 0; i < 4 && t < 300; t++) { const a = R2() * 6.283, rr = 14 + R2() * (R - 20), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr;
+      if (z > -2 || blk(x, z) || !C.colFree(x, z, 2) || C.inHouse(x, z, 2) || cur.pads.some(p => Math.hypot(p.x - x, p.z - z) < 25)) continue; const y = cur.h(x, z);
+      const pad = new T.Group(); pad.add(mk(G.cyl, M(w.col, { e: w.col, ei: .6 }), 0, .08, 0, 1.4, .16, 1.4)); const tr = mk(G.tor, M(0xffe08a, { e: 0xffd040, ei: .8 }), 0, .18, 0, 1.4, 1.4, .3, false); tr.rotation.x = Math.PI / 2; pad.add(tr);
+      pad.add(glow(w.col, 2.6, 0, .4, 0, .5)); pad.position.set(x, y, z); C.scene.add(pad); cur.pads.push({ x, z, y, m: pad, cd: 0 });
+      for (let k = 0; k < 4; k++) { const key = 'r' + i + k; if (got[key]) continue; const r = mk(G.tor, M(0xffe07a, { e: 0xffd040, ei: 1 }), x, y + 4 + k * 1.6, z, .7, .7, .14, false); C.scene.add(r); cur.rings.push({ key, x, z, y: y + 4 + k * 1.6, m: r }); } i++; }
   }
   /* ---------- Innenräume für Türme und Zelte: Tür am Bau, drinnen ein eigener Raum (hinter der Welt bei z≈330) ----------
      Turm: Wendeltreppe aus Steinstufen nach oben zu einer Galerie mit Truhe. Zelt: Teppiche, Kissen, Laterne, ein Krug. */
@@ -498,6 +510,8 @@ export function createMaerchen(C) {
       if (m && m.t === 'collect' && s.st === 1 && Math.hypot(pl.x - it.x, pl.z - it.z) < 1.8 && !pl.dead) { s.got[it.i] = 1; C.scene.remove(it.o); cur.items.splice(i, 1); C.sfx('pick'); C.emit(it.x, cur.h(it.x, it.z) + .6, it.z, 0xffe08a, 18, 3, .7, .5, -2);
         const got = Object.keys(s.got).length, nm = m.pts[it.i][2]; C.toast(`${cur.w.em} ${nm || m.item} (${got}/${m.pts.length})`); refresh(); if (got >= m.pts.length) done(); else C.saveGame(true); } }
     if (cur.sec) for (let i = cur.sec.length - 1; i >= 0; i--) { const q = cur.sec[i]; q.o.rotation.y += dt * 2; if (Math.hypot(pl.x - q.x, pl.z - q.z) < 1.7 && !pl.dead) { cur.side.sec[q.i] = 1; C.scene.remove(q.o); cur.sec.splice(i, 1); C.sfx('pick'); C.emit(q.x, cur.h(q.x, q.z) + .7, q.z, 0xffe08a, 22, 3, .8, .5, -2); C.toast(`🌟 Sternsplitter (${Object.keys(cur.side.sec).length}/${SIDE_N})`); C.saveGame(true); } }
+    if (cur.pads) for (const q of cur.pads) { q.cd -= dt; if (q.cd > 0) continue; if (Math.hypot(pl.x - q.x, pl.z - q.z) < 1.3 && (pl.y || 0) <= q.y + .4) { q.cd = .8; C.bounce(17); C.sfx('portal'); C.emit(q.x, q.y + .3, q.z, 0xffe08a, 16, 3, .7, .3, -6); } }
+    if (cur.rings) for (let i = cur.rings.length - 1; i >= 0; i--) { const r = cur.rings[i]; r.m.rotation.y += dt * 2; if (Math.hypot(pl.x - r.x, pl.z - r.z) < 1.1 && Math.abs((pl.y || 0) + .8 - r.y) < 1.1) { C.scene.remove(r.m); cur.rings.splice(i, 1); const S2 = C.S(); S2.mw[cur.w.id].rings[r.key] = 1; S2.shards += 8; C.sfx('pick'); C.emit(r.x, r.y, r.z, 0xffe08a, 12, 2, .5, .3, 0); C.toast('💫 Splitterring +8'); } }
     if (cur.swing) { const q = cur.swing; q.t += dt / 1.1; const k = Math.min(1, q.t), e = k * k * (3 - 2 * k); pl.x = q.x0 + (q.x1 - q.x0) * e; pl.z = q.z0 + (q.z1 - q.z0) * e; pl.y = cur.h(pl.x, pl.z) + Math.sin(k * Math.PI) * 6 + .2; pl.vy = 0; pl.air = true; pl.face = Math.atan2(q.x1 - q.x0, q.z1 - q.z0); if (k >= 1) { cur.swing = null; pl.vy = -2; } }
     if (cur.cur) for (const q of cur.cur) { if (q.off) continue; const d = Math.hypot(pl.x - q.x, pl.z - q.z); if (d < q.r) { const k = (1 - d / q.r) * 6.5 * dt, nx = pl.x + q.dx * k, nz = pl.z + q.dz * k; if (!C.W().blocked(nx, nz)) { pl.x = nx; pl.z = nz; } } }
     if (cur.w.vents && !pl.air) for (const [x, z] of cur.w.vents) if (Math.hypot(pl.x - x, pl.z - z) < 1.2) { pl.vy = 15; pl.air = true; C.sfx('jump'); C.emit(x, cur.h(x, z) + .3, z, 0xd8f8ff, 14, 2, 1, .2, -6); }
