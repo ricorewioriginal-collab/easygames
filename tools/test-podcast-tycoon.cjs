@@ -77,6 +77,19 @@ server.listen(0, '127.0.0.1', async () => {
     for (let i = 0; i < 14 && !(await p.evaluate(() => window.__rd)); i++) { await p.evaluate(() => { const S = AMC.Play.state(), t = S.thieves.find(x => x.rival); if (t) { S.pl.x = t.x - 1.2; S.pl.z = t.z; } }); await p.waitForTimeout(120); await p.keyboard.press('KeyE'); await p.waitForTimeout(700); }
     assert.ok(await p.evaluate(() => window.__rd), 'Rangelei mit Rauschmann gewonnen');
     await p.evaluate(() => { AMC.Play.stop(); AMC.UI.closeAll(); });
+    // Arcade: drei 3D-Minispiele mit Andrew und Marco
+    await p.evaluate(() => AMC.Game.arcade('flap')); await p.waitForTimeout(1200);
+    await p.keyboard.press('Space'); await p.waitForTimeout(400);
+    assert.ok(await p.evaluate(() => { const r = AMC.Arcade.state(); return r && r.id === 'flap' && r.phase !== 'ready' && r.p.x > 0; }), 'Funkwellen-Flug startet und fliegt');
+    await p.evaluate(() => AMC.Game.arcade('jump')); await p.waitForTimeout(1200);
+    await p.keyboard.down('KeyD'); await p.waitForTimeout(800); await p.keyboard.up('KeyD');
+    assert.ok(await p.evaluate(() => { const r = AMC.Arcade.state(); return r && r.id === 'jump' && r.p.x > 0.3 && r.plats.length > 10 && r.goal > 100; }), 'Jump & Run läuft');
+    await p.evaluate(() => AMC.Game.arcade('run')); await p.waitForTimeout(1200);
+    await p.keyboard.press('Space'); await p.waitForTimeout(600); await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(300);
+    assert.ok(await p.evaluate(() => { const r = AMC.Arcade.state(); return r && r.id === 'run' && r.phase !== 'ready' && r.p.z < 0 && r.p.lane === 0; }), 'Endlos-Läufer rennt');
+    await p.evaluate(() => { const r = AMC.Arcade.state(); r.crash(); }); await p.waitForTimeout(2200);
+    assert.ok(await p.evaluate(() => !!document.querySelector('.arc-end')), 'Arcade-Ergebnis erscheint');
+    await p.evaluate(() => { AMC.UI.closeAll(); AMC.Arcade.close(true); AMC.Game.mode = 'menu'; });
     // Funk-Rennen: 10 Tore, Uhr läuft vorwärts
     await p.evaluate(() => { AMC.UI.closeAll(); AMC.Play.onEnd = () => {}; AMC.Play.start({ mode: 'race', host: 'andrew' }); }); await p.waitForTimeout(2500);
     assert.equal(await p.evaluate(() => AMC.Play.state().gates.length), 10, 'Rennen mit 10 Toren');
