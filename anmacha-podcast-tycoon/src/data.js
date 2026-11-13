@@ -206,7 +206,92 @@
         ['a', 'Danke an alle, die uns seit 2020 zuhören. Das hier ist erst der Anfang.'],
         ['n', 'Das neue Gesicht von AnMaCha – Der Podcast. Die neue Staffel beginnt. Hört rein: überall, wo es Podcasts gibt.']
       ]
+    },
+    // ---------------- Staffel 2: Das Funkloch kehrt zurück
+    {
+      id: 'c9', season: 2, title: 'Imbisskind', when: 'Staffel 2 · Rückblende Februar 2021', ep: 4,
+      sky: 'day', obj: { type: 'deliver', n: 5, t: 260 }, drones: 5, show: { rounds: 6, goal: [540, 820, 1100] },
+      intro: [
+        ['n', 'Nach dem Festival ist Ruhe eingekehrt. Doch im Archiv rauscht es: Das Funkloch hat Bruchstücke alter Folgen in der Stadt verstreut.'],
+        ['m', 'Folge 4, „Imbisskind“. Mensakind oder Imbisskind – die Frage hat damals die Nation gespalten.'],
+        ['a', 'Ich bin ganz klar Imbisskind. Und die Fans haben Hunger! Am Imbiss warten Bestellungen.'],
+        ['n', 'Hol am Imbiss-Wagen die Bestellungen ab ({x}) und bring sie zu den hungrigen Fans (🍟). Du kannst drei Tüten gleichzeitig tragen.']
+      ],
+      outro: [['a', 'Alle satt, alle glücklich. Imbisskind forever!'], ['m', 'Ich hab eine Pommes gefunden. Im Mischpult. Von 2021.']]
+    },
+    {
+      id: 'c10', season: 2, title: 'Die Katze und die Gurke', when: 'Staffel 2 · Rückblende Februar 2023', ep: 11,
+      sky: 'sunset', obj: { type: 'cat', n: 3, t: 240 }, drones: 4, show: { rounds: 6, goal: [580, 880, 1180] },
+      intro: [
+        ['n', 'Elektroautos, Verkaufs-Apps und ein Geburtstag – Folge 11. Doch mitten in der Aufnahme springt eine Katze aufs Mischpult und flitzt mit dem Studio-Schlüssel davon.'],
+        ['m', 'Das ist die Katze aus dem Gurken-Video! Die hat vor gar nichts Angst. Außer vor Gurken.'],
+        ['a', 'Dann fangen wir sie ein. Ganz vorsichtig. Und ohne Gurke.'],
+        ['n', 'Fang die Katze dreimal ein. Sie ist flink – sprinte mit {rb} und schneide ihr den Weg ab. Andrew ist schneller.']
+      ],
+      outro: [['m', 'Schlüssel zurück, Katze glücklich.'], ['a', 'Und die Gurke? Die bleibt im Kühlschrank. Für immer.']]
+    },
+    {
+      id: 'c11', season: 2, title: 'Hör\' mir uff!', when: 'Staffel 2 · Rückblende April 2023', ep: 12,
+      sky: 'night', obj: { type: 'hunt', n: 12, t: 270 }, drones: 9, show: { rounds: 7, goal: [640, 960, 1280] },
+      intro: [
+        ['n', 'Folge 12: Künstliche Intelligenz. Das Funkloch hat sich das Thema zu Herzen genommen – und eine Armee von KI-Drohnen gebaut.'],
+        ['a', 'Die quatschen alle gleichzeitig! „Als KI-Sprachmodell kann ich nicht …“ Hör\' mir uff!'],
+        ['m', 'DSL oder Glasfaser – egal. Wir schalten die einfach ab. Mit Gefühl. Und mit Schallwellen.'],
+        ['n', 'Schalte 12 KI-Drohnen mit der Schallwelle ({x}) ab. Marcos Technik-Welle schafft eine Drohne mit einem Treffer.']
+      ],
+      outro: [['a', 'Ruhe im Äther. Herrlich.'], ['m', 'Ich hab eine Drohne behalten. Sie heißt jetzt Klaus und sagt nur noch „Hallo“.']]
+    },
+    {
+      id: 'c12', season: 2, title: 'Giselas Camper', when: 'Staffel 2 · Jubiläum', ep: 20,
+      sky: 'festival', obj: { type: 'boss', n: 3, t: 380, hp: 13, name: 'Das Funkloch 2.0' }, drones: 5, show: { rounds: 8, goal: [720, 1080, 1440] },
+      intro: [
+        ['n', 'Jubiläums-Folge 20: Camping, Urlaub und ein Wohnmobil namens Gisela. Die ganze Stadt feiert – bis der Himmel violett wird.'],
+        ['m', 'Es ist zurück. DAS FUNKLOCH 2.0. Größer, lauter und mit Update.'],
+        ['a', 'Wir haben es einmal geschafft, wir schaffen es wieder. Gisela glaubt an uns!'],
+        ['n', 'Das Funkloch 2.0 hält mehr aus und ruft mehr Drohnen. Weiche aus ({rt}), spring über Rauschwellen ({a}) und triff es mit {x}, wenn der Schild offen ist.']
+      ],
+      outro: [
+        ['a', 'Zwanzig Folgen. Ein Funkloch. Zweimal besiegt.'],
+        ['m', 'Und Gisela hat nicht mal einen Kratzer.'],
+        ['n', 'Staffel 2 ist im Kasten. Danke an alle, die AnMaCha hören – und weiter geht es überall, wo es Podcasts gibt!']
+      ]
     }
+  ];
+
+  // ---------------------------------------------------------------- Fanshop: Fan-Punkte (🎟️) gibt es für jede Runde, Kapitel und Nebenaufträge
+  D.OUTFITS = [
+    { id: 'std', name: 'Studio-Polo', icon: '👕', cost: 0, look: {} },
+    { id: 'orange', name: 'AnMaCha-Orange', icon: '🧡', cost: 300, look: { top: '#ff8a1e' } },
+    { id: 'winter', name: 'Weihnachts-Look', icon: '🎄', cost: 450, look: { top: '#c62828', hat: { type: 'beanie', color: '#f4f4f4' } } },
+    { id: 'festival', name: 'Festival-Star', icon: '🕶️', cost: 600, look: { top: '#f4f4f8', topStyle: 'tank', hat: { type: 'sunglasses', color: '#111' } } },
+    { id: 'retro', name: '1996er Party', icon: '📼', cost: 600, look: { top: '#ff3da8', bottom: '#3dd6ff', hat: { type: 'cap', color: '#ffe03d' } } },
+    { id: 'rock', name: 'Rockradio', icon: '🎸', cost: 750, look: { top: '#111', topStyle: 'tank', hat: { type: 'band', color: '#e0503a' } } },
+    { id: 'camper', name: 'Camper', icon: '⛺', cost: 750, look: { top: '#2f8f4e', bottomStyle: 'shorts', hat: { type: 'cap', color: '#6b5a45' } } },
+    { id: 'gala', name: 'Gala', icon: '🎩', cost: 1000, look: { top: '#1d1d24', topStyle: 'long', hat: { type: 'tophat', color: '#111' } } },
+    { id: 'king', name: 'Podcast-König', icon: '👑', cost: 2000, look: { top: '#5a2bb0', hat: { type: 'crown', color: '#ffd23f' } } }
+  ];
+  D.UPGRADES = [
+    { id: 'mics', name: 'Profi-Mikrofone', icon: '🎙️', cost: 400, desc: '+10 % Hörer in jeder Aufnahme.' },
+    { id: 'jingle', name: 'Jingle-Paket', icon: '🎵', cost: 300, desc: 'Ein vierter Jingle pro Aufnahme.' },
+    { id: 'neon', name: 'Studio-Neon', icon: '💡', cost: 250, desc: 'Aufnahmen starten mit mehr Stimmung (+10 Hype).' },
+    { id: 'shoes', name: 'Turnschuhe', icon: '👟', cost: 350, desc: 'Andrew und Marco laufen 8 % schneller.' },
+    { id: 'power', name: 'Powerbank', icon: '🔋', cost: 300, desc: 'Störsender ziehen 30 % weniger Energie ab.' },
+    { id: 'watch', name: 'Stoppuhr', icon: '⏱️', cost: 450, desc: '+20 Sekunden in den Story-Kapiteln.' }
+  ];
+
+  // ---------------------------------------------------------------- Nebenaufträge (Stadt erkunden) – check(S) bekommt den Stand der Stadt
+  const sum = S => D.RUBRIC_IDS.reduce((a, r) => a + S.got[r], 0);
+  D.QUESTS = [
+    { id: 'q1', icon: '✨', name: 'Themen-Sammler', desc: 'Sammle 30 Themen-Funken', goal: 30, val: sum, pts: 150 },
+    { id: 'q2', icon: '📡', name: 'Funkstille', desc: 'Schalte 10 Störsender ab', goal: 10, val: S => S.kills, pts: 200 },
+    { id: 'q3', icon: '💬', name: 'Hörernähe', desc: 'Sprich mit 5 Fans', goal: 5, val: S => S.talks, pts: 150 },
+    { id: 'q4', icon: '🗼', name: 'Gipfelsturm', desc: 'Klettere ganz nach oben auf den Sendemast', goal: 1, val: S => (S.maxY >= S.mastTop - 1 ? 1 : 0), pts: 250 },
+    { id: 'q5', icon: '🌟', name: 'Erinnerungsjäger', desc: 'Finde 2 Goldene Erinnerungen', goal: 2, val: S => S.gold, pts: 200 },
+    { id: 'q6', icon: '🎵', name: 'Musik-Anmacher', desc: 'Sammle 10 Musik-Funken', goal: 10, val: S => S.got.musik, pts: 150 },
+    { id: 'q7', icon: '📻', name: 'Radio-Spaziergang', desc: 'Hör 60 Sekunden Radio oder Podcast in der Stadt', goal: 60, val: S => Math.floor(S.radioT || 0), pts: 100 },
+    { id: 'q8', icon: '🏢', name: 'Dachdecker', desc: 'Spring auf das Dach des Funkhauses', goal: 1, val: S => (S.onFunkhaus ? 1 : 0), pts: 200 },
+    { id: 'q9', icon: '🏃', name: 'Marathon', desc: 'Lauf 1.000 Meter durch die Stadt', goal: 1000, val: S => Math.floor(S.dist || 0), pts: 200 },
+    { id: 'q10', icon: '⇄', name: 'Teamwork', desc: 'Wechsle 10-mal zwischen Andrew und Marco', goal: 10, val: S => S.swaps || 0, pts: 100 }
   ];
 
   // ---------------------------------------------------------------- Die 13 Sender (AnMaCha-Radioproduktion bei laut.fm, alle auch bei RicoReWi Radio)

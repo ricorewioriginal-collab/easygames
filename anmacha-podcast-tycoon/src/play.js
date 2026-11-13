@@ -339,6 +339,10 @@
     S = { cfg, ch, mode: cfg.mode, sky, rng, scene: new T.Scene(), group: new T.Group(), col: [], pickups: [], drones: [], npcs: [], glows: [], gates: [], relays: [], guests: [],
       time: 0, left: ch ? ch.obj.t : cfg.mode === 'jagd' ? 180 : 0, energy: 100, hurtT: 9, got: {}, gold: 0, tapes: 0, kills: 0, talks: 0, score: 0, done: false, ended: false, phase: 'play', t0: performance.now(), hud: {}, msgT: 0 };
     D.RUBRIC_IDS.forEach(r => (S.got[r] = 0));
+    S.bossName = (ch && ch.obj.name) || 'Das Funkloch';
+    S.carry = 0; S.fed = 0; S.caught = 0; S.dist = 0; S.maxY = 0; S.swaps = 0; S.radioT = 0; S.qT = 0;
+    S.fast = AMC.Save.has('shoes') ? 1.08 : 1;
+    if (ch && cfg.mode === 'story' && AMC.Save.has('watch') && ch.obj.type !== 'train') S.left += 20;
     S.scene.add(S.group);
     const env = W.makeSky(S.scene, sky); S.env = env;
     W.particles.attach(S.scene);
@@ -356,7 +360,8 @@
   P.stop = function () {
     if (!S) return;
     ['andrew', 'marco'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent) f.root.parent.remove(f.root); });
-    S.npcs.forEach(n => n.fig && n.fig.dispose());
+    S.npcs.forEach(n => { if (n.fig) n.fig.dispose(); n.fig = null; });
+    if (S.cat) { if (S.cat.mixer) S.cat.mixer.stopAllAction(); S.group.remove(S.cat.m); }
     S.group.traverse(o => { if (o.geometry && !o.isSkinnedMesh) o.geometry.dispose(); });
     const hud = U.$('hud'); hud.hidden = true; hud.innerHTML = '';
     S = null; P.active = false;
@@ -409,10 +414,19 @@
       spawnFunken(10);
       S.dancers = [];
     }
+    if (type === 'deliver') {
+      spawnFunken(10);
+      buildImbiss(PARK.x + 11, PARK.z - 10);
+      S.hungryNeed = ch.obj.n;
+    }
+    if (type === 'cat') { spawnFunken(10); spawnCat(rng); }
+    if (type === 'hunt') { spawnFunken(8); roofSpots.slice(0, 2).forEach(r => addPickup('gold', null, r.x, r.y + 1.2, r.z)); }
+    if (type === 'free') S.mastTop = S.mastSteps.length ? S.mastSteps[S.mastSteps.length - 1].y : 30;
     if (type === 'boss') {
       spawnFunken(6);
       const m = droneMesh(true);
-      S.boss = { m, x: PARK.x, y: 6, z: PARK.z + 2, hp: 9, max: 9, phase: 0, t: 0, state: 'intro', open: 0, waves: [], hitT: 0 };
+      const hp = ch.obj.hp || 9;
+      S.boss = { m, x: PARK.x, y: 6, z: PARK.z + 2, hp, max: hp, phase: 0, t: 0, state: 'intro', open: 0, waves: [], hitT: 0 };
       m.position.set(S.boss.x, S.boss.y, S.boss.z);
     }
     for (let i = 0; i < droneN; i++) {
@@ -423,7 +437,7 @@
     }
   }
   async function spawnFans(rng) {
-    const n = [3, 6, 9][W.quality] + (S.type === 'guest' ? 3 : 0) + (S.type === 'party' ? 3 : 0);
+    const n = [3, 6, 9][W.quality] + (S.type === 'guest' ? 3 : 0) + (S.type === 'party' ? 3 : 0) + (S.type === 'deliver' ? S.hungryNeed : 0);
     const myS = S;
     for (let i = 0; i < n; i++) {
       let x, y, z;
@@ -433,12 +447,12 @@
       if (S !== myS) { if (fig) fig.dispose(); return; }
       if (!fig) continue;
       const guest = S.type === 'guest' && i < S.guestNeed;
-      const dancer = S.type === 'party' && i < 6;
-      const npc = { fig, x, y, z, yaw: rng() * 6, name: D.FAN_NAMES[i % D.FAN_NAMES.length], line: D.FAN_LINES[Math.floor(rng() * D.FAN_LINES.length)], talked: false, guest, follow: false, delivered: false, dancer, hyped: false, vx: 0, vz: 0, vy: 0, onGround: true, anim: '' };
+      const dancer = S.type === 'party' && i < 6, hungry = S.type === 'deliver' && i < S.hungryNeed;
+      const npc = { fig, x, y, z, yaw: rng() * 6, name: D.FAN_NAMES[i % D.FAN_NAMES.length], line: D.FAN_LINES[Math.floor(rng() * D.FAN_LINES.length)], talked: false, guest, follow: false, delivered: false, dancer, hungry, fed: false, hyped: false, vx: 0, vz: 0, vy: 0, onGround: true, anim: '' };
       fig.root.position.set(x, y, z); fig.root.rotation.y = npc.yaw; S.group.add(fig.root);
       setAnim(npc, dancer ? 'dance' : 'idle');
-      npc.mark = W.glow(guest ? 0xffd23f : dancer ? 0xff3da8 : 0x3dd6ff, 1.4, fig.root, 0, 2.35, 0);
-      const tx = W.textTex([guest ? '⭐' : dancer ? '♪' : '!'], { w: 128, h: 128, bg: '#14161f', size: 90, accent: guest ? '#ffd23f' : '#3dd6ff' });
+      npc.mark = W.glow(guest ? 0xffd23f : dancer ? 0xff3da8 : hungry ? 0xff8a1e : 0x3dd6ff, 1.4, fig.root, 0, 2.35, 0);
+      const tx = W.textTex([guest ? '⭐' : dancer ? '♪' : hungry ? '🍟' : '!'], { w: 128, h: 128, bg: '#14161f', size: 90, accent: guest ? '#ffd23f' : hungry ? '#ff8a1e' : '#3dd6ff' });
       npc.icon = new T.Sprite(new T.SpriteMaterial({ map: tx, depthTest: false })); npc.icon.scale.set(0.5, 0.5, 1); npc.icon.position.y = 2.35; fig.root.add(npc.icon);
       S.npcs.push(npc);
     }
@@ -452,7 +466,7 @@
       '<div class="h-rub" id="hRub"></div></div>' +
       '<div class="h-tr"><canvas id="hMap" width="180" height="180" class="glass"></canvas><div class="h-time glass" id="hTime"></div></div>' +
       '<div class="h-bl"><div class="h-host glass" id="hHost"><img id="hFace" alt=""><div><b id="hName"></b><i class="h-en"><em id="hEn"></em></i><small id="hSwap"></small></div></div></div>' +
-      '<div class="h-prompt" id="hPrompt"></div><div class="h-msg" id="hMsg"></div><div class="h-boss" id="hBoss" hidden><b>📡 Das Funkloch</b><i><em id="hBossBar"></em></i></div><div class="h-hit" id="hHit"></div>';
+      '<div class="h-prompt" id="hPrompt"></div><div class="h-msg" id="hMsg"></div><div class="h-boss" id="hBoss" hidden><b>📡 ' + S.bossName + '</b><i><em id="hBossBar"></em></i></div><div class="h-hit" id="hHit"></div>';
     U.$('hTitle').textContent = ch ? 'Kapitel ' + (D.CHAPTERS.indexOf(ch) + 1) + ' · ' + ch.title : S.mode === 'jagd' ? 'Themenjagd' : 'Funkhaus-Viertel';
     S.hud = { map: U.$('hMap').getContext('2d'), mapT: 0, txtT: 0 };
     drawRub();
@@ -480,10 +494,15 @@
     if (t === 'guest') { const fol = S.npcs.filter(n => n.follow && !n.delivered).length, del = S.npcs.filter(n => n.delivered).length; return ['Gäste im Funkhaus ' + del + '/' + S.guestNeed + (fol ? ' · ' + fol + ' folgen dir' : ''), del / S.guestNeed]; }
     if (t === 'antenna') { const f = S.relays.filter(r => r.fixed).length; return ['Verteiler repariert ' + f + '/' + S.relays.length + ' – rauf auf den Sendemast!', f / S.relays.length]; }
     if (t === 'train') { const k = S.gates.filter(g => g.passed).length; return ['Haltestellen ' + k + '/' + S.gates.length + ' – lauf durch das blaue Tor', k / S.gates.length]; }
+    if (t === 'deliver') return ['Satte Fans 🍟 ' + S.fed + '/' + S.hungryNeed + (S.carry ? ' · du trägst ' + S.carry + ' Tüte' + (S.carry > 1 ? 'n' : '') : ' · hol Essen am Imbiss'), S.fed / S.hungryNeed];
+    if (t === 'cat') return ['Katze gefangen 🐈 ' + S.caught + '/' + ch.obj.n + ' – folge dem Lichtstrahl', S.caught / ch.obj.n];
+    if (t === 'hunt') return ['KI-Drohnen abgeschaltet 🤖 ' + Math.min(S.kills, ch.obj.n) + '/' + ch.obj.n, S.kills / ch.obj.n];
     if (t === 'party') return ['Kassetten 📼 ' + S.tapes + '/' + ch.obj.n + ' · Tanzende mit ' + AMC.glyph('x') + ' anfeuern', S.tapes / ch.obj.n];
-    if (t === 'boss') return [S.boss.state === 'intro' ? 'Das Funkloch erscheint …' : 'Triff das Funkloch, wenn der Schild offen ist', 1 - S.boss.hp / S.boss.max];
+    if (t === 'boss') return [S.boss.state === 'intro' ? S.bossName + ' erscheint …' : 'Triff ' + S.bossName.replace(/^Das /, 'das ') + ', wenn der Schild offen ist', 1 - S.boss.hp / S.boss.max];
     if (t === 'jagd') return ['Sammle so viele Themen wie möglich! Punkte: ' + U.fmt(S.score), 1 - S.left / 180];
-    return ['Erkunde die Stadt, sammle Themen, hör Radio. Funkhaus = zurück ins Menü.', total / 30];
+    const q = nextQuest();
+    if (q) { const v = Math.min(q.goal, q.val(S)); return ['📋 Nebenauftrag: ' + q.icon + ' ' + q.desc + ' (' + U.fmt(v) + '/' + U.fmt(q.goal) + ') · ' + AMC.glyph('x') + ' an der Tür = Menü', v / q.goal]; }
+    return ['Alle Nebenaufträge erledigt! Erkunde weiter oder geh ins Funkhaus.', 1];
   }
   function updHud(dt) {
     S.hud.txtT -= dt;
@@ -512,6 +531,9 @@
     for (const p of S.pickups) if (!p.taken) { g.fillStyle = p.kind === 'gold' ? '#ffd23f' : p.kind === 'tape' ? '#ff6ad0' : D.RUBRICS[p.rub].color; g.beginPath(); g.arc(X(p.x), Z(p.z), p.kind === 'funke' ? 2 : 3.2, 0, 7); g.fill(); }
     for (const d of S.drones) if (!d.dead) { g.fillStyle = '#ff2a3a'; g.fillRect(X(d.x) - 2, Z(d.z) - 2, 4, 4); }
     for (const n of S.npcs) if ((n.guest && !n.delivered) || (n.dancer && !n.hyped)) { g.fillStyle = n.guest ? '#ffd23f' : '#ff3da8'; g.fillText ? (g.font = '10px sans-serif', g.fillText(n.guest ? '⭐' : '♪', X(n.x) - 4, Z(n.z) + 4)) : 0; }
+    for (const n of S.npcs) if (n.hungry && !n.fed) { g.font = '10px sans-serif'; g.fillText('🍟', X(n.x) - 5, Z(n.z) + 4); }
+    if (S.imbiss) { g.fillStyle = '#ff8a1e'; g.fillRect(X(S.imbiss.x) - 4, Z(S.imbiss.z) - 4, 8, 8); }
+    if (S.cat) { g.font = '11px sans-serif'; g.fillText('🐈', X(S.cat.x) - 6, Z(S.cat.z) + 4); }
     const ng = S.gates.find(q => !q.passed); if (ng) { g.strokeStyle = '#3dd6ff'; g.lineWidth = 2; g.beginPath(); g.arc(X(ng.x), Z(ng.z), 5, 0, 7); g.stroke(); }
     if (S.beacon.visible) { g.strokeStyle = '#ff8a1e'; g.lineWidth = 2.5; g.beginPath(); g.arc(X(S.beacon.position.x), Z(S.beacon.position.z), 6 + Math.sin(S.time * 6) * 1.5, 0, 7); g.stroke(); }
     // Spieler-Pfeil (Blickrichtung der Kamera)
@@ -527,10 +549,12 @@
       if (d < 2.4) {
         if (n.guest && !n.follow && !n.delivered) return { label: 'Gast einladen', run: () => inviteGuest(n) };
         if (n.dancer && !n.hyped) return null;
+        if (n.hungry && !n.fed) return S.carry > 0 ? { label: 'Essen bringen 🍟', run: () => feed(n) } : null;
         if (!n.talked && !n.guest && !n.dancer) return { label: 'Mit ' + n.name + ' sprechen', run: () => talk(n) };
       }
     }
     for (const r of S.relays) if (!r.fixed && Math.hypot(r.x - p.x, r.z - p.z) < 2.2 && Math.abs(r.y - p.y) < 1.6) return { label: 'Verteiler reparieren (halten)', hold: r };
+    if (S.imbiss && Math.hypot(S.imbiss.x - p.x, S.imbiss.z - p.z) < 3.4 && S.carry < 3 && S.fed + S.carry < S.hungryNeed) return { label: 'Bestellungen abholen 🍟', run: pickOrder };
     if (S.mode === 'free' && Math.hypot(FUNKHAUS.door.x - p.x, FUNKHAUS.door.z - p.z) < 3.5) return { label: 'Ins Funkhaus (Menü)', run: () => finish(true) };
     return null;
   }
@@ -580,7 +604,7 @@
       b.hp -= H.id === 'marco' ? 1.5 : 1; b.hitT = 0.3; AMC.Audio.sfx('hit'); W.cam.shake = 0.5;
       W.particles.burst(b.x, b.y, b.z, 0x8a3dff, 40, { speed: 9 });
       if (b.hp <= 0) bossDown();
-      else if (b.hp <= b.max * (2 - b.phase) / 3) { b.phase++; b.open = 0; b.state = 'rise'; b.t = 0; msg('📡 Das Funkloch wird wütend! Phase ' + (b.phase + 1), 2); AMC.Audio.sfx('boss'); }
+      else if (b.hp <= b.max * (2 - b.phase) / 3) { b.phase++; b.open = 0; b.state = 'rise'; b.t = 0; msg('📡 ' + S.bossName + ' wird wütend! Phase ' + (b.phase + 1), 2); AMC.Audio.sfx('boss'); }
     }
   }
   function killDrone(d) {
@@ -591,6 +615,7 @@
   }
   function hurt(dmg, fromX, fromZ) {
     const p = S.pl; if (p.inv > 0 || p.dodge > 0 || S.ended) return;
+    if (AMC.Save.has('power')) dmg *= 0.7;
     S.energy = Math.max(0, S.energy - dmg); p.inv = 1.2; S.hurtT = 0;
     const dx = p.x - fromX, dz = p.z - fromZ, l = Math.hypot(dx, dz) || 1; p.vx = dx / l * 10; p.vz = dz / l * 10; p.vy = 5;
     AMC.Audio.sfx('static'); W.cam.shake = 0.6; const h = U.$('hHit'); if (h) { h.classList.remove('on'); void h.offsetWidth; h.classList.add('on'); }
@@ -603,7 +628,7 @@
   }
   function swapHost() {
     const a = S.pl, b = S.fo;
-    S.pl = b; S.fo = a; S.pl.vx = a.vx; S.pl.vz = a.vz;
+    S.pl = b; S.fo = a; S.pl.vx = a.vx; S.pl.vz = a.vz; S.swaps++;
     AMC.Audio.sfx('swap'); W.particles.burst(S.pl.x, S.pl.y + 1, S.pl.z, 0xff8a1e, 26, { speed: 4 });
     updHost(); msg('Jetzt spielst du ' + S.pl.H.name + ' – ' + S.pl.H.perk, 3);
   }
@@ -638,7 +663,7 @@
     let wx = rX * I.move.x + fwdX * I.move.y, wz = rZ * I.move.x + fwdZ * I.move.y;
     const mag = Math.min(1, Math.hypot(wx, wz)); if (mag > 0.01) { const l = Math.hypot(wx, wz); wx /= l; wz /= l; }
     const sprint = I.sprint || (I.device === 'touch' && mag > 0.92);
-    let speed = H.speed * mag * (sprint ? 1.55 : 1);
+    let speed = H.speed * mag * (sprint ? 1.55 : 1) * (S.fast || 1);
     if (I.hit('jump') && (p.onGround || p.jumps < 2)) {
       p.vy = p.onGround ? H.jump : H.jump * 0.85; p.jumps = p.onGround ? 1 : 2; p.onGround = false; AMC.Audio.sfx('jump');
       if (p.jumps === 2) { W.particles.burst(p.x, p.y + 0.2, p.z, 0xffffff, 10, { speed: 3, up: -1, life: 0.4 }); setAnim(p, 'ninja', { restart: true }); }
@@ -675,6 +700,8 @@
     if (S.left > 0 && S.mode !== 'free') { S.left -= dt; if (S.left <= 0) { S.left = 0; if (S.mode === 'jagd') return finish(true, 'time'); if (!S.done) return finish(false, 'time'); } }
     updPickups(dt); updDrones(dt); updNpcs(dt); updObjective(dt); updRings(dt);
     if (S.boss) updBoss(dt);
+    if (S.cat) updCat(dt);
+    if (S.mode === 'free') updQuests(dt, sp);
     // Tür
     if (S.done && S.mode === 'story' && Math.hypot(FUNKHAUS.door.x - p.x, FUNKHAUS.door.z - p.z) < 3 && p.y < 1.5) return finish(true);
     // Effekte
@@ -769,6 +796,9 @@
     if (t === 'guest' && S.npcs.filter(n => n.delivered).length >= S.guestNeed) { objectiveDone(); finishSoon(); }
     if (t === 'antenna' && S.relays.length && S.relays.every(r => r.fixed)) objectiveDone();
     if (t === 'party' && S.tapes >= ch.obj.n) objectiveDone();
+    if (t === 'deliver') { if (S.fed >= S.hungryNeed) objectiveDone(); else { S.beacon.visible = true; const h = S.carry > 0 ? S.npcs.filter(n => n.hungry && !n.fed).sort((a, b) => Math.hypot(a.x - S.pl.x, a.z - S.pl.z) - Math.hypot(b.x - S.pl.x, b.z - S.pl.z))[0] : null; if (h) S.beacon.position.set(h.x, 0, h.z); else S.beacon.position.set(S.imbiss.x, 0, S.imbiss.z); } }
+    if (t === 'cat') { if (S.caught >= ch.obj.n) objectiveDone(); else { S.beacon.visible = true; S.beacon.position.set(S.cat.x, 0, S.cat.z); } }
+    if (t === 'hunt' && S.kills >= ch.obj.n) objectiveDone();
     if (t === 'train') {
       const g = S.gates.find(q => !q.passed);
       S.gates.forEach(q => { q.ring.material.emissive.set(q === g ? 0x2090ff : q.passed ? 0x20a040 : 0x222233); q.ring.rotation.y += 0.02; });
@@ -781,6 +811,91 @@
     if (!S.rings) return;
     S.rings = S.rings.filter(r => { r.t += dt; const k = r.t / 0.35, s = 0.4 + k * r.max; r.m.scale.set(s, s, s); r.m.material.opacity = Math.max(0, 0.6 * (1 - k)); r.m.position.set(S.pl.x, S.pl.y + 0.9, S.pl.z); if (k >= 1) { S.group.remove(r.m); r.m.geometry.dispose(); return false; } return true; });
   }
+  // ------------------------------------------------------------------ Imbiss (Kapitel „Imbisskind“)
+  function buildImbiss(x, z) {
+    const g = new T.Group(); g.position.set(x, 0, z); S.group.add(g);
+    W.box(4.2, 2.2, 2.2, W.mat(0xf4f4f4, { r: 0.6 }), 0, 1.1, 0, g);
+    W.box(4.4, 0.18, 1.2, W.mat(0x8a5a2b), 0, 1.25, 1.5, g);
+    const aw = W.box(4.6, 0.16, 1.8, W.mat(0xff8a1e, { e: 0x331500 }), 0, 2.8, 1.2, g); aw.rotation.x = 0.25;
+    [-1.9, 1.9].forEach(px => W.cyl(0.06, 0.06, 2.8, W.mat(0x888888, { m: 0.8 }), px, 1.4, 2.0, g));
+    W.sign(g, W.textTex(['🍟 IMBISS', 'Mensakind oder Imbisskind?'], { size: 60 }), 4, 1.3, 0, 3.8, 0, 0, true);
+    W.glow(0xffb347, 4, g, 0, 2.4, 1.6);
+    addBox(x - 2.1, x + 2.1, z - 1.1, z + 1.1, 2.2);
+    S.imbiss = { x, z: z + 2.4, g };
+  }
+  function pickOrder() {
+    const n = Math.min(3, S.hungryNeed - S.fed - S.carry); if (n <= 0) return;
+    S.carry += n; AMC.Audio.sfx('buy'); msg('🍟 ' + n + ' Bestellung' + (n > 1 ? 'en' : '') + ' eingepackt – ab zu den hungrigen Fans!', 2.4);
+    W.particles.burst(S.imbiss.x, 2, S.imbiss.z, 0xffb347, 24, { speed: 5 });
+  }
+  function feed(n) {
+    S.carry--; S.fed++; n.fed = true; n.icon.visible = false; n.mark.visible = false; S.score += 500;
+    n.fig.root.rotation.y = Math.atan2(S.pl.x - n.x, S.pl.z - n.z); setAnim(n, 'yes'); setTimeout(() => n.fig && setAnim(n, 'idle'), 1600);
+    const rub = U.pick(['feel', 'serious', 'tv']); S.got[rub] += 2; drawRub();
+    AMC.UI.bubble(n.name, U.pick(['Pommes rot-weiß! Ihr seid die Besten!', 'Currywurst! Ich bin eindeutig Imbisskind.', 'Mensa war gestern. Danke, Jungs!', 'Mit extra Zwiebeln? Ihr kennt mich!']), '+2 ' + D.RUBRICS[rub].icon + ' ' + D.RUBRICS[rub].name);
+    AMC.Audio.sfx('cheer'); W.particles.burst(n.x, n.y + 2, n.z, 0xff8a1e, 26, { speed: 6 });
+  }
+  // ------------------------------------------------------------------ Katze (Kapitel „Die Katze und die Gurke“)
+  function spawnCat(rng) {
+    if (!W.cat) { S.catFake = true; }
+    const [x, , z] = freeSpot(rng, 25);
+    const c = { x, y: 0.2, z, vx: 0, vz: 0, vy: 0, onGround: true, yaw: 0, tire: 0, rest: 0, jumpT: 0 };
+    if (W.cat) {
+      const m = W.cat.scene; m.position.set(0, 0, 0); m.scale.set(1, 1, 1); m.rotation.set(0, 0, 0); m.updateMatrixWorld(true);
+      const box = new T.Box3().setFromObject(m), h = box.max.y - box.min.y || 1, k = 0.85 / h;
+      m.scale.setScalar(k); m.traverse(o => { if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; } });
+      // ein Mixer für die Katze über alle Läufe (sonst kollidieren Bindungen am selben Modell)
+      if (!W.cat.mixer) { W.cat.mixer = new T.AnimationMixer(m); W.cat.act = {}; W.cat.animations.forEach(a => (W.cat.act[a.name] = W.cat.mixer.clipAction(a))); }
+      W.cat.mixer.stopAllAction();
+      c.m = m; c.mixer = W.cat.mixer; c.act = W.cat.act;
+      c.play = n => { if (c.cur === n || !c.act[n]) return; try { const a = c.act[n]; a.reset().fadeIn(0.15).play(); if (c.cur && c.act[c.cur]) c.act[c.cur].fadeOut(0.15); } catch (e) { /* Bewegung überspringen */ } c.cur = n; };
+      c.play('idle');
+    } else {
+      c.m = new T.Mesh(new T.SphereGeometry(0.35, 14, 10), W.mat(0xff9a40)); c.play = () => {};
+    }
+    S.group.add(c.m); c.m.position.set(x, c.y, z); S.cat = c;
+  }
+  function updCat(dt) {
+    const c = S.cat, p = S.pl; if (c.mixer) c.mixer.update(dt);
+    const dx = c.x - p.x, dz = c.z - p.z, d = Math.hypot(dx, dz);
+    if (S.done) { moveBody(c, dt, 0, 0, 0, 8); c.play('idle'); c.m.position.set(c.x, c.y, c.z); return; }
+    if (d < 1.35 && Math.abs(p.y - c.y) < 1.4) {
+      S.caught++; S.score += 900; AMC.Audio.sfx('gold'); W.particles.burst(c.x, c.y + 0.6, c.z, 0xffb347, 40, { speed: 7 });
+      const left = S.ch.obj.n - S.caught;
+      msg(left > 0 ? '🐈 Gefangen! … und schon wieder weg. Noch ' + left + '×!' : '🐈 Hab dich! Der Studio-Schlüssel ist zurück!', 2.4);
+      if (left > 0) { let best = null; for (let i = 0; i < 8; i++) { const s2 = freeSpot(S.rng, 20); if (!best || Math.hypot(s2[0] - p.x, s2[2] - p.z) > Math.hypot(best[0] - p.x, best[2] - p.z)) best = s2; } c.x = best[0]; c.z = best[2]; c.y = 0.4; c.vx = c.vz = 0; c.tire = 0; }
+      return;
+    }
+    let wx = 0, wz = 0, sp = 0;
+    if (c.rest > 0) { c.rest -= dt; sp = 0; }
+    else if (d < 11) {
+      c.tire += dt; if (c.tire > 4.5) { c.rest = 1.6; c.tire = 0; msg('🐈 Die Katze verschnauft – jetzt!', 1.2); }
+      const a = Math.atan2(dx, dz) + Math.sin(S.time * 1.3) * 0.6; wx = Math.sin(a); wz = Math.cos(a);
+      // an Wänden entlang ausweichen
+      if (solidAt(c.x + wx * 1.2, c.y + 0.5, c.z + wz * 1.2)) { const t = Math.sign(Math.sin(S.time * 0.4)) || 1; const a2 = a + t * Math.PI / 2; wx = Math.sin(a2); wz = Math.cos(a2); }
+      sp = 7.8 + S.caught * 0.5;
+    } else { c.tire = Math.max(0, c.tire - dt); }
+    const v = moveBody(c, dt, wx, wz, sp, 10);
+    if (c.onGround && sp > 0 && solidAt(c.x + wx * 0.7, c.y + 0.3, c.z + wz * 0.7) && !solidAt(c.x + wx * 0.7, c.y + 1.6, c.z + wz * 0.7)) { c.vy = 7; c.onGround = false; c.play('jump'); }
+    if (c.onGround) { if (v > 0.6) { c.play('walk'); if (c.act && c.act.walk) c.act.walk.timeScale = Math.min(2.6, v / 3); } else c.play(c.rest > 0 ? 'no' : 'idle'); }
+    c.m.position.set(c.x, c.y, c.z); c.m.rotation.y = c.yaw;
+  }
+  // ------------------------------------------------------------------ Nebenaufträge (Stadt erkunden)
+  function nextQuest() { const qs = AMC.Save.data.quests; return D.QUESTS.find(q => !qs[q.id]); }
+  function updQuests(dt, sp) {
+    const p = S.pl;
+    S.dist += Math.min(sp || 0, 20) * dt; S.maxY = Math.max(S.maxY, p.y);
+    S.onFunkhaus = S.onFunkhaus || (p.y >= FUNKHAUS.h - 0.6 && p.x > FUNKHAUS.x0 && p.x < FUNKHAUS.x1 && p.z > FUNKHAUS.z0 && p.z < FUNKHAUS.z1);
+    if (AMC.Media.active()) S.radioT += dt;
+    if ((S.qT -= dt) > 0) return; S.qT = 0.5;
+    const qs = AMC.Save.data.quests;
+    for (const q of D.QUESTS) if (!qs[q.id] && q.val(S) >= q.goal) {
+      qs[q.id] = Date.now(); const n = AMC.Save.earn(q.pts);
+      AMC.Audio.sfx('star'); W.particles.burst(p.x, p.y + 2, p.z, 0xffd23f, 40, { speed: 7 });
+      AMC.UI.toast('📋 Nebenauftrag geschafft: ' + q.icon + ' ' + q.name + ' · +' + n + ' 🎟️ Fan-Punkte');
+      S.score += 500;
+    }
+  }
   // Boss „Das Funkloch“
   function updBoss(dt) {
     const b = S.boss, p = S.pl, U2 = b.m.userData;
@@ -789,7 +904,7 @@
     if (b.hitT > 0) b.hitT -= dt;
     U2.eye.material.color.set(b.open > 0 ? 0x30ff90 : b.hitT > 0 ? 0xffffff : 0xff2a3a);
     if (b.state === 'dead') return;
-    if (b.state === 'intro') { b.y = U.damp(b.y, 7, 1, dt); if (b.t > 2.5) { b.state = 'rise'; b.t = 0; AMC.Audio.sfx('boss'); AMC.Audio.music('boss'); msg('📡 Das Funkloch greift an! Spring über die Rauschwellen!', 3); } }
+    if (b.state === 'intro') { b.y = U.damp(b.y, 7, 1, dt); if (b.t > 2.5) { b.state = 'rise'; b.t = 0; AMC.Audio.sfx('boss'); AMC.Audio.music('boss'); msg('📡 ' + S.bossName + ' greift an! Spring über die Rauschwellen!', 3); } }
     else if (b.state === 'rise') { b.y = U.damp(b.y, 7, 2, dt); b.x = U.damp(b.x, PARK.x + Math.sin(b.t * 0.7) * 8, 1, dt); b.z = U.damp(b.z, PARK.z + Math.cos(b.t * 0.5) * 6, 1, dt); if (b.t > 2.2 - b.phase * 0.3) { b.state = 'slam'; b.t = 0; } }
     else if (b.state === 'slam') {
       b.y = U.damp(b.y, 2, 6, dt);
