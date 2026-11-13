@@ -37,7 +37,7 @@
         "PC: WASD oder Pfeile bewegen, Maus ziehen, Q/E oder Mausrad steuern die Kamera, C dreht sie hinter Aeru. Leertaste = Springen/Flügelschlag/Gleiten, G = Flug ein/aus, Umschalt = Rammstoß bzw. im Flug sinken, F = Windstoß, R oder Enter = Sprechen und Tor benutzen, J = Tagebuch, Esc oder P = Pause.",
         "Dialoge: R, Leertaste oder Enter blättert weiter; bereits gesehene Dialoge überspringst du mit X, Backspace oder „Überspringen ⏭“.",
         "Touch: linker Stick bewegt, rechts wischen dreht die Kamera. Das Aktionsrad rechts hat SPRUNG (groß, unten), FLUG (oben), WIND (links) und RAMM/ROLLE (rechts). REDEN erscheint nur, wenn jemand in der Nähe ist. ☰ = Tagebuch, Ⅱ = Pause.",
-        "Controller: linker Stick oder Steuerkreuz bewegt, A springt bzw. bestätigt, X = Windstoß, Y = Sprechen, RT = Flug, LT = Rammstoß/sinken, LB/RB = Kamera drehen, Select = Tagebuch, Start oder B = Pause."
+        "Controller (PlayStation, Nintendo Switch, Xbox – wird automatisch erkannt, die Symbole passen sich an): linker Stick läuft und fliegt analog (leicht drücken = langsam), rechter Stick dreht die Kamera, R3 dreht sie hinter Aeru, L1/R1 (L/R) drehen schrittweise. Kreuz (Switch: B) = Springen/Flügelschlag/gleiten, Kreis (Switch: A) = Windstoß, Viereck (Switch: Y) = Rammstoß, Dreieck (Switch: X) = Sprechen und Portale, R2 (ZR) = Flug ein/aus, L2 (ZL) = Rammstoß bzw. im Flug sinken, Options/+ = Pause, Share/− = Tagebuch. Treffer lassen den Controller kurz vibrieren. Select + Start öffnet die Belegung zum Umstellen."
       ]
     },
     {
@@ -83,6 +83,12 @@
       "p": [
         "Das Spiel speichert automatisch im Browser (Spielstand und Einstellungen getrennt). „Speichern & Titelbild“ sichert sofort. Vor einem neuen Abenteuer wird der alte Stand gesichert. Ältere Spielstände werden beim Laden übernommen; ein Hinweis „SPIELSTAND ÜBERNOMMEN“ erklärt dann, was übernommen wurde. Wechselst du Fenster oder Tab, pausiert das Spiel.",
         "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+      ]
+    },
+    {
+      "t": "Portale zu Bunte Insel und Zotik",
+      "p": [
+        "In jeder Welt stehen links und rechts neben dem Inselstart zwei bunte Portale: links zur Bunten Insel, rechts nach Zotik. Stell dich davor und drück zweimal Sprechen (R, REDEN oder Dreieck/X) – beim ersten Mal fragt das Spiel nach, beim zweiten Mal speichert es deinen Spielstand und reist los. In der Bunten Insel und in Zotik führt dich der Knopf „🐉 Zurück zu AERU“ oben in der Mitte wieder zurück; du landest im Titelbild und setzt deine Reise fort."
       ]
     }
   ],

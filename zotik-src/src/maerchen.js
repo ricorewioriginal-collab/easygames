@@ -48,15 +48,16 @@ export function createMaerchen(C) {
   const inRiver = (w, x, z) => { const rv = w.river; if (!rv || (x > rv.ford[0] && x < rv.ford[1])) return false; return riverDist(rv, x, z) < rv.w * .5 - .5; };
 
   /* ---------- Bausteine ---------- */
-  function solidBox(x, z, w, d, ry) { const L = Math.max(w, d), r = Math.min(w, d) / 2, n = Math.max(1, Math.ceil((L - r * 2) / (r * .6)) + 1), c = Math.cos(ry || 0), s = Math.sin(ry || 0);
-    for (let i = 0; i < n; i++) { const u = n === 1 ? 0 : (i / (n - 1) - .5) * (L - r * 2), lx = w >= d ? u : 0, lz = w >= d ? 0 : u; C.addCol(x + lx * c + lz * s, z - lx * s + lz * c, r); } }
+  function solidBox(x, z, w, d, ry, t, f) { const L = Math.max(w, d), r = Math.min(w, d) / 2, n = Math.max(1, Math.ceil((L - r * 2) / (r * .6)) + 1), c = Math.cos(ry || 0), s = Math.sin(ry || 0);
+    for (let i = 0; i < n; i++) { const u = n === 1 ? 0 : (i / (n - 1) - .5) * (L - r * 2), lx = w >= d ? u : 0, lz = w >= d ? 0 : u; C.addCol(x + lx * c + lz * s, z - lx * s + lz * c, r, t); }
+    if (t != null && C.climb && Math.min(w, d) >= 1) C.climb({ x, z, c, s, hx: w / 2 + .2, hz: d / 2 + .2, y: t, f: f || null }); }
   function B(g) {
     const mt = (col, op) => { const t = op.tex || (o.tmap && o.tmap[col]); return t ? C.TX.tri(t, col, op.to || {}) : M(col, op.mat || {}); };
     const o = {
       g, h: (x, z) => cur.h(x, z), addCol: C.addCol, solid: solidBox, tmap: null,
       mat: (col, tex, to) => tex ? C.TX.tri(tex, col, to || {}) : M(col),
-      box(x, y, z, w, h, d, col, op) { op = op || {}; const m = mk(G.box, mt(col, op), x, y + h / 2, z, w, h, d, op.cast !== false); if (op.ry) m.rotation.y = op.ry; if (op.rx) m.rotation.x = op.rx; if (op.rz) m.rotation.z = op.rz; g.add(m); if (op.solid) solidBox(x, z, w, d, op.ry); return m; },
-      cyl(x, y, z, r, h, col, op) { op = op || {}; const m = mk(op.lo ? G.cyl0 : G.cyl, mt(col, op), x, y + h / 2, z, r, h, r, op.cast !== false); g.add(m); if (op.solid) C.addCol(x, z, r); return m; },
+      box(x, y, z, w, h, d, col, op) { op = op || {}; const m = mk(G.box, mt(col, op), x, y + h / 2, z, w, h, d, op.cast !== false); if (op.ry) m.rotation.y = op.ry; if (op.rx) m.rotation.x = op.rx; if (op.rz) m.rotation.z = op.rz; g.add(m); if (op.solid) solidBox(x, z, w, d, op.ry, h >= .8 ? y + h : null); return m; },
+      cyl(x, y, z, r, h, col, op) { op = op || {}; const m = mk(op.lo ? G.cyl0 : G.cyl, mt(col, op), x, y + h / 2, z, r, h, r, op.cast !== false); g.add(m); if (op.solid) { const big = r >= 1.2 && C.climb; C.addCol(x, z, r, big ? y + h : null); if (big) C.climb({ x, z, rd: 1, hx: r, hz: r, y: y + h }); } return m; },
       cone(x, y, z, r, h, col, op) { op = op || {}; const m = mk(op.lo ? G.cone0 : G.cone, mt(col, op), x, y + h / 2, z, r, h, op.rz2 || r, op.cast !== false); if (op.ry) m.rotation.y = op.ry; g.add(m); if (op.solid) C.addCol(x, z, r * .85); return m; },
       sph(x, y, z, sx, sy, sz, col, op) { op = op || {}; const m = mk(G.sph, mt(col, op), x, y, z, sx, sy, sz, op.cast !== false); g.add(m); if (op.solid) C.addCol(x, z, Math.min(sx, sz) * .95); return m; },
       ico(x, y, z, sx, sy, sz, col, op) { op = op || {}; const m = mk(PG.rock, op.tex || (o.tmap && o.tmap[col]) ? mt(col, op) : C.TX.tri('rock', col, { s: .5 }), x, y, z, sx, sy, sz); g.add(m); if (op.solid) C.addCol(x, z, Math.min(sx, sz) * .9); return m; },

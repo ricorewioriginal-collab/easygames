@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b3dc20c5ad8d",
- "generated": "2026-11-13T02:17:14+01:00",
- "commit": "2fd6ab7ebf4c3b5648d56a7d08d74fc149119682",
+ "version": "3846e7f3a723",
+ "generated": "2026-11-13T01:37:18+00:00",
+ "commit": "1440b3f06ec38205c40022f8edecf0d1afe6186a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -348,13 +348,13 @@
   },
   {
    "p": "aeru/game.js",
-   "s": 125611,
-   "h": "d9994713a526a50c7e2466cb3d90c81e59d155043a0191d4c91ec236aefd8d67"
+   "s": 134102,
+   "h": "f802170f2a0e7cf394cbaa6d300ed14a145e02800b52a2e58841577f3cef21c4"
   },
   {
    "p": "aeru/index.html",
-   "s": 13083,
-   "h": "3030a059ecc380b4ba421e8e194e9071b059e1a371adb2ac84912ab4a7f21363"
+   "s": 14982,
+   "h": "6e0f40000d6e4f9c2e502c72e52cf1a3465b1eae7882456f5ef361b196e37c74"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -367,14 +367,19 @@
    "h": "575415640225044966d3d1455bc0be2ad54308c6f99f2ce4b4f41352bc6ae430"
   },
   {
+   "p": "aeru/rueckweg.js",
+   "s": 2100,
+   "h": "131658fe700ee6cc3a26ae899dbd4906ea3ad0d4b989e6c6d9067b1bc9fc12e7"
+  },
+  {
    "p": "aeru/story.js",
    "s": 45418,
    "h": "27af27d9f77eb28b08e5d0c8e3976c626b53f8717c365f6c94187052675fa633"
   },
   {
    "p": "aeru/style.css",
-   "s": 29680,
-   "h": "6cd4a030aa1a1797fd8cea27669fc44a19988d52104ae4380fc0bb71780bdef0"
+   "s": 34489,
+   "h": "78f0ee369a8f170cc4bf4b04660534942820ddcaf8f16e5e32752b653e5aadca"
   },
   {
    "p": "aeru/sw.js",
@@ -4603,8 +4608,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 109763,
-   "h": "8f6586215188ae235c2705ee7ac3a019d6c474fe537eef380ed7094a773240bd"
+   "s": 109813,
+   "h": "0b027e51b6b05e7ddba398f4a9656333a79ce4621f6d4dbfd1890eb590aec0f5"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -6468,8 +6473,8 @@
   },
   {
    "p": "guides/aeru.json",
-   "s": 17827,
-   "h": "f0342bdec5b03b410f130d7596ace8e8f8a55437d5ee7902a2b2a3720e4d0fe5"
+   "s": 18807,
+   "h": "8822abdf148aec7324b31f66f1e9dd1a4d6c5d7fa136f8cb38b25a83fd3aff09"
   },
   {
    "p": "guides/anmacha-beat-surfer.json",
@@ -9679,7 +9684,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258564,
-   "h": "6f7eda03c161ea6c04595bfca8add1b22867c3541719922fee04ed73ef2ebf83"
+   "h": "7655aee9a59e0fe9de9a470f12264b4e0a5bd87c5024f1abed42193fef2c90f9"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -12167,9 +12172,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-C2w6j5QC.js",
-   "s": 1754751,
-   "h": "6885639ac440bde82e6d2d5c25f52d21978066a12b9b4b453e59d52f21b52851"
+   "p": "zotik/assets/index-DyByXvio.js",
+   "s": 1757783,
+   "h": "c6e5f610b7274166c0e1fdcb2d94efb15b877dae617afa5ebee0b6b8101c0811"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -12188,8 +12193,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 72193,
-   "h": "3349cb41204139a5ee23496d685740d35eefa5190db37d4dac9a2adb0a2143ef"
+   "s": 72243,
+   "h": "50d3cc4a0036d40abc019c047d41cfc2347fc2e6bc86ccfc10401584e12b0698"
   },
   {
    "p": "zotik/manifest.webmanifest",

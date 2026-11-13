@@ -1,6 +1,6 @@
 # Stand der Überarbeitung
 
-Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese Datei listet nur, was tatsächlich gebaut und geprüft wurde. Stand: 11.10.2026.
+Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese Datei listet nur, was tatsächlich gebaut und geprüft wurde. Stand: 13.11.2026.
 
 ## Umgesetzt und automatisch getestet
 
@@ -20,6 +20,7 @@ Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese D
 - **Grafikstufen** Sparsam/Ausgewogen/Hoch/Automatisch; die Automatik senkt nachweislich die Auflösung bei langsamen Bildern. → `browser.cjs`
 
 - **Erweiterung (Himmelsinseln, Rammstoß, Nachtgarten):** 21 Himmelsinseln mit Truhen und Schwung-Ringen, Rammstoß, siebte Welt mit eigener Geschichte (Epilog), neuen Gegnern (Nachtmotte, Wurzelwächter) und Boss (Nachtblüte). → `sky.cjs`, `neu.cjs`, `story.cjs`
+- **Spyro-Ausbau, Schritt 1 (13.11.2026):** Spieleportale zur Bunten Insel und nach Zotik in allen 7 Welten mit Rückweg-Knopf in beiden Spielen, analoge Controller-Steuerung (Sticks, Vibration, PlayStation-/Switch-Symbole), Ladebild, Weltkarte beim Betreten, modernisiertes Titelbild mit Fortschritt. → `portale.cjs`, `browser.cjs`; Controller und Rückweg zusätzlich im echten Chromium mit nachgebautem DualSense geprüft.
 
 ## Umgesetzt, aber nicht vollständig getestet
 
@@ -28,14 +29,15 @@ Grundlage: Masterprompt „AERU – Die Sterneninseln“ (Phasen A–F). Diese D
 - **Audio:** Musik pro Insel, Lautstärke, Stummschaltung und Anhalten im Hintergrund sind gebaut; Klang und Lautstärkeverhältnis hat niemand angehört.
 - **Verlorener WebGL-Kontext:** löst ein Neuladen aus (Spielstand bleibt); nicht künstlich ausgelöst getestet.
 - **Einstellungen** (Empfindlichkeiten, Kamerahilfe, Textgeschwindigkeit, große Schrift, reduzierte Bewegung, Vollbild): werden gespeichert und angewendet, aber nicht jede Option einzeln automatisch geprüft.
+- **Controller an echter Hardware:** Erkennung, Symbole und Analogsteuerung nur mit nachgebautem Controller im Browser geprüft; Vibration nur im Code (Chromium headless hat keine).
 - **Nebenquests:** Ablauf und Reihenfolge laufen über dieselbe Engine; im Story-Test wird nur Pip indirekt berührt, die übrigen fünf nicht vollständig durchgespielt.
 
 ## Offen
 
 - Test auf echten Geräten (mindestens ein Android-Handy, ein iPhone, ein Notebook mit integrierter Grafik) und Eintrag der Messwerte in TESTING.md.
 - Bäume und Gras bewegen sich nicht im Wind.
-- Keine Controller-Unterstützung (Gamepad).
 - Keine Sprachausgabe/Vertonung; Texte nur auf Deutsch.
+- Spyro-Ausbau, nächste Schritte: freie 3D-Modelle (Quaternius-Drache für Aeru, Monster als Gegner, Wizp-Bäume und -Felsen, alle CC0 und schon im Repository), Spyro-artiges Gameplay (Halte-Ansturm, Edelsteine mit Farbwerten, Diebe, mehr Level), mehr Sound-Effekte und Animationen.
 
 ## Bekannte Fehler und Grenzen
 
