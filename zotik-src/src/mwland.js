@@ -302,6 +302,44 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
         for (const [dx, dz] of [[-.9, -.4], [-.9, .4], [.9, -.4], [.9, .4]]) b.cyl(40 + dx, 0, 52 + dz, .13, 1.6, C2); b.box(40, 2.3, 52, 1.6, .2, 1.5, 0x8a2a1a, { cast: false }); b.addCol(40, 52, 1.6); }
       K.water(46, 46, 2.6, 0x5a8a9a); for (let i = 0; i < 5; i++) b.box(34 + (i % 3) * 1.4, 0, 54 + (i > 2 ? 1.4 : 0), 1.1, .8, .8, [0x8a5a3a, 0xc8a070, 0x6a4a2a][i % 3], { tex: 'wood' }); K.lamp(36, 48, 0xff6a3a);
     },
+    nimmerland(b, w, A) {
+      const K = kit(b), WD = 0x6a4a2a, DK = 0x2a1e14, h = (x, z) => b.h(x, z);
+      b.tmap = { 0x6a4a2a: 'wood', 0x5a3a22: 'wood', 0x8a6a4a: 'wood', 0x7a7470: 'rock', 0xe8dcc0: 'plaster' };
+      // Haus unter der Erde: sieben hohle Bäume um den Hängebaum, Peters Hut als Schornstein
+      for (let i = 0; i < 7; i++) { const a = i * .9 + .3, x = -24 + Math.cos(a) * 8, z = -58 + Math.sin(a) * 8; K.tree(x, z, 1.25, 0x5a3a22, 0x3a7a3a, { n: 4 }); b.ico(x + Math.cos(a) * .45, .9, z + Math.sin(a) * .45, .3, .55, .1, DK, { cast: false }); }
+      b.cyl(-24, 0, -58, 1.3, 4.2, 0x5a3a22, { solid: 1, tex: 'bark' }); for (let i = 0; i < 5; i++) b.ico(-24 + Math.cos(i * 1.3) * 2.2, 5 + (i % 2), -58 + Math.sin(i * 1.3) * 2.2, 2.4, 1.8, 2.4, 0x2a6a2a);
+      b.cyl(-19, 0, -54, .26, .7, 0x2a2a1a, { lo: 1 }); b.cyl(-19, .7, -54, .5, .06, 0x3a7a3a, { lo: 1 }); b.box(-18.8, .5, -54, .05, .3, .2, 0xc83a2a, { cast: false }); A.smoke(-19, 1.1, -54);
+      // Wendys kleines Haus: von den Jungen gebaut, Johns Zylinder als Schornstein, Rosen an der Wand
+      K.house(-6, -30, 5, 4, 2.4, 0xe8dcc0, 0xc85a3a, .2, { beams: 0x8a6a4a }); b.cyl(-5, 3.6, -30.6, .26, .9, 0x1a1a22, { lo: 1 }); b.cyl(-5, 3.6, -30.6, .42, .05, 0x1a1a22, { lo: 1 }); A.smoke(-5, 4.6, -30.6);
+      for (let i = 0; i < 6; i++) b.sph(-8.2 + i * .9, .5 + (i % 2) * .3, -27.8, .22, .22, .16, 0xe03a5a, { cast: false });
+      // Tigerlilies Lager: Zelte, Totempfahl, Lagerfeuer, Trommeln
+      for (const [x, z, c] of [[34, -34, 0xd8c8a0], [46, -36, 0xc8b890], [52, -24, 0xd8c8a0], [36, -18, 0xc8b890], [48, -14, 0xd0c098]]) K.tent(x, z, 2.2, 3.6, c, { flag: 0xc83a2a });
+      for (let i = 0; i < 4; i++) b.box(42, i * 1.1, -28, .9, 1.1, .9, [0xc83a2a, 0x2a6ac8, 0xe8c040, 0x3a8a3a][i], { tex: 'wood', solid: i === 0 }); for (const s of [-1, 1]) b.box(42 + s * .9, 3.4, -28, 1, .2, .4, 0xc83a2a);
+      A.fire(42, -22, 1.1); for (let i = 0; i < 3; i++) b.cyl(38 + i * 2.5, 0, -40, .45, .8, 0x8a5a3a, { tex: 'wood' });
+      // Nixenlagune mit dem Strafenfelsen
+      b.ico(-50, .2, -14, 2.2, 2.6, 1.8, 0x7a7470, { solid: 1, tex: 'rock' }); for (const [x, z] of [[-58, -8], [-42, -22], [-56, -22]]) b.ico(x, 0, z, 1.1, .8, 1, 0x7a7470, { tex: 'rock' });
+      for (const [x, z, c] of [[-58, -8, 0x3ac8a0], [-42, -22, 0x8a6ae0]]) { b.sph(x, .9, z, .28, .4, .24, 0xf0d0c0, { cast: false }); b.cone(x, .2, z + .1, .32, .7, c, { lo: 1 }); b.glow(c, 2.6, x, 1, z, .6); }
+      // Feenhain: Pilzring, schwebende Feenlichter, Glöckchens Laterne
+      for (let i = 0; i < 12; i++) { const a = i * .5236, x = -72 + Math.cos(a) * 6, z = -66 + Math.sin(a) * 6; b.cyl(x, 0, z, .14, .6, 0xf0e8d8, { lo: 1 }); b.cone(x, .6, z, .45, .35, [0xe83a5a, 0xf0c040, 0x8a6ae0][i % 3], { lo: 1 }); }
+      for (let i = 0; i < 9; i++) { const f = b.sph(-72 + Math.cos(i * 2.1) * 3.5, 1.4 + (i % 3) * .6, -66 + Math.sin(i * 2.1) * 3.5, .09, .09, .09, 0xfff0a0, { mat: { e: 0xffe060, ei: 3 }, cast: false }); A.bob(f, .35, 1.2 + i * .1); }
+      b.glow(0xffe8a0, 6, -72, 1.6, -66, .8); b.cyl(-70, 0, -60, .06, 1.6, 0x3a2a1a, { lo: 1 }); b.sph(-70, 1.7, -60, .16, .2, .16, 0xfff0a0, { mat: { e: 0xffe060, ei: 2.6 }, cast: false });
+      // Nest des Nimmervogels: schwimmendes Nest mit Vogel
+      b.tor(74, .45, -58, 2.4, 0x8a6a3a, { rx: Math.PI / 2, d: 1.4 }); b.cyl(74, 0, -58, 2.2, .3, 0x6a4a2a, { solid: 1 }); A.creature('vogel', 0xe8d8b0, 1.5).position.set(74, .8, -58);
+      // Krokodilsumpf: Schilf und ein alter Wecker im Schlamm
+      for (let i = 0; i < 26; i++) { const a = i * 2.4, r = 6 + (i % 4); b.cyl(-60 + Math.cos(a) * r, 0, 16 + Math.sin(a) * r, .04, 1.4 + (i % 3) * .4, 0x5a7a3a, { lo: 1, cast: false }); }
+      b.cyl(-54, .1, 22, .4, .14, 0xd8b040, { mat: { m: .9, r: .3 } }); b.glow(0xffd060, 2, -54, .4, 22, .5);
+      // Kidds Bucht: die Jolly Roger vor Anker (Rumpf begehbar, Masten, Segel, Totenkopfflagge)
+      const sx = 30, sz = -94, sy = Math.max(-.4, h(sx, sz)) + .2;
+      b.box(sx, sy, sz, 6, 2.2, 15, 0x3a2a1a, { solid: 1, tex: 'wood' }); b.box(sx, sy + 2.2, sz - 5.2, 6, 1.6, 4.6, 0x4a3420, { solid: 1, tex: 'wood' }); b.box(sx, sy, sz + 7.4, 4.2, 2.2, 4.2, 0x3a2a1a, { ry: Math.PI / 4, tex: 'wood' }); b.box(sx, sy + 1.6, sz + 10.2, .25, .25, 3, 0x4a3420);
+      for (const s of [-1, 1]) b.box(sx + s * 2.9, sy + 2.2, sz + 1, .2, .7, 10, 0x2a1e14);
+      for (const [dz, ht] of [[3, 11], [-2, 13]]) { b.cyl(sx, sy + 2.2, sz + dz, .22, ht, 0x4a3420, { lo: 1 }); for (let k = 0; k < 2; k++) { const sl = b.box(sx, sy + 5 + k * 4, sz + dz, 5 - k * 1.2, 3, .08, 0x1a1a22, { cast: false }); A.sway(sl, dz + k); } }
+      b.box(sx, sy + 16, sz - 2, 1.4, .9, .05, 0x0a0a0a, { cast: false }); b.sph(sx, sy + 16.1, sz - 1.97, .22, .22, .02, 0xf0f0e8, { cast: false });
+      b.box(sx, sy + 3.8, sz - 6.8, .2, 1, .2, 0x2a1e14); b.tor(sx, sy + 4.6, sz - 6.8, .5, 0x6a4a2a, { d: .1 }); b.glow(0xffb060, 4, sx + 2, sy + 4, sz - 4, .6);
+      // Totenschädelfelsen am Rand der Bucht
+      b.sph(62, 3, -100, 4, 3.6, 3.4, 0xd8d0c0, { solid: 1, tex: 'rock' }); for (const s of [-1, 1]) b.sph(62 + s * 1.4, 3.6, -96.8, .9, 1, .4, 0x14100c, { cast: false }); b.box(62, 1.6, -96.9, 1.6, .5, .3, 0x14100c, { cast: false });
+      // Zweiter Stern rechts: ein heller Stern über der Insel
+      const st = b.oct(26, 46, -150, 2.2, 2.2, 2.2, 0xfff4d0, { mat: { e: 0xfff0b0, ei: 3 } }); b.glow(0xfff0c0, 22, 26, 46, -150, .9); A.spin(st, .3);
+    },
     camelot(b, w, A) {
       const K = kit(b), S = 0xeae6de, B2 = 0x3a5aa8;
       b.tmap = { 0xeae6de: 'stone', 0xd8d0c0: 'plaster', 0x6a4a2a: 'wood', 0x5a3a22: 'wood', 0x8a8a8e: 'rock', 0x8a8a90: 'rock', 0x8a6a3a: 'wood' };
