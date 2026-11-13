@@ -9,6 +9,16 @@
       ]
     },
     {
+      "t": "Weite Welten",
+      "list": [
+        "Jede Welt hat neben der Hauptinsel vier große Gebiete (Nord, Ost, West, Süd). Breite Brücken führen zu Fuß hinüber; an jedem Brückenende liegt ein Rastpunkt.",
+        "Edelsteine haben Farbwerte: Rot 1, Grün 2, Blau 5, Gold 10, Lila 25. Die Anzeige ◈ zeigt den Schatz dieser Welt (gefunden / gesamt). Rote Edelsteine weisen den Weg über die Brücken, Gold liegt oben auf den Stufentürmen, Lila ganz oben im Nordgebiet, und in den Schatzkörben der Gebiete stecken weitere Edelsteine.",
+        "Kristalldrachen: In jedem Gebiet steht ein in Kristall gebannter Drache. Lauf zu ihm, um ihn zu befreien – er spricht mit dir und bewahrt dort deinen Rastpunkt. 4 je Welt, 28 insgesamt.",
+        "Eierdieb: Im Ostgebiet flüchtet ein Dieb mit einem Drachenei. Zu Fuß ist er zu schnell – halte die Rammtaste für den Ansturm und lenke ihn auf den Dieb (auch ein Windstoß aus der Nähe trifft). Ein Ei je Welt.",
+        "Weltentore: Im Nordgebiet führt das Tor in die nächste Welt, im Südgebiet zurück in die vorige. Einfach hineinlaufen – kein Menü. Das Tor nach vorn erwacht, sobald der Leuchtkern dieser Welt leuchtet."
+      ]
+    },
+    {
       "t": "Start und Pausenmenü",
       "list": [
         "Titelbild: „Reise fortsetzen“ lädt deinen Spielstand, „Neues Abenteuer“ beginnt von vorn (der alte Stand wird vorher gesichert), „Spielesammlung“ führt zurück. Bedienung mit ↑/↓ und Enter.",
@@ -266,6 +276,14 @@
         "15 Himmelstruhen: Himmelsschwingen – Flügelkraft +25.",
         "21 Himmelstruhen: Himmelskrone – alle Himmelstruhen gefunden.",
         "Mit allem hat Aeru 8 Herzen (statt 5) und 150 Flügelkraft (statt 100)."
+      ]
+    },
+    {
+      "t": "Edelsteine, Drachen und Eier",
+      "list": [
+        "Pro Welt: rote Edelsteine auf allen vier Brücken, je Gebiet sechs grüne im Ring und zwei blaue in der Mitte, ein goldener auf dem Stufenturm (im Nordgebiet zusätzlich ein lila Edelstein auf der dritten Stufe) und zwei bis drei Schatzkörbe mit grünen oder blauen Edelsteinen.",
+        "Kristalldrachen stehen jeweils gegenüber der Brücke im Gebiet: im Norden und Süden etwas links der Mitte, im Osten und Westen außen.",
+        "Eierdieb (Ostgebiet): von der Brücke aus nähern, Rammtaste halten und auf ihn zulenken. Er flieht am Rand entlang – schneide ihm den Weg zur Mitte ab."
       ]
     }
   ],
