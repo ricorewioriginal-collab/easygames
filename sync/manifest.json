@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "0ebc147cf9a5",
- "generated": "2026-11-13T17:33:07+01:00",
- "commit": "88accf48fccac663bc671a8ed6ec47e3aa2d8207",
+ "version": "0e656d75d259",
+ "generated": "2026-11-13T16:54:32+00:00",
+ "commit": "0ddf9dc9ed8f3bcfb54dd5b56a83cf580c0759f4",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9754,7 +9754,7 @@
   {
    "p": "sync/catalog.json",
    "s": 259012,
-   "h": "856a3cb39e8d4d415bb19d172694a188a812a0b7f4231c7560a61e24e5a50abd"
+   "h": "d084009937c25162a535b3705b88da0f411197848ff1f5aa24fc0e94f1ccbc74"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -12242,9 +12242,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-Db4EpyNg.js",
-   "s": 1884639,
-   "h": "fad994e71a59ff3c3ef4689c72bcc5c889a9cb22c23c0e9056a690773b64c4f3"
+   "p": "zotik/assets/index-Ce0lLrDw.js",
+   "s": 1885932,
+   "h": "376f8b9ec3fb801dae8b2b3feaf7738202476b7fac29bdf69d3db2b5af16ae50"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -12264,7 +12264,7 @@
   {
    "p": "zotik/index.html",
    "s": 72608,
-   "h": "f4a3e3b61512764ff8012754f173eb089fad5a91e06952f4180c9f5e2dd28862"
+   "h": "0e5b4ff31207e26ae1db6ba483a5ea3e5b77e2698e9ffd909aa95273445a98a2"
   },
   {
    "p": "zotik/manifest.webmanifest",
