@@ -122,8 +122,8 @@
   add('bunte-insel', 'Bunte Insel', [
     { id: 'bi-jannis', n: 'Jannis', sp: 'rush', d: 'Der Held der Bunten Insel – mit Fernsteuerung.', stats: { walk: 3.0, speed: 1.12, weight: .75, power: .92 }, look: { skin: '#f7d6c0', top: '#1f2a44', bottom: '#7a5230', shoes: '#1f2a44', hair: { style: 'bowl', color: '#f6dc8a' }, eyes: '#52759a', print: '#9be37a', size: .8, head: 1.25, antenna: '#ff3d00', fx: '#4fc3f7' } }
   ]);
-  // AnMaCha Podcast Tycoon 3D
-  add('anmacha-podcast-tycoon', 'AnMaCha Podcast Tycoon', [
+  // AnMaCha – Der Podcast (Offizielles Spiel)
+  add('anmacha-podcast-tycoon', 'AnMaCha – Der Podcast', [
     { id: 'pt-marco', n: 'Marco', sp: 'shot', d: 'Technik-Herz und Serienkenner – Kabel ist Leidenschaft!', stats: { power: 1.08, weight: 1.12, walk: 2.2 }, look: { skin: '#f0c8a8', top: '#16171c', bottom: '#2b2f3a', shoes: '#1b1b1b', hair: { style: 'short', color: '#6b4528' }, beard: '#6b4528', print: '#ff8a1e', headphones: true, bulk: 1.12, fx: '#6ef0ff' } },
     { id: 'pt-andrew', n: 'Andrew', sp: 'rush', d: 'Musikgefühl, Herzlichkeit und ein Lachen bis in die Kaffeeküche.', stats: { speed: 1.05 }, look: { skin: '#f3cdb2', top: '#16171c', bottom: '#3a4f78', shoes: '#1b1b1b', hair: { style: 'short', color: '#c9844a' }, print: '#ff8a1e', mic: true, fx: '#ffb02e' } }
   ]);

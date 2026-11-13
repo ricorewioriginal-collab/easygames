@@ -1,373 +1,326 @@
-/* Start, Lader, Spielschleife, Eingabe (Tastatur, Touch-Joystick, Controller über ../gamepad.js), HUD, Interaktionen,
-   Hinweis-Warteschlange (Dialoge, Missionen, Kapitel, Ende), Autosave. */
+/* AnMaCha – Der Podcast (Offizielles Spiel) – Start, Ladebildschirm, Hauptmenü, Spielmodi und Spielschleife. */
 (function (root) {
   'use strict';
-  const PT = root.PT = root.PT || {};
-  const BASE = './';
-  // Ladereihenfolge mit Gewichten (Fortschrittsbalken); optional = darf fehlen
-  const FILES = [
-    ['../vendor/three-r128.min.js', 30], ['../vendor/qrcode-generator-1.4.4.js', 2, true],
-    ['src/core/util.js', 1], ['src/core/i18n.js', 1],
-    ['src/data/rubrics.js', 2], ['src/data/objects.js', 2], ['src/data/people.js', 2], ['src/data/districts.js', 2], ['src/data/economy.js', 2], ['src/data/missions.js', 3], ['src/data/quiz.js', 3], ['src/data/sounds.js', 1], ['src/data/studio-fun.js', 1],
-    ['src/sim/build.js', 2], ['src/sim/sim.js', 3], ['src/sim/fun.js', 1], ['src/sim/radio.js', 1], ['src/storage/save.js', 1], ['src/audio/audio.js', 1], ['src/radio/player.js', 1],
-    ['src/minigames/registry.js', 1]
-  ].concat(['p01-pegel', 'p02-mixer', 'p03-schnitt', 'p04-stoerung', 't01-kabel', 't02-router', 't03-kamera', 't04-akustik', 'q01-blitzquiz', 'q02-wahrquatsch', 'q03-schaetzduell', 'q04-geraeusche', 'r01-parken', 'r02-bahnhof', 'r03-navigation', 'r04-kurier', 'y01-mikrofangen', 'y02-beat', 'y03-spotlight', 'y04-konfetti', 'f01-hoererpost', 'f02-interview', 'f03-gutenachrichten', 'f04-geschenke'].map(f => ['src/minigames/' + f + '.js', 1]))
-    .concat([['src/minigames/harness.js', 1], ['src/world/nav.js', 2, true], ['src/world/textures.js', 1], ['src/world/models.js', 4], ['src/world/world.js', 6],
-      ['src/ui/ui-core.js', 1], ['src/ui/ui-panels.js', 2], ['src/ui/ui-prod.js', 2], ['src/ui/ui-build.js', 2], ['src/ui/ui-radio.js', 1], ['src/ui/ui-fun.js', 1], ['src/ui/ui-menu.js', 1], ['src/ui/editor.js', 3, true], ['src/party/online.js', 3, true]]);
+  const AMC = root.AMC;
+  const U = AMC.U, D = AMC.Data, I = AMC.Input, UI = AMC.UI, W = AMC.World, Save = AMC.Save;
+  const G = AMC.Game = { mode: 'boot', host: Save.data.host || 'andrew', paused: false };
 
-  function loadScript(src, timeout) {
-    return new Promise((res, rej) => {
-      const s = document.createElement('script'); s.src = BASE + src + '?v=' + encodeURIComponent(root.PT_BUILD || '1'); s.async = false;
-      const t = setTimeout(() => { s.onload = s.onerror = null; rej(new Error('Zeitüberschreitung: ' + src)); }, timeout || 25000);
-      s.onload = () => { clearTimeout(t); res(); }; s.onerror = () => { clearTimeout(t); rej(new Error('Nicht geladen: ' + src)); };
-      document.head.appendChild(s);
-    });
-  }
+  // ------------------------------------------------------------------ Laden
+  function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error(src)); document.head.appendChild(s); }); }
+  function progress(f, label) { U.$('loadBar').style.width = Math.round(f * 100) + '%'; if (label) U.$('loadTxt').textContent = label + ' …'; }
+  let tipI = Math.floor(Math.random() * D.TIPS.length);
+  const tipTimer = setInterval(() => { const e = U.$('loadTip'); if (e) e.textContent = '💡 ' + D.TIPS[tipI++ % D.TIPS.length]; }, 2600);
+  U.$('loadTip').textContent = '💡 ' + D.TIPS[tipI++ % D.TIPS.length];
+
   async function boot() {
-    const bar = document.getElementById('loadBar'), txt = document.getElementById('loadTxt');
-    const total = FILES.reduce((t, f) => t + f[1], 0); let done = 0;
-    for (const [src, w, optional] of FILES) {
-      txt.textContent = 'Lade ' + src.replace(/^.*\//, '') + ' …';
-      let ok = false, err = null;
-      for (let attempt = 0; attempt < 3 && !ok; attempt++) {
-        try { await loadScript(src, attempt ? 40000 : 25000); ok = true; } catch (e) { err = e; }
+    try {
+      progress(0.02, '3D-Grafik');
+      await loadScript('../vendor/three-r128.min.js');
+      await Promise.all(['../vendor/three-r128-gltfloader.js', '../figuren/figuren.js'].map(loadScript));
+      progress(0.08, '3D-Modelle');
+      const cv = U.$('view'); I.bindCanvas(cv);
+      await W.init(cv, (f, l) => progress(0.08 + f * 0.82, l));
+      progress(0.93, 'Studio');
+      ['andrew', 'marco'].forEach(id => { if (W.hosts[id]) UI.faces[id] = W.portrait(W.hosts[id]); });
+      AMC.Studio.build();
+      UI.buildTouch(); UI.initNowPlaying();
+      AMC.Media.refresh();
+      progress(1, 'Fertig');
+      clearInterval(tipTimer);
+      setTimeout(() => { U.$('loading').classList.add('done'); setTimeout(() => U.$('loading').remove(), 700); }, 250);
+      toMenuScene(); title();
+      requestAnimationFrame(frame);
+    } catch (e) {
+      console.error(e);
+      U.$('loadTxt').innerHTML = '⚠️ Das Spiel konnte nicht starten (' + U.esc(e.message || e) + ').<br>Bitte Seite neu laden.';
+    }
+  }
+
+  // ------------------------------------------------------------------ Szenen
+  function toMenuScene() {
+    stopAll(); G.mode = 'menu'; AMC.Studio.enter('menu'); AMC.Audio.music('menu'); UI.showTouch(false);
+  }
+  function stopAll() {
+    if (AMC.Play.active) AMC.Play.stop();
+    if (AMC.Show.active) AMC.Show.stop();
+    if (AMC.Quiz.active) AMC.Quiz.stop();
+    UI.closeAll(); G.paused = false;
+  }
+
+  // ------------------------------------------------------------------ Titel & Hauptmenü
+  function title() {
+    const s = UI.open('<div class="title"><div class="t-logo"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" fill="#111218" stroke="#ff8a1e" stroke-width="6"/><path d="M47 35 L88 60 L47 85Z" fill="#ff8a1e"/></svg>' +
+      '<h1>AnMa<span>Cha</span></h1><h2>Der Podcast</h2><p class="t-off">Offizielles Spiel</p></div>' +
+      '<p class="t-slogan">„' + D.SLOGAN + '“</p><button type="button" class="btn primary t-start" data-nav data-first id="tStart">' + startLabel() + '</button><p class="t-foot">mit Andrew &amp; Marco · Wir ♥ Medien</p></div>', { cls: 'title-screen', back: () => {} });
+    let go = false; const start = () => { if (go) return; go = true; AMC.Audio.init(); AMC.Audio.sfx('jingle'); UI.close(s); mainMenu(); };
+    s.el.querySelector('#tStart').onclick = start;
+    s.el.addEventListener('pointerup', e => { if (e.pointerType === 'touch') start(); });
+    AMC.onDevice = () => { const b = U.$('tStart'); if (b) b.innerHTML = startLabel(); };
+  }
+  const startLabel = () => I.device === 'pad' ? AMC.glyph('a') + ' Drücken zum Starten' : I.device === 'touch' ? 'Antippen zum Starten' : 'Enter / Klick zum Starten';
+
+  function mainMenu() {
+    const st = Save.data.story, chDone = st.done, stars = Object.values(st.stars).reduce((a, b) => a + b, 0);
+    const s = UI.open(
+      '<div class="menu-l"><div class="m-logo"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" fill="#111218" stroke="#ff8a1e" stroke-width="6"/><path d="M47 35 L88 60 L47 85Z" fill="#ff8a1e"/></svg><div><h1>AnMa<span>Cha</span> – Der Podcast</h1><p>Offizielles Spiel</p></div></div>' +
+      '<nav class="m-list">' +
+      mi('story', '▶', 'Story: Die Staffel', chDone >= D.CHAPTERS.length ? 'Alle 8 Kapitel geschafft · ⭐ ' + stars + '/24' : 'Kapitel ' + (chDone + 1) + ' von 8 · ⭐ ' + stars, true) +
+      mi('live', '🎙️', 'Live-Show', 'Endlos-Aufnahme · Rekord ' + U.fmt(Save.data.best.live) + ' Hörer') +
+      mi('jagd', '🏃', 'Themenjagd', '3 Minuten durch die Stadt · Rekord ' + U.fmt(Save.data.best.jagd)) +
+      mi('quiz', '🧠', 'KI-Quizshow', '1 Spieler oder 2 Spieler: Andrew gegen Marco') +
+      mi('free', '🏙️', 'Stadt erkunden', 'Frei spielen, Radio hören, Störsender jagen') +
+      mi('radio', '📻', 'Radio & Podcast', 'Alle Folgen und die 13 AnMaCha-Sender') +
+      '</nav><div class="m-row">' + mi('settings', '⚙️', 'Einstellungen') + mi('controls', '🎮', 'Steuerung') + mi('credits', 'ℹ️', 'Mitwirkende') + '</div></div>' +
+      '<div class="menu-r"><button type="button" class="host-pick glass" data-nav id="mHost"></button><div class="m-hint" id="mHint"></div></div>',
+      { cls: 'main-menu', back: () => {} });
+    const el = s.el;
+    function updHost() {
+      const H = D.HOSTS[G.host];
+      el.querySelector('#mHost').innerHTML = '<img src="' + UI.face(G.host) + '" alt=""><span><small>Du spielst</small><b>' + H.name + '</b><em>' + H.perk + '</em></span><span class="hp-sw">' + AMC.glyph('y') + ' wechseln</span>';
+      el.querySelector('#mHint').innerHTML = AMC.glyph('dpad') + ' Auswählen · ' + AMC.glyph('ok') + ' Start · ' + AMC.glyph('select') + ' Radio · ' + AMC.glyph('lb') + ' Sender';
+      ['andrew', 'marco'].forEach(id => { const f = W.hosts[id]; if (f) f.play(id === G.host ? 'yes' : 'idle', { fade: 0.3 }); });
+    }
+    const swapHost = () => { G.host = G.host === 'andrew' ? 'marco' : 'andrew'; Save.data.host = G.host; Save.save(); AMC.Audio.sfx('swap'); updHost(); };
+    el.querySelector('#mHost').onclick = swapHost;
+    s.o.onKey = () => { if (I.hit('swap')) { swapHost(); return true; } return false; };
+    updHost();
+    const go = { story: storyMenu, live: startLive, jagd: () => startCity('jagd'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), settings, controls, credits };
+    el.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go[b.dataset.go]());
+    G.menu = s;
+  }
+  const mi = (go, icon, label, sub, first) => '<button type="button" class="m-item" data-nav data-go="' + go + '"' + (first ? ' data-first' : '') + '><span class="mi-ic">' + icon + '</span><span class="mi-t"><b>' + label + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + '</span></button>';
+
+  // ------------------------------------------------------------------ Story
+  function storyMenu() {
+    const st = Save.data.story;
+    const s = UI.open('<div class="panel glass wide"><header><h2>▶ Die Staffel</h2><button class="btn small" data-nav id="sBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
+      '<p class="lead">Von der ersten Folge im Sommer 2020 bis LIVE auf dem Podfluencer Festival: Erlebt die Geschichte von AnMaCha – Der Podcast.</p><div class="ch-grid">' +
+      D.CHAPTERS.map((c, i) => {
+        const open = i <= st.done, stars = st.stars[c.id] || 0;
+        return '<button type="button" class="ch-card' + (open ? '' : ' locked') + '" data-nav data-ch="' + i + '"' + (i === Math.min(st.done, 7) ? ' data-first' : '') + (open ? '' : ' disabled') + ' style="--i:' + i + '">' +
+          '<span class="ch-n">' + (i + 1) + '</span><span class="ch-t"><small>' + c.when + ' · Folge ' + (c.ep < 10 ? '#0' : '#') + c.ep + '</small><b>' + c.title + '</b><em>' + objName(c) + '</em></span>' +
+          '<span class="ch-s">' + (open ? '★★★'.split('').map((x, k) => '<i class="' + (k < stars ? 'on' : '') + '">★</i>').join('') : '🔒') + '</span></button>';
+      }).join('') + '</div></div>', { back: () => UI.close(s) });
+    s.el.querySelector('#sBack').onclick = () => UI.close(s);
+    s.el.querySelectorAll('[data-ch]').forEach(b => b.onclick = () => { if (!b.disabled) { UI.closeAll(); playChapter(+b.dataset.ch); } });
+  }
+  const objName = c => ({ collect: '✨ Themen-Funken sammeln', guest: '⭐ Gäste ins Studio bringen', antenna: '📡 Sendemast reparieren', train: '🚉 Haltestellen-Rennen', party: '📼 Mixtapes finden', boss: '👾 Bosskampf: Das Funkloch' })[c.obj.type] + ' · 🎙️ Live-Aufnahme';
+
+  function playChapter(i) {
+    const ch = D.CHAPTERS[i];
+    G.chapter = i;
+    UI.dialog(ch.intro, () => startCity('story', ch));
+  }
+
+  function startCity(mode, ch) {
+    stopAll(); G.mode = 'play';
+    AMC.Studio.leave();
+    AMC.Play.onEnd = res => cityEnd(mode, ch, res);
+    AMC.Play.start({ mode, chapter: ch, host: G.host });
+    UI.showTouch(true);
+    AMC.Play.msg(mode === 'jagd' ? '🏃 Themenjagd! 3 Minuten – sammle alles!' : mode === 'free' ? '🏙️ Willkommen im Funkhaus-Viertel!' : '🎙️ ' + ch.title + ' – los geht\'s!', 2.6);
+    if (!Save.data.seenIntro) { Save.data.seenIntro = true; Save.save(); setTimeout(() => UI.toast(I.device === 'touch' ? 'Links bewegen, rechts wischen = Kamera. ⤴ Springen, 📣 Welle, 💨 Ausweichen, ⇄ Wechsel' : I.device === 'pad' ? 'Linker Stick laufen, rechter Stick Kamera, A springen, X Welle, RT ausweichen, Y Andrew/Marco' : 'WASD laufen, Maus ziehen = Kamera, Leertaste springen, E Welle, C ausweichen, Q wechseln, Umschalt sprinten', 7000), 800); }
+  }
+  function cityEnd(mode, ch, res) {
+    UI.showTouch(false);
+    if (mode === 'free') return setTimeout(() => { toMenuScene(); mainMenu(); }, 300);
+    if (mode === 'jagd') {
+      const best = Save.data.best.jagd, rec = res.score > best; if (rec) { Save.data.best.jagd = res.score; Save.save(); }
+      return setTimeout(() => results({ title: '🏃 Themenjagd vorbei!', stars: res.score > 9000 ? 3 : res.score > 6000 ? 2 : res.score > 3000 ? 1 : 0, lines: [['Punkte', U.fmt(res.score) + (rec ? ' 🏆 Neuer Rekord!' : '')], ['Themen-Funken', sumGot(res.got)], ['Störsender abgeschaltet', res.kills], ['Goldene Erinnerungen', res.gold]], again: () => startCity('jagd') }), 400);
+    }
+    if (!res.ok) return setTimeout(() => results({ title: '⏱ Sendeschluss!', fail: true, stars: 0, lines: [['Die Zeit ist abgelaufen.', ''], ['Tipp', U.pick(D.TIPS)]], again: () => playChapterDirect(G.chapter) }), 400);
+    // Ab ins Studio
+    transition('🎙️ Ab ins Studio!', () => startShow('story', ch, res));
+  }
+  function playChapterDirect(i) { startCity('story', D.CHAPTERS[i]); }
+  G.playChapter = i => { UI.closeAll(); G.chapter = i; playChapterDirect(i); };
+  const sumGot = got => D.RUBRIC_IDS.reduce((a, r) => a + (got[r] || 0), 0);
+
+  function cardsFrom(res, ch) {
+    const cards = [];
+    D.RUBRIC_IDS.forEach(r => { const c = res.got[r] || 0, n = Math.min(3, Math.ceil(c / 2)); for (let k = 0; k < n; k++) cards.push({ rub: r, power: 1 + Math.min(1.6, c * 0.16), label: D.RUBRICS[r].name }); });
+    for (let k = 0; k < Math.min(3, res.gold); k++) cards.push({ rub: U.pick(D.RUBRIC_IDS), power: 2.6, label: '🌟 Goldene Erinnerung' });
+    if (ch && ch.obj.type === 'guest') for (let k = 0; k < 3; k++) cards.push({ rub: 'feel', power: 2.2, label: '⭐ Gast-Geschichte' });
+    if (ch && ch.obj.type === 'party') cards.push({ rub: 'musik', power: 2.5, label: '📼 Mixtape 96' }, { rub: 'musik', power: 2.5, label: '📼 Mixtape 96' });
+    if (ch && ch.obj.type === 'boss') cards.push({ rub: 'feel', power: 3, label: '🎪 Festival-Moment' }, { rub: 'tech', power: 2.6, label: '📡 Funkloch besiegt' });
+    if (ch && ch.obj.type === 'antenna') cards.push({ rub: 'tech', power: 2.4, label: '📡 Sendemast-Story' });
+    if (ch && ch.obj.type === 'train') cards.push({ rub: 'serious', power: 2.4, label: '🚉 Bahn-Erlebnis' });
+    cards.push({ rub: 'life', power: 0.9, label: 'Wenig Interessantes aus unserem Leben' });
+    return cards;
+  }
+  function startShow(mode, ch, res) {
+    stopAll(); G.mode = 'show';
+    const cards = mode === 'story' ? cardsFrom(res, ch) : [];
+    AMC.Show.start({
+      mode: mode === 'story' ? 'story' : 'arcade', rounds: ch ? ch.show.rounds : 99, goal: ch ? ch.show.goal : [300, 600, 900], cards, host: (res && res.host) || G.host,
+      onEnd: r => showEnd(mode, ch, res, r)
+    });
+  }
+  function showEnd(mode, ch, cityRes, r) {
+    if (mode === 'arcade') {
+      const rec = r.listeners > Save.data.best.live; if (rec) { Save.data.best.live = r.listeners; Save.save(); }
+      return results({ title: '🎙️ Live-Show beendet', stars: r.listeners > 20000 ? 3 : r.listeners > 10000 ? 2 : r.listeners > 4000 ? 1 : 0, lines: [['Hörer', U.fmt(r.listeners) + (rec ? ' 🏆 Neuer Rekord!' : '')], ['Runden', r.rounds]], again: startLive });
+    }
+    const idx = D.CHAPTERS.indexOf(ch), st = Save.data.story;
+    if (r.stars < 1) return results({ title: '📉 Zu wenig Hörer …', fail: true, stars: 0, lines: [['Hörer', U.fmt(r.listeners)], ['Ziel für ⭐', U.fmt(ch.show.goal[0] * 10)], ['Tipp', 'Nutze passende Karten und wechsle die Sprecher für Kombo-Bonus.']], again: () => startShow('story', ch, cityRes), againLabel: 'Aufnahme wiederholen' });
+    st.stars[ch.id] = Math.max(st.stars[ch.id] || 0, r.stars); st.best[ch.id] = Math.max(st.best[ch.id] || 0, r.listeners);
+    const first = st.done === idx; if (st.done <= idx) st.done = idx + 1; Save.save();
+    toMenuScene();
+    UI.dialog(ch.outro, () => {
+      const epIdx = AMC.Media.episodes.findIndex(e => e.nr === (ch.ep < 10 ? '#0' : '#') + ch.ep);
+      results({
+        title: '✅ Kapitel ' + (idx + 1) + ' geschafft!', stars: r.stars,
+        lines: [['Hörer', U.fmt(r.listeners)], ['Themen-Funken', sumGot(cityRes.got)], ['Störsender', cityRes.kills], ['Hörer gesprochen', cityRes.talks]].concat(first && idx === D.CHAPTERS.length - 1 ? [['🏆', 'Staffel abgeschlossen! Danke fürs Spielen.']] : []),
+        next: idx < D.CHAPTERS.length - 1 ? () => playChapter(idx + 1) : null,
+        again: () => playChapter(idx),
+        episode: epIdx >= 0 ? epIdx : null
+      });
+    });
+  }
+  function transition(text, cb) {
+    const t = U.el('div', 'transition', '<b>' + text + '</b>'); document.body.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('in'));
+    setTimeout(() => { cb(); t.classList.add('out'); setTimeout(() => t.remove(), 600); }, 900);
+  }
+
+  // ------------------------------------------------------------------ Ergebnis
+  function results(o) {
+    if (G.mode !== 'menu') toMenuScene();
+    const s = UI.open('<div class="panel glass res' + (o.fail ? ' fail' : '') + '"><h2>' + o.title + '</h2>' +
+      (o.fail ? '' : '<div class="stars">' + [0, 1, 2].map(k => '<i class="' + (k < o.stars ? 'on' : '') + '" style="--d:' + k * 0.25 + 's">★</i>').join('') + '</div>') +
+      '<dl>' + o.lines.map(([a, b]) => '<dt>' + a + '</dt><dd>' + b + '</dd>').join('') + '</dl><div class="row wrap">' +
+      (o.next ? '<button class="btn primary" data-nav data-first id="rNextCh">▶ Nächstes Kapitel</button>' : '') +
+      (o.episode != null ? '<button class="btn" data-nav id="rEp">🎧 Echte Folge anhören</button>' : '') +
+      (o.again ? '<button class="btn' + (o.next ? '' : ' primary') + '" data-nav' + (o.next ? '' : ' data-first') + ' id="rAgain">↻ ' + (o.againLabel || 'Nochmal') + '</button>' : '') +
+      '<button class="btn" data-nav id="rMenu">🏠 Hauptmenü</button></div></div>', { back: () => { UI.close(s); mainMenu(); } });
+    if (!o.fail) { AMC.Audio.sfx(o.stars ? 'win' : 'lose'); for (let k = 0; k < o.stars; k++) setTimeout(() => AMC.Audio.sfx('star'), 400 + k * 250); }
+    else AMC.Audio.sfx('lose');
+    const b = id => s.el.querySelector('#' + id);
+    if (b('rNextCh')) b('rNextCh').onclick = () => { UI.close(s); o.next(); };
+    if (b('rAgain')) b('rAgain').onclick = () => { UI.close(s); o.again(); };
+    if (b('rEp')) b('rEp').onclick = () => { AMC.Media.playEpisode(o.episode); UI.radio(); };
+    b('rMenu').onclick = () => { UI.close(s); mainMenu(); };
+  }
+
+  // ------------------------------------------------------------------ Weitere Modi
+  function startLive() { UI.closeAll(); transition('🎙️ Live-Show', () => startShow('arcade', null, null)); }
+  function quizMenu() {
+    const pads = I.padCount();
+    const s = UI.open('<div class="panel glass"><header><h2>🧠 Die verrückte KI-Quizshow</h2><button class="btn small" data-nav id="qBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
+      '<p class="lead">Nach AnMaCha Spezial #2: Zehn Fragen zu Radio, Podcast, TV, Musik und Technik. Wer schneller richtig liegt, bekommt mehr Punkte.</p>' +
+      '<div class="row wrap"><button class="btn primary big" data-nav data-first id="q1">👤 1 Spieler<small>gegen den KI-Kollegen</small></button><button class="btn big" data-nav id="q2">👥 2 Spieler<small>' + (pads > 1 ? '2 Controller erkannt' : 'Tastatur geteilt, 2 Controller oder Handy') + '</small></button></div>' +
+      '<p class="hint">Rekord (1 Spieler): ' + U.fmt(Save.data.best.quiz) + ' Punkte</p></div>', { back: () => UI.close(s) });
+    s.el.querySelector('#qBack').onclick = () => UI.close(s);
+    const go = n => { UI.closeAll(); stopAll(); G.mode = 'quiz'; AMC.Quiz.start({ players: n, host: G.host, onEnd: r => quizEnd(r) }); };
+    s.el.querySelector('#q1').onclick = () => go(1); s.el.querySelector('#q2').onclick = () => go(2);
+  }
+  function quizEnd(r) {
+    const n = id => D.HOSTS[id].name;
+    results({ title: r.win < 0 ? '🤝 Unentschieden!' : '🏆 ' + n(r.ids[r.win]) + ' gewinnt!', stars: r.two ? (r.win >= 0 ? 3 : 2) : r.win === 0 ? 3 : r.score[0] > 600 ? 1 : 0, lines: [[n(r.ids[0]), U.fmt(r.score[0])], [n(r.ids[1]), U.fmt(r.score[1])]], again: () => { stopAll(); G.mode = 'quiz'; AMC.Quiz.start({ players: r.two ? 2 : 1, host: G.host, onEnd: quizEnd }); } });
+  }
+
+  // ------------------------------------------------------------------ Einstellungen, Steuerung, Mitwirkende
+  function settings() {
+    const st = Save.data.settings;
+    const rng = (id, label, v) => '<label class="set"><span>' + label + '</span><input type="range" min="0" max="1" step="0.05" value="' + v + '" data-nav id="' + id + '"></label>';
+    const tog = (id, label, on) => '<button type="button" class="set tog' + (on ? ' on' : '') + '" data-nav id="' + id + '"><span>' + label + '</span><i>' + (on ? 'An' : 'Aus') + '</i></button>';
+    const s = UI.open('<div class="panel glass"><header><h2>⚙️ Einstellungen</h2><button class="btn small" data-nav id="eBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
+      rng('sMus', '🎵 Spielmusik', st.music) + rng('sSfx', '🔊 Effekte', st.sfx) + rng('sRad', '📻 Radio & Podcast', st.radio) +
+      '<label class="set"><span>🖥️ Grafik</span><select data-nav id="sQ"><option value="auto">Automatisch</option><option value="low">Niedrig (schnell)</option><option value="mid">Mittel</option><option value="high">Hoch</option></select></label>' +
+      tog('sInv', '🎥 Kamera umkehren (oben/unten)', st.invert) + tog('sShake', '📳 Bildschirm wackeln', st.shake) + tog('sSub', '💬 Sprechblasen in der Aufnahme', st.subtitles !== false) +
+      '<label class="set"><span>🎯 Kamera-Empfindlichkeit</span><input type="range" min="0.4" max="2" step="0.1" value="' + st.sens + '" data-nav id="sSens"></label>' +
+      '<button type="button" class="btn danger" data-nav id="sReset">🗑️ Spielstand zurücksetzen</button></div>', { back: () => UI.close(s) });
+    const el = s.el, $ = id => el.querySelector('#' + id);
+    $('eBack').onclick = () => UI.close(s);
+    $('sMus').oninput = e => { st.music = +e.target.value; AMC.Audio.apply(); Save.save(); };
+    $('sSfx').oninput = e => { st.sfx = +e.target.value; AMC.Audio.apply(); AMC.Audio.sfx('ui'); Save.save(); };
+    $('sRad').oninput = e => { AMC.Media.setVolume(e.target.value); Save.save(); };
+    $('sSens').oninput = e => { st.sens = +e.target.value; Save.save(); };
+    $('sQ').value = st.quality; $('sQ').onchange = e => { st.quality = e.target.value; Save.save(); UI.toast('🖥️ Grafik wird beim nächsten Start übernommen.'); };
+    $('sQ').addEventListener('keydown', e => { if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') e.preventDefault(); });
+    s.o.onKey = () => { const f = s.focus; if (f && f.id === 'sQ' && (I.hit('left') || I.hit('right') || I.hit('ok'))) { const o = ['auto', 'low', 'mid', 'high'], i = (o.indexOf(f.value) + (I.hit('left') ? 3 : 1)) % 4; f.value = o[i]; f.onchange({ target: f }); AMC.Audio.sfx('tick'); return true; } return false; };
+    const t = (id, key) => $(id).onclick = () => { st[key] = !(key === 'subtitles' ? st[key] !== false : st[key]); $(id).classList.toggle('on', key === 'subtitles' ? st[key] !== false : st[key]); $(id).querySelector('i').textContent = $(id).classList.contains('on') ? 'An' : 'Aus'; Save.save(); };
+    t('sInv', 'invert'); t('sShake', 'shake'); t('sSub', 'subtitles');
+    $('sReset').onclick = () => UI.confirm('Wirklich den ganzen Spielstand löschen?', () => { Save.reset(); G.host = 'andrew'; UI.closeAll(); mainMenu(); UI.toast('Spielstand zurückgesetzt.'); });
+  }
+  function controls() {
+    const rows = [
+      ['Laufen', 'Linker Stick', 'W A S D / Pfeile', 'Joystick links'], ['Sprinten', 'RB / L3', 'Umschalt', 'Joystick ganz drücken'], ['Kamera', 'Rechter Stick', 'Maus ziehen / I J K L', 'Rechts wischen'],
+      ['Springen (2× = Doppelsprung)', 'A', 'Leertaste', '⤴'], ['Schallwelle / Sprechen / Reparieren', 'X', 'E / Enter', '📣'], ['Ausweichen (kurz unverwundbar)', 'RT / B', 'C / Strg', '💨'],
+      ['Andrew ↔ Marco', 'Y', 'Q / Tab', '⇄'], ['Radio: nächster Sender', 'LB', 'N', 'Titelanzeige antippen'], ['Radio an/aus', 'LT', 'M', '📻'], ['Radio & Podcast', 'Select', 'R', '📻'], ['Pause', 'Start', 'Esc / P', '⏸'],
+      ['Aufnahme: Befehl wählen', 'Steuerkreuz', 'Pfeile', 'Antippen'], ['Aufnahme: Ausführen / Timing', 'A', 'Leertaste / Enter', 'Antippen']
+    ];
+    const s = UI.open('<div class="panel glass wide"><header><h2>🎮 Steuerung</h2><button class="btn small" data-nav data-first id="cBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
+      '<p class="lead">Ein Bedienkonzept für alle Geräte: Controller (Xbox, PlayStation, Switch), Tastatur und Maus, Touch – und am TV mit Pfeiltasten und OK. Belegung ändern: Select + Start.</p>' +
+      '<table class="ctl"><thead><tr><th></th><th>🎮 Controller</th><th>⌨️ Tastatur</th><th>📱 Touch</th></tr></thead><tbody>' + rows.map(r => '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td></tr>').join('') + '</tbody></table></div>', { back: () => UI.close(s) });
+    s.el.querySelector('#cBack').onclick = () => UI.close(s);
+  }
+  function credits() {
+    const s = UI.open('<div class="panel glass"><header><h2>ℹ️ Mitwirkende</h2><button class="btn small" data-nav data-first id="crBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
+      '<p><b>AnMaCha – Der Podcast (Offizielles Spiel)</b><br>Mit Marco und Andrew. Story frei nach den Folgen, Rubriken und Neuigkeiten auf <a href="https://anmacha.de" target="_blank" rel="noopener" data-nav>anmacha.de</a>.</p>' +
+      '<p><b>Podcast & Sender</b><br>Folgen direkt vom offiziellen Podcast-Feed (podcaster.de), Sender live über laut.fm – nichts davon ist im Spiel gespeichert. Die Sender laufen auch bei RicoReWi Radio.</p>' +
+      '<p><b>3D & Ton (frei lizenziert)</b><br>Menschen und Bewegungen: Quaternius „Universal Base Characters“ und „Universal Animation Library“ (CC0) · Gebäude: Quaternius „Ultimate Textured Building Pack“ (CC0) · Bäume, Brunnen, Felsen: Kenney „Fantasy Town Kit“ (CC0) · Geräusche: Kenney (CC0) · Musik und Effekte: im Browser erzeugt · Three.js (MIT) · Schrift Fredoka (OFL).</p>' +
+      '<p class="hint">Ein Spiel aus der easygames-Sammlung · Wir ♥ Medien</p></div>', { back: () => UI.close(s) });
+    s.el.querySelector('#crBack').onclick = () => UI.close(s);
+  }
+
+  // ------------------------------------------------------------------ Pause
+  function pause() {
+    if (G.paused) return; G.paused = true; AMC.Audio.sfx('back');
+    const canRestart = G.mode === 'play' && AMC.Play.state() && AMC.Play.state().mode !== 'free';
+    const s = UI.open('<div class="panel glass small pause"><h2>⏸ Pause</h2>' +
+      '<button class="btn primary" data-nav data-first id="pRes">▶ Weiter</button><button class="btn" data-nav id="pRad">📻 Radio & Podcast</button><button class="btn" data-nav id="pSet">⚙️ Einstellungen</button><button class="btn" data-nav id="pCtl">🎮 Steuerung</button>' +
+      (canRestart ? '<button class="btn" data-nav id="pRe">↻ Neu starten</button>' : '') + '<button class="btn" data-nav id="pMenu">🏠 Hauptmenü</button><p class="hint">💡 ' + U.pick(D.TIPS) + '</p></div>', { back: resume, pauseCloses: true });
+    function resume() { UI.close(s); G.paused = false; }
+    const b = id => s.el.querySelector('#' + id);
+    b('pRes').onclick = resume; b('pRad').onclick = () => UI.radio(); b('pSet').onclick = settings; b('pCtl').onclick = controls;
+    if (b('pRe')) b('pRe').onclick = () => { const st = AMC.Play.state(); resume(); startCity(st.mode, st.ch); };
+    b('pMenu').onclick = () => UI.confirm('Zurück ins Hauptmenü? Der Fortschritt in diesem Level geht verloren.', () => { toMenuScene(); mainMenu(); });
+  }
+
+  // ------------------------------------------------------------------ Spielschleife
+  let last = performance.now(), slow = 0;
+  function frame(now) {
+    requestAnimationFrame(frame);
+    let dt = (now - last) / 1000; last = now; if (dt > 0.1) dt = 0.1;
+    I.update(dt);
+    const uiBusy = UI.update();
+    if (!uiBusy) {
+      if (I.hit('radioNext')) AMC.Media.cycle(1);
+      if (I.hit('radioToggle')) AMC.Media.toggle();
+      if (I.hit('radio')) UI.radio();
+    }
+    try {
+      if (G.mode === 'play') {
+        if (!uiBusy && !G.paused) { if (I.hit('pause')) pause(); else AMC.Play.update(dt); }
+        else if (W.particles) W.particles.update(0);
+        AMC.Play.render();
+      } else if (G.mode === 'show') {
+        if (!uiBusy && I.hit('pause') && AMC.Show.inMenuRoot()) pause();
+        if (!G.paused && !uiBusy) AMC.Show.update(dt); else AMC.Studio.update(dt * 0.3);
+        AMC.Show.render();
+      } else if (G.mode === 'quiz') {
+        if (!uiBusy && I.hit('pause')) pause();
+        if (!G.paused && !uiBusy) AMC.Quiz.update(dt);
+        AMC.Quiz.render();
+      } else if (G.mode === 'menu') {
+        AMC.Studio.update(dt, { led: { hype: 55 + Math.sin(now / 900) * 30, text: 'BEREIT', sub: AMC.Media.active() ? '♪ ' + AMC.Media.label().main.slice(0, 34) : 'Seid Ihr bereit?' } });
+        AMC.Studio.render();
       }
-      if (!ok && !optional) { showFatal('Eine Spieldatei fehlt oder konnte nicht geladen werden (' + src + '). Bitte Verbindung prüfen und neu laden.', err); return; }
-      done += w; bar.style.width = Math.round(done / total * 100) + '%';
-    }
-    txt.textContent = 'Starte …';
-    try { start(); } catch (e) { showFatal('Beim Start ist ein Fehler aufgetreten.', e); }
-  }
-  function showFatal(msg, e) {
-    const l = document.getElementById('loading');
-    l.innerHTML = '<div class="pt-fatal"><h2>😵 Ups</h2><p>' + msg + '</p>' + (e ? '<pre>' + String(e && e.message || e).replace(/</g, '&lt;') + '</pre>' : '') + '<button onclick="location.reload()">Neu laden</button> <a href="../index.html">← easygames</a></div>';
-    if (e) console.error(e);
+    } catch (e) { if (!slow++) console.error(e); }
   }
 
-  // ── Spielkontext ─────────────────────────────────────────
-  let G, keys = {}, joy = { x: 0, y: 0, on: false }, lastT = 0, hudT = 0, fpsN = 0, fpsT = 0, fps = 0, nearCache = null, lastDist = null, busy = false, queue = Promise.resolve(), saver = null;
-  function start() {
-    const UI = PT.UI, S = PT.Sim, D = PT.DATA;
-    const repo = PT.Save.create();
-    const settings = repo.settings(UI.DEFAULT_SETTINGS); settings.keys = Object.assign({}, UI.DEFAULT_KEYS, settings.keys || {});
-    G = PT.G = {
-      st: null, world: null, repo, slot: null, mode: 'menu', hist: { undo: [], redo: [] },
-      qualityFor(q) { if (q && q !== 'auto') return q; const small = Math.min(screen.width, screen.height) < 700, cores = navigator.hardwareConcurrency || 4; return small || cores <= 4 ? 'low' : 'mid'; },
-      hud, afterAction, travel, loadSlot, startGame, toMenu, runMG, autosave: () => saver && saver.poke(),
-      enqueue: f => (queue = queue.then(f).catch(e => console.error(e))) // Spaß-Popups (ui-fun.js) reihen sich in die Hinweise ein
-    };
-    G.start = startGame;
-    // Highlights für die TikTok-Steuerung im Stream (stream-tiktok.js): Aktion game:<id>
-    window.EasyGamesStream = { actions: [
-      { id: 'pleite', icon: '💸', label: 'Pleite! Kasse auf 0', run: () => { if (!G.st) return false; G.st.money = 0; hud(); UI.toast('💸 Pleite! Die Zuschauer haben die Kasse geleert.'); } },
-      { id: 'geldregen', icon: '💶', label: 'Geldregen +5.000', run: () => { if (!G.st) return false; G.st.money += 5000; hud(); UI.toast('💶 Geldregen von den Zuschauern: +5.000', 'good'); } },
-      { id: 'fans', icon: '💛', label: '+100 Fans', run: () => { if (!G.st) return false; G.st.fans += 100; hud(); UI.toast('💛 +100 Fans aus dem LIVE', 'good'); } }
-    ] };
-    UI.applySettings(settings);
-    // 3D-Welt
-    const cv = document.getElementById('view');
-    try { G.world = PT.World.create(cv, { quality: G.qualityFor(settings.quality) }); G.world.resize(innerWidth, innerHeight); }
-    catch (e) { console.warn('3D nicht verfügbar', e); G.world = null; }
-    if (G.world) {
-      G.world.onContextLost && G.world.onContextLost(() => { UI.toast('Grafik wurde kurz unterbrochen …', 'bad', 5000); });
-      G.world.onContextRestored && G.world.onContextRestored(() => { if (G.st) G.world.load(G.st); UI.toast('Grafik wieder da.', 'good'); });
-    }
-    addEventListener('resize', () => { G.world && G.world.resize(innerWidth, innerHeight); });
-    saver = repo.autosaver(() => G.st, st => st.mode === 'creative' ? 'creative' : st.mode === 'challenge' ? 'challenge' : 'auto', 8000);
-    addEventListener('pagehide', () => { if (G.st) saver.now(); });
-    document.addEventListener('visibilitychange', () => { if (document.hidden && G.st) saver.now(); });
-    bindInput(); buildHud(); if (UI.Fun) UI.Fun.init();
-    document.getElementById('loading').remove();
-    const q = new URLSearchParams(location.search), join = q.get('join');
-    UI.mainMenu();
-    if (join) UI.online(join.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6));
-    if (!G.world) UI.toast('Dein Browser kann kein 3D (WebGL). Party, Online-Quizshow und 2D-Minispiele funktionieren trotzdem.', 'bad', 9000);
-    requestAnimationFrame(loop);
-  }
+  // ------------------------------------------------------------------ Stream-Overlay (OBS/TikTok): eigene Aktionen
+  root.EasyGamesStream = {
+    actions: [
+      { id: 'jump', icon: '⤴', label: 'Springen', run: () => I.fire('jump') },
+      { id: 'wave', icon: '📣', label: 'Schallwelle', run: () => I.fire('act') },
+      { id: 'swap', icon: '⇄', label: 'Andrew ↔ Marco', run: () => I.fire('swap') },
+      { id: 'radio', icon: '📻', label: 'Nächster Sender', run: () => AMC.Media.cycle(1) },
+      { id: 'cheer', icon: '🎉', label: 'Applaus', run: () => { AMC.Audio.sfx('applause'); if (W.particles) W.particles.burst(0, 2.5, 0, 0xff8a1e, 40, { speed: 7 }); } }
+    ]
+  };
+  document.addEventListener('visibilitychange', () => { if (document.hidden && G.mode === 'play' && !G.paused && !UI.isOpen()) pause(); });
 
-  // ── Spiel starten / laden ────────────────────────────────
-  function startGame(o) {
-    const UI = PT.UI, S = PT.Sim;
-    if (!G.world) { UI.toast('Ohne 3D-Grafik kann die Karriere nicht starten.', 'bad'); UI.mainMenu(); return; }
-    const st = S.create({ mode: o.mode, difficulty: o.difficulty, seed: (Date.now() ^ (Math.random() * 1e9)) >>> 0, name: o.name, look: o.look, challenge: o.challenge, ngPlus: o.ngPlus });
-    G.slot = o.mode === 'career' ? (o.slot || 'slot1') : null;
-    enter(st);
-    if (st.mode === 'career') {
-      G.repo.save(G.slot, st);
-      queue = queue.then(() => UI.chapter(1)).then(() => UI.dialogue([['marco', 'Hey ' + st.name + '! Komm rein, ich zeig dir das Studio.'], ['andrew', 'Lauf einfach zu Marco und drück ' + UI.keyName(UI.settings.keys.interact) + ' – oder tipp auf den Knopf unten rechts.']]));
-    } else if (st.mode === 'challenge') {
-      const c = S.challengeStatus(st); queue = queue.then(() => UI.dialogue([['marco', 'Herausforderung „' + c.c.name + '“: ' + c.c.desc], ['andrew', 'Wir haben ' + c.c.days + ' Tage. Los geht’s!']]));
-    } else queue = queue.then(() => UI.dialogue([['andrew', 'Kreativmodus! Unbegrenztes Budget, alles freigeschaltet. Bau das Studio deiner Träume.']]));
-  }
-  function loadSlot(s) {
-    const UI = PT.UI, r = G.repo.load(s);
-    if (!r.ok) { UI.toast(r.empty ? 'Der Spielstand ist leer.' : 'Spielstand beschädigt – konnte nicht geladen werden.', 'bad'); UI.mainMenu(); return; }
-    if (!G.world) { UI.toast('Ohne 3D-Grafik kann die Karriere nicht laden.', 'bad'); UI.mainMenu(); return; }
-    if (r.restored) UI.toast('Spielstand war beschädigt – die letzte Sicherung wurde geladen.', 'info', 6000);
-    G.slot = ['slot1', 'slot2', 'slot3'].includes(s) ? s : null;
-    enter(r.state); UI.toast('Willkommen zurück! ' + PT.Sim.dateText(r.state), 'good');
-  }
-  function enter(st) {
-    const UI = PT.UI;
-    UI.closeAll(); document.querySelectorAll('.pt-menu').forEach(m => m.remove());
-    G.st = st; G.hist = { undo: [], redo: [] }; G.mode = 'walk'; lastDist = null;
-    G.world.load(st); G.world.setCamMode('follow'); G.world.setTime(st.time.min);
-    document.getElementById('hud').hidden = false;
-    PT.Audio.music('studio'); hud(); afterAction();
-  }
-  function toMenu() {
-    const UI = PT.UI;
-    if (G.st) saver.now();
-    if (UI.Build.active()) UI.Build.close();
-    UI.closeAll(); if (PT.RadioPlayer) PT.RadioPlayer.stop(); G.st = null; G.mode = 'menu'; document.getElementById('hud').hidden = true; UI.mainMenu();
-  }
-
-  // ── Minispiele ───────────────────────────────────────────
-  function runMG(id, o) {
-    o = o || {}; const st = G.st, UI = PT.UI, S = PT.Sim;
-    const prev = G.mode; G.mode = 'mg';
-    const def = PT.MG.get(id); if (!def) { UI.toast('Minispiel fehlt: ' + id, 'bad'); o.onDone && o.onDone(null); return; }
-    const plays = st && st.mg[id] ? st.mg[id].plays : 0;
-    PT.Harness.run({
-      id, world: G.world, title: o.title,
-      difficulty: o.difficulty != null ? o.difficulty : st ? st.diff : 1, allowDiff: o.free || !!o.allowDiff,
-      seed: st ? PT.hash(st.seed + ':' + id + ':' + st.time.day + ':' + plays) : undefined,
-      players: o.party || [{ name: st ? st.name : 'Du' }],
-      reward(res) {
-        const best = G.repo.best(); best.mg = best.mg || {}; if (!o.party) { best.mg[id] = Math.max(best.mg[id] || 0, res.score); G.repo.saveBest(best); }
-        if (!st || o.party) return [];
-        const out = S.minigameDone(st, res, o.ctx || {});
-        return out.text;
-      },
-      onDone(res) { G.mode = prev === 'mg' ? 'walk' : prev; if (G.st) afterAction(); if (o.onDone) o.onDone(res); }
-    });
-  }
-
-  // ── Nach jeder Aktion: Hinweise, HUD, Autosave ───────────
-  function afterAction(force) {
-    const st = G.st; if (!st) return; const UI = PT.UI, S = PT.Sim, D = PT.DATA;
-    hud(); saver.poke();
-    const ns = st.notices.splice(0, st.notices.length);
-    ns.forEach(n => {
-      if (n.t === 'good' || n.t === 'bad' || n.t === 'info') UI.toast(n.text, n.t, 4200);
-      else if (n.t === 'ach') { UI.toast(n.text, 'ach', 5000); PT.Audio.fx('mission'); }
-      else queue = queue.then(() => showNotice(n));
-    });
-    queue = queue.then(() => {
-      if (st.pendingChoice) { const m = D.missions.concat(D.sideMissions).find(x => x.id === st.pendingChoice); return UI.choose('Entscheidung', m.choice.q, m.choice.options.map(o => ({ label: o.label })), { noClose: true, icon: '🤔' }).then(i => { S.storyChoice(st, m.id, Math.max(0, i)); hud(); }); }
-    });
-  }
-  function showNotice(n) {
-    const UI = PT.UI, st = G.st, D = PT.DATA;
-    if (!st) return;
-    if (n.t === 'dialogue') {
-      if (n.cut && G.world && !UI.settings.reducedMotion) G.world.cine(n.cut, 2.5);
-      return UI.dialogue(n.lines, { title: n.title });
-    }
-    if (n.t === 'mission') {
-      PT.Audio.fx('mission');
-      const r = n.rew || {};
-      return UI.dialogue(n.lines || [], {}).then(() => new Promise(res => {
-        const p = UI.panel(n.title, '<p class="pt-rew">' + [r.money ? '💶 +' + PT.money(r.money * PT.Sim.diffRules(st).money) : '', r.fans ? '💛 +' + r.fans + ' Fans' : '', r.rep ? '⭐ Ruf +' + r.rep : ''].filter(Boolean).join(' · ') + '</p>' + ((r.unlock || []).length ? '<p>🔓 ' + r.unlock.map(u => { const [k, v] = u.split(':'); return k === 'district' ? 'Neuer Bezirk: ' + D.districts.find(d => d.id === v).name : k === 'lot' ? 'Campus-Grundstück kann gepachtet werden' : v === 'guests' ? 'Gäste einladen' : v === 'sponsors' ? 'Sponsoren' : v; }).join(' · ') + '</p>' : '') + nextHint(), { icon: '🎯', onClose: res });
-        p.footer('<button data-act="x" data-primary class="pri">Weiter</button>'); UI.bind(p.root, { x: () => p.close() });
-        if ((r.unlock || []).some(u => u.startsWith('district'))) { G.world.refreshUnlocks(); }
-      }));
-    }
-    if (n.t === 'chapter') { PT.Audio.music(n.ch >= 6 ? 'festival' : 'city'); return UI.chapter(n.ch); }
-    if (n.t === 'ending') return UI.ending(st);
-    if (n.t === 'challenge') {
-      const best = G.repo.best(); if (n.success) { best.ch = best.ch || {}; best.ch[st.challenge.id] = true; G.repo.saveBest(best); }
-      return new Promise(res => { const p = UI.panel(n.success ? '🏆 Geschafft!' : 'Leider vorbei', '<p>Herausforderung „' + PT.esc(n.name) + '“ ' + (n.success ? 'gemeistert!' : 'nicht geschafft.') + '</p>', { onClose: res }); p.footer('<button data-act="m">Hauptmenü</button><button data-act="x" data-primary class="pri">Weiterspielen</button>'); UI.bind(p.root, { x: () => p.close(), m: () => { p.close(); toMenu(); } }); PT.Audio.fx(n.success ? 'win' : 'lose'); });
-    }
-  }
-  function nextHint() {
-    const st = G.st, m = PT.Sim.currentMission(st); if (!m) return '';
-    const n = PT.DATA.npcs.find(x => x.id === m.actor) || PT.DATA.hosts.find(x => x.id === m.actor);
-    return '<p class="pt-hint">Nächste Mission: <b>' + PT.esc(m.title) + '</b> – sprich mit ' + PT.esc(n ? n.name : m.actor) + ' (' + PT.esc(PT.DATA.districts.find(d => d.id === m.loc).name) + ').</p>';
-  }
-
-  // ── HUD ──────────────────────────────────────────────────
-  function buildHud() {
-    const UI = PT.UI, h = document.getElementById('hud');
-    h.innerHTML = '<div class="pt-hud-stats"><span id="hTime"></span><span id="hMoney"></span><span id="hFans"></span><span id="hRep"></span></div>' +
-      '<div class="pt-hud-mission" id="hMission"></div><canvas id="hMap" width="150" height="150" aria-label="Minikarte"></canvas><span id="hFps" hidden></span>' +
-      '<div class="pt-hud-btns"><button data-act="build" title="Bauen">🔨<small>Bauen</small></button><button data-act="prod" title="Produktion">🎙️<small>Folge</small></button><button data-act="team" title="Team">👥<small>Team</small></button><button data-act="finance" title="Finanzen">💶<small>Geld</small></button><button data-act="journal" title="Journal">📓<small>Journal</small></button><button data-act="archive" title="Archiv">🗄️<small>Archiv</small></button><button data-act="map" title="Karte">🗺️<small>Karte</small></button><button data-act="radio" title="Radio: AnMaCha24 hören und Radiostudio">📻<small>Radio</small></button><button data-act="sleep" title="Feierabend">🌙<small>Schlafen</small></button><button data-act="pause" title="Pause">⏸<small>Menü</small></button></div>' +
-      '<div class="pt-joy" id="joy"><i></i></div><div class="pt-act" id="actBox" hidden><span id="actLabel"></span><button id="actBtn" aria-label="Benutzen">E</button></div>';
-    UI.bind(h, {
-      build: () => openOr(() => UI.Build.open()), prod: () => openOr(openProd), team: () => openOr(UI.team), finance: () => openOr(UI.finance), journal: () => openOr(UI.journal), archive: () => openOr(UI.archive), map: () => openOr(UI.map), radio: () => openOr(() => UI.radio()), pause: () => openOr(UI.pause), sleep: () => openOr(sleep)
-    });
-    document.getElementById('hMap').onclick = () => openOr(UI.map);
-    document.getElementById('actBtn').onclick = () => interact();
-    // Touch-Joystick
-    const j = document.getElementById('joy'), knob = j.querySelector('i'); let id = null, c = null;
-    j.addEventListener('pointerdown', e => { id = e.pointerId; j.setPointerCapture(id); const r = j.getBoundingClientRect(); c = { x: r.left + r.width / 2, y: r.top + r.height / 2, r: r.width / 2 }; joy.on = true; move(e); e.preventDefault(); });
-    const move = e => { if (e.pointerId !== id) return; let dx = (e.clientX - c.x) / c.r, dy = (e.clientY - c.y) / c.r; const l = Math.hypot(dx, dy); if (l > 1) { dx /= l; dy /= l; } joy.x = dx; joy.y = dy; knob.style.transform = 'translate(' + dx * 34 + 'px,' + dy * 34 + 'px)'; };
-    j.addEventListener('pointermove', move);
-    const up = e => { if (e.pointerId !== id) return; id = null; joy.on = false; joy.x = joy.y = 0; knob.style.transform = ''; };
-    j.addEventListener('pointerup', up); j.addEventListener('pointercancel', up);
-  }
-  function openOr(f) { const UI = PT.UI; if (!G.st || G.mode === 'mg' || document.querySelector('.pt-dlg')) return; if (UI.Build.active() && f !== UI.pause) return; if (UI.top()) return; f(); }
-  function hud() {
-    const st = G.st; if (!st) return; const S = PT.Sim, UI = PT.UI, D = PT.DATA;
-    const $ = id => document.getElementById(id);
-    $('hTime').textContent = '📅 ' + S.dateText(st); $('hMoney').textContent = '💶 ' + PT.money(st.money); $('hMoney').classList.toggle('neg', st.money < 0);
-    $('hFans').textContent = '💛 ' + PT.fmt(st.fans); $('hRep').textContent = '⭐ ' + Math.round(st.rep);
-    let mt = '';
-    const m = S.currentMission(st);
-    if (m) {
-      if (st.missions.curState === 'offer') { const n = UI.person(m.actor); mt = '<b>🎯 ' + PT.esc(m.title) + '</b><span>Sprich mit ' + PT.esc(n.name) + ' (' + PT.esc(D.districts.find(d => d.id === m.loc).name) + ')</span>'; }
-      else { const pr = S.missionProgress(st, m, st.missions.prog), open = pr.find(p => !p.done) || pr[0]; mt = '<b>🎯 ' + PT.esc(m.title) + '</b><span>' + PT.esc(open.label) + (open.need > 1 ? ' (' + PT.fmt(Math.min(open.have, open.need)) + '/' + PT.fmt(open.need) + ')' : '') + '</span>'; }
-    } else if (st.challenge) { const c = S.challengeStatus(st); mt = '<b>' + c.c.icon + ' ' + PT.esc(c.c.name) + ' · noch ' + c.daysLeft + ' Tage</b><span>' + c.items.map(i => PT.esc(i.label) + ' ' + PT.fmt(i.have) + '/' + PT.fmt(i.need)).join(' · ') + '</span>'; }
-    else if (st.endless) { const gl = st.endless.goals.find(x => !x.done); mt = '<b>♾️ Endlosmodus · Woche ' + st.endless.week + '</b><span>' + (gl ? PT.esc(gl.label) : 'Alle Wochenziele erreicht!') + '</span>'; }
-    else if (st.mode === 'creative') mt = '<b>🎨 Kreativmodus</b><span>Unbegrenztes Budget</span>';
-    $('hMission').innerHTML = mt;
-    if (UI.Fun) UI.Fun.hud();
-    $('hFps').hidden = !UI.settings.fps; if (UI.settings.fps) $('hFps').textContent = fps + ' FPS' + (G.world && G.world.stats ? ' · ' + G.world.stats().calls + ' DC' : '');
-  }
-  function drawMap() {
-    if (!G.world || !G.st) return; const cv = document.getElementById('hMap'); const S = PT.Sim, st = G.st, m = S.currentMission(st);
-    G.world.minimap(cv.getContext('2d'), cv.width, cv.height, { target: m ? (st.missions.curState === 'offer' ? m.actor : m.loc) : null });
-  }
-
-  // ── Interaktionen ────────────────────────────────────────
-  function travel(dist) {
-    const st = G.st, S = PT.Sim, UI = PT.UI; if (!st.unlocks.districts[dist]) { UI.toast('Dieser Bezirk ist noch gesperrt.', 'bad'); return; }
-    S.advance(st, 20); G.world.teleport(dist); PT.Audio.fx('whoosh'); afterAction();
-  }
-  function sleep() {
-    const st = G.st, S = PT.Sim, UI = PT.UI;
-    if (st.prod) { UI.toast('Erst die laufende Folge fertig machen (oder abbrechen).', 'info'); return; }
-    UI.confirm('Feierabend?', 'Die Zeit springt auf morgen 8:00 Uhr. Heute Nacht werden Miete, Gehälter und Unterhalt fällig.', '🌙 Schlafen', 'Noch nicht').then(y => {
-      if (!y) return; const rep = S.advance(st, (1440 - st.time.min) + 8 * 60); dayReports(rep); afterAction();
-    });
-  }
-  function dayReports(reps) {
-    const UI = PT.UI, st = G.st;
-    (reps || []).forEach(r => {
-      const L = r.ledger, inc = Object.values(L.inc).reduce((a, b) => a + b, 0), exp = Object.values(L.exp).reduce((a, b) => a + b, 0);
-      UI.toast('🌅 Tag ' + (r.day + 1) + ': gestern ' + (inc - exp >= 0 ? '+' : '') + PT.money(inc - exp) + ' · Konto ' + PT.money(st.money), inc - exp >= 0 ? 'good' : 'bad', 5000);
-      if (G.slot) G.repo.save(G.slot, st);
-    });
-    if (reps && reps.length) saver.now();
-  }
-  function openProd() {
-    const st = G.st, UI = PT.UI;
-    if (st.mode === 'career' && st.missions.done.length === 0) { UI.toast('Sprich zuerst mit Marco im Studio.', 'info'); return; }
-    UI.Prod.open();
-  }
-  function interact() {
-    const UI = PT.UI, S = PT.Sim, D = PT.DATA, st = G.st, n = nearCache;
-    if (!st || !n || UI.isOpen() || G.mode !== 'walk') return;
-    PT.Audio.fx('click');
-    if (n.kind === 'npc') return talkTo(n.id);
-    if (n.kind === 'job') return offerJob(D.jobs.find(j => j.id === n.id));
-    if (n.kind === 'travel') return UI.map();
-    if (n.kind === 'build') return UI.Build.open(n.id === 'campus' ? 'campus' : 'studio');
-    if (n.kind === 'lot') return UI.finance();
-    if (n.kind === 'studio') return deskMenu();
-    if (n.kind === 'radio') return UI.radio('studio');
-  }
-  function deskMenu() {
-    const UI = PT.UI, S = PT.Sim, st = G.st;
-    const live = S.liveshowAvailable(st);
-    const opts = [{ label: st.prod ? '🎙️ Folge weiter produzieren' : '🎙️ Neue Folge produzieren', desc: S.canProduce(st).ok || st.prod ? '' : S.canProduce(st).err }, { label: '📺 Live-Show auf der TV-Bühne', desc: live.ok ? 'Tickets und viele neue Fans (Minispiel Spotlight)' : live.err, disabled: !live.ok }, { label: '🔨 Baumodus' }, { label: '🌙 Feierabend' }, { label: '📻 Radio & AnMaCha24', desc: 'Sendung im Radiostudio = Werbung für die nächste Folge' }];
-    UI.choose('Produktionspult', 'Was steht an?', opts, { icon: '🎚️' }).then(i => {
-      if (i === 0) openProd(); else if (i === 1) runMG('Y03', { ctx: { liveshow: true }, title: 'Live-Show im eigenen Studio' }); else if (i === 2) UI.Build.open('studio'); else if (i === 3) sleep(); else if (i === 4) UI.radio('studio');
-    });
-  }
-  function missionGame(npcId) {
-    // Minispiel-Ziele der aktuellen Mission (oder einer Nebenmission) bei der passenden Figur
-    const S = PT.Sim, D = PT.DATA, st = G.st, out = [];
-    const check = (m, prog, active) => { if (!active) return; m.obj.forEach((o, i) => { if (o.type !== 'minigame') return; const s = S.objectiveState(st, o, prog, i); if (s.have >= s.need) return; const id = o.id || PT.MG.list().filter(d => d.group === o.group)[(prog[i] || 0) % 4].id; out.push({ id, label: o.label || PT.MG.get(id).name, title: m.title }); }); };
-    const m = S.currentMission(st); if (m && m.actor === npcId) check(m, st.missions.prog, st.missions.curState === 'active');
-    Object.keys(st.missions.side).forEach(id => { const sm = D.sideMissions.find(x => x.id === id); if (sm.actor === npcId) check(sm, st.missions.side[id].prog, st.missions.side[id].state === 'active'); });
-    return out;
-  }
-  function talkTo(id) {
-    const UI = PT.UI, S = PT.Sim, D = PT.DATA, st = G.st;
-    const res = S.talk(st, id); afterAction();
-    if (res.mission) return; // Missionsdialog läuft über die Hinweise
-    const person = UI.person(id), lines = person.talk || person.lines || ['Hallo!'];
-    queue = queue.then(() => UI.dialogue([[id, lines[(st.time.day + (st.rel[id] || 0)) % lines.length]]])).then(() => {
-      const opts = [], acts = [];
-      missionGame(id).forEach(g => { opts.push({ label: '🎯 ' + g.label, desc: 'Mission: ' + g.title }); acts.push(() => runMG(g.id, { title: g.title, ctx: {} })); });
-      if (res.offerSide) { const sm = res.offerSide; opts.push({ label: '📌 Nebenmission: ' + sm.title, desc: sm.obj.map(o => o.label || o.type).join(', ') }); acts.push(() => { S.acceptSide(st, sm.id); afterAction(); }); }
-      D.jobs.filter(j => j.npc === id).forEach(j => { opts.push({ label: '💼 ' + j.name, desc: 'Nebenjob (' + PT.MG.get(j.mg).name + '), bis ' + PT.money(Math.round(j.pay * S.diffRules(st).money)) + (st.stats.jobsToday >= D.rules.sideJobCap ? ' – heute schon viele Jobs, weniger Lohn' : '') }); acts.push(() => offerJob(j, true)); });
-      const app = st.applicants.find(a => a.id === id); if (app) { opts.push({ label: '🤝 Ins Team holen', desc: D.roles[app.role].name + ', ' + PT.money(app.salary) + '/Tag' }); acts.push(() => UI.team()); }
-      if (!opts.length) return;
-      opts.push({ label: 'Tschüss!' }); acts.push(() => {});
-      return UI.choose(person.name, '', opts, { icon: '💬' }).then(i => { if (i >= 0 && acts[i]) acts[i](); });
-    });
-  }
-  function offerJob(j, direct) {
-    const UI = PT.UI; if (!j) return;
-    const go = () => runMG(j.mg, { ctx: { job: j.id }, title: 'Nebenjob: ' + j.name });
-    if (direct) { go(); return; }
-    UI.confirm('💼 ' + j.name, 'Minispiel ' + PT.MG.get(j.mg).name + '. Lohn bis ' + PT.money(j.pay) + ' (dauert 45 Spielminuten).', 'Annehmen', 'Später').then(y => { if (y) go(); });
-  }
-
-  // ── Eingabe ──────────────────────────────────────────────
-  function bindInput() {
-    addEventListener('keydown', e => {
-      const UI = PT.UI; keys[e.code] = true;
-      if (!G || !G.st || G.mode === 'mg' || G.mode === 'build') return;
-      if (e.target && /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
-      const k = UI.settings.keys;
-      if (e.code === k.pause || e.code === 'Escape') { if (UI.top()) UI.top().close(); else if (!document.querySelector('.pt-dlg')) UI.pause(); e.preventDefault(); return; }
-      if (UI.isOpen()) return;
-      const map = { [k.interact]: interact, [k.build]: () => openOr(() => UI.Build.open()), [k.prod]: () => openOr(openProd), [k.team]: () => openOr(UI.team), [k.finance]: () => openOr(UI.finance), [k.journal]: () => openOr(UI.journal), [k.archive]: () => openOr(UI.archive), [k.map]: () => openOr(UI.map) };
-      if (map[e.code]) { e.preventDefault(); map[e.code](); }
-      else if (e.code === 'Enter' && nearCache) { e.preventDefault(); interact(); }
-    });
-    addEventListener('keyup', e => { keys[e.code] = false; });
-    addEventListener('blur', () => { keys = {}; });
-  }
-  function moveInput() {
-    let x = 0, z = 0;
-    if (keys.KeyA || keys.ArrowLeft) x -= 1; if (keys.KeyD || keys.ArrowRight) x += 1; if (keys.KeyW || keys.ArrowUp) z -= 1; if (keys.KeyS || keys.ArrowDown) z += 1;
-    if (joy.on) { x = joy.x; z = joy.y; }
-    const l = Math.hypot(x, z); if (l > 1) { x /= l; z /= l; }
-    return { mx: x, mz: z, run: !!keys[PT.UI.settings.keys.run] || (joy.on && Math.hypot(joy.x, joy.y) > 0.92) };
-  }
-
-  // ── Schleife ─────────────────────────────────────────────
-  function loop(t) {
-    requestAnimationFrame(loop);
-    const dt = Math.min(0.05, Math.max(0, (t - lastT) / 1000)); lastT = t;
-    fpsN++; if (t - fpsT > 1000) { fps = fpsN; fpsN = 0; fpsT = t; }
-    const UI = PT.UI; if (!UI || !G) return;
-    if (!G.world) return;
-    if (G.mode === 'mg') return; // der Minispiel-Rahmen rendert selbst
-    const st = G.st;
-    if (st && G.mode === 'walk') {
-      const paused = UI.isOpen() || document.hidden;
-      let near = null, dist = null;
-      if (!paused) {
-        const reps = PT.Sim.advance(st, dt * 1.5 * (UI.settings.timeSpeed || 1)); if (reps.length) { dayReports(reps); afterAction(); }
-        G.world.setTime(st.time.min);
-        const r = G.world.update(dt, moveInput()) || {}; near = r.near; dist = r.district;
-        if (dist && dist !== lastDist) { lastDist = dist; PT.Sim.visit(st, dist); afterAction(); PT.Audio.music(dist === 'festival' ? 'festival' : st.time.min > 20 * 60 || st.time.min < 6 * 60 ? 'night' : dist === 'altstudio' ? 'studio' : 'city'); }
-        if (st.pending.length && !busy) { busy = true; dayEvent().then(() => { busy = false; }); }
-      } else G.world.update(0, { mx: 0, mz: 0 });
-      nearCache = paused ? null : near;
-      const box = document.getElementById('actBox');
-      box.hidden = !nearCache; if (nearCache) { document.getElementById('actLabel').textContent = nearCache.label; document.getElementById('actBtn').textContent = /Touch|Mobi|Android|iPhone/.test(navigator.userAgent) ? '👆' : UI.keyName(UI.settings.keys.interact); }
-    } else if (st && G.mode === 'build') { G.world.update(dt, { mx: 0, mz: 0 }); } // dt nötig, sonst folgt die Baukamera Wischen/Zoom nicht
-    else G.world.update(dt, { mx: 0, mz: 0, idle: true });
-    G.world.render();
-    if (UI.Fun && st) UI.Fun.frame(dt);
-    hudT += dt; if (hudT > 0.25 && st) { hudT = 0; hud(); drawMap(); }
-  }
-  function dayEvent() {
-    const UI = PT.UI, S = PT.Sim, D = PT.DATA, st = G.st;
-    const ev = D.events.find(e => e.id === st.pending[0]); if (!ev) { st.pending.shift(); return Promise.resolve(); }
-    return UI.choose('⚡ ' + ev.title, ev.text, ev.choices.map(c => ({ label: c.label, desc: c.mg ? 'Minispiel: ' + PT.MG.get(c.mg).name : UI.Prod.fxText(c.effect) })), { noClose: true }).then(i => new Promise(res => {
-      i = Math.max(0, i); const c = ev.choices[i];
-      if (c.mg) runMG(c.mg, { title: ev.title, ctx: { event: true }, onDone: r => { const out = S.eventChoose(st, ev.id, i, r || { won: false }); UI.toast(UI.Prod.fxText(out.fx), r && r.won ? 'good' : 'bad'); afterAction(); res(); } });
-      else { const out = S.eventChoose(st, ev.id, i); UI.toast(UI.Prod.fxText(out.fx), 'info'); afterAction(); res(); }
-    }));
-  }
-
-  root.addEventListener('error', e => { try { if (PT.UI && PT.UI.toast) PT.UI.toast('Kleiner Fehler: ' + (e.message || 'unbekannt'), 'bad', 4000); } catch (x) { /* egal */ } });
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-})(window);
+  boot();
+})(typeof window !== 'undefined' ? window : globalThis);

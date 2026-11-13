@@ -1,0 +1,140 @@
+/* AnMaCha – Der Podcast – Ton: Effekte und Musik live im Browser erzeugt (Web Audio, keine fremden Dateien),
+   dazu drei kurze CC0-Geräusche von Kenney (sounds/). Spielmusik schweigt, solange Radio oder Podcast laufen. */
+(function (root) {
+  'use strict';
+  const AMC = root.AMC = root.AMC || {};
+  const A = AMC.Audio = { ctx: null, ready: false, track: '', muted: false };
+  let master, musicBus, sfxBus, noiseBuf, comp;
+  const samples = {};
+  const vol = () => AMC.Save.data.settings;
+
+  A.init = function () {
+    if (A.ctx) { if (A.ctx.state === 'suspended') A.ctx.resume().catch(() => {}); return; }
+    const C = root.AudioContext || root.webkitAudioContext; if (!C) return;
+    const ctx = A.ctx = new C();
+    comp = ctx.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4; comp.connect(ctx.destination);
+    master = ctx.createGain(); master.gain.value = 1; master.connect(comp);
+    musicBus = ctx.createGain(); musicBus.connect(master);
+    sfxBus = ctx.createGain(); sfxBus.connect(master);
+    A.apply();
+    noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 1.5, ctx.sampleRate);
+    const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    ['coins', 'enter', 'buy'].forEach(n => {
+      fetch('sounds/' + n + '.mp3').then(r => r.arrayBuffer()).then(b => ctx.decodeAudioData(b)).then(buf => { samples[n] = buf; }).catch(() => {});
+    });
+    A.ready = true;
+    if (A.track) { const t = A.track; A.track = ''; A.music(t); }
+  };
+  ['pointerdown', 'keydown', 'touchstart'].forEach(ev => root.addEventListener(ev, () => A.init(), { passive: true }));
+  root.addEventListener('easygames:pad', () => A.init());
+
+  let duck = 1;
+  A.apply = function () {
+    if (!A.ctx) return;
+    const s = vol(), t = A.ctx.currentTime;
+    musicBus.gain.setTargetAtTime(s.music * 0.5 * duck, t, 0.3);
+    sfxBus.gain.setTargetAtTime(s.sfx * 0.9, t, 0.05);
+  };
+  /** Spielmusik aus (Radio/Podcast läuft) oder an. */
+  A.duck = on => { duck = on ? 0 : 1; A.apply(); };
+
+  // ------------------------------------------------------------------ Bausteine
+  function env(g, t, a, peak, dec, sus = 0.0001) { g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(Math.max(sus, 0.0001), t + a + dec); }
+  function tone(freq, t, dur, type, peak, bus, glide) {
+    const c = A.ctx, o = c.createOscillator(), g = c.createGain();
+    o.type = type || 'sine'; o.frequency.setValueAtTime(freq, t); if (glide) o.frequency.exponentialRampToValueAtTime(glide, t + dur);
+    env(g, t, 0.005, peak, dur); o.connect(g); g.connect(bus || sfxBus); o.start(t); o.stop(t + dur + 0.05);
+    return o;
+  }
+  function noise(t, dur, peak, fType, fFreq, bus, q) {
+    const c = A.ctx, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+    s.buffer = noiseBuf; f.type = fType || 'highpass'; f.frequency.value = fFreq || 4000; if (q) f.Q.value = q;
+    env(g, t, 0.003, peak, dur); s.connect(f); f.connect(g); g.connect(bus || sfxBus); s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.05);
+    return f;
+  }
+  const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+
+  // ------------------------------------------------------------------ Effekte
+  const FX = {
+    ui: t => tone(1320, t, 0.05, 'triangle', 0.12),
+    move: t => tone(900, t, 0.035, 'triangle', 0.06),
+    ok: t => { tone(880, t, 0.08, 'triangle', 0.16); tone(1320, t + 0.06, 0.12, 'triangle', 0.14); },
+    back: t => tone(520, t, 0.1, 'triangle', 0.12, null, 380),
+    jump: t => tone(300, t, 0.18, 'square', 0.06, null, 700),
+    land: t => noise(t, 0.08, 0.12, 'lowpass', 500),
+    collect: t => { [0, 4, 7, 12].forEach((s, i) => tone(mtof(84 + s), t + i * 0.045, 0.16, 'triangle', 0.13)); },
+    gold: t => { [0, 4, 7, 12, 16, 19].forEach((s, i) => tone(mtof(79 + s), t + i * 0.05, 0.25, 'sine', 0.16)); sample('coins', t, 0.6); },
+    dash: t => { const f = noise(t, 0.25, 0.25, 'bandpass', 900, null, 1.2); f.frequency.exponentialRampToValueAtTime(3200, t + 0.2); },
+    wave: t => { tone(160, t, 0.35, 'sawtooth', 0.12, null, 60); const f = noise(t, 0.35, 0.18, 'bandpass', 600, null, 2); f.frequency.exponentialRampToValueAtTime(2400, t + 0.3); },
+    zap: t => { tone(1400, t, 0.18, 'square', 0.07, null, 200); noise(t, 0.2, 0.2, 'highpass', 2500); },
+    hit: t => { tone(180, t, 0.2, 'sawtooth', 0.18, null, 70); noise(t, 0.15, 0.3, 'lowpass', 900); },
+    swap: t => { tone(600, t, 0.08, 'sine', 0.14, null, 1200); tone(1200, t + 0.08, 0.08, 'sine', 0.12, null, 600); },
+    talk: t => { for (let i = 0; i < 3; i++) tone(U.rand(380, 560), t + i * 0.06, 0.05, 'triangle', 0.05); },
+    star: t => { tone(mtof(88), t, 0.4, 'sine', 0.18); tone(mtof(95), t + 0.1, 0.5, 'sine', 0.14); },
+    combo: t => { tone(mtof(76), t, 0.08, 'square', 0.07); tone(mtof(83), t + 0.07, 0.12, 'square', 0.07); },
+    perfect: t => { [0, 7, 12, 19].forEach((s, i) => tone(mtof(81 + s), t + i * 0.035, 0.2, 'triangle', 0.13)); },
+    miss: t => tone(220, t, 0.25, 'square', 0.08, null, 110),
+    buzz: t => tone(110, t, 0.4, 'sawtooth', 0.1),
+    static: t => noise(t, 0.6, 0.2, 'bandpass', 1800, null, 0.6),
+    cheer: t => { for (let i = 0; i < 6; i++) noise(t + i * 0.07, 0.9, 0.08, 'bandpass', U.rand(900, 2600), null, 0.8); tone(mtof(72), t, 0.3, 'triangle', 0.05); },
+    applause: t => { for (let i = 0; i < 28; i++) noise(t + Math.random() * 1.4, 0.05, 0.12, 'bandpass', U.rand(1500, 4000), null, 1.5); },
+    jingle: t => { const n = [72, 76, 79, 84, 79, 84, 88]; n.forEach((m, i) => { tone(mtof(m), t + i * 0.09, 0.22, 'square', 0.06); tone(mtof(m - 12), t + i * 0.09, 0.2, 'triangle', 0.08); }); },
+    onair: t => { tone(mtof(84), t, 0.12, 'sine', 0.15); tone(mtof(84), t + 0.18, 0.12, 'sine', 0.15); tone(mtof(91), t + 0.36, 0.4, 'sine', 0.15); },
+    win: t => { [60, 64, 67, 72, 76, 79, 84].forEach((m, i) => tone(mtof(m), t + i * 0.08, 0.5, 'triangle', 0.1)); sample('coins', t + 0.4, 0.5); },
+    lose: t => { [67, 63, 60, 55].forEach((m, i) => tone(mtof(m), t + i * 0.16, 0.3, 'triangle', 0.1)); },
+    boss: t => { tone(55, t, 1.2, 'sawtooth', 0.2, null, 40); noise(t, 1, 0.2, 'lowpass', 300); },
+    door: t => sample('enter', t, 0.6),
+    buy: t => sample('buy', t, 0.6),
+    tick: t => tone(2000, t, 0.02, 'square', 0.04)
+  };
+  const U = AMC.U;
+  function sample(n, t, v) { const b = samples[n]; if (!b) return; const s = A.ctx.createBufferSource(), g = A.ctx.createGain(); g.gain.value = v || 0.7; s.buffer = b; s.connect(g); g.connect(sfxBus); s.start(t); }
+  const last = {};
+  A.sfx = function (name) {
+    if (!A.ctx || !A.ready || !FX[name]) return;
+    const now = A.ctx.currentTime; if (last[name] && now - last[name] < 0.03) return; last[name] = now;
+    try { FX[name](now + 0.005); } catch (e) { /* Ton darf nie das Spiel stören */ }
+  };
+
+  // ------------------------------------------------------------------ Musik (Schrittsequenzer, je Stimmung eigener Track)
+  const TRACKS = {
+    menu: { bpm: 112, prog: [57, 53, 48, 55], minor: true, kick: 'x...x...x...x...', snare: '....x.......x...', hat: '..x...x...x...x.', bass: 'x..x..x.x..x..x.', arp: false, pad: true, lead: [0, 3, 7, 10, 7, 3] },
+    city: { bpm: 124, prog: [50, 46, 53, 48], minor: true, kick: 'x...x...x...x...', snare: '....x.......x...', hat: '.xx..xx..xx..xx.', bass: 'x.xx..x.x.xx..x.', arp: true, pad: true },
+    show: { bpm: 104, prog: [45, 48, 43, 50], minor: true, kick: 'x.....x.x.......', snare: '....x.......x..x', hat: 'x.x.x.x.x.x.x.xx', bass: 'x..x....x.x..x..', arp: false, pad: true },
+    boss: { bpm: 142, prog: [45, 45, 46, 43], minor: true, kick: 'x...x...x...x.x.', snare: '....x..x....x...', hat: 'xxxxxxxxxxxxxxxx', bass: 'xxxxxxxxxxxxxxxx', arp: true, pad: false },
+    quiz: { bpm: 120, prog: [48, 53, 55, 48], minor: false, kick: 'x...x...x...x...', snare: '....x.......x...', hat: '..x...x...x...x.', bass: 'x...x.x.x...x.x.', arp: true, pad: false },
+    party: { bpm: 128, prog: [53, 50, 46, 48], minor: false, kick: 'x...x...x...x...', snare: '....x.......x...', hat: '..x...x...x...x.', bass: '..x...x...x...x.', arp: true, pad: true }
+  };
+  let seq = null;
+  A.music = function (name) {
+    if (A.track === name && seq) return;
+    A.track = name;
+    if (!A.ctx) return;
+    if (seq) { seq.stop = true; seq = null; }
+    const T = TRACKS[name]; if (!T) return;
+    const s = seq = { stop: false, step: 0, t: A.ctx.currentTime + 0.1 };
+    const stepDur = 60 / T.bpm / 4;
+    const run = () => {
+      if (s.stop || !A.ctx) return;
+      while (s.t < A.ctx.currentTime + 0.25) { playStep(T, s.step, s.t, stepDur); s.t += stepDur; s.step++; }
+      setTimeout(run, 60);
+    };
+    run();
+  };
+  A.stopMusic = () => { if (seq) seq.stop = true; seq = null; A.track = ''; };
+  function playStep(T, step, t, sd) {
+    const i = step % 16, bar = Math.floor(step / 16) % T.prog.length, root = T.prog[bar];
+    const third = T.minor ? 3 : 4;
+    if (T.kick[i] === 'x') { const o = tone(150, t, 0.22, 'sine', 0.55, musicBus, 42); o.frequency.exponentialRampToValueAtTime(42, t + 0.12); }
+    if (T.snare[i] === 'x') { noise(t, 0.14, 0.22, 'bandpass', 1900, musicBus, 0.7); tone(220, t, 0.06, 'triangle', 0.08, musicBus); }
+    if (T.hat[i] === 'x') noise(t, 0.035, i % 4 === 2 ? 0.07 : 0.04, 'highpass', 7500, musicBus);
+    if (T.bass[i] === 'x') {
+      const c = A.ctx, o = c.createOscillator(), f = c.createBiquadFilter(), g = c.createGain();
+      o.type = 'sawtooth'; o.frequency.value = mtof(root - 12 + (i === 14 ? 7 : 0)); f.type = 'lowpass'; f.frequency.setValueAtTime(900, t); f.frequency.exponentialRampToValueAtTime(180, t + sd * 1.6);
+      env(g, t, 0.005, 0.16, sd * 1.8); o.connect(f); f.connect(g); g.connect(musicBus); o.start(t); o.stop(t + sd * 2);
+    }
+    if (T.pad && i === 0) [0, third, 7, 12].forEach(s => { const o = tone(mtof(root + s + 12), t, sd * 15, 'triangle', 0.025, musicBus); o.detune.value = U.rand(-8, 8); });
+    if (T.arp && i % 2 === 0) { const arp = [0, third, 7, 12, 7, third, 12, 15]; tone(mtof(root + 24 + arp[(i / 2) % 8]), t, sd * 0.9, 'square', 0.022, musicBus); }
+    if (T.lead && i % 4 === 0 && (step >> 4) % 2 === 1) tone(mtof(root + 24 + T.lead[(i / 4 + bar) % T.lead.length]), t, sd * 3, 'sine', 0.04, musicBus);
+  }
+})(typeof window !== 'undefined' ? window : globalThis);
