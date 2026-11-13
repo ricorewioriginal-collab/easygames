@@ -5,7 +5,7 @@
       "t": "Ziel des Spiels",
       "p": [
         "AnMaCha – Der Podcast ist das offizielle Spiel zum AnMaCha-Podcast. Du spielst Andrew und Marco, die Stimmen hinter „Wir ♥ Medien“. In der 3D-Stadt rund ums Funkhaus jagst du Themen, triffst Gäste und schaltest Störsender ab. Danach geht es ins Studio: Dort nehmt ihr die Folge live auf.",
-        "Die Story hat drei Staffeln mit 17 Kapiteln nach echten Folgen und den AnMaCha-Radios. Staffel 1 reicht von Folge 1 „Da muss man erstmal reinwachsen“ bis zum Finale „LIVE vom Podfluencer Festival“ gegen den Boss „Das Funkloch“. In Staffel 2 kehrt das Funkloch zurück: Imbisskind, Die Katze und die Gurke, Hör' mir uff! und Giselas Camper mit dem Boss „Das Funkloch 2.0“. Staffel 3 geht auf Sendung: AnMaCha24, Clubradio24, Christmasradio24, YourTime-FM und Rockradio24 mit dem Boss „Der Rauschkönig“. Jedes Kapitel bringt bis zu 3 Sterne."
+        "Die Story hat drei Staffeln mit 17 Kapiteln nach echten Folgen und den AnMaCha-Radios. Staffel 1 reicht von Folge 1 „Da muss man erstmal reinwachsen“ bis zum Finale „LIVE vom Podfluencer Festival“ gegen Ralf Rauschmann und seine Drohne „Das Funkloch“. In Staffel 2 kehrt das Funkloch zurück: Imbisskind, Die Katze und die Gurke, Hör' mir uff! und Giselas Camper mit dem Boss „Das Funkloch 2.0“. Staffel 3 geht auf Sendung: AnMaCha24, Clubradio24, Christmasradio24, YourTime-FM und Rockradio24 mit dem Finale gegen den „Rauschkönig“. Jedes Kapitel bringt bis zu 3 Sterne."
       ]
     },
     {
@@ -54,6 +54,21 @@
         "Gisela fährt nur Marco. Er fährt besonders achtsam und leidet bei jedem Rempler mit. Spielst du Andrew, übergibt das Spiel das Steuer an Marco. Kommt Andrew Gisela allein zu nahe, hupt sie empört und schubst ihn weg.",
         "Unter „Stadt & Nebenaufträge“ wartet immer eine Besorgung mit Gisela, zum Beispiel Kabel vom Elektromarkt, Pommes vom Imbiss oder eine Fahrt zu einem Event wie dem Podfluencer-Treffen. Das Ziel ist ein gelber Ring, bei Events ein pinker. Dort langsam reinfahren. Besorgungen bringen Fan-Punkte, Events doppelt so viele.",
         "Kabeldiebe (rot markiert, 🔌) schnappen sich Studio-Kabel und laufen weg. Hol sie im Sprint ein und rangel sie mit X/E zu Boden. Nach drei Schubsern geben sie auf und rücken die Kabel raus."
+      ]
+    },
+    {
+      "t": "Zuhause bei Marco und Andrew",
+      "p": [
+        "Unter „🏠 Zuhause“ besuchst du Andrews Wohnung oder Marcos Bude. Jeder hat Bedürfnisse: Energie, Hunger und Spaß. Schlafen, Essen, Fernsehen, Pflanze gießen, Technik basteln oder Musik spielen füllt sie wieder auf.",
+        "Gute Laune bringt der nächsten Aufnahme Start-Hype, schlechte kostet Hype. Stadt-Einsätze und Aufnahmen machen müde. Am Schreibtisch kommen verrückte Ideen aus Alltag und Internet (bis zu 3). Jede Idee wird in der nächsten Aufnahme zu einer starken 💡-Themenkarte.",
+        "Mit „Einrichten“ baust du jedes Möbelstück in drei Stufen mit Fan-Punkten aus. Bessere Möbel füllen die Bedürfnisse schneller."
+      ]
+    },
+    {
+      "t": "Begehbares Studio und Musikshop",
+      "p": [
+        "„🚶 Studio betreten“ lässt dich selbst durchs Studio laufen. Am Pult startest du die Aufnahme, an der Wand links geht es zum Studio-Editor, rechts zum Musikshop, an der Tür raus in die Stadt. RicoReWi hängt natürlich auch herum und hat immer einen Plan.",
+        "Im „🎹 Musikshop“ kaufst du freie Klavierlicht-Songs für Fan-Punkte. Einmal tippen spielt eine Hörprobe, nochmal tippen kauft. Gekaufte Songs wünschen sich die Hörer während der Aufnahme öfter."
       ]
     },
     {
@@ -161,7 +176,8 @@
         "Mit dem Doppelsprung erreichst du Funken auf Dächern; Kisten-Treppen führen nach oben.",
         "Weiche Störsendern mit Ausweichen aus – während der Rolle bist du kurz unverwundbar.",
         "Spar dir Fan-Punkte zuerst für Profi-Mikrofone und Jingle-Paket – sie helfen bei jedem Stern.",
-        "Spielst du Andrew und willst Gisela fahren: einfach hingehen und X/E drücken – das Spiel wechselt automatisch zu Marco."
+        "Spielst du Andrew und willst Gisela fahren: einfach hingehen und X/E drücken – das Spiel wechselt automatisch zu Marco.",
+        "Schick Marco und Andrew vor wichtigen Aufnahmen nach Hause: ausgeschlafen und satt bringen sie mehr Start-Hype, und Schreibtisch-Ideen werden zu starken Themenkarten."
       ]
     },
     {
@@ -239,7 +255,7 @@
     {
       "t": "Kapitel 8 – LIVE vom Podfluencer Festival",
       "p": [
-        "Boss „Das Funkloch“ über der Festivalbühne: Spring über die violetten Schockwellen und triff es mit der Schallwelle, wenn der Schild offen ist. 3 Phasen, in jeder wird es schneller. Danach die große Live-Aufnahme: 8 Runden, 5.000 / 7.800 / 10.500 Hörer."
+        "Boss „Das Funkloch“ über der Festivalbühne: Spring über die violetten Schockwellen und triff die Drohne mit der Schallwelle, wenn der Schild offen ist. 3 Phasen, in jeder wird es schneller. Danach flieht ihr Pilot Ralf Rauschmann vom Piratensender Radio Funkloch: Lauf ihm nach und gewinne die Rangelei (Aktion tippen). Danach die große Live-Aufnahme: 8 Runden, 5.000 / 7.800 / 10.500 Hörer."
       ]
     },
     {
@@ -263,7 +279,7 @@
     {
       "t": "Kapitel 12 – Giselas Camper",
       "p": [
-        "Boss „Das Funkloch 2.0“ hält mehr aus als das Original. Gleiche Taktik: über die violetten Rauschwellen springen, bei offenem Schild mit der Welle treffen, Drohnen in Phase 2 und 3 zuerst abschalten. Aufnahme: 8 Runden, 7.200 / 10.800 / 14.400 Hörer."
+        "Boss „Das Funkloch 2.0“ hält mehr aus als das Original. Gleiche Taktik: über die violetten Rauschwellen springen, bei offenem Schild mit der Welle treffen, Drohnen in Phase 2 und 3 zuerst abschalten. Danach Ralf Rauschmann einholen und in der Rangelei stellen. Aufnahme: 8 Runden, 7.200 / 10.800 / 14.400 Hörer."
       ]
     },
     {
@@ -293,7 +309,7 @@
     {
       "t": "Kapitel 17 – Rockradio24 – Der Rauschkönig",
       "p": [
-        "Finale: Der Rauschkönig hält mehr aus als beide Funklöcher. Über die violetten Rauschwellen springen, ausweichen und bei offenem Schild mit der Schallwelle treffen. Erst die Drohnen abräumen, dann auf den Boss. Aufnahme: 8 Runden."
+        "Finale: Die Rauschkönig-Drohne hält mehr aus als beide Funklöcher. Über die violetten Rauschwellen springen, ausweichen und bei offenem Schild mit der Schallwelle treffen. Erst die Drohnen abräumen, dann auf den Boss. Zum Schluss stellst du Ralf „Rauschkönig“ Rauschmann persönlich in einer Rangelei. Aufnahme: 8 Runden."
       ]
     },
     {

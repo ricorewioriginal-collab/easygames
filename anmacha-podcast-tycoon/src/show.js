@@ -152,7 +152,7 @@
       cam.position.copy(P[0]); cam.lookAt(P[1]);
       if (ST.glitch > 0) { ST.glitch -= dt; cam.position.x += (Math.random() - 0.5) * 0.05 * ST.glitch; cam.position.y += (Math.random() - 0.5) * 0.04 * ST.glitch; }
       if (ST.fx > 0) { ST.fx -= dt * 0.8; ST.rimA.intensity += ST.fx * 4; ST.rimB.intensity += ST.fx * 4; }
-    } else if (ST.mode === 'edit') {
+    } else if (ST.mode === 'edit' || ST.mode === 'walk') {
       /* Kamera setzt der Editor (AMC.StudioEdit) */
     } else if (ST.mode === 'quiz') {
       const a = Math.sin(ST.t * 0.2) * 0.25;
@@ -183,12 +183,18 @@
   SH.start = function (cfg) {
     S = { cfg, round: 0, rounds: cfg.rounds || 6, hype: Math.min(90, 55 + (AMC.Save.has('neon') ? 10 : 0) + (AMC.StudioEdit ? AMC.StudioEdit.bonus().hype : 0)), listeners: 0, combo: 1, lastSpeaker: '', speaker: cfg.host || 'andrew', jingles: AMC.Save.has('jingle') ? 4 : 3, special: 0, swapUsed: false,
       cards: (cfg.cards || []).map(c => Object.assign({ used: false }, c)), phase: 'intro', menu: 'root', sel: 0, t: 0, mini: null, incident: null, chatT: 0, log: [], arcade: cfg.mode === 'arcade', ended: false };
+    // Sims-Teil: Stimmung der beiden und Ideen von zu Hause
+    const hb = AMC.Home && !cfg.test ? AMC.Home.showBonus() : null;
+    if (hb) { S.hype = U.clamp(S.hype + hb.hype, 20, 95); S.cards = S.cards.concat(hb.cards); S.homeNote = hb; AMC.Home.tire(null, cfg.mode === 'arcade' ? 1 : 0.8); }
     SH.active = true;
     ST.enter('show'); ST.focus = S.speaker;
     AMC.Audio.music('show');
     buildUi();
     setTimeout(() => { if (!S) return; AMC.Audio.sfx('onair'); say('n', 'Wir sind ON AIR!'); }, 300);
-    setTimeout(() => { if (!S) return; say(S.speaker, U.pick(['Hallo und herzlich willkommen zu AnMaCha – Der Podcast!', 'Seid Ihr bereit, angemacht zu werden? Willkommen!', 'Hey, willkommen zu einer neuen Folge – mit Marco und Andrew!'])); nextRound(); }, 1500);
+    setTimeout(() => { if (!S) return; say(S.speaker, U.pick(['Hallo und herzlich willkommen zu AnMaCha – Der Podcast!', 'Seid Ihr bereit, angemacht zu werden? Willkommen!', 'Hey, willkommen zu einer neuen Folge – mit Marco und Andrew!']));
+      const n = S.homeNote; if (n && n.cards.length) pop('💡 ' + n.cards.length + ' Idee' + (n.cards.length > 1 ? 'n' : '') + ' von zu Hause!<small>als Bonus-Themen</small>', 'good');
+      if (n && n.tired.length) setTimeout(() => S && pop('😴 ' + n.tired.join(' & ') + ' ist durch …<small>Zu Hause schlafen, essen, entspannen!</small>', 'miss'), 900);
+      nextRound(); }, 1500);
   };
   SH.stop = function () { SH.active = false; if (S && S.mini && S.mini.ctl) S.mini.ctl.destroy(); S = null; const u = U.$('showUi'); if (u) u.remove(); ST.leave(); };
 
@@ -255,7 +261,7 @@
   }
   // --- Hörer-Musikwünsche (freie Klavierlicht-Melodien) kommen automatisch rein
   function newWish() {
-    const w = U.pick(D.WISHES.filter(x => !(S.wished || []).includes(x.id))) || U.pick(D.WISHES);
+    const own = AMC.Home ? AMC.Home.ownedSongs() : [], pool = D.WISHES.concat(own, own), w = U.pick(pool.filter(x => !(S.wished || []).includes(x.id))) || U.pick(pool);
     S.wished = (S.wished || []).concat(w.id);
     S.wish = Object.assign({ from: U.pick(D.FAN_NAMES), left: 3 }, w);
     chatLine(S.wish.from, '🎵 Wunsch: „' + w.t + '“ – ' + w.r, 'hype');

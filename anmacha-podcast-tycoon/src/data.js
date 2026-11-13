@@ -234,13 +234,14 @@
     },
     {
       id: 'c8', title: 'LIVE vom Podfluencer Festival', when: 'Herbst 2026 · München', ep: 24,
-      sky: 'festival', obj: { type: 'boss', n: 3, t: 360 }, drones: 4, show: { rounds: 8, goal: [500, 780, 1050] },
+      sky: 'festival', obj: { type: 'boss', n: 3, t: 360, rival: 'Ralf Rauschmann' }, drones: 4, show: { rounds: 8, goal: [500, 780, 1050] },
       intro: [
         ['n', 'München, Podfluencer Festival 2026. Side-Stage, LIVE im Radio auf AnMaCha24 – der Start in die neue Staffel.'],
         ['a', 'Das ist es, Marco. Die große Bühne. Das neue Gesicht von AnMaCha.'],
         ['m', 'Und ausgerechnet jetzt taucht DAS FUNKLOCH auf. Der größte Störsender, den die Stadt je gesehen hat.'],
+        ['r', 'Leute! Ich hab recherchiert: Die Drohne gehört Ralf Rauschmann. Der betreibt den Piratensender „Radio Funkloch“ und ist neidisch auf euch.'],
         ['a', 'Dann rauschen wir zurück. Seid ihr bereit, angemacht zu werden?'],
-        ['n', 'Besiege das Funkloch: Weiche seinen Rauschwellen aus ({rt}) und triff es mit Schallwellen ({x}), wenn sein Schild offen ist.']
+        ['n', 'Hol die Störsender-Drohne „Funkloch“ runter: Weiche den Rauschwellen aus ({rt}) und triff sie mit Schallwellen ({x}), wenn ihr Schild offen ist. Danach wartet Rauschmann selbst – auf eine ordentliche Rangelei.']
       ],
       outro: [
         ['m', 'Wir haben es geschafft. LIVE. Vor allen.'],
@@ -284,10 +285,11 @@
     },
     {
       id: 'c12', season: 2, title: 'Giselas Camper', when: 'Staffel 2 · Jubiläum', ep: 20,
-      sky: 'festival', obj: { type: 'boss', n: 3, t: 380, hp: 13, name: 'Das Funkloch 2.0' }, drones: 5, show: { rounds: 8, goal: [720, 1080, 1440] },
+      sky: 'festival', obj: { type: 'boss', n: 3, t: 380, hp: 13, name: 'Das Funkloch 2.0', rival: 'Ralf Rauschmann' }, drones: 5, show: { rounds: 8, goal: [720, 1080, 1440] },
       intro: [
         ['n', 'Jubiläums-Folge 20: Camping, Urlaub und ein Wohnmobil namens Gisela. Die ganze Stadt feiert – bis der Himmel violett wird.'],
         ['m', 'Es ist zurück. DAS FUNKLOCH 2.0. Größer, lauter und mit Update.'],
+        ['r', 'Rauschmann hat seine Drohne aufgerüstet. Ich hab’s auf seinem Insta gesehen. Er hat 12 Follower. Alle Bots.'],
         ['a', 'Wir haben es einmal geschafft, wir schaffen es wieder. Gisela glaubt an uns!'],
         ['n', 'Das Funkloch 2.0 hält mehr aus und ruft mehr Drohnen. Weiche aus ({rt}), spring über Rauschwellen ({a}) und triff es mit {x}, wenn der Schild offen ist.']
       ],
@@ -347,15 +349,16 @@
     },
     {
       id: 'c17', season: 3, title: 'Rockradio24 – Der Rauschkönig', when: 'Staffel 3 · Finale', ep: 25,
-      sky: 'festival', obj: { type: 'boss', n: 3, t: 400, hp: 16, name: 'Der Rauschkönig' }, drones: 6, show: { rounds: 8, goal: [960, 1420, 1880] },
+      sky: 'festival', obj: { type: 'boss', n: 3, t: 400, hp: 16, name: 'Die Rauschkönig-Drohne', rival: 'Ralf „Rauschkönig“ Rauschmann' }, drones: 6, show: { rounds: 8, goal: [960, 1420, 1880] },
       intro: [
-        ['n', 'Rockradio24 eröffnet mit einem Konzert vor dem Funkhaus. Doch aus dem Funkloch steigt sein großer Bruder: DER RAUSCHKÖNIG.'],
-        ['a', 'Der hat eine Krone. Aus Antennen.'],
+        ['n', 'Rockradio24 eröffnet mit einem Konzert vor dem Funkhaus. Doch über der Bühne schwebt Rauschmanns größte Störsender-Drohne aller Zeiten.'],
+        ['r', 'Rauschmann nennt sich jetzt „Rauschkönig“. Er trägt eine Krone. Aus Antennen.'],
+        ['a', 'Der hat echt eine Krone auf? Okay, die Drohne zuerst – und dann reden wir mit ihm. Mit den Händen.'],
         ['m', 'Dann zeigen wir ihm, wie Rock klingt. Gisela, Hupe bereit!'],
-        ['n', 'Der Rauschkönig ist stärker als alles zuvor. Weiche aus ({rt}), spring über Rauschwellen ({a}) und triff ihn mit {x}, wenn der Schild offen ist.']
+        ['n', 'Die Rauschkönig-Drohne ist stärker als alles zuvor. Weiche aus ({rt}), spring über Rauschwellen ({a}) und triff sie mit {x}, wenn der Schild offen ist. Danach: Rangelei mit dem Rauschkönig persönlich.']
       ],
       outro: [
-        ['m', 'Der Rauschkönig ist weg. Und mein Trommelfell auch.'],
+        ['m', 'Der Rauschkönig hat aufgegeben. Er moderiert jetzt eine Gartensendung. Und mein Trommelfell ist weg.'],
         ['a', 'Podcast, Radio, Rockkonzert. Was kommt als Nächstes?'],
         ['n', 'Staffel 3 ist im Kasten. Alle AnMaCha-Radios senden wieder – hört rein auf anmacha.de!']
       ]
