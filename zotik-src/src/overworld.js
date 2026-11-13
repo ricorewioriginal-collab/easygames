@@ -1,6 +1,6 @@
 /* Weltkarte (wie die Oberwelt klassischer JRPGs): ein Kontinent, über den Wegpfade von Welt zu Welt führen.
    Jede Welt steht als Wahrzeichen-Insel am Weg und lässt sich betreten; ringsum liegt das Meer.
-   An Stegen ruft man die Nautilux; auf dem Wasser erreicht man die Märchen-Inseln draußen im Meer. */
+   Auch zu den Märchen-Inseln führt ein Pfad über eine Landzunge; an den Stegen ruft man die Nautilux und setzt Kurs auf jede erreichte Welt. */
 import { ISLE } from './minis.js';
 
 /* Lage der Welten auf der Karte (Einheiten wie in den Welten: ~6 Schritte je Sekunde) */
@@ -27,6 +27,9 @@ export function createOverworld(C) {
 
   function build(o) {
     const g = new T.Group(); scene.add(g);
+    /* Märchen-Inseln: Lage neben ihrem Kapitel, dazu ein Wegpfad (Landzunge) von dort aus */
+    const ISL = [];
+    for (const k in MWOFF) { const n = +k, w = o.mw(n); if (!w) continue; const b = OWN[w.link] || OWN[1], [ox, oz] = MWOFF[k], p = [b[0] + ox, b[1] + oz + 26]; ISL.push([n, p]); if (!segs.some(s => s[3] === n)) segs.push([b, p, w.link, n]); }
     /* Gelände mit Farbe je Region (Gras der nächsten Welt), Sand an der Küste, Pfade */
     const W = 380, D = 600, cx = 0, cz = -70, nx = 150, nzs = 236, geo = new T.PlaneGeometry(W, D, nx, nzs); geo.rotateX(-Math.PI / 2); geo.translate(cx, 0, cz);
     const P = geo.attributes.position, col = new Float32Array(P.count * 3), c = new T.Color(), c2 = new T.Color(), sand = new T.Color(0xe6d49a), path = new T.Color(0xb8945a), deep = new T.Color(0x2a5a6a);
@@ -45,8 +48,12 @@ export function createOverworld(C) {
     /* Wälder (zwei Instanz-Gruppen, ein Zeichenaufruf je Gruppe) */
     const TR = []; for (let i = 0; i < 900 && TR.length < 420; i++) { const x = cx + (Math.random() - .5) * W, z = cz + (Math.random() - .5) * D, h = H(x, z); if (h < 1 || dPath(x, z) < 5 || nearest(x, z)[1] < 16) continue; TR.push([x, h, z, .8 + Math.random() * .8]); }
     const trunk = new T.InstancedMesh(G.cyl0, M(0x5a3e26), TR.length), crown = new T.InstancedMesh(G.ico || G.sph, M(0xffffff, { r: .9 }), TR.length), q = new T.Object3D();
-    TR.forEach(([x, h, z, s], i) => { q.position.set(x, h + 1.1 * s, z); q.rotation.set(0, 0, 0); q.scale.set(.25 * s, 2.2 * s, .25 * s); q.updateMatrix(); trunk.setMatrixAt(i, q.matrix);
-      q.position.set(x, h + 2.9 * s, z); q.rotation.y = i; q.scale.set(1.5 * s, 1.7 * s, 1.5 * s); q.updateMatrix(); crown.setMatrixAt(i, q.matrix);
+    const setTree = (i, on) => { const [x, h, z, s0] = TR[i], s = on ? s0 : 1e-4; q.position.set(x, h + 1.1 * s, z); q.rotation.set(0, 0, 0); q.scale.set(.25 * s, 2.2 * s, .25 * s); q.updateMatrix(); trunk.setMatrixAt(i, q.matrix);
+      q.position.set(x, h + 2.9 * s, z); q.rotation.y = i; q.scale.set(1.5 * s, 1.7 * s, 1.5 * s); q.updateMatrix(); crown.setMatrixAt(i, q.matrix); };
+    /* Kampfbühne freiräumen: Bäume im Umkreis ausblenden (danach zurück) */
+    const clearTrees = (x, z, r) => { const L = []; TR.forEach((t, i) => { if (Math.hypot(t[0] - x, t[2] - z) < r) { setTree(i, false); L.push(i); } }); trunk.instanceMatrix.needsUpdate = crown.instanceMatrix.needsUpdate = true;
+      return () => { for (const i of L) setTree(i, true); trunk.instanceMatrix.needsUpdate = crown.instanceMatrix.needsUpdate = true; }; };
+    TR.forEach(([x, h, z, s], i) => { setTree(i, true);
       const [k] = nearest(x, z); c.setHex((ISLE[k] || ISLE[1]).lf).offsetHSL(0, 0, (Math.random() - .5) * .1); crown.setColorAt(i, c); });
     for (const m of [trunk, crown]) { m.castShadow = true; m.frustumCulled = false; g.add(m); }
     /* Welten als Wahrzeichen-Inseln am Weg, Märchen-Inseln im Meer */
@@ -54,22 +61,23 @@ export function createOverworld(C) {
     for (const k in OWN) { const n = +k, [x, z] = OWN[k], isl = MINI.island(n); isl.scale.setScalar(6.5); isl.position.set(x, H(x, z) - .4, z); g.add(isl);
       const open = o.open(n); if (!open) { const dome = mk(G.sph, M(0x6a3aaa, { e: 0x5a2aaa, ei: 1.2, t: .35 }), x, H(x, z), z, 14, 10, 14, false); g.add(dome); sealC.push([x, z, 13]); }
       g.add(glow((ISLE[n] || ISLE[1]).c, 12, x, H(x, z) + 9, z, .35)); marks.push({ n, x, z, open }); }
-    for (const k in MWOFF) { const n = +k, w = o.mw(n); if (!w) continue; const [ox, oz] = MWOFF[k], b = OWN[w.link] || OWN[1], x = b[0] + ox, z = b[1] + oz + 26, isl = MINI.island(n); isl.scale.setScalar(8); isl.position.set(x, OW_WL + .2, z); g.add(isl);
-      g.add(glow((ISLE[n] || ISLE[1]).c, 14, x, 10, z, .4)); marks.push({ n, x, z, open: o.open(n), mw: 1 }); }
-    /* Stege: an mehreren Küstenstellen, dort steigt man in die Nautilux */
+    for (const [n, [x, z]] of ISL) { const isl = MINI.island(n), open = o.open(n); isl.scale.setScalar(8); isl.position.set(x, Math.max(OW_WL + .2, H(x, z) - .4), z); g.add(isl);
+      if (!open) { g.add(mk(G.sph, M(0x6a3aaa, { e: 0x5a2aaa, ei: 1.2, t: .35 }), x, H(x, z), z, 15, 11, 15, false)); sealC.push([x, z, 14]); }
+      g.add(glow((ISLE[n] || ISLE[1]).c, 14, x, H(x, z) + 10, z, .4)); marks.push({ n, x, z, open, mw: 1 }); }
+    /* Stege: an der Küste nahe jeder Welt, dort steigt man in die Nautilux */
     const docks = [];
-    for (const k of [1, 3, 5, 7, 9]) { const [bx, bz] = OWN[k]; let best = null;
+    for (const mk0 of marks) { const bx = mk0.x, bz = mk0.z; let best = null;
       for (let a = 0; a < 6.283; a += .2) for (let r = 16; r < 60; r += 2) { const x = bx + Math.cos(a) * r, z = bz + Math.sin(a) * r; if (water(x, z)) { if (!best || r < best[2]) best = [x, z, r, a]; break; } }
-      if (!best) continue; const [wx, wz, , a] = best, lx = wx - Math.cos(a) * 3, lz = wz - Math.sin(a) * 3, d = new T.Group(); d.position.set(lx, Math.max(OW_WL + .25, H(lx, lz)), lz); d.rotation.y = -a + Math.PI / 2;
+      if (!best || docks.some(d => Math.hypot(d.x - best[0], d.z - best[1]) < 26)) continue; const [wx, wz, , a] = best, lx = wx - Math.cos(a) * 3, lz = wz - Math.sin(a) * 3, d = new T.Group(); d.position.set(lx, Math.max(OW_WL + .25, H(lx, lz)), lz); d.rotation.y = -a + Math.PI / 2;
       const wd = M(0x7a5232, { r: .9 }); d.add(mk(G.box, wd, 0, .1, 3, 2.2, .2, 8)); for (const s of [-1, 1]) for (const zz of [0, 3, 6]) d.add(mk(G.cyl0, M(0x4a3020), s * 1, -.6, zz, .14, 1.6, .14));
-      d.add(mk(G.cyl0, M(0x4a3020), .9, .8, 6.6, .1, 1.6, .1)); d.add(glow(0x8ad0ff, 2.4, .9, 1.7, 6.6, .7)); g.add(d); docks.push({ x: wx, z: wz, lx, lz }); }
+      d.add(mk(G.cyl0, M(0x4a3020), .9, .8, 6.6, .1, 1.6, .1)); d.add(glow(0x8ad0ff, 2.4, .9, 1.7, 6.6, .7)); g.add(d); docks.push({ x: wx, z: wz, lx, lz, n: mk0.n }); }
     const blk = (x, z) => x < cx - W / 2 + 6 || x > cx + W / 2 - 6 || z < cz - D / 2 + 6 || z > cz + D / 2 - 6 || water(x, z) || sealC.some(([sx, sz, r]) => Math.hypot(x - sx, z - sz) < r);
     let t0 = 0; const anim = t => { wtex.offset.x = Math.sin(t * .05) * .3; wtex.offset.y = t * .006; t0 = t; };
     /* kleine Karte fürs Menü/Minikarte */
     const mbg = (() => { const cv = document.createElement('canvas'); cv.width = 260; cv.height = 310; const x = cv.getContext('2d'); x.fillStyle = '#1e5a8a'; x.fillRect(0, 0, 260, 310);
       for (let j = 0; j < 310; j += 2) for (let i = 0; i < 260; i += 2) { const wx = (i - 130) * W / 260 + cx, wz = (j - 155) * D / 310 + cz, h = H(wx, wz); if (h > OW_WL) { x.fillStyle = h < .6 ? '#d8c890' : dPath(wx, wz) < 3 ? '#b8945a' : '#4a8a4a'; x.fillRect(i, j, 2, 2); } }
       for (const m of marks) { x.fillStyle = '#' + ((ISLE[m.n] || ISLE[1]).c).toString(16).padStart(6, '0'); x.beginPath(); x.arc((m.x - cx) * 260 / W + 130, (m.z - cz) * 310 / D + 155, m.mw ? 3 : 4, 0, 7); x.fill(); } cv.ow = [cx - W / 2, cz - D / 2, W, D]; return cv; })();
-    return { g, terr, H, water, blocked: blk, marks, docks, anim, mbg, nearest, dPath };
+    return { g, terr, H, water, blocked: blk, marks, docks, anim, mbg, nearest, dPath, clearTrees };
   }
   return { build, H, water, OWN, MWOFF };
 }

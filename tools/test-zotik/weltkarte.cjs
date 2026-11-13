@@ -1,6 +1,6 @@
 // Weltkarte: aus einer Welt über den Rand/Wegweiser auf die Oberwelt, Wegpfad zur nächsten Welt, betreten; Wasser sperrt zu Fuß,
 // am Steg die Nautilux rufen und übers Meer fahren; Märchen-Insel anlegen.   node tools/test-zotik/weltkarte.cjs [bild]
-const { chromium, ARGS, open, intro, shot, skip } = require('./lib.cjs');
+const { chromium, ARGS, open, intro, shot, skip, opt } = require('./lib.cjs');
 const BILD = process.argv[2] === 'bild';
 (async () => { const b = await chromium.launch({ args: ARGS }); const p = await open(b, { render: BILD, ctx: { viewport: { width: 960, height: 540 } } }); const res = [], w = ms => p.waitForTimeout(ms);
   const ok = (n, c, i) => { res.push(c); console.log(`${c ? 'ok  ' : 'FEHL'} ${n}${i ? ' · ' + i : ''}`); };
@@ -18,11 +18,12 @@ const BILD = process.argv[2] === 'bild';
   const m = await p.evaluate(() => { const Z = __zotik, W = Z.W; let land = 0, sea = 0; for (let x = -180; x <= 180; x += 10) for (let z = -360; z <= 220; z += 10) W.blocked(x, z) ? sea++ : land++; return { land, sea, solm: W.near(58, 18) && W.near(58, 18).name, dark: W.near(-42, -76) && W.near(-42, -76).pr }; });
   ok('Land und Meer', m.land > 300 && m.sea > 600, JSON.stringify(m)); ok('Welt am Weg (Solmera betreten)', m.solm === 'Solmera'); ok('verschlossene Welt versiegelt', m.dark === 'Versiegelt', m.dark);
   // Nautilux am Steg
-  const d = await p.evaluate(() => { const Z = __zotik, W = Z.W; let st = null; for (let x = -180; x <= 180 && !st; x += 1) for (let z = -360; z <= 220 && !st; z += 1) { const q = W.near(x, z); if (q && q.name === 'Steg') st = [x, z]; } if (!st) return 'kein Steg'; Z.pl.x = st[0]; Z.pl.z = st[1]; Z.step(1 / 30, 3); const n = Z.nearI; if (!n || n.name !== 'Steg') return 'Steg nicht ansprechbar'; Z.interact(); Z.step(1 / 30, 5); return { naut: Z.naut.on, lake: !!Z.owLake(Z.pl.x, Z.pl.z) }; });
-  ok('Steg: Nautilux rufen, auf dem Wasser', d.naut && d.lake, JSON.stringify(d));
+  const d = await p.evaluate(() => { const Z = __zotik, W = Z.W; let st = null; for (let x = -180; x <= 180 && !st; x += 1) for (let z = -360; z <= 220 && !st; z += 1) { const q = W.near(x, z); if (q && q.name === 'Steg') st = [x, z]; } if (!st) return 'kein Steg'; Z.pl.x = st[0]; Z.pl.z = st[1]; Z.step(1 / 30, 3); const n = Z.nearI; if (!n || n.name !== 'Steg') return 'Steg nicht ansprechbar'; Z.interact(); return 1; }); if (d === 1) { await p.waitForTimeout(900); await opt(p, 'Frei'); }
+  const d2 = await p.evaluate(() => { const Z = __zotik; Z.step(1 / 30, 5); return { naut: Z.naut.on, lake: !!Z.owLake(Z.pl.x, Z.pl.z) }; });
+  ok('Steg: Nautilux rufen, auf dem Wasser', d2.naut && d2.lake, JSON.stringify(d === 1 ? d2 : d));
   if (BILD) { await p.evaluate(() => __zotik.setCam(0, .35, 14)); await shot(p, 'weltkarte-steg'); }
   const mw = await p.evaluate(() => { const Z = __zotik, W = Z.W; const t = W.near.call(W, 0, 0); let isl = null; for (let x = -180; x <= 180 && !isl; x += 2) for (let z = -360; z <= 220 && !isl; z += 2) { const q = W.near(x, z); if (q && q.mw) isl = q; } return isl ? isl.name : null; });
-  ok('Märchen-Insel per Nautilux erreichbar', !!mw, mw);
+  ok('Märchen-Insel erreichbar', !!mw, mw);
   // in eine Welt gehen
   await p.evaluate(() => { const Z = __zotik; if (Z.naut.on) Z.mount && 0; }); 
   const e = await p.evaluate(() => { const Z = __zotik; Z.X.jr = 'fade'; Z.X.noDetour = 1; Z.travel(4); Z.X.jr = 0; Z.X.noDetour = 0; return 1; });
