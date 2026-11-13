@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "471d675e1ceb",
- "generated": "2026-11-13T02:37:53+01:00",
- "commit": "5fb10290186ef5dc86a35ae38b1bde47a2b056cf",
+ "version": "052154602379",
+ "generated": "2026-11-13T01:47:49+00:00",
+ "commit": "06e437802de453f6f8fa7809c8a7a1da75a5a80b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9689,7 +9689,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258828,
-   "h": "4f73af078ded0b1863ed60e6ae1c2a0153ec98ad09376fffdcd72b2bd6031dd9"
+   "h": "1d9d1b9b41a3d3e3fea523c7281efe0fa44f26cb5aedf848035c9ad9390d3182"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -12177,9 +12177,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-DyByXvio.js",
-   "s": 1757783,
-   "h": "c6e5f610b7274166c0e1fdcb2d94efb15b877dae617afa5ebee0b6b8101c0811"
+   "p": "zotik/assets/index-T2xcuuRY.js",
+   "s": 1758166,
+   "h": "e03d0648eb9130d7ef78b876830c8c1aead98fd0f0347d5ac465f7d0ccc33328"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -12199,7 +12199,7 @@
   {
    "p": "zotik/index.html",
    "s": 72243,
-   "h": "50d3cc4a0036d40abc019c047d41cfc2347fc2e6bc86ccfc10401584e12b0698"
+   "h": "ed13acb671f6ce844792e99da73b08c0864c2b45f79948e9463968eea71bc048"
   },
   {
    "p": "zotik/manifest.webmanifest",
@@ -12342,9 +12342,19 @@
    "h": "f31fd4fcd6751788a9dc1fb0c536fa4164dda8601f8f6370c5555c2a1374d5e7"
   },
   {
+   "p": "zotik/tex/bark_d1k.jpg",
+   "s": 264165,
+   "h": "9a9f8fcb209e4e9535a0167f9a83f8701802e06c76b4f6e0dbd64b7b3a5ba6cc"
+  },
+  {
    "p": "zotik/tex/bark_n.jpg",
    "s": 82706,
    "h": "48a850fc482583b9eda86cd0684cb8a36ef7cfcd4c311293c5f11dbfce8b7e4d"
+  },
+  {
+   "p": "zotik/tex/bark_n1k.jpg",
+   "s": 277943,
+   "h": "23793ccf5e89ecf685e827ffa84075a9aa46459bed80570bcb0e0ee6ad7c950b"
   },
   {
    "p": "zotik/tex/brick_d.jpg",
@@ -12352,9 +12362,19 @@
    "h": "adeeb9c3e826f63073ba8e9ca01a7ee9e41643561ad5448b360f128d1c744c89"
   },
   {
+   "p": "zotik/tex/brick_d1k.jpg",
+   "s": 142574,
+   "h": "b63f6e8f11bbd87b9688644cff642adb0124070eb80ffa66d643bc35ffd970e1"
+  },
+  {
    "p": "zotik/tex/brick_n.jpg",
    "s": 66349,
    "h": "c2a2f3538b764f79090bdaf49ecf94a0422a72bbe63dbc8dd7df33bf2f5d30be"
+  },
+  {
+   "p": "zotik/tex/brick_n1k.jpg",
+   "s": 251467,
+   "h": "7dbcc2e647e08d0dddb96fb5f451f1783e72ed4e352d2cb05facaa6ffe39c1bf"
   },
   {
    "p": "zotik/tex/cobble_d.jpg",
@@ -12362,9 +12382,19 @@
    "h": "0918a5d073f51384057ab60a1040bd5750a3799b44107c3f4b3dc8486057768b"
   },
   {
+   "p": "zotik/tex/cobble_d1k.jpg",
+   "s": 180308,
+   "h": "82ba2d7d329701284fb4f306d20818e4ecc40d4170aaa16d151a35149985254c"
+  },
+  {
    "p": "zotik/tex/cobble_n.jpg",
    "s": 49169,
    "h": "029be7cde966e03a28ea4c9e2b0194e1a4edd1834b14192a6c9a701744d1452a"
+  },
+  {
+   "p": "zotik/tex/cobble_n1k.jpg",
+   "s": 155201,
+   "h": "fb371b4a18325414d0c8fbf5997e97c0689c78169951949e212e7e8bb1670968"
   },
   {
    "p": "zotik/tex/coral_d.jpg",
@@ -12372,9 +12402,19 @@
    "h": "884bfeb034251dedde2d45b022d4e0f609f951946e66b44681107777e0033960"
   },
   {
+   "p": "zotik/tex/coral_d1k.jpg",
+   "s": 174503,
+   "h": "78e6ff4511daba931af2f1e8cf96bdaaeaa8bb565d4d4aebf9059bf0e2a583a3"
+  },
+  {
    "p": "zotik/tex/coral_n.jpg",
    "s": 77573,
    "h": "0647de987ea7cec4068e4a20f9b465c2eebcf751f0e1fcf75854cc7c1fd0d6df"
+  },
+  {
+   "p": "zotik/tex/coral_n1k.jpg",
+   "s": 284776,
+   "h": "648547d179a94c9177f21b5f6c92a3f6cc63a4ccabf8f158f1d4553776d3d4e3"
   },
   {
    "p": "zotik/tex/forest_d.jpg",
@@ -12382,9 +12422,19 @@
    "h": "f7382e47f43edde1ae8d37670a5268fd20e12648ac7960f2e9392fb07c5828a6"
   },
   {
+   "p": "zotik/tex/forest_d1k.jpg",
+   "s": 301234,
+   "h": "1317840577033d7a944895ef52145eb4583cd09688663c0c0fedcc6d2a46af32"
+  },
+  {
    "p": "zotik/tex/forest_n.jpg",
    "s": 77955,
    "h": "d9b3549a11fbbfd2bf059b3d59da2202f85ece5fab3f4e2295c1768ab6917822"
+  },
+  {
+   "p": "zotik/tex/forest_n1k.jpg",
+   "s": 329174,
+   "h": "5e4eebbc349336d7117d2a2637be641cb4972c25d6d1c6ccaba645a89447bfaa"
   },
   {
    "p": "zotik/tex/grass_d.jpg",
@@ -12392,9 +12442,19 @@
    "h": "747ba2c0fb91cc841c4251dbca7a90cc3cc2b6e4a2bbf7e8d19eb70a0be2d600"
   },
   {
+   "p": "zotik/tex/grass_d1k.jpg",
+   "s": 200904,
+   "h": "aad830b6c18e610d9d9f4b3e746d23888834802131d49d5903e6328c4321db9c"
+  },
+  {
    "p": "zotik/tex/grass_n.jpg",
    "s": 81986,
    "h": "97e4c8d23a9c39d92872e207dbffce8045042ec946e7e25f661079901317c441"
+  },
+  {
+   "p": "zotik/tex/grass_n1k.jpg",
+   "s": 378044,
+   "h": "ba487cbbd96248f0205afc43bfd973d74c35491356835453b0fc6daf739cec30"
   },
   {
    "p": "zotik/tex/marble_d.jpg",
@@ -12402,9 +12462,19 @@
    "h": "02f2adba155b0eb039534e67756e0df49f3ce077a53585a88735c23d25d4d0d1"
   },
   {
+   "p": "zotik/tex/marble_d1k.jpg",
+   "s": 97611,
+   "h": "19f440bc8858bb8053360228eaf6ae62cb59f42abc08fa8719dfe6bde93442c4"
+  },
+  {
    "p": "zotik/tex/marble_n.jpg",
    "s": 3698,
    "h": "ec2ec0a43621667668695f9b924fcc593a98fbcc04102362970f183da6b5ac03"
+  },
+  {
+   "p": "zotik/tex/marble_n1k.jpg",
+   "s": 15626,
+   "h": "fcff514254d1e39d73486743e0db606b6f812492c5d22a539bcadf8c3c0b7ede"
   },
   {
    "p": "zotik/tex/mud_d.jpg",
@@ -12412,9 +12482,19 @@
    "h": "50c99d5503f541540d56e337cbdcd8e553eb5b38779c7cf9a9ebf725c9fa14f9"
   },
   {
+   "p": "zotik/tex/mud_d1k.jpg",
+   "s": 198859,
+   "h": "85aad24f6580b4d9d4aa2a0c8ec0221221ad8b0752619bce5bdd2b2f8c650a9d"
+  },
+  {
    "p": "zotik/tex/mud_n.jpg",
    "s": 78230,
    "h": "4a6efaf0d5a371fade45616b868f8c880b5962339f9795183a36aafad7b0b0e1"
+  },
+  {
+   "p": "zotik/tex/mud_n1k.jpg",
+   "s": 274457,
+   "h": "dbdb0a422bbdf1220b2951219a24e6ab76c43cc60195c5ca821383d14c1ca9ee"
   },
   {
    "p": "zotik/tex/plaster_d.jpg",
@@ -12422,9 +12502,19 @@
    "h": "f8e7e0cfbd3032d0501ab36255e4f0fefb3b8a371b9941c234db2d88b7fb3021"
   },
   {
+   "p": "zotik/tex/plaster_d1k.jpg",
+   "s": 137529,
+   "h": "e3791e49b09f574cfee63386828c33e1b48ae7649800ad35932fee5fe96086a3"
+  },
+  {
    "p": "zotik/tex/plaster_n.jpg",
    "s": 55896,
    "h": "34a81205d6f6d7b6c4cc32199e7187a32d7e80678ec31289d84cd5fad475f6bf"
+  },
+  {
+   "p": "zotik/tex/plaster_n1k.jpg",
+   "s": 220442,
+   "h": "b6449e20397d32e0c33a7830357717ad22a7f77f8c09641bbe196eae7dd844fa"
   },
   {
    "p": "zotik/tex/rock_d.jpg",
@@ -12432,9 +12522,19 @@
    "h": "040900ebafc33e4bc0b2c2937a2af79a28f925ae1eb766c08016f368462cf781"
   },
   {
+   "p": "zotik/tex/rock_d1k.jpg",
+   "s": 290247,
+   "h": "9a902fc8d41f748c06895695d5803be3bc07f1621a4c7805dbb5f2e0d441aada"
+  },
+  {
    "p": "zotik/tex/rock_n.jpg",
    "s": 52424,
    "h": "9c3b4ca04f6f7fef5f8af94a72f067dabe97cf05626849209cecde515027d4e1"
+  },
+  {
+   "p": "zotik/tex/rock_n1k.jpg",
+   "s": 200777,
+   "h": "2ced5226fea742cb428e4fb02a21a5bd2529fe308e2c663c6f7438bd5c27345c"
   },
   {
    "p": "zotik/tex/roof_d.jpg",
@@ -12442,9 +12542,19 @@
    "h": "117d259ebb3cc74eb74f1fa65b6726c506e7321f114e3e2c80a2f603d06982a5"
   },
   {
+   "p": "zotik/tex/roof_d1k.jpg",
+   "s": 199454,
+   "h": "c4c45edd7c0a21158a2454e269273ddfcdde7d39926631a0a6333a16dff192d6"
+  },
+  {
    "p": "zotik/tex/roof_n.jpg",
    "s": 76779,
    "h": "6f44ce5be6b1b9429fd317443370d1639b4657f930192c9b3ff1ef8af80ea833"
+  },
+  {
+   "p": "zotik/tex/roof_n1k.jpg",
+   "s": 254195,
+   "h": "88d6ed6d2a20aea48c3a27664e2f4ba8bfd8e3c5e0450a44280a3cc1c052f9de"
   },
   {
    "p": "zotik/tex/sand_d.jpg",
@@ -12452,9 +12562,19 @@
    "h": "c7a1cfd56c161fa039687773ca4312a98fc09dad7a29bf6986b4208ab8273067"
   },
   {
+   "p": "zotik/tex/sand_d1k.jpg",
+   "s": 239448,
+   "h": "f736d2c48e3e69c036dbf31eb592d063f1600c9e4d6f5c88fda54b5d6ae81b0c"
+  },
+  {
    "p": "zotik/tex/sand_n.jpg",
    "s": 60025,
    "h": "ca68193851a58372ecc04483f27e7743e3b6fd56a28b8ce554ae51bc16ac87a0"
+  },
+  {
+   "p": "zotik/tex/sand_n1k.jpg",
+   "s": 252093,
+   "h": "a0ae4c6e32a1dc3840c9b0236b0011850c04edad1a0fda30097fa24f1c05cbbc"
   },
   {
    "p": "zotik/tex/slate_d.jpg",
@@ -12462,9 +12582,19 @@
    "h": "55b706c01c6c7fdab27b63464e10a9cd1f32003e46c120b41ef5ef6e52f5822e"
   },
   {
+   "p": "zotik/tex/slate_d1k.jpg",
+   "s": 214570,
+   "h": "3ec2cbf642198613a5e71436d748393bc13898ac19ca7068d5fc7b79dae8479d"
+  },
+  {
    "p": "zotik/tex/slate_n.jpg",
    "s": 43217,
    "h": "d5b680c6148433cc4e56453533034c0ad4d8fcb17e8237bf97b9d1346ec58372"
+  },
+  {
+   "p": "zotik/tex/slate_n1k.jpg",
+   "s": 139381,
+   "h": "cd9f47fb0d47467f6837962c0e232eddb2c0d7e7353a986934ce57c437eda1c6"
   },
   {
    "p": "zotik/tex/snow_d.jpg",
@@ -12472,9 +12602,19 @@
    "h": "a69c45ff7b821c4a0f90f2a4bb252bb30ad51d554428e67a8bc4db806dab91b4"
   },
   {
+   "p": "zotik/tex/snow_d1k.jpg",
+   "s": 115304,
+   "h": "986189339fc3156a70921dbaf87bbc7fdd39d73ff8dd4332063d2da917afcf40"
+  },
+  {
    "p": "zotik/tex/snow_n.jpg",
    "s": 54397,
    "h": "80ad8efce1e903da2afe0c7eddd4d380f0aa9e424cbec73d701781891b23f7ab"
+  },
+  {
+   "p": "zotik/tex/snow_n1k.jpg",
+   "s": 239098,
+   "h": "eb35b36f5cb9c74c6d1ac3dc09839f07094d2e8388c1c934d3d06b19a32cc0cc"
   },
   {
    "p": "zotik/tex/stone_d.jpg",
@@ -12482,9 +12622,19 @@
    "h": "89891563f3e7543532f6e0c9ea9d02ef69aa8b17deb4573ed29586e844857c0e"
   },
   {
+   "p": "zotik/tex/stone_d1k.jpg",
+   "s": 207131,
+   "h": "349521a8a482a6862d4614910134e5798b4851daa63ac96e76d98ed185e63c65"
+  },
+  {
    "p": "zotik/tex/stone_n.jpg",
    "s": 77539,
    "h": "06f0032051705f02dfb276f135797485f1d238804ac1b66d83b8b000fc1ab8c1"
+  },
+  {
+   "p": "zotik/tex/stone_n1k.jpg",
+   "s": 280828,
+   "h": "ca4029e0eb393bf2f4d1479269ffa53c340a292caa32f40f31efaf0555a17b74"
   },
   {
    "p": "zotik/tex/wood_d.jpg",
@@ -12492,9 +12642,19 @@
    "h": "d970dca04e14fb4a9e129e1d144c1a95ddd44f78d75c442c862057ee6be85fe3"
   },
   {
+   "p": "zotik/tex/wood_d1k.jpg",
+   "s": 113335,
+   "h": "24a9c4f854937a82521eb3e763bf90c7d2dd17b1d83afba918a2f10aee278c0f"
+  },
+  {
    "p": "zotik/tex/wood_n.jpg",
    "s": 23984,
    "h": "9b4ac74c60783f091e293a5024f923be78378dbbbce9323d45d366b3481795ce"
+  },
+  {
+   "p": "zotik/tex/wood_n1k.jpg",
+   "s": 108416,
+   "h": "9929b4c704dbfd66ae8b3ff0ff0ba9c313e24a5dbb12be88fde251573775fa72"
   }
  ],
  "vendor": {

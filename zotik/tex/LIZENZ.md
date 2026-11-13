@@ -18,3 +18,5 @@ Alle Texturen stammen von Poly Haven (https://polyhaven.com) und stehen unter **
 - `rock_d.jpg`, `rock_n.jpg` – mossy_rock (https://polyhaven.com/a/mossy_rock)
 - `mud_d.jpg`, `mud_n.jpg` – brown_mud (https://polyhaven.com/a/brown_mud)
 - `brick_d.jpg`, `brick_n.jpg` – mossy_brick (https://polyhaven.com/a/mossy_brick)
+
+1024-px-Fassungen (`*_d1k.jpg`, `*_n1k.jpg`) derselben Texturen für PC/TV, ebenfalls CC0 von Poly Haven (1k-Download, JPEG neu gespeichert).

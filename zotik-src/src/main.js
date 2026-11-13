@@ -116,7 +116,7 @@ function pushOut1(o,r){
 /* ================= Renderer ================= */
 const cv=$('cv');
 const renderer=new T.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'});
-const TX=createTex({T,renderer});
+const TX=createTex({T,renderer,hi:!TOUCH});
 let _dg=null;const DG=()=>_dg||(_dg=createDungeon({T,TX,M,mk,G,glow,scene}));
 /* Bodentextur je Kapitelwelt (CC0, public/tex) */
 const WGTEX={2:'forest',3:'cobble',4:'sand',5:'sand',6:'snow',7:'mud',8:'cobble',9:'grass',10:'marble',11:'rock'};
