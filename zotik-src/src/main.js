@@ -67,7 +67,7 @@ function hgtL(x,z){
   const ex=Math.max(0,Math.abs(x)-116)+Math.max(0,z-64)+Math.max(0,-220-z);   /* Weltrand: sichtbarer Wall statt abfallender Kante mit unsichtbarer Sperre */
   return n+ex*ex*.12;
 }
-const blocked=(x,z)=>obBlk(x,z)||(z>300?ruinOut(x,z):WLD?WLD.blocked(x,z):(hgtL(x,z)>8.5&&tooSteep(hgtLG,x,z))||x<-128||x>128||z>76||z<-232||(z<-148&&!lunOpen()));
+const blocked=(x,z)=>obBlk(x,z)||(z>300?(WLD&&WLD.story?WLD.blocked(x,z):ruinOut(x,z)):WLD?WLD.blocked(x,z):(hgtL(x,z)>8.5&&tooSteep(hgtLG,x,z))||x<-128||x>128||z>76||z<-232||(z<-148&&!lunOpen()));
 /* Oberhalb der Hügelgrenze ist nur gesperrt, was sichtbar steil ist (Hang > ~48°) – sanfte Hänge und Hochebenen bleiben begehbar, statt mitten am Hang eine unsichtbare Wand zu ziehen. Darunter bleibt alles wie bisher frei. */
 function tooSteep(h,x,z){const a=h(x+.6,z)-h(x-.6,z),b=h(x,z+.6)-h(x,z-.6);return a*a+b*b>1.74}
 const zoneAt=(x,z)=>z>300?'ruin':WLD?WLD.zone(x,z):z<-146?'cave':(z<-44?'forest':'village');
