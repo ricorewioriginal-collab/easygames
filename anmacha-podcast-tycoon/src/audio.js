@@ -28,11 +28,11 @@
   ['pointerdown', 'keydown', 'touchstart'].forEach(ev => root.addEventListener(ev, () => A.init(), { passive: true }));
   root.addEventListener('easygames:pad', () => A.init());
 
-  let duck = 1;
+  let duck = 1, songs0 = 0;
   A.apply = function () {
     if (!A.ctx) return;
     const s = vol(), t = A.ctx.currentTime;
-    musicBus.gain.setTargetAtTime(s.music * 0.5 * duck, t, 0.3);
+    musicBus.gain.setTargetAtTime(s.music * 0.5 * duck * (songs0 > 0 ? 0.3 : 1), t, 0.3);
     sfxBus.gain.setTargetAtTime(s.sfx * 0.9, t, 0.05);
   };
   /** Spielmusik aus (Radio/Podcast läuft) oder an. */
@@ -114,7 +114,13 @@
   };
   const songs = {};
   /** Lied aus Klavierlicht laden: { title, step (ms je Schritt), mel: [[schritt, midi, länge]], bass } */
-  A.song = id => songs[id] || (songs[id] = fetch('../klavierlicht/archiv/' + id + '.json').then(r => r.ok ? r.json() : null).catch(() => null));
+  // Erst lokal (Browser, Homepage), sonst online von der easygames-Homepage – die App liefert das Klavierlicht-Archiv nicht mit
+  const ARCH = ['../klavierlicht/archiv/', (root.EASYGAMES_PUBLIC_BASE || 'https://ricorewioriginal-collab.github.io/easygames/').replace(/\/?$/, '/') + 'klavierlicht/archiv/'];
+  const getJson = (file, i) => (i = i || 0) >= ARCH.length ? Promise.resolve(null) : fetch(ARCH[i] + file).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(j => (j && typeof j === 'object' ? j : Promise.reject(0))).catch(() => getJson(file, i + 1));
+  A.song = id => songs[id] || (songs[id] = getJson(id + '.json').then(j => { if (!j) delete songs[id]; return j; }));
+  let idx = null;
+  /** Liederliste des Klavierlicht-Archivs (Musikshop) */
+  A.songIndex = () => idx || (idx = getJson('index.json').then(j => { if (!j) idx = null; return j && j.songs || null; }));
   /** Lied ab Schritt s0 für sec Sekunden abspielen (Melodie optional), gibt Stopp-Funktion zurück */
   A.playSong = function (song, o) {
     o = o || {}; if (!A.ctx || !A.ready || !song) return () => {};
@@ -122,7 +128,10 @@
     bus.connect(sfxBus);
     const sched = (arr, vel) => (arr || []).forEach(([s, m, l]) => { if (s >= s0 && s < s1) A.piano(m, t0 + (s - s0) * st, l * st, vel, bus); });
     if (o.mel !== false) sched(song.mel, o.vel || 0.6); sched(song.bass, (o.vel || 0.6) * 0.55);
-    return () => { try { bus.gain.setTargetAtTime(0, A.ctx.currentTime, 0.05); setTimeout(() => bus.disconnect(), 400); } catch (e) { /* still */ } };
+    // Spielmusik leiser, solange das Lied läuft
+    let on = true; const off = () => { if (!on) return; on = false; songs0 = Math.max(0, songs0 - 1); A.apply(); };
+    songs0++; A.apply(); const tm = setTimeout(off, ((s1 - s0) * st + 0.8) * 1000);
+    return () => { clearTimeout(tm); off(); try { bus.gain.setTargetAtTime(0, A.ctx.currentTime, 0.05); setTimeout(() => bus.disconnect(), 400); } catch (e) { /* still */ } };
   };
   const U = AMC.U;
   function sample(n, t, v) { const b = samples[n]; if (!b) return; const s = A.ctx.createBufferSource(), g = A.ctx.createGain(); g.gain.value = v || 0.7; s.buffer = b; s.connect(g); g.connect(sfxBus); s.start(t); }

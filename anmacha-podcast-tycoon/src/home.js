@@ -196,13 +196,7 @@
     else if (s.act === 'tv') { play('yes'); n.fun = Math.min(100, n.fun + 35 * k); n.energy = Math.max(0, n.energy - 4); say('📺 ' + line('tv')); AMC.Audio.sfx('static'); }
     else if (s.act === 'plant') { play('knock'); n.fun = Math.min(100, n.fun + 15 * k); say('🌿 ' + line('plant')); W.particles.burst(s.x, 1, s.z, 0x40d070, 14, { speed: 2 }); }
     else if (s.act === 'tech') { play('knock'); n.energy = Math.max(0, n.energy - 6); n.fun = Math.min(100, n.fun + 20 * k); if ((n.ideas || []).length < 3 && Math.random() < 0.5 + lv * 0.2) { n.ideas.push('Technik-Trick aus der Werkbank'); say('🔧 ' + line('tech') + ' 💡 Neue Idee!'); } else say('🔧 ' + line('tech')); AMC.Audio.sfx('plug'); W.particles.burst(s.x, 1.1, s.z, 0x3dd6ff, 12, { speed: 3 }); }
-    else if (s.act === 'music') {
-      play('dance'); R.busy = R.w.busy = 6; n.fun = Math.min(100, n.fun + 30 * k);
-      const pool = D.WISHES.concat(HM.ownedSongs()), w = U.pick(pool);
-      say('🎹 ' + line('music') + ' – „' + w.t + '“', 6000);
-      AMC.Audio.song(w.id).then(song => { if (song && R && R.who === hid) R.stopSong = AMC.Audio.playSong(song, { from: song.mel[0][0], sec: 6, vel: 0.65 }); });
-      if ((n.ideas || []).length < 3 && Math.random() < 0.3 + lv * 0.15) n.ideas.push('Musikidee: „' + w.t + '“ im Remix');
-    }
+    else if (s.act === 'music') { R.busy = R.w.busy = 0; pianoPick(hid, lv, line('music')); }
     else if (s.act === 'desk') {
       play('knock'); n.energy = Math.max(0, n.energy - 5);
       if ((n.ideas || []).length >= 3) say('💡 Der Kopf ist voll! Erst mal eine Folge aufnehmen und die Ideen loswerden.');
@@ -274,6 +268,34 @@
     say('RicoReWi: „' + U.pick(D.RICO_LINES) + '“', 4600); AMC.Audio.sfx('talk');
   }
 
+  // ------------------------------------------------------------------ Klavier: Lied aus dem Repertoire wählen und selbst spielen (Rhythmus-Minispiel)
+  function pianoPick(hid, lv, txt) {
+    const r0 = R, pool = D.WISHES.concat(HM.ownedSongs());
+    const s = AMC.UI.open('<div class="panel glass"><header><h2>🎹 Klavier</h2><button class="btn small" data-nav id="pkB">' + AMC.glyph('b') + ' Zurück</button></header><p class="hint">' + U.esc(txt) + ' Welches Lied? Spiel die Melodie im Takt – gekaufte Lieder aus dem Musikshop stehen hier auch.</p><div class="st-list" id="pkL">' +
+      pool.map((w, i) => '<button type="button" class="st-item" data-nav data-p="' + i + '"><span class="st-ic">🎵</span><span><b>' + U.esc(w.t) + '</b><small>' + U.esc(w.r) + '</small></span></button>').join('') + '</div></div>', { back: () => AMC.UI.close(s) });
+    s.el.querySelector('#pkB').onclick = () => AMC.UI.close(s);
+    s.el.querySelector('#pkL').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (!b) return; AMC.UI.close(s); if (R === r0) pianoPlay(r0, hid, lv, pool[+b.dataset.p]); });
+  }
+  function pianoPlay(r0, hid, lv, w) {
+    if (r0.mini) return;
+    const box = U.el('div', 'sh-mini'); box.id = 'hmMini'; U.$('homeUi').appendChild(box); r0.busy = 99;
+    AMC.Audio.song(w.id).then(song => {
+      if (R !== r0) { box.remove(); return; }
+      if (!song) { box.remove(); r0.busy = 0; say('📡 „' + w.t + '“ lässt sich gerade nicht laden – bitte mit Internet nochmal versuchen.', 4200); return; }
+      const f = W.hosts[hid]; if (f) { f.play('dance', { fade: 0.2 }); r0.w.anim = 'dance'; }
+      r0.mini = { box, ctl: AMC.Minis.start(box, 'rhythm', { song, color: '#a46bff', speed: 1, n: 12 + lv * 4, label: '„' + w.t + '“' }, q => {
+        if (R !== r0) return;
+        r0.mini.ctl.destroy(); box.remove(); r0.mini = null; r0.busy = 0;
+        const n = needs(hid), fan = Save.earn(5 + Math.round(q * 25 * (1 + lv * 0.5)));
+        n.fun = Math.min(100, n.fun + 15 + q * 25 * (1 + lv * 0.5));
+        const idea = q >= 0.6 && (n.ideas || []).length < 3; if (idea) n.ideas.push('Musikidee: „' + w.t + '“ im Remix');
+        Save.save(); drawNeeds(); if (f) f.play(q >= 0.6 ? 'arms' : 'idle', { fade: 0.2 });
+        say((q >= 0.85 ? '🎹 Wie ein Profi!' : q >= 0.5 ? '🎹 Schön gespielt!' : '🎹 Üben, üben, üben …') + ' +' + fan + ' 🎟️' + (idea ? ' · 💡 Musikidee' : ''), 4200);
+        AMC.Audio.sfx(q >= 0.6 ? 'applause' : 'ok');
+      }) };
+    });
+  }
+
   // ------------------------------------------------------------------ Musikshop (Klavierlicht, gemeinfrei)
   let shopList = null;
   HM.ownedSongs = () => (Save.data.songs || []).map(s => ({ id: s.id, t: s.t, r: 'Gekauft im Musikshop – unbedingt spielen! 🎹' }));
@@ -285,16 +307,16 @@
       const own = new Set((Save.data.songs || []).map(x => x.id)), free = new Set(D.WISHES.map(x => x.id));
       s.el.querySelector('#msList').innerHTML = list.map(x => { const has = own.has(x.id) || free.has(x.id), cost = 60 + (x.diff || 2) * 30; return '<button type="button" class="st-item" data-nav data-id="' + x.id + '" data-cost="' + cost + '"><span class="st-ic">' + (has ? '✅' : '🎵') + '</span><span><b>' + U.esc(x.title) + '</b><small>' + U.esc(x.artist || '') + ' · ' + (has ? 'im Repertoire – antippen zum Anhören' : '🎟️ ' + cost + ' · antippen: anhören, nochmal: kaufen') + '</small></span></button>'; }).join('');
     };
-    const load = shopList ? Promise.resolve(shopList) : fetch('../klavierlicht/archiv/index.json').then(r => r.json()).then(j => (shopList = (j.songs || []).filter(x => x.cat !== 'choral').slice(0, 60))).catch(() => (shopList = D.WISHES.map(w => ({ id: w.id, title: w.t, diff: 2 }))));
-    load.then(list => { if (!s.closed) render(list); });
+    const load = shopList ? Promise.resolve(shopList) : AMC.Audio.songIndex().then(l => l ? (shopList = l.filter(x => x.cat !== 'choral').slice(0, 60)) : null);
+    load.then(list => { if (s.closed) return; if (list) render(list); else s.el.querySelector('#msList').innerHTML = '<p class="hint">📡 Die Liederliste kommt aus dem Internet. Bitte online gehen und den Musikshop nochmal öffnen.</p>'; });
     let armed = null;
     s.el.querySelector('#msList').addEventListener('click', e => {
       const b = e.target.closest('[data-id]'); if (!b) return;
       const id = b.dataset.id, x = shopList.find(q => q.id === id), own = (Save.data.songs || []).some(q => q.id === id) || D.WISHES.some(q => q.id === id);
-      stopPrev(); AMC.Audio.song(id).then(song => { if (song && !s.closed) stopP = AMC.Audio.playSong(song, { from: song.mel[0][0], sec: 7, vel: 0.6 }); });
+      stopPrev(); AMC.Audio.song(id).then(song => { if (s.closed) return; if (song) stopP = AMC.Audio.playSong(song, { from: song.mel[0][0], sec: 7, vel: 0.7 }); else AMC.UI.toast('📡 Hörprobe lädt nicht – bitte online gehen.'); });
       if (own) return;
       if (armed !== id) { armed = id; AMC.UI.toast('🎧 Hörprobe „' + x.title + '“ – nochmal antippen zum Kaufen'); return; }
-      const cost = +b.dataset.cost; if (Save.data.fan < cost) { AMC.Audio.sfx('miss'); AMC.UI.toast('Zu wenig Fan-Punkte.'); return; }
+      const cost = +b.dataset.cost; if (Save.data.fan < cost) { AMC.Audio.sfx('miss'); AMC.UI.toast('Zu wenig Fan-Punkte: ' + cost + ' 🎟️ nötig, du hast ' + U.fmt(Save.data.fan) + '. Fan-Punkte gibt es für Folgen, Fans und Minispiele.'); return; }
       Save.data.fan -= cost; Save.data.songs = (Save.data.songs || []).concat({ id, t: x.title }); Save.save(); AMC.Audio.sfx('buy'); armed = null;
       AMC.UI.toast('✅ „' + x.title + '“ gehört jetzt zum Repertoire!'); s.el.querySelector('#msFan').textContent = U.fmt(Save.data.fan); render(shopList);
     });
@@ -320,7 +342,7 @@
     R.t += dt; if (R.busy > 0) R.busy -= dt;
     if (R.tick && R.tick(dt)) { W.particles.update(dt); return; }
     if (!R) return;
-    if (R.mini) { R.mini.ctl.update(dt); (R.figs || []).forEach(f => f.update(dt)); if (R.w.fig) R.w.fig.update(dt); return; }
+    if (R.mini) { I.dpadEmotes = false; R.mini.ctl.update(dt); (R.figs || []).forEach(f => f.update(dt)); if (R.w.fig) R.w.fig.update(dt); return; }
     (R.figs || []).forEach(f => f.update(dt));
     if (!(R.busy > 0)) R.w.update(dt); else { if (R.sc && R.w.fig) R.w.fig.update(dt); const cam = W.camera; if (R.w.cp) { cam.position.copy(R.w.cp); cam.lookAt(R.w.ct); } }
     if (I.hit('act')) use();
