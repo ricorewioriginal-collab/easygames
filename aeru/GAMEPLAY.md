@@ -9,6 +9,7 @@ Simulation mit festen 60 Hz (Akkumulator), dadurch gleiches Verhalten bei 30, 60
 - **Sprungpuffer:** Ein Druck bis 0,14 s vor der Landung wird nach dem Aufsetzen ausgeführt (statt eines Flügelschlags knapp über dem Boden).
 - **Gleiten:** In der Luft Sprung halten – deutlich langsamerer Fall.
 - **Rammstoß (Umschalt / RAMM):** Am Boden ein kurzer Schub mit Unverwundbarkeit. Wer im Schub einen Gegner trifft, schlägt ihn (Reichweite 1,7 m, nach den ersten 3 Himmelstruhen 3,2 m) und zerstreut Dornenkugeln.
+- **Ansturm:** Wer die Rammtaste nach dem Stoß gedrückt hält, stürmt bis zu 3 s lenkbar mit 12,5 m/s weiter (Wendekreis 3,2 rad/s) und rammt alle 0,3 s erneut. Loslassen, Springen, Fliegen oder eine Kante (Kantenschutz) beenden ihn.
 - **Landung:** Stauchung und Geräusch je nach Fallgeschwindigkeit.
 - Plattformen haben echte Dicke: Man kann unter ihnen hindurchlaufen, es gibt keine unsichtbaren Wände.
 - **Kantenhilfe:** Wer bis zu 1,3 m unter einer Kante gegen Insel oder Plattform stößt, zieht sich hinauf.
@@ -116,3 +117,9 @@ Ein einziger AudioContext, erst nach der ersten Eingabe. Musik pro Insel (Grundt
 ## Pause und Fokus
 
 Fensterwechsel oder verdeckter Tab pausiert das Spiel und löst alle gedrückten Tasten und Touchpunkte.
+
+## Drachenkunst
+
+- **Schatzkörbe:** bis zu fünf je Welt an festen Stellen (nur auf ebenem Boden, frei von Splittern, Laternen, Figuren, Teichen, Portalen und Bäumen; Bäume meiden diese Stellen). Fest wie Felsen; Windstoß, Rammstoß und Ansturm zerbrechen sie. Nicht gespeichert – beim nächsten Besuch stehen sie wieder.
+- **Lichtfalter:** aus jedem zerbrochenen Korb und jedem besiegten Gegner (Pool von 6). Flattern umher, weichen leicht aus, fliegen nach 12 s davon. Fangen heilt ein Herz, bei vollen Herzen füllt er die Flügelkraft.
+- **Funkel:** Begleiter-Glühwürmchen hinter Aerus Schulter. Farbe = Lebensenergie (Gold über 60 %, Blau über 30 %, sonst Rot; bei einem Herz blinkt er). Holt Splitter und Falter aus 2,4 m heran (vorher 1,2 m). Splitter-Kette: innerhalb von 1,4 s gesammelte Splitter steigen im Ton.

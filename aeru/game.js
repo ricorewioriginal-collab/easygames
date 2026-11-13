@@ -194,10 +194,13 @@ function whoosh(duration = .25, vol = .05, freq = 1200) {
 const chord = (list, d = .5, v = .05) => list.forEach((f, i) => setTimeout(() => note(f, d, v), i * 95));
 const sfx = {
   jump: () => note(350, .18, .025), flap: () => { whoosh(.2, .05, 900); note(520, .2, .02); }, land: () => note(110, .15, .05, 'triangle'),
-  step: () => note(90 + Math.random() * 20, .05, .01, 'triangle'), gem: id => note(620 + (id % 5) * 90, .25, .045),
+  step: () => note(90 + Math.random() * 20, .05, .01, 'triangle'), gem: n => note(620 + n * 45, .25, .045),
   attack: () => { whoosh(.28, .06, 1500); note(170, .2, .03, 'triangle'); }, hit: () => note(300, .1, .04, 'square'), hurt: () => note(110, .3, .08, 'triangle'),
   right: () => chord([523, 659, 784]), wrong: () => chord([330, 277, 220], .35, .05), portal: () => { note(300, .7, .04); setTimeout(() => note(600, .6, .04), 120); setTimeout(() => note(900, .6, .035), 240); },
-  story: () => chord([392, 494, 587, 784], .9, .035), checkpoint: () => note(880, .35, .025), boss: () => note(85, .6, .07, 'triangle'), warn: () => note(220, .35, .03, 'sawtooth')
+  story: () => chord([392, 494, 587, 784], .9, .035), checkpoint: () => note(880, .35, .025), boss: () => note(85, .6, .07, 'triangle'), warn: () => note(220, .35, .03, 'sawtooth'),
+  crate: () => { whoosh(.18, .07, 380); note(140, .16, .05, 'square'); setTimeout(() => note(95, .12, .04, 'triangle'), 60); },
+  flutter: () => { note(1320, .08, .015); setTimeout(() => note(1560, .08, .015), 70); }, falter: () => chord([784, 988, 1175], .3, .03),
+  charge: () => { whoosh(.32, .05, 520); note(130, .25, .02, 'triangle'); }
 };
 
 // ───────── Freie 3D-Modelle (GLB) ─────────
@@ -383,6 +386,76 @@ function chestPickup() {
   }
 }
 
+// ───────── Drachenkunst: Ansturm, Schatzkörbe, Lichtfalter, Funkel ─────────
+// Schatzkörbe stehen in jeder Welt auf festem Boden; Rammstoß, Ansturm oder Windstoß zerbrechen sie. Sie werden nicht gespeichert
+// und stehen beim nächsten Besuch wieder. Aus Körben und besiegten Gegnern steigt ein Lichtfalter: Fangen heilt ein Herz.
+// Funkel, das Glühwürmchen, begleitet Aeru, zeigt mit seiner Farbe die Lebensenergie und holt Splitter in der Nähe heran.
+const CRATE_SPOTS = [[9, 2], [-9, 3], [-16, 10], [16, -12], [-6, -15]];
+const FUNKEL_REACH = 2.4, CHARGE_SPEED = 12.5, CHARGE_TIME = 3;
+let crates = [], gemCombo = 0, lastGemAt = -9;
+const crateSpotFree = (x, z) => !CRATE_SPOTS.some(([cx, cz]) => Math.hypot(x - cx, z - cz) < 3.2);
+function buildCrates(index) {
+  const cfg = levels[index];
+  for (const [x, z] of CRATE_SPOTS) {
+    const y = floorAt(x, z, 30);
+    // Nur auf ebenem Boden und mit Abstand zu Splittern, Laternen, Figuren, Teichen und Portalen.
+    if (y < -1 || [[-1, -1], [1, -1], [-1, 1], [1, 1]].some(([a, b]) => floorAt(x + a * 1.4, z + b * 1.4, y + .3) !== y)) continue;
+    if (gems.some(g => Math.hypot(g.x - x, g.z - z) < 2) || torches.some(t => Math.hypot(t.x - x, t.z - z) < 3) || items.some(i => Math.hypot(i.x - x, i.z - z) < 2.5)
+      || [...npcs.values()].some(n => Math.hypot(n.x - x, n.z - z) < 3) || (cfg.pond && Math.hypot(cfg.pond[0] - x, cfg.pond[1] - z) < 4.5) || GAME_PORTALS.some(p => Math.hypot(p.x - x, p.z - z) < 5)
+      || treeColliders.some(t => Math.hypot(t.x - x, t.z - z) < t.crown + 1.4)) continue;
+    const g = new T.Group(); g.position.set(x, y, z); g.rotation.y = x * .37; world.add(g);
+    mesh('box', '#a8763f', 0, .5, 0, 1.1, 1, 1.1, g); mesh('box', '#e6c278', 0, .5, 0, 1.18, .16, 1.18, g); mesh('box', '#e6c278', 0, .5, 0, .16, 1.04, 1.18, g);
+    const col = {x, z, trunk: .7, trunkTop: y + 1.05, crown: 1.1, cy: -100, ch: 0, rock: true, crate: true};
+    treeColliders.push(col); crates.push({x, y, z, g, col, broken: false});
+  }
+}
+function breakCrate(c) {
+  c.broken = true; c.g.visible = false; c.col.crown = 0; c.col.trunkTop = -100;
+  spark(c.x, c.y + .6, c.z, '#e6c278', 16); spark(c.x, c.y + .6, c.z, '#a8763f', 10); sfx.crate(); rumble(70, .35);
+  spawnFalter(c.x, c.y + 1, c.z);
+  if (!breakCrate.told) { breakCrate.told = true; toast('Schatzkorb zerbrochen · Fang den Lichtfalter, er heilt ein Herz'); }
+}
+function crateHits(hit) { for (const c of crates) if (!c.broken && hit(c)) breakCrate(c); }
+// Lichtfalter: kleiner Pool, außerhalb der Welt angelegt (überlebt den Weltwechsel ohne Neuaufbau).
+const falterMat = new T.MeshBasicMaterial({color: 0xfff2a8, side: T.DoubleSide, toneMapped: false});
+const falterPool = Array.from({length: 6}, () => { const g = new T.Group(); for (const s of [-1, 1]) { const w = new T.Mesh(geos.disc, falterMat); w.scale.set(.28, .2, 1); w.position.x = s * .15; w.rotation.y = s * .4; g.add(w); } g.visible = false; scene.add(g); return {g, x: 0, y: 0, z: 0, life: 0, seed: 0}; });
+function spawnFalter(x, y, z) {
+  const f = falterPool.find(p => p.life <= 0) || falterPool.reduce((a, b) => a.life < b.life ? a : b);
+  Object.assign(f, {x, y, z, life: 12, seed: Math.random() * 9}); f.g.visible = true; f.g.position.set(x, y, z); sfx.flutter();
+}
+function updateFalter(dt) {
+  for (const f of falterPool) {
+    if (f.life <= 0) continue;
+    f.life -= dt;
+    const dx = f.x - state.x, dz = f.z - state.z, d = Math.hypot(dx, dz) || 1, near = d < 4 ? (4 - d) * .5 : 0;
+    // Flattert umher und weicht Aeru leicht aus – fangen bleibt leicht, weil Funkel ihn in Reichweite heranholt.
+    f.x += (Math.sin(time * 1.3 + f.seed) * .9 + dx / d * near) * dt; f.z += (Math.cos(time * 1.1 + f.seed) * .9 + dz / d * near) * dt;
+    const ground = floorAt(f.x, f.z, f.y + 1); if (ground < -50) { f.x -= dx / d * near * dt * 2; f.z -= dz / d * near * dt * 2; }
+    f.y = f.life < 1 ? f.y + dt * 4 : approach(f.y, (ground > -50 ? ground : f.y - 1.3) + 1.3 + Math.sin(time * 2 + f.seed) * .3, 2, dt);
+    if (Math.hypot(f.x - state.x, f.z - state.z) < FUNKEL_REACH && Math.abs(f.y - state.y - .9) < 2.4) {
+      f.life = 0; f.g.visible = false; spark(f.x, f.y, f.z, '#fff2a8', 10);
+      if (state.hp < maxHp()) { state.hp++; toast('Lichtfalter · ein Herz zurück'); } else { state.stamina = maxStamina(); }
+      sfx.falter(); updateHUD(); continue;
+    }
+    if (f.life <= 0) { f.g.visible = false; continue; }
+    f.g.position.set(f.x, f.y, f.z); f.g.rotation.y = time * .8 + f.seed;
+    const flap = Math.sin(time * 18 + f.seed) * .9; f.g.children[0].rotation.y = -.4 - flap; f.g.children[1].rotation.y = .4 + flap;
+  }
+}
+function clearFalter() { for (const f of falterPool) { f.life = 0; f.g.visible = false; } }
+// Funkel: ein Leuchtpunkt hinter Aerus Schulter. Gold = gesund, Blau = angeschlagen, Rot und blinkend = nur noch ein Herz.
+const funkel = new T.Mesh(geos.ball, new T.MeshBasicMaterial({color: 0xffe27a, toneMapped: false})); funkel.scale.setScalar(.22); scene.add(funkel);
+const funkelPos = new T.Vector3();
+function funkelColor() { const r = state.hp / maxHp(); return r > .6 ? 0xffe27a : r > .3 ? 0x8fdcff : 0xff8f8f; }
+function updateFunkel(dt) {
+  if (!state) return;
+  const side = Math.sin(state.yaw + 1.2), back = Math.cos(state.yaw + 1.2);
+  funkelPos.x = approach(funkelPos.x, state.x + side * .9, 6, dt); funkelPos.z = approach(funkelPos.z, state.z + back * .9, 6, dt);
+  funkelPos.y = approach(funkelPos.y, state.y + 2.1 + Math.sin(time * 3) * .15, 6, dt);
+  funkel.position.copy(funkelPos); funkel.material.color.setHex(funkelColor());
+  funkel.visible = mode !== 'title' && (state.hp > 1 || Math.floor(time * 6) % 2 === 0);
+}
+
 // ───────── Inselbau ─────────
 function island(x, z, r, y = 0) { const cfg = levels[save.level]; mesh('cylinder', cfg.grass, x, y - .6, z, r, 1.2, r); const base = mesh('cone', cfg.rock, x, y - 5.2, z, r * .99, 9, r * .99); base.rotation.z = Math.PI; solids.push({x, z, r, y, thick: 9.7}); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; mesh('rock', cfg.rock, x + Math.cos(a) * r * .7, y - 2.1, z + Math.sin(a) * r * .7, 3, 4, 3); } }
 function platform(x, z, w, d, y) { mesh('box', levels[save.level].rock, x, y - .5, z, w, 1, d); mesh('box', levels[save.level].grass, x, y + .015, z, w + .1, .08, d + .1); solids.push({x, z, w, d, y, thick: 1}); }
@@ -432,7 +505,7 @@ function buildLevel(index, titleOnly = false) {
   for (const d of disposables) d.dispose(); disposables = [];
   world.traverse(o => { if (o.isMesh && !shared.has(o.geometry)) o.geometry.dispose(); if (o.isInstancedMesh) o.dispose?.(); });
   world = new T.Group(); scene.add(world);
-  sceneryPlan = []; chests = []; boostRings = []; gusts = []; updrafts = []; flightRings = []; solids = []; treeColliders = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
+  sceneryPlan = []; crates = []; clearFalter(); chests = []; boostRings = []; gusts = []; updrafts = []; flightRings = []; solids = []; treeColliders = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
   clearEffects(); particlePool.forEach(p => { p.life = 0; p.m.visible = false; });
   clearInput(); accumulator = 0; save.level = index;
   const cfg = levels[index];
@@ -449,7 +522,7 @@ function buildLevel(index, titleOnly = false) {
   (cfg.rings || []).forEach(([x, y, z], id) => { const got = save.rings[index].includes(id); const m = ring(x, y, z, 2.5, '#ffe9a8'); m.material = own(new T.MeshBasicMaterial({color: got ? 0x60c4a4 : 0xffd277, toneMapped: false})); m.rotation.y = id === 1 ? Math.PI / 2 : 0; flightRings.push({x, y, z, id, m, got}); });
   for (let i = 0; i < 15; i++) { const z = 19 - i * 2.5; mesh('cylinder', '#d4c9a2', Math.sin(i * .6) * 1.4, .04, z, 1.6, .06, 1.2).rotation.y = i; }
   let seed = 5432 + index * 34; const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-  for (let i = 0; i < 38; i++) { const a = rand() * TAU, r = 17 + rand() * 8, x = Math.cos(a) * r, z = Math.sin(a) * r; if (floorAt(x, z) < -.1 || Math.abs(x) < 6 || dist({x, z}, {x: -14, z: -6}) < 4 || dist({x, z}, {x: 14, z: -7}) < 4 || dist({x, z}, {x: 20, z: 12}) < 3.5 || GAME_PORTALS.some(p => dist({x, z}, p) < 5.5)) continue; tree(x, z, .65 + rand() * .6); }
+  for (let i = 0; i < 38; i++) { const a = rand() * TAU, r = 17 + rand() * 8, x = Math.cos(a) * r, z = Math.sin(a) * r; if (floorAt(x, z) < -.1 || Math.abs(x) < 6 || dist({x, z}, {x: -14, z: -6}) < 4 || dist({x, z}, {x: 14, z: -7}) < 4 || dist({x, z}, {x: 20, z: 12}) < 3.5 || GAME_PORTALS.some(p => dist({x, z}, p) < 5.5) || !crateSpotFree(x, z)) continue; tree(x, z, .65 + rand() * .6); }
   for (let i = 0; i < 65; i++) { const a = rand() * TAU, r = rand() * 25, x = Math.cos(a) * r, z = Math.sin(a) * r; if (useSceneryModels()) { if (i % 3 === 0 && floorAt(x, z) > -.1) sceneryPlan.push({kind: 'grass', x, z, s: .8 + (i % 5) * .1, yaw: i}); } else mesh('cone', i % 3 ? '#b4ca9d' : cfg.accent, x, .18, z, .08, .36, .08); }
   for (const s of [-1, 1]) for (let i = 0; i < 4; i++) { const x = s * (18 + i % 2 * 3), z = -15 + i * 7, h = 2 + rand() * 2; treeColliders.push({x, z, trunk: .8, trunkTop: h, crown: 1.45, cy: -100, ch: 0, rock: true}); if (useSceneryModels()) sceneryPlan.push({kind: 'rock', x, z, s: h / 3, yaw: i * 1.3 + s}); else mesh('box', cfg.rock, x, 1, z, 1.2, h, 1.3).rotation.z = s * .12; }
   if (cfg.pond) { pond = new T.Mesh(geos.disc, own(new T.MeshStandardMaterial({color: linearColor('#7fd6e6'), emissive: linearColor('#3a9fb5'), emissiveIntensity: .35, roughness: .2}))); pond.rotation.x = -Math.PI / 2; pond.scale.setScalar(2.6); pond.position.set(cfg.pond[0], .06, cfg.pond[1]); world.add(pond); for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; mesh('rock', cfg.rock, cfg.pond[0] + Math.cos(a) * 2.9, .15, cfg.pond[1] + Math.sin(a) * 2.9, .5, .35, .5); } }
@@ -463,7 +536,7 @@ function buildLevel(index, titleOnly = false) {
   gp.forEach(([x, z, y], id) => { const m = mesh('gem', id % 3 ? '#b4f9d5' : '#ffe6b0', x, y + 1.1, z, .28, .48, .28, world, true); m.visible = !save.collected[index].includes(id); gems.push({x, y: y + 1.1, z, id, m, got: !m.visible}); });
   for (const it of story.items.filter(it => it.level === index)) { const m = mesh('gem', it.color, it.x, it.y + 1.2, it.z, .42, .62, .42, world, true); const b = new T.Mesh(beam.geometry, own(new T.MeshBasicMaterial({color: linearColor(it.color), transparent: true, opacity: .25, depthWrite: false, toneMapped: false}))); b.scale.set(1.4, .25, 1.4); b.position.set(it.x, it.y + 3.5, it.z); world.add(b); items.push({...it, m, b, y: it.y + 1.2}); }
   cfg.enemies.forEach((kind, i) => { const x = (i % 2 ? 1 : -1) * (7 + (i % 3) * 4), z = 9 - Math.floor(i / 2) * 6; enemies.push(makeEnemy(kind, x, z)); });
-  syncNpcs(true);
+  syncNpcs(true); buildCrates(index);
   // Rastpunkte: Inselstart, oberes Tor, beide Außeninseln, inselspezifische Höhen.
   checkpoints = [{x: 0, y: 0, z: 19, start: true}, {x: 0, y: 3, z: -17.6}, {x: 36, y: 1, z: 3}, {x: -35, y: 2, z: -5}, ...SKY.map(sk => ({x: sk.x - sk.r * .45, y: sk.y, z: sk.z - sk.r * .1})), ...cfg.checkpoints.map(([x, y, z]) => ({x, y, z}))];
   for (const c of checkpoints.slice(1)) { const m = mesh('cylinder', cfg.accent, c.x, c.y + .08, c.z, .55, .16, .55); m.castShadow = false; }
@@ -476,7 +549,7 @@ function buildLevel(index, titleOnly = false) {
   batchScenery();
   const cp = save.checkpoint && save.checkpoint.level === index ? save.checkpoint : null;
   const sx = cp ? cp.x : 0, sy = cp ? cp.y : 0, sz = cp ? cp.z : 19;
-  state = {x: sx, y: sy, z: sz, vy: 0, vx: 0, vz: 0, flight: false, draftSuppressed: false, stamina: maxStamina(), coyote: .12, jumpBuffer: 0, flapCooldown: 0, yaw: 0, hp: maxHp(), onGround: true, checkpoint: {x: sx, y: sy, z: sz}, distance: 0, dodge: 0, dodgeCooldown: 0, dodgeX: 0, dodgeZ: 0, landing: 0, jumpCut: true, jumpT: 1, stepDist: 0, cpTimer: 0};
+  state = {x: sx, y: sy, z: sz, vy: 0, vx: 0, vz: 0, flight: false, draftSuppressed: false, stamina: maxStamina(), coyote: .12, jumpBuffer: 0, flapCooldown: 0, yaw: 0, hp: maxHp(), onGround: true, checkpoint: {x: sx, y: sy, z: sz}, distance: 0, dodge: 0, dodgeCooldown: 0, dodgeX: 0, dodgeZ: 0, charge: 0, chargeHit: 0, landing: 0, jumpCut: true, jumpT: 1, stepDist: 0, cpTimer: 0};
   visualPosition.set(sx, sy, sz); cameraTarget.set(sx, sy + 1.2, sz); player.position.set(sx, sy, sz); player.visible = true; camYaw = 0; attackTime = 0; attackCooldown = 0; invulnerable = 0; near = null;
   camera.position.set(sx, sy + 7, sz + 10); applyQuality(); refreshWorld(); updateHUD();
   if (!titleOnly) { worldCard(index); retrigger($('fade'), 'on'); }
@@ -539,9 +612,10 @@ function rammStrike() {
   const range = chestUpgrade('ramm') ? 3.2 : 1.7;
   for (const e of enemies) if (e.state !== 'dead' && e.rammed !== rammId && Math.abs(state.y - (e.g.position.y || 0)) < 2.4 && Math.hypot(e.x - state.x, e.z - state.z) < range) { e.rammed = rammId; hitEnemy(e, state.dodgeX, state.dodgeZ); spark(e.x, 1.1, e.z, '#ffe3a3', 12); sfx.hit(); rumble(90, .45); }
   for (const o of orbPool) if (o.life > 0 && Math.hypot(o.m.position.x - state.x, o.m.position.z - state.z) < range && Math.abs(o.m.position.y - state.y - 1) < 2) { o.life = 0; o.m.visible = false; spark(o.m.position.x, o.m.position.y, o.m.position.z, '#ffd9c2', 6); }
+  crateHits(c => Math.hypot(c.x - state.x, c.z - state.z) < range + .6 && Math.abs(c.y - state.y) < 1.5);
 }
 function dodge() {
-  if (mode !== 'play' || state.dodgeCooldown > 0 || !state.onGround) return;
+  if (mode !== 'play' || state.dodgeCooldown > 0 || !state.onGround || state.charge > 0) return;
   const f = inputDirection();
   const dx = f.length > .1 ? f.dx : -Math.sin(state.yaw), dz = f.length > .1 ? f.dz : -Math.cos(state.yaw);
   state.dodge = .24; state.dodgeCooldown = .7; state.dodgeX = dx; state.dodgeZ = dz; invulnerable = Math.max(invulnerable, .3); whoosh(.2, .05, 700); rammId++;
@@ -595,8 +669,21 @@ function movePlayer(dt) {
   const air = !state.onGround, gliding = air && !state.flight && jumpDown && state.stamina > 0 && state.vy < 0;
   const flySpeed = upgrade('speed') ? 1.12 : 1;
   // Horizontale Bewegung: schnelles Anlaufen und Abbremsen am Boden, Trägheit in der Luft.
-  if (state.dodge > 0) { state.dodge -= dt; state.vx = state.dodgeX * 17; state.vz = state.dodgeZ * 17; rammStrike(); }
-  else {
+  if (state.dodge > 0) {
+    state.dodge -= dt; state.vx = state.dodgeX * 17; state.vz = state.dodgeZ * 17; rammStrike();
+    // Ansturm: Wer den Rammknopf nach dem Stoß gedrückt hält, stürmt lenkbar weiter (höchstens drei Sekunden).
+    if (state.dodge <= 0 && shiftDown && !air && !state.flight) { state.charge = CHARGE_TIME; state.chargeHit = 0; rammId++; if (!dodge.told) { dodge.told = true; toast('Ansturm · ' + actionKey('ramm') + ' gedrückt halten und lenken'); } }
+  } else if (state.charge > 0) {
+    state.charge -= dt; state.chargeHit -= dt;
+    if (!shiftDown || air || state.flight) state.charge = 0;
+    else {
+      if (length > .1) { const a = Math.atan2(state.dodgeX, state.dodgeZ), b = Math.atan2(dx, dz), turn = Math.atan2(Math.sin(b - a), Math.cos(b - a)), na = a + clamp(turn, -3.2 * dt, 3.2 * dt); state.dodgeX = Math.sin(na); state.dodgeZ = Math.cos(na); }
+      state.vx = state.dodgeX * CHARGE_SPEED; state.vz = state.dodgeZ * CHARGE_SPEED;
+      if (state.chargeHit <= 0) { state.chargeHit = .3; rammId++; sfx.charge(); spark(state.x, state.y + .2, state.z, '#e9e2c8', 4); }
+      rammStrike();
+      if (state.charge <= 0) state.dodgeCooldown = .5;
+    }
+  } else {
     let speed, rate;
     if (state.flight) { speed = (shiftDown ? 14 : 11) * flySpeed * (state.boost > 0 ? 1.5 : 1); rate = length > .05 ? 3.4 : 1.8; const ff = flightFloor(state); if (ff > -50 && state.y - ff < 12) { speed *= .75; rate = length > .05 ? 5 : 6; } }
     else if (gliding) { speed = 9; rate = 4; }
@@ -647,7 +734,7 @@ function movePlayer(dt) {
   // Kantenschutz: Beim Laufen bleibt Aeru kurz an der Kante stehen; wer weiter drückt, springt bewusst hinunter.
   if (state.onGround && state.dodge <= 0 && floorAt(nx, nz, state.y + .42) < state.y - .6) {
     state.edgeT = (state.edgeT || 0) + dt;
-    if (state.edgeT < .45) { nx = state.x; nz = state.z; state.vx = 0; state.vz = 0; }
+    if (state.edgeT < .45) { nx = state.x; nz = state.z; state.vx = 0; state.vz = 0; state.charge = 0; }
   } else if (state.onGround) state.edgeT = 0;
   // Bäume sind fest: Stamm am Boden, Krone in der Luft. Niemand läuft oder fliegt mehr hinein.
   for (const t of treeColliders) {
@@ -657,7 +744,8 @@ function movePlayer(dt) {
     if (d < lim && d > 0) { const ux = (nx - t.x) / d, uz = (nz - t.z) / d; nx = t.x + ux * lim; nz = t.z + uz * lim; const dot = state.vx * ux + state.vz * uz; if (dot < 0) { state.vx -= dot * ux; state.vz -= dot * uz; } }
   }
   const px = state.x, pz = state.z; state.x = nx; state.z = nz;
-  if (length > .05 || state.dodge > 0) { const target = Math.atan2(-(state.dodge > 0 ? state.dodgeX : dx), -(state.dodge > 0 ? state.dodgeZ : dz)); state.yaw += Math.atan2(Math.sin(target - state.yaw), Math.cos(target - state.yaw)) * (1 - Math.exp(-dt * 13)); state.distance += Math.hypot(state.vx, state.vz) * dt; }
+  const rushing = state.dodge > 0 || state.charge > 0;
+  if (length > .05 || rushing) { const target = Math.atan2(-(rushing ? state.dodgeX : dx), -(rushing ? state.dodgeZ : dz)); state.yaw += Math.atan2(Math.sin(target - state.yaw), Math.cos(target - state.yaw)) * (1 - Math.exp(-dt * 13)); state.distance += Math.hypot(state.vx, state.vz) * dt; }
   const oldY = state.y, fallSpeed = state.vy, wasGround = state.onGround;
   state.y += state.vy * dt; let floor = floorAt(state.x, state.z, oldY + .42);
   // Durchfallschutz: der ganze Weg dieses Schritts zählt (schneller Fall, Kante, Plattformrand), nicht nur der Endpunkt.
@@ -685,7 +773,7 @@ function movePlayer(dt) {
 function animatePlayer(dt, input, gliding) {
   const {x, length} = input;
   player.rotation.y = state.yaw; player.rotation.z = gliding ? clamp(-x * .15, -.18, .18) : Math.sin(state.distance * 2) * Math.min(length, .7) * .03;
-  player.rotation.x = approach(player.rotation.x, state.dodge > 0 ? -.35 : gliding ? -.08 : 0, 8, dt);
+  player.rotation.x = approach(player.rotation.x, state.dodge > 0 || state.charge > 0 ? -.35 : gliding ? -.08 : 0, 8, dt);
   const squash = state.landing > 0 ? 1 - state.landing * 1.2 : 1; player.scale.set(1 / Math.sqrt(squash), squash, 1 / Math.sqrt(squash));
   player.visible = invulnerable <= .3 || Math.floor(time * 12) % 2 === 0;
   player.userData.wings.forEach((w, i) => { const flapping = state.vy > 1 && !state.onGround; const target = (i ? 1 : -1) * (gliding || flapping ? -.18 + Math.sin(time * (flapping ? 13 : 4)) * (flapping ? .45 : .08) : .5 + Math.sin(time * 3) * .16); w.rotation.z = approach(w.rotation.z, target, 12, dt); });
@@ -695,7 +783,7 @@ function animatePlayer(dt, input, gliding) {
 }
 function respawn(message) {
   const max = maxHp();
-  Object.assign(state, state.checkpoint, {vy: 0, vx: 0, vz: 0, flight: false, draftSuppressed: false, stamina: maxStamina(), onGround: true, hp: state.hp > 0 ? state.hp : max, dodge: 0});
+  Object.assign(state, state.checkpoint, {vy: 0, vx: 0, vz: 0, flight: false, draftSuppressed: false, stamina: maxStamina(), onGround: true, hp: state.hp > 0 ? state.hp : max, dodge: 0, charge: 0});
   if (state.hp <= 0) state.hp = max;
   invulnerable = 2; clearEffects(); if (boss) boss.onRespawn();
   visualPosition.set(state.x, state.y, state.z); camera.position.set(state.x, state.y + 7, state.z + 10);
@@ -730,7 +818,7 @@ function hitEnemy(e, fx, fz) {
   }
   e.hp--; e.pulse = .18; e.x += fx * 2; e.z += fz * 2; spark(e.x, 1, e.z, '#e2d4a9'); sfx.hit();
   if (e.state === 'windup') { e.state = 'recover'; e.t = .8; e.warn.visible = false; }
-  if (e.hp <= 0) { e.state = 'dead'; e.g.visible = false; e.respawn = 20; note(550, .22, .03); quests.emit({type: 'enemy', level: save.level, kind: e.kind}); }
+  if (e.hp <= 0) { e.state = 'dead'; e.g.visible = false; e.respawn = 20; note(550, .22, .03); spawnFalter(e.x, (e.g.position.y || 0) + 1.2, e.z); quests.emit({type: 'enemy', level: save.level, kind: e.kind}); }
 }
 function updateEnemies(dt) {
   for (const e of enemies) {
@@ -776,6 +864,7 @@ function strike() {
   const facing = (x, z, r) => { const dx = x - state.x, dz = z - state.z, d = Math.hypot(dx, dz); return d < r && (d < 1.2 || (dx * fx + dz * fz) / d > .6); };
   for (const t of torches) if (!t.lit && Math.abs(state.y - t.y) < 3 && facing(t.x, t.z, range)) { if (!lightLantern(t)) break; }
   for (const e of enemies) if (e.state !== 'dead' && Math.abs(state.y) < 2.7 && facing(e.x, e.z, range)) hitEnemy(e, fx, fz);
+  crateHits(c => Math.abs(c.y - state.y) < 2 && facing(c.x, c.z, range + .6));
   for (const o of orbPool) if (o.life > 0 && facing(o.m.position.x, o.m.position.z, 5) && Math.abs(o.m.position.y - state.y - 1) < 2.5) { o.life = 0; o.m.visible = false; spark(o.m.position.x, o.m.position.y, o.m.position.z, '#ffd9c2', 6); }
   if (boss) boss.strike(facing, range);
   updateHUD();
@@ -922,8 +1011,10 @@ function pickups() {
     r.got = true; r.m.material.color.setHex(0x60c4a4); save.rings[save.level].push(r.id); state.stamina = maxStamina(); sfx.right(); spark(r.x, r.y, r.z, '#fff2a7', 20);
     toast(`Himmelsring ${save.rings[save.level].length} / 3 · Flügelkraft aufgefüllt`); persist(); quests.emit({type: 'ring', level: save.level});
   }
-  for (const g of gems) if (!g.got && Math.hypot(state.x - g.x, state.z - g.z) < 1.2 && Math.abs(state.y + .9 - g.y) < 1.8) {
-    const before = totalGems(); g.got = true; g.m.visible = false; save.collected[save.level].push(g.id); sfx.gem(g.id); spark(g.x, g.y, g.z, '#c9ffdd', 7);
+  for (const g of gems) if (!g.got && Math.hypot(state.x - g.x, state.z - g.z) < FUNKEL_REACH && Math.abs(state.y + .9 - g.y) < 2.2) {
+    // Funkel holt Splitter in Reichweite heran; schnell hintereinander gesammelt steigt der Ton (Kette).
+    gemCombo = elapsed - lastGemAt < 1.4 ? Math.min(gemCombo + 1, 8) : 0; lastGemAt = elapsed;
+    const before = totalGems(); g.got = true; g.m.visible = false; save.collected[save.level].push(g.id); sfx.gem(gemCombo * 2); spark(g.x, g.y, g.z, '#c9ffdd', 7); spark(funkelPos.x, funkelPos.y, funkelPos.z, '#ffe27a', 4);
     const unlocked = story.upgrades.find(u => before < u.gems && totalGems() >= u.gems);
     if (unlocked) { sfx.story(); toast('Neue Fähigkeit · ' + unlocked.text); state.hp = maxHp(); state.stamina = maxStamina(); refreshGlow(); }
     else if (totalGems() % 6 === 0 && state.hp < maxHp()) { state.hp++; toast('Sechs Splitter · Ein Herz aufgefüllt'); }
@@ -1304,7 +1395,7 @@ function stickMove(e) {
 $('stick').addEventListener('pointerdown', e => { e.preventDefault(); audioStart(); stickId = e.pointerId; try { $('stick').setPointerCapture(e.pointerId); } catch {} stickMove(e); });
 $('stick').addEventListener('pointermove', stickMove);
 for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) $('stick').addEventListener(type, e => { if (stickId !== e.pointerId) return; stickId = null; moveX = moveY = 0; $('knob').style.transform = ''; });
-const BUTTONS = [['jump', jumpPress, v => jumpHeld = v], ['attack', strike, v => attackHeld = v], ['talk', talk], ['fly', flight], ['dodge', () => { if (state.flight) diveHeld = true; else dodge(); }, v => { if (!v) diveHeld = false; }]];
+const BUTTONS = [['jump', jumpPress, v => jumpHeld = v], ['attack', strike, v => attackHeld = v], ['talk', talk], ['fly', flight], ['dodge', () => { diveHeld = true; if (!state.flight) dodge(); }, v => { if (!v) diveHeld = false; }]];
 for (const [id, fn, hold] of BUTTONS) {
   const b = $(id);
   b.addEventListener('pointerdown', e => { e.preventDefault(); try { b.setPointerCapture(e.pointerId); } catch {} b.classList.add('held'); hold?.(true); if (mode === 'dialog' && id !== 'talk') return; fn(); });
@@ -1345,7 +1436,7 @@ function update(dt) {
   if (keys.has('KeyQ')) { camYaw += dt * 1.7 * settings.camSens; camManualUntil = time + 2; } if (keys.has('KeyE')) { camYaw -= dt * 1.7 * settings.camSens; camManualUntil = time + 2; }
   movePlayer(dt);
   if (mode !== 'play') return;
-  pickups(); chestPickup(); updateEnemies(dt); updateBossEffects(dt);
+  pickups(); chestPickup(); updateFalter(dt); updateEnemies(dt); updateBossEffects(dt);
   for (const n of npcs.values()) { if (!n.present) continue; const d = Math.hypot(n.tx - n.x, n.ty - n.y, n.tz - n.z); if (d > .05) { const step = Math.min(d, dt * 8); n.x += (n.tx - n.x) / d * step; n.y += (n.ty - n.y) / d * step; n.z += (n.tz - n.z) / d * step; } }
   near = findNear(); $('prompt').hidden = !near || mode !== 'play';
   setText('promptText', near === 'portal' ? (save.cores[save.level] ? 'Durch das Sternentor' : 'Das Sternentor schläft') : near?.url ? 'Portal: ' + near.name : near ? 'Sprechen mit ' + near.name : '');
@@ -1381,6 +1472,7 @@ function animate(now) {
   if (mode === 'play') { accumulator += dt; while (accumulator >= TICK && mode === 'play') { update(TICK); accumulator -= TICK; } } else accumulator = 0;
   for (const d of updrafts) { const ch = d.g.children; for (let i = 1; i < ch.length; i++) ch[i].position.y = (time * 3 + (i - 1) * d.height / 4) % d.height; }
   if (mode !== 'pause') animateEnemies(dt);
+  updateFunkel(dt);
   for (const r of flightRings) r.m.rotation.z = time * .3;
   for (const c of chests) if (!c.opened) { c.gem.rotation.y = time * 1.4; c.gem.position.y = 2.1 + Math.sin(time * 2 + c.x) * .15; c.halo.rotation.z = time * .5; }
   for (const r of boostRings) if (r.m.visible) r.m.rotation.z = time * .8;
@@ -1464,6 +1556,9 @@ function drawCanvasFallback(c, w, h) {
   for (const it of items) if (it.m.visible) add(it.x, it.y + 1.2, it.z, ([px, py]) => { ell(px, py, s * .7, s * .7, it.color, '#fff', 2); label(it.label, px, py - s * 1.2); });
   for (const r of flightRings) if (!r.got) add(r.x, r.y, r.z, ([px, py]) => { ell(px, py, s * 2.2, s * 2.2, null, '#ffd277', 4); label('Ring', px, py - s * 2.5, '#ffeab3'); });
   for (const c of chests) add(c.x, c.y, c.z, ([px, py]) => { c_.fillStyle = '#8a5a34'; c_.fillRect(px - s * .7, py - s * .9, s * 1.4, s * .9); c_.fillStyle = '#e9c46a'; c_.fillRect(px - s * .7, py - s * 1.05, s * 1.4, s * .25); if (!c.opened) { poly([[px, py - s * 2.2], [px + s * .35, py - s * 1.7], [px, py - s * 1.2], [px - s * .35, py - s * 1.7]], '#fff0a6', '#fff'); label('Truhe', px, py - s * 2.5, '#ffe9a8'); } });
+  for (const k of crates) if (!k.broken) add(k.x, k.y, k.z, ([px, py]) => { c.fillStyle = '#a8763f'; c.fillRect(px - s * .55, py - s * 1.1, s * 1.1, s * 1.1); c.strokeStyle = '#e6c278'; c.lineWidth = 2; c.strokeRect(px - s * .55, py - s * 1.1, s * 1.1, s * 1.1); });
+  for (const f of falterPool) if (f.life > 0) add(f.x, f.y, f.z, ([px, py]) => ell(px, py, s * .35, s * .2, '#fff2a8', '#fff', 1));
+  if (state) add(funkelPos.x, funkelPos.y, funkelPos.z, ([px, py]) => ell(px, py, s * .25, s * .25, '#' + funkelColor().toString(16).padStart(6, '0'), '#fff', 1));
   for (const r of boostRings) if (r.m.visible) add(r.x, r.y, r.z, ([px, py]) => ell(px, py, s * 1.9, s * 1.9, null, '#7fe9ff', 4));
   for (const a of anchors) if (!a.broken) add(a.x, a.y, a.z, ([px, py]) => { ell(px, py, s, s, '#9b7fe6', '#fff', 2); label('ANKER', px, py - s * 1.4); });
   add(0, 3, -21, ([px, py]) => { ell(px, py - s * 3, s * 2.4, s * 3, null, '#ffdda0', 5); label('STERNENTOR', px, py - s * 6.4); });
@@ -1494,13 +1589,14 @@ if (TEST) window.aeruTest = {
     items: items.map(i => ({id: i.id, x: i.x, y: i.y, z: i.z, visible: i.m.visible})), enemies: enemies.map(e => ({kind: e.kind, x: e.x, z: e.z, state: e.state, hp: e.hp, model: !!e.anim})),
     waves: waves.map(w => w.r), markers: markers.length, orbs: orbPool.filter(o => o.life > 0).length, gusts: gusts.map(e => ({age: e.age, meshes: e.g.children.length})),
     layout: {trees: treeColliders.map(t => ({...t})), gems: gems.map(g => ({x: g.x, y: g.y, z: g.z, id: g.id})), torches: torches.map(t => ({x: t.x, y: t.y, z: t.z, id: t.id, lit: t.lit})), rings: flightRings.map(r => ({x: r.x, y: r.y, z: r.z})), updrafts: updrafts.map(u => ({x: u.x, y: u.y, z: u.z, height: u.height})), solids: solids.map(s => ({...s})), checkpoints}, settings: {...settings}, quality: {auto: autoLevel, scale: renderScale}}),
-  teleport: (x, y, z, yaw = 0) => { Object.assign(state, {x, y, z, yaw, vy: 0, vx: 0, vz: 0, flight: false, dodge: 0}); },
+  teleport: (x, y, z, yaw = 0) => { Object.assign(state, {x, y, z, yaw, vy: 0, vx: 0, vz: 0, flight: false, dodge: 0, charge: 0}); },
   strike, talk, jump: jumpPress, flight, dodge, travel, pause, resume, advance, skipDialog, frame: animate, step: update, level: buildLevel, floorAt,
   finishDialog: () => { let guard = 0; while (mode === 'dialog' && guard++ < 500) { typing = null; advance(); } },
   hold: (what, v) => { if (what === 'jump') jumpHeld = v; if (what === 'attack') attackHeld = v; if (what === 'dive') diveHeld = v; },
   lose: () => { state.hp = 1; invulnerable = 0; hurt(); },
   perf: () => { let objects = 0; scene.traverse(() => objects++); const info = renderer.info?.render || {}; return {...lastPerf, calls: info.calls, triangles: info.triangles, pixelRatio: renderer.getPixelRatio?.(), objects, quality: settings.quality === 'auto' ? autoLevel : settings.quality, renderScale, geometries: renderer.info?.memory?.geometries, textures: renderer.info?.memory?.textures}; },
   sky: SKY, rammId: () => rammId,
+  crates: () => crates.map(c => ({x: c.x, y: c.y, z: c.z, broken: c.broken})), falter: () => falterPool.filter(f => f.life > 0).map(f => ({x: f.x, y: f.y, z: f.z})), funkel: () => ({x: funkelPos.x, y: funkelPos.y, z: funkelPos.z, color: funkelColor()}), spawnFalter, hurt,
   portals: () => gamePortals.map(p => ({id: p.id, x: p.x, z: p.z, url: p.url})), navigated: () => window.__aeruNavigate || null, cam: () => ({yaw: camYaw, pitch: camPitch}), padInput: () => ({x: padX, y: padY}),
   autoAdjust, setQuality: q => { settings.quality = q; applySettings(); }, applySettings, settings
 };
