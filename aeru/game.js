@@ -14,7 +14,7 @@ const store = {get(k) { try { return localStorage.getItem(k); } catch { return n
 
 // ───────── Einstellungen ─────────
 const SETTINGS_KEY = 'aeru-settings';
-const DEFAULTS = {volume: .8, music: true, quality: 'auto', camSens: 1, touchSens: 1, camAssist: true, flightAssist: false, guide: true,
+const DEFAULTS = {volume: .8, music: true, quality: 'auto', camSens: 1, touchSens: 1, camAssist: true, flightAssist: false, guide: true, voice: true,
   reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches, textSpeed: 'normal', uiSize: 'normal', perf: false};
 const settings = (() => {
   const s = {...DEFAULTS};
@@ -195,7 +195,7 @@ const chord = (list, d = .5, v = .05) => list.forEach((f, i) => setTimeout(() =>
 const sfx = {
   jump: () => note(350, .18, .025), flap: () => { whoosh(.2, .05, 900); note(520, .2, .02); }, land: () => note(110, .15, .05, 'triangle'),
   step: () => note(90 + Math.random() * 20, .05, .01, 'triangle'), gem: n => note(620 + n * 45, .25, .045),
-  attack: () => { whoosh(.28, .06, 1500); note(170, .2, .03, 'triangle'); }, hit: () => note(300, .1, .04, 'square'), hurt: () => note(110, .3, .08, 'triangle'),
+  attack: () => { whoosh(.34, .08, 700); whoosh(.22, .04, 2600); note(95, .28, .03, 'sawtooth'); }, hit: () => note(300, .1, .04, 'square'), hurt: () => note(110, .3, .08, 'triangle'),
   right: () => chord([523, 659, 784]), wrong: () => chord([330, 277, 220], .35, .05), portal: () => { note(300, .7, .04); setTimeout(() => note(600, .6, .04), 120); setTimeout(() => note(900, .6, .035), 240); },
   story: () => chord([392, 494, 587, 784], .9, .035), checkpoint: () => note(880, .35, .025), boss: () => note(85, .6, .07, 'triangle'), warn: () => note(220, .35, .03, 'sawtooth'),
   crate: () => { whoosh(.18, .07, 380); note(140, .16, .05, 'square'); setTimeout(() => note(95, .12, .04, 'triangle'), 60); },
@@ -330,10 +330,14 @@ function fireOrb(x, y, z, tx, ty, tz, speed = 7) {
 }
 function clearEffects() { waves.forEach(w => w.m.visible = false); waves = []; markers.forEach(m => m.m.visible = false); markers = []; orbPool.forEach(o => { o.life = 0; o.m.visible = false; }); }
 
+// Feueratem: Flammenringe und Funkenstreifen in Orange und Gelb (gleiche Form und Trefferzone wie der frühere Windstoß).
+const fireMat = new T.MeshBasicMaterial({color: 0xff7a2e, transparent: true, opacity: .9, depthWrite: false, toneMapped: false});
+const fireCoreMat = new T.MeshBasicMaterial({color: 0xffe07a, transparent: true, opacity: .95, depthWrite: false, toneMapped: false});
+const fireEdgeMat = new T.MeshBasicMaterial({color: 0xb3261e, transparent: true, opacity: .7, depthWrite: false, toneMapped: false});
 function makeGust(x, y, z, yaw) {
   const g = new T.Group(); g.position.set(x, y + 1.2, z); g.rotation.y = yaw;
-  for (let i = 0; i < 4; i++) { const r = new T.Mesh(windRingGeo, i % 2 ? windWhiteMat : windMat); r.userData.offset = i; g.add(r); const border = new T.Mesh(windRingGeo, windEdgeMat); border.scale.setScalar(1.14); r.add(border); }
-  for (let i = 0; i < 9; i++) { const m = new T.Mesh(windStreakGeo, i % 2 ? windMat : windWhiteMat); m.userData.angle = i / 9 * TAU; m.userData.offset = i / 9; g.add(m); }
+  for (let i = 0; i < 4; i++) { const r = new T.Mesh(windRingGeo, i % 2 ? fireCoreMat : fireMat); r.userData.offset = i; g.add(r); const border = new T.Mesh(windRingGeo, fireEdgeMat); border.scale.setScalar(1.14); r.add(border); }
+  for (let i = 0; i < 9; i++) { const m = new T.Mesh(windStreakGeo, i % 2 ? fireMat : fireCoreMat); m.userData.angle = i / 9 * TAU; m.userData.offset = i / 9; g.add(m); }
   world.add(g); gusts.push({g, age: 0}); return g;
 }
 function tickGusts(dt) {
@@ -388,7 +392,7 @@ function chestPickup() {
 }
 
 // ───────── Drachenkunst: Ansturm, Schatzkörbe, Lichtfalter, Funkel ─────────
-// Schatzkörbe stehen in jeder Welt auf festem Boden; Rammstoß, Ansturm oder Windstoß zerbrechen sie. Sie werden nicht gespeichert
+// Schatzkörbe stehen in jeder Welt auf festem Boden; Rammstoß, Ansturm oder Feueratem zerbrechen sie. Sie werden nicht gespeichert
 // und stehen beim nächsten Besuch wieder. Aus Körben und besiegten Gegnern steigt ein Lichtfalter: Fangen heilt ein Herz.
 // Funkel, das Glühwürmchen, begleitet Aeru, zeigt mit seiner Farbe die Lebensenergie und holt Splitter in der Nähe heran.
 const CRATE_SPOTS = [[9, 2], [-9, 3], [-16, 10], [16, -12], [-6, -15]];
@@ -472,6 +476,11 @@ const REGION_DEFS = [{id: 'n', name: 'Nordgebiet', x: 0, z: -76, r: 20, axis: 'z
   {id: 'w', name: 'Westgebiet', x: -70, z: -16, r: 19, axis: 'x', at: -16, side: -1},
   {id: 's', name: 'Südgebiet', x: -22, z: 74, r: 20, axis: 'z', at: -14, side: 1}];
 const GATE_NEXT = {x: 0, z: -91}, GATE_PREV = {x: -22, z: 89};
+// Heimathain: die Heimatwelt (in Welt 1, östlich über eine eigene Brücke) mit einem Levelportal je Welt. In jeder anderen Welt führt das Heimtor im Südgebiet zurück.
+const HUB = {x: 70, z: 36, r: 22, at: 20}, HOME_GATE = {x: -36, z: 70}, HOME_ARRIVE = {x: -31.2, y: 0, z: 71.4};
+const hubAngle = i => (-30 + (i - 1) * 36) * Math.PI / 180;
+const hubPortal = (i, rr = 14) => ({x: HUB.x + Math.cos(hubAngle(i)) * rr, z: HUB.z + Math.sin(hubAngle(i)) * rr});
+const reserved = (x, z, m) => [GATE_NEXT, GATE_PREV, HOME_GATE].some(g => Math.hypot(g.x - x, g.z - z) < m);
 // Kristalldrachen: vier je Welt, eigene Namen und Worte (Reihenfolge Nord, Ost, West, Süd).
 const RESCUE = [
   [['Ilvar', 'Die Stille hat uns in Kristall gesperrt. Dein Wind hat den Bann gebrochen – flieg weiter, kleiner Bruder.'], ['Mora', 'Ich habe die Wiesen bewacht, bis alles still wurde. Danke, Aeru. Die Körbe hier verstecken Edelsteine.'], ['Tesk', 'Ein Dieb mit einem Ei lief vorbei. Halte die Rammtaste, dann holst du ihn ein!'], ['Nunah', 'Hinter mir öffnet sich das Weltentor, sobald dein Leuchtkern brennt.']],
@@ -480,13 +489,13 @@ const RESCUE = [
   [['Nimbra', 'Die Wolkenriffe sind weit. Folge den roten Edelsteinen über die Brücken.'], ['Faro', 'Ich hörte das Ei weinen. Der Dieb ist schnell – sei schneller.'], ['Sedi', 'Hier oben ist der Wind am stärksten. Danke für die Freiheit.'], ['Tomo', 'Jeder Korb hat einen Schatz. Zerbrich sie alle!']],
   [['Lysa', 'Mein Echo war das Einzige, was blieb. Jetzt habe ich wieder eine Stimme.'], ['Grav', 'Schatten weichen dir aus. Warte, bis sie springen, dann triff sie.'], ['Ithe', 'Die Klamm ist tief. Bleib auf den Brücken, die Kante hält dich.'], ['Run', 'Die Wahrheit klingt wie Kristall. Danke, Aeru.']],
   [['Aurel', 'Der letzte Morgen wartet auf dich. Ich spüre ihn schon.'], ['Ninive', 'Die Ruinen erinnern sich an Drachenflügel. Lass sie wieder rauschen.'], ['Bram', 'Viele Gegner hier – ein Ansturm räumt den Weg frei.'], ['Selu', 'Leuchte, kleiner Drache. Die Stille fürchtet dein Licht.']],
-  [['Nachtwind', 'Im Nachtgarten blühen Samen, die nicht hierher gehören. Danke für die Rettung.'], ['Mirr', 'Motten fallen schon beim ersten Windstoß.'], ['Daal', 'Aus den Warnkreisen der Wurzeln musst du heraus, sonst trifft es dich.'], ['Veyla', 'Du hast uns alle gefunden? Dann ist der Himmel wieder ganz.']]];
-let regions = [], jewels = [], dragonStatues = [], thief = null, worldGates = [], gateTold = 0, jewelBatches = [];
+  [['Nachtwind', 'Im Nachtgarten blühen Samen, die nicht hierher gehören. Danke für die Rettung.'], ['Mirr', 'Motten fallen schon beim ersten Feuerstoß.'], ['Daal', 'Aus den Warnkreisen der Wurzeln musst du heraus, sonst trifft es dich.'], ['Veyla', 'Du hast uns alle gefunden? Dann ist der Himmel wieder ganz.']]];
+let regions = [], jewels = [], dragonStatues = [], thief = null, worldGates = [], gateTold = 0, jewelBatches = [], hub = null, elderTold = false;
 const regionSave = (key, index = save.level) => (save[key] ||= Array.from({length: LEVEL_COUNT}, () => []))[index] ||= [];
 const jewelValue = (index = save.level) => jewels.length && index === save.level ? jewels.filter(j => j.got).reduce((n, j) => n + j.v, 0) : 0;
 const jewelTotal = () => jewels.reduce((n, j) => n + j.v, 0);
 // Brückenbereich samt 7 m Zugang auf dem Hauptland (dort stehen keine Bäume oder Felsen im Weg).
-const nearBridge = (x, z, m = 3) => regions.some(rg => { if (!rg.bridge) return false; const a = rg.bridge.a - rg.side * 7, b = rg.bridge.b; return rg.axis === 'x' ? Math.abs(z - rg.at) < m && (x - a) * (x - b) <= 0 : Math.abs(x - rg.at) < m && (z - a) * (z - b) <= 0; });
+const nearBridge = (x, z, m = 3) => [...regions, hub].some(rg => { if (!rg) return false; if (!rg.bridge) return false; const a = rg.bridge.a - rg.side * 7, b = rg.bridge.b; return rg.axis === 'x' ? Math.abs(z - rg.at) < m && (x - a) * (x - b) <= 0 : Math.abs(x - rg.at) < m && (z - a) * (z - b) <= 0; });
 // Statue: ein Drachenkörper als einzige Geometrie (ein Draw Call je Statue), einmal gebaut und geteilt.
 let statueGeo = null;
 const crystalMat = new T.MeshStandardMaterial({color: linearColor('#c6ecff'), emissive: linearColor('#4f9fd6'), emissiveIntensity: .45, roughness: .15, metalness: .1, flatShading: true, transparent: true, opacity: .82});
@@ -499,7 +508,7 @@ function mergedGeometry(group) {
 function statueGeometry() { if (!statueGeo) { const d = dragon('#ffffff', '#ffffff', 1.25); statueGeo = mergedGeometry(d); } return statueGeo; }
 function buildRegions(index) {
   const cfg = levels[index], R = cfg.mainRadius || 27;
-  regions = []; jewels = []; dragonStatues = []; thief = null; worldGates = []; const spawned = [];
+  regions = []; jewels = []; dragonStatues = []; thief = null; worldGates = []; hub = null; const spawned = [];
   let seed = 9187 + index * 71; const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
   const got = regionSave('jewels', index), freed = regionSave('dragons', index), egg = regionSave('eggs', index);
   const addJewel = (kind, x, z, y = 0, hidden = false) => { const id = jewels.length; jewels.push({id, kind, v: JEWEL[kind].v, x, y: y + 1, z, got: got.includes(id), hidden}); return jewels[id]; };
@@ -519,8 +528,9 @@ function buildRegions(index) {
     platform(tx, tz, 5, 5, 1.1); platform(tx + 2.5, tz - 2.5, 3.4, 3.4, 2.2); addJewel('gold', tx + 2.5, tz - 2.5, 2.2);
     if (rg.id === 'n') { platform(tx + 5, tz - 5, 3, 3, 3.3); addJewel('lila', tx + 5, tz - 5, 3.3); }
     // Grüne Ringe und blaue Edelsteine im Gebiet
-    for (let i = 0; i < 6; i++) { const ang = i / 6 * TAU + rand(), rr = rg.r * .55; addJewel('gruen', rg.x + Math.cos(ang) * rr, rg.z + Math.sin(ang) * rr); }
-    for (let i = 0; i < 2; i++) { const ang = rand() * TAU, rr = rg.r * .3; addJewel('blau', rg.x + Math.cos(ang) * rr, rg.z + Math.sin(ang) * rr); }
+    const place = (kind, ang, rr) => { let x = rg.x + Math.cos(ang) * rr, z = rg.z + Math.sin(ang) * rr; if (reserved(x, z, 4.5)) { x = rg.x + Math.cos(ang + Math.PI) * rr; z = rg.z + Math.sin(ang + Math.PI) * rr; } addJewel(kind, x, z); };
+    for (let i = 0; i < 6; i++) place('gruen', i / 6 * TAU + rand(), rg.r * .55);
+    for (let i = 0; i < 2; i++) place('blau', rand() * TAU, rg.r * .3);
     // Kristalldrache gegenüber der Brücke
     const di = REGION_DEFS.indexOf(def), dx = rg.axis === 'x' ? rg.x + rg.side * rg.r * .45 : rg.x - 7, dz = rg.axis === 'x' ? rg.z + 7 : rg.z + rg.side * rg.r * .4;
     const st = new T.Mesh(statueGeometry(), freed.includes(di) ? freedMat : crystalMat); st.position.set(dx, 0, dz); st.rotation.y = Math.atan2(rg.x - dx, rg.z - dz) + Math.PI; st.castShadow = true; world.add(st);
@@ -535,7 +545,7 @@ function buildRegions(index) {
       const sx = rg.x - ex, sz = rg.z - ez, k = clamp(((x - ex) * sx + (z - ez) * sz) / (sx * sx + sz * sz), 0, 1);
       if (Math.hypot(x - ex - sx * k, z - ez - sz * k) < 3.5) continue;
       if (nearBridge(x, z, 5) || Math.hypot(x - tx - 2.5, z - tz + 2.5) < 7 || Math.hypot(x - dx, z - dz) < 5 || Math.hypot(x - ex, z - ez) < 4 || jewels.some(j => Math.hypot(j.x - x, j.z - z) < 3)
-        || [GATE_NEXT, GATE_PREV].some(g => Math.hypot(g.x - x, g.z - z) < 7)) continue;
+        || reserved(x, z, 7)) continue;
       tree(x, z, .7 + rand() * .5);
     }
     // Gegner des Gebiets
@@ -545,8 +555,15 @@ function buildRegions(index) {
   // Schatzkörbe im Gebiet mit Edelstein darin (erscheint beim Zerbrechen)
   for (const rg of regions) for (let i = 0; i < 3; i++) {
     const ang = i * 2.1 + 1, rr = rg.r * .72, x = rg.x + Math.cos(ang) * rr, z = rg.z + Math.sin(ang) * rr;
-    if (nearBridge(x, z, 4) || treeColliders.some(t => Math.hypot(t.x - x, t.z - z) < t.crown + 1.4) || jewels.some(j => Math.hypot(j.x - x, j.z - z) < 2)) continue;
+    if (nearBridge(x, z, 4) || reserved(x, z, 5) || treeColliders.some(t => Math.hypot(t.x - x, t.z - z) < t.crown + 1.4) || jewels.some(j => Math.hypot(j.x - x, j.z - z) < 2)) continue;
     const j = addJewel(i ? 'blau' : 'gruen', x, z, 0, true); addCrate(x, 0, z, j);
+  }
+  // Wächter im Westgebiet: ein großer Gegner (6 Treffer). Besiegt gibt er einen lila Edelstein frei (gespeichert – danach bleibt er fort).
+  const wr = regions[2], gj = addJewel('lila', wr.x, wr.z - 3, 0, true);
+  if (!gj.got) {
+    const kind = cfg.enemies[0], e = makeEnemy(kind, wr.x, wr.z - 3);
+    Object.assign(e, {guard: gj, size: 2.2, hp: 6, isle: {x: wr.x, z: wr.z, r: wr.r - 3}, def: {...e.def, hp: 6, notice: 13, windup: e.def.windup + .25, dash: e.def.dash + 2, label: 'Wächter'}});
+    e.g.scale.setScalar(2.2); spawned.push(e);
   }
   // Eierdieb im Ostgebiet
   const o = regions[1];
@@ -555,14 +572,30 @@ function buildRegions(index) {
     const e = mesh('ball', '#fff4dc', 0, 1.1, .5, .32, .42, .32, g, true); e.material = mat('#fff1c9', true);
     g.position.set(o.x, 0, o.z); world.add(g); thief = {x: o.x, z: o.z, home: o, g, t: 0, caught: false, fled: 0};
   }
+  // Heimathain mit Levelportalen (nur in Welt 1)
+  if (index === 0) {
+    const H = HUB, start = Math.sqrt(R * R - H.at * H.at) - 1.5, endIn = H.x - Math.sqrt(H.r * H.r - (H.z - H.at) ** 2) + 1.5;
+    island(H.x, H.z, H.r, 0); platform((start + endIn) / 2, H.at, endIn - start, 4, 0);
+    hub = {...H, id: 'h', axis: 'x', side: 1, bridge: {a: start, b: endIn}, entry: {x: endIn - 3, z: H.at}};
+    for (let t = 3; t < endIn - start - 2; t += 4) addJewel('rot', start + t, H.at);
+    const plaza = mesh('cylinder', cfg.accent, H.x, .06, H.z, 6, .12, 6); plaza.castShadow = false;
+    const st = new T.Mesh(statueGeometry(), freedMat); st.position.set(H.x, .2, H.z); st.scale.setScalar(1.5); st.rotation.y = Math.atan2(H.x - hub.entry.x, H.z - hub.entry.z) + Math.PI; st.castShadow = true; world.add(st);
+    treeColliders.push({x: H.x, z: H.z, trunk: 1.3, trunkTop: 3, crown: 1.8, cy: -100, ch: 0, rock: true, statue: true});
+    for (let i = 1; i < LEVEL_COUNT; i++) {
+      const p = hubPortal(i), open = !!save.cores[i - 1], short = levels[i].name.split(' · ')[1];
+      worldGates.push(makeWorldGate({id: 'hub' + i, ...p, rot: Math.atan2(H.x - p.x, H.z - p.z), to: i, need: i - 1, arrive: HOME_ARRIVE, name: (i + 1) + ' · ' + short, color: open ? levels[i].accent : '#59647b', rim: open ? '#ffe3a4' : '#8b8799'}));
+    }
+    for (let i = 0; i < 5; i++) { const ang = hubAngle(i + 1.5), x = H.x + Math.cos(ang) * 19.5, z = H.z + Math.sin(ang) * 19.5; if (!nearBridge(x, z, 4)) tree(x, z, .8); }
+  }
   // Weltentore
+  if (index > 0) worldGates.push(makeWorldGate({id: 'home', ...HOME_GATE, rot: Math.atan2(HOME_ARRIVE.x - HOME_GATE.x, HOME_ARRIVE.z - HOME_GATE.z), to: 0, arrive: {...hubPortal(index, 9.5), y: 0}, name: '⌂ Heimathain', color: '#ffe3a4', rim: '#9ff3d4'}));
   if (index < LEVEL_COUNT - 1) worldGates.push(makeWorldGate({id: 'next', ...GATE_NEXT, to: index + 1, name: '→ ' + levels[index + 1].name.split(' · ')[1], color: '#9ff3d4', rim: '#ffe3a4'}));
   if (index > 0) worldGates.push(makeWorldGate({id: 'prev', ...GATE_PREV, to: index - 1, name: '← ' + levels[index - 1].name.split(' · ')[1], color: '#ffc9a6', rim: '#c7a6ff'}));
   buildJewelMeshes();
   return spawned;
 }
 function makeWorldGate(p) {
-  const {g, disc} = portalGate(p, Math.atan2(-p.x, -p.z)); return {...p, g, disc};
+  const {g, disc} = portalGate(p, p.rot ?? Math.atan2(-p.x, -p.z)); return {...p, g, disc};
 }
 // Edelsteine als InstancedMesh je Farbe (fünf Draw Calls für alle Edelsteine einer Welt).
 const jewelM = new T.Matrix4(), jewelQ = new T.Quaternion(), jewelS = new T.Vector3(), jewelP = new T.Vector3(), jewelE = new T.Euler();
@@ -619,12 +652,22 @@ function updateRegions(dt) {
     const cx = thief.x - h.x, cz = thief.z - h.z, cr = Math.hypot(cx, cz), lim = h.r - 2.5; if (cr > lim) { thief.x = h.x + cx / cr * lim; thief.z = h.z + cz / cr * lim; }
     thief.t += dt; thief.g.position.set(thief.x, Math.abs(Math.sin(thief.t * 12)) * .25, thief.z); if (Math.hypot(vx, vz) > .5) thief.g.rotation.y = Math.atan2(-vx, -vz);
   }
+  // Ormun, der Älteste im Heimathain, erklärt beim ersten Besuch die Levelportale.
+  if (hub && !elderTold && mode === 'play' && Math.hypot(state.x - hub.x, state.z - hub.z) < 5.5 && state.y < 2.5) {
+    elderTold = true; const role = 'Ältester · Heimathain', open = worldGates.filter(g => g.need != null && save.cores[g.need]).length;
+    openDialog('heim_ormun', [{name: 'Ormun', role, portrait: '✺', who: 'drache', text: 'Willkommen im Heimathain, kleiner Bruder. Von hier führt ein Portal in jede Welt, die du befreit hast.'},
+      {name: 'Ormun', role, portrait: '✺', who: 'drache', text: `Offen sind ${open} von ${LEVEL_COUNT - 1} Portalen. Jeder Leuchtkern weckt das nächste. Das Heimtor im Süden jeder Welt bringt dich zurück.`},
+      {name: 'Ormun', role, portrait: '✺', who: 'drache', text: `Gerettet hast du ${totalDragons()} von ${LEVEL_COUNT * 4} Drachen und ${totalEggs()} von ${LEVEL_COUNT} Eiern. Flieg los!`}], () => {});
+  }
   // Weltentore: hineinlaufen genügt
   for (const g of worldGates) if (Math.hypot(state.x - g.x, state.z - g.z) < 2 && state.y < 3 && mode === 'play') {
-    if (g.id === 'next' && !save.cores[save.level]) { if (time > gateTold) { gateTold = time + 4; toast('Das Weltentor erwacht, wenn der Leuchtkern dieser Welt leuchtet'); sfx.wrong(); } continue; }
+    const need = g.id === 'next' ? save.level : g.need;
+    if (need != null && !save.cores[need]) { if (time > gateTold) { gateTold = time + 4; toast(g.id === 'next' ? 'Das Weltentor erwacht, wenn der Leuchtkern dieser Welt leuchtet' : 'Dieses Portal erwacht, wenn der Leuchtkern von ' + levels[need].name.split(' · ')[1] + ' leuchtet'); sfx.wrong(); } continue; }
     sfx.portal(); retrigger($('fade'), 'on');
-    const arrive = g.id === 'next' ? {x: GATE_PREV.x, y: 0, z: GATE_PREV.z - 5} : {x: GATE_NEXT.x, y: 0, z: GATE_NEXT.z + 5};
-    travel(g.to, arrive); return;
+    const arrive = g.arrive || (g.id === 'next' ? {x: GATE_PREV.x, y: 0, z: GATE_PREV.z - 5} : {x: GATE_NEXT.x, y: 0, z: GATE_NEXT.z + 5});
+    travel(g.to, arrive);
+    if (g.id === 'home') toast(`Heimathain · Drachen ${totalDragons()} / ${LEVEL_COUNT * 4} · Dracheneier ${totalEggs()} / ${LEVEL_COUNT}`);
+    return;
   }
 }
 function catchThief(hit) {
@@ -719,7 +762,7 @@ function buildLevel(index, titleOnly = false) {
   cfg.enemies.forEach((kind, i) => { const x = (i % 2 ? 1 : -1) * (7 + (i % 3) * 4), z = 9 - Math.floor(i / 2) * 6; enemies.push(makeEnemy(kind, x, z)); }); enemies.push(...regionEnemies);
   syncNpcs(true); buildCrates(index);
   // Rastpunkte: Inselstart, oberes Tor, beide Außeninseln, inselspezifische Höhen.
-  checkpoints = [{x: 0, y: 0, z: 19, start: true}, {x: 0, y: 3, z: -17.6}, {x: 36, y: 1, z: 3}, {x: -35, y: 2, z: -5}, ...SKY.map(sk => ({x: sk.x - sk.r * .45, y: sk.y, z: sk.z - sk.r * .1})), ...cfg.checkpoints.map(([x, y, z]) => ({x, y, z})), ...regions.map(rg => ({x: rg.entry.x, y: 0, z: rg.entry.z}))];
+  checkpoints = [{x: 0, y: 0, z: 19, start: true}, {x: 0, y: 3, z: -17.6}, {x: 36, y: 1, z: 3}, {x: -35, y: 2, z: -5}, ...SKY.map(sk => ({x: sk.x - sk.r * .45, y: sk.y, z: sk.z - sk.r * .1})), ...cfg.checkpoints.map(([x, y, z]) => ({x, y, z})), ...(hub ? [{x: hub.entry.x, y: 0, z: hub.entry.z}] : []), ...regions.map(rg => ({x: rg.entry.x, y: 0, z: rg.entry.z}))];
   for (const c of checkpoints.slice(1)) { const m = mesh('cylinder', cfg.accent, c.x, c.y + .08, c.z, .55, .16, .55); m.castShadow = false; }
   for (let i = 0; i < 14; i++) { const a = i / 14 * TAU, x = Math.cos(a) * (120 + rand() * 30), z = Math.sin(a) * (120 + rand() * 30), y = -8 + rand() * 18; const c = new T.Group(); for (let j = 0; j < 4; j++) { const m = new T.Mesh(geos.ball, mat(index === 2 ? '#94abc3' : '#e3e5d4')); m.position.set(j * 3, 0, j % 2); m.scale.set(4.6, 1.6, 2.8); c.add(m); } c.position.set(x, y - 7, z); world.add(c); clouds.push(c); if (i % 2 === 0) { const m = mesh('cone', cfg.rock, x, y - 12, z, 6 + rand() * 7, 18, 8); m.rotation.z = Math.PI; mesh('cylinder', cfg.grass, x, y - 3, z, 8, .8, 8); } }
   for (const s of [-1, 1]) { ring(s * 28, 3, s === 1 ? 2 : -5, 1.3, '#ffe6a5').rotation.y = Math.PI / 2; tree(s === 1 ? 39 : -37, s === 1 ? 5 : -7, .7); }
@@ -730,7 +773,7 @@ function buildLevel(index, titleOnly = false) {
   batchScenery();
   const cp = save.checkpoint && save.checkpoint.level === index ? save.checkpoint : null;
   const sx = cp ? cp.x : 0, sy = cp ? cp.y : 0, sz = cp ? cp.z : 19;
-  state = {x: sx, y: sy, z: sz, vy: 0, vx: 0, vz: 0, flight: false, draftSuppressed: false, stamina: maxStamina(), coyote: .12, jumpBuffer: 0, flapCooldown: 0, yaw: 0, hp: maxHp(), onGround: true, checkpoint: {x: sx, y: sy, z: sz}, distance: 0, dodge: 0, dodgeCooldown: 0, dodgeX: 0, dodgeZ: 0, charge: 0, chargeHit: 0, landing: 0, jumpCut: true, jumpT: 1, stepDist: 0, cpTimer: 0};
+  state = {x: sx, y: sy, z: sz, vy: 0, vx: 0, vz: 0, flight: false, glide: false, draftSuppressed: false, stamina: maxStamina(), coyote: .12, jumpBuffer: 0, flapCooldown: 0, yaw: 0, hp: maxHp(), onGround: true, checkpoint: {x: sx, y: sy, z: sz}, distance: 0, dodge: 0, dodgeCooldown: 0, dodgeX: 0, dodgeZ: 0, charge: 0, chargeHit: 0, landing: 0, jumpCut: true, jumpT: 1, stepDist: 0, cpTimer: 0};
   visualPosition.set(sx, sy, sz); cameraTarget.set(sx, sy + 1.2, sz); player.position.set(sx, sy, sz); player.visible = true; camYaw = 0; attackTime = 0; attackCooldown = 0; invulnerable = 0; near = null;
   camera.position.set(sx, sy + 7, sz + 10); applyQuality(); refreshWorld(); updateHUD();
   if (!titleOnly) { worldCard(index); retrigger($('fade'), 'on'); }
@@ -775,6 +818,8 @@ function jumpPress() {
   // Kurz vor der Landung wird der Druck gepuffert (Sprung bei Bodenkontakt) statt als Flügelschlag gewertet.
   const ground = floorAt(state.x, state.z, state.y + .42);
   if (state.vy < 0 && state.y - ground < .9) state.jumpBuffer = BUFFER;
+  // Gleiten wie beim Drachenjungen: zweiter Sprungdruck in der Luft breitet die Flügel aus – ohne Flügelkraft, bis zur Landung.
+  else if (!state.glide) { state.glide = true; state.vy = Math.min(state.vy, .4); sfx.flap(); if (!jumpPress.told) { jumpPress.told = true; toast('Gleiten · ' + actionKey('ramm') + ': fallen lassen · nochmal ' + actionKey('jump') + ': Flügelschlag'); } }
   else if (state.stamina >= 12 && state.flapCooldown <= 0) { state.flight = true; state.draftSuppressed = false; flap(); }
   else state.jumpBuffer = BUFFER;
 }
@@ -784,14 +829,14 @@ function flight() {
   if (mode !== 'play') return; audioStart();
   if (state.flight) { state.flight = false; state.draftSuppressed = true; toast('Flügel angelegt · Landen'); return; }
   if (state.stamina < 12) { toast('Flügelkraft lädt am Boden oder im Aufwind auf.'); return; }
-  state.flight = true; state.draftSuppressed = false; state.onGround = false; state.vy = Math.max(state.vy, 9); state.stamina -= 8; sfx.flap();
+  state.flight = true; state.glide = false; state.draftSuppressed = false; state.onGround = false; state.vy = Math.max(state.vy, 9); state.stamina -= 8; sfx.flap();
   if (!flight.told) { flight.told = true; toast(matchMedia('(pointer:coarse)').matches ? 'Flug · SPRUNG halten: steigen · ROLLE: sinken' : 'Flug · Leertaste antippen: Flügelschlag · halten: steigen · Umschalt: sinken'); }
 }
 let rammId = 0;
 // Rammstoß: Wer im Ausweichschub (Umschalt / ROLLE) einen Gegner trifft, schlägt ihn – wie der Ansturm eines Drachenjungen.
 function rammStrike() {
   const range = chestUpgrade('ramm') ? 3.2 : 1.7;
-  for (const e of enemies) if (e.state !== 'dead' && e.rammed !== rammId && Math.abs(state.y - (e.g.position.y || 0)) < 2.4 && Math.hypot(e.x - state.x, e.z - state.z) < range) { e.rammed = rammId; hitEnemy(e, state.dodgeX, state.dodgeZ); spark(e.x, 1.1, e.z, '#ffe3a3', 12); sfx.hit(); rumble(90, .45); }
+  for (const e of enemies) if (e.state !== 'dead' && e.rammed !== rammId && Math.abs(state.y - (e.g.position.y || 0)) < 2.4 && Math.hypot(e.x - state.x, e.z - state.z) < range + (e.size ? 1.2 : 0)) { e.rammed = rammId; hitEnemy(e, state.dodgeX, state.dodgeZ); spark(e.x, 1.1, e.z, '#ffe3a3', 12); sfx.hit(); rumble(90, .45); }
   for (const o of orbPool) if (o.life > 0 && Math.hypot(o.m.position.x - state.x, o.m.position.z - state.z) < range && Math.abs(o.m.position.y - state.y - 1) < 2) { o.life = 0; o.m.visible = false; spark(o.m.position.x, o.m.position.y, o.m.position.z, '#ffd9c2', 6); }
   crateHits(c => Math.hypot(c.x - state.x, c.z - state.z) < range + .6 && Math.abs(c.y - state.y) < 1.5);
   catchThief(t => Math.hypot(t.x - state.x, t.z - state.z) < range + .4 && Math.abs(state.y) < 2);
@@ -826,7 +871,7 @@ function rumble(ms, strong = .5) {
 // Tastenname für Hinweise: Controller-Symbol, Touch-Knopf oder Taste.
 const PAD_BUTTON = {talk: 'y', jump: 'a', wind: 'b', ramm: 'x', fly: 'rt', journal: 'select', pause: 'start'};
 const KEY_LABEL = {talk: 'R', jump: '␣', wind: 'F', ramm: '⇧', fly: 'G', journal: 'J', pause: 'Esc'};
-const TOUCH_LABEL = {talk: 'REDEN', jump: 'SPRUNG', wind: 'WIND', ramm: 'RAMM', fly: 'FLUG', journal: '☰', pause: 'Ⅱ'};
+const TOUCH_LABEL = {talk: 'REDEN', jump: 'SPRUNG', wind: 'FEUER', ramm: 'RAMM', fly: 'FLUG', journal: '☰', pause: 'Ⅱ'};
 function actionKey(a) {
   if (padOn() && window.EasyGamesPad?.glyph) return EasyGamesPad.glyph(PAD_BUTTON[a]);
   return matchMedia('(pointer:coarse)').matches ? TOUCH_LABEL[a] : KEY_LABEL[a];
@@ -848,7 +893,8 @@ function movePlayer(dt) {
   state.flapCooldown = Math.max(0, state.flapCooldown - dt); state.dodgeCooldown = Math.max(0, state.dodgeCooldown - dt); state.jumpBuffer = Math.max(0, state.jumpBuffer - dt); state.landing = Math.max(0, state.landing - dt);
   state.coyote = state.onGround ? COYOTE : Math.max(0, state.coyote - dt); state.boost = Math.max(0, (state.boost || 0) - dt);
   if (state.jumpBuffer > 0 && (state.onGround || state.coyote > 0)) doJump();
-  const air = !state.onGround, gliding = air && !state.flight && jumpDown && state.stamina > 0 && state.vy < 0;
+  if (state.flight || state.onGround || state.dodge > 0 || shiftDown && state.glide) state.glide = false;
+  const air = !state.onGround, gliding = air && !state.flight && (state.glide || jumpDown && state.stamina > 0 && state.vy < 0);
   const flySpeed = upgrade('speed') ? 1.12 : 1;
   // Horizontale Bewegung: schnelles Anlaufen und Abbremsen am Boden, Trägheit in der Luft.
   if (state.dodge > 0) {
@@ -868,10 +914,12 @@ function movePlayer(dt) {
   } else {
     let speed, rate;
     if (state.flight) { speed = (shiftDown ? 14 : 11) * flySpeed * (state.boost > 0 ? 1.5 : 1); rate = length > .05 ? 3.4 : 1.8; const ff = flightFloor(state); if (ff > -50 && state.y - ff < 12) { speed *= .75; rate = length > .05 ? 5 : 6; } }
-    else if (gliding) { speed = 9; rate = 4; }
+    else if (gliding) { speed = state.glide ? 11 : 9; rate = 4; }
     else if (air) { speed = 8; rate = 6; }
     else { speed = shiftDown ? 10.5 : 7.4; rate = length > .05 ? 16 : 22; }
-    state.vx = approach(state.vx, dx * speed * length, rate, dt); state.vz = approach(state.vz, dz * speed * length, rate, dt);
+    // Beim Gleiten segelt Aeru auch ohne Eingabe weiter geradeaus; der Stick lenkt nur.
+    if (state.glide && length < .3) state.vx = approach(state.vx, -Math.sin(state.yaw) * speed * .8, rate, dt), state.vz = approach(state.vz, -Math.cos(state.yaw) * speed * .8, rate, dt);
+    else { state.vx = approach(state.vx, dx * speed * length, rate, dt); state.vz = approach(state.vz, dz * speed * length, rate, dt); }
   }
   // Vertikal: ein Zustand pro Situation – Boden, Sprung/Fall, Gleiten, Flug.
   if (state.flight) {
@@ -881,7 +929,8 @@ function movePlayer(dt) {
     // Ohne Steigen erholen sich die Flügel langsam, damit niemand ohne Kraft unter einer Insel festhängt.
     else if (flightFloor(state) > -50 && state.y - flightFloor(state) < 12) { state.vy = approach(state.vy, -3.2, 3, dt); state.stamina = Math.min(maxStamina(), state.stamina + 8 * dt); }
     else { state.vy = approach(state.vy, state.stamina > 0 ? -1.4 : -2.6, 2.5, dt); state.stamina = Math.min(maxStamina(), state.stamina + 8 * dt); }
-  } else if (gliding) { state.vy = Math.max(-2.2, state.vy - 5 * dt); state.stamina = Math.max(0, state.stamina - 10 * dt); }
+  } else if (state.glide) state.vy = Math.max(-2.4, state.vy - 6 * dt);
+  else if (gliding) { state.vy = Math.max(-2.2, state.vy - 5 * dt); state.stamina = Math.max(0, state.stamina - 10 * dt); }
   else {
     // Variable Sprunghöhe: früh losgelassen = kleiner Hüpfer (mindestens gut eine Stufe hoch).
     state.jumpT += dt;
@@ -965,7 +1014,7 @@ function animatePlayer(dt, input, gliding) {
 }
 function respawn(message) {
   const max = maxHp();
-  Object.assign(state, state.checkpoint, {vy: 0, vx: 0, vz: 0, flight: false, draftSuppressed: false, stamina: maxStamina(), onGround: true, hp: state.hp > 0 ? state.hp : max, dodge: 0, charge: 0});
+  Object.assign(state, state.checkpoint, {vy: 0, vx: 0, vz: 0, flight: false, glide: false, draftSuppressed: false, stamina: maxStamina(), onGround: true, hp: state.hp > 0 ? state.hp : max, dodge: 0, charge: 0});
   if (state.hp <= 0) state.hp = max;
   invulnerable = 2; clearEffects(); if (boss) boss.onRespawn();
   visualPosition.set(state.x, state.y, state.z); camera.position.set(state.x, state.y + 7, state.z + 10);
@@ -1000,7 +1049,8 @@ function hitEnemy(e, fx, fz) {
   }
   e.hp--; e.pulse = .18; e.x += fx * 2; e.z += fz * 2; spark(e.x, 1, e.z, '#e2d4a9'); sfx.hit();
   if (e.state === 'windup') { e.state = 'recover'; e.t = .8; e.warn.visible = false; }
-  if (e.hp <= 0) { e.state = 'dead'; e.g.visible = false; e.respawn = 20; note(550, .22, .03); spawnFalter(e.x, (e.g.position.y || 0) + 1.2, e.z); quests.emit({type: 'enemy', level: save.level, kind: e.kind}); }
+  if (e.hp <= 0) { e.state = 'dead'; e.g.visible = false; e.respawn = e.guard ? Infinity : 20; note(550, .22, .03); spawnFalter(e.x, (e.g.position.y || 0) + 1.2, e.z);
+    if (e.guard) { e.guard.hidden = false; e.guard.x = e.x; e.guard.z = e.z; e.guard.y = 1.2; sfx.story(); spark(e.x, 1.5, e.z, '#c57bff', 30); rumble(260, .8); toast('Wächter besiegt · Ein lila Edelstein liegt frei'); } quests.emit({type: 'enemy', level: save.level, kind: e.kind}); }
 }
 function updateEnemies(dt) {
   for (const e of enemies) {
@@ -1021,7 +1071,7 @@ function updateEnemies(dt) {
       }
     } else if (e.state === 'dash') {
       e.x += e.dirX * e.def.dash * dt; e.z += e.dirZ * e.def.dash * dt;
-      if (d < 1.15 && state.y < 1.6) hurt(e.dirX, e.dirZ);
+      if (d < 1.15 * (e.size || 1) && state.y < 1.6) hurt(e.dirX, e.dirZ);
       if (e.t <= 0) { e.state = 'recover'; e.t = 1.2; }
     } else if (e.state === 'recover' && e.t <= 0) { e.state = 'patrol'; e.cool = 1.4 + Math.random(); }
     // Auf der Insel bleiben.
@@ -1042,7 +1092,7 @@ function strike() {
   if (mode !== 'play' || attackCooldown > 0) return; audioStart();
   attackCooldown = .45; attackTime = .42; sfx.attack();
   const fx = -Math.sin(state.yaw), fz = -Math.cos(state.yaw), range = attackRange();
-  makeGust(state.x, state.y, state.z, state.yaw); spark(state.x + fx, state.y + 1.2, state.z + fz, '#c0ffea', 14);
+  makeGust(state.x, state.y, state.z, state.yaw); for (let k = 1; k <= 3; k++) spark(state.x + fx * k * 1.6, state.y + 1.2, state.z + fz * k * 1.6, k % 2 ? '#ff9a3c' : '#ffd36e', 7);
   const facing = (x, z, r) => { const dx = x - state.x, dz = z - state.z, d = Math.hypot(dx, dz); return d < r && (d < 1.2 || (dx * fx + dz * fz) / d > .6); };
   for (const t of torches) if (!t.lit && Math.abs(state.y - t.y) < 3 && facing(t.x, t.z, range)) { if (!lightLantern(t)) break; }
   for (const e of enemies) if (e.state !== 'dead' && Math.abs(state.y) < 2.7 && facing(e.x, e.z, range)) hitEnemy(e, fx, fz);
@@ -1375,8 +1425,8 @@ function drawMap() {
   const c = $('map').getContext('2d'), s = .78; if (!c.translate) return;
   c.clearRect(0, 0, 160, 160); c.save(); c.translate(80, 80);
   c.fillStyle = '#9fc4b333'; c.beginPath(); c.arc(0, 0, (levels[save.level].mainRadius || 27) * s, 0, TAU); c.fill();
-  for (const [x, z, r] of [[37, 2, 7], [-36, -5, 6], ...regions.map(rg => [rg.x, rg.z, rg.r])]) { c.beginPath(); c.arc(x * s, z * s, r * s, 0, TAU); c.fill(); }
-  for (const rg of regions) { const {a, b} = rg.bridge; rg.axis === 'x' ? c.fillRect(Math.min(a, b) * s, (rg.at - 2) * s, Math.abs(b - a) * s, 4 * s) : c.fillRect((rg.at - 2) * s, Math.min(a, b) * s, 4 * s, Math.abs(b - a) * s); }
+  for (const [x, z, r] of [[37, 2, 7], [-36, -5, 6], ...[...regions, hub].filter(Boolean).map(rg => [rg.x, rg.z, rg.r])]) { c.beginPath(); c.arc(x * s, z * s, r * s, 0, TAU); c.fill(); }
+  for (const rg of [...regions, hub].filter(Boolean)) { const {a, b} = rg.bridge; rg.axis === 'x' ? c.fillRect(Math.min(a, b) * s, (rg.at - 2) * s, Math.abs(b - a) * s, 4 * s) : c.fillRect((rg.at - 2) * s, Math.min(a, b) * s, 4 * s, Math.abs(b - a) * s); }
   const dot = (x, z, r, color) => { c.fillStyle = color; c.beginPath(); c.arc(x * s, z * s, r, 0, TAU); c.fill(); };
   flightRings.filter(r => !r.got).forEach(r => dot(r.x, r.z, 3, '#ffe188')); gems.filter(g => !g.got).forEach(g => dot(g.x, g.z, 1.6, '#b5f7d1')); jewels.filter(j => !j.got && !j.hidden).forEach(j => dot(j.x, j.z, 1.2, JEWEL[j.kind].c));
   dragonStatues.forEach(d => dot(d.x, d.z, 2.6, d.freed ? '#ffd98a' : '#bfe6ff')); worldGates.forEach(g => dot(g.x, g.z, 3, g.color)); if (thief && !thief.caught) dot(thief.x, thief.z, 2.4, '#8fe06a');
@@ -1400,8 +1450,14 @@ function nextDialog() {
   $('dialog').hidden = false; $('prompt').hidden = true; $('skip').hidden = !save.seen[dialogCurrent.id];
   showLine(); if (!TEST) $('next').focus();
 }
+// Sprachausgabe: Dialogzeilen vorlesen (Gerätestimme, Deutsch). Drachen sprechen tiefer, Funkel und Kinder höher. Abschaltbar in den Einstellungen.
+const VOICE_PITCH = {drache: .7, vesper: .6, stille: .5, pip: 1.35};
+function speakLine(line) {
+  const sy = window.speechSynthesis; if (!sy || typeof SpeechSynthesisUtterance !== 'function') return;
+  try { sy.cancel(); if (!settings.voice || !line) return; const u = new SpeechSynthesisUtterance(line.text); u.lang = 'de-DE'; u.rate = 1.02; u.pitch = VOICE_PITCH[line.who] || 1; u.volume = settings.volume; const v = sy.getVoices?.().find(x => /^de/i.test(x.lang)); if (v) u.voice = v; sy.speak(u); } catch {}
+}
 function showLine() {
-  const line = dialogCurrent.lines[dialogIndex];
+  const line = dialogCurrent.lines[dialogIndex]; speakLine(line);
   setText('speaker', line.name); setText('role', line.role); $('portrait').textContent = line.portrait;
   $('portrait').dataset.who = line.who;
   typing = settings.reducedMotion || settings.textSpeed === 'sofort' ? null : {text: line.text, t: time, n: -1};
@@ -1416,7 +1472,7 @@ function advance() {
   closeDialog();
 }
 function closeDialog() {
-  const d = dialogCurrent; dialogCurrent = null; typing = null; if (d && story.dialogs[d.id]) save.seen[d.id] = 1;
+  const d = dialogCurrent; dialogCurrent = null; typing = null; speakLine(null); if (d && story.dialogs[d.id]) save.seen[d.id] = 1;
   $('dialog').hidden = true; if (mode === 'dialog') mode = 'play';
   d?.done?.();
   if (dialogQueue.length) nextDialog();
@@ -1462,7 +1518,7 @@ function renderJournal() {
   $('journalBody').innerHTML = html;
 }
 const SETTING_ROWS = [
-  ['volume', 'Lautstärke', 'range', 0, 1, .1], ['music', 'Musik', 'toggle'], ['quality', 'Grafik', 'cycle', ['auto', 'sparsam', 'ausgewogen', 'hoch']],
+  ['volume', 'Lautstärke', 'range', 0, 1, .1], ['music', 'Musik', 'toggle'], ['voice', 'Sprachausgabe (Dialoge vorlesen)', 'toggle'], ['quality', 'Grafik', 'cycle', ['auto', 'sparsam', 'ausgewogen', 'hoch']],
   ['camSens', 'Kamera-Empfindlichkeit', 'range', .3, 2.5, .1], ['touchSens', 'Touch-Empfindlichkeit', 'range', .3, 2.5, .1], ['camAssist', 'Kamerahilfe', 'toggle'],
   ['flightAssist', 'Flughilfe (weniger Kraftverbrauch)', 'toggle'], ['guide', 'Zielhinweise und Kompass', 'toggle'], ['textSpeed', 'Text', 'cycle', ['normal', 'sofort']],
   ['reducedMotion', 'Reduzierte Bewegung', 'toggle'], ['uiSize', 'Bediengröße', 'cycle', ['normal', 'gross']], ['perf', 'Leistungsanzeige', 'toggle']];
@@ -1779,7 +1835,7 @@ if (TEST) window.aeruTest = {
     quests: Object.fromEntries(story.quests.map(q => [q.id, quests.status(q.id)])), dialog: dialogCurrent ? {id: dialogCurrent.id, line: dialogIndex, queued: dialogQueue.map(d => d.id)} : null,
     boss: boss ? {id: boss.id, hp: boss.hp, active: boss.active, state: boss.state, phase: boss.phase, visible: boss.g.visible} : null, anchors: anchors.map(a => ({x: a.x, y: a.y, z: a.z, broken: a.broken})),
     near: near === 'portal' ? 'portal' : near?.id, target: currentTarget, npcs: [...npcs.values()].filter(n => n.present).map(n => ({id: n.id, x: n.x, y: n.y, z: n.z, marker: npcMarker(n.id)})),
-    items: items.map(i => ({id: i.id, x: i.x, y: i.y, z: i.z, visible: i.m.visible})), enemies: enemies.map(e => ({kind: e.kind, x: e.x, z: e.z, state: e.state, hp: e.hp, model: !!e.anim})),
+    items: items.map(i => ({id: i.id, x: i.x, y: i.y, z: i.z, visible: i.m.visible})), enemies: enemies.map(e => ({kind: e.kind, x: e.x, z: e.z, state: e.state, hp: e.hp, model: !!e.anim, guard: !!e.guard})),
     waves: waves.map(w => w.r), markers: markers.length, orbs: orbPool.filter(o => o.life > 0).length, gusts: gusts.map(e => ({age: e.age, meshes: e.g.children.length})),
     layout: {trees: treeColliders.map(t => ({...t})), gems: gems.map(g => ({x: g.x, y: g.y, z: g.z, id: g.id})), torches: torches.map(t => ({x: t.x, y: t.y, z: t.z, id: t.id, lit: t.lit})), rings: flightRings.map(r => ({x: r.x, y: r.y, z: r.z})), updrafts: updrafts.map(u => ({x: u.x, y: u.y, z: u.z, height: u.height})), solids: solids.map(s => ({...s})), checkpoints}, settings: {...settings}, quality: {auto: autoLevel, scale: renderScale}}),
   teleport: (x, y, z, yaw = 0) => { Object.assign(state, {x, y, z, yaw, vy: 0, vx: 0, vz: 0, flight: false, dodge: 0, charge: 0}); },
@@ -1791,7 +1847,7 @@ if (TEST) window.aeruTest = {
   sky: SKY, rammId: () => rammId,
   crates: () => crates.map(c => ({x: c.x, y: c.y, z: c.z, broken: c.broken})), falter: () => falterPool.filter(f => f.life > 0).map(f => ({x: f.x, y: f.y, z: f.z})), funkel: () => ({x: funkelPos.x, y: funkelPos.y, z: funkelPos.z, color: funkelColor()}), spawnFalter, hurt,
   regions: () => regions.map(r => ({id: r.id, x: r.x, z: r.z, r: r.r, bridge: r.bridge, axis: r.axis, at: r.at, entry: r.entry, tower: r.tower})), jewels: () => jewels.map(j => ({id: j.id, kind: j.kind, v: j.v, x: j.x, y: j.y, z: j.z, got: j.got, hidden: j.hidden})),
-  statues: () => dragonStatues.map(d => ({id: d.id, x: d.x, z: d.z, freed: d.freed})), thief: () => thief && {x: thief.x, z: thief.z, caught: thief.caught}, gates: () => worldGates.map(g => ({id: g.id, x: g.x, z: g.z, to: g.to})), jewelValue, jewelTotal,
+  statues: () => dragonStatues.map(d => ({id: d.id, x: d.x, z: d.z, freed: d.freed})), thief: () => thief && {x: thief.x, z: thief.z, caught: thief.caught}, gates: () => worldGates.map(g => ({id: g.id, x: g.x, z: g.z, to: g.to, need: g.need, arrive: g.arrive})), hub: () => hub && {x: hub.x, z: hub.z, r: hub.r, bridge: hub.bridge, at: hub.at, entry: hub.entry}, setCore: (i, v = true) => { save.cores[i] = v; }, jewelValue, jewelTotal,
   portals: () => gamePortals.map(p => ({id: p.id, x: p.x, z: p.z, url: p.url})), navigated: () => window.__aeruNavigate || null, cam: () => ({yaw: camYaw, pitch: camPitch}), padInput: () => ({x: padX, y: padY}),
   autoAdjust, setQuality: q => { settings.quality = q; applySettings(); }, applySettings, settings
 };
