@@ -49,8 +49,8 @@
 
   // ------------------------------------------------------------------ Titel & Hauptmenü
   function title() {
-    const s = UI.open('<div class="title"><div class="t-logo"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" fill="#111218" stroke="#ff8a1e" stroke-width="6"/><path d="M47 35 L88 60 L47 85Z" fill="#ff8a1e"/></svg>' +
-      '<h1>AnMa<span>Cha</span></h1><h2>Der Podcast</h2><p class="t-off">Offizielles Spiel</p></div>' +
+    const s = UI.open('<div class="title"><div class="t-logo"><img class="t-pod" src="' + UI.podLogo + '" alt="AnMaCha – Der Podcast mit Marco & Andrew · www.anmacha.de">' +
+      '<p class="t-off">Offizielles Spiel</p></div>' +
       '<p class="t-slogan">„' + D.SLOGAN + '“</p><button type="button" class="btn primary t-start" data-nav data-first id="tStart">' + startLabel() + '</button><p class="t-foot">mit Andrew &amp; Marco · Wir ♥ Medien</p></div>', { cls: 'title-screen', back: () => {} });
     const koop = (/[?&]koop=([A-Za-z0-9]{5})/.exec(location.search) || [])[1];
     let go = false; const start = () => { if (go) return; go = true; AMC.Audio.init(); AMC.Audio.sfx('jingle'); UI.close(s); mainMenu(); if (koop) AMC.Net.lobby(koop.toUpperCase()); };
@@ -63,15 +63,16 @@
   function mainMenu() {
     const st = Save.data.story, chDone = st.done, stars = Object.values(st.stars).reduce((a, b) => a + b, 0);
     const s = UI.open(
-      '<div class="menu-l"><div class="m-logo"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" fill="#111218" stroke="#ff8a1e" stroke-width="6"/><path d="M47 35 L88 60 L47 85Z" fill="#ff8a1e"/></svg><div><h1>AnMa<span>Cha</span> – Der Podcast</h1><p>Offizielles Spiel</p></div></div>' +
+      '<div class="menu-l"><div class="m-logo"><img src="' + UI.podLogo + '" alt=""><div><h1>AnMa<span>Cha</span> – Der Podcast</h1><p>Offizielles Spiel</p></div></div>' +
       '<nav class="m-list">' +
-      mi('story', '▶', 'Story: Staffel 1 & 2', chDone >= D.CHAPTERS.length ? 'Alle ' + D.CHAPTERS.length + ' Kapitel geschafft · ⭐ ' + stars + '/' + D.CHAPTERS.length * 3 : 'Kapitel ' + (chDone + 1) + ' von ' + D.CHAPTERS.length + ' · ⭐ ' + stars, true) +
+      mi('story', '▶', 'Story: Staffel 1–3', chDone >= D.CHAPTERS.length ? 'Alle ' + D.CHAPTERS.length + ' Kapitel geschafft · ⭐ ' + stars + '/' + D.CHAPTERS.length * 3 : 'Kapitel ' + (chDone + 1) + ' von ' + D.CHAPTERS.length + ' · ⭐ ' + stars, true) +
       mi('live', '🎙️', 'Live-Show', 'Endlos-Aufnahme · Rekord ' + U.fmt(Save.data.best.live) + ' Hörer') +
       mi('jagd', '🏃', 'Themenjagd', '3 Minuten durch die Stadt · Rekord ' + U.fmt(Save.data.best.jagd)) +
       mi('race', '🏁', 'Funk-Rennen', '10 Tore auf Zeit · ' + (Save.data.best.race ? 'Bestzeit ' + Save.data.best.race.toFixed(1) + ' s' : 'noch keine Bestzeit')) +
       mi('quiz', '🧠', 'KI-Quizshow', '1 Spieler oder 2 Spieler: Andrew gegen Marco') +
       mi('free', '🏙️', 'Stadt & Nebenaufträge', Object.keys(Save.data.quests).length + '/' + D.QUESTS.length + ' Aufträge erledigt · frei spielen, Radio hören') +
       mi('koop', '🌐', 'Online-Koop', 'Zu zweit auf zwei Geräten: Andrew & Marco – per Link, Code oder QR') +
+      mi('studio', '🛠️', 'Studio gestalten', 'Studio-Wert ' + AMC.StudioEdit.value() + ' · Möbel, Deko, Technik frei hinstellen – bringt Hörer-Bonus') +
       mi('shop', '🛍️', 'Fanshop', '🎟️ ' + U.fmt(Save.data.fan) + ' Fan-Punkte · Outfits & Studio-Upgrades') +
       mi('radio', '📻', 'Radio & Podcast', 'Alle Folgen und die 13 AnMaCha-Sender') +
       '</nav><div class="m-row">' + mi('settings', '⚙️', 'Einstellungen') + mi('controls', '🎮', 'Steuerung') + mi('credits', 'ℹ️', 'Mitwirkende') + '</div></div>' +
@@ -88,11 +89,17 @@
     el.querySelector('#mHost').onclick = swapHost;
     s.o.onKey = () => { if (I.hit('swap')) { swapHost(); return true; } return false; };
     updHost();
-    const go = { story: storyMenu, live: startLive, jagd: () => startCity('jagd'), race: () => startCity('race'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
+    const go = { studio: studioEdit, story: storyMenu, live: startLive, jagd: () => startCity('jagd'), race: () => startCity('race'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
     el.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go[b.dataset.go]());
     G.menu = s;
   }
   const mi = (go, icon, label, sub, first) => '<button type="button" class="m-item" data-nav data-go="' + go + '"' + (first ? ' data-first' : '') + '><span class="mi-ic">' + icon + '</span><span class="mi-t"><b>' + label + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + '</span></button>';
+
+  // ------------------------------------------------------------------ Studio gestalten
+  function studioEdit() {
+    UI.closeAll(); stopAll(); G.mode = 'edit'; UI.showTouch(false);
+    AMC.StudioEdit.open(() => { G.mode = 'menu'; AMC.Studio.enter('menu'); mainMenu(); });
+  }
 
   // ------------------------------------------------------------------ Story
   function storyMenu() {
@@ -100,7 +107,7 @@
     const s = UI.open('<div class="panel glass wide"><header><h2>▶ Die Staffel</h2><button class="btn small" data-nav id="sBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
       '<p class="lead">Staffel 1: von der ersten Folge im Sommer 2020 bis LIVE auf dem Podfluencer Festival. Staffel 2: Das Funkloch kehrt zurück – und streut alte Folgen in der Stadt.</p><div class="ch-grid">' +
       D.CHAPTERS.map((c, i) => {
-        const head = i === 0 || (D.CHAPTERS[i - 1].season || 1) !== (c.season || 1) ? '<h3 class="ch-season">Staffel ' + (c.season || 1) + (c.season === 2 ? ' · Das Funkloch kehrt zurück' : ' · Die Geschichte von AnMaCha') + '</h3>' : '';
+        const head = i === 0 || (D.CHAPTERS[i - 1].season || 1) !== (c.season || 1) ? '<h3 class="ch-season">Staffel ' + (c.season || 1) + ({ 2: ' · Das Funkloch kehrt zurück', 3: ' · Auf Sendung – die AnMaCha-Radios' }[c.season] || ' · Die Geschichte von AnMaCha') + '</h3>' : '';
         const open = i <= st.done, stars = st.stars[c.id] || 0;
         return head + '<button type="button" class="ch-card' + (open ? '' : ' locked') + '" data-nav data-ch="' + i + '"' + (i === Math.min(st.done, D.CHAPTERS.length - 1) ? ' data-first' : '') + (open ? '' : ' disabled') + ' style="--i:' + i + '">' +
           '<span class="ch-n">' + (i + 1) + '</span><span class="ch-t"><small>' + c.when + ' · Folge ' + (c.ep < 10 ? '#0' : '#') + c.ep + '</small><b>' + c.title + '</b><em>' + objName(c) + '</em></span>' +
@@ -214,7 +221,7 @@
       const epIdx = AMC.Media.episodes.findIndex(e => e.nr === (ch.ep < 10 ? '#0' : '#') + ch.ep);
       results({
         title: '✅ Kapitel ' + (idx + 1) + ' geschafft!', stars: r.stars,
-        lines: [['Hörer', U.fmt(r.listeners)], ['Themen-Funken', sumGot(cityRes.got)], ['Störsender', cityRes.kills], ['Fans gesprochen', cityRes.talks], fanLine(fp)].concat(first && seasonEnd ? [['🏆', 'Staffel ' + (ch.season || 1) + ' abgeschlossen!' + (idx < D.CHAPTERS.length - 1 ? ' Staffel 2 ist freigeschaltet.' : ' Danke fürs Spielen!')]] : []),
+        lines: [['Hörer', U.fmt(r.listeners)], ['Themen-Funken', sumGot(cityRes.got)], ['Störsender', cityRes.kills], ['Fans gesprochen', cityRes.talks], fanLine(fp)].concat(first && seasonEnd ? [['🏆', 'Staffel ' + (ch.season || 1) + ' abgeschlossen!' + (idx < D.CHAPTERS.length - 1 ? ' Staffel ' + ((ch.season || 1) + 1) + ' ist freigeschaltet.' : ' Danke fürs Spielen!')]] : []),
         next: idx < D.CHAPTERS.length - 1 ? () => playChapter(idx + 1) : null,
         again: () => playChapter(idx),
         episode: epIdx >= 0 ? epIdx : null
@@ -380,6 +387,9 @@
         if (!uiBusy && I.hit('pause')) pause();
         if (!G.paused && !uiBusy) AMC.Quiz.update(dt);
         AMC.Quiz.render();
+      } else if (G.mode === 'edit') {
+        if (!uiBusy) AMC.StudioEdit.update(dt);
+        AMC.Studio.update(dt); AMC.Studio.render();
       } else if (G.mode === 'menu') {
         AMC.Studio.update(dt, { led: { hype: 55 + Math.sin(now / 900) * 30, text: 'BEREIT', sub: AMC.Media.active() ? '♪ ' + AMC.Media.label().main.slice(0, 34) : 'Seid Ihr bereit?' } });
         AMC.Studio.render();
