@@ -14,6 +14,7 @@
     "▶ Story: Staffel 1 & 2 – 12 Kapitel, eins nach dem anderen freigeschaltet.",
     "🎙️ Live-Show – Endlos-Aufnahme im Studio, bis der Hype auf null fällt. Rekord wird gespeichert.",
     "🏃 Themenjagd – 3 Minuten in der Stadt, so viele Punkte wie möglich.",
+    "🏁 Funk-Rennen – lauf auf Zeit durch 10 nummerierte Tore. Medaillen: Gold bis 50 s, Silber bis 70 s, Bronze bis 100 s; die Bestzeit wird gespeichert.",
     "🤖 Die verrückte KI-Quizshow – 10 Fragen, allein gegen die KI oder zu zweit an einem Gerät.",
     "🏙️ Stadt & Nebenaufträge – die Stadt ohne Zeitdruck, mit 10 Nebenaufträgen für Fan-Punkte.",
     "🌐 Online-Koop – zu zweit auf zwei Geräten: einer spielt Andrew, einer Marco.",
@@ -53,6 +54,8 @@
     "Pointe: Drücke die angezeigte Tastenfolge rechtzeitig.",
     "Übergabe: Gib an den Co-Moderator ab und baue eine Kombo auf.",
     "Jingle: Bis zu 3 Mal pro Folge – gibt Hype.",
+    "🎛️ Soundboard: Ein Pad leuchtet auf – drück es schnell (A, B, X, Y bzw. Leertaste, Esc, E, Q oder antippen). 6 Treffer in 7 Sekunden sind perfekt, falsche Pads kosten einen Treffer. Danach 2 Runden Pause.",
+    "❓ Hörerfrage: Ein Fan stellt eine Quizfrage zum Podcast – wähle die richtige Antwort. Richtig gibt viele Hörer. Danach 2 Runden Pause.",
     "Spezial: Marcos Tagebuch oder Andrews Musikmoment, wenn die Leiste voll ist.",
     "Pannen: Pegel halten, Kabel nach Richtungsfolge stecken oder einen Anrufer der richtigen Rubrik zuordnen.",
     "Stärken: Karten in der Lieblingsrubrik des sprechenden Hosts zählen mehr."
@@ -61,7 +64,7 @@
   {
    "t": "Fanshop und Fan-Punkte",
    "p": [
-    "Fan-Punkte (🎟️) bekommst du für jedes Kapitel (beim ersten Abschluss deutlich mehr), für Live-Show, Themenjagd, Quiz und Nebenaufträge. Im Fanshop gibt es 9 Outfits pro Host – vom Studio-Polo bis zum Podcast-König – und 6 Studio-Upgrades."
+    "Fan-Punkte (🎟️) bekommst du für jedes Kapitel (beim ersten Abschluss deutlich mehr), für Live-Show, Themenjagd, Funk-Rennen, Quiz und Nebenaufträge. Im Fanshop gibt es 9 Outfits pro Host – vom Studio-Polo bis zum Podcast-König – und 6 Studio-Upgrades."
    ],
    "list": [
     "🎙️ Profi-Mikrofone: +10 % Hörer in jeder Aufnahme.",
@@ -120,7 +123,7 @@
   {
    "t": "Wertung und Speichern",
    "p": [
-    "Sterne pro Kapitel hängen von den Hörern der Live-Aufnahme ab. Rekorde für Live-Show, Themenjagd und Quiz werden gespeichert. Der Spielstand liegt lokal im Browser und wird mit Google-Anmeldung über die AnMaCha-Cloud gesichert. In den Einstellungen gibt es Lautstärken, Grafikqualität, Kamera-Empfindlichkeit, Achsen umkehren, Bildschirmwackeln und Untertitel."
+    "Sterne pro Kapitel hängen von den Hörern der Live-Aufnahme ab. Rekorde für Live-Show, Themenjagd, Funk-Rennen und Quiz werden gespeichert. Der Spielstand liegt lokal im Browser und wird mit Google-Anmeldung über die AnMaCha-Cloud gesichert. In den Einstellungen gibt es Lautstärken, Grafikqualität, Kamera-Empfindlichkeit, Achsen umkehren, Bildschirmwackeln und Untertitel."
    ]
   }
  ],
@@ -148,6 +151,7 @@
    "list": [
     "Marco repariert die Verteiler am Sendemast doppelt so schnell – wechsle vor dem Aufstieg.",
     "Andrew ist auf der Themenjagd schneller und kommt höher: ideal für Rekorde.",
+    "Funk-Rennen: Spiele Andrew, halte Sprinten gedrückt und nutze Ausweichen auf geraden Strecken. Der Lichtstrahl zeigt immer das nächste Tor, die Karte oben rechts ebenfalls.",
     "Im Quiz bringen schnelle Antworten Zusatzpunkte. Bei 2 Spielern zählt, wer zuerst richtig drückt."
    ]
   },
@@ -256,7 +260,7 @@
   },
   {
    "q": "Wie bekomme ich schnell Fan-Punkte?",
-   "a": "Neue Kapitel zum ersten Mal schaffen und die Nebenaufträge in der Stadt erledigen. Danach lohnen sich Live-Show und Themenjagd."
+   "a": "Neue Kapitel zum ersten Mal schaffen und die Nebenaufträge in der Stadt erledigen. Danach lohnen sich Live-Show, Themenjagd und Funk-Rennen (Gold bringt 150 Fan-Punkte)."
   },
   {
    "q": "Wie spiele ich online mit einem Freund?",

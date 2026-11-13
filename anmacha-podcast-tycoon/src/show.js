@@ -242,9 +242,12 @@
       { label: '😂 Pointe', info: 'Tastenfolge – hohes Risiko', run: punchline },
       { label: '🔁 Übergabe an ' + D.HOSTS[S.speaker === 'andrew' ? 'marco' : 'andrew'].name, info: S.swapUsed ? 'schon gewechselt' : 'Kombo-Bonus', dis: S.swapUsed, run: swap },
       { label: '🎵 Jingle', info: S.jingles + '× übrig', dis: S.jingles <= 0, run: jingle },
+      { label: '🎛️ Soundboard', info: cool(S.sbRound) ? 'Effekte treffen' : 'lädt …', dis: !cool(S.sbRound), run: soundboard },
+      { label: '❓ Hörerfrage', info: cool(S.qRound) ? 'Quiz für Fans' : 'lädt …', dis: !cool(S.qRound), run: listenerQ },
       { label: sp ? (S.speaker === 'marco' ? '📖 Marcos Tagebuch' : '🎶 Andrews Musikmoment') : '✨ Spezial', info: sp ? 'BEREIT!' : Math.round(S.special) + ' %', dis: !sp, hot: sp, run: special }
     ];
   }
+  function cool(r) { return r == null || S.round - r >= 2; }
   function renderMenu() {
     const ul = U.$('shCmdL'), items = menuItems();
     S.sel = U.clamp(S.sel, 0, items.length - 1);
@@ -326,6 +329,26 @@
     });
   }
 
+  // --- Soundboard: aufleuchtende Pads treffen
+  function soundboard() {
+    S.sbRound = S.round; closeMenu();
+    say(S.speaker, U.pick(['Soundboard-Zeit! Wer drückt am schnellsten?', 'Ich hab neue Effekte – hört mal!', 'Tusch, Hupe, Applaus – los geht\'s!']));
+    startMini('pads', { need: 6, time: 7, life: Math.max(0.6, 1.1 - S.round * 0.04) }, q => {
+      applyGain(36 * S.combo * (0.4 + q), q); if (q >= 0.8) AMC.Audio.sfx('applause');
+      nextSoon();
+    });
+  }
+  // --- Hörerfrage: Quizfrage aus dem Fan-Postfach
+  function listenerQ() {
+    S.qRound = S.round; closeMenu();
+    const f = U.pick(D.QUIZ), name = U.pick(D.FAN_NAMES);
+    say(S.speaker, U.pick(['Frage aus dem Postfach!', 'Ein Hörer will was wissen …', 'Hörerfrage – mal sehen, ob wir das wissen!']));
+    startMini('pick', { title: '❓ Hörerfrage', q: name + ': „' + f[0] + '“', opts: U.shuffle(f.slice(1, 5)), right: f[1] }, q => {
+      say(S.speaker === 'andrew' ? 'marco' : 'andrew', q >= 1 ? U.pick(['Genau so! Danke für die Frage!', 'Richtig – Gruß zurück!']) : 'Richtig wäre: ' + f[1] + '. Nächstes Mal!');
+      applyGain(q >= 1 ? 40 * S.combo : 5, q >= 1 ? 1 : 0.3); nextSoon(1600);
+    });
+  }
+
   // --- Störungen
   const INC = [
     { id: 'pegel', name: '🔊 Rückkopplung!', desc: 'Halte den Pegel im grünen Bereich.', help: 'Gedrückt halten = Pegel hoch' },
@@ -370,9 +393,14 @@
       box.innerHTML = '<div class="mg-lbl">🔊 Pegel halten</div><div class="lvl"><div class="lvl-band" id="mgBand"></div><div class="lvl-needle" id="mgNeedle"></div></div><i class="mg-bar"><em id="mgBar"></em></i><div class="mg-help">' + AMC.glyph('a') + ' gedrückt halten = lauter · loslassen = leiser</div>';
       S.mini.v = 0.3; S.mini.band = 0.5; S.mini.ok = 0;
     } else if (kind === 'pick') {
-      box.innerHTML = '<div class="mg-lbl">📞 Anruf</div><p class="pick-q">' + U.esc(o.q) + '</p><div class="pick-o">' + o.opts.map((r, i) => '<button type="button" class="btn' + (i === 0 ? ' sel' : '') + '" data-r="' + r + '">' + D.RUBRICS[r].icon + ' ' + D.RUBRICS[r].name + '</button>').join('') + '</div><div class="mg-help">Wählen mit ' + AMC.glyph('dpad') + ', bestätigen mit ' + AMC.glyph('a') + '</div>';
+      box.innerHTML = '<div class="mg-lbl">' + (o.title || '📞 Anruf') + '</div><p class="pick-q">' + U.esc(o.q) + '</p><div class="pick-o">' + o.opts.map((r, i) => '<button type="button" class="btn' + (i === 0 ? ' sel' : '') + '">' + (D.RUBRICS[r] ? D.RUBRICS[r].icon + ' ' + D.RUBRICS[r].name : U.esc(r)) + '</button>').join('') + '</div><div class="mg-help">Wählen mit ' + AMC.glyph('dpad') + ', bestätigen mit ' + AMC.glyph('a') + '</div>';
       S.mini.sel = 0;
       box.querySelectorAll('.pick-o button').forEach((b, i) => b.addEventListener('click', e => { e.stopPropagation(); S.mini.sel = i; pickDone(); }));
+    } else if (kind === 'pads') {
+      const K = ['y', 'x', 'b', 'a'];
+      box.innerHTML = '<div class="mg-lbl">🎛️ Soundboard</div><div class="pads" id="mgPads">' + K.map(k => '<button type="button" data-k="' + k + '">' + AMC.glyph(k) + '</button>').join('') + '</div><i class="mg-bar"><em id="mgBar"></em></i><div class="mg-help">Leuchtendes Pad drücken · <b id="mgCnt">0</b>/' + o.need + '</div>';
+      S.mini.hits = 0; S.mini.lit = null; S.mini.lt = 0;
+      box.querySelectorAll('.pads button').forEach(b => b.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); padPress(b.dataset.k); }));
     }
   }
   function endMini(q) { const m = S.mini; if (!m || m.done) return; m.done = true; setTimeout(() => { if (!S) return; U.$('shMini').hidden = true; S.mini = null; m.cb(q); }, 380); }
@@ -382,7 +410,17 @@
     if (k === m.seq[m.i]) { spans[m.i].classList.add('ok'); m.i++; AMC.Audio.sfx('tick'); if (m.i >= m.seq.length) { AMC.Audio.sfx('perfect'); endMini(1); } }
     else { spans[m.i].classList.add('bad'); AMC.Audio.sfx('miss'); endMini(0.2); }
   }
-  function pickDone() { const m = S.mini, r = m.opts[m.sel]; const ok = r === m.right; U.$('shMini').querySelectorAll('.pick-o button').forEach(b => b.classList.add(b.dataset.r === m.right ? 'right' : 'wrong')); AMC.Audio.sfx(ok ? 'perfect' : 'miss'); endMini(ok ? 1 : 0.3); }
+  function padLight(m) {
+    const K = ['y', 'x', 'b', 'a']; let k; do k = U.pick(K); while (k === m.lit);
+    m.lit = k; m.lt = m.life;
+    U.$('mgPads').querySelectorAll('button').forEach(b => b.classList.toggle('lit', b.dataset.k === k));
+  }
+  function padPress(k) {
+    const m = S.mini; if (!m || m.kind !== 'pads' || m.done || !m.lit) return;
+    if (k === m.lit) { m.hits++; AMC.Audio.sfx(U.pick(['tick', 'combo', 'cheer'])); U.$('mgCnt').textContent = m.hits; if (m.hits >= m.need) { AMC.Audio.sfx('perfect'); return endMini(1); } padLight(m); }
+    else { AMC.Audio.sfx('miss'); m.hits = Math.max(0, m.hits - 1); U.$('mgCnt').textContent = m.hits; }
+  }
+  function pickDone() { const m = S.mini, r = m.opts[m.sel]; const ok = r === m.right; U.$('shMini').querySelectorAll('.pick-o button').forEach((b, i) => b.classList.add(m.opts[i] === m.right ? 'right' : 'wrong')); AMC.Audio.sfx(ok ? 'perfect' : 'miss'); endMini(ok ? 1 : 0.3); }
   function updMini(dt) {
     const m = S.mini; if (!m || m.done) return;
     m.t += dt;
@@ -416,6 +454,13 @@
       U.$('mgNeedle').style.left = (m.v * 100) + '%'; const b = U.$('mgBand'); b.style.left = ((m.band - 0.12) * 100) + '%'; b.classList.toggle('in', inBand);
       U.$('mgBar').style.width = Math.min(100, m.ok / 2.4 * 100) + '%';
       if (m.ok >= 2.4) { AMC.Audio.sfx('perfect'); endMini(1); } else if (m.t > 6) endMini(0.3);
+    } else if (m.kind === 'pads') {
+      if (!m.lit || (m.lt -= dt) <= 0) padLight(m);
+      let hit = (I.padHits[0] || []).find(x => ['a', 'b', 'x', 'y'].includes(x));
+      if (!hit && I.device !== 'pad') hit = I.hit('jump') ? 'a' : I.hit('back') ? 'b' : I.hit('act') ? 'x' : I.hit('swap') ? 'y' : null;
+      if (hit) padPress(hit);
+      U.$('mgBar').style.width = Math.max(0, 100 - m.t / m.time * 100) + '%';
+      if (m.t > m.time && !m.done) endMini(Math.min(1, m.hits / m.need));
     } else if (m.kind === 'pick') {
       const btns = U.$('shMini').querySelectorAll('.pick-o button');
       if (I.hit('up') || I.hit('left')) { m.sel = (m.sel + btns.length - 1) % btns.length; AMC.Audio.sfx('move'); }
@@ -461,6 +506,7 @@
     ST.update(dt, { talk: S.phase !== 'end', led: { hype: S.hype, text: 'ON AIR', sub: '🎧 ' + U.fmt(S.listeners) + ' Hörer · Runde ' + S.round }, flash: fl });
   };
   SH.render = () => ST.render();
+  SH.state = () => S;
   SH.inMenuRoot = () => S && S.phase === 'menu' && S.menu === 'root';
   SH.paused = false;
 })(typeof window !== 'undefined' ? window : globalThis);

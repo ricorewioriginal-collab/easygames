@@ -35,7 +35,10 @@ server.listen(0, '127.0.0.1', async () => {
     assert.ok(await p.evaluate(() => !!AMC.Play.state().cat), 'Katze da');
     await p.evaluate(() => AMC.Game.playChapter(8)); await p.waitForTimeout(2500);
     assert.ok(await p.evaluate(() => !!AMC.Play.state().imbiss), 'Imbiss da');
-    await p.evaluate(() => AMC.UI.closeAll());
+    // Funk-Rennen: 10 Tore, Uhr läuft vorwärts
+    await p.evaluate(() => { AMC.UI.closeAll(); AMC.Play.onEnd = () => {}; AMC.Play.start({ mode: 'race', host: 'andrew' }); }); await p.waitForTimeout(2500);
+    assert.equal(await p.evaluate(() => AMC.Play.state().gates.length), 10, 'Rennen mit 10 Toren');
+    await p.evaluate(() => { AMC.Play.stop(); AMC.UI.closeAll(); });
     // Radio
     await p.evaluate(() => AMC.UI.radio()); await p.waitForTimeout(800);
     assert.ok(await p.$$eval('.radio-screen button', b => b.length) > 10, 'Radio-Fenster mit Sendern/Folgen');
