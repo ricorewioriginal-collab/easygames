@@ -152,6 +152,14 @@
     "🐞 Fehler melden: kurze Beschreibung schreiben; das Spiel hängt Gerät, Welt und letzte Fehler an. „Per Mail senden“ oder „Kopieren“.",
     "Läuft etwas ruckelig, im Eltern-Bereich den Sparmodus einschalten."
    ]
+  },
+  {
+   "t": "Spiel-Portale, Welten-Shows und Freundschaft",
+   "p": [
+    "In vier Welten steht ein Portal zu einem anderen easygames-Spiel: Regenbogenwelt → Gay Life!, Drachenwelt → AERU, Radiowelt → AnMaCha Podcast Tycoon, Stadt → Marktrausch. Dazu das Taschi-Portal in Taschi-Land. Hingehen, Aktion-Knopf, „Los geht’s!“ – die Insel speichert vorher.",
+    "Jede dieser Welten hat eine Mitmach-Show: Konfetti-Kanone, Drachenhorn (der Drache fliegt herab und speit Feuer), DJ-Pult mit tanzendem Equalizer und Stadtfest-Feuerwerk. Die erste Show am Tag bringt +1 ⭐.",
+    "Bewohner werden deine Freunde: Einmal am Tag reden bringt Freundschaft, direkt danach kannst du für 3 ⭐ ein Geschenk geben, ein Blumenstrauß zählt besonders viel. Bis zu 5 Herzen, jedes neue Herz bringt Sterne."
+   ]
   }
  ],
  "ratgeber": [
@@ -163,7 +171,8 @@
     "Hol dir jeden Tag das Tagesgeschenk – 3 Tage hintereinander geben den Sticker „Stammgast“.",
     "Öffne in jedem Haus die Schatztruhe: Sie gibt ⭐ und Futter, 10 Truhen geben einen Sticker.",
     "Sterne sparen: erst Aufgaben und Tagesgeschenk, dann einkaufen.",
-    "Zwei Aktionen in der Nähe? A ist die erste, X die zweite."
+    "Zwei Aktionen in der Nähe? A ist die erste, X die zweite.",
+    "Sprich jeden Tag kurz mit deinen Lieblings-Bewohnern und gib ihnen ein Geschenk – so kommst du schnell zu 5 Herzen und dem Sticker 💖 Beste Freunde."
    ]
   },
   {
@@ -597,6 +606,10 @@
   {
    "q": "Wo finde ich Hilfe im Spiel?",
    "a": "Unter ⚙️ → „📚 Handbuch & Lösungen“ steht dasselbe Handbuch und Lösungsbuch direkt im Spiel."
+  },
+  {
+   "q": "Das Portal reagiert nicht – was tun?",
+   "a": "Stell dich direkt vor das Portal, bis der Knopf „🌀 Durchs Portal …“ erscheint, und drück ihn. Es öffnet sich eine Rückfrage mitten auf dem Bild: „🚀 Los geht’s!“ startet die Reise, „🏝️ Hierbleiben“ (oder B/Escape) schließt sie. Mit „Zurück“ im Browser kommst du wieder auf die Insel."
   }
  ]
 }

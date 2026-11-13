@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "32f4180437b7",
- "generated": "2026-11-13T01:08:29+00:00",
- "commit": "356614b06fac15b7a3994c0b9913c7c30a355dc8",
+ "version": "2498073b477b",
+ "generated": "2026-11-13T02:08:44+01:00",
+ "commit": "d3afd6f6f9b00a3017d60ca0a518bbbe61fefdaf",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4778,8 +4778,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 109763,
-   "h": "8f6586215188ae235c2705ee7ac3a019d6c474fe537eef380ed7094a773240bd"
+   "s": 109824,
+   "h": "2fdf51be7de727ad3eec58e3c5d7ff38ffb6b9a6f6a63931f2250091bfb169e5"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -4818,8 +4818,8 @@
   },
   {
    "p": "bunte-insel/js/buch-data.js",
-   "s": 28679,
-   "h": "1a6f2940f33072160b55b9622609d987cfcd8c5c35ea8c9be10c61be6a8890ac"
+   "s": 30376,
+   "h": "f60f42a32721e83319b061e1128653d6fe8c16d70c98c5e9957d7b2cc9e68f82"
   },
   {
    "p": "bunte-insel/js/buch.js",
@@ -4838,8 +4838,8 @@
   },
   {
    "p": "bunte-insel/js/bunte-insel.min.js",
-   "s": 2133530,
-   "h": "8e1c0e05a5287a0823ba00cc2eac8ac2e53aa72e987efdb0171a9ef890251c9d"
+   "s": 2159967,
+   "h": "f203f5b14caf6366bcb2ba16eec0e67c5d9c2b156f902e666225e39901f42e47"
   },
   {
    "p": "bunte-insel/js/camp.js",
@@ -4883,8 +4883,8 @@
   },
   {
    "p": "bunte-insel/js/dialog.js",
-   "s": 4946,
-   "h": "a354c71fa39b7fe34cf5640018fc75add032b956a801934991357ce625451600"
+   "s": 5193,
+   "h": "8b1460aa7f3d4186b068ae2dfe24b3c0667e04ed14b45bde745ef75d258ac45d"
   },
   {
    "p": "bunte-insel/js/drachen.js",
@@ -4905,6 +4905,16 @@
    "p": "bunte-insel/js/farm.js",
    "s": 21560,
    "h": "9a701bc540fe681a0da13b99508522f5905d190619d874a27393f005b7e6ebbb"
+  },
+  {
+   "p": "bunte-insel/js/flair.js",
+   "s": 11514,
+   "h": "6b18dffd8223bb1e96beccc27a0f65461a38404aa5946f65326e70e6d055ed71"
+  },
+  {
+   "p": "bunte-insel/js/freunde.js",
+   "s": 3956,
+   "h": "c24a0f74e47318d735ae564a17b7753fa9793b9e6b7004de3ce37e32abe81dde"
   },
   {
    "p": "bunte-insel/js/fun.js",
@@ -4953,8 +4963,8 @@
   },
   {
    "p": "bunte-insel/js/i18n.js",
-   "s": 150766,
-   "h": "2a5f46fd3d3ef633f81c412b3e9e5bff7759c6c01318ed24cd61266fb6e93c8d"
+   "s": 153019,
+   "h": "7a261a80c91b792ce11538c15d78e76ec4bf3f1fdb7182b24abd204e17edd07e"
   },
   {
    "p": "bunte-insel/js/innen.js",
@@ -4978,8 +4988,8 @@
   },
   {
    "p": "bunte-insel/js/kids.js",
-   "s": 29771,
-   "h": "a0e031c074822f10f6bc3855f9858335d0b1146cb1caaf3174f3dbada8402f51"
+   "s": 30020,
+   "h": "65e28b5628f64cde28760800e4841927d5af813770abf0009904df58c2f13143"
   },
   {
    "p": "bunte-insel/js/kitchen.js",
@@ -5008,8 +5018,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 322358,
-   "h": "6973818706b7bd2a020006bd7ca9de96d2b29b2a679dd99358e91998cb59a5da"
+   "s": 324120,
+   "h": "54a73713e53226caf83b466b2aafc916784757dabc3aec9132bbd85c9a46a2b1"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -5070,6 +5080,11 @@
    "p": "bunte-insel/js/pool.js",
    "s": 6824,
    "h": "15138d92d8ae7d13612f7e900e3667e8752c5c5e778aa44b17b6c7e0c76a9a51"
+  },
+  {
+   "p": "bunte-insel/js/portale.js",
+   "s": 14355,
+   "h": "08cb8ad9675c576c1699371d251c9d4e786e975461bd592630abb65f3189df42"
   },
   {
    "p": "bunte-insel/js/prisma.js",
@@ -5148,8 +5163,8 @@
   },
   {
    "p": "bunte-insel/js/taschi-game.js",
-   "s": 9738,
-   "h": "ba870e816270d8986ed011a6e3fe49367d45a29a1adff7d415c5ff6d57edc5ce"
+   "s": 9473,
+   "h": "82695a214195115c60df20dc507da4905d2e70e8f5173033793ffc913e8c3775"
   },
   {
    "p": "bunte-insel/js/taschi.js",
@@ -6793,8 +6808,8 @@
   },
   {
    "p": "guides/bunte-insel.json",
-   "s": 48698,
-   "h": "dcea0101b610887ab00603df3b92a5e03fb6f039bf0b0b750d881c3bd180ad33"
+   "s": 50064,
+   "h": "7f11650701b0c2e6dd8d123c1a1664ddd057078509f6e5a4006bfbcf22ff5594"
   },
   {
    "p": "guides/challenge-show.json",
@@ -9854,7 +9869,7 @@
   {
    "p": "sync/catalog.json",
    "s": 259157,
-   "h": "477cd7dc51534f914af244eb2673fe5068b6d26607dbf78e4c2d3da7f933beaf"
+   "h": "d5389b3249e5ceedde44b7c53e6f4b87a89d454fa89d6332940875cb83d41587"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

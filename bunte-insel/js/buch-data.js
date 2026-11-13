@@ -111,6 +111,17 @@ BI.BUCH = {
       ['ul', ['🔬 Professor Ulme steht vor der Arena und erklärt, wohin die Taschis gezogen sind.', '🗿 Die große Statue auf dem Platz hält den allerersten Taschiball.', '🌀 Das Portal steht mitten in der Arena: hineingehen (Aktion-Knopf) → „Los geht’s!“. Das Inselspiel wird gespeichert, dann öffnet sich das Taschi-Spiel. Mit „Zurück“ im Browser kommst du wieder auf die Insel.', '🎈 Der Heißluftballon hinten im Lager ist ein Fahrzeug zum Einsteigen.']],
       ['tip', 'Alte Spielstände mit Taschi-Team bleiben gespeichert – es geht nichts verloren.']
     ] },
+    { id: 'portale', icon: '🌀', title: 'Spiel-Portale & Welten-Shows', body: [
+      ['p', 'In vier Welten steht ein leuchtendes Portal zu einem anderen easygames-Spiel. Hingehen, Aktion-Knopf drücken, „Los geht’s!“ wählen – dein Inselspiel wird vorher gespeichert.'],
+      ['ul', ['🏳️‍🌈 Regenbogenwelt → Gay Life! (Spielesammlung)', '🪽 Drachenwelt → AERU – Die Sterneninseln', '🎙️ Radiowelt → AnMaCha Podcast Tycoon', '🛒 Stadt → Marktrausch (Supermarkt-Simulator)', '🌀 Taschi-Land → Taschi']],
+      ['p', 'Jede dieser Welten hat außerdem eine Mitmach-Show: 🎉 Konfetti-Kanone (Regenbogen), 🐉 Drachenhorn – der Drache fliegt herab und speit Feuer, 🎛️ DJ-Pult mit tanzendem Equalizer (Radio), 🎆 Stadtfest-Feuerwerk (Stadt).'],
+      ['tip', 'Die erste Show jeder Welt bringt jeden Tag +1 ⭐. Alle Portale findest du auch unter 🧭 Wohin? → Spiele.']
+    ] },
+    { id: 'freunde', icon: '💞', title: 'Freundschaft mit Bewohnern', body: [
+      ['p', 'Die Bewohner merken sich dich! Jedes Gespräch am Tag bringt Freundschaft, die Herzen siehst du im Gesprächsfenster (bis zu 5 ❤️).'],
+      ['ul', ['💬 Einmal am Tag reden: +1 Freundschaft', '🎁 Direkt nach dem Gespräch zeigt der Knopf „Geschenk“: für 3 ⭐ gibt es +2 Freundschaft (einmal am Tag je Bewohner)', '💐 Ein Blumenstrauß aus dem Garten: +3 Freundschaft', '❤️ Jedes neue Herz bringt Sterne, ab 3 Herzen bekommst du ein Dankeschön-Geschenk und eine persönliche Begrüßung']],
+      ['tip', 'Sticker: 💞 Guter Freund (3 Herzen) und 💖 Beste Freunde (5 Herzen). Deine Freunde stehen im Aufgaben-Buch unter 💞 Freundschaften.']
+    ] },
     { id: 'wunsch', icon: '🌠', title: 'Wunsch-Insel (hinter dem Schlüsselreich)', body: [
       ['p', 'Eine lange Holzbrücke an der Westküste des Schlüsselreichs führt zur Wunsch-Insel. Hier leben Kira und Silvan – und hier geht der Abend nicht ohne Abenteuer zu Ende.'],
       ['ul', ['🌟 Wunschfrüchte: 3 Stück – an der krummen Palme am Strand, hinter der Hütte und unter dem großen Baum. Danach leuchtet am Baum ein geheimes Zeichen: ☀️ → 🌙 → ⭐ → 💖 → 🗝️.', '🕳️ Geheime Schlucht: Erst den Kristall am Eingang berühren, dann die 5 Wandzeichen in der Reihenfolge vom Baum berühren – das Tor öffnet sich, du bekommst den Wunschschlüssel (im Wuschel-Laden wählbar).', '🛶 Floß: 3 Stämme 🪵, 2 Seile 🧵, 1 Segel ⛵ finden (auch auf Felsen und am Turm), am Bauplatz zusammensetzen, dann Probefahrt zur roten Boje.', '🗼 Aussichtsturm: Stufen hochklettern, durchs Fernrohr schauen. 📦 3 Truhen (Turm, zwei Felsen) und 5 Sternscherben auf den Felsen. Ein Holzsteg verbindet Turm und Felsen C.', '🌑 Einbruch der Dunkelheit: Wenn alles andere fertig ist, löst die Hängematte den Sonnenuntergang aus. 40 Sekunden gegen Schattenwesen durchhalten (⚔️ schlagen, 🌀 ausweichen, ✨ Lichtwelle).', '🏟️ Schattenarena: 3 Runden mit Krabblern, Springern, Schützen und Wirblern, dann Endgegner Umbra. Umbras Panzer hält jeden Treffer ab – lock ihn beim Sturmangriff gegen einen Pfeiler, dann ist er betäubt und verwundbar.']],
