@@ -17,7 +17,7 @@ const only = process.argv.slice(2).map(Number);
       const walk = (x0, z0, x1, z1, y) => { const pl = Z.pl; pl.x = x0; pl.z = z0; pl.y = y; pl.vy = 0; pl.air = false; Z.keys.KeyW = true;
         for (let i = 0; i < 160 && Math.hypot(pl.x - x1, pl.z - z1) > 1; i++) { Z.cam(Math.atan2(pl.x - x1, pl.z - z1), .35, 9); Z.step(1 / 30, 1); } Z.keys.KeyW = false; for (let i = 0; i < 10; i++) Z.step(1 / 30, 1);
         return Math.hypot(pl.x - x1, pl.z - z1) < 1.5; };
-      o.bridges = (A.bridges || []).map(([ax, az, bx, bz, by]) => { const L = Math.hypot(bx - ax, bz - az), ux = (bx - ax) / L, uz = (bz - az) / L, sx = ax - ux * 2.5, sz = az - uz * 2.5; return walk(sx, sz, bx + ux * 2.5, bz + uz * 2.5, Math.max(by, Z.hgt(sx, sz))); });
+      o.bridges = (A.bridges || []).map(([ax, az, bx, bz, by, wk]) => { const L = Math.hypot(bx - ax, bz - az), ux = (bx - ax) / L, uz = (bz - az) / L, e = wk ? -.6 : 2.5, sx = ax - ux * e, sz = az - uz * e; return walk(sx, sz, bx + ux * e, bz + uz * e, Math.max(by, Z.hgt(sx, sz))); });   // Wehrgang (wk): nur auf der Mauerkrone
       return o; }); console.log(JSON.stringify(r.bridges));
     chk(r.tiers.every(Boolean), `${r.name}: alle ${r.tiers.length} Plateaus über Rampen erreichbar`);
     chk(r.flat, `${r.name}: Plateau-Oberkanten eben auf Sollhöhe`);
