@@ -63,12 +63,16 @@
     {
       "t": "Die Senderhäuser",
       "p": [
-        "Jeder der 13 AnMaCha-Sender hat in der Stadt ein eigenes Haus mit farbiger Tür und Schild, vier davon als Pavillons am Sendemast. Drinnen ist alles im Stil des Senders eingerichtet, zum Beispiel mit Discokugel und DJ-Pult bei Clubradio24, Weihnachtsbaum bei Christmasradio24, Verstärkern bei Rockradio24 und Ricos Bildschirmwand bei RicoReWi Radio."
+        "Jeder der 13 AnMaCha-Sender hat in der Stadt ein eigenes Haus mit farbiger Tür und Schild, vier davon als Pavillons am Sendemast. Jedes Haus ist innen komplett anders, passend zu Genre und Beschreibung: LED-Tanzfläche mit DJ-Pult bei Clubradio24, Kaminhütte mit Weihnachtsbaum bei Christmasradio24, Rockbühne mit Verstärkern bei Rockradio24, Retro-Zimmer mit Kassetten und Automaten bei Kultradio24, Spielzimmer mit Bällebad bei RadioFloh, Ricos Tool-Labor bei RicoReWi Radio und so weiter.",
+        "Wie im Club: Drinnen sind Fans des Senders, die herumlaufen, im Chat schreiben, Sprechblasen zeigen und mittanzen. Wenn du tanzt, kommen sie zu dir und tanzen mit."
       ],
       "list": [
-        "🎙️ Gastmoderation am Pult: ein Rhythmus-Spiel mit einem Klavierlicht-Song. Bringt Fan-Punkte, gute Laune und bei gutem Ergebnis eine Show-Idee.",
-        "🎧 Radio-Ecke: Der Sender läuft live.",
-        "💬 Partner: Marco oder Andrew erzählen etwas über den Sender.",
+        "💃 Tanzen: Springen-Taste (Leertaste, A, ⤴) oder Knopf „Tanzen“. Dazu Winken, Jubeln und Rolle (Tasten 1 bis 3 oder die Emote-Leiste).",
+        "⇄ Figurenwechsel: Q, Y oder der Knopf mit dem Namen. Du spielst dann den Partner, der andere tanzt mit.",
+        "🔥 Vibe: Tanzen bei den Fans und erfüllte Fan-Wünsche füllen den Vibe-Balken. Ist er voll, steigt das Party-Level des Senders (bis 5) und alle feiern. Das bringt Fan-Punkte.",
+        "Fan-Wünsche (Symbol über dem Kopf): Autogramm, Selfie, zusammen tanzen, Songwunsch (Klavierlicht) oder plaudern. Hingehen und Aktion drücken.",
+        "🎮 3D-Spiel pro Sender: Musik-Sender haben ein Beat-Spiel (Edelsteine fliegen auf vier Bahnen heran, im Takt ◀ ▼ ▲ ▶ drücken), die anderen ein Fangspiel (gute Dinge fangen, Störungen ausweichen, 3 Leben, 40 Sekunden). Rekorde werden pro Sender gespeichert.",
+        "🎧 Radio-Ecke: Der Sender läuft live. 💬 Partner: Marco oder Andrew erzählen etwas über den Sender.",
         "Sender-Tour: Jeder erste Besuch bringt 40 Fan-Punkte, alle 13 Häuser zusammen bringen 500 extra.",
         "Story (Staffel 3): Im Senderhaus des Kapitel-Senders wartet ein Interview mit Bonus-Funken. Das Haus ist auf der Karte als farbiges Quadrat markiert."
       ]

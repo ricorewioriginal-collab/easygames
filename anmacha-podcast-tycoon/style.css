@@ -388,3 +388,27 @@ html.eg-pad .tb, html.dev-pad #touch { display: none; }
 .arc-ui .hm-say { top: calc(70px + var(--safe-t)); bottom: auto; pointer-events: none; }
 .arc-end .arc-big { font: 800 40px Fredoka, system-ui, sans-serif; color: #ffd23f; margin: 6px 0; text-align: center; }
 @media (max-width: 520px) { .arc-top small { display: none; } .arc-top b { font-size: 14px; } .arc-help { font-size: 12px; white-space: normal; text-align: center; width: calc(100vw - 32px); } }
+/* Senderhäuser: Vibe, Emotes, Chat, Fan-Blasen (Club-Stil) */
+.hm-desc { font-size: 12px; opacity: .8; max-width: 300px; line-height: 1.3; }
+.hm-vibe { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; }
+.hm-vibe i { width: 110px; height: 9px; border-radius: 5px; background: rgba(255,255,255,.14); overflow: hidden; display: block; }
+.hm-vibe em { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #ff3da8, #ffd23f, #3dd6ff); transition: width .3s; }
+.hm-vibe b { color: #ffd23f; }
+.hm-emo { position: absolute; right: calc(8px + var(--safe-r)); top: 36%; display: flex; flex-direction: column; gap: 6px; padding: 6px; border-radius: 20px; background: rgba(10, 8, 20, .55); backdrop-filter: blur(8px); }
+.hm-emo button { border: 0; background: rgba(255,255,255,.1); color: #fff; font-size: 22px; width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; cursor: pointer; line-height: 1; padding: 4px 0; }
+.hm-emo button small { font: 600 10px Fredoka, system-ui, sans-serif; opacity: .85; }
+.hm-emo button:active { transform: scale(.92); background: rgba(255, 61, 168, .45); }
+.hm-feed { position: absolute; left: calc(10px + var(--safe-l)); bottom: calc(160px + var(--safe-b)); width: min(280px, 60vw); display: flex; flex-direction: column; gap: 3px; pointer-events: none !important; }
+.hm-fl { font-size: 12.5px; background: rgba(10, 8, 20, .55); border-radius: 10px; padding: 4px 8px; animation: popIn .25s; }
+.hm-bub { position: absolute; left: 0; top: 0; pointer-events: none !important; background: #fff; color: #1b1b24; font: 600 13px Fredoka, system-ui, sans-serif; padding: 5px 10px; border-radius: 14px; max-width: 200px; box-shadow: 0 4px 14px rgba(0,0,0,.35); white-space: normal; }
+.hm-bub::after { content: ''; position: absolute; left: 50%; bottom: -6px; margin-left: -6px; border: 6px solid transparent; border-bottom: 0; border-top-color: #fff; }
+.hm-lanes { position: absolute; left: 0; right: 0; bottom: calc(18px + var(--safe-b)); display: flex; justify-content: center; gap: 10px; }
+.hm-lanes button[data-d] { width: 96px; height: 80px; border-radius: 22px; }
+.hm-lanes:has([data-d]) { justify-content: space-between; padding: 0 calc(14px + var(--safe-l)); }
+.hm-lanes button { width: 68px; height: 68px; border-radius: 50%; border: 3px solid var(--c); background: color-mix(in srgb, var(--c) 25%, rgba(10,8,20,.6)); color: #fff; font-size: 28px; cursor: pointer; }
+.hm-lanes button:active { background: var(--c); }
+.sd-game { position: absolute; left: 50%; transform: translateX(-50%); top: calc(10px + var(--safe-t)); border-radius: 16px; padding: 8px 16px; font: 700 15px Fredoka, system-ui, sans-serif; text-align: center; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 2px; width: max-content; max-width: min(460px, calc(100vw - 150px)); }
+.sd-game span { font-weight: 500; font-size: 13px; opacity: .9; } .sd-game em { font-style: normal; font-size: 24px; color: #ffd23f; } .sd-game small { font-weight: 500; font-size: 11.5px; opacity: .75; }
+.home-ui:has(.sd-game) .hm-top, .home-ui:has(.sd-game) .hm-emo, .home-ui:has(.sd-game) .hm-use { display: none; }
+.hm-selfie { position: fixed; inset: 0; background: #fff; z-index: 60; pointer-events: none; animation: hmFade .6s ease forwards; }
+@media (max-height: 560px) and (orientation: landscape) { .hm-lanes { justify-content: flex-start; padding: 0 calc(16px + var(--safe-l)); } .hm-lanes button:nth-child(2) { margin-right: auto; } .hm-lanes button { width: 62px; height: 62px; } .hm-emo { top: calc(10px + var(--safe-t)); right: calc(110px + var(--safe-r)); flex-direction: row; } .hm-emo button { width: 44px; height: 44px; font-size: 18px; } .hm-feed { bottom: calc(60px + var(--safe-b)); } .hm-desc { display: none; } }

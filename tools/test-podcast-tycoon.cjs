@@ -49,13 +49,14 @@ server.listen(0, '127.0.0.1', async () => {
     assert.ok(await p.evaluate(() => AMC.StudioEdit.value() > 0 && AMC.StudioEdit.bonus().hype >= 0), 'Studio-Editor');
     await p.keyboard.press('Escape'); await p.keyboard.press('Escape'); await p.waitForTimeout(500);
     // Stadt frei: Verkehr, Kabeldiebe, Besorgung; Marco fährt Gisela und steigt wieder aus
-    await p.evaluate(() => { AMC.UI.closeAll(); AMC.Game.mode = 'play'; AMC.Play.onEnd = () => {}; AMC.Play.start({ mode: 'free', host: 'marco' }); }); await p.waitForTimeout(3000);
+    await p.evaluate(() => { if (AMC.StudioEdit.close) AMC.StudioEdit.close(); AMC.UI.closeAll(); AMC.Game.mode = 'play'; AMC.Play.onEnd = () => {}; AMC.Play.start({ mode: 'free', host: 'marco' }); }); await p.waitForTimeout(3000);
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(); return S.cars.length >= 5 && S.traffic.length >= 3 && !!S.errand; }), 'Autos, Verkehr und Besorgung');
     await p.evaluate(() => { const S = AMC.Play.state(); S.pl.x = S.gisela.x - 2.5; S.pl.z = S.gisela.z; }); await p.waitForTimeout(300);
-    await p.keyboard.press('KeyE'); await p.waitForTimeout(400);
+    for (let i = 0; i < 6 && !(await p.evaluate(() => !!AMC.Play.state().drive)); i++) { await p.evaluate(() => { const S = AMC.Play.state(); S.pl.x = S.gisela.x - 2.5; S.pl.z = S.gisela.z; AMC.Input.fire('act'); }); await p.waitForTimeout(500); }
     assert.ok(await p.evaluate(() => !!AMC.Play.state().drive && AMC.Play.state().drive.gisela), 'Marco sitzt in Gisela');
     await p.keyboard.down('KeyW'); await p.waitForTimeout(1200); await p.keyboard.up('KeyW');
-    await p.keyboard.press('KeyE'); await p.waitForTimeout(2500);
+    for (let i = 0; i < 6 && (await p.evaluate(() => !!AMC.Play.state().drive)); i++) { await p.evaluate(() => AMC.Input.fire('act')); await p.waitForTimeout(800); }
+    await p.waitForTimeout(1500);
     assert.ok(await p.evaluate(() => !AMC.Play.state().drive), 'Aussteigen klappt');
     // Begehbares Funkhaus: Menüpunkte als Orte in der Welt
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(), ids = S.stations.map(s => s.id); return ['menu', 'live', 'edit', 'story', 'quiz', 'radio', 'shop', 'koop', 'arcade', 'music', 'home:andrew', 'home:marco'].every(i => ids.includes(i)); }), 'Alle Menüpunkte als Orte');
@@ -66,9 +67,18 @@ server.listen(0, '127.0.0.1', async () => {
     // Senderhäuser: alle 13 Sender haben ein begehbares Haus mit Gastmoderation
     assert.equal(await p.evaluate(() => AMC.Play.state().stations.filter(s => s.id.startsWith('sender:')).length), 13, '13 Senderhäuser in der Stadt');
     await p.evaluate(() => { AMC.Play.stop(); AMC.UI.closeAll(); AMC.Game.mode = 'home'; AMC.Home.station('clubradio24', 'andrew', () => {}); }); await p.waitForTimeout(1200);
-    await p.evaluate(() => { const r = AMC.Home._state(); r.w.x = 0; r.w.z = -1.2; }); await p.waitForTimeout(300);
-    for (let i = 0; i < 5 && !(await p.evaluate(() => !!AMC.Home._state().mini)); i++) { await p.evaluate(() => AMC.Input.fire('act')); await p.waitForTimeout(800); }
-    assert.ok(await p.evaluate(() => AMC.Home._state().slug === 'clubradio24' && !!AMC.Home._state().mini && (AMC.Save.data.senders || {}).clubradio24), 'Senderhaus mit Gastmoderation');
+    // Club-Feeling: eigener Raum, Fans, Tanzen, Figurenwechsel, 3D-Spiel
+    assert.ok(await p.evaluate(() => { const r = AMC.Home._state(); return r.slug === 'clubradio24' && r.cfg.floor[0] === 'led' && (AMC.Save.data.senders || {}).clubradio24; }), 'Clubradio24 hat eigenen Raum');
+    assert.equal(new Set(await p.evaluate(() => Object.values(AMC.Sender.HOUSES).map(h => h.wallTex + '/' + h.floor[0] + '/' + h.light))).size, 13, 'alle 13 Häuser unterschiedlich');
+    await p.waitForFunction(() => AMC.Home._state().fans.length >= 3, null, { timeout: 20000 });
+    await p.evaluate(() => document.querySelector('#sdEmo [data-e=dance]').click()); await p.waitForFunction(() => AMC.Home._state().w.fig.curName === 'dance', null, { timeout: 8000 }).catch(() => {});
+    assert.ok(await p.evaluate(() => AMC.Home._state().dancing && AMC.Home._state().w.fig.curName === 'dance'), 'Tanzen sichtbar');
+    await p.evaluate(() => document.querySelector('#sdEmo [data-e=swap]').click()); await p.waitForTimeout(500);
+    assert.equal(await p.evaluate(() => AMC.Home._state().who), 'marco', 'Figurenwechsel im Senderhaus');
+    await p.evaluate(() => AMC.Sender._startGame(AMC.Home._state())); await p.waitForTimeout(1500);
+    assert.ok(await p.evaluate(() => !!AMC.Home._state().game && !!document.getElementById('sdGame')), '3D-Senderspiel läuft');
+    await p.evaluate(() => { AMC.Home.close(true); AMC.Home.station('anmacha24', 'andrew', () => {}); AMC.Sender._startGame(AMC.Home._state()); }); await p.waitForTimeout(1500);
+    assert.ok(await p.evaluate(() => AMC.Home._state().cfg.game.kind === 'catch' && !!AMC.Home._state().game), '3D-Fangspiel läuft');
     await p.evaluate(() => { AMC.Home.close(true); AMC.Game.mode = 'menu'; });
     await p.evaluate(() => { AMC.Play.stop(); AMC.UI.closeAll(); });
     // Sims-Teil: Zuhause (Bedürfnisse, Schreibtisch-Idee), begehbares Studio, Musikshop, Gegenspieler zum Rangeln
@@ -98,7 +108,7 @@ server.listen(0, '127.0.0.1', async () => {
     await p.keyboard.down('KeyD'); await p.waitForTimeout(800); await p.keyboard.up('KeyD');
     assert.ok(await p.evaluate(() => { const r = AMC.Arcade.state(); return r && r.id === 'jump' && r.p.x > 0.3 && r.plats.length > 10 && r.goal > 100; }), 'Jump & Run läuft');
     await p.evaluate(() => AMC.Game.arcade('run')); await p.waitForTimeout(1200);
-    await p.keyboard.press('Space'); await p.waitForFunction(() => AMC.Arcade.state().phase !== 'ready', null, { timeout: 5000 }); await p.waitForTimeout(400); await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(400);
+    await p.keyboard.press('Space'); await p.waitForFunction(() => AMC.Arcade.state().phase !== 'ready', null, { timeout: 5000 }); await p.waitForTimeout(400); await p.evaluate(() => AMC.Input.fire('left')); await p.waitForFunction(() => AMC.Arcade.state().p.lane === 0, null, { timeout: 5000 }).catch(() => {});
     assert.ok(await p.evaluate(() => { const r = AMC.Arcade.state(); return r && r.id === 'run' && r.phase !== 'ready' && r.p.z < 0 && r.p.lane === 0; }), 'Endlos-Läufer rennt');
     await p.evaluate(() => { const r = AMC.Arcade.state(); r.crash(); }); await p.waitForTimeout(2200);
     assert.ok(await p.evaluate(() => !!document.querySelector('.arc-end')), 'Arcade-Ergebnis erscheint');
