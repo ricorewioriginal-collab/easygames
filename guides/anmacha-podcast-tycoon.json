@@ -78,6 +78,25 @@
       ]
     },
     {
+      "t": "Die Medienstadt: Viertel und Orte",
+      "p": [
+        "Die Stadt hat 16 Viertel, zum Beispiel Funkhaus-Viertel, Kino-Quartier, Zeitungsviertel, TV-Hof, Café-Kiez, Musikmeile und Festivalwiese. Oben links steht, wo du gerade bist. Jedes neu entdeckte Viertel bringt 10 Fan-Punkte.",
+        "Neun Orte kann man benutzen (jeder neu entdeckte Ort bringt 15 Fan-Punkte, der Stadtführer zählt mit):"
+      ],
+      "list": [
+        "📰 Zeitungskiosk: Tageszeitung (10 🎟️) bringt eine Idee aus der Schlagzeile, einmal am Tag.",
+        "🎬 Kino Lichtspiel: Trailer (20 🎟️), Spaß für beide und +3 TV-Funken, einmal am Tag.",
+        "📺 Kanal 9: Talkshow-Gast mit Quizfrage. Richtig gibt viele Abos, falsch ein paar. Einmal am Tag.",
+        "☕ Café Funkpause: Kaffee (15 🎟️) gibt Energie, Kuchen (12 🎟️) stillt Hunger, für beide.",
+        "🎤 Karaoke-Bar Echo: einen Klavierlicht-Song singen, +3 Musik-Funken, einmal am Tag.",
+        "🔌 Elektromarkt Volt: Gadget testen (40 🎟️), +4 Technik-Funken und eine Idee.",
+        "🥨 Bäckerei Brezel: Brezeln (8 🎟️) gegen den Hunger.",
+        "🎧 Podcast-Café Hörsaal: Stammhörer treffen, neue Abos und +2 Feelgood-Funken, einmal am Tag.",
+        "📸 Selfie-Wall: Selfies mit Fans (3× am Tag), Fan-Punkte und Stadt-Vibe.",
+        "Jeder benutzte Ort zählt im Tagesplan als 🚐-Ausflug."
+      ]
+    },
+    {
       "t": "Stadtbus und Gisela von innen",
       "p": [
         "🚌 Stadtbus „AnMaCha-Linie 1“: Acht Haltestellen verbinden die Viertel (Funkhaus, Stadtpark, Sendemast, Imbiss am Ring, Senderviertel Ost, Campingplatz, Südstadt, Westend). Der orange Bus fährt sichtbar seine Runde und ist auf der Karte markiert. An einer Haltestelle Aktion drücken und das Ziel wählen, die Fahrt ist kostenlos.",
@@ -94,7 +113,8 @@
       "t": "Club-Feeling in der Stadt",
       "p": [
         "Auch draußen ist was los: Rechts (im Querformat oben) ist die Emote-Leiste mit Tanzen, Winken und Jubeln (Tasten 1 bis 3). Fans in der Nähe winken zurück, jubeln mit und kommen zum Mittanzen, sobald du tanzt. Über den Köpfen erscheinen Sprechblasen, links läuft der Stadt-Chat.",
-        "🔥 Stadt-Vibe: Tanzen mit Fans und Emotes füllen den Balken. Ist er voll, gibt es eine Straßenparty mit Konfetti und 60 Fan-Punkten. Losgehen oder Springen beendet das Tanzen."
+        "🔥 Stadt-Vibe: Tanzen mit Fans und Emotes füllen den Balken. Ist er voll, gibt es eine Straßenparty mit Konfetti und 60 Fan-Punkten. Losgehen oder Springen beendet das Tanzen.",
+        "🎮 Controller: Das Steuerkreuz bedient die Emote-Leisten (✚↑ Tanzen, ✚← Winken, ✚→ Jubeln, ✚↓ Rolle bzw. Einrichten/Ausbauen), R3 tanzt ebenfalls. Y wechselt die Figur, X erfüllt Fan-Wünsche. Die passende Taste steht als kleines Abzeichen am Knopf; in Menüs steuert das Steuerkreuz wie gewohnt."
       ]
     },
     {
