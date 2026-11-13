@@ -251,3 +251,12 @@ html.dev-touch .h-prompt { bottom: calc(230px + var(--safe-b)); }
 }
 html.eg-pad .tb, html.dev-pad #touch { display: none; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* Staffeln, Fanshop */
+.ch-season { grid-column: 1 / -1; margin: 10px 0 2px; font-size: 1rem; color: var(--or); letter-spacing: .02em; }
+.fan-pts { margin-left: auto; margin-right: 10px; padding: 6px 12px; border-radius: 999px; background: rgba(255, 210, 63, .14); border: 1px solid rgba(255, 210, 63, .45); font-weight: 700; }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; max-height: min(56vh, 520px); overflow: auto; padding: 2px; }
+.shop-it { appearance: none; display: flex; align-items: center; gap: 12px; text-align: left; padding: 12px; border-radius: 16px; border: 1px solid var(--line); background: rgba(255, 255, 255, .05); cursor: pointer; color: inherit; font: inherit; }
+.shop-it .si-ic { font-size: 1.9rem; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 12px; background: rgba(0, 0, 0, .3); flex: none; }
+.shop-it .si-t { display: flex; flex-direction: column; gap: 2px; } .shop-it small { opacity: .75; }
+.shop-it.own { border-color: rgba(61, 214, 120, .5); } .shop-it.on { background: rgba(255, 138, 30, .22); border-color: var(--or); }

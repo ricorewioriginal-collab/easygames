@@ -64,11 +64,12 @@
     const s = UI.open(
       '<div class="menu-l"><div class="m-logo"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" fill="#111218" stroke="#ff8a1e" stroke-width="6"/><path d="M47 35 L88 60 L47 85Z" fill="#ff8a1e"/></svg><div><h1>AnMa<span>Cha</span> – Der Podcast</h1><p>Offizielles Spiel</p></div></div>' +
       '<nav class="m-list">' +
-      mi('story', '▶', 'Story: Die Staffel', chDone >= D.CHAPTERS.length ? 'Alle 8 Kapitel geschafft · ⭐ ' + stars + '/24' : 'Kapitel ' + (chDone + 1) + ' von 8 · ⭐ ' + stars, true) +
+      mi('story', '▶', 'Story: Staffel 1 & 2', chDone >= D.CHAPTERS.length ? 'Alle ' + D.CHAPTERS.length + ' Kapitel geschafft · ⭐ ' + stars + '/' + D.CHAPTERS.length * 3 : 'Kapitel ' + (chDone + 1) + ' von ' + D.CHAPTERS.length + ' · ⭐ ' + stars, true) +
       mi('live', '🎙️', 'Live-Show', 'Endlos-Aufnahme · Rekord ' + U.fmt(Save.data.best.live) + ' Hörer') +
       mi('jagd', '🏃', 'Themenjagd', '3 Minuten durch die Stadt · Rekord ' + U.fmt(Save.data.best.jagd)) +
       mi('quiz', '🧠', 'KI-Quizshow', '1 Spieler oder 2 Spieler: Andrew gegen Marco') +
-      mi('free', '🏙️', 'Stadt erkunden', 'Frei spielen, Radio hören, Störsender jagen') +
+      mi('free', '🏙️', 'Stadt & Nebenaufträge', Object.keys(Save.data.quests).length + '/' + D.QUESTS.length + ' Aufträge erledigt · frei spielen, Radio hören') +
+      mi('shop', '🛍️', 'Fanshop', '🎟️ ' + U.fmt(Save.data.fan) + ' Fan-Punkte · Outfits & Studio-Upgrades') +
       mi('radio', '📻', 'Radio & Podcast', 'Alle Folgen und die 13 AnMaCha-Sender') +
       '</nav><div class="m-row">' + mi('settings', '⚙️', 'Einstellungen') + mi('controls', '🎮', 'Steuerung') + mi('credits', 'ℹ️', 'Mitwirkende') + '</div></div>' +
       '<div class="menu-r"><button type="button" class="host-pick glass" data-nav id="mHost"></button><div class="m-hint" id="mHint"></div></div>',
@@ -84,7 +85,7 @@
     el.querySelector('#mHost').onclick = swapHost;
     s.o.onKey = () => { if (I.hit('swap')) { swapHost(); return true; } return false; };
     updHost();
-    const go = { story: storyMenu, live: startLive, jagd: () => startCity('jagd'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), settings, controls, credits };
+    const go = { story: storyMenu, live: startLive, jagd: () => startCity('jagd'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), shop, settings, controls, credits };
     el.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go[b.dataset.go]());
     G.menu = s;
   }
@@ -94,17 +95,18 @@
   function storyMenu() {
     const st = Save.data.story;
     const s = UI.open('<div class="panel glass wide"><header><h2>▶ Die Staffel</h2><button class="btn small" data-nav id="sBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
-      '<p class="lead">Von der ersten Folge im Sommer 2020 bis LIVE auf dem Podfluencer Festival: Erlebt die Geschichte von AnMaCha – Der Podcast.</p><div class="ch-grid">' +
+      '<p class="lead">Staffel 1: von der ersten Folge im Sommer 2020 bis LIVE auf dem Podfluencer Festival. Staffel 2: Das Funkloch kehrt zurück – und streut alte Folgen in der Stadt.</p><div class="ch-grid">' +
       D.CHAPTERS.map((c, i) => {
+        const head = i === 0 || (D.CHAPTERS[i - 1].season || 1) !== (c.season || 1) ? '<h3 class="ch-season">Staffel ' + (c.season || 1) + (c.season === 2 ? ' · Das Funkloch kehrt zurück' : ' · Die Geschichte von AnMaCha') + '</h3>' : '';
         const open = i <= st.done, stars = st.stars[c.id] || 0;
-        return '<button type="button" class="ch-card' + (open ? '' : ' locked') + '" data-nav data-ch="' + i + '"' + (i === Math.min(st.done, 7) ? ' data-first' : '') + (open ? '' : ' disabled') + ' style="--i:' + i + '">' +
+        return head + '<button type="button" class="ch-card' + (open ? '' : ' locked') + '" data-nav data-ch="' + i + '"' + (i === Math.min(st.done, D.CHAPTERS.length - 1) ? ' data-first' : '') + (open ? '' : ' disabled') + ' style="--i:' + i + '">' +
           '<span class="ch-n">' + (i + 1) + '</span><span class="ch-t"><small>' + c.when + ' · Folge ' + (c.ep < 10 ? '#0' : '#') + c.ep + '</small><b>' + c.title + '</b><em>' + objName(c) + '</em></span>' +
           '<span class="ch-s">' + (open ? '★★★'.split('').map((x, k) => '<i class="' + (k < stars ? 'on' : '') + '">★</i>').join('') : '🔒') + '</span></button>';
       }).join('') + '</div></div>', { back: () => UI.close(s) });
     s.el.querySelector('#sBack').onclick = () => UI.close(s);
     s.el.querySelectorAll('[data-ch]').forEach(b => b.onclick = () => { if (!b.disabled) { UI.closeAll(); playChapter(+b.dataset.ch); } });
   }
-  const objName = c => ({ collect: '✨ Themen-Funken sammeln', guest: '⭐ Gäste ins Studio bringen', antenna: '📡 Sendemast reparieren', train: '🚉 Haltestellen-Rennen', party: '📼 Mixtapes finden', boss: '👾 Bosskampf: Das Funkloch' })[c.obj.type] + ' · 🎙️ Live-Aufnahme';
+  const objName = c => ({ collect: '✨ Themen-Funken sammeln', guest: '⭐ Gäste ins Studio bringen', antenna: '📡 Sendemast reparieren', train: '🚉 Haltestellen-Rennen', party: '📼 Mixtapes finden', deliver: '🍟 Imbiss-Lieferdienst', cat: '🐈 Katzenjagd', hunt: '🤖 KI-Drohnen abschalten', boss: '👾 Bosskampf: ' + (c.obj.name || 'Das Funkloch') })[c.obj.type] + ' · 🎙️ Live-Aufnahme';
 
   function playChapter(i) {
     const ch = D.CHAPTERS[i];
@@ -126,7 +128,8 @@
     if (mode === 'free') return setTimeout(() => { toMenuScene(); mainMenu(); }, 300);
     if (mode === 'jagd') {
       const best = Save.data.best.jagd, rec = res.score > best; if (rec) { Save.data.best.jagd = res.score; Save.save(); }
-      return setTimeout(() => results({ title: '🏃 Themenjagd vorbei!', stars: res.score > 9000 ? 3 : res.score > 6000 ? 2 : res.score > 3000 ? 1 : 0, lines: [['Punkte', U.fmt(res.score) + (rec ? ' 🏆 Neuer Rekord!' : '')], ['Themen-Funken', sumGot(res.got)], ['Störsender abgeschaltet', res.kills], ['Goldene Erinnerungen', res.gold]], again: () => startCity('jagd') }), 400);
+      const fp = Save.earn(res.score / 40);
+      return setTimeout(() => results({ title: '🏃 Themenjagd vorbei!', stars: res.score > 9000 ? 3 : res.score > 6000 ? 2 : res.score > 3000 ? 1 : 0, lines: [['Punkte', U.fmt(res.score) + (rec ? ' 🏆 Neuer Rekord!' : '')], ['Themen-Funken', sumGot(res.got)], ['Störsender abgeschaltet', res.kills], ['Goldene Erinnerungen', res.gold], fanLine(fp)], again: () => startCity('jagd') }), 400);
     }
     if (!res.ok) return setTimeout(() => results({ title: '⏱ Sendeschluss!', fail: true, stars: 0, lines: [['Die Zeit ist abgelaufen.', ''], ['Tipp', U.pick(D.TIPS)]], again: () => playChapterDirect(G.chapter) }), 400);
     // Ab ins Studio
@@ -134,6 +137,7 @@
   }
   function playChapterDirect(i) { startCity('story', D.CHAPTERS[i]); }
   G.playChapter = i => { UI.closeAll(); G.chapter = i; playChapterDirect(i); };
+  const fanLine = n => ['🎟️ Fan-Punkte', '+' + U.fmt(n) + ' (jetzt ' + U.fmt(Save.data.fan) + ')'];
   const sumGot = got => D.RUBRIC_IDS.reduce((a, r) => a + (got[r] || 0), 0);
 
   function cardsFrom(res, ch) {
@@ -145,6 +149,9 @@
     if (ch && ch.obj.type === 'boss') cards.push({ rub: 'feel', power: 3, label: '🎪 Festival-Moment' }, { rub: 'tech', power: 2.6, label: '📡 Funkloch besiegt' });
     if (ch && ch.obj.type === 'antenna') cards.push({ rub: 'tech', power: 2.4, label: '📡 Sendemast-Story' });
     if (ch && ch.obj.type === 'train') cards.push({ rub: 'serious', power: 2.4, label: '🚉 Bahn-Erlebnis' });
+    if (ch && ch.obj.type === 'deliver') cards.push({ rub: 'feel', power: 2.4, label: '🍟 Imbiss-Geschichten' }, { rub: 'serious', power: 2.2, label: '🍽️ Mensakind oder Imbisskind?' });
+    if (ch && ch.obj.type === 'cat') cards.push({ rub: 'tv', power: 2.5, label: '🐈 Das Gurken-Video' }, { rub: 'tech', power: 2.2, label: '🚗 Elektroauto-Talk' });
+    if (ch && ch.obj.type === 'hunt') cards.push({ rub: 'tech', power: 2.8, label: '🤖 KI – Hör\' mir uff!' }, { rub: 'serious', power: 2.4, label: '🧠 Serious 15: Künstliche Intelligenz' });
     cards.push({ rub: 'life', power: 0.9, label: 'Wenig Interessantes aus unserem Leben' });
     return cards;
   }
@@ -159,18 +166,21 @@
   function showEnd(mode, ch, cityRes, r) {
     if (mode === 'arcade') {
       const rec = r.listeners > Save.data.best.live; if (rec) { Save.data.best.live = r.listeners; Save.save(); }
-      return results({ title: '🎙️ Live-Show beendet', stars: r.listeners > 20000 ? 3 : r.listeners > 10000 ? 2 : r.listeners > 4000 ? 1 : 0, lines: [['Hörer', U.fmt(r.listeners) + (rec ? ' 🏆 Neuer Rekord!' : '')], ['Runden', r.rounds]], again: startLive });
+      const fp = Save.earn(r.listeners / 50);
+      return results({ title: '🎙️ Live-Show beendet', stars: r.listeners > 20000 ? 3 : r.listeners > 10000 ? 2 : r.listeners > 4000 ? 1 : 0, lines: [['Hörer', U.fmt(r.listeners) + (rec ? ' 🏆 Neuer Rekord!' : '')], ['Runden', r.rounds], fanLine(fp)], again: startLive });
     }
     const idx = D.CHAPTERS.indexOf(ch), st = Save.data.story;
     if (r.stars < 1) return results({ title: '📉 Zu wenig Hörer …', fail: true, stars: 0, lines: [['Hörer', U.fmt(r.listeners)], ['Ziel für ⭐', U.fmt(ch.show.goal[0] * 10)], ['Tipp', 'Nutze passende Karten und wechsle die Sprecher für Kombo-Bonus.']], again: () => startShow('story', ch, cityRes), againLabel: 'Aufnahme wiederholen' });
     st.stars[ch.id] = Math.max(st.stars[ch.id] || 0, r.stars); st.best[ch.id] = Math.max(st.best[ch.id] || 0, r.listeners);
     const first = st.done === idx; if (st.done <= idx) st.done = idx + 1; Save.save();
+    const fp = Save.earn(first ? 150 + r.stars * 100 : r.stars * 40);
+    const seasonEnd = idx === D.CHAPTERS.length - 1 || (D.CHAPTERS[idx + 1] && (D.CHAPTERS[idx + 1].season || 1) !== (ch.season || 1));
     toMenuScene();
     UI.dialog(ch.outro, () => {
       const epIdx = AMC.Media.episodes.findIndex(e => e.nr === (ch.ep < 10 ? '#0' : '#') + ch.ep);
       results({
         title: '✅ Kapitel ' + (idx + 1) + ' geschafft!', stars: r.stars,
-        lines: [['Hörer', U.fmt(r.listeners)], ['Themen-Funken', sumGot(cityRes.got)], ['Störsender', cityRes.kills], ['Hörer gesprochen', cityRes.talks]].concat(first && idx === D.CHAPTERS.length - 1 ? [['🏆', 'Staffel abgeschlossen! Danke fürs Spielen.']] : []),
+        lines: [['Hörer', U.fmt(r.listeners)], ['Themen-Funken', sumGot(cityRes.got)], ['Störsender', cityRes.kills], ['Fans gesprochen', cityRes.talks], fanLine(fp)].concat(first && seasonEnd ? [['🏆', 'Staffel ' + (ch.season || 1) + ' abgeschlossen!' + (idx < D.CHAPTERS.length - 1 ? ' Staffel 2 ist freigeschaltet.' : ' Danke fürs Spielen!')]] : []),
         next: idx < D.CHAPTERS.length - 1 ? () => playChapter(idx + 1) : null,
         again: () => playChapter(idx),
         episode: epIdx >= 0 ? epIdx : null
@@ -216,7 +226,39 @@
   }
   function quizEnd(r) {
     const n = id => D.HOSTS[id].name;
-    results({ title: r.win < 0 ? '🤝 Unentschieden!' : '🏆 ' + n(r.ids[r.win]) + ' gewinnt!', stars: r.two ? (r.win >= 0 ? 3 : 2) : r.win === 0 ? 3 : r.score[0] > 600 ? 1 : 0, lines: [[n(r.ids[0]), U.fmt(r.score[0])], [n(r.ids[1]), U.fmt(r.score[1])]], again: () => { stopAll(); G.mode = 'quiz'; AMC.Quiz.start({ players: r.two ? 2 : 1, host: G.host, onEnd: quizEnd }); } });
+    const fp = Save.earn(r.score[0] / 10);
+    results({ fan: fp, title: r.win < 0 ? '🤝 Unentschieden!' : '🏆 ' + n(r.ids[r.win]) + ' gewinnt!', stars: r.two ? (r.win >= 0 ? 3 : 2) : r.win === 0 ? 3 : r.score[0] > 600 ? 1 : 0, lines: [[n(r.ids[0]), U.fmt(r.score[0])], [n(r.ids[1]), U.fmt(r.score[1])], fanLine(fp)], again: () => { stopAll(); G.mode = 'quiz'; AMC.Quiz.start({ players: r.two ? 2 : 1, host: G.host, onEnd: quizEnd }); } });
+  }
+
+  // ------------------------------------------------------------------ Fanshop: Outfits & Studio-Upgrades
+  function shop(tab) {
+    tab = tab || 'outfit';
+    const who = G.host, H = D.HOSTS[who], cur = Save.data.outfit[who] || 'std';
+    const card = (it, kind) => {
+      const own = it.cost === 0 || Save.has(kind + ':' + it.id), on = kind === 'o' && cur === it.id, can = Save.data.fan >= it.cost;
+      return '<button type="button" class="shop-it' + (own ? ' own' : '') + (on ? ' on' : '') + '" data-nav data-it="' + kind + ':' + it.id + '"><span class="si-ic">' + it.icon + '</span><span class="si-t"><b>' + it.name + '</b><small>' +
+        (it.desc ? it.desc + ' · ' : '') + (on ? '✔ trägt ' + H.name : own ? (kind === 'o' ? 'Anziehen' : '✔ Im Studio') : '🎟️ ' + U.fmt(it.cost) + (can ? '' : ' · zu wenig Punkte')) + '</small></span></button>';
+    };
+    const s = UI.open('<div class="panel glass wide"><header><h2>🛍️ Fanshop</h2><span class="fan-pts">🎟️ ' + U.fmt(Save.data.fan) + '</span><button class="btn small" data-nav id="fBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
+      '<div class="r-tabs"><button class="tab' + (tab === 'outfit' ? ' on' : '') + '" data-nav id="tO"' + (tab === 'outfit' ? ' data-first' : '') + '>👕 Outfits für ' + H.name + '</button><button class="tab' + (tab === 'up' ? ' on' : '') + '" data-nav id="tU"' + (tab === 'up' ? ' data-first' : '') + '>🎙️ Studio-Upgrades</button></div>' +
+      '<p class="hint">Fan-Punkte gibt es für Kapitel, Live-Show, Themenjagd, Quiz und Nebenaufträge. ' + AMC.glyph('y') + ' wechselt zwischen Andrew und Marco.</p>' +
+      '<div class="shop-grid">' + (tab === 'outfit' ? D.OUTFITS.map(o => card(o, 'o')) : D.UPGRADES.map(u => card(u, 'u'))).join('') + '</div></div>', { back: () => UI.close(s) });
+    const re = t => { UI.close(s); shop(t); };
+    s.el.querySelector('#fBack').onclick = () => UI.close(s);
+    s.el.querySelector('#tO').onclick = () => re('outfit'); s.el.querySelector('#tU').onclick = () => re('up');
+    s.o.onKey = () => { if (I.hit('swap')) { G.host = G.host === 'andrew' ? 'marco' : 'andrew'; Save.data.host = G.host; Save.save(); AMC.Audio.sfx('swap'); re(tab); return true; } return false; };
+    s.el.querySelectorAll('[data-it]').forEach(b => b.onclick = () => {
+      const [kind, id] = b.dataset.it.split(':'), it = (kind === 'o' ? D.OUTFITS : D.UPGRADES).find(x => x.id === id), key = kind + ':' + id;
+      const owned = it.cost === 0 || Save.has(key);
+      const wear = () => { if (kind !== 'o') return; Save.data.outfit[who] = id; Save.save(); W.rebuildHost(who).then(f => { if (f) { UI.faces[who] = W.portrait(f); f.play('yes'); } }); };
+      if (owned) { if (kind === 'o' && cur !== id) { wear(); AMC.Audio.sfx('swap'); UI.toast(it.icon + ' ' + H.name + ' trägt jetzt: ' + it.name); setTimeout(() => re(tab), 60); } return; }
+      if (Save.data.fan < it.cost) { AMC.Audio.sfx('buzz'); UI.toast('🎟️ Dir fehlen noch ' + U.fmt(it.cost - Save.data.fan) + ' Fan-Punkte.'); return; }
+      UI.confirm(it.icon + ' ' + it.name + ' für 🎟️ ' + U.fmt(it.cost) + ' kaufen?', () => {
+        Save.data.fan -= it.cost; Save.data.owned.push(key); Save.save(); AMC.Audio.sfx('buy');
+        if (kind === 'u') Save.data.owned.push(id);   // Upgrades wirken direkt (Save.has('mics') …)
+        Save.save(); wear(); UI.toast('✔ ' + it.name + (kind === 'o' ? ' gekauft und angezogen!' : ' ist jetzt im Studio!')); setTimeout(() => re(tab), 60);
+      });
+    });
   }
 
   // ------------------------------------------------------------------ Einstellungen, Steuerung, Mitwirkende
@@ -259,7 +301,7 @@
     const s = UI.open('<div class="panel glass"><header><h2>ℹ️ Mitwirkende</h2><button class="btn small" data-nav data-first id="crBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
       '<p><b>AnMaCha – Der Podcast (Offizielles Spiel)</b><br>Mit Marco und Andrew. Story frei nach den Folgen, Rubriken und Neuigkeiten auf <a href="https://anmacha.de" target="_blank" rel="noopener" data-nav>anmacha.de</a>.</p>' +
       '<p><b>Podcast & Sender</b><br>Folgen direkt vom offiziellen Podcast-Feed (podcaster.de), Sender live über laut.fm – nichts davon ist im Spiel gespeichert. Die Sender laufen auch bei RicoReWi Radio.</p>' +
-      '<p><b>3D & Ton (frei lizenziert)</b><br>Menschen und Bewegungen: Quaternius „Universal Base Characters“ und „Universal Animation Library“ (CC0) · Gebäude: Quaternius „Ultimate Textured Building Pack“ (CC0) · Bäume, Brunnen, Felsen: Kenney „Fantasy Town Kit“ (CC0) · Geräusche: Kenney (CC0) · Musik und Effekte: im Browser erzeugt · Three.js (MIT) · Schrift Fredoka (OFL).</p>' +
+      '<p><b>3D & Ton (frei lizenziert)</b><br>Menschen und Bewegungen: Quaternius „Universal Base Characters“ und „Universal Animation Library“ (CC0) · Gebäude: Quaternius „Ultimate Textured Building Pack“ (CC0) · Katze: Quaternius „Ultimate Monsters“ (CC0) · Bäume, Brunnen, Felsen: Kenney „Fantasy Town Kit“ (CC0) · Geräusche: Kenney (CC0) · Musik und Effekte: im Browser erzeugt · Three.js (MIT) · Schrift Fredoka (OFL).</p>' +
       '<p class="hint">Ein Spiel aus der easygames-Sammlung · Wir ♥ Medien</p></div>', { back: () => UI.close(s) });
     s.el.querySelector('#crBack').onclick = () => UI.close(s);
   }

@@ -32,6 +32,7 @@
     story: { done: 0, stars: {}, best: {} },
     best: { live: 0, jagd: 0, quiz: 0 },
     stats: { funken: 0, drones: 0, shows: 0, listeners: 0, quizWins: 0 },
+    fan: 0, owned: [], outfit: { andrew: 'std', marco: 'std' }, quests: {},
     seenIntro: false
   });
   const Save = AMC.Save = {
@@ -41,13 +42,15 @@
         const j = JSON.parse(root.localStorage.getItem(KEY) || 'null');
         if (j && j.v === 4) {
           const d = DEF();
-          Save.data = Object.assign(d, j, { settings: Object.assign(d.settings, j.settings || {}), story: Object.assign(d.story, j.story || {}), best: Object.assign(d.best, j.best || {}), stats: Object.assign(d.stats, j.stats || {}) });
+          Save.data = Object.assign(d, j, { settings: Object.assign(d.settings, j.settings || {}), story: Object.assign(d.story, j.story || {}), best: Object.assign(d.best, j.best || {}), stats: Object.assign(d.stats, j.stats || {}), outfit: Object.assign(d.outfit, j.outfit || {}) });
         }
       } catch (e) { /* ohne Speicher spielen */ }
       return Save.data;
     },
     save() { try { root.localStorage.setItem(KEY, JSON.stringify(Save.data)); } catch (e) { /* voll oder gesperrt */ } },
-    reset() { Save.data = DEF(); Save.save(); }
+    reset() { Save.data = DEF(); Save.save(); },
+    has(id) { return Save.data.owned.indexOf(id) >= 0; },
+    earn(n) { n = Math.max(0, Math.round(n)); Save.data.fan += n; Save.save(); return n; }
   };
   Save.load();
 

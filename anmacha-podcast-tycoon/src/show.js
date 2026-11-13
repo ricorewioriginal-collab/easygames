@@ -156,7 +156,7 @@
   let S = null;
   /** cfg: { mode:'story'|'arcade', rounds, goal:[1,2,3 Sterne], cards:[{rub,power,label}] , host } */
   SH.start = function (cfg) {
-    S = { cfg, round: 0, rounds: cfg.rounds || 6, hype: 55, listeners: 0, combo: 1, lastSpeaker: '', speaker: cfg.host || 'andrew', jingles: 3, special: 0, swapUsed: false,
+    S = { cfg, round: 0, rounds: cfg.rounds || 6, hype: 55 + (AMC.Save.has('neon') ? 10 : 0), listeners: 0, combo: 1, lastSpeaker: '', speaker: cfg.host || 'andrew', jingles: AMC.Save.has('jingle') ? 4 : 3, special: 0, swapUsed: false,
       cards: (cfg.cards || []).map(c => Object.assign({ used: false }, c)), phase: 'intro', menu: 'root', sel: 0, t: 0, mini: null, incident: null, chatT: 0, log: [], arcade: cfg.mode === 'arcade', ended: false };
     SH.active = true;
     ST.enter('show'); ST.focus = S.speaker;
@@ -280,7 +280,7 @@
     });
   }
   function applyGain(gain, q) {
-    const add = Math.round(gain * (8 + S.round * 1.5) * (0.6 + S.hype / 100));
+    const add = Math.round(gain * (8 + S.round * 1.5) * (0.6 + S.hype / 100) * (AMC.Save.has('mics') ? 1.1 : 1));
     S.listeners += add; S.hype = U.clamp(S.hype + gain * 0.35 - 7, 0, 100); S.special = Math.min(100, S.special + gain * 0.45);
     const words = q >= 1 ? ['PERFEKT!', 'perfect'] : q >= 0.8 ? ['STARK!', 'good'] : q >= 0.5 ? ['Okay', 'ok'] : ['Daneben …', 'miss'];
     pop(words[0] + '<small>+' + U.fmt(add) + ' 🎧</small>', words[1]);

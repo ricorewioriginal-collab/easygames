@@ -28,6 +28,12 @@ server.listen(0, '127.0.0.1', async () => {
     const z1 = await p.evaluate(() => AMC.Play.state().pl.z);
     assert.ok(z1 < z0 - 1, 'Figur läuft nach vorn: ' + z0 + ' → ' + z1);
     await p.keyboard.press('Escape'); await p.waitForTimeout(800);
+    // Staffel 2: Katzen-Kapitel startet mit Katze, Imbiss-Kapitel mit Imbiss
+    assert.equal(await p.evaluate(() => AMC.Data.CHAPTERS.length), 12);
+    await p.evaluate(() => { AMC.UI.closeAll(); AMC.Game.playChapter(9); }); await p.waitForTimeout(2500);
+    assert.ok(await p.evaluate(() => !!AMC.Play.state().cat), 'Katze da');
+    await p.evaluate(() => AMC.Game.playChapter(8)); await p.waitForTimeout(2500);
+    assert.ok(await p.evaluate(() => !!AMC.Play.state().imbiss), 'Imbiss da');
     await p.evaluate(() => AMC.UI.closeAll());
     // Radio
     await p.evaluate(() => AMC.UI.radio()); await p.waitForTimeout(800);
