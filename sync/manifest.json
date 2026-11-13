@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "05c1492d92c4",
- "generated": "2026-11-13T00:44:38+00:00",
- "commit": "44de15c0eafd17b4f7338dc7d072033bdd34ab16",
+ "version": "cfc4184f94af",
+ "generated": "2026-11-13T01:44:56+01:00",
+ "commit": "e257448082cd31bc8981d932a73becde2e5d91a1",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -348,13 +348,13 @@
   },
   {
    "p": "aeru/game.js",
-   "s": 125611,
-   "h": "d9994713a526a50c7e2466cb3d90c81e59d155043a0191d4c91ec236aefd8d67"
+   "s": 134102,
+   "h": "f802170f2a0e7cf394cbaa6d300ed14a145e02800b52a2e58841577f3cef21c4"
   },
   {
    "p": "aeru/index.html",
-   "s": 13083,
-   "h": "3030a059ecc380b4ba421e8e194e9071b059e1a371adb2ac84912ab4a7f21363"
+   "s": 14982,
+   "h": "6e0f40000d6e4f9c2e502c72e52cf1a3465b1eae7882456f5ef361b196e37c74"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -367,14 +367,19 @@
    "h": "575415640225044966d3d1455bc0be2ad54308c6f99f2ce4b4f41352bc6ae430"
   },
   {
+   "p": "aeru/rueckweg.js",
+   "s": 2100,
+   "h": "131658fe700ee6cc3a26ae899dbd4906ea3ad0d4b989e6c6d9067b1bc9fc12e7"
+  },
+  {
    "p": "aeru/story.js",
    "s": 45418,
    "h": "27af27d9f77eb28b08e5d0c8e3976c626b53f8717c365f6c94187052675fa633"
   },
   {
    "p": "aeru/style.css",
-   "s": 29680,
-   "h": "6cd4a030aa1a1797fd8cea27669fc44a19988d52104ae4380fc0bb71780bdef0"
+   "s": 34489,
+   "h": "78f0ee369a8f170cc4bf4b04660534942820ddcaf8f16e5e32752b653e5aadca"
   },
   {
    "p": "aeru/sw.js",
@@ -4778,8 +4783,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 110044,
-   "h": "046b9d58cfdeedfa0bee1958c767e1e20763d45caab321cc360751f8130456da"
+   "s": 110094,
+   "h": "21ed40b7deb4b72b0aca6fdd32c1c66e00a725e2d354b738f15e7e093c61bb76"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -6638,8 +6643,8 @@
   },
   {
    "p": "guides/aeru.json",
-   "s": 17827,
-   "h": "f0342bdec5b03b410f130d7596ace8e8f8a55437d5ee7902a2b2a3720e4d0fe5"
+   "s": 18807,
+   "h": "8822abdf148aec7324b31f66f1e9dd1a4d6c5d7fa136f8cb38b25a83fd3aff09"
   },
   {
    "p": "guides/anmacha-beat-surfer.json",
@@ -9849,7 +9854,7 @@
   {
    "p": "sync/catalog.json",
    "s": 259157,
-   "h": "30102989367060198f2e214d1193906f3c59194c3f760249ae214ce0715386c1"
+   "h": "004556f9bf4fd2b74dcfc535eac08f0e171c6fe9cfe21920a0e8bdb97cb511a4"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -12358,8 +12363,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 72193,
-   "h": "6c08512952e5998c23a48d13f18f1a5514442a6a98076135a4b848b7feb0543f"
+   "s": 72243,
+   "h": "a4fd2855995306cbb6c36f3ce48ab4e7407243ae238d130de08abda5b0250f99"
   },
   {
    "p": "zotik/manifest.webmanifest",

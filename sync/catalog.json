@@ -759,7 +759,7 @@
      "Heiltränke gibt es im Laden gegen Rissplitter."
     ]
    },
-   "size": 15275301,
+   "size": 15275351,
    "files": 64,
    "offline": true,
    "cloud": {
@@ -823,8 +823,8 @@
      "Das Tagebuch zeigt das aktuelle Ziel; ein Kompass und ein Lichtstrahl weisen den Weg."
     ]
    },
-   "size": 1438074,
-   "files": 12,
+   "size": 1455373,
+   "files": 13,
    "offline": true,
    "cloud": {
     "game": "aeru",
@@ -3115,7 +3115,7 @@
      "Gekämpft wird nur in der Kampfarena und auf der Wald-Insel (das Waldtor im alten Verbotenen Wald bringt dich hin)."
     ]
    },
-   "size": 6620858,
+   "size": 6620908,
    "files": 133,
    "offline": true,
    "cloud": {

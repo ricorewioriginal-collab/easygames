@@ -27,6 +27,19 @@ Simulation mit festen 60 Hz (Akkumulator), dadurch gleiches Verhalten bei 30, 60
 
 Links ein großer Stick mit Totzonenring. Rechts ein Aktionsrad: SPRUNG groß unten, FLUG oben, WIND links, ROLLE rechts. REDEN erscheint nur, wenn jemand in der Nähe ist.
 
+## Controller
+
+PlayStation, Nintendo Switch und Xbox werden automatisch erkannt (`../gamepad.js`); Hinweise zeigen die passenden Symbole (✕ ○ □ △ bzw. B A Y X).
+Linker Stick läuft und fliegt **analog** (Totzone 0,18, halb gedrückt = halbe Geschwindigkeit), rechter Stick dreht die Kamera (Totzone 0,2), R3 = Kamera hinter Aeru, L1/R1 drehen schrittweise.
+Kreuz = Sprung, Kreis = Windstoß, Viereck = Rammstoß, Dreieck = Sprechen/Portal, R2 = Flug, L2 = Rammstoß bzw. sinken, Options = Pause, Share = Tagebuch.
+Treffer und Rammstöße lassen den Controller kurz vibrieren. Im Controller-Modus ersetzt eine Symbolleiste die Tastatur- und Touch-Hinweise; Menüs bedient das Steuerkreuz.
+
+## Spieleportale
+
+In jeder Welt stehen neben dem Inselstart zwei Portale: links zur **Bunten Insel**, rechts nach **Zotik** (die beiden Highlight-Spiele der Sammlung).
+Erstes Sprechen fragt nach, das zweite speichert und reist im selben Tab (`?from=aeru`). Die Portalsäulen sind fest. In beiden Spielen zeigt `rueckweg.js`
+für diese Sitzung oben in der Mitte „🐉 Zurück zu AERU“.
+
 ## Kamera
 
 Folgt weich, lässt sich frei drehen (Maus, Q/E, Wischen) und zoomen (Mausrad). Die Kamerahilfe dreht nach kurzer Zeit ohne manuelle Eingabe hinter Aeru (abschaltbar). Die Kamera bleibt über Boden und Plattformen. Empfindlichkeit für Maus und Touch getrennt einstellbar.
