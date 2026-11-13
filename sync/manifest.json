@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "06c2c96a878a",
- "generated": "2026-11-13T23:33:03+00:00",
- "commit": "3877e83cb559d1b1deaad0c50aa589e70e2e2f59",
+ "version": "b2f028e7f0bf",
+ "generated": "2026-11-13T23:37:47+00:00",
+ "commit": "8b2b0e5b61cd378307b7e661a84eb9cf370b025d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -348,13 +348,13 @@
   },
   {
    "p": "aeru/game.js",
-   "s": 191005,
-   "h": "da60363898f08f0303dd9e1148302885aaef7e5d95202418e5f77895a80ef871"
+   "s": 196322,
+   "h": "56e9ff1933f2c0610724ff3a46f197b13d2729d21792d1ddfa6873e9dc94cd90"
   },
   {
    "p": "aeru/index.html",
    "s": 15593,
-   "h": "de5fa6bec7815ebb35bb1d9984caa1cf191e5e60db9beb27de964a4d775588fe"
+   "h": "dad1907d8668a28438cf63e2f5d5ac03c3e89d04a02956a64ded919ce4000510"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -6603,8 +6603,8 @@
   },
   {
    "p": "guides/aeru.json",
-   "s": 24641,
-   "h": "324969ff5309e1722c3015dc69f650f931928274a483531cf350752479c546a2"
+   "s": 24952,
+   "h": "0f69c03607c9338543f1ec87581ca816e1428f2ecbfa8203bf269ff0c8eb1a32"
   },
   {
    "p": "guides/anmacha-beat-surfer.json",
@@ -9814,7 +9814,7 @@
   {
    "p": "sync/catalog.json",
    "s": 259012,
-   "h": "758000f2316d12ef8f30ebed21cc6818722ee343a887e2b91ed6a3d219d9bd76"
+   "h": "0c304af074bd6adb300ab5752e3a60dd9117a56eb2353632613e56d74aa1ce85"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -12302,9 +12302,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-CezgCeXr.js",
-   "s": 1901768,
-   "h": "267b5bec4176ff1656ba8b8dc246c87dfe00b957251a929f60faf19f72963e60"
+   "p": "zotik/assets/index-DJ-01qSV.js",
+   "s": 1904732,
+   "h": "710051e530af83b55420908a091f01c0b283f979806ec237fe29030917c2b1c1"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -12323,8 +12323,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 72608,
-   "h": "d9aa957b20c62986608d5524ff2944b991588af35dc6509deba7c4401ac1c3b5"
+   "s": 72669,
+   "h": "b9d3e12ee138f8cb6b6b23c0a24024badacedb0af36e1a3cd015c60c1c0ae5df"
   },
   {
    "p": "zotik/manifest.webmanifest",
