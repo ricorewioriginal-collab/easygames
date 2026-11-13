@@ -6,9 +6,9 @@
 import { WORLDS } from './mwdata.js';
 import { makeLand } from './mwland.js';
 import { createMwFoes } from './mwfoes.js';
-export const MW_FIRST = 21, MW_LAST = 31, MW = WORLDS;
+export const MW_FIRST = 21, MW_LAST = 32, MW = WORLDS;
 const CX = 0; let CZ = -36, R = 58; const PATHX = z => Math.sin(z * .08) * 5;
-const GTEX = { spiegel: 'forest', dschungel: 'forest', notredame: 'cobble', theben: 'sand', meer: 'sand', mauer: 'grass', camelot: 'grass', nimmerland: 'grass', wunderland: 'grass', pinocchio: 'grass', aladdin: 'sand' };
+const GTEX = { spiegel: 'forest', dschungel: 'forest', notredame: 'cobble', theben: 'sand', meer: 'sand', mauer: 'grass', camelot: 'grass', nimmerland: 'grass', wunderland: 'grass', pinocchio: 'grass', aladdin: 'sand', kurbelhafen: 'grass' };
 const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 const hex = n => '#' + n.toString(16).padStart(6, '0');
 
@@ -171,6 +171,7 @@ export function createMaerchen(C) {
       case 'page': { const m = mk(G.box, M(0xf4ecd8, { r: .8 }), 0, .3, 0, .42, .02, .56); m.rotation.set(-.4, .3, .2); g.add(m); g.add(mk(G.box, M(0x3a2a1a), .02, .31, .05, .3, .005, .04, false)); g.add(glow(0xfff4d0, 2, 0, .4, 0, .6)); break; }
       case 'gem': { const c = [0xd81a3a, 0x2ac86a, 0x3a6ad8, 0xf4f0f8, 0xd8a020, 0x9a3ad8][i % 6]; g.add(mk(G.oct, M(c, { e: c, ei: 1.6, m: .3, r: .15 }), 0, .4, 0, .22, .3, .22)); g.add(mk(G.cyl0, M(0x4a3a20), 0, .72, 0, .03, .12, .03, false)); g.add(glow(c, 2.2, 0, .4, 0, .8)); break; }
       case 'bowl': g.add(mk(G.cyl, M(0xd8b040, { m: .9, r: .3 }), 0, .18, 0, .4, .16, .4)); for (let k = 0; k < 5; k++) g.add(mk(G.oct, M([0xd81a3a, 0x2ac86a, 0x3a6ad8, 0xf4f0f8, 0x9a3ad8][k], { e: 0x6a4a2a, ei: 1.4 }), Math.cos(k * 1.26) * .18, .34, Math.sin(k * 1.26) * .18, .08, .1, .08, false)); g.add(glow(0xffe0a0, 2.2, 0, .45, 0, .7)); break;
+      case 'reel': for (const z of [-.08, .08]) { const r = mk(G.cyl, M(0x2a2a2a, { m: .7, r: .35 }), 0, .45, z, .32, .03, .32); r.rotation.x = 1.5708; g.add(r); } { const c = mk(G.cyl, M(0x6a6a6a, { r: .6 }), 0, .45, 0, .26, .14, .26); c.rotation.x = 1.5708; g.add(c); } g.add(mk(G.box, M(0x3a3a3a), .2, .12, 0, .5, .02, .14, false)); g.add(glow(0xffffff, 2, 0, .45, 0, .7)); break;
       case 'ember': g.add(mk(G.sph, M(0xff6a20, { e: 0xff4010, ei: 2.6 }), 0, .3, 0, .22, .2, .22)); g.add(glow(0xff8a30, 2.4, 0, .4, 0, .9)); break;
       case 'mask': g.add(mk(G.sph, M([0xf0e8d8, 0xd8b040, 0xc8402a, 0x4a6ac8, 0xe8e8f0][i % 5], { r: .4 }), 0, .55, 0, .3, .36, .1)); g.add(mk(G.box, M(0x1a1410), 0, .62, .06, .25, .06, .04, false)); g.add(glow(0xffe08a, 2, 0, .55, 0, .7)); break;
       case 'market': { if (i % 4 === 0) { const P = FOE.make('reiter', 0x8a5a3a, false); P.root.scale.setScalar(.75); P.body.children.forEach((c, k) => { if (k > 10) c.visible = false; }); g.add(P.root); }
@@ -189,6 +190,8 @@ export function createMaerchen(C) {
       case 'coin': b.ico(0, .1, 0, .9, .35, .8, 0x6a4a2a, { cast: false }); b.cyl(.2, .3, 0, .18, .04, 0xd8b040, { mat: { m: .9, r: .3 } }); fire.add(mk(G.oct, M(0xffd040, { e: 0xffb020, ei: 2 }), 0, .9, 0, .2, .3, .2, false)); fire.add(glow(0xffd060, 3, 0, .8, 0, .7)); break;
       case 'oillamp': b.cyl(0, 0, 0, .5, 1, 0x8a7a64, { mat: { r: .9 } }); { const l = b.sph(0, 1.2, 0, .45, .22, .3, 0xd8a040, { mat: { m: .9, r: .3 } }); b.cone(.55, 1.22, 0, .1, .4, 0xd8a040, { mat: { m: .9, r: .3 } }).rotation.z = -1.4; b.tor(-.42, 1.25, 0, .16, 0xd8a040, { d: .04, mat: { m: .9 } }); }
         fire.add(mk(G.cone, M(0xffb040, { e: 0xff8a10, ei: 2.6 }), .78, 1.3, 0, .1, .3, .1, false)); fire.add(glow(0xffc060, 4, .7, 1.4, 0, .8)); break;
+      case 'whistle': b.cyl(0, 0, 0, .35, 1.4, 0x5a5a5a, { mat: { m: .6, r: .4 } }); b.cyl(0, 1.4, 0, .22, 1.2, 0xc8b070, { mat: { m: .9, r: .25 } }); b.box(0, 2.1, .22, .26, .16, .1, 0x1a1a1a); b.cone(0, 2.6, 0, .3, .3, 0xc8b070, { mat: { m: .9, r: .25 } });
+        { let k = 0; C.animObjs.push({ fn(t, dt) { if (!fire.visible) return; k += dt || .016; if (k > .25) { k = 0; C.emit(g.position.x, g.position.y + 2.9, g.position.z, 0xf0f0f0, 1, .5, 1.6, .4, -1.4); } } }); } fire.add(glow(0xffffff, 3, 0, 2.6, 0, .6)); break;
       case 'bell': b.box(-1, 0, 0, .2, 2.4, .2, 0x5a3a22); b.box(1, 0, 0, .2, 2.4, .2, 0x5a3a22); b.box(0, 2.3, 0, 2.3, .2, .25, 0x5a3a22);
         b.cone(0, .8, 0, .75, 1.4, 0xb08a3a, { mat: { m: .85, r: .3 } }); b.sph(0, 2.15, 0, .4, .28, .4, 0xb08a3a, { mat: { m: .85, r: .3 } }); break;
       case 'beacon': b.cyl(0, 0, 0, 1.3, 1.2, 0x8a8478, { mat: { r: 1 } }); for (let i = 0; i < 5; i++) { const l = b.cyl(Math.cos(i * 1.26) * .4, 1.3, Math.sin(i * 1.26) * .4, .12, 1, 0x5a3a1a, { lo: 1 }); l.rotation.z = .4 * Math.cos(i); }

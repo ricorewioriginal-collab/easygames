@@ -1641,7 +1641,7 @@ Object.assign(PORT,{Mara:['🔬','#7a4ac8'],Sela:['🧪','#d9a050'],Elio:['📖'
 const ATM0={top:[.015,.035,.17],mid:[.09,.17,.52],hor:[.36,.30,.68],aur:[.2,.9,.9],ms:[.35,.5,.95],gr:[.08,.1,.3],moon:0xdde8ff,mg:[0x7fa8ff,0xbfd6ff],fog:0x2a3a86,fd:.0037,hemi:[0x849de9,0x244348,.64],lite:[0xc4d4ff,1.15],stars:1,expo:1.05};
 function setAtmos(a){const u=skyMat.uniforms;u.uT.value.setRGB(...a.top);u.uM.value.setRGB(...a.mid);u.uH.value.setRGB(...a.hor);u.uA.value.setRGB(...a.aur);u.uS.value.setRGB(...a.ms);u.uG.value.setRGB(...a.gr);
   scene.fog.color.setHex(a.fog);scene.fog.density=a.fd;hemi.color.setHex(a.hemi[0]);hemi.groundColor.setHex(a.hemi[1]);hemi.intensity=a.hemi[2];moonL.color.setHex(a.lite[0]);moonL.intensity=a.lite[1];
-  if(MOONM)MOONM.material.color.setHex(a.moon);MOONGL.forEach((g,i)=>g.material.color.setHex(a.mg[i]));if(STARS)STARS.material.opacity=a.stars;renderer.toneMappingExposure=a.expo}
+  if(MOONM)MOONM.material.color.setHex(a.moon);MOONGL.forEach((g,i)=>g.material.color.setHex(a.mg[i]));if(STARS)STARS.material.opacity=a.stars;renderer.toneMappingExposure=a.expo;renderer.domElement.style.filter=a.bw?'grayscale(1) contrast(1.06) brightness(1.08) sepia(.08)':'';document.body.classList.toggle('bwfilm',!!a.bw)}
 function atmOf(C){const s=C.sky;return{top:s[0],mid:s[1],hor:s[2],aur:s[3],ms:s[4],gr:s[2].map(v=>v*.3),moon:C.moon,mg:[C.rift,C.moon],fog:C.fog[0],fd:C.fog[1],hemi:C.hemi,lite:C.lite,stars:C.stars,expo:C.expo}}
 /* ---- Gegner einfärben (Material-Kopien) ---- */
 function tintModel(m,hex,k){k=k??.5;const tc=new T.Color(hex),seen=new Map();
