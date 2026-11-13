@@ -29,12 +29,19 @@ export function createMaerchen(C) {
 
   /* ---------- Gelände: Hügel, ebene Plätze, Teiche, Fluss mit Furt/Brücke, steiler Randhang ---------- */
   function riverDist(rv, x, z) { let best = 1e9; for (let i = 0; i < rv.pts.length - 1; i++) { const [ax, az] = rv.pts[i], [bx, bz] = rv.pts[i + 1], dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz))), d = Math.hypot(x - ax - dx * t, z - az - dz * t); if (d < best) best = d; } return best; }
+  /* Wegenetz: von der Hauptstraße führt ein Weg zu jedem Ort der Welt (gerade Abschnitte, Abstand per Segment) */
+  function roads(w) { if (w._roads) return w._roads; const L = []; for (const q of w.zones) { const zx = q[3], zz = q[4], z0 = Math.max(-86, Math.min(12, zz)), x0 = PATHX(z0), dx = zx - x0, dz = zz - z0, D = Math.hypot(dx, dz), e = Math.max(0, D - q[5] * .45); if (e < 6) continue;
+      const mx = x0 + dx * .5 + (-dz / D) * Math.min(8, D * .12), mz = z0 + dz * .5 + (dx / D) * Math.min(8, D * .12), ex = x0 + dx / D * e, ez = z0 + dz / D * e; L.push([x0, z0, mx, mz], [mx, mz, ex, ez]); }
+    return (w._roads = L); }
+  const segD = (x, z, [ax, az, bx, bz]) => { const dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1))); return Math.hypot(x - ax - dx * t, z - az - dz * t); };
+  const roadD = (w, x, z) => { let b = 1e9; for (const s of roads(w)) { const d = segD(x, z, s); if (d < b) b = d; } return b; };
   function heightFn(w) {
     const pads = w.pads, rects = w.rects || [], pools = w.pools || [], ph = w.n * 1.37, amp = w.amp, rv = w.river;
     return (x, z) => {
       const d = Math.hypot(x - CX, z - CZ);
       let q = (Math.sin(x * .07 + ph) * Math.cos(z * .06 + ph * .5) * 1.2 + Math.sin(x * .031 + z * .027 + ph) * 1.6 + Math.sin(x * .17 + z * .13) * .25) * amp;
       let f = 1 - (1 - sm(2.5, 6, Math.abs(x - PATHX(z)))) * sm(-90, -84, z) * (1 - sm(14, 18, z));
+      const rd = roadD(w, x, z); f = Math.min(f, sm(2.2, 5.5, rd)); q *= 1 + .9 * sm(9, 26, Math.min(rd, Math.abs(x - PATHX(z))));   // Wege eben, Wildnis hügeliger
       for (const [px, pz, r] of pads) f = Math.min(f, sm(r, r + 6, Math.hypot(x - px, z - pz)));
       for (const [x0, x1, z0, z1] of rects) f = Math.min(f, sm(0, 6, Math.hypot(Math.max(x0 - x, 0, x - x1), Math.max(z0 - z, 0, z - z1))));
       f = Math.min(f, sm(7, 12, Math.hypot(x, z - 10)));
@@ -235,7 +242,7 @@ export function createMaerchen(C) {
     const PS = 2 * R + 54, PN = Math.min(240, Math.round(PS * .8)), geo = new T.PlaneGeometry(PS, PS, PN, PN); geo.rotateX(-Math.PI / 2); geo.translate(CX, 0, CZ);
     const p = geo.attributes.position, col = new Float32Array(p.count * 3), c = new T.Color(), c1 = new T.Color(w.ground[0]), c2 = new T.Color(w.ground[1]), cp = new T.Color(w.path), cr = new T.Color(w.ridge), sn = new T.Color(0xf0f4f8), sand = new T.Color(0x8a7a5a);
     for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i), y = h(x, z); p.setY(i, y); const d = Math.hypot(x - CX, z - CZ), nz = Math.sin(x * .9) * Math.cos(z * .8) * .5 + Math.sin(x * .23 + z * .31) * .5;
-      c.copy(c1).lerp(c2, .5 + nz * .5); const pd = Math.abs(x - PATHX(z)); if (z < 16 && z > -88 && pd < 2.6) c.lerp(cp, 1 - sm(1.6, 2.6, pd)); if (y < -.5) c.lerp(sand, Math.min(1, -y - .5)); c.lerp(cr, sm(R, R + 5, d)); if (w.snow) c.lerp(sn, Math.min(1, sm(R - 2, R + 4, d) * .9 + sm(3, 6, y) * .6)); col.set([c.r, c.g, c.b], i * 3); }
+      c.copy(c1).lerp(c2, .5 + nz * .5); const pd = Math.abs(x - PATHX(z)), rdd = roadD(w, x, z); if (rdd < 2.4) c.lerp(cp, .85 * (1 - sm(1.4, 2.4, rdd))); if (z < 16 && z > -88 && pd < 2.6) c.lerp(cp, 1 - sm(1.6, 2.6, pd)); if (y < -.5) c.lerp(sand, Math.min(1, -y - .5)); c.lerp(cr, sm(R, R + 5, d)); if (w.snow) c.lerp(sn, Math.min(1, sm(R - 2, R + 4, d) * .9 + sm(3, 6, y) * .6)); col.set([c.r, c.g, c.b], i * 3); }
     geo.setAttribute('color', new T.BufferAttribute(col, 3)); geo.computeVertexNormals();
     const terr = new T.Mesh(geo, C.TX.tri(GTEX[w.id] || 'grass', 0xffffff, { vc: 1, s: .22, gain: 2.1, n: .8 })); terr.receiveShadow = true; C.scene.add(terr); WD.terr = terr;
     for (const [px, pz, r, wc] of pools) { const wm = mk(new T.CircleGeometry(r + .6, 64), new T.MeshStandardMaterial({ color: wc, metalness: .6, roughness: .06, transparent: true, opacity: .82 }), px, -.4, pz, 1, 1, 1, false); wm.rotation.x = -Math.PI / 2; C.scene.add(wm); }
@@ -250,7 +257,7 @@ export function createMaerchen(C) {
     for (const d of w.npcs) busy.push([d.x, d.z, 3]); for (const q of [...(w.chests || []), ...(w.pots || []), ...(w.lore || []), ...(w.portals || []), ...(w.vents || [])]) busy.push([q[0], q[1], 2.5]);
     for (const q of (w.swings || [])) busy.push([q[0], q[1], 3], [q[2], q[3], 3]); if (w.currents) for (const q of w.currents) busy.push([q[0], q[1], q[2]]); if (w.climb) busy.push([w.climb.cx, w.climb.cz, 8]);
     for (const [kind, cnt0] of w.decor) { const cnt = Math.round(cnt0 * Math.min(AK, 2.4)); let n2 = 0, tries = 0; while (n2 < cnt && tries++ < cnt * 30) { const a = R2() * 6.283, rr = Math.sqrt(R2()) * (R - 3), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr;
-      if (Math.abs(x - PATHX(z)) < 4 && z < 16 && z > -88) continue; if (busy.some(([bx, bz, br]) => Math.hypot(x - bx, z - bz) < br + 1.5)) continue; if ((w.rects || []).some(([x0, x1, z0, z1]) => x > x0 - 2 && x < x1 + 2 && z > z0 - 2 && z < z1 + 2)) continue;
+      if ((Math.abs(x - PATHX(z)) < 4 && z < 16 && z > -88) || roadD(w, x, z) < 3.2) continue; if (busy.some(([bx, bz, br]) => Math.hypot(x - bx, z - bz) < br + 1.5)) continue; if ((w.rects || []).some(([x0, x1, z0, z1]) => x > x0 - 2 && x < x1 + 2 && z > z0 - 2 && z < z1 + 2)) continue;
       if (blk(x, z) || C.inHouse(x, z, 1.2) || (w.river && riverDist(w.river, x, z) < w.river.w * .5 + 1.5)) continue; if (list.some(q => DECOR[q[2]].col && Math.hypot(q[0] - x, q[1] - z) < 2.6)) continue;
       list.push([x, z, kind, .8 + R2() * .5, R2() * 6.3]); n2++; } }
     scatter(g, list, WD.ims, w.snow);
@@ -288,6 +295,9 @@ export function createMaerchen(C) {
       C.INT.push({ x: x0, z: z0 + (z1 > z0 ? -1.2 : 1.2), name: nm, pr: 'Schwingen', rad: 2.4, talk() { cur.swing = { x0: C.pl.x, z0: C.pl.z, x1, z1: z1 + (z1 > z0 ? 1.6 : -1.6), t: 0 }; C.sfx('jump'); } }); } });
     if (w.currents) cur.cur = w.currents.map(q => ({ x: q[0], z: q[1], r: q[2], dx: q[3], dz: q[4], id: q[5] }));
     if (w.climb) C.INT.push({ x: w.climb.cx + 1.2, z: w.climb.cz + 6, name: 'Glockenturm', pr: 'Ansehen', rad: 2.6, vis: () => C.pl.y < 1, talk() { C.say([['Zotik', 'Steinvorsprünge winden sich um den Turm nach oben. Sprung für Sprung – bis zur Glockenstube.']]); } });
+    // Laternen entlang der Wege zu den Orten
+    { const post = M(0x3a2e24, { r: .8 }), lm = M(0xffd890, { e: 0xffc060, ei: 2 }); let k = 0; for (const [ax, az, bx, bz] of roads(w)) { const L = Math.hypot(bx - ax, bz - az), nx = -(bz - az) / L, nz = (bx - ax) / L; for (let t = 7; t < L - 3; t += 13) { const sd = (k++ % 2 ? 1 : -1) * 2.7, x = ax + (bx - ax) * t / L + nx * sd, z = az + (bz - az) * t / L + nz * sd; if (blk(x, z) || C.inHouse(x, z, .5) || !C.colFree(x, z, .6)) continue; const y = h(x, z);
+      const lg = new T.Group(); lg.position.set(x, y, z); lg.add(mk(G.cyl0, post, 0, 1.3, 0, .09, 2.6, .09)); lg.add(mk(G.box, post, 0, 2.62, 0, .34, .08, .34, false)); lg.add(mk(G.sph0, lm, 0, 2.4, 0, .17, .24, .17, false)); lg.add(glow(0xffc060, 2.4, 0, 2.4, 0, .55)); g.add(lg); C.addCol(x, z, .25); } } }
     life(w); side(w, s, folkLife(w, R2, blk, busy), R2, blk); rooms(w); jumps(w, R2, blk);
     if (s.st === 1) arm(w, s);
     keyhole(w, s);
