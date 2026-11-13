@@ -73,6 +73,7 @@
   TR.ride = id => { const S = C && C.S; const to = S && S.busStops && S.busStops.find(s => s.st.id === id); if (to) ride(to, true); };
   function ride(to, fast) {
     const S = C.S, t = U.el('div', 'transition', '<b>🚌 Nächster Halt: ' + U.esc(to.st.name) + '</b>'); document.body.appendChild(t);
+    if (AMC.Career) AMC.Career.mark('tour');
     AMC.Audio.sfx('horn'); requestAnimationFrame(() => t.classList.add('in'));
     setTimeout(() => {
       if (C.S !== S) { t.remove(); return; }
