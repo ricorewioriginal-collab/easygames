@@ -56,6 +56,7 @@ let HGL=null;function hgtLG(x,z){const NX=135,NZ=160,gx=TW/NX,gz=TD/NZ,x0=TCX-TW
   if(!HGL){HGL=new Float32Array((NX+1)*(NZ+1));for(let j=0;j<=NZ;j++)for(let i=0;i<=NX;i++)HGL[j*(NX+1)+i]=hgtL(x0+i*gx,z0+j*gz)}
   const fx=(x-x0)/gx,fz=(z-z0)/gz;if(fx<0||fz<0||fx>=NX||fz>=NZ)return hgtL(x,z);const i=fx|0,j=fz|0,u=fx-i,v=fz-j,a=HGL[j*(NX+1)+i],b=HGL[j*(NX+1)+i+1],c=HGL[(j+1)*(NX+1)+i],d=HGL[(j+1)*(NX+1)+i+1];
   return u+v<=1?a+(b-a)*u+(c-a)*v:d+(c-d)*(1-u)+(b-d)*(1-v)}
+let LAM=null,LAH=null,LCW=null;   /* Lunaris als Areal (Maske, Höhen, Weltdaten) */
 function hgtL(x,z){
   let n=Math.sin(x*.045+1.3)*Math.cos(z*.04)*3.2+Math.sin(x*.12+z*.09)*.9+Math.sin(z*.02+x*.015)*4;
   const dv=Math.hypot(x,z),da=Math.hypot(x-ARENA.x,z-ARENA.z);
@@ -64,11 +65,12 @@ function hgtL(x,z){
   n=n*(1-flat*.93)*(1-pf*.72);
   let ring=sm(30,38,da)*(1-sm(64,92,da))*17;
   if(z>ARENA.z)ring*=sm(8,15,Math.abs(x-ARENA.x));
-  n+=ring;
+  if(LAM)ring*=sm(.5,6,LAM.E(x,z));
+  n+=ring;if(LAH)n=LAH(x,z,n);   /* KH-Areal: Mondwald-Wände, Plateaus */
   const ex=Math.max(0,Math.abs(x)-116)+Math.max(0,z-64)+Math.max(0,-220-z);   /* Weltrand: sichtbarer Wall statt abfallender Kante mit unsichtbarer Sperre */
   return n+ex*ex*.12;
 }
-const blocked=(x,z)=>obBlk(x,z)||(z>300?(WLD&&WLD.story?WLD.blocked(x,z):ruinOut(x,z)):WLD?WLD.blocked(x,z):(hgtL(x,z)>8.5&&tooSteep(hgtLG,x,z))||x<-128||x>128||z>76||z<-232||(z<-148&&!lunOpen()));
+const blocked=(x,z)=>obBlk(x,z)||(z>300?(WLD&&WLD.story?WLD.blocked(x,z):ruinOut(x,z)):WLD?WLD.blocked(x,z):(hgtL(x,z)>8.5&&tooSteep(hgtLG,x,z))||(LAM&&LAM.E(x,z)>1.2)||x<-128||x>128||z>76||z<-232||(z<-148&&!lunOpen()));
 /* Oberhalb der Hügelgrenze ist nur gesperrt, was sichtbar steil ist (Hang > ~48°) – sanfte Hänge und Hochebenen bleiben begehbar, statt mitten am Hang eine unsichtbare Wand zu ziehen. Darunter bleibt alles wie bisher frei. */
 function tooSteep(h,x,z){const a=h(x+.6,z)-h(x-.6,z),b=h(x,z+.6)-h(x,z-.6);return a*a+b*b>1.74}
 const zoneAt=(x,z)=>z>300?'ruin':WLD?WLD.zone(x,z):z<-146?'cave':(z<-44?'forest':'village');
@@ -362,8 +364,9 @@ function jumpPaths(n){const j=jumpPath(n),k=PLAT.length;jumpPath(n,{k0:70,k1:120
 function jumpPath(n,o){o=o||{};const col=o.col??(n===1?0x7ab0ff:CHP[n].glowc[0]),NS=o.steps||4;let q=null,dir=0;
   const lineOk=(c,d,pass)=>{const y0=hgt(c[0],c[1]);for(let i=1;i<=(NS+4)*4/3;i++){const x=c[0]+Math.sin(d)*3*i,z=c[1]+Math.cos(d)*3*i,dh=hgt(x,z)-y0;if(dh>(pass?.5:.25)*i+(pass?.2:.3)||dh<(pass?-4:-2)||pBlocked(x,z)||!colFree(x,z,2))return false}return true};
   /* Areal-Kapitelwelten: zuerst vom Weg durch die Gasse auf einen Platz (dort ist Raum für die Platten) */
-  if(WLD&&WLD.cw&&!o.k0)for(let pass=0;pass<2&&!q;pass++)for(const z0 of WLD.cw.zones.filter(zq=>zq[0][0]==='p').map(zq=>zq[4])){const zq=WLD.cw.zones.find(v=>v[4]===z0),px=WLD.path(z0),c=[px+Math.sign(zq[3]-px)*4,z0],d=zq[3]>px?Math.PI/2:-Math.PI/2;if((WLD._jp||[]).some(p=>Math.hypot(p[0]-c[0],p[1]-c[1])<30))continue;if(lineOk(c,d,pass)){q=c;dir=d;break}}
-  for(let pass=0;pass<2&&!q;pass++)for(let k=o.k0||20;k<(o.k1||70)&&!q;k++){const c=nqSpot(k);if(!c||(WLD&&WLD._jp||[]).some(p=>Math.hypot(p[0]-c[0],p[1]-c[1])<30)||(WLD&&WLD.mw&&WLD.mw.key&&Math.hypot(WLD.mw.key[0]-c[0],WLD.mw.key[1]-c[1])<12))continue;   /* nicht ans Schlüsselloch */for(const d of WLD&&WLD.cw?[Math.PI,0,Math.PI/2,-Math.PI/2,Math.PI*.75,-Math.PI*.75,Math.PI*.25,-Math.PI*.25]:[Math.PI,0,Math.PI/2,-Math.PI/2]){let ok=true;const y0=hgt(c[0],c[1]);for(let i=1;i<=(NS+4)*4/3&&ok;i++){const x=c[0]+Math.sin(d)*3*i,z=c[1]+Math.cos(d)*3*i,dh=hgt(x,z)-y0;if(dh>(pass?.5:.25)*i+(pass?.2:.3)||dh<(pass?-4:-2)||pBlocked(x,z)||!colFree(x,z,2))ok=false}if(ok){q=c;dir=d;break}}}
+  const CWJ=WLD?WLD.cw:LCW,PXJ=WLD?WLD.path:PATHX;
+  if(CWJ&&!o.k0)for(let pass=0;pass<2&&!q;pass++)for(const z0 of CWJ.zones.filter(zq=>zq[0][0]==='p').map(zq=>zq[4])){const zq=CWJ.zones.find(v=>v[4]===z0),px=PXJ(z0),c=[px+Math.sign(zq[3]-px)*4,z0],d=zq[3]>px?Math.PI/2:-Math.PI/2;if(((WLD&&WLD._jp)||[]).some(p=>Math.hypot(p[0]-c[0],p[1]-c[1])<30))continue;if(lineOk(c,d,pass)){q=c;dir=d;break}}
+  for(let pass=0;pass<2&&!q;pass++)for(let k=o.k0||20;k<(o.k1||70)&&!q;k++){const c=nqSpot(k);if(!c||(WLD&&WLD._jp||[]).some(p=>Math.hypot(p[0]-c[0],p[1]-c[1])<30)||(WLD&&WLD.mw&&WLD.mw.key&&Math.hypot(WLD.mw.key[0]-c[0],WLD.mw.key[1]-c[1])<12))continue;   /* nicht ans Schlüsselloch */for(const d of CWJ?[Math.PI,0,Math.PI/2,-Math.PI/2,Math.PI*.75,-Math.PI*.75,Math.PI*.25,-Math.PI*.25]:[Math.PI,0,Math.PI/2,-Math.PI/2]){let ok=true;const y0=hgt(c[0],c[1]);for(let i=1;i<=(NS+4)*4/3&&ok;i++){const x=c[0]+Math.sin(d)*3*i,z=c[1]+Math.cos(d)*3*i,dh=hgt(x,z)-y0;if(dh>(pass?.5:.25)*i+(pass?.2:.3)||dh<(pass?-4:-2)||pBlocked(x,z)||!colFree(x,z,2))ok=false}if(ok){q=c;dir=d;break}}}
   if(!q)return null;const y0=hgt(q[0],q[1]),sx=Math.sin(dir),sz=Math.cos(dir),g=new T.Group();scene.add(g);
   const slab=(x,z,top,r,mov)=>{const m=new T.Group();m.position.set(x,top,z);m.add(mk(G.cyl,M(0x8d93b0,{r:.5,m:.2}),0,-.15,0,r,.3,r));m.add(mk(G.cyl,M(col,{e:col,ei:1.4,r:.2}),0,-.31,0,r*.82,.05,r*.82,false));m.add(mk(G.cyl,M(col,{e:col,ei:1.2}),0,.01,0,r*.5,.02,r*.5,false));m.add(glow(col,r*2.6,0,-.5,0,.35));g.add(m);
     const p={x,z,hx:r*.86,hz:r*.86,top,th:.34};PLAT.push(p);
@@ -1397,9 +1400,9 @@ function updateNpcs(dt){
   nearI=null;let nd=3.9;const hiP=CLB.length&&!naut.on&&pl.y>hgt(pl.x,pl.z)+1.6;   /* auf dem Dach: nichts im Haus darunter ansprechen */
   for(const n of NPC){n.t+=dt;let dx=pl.x-n.x,dz=pl.z-n.z,d=Math.hypot(dx,dz);XO.npc(n,dt,d);dx=pl.x-n.x;dz=pl.z-n.z;
     if(n.mv)n.face+=ang(n.face,n.mf)*Math.min(1,dt*6);else if(d<8)n.face+=ang(n.face,Math.atan2(dx,dz))*Math.min(1,dt*3);else n.face+=ang(n.face,n.base)*Math.min(1,dt*2);
-    const vv=d<90;if(n.P.root.visible!==vv)n.P.root.visible=vv;if(!vv){n.spr.visible=false;continue}if(n.P.fig){const nr=d<(TOUCH?34:52);if(n.P.fig.root.visible!==nr){n.P.fig.root.visible=nr;n.P.body.visible=!nr}}n.P.root.rotation.y=n.face;animHuman(n.P,n.t,n.mv||0);
+    const vv=d<90&&!n.P.hid;if(n.col)n.col.r=n.P.hid?0:.5;if(n.P.root.visible!==vv)n.P.root.visible=vv;if(!vv){n.spr.visible=false;continue}if(n.P.fig){const nr=d<(TOUCH?34:52);if(n.P.fig.root.visible!==nr){n.P.fig.root.visible=nr;n.P.body.visible=!nr}}n.P.root.rotation.y=n.face;animHuman(n.P,n.t,n.mv||0);
     n.spr.visible=n.mark();if(n.spr.visible)n.spr.position.y=hgt(n.x,n.z)+2.7+Math.sin(time*3)*.12;
-    if(d<nd&&!dlg.on&&!hiP){nd=d;nearI=n}}
+    if(d<nd&&!dlg.on&&!hiP&&!n.P.hid){nd=d;nearI=n}}
   for(const c of chests){if(S.chests[c.id]||(c.py!==undefined?Math.abs(pl.y-c.py)>1:hiP))continue;const d=Math.hypot(pl.x-c.x,pl.z-c.z);if(d<nd&&d<2.8){nd=d;nearI=c}}
   for(const c of INT){if((c.vis&&!c.vis())||(hiP&&!c.hi))continue;const d=Math.hypot(pl.x-c.x,pl.z-c.z);if(d<nd&&d<(c.rad||3)){nd=d;nearI=c}}
   if(!nearI&&WLD&&WLD.over)nearI=WLD.near(pl.x,pl.z);
@@ -3788,9 +3791,34 @@ var CAVE_DOOR=[22,-30];
     if(MP.on)return say([['Zotik','Die Echogrotte betrete ich lieber allein.']]);
     say([['Zotik',`Die Echogrotte: 99 Ebenen, jedes Mal anders. Drinnen fange ich bei Stufe 1 an, ohne Ausrüstung. Nur blaue Schätze darf ich behalten. Rekord: Ebene ${S.cave.best||0}.`]],null,[{t:'Betreten',fn:caveEnter},{t:'📅 Tagesgrotte',fn:()=>caveEnter(true)},{t:'Später',fn(){}}])}});
   NZ().populate(1,null,mul32(7301),0x8ab0ff);
-  buildRuin(1,0x6a6c8c,ruinSpot(hgtL,(x,z)=>hgtL(x,z)>8.5||x<-128||x>128||z>76||z<-232||z<-148,PATHX,mul32(4711)));
-  felliLook();
+  const rsp=ruinSpot(hgtL,(x,z)=>hgtL(x,z)>8.5||x<-128||x>128||z>76||z<-232||z<-148,PATHX,mul32(4711));buildRuin(1,0x6a6c8c,rsp);
+  felliLook();lunAreal([rsp,CAVE_DOOR]);
 })();
+/* Lunaris als KH-Areal: Mondwald-Wände zwischen Dorf, Weg, Plätzen und allen Story-Orten; drei Plateaus mit Treppe und Truhe */
+function lunAreal(extra){
+  const lake=NZ().lakeFor(1,PATHX),P=[[16,-48,13],[-38,-72,13],[32,-96,13],[-30,-118,12],[30,-134,11]],TI=[[-58,-60,5,5,-42,-70],[50,-140,5,5,34,-132],[-54,-126,5,5,-38,-120]];
+  const pts=[...chests,...herbs,...INT.filter(o=>o.z<300),...OB.filter(o=>o.z<300),...PLAT].map(o=>[o.x,o.z]).concat(extra);
+  LCW={zones:[['dorf','','',0,0,40],['arena','','',ARENA.x,ARENA.z,31],...P.map(([x,z,r],i)=>['p'+i,'','',x,z,r])],pads:LPADS.map(q=>[q[0],q[1],q[2]+2]),pools:lake?[[lake.x,lake.z,lake.r*1.3]]:[],chests:pts,pots:[],lore:[],portals:[],npcs:[],ms:[],
+    areal:{path:[44,-160,12],tiers:TI,bridges:[],lanes:[[0,40,0,66,4],...P.map(([x,z])=>[x,z,PATHX(z),z,4.5])],wall:['pine','broad','pine','crys'],rock:['rock_big_B_gray_1','rock_big_2'],step:0x8a8ab0}};
+  LAM=arealMask(LCW,[],PATHX,0,-81,150);LAH=arealHeight(LCW,LAM);HGL=null;
+  {const g=terrain.geometry,p=g.attributes.position,ca=g.attributes.color,c=new T.Color(),cR=new T.Color(0x55507a);
+    for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),h=hgt(x,z);if(Math.abs(h-p.getY(i))<.01)continue;p.setY(i,h);c.fromArray(ca.array,i*3);if(h>5)c.lerp(cR,sm(5,12,h)*.7);c.toArray(ca.array,i*3)}
+    p.needsUpdate=true;ca.needsUpdate=true;g.computeVertexNormals();g.computeBoundingSphere()}
+  /* Gegner, die jetzt in einer Wand stünden, auf den nächsten freien Platz */
+  for(const e of E){if(e.boss||!blocked(e.hx,e.hz))continue;let ok=0;for(let r=2;r<40&&!ok;r+=2)for(let a=0;a<12&&!ok;a++){const x=e.hx+Math.cos(a*.524)*r,z=e.hz+Math.sin(a*.524)*r;if(!blocked(x,z)){e.x=e.hx=x;e.z=e.hz=z;ok=1}}e.m.root.position.set(e.x,hgt(e.x,e.z),e.z)}
+  const ag=new T.Group();scene.add(ag);const wl=[],R=mul32(9917),bA={box(x,y,z,w,hh,d,col){ag.add(mk(G.box,M(col),x,y+hh/2,z,w,hh,d))},cyl(x,y,z,r,hh,col){ag.add(mk(G.cyl0,M(col),x,y+hh/2,z,r,hh,r))},sph(x,y,z,sx,sy,sz,col,op){ag.add(mk(G.sph0,M(col,(op&&op.mat)||{}),x,y,z,sx,sy,sz,false))},glow(c,sz,x,y,z,a){ag.add(glow(c,sz,x,y,z,a))},addCol};
+  arealDress({C:{KK,TX,T,PLAT,addCol,colFree,inHouse:()=>false},w:LCW,b:bA,g:ag,h:hgt,M:LAM,R2:R,blk:blocked,busy:[],roadD:(x,z)=>Math.abs(x-PATHX(z)),wallList:wl,TOUCH,mk,G,MAT:M});
+  /* Waldwand im Lunaris-Stil: Mondbäume, Tannen mit leuchtenden Spitzen, Rissscherben */
+  const n=wl.length,tr=inst(TRUNK,iTrunk.material,n,true),cn=inst(CAN,iCan.material,n*4,true),pn=inst(PINE,iPine.material,n*3,true),cy=inst(PG.crystal,iCrys.material,n,false);
+  for(const [x,z,k,sc] of wl){const h=hgt(x,z),s=(sc||1.3)*1.15,col=pick(LEAF);
+    if(k==='crys'){put(cy,x,h+s*1.2,z,s*.5,s*1.8,s*.5,R()*6,pick([0x6ab0ff,0x9a7aff,0x58e6ff]),(R()-.5)*.4,(R()-.5)*.4);continue}
+    put(tr,x,h+s*1.1,z,.55*s,s*2.4,.55*s,0,0x4a3328);
+    if(k==='pine'){for(let q=0;q<3;q++)put(pn,x,h+s*(2.3+q*1.35),z,s*(2.2-q*.55),s*2.2,s*(2.2-q*.55),R()*6,q===2?0x7be0d0:col)}
+    else{put(cn,x,h+s*3.6,z,s*2.4,s*1.9,s*2.4,R()*6,col);put(cn,x+s*.9,h+s*2.8,z+s*.4,s*1.5,s*1.2,s*1.5,R()*6,pick(LEAF))}}
+  for(const im of [tr,cn,pn,cy]){im.count=im.userData.n;im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true}
+  chunkInst([tr,cn,pn,cy]);
+  TI.forEach(([tx,tz,r,ty],i)=>{const id='1t'+i,x=tx+1,z=tz+1,o={id,x,z,m:makeChest(),reward:{shards:43,potions:1},pr:'Truhe öffnen',py:ty};o.m.position.set(x,ty,z);o.m.rotation.y=wr(0,6);if(S.chests[id])o.m.visible=false;scene.add(o.m);chests.push(o);addCol(x,z,.7)});
+}
 function drawOb(mx){if(pl.z>300){mx.fillStyle='#2a2a3e';mx.fillRect(-13,333,26,34)}if(!OB.length)return;for(const o of OB){if(obPass(o)&&o.t!=='plate'&&o.t!=='water')continue;mx.fillStyle=o.t==='wall'?'#8a8aa8':o.t==='water'?(o.done?'#d8f4ff':'#2a8ad8'):o.t==='deep'?'#1a4a8a':o.t==='gate'?'#c8a060':o.t==='plate'?'#ffd45a':o.t==='block'?'#d0c0a0':'#ff8a5a';mx.fillRect(o.x-o.hw,o.z-o.hd,o.hw*2,o.hd*2)}}
 
 ensureBoss();
