@@ -14,12 +14,12 @@ const passive = g => ['arrive', 'boss', 'enemy', 'item'].includes(g.type) || (['
 const grid = (fill) => Array.from({length: WORLDS}, fill);
 function freshSave() {
   return {version: SAVE_VERSION, level: 0, checkpoint: null,
-    collected: grid(() => []), lit: grid(() => []), rings: grid(() => []), chests: grid(() => []), cores: Array(WORLDS).fill(false),
+    collected: grid(() => []), lit: grid(() => []), rings: grid(() => []), chests: grid(() => []), jewels: grid(() => []), dragons: grid(() => []), eggs: grid(() => []), cores: Array(WORLDS).fill(false),
     quests: {}, flags: {}, seen: {}, boss: {vesper: 6, stille: 9, bluete: 8}, elapsed: 0, migration: null};
 }
 const uniqueInts = (list, max) => Array.isArray(list) ? [...new Set(list.filter(v => Number.isInteger(v) && v >= 0 && v < max))] : [];
 function copyWorld(target, source) {
-  for (const [key, max] of [['collected', GEMS_PER_LEVEL], ['lit', 3], ['rings', 3], ['chests', 3]])
+  for (const [key, max] of [['collected', GEMS_PER_LEVEL], ['lit', 3], ['rings', 3], ['chests', 3], ['jewels', 200], ['dragons', 4], ['eggs', 1]])
     for (let i = 0; i < WORLDS; i++) target[key][i] = uniqueInts(source?.[key]?.[i], max);
 }
 

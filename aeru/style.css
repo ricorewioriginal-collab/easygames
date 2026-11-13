@@ -25,6 +25,7 @@ kbd{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 
 .stats>span{display:flex;align-items:center;gap:6px;background:var(--plate);border:2px solid #9decc855;border-radius:12px;padding:4px 12px 4px 8px;box-shadow:0 4px 0 #04161c80;font-weight:800}
 .stats i{font-style:normal;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;font-size:15px}
 .crystal i{background:radial-gradient(#d4fff0,#3fb79c);color:#0b4a43}
+.jewel i{background:radial-gradient(#ffe0f2,#c05bd6);color:#3b0d47}.jewel b{color:#ffc7f2}
 .cores{border-color:#f4cc8166!important}.cores i{background:radial-gradient(#fff5d0,#d89a3f);color:#5a3209}
 .stats b{display:inline-block;font-size:21px;min-width:22px;text-align:right;text-shadow:0 2px 0 #031a20}
 .crystal b{color:var(--mint)}.cores b{color:var(--gold)}

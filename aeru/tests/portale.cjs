@@ -33,7 +33,7 @@ function fresh(opts) { const h = load(opts); h.api.settings.camAssist = false; h
 }
 // Portalsäulen sind fest: Aeru läuft nicht durch sie hindurch.
 {
-  const h = fresh(), {api} = h, pil = h.snap().layout.trees.filter(t => t.pillar);
+  const h = fresh(), {api} = h, pil = h.snap().layout.trees.filter(t => t.pillar && api.portals().some(p => Math.hypot(p.x - t.x, p.z - t.z) < 4));
   assert.equal(pil.length, 4, 'vier Portalsäulen');
   const c = pil[0]; api.teleport(c.x, 0, c.z + 2.5, 0); h.tick(3);
   h.key('KeyW'); let min = 9; for (let i = 0; i < 90; i++) { h.tick(1); const s = h.snap().state; min = Math.min(min, Math.hypot(s.x - c.x, s.z - c.z)); } h.up('KeyW');
