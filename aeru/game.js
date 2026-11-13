@@ -352,11 +352,12 @@ function buildLevel(index, titleOnly = false) {
   (cfg.rings || []).forEach(([x, y, z], id) => { const got = save.rings[index].includes(id); const m = ring(x, y, z, 2.5, '#ffe9a8'); m.material = own(new T.MeshBasicMaterial({color: got ? 0x60c4a4 : 0xffd277, toneMapped: false})); m.rotation.y = id === 1 ? Math.PI / 2 : 0; flightRings.push({x, y, z, id, m, got}); });
   for (let i = 0; i < 15; i++) { const z = 19 - i * 2.5; mesh('cylinder', '#d4c9a2', Math.sin(i * .6) * 1.4, .04, z, 1.6, .06, 1.2).rotation.y = i; }
   let seed = 5432 + index * 34; const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-  for (let i = 0; i < 38; i++) { const a = rand() * TAU, r = 17 + rand() * 8, x = Math.cos(a) * r, z = Math.sin(a) * r; if (floorAt(x, z) < -.1 || Math.abs(x) < 6 || dist({x, z}, {x: -14, z: -6}) < 4 || dist({x, z}, {x: 14, z: -7}) < 4 || dist({x, z}, {x: 20, z: 12}) < 3.5) continue; tree(x, z, .65 + rand() * .6); }
+  for (let i = 0; i < 38; i++) { const a = rand() * TAU, r = 17 + rand() * 8, x = Math.cos(a) * r, z = Math.sin(a) * r; if (floorAt(x, z) < -.1 || Math.abs(x) < 6 || dist({x, z}, {x: -14, z: -6}) < 4 || dist({x, z}, {x: 14, z: -7}) < 4 || dist({x, z}, {x: 20, z: 12}) < 3.5 || GAME_PORTALS.some(p => dist({x, z}, p) < 5.5)) continue; tree(x, z, .65 + rand() * .6); }
   for (let i = 0; i < 65; i++) { const a = rand() * TAU, r = rand() * 25, x = Math.cos(a) * r, z = Math.sin(a) * r; mesh('cone', i % 3 ? '#b4ca9d' : cfg.accent, x, .18, z, .08, .36, .08); }
   for (const s of [-1, 1]) for (let i = 0; i < 4; i++) { const x = s * (18 + i % 2 * 3), z = -15 + i * 7; mesh('box', cfg.rock, x, 1, z, 1.2, 2 + rand() * 2, 1.3).rotation.z = s * .12; }
   if (cfg.pond) { pond = new T.Mesh(geos.disc, own(new T.MeshStandardMaterial({color: linearColor('#7fd6e6'), emissive: linearColor('#3a9fb5'), emissiveIntensity: .35, roughness: .2}))); pond.rotation.x = -Math.PI / 2; pond.scale.setScalar(2.6); pond.position.set(cfg.pond[0], .06, cfg.pond[1]); world.add(pond); for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; mesh('rock', cfg.rock, cfg.pond[0] + Math.cos(a) * 2.9, .15, cfg.pond[1] + Math.sin(a) * 2.9, .5, .35, .5); } }
   arch(0, -21); portal = ring(0, 5.5, -21, 1.9, '#ffe3a4'); portal.material = own(new T.MeshStandardMaterial({color: linearColor('#ffe3a4'), emissive: linearColor('#f9c76f'), emissiveIntensity: .5}));
+  buildGamePortals();
   core = mesh('gem', '#ffe1a0', 0, 5.2, -20, .65, 1, .65, world, true); core.visible = save.cores[index];
   const torchPos = cfg.torches || [[-14, -6, 0], [14, -7, 0], [0, -16, 2.25]];
   torchPos.forEach(([x, z, y], id) => { const lit = save.lit[index].includes(id); mesh('cylinder', cfg.accent, x, y + .7, z, .5, 1.4, .5); mesh('cone', cfg.accent, x, y + 1.45, z, .85, .5, .85).rotation.z = Math.PI; const light = mesh('gem', lit ? '#a6ffe0' : '#59647b', x, y + 2, z, .42, .7, .42, world, true); const halo = ring(x, y + 2, z, .8, '#b9ffda'); halo.visible = lit; torches.push({x, y, z, id, light, halo, lit}); });
@@ -380,7 +381,7 @@ function buildLevel(index, titleOnly = false) {
   state = {x: sx, y: sy, z: sz, vy: 0, vx: 0, vz: 0, flight: false, draftSuppressed: false, stamina: maxStamina(), coyote: .12, jumpBuffer: 0, flapCooldown: 0, yaw: 0, hp: maxHp(), onGround: true, checkpoint: {x: sx, y: sy, z: sz}, distance: 0, dodge: 0, dodgeCooldown: 0, dodgeX: 0, dodgeZ: 0, landing: 0, jumpCut: true, jumpT: 1, stepDist: 0, cpTimer: 0};
   visualPosition.set(sx, sy, sz); cameraTarget.set(sx, sy + 1.2, sz); player.position.set(sx, sy, sz); player.visible = true; camYaw = 0; attackTime = 0; attackCooldown = 0; invulnerable = 0; near = null;
   camera.position.set(sx, sy + 7, sz + 10); applyQuality(); refreshWorld(); updateHUD();
-  if (!titleOnly) { toast(cfg.name.replace(/^\d+ · /, '') + ' · ' + cfg.title); retrigger($('fade'), 'on'); }
+  if (!titleOnly) { worldCard(index); retrigger($('fade'), 'on'); }
 }
 // Unbewegliche Landschaft wird nach Geometrie und Material in InstancedMesh-Gruppen gebündelt (weniger Draw Calls).
 function batchScenery() {
@@ -438,7 +439,7 @@ let rammId = 0;
 // Rammstoß: Wer im Ausweichschub (Umschalt / ROLLE) einen Gegner trifft, schlägt ihn – wie der Ansturm eines Drachenjungen.
 function rammStrike() {
   const range = chestUpgrade('ramm') ? 3.2 : 1.7;
-  for (const e of enemies) if (e.state !== 'dead' && e.rammed !== rammId && Math.abs(state.y - (e.g.position.y || 0)) < 2.4 && Math.hypot(e.x - state.x, e.z - state.z) < range) { e.rammed = rammId; hitEnemy(e, state.dodgeX, state.dodgeZ); spark(e.x, 1.1, e.z, '#ffe3a3', 12); sfx.hit(); }
+  for (const e of enemies) if (e.state !== 'dead' && e.rammed !== rammId && Math.abs(state.y - (e.g.position.y || 0)) < 2.4 && Math.hypot(e.x - state.x, e.z - state.z) < range) { e.rammed = rammId; hitEnemy(e, state.dodgeX, state.dodgeZ); spark(e.x, 1.1, e.z, '#ffe3a3', 12); sfx.hit(); rumble(90, .45); }
   for (const o of orbPool) if (o.life > 0 && Math.hypot(o.m.position.x - state.x, o.m.position.z - state.z) < range && Math.abs(o.m.position.y - state.y - 1) < 2) { o.life = 0; o.m.visible = false; spark(o.m.position.x, o.m.position.y, o.m.position.z, '#ffd9c2', 6); }
 }
 function dodge() {
@@ -447,8 +448,38 @@ function dodge() {
   const dx = f.length > .1 ? f.dx : -Math.sin(state.yaw), dz = f.length > .1 ? f.dz : -Math.cos(state.yaw);
   state.dodge = .24; state.dodgeCooldown = .7; state.dodgeX = dx; state.dodgeZ = dz; invulnerable = Math.max(invulnerable, .3); whoosh(.2, .05, 700); rammId++;
 }
+// ───────── Controller ─────────
+// gamepad.js gibt jedem Pad das Standard-Layout, ahmt die Knöpfe als Tasten nach und zeigt Symbole je Controller-Art (PlayStation, Switch, Xbox).
+// Die Sticks liest Aeru selbst: links analog laufen/fliegen, rechts Kamera. Pfeiltasten des Sticks werden dann übergangen.
+let padX = 0, padY = 0;
+const padOn = () => !!document.documentElement.classList?.contains('eg-pad');
+function readPad(dt) {
+  padX = padY = 0;
+  let list = []; try { list = navigator.getGamepads?.() || []; } catch {}
+  for (const gp of list) {
+    if (!gp || gp.connected === false || !gp.axes || gp.axes.length < 2) continue;
+    const ax = gp.axes[0] || 0, ay = gp.axes[1] || 0, rx = gp.axes[2] || 0, ry = gp.axes[3] || 0, m = Math.hypot(ax, ay);
+    if (m > .18 && m > Math.hypot(padX, padY)) { const k = Math.min(1, (m - .18) / .72) / m; padX = ax * k; padY = ay * k; }
+    const r = Math.hypot(rx, ry);
+    if (mode === 'play' && r > .2) { const k = Math.min(1, (r - .2) / .7) / r; camYaw -= rx * k * 2.6 * settings.camSens * dt; camPitch = clamp(camPitch + ry * k * 1.2 * settings.camSens * dt, .08, .85); camManualUntil = time + 3; }
+  }
+}
+function rumble(ms, strong = .5) {
+  if (!padOn()) return;
+  let list = []; try { list = navigator.getGamepads?.() || []; } catch {}
+  for (const gp of list) try { gp?.vibrationActuator?.playEffect?.('dual-rumble', {duration: ms, strongMagnitude: strong, weakMagnitude: strong * .6})?.catch?.(() => {}); } catch {}
+}
+// Tastenname für Hinweise: Controller-Symbol, Touch-Knopf oder Taste.
+const PAD_BUTTON = {talk: 'y', jump: 'a', wind: 'b', ramm: 'x', fly: 'rt', journal: 'select', pause: 'start'};
+const KEY_LABEL = {talk: 'R', jump: '␣', wind: 'F', ramm: '⇧', fly: 'G', journal: 'J', pause: 'Esc'};
+const TOUCH_LABEL = {talk: 'REDEN', jump: 'SPRUNG', wind: 'WIND', ramm: 'RAMM', fly: 'FLUG', journal: '☰', pause: 'Ⅱ'};
+function actionKey(a) {
+  if (padOn() && window.EasyGamesPad?.glyph) return EasyGamesPad.glyph(PAD_BUTTON[a]);
+  return matchMedia('(pointer:coarse)').matches ? TOUCH_LABEL[a] : KEY_LABEL[a];
+}
 function inputDirection() {
-  let x = moveX + (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0), z = moveY + (keys.has('KeyS') || keys.has('ArrowDown') ? 1 : 0) - (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0);
+  const stick = padX !== 0 || padY !== 0, arrows = !stick;
+  let x = moveX + padX + (keys.has('KeyD') || arrows && keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || arrows && keys.has('ArrowLeft') ? 1 : 0), z = moveY + padY + (keys.has('KeyS') || arrows && keys.has('ArrowDown') ? 1 : 0) - (keys.has('KeyW') || arrows && keys.has('ArrowUp') ? 1 : 0);
   let length = Math.hypot(x, z); if (length < .12) { x = z = 0; length = 0; } else if (length > 1) { x /= length; z /= length; length = 1; }
   return {x, z, length, dx: x * Math.cos(camYaw) + z * Math.sin(camYaw), dz: -x * Math.sin(camYaw) + z * Math.cos(camYaw)};
 }
@@ -665,7 +696,7 @@ function lightLantern(t) {
 function setLantern(t, lit) { t.lit = lit; t.light.material = mat(lit ? '#a6ffe0' : '#59647b', true); t.halo.visible = lit; }
 function hurt(kx = 0, kz = 0) {
   if (invulnerable > 0 || mode !== 'play') return;
-  state.hp--; invulnerable = 1.3; sfx.hurt(); spark(state.x, state.y + 1, state.z, '#ffb4a2');
+  state.hp--; invulnerable = 1.3; sfx.hurt(); rumble(220, .7); spark(state.x, state.y + 1, state.z, '#ffb4a2');
   const k = Math.hypot(kx, kz) || 1; state.vx += kx / k * 7; state.vz += kz / k * 7; if (state.onGround) state.vy = 5;
   retrigger($('vignette'), 'hurt');
   if (state.hp <= 0) { state.hp = 0; respawn('Der Wind fängt dich auf. Versuch es noch einmal.'); }
@@ -804,15 +835,50 @@ function pickups() {
   }
 }
 const PORTAL = {x: 0, z: -21};
+// Spieleportale: In jeder Welt führen zwei Tore neben dem Inselstart zu den Highlight-Spielen der Sammlung (gleicher Tab, Spielstand wird vorher gespeichert).
+// Bunte Insel und Zotik zeigen bei ?from=aeru einen Rückweg-Knopf zu AERU.
+const GAME_PORTALS = [{id: 'bunte', x: -8, z: 17, name: 'Bunte Insel', url: '../bunte-insel/?from=aeru', color: '#ff9ad5', rim: '#ffd36e'},
+  {id: 'zotik', x: 8, z: 17, name: 'Zotik', url: '../zotik/?from=aeru', color: '#8fdcff', rim: '#c7a6ff'}];
+let gamePortals = [], portalAsk = null, leaving = false;
+let swirlTex = null;
+function canvasTexture(w, h, draw) {
+  const c = document.createElement?.('canvas'); if (!c) return null; c.width = w; c.height = h; const x = c.getContext?.('2d'); if (!x) return null;
+  draw(x, w, h); const t = new T.CanvasTexture(c); if (Number(T.REVISION) < 150) t.encoding = T.sRGBEncoding; else t.colorSpace = T.SRGBColorSpace; return t;
+}
+function buildGamePortals() {
+  gamePortals = []; portalAsk = null;
+  if (!swirlTex) { swirlTex = canvasTexture(128, 128, (x, w) => { const g = x.createRadialGradient(64, 64, 4, 64, 64, 64); g.addColorStop(0, '#ffffff'); g.addColorStop(.55, '#d8d8d8'); g.addColorStop(1, '#5a5a5a'); x.fillStyle = g; x.fillRect(0, 0, w, w); x.strokeStyle = '#ffffffaa'; x.lineWidth = 5; for (let i = 0; i < 4; i++) { x.beginPath(); for (let a = 0; a < 7; a += .1) { const r = a * 8.5, q = a + i * Math.PI / 2; x.lineTo(64 + Math.cos(q) * r, 64 + Math.sin(q) * r); } x.stroke(); } }); if (swirlTex) shared.add(swirlTex); }
+  for (const p of GAME_PORTALS) {
+    const g = new T.Group(); g.position.set(p.x, 0, p.z); g.rotation.y = Math.atan2(-p.x, 0) * .35; world.add(g);
+    for (const s of [-1, 1]) { mesh('box', p.rim, s * 2.4, 2.6, 0, .7, 5.2, .8, g); mesh('box', '#5c5470', s * 2.4, .3, 0, 1.2, .6, 1.2, g); mesh('gem', p.color, s * 2.4, 5.6, 0, .45, .7, .45, g, true); treeColliders.push({x: p.x + Math.cos(g.rotation.y) * s * 2.4, z: p.z - Math.sin(g.rotation.y) * s * 2.4, trunk: .5, trunkTop: 5.3, crown: 1.1, cy: -100, ch: 0, pillar: true}); }
+    const top = ring(0, 2.9, 0, 2.3, p.rim, g); top.scale.y = 1.2;
+    const disc = new T.Mesh(new T.CircleGeometry(2.1, 40), own(new T.MeshBasicMaterial({color: linearColor(p.color), map: swirlTex, transparent: true, opacity: .88, side: T.DoubleSide, depthWrite: false, toneMapped: false})));
+    disposables.push(disc.geometry); disc.position.y = 2.9; disc.scale.y = 1.2; g.add(disc);
+    const labelTex = canvasTexture(256, 64, (x, w, h) => { x.fillStyle = '#0b292dcc'; x.beginPath(); x.roundRect ? x.roundRect(4, 6, w - 8, h - 12, 26) : x.rect(4, 6, w - 8, h - 12); x.fill(); x.font = '900 30px Trebuchet MS, system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = '#fff3d3'; x.fillText(p.name, w / 2, h / 2 + 1); });
+    if (labelTex) { own(labelTex); const sp = new T.Sprite(own(new T.SpriteMaterial({map: labelTex, transparent: true, depthWrite: false, toneMapped: false}))); sp.scale.set(4, 1, 1); sp.position.y = 6.7; g.add(sp); }
+    gamePortals.push({...p, g, disc});
+  }
+}
 function findNear() {
   let found = null, nd = 3.7;
   for (const n of npcs.values()) { if (!n.present) continue; const d = dist(state, n); if (d < nd && Math.abs(state.y - n.y) < 2) { found = n; nd = d; } }
   if (!found && dist(state, PORTAL) < 3.8 && state.y > 2) found = 'portal';
+  if (!found) for (const p of gamePortals) if (dist(state, p) < 3 && state.y < 3) found = p;
   return found;
+}
+// Erst nachfragen, beim zweiten Druck reisen – so verlässt niemand AERU aus Versehen.
+function enterGamePortal(p) {
+  if (leaving) return;
+  if (!portalAsk || portalAsk.id !== p.id || time - portalAsk.t > 5) { portalAsk = {id: p.id, t: time}; sfx.portal(); toast(p.name + ' · Nochmal ' + actionKey('talk') + ' drücken zum Reisen. Dein Spielstand wird gespeichert.'); return; }
+  leaving = true; portalAsk = null; persist(); sfx.portal(); retrigger($('fade'), 'on'); toast('Auf ins Spiel ' + p.name + ' …');
+  const url = TEST ? p.url : new URL(p.url, location.href).href;
+  if (TEST) { window.__aeruNavigate = url; leaving = false; return; }
+  setTimeout(() => { location.href = url; }, 650);
 }
 function talk() {
   if (mode === 'dialog') { advance(); return; }
   if (mode !== 'play' || !near) return; audioStart();
+  if (near.url) { enterGamePortal(near); return; }
   if (near === 'portal') {
     if (save.cores[save.level]) { sfx.portal(); travel((save.level + 1) % LEVEL_COUNT); }
     else openDialog('gate_closed', quests.lines('gate_closed'), () => {});
@@ -862,6 +928,11 @@ const uiCache = new Map();
 function setText(id, v) { if (uiCache.get(id) !== v) { uiCache.set(id, v); const el = $(id); if (el) el.textContent = v; } }
 function retrigger(el, cls) { if (settings.reducedMotion && cls !== 'on') return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
 function setCount(id, v) { const old = uiCache.get(id); setText(id, v); if (old !== undefined && old !== v) retrigger($(id), 'bump'); }
+// Weltkarte beim Betreten einer Insel (ersetzt den Ladehinweis: der Aufbau selbst dauert nur Millisekunden).
+function worldCard(index) {
+  const cfg = levels[index]; setText('worldNo', 'WELT ' + (index + 1) + ' VON ' + LEVEL_COUNT); setText('worldName', cfg.name.replace(/^\d+ · /, '')); setText('worldTitle', cfg.title);
+  const el = $('worldCard'); el.style.setProperty?.('--accent', cfg.accent); el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+}
 function toast(text) { $('toast').textContent = text; $('toast').classList.add('show'); toastUntil = time + 3.6; }
 function focusFirst(...ids) { const el = ids.map($).find(e => e && !e.hidden && !e.disabled); el?.focus(); }
 let currentTarget = null;
@@ -919,7 +990,7 @@ function updateCompass() {
 function showHUD(on) {
   for (const id of ['hud', 'quest', 'map', 'desktopHelp', 'flightHud']) $(id).hidden = !on;
   const touch = 'ontouchstart' in window || matchMedia('(pointer:coarse)').matches;
-  $('touch').hidden = !(on && touch); $('promptKey').textContent = touch ? '☷' : 'R';
+  $('touch').hidden = !(on && touch); refreshPadUI();
   if (!on) { $('compass').hidden = true; $('bossHud').hidden = true; $('prompt').hidden = true; beam.visible = false; }
 }
 let mapTimer = 0;
@@ -1065,8 +1136,22 @@ function start(resume) {
 function toTitle() {
   persist(); resetDialogs(); mode = 'title'; save.__live = false;
   for (const id of ['pauseMenu', 'ending', 'notice']) $(id).hidden = true;
-  $('menu').hidden = false; $('continue').hidden = !store.get(SAVE_KEY); showHUD(false); if (!TEST) focusFirst('continue', 'start');
+  $('menu').hidden = false; $('continue').hidden = !store.get(SAVE_KEY); showHUD(false); menuStats(); if (!TEST) focusFirst('continue', 'start');
 }
+// Fortschritt auf dem Titelbild (nur lesen, nichts wird verändert).
+function menuStats() {
+  const el = $('menuStats'); let sv = null; try { sv = JSON.parse(store.get(SAVE_KEY)); } catch {}
+  if (!sv || typeof sv !== 'object' || !Array.isArray(sv.collected)) { el.hidden = true; return; }
+  const gemsGot = sv.collected.reduce((a, l) => a + (Array.isArray(l) ? l.length : 0), 0), coresGot = Array.isArray(sv.cores) ? sv.cores.filter(Boolean).length : 0, lv = clamp(Number(sv.level) || 0, 0, LEVEL_COUNT - 1);
+  el.innerHTML = `<span><i>✦</i>${levels[lv].name.replace(/^\d+ · /, '')}</span><span><i>◆</i>${gemsGot}/${TOTAL_GEMS}</span><span><i>✺</i>${coresGot}/${LEVEL_COUNT}</span>`; el.hidden = false;
+}
+function refreshPadUI() {
+  const on = padOn(), G = k => window.EasyGamesPad?.glyph ? EasyGamesPad.glyph(k) : k.toUpperCase(), touch = 'ontouchstart' in window || matchMedia('(pointer:coarse)').matches;
+  $('padHelp').innerHTML = on ? [['ls', 'Laufen'], ['rs', 'Kamera'], ['a', 'Sprung'], ['b', 'Wind'], ['x', 'Rammen'], ['rt', 'Flug'], ['y', 'Reden'], ['start', 'Pause']].map(([k, t]) => `<span><kbd>${G(k)}</kbd>${t}</span>`).join('') : '';
+  $('promptKey').textContent = on ? G('y') : touch ? '☷' : 'R';
+  $('menuHint').innerHTML = on ? `<kbd>✚</kbd> Wählen <kbd>${G('a')}</kbd> Bestätigen` : '<kbd>↑</kbd><kbd>↓</kbd> Wählen <kbd>Enter</kbd> Bestätigen';
+}
+addEventListener('easygames:pad', refreshPadUI);
 
 // ───────── Eingabe ─────────
 let stickId = null, cameraPointer = null;
@@ -1164,7 +1249,7 @@ function update(dt) {
   pickups(); chestPickup(); updateEnemies(dt); updateBossEffects(dt);
   for (const n of npcs.values()) { if (!n.present) continue; const d = Math.hypot(n.tx - n.x, n.ty - n.y, n.tz - n.z); if (d > .05) { const step = Math.min(d, dt * 8); n.x += (n.tx - n.x) / d * step; n.y += (n.ty - n.y) / d * step; n.z += (n.tz - n.z) / d * step; } }
   near = findNear(); $('prompt').hidden = !near || mode !== 'play';
-  setText('promptText', near === 'portal' ? (save.cores[save.level] ? 'Durch das Sternentor' : 'Das Sternentor schläft') : near ? 'Sprechen mit ' + near.name : '');
+  setText('promptText', near === 'portal' ? (save.cores[save.level] ? 'Durch das Sternentor' : 'Das Sternentor schläft') : near?.url ? 'Portal: ' + near.name : near ? 'Sprechen mit ' + near.name : '');
   $('talk').classList.toggle('ready', !!near);
   if (dirty) { dirty = false; refreshWorld(); updateHUD(); persist(); }
   if (time - lastSave > 15) { persist(); lastSave = time; }
@@ -1193,6 +1278,7 @@ const markerCache = new Map(); let markerTimer = 0;
 function animate(now) {
   requestAnimationFrame(animate);
   const dt = Math.min(.1, (now - (last || now)) / 1000); last = now; time += dt;
+  readPad(dt);
   if (mode === 'play') { accumulator += dt; while (accumulator >= TICK && mode === 'play') { update(TICK); accumulator -= TICK; } } else accumulator = 0;
   for (const d of updrafts) { const ch = d.g.children; for (let i = 1; i < ch.length; i++) ch[i].position.y = (time * 3 + (i - 1) * d.height / 4) % d.height; }
   for (const r of flightRings) r.m.rotation.z = time * .3;
@@ -1208,6 +1294,7 @@ function animate(now) {
     let color = markerCache.get(n.id); if (color === undefined) { color = npcMarker(n.id); markerCache.set(n.id, color); } n.marker.visible = !!color; if (color) { if (n.markerColor !== color) { n.markerColor = color; n.marker.material = mat(color, true); } n.marker.position.set(n.x, n.y + 3.3 + Math.sin(time * 2) * .15, n.z); n.marker.rotation.y = time; }
     if (mode !== 'title' && dist(state, n) < 6) n.g.rotation.y = approach(n.g.rotation.y, Math.atan2(n.x - state.x, n.z - state.z), 6, dt);
   }
+  for (const p of gamePortals) { p.disc.rotation.z = -time * 1.3; p.disc.material.opacity = .78 + Math.sin(time * 3) * .1; }
   if (portal) { portal.rotation.z = time * .15; portal.material.emissiveIntensity = save.cores[save.level] ? 1.2 : .15; }
   if (core) { core.rotation.y = time; core.position.y = 5.2 + Math.sin(time * 2) * .2; }
   clouds.forEach((c, i) => c.position.x += Math.sin(time * .05 + i) * dt * .2);
@@ -1314,9 +1401,10 @@ if (TEST) window.aeruTest = {
   lose: () => { state.hp = 1; invulnerable = 0; hurt(); },
   perf: () => { let objects = 0; scene.traverse(() => objects++); const info = renderer.info?.render || {}; return {...lastPerf, calls: info.calls, triangles: info.triangles, pixelRatio: renderer.getPixelRatio?.(), objects, quality: settings.quality === 'auto' ? autoLevel : settings.quality, renderScale, geometries: renderer.info?.memory?.geometries, textures: renderer.info?.memory?.textures}; },
   sky: SKY, rammId: () => rammId,
+  portals: () => gamePortals.map(p => ({id: p.id, x: p.x, z: p.z, url: p.url})), navigated: () => window.__aeruNavigate || null, cam: () => ({yaw: camYaw, pitch: camPitch}), padInput: () => ({x: padX, y: padY}),
   autoAdjust, setQuality: q => { settings.quality = q; applySettings(); }, applySettings, settings
 };
-save = readSave(); $('continue').hidden = !save;
+save = readSave(); $('continue').hidden = !save; menuStats();
 if (loadProblem && !save) { $('saveNote').hidden = false; $('saveNote').textContent = 'Ein vorhandener Spielstand konnte nicht gelesen werden. Er wird vor einem neuen Abenteuer gesichert und nicht gelöscht.'; }
 if (canvasMode) { $('graphicsNotice').textContent = 'Schräge 2D-Ansicht (kein WebGL in dieser App) · Spiel und Spielstand sind identisch'; }
 const titleSave = save; save = save ? JSON.parse(JSON.stringify(save)) : Q.freshSave(); newEngine(); buildLevel(save.level, true); save = titleSave || save;
