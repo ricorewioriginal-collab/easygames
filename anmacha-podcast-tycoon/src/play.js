@@ -255,6 +255,33 @@
       addStation(v[0], v[1] + ' ' + v[2] + (v[0].startsWith('home') ? ' betreten' : ' – rein da!'), f.x, zf + f.sz * 1.4, 2.0);
       f.venue = v[0]; dm.userData.venue = v[0];
     });
+    // Senderhäuser: die übrigen Flachbauten und vier Pavillons am Sendemast – jeder AnMaCha-Sender hat ein eigenes Haus
+    const order = ['anmacha24', 'clubradio24', 'christmasradio24', 'yourtime-fm', 'rockradio24', 'ricorewi', 'chartradio24', 'kultradio24', 'special-radio', 'zockerfm', 'rapradio24', 'schlagerpop24', 'radiofloh'];
+    const spots = list.slice(V.length).map(f => ({ x: f.x, zf: f.z + f.sz * (f.d / 2), sz: f.sz, top: f.h - 0.85 }));
+    [[-11, 11], [11, 11], [-11, -11], [11, -11]].forEach(([dx, dz]) => {
+      const x = MAST.x + dx, z = MAST.z + dz, sz = dz > 0 ? 1 : -1;
+      W.box(7, 4.6, 7, [W.mat(0xe8e1d6), W.mat(0xe8e1d6), W.mat(0x6c6a70), W.mat(0x6c6a70), W.mat(0xe8e1d6), W.mat(0xe8e1d6)], x, 2.3, z, g);
+      addBox(x - 3.5, x + 3.5, z - 3.5, z + 3.5, 4.6);
+      spots.push({ x, zf: z + sz * 3.5, sz, top: 3.75, band: true });
+    });
+    order.forEach((slug, i) => {
+      const sp = spots[i], st = D.STATIONS.find(x => x.slug === slug); if (!sp || !st) return;
+      const col = new T.Color(st.color).getHex(), ry = sp.sz > 0 ? 0 : Math.PI;
+      if (sp.band) W.box(7.2, 0.3, 7.2, W.mat(col, { e: col, ei: 0.5 }), sp.x, 4.75, sp.zf - sp.sz * 3.5, g, false);
+      const t = W.textTex([st.icon + ' ' + st.name, 'Senderhaus'], { w: 512, h: 160, size: 56, accent: st.color });
+      const m = new T.Mesh(new T.PlaneGeometry(4.6, 1.44), new T.MeshBasicMaterial({ map: t, toneMapped: false })); m.position.set(sp.x, sp.top, sp.zf + sp.sz * 0.06); m.rotation.y = ry; g.add(m);
+      W.box(1.8, 2.3, 0.12, W.mat(col, { e: col, ei: 0.7, r: 0.4 }), sp.x, 1.31, sp.zf + sp.sz * 0.07, g, false);
+      W.box(2.6, 0.15, 1.4, W.mat(0x16171c), sp.x, 2.55, sp.zf + sp.sz * 0.7, g, false);
+      addStation('sender:' + slug, '📻 ' + st.name + ': Senderhaus betreten', sp.x, sp.zf + sp.sz * 1.4, 2.0);
+    });
+  }
+  // Story: Im Senderhaus des Kapitel-Senders wartet ein Interview (Bonus-Funken, die Stadt bleibt offen)
+  function senderInterview(st) {
+    S.senderDone = true;
+    const rub = (AMC.Home && AMC.Home.SENDER_RUB[st.slug]) || 'musik', H = AMC.Home && AMC.Home.SENDER[st.slug];
+    S.got[rub] += 3; S.score += 400; drawRub();
+    AMC.UI.bubble(st.name, (H ? H.talk[0] : st.desc) + ' Schön, dass ihr vorbeischaut – das Interview geht direkt in eure Folge!', '+3 ' + D.RUBRICS[rub].icon + ' ' + D.RUBRICS[rub].name);
+    AMC.Audio.sfx('applause'); W.particles.burst(S.pl.x, S.pl.y + 2, S.pl.z, new T.Color(st.color).getHex(), 30);
   }
   function buildPark(g, sky) {
     const M = W.mat, { x, z } = PARK;
@@ -619,6 +646,7 @@
     if (S.imbiss) { g.fillStyle = '#ff8a1e'; g.fillRect(X(S.imbiss.x) - 4, Z(S.imbiss.z) - 4, 8, 8); }
     if (S.cat) { g.font = '11px sans-serif'; g.fillText('🐈', X(S.cat.x) - 6, Z(S.cat.z) + 4); }
     const ng = S.gates.find(q => !q.passed); if (ng) { g.strokeStyle = '#3dd6ff'; g.lineWidth = 2; g.beginPath(); g.arc(X(ng.x), Z(ng.z), 5, 0, 7); g.stroke(); }
+    if (S.stations) for (const st of S.stations) { if (!st.sp.visible) continue; const sd = st.id.startsWith('sender:'); g.fillStyle = sd ? (D.STATIONS.find(x => 'sender:' + x.slug === st.id) || {}).color || '#fff' : '#ffffff'; g.fillRect(X(st.x) - 2.5, Z(st.z) - 2.5, 5, 5); }
     if (AMC.Drive) for (const d of AMC.Drive.mapDots()) { g.fillStyle = d.c; g.beginPath(); g.arc(X(d.x), Z(d.z), d.big ? 4.5 : 2.6, 0, 7); g.fill(); if (d.big) { g.strokeStyle = '#000'; g.lineWidth = 1; g.stroke(); } }
     if (S.beacon.visible) { g.strokeStyle = '#ff8a1e'; g.lineWidth = 2.5; g.beginPath(); g.arc(X(S.beacon.position.x), Z(S.beacon.position.z), 6 + Math.sin(S.time * 6) * 1.5, 0, 7); g.stroke(); }
     // Spieler-Pfeil (Blickrichtung der Kamera)
@@ -644,6 +672,7 @@
     if (S.gisela && S.gisela.t <= 0 && Math.hypot(S.gisela.x - p.x, S.gisela.z - p.z) < 3.6) return { label: 'Gisela hupen 📯', run: honk };
     if (S.rico && S.rico.t <= 0 && Math.hypot(S.rico.x - p.x, S.rico.z - p.z) < 2.6) return { label: 'Mit RicoReWi quatschen 📱', run: ricoTalk };
     if (S.imbiss && Math.hypot(S.imbiss.x - p.x, S.imbiss.z - p.z) < 3.4 && S.carry < 3 && S.fed + S.carry < S.hungryNeed) return { label: 'Bestellungen abholen 🍟', run: pickOrder };
+    if (S.ch && S.ch.radio && !S.senderDone && p === S.pl && S.stations) { const st = S.stations.find(x => x.id === 'sender:' + S.ch.radio); if (st && Math.hypot(st.x - p.x, st.z - p.z) < st.r) { const ss = D.STATIONS.find(x => x.slug === S.ch.radio); return { label: '🎙️ Interview bei ' + ss.name + ' (Bonus)', run: () => senderInterview(ss) }; } }
     if (S.mode === 'free' && S.net !== 'guest' && p === S.pl && S.stations) for (const st of S.stations) if (Math.hypot(st.x - p.x, st.z - p.z) < st.r && p.y < 2) return { label: st.label, run: () => { AMC.Audio.sfx('door'); if (st.id !== 'menu' && P.onAction) P.onAction(st.id); else finish(true); } };
     return null;
   }
@@ -816,7 +845,8 @@
     // Tür
     if (S.done && S.mode === 'story' && [p].concat(S.net === 'host' ? [S.fo] : []).some(e => Math.hypot(FUNKHAUS.door.x - e.x, FUNKHAUS.door.z - e.z) < 3 && e.y < 1.5)) return finish(true);
     // Effekte
-    if (S.stations) for (const st of S.stations) { st.sp.visible = S.mode === 'free'; st.sp.position.y = 2.9 + Math.sin(S.time * 2.4 + st.x) * 0.15; }
+    if (S.ch && S.ch.radio && !S.senderHint && S.time > 8) { S.senderHint = true; const ss = D.STATIONS.find(x => x.slug === S.ch.radio); if (ss) msg('📻 Tipp: Im Senderhaus von ' + ss.name + ' wartet ein Interview – Bonus-Funken! (Quadrat auf der Karte)', 4); }
+    if (S.stations) for (const st of S.stations) { st.sp.visible = S.mode === 'free' || (!!S.ch && st.id === 'sender:' + S.ch.radio && !S.senderDone); st.sp.position.y = 2.9 + Math.sin(S.time * 2.4 + st.x) * 0.15; }
     S.beacon.rotation.y += dt; if (S.doorMesh) S.doorMesh.material.emissiveIntensity = S.done ? 1 + Math.sin(S.time * 6) * 0.6 : 0.8;
     if (S.mastBlink) S.mastBlink.material.opacity = Math.sin(S.time * 4) > 0 ? 1 : 0.15;
     if (S.snow) { const a = S.snow.geometry.attributes.position.array; for (let i = 1; i < a.length; i += 3) { a[i] -= dt * 2.2; if (a[i] < 0) a[i] = 40; } S.snow.geometry.attributes.position.needsUpdate = true; S.snow.position.set(Math.round(p.x / 10) * 10, 0, Math.round(p.z / 10) * 10); }

@@ -63,6 +63,13 @@ server.listen(0, '127.0.0.1', async () => {
     await p.evaluate(() => { window.__act = null; AMC.Play.onAction = id => { window.__act = id; }; const S = AMC.Play.state(), st = S.stations.find(s => s.id === 'shop'); S.pl.x = st.x; S.pl.z = st.z; S.pl.y = 0.2; }); await p.waitForTimeout(400);
     for (let i = 0; i < 5 && !(await p.evaluate(() => window.__act)); i++) { await p.evaluate(() => AMC.Input.fire('act')); await p.waitForTimeout(300); }
     assert.equal(await p.evaluate(() => window.__act), 'shop', 'Fanshop im Funkhaus öffnet');
+    // Senderhäuser: alle 13 Sender haben ein begehbares Haus mit Gastmoderation
+    assert.equal(await p.evaluate(() => AMC.Play.state().stations.filter(s => s.id.startsWith('sender:')).length), 13, '13 Senderhäuser in der Stadt');
+    await p.evaluate(() => { AMC.Play.stop(); AMC.UI.closeAll(); AMC.Game.mode = 'home'; AMC.Home.station('clubradio24', 'andrew', () => {}); }); await p.waitForTimeout(1200);
+    await p.evaluate(() => { const r = AMC.Home._state(); r.w.x = 0; r.w.z = -1.2; }); await p.waitForTimeout(300);
+    for (let i = 0; i < 5 && !(await p.evaluate(() => !!AMC.Home._state().mini)); i++) { await p.evaluate(() => AMC.Input.fire('act')); await p.waitForTimeout(800); }
+    assert.ok(await p.evaluate(() => AMC.Home._state().slug === 'clubradio24' && !!AMC.Home._state().mini && (AMC.Save.data.senders || {}).clubradio24), 'Senderhaus mit Gastmoderation');
+    await p.evaluate(() => { AMC.Home.close(true); AMC.Game.mode = 'menu'; });
     await p.evaluate(() => { AMC.Play.stop(); AMC.UI.closeAll(); });
     // Sims-Teil: Zuhause (Bedürfnisse, Schreibtisch-Idee), begehbares Studio, Musikshop, Gegenspieler zum Rangeln
     await p.evaluate(() => { AMC.Game.mode = 'home'; AMC.Home.open('marco', () => {}); }); await p.waitForTimeout(1200);
