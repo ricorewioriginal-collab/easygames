@@ -260,3 +260,14 @@ html.eg-pad .tb, html.dev-pad #touch { display: none; }
 .shop-it .si-ic { font-size: 1.9rem; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 12px; background: rgba(0, 0, 0, .3); flex: none; }
 .shop-it .si-t { display: flex; flex-direction: column; gap: 2px; } .shop-it small { opacity: .75; }
 .shop-it.own { border-color: rgba(61, 214, 120, .5); } .shop-it.on { background: rgba(255, 138, 30, .22); border-color: var(--or); }
+
+/* Online-Koop */
+.koop .k-share { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin: 6px 0 10px; }
+.koop .k-qr { width: 150px; height: 150px; background: #fff; padding: 8px; border-radius: 12px; flex: none; }
+.koop .k-qr svg { width: 100%; height: 100%; display: block; }
+.koop .k-code { font: 800 2.4rem/1 ui-monospace, Consolas, monospace; letter-spacing: .3em; color: var(--or); margin: 4px 0 8px; }
+.koop .k-status { padding: 10px 14px; border-radius: 12px; background: rgba(255, 255, 255, .06); } .koop .k-status.ok { background: rgba(61, 214, 120, .16); color: #8ff0b0; }
+.koop .k-modes { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; } .koop .k-modes small { display: block; opacity: .75; font-weight: 400; }
+.koop .k-ch { display: flex; gap: 8px; align-items: stretch; } .koop .k-ch [data-km] { flex: 1; }
+.koop .k-join { margin-top: 14px; } .koop .k-join input { flex: 1; min-width: 0; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: rgba(0, 0, 0, .35); color: inherit; font: 700 1.3rem ui-monospace, monospace; letter-spacing: .2em; text-transform: uppercase; }
+.koop .k-err { color: #ff9aa8; }
