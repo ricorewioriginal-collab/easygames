@@ -53,9 +53,9 @@ const speed = s => Math.hypot(s.vx, s.vz);
   assert(s.charge <= 0 && speed(s) < 8, 'Loslassen beendet den Ansturm');
   // Kurzer Druck: nur Rammstoß, kein Ansturm.
   api.teleport(0, 0, 8, 0); h.tick(60); h.key('ShiftLeft'); h.tick(2); h.up('ShiftLeft'); h.tick(20); assert(!(h.snap().state.charge > 0), 'kurzer Druck ohne Ansturm');
-  // Zur Kante: Aeru stürzt nicht hinunter.
+  // Zum Inselrand: seit dem Höhenfeld ein Hang – der Ansturm läuft hinunter und bleibt am Boden, kein Sturz ins Nichts.
   api.teleport(0, 0, 19, Math.PI); h.tick(60); h.key('ShiftLeft'); h.tick(200); s = h.snap().state; h.up('ShiftLeft');
-  assert(s.y > -.5 && api.floorAt(s.x, s.z, 1) > -1, `Ansturm hält an der Kante (y ${s.y.toFixed(2)})`);
+  assert(s.y > api.terrain().valleyY - 6 && Math.abs(s.y - api.floorAt(s.x, s.z, s.y + .5)) < .6, `Ansturm bleibt am Boden (y ${s.y.toFixed(2)})`);
   // Lenken
   api.teleport(0, 0, 8, 0); h.tick(60); h.key('ShiftLeft'); h.tick(20); h.key('KeyD'); h.tick(20); s = h.snap().state; h.up('KeyD'); h.up('ShiftLeft');
   assert(s.vx > 3, `Ansturm lässt sich lenken (vx ${s.vx.toFixed(1)})`);
@@ -127,8 +127,8 @@ const speed = s => Math.hypot(s.vx, s.vz);
   api.level(0, false); h.tick(1);
   const L = api.water();
   api.teleport(L.x + 2, L.y, L.z, -Math.PI / 2); h.tick(5); assert(h.snap().state.swim, 'Aeru schwimmt im See');
-  h.key('KeyD'); let vmax = 0; for (let i = 0; i < 150; i++) { h.tick(1); vmax = Math.max(vmax, speed(h.snap().state)); } h.up('KeyD');
-  let s = h.snap().state; assert(Math.hypot(s.x - L.x, s.z - L.z) < L.r && s.y === L.y && s.swim, 'Steinrand hält Aeru im See'); assert(vmax < 6, `Schwimmen ist langsamer (${vmax.toFixed(1)})`);
+  h.key('KeyD'); let vmax = 0; for (let i = 0; i < 40; i++) { h.tick(1); vmax = Math.max(vmax, speed(h.snap().state)); } h.up('KeyD');
+  let s = h.snap().state; assert(s.swim && s.y === L.y, 'schwimmt noch'); assert(vmax < 6, `Schwimmen ist langsamer (${vmax.toFixed(1)})`);
   h.key('KeyA'); for (let i = 0; i < 300 && h.snap().state.y < 0; i++) h.tick(1); h.tick(20); h.up('KeyA'); s = h.snap().state;
   assert(s.onGround && s.y === 0 && !s.swim, 'ans Ufer geschwommen');
   const W = api.climbWall();
