@@ -5,7 +5,10 @@ import { BuildMode } from './build/build-mode';
 import type { BuildHost } from './build/host';
 import { lotById } from './data/lots';
 import { CameraRig } from './input/camera';
-import { Controls, moveFocus } from './input/controls';
+import { Controls, cycleTabs, moveFocus, moveFocusDir } from './input/controls';
+import { loadModels } from './render/models';
+import { TOON } from './render/style';
+import { PadUi, type PadCtx } from './ui/pad-ui';
 import { isCode, MpGuest, MpHost, normCode, type GuestCard } from './net/mp';
 import { SimsView } from './render/sims-view';
 import { WorldView, type ViewMode } from './render/world-view';
@@ -65,6 +68,7 @@ export class App implements AppApi {
   private loading = false;
   private quality: Quality = 'mid';
   private fpsEl: HTMLElement | null = null;
+  private padUi: PadUi | null = null;
   private fpsAcc = { t: 0, n: 0 };
   private unsub: (() => void)[] = [];
 
@@ -124,13 +128,14 @@ export class App implements AppApi {
       keymap: () => this.keymap(),
       edgeScroll: () => this.settings.edgeScroll,
       deadzone: () => this.settings.padDeadzone,
-      uiBlocked: () => modalOpen() || !this.game || this.loading || !!document.getElementById('cas'),
+      uiBlocked: () => modalOpen() || pieOpen() || !this.game || this.loading || !!document.getElementById('cas'),
       groundAt: (x, y) => this.groundAt(x, y),
     });
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) this.autosave();
     });
     window.addEventListener('pagehide', () => this.autosave());
+    this.padUi = new PadUi(this.ui, () => this.padCtx(), () => this.settings.uiMode);
     this.applySettings();
     progress(0.6, 'Menü wird vorbereitet …');
     requestAnimationFrame(this.loop);
@@ -218,11 +223,12 @@ export class App implements AppApi {
       this.game = g;
       if (!this.guest) {
         // Darstellungs- und Steuerungsoptionen kommen aus dem Profil, Spielregeln aus dem Spielstand
-        for (const k of ['quality', 'shadows', 'resScale', 'fps', 'volume', 'music', 'bigText', 'reduceMotion', 'highContrast', 'keys', 'padDeadzone', 'edgeScroll', 'maxNpcs'] as const) (g.settings as unknown as Record<string, unknown>)[k] = this.settings[k];
+        for (const k of ['quality', 'shadows', 'resScale', 'fps', 'volume', 'music', 'bigText', 'reduceMotion', 'highContrast', 'keys', 'padDeadzone', 'edgeScroll', 'maxNpcs', 'uiMode', 'toon'] as const) (g.settings as unknown as Record<string, unknown>)[k] = this.settings[k];
       }
       this.settings = g.settings;
       ld.phase(2);
       await frame();
+      await loadModels(); // echte 3D-Modelle (Bäume, Büsche, Felsen, Autos); ohne Datei bleibt es prozedural
       const wv = new WorldView(g.world, this.renderer, { quality: this.quality, shadows: this.settings.shadows && this.quality !== 'low' });
       wv.buildStatic();
       wv.scene.add(this.sv.group);
@@ -389,6 +395,7 @@ export class App implements AppApi {
     if (document.hidden) return;
     const g = this.game;
     this.controls.update(dt);
+    this.padUi?.update();
     this.rig.update(dt);
     this.audio.update();
     if (!g || !this.wv) {
@@ -701,13 +708,39 @@ export class App implements AppApi {
     }
   }
   private onPad(b: string): void {
+    this.padUi?.touch();
     if (document.getElementById('cas') || modalOpen() || pieOpen() || !this.game) {
-      if (b === 'dup' || b === 'dleft') moveFocus(-1);
-      else if (b === 'ddown' || b === 'dright') moveFocus(1);
-      else if (b === 'a') (document.activeElement as HTMLElement | null)?.click();
-      else if (b === 'b') {
+      const act = document.activeElement as HTMLElement | null;
+      const range = act instanceof HTMLInputElement && act.type === 'range' ? act : null;
+      if (range && (b === 'dleft' || b === 'dright')) {
+        // Schieberegler mit links/rechts verstellen
+        if (b === 'dleft') range.stepDown();
+        else range.stepUp();
+        range.dispatchEvent(new Event('input', { bubbles: true }));
+        range.dispatchEvent(new Event('change', { bubbles: true }));
+        return;
+      }
+      if (b === 'dup') moveFocusDir(0, -1);
+      else if (b === 'ddown') moveFocusDir(0, 1);
+      else if (b === 'dleft') moveFocusDir(-1, 0);
+      else if (b === 'dright') moveFocusDir(1, 0);
+      else if (b === 'a') {
+        if (act && act !== document.body && act !== this.canvas) {
+          act.click();
+          this.controls.rumble(30, 0, 0.3);
+        } else moveFocusDir(0, 1);
+      } else if (b === 'b') {
         if (!closePie()) closeTopModal();
-      } else if (b === 'start' && !this.game) moveFocus(1);
+      } else if (b === 'lb' || b === 'rb') cycleTabs(b === 'rb' ? 1 : -1);
+      else if (b === 'start' && !this.game) moveFocus(1);
+      return;
+    }
+    if (b === 'lt' || b === 'rt') {
+      // L2/ZL: Kaufmodus, R2/ZR: Baumodus (nochmal drücken: zurück ins Leben)
+      if (this.isGuest) return;
+      const m = b === 'lt' ? 'buy' : 'build';
+      this.setMode(this.mode === m ? 'live' : m);
+      this.controls.rumble(50, 0.2, 0.3);
       return;
     }
     if (this.mode !== 'live' && this.build?.pad(b)) return;
@@ -716,9 +749,11 @@ export class App implements AppApi {
     switch (b) {
       case 'a':
         this.onTap(cx, cy, 0);
+        if (pieOpen()) this.controls.rumble(35, 0, 0.35);
         break;
       case 'b':
         if (this.mode !== 'live') this.setMode('live');
+        else this.focusActive();
         break;
       case 'x':
         this.openPhone();
@@ -740,6 +775,12 @@ export class App implements AppApi {
       case 'back':
         this.openMap();
         break;
+      case 'l3':
+        this.setWallMode(this.wallMode === 'up' ? 'cut' : this.wallMode === 'cut' ? 'down' : 'up');
+        break;
+      case 'r3':
+        this.focusActive();
+        break;
       case 'dup':
         this.setLevel(1);
         break;
@@ -753,6 +794,20 @@ export class App implements AppApi {
         this.setSpeed(Math.min(3, this.g.clock.speed + 1));
         break;
     }
+  }
+  /** Was der Controller gerade bedient (für Hinweisleiste und Zielkreuz) */
+  private padCtx(): PadCtx {
+    if (this.loading) return 'off';
+    if (pieOpen()) return 'pie';
+    if (document.getElementById('cas') || modalOpen() || !this.game) return 'menu';
+    if (this.mode === 'live') return 'live';
+    if (this.build?.dragging) return 'drag';
+    return this.mode === 'buy' ? 'buy' : 'build';
+  }
+  /** Kamera zur gewählten Figur */
+  private focusActive(): void {
+    const s = this.game?.active;
+    if (s) this.focusOn(s.x, s.z);
   }
 
   // ---------- Menüs ----------
@@ -839,6 +894,8 @@ export class App implements AppApi {
     document.body.classList.toggle('bigtext', s.bigText);
     document.body.classList.toggle('contrast', s.highContrast);
     document.body.classList.toggle('reduce', s.reduceMotion);
+    this.padUi?.applyMode();
+    TOON.value = s.toon === false ? 0 : 1;
     this.rig.reduceMotion = s.reduceMotion;
     if (!s.fps && this.fpsEl) {
       this.fpsEl.remove();

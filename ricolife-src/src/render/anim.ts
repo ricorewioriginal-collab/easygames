@@ -3,6 +3,7 @@
 // - gemeinsam genutzte Materialien (alle Figuren teilen sich ein Material → wenige Shader-Programme, keine Material-Kopien)
 // - kleine Mathe-Helfer für Animationen
 import * as THREE from 'three';
+import { stylize } from './style';
 
 // ---------- Mathe ----------
 export const PI = Math.PI;
@@ -29,12 +30,12 @@ let matHigh: THREE.MeshLambertMaterial | null = null;
 
 /** Gemeinsames Figuren-Material (Vertexfarben). Nie pro Figur kopieren oder freigeben. */
 export function figureMaterial(): THREE.MeshLambertMaterial {
-  if (!matNormal) matNormal = new THREE.MeshLambertMaterial({ vertexColors: true });
+  if (!matNormal) matNormal = stylize(new THREE.MeshLambertMaterial({ vertexColors: true }));
   return matNormal;
 }
 /** Variante mit leichtem Leuchten für die ausgewählte Figur (Markierung) */
 export function figureHighlightMaterial(): THREE.MeshLambertMaterial {
-  if (!matHigh) matHigh = new THREE.MeshLambertMaterial({ vertexColors: true, emissive: new THREE.Color('#4a3c12') });
+  if (!matHigh) matHigh = stylize(new THREE.MeshLambertMaterial({ vertexColors: true, emissive: new THREE.Color('#4a3c12') }));
   return matHigh;
 }
 

@@ -2,6 +2,7 @@
 // Jede Variante (Def, Farbe A, Farbe B, Zustand) wird einmal gebaut und gecacht.
 // Ausgabe getrennt nach Materialgruppe: solid (Lambert, Vertexfarben), glass (durchscheinend), emissive (leuchtend, unbeleuchtet).
 import * as THREE from 'three';
+import { stylize } from './style';
 import type { ObjectDef, Part } from '../data/types';
 import { getDef } from '../world/defs';
 import { GeoBuf, col, type Raw } from './geo-builder';
@@ -247,7 +248,7 @@ let mats: Record<'solid' | 'glass' | 'emissive', THREE.Material> | null = null;
 export function objectMaterial(kind: 'solid' | 'glass' | 'emissive'): THREE.Material {
   if (!mats) {
     mats = {
-      solid: new THREE.MeshLambertMaterial({ vertexColors: true }),
+      solid: stylize(new THREE.MeshLambertMaterial({ vertexColors: true })),
       glass: new THREE.MeshLambertMaterial({ vertexColors: true, transparent: true, opacity: 0.42, depthWrite: false, emissive: new THREE.Color(0, 0, 0) }),
       emissive: new THREE.MeshBasicMaterial({ vertexColors: true }),
     };

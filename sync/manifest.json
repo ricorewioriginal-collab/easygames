@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "4ad102bcbc74",
- "generated": "2026-11-12T23:24:21+00:00",
- "commit": "0e49814b7ce2ed5d2398f3b92027a27f3b4df547",
+ "version": "2c3393f7ea6d",
+ "generated": "2026-11-12T23:57:20+00:00",
+ "commit": "8e4f2099b2ad7a3e51eb206b2d99da8e5434e5b3",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -6249,7 +6249,7 @@
   {
    "p": "games.js",
    "s": 58347,
-   "h": "ae63e78e5f8d097034edc3249d2d53db7d7255344da272e3abb076d3f44990eb"
+   "h": "5fb0496723649e20cea784802639a061918941c7722ad19bf4aa937503886849"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6903,8 +6903,8 @@
   },
   {
    "p": "guides/ricolife.json",
-   "s": 26384,
-   "h": "3295ca67377df23e638b0e7b176948cb0e086c0871a8c0d9c3fad7704d5ec6ba"
+   "s": 27053,
+   "h": "4422e7acb402b0b6495b967513601b442ee65cda6da7aa821c28ac9d63bd4b5a"
   },
   {
    "p": "guides/ricopoly.json",
@@ -8757,19 +8757,19 @@
    "h": "13ff08bb013337d1b3f62a730374c4e5817ba8ef9b1ac1fd88ef8619370de78a"
   },
   {
-   "p": "ricolife/assets/index-BgmIYRPs.js",
-   "s": 735004,
-   "h": "0fe448be5084f6590ff22faade66cf050726ea2a7da679b4ad436e74f3869071"
+   "p": "ricolife/assets/index-ClxINC4Y.js",
+   "s": 750876,
+   "h": "876976ff2ef583fc749b5423defce7bebc92cd1ab5b56e6dd21e79283ba33d4a"
   },
   {
-   "p": "ricolife/assets/index-LMqfA7Ns.css",
-   "s": 28559,
-   "h": "3bd7b23e6bf00dc92474e41811dd3b1b7486f247ef36bbf078ef6bd596bf2896"
+   "p": "ricolife/assets/index-Cp4y05Xu.css",
+   "s": 31314,
+   "h": "1e681d704f1758be7c29cf0e8c059a6ee0d42ba76967b1eeb3cdeacc9809d855"
   },
   {
-   "p": "ricolife/assets/three-D1eY29yz.js",
-   "s": 497571,
-   "h": "29ad1908e9a1c5e3e4db9f73e340c4c67b6ac5b9dba10d1180e7d1051564096a"
+   "p": "ricolife/assets/three-BcTYLduH.js",
+   "s": 497580,
+   "h": "69e720b4a47a652f1a2a42ace7c26edd4747d078aae5abb5fc01416b97f8dd15"
   },
   {
    "p": "ricolife/card.svg",
@@ -8803,8 +8803,8 @@
   },
   {
    "p": "ricolife/index.html",
-   "s": 2217,
-   "h": "e54537603360a1c4824f7ddb9d5f03cc96e01f42cc271758974e9231adc52a4f"
+   "s": 2397,
+   "h": "26d3320f614f0ebb19862e5fe7e15944e1d928c6c97b907ec517068a65e5c936"
   },
   {
    "p": "ricolife/manifest.webmanifest",
@@ -8812,9 +8812,14 @@
    "h": "13852e6ad7e440349d0dfafa17fa3581ee0ae1f98950f97681bf98579646567f"
   },
   {
+   "p": "ricolife/models/kenney.bin",
+   "s": 237556,
+   "h": "98a0c23fb2cd539ec7dce5615ffcb4b2a6a3426ca2c4ffdd0b74a5efde8d4441"
+  },
+  {
    "p": "ricolife/sw.js",
-   "s": 2296,
-   "h": "f79be4144b7aa988fbe56722a440c14820816ff7e449cedd19cdaf231b824384"
+   "s": 2319,
+   "h": "bd791db4a77025aa4c35fa7aa3f369996ae99e16614193391adbe7df8940c76a"
   },
   {
    "p": "ricopoly/card.jpg",
@@ -9774,7 +9779,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258881,
-   "h": "e0f19d4b4e948fc7268c4903a96e4f365dde2ca43b979aa455ae6659ae0b38e4"
+   "h": "f591a1cf2d2b8d745fc4c3264aece7d714d2d874c59b2520890168225453efc0"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

@@ -7,6 +7,7 @@ import { buildDeco, ROADS_H, ROADS_V, ROAD_END_X, WATER_X, type Deco } from '../
 import { MAP_H, MAP_W, Ter, type World } from '../world/world';
 import { GeoBuf, col, hash2, rawToGeometry, type Raw } from './geo-builder';
 import { addPart } from './object-mesh';
+import { MTag, hasModels, joinRaw, modelRaw } from './models';
 
 export const PX = 6; // Texel je Kachel
 export const TEX_W = WATER_X * PX;
@@ -214,6 +215,9 @@ function makeTemplates() {
       B(-0.17, 3.55, -0.17, 0.04, 0.28, 0.04, IRON), B(0.17, 3.55, -0.17, 0.04, 0.28, 0.04, IRON), B(-0.17, 3.55, 0.17, 0.04, 0.28, 0.04, IRON), B(0.17, 3.55, 0.17, 0.04, 0.28, 0.04, IRON),
     ]),
     lampGlow: rawOf([B(0, 3.56, 0, 0.3, 0.26, 0.3, '#ffe4a8')]),
+    rock: rawOf([S(0, 0.22, 0, 0.9, 0.5, 0.7, '#9d9b93'), S(0.3, 0.15, 0.2, 0.5, 0.32, 0.45, '#8f8d86')]),
+    stump: rawOf([C(0, 0, 0, 0.42, 0.45, 0.42, TRUNK), C(0, 0.45, 0, 0.38, 0.02, 0.38, '#d8b98a')]),
+    log: rawOf([C(0, -0.3, 0, 0.4, 1.0, 0.4, TRUNK, 1, [90, 0, 0])]),
     bench: rawOf([
       B(0, 0.4, 0.02, 1.6, 0.05, 0.42, '#a8754a'), B(0, 0.52, -0.2, 1.6, 0.3, 0.05, '#a8754a', [-10, 0, 0]),
       B(-0.7, 0, 0, 0.06, 0.4, 0.42, IRON), B(0.7, 0, 0, 0.06, 0.4, 0.42, IRON), B(-0.7, 0.4, -0.2, 0.06, 0.45, 0.05, IRON), B(0.7, 0.4, -0.2, 0.06, 0.45, 0.05, IRON),
@@ -230,6 +234,45 @@ function makeTemplates() {
       B(0, 0.7, 0.8, 1.0, 0.6, 1.3, '#e8e2d6'), B(0, 1.3, 0.8, 1.1, 0.06, 1.4, '#a63d32'), C(0, 0.7, -0.6, 0.07, 3.2, 0.07, '#8a6a4a'), B(0, 0.7, 1.95, 1.5, 0.12, 0.08, '#8a6a4a'),
     ]),
   };
+}
+
+// ---------- Echte Modelle (Kenney Nature Kit, CC0) ----------
+interface TreeT { trunk: Raw | null; crown: Raw | null }
+let kenney: ReturnType<typeof makeKenney> | null | undefined;
+const SOLID_COL: Record<number, THREE.Color> = { [MTag.Bark]: col(TRUNK), [MTag.WoodInner]: col('#d8b98a'), [MTag.Stone]: col('#9d9b93'), [MTag.Grass]: col('#5c8c3c'), [MTag.Leaf]: col('#5c8c3c'), [MTag.Petal]: col('#e8607a') };
+const BIRCH = col('#e6e0d4');
+/** feste Farben im Stil der Stadt (Modellfarben nur bei Birkenrinde), Unterseite leicht dunkler */
+const solidColor = (tag: number, r: number, g: number, b: number, ny: number): [number, number, number] => {
+  const c = tag === MTag.Bark && r > 0.95 && g > 0.9 ? BIRCH : SOLID_COL[tag];
+  const k = 0.82 + 0.18 * Math.max(0, ny);
+  return c ? [c.r * k, c.g * k, c.b * k] : [r * k, g * k, b * k];
+};
+/** Laub kodiert wie leafRaw: r = Art/10, g = Zufall (später), b = Oberseite */
+const leafEnc = (kind: Leaf) => (tag: number, _r: number, _g: number, _b: number, ny: number): [number, number, number] => [(tag === MTag.Petal ? Leaf.Petal : tag === MTag.Grass && kind !== Leaf.Bush ? Leaf.Green : kind) / 10, 0, ny * 0.5 + 0.5];
+const LEAVES = [MTag.Leaf, MTag.Grass, MTag.Petal];
+const WOOD = [MTag.Bark, MTag.WoodInner, MTag.Stone, MTag.Color];
+
+function makeKenney() {
+  if (!hasModels()) return null;
+  const tree = (name: string, height: number, kind: Leaf): TreeT => ({
+    trunk: modelRaw(name, { height, tags: WOOD, color: solidColor }),
+    crown: modelRaw(name, { height, tags: LEAVES, color: leafEnc(kind) }),
+  });
+  const solid = (name: string, height: number): Raw | null => modelRaw(name, { height, color: solidColor });
+  const flowers = (): Raw =>
+    joinRaw([[0, 0, 0], [0.26, 0.05, 1.7], [-0.2, 0.22, 3.4], [0.05, -0.27, 5.1]].map(([x, z, r]) => modelRaw('flower_red', { height: 0.42, tags: LEAVES, color: leafEnc(Leaf.Green), off: [x!, 0, z!], rot: r })));
+  const t = {
+    trees: [tree('tree_oak', 3.8, Leaf.Tree), tree('tree_fat', 3.3, Leaf.Tree), tree('tree_autumn', 4.0, Leaf.Tree)],
+    pines: [tree('tree_pine', 4.1, Leaf.Pine), tree('tree_pine_tall', 5.3, Leaf.Pine)],
+    bushes: [tree('bush', 0.8, Leaf.Bush), tree('bush_large', 1.05, Leaf.Bush)],
+    flowers: flowers(),
+    rocks: [solid('rock_large', 0.7), solid('rock_small', 0.42)],
+    stump: solid('stump', 0.5),
+    log: solid('log', 0.42),
+  };
+  // unvollständige Datei → lieber ganz prozedural
+  if (!t.trees.every((x) => x.crown && x.trunk) || !t.pines.every((x) => x.crown) || !t.bushes.every((x) => x.crown) || !t.rocks.every(Boolean) || !t.stump || !t.log) return null;
+  return t;
 }
 
 // ---------- Sektoren ----------
@@ -264,6 +307,8 @@ const APT_STYLE: Record<string, { walls: string[]; roof: string; floors: number[
 export function buildStatic(w: World): StaticOut {
   templates ??= makeTemplates();
   const T = templates;
+  if (kenney === undefined || (kenney === null && hasModels())) kenney = makeKenney();
+  const K = kenney;
   const solid: GeoBuf[] = [], foliage: GeoBuf[] = [];
   for (let i = 0; i < N_SECT; i++) {
     solid.push(new GeoBuf(8192));
@@ -284,6 +329,20 @@ export function buildStatic(w: World): StaticOut {
   const addTree = (kind: Deco['kind'], x: number, z: number, r: number, s: number): void => {
     const sec = sectOf(x, z);
     const c = Math.cos(r), sn = Math.sin(r);
+    if (K) {
+      const v = Math.floor(hash2(Math.floor(x * 7), Math.floor(z * 13)) * 997);
+      const put = (tt: TreeT): void => {
+        if (tt.trunk) solid[sec]!.appendRaw(tt.trunk, c, sn, x, 0, z, 1, 1, 1, s);
+        if (tt.crown) leaf(tt.crown, sec, x, z, r, s);
+      };
+      switch (kind) {
+        case 'tree': return put(K.trees[v % K.trees.length]!);
+        case 'pine': return put(K.pines[v % K.pines.length]!);
+        case 'bush': return put(K.bushes[v % K.bushes.length]!);
+        case 'flowers': return leaf(K.flowers, sec, x, z, r, s);
+        default:
+      }
+    }
     switch (kind) {
       case 'tree':
         solid[sec]!.appendRaw(T.trunk, c, sn, x, 0, z, 1, 1, 1, s);
@@ -310,6 +369,12 @@ export function buildStatic(w: World): StaticOut {
       case 'tree': case 'pine': case 'bush': case 'flowers':
         addTree(d.kind, d.x, d.z, d.r, d.s);
         break;
+      case 'rock': case 'stump': case 'log': {
+        // ohne echte Modelle: einfacher Fels/Stumpf aus Grundformen
+        const raw = K ? (d.kind === 'rock' ? K.rocks[Math.floor(d.s * 100) % 2]! : d.kind === 'stump' ? K.stump! : K.log!) : d.kind === 'rock' ? T.rock : d.kind === 'stump' ? T.stump : T.log;
+        solid[sec]!.appendRaw(raw, c, s, d.x, 0, d.z, 1, 1, 1, d.s);
+        break;
+      }
       case 'lamp':
         solid[sec]!.appendRaw(T.lamp, 1, 0, d.x, 0, d.z);
         lamps.appendRaw(T.lampGlow, 1, 0, d.x, 0, d.z);
