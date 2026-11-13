@@ -42,7 +42,7 @@ export function createMaerchen(C) {
       const d = Math.hypot(x - CX, z - CZ);
       let q = (Math.sin(x * .07 + ph) * Math.cos(z * .06 + ph * .5) * 1.2 + Math.sin(x * .031 + z * .027 + ph) * 1.6 + Math.sin(x * .17 + z * .13) * .25) * amp;
       let f = 1 - (1 - sm(2.5, 6, Math.abs(x - PATHX(z)))) * sm(-90, -84, z) * (1 - sm(14, 18, z));
-      const rd = roadD(w, x, z); f = Math.min(f, sm(2.2, 5.5, rd)); q *= 1 + .9 * sm(9, 26, Math.min(rd, Math.abs(x - PATHX(z))));   // Wege eben, Wildnis hügeliger
+      const rd = roadD(w, x, z); f = Math.min(f, sm(2.2, 5.5, rd)); q *= AM ? .75 : 1 + .9 * sm(9, 26, Math.min(rd, Math.abs(x - PATHX(z))));   // Wege eben, Wildnis hügeliger
       for (const [px, pz, r] of pads) f = Math.min(f, sm(r, r + 6, Math.hypot(x - px, z - pz)));
       for (const [x0, x1, z0, z1] of rects) f = Math.min(f, sm(0, 6, Math.hypot(Math.max(x0 - x, 0, x - x1), Math.max(z0 - z, 0, z - z1))));
       f = Math.min(f, sm(7, 12, Math.hypot(x, z - 10)));
