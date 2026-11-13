@@ -2206,7 +2206,9 @@ const CAR={
     4:{path:[44,-160,14],plazas:[[-28,34,13],[-50,-38,12],[-90,38,14],[-112,-30,11],[-142,30,11]],tiers:[[-40,52,5,5,-26,30],[-70,50,5,5,-92,44],[-136,-24,5,5,-120,-14]],
       quay:0,wall:['rockbig','rock','rockbig','palm'],wallMax:9,wz:[['cactus1',3.4],['cactus2',3.8],['palm2',7.5],['rock_big_1',3.2]],rock:['rock_big_1','rock_big_2'],step:0xc8a070},
     5:{path:[44,-160,14],plazas:[[-14,48,12],[-50,-40,13],[-78,40,12],[-104,-38,13],[-132,34,11]],tiers:[[-36,-58,5,5,-46,-40],[-64,58,5,5.5,-76,44],[-120,-56,5,5,-108,-40]],
-      city:{walls:[0x7aa8a0,0x88b0b8,0x6a9a98,0xa0c0b8,0x8ab8a8],roofs:[0x2a7a8a,0x3a9a8a,0x1a5a7a,0xd8c890],flat:1},quay:-1.2,wall:['coral','kelp'],rock:['rock_big_B_gray_1','rock_big_2'],step:0x7a9a98}
+      city:{walls:[0x7aa8a0,0x88b0b8,0x6a9a98,0xa0c0b8,0x8ab8a8],roofs:[0x2a7a8a,0x3a9a8a,0x1a5a7a,0xd8c890],flat:1},quay:-1.2,wall:['coral','kelp'],rock:['rock_big_B_gray_1','rock_big_2'],step:0x7a9a98},
+    6:{path:[44,-160,12],flatWild:1,plazas:[[-26,-40,12],[-52,40,13],[-58,-40,12],[-92,40,13],[-124,-36,12],[-138,34,10]],tiers:[[-30,56,5,5,-46,40],[-40,-50,5,5,-56,-40],[-108,56,5,5.5,-96,42],[-140,-50,5,5,-128,-38]],
+      wall:['pine','pine','rockbig','dead'],wz:[['rock_big_B_gray_1',3.6],['rock_big_3',4]],rock:['rock_big_B_gray_1','rock_big_3'],step:0xc8d8e8}
 };
 function buildWorld(n){HST=HSTY[n]||HSTY[1];
   const C=CHP[n],R=mul32(7000+n*131),rr=(a,b)=>a+R()*(b-a),rp=a=>a[R()*a.length|0],ph=n*1.7,amp=C.amp||1,P=C.pal,cs=()=>chCs(n);
@@ -2221,7 +2223,8 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
   const CRT=[[-70,-60],[60,-100],[-55,-130],[75,-30]];
   const MESA=[[-48,-80],[52,-112],[-40,-130],[60,-66]];
   // Eigene Karte je Welt im Norden: Kanäle, Inselkette, Schlucht, Lavaflüsse, Häuserblöcke, Abgründe, Tafelberge
-  const wildMap=(c,x,z)=>{const iw=sm(-146,-140,z)*(1-sm(-52,-46,z));if(iw<=0)return c;const pd=Math.abs(x-pathx(z)),off=pd<3.4?0:1;switch(n){
+  const wildMap=(c,x,z)=>{let iw=sm(-146,-140,z)*(1-sm(-52,-46,z));if(iw<=0)return c;if(AM&&CA.flatWild)iw*=sm(.5,6,AM.E(x,z));   // Areal: Weltform nur in den Wänden, Plätze bleiben eben
+    const pd=Math.abs(x-pathx(z)),off=pd<3.4?0:1;switch(n){
     case 3:for(const zc of [-64,-94,-126])c-=5*Math.exp(-((z-zc)**2)/22)*off*iw;return c;   // Kanäle mit Brücken
     case 4:for(const [mx,mz] of MESA){const d=Math.hypot(x-mx*mir,z-mz);c+=13*(1-sm(7,11,d))*iw}return c;   // Tafelberge
     case 5:return c-1.4*iw+(1-sm(2,5,pd))*2.6*iw;   // Inselkette mit Damm
