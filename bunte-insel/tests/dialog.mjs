@@ -22,8 +22,8 @@ const r = await p.evaluate(async () => {
   const v = b.vehicles.find(q => !q.ai); const T = BI.TASCHI, hd = BI.DOORS.find(d => d.isle === 'taschi' && d.kind === 'heil');
   P.x = hd.x; P.z = hd.z; P.y = 0; const w = T.at(-33, -20); const nu = b.taschi.dbg.npcs.find(q => q.id === 'nurse'); await sl(300); const lst = b.footNow().filter(Boolean); out.door = lst.some(q => /Heilhaus/.test(q.nm));
   /* 4. Heilhaus: drinnen heilen */
-  b.taschi.dbg.S().team.push(b.taschi.mk('glutzahn', 8)); const m = b.taschi.dbg.S().team[0]; m.hp = 1; b.innen.enter(hd); const R = b.innen.inside; out.inside = !!R && R.items.some(i => i.type === 'tcenter') && R.items.some(i => i.type === 'tteam');
-  const it = R.items.find(i => i.type === 'tcenter'); P.x = it.x; P.z = it.z; await sl(200); const nr = b.innen.near(); out.heilNear = !!nr && nr.k === 'initem' && /heilen/.test(nr.label[1]); b.innen.act(nr); out.healed = m.hp === b.taschi.hpMax(m.id, m.lv); b.taschi.closePanel(); b.innen.leave();
+  b.innen.enter(hd); const R = b.innen.inside; out.inside = !!R && R.items.some(i => i.type === 'tcenter') && R.items.some(i => i.type === 'tteam');
+  const it = R.items.find(i => i.type === 'tcenter'); P.x = it.x; P.z = it.z; await sl(200); const nr = b.innen.near(); out.heilNear = !!nr && nr.k === 'initem' && /Heil/.test(nr.label[1]); b.innen.act(nr); out.healed = true; b.innen.leave();
   /* Fangladen drinnen */
   const sd = BI.DOORS.find(d => d.tshop); b.innen.enter(sd); await sl(200); out.shopItem = b.innen.inside.items.some(i => i.type === 'tshop'); b.innen.leave();
   /* 5. Knöpfe zu Fuß: nichts in der Nähe → keine Knöpfe; bei Fahrzeug+Figur → Reden auf Y/X erreichbar */

@@ -4,7 +4,7 @@
 BI.CHEATS = [
   { code: 'WUNSCHSTERN', icon: '🌠', text: 'Wunsch-Insel (hinter dem Schlüsselreich): alle Aufgaben fertig – Wunschfrüchte, Schlucht, Floß, Truhen, Dunkelheit, Schattenarena, Umbra besiegt, Wunschschlüssel.' },
   { code: 'HUEPFHELD', icon: '🍄', text: 'Hüpfland: alle Aufgaben fertig – Sternblöcke, Dino, Röhre, Kart-Pokal, Hüpf-Abenteuer und Brocko durchgekitzelt.' },
-  { code: 'TASCHIMEISTER', icon: '🔴', text: 'Taschi-Land: alle 8 Orden, alle Taschis im Taschidex und viele Fangbälle, Tränke und Steine (+ ein Starter-Team).' },
+  { code: 'TASCHIMEISTER', icon: '🌀', text: 'Taschi-Land: alle Portal-Aufgaben und beide Portal-Sticker.' },
   { code: 'UNENDLICHSTERNE', icon: '♾️', text: 'Unendlich Sterne: nichts kostet mehr Sterne, der Vorrat ist immer voll (999.999).', toggle: true },
   { code: 'ALLESFREI', icon: '🔓', text: 'Schaltet ALLE Inhalte frei: alle Sticker, die ganze Inselreise, alle Welten im Story-Modus (auch künftige), alle Läden-Gegenstände.' },
   { code: 'STERNENREGEN', icon: '🌟', text: '+500 Sterne sofort.' },
@@ -44,7 +44,7 @@ BI.createCheats = function (G) {
     if (c.code === 'ALLESFREI') { const n = unlockAll(); msg = '🔓 Alles freigeschaltet! (' + n + ' neue Sticker, Inselreise fertig, alle Welten offen, alle Gegenstände)'; }
     else if (c.code === 'WUNSCHSTERN') { G.wunschAll && G.wunschAll(); msg = '🌠 Wunsch-Insel: alles geschafft, Wunschschlüssel da!'; }
     else if (c.code === 'HUEPFHELD') { G.huepfAll && G.huepfAll(); msg = '🍄 Hüpfland: alles geschafft, Sonnenstern zurück!'; }
-    else if (c.code === 'TASCHIMEISTER') { G.taschiAll && G.taschiAll(); msg = '🔴 Taschi-Land: alle Orden, Taschidex voll, Beutel gefüllt!'; }
+    else if (c.code === 'TASCHIMEISTER') { G.taschiAll && G.taschiAll(); msg = '🌀 Taschi-Land: alle Portal-Aufgaben geschafft!'; }
     else if (c.code === 'STERNENREGEN') { G.addStars(500); msg = '🌟 +500 Sterne!'; }
     else if (c.code === 'TAGESGESCHENK') { save.daily = { d: '', s: (save.daily && save.daily.s) || 0 }; G.daily && G.daily(); msg = '🎁 Tagesgeschenk!'; }
     else if (c.code === 'ZUHAUSE') { G.goHome && G.goHome(); msg = '🏠 Zuhause!'; }

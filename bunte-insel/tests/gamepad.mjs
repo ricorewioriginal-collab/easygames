@@ -37,9 +37,27 @@ const taps = await p.evaluate(() => window.__taps); ok(taps.length === 1 && taps
 ok(await p.evaluate(() => [...document.body.children].some(e => e.style.zIndex === '99999' && e.style.display === 'block')), 'Finger-Zeiger sichtbar');
 if (process.env.SHOT) await p.screenshot({ path: process.env.SHOT });
 await p.evaluate(() => { __bi.mini.stop(); }); await sl(300);
+/* 5c. Insel-Handy: R1 wechselt zur Einstellungen-App und zwischen Reitern, B zurück zur Startseite, rechter Stick blättert ohne Fehler */
+await press(9); await sl(300); ok(await p.evaluate(() => !document.getElementById('kHome').hidden && document.querySelectorAll('#kHome .kApp').length === 12), 'Pause = Insel-Handy mit 12 Apps');
+await press(5); await sl(200); ok(await p.evaluate(() => !document.getElementById('kSet').hidden && __bi.konsole.tab === 0), 'R1: Einstellungen-App'); await press(5); await sl(200); ok(await p.evaluate(() => __bi.konsole.tab === 1), 'R1: nächster Reiter (Bild & Ton)');
+await press(1); await sl(300); ok(await p.evaluate(() => !document.getElementById('pause').hidden && !document.getElementById('kHome').hidden), 'B: zurück zur Startseite (Handy bleibt offen)');
+ok(await p.evaluate(() => !!document.getElementById('gpBar') && !document.getElementById('gpBar').hidden && /Auswählen/.test(document.getElementById('gpBar').textContent)), 'Hinweisleiste im Menü');
+await press(1); await sl(400); ok(await p.evaluate(() => document.getElementById('pause').hidden), 'B auf der Startseite: weiter spielen');
+/* 5d. Spiel: Hinweisleiste, L3 schaltet Rennen, R3 Kamera hinter die Figur */
+await sl(400); ok(await p.evaluate(() => /Rennen/.test(document.getElementById('gpBar').textContent)), 'Hinweisleiste im Spiel');
+await press(10); ok(await p.evaluate(() => __bi.inp ? __bi.inp.turbo : __bi.pad.runLock), 'L3: Rennen an'); await press(10);
+await p.evaluate(() => { __bi.cam.yaw = 0; __bi.P.h = 1; }); await press(11); ok(await p.evaluate(() => Math.abs(__bi.cam.yaw - (1 + Math.PI)) < .01), 'R3: Kamera hinter die Figur');
 /* 6. Trennen */
 await p.evaluate(() => { window.__gp.connected = false; const e = new Event('gamepaddisconnected'); e.gamepad = window.__gp; window.dispatchEvent(e); }); await sl(300);
 ok(await p.evaluate(() => !document.body.classList.contains('gamepad')), 'Controller getrennt: Hinweis, Touch/Tastatur bleibt');
+/* 6b. PlayStation: Symbole ✕ ○ □ △ an den Knöpfen; Switch: A (rechts, Index 1) bestätigt, B (unten, Index 0) zurück */
+await mk('standard', 'DualSense Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 0ce6)'); await sl(400);
+ok(await p.evaluate(() => __bi.pad.kind === 'ps' && document.getElementById('bJump').dataset.k === '○' && document.body.classList.contains('gp-ps')), 'PlayStation erkannt, Tastensymbole ✕○□△');
+await p.evaluate(() => { window.__gp.connected = false; const e = new Event('gamepaddisconnected'); e.gamepad = window.__gp; window.dispatchEvent(e); }); await sl(200);
+await mk('standard', 'Pro Controller (STANDARD GAMEPAD Vendor: 057e Product: 2009)'); await sl(400);
+ok(await p.evaluate(() => __bi.pad.kind === 'nin' && document.getElementById('bAux').dataset.k === 'Y' && document.getElementById('bAct').dataset.k === 'A'), 'Switch erkannt: Symbole wie auf der Switch (Y links, X oben)');
+await p.evaluate(() => { window.__esc = []; addEventListener('keydown', e => window.__esc.push(e.code + ':' + (document.activeElement && document.activeElement.id))); }); await press(9, 400); await sl(300); const sw1 = await p.evaluate(() => !document.getElementById('pause').hidden); await press(0, 400); await sl(400); ok(sw1 && await p.evaluate(() => document.getElementById('pause').hidden), 'Switch: B (unten) schließt das Insel-Handy');
+await p.evaluate(() => { window.__gp.connected = false; const e = new Event('gamepaddisconnected'); e.gamepad = window.__gp; window.dispatchEvent(e); }); await sl(200);
 /* 7. Unbekanntes Pad: Einrichtung */
 await mk('', 'Generic USB Gamepad (Vendor: 1234 Product: abcd)'); await sl(300);
 ok(await p.evaluate(() => !![...document.body.children].find(e => /einrichten/.test(e.textContent) && e.style.zIndex === '99998')), 'Unbekanntes Pad: Einrichtungs-Assistent erscheint');
