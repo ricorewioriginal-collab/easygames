@@ -5,13 +5,14 @@ let ok = 0, n = 0; const chk = (c, m) => { n++; if (c) ok++; console.log((c ? 'o
 const only = process.argv.slice(2).map(Number);
 (async () => { const b = await chromium.launch({ args: ARGS }); const p = await open(b); const w = ms => p.waitForTimeout(ms);
   await p.evaluate(() => { const Z = __zotik; Z.startDbg(); const S = Z.S(); S.stage = 8; S.lvl = 20; }); await intro(p); await skip(p);
-  const L = await p.evaluate(() => __zotik.MWX().WORLDS.filter(w => w.areal).map(w => w.n));
+  const L = await p.evaluate(() => [2, 3, 4, 5, 6, 7, 8, 9, 10].concat(__zotik.MWX().WORLDS.filter(w => w.areal).map(w => w.n)));   // Kapitelwelten zuerst (nur mit Areal)
   for (const wn of L) { if (only.length && !only.includes(wn)) continue;
     await p.evaluate(n => __zotik.switchWorld(n), wn); await w(2500); for (let i = 0; i < 10; i++) { await skip(p); await w(200); }
+    if (wn < 21 && !(await p.evaluate(() => !!__zotik.WLD.cw))) continue;
     await flood(p);
-    const r = await p.evaluate(() => { const Z = __zotik, W = Z.WLD, A = W.mw.areal, o = { name: W.mw.name };
+    const r = await p.evaluate(() => { const Z = __zotik, W = Z.WLD, MW = W.mw || W.cw, A = MW.areal, o = { name: W.mw ? W.mw.name : W.C.name };
       o.tiers = A.tiers.map(t => !!window.__near(t[0], t[1], 2.4)); o.flat = A.tiers.every(t => Math.abs(Z.hgt(t[0], t[1]) - t[3]) < .05);
-      o.chests = (W.mw.chests || []).filter(([x, z]) => !window.__near(x, z, 2.4)).map(q => q.join('/'));
+      o.chests = (W.mw ? W.mw.chests || [] : A.tiers.map(t => [t[0] + 1, t[1] + 1])).filter(([x, z]) => !window.__near(x, z, 2.4)).map(q => q.join('/'));
       o.cuts = (A.cuts || []).every(c => W.blocked((c[0] + c[2]) / 2, (c[1] + c[3]) / 2));
       let wall = 0; for (let i = 0; i < 400; i++) { const x = -100 + (i % 20) * 10, z = 10 - (i / 20 | 0) * 7; if (W.blocked(x, z)) wall++; } o.wall = wall;
       const walk = (x0, z0, x1, z1, y) => { const pl = Z.pl; pl.x = x0; pl.z = z0; pl.y = y; pl.vy = 0; pl.air = false; Z.keys.KeyW = true;
