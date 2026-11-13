@@ -6,6 +6,7 @@
 //   bridges: [[x0, z0, x1, z1, y]]  Brücke (begehbar über PLAT), y = Oberkante
 //   lanes: [[x0, z0, x1, z1, hw?]]  zusätzliche Gasse
 //   quay: y  Kanalstadt: offene Flächen mindestens auf Höhe y (Kais)
+//   void: t  Schwebeinseln: statt Wänden Abgrund bis -t (keine Waldwand)
 //   piers: [[x0, z0, x1, z1, y]]  Steg vom Ufer (x0, z0) übers Wasser, endet offen bei (x1, z1)
 //   wall: DECOR-Arten der Waldwand, wz: Wizp-Bäume der vordersten Reihe [[name, höhe]], rock: Wizp-Felsen an Klippen
 //   props: { zonenId: [[datei, name, größe (>0 Höhe, <0 Maßstab), anzahl]] }
@@ -55,7 +56,8 @@ export function arealHeight(w, M) {
     let ff = 1; for (const [cx, cz, r, , fx, fz] of T) { const d = Math.hypot(x - cx, z - cz); if (d > r + 30) continue; ff = Math.min(ff, sm(r + .5, r + 8, d), sm(2.6, 7, segD(x, z, cx, cz, fx, fz)[0])); }
     q *= ff;   // Gelände rund um Plateau und Rampe eben, damit die Rampe gleichmäßig steigt
     let e = M.E(x, z);
-    if (e > 0 && !A.city) { let u = 1; for (const b of BR) u = Math.min(u, sm(2.5, 4.5, segD(x, z, b[0], b[1], b[2], b[3])[0])); q += (6.5 * sm(.8, 4.5, e) + .3 * Math.max(0, e - 4.5)) * u - (1 - u) * 1.5; }
+    if (A.void && e > 0) { const k = sm(.3, 3, e); q += (-A.void - q) * k; }   // Schwebeinseln: zwischen den Arealen fällt das Land in die Wolken ab
+    else if (e > 0 && !A.city) { let u = 1; for (const b of BR) u = Math.min(u, sm(2.5, 4.5, segD(x, z, b[0], b[1], b[2], b[3])[0])); q += (6.5 * sm(.8, 4.5, e) + .3 * Math.max(0, e - 4.5)) * u - (1 - u) * 1.5; }
     if (A.quay != null && q < A.quay) q += (A.quay - q) * (1 - sm(.2, 1.6, e));   // Kanalstadt: Gassen und Plätze als Kais über dem Wasser
     for (const [cx, cz, r, y, fx, fz] of T) { const d = Math.hypot(x - cx, z - cz); if (d > r + 30) continue;
       let k = 1 - sm(r, r + 1.3, d); const L = Math.hypot(fx - cx, fz - cz), [sd, t] = segD(x, z, cx, cz, fx, fz);
@@ -75,7 +77,7 @@ export function arealDress({ C, w, b, g, h, M, R2, blk, busy, roadD, wallList, T
   const step = TOUCH ? 3.6 : 3, maxWz = TOUCH ? 90 : 220; let nwz = 0;
   for (let j = 0; j < M.N; j += step / M.ST) for (let i = 0; i < M.N; i += step / M.ST) {
     const x = M.X0 + i * M.ST + (R2() - .5) * step * .8, z = M.Z0 + j * M.ST + (R2() - .5) * step * .8, e = M.E(x, z);
-    if (A.city || e < (A.hedge ? 3.4 : 1.4) || e > (A.wallMax || 12) || Math.hypot(x, z - 12) < 16) continue; if ((A.bridges || []).some(q => segD(x, z, q[0], q[1], q[2], q[3])[0] < 4)) continue;
+    if (A.city || A.void || e < (A.hedge ? 3.4 : 1.4) || e > (A.wallMax || 12) || Math.hypot(x, z - 12) < 16) continue; if ((A.bridges || []).some(q => segD(x, z, q[0], q[1], q[2], q[3])[0] < 4)) continue;
     if (e < 4.6 && A.wz && nwz < maxWz && R2() < .75) { const [k, hh] = A.wz[R2() * A.wz.length | 0]; wz.push({ k, x, y: h(x, z) - .1, z, ry: R2() * 6.28, h: hh * (.8 + R2() * .4) }); nwz++; continue; }
     const kind = A.wall[R2() * A.wall.length | 0]; wallList.push([x, z, kind, 1 + R2() * .7, R2() * 6.3, 1]); }
   // Stadt: statt Waldwand geschlossene Häuserzeilen, Giebel zur Gasse, dahinter Dächer als Silhouette
