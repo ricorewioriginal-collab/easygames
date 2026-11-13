@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "10759ab5d8bf",
- "generated": "2026-11-13T14:36:01+00:00",
- "commit": "30eb71b5b92c23305d8014cc1ea173cad838dbbc",
+ "version": "9231d865c774",
+ "generated": "2026-11-13T16:38:10+01:00",
+ "commit": "09698982a6279424dd1ec2751c7eeb6cfd46183d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -348,13 +348,13 @@
   },
   {
    "p": "aeru/game.js",
-   "s": 179423,
-   "h": "c18cbcfe56433d81f4c9d58db4518d47882f8faf0af0906308da6d7d5117cf26"
+   "s": 181832,
+   "h": "59178351af093f231732553ac29cb1908a498905af49273e04c09abf5609ecb4"
   },
   {
    "p": "aeru/index.html",
    "s": 15593,
-   "h": "e42fb9376379353bacdf70c3e2aa5e1ee3ca94c0e7b2b8db61aa834715de9848"
+   "h": "1862f8d555f20ff3eaf3d58dafabaaec8a3ab57af5d6adad16039fbb340ee5f2"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -365,6 +365,11 @@
    "p": "aeru/models/armabee.glb",
    "s": 122244,
    "h": "38834853d05abb96819c18dfac36f4c139e0f136437e7941c9a119a0ff2c2f8b"
+  },
+  {
+   "p": "aeru/models/castle.glb",
+   "s": 873412,
+   "h": "aac4fc7a40d3e8e98a240cc468ab209bae178637ce4c24cec1cbc94086fd59a4"
   },
   {
    "p": "aeru/models/ghost.glb",
@@ -9734,7 +9739,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258882,
-   "h": "18c3d25be5dfeb841c6188ab54b8715f1ffe6a518cdf5785ba4387c177a17350"
+   "h": "6211e0683b63bfbd11b5c2951a6cea2c5da774366ee4ecf179404cf3c0498915"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
