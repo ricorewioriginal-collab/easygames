@@ -1,4 +1,4 @@
-import {createPolish,PROFILES,loadProfile,saveProfile} from './polish.js';
+import {createPolish,createAmbient,PROFILES,loadProfile,saveProfile} from './polish.js';
 import * as THREE from 'three';
 import { createPost } from './post.js';
 import { createExtra } from './extra.js';
@@ -599,7 +599,7 @@ const ffMat=new T.ShaderMaterial({transparent:true,depthWrite:false,blending:T.A
   vertexShader:'attribute vec3 col;varying vec3 c;varying float f;uniform float t;uniform vec3 cen;uniform float k;void main(){vec3 p=position;p.x+=sin(t*.5+p.y*3.)*1.5;p.z+=cos(t*.43+p.x)*1.5;p.y+=sin(t*.8+p.x*2.)*.8;vec3 w=vec3(100.,14.,100.);p=mod(p-cen+w*.5,w)-w*.5+cen;p.y=cen.y-1.+mod(position.y+sin(t*.3+position.x)*2.,14.);c=col;f=.55+.45*sin(t*2.+position.x*7.);vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=(.5+f*.4)*k/-mv.z;gl_Position=projectionMatrix*mv;}',
   fragmentShader:'varying vec3 c;varying float f;void main(){float d=length(gl_PointCoord-.5)*2.;float a=smoothstep(1.,0.,d);gl_FragColor=vec4(c*1.4,a*f);}'});
 const fireflies=new T.Points(ffGeo,ffMat);fireflies.frustumCulled=false;scene.add(fireflies);
-const POL=createPolish({scene,TOUCH,curCh:()=>curCh});
+const POL=createPolish({scene,TOUCH,curCh:()=>curCh}),AMB=createAmbient();
 
 /* ================= Figuren (nach Master-Sheets) ================= */
 const SMILE=new T.TorusGeometry(1,.14,6,12,Math.PI);
@@ -1525,6 +1525,7 @@ function frame(now){
   if(mode==='title')titleCam(dt);else if(mode==='creator')creatorCam(dt);else if(!menuOpen||MP.on){try{update(dt)}catch(e){if(!frame.err||time-frame.err>5){frame.err=time;console.error('[Zotik]',e)}}}
   if(MP.net)mpTick(dt);
   ffMat.uniforms.t.value=time;ffMat.uniforms.cen.value.set(camTarget.x||0,(camTarget.y||2)-1.5,camTarget.z||12);ffMat.uniforms.k.value=innerHeight*.6;
+  if(AC&&sndOn)AMB(AC,master,curCh,mode==='play'&&!WLD?.cave);else if(AC)AMB(AC,master,curCh,false);
   {const a=PROFILES[GFX].amb;POL.update(time,camTarget.x||0,(camTarget.y||2)-1.5,camTarget.z||12,innerHeight,mode==='play'||mode==='title'?(a<0?[1,.8,.5,.25][qLv]:a):0)}
   if(!menuOpen||MP.on){updParticles(dt);FXH.update(dt);MFX.update(dt)}
   if(++shN>=QSH[qLv]){shN=0;renderer.shadowMap.needsUpdate=true}
