@@ -149,8 +149,17 @@ export function createOnline(C) {
   const KEEP = new Set(['mira', 'prof', 'elder', 'home']);
   const phase = () => ((Date.now() / 1000) % DAY) / DAY;
   const phaseName = () => { const p = phase(); return p < .2 ? '🌅 Morgen' : p < .5 ? '☀️ Mittag' : p < .7 ? '🌇 Abend' : '🌙 Nacht' };
+  /* Bewohner, die frei umherschlendern: Ziel im Umkreis wählen, hingehen, stehen bleiben, weiter */
+  function roam(n, dt, dPl) {
+    const W = n.wander; if (dPl < 3.2 || C.dlgOn()) return; if (W.w > 0) { W.w -= dt; return; }
+    if (!W.t) { const a = Math.random() * 6.283, r = 2 + Math.random() * W.r, x = W.x + Math.sin(a) * r, z = W.z + Math.cos(a) * r; let ok = Math.abs(hgt(x, z) - hgt(n.x, n.z)) < 1.6;
+      for (let j = 1; j <= 5 && ok; j++) { const q = j / 5; if (C.blocked(n.x + (x - n.x) * q, n.z + (z - n.z) * q)) ok = false; } if (!ok) { W.w = .8; return; } W.t = [x, z]; }
+    const dx = W.t[0] - n.x, dz = W.t[1] - n.z, d = Math.hypot(dx, dz); if (d < .2) { W.t = null; W.w = 2 + Math.random() * 5; return; }
+    const stp = Math.min(d, (W.sp || 1.3) * dt); n.x += dx / d * stp; n.z += dz / d * stp; n.mv = .5; n.mf = Math.atan2(dx, dz);
+    n.P.root.position.set(n.x, hgt(n.x, n.z), n.z); n.spr.position.x = n.x; n.spr.position.z = n.z; if (n.col) { n.col.x = n.x; n.col.z = n.z; }
+  }
   function npc(n, dt, dPl) {
-    n.mv = 0; if (KEEP.has(n.id) || n.noRoute) return;
+    n.mv = 0; if (n.wander) return roam(n, dt, dPl); if (KEEP.has(n.id) || n.noRoute) return;
     if (!n.home) {
       n.home = [n.x, n.z]; const h0 = hgt(n.x, n.z); let best = null;
       for (let i = 0; i < 12 && !best; i++) {

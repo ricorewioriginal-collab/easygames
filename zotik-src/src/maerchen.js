@@ -260,10 +260,18 @@ export function createMaerchen(C) {
     // Gegner-Arten dieser Welt
     for (const k of ['a', 'b', 'c', 'd', 'x', 'y']) { const f = w.foes[k]; if (!f) continue; const key = 'mw' + n + k, hov = FOE.HOVER.has(f[0]) || C.CR().HOV.has(f[0]), boss = k === 'x' || k === 'y', base = boss ? C.ED.boss : hov ? C.ED.rift : C.ED.wolf;
       C.ED[key] = Object.assign({}, base, { name: f[1], col: f[2], make: () => FOE.has(f[0]) ? FOE.make(f[0], f[2], boss) : C.CR().makeKind(f[0], f[2], boss), sc: boss ? (f[0] === 'hydra' || f[0] === 'loewe' || f[0] === 'tiger' ? 1.55 : 1.45) : f[0] === 'riese' ? 1.15 : 1, base: hov ? 'rift' : 'wolf' },
-        boss ? { boss: true, sub: f[3], p2t: f[4], minion: 'mw' + n + 'a', aggro: 30 } : {}); WD.edKeys.push(key); }
+        boss ? { boss: true, sub: f[3], p2t: f[4], minion: 'mw' + n + 'a', aggro: 30 } : {}); WD.edKeys.push(key);
+      /* Varianten jeder Art: Späher (klein, flink, springt an bzw. schießt schneller) und Anführer (groß, goldener Schimmer, zäh, schlägt öfter zu) */
+      if (!boss) { const d0 = C.ED[key], mel = d0.base === 'wolf';
+        C.ED[key + 's'] = Object.assign({}, d0, { name: f[1] + ' · Späher', sc: d0.sc * .82, spd: (d0.spd || 4) * 1.3, cool: (d0.cool || 2) * (mel ? .9 : .7), leap: mel ? 1 : d0.leap, make: () => C.tint(d0.make(), 0x9ae8ff, .3) });
+        C.ED[key + 'e'] = Object.assign({}, d0, { name: f[1] + ' · Anführer', mini: true, sc: d0.sc * 1.32, cool: (d0.cool || 2) * .8, wind: (d0.wind || .7) * .85, rng: (d0.rng || 2.5) * (mel ? 1.15 : 1), make: () => C.tint(d0.make(), 0xffc040, .5) });
+        WD.edKeys.push(key + 's', key + 'e'); } }
     // Gegner in der Wildnis (nicht am Ankunftsplatz, nicht in Dörfern)
     let ne = 0, tries = 0; const calm = w.zones.filter(q => ['lichtung', 'dorf', 'agora', 'hof', 'gaerten', 'parvis'].includes(q[0]));
-    const NE = Math.round(10 * Math.min(AK, 3.2)); while (ne < NE && tries++ < 900) { const a = R2() * 6.283, rr = 14 + R2() * (R - 18), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr; if (z > -4 || blk(x, z) || !C.colFree(x, z, 1) || calm.some(q => Math.hypot(x - q[3], z - q[4]) < q[5])) continue; C.spawnEnemy('mw' + n + 'abc'[ne % 3], x, z); ne++; }
+    const NE = Math.round(10 * Math.min(AK, 3.2)); while (ne < NE && tries++ < 900) { const a = R2() * 6.283, rr = 14 + R2() * (R - 18), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr; if (z > -4 || blk(x, z) || !C.colFree(x, z, 1) || calm.some(q => Math.hypot(x - q[3], z - q[4]) < q[5])) continue;
+      /* gemischte Gruppen: 2–4 verschiedene Arten, Späher dabei, größere Gruppen mit Anführer */
+      const sz = Math.min(NE - ne, 2 + (R2() * 3 | 0)), k0 = R2() * 3 | 0; for (let i = 0; i < sz; i++) { const a2 = i * 2.4 + R2(), px = x + (i ? Math.sin(a2) * 2.8 : 0), pz = z + (i ? Math.cos(a2) * 2.8 : 0); if (i && (blk(px, pz) || !C.colFree(px, pz, 1))) continue;
+        const k = 'mw' + n + 'abc'[(k0 + i) % 3], v = i === 0 && sz >= 3 ? 'e' : R2() < .3 ? 's' : ''; C.spawnEnemy(C.ED[k + v] ? k + v : k, px, pz); ne++; } }
     // Nautilux geparkt am Ankunftsplatz (Reise wie mit dem Gumi-Schiff)
     { const sh = C.makeNaut(); sh.scale.setScalar(.85); sh.position.set(-7, h(-7, 15) + 1.6, 15); sh.rotation.y = .6; sh.visible = true; C.scene.add(sh); C.addCol(-7, 15, 2.4); const y0 = sh.position.y; C.animObjs.push({ fn(t) { sh.position.y = y0 + Math.sin(t * 1.3) * .18; } });
       C.INT.push({ x: -4.6, z: 12.4, name: 'Nautilux', pr: 'Weiterreisen', rad: 3.2, talk() { C.openTravel(); } }); }
@@ -279,7 +287,7 @@ export function createMaerchen(C) {
       C.INT.push({ x: x0, z: z0 + (z1 > z0 ? -1.2 : 1.2), name: nm, pr: 'Schwingen', rad: 2.4, talk() { cur.swing = { x0: C.pl.x, z0: C.pl.z, x1, z1: z1 + (z1 > z0 ? 1.6 : -1.6), t: 0 }; C.sfx('jump'); } }); } });
     if (w.currents) cur.cur = w.currents.map(q => ({ x: q[0], z: q[1], r: q[2], dx: q[3], dz: q[4], id: q[5] }));
     if (w.climb) C.INT.push({ x: w.climb.cx + 1.2, z: w.climb.cz + 6, name: 'Glockenturm', pr: 'Ansehen', rad: 2.6, vis: () => C.pl.y < 1, talk() { C.say([['Zotik', 'Steinvorsprünge winden sich um den Turm nach oben. Sprung für Sprung – bis zur Glockenstube.']]); } });
-    life(w);
+    life(w); folkLife(w, R2, blk, busy);
     if (s.st === 1) arm(w, s);
     keyhole(w, s);
     WD.mbg = minimap(w); C.setMBG(WD.mbg);
@@ -301,6 +309,30 @@ export function createMaerchen(C) {
       C.animObjs.push({ fn(t) { for (const f of fl) { const a = f.ph + t * f.sp; f.g.position.set(f.cx + Math.cos(a) * f.r, f.y + Math.sin(t + f.ph) * .3, f.cz + Math.sin(a) * f.r); f.g.rotation.y = -a; } } }); }
     if (L.includes('bubbles')) C.animObjs.push({ fn() { if (cur && Math.random() < .3) C.emit(C.pl.x + (Math.random() - .5) * 30, cur.h(C.pl.x, C.pl.z) + .2, C.pl.z + (Math.random() - .5) * 30, 0xc8f4ff, 1, .3, 3, .12, -1.5); } });
     if (L.includes('snow')) C.animObjs.push({ fn() { if (cur && Math.random() < .7) C.emit(C.pl.x + (Math.random() - .5) * 34, C.pl.y + 12, C.pl.z + (Math.random() - .5) * 34, 0xffffff, 1, .4, 6, .1, 1.2); } });
+  }
+  /* ---------- Bewohner und Tiere: schlendern umher, erzählen von ihrer Welt ---------- */
+  const ROLES = [['Wanderer', 'm'], ['Marktfrau', 'f'], ['Bauer', 'm'], ['Kräutersammlerin', 'f'], ['Holzfäller', 'm'], ['Spielmann', 'm'], ['Wäscherin', 'f'], ['Kind', 'k']];
+  const FOLKL = [z => 'Warst du schon bei ' + z[1] + '? ' + z[2] + '.', () => 'Seit der Riss da ist, trauen sich die Leute kaum noch vor die Tür.', () => 'Pass auf dich auf. Draußen streifen Rudel herum, und manche haben einen Anführer mit goldenem Schimmer.',
+    z => 'Man erzählt sich, bei ' + z[1] + ' liegt noch etwas verborgen.', () => 'Ein Fremder mit einem Fuchs? Das gibt es auch nur in Geschichten.', () => 'Wenn du Krüge findest: zerschlag sie ruhig. Die Leute verstecken gern ein paar Splitter darin.'];
+  function folkLife(w, R2, blk, busy) {
+    const pal = [w.col, ...(w.ground || []), 0x8a5a3a, 0x3a5a8a, 0xb0904a, 0x6a3a5a], calm = w.zones.filter(q => ['lichtung', 'dorf', 'agora', 'hof', 'gaerten', 'parvis', 'greve', 'wunder', 'friede', 'markt', 'hafen'].includes(q[0]));
+    const NR = w.life && w.life.includes('fish') ? 2 : 6; let made = 0, tries = 0;
+    while (made < NR && tries++ < 200) { const z0 = calm.length && R2() < .6 ? calm[(R2() * calm.length) | 0] : null, a = R2() * 6.283, rr = z0 ? R2() * z0[5] * .7 : 4 + R2() * 5, z = z0 ? z0[4] + Math.cos(a) * rr : -8 - R2() * 70, x = z0 ? z0[3] + Math.sin(a) * rr : PATHX(z) + (R2() < .5 ? -1 : 1) * rr;
+      if (blk(x, z) || !C.colFree(x, z, 1) || busy.some(([bx, bz, br]) => Math.hypot(x - bx, z - bz) < br)) continue;
+      const [role, g] = ROLES[(made + w.n) % ROLES.length], P = C.folk(role, { g: g === 'k' ? 'm' : g, cloth: pal[(R2() * pal.length) | 0], cloth2: pal[(R2() * pal.length) | 0], hair: [0x2a1c16, 0x6a4a2a, 0xb07a3a, 0xd0d0d0][(R2() * 4) | 0], sc: g === 'k' ? .7 : .9 + R2() * .15 }, { pal: 1 });
+      const zz = w.zones[(made * 3 + w.n) % w.zones.length], lines = [0, 1, 2].map(i => FOLKL[(made + i * 2 + w.n) % FOLKL.length](zz));
+      const o = C.addNpc('mw_folk' + made, role, x, z, P, () => C.say([[role, lines[(o.k = ((o.k || 0) + 1)) % lines.length]]]), R2() * 6.3); o.wander = { x, z, r: z0 ? 6 : 5, w: R2() * 4, sp: g === 'k' ? 1.8 : 1.2 }; made++; }
+    /* Kleintiere: Hasen und Hühner hoppeln umher und flüchten, wenn man ihnen zu nahe kommt */
+    if (w.life && w.life.includes('fish')) return; const snow = !!w.snow, cr = [];
+    for (let i = 0; i < 8; i++) { const a = R2() * 6.283, rr = Math.sqrt(R2()) * (R - 8), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr; if (blk(x, z)) continue;
+      const hen = i % 3 === 2, c = hen ? 0xf0ece0 : snow ? 0xf4f4f8 : 0x9a7a5a, g = new T.Group(); g.add(mk(G.sph, M(c, { r: .9 }), 0, .2, 0, .2, .18, .26, false)); g.add(mk(G.sph, M(c, { r: .9 }), 0, .34, .2, .12, .12, .12, false));
+      if (hen) { g.add(mk(G.cone, M(0xe8a020), 0, .34, .33, .03, .06, .03, false)); g.add(mk(G.sph, M(0xd02a2a), 0, .45, .2, .03, .05, .07, false)); } else { g.add(mk(G.sph, M(c), -.05, .52, .17, .03, .12, .04, false)); g.add(mk(G.sph, M(c), .05, .52, .17, .03, .12, .04, false)); g.add(mk(G.sph, M(0xffffff), 0, .22, -.26, .07, .07, .07, false)); }
+      C.scene.add(g); cr.push({ g, x, z, hx: x, hz: z, tx: x, tz: z, w: R2() * 3, f: 0, hen }); }
+    C.animObjs.push({ fn(t, dt) { if (!cur || !dt) return; for (const q of cr) { const dp = Math.hypot(C.pl.x - q.x, C.pl.z - q.z); if (dp > 60) continue;
+      if (dp < 4) { const a = Math.atan2(q.x - C.pl.x, q.z - C.pl.z); q.tx = q.x + Math.sin(a) * 5; q.tz = q.z + Math.cos(a) * 5; q.w = 0; } else if (q.w > 0) { q.w -= dt; } else if (Math.hypot(q.tx - q.x, q.tz - q.z) < .2) { q.tx = q.hx + (Math.random() - .5) * 10; q.tz = q.hz + (Math.random() - .5) * 10; q.w = 1 + Math.random() * 3; }
+      const dx = q.tx - q.x, dz = q.tz - q.z, d = Math.hypot(dx, dz); let y = cur.h(q.x, q.z);
+      if (q.w <= 0 && d > .2) { const sp = (dp < 4 ? 4.5 : 1.4) * dt, nx = q.x + dx / d * Math.min(d, sp), nz = q.z + dz / d * Math.min(d, sp); if (blk(nx, nz)) { q.tx = q.x; q.tz = q.z; } else { q.x = nx; q.z = nz; } q.g.rotation.x = 0; q.g.rotation.y = Math.atan2(dx, dz); q.f += dt * (q.hen ? 10 : 7); y += q.hen ? 0 : Math.abs(Math.sin(q.f)) * .25; }
+      else if (q.hen) q.g.rotation.x = Math.max(0, Math.sin(t * 3 + q.hx)) * .5; q.g.position.set(q.x, y, q.z); } } });
   }
   function minimap(w) {
     const c = document.createElement('canvas'); c.width = 260; c.height = 310; const x = c.getContext('2d');
