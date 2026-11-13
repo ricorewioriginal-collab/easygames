@@ -201,7 +201,7 @@
     const fx = Math.sin(car.h), fz = Math.cos(car.h);
     let nx = car.x + fx * car.v * dt, nz = car.z + fz * car.v * dt;
     const front = Math.sign(car.v || 1) * (car.len + 0.2);
-    const hit = C.solidAt(nx + fx * front, 0.8, nz + fz * front) || C.solidAt(nx + fx * front + Math.cos(car.h) * car.wid, 0.8, nz + fz * front - Math.sin(car.h) * car.wid) || C.solidAt(nx + fx * front - Math.cos(car.h) * car.wid, 0.8, nz + fz * front + Math.sin(car.h) * car.wid) || Math.abs(nx) > 88 || Math.abs(nz) > 88;
+    const hit = C.solidAt(nx + fx * front, 0.8, nz + fz * front) || C.solidAt(nx + fx * front + Math.cos(car.h) * car.wid, 0.8, nz + fz * front - Math.sin(car.h) * car.wid) || C.solidAt(nx + fx * front - Math.cos(car.h) * car.wid, 0.8, nz + fz * front + Math.sin(car.h) * car.wid) || (C.S.areas && AMC.Worlds ? !AMC.Worlds.inside(nx, nz, 1.5) : Math.abs(nx) > 88 || Math.abs(nz) > 88);
     const tHit = S.traffic.find(t => Math.hypot(t.g.position.x - nx, t.g.position.z - nz) < 3.2);
     if (hit || tHit) { crash(car, Math.abs(car.v)); car.v *= -0.3; nx = car.x; nz = car.z; if (tHit) tHit.stop = 2; }
     car.x = nx; car.z = nz;

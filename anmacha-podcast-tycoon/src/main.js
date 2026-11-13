@@ -185,6 +185,8 @@
       if (id.startsWith('sender:')) { const sl = id.slice(7); UI.closeAll(); stopAll(); G.mode = 'home'; UI.showTouch(true); AMC.Audio.music('menu'); AMC.Home.station(sl, G.host, back); return; }
       if (id.startsWith('bus:')) return AMC.Transit.menu(id);
       if (id.startsWith('place:')) return AMC.District.open(id.slice(6));
+      if (id.startsWith('world:')) return AMC.Worlds.open(id.slice(6));
+      if (id.startsWith('ferry:')) return AMC.Worlds.ferry(id);
       if (id === 'camper') { UI.closeAll(); stopAll(); G.mode = 'home'; UI.showTouch(true); AMC.Audio.music('menu'); AMC.Home.camper(G.host, back); return; }
       if (id.startsWith('home:')) { const h = id.slice(5); UI.closeAll(); stopAll(); G.mode = 'home'; UI.showTouch(true); AMC.Audio.music('menu'); AMC.Home.open(h, back); return; }
       ({ live: startLive, edit: studioEdit, story: storyMenu, quiz: quizMenu, radio: () => UI.radio(), shop: () => shop(), koop: () => AMC.Net.lobby(), music: () => AMC.Home.musicShop(), arcade: arcadeMenu, menu: mainMenu })[id]();

@@ -12,7 +12,7 @@
     '-67.5,67.5': '🏘️ Altstadt', '-22.5,67.5': '🛍️ Einkaufsstraße', '22.5,67.5': '🏠 Südstadt', '67.5,67.5': '🎪 Festivalwiese' };
   const BL = [-67.5, -22.5, 22.5, 67.5];
   const blockOf = (x, z) => { const near = v => BL.reduce((a, b) => Math.abs(b - v) < Math.abs(a - v) ? b : a); return near(x) + ',' + near(z); };
-  DI.name = (x, z) => NAMES[blockOf(x, z)] || '🏙️ Medienstadt';
+  DI.name = (x, z) => (AMC.Worlds && AMC.Worlds.name(x, z)) || NAMES[blockOf(x, z)] || '🏙️ Medienstadt';
 
   // Orte: wo (Block), wie sie aussehen, was man tun kann
   const PLACES = [
@@ -81,7 +81,7 @@
     if (n !== V.cur) {
       V.cur = n; const t = U.$('hTitle'); if (t) t.textContent = n;
       const seen = Save.data.districts = Save.data.districts || {};
-      if (!seen[n]) { seen[n] = 1; Save.earn(10); Save.save(); C.msg('📍 Neues Viertel entdeckt: ' + n + ' · +10 🎟️ (' + Object.keys(seen).length + '/16)', 2.6); }
+      if (!seen[n]) { seen[n] = 1; Save.earn(10); Save.save(); C.msg('📍 Neues Viertel entdeckt: ' + n + ' · +10 🎟️ (' + Object.keys(seen).length + '/' + (16 + (AMC.Worlds ? AMC.Worlds.WORLDS.length + 1 : 0)) + ')', 2.6); }
     }
   };
 
