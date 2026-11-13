@@ -126,7 +126,7 @@
     fig.hostId = id;
     return fig;
   }
-  W.makeFan = async function (seed) {
+  W.makeFan = async function (seed, over) {
     if (!W.kit) return null;
     const r = U.seeded(seed * 977 + 13), pick = a => a[Math.floor(r() * a.length)];
     const w = r() < 0.5;
@@ -137,6 +137,7 @@
       bottom: pick(['#2c3554', '#3a4f78', '#1d1d24', '#6b5a45', '#7d2b3a']), bottomStyle: pick(['pants', 'pants', 'shorts']), shoes: pick(['#f4f4f8', '#1b1b1b', '#c0392b']),
       beard: !w && r() < 0.35 ? pick(['#2a1a10', '#6b4528']) : undefined, hat: r() < 0.2 ? { type: 'cap', color: pick(['#ff8a1e', '#1d1d24', '#2f6bff']) } : undefined
     };
+    if (over) { if (over.top) look.top = over.top; if (over.hat) look.hat = over.hat; }
     look.build = w ? 0.9 : 0.95 + r() * 0.12; look.belly = w ? 0 : r() * 0.8; look.eyes = pick(['#4b6b8a', '#5a3a22', '#3d5a3a', '#6a4a2a']);
     const f = await AMC.People.make(W.kit, look); f.root.traverse(o => { if (o.isMesh) o.castShadow = W.quality > 1; }); return f;
   };
