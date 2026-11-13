@@ -4,6 +4,7 @@
 //   tiers: [[x, z, r, y, fx, fz]]  Plateau (Oberkante y absolut) mit Rampe hinunter zum Fußpunkt (fx, fz)
 //   cuts:  [[x0, z0, x1, z1, breite, tiefe]]  Schlucht (Absturz = zurück an den Rand)
 //   bridges: [[x0, z0, x1, z1, y]]  Brücke (begehbar über PLAT), y = Oberkante
+//   lanes: [[x0, z0, x1, z1, hw?]]  zusätzliche Gasse
 //   piers: [[x0, z0, x1, z1, y]]  Steg vom Ufer (x0, z0) übers Wasser, endet offen bei (x1, z1)
 //   wall: DECOR-Arten der Waldwand, wz: Wizp-Bäume der vordersten Reihe [[name, höhe]], rock: Wizp-Felsen an Klippen
 //   props: { zonenId: [[datei, name, größe (>0 Höhe, <0 Maßstab), anzahl]] }
@@ -22,6 +23,7 @@ export function arealMask(w, roads, PATHX, CX, CZ, R) {
   if (A.openRects) for (const [x0, x1, z0, z1] of (w.rects || [])) { const zc = (z0 + z1) / 2, hw = (z1 - z0) / 2; S0.push([x0, zc, x1, zc, hw]); }   // Platz entlang eines Bauwerks (z. B. Mauer)
   if (w.river) { const P = w.river.pts; for (let i = 0; i < P.length - 1; i++) S0.push([P[i][0], P[i][1], P[i + 1][0], P[i + 1][1], w.river.w * .5 + 3]); }
   for (const q of (A.cuts || [])) S0.push([q[0], q[1], q[2], q[3], q[4] * .5]);
+  for (const q of (A.lanes || [])) S0.push([q[0], q[1], q[2], q[3], q[4] || 2.6]);   // feste Gassen (z. B. Teich ans Wegenetz)
   const C1 = [], S1 = [];   // Plateaus und Rampen: offen, aber keine Ziele für Gassen (sonst endet eine Gasse an der Klippe)
   const near = (x, z, C, S) => { let e = 1e9; for (const [cx, cz, r] of C) e = Math.min(e, Math.hypot(x - cx, z - cz) - r); for (const s of S) e = Math.min(e, segD(x, z, s[0], s[1], s[2], s[3])[0] - s[4]); return e; };
   const base0 = (x, z) => near(x, z, C0, S0), base = (x, z) => Math.min(base0(x, z), near(x, z, C1, S1));
@@ -29,6 +31,7 @@ export function arealMask(w, roads, PATHX, CX, CZ, R) {
   const link = (x, z) => { let bx = x, bz = z, bd = 1e9;
     for (let a = 0; a < 32; a++) for (let d = 2; d < 60; d += 2) { const px = x + Math.cos(a * .196) * d, pz = z + Math.sin(a * .196) * d; if (base0(px, pz) < -1.5) { if (d < bd) { bd = d; bx = px; bz = pz; } break; } }
     if (bd < 1e9) S0.push([x, z, bx, bz, 2.6]); };
+  if (A.maze) { const [mx, mz, n, c] = A.maze, hs = n * c / 2; link(mx - hs - 1.5, mz); C0.push([mx - hs - 1.5, mz, 2.6]); for (let k = 0; k < n; k++) { const zk = mz - hs + (k + .5) * c; S0.push([mx - hs + c * .5, zk, mx + hs - c * .5, zk, c * .72]); } }   // Irrgarten: quadratische Fläche, Eingang West mit Gasse
   // Plateaus: Rampenfuß mit Gasse ans Wegenetz, dann Plateau und Rampe selbst offen
   for (const q of (A.tiers || [])) { if (base(q[4], q[5]) > -2) link(q[4], q[5]); C0.push([q[4], q[5], 3]); }
   for (const q of (A.tiers || [])) { C1.push([q[0], q[1], q[2] + .2]); S1.push([q[0], q[1], q[4], q[5], 2.6]); }
@@ -70,7 +73,7 @@ export function arealDress({ C, w, b, g, h, M, R2, blk, busy, roadD, wallList, T
   const step = TOUCH ? 3.6 : 3, maxWz = TOUCH ? 90 : 220; let nwz = 0;
   for (let j = 0; j < M.N; j += step / M.ST) for (let i = 0; i < M.N; i += step / M.ST) {
     const x = M.X0 + i * M.ST + (R2() - .5) * step * .8, z = M.Z0 + j * M.ST + (R2() - .5) * step * .8, e = M.E(x, z);
-    if (A.city || e < 1.4 || e > 12 || Math.hypot(x, z - 12) < 16) continue; if ((A.bridges || []).some(q => segD(x, z, q[0], q[1], q[2], q[3])[0] < 4)) continue;
+    if (A.city || e < (A.hedge ? 3.4 : 1.4) || e > 12 || Math.hypot(x, z - 12) < 16) continue; if ((A.bridges || []).some(q => segD(x, z, q[0], q[1], q[2], q[3])[0] < 4)) continue;
     if (e < 4.6 && A.wz && nwz < maxWz && R2() < .75) { const [k, hh] = A.wz[R2() * A.wz.length | 0]; wz.push({ k, x, y: h(x, z) - .1, z, ry: R2() * 6.28, h: hh * (.8 + R2() * .4) }); nwz++; continue; }
     const kind = A.wall[R2() * A.wall.length | 0]; wallList.push([x, z, kind, 1 + R2() * .7, R2() * 6.3, 1]); }
   // Stadt: statt Waldwand geschlossene Häuserzeilen, Giebel zur Gasse, dahinter Dächer als Silhouette
@@ -86,6 +89,27 @@ export function arealDress({ C, w, b, g, h, M, R2, blk, busy, roadD, wallList, T
       for (const wy of [H * .38, H * .72]) for (const wx of [-W * .28, W * .28]) if ((k + wx + wy | 0) % 3) hg.add(mk(G.box, win, wx, wy, D / 2 + .04, .8, .9, .05, false));
       hg.add(mk(G.box, MAT(0x3a2a1e), 0, .9, D / 2 + .04, 1.2, 1.8, .05, false)); }
   }
+  // Hecken: geschnittene Heckenwand an jeder Gasse (Instanzen), Irrgarten mit festen Heckenwänden
+  if (A.hedge) { const T = C.T, acc = [], hm = C.TX.tri('grass', A.hedge, { s: .6, gain: 2 });
+    for (let j = 0; j < M.N; j += 1.4) for (let i = 0; i < M.N; i += 1.4) { const x = M.X0 + i * M.ST, z = M.Z0 + j * M.ST, e = M.E(x, z);
+      if (e < 1.5 || e > 3 || Math.hypot(x, z - 12) < 16 || acc.some(q => Math.abs(q[0] - x) < 2.2 && Math.abs(q[1] - z) < 2.2 && Math.hypot(q[0] - x, q[1] - z) < 2.2)) continue;
+      if ((A.bridges || []).some(q => segD(x, z, q[0], q[1], q[2], q[3])[0] < 4)) continue; acc.push([x, z]); }
+    const im = new T.InstancedMesh(G.box, hm, acc.length), o = new T.Object3D();
+    acc.forEach(([x, z], k) => { const gx = M.E(x + 1, z) - M.E(x - 1, z), gz = M.E(x, z + 1) - M.E(x, z - 1), H = 2.4 + (k * 7 % 5) * .12;
+      o.position.set(x, h(x, z) - .3 + H / 2, z); o.rotation.set(0, Math.atan2(-gx, -gz), 0); o.scale.set(3.4, H, 2.6); o.updateMatrix(); im.setMatrixAt(k, o.matrix); });
+    im.receiveShadow = true; g.add(im); }
+  if (A.maze) { const [mx, mz, n, c] = A.maze, hs = n * c / 2, x0 = mx - hs, z0 = mz - hs, hd = A.hedge || 0x2a6a2a, seen = new Uint8Array(n * n), H = [], V = [];
+    let sd = 7; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
+    for (let j = 0; j <= n; j++) for (let i = 0; i < n; i++) H.push(1); for (let j = 0; j < n; j++) for (let i = 0; i <= n; i++) V.push(1);   // H[j*n+i]: Wand nördlich Zelle (i,j); V[j*(n+1)+i]: Wand westlich
+    const st = [[0, n >> 1]]; seen[(n >> 1) * n] = 1;
+    while (st.length) { const [i, j] = st[st.length - 1], nb = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([a, b2]) => [i + a, j + b2, a, b2]).filter(([a, b2]) => a >= 0 && b2 >= 0 && a < n && b2 < n && !seen[b2 * n + a]);
+      if (!nb.length) { st.pop(); continue; } const [a, b2, da, db] = nb[rnd() * nb.length | 0]; seen[b2 * n + a] = 1; st.push([a, b2]);
+      if (da) V[j * (n + 1) + Math.max(i, a)] = 0; else H[Math.max(j, b2) * n + i] = 0; }
+    V[(n >> 1) * (n + 1)] = 0;   // Eingang West
+    const wall = (x, z, lx, lz) => b.box(x, h(x, z) - .3, z, lx, 2.9, lz, hd, { solid: 1, tex: 'grass', to: { s: .6 } });
+    for (let j = 0; j <= n; j++) for (let i = 0; i < n; i++) if (H[j * n + i]) wall(x0 + (i + .5) * c, z0 + j * c, c + 1, 1);
+    for (let j = 0; j < n; j++) for (let i = 0; i <= n; i++) if (V[j * (n + 1) + i]) wall(x0 + i * c, z0 + (j + .5) * c, 1, c + 1);
+    for (const [x, z] of [[x0 - .9, mz - c * .5 - .2], [x0 - .9, mz + c * .5 + .2]]) lampAt(b, x, z, h(x, z)); }
   // Plateaus: Felsen an der Kante, Treppe auf der Rampe, Laternen oben und unten
   const stone = C.TX.tri('stone', A.step || 0x8a847a, { s: .6, gain: 1.5 });
   for (const [cx, cz, r, y, fx, fz] of (A.tiers || [])) { const ra = Math.atan2(fx - cx, fz - cz), L = Math.hypot(fx - cx, fz - cz);
