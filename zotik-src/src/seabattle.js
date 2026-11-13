@@ -104,7 +104,7 @@ export function createSeaBattle(C) {
     const z0 = { id: 'zotik', n: 'Zotik', col: 0x8ad0ff, ip: 20, mag: 1, melee: 1, get hp() { return S.hp; }, set hp(v) { S.hp = v; }, get max() { return C.maxHp(); }, atk: () => C.atkV() };
     if (!sea) { z0.act = mkAct(lead ? lead.P.root : C.fox.root, 0); z0.act.fox = !lead; z0.act.P = lead ? lead.P : null; z0.act.kk = lead && lead.P.kk || null; }
     B.party.push(z0);
-    C.CMP().filter(a => !a.ko && !a.guest && a.id !== S.lead).slice(0, 3).forEach((a, i) => { const p = C.PARTY[a.id], m = { id: a.id, n: p.n, col: p.col, ip: 20, a, melee: !!p.melee, get hp() { return a.hp; }, set hp(v) { a.hp = v; }, get max() { return C.cmax(a.id); }, atk: () => (p.atk * 1.5 + S.lvl * 1.2) * 1.4 };
+    C.CMP().filter(a => !a.ko && !a.guest && a.id !== S.lead).slice(0, 3).forEach((a, i) => { const p = C.PARTY[a.id], m = { id: a.id, n: p.n, col: p.col, ip: 20, a, melee: !!p.melee, get hp() { return a.hp; }, set hp(v) { a.hp = v; }, get max() { return C.cmax(a.id); }, atk: () => C.cAtk(a.id) * 1.4, crit: () => C.cg(a.id, 'crit'), def: () => C.cg(a.id, 'def') };
       if (!sea) { m.act = mkAct(a.P.root, i + 1); m.act.P = a.P; m.act.kk = a.P.kk || null; } B.party.push(m); });
     C.setOn(true); C.$('hud').hidden = true; H.hidden = false; q('.rb-r').classList.remove('on'); flashScr(); sfx('roar'); music(rare); hud();
     banner(rare ? '⚠️ ' + B.foes[0].d.n : sea ? '🌊 Seekampf' : '⚔️ Kampf', rare ? 'Eine gewaltige Bestie!' : B.foes.map(f => f.d.n).join(' · '));
@@ -161,7 +161,7 @@ export function createSeaBattle(C) {
   async function doCmd(m, c) {
     const S = C.S(), a = partyA(m), FX = C.FXH(), MF = C.MFX();
     if (c.k === 'atk') { const f = c.f && !c.f.dead ? c.f : live()[0]; if (!f) return; B.curF = f; hud(); shotOver(a, f); await wait(380);
-      const crit = Math.random() < .12, dmg = m.atk() * (crit ? 1.7 : 1);
+      const crit = Math.random() < .12 + (m.crit ? m.crit() : 0), dmg = m.atk() * (crit ? 1.7 : 1);
       if (B.sea) { lunge(a, f.base.x, f.base.z, 2.2, .55); sfx('slash'); await wait(220); MF.bolt(a.base.x, a.base.y + 1.2, a.base.z, f.base.x, f.base.y + f.h * .5, f.base.z, m.col || 0x8ad0ff, .25); await wait(160); }
       else if (m.melee) { lunge(a, f.base.x, f.base.z, 99, .85, 1); a.atk = 0; sfx('dodge'); await wait(300); sfx(crit ? 'crit' : 'slash'); if (a.kk) C.KK.once(a.kk, 'Throw'); }
       else { if (a.kk) C.KK.once(a.kk, 'Throw'); lunge(a, f.base.x, f.base.z, .7, .4); await wait(200); MF.flare(a.base.x, a.base.y + 1.3, a.base.z, m.col || 0xffffff, 1.4, .3); MF.bolt(a.base.x, a.base.y + 1.3, a.base.z, f.base.x, f.base.y + f.h * .5, f.base.z, m.col || 0xffffff, .22); await wait(180); }
@@ -212,7 +212,7 @@ export function createSeaBattle(C) {
     await wait(560); B && (B.curF = null);
   }
   function hurt(m, raw) {
-    if (!B || m.hp <= 0) return; const g = B.guard[m.id], a = partyA(m), d = Math.round(raw * (g ? .45 : 1) * rnd(.85, 1.15)); m.hp = Math.max(0, m.hp - d); m.ip = Math.min(100, m.ip + 12);
+    if (!B || m.hp <= 0) return; const g = B.guard[m.id], a = partyA(m), d = Math.round(raw * (g ? .45 : 1) * (1 - (m.def ? m.def() : 0)) * rnd(.85, 1.15)); m.hp = Math.max(0, m.hp - d); m.ip = Math.min(100, m.ip + 12);
     sfx('hurt'); dnum(a.base.x, a.base.y + 2.1, a.base.z, (B.sea ? m.n + ' ' : '') + '−' + d, 'p'); C.FXH().impact(a.base.x, a.base.y + 1, a.base.z, 0xff6a5a, false); B.shk = Math.max(B.shk, .28);
     if (g) C.MFX().ring(a.base.x, a.base.y + .8, a.base.z, 0x8ad0ff, 1.4, .4, 0); if (a.kk) C.KK.once(a.kk, 'Hit_A'); if (!a.ship) lunge(a, a.base.x - B.fx * 3, a.base.z - B.fz * 3, .5, .3);
     if (m.hp <= 0) { toast('💫 ' + m.n + ' ist K.O.'); if (m.a) { m.a.ko = true; m.a.kot = 0; } if (a.kk) C.KK.ko(a.kk, true); a.down = 1; }
@@ -223,9 +223,9 @@ export function createSeaBattle(C) {
   async function win() {
     if (!B || B.over) return; B.over = 1; B.cur = B.curF = null; stopMusic(); fanfare(); const S = C.S();
     const xp = B.foes.reduce((s, f) => s + Math.round((6 + 4 * f.lv) * (f.boss ? 4 : 1.3)), 0), sh = B.foes.reduce((s, f) => s + Math.round(2 + f.lv * .5) * (f.boss ? 4 : 1), 0); S.shards += sh;
-    const potion = Math.random() < .25 ? (S.potions = (S.potions || 0) + 1, 1) : 0;
+    const potion = Math.random() < .25 ? (S.potions = (S.potions || 0) + 1, 1) : 0, gear = Math.random() < (B.boss ? 1 : .15) ? C.cgDrop(reg(B.k) + (B.boss ? 2 : 0)) : '';
     for (const m of up()) { const a = partyA(m); if (a) { a.hop = 1.8; if (a.kk) C.KK.once(a.kk, 'Interact'); } }
-    B.vic = 1; hud(); const r = q('.rb-r'); r.innerHTML = `<h2>SIEG</h2><div>+${xp} EP · +${sh} 💎${potion ? ' · 🧪 Trank' : ''}</div>`; r.classList.add('on');
+    B.vic = 1; hud(); const r = q('.rb-r'); r.innerHTML = `<h2>SIEG</h2><div>+${xp} EP · +${sh} 💎${potion ? ' · 🧪 Trank' : ''}${gear ? '<br>🎁 ' + gear + ' (Gefährten)' : ''}</div>`; r.classList.add('on');
     await wait(2600); const fin = B && B.ref; end(); C.gainXp(xp); if (fin) fin.gone = 1;
   }
   async function flee() {

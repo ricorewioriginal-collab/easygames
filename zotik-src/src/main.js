@@ -74,6 +74,18 @@ const zoneAt=(x,z)=>z>300?'ruin':WLD?WLD.zone(x,z):z<-146?'cave':(z<-44?'forest'
 /* Kreis-Kollider */
 const COL=[];
 function addCol(x,z,r){COL.push({x,z,r})}
+/* Kisten, Fässer und Kistenstapel (KayKit) lassen sich überall zerschlagen: Splitter, manchmal Trank, Äther oder Gefährten-Ausrüstung */
+const BRK=[],BRKRE=/barrel|box_|crate/i;
+function brkAdd(L){for(const q of L){if(!BRKRE.test(q.k))continue;let c=COL.find(o=>Math.abs(o.x-q.x)<.01&&Math.abs(o.z-q.z)<.01);if(!c){c={x:q.x,z:q.z,r:.6};COL.push(c)}BRK.push({q,c,hp:1})}}
+function placeBrk(par,L,f){KK.place(par,L,f);brkAdd(L)}
+function brkSmash(px,pz,ax,az){let hit=false;for(const b of BRK){if(!b.hp)continue;const dx=b.q.x-px,dz=b.q.z-pz,d=Math.hypot(dx,dz);if(d>2.5||(d>.6&&(dx*ax+dz*az)/d<.2))continue;b.hp=0;hit=true;KK.hideQ(b.q);const i=COL.indexOf(b.c);if(i>=0)COL.splice(i,1);
+  const x=b.q.x,z=b.q.z,y=(b.q.y||hgt(x,z));emit(x,y+.6,z,0xb08050,18,4.5,.8,.3,9,3);FXH.impact(x,y+.7,z,0xffe0a0,false);sfx('chest');camShake=Math.max(camShake,.12);XT.count&&XT.count('box');
+  const r=Math.random(),n=chNow()||1;if(r<.12){S.potions++;dnum(x,y+1.4,z,'🧪 +1','h')}else if(r<.18){cgGive(cgDrop(n<12?n:6))}else if(r<.22){S.items=S.items||{};S.items.ether=(S.items.ether||0)+1;dnum(x,y+1.4,z,'🔷 +1','x')}else{const sh=2+(Math.random()*5|0)+Math.min(10,n);S.shards+=sh;dnum(x,y+1.4,z,'💎 +'+sh,'x')}}return hit}
+/* in jeder Welt ein paar Kistenstapel und Fässer am Weg (auch Lunaris und Märchenwelten) */
+function brkScatter(n){const R=mul32(n*3301+7),K=['barrel_large','box_large','box_stacked','crates_stacked','barrel_small_stack'],L=[];
+  const disc=n>=MW_FIRST||!WLD;for(let t=0,c=0;c<14&&t<600;t++){let x,z;if(disc){const a=R()*6.283,r=8+R()*(n===1?40:75);x=Math.sin(a)*r;z=Math.cos(a)*r-10}else{z=6-R()*150;x=(WLD.path?WLD.path(z):0)+(R()<.5?-1:1)*(4+R()*16)}if(blocked(x,z)||(WLD&&WLD.reach&&!WLD.reach(x,z))||!colFree(x,z,1.6)||Math.hypot(x,z-9)<5)continue;
+    const k=K[R()*K.length|0],y=hgt(x,z);L.push({k,x,y,z,ry:R()*6.28});if(R()<.5){const a=R()*6.28;L.push({k:K[R()*2|0],x:x+Math.cos(a)*1.3,y,z:z+Math.sin(a)*1.3,ry:R()*6.28})}c++}
+  placeBrk(scene,L)}
 const colFree=(x,z,r)=>!COL.some(c=>Math.hypot(c.x-x,c.z-z)<c.r+r)&&!HOUSES.some(H=>Math.hypot(H.x-x,H.z-z)<H.R+r);   /* kein Baum, Fels oder Haus im Weg */
 const CAMCOL=[],HOUSES=[];let inH=null;
 /* Springen und Plattformen: PLAT = schwebende Platten {x,z,hx,hz,top,th}; man landet von oben darauf, von der Seite sind sie eine Wand, hohe Platten unterläuft man */
@@ -293,7 +305,7 @@ const WARM=0xffc46a;
 const chests=[],herbs=[];
 const houseL=new T.PointLight(0xffb060,0,15,1.6);scene.add(houseL);
 /* Städte: Einrichtung, Personen und Läden der Gebäude (town.js); alles Spätere wird erst beim Aufruf nachgeschlagen */
-const TOWN=createTown({folk:(n,o)=>folkNpc(n,o),T,mk,G,M,glow,scene,S:()=>S,INT:()=>INT,CMP:()=>CMP,GEAR:()=>GEAR,XT:()=>XT,time:()=>time,tier:()=>Math.min(10,Math.max(1,curCh===11?10:curCh)),anim:fn=>animObjs.push({fn}),say:(...a)=>say(...a),toast:(...a)=>toast(...a),sfx:(...a)=>sfx(...a),emit:(...a)=>emit(...a),addNpc:(...a)=>addNpc(...a),makeVillager:o=>makeVillager(o),openShop:(n,k)=>openShop(n,k),maxHp:()=>maxHp(),maxMp:()=>maxMp(),cmax:id=>cmax(id),cmpRevive:(a,f)=>cmpRevive(a,f),saveGame:q=>saveGame(q),giveGear:id=>giveGear(id),statLine:d=>statLine(d),Q:()=>NQ});
+const TOWN=createTown({folk:(n,o)=>folkNpc(n,o),T,mk,G,M,glow,scene,S:()=>S,INT:()=>INT,CMP:()=>CMP,GEAR:()=>GEAR,XT:()=>XT,time:()=>time,tier:()=>Math.min(10,Math.max(1,curCh===11?10:curCh)),anim:fn=>animObjs.push({fn}),say:(...a)=>say(...a),toast:(...a)=>toast(...a),sfx:(...a)=>sfx(...a),emit:(...a)=>emit(...a),addNpc:(...a)=>addNpc(...a),makeVillager:o=>makeVillager(o),openShop:(n,k)=>openShop(n,k),maxHp:()=>maxHp(),maxMp:()=>maxMp(),cmax:id=>cmax(id),cAtk:id=>cAtk(id),cg:(id,k)=>cg(id,k),cgDrop:n=>{const k=cgDrop(n);cgGive(k,true);return CG[k].s==='w'?CG[k].t+'-Waffe':CG[k].n},cmpRevive:(a,f)=>cmpRevive(a,f),saveGame:q=>saveGame(q),giveGear:id=>giveGear(id),statLine:d=>statLine(d),Q:()=>NQ});
 /* Nebenquest-Ketten der Städte (quests.js) */
 const nqEmo={};
 function nqMarker(x,z,em){const g=new T.Group(),y=hgt(x,z);g.position.set(x,y,z);let tx=nqEmo[em];if(!tx){const cv=document.createElement('canvas');cv.width=cv.height=96;const c=cv.getContext('2d');c.font='70px serif';c.textAlign='center';c.textBaseline='middle';c.fillText(em,48,54);tx=nqEmo[em]=new T.CanvasTexture(cv)}
@@ -847,7 +859,7 @@ function openShop(nm,kind){menuOpen=true;for(const k in keys)keys[k]=false;$('me
 function buy(n,c){if(S.shards<c){toast('Nicht genug Splitter');return}S.shards-=c;S.potions+=n;sfx('pick');toast('🧪 +'+n+' Heiltrank');renderMenu('shop');saveGame(true)}
 
 /* ================= XP ================= */
-function gainXp(n){if((S.fl.bless||0)>(S.t||0))n=Math.round(n*1.25);S.xp+=n;dnum(pl.x,pl.y+2.4,pl.z,'+'+n+' EP','x');let up=0;while(S.xp>=xpNeed()&&S.lvl<XT.LVCAP){S.xp-=xpNeed();S.lvl++;up++}
+function gainXp(n){if((S.fl.bless||0)>(S.t||0))n=Math.round(n*1.25);S.xp+=n;cGain(n);dnum(pl.x,pl.y+2.4,pl.z,'+'+n+' EP','x');let up=0;while(S.xp>=xpNeed()&&S.lvl<XT.LVCAP){S.xp-=xpNeed();S.lvl++;up++}
   if(up){S.hp=maxHp();S.mp=maxMp();sfx('level');FXH.pillar(pl.x,pl.y,pl.z,0xffd45a,1.2,7,1.6,pl);banner('Stufe '+S.lvl,'Neue Kraft erwacht');emit(pl.x,pl.y+1,pl.z,0xffe08a,60,6,1.4,.9,-2,3);fxRing(pl.x,pl.z,0xffd45a,6,.9)}}
 
 /* ================= Spieler & Welt-Akteure ================= */
@@ -1156,7 +1168,7 @@ function startAttack(){if(pl.dead||dlg.on||pl.dash>0||naut.on)return;if(pl.air&&
   sfx(pl.combo>=2?'heavy':'slash')}
 const ATD=[.34,.34,.5,.62];
 function doHit(){let any=false;const mult=[1,1,1.55,2.2][pl.combo]*(1+Math.min(.2,CB.n*.01)),ax=Math.sin(pl.face),az=Math.cos(pl.face);const LR=leadRanged();if(LR){const crit=Math.random()<.14+gsum('crit'),el=CEL[S.lead],dmg=atkV()*mult*.85*cwMul(S.lead)*(crit?1.8:1),c=el?elCol(el):LR.col;proj(pl.x+ax*.6,pl.y+1.2,pl.z+az*.6,ax*24,az*24,dmg,false,c,1.1,el);if(pl.combo>=2)for(const o of [-.25,.25])proj(pl.x+ax*.6,pl.y+1.2,pl.z+az*.6,Math.sin(pl.face+o)*22,Math.cos(pl.face+o)*22,dmg*.6,false,c,1,el);S.mp=Math.min(maxMp(),S.mp+2);return}
-  if(WPX().W)WPX().smash(pl.x,pl.z,ax,az);
+  if(WPX().W)WPX().smash(pl.x,pl.z,ax,az);brkSmash(pl.x,pl.z,ax,az);
   for(const e of E){if(e.dead)continue;const dx=e.x-pl.x,dz=e.z-pl.z,d=Math.hypot(dx,dz);if(d>(pl.combo===3?4.6:2.9)+e.rad)continue;if(pl.combo!==3&&d>.8&&(dx*ax+dz*az)/d<.35)continue;
     const crit=Math.random()<.14+gsum('crit')+.02*skR('prec');const dmg=atkV()*mult*(.9+Math.random()*.2)*(crit?1.8:1);hurtE(e,dmg,dx/d,dz/d,crit);extOnHit(e,dmg);any=true}
   slashG.position.set(pl.x,pl.y+.9,pl.z);slashG.rotation.y=pl.face+(pl.combo===1?0:0);slashM.scale.setScalar(1);slashM.material.opacity=.85;slashM.rotation.z=pl.combo===1?3.1416:0;pl.slashT=.18;
@@ -1184,9 +1196,20 @@ function artSlamLand(){pl.slam=false;sfx('crit');camShake=Math.max(camShake,.45)
 function artHTML(){let h='<h3>🌌 Riss-Künste</h3><p style="color:var(--dim);font-size:13px">Jede Welt, deren Riss du schließt, schenkt dir eine neue Fähigkeit.</p>';for(const a of ARTS){const on=chDone(a.ch);h+=`<div class="row"><span>${on?a.em:'🔒'} ${a.n}${a.mp?' <small style="color:var(--dim)">· '+a.mp+' Mana</small>':''}<br><small style="color:var(--dim)">${on?a.d:'Schließe Kapitel '+a.ch+' ('+CHP[a.ch].name+') ab.'}</small></span><span>${on?(a.mp?'Zauber':'passiv'):''}</span></div>`}return h}
 function artAnnounce(){if(mode!=='play')return;for(const a of ARTS){if(chDone(a.ch)&&!S.fl['art_'+a.id]){S.fl['art_'+a.id]=1;sfx('level');banner('Neue Riss-Kunst',a.em+' '+a.n);say([['Zotik','Der geschlossene Riss hat etwas in mir geweckt: '+a.n+'!'],['Riss-Kunst',a.em+' '+a.n+' – '+a.d+(a.mp?' Du findest sie im Kommandomenü unter Magie.':'')]]);saveGame(true);return}}}
 const SWIM=()=>!!(WLD&&WLD.mw&&WLD.mw.under&&!naut.on);   /* Unterwasserwelt: Sprungtaste = Schwimmzug, langsames Sinken */
+/* Schwimmen und Tauchen in den Seen der Welten: hineinlaufen, an der Oberfläche schwimmen, Ausweichen = abtauchen, Springen = auftauchen (unten Luft beachten) */
+const LAKEW=(x,z)=>{if(naut.on)return null;const L=NZ().lakeAt(x,z);return L&&L.kind==='water'?L:null};
+function swimTick(dt){const L=LAKEW(pl.x,pl.z),off=()=>{if(pl.wat){pl.wat=0;pl.dv=0}return null};if(!L)return off();const bot=hgt(pl.x,pl.z),surf=L.wl-1.05;if(bot>surf-.35)return off();
+  if(pl.air&&(pl.vy>0||pl.y>surf+.05))return null;
+  if(!pl.wat){pl.wat=1;pl.dv=0;pl.wvy=pl.air?Math.min(0,pl.vy)*.4:0;pl.br=12;sfx('dodge');emit(pl.x,surf+1,pl.z,0xd8f8ff,24,4,.8,.4,-6);MFX.ring(pl.x,surf+1.05,pl.z,0xd8f8ff,2.4,.6,0);if(!S.fl.swimTip){S.fl.swimTip=1;toast('🌊 Schwimmen: '+KH('dodge')+' abtauchen · '+KH('jump')+' auftauchen')}}
+  pl.wvy+=((pl.dv?.8:0)-pl.wvy*1.8)*dt;let y=pl.y+pl.wvy*dt;pl.vy=0;
+  if(y>=surf){y=surf;if(pl.dv){pl.dv=0;emit(pl.x,surf+1,pl.z,0xd8f8ff,12,2.5,.6,.3,-6)}}
+  if(y<bot+.3){y=bot+.3;pl.wvy=Math.max(0,pl.wvy)}if(y<surf-.4)pl.dv=1;
+  if(pl.dv){pl.br-=dt;if(pl.br<4&&!pl.brT){pl.brT=1;toast('🫧 Die Luft wird knapp – auftauchen!')}if(pl.br<=0){pl.br=1;hurtP(Math.round(maxHp()*.06))}if((pl.bub=(pl.bub||0)+dt)>.22){pl.bub=0;emit(pl.x,y+1.1,pl.z,0xd8f8ff,1,.4,1.2,.22,-3)}}else{pl.br=Math.min(12,(pl.br||12)+dt*3);pl.brT=0}
+  if(pl.mv>.1&&!pl.dv&&(pl.rip=(pl.rip||0)+dt)>.4){pl.rip=0;MFX.ring(pl.x,surf+1.08,pl.z,0xd8f8ff,1.3,.7,0)}
+  return y}
 function swimStroke(){if(pl.swc>0||pl.y>hgt(pl.x,pl.z)+15)return;pl.swc=.24;pl.air=true;pl.vy=Math.max(pl.vy||0,JUMPV*.55);sfx('ui');emit(pl.x,pl.y+.4,pl.z,0xd8f8ff,10,1.6,.9,.3,-3)}
-function jump(){if(naut.on||pl.dead||dlg.on||menuOpen||mode!=='play')return;if(SWIM()&&pl.air)return swimStroke();const lp=skR('leap');if(pl.air){if(lp<3||pl.dj)return;pl.dj=true;pl.vy=JUMPV*.85;sfx('ui');emit(pl.x,pl.y+.1,pl.z,0xb0ffd8,12,3,.4,.5,0);return}pl.dj=false;pl.air=true;pl.vy=JUMPV*Math.sqrt(1+.05*lp)*(X.form&&X.form.on>0?1.12:1);pl.jfw=REMOTE?.75:0;sfx('jump');emit(pl.x,pl.y+.1,pl.z,0xcfe0ff,10,3,.4,.5,0)}
-function dodge(){if(naut.on||pl.dead||dlg.on||pl.cd.dg>0||pl.dash>0)return;const [ix,iy]=inputVec();let dx=Math.sin(pl.face),dz=Math.cos(pl.face);if(ix||iy){const w=worldDir(ix,iy);dx=w[0];dz=w[1]}
+function jump(){if(naut.on||pl.dead||dlg.on||menuOpen||mode!=='play')return;if(pl.wat&&pl.dv){pl.wvy=5.5;sfx('ui');return}if(SWIM()&&pl.air)return swimStroke();const lp=skR('leap');if(pl.air){if(lp<3||pl.dj)return;pl.dj=true;pl.vy=JUMPV*.85;sfx('ui');emit(pl.x,pl.y+.1,pl.z,0xb0ffd8,12,3,.4,.5,0);return}pl.dj=false;pl.air=true;pl.vy=JUMPV*Math.sqrt(1+.05*lp)*(X.form&&X.form.on>0?1.12:1);pl.jfw=REMOTE?.75:0;sfx('jump');emit(pl.x,pl.y+.1,pl.z,0xcfe0ff,10,3,.4,.5,0)}
+function dodge(){if(naut.on||pl.dead||dlg.on)return;if(pl.wat){pl.wvy=-5.5;pl.dv=1;sfx('dodge');emit(pl.x,pl.y+1,pl.z,0xd8f8ff,8,2,.5,.3,-4);return}if(pl.cd.dg>0||pl.dash>0)return;const [ix,iy]=inputVec();let dx=Math.sin(pl.face),dz=Math.cos(pl.face);if(ix||iy){const w=worldDir(ix,iy);dx=w[0];dz=w[1]}
   pl.dx=dx;pl.dz=dz;pl.dash=.34;pl.iframes=artOn('shade')?.56:.42;pl.shH=artOn('shade')?new Set():null;pl.cd.dg=.8;pl.atk=-1;pl.face=Math.atan2(dx,dz);sfx('dodge');emit(pl.x,pl.y+.3,pl.z,0xcfe8ff,8,2,.4,.5)}
 function skill1(){if(naut.on)return;if(S.lead&&CSK[S.lead])return cmpSkill(S.lead);if(pl.dead||dlg.on||pl.cd.s1>0)return;if(S.mp<formMp(18)){toast('Zu wenig Mana');return}S.mp-=formMp(18);pl.cd.s1=2.6;pl.spin=.55;pl.atk=-1;mpSend({t:'sk',k:1,x:r2(pl.x),z:r2(pl.z)});sfx('skill1');wrFire(pl.x,pl.z);wrEcho();fxRing(pl.x,pl.z,0xffa040,5,.5);MFX.swirl(pl.x,pl.y,pl.z,0xffa040,2.3,2.2,.6);MFX.circle(pl.x,pl.y,pl.z,0xff8a30,2.6,.7);emit(pl.x,pl.y+1,pl.z,0xffb050,40,8,.6,.7,0);camShake=.2;
   for(const e of E){if(e.dead)continue;const dx=e.x-pl.x,dz=e.z-pl.z,d=Math.hypot(dx,dz);if(d<4.8+e.rad){hurtE(e,atkV()*1.7*magV()*(.9+Math.random()*.2),dx/(d||1),dz/(d||1),false,'fire');extOnHit(e,0)}}}
@@ -1200,7 +1223,7 @@ function interact(){if(!nearI||dlg.on||pl.dead)return;const o=nearI;sfx('ui');
 
 /* ================= Menü ================= */
 function toggleMenu(on,tab){menuOpen=on;$('menu').hidden=!on;if(on){mState.shop=false;renderMenu(tab||'quest');sfx('ui');MN.zone='tabs';MN.on=document.documentElement.classList.contains('eg-pad')||REMOTE;MN.i=Math.max(0,mnItems().findIndex(b=>b.classList.contains('on')));mnMark()}else{saveGame(true);X.course=0}if(!on)for(const k in keys)keys[k]=false}
-const TABS=[['quest','📜','Aufgaben'],['travel','🌍','Weltreise'],['inv','🎒','Inventar'],['equip','🛡️','Ausrüstung'],['felli','🌿','Felli'],['skills','✨','Fähigkeiten'],['help','🎮','Steuerung'],['coop','👥','Koop'],['chron','📖','Chronik'],['camp','⛺','Camp'],['events','🎉','Events'],['home','🏡','Zuhause']];
+const TABS=[['quest','📜','Aufgaben'],['travel','🌍','Weltreise'],['inv','🎒','Inventar'],['equip','🛡️','Ausrüstung'],['party','🧑‍🤝‍🧑','Gruppe'],['felli','🌿','Felli'],['skills','✨','Fähigkeiten'],['help','🎮','Steuerung'],['coop','👥','Koop'],['chron','📖','Chronik'],['camp','⛺','Camp'],['events','🎉','Events'],['home','🏡','Zuhause']];
 /* Menü wie an der Konsole (Controller, Tastatur, Fernbedienung): links die Reiter, rechts der Inhalt.
    ↑↓ Reiter wählen (Inhalt wechselt sofort) · → bzw. A in den Inhalt · im Inhalt Steuerkreuz wählt, A bestätigt/rüstet aus,
    ← am linken Rand oder B zurück zu den Reitern · B auf den Reitern schließt · LB/RB (Q/E) Reiter vor/zurück. Maus und Touch bleiben, wie sie sind. */
@@ -1253,12 +1276,12 @@ function renderMenu(tab){mState.tab=tab;const t=$('tabs'),c=$('mcont');menuChrom
     h+='<h3>Nebenaufgabe: Wolfsplage</h3><div class="row"><span>'+(S.side===0?'Sprich mit Boro im Dorf.':S.side===1?`Besiege 4 Dornenwölfe (${Math.min(S.sideK,4)}/4).`:S.side===2?'Kehre zu Boro zurück.':'✅ Erledigt')+'</span></div>'}
   if(tab==='quest')h+=NQ.html()+sqHTML();
   if(tab==='inv'){h+=`<h3>Zotik · Stufe ${S.lvl}</h3><div class="row"><span>Erfahrung</span><span>${S.xp} / ${xpNeed()}</span></div><div class="row"><span>Leben</span><span>${Math.ceil(S.hp)} / ${maxHp()}</span></div><div class="row"><span>Mana</span><span>${Math.floor(S.mp)} / ${maxMp()}</span></div><div class="row"><span>Angriff</span><span>${Math.round(atkV())}</span></div>
-    ${partyHTML()}${extraHTML()}${extInvHTML()}<h3>Gegenstände</h3><div class="row"><span>⚔ ${S.blade2?'Weltenklinge (Echo des Kerns)':S.blade?'Reiseklinge (Mondkristall)':'Reiseklinge'}</span><span>Waffe</span></div><div class="row"><span>🧪 Heiltrank</span><span>× ${S.potions}</span></div><div class="row"><span>💎 Rissplitter</span><span>× ${S.shards}</span></div><div class="row"><span>🌿 Mondkraut</span><span>× ${S.herbs}</span></div>`}
+    ${partyBrief()}${extraHTML()}${extInvHTML()}<h3>Gegenstände</h3><div class="row"><span>⚔ ${S.blade2?'Weltenklinge (Echo des Kerns)':S.blade?'Reiseklinge (Mondkristall)':'Reiseklinge'}</span><span>Waffe</span></div><div class="row"><span>🧪 Heiltrank</span><span>× ${S.potions}</span></div><div class="row"><span>💎 Rissplitter</span><span>× ${S.shards}</span></div><div class="row"><span>🌿 Mondkraut</span><span>× ${S.herbs}</span></div>`}
   if(tab==='skills')h+=`<div class="row"><span>⚔ Klingenkombo (${KH('atk')})</span><span>3 Hiebe</span></div><div class="row"><span>💨 Ausweichen (${KH('dodge')})</span><span>Unverwundbar</span></div><div class="row"><span>⤴ Springen (${KH('jump')})</span><span>Auf Platten und über Hindernisse</span></div><div class="row"><span>🌀 Funkenwirbel (1)</span><span>18 Mana</span></div><div class="row"><span>✨ Lichtstoß (2)</span><span>22 Mana</span></div><div class="row"><span>🧪 Heiltrank (3 / R)</span><span>+60 % Leben</span></div><p style="color:var(--dim);font-size:13px">Treffer laden Mana auf. Rote Kreise am Boden zeigen Angriffe an: rechtzeitig ausweichen!</p>`;
   if(tab==='help')h+=controlsHTML()+INP.optionsHTML()+`<h3>Optionen</h3><div class="row"><span>📺 Fernbedienung (nur Pfeile, OK und Zurück)</span><span><button class="cpb" id="optRem">${REMOTE?'an – ausschalten':'aus – einschalten'}</button></span></div><div class="row"><span>🎰 Casino (Kristallslots, nur Spiel-Splitter)</span><span><button class="cpb" id="optCas">${S.cas&&S.cas.off?'aus – einschalten':'an – ausschalten'}</button></span></div>`;
   if(tab==='travel')h+=travelHTML();
-  if(tab==='events')h+=XO.eventsHTML();if(tab==='home')h+=XO.homeHTML();if(tab==='chron')h+=XT.chronHTML();if(tab==='camp')h+=LF().campHTML()+XT.campHTML();if(tab==='coop')h+=coopHTML();if(tab==='equip')h+=equipHTML();if(tab==='felli')h+=felliHTML()+LF().soulHTML();if(tab==='skills')h=skHTML()+artHTML()+h+extSkillsHTML();
-  c.innerHTML=h;c.querySelectorAll('.trv').forEach(b=>b.onclick=()=>travel(+b.dataset.n));
+  if(tab==='party')h+=partyHTML();if(tab==='events')h+=XO.eventsHTML();if(tab==='home')h+=XO.homeHTML();if(tab==='chron')h+=XT.chronHTML();if(tab==='camp')h+=LF().campHTML()+XT.campHTML();if(tab==='coop')h+=coopHTML();if(tab==='equip')h+=equipHTML();if(tab==='felli')h+=felliHTML()+LF().soulHTML();if(tab==='skills')h=skHTML()+artHTML()+h+extSkillsHTML();
+  c.innerHTML=h;if(tab==='party')partyBind(c);c.querySelectorAll('.trv').forEach(b=>b.onclick=()=>travel(+b.dataset.n));
   c.querySelectorAll('[data-tw]').forEach(b=>b.onclick=()=>{sfx('ui');mState.tw=+b.dataset.tw;renderMenu('travel')});{const o=c.querySelector('.wn.on');if(o)try{o.scrollIntoView({block:'nearest',inline:'center'})}catch(e){}}
   c.querySelectorAll('[data-es]').forEach(b=>b.onclick=()=>{sfx('ui');mState.es=b.dataset.es;mState.ep='';renderMenu('equip')});c.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{const id=b.dataset.pick;if(mState.ep===id&&gearSet()[GEAR[id].s]!==id){equip(id);renderMenu('equip');return}sfx('ui');mState.ep=id;renderMenu('equip')});{const gc=c.querySelector('#goCas');if(gc)gc.onclick=()=>travel(3)}if(tab==='coop')coopBind();extBind(c,tab);LF().bind(c,tab,()=>renderMenu(tab));if(tab==='camp')XT.bind(c,()=>renderMenu('camp'));XO.bind(c,tab,()=>renderMenu(tab));if(tab==='help')INP.bindOptions(c,()=>renderMenu('help'));{const or=$('optRem');if(or)or.onclick=()=>{setRemote(!REMOTE,true);sfx('ui');toast(REMOTE?'📺 Fernbedienung an: ↑↓ laufen · ←→ drehen · OK Angriff/Aktion · Zurück Befehle':'📺 Fernbedienung aus');renderMenu('help')}}const oc=$('optCas');if(oc)oc.onclick=()=>{S.cas.off=!S.cas.off;sfx('ui');toast(S.cas.off?'🎰 Casino ausgeschaltet':'🎰 Casino eingeschaltet');saveGame(true);renderMenu('help')}}
 $('mResume').onclick=()=>toggleMenu(false);$('saveBtn').onclick=()=>saveGame();
@@ -1282,7 +1305,7 @@ function updatePlayer(dt){
   else{const k=1-Math.exp(-14*dt);pl.vx+=(tx-pl.vx)*k;pl.vz+=(tz-pl.vz)*k}
   pl.mv=clamp(Math.hypot(pl.vx,pl.vz)/6.4,0,1.3);
   if((ix||iy)&&pl.atk<0&&pl.dash<=0){const want=Math.atan2(pl.vx,pl.vz);pl.face+=ang(pl.face,want)*Math.min(1,dt*14)}
-  let mvx=(pl.vx+pl.kx)*dt,mvz=(pl.vz+pl.kz)*dt,ns=Math.min(10,Math.max(1,Math.ceil(Math.hypot(mvx,mvz)/.3)));pl.kx*=Math.exp(-9*dt);pl.kz*=Math.exp(-9*dt);
+  let mvx=(pl.vx+pl.kx)*dt*(pl.wat?.62:1),mvz=(pl.vz+pl.kz)*dt*(pl.wat?.62:1),ns=Math.min(10,Math.max(1,Math.ceil(Math.hypot(mvx,mvz)/.3)));pl.kx*=Math.exp(-9*dt);pl.kz*=Math.exp(-9*dt);
   {const pb=(x,z)=>pBlocked(x,z)||(PLAT.length&&platWall(x,z,pl.y));if(pl.air&&pl.jfw>0){pl.jfw-=dt;mvx+=Math.sin(pl.face)*6*dt;mvz+=Math.cos(pl.face)*6*dt}   /* Fernbedienung: der Sprung trägt nach vorn */
   for(let q=0;q<ns;q++){const nx=pl.x+mvx/ns,nz=pl.z+mvz/ns;if(!pb(nx,nz)){pl.x=nx;pl.z=nz}else if(!pb(nx,pl.z))pl.x=nx;else if(!pb(pl.x,nz))pl.z=nz;pushOut(pl,.5)}}
   if(!naut.on&&(ix||iy)&&pBlocked(pl.x,pl.z)){pl.stk=(pl.stk||0)+dt;if(pl.stk>.6){pl.stk=0;landSafe()}}else pl.stk=0;   /* steckt Zotik in gesperrtem Gelände fest, kommt er an der nächsten freien Stelle heraus */
@@ -1290,7 +1313,7 @@ function updatePlayer(dt){
     if(nAir()||(nSub()&&curCh===5)){naut.alt=Math.max(gh+(nAir()?3:.6),Math.min(80,(naut.alt??gh+6)+(nUp()?11:nDn()?-11:0)*dt));ty=naut.alt}
     else if(LK){if(nSub()&&LK.kind==='water'){naut.dep=Math.max(gh+1,Math.min(LK.wl+.1,(naut.dep??LK.wl-2.5)+(nUp()?5:nDn()?-5:0)*dt));ty=naut.dep}else ty=LK.wl+.1}
     else naut.dep=null;nMedHint()}
-  if(!naut.on){const P=PLAT.length?platTop(pl.x,pl.z,pl.y):null,sup=P?Math.max(ty,P.top):ty;pl.on=P&&P.top>=ty?P:null;
+  let SWY=null;if(!naut.on&&(SWY=swimTick(dt))!==null){ty=pl.y=SWY;pl.air=false;pl.on=null}else if(!naut.on){const P=PLAT.length?platTop(pl.x,pl.z,pl.y):null,sup=P?Math.max(ty,P.top):ty;pl.on=P&&P.top>=ty?P:null;
     if(pl.air){pl.vy-=GRAV*wrG()*(WLD&&WLD.grav||1)*dt;if(SWIM()){pl.swc=(pl.swc||0)-dt;pl.vy=Math.max(pl.vy,-2.6);if((pl.bub=(pl.bub||0)+dt)>.18){pl.bub=0;emit(pl.x,pl.y+.9,pl.z,0xd8f8ff,1,.4,1.2,.22,-3)}}pl.y+=pl.vy*dt;if(pl.gl=(pl.vy<0&&!pl.slam&&keys.Space&&artOn('glide')))pl.vy=Math.max(pl.vy,-1.6);   /* Gleiten: Sprungtaste halten */
       if(pl.vy<=0&&pl.y<=sup){pl.y=ty=sup;pl.air=false;if(pl.vy<-9)sfx('land');pl.vy=0;if(pl.slam)artSlamLand();emit(pl.x,pl.y+.1,pl.z,0xcfe0ff,8,2,.4,.5,0)}}
     else if(pl.y>sup+.7){pl.air=true;pl.vy=0}   /* über die Kante gelaufen: fallen */
@@ -1305,7 +1328,7 @@ function animPlayer(dt){
   const f=fox;if(S.lead)f.root.visible=false;f.root.position.set(pl.x,pl.y,pl.z);f.root.rotation.y=pl.face;
   animFox(f,time,pl.dash>0?0:pl.mv,pl.atk);if(pl.air&&!naut.on){const u=Math.max(-1,Math.min(1,(pl.vy||0)/JUMPV)),up=Math.max(0,u),dn=Math.max(0,-u);f.legs[0].rotation.x=.9*up-.5*dn;f.legs[1].rotation.x=.5*up+.35*dn;f.arms[0].rotation.x=-2.3*up-1.1*dn;if(pl.atk<0)f.arms[1].rotation.x=-2.3*up-1.1*dn;f.body.position.y=0}   /* Sprunghaltung: Arme hoch beim Absprung, Beine vor beim Fallen */
   f.body.rotation.set(0,0,0);
-  if(pl.air&&SWIM()&&pl.atk<0){const k=Math.sin(time*8);f.body.rotation.x=.45+Math.min(.5,pl.mv*.45);f.legs[0].rotation.x=k*.7;f.legs[1].rotation.x=-k*.7;f.arms[0].rotation.x=f.arms[1].rotation.x=-2.4+Math.sin(time*4)*.7}   /* Schwimmhaltung */
+  if(((pl.air&&SWIM())||pl.wat)&&pl.atk<0){const k=Math.sin(time*8);f.body.rotation.x=.45+Math.min(.5,pl.mv*.45);f.legs[0].rotation.x=k*.7;f.legs[1].rotation.x=-k*.7;f.arms[0].rotation.x=f.arms[1].rotation.x=-2.4+Math.sin(time*4)*.7}   /* Schwimmhaltung */
   if(pl.atk>=0){const p=Math.min(1,pl.atkT/ATD[pl.combo]);atkPose(f,p,pl.combo)}
   else{f.arms[1].rotation.z=0}
   FXH.trail(f.handSword,!S.lead&&pl.atk>=0&&pl.atkT/ATD[pl.combo]>.24&&pl.atkT/ATD[pl.combo]<.72||pl.spin>0,X.form&&X.form.on>0?0xffd870:0xbfe4ff,dt);
@@ -1469,7 +1492,7 @@ function begin(isNew){if(!WLD){if(!JP1)JP1=jumpPath(1);NQ.enter(1)}for(const c o
   initAudio();mode='play';$('title').hidden=true;$('hud').hidden=false;
   $('creator').hidden=true;applyCos(S.cos);
   if(S.stage>=8&&!S.fl.naut)S.fl.naut=1;   /* ältere Spielstände: Nautilux nachreichen */
-  sx();switchWorld(S.ch||1);if(!WLD)ensureBoss2();
+  sx();switchWorld(S.ch||1);if(!WLD)ensureBoss2();if(!BRK.length&&(S.ch||1)===1)brkScatter(1);
   pl.x=S.x;pl.z=S.z;pl.y=hgt(pl.x,pl.z);pl.face=S.ry;pl.dead=false;pl.vx=pl.vz=0;camYaw=pl.face+Math.PI;camTarget.set(pl.x,pl.y+1.5,pl.z);camPos.set(pl.x,pl.y+4,pl.z+8);sndOn=S.snd!==false;if(master)master.gain.value=sndOn?.85:0;$('mSound').textContent=sndOn?'🔊 Ton an':'🔇 Ton aus';
   fel.x=pl.x+2;fel.z=pl.z+2;syncParty();if(S.ng)for(const e of E)e.hp=e.max=Math.round(e.d.hp*(1+.5*S.ng));
   if(FROM_BUNT&&!isNew){FROM_BUNT=false;if((S.ch||1)===1){pl.x=-8;pl.z=-15.5;pl.y=hgt(pl.x,pl.z);pl.face=Math.PI;camYaw=pl.face+Math.PI;camTarget.set(pl.x,pl.y+1.5,pl.z);camPos.set(pl.x,pl.y+4,pl.z+8);setTimeout(()=>toast('🏝️ Willkommen zurück aus der Bunten Insel!'),700)}else setTimeout(()=>toast('🏝️ Willkommen zurück! Das grüne Tor zur Bunten Insel steht in Lunaris.'),700)}else FROM_BUNT=false;
@@ -1644,9 +1667,9 @@ function restoreLunaris(){
 function switchWorld(n){
   if(n===curCh&&(n===1||WLD))return;
   MP.quiet=true;
-  try{WPX().clear();if(curCh===1&&!WLD){if(n!==1)leaveLunaris()}else destroyWorld();
+  try{WPX().clear();BRK.length=0;if(curCh===1&&!WLD){if(n!==1)leaveLunaris()}else destroyWorld();
   if(n===1)restoreLunaris();else if(n===12)buildCave();else if(n===13)buildCamp();else if(n===14)buildPixRoom();else if(n===15)buildOver();else if(n>=MW_FIRST)MWX().build(n);else buildWorld(n)}finally{MP.quiet=false}
-  if(n>=MW_FIRST)castleSite(n);NZ().activate(n);curCh=n;S.ch=n;curZone='';mpWorldChanged(n);if(n===1&&!JP1)JP1=jumpPath(1);NQ.enter(n);LF().arrive(n);if(WLD)WLD.jp=n>1&&n<12?jumpPath(n):null;wmAbort();if(n>1&&n<12&&WLD&&!WLD.cave&&!WLD.story){owSign(n,3.2,13);advCamp(n);kbDress(n);wzDress(n)}if(n>1&&n<11&&WLD&&!WLD.cave&&!WLD.story){worldMark(n);if(!MP.on)WPX().build(n,WLD.path,hgt)}worldRule(WLD&&!WLD.cave&&!WLD.story?n:0);
+  if(n>=MW_FIRST)castleSite(n);NZ().activate(n);curCh=n;S.ch=n;curZone='';mpWorldChanged(n);if(n===1&&!JP1)JP1=jumpPath(1);NQ.enter(n);LF().arrive(n);if(WLD)WLD.jp=n>1&&n<12?jumpPath(n):null;wmAbort();if(n>1&&n<12&&WLD&&!WLD.cave&&!WLD.story){owSign(n,3.2,13);advCamp(n);kbDress(n);wzDress(n)}if(n>1&&n<11&&WLD&&!WLD.cave&&!WLD.story){worldMark(n);if(!MP.on)WPX().build(n,WLD.path,hgt)}worldRule(WLD&&!WLD.cave&&!WLD.story?n:0);if((n<12&&!(WLD&&(WLD.cave||WLD.story)))||n>=MW_FIRST)brkScatter(n);
 }
 /* ---- Ladebild je Welt: Name, Untertitel, Zeichen in der Weltfarbe, ein Tipp ---- */
 const WTIPS=['Blocken im richtigen Moment wirft Gegner aus dem Takt.','Jede Figur hat ein eigenes Element. Schwächen treffen doppelt.','Tippe oben links auf einen Gefährten, um ihn selbst zu spielen.','Im Camp rasten füllt Leben und Mana und speichert.','Hinweistafeln in Ruinen zeigen die nächste Platte mit einer grünen Lichtsäule.','Im Casino spielst du nur um Splitter, nie um echtes Geld.','Weltwaffen verstärken die Figur, die zu einer Welt gehört.','Ausweichen im letzten Moment verlangsamt kurz die Zeit.','Lies Bücherregale in den Städten: Dort stehen Hinweise zur Welt.'];
@@ -1863,13 +1886,33 @@ function makeCmp(id){let P;
   P.root.visible=true;scene.add(P.root);KEEPX.add(P.root);return P}
 function addCmp(id){if(CMP.some(a=>a.id===id))return;CMP.push({id,P:makeCmp(id),x:pl.x+(CMP.length%2?2:-2),z:pl.z+2.5,face:pl.face,t:Math.random()*9,cd:1,hc:3,mv:0,hp:cmax(id),ko:false,kot:0,skc:0,taunt:0,calm:0})}
 /* Gefährten als echte Gruppe (wie Lufia/Final Fantasy): eigene KP, K.O., eigene Fähigkeit per Befehl, Taktik */
-const CHP0={lyra:60,nia:65,rovan:115,kael:75,mirael:65,toren:110,eryn:62,aera:80,prof:72,mira:62},cmax=id=>Math.round((CHP0[id]||70)+S.lvl*9);
+const CHP0={lyra:60,nia:65,rovan:115,kael:75,mirael:65,toren:110,eryn:62,aera:80,prof:72,mira:62},cmax=id=>Math.round(((CHP0[id]||70)+cLv(id)*9+cg(id,'hp')));
+/* Gefährten wachsen selbst: eigene Stufe, eigene EP (aktive Gruppe voll, Reserve im Camp zur Hälfte) und eigene Ausrüstung in drei Fächern */
+const CG={g_w1:{s:'w',t:'Eschen',atk:3,tier:1},g_w2:{s:'w',t:'Mondsilber',atk:8,tier:3},g_w3:{s:'w',t:'Glut',atk:15,tier:6},g_w4:{s:'w',t:'Sternen',atk:24,tier:9},
+  g_a1:{s:'a',n:'Reiseumhang',hp:30,def:.05,tier:1},g_a2:{s:'a',n:'Rindenweste',hp:70,def:.1,tier:3},g_a3:{s:'a',n:'Korallenpanzer',hp:120,def:.15,tier:6},g_a4:{s:'a',n:'Sternenmantel',hp:200,def:.2,tier:9},
+  g_c1:{s:'c',n:'Glücksbrosche',crit:.08,tier:2},g_c2:{s:'c',n:'Heilstein',heal:.5,tier:4},g_c3:{s:'c',n:'Eilring',spd:.25,tier:7},g_c4:{s:'c',n:'Bandkristall',atk:6,hp:60,crit:.05,tier:10}};
+const CWN={lyra:'Buch',nia:'Bogen',rovan:'Hammer',kael:'Dolch',mirael:'Schlüssel',toren:'Hammer',eryn:'Schriftrolle',prof:'Apparat',mira:'Stab',aera:'Klinge'};
+const cgName=(k,id)=>{const d=CG[k];return !d?'–':d.s==='w'?d.t+'-'+(CWN[id]||'Waffe'):d.n},cgInfo=k=>{const d=CG[k];if(!d)return'';return[d.atk&&'+'+d.atk+' Angriff',d.hp&&'+'+d.hp+' LP',d.def&&'−'+Math.round(d.def*100)+' % Schaden',d.crit&&'+'+Math.round(d.crit*100)+' % Kritisch',d.heal&&'+'+Math.round(d.heal*100)+' % Heilung',d.spd&&'+'+Math.round(d.spd*100)+' % Tempo'].filter(Boolean).join(' · ')};
+function cSt(id){S.cl=S.cl||{};S.cinv=S.cinv||{};if(!S.cl[id]){S.cl[id]={lv:Math.max(1,(S.lvl||1)-1),xp:0,g:{w:'g_w1',a:'g_a1',c:''}};S.cinv.g_w1=(S.cinv.g_w1||0)+1;S.cinv.g_a1=(S.cinv.g_a1||0)+1}return S.cl[id]}
+const cLv=id=>cSt(id).lv,cg=(id,k)=>{let v=0;const g=cSt(id).g;for(const sl in g){const d=CG[g[sl]];if(d&&d[k])v+=d[k]}return v};
+const cAtk=id=>((PARTY[id]||{atk:7}).atk*1.5+cLv(id)*1.25+cg(id,'atk')),cXpNeed=lv=>Math.round(40+lv*lv*12);
+function cGain(n){for(const id of new Set([...(S.party||[]),...(S.res||[])])){if(!PARTY[id])continue;const c=cSt(id),act=CMP.some(a=>a.id===id);c.xp+=Math.round(n*(act?1:.5));let up=0;while(c.xp>=cXpNeed(c.lv)&&c.lv<(XT.LVCAP||99)){c.xp-=cXpNeed(c.lv);c.lv++;up++}
+  if(up){const a=CMP.find(q=>q.id===id);if(a){a.hp=cmax(id);FXH.pillar(a.x,hgt(a.x,a.z),a.z,PARTY[id].col,1,5,1.2)}toast('⬆️ '+PARTY[id].n+' erreicht Stufe '+c.lv)}}}
+function cgGive(k,quiet){if(!CG[k])return;S.cinv=S.cinv||{};S.cinv[k]=(S.cinv[k]||0)+1;if(!quiet){toast('🎁 Gefährten-Ausrüstung: '+(CG[k].s==='w'?CG[k].t+'-Waffe':CG[k].n));sfx('level')}}
+const cgFree=k=>{let used=0;for(const id in (S.cl||{}))for(const sl in S.cl[id].g)if(S.cl[id].g[sl]===k)used++;return ((S.cinv||{})[k]||0)-used};
+function cgDrop(n){const t=Math.max(1,Math.min(10,n)),L=Object.keys(CG).filter(k=>CG[k].tier<=t&&CG[k].tier>=t-4);return L.length?L[Math.random()*L.length|0]:'g_w1'}
+function partyHTML(){const ids=[...new Set([...(S.party||[]),...(S.res||[])])].filter(id=>PARTY[id]);if(!ids.length)return'<p style="color:var(--dim)">Noch niemand in der Gruppe.</p>';
+  let h='<p style="color:var(--dim);font-size:13px">Jeder Gefährte sammelt eigene Erfahrung (im Camp zur Hälfte) und trägt eigene Ausrüstung. Neue Teile findest du in Truhen und nach Kämpfen.</p>';
+  for(const id of ids){const c=cSt(id),p=PARTY[id],a=CMP.find(q=>q.id===id),res=!a;h+=`<h3 style="color:${p.css}">${p.em} ${p.n} · Stufe ${c.lv}${res?' <small style="color:var(--dim)">(Camp)</small>':''}</h3><div class="row"><span>Erfahrung</span><span>${c.xp} / ${cXpNeed(c.lv)}</span></div><div class="row"><span>Leben · Angriff</span><span>${a?Math.ceil(a.hp)+' / ':''}${cmax(id)} · ${Math.round(cAtk(id))}</span></div>`;
+    for(const sl of ['w','a','c']){const k=c.g[sl];h+=`<div class="row"><span>${SLOTN[sl]}: <b>${k?cgName(k,id):'–'}</b><br><small style="color:var(--dim)">${cgInfo(k)}</small></span><span><button class="cpb" data-cg="${id}:${sl}">Wechseln</button></span></div>`}}
+  return h}
+function partyBind(c){c.querySelectorAll('[data-cg]').forEach(b=>b.onclick=()=>{const [id,sl]=b.dataset.cg.split(':'),g=cSt(id).g,L=['',...Object.keys(CG).filter(k=>CG[k].s===sl&&(cgFree(k)>0||g[sl]===k))],i=L.indexOf(g[sl]||'');g[sl]=L[(i+1)%L.length];const a=CMP.find(q=>q.id===id);if(a)a.hp=Math.min(a.hp,cmax(id));sfx('ui');saveGame(true);renderMenu('party')})}
 const CSK={lyra:{n:'Heilwelle',em:'💚',cd:18,d:'heilt alle, belebt K.O.-Gefährten'},nia:{n:'Zielschuss',em:'🎯',cd:9,d:'starker Schuss aufs Ziel'},rovan:{n:'Provokation',em:'📣',cd:15,d:'Gegner greifen Rovan an'},
   kael:{n:'Rissdolche',em:'🗡️',cd:9,ty:'shot',d:'schneller Treffer aufs Ziel'},mirael:{n:'Kühlnebel',em:'💧',cd:20,ty:'heal',d:'heilt die Gruppe'},toren:{n:'Glutschlag',em:'🔥',cd:15,ty:'taunt',d:'zieht Gegner auf Toren'},
   eryn:{n:'Erinnerungspfeil',em:'📜',cd:10,ty:'shot',d:'starker Treffer aufs Ziel'},aera:{n:'Sternenlanze',em:'🌟',cd:10,ty:'shot',d:'Lanzenstoß aufs Ziel'},
   prof:{n:'Nautilux-Salve',em:'🚤',cd:12,ty:'shot',d:'Kristallkanone aufs Ziel'},mira:{n:'Mondlicht',em:'🌙',cd:20,ty:'heal',d:'heilt die Gruppe'}};
 let CTGT=null;
-function cmpHurt(a,dmg){if(a.ko)return;dmg=Math.max(1,Math.round(dmg*(a.id==='rovan'?(a.taunt>0?.45:.75):1)));a.hp-=dmg;a.calm=0;dnum(a.x,hgt(a.x,a.z)+2.2,a.z,dmg,'p');
+function cmpHurt(a,dmg){if(a.ko)return;dmg=Math.max(1,Math.round(dmg*(a.id==='rovan'?(a.taunt>0?.45:.75):1)*(1-cg(a.id,'def'))));a.hp-=dmg;a.calm=0;dnum(a.x,hgt(a.x,a.z)+2.2,a.z,dmg,'p');
   if(a.hp<=0){a.hp=0;a.ko=true;a.kot=0;sfx('hurt');toast('💫 '+PARTY[a.id].n+' ist K.O. – Lyras Heilwelle oder eine Kampfpause hilft');X.deck.dirty=true}}
 function reviveAll(){if(S.mp<25)return toast('Zu wenig Mana (25)');const k=CMP.filter(c=>c.ko);if(!k.length)return;S.mp-=25;for(const a of k)cmpRevive(a,.5);sfx('heal');toast('💚 Gefährten wiederbelebt')}
 function cmpRevive(a,f){if(!a.ko)return;a.ko=false;a.kx=undefined;a.kot=0;a.hp=Math.round(cmax(a.id)*f);a.P.root.rotation.z=0;if(a.P.kk)KK.ko(a.P.kk,false);emit(a.x,hgt(a.x,a.z)+1,a.z,0x7dffb2,24,3,1,.7,-3,2)}
@@ -1959,10 +2002,10 @@ function updCmp(dt){
     a.walk=en?dist>.5:dist>2.4?1:dist<.7?0:a.walk;if(dist>24){a.x=tx;a.z=tz}else if(a.walk){const sp=Math.min(dist*3.4,d.melee?6.4:6.8);a.x+=dx/dist*sp*dt;a.z+=dz/dist*sp*dt;mv=Math.min(1,sp/6)}
     pushOut(a,.4);
     const fa=en?Math.atan2(en.x-a.x,en.z-a.z):(dist>.8?Math.atan2(dx,dz):pl.face);a.face+=ang(a.face,fa)*Math.min(1,dt*9);
-    if(en&&a.cd<=0&&ed<=d.rng+(d.melee?.7:0)){a.cd=d.cd*1.6*(.9+Math.random()*.25);tgAdd(1.2);a.P.hit=.5;const dmg=(d.atk*1.5+S.lvl*1.2)*.55*LF().bondMul(a.id)*cwMul(a.id),cel=CEL[a.id],ea=Math.atan2(en.x-a.x,en.z-a.z);
+    if(en&&a.cd<=0&&ed<=d.rng+(d.melee?.7:0)){a.cd=d.cd*1.6*(.9+Math.random()*.25);tgAdd(1.2);a.P.hit=.5;const dmg=cAtk(a.id)*.55*LF().bondMul(a.id)*cwMul(a.id)*(Math.random()<cg(a.id,'crit')?1.8:1),cel=CEL[a.id],ea=Math.atan2(en.x-a.x,en.z-a.z);
       if(d.melee){hurtE(en,dmg,Math.sin(ea)*.5,Math.cos(ea)*.5,false,cel);emit(en.x,hgt(en.x,en.z)+1,en.z,0xffffff,8,3,.3,.5);sfx('hit')}
       else{proj(a.x+Math.sin(ea)*.5,hgt(a.x,a.z)+1.2,a.z+Math.cos(ea)*.5,Math.sin(ea)*22,Math.cos(ea)*22,dmg,false,cel?elCol(cel):d.col,1.1,cel)}}
-    if(d.heal&&a.hc<=0&&!pl.dead&&S.hp<maxHp()*(S.ptac==='def'?d.thr+.2:d.thr)){a.hc=d.hcd*(S.lf&&S.lf.vow==='freund'?.7:1);const h=d.heal+S.lvl*2;S.hp=Math.min(maxHp(),S.hp+h);sfx('heal');dnum(pl.x,pl.y+2.3,pl.z,'+'+h,'h');emit(pl.x,pl.y+.8,pl.z,0x7dffb2,26,3,1,.7,-3,2);toast('✨ Lyra heilt dich')}
+    if(d.heal&&a.hc<=0&&!pl.dead&&S.hp<maxHp()*(S.ptac==='def'?d.thr+.2:d.thr)){a.hc=d.hcd*(S.lf&&S.lf.vow==='freund'?.7:1);const h=(d.heal+cLv(a.id)*2)*(1+cg(a.id,'heal'));S.hp=Math.min(maxHp(),S.hp+h);sfx('heal');dnum(pl.x,pl.y+2.3,pl.z,'+'+h,'h');emit(pl.x,pl.y+.8,pl.z,0x7dffb2,26,3,1,.7,-3,2);toast('✨ Lyra heilt dich')}
     a.P.root.position.set(a.x,hgt(a.x,a.z),a.z);a.P.root.rotation.y=a.face;a.P.root.rotation.z=0;a.mv+=(mv-a.mv)*Math.min(1,dt*8);animHuman(a.P,a.t,a.mv)})}
 /* ================= Orun (Lunaris) & Rätsel in Lunaris ================= */
 ED.orun=Object.assign({},ED.boss,{name:'Orun',hp:760,dmg:21,xp:340,sc:2.1,sub:'Hüter des Weltenrisses',p2t:'Orun entfesselt den Riss!',make:()=>tintModel(makeWolf(true),0xffb040,.55),col:0xffb040,intro:()=>cutscene('LUN_ORUN')});
@@ -2026,7 +2069,7 @@ let nMed=null;function nMedHint(){const m=NZ().medium();if(m===nMed)return;nMed=
 const nAir=()=>naut.on&&naut.f===2,nSub=()=>naut.on&&naut.f===1;
 const poolB=(x,z)=>{const q=WLD&&WLD.pool;return !!q&&Math.hypot(x-q.x,z-q.z)<q.r};
 const OWLK={wl:OW_WL,kind:'water',x:0,z:0,r:1e4},owLake=(x,z)=>WLD&&WLD.over&&x>-186&&x<186&&z>-368&&z<228&&hgt(x,z)<OW_WL-.05&&!WLD.rocks(x,z)?OWLK:null;
-const pBlocked=(x,z)=>{if(naut.on&&!nAir()&&(NZ().lakeAt(x,z)||owLake(x,z)))return false;if(nAir()||(nSub()&&curCh===5&&pl.y>hgt(x,z)+1))return x<-128||x>128||z>76||z<-232||(z<-148&&(WLD?WLD.sealedNow():!lunOpen()));if(poolB(x,z))return !nSub();return blocked(x,z)};
+const pBlocked=(x,z)=>{if(!naut.on&&LAKEW(x,z))return false;if(naut.on&&!nAir()&&(NZ().lakeAt(x,z)||owLake(x,z)))return false;if(nAir()||(nSub()&&curCh===5&&pl.y>hgt(x,z)+1))return x<-128||x>128||z>76||z<-232||(z<-148&&(WLD?WLD.sealedNow():!lunOpen()));if(poolB(x,z))return !nSub();return blocked(x,z)};
 function makeNaut(){const g=new T.Group(),br=M(0xc89a4a,{m:.6,r:.35}),dk=M(0x5a4a3a,{r:.6}),gl=M(0x9ae8ff,{e:0x4ac8ff,ei:.8});
   g.add(mk(G.sph,br,0,.9,0,1.5,.9,2.2));g.add(mk(G.sph,gl,0,1.55,.55,.85,.62,.95,false));g.add(mk(G.box,dk,0,1.5,-1.9,.12,.95,.9));
   for(const s of [-1,1])g.add(mk(G.box,dk,s*1.3,.7,-.2,.8,.1,.7));
@@ -2101,7 +2144,7 @@ function hallKill(e){const r=HALL.run;if(!r)return;r.left--;if(r.left>0)return;c
 function startNG(){if(MP.role==='guest'){toast('Nur der Gastgeber kann Neues Spiel+ starten.');return}const nx=(S.ng||0)+1;say([['Veyra',`Neues Spiel+ (Stufe ${nx}): Du behältst Stufe, Splitter, Waffen, Andenken, Nautilux und Gefährten. Die Geschichte beginnt von vorn. Gegner haben +${50*nx} % Leben und +${35*nx} % Angriff, Bosse bekommen eine Raserei-Phase. Der Weltenriss bleibt offen.`]],null,[{t:'Beginnen',fn:doNG},{t:'Lieber nicht',fn:()=>{}}])}
 function doNG(){const keep=['lvl','xp','shards','potions','blade','blade2','trk','cos','party','fl','end','ending','hall','sq','mem','cas','snd','t','gear','inv','felli','tools','tool','items','fk','up','mag','sk','bstR'],o=DEF();for(const k of keep)o[k]=S[k];o.cave={best:(S.cave&&S.cave.best)||0,f:1,seed:1};o.ng=(S.ng||0)+1;o.fl=Object.assign({},S.fl,{bridge:0});
   for(const k of Object.keys(S))delete S[k];Object.assign(S,o);S.hp=maxHp();S.mp=maxMp();S.ch=1;S.x=0;S.z=13;S.ry=Math.PI;saveGame(true);banner('Neues Spiel+','Stufe '+S.ng+' – das Spiel startet neu');setTimeout(()=>location.reload(),2200)}
-function partyHTML(){if(!S.party.length)return '';let h='<h3>Gefährten</h3>';for(const id of S.party){const d=PARTY[id];h+=`<div class="row"><span>${d.em} ${d.n}</span><span>${d.heal?'heilt dich':d.melee?'Nahkampf':'Fernkampf'}</span></div>`}return h}
+function partyBrief(){if(!S.party.length)return '';let h='<h3>Gefährten <small style="color:var(--dim)">(Details unter 🧑‍🤝‍🧑 Gruppe)</small></h3>';for(const id of S.party){const d=PARTY[id];if(!d)continue;h+=`<div class="row"><span>${d.em} ${d.n} · Stufe ${cLv(id)}</span><span>${d.heal?'heilt dich':d.melee?'Nahkampf':'Fernkampf'}</span></div>`}return h}
 
 /* ================= Welt bauen ================= */
 /* Eigener Stadtplan je Welt (vorher überall derselbe, nur gespiegelt): [x,z,Drehung] für Wohnhaus, Tränke, Magie, Schmiede, Taverne, Kirche – abseits von Weg, Platz, Tor und Figuren */
@@ -3096,7 +3139,7 @@ function kkDress(par,g,N,cx,cz,cs,seed,skip){const R=mul32(seed*977+13),out=[];
   for(const [x,z,a] of DG().gridSpots(g,N,cx,cz,cs,skip)){const r=R(),ry=Math.atan2(-Math.cos(a),-Math.sin(a)),side=(R()-.5)*cs*.5,sx=-Math.sin(a)*side,sz=Math.cos(a)*side;
     if(r<.16)out.push({k:KKB[R()*KKB.length|0],x:x+Math.cos(a)*.62+sx,y:.4,z:z+Math.sin(a)*.62+sz,ry,s:1.2});
     else if(r<.46){const q=KKD[R()*KKD.length|0];out.push({k:q[0],x:x+Math.cos(a)*.15+sx,y:0,z:z+Math.sin(a)*.15+sz,ry:ry+(R()-.5)*.5,s:q[1]*(.95+R()*.15)})}}
-  KK.place(par,out);return out.length}
+  placeBrk(par,out);return out.length}
 /* Ruinen-Kämpfe: Hinterhalt je Raum, Ruinenwächter vor dem Schatz (erst nach dem Rätsel) */
 const rwKey=(k,n)=>ED[k+n]?k+n:ED['a'+n]?'a'+n:ED['b2']?'b2':'wolf';
 function ruinSpawn(key,z0,z1,tag){let x=0,z=(z0+z1)/2,t=0;do{x=-10+Math.random()*20;z=z0+1+Math.random()*(z1-z0-2)}while(blocked(x,z)&&t++<30);const e=spawnEnemy(key,x,z);e.rw=tag;e.summoned=true;e.st='chase';return e}
@@ -3392,7 +3435,7 @@ function advCamp(n){const p=(()=>{for(let t=0;t<60;t++){const z=-14-t*1.7,x=(WLD
   pick.forEach((a,i)=>{const an=i*2.1+n,x=cx+Math.sin(an)*2.4,z=cz+Math.cos(an)*2.4,P=KK.char(a[0],{h:1.75,r:a[2],l:a[3]});
     addNpc('adv'+n+i,a[1],x,z,{root:P.root,kk:P},()=>advTalk(n,a[1],i),Math.atan2(cx-x,cz-z),()=>!S.fl['adv'+n])});
   const R=mul32(n*41+7),L=[];for(let i=0;i<5;i++){const an=i*1.3+.6+n,r=4+R()*1.2;L.push({k:['bed_floor','barrel_large','box_stacked','trunk_medium_B','crates_stacked'][i],x:cx+Math.sin(an)*r,y:0,z:cz+Math.cos(an)*r,ry:an+Math.PI})}
-  for(const q of L){q.y=hgt(q.x,q.z);addCol(q.x,q.z,.5)}KK.place(scene,L)}
+  for(const q of L){q.y=hgt(q.x,q.z);addCol(q.x,q.z,.5)}placeBrk(scene,L)}
 /* Gebäude aus dem KayKit „Medieval Builder Pack“ (CC0) je Kapitelwelt: Mühlen, Gehöfte, Wachtürme, Märkte am Wegesrand (mit Kollision) */
 const KBW={2:['lumbermill','mill','watchtower'],3:['market','well','barracks'],4:['well','market','mine'],5:['watermill','well','market'],6:['lumbermill','watchtower','barracks'],7:['mine','barracks','watchtower'],
   8:['watchtower','well','archeryrange'],9:['mill','farm_plot','market'],10:['watchtower','castle','well'],11:['watchtower','barracks']};
@@ -3533,7 +3576,9 @@ const CHEST_GEAR={c2:'a_wander',h2:'w_mond',h3:'c_amul'};
 function extChest(o,r,t){
   if(r.cave){const run=S.cave.run;if(!run)return;if(r.gear){if(r.cave==='blue'&&run){run.blue.push(r.gear);t.push('🔷 '+GEAR[r.gear].n+' (bleibt)')}else{giveGear(r.gear,true);t.push('🛡️ '+GEAR[r.gear].n)}}if(r.ether){S.items.ether+=r.ether;t.push('🔷 Äther +'+r.ether)}if(WLD&&WLD.refresh)WLD.refresh();return}
   const gid=r.gear||CHEST_GEAR[o.id]||(/^\d+c1$/.test(o.id)?WCH_GEAR[parseInt(o.id)]:'');
-  if(gid&&GEAR[gid]){giveGear(gid,true);t.push('🛡️ '+GEAR[gid].n)}if(r.ether){S.items.ether+=r.ether;t.push('🔷 Äther +'+r.ether)}}
+  if(gid&&GEAR[gid]){giveGear(gid,true);t.push('🛡️ '+GEAR[gid].n)}if(r.ether){S.items.ether+=r.ether;t.push('🔷 Äther +'+r.ether)}
+  /* Truhen tragen auch Ausrüstung: ein noch fehlendes Teil für Zotik (passend zur Welt) oder etwas für die Gefährten */
+  if(!gid){const n=Math.min(11,chNow()<12?chNow():6),h=[...String(o.id)].reduce((a,c)=>a*31+c.charCodeAt(0)|0,n)>>>0;if(h%5<2){const I=invSet(),miss=Object.keys(GEAR).filter(k=>GEAR[k].tier&&GEAR[k].tier<=n+1&&!I[k]);if(miss.length&&h%5===0){const k=miss[h%miss.length];giveGear(k,true);t.push('🛡️ '+GEAR[k].n)}else{const k=cgDrop(n);cgGive(k,true);t.push('🎁 '+(CG[k].s==='w'?CG[k].t+'-Waffe':CG[k].n)+' (Gefährten)')}}}}
 const WCH_GEAR={2:'c_amul',3:'a_rinde',4:'w_dorn',5:'a_koralle',6:'w_glut',7:'a_frost',8:'c_glueck',9:'w_stern',10:'a_stern',11:'c_ur'};
 function extChapterDone(n){const t=CH_TOOL[n];if(t&&!S.tools.includes(t)){S.tools.push(t);setTimeout(()=>{banner('Neues Werkzeug: '+TOOLS[t].em+' '+TOOLS[t].n,'In den Werkzeug-Ruinen öffnet es neue Wege');sfx('level')},2600)}X.deck.dirty=true}
 function extArrive(n){X.lock=null;if(X.form.on>0)formEnd();X.q.length=0;
@@ -3679,4 +3724,4 @@ function drawOb(mx){if(pl.z>300){mx.fillStyle='#2a2a3e';mx.fillRect(-13,333,26,3
 ensureBoss();
 camTarget.set(0,2,12);
 requestAnimationFrame(frame);
-if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__zotik={kkCast:id=>kkCast(id),dunEnter:(n,c)=>dunEnter(n,c),set noRender(v){frame.off=!!v},owGo,owLake,mount,cycleNaut,get naut(){return naut},get nearI(){return nearI},get MFX(){return MFX},ipUse,WPNS,KK,ED,MINI,get mState(){return mState},PX:()=>PX(),WP:()=>WPX(),RIDE:()=>RIDEX(),doHit:()=>doHit(),pixEnter:()=>pixEnter(),get mode(){return mode},INP,T,platWall,MWX:()=>MWX(),FXH:()=>FXH,TOWN,NPC,NQ,killE,E,resetEnemy,RMS,refreshQuest,ARTS,artOn,get WR(){return WRU},WRN,WM,wmStart,guestBye,guestArrive,partyPick,setLead,ruinGuard,leadSkill2,CSK2,WWG,cwOf,fox,profJoin,miraJoin,recruit,skill1,skill2,ZON,BKIT,MKIT,startAtk,ED,zone,artThorn,artGust,artFrost,artBolt,artStar,startAttack,dodge,keys,skR,skFree,spawnEnemy,PLAT,jump,dunEnter,dunLeave,DUNF,dunWin(){if(X.dun)dunLeave(true)},get dun(){return X.dun},get WLD(){return WLD},get jp(){return WLD?WLD.jp:JP1},setCam(y,pt,di){camYaw=y;if(pt!=null)camPitch=pt;if(di!=null)camDist=di},AF,NZ,EPX,nautTo,pl,joy,inputVec,CR:()=>CR(),get goTo(){return goTo},get steer(){return steer},set steer(v){steer=v},get mode(){return mode},startNew(){S=DEF();S.ch=13;S.x=0;S.z=1;mode='play';begin(true)},startDbg(){S=DEF();for(let n=2;n<=10;n++)S.fl['wr'+n]=1;S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit};mode='play';begin(true)},X,OB,GEAR,TOOLS,lockCycle,doReaction,teamAttack,formStart,ipUse,useTool,toolNext,caveEnter,caveNext,caveExit,LF:()=>LF(),get CUT(){return CUT},giveGear,equip,feed,felliXp,deckExec,deckMove,deckOpen,ruinGo,get CAVE_DOOR(){return CAVE_DOOR},spellHeal,useEther,fStage,findRx,proj,maxHp:()=>maxHp(),atkV:()=>atkV(),toBunt,BUNT_URL,get qLv(){return qLv},setQ,get naut(){return naut},pushOut,INST,blocked,hgt,pBlocked,COL,HOUSES,PZD,CUT,openPuzzle,closePuzzle,cutscene,joinParty,CMP,lunOpen,spawnOrun,get puzOpen(){return puzOpen},get W(){return WLD},get ch(){return curCh},INT,CHP,switchWorld,travel,ARENA,herbs,chests,drops,projs,step:(dt,n)=>{for(let i=0;i<n;i++){time+=dt;for(const o of animObjs)o.fn(time,dt);update(dt);updParticles(dt)}},cam:(y,p,d)=>{camYaw=y;camPitch=p;camDist=d},S:()=>S,pl,E,NPC,begin,say,toast,setStage,hurtP,get boss(){return boss},camera,scene,renderer,skill1,skill2,startAttack,dodge,interact,keys,MP,mpMsg,mpSend,mpHost,mpJoin,mpTick,variantCos,sharedFlat,spawnEnemy,hurtE,killE,get boss2(){return boss},toggleMenu,renderMenu,XT,XO};
+if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__zotik={BRK,NZ:()=>NZ(),dodge:()=>dodge(),jump:()=>jump(),gainXp:n=>gainXp(n),kkCast:id=>kkCast(id),dunEnter:(n,c)=>dunEnter(n,c),set noRender(v){frame.off=!!v},owGo,owLake,mount,cycleNaut,get naut(){return naut},get nearI(){return nearI},get MFX(){return MFX},ipUse,WPNS,KK,ED,MINI,get mState(){return mState},PX:()=>PX(),WP:()=>WPX(),RIDE:()=>RIDEX(),doHit:()=>doHit(),pixEnter:()=>pixEnter(),get mode(){return mode},INP,T,platWall,MWX:()=>MWX(),FXH:()=>FXH,TOWN,NPC,NQ,killE,E,resetEnemy,RMS,refreshQuest,ARTS,artOn,get WR(){return WRU},WRN,WM,wmStart,guestBye,guestArrive,partyPick,setLead,ruinGuard,leadSkill2,CSK2,WWG,cwOf,fox,profJoin,miraJoin,recruit,skill1,skill2,ZON,BKIT,MKIT,startAtk,ED,zone,artThorn,artGust,artFrost,artBolt,artStar,startAttack,dodge,keys,skR,skFree,spawnEnemy,PLAT,jump,dunEnter,dunLeave,DUNF,dunWin(){if(X.dun)dunLeave(true)},get dun(){return X.dun},get WLD(){return WLD},get jp(){return WLD?WLD.jp:JP1},setCam(y,pt,di){camYaw=y;if(pt!=null)camPitch=pt;if(di!=null)camDist=di},AF,NZ,EPX,nautTo,pl,joy,inputVec,CR:()=>CR(),get goTo(){return goTo},get steer(){return steer},set steer(v){steer=v},get mode(){return mode},startNew(){S=DEF();S.ch=13;S.x=0;S.z=1;mode='play';begin(true)},startDbg(){S=DEF();for(let n=2;n<=10;n++)S.fl['wr'+n]=1;S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit};mode='play';begin(true)},X,OB,GEAR,TOOLS,lockCycle,doReaction,teamAttack,formStart,ipUse,useTool,toolNext,caveEnter,caveNext,caveExit,LF:()=>LF(),get CUT(){return CUT},giveGear,equip,feed,felliXp,deckExec,deckMove,deckOpen,ruinGo,get CAVE_DOOR(){return CAVE_DOOR},spellHeal,useEther,fStage,findRx,proj,maxHp:()=>maxHp(),atkV:()=>atkV(),toBunt,BUNT_URL,get qLv(){return qLv},setQ,get naut(){return naut},pushOut,INST,blocked,hgt,pBlocked,COL,HOUSES,PZD,CUT,openPuzzle,closePuzzle,cutscene,joinParty,CMP,lunOpen,spawnOrun,get puzOpen(){return puzOpen},get W(){return WLD},get ch(){return curCh},INT,CHP,switchWorld,travel,ARENA,herbs,chests,drops,projs,step:(dt,n)=>{for(let i=0;i<n;i++){time+=dt;for(const o of animObjs)o.fn(time,dt);update(dt);updParticles(dt)}},cam:(y,p,d)=>{camYaw=y;camPitch=p;camDist=d},S:()=>S,pl,E,NPC,begin,say,toast,setStage,hurtP,get boss(){return boss},camera,scene,renderer,skill1,skill2,startAttack,dodge,interact,keys,MP,mpMsg,mpSend,mpHost,mpJoin,mpTick,variantCos,sharedFlat,spawnEnemy,hurtE,killE,get boss2(){return boss},toggleMenu,renderMenu,XT,XO};

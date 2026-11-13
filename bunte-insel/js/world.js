@@ -643,7 +643,7 @@ BI.buildWorld = function (scene) {
   /* ---------- Bäume, Büsche, Blumen, Steine ---------- */
   /* Bäume: Stamm/Krone/Kegel als Instanzen (je 1 Draw-Call), damit sie einzeln wackeln können */
   W.trees = [];
-  const IL = { trunk: [], crown: [], cone: [] }, _im = new THREE.Matrix4(), _iq = new THREE.Quaternion(), _ip = new THREE.Vector3(), _is = new THREE.Vector3();
+  const IL = { trunk: [], crown: [], cone: [], tree_oak: [], tree_fat: [], tree_autumn: [], tree_pine: [], tree_pine_tall: [] }, _im = new THREE.Matrix4(), _iq = new THREE.Quaternion(), _ip = new THREE.Vector3(), _is = new THREE.Vector3();
   function inst(kind, T, x, y, z, sx, sy, sz, color, jit) {
     _im.compose(_ip.set(x, y, z), _iq.identity(), _is.set(sx, sy, sz)); const c = new THREE.Color(color); if (jit) c.multiplyScalar(1 + (rnd() - .5) * jit);
     const e = { m: _im.clone(), c, kind, mesh: null, i: IL[kind].length }; IL[kind].push(e); T.parts.push(e);
@@ -664,6 +664,7 @@ BI.buildWorld = function (scene) {
       inst('trunk', T, x, 0, z, .85 * s, 1.6 * s, .85 * s, 0x7a5233, 0);
       inst('trunk', T, x, 0, z, 1.25 * s, .32 * s, 1.25 * s, 0x765033, 0);
       for (let k = 0; k < 3; k++) inst('cone', T, x, (1.2 + k * 1.5) * s, z, (2.1 - k * .5) * s, 2.4 * s, (2.1 - k * .5) * s, pick([0x377f50, 0x40925b, 0x296d47]), .1);
+      inst((Math.abs(Math.floor(x * 7 + z * 13)) & 1) ? 'tree_pine' : 'tree_pine_tall', T, x, 0, z, 4.6 * s, 4.6 * s, 4.6 * s, 0xffffff, 0); /* echtes 3D-Modell (Kenney, CC0) – ersetzt die Grundformen, sobald deko.bin geladen ist */
       W.addCircle(x, z, .6);
     } else {
       const blossom = Math.abs(Math.floor(x * 17 + z * 11)) % 13 === 0;
@@ -674,6 +675,7 @@ BI.buildWorld = function (scene) {
       inst('crown', T, x - .8 * s, 3.65 * s, z + .55 * s, 1.06 * s, .94 * s, 1.06 * s, blossom ? 0xf2aac5 : 0x78bd80, 0);
       inst('crown', T, x + .28 * s, 4.45 * s, z + .2 * s, .82 * s, .72 * s, .82 * s, blossom ? 0xf9d0dd : 0x94cd93, 0);
       inst('crown', T, x - 1.12 * s, 3.25 * s, z - .42 * s, .83 * s, .72 * s, .83 * s, blossom ? 0xf2bad0 : 0x6ead74, 0);
+      { const r = Math.abs(Math.floor(x * 5 + z * 3)) % 9; inst(blossom ? 'tree_autumn' : r < 5 ? 'tree_oak' : 'tree_fat', T, x, 0, z, 4.6 * s, 4.6 * s, 4.6 * s, 0xffffff, 0); }
       W.addCircle(x, z, .65);
     }
     W.trees.push(T);
@@ -685,17 +687,25 @@ BI.buildWorld = function (scene) {
     const mat = new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true }); W.treeMat = mat;
     /* je 120-m-Kachel eine eigene Instanz-Gruppe mit passender Hülle (Platz für umfallende Bäume): unsichtbare Kacheln werden übersprungen */
     const CELL = 120, PAD = 14;
-    for (const k of ['trunk', 'crown', 'cone']) {
+    const MODEL = ['tree_oak', 'tree_fat', 'tree_autumn', 'tree_pine', 'tree_pine_tall'], tiny = new THREE.BufferGeometry(); tiny.setAttribute('position', new THREE.BufferAttribute(new Float32Array(9), 3)); W.treeMeshes = {};
+    for (const k of MODEL) geos[k] = tiny;
+    for (const k of ['trunk', 'crown', 'cone', ...MODEL]) {
       const cells = new Map(); for (const e of IL[k]) { const key = Math.floor(e.m.elements[12] / CELL) + ',' + Math.floor(e.m.elements[14] / CELL); (cells.get(key) || cells.set(key, []).get(key)).push(e); }
       for (const list of cells.values()) {
         const g = new THREE.BufferGeometry(); for (const a in geos[k].attributes) g.setAttribute(a, geos[k].attributes[a]); if (geos[k].index) g.setIndex(geos[k].index);
         const bb = new THREE.Box3(); for (const e of list) bb.expandByPoint(_ip.set(e.m.elements[12], e.m.elements[13], e.m.elements[14]));
         g.boundingSphere = bb.getBoundingSphere(new THREE.Sphere()); g.boundingSphere.radius += PAD;
         const m = new THREE.InstancedMesh(g, mat, list.length); m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-        list.forEach((e, i) => { e.i = i; m.setMatrixAt(i, e.m); m.setColorAt(i, e.c); e.mesh = m; }); scene.add(m); W.bigMeshes.push(m);
+        list.forEach((e, i) => { e.i = i; m.setMatrixAt(i, e.m); m.setColorAt(i, e.c); e.mesh = m; }); scene.add(m); W.bigMeshes.push(m); (W.treeMeshes[k] || (W.treeMeshes[k] = [])).push(m);
+        if (MODEL.includes(k)) { m.userData.n = list.length; m.count = 0; }
       }
     }
   }
+  /* Echte Baum-Modelle einschalten: Kenney-Geometrie in die Instanz-Gruppen, Grundformen (Stamm/Kugeln/Kegel) auf 0 Instanzen */
+  W.useTreeModels = function (D) {
+    let ok = 0; for (const k of ['tree_oak', 'tree_fat', 'tree_autumn', 'tree_pine', 'tree_pine_tall']) { const g = D.geo(k); if (!g) return false; for (const m of W.treeMeshes[k] || []) { const n = new THREE.BufferGeometry(); for (const a in g.attributes) n.setAttribute(a, g.attributes[a]); n.setIndex(g.index); n.boundingSphere = m.geometry.boundingSphere; m.geometry = n; m.count = m.userData.n; ok++; } }
+    if (!ok) return false; for (const k of ['trunk', 'crown', 'cone']) for (const m of W.treeMeshes[k] || []) m.count = 0; W.treeModels = true; return true;
+  };
   const _a = new THREE.Matrix4(), _r = new THREE.Matrix4(), _b = new THREE.Matrix4(), _ax = new THREE.Vector3(), _touch = new Set();
   /* Baum um den Fuß kippen (ang) – Kipprichtung ist die Schlagrichtung (wx,wz) */
   function poseTree(T, ang) {

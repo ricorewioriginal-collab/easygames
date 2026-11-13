@@ -12,7 +12,7 @@ export function createNautZone(c) {
   function lakeFor(n, pathx, wl) {
     if ([5, 12].includes(n)) return null;   // Aqualis liegt unter dem Meer (dort taucht das U-Boot frei durch die Stadt)
     const side = n % 2 ? 1 : -1, z = -98, x = Math.max(-96, Math.min(96, pathx(z) + side * 60));
-    return { x, z, r: 21, wl: wl ?? -1, dep: 7, kind: n === 7 ? 'lava' : n === 9 ? 'cloud' : 'water' };   // Ignara: Lavasee (Hitzeschild), Astralis: Wolkenmeer
+    return { x, z, r: 21, wl: wl ?? -1, dep: 10, kind: n === 7 ? 'lava' : n === 9 ? 'cloud' : 'water' };   // Ignara: Lavasee (Hitzeschild), Astralis: Wolkenmeer
   }
   // innerhalb des Radius liegt alles unter Wasser (Mulde bis dep tief), dahinter steigt ein Ufer an und geht ins Gelände über
   const carve = (L, q, x, z) => { if (!L) return q; const d = Math.hypot(x - L.x, z - L.z); if (d > L.r * 1.35) return q;
