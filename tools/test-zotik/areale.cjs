@@ -1,27 +1,29 @@
-// Areale der Märchenwelten (Spiegelwald): Waldwände sperren, Plateaus über Rampen erreichbar, Brücken tragen über Schlucht und Abgrund
+// Areale der Welten (Märchenwelten mit `areal`): Plateaus über Rampen erreichbar und eben, Brücken tragen, Schluchten sind Abgrund,
+// alle Truhen zu Fuß erreichbar, Waldwände sperren. Aufruf: node areale.cjs [weltnummern …]
 const { chromium, ARGS, open, intro, skip, flood } = require('./lib.cjs');
 let ok = 0, n = 0; const chk = (c, m) => { n++; if (c) ok++; console.log((c ? 'ok   ' : 'FEHL ') + m); };
+const only = process.argv.slice(2).map(Number);
 (async () => { const b = await chromium.launch({ args: ARGS }); const p = await open(b); const w = ms => p.waitForTimeout(ms);
   await p.evaluate(() => { const Z = __zotik; Z.startDbg(); const S = Z.S(); S.stage = 8; S.lvl = 20; }); await intro(p); await skip(p);
-  await p.evaluate(() => __zotik.switchWorld(21)); await w(3000); for (let i = 0; i < 10; i++) { await skip(p); await w(250); }
-  await flood(p);
-  const r = await p.evaluate(() => { const Z = __zotik, W = Z.WLD, A = W.mw.areal, o = {};
-    o.tiers = A.tiers.map(t => !!window.__near(t[0], t[1], 2.4)); o.top = A.tiers.map(t => +Z.hgt(t[0], t[1]).toFixed(2));
-    o.wall = [[60, 10], [-90, -70], [0, -125]].map(([x, z]) => W.blocked(x, z)); o.cut = W.blocked(42, -93.8);
-    const walk = (x0, z0, x1, z1, y) => { const pl = Z.pl; pl.x = x0; pl.z = z0; pl.y = y; pl.vy = 0; pl.air = false; Z.cam(Math.atan2(x0 - x1, z0 - z1), .35, 9); Z.keys.KeyW = true;
-      for (let i = 0; i < 150 && Math.hypot(pl.x - x1, pl.z - z1) > 1; i++) { Z.cam(Math.atan2(pl.x - x1, pl.z - z1), .35, 9); Z.step(1 / 30, 1); } Z.keys.KeyW = false; for (let i = 0; i < 10; i++) Z.step(1 / 30, 1);
-      return { d: +Math.hypot(pl.x - x1, pl.z - z1).toFixed(1), y: +pl.y.toFixed(2) }; };
-    const [ax, az, bx, bz, by] = A.bridges[1], ux = (bx - ax), uz = (bz - az), L = Math.hypot(ux, uz);
-    o.b1 = walk(ax - ux / L * 2, az - uz / L * 2, bx + ux / L * 2, bz + uz / L * 2, by);
-    const [cx, cz, dx, dz] = A.bridges[0], vx = dx - cx, vz = dz - cz, M = Math.hypot(vx, vz);
-    o.b0 = walk(cx - vx / M * 3, cz - vz / M * 3, dx + vx / M * 3, dz + vz / M * 3, Z.hgt(cx - vx / M * 3, cz - vz / M * 3));
-    o.props = Z.scene.children.length; return o; });
-  console.log(JSON.stringify(r));
-  chk(r.tiers.every(Boolean), 'alle Plateaus zu Fuß über Rampen erreichbar');
-  chk(r.top.every((y, i) => Math.abs(y - [3.4, 4, 5.5, 5.5][i]) < .05), 'Plateau-Oberkanten eben auf Sollhöhe');
-  chk(r.wall.every(Boolean), 'Waldwände zwischen den Arealen sperren');
-  chk(r.cut, 'Schlucht ist ein Abgrund (gesperrt)');
-  chk(r.b1.d < 1.5 && Math.abs(r.b1.y - 5.5) < .3, 'Hängebrücke zwischen den Plateaus begehbar');
-  chk(r.b0.d < 1.5, 'Brücke über die Splitterkluft begehbar');
+  const L = await p.evaluate(() => __zotik.MWX().WORLDS.filter(w => w.areal).map(w => w.n));
+  for (const wn of L) { if (only.length && !only.includes(wn)) continue;
+    await p.evaluate(n => __zotik.switchWorld(n), wn); await w(2500); for (let i = 0; i < 10; i++) { await skip(p); await w(200); }
+    await flood(p);
+    const r = await p.evaluate(() => { const Z = __zotik, W = Z.WLD, A = W.mw.areal, o = { name: W.mw.name };
+      o.tiers = A.tiers.map(t => !!window.__near(t[0], t[1], 2.4)); o.flat = A.tiers.every(t => Math.abs(Z.hgt(t[0], t[1]) - t[3]) < .05);
+      o.chests = (W.mw.chests || []).filter(([x, z]) => !window.__near(x, z, 2.4)).map(q => q.join('/'));
+      o.cuts = (A.cuts || []).every(c => W.blocked((c[0] + c[2]) / 2, (c[1] + c[3]) / 2));
+      let wall = 0; for (let i = 0; i < 400; i++) { const x = -100 + (i % 20) * 10, z = 10 - (i / 20 | 0) * 7; if (W.blocked(x, z)) wall++; } o.wall = wall;
+      const walk = (x0, z0, x1, z1, y) => { const pl = Z.pl; pl.x = x0; pl.z = z0; pl.y = y; pl.vy = 0; pl.air = false; Z.keys.KeyW = true;
+        for (let i = 0; i < 160 && Math.hypot(pl.x - x1, pl.z - z1) > 1; i++) { Z.cam(Math.atan2(pl.x - x1, pl.z - z1), .35, 9); Z.step(1 / 30, 1); } Z.keys.KeyW = false; for (let i = 0; i < 10; i++) Z.step(1 / 30, 1);
+        return Math.hypot(pl.x - x1, pl.z - z1) < 1.5; };
+      o.bridges = (A.bridges || []).map(([ax, az, bx, bz, by, wk]) => { const L = Math.hypot(bx - ax, bz - az), ux = (bx - ax) / L, uz = (bz - az) / L, e = wk ? -.6 : 2.5, sx = ax - ux * e, sz = az - uz * e; return walk(sx, sz, bx + ux * e, bz + uz * e, Math.max(by, Z.hgt(sx, sz))); });   // Wehrgang (wk): nur auf der Mauerkrone
+      return o; }); console.log(JSON.stringify(r.bridges));
+    chk(r.tiers.every(Boolean), `${r.name}: alle ${r.tiers.length} Plateaus über Rampen erreichbar`);
+    chk(r.flat, `${r.name}: Plateau-Oberkanten eben auf Sollhöhe`);
+    chk(!r.chests.length, `${r.name}: alle Truhen zu Fuß erreichbar` + (r.chests.length ? ' – NICHT: ' + r.chests.join(', ') : ''));
+    chk(r.cuts, `${r.name}: Schluchten sind Abgrund (gesperrt)`);
+    chk(r.wall > 80, `${r.name}: Waldwände zwischen den Arealen (${r.wall}/400 Stichproben gesperrt)`);
+    chk(r.bridges.every(Boolean), `${r.name}: alle ${r.bridges.length} Brücken begehbar`); }
   chk(!p.errs.length, 'keine Fehler auf der Seite' + (p.errs.length ? ': ' + p.errs[0] : ''));
   console.log(ok + '/' + n + ' bestanden'); await b.close(); process.exit(ok === n ? 0 : 1); })();

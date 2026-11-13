@@ -25,7 +25,7 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       // Mauer zwischen zwei Punkten, optional mit Zinnen
       wall(x0, z0, x1, z1, h, th, col, o = {}) { const dx = x1 - x0, dz = z1 - z0, L = Math.hypot(dx, dz), ry = Math.atan2(dx, dz) + Math.PI / 2, cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
         b.box(cx, 0, cz, L, h, th, col, { ry, solid: 1, tex: o.tex || 'stone' });
-        if (o.cren) for (let i = 0; i < L / 2 - .5; i++) { const t = (i + .75) / (L / 2), px = x0 + dx * t, pz = z0 + dz * t; b.box(px, h, pz, 1, .8, th * .9, col, { ry }); } },
+        if (o.cren) for (let i = 0; i < L / 2 - .5; i++) { const t = (i + .75) / (L / 2), px = x0 + dx * t, pz = z0 + dz * t; if (!o.walk) b.box(px, h, pz, 1, .8, th * .9, col, { ry }); else for (const sd of [-1, 1]) b.box(px - dz / L * sd * (th / 2 - .25), h, pz + dx / L * sd * (th / 2 - .25), 1, .9, .5, col, { ry }); } },   /* walk: Zinnen nur an den Kanten, oben begehbar */
       tent(x, z, r, h, col, o = {}) { b.cyl(x, 0, z, .1, h + .4, 0x5a4030, { lo: 1 }); const t = b.cone(x, 0, z, r, h, col, { lo: 1, solid: 1 }); t.rotation.y = o.ry || .3; if (b.enter && r >= 1.6) b.enter('tent', x, z, r * .85, { h, wall: col });
         if (o.flag) b.box(x + .35, h + .3, z, .7, .4, .03, o.flag, { cast: false }); },
       stall(x, z, cloth, ry, goods) { const g = new T.Group(); g.position.set(x, 0, z); g.rotation.y = ry || 0; b.g.add(g);
@@ -280,7 +280,7 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       for (const [x, z] of [[28, -48], [44, -46], [46, -58]]) { b.cyl(x, 0, z, .07, 4.4, 0x3a2a1a, { lo: 1, solid: 1 }); const f = b.box(x + .55, 3.4, z, 1, 1.8, .04, R, { cast: false }); A.sway(f, x); }
       b.cyl(38, .5, -48, .8, 1, 0x8a2a1a, { solid: 1 }); b.cyl(38, 1.5, -48, .82, .06, 0xe8d8c0, { cast: false });
       // Große Mauer mit Torturm (rotes Dach) und Wachtürmen
-      const Z = -87; K.wall(-62, Z, -6, Z, 7, 4, S, { cren: 1 }); K.wall(6, Z, 62, Z, 7, 4, S, { cren: 1 });
+      const Z = -87; K.wall(-62, Z, -6, Z, 7, 4, S, { cren: 1, walk: 1 }); K.wall(6, Z, 62, Z, 7, 4, S, { cren: 1, walk: 1 });
       b.box(0, 0, Z, 12, 10, 6, 0xa8a296, { solid: 1 }); b.box(0, 0, Z + 3.05, 3.6, 5, .1, 0x2a2420, { cast: false }); b.box(0, 10, Z, 8, 3, 4.6, R);
       const gr = b.cone(0, 13, Z, 1, 2.6, 0x2a2a30, { lo: 1 }); gr.rotation.y = Math.PI / 4; gr.scale.set(7.4, 2.6, 5.2); for (const s of [-1, 1]) { const tip = b.cone(s * 5.2, 13.1, Z + 2.4, .15, .7, 0x2a2a30); tip.rotation.z = -s; }
       for (const x of [-30, 30]) { b.box(x, 0, Z, 6.4, 11, 6.4, S, { solid: 1 }); b.box(x, 11, Z, 7, .8, 7, 0x7a746a); }
