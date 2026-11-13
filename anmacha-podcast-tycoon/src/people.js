@@ -372,6 +372,19 @@
       mg.add(lip, teeth, ul); mg.rotation.x = -0.12; toHead(mg); fig.extra.pop(); fig.mouth = mg;
       mg.traverse(o => { if (o.material) fig.mats.push(o.material); });
     }
+    // Schmuck: Nasenpiercing (Septum-Ring) und Ohrring mit Kreuz
+    if (L.piercing || L.earring) {
+      const met = new T.MeshStandardMaterial({ color: 0xc8ccd4, metalness: 0.9, roughness: 0.25 }), blk = new T.MeshStandardMaterial({ color: 0x18181c, metalness: 0.6, roughness: 0.35 });
+      fig.mats.push(met, blk);
+      if (L.piercing) { const r = new T.Mesh(new T.TorusGeometry(0.0062, 0.0011, 6, 16), met); r.position.copy(hc).add(new T.Vector3(0, -0.043, surfZ(0, -0.04) + 0.006)); r.rotation.x = 0.35; toHead(r); }
+      if (L.earring) {
+        const sx = L.earring === 'r' ? -1 : 1, e = new T.Group(); e.position.copy(hc).add(new T.Vector3(sx * R[0] * 0.99, -0.03, -0.004));
+        const hoop = new T.Mesh(new T.TorusGeometry(0.0045, 0.001, 6, 12), blk); hoop.rotation.y = Math.PI / 2; e.add(hoop);
+        const v = new T.Mesh(new T.BoxGeometry(0.0022, 0.016, 0.0022), blk); v.position.y = -0.012; e.add(v);
+        const h = new T.Mesh(new T.BoxGeometry(0.0022, 0.0022, 0.009), blk); h.position.y = -0.009; e.add(h);
+        toHead(e); fig.extra.pop(); fig.ear = e;
+      }
+    }
     // Aufdruck (Logo + Name) und Ausweis: flache Teile auf dem Oberkörper
     if (L.logo || L.badge) {
       const tex = decalTex(L.logo ? L.name : '', L.badge), m = new T.MeshStandardMaterial({ map: tex, transparent: true, roughness: 0.7, alphaTest: 0.05 });
@@ -402,7 +415,7 @@
     };
     fig.look = L0; fig.people = true;
     const baseDispose = fig.dispose;
-    fig.dispose = () => { baseDispose(); geo.dispose(); if (fig.mouth) fig.mouth.traverse(o => { if (o.geometry) o.geometry.dispose(); }); };
+    fig.dispose = () => { baseDispose(); geo.dispose(); [fig.mouth, fig.ear].forEach(g => g && g.traverse(o => { if (o.geometry) o.geometry.dispose(); })); };
     return fig;
   };
 })(typeof window !== 'undefined' ? window : globalThis);

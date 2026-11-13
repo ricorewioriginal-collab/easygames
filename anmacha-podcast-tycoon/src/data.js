@@ -34,8 +34,49 @@
       speed: 6.6, jump: 7.6, wave: 3.6, waveDmg: 2, strong: ['tech', 'tv'],
       perk: 'Kräftiger. Technik-Welle: schaltet Störsender sofort ab und repariert Geräte schneller.',
       blurb: 'Technik-Herz, Serienkenner und Hüter von Marcos Tagebuch.'
+    },
+    // Kein spielbarer Host: RicoReWi, der Social-Media-Junkie hinter den Kulissen (plant, baut Tools, nervt liebevoll)
+    rico: {
+      id: 'rico', name: 'RicoReWi', color: '#a46bff', npc: true,
+      look: { body: 'm', skin: '#efc3a4', hair: { style: 'spike', color: '#5a4030', vol: 1.5, quiff: 0.02 }, beard: '#6b4a30', brow: '#4e3524', eyes: '#3c3026', top: '#5b2d8c', topStyle: 'tee', bottom: '#2a2f3a', bottomStyle: 'pants', shoes: '#1d1d22', build: 1.12, belly: 0.55, name: 'RicoReWi', piercing: true, earring: 'l' },
+      blurb: 'Social-Media-Junkie, Dauerplaner und Tool-Bastler. Nervt das Team – natürlich nur ironisch.'
     }
   };
+  // RicoReWi platzt rein: Sprüche im Studio, in der Live-Aufnahme und in der Stadt
+  D.RICO_LINES = [
+    'Leute, ich hab ein neues Tool gebaut! Es plant, wann wir planen.',
+    'Kurze Frage: Darf ich das live auf TikTok streamen? … Zu spät, läuft schon.',
+    'Ich hab eine Tabelle für unsere Tabellen angelegt.',
+    'Der Algorithmus liebt euch heute! Also … zu 3 Prozent.',
+    'Kann einer von euch mal kurz in die Kamera winken? Für die Story. Und für die Story von der Story.',
+    'Ich hab die Folge schon geschnitten. Ihr habt sie noch gar nicht aufgenommen? Egal, sieht gut aus.',
+    'Neue Idee: Ein Radiosender nur für Radiosender.',
+    'Mein Handy hat 4 % Akku und 900 Benachrichtigungen. Alles läuft nach Plan.',
+    'Ich hab den Podcast-Feed optimiert. Er ist jetzt 0,2 Sekunden schneller und komplett lila.',
+    'Psst – ich bin gar nicht da. Ich bin nur ein Hologramm aus dem Planungs-Tool.'
+  ];
+  // Verrückte Ideen von Marco und Andrew – aus dem Alltag und aus dem Internet (Live-Aufnahme, Stadt, Szenen)
+  D.IDEAS = [
+    ['m', 'Was, wenn wir die nächste Folge komplett in Gisela aufnehmen? Während der Fahrt. Auf der Autobahn.', 'a', 'Und wer fährt? Du hältst das Mikro!'],
+    ['a', 'Ich hab im Internet gelesen: Pflanzen wachsen besser mit Podcast. Ich nehm jetzt für meinen Basilikum auf.', 'm', 'Der Basilikum hat schon mehr Hörer als wir.'],
+    ['m', 'Wir brauchen einen eigenen Jingle für Werbepausen. Gesungen. Von mir.', 'a', 'Dann brauchen wir auch Ohrstöpsel als Merch.'],
+    ['a', 'Neuer Trend: Leute hören Podcasts auf doppelter Geschwindigkeit. Wir reden ab jetzt einfach halb so schnell.', 'm', 'Daaas … iiist … geeeniaaal.'],
+    ['m', 'Ich hab beim Einkaufen einen Typen gesehen, der seinen Einkaufszettel als Sprachnachricht hatte. Fünf Minuten lang.', 'a', 'Das ist kein Einkaufszettel, das ist ein Hörbuch.'],
+    ['a', 'Lass uns ein Radio-Gewinnspiel machen! Der Preis: ein Tag mit Gisela.', 'm', 'Gisela braucht Urlaub, kein Gewinnspiel.'],
+    ['m', 'Ich will einen Smart-Kühlschrank, der unsere Folgen ankündigt, wenn man ihn aufmacht.', 'a', 'Und bei Gurken schreit er.'],
+    ['a', 'Die KI hat mir ein Rezept für Köttbullar geschrieben. Mit Gummibärchen.', 'm', 'Das probieren wir live. Für die Wissenschaft.'],
+    ['m', 'Wir machen eine Folge nur mit Geräuschen. Kein einziges Wort.', 'a', '… Mmmh.', ],
+    ['a', 'Was, wenn jeder Hörer ein Wort aussucht und wir daraus die Folge bauen?', 'm', 'Dann heißt die Folge „Banane Glasfaser Oma“.']
+  ];
+  // Hörer-Musikwünsche: freie Melodien aus Klavierlicht (../klavierlicht/archiv, gemeinfrei)
+  D.WISHES = [
+    { id: 'cancan', t: 'Can-Can', r: 'Bitte was zum Tanzen! 💃' }, { id: 'tuerkisch', t: 'Türkischer Marsch', r: 'Für meine Oma, die hört mit! 👵' },
+    { id: 'korobeiniki', t: 'Korobeiniki', r: 'Das Lied aus dem Klötzchen-Spiel!! 🧱' }, { id: 'maple-leaf-rag', t: 'Maple Leaf Rag', r: 'Ragtime bitte, ich putze gerade 🧽' },
+    { id: 'donauwalzer', t: 'An der schönen blauen Donau', r: 'Walzer für die Kaffeeküche ☕' }, { id: 'bergkoenig', t: 'In der Halle des Bergkönigs', r: 'Was Spannendes für die Bahnfahrt 🚆' },
+    { id: 'nachtmusik', t: 'Eine kleine Nachtmusik', r: 'Für die Nachtschicht 🌙' }, { id: 'morgenstimmung', t: 'Morgenstimmung', r: 'Ich bin gerade erst aufgestanden 😴' },
+    { id: 'neu-drunken-sailor', t: 'Drunken Sailor', r: 'Grüße vom Campingplatz! ⛺' }, { id: 'birthday', t: 'Happy Birthday', r: 'Meine Schwester hat Geburtstag! 🎂' },
+    { id: 'kanon', t: 'Kanon in D', r: 'Was Romantisches bitte 💕' }, { id: 'volk-the-irish-washerwoman', t: 'The Irish Washerwoman', r: 'Irisch! Ich bin auf dem Weg zum Pub 🍀' }
+  ];
 
   // ---------------------------------------------------------------- Sprüche in der Live-Aufnahme (je Rubrik)
   D.LINES = {
@@ -264,6 +305,7 @@
         ['n', 'Aus dem Podcast wird ein Sender: AnMaCha24 geht rund um die Uhr auf Sendung. Erste Nacht, erste Livesendung – und das Programm ist noch leer.'],
         ['m', 'Wir brauchen Themen für acht Stunden. Wie viele haben wir?'],
         ['a', 'Drei. Und eins davon ist „Marco hat Hunger“.'],
+        ['r', 'Keine Panik! Ich hab ein Tool gebaut, das Themen findet. Es hat bisher „Marco hat Hunger“ gefunden.'],
         ['n', 'Sammle 16 Themen-Funken in der nächtlichen Stadt, dazu 4 goldene ({x} für die Schallwelle gegen Störsender).']
       ],
       outro: [['a', 'Acht Stunden durchgesendet. Ich höre jetzt Stimmen.'], ['m', 'Das sind die Hörer, Andrew. Die rufen an.']]
@@ -275,6 +317,7 @@
         ['n', 'Clubradio24 legt auf – aber das Funkloch hat die Club-Mixtapes in der ganzen Stadt versteckt.'],
         ['m', 'Ohne Mixtapes spielen wir Fahrstuhlmusik. Vier Stunden lang.'],
         ['a', 'Ich mag Fahrstuhlmusik.'],
+        ['r', 'Ich hab schon 40 Clubnacht-Posts geplant. Mit Countdown. Der Countdown läuft seit gestern.'],
         ['m', 'Genau deshalb suchen wir jetzt die Mixtapes!'],
         ['n', 'Finde 12 Mixtapes 📼 zwischen den Neonlichtern, bevor die Clubnacht beginnt.']
       ],

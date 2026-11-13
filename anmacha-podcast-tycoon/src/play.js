@@ -349,6 +349,7 @@
     W.particles.attach(S.scene);
     buildCity(sky, rng);
     buildGisela(FUNKHAUS.door.x + 11, FUNKHAUS.door.z + 3.5);
+    buildRico(FUNKHAUS.door.x - 6.5, FUNKHAUS.door.z + 4);
     spawnHosts(cfg.host || 'andrew', FUNKHAUS.door.x, FUNKHAUS.door.z + 6);
     W.cam.yaw = 0; W.cam.pitch = 0.32; W.cam.cur = null; W.cam.tx = S.pl.x; W.cam.ty = 1.6; W.cam.tz = S.pl.z;
     S.beacon = beam(0xff8a1e);
@@ -361,7 +362,7 @@
   };
   P.stop = function () {
     if (!S) return;
-    ['andrew', 'marco'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent) f.root.parent.remove(f.root); });
+    ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent) f.root.parent.remove(f.root); });
     S.npcs.forEach(n => { if (n.fig) n.fig.dispose(); n.fig = null; });
     if (S.cat) { if (S.cat.mixer) S.cat.mixer.stopAllAction(); S.group.remove(S.cat.m); }
     S.group.traverse(o => { if (o.geometry && !o.isSkinnedMesh) o.geometry.dispose(); });
@@ -561,6 +562,7 @@
     }
     for (const r of S.relays) if (!r.fixed && Math.hypot(r.x - p.x, r.z - p.z) < 2.2 && Math.abs(r.y - p.y) < 1.6) return { label: 'Verteiler reparieren (halten)', hold: r };
     if (S.gisela && S.gisela.t <= 0 && Math.hypot(S.gisela.x - p.x, S.gisela.z - p.z) < 3.6) return { label: 'Gisela hupen 📯', run: honk };
+    if (S.rico && S.rico.t <= 0 && Math.hypot(S.rico.x - p.x, S.rico.z - p.z) < 2.6) return { label: 'Mit RicoReWi quatschen 📱', run: ricoTalk };
     if (S.imbiss && Math.hypot(S.imbiss.x - p.x, S.imbiss.z - p.z) < 3.4 && S.carry < 3 && S.fed + S.carry < S.hungryNeed) return { label: 'Bestellungen abholen 🍟', run: pickOrder };
     if (S.mode === 'free' && S.net !== 'guest' && p === S.pl && Math.hypot(FUNKHAUS.door.x - p.x, FUNKHAUS.door.z - p.z) < 3.5) return { label: 'Ins Funkhaus (Menü)', run: () => finish(true) };
     return null;
@@ -715,6 +717,7 @@
     // Zeit
     if (S.left > 0 && S.mode !== 'free') { S.left -= dt; if (S.left <= 0) { S.left = 0; if (S.mode === 'jagd') return finish(true, 'time'); if (!S.done) return finish(false, 'time'); } }
     updPickups(dt); updDrones(dt); updNpcs(dt); updObjective(dt); updRings(dt);
+    if (S.rico) { S.rico.f.update(dt); if (S.rico.t > 0) S.rico.t -= dt; }
     if (S.gisela) { if (S.gisela.t > 0) S.gisela.t -= dt; S.gisela.g.position.y = S.gisela.t > 0 ? Math.abs(Math.sin(S.time * 18)) * 0.06 : 0; }
     if (S.boss) updBoss(dt);
     if (S.cat) updCat(dt);
@@ -844,6 +847,20 @@
   }
   const HONK = [['m', 'Das ist Gisela! Umgebaut mit meinen eigenen Händen. Und etwas Panzertape.'], ['a', 'Marco, die Tür hängt schief.'], ['m', 'Das ist kein Fehler, das ist Charakter!'],
     ['a', 'Ich glaub, Gisela hat gerade ein Kabel verloren.'], ['m', 'Gisela fährt mit Liebe. Und mit ein bisschen Diesel.'], ['a', 'Wann machen wir endlich die Podcast-Tour mit ihr?'], ['m', 'Psst, nicht so laut – sie ist empfindlich.']];
+  // RicoReWi: Social-Media-Junkie vor dem Funkhaus, immer am Planen (Handy, Tools, Ideen)
+  function buildRico(x, z) {
+    const f = W.hosts.rico; if (!f) return;
+    S.group.add(f.root); f.root.position.set(x, 0, z); f.root.rotation.y = 0.6; f.root.visible = true; f.play('idle');
+    S.rico = { x, z, f, t: 0, n: 0 };
+  }
+  function ricoTalk() {
+    const R = S.rico; R.t = 1.2; R.n++;
+    R.f.root.rotation.y = Math.atan2(S.pl.x - R.x, S.pl.z - R.z); R.f.play('arms', { fade: 0.2 }); setTimeout(() => S && S.rico && R.f.play('idle', { fade: 0.4 }), 1700);
+    const first = R.n === 1, rub = U.pick(D.RUBRIC_IDS);
+    if (first) { S.got[rub] += 3; drawRub(); S.score += 200; }
+    AMC.UI.bubble('RicoReWi', U.pick(D.RICO_LINES), first ? '+3 ' + D.RUBRICS[rub].icon + ' ' + D.RUBRICS[rub].name + ' · Rico teilt euch' : null);
+    AMC.Audio.sfx('talk'); W.particles.burst(R.x, 2.2, R.z, 0xa46bff, 14);
+  }
   function honk() {
     const G2 = S.gisela; G2.honk++; G2.t = 0.6; S.honks = (S.honks || 0) + 1;
     AMC.Audio.sfx('horn'); W.particles.burst(G2.x, 2.6, G2.z, 0xff8a1e, 26, { speed: 5 }); W.particles.burst(G2.x, 0.6, G2.z, 0xcccccc, 14, { speed: 2, up: 1 });

@@ -21,7 +21,7 @@
       const cv = U.$('view'); I.bindCanvas(cv);
       await W.init(cv, (f, l) => progress(0.08 + f * 0.82, l));
       progress(0.93, 'Studio');
-      ['andrew', 'marco'].forEach(id => { if (W.hosts[id]) UI.faces[id] = W.portrait(W.hosts[id]); });
+      ['andrew', 'marco', 'rico'].forEach(id => { if (W.hosts[id]) UI.faces[id] = W.portrait(W.hosts[id]); });
       AMC.Studio.build();
       UI.buildTouch(); UI.initNowPlaying();
       AMC.Media.refresh();
@@ -342,7 +342,7 @@
     const s = UI.open('<div class="panel glass"><header><h2>ℹ️ Mitwirkende</h2><button class="btn small" data-nav data-first id="crBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
       '<p><b>AnMaCha – Der Podcast (Offizielles Spiel)</b><br>Mit Marco und Andrew. Story frei nach den Folgen, Rubriken und Neuigkeiten auf <a href="https://anmacha.de" target="_blank" rel="noopener" data-nav>anmacha.de</a>.</p>' +
       '<p><b>Podcast & Sender</b><br>Folgen direkt vom offiziellen Podcast-Feed (podcaster.de), Sender live über laut.fm – nichts davon ist im Spiel gespeichert. Die Sender laufen auch bei RicoReWi Radio.</p>' +
-      '<p><b>3D & Ton (frei lizenziert)</b><br>Menschen und Bewegungen: Quaternius „Universal Base Characters“ und „Universal Animation Library“ (CC0) · Gebäude: Quaternius „Ultimate Textured Building Pack“ (CC0) · Katze: Quaternius „Ultimate Monsters“ (CC0) · Bäume, Brunnen, Felsen: Kenney „Fantasy Town Kit“ (CC0) · Geräusche: Kenney (CC0) · Musik und Effekte: im Browser erzeugt · Three.js (MIT) · Schrift Fredoka (OFL).</p>' +
+      '<p><b>3D & Ton (frei lizenziert)</b><br>Menschen und Bewegungen: Quaternius „Universal Base Characters“ und „Universal Animation Library“ (CC0) · Gebäude: Quaternius „Ultimate Textured Building Pack“ (CC0) · Katze: Quaternius „Ultimate Monsters“ (CC0) · Bäume, Brunnen, Felsen: Kenney „Fantasy Town Kit“ (CC0) · Geräusche: Kenney (CC0) · Musikwünsche: gemeinfreie Melodien aus Klavierlicht · Musik und Effekte: im Browser erzeugt · Three.js (MIT) · Schrift Fredoka (OFL).</p>' +
       '<p class="hint">Ein Spiel aus der easygames-Sammlung · Wir ♥ Medien</p></div>', { back: () => UI.close(s) });
     s.el.querySelector('#crBack').onclick = () => UI.close(s);
   }
@@ -361,6 +361,7 @@
     b('pMenu').onclick = () => UI.confirm(G.net ? 'Koop-Spiel verlassen? Die Verbindung wird getrennt.' : 'Zurück ins Hauptmenü? Der Fortschritt in diesem Level geht verloren.', () => { if (G.net) AMC.Net.close(); toMenuScene(); mainMenu(); });
   }
 
+  G.pause = () => { if (!G.paused && /^(play|show|quiz)$/.test(G.mode)) pause(); };
   // ------------------------------------------------------------------ Spielschleife
   let last = performance.now(), slow = 0;
   function frame(now) {
@@ -380,7 +381,7 @@
         else if (W.particles) W.particles.update(0);
         AMC.Play.render();
       } else if (G.mode === 'show') {
-        if (!uiBusy && I.hit('pause') && AMC.Show.inMenuRoot()) pause();
+        if (!uiBusy && I.hit('pause') && !(AMC.Show.state() && AMC.Show.state().menu !== 'root' && AMC.Show.state().phase === 'menu')) pause();
         if (!G.paused && !uiBusy) AMC.Show.update(dt); else AMC.Studio.update(dt * 0.3);
         AMC.Show.render();
       } else if (G.mode === 'quiz') {

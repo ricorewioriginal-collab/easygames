@@ -355,3 +355,6 @@ html.eg-pad .tb, html.dev-pad #touch { display: none; }
 
 /* Dialog-Szenen: Box unten, Figuren oben sichtbar */
 .screen.dlg-screen { align-items: end; justify-items: center; }
+.sh-pause { pointer-events: auto; border: 0; color: #fff; font-size: 18px; width: 42px; height: 42px; border-radius: 14px; cursor: pointer; flex: none; }
+.qz-pause { position: absolute; top: calc(10px + var(--safe-t)); right: calc(10px + var(--safe-r)); z-index: 3; }
+.sh-top .sh-pause { position: fixed; top: calc(10px + var(--safe-t)); right: calc(10px + var(--safe-r)); z-index: 4; }

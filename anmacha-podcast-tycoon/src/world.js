@@ -63,7 +63,7 @@
     W.kit = root.EasyFiguren ? root.EasyFiguren.create({ THREE: T, base: '../figuren/', srgb: true }) : null;
     if (W.kit) {
       await W.kit.load().catch(() => {}); tick('Menschen & Bewegungen');
-      for (const id of ['andrew', 'marco']) { W.hosts[id] = await makeHost(id); tick(AMC.Data.HOSTS[id].name); }
+      for (const id of ['andrew', 'marco', 'rico']) { W.hosts[id] = await makeHost(id); if (id !== 'rico') tick(AMC.Data.HOSTS[id].name); }
     } else { tick(); tick(); tick(); }
     // Katze (Quaternius „Ultimate Monsters“, CC0) – mit eigenen Bewegungen für Kapitel 10
     await new Promise(res => loader.load('models/cat.glb', g => { W.cat = g; res(); }, null, () => res()));
