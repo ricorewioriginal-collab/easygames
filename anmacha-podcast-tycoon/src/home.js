@@ -305,6 +305,10 @@
   HM.SENDER = AMC.Sender.HOUSES;
   HM.SENDER_RUB = AMC.Sender.RUB;
   HM.senderVisited = () => Object.keys(Save.data.senders || {}).length;
+  HM.camper = function (host, onClose) {
+    T = root.THREE; HM.close(true);
+    return AMC.Camper.open(host, KIT, onClose);
+  };
   HM.station = function (slug, host, onClose) {
     T = root.THREE; HM.close(true);
     return AMC.Sender.open(slug, host, KIT, onClose);
