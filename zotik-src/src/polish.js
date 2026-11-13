@@ -47,3 +47,24 @@ export const PROFILES = {
 };
 export function loadProfile() { try { const v = localStorage.getItem('zotik_gfx'); return PROFILES[v] ? v : 'auto' } catch (e) { return 'auto' } }
 export function saveProfile(v) { try { localStorage.setItem('zotik_gfx', v) } catch (e) { } }
+
+/* ---- Umgebungsklang: ein Rauschbett (Wind, Rauschen, Glut) mit Filter je Welt-Art, läuft leise unter der Musik ---- */
+const BED = { 0: [520, .5, .022, .08], 1: [380, .7, .05, .12], 2: [140, .8, .045, .2], 3: [900, .6, .018, .1], 4: [240, .6, .05, .15] };
+export function createAmbient() {
+  let ctx = null, g = null, f = null, lfo = null, lg = null, last = -2;
+  function init(AC, master) {
+    const b = AC.createBuffer(1, AC.sampleRate * 2, AC.sampleRate), a = b.getChannelData(0); let y = 0;
+    for (let i = 0; i < a.length; i++) { y = y * .96 + (Math.random() * 2 - 1) * .04; a[i] = y * 5 }
+    const s = AC.createBufferSource(); s.buffer = b; s.loop = true;
+    f = AC.createBiquadFilter(); f.type = 'bandpass'; g = AC.createGain(); g.gain.value = 0;
+    lfo = AC.createOscillator(); lfo.frequency.value = .12; lg = AC.createGain(); lg.gain.value = 0; lfo.connect(lg); lg.connect(g.gain);
+    s.connect(f); f.connect(g); g.connect(master); s.start(); lfo.start(); ctx = AC;
+  }
+  return function (AC, master, ch, on) {
+    if (!AC) return; if (!ctx) init(AC, master);
+    const d = on ? KIND[ch] : null, key = d ? d[0] : -1; if (key === last) return; last = key;
+    const t = AC.currentTime, p = d ? BED[key] : null;
+    if (!p) { g.gain.setTargetAtTime(0, t, .8); lg.gain.setTargetAtTime(0, t, .8); return }
+    f.frequency.setTargetAtTime(p[0], t, .8); f.Q.value = p[1]; g.gain.setTargetAtTime(p[2], t, 1.2); lg.gain.setTargetAtTime(p[2] * .6, t, 1.2); lfo.frequency.value = p[3];
+  };
+}
