@@ -9,7 +9,10 @@
       ]
     },
     {
-      "t": "Start und Hauptmenü",
+      "t": "Start und Gesamtmenü",
+      "p": [
+        "Nach dem Startbildschirm geht es direkt in die Stadt. Ein separates Hauptmenü gibt es nicht mehr: Alle Funktionen stecken im Gesamtmenü, das du mitten in der Stadt aufrufst (⏸-Knopf, Esc oder Start) oder am Empfang im Funkhaus. Dort geht es mit „🏙️ Weiter in der Stadt“ zurück ins Spiel."
+      ],
       "list": [
         "▶ Story: Staffel 1–3 – 17 Kapitel, eins nach dem anderen freigeschaltet. Staffel 3 folgt den AnMaCha-Radios.",
         "🎙️ Live-Show – Endlos-Aufnahme im Studio, bis der Hype auf null fällt. Rekord wird gespeichert.",
@@ -53,7 +56,7 @@
         "Das Funkhaus hat ein Dach und lässt sich betreten. Drinnen ist jeder Menüpunkt ein eigener Ort, und im Spiel „Stadt & Nebenaufträge“ öffnest du ihn mit der Aktionstaste (Ⓧ, E oder 📣)."
       ],
       "list": [
-        "Empfang: zurück ins Hauptmenü und zu den Einstellungen.",
+        "Empfang: Gesamtmenü mit allen Funktionen und den Einstellungen.",
         "Studio A mit Pult: Live-Aufnahme starten. Daneben die Werkstatt zum Studio-Umbauen.",
         "Redaktion mit Pinnwand: alle Story-Kapitel.",
         "Quiz-Bühne: KI-Quizshow. Radio-Lounge: alle Sender und Folgen. Fanshop: Outfits und Upgrades. Koop-Terminal: online zu zweit.",
@@ -61,14 +64,38 @@
       ]
     },
     {
-      "t": "Die Senderhäuser",
+      "t": "Stadtbus und Gisela von innen",
       "p": [
-        "Jeder der 13 AnMaCha-Sender hat in der Stadt ein eigenes Haus mit farbiger Tür und Schild, vier davon als Pavillons am Sendemast. Drinnen ist alles im Stil des Senders eingerichtet, zum Beispiel mit Discokugel und DJ-Pult bei Clubradio24, Weihnachtsbaum bei Christmasradio24, Verstärkern bei Rockradio24 und Ricos Bildschirmwand bei RicoReWi Radio."
+        "🚌 Stadtbus „AnMaCha-Linie 1“: Acht Haltestellen verbinden die Viertel (Funkhaus, Stadtpark, Sendemast, Imbiss am Ring, Senderviertel Ost, Campingplatz, Südstadt, Westend). Der orange Bus fährt sichtbar seine Runde und ist auf der Karte markiert. An einer Haltestelle Aktion drücken und das Ziel wählen, die Fahrt ist kostenlos.",
+        "🚐 Gisela von innen: Geh hinter Gisela und drück Aktion („Gisela von innen“). Drinnen sitzt Marco am Steuer, Andrew darf nur mit ihm rein. Mit „🛠️ Ausbauen“ kaufst du für Fan-Punkte Klappbett, Mini-Küche, mobiles Studio, Sitzecke, Lichterkette, Solardach, Markise und die Heck-Erweiterung, die Gisela länger macht."
       ],
       "list": [
-        "🎙️ Gastmoderation am Pult: ein Rhythmus-Spiel mit einem Klavierlicht-Song. Bringt Fan-Punkte, gute Laune und bei gutem Ergebnis eine Show-Idee.",
-        "🎧 Radio-Ecke: Der Sender läuft live.",
-        "💬 Partner: Marco oder Andrew erzählen etwas über den Sender.",
+        "Ausbauten sind sichtbar, innen und teils außen an Gisela (Solardach, Lichterkette, Markise, Heck).",
+        "Mobiles Studio: Gisela-Session mit einem Klavierlicht-Song, bringt Fan-Punkte und Show-Ideen.",
+        "Solardach: Besorgungen mit Gisela bringen 50 % mehr Fan-Punkte. Markise: Events bringen 40 Fan-Punkte extra.",
+        "Gisela bleibt dort stehen, wo du sie abgestellt hast."
+      ]
+    },
+    {
+      "t": "Club-Feeling in der Stadt",
+      "p": [
+        "Auch draußen ist was los: Rechts (im Querformat oben) ist die Emote-Leiste mit Tanzen, Winken und Jubeln (Tasten 1 bis 3). Fans in der Nähe winken zurück, jubeln mit und kommen zum Mittanzen, sobald du tanzt. Über den Köpfen erscheinen Sprechblasen, links läuft der Stadt-Chat.",
+        "🔥 Stadt-Vibe: Tanzen mit Fans und Emotes füllen den Balken. Ist er voll, gibt es eine Straßenparty mit Konfetti und 60 Fan-Punkten. Losgehen oder Springen beendet das Tanzen."
+      ]
+    },
+    {
+      "t": "Die Senderhäuser",
+      "p": [
+        "Jeder der 13 AnMaCha-Sender hat in der Stadt ein eigenes Haus mit farbiger Tür und Schild, vier davon als Pavillons am Sendemast. Jedes Haus ist innen komplett anders, passend zu Genre und Beschreibung: LED-Tanzfläche mit DJ-Pult bei Clubradio24, Kaminhütte mit Weihnachtsbaum bei Christmasradio24, Rockbühne mit Verstärkern bei Rockradio24, Retro-Zimmer mit Kassetten und Automaten bei Kultradio24, Spielzimmer mit Bällebad bei RadioFloh, Ricos Tool-Labor bei RicoReWi Radio und so weiter.",
+        "Wie im Club: Drinnen sind Fans des Senders, die herumlaufen, im Chat schreiben, Sprechblasen zeigen und mittanzen. Wenn du tanzt, kommen sie zu dir und tanzen mit."
+      ],
+      "list": [
+        "💃 Tanzen: Springen-Taste (Leertaste, A, ⤴) oder Knopf „Tanzen“. Dazu Winken, Jubeln und Rolle (Tasten 1 bis 3 oder die Emote-Leiste).",
+        "⇄ Figurenwechsel: Q, Y oder der Knopf mit dem Namen. Du spielst dann den Partner, der andere tanzt mit.",
+        "🔥 Vibe: Tanzen bei den Fans und erfüllte Fan-Wünsche füllen den Vibe-Balken. Ist er voll, steigt das Party-Level des Senders (bis 5) und alle feiern. Das bringt Fan-Punkte.",
+        "Fan-Wünsche (Symbol über dem Kopf): Autogramm, Selfie, zusammen tanzen, Songwunsch (Klavierlicht) oder plaudern. Hingehen und Aktion drücken.",
+        "🎮 3D-Spiel pro Sender: Musik-Sender haben ein Beat-Spiel (Edelsteine fliegen auf vier Bahnen heran, im Takt ◀ ▼ ▲ ▶ drücken), die anderen ein Fangspiel (gute Dinge fangen, Störungen ausweichen, 3 Leben, 40 Sekunden). Rekorde werden pro Sender gespeichert.",
+        "🎧 Radio-Ecke: Der Sender läuft live. 💬 Partner: Marco oder Andrew erzählen etwas über den Sender.",
         "Sender-Tour: Jeder erste Besuch bringt 40 Fan-Punkte, alle 13 Häuser zusammen bringen 500 extra.",
         "Story (Staffel 3): Im Senderhaus des Kapitel-Senders wartet ein Interview mit Bonus-Funken. Das Haus ist auf der Karte als farbiges Quadrat markiert."
       ]
@@ -100,7 +127,7 @@
     {
       "t": "Arcade: 3D-Minispiele",
       "p": [
-        "Unter „🕹️ Arcade“ im Hauptmenü oder am Arcade-Automaten im begehbaren Studio spielst du mit Andrew oder Marco (wechseln mit Ⓨ/Q). Punkte bringen Fan-Punkte, jedes Spiel hat einen eigenen Rekord."
+        "Unter „🕹️ Arcade“ im Gesamtmenü, im Arcade-Laden in der Stadt oder am Arcade-Automaten im begehbaren Studio spielst du mit Andrew oder Marco (wechseln mit Ⓨ/Q). Punkte bringen Fan-Punkte, jedes Spiel hat einen eigenen Rekord."
       ],
       "list": [
         "📡 Funkwellen-Flug: Tippen, Leertaste oder Ⓐ lässt dich hüpfen. Flieg durch die Lücken zwischen den Funkmasten, jeder Mast bringt einen Punkt.",
@@ -173,7 +200,7 @@
     {
       "t": "Online-Koop",
       "p": [
-        "Im Hauptmenü unter „🌐 Online-Koop“ eröffnet ein Gerät das Spiel und zeigt einen 5-stelligen Code, einen QR-Code und einen Link. Mitspieler können per Link, Code oder QR-Code von überall beitreten. Der Gastgeber spielt seine gewählte Figur, der Gast die andere."
+        "Im Gesamtmenü unter „🌐 Online-Koop“ eröffnet ein Gerät das Spiel und zeigt einen 5-stelligen Code, einen QR-Code und einen Link. Mitspieler können per Link, Code oder QR-Code von überall beitreten. Der Gastgeber spielt seine gewählte Figur, der Gast die andere."
       ],
       "list": [
         "🏃 Themenjagd zu zweit: 3 Minuten, gemeinsame Punkte.",
@@ -189,7 +216,7 @@
         "Tastatur & Maus: WASD/Pfeile laufen, Maus ziehen Kamera, Leertaste springen, E Welle/sprechen, C ausweichen, Umschalt sprinten, Q wechseln, R Radio, N nächster Sender, M Radio an/aus, Esc Pause.",
         "Touch: Stick links, rechts wischen für die Kamera, Knöpfe ⤴ springen, 📣 Welle, 💨 ausweichen, ⇄ wechseln, 📻 Radio und ⏸ Pause.",
         "Die Knopfsymbole passen sich automatisch an: Xbox, PlayStation, Nintendo, Tastatur oder Touch.",
-        "Pause: jederzeit mit Start, Esc oder dem ⏸-Knopf oben rechts – auch in der Live-Aufnahme und der Quizshow. Von dort geht es zurück ins Hauptmenü."
+        "Pause: jederzeit mit Start, Esc oder dem ⏸-Knopf oben rechts – auch in der Live-Aufnahme und der Quizshow. In der Stadt öffnet sie das Gesamtmenü, in anderen Modi geht es von dort zurück in die Stadt."
       ]
     },
     {
@@ -378,11 +405,11 @@
     },
     {
       "q": "Wie spiele ich online mit einem Freund?",
-      "a": "Hauptmenü → 🌐 Online-Koop → Spiel eröffnen. Schick den Link oder zeig den QR-Code; dein Freund kann auch den Code unter „🌐 Online-Koop“ eingeben. Sobald er verbunden ist, wählst du den Modus."
+      "a": "Gesamtmenü (⏸) → 🌐 Online-Koop → Spiel eröffnen. Schick den Link oder zeig den QR-Code; dein Freund kann auch den Code unter „🌐 Online-Koop“ eingeben. Sobald er verbunden ist, wählst du den Modus."
     },
     {
       "q": "Wo ist das Menü in der Stadt?",
-      "a": "Geh ins Funkhaus. Am Empfang kommst du ins Hauptmenü, alle anderen Menüpunkte haben drinnen oder in der Stadt einen eigenen Ort. Die Pause (⏸, Esc oder Start) geht ebenfalls jederzeit."
+      "a": "Drück ⏸, Esc oder Start: Dann öffnet sich das Gesamtmenü mit allen Funktionen. Alternativ am Empfang im Funkhaus. Viele Menüpunkte haben außerdem einen eigenen Ort in der Stadt (Funkhaus, Läden, Senderhäuser, die Häuser von Andrew und Marco)."
     }
   ]
 }

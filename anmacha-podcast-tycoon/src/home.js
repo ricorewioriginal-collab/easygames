@@ -88,7 +88,7 @@
       const v = Math.hypot(w.vx, w.vz); if (v > 0.3) w.yaw = Math.atan2(w.vx, w.vz);
       const f = w.fig; if (f) {
         f.root.position.set(w.x, 0, w.z); f.root.rotation.y += U.angDiff(f.root.rotation.y, w.yaw) * Math.min(1, dt * 12);
-        if (!(w.busy > 0)) { const a = v < 0.3 ? 'idle' : v < 3.4 ? 'walk' : 'jog'; if (w.anim !== a) { f.play(a, { fade: 0.2 }); w.anim = a; } }
+        if (!(w.busy > 0)) { const a = (o.anim && o.anim(v)) || (v < 0.3 ? 'idle' : v < 3.4 ? 'walk' : 'jog'); if (w.anim !== a) { f.play(a, { fade: 0.2 }); w.anim = a; } }
         if (!o.noFigUpdate) f.update(dt);
       }
       if (w.busy > 0) w.busy -= dt;
@@ -120,7 +120,7 @@
       '<span class="hm-n idea" title="Ideen für die nächste Aufnahme">💡 ' + (n.ideas || []).length + '/3</span>';
   }
   function say(text, ms) {
-    const b = U.$('hmSay'); if (!b) return; b.hidden = false; b.textContent = text; b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
+    const b = U.$('hmSay'); if (!b) return; b.hidden = false; if (text.indexOf('<kbd') >= 0) b.innerHTML = text; else b.textContent = text; b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
     clearTimeout(say.t); say.t = setTimeout(() => { if (b) b.hidden = true; }, ms || 3600);
   }
   function use() { if (!R || R.busy > 0) return; const s = R.w.near(); if (s && s.run) { AMC.Audio.sfx('ok'); s.run(); } }
@@ -172,7 +172,7 @@
     if (fig) { if (fig.root.parent) fig.root.parent.remove(fig.root); built.g.add(fig.root); fig.root.visible = true; fig.talk && fig.talk(false); }
     R = { kind: 'home', who: hid, sc: built.sc, g: built.g, objs: built.objs, onClose, busy: 0, t: 0 };
     const solids = () => H.slots.map(s => ({ x: s.x, z: s.z, r: s.id === 'bed' ? 1.3 : s.id === 'kitchen' ? 1.4 : s.id === 'sofa' ? 1.1 : 0.8 }));
-    const spots = () => H.slots.map(s => ({ x: s.x, z: s.z, r: s.id === 'bed' || s.id === 'kitchen' ? 2.4 : 2.0, label: actLabel(s), run: () => act(s) })).concat([{ x: 5.4, z: 3, r: 1.6, label: '🚪 Zurück ins Menü', run: () => HM.close() }]);
+    const spots = () => H.slots.map(s => ({ x: s.x, z: s.z, r: s.id === 'bed' || s.id === 'kitchen' ? 2.4 : 2.0, label: actLabel(s), run: () => act(s) })).concat([{ x: 5.4, z: 3, r: 1.6, label: '🚪 Raus in die Stadt', run: () => HM.close() }]);
     R.w = walker({ x: 2.5, z: 2.6, fig, bounds: { x0: -5.6, x1: 5.6, z0: -4.0, z1: 4.0 }, solids, spots });
     R.ui = hud(H.name, '<button type="button" class="btn small" id="hmBuild">🛋️ Einrichten</button>');
     R.ui.querySelector('#hmBuild').onclick = () => furnish(hid);
@@ -300,134 +300,26 @@
     });
   };
 
-  // ------------------------------------------------------------------ Senderhäuser: jeder AnMaCha-Sender hat ein eigenes, begehbares Haus
-  const SENDER = {
-    anmacha24: { wall: 0x1c1630, floor: '#2a2236', props: ['moon', 'logo', 'neon'], talk: ['Hier läuft nachts die AnMaCha & Friends Podcastnacht. Unser Wohnzimmer!', 'Musik, die mich anmacht! Der Slogan ist von uns. Glaube ich.'] },
-    ricorewi: { wall: 0x2a2a3a, floor: '#3a3448', props: ['phones', 'ring', 'pc'], rico: true, talk: ['Rico hat hier 14 Bildschirme. Für EIN Tool.', 'Familiensender! Rico nennt das „Content-Ökosystem“.'] },
-    'yourtime-fm': { wall: 0xe8f4ee, floor: '#b8a27a', props: ['globe', 'suitcase', 'camper'], talk: ['YourTime-FM: Reisen, Freizeit, Feelgood. Gisela wäre hier Stammgast.', 'Nächstes Abenteuer? Ich sag nur: Roadtrip!'] },
-    chartradio24: { wall: 0x241a2a, floor: '#3a2a30', props: ['chart', 'trophy', 'neon'], talk: ['Die aktuellen Hits! Wer ist diese Woche auf Platz 1?', 'Ich wollte mal in die Charts. Mit Kabelsalat-Geräuschen.'] },
-    clubradio24: { wall: 0x140c24, floor: '#1a1030', props: ['disco', 'dj', 'neon'], talk: ['Dance und House! Erlebe den Beat!', 'Andrew tanzt hier immer. Marco zählt die Kabel.'] },
-    'special-radio': { wall: 0x18243a, floor: '#22304a', props: ['stars', 'spot', 'logo'], talk: ['Specials, Specials, Specials. Heute: Ein Special über Specials.', 'Hier laufen die besonderen Sendungen. So wie wir.'] },
-    kultradio24: { wall: 0x2a1a34, floor: '#3a2448', props: ['tapes', 'neon', 'arcade'], talk: ['Kult-Hits der 80er und 90er! Kassetten zurückspulen mit dem Bleistift!', '1996er Party-Vibes. Leckmuschel inklusive.'] },
-    rockradio24: { wall: 0x1a1414, floor: '#2a1e1a', props: ['amp', 'guitar', 'drums'], talk: ['Gitarren und Gas! Hier wurde der Rauschkönig besiegt.', 'Lautstärke 11. Mindestens.'] },
-    zockerfm: { wall: 0x0e1a14, floor: '#14261c', props: ['pc', 'arcade', 'neon'], talk: ['Musik zum Zocken! Rico hat hier den Highscore. Angeblich.', 'Ein Level noch. Dann nehmen wir auf.'] },
-    rapradio24: { wall: 0x2a2418, floor: '#3a3020', props: ['graffiti', 'dj', 'spot'], talk: ['Rap, R&B und Groove. Marco hat einen Reim versucht. Wir reden nicht drüber.', 'Mikro check, eins zwei! Andrew, nicht so laut!'] },
-    schlagerpop24: { wall: 0x3a1a2a, floor: '#4a2236', props: ['hearts', 'disco', 'stars'], talk: ['Schlager und Gefühl! Hier wird jeder zum Mitsänger.', 'Atemlos durch das Funkhaus … Moment, das ist geschützt.'] },
-    christmasradio24: { wall: 0x1a2a20, floor: '#2a3a2a', props: ['tree', 'gifts', 'snow'], talk: ['Weihnachtsmusik – das ganze Jahr! Auch im August.', 'Ich kauf die Geschenke an Heiligabend. Hier gibt es sie das ganze Jahr.'] },
-    radiofloh: { wall: 0xfff1d8, floor: '#ffd8a0', props: ['plush', 'blocks', 'hearts'], talk: ['Das Kinderradio! Der Fuchs hier ist der Chef.', 'RadioFloh – hier sind wir ausnahmsweise die Erwachsenen.'] }
-  };
-  HM.SENDER = SENDER;
-  function senderProp(kind, g, x, z, col) {
-    const Mt = (c, o) => W.mat(c, o || { r: 0.6 }), B = (w, h, d, c, px, py, pz, o) => W.box(w, h, d, Mt(c, o), x + px, py, z + pz, g, false);
-    const ball = (r, c, px, py, pz, o) => { const m = new T.Mesh(new T.SphereGeometry(r, 14, 10), Mt(c, o)); m.position.set(x + px, py, z + pz); g.add(m); return m; };
-    const glowC = new T.Color(col).getHex();
-    switch (kind) {
-      case 'disco': { const b = ball(0.5, 0xdddddd, 0, 2.9, 0, { m: 1, r: 0.15, e: glowC, ei: 0.35 }); b.userData.spin = 1.5; W.cyl(0.02, 0.02, 0.6, Mt(0x888888), x, 3.3, z, g); break; }
-      case 'dj': B(2, 1, 0.8, 0x16171c, 0, 0.5, 0); [-0.5, 0.5].forEach(o => { const p = W.cyl(0.32, 0.32, 0.05, Mt(0x111111), x + o, 1.03, z, g, 18); p.userData.spin = 6; }); B(2, 0.06, 0.82, glowC, 0, 0.98, 0, { e: glowC, ei: 0.9 }); break;
-      case 'neon': { const t = W.textTex(['ON AIR'], { w: 256, h: 96, size: 56, bg: '#0a0a12', fg: '#fff', accent: col }); const m = new T.Mesh(new T.PlaneGeometry(1.8, 0.68), new T.MeshBasicMaterial({ map: t, toneMapped: false })); m.position.set(x, 2.4, z - 0.4); g.add(m); break; }
-      case 'tree': W.cyl(0.12, 0.15, 0.6, Mt(0x6b4a30), x, 0.3, z, g); [[1.0, 1.2], [0.75, 1.9], [0.45, 2.5]].forEach(([r, y]) => W.cyl(0, r, 0.9, Mt(0x2f7a3a), x, y, z, g, 10)); ball(0.14, 0xffd23f, 0, 3.05, 0, { e: 0xffd23f, ei: 1.5 }); for (let i = 0; i < 8; i++) ball(0.07, [0xff3a3a, 0xffd23f, 0x3dd6ff][i % 3], Math.cos(i) * 0.7, 1.2 + (i % 4) * 0.35, Math.sin(i) * 0.7, { e: 0xffffff, ei: 0.3 }); break;
-      case 'gifts': [[0, 0, 0xff3a3a], [0.6, 0.2, 0x3dd6ff], [-0.5, 0.3, 0xffd23f], [0.2, -0.5, 0xa46bff]].forEach(([px, pz, c], i) => { const h = 0.3 + (i % 2) * 0.2; B(0.45, h, 0.45, c, px, h / 2, pz); B(0.08, h + 0.02, 0.47, 0xffffff, px, h / 2, pz); }); break;
-      case 'snow': { const t = W.canvasTex(128, 96, (c, w, h) => { c.fillStyle = '#20304a'; c.fillRect(0, 0, w, h); c.fillStyle = '#fff'; for (let i = 0; i < 70; i++) c.fillRect((i * 37) % w, (i * 53) % h, 2, 2); c.fillRect(0, h - 14, w, 14); }); const m = new T.Mesh(new T.PlaneGeometry(2.2, 1.5), new T.MeshBasicMaterial({ map: t })); m.position.set(x, 2, z - 0.3); g.add(m); break; }
-      case 'amp': B(1, 1.4, 0.6, 0x111111, 0, 0.7, 0); B(0.8, 0.8, 0.02, 0x333333, 0, 0.75, 0.31); B(1.02, 0.15, 0.62, 0xc8a070, 0, 1.33, 0); break;
-      case 'guitar': [0, 0.8].forEach((o, i) => { const gr = new T.Group(); const b = new T.Mesh(new T.CylinderGeometry(0.32, 0.32, 0.1, 16), Mt(i ? 0xd8342c : 0xffd23f)); b.rotation.x = Math.PI / 2; gr.add(b); const n = new T.Mesh(new T.BoxGeometry(0.08, 0.9, 0.05), Mt(0x5a4030)); n.position.y = 0.6; gr.add(n); gr.position.set(x + o, 0.7, z); gr.rotation.z = 0.15; g.add(gr); }); break;
-      case 'drums': [[0, 0, 0.45], [-0.6, 0.3, 0.3], [0.6, 0.3, 0.3]].forEach(([px, pz, r]) => W.cyl(r, r, 0.4, Mt(0xd8342c, { r: 0.3, m: 0.3 }), x + px, 0.45, z + pz, g, 16)); W.cyl(0.25, 0.25, 0.03, Mt(0xffd23f, { m: 0.9, r: 0.2 }), x + 0.9, 1.2, z - 0.1, g, 16); break;
-      case 'tapes': for (let i = 0; i < 12; i++) B(0.42, 0.28, 0.06, [0xff9fd0, 0x3dd6ff, 0xffd23f, 0x6cff8a][i % 4], -0.5 + (i % 3) * 0.5, 1.2 + Math.floor(i / 3) * 0.35, -0.3); B(1.7, 1.6, 0.1, 0x2a2a2a, 0, 1.7, -0.38); break;
-      case 'arcade': B(0.8, 1.6, 0.7, 0x2a1a4a, 0, 0.8, 0); B(0.62, 0.45, 0.04, glowC, 0, 1.3, 0.36, { e: glowC, ei: 0.9 }); B(0.82, 0.22, 0.72, glowC, 0, 1.72, 0, { e: glowC, ei: 0.6 }); break;
-      case 'chart': B(2.2, 1.8, 0.08, 0x16171c, 0, 1.6, -0.3); [0.9, 0.7, 0.55, 0.4, 0.25].forEach((h, i) => B(0.3, h * 1.3, 0.04, glowC, -0.8 + i * 0.4, 0.85 + h * 0.65, -0.24, { e: glowC, ei: 0.7 })); break;
-      case 'trophy': B(0.5, 0.9, 0.5, 0x3a3d4a, 0, 0.45, 0); W.cyl(0.18, 0.08, 0.35, Mt(0xffc23a, { m: 0.8, r: 0.25 }), x, 1.08, z, g, 12); break;
-      case 'globe': { W.cyl(0.05, 0.25, 0.9, Mt(0x8a6a48), x, 0.45, z, g, 10); const b = ball(0.42, 0x3a8be0, 0, 1.3, 0, { r: 0.5 }); b.userData.spin = 0.6; break; }
-      case 'suitcase': B(0.8, 0.6, 0.3, 0xd8342c, 0, 0.3, 0); B(0.3, 0.06, 0.06, 0x111111, 0, 0.66, 0); B(0.6, 0.45, 0.3, 0x2fd3a0, 0.7, 0.23, 0.1); break;
-      case 'camper': if (AMC.StudioEdit && AMC.StudioEdit.camper) { const c = AMC.StudioEdit.camper(0.35); c.position.set(x, 1.0, z); c.rotation.y = 0.4; g.add(c); B(1.2, 0.05, 0.8, 0x5a4030, 0, 0.96, 0); B(0.08, 0.95, 0.08, 0x5a4030, 0, 0.47, 0); } break;
-      case 'phones': B(1.6, 0.06, 0.8, 0x8a6a48, 0, 0.78, 0); for (let i = 0; i < 4; i++) B(0.14, 0.26, 0.02, 0x111111, -0.6 + i * 0.4, 0.95, -0.1); for (let i = 0; i < 3; i++) B(0.5, 0.32, 0.03, glowC, -0.55 + i * 0.55, 1.6, -0.35, { e: glowC, ei: 0.8 }); break;
-      case 'ring': { const r = new T.Mesh(new T.TorusGeometry(0.4, 0.05, 8, 24), Mt(0xffffff, { e: 0xffffff, ei: 1.4 })); r.position.set(x, 1.6, z); g.add(r); W.cyl(0.03, 0.03, 1.4, Mt(0x333333), x, 0.7, z, g, 6); break; }
-      case 'pc': B(1.6, 0.06, 0.8, 0x2a2a2e, 0, 0.78, 0); B(0.9, 0.5, 0.04, 0x111111, 0, 1.15, -0.25); B(0.84, 0.44, 0.02, glowC, 0, 1.15, -0.22, { e: glowC, ei: 0.8 }); B(0.3, 0.6, 0.6, 0x16171c, 0.6, 0.3, 0); B(0.05, 0.5, 0.5, glowC, 0.76, 0.3, 0, { e: glowC, ei: 1 }); break;
-      case 'graffiti': { const t = W.canvasTex(256, 128, (c, w, h) => { c.fillStyle = '#5a5a5a'; c.fillRect(0, 0, w, h); c.font = '900 54px Fredoka, sans-serif'; c.fillStyle = col; c.strokeStyle = '#111'; c.lineWidth = 6; c.strokeText('FLOW', 40, 84); c.fillText('FLOW', 40, 84); }); const m = new T.Mesh(new T.PlaneGeometry(2.4, 1.2), new T.MeshBasicMaterial({ map: t })); m.position.set(x, 1.6, z - 0.3); g.add(m); break; }
-      case 'hearts': for (let i = 0; i < 6; i++) { const h = ball(0.16, i % 2 ? 0xff6fb0 : 0xff3a6a, Math.cos(i) * 0.7, 1.6 + (i % 3) * 0.4, Math.sin(i) * 0.2, { e: 0xff3a6a, ei: 0.5 }); h.scale.set(1, 0.85, 0.5); } break;
-      case 'stars': for (let i = 0; i < 7; i++) ball(0.09, 0xffd23f, (i - 3) * 0.35, 2.4 + Math.sin(i * 2) * 0.3, 0, { e: 0xffd23f, ei: 1.4 }); break;
-      case 'spot': W.cyl(0.25, 0.15, 0.5, Mt(0x111111), x, 2.8, z, g, 10); W.cyl(0.02, 0.9, 2.6, Mt(glowC, { e: glowC, ei: 0.5, t: 0.18 }), x, 1.35, z, g, 16); break;
-      case 'moon': { const m = ball(0.5, 0xfff4c8, 0, 2.4, -0.3, { e: 0xfff1b0, ei: 1 }); m.scale.z = 0.3; break; }
-      case 'logo': { const t = new T.TextureLoader().load(AMC.UI.podLogo); t.encoding = T.sRGBEncoding; const m = new T.Mesh(new T.PlaneGeometry(1.4, 1.4), new T.MeshBasicMaterial({ map: t })); m.position.set(x, 2, z - 0.3); g.add(m); break; }
-      case 'plush': { ball(0.4, 0xffa94d, 0, 0.4, 0); ball(0.28, 0xffa94d, 0, 0.95, 0); [-0.15, 0.15].forEach(o => W.cyl(0, 0.1, 0.25, Mt(0xffa94d), x + o, 1.25, z, g, 6)); ball(0.08, 0xffffff, 0, 0.9, 0.24); break; }
-      case 'blocks': [[0, 0, 0xff3a3a], [0.5, 0, 0x3dd6ff], [0.25, 0.45, 0xffd23f], [-0.5, 0.1, 0x6cff8a]].forEach(([px, py, c]) => B(0.42, 0.42, 0.42, c, px, 0.21 + py, 0)); break;
-    }
-  }
-  function buildSender(st, cfg) {
-    const sc = new T.Scene(), g = new T.Group(); sc.add(g);
-    const col = new T.Color(st.color).getHex();
-    sc.background = new T.Color(0x0b0c12);
-    sc.add(new T.HemisphereLight(0xfff1e0, 0x3a3040, 0.9));
-    const sun = new T.DirectionalLight(0xffffff, 1.0); sun.position.set(4, 9, 6); sc.add(sun);
-    const lamp = new T.PointLight(col, 1.6, 16); lamp.position.set(0, 3.2, -1); sc.add(lamp);
-    const ftex = W.canvasTex(128, 128, (c, w, h) => { c.fillStyle = cfg.floor; c.fillRect(0, 0, w, h); c.fillStyle = 'rgba(255,255,255,.07)'; c.fillRect(0, 0, w / 2, h / 2); c.fillRect(w / 2, h / 2, w / 2, h / 2); }, [6, 5]);
-    const fl = new T.Mesh(new T.PlaneGeometry(12, 9), new T.MeshStandardMaterial({ map: ftex, roughness: 0.75 })); fl.rotation.x = -Math.PI / 2; g.add(fl);
-    const wm = W.mat(cfg.wall, { r: 0.9 }), acc = W.mat(col, { e: col, ei: 0.6 });
-    W.box(12, 3.4, 0.2, wm, 0, 1.7, -4.6, g, false); W.box(0.2, 3.4, 9, wm, -6.1, 1.7, 0, g, false); W.box(0.2, 3.4, 9, wm, 6.1, 1.7, 0, g, false);
-    W.box(12, 0.12, 0.22, acc, 0, 3.3, -4.48, g, false); W.box(0.22, 0.12, 9, acc, -5.98, 3.3, 0, g, false); W.box(0.22, 0.12, 9, acc, 5.98, 3.3, 0, g, false);
-    const sign = W.textTex([st.icon + ' ' + st.name, st.desc.slice(0, 44)], { w: 640, h: 160, size: 58, accent: st.color });
-    const sm = new T.Mesh(new T.PlaneGeometry(4.4, 1.1), new T.MeshBasicMaterial({ map: sign, toneMapped: false })); sm.position.set(0, 2.55, -4.48); g.add(sm);
-    // Sendepult mit zwei Mikros und ON-AIR-Lampe
-    W.box(3.2, 0.85, 1.1, W.mat(0x2a2c36), 0, 0.43, -2.6, g, false); W.box(3.3, 0.06, 1.2, acc, 0, 0.88, -2.6, g, false);
-    [-0.8, 0.8].forEach(o => { W.cyl(0.025, 0.025, 0.45, W.mat(0x222222), o, 1.13, -2.4, g, 6); const h = new T.Mesh(new T.SphereGeometry(0.1, 10, 8), W.mat(0x9aa0ad, { m: 0.8, r: 0.3 })); h.position.set(o, 1.4, -2.4); g.add(h); });
-    const onair = new T.Mesh(new T.SphereGeometry(0.16, 10, 8), W.mat(0xff2a2a, { e: 0xff2a2a, ei: 1.5 })); onair.position.set(0, 1.9, -4.4); g.add(onair);
-    // Radio-Ecke
-    W.box(1.2, 0.8, 0.6, W.mat(0x5a4030), -4.4, 0.4, 2.2, g, false); W.box(0.9, 0.5, 0.05, acc, -4.4, 0.55, 2.52, g, false);
-    // Senderspezifische Deko
-    const P = [[-4.3, -3.4], [4.3, -3.4], [-4.6, -0.6]];
-    cfg.props.forEach((k, i) => senderProp(k, g, P[i][0], P[i][1], st.color));
-    return { sc, g, onair };
-  }
-  const SENDER_RUB = { anmacha24: 'feel', ricorewi: 'tech', 'yourtime-fm': 'feel', chartradio24: 'musik', clubradio24: 'musik', 'special-radio': 'tv', kultradio24: 'musik', rockradio24: 'musik', zockerfm: 'tech', rapradio24: 'musik', schlagerpop24: 'musik', christmasradio24: 'feel', radiofloh: 'tv' };
-  HM.SENDER_RUB = SENDER_RUB;
+  // ------------------------------------------------------------------ Senderhäuser (Räume, Fans, Spiele in sender.js)
+  const KIT = { begin: r => (R = r), alive: r => R === r, walker, hud, say, drawNeeds, needs, retitle: t => { const b = document.querySelector('#homeUi .hm-top b'); if (b) b.textContent = t; } };
+  HM.SENDER = AMC.Sender.HOUSES;
+  HM.SENDER_RUB = AMC.Sender.RUB;
   HM.senderVisited = () => Object.keys(Save.data.senders || {}).length;
+  HM.camper = function (host, onClose) {
+    T = root.THREE; HM.close(true);
+    return AMC.Camper.open(host, KIT, onClose);
+  };
   HM.station = function (slug, host, onClose) {
     T = root.THREE; HM.close(true);
-    const st = D.STATIONS.find(x => x.slug === slug) || D.STATIONS[0], cfg = SENDER[st.slug] || SENDER.anmacha24;
-    const built = buildSender(st, cfg), hid = host || 'andrew', other = hid === 'andrew' ? 'marco' : 'andrew', fig = W.hosts[hid];
-    const put = (id, x, z, ry, anim) => { const f = W.hosts[id]; if (!f) return null; if (f.root.parent) f.root.parent.remove(f.root); built.g.add(f.root); f.root.visible = true; f.root.position.set(x, 0, z); f.root.rotation.set(0, ry, 0); f.play(anim || 'idle', { fade: 0.2 }); return f; };
-    put(hid, 2.5, 2.6, Math.PI);
-    const figs = [put(other, 3.4, -0.6, -0.9, 'yes')]; if (cfg.rico) figs.push(put('rico', 1.4, -2.2, 0.3, 'idle'));
-    R = { kind: 'sender', who: hid, slug: st.slug, sc: built.sc, g: built.g, onClose, busy: 0, t: 0, figs: figs.filter(Boolean), onair: built.onair };
-    const solids = () => [{ box: true, x0: -1.7, x1: 1.7, z0: -3.2, z1: -2.0 }, { x: 3.4, z: -0.6, r: 0.4 }, { x: -4.4, z: 2.2, r: 0.7 }].concat([[-4.3, -3.4], [4.3, -3.4], [-4.6, -0.6]].map(([x, z]) => ({ x, z, r: 0.8 })));
-    const spots = () => [
-      { x: 0, z: -1.5, r: 1.6, label: '🎙️ Gastmoderation bei ' + st.name + ' (Klavierlicht-Song)', run: () => senderMic(st) },
-      { x: -4.4, z: 2.2, r: 1.8, label: '🎧 ' + st.name + ' live hören', run: () => { AMC.Media.playStation(st.slug); say('📻 ' + st.name + ' läuft – ' + st.desc); } },
-      { x: 3.4, z: -0.6, r: 1.8, label: '💬 Mit ' + D.HOSTS[other].name + ' quatschen', run: () => { const n = needs(hid); n.fun = Math.min(100, n.fun + 8); Save.save(); drawNeeds(); say(D.HOSTS[other].name + ': „' + U.pick(cfg.talk) + '“', 4600); const f = W.hosts[other]; if (f) { f.play('yes', { restart: true }); setTimeout(() => f.play('idle', { fade: 0.3 }), 1500); } } },
-      { x: 5.4, z: 3, r: 1.6, label: '🚪 Raus in die Stadt', run: () => HM.close() }
-    ];
-    R.w = walker({ x: 2.5, z: 2.6, fig, bounds: { x0: -5.6, x1: 5.6, z0: -4.0, z1: 4.0 }, solids, spots });
-    R.ui = hud(st.icon + ' ' + st.name + ' · Senderhaus', '');
-    drawNeeds();
-    W.particles.attach(R.sc);
-    AMC.Audio.sfx('door');
-    // Sender-Tour: jeder erste Besuch bringt Fan-Punkte, alle 13 einen Bonus
-    const v = Save.data.senders = Save.data.senders || {};
-    if (!v[st.slug]) { v[st.slug] = 1; Save.earn(40); const n = HM.senderVisited(); if (n >= D.STATIONS.length) { Save.earn(500); setTimeout(() => AMC.UI.toast('🏆 Sender-Tour komplett! Alle ' + n + ' Senderhäuser besucht: +500 🎟️'), 1200); } else setTimeout(() => AMC.UI.toast('📻 Neues Senderhaus! +40 🎟️ · Sender-Tour ' + n + '/' + D.STATIONS.length), 900); Save.save(); }
-    setTimeout(() => say(D.HOSTS[other].name + ': „' + cfg.talk[0] + '“', 4600), 400);
+    return AMC.Sender.open(slug, host, KIT, onClose);
   };
-  function senderMic(st) {
-    if (R.mini) return;
-    const box = U.el('div', 'sh-mini'); box.id = 'hmMini'; U.$('homeUi').appendChild(box);
-    const w = U.pick(D.WISHES.concat(HM.ownedSongs())), slug = R.slug, hid = R.who;
-    R.busy = 99;
-    AMC.Audio.song(w.id).catch(() => null).then(song => {
-      if (!R || R.slug !== slug) { box.remove(); return; }
-      R.mini = { box, ctl: AMC.Minis.start(box, 'rhythm', { song: song || null, color: st.color, speed: 1, n: 14, label: st.icon + ' „' + w.t + '“ auf ' + st.name }, q => {
-        if (!R || R.slug !== slug) return;
-        R.mini.ctl.destroy(); box.remove(); R.mini = null; R.busy = 0;
-        const fan = Save.earn(15 + Math.round(q * 60)), n = needs(hid);
-        n.fun = Math.min(100, n.fun + 10); n.energy = Math.max(0, n.energy - 6);
-        if (q >= 0.6 && (n.ideas || []).length < 3) n.ideas.push(st.name + '-Special');
-        Save.save(); drawNeeds();
-        say((q >= 0.75 ? '🔥 Die Hörer von ' + st.name + ' rasten aus!' : q >= 0.45 ? '👍 Solide Moderation!' : '😅 Naja … die Technik war schuld.') + ' +' + fan + ' 🎟️' + (q >= 0.6 ? ' · 💡 Neue Show-Idee!' : ''), 4200);
-        AMC.Audio.sfx(q >= 0.6 ? 'applause' : 'ok');
-      }) };
-    });
-  }
 
   // ------------------------------------------------------------------ Schleife
   HM.update = function (dt) {
     if (!R) return;
     R.t += dt; if (R.busy > 0) R.busy -= dt;
+    if (R.tick && R.tick(dt)) { W.particles.update(dt); return; }
+    if (!R) return;
     if (R.mini) { R.mini.ctl.update(dt); (R.figs || []).forEach(f => f.update(dt)); if (R.w.fig) R.w.fig.update(dt); return; }
     (R.figs || []).forEach(f => f.update(dt));
     if (!(R.busy > 0)) R.w.update(dt); else { if (R.sc && R.w.fig) R.w.fig.update(dt); const cam = W.camera; if (R.w.cp) { cam.position.copy(R.w.cp); cam.lookAt(R.w.ct); } }
@@ -443,7 +335,9 @@
   HM.close = function (silent) {
     if (!R) return;
     const r = R; R = null;
+    if (r.dispose) r.dispose();
     if (r.stopSong) r.stopSong();
+    document.querySelectorAll('.hm-bub').forEach(e => e.remove());
     const ui = U.$('homeUi'); if (ui) ui.remove();
     if (r.marks) r.marks.forEach(m => AMC.Studio.group.remove(m));
     if (r.mini) { r.mini.ctl.destroy(); r.mini.box.remove(); }

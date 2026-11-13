@@ -132,7 +132,7 @@
     const car = S.drive;
     if (!car || !car.gisela) return;
     if (Math.hypot(car.x - E.e.x, car.z - E.e.z) < 4 && Math.abs(car.v) < 6) {
-      const pts = E.e.event ? 120 : 60;
+      const pts = Math.round((E.e.event ? 120 + (AMC.Camper && AMC.Camper.has('markise') ? 40 : 0) : 60) * (AMC.Camper ? AMC.Camper.errandBonus() : 1));
       AMC.Save.earn(pts);
       S.score += E.e.event ? 1200 : 600; S.errands = (S.errands || 0) + 1;
       AMC.Audio.sfx('horn'); AMC.Audio.sfx('perfect'); W.particles.burst(E.e.x, 2, E.e.z, E.e.event ? 0xff3da8 : 0xffd23f, 50, { speed: 7 });
@@ -147,6 +147,7 @@
     for (const th of S.thieves) if (th.fig && !th.done && th.down < 0.15 && Math.hypot(th.x - p.x, th.z - p.z) < 2.3) return { label: 'Rangeln 🤼', run: () => scuffle(th) };
     for (const car of S.cars) {
       if (Math.hypot(car.x - p.x, car.z - p.z) > 3.4) continue;
+      if (car.gisela && AMC.Play.onAction && AMC.Camper && (Math.sin(car.h) * (p.x - car.x) + Math.cos(car.h) * (p.z - car.z)) < -1.2) return { label: '🛠️ Gisela von innen: ' + (AMC.Camper.value() ? 'Ausbau ' + AMC.Camper.value() + '/' + AMC.Camper.UP.length : 'ausbauen'), run: () => { S.giselaAt = { x: car.x, z: car.z, h: car.h }; AMC.Save.data.giselaAt = S.giselaAt; AMC.Play.onAction('camper'); } };
       if (car.gisela && p.H.id !== 'marco') return { label: 'Marco ans Steuer von Gisela 🚐', run: () => { C.swapHost(); setTimeout(() => C.S && enter(car), 250); } };
       return { label: (car.gisela ? 'Mit Gisela fahren 🚐' : 'Einsteigen: ' + car.name + ' 🚗'), run: () => enter(car) };
     }
