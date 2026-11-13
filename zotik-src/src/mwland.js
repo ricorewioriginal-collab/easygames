@@ -56,6 +56,7 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       A.smoke(-23, 5.6, -22);
       b.box(-22, 0, -12.6, 3.2, .8, 1.3, 0x7a5a3a, { solid: 1 }); for (let i = 0; i < 7; i++) { const a = i / 7 * 6.283; b.box(-22 + Math.cos(a) * 2.1, 0, -12.6 + Math.sin(a) * 1.2, .35, .45, .35, 0x8a6a4a); b.cyl(-23.3 + i * .44, .82, -12.6, .1, .05, 0xd8d0c0, { cast: false }); }
       for (const x of [-34, -28]) b.cyl(x, 0, -27, .07, 1.9, 0x5a4030, { lo: 1, solid: 1 }); b.box(-31, 1.8, -27, 6, .02, .02, 0xe8e0d0, { cast: false }); for (let i = 0; i < 7; i++) b.box(-33.4 + i * .8, 1.45, -27, .4, .55, .03, [0xc84a3a, 0x4a7ac8, 0x5aa04a, 0xd8b040, 0x8a4ac8, 0xe07a2a, 0x4ab0b0][i], { cast: false });
+      K.house(-19, -52, 6, 4.6, 3, 0xd8c8a8, 0x5a4a3a, -1.95, { beams: 0x4a3020 });   // Werkzeughütte der Zwerge am Stollen
       for (let i = 0; i < 4; i++) b.cyl(-19 + (i % 2) * .5, .3 + i * .45, -24 + (i % 2) * .3, .25, 2.2, 0x6a4a2a, { cast: false }).rotation.x = Math.PI / 2; b.addCol(-19, -24, 1);
       // Spiegelsee: Schilf, Ruderboot
       for (let i = 0; i < 22; i++) { const a = i * .29, r = 7.8 + (i % 3) * .4; b.cyl(26 + Math.cos(a) * r, 0, -24 + Math.sin(a) * r, .04, 1.3 + (i % 3) * .3, 0x5a7a3a, { lo: 1, cast: false }); }

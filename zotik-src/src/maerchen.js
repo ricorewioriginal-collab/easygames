@@ -3,6 +3,7 @@
 // Wahrzeichen, Figuren, Tiere und Leben, eine eigene Spielmechanik (Spiegel-Portale, Lianen, Kletterturm, Strömungen, Arena …),
 // ein Gast, der mitkämpft, 4–5 Aufträge, Bosse mit Reaktionsbefehl und am Ende ein Schlüsselloch zum Versiegeln.
 // Zustand: S.mw[id] = { v: 2, m: Auftrag, st: 0 frei / 1 läuft, c: Zähler, got: {Teil: 1}, done: 1, seen: 1, no: 1 (Abstecher abgelehnt) }.
+import { arealMask, arealHeight, arealCutDepth, arealDress } from './mwareal.js';
 import { WORLDS } from './mwdata.js';
 import { makeLand } from './mwland.js';
 import { createMwFoes } from './mwfoes.js';
@@ -36,7 +37,7 @@ export function createMaerchen(C) {
   const segD = (x, z, [ax, az, bx, bz]) => { const dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1))); return Math.hypot(x - ax - dx * t, z - az - dz * t); };
   const roadD = (w, x, z) => { let b = 1e9; for (const s of roads(w)) { const d = segD(x, z, s); if (d < b) b = d; } return b; };
   function heightFn(w) {
-    const pads = w.pads, rects = w.rects || [], pools = w.pools || [], ph = w.n * 1.37, amp = w.amp, rv = w.river;
+    const pads = w.pads, rects = w.rects || [], pools = w.pools || [], ph = w.n * 1.37, amp = w.amp, rv = w.river, AM = areal(w), AH = AM && arealHeight(w, AM);
     return (x, z) => {
       const d = Math.hypot(x - CX, z - CZ);
       let q = (Math.sin(x * .07 + ph) * Math.cos(z * .06 + ph * .5) * 1.2 + Math.sin(x * .031 + z * .027 + ph) * 1.6 + Math.sin(x * .17 + z * .13) * .25) * amp;
@@ -49,9 +50,12 @@ export function createMaerchen(C) {
       q *= f;
       for (const [px, pz, r] of pools) { const pd = Math.hypot(x - px, z - pz); q -= 1.4 * (1 - sm(r - 1, r + 1.5, pd)); }
       if (rv) { const rd = riverDist(rv, x, z), cut = 1 - sm(rv.w * .5 - 1.2, rv.w * .5 + .8, rd), ford = x > rv.ford[0] && x < rv.ford[1]; q -= cut * (ford ? (rv.bridge ? 0 : .35) : 1.7); }
+      if (AH) q = AH(x, z, q);
       const k = Math.max(0, d - R); return q + k * k * .38;
     };
   }
+  /* Areale (KH-Gebiete mit Gassen und Waldwänden), Maske je Welt einmal berechnet */
+  const areal = w => w.areal ? (w._am || (w._am = arealMask(w, roads(w), PATHX, CX, CZ, R))) : null;
   const inRiver = (w, x, z) => { const rv = w.river; if (!rv || (x > rv.ford[0] && x < rv.ford[1])) return false; return riverDist(rv, x, z) < rv.w * .5 - .5; };
 
   /* ---------- Bausteine ---------- */
@@ -136,12 +140,12 @@ export function createMaerchen(C) {
     house: { parts: [[() => G.box, 0xd8c8a8, 4.5, 4.2, 9, 4.2], [() => G.cone, 0x4a4a5a, 9.8, 3.4, 2.4, 3.4]], col: 0 }
   };
   const offs = { jungle: [[0, 0], [1.2, .6]], bamboo: [[0, 0], [.5, .3], [-.3, .5]], coral: [[0, 0], [.3, 0], [-.5, .3]] };
-  function scatter(g, list, keep, snow) {
+  function scatter(g, list, keep, snow, wall) {
     const by = {}; for (const it of list) (by[it[2]] = by[it[2]] || []).push(it);
     for (const k in by) { const D = DECOR[k], L = by[k]; D.parts.forEach((p, pi) => { const geo = p[0](), col = snow && pi === D.parts.length - 1 && (k === 'pine' || k === 'rockbig') ? 0xe8eef4 : p[1], im = new T.InstancedMesh(geo, geo === PG.trunk ? C.TX.tri('bark', col, { s: .9, gain: 1.7 }) : geo === PG.rock ? C.TX.tri(snow && col === 0xe8eef4 ? 'snow' : 'rock', col, { s: .45, gain: 1.7 }) : k === 'column' && pi === 0 ? C.TX.tri('marble', col, { s: .6 }) : k === 'barrel' ? C.TX.tri('wood', col, { s: 1.2 }) : M(col, p[6] || {}), L.length), q = new T.Object3D(), tc = new T.Color();
       L.forEach(([x, z, , s, r], i) => { const of = (offs[k] && offs[k][pi]) || [0, 0], y = cur.h(x, z); q.position.set(x + of[0] * s, y + p[2] * s, z + of[1] * s); q.rotation.set(0, r, 0); q.scale.set(p[3] * s, p[4] * s, p[5] * s); q.updateMatrix(); im.setMatrixAt(i, q.matrix); im.setColorAt && im.setColorAt(i, tc.setHex(0xffffff).multiplyScalar(.82 + ((i * 37) % 10) * .036)); });
-      if (im.instanceColor) im.instanceColor.needsUpdate = true; im.castShadow = k !== 'flower' && k !== 'shell'; im.receiveShadow = true; im.frustumCulled = false; g.add(im); keep.push(im); });
-      if (D.col) for (const [x, z, , s] of L) if (Math.hypot(x - CX, z - CZ) < R + 1) C.addCol(x, z, D.col * s); }
+      if (im.instanceColor) im.instanceColor.needsUpdate = true; im.castShadow = !wall && k !== 'flower' && k !== 'shell'; im.receiveShadow = true; im.frustumCulled = false; g.add(im); keep.push(im); });
+      if (D.col && !wall) for (const [x, z, , s] of L) if (Math.hypot(x - CX, z - CZ) < R + 1) C.addCol(x, z, D.col * s); }
   }
 
   /* ---------- Figuren ---------- */
@@ -230,8 +234,8 @@ export function createMaerchen(C) {
 
   /* ---------- Welt aufbauen ---------- */
   function build(n) {
-    const w0 = W(n); R = w0.R || 58; CZ = w0.cz ?? -36; const AK = (R / 58) ** 2, w = w0, h = heightFn(w), S = C.S(), s = st(w.id), pools = w.pools || [];
-    const blk = (x, z) => z > 300 ? !(cur && cur.rooms.some(q => Math.abs(x - q.x) < q.hw && Math.abs(z - q.z) < q.hd)) : C.tooSteep(h, x, z) || Math.hypot(x - CX, z - CZ) > R + 6 || pools.some(([px, pz, r]) => Math.hypot(x - px, z - pz) < r - .4) || inRiver(w, x, z);
+    const w0 = W(n); R = w0.R || 58; CZ = w0.cz ?? -36; const AK = (R / 58) ** 2, w = w0, h = heightFn(w), AM = areal(w), rock = new T.Color(0x6a6460), floor = new T.Color(w.ridge), S = C.S(), s = st(w.id), pools = w.pools || [];
+    const blk = (x, z) => z > 300 ? !(cur && cur.rooms.some(q => Math.abs(x - q.x) < q.hw && Math.abs(z - q.z) < q.hd)) : C.tooSteep(h, x, z) || Math.hypot(x - CX, z - CZ) > R + 6 || pools.some(([px, pz, r]) => Math.hypot(x - px, z - pz) < r - .4) || inRiver(w, x, z) || (AM && (AM.E(x, z) > 1.2 || arealCutDepth(w, x, z)));
     const zone = (x, z) => { for (const q of w.zones) if (Math.hypot(x - q[3], z - q[4]) < q[5]) return q[0]; return 'wild'; };
     const zn = { wild: [w.name, w.sub], ruin: ['Drinnen', w.name] }; for (const q of w.zones) zn[q[0]] = [q[1], q[2]];
     const WD = { n, C: C.CHP[n], h, blocked: blk, zone, ims: [], edKeys: [], terr: null, story: true, mw: w, lv: Math.max(3, S.lvl - 1), grav: w.grav || 1,
@@ -242,7 +246,8 @@ export function createMaerchen(C) {
     const PS = 2 * R + 54, PN = Math.min(240, Math.round(PS * .8)), geo = new T.PlaneGeometry(PS, PS, PN, PN); geo.rotateX(-Math.PI / 2); geo.translate(CX, 0, CZ);
     const p = geo.attributes.position, col = new Float32Array(p.count * 3), c = new T.Color(), c1 = new T.Color(w.ground[0]), c2 = new T.Color(w.ground[1]), cp = new T.Color(w.path), cr = new T.Color(w.ridge), sn = new T.Color(0xf0f4f8), sand = new T.Color(0x8a7a5a);
     for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i), y = h(x, z); p.setY(i, y); const d = Math.hypot(x - CX, z - CZ), nz = Math.sin(x * .9) * Math.cos(z * .8) * .5 + Math.sin(x * .23 + z * .31) * .5;
-      c.copy(c1).lerp(c2, .5 + nz * .5); const pd = Math.abs(x - PATHX(z)), rdd = roadD(w, x, z); if (rdd < 2.4) c.lerp(cp, .85 * (1 - sm(1.4, 2.4, rdd))); if (z < 16 && z > -88 && pd < 2.6) c.lerp(cp, 1 - sm(1.6, 2.6, pd)); if (y < -.5) c.lerp(sand, Math.min(1, -y - .5)); c.lerp(cr, sm(R, R + 5, d)); if (w.snow) c.lerp(sn, Math.min(1, sm(R - 2, R + 4, d) * .9 + sm(3, 6, y) * .6)); col.set([c.r, c.g, c.b], i * 3); }
+      c.copy(c1).lerp(c2, .5 + nz * .5); const pd = Math.abs(x - PATHX(z)), rdd = roadD(w, x, z); if (rdd < 2.4) c.lerp(cp, .85 * (1 - sm(1.4, 2.4, rdd))); if (z < 16 && z > -88 && pd < 2.6) c.lerp(cp, 1 - sm(1.6, 2.6, pd)); if (AM) { const e = AM.E(x, z), sl = Math.hypot(h(x + .6, z) - h(x - .6, z), h(x, z + .6) - h(x, z - .6)); c.lerp(floor, sm(.6, 3, e) * .75).lerp(rock, sm(.9, 1.6, sl) * .8 * (1 - sm(1, 3, e))); for (const q of w.zones) { const zd = Math.hypot(x - q[3], z - q[4]); if (zd < q[5] * .6) c.lerp(cp, (1 - sm(q[5] * .35, q[5] * .6, zd)) * (.3 + .1 * Math.sin(zd * 1.6))); } }
+      if (y < -.5) c.lerp(sand, Math.min(1, -y - .5)); c.lerp(cr, sm(R, R + 5, d)); if (w.snow) c.lerp(sn, Math.min(1, sm(R - 2, R + 4, d) * .9 + sm(3, 6, y) * .6)); col.set([c.r, c.g, c.b], i * 3); }
     geo.setAttribute('color', new T.BufferAttribute(col, 3)); geo.computeVertexNormals();
     const terr = new T.Mesh(geo, C.TX.tri(GTEX[w.id] || 'grass', 0xffffff, { vc: 1, s: .22, gain: 2.1, n: .8 })); terr.receiveShadow = true; C.scene.add(terr); WD.terr = terr;
     for (const [px, pz, r, wc] of pools) { const wm = mk(new T.CircleGeometry(r + .6, 64), new T.MeshStandardMaterial({ color: wc, metalness: .6, roughness: .06, transparent: true, opacity: .82 }), px, -.4, pz, 1, 1, 1, false); wm.rotation.x = -Math.PI / 2; C.scene.add(wm); }
@@ -256,10 +261,11 @@ export function createMaerchen(C) {
     for (const m of w.ms) { for (const q of (m.pts || [])) busy.push([q[0], q[1], 3]); if (m.at) busy.push([m.at[0], m.at[1], m.r || 5]); }
     for (const d of w.npcs) busy.push([d.x, d.z, 3]); for (const q of [...(w.chests || []), ...(w.pots || []), ...(w.lore || []), ...(w.portals || []), ...(w.vents || [])]) busy.push([q[0], q[1], 2.5]);
     for (const q of (w.swings || [])) busy.push([q[0], q[1], 3], [q[2], q[3], 3]); if (w.currents) for (const q of w.currents) busy.push([q[0], q[1], q[2]]); if (w.climb) busy.push([w.climb.cx, w.climb.cz, 8]);
-    for (const [kind, cnt0] of w.decor) { const cnt = Math.round(cnt0 * Math.min(AK, 2.4)); let n2 = 0, tries = 0; while (n2 < cnt && tries++ < cnt * 30) { const a = R2() * 6.283, rr = Math.sqrt(R2()) * (R - 3), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr;
+    for (const [kind, cnt0] of w.decor) { const cnt = Math.round(cnt0 * Math.min(AK, 2.4) * (AM && DECOR[kind].col > .3 ? .35 : 1)); let n2 = 0, tries = 0; while (n2 < cnt && tries++ < cnt * 30) { const a = R2() * 6.283, rr = Math.sqrt(R2()) * (R - 3), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr;
       if ((Math.abs(x - PATHX(z)) < 4 && z < 16 && z > -88) || roadD(w, x, z) < 3.2) continue; if (busy.some(([bx, bz, br]) => Math.hypot(x - bx, z - bz) < br + 1.5)) continue; if ((w.rects || []).some(([x0, x1, z0, z1]) => x > x0 - 2 && x < x1 + 2 && z > z0 - 2 && z < z1 + 2)) continue;
       if (blk(x, z) || C.inHouse(x, z, 1.2) || (w.river && riverDist(w.river, x, z) < w.river.w * .5 + 1.5)) continue; if (list.some(q => DECOR[q[2]].col && Math.hypot(q[0] - x, q[1] - z) < 2.6)) continue;
       list.push([x, z, kind, .8 + R2() * .5, R2() * 6.3]); n2++; } }
+    if (AM) { const wl = []; arealDress({ C, w, b, g, h, M: AM, R2, blk, busy, roadD: (x, z) => Math.min(roadD(w, x, z), z < 16 && z > -88 ? Math.abs(x - PATHX(z)) : 1e9), wallList: wl, TOUCH: C.TOUCH, mk, G, MAT: M }); scatter(g, wl, WD.ims, w.snow, 1); }
     scatter(g, list, WD.ims, w.snow);
     C.mergeStatic(g, keepSet);
     // Figuren
