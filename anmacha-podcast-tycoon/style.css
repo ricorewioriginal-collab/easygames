@@ -434,3 +434,6 @@ html:not(.dev-touch) .cv-feed { bottom: calc(110px + var(--safe-b)); }
 html.dev-pad [data-pad], html.dev-kb [data-kb] { position: relative; }
 html.dev-pad .hm-emo [data-pad]::after, html.dev-kb .hm-emo [data-kb]::after, html.dev-pad .hm-act [data-pad]::after { content: attr(data-pad); position: absolute; top: -6px; right: -6px; font: 700 10px Fredoka, system-ui, sans-serif; background: #ff8a1e; color: #111; border-radius: 7px; padding: 1px 4px; line-height: 1.2; }
 html.dev-kb .hm-emo [data-kb]::after { content: attr(data-kb); }
+/* Beziehungen: Freundschafts-Balken */
+.so-bar { height: 8px; border-radius: 4px; background: rgba(255,255,255,.12); margin: 0 0 10px; overflow: hidden; }
+.so-bar i { display: block; height: 100%; background: linear-gradient(90deg, #ff3da8, #ffd23f); }

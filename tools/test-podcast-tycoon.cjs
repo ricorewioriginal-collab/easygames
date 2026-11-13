@@ -23,7 +23,7 @@ server.listen(0, '127.0.0.1', async () => {
     await p.click('#tStart'); await p.waitForFunction(() => AMC.Game.mode === 'play' && AMC.Play.state() && AMC.Play.state().mode === 'free', null, { timeout: 20000 });
     // Kein separates Hauptmenü: Start führt in die Stadt, das Gesamtmenü öffnet sich dort (Pause) mit allen Funktionen
     await p.evaluate(() => AMC.Game.pause()); await p.waitForSelector('.main-menu.in-city [data-go=story]');
-    assert.ok(await p.evaluate(() => ['resume', 'story', 'live', 'jagd', 'race', 'quiz', 'koop', 'walk', 'home', 'arcade', 'music', 'studio', 'shop', 'radio', 'settings', 'controls', 'credits'].every(g => document.querySelector('.main-menu [data-go=' + g + ']'))), 'Gesamtmenü hat alle Funktionen');
+    assert.ok(await p.evaluate(() => ['resume', 'story', 'live', 'jagd', 'race', 'quiz', 'koop', 'walk', 'friends', 'home', 'arcade', 'music', 'studio', 'shop', 'radio', 'settings', 'controls', 'credits'].every(g => document.querySelector('.main-menu [data-go=' + g + ']'))), 'Gesamtmenü hat alle Funktionen');
     await p.click('[data-go=resume]'); await p.waitForTimeout(300);
     assert.ok(await p.evaluate(() => !document.querySelector('.main-menu') && AMC.Game.mode === 'play'), 'Weiter in der Stadt');
     // Club-Feeling in der Stadt: Emote-Leiste, Tanzen, Stadt-Vibe
@@ -40,6 +40,10 @@ server.listen(0, '127.0.0.1', async () => {
     assert.equal(await p.evaluate(() => AMC.Play.state().busStops.length), 8, '8 Bushaltestellen');
     await p.evaluate(() => AMC.Play.onAction('bus:funk')); await p.waitForSelector('[data-b=park]'); await p.click('[data-b=park]'); await p.waitForTimeout(1800);
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(), b = S.busStops.find(x => x.st.id === 'park'); return Math.hypot(S.pl.x - b.x, S.pl.z - b.z) < 5; }), 'Bus bringt zum Stadtpark');
+    // Beziehungen: angesprochener Fan wird getroffen, Aktion steigert Freundschaft, Freundebuch
+    assert.ok(await p.evaluate(() => { const S = AMC.Play.state(), n = S.npcs.find(x => !x.guest && !x.dancer && !x.hungry); if (!n) return false; n.talked = true; S.pl.x = n.x + 1; S.pl.z = n.z; const before = AMC.Social.points(n.name); AMC.Social.open(n, S); document.querySelector('#soL [data-s="0"]').click(); window.__soN = n.name; return JSON.stringify([before, AMC.Social.points(n.name), !!document.querySelector('#soL'), n.name]); }).then(r => { const a = JSON.parse(r); return a[1] === a[0] + 4; }), 'High-Five steigert Freundschaft');
+    assert.ok(await p.evaluate(() => { AMC.Save.data.social.f[window.__soN] = 70; return AMC.Social.superfans() >= 1 && AMC.Social.bonus() >= 0.02 && AMC.Social.level(window.__soN).name === 'Superfan'; }), 'Superfan zählt als Hörer-Bonus');
+    assert.ok(await p.evaluate(() => { const s = AMC.Social.book(); const ok = !!document.querySelector('#sbL .st-item'); AMC.UI.close(s); return ok; }), 'Freundebuch zeigt Fans');
     // Tagesablauf und Folgen-Wirtschaft: Uhr im HUD, Aufnahme wertet aus, neuer Tag
     assert.ok(await p.evaluate(() => !!document.getElementById('crDay') && AMC.Career.plan().length === 4), 'Tagesplan im Stadt-HUD');
     assert.ok(await p.evaluate(() => { const c = AMC.Career.state(), d = c.day, a = c.abos; c.min = 18 * 60 + 10; const e = AMC.Career.episode({ listeners: 5000 }); return c.day === d + 1 && c.abos > a && e.hoerer >= 5000 && e.lines.length >= 4; }), 'Aufnahme bringt Hörer, Abos und neuen Tag');
