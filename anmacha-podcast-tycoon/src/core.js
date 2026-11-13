@@ -30,7 +30,7 @@
     settings: { music: 0.55, sfx: 0.8, radio: 0.75, quality: 'auto', invert: false, sens: 1, shake: true, touchSize: 1, subtitles: true },
     host: 'andrew',
     story: { done: 0, stars: {}, best: {} },
-    best: { live: 0, jagd: 0, quiz: 0 },
+    best: { live: 0, jagd: 0, quiz: 0, race: 0 },
     stats: { funken: 0, drones: 0, shows: 0, listeners: 0, quizWins: 0 },
     fan: 0, owned: [], outfit: { andrew: 'std', marco: 'std' }, quests: {},
     seenIntro: false

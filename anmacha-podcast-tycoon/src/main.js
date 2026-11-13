@@ -68,6 +68,7 @@
       mi('story', '▶', 'Story: Staffel 1 & 2', chDone >= D.CHAPTERS.length ? 'Alle ' + D.CHAPTERS.length + ' Kapitel geschafft · ⭐ ' + stars + '/' + D.CHAPTERS.length * 3 : 'Kapitel ' + (chDone + 1) + ' von ' + D.CHAPTERS.length + ' · ⭐ ' + stars, true) +
       mi('live', '🎙️', 'Live-Show', 'Endlos-Aufnahme · Rekord ' + U.fmt(Save.data.best.live) + ' Hörer') +
       mi('jagd', '🏃', 'Themenjagd', '3 Minuten durch die Stadt · Rekord ' + U.fmt(Save.data.best.jagd)) +
+      mi('race', '🏁', 'Funk-Rennen', '10 Tore auf Zeit · ' + (Save.data.best.race ? 'Bestzeit ' + Save.data.best.race.toFixed(1) + ' s' : 'noch keine Bestzeit')) +
       mi('quiz', '🧠', 'KI-Quizshow', '1 Spieler oder 2 Spieler: Andrew gegen Marco') +
       mi('free', '🏙️', 'Stadt & Nebenaufträge', Object.keys(Save.data.quests).length + '/' + D.QUESTS.length + ' Aufträge erledigt · frei spielen, Radio hören') +
       mi('koop', '🌐', 'Online-Koop', 'Zu zweit auf zwei Geräten: Andrew & Marco – per Link, Code oder QR') +
@@ -87,7 +88,7 @@
     el.querySelector('#mHost').onclick = swapHost;
     s.o.onKey = () => { if (I.hit('swap')) { swapHost(); return true; } return false; };
     updHost();
-    const go = { story: storyMenu, live: startLive, jagd: () => startCity('jagd'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
+    const go = { story: storyMenu, live: startLive, jagd: () => startCity('jagd'), race: () => startCity('race'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
     el.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go[b.dataset.go]());
     G.menu = s;
   }
@@ -122,7 +123,7 @@
     AMC.Play.onEnd = res => cityEnd(mode, ch, res);
     AMC.Play.start({ mode, chapter: ch, host: G.host });
     UI.showTouch(true);
-    AMC.Play.msg(mode === 'jagd' ? '🏃 Themenjagd! 3 Minuten – sammle alles!' : mode === 'free' ? '🏙️ Willkommen im Funkhaus-Viertel!' : '🎙️ ' + ch.title + ' – los geht\'s!', 2.6);
+    AMC.Play.msg(mode === 'jagd' ? '🏃 Themenjagd! 3 Minuten – sammle alles!' : mode === 'race' ? '🏁 Funk-Rennen! Lauf durch alle 10 Tore – die Uhr läuft!' : mode === 'free' ? '🏙️ Willkommen im Funkhaus-Viertel!' : '🎙️ ' + ch.title + ' – los geht\'s!', 2.6);
     if (!Save.data.seenIntro) { Save.data.seenIntro = true; Save.save(); setTimeout(() => UI.toast(I.device === 'touch' ? 'Links bewegen, rechts wischen = Kamera. ⤴ Springen, 📣 Welle, 💨 Ausweichen, ⇄ Wechsel' : I.device === 'pad' ? 'Linker Stick laufen, rechter Stick Kamera, A springen, X Welle, RT ausweichen, Y Andrew/Marco' : 'WASD laufen, Maus ziehen = Kamera, Leertaste springen, E Welle, C ausweichen, Q wechseln, Umschalt sprinten', 7000), 800); }
   }
   function cityEnd(mode, ch, res) {
@@ -132,6 +133,11 @@
       const best = Save.data.best.jagd, rec = res.score > best; if (rec) { Save.data.best.jagd = res.score; Save.save(); }
       const fp = Save.earn(res.score / 40);
       return setTimeout(() => results({ title: '🏃 Themenjagd vorbei!', stars: res.score > 9000 ? 3 : res.score > 6000 ? 2 : res.score > 3000 ? 1 : 0, lines: [['Punkte', U.fmt(res.score) + (rec ? ' 🏆 Neuer Rekord!' : '')], ['Themen-Funken', sumGot(res.got)], ['Störsender abgeschaltet', res.kills], ['Goldene Erinnerungen', res.gold], fanLine(fp)], again: () => startCity('jagd') }), 400);
+    }
+    if (mode === 'race') {
+      const t = res.time, best = Save.data.best.race, rec = !best || t < best; if (rec) { Save.data.best.race = Math.round(t * 10) / 10; Save.save(); }
+      const stars = t <= 50 ? 3 : t <= 70 ? 2 : t <= 100 ? 1 : 0, fp = Save.earn(30 + stars * 40);
+      return setTimeout(() => results({ title: '🏁 Ziel erreicht!', stars, lines: [['Zeit', t.toFixed(1) + ' s' + (rec ? ' 🏆 Neue Bestzeit!' : '')], ['Medaille', ['–', '🥉 Bronze (≤ 100 s)', '🥈 Silber (≤ 70 s)', '🥇 Gold (≤ 50 s)'][stars]], ['Themen-Funken', sumGot(res.got)], fanLine(fp)], again: () => startCity('race') }), 400);
     }
     if (!res.ok) return setTimeout(() => results({ title: '⏱ Sendeschluss!', fail: true, stars: 0, lines: [['Die Zeit ist abgelaufen.', ''], ['Tipp', U.pick(D.TIPS)]], again: () => playChapterDirect(G.chapter) }), 400);
     // Ab ins Studio

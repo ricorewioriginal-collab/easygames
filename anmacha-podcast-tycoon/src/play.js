@@ -376,7 +376,7 @@
     const pickRub = () => { const ws = D.RUBRIC_IDS.map(rubricW), sum = ws.reduce((a, b) => a + b, 0); let v = rng() * sum; for (let i = 0; i < ws.length; i++) { v -= ws[i]; if (v <= 0) return D.RUBRIC_IDS[i]; } return 'feel'; };
     const spawnFunken = n => { for (let i = 0; i < n; i++) { const [x, y, z] = freeSpot(rng); addPickup('funke', pickRub(), x, y + 1.1, z); } };
     const roofSpots = U.shuffle(S.roofs);
-    const droneN = ch ? ch.drones : S.mode === 'jagd' ? 6 : 4;
+    const droneN = ch ? ch.drones : S.mode === 'jagd' ? 6 : S.mode === 'race' ? 3 : 4;
     if (type === 'collect' || type === 'jagd' || type === 'free') {
       spawnFunken(ch ? ch.obj.n + 8 : 26);
       roofSpots.slice(0, ch && ch.obj.gold ? 4 : 2).forEach(r => addPickup('gold', null, r.x, r.y + 1.2, r.z));
@@ -396,18 +396,19 @@
       });
       roofSpots.slice(0, 2).forEach(r => addPickup('gold', null, r.x, r.y + 1.2, r.z));
     }
-    if (type === 'train') {
-      // Route über die Straßen: Haltestellen-Tore
+    if (type === 'train' || type === 'race') {
+      // Route über die Straßen: Haltestellen-Tore (Funk-Rennen: alle 10 Tore auf Zeit)
+      const race = type === 'race';
       const route = [[0, 20], [0, 42], [-30, 45], [-45, 20], [-45, -30], [-10, -45], [30, -45], [45, -10], [45, 30], [20, 45]];
-      route.slice(0, ch.obj.n).forEach(([x, z], i) => {
+      route.slice(0, race ? route.length : ch.obj.n).forEach(([x, z], i) => {
         const g = new T.Group(); g.position.set(x, 0, z); S.group.add(g);
         const ring = new T.Mesh(new T.TorusGeometry(2.6, 0.18, 10, 40), W.mat(0x3dd6ff, { e: 0x2090ff, ei: 1.2 })); ring.position.y = 2.8; g.add(ring);
-        const sgn = W.textTex(['H', 'Haltestelle ' + (i + 1)], { w: 256, h: 256, bg: '#0a5a2a', fg: '#ffd400', accent: '#ffffff', size: 110 });
+        const sgn = race ? W.textTex([String(i + 1), 'Funk-Rennen'], { w: 256, h: 256, bg: '#3a1a5a', fg: '#ff8a1e', accent: '#ffffff', size: 110 }) : W.textTex(['H', 'Haltestelle ' + (i + 1)], { w: 256, h: 256, bg: '#0a5a2a', fg: '#ffd400', accent: '#ffffff', size: 110 });
         W.sign(g, sgn, 1.3, 1.3, 3.4, 3.2, 0, 0);
         W.cyl(0.06, 0.06, 2.6, W.mat(0x888888), 3.4, 1.3, 0, g);
         S.gates.push({ x, z, g, ring, i, passed: false });
       });
-      S.left = 32; S.gateBonus = 11.5;
+      if (race) S.left = 0; else { S.left = 32; S.gateBonus = 11.5; }
       spawnFunken(8);
     }
     if (type === 'party') {
@@ -468,7 +469,7 @@
       '<div class="h-tr"><canvas id="hMap" width="180" height="180" class="glass"></canvas><div class="h-time glass" id="hTime"></div></div>' +
       '<div class="h-bl"><div class="h-host glass" id="hHost"><img id="hFace" alt=""><div><b id="hName"></b><i class="h-en"><em id="hEn"></em></i><small id="hSwap"></small></div></div></div>' +
       '<div class="h-prompt" id="hPrompt"></div><div class="h-msg" id="hMsg"></div><div class="h-boss" id="hBoss" hidden><b>📡 ' + S.bossName + '</b><i><em id="hBossBar"></em></i></div><div class="h-hit" id="hHit"></div>';
-    U.$('hTitle').textContent = ch ? 'Kapitel ' + (D.CHAPTERS.indexOf(ch) + 1) + ' · ' + ch.title : S.mode === 'jagd' ? 'Themenjagd' : 'Funkhaus-Viertel';
+    U.$('hTitle').textContent = ch ? 'Kapitel ' + (D.CHAPTERS.indexOf(ch) + 1) + ' · ' + ch.title : S.mode === 'jagd' ? 'Themenjagd' : S.mode === 'race' ? 'Funk-Rennen' : 'Funkhaus-Viertel';
     S.hud = { map: U.$('hMap').getContext('2d'), mapT: 0, txtT: 0 };
     drawRub();
     updHost();
@@ -501,6 +502,7 @@
     if (t === 'hunt') return ['KI-Drohnen abgeschaltet 🤖 ' + Math.min(S.kills, ch.obj.n) + '/' + ch.obj.n, S.kills / ch.obj.n];
     if (t === 'party') return ['Kassetten 📼 ' + S.tapes + '/' + ch.obj.n + ' · Tanzende mit ' + AMC.glyph('x') + ' anfeuern', S.tapes / ch.obj.n];
     if (t === 'boss') return [S.boss.state === 'intro' ? S.bossName + ' erscheint …' : 'Triff ' + S.bossName.replace(/^Das /, 'das ') + ', wenn der Schild offen ist', 1 - S.boss.hp / S.boss.max];
+    if (t === 'race') { const k = S.gates.filter(g => g.passed).length, b = AMC.Save.data.best.race; return ['🏁 Tore ' + k + '/' + S.gates.length + ' – so schnell wie möglich!' + (b ? ' · Bestzeit ' + b.toFixed(1) + ' s' : ''), k / S.gates.length]; }
     if (t === 'jagd') return ['Sammle so viele Themen wie möglich! Punkte: ' + U.fmt(S.score), 1 - S.left / 180];
     const q = nextQuest();
     if (q) { const v = Math.min(q.goal, q.val(S)); return ['📋 Nebenauftrag: ' + q.icon + ' ' + q.desc + ' (' + U.fmt(v) + '/' + U.fmt(q.goal) + ') · ' + AMC.glyph('x') + ' an der Tür = Menü', v / q.goal]; }
@@ -514,7 +516,8 @@
       const o = U.$('hObj'); if (o.innerHTML !== txt) o.innerHTML = txt;
       U.$('hObjBar').style.width = Math.round(U.clamp(frac, 0, 1) * 100) + '%';
       const te = U.$('hTime');
-      if (S.left > 0 || S.mode === 'jagd' || (S.ch && S.type !== 'free')) { te.hidden = false; te.textContent = '⏱ ' + U.time(S.left); te.classList.toggle('warn', S.left < 20); } else te.hidden = true;
+      if (S.type === 'race') { te.hidden = false; te.textContent = '⏱ ' + S.time.toFixed(1) + ' s'; te.classList.remove('warn'); }
+      else if (S.left > 0 || S.mode === 'jagd' || (S.ch && S.type !== 'free')) { te.hidden = false; te.textContent = '⏱ ' + U.time(S.left); te.classList.toggle('warn', S.left < 20); } else te.hidden = true;
       U.$('hEn').style.width = S.energy + '%';
       const pr = U.$('hPrompt'), near = interactTarget();
       pr.innerHTML = near ? AMC.glyph('x') + ' ' + near.label : '';
@@ -813,10 +816,11 @@
     if (t === 'deliver') { if (S.fed >= S.hungryNeed) objectiveDone(); else { S.beacon.visible = true; const h = S.carry > 0 ? S.npcs.filter(n => n.hungry && !n.fed).sort((a, b) => Math.hypot(a.x - S.pl.x, a.z - S.pl.z) - Math.hypot(b.x - S.pl.x, b.z - S.pl.z))[0] : null; if (h) S.beacon.position.set(h.x, 0, h.z); else S.beacon.position.set(S.imbiss.x, 0, S.imbiss.z); } }
     if (t === 'cat') { if (S.caught >= ch.obj.n) objectiveDone(); else { S.beacon.visible = true; S.beacon.position.set(S.cat.x, 0, S.cat.z); } }
     if (t === 'hunt' && S.kills >= ch.obj.n) objectiveDone();
-    if (t === 'train') {
-      const g = S.gates.find(q => !q.passed);
+    if (t === 'train' || t === 'race') {
+      const g = S.gates.find(q => !q.passed), race = t === 'race';
       S.gates.forEach(q => { q.ring.material.emissive.set(q === g ? 0x2090ff : q.passed ? 0x20a040 : 0x222233); q.ring.rotation.y += 0.02; });
-      if (g) { S.beacon.visible = true; S.beacon.position.set(g.x, 0, g.z); if (Math.hypot(S.pl.x - g.x, S.pl.z - g.z) < 2.8 || (S.net === 'host' && Math.hypot(S.fo.x - g.x, S.fo.z - g.z) < 2.8)) { g.passed = true; S.left += S.gateBonus; AMC.Audio.sfx('perfect'); msg('🚉 Haltestelle ' + (g.i + 1) + ' · +' + S.gateBonus + ' s', 1.4); W.particles.burst(g.x, 2.8, g.z, 0x3dd6ff, 30); S.score += 300; } }
+      if (g) { S.beacon.visible = true; S.beacon.position.set(g.x, 0, g.z); if (Math.hypot(S.pl.x - g.x, S.pl.z - g.z) < 2.8 || (S.net === 'host' && Math.hypot(S.fo.x - g.x, S.fo.z - g.z) < 2.8)) { g.passed = true; AMC.Audio.sfx('perfect'); W.particles.burst(g.x, 2.8, g.z, 0x3dd6ff, 30); S.score += 300; if (race) msg('🏁 Tor ' + (g.i + 1) + '/' + S.gates.length + ' · ' + S.time.toFixed(1) + ' s', 1.2); else { S.left += S.gateBonus; msg('🚉 Haltestelle ' + (g.i + 1) + ' · +' + S.gateBonus + ' s', 1.4); } } }
+      else if (race) { objectiveDone(); return finish(true, 'race'); }
       else objectiveDone();
     }
   }

@@ -3024,7 +3024,7 @@
   {
    "id": "anmacha-podcast-tycoon",
    "title": "AnMaCha – Der Podcast (Offizielles Spiel)",
-   "desc": "Das offizielle Spiel zum AnMaCha-Podcast: Spiele Andrew und Marco in einer 3D-Stadt, jage Themen-Funken, schalte Störsender mit der Schallwelle ab und nimm eure Folgen live auf – mit Kommandomenü, Pannen und Live-Chat. Story mit 2 Staffeln und 12 Kapiteln nach echten Folgen mit Bossen, 10 Nebenaufträge, Fanshop mit Outfits und Studio-Upgrades, Live-Show, Themenjagd, verrückte KI-Quizshow für 1–2 Spieler und freies Erkunden. 🌐 Online-Koop: Andrew und Marco auf zwei Geräten per Link, Code oder QR. Echter Podcast und 13 AnMaCha-Sender mit Titelanzeige direkt im Spiel. Controller, Tastatur & Maus, Touch und TV.",
+   "desc": "Das offizielle Spiel zum AnMaCha-Podcast: Spiele Andrew und Marco in einer 3D-Stadt, jage Themen-Funken, schalte Störsender mit der Schallwelle ab und nimm eure Folgen live auf – mit Kommandomenü, Pannen und Live-Chat. Story mit 2 Staffeln und 12 Kapiteln nach echten Folgen mit Bossen, 10 Nebenaufträge, Fanshop mit Outfits und Studio-Upgrades, Live-Show mit Soundboard und Hörerfragen, Themenjagd, Funk-Rennen auf Zeit, verrückte KI-Quizshow für 1–2 Spieler und freies Erkunden. 🌐 Online-Koop: Andrew und Marco auf zwei Geräten per Link, Code oder QR. Echter Podcast und 13 AnMaCha-Sender mit Titelanzeige direkt im Spiel. Controller, Tastatur & Maus, Touch und TV.",
    "icon": "🎙️",
    "img": "anmacha-podcast-tycoon/card.svg",
    "bg": "linear-gradient(145deg,#10142a,#232a52 55%,#ff8a1e)",
@@ -3054,7 +3054,7 @@
      "Jingles bei sinkendem Hype einsetzen."
     ]
    },
-   "size": 1839568,
+   "size": 1845396,
    "files": 29,
    "offline": true,
    "cloud": {
