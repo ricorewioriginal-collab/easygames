@@ -179,6 +179,7 @@
     // Menüpunkte als Orte in der Welt: Panels öffnen über der Stadt (Spiel pausiert), Szenenwechsel starten direkt
     AMC.Play.onAction = mode !== 'free' ? null : id => {
       const back = () => hub(id);
+      if (id.startsWith('sender:') && AMC.Career) AMC.Career.mark('tour');
       if (id.startsWith('sender:')) { const sl = id.slice(7); UI.closeAll(); stopAll(); G.mode = 'home'; UI.showTouch(true); AMC.Audio.music('menu'); AMC.Home.station(sl, G.host, back); return; }
       if (id.startsWith('bus:')) return AMC.Transit.menu(id);
       if (id === 'camper') { UI.closeAll(); stopAll(); G.mode = 'home'; UI.showTouch(true); AMC.Audio.music('menu'); AMC.Home.camper(G.host, back); return; }
@@ -257,20 +258,22 @@
   }
   function startShow(mode, ch, res) {
     stopAll(); G.mode = 'show';
-    const cards = mode === 'story' ? cardsFrom(res, ch) : [];
+    const cards = mode === 'story' ? cardsFrom(res, ch) : AMC.Career ? AMC.Career.cards() : [];
     AMC.Show.start({
       mode: mode === 'story' ? 'story' : 'arcade', rounds: ch ? ch.show.rounds : 99, goal: ch ? ch.show.goal : [300, 600, 900], cards, host: (res && res.host) || G.host,
       onEnd: r => showEnd(mode, ch, res, r)
     });
   }
   function showEnd(mode, ch, cityRes, r) {
+    const ev = AMC.Career ? AMC.Career.episode(r) : null, evl = ev ? ev.lines : [];
+    if (ev && ev.up) setTimeout(() => UI.toast(ev.rank.icon + ' Aufstieg: Ihr seid jetzt ' + ev.rank.name + '!', 4500), 1500);
     if (mode === 'arcade') {
       const rec = r.listeners > Save.data.best.live; if (rec) { Save.data.best.live = r.listeners; Save.save(); }
       const fp = Save.earn(r.listeners / 50);
-      return results({ title: '🎙️ Live-Show beendet', stars: r.listeners > 20000 ? 3 : r.listeners > 10000 ? 2 : r.listeners > 4000 ? 1 : 0, lines: [['Hörer', U.fmt(r.listeners) + (rec ? ' 🏆 Neuer Rekord!' : '')], ['Runden', r.rounds], fanLine(fp)], again: startLive });
+      return results({ title: '🎙️ Live-Show beendet', stars: r.listeners > 20000 ? 3 : r.listeners > 10000 ? 2 : r.listeners > 4000 ? 1 : 0, lines: [['Hörer', U.fmt(r.listeners) + (rec ? ' 🏆 Neuer Rekord!' : '')], ['Runden', r.rounds], fanLine(fp)].concat(evl), again: startLive, againLabel: 'Noch eine Folge' });
     }
     const idx = D.CHAPTERS.indexOf(ch), st = Save.data.story;
-    if (r.stars < 1) return results({ title: '📉 Zu wenig Hörer …', fail: true, stars: 0, lines: [['Hörer', U.fmt(r.listeners)], ['Ziel für ⭐', U.fmt(ch.show.goal[0] * 10)], ['Tipp', 'Nutze passende Karten und wechsle die Sprecher für Kombo-Bonus.']], again: () => startShow('story', ch, cityRes), againLabel: 'Aufnahme wiederholen' });
+    if (r.stars < 1) return results({ title: '📉 Zu wenig Hörer …', fail: true, stars: 0, lines: [['Hörer', U.fmt(r.listeners)], ['Ziel für ⭐', U.fmt(ch.show.goal[0] * 10)], ['Tipp', 'Nutze passende Karten und wechsle die Sprecher für Kombo-Bonus.']].concat(evl), again: () => startShow('story', ch, cityRes), againLabel: 'Aufnahme wiederholen' });
     st.stars[ch.id] = Math.max(st.stars[ch.id] || 0, r.stars); st.best[ch.id] = Math.max(st.best[ch.id] || 0, r.listeners);
     const first = st.done === idx; if (st.done <= idx) st.done = idx + 1; Save.save();
     const fp = Save.earn(first ? 150 + r.stars * 100 : r.stars * 40);
@@ -280,7 +283,7 @@
       const epIdx = AMC.Media.episodes.findIndex(e => e.nr === (ch.ep < 10 ? '#0' : '#') + ch.ep);
       results({
         title: '✅ Kapitel ' + (idx + 1) + ' geschafft!', stars: r.stars,
-        lines: [['Hörer', U.fmt(r.listeners)], ['Themen-Funken', sumGot(cityRes.got)], ['Störsender', cityRes.kills], ['Fans gesprochen', cityRes.talks], fanLine(fp)].concat(first && seasonEnd ? [['🏆', 'Staffel ' + (ch.season || 1) + ' abgeschlossen!' + (idx < D.CHAPTERS.length - 1 ? ' Staffel ' + ((ch.season || 1) + 1) + ' ist freigeschaltet.' : ' Danke fürs Spielen!')]] : []),
+        lines: [['Hörer', U.fmt(r.listeners)], ['Themen-Funken', sumGot(cityRes.got)], ['Störsender', cityRes.kills], ['Fans gesprochen', cityRes.talks], fanLine(fp)].concat(evl).concat(first && seasonEnd ? [['🏆', 'Staffel ' + (ch.season || 1) + ' abgeschlossen!' + (idx < D.CHAPTERS.length - 1 ? ' Staffel ' + ((ch.season || 1) + 1) + ' ist freigeschaltet.' : ' Danke fürs Spielen!')]] : []),
         next: idx < D.CHAPTERS.length - 1 ? () => playChapter(idx + 1) : null,
         again: () => playChapter(idx),
         episode: epIdx >= 0 ? epIdx : null

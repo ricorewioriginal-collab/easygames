@@ -31,10 +31,10 @@
   function near(r) { const p = V.S.pl; return V.S.npcs.filter(n => n.fig && n.fig.root.visible && !n.follow && !n.guest && Math.hypot(n.x - p.x, n.z - p.z) < r); }
   function emote(e) {
     if (!V) return; const p = V.S.pl; if (!p.fig || !p.onGround) return;
-    if (e === 'dance') { V.dancing = !V.dancing; AMC.Audio.sfx(V.dancing ? 'combo' : 'ui'); if (V.dancing) { p.fig.play('dance', { fade: 0.2 }); p.anim = 'dance'; p.busy = 0.3; } else { p.busy = 0; } draw(); return; }
+    if (e === 'dance') { V.dancing = !V.dancing; AMC.Audio.sfx(V.dancing ? 'combo' : 'ui'); if (V.dancing) { p.fig.play('dance', { fade: 0.2 }); p.anim = 'dance'; p.busy = 0.3; if (AMC.Career && near(9).length) AMC.Career.mark('dance'); } else { p.busy = 0; } draw(); return; }
     V.dancing = false; p.fig.play(e, { restart: true, fade: 0.1 }); p.anim = e; p.busy = 1.5; AMC.Audio.sfx(e === 'arms' ? 'cheer' : 'ui');
     const fans = near(9); fans.forEach(n => { n.fig.play(e, { restart: true, fade: 0.1 }); n.anim = e; n.danceT = 1.4; n.fig.root.rotation.y = Math.atan2(p.x - n.x, p.z - n.z); });
-    if (fans.length) { bump(4 + fans.length * 2); const n = U.pick(fans); bubble(n, e === 'yes' ? U.pick(['Hallo! 👋', 'Huhu! 😄', 'Moin! 👋']) : U.pick(['Jaaa! 🙌', 'Woohoo! 🎉', 'AnMaCha! 🧡'])); Save.earn(2); }
+    if (fans.length) { if (AMC.Career) AMC.Career.mark('dance'); bump(4 + fans.length * 2); const n = U.pick(fans); bubble(n, e === 'yes' ? U.pick(['Hallo! 👋', 'Huhu! 😄', 'Moin! 👋']) : U.pick(['Jaaa! 🙌', 'Woohoo! 🎉', 'AnMaCha! 🧡'])); Save.earn(2); }
     draw();
   }
   function bump(n) {

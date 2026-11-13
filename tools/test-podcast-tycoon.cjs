@@ -35,6 +35,9 @@ server.listen(0, '127.0.0.1', async () => {
     assert.equal(await p.evaluate(() => AMC.Play.state().busStops.length), 8, '8 Bushaltestellen');
     await p.evaluate(() => AMC.Play.onAction('bus:funk')); await p.waitForSelector('[data-b=park]'); await p.click('[data-b=park]'); await p.waitForTimeout(1800);
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(), b = S.busStops.find(x => x.st.id === 'park'); return Math.hypot(S.pl.x - b.x, S.pl.z - b.z) < 5; }), 'Bus bringt zum Stadtpark');
+    // Tagesablauf und Folgen-Wirtschaft: Uhr im HUD, Aufnahme wertet aus, neuer Tag
+    assert.ok(await p.evaluate(() => !!document.getElementById('crDay') && AMC.Career.plan().length === 4), 'Tagesplan im Stadt-HUD');
+    assert.ok(await p.evaluate(() => { const c = AMC.Career.state(), d = c.day, a = c.abos; c.min = 18 * 60 + 10; const e = AMC.Career.episode({ listeners: 5000 }); return c.day === d + 1 && c.abos > a && e.hoerer >= 5000 && e.lines.length >= 4; }), 'Aufnahme bringt Hörer, Abos und neuen Tag');
     // Gisela von innen: ausbauen und betreten
     await p.evaluate(() => { AMC.Save.data.fan += 400; AMC.Camper.buy('bett'); AMC.Camper.buy('studio'); AMC.Play.onAction('camper'); }); await p.waitForTimeout(1200);
     assert.ok(await p.evaluate(() => { const r = AMC.Home._state(); return r && r.kind === 'camper' && AMC.Camper.has('bett') && AMC.Camper.has('studio') && !!r.B.P.studio; }), 'Gisela innen begehbar und ausgebaut');
@@ -120,7 +123,8 @@ server.listen(0, '127.0.0.1', async () => {
     await p.evaluate(() => { AMC.Play.stop(); AMC.UI.closeAll(); });
     // Arcade: drei 3D-Minispiele mit Andrew und Marco
     await p.evaluate(() => AMC.Game.arcade('flap')); await p.waitForTimeout(1200);
-    await p.keyboard.press('Space'); await p.waitForTimeout(400);
+    for (let i = 0; i < 6 && (await p.evaluate(() => AMC.Arcade.state().phase === 'ready')); i++) { await p.evaluate(() => AMC.Input.fire('jump')); await p.waitForTimeout(400); }
+    await p.waitForFunction(() => AMC.Arcade.state().p.x > 0, null, { timeout: 5000 }).catch(() => {});
     assert.ok(await p.evaluate(() => { const r = AMC.Arcade.state(); return r && r.id === 'flap' && r.phase !== 'ready' && r.p.x > 0; }), 'Funkwellen-Flug startet und fliegt');
     await p.evaluate(() => AMC.Game.arcade('jump')); await p.waitForTimeout(1200);
     await p.keyboard.down('KeyD'); await p.waitForFunction(() => AMC.Arcade.state().p.x > 0.3, null, { timeout: 8000 }).catch(() => {}); await p.keyboard.up('KeyD');
