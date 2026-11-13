@@ -54,7 +54,7 @@ export function createMaerchen(C) {
   function B(g) {
     const mt = (col, op) => { const t = op.tex || (o.tmap && o.tmap[col]); return t ? C.TX.tri(t, col, op.to || {}) : M(col, op.mat || {}); };
     const o = {
-      g, h: (x, z) => cur.h(x, z), addCol: C.addCol, solid: solidBox, tmap: null,
+      g, h: (x, z) => cur.h(x, z), addCol: C.addCol, solid: solidBox, tmap: null, house: C.house, enter: (k, x, z, r, q) => cur.doors.push({ k, x, z, r, q }),
       mat: (col, tex, to) => tex ? C.TX.tri(tex, col, to || {}) : M(col),
       box(x, y, z, w, h, d, col, op) { op = op || {}; const m = mk(G.box, mt(col, op), x, y + h / 2, z, w, h, d, op.cast !== false); if (op.ry) m.rotation.y = op.ry; if (op.rx) m.rotation.x = op.rx; if (op.rz) m.rotation.z = op.rz; g.add(m); if (op.solid) solidBox(x, z, w, d, op.ry, h >= .8 ? y + h : null); return m; },
       cyl(x, y, z, r, h, col, op) { op = op || {}; const m = mk(op.lo ? G.cyl0 : G.cyl, mt(col, op), x, y + h / 2, z, r, h, r, op.cast !== false); g.add(m); if (op.solid) { const big = r >= 1.2 && C.climb; C.addCol(x, z, r, big ? y + h : null); if (big) C.climb({ x, z, rd: 1, hx: r, hz: r, y: y + h }); } return m; },
@@ -224,12 +224,12 @@ export function createMaerchen(C) {
   /* ---------- Welt aufbauen ---------- */
   function build(n) {
     const w0 = W(n); R = w0.R || 58; CZ = w0.cz ?? -36; const AK = (R / 58) ** 2, w = w0, h = heightFn(w), S = C.S(), s = st(w.id), pools = w.pools || [];
-    const blk = (x, z) => C.tooSteep(h, x, z) || Math.hypot(x - CX, z - CZ) > R + 6 || pools.some(([px, pz, r]) => Math.hypot(x - px, z - pz) < r - .4) || inRiver(w, x, z);
+    const blk = (x, z) => z > 300 ? !(cur && cur.rooms.some(q => Math.abs(x - q.x) < q.hw && Math.abs(z - q.z) < q.hd)) : C.tooSteep(h, x, z) || Math.hypot(x - CX, z - CZ) > R + 6 || pools.some(([px, pz, r]) => Math.hypot(x - px, z - pz) < r - .4) || inRiver(w, x, z);
     const zone = (x, z) => { for (const q of w.zones) if (Math.hypot(x - q[3], z - q[4]) < q[5]) return q[0]; return 'wild'; };
-    const zn = { wild: [w.name, w.sub] }; for (const q of w.zones) zn[q[0]] = [q[1], q[2]];
+    const zn = { wild: [w.name, w.sub], ruin: ['Drinnen', w.name] }; for (const q of w.zones) zn[q[0]] = [q[1], q[2]];
     const WD = { n, C: C.CHP[n], h, blocked: blk, zone, ims: [], edKeys: [], terr: null, story: true, mw: w, lv: Math.max(3, S.lvl - 1), grav: w.grav || 1,
       zn, path: PATHX, secs: () => cur && cur.sec, mbg: null, spawn: [0, 12], refresh, menuQuest, kill, zoneEnter() { }, ensureBoss() { }, sealedNow: () => false, spawnMini() { }, tick };
-    C.setWLD(WD); cur = { w, h, g: null, items: [], ints: [], boss: null, guest: null, react: null, swing: null, wave: 0 };
+    C.setWLD(WD); cur = { w, h, g: null, items: [], ints: [], doors: [], rooms: [], boss: null, guest: null, react: null, swing: null, wave: 0 };
     C.setAtmos({ sun: [.38, .66, .66], ...w.atm });   // Sonne von vorn-oben: Fassaden zur Kamera hin beleuchtet
     // Boden: glatte Schattierung, Farbverlauf, Weg, Sand am Wasser, Schnee am Rand; feine Bodenstruktur als Textur
     const PS = 2 * R + 54, PN = Math.min(240, Math.round(PS * .8)), geo = new T.PlaneGeometry(PS, PS, PN, PN); geo.rotateX(-Math.PI / 2); geo.translate(CX, 0, CZ);
@@ -251,7 +251,7 @@ export function createMaerchen(C) {
     for (const q of (w.swings || [])) busy.push([q[0], q[1], 3], [q[2], q[3], 3]); if (w.currents) for (const q of w.currents) busy.push([q[0], q[1], q[2]]); if (w.climb) busy.push([w.climb.cx, w.climb.cz, 8]);
     for (const [kind, cnt0] of w.decor) { const cnt = Math.round(cnt0 * Math.min(AK, 2.4)); let n2 = 0, tries = 0; while (n2 < cnt && tries++ < cnt * 30) { const a = R2() * 6.283, rr = Math.sqrt(R2()) * (R - 3), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr;
       if (Math.abs(x - PATHX(z)) < 4 && z < 16 && z > -88) continue; if (busy.some(([bx, bz, br]) => Math.hypot(x - bx, z - bz) < br + 1.5)) continue; if ((w.rects || []).some(([x0, x1, z0, z1]) => x > x0 - 2 && x < x1 + 2 && z > z0 - 2 && z < z1 + 2)) continue;
-      if (blk(x, z) || (w.river && riverDist(w.river, x, z) < w.river.w * .5 + 1.5)) continue; if (list.some(q => DECOR[q[2]].col && Math.hypot(q[0] - x, q[1] - z) < 2.6)) continue;
+      if (blk(x, z) || C.inHouse(x, z, 1.2) || (w.river && riverDist(w.river, x, z) < w.river.w * .5 + 1.5)) continue; if (list.some(q => DECOR[q[2]].col && Math.hypot(q[0] - x, q[1] - z) < 2.6)) continue;
       list.push([x, z, kind, .8 + R2() * .5, R2() * 6.3]); n2++; } }
     scatter(g, list, WD.ims, w.snow);
     C.mergeStatic(g, keepSet);
@@ -288,7 +288,7 @@ export function createMaerchen(C) {
       C.INT.push({ x: x0, z: z0 + (z1 > z0 ? -1.2 : 1.2), name: nm, pr: 'Schwingen', rad: 2.4, talk() { cur.swing = { x0: C.pl.x, z0: C.pl.z, x1, z1: z1 + (z1 > z0 ? 1.6 : -1.6), t: 0 }; C.sfx('jump'); } }); } });
     if (w.currents) cur.cur = w.currents.map(q => ({ x: q[0], z: q[1], r: q[2], dx: q[3], dz: q[4], id: q[5] }));
     if (w.climb) C.INT.push({ x: w.climb.cx + 1.2, z: w.climb.cz + 6, name: 'Glockenturm', pr: 'Ansehen', rad: 2.6, vis: () => C.pl.y < 1, talk() { C.say([['Zotik', 'Steinvorsprünge winden sich um den Turm nach oben. Sprung für Sprung – bis zur Glockenstube.']]); } });
-    life(w); side(w, s, folkLife(w, R2, blk, busy), R2, blk);
+    life(w); side(w, s, folkLife(w, R2, blk, busy), R2, blk); rooms(w);
     if (s.st === 1) arm(w, s);
     keyhole(w, s);
     WD.mbg = minimap(w); C.setMBG(WD.mbg);
@@ -310,6 +310,34 @@ export function createMaerchen(C) {
       C.animObjs.push({ fn(t) { for (const f of fl) { const a = f.ph + t * f.sp; f.g.position.set(f.cx + Math.cos(a) * f.r, f.y + Math.sin(t + f.ph) * .3, f.cz + Math.sin(a) * f.r); f.g.rotation.y = -a; } } }); }
     if (L.includes('bubbles')) C.animObjs.push({ fn() { if (cur && Math.random() < .3) C.emit(C.pl.x + (Math.random() - .5) * 30, cur.h(C.pl.x, C.pl.z) + .2, C.pl.z + (Math.random() - .5) * 30, 0xc8f4ff, 1, .3, 3, .12, -1.5); } });
     if (L.includes('snow')) C.animObjs.push({ fn() { if (cur && Math.random() < .7) C.emit(C.pl.x + (Math.random() - .5) * 34, C.pl.y + 12, C.pl.z + (Math.random() - .5) * 34, 0xffffff, 1, .4, 6, .1, 1.2); } });
+  }
+  /* ---------- Innenräume für Türme und Zelte: Tür am Bau, drinnen ein eigener Raum (hinter der Welt bei z≈330) ----------
+     Turm: Wendeltreppe aus Steinstufen nach oben zu einer Galerie mit Truhe. Zelt: Teppiche, Kissen, Laterne, ein Krug. */
+  function rooms(w) {
+    const S = C.S(); S.chests = S.chests || {};
+    cur.doors.forEach((d, i) => { const rx = -90 + i * 26, rz = 330, tw = d.k === 'tower', hw = tw ? 5.5 : 3.6, hd = tw ? 5.5 : 3.6, H = tw ? Math.min(16, Math.max(9, d.q.h)) : 3.2;
+      const g = new T.Group(); g.position.set(rx, 0, rz); C.scene.add(g); cur.rooms.push({ x: rx, z: rz, hw: hw - .45, hd: hd - .45 });
+      const wallM = C.TX.tri(tw ? 'stone' : 'plaster', tw ? (d.q.wall || 0x8a8478) : (d.q.wall || 0xc8a070), { s: .5, gain: tw ? 1.6 : 1.3 }), floorM = C.TX.tri(tw ? 'stone' : 'wood', tw ? 0x6a6460 : 0x8a6a4a, { s: .6, gain: 1.4 });
+      g.add(mk(G.box, floorM, 0, -.1, 0, hw * 2, .2, hd * 2, false));
+      for (const [sx, sz, lw, ld, wh] of [[0, -hd, hw * 2, .4, H], [0, hd, hw * 2, .4, 1.2], [-hw, 0, .4, hd * 2, H], [hw, 0, .4, hd * 2, H]]) g.add(mk(G.box, wallM, sx, wh / 2, sz, lw, wh, ld));   // vordere Wand niedrig: Kamera schaut hinein
+      const exitZ = rz + hd - 1.2; g.add(mk(G.cyl, M(0xffd890, { e: 0xffb050, ei: 1.2 }), 0, .03, hd - 1.2, .9, .04, .9, false)); g.add(glow(0xffd890, 2.4, 0, .4, hd - 1.2, .45));   // Lichtkreis am Ausgang
+      const lampAt = (lx, ly, lz) => { g.add(mk(G.sph0, M(0xffd890, { e: 0xffc060, ei: 2 }), lx, ly, lz, .14, .18, .14, false)); g.add(glow(0xffc060, 2.6, lx, ly, lz, .5)); };
+      if (tw) { // Wendeltreppe an den Wänden entlang, oben eine Galerie
+        const n = Math.max(8, Math.round(H / .95)); for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2 * 1.25 + Math.PI * .75, px = Math.cos(a) * (hw - 1.4), pz = Math.sin(a) * (hd - 1.4), top = .9 * (k + 1);
+          g.add(mk(G.box, C.TX.tri('stone', 0x9a948a, { s: .6, gain: 1.5 }), px, top - .2, pz, 1.7, .4, 1.7)); C.PLAT.push({ x: rx + px, z: rz + pz, hx: .85, hz: .85, top, th: .5 }); if (k % 3 === 1) lampAt(px * 1.15, top + 1.6, pz * 1.15); }
+        const gt = .9 * (n + 1), gx = 0, gz = -hd + 1.6; g.add(mk(G.box, C.TX.tri('wood', 0x6a4a30, { s: .6 }), gx, gt - .2, gz, hw * 2 - .8, .4, 2.6)); C.PLAT.push({ x: rx + gx, z: rz + gz, hx: hw - .4, hz: 1.3, top: gt, th: .5 });
+        const id = 'mw_' + w.id + '_t' + i, o = { id, x: rx + 1.5, z: rz + gz, m: C.makeChest(true), reward: { shards: 90 + w.n * 6, potions: 1 }, pr: 'Truhe öffnen' }; o.m.position.set(o.x, gt, o.z); if (S.chests[id]) o.m.visible = false; C.scene.add(o.m); C.chests.push(o); o.py = gt;
+        g.add(mk(G.box, M(0xd8e8ff, { e: 0x8ab8ff, ei: 1.2 }), 0, gt + 1.6, -hd + .25, 1.1, 1.6, .05, false));
+        C.INT.push({ x: rx - 2, z: rz + gz + .3, name: 'Turmfenster', pr: 'Hinausschauen', rad: 2.2, vis: () => C.pl.y > gt - .5, talk() { C.say([['Zotik', 'Von hier oben sieht man ganz ' + w.name + '. Irgendwo da draußen glitzert noch etwas.']]); } });
+      } else { // Zelt: Teppiche, Kissen, Laterne, Krug
+        for (const [lx, lz, c] of [[0, 0, 0x8a2f3a], [-1.4, -1.2, 0x2f5a8a]]) g.add(mk(G.cyl, M(c, { r: 1 }), lx, .02, lz, 1.5, .03, 1.5, false));
+        for (let k = 0; k < 4; k++) g.add(mk(G.sph, M([0xd8a040, 0x8a3a6a, 0x3a8a6a, 0xc84a3a][k], { r: .9 }), -2 + k * 1.3, .25, -hd + 1, .5, .25, .4));
+        lampAt(0, 2.4, 0); const id = 'mw_' + w.id + '_z' + i, o = { id, x: rx + 2, z: rz - 1.5, m: C.makeChest(false), reward: { shards: 40 + w.n * 3 }, pr: 'Truhe öffnen' }; o.m.position.set(o.x, 0, o.z); if (S.chests[id]) o.m.visible = false; C.scene.add(o.m); C.chests.push(o); }
+      // Tür außen und Übergang
+      const dz = d.z + d.r + .15, door = mk(G.box, M(0x3a2618, { r: .9 }), d.x, cur.h(d.x, dz) + 1.1, dz, 1.2, 2.2, .12, false); C.scene.add(door); C.scene.add(glow(0xffd890, 2.2, d.x, cur.h(d.x, dz) + 2.4, dz + .1, .45));
+      const go = (x, z, y, face) => { const fd = C.$('fade'); C.sfx('ui'); fd.style.opacity = 1; setTimeout(() => { C.pl.x = x; C.pl.z = z; C.pl.y = y; C.pl.vy = 0; C.pl.face = face; C.snapCam(); fd.style.opacity = 0; }, 260); };
+      C.INT.push({ x: d.x, z: dz + 1, name: tw ? 'Turm' : 'Zelt', pr: 'Eintreten', rad: 2.2, talk() { go(rx, exitZ - .6, 0, Math.PI); } });
+      C.INT.push({ x: rx, z: exitZ, name: 'Ausgang', pr: 'Hinausgehen', rad: 1.8, vis: () => C.pl.y < 1, talk() { go(d.x, dz + 1.6, cur.h(d.x, dz + 1.6), 0); } }); });
   }
   /* ---------- Bewohner und Tiere: schlendern umher, erzählen von ihrer Welt ---------- */
   const ROLES = [['Wanderer', 'm'], ['Marktfrau', 'f'], ['Bauer', 'm'], ['Kräutersammlerin', 'f'], ['Holzfäller', 'm'], ['Spielmann', 'm'], ['Wäscherin', 'f'], ['Kind', 'k']];

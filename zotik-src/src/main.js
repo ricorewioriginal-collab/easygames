@@ -420,7 +420,7 @@ const PRISM=(()=>{const g=new T.CylinderGeometry(1,1,1,3,1);g.rotateZ(Math.PI/2)
 const DOME=new T.SphereGeometry(1,TOUCH?16:28,TOUCH?8:14,0,Math.PI*2,0,Math.PI/2);
 function house(x,z,w,d,h,wall,roof,ry,opt){
   opt=opt||{};const g=new T.Group(),y=hgt(x,z),c=Math.cos(ry),sn=Math.sin(ry);g.position.set(x,y-.2,z);g.rotation.y=ry;
-  const HS=HST,wm=TX.tri(HS.w,wall,{s:.45,gain:HS.w==='plaster'?1.7:1.5,n:.8,r:.85,e:0x3a2c1e,ei:1,fresh:1}),segs=[],t=.4,H=h+.4,dw=.75;
+  const HS=opt.hs||HST,wm=TX.tri(HS.w,wall,{s:.45,gain:HS.w==='plaster'?1.7:1.5,n:.8,r:.85,e:0x3a2c1e,ei:1,fresh:1}),segs=[],t=.4,H=h+.4,dw=.75;
   const H0={x,z,y,w,d,h,c,s:sn,R:Math.hypot(w,d)/2+1,segs,wm,f:0,roof:null,ceil:null};
   const W2=(lx,lz)=>[x+lx*c+lz*sn,z-lx*sn+lz*c];
   const solid=(lx,lz,hx,hz)=>{const q=W2(lx,lz);segs.push({wx:q[0],wz:q[1],hx,hz})};
@@ -468,7 +468,7 @@ function house(x,z,w,d,h,wall,roof,ry,opt){
   const table=(lx,lz,tw,td)=>{box(wood,lx,.75,lz,tw,.1,td);for(const a of [-1,1])for(const b of [-1,1])box(wood2,lx+a*(tw/2-.1),0,lz+b*(td/2-.1),.1,.75,.1);solid(lx,lz,tw/2,td/2)};
   const stool=(lx,lz)=>{box(wood,lx,.3,lz,.45,.08,.45);box(wood2,lx,0,lz,.12,.3,.12)};
   const barrel=(lx,lz)=>{g.add(mk(G.cyl,M(0x7a5232,{r:.8}),lx,Y+.5,lz,.42,1,.42));g.add(mk(G.cyl,M(0x3a2a22,{m:.5,r:.5}),lx,Y+.5,lz,.44,.12,.44,false));solid(lx,lz,.42,.42)};
-  const lamp=(lx,ly,lz,sz)=>{g.add(mk(G.sph0,M(0xffd890,{e:0xffc060,ei:2}),lx,ly,lz,.12,.15,.12,false));g.add(glow(0xffc060,sz||2.4,lx,ly,lz,.7))};
+  const lamp=(lx,ly,lz,sz)=>{g.add(mk(G.sph0,M(0xffd890,{e:0xffc060,ei:2}),lx,ly,lz,.12,.15,.12,false));g.add(glow(0xffc060,sz||2.4,lx,ly,lz,.7*(opt.dim||1)))};
   const bed=(lx,lz)=>{box(wood2,lx,0,lz,1.1,.35,2.0);box(cloth,lx,.35,lz+.1,1.0,.18,1.7);box(sheet,lx,.35,lz-.8,.8,.16,.38);solid(lx,lz,.55,1.0)};
   const rug=(lx,lz,col)=>g.add(mk(G.cyl,M(col,{r:1}),lx,Y+.02,lz,1.3,.03,1.3,false));
   const cup=(lx,lz,cw)=>{box(wood2,lx,0,lz,cw,1.9,.5);for(let k=0;k<4;k++)box(M([0xb84a4a,0x4a7ab8,0x4aa86a,0xd8b04a][k]),lx-cw*.3+k*cw*.2,.95,lz+.26,.14,.4,.05);solid(lx,lz,cw/2,.25)};
@@ -493,7 +493,7 @@ function house(x,z,w,d,h,wall,roof,ry,opt){
   if(TOWN.has(kind))TOWN.build(kind,{g,roofGroup,box,table,stool,barrel,lamp,rug,cup,solid,W2,w,d,h,t,Y,x,y,z,ry,H0,roof,wm});
   if(opt.chest){const q=W2(-w/2+t+.7,d/2-t-.8),o={id:opt.chest.id,x:q[0],z:q[1],m:makeChest(),reward:opt.chest.reward,pr:'Truhe öffnen'};o.m.position.set(q[0],y+.02,q[1]);o.m.rotation.y=ry+.4;scene.add(o.m);chests.push(o);solid(-w/2+t+.7,d/2-t-.8,.5,.4)}
   mergeStatic(roofGroup);mergeStatic(g,new Set([roofGroup,ceil,winG]));scene.add(g);colRect(x,z,w,d,ry);HOUSES.push(H0);houseClimb(H0,HS.f,w,d,h,y);
-  const gl=glow(WARM,5,x+Math.sin(ry)*d/2,y+1.6,z+Math.cos(ry)*d/2,.35);scene.add(gl);return g;
+  const gl=glow(WARM,5,x+Math.sin(ry)*d/2,y+1.6,z+Math.cos(ry)*d/2,.35*(opt.dim||1));scene.add(gl);return g;
 }
 function houseClimb(H0,f,w,d,h,y){if(f==='spire')return;const B={x:H0.x,z:H0.z,c:H0.c,s:H0.s,hx:w/2+.4,hz:d/2+.4,y:y+h};H0.top=y+h+.2;
   if(f==='gable'){const rh=Math.min(w,d)*.42+.6,ax=w>=d,hw=(ax?d:w)/2+.45;B.f=(lx,lz)=>Math.max(0,rh*(1-Math.abs(ax?lz:lx)/hw))}
@@ -965,7 +965,7 @@ function ensureBoss(){if(S.boss||boss)return;boss=spawnEnemy('boss',ARENA.x,AREN
 /* ---- Kampf-Verfeinerung: Schwächen & Bruch (Lufia/FF), Treffergefühl & Kombo (KH), Perfektes Ausweichen ---- */
 const EL={fire:['🔥','Feuer'],light:['✨','Licht'],nature:['🌿','Natur'],ice:['❄️','Eis'],storm:['⚡','Sturm']};
 const weakOf=e=>e.d.weak||(e.d.base==='rift'?'light':'fire');
-let _mw=null;const MWX=()=>_mw||(_mw=createMaerchen({tint:(m,c,k)=>tintModel(m,c,k),climb:o=>clbAdd(o),folk:(n,o,w)=>folkNpc(n,o,w),T,G,PG,M,mk,glow,mergeStatic,scene,keyHint:KH,inMode:()=>INP.mode(),S:()=>S,MP:()=>MP,CHP,setWLD:w=>{WLD=w},W:()=>WLD,setAtmos,tooSteep,addCol,colFree,rng:mul32,animObjs,emit,pl,addNpc,CR:()=>CR(),makeVillager,ED,spawnEnemy,INT,say:(...a)=>say(...a),travel:n=>travel(n),$,sfx:n=>sfx(n),banner:(...a)=>banner(...a),toast:(...a)=>toast(...a),saveGame:q=>saveGame(q),
+let _mw=null;const MWX=()=>_mw||(_mw=createMaerchen({tint:(m,c,k)=>tintModel(m,c,k),house:(...a)=>house(...a),inHouse:(x,z,r)=>HOUSES.some(H=>{const dx=x-H.x,dz=z-H.z,lx=dx*H.c-dz*H.s,lz=dx*H.s+dz*H.c;return Math.abs(lx)<H.w/2+r&&Math.abs(lz)<H.d/2+r}),climb:o=>clbAdd(o),folk:(n,o,w)=>folkNpc(n,o,w),T,G,PG,M,mk,glow,mergeStatic,scene,keyHint:KH,inMode:()=>INP.mode(),S:()=>S,MP:()=>MP,CHP,setWLD:w=>{WLD=w},W:()=>WLD,setAtmos,tooSteep,addCol,colFree,rng:mul32,animObjs,emit,pl,addNpc,CR:()=>CR(),makeVillager,ED,spawnEnemy,INT,say:(...a)=>say(...a),travel:n=>travel(n),$,sfx:n=>sfx(n),banner:(...a)=>banner(...a),toast:(...a)=>toast(...a),saveGame:q=>saveGame(q),
   setBoss:e=>{boss=e},clearBoss:()=>{$('boss').hidden=true;boss=null},FX:()=>FXH,gainXp:x=>gainXp(x),giveGear:id=>giveGear(id),time:()=>time,setMBG:c=>{MBG=c},
   TX,PLAT,makeChest:g=>makeChest(g),chests,CMP,PARTY,PORT,setCam:o=>setCam(o),snapCam:()=>snapCam(),hurtE:(...a)=>hurtE(...a),shake:v=>{camShake=Math.max(camShake,v)},makeNaut:()=>makeNaut(),chDone:n=>chDone(n),openTravel:()=>toggleMenu(true,'travel'),E:()=>E,dlgOn:()=>dlg.on}));
 let _sb=null;const SBX=()=>_sb||(_sb=createSeaBattle({T,scene,camera,say:(...a)=>say(...a),sfx:(...a)=>sfx(...a),toast:(...a)=>toast(...a),banner:(...a)=>banner(...a),dnum:(...a)=>dnum(...a),emit:(...a)=>emit(...a),S:()=>S,pl,wl:OW_WL,CMP:()=>CMP,PARTY,cmax:id=>cmax(id),maxHp:()=>maxHp(),atkV:()=>atkV(),gainXp:n=>gainXp(n),makeKind:(k,c)=>CR().makeKind(k,c,false),makeCreature:(k,sl,c)=>CR().makeCreature(k,sl,c),makeExtra:(k,i)=>CR().makeExtra(k,i),ED,CHP,WLV,eHp,eDm,maxMp:()=>maxMp(),KK,fox,naut:()=>naut,hgt:(x,z)=>hgt(x,z),$,FXH:()=>FXH,MFX:()=>MFX,tone:(...a)=>tone(...a),noise:(...a)=>noise(...a),hitStop:v=>{hitStop=Math.max(hitStop,v)},animHuman:(P,t,mv)=>animHuman(P,t,mv),foxAnim:(mv,ap)=>{animFox(fox,time,mv,ap>=0?0:-1);fox.body.rotation.set(0,0,0);if(ap>=0)atkPose(fox,ap,0)},water:(x,z)=>!WLD||!WLD.water||WLD.water(x,z),cAtk:id=>cAtk(id),cg:(id,k)=>cg(id,k),cgDrop:n=>cgDrop(n),setOn:v=>{X.sea=v;if(v&&WLD&&WLD.clearTrees)X.trees=WLD.clearTrees(pl.x,pl.z,24);else if(!v&&X.trees){X.trees();X.trees=null}},lose:()=>{const d=WLD&&WLD.docks&&WLD.docks.slice().sort((a,b)=>Math.hypot(a.x-pl.x,a.z-pl.z)-Math.hypot(b.x-pl.x,b.z-pl.z))[0];if(d){pl.x=d.x;pl.z=d.z}}}));
@@ -1467,7 +1467,7 @@ function drawMap(){
   mx.fillStyle='#fff';mx.font='bold 17px Fredoka,sans-serif';mx.textAlign='center';mx.fillText('N',128+Math.sin(camYaw)*112,134-Math.cos(camYaw)*112+0);
 }
 const ZN={village:['Lunaris','Dorf am Mondblick'],forest:['Mondwald','Hier summt der Boden'],cave:['Risshöhle','Hüter des Risses'],ruin:['Werkzeug-Ruine','Ein Rätsel aus alter Zeit']};
-function checkZone(){const z=zoneAt(pl.x,pl.z);if(z!==curZone){const first=!curZone;curZone=z;const zt=(WLD?WLD.zn:ZN)[z];$('zone').textContent=zt[0];banner(zt[0],zt[1]);
+function checkZone(){const z=zoneAt(pl.x,pl.z);if(z!==curZone){const first=!curZone;curZone=z;const zt=(WLD?WLD.zn:ZN)[z]||(WLD&&WLD.zn.wild)||ZN.village;$('zone').textContent=zt[0];banner(zt[0],zt[1]);
   if(MP.role==='guest')mpSend({t:'zn',z});else zoneEvent(z);if(!first)saveGame(true)}}
 function updateFelli(dt){fel.t+=dt;const tx=pl.x-Math.sin(pl.face)*2.2+Math.cos(pl.face)*1.4,tz=pl.z-Math.cos(pl.face)*2.2-Math.sin(pl.face)*1.4,d=Math.hypot(tx-fel.x,tz-fel.z);
   if(d>.4){const sp=Math.min(d*3,9);fel.x+=(tx-fel.x)/d*sp*dt;fel.z+=(tz-fel.z)/d*sp*dt}if(d>14){fel.x=tx;fel.z=tz}
