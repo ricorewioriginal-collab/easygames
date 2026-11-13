@@ -177,12 +177,15 @@ export function createKayKit({ T, G, TOUCH }) {
         src.traverse(o => { if (!o.isMesh) return;
           const loc = new T.Matrix4().multiplyMatrices(inv, o.matrixWorld);
           const im = new T.InstancedMesh(o.geometry, o.material, by[k].length); im.castShadow = !TOUCH; im.receiveShadow = true;
-          by[k].forEach((q, i) => { ob.position.set(q.x, q.y || 0, q.z); ob.rotation.set(0, q.ry || 0, 0); ob.scale.setScalar(q.h ? q.h / PH[k] * (q.s || 1) : q.s || 1); ob.updateMatrix(); M4.multiplyMatrices(ob.matrix, loc); im.setMatrixAt(i, M4); });
+          by[k].forEach((q, i) => { (q._h || (q._h = [])).push([im, i]); ob.position.set(q.x, q.y || 0, q.z); ob.rotation.set(0, q.ry || 0, 0); ob.scale.setScalar(q.h ? q.h / PH[k] * (q.s || 1) : q.s || 1); ob.updateMatrix(); M4.multiplyMatrices(ob.matrix, loc); im.setMatrixAt(i, M4); });
           im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere && im.computeBoundingSphere(); im.frustumCulled = false; par.add(im); });
       }
     }).catch(e => console.warn('KayKit-Requisiten', f, e && e.message));
   }
+  /* ein Teil aus place() ausblenden (zerschlagen) */
+  const Z4 = new T.Matrix4().makeScale(0, 0, 0);
+  function hideQ(q) { for (const [im, i] of q._h || []) { im.setMatrixAt(i, Z4); im.instanceMatrix.needsUpdate = true; } }
   const warm = () => { load('anim'); props(); };
   const heightOf = k => PH[k];
-  return { char, beast, heightOf, play, once, loop, drive, walk, ko, update, prop, place, warm, load, get live() { return LIVE.size; } };
+  return { char, beast, heightOf, play, once, loop, drive, walk, ko, update, prop, place, hideQ, warm, load, get live() { return LIVE.size; } };
 }
