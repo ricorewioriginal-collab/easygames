@@ -49,7 +49,7 @@ export function arealHeight(w, M) {
     let ff = 1; for (const [cx, cz, r, , fx, fz] of T) { const d = Math.hypot(x - cx, z - cz); if (d > r + 30) continue; ff = Math.min(ff, sm(r + .5, r + 8, d), sm(2.6, 7, segD(x, z, cx, cz, fx, fz)[0])); }
     q *= ff;   // Gelände rund um Plateau und Rampe eben, damit die Rampe gleichmäßig steigt
     let e = M.E(x, z);
-    if (e > 0) { let u = 1; for (const b of BR) u = Math.min(u, sm(2.5, 4.5, segD(x, z, b[0], b[1], b[2], b[3])[0])); q += (6.5 * sm(.8, 4.5, e) + .3 * Math.max(0, e - 4.5)) * u - (1 - u) * 1.5; }
+    if (e > 0 && !A.city) { let u = 1; for (const b of BR) u = Math.min(u, sm(2.5, 4.5, segD(x, z, b[0], b[1], b[2], b[3])[0])); q += (6.5 * sm(.8, 4.5, e) + .3 * Math.max(0, e - 4.5)) * u - (1 - u) * 1.5; }
     for (const [cx, cz, r, y, fx, fz] of T) { const d = Math.hypot(x - cx, z - cz); if (d > r + 30) continue;
       let k = 1 - sm(r, r + 1.3, d); const L = Math.hypot(fx - cx, fz - cz), [sd, t] = segD(x, z, cx, cz, fx, fz);
       if (sd < 2.4 && L > r) { const s = t * L; if (s > r - 1) k = Math.max(k, (1 - Math.max(0, Math.min(1, (s - r + 1) / (L - r + 1)))) * (1 - sm(1.8, 2.5, sd))); }
@@ -68,9 +68,22 @@ export function arealDress({ C, w, b, g, h, M, R2, blk, busy, roadD, wallList, T
   const step = TOUCH ? 3.6 : 3, maxWz = TOUCH ? 70 : 150; let nwz = 0;
   for (let j = 0; j < M.N; j += step / M.ST) for (let i = 0; i < M.N; i += step / M.ST) {
     const x = M.X0 + i * M.ST + (R2() - .5) * step * .8, z = M.Z0 + j * M.ST + (R2() - .5) * step * .8, e = M.E(x, z);
-    if (e < 1.4 || e > 12 || Math.hypot(x, z - 12) < 16) continue; if ((A.bridges || []).some(q => segD(x, z, q[0], q[1], q[2], q[3])[0] < 4)) continue;
+    if (A.city || e < 1.4 || e > 12 || Math.hypot(x, z - 12) < 16) continue; if ((A.bridges || []).some(q => segD(x, z, q[0], q[1], q[2], q[3])[0] < 4)) continue;
     if (e < 3.4 && A.wz && nwz < maxWz && R2() < .55) { const [k, hh] = A.wz[R2() * A.wz.length | 0]; wz.push({ k, x, y: h(x, z) - .1, z, ry: R2() * 6.28, h: hh * (.8 + R2() * .4) }); nwz++; continue; }
     const kind = A.wall[R2() * A.wall.length | 0]; wallList.push([x, z, kind, 1 + R2() * .7, R2() * 6.3, 1]); }
+  // Stadt: statt Waldwand geschlossene Häuserzeilen, Giebel zur Gasse, dahinter Dächer als Silhouette
+  if (A.city) { const T = C.T, acc = [], tx = (t, c, o) => C.TX.tri(t, c, o || { s: .5, gain: 1.5 }), win = MAT(0xffd890, { e: 0xffb050, ei: 1.3 });
+    for (let j = 0; j < M.N; j += 1.6) for (let i = 0; i < M.N; i += 1.6) { const x = M.X0 + i * M.ST, z = M.Z0 + j * M.ST, e = M.E(x, z);
+      if (!((e > 3 && e < 4.6) || (e > 9.5 && e < 11.5)) || Math.hypot(x, z - 12) < 16 || acc.some(q => Math.hypot(q[0] - x, q[1] - z) < 6.3)) continue; acc.push([x, z]);
+      const gx = M.E(x + 1, z) - M.E(x - 1, z), gz = M.E(x, z + 1) - M.E(x, z - 1), ry = Math.atan2(-gx, -gz), k = acc.length, W = 7.4, D = 5.6, H = 5 + (k * 7 % 4), y = h(x, z) - .2;
+      const wc = A.city.walls[k % A.city.walls.length], rc = A.city.roofs[(k >> 1) % A.city.roofs.length], hg = new T.Group(); hg.position.set(x, y, z); hg.rotation.y = ry; g.add(hg);
+      hg.add(mk(G.box, tx('plaster', wc, { s: .45, gain: 1.7, n: .6, e: 0x3a3026, ei: 1 }), 0, H / 2, 0, W, H, D));
+      if (A.city.beam) for (const bx of [-W / 2 + .15, 0, W / 2 - .15]) hg.add(mk(G.box, tx('wood', A.city.beam), bx, H / 2, D / 2 + .03, .24, H, .08, false));
+      for (const s of [-1, 1]) { const r = mk(G.box, tx(A.city.slate ? 'slate' : 'roof', rc, { s: .6 }), 0, H + D * .27, s * D * .26, W + .6, .28, D * .62); r.rotation.x = s * .72; hg.add(r); }
+      hg.add(mk(G.box, tx('plaster', wc, { s: .45, gain: 1.7, n: .6, e: 0x3a3026, ei: 1 }), 0, H + D * .14, 0, W * .99, D * .3, D * .02, false));
+      for (const wy of [H * .38, H * .72]) for (const wx of [-W * .28, W * .28]) if ((k + wx + wy | 0) % 3) hg.add(mk(G.box, win, wx, wy, D / 2 + .04, .8, .9, .05, false));
+      hg.add(mk(G.box, MAT(0x3a2a1e), 0, .9, D / 2 + .04, 1.2, 1.8, .05, false)); }
+  }
   // Plateaus: Felsen an der Kante, Treppe auf der Rampe, Laternen oben und unten
   const stone = C.TX.tri('stone', A.step || 0x8a847a, { s: .6, gain: 1.5 });
   for (const [cx, cz, r, y, fx, fz] of (A.tiers || [])) { const ra = Math.atan2(fx - cx, fz - cz), L = Math.hypot(fx - cx, fz - cz);
