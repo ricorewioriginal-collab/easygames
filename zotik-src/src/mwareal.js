@@ -18,15 +18,18 @@ export function arealMask(w, roads, PATHX, CX, CZ, R) {
   C0.push([0, 10, 14], [-7, 15, 7]);
   for (const [x, z, r] of w.pads) C0.push([x, z, r + 2]);
   for (const [x, z, r] of (w.pools || [])) C0.push([x, z, r + 3]);
+  if (w.river) { const P = w.river.pts; for (let i = 0; i < P.length - 1; i++) S0.push([P[i][0], P[i][1], P[i + 1][0], P[i + 1][1], w.river.w * .5 + 3]); }
   for (const q of (A.cuts || [])) S0.push([q[0], q[1], q[2], q[3], q[4] * .5]);
-  const base = (x, z) => { let e = 1e9; for (const [cx, cz, r] of C0) e = Math.min(e, Math.hypot(x - cx, z - cz) - r); for (const s of S0) e = Math.min(e, segD(x, z, s[0], s[1], s[2], s[3])[0] - s[4]); return e; };
+  const C1 = [], S1 = [];   // Plateaus und Rampen: offen, aber keine Ziele für Gassen (sonst endet eine Gasse an der Klippe)
+  const near = (x, z, C, S) => { let e = 1e9; for (const [cx, cz, r] of C) e = Math.min(e, Math.hypot(x - cx, z - cz) - r); for (const s of S) e = Math.min(e, segD(x, z, s[0], s[1], s[2], s[3])[0] - s[4]); return e; };
+  const base0 = (x, z) => near(x, z, C0, S0), base = (x, z) => Math.min(base0(x, z), near(x, z, C1, S1));
   // Einzelne Dinge in der Wildnis (Truhen, Krüge, Steine, Figuren, Auftragsorte) bekommen eine Gasse zum nächsten offenen Ort
   const link = (x, z) => { let bx = x, bz = z, bd = 1e9;
-    for (let a = 0; a < 32; a++) for (let d = 2; d < 60; d += 2) { const px = x + Math.cos(a * .196) * d, pz = z + Math.sin(a * .196) * d; if (base(px, pz) < -1.5) { if (d < bd) { bd = d; bx = px; bz = pz; } break; } }
+    for (let a = 0; a < 32; a++) for (let d = 2; d < 60; d += 2) { const px = x + Math.cos(a * .196) * d, pz = z + Math.sin(a * .196) * d; if (base0(px, pz) < -1.5) { if (d < bd) { bd = d; bx = px; bz = pz; } break; } }
     if (bd < 1e9) S0.push([x, z, bx, bz, 2.6]); };
   // Plateaus: Rampenfuß mit Gasse ans Wegenetz, dann Plateau und Rampe selbst offen
   for (const q of (A.tiers || [])) { if (base(q[4], q[5]) > -2) link(q[4], q[5]); C0.push([q[4], q[5], 3]); }
-  for (const q of (A.tiers || [])) { C0.push([q[0], q[1], q[2] + .2]); S0.push([q[0], q[1], q[4], q[5], 2.6]); }
+  for (const q of (A.tiers || [])) { C1.push([q[0], q[1], q[2] + .2]); S1.push([q[0], q[1], q[4], q[5], 2.6]); }
   const pts = []; for (const q of [...(w.chests || []), ...(w.pots || []), ...(w.lore || []), ...(w.portals || []), ...(A.extra || [])]) pts.push([q[0], q[1], 3.2]);
   for (const d of w.npcs) pts.push([d.x, d.z, 3.5]); for (const m of w.ms) { for (const q of (m.pts || [])) pts.push([q[0], q[1], 3.5]); if (m.at) pts.push([m.at[0], m.at[1], Math.max(4, m.r || 4)]); }
   pts.sort((a, b) => base(a[0], a[1]) - base(b[0], b[1]));
