@@ -15,7 +15,7 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
         g.add(mk(G.box, M(0x4a3020), 0, 1.05, d / 2 + .02, 1.1, 2.1, .08, false));
         for (const sx of [-w * .3, w * .3]) g.add(mk(G.box, M(0xffd890, { e: 0xffc060, ei: o.dark ? .5 : 1.4 }), sx, h * .55, d / 2 + .03, .8, .7, .05, false));
         if (o.chimney) g.add(mk(G.box, M(0x6a5a50), w * .3, h + d * .45, -d * .15, .6, 1.4, .6));
-        b.solid(x, z, w, d, ry); return bb;
+        b.solid(x, z, w, d, ry, h, (lx, lz) => Math.max(0, d * .47 - .88 * Math.abs(lz))); return bb;
       },
       tower(x, z, r, h, wall, roofC, roofH, o = {}) { b.cyl(x, 0, z, r, h, wall, { solid: 1, tex: o.tex || 'stone' }); if (roofC) b.cone(x, h, z, r * 1.18, roofH || r * 2, roofC, { tex: dark(roofC) ? 'slate' : 'roof', to: { s: .7 } });
         if (o.crown) for (let i = 0; i < 8; i++) { const a = i * .785; b.box(x + Math.cos(a) * r * .9, h, z + Math.sin(a) * r * .9, .6, .7, .6, wall); }
