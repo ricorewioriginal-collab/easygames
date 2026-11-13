@@ -97,6 +97,14 @@ export function arealDress({ C, w, b, g, h, M, R2, blk, busy, roadD, wallList, T
       hg.add(mk(G.box, tx('plaster', wc, { s: .45, gain: 1.7, n: .6, e: 0x3a3026, ei: 1 }), 0, H + D * .14, 0, W * .99, D * .3, D * .02, false)); }
       for (const wy of [H * .38, H * .72]) for (const wx of [-W * .28, W * .28]) if ((k + wx + wy | 0) % 3) hg.add(mk(G.box, win, wx, wy, D / 2 + .04, .8, .9, .05, false));
       hg.add(mk(G.box, MAT(0x3a2a1e), 0, .9, D / 2 + .04, 1.2, 1.8, .05, false)); }
+    // Lücken zwischen den Häusern: Gartenmauer statt unsichtbarer Sperre (Gasse endet sichtbar)
+    const gw = []; for (let j = 0; j < M.N; j += .8) for (let i = 0; i < M.N; i += .8) { const x = M.X0 + i * M.ST, z = M.Z0 + j * M.ST, e = M.E(x, z);
+      if (e < 1.3 || e > 2.3 || acc.some(q => Math.hypot(q[0] - x, q[1] - z) < 4.9) || gw.some(q => Math.hypot(q[0] - x, q[1] - z) < 2.1)) continue;
+      if ((A.bridges || []).some(q => segD(x, z, q[0], q[1], q[2], q[3])[0] < 4)) continue; gw.push([x, z]); }
+    if (gw.length) { const im = new T.InstancedMesh(G.box, tx('stone', A.city.walls[0], { s: .5, gain: 1.6, n: .6 }), gw.length), o = new T.Object3D();
+      gw.forEach(([x, z], k) => { const gx = M.E(x + 1, z) - M.E(x - 1, z), gz = M.E(x, z + 1) - M.E(x, z - 1), H = 1.7 + (k * 5 % 3) * .15;
+        o.position.set(x, h(x, z) - .3 + H / 2, z); o.rotation.set(0, Math.atan2(-gx, -gz), 0); o.scale.set(2.7, H, .8); o.updateMatrix(); im.setMatrixAt(k, o.matrix); });
+      im.castShadow = im.receiveShadow = true; g.add(im); }
   }
   // Hecken: geschnittene Heckenwand an jeder Gasse (Instanzen), Irrgarten mit festen Heckenwänden
   if (A.hedge) { const T = C.T, acc = [], hm = C.TX.tri('grass', A.hedge, { s: .6, gain: 2 });
