@@ -13,7 +13,7 @@ const res = await p.evaluate(async keys => {
   const mods = { dampf: b.dampf, drachen: b.drachen, fussball: b.fussball, zotik: b.zotik, radio: b.radio, atlantis: b.atlantis, taschi: b.taschi, wunsch: b.wunsch };
   const sat = (g, key) => {
     const s = b.save; if (typeof g === 'string') { (s.stk = s.stk || []).includes(g) || s.stk.push(g); return; }
-    if (g.log) { mods[g.log].log(); const m = s[g.log], r = g.row;
+    if (g.log) { mods[g.log].log(); const m = s[g.log] || {}, r = g.row;
       if (g.log === 'dampf') { if (r === 0) m.col = [1, 1, 1, 1, 1, 1]; if (r === 1) m.inst = [1, 1, 1, 1, 1, 1]; if (r === 2) m.notes = [0, 1, 2, 3, 4, 5, 6, 7]; if (r === 3) m.film = 1; }
       if (g.log === 'drachen') { if (r === 0) m.fackeln = [1, 1, 1, 1, 1, 1]; if (r === 1) m.freunde = [1, 1, 1, 1, 1, 1]; if (r === 2) m.ringe = 8; if (r === 4) m.tor = 1; }
       if (g.log === 'fussball') { if (r === 0) m.played = 1; if (r === 1) m.goals = Math.max(m.goals, 5); if (r === 2) m.goals = 25; }
@@ -21,7 +21,7 @@ const res = await p.evaluate(async keys => {
       if (g.log === 'radio') { if (r === 1) m.done = m.done.length ? m.done : ['a']; if (r === 2) { m.all = 1; m.done = Array.from({ length: 13 }, (_, i) => 'x' + i); } if (r === 3) m.visual = 1; }
       if (g.log === 'atlantis') { if (r === 1) m.holo = [1, 1, 1, 1, 1]; if (r === 2) m.herz = 1; if (r === 3) m.harp = 1; if (r === 4) m.lowg = 1; if (r === 5) m.glider = 1; }
       if (g.log === 'wunsch') { m.visit = 1; if (r >= 1) m.fruit = [1, 1, 1]; if (r === 2) m.talk = { sym: 1 }; if (r === 3) m.cave = 1; if (r === 5 || r === 6) { m.raft = 1; m.trial = 1; m.parts = [1, 1, 1, 1, 1, 1]; } if (r === 7) m.tower = 1; if (r === 8) m.chests = [1, 1, 1]; if (r === 9) m.dark = 2; if (r === 10) m.rounds = 3; if (r === 11) m.boss = 1; }
-      if (g.log === 'taschi') { const OK = ['', 'fang', 'fels', 'perle', 'funke', 'bluete', 'forscher', 'team', 'meister']; if (r === 0) m.team.push({ id: 'glutzahn', lv: 5, xp: 0, hp: 20, mv: ['kratzer'] }); else m.orden[OK[r]] = 1; }
+      if (g.log === 'taschi') { (s.flags = s.flags || {})[['ta_ulme', 'ta_statue', 'ta_sehen', 'ta_reise'][r]] = 1; }
       return; }
     if (g.talk) { const names = [...I.dbg.residents(g.talk)]; s.talked = s.talked || []; for (const n of names.slice(0, g.n)) if (!s.talked.includes(n)) s.talked.push(n); return; }
     if (g.flag) { (s.flags = s.flags || {})[g.flag] = 1; return; }
