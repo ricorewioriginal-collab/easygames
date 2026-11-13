@@ -1,4 +1,4 @@
-/* Live-Kommentator für Funkparcours: eine Stimme, keine Überlagerung. */
+/* Live-Kommentator für Titanparcours: eine Stimme, keine Überlagerung. */
 export function makeCommentator(){
  const synth=window.speechSynthesis,enabledAPI=!!(synth&&window.SpeechSynthesisUtterance);
  const KEY='fpVoice',saved=(()=>{try{return localStorage.getItem(KEY)}catch(e){return null}})();
