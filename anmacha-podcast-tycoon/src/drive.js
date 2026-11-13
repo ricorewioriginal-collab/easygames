@@ -22,6 +22,7 @@
   const CARCRASH = ['Hoppla! Gut, dass das kein Dienstwagen ist.', 'Rumms! Die Versicherung hört bestimmt keinen Podcast.', 'Kurzer Kratzer. Erzählen wir in der nächsten Folge.'];
   const ANDREW_NO = ['Marco (von weitem): ANDREW! Finger weg von Gisela!', 'Gisela hupt empört. Andrew allein? Keine Chance.', 'Marco: Gisela lässt sich nicht von jedem anfassen. Schon gar nicht von dir.', 'Andrew: Ich wollte nur gucken! … Sie hat mich angehupt.'];
   const PED = ['Ey, pass doch auf!', 'Hupen kann ich auch!', 'Ist das Gisela?! Autogramm!', 'Langsam, ihr Radiomenschen!'];
+  const RIVAL = ['Ihr habt mehr Hörer als ich! Das ist unfair!', 'Radio Funkloch war zuerst da! … Glaub ich.', 'Nicht die Frisur! Die hat 20 Minuten gedauert!', 'Okay, okay – eure Folgen sind gar nicht so schlecht.'];
   const THIEF = ['Die Kabel brauch ich für meinen eigenen Podcast!', 'Ich wollte doch nur den Sound ausleihen!', 'Lass los, das ist mein Kabelsalat!', 'Okay, okay! Ich geb’s zurück!'];
 
   DR.build = function (ctx) {
@@ -57,6 +58,17 @@
   }
 
   // ------------------------------------------------------------------ Kabeldiebe & Rangelei
+  /** Gegenspieler nach dem Bosskampf: rangeln statt schießen */
+  DR.spawnRival = async function (name, x, z, onDone) {
+    const S = C.S, my = S;
+    const fig = await AMC.People.make(W.kit, { body: 'm', skin: '#e9b896', hair: { style: 'short', color: '#222', vol: 1.2 }, brow: '#222', top: '#2a2f3a', topStyle: 'long', bottom: '#1d1d22', shoes: '#111', build: 1.1, belly: 0.6, hat: (S.ch && S.ch.season === 3) ? { type: 'crown', color: '#c0c4cc' } : { type: 'sunglasses', color: '#111' } }).catch(() => null);
+    if (C.S !== my || !fig) { if (fig) fig.dispose(); if (!fig) onDone(); return; }
+    fig.root.position.set(x, 0.16, z); S.group.add(fig.root);
+    const th = { fig, x, y: 0.16, z, vx: 0, vy: 0, vz: 0, yaw: 0, onGround: true, anim: '', hp: 5, down: 0, done: false, t: 0, name, rival: true, onDone };
+    th.mark = W.glow(0xff4040, 1.6, fig.root, 0, 2.4, 0);
+    C.setAnim(th, 'arms'); S.thieves.push(th);
+    W.particles.burst(x, 1.5, z, 0xff4040, 40, { speed: 6 }); AMC.Audio.sfx('boss');
+  };
   async function spawnThieves(n) {
     const S = C.S, my = S;
     for (let i = 0; i < n; i++) {
@@ -80,7 +92,7 @@
       if (th.down > 0) { th.down -= dt; if (th.down <= 0) C.setAnim(th, 'idle'); continue; }
       const dx = th.x - p.x, dz = th.z - p.z, d = Math.hypot(dx, dz);
       let wx = 0, wz = 0, sp = 0;
-      if (d < 9 && !S.drive) { wx = dx / (d || 1); wz = dz / (d || 1); sp = 5.6; }   // flieht – Sprinten holt ihn ein
+      if (d < 9 && !S.drive) { wx = dx / (d || 1); wz = dz / (d || 1); sp = th.rival ? 4.4 : 5.6; if (th.rival && Math.hypot(th.x + 22.5, th.z - 22.5) > 14) { wx = -wx; wz = -wz; } }   // flieht – Sprinten holt ihn ein
       else { th.t += dt; wx = Math.sin(th.t * 0.4 + th.x); wz = Math.cos(th.t * 0.33 + th.z); sp = 1.4; }
       const s = C.moveBody(th, dt, wx, wz, sp, 6);
       C.setAnim(th, s < 0.4 ? 'idle' : s < 3 ? 'walk' : 'jog');
@@ -94,8 +106,9 @@
     p.yaw = Math.atan2(th.x - p.x, th.z - p.z); if (p.fig) p.fig.root.rotation.y = p.yaw;
     th.hp--; th.vx = Math.sin(p.yaw) * 7; th.vz = Math.cos(p.yaw) * 7; th.vy = 3; th.onGround = false;
     AMC.Audio.sfx('hit'); W.cam.shake = 0.25; W.particles.burst(th.x, th.y + 1.2, th.z, 0xffffff, 10, { speed: 4, life: 0.35 });
-    if (th.hp > 0) { th.down = 0.5; C.setAnim(th, 'push', { once: true, restart: true }); C.msg('🤼 ' + th.name + ': „' + U.pick(THIEF) + '“', 2.2); return; }
+    if (th.hp > 0) { th.down = 0.35; C.setAnim(th, 'push', { once: true, restart: true }); C.msg('🤼 ' + th.name + ': „' + U.pick(th.rival ? RIVAL : THIEF) + '“', 2.2); return; }
     th.done = true; th.t = 0; C.setAnim(th, 'down', { once: true }); if (th.icon) th.icon.visible = false; if (th.mark) th.mark.visible = false;
+    if (th.rival) { AMC.Audio.sfx('win'); W.particles.burst(th.x, th.y + 1.4, th.z, 0xffd23f, 60, { speed: 8 }); th.onDone && th.onDone(); return; }
     S.score += 400; S.kills = (S.kills || 0) + 1; S.got.tech = (S.got.tech || 0) + 2; C.drawRub && C.drawRub();
     AMC.Audio.sfx('perfect'); W.particles.burst(th.x, th.y + 1, th.z, 0xffd23f, 26);
     C.msg('🔌 Kabel zurück! ' + th.name + ' gibt auf. +400 · +2 Technik' + (p.H.id === 'marco' ? ' – Marco: „Und jetzt ordentlich aufrollen!“' : ' – Andrew: „War doch gar nicht so schlimm.“'), 3);
@@ -131,7 +144,7 @@
   // ------------------------------------------------------------------ Einsteigen, Fahren, Aussteigen
   DR.interact = function (p) {
     const S = C && C.S; if (!S || !S.cars || S.drive || S.net) return null;
-    for (const th of S.thieves) if (th.fig && !th.done && th.down <= 0 && Math.hypot(th.x - p.x, th.z - p.z) < 2.3) return { label: 'Rangeln 🤼', run: () => scuffle(th) };
+    for (const th of S.thieves) if (th.fig && !th.done && th.down < 0.15 && Math.hypot(th.x - p.x, th.z - p.z) < 2.3) return { label: 'Rangeln 🤼', run: () => scuffle(th) };
     for (const car of S.cars) {
       if (Math.hypot(car.x - p.x, car.z - p.z) > 3.4) continue;
       if (car.gisela && p.H.id !== 'marco') return { label: 'Marco ans Steuer von Gisela 🚐', run: () => { C.swapHost(); setTimeout(() => C.S && enter(car), 250); } };

@@ -44,7 +44,7 @@
     if (AMC.Play.active) AMC.Play.stop();
     if (AMC.Show.active) AMC.Show.stop();
     if (AMC.Quiz.active) AMC.Quiz.stop();
-    UI.closeAll(); G.paused = false; G.net = null; AMC.Play.netSend = null;
+    if (AMC.Home && AMC.Home.active()) AMC.Home.close(true); UI.closeAll(); G.paused = false; G.net = null; AMC.Play.netSend = null;
   }
 
   // ------------------------------------------------------------------ Titel & Hauptmenü
@@ -72,6 +72,9 @@
       mi('quiz', '🧠', 'KI-Quizshow', '1 Spieler oder 2 Spieler: Andrew gegen Marco') +
       mi('free', '🏙️', 'Stadt & Nebenaufträge', Object.keys(Save.data.quests).length + '/' + D.QUESTS.length + ' Aufträge erledigt · frei spielen, Radio hören') +
       mi('koop', '🌐', 'Online-Koop', 'Zu zweit auf zwei Geräten: Andrew & Marco – per Link, Code oder QR') +
+      mi('walk', '🚶', 'Studio betreten', 'Zu Fuß durchs Studio: Pult, Rico, Einrichten, Musikshop') +
+      mi('home', '🏠', 'Zuhause', 'Andrews Wohnung & Marcos Haus · ' + ['andrew', 'marco'].map(id => D.HOSTS[id].name + ' ' + Math.round(AMC.Home.mood(id) * 100) + ' % fit').join(' · ')) +
+      mi('music', '🎹', 'Musikshop', (Save.data.songs || []).length + ' gekaufte Lieder · freie Klavierlicht-Melodien für Hörerwünsche') +
       mi('studio', '🛠️', 'Studio gestalten', 'Studio-Wert ' + AMC.StudioEdit.value() + ' · Möbel, Deko, Technik frei hinstellen – bringt Hörer-Bonus') +
       mi('shop', '🛍️', 'Fanshop', '🎟️ ' + U.fmt(Save.data.fan) + ' Fan-Punkte · Outfits & Studio-Upgrades') +
       mi('radio', '📻', 'Radio & Podcast', 'Alle Folgen und die 13 AnMaCha-Sender') +
@@ -89,11 +92,33 @@
     el.querySelector('#mHost').onclick = swapHost;
     s.o.onKey = () => { if (I.hit('swap')) { swapHost(); return true; } return false; };
     updHost();
-    const go = { studio: studioEdit, story: storyMenu, live: startLive, jagd: () => startCity('jagd'), race: () => startCity('race'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
+    const go = { walk: walkStudio, home: homeMenu, music: () => AMC.Home.musicShop(), studio: studioEdit, story: storyMenu, live: startLive, jagd: () => startCity('jagd'), race: () => startCity('race'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
     el.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go[b.dataset.go]());
     G.menu = s;
   }
   const mi = (go, icon, label, sub, first) => '<button type="button" class="m-item" data-nav data-go="' + go + '"' + (first ? ' data-first' : '') + '><span class="mi-ic">' + icon + '</span><span class="mi-t"><b>' + label + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + '</span></button>';
+
+  // ------------------------------------------------------------------ Sims-Teil: Zuhause und begehbares Studio
+  const backToMenu = () => { G.mode = 'menu'; AMC.Studio.enter('menu'); AMC.Audio.music('menu'); mainMenu(); };
+  function homeMenu() {
+    const card = id => { const n = AMC.Home.needs(id); return '<button type="button" class="st-item" data-nav data-h="' + id + '"><img class="hm-face" src="' + UI.face(id) + '" alt=""><span><b>' + AMC.Home.HOMES[id].name + '</b><small>⚡ ' + Math.round(n.energy) + ' · 🍔 ' + Math.round(n.hunger) + ' · 🎮 ' + Math.round(n.fun) + ' · 💡 ' + (n.ideas || []).length + '/3 Ideen</small></span></button>'; };
+    const s = UI.open('<div class="panel glass"><header><h2>🏠 Zuhause</h2><button class="btn small" data-nav id="hmB">' + AMC.glyph('b') + ' Zurück</button></header><p class="hint">Schlafen, essen, entspannen und Ideen sammeln. Wer fit ist, macht bessere Folgen.</p><div class="st-list">' + card('andrew') + card('marco') + '</div></div>', { back: () => UI.close(s) });
+    s.el.querySelector('#hmB').onclick = () => UI.close(s);
+    s.el.querySelectorAll('[data-h]').forEach(b => b.onclick = () => openHome(b.dataset.h));
+  }
+  function openHome(id) {
+    UI.closeAll(); stopAll(); G.mode = 'home'; UI.showTouch(true); AMC.Studio.leave(); AMC.Audio.music('menu');
+    AMC.Home.open(id, () => { UI.showTouch(false); backToMenu(); });
+  }
+  function walkStudio() {
+    UI.closeAll(); stopAll(); G.mode = 'home'; UI.showTouch(true);
+    const leave = then => { AMC.Home.close(true); UI.showTouch(false); then(); };
+    AMC.Home.studio({ host: G.host, actions: {
+      live: () => leave(startLive),
+      edit: () => leave(studioEdit),
+      city: () => leave(() => startCity('free'))
+    } }, () => { UI.showTouch(false); backToMenu(); });
+  }
 
   // ------------------------------------------------------------------ Studio gestalten
   function studioEdit() {
@@ -388,6 +413,9 @@
         if (!uiBusy && I.hit('pause')) pause();
         if (!G.paused && !uiBusy) AMC.Quiz.update(dt);
         AMC.Quiz.render();
+      } else if (G.mode === 'home') {
+        if (!uiBusy) AMC.Home.update(dt);
+        AMC.Home.render();
       } else if (G.mode === 'edit') {
         if (!uiBusy) AMC.StudioEdit.update(dt);
         AMC.Studio.update(dt); AMC.Studio.render();
