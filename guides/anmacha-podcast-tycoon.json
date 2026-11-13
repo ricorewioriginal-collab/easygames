@@ -16,6 +16,7 @@
     "🏃 Themenjagd – 3 Minuten in der Stadt, so viele Punkte wie möglich.",
     "🤖 Die verrückte KI-Quizshow – 10 Fragen, allein gegen die KI oder zu zweit an einem Gerät.",
     "🏙️ Stadt & Nebenaufträge – die Stadt ohne Zeitdruck, mit 10 Nebenaufträgen für Fan-Punkte.",
+    "🌐 Online-Koop – zu zweit auf zwei Geräten: einer spielt Andrew, einer Marco.",
     "📻 Radio & Podcast – echte Folgen und 13 AnMaCha-Sender mit Titelanzeige.",
     "🛍️ Fanshop – Outfits für Andrew und Marco und Studio-Upgrades, bezahlt mit Fan-Punkten.",
     "⚙️ Einstellungen, 🎮 Steuerung und Credits.",
@@ -87,6 +88,18 @@
     "🏢 Aufs Dach des Funkhauses springen",
     "🏃 1.000 Meter laufen",
     "⇄ 10-mal zwischen Andrew und Marco wechseln"
+   ]
+  },
+  {
+   "t": "Online-Koop",
+   "p": [
+    "Im Hauptmenü unter „🌐 Online-Koop“ eröffnet ein Gerät das Spiel und zeigt einen 5-stelligen Code, einen QR-Code und einen Link. Mitspieler können per Link, Code oder QR-Code von überall beitreten. Der Gastgeber spielt seine gewählte Figur, der Gast die andere."
+   ],
+   "list": [
+    "🏃 Themenjagd zu zweit: 3 Minuten, gemeinsame Punkte.",
+    "🏙️ Stadt zu zweit: frei spielen und Störsender jagen.",
+    "🎬 Kapitel zu zweit: jedes beim Gastgeber freigeschaltete Kapitel (Stadtteil, auch Bosskämpfe). Der Story-Fortschritt bleibt dabei unverändert, beide bekommen Fan-Punkte.",
+    "Energie und Zeit sind gemeinsam. Im Pause-Menü läuft das Spiel weiter, damit der andere nicht stehen bleibt."
    ]
   },
   {
@@ -244,6 +257,10 @@
   {
    "q": "Wie bekomme ich schnell Fan-Punkte?",
    "a": "Neue Kapitel zum ersten Mal schaffen und die Nebenaufträge in der Stadt erledigen. Danach lohnen sich Live-Show und Themenjagd."
+  },
+  {
+   "q": "Wie spiele ich online mit einem Freund?",
+   "a": "Hauptmenü → 🌐 Online-Koop → Spiel eröffnen. Schick den Link oder zeig den QR-Code; dein Freund kann auch den Code unter „🌐 Online-Koop“ eingeben. Sobald er verbunden ist, wählst du den Modus."
   }
  ]
 }

@@ -30,6 +30,7 @@ server.listen(0, '127.0.0.1', async () => {
     await p.keyboard.press('Escape'); await p.waitForTimeout(800);
     // Staffel 2: Katzen-Kapitel startet mit Katze, Imbiss-Kapitel mit Imbiss
     assert.equal(await p.evaluate(() => AMC.Data.CHAPTERS.length), 12);
+    assert.ok(await p.evaluate(() => typeof AMC.Net.lobby === 'function' && /\/easygames\/anmacha-podcast-tycoon\/\?koop=ABCDE$/.test(AMC.Net.link('ABCDE'))), 'Koop-Link zeigt auf die Homepage');
     await p.evaluate(() => { AMC.UI.closeAll(); AMC.Game.playChapter(9); }); await p.waitForTimeout(2500);
     assert.ok(await p.evaluate(() => !!AMC.Play.state().cat), 'Katze da');
     await p.evaluate(() => AMC.Game.playChapter(8)); await p.waitForTimeout(2500);
