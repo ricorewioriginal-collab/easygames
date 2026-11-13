@@ -48,6 +48,15 @@
       ]
     },
     {
+      "t": "Fahren, Besorgungen und Rangeleien",
+      "p": [
+        "In der Stadt fährt Verkehr, und am Straßenrand parken Autos. Geh an ein Auto heran und drück X/E zum Einsteigen. Gelenkt wird mit dem Stick oder WASD. A/Leertaste hupt, B/C bremst, und X/E hält an und steigt aus. Niemand wird angefahren: Passanten springen zur Seite und schimpfen.",
+        "Gisela fährt nur Marco. Er fährt besonders achtsam und leidet bei jedem Rempler mit. Spielst du Andrew, übergibt das Spiel das Steuer an Marco. Kommt Andrew Gisela allein zu nahe, hupt sie empört und schubst ihn weg.",
+        "Unter „Stadt & Nebenaufträge“ wartet immer eine Besorgung mit Gisela, zum Beispiel Kabel vom Elektromarkt, Pommes vom Imbiss oder eine Fahrt zu einem Event wie dem Podfluencer-Treffen. Das Ziel ist ein gelber Ring, bei Events ein pinker. Dort langsam reinfahren. Besorgungen bringen Fan-Punkte, Events doppelt so viele.",
+        "Kabeldiebe (rot markiert, 🔌) schnappen sich Studio-Kabel und laufen weg. Hol sie im Sprint ein und rangel sie mit X/E zu Boden. Nach drei Schubsern geben sie auf und rücken die Kabel raus."
+      ]
+    },
+    {
       "t": "Die Live-Aufnahme",
       "p": [
         "Im Studio wählst du Befehle aus einem Kommandomenü (Steuerkreuz/Pfeile, A/Enter zum Bestätigen). Jede Runde ist ein Gesprächsblock; am Ende zählen die Hörer."
@@ -151,7 +160,8 @@
         "Sammle in der Stadt möglichst viele Funken verschiedener Farben: Jede Farbe bringt eigene Themenkarten für die Aufnahme.",
         "Mit dem Doppelsprung erreichst du Funken auf Dächern; Kisten-Treppen führen nach oben.",
         "Weiche Störsendern mit Ausweichen aus – während der Rolle bist du kurz unverwundbar.",
-        "Spar dir Fan-Punkte zuerst für Profi-Mikrofone und Jingle-Paket – sie helfen bei jedem Stern."
+        "Spar dir Fan-Punkte zuerst für Profi-Mikrofone und Jingle-Paket – sie helfen bei jedem Stern.",
+        "Spielst du Andrew und willst Gisela fahren: einfach hingehen und X/E drücken – das Spiel wechselt automatisch zu Marco."
       ]
     },
     {
