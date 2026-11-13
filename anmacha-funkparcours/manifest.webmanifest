@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "AnMaCha Funkparcours",
-  "short_name": "Funkparcours",
+  "name": "Titanparcours",
+  "short_name": "Titanparcours",
   "lang": "de",
   "start_url": "./",
   "scope": "./",
@@ -10,8 +10,8 @@
     "fullscreen",
     "standalone"
   ],
-  "background_color": "#050517",
-  "theme_color": "#080821",
+  "background_color": "#020203",
+  "theme_color": "#030305",
   "categories": [
     "games"
   ],

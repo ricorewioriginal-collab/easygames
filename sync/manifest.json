@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "56f2bcb84d14",
- "generated": "2026-11-12T22:16:02+00:00",
- "commit": "f568e0a192dca6e89fe95f0e3dd9116c44911141",
+ "version": "db91cd88397f",
+ "generated": "2026-11-12T23:27:11+00:00",
+ "commit": "0acf376dfdb7b4d0c465c17e9fb2cd8bb02e265f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -818,23 +818,23 @@
   },
   {
    "p": "anmacha-funkparcours/card.png",
-   "s": 30505,
-   "h": "680c0688d74e4e6e331ab55e1d1ab569d6457f0a3d7c48b9d483df059a9908b6"
+   "s": 87417,
+   "h": "741249ef7a9d96f02e55a874e20df2ce2cf56fedce100f76265b9e6039398501"
   },
   {
    "p": "anmacha-funkparcours/chars.js",
-   "s": 3318,
-   "h": "5711a38822580e4f7f114b56a3c4eb747e0689e02a75c5274118097e219b4530"
+   "s": 3320,
+   "h": "b1dbb8b2f5a59be1fa3dcddd14c5b40834ece259fcb499356e2e479622d1cf60"
   },
   {
    "p": "anmacha-funkparcours/commentary.js",
-   "s": 1860,
-   "h": "5c7b0bf8baae9df5b03292b99e3ee0d9308b70b63e0d7d9dcaa8432c2ceaa117"
+   "s": 1861,
+   "h": "003de3398a1eec3fd7450b31baca66cc8b6bc570b248f3a66e09fa54d1ba5100"
   },
   {
    "p": "anmacha-funkparcours/controller.js",
-   "s": 4693,
-   "h": "495735e0044b66b7f68d02f9e1bfb0a3494f360fefa93a7413508c31f812b101"
+   "s": 4887,
+   "h": "0f8da1b52e13cd8f2cfdcabb636e1cffd8d0e38cd9b404c80325a7df643bedd6"
   },
   {
    "p": "anmacha-funkparcours/engine.js",
@@ -843,13 +843,13 @@
   },
   {
    "p": "anmacha-funkparcours/index.html",
-   "s": 11764,
-   "h": "ba53dd4ccb44b837c235480fee4fa62b12f29e799ea4222b39f6a1aa15e7671f"
+   "s": 13334,
+   "h": "8c7b83bea69bb09bcac185b248016d092f22807bf031cc4579dec8ebc8bc41a4"
   },
   {
    "p": "anmacha-funkparcours/logo.png",
-   "s": 131006,
-   "h": "3cc6a69ac326a7236a18b621cfb834ba0dc4a7ee6e01b606c5ea680d4d3d979a"
+   "s": 99899,
+   "h": "814821c41389f4baf9ace7d21d77ddb00d770d6de92a9357300f662cfa010bbd"
   },
   {
    "p": "anmacha-funkparcours/logos/01.png",
@@ -933,23 +933,23 @@
   },
   {
    "p": "anmacha-funkparcours/main.js",
-   "s": 27511,
-   "h": "82d79334d3d5307a764936b40e99e862bd01d221f81e16b0689deee0ca4f0e0d"
+   "s": 29706,
+   "h": "5b4a947b7d9b24a23b7e3c5e2795422470f3a55a3663607d34e63d12227c3ece"
   },
   {
    "p": "anmacha-funkparcours/manifest.webmanifest",
-   "s": 796,
-   "h": "3c1522d1ea9df7de806af3f8489aeffb1c6b32b32bc1120fbbaf1befb8904ab6"
+   "s": 790,
+   "h": "5e5f17b0436b0186add8d4d2a5ddcbc8a1dedab92afafaf5bd1e55383a412a39"
   },
   {
    "p": "anmacha-funkparcours/menu.js",
-   "s": 7765,
-   "h": "0e4f9971dd3be78daa7b1be94cb93b5ae2cf0036368439067d62ec95ff9dd1fa"
+   "s": 9231,
+   "h": "1271224408a340a5c13784cd5d3692a0d7a3db06704f6fe8f99d323dabcd9ca1"
   },
   {
    "p": "anmacha-funkparcours/pair.js",
-   "s": 4777,
-   "h": "6d7df34736e0a7a3774bace00e92231825ebbf4317ce474e61e40d3fe65eecba"
+   "s": 4778,
+   "h": "0947d8fa314cc82af68a2d18e7565f841ca91d90f2d493a96754d1b7ff7e781f"
   },
   {
    "p": "anmacha-funkparcours/scene.js",
@@ -958,18 +958,18 @@
   },
   {
    "p": "anmacha-funkparcours/stick.js",
-   "s": 2254,
-   "h": "c7325d448581384f28093de1a786c9e7a957e7ab3e2e19b910354d724282778c"
+   "s": 2484,
+   "h": "c3b959806281c32ddd85748217c497ca20ed2af26ee660438201113637dcc151"
   },
   {
    "p": "anmacha-funkparcours/style.css",
-   "s": 20723,
-   "h": "da7c1c834e144c80f14105b3372e98acd72a99fe94d7aa8fbb1e6cea5b87c0aa"
+   "s": 23333,
+   "h": "48adf94b82b5f01414f437190a71bb7ed750c80ce7885f92ae4fc67ed4b34943"
   },
   {
    "p": "anmacha-funkparcours/sw.js",
-   "s": 2006,
-   "h": "eaef07c06212c6eeb016834d942583ca64c252430365e9871fe1d7373bd8b549"
+   "s": 2003,
+   "h": "a2a275d0785f6207433ecf3e647cf6252e72583636e3c4e4df48fea28eb1715f"
   },
   {
    "p": "anmacha-gesucht/audio.js",
@@ -5648,8 +5648,8 @@
   },
   {
    "p": "einbinden.html",
-   "s": 106551,
-   "h": "eb2b3e4ce756c67af965d2fc18afbe5a125e0253bae2f0285f9dd209f3f213ed"
+   "s": 106552,
+   "h": "5f9354ae1cdfea94f953bcd0c0f443b86b6961099efe3a810d00e9e8bb94fd47"
   },
   {
    "p": "erfolge.html",
@@ -6123,8 +6123,8 @@
   },
   {
    "p": "games.js",
-   "s": 58243,
-   "h": "7e3bf13db1f902c92c930fdf1b52910a3bff02efe6930b8bed849dcad02bfa7e"
+   "s": 58264,
+   "h": "25d387fb6e6a728b348fbd996a4fcb69f7ab6af4748438bb51c1562a1ea80fc4"
   },
   {
    "p": "gay-life/card.jpg",
@@ -6358,8 +6358,8 @@
   },
   {
    "p": "guides.js",
-   "s": 173255,
-   "h": "6b4350b6f11dcd2705ed9066fdeacc1c8c540558e14f70197bcbf6ac05041af9"
+   "s": 173508,
+   "h": "b272336f75bc63b38a9a5653d250c117718b776a700f89eea0a2bb90ce7a135c"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -6393,8 +6393,8 @@
   },
   {
    "p": "guides/anmacha-funkparcours.json",
-   "s": 15998,
-   "h": "ea22b99f8327bf59d052904a0fb2ce4b8d8bd175b7aeee11bcddb60f8b61ae24"
+   "s": 18755,
+   "h": "de2ca9c60e3806e5e06f090a151e5d820240bc92d3fa7fbb054113b475c8bbdf"
   },
   {
    "p": "guides/anmacha-gesucht.json",
@@ -9528,8 +9528,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 258195,
-   "h": "fbcbe01f551dca978f2d9c58308bb7ee4382334de98bb218a8307425d8cd3f43"
+   "s": 258471,
+   "h": "dcfe8eb91cc1b6e056df2edc8a84a480bafb627929deae5885855218db28f6e3"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
