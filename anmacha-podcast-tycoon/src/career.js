@@ -42,13 +42,13 @@
     if (ph === 'morgen') setTimeout(() => V && AMC.Play.msg('🌅 Tag ' + st().day + ': Erst Ideen sammeln, dann rein in die Stadt!', 3.2, true), 2800);
   };
   CR.stop = function () { if (V && V.el) V.el.remove(); V = null; Save.save(); };
-  CR.mark = k => { const t = st().today; if (k === 'dance') t.dance++; else t[k] = 1; };
+  CR.mark = k => { const t = st().today; if (k === 'dance') t.dance++; else t[k] = 1; if (AMC.Events) AMC.Events.mark(k === 'dance' ? 'dance' : 'tour'); };
   CR.update = function (dt, S) {
     if (!V || V.S !== S) return;
     const c = st(), t = c.today, L = V.last;
     // Fortschritt des Tages mitzählen
     D.RUBRIC_IDS.forEach(r => { const d = (S.got[r] || 0) - (L.got[r] || 0); if (d > 0) t.got[r] = (t.got[r] || 0) + d; L.got[r] = S.got[r] || 0; });
-    if (S.talks > L.talks) { t.talks += S.talks - L.talks; L.talks = S.talks; }
+    if (S.talks > L.talks) { t.talks += S.talks - L.talks; if (AMC.Events) AMC.Events.mark('talk', S.talks - L.talks); L.talks = S.talks; }
     if ((S.errands || 0) > L.errands) { t.errands += S.errands - L.errands; L.errands = S.errands; }
     // Uhr
     const before = c.min; c.min = Math.min(LATE + 30, c.min + dt * SPEED);
@@ -59,13 +59,14 @@
   };
   function draw() {
     if (!V || !V.el) return; const c = st(), ph = CR.phase(), rk = CR.rank();
-    V.el.innerHTML = '<div class="cr-top"><b>📅 Tag ' + c.day + '</b><span>🕗 ' + clock(c.min) + '</span><span>' + ph[1] + '</span></div>' +
+    V.el.innerHTML = '<div class="cr-top"><b>📅 Tag ' + c.day + '</b>' + (AMC.Events ? '<span title="' + U.esc(AMC.Events.week().name) + '">' + AMC.Events.week().icon + '</span>' : '') + '<span>🕗 ' + clock(c.min) + '</span><span>' + ph[1] + '</span></div>' +
       '<div class="cr-mid"><span title="Abonnenten">👥 ' + U.fmt(Math.round(c.abos)) + ' Abos</span><span>' + rk.icon + ' ' + rk.name + '</span></div>' +
       '<div class="cr-plan">' + CR.plan().map(p => '<i class="' + (p.ok ? 'ok' : '') + '" title="' + U.esc(p.name) + '">' + p.icon + (p.ok ? '✓' : '') + '</i>').join('') + '<em>🎙️ ' + (ph[0] === 'abend' ? 'Jetzt aufnehmen!' : 'Aufnahme am Abend') + '</em></div>';
   }
   // Tag ohne Aufnahme vergeht: Abos sinken etwas, neuer Morgen
   CR.skipDay = function () {
-    const c = st(), lost = Math.round(c.abos * 0.03);
+    const c = st(); c.skips = (c.skips || 0) + 1;
+    const lost = Math.round(c.abos * 0.03 * Math.min(3, c.skips));   // jeder weitere Tag ohne Folge kostet mehr
     c.abos = Math.max(50, c.abos - lost); c.day++; c.min = DAY0; c.today = fresh(); Save.save();
     AMC.UI.toast('🌙 Der Tag ging ohne Folge zu Ende. −' + lost + ' Abos. Neuer Tag ' + c.day + '!', 4200);
   };
@@ -78,19 +79,20 @@
 
   // ------------------------------------------------------------------ Aufnahme auswerten (Nacht), neuer Tag
   CR.episode = function (r) {
-    const c = st(), ph = CR.phase()[0], plan = CR.plan(), done = plan.filter(p => p.ok).length;
+    const c = st(), ph = CR.phase()[0], plan = CR.plan(), done = plan.filter(p => p.ok).length, ev = AMC.Events ? AMC.Events.episode() : { parts: [], lines: [], lost: 0 };
     // Ideen beider Hosts fließen in die Folge
     let ideas = 0; if (AMC.Home) ['andrew', 'marco'].forEach(id => { const n = AMC.Home.needs(id); ideas += (n.ideas || []).length; n.ideas = []; });
     const mood = AMC.Home ? (AMC.Home.mood('andrew') + AMC.Home.mood('marco')) / 2 : 0.7;
     const studio = AMC.StudioEdit ? AMC.StudioEdit.bonus().lis : 0, gis = AMC.Camper ? AMC.Camper.value() : 0, songs = Math.min(10, (Save.data.songs || []).length);
     const parts = [
       ['💡 Ideen', ideas * 0.08], ['📋 Tagesplan', done * 0.05], ['🌆 Prime-Time', ph === 'abend' ? 0.2 : 0], ['🛠️ Studio', studio], ['🚐 Gisela', gis * 0.02], ['🎹 Musik', songs * 0.01], ['❤️ Fans', AMC.Social ? AMC.Social.bonus() : 0], ['😊 Fitness', (mood - 0.6) * 0.5]
-    ].filter(p => Math.abs(p[1]) >= 0.005);
+    ].concat(ev.parts).filter(p => Math.abs(p[1]) >= 0.005);
     const factor = Math.max(0.5, 1 + parts.reduce((a, p) => a + p[1], 0));
     const base = Math.max(0, r.listeners || 0), hoerer = Math.round(base * factor);
     const neu = Math.round(hoerer * 0.05 * (1 + done * 0.1)), fan = Math.round(hoerer / 60 + c.abos / 150);
     const rk0 = CR.rank(c.abos);
-    c.abos += neu; c.eps++; c.total += hoerer; c.best = Math.max(c.best, hoerer);
+    const weg = Math.round(c.abos * ev.lost);
+    c.abos = Math.max(50, c.abos + neu - weg); c.eps++; c.skips = 0; if (AMC.Events) AMC.Events.mark('eps'); c.total += hoerer; c.best = Math.max(c.best, hoerer);
     c.log = (c.log || []).concat({ day: c.day, h: hoerer, abos: Math.round(c.abos) }).slice(-14);
     const day = c.day; c.day++; c.min = DAY0; c.today = fresh();
     Save.earn(fan); Save.save();
@@ -98,7 +100,7 @@
     return {
       hoerer, neu, fan, up, rank: rk,
       lines: [['📅 Tag ' + day + ' · Auswertung', U.fmt(hoerer) + ' Hörer (×' + factor.toFixed(2) + ')'], ['Einfluss', parts.map(p => p[0] + ' ' + (p[1] >= 0 ? '+' : '') + Math.round(p[1] * 100) + ' %').join(' · ') || '–'],
-        ['👥 Neue Abos', '+' + U.fmt(neu) + ' (jetzt ' + U.fmt(Math.round(c.abos)) + ')'], ['💶 Einnahmen (Werbung & Fans)', '+' + U.fmt(fan) + ' 🎟️'], [rk.icon + ' Rang', rk.name + (up ? ' – Aufstieg! 🎉' : rk.next ? ' · nächster ab ' + U.fmt(rk.next) + ' Abos' : '')]]
+        ['👥 Neue Abos', '+' + U.fmt(neu) + (weg ? ' −' + U.fmt(weg) + ' durch die Panne' : '') + ' (jetzt ' + U.fmt(Math.round(c.abos)) + ')'], ['💶 Einnahmen (Werbung & Fans)', '+' + U.fmt(fan) + ' 🎟️'], [rk.icon + ' Rang', rk.name + (up ? ' – Aufstieg! 🎉' : rk.next ? ' · nächster ab ' + U.fmt(rk.next) + ' Abos' : '')]].concat(ev.lines)
     };
   };
 })(typeof window !== 'undefined' ? window : globalThis);

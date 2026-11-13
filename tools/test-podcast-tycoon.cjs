@@ -23,7 +23,7 @@ server.listen(0, '127.0.0.1', async () => {
     await p.click('#tStart'); await p.waitForFunction(() => AMC.Game.mode === 'play' && AMC.Play.state() && AMC.Play.state().mode === 'free', null, { timeout: 20000 });
     // Kein separates Hauptmenü: Start führt in die Stadt, das Gesamtmenü öffnet sich dort (Pause) mit allen Funktionen
     await p.evaluate(() => AMC.Game.pause()); await p.waitForSelector('.main-menu.in-city [data-go=story]');
-    assert.ok(await p.evaluate(() => ['resume', 'story', 'live', 'jagd', 'race', 'quiz', 'koop', 'walk', 'friends', 'home', 'arcade', 'music', 'studio', 'shop', 'radio', 'settings', 'controls', 'credits'].every(g => document.querySelector('.main-menu [data-go=' + g + ']'))), 'Gesamtmenü hat alle Funktionen');
+    assert.ok(await p.evaluate(() => ['resume', 'story', 'live', 'jagd', 'race', 'quiz', 'koop', 'walk', 'week', 'friends', 'home', 'arcade', 'music', 'studio', 'shop', 'radio', 'settings', 'controls', 'credits'].every(g => document.querySelector('.main-menu [data-go=' + g + ']'))), 'Gesamtmenü hat alle Funktionen');
     await p.click('[data-go=resume]'); await p.waitForTimeout(300);
     assert.ok(await p.evaluate(() => !document.querySelector('.main-menu') && AMC.Game.mode === 'play'), 'Weiter in der Stadt');
     // Club-Feeling in der Stadt: Emote-Leiste, Tanzen, Stadt-Vibe
@@ -44,6 +44,13 @@ server.listen(0, '127.0.0.1', async () => {
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(), n = S.npcs.find(x => !x.guest && !x.dancer && !x.hungry); if (!n) return false; n.talked = true; S.pl.x = n.x + 1; S.pl.z = n.z; const before = AMC.Social.points(n.name); AMC.Social.open(n, S); document.querySelector('#soL [data-s="0"]').click(); window.__soN = n.name; return JSON.stringify([before, AMC.Social.points(n.name), !!document.querySelector('#soL'), n.name]); }).then(r => { const a = JSON.parse(r); return a[1] === a[0] + 4; }), 'High-Five steigert Freundschaft');
     assert.ok(await p.evaluate(() => { AMC.Save.data.social.f[window.__soN] = 70; return AMC.Social.superfans() >= 1 && AMC.Social.bonus() >= 0.02 && AMC.Social.level(window.__soN).name === 'Superfan'; }), 'Superfan zählt als Hörer-Bonus');
     assert.ok(await p.evaluate(() => { const s = AMC.Social.book(); const ok = !!document.querySelector('#sbL .st-item'); AMC.UI.close(s); return ok; }), 'Freundebuch zeigt Fans');
+    // Etappe 5: Wochen-Event, goldene Kassetten, Rückschlag bei der Auswertung
+    assert.ok(await p.evaluate(() => { const w = AMC.Events.week(); return w.name && w.need > 0 && AMC.Play.state().goldTapes.length >= 15; }), 'Wochen-Event und Kassetten in der Stadt');
+    await p.evaluate(() => { const S = AMC.Play.state(), c = S.goldTapes[0]; S.pl.x = c.x; S.pl.z = c.z; S.pl.y = c.y - 1; });
+    await p.waitForFunction(() => AMC.Events.tapes() >= 1, null, { timeout: 8000 }).catch(() => {});
+    assert.ok(await p.evaluate(() => AMC.Events.tapes() >= 1), 'Goldene Kassette eingesammelt');
+    assert.ok(await p.evaluate(() => { const e = AMC.Events.episode('sponsor'); return e.lines.length >= 2 && e.parts.length >= 1; }), 'Rückschlag oder Schutz in der Auswertung');
+    assert.ok(await p.evaluate(() => { const s = AMC.Events.panel(); const ok = document.querySelectorAll('.panel .st-item').length >= 4; AMC.UI.close(s); return ok; }), 'Wochen-Übersicht');
     // Musik: Klavierlicht-Liederliste und Lied laden (lokal oder online), Musikshop listet Lieder
     assert.ok(await p.evaluate(async () => { const l = await AMC.Audio.songIndex(), s = await AMC.Audio.song('cancan'); return l && l.length > 50 && s && s.mel.length > 10; }), 'Klavierlicht-Lieder laden');
     assert.ok(await p.evaluate(async () => { AMC.Home.musicShop(); await new Promise(r => setTimeout(r, 600)); const n = document.querySelectorAll('#msList [data-id]').length; AMC.UI.closeAll(); return n >= 40; }), 'Musikshop zeigt Lieder');
