@@ -1810,7 +1810,7 @@
      "Spar dir das Finale für den Moment auf, in dem der Gegner einen Fehler macht."
     ]
    },
-   "size": 213166,
+   "size": 213185,
    "files": 11,
    "offline": true,
    "cloud": {
@@ -3023,34 +3023,38 @@
   },
   {
    "id": "anmacha-podcast-tycoon",
-   "title": "AnMaCha Podcast Tycoon 3D – Das totale Studio-Chaos!",
-   "desc": "Podcast-Wirtschaftssimulation in 3D mit Marco und Andrew: begehbare Stadt mit 8 Vierteln, Studio-Baumodus mit über 70 Objekten, Gäste, Personal und Sponsoren, Folgen von der Recherche bis zum Mehrspur-Schnitt produzieren, 60 Hauptmissionen in 6 Kapiteln, Nebenaufträge, 3 Enden und Endlosmodus. 24 Minispiele, Party für 1–4 an einem Gerät und 🌐 Online-Quizshow per Code, Link oder QR. Handy, PC und Controller, Speicherstand lokal und per Google.",
+   "title": "AnMaCha – Der Podcast (Offizielles Spiel)",
+   "desc": "Das offizielle Spiel zum AnMaCha-Podcast: Spiele Andrew und Marco in einer 3D-Stadt, jage Themen-Funken, schalte Störsender mit der Schallwelle ab und nimm eure Folgen live auf – mit Kommandomenü, Pannen und Live-Chat. Story mit 8 Kapiteln nach echten Folgen und Boss „Das Funkloch“, Live-Show, Themenjagd, verrückte KI-Quizshow für 1–2 Spieler und freies Erkunden. Echter Podcast und 13 AnMaCha-Sender mit Titelanzeige direkt im Spiel. Controller, Tastatur & Maus, Touch und TV.",
    "icon": "🎙️",
    "img": "anmacha-podcast-tycoon/card.svg",
    "bg": "linear-gradient(145deg,#10142a,#232a52 55%,#ff8a1e)",
    "glow": "rgba(255,138,30,.5)",
    "path": "anmacha-podcast-tycoon/",
    "modes": {
-    "online": true,
     "multi": true
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "AnMaCha Podcast Tycoon 3D ist eine Wirtschaftssimulation mit Marco und Andrew. Du startest mit 6000 Euro und einer kleinen Garage in einer begehbaren 3D-Stadt mit acht Vierteln. Im Baumodus ziehst du Wände, legst Böden, setzt Türen und Fenster und stellst über 70 Objekte aus 12 Kategorien auf, etwa Mikrofone, Mischpulte, Akustikplatten und Sofas. Eine Folge entsteht in Schritten: Thema aus 60 Themen in 6 Rubriken wählen, recherchieren, Gast einladen, Technik prüfen, aufnehmen, im Mehrspur-Editor schneiden, Cover und Titel festlegen und veröffentlichen. Hörer, Fans, Ruf und Einnahmen hängen von der Qualität ab. Du stellst Personal ein, nimmst Sponsoren an, kaufst neue Grundstücke und reparierst Technik. Die Geschichte führt durch 60 Hauptmissionen in 6 Kapiteln mit drei Enden, dazu kommen 24 Nebenaufträge und danach ein Endlosmodus. Außerdem gibt es einen Kreativmodus ohne Geldgrenze und Herausforderungen. 24 Minispiele (Technik, Fahren, Fans, Quiz, Produktion und Party) lassen sich einzeln, als Party für 1–4 Spieler an einem Gerät oder in der 🌐 Online-Quizshow spielen, der Mitspieler von überall per Code, Link oder QR beitreten. Gespeichert wird in 3 Plätzen plus Autosave, optional mit Google auf allen Geräten. Fanprojekt, kein offizielles Produkt; den echten Podcast gibt es auf anmacha.de.",
+    "anleitung": "Das offizielle Spiel zum AnMaCha-Podcast: Du spielst Andrew oder Marco (jederzeit wechselbar) in einer 3D-Stadt rund ums Funkhaus. Sammle Themen-Funken in fünf Rubriken, triff Gäste, repariere den Sendemast und schalte Störsender mit der Schallwelle ab. Danach nehmt ihr die Folge live im Studio auf: Im Kommandomenü wählst du Thema (Timing-Ring), Pointe (Tastenfolge), Übergabe, Jingle oder Spezial und meisterst Pannen. Die Hörer bestimmen die Sterne. Modi: Story mit 8 Kapiteln nach echten Folgen bis zum Boss „Das Funkloch“, Live-Show (endlos), Themenjagd (3 Minuten), verrückte KI-Quizshow für 1–2 Spieler und freies Erkunden. Im Radio-Fenster laufen echte Podcast-Folgen und 13 AnMaCha-Sender mit Titelanzeige.",
     "steuerung": [
-     "Smartphone und Tablet: Joystick links unten zum Laufen, Knopf zum Sprechen oder Benutzen, Knöpfe rechts unten für Bauen, Folge, Team, Geld, Journal, Karte und Menü. Im Baumodus mit einem Finger verschieben, mit zwei Fingern zoomen, antippen zum Platzieren.",
-     "PC: WASD oder Pfeiltasten laufen, Umschalt rennen, E oder Enter sprechen/benutzen, B Bauen, P Produktion, T Team, F Finanzen, J Journal, O Archiv, M Karte, Esc Pause. Im Baumodus Maus zum Platzieren, Mausrad zoomt, R dreht, Strg+Z/Y rückgängig. Tasten in den Optionen änderbar.",
-     "Controller: linker Stick laufen, A sprechen/benutzen, B zurück, Start Pause, rechter Stick als Mauszeiger für alle Knöpfe."
+     "Controller: linker Stick laufen, rechter Stick Kamera",
+     "A springen / bestätigen (zweimal = Doppelsprung), B zurück",
+     "X Schallwelle / sprechen, RT ausweichen, RB sprinten",
+     "Y Andrew ↔ Marco wechseln",
+     "LB nächster Sender, LT Radio an/aus, Select Radio & Podcast, Start Pause",
+     "Tastatur: WASD laufen, Maus ziehen Kamera, Leertaste springen, E Welle, C ausweichen, Umschalt sprinten, Q wechseln",
+     "R Radio, N nächster Sender, M Radio an/aus, Esc Pause",
+     "Touch: Stick links, rechts wischen für die Kamera, Knöpfe für Springen, Welle, Ausweichen, Wechsel, Radio und Pause"
     ],
     "tipps": [
-     "Akustikplatten und gute Mikrofone heben die Aufnahmequalität am stärksten.",
-     "Technik nutzt sich mit jeder Folge ab: rechtzeitig im Finanzfenster reparieren.",
-     "Im Schnitteditor zuerst die Ähms schneiden und Pausen schließen, das bringt die meisten Punkte.",
-     "Wenig Geld? Kurze Folgen kosten nichts, Nebenaufträge in der Stadt bringen schnelles Geld."
+     "Sammle Funken aller fünf Farben – jede bringt eigene Themenkarten.",
+     "Andrew passt zu Musik und Feelgood, Marco zu Tech und TV.",
+     "Goldene Erinnerungen geben die stärksten Karten.",
+     "Jingles bei sinkendem Hype einsetzen."
     ]
    },
-   "size": 1122168,
-   "files": 63,
+   "size": 1725853,
+   "files": 27,
    "offline": true,
    "cloud": {
     "game": "anmacha-podcast-tycoon",

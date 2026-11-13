@@ -51,7 +51,7 @@ def dark(c, f):
 
 
 SHORT_NAMES = {
-    'Funkflut Survivor – Überlebe die Störwelle!': 'Funkflut','Royal Radio Match 3D': 'Radio Match 3D'}   # eigene Kurznamen, wo das Kürzen unschön wäre
+    'Funkflut Survivor – Überlebe die Störwelle!': 'Funkflut','Royal Radio Match 3D': 'Radio Match 3D', 'AnMaCha – Der Podcast (Offizielles Spiel)': 'AnMaCha Podcast'}   # eigene Kurznamen, wo das Kürzen unschön wäre
 
 
 def short(title):

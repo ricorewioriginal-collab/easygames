@@ -7,7 +7,7 @@
 window.EASYGAMES_MODES = {
   'anmacha-undercover': { online: true },
   'spinwelten': { online: true },
-  'anmacha-podcast-tycoon': { online: true, multi: true },
+  'anmacha-podcast-tycoon': { multi: true },
   'anmacha-kart': { pad: true, multi: true, online: true, tvParam: true },
   'anmacha-quiz': { pad: true, online: true, multi: true },
   'anmacha-koffer-dealer': { pad: true, online: true },
