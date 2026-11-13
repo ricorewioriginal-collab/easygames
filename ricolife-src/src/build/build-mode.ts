@@ -123,6 +123,9 @@ export class BuildMode {
   private highlighted: string | null = null;
   private pv: Preview | null = null;
   private padT = 0;
+  /** Ziehen mit dem Controller läuft (Anfang gesetzt) */
+  private padDrag = false;
+  private didPadDrag = false;
   private padAcc = 0;
   private shownFunds = NaN;
   private shownLevel = -1;
@@ -192,6 +195,7 @@ export class BuildMode {
   /** Auswahl/Ziehen/Aufnehmen abbrechen (Modus bleibt offen) */
   private cancel(): void {
     this.drag = null;
+    this.padDrag = false;
     this.moving = null;
     this.plan = null;
     this.hkey = NaN;
@@ -507,6 +511,10 @@ export class BuildMode {
     this.refresh(true);
   }
 
+  get dragging(): boolean {
+    return !!this.drag;
+  }
+
   dragStart(x: number, y: number): boolean {
     if (!this._active || !DRAG_TOOLS.has(this.tool)) return false;
     const gp = this.host.groundAt(x, y);
@@ -580,9 +588,28 @@ export class BuildMode {
       cy = window.innerHeight / 2;
     switch (b) {
       case 'a':
+        // Zieh-Werkzeuge (Wand, Raum, Boden …): A setzt den Anfang, Kamera mit dem Stick bewegen, A setzt das Ende
+        if (DRAG_TOOLS.has(this.tool) && !this.moving) {
+          if (this.drag) {
+            this.padDrag = false;
+            this.dragEnd(cx, cy);
+            // nur angetippt (Anfang = Ende): wie Tippen, z. B. ein Wandstück oder eine Bodenkachel
+            if (!this.didPadDrag && this.tool !== 'room' && this.tool !== 'floor') this.tap(cx, cy, 0);
+          } else if (this.dragStart(cx, cy)) {
+            this.padDrag = true;
+            this.didPadDrag = false;
+          }
+          return true;
+        }
         this.tap(cx, cy, 0);
         return true;
       case 'b':
+        if (this.drag) {
+          this.drag = null;
+          this.padDrag = false;
+          this.refresh(true);
+          return true;
+        }
         this.escape(true);
         return true;
       case 'x':
@@ -606,7 +633,14 @@ export class BuildMode {
   update(dt: number): void {
     if (!this._active) return;
     this.padAcc += dt;
-    if (this.padT > 0) {
+    if (this.padDrag && this.drag) {
+      if (this.padAcc > 0.08) {
+        this.padAcc = 0;
+        const b0 = `${this.drag.bx},${this.drag.bz}`;
+        this.dragMove(window.innerWidth / 2, window.innerHeight / 2);
+        if (`${this.drag?.bx},${this.drag?.bz}` !== b0) this.didPadDrag = true;
+      }
+    } else if (this.padT > 0) {
       this.padT -= dt;
       if (this.padAcc > 0.1) {
         this.padAcc = 0;

@@ -428,3 +428,65 @@ test('M: Mehrspieler – Gast tritt per Code bei, Befehl und Chat kommen an', as
   }, you, { timeout: 15_000 });
   await shot(guest, 'multiplayer-guest');
 });
+
+test('N: PlayStation-Controller – Symbole, Hinweisleiste, Bauen mit Anfang/Ende, Kaufmodus, Reiter', async ({ page }, info) => {
+  desktopOnly(info.project.name);
+  await page.addInitScript(() => {
+    const pad = { connected: true, mapping: 'standard', axes: [0, 0, 0, 0], buttons: Array.from({ length: 17 }, () => ({ pressed: false, value: 0 })), id: 'DualSense Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 0ce6)', index: 0, timestamp: 0 };
+    (window as any).__pad = pad;
+    Object.defineProperty(navigator, 'getGamepads', { value: () => [pad] });
+  });
+  const errors = watchErrors(page);
+  await quick(page);
+  const press = async (i: number): Promise<void> => {
+    await page.evaluate((b) => { const p = (window as any).__pad; p.buttons[b] = { pressed: true, value: 1 }; }, i);
+    await page.waitForTimeout(400);
+    await page.evaluate((b) => { const p = (window as any).__pad; p.buttons[b] = { pressed: false, value: 0 }; }, i);
+    await page.waitForTimeout(400);
+  };
+  await press(5); // R1: nächste Figur → Controller-Modus
+  await expect(page.locator('html')).toHaveClass(/(^|\s)pad(\s|$)/);
+  await expect(page.locator('.padbar')).toBeVisible();
+  await expect(page.locator('.padbar')).toContainText('✕');
+  await expect(page.locator('.reticle')).toBeVisible();
+  await expect(page.locator('#btnBuild .pg')).toHaveText('R2');
+  await press(7); // R2: Baumodus
+  await expect.poll(() => page.evaluate(() => document.body.dataset.mode)).toBe('build');
+  const walls0 = await page.evaluate(() => (window as any).__rl.g.world.walls.size as number);
+  // Kamera auf eine freie Ecke des eigenen Grundstücks
+  await page.evaluate(() => {
+    const app = (window as any).__rl;
+    const g = app.g;
+    const o = [...g.world.objs.values()].find((x: any) => x.lot === g.hh.lot);
+    const [cx, cz] = g.world.centerOf(o);
+    const L = g.world.lotAt(cx, cz);
+    app.look(L.x + 1.5, L.z + 1.5, 14);
+  });
+  await page.waitForTimeout(800);
+  await press(0); // ✕: Anfang setzen
+  await expect(page.locator('.reticle.drag')).toBeVisible();
+  await expect(page.locator('.padbar')).toContainText('Ende setzen');
+  await page.evaluate(() => ((window as any).__pad.axes[0] = 0.8));
+  await page.waitForTimeout(700);
+  await page.evaluate(() => ((window as any).__pad.axes[0] = 0));
+  await page.waitForTimeout(400);
+  await press(0); // ✕: Ende setzen
+  await expect(page.locator('.reticle.drag')).toHaveCount(0);
+  const walls1 = await page.evaluate(() => (window as any).__rl.g.world.walls.size as number);
+  expect(walls1).toBeGreaterThan(walls0);
+  await press(6); // L2: Kaufmodus
+  await expect.poll(() => page.evaluate(() => document.body.dataset.mode)).toBe('buy');
+  await press(6); // L2 nochmal: zurück ins Leben
+  await expect.poll(() => page.evaluate(() => document.body.dataset.mode)).toBe('live');
+  // Menü: Start → Einstellungen per Steuerkreuz → Reiter mit R1
+  await press(9);
+  await expect(page.locator('#pResume')).toBeVisible();
+  await page.locator('.modal .btn', { hasText: 'Einstellungen' }).focus();
+  await press(0);
+  await expect(page.locator('.modal [role="tab"].on')).toHaveText('Spiel');
+  await press(5);
+  await expect(page.locator('.modal [role="tab"].on')).toHaveText('Grafik');
+  await press(1);
+  await shot(page, 'controller-ps');
+  expect(errors).toEqual([]);
+});

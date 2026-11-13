@@ -1,4 +1,4 @@
-/* Funkparcours – die wählbaren Läufer (reine Daten, ohne DOM/Three.js). Erfundene Figuren, keine echten Personen.
+/* Titanparcours – die wählbaren Läufer (reine Daten, ohne DOM/Three.js). Erfundene Figuren, keine echten Personen.
    Eigene Läufer: Steckbrief für die easygames-Figuren (../figuren/figuren.js); dazu kommen alle Figuren aus anderen easygames
    (easyclash/js/roster.js, window.EC_ROSTER): Menschen als realistische Figur, Tiere/Wesen im Look ihres Spiels.
    Schlüssel einer Figur: Zahl = eigener Läufer (Index in CHARS), Text = id aus dem Roster. */
@@ -31,7 +31,7 @@ export function charLook(k, color, fromRoster) {
 }
 /** Auswahl-Liste: eigene Läufer, dann die Figuren der anderen Spiele, nach Spiel gruppiert */
 export function charGroups() {
-  const g = [{ n: 'Funkparcours', list: CHARS.map((c, i) => ({ k: i, n: c.n, c: c.skin })) }], by = new Map();
+  const g = [{ n: 'Titanparcours', list: CHARS.map((c, i) => ({ k: i, n: c.n, c: c.skin })) }], by = new Map();
   for (const c of roster()) { if (!by.has(c.gameN)) by.set(c.gameN, []); by.get(c.gameN).push({ k: c.id, n: c.n, c: (c.look && (c.look.top || c.look.skin)) || '#888' }); }
   for (const [n, list] of by) g.push({ n, list });
   return g;

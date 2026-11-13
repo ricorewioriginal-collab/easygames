@@ -1,6 +1,6 @@
 # Stand – RicoLife 3D
 
-Stand: 17.10.2026 · Spielstand-Version 1 · Service-Worker-Cache `eg-ricolife-v1`
+Stand: 12.11.2026 · Spielstand-Version 1 · Service-Worker-Cache `eg-ricolife-v2`
 
 ## Fertig
 
@@ -14,7 +14,10 @@ Stand: 17.10.2026 · Spielstand-Version 1 · Service-Worker-Cache `eg-ricolife-v
 - **Speichern:** 3 Plätze, Sicherungskopie, Export/Import, Autosave, Google-Spielstand über `anmacha-cloud`
 - **Mehrspieler:** Besuch über Code mit bis zu 3 Gästen über `cloud/fire-peer.js` (Firebase-Vermittlung, WebRTC); Gastgeber rechnet, Gäste steuern ihre eigene Figur und chatten
 - **Kamera:** nah und flach im Live-Modus, Mausrad zoomt zum Zeiger hin
-- **Steuerung:** Touch, Maus/Tastatur (umbelegbar), Controller
+- **Steuerung:** Touch, Maus/Tastatur (umbelegbar), Controller mit PlayStation-/Switch-/Xbox-Symbolen (automatisch erkannt), Zielkreuz, Hinweisleiste, Symbole an den Bildschirm-Knöpfen, Bauen und Kaufen komplett per Controller (L2/R2, Anfang/Ende setzen), räumliche Menü-Navigation mit Wiederholung, Reiter mit L1/R1, Vibration
+- **TV/Konsole:** größere Oberfläche mit Rand gegen Overscan, automatisch an TV-/Konsolen-Browsern (PlayStation, Xbox, Switch, Smart-TV) und im Controller-Modus am großen Bildschirm, einstellbar
+- **Grafik:** echte 3D-Modelle (Kenney Nature Kit/Car Kit, CC0) für Bäume, Büsche, Blumen, Felsen, Baumstümpfe, Stämme und Autos; Konsolen-Look (weiches Licht, Lichtkante, kräftigere Farben), abschaltbar
+- **Kollisionen:** Bäume, Laternen, Bänke, Felsen und Stümpfe blockieren Wege; Zugänge zu allen Grundstücken bleiben frei, „Hierhin gehen“ auf ein blockiertes Feld führt daneben
 - **PWA:** offline spielbar, installierbar, Update-Hinweis „Neue Version verfügbar – Jetzt aktualisieren“
 
 ## Grenzen
@@ -24,7 +27,9 @@ Stand: 17.10.2026 · Spielstand-Version 1 · Service-Worker-Cache `eg-ricolife-v
 - Gäste im Mehrspieler dürfen nicht bauen, kaufen, arbeiten gehen oder Familienentscheidungen treffen (Schutz des Gastgeber-Spielstands). Fällt der Gastgeber weg, endet der Besuch; der Gast kann seine Figur behalten.
 - Mehrspieler braucht Internet; offline geht nur Einzelspieler.
 - 6 der 9 Berufe laufen „im Hintergrund“ (Figur fährt weg und kommt mit Lohn zurück).
-- Grafik ist bewusst schlicht (prozedurale Modelle, keine Fremd-Assets), siehe [ASSETS.md](ASSETS.md).
+- Möbel, Häuser und Figuren sind weiterhin prozedural (eigener Stil); echte Modelle gibt es für Natur und Autos, siehe [ASSETS.md](ASSETS.md).
+- „Konsole“ heißt: im Browser der Konsole oder am Fernseher mit Controller spielbar – es gibt keine nativen Konsolen-Fassungen (Store-Veröffentlichung braucht Lizenzen der Hersteller).
+- Figuren weichen einander nicht aus (sie können sich kurz überlappen); Wände, Möbel und Stadt-Deko sind feste Hindernisse.
 
 ## Firestore-Regeln
 

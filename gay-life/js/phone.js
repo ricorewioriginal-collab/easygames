@@ -16,6 +16,7 @@
   function C() { return GL.core; }
   function esc(t) { return C().esc(t); }
 
+  ph.app = function () { return cur; };
   ph.isOpen = function () { var p = el(); return !!(p && p.classList.contains('on')); };
   ph.open = function (app) { var p = el(); if (!p) return; GL.ui.close(); cur = app || 'home'; p.classList.add('on'); render(); };
   ph.close = function () { var p = el(); if (p) p.classList.remove('on'); };

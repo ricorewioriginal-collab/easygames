@@ -9,7 +9,7 @@
     L.log.unshift({ d: L.day, h: GL.life.clock(), a: Math.round(a), t: String(t).slice(0, 60) });
     if (L.log.length > 30) L.log.length = 30;
   }
-  eco.earn = function (a, t) { a = Math.max(0, Math.round(a)); L.money += a; book(a, t); GL.life.hud(); GL.save(); return a; };
+  eco.earn = function (a, t) { a = Math.max(0, Math.round(a)); L.money += a; book(a, t); GL.life.hud(); GL.save(); GL.emit('earn', a, t); return a; };
   eco.spend = function (a, t) { a = Math.round(a); if (a > L.money) return false; L.money -= a; book(-a, t); GL.life.hud(); GL.save(); return true; };
 
   /* ---------- Späti Lecker ---------- */

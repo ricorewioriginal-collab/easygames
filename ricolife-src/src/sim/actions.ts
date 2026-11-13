@@ -1,6 +1,6 @@
 // Ausführung der Aktionswarteschlange: Hinlaufen (A*), Platz einnehmen, Animation, Wirkung, Abschluss.
 import { clamp, wrapAngle } from '../core/util';
-import { LEVEL_H, type ObjInst, cellKey, rotLocal, dimsOf } from '../world/world';
+import { F_BLOCK, LEVEL_H, MAP_H, MAP_W, type ObjInst, cellKey, rotLocal, dimsOf } from '../world/world';
 import { getDef } from '../world/defs';
 import { findPath, type PathPoint } from '../world/nav';
 import { lotEntrance, ROADS_H, ROADS_V } from '../world/map';
@@ -159,7 +159,21 @@ export function resolveRoute(g: Game, s: Sim, d: IDef, c: Ctx): RouteTarget | st
   }
   if (d.on === 'sim' && c.t) return nearTarget(g, c.t.x, c.t.z, c.t.l);
   if (d.on === 'pet' && c.p) return nearTarget(g, c.p.x, c.p.z, c.p.l);
-  if (d.on === 'ground' && c.a.data) return { x: Number(c.a.data.x), z: Number(c.a.data.z), l: Number(c.a.data.l ?? 0) };
+  if (d.on === 'ground' && c.a.data) {
+    const x = Number(c.a.data.x), z = Number(c.a.data.z), l = Number(c.a.data.l ?? 0);
+    // Ziel auf einem Baum, einer Laterne oder einem Möbel: auf das nächste freie Feld daneben ausweichen
+    const fx = Math.floor(x), fz = Math.floor(z);
+    if (fx >= 0 && fz >= 0 && fx < MAP_W && fz < MAP_H && g.world.flags[cellKey(l, fx, fz)]! & F_BLOCK) {
+      const any: { x: number; z: number; l: number }[] = [];
+      for (let dz = -1; dz <= 1; dz++)
+        for (let dx = -1; dx <= 1; dx++) {
+          const nx = fx + dx, nz = fz + dz;
+          if ((dx || dz) && nx >= 0 && nz >= 0 && nx < MAP_W && nz < MAP_H && !(g.world.flags[cellKey(l, nx, nz)]! & F_BLOCK)) any.push({ x: nx + 0.5, z: nz + 0.5, l });
+        }
+      if (any.length) return { x, z, l, any };
+    }
+    return { x, z, l };
+  }
   return { x: s.x, z: s.z, l: s.l };
 }
 

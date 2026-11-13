@@ -1,4 +1,4 @@
-window.EASYGAMES_BUILD = '20261024.2'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
+window.EASYGAMES_BUILD = '20261113.1'; // Änderung zwingt alle EasyGames-Einbettungen auf die aktuelle Fassung.
 // Neues Spiel? Hier einen Eintrag ergänzen. "path" = Ordner im Repo oder komplette URL.
 const GAMES = [
   { id: 'ricolife', title: 'RicoLife 3D – Dein Leben. Deine Regeln.', icon: '🏡', img: 'ricolife/card.svg', bg: 'linear-gradient(145deg,#123a50,#4b8d8e 54%,#e5b16b)', glow: 'rgba(139,212,194,.45)', path: 'ricolife/', desc: 'Eigenständige 3D-Lebenssimulation in einer lebendigen offenen Stadt: eigenen Haushalt erstellen, begehbare Häuser bauen und einrichten, Bedürfnisse und Emotionen erleben, Berufe ausüben, Freundschaften und Familien gründen, Lebensgeschichten entdecken. Frei spielbar, auch offline, mit optionalem Google-Spielstand. Für Handy, PC und Controller.' },
@@ -123,8 +123,8 @@ const GAMES = [
     path: 'funk-billard/', desc: '8-Ball-Pool mit echter Kugelphysik in einer Neon-Funk-Lounge: Volle gegen Halbe, die 8 zum Schluss. Zielen mit Wischen oder von oben, Kraftbalken ziehen und loslassen, Effet für Nachläufer und Rückzieher, Ziellinie mit Laufrichtungen, Fouls und Ball in der Hand. Gegen den Computer in 3 Stärken, zu zweit an einem Gerät, 🌐 Online gegen Freunde per Code oder freies Training.' },
   { id: 'anmacha-preisradar', title: 'AnMaCha Preisradar', icon: '💶', img: 'anmacha-preisradar/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#8b5cf6 50%,#ff9a1f)', glow: 'rgba(255,154,31,.55)',
     path: 'anmacha-preisradar/', desc: 'Das Preis-Schätzspiel: Gebotsduell, Frequenz-Skala, Teurer oder billiger, Einkaufswagen und Preisfinale – bis zu 4 Spieler, Computer-Gegner, geheime Tipps per Handy. 200+ Produkte, präsentiert vom RicoReWi Radioportal.' },
-  { id: 'anmacha-funkparcours', title: 'AnMaCha Funkparcours', icon: '🏃', img: 'anmacha-funkparcours/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#00b8d9 55%,#ff2d95)', glow: 'rgba(0,184,217,.55)',
-    path: 'anmacha-funkparcours/', desc: 'Das Hindernis-Zeitspiel in 3D: springen, hangeln, Wand erklimmen – jeder Läufer allein, die Zeiten werden verglichen. 3 Parcours, Geist der Bestzeit, bis zu 4 Läufer, Handys als Pads.' },
+  { id: 'anmacha-funkparcours', title: 'Titanparcours', icon: '🏃', img: 'anmacha-funkparcours/card.png', bg: 'linear-gradient(145deg,#0b0c10,#ff6a1a 55%,#2e8bff)', glow: 'rgba(255,106,26,.55)',
+    path: 'anmacha-funkparcours/', desc: 'Das Hindernis-Zeitspiel in 3D nach dem Vorbild der Ninja-Shows: springen, hangeln, ducken, Wand erklimmen – Zeiten werden verglichen. 3 Parcours, Geist der Bestzeit, bis zu 4 Läufer, Gamepad und Handys als Pads.' },
   { id: 'FunkhausReality', title: 'Funkhaus Reality', icon: '🏠', img: 'FunkhausReality/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#ff2d95 55%,#00e5ff)', glow: 'rgba(255,45,149,.55)',
     path: 'FunkhausReality/', desc: 'Die Live-WG im Radiostudio: Allianzen schmieden, Gerüchte streuen, im Beichtstuhl nominieren – die Hörer entscheiden, wer geht. 3D-Haus, Wochenaufgaben, 1–4 Menschen mit privaten Handy-Pads gegen KI-Mitbewohner.' },
   { id: 'MachMichAus', title: 'Mach mich aus!', icon: '💡', img: 'MachMichAus/card.png', bg: 'linear-gradient(145deg,#1a1a6a,#00b8d9 50%,#ff2d95)', glow: 'rgba(0,184,217,.55)',

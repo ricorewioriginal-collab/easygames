@@ -284,16 +284,17 @@ window.EASYGAMES_GUIDES = {
   ]
  },
  "anmacha-funkparcours": {
-  "anleitung": "Hindernis-Zeitspiel: Jeder Läufer rennt allein über den Parcours, es zählt die Zeit; wer ins Wasser fällt, ist raus und wird nach der Strecke gewertet. Die Show hat Vorrunde, Halbfinale und Finale (3 Parcours, 1 bis 4 Läufer), Platz 1 bekommt die meisten Punkte. Im Training jagst du auf einem Parcours deine Bestzeit; ein Geist zeigt den bisher Schnellsten.",
+  "anleitung": "Titanparcours, das Hindernis-Zeitspiel nach dem Vorbild der Ninja-Shows: Jeder Läufer rennt allein über den Parcours, es zählt die Zeit; wer ins Wasser fällt, ist raus und wird nach der Strecke gewertet. Die Show hat Vorrunde, Halbfinale und Finale (3 Parcours, 1 bis 4 Läufer), Platz 1 bekommt die meisten Punkte. Im Training jagst du auf einem Parcours deine Bestzeit; ein Geist zeigt den bisher Schnellsten.",
   "steuerung": [
-   "PC: Laufen mit A/D oder Pfeil links/rechts; Springen mit Leertaste, Pfeil hoch oder W (länger halten = höher); Esc beendet die Show (nach Rückfrage), ein Pausenmenü gibt es nicht; im Menü Pfeiltasten, Enter, Esc.",
-   "Touch: Stick links ziehen zum Laufen, Knopf Springen.",
-   "Gamepad: Stick oder Steuerkreuz zum Laufen, A/X/Y zum Springen; im Menü A = OK, B = Zurück, Start.",
+   "PC: Laufen mit A/D oder Pfeil links/rechts; Springen mit Leertaste, Pfeil hoch oder W (länger halten = höher); Ducken mit Pfeil runter, S oder Shift (mit Anlauf rutschen); Esc oder P = Pause; im Menü Pfeiltasten, Enter, Esc.",
+   "Touch: Stick links zum Laufen (runterziehen = ducken), Knöpfe Springen und Ducken, Pause.",
+   "Gamepad wie auf der Konsole: Stick oder Steuerkreuz laufen, A springen, B oder Stick runter ducken, Start = Pausemenü; im Menü A = OK, B = Zurück. Vibriert bei Treffern.",
    "Handys koppeln: Jedes Handy wird das Steuer-Pad eines Läufers (bis zu 4) und meldet Bereit."
   ],
   "tipps": [
-   "An der Steilwand zählt Tempo: voll anlaufen, kurz vor der Wand springen.",
-   "An Hangelstangen greift der Läufer von selbst; mit Sprung kannst du früher abspringen."
+   "Unter Pendelbalken und durch den Tunnel nur geduckt – mit Anlauf rutschst du durch.",
+   "An der Lachsleiter im Takt springen; zu früh gedrückt rutscht die Stange ab.",
+   "An der Steilwand zählt Tempo: voll anlaufen, kurz vor der Wand springen."
   ]
  },
  "FunkhausReality": {

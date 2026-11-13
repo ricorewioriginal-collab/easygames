@@ -1,6 +1,6 @@
-/* Funkparcours – Handy-Pad: beitreten, „Bereit" sagen, dann Stick laufen, Knopf springen (gegriffen wird automatisch). */
+/* Titanparcours – Handy-Pad: beitreten, „Bereit" sagen, dann Stick laufen (runter = ducken), Knöpfe springen und ducken (gegriffen wird automatisch). */
 import { JOIN, CDN, peerCfg, loadScript } from './pair.js';
-import { STICK_HTML, JUMP_HTML, stick, hold } from './stick.js';
+import { STICK_HTML, JUMP_HTML, DUCK_HTML, stick, hold } from './stick.js';
 const $ = id => document.getElementById(id), esc = s => String(s == null ? '' : s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
 const CSS = ['#ff6fb0', '#00b8d9', '#ffd24a', '#8b5cf6'];
 export function startController() {
@@ -9,7 +9,7 @@ export function startController() {
   const put = html => { root.innerHTML = html; }, tx = m => { try { conn && conn.open && conn.send(m); } catch (e) {} };
   const setMask = m => { if (m !== mask) { mask = m; tx({ t: 'in', v: m }); } };
   function screenJoin(msg) {
-    key = ''; mask = 0; put(`<h2>Funkparcours<br><small>Handy-Pad · Raum ${esc(JOIN)}</small></h2><div class="info">${msg ? esc(msg) : 'Gib deinen Namen ein und tritt bei. Dann steuerst du deinen Läufer mit diesem Handy.'}</div><input id="cn" maxlength="14" placeholder="Dein Name" value="${esc(name)}" autocomplete="off"><button class="btn green" id="cj">Beitreten</button>`);
+    key = ''; mask = 0; put(`<h2>Titanparcours<br><small>Handy-Pad · Raum ${esc(JOIN)}</small></h2><div class="info">${msg ? esc(msg) : 'Gib deinen Namen ein und tritt bei. Dann steuerst du deinen Läufer mit diesem Handy.'}</div><input id="cn" maxlength="14" placeholder="Dein Name" value="${esc(name)}" autocomplete="off"><button class="btn green" id="cj">Beitreten</button>`);
     $('cj').onclick = () => { name = ($('cn').value || '').trim().slice(0, 14) || 'Gast'; try { localStorage.setItem('fpPhoneName', name); } catch (e) {} connect(); };
   }
   async function connect() {
@@ -35,9 +35,10 @@ export function startController() {
     if (s.phase === 'ready') { put(`${head(s)}<div class="info">Du bist dran: <b>${esc(s.cname)}</b></div><button class="btn green" id="cr" style="min-height:120px;font-size:30px">Bereit!</button>`); $('cr').onclick = () => { tx({ t: 'ready' }); $('cr').disabled = true; }; return; }
     if (s.phase === 'count') { put(`${head(s)}<div class="bigt">3 · 2 · 1</div><div class="info">Halte dich bereit …</div>`); return; }
     if (s.phase === 'run') {
-      put(`<div class="cpad">${STICK_HTML}${JUMP_HTML}</div>`); let sm = 0, jm = 0;
-      stick(root.querySelector('.stick'), m => { sm = m; setMask(sm | jm); });
-      hold(root.querySelector('.act.main'), () => { jm = 4; setMask(sm | jm); }, () => { jm = 0; setMask(sm | jm); }); return;
+      put(`<div class="cpad">${STICK_HTML}<div class="cacts">${DUCK_HTML}${JUMP_HTML}</div></div>`); let sm = 0, jm = 0, dm = 0; const upd = () => setMask(sm | jm | dm);
+      stick(root.querySelector('.stick'), m => { sm = m; upd(); });
+      hold(root.querySelector('.act.main'), () => { jm = 4; upd(); }, () => { jm = 0; upd(); });
+      hold(root.querySelector('.act.duck'), () => { dm = 8; upd(); }, () => { dm = 0; upd(); }); return;
     }
     put(`${head(s)}<div class="bigt">${esc(s.say || '')}</div><div class="tbl">${board(s)}</div>`);
   }

@@ -1,7 +1,7 @@
 // Statisches Stadtbild von Lindenhafen: Straßen, Gehwege, Wasser, Bäume, Laternen und Verkehrswege.
 import { LOTS } from '../data/lots';
 import { Rng } from '../core/rng';
-import { MAP_H, MAP_W, Ter, type World } from './world';
+import { MAP_H, MAP_W, Ter, cellKey, type World } from './world';
 
 export const ROADS_H: [number, number][] = [
   [0, 4],
@@ -20,7 +20,7 @@ export const isRoad = (x: number, z: number): boolean =>
   (x < ROAD_END_X && ROADS_H.some(([a, b]) => z >= a && z < b)) || ROADS_V.some(([a, b]) => x >= a && x < b);
 
 export interface Deco {
-  kind: 'tree' | 'pine' | 'bush' | 'lamp' | 'bench' | 'flowers' | 'hydrant' | 'sign' | 'boat' | 'busstop';
+  kind: 'tree' | 'pine' | 'bush' | 'lamp' | 'bench' | 'flowers' | 'hydrant' | 'sign' | 'boat' | 'busstop' | 'rock' | 'stump' | 'log';
   x: number;
   z: number;
   r: number;
@@ -52,6 +52,35 @@ export function buildTerrain(w: World): void {
   for (let z = 77; z <= 83; z++) for (let x = 154; x < 157; x++) t[z * MAP_W + x] = Ter.Wood;
   // Sandstreifen an der Promenade
   for (let z = 6; z < 26; z++) t[z * MAP_W + 147] = Ter.Sand;
+  blockDeco(w);
+}
+
+/** Deko, durch die niemand hindurchlaufen soll (Stämme, Laternen, Bänke, Felsen) */
+const SOLID_DECO = new Set<Deco['kind']>(['tree', 'pine', 'bush', 'lamp', 'bench', 'hydrant', 'sign', 'rock', 'stump', 'log']);
+
+/** Feste Deko als blockierte Bodenzellen eintragen; Zugänge zu den Grundstücken bleiben immer frei. */
+export function blockDeco(w: World): void {
+  w.staticBlock.clear();
+  const keep = new Set<number>();
+  for (const l of LOTS) {
+    const [ex, ez] = lotEntrance(l.id);
+    for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) keep.add(cellKey(0, Math.floor(ex) + dx, Math.floor(ez) + dz));
+  }
+  const add = (x: number, z: number): void => {
+    const cx = Math.floor(x), cz = Math.floor(z);
+    if (cx < 0 || cz < 0 || cx >= MAP_W || cz >= MAP_H) return;
+    const k = cellKey(0, cx, cz);
+    if (!keep.has(k) && !w.lotMap[cz * MAP_W + cx]) w.staticBlock.add(k);
+  };
+  for (const d of buildDeco(w)) {
+    if (!SOLID_DECO.has(d.kind)) continue;
+    if (d.kind === 'bench' || d.kind === 'log') {
+      // längliche Deko: beide Enden
+      const ox = Math.cos(d.r) * 0.55, oz = -Math.sin(d.r) * 0.55;
+      add(d.x + ox, d.z + oz);
+      add(d.x - ox, d.z - oz);
+    } else add(d.x, d.z);
+  }
 }
 
 /** Dekoration entlang der Straßen (deterministisch). Blockiert keine Wege außer Bäumen auf Grünflächen. */
@@ -88,6 +117,19 @@ export function buildDeco(w: World): Deco[] {
     if (at(x, z) !== Ter.Grass) continue;
     const kind = rng.chance(0.25) ? 'pine' : rng.chance(0.4) ? 'bush' : rng.chance(0.3) ? 'flowers' : 'tree';
     out.push({ kind, x: x + 0.5, z: z + 0.5, r: rng.range(0, 6.28), s: rng.range(0.7, 1.25) });
+  }
+  // Felsen, Baumstümpfe und Stämme auf größeren Grünflächen (eigene Zufallsfolge: Bäume bleiben, wo sie waren)
+  const r2 = new Rng(1312);
+  const used = new Set(out.map((d) => Math.floor(d.z) * MAP_W + Math.floor(d.x)));
+  for (let i = 0; i < 90; i++) {
+    const x = r2.int(1, WATER_X - 2),
+      z = r2.int(1, MAP_H - 2);
+    let open = true;
+    for (let dz = -1; dz <= 1 && open; dz++) for (let dx = -1; dx <= 1 && open; dx++) if (at(x + dx, z + dz) !== Ter.Grass || used.has((z + dz) * MAP_W + x + dx)) open = false;
+    if (!open) continue;
+    used.add(z * MAP_W + x);
+    const kind = r2.chance(0.5) ? 'rock' : r2.chance(0.55) ? 'stump' : 'log';
+    out.push({ kind, x: x + 0.5, z: z + 0.5, r: r2.range(0, 6.28), s: r2.range(0.8, 1.3) });
   }
   // Promenade
   for (let z = 4; z < 96; z += 7) {
