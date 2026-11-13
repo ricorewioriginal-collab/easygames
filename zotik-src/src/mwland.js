@@ -401,6 +401,50 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       { const X = 30, Z = -118, Y = Math.min(-.4, h(X, Z)); b.sph(X, Y, Z, 6, 3.4, 7, 0x4a5a6a, { mat: { r: .5 } }); b.sph(X, Y + .1, Z + 6.3, 3.6, 1.3, 1.2, 0x14141a, { cast: false }); for (let i = 0; i < 9; i++) b.cone(X - 3.4 + i * .85, Y + .9, Z + 6.6, .18, .6, 0xf4f0e6, { lo: 1 }).rotation.x = Math.PI;
         for (const s of [-1, 1]) b.sph(X + s * 3.4, Y + 2.2, Z + 4.6, .45, .45, .3, 0xf0f0e8, { cast: false }); b.cone(X, Y + 3, Z - 4, .5, 3.4, 0x4a5a6a, { lo: 1 }); }
     },
+    aladdin(b, w, A) {
+      const K = kit(b), WL = 0xf0e4c8, SA = 0xe0c898, GD = 0xd8a020, TQ = 0x2ab0b0;
+      b.tmap = { 0xc8b088: 'stone', 0x6a4a2a: 'wood', 0x7a5a3a: 'wood' }; const P = { tex: 'plaster', to: { s: .45, gain: 1.7, n: .6, e: 0x4a3a28, ei: 1 } };
+      const flat = (x, z, w2, d, h, col, dome) => { b.box(x, 0, z, w2, h, d, col, { solid: 1, ...P }); for (const s of [-1, 1]) { b.box(x, h, z + s * d / 2, w2, .45, .25, col); b.box(x + s * w2 / 2, h, z, .25, .45, d, col); }
+        b.box(x, 1, z + d / 2 + .03, 1.1, 2, .06, 0x5a3a22, { cast: false }); for (const sx of [-w2 * .3, w2 * .3]) b.box(x + sx, h * .6, z + d / 2 + .04, .7, .9, .05, 0xffd890, { mat: { e: 0xffb040, ei: 1.2 }, cast: false });
+        if (dome) { b.sph(x, h, z, dome, dome * .9, dome, dome > 2 ? GD : TQ, { mat: { m: .6, r: .35 } }); b.cone(x, h + dome * .85, z, .12, 1, GD, { lo: 1 }); } };
+      const minaret = (x, z, hh) => { b.cyl(x, 0, z, .9, hh, WL, { solid: 1, ...P }); b.cyl(x, hh * .7, z, 1.25, .35, SA); b.cyl(x, hh, z, .7, 1.6, WL); b.sph(x, hh + 1.6, z, .75, .8, .75, GD, { mat: { m: .7, r: .3 } }); b.cone(x, hh + 2.3, z, .08, 1, GD, { lo: 1 }); };
+      // Der große Basar: Stände mit Seide, Gewürzen und Lampen, Sonnensegel, Teppiche
+      const cl = [0xc83a3a, 0x2a8ac8, 0xd8a020, 0x8a3ab0, 0x3aa86a, 0xe86a2a];
+      for (let i = 0; i < 8; i++) { const a = i * .785 + .3, x = -6 + Math.cos(a) * 12, z = -26 + Math.sin(a) * 12; K.stall(x, z, cl[i % 6], -a + 1.5708, [0xd8a020, 0xc84a1a, 0x8a3a1a, 0xe8d8b0][i % 4]); }
+      for (let i = 0; i < 3; i++) { const c = b.box(-6 + (i - 1) * 5, 4.2, -26, 4.6, .06, 6, cl[(i + 2) % 6], { cast: false }); A.sway(c, i); } for (const x of [-16, 4]) for (const z of [-30, -22]) b.cyl(x, 0, z, .12, 4.4, 0x6a4a2a, { lo: 1 });
+      for (let i = 0; i < 3; i++) b.box(-10 + i * 4, .02, -19, 2.4, .04, 1.6, [0xb81a2a, 0x2a4a9a, 0xd8a020][i], { cast: false });
+      for (let i = 0; i < 6; i++) { const l = b.sph(-14 + i * 3.4, 3.6, -30, .2, .16, .14, GD, { mat: { m: .9, r: .3, e: 0xffa020, ei: .6 }, cast: false }); A.bob(l, .06, 1.4 + i * .2); }
+      // Aladdins Elternhaus: Flachdach mit Brüstung (erkletterbar), Spinnrad, Krüge
+      flat(-40, -18, 7, 6, 3.4, SA); b.cyl(-36, 0, -14, .5, .9, 0xb86a3a, {}); b.cyl(-35, 0, -14.6, .35, .7, 0xa05a2a, {}); b.tor(-43, .7, -14.4, .45, 0x6a4a2a, { d: .06, rx: 0 });
+      flat(-30, -10, 5, 5, 2.8, WL); flat(-48, -28, 6, 5, 3, WL, 1.4);
+      // Palast des Sultans: Hauptbau, goldene Hauptkuppel, Nebenkuppeln, vier Minarette, Juwelenfenster
+      b.box(6, 0, -101, 26, 8, 9, WL, { solid: 1, ...P }); b.box(6, 0, -96.2, 8, 6, .6, WL); b.box(6, 0, -95.8, 4, 4.4, .1, 0x3a2410, { cast: false });
+      b.sph(6, 8, -101, 5, 5.2, 5, GD, { mat: { m: .75, r: .25 } }); b.cone(6, 12.8, -101, .2, 2.4, GD, { lo: 1 }); b.sph(6, 15.4, -101, .4, .4, .4, GD, { mat: { m: .9, e: 0xffc040, ei: .8 } });
+      for (const sx of [-1, 1]) { b.sph(6 + sx * 9, 8, -101, 2.4, 2.4, 2.4, TQ, { mat: { m: .4, r: .3 } }); b.cone(6 + sx * 9, 10.3, -101, .1, 1, GD, { lo: 1 }); minaret(6 + sx * 14, -96.5, 13); minaret(6 + sx * 14, -105.5, 13); }
+      for (let i = 0; i < 12; i++) { const c = [0xd81a3a, 0x2ac86a, 0x3a6ad8, 0xf4f0f8][i % 4], x = -5 + i * 2 + (i > 5 ? 2 : 0); b.box(x, 7, -96.45, .9, 1.2, .08, c, { mat: { e: c, ei: i === 11 ? .1 : 1.4 }, cast: false }); }
+      for (let i = 0; i < 6; i++) b.cyl(-6 + i * 4.8, 0, -92, .28, 3.6, WL, { solid: 1 }); K.lamp(-8, -88, 0xffc060); K.lamp(20, -84, 0xffc060);
+      // Die Schatzhöhle: Felsen im Halbkreis, Treppe, Bäume mit Früchten aus Edelsteinen
+      for (let i = 0; i < 7; i++) { const a = 2.2 + i * .36, r = 20 + (i % 2) * 1.5; b.ico(-64 + Math.cos(a) * r, 2.2, -72 + Math.sin(a) * r, 3.4, 4.6, 3, 0xa07a50, { solid: 1 }); }
+      for (let i = 0; i < 4; i++) b.box(-50 + i * .9, i * .3, -80, 1, .3, 3, 0xc8b088, { tex: 'stone' });
+      for (const [x, z, f] of [[-68, -66, 0xd81a3a], [-60, -78, 0x2ac86a], [-72, -80, 0x3a6ad8], [-62, -64, 0xf4f0f8]]) K.tree(x, z, .8, 0x6a5a4a, 0x4a8a5a, { fruit: f, n: 3, glowF: 1.6 });
+      b.glow(0xffd860, 10, -64, 2, -72, .3);
+      // Die Oase: Palmen, Sitzkissen, Krüge am Wasser
+      for (let i = 0; i < 6; i++) { const a = i * 1.047 + .4, x = 46 + Math.cos(a) * 9, z = -24 + Math.sin(a) * 9; b.cyl(x, 0, z, .25, 5, 0x8a6a3a, { tex: 'bark' }); for (let k = 0; k < 5; k++) { const l = b.box(x + Math.cos(k * 1.26) * 1.2, 5, z + Math.sin(k * 1.26) * 1.2, 2.6, .08, .7, 0x3a8a3a, { ry: -k * 1.26 }); l.rotation.z = -.3; A.sway(l, k); } }
+      for (let i = 0; i < 3; i++) b.box(38 + i * 1.4, .1, -15, 1, .3, 1, cl[i], { cast: false });
+      // Lager des Zauberers: violettes Zelt, Sternenglobus, Fernrohr, Lampenkarren
+      K.tent(70, -76, 4, 4.6, 0x4a2a6a, { flag: 0xd8a020 }); b.glow(0x9a6aff, 6, 70, 2, -72, .5);
+      { const gl = b.sph(64, 1.6, -70, .7, .7, .7, 0x1a1a3a, { mat: { e: 0x4a3aa8, ei: 1.2, m: .3 } }); A.spin(gl, .4); b.cyl(64, 0, -70, .1, 1, GD, { lo: 1 }); }
+      { const t = b.cyl(75, 1.4, -70, .12, 1.8, GD, { lo: 1, mat: { m: .9 } }); t.rotation.z = .9; b.cyl(75, 0, -70, .05, 1.4, 0x3a2a1a, { lo: 1 }); }
+      b.box(60, 0, -84, 3, .9, 1.6, 0x6a4a2a, { solid: 1 }); for (let i = 0; i < 5; i++) b.sph(59 + i * .5, 1.1, -84, .2, .14, .14, 0xd8a040, { mat: { m: .9, r: .3 }, cast: false });
+      // Das Badehaus: Kuppel mit Lichtlöchern, Dampf
+      flat(-36, -50, 8, 7, 3.2, WL, 2.6); for (let i = 0; i < 5; i++) b.sph(-36 + Math.cos(i * 1.26) * 1.6, 5.4, -50 + Math.sin(i * 1.26) * 1.6, .16, .1, .16, 0xfff0c0, { mat: { e: 0xffe080, ei: 2 }, cast: false }); A.smoke(-36, 6.4, -50);
+      // Karawanserei: Hof mit Mauern und Tor, Säcke, Kisten
+      K.wall(26, -66, 42, -66, 3.4, 1, 0xc8b088); K.wall(26, -66, 26, -52, 3.4, 1, 0xc8b088); K.wall(42, -66, 42, -52, 3.4, 1, 0xc8b088); K.wall(26, -52, 31.5, -52, 3.4, 1, 0xc8b088); K.wall(36.5, -52, 42, -52, 3.4, 1, 0xc8b088); K.arch(34, -52, 4.4, 4, 0xc8b088, 0, .9);
+      for (let i = 0; i < 6; i++) b.sph(29 + (i % 3) * 1.1, .45, -63 + (i > 2 ? 1 : 0), .5, .45, .45, 0xc8a878, { mat: { r: 1 } }); b.box(37, 0, -57, 1.4, 1.2, 1.4, 0x7a5a3a, { solid: 1 }); b.box(38.4, 0, -55.6, 1, .9, 1, 0x7a5a3a);
+      // Stadthäuser mit Kuppeln rund um die Gassen
+      for (const [x, z, w2, d, hh, dm] of [[-22, -40, 6, 6, 3.6, 1.6], [10, -46, 6, 5, 3.2, 0], [18, -22, 7, 6, 4, 1.8], [-26, -66, 6, 6, 3.4, 0], [16, -70, 7, 5, 3.6, 1.6], [-14, -78, 6, 6, 3, 0]]) flat(x, z, w2, d, hh, [WL, SA][(x + z) & 1], dm);
+      minaret(-18, -10, 11);
+    },
     camelot(b, w, A) {
       const K = kit(b), S = 0xeae6de, B2 = 0x3a5aa8;
       b.tmap = { 0xeae6de: 'stone', 0xd8d0c0: 'plaster', 0x6a4a2a: 'wood', 0x5a3a22: 'wood', 0x8a8a8e: 'rock', 0x8a8a90: 'rock', 0x8a6a3a: 'wood' };
