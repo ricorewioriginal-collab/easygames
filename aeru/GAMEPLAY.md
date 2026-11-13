@@ -94,6 +94,10 @@ Jede der 7 Welten hat drei kleine **Himmelsinseln** (Ost-Nord, West-Nord, Süd).
 
 Lautstärke, Musik, Grafikqualität, Kamera- und Touchempfindlichkeit, Kamerahilfe, Flughilfe, Zielhilfe (Lichtstrahl/Kompass), reduzierte Bewegung, Textgeschwindigkeit, große Schrift, Leistungsanzeige, Vollbild. Gespeichert unter `aeru-settings`.
 
+## Modelle
+
+Bäume, Felsen und Gras (Wizp, CC0) werden je Welt als InstancedMesh gezeichnet (wenige Draw Calls); die Gegner (Quaternius, CC0) haben eigene Skelette mit Bewegungen für Schweben, Anlauf, Kopfstoß und Treffer. Die Modelle ändern nur das Aussehen – Kollision und Verhalten bleiben gleich. Auf „Sparsam“, ohne WebGL oder wenn die Dateien nicht laden, bleiben die eigenen Formen. Das Ladebild wartet höchstens 7 s auf die Modelle.
+
 ## Grafikstufen
 
 | Stufe | Auflösung | Schatten | Partikel | Wolken | Vögel |
