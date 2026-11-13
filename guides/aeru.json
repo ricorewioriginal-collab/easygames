@@ -28,7 +28,10 @@
         "Flügelkraft: Die Leiste FLÜGELKRAFT lädt am Boden, in türkisen Aufwinden (die dich zusätzlich anheben) und langsam im Flug ohne Steigen. Bei wenig Kraft warnt die Anzeige.",
         "Schwung-Ringe (hellblau): Durchfliegen gibt 2,4 Sekunden lang 50 % mehr Flugtempo und füllt die Flügelkraft.",
         "Windstoß (F bzw. WIND): trifft Gegner, Laternen, Kugeln und Bossschilde in Blickrichtung.",
-        "Rammstoß (Umschalt bzw. RAMM/ROLLE am Boden): kurzer Schub, in dem Aeru unverwundbar ist. Getroffene Gegner werden geschlagen, Dornenkugeln zerstreut."
+        "Rammstoß (Umschalt bzw. RAMM/ROLLE am Boden): kurzer Schub, in dem Aeru unverwundbar ist. Getroffene Gegner werden geschlagen, Dornenkugeln zerstreut. Hältst du die Taste nach dem Stoß gedrückt, folgt der Ansturm: bis zu 3 Sekunden lenkbares Weiterstürmen, das alles auf dem Weg rammt. Loslassen, Springen oder eine Kante beenden ihn.",
+        "Schatzkörbe (Holzkisten mit goldenen Bändern): stehen in jeder Welt, sind fest und zerbrechen durch Windstoß, Rammstoß oder Ansturm. Beim nächsten Besuch stehen sie wieder.",
+        "Lichtfalter: steigen aus zerbrochenen Körben und besiegten Gegnern auf. Fangen heilt ein Herz (bei vollen Herzen füllt er die Flügelkraft). Nach 12 Sekunden fliegen sie davon.",
+        "Funkel: das Glühwürmchen schwebt immer neben Aeru. Seine Farbe zeigt die Lebensenergie – Gold = gesund, Blau = angeschlagen, Rot und blinkend = nur noch ein Herz. Funkel holt Splitter und Lichtfalter aus bis zu 2,4 m heran. Schnell hintereinander gesammelte Splitter klingen immer höher."
       ]
     },
     {
@@ -108,7 +111,9 @@
         "Warte auf den roten Kristall: Er kündigt jeden Angriff an. Weiche aus und schlage in der Erholungsphase zu.",
         "Der Rammstoß macht kurz unverwundbar – ideal, um durch einen Angriff hindurch zu kommen.",
         "Stille-Schatten erst nach ihrem Angriff treffen, vorher weichen sie aus.",
-        "Wurzelwächter: Aus den drei Warnkreisen heraus gehen, sie schlagen nach 1 Sekunde ein."
+        "Wurzelwächter: Aus den drei Warnkreisen heraus gehen, sie schlagen nach 1 Sekunde ein.",
+        "Der Ansturm (Rammtaste halten) räumt Gegnergruppen und Schatzkörbe in einem Zug ab. Lenke nur sanft – er wendet langsamer als normales Laufen.",
+        "Wenig Herzen? Zerbrich die Schatzkörbe der Welt: Jeder gibt einen Lichtfalter, der ein Herz heilt. Achte auf Funkels Farbe."
       ]
     },
     {
