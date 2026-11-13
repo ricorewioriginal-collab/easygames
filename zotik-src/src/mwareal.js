@@ -4,6 +4,7 @@
 //   tiers: [[x, z, r, y, fx, fz]]  Plateau (Oberkante y absolut) mit Rampe hinunter zum Fußpunkt (fx, fz)
 //   cuts:  [[x0, z0, x1, z1, breite, tiefe]]  Schlucht (Absturz = zurück an den Rand)
 //   bridges: [[x0, z0, x1, z1, y]]  Brücke (begehbar über PLAT), y = Oberkante
+//   piers: [[x0, z0, x1, z1, y]]  Steg vom Ufer (x0, z0) übers Wasser, endet offen bei (x1, z1)
 //   wall: DECOR-Arten der Waldwand, wz: Wizp-Bäume der vordersten Reihe [[name, höhe]], rock: Wizp-Felsen an Klippen
 //   props: { zonenId: [[datei, name, größe (>0 Höhe, <0 Maßstab), anzahl]] }
 const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
@@ -101,6 +102,10 @@ export function arealDress({ C, w, b, g, h, M, R2, blk, busy, roadD, wallList, T
     for (let s = 0; s <= L; s += 1.1) { const x = ax + ux * s, z = az + uz * s; C.PLAT.push({ x, z, hx: 1.25, hz: 1.25, top: y, th: .5 }); const m = mk(G.box, plank, x, y - .1, z, 2.6, .2, 1); m.rotation.y = ry; g.add(m); }
     for (let s = 0; s <= L + .01; s += L / Math.max(2, Math.round(L / 2.2))) for (const sd of [-1, 1]) { const x = ax + ux * s - uz * sd * 1.35, z = az + uz * s + ux * sd * 1.35; g.add(mk(G.cyl0, MAT(0x5a4030), x, y + .5, z, .08, 1.2, .08)); }
     for (const sd of [-1, 1]) for (const yy of [.6, 1.05]) { const m = mk(G.box, rope, (ax + bx) / 2 - uz * sd * 1.35, y + yy, (az + bz) / 2 + ux * sd * 1.35, .05, .05, L, false); m.rotation.y = ry; g.add(m); } }
+  // Stege [x0, z0, x1, z1, y]: vom Ufer ins Wasser, breite Planken auf Pfählen, enden über dem Wasser
+  for (const [ax, az, bx, bz, y] of (A.piers || [])) { const L = Math.hypot(bx - ax, bz - az), ry = Math.atan2(bx - ax, bz - az), ux = (bx - ax) / L, uz = (bz - az) / L;
+    for (let s = 0; s <= L; s += 1.1) { const x = ax + ux * s, z = az + uz * s; C.PLAT.push({ x, z, hx: 1.4, hz: 1.4, top: y, th: .5 }); const m = mk(G.box, plank, x, y - .1, z, 3, .2, 1); m.rotation.y = ry; g.add(m); }
+    for (let s = 0; s <= L + .01; s += L / Math.max(2, Math.round(L / 2.6))) for (const sd of [-1, 1]) { const x = ax + ux * s - uz * sd * 1.5, z = az + uz * s + ux * sd * 1.5; g.add(mk(G.cyl0, MAT(0x4a3020), x, y - 1.2 + (s > L - .5 ? .25 : 0), z, .14, 2.6 + (s > L - .5 ? .5 : 0), .14)); } }
   // Requisiten je Ort (Instanzen, große Teile mit Kollision)
   const placed = [];
   for (const q of w.zones) { const L0 = (A.props || {})[q[0]]; if (!L0) continue; const [, , , zx, zz, zr] = q;
