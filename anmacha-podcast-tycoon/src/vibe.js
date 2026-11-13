@@ -83,7 +83,7 @@
     }
     // Chat: Sprechblasen über Fans und Stadt-Chat
     V.bubT -= dt;
-    if (V.bubT <= 0) { V.bubT = 2.5 + Math.random() * 3; const c = near(22); if (c.length) { const n = U.pick(c), l = V.dancing || V.party > 0 ? U.pick(['Mega Moves! 💃', 'Tanz weiter! 🔥', 'Straßenparty! 🎉', 'Ich film das! 📱']) : U.pick(SHORT); bubble(n, l); if (Math.random() < 0.6) feed(n.name, l); } }
+    if (V.bubT <= 0) { V.bubT = 2.5 + Math.random() * 3; const c = near(22); if (c.length) { const n = U.pick(c), g = AMC.Social && Math.random() < 0.6 && AMC.Social.greet(n.name, p.id), l = g ? g : V.dancing || V.party > 0 ? U.pick(['Mega Moves! 💃', 'Tanz weiter! 🔥', 'Straßenparty! 🎉', 'Ich film das! 📱']) : U.pick(SHORT); bubble(n, l); if (Math.random() < 0.6) feed(n.name, l); } }
     V.feedT -= dt; if (V.feedT <= 0) { V.feedT = 9 + Math.random() * 8; const st = U.pick(D.STATIONS); feed(U.pick(D.FAN_NAMES), U.pick(['Hört gerade ' + st.name + ' ' + st.icon, 'Ist auf dem Weg zum Senderhaus von ' + st.name, 'Hat ein Autogramm von ' + U.pick(['Andrew', 'Marco']) + ' bekommen ✍️'])); }
     const cam = W.camera, wv = new root.THREE.Vector3(), cw = W.renderer.domElement.clientWidth, ch = W.renderer.domElement.clientHeight;
     V.bubs.forEach(b => {
