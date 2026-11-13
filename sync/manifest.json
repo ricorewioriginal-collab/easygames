@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1d432e1e9353",
- "generated": "2026-11-13T01:02:01+00:00",
- "commit": "39b1489ecf05635318097ca7bb5fc09436e7cd4f",
+ "version": "7679de32381f",
+ "generated": "2026-11-13T02:26:04+01:00",
+ "commit": "f92cb16abac96951468ba192b181163896992ec7",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -348,18 +348,48 @@
   },
   {
    "p": "aeru/game.js",
-   "s": 134102,
-   "h": "f802170f2a0e7cf394cbaa6d300ed14a145e02800b52a2e58841577f3cef21c4"
+   "s": 143066,
+   "h": "23a9851026206f6a267fd3f948cd05b2835eb37de4a2730e0c4b6cf4dd05a098"
   },
   {
    "p": "aeru/index.html",
-   "s": 14982,
-   "h": "6e0f40000d6e4f9c2e502c72e52cf1a3465b1eae7882456f5ef361b196e37c74"
+   "s": 15217,
+   "h": "8f970150aa7573041611a5ee1b335747ac092b3cdb51c1b287a3aef874bacb93"
   },
   {
    "p": "aeru/manifest.webmanifest",
    "s": 746,
    "h": "53725bff31c3ab36690d8e2dad525f66859fc08b2bd8e197f53306d9a9b89dd5"
+  },
+  {
+   "p": "aeru/models/armabee.glb",
+   "s": 122244,
+   "h": "38834853d05abb96819c18dfac36f4c139e0f136437e7941c9a119a0ff2c2f8b"
+  },
+  {
+   "p": "aeru/models/ghost.glb",
+   "s": 175968,
+   "h": "ba309c94ddb67f6e3d3521ca2cfaf40945baae32b51360aa3c97fd48c3f8a335"
+  },
+  {
+   "p": "aeru/models/glub.glb",
+   "s": 127496,
+   "h": "1747141e0c352607c3394e727c5a406d4328730d7a66c0a8bf4c0ed3546e7548"
+  },
+  {
+   "p": "aeru/models/goleling.glb",
+   "s": 177724,
+   "h": "d4fddb7b2ccd2cd33f26d88cc228b048f4382ab45b938e55bac57ef143791780"
+  },
+  {
+   "p": "aeru/models/hywirl.glb",
+   "s": 173492,
+   "h": "bd94ef17ad1856d77aefb47161bfe9b915f39d2fd4642c524c51b475d5efb505"
+  },
+  {
+   "p": "aeru/models/scenery.glb",
+   "s": 292172,
+   "h": "7d30b5d145b3cf89b2ce68bf78f2a5277f825b1b8d1cdfff97f28167f19dcf06"
   },
   {
    "p": "aeru/quests.js",
@@ -9679,7 +9709,7 @@
   {
    "p": "sync/catalog.json",
    "s": 258359,
-   "h": "0e31c46bcaac062c307847b6acfb96fda3a93f715c2e7cc14ac53f19ccebdeb2"
+   "h": "b2bf533729b7a7c0db280fbf74a9db2a23ef642d4ca5c8f9bc1291779ec9ce0f"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

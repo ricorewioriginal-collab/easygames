@@ -200,6 +200,103 @@ const sfx = {
   story: () => chord([392, 494, 587, 784], .9, .035), checkpoint: () => note(880, .35, .025), boss: () => note(85, .6, .07, 'triangle'), warn: () => note(220, .35, .03, 'sawtooth')
 };
 
+// ───────── Freie 3D-Modelle (GLB) ─────────
+// CC0-Modelle aus models/ (Herkunft: models/LIZENZ.md). Sie ersetzen nur das Aussehen: Kollision, Gegnerverhalten und Erreichbarkeit
+// bleiben exakt wie bei den eigenen Formen. Fehlt der Loader, das Netz oder WebGL, oder steht die Grafik auf „Sparsam“, bleiben die eigenen Formen.
+const MODEL_FILES = {scenery: 'models/scenery.glb', kaefer: 'models/armabee.glb', funke: 'models/hywirl.glb', schatten: 'models/ghost.glb', motte: 'models/glub.glb', wurzel: 'models/goleling.glb'};
+const ENEMY_MODEL = {kaefer: {h: 1.5, y: .15}, funke: {h: 1.7, y: .2}, schatten: {h: 1.9, y: 0}, motte: {h: 1.5, y: .3}, wurzel: {h: 2.1, y: 0}};
+// Bäume, Felsen und Gras je Welt (Teilnamen aus scenery.glb)
+const LEVEL_TREES = [['garden_tree_green', 'garden_tree_yellow'], ['garden_tree_yellow', 'ancient_tree_yellow_1'], ['garden_tree_green', 'garden_tree_green'], ['garden_tree_green', 'garden_tree_yellow'], ['garden_tree_pink', 'ancient_tree_pink_1'], ['garden_tree_yellow', 'garden_tree_pink'], ['garden_tree_pink', 'ancient_tree_pink_1']];
+const LEVEL_GRASS = ['grass_green_group', 'grass_green_group', 'grass_purple_group', 'grass_green_group', 'grass_purple_group', 'grass_green_group', 'grass_purple_group'];
+const models = {}, sceneryParts = new Map();
+let modelsReady = false, sceneryPlan = [];
+const useSceneryModels = () => modelsReady && !!models.scenery && !canvasMode && preset !== QUALITY.sparsam;
+function loadModels() {
+  if (canvasMode || !T.GLTFLoader || typeof fetch !== 'function') return Promise.resolve(false);
+  const loader = new T.GLTFLoader();
+  const one = (key, url) => new Promise(done => { try { loader.load(url + '?v=1', g => { models[key] = g; done(); }, undefined, () => done()); } catch { done(); } });
+  return Promise.all(Object.entries(MODEL_FILES).map(([k, u]) => one(k, u))).then(() => {
+    for (const g of Object.values(models)) g.scene.traverse(o => { if (o.isMesh) shared.add(o.geometry); });   // Modelle überleben den Weltwechsel
+    // Teile heißen in der Datei „p:<name>“; der Loader entfernt den Doppelpunkt aus Knotennamen.
+    if (models.scenery) for (const o of models.scenery.scene.children) if (/^p:?/.test(o.name)) sceneryParts.set(o.name.replace(/^p:?/, ''), o);
+    modelsReady = Object.keys(models).length > 0; return modelsReady;
+  });
+}
+// Begrenzungsbox, die quantisierte (normalisierte) Positionen richtig umrechnet – r128 rechnet dort sonst mit Rohwerten.
+const NORM_DIV = [[Int8Array, 127], [Uint8Array, 255], [Int16Array, 32767], [Uint16Array, 65535]];
+function geometryBox(geo) {
+  const a = geo.attributes.position, box = new T.Box3(), v = new T.Vector3(), div = a.normalized ? (NORM_DIV.find(([C]) => a.array instanceof C)?.[1] || 1) : 1;
+  for (let i = 0; i < a.count; i++) box.expandByPoint(v.set(a.getX(i) / div, a.getY(i) / div, a.getZ(i) / div));
+  return box;
+}
+function objectBox(root) {
+  root.updateMatrixWorld(true); const box = new T.Box3();
+  root.traverse(o => { if (o.isMesh) box.union(geometryBox(o.geometry).applyMatrix4(o.matrixWorld)); });
+  return box;
+}
+// Einheitsgröße je Teil: Fuß auf y=0, Mitte im Ursprung, Höhe 1 (für Bäume zusätzlich die Kronenbreite begrenzen, damit sie zur Kollision passt).
+const partCache = new Map();
+function sceneryPart(name) {
+  if (partCache.has(name)) return partCache.get(name);
+  const root = sceneryParts.get(name); if (!root) { partCache.set(name, null); return null; }
+  root.updateMatrixWorld(true);
+  const inv = new T.Matrix4().copy(root.matrixWorld).invert(), box = new T.Box3(), pieces = [];
+  root.traverse(o => { if (!o.isMesh) return; const m = new T.Matrix4().multiplyMatrices(inv, o.matrixWorld); pieces.push({geometry: o.geometry, material: o.material, m}); box.union(geometryBox(o.geometry).applyMatrix4(m)); });
+  const size = box.getSize(new T.Vector3()), h = Math.max(size.y, .01), norm = new T.Matrix4().makeScale(1 / h, 1 / h, 1 / h).multiply(new T.Matrix4().makeTranslation(-(box.min.x + box.max.x) / 2, -box.min.y, -(box.min.z + box.max.z) / 2));
+  const part = {pieces, width: Math.max(size.x, size.z) / h, norm}; partCache.set(name, part);
+  for (const pc of pieces) { shared.add(pc.geometry); }
+  return part;
+}
+const tmpM = new T.Matrix4(), tmpQ = new T.Quaternion(), tmpS = new T.Vector3(), tmpP = new T.Vector3(), upY = new T.Vector3(0, 1, 0);
+function placeSceneryModels(index) {
+  if (!sceneryPlan.length) return;
+  const trees = LEVEL_TREES[index] || LEVEL_TREES[0], groups = new Map(), add = (name, matrix) => { if (!groups.has(name)) groups.set(name, []); groups.get(name).push(matrix); };
+  sceneryPlan.forEach((p, i) => {
+    let name, height, sx = 1;
+    if (p.kind === 'tree') { name = trees[i % 2]; height = 6.4 * p.s; const part = sceneryPart(name); if (part) sx = Math.min(1, 4.6 * p.s / (part.width * height)); }
+    else if (p.kind === 'rock') { name = i % 2 ? 'rock_big_1' : 'rock_big_2'; height = 3 * p.s; sx = 1.5 / height; }
+    else { name = LEVEL_GRASS[index] || LEVEL_GRASS[0]; height = .55 * p.s; }
+    const part = sceneryPart(name); if (!part) return;
+    tmpQ.setFromAxisAngle(upY, p.yaw ?? (p.x * 7.3 + p.z * 3.1)); tmpS.set(height * sx, height, height * sx); tmpP.set(p.x, p.kind === 'grass' ? Math.max(0, floorAt(p.x, p.z, 1)) : 0, p.z);   // Bäume und Felsen stehen wie ihre Kollision auf Höhe 0
+    add(name, new T.Matrix4().compose(tmpP, tmpQ, tmpS).multiply(part.norm));
+  });
+  for (const [name, list] of groups) for (const pc of sceneryPart(name).pieces) {
+    const inst = new T.InstancedMesh(pc.geometry, pc.material, list.length); inst.castShadow = !name.startsWith('grass'); inst.receiveShadow = true;
+    list.forEach((m, i) => inst.setMatrixAt(i, tmpM.multiplyMatrices(m, pc.m))); inst.instanceMatrix.needsUpdate = true; inst.frustumCulled = false; world.add(inst);
+  }
+}
+// Skelett-Kopie (wie SkeletonUtils.clone): jede Figur bekommt eigene Knochen, damit Bewegungen unabhängig laufen.
+function cloneSkinned(src) {
+  const copy = src.clone(true), bones = new Map();
+  copy.traverse(o => { if (o.isBone) bones.set(o.name, o); });
+  const orig = new Map(); src.traverse(o => { if (o.isSkinnedMesh) orig.set(o.name, o); });
+  copy.traverse(o => { if (!o.isSkinnedMesh) return; const s = orig.get(o.name); if (!s) return; o.skeleton = new T.Skeleton(s.skeleton.bones.map(b => bones.get(b.name)), s.skeleton.boneInverses); o.bind(o.skeleton, s.bindMatrix); o.frustumCulled = false; });
+  return copy;
+}
+function enemyModel(kind, body) {
+  const g = models[kind], spec = ENEMY_MODEL[kind]; if (!g || !spec || canvasMode) return null;
+  const m = cloneSkinned(g.scene); m.traverse(o => { if (o.isMesh) { o.castShadow = true; } });
+  const box = objectBox(m), size = box.getSize(new T.Vector3()), k = spec.h / Math.max(size.y, .01);
+  m.scale.setScalar(k); m.position.set(-(box.min.x + box.max.x) / 2 * k, spec.y - box.min.y * k, -(box.min.z + box.max.z) / 2 * k); m.rotation.y = Math.PI;
+  const wrap = new T.Group(); wrap.add(m); body.clear(); body.add(wrap);
+  const mixer = new T.AnimationMixer(m), clips = {}; for (const c of g.animations) clips[c.name.split('|').pop()] = c;
+  const anim = {mixer, clips, cur: null, name: ''}; playClip(anim, 'Flying_Idle'); return anim;
+}
+function playClip(anim, name, once = false) {
+  if (!anim || anim.name === name || !anim.clips[name]) return;
+  const next = anim.mixer.clipAction(anim.clips[name]); next.reset(); next.setLoop(once ? T.LoopOnce : T.LoopRepeat, Infinity); next.clampWhenFinished = once;
+  if (anim.cur) next.crossFadeFrom(anim.cur, .18, false); next.play(); anim.cur = next; anim.name = name;
+}
+function animateEnemies(dt) {
+  for (const e of enemies) {
+    const a = e.anim; if (!a || !e.g.visible) continue;
+    const want = e.pulse > 0 ? 'HitReact' : e.state === 'dash' ? 'Headbutt' : e.state === 'windup' ? 'Fast_Flying' : 'Flying_Idle';
+    playClip(a, want, want === 'HitReact' || want === 'Headbutt');
+    if (a.name === 'HitReact' && e.pulse <= 0 && !a.cur.isRunning()) playClip(a, 'Flying_Idle');
+    a.mixer.update(dt);
+  }
+}
+
 // ───────── Weltzustand ─────────
 let chests = [], boostRings = [];
 let state, treeColliders = [], solids = [], gems = [], torches = [], enemies = [], npcs = new Map(), items = [], fallbackTrees = [], particles = [], clouds = [], checkpoints = [], updrafts = [], flightRings = [], gusts = [], waves = [], markers = [], anchors = [];
@@ -290,7 +387,7 @@ function chestPickup() {
 function island(x, z, r, y = 0) { const cfg = levels[save.level]; mesh('cylinder', cfg.grass, x, y - .6, z, r, 1.2, r); const base = mesh('cone', cfg.rock, x, y - 5.2, z, r * .99, 9, r * .99); base.rotation.z = Math.PI; solids.push({x, z, r, y, thick: 9.7}); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; mesh('rock', cfg.rock, x + Math.cos(a) * r * .7, y - 2.1, z + Math.sin(a) * r * .7, 3, 4, 3); } }
 function platform(x, z, w, d, y) { mesh('box', levels[save.level].rock, x, y - .5, z, w, 1, d); mesh('box', levels[save.level].grass, x, y + .015, z, w + .1, .08, d + .1); solids.push({x, z, w, d, y, thick: 1}); }
 function floorAt(x, z, limit = Infinity) { let y = -100; for (const s of solids) { if (s.y > limit) continue; if (s.r ? Math.hypot(x - s.x, z - s.z) < s.r - .1 : Math.abs(x - s.x) < s.w / 2 + .2 && Math.abs(z - s.z) < s.d / 2 + .2) y = Math.max(y, s.y); } return y; }
-function tree(x, z, s = 1) { const cfg = levels[save.level]; fallbackTrees.push({x, z, s}); treeColliders.push({x, z, trunk: .45 * s, trunkTop: 2.6 * s, crown: 2.4 * s, cy: 4.45 * s, ch: 1.7 * s}); mesh('cone', '#7f7b68', x, 2 * s, z, .4 * s, 4 * s, .4 * s); for (let i = 0; i < 3; i++) mesh('ball', cfg.leaf, x + (i - 1) * .75 * s, (4 + i * .45) * s, z + (i % 2) * .4, 2.5 * s, 1.8 * s, 2 * s); }
+function tree(x, z, s = 1) { const cfg = levels[save.level]; fallbackTrees.push({x, z, s}); treeColliders.push({x, z, trunk: .45 * s, trunkTop: 2.6 * s, crown: 2.4 * s, cy: 4.45 * s, ch: 1.7 * s}); if (useSceneryModels()) { sceneryPlan.push({kind: 'tree', x, z, s}); return; } mesh('cone', '#7f7b68', x, 2 * s, z, .4 * s, 4 * s, .4 * s); for (let i = 0; i < 3; i++) mesh('ball', cfg.leaf, x + (i - 1) * .75 * s, (4 + i * .45) * s, z + (i % 2) * .4, 2.5 * s, 1.8 * s, 2 * s); }
 function arch(x, z) { const c = levels[save.level].accent; for (const s of [-1, 1]) { mesh('box', c, x + s * 2.5, 2.5, z, .8, 5, .9); mesh('box', c, x + s * 2.5, .3, z, 1.3, .6, 1.4); mesh('box', c, x + s * 2.5, 5, z, 1.25, .4, 1.3); } const r = ring(x, 4.8, z, 2.5, c); r.scale.y = .6; mesh('box', c, x, 6.2, z, 5.5, .4, 1); }
 const SLOTS = {keeper: {x: -4, z: 13, y: 0}, side: {x: 12, z: 9, y: 0}, helper: {x: -10, z: -12, y: 0}};
 function npcModel(kind, c) {
@@ -335,7 +432,7 @@ function buildLevel(index, titleOnly = false) {
   for (const d of disposables) d.dispose(); disposables = [];
   world.traverse(o => { if (o.isMesh && !shared.has(o.geometry)) o.geometry.dispose(); if (o.isInstancedMesh) o.dispose?.(); });
   world = new T.Group(); scene.add(world);
-  chests = []; boostRings = []; gusts = []; updrafts = []; flightRings = []; solids = []; treeColliders = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
+  sceneryPlan = []; chests = []; boostRings = []; gusts = []; updrafts = []; flightRings = []; solids = []; treeColliders = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
   clearEffects(); particlePool.forEach(p => { p.life = 0; p.m.visible = false; });
   clearInput(); accumulator = 0; save.level = index;
   const cfg = levels[index];
@@ -353,8 +450,8 @@ function buildLevel(index, titleOnly = false) {
   for (let i = 0; i < 15; i++) { const z = 19 - i * 2.5; mesh('cylinder', '#d4c9a2', Math.sin(i * .6) * 1.4, .04, z, 1.6, .06, 1.2).rotation.y = i; }
   let seed = 5432 + index * 34; const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
   for (let i = 0; i < 38; i++) { const a = rand() * TAU, r = 17 + rand() * 8, x = Math.cos(a) * r, z = Math.sin(a) * r; if (floorAt(x, z) < -.1 || Math.abs(x) < 6 || dist({x, z}, {x: -14, z: -6}) < 4 || dist({x, z}, {x: 14, z: -7}) < 4 || dist({x, z}, {x: 20, z: 12}) < 3.5 || GAME_PORTALS.some(p => dist({x, z}, p) < 5.5)) continue; tree(x, z, .65 + rand() * .6); }
-  for (let i = 0; i < 65; i++) { const a = rand() * TAU, r = rand() * 25, x = Math.cos(a) * r, z = Math.sin(a) * r; mesh('cone', i % 3 ? '#b4ca9d' : cfg.accent, x, .18, z, .08, .36, .08); }
-  for (const s of [-1, 1]) for (let i = 0; i < 4; i++) { const x = s * (18 + i % 2 * 3), z = -15 + i * 7; mesh('box', cfg.rock, x, 1, z, 1.2, 2 + rand() * 2, 1.3).rotation.z = s * .12; }
+  for (let i = 0; i < 65; i++) { const a = rand() * TAU, r = rand() * 25, x = Math.cos(a) * r, z = Math.sin(a) * r; if (useSceneryModels()) { if (i % 3 === 0 && floorAt(x, z) > -.1) sceneryPlan.push({kind: 'grass', x, z, s: .8 + (i % 5) * .1, yaw: i}); } else mesh('cone', i % 3 ? '#b4ca9d' : cfg.accent, x, .18, z, .08, .36, .08); }
+  for (const s of [-1, 1]) for (let i = 0; i < 4; i++) { const x = s * (18 + i % 2 * 3), z = -15 + i * 7, h = 2 + rand() * 2; treeColliders.push({x, z, trunk: .8, trunkTop: h, crown: 1.45, cy: -100, ch: 0, rock: true}); if (useSceneryModels()) sceneryPlan.push({kind: 'rock', x, z, s: h / 3, yaw: i * 1.3 + s}); else mesh('box', cfg.rock, x, 1, z, 1.2, h, 1.3).rotation.z = s * .12; }
   if (cfg.pond) { pond = new T.Mesh(geos.disc, own(new T.MeshStandardMaterial({color: linearColor('#7fd6e6'), emissive: linearColor('#3a9fb5'), emissiveIntensity: .35, roughness: .2}))); pond.rotation.x = -Math.PI / 2; pond.scale.setScalar(2.6); pond.position.set(cfg.pond[0], .06, cfg.pond[1]); world.add(pond); for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; mesh('rock', cfg.rock, cfg.pond[0] + Math.cos(a) * 2.9, .15, cfg.pond[1] + Math.sin(a) * 2.9, .5, .35, .5); } }
   arch(0, -21); portal = ring(0, 5.5, -21, 1.9, '#ffe3a4'); portal.material = own(new T.MeshStandardMaterial({color: linearColor('#ffe3a4'), emissive: linearColor('#f9c76f'), emissiveIntensity: .5}));
   buildGamePortals();
@@ -375,6 +472,7 @@ function buildLevel(index, titleOnly = false) {
   birds = new T.InstancedMesh(geos.cone, mat('#f6f0de'), 8); birds.castShadow = false; birds.frustumCulled = false; world.add(birds);
   const bossId = Object.keys(BOSSES).find(id => BOSSES[id].level === index);
   if (bossId) boss = makeBoss(bossId);
+  placeSceneryModels(index);
   batchScenery();
   const cp = save.checkpoint && save.checkpoint.level === index ? save.checkpoint : null;
   const sx = cp ? cp.x : 0, sy = cp ? cp.y : 0, sz = cp ? cp.z : 19;
@@ -620,7 +718,8 @@ function makeEnemy(kind, x, z) {
   else { mesh('rock', def.color, 0, .65, 0, .75, .7, .65, body); for (const s of [-1, 1]) { mesh('gem', def.eye, s * .24, .8, -.55, .12, .1, .08, body, true); mesh('cone', kind === 'schatten' ? '#4a3f6e' : '#70738d', s * .5, 1.3, .05, .18, .8, .18, body); } }
   const warn = mesh('gem', '#ff6a4d', 0, 2.4, 0, .16, .3, .16, g, true); warn.visible = false;
   g.position.set(x, 0, z); world.add(g);
-  return {kind, def, g, body, warn, x, z, homeX: x, homeZ: z, hp: def.hp, state: 'patrol', t: 0, cool: 1 + Math.random(), dirX: 0, dirZ: 0, pulse: 0, respawn: 0};
+  const anim = enemyModel(kind, body);
+  return {kind, def, g, body, warn, anim, x, z, homeX: x, homeZ: z, hp: def.hp, state: 'patrol', t: 0, cool: 1 + Math.random(), dirX: 0, dirZ: 0, pulse: 0, respawn: 0};
 }
 function hitEnemy(e, fx, fz) {
   if (e.kind === 'schatten' && e.state !== 'recover' && e.state !== 'dash') {
@@ -1281,6 +1380,7 @@ function animate(now) {
   readPad(dt);
   if (mode === 'play') { accumulator += dt; while (accumulator >= TICK && mode === 'play') { update(TICK); accumulator -= TICK; } } else accumulator = 0;
   for (const d of updrafts) { const ch = d.g.children; for (let i = 1; i < ch.length; i++) ch[i].position.y = (time * 3 + (i - 1) * d.height / 4) % d.height; }
+  if (mode !== 'pause') animateEnemies(dt);
   for (const r of flightRings) r.m.rotation.z = time * .3;
   for (const c of chests) if (!c.opened) { c.gem.rotation.y = time * 1.4; c.gem.position.y = 2.1 + Math.sin(time * 2 + c.x) * .15; c.halo.rotation.z = time * .5; }
   for (const r of boostRings) if (r.m.visible) r.m.rotation.z = time * .8;
@@ -1391,7 +1491,7 @@ if (TEST) window.aeruTest = {
     quests: Object.fromEntries(story.quests.map(q => [q.id, quests.status(q.id)])), dialog: dialogCurrent ? {id: dialogCurrent.id, line: dialogIndex, queued: dialogQueue.map(d => d.id)} : null,
     boss: boss ? {id: boss.id, hp: boss.hp, active: boss.active, state: boss.state, phase: boss.phase, visible: boss.g.visible} : null, anchors: anchors.map(a => ({x: a.x, y: a.y, z: a.z, broken: a.broken})),
     near: near === 'portal' ? 'portal' : near?.id, target: currentTarget, npcs: [...npcs.values()].filter(n => n.present).map(n => ({id: n.id, x: n.x, y: n.y, z: n.z, marker: npcMarker(n.id)})),
-    items: items.map(i => ({id: i.id, x: i.x, y: i.y, z: i.z, visible: i.m.visible})), enemies: enemies.map(e => ({kind: e.kind, x: e.x, z: e.z, state: e.state, hp: e.hp})),
+    items: items.map(i => ({id: i.id, x: i.x, y: i.y, z: i.z, visible: i.m.visible})), enemies: enemies.map(e => ({kind: e.kind, x: e.x, z: e.z, state: e.state, hp: e.hp, model: !!e.anim})),
     waves: waves.map(w => w.r), markers: markers.length, orbs: orbPool.filter(o => o.life > 0).length, gusts: gusts.map(e => ({age: e.age, meshes: e.g.children.length})),
     layout: {trees: treeColliders.map(t => ({...t})), gems: gems.map(g => ({x: g.x, y: g.y, z: g.z, id: g.id})), torches: torches.map(t => ({x: t.x, y: t.y, z: t.z, id: t.id, lit: t.lit})), rings: flightRings.map(r => ({x: r.x, y: r.y, z: r.z})), updrafts: updrafts.map(u => ({x: u.x, y: u.y, z: u.z, height: u.height})), solids: solids.map(s => ({...s})), checkpoints}, settings: {...settings}, quality: {auto: autoLevel, scale: renderScale}}),
   teleport: (x, y, z, yaw = 0) => { Object.assign(state, {x, y, z, yaw, vy: 0, vx: 0, vz: 0, flight: false, dodge: 0}); },
@@ -1407,6 +1507,9 @@ if (TEST) window.aeruTest = {
 save = readSave(); $('continue').hidden = !save; menuStats();
 if (loadProblem && !save) { $('saveNote').hidden = false; $('saveNote').textContent = 'Ein vorhandener Spielstand konnte nicht gelesen werden. Er wird vor einem neuen Abenteuer gesichert und nicht gelöscht.'; }
 if (canvasMode) { $('graphicsNotice').textContent = 'Schräge 2D-Ansicht (kein WebGL in dieser App) · Spiel und Spielstand sind identisch'; }
-const titleSave = save; save = save ? JSON.parse(JSON.stringify(save)) : Q.freshSave(); newEngine(); buildLevel(save.level, true); save = titleSave || save;
+function titleScene() { const titleSave = save; save = save ? JSON.parse(JSON.stringify(save)) : Q.freshSave(); newEngine(); buildLevel(save.level, true); save = titleSave || save; }
+titleScene();
+// Modelle laden; das Ladebild wartet darauf (höchstens einige Sekunden, siehe index.html). Danach das Titelbild mit Modellen neu aufbauen.
+loadModels().then(ok => { if (ok && mode === 'title') titleScene(); window.__aeruReady = true; }, () => { window.__aeruReady = true; });
 applySettings(); requestAnimationFrame(animate); if (!TEST) focusFirst('continue', 'start');
 })();

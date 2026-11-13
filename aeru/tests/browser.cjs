@@ -3,10 +3,13 @@
 // WICHTIG: Chromium läuft hier headless mit SwiftShader (Software-Rendering). Die Messwerte sind KEINE
 // Messungen auf echten Smartphone-GPUs, sondern nur Vergleichswerte zwischen Qualitätsstufen auf dieser Maschine.
 // Start: node aeru/tests/browser.cjs   (Playwright muss installiert sein; CHROMIUM_PATH optional)
-const path = require('node:path'), fs = require('node:fs'), url = require('node:url');
+const path = require('node:path'), fs = require('node:fs');
 let chromium; try { ({chromium} = require('playwright')); } catch { console.log('SKIP: Playwright ist nicht installiert.'); process.exit(0); }
 const out = path.join(__dirname, 'screenshots'); fs.mkdirSync(out, {recursive: true});
-const page_url = url.pathToFileURL(path.resolve(__dirname, '../index.html')).href + '?test';
+// Über einen kleinen HTTP-Server (wie im Netz): nur so lädt der Browser die GLB-Modelle (file:// sperrt fetch).
+const http = require('node:http'), ROOT = path.resolve(__dirname, '../..'), MIME = {html: 'text/html', js: 'text/javascript', css: 'text/css', json: 'application/json', svg: 'image/svg+xml', png: 'image/png', glb: 'model/gltf-binary', webmanifest: 'application/json'};
+const server = http.createServer((q, r) => { let f = path.join(ROOT, decodeURIComponent(new URL(q.url, 'http://x').pathname)); if (!f.startsWith(ROOT) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); return r.end(); } r.writeHead(200, {'content-type': MIME[f.split('.').pop()] || 'application/octet-stream'}); r.end(fs.readFileSync(f)); });
+let page_url = '';
 const VIEWPORTS = (process.env.ONLY ? v => v.filter(x => x.name.includes(process.env.ONLY)) : v => v)([
   {name: 'desktop-1920x1080', width: 1920, height: 1080},
   {name: 'desktop-1366x768', width: 1366, height: 768},
@@ -30,19 +33,22 @@ async function layoutProblems(page, selectors) {
   }, selectors);
 }
 (async () => {
+  await new Promise(r => server.listen(0, '127.0.0.1', r)); page_url = `http://127.0.0.1:${server.address().port}/aeru/index.html?test`;
   const browser = await chromium.launch({executablePath: process.env.CHROMIUM_PATH || undefined, headless: true, args: ['--no-sandbox', '--enable-unsafe-swiftshader', '--use-gl=angle', '--use-angle=swiftshader', '--ignore-gpu-blocklist']});
   const results = [], failures = [];
   for (const vp of VIEWPORTS) {
     const context = await browser.newContext({viewport: {width: vp.width, height: vp.height}, deviceScaleFactor: vp.dpr || (vp.mobile ? 2 : 1), isMobile: !!vp.mobile, hasTouch: !!vp.mobile});
     const page = await context.newPage(), errors = [];
     page.on('pageerror', e => errors.push(e.message)); page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
-    await page.goto(page_url); await page.waitForTimeout(800);
+    await context.route(/googleapis|gstatic|firebase/, r => r.abort());
+    await page.goto(page_url); await page.waitForFunction(() => window.__aeruReady, null, {timeout: 30000}); await page.waitForTimeout(500);
     const webgl = await page.evaluate(() => !document.querySelector('#graphicsNotice') || document.querySelector('#graphicsNotice').hidden);
     await page.screenshot({path: path.join(out, vp.name + '-title.png')});
     await page.click('#start'); await page.waitForTimeout(300); await page.evaluate(() => Promise.all(document.querySelector('#dialog').getAnimations().map(a => a.finished)));
     const dialogOk = await page.evaluate(() => { const r = document.querySelector('#dialog').getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight + 1 && r.left >= 0 && r.right <= innerWidth + 1; });
     await page.screenshot({path: path.join(out, vp.name + '-dialog.png')});
     await page.evaluate(() => { for (let i = 0; i < 20 && aeruTest.snapshot().mode === 'dialog'; i++) aeruTest.finishDialog(); }); await page.waitForTimeout(200);
+    const modelsOk = await page.evaluate(() => aeruTest.snapshot().enemies.every(e => e.model)); if (!modelsOk) errors.push('Gegnermodelle nicht geladen');
     // Kurz laufen: echte Tasteneingabe bzw. Touch-Stick.
     const z0 = await page.evaluate(() => aeruTest.snapshot().state.z);
     if (vp.mobile) { const b = await page.locator('#stick').boundingBox(); await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2); await page.dispatchEvent('#stick', 'pointerdown', {pointerId: 3, clientX: b.x + b.width / 2, clientY: b.y + 5, isPrimary: true}); await page.waitForTimeout(2500); await page.dispatchEvent('#stick', 'pointerup', {pointerId: 3}); }
@@ -68,7 +74,7 @@ async function layoutProblems(page, selectors) {
     if (errors.length || res.problems.length || !dialogOk || moved < 1) failures.push(res);
     await context.close();
   }
-  await browser.close();
+  await browser.close(); server.close();
   fs.writeFileSync(path.join(out, 'results.json'), JSON.stringify(results, null, 1));
   for (const r of results) console.log(`${r.viewport}: WebGL=${r.webgl} Bewegung=${r.moved} m Dialog=${r.dialogOk ? 'ok' : 'FEHLT'} | auto ${fmt(r.perf.auto)} | sparsam ${fmt(r.perf.sparsam)} | hoch ${fmt(r.perf.hoch)}${r.problems.length ? '\n   ' + r.problems.join('\n   ') : ''}${r.errors.length ? '\n   FEHLER ' + r.errors.join(' | ') : ''}`);
   if (failures.length) { console.log('FAIL: ' + failures.map(f => f.viewport).join(', ')); process.exit(1); }

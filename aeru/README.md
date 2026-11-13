@@ -32,6 +32,8 @@ Aeru, ein junger Drache, folgt einer durchgehenden Geschichte über sechs Inseln
 | `story.js` | Figuren, Kapitel, Quests, Dialoge, Reaktionen, Belohnungen (reine Daten) |
 | `quests.js` | Quest-Engine (Zustände, Bedingungen, Fortschritt) und Spielstand-Migration, ohne DOM |
 | `game.js` | Darstellung (Three.js r128), Physik, Kampf, Bosse, Oberfläche, Audio, Speichern |
+| `models/` | freie CC0-Modelle (Bäume, Felsen, Gras, Gegner), erzeugt mit `tools/make-aeru-models.mjs` |
+| `rueckweg.js` | Rückweg-Knopf in Bunte Insel und Zotik bei `?from=aeru` |
 | `tests/` | automatische Tests, siehe TESTING.md |
 
 Spielstand: `aeru-save-v1` (Format Version 3, sieben Welten inkl. Himmelstruhen; ältere Stände ohne Nachtgarten laden unverändert). Alte Stände (Version 1/2) werden beim Laden übernommen; das Original bleibt unter `aeru-save-backup`. Vor einem neuen Abenteuer wird der alte Stand unter `aeru-save-previous` gesichert. Einstellungen liegen unter `aeru-settings`.
@@ -40,6 +42,6 @@ Spielstand: `aeru-save-v1` (Format Version 3, sieben Welten inkl. Himmelstruhen;
 
 ## Urheber und Lizenzen
 
-Figuren, Namen, Dialoge, Levelgestaltung, Polygonmodelle, SVG und Musik wurden für dieses Spiel erstellt. Keine übernommenen Assets, Namen, Geschichten oder Audiodateien anderer Spiele. Eine rechtliche Markenprüfung der Namen ist nicht erfolgt.
+Figuren, Namen, Dialoge, Levelgestaltung, Aerus Modell, SVG und Musik wurden für dieses Spiel erstellt. Bäume, Felsen, Gras und die Gegner sind freie CC0-Modelle von Wizp und Quaternius (Herkunft: [models/LIZENZ.md](models/LIZENZ.md)). Keine Assets, Namen, Geschichten oder Audiodateien anderer Spiele. Eine rechtliche Markenprüfung der Namen ist nicht erfolgt.
 
 Three.js: Copyright 2010–2026 three.js authors, MIT-Lizenz, siehe `vendor/LICENSE.three.txt`. Übriger Code unter der Lizenz des übergeordneten Repositories.
