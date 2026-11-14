@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "244d12c22acc",
- "generated": "2026-11-14T15:27:49+01:00",
- "commit": "0d29554544ebfea5c0312926a7ffc602de4ece3d",
+ "version": "d98a3128b6c9",
+ "generated": "2026-11-14T14:44:59Z",
+ "commit": "46808ac4704f5bd75735aaf108a858adeafcdcf3",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7523,8 +7523,8 @@
   },
   {
    "p": "guides/show-me-your-voice.json",
-   "s": 20472,
-   "h": "720a8fe286b47bc1b1c78ca803a51273e1c6115618ad9139c52e363a37c78fa6"
+   "s": 21089,
+   "h": "44614cd97fc1ea87d032e8196f825da6e3da315eb88993a7b62bbda59d1ea77b"
   },
   {
    "p": "guides/sonnenhof.json",
@@ -9913,8 +9913,8 @@
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 176388,
-   "h": "98f103f83df71f0eba0c8ee6e97f7f88f1010a4146351e38a1005286990aebe0"
+   "s": 176788,
+   "h": "f1e4ceae918da8edcf0480a805da9cb484744c406ca74929cecdc0a8de69eb3f"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
@@ -9928,13 +9928,13 @@
   },
   {
    "p": "show-me-your-voice/js/core.js",
-   "s": 32262,
-   "h": "47a6dd8196f8e4dac0ddd6563e0da4358558b6356d0357f1035de1c9d153e662"
+   "s": 32805,
+   "h": "0d340da8938791ad0c4c304ed0d3356f1ab0b2679db48403110826dabff15589"
   },
   {
    "p": "show-me-your-voice/js/data.js",
-   "s": 64448,
-   "h": "f8dc39f27c266bb87e5225e1801abe7380891d64a314115979f80129da5a901d"
+   "s": 69472,
+   "h": "0928ec3da2f9d3a8e8d80f5118bb7987e37c0d994016d96caae28ad1bb01bac2"
   },
   {
    "p": "show-me-your-voice/js/media.js",
@@ -9943,8 +9943,8 @@
   },
   {
    "p": "show-me-your-voice/js/stage.js",
-   "s": 32319,
-   "h": "f8d5680a103fe68ff9081e5dfdb59731691ccb131acc571c82dba00441ec5759"
+   "s": 32457,
+   "h": "9b2eb7528b2fb6ff498dda6cf30c418ee295f18075387d686ea963297e37284e"
   },
   {
    "p": "show-me-your-voice/manifest.webmanifest",
@@ -9953,8 +9953,8 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 35606,
-   "h": "00c8d1b47d133b765e67e0a2de38a9096bfaa70b230e1c71ff1702711aa41902"
+   "s": 35854,
+   "h": "005cf91c1605ff7bccb9791ac1274f3004f4da5fd539b367c2434d74d6d951a4"
   },
   {
    "p": "show-me-your-voice/sw.js",
@@ -10359,7 +10359,7 @@
   {
    "p": "sync/catalog.json",
    "s": 261733,
-   "h": "7d77d1274590f37c8c57f5067c9056d2bca9a0a2e4122b6bdbe1d3e28490688c"
+   "h": "35d5950add383f79e106804d4b33a57cd3c25048bf7978119655bfa2abf5d20e"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
