@@ -297,7 +297,40 @@
   // ---------- Freies Vorsingen ----------
   // frames: [{ m: MIDI-Tonhöhe | null, l: Pegel (RMS) }] im Abstand dt Sekunden. Kein Song als Vorgabe:
   // Intonation zählt relativ zur eigenen Tonart (gemeinsame Verschiebung wird herausgerechnet).
-  function singScore(frames, attrs, dt) {
+  // Tonart des Songs (aus der Hörprobe): Dur-/Moll-Tonleiter, t = Grundton 0..11 (C = 0)
+  const SCALE = { maj: [0, 2, 4, 5, 7, 9, 11], min: [0, 2, 3, 5, 7, 8, 10] };
+  const KEYN = ['C', 'Cis', 'D', 'Es', 'E', 'F', 'Fis', 'G', 'As', 'A', 'B', 'H'];
+  function inKey(m, key) { const pc = ((Math.round(m) - key.t) % 12 + 12) % 12; return (key.minor ? SCALE.min : SCALE.maj).includes(pc); }
+  function keyName(key) { return key ? KEYN[key.t] + (key.minor ? '-Moll' : '-Dur') : ''; }
+  // Krumhansl-Profile: Chroma (12 Werte) → wahrscheinlichste Tonart
+  const KP = { maj: [6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88], min: [6.33, 2.68, 3.52, 5.38, 2.6, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17] };
+  function keyFromChroma(ch) {
+    if (!Array.isArray(ch) || ch.length !== 12 || !ch.some(v => v > 0)) return null;
+    const corr = (a, b) => { const ma = a.reduce((x, y) => x + y) / 12, mb = b.reduce((x, y) => x + y) / 12; let n = 0, da = 0, db = 0; for (let i = 0; i < 12; i++) { n += (a[i] - ma) * (b[i] - mb); da += (a[i] - ma) ** 2; db += (b[i] - mb) ** 2; } return n / Math.sqrt(da * db || 1); };
+    let best = null;
+    for (let t = 0; t < 12; t++) for (const mo of ['maj', 'min']) { const prof = KP[mo].map((_, i) => KP[mo][(i - t + 12) % 12]); const r = corr(ch, prof); if (!best || r > best.r) best = { t, minor: mo === 'min', r }; }
+    return best && best.r > 0.3 ? { t: best.t, minor: best.minor, conf: Math.round(best.r * 100) / 100 } : null;
+  }
+  // UltraStar-Notendatei (#BPM, #GAP, Zeilen ": Start Länge Tonhöhe Silbe") → Noten in Sekunden, Tonhöhe als MIDI (0 = C4 = 60)
+  function ultraParse(txt) {
+    const L = String(txt || '').split(/\r?\n/), h = {}, notes = [];
+    L.forEach(l => { const m = l.match(/^#([A-Z]+):(.*)$/i); if (m) h[m[1].toUpperCase()] = m[2].trim(); });
+    const bpm = parseFloat(String(h.BPM || '').replace(',', '.')), gap = parseFloat(String(h.GAP || '0').replace(',', '.')) || 0;
+    if (!(bpm > 0)) return null;
+    const beat = 60 / (bpm * 4);
+    L.forEach(l => { const m = l.match(/^([:*FRG])\s+(-?\d+)\s+(\d+)\s+(-?\d+)\s?(.*)$/); if (!m || m[1] === 'F' || m[1] === 'R') return;
+      notes.push({ t: gap / 1000 + +m[2] * beat, d: Math.max(beat, +m[3] * beat), p: 60 + +m[4], gold: m[1] === '*' || m[1] === 'G', txt: m[5] || '' }); });
+    return notes.length ? { title: h.TITLE || '', artist: h.ARTIST || '', bpm, gap, notes } : null;
+  }
+  // Wertung Note für Note: Anteil der Zielzeit, in der du den Ton (Oktave egal, ±1 Halbton) triffst. Frames brauchen die Videozeit vt.
+  function ultraScore(frames, notes, dt) {
+    dt = dt > 0 ? dt : 0.05; let tot = 0, hit = 0, gold = 0, n = 0, nHit = 0;
+    const fr = (frames || []).filter(f => f && Number.isFinite(f.vt));
+    (notes || []).forEach(nt => { let a = 0, b = 0; fr.forEach(f => { if (f.vt < nt.t || f.vt >= nt.t + nt.d) return; b++; if (Number.isFinite(f.m)) { const d = (((f.m - nt.p) % 12) + 18) % 12 - 6; if (Math.abs(d) <= 1) a++; } });
+      if (!b) return; n++; tot += b * (nt.gold ? 2 : 1); hit += a * (nt.gold ? 2 : 1); if (a / b >= 0.5) { nHit++; if (nt.gold) gold++; } });
+    return { treff: tot ? r1(clamp(hit / tot * 100)) : 0, notes: n, hit: nHit, gold };
+  }
+  function singScore(frames, attrs, dt, ref) {
     dt = dt > 0 ? dt : 0.05;
     const fr = Array.isArray(frames) ? frames.filter(f => f && typeof f === 'object') : [];
     const okM = m => Number.isFinite(m) && m > 24 && m < 108;
@@ -322,7 +355,10 @@
     const db = v.map(f => 20 * Math.log10(Math.max(1e-4, +f.l || 0)));
     const dbAvg = db.length ? db.reduce((a, b) => a + b, 0) / db.length : 0;
     const dbSd = db.length ? Math.sqrt(db.reduce((a, b) => a + (b - dbAvg) * (b - dbAvg), 0) / db.length) : 0;
+    const key = ref && ref.key, us = ref && ref.ultra ? ultraScore(fr, ref.ultra.notes, dt) : null;
+    const inkey = key && centers.length ? r1(clamp(centers.filter(c => inKey(c, key)).length / centers.length * 100)) : null;
     const st = {
+      inkey, key: key ? keyName(key) : null, treff: us ? us.treff : null, uNotes: us ? us.notes : 0, uHit: us ? us.hit : 0,
       inton: r1(clamp(110 - dev * 3)), stab: dn ? r1(clamp(100 * (1 - ds / dn / 0.8 - dd / dn / 0.5))) : 0,
       range: r1(clamp((high - low) / 14 * 100)), dyn: r1(clamp(dbSd / 6 * 100)), presence: total ? r1(clamp(voiced / total * 130)) : 0,
       cents: Math.round(dev), semis: r1(high - low), low: Math.round(low), high: Math.round(high), voiced: r1(voiced), total: r1(total), notes: notes.length };
@@ -332,6 +368,8 @@
     TRAINABLE.forEach(k => { c[k] = 0.85 * c[k] + 0.15 * (attrs && attrs[k] != null ? attrs[k] : 40); });
     CK.forEach(k => { c[k] = r1(clamp(c[k])); });
     let perf = 0.35 * st.inton + 0.2 * st.stab + 0.15 * st.range + 0.15 * st.dyn + 0.15 * st.presence;
+    if (us && us.notes >= 3) { perf = 0.5 * us.treff + 0.15 * st.inton + 0.1 * st.stab + 0.1 * st.dyn + 0.15 * st.presence; c.stimme = r1(clamp(0.85 * (0.6 * us.treff + 0.25 * st.inton + 0.15 * st.stab) + 0.15 * (attrs && attrs.stimme != null ? attrs.stimme : 40))); }   // echte Melodie: Treffer zählen am meisten
+    else if (inkey != null) { perf = 0.25 * st.inton + 0.2 * inkey + 0.15 * st.stab + 0.15 * st.range + 0.1 * st.dyn + 0.15 * st.presence; c.stimme = r1(clamp(0.85 * (0.4 * st.inton + 0.35 * inkey + 0.25 * st.stab) + 0.15 * (attrs && attrs.stimme != null ? attrs.stimme : 40))); }   // Töne passen zur Tonart des Songs
     if (voiced < 5) perf *= voiced / 5;      // kaum gesungen: kaum Punkte
     return { perf: r1(clamp(perf)), crit: c, mult: 1, sing: st };
   }
@@ -502,7 +540,7 @@
   }
 
   const API = { D, CK, TRAINABLE, DIFF, rng, hash, clamp, cleanName, newProfile, level, newSeason, startRound, cancelRound,
-    analyze, panelOf, judge, ONLINE, onlineDef, onlineResolve, encoreFlip, comment, rollEvent, applyEvent, mergeSymp, aiPerf, rank, resolveRound, freeCasting, singScore, singCareer, liveScorer, singTitle, dailyDay, dailyCode, dailySong, starSum, unlocked, singStars, trainGain, applyTraining, applyCommunity, bonusScore,
+    analyze, panelOf, judge, ONLINE, onlineDef, onlineResolve, encoreFlip, comment, rollEvent, applyEvent, mergeSymp, aiPerf, rank, resolveRound, freeCasting, singScore, singCareer, liveScorer, keyFromChroma, keyName, inKey, ultraParse, ultraScore, singTitle, dailyDay, dailyCode, dailySong, starSum, unlocked, singStars, trainGain, applyTraining, applyCommunity, bonusScore,
     DEF_SETTINGS, freshSave, repair };
   if (typeof module !== 'undefined' && module.exports) module.exports = API; else root.SMYV = API;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -118,27 +118,57 @@ function boom(n, x, y, z, spread, cols) {
     cc[i * 3] = c.r; cc[i * 3 + 1] = c.g; cc[i * 3 + 2] = c.b; }
 }
 
-// ---------- Figuren ----------
-let singer = null, mix = null, judges = [];
+// ---------- Figuren: KayKit-Charaktere (CC0, Kay Lousberg), aus Kopf/Körper/Armen/Beinen der vier Klassen gemischt ----------
+const KK = {}, KCLS = ['knight', 'mage', 'rogue', 'barbarian', 'rogue_hooded'];
+let kmoves = {}, singer = null, mix = null, sAct = {}, judges = [], kkReady = false;
 const loader = new GLTFLoader();
-loader.load('assets3d/singer.glb', g => {
-  singer = g.scene; singer.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false; } });
-  singer.position.set(0, FLOOR, 0); s.add(singer);
-  mix = new THREE.AnimationMixer(singer); const a = mix.clipAction(g.animations[0]); a.play();
+const PART = { head: /_(Head|Head_Hooded)$/, body: /_Body$/, arms: /_Arm(Left|Right)$/, legs: /_Leg(Left|Right)$/, hat: /_(Hat|Helmet)$/, cape: /_Cape$/ };
+const SKIN = [0xffe0c8, 0xf1c27d, 0xc68642, 0x8d5524, 0xffd5b8];
+const OUTFIT = [0xff2aa0, 0x3a86ff, 0xffc93c, 0x22c55e, 0x8a5cf6, 0xffffff, 0x222233, 0xff6b3d, 0x2ad4ff, 0xe11d48];
+function rngOf(seed) { let x = (seed >>> 0) || 1; return () => ((x = (x * 1664525 + 1013904223) >>> 0) / 4294967296); }
+// Figur aus einer Beschreibung bauen: { head, body, arms, legs, hat, cape, c1, c2 } (Klassen-Namen, Farben)
+function makeChar(sp) {
+  const base = SU.clone(KK[sp.body].scene), bones = {}; base.traverse(o => { if (o.isBone) bones[o.name] = o; });
+  const drop = [];
+  base.traverse(o => { if (!o.isSkinnedMesh && !o.isMesh) return;
+    const n = o.name; if (PART.head.test(n) || PART.arms.test(n) || PART.legs.test(n) || PART.hat.test(n) || PART.cape.test(n)) drop.push(o); });
+  drop.forEach(o => o.parent.remove(o));
+  const take = (cls, re) => { const src = KK[cls].scene; src.traverse(o => { if (!o.isSkinnedMesh || !re.test(o.name)) return;
+    const m = o.clone(); m.bind(new THREE.Skeleton(o.skeleton.bones.map(b => bones[b.name] || b), o.skeleton.boneInverses), o.bindMatrix);
+    const host = bones.root ? bones.root.parent : base; host.add(m); }); };
+  take(sp.head, PART.head); take(sp.arms, PART.arms); take(sp.legs, PART.legs);
+  if (sp.hat) take(sp.hat, PART.hat); if (sp.cape) take(sp.cape, PART.cape);
+  base.traverse(o => { if (!o.isMesh) return; o.castShadow = true; o.frustumCulled = false; o.material = o.material.clone();
+    const n = o.name; if (PART.body.test(n) || PART.cape.test(n)) o.material.color.set(sp.c1).lerp(new THREE.Color(0xffffff), 0.35);
+    else if (PART.legs.test(n)) o.material.color.set(sp.c2).lerp(new THREE.Color(0xffffff), 0.4);
+    else if (PART.arms.test(n)) o.material.color.set(sp.c1).lerp(new THREE.Color(0xffffff), 0.55); });
+  const g = new THREE.Group(); g.add(base); const bb = new THREE.Box3().setFromObject(base); base.scale.setScalar(1.75 / Math.max(0.5, bb.max.y - bb.min.y));
+  const m = new THREE.AnimationMixer(base);
+  return { f: g, m, base, play(name, fade) { const c = kmoves[name]; if (!c) return; const a = m.clipAction(c); if (this.cur === a) return; a.reset().play(); if (this.cur && fade !== 0) a.crossFadeFrom(this.cur, fade || 0.3, false); this.cur = a; } };
+}
+function specOf(seed) { const R = rngOf(seed), pick = a => a[Math.floor(R() * a.length)], cls = KCLS.slice(0, 4);
+  return { head: pick(KCLS), body: pick(cls), arms: pick(cls), legs: pick(cls), hat: R() < 0.35 ? pick(['knight', 'mage', 'barbarian']) : null, cape: R() < 0.25 ? pick(cls) : null, c1: pick(OUTFIT), c2: pick(OUTFIT) }; }
+const look = { tint: null, seed: 7 };
+function addMic() {
   const mic = new THREE.Group(); const mm = new THREE.MeshStandardMaterial({ color: 0x222228, metalness: 1, roughness: 0.25 });
   const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 1.45, 12), mm); pole.position.y = 0.72; mic.add(pole);
   const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 0.03, 28), mm); mic.add(foot);
   const capM = new THREE.Mesh(new THREE.SphereGeometry(0.05, 16, 12), new THREE.MeshStandardMaterial({ color: 0x999999, metalness: 1, roughness: 0.5 })); capM.position.y = 1.47; mic.add(capM);
   mic.position.set(0.55, FLOOR, 0.6); s.add(mic);
-  // Jury: drei Sitzplätze am Pult (Rückenansicht, gedämpfte Farben)
-  const tints = [0x8a6aff, 0xff7aa8, 0x6ad0ff];
-  judges = [-2.3, 0, 2.3].map((x, i) => { const j = SU.clone(singer); j.scale.setScalar(0.92); j.position.set(x, -0.3, 7.9); j.rotation.y = Math.PI;
-    j.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); o.material.color.multiply(new THREE.Color(tints[i]).offsetHSL(0, 0, 0.55)); o.castShadow = false; } });
-    s.add(j); const jm = new THREE.AnimationMixer(j); jm.clipAction(g.animations[0]).play(); jm.setTime(i * 0.7); jm.timeScale = 0; return { j, jm }; });
-  setTint(look.tint); buildFigures();
-}, undefined, () => {});
-const look = { tint: null };
-function setTint(hex) { look.tint = hex; if (!singer || !hex) return; singer.traverse(o => { if (o.isMesh && /pant|top|cloth|body/i.test(o.name + (o.material && o.material.name))) { o.material = o.material.clone(); o.material.color = new THREE.Color(hex); } }); }
+}
+function buildStageFigures() {
+  if (singer) { s.remove(singer.f); }
+  singer = makeChar(Object.assign(specOf(look.seed), look.tint ? { c1: look.tint } : {})); singer.f.position.set(0, FLOOR, 0); s.add(singer.f); singer.play('Idle', 0); mix = singer.m;
+  if (!judges.length) {   // Jury sitzt am Pult und schaut zur Bühne
+    const chairM = new THREE.MeshPhysicalMaterial({ color: 0x1a1a24, roughness: 0.3, clearcoat: 1 });
+    judges = [-2.3, 0, 2.3].map((x, i) => { const j = makeChar(specOf(900 + i * 37)); j.f.position.set(x, 0, 7.75); j.f.rotation.y = Math.PI; s.add(j.f); j.play('Sit_Chair_Idle', 0); j.m.setTime(i * 0.6);
+      const ch = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.12, 0.7), chairM); ch.position.set(x, 0.45, 7.8); s.add(ch); const bk = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.9, 0.1), chairM); bk.position.set(x, 0.95, 8.15); s.add(bk);
+      return { j: j.f, jm: j.m, c: j }; });
+  }
+}
+Promise.all(KCLS.map(c => loader.loadAsync('assets3d/kk-' + c + '.glb').then(g => { KK[c] = g; })).concat(fetch('assets3d/kk-moves.json').then(r2 => r2.json()).then(list => { list.forEach(j => { kmoves[j.name] = THREE.AnimationClip.parse(j); }); })))
+  .then(() => { kkReady = true; addMic(); buildStageFigures(); buildFigures(); }).catch(e => console.warn('3D-Figuren', e));
+function setTint(hex) { look.tint = hex; if (kkReady) buildStageFigures(); }
 
 // ---------- Notenbahn (3D-Highway) ----------
 const HW = new THREE.Group(); s.add(HW); HW.visible = false;
@@ -160,9 +190,9 @@ function screenToFloor(px, py, W, H) { ray.setFromCamera(new THREE.Vector2(px / 
 const VX = 80, ZX = -80;   // Villa und Zitterraum liegen neben dem Studio
 // ---------- Kamera-Einstellungen je Bildschirm ----------
 const SHOTS = {
-  stage: { p: [0, 3.2, 13.5], t: [0, 2, 0], fov: 30, hue: 320, orbit: 0.35 },
-  title: { p: [0, 2.2, 11.5], t: [0, 2.6, -1], fov: 34, hue: 300, orbit: 0.6 },
-  menu: { p: [-4.5, 2.4, 11], t: [0.5, 2.2, 0], fov: 32, hue: 280, orbit: 0.4 },
+  stage: { p: [0, 3.9, 14.5], t: [0, 1.5, 0], fov: 30, hue: 320, orbit: 0.35 },
+  title: { p: [0, 3.4, 13.5], t: [0, 2.1, -1], fov: 34, hue: 300, orbit: 0.6 },
+  menu: { p: [-4.5, 3.8, 13], t: [0.5, 1.5, 0], fov: 32, hue: 280, orbit: 0.4 },
   backstage: { p: [VX + 7, 6.5, 10], t: [VX, 0.8, 0], fov: 46, hue: 30, orbit: 0.2, dim: 0.75 },
   zitter: { p: [ZX, 1.9, 7.5], t: [ZX, 1.35, 0], fov: 34, hue: 230, orbit: 0.25, dim: 1 },
   chairs: { p: [0.4, 2.1, 3.2], t: [0, 1.25, 7.8], fov: 40, hue: 200, orbit: 0.2 },
@@ -193,7 +223,7 @@ const API = window.SMYV3D = {
   jury(i, on) { if (buzz[i]) buzz[i].material.color.set(on ? 0xff1a30 : 0x551018); },
   cheer(n) { boom(n || 160, 0, 8.5, 0, 5, [0xffd23f, 0xff4d8d, 0x3a86ff, 0x22c55e, 0xffffff]); },
   ready: true,
-  dbg() { return { cam: cam.position.toArray().map(v => +v.toFixed(2)), walk: walkSt.on, x: walkSt.x, z: walkSt.z, player: !!player, moves: Object.keys(moves) }; }
+  dbg() { return { cam: cam.position.toArray().map(v => +v.toFixed(2)), walk: walkSt.on, x: walkSt.x, z: walkSt.z, player: !!player, moves: Object.keys(kmoves).length }; }
 };
 window.dispatchEvent(new Event('smyv3d'));
 
@@ -277,25 +307,22 @@ const zSpots = [-1.8, 0, 1.8].map(x => { const L = new THREE.SpotLight(0xffffff,
 Z.add(new THREE.HemisphereLight(0x4040a0, 0x050510, 0.25));
 
 // Figuren in Villa und Zitterraum (aus dem Sänger-Modell, mit echten Bewegungen)
-let moves = {}, player = null, pMix = null, pAct = {}, npcs = [], zitFig = [];
+let player = null, pMix = null, pAct = {}, npcs = [], zitFig = [];
+const moves = kmoves;
 const walkSt = { on: false, spots: [], onUse: null, x: 0, z: 2.5, rot: Math.PI, target: null, keys: {}, near: null, labels: null };
 const SPOTS = { stage: [0, -5.2, '🎤 Zur Bühne'], train: [-5.4, -3, '🏋️ Proberaum'], comm: [4.5, -0.6, '📱 Community-Ecke'], cands: [-2.6, 1.6, '👥 Kandidaten'], prof: [6.6, 4.1, '👤 Schminktisch'],
   coach: [-7.2, -0.8, '🎓 Vocal-Coach'], host: [2.4, -3.6, '🎙️ Rico'], menu: [-8.1, 2, '🏠 Menü'] };
-function figure(tint, anim, x, z, ry, par) {
-  const f = SU.clone(singer); f.traverse(o => { if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; if (tint) { o.material = o.material.clone(); o.material.color.multiply(new THREE.Color(tint)); } } });
-  f.position.set(x, 0, z); f.rotation.y = ry || 0; (par || V).add(f);
-  const m = new THREE.AnimationMixer(f); const clip = moves[anim]; if (clip) { const a = m.clipAction(clip); a.play(); a.time = Math.random() * clip.duration; }
-  return { f, m };
-}
+function figure(seed, anim, x, z, ry, par) { const c = makeChar(specOf(seed)); c.f.position.set(x, 0, z); c.f.rotation.y = ry || 0; (par || V).add(c.f); c.play(anim, 0); c.m.setTime(Math.random() * 2); return c; }
 function buildFigures() {
-  if (!singer || player || !moves.idle) return;
-  const p = figure(null, null, 0, 2.5, Math.PI); player = p.f; pMix = p.m; ['idle', 'walk'].forEach(k => { pAct[k] = pMix.clipAction(moves[k]); }); pAct.idle.play();
-  npcs.push(figure(0x6aa8ff, 'idle', -2.9, 1.1, 0.6), figure(0xff8a6a, 'agree', -2.0, 1.9, -0.9), figure(0x7aff9a, 'headShake', -3.4, 2.2, 1.2));
-  npcs.push(figure(0xff7ad8, 'agree', -7.2, -0.3, 1.4));   // Coach
-  npcs.push(figure(0x9a7aff, 'idle', 2.4, -4.2, 0));       // Rico
-  zitFig = [-1.8, 0, 1.8].map((x, i) => figure([0xb0d0ff, null, 0xffc0a0][i], i === 1 ? 'sad_pose' : 'idle', x, -0.2, 0, Z));
+  if (!kkReady || player) return;
+  const p = makeChar(Object.assign(specOf(look.seed), look.tint ? { c1: look.tint } : {})); p.f.position.set(0, 0, 2.5); V.add(p.f); player = p.f; pMix = p.m; p.play('Idle', 0); pAct = p;
+  npcs.push(figure(101, 'Idle', -2.9, 1.1, 0.6), figure(202, 'Cheer', -2.0, 1.9, -0.9), figure(303, 'Interact', -3.4, 2.2, 1.2));
+  npcs.push(figure(404, 'Sit_Chair_Idle', 4.0, -1.85, 0), figure(505, 'Sit_Chair_Idle', 5.2, -1.85, 0));   // auf dem Sofa
+  npcs.push(figure(606, 'Spellcast_Raise', -5.4, -3.6, 0.2));   // Proberaum
+  npcs.push(figure(707, 'Interact', -7.2, -0.3, 1.4));   // Coach
+  npcs.push(figure(808, 'Idle', 2.4, -4.2, 0));          // Rico
+  zitFig = [-1.8, 0, 1.8].map((x, i) => figure(1001 + i * 11, i === 1 ? 'Sit_Chair_Idle' : 'Sit_Chair_Idle', x, -0.45, 0, Z));
 }
-fetch('assets3d/moves.json').then(r2 => r2.json()).then(list => { list.forEach(j => { moves[j.name] = THREE.AnimationClip.parse(j); }); buildFigures(); }).catch(() => {});
 function walkLabels() {
   const box = document.getElementById('walkSpots'); if (!box) return null;
   box.innerHTML = walkSt.spots.map(k => `<button type="button" class="wSpot" data-w="${k}">${SPOTS[k][2]}</button>`).join('');
@@ -318,9 +345,7 @@ function stepWalk(dt) {
   if (mag > 0.05) { walkSt.x = Math.max(-VW / 2 + 0.6, Math.min(VW / 2 - 0.6, walkSt.x + ix / Math.hypot(ix, iz) * spd * dt)); walkSt.z = Math.max(-VD / 2 + 0.7, Math.min(VD / 2 - 0.5, walkSt.z + iz / Math.hypot(ix, iz) * spd * dt));
     const want = Math.atan2(ix, iz); let d = want - walkSt.rot; d = Math.atan2(Math.sin(d), Math.cos(d)); walkSt.rot += d * Math.min(1, dt * 10); }
   player.position.set(walkSt.x, 0, walkSt.z); player.rotation.y = walkSt.rot;
-  const moving = mag > 0.05, A2 = moving ? pAct.walk : pAct.idle, B2 = moving ? pAct.idle : pAct.walk;
-  if (!A2.isRunning()) { A2.reset().play(); A2.crossFadeFrom(B2, 0.25, false); }
-  pAct.walk.timeScale = 0.6 + mag * 0.7;
+  const moving = mag > 0.05; pAct.play(moving ? (mag > 0.8 ? 'Running_A' : 'Walking_A') : 'Idle', 0.2);
   // nächster Punkt
   let near = null, nd = 1.6; for (const k of walkSt.spots) { const sp = SPOTS[k], d = Math.hypot(sp[0] - walkSt.x, sp[1] - walkSt.z); if (d < nd) { nd = d; near = k; } }
   walkSt.near = near;
@@ -362,7 +387,8 @@ function frame() {
   });
   ring.material.color.setHSL(((ledHue % 360) + 360) % 360 / 360, 0.9, 0.45 + 0.2 * beat * lastE);
   if (Math.floor(t * 20) !== Math.floor((t - dt) * 20)) drawLed(t, lastE);
-  if (mix) { mix.timeScale = st ? 0.6 + lastE * 0.7 : 0.45; mix.update(reduced ? 0 : dt); }
+  if (singer) { singer.play(st && lastE > 0.62 && beat > 0.5 ? 'Cheer' : 'Idle', 0.4); singer.m.update(reduced ? 0 : dt); }
+  judges.forEach(j => j.jm.update(dt));
   placeAud(t, st ? lastE : 0.25);
   if (pMix) pMix.update(dt); npcs.concat(zitFig).forEach(n => n.m.update(dt)); stepWalk(dt);
   if (shotName === 'zitter') zitFig.forEach((n, i) => { zSpots[i].L.intensity = 40 + 30 * Math.max(0, Math.sin(t * 3 + i * 2.1)); });

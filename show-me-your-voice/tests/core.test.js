@@ -346,3 +346,23 @@ test('Release-Inhalte: Mottos mit Song je Stil, gültige Ereignis-Effekte, Inter
   ['einstimmig', 'perfekt', 'fanliebling'].forEach(id => assert.ok(prof.ach.includes(id), 'Erfolg ' + id));
   if (prof.stats.wins >= 3) assert.ok(prof.ach.includes('legende'));
 });
+
+test('Echte Töne: Tonart und UltraStar-Noten', () => {
+  const S = require('../js/core.js');
+  // C-Dur-Chroma → C-Dur
+  const ch = [6, 0.5, 3, 0.5, 4.5, 4, 0.5, 5, 0.5, 3.5, 0.5, 3];
+  const k = S.keyFromChroma(ch); assert.ok(k && k.t === 0 && !k.minor, JSON.stringify(k));
+  assert.equal(S.keyName({ t: 9, minor: true }), 'A-Moll');
+  // Töne in der Tonart → hohe Wertung, schräge Töne → niedrige
+  const mk = ms => { const f = []; ms.forEach(m => { for (let i = 0; i < 10; i++) f.push({ m, l: 0.1 }); for (let i = 0; i < 2; i++) f.push({ m: null, l: 0 }); }); return f; };
+  const good = S.singScore(mk([60, 62, 64, 65, 67, 69, 71, 72, 67, 64]), null, 0.05, { key: { t: 0, minor: false } });
+  const bad = S.singScore(mk([61, 63, 66, 68, 70, 61, 63, 66, 68, 70]), null, 0.05, { key: { t: 0, minor: false } });
+  assert.equal(good.sing.inkey, 100); assert.equal(bad.sing.inkey, 0); assert.ok(good.perf > bad.perf);
+  // UltraStar: drei Noten, richtig gesungen vs. falsch
+  const u = S.ultraParse('#TITLE:Test\n#ARTIST:Rico\n#BPM:150\n#GAP:1000\n: 0 4 0 Show\n: 8 4 2 me\n* 16 8 4 Voice\nE');
+  assert.ok(u && u.notes.length === 3 && u.notes[0].p === 60 && Math.abs(u.notes[0].t - 1) < 1e-9 && u.notes[2].gold);
+  const sing = off => { const f = []; for (let vt = 0.9; vt < 3.2; vt += 0.05) { const n = u.notes.find(x => vt >= x.t && vt < x.t + x.d); f.push({ vt, m: n ? n.p + 12 + off : null, l: 0.1 }); } return f; };
+  const hit = S.ultraScore(sing(0), u.notes, 0.05), miss = S.ultraScore(sing(4), u.notes, 0.05);
+  assert.ok(hit.treff > 90 && hit.hit === 3, JSON.stringify(hit)); assert.ok(miss.treff < 10, JSON.stringify(miss));
+  const r = S.singScore(sing(0), null, 0.05, { ultra: u }); assert.ok(r.sing.treff > 90 && r.sing.uHit === 3);
+});
