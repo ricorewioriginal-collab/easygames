@@ -14,6 +14,7 @@
     ['🎧', 'AnMaCha – Der Podcast', 'Jede Woche eine neue Folge', '#ff8a1e'], ['🗞️', 'Morgenpost', 'Druckfrisch aus dem Medienhafen', '#ffd23f']];
   const NEWS = ['Andrew und Marco knacken die Hörer-Charts', 'Festival-Insel: Hauptbühne heute ausverkauft', 'Fernsehturm sendet wieder in HD', 'Gisela fährt Rekord-Kilometer',
     'Störsender im Hafen gesichtet', 'RicoReWi-Universum öffnet die Music Arena', 'Goldene Kassetten in der Stadt versteckt', 'Kanal 9 sucht neue Talkgäste'];
+  const LOGOS = {};
   const PROGS = ['live', 'ad', 'news', 'viz', 'ad', 'info'];
   function tv(seed) {
     const cv = document.createElement('canvas'); cv.width = 512; cv.height = 288;
@@ -31,6 +32,15 @@
       font(g, 26, 600); g.fillStyle = '#ffd7ae'; g.fillText('Andrew & Marco · Der Podcast', w / 2, 140);
       if (Math.floor(t * 2) % 2) { g.fillStyle = '#ff2a3a'; g.beginPath(); g.arc(40, 34, 11, 0, 7); g.fill(); }
       font(g, 24); g.fillStyle = '#fff'; g.textAlign = 'left'; g.fillText('LIVE', 58, 35);
+    } else if (p === 'ad' && (slot + s.seed) % 2) {   // Sender-Werbung mit echtem Logo
+      const sts = AMC.Data.STATIONS, st = sts[(slot * 5 + s.seed) % sts.length];
+      if (!LOGOS[st.slug]) { const im = new Image(); im.src = AMC.UI.senderLogo(st.slug); LOGOS[st.slug] = im; }
+      const im = LOGOS[st.slug], gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0, st.color); gr.addColorStop(1, '#0b0b14'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+      const z = 1 + 0.04 * Math.sin(t * 3), L = 220 * z;
+      if (im.complete && im.naturalWidth) g.drawImage(im, 34 + (220 - L) / 2, (h - L) / 2, L, L);
+      g.textAlign = 'left'; font(g, 38); g.fillStyle = '#fff'; g.fillText(st.name, 276, 110);
+      font(g, 20, 600); g.fillStyle = 'rgba(255,255,255,.9)'; const ds = st.desc.split(' '), hf = Math.ceil(ds.length / 2); g.fillText(ds.slice(0, hf).join(' '), 276, 156); g.fillText(ds.slice(hf).join(' '), 276, 184);
+      font(g, 22); g.fillStyle = '#ffd23f'; g.fillText('▶ Jetzt einschalten', 276, 232); g.textAlign = 'center';
     } else if (p === 'ad') {
       const a = ADS[(slot * 3 + s.seed) % ADS.length], gr = g.createRadialGradient(w / 2, h / 2, 10, w / 2, h / 2, w * 0.7);
       gr.addColorStop(0, a[3]); gr.addColorStop(1, '#0b0b14'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
@@ -96,6 +106,7 @@
     for (const p of V.people) {
       const d = Math.hypot(p.x - pl.x, p.z - pl.z); p.wrap.visible = d < 120; if (d > 80) continue;
       p.t -= dt;
+      if (p.talking) { p.wrap.rotation.y = p.yaw; near.push(p); continue; }
       if (p.beh === 'walk') {
         const dx = p.tx - p.x, dz = p.tz - p.z, L = Math.hypot(dx, dz);
         if (p.wait > 0) { p.wait -= dt; anim(p, 'idle'); if (p.wait <= 0) pickTarget(p); }
@@ -125,7 +136,7 @@
   function onPath(P, s) { s = ((s % P.L) + P.L) % P.L; for (const g of P.seg) if (s <= g.s0 + g.l) { const k = (s - g.s0) / g.l; return [g.a[0] + (g.b[0] - g.a[0]) * k, g.a[1] + (g.b[1] - g.a[1]) * k, Math.atan2(g.b[0] - g.a[0], g.b[1] - g.a[1])]; } return [P.seg[0].a[0], P.seg[0].a[1], 0]; }
   function vehicle(model, len, P, s, v, y) {
     const g = W.prop(model, len); if (!g) return null; V.S.group.add(g);
-    const c = { g, P, s, v, base: v, y: y || 0.12 }; V.cars.push(c); return c;
+    const c = { g, P, s, v, base: v, y: y || 0.12, model }; V.cars.push(c); return c;
   }
   function updCars(dt, pl) {
     for (const c of V.cars) {
@@ -136,6 +147,28 @@
       const d = h - c.g.rotation.y; c.g.rotation.y += Math.atan2(Math.sin(d), Math.cos(d)) * Math.min(1, dt * (c.ship ? 1.2 : 6));
       if (!c.ship && block && c.v < 1 && Math.hypot(dx, dz) < 7 && !(c.honk > V.time)) { c.honk = V.time + 5; AMC.Audio.sfx('horn'); }
     }
+  }
+
+  // ------------------------------------------------------------------ KayKit-Stadtmöbel: Ampeln, Bänke, Hydranten, Büsche, Container
+  function kitCity(S, g, solid) {
+    if (!W.models.kk_bench) return;
+    const R = C.ROADS, L = { light: [], bench: [], hyd: [], bush: [], dump: [], box: [] };
+    const nearSt = (x, z, r) => (S.stations || []).some(s => Math.hypot(s.x - x, s.z - z) < r);
+    const free = (x, z, r) => !nearSt(x, z, r + 3) && ![[0, 0], [r, 0], [-r, 0], [0, r], [0, -r]].some(([a, b]) => C.solidAt(x + a, 1, z + b));
+    R.forEach(a => R.forEach(b => [[1, 1], [1, -1], [-1, 1], [-1, -1]].forEach(([sx, sz]) => { const x = a + sx * 5.8, z = b + sz * 5.8; L.light.push({ x, z, rot: Math.atan2(-sx, -sz), s: 4.4, y: 0.16 }); solid(x, z, 0.35, 0.35, 4); })));
+    let k = 0;
+    R.forEach(r => [-1, 1].forEach(sd => [0, 1].forEach(ax => { for (let s = -84; s <= 84; s += 7) {
+      if (R.some(q => Math.abs(q - s) < 9)) continue; k++;
+      const kind = (k * 7 + (r + 50) * 3 + sd * 5 + ax * 11) % 9, off = sd * 6.4, x = ax ? s : r + off, z = ax ? r + off : s, rot = ax ? (sd > 0 ? Math.PI : 0) : (sd > 0 ? -Math.PI / 2 : Math.PI / 2);
+      if (kind === 0 || kind === 5) { if (free(x, z, 1.4)) { L.bench.push({ x, z, rot, s: 2.1, y: 0.16 }); solid(x, z, ax ? 2.1 : 0.6, ax ? 0.6 : 2.1, 0.5); } }
+      else if (kind === 1 || kind === 6) { if (free(x, z, 0.8)) L.bush.push({ x, z, rot: k, s: 1.2, y: 0.16 }); }
+      else if (kind === 2) { if (free(x, z, 0.5)) { L.hyd.push({ x, z, rot, s: 0.8, y: 0.16 }); solid(x, z, 0.4, 0.4, 0.8); } }
+      else if (kind === 3) { const x2 = ax ? s : r + sd * 8.6, z2 = ax ? r + sd * 8.6 : s; if (free(x2, z2, 1.6)) { L.dump.push({ x: x2, z: z2, rot, s: 2.2, y: 0.16 }); solid(x2, z2, 2.2, 2.2, 1.3); } }
+      else if (kind === 7) { const x2 = ax ? s : r + sd * 8, z2 = ax ? r + sd * 8 : s; if (free(x2, z2, 0.8)) L.box.push({ x: x2, z: z2, rot: k, s: 0.9, y: 0.16 }); }
+    } })));
+    W.instances(g, 'kk_trafficlight_a', L.light, { byHeight: true }); W.instances(g, 'kk_bench', L.bench); W.instances(g, 'kk_bush', L.bush, { byHeight: true });
+    W.instances(g, 'kk_firehydrant', L.hyd, { byHeight: true }); W.instances(g, 'kk_dumpster', L.dump); W.instances(g, k % 2 ? 'kk_box_a' : 'kk_box_b', L.box);
+    V.kit = L;
   }
 
   // ------------------------------------------------------------------ Aufbau
@@ -151,6 +184,7 @@
       const lx = x1 - x0 > z1 - z0, n = Math.floor((lx ? x1 - x0 : z1 - z0) / 6); const lm = line ? neonMat(line) : W.mat(0xffffff, { r: 0.6 });
       for (let i = 0; i < n; i++) W.box(lx ? 2.6 : 0.22, 0.02, lx ? 0.22 : 2.6, lm, lx ? x0 + 3 + i * 6 : (x0 + x1) / 2, 0.16, lx ? (z0 + z1) / 2 : z0 + 3 + i * 6, g, false); };
 
+    kitCity(S, g, solid);
     // --- 🚢 Medienhafen: Skyline, Straße mit Verkehr, Lieferwagen, Kisten, Frachtschiffe, Video-Wand
     [[134, -40, 'skyscraper_b'], [176.5, -40, 'skyscraper_a'], [208, -40, 'skyscraper_c'], [209, -24, 'skyscraper_a'], [209, -12, 'skyscraper_c'], [209, 12, 'skyscraper_b'], [209, 24, 'skyscraper_a']].forEach(([x, z, n], i) => tower(n, 8, x, z, i % 2 ? Math.PI : 0));
     [[135, 38, 'building_a'], [149, 38, 'building_e'], [163, 38, 'building_b'], [177, 38, 'building_d']].forEach(([x, z, n]) => tower(n, 9, x, z, Math.PI));
@@ -256,7 +290,14 @@
     V.ambT -= dt; if (V.ambT <= 0) { V.ambT = 7 + Math.random() * 6; if (atStage || atArena) { AMC.Audio.sfx('cheer'); V.hype = 2.5; } else if (wName && /hafen/.test(wName) && Math.random() < 0.5) AMC.Audio.sfx('horn'); }
   };
   FX.cheer = function () { if (V) { V.hype = 4; V.people.forEach(p => { if (p.beh === 'cheer') p.t = 0; }); } };
-  FX.count = () => V ? { people: V.people.length, cars: V.cars.length, screens: V.screens.length } : { people: 0, cars: 0, screens: 0 };
+  const CAR_NAME = { sedan: 'Limousine', taxi: 'Taxi', van: 'Kleinbus', police_car: 'Polizeiauto', delivery_van: 'Lieferwagen' };
+  /** Fahrzeug in der Nähe, das gerade (fast) steht – zum Leihen */
+  FX.nearCar = (x, z, r) => { if (!V) return null; const c = V.cars.find(c => !c.ship && c.v < 3 && Math.hypot(c.g.position.x - x, c.g.position.z - z) < r); if (c) c.name = CAR_NAME[c.model] || 'Auto'; return c || null; };
+  /** Nächste Person (zum Ansprechen) und Animation von außen */
+  FX.nearPerson = (x, z, r) => { if (!V) return null; let best = null, bd = r; for (const p of V.people) { const d = Math.hypot(p.x - x, p.z - z); if (d < bd && p.wrap.visible) { bd = d; best = p; } } return best; };
+  FX.anim = (p, n) => { if (p && p.fig) { p.cur = null; anim(p, n); } };
+  FX.take = c => { if (!V) return false; const i = V.cars.indexOf(c); if (i < 0) return false; V.cars.splice(i, 1); return true; };
+  FX.count = () => V ? { people: V.people.length, cars: V.cars.length, screens: V.screens.length, kit: V.kit ? Object.values(V.kit).reduce((a, l) => a + l.length, 0) : 0 } : { people: 0, cars: 0, screens: 0 };
   FX.stop = function () {
     if (!V) return;
     V.people.forEach(p => { if (p.wrap.parent) p.wrap.parent.remove(p.wrap); p.fig.dispose(); });

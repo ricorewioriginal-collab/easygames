@@ -210,6 +210,9 @@
     const sm = new T.Mesh(new T.PlaneGeometry(5.2, 1.08), new T.MeshBasicMaterial({ map: sign, toneMapped: false })); sm.position.set(cfg.wallTex === 'stars' || cfg.props.some(p => /logoBig|screens|map|bigscreen|board|glitter|tapes/.test(p[0]) && Math.abs(p[1]) < 1) ? hw - 3.2 : 0, 3.1, -hd + 0.02);
     if (cfg.props.some(p => /logoBig|screens|map|bigscreen|glitter/.test(p[0]) && Math.abs(p[1]) < 1)) sm.position.set(0, 3.55, -hd + 0.02), sm.scale.set(0.8, 0.8, 1);
     g.add(sm);
+    // echtes Senderlogo groß an der Seitenwand und klein neben dem Schild
+    const lgW = W.logoPlane(st.slug, 2.2); lgW.position.set(-hw + 0.03, 2.2, -hd + 2.0); lgW.rotation.y = Math.PI / 2; g.add(lgW);
+    const lgS = W.logoPlane(st.slug, 1.0); lgS.position.set(sm.position.x - 3.2 * sm.scale.x, sm.position.y, -hd + 0.03); g.add(lgS);
     // Lichtkegel im Club / bei der Party
     R.beams = [];
     if (L === 'club' || L === 'party' || L === 'rock') {

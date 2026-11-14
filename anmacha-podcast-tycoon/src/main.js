@@ -95,9 +95,9 @@
       const H = D.HOSTS[G.host];
       el.querySelector('#mHost').innerHTML = '<img src="' + UI.face(G.host) + '" alt=""><span><small>Du spielst</small><b>' + H.name + '</b><em>' + H.perk + '</em></span><span class="hp-sw">' + AMC.glyph('y') + ' wechseln</span>';
       el.querySelector('#mHint').innerHTML = AMC.glyph('dpad') + ' Auswählen · ' + AMC.glyph('ok') + ' Start · ' + AMC.glyph('select') + ' Radio · ' + AMC.glyph('lb') + ' Sender';
-      ['andrew', 'marco'].forEach(id => { const f = W.hosts[id]; if (f) f.play(id === G.host ? 'yes' : 'idle', { fade: 0.3 }); });
+      ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f) f.play(id === G.host ? 'yes' : 'idle', { fade: 0.3 }); });
     }
-    const swapHost = () => { if (inCity) { resume(); I.fire('swap'); return; } G.host = G.host === 'andrew' ? 'marco' : 'andrew'; Save.data.host = G.host; Save.save(); AMC.Audio.sfx('swap'); updHost(); };
+    const swapHost = () => { if (inCity) { resume(); I.fire('swap'); return; } G.host = D.nextHost(G.host); Save.data.host = G.host; Save.save(); AMC.Audio.sfx('swap'); updHost(); };
     el.querySelector('#mHost').onclick = swapHost;
     s.o.onKey = () => { if (I.hit('swap')) { swapHost(); return true; } return false; };
     updHost();
@@ -126,7 +126,7 @@
   function arcadeMenu() {
     const card = g => '<button type="button" class="st-item" data-nav data-a="' + g.id + '"><span class="st-ic">' + g.icon + '</span><span><b>' + g.name + '</b><small>' + g.sub + ' · Rekord ' + U.fmt(Save.data.best['arc_' + g.id] || 0) + '</small></span></button>';
     const s = UI.open('<div class="panel glass"><header><h2>🕹️ Arcade</h2><button class="btn small" data-nav id="arB">' + AMC.glyph('b') + ' Zurück</button></header><p class="hint">Du spielst <b id="arHost">' + D.HOSTS[G.host].name + '</b> · <button type="button" class="btn small" data-nav id="arSw">' + AMC.glyph('y') + ' wechseln</button> · Punkte bringen Fan-Punkte</p><div class="st-list">' + AMC.Arcade.GAMES.map(card).join('') + '</div></div>', { back: () => UI.close(s) });
-    const sw = () => { G.host = G.host === 'andrew' ? 'marco' : 'andrew'; Save.data.host = G.host; Save.save(); AMC.Audio.sfx('swap'); s.el.querySelector('#arHost').textContent = D.HOSTS[G.host].name; };
+    const sw = () => { G.host = D.nextHost(G.host); Save.data.host = G.host; Save.save(); AMC.Audio.sfx('swap'); s.el.querySelector('#arHost').textContent = D.HOSTS[G.host].name; };
     s.el.querySelector('#arB').onclick = () => UI.close(s);
     s.el.querySelector('#arSw').onclick = sw;
     s.o.onKey = () => { if (I.hit('swap')) { sw(); return true; } return false; };
@@ -186,6 +186,7 @@
       const back = () => hub(id);
       if (id.startsWith('sender:') && AMC.Career) AMC.Career.mark('tour');
       if (id.startsWith('sender:')) { const sl = id.slice(7); UI.closeAll(); stopAll(); G.mode = 'home'; UI.showTouch(true); AMC.Audio.music('menu'); AMC.Home.station(sl, G.host, back); return; }
+      if (id.startsWith('room:')) { const k = +id.slice(5); UI.closeAll(); stopAll(); G.mode = 'home'; UI.showTouch(true); AMC.Audio.music('menu'); AMC.Home.room(k, G.host, back); return; }
       if (id.startsWith('bus:')) return AMC.Transit.menu(id);
       if (id.startsWith('place:')) return AMC.District.open(id.slice(6));
       if (id.startsWith('world:')) return AMC.Worlds.open(id.slice(6));
@@ -268,7 +269,7 @@
     stopAll(); G.mode = 'show';
     const cards = mode === 'story' ? cardsFrom(res, ch) : AMC.Career ? AMC.Career.cards() : [];
     AMC.Show.start({
-      mode: mode === 'story' ? 'story' : 'arcade', rounds: ch ? ch.show.rounds : 99, goal: ch ? ch.show.goal : [300, 600, 900], cards, host: (res && res.host) || G.host,
+      mode: mode === 'story' ? 'story' : 'arcade', rounds: ch ? ch.show.rounds : 99, goal: ch ? ch.show.goal : [300, 600, 900], cards, host: ((res && res.host) || G.host) === 'rico' ? 'andrew' : ((res && res.host) || G.host),
       onEnd: r => showEnd(mode, ch, res, r)
     });
   }
@@ -357,7 +358,7 @@
     const re = t => { UI.close(s); shop(t); };
     s.el.querySelector('#fBack').onclick = () => UI.close(s);
     s.el.querySelector('#tO').onclick = () => re('outfit'); s.el.querySelector('#tU').onclick = () => re('up');
-    s.o.onKey = () => { if (I.hit('swap')) { G.host = G.host === 'andrew' ? 'marco' : 'andrew'; Save.data.host = G.host; Save.save(); AMC.Audio.sfx('swap'); re(tab); return true; } return false; };
+    s.o.onKey = () => { if (I.hit('swap')) { G.host = D.nextHost(G.host); Save.data.host = G.host; Save.save(); AMC.Audio.sfx('swap'); re(tab); return true; } return false; };
     s.el.querySelectorAll('[data-it]').forEach(b => b.onclick = () => {
       const [kind, id] = b.dataset.it.split(':'), it = (kind === 'o' ? D.OUTFITS : D.UPGRADES).find(x => x.id === id), key = kind + ':' + id;
       const owned = it.cost === 0 || Save.has(key);

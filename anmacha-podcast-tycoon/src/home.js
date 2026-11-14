@@ -331,6 +331,10 @@
     T = root.THREE; HM.close(true);
     return AMC.Camper.open(host, KIT, onClose);
   };
+  HM.room = function (k, host, onClose) {
+    T = root.THREE; HM.close(true);
+    return AMC.Rooms.open(k, host, KIT, onClose);
+  };
   HM.station = function (slug, host, onClose) {
     T = root.THREE; HM.close(true);
     return AMC.Sender.open(slug, host, KIT, onClose);

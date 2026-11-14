@@ -298,7 +298,8 @@
         const y = v.y, z = v.z; const tY = y / R[1];
         let d = st === 'buzz' ? 0.002 : 0.006 * vol;
         if (tY > 0.3 && st !== 'buzz') d += (0.012 + (hair.quiff || 0) * (z > 0 ? sat(z / R[2]) : 0)) * vol * sat((tY - 0.3) * 1.6);
-        if (st === 'curly' || st === 'spike') d += hash(v.x * 120, v.y * 120, v.z * 120) * (st === 'spike' ? 0.03 : 0.014);
+        if (st === 'curly') d += hash(v.x * 120, v.y * 120, v.z * 120) * 0.014;
+        if (st === 'spike') d += hash(v.x * 160, v.y * 160, v.z * 160) * 0.006 * sat((tY - 0.2) * 2);   // Grundschicht kurz, Stacheln kommen extra
         if (hair.part && tY > 0.5 && v.x < -0.01) d += 0.006;
         const len = Math.hypot(v.x, v.y, v.z) || 1; v.multiplyScalar(1 + d / len);
         if (st === 'buzz') return;
@@ -319,6 +320,21 @@
           [{ t: 0, rx: R[0] * 1.1, rz: R[2] * 1.06 }, { t: 0.5, rx: R[0] * 1.2, rz: R[2] * 1.02 }, { t: 1, rx: R[0] * (st === 'long' ? 1.35 : 1.15), rz: R[2] * 0.75 }], 24, false);
         clip(cg, v => v.z - hc.z < (v.y > hc.y - 0.07 ? -0.02 : 0.02) || Math.abs(v.x) > 0.07);
         bd.add(cg, v => shade(cHair, 0.8 + hash(v.x * 400, v.y * 2000, v.z * 400) * 0.3), v => v.y < hc.y - 0.12 ? [['Head', 0.6], ['neck_01', 0.4]] : headW);
+      }
+      if (st === 'spike') {   // Stachelhaare: einzelne, nach oben/vorn gestylte Spitzen (nur Oberkopf, nie im Gesicht)
+        let n = 0;
+        for (let i = 0; i < 140 && n < (L.name ? 64 : 24); i++) {
+          const a = hash(i, 1.7, 3.1) * Math.PI * 2, up = 0.42 + hash(i, 5.3, 0.4) * 0.55;
+          const dir = new T.Vector3(Math.sin(a) * Math.sqrt(1 - up * up), up, Math.cos(a) * Math.sqrt(1 - up * up));
+          if (dir.z > 0.35 && up < 0.72) continue;   // Stirn frei lassen
+          const base = hc.clone().add(new T.Vector3(dir.x * R[0] * 1.02, 0.006 + dir.y * R[1] * 1.0, -0.006 + dir.z * R[2] * 1.04));
+          const out = dir.clone().multiplyScalar(0.55).add(new T.Vector3(0, 0.7, 0.18)).normalize();
+          const tip = base.clone().addScaledVector(out, (0.03 + hash(i, 2.2, 9.1) * 0.022) * vol * (dir.z > 0.2 ? 1.15 : 0.9));
+          const r0 = 0.015 + hash(i, 7.7, 1.3) * 0.007;
+          bd.add(tube(base, tip, Math.abs(out.y) > 0.9 ? new T.Vector3(1, 0, 0) : new T.Vector3(0, 1, 0), [{ t: 0, rx: r0, rz: r0 * 0.8 }, { t: 0.55, rx: r0 * 0.55, rz: r0 * 0.45 }, { t: 1, rx: 0.0012, rz: 0.0012 }], 6),
+            v => shade(cHair, 0.78 + hash(v.x * 400, v.y * 900, v.z * 400) * 0.4), headW);
+          n++;
+        }
       }
       if (st === 'bun') bd.add(ellipsoid(hc.clone().add(new T.Vector3(0, 0.1, -0.07)), [0.045, 0.04, 0.042], 14, 10), cHair, headW);
       if (st === 'pony') bd.add(tube(hc.clone().add(new T.Vector3(0, 0.04, -0.1)), hc.clone().add(new T.Vector3(0, -0.14, -0.15)), X, [{ t: 0, rx: 0.03, rz: 0.03 }, { t: 0.4, rx: 0.035, rz: 0.032 }, { t: 1, rx: 0.012, rz: 0.012 }], 10), cHair, headW);

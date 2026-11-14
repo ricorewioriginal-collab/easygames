@@ -37,12 +37,26 @@
       const car = { g, x, z, h, v: 0, name: ['Kombi', 'Kleinwagen', 'Sportflitzer', 'Lieferwagen'][i], max: [20, 18, 26, 16][i], len: 2.1, wid: 1.0 };
       car.box = C.addBox(x - 1.4, x + 1.4, z - 1.4, z + 1.4, 1.4); car.box = S.col[S.col.length - 1]; S.cars.push(car);
     });
+    // KayKit-Autos parken am Straßenrand – alle fahrbar
+    if (W.models && W.models.kk_car_sedan) {
+      const KK = [['kk_car_hatchback', 'Kompaktwagen', 19], ['kk_car_stationwagon', 'Kombi', 20], ['kk_car_sedan', 'Limousine', 22], ['kk_car_taxi', 'Taxi', 21], ['kk_car_police', 'Polizeiauto', 25]];
+      let n = 0;
+      for (let i = 0; i < 40 && n < [6, 9, 12][W.quality]; i++) {
+        const r = C.ROADS[i % 3], ax = (i >> 1) % 2, sd = i % 4 < 2 ? 1 : -1, s = -80 + rng() * 160;
+        if (C.ROADS.some(q => Math.abs(q - s) < 10) || S.cars.some(c => Math.hypot(c.x - (ax ? s : r + sd * 4.3), c.z - (ax ? r + sd * 4.3 : s)) < 7)) continue;
+        const x = ax ? s : r + sd * 4.3, z = ax ? r + sd * 4.3 : s, h = ax ? (sd > 0 ? Math.PI / 2 : -Math.PI / 2) : (sd > 0 ? 0 : Math.PI), m = KK[n % KK.length];
+        const g = W.prop(m[0], 4.3); if (!g) break; g.position.set(x, 0, z); g.rotation.y = h; S.group.add(g);
+        const car = { g, x, z, h, v: 0, name: m[1], max: m[2], len: 2.1, wid: 0.95 };
+        C.addBox(x - (ax ? 2.1 : 1), x + (ax ? 2.1 : 1), z - (ax ? 1 : 2.1), z + (ax ? 1 : 2.1), 1.4); car.box = S.col[S.col.length - 1]; S.cars.push(car); n++;
+      }
+    }
     // Verkehr: Autos fahren auf den Straßen hin und her
     const nT = [3, 5, 8][W.quality] || 4;
     for (let i = 0; i < nT; i++) {
       const road = C.ROADS[i % 3], axis = i % 2 ? 'x' : 'z', dir = i % 4 < 2 ? 1 : -1, s = -80 + rng() * 160;
-      const g = (W.models && W.models.sedan && W.prop(['sedan', 'taxi', 'van', 'police_car', 'delivery_van'][i % 5], 4.2)) || carMesh(cols[Math.floor(rng() * cols.length)]); S.group.add(g);
-      S.traffic.push({ g, road, axis, dir, s, v: 9 + rng() * 4, base: 9 + rng() * 4, stop: 0 });
+      const TM = [['kk_car_sedan', 'Limousine'], ['taxi', 'Taxi'], ['kk_car_hatchback', 'Kompaktwagen'], ['van', 'Kleinbus'], ['kk_car_taxi', 'Taxi'], ['police_car', 'Polizeiauto'], ['kk_car_stationwagon', 'Kombi'], ['delivery_van', 'Lieferwagen']], tm = TM[i % TM.length];
+      const g = (W.models && W.models[tm[0]] && W.prop(tm[0], 4.2)) || (W.models && W.models.sedan && W.prop('sedan', 4.2)) || carMesh(cols[Math.floor(rng() * cols.length)]); S.group.add(g);
+      S.traffic.push({ g, road, axis, dir, s, v: 9 + rng() * 4, base: 9 + rng() * 4, stop: 0, name: tm[1] });
     }
     // Kabeldiebe (nur frei spielen und Themenjagd): echte Menschen, mit denen man rangelt
     if (S.mode === 'free' || S.mode === 'jagd') spawnThieves(S.mode === 'free' ? 3 : 2);
@@ -148,11 +162,26 @@
     for (const car of S.cars) {
       if (Math.hypot(car.x - p.x, car.z - p.z) > 3.4) continue;
       if (car.gisela && AMC.Play.onAction && AMC.Camper && (Math.sin(car.h) * (p.x - car.x) + Math.cos(car.h) * (p.z - car.z)) < -1.2) return { label: '🛠️ Gisela von innen: ' + (AMC.Camper.value() ? 'Ausbau ' + AMC.Camper.value() + '/' + AMC.Camper.UP.length : 'ausbauen'), run: () => { S.giselaAt = { x: car.x, z: car.z, h: car.h }; AMC.Save.data.giselaAt = S.giselaAt; AMC.Play.onAction('camper'); } };
-      if (car.gisela && p.H.id !== 'marco') return { label: 'Marco ans Steuer von Gisela 🚐', run: () => { C.swapHost(); setTimeout(() => C.S && enter(car), 250); } };
+      if (car.gisela && p.H.id !== 'marco') return { label: 'Marco ans Steuer von Gisela 🚐', run: () => { C.swapHost('marco'); setTimeout(() => C.S && enter(car), 250); } };
       return { label: (car.gisela ? 'Mit Gisela fahren 🚐' : 'Einsteigen: ' + car.name + ' 🚗'), run: () => enter(car) };
     }
     return null;
   };
+  /** Nachrangig (nach Orten und Figuren): jedes haltende Auto lässt sich leihen (Stadtverkehr und Welten) */
+  DR.borrowTarget = function (p) {
+    const S = C && C.S; if (!S || !S.cars || S.drive || S.net) return null;
+    const t = S.traffic.find(t => t.v < 3 && Math.hypot(t.g.position.x - p.x, t.g.position.z - p.z) < 3.6);
+    if (t) return { label: 'Auto leihen: ' + t.name + ' 🚗', run: () => borrow(t.g, t.name, () => { S.traffic.splice(S.traffic.indexOf(t), 1); }) };
+    const w = AMC.WorldFX && AMC.WorldFX.nearCar && AMC.WorldFX.nearCar(p.x, p.z, 3.6);
+    if (w) return { label: 'Auto leihen: ' + w.name + ' 🚗', run: () => { if (AMC.WorldFX.take(w)) borrow(w.g, w.name); } };
+    return null;
+  };
+  const LEND = ['Fahrer: „Na gut – aber bringt ihn heil zurück!“', 'Fahrerin: „Ihr seid doch die vom Podcast! Klar, fahrt ’ne Runde.“', 'Fahrer: „Nur wenn ich in der nächsten Folge gegrüßt werde.“', 'Fahrerin: „Tank ist voll. Hupe funktioniert. Viel Spaß!“'];
+  function borrow(g, name, done) {
+    const S = C.S; done && done();
+    const car = { g, x: g.position.x, z: g.position.z, h: g.rotation.y, v: 0, name, max: /Polizei/.test(name) ? 24 : /Liefer|Bus|Van/.test(name) ? 16 : 20, len: 2.1, wid: 1.0, lent: true };
+    S.cars.push(car); C.msg('🔑 ' + U.pick(LEND), 2.6); enter(car);
+  }
   function enter(car) {
     const S = C.S, p = S.pl; if (S.drive) return;
     S.drive = car; car.v = 0; car.cool = 0.4;
@@ -189,21 +218,42 @@
     if (I.hit('act') && car.cool <= 0) { car.leave = true; if (Math.abs(car.v) > 3) C.msg('Bremsen … und aussteigen.', 1.2); }
     if (car.leave && Math.abs(car.v) < 3) { car.leave = false; exit(); return true; }
     if (I.hit('jump')) { if (car.gisela && C.honk && !(C.S.gisela.t > 0)) C.honk(); else AMC.Audio.sfx('horn'); honkPeds(car); }
-    const thr = car.leave ? 0 : I.move.y, steer = I.move.x, hb = I.keys.has('KeyC') || I.keys.has('ShiftRight') || C.padHeld(1) || AMC.UI.touchHeld('b') || AMC.UI.touchHeld('dodge');
-    const max = car.max * (I.sprint && !car.gisela ? 1.25 : 1);
-    if (thr > 0.05) car.v += thr * (car.gisela ? 7 : 11) * dt * (car.v < 0 ? 2.5 : 1);
-    else if (thr < -0.05) car.v += thr * (car.v > 0 ? 16 : 6) * dt;
+    // Gas/Bremse: Stick/WASD oder Trigger (RT Gas, LT Bremse/rückwärts) – Rückwärts klappt immer
+    const rt = padVal(7), lt = padVal(6);
+    const thr = car.leave ? 0 : U.clamp(I.move.y + rt - lt, -1, 1), steer = I.move.x, hb = I.keys.has('KeyC') || I.keys.has('ShiftRight') || C.padHeld(1) || AMC.UI.touchHeld('b') || AMC.UI.touchHeld('dodge');
+    const max = car.max * (I.sprint && !car.gisela ? 1.25 : 1), rev = car.gisela ? 5 : 8;
+    if (thr > 0.05) car.v += thr * (car.gisela ? 7 : 11) * dt * (car.v < -0.3 ? 3 : 1);
+    else if (thr < -0.05) car.v += thr * (car.v > 0.3 ? 16 : 7) * dt;
     else car.v = U.damp(car.v, 0, 1.4, dt);
     if (hb || car.leave) car.v = U.damp(car.v, 0, 4, dt);
-    car.v = U.clamp(car.v, -6, max);
-    const turn = steer * (car.gisela ? 1.6 : 2.2) * Math.min(1, Math.abs(car.v) / 5) * Math.sign(car.v) * (hb ? 1.5 : 1);
-    car.h -= turn * dt;
-    const fx = Math.sin(car.h), fz = Math.cos(car.h);
-    let nx = car.x + fx * car.v * dt, nz = car.z + fz * car.v * dt;
-    const front = Math.sign(car.v || 1) * (car.len + 0.2);
-    const hit = C.solidAt(nx + fx * front, 0.8, nz + fz * front) || C.solidAt(nx + fx * front + Math.cos(car.h) * car.wid, 0.8, nz + fz * front - Math.sin(car.h) * car.wid) || C.solidAt(nx + fx * front - Math.cos(car.h) * car.wid, 0.8, nz + fz * front + Math.sin(car.h) * car.wid) || (C.S.areas && AMC.Worlds ? !AMC.Worlds.inside(nx, nz, 1.5) : Math.abs(nx) > 88 || Math.abs(nz) > 88);
-    const tHit = S.traffic.find(t => Math.hypot(t.g.position.x - nx, t.g.position.z - nz) < 3.2);
-    if (hit || tHit) { crash(car, Math.abs(car.v)); car.v *= -0.3; nx = car.x; nz = car.z; if (tHit) tHit.stop = 2; }
+    car.v = U.clamp(car.v, -rev, max);
+    // Lenken: auch langsam und im Stand ein wenig, damit man aus jeder Ecke herauskommt
+    const sp = Math.abs(car.v), turn = steer * (car.gisela ? 1.6 : 2.2) * Math.max(Math.abs(thr) > 0.05 ? 0.35 : 0, Math.min(1, sp / 4)) * (car.v < -0.1 || (sp < 0.3 && thr < -0.05) ? -1 : 1) * (hb ? 1.5 : 1);
+    const h0 = car.h, h1 = car.h - turn * dt;
+    const fx = Math.sin(h1), fz = Math.cos(h1);
+    let nx = car.x + fx * car.v * dt, nz = car.z + fz * car.v * dt, nh = h1;
+    const was = blocked(car, car.x, car.z, h0);
+    const tNear = (x, z) => S.traffic.find(t => Math.hypot(t.g.position.x - x, t.g.position.z - z) < 3.2 && Math.hypot(t.g.position.x - x, t.g.position.z - z) < Math.hypot(t.g.position.x - car.x, t.g.position.z - car.z) - 0.001);
+    const bad = (x, z, h) => (!was && blocked(car, x, z, h)) || (was && blocked(car, x, z, h) > was) || tNear(x, z);
+    if (bad(nx, nz, nh)) {
+      // an Wänden entlang rutschen statt hängen zu bleiben
+      if (!bad(nx, car.z, nh)) nz = car.z;
+      else if (!bad(car.x, nz, nh)) nx = car.x;
+      else if (!bad(car.x, car.z, nh)) { nx = car.x; nz = car.z; }
+      else { nx = car.x; nz = car.z; nh = h0; }
+      const tHit = tNear(car.x + fx * car.v * dt, car.z + fz * car.v * dt);
+      if (nx === car.x && nz === car.z) { crash(car, sp); car.v *= -0.25; if (tHit) tHit.stop = 1.2; }
+      else car.v *= 0.85;
+    }
+    // Rettung: hängt man über 1,5 s fest, setzt Gisela/das Auto auf die letzte freie Stelle zurück
+    car.stuck = (Math.abs(thr) > 0.3 && Math.hypot(nx - car.x, nz - car.z) < 0.02 * Math.max(1, sp)) ? (car.stuck || 0) + dt : 0;
+    if (car.trail && car.stuck > 1.5) {
+      const back = car.trail[0]; car.stuck = 0; car.v = 0;
+      if (back) { nx = back.x; nz = back.z; nh = back.h; C.msg('🔧 Freigefahren – zurück auf die Straße.', 1.6); }
+    }
+    car.h = nh;
+    car.trail = car.trail || [];
+    if (!blocked(car, nx, nz, nh) && (!car.trailT || S.time > car.trailT)) { car.trailT = S.time + 0.5; car.trail.push({ x: nx, z: nz, h: nh }); if (car.trail.length > 6) car.trail.shift(); }
     car.x = nx; car.z = nz;
     car.g.position.set(car.x, Math.abs(car.v) > 1 ? Math.abs(Math.sin(S.time * 14)) * 0.025 : 0, car.z); car.g.rotation.y = car.h;
     car.g.rotation.z = U.damp(car.g.rotation.z || 0, -steer * Math.min(1, Math.abs(car.v) / 12) * 0.05, 6, dt);
@@ -217,6 +267,17 @@
     if (car.gisela && car.v > 11 && Math.random() < dt * 0.25) C.msg('Marco: Nicht so schnell, Gisela ist keine 20 mehr!', 2);
     return true;
   };
+  function padVal(b) { const ps = I.pads ? I.pads() : []; const x = ps[0] && ps[0].buttons[b]; return x ? (x.value > 0.08 ? x.value : (x.pressed ? 1 : 0)) : 0; }
+  /** Anzahl blockierter Messpunkte rund um das Fahrzeug (0 = frei) */
+  function blocked(car, x, z, h) {
+    const S = C.S, fx = Math.sin(h), fz = Math.cos(h), rx = Math.cos(h), rz = -Math.sin(h); let n = 0;
+    for (const [a, b] of [[0, 1], [0.9, 1], [-0.9, 1], [0, -1], [0.9, -1], [-0.9, -1], [1, 0], [-1, 0]]) {
+      const px = x + fx * car.len * b + rx * car.wid * a, pz = z + fz * car.len * b + rz * car.wid * a;
+      if (C.solidAt(px, 0.8, pz)) n++;
+    }
+    if (S.areas && AMC.Worlds ? !AMC.Worlds.inside(x, z, 1.5) : Math.abs(x) > 88 || Math.abs(z) > 88) n += 4;
+    return n;
+  }
   DR.driving = () => !!(C && C.S && C.S.drive);
   function crash(car, v) {
     if (v < 3 || car.crashT > C.S.time) return;

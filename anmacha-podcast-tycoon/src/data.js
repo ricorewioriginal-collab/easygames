@@ -37,11 +37,16 @@
     },
     // Kein spielbarer Host: RicoReWi, der Social-Media-Junkie hinter den Kulissen (plant, baut Tools, nervt liebevoll)
     rico: {
-      id: 'rico', name: 'RicoReWi', color: '#a46bff', npc: true,
-      look: { body: 'm', skin: '#efc3a4', hair: { style: 'spike', color: '#5a4030', vol: 1.5, quiff: 0.02 }, beard: '#6b4a30', brow: '#4e3524', eyes: '#3c3026', top: '#5b2d8c', topStyle: 'tee', bottom: '#2a2f3a', bottomStyle: 'pants', shoes: '#1d1d22', build: 1.12, belly: 0.55, name: 'RicoReWi', piercing: true, earring: 'l' },
+      id: 'rico', name: 'RicoReWi', color: '#a46bff',
+      speed: 7.0, jump: 8.2, wave: 4.2, waveDmg: 1, strong: ['tech', 'tv'],
+      perk: 'Social-Media-Turbo: flink, springt gut und hat eine große Tool-Welle.',
+      look: { body: 'm', skin: '#efc3a4', hair: { style: 'spike', color: '#5a4030', vol: 1.1, quiff: 0.012 }, beard: '#6b4a30', brow: '#4e3524', eyes: '#3c3026', top: '#5b2d8c', topStyle: 'tee', bottom: '#2a2f3a', bottomStyle: 'pants', shoes: '#1d1d22', build: 1.12, belly: 0.55, name: 'RicoReWi', piercing: true, earring: 'l' },
       blurb: 'Social-Media-Junkie, Dauerplaner und Tool-Bastler. Nervt das Team – natürlich nur ironisch.'
     }
   };
+  /** Reihenfolge beim Wechseln: Andrew → Marco → RicoReWi */
+  D.HOST_ORDER = ['andrew', 'marco', 'rico'];
+  D.nextHost = id => D.HOST_ORDER[(D.HOST_ORDER.indexOf(id) + 1) % D.HOST_ORDER.length];
   // RicoReWi platzt rein: Sprüche im Studio, in der Live-Aufnahme und in der Stadt
   D.RICO_LINES = [
     'Kommt rüber über die Westbrücke ins RicoReWi-Universum! Musik, Radio, Bücher, Apps – alles da.',
