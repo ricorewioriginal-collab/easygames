@@ -1,5 +1,5 @@
 // SHOW ME YOUR VOICE – Browser-Test „echte Songs“ (Playwright, ohne Internet: iTunes, Hörprobe, Piped, lrclib und YouTube-Player sind Attrappen).
-// Spiel-Modus: Song suchen → Video + Tempo aus der Hörprobe (120 BPM) + Taktlage aus dem Liedtext → Noten liegen auf den Schlägen; ◀ ▶ verschiebt.
+// Noten-Modus spielt Klavierlicht-Songs (kein YouTube/Radio mehr), Jury verteilt Songs fürs echte Singen.
 // Vorsingen: Karaoke-Video direkt im Spiel suchen.   node show-me-your-voice/tests/e2e-songs.mjs [Basis-URL] [Screenshot-Ordner]
 import { chromium } from 'playwright';
 const base = (process.argv[2] || 'http://localhost:8766/') + 'show-me-your-voice/', out = process.argv[3] || '';
@@ -35,27 +35,9 @@ const p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); p.on(
 await p.goto(base); await p.waitForSelector('#sTitle.on'); await p.keyboard.press('Enter'); await p.waitForSelector('#sMenu.on'); await p.evaluate(() => { window.SMYVApp.state().prep.how = 'game'; });   // Tests prüfen den Rhythmus-Modus
 await p.evaluate(() => { window.SMYV.D.ROUNDS.forEach(r => { r.len = 14; }); });
 await p.click('[data-m="new"]'); await p.click('#avaOk'); await p.waitForSelector('#sBack.on'); await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on');
-ok(!(await p.locator('#prepBox [data-v^="own:"]').count()), 'keine eigenen Web-Audio-Songs mehr');
-await p.click('#prepBox [data-g="music"][data-v="yt"]'); await p.waitForSelector('#ovQ'); await p.fill('#ovQ', 'Sommerhit'); await p.press('#ovQ', 'Enter');
-await p.waitForSelector('#ovRes [data-i="0"]'); await shot(p, 'song-suche'); await p.click('#ovRes [data-i="0"]');
-ok(/Sommerhit/.test(await p.textContent('#prepBox [data-v="yt"]')) && (await p.getAttribute('#prepBox [data-v="yt"]', 'aria-pressed')) === 'true', 'Song gewählt: ' + await p.textContent('#prepBox [data-v="yt"] b'));
-await shot(p, 'song-prep');
-await p.click('#bGo'); await p.waitForSelector('#sTalk.on'); for (let i = 0; i < 6; i++) { if (await p.isVisible('#bStageGo')) break; await p.click('#talkQ [data-a="0"]'); } await p.click('#bStageGo');
-await p.waitForSelector('#sStage.on', { timeout: 30000 }); await p.waitForFunction(() => { const s = window.SMYVApp.stageObj(); return s && s.o.ext && s.now > 3; }, null, { timeout: 15000 });
-const r = await p.evaluate(() => { const s = window.SMYVApp.stageObj(), e = s.o.ext, B = 60 / e.bpm; const off = s.notes.map(n => { const x = ((s.v0 + n.t - e.beat0) % (B / 2) + B / 2) % (B / 2); return Math.min(x, B / 2 - x); });
-  return { bpm: e.bpm, beat0: e.beat0, notes: s.notes.length, maxOff: Math.max(...off), vid: e.vid, vis: !document.getElementById('stVid').hidden, title: document.getElementById('stTitle').textContent, sync: !document.getElementById('stSync').hidden }; });
-ok(Math.abs(r.bpm - 120) < 1.5, 'Tempo aus der Hörprobe: ' + r.bpm + ' BPM (echt: 120)');
-ok(Math.abs(((r.beat0 % 0.5) + 0.5) % 0.5 - 0.25) < 0.03, 'Taktlage aus dem Liedtext: ' + r.beat0.toFixed(3) + ' s');
-ok(r.notes >= 4 && r.maxOff < 0.01, `Noten liegen auf den Schlägen des Songs (${r.notes} Noten, max. Abweichung ${(r.maxOff * 1000).toFixed(1)} ms)`);
-ok(r.vid === 'AAAAAAAAAAA' && r.vis, 'offizielles Video läuft sichtbar auf der Bühne');
-ok(/YouTube · Test Band/.test(r.title) && /iTunes/.test(r.title) && /LRCLIB/.test(r.title), 'Quelle im Auftritt: ' + r.title);
-await shot(p, 'song-buehne');
-const t0 = await p.evaluate(() => window.SMYVApp.stageObj().notes.find(n => !n.st && n.t > window.SMYVApp.stageObj().now + 1).t);
-await p.click('#stSync [data-d="0.03"]'); const t1 = await p.evaluate(t => window.SMYVApp.stageObj().notes.find(n => Math.abs(n.t - t - 0.03) < 1e-6) ? 1 : 0, t0);
-ok(r.sync && t1 === 1 && (await p.evaluate(() => window.SMYVApp.state().save.ytSync.AAAAAAAAAAA)) === 0.03, 'Song-Sync von Hand: ▶ schiebt Noten um 30 ms und merkt es sich');
+ok(!(await p.locator('#prepBox [data-g="music"]').count()) && (await p.locator('#klList [data-kl]').count()) > 0, 'Noten-Modus: Klavierlicht-Songs statt YouTube/Radio (Auftritt mit YouTube-Song nur noch beim echten Singen)');
 // Vorsingen: Karaoke-Video direkt im Spiel suchen
-await p.evaluate(() => { const s = window.SMYVApp.stageObj(); if (s) s.abort(); });
-await p.waitForTimeout(1500); await p.evaluate(() => window.SMYVApp.go('sSing'));
+await p.evaluate(() => window.SMYVApp.go('sSing'));
 await p.waitForSelector('#sSing.on'); await p.click('#singBox .songFind [data-yt]'); await p.waitForSelector('#ovQ'); await p.fill('#ovQ', 'Sommerhit'); await p.press('#ovQ', 'Enter');
 await p.waitForSelector('#ovRes [data-i="0"]'); await shot(p, 'karaoke-suche'); await p.click('#ovRes [data-i="0"]');
 const k = await p.evaluate(() => ({ link: (document.getElementById('singLink') || {}).value, title: (document.getElementById('singTitle') || {}).value }));
@@ -65,12 +47,12 @@ const as = await p.evaluate(() => { const A = window.SMYVApp, sv = A.state().sav
   for (let k = 0; k < 40; k++) { s.seed = 1000 + k; s.round = 2; if (A.assignOf(s)) hit++; n++; }
   s.round = 0; const cast = A.assignOf(s); s.round = 2; for (let k = 0; k < 40 && !A.assignOf(s); k++) s.seed = 2000 + k; return { hit, n, cast: !!cast, a: A.assignOf(s) }; });
 ok(as.hit > 5 && as.hit < 35 && !as.cast, `Jury verteilt manchmal Songs (${as.hit} von ${as.n} Mottoshows, nie im Casting)`);
-await p.evaluate(() => { window.SMYVApp.go('sMenu'); window.SMYVApp.go('sBack'); }); await p.waitForSelector('#sBack.on'); await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on');
-ok(/hat dir einen Song zugeteilt/.test(await p.textContent('#prepBox')) && (await p.locator('#prepBox [data-g="music"]').count()) === 1, 'Zugeteilter Song: ' + as.a.name + ' → ' + as.a.t); await shot(p, 'jury-song');
-// Reiter „Song“ ohne Auswahl → Zufalls-Song (nicht Radio)
-await p.evaluate(() => { const st = window.SMYVApp.state(); st.prep.song = null; st.prep.music = 'radio:ricorewi'; st.prep.tab = 'song'; st.save.season.round = 0; window.SMYVApp.go('sMenu'); window.SMYVApp.go('sBack'); });
+await p.evaluate(() => { window.SMYVApp.state().prep.how = 'sing'; window.SMYVApp.go('sMenu'); window.SMYVApp.go('sBack'); }); await p.waitForSelector('#sBack.on'); await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on');
+ok(/hat dir einen Song zugeteilt/.test(await p.textContent('#prepBox')), 'Zugeteilter Song (echt singen): ' + as.a.name + ' → ' + as.a.t); await shot(p, 'jury-song');
+// Noten-Modus ohne Auswahl → Zufalls-Song aus Klavierlicht
+await p.evaluate(() => { const st = window.SMYVApp.state(); st.prep.how = 'game'; st.prep.kl = null; st.save.season.round = 0; window.SMYVApp.go('sMenu'); window.SMYVApp.go('sBack'); });
 await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on'); await p.click('#bGo'); await p.waitForSelector('#sTalk.on');
-const rs = await p.evaluate(() => { const pr = window.SMYVApp.state().prep; return { music: pr.music, song: pr.song && pr.song.title }; });
-ok(rs.music === 'yt' && rs.song, 'Song-Reiter ohne Auswahl spielt einen Zufalls-Song: ' + rs.song);
+const rs = await p.evaluate(() => { const pr = window.SMYVApp.state().prep; return pr.kl && pr.kl.title; });
+ok(!!rs, 'ohne Auswahl spielt ein Zufalls-Song aus Klavierlicht: ' + rs);
 ok(!errs.length, 'Keine Laufzeitfehler' + (errs.length ? ': ' + errs.join(' | ') : ''));
 await b.close();
