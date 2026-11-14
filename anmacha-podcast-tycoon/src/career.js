@@ -86,7 +86,7 @@
     const studio = AMC.StudioEdit ? AMC.StudioEdit.bonus().lis : 0, gis = AMC.Camper ? AMC.Camper.value() : 0, songs = Math.min(10, (Save.data.songs || []).length);
     const parts = [
       ['💡 Ideen', ideas * 0.08], ['📋 Tagesplan', done * 0.05], ['🌆 Prime-Time', ph === 'abend' ? 0.2 : 0], ['🛠️ Studio', studio], ['🚐 Gisela', gis * 0.02], ['🎹 Musik', songs * 0.01], ['❤️ Fans', AMC.Social ? AMC.Social.bonus() : 0], ['🌧️ Regenwetter', AMC.Atmos ? AMC.Atmos.bonus() : 0], ['😊 Fitness', (mood - 0.6) * 0.5]
-    ].concat(ev.parts).filter(p => Math.abs(p[1]) >= 0.005);
+    ].concat(AMC.Guests && AMC.Guests.part() ? [AMC.Guests.part()] : [], AMC.Feed ? AMC.Feed.parts() : [], ev.parts).filter(p => Math.abs(p[1]) >= 0.005);
     const factor = Math.max(0.5, 1 + parts.reduce((a, p) => a + p[1], 0));
     const base = Math.max(0, r.listeners || 0), hoerer = Math.round(base * factor);
     const neu = Math.round(hoerer * 0.05 * (1 + done * 0.1)), fan = Math.round(hoerer / 60 + c.abos / 150);
@@ -94,6 +94,7 @@
     const weg = Math.round(c.abos * ev.lost);
     c.abos = Math.max(50, c.abos + neu - weg); c.eps++; c.skips = 0; if (AMC.Events) AMC.Events.mark('eps'); c.total += hoerer; c.best = Math.max(c.best, hoerer);
     c.log = (c.log || []).concat({ day: c.day, h: hoerer, abos: Math.round(c.abos) }).slice(-14);
+    if (AMC.Guests) AMC.Guests.after(); if (AMC.Feed) AMC.Feed.episode(hoerer, c.day);
     const day = c.day; c.day++; c.min = DAY0; c.today = fresh();
     Save.earn(fan); Save.save();
     const rk = CR.rank(c.abos), up = rk.name !== rk0.name;
