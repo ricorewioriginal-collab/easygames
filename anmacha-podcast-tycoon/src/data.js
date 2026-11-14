@@ -44,6 +44,9 @@
   };
   // RicoReWi platzt rein: Sprüche im Studio, in der Live-Aufnahme und in der Stadt
   D.RICO_LINES = [
+    'Kommt rüber über die Westbrücke ins RicoReWi-Universum! Musik, Radio, Bücher, Apps – alles da.',
+    'Im Radioportal laufen alle AnMaCha-Streams an einem Ort. Habt ihr schon abgestimmt?',
+    'Ich hab nicht zu viele Ideen. Die Welt hat nur zu wenig Tabs offen.',
     'Leute, ich hab ein neues Tool gebaut! Es plant, wann wir planen.',
     'Kurze Frage: Darf ich das live auf TikTok streamen? … Zu spät, läuft schon.',
     'Ich hab eine Tabelle für unsere Tabellen angelegt.',

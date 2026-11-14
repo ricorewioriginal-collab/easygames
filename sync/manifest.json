@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f009da482c17",
- "generated": "2026-11-13T23:47:05+00:00",
- "commit": "ac156870a6c69f2671a6cbeff7b0d3ba8209ee6c",
+ "version": "865cab661b8b",
+ "generated": "2026-11-13T23:49:20+00:00",
+ "commit": "3fe92039f530cf2147d6f5aebaa957a6bf4dd6fb",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -348,13 +348,13 @@
   },
   {
    "p": "aeru/game.js",
-   "s": 196322,
-   "h": "56e9ff1933f2c0610724ff3a46f197b13d2729d21792d1ddfa6873e9dc94cd90"
+   "s": 197538,
+   "h": "966ba04d40c88e6779871c4eb48b370216b2cc474b4f63f775f0e1167f68e376"
   },
   {
    "p": "aeru/index.html",
-   "s": 15593,
-   "h": "dad1907d8668a28438cf63e2f5d5ac03c3e89d04a02956a64ded919ce4000510"
+   "s": 15598,
+   "h": "397dc5a70d1ac9756d40f3d7c52e65c719d055e8e6e4f136b3875138b723a3c8"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -2173,8 +2173,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/index.html",
-   "s": 6763,
-   "h": "bec1fa41eb2cf4d8921613ee1c50adf8bff1633868ef06e60c8f2e43570f25ef"
+   "s": 6838,
+   "h": "62a9e841dc3d76b74728e1e041784b27a59347f7373ce0bb086d809175106613"
   },
   {
    "p": "anmacha-podcast-tycoon/manifest.webmanifest",
@@ -2252,6 +2252,11 @@
    "h": "e97d2b700e9cb6bfc0a668bc832ccaf2e0dbef29a02fd5e23ff0bcb949ecabe9"
   },
   {
+   "p": "anmacha-podcast-tycoon/src/atmos.js",
+   "s": 4922,
+   "h": "b1a2d143ede6041d719fdf27408999037383b96fe3db43dc0e4cd72fa2eb27ea"
+  },
+  {
    "p": "anmacha-podcast-tycoon/src/audio.js",
    "s": 15223,
    "h": "85e52a0e29cac6404d07134fd2d6a8df4f00ea19b40e9da76e99009f21ce8860"
@@ -2263,8 +2268,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/career.js",
-   "s": 8782,
-   "h": "f0c9f6682f8fb1e29700d3d175ca1da4b7d5454314cb27b23dad28569e5d2314"
+   "s": 8952,
+   "h": "1d83fd6456b1dbda2cae6e115176c3f898b081d152a16f877a907f930ab21ff1"
   },
   {
    "p": "anmacha-podcast-tycoon/src/core.js",
@@ -2273,18 +2278,18 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/data.js",
-   "s": 45342,
-   "h": "52adc0f3d3b1e600d8bfa5054f7ce33d44aa72455d33fe80b99b8ebd2d79551b"
+   "s": 45616,
+   "h": "806b1ce012f80a69d384233dfcfd6413ff2ca365d5ab6d85b6b746ad7feee396"
   },
   {
    "p": "anmacha-podcast-tycoon/src/district.js",
-   "s": 14915,
-   "h": "551252b1ae2fb5c90bb28c5b2374d2bb01b051e66b36416958b28075a240ada4"
+   "s": 15016,
+   "h": "b70655163d88b77032f1ec43b24f2fd13e42a628c0f552d732966ed94721f9b3"
   },
   {
    "p": "anmacha-podcast-tycoon/src/drive.js",
-   "s": 22308,
-   "h": "14b483ac3d3eaf286ca88eb8857de9d18be9e95a8bea99f7d1b5c6496c260bdb"
+   "s": 22370,
+   "h": "d854a9bde11ae56f619019056acae8e1ade14b33d05a9de1e530f2d1d88d8f89"
   },
   {
    "p": "anmacha-podcast-tycoon/src/events.js",
@@ -2298,8 +2303,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/main.js",
-   "s": 45630,
-   "h": "b5dcb4fa06d4846adec9032205ec46a0c831a457046662bea9a6a697726de284"
+   "s": 45766,
+   "h": "b1436e57c0140233ae9c27fb13522a3d41c3ccfeeae051f12022920790b5dbc2"
   },
   {
    "p": "anmacha-podcast-tycoon/src/media.js",
@@ -2318,13 +2323,13 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/people.js",
-   "s": 34326,
-   "h": "9a4a8b83a72010127e1ca075dcfc544d5bdf67ff071d26b23264c6f4e00a9fcd"
+   "s": 34991,
+   "h": "c87a22f73fcea3881b776784b008551f30682babaef3df423961dc5416e77aee"
   },
   {
    "p": "anmacha-podcast-tycoon/src/play.js",
-   "s": 100587,
-   "h": "4fe2df18b30b8aeafb41e5d8f9930a07730f6aa34aaf258343b8ab38946699fc"
+   "s": 102186,
+   "h": "92adb4c854fabd59296305619ead1ab9d63bcb14627bff71eabd74255c51e624"
   },
   {
    "p": "anmacha-podcast-tycoon/src/quiz.js",
@@ -2372,9 +2377,14 @@
    "h": "ace902d85ba025827615cf31ba3afe80854878fde5806b3b7bbb93ff9b65cc4c"
   },
   {
+   "p": "anmacha-podcast-tycoon/src/worlds.js",
+   "s": 26494,
+   "h": "94f378b59ba59d26b1de5c3692b7b42f165ce8e8a3018650f95d400e5b6e19eb"
+  },
+  {
    "p": "anmacha-podcast-tycoon/style.css",
-   "s": 57538,
-   "h": "43a5b5b23e5caa85f21b63edcbbf4e2686362115c36849428e3438298fc6c395"
+   "s": 57649,
+   "h": "62c6c95f1940cff1bcf3f73fea28a1e41a2a77ffb864ab8e3db3825741f8f9ae"
   },
   {
    "p": "anmacha-podcast-tycoon/sw.js",
@@ -6603,8 +6613,8 @@
   },
   {
    "p": "guides/aeru.json",
-   "s": 24952,
-   "h": "0f69c03607c9338543f1ec87581ca816e1428f2ecbfa8203bf269ff0c8eb1a32"
+   "s": 25000,
+   "h": "257373f161dea557561170892fd0a174b58ec9f99f9540616b88c6d9a6d08103"
   },
   {
    "p": "guides/anmacha-beat-surfer.json",
@@ -6673,8 +6683,8 @@
   },
   {
    "p": "guides/anmacha-podcast-tycoon.json",
-   "s": 35358,
-   "h": "82ca6dea5ce23d9dff46ca1cbfd42e4ae1efe585fa5087083f4f8ea8eaa7733d"
+   "s": 36951,
+   "h": "21f500afb0962a802c59c7f9da22a05721ed4b02a12789ab3a029ebfbc3b72c9"
   },
   {
    "p": "guides/anmacha-preisradar.json",
@@ -9814,7 +9824,7 @@
   {
    "p": "sync/catalog.json",
    "s": 259012,
-   "h": "27ccd80e75842ba806e80da769407a9e9143bfe2dca06bcb8e596a246e605b72"
+   "h": "b13c4ea10bd84348ff4c10f3753774c0b9c62d0129f9dfd46d586fe39c1a88e6"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -12302,9 +12312,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-D4chFlYd.js",
-   "s": 1905799,
-   "h": "159e50ea60706e7bbd81e6c948504881535d98cf8d2223c2273260a737a8942a"
+   "p": "zotik/assets/index-DdSkoUUt.js",
+   "s": 1910100,
+   "h": "df48cb106783cde48b179a9ebc3b82ee05ad5f07b4e3be226e540274d029297a"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -12324,7 +12334,7 @@
   {
    "p": "zotik/index.html",
    "s": 72669,
-   "h": "081f536fc7335a1297f8263d265472a6daef50c096367e7d61eeddd7be3db787"
+   "h": "2cf792b1073645f6db9f361fd0aa1b2fb9d34fc47190459d378ef98d85bc537f"
   },
   {
    "p": "zotik/manifest.webmanifest",

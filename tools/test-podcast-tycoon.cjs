@@ -37,13 +37,23 @@ server.listen(0, '127.0.0.1', async () => {
     assert.ok(await p.evaluate(() => AMC.Input.dpadEmotes && AMC.CityVibe.state().dancing && AMC.Input.device === 'pad'), 'Controller: Steuerkreuz tanzt in der Stadt');
     await p.evaluate(() => { navigator.getGamepads = () => []; document.querySelector('#cvEmo [data-e=dance]').click(); });
     // Stadtbus: 8 Haltestellen, Fahrt in ein anderes Viertel
-    assert.equal(await p.evaluate(() => AMC.Play.state().busStops.length), 8, '8 Bushaltestellen');
+    assert.equal(await p.evaluate(() => AMC.Play.state().busStops.length), 12, '12 Bushaltestellen (8 Stadt, 4 Welten)');
     await p.evaluate(() => AMC.Play.onAction('bus:funk')); await p.waitForSelector('[data-b=park]'); await p.click('[data-b=park]'); await p.waitForTimeout(1800);
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(), b = S.busStops.find(x => x.st.id === 'park'); return Math.hypot(S.pl.x - b.x, S.pl.z - b.z) < 5; }), 'Bus bringt zum Stadtpark');
     // Beziehungen: angesprochener Fan wird getroffen, Aktion steigert Freundschaft, Freundebuch
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(), n = S.npcs.find(x => !x.guest && !x.dancer && !x.hungry); if (!n) return false; n.talked = true; S.pl.x = n.x + 1; S.pl.z = n.z; const before = AMC.Social.points(n.name); AMC.Social.open(n, S); document.querySelector('#soL [data-s="0"]').click(); window.__soN = n.name; return JSON.stringify([before, AMC.Social.points(n.name), !!document.querySelector('#soL'), n.name]); }).then(r => { const a = JSON.parse(r); return a[1] === a[0] + 4; }), 'High-Five steigert Freundschaft');
     assert.ok(await p.evaluate(() => { AMC.Save.data.social.f[window.__soN] = 70; return AMC.Social.superfans() >= 1 && AMC.Social.bonus() >= 0.02 && AMC.Social.level(window.__soN).name === 'Superfan'; }), 'Superfan zählt als Hörer-Bonus');
     assert.ok(await p.evaluate(() => { const s = AMC.Social.book(); const ok = !!document.querySelector('#sbL .st-item'); AMC.UI.close(s); return ok; }), 'Freundebuch zeigt Fans');
+    // Mehrere Welten ohne Ladebruch: Brücke, Damm, Fähre, Welt-Orte, RicoReWi-Universum
+    assert.ok(await p.evaluate(() => AMC.Worlds.WORLDS.length === 4 && AMC.Worlds.inside(160, 0) && AMC.Worlds.inside(110, 0) && !AMC.Worlds.inside(60, 110) && AMC.Worlds.name(-170, 0).includes('RicoReWi')), 'Welten und Übergänge');
+    assert.ok(await p.evaluate(() => { const e = { x: 60, z: 120 }; AMC.Worlds.clamp(e); return AMC.Worlds.inside(e.x, e.z); }), 'Wasser ist nicht begehbar');
+    assert.ok(await p.evaluate(() => ['world:kanal9', 'world:buehne', 'world:turm', 'world:arena', 'world:portal', 'ferry:hin'].every(id => AMC.Play.state().stations.some(s => s.id === id))), 'Orte der Welten sind da');
+    assert.ok(await p.evaluate(() => { const before = AMC.Worlds.ricoQuest().n; AMC.Worlds.open('buecher'); document.querySelector('#woL [data-w="0"]').click(); return AMC.Worlds.ricoQuest().n === before + 1; }), 'RicoReWi-Story zählt Orte');
+    await p.evaluate(() => { const S = AMC.Play.state(); S.pl.x = 0; S.pl.z = 98; AMC.Worlds.ferry('ferry:hin'); });
+    await p.waitForFunction(() => !AMC.Play.state().ferry, null, { timeout: 40000 }).catch(() => {});
+    assert.ok(await p.evaluate(() => AMC.Play.state().pl.z > 120), 'Fähre bringt zur Festival-Insel');
+    // Optik: Tag und Nacht nach der Spieluhr, Wetter je Tag, Laternen nachts
+    assert.ok(await p.evaluate(() => { const c = AMC.Career.state(), m0 = c.min, S = AMC.Play.state(); c.min = 13 * 60; AMC.Atmos.apply(); const day = S.env.sun.intensity; c.min = 23 * 60; AMC.Atmos.apply(); const night = S.env.sun.intensity, lit = S.lampGlow ? S.lampGlow.visible : true; c.min = m0; AMC.Atmos.apply(); return night < day && lit && AMC.Atmos.night() === false && ['sun', 'cloud', 'rain'].includes(AMC.Atmos.weather().id); }), 'Tag und Nacht, Wetter');
     // Etappe 5: Wochen-Event, goldene Kassetten, Rückschlag bei der Auswertung
     assert.ok(await p.evaluate(() => { const w = AMC.Events.week(); return w.name && w.need > 0 && AMC.Play.state().goldTapes.length >= 15; }), 'Wochen-Event und Kassetten in der Stadt');
     await p.evaluate(() => { const S = AMC.Play.state(), c = S.goldTapes[0]; S.pl.x = c.x; S.pl.z = c.z; S.pl.y = c.y - 1; });

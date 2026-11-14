@@ -82,10 +82,16 @@ export function arealDress({ C, w, b, g, h, M, R2, blk, busy, roadD, wallList, T
     const kind = A.wall[R2() * A.wall.length | 0]; wallList.push([x, z, kind, 1 + R2() * .7, R2() * 6.3, 1]); }
   // Stadt: statt Waldwand geschlossene Häuserzeilen, Giebel zur Gasse, dahinter Dächer als Silhouette
   if (A.city) { const T = C.T, acc = [], tx = (t, c, o) => C.TX.tri(t, c, o || { s: .5, gain: 1.5 }), win = MAT(0xffd890, { e: 0xffb050, ei: 1.3 });
-    for (let j = 0; j < M.N; j += 1.6) for (let i = 0; i < M.N; i += 1.6) { const x = M.X0 + i * M.ST, z = M.Z0 + j * M.ST, e = M.E(x, z);
-      if (!((e > 3 && e < 4.6) || (e > 9.5 && e < 11.5)) || Math.hypot(x, z - 12) < 16 || acc.some(q => Math.hypot(q[0] - x, q[1] - z) < 6.3)) continue; acc.push([x, z]);
+    for (let j = 0; j < M.N; j += 1.6) for (let i = 0; i < M.N; i += 1.6) { let x = M.X0 + i * M.ST, z = M.Z0 + j * M.ST; const e = M.E(x, z);
+      if (!((e > 3 && e < 4.6) || (e > 9.5 && e < 11.5)) || Math.hypot(x, z - 12) < 16 || acc.some(q => Math.hypot(q[0] - x, q[1] - z) < 6.3)) continue;
+      if (e < 4.6) { const ax = M.E(x + 1, z) - M.E(x - 1, z), az = M.E(x, z + 1) - M.E(x, z - 1), L = Math.hypot(ax, az); if (L > .2) { const t = (3.95 - e) / Math.max(.3, L / 2); x += ax / L * t; z += az / L * t; } }   // Hausfront genau an die Gassenkante (keine Lücke vor der Sperre)
+      acc.push([x, z]);
       const gx = M.E(x + 1, z) - M.E(x - 1, z), gz = M.E(x, z + 1) - M.E(x, z - 1), ry = Math.atan2(-gx, -gz), k = acc.length, W = 7.4, D = 5.6, H = 5 + (k * 7 % 4), y = h(x, z) - .2;
+      const dx0 = x + Math.sin(ry) * (D / 2 + 1.6), dz0 = z + Math.cos(ry) * (D / 2 + 1.6);
+      if (b.house && e < 4.6 && k % 3 === 1 && z > -140 && !blk(dx0, dz0) && Math.abs(h(dx0, dz0) - h(x, z)) < .6 && C.colFree(dx0, dz0, 1.1)) {   // jedes dritte Haus der Gasse ist begehbar (Innenraum, Dach erkletterbar), manche mit Truhe
+        b.house(x, z, W, D, 4, A.city.walls[k % A.city.walls.length], A.city.roofs[(k >> 1) % A.city.roofs.length], ry, { ar: 1, sty: A.city.sty || (A.city.flat ? 4 : A.city.slate ? 3 : 1), chest: k % 6 === 1 ? { id: 'ah' + (w.n || 0) + '_' + k, reward: { shards: 20 + (w.n || 1) * 2, potions: 1 } } : null }); continue; }
       const wc = A.city.walls[k % A.city.walls.length], rc = A.city.roofs[(k >> 1) % A.city.roofs.length], hg = new T.Group(); hg.position.set(x, y, z); hg.rotation.y = ry; g.add(hg);
+      if (C.climb) { const fl = A.city.flat, rh = D * .44; C.climb({ x, z, c: Math.cos(ry), s: Math.sin(ry), hx: W / 2 + .1, hz: D / 2 + .1, y: y + H, f: fl ? null : (lx, lz) => Math.max(0, rh * (1 - Math.abs(lz) / (D / 2 + .1))) }); }   // Dach begehbar
       hg.add(mk(G.box, A.city.flat ? tx('plaster', wc, { s: .5, gain: 2.2, n: .45, e: 0x6a4a2a, ei: 1 }) : tx('plaster', wc, { s: .45, gain: 1.7, n: .6, e: 0x3a3026, ei: 1 }), 0, H / 2, 0, W, H, D));
       if (A.city.beam) for (const bx of [-W / 2 + .15, 0, W / 2 - .15]) hg.add(mk(G.box, tx('wood', A.city.beam), bx, H / 2, D / 2 + .03, .24, H, .08, false));
       if (A.city.flat) {   // Lehmhaus: Flachdach mit Brüstung, manche mit Kuppel
@@ -99,11 +105,12 @@ export function arealDress({ C, w, b, g, h, M, R2, blk, busy, roadD, wallList, T
       hg.add(mk(G.box, MAT(0x3a2a1e), 0, .9, D / 2 + .04, 1.2, 1.8, .05, false)); }
     // Lücken zwischen den Häusern: Gartenmauer statt unsichtbarer Sperre (Gasse endet sichtbar)
     const gw = []; for (let j = 0; j < M.N; j += .8) for (let i = 0; i < M.N; i += .8) { const x = M.X0 + i * M.ST, z = M.Z0 + j * M.ST, e = M.E(x, z);
-      if (e < 1.3 || e > 2.3 || acc.some(q => Math.hypot(q[0] - x, q[1] - z) < 4.9) || gw.some(q => Math.hypot(q[0] - x, q[1] - z) < 2.1)) continue;
+      if (e < 1.25 || e > 1.85 || acc.some(q => Math.hypot(q[0] - x, q[1] - z) < 4.9) || gw.some(q => Math.hypot(q[0] - x, q[1] - z) < 2.1)) continue;
       if ((A.bridges || []).some(q => segD(x, z, q[0], q[1], q[2], q[3])[0] < 4)) continue; gw.push([x, z]); }
     if (gw.length) { const im = new T.InstancedMesh(G.box, tx('stone', A.city.walls[0], { s: .5, gain: 1.6, n: .6 }), gw.length), o = new T.Object3D();
       gw.forEach(([x, z], k) => { const gx = M.E(x + 1, z) - M.E(x - 1, z), gz = M.E(x, z + 1) - M.E(x, z - 1), H = 1.7 + (k * 5 % 3) * .15;
-        o.position.set(x, h(x, z) - .3 + H / 2, z); o.rotation.set(0, Math.atan2(-gx, -gz), 0); o.scale.set(2.7, H, .8); o.updateMatrix(); im.setMatrixAt(k, o.matrix); });
+        const ry = Math.atan2(-gx, -gz); o.position.set(x, h(x, z) - .3 + H / 2, z); o.rotation.set(0, ry, 0); o.scale.set(2.7, H, .8); o.updateMatrix(); im.setMatrixAt(k, o.matrix);
+        if (C.climb) C.climb({ x, z, c: Math.cos(ry), s: Math.sin(ry), hx: 1.35, hz: .45, y: h(x, z) - .3 + H }); });
       im.castShadow = im.receiveShadow = true; g.add(im); }
   }
   // Hecken: geschnittene Heckenwand an jeder Gasse (Instanzen), Irrgarten mit festen Heckenwänden

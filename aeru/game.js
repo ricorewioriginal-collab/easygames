@@ -361,44 +361,61 @@ function makeUpdraft(x, z, y = 0, height = 12, temporary = false) {
   world.add(g); const d = {x, z, y, height, g, temporary}; updrafts.push(d); return d;
 }
 
-// ───────── Talboden: eine zusammenhängende Welt ─────────
-// Unter allen Inseln liegt eine Talwiese (6 m tiefer), umrahmt von Bergen. Wer von einer Insel fällt, landet im Tal statt im Nichts
-// und steigt über Felstreppen wieder hinauf. Die Weltgrenze hält Aeru auch im Flug innerhalb der Berge.
-const VALLEY_Y = -6, VALLEY_R = 165, WORLD_R = 150, STAIR_STEPS = 7;
-let valleyStairs = [];
-// Talteile: Höhe und Breite in Metern (aus den Maßen der Modelle).
-const VALLEY_PART = {trees_A: [4.5, 6], trees_B: [4.2, 6.5], tree_A: [6, 2.9], tree_B: [5.5, 3.2], rock_A: [.5, 2.2], rock_C: [1.1, 2]};
-function stairway(cx, cz, r, ang, top) {
-  const steps = [];
-  for (let k = 1; k <= STAIR_STEPS; k++) { const d = r + .5 + (STAIR_STEPS - k) * 2, y = VALLEY_Y + k * (top - VALLEY_Y) / STAIR_STEPS; steps.push({x: cx + Math.cos(ang) * d, z: cz + Math.sin(ang) * d, y}); }
-  // Frei: unter den Stufen (außer der obersten) nur Talboden, keine Tore oder Brücken daneben.
-  if (steps.some((p, i) => reserved(p.x, p.z, 4) || i < STAIR_STEPS - 1 && floorAt(p.x, p.z) > VALLEY_Y || [[1.8, 0], [-1.8, 0], [0, 1.8], [0, -1.8]].some(([a, b]) => i < STAIR_STEPS - 2 && floorAt(p.x + a, p.z + b) > VALLEY_Y))) return null;
-  const cfg = levels[save.level];
-  for (const p of steps) { const h = p.y - VALLEY_Y + .3; const m = mesh('box', cfg.rock, p.x, p.y - h / 2, p.z, 3, h, 3); m.rotation.y = -ang; mesh('box', cfg.grass, p.x, p.y + .015, p.z, 3.1, .08, 3.1).rotation.y = -ang; solids.push({x: p.x, z: p.z, w: 3, d: 3, y: p.y, thick: h}); }
-  return {x: steps[0].x, z: steps[0].z, top, ang, steps};
+// ───────── Gelände: ein Höhenfeld pro Welt ─────────
+// Die ganze Welt ist ein zusammenhängendes Gelände: Talwiesen mit Hügeln, darauf die Hochflächen (Hauptland, Gebiete, Heimathain)
+// mit begehbaren Hängen, Landbrücken als Grate, eine Mulde für den See. Zum Rand steigt das Gelände zu den Bergen an.
+// Hochflächen bleiben oben eben auf ihrer alten Höhe – alles, was dort steht, bleibt gültig.
+const VALLEY_Y = -6, TERRAIN_HALF = 170, WORLD_R = 150, SLOPE = .85, STEP_UP = .45;
+let terrain = {pl: [], ri: [], ba: [], ph: 0};
+function resetTerrain(index) { terrain = {pl: [], ri: [], ba: [], ph: index * 1.7}; }
+function hills(x, z) {
+  const p = terrain.ph;
+  return 1.6 * Math.sin(x * .045 + 1.3 + p) * Math.cos(z * .038 - p * .6) + 1.1 * Math.sin(x * .021 - z * .033 + .7 + p * .4) + .55 * Math.sin((x + z) * .09 + p);
 }
-function buildValley(index) {
-  const cfg = levels[index]; valleyStairs = [];
-  const floor = mesh('cylinder', '#' + new T.Color(cfg.grass).multiplyScalar(.8).getHexString(), 0, VALLEY_Y - .5, 0, VALLEY_R, 1, VALLEY_R); floor.castShadow = false;
-  solids.push({x: 0, z: 0, r: VALLEY_R, y: VALLEY_Y, thick: 2, valley: true});
-  // Treppen: Hauptland, jedes Gebiet und der Heimathain. Gesucht wird der erste freie Winkel.
-  const plateaus = [{x: 0, z: 0, r: cfg.mainRadius || 27, out: -Math.PI / 4}, ...regions.map(rg => ({x: rg.x, z: rg.z, r: rg.r, out: Math.atan2(rg.z, rg.x)}))];
-  if (hub) plateaus.push({x: hub.x, z: hub.z, r: hub.r, out: Math.atan2(hub.z, hub.x)});
-  for (const pl of plateaus) for (const off of [.75, -.75, 1.3, -1.3, 2, -2, 2.6, -2.6, 0, Math.PI]) { const st = stairway(pl.x, pl.z, pl.r, pl.out + off, 0); if (st) { valleyStairs.push(st); break; } }
-  // Talwiese beleben: Baumgruppen, Hügel und Felsen (nur mit Modellen, ein InstancedMesh je Teil).
+function heightAt(x, z) {
+  const rr = Math.hypot(x, z);
+  let h = VALLEY_Y + hills(x, z) + (rr > 128 ? Math.min(rr - 128, 40) * 1.4 : 0);
+  // Erst Seeufer und Seemulde, danach die übrigen Hochflächen: Wo ein Gebiet in den See ragt, liegt sein Ufer obenauf.
+  for (const q of terrain.ba) { const d = Math.hypot(x - q.x, z - q.z); h = Math.max(h, d - q.r - 1.6 <= 0 ? 0 : -(d - q.r - 1.6) * SLOPE); if (d < q.r) h = Math.min(h, q.y); }
+  for (const q of terrain.pl) { const d = Math.hypot(x - q.x, z - q.z) - q.r; h = Math.max(h, d <= 0 ? q.y : q.y - d * SLOPE); }
+  for (const q of terrain.ri) {
+    const vx = q.bx - q.ax, vz = q.bz - q.az, t = clamp(((x - q.ax) * vx + (z - q.az) * vz) / (vx * vx + vz * vz), 0, 1);
+    const d = Math.hypot(x - q.ax - vx * t, z - q.az - vz * t) - q.w / 2; h = Math.max(h, d <= 0 ? q.y : q.y - d * SLOPE);
+  }
+  return h;
+}
+// Landbrücke als Grat zwischen zwei Hochflächen (die Brückenplatte bleibt als begehbarer Weg darauf).
+function ridge(ax, az, bx, bz, w = 4, y = 0) { terrain.ri.push({ax, az, bx, bz, w, y}); }
+function buildTerrain(index) {
+  const cfg = levels[index], N = preset === QUALITY.sparsam ? 100 : 150, S = TERRAIN_HALF * 2;
+  const geo = new T.PlaneGeometry(S, S, N, N); geo.rotateX(-Math.PI / 2);
+  const pos = geo.attributes.position, col = new Float32Array(pos.count * 3);
+  const top = new T.Color(linearColor(cfg.grass)), low = top.clone().multiplyScalar(.78), rock = new T.Color(linearColor(cfg.rock)), c = new T.Color();
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i), z = pos.getZ(i), h = heightAt(x, z);
+    const slope = Math.max(Math.abs(heightAt(x + 1, z) - heightAt(x - 1, z)), Math.abs(heightAt(x, z + 1) - heightAt(x, z - 1))) / 2;
+    // Auf Hochflächen liegt das Gelände knapp unter der Grasplatte, damit nichts flimmert.
+    pos.setY(i, h - (terrain.pl.some(q => Math.hypot(x - q.x, z - q.z) < q.r - .4) ? .06 : 0));
+    c.copy(h > -1.5 ? top : low).lerp(rock, clamp((slope - .45) / .5, 0, 1)); col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+  }
+  geo.setAttribute('color', new T.BufferAttribute(col, 3)); geo.computeVertexNormals();
+  const m = new T.Mesh(geo, own(new T.MeshStandardMaterial({vertexColors: true, roughness: .95}))); m.receiveShadow = true; world.add(m);
+  // Talwiese beleben: Baumgruppen und Felsen auf flachen Stellen (nur mit Modellen, ein InstancedMesh je Teil).
   if (!useSceneryModels() || !models.castle) return;
   let seed = 4021 + index * 97; const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
   const parts = ['trees_A', 'trees_B', 'tree_A', 'rock_A', 'tree_B', 'trees_A', 'rock_C', 'tree_A'];
   for (let i = 0; i < 80; i++) {
-    const a = rand() * TAU, rr = 34 + rand() * 106, x = Math.cos(a) * rr, z = Math.sin(a) * rr;
-    if (floorAt(x, z) > VALLEY_Y || [[3, 0], [-3, 0], [0, 3], [0, -3]].some(([u, v]) => floorAt(x + u, z + v) > VALLEY_Y) || valleyStairs.some(st => st.steps.some(p => Math.hypot(p.x - x, p.z - z) < 5))) continue;
+    const a = rand() * TAU, rr = 34 + rand() * 92, x = Math.cos(a) * rr, z = Math.sin(a) * rr, y = heightAt(x, z);
+    if (y > -2 || Math.abs(heightAt(x + 2.5, z) - heightAt(x - 2.5, z)) > 1.2 || Math.abs(heightAt(x, z + 2.5) - heightAt(x, z - 2.5)) > 1.2 || solids.some(s => s.r ? Math.hypot(x - s.x, z - s.z) < s.r + 3 : Math.abs(x - s.x) < s.w / 2 + 3 && Math.abs(z - s.z) < s.d / 2 + 3)) continue;
     // Höhe je Teil passend zur Breite (Felsen sind flach, Baumgruppen breit); Kollision wie bei Bäumen, damit auch die Kamera ausweicht.
     const name = parts[i % parts.length], [h, w] = VALLEY_PART[name], k = .85 + rand() * .3, hh = h * k, ww = w * k;
-    prop(name, x, z, hh, rand() * TAU, 0, VALLEY_Y);
-    if (name.startsWith('rock')) treeColliders.push({x, z, trunk: ww * .4, trunkTop: VALLEY_Y + hh, crown: ww * .45, cy: -100, ch: 0, rock: true, prop: name});
-    else treeColliders.push({x, z, trunk: .5, trunkTop: VALLEY_Y + hh * .4, crown: ww * .42, cy: VALLEY_Y + hh * .65, ch: hh * .35, prop: name});
+    prop(name, x, z, hh, rand() * TAU, 0, y - .1);
+    if (name.startsWith('rock')) treeColliders.push({x, z, trunk: ww * .4, trunkTop: y + hh, crown: ww * .45, cy: -100, ch: 0, rock: true, prop: name});
+    else treeColliders.push({x, z, trunk: .5, trunkTop: y + hh * .4, crown: ww * .42, cy: y + hh * .65, ch: hh * .35, prop: name});
   }
 }
+// Talteile: Höhe und Breite in Metern (aus den Maßen der Modelle).
+const VALLEY_PART = {trees_A: [4.5, 6], trees_B: [4.2, 6.5], tree_A: [6, 2.9], tree_B: [5.5, 3.2], rock_A: [.5, 2.2], rock_C: [1.1, 2]};
 
 // ───────── Himmelsinseln, Truhen, Schwung-Ringe ─────────
 // Drei kleine Inseln pro Welt weit draußen: Aufwind nehmen, hinausfliegen, landen. Jede trägt eine Himmelstruhe, einen Rastpunkt und eine Ringstraße.
@@ -575,7 +592,7 @@ function buildRegions(index) {
     // Brücke vom Hauptland zum Gebiet (achsparallel, Oberkante auf Bodenhöhe, je 1,5 m Überlappung)
     const off = rg.axis === 'x' ? rg.at : rg.at, start = Math.sqrt(R * R - off * off) - 1.5, endIn = (rg.axis === 'x' ? Math.abs(rg.x) : Math.abs(rg.z)) - Math.sqrt(rg.r * rg.r - (rg.axis === 'x' ? rg.z - rg.at : rg.x - rg.at) ** 2) + 1.5;
     const a = rg.side * start, b = rg.side * endIn, mid = (a + b) / 2, len = Math.abs(b - a);
-    if (rg.axis === 'x') platform(mid, rg.at, len, 4, 0); else platform(rg.at, mid, 4, len, 0);
+    if (rg.axis === 'x') { platform(mid, rg.at, len, 4, 0); ridge(a, rg.at, b, rg.at); } else { platform(rg.at, mid, 4, len, 0); ridge(rg.at, a, rg.at, b); }
     rg.bridge = {a, b};
     for (let t = 3; t < len - 2; t += 4) { const p = a + rg.side * t; rg.axis === 'x' ? addJewel('rot', p, rg.at) : addJewel('rot', rg.at, p); }
     // Rastpunkt am Gebietsrand
@@ -618,10 +635,10 @@ function buildRegions(index) {
     // Dichtes Gras (nur Aussehen, ein InstancedMesh je Teil)
     if (useSceneryModels()) for (let i = 0; i < 12; i++) { const ang = i * 2.39996, rr = rg.r * Math.sqrt((i + .5) / 12) * .9; sceneryPlan.push({kind: 'grass', x: rg.x + Math.cos(ang) * rr, z: rg.z + Math.sin(ang) * rr, s: .8 + (i % 4) * .15, yaw: i}); }
   }
-  // See: Seegrund 0,9 m unter dem Ufer, Aeru schwimmt mit dem Kopf über Wasser. Ans Ufer zieht ihn die Kantenhilfe, außen hält ihn der Steinrand.
+  // See: Seegrund 0,9 m unter dem Ufer, Aeru schwimmt mit dem Kopf über Wasser. Ans Ufer steigt er überall von selbst (bis 1 m Stufe).
   {
     const o = regions[1], L = {x: o.x + o.r + 5, z: o.z, r: 8, y: -.9}; lake = L;
-    island(L.x, L.z, L.r, L.y);
+    terrain.ba.push({x: L.x, z: L.z, r: L.r, y: L.y}); mesh('cylinder', cfg.grass, L.x, L.y - .6, L.z, L.r, 1.2, L.r);
     const w = mesh('cylinder', '#4fb6d6', L.x, -.16, L.z, L.r - .05, .1, L.r - .05); w.material = waterMat; w.castShadow = false;
     for (let i = 0; i < 9; i++) { const a = (i / 8 - .5) * 3.6; mesh('rock', cfg.rock, L.x + Math.cos(a) * L.r, -.45, L.z + Math.sin(a) * L.r, .9, .7, .9); }
     for (let i = 0; i < 4; i++) { const a = i / 4 * TAU + .4; addJewel('gruen', L.x + Math.cos(a) * 4.6, L.z + Math.sin(a) * 4.6, L.y); }
@@ -676,7 +693,7 @@ function buildRegions(index) {
   // Heimathain mit Levelportalen (nur in Welt 1)
   if (index === 0) {
     const H = HUB, start = Math.sqrt(R * R - H.at * H.at) - 1.5, endIn = H.x - Math.sqrt(H.r * H.r - (H.z - H.at) ** 2) + 1.5;
-    island(H.x, H.z, H.r, 0); platform((start + endIn) / 2, H.at, endIn - start, 4, 0);
+    island(H.x, H.z, H.r, 0); platform((start + endIn) / 2, H.at, endIn - start, 4, 0); ridge(start, H.at, endIn, H.at);
     hub = {...H, id: 'h', axis: 'x', side: 1, bridge: {a: start, b: endIn}, entry: {x: endIn - 3, z: H.at}};
     for (let t = 3; t < endIn - start - 2; t += 4) addJewel('rot', start + t, H.at);
     const plaza = mesh('cylinder', cfg.accent, H.x, .06, H.z, 6, .12, 6); plaza.castShadow = false;
@@ -784,12 +801,12 @@ const totalDragons = () => (save.dragons || []).reduce((n, a) => n + (a?.length 
 const totalJewelsSaved = () => (save.jewels || []).reduce((n, a) => n + (a?.length || 0), 0);
 
 // ───────── Inselbau ─────────
-// Inseln am Boden (y ≤ 2) stehen als Tafelberge mit senkrechter Felswand auf dem Talboden; hohe Himmelsinseln schweben weiter.
+// Inseln am Boden (y ≤ 2) sind Hochflächen im Gelände (Grasplatte oben, Hänge ringsum); hohe Himmelsinseln schweben weiter.
 function island(x, z, r, y = 0) { const cfg = levels[save.level]; mesh('cylinder', cfg.grass, x, y - .6, z, r, 1.2, r);
-  if (y <= 2) { const h = y - 1.2 - VALLEY_Y; mesh('cylinder', cfg.rock, x, VALLEY_Y + h / 2, z, r * .98, h, r * .98).castShadow = false; solids.push({x, z, r, y, thick: y - VALLEY_Y, mesa: true}); return; }
+  if (y <= 2) { terrain.pl.push({x, z, r, y}); return; }
   const base = mesh('cone', cfg.rock, x, y - 5.2, z, r * .99, 9, r * .99); base.rotation.z = Math.PI; solids.push({x, z, r, y, thick: 9.7}); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; mesh('rock', cfg.rock, x + Math.cos(a) * r * .7, y - 5.2, z + Math.sin(a) * r * .7, 3, 4, 3); } }
 function platform(x, z, w, d, y) { mesh('box', levels[save.level].rock, x, y - .5, z, w, 1, d); mesh('box', levels[save.level].grass, x, y + .015, z, w + .1, .08, d + .1); solids.push({x, z, w, d, y, thick: 1}); }
-function floorAt(x, z, limit = Infinity) { let y = -100; for (const s of solids) { if (s.y > limit) continue; if (s.r ? Math.hypot(x - s.x, z - s.z) < s.r - .1 : Math.abs(x - s.x) < s.w / 2 + .2 && Math.abs(z - s.z) < s.d / 2 + .2) y = Math.max(y, s.y); } return y; }
+function floorAt(x, z, limit = Infinity) { let y = heightAt(x, z); if (y > limit) y = -100; for (const s of solids) { if (s.y > limit) continue; if (s.r ? Math.hypot(x - s.x, z - s.z) < s.r - .1 : Math.abs(x - s.x) < s.w / 2 + .2 && Math.abs(z - s.z) < s.d / 2 + .2) y = Math.max(y, s.y); } return y; }
 function tree(x, z, s = 1) { const cfg = levels[save.level]; fallbackTrees.push({x, z, s}); treeColliders.push({x, z, trunk: .45 * s, trunkTop: 2.6 * s, crown: 2.4 * s, cy: 4.45 * s, ch: 1.7 * s}); if (useSceneryModels()) { sceneryPlan.push({kind: 'tree', x, z, s}); return; } mesh('cone', '#7f7b68', x, 2 * s, z, .4 * s, 4 * s, .4 * s); for (let i = 0; i < 3; i++) mesh('ball', cfg.leaf, x + (i - 1) * .75 * s, (4 + i * .45) * s, z + (i % 2) * .4, 2.5 * s, 1.8 * s, 2 * s); }
 function arch(x, z) { const c = levels[save.level].accent; for (const s of [-1, 1]) { mesh('box', c, x + s * 2.5, 2.5, z, .8, 5, .9); mesh('box', c, x + s * 2.5, .3, z, 1.3, .6, 1.4); mesh('box', c, x + s * 2.5, 5, z, 1.25, .4, 1.3); } const r = ring(x, 4.8, z, 2.5, c); r.scale.y = .6; mesh('box', c, x, 6.2, z, 5.5, .4, 1); }
 const SLOTS = {keeper: {x: -4, z: 13, y: 0}, side: {x: 12, z: 9, y: 0}, helper: {x: -10, z: -12, y: 0}};
@@ -835,9 +852,9 @@ function buildLevel(index, titleOnly = false) {
   for (const d of disposables) d.dispose(); disposables = [];
   world.traverse(o => { if (o.isMesh && !shared.has(o.geometry)) o.geometry.dispose(); if (o.isInstancedMesh) o.dispose?.(); });
   world = new T.Group(); scene.add(world);
-  sceneryPlan = []; crates = []; clearFalter(); regions = []; jewels = []; jewelBatches = []; dragonStatues = []; thief = null; worldGates = []; chests = []; boostRings = []; gusts = []; updrafts = []; flightRings = []; solids = []; treeColliders = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
+  resetTerrain(0); sceneryPlan = []; crates = []; clearFalter(); regions = []; jewels = []; jewelBatches = []; dragonStatues = []; thief = null; worldGates = []; chests = []; boostRings = []; gusts = []; updrafts = []; flightRings = []; solids = []; treeColliders = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
   clearEffects(); particlePool.forEach(p => { p.life = 0; p.m.visible = false; });
-  clearInput(); accumulator = 0; save.level = index;
+  clearInput(); accumulator = 0; save.level = index; terrain.ph = index * 1.7;
   const cfg = levels[index];
   sky.material.uniforms.top.value.set(cfg.sky); sky.material.uniforms.bottom.value.set(cfg.fog); sky.material.uniforms.dim.value = 0; scene.fog = new T.Fog(linearColor(cfg.fog), 85, 215);
   sun.color.set(cfg.light.sun); sun.intensity = cfg.light.sunI * lightScale; hemi.intensity = cfg.light.hemi * lightScale;
@@ -849,7 +866,7 @@ function buildLevel(index, titleOnly = false) {
   if (index >= 3) makeUpdraft(0, 5, 0, 13);
   buildSky(index);
   // Bergkulisse rundum (weit draußen, nur zum Ansehen)
-  buildValley(index);
+  buildTerrain(index);
   if (preset !== QUALITY.sparsam) for (let i = 0; i < 9; i++) { const ang = i / 9 * TAU + index * .37, rr = 185 + (i * 37 % 23), h = 75 + (i * 53 % 30); prop(i % 2 ? 'mountain_B' : 'mountain_C', Math.cos(ang) * rr, Math.sin(ang) * rr, h, ang * 3 + i, 0, -48); }
   if (index === 4) { platform(-13, -4, 7, 7, 5); platform(12, -7, 7, 7, 7); makeUpdraft(-13, 1, 0, 14); makeUpdraft(12, -1, 0, 16); for (const [x, z] of [[-13, -4], [12, -7]]) for (let j = 0; j < 5; j++) mesh('gem', cfg.accent, x - 3 + j * 1.5, 1.2, z + 4, .65, 2.8, .65).rotation.z = (j - 2) * .15; }
   if (index === 5) { for (const sign of [-1, 1]) { for (let j = 0; j < 4; j++) platform(sign * (8 + j * 3), -2 - j * 2, 4, 4, .6 + j * .6); makeUpdraft(sign * 16, 2, 0, 14); } }
@@ -1089,7 +1106,7 @@ function movePlayer(dt) {
     const ledge = s.y - state.y < LEDGE && state.vy < 6;
     if (s.r) {
       // Der Felskegel unter einer Insel wird nach unten schmaler; die Kollision folgt seiner sichtbaren Form.
-      const depth = s.y - (state.y + 1.6), lim = (depth < 1.2 || s.mesa ? s.r : s.r * .99 * Math.max(0, 1 - (depth - .7) / 9)) + .35;
+      const depth = s.y - (state.y + 1.6), lim = (depth < 1.2 ? s.r : s.r * .99 * Math.max(0, 1 - (depth - .7) / 9)) + .35;
       const d = Math.hypot(nx - s.x, nz - s.z);
       if (d < lim && d > 0) {
         if (ledge && depth < 1.2) { const k = Math.min(1, (s.r - .6) / d); nx = s.x + (nx - s.x) * k; nz = s.z + (nz - s.z) * k; state.y = s.y; state.vy = 0; continue; }
@@ -1115,7 +1132,13 @@ function movePlayer(dt) {
     const d = Math.hypot(nx - t.x, nz - t.z);
     if (d < lim && d > 0) { const ux = (nx - t.x) / d, uz = (nz - t.z) / d; nx = t.x + ux * lim; nz = t.z + uz * lim; const dot = state.vx * ux + state.vz * uz; if (dot < 0) { state.vx -= dot * ux; state.vz -= dot * uz; } }
   }
-  if (lake && state.y < lake.y + .5 && state.y > lake.y - .3 && Math.hypot(state.x - lake.x, state.z - lake.z) < lake.r) { const d = Math.hypot(nx - lake.x, nz - lake.z), lim = lake.r - .7; if (d > lim && floorAt(nx, nz, state.y + .42) < lake.y - .1) { nx = lake.x + (nx - lake.x) / d * lim; nz = lake.z + (nz - lake.z) / d * lim; } }
+  // Gelände: Hänge sind begehbar; bis 1 m hohe Stufen (Ufer, Grasplatten) nimmt Aeru von selbst, steilere Wände halten auf.
+  { const th = heightAt(nx, nz);
+    if (th > state.y + STEP_UP) {
+      if (th - state.y < 1 && !state.flight && state.vy < 6) { state.y = th; state.vy = Math.max(0, state.vy); }
+      else { const tx = heightAt(nx, state.z), tz = heightAt(state.x, nz);
+        if (tx <= state.y + STEP_UP) { nz = state.z; state.vz = 0; } else if (tz <= state.y + STEP_UP) { nx = state.x; state.vx = 0; } else { nx = state.x; nz = state.z; state.vx = state.vz = 0; } }
+    } }
   { const bd = Math.hypot(nx, nz); if (bd > WORLD_R) { nx *= WORLD_R / bd; nz *= WORLD_R / bd; if (time - (movePlayer.edgeTold || -9) > 6) { movePlayer.edgeTold = time; toast('Die Berge umschließen die Welt · dahinter ist nur Himmel'); } } }
   const px = state.x, pz = state.z; state.x = nx; state.z = nz;
   const rushing = state.dodge > 0 || state.charge > 0;
@@ -1124,6 +1147,8 @@ function movePlayer(dt) {
   state.y += state.vy * dt; let floor = floorAt(state.x, state.z, oldY + .42);
   // Durchfallschutz: der ganze Weg dieses Schritts zählt (schneller Fall, Kante, Plattformrand), nicht nur der Endpunkt.
   if (state.vy <= 0) { const f0 = floorAt(px, pz, oldY + .42), f1 = floorAt((px + nx) / 2, (pz + nz) / 2, oldY + .42); if (f0 > floor && f0 <= oldY + .42 && state.y <= f0) floor = f0; if (f1 > floor && f1 <= oldY + .42 && state.y <= f1) floor = f1; }
+  // Hangabwärts bleibt Aeru am Boden, statt bei jedem Schritt kurz abzuheben.
+  if (wasGround && state.vy <= 0 && !state.flight && state.y > floor && state.y - floor < .5) state.y = floor;
   if (state.y <= floor && state.vy <= 0) {
     state.y = floor; state.vy = 0; state.onGround = true; state.flight = false; state.jumpCut = true;
     state.stamina = Math.min(maxStamina(), state.stamina + dt * 45);
@@ -1502,17 +1527,13 @@ function updateCamera(dt) {
     const a = dx * dx + dy * dy + dz * dz, b = 2 * (ox * dx + oy * dy + oz * dz), c = ox * ox + oy * oy + oz * oz - R * R, disc = b * b - 4 * a * c;
     if (c > 0 && disc > 0) { const hit = (-b - Math.sqrt(disc)) / (2 * a); if (hit > 0 && hit < 1) cameraGoal.set(cameraTarget.x + dx * Math.max(.3, hit), cameraTarget.y + dy * Math.max(.3, hit), cameraTarget.z + dz * Math.max(.3, hit)); }
   }
-  // Tafelberge über Aeru (im Tal): Die Kamera rückt vor die Felswand, statt in ihr zu stecken.
-  for (const s of solids) {
-    if (!s.mesa || s.y < cameraTarget.y + .5) continue;
-    const R = s.r + .6, fx = cameraTarget.x - s.x, fz = cameraTarget.z - s.z, dx = cameraGoal.x - cameraTarget.x, dz = cameraGoal.z - cameraTarget.z;
-    const a = dx * dx + dz * dz, b = 2 * (fx * dx + fz * dz), c = fx * fx + fz * fz - R * R, disc = b * b - 4 * a * c;
-    if (a > 1e-6 && c > 0 && disc > 0) { const hit = (-b - Math.sqrt(disc)) / (2 * a); if (hit > 0 && hit < 1) { const k = Math.max(.25, hit); cameraGoal.x = cameraTarget.x + dx * k; cameraGoal.z = cameraTarget.z + dz * k; } }
-  }
+  // Gelände zwischen Aeru und Kamera (Hang, Hochfläche): Die Kamera hebt sich darüber, statt im Hang zu stecken.
+  cameraGoal.y = Math.max(cameraGoal.y, heightAt(cameraGoal.x, cameraGoal.z) + .9, heightAt((cameraGoal.x + cameraTarget.x) / 2, (cameraGoal.z + cameraTarget.z) / 2) + .6);
   const ground = floorAt(cameraGoal.x, cameraGoal.z, cameraTarget.y + 2.5);
   if (cameraGoal.y < ground + .9) cameraGoal.y = ground + .9;
   camera.position.lerp(cameraGoal, 1 - Math.exp(-dt * 9));
   if (camera.position.y < ground + .6) camera.position.y = ground + .6;
+  camera.position.y = Math.max(camera.position.y, heightAt(camera.position.x, camera.position.z) + .5);
   for (const t of treeColliders) {
     const ox = camera.position.x - t.x, oy = camera.position.y - t.cy, oz = camera.position.z - t.z, d = Math.hypot(ox, oy, oz), R = t.crown + .4;
     if (d < R && d > 0) camera.position.set(t.x + ox / d * R, t.cy + oy / d * R, t.z + oz / d * R);
@@ -2016,7 +2037,7 @@ if (TEST) window.aeruTest = {
   lose: () => { state.hp = 1; invulnerable = 0; hurt(); },
   perf: () => { let objects = 0; scene.traverse(() => objects++); const info = renderer.info?.render || {}; return {...lastPerf, calls: info.calls, triangles: info.triangles, pixelRatio: renderer.getPixelRatio?.(), objects, quality: settings.quality === 'auto' ? autoLevel : settings.quality, renderScale, geometries: renderer.info?.memory?.geometries, textures: renderer.info?.memory?.textures}; },
   sky: SKY, rammId: () => rammId,
-  trial: () => trial && {active: trial.active, t: trial.t, start: {...trial.start}, got: trial.jewel.got, hidden: trial.jewel.hidden, items: trial.items.map(o => ({kind: o.kind, x: o.x, y: o.y, z: o.z, got: o.got}))}, valley: () => ({y: VALLEY_Y, worldR: WORLD_R, stairs: valleyStairs.map(st => ({...st, steps: st.steps.map(p => ({...p}))}))}), water: () => lake && {...lake}, climbWall: () => climbWall && {...climbWall}, crates: () => crates.map(c => ({x: c.x, y: c.y, z: c.z, broken: c.broken, steel: !!c.steel})), falter: () => falterPool.filter(f => f.life > 0).map(f => ({x: f.x, y: f.y, z: f.z})), funkel: () => ({x: funkelPos.x, y: funkelPos.y, z: funkelPos.z, color: funkelColor()}), spawnFalter, hurt,
+  trial: () => trial && {active: trial.active, t: trial.t, start: {...trial.start}, got: trial.jewel.got, hidden: trial.jewel.hidden, items: trial.items.map(o => ({kind: o.kind, x: o.x, y: o.y, z: o.z, got: o.got}))}, terrain: () => ({valleyY: VALLEY_Y, worldR: WORLD_R, plateaus: terrain.pl.map(q => ({...q})), ridges: terrain.ri.map(q => ({...q}))}), heightAt, water: () => lake && {...lake}, climbWall: () => climbWall && {...climbWall}, crates: () => crates.map(c => ({x: c.x, y: c.y, z: c.z, broken: c.broken, steel: !!c.steel})), falter: () => falterPool.filter(f => f.life > 0).map(f => ({x: f.x, y: f.y, z: f.z})), funkel: () => ({x: funkelPos.x, y: funkelPos.y, z: funkelPos.z, color: funkelColor()}), spawnFalter, hurt,
   regions: () => regions.map(r => ({id: r.id, x: r.x, z: r.z, r: r.r, bridge: r.bridge, axis: r.axis, at: r.at, entry: r.entry, tower: r.tower})), jewels: () => jewels.map(j => ({id: j.id, kind: j.kind, v: j.v, x: j.x, y: j.y, z: j.z, got: j.got, hidden: j.hidden})),
   statues: () => dragonStatues.map(d => ({id: d.id, x: d.x, z: d.z, freed: d.freed})), thief: () => thief && {x: thief.x, z: thief.z, caught: thief.caught}, gates: () => worldGates.map(g => ({id: g.id, x: g.x, z: g.z, to: g.to, need: g.need, arrive: g.arrive})), hub: () => hub && {x: hub.x, z: hub.z, r: hub.r, bridge: hub.bridge, at: hub.at, entry: hub.entry}, setCore: (i, v = true) => { save.cores[i] = v; }, jewelValue, jewelTotal,
   portals: () => gamePortals.map(p => ({id: p.id, x: p.x, z: p.z, url: p.url})), navigated: () => window.__aeruNavigate || null, cam: () => ({yaw: camYaw, pitch: camPitch}), stick: (x, y) => { moveX = x; moveY = y; }, padInput: () => ({x: padX, y: padY}),
