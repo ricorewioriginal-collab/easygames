@@ -7,9 +7,9 @@ import { arealMask, arealHeight, arealCutDepth, arealDress } from './mwareal.js'
 import { WORLDS } from './mwdata.js';
 import { makeLand } from './mwland.js';
 import { createMwFoes } from './mwfoes.js';
-export const MW_FIRST = 21, MW_LAST = 32, MW = WORLDS;
+export const MW_FIRST = 21, MW_LAST = 33, MW = WORLDS;
 const CX = 0; let CZ = -36, R = 58; const PATHX = z => Math.sin(z * .08) * 5;
-const GTEX = { spiegel: 'forest', dschungel: 'forest', notredame: 'cobble', theben: 'sand', meer: 'sand', mauer: 'grass', camelot: 'grass', nimmerland: 'grass', wunderland: 'grass', pinocchio: 'grass', aladdin: 'sand', kurbelhafen: 'grass' };
+const GTEX = { spiegel: 'forest', dschungel: 'forest', notredame: 'cobble', theben: 'sand', meer: 'sand', mauer: 'grass', camelot: 'grass', nimmerland: 'grass', wunderland: 'grass', pinocchio: 'grass', aladdin: 'sand', kurbelhafen: 'grass', ricorewi: 'grass' };
 const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 const hex = n => '#' + n.toString(16).padStart(6, '0');
 
@@ -171,6 +171,7 @@ export function createMaerchen(C) {
     if (kind === 'jar') add(mk(G.sph, M(0xb08a3a, { m: .8, r: .3 }), 0, .5 * s, 0, .55 * s, .6 * s, .55 * s));
   }
   function npcModel(d) {
+    if (d.kk && C.kkCast) return C.kkCast(d.kk);   // Hauptfigur als KayKit-Figur (z. B. RiCARDO)
     if (d.ani) { const [kind, col, sc] = d.ani, P = FOE.has(kind) ? FOE.make(kind, col, false) : C.CR().makeKind(kind, col, false); P.root.scale.setScalar(sc); P.arms = [new T.Group()]; if (!P.legs || P.legs.length < 2) P.legs = [new T.Group(), new T.Group()]; if (!P.head) P.head = new T.Group(); return P; }
     const W = { bow: { l: 'bow_withString' }, sword: { r: 'sword_1handed' }, staff: { r: 'staff' }, club: { r: 'hammer_B' }, pick: { r: 'hammer_A' } }[d.extra] || {};
     const P = C.folk(d.name, d.v, { pal: 1, ...W, hideX: d.extra === 'tail' ? 'Leg|Cape' : '' }); if (d.extra && !W.r && !W.l) { if (d.extra === 'tail') P.tailCol = d.v.cloth; extra(P, d.extra, 1); } return P;
@@ -264,7 +265,7 @@ export function createMaerchen(C) {
     for (let k = 0; k < 2; k++) { const rr = R + 3 + k * 4.5, N = Math.round(rr * 6.283 / (w.border.includes('house') ? 5.6 : 3.6)); for (let i = 0; i < N; i++) { const a = (i + k * .5) / N * 6.283, x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr; if (Math.hypot(x, z - 15) < 9) continue; const kind = w.border[(i + k) % w.border.length]; list.push([x, z, kind, kind === 'rockbig' ? .7 + R2() * .5 : kind === 'house' ? .8 + R2() * .4 : 1.1 + R2() * .6, kind === 'house' ? -a : R2() * 6.3]); } }
     const busy = [...w.pads.map(([x, z, r]) => [x, z, r + 2]), [0, 10, 10], [-7, 15, 6], ...pools.map(([x, z, r]) => [x, z, r + 2]), ...w.zones.map(q => [q[3], q[4], 5])];
     for (const m of w.ms) { for (const q of (m.pts || [])) busy.push([q[0], q[1], 3]); if (m.at) busy.push([m.at[0], m.at[1], m.r || 5]); }
-    for (const d of w.npcs) busy.push([d.x, d.z, 3]); for (const q of [...(w.chests || []), ...(w.pots || []), ...(w.lore || []), ...(w.portals || []), ...(w.vents || [])]) busy.push([q[0], q[1], 2.5]);
+    for (const d of w.npcs) busy.push([d.x, d.z, 3]); for (const q of [...(w.chests || []), ...(w.pots || []), ...(w.lore || []), ...(w.portals || []), ...(w.ints || []), ...(w.vents || [])]) busy.push([q[0], q[1], 2.5]);
     for (const q of (w.swings || [])) busy.push([q[0], q[1], 3], [q[2], q[3], 3]); if (w.currents) for (const q of w.currents) busy.push([q[0], q[1], q[2]]); if (w.climb) busy.push([w.climb.cx, w.climb.cz, 8]);
     for (const [kind, cnt0] of w.decor) { const cnt = Math.round(cnt0 * Math.min(AK, 2.4) * (AM && DECOR[kind].col > .3 ? .35 : 1)); let n2 = 0, tries = 0; while (n2 < cnt && tries++ < cnt * 30) { const a = R2() * 6.283, rr = Math.sqrt(R2()) * (R - 3), x = CX + Math.sin(a) * rr, z = CZ + Math.cos(a) * rr;
       if ((Math.abs(x - PATHX(z)) < 4 && z < 16 && z > -88) || roadD(w, x, z) < 3.2) continue; if (busy.some(([bx, bz, br]) => Math.hypot(x - bx, z - bz) < br + 1.5)) continue; if ((w.rects || []).some(([x0, x1, z0, z1]) => x > x0 - 2 && x < x1 + 2 && z > z0 - 2 && z < z1 + 2)) continue;
@@ -300,7 +301,11 @@ export function createMaerchen(C) {
       C.INT.push({ x, z: z + 1.2, name: 'Krug', pr: 'Zerschlagen', rad: 2, vis: () => m.visible, talk() { m.visible = false; C.sfx('hit'); C.emit(x, h(x, z) + .5, z, 0xa86a3a, 14, 3, .5, .3, 9); const S2 = C.S(), r = Math.random(); if (r < .15) { S2.potions++; C.toast('🧪 Heiltrank gefunden'); } else { const v = 6 + (r * 14 | 0); S2.shards += v; C.toast('💎 +' + v); } } }); });
     (w.lore || []).forEach(([x, z, txt]) => { b.ico(x, .6, z, .7, 1.2, .5, 0x8a8478, { solid: 1 }); const pl = mk(G.box, M(0xe8d8a8, { e: 0x6a5a30, ei: .6 }), x, h(x, z) + 1, z + .42, .7, .5, .04, false); C.scene.add(pl); C.INT.push({ x, z: z + 1.6, name: 'Erzählerstein', pr: 'Lesen', rad: 2.4, talk() { C.say([['Erzählerstein', txt]]); } }); });
     (w.portals || []).forEach(([x, z, nm], i, L) => { const pg = new T.Group(); pg.position.set(x, h(x, z), z); const fr = mk(G.tor, M(0xc8a24a, { m: .9, r: .25 }), 0, 1.7, 0, .95, .95, .5, false); fr.scale.y = 1.7; pg.add(fr); pg.add(mk(G.sph, M(0xd8e8ff, { m: 1, r: .04, e: 0x6a4aaa, ei: .8 }), 0, 1.7, 0, .85, 1.5, .04, false)); pg.add(mk(G.box, M(0x2a2232), 0, .1, 0, 1.4, .2, .5)); pg.add(glow(0xc8a0ff, 3.4, 0, 1.7, .2, .5)); C.scene.add(pg); C.addCol(x, z, .6);
-      C.INT.push({ x, z: z + 1.5, name: nm, pr: 'Durch den Spiegel', rad: 2.4, talk() { const [tx, tz] = L[(i + 1) % L.length]; C.sfx('portal'); C.FX().pillar(C.pl.x, C.pl.y, C.pl.z, 0xc8a0ff, 1.1, 5, .8); C.pl.x = tx; C.pl.z = tz + 2.2; C.pl.y = h(C.pl.x, C.pl.z); C.snapCam(); C.FX().pillar(C.pl.x, C.pl.y, C.pl.z, 0xc8a0ff, 1.1, 5, .8); C.toast('🪞 ' + L[(i + 1) % L.length][2]); } }); });
+      C.INT.push({ x, z: z + 1.5, name: nm, pr: w.portalPr || 'Durch den Spiegel', rad: 2.4, talk() { const [tx, tz] = L[(i + 1) % L.length]; C.sfx('portal'); C.FX().pillar(C.pl.x, C.pl.y, C.pl.z, 0xc8a0ff, 1.1, 5, .8); C.pl.x = tx; C.pl.z = tz + 2.2; C.pl.y = h(C.pl.x, C.pl.z); C.snapCam(); C.FX().pillar(C.pl.x, C.pl.y, C.pl.z, 0xc8a0ff, 1.1, 5, .8); C.toast('🪞 ' + L[(i + 1) % L.length][2]); } }); });
+    /* Echte Ausgänge (z. B. Portal zu einem anderen easygames-Spiel): erst fragen, Spielstand sichern, dann wechseln. Masten mit Sender-ID schalten das Abenteurer-Radio um. */
+    (w.ints || []).forEach(([x, z, nm, pr, a]) => C.INT.push({ x, z, name: nm, pr, rad: 2.4, talk() {
+      C.say([[a.who || 'Erzähler', a.txt]], null, [{ t: '▶ ' + a.t + ' öffnen', fn: () => { C.saveGame(true); C.sfx('portal'); setTimeout(() => { location.href = new URL(a.go + (a.go.includes('?') ? '&' : '?') + 'from=zotik', location.href).href; }, 350); } }, { t: 'Hierbleiben', fn: () => { } }]); } }));
+    w.ms.forEach((m, mi) => { if (m.t === 'ring') (m.pts || []).forEach(([x, z, nm, sid]) => { if (!sid) return; C.INT.push({ x: x + .9, z: z + .9, name: nm.replace(/^Mast /, '📻 '), pr: 'Sender einschalten', rad: 1.8, vis: () => (st(w.id).m > mi || st(w.id).done) && !!window.ZotikRadio, talk() { window.ZotikRadio.pick(sid); C.sfx('pick'); C.toast('📻 ' + nm.replace(/^Mast /, '') + ' läuft'); } }); }); });
     (w.swings || []).forEach(([ax, az, bx, bz, nm]) => { for (const [x0, z0, x1, z1] of [[ax, az, bx, bz], [bx, bz, ax, az]]) { const tx = (x0 + x1) / 2, tz = (z0 + z1) / 2, post = mk(G.cyl0, M(0x5a4430), x0, h(x0, z0) + 1.5, z0, .1, 3, .1); C.scene.add(post); C.addCol(x0, z0, .3);
       const vine = mk(G.cyl0, M(0x3a7a2a), (x0 + tx) / 2, h(tx, tz) + 7, (z0 + tz) / 2, .05, 9, .05, false); vine.rotation.x = Math.atan2(z0 - tz, 9) * .9; C.scene.add(vine);
       C.INT.push({ x: x0, z: z0 + (z1 > z0 ? -1.2 : 1.2), name: nm, pr: 'Schwingen', rad: 2.4, talk() { cur.swing = { x0: C.pl.x, z0: C.pl.z, x1, z1: z1 + (z1 > z0 ? 1.6 : -1.6), t: 0 }; C.sfx('jump'); } }); } });
@@ -444,7 +449,8 @@ export function createMaerchen(C) {
     else addGuest();
   }
   function addGuest() {
-    if (!cur || cur.guest || C.MP().on) return; const d = cur.w.guest, P = npcModel(d); C.PARTY[d.id] = { n: d.name, col: d.col, css: d.css, em: d.em, atk: d.atk, rng: d.rng, cd: d.cd, melee: d.melee };
+    if (!cur || cur.guest || C.MP().on) return; if (cur.w.guest.perm && C.S().fl['gk_' + cur.w.guest.perm]) return;   // schon dauerhaft im Team
+    const d = cur.w.guest, P = npcModel(d); C.PARTY[d.id] = { n: d.name, col: d.col, css: d.css, em: d.em, atk: d.atk, rng: d.rng, cd: d.cd, melee: d.melee };
     P.root.visible = true; C.scene.add(P.root); const a = { id: d.id, P, x: C.pl.x + 2, z: C.pl.z + 2.5, face: C.pl.face, t: 0, cd: 1, hc: 3, mv: 0, hp: 70 + C.S().lvl * 9, ko: false, kot: 0, skc: 0, taunt: 0, calm: 0, guest: 1 };
     C.CMP.push(a); cur.guest = a; C.toast('🤝 ' + d.name + ' kämpft an deiner Seite');
   }
@@ -559,7 +565,7 @@ export function createMaerchen(C) {
         const S = C.S(), s2 = st(w.id); s2.done = 1; S.shards += 300; S.potions += 2; S.items.phoenix = (S.items.phoenix || 0) + 1; C.gainXp(250 + S.lvl * 20); C.sfx('level');
         const k = seals(); C.banner('Welt versiegelt', w.em + ' ' + w.name + ' · Siegel ' + k + '/' + WORLDS.length); C.toast('💎 +300 · 🧪 +2 · 🔥 Phönix-Trank');
         if (k >= WORLDS.length && !S.fl.mwAll) { S.fl.mwAll = 1; C.giveGear('w_maer'); C.say([['Erzähler', 'Alle sieben Märchenwelten sind versiegelt. Aus den Siegeln formt sich eine Klinge, in der jede Geschichte weiterklingt.'], ['Zotik', 'Die Erzählerklinge … Danke, ihr alle.']]); }
-        mat.color.setHex(0x8a8a9a); mat.emissive.setHex(0x2a2a3a); refresh(); C.saveGame(true); });
+        mat.color.setHex(0x8a8a9a); mat.emissive.setHex(0x2a2a3a); refresh(); if (C.onSeal) C.onSeal(w); C.saveGame(true); });
     } });
   }
 
