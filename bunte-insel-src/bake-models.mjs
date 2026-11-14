@@ -55,7 +55,7 @@ function decodePng(buf) {
 const linToSrgb = (c) => (c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(c, 1 / 2.4) - 0.055);
 
 // ---------- GLB ----------
-async function readGlb(file) {
+async function readGlb(file, pick) {
   let json = null, bin = null;
   if (file.endsWith('.gltf')) { json = JSON.parse(fs.readFileSync(file, 'utf8')); bin = fs.readFileSync(path.join(path.dirname(file), json.buffers[0].uri)); }
   else {
@@ -100,11 +100,8 @@ async function readGlb(file) {
       }
     return out;
   };
-  let tex = null;
-  if (json.images?.length) {
-    const im = json.images[0];
-    tex = decodePng(im.uri ? fs.readFileSync(path.join(path.dirname(file), im.uri)) : Buffer.from(views[im.bufferView].data));
-  }
+  const imgs = (json.images ?? []).map((im) => decodePng(im.uri ? fs.readFileSync(path.join(path.dirname(file), im.uri)) : Buffer.from(views[im.bufferView].data)));
+  const texOf = (ti) => (ti === undefined ? null : imgs[json.textures?.[ti]?.source ?? ti] ?? null);
   // Knoten-Hierarchie
   const prims = [];
   const visit = (ni, parent) => {
@@ -115,7 +112,8 @@ async function readGlb(file) {
     if (nd.mesh !== undefined) for (const p of json.meshes[nd.mesh].primitives) prims.push({ p, m: wm });
     for (const c of nd.children ?? []) visit(c, wm);
   };
-  for (const n of json.scenes[json.scene ?? 0].nodes) visit(n, new THREE.Matrix4());
+  if (pick) { const ni = json.nodes.findIndex((n) => n.name === pick); if (ni < 0) throw new Error(`${file}: Knoten ${pick} fehlt`); const nd = json.nodes[ni]; for (const c of nd.children ?? []) visit(c, new THREE.Matrix4()); if (nd.mesh !== undefined) for (const p of json.meshes[nd.mesh].primitives) prims.push({ p, m: new THREE.Matrix4() }); }
+  else for (const n of json.scenes[json.scene ?? 0].nodes) visit(n, new THREE.Matrix4());
 
   const P = [], N = [], C = [], T = [], I = [];
   for (const { p, m } of prims) {
@@ -135,7 +133,8 @@ async function readGlb(file) {
       else v.set(0, 1, 0);
       N.push(v.x, v.y, v.z);
       let col = [linToSrgb(fc[0]), linToSrgb(fc[1]), linToSrgb(fc[2])];
-      if (tex && uv && pbr.baseColorTexture) {
+      const tex = texOf(pbr.baseColorTexture?.index);
+      if (tex && uv) {
         const off = tt.offset ?? [0, 0], sc = tt.scale ?? [1, 1];
         let u = uv[k * 2] * sc[0] + off[0], w = uv[k * 2 + 1] * sc[1] + off[1];
         u -= Math.floor(u); w -= Math.floor(w);
@@ -156,32 +155,44 @@ async function readGlb(file) {
 
 await MeshoptDecoder.ready;
 const files = fs.readdirSync(SRC).filter((f) => /\.(glb|gltf)$/.test(f)).sort();
+// Auswahl einzelner Modelle aus Sammel-Dateien (z. B. dieselben CC0-Pakete wie im Zotik-Spiel): models-src/picks.json = { "name": ["pfad/zur.glb", "Knotenname"] }
+const PICKS = fs.existsSync(path.join(SRC, 'picks.json')) ? JSON.parse(fs.readFileSync(path.join(SRC, 'picks.json'), 'utf8')) : {};
+// deko.bin = Einzeldateien (überall gebraucht, früh geladen); welt.bin = Auswahl aus picks.json (erst in der Nähe der Welt geladen)
+const SETS = [[OUT, files.map((f) => [f.replace(/\.(glb|gltf)$/, ''), path.join(SRC, f), null])], [path.join(path.dirname(OUT), 'welt.bin'), Object.entries(PICKS).map(([k, [f, n]]) => [k, path.join(SRC, f), n])]];
+for (const [OUTF, jobs] of SETS) {
 const meta = { v: 1, models: {} };
 const chunks = [];
 let off = 0;
 const add = (u8) => { const pad = (4 - (off % 4)) % 4; if (pad) { chunks.push(new Uint8Array(pad)); off += pad; } const at = off; chunks.push(u8); off += u8.byteLength; return at; };
 let totalV = 0;
-for (const f of files) {
-  const { P, N, C, I } = await readGlb(path.join(SRC, f));
+for (const [name, file, pick] of jobs) {
+  const f = name;
+  const { P, N, C, I } = await readGlb(file, pick);
   const vc = P.length / 3;
   if (vc > 65535) throw new Error(`${f}: zu viele Vertices`);
   const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
   for (let k = 0; k < vc; k++) for (let c = 0; c < 3; c++) { min[c] = Math.min(min[c], P[k * 3 + c]); max[c] = Math.max(max[c], P[k * 3 + c]); }
-  const qp = new Int16Array(vc * 3), qn = new Int8Array(vc * 3), qc = new Uint8Array(vc * 3);
+  let qp = new Int16Array(vc * 3), qn = new Int8Array(vc * 3), qc = new Uint8Array(vc * 3);
   for (let k = 0; k < vc; k++) for (let c = 0; c < 3; c++) {
     const span = max[c] - min[c] || 1;
     qp[k * 3 + c] = Math.round(((P[k * 3 + c] - min[c]) / span) * 65535 - 32768);
     qn[k * 3 + c] = Math.round(Math.max(-1, Math.min(1, N[k * 3 + c])) * 127);
     qc[k * 3 + c] = Math.round(Math.max(0, Math.min(1, C[k * 3 + c])) * 255);
   }
-  const name = f.replace(/\.(glb|gltf)$/, '');
-  meta.models[name] = { vc, ic: I.length, min: min.map((x) => +x.toFixed(4)), max: max.map((x) => +x.toFixed(4)), p: add(new Uint8Array(qp.buffer)), n: add(new Uint8Array(qn.buffer)), c: add(qc), i: add(new Uint8Array(Uint16Array.from(I).buffer)) };
-  totalV += vc;
+  // gleiche Vertices (nach dem Quantisieren) zusammenlegen – spart bei Sammel-Paketen viel Platz
+  { const map = new Map(), remap = new Uint32Array(vc), np = [], nn = [], nc = []; let u = 0;
+    for (let k = 0; k < vc; k++) { const key = qp[k * 3] + ',' + qp[k * 3 + 1] + ',' + qp[k * 3 + 2] + ',' + qn[k * 3] + ',' + qn[k * 3 + 1] + ',' + qn[k * 3 + 2] + ',' + qc[k * 3] + ',' + qc[k * 3 + 1] + ',' + qc[k * 3 + 2]; let j = map.get(key); if (j === undefined) { j = u++; map.set(key, j); for (let c = 0; c < 3; c++) { np.push(qp[k * 3 + c]); nn.push(qn[k * 3 + c]); nc.push(qc[k * 3 + c]); } } remap[k] = j; }
+    const I2 = []; for (let k = 0; k < I.length; k += 3) { const a = remap[I[k]], b = remap[I[k + 1]], c = remap[I[k + 2]]; if (a !== b && b !== c && a !== c) I2.push(a, b, c); }
+    I.length = 0; I.push(...I2); qp = Int16Array.from(np); qn = Int8Array.from(nn); qc = Uint8Array.from(nc); }
+  const vcq = qp.length / 3;
+  meta.models[name] = { vc: vcq, ic: I.length, min: min.map((x) => +x.toFixed(4)), max: max.map((x) => +x.toFixed(4)), p: add(new Uint8Array(qp.buffer)), n: add(new Uint8Array(qn.buffer)), c: add(qc), i: add(new Uint8Array(Uint16Array.from(I).buffer)) };
+  totalV += vcq;
 }
 const js = Buffer.from(JSON.stringify(meta));
 const head = Buffer.alloc(8); head.write('BIM1', 0, 'ascii'); head.writeUInt32LE(js.length, 4);
 const jpad = Buffer.alloc((4 - ((8 + js.length) % 4)) % 4, 0x20);
-fs.mkdirSync(path.dirname(OUT), { recursive: true });
-fs.writeFileSync(OUT, Buffer.concat([head, js, jpad, ...chunks.map((c) => Buffer.from(c.buffer, c.byteOffset, c.byteLength))]));
-console.log(`${files.length} Modelle, ${totalV} Vertices → ${path.relative(root, OUT)} (${(fs.statSync(OUT).size / 1024).toFixed(1)} KB)`);
+fs.mkdirSync(path.dirname(OUTF), { recursive: true });
+fs.writeFileSync(OUTF, Buffer.concat([head, js, jpad, ...chunks.map((c) => Buffer.from(c.buffer, c.byteOffset, c.byteLength))]));
+console.log(`${jobs.length} Modelle, ${totalV} Vertices → ${path.relative(root, OUTF)} (${(fs.statSync(OUTF).size / 1024).toFixed(1)} KB)`);
 for (const [k, m] of Object.entries(meta.models)) console.log(`  ${k}: ${m.vc} V, ${m.ic / 3} T, Größe ${m.max.map((x, i) => (x - m.min[i]).toFixed(2)).join(' × ')}`);
+}

@@ -44,7 +44,7 @@ BI.registerDoors = function (W) {
   if (M) { lo(M, 66, -16, -1, 0, 'huette', 'Strandhütte', 'maerchen'); [[5, -33], [19, -33], [5, -41], [19, -41]].forEach(([a, b], i) => lo(M, a, b, 0, 1, 'zelt', ['Wahrsager-Zelt', 'Teppich-Zelt', 'Gewürz-Zelt', 'Lampen-Zelt'][i], 'maerchen')); }
   if (Q) { lo(Q, 14, -32, 0, 1, 'frucht', 'Ananas-Haus', 'schwamm'); lo(Q, 26, -32, 0, 1, 'stein', 'Stein-Haus', 'schwamm'); lo(Q, 38, -32, 0, 1, 'kopf', 'Steinkopf-Haus', 'schwamm'); lo(Q, -14, 34, 0, -1, 'eimer', 'Eimerchen', 'schwamm'); lo(Q, -44, 34, 0, -1, 'held', 'Heldenheim', 'schwamm'); lo(Q, -56, -20, 1, 0, 'huette', 'Strandhütte', 'schwamm'); }
   if (B) { const t = B.at(194, -5.5), k = B.at(184, 12); BI.doorScan(W, t.x, t.z, -B.ux, -B.uz, 'turm', 'Bademeister-Turm', 'bade'); BI.doorScan(W, k.x, k.z, -B.ux, -B.uz, 'laden', 'Eis-Kiosk', 'bade'); }
-  wo(25, 385, 'haus', 'Mondhaus', 'zotik', 0, 330); wo(29, 413, 'huette', 'Kristallhütte', 'zotik', 0, 330); wo(31, 348, 'turm', 'Mondturm', 'zotik', 0, 330);
+  for (const h of (BI.ZOTIK && BI.ZOTIK.houses) || []) wo(h.x, h.z, h.kind, h.name, 'zotik', h.tx, h.tz); if (BI.ZOTIK && BI.ZOTIK.turm) wo(BI.ZOTIK.turm.x, BI.ZOTIK.turm.z, 'turm', 'Mondturm', 'zotik', BI.ZOTIK.turm.x, BI.ZOTIK.turm.z + 20);
   wo(181, -179, 'haus', 'Bauhaus', 'bauland', 0, -150); wo(207, -148, 'huette', 'Bauhütte', 'bauland', 0, -150); wo(207, -174, 'werkstatt', 'Werkstatt-Haus', 'bauland', 0, -150);
   wo(246, 8, 'laden', 'Park-Büro', 'park', 200, 0); wo(-266, -162, 'haus', 'Hafenhaus', 'dampf', -230, -150); wo(-301, -135, 'kapitaen', 'Kapitänshaus', 'dampf', -270, -150); wo(240, 184, 'turm', 'Funkturm', 'radio', 200, 170);
   wo(-66, 60, 'turm', 'Wasserturm', 'insel', 0, 0); wo(162, -28, 'haus', 'Ferienhaus', 'insel', 100, 0); wo(-165, -11, 'huette', 'Bauernhütte', 'insel', -100, 0);
@@ -89,7 +89,7 @@ BI.createInnen = function (G) {
     raetsel: ['📚 Im Prüfungsturm helfen Bomben, Bogen und Enterhaken – jedes Werkzeug öffnet neue Wege.', '📚 Kapsli wird stärker, wenn du es fütterst. Es hilft dir auf der Wald-Insel!', '📚 In der Uralten Höhle wartet jedes Mal ein neues Stockwerk.'],
     schluessel: ['📚 Fünf Schlüssellöcher warten im Schlüsselreich – jedes braucht eine andere Aufgabe.', '📚 Mit dem Lichtschlüssel vertreibst du die Dunkelwichtel. Sammle die Herz-Kristalle 💎!', '📚 Am Uhrturm gibt es Meersalz-Eis – lecker!'],
     schwamm: ['📚 In der Knusper-Krabbe kannst du Burger essen – oder selbst am Grill braten! 🍔', '📚 Mit dem Kescher fängst du Quallen. Aber sanft! 🪼', '📚 Das Wannen-Mobil kann man fahren – es parkt danach von allein.'],
-    zotik: ['📚 Lunaris ist die Hauptstadt von Zotik. Sammle Splitter: 10 Splitter = 1 ⭐.', '📚 Am Weltentor-Platz führen sechs Tore zu anderen Welten.', '📚 Moosling Felli hilft dir beim Elementar-Kampf. 🌱'],
+    zotik: ['📚 Lunaris ist das Dorf am Mondblick. Sammle Splitter: 10 Splitter = 1 ⭐.', '📚 Am Weltentor-Platz führen sechs Tore zu anderen Welten – und ein großes Tor ins Zotik-Spiel.', '📚 Das Mondtor öffnet sich nur bei Vollmond 🌕. Moosling Felli ist Zotiks Seelenbegleiter. 🌱'],
     bauland: ['📚 Im Bauland baust du eigene Häuser aus Blöcken. 🧱', '📚 Erst ein Boden, dann Wände, dann ein Dach – so steht dein Haus stabil!', '📚 Mit Farbe 🎨 sieht jedes Haus anders aus.'],
     dampf: ['📚 Der Dampfer fährt zu anderen Häfen – steig einfach ein! 🚢', '📚 Am Kai liegen Kisten und Fässer. Was da wohl drin ist?'],
     maerchen: ['📚 Im Märchenland gibt es einen Umzug – lauf mit! 🎠', '📚 Auf dem Basar gibt es Teppiche, Gewürze und Wunderlampen.'],

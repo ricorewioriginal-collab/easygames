@@ -1,0 +1,58 @@
+{
+ "kb_house": [
+  "../../zotik/models/kb/kb.glb",
+  "p_house"
+ ],
+ "kb_market": [
+  "../../zotik/models/kb/kb.glb",
+  "p_market"
+ ],
+ "kb_well": [
+  "../../zotik/models/kb/kb.glb",
+  "p_well"
+ ],
+ "kb_watchtower": [
+  "../../zotik/models/kb/kb.glb",
+  "p_watchtower"
+ ],
+ "kb_castle": [
+  "../../zotik/models/kb/kb.glb",
+  "p_castle"
+ ],
+ "wz_tree_pink": [
+  "../../zotik/models/wz/wz.glb",
+  "p:ancient_tree_pink_1"
+ ],
+ "wz_garden_pink": [
+  "../../zotik/models/wz/wz.glb",
+  "p:garden_tree_pink"
+ ],
+ "wz_grass_purple": [
+  "../../zotik/models/wz/wz.glb",
+  "p:grass_purple_group"
+ ],
+ "wz_grass_green": [
+  "../../zotik/models/wz/wz.glb",
+  "p:grass_green_group"
+ ],
+ "wz_rock_big": [
+  "../../zotik/models/wz/wz.glb",
+  "p:rock_big_1"
+ ],
+ "wz_rock_med": [
+  "../../zotik/models/wz/wz.glb",
+  "p:rock_medium_2"
+ ],
+ "wz_lamp": [
+  "../../zotik/models/wz/wz.glb",
+  "p:lamp"
+ ],
+ "wz_arch": [
+  "../../zotik/models/wz/wz.glb",
+  "p:arch"
+ ],
+ "wz_plant": [
+  "../../zotik/models/wz/wz.glb",
+  "p:garden_plant_1"
+ ]
+}

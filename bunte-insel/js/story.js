@@ -32,7 +32,7 @@ BI.createStory = function (G) {
   K.index = () => S().c;
   K.data = () => ST.map(c => ({ icon: c.icon, name: c.name, intro: c.intro, tasks: c.tasks.map(t => ({ icon: t[2], text: t[3] })) }));
   /* Bewohner erzählen vom Fest und geben einen Tipp zum nächsten Ziel – so hängen Gespräche und Inselreise zusammen */
-  K.hintLine = function () { const c = K.chapter(); if (!c) return null; const n = next(); if (!n) return null; const T = ['Hast du schon gehört? Bürgermeisterin Rosi bereitet das große Insel-Fest vor!', 'Ich freu mich so aufs Insel-Fest!', 'Rosi sagt, du hilfst beim Insel-Fest – toll!'];
+  K.hintLine = function () { const c = K.chapter(); if (!c) { const L = G.lights && G.lights(); return L && L.n < L.of ? ['Rosi plant das Fest der Welten!', 'Alle Welten wollen mitfeiern!', 'Hast du schon ein Weltenlicht gefunden?'][(Math.random() * 3) | 0] + ' 🌟 ' + L.n + '/' + L.of + ' Weltenlichter – jede Inselgeschichte bringt eins.' : null; } const n = next(); if (!n) return null; const T = ['Hast du schon gehört? Bürgermeisterin Rosi bereitet das große Insel-Fest vor!', 'Ich freu mich so aufs Insel-Fest!', 'Rosi sagt, du hilfst beim Insel-Fest – toll!'];
     return T[(Math.random() * T.length) | 0] + ' Tipp: ' + n[3].replace(/ \(.*\)$/, '') + '.'; };
   K.finish = () => { S().c = ST.length; G.persist(); renderChip(); };
   const chip = $('questChip'); BI.injectLogCss();
@@ -67,8 +67,8 @@ BI.createStory = function (G) {
     const again = (save.stk || []).includes('hero'); /* wer die Reise schon vor dem Parkdirektor-Kapitel geschafft hat, bekommt den Festpreis nicht doppelt */
     if (!quiet && !again) { G.addStars(20); A.fanfare && A.fanfare(); for (let i = 0; i < 4; i++) setTimeout(() => fx.burst(P.x + (Math.random() - .5) * 8, 6 + Math.random() * 4, P.z + (Math.random() - .5) * 8, 60, [BI.C.gold, BI.C.pink, BI.C.blue, BI.C.green, BI.C.orange], 12, 1.8, 26, 6), i * 450); }
     if (G.earn) G.earn('hero');
-    say('🏆 Die Inselreise ist geschafft! Großes Insel-Fest – du bist jetzt Inselheld! ' + (quiet || again ? '' : '+20 ⭐ ') + '· Weiter geht’s mit den Tagesaufgaben im 🎉-Menü', 6000);
-    if (!quiet && !again && A.speak) A.speak('Hurra! Alles ist vorbereitet – das große Insel-Fest beginnt, und du bist unser Inselheld! Jetzt warten die anderen Inseln mit ihren eigenen Geschichten auf dich.');
+    say('🏆 Die Inselreise ist geschafft! Großes Insel-Fest – du bist jetzt Inselheld! ' + (quiet || again ? '' : '+20 ⭐ ') + '· Das Feuerwerk hat man in allen Welten gesehen: Hilf jeder Welt bei ihrer Geschichte, dann feiern alle das 🌟 Fest der Welten!', 7000);
+    if (!quiet && !again && A.speak) A.speak('Hurra! Das große Insel-Fest beginnt, und du bist unser Inselheld! Unser Feuerwerk hat man in allen Welten gesehen – jetzt möchten alle mitfeiern. Hilf jeder Welt bei ihrer Geschichte, dann feiern wir zusammen das Fest der Welten!');
   }
   /* Ereignisse von außen */
   K.note = function (k) { const s = S(); if (s.ev[k]) return; const c = K.chapter(); if (!c || !c.tasks.some(t => t[0] === 'ev' && t[1] === k)) { s.ev[k] = 1; return; } s.ev[k] = 1; tick(c, k); };

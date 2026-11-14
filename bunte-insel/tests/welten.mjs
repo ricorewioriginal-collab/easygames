@@ -19,7 +19,7 @@ await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => wi
     out.size = Z.R <= 75 && Z.R >= 55;
     out.bridge = true; for (let z = Z.bridge.z0 + 2; z < Z.bridge.z1 - 1; z += 4) if (W.resolve(0, z, .4, {}).hit) out.bridge = false;
     out.bridgeEnd = Math.abs(Z.bridge.z1 - (Z.z - Z.R)) < 1.5 && !W.resolve(0, Z.z - Z.R + 2, .4, {}).hit;
-    const pts = [Z.tavern, Z.akad, Z.statue, Z.hint, Z.gateC].concat(Z.gates); out.inside = pts.every(o => o && Math.hypot(o.x - Z.x, o.z - Z.z) < Z.R - 3);
+    const pts = [Z.smith, Z.werk, Z.statue, Z.mondtor, Z.riss, Z.camp, Z.gateC].concat(Z.gates, Z.houses, Z.stones); out.inside = pts.every(o => o && Math.hypot(o.x - Z.x, o.z - Z.z) < Z.R - 3);
     const fl2ok = v => v > 3 && v < 8; const hx = Z.x + Z.hill.x * Z.S, hz = Z.z + Z.hill.z * Z.S; const fl = W.floorAt ? W.floorAt(hx, hz) : W.zotik.floor(hx, hz); out.fl = fl; out.fl2 = W.zotik.floor(hx, hz); out.hill = fl2ok(out.fl2); out.flatEdge = W.zotik.floor(Z.x - Z.R + 6, Z.z) === 0;
     out.zone = BI.worldAt(Z.x, Z.z) === 'zotik' && BI.zoneAt(Z.x + 30, Z.z, {}) === 'zotik';
     const g = b.zotik.shards || []; out.shards = g.length > 20 && g.every(q => Math.hypot(q.x - Z.x, q.z - Z.z) < Z.R);

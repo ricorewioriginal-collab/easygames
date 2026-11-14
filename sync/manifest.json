@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "79c38829da88",
- "generated": "2026-11-14T01:16:26+00:00",
- "commit": "8b3ce062acb482c7d65ec767fcb49f7d595bcebc",
+ "version": "5bd11b02a538",
+ "generated": "2026-11-14T01:19:15+00:00",
+ "commit": "c58d286f3b7f1044739f0ac5cc988eabdf7cc0c7",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -4864,7 +4864,7 @@
   {
    "p": "bunte-insel/index.html",
    "s": 109874,
-   "h": "24099b2f879f221fbd9fcb874b278e9508ed66cfc97a714fbc44b64fd052d9eb"
+   "h": "2b07c984c2bed97a74fb50ca9c08866c8356e4fa3cb6661b68af8b2d608ae5c7"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -4883,8 +4883,8 @@
   },
   {
    "p": "bunte-insel/js/ausruestung.js",
-   "s": 10319,
-   "h": "4e9bb2e9f827e6d6f0a341dff1201eb10390351e3783e6343dd98102b327402c"
+   "s": 10310,
+   "h": "2278a2c7847073125ed97c5edc28ec892cf92dc8fb2ac82042805a782661008e"
   },
   {
    "p": "bunte-insel/js/badestrand.js",
@@ -4903,8 +4903,8 @@
   },
   {
    "p": "bunte-insel/js/buch-data.js",
-   "s": 30377,
-   "h": "b9cc930b899ee383d4683e199c9fb4b7e3a4440ef013a9cf3f66ceb990afafd3"
+   "s": 30602,
+   "h": "017b2ee7e24e255014e8a16a00f025bb01996875366ecd6e036903993b63aa09"
   },
   {
    "p": "bunte-insel/js/buch.js",
@@ -4923,8 +4923,8 @@
   },
   {
    "p": "bunte-insel/js/bunte-insel.min.js",
-   "s": 2159976,
-   "h": "a4b48840aa41f2229320b58f00241800b96d430b0bae12bec7a0fe02e5345e07"
+   "s": 2174866,
+   "h": "ce3c285e82a6d5db276cfd54e0c74ee9050aea59e584e7ebe83087df5bbc2f48"
   },
   {
    "p": "bunte-insel/js/camp.js",
@@ -4963,8 +4963,8 @@
   },
   {
    "p": "bunte-insel/js/deko.js",
-   "s": 8107,
-   "h": "a5bd936c76248ce7b26fb69ed89fff8793c2c3547a501754a6635a31d73c3497"
+   "s": 10371,
+   "h": "ceb74ed260d01c1c67a84b4cb0552a8da77a6f8cf5ef91cc85f5cf462c6a68d3"
   },
   {
    "p": "bunte-insel/js/dialog.js",
@@ -5048,18 +5048,18 @@
   },
   {
    "p": "bunte-insel/js/i18n.js",
-   "s": 153019,
-   "h": "7a261a80c91b792ce11538c15d78e76ec4bf3f1fdb7182b24abd204e17edd07e"
+   "s": 152997,
+   "h": "485aeaaaf2c2227bd72469bdab060e8838a882668276f06d2cf205e99359449f"
   },
   {
    "p": "bunte-insel/js/innen.js",
-   "s": 63824,
-   "h": "702e760182a99d6c0205998676a78db31fa39a44c0ecfc83c01a8af98977b4f8"
+   "s": 63988,
+   "h": "0bef20f08bc703c1fa90550e9422878529f0464a2001d178b3b84f284552394f"
   },
   {
    "p": "bunte-insel/js/inselstory.js",
-   "s": 25315,
-   "h": "9b36179e842d62c130f1aa883b51035b07c5f4b05b32186944032879addf605d"
+   "s": 26779,
+   "h": "1fe791da82e9ac1c44f92797d8a46f8d8953c7818dffe28505fe572b387f4eb9"
   },
   {
    "p": "bunte-insel/js/jump.js",
@@ -5073,8 +5073,8 @@
   },
   {
    "p": "bunte-insel/js/kids.js",
-   "s": 30020,
-   "h": "65e28b5628f64cde28760800e4841927d5af813770abf0009904df58c2f13143"
+   "s": 30122,
+   "h": "0dc37aaf6f2696ff8b736d28354ab113479a3e322386b8de4fb9f34a46b9e19c"
   },
   {
    "p": "bunte-insel/js/kitchen.js",
@@ -5103,8 +5103,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 324120,
-   "h": "54a73713e53226caf83b466b2aafc916784757dabc3aec9132bbd85c9a46a2b1"
+   "s": 324411,
+   "h": "e70cc7d0c0e654a9dbb0a6c2d2e97293b828d400d2649ac7c00199bf3c053c61"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -5228,8 +5228,8 @@
   },
   {
    "p": "bunte-insel/js/story.js",
-   "s": 12605,
-   "h": "4f945b2b6d845ad53c1e411d0966373c0c865ee1782074ba909616d2801acb0f"
+   "s": 13032,
+   "h": "29de24401fef6e3e6cff0f0561115e4b149047a75bee14c29e8113dd030262a1"
   },
   {
    "p": "bunte-insel/js/storymode.js",
@@ -5238,8 +5238,8 @@
   },
   {
    "p": "bunte-insel/js/tafeln.js",
-   "s": 8811,
-   "h": "5610bd600b3760fb564355331b908e0a0fba01c8f51342c78fbce093ad621ca2"
+   "s": 8831,
+   "h": "1af2caeeae9c8f7804258f0489b3c617bff2a700104eea532b24343375160ea2"
   },
   {
    "p": "bunte-insel/js/talk.js",
@@ -5293,8 +5293,8 @@
   },
   {
    "p": "bunte-insel/js/util.js",
-   "s": 80140,
-   "h": "2188aa289249dc43232a9418c6d80c5cb5f71d2c1d900c73c2ac4726c939b9b7"
+   "s": 80294,
+   "h": "c54689cc07000148f0f0140ae1a0f657456eee9e0b4dfbfcb4dfb5520a4896b9"
   },
   {
    "p": "bunte-insel/js/vehicles.js",
@@ -5333,8 +5333,8 @@
   },
   {
    "p": "bunte-insel/js/zotik.js",
-   "s": 34520,
-   "h": "93bf511258ce393ec6c66930b6331d7a2281b9d280209ca1d35c869f45d2c9b2"
+   "s": 50647,
+   "h": "12ab37be985019c91c682e9d5c0265bb45bc27a28b208ab84d80c70222affe6d"
   },
   {
    "p": "bunte-insel/manifest.webmanifest",
@@ -5343,8 +5343,13 @@
   },
   {
    "p": "bunte-insel/models/deko.bin",
-   "s": 159548,
-   "h": "22330c90dc126f9370a4ae603448bcb2b34bbae2ae3cbd58b49647045d2feac6"
+   "s": 153504,
+   "h": "41b58f67d99e7f2df04d7e561bfffbbae4413913a213a141e05bc85c30dcab9c"
+  },
+  {
+   "p": "bunte-insel/models/welt.bin",
+   "s": 398744,
+   "h": "dcf51cdbb3a03634c400378f09b1c5ccf326cf4c79efe7189b10772f91c48f53"
   },
   {
    "p": "bunte-insel/radio/lautfm.png",
@@ -6893,8 +6898,8 @@
   },
   {
    "p": "guides/bunte-insel.json",
-   "s": 50065,
-   "h": "5a5c5d0283c687c0d2052f98bc81cd6f02b7b4e0626f9ac2fa5c38194b9523b9"
+   "s": 50365,
+   "h": "541648c40592389e4a4a8300cb46120c645c49a61e365a0f904c0668110e920c"
   },
   {
    "p": "guides/challenge-show.json",
@@ -9954,7 +9959,7 @@
   {
    "p": "sync/catalog.json",
    "s": 259012,
-   "h": "c2aa6614af05c587f89ab401ba3e1764b012e89aa3f9c600a10bd57c2b535c16"
+   "h": "87fab51459c7460fe985f6f7d3594217d02e396afa8f40aa12bf03b637cd141a"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

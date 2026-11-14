@@ -77,12 +77,12 @@ BI.INSELSTORY = [
     { text: 'Fehlt nur noch Ausdauer! Schaffe 25 Tore.', hint: 'Schieße 25 Tore', goal: [{ log: 'fussball', row: 2 }], done: '25 Tore – Wahnsinn!' },
     { text: 'Das Turnier wartet! Gewinne den goldenen Pokal!', hint: 'Gewinne das Fußball-Turnier', goal: ['cupwin'], done: 'Pokalsieger!' }
   ], end: 'Lena hebt den Pokal: Du bist die Meisterin der Arena!' },
-  { key: 'ZOTIK', icon: '🦊', npc: 'Mira', title: 'Der Ruf des Kristalls', acts: [
-    { text: 'Reisende, ich habe auf dich gewartet! Der große Kristall von Lunaris ruft nach Hilfe. Sprich mit mir in der Taverne – dann geht es los.', hint: 'Besuche Lunaris und sprich mit Mira in der Taverne', goal: [{ log: 'zotik', row: 0 }, { log: 'zotik', row: 1 }], done: 'Mira vertraut dir!' },
-    { text: 'Ein Hinweis liegt im Hafen. Such ihn!', hint: 'Finde den Hinweis im Hafen', goal: [{ log: 'zotik', row: 2 }], done: 'Der Hinweis führt zur Akademie!' },
-    { text: 'An der Akademie ist ein Riss in der Luft. Untersuche ihn – aber sei auf einen Kampf gefasst!', hint: 'Untersuche den Riss an der Akademie (Elementar-Kampf)', goal: [{ log: 'zotik', row: 3 }], done: 'Der Riss ist geschlossen!' },
-    { text: 'Erzähl Mira, was geschehen ist!', hint: 'Berichte Mira vom Kampf', goal: [{ log: 'zotik', row: 4 }], done: 'Der Kristall strahlt wieder!' }
-  ], end: 'Mira verneigt sich: Du bist der Held von Lunaris!' },
+  { key: 'ZOTIK', icon: '🦊', npc: 'Mira', title: 'Der erste Riss', acts: [
+    { text: 'Zotik! Hörst du das Summen im Boden? Komm nach Lunaris und sprich mit mir am Kristallbrunnen – dann geht es los.', hint: 'Besuche Lunaris und sprich mit Mira am Kristallbrunnen', goal: [{ log: 'zotik', row: 0 }, { log: 'zotik', row: 1 }], done: 'Mira vertraut dir!' },
+    { text: 'Ich brauche drei Mondkräuter aus dem Mondwald. Und im Wald schwirren verängstigte Riftlinge – beruhige sie mit deinem Licht!', hint: 'Sammle 3 Mondkräuter und beruhige 5 Riftlinge im Mondwald', goal: [{ log: 'zotik', row: 2 }, { log: 'zotik', row: 3 }], done: 'Der Mondwald ist ruhig!' },
+    { text: 'Professorium hat das Summen gemessen. Besuch ihn in der Werkstatt und öffne das Mondtor – dahinter wartet der Mondwolf am Risstor.', hint: 'Öffne das Mondtor (Vollmond 🌕) und beruhige den Mondwolf', goal: [{ log: 'zotik', row: 4 }, { log: 'zotik', row: 5 }], done: 'Der Mondwolf ist dein Freund!' },
+    { text: 'Erzähl mir, was am Risstor geschehen ist!', hint: 'Berichte Mira am Kristallbrunnen', goal: [{ log: 'zotik', row: 6 }], done: 'Die Weltentore sind offen!' }
+  ], end: 'Mira lächelt: Du hörst die Welten, Zotik – jetzt sind sie alle verbunden!' },
   { key: 'RADIO', icon: '📻', npc: 'Funkmeisterin Frida', title: 'Die dreizehn Sender', acts: [
     { text: 'Hörst du das Rauschen? Die Funkwelle hat 13 Sender! Schalte am Platz ein Radio ein und hör 20 Sekunden zu.', hint: 'Höre einen Sender (Radio am Platz, 20 Sekunden zuhören)', goal: [{ log: 'radio', row: 1 }], done: 'Dein erster Sender!' },
     { text: 'Das Visual Radio zeigt die Musik als Bilder. Schau es dir an einem Bildschirm an!', hint: 'Sieh dir das Visual Radio an einem Bildschirm an', goal: [{ log: 'radio', row: 3 }], done: 'Musik zum Sehen!' },
@@ -139,8 +139,13 @@ BI.createInselStory = function (G) {
     }
     if (moved) persist(); return moved;
   }
-  function finish(d, quiet) { const id = 'geschichte_' + d.key.toLowerCase(); if (!quiet) { G.addStars(10); setTimeout(() => say('🏆 ' + d.icon + ' „' + d.title + '“ geschafft! ' + d.end + ' +10 ⭐', 6200), 1200); if (G.speak) G.speak(d.end); } if (G.earn) G.earn(id); }
-  function announce(d) { const a = d.acts[S()[d.key]]; if (!a) return; say(d.icon + ' ' + d.npc + ': „' + a.text + '“', 8200); if (G.speak) G.speak(a.text); }
+  /* Roter Faden nach der Inselreise: Das Fest-Feuerwerk hat man in allen Welten gesehen – jede geschaffte Inselgeschichte bringt ein 🌟 Weltenlicht,
+     und wenn alle Welten geholfen sind, feiern alle zusammen das Fest der Welten (Sticker „weltenfest“). */
+  const lights = () => ST.filter(q => { const a = S()[q.key]; return a != null && a >= q.acts.length; }).length;
+  K.lights = () => ({ n: lights(), of: ST.length });
+  function finish(d, quiet) { const id = 'geschichte_' + d.key.toLowerCase(), n = lights(), all = n >= ST.length; if (!quiet) { G.addStars(10); setTimeout(() => say('🏆 ' + d.icon + ' „' + d.title + '“ geschafft! ' + d.end + ' +10 ⭐ · 🌟 Weltenlicht ' + n + '/' + ST.length + ' – ' + d.npc + ' kommt zum Fest der Welten!', 7000), 1200); if (G.speak) G.speak(d.end); } if (G.earn) G.earn(id);
+    if (all && !got('weltenfest')) { if (G.earn) G.earn('weltenfest'); if (!quiet) { G.addStars(30); setTimeout(() => { say('🎆 Alle ' + ST.length + ' Weltenlichter leuchten! Bürgermeisterin Rosi, Zotik, Mira und die Helden aller Welten feiern mit dir das große Fest der Welten auf der Bunten Insel! +30 ⭐', 9000); G.fanfare && G.fanfare(); if (G.speak) G.speak('Alle Weltenlichter leuchten! Jetzt feiern alle Welten zusammen das große Fest der Welten – und du bist der Held aller Welten!'); }, 8600); } } }
+  function announce(d) { const i = S()[d.key], a = d.acts[i]; if (!a) return; const t = a.text + (i === 0 ? ' Hilf uns – dann bringst du ein 🌟 Weltenlicht zum Fest der Welten!' : ''); say(d.icon + ' ' + d.npc + ': „' + t + '“', 8800); if (G.speak) G.speak(t); }
   function start(d) { const s = S(); if (s[d.key] != null) return; s[d.key] = 0; persist(); if (!advance(d, true)) announce(d); else { const a = d.acts[s[d.key]]; if (a) announce(d); else say(d.icon + ' „' + d.title + '“ hast du schon geschafft! 🏆', 3600); } }
   let tmr = 0;
   K.update = function (dt) {
@@ -158,7 +163,7 @@ BI.createInselStory = function (G) {
     const rows = []; let n = 0;
     for (const d of ST) { const a = S()[d.key], done = a != null && a >= d.acts.length; if (done) n++; rows.push({ ok: done, icon: d.icon, text: d.title + (a == null ? ' – noch nicht begonnen (geh auf die Insel)' : done ? ' – geschafft! 🏆' : ' – Akt ' + (a + 1) + '/' + d.acts.length + ': ' + d.acts[a].hint), dest: null });
       if (a != null && !done) for (let i = 0; i < d.acts.length; i++) rows.push({ ok: i < a, icon: '  ' + (i < a ? '✔' : '▫'), text: d.acts[i].hint, dest: null }); }
-    return { title: '📜 Inselgeschichten', count: n + ' von ' + ST.length, rows };
+    return { title: '📜 Inselgeschichten · 🌟 Fest der Welten', count: n + ' von ' + ST.length + ' Weltenlichtern', rows };
   };
   K.dbg = { S, advance, start, stage, ST, goalDone, residents };
   return K;
