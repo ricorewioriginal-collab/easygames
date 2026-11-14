@@ -5,7 +5,7 @@ const PAD = () => { const mk = () => ({ pressed: false, touched: false, value: 0
   window.__pad = g; window.__padOn = false; navigator.getGamepads = () => window.__padOn ? [g, null, null, null] : [null, null, null, null];
   window.__press = (i, on) => { g.buttons[i].pressed = on; g.buttons[i].value = on ? 1 : 0; g.timestamp = performance.now(); }; };
 async function open(b, o = {}) { const ctx = await b.newContext(Object.assign({ viewport: { width: 640, height: 360 } }, o.ctx || {})); await ctx.addInitScript(PAD); if (o.init) await ctx.addInitScript(o.init);
-  const p = await ctx.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message.slice(0, 200))); p.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|favicon|net::ERR/.test(m.text())) p.errs.push('console: ' + m.text().slice(0, 200)); });
+  const p = await ctx.newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message.slice(0, 200))); p.on('console', m => { if (process.env.ZVLOG && m.text().startsWith('ZVMISS\t')) require('fs').appendFileSync(process.env.ZVLOG, m.text() + '\n'); if (m.type() === 'error' && !/Failed to load resource|favicon|net::ERR/.test(m.text())) p.errs.push('console: ' + m.text().slice(0, 200)); });
   await p.goto('http://localhost:8799/zotik/?debug' + (o.q || ''), { waitUntil: 'commit', timeout: 120000 }); await p.waitForFunction(() => window.__zotik, null, { timeout: 180000 });
   if (!o.render) await p.evaluate(() => { __zotik.noRender = true; }); return p; }
 const state = p => p.evaluate(() => { const v = id => { const e = document.getElementById(id); return !!e && !e.hidden && getComputedStyle(e).display !== 'none'; }; const a = document.activeElement;
