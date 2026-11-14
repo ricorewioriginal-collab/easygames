@@ -54,12 +54,17 @@ await A.click('[data-o="host"]'); await A.waitForSelector('.bigCode');
 const code = (await A.textContent('.bigCode')).trim(); ok(/^[A-Z0-9]{4}$/.test(code), 'Show eröffnet, Code ' + code);
 const B = await page('Gast'); await B.goto(base + '?join=' + code); await setup(B, 'Gasti');
 await A.waitForFunction(() => document.querySelectorAll('#onBox .onPlayers .onP').length === 2, null, { timeout: 10000 });
-ok(true, 'Gast tritt per Einladungslink bei'); await A.click('[data-o="m:beat"]'); await shot(A, '1-lobby');
+ok(true, 'Gast tritt per Einladungslink bei'); await A.click('[data-o="m:song"]');
+await A.click('[data-o="osong"]'); await A.fill('#ovKlQ', 'entchen'); await A.click('#ovKl [data-kl]');
+ok(/Alle meine Entchen/.test(await phase(A)), 'Gastgeber legt einen Klavierlicht-Song für alle fest'); await shot(A, '1-lobby');
 await B.waitForFunction(() => /Hosti/.test((document.getElementById('onBox') || {}).textContent || ''), null, { timeout: 8000 }).catch(() => {});
 ok(/Gasti/.test(await phase(A)) && /Hosti/.test(await phase(B)), 'Beide sehen beide Namen');
 await bot(A, 1); await bot(B, 0.4);
 await A.click('[data-o="start"]');
 await Promise.all([A.waitForSelector('#sStage.on', { timeout: 10000 }), B.waitForSelector('#sStage.on', { timeout: 10000 })]); ok(true, 'Beide singen gleichzeitig');
+await A.waitForTimeout(1500);
+const kk = await Promise.all([A, B].map(p => p.evaluate(() => { const s = window.SMYVApp.stageObj(); return s && s.kl ? s.notes.map(n => n.p).join(',') : ''; })));
+ok(kk[0] && kk[0] === kk[1], 'Beide spielen dieselben Klavierlicht-Noten');
 await shot(B, '2-auftritt');
 // Voting
 await Promise.all([A.waitForSelector('[data-vote]', { timeout: 60000 }), B.waitForSelector('[data-vote]', { timeout: 60000 })]);

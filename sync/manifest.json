@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "14dfc2207051",
- "generated": "2026-11-14T20:10:03+01:00",
- "commit": "bc27bc32553de18c9d20e7613a03355a2a22b15b",
+ "version": "afbd8b772d94",
+ "generated": "2026-11-14T20:27:51+01:00",
+ "commit": "761368b0bc2fdf7fad6739d2114e860f2143f416",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7523,8 +7523,8 @@
   },
   {
    "p": "guides/show-me-your-voice.json",
-   "s": 21089,
-   "h": "44614cd97fc1ea87d032e8196f825da6e3da315eb88993a7b62bbda59d1ea77b"
+   "s": 21394,
+   "h": "dc1b943a76b47121fe7a413067b6076cd29cab58e344f5b1191730b9a9f79383"
   },
   {
    "p": "guides/sonnenhof.json",
@@ -10043,18 +10043,18 @@
   },
   {
    "p": "show-me-your-voice/index.html",
-   "s": 20506,
-   "h": "e8c091b747f0e55a347b93b793fdf363ef9964fef3e0272f9173e9391ab33622"
+   "s": 20092,
+   "h": "e04fe5d151a9a34d6629e966ae025076b0cb1c2b3223bb93f35bd10150f6cce1"
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 197746,
-   "h": "cfc08df94b359a1a324e0a7f230dec7ddb2fc1d7c139e36e185557e31d2271df"
+   "s": 195534,
+   "h": "1d2909da33362d50f101f29998f8c551947c871142421474e66282e313611130"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
-   "s": 19859,
-   "h": "98b757b7a9758b3f853c29dca4477e51e9bfd765dfb53bfe5654913689bc2d8f"
+   "s": 15313,
+   "h": "b04f57cf5b5271d8723e14fa7b5e77242c8d94a6bbf634ed7606c69895bd643c"
   },
   {
    "p": "show-me-your-voice/js/avatar.js",
@@ -10063,13 +10063,18 @@
   },
   {
    "p": "show-me-your-voice/js/core.js",
-   "s": 37071,
-   "h": "4d9de6c702961280cce16ac1e3329170215ffa99707cbb851e67950635a83edc"
+   "s": 37054,
+   "h": "8a8a72d77446dfcf8d3761ecab9f83eae6a26a204f11b0346621eea77998aa58"
   },
   {
    "p": "show-me-your-voice/js/data.js",
-   "s": 69930,
-   "h": "0a383e36cf405fab89da158c4025c272f53e4c6d575526f15c8177dffb593c60"
+   "s": 68673,
+   "h": "99be0bd0d6b934bef62745e6d5ad07601fea23bb653e4c5a798fc50f8af481bd"
+  },
+  {
+   "p": "show-me-your-voice/js/klsongs.js",
+   "s": 5741,
+   "h": "99496cf049de29bb6734ce4b3c8ce7b0d9ad978d753c49ac20b85a2860225ba5"
   },
   {
    "p": "show-me-your-voice/js/media.js",
@@ -10083,8 +10088,23 @@
   },
   {
    "p": "show-me-your-voice/js/stage.js",
-   "s": 32654,
-   "h": "25dae1f6eedae11ab5ac0311c11c525495ffcfc5d2aecf2365e8942057777d83"
+   "s": 34053,
+   "h": "63421fe747a8db4a02bbb46122aa94e134813dd57cecdf3c13a42a38d88e9de4"
+  },
+  {
+   "p": "show-me-your-voice/klavierlicht/core.js",
+   "s": 13971,
+   "h": "6241aadd45dda18b1ed2ffdd5ca46ccf5e42226b4570656cac66c32c345f3ccf"
+  },
+  {
+   "p": "show-me-your-voice/klavierlicht/piano.js",
+   "s": 6462,
+   "h": "ca326f7d9bf3da535f0dcb782ec746802cce3f7b00161fd8fc55920ea2d910ec"
+  },
+  {
+   "p": "show-me-your-voice/klavierlicht/songs.js",
+   "s": 5824,
+   "h": "2c1041f9c30a190cfed6906268acf5d4ba6639d88389b6d7f541d7fbe2f80e31"
   },
   {
    "p": "show-me-your-voice/manifest.webmanifest",
@@ -10093,8 +10113,8 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 54738,
-   "h": "88d897e2471b8be055e70f0d2bda6b39e8adde695a003646902ba5ef109466d2"
+   "s": 55611,
+   "h": "c901860ef68270813b49a97d375e88162a2e57656b55d0b7592e029d42bfe7db"
   },
   {
    "p": "show-me-your-voice/sw.js",
@@ -10664,7 +10684,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262492,
-   "h": "fd279b7bad6a6bbd4fdaaafb8a926a6b10b11182d6ab954d73c32174765fec90"
+   "h": "3bab9fcff421551783cf7615fb8cd874fe0add41103d108cb2f0b1a591b02600"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
