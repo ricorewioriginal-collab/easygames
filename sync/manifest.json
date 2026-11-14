@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "0b5a9b05408b",
- "generated": "2026-11-14T17:41:50+00:00",
- "commit": "212826853f7e0c26a9ab4d0ec5d0107c819207c8",
+ "version": "eb5c67517240",
+ "generated": "2026-11-14T17:45:40+00:00",
+ "commit": "1a0ff6988ae74d0f83001219d6889b0eb42c58c3",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10207,6 +10207,11 @@
    "h": "0693c9f33056a41760349b3009e949b4792e28e77f36b81a832df347bdfbb1a1"
   },
   {
+   "p": "show-me-your-voice/vo/rico-intro-finale-0.mp3",
+   "s": 107448,
+   "h": "3761b1ccd2efa225805772a9f02d8b3bf69db9f4f531d4c872153c7ffaa2c0d6"
+  },
+  {
    "p": "show-me-your-voice/vo/rico-intro-halbfinale-0.mp3",
    "s": 94909,
    "h": "2d49435b4837ee4bb462c2b6f64c0fd68ff7879b741c6cb08b13523784e89ba6"
@@ -10639,7 +10644,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262491,
-   "h": "dea41dba695bac95a5dc17d559b9e68d5af545ea36cd051498e053afdd1d9c75"
+   "h": "9a4233caf0964741c79e887324d6ce904e90c82c490c5836de2449ed254f9daa"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
