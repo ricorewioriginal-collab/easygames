@@ -83,6 +83,7 @@ let encores = 0, events = 0;
 async function playRound(p) {
   if (await backEvent(p)) events++;
   await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on');
+  if (await p.isVisible('#prepBox [data-tab="radio"]')) await p.click('#prepBox [data-tab="radio"]');   // Radio (im Test lokal), nicht YouTube
   await p.click('#bGo'); await talkThrough(p); await waitResult(p);
   while (await p.isVisible('#bNext')) { const lbl = await p.textContent('#bNext'); await p.click('#bNext'); if (!/Weiter ▶/.test(lbl)) break; await p.waitForTimeout(120); }
   await p.waitForTimeout(200);
@@ -111,7 +112,7 @@ ok(after > before, `Training steigert Timing (${before} → ${after})`);
 await p.click('[data-act="ok"]'); await p.click('#sTrain [data-back]'); await p.waitForSelector('#sBack.on');
 ok(/1 übrig/.test(await p.textContent('[data-b="train"]')), 'Trainingseinheit verbraucht');
 // Erste Runde mit Screenshots
-await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on'); await p.click('[data-g="approach"][data-v="risiko"]'); await shot(p, '06-vorbereitung');
+await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on'); if (await p.isVisible('#prepBox [data-tab="radio"]')) await p.click('#prepBox [data-tab="radio"]'); await p.click('[data-g="approach"][data-v="risiko"]'); await shot(p, '06-vorbereitung');
 await p.click('#bGo'); await p.waitForSelector('#sTalk.on'); await p.waitForTimeout(150); await shot(p, '07a-wartebereich');
 await p.click('#talkQ [data-a="0"]'); await p.click('#talkQ [data-a="1"]'); await p.click('#talkQ [data-a="0"]'); await shot(p, '07b-jury-gespraech');
 ok(/Läuft gerade auf RicoReWi Radio/.test(await p.textContent('#airBox')), 'Sender läuft schon im Wartebereich: ' + (await p.textContent('#airBox')));
@@ -137,7 +138,7 @@ for (let i = 0; i < 6 && (await st(p)).status === 'backstage'; i++) {
   const r = (await st(p)).round;
   if (r === 2) {   // Mottoshow: Voting und Zitterbank fotografieren
     if (await backEvent(p)) events++;
-    await p.click('[data-b="stage"]'); await p.click('#bGo'); await talkThrough(p); await waitResult(p);
+    await p.click('[data-b="stage"]'); if (await p.isVisible('#prepBox [data-tab="radio"]')) await p.click('#prepBox [data-tab="radio"]'); await p.click('#bGo'); await talkThrough(p); await waitResult(p);
     for (let k = 0; k < 6 && !(await p.isVisible('.vbar')); k++) { await p.click('#bNext'); await p.waitForTimeout(150); }
     ok(await p.isVisible('.vbar'), 'Voting-Balken nach der Jury'); await p.waitForTimeout(2600); await shot(p, '12a-voting');
     ok(await p.isVisible('#zit'), 'Zitterbank wird aufgelöst');
@@ -156,7 +157,7 @@ await p.click('[data-w="prof"]'); await p.waitForSelector('#sProfile.on'); await
 await p.click('#sProfile [data-back]');
 
 // ---------- Ausscheiden ----------
-await p.click('[data-w="new"]'); await p.waitForSelector('#sBack.on'); await bot(p, 0.15, 7);
+await p.click('[data-w="new"]'); await p.waitForSelector('#sBack.on'); await bot(p, 0.03, 7);
 await playRound(p); await p.waitForSelector('#sOut.on'); await shot(p, '15-ausgeschieden');
 ok((await st(p)).status === 'out', 'Schwacher Auftritt → ausgeschieden');
 await p.click('[data-o="menu"]'); await p.waitForSelector('#sMenu.on');
@@ -229,7 +230,7 @@ await m.close();
   await q.evaluate(() => { window.SMYV.D.ROUNDS.forEach(r => { r.len = 16; }); });
   await q.click('[data-m="new"]'); await q.click('#avaOk'); await q.waitForSelector('#sBack.on');
   await q.evaluate(() => { const A = window.SMYVAudio, orig = A.radioStart; A.radioStart = (s, d, u, plain) => (plain ? orig(s, d, u, true) : Promise.reject(new Error('cors'))); });   // Analyse verweigert wie bei fehlender CORS-Freigabe
-  await q.click('[data-b="stage"]'); await q.waitForSelector('#sPrep.on'); await q.click('#bGo'); await talkThrough(q);
+  await q.click('[data-b="stage"]'); await q.waitForSelector('#sPrep.on'); await q.click('#prepBox [data-tab="radio"]'); await q.click('#bGo'); await talkThrough(q);
   await q.waitForSelector('#sStage.on', { timeout: 20000 }); await q.waitForTimeout(2500);
   const pl = await q.evaluate(() => ({ plain: window.SMYVAudio.radioPlain(), notes: window.SMYVApp.stageObj().notes.length, title: document.getElementById('stTitle').textContent }));
   ok(pl.plain && pl.notes > 0 && /laut\.fm/.test(pl.title), 'Ohne CORS: Sender läuft hörbar, Noten im Takt des Stils (' + pl.notes + ')');

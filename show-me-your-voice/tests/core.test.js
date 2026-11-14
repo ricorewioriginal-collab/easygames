@@ -327,3 +327,22 @@ test('Live-Wertung: setLen verteilt die Punkte auf eine neue Länge', () => {
   for (let i = 0; i < 100; i++) { a.push(60); b.push(60); }
   assert.ok(b.end().total > a.end().total * 5);
 });
+
+test('Release-Inhalte: Mottos mit Song je Stil, gültige Ereignis-Effekte, Interview-Fragen je Juror, neue Erfolge', () => {
+  assert.ok(D.MOTTOS.length >= 6);
+  D.MOTTOS.forEach(m => Object.keys(D.STYLES).forEach(st => assert.ok(m.songs[st], m.id + ' ohne Song für ' + st)));
+  assert.ok(D.EVENTS.length >= 12); assert.strictEqual(new Set(D.EVENTS.map(e => e.id)).size, D.EVENTS.length);
+  const attrs = S.newProfile('x').attrs, crit = Object.keys(D.CRIT);
+  D.EVENTS.forEach(e => { assert.strictEqual(e.a.length, 2); e.a.forEach(a => {
+    Object.keys(a.attr || {}).forEach(k => assert.ok(k in attrs, e.id + ': attr ' + k));
+    Object.keys(a.crit || {}).forEach(k => assert.ok(crit.includes(k), e.id + ': crit ' + k));
+    Object.keys(a.symp || {}).forEach(k => assert.ok(D.MAIN_JURY.includes(k), e.id + ': symp ' + k)); }); });
+  ['Marc', 'Lena', 'David'].forEach(n => assert.ok(D.INTERVIEW.filter(q => q.q.startsWith(n)).length >= 2, n));
+  assert.ok(D.HOST_Q.length >= 6); assert.strictEqual(new Set(D.ACHIEVEMENTS.map(a => a.id)).size, D.ACHIEVEMENTS.length);
+  // starke Staffel schaltet neue Erfolge frei
+  const prof = S.newProfile('Star'); prof.fans = 99;
+  const top = { rhythm: { n: 60, p: 60, g: 0, o: 0, m: 0, maxCombo: 60 }, pitch: { q: 1 }, show: { hit: 3, total: 3 }, rhythmShare: 0.6, approach: 'risiko', action: 'publikum' };
+  for (let i = 0; i < 3; i++) { const se = S.newSeason(1000 + i); while (se.status === 'backstage') { const id = S.startRound(se), oc = S.analyze(top, prof.attrs, se.lastPerf); Object.assign(oc, { style: 'pop', approach: 'risiko', action: 'publikum' }); S.resolveRound(se, prof, oc, id); } }
+  ['einstimmig', 'perfekt', 'fanliebling'].forEach(id => assert.ok(prof.ach.includes(id), 'Erfolg ' + id));
+  if (prof.stats.wins >= 3) assert.ok(prof.ach.includes('legende'));
+});

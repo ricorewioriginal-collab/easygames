@@ -222,7 +222,10 @@
   const MOTTOS = [
     { id: 'retro', name: 'Best of 80er & 90er', songs: { pop: 'Neonnacht 1989', ballade: 'Kassettenliebe', rock: 'Rave im Kopf', soul: 'Walkman-Soul' } },
     { id: 'iconic', name: 'Iconic Hits', songs: { pop: 'Kronen aus Konfetti', ballade: 'Für immer Refrain', rock: 'Stadionlicht', soul: 'Samtstimme' } },
-    { id: 'herz', name: 'Herzensmomente', songs: { pop: 'Sag es laut', ballade: 'Ein Brief an mich', rock: 'Narben aus Gold', soul: 'Zuhause in dir' } }
+    { id: 'herz', name: 'Herzensmomente', songs: { pop: 'Sag es laut', ballade: 'Ein Brief an mich', rock: 'Narben aus Gold', soul: 'Zuhause in dir' } },
+    { id: 'deutsch', name: 'Deutsch-Pop-Nacht', songs: { pop: 'Kopf hoch, Himmel weit', ballade: 'Wenn die Stadt schläft', rock: 'Asphaltherz', soul: 'Sonntagsgefühl' } },
+    { id: 'party', name: 'Party-Hymnen', songs: { pop: 'Hände in die Luft', ballade: 'Letzter Tanz', rock: 'Bis die Boxen glühen', soul: 'Discokugel-Seele' } },
+    { id: 'film', name: 'Film & Musical', songs: { pop: 'Abspann im Regen', ballade: 'Vorhang auf für dich', rock: 'Heldenmarsch', soul: 'Großes Kino' } }
   ];
 
   const APPROACH = {
@@ -264,7 +267,14 @@
     { id: 'durchhalter', icon: 6, name: 'Durchhalter', desc: 'Das Finale erreicht.' },
     { id: 'herz', icon: 7, name: 'Herz der Community', desc: 'In einer Runde die meisten Votes geholt.' },
     { id: 'krone', icon: 8, name: 'Top 6', desc: 'Die Mottoshow überstanden.' },
-    { id: 'sieger', icon: 9, name: 'Sieger', desc: 'Eine Staffel gewonnen.' }
+    { id: 'sieger', icon: 9, name: 'Sieger', desc: 'Eine Staffel gewonnen.' },
+    { id: 'einstimmig', icon: '🌟', name: 'Einstimmig', desc: 'Im Casting alle drei Jury-Ja geholt.' },
+    { id: 'ticket', icon: '🎫', name: 'Goldenes Ticket', desc: 'Von Rico das Goldene Ticket bekommen.' },
+    { id: 'duell', icon: '⚔️', name: 'Duellant', desc: 'Ein Battle gewonnen.' },
+    { id: 'gerettet', icon: '💖', name: 'Gerettet', desc: 'Nach einem verlorenen Battle von der Community gerettet.' },
+    { id: 'perfekt', icon: '💯', name: 'Makellos', desc: 'Einen Auftritt mit mindestens 95 Performance-Punkten.' },
+    { id: 'fanliebling', icon: '📣', name: 'Fan-Liebling', desc: '100 Fans erreicht.' },
+    { id: 'legende', icon: '👑', name: 'Legende', desc: 'Drei Staffeln gewonnen.' }
   ];
 
   // Show-Archiv: echte Folgen von smyv.ricorewi.de (YouTube)
@@ -311,7 +321,20 @@
     { q: 'David: „Warum sollten wir gerade dich nehmen?“', a: [
       ['„Weil ich hart arbeite und jede Kritik annehme.“', { marc: 2 }],
       ['„Weil ich anders bin als alle anderen hier.“', { david: 2 }],
-      ['„Das entscheidet ihr – ich lasse meine Stimme sprechen.“', { marc: 1, lena: 1 }]] }
+      ['„Das entscheidet ihr – ich lasse meine Stimme sprechen.“', { marc: 1, lena: 1 }]] },
+    // Zweite Frage je Juror: pro Staffel wird für jeden Juror eine der beiden gezogen
+    { q: 'Marc: „Wie lange bereitest du dich schon auf heute vor?“', a: [
+      ['„Seit Monaten – jeden Tag Gesangsübungen.“', { marc: 2 }],
+      ['„Ich habe mich gestern spontan angemeldet.“', { david: 1, marc: -1 }],
+      ['„Mein ganzes Leben, irgendwie.“', { lena: 1, marc: 1 }]] },
+    { q: 'Lena: „Wer hat dich zum Singen gebracht?“', a: [
+      ['„Meine Oma – sie hat immer mit mir gesungen.“', { lena: 2 }],
+      ['„Die großen Stars auf der Bühne.“', { david: 1 }],
+      ['„Niemand, ich habe es mir selbst beigebracht.“', { marc: 1, david: 1 }]] },
+    { q: 'David: „Was machst du, wenn du heute ein Nein bekommst?“', a: [
+      ['„Wiederkommen – und besser sein.“', { marc: 1, david: 1 }],
+      ['„Ein Nein gibt es heute nicht.“', { david: 2, lena: -1 }],
+      ['„Weinen. Und dann weitersingen.“', { lena: 2 }]] }
   ];
   // Ricos Interview vor späteren Runden: wirkt auf Votes oder Jury-Sympathie
   const HOST_Q = [
@@ -320,7 +343,13 @@
     { q: 'Rico: „Die Konkurrenz ist stark. Wie gehst du damit um?“', a: [
       ['„Ich konzentriere mich nur auf mich.“', { marc: 2 }, 0], ['„Konkurrenz spornt mich an!“', { david: 2 }, 1], ['„Wir sind hier eine Familie.“', { lena: 1 }, 3]] },
     { q: 'Rico: „Was war dein bisher schönster Moment in der Staffel?“', a: [
-      ['„Die erste Ja-Stimme. Gänsehaut!“', { lena: 1 }, 2], ['„Jede Probe mit Sophie.“', { marc: 1 }, 1], ['„Die Fans, die mir schreiben.“', {}, 4]] }
+      ['„Die erste Ja-Stimme. Gänsehaut!“', { lena: 1 }, 2], ['„Jede Probe mit Sophie.“', { marc: 1 }, 1], ['„Die Fans, die mir schreiben.“', {}, 4]] },
+    { q: 'Rico: „Die Jury war zuletzt streng mit dir. Was nimmst du mit?“', a: [
+      ['„Jede Kritik macht mich besser.“', { marc: 2 }, 1], ['„Heute beweise ich das Gegenteil.“', { david: 2 }, 2], ['„Ich höre vor allem auf mein Herz.“', { lena: 2 }, 1]] },
+    { q: 'Rico: „Wem widmest du deinen Auftritt heute?“', a: [
+      ['„Meiner Familie zu Hause.“', { lena: 1 }, 3], ['„Allen, die nie an mich geglaubt haben.“', { david: 1 }, 3], ['„Euch Fans – ohne euch wäre ich nicht hier.“', {}, 5]] },
+    { q: 'Rico: „Hand aufs Herz – wie nervös bist du gerade?“', a: [
+      ['„Null. Ich bin bereit.“', { david: 1 }, 2], ['„Sehr – aber das gehört dazu.“', { lena: 1 }, 3], ['„Ich habe einen Plan, das beruhigt.“', { marc: 1 }, 1]] }
   ];
 
   // Backstage-Drama: einmal pro Runde ab dem Recall. Effekte gelten für die nächste Runde (Sympathie, Kriterien) oder dauerhaft (Fans, Werte).
@@ -336,7 +365,19 @@
     { id: 'duett', icon: '🎶', title: 'Duett-Angebot', text: '{friend} fragt, ob ihr zusammen für Social Media singt.',
       a: [{ t: 'Klar, gerne!', d: '+3 Fans, Ausdruck dauerhaft +2', fans: 3, attr: { ausdruck: 2 } }, { t: 'Lieber proben', d: 'Timing dauerhaft +2', attr: { timing: 2 } }] },
     { id: 'interview', icon: '📺', title: 'Kamera-Interview', text: 'Das Backstage-Team will wissen, wie es dir geht.',
-      a: [{ t: 'Emotional erzählen', d: 'Lena +2 Sympathie, +2 Fans', symp: { lena: 2 }, fans: 2 }, { t: 'Selbstbewusst auftreten', d: 'David +2 Sympathie', symp: { david: 2 } }] }
+      a: [{ t: 'Emotional erzählen', d: 'Lena +2 Sympathie, +2 Fans', symp: { lena: 2 }, fans: 2 }, { t: 'Selbstbewusst auftreten', d: 'David +2 Sympathie', symp: { david: 2 } }] },
+    { id: 'kostuem', icon: '👗', title: 'Kostüm-Panne', text: 'Kurz vor der Probe reißt die Naht an deinem Bühnen-Outfit.',
+      a: [{ t: 'Selbst nähen', d: '–1 Training in dieser Runde, Bühnenpräsenz +4 im Auftritt', train: -1, crit: { praesenz: 4 } }, { t: 'Improvisieren', d: 'Mut +5 im Auftritt, Marc –1 Sympathie', crit: { mut: 5 }, symp: { marc: -1 } }] },
+    { id: 'tipp', icon: '💡', title: 'Tipp vom Profi', text: 'Ein früherer Gewinner der Show schaut backstage vorbei und bietet dir eine Probe an.',
+      a: [{ t: 'Gesangsprobe', d: 'Stimme dauerhaft +2', attr: { stimme: 2 } }, { t: 'Bühnen-Coaching', d: 'Bühnenpräsenz dauerhaft +2', attr: { praesenz: 2 } }] },
+    { id: 'viral', icon: '📈', title: 'Clip geht viral', text: 'Ein Ausschnitt deines letzten Auftritts hat über Nacht tausende Aufrufe.',
+      a: [{ t: 'Live-Q&A mit den Fans', d: '+7 Fans, –1 Training in dieser Runde', fans: 7, train: -1 }, { t: 'Bodenständig bleiben', d: '+3 Fans, Lena +1 Sympathie', fans: 3, symp: { lena: 1 } }] },
+    { id: 'technik', icon: '🎧', title: 'In-Ear defekt', text: 'Bei der Stellprobe fällt dein In-Ear-Monitor aus.',
+      a: [{ t: 'Nach Gehör singen', d: 'Timing –4, aber Mut +6 im Auftritt', crit: { timing: -4, mut: 6 } }, { t: 'Technik-Check verlangen', d: '–1 Training in dieser Runde, keine Nachteile', train: -1 }] },
+    { id: 'jurylob', icon: '🗣️', title: 'Lob auf dem Flur', text: 'Ein Jurymitglied nickt dir im Vorbeigehen anerkennend zu.',
+      a: [{ t: 'Kurz bedanken', d: 'Marc +1, Lena +1 Sympathie', symp: { marc: 1, lena: 1 } }, { t: 'Nach einem Tipp fragen', d: 'Ausdruck dauerhaft +2, David +1 Sympathie', attr: { ausdruck: 2 }, symp: { david: 1 } }] },
+    { id: 'rivale', icon: '🤝', title: 'Rivalen-Hilfe', text: '{rival} hat die Stimme verloren und fragt dich nach deinem Hustensaft.',
+      a: [{ t: 'Natürlich helfen', d: '+4 Fans, Lena +2 Sympathie', fans: 4, symp: { lena: 2 } }, { t: 'Eigene Vorbereitung zuerst', d: '+1 Training in dieser Runde', train: 1 }] }
   ];
 
   // Freies Vorsingen: Karaoke-Videos mit Lyrics (nur Kanäle, die das Einbetten erlauben) und eine Challenge je Genre.

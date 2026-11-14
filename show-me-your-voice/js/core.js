@@ -237,7 +237,14 @@
       if (def.id === 'motto' && inNext) unlock(profile, 'krone', newAch);
       if (def.id === 'halbfinale' && inNext) { profile.stats.finals++; unlock(profile, 'durchhalter', newAch); }
       if (outcome.q != null && outcome.q >= 0.9) unlock(profile, 'stimme', newAch);
+      if (def.id === 'casting' && me.yes === 3) unlock(profile, 'einstimmig', newAch);
+      if (res.golden) unlock(profile, 'ticket', newAch);
+      if (res.battle && res.battle.saved === 'p') unlock(profile, 'gerettet', newAch);
+      else if (res.battle && res.battle.pairs.some(x => x.winner === 'p')) unlock(profile, 'duell', newAch);
+      if (me.perf >= 95) unlock(profile, 'perfekt', newAch);
+      if (profile.fans >= 100) unlock(profile, 'fanliebling', newAch);
       if (def.final) { profile.stats.seasons++; if (res.place === 1) { profile.stats.wins++; unlock(profile, 'sieger', newAch); } }
+      if (profile.stats.wins >= 3) unlock(profile, 'legende', newAch);
       else if (!inNext) profile.stats.seasons++;
     }
     return res;
