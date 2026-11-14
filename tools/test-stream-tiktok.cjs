@@ -123,17 +123,22 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     // Eingebettet (Windows-App): Skript direkt im Spielfenster, Geschenk wirkt dort
     const e = await (await b.newContext({ viewport: { width: 800, height: 600 } })).newPage();
     e.on('pageerror', x => errs.push('eingebettet: ' + x.message));
-    await e.addInitScript('window.EG_TIKTOK_EMBED = ' + JSON.stringify({ ws: 'ws://127.0.0.1:' + port, id: 'deluxe-2048', title: '2048' }) + ';\n' + fs.readFileSync(path.join(ROOT, 'stream-tiktok.js'), 'utf8'));
+    // genau so, wie die Windows-App es einspielt (TikTok.cs EmbedScript, vor dem Laden der Seite, nur oberste Seite)
+    await e.addInitScript('if (window === window.top) { window.EG_TIKTOK_EMBED = ' + JSON.stringify({ ws: 'ws://127.0.0.1:' + port, id: 'deluxe-2048', title: '2048', setup: false }) + ';\n' + fs.readFileSync(path.join(ROOT, 'stream-tiktok.js'), 'utf8') + '\n}');
     await e.goto('http://127.0.0.1:' + srv.address().port + '/deluxe-2048/'); await e.waitForSelector('.tt-leg'); await sleep(1500);
     await e.waitForFunction(() => /verbunden/.test(document.querySelector('.tt-state').textContent) && !/nicht/.test(document.querySelector('.tt-state').textContent), null, { timeout: 8000 }).catch(() => { });
     await inject({ type: 'gift', user: 'Noah', gift: 'Perfume', count: 1 });
     const fe = await e.waitForFunction(() => /Noah: 🌹 Perfume/.test(document.querySelector('.tt-feed').textContent), null, { timeout: 4000 }).then(() => true, () => false);
     const pe = await e.waitForFunction(() => !!navigator.getGamepads()[3], null, { timeout: 4000 }).then(() => true, () => false);
     ok(fe && pe, 'Windows-App (eingebettet): Legende, Ereignis' + (fe ? '' : ' [fehlt]') + ' und virtueller Controller' + (pe ? '' : ' [fehlt]') + ' im Spielfenster');
+    const eb = () => e.evaluate(() => document.querySelector('#board, .board, main, body').innerText + '|' + JSON.stringify(localStorage));
+    const e0 = await eb(); for (const w of ['rechts', 'runter', 'links', 'hoch']) { await inject({ type: 'chat', user: 'Mia', text: w }); await sleep(700); }
+    const ef = await e.evaluate(() => /Mia/.test(document.querySelector('.tt-feed').textContent));
+    ok(ef && (await eb()) !== e0, 'Windows-App (eingebettet): Chat-Befehle steuern das Spiel im Spielfenster');
     ok(!errs.length, 'keine Fehler ' + errs.join(' | '));
     // Was „A drücken“ im jeweiligen Spiel bedeutet: Kart Rush (A = Gas · Bestätigen) – in der Legende und in den Einstellungen
     const kb = base.replace('game=deluxe-2048', 'game=anmacha-kart');
-    const kl = await (await b.newContext({ viewport: { width: 1000, height: 900 } })).newPage(); await kl.goto(kb); await kl.waitForSelector('.tt-leg'); await sleep(4500);
+    const kl = await (await b.newContext({ viewport: { width: 1000, height: 900 } })).newPage(); await kl.goto(kb); await kl.waitForSelector('.tt-leg'); await kl.waitForFunction(() => /A drücken \(/.test(document.querySelector('.tt-leg').textContent), null, { timeout: 15000 }).catch(() => { });   // Kart Rush lädt seine Belegung erst nach dem Start
     const legT = await kl.textContent('.tt-leg'); ok(/A drücken \(Gas/.test(legT), 'Legende zeigt, was A in Kart Rush macht: ' + (legT.match(/A drücken[^→]*/) || [''])[0]);
     const ks = await (await b.newContext({ viewport: { width: 1000, height: 900 } })).newPage(); await ks.goto(kb + '&setup=1'); await ks.waitForSelector('#ttSet'); await sleep(4500);
     await ks.evaluate(() => { const i = document.querySelector('#ttGifts input[list="ttAct"]'); i.dispatchEvent(new Event('input', { bubbles: true })); });

@@ -1,35 +1,20 @@
 // SHOW ME YOUR VOICE – Browser-Test (Playwright). Start: Server im Repo-Ordner, dann
 //   node show-me-your-voice/tests/e2e.mjs [Basis-URL] [Screenshot-Ordner]
 // Spielt eine komplette Staffel mit einem Test-Bot (Runden auf wenige Sekunden gekürzt), dazu Ausscheiden, Neuladen,
-// Training, Bonus-Challenge, Archiv, Einstellungen sowie Handy-Ansicht mit Touch. Der Radio-Stream wird durch eine
-// lokale Test-Datei mit Beats ersetzt (WAV, mit CORS-Freigabe), damit die Live-Noten aus dem Radio geprüft werden.
+// Training, Bonus-Challenge, Archiv, Einstellungen sowie Handy-Ansicht mit Touch. Der Noten-Modus spielt Klavierlicht-Songs
+// (Dateien im Spielordner); laut.fm wird blockiert und darf nie angefragt werden.
 import { chromium } from 'playwright';
 const base = (process.argv[2] || 'http://localhost:8766/') + 'show-me-your-voice/', out = process.argv[3] || '';
 const b = await chromium.launch({ args: ['--no-sandbox', '--autoplay-policy=no-user-gesture-required'] });
 const errs = [], ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHLER ') + m); if (!c) process.exitCode = 1; };
 const shot = async (p, n) => { if (out) await p.screenshot({ path: out + '/smyv-' + n + '.jpg', type: 'jpeg', quality: 80 }); };
 
-// 60 s Test-Beat (120 BPM, Bass + Hi-Hat) als WAV
-const WAV = (() => {
-  const sr = 11025, n = sr * 60, buf = Buffer.alloc(44 + n * 2);
-  buf.write('RIFF', 0); buf.writeUInt32LE(36 + n * 2, 4); buf.write('WAVEfmt ', 8); buf.writeUInt32LE(16, 16); buf.writeUInt16LE(1, 20); buf.writeUInt16LE(1, 22);
-  buf.writeUInt32LE(sr, 24); buf.writeUInt32LE(sr * 2, 28); buf.writeUInt16LE(2, 32); buf.writeUInt16LE(16, 34); buf.write('data', 36); buf.writeUInt32LE(n * 2, 40);
-  let seed = 1; const rnd = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff) * 2 - 1;
-  for (let i = 0; i < n; i++) {
-    const t = i / sr, b = t % 0.5, h = (t + 0.25) % 0.5;
-    const v = (b < 0.12 ? Math.sin(2 * Math.PI * 70 * b) * Math.exp(-b * 30) : 0) + (h < 0.04 ? rnd() * Math.exp(-h * 90) * 0.6 : 0);
-    buf.writeInt16LE(Math.max(-32767, Math.min(32767, Math.round(v * 26000))), 44 + i * 2);
-  }
-  return buf;
-})();
+const radioCalls = [];
 async function page(vp, touch) {
   const c = await b.newContext({ viewport: vp, hasTouch: !!touch, isMobile: !!touch, serviceWorkers: 'block' });
   await c.route(/i\.ytimg\.com|youtube|anmacha-cloud\.js|gamepad\.js/, r => r.fulfill({ status: 200, body: '', contentType: 'text/javascript' }));
-  await c.route(/stream\.laut\.fm/, r => r.fulfill({ status: 200, body: WAV, contentType: 'audio/wav', headers: { 'Access-Control-Allow-Origin': '*' } }));
+  await c.route(/laut\.fm/, r => { radioCalls.push(r.request().url()); r.fulfill({ status: 503, body: '' }); });
   await c.route(/\/api\/v1\/search|\/search\?filter=videos|instances\.json|piped-instances|itunes\.apple\.com|lrclib\.net/, r => r.fulfill({ status: 503, body: '' }));   // keine echten Song-Dienste im Test
-  // Titel wechselt nach einigen Abfragen (Songwechsel), Startzeit liegt in der Vergangenheit (Song läuft schon)
-  let calls = 0;
-  await c.route(/api\.laut\.fm/, r => { calls++; r.fulfill({ status: 200, body: JSON.stringify({ type: 'song', title: 'Testbeat ' + Math.floor(calls / 4), artist: { name: 'Test-Interpret' }, started_at: new Date(Date.now() - 60000).toISOString(), ends_at: new Date(Date.now() + 8000).toISOString() }), contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' } }); });
   const p = await c.newPage();
   p.on('pageerror', e => errs.push(e.message));
   p.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|net::/i.test(m.text())) errs.push(m.text()); });
@@ -64,11 +49,7 @@ async function talkThrough(p) {
   await p.waitForSelector('#sTalk.on');
   for (let i = 0; i < 6; i++) { if (await p.isVisible('#bStageGo')) break; await p.click('#talkQ [data-a="0"]'); }
   await p.click('#bStageGo');
-  // Radio: Auftritt startet erst beim Songwechsel – sonst nach kurzer Zeit „Sofort starten“
-  for (let k = 0; k < 60 && !(await p.isVisible('#sStage.on')); k++) {
-    if (k > 25 && await p.isVisible('#ovBox [data-act="now"]')) { await p.click('#ovBox [data-act="now"]'); break; }
-    await p.waitForTimeout(250);
-  }
+  await p.waitForSelector('#sStage.on', { timeout: 20000 });
 }
 // bis zum Ergebnis warten, eine angebotene Zugabe annehmen
 async function waitResult(p) {
@@ -83,7 +64,6 @@ let encores = 0, events = 0;
 async function playRound(p) {
   if (await backEvent(p)) events++;
   await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on');
-  if (await p.isVisible('#prepBox [data-tab="radio"]')) await p.click('#prepBox [data-tab="radio"]');   // Radio (im Test lokal), nicht YouTube
   await p.click('#bGo'); await talkThrough(p); await waitResult(p);
   while (await p.isVisible('#bNext')) { const lbl = await p.textContent('#bNext'); await p.click('#bNext'); if (!/Weiter ▶/.test(lbl)) break; await p.waitForTimeout(120); }
   await p.waitForTimeout(200);
@@ -112,18 +92,17 @@ ok(after > before, `Training steigert Timing (${before} → ${after})`);
 await p.click('[data-act="ok"]'); await p.click('#sTrain [data-back]'); await p.waitForSelector('#sBack.on');
 ok(/1 übrig/.test(await p.textContent('[data-b="train"]')), 'Trainingseinheit verbraucht');
 // Erste Runde mit Screenshots
-await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on'); if (await p.isVisible('#prepBox [data-tab="radio"]')) await p.click('#prepBox [data-tab="radio"]'); await p.click('[data-g="approach"][data-v="risiko"]'); await shot(p, '06-vorbereitung');
+await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on'); await p.click('#klCats [data-klc="kinder"]'); await p.click('#klList [data-kl]'); await p.click('[data-g="approach"][data-v="risiko"]'); await shot(p, '06-vorbereitung');
 await p.click('#bGo'); await p.waitForSelector('#sTalk.on'); await p.waitForTimeout(150); await shot(p, '07a-wartebereich');
 await p.click('#talkQ [data-a="0"]'); await p.click('#talkQ [data-a="1"]'); await p.click('#talkQ [data-a="0"]'); await shot(p, '07b-jury-gespraech');
-ok(/Läuft gerade auf RicoReWi Radio/.test(await p.textContent('#airBox')), 'Sender läuft schon im Wartebereich: ' + (await p.textContent('#airBox')));
-await p.click('#bStageGo'); await p.waitForSelector('#ovBox [data-act="now"]'); await shot(p, '07c-warte-auf-song');
-await p.waitForSelector('#sStage.on', { timeout: 20000 }); ok(true, 'Auftritt startet automatisch beim Songwechsel'); await p.waitForTimeout(3200); await shot(p, '07-buehne');
-ok(/laut\.fm/.test(await p.textContent('#stTitle')), 'Radio-Quelle wird im Auftritt genannt: ' + (await p.textContent('#stTitle')));
-ok(await p.evaluate(() => { const s = window.SMYVApp.stageObj(); return s && s.part && s.part.live && s.notes.length > 0; }), 'Noten entstehen live aus dem Radio-Stream');
+ok(/Dein Song:/.test(await p.textContent('#talkBox')), 'Wartebereich nennt den Klavierlicht-Song');
+await p.click('#bStageGo'); await p.waitForSelector('#sStage.on', { timeout: 20000 }); await p.waitForTimeout(3200); await shot(p, '07-buehne');
+ok(/Klavierlicht/.test(await p.textContent('#stTitle')), 'Song-Quelle wird im Auftritt genannt: ' + (await p.textContent('#stTitle')));
+ok(await p.evaluate(() => { const s = window.SMYVApp.stageObj(); return s && s.kl && s.notes.length > 0 && s.notes.every(n => typeof n.p === 'number'); }), 'Noten sind die Melodie des Songs');
 await p.keyboard.press('Escape'); await p.waitForSelector('#ov:not([hidden])'); ok(await p.evaluate(() => window.SMYVApp.stageObj().paused), 'Pause mit Esc'); await shot(p, '08-pause');
 await p.keyboard.press('Escape'); await p.waitForTimeout(100); ok(!(await p.evaluate(() => window.SMYVApp.stageObj().paused)), 'Weiter mit Esc');
 await waitResult(p); await shot(p, '09-performance');
-ok(/Quelle: .*laut\.fm/.test(await p.textContent('#resBox')), 'Quelle steht auch im Ergebnis');
+ok(/Klavierlicht-Song: „/.test(await p.textContent('#resBox')), 'Quelle steht auch im Ergebnis');
 await p.click('#bNext'); await p.waitForTimeout(4800); await shot(p, '10-jury');
 await p.click('#bNext'); await p.waitForTimeout(300); await shot(p, '11-entscheidung');
 await p.click('#bNext'); await p.waitForSelector('#sBack.on');
@@ -138,7 +117,7 @@ for (let i = 0; i < 6 && (await st(p)).status === 'backstage'; i++) {
   const r = (await st(p)).round;
   if (r === 2) {   // Mottoshow: Voting und Zitterbank fotografieren
     if (await backEvent(p)) events++;
-    await p.click('[data-b="stage"]'); if (await p.isVisible('#prepBox [data-tab="radio"]')) await p.click('#prepBox [data-tab="radio"]'); await p.click('#bGo'); await talkThrough(p); await waitResult(p);
+    await p.click('[data-b="stage"]'); await p.click('#bGo'); await talkThrough(p); await waitResult(p);
     for (let k = 0; k < 6 && !(await p.isVisible('.vbar')); k++) { await p.click('#bNext'); await p.waitForTimeout(150); }
     ok(await p.isVisible('.vbar'), 'Voting-Balken nach der Jury'); await p.waitForTimeout(2600); await shot(p, '12a-voting');
     ok(await p.isVisible('#zit'), 'Zitterbank wird aufgelöst');
@@ -167,8 +146,7 @@ ok(!/fortsetzen/.test(await p.textContent('#menuList')), 'Nach dem Ausscheiden k
 await bot(p, 0.95, 7);
 await p.click('[data-m="free"]'); await p.waitForSelector('#sPrep.on'); await p.click('#bGo'); await talkThrough(p);
 await p.waitForSelector('#sStage.on'); await p.waitForTimeout(2500);
-const lost = await p.evaluate(() => { const s = window.SMYVApp.stageObj(); const n0 = s.notes.length; s.radioLost(); return { live: s.part.live, click: !!s.part.click, more: s.notes.length > n0 }; });
-ok(!lost.live && lost.click, 'Radio bricht ab → leiser Takt-Klick und Noten übernehmen');
+ok(await p.evaluate(() => window.SMYVApp.stageObj().kl), 'Freies Casting spielt einen Klavierlicht-Song');
 await waitResult(p);
 for (let k = 0; k < 8 && !(await p.isVisible('#sPrep.on')); k++) { await p.click('#bNext'); await p.waitForTimeout(150); }
 await p.waitForSelector('#sPrep.on'); ok(true, 'Freies Casting durchgespielt');
@@ -219,22 +197,6 @@ const sw = await m.evaluate(() => document.documentElement.scrollWidth <= innerW
 ok(sw, 'Kein seitliches Scrollen auf dem Handy');
 await m.close();
 
-// ---------- Radio ohne CORS-Freigabe: Sender läuft trotzdem (nur abspielen) ----------
-{
-  const c = await b.newContext({ viewport: { width: 1280, height: 800 }, serviceWorkers: 'block' });
-  await c.route(/i\.ytimg\.com|youtube|anmacha-cloud\.js|gamepad\.js/, r => r.fulfill({ status: 200, body: '', contentType: 'text/javascript' }));
-  await c.route(/stream\.laut\.fm/, r => r.fulfill({ status: 200, body: WAV, contentType: 'audio/wav' }));   // ohne Access-Control-Allow-Origin
-  await c.route(/api\.laut\.fm/, r => r.fulfill({ status: 200, body: JSON.stringify({ title: 'Testbeat', artist: { name: 'Test-Interpret' } }), contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' } }));
-  const q = await c.newPage(); q.on('pageerror', e => errs.push(e.message));
-  await q.goto(base); await q.waitForSelector('#sTitle.on'); await q.evaluate(() => { window.SMYVApp.state().prep.how = 'game'; }); await q.keyboard.press('Enter'); await q.waitForSelector('#sMenu.on');
-  await q.evaluate(() => { window.SMYV.D.ROUNDS.forEach(r => { r.len = 16; }); });
-  await q.click('[data-m="new"]'); await q.click('#avaOk'); await q.waitForSelector('#sBack.on');
-  await q.evaluate(() => { const A = window.SMYVAudio, orig = A.radioStart; A.radioStart = (s, d, u, plain) => (plain ? orig(s, d, u, true) : Promise.reject(new Error('cors'))); });   // Analyse verweigert wie bei fehlender CORS-Freigabe
-  await q.click('[data-b="stage"]'); await q.waitForSelector('#sPrep.on'); await q.click('#prepBox [data-tab="radio"]'); await q.click('#bGo'); await talkThrough(q);
-  await q.waitForSelector('#sStage.on', { timeout: 20000 }); await q.waitForTimeout(2500);
-  const pl = await q.evaluate(() => ({ plain: window.SMYVAudio.radioPlain(), notes: window.SMYVApp.stageObj().notes.length, title: document.getElementById('stTitle').textContent }));
-  ok(pl.plain && pl.notes > 0 && /laut\.fm/.test(pl.title), 'Ohne CORS: Sender läuft hörbar, Noten im Takt des Stils (' + pl.notes + ')');
-  await c.close();
-}
+ok(!radioCalls.length, 'keine Radio-Anfragen mehr (' + radioCalls.length + ')');
 ok(!errs.length, 'Keine Laufzeitfehler' + (errs.length ? ': ' + errs.join(' | ') : ''));
 await b.close();

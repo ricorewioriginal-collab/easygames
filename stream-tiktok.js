@@ -79,16 +79,20 @@
   // Positionen hängen am Rahmen von stream.html: p = hochkant mit Titel/QR, l = quer mit Seitenleiste, full = nur Spiel (auch Windows-App)
   var css = document.createElement('style');
   css.textContent = '.tt{position:absolute;z-index:20;font-family:system-ui,"Segoe UI",sans-serif;color:#fff;pointer-events:none}' +
-    '.tt-leg,.tt-top{padding:8px 10px;border-radius:12px;background:rgba(5,7,13,.78);font-size:12px;line-height:1.5;max-width:46%;box-shadow:0 4px 14px rgba(0,0,0,.4);backdrop-filter:blur(4px)}' +
-    '.tt-leg b,.tt-top b{display:block;font-size:11px;color:#7ff3ff;letter-spacing:.04em;margin-bottom:2px}.tt-leg .r,.tt-top .r{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+    '.tt-leg,.tt-top{padding:7px 10px 7px 9px;border-radius:12px;background:linear-gradient(160deg,rgba(22,14,42,.66),rgba(7,9,20,.66));border:1px solid rgba(255,255,255,.1);border-left:2px solid #fe2c55;font-size:11px;line-height:1.3;max-width:40%;box-shadow:0 6px 18px rgba(0,0,0,.35);backdrop-filter:blur(10px) saturate(1.3);-webkit-backdrop-filter:blur(10px) saturate(1.3)}' +
+    '.tt-leg b,.tt-top b{display:block;font-size:9.5px;font-weight:900;letter-spacing:.1em;margin-bottom:4px;background:linear-gradient(90deg,#25f4ee,#fe2c55);-webkit-background-clip:text;background-clip:text;color:transparent}' +
+    '.tt-leg .r{display:grid;grid-template-columns:16px auto minmax(0,1fr);gap:5px;align-items:center;padding:1.5px 0;transition:opacity .35s}.tt-leg .r i{font-style:normal;text-align:center}.tt-leg .r .a{opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tt-leg .r em{font-style:normal;opacity:.55}' +
+    '.tt-leg .r.h{display:none}.tt-leg .pg{float:right;-webkit-text-fill-color:rgba(255,255,255,.45);color:rgba(255,255,255,.45);letter-spacing:0}' +
+    '.tt-top{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}.tt-top b{margin:0}.tt-top .r{padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.08)}' +
+    '.tt-leg b::before{content:"● ";color:#fe2c55;-webkit-text-fill-color:#fe2c55;animation:ttPulse 1.4s ease-in-out infinite}@keyframes ttPulse{50%{opacity:.35}}.tt-leg .r,.tt-top .r{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
     '.tt-leg .c,.tt-top .c{color:#ffd84a;font-weight:700}.tt-leg img{width:16px;height:16px;vertical-align:-3px}' +
     '.tt-tr{top:58px;right:8px}.tt-tl{top:58px;left:8px}.tt-br{bottom:100px;right:8px}.tt-bl{bottom:100px;left:8px}' +
     '.tt-feed{left:8px;right:8px;bottom:96px;display:flex;flex-direction:column;align-items:flex-start;gap:5px}' +
-    '.tt-feed div{padding:6px 11px;border-radius:999px;background:linear-gradient(90deg,rgba(236,72,153,.92),rgba(139,92,246,.92));font-size:13px;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.35);animation:ttIn .25s ease-out}' +
-    '@keyframes ttIn{from{transform:translateX(-20px);opacity:0}to{transform:none;opacity:1}}' +
-    '.tt-like{left:8px;right:8px;top:52px;height:8px;border-radius:4px;background:rgba(255,255,255,.18);overflow:hidden}.tt-like i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f472b6,#fb7185);transition:width .3s}' +
+    '.tt-feed div{padding:5px 11px;border-radius:999px;background:linear-gradient(95deg,rgba(254,44,85,.9),rgba(139,92,246,.88) 75%,rgba(37,244,238,.85));border:1px solid rgba(255,255,255,.22);font-size:12px;font-weight:800;max-width:92%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.35);box-shadow:0 4px 12px rgba(0,0,0,.35);animation:ttIn .35s cubic-bezier(.2,1.4,.4,1),ttOut .4s ease-in 4.6s forwards}' +
+    '@keyframes ttIn{from{transform:translateX(-24px) scale(.85);opacity:0}to{transform:none;opacity:1}}@keyframes ttOut{to{opacity:0;transform:translateX(-12px)}}' +
+    '.tt-like{left:8px;right:8px;top:52px;height:5px;border-radius:3px;background:rgba(255,255,255,.14);overflow:hidden}.tt-like i{display:block;height:100%;width:0;background:linear-gradient(90deg,#25f4ee,#fe2c55);box-shadow:0 0 12px rgba(254,44,85,.8);transition:width .3s}' +
     '.tt-vote{left:50%;top:40%;transform:translate(-50%,-50%);padding:10px 16px;border-radius:14px;background:rgba(5,7,13,.82);font-size:15px;font-weight:800;text-align:center}' +
-    '.tt-state{right:8px;bottom:8px;font-size:10px;opacity:.6}' +
+    '.tt-state{right:8px;bottom:8px;font-size:10px;opacity:.75;padding:2px 8px;border-radius:999px;background:rgba(0,0,0,.35)}' +
     '.l .tt-tr,.l .tt-tl,.full .tt-tr,.full .tt-tl{top:16px}.l .tt-br,.l .tt-bl,.full .tt-br,.full .tt-bl{bottom:12px}.l .tt-tr,.l .tt-br{right:258px}' +
     '.l .tt-feed,.full .tt-feed{bottom:12px}.l .tt-feed,.l .tt-like{right:258px}.l .tt-like,.full .tt-like{top:4px}.l .tt-state{right:258px}.l .tt-leg,.l .tt-top{max-width:30%}';
   document.head.appendChild(css);
@@ -101,19 +105,28 @@
   var OPP = { tr: 'tl', tl: 'tr', br: 'bl', bl: 'br' };
   function drawLegend() {
     var e = eff(), rows = [];
-    (e.gifts || []).forEach(function (g) { if (g.gift) { var gi = giftInfo(g.gift); rows.push('<div class="r">' + (gi.img ? '<img src="' + esc(gi.img) + '" alt="">' : esc(g.icon || gi.icon || '🎁')) + ' <span class="c">' + esc(g.gift) + '</span> → ' + esc(withMean(g.label || g.action, g.action)) + '</div>'); } });
-    if (e.likes && e.likes.every > 0) rows.push('<div class="r">❤️ <span class="c">' + e.likes.every + ' Likes</span> → ' + esc(withMean(e.likes.label || e.likes.action, e.likes.action)) + '</div>');
+    // kompakte Zeile: Symbol | Name | Wirkung (was der Knopf im Spiel macht, leiser in Klammern)
+    var row = function (ic, name, label, action) { var l = String(label || action || ''), m = padMean(action), mean = m && l.indexOf(m) < 0 ? '<em> (' + esc(m) + ')</em>' : '';
+      return '<div class="r"><i>' + ic + '</i><span class="c">' + esc(name) + '</span><span class="a">' + esc(l) + mean + '</span></div>'; };
+    (e.gifts || []).forEach(function (g) { if (g.gift) { var gi = giftInfo(g.gift); rows.push(row(gi.img ? '<img src="' + esc(gi.img) + '" alt="">' : esc(g.icon || gi.icon || '🎁'), g.gift, g.label, g.action)); } });
+    if (e.likes && e.likes.every > 0) rows.push(row('❤️', e.likes.every + ' Likes', e.likes.label, e.likes.action));
     var cmds = (e.commands || []).map(function (c) { return c[0]; }).filter(Boolean);
-    if (cmds.length) rows.push('<div class="r">💬 Schreib: <span class="c">' + esc(cmds.slice(0, 6).join(' · ')) + '</span></div>');
-    legend.innerHTML = '<b>' + (e.mode === 'vote' ? 'TIKTOK STEUERT · ABSTIMMUNG' : 'TIKTOK STEUERT DAS SPIEL') + '</b>' + rows.join('');
+    if (cmds.length) rows.push('<div class="r"><i>💬</i><span class="a" style="grid-column:2/4">Schreib: <span class="c">' + esc(cmds.slice(0, 6).join(' · ')) + '</span></span></div>');
+    legRows = rows.length;
+    legend.innerHTML = '<b>' + (e.mode === 'vote' ? 'TIKTOK STEUERT · ABSTIMMUNG' : 'TIKTOK STEUERT') + '<span class="pg"></span></b>' + rows.join(''); legPage(0);
     legend.className = 'tt tt-leg tt-' + (e.legend && e.legend !== 'off' ? e.legend : 'tr'); legend.style.display = e.legend === 'off' || !rows.length || !shows('legend') ? 'none' : '';
     likeBar.style.display = e.likes && e.likes.every > 0 && shows('legend') ? '' : 'none';
     top.className = 'tt tt-top tt-' + (OPP[e.legend] || 'tr'); drawTop();
   }
+  // Viele Geschenke: Legende blättert alle 6 s weiter (6 Zeilen je Seite), bleibt dadurch klein
+  var legRows = 0, legP = 0, LPG = 6;
+  function legPage(p) { var r = legend.querySelectorAll('.r'), n = Math.ceil(r.length / LPG); legP = n ? p % n : 0;
+    r.forEach(function (x, i) { x.classList.toggle('h', n > 1 && Math.floor(i / LPG) !== legP); }); var pg = legend.querySelector('.pg'); if (pg) pg.textContent = n > 1 ? (legP + 1) + '/' + n : ''; }
+  setInterval(function () { if (legRows > LPG) legPage(legP + 1); }, 6000);
   function drawTop() {
     var e = eff(), k = Object.keys(fans).sort(function (a, b) { return fans[b] - fans[a]; }).slice(0, 3);
     if (!e.top || !k.length || !shows('top')) { top.style.display = 'none'; return; }
-    top.style.display = ''; top.innerHTML = '<b>🏆 TOP-FANS</b>' + k.map(function (u, i) { return '<div class="r">' + ['🥇', '🥈', '🥉'][i] + ' ' + esc(u) + ' <span class="c">' + fans[u] + '💎</span></div>'; }).join('');
+    top.style.display = ''; top.innerHTML = '<b>🏆 TOP</b>' + k.map(function (u, i) { return '<div class="r">' + ['🥇', '🥈', '🥉'][i] + ' ' + esc(u) + ' <span class="c">' + fans[u] + '💎</span></div>'; }).join('');
   }
   function toast(text) {
     var d = document.createElement('div'); d.textContent = text; feed.appendChild(d);
@@ -154,8 +167,11 @@
   }
   var queue = Promise.resolve(), swapUntil = 0, freezeUntil = 0;
   var SWAP = { LEFT: 'RIGHT', RIGHT: 'LEFT', UP: 'DOWN', DOWN: 'UP' };
+  // gamepad.js blendet beim ersten Knopfdruck seine Belegung ein – im Stream stört das (Zuschauer sehen die Geschenke-Legende)
+  var legHid = 0;
+  function hidePadLegend() { if (legHid > 3) return; legHid++; var w = gameWin(); [60, 300, 900].forEach(function (t) { setTimeout(function () { try { w.EasyGamesPad && w.EasyGamesPad.showLegend(0); } catch (e) { } }, t); }); }
   function press(i, done) {
-    padApi(function (N) { N.press(i, 1); setTimeout(function () { N.press(i, 0); setTimeout(done, 90); }, 160); });
+    padApi(function (N) { N.press(i, 1); setTimeout(function () { N.press(i, 0); setTimeout(done, 90); }, 160); hidePadLegend(); });
     setTimeout(done, 900);   // falls das Spiel noch lädt: nicht hängen bleiben
   }
   // Effekte auf das Spiel (Stream: iframe, Windows-App: ganze Seite) und Einblendungen
@@ -167,8 +183,8 @@
     '@keyframes ttDance{0%,100%{scale:1;rotate:0deg}25%{scale:1.06;rotate:-5deg}50%{scale:.95;rotate:0deg}75%{scale:1.06;rotate:5deg}}' +
     '@keyframes ttBan{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}15%{transform:translate(-50%,-50%) scale(1.08);opacity:1}85%{opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}' +
     '@keyframes ttScare{0%{transform:scale(.2);opacity:0}20%{transform:scale(1.3);opacity:1}100%{transform:scale(1);opacity:0}}' +
-    '.tt-rain{position:absolute;top:0;font-size:34px;animation:ttRain linear forwards}.tt-ban{position:absolute;left:50%;top:45%;width:88%;max-width:900px;padding:16px 18px;border-radius:18px;text-align:center;' +
-    'background:linear-gradient(110deg,rgba(236,72,153,.95),rgba(139,92,246,.95));font-size:24px;font-weight:900;box-shadow:0 10px 40px rgba(0,0,0,.5);animation:ttBan 3.5s ease-out forwards;z-index:40}' +
+    '.tt-rain{position:absolute;top:0;font-size:34px;animation:ttRain linear forwards}.tt-ban{position:absolute;left:50%;top:42%;width:max-content;max-width:min(78%,560px);padding:11px 20px;border-radius:16px;text-align:center;' +
+    'background:linear-gradient(rgba(14,10,30,.78),rgba(14,10,30,.78)) padding-box,linear-gradient(100deg,#25f4ee,#fe2c55) border-box;border:2px solid transparent;backdrop-filter:blur(10px);font-size:19px;line-height:1.25;font-weight:900;letter-spacing:-.01em;text-shadow:0 2px 10px rgba(0,0,0,.5);box-shadow:0 10px 30px rgba(0,0,0,.45),0 0 24px rgba(254,44,85,.3);animation:ttBan 3.5s ease-out forwards;z-index:40}' +
     '.tt-black{position:absolute;inset:0;background:#000;display:flex;align-items:center;justify-content:center;font-size:40px;z-index:26}' +
     '.tt-crash{position:absolute;inset:0;z-index:27;background:#f3f3f3;color:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font:600 17px system-ui,"Segoe UI",sans-serif;text-align:center;padding:20px}' +
     '.tt-crash i{width:34px;height:34px;border:4px solid #bbb;border-top-color:#0b74de;border-radius:50%;animation:ttSpin 1s linear infinite}' +

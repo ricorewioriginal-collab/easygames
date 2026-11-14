@@ -75,8 +75,16 @@ function readConfig() { try { return JSON.parse(fs.readFileSync(CONFIG, 'utf8'))
 function emit(ev) { broadcast({ type: 'event', ev }); log(ev.type + '  ' + (ev.user || '') + '  ' + (ev.text || ev.gift || ev.count || '')); }
 function setStatus(s) { status = s; log(s); broadcast({ type: 'status', msg: s }); }
 
-// tiktok-live-connector: Felder je nach Version direkt oder unter user/giftDetails
-const who = d => { const u = d.user || d; return u.nickname || u.uniqueId || 'Jemand'; };
+// tiktok-live-connector: Felder je nach Version – 1.x (comment, likeCount, giftDetails.giftType, uniqueId) und 2.x (Protokoll v3:
+// content, count, gift.type/name/diamondCount, user.nickname/displayId). Beides wird hier auf dasselbe Ereignis gebracht.
+const who = d => { const u = d.user || d; return u.nickname || u.uniqueId || u.displayId || 'Jemand'; };
+const chatText = d => String(d.comment ?? d.content ?? '');
+const likeCount = d => Math.max(1, Number(d.likeCount ?? d.count ?? 1) || 1);
+function giftOf(d) {
+  const g = d.giftDetails || d.gift || {};
+  return { name: d.giftName || g.giftName || g.name || '', id: d.giftId || g.id, type: Number(d.giftType ?? g.giftType ?? g.type ?? 0),
+    diamonds: Number(d.diamondCount || g.diamondCount || g.diamond_count || 0), count: Math.max(1, Number(d.repeatCount || d.comboCount || 1) || 1), end: !!Number(d.repeatEnd) || d.repeatEnd === true };
+}
 async function live(name) {
   // https://github.com/zerodytrash/TikTok-Live-Connector (ESM): im Ordner dieses Skripts installieren
   let lib;
@@ -84,17 +92,18 @@ async function live(name) {
     console.error('Bitte zuerst im Ordner ' + path.dirname(fileURLToPath(import.meta.url)) + ' ausführen:  npm i tiktok-live-connector'); process.exit(2);
   }
   const Conn = lib.TikTokLiveConnection || lib.WebcastPushConnection;
-  const c = new Conn(name.replace(/^@/, ''));
-  c.on('chat', d => emit({ type: 'chat', user: who(d), text: d.comment }));
+  const c = new Conn(name.replace(/^@/, ''), { processInitialData: false, enableExtendedGiftInfo: false });   // 2.x verlangt das Einstellungsobjekt; alte Nachrichten beim Verbinden nicht als neue Ereignisse zählen
+  c.on('chat', d => { const t = chatText(d).trim(); if (t) emit({ type: 'chat', user: who(d), text: t }); });
   c.on('gift', d => {
-    const g = d.giftDetails || d.gift || {};
-    if ((d.giftType || g.giftType) === 1 && !d.repeatEnd) return;   // Serien-Geschenk: erst am Ende zählen
-    emit({ type: 'gift', user: who(d), gift: d.giftName || g.giftName || g.name || '', giftId: d.giftId || g.id, count: d.repeatCount || 1, diamonds: d.diamondCount || g.diamondCount || g.diamond_count || 0 });
+    const g = giftOf(d);
+    if (g.type === 1 && !g.end) return;   // Serien-Geschenk (Combo): erst am Ende einmal mit der Anzahl zählen
+    emit({ type: 'gift', user: who(d), gift: g.name, giftId: g.id, count: g.count, diamonds: g.diamonds });
   });
-  c.on('like', d => emit({ type: 'like', user: who(d), count: d.likeCount || 1 }));
+  c.on('like', d => emit({ type: 'like', user: who(d), count: likeCount(d) }));
   c.on('follow', d => emit({ type: 'follow', user: who(d) }));
   c.on('share', d => emit({ type: 'share', user: who(d) }));
-  c.on('subscribe', d => emit({ type: 'sub', user: who(d) }));
+  c.on('subscribe', d => emit({ type: 'sub', user: who(d) }));   // 1.x
+  c.on('subNotify', d => emit({ type: 'sub', user: who(d) }));   // 2.x
   c.on('member', d => emit({ type: 'join', user: who(d) }));
   const loadGifts = () => Promise.resolve((c.fetchAvailableGifts || c.getAvailableGifts || (() => []))).then(f => f.call(c)).then(list => {
     gifts = (Array.isArray(list) ? list : []).map(g => ({ name: g.name || g.giftName, diamonds: g.diamond_count || g.diamondCount || 0, img: ((g.image && (g.image.url_list || g.image.urlList)) || [])[0] || '' }))

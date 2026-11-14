@@ -72,9 +72,11 @@ jobs:
           name: easygames-android-test
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
+  # Sofort nach jedem Push auf main, NICHT erst nach "verify": GitHub Pages veröffentlicht den Commit sofort.
+  # Bringt ein Merge ein veraltetes Manifest mit (z. B. zwei PRs ändern dieselbe Datei kurz nacheinander), meldet
+  # die App sonst minutenlang "Prüfsumme stimmt nicht". Das Manifest beschreibt nur die schon veröffentlichten Dateien.
   sync:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    needs: verify
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -99,4 +101,5 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add sync/manifest.json sync/catalog.json sync/version.json thumbs
           git commit -m 'chore: refresh Android offline game catalog'
-          git push origin HEAD:main
+          # Kam inzwischen ein neuer Commit auf main, erzeugt dessen eigener Lauf das passende Manifest.
+          git push origin HEAD:main || { git fetch -q origin main; [ "$(git rev-parse origin/main)" != "$(git rev-parse HEAD~1)" ] && echo "main ist weiter – der nächste Lauf übernimmt." || exit 1; }

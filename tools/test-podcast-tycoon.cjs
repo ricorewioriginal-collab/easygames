@@ -20,7 +20,7 @@ server.listen(0, '127.0.0.1', async () => {
     await p.goto(url);
     await p.waitForFunction(() => document.getElementById('loading').classList.contains('done'), null, { timeout: 180000 });
     assert.match(await p.title(), /AnMaCha – Der Podcast/);
-    await p.evaluate(() => { AMC.Save.data.acts = { cur: 0, seen: { 0: 1 }, w: {} }; });   // Story-Szenen nicht automatisch starten (eigener Test unten)
+    await p.evaluate(() => { AMC.Save.data.acts = { cur: 0, seen: { 0: 1 }, w: {} }; AMC.Save.data.scenes = { andrew: 1, marco: 1, duo: 1 }; });   // Story-Szenen nicht automatisch starten (eigener Test unten)
     await p.click('#tStart'); await p.waitForFunction(() => AMC.Game.mode === 'play' && AMC.Play.state() && AMC.Play.state().mode === 'free', null, { timeout: 20000 });
     // Kein separates Hauptmenü: Start führt in die Stadt, das Gesamtmenü öffnet sich dort (Pause) mit allen Funktionen
     await p.evaluate(() => AMC.Game.pause()); await p.waitForSelector('.main-menu.in-city [data-go=story]');
@@ -67,6 +67,16 @@ server.listen(0, '127.0.0.1', async () => {
     assert.ok(await p.evaluate(() => { AMC.Worlds.open('xo-zotik'); document.querySelector('#xoL [data-x="2"]').click(); AMC.UI.closeAll(); const g = AMC.Guests.list().find(x => x.id === 'xo-zotik'); return !!(g && g.open); }), 'Zotik wird Studiogast');
     await p.evaluate(() => { const S = AMC.Play.state(); [S.pl.x, S.pl.z] = window.__xoPos; }); await p.waitForTimeout(500);
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(); AMC.Save.data.settings.voice = false; const ok = AMC.Cut.play(AMC.Acts.ACTS[1].intro(S)); const on = AMC.Cut.active() && !!document.querySelector('.cut #cutT').textContent; for (let i = 0; i < 5; i++) AMC.Cut.tick(0.1); AMC.Cut.skip(); return ok && on && !AMC.Cut.active() && AMC.Acts.ACTS.length === 5 && AMC.Acts.state().title.includes('Akt 1'); }), 'Zwischensequenz und Story-Akte');
+    // Ricos Live-Show: eigene Bühne, Originalstimme (Clips), danach räumt die Szene auf und das Live-Studio bietet sie erneut an
+    assert.ok(await p.evaluate(() => ['andrew', 'marco'].every(id => typeof AMC.Acts.voiceFor(id) === 'string')), 'Feste Stimmen für Andrew und Marco');
+    assert.ok(await p.evaluate(() => { const S = AMC.Play.state(), r = AMC.World.hosts.rico, p0 = r.root.position.clone(), par = r.root.parent; delete AMC.Save.data.ricoLive; const n0 = S.group.children.length; AMC.Worlds.open('tiktok'); const cut = [...document.querySelectorAll('.cut')].pop(), on = AMC.Cut.active() && AMC.RicoLive.active() && cut.classList.contains('orig') && /RicoReWi-Universum/.test(cut.querySelector('#cutT').textContent); for (let i = 0; i < 30; i++) AMC.Cut.tick(0.1); AMC.Cut.skip(); const clean = !AMC.RicoLive.active() && S.group.children.length === n0 && r.root.parent === par && r.root.position.distanceTo(p0) < 0.01; const menu = !!document.querySelector('#woL [data-rl]'); const b = document.querySelector('#woB'); if (b) b.click(); return JSON.stringify({ on, clean, menu, seen: AMC.RicoLive.seen() }); }).then(r => { const o = JSON.parse(r); return o.on && o.clean && o.menu && o.seen || (console.log(r), false); }), 'Ricos Live-Show mit Originalstimme');
+    assert.ok(['1', '2', '3', '4', '5'].every(i => fs.statSync(path.join(ROOT, 'anmacha-podcast-tycoon/sounds/rico/live-' + i + '.mp3')).size > 20000), 'Rico-Sprachclips vorhanden');
+    { const vo = path.join(ROOT, 'anmacha-podcast-tycoon/vo'), lines = JSON.parse(fs.readFileSync(path.join(vo, 'lines.json'), 'utf8')), idx = fs.existsSync(path.join(vo, 'index.json')) ? JSON.parse(fs.readFileSync(path.join(vo, 'index.json'), 'utf8')) : null;
+      if (idx) assert.ok(await p.evaluate(l => l.every(x => true) && l.length > 100, lines) && (await p.evaluate(l => l.map(x => AMC.Acts.voKey(x.who, x.text)), lines)).every(k => idx.includes(k) && fs.existsSync(path.join(vo, k + '.mp3'))), 'Sprachclips für alle Zeilen (Edge-TTS)'); }
+    assert.ok(await p.evaluate(() => { const a = AMC.Babble.voice('Hafenarbeiter Olaf'), b = AMC.Babble.voice('Försterin Helga'); return a.base > 120 && b.base > a.base && JSON.stringify(a) === JSON.stringify(AMC.Babble.voice('Hafenarbeiter Olaf')); }), 'NPC-Brabbelstimmen je Figur');
+    assert.ok(await p.evaluate(() => ['andrew', 'marco', 'duo'].every(id => { const S = AMC.Play.state(), n0 = S.group.children.length; const ok = AMC.Scenes.play(id); const cut = [...document.querySelectorAll('.cut')].pop(), txt = cut && cut.querySelector('#cutT').textContent; for (let i = 0; i < 20; i++) AMC.Cut.tick(0.1); AMC.Cut.skip(); return ok && txt && !AMC.Scenes.active() && S.group.children.length === n0; })), 'Bühnen-Szenen: Andrew, Marco und beide');
+    assert.ok(await p.evaluate(() => { const a = AMC.Save.data.acts, c = AMC.Career.state(), cur0 = a.cur, e0 = c.eps; c.eps = 5; a.cur = 0; const early = AMC.Scenes.LIST.andrew.need(); a.cur = 1; const inAct = AMC.Scenes.LIST.andrew.need() && !AMC.Scenes.LIST.marco.need(); a.cur = cur0; c.eps = e0; return !early && inAct && typeof AMC.Voice.after === 'function'; }), 'Szenen gehören zu ihrem Story-Akt');
+    assert.ok(await p.evaluate(() => { const s = AMC.Acts.panel(); const n = s.el.querySelectorAll('#acL [data-sc]').length; AMC.UI.close(s); return n === 4; }), 'Szenen im Story-Menü');
     assert.ok(await p.evaluate(() => { const c = AMC.Career.state(), e0 = c.eps; c.eps = Math.max(1, e0); AMC.Acts.update(2); const adv = AMC.Acts.state().i === 1 && AMC.Cut.active(); AMC.Cut.skip(); c.eps = e0; return adv; }), 'Akt geschafft: Szene und nächster Akt');
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(), d0 = S.drive; AMC.Save.data.settings.voice = false; const ok = AMC.Worlds.inside(250, 0) && AMC.Worlds.inside(360, 20) && AMC.Worlds.name(360, 0).includes('Wellenburg') && ['messe', 'funkloch', 'camping', 'platten'].every(id => AMC.Worlds.PLACES[id]) && S.stations.some(s => s.id === 'world:messe');
       S.drive = { gisela: true, x: 310, z: 0 }; AMC.Worlds.update(0.016); S.drive = d0; const trip = !!AMC.Career.state().today.places.roadtrip; if (AMC.Cut.active()) AMC.Cut.skip(); return ok && trip; }), 'Gisela-Roadtrip nach Wellenburg');
@@ -186,7 +196,7 @@ server.listen(0, '127.0.0.1', async () => {
     assert.ok(await p.evaluate(() => { const R = AMC.Home._state(); return !!R.oa && !!document.getElementById('oaHud') && AMC.OnAir.spots(R).length === 2 && AMC.OnAir.level('rapradio24') === 0; }), 'Senderhaus hat Pult, Auftragsbrett und Ruf-Anzeige');
     assert.ok(await p.evaluate(() => { const R = AMC.Home._state(), sp = AMC.OnAir.spots(R)[0]; R.w.x = sp.x; R.w.z = sp.z; const s = R.w.near(); return !!s && s.label.includes('On-Air-Pult'); }), 'Pult ist erreichbar');
     assert.ok(await p.evaluate(async () => { const R = AMC.Home._state(); AMC.Home.needs('andrew').ideas = ['Test-Idee']; AMC.OnAir.start(R); if (!document.getElementById('oaShow')) return 'kein Fenster';
-      for (let i = 0; i < 5; i++) { const S = R.oa.show; if (S.phase !== 'pick') return 'Phase ' + S.phase; document.querySelector('#oaShow [data-o="0"]').click(); S.needle = S.zone; document.querySelector('#oaShow [data-now]').click(); await new Promise(r => setTimeout(r, 1650)); }
+      for (let i = 0; i < 5; i++) { const S = R.oa.show; if (S.phase !== 'pick') return 'Phase ' + S.phase; document.querySelector('#oaShow [data-o="0"]').click(); S.needle = S.zone; document.querySelector('#oaShow [data-now]').click(); if (S.phase !== 'wait') return 'kein Ergebnis-Halt'; await new Promise(r => setTimeout(r, 900)); document.querySelector('#oaShow [data-go]').click(); await new Promise(r => setTimeout(r, 200)); }
       const S = R.oa.show; return S && S.phase === 'done' ? true : 'nicht fertig'; }).then(r => r === true || r), 'Gastmoderation durchgespielt');
     assert.ok(await p.evaluate(() => { const R = AMC.Home._state(); const lv = AMC.OnAir.level('rapradio24'), promo = AMC.OnAir.promo(); AMC.OnAir.stop(R); return lv >= 1 && promo > 0 && !document.getElementById('oaShow') && AMC.Save.data.onair.good === 1; }), 'Moderation bringt Ruf und Cross-Promo');
     assert.ok(await p.evaluate(() => { const c = AMC.Career.state(), e = AMC.Career.episode({ listeners: 4000 }); return e.lines[1][1].includes('Cross-Promo') && AMC.OnAir.promo() === 0; }), 'Cross-Promo wirkt in der nächsten Folge');
@@ -229,6 +239,30 @@ server.listen(0, '127.0.0.1', async () => {
     await p.evaluate(() => AMC.Game.arcade('jump')); await p.waitForTimeout(1200);
     await p.keyboard.down('KeyD'); await p.waitForFunction(() => AMC.Arcade.state().p.x > 0.3, null, { timeout: 8000 }).catch(() => {}); await p.keyboard.up('KeyD');
     assert.ok(await p.evaluate(() => { const r = AMC.Arcade.state(); return r && r.id === 'jump' && r.p.x > 0.3 && r.plats.length > 10 && r.goal > 100; }), 'Jump & Run läuft');
+    // Kein Durchfallen bei Handy-Bildraten: gleiche Sprunghöhe, Landen auf jeder Plattform (auch nach tiefem Fall und knappem Sprung)
+    const jr = await p.evaluate(() => {
+      const r = AMC.Arcade.state(), G = r.G, p = r.p, I = AMC.Input, out = [], keep = { ...p }, lives = r.lives;
+      const mx = I.move.x, jh = I.jumpHeld; I.move.x = 0; I.jumpHeld = true;
+      const run = (dt, sec) => { for (let t = 0; t < sec; t += dt) { G.update(r, dt); r.tap = false; } };
+      for (const fps of [120, 60, 30, 20, 15, 10]) {
+        const dt = 1 / fps;
+        Object.assign(p, { x: 1, y: 0, vx: 0, vy: 0, ground: true, coyote: 0.1, buf: 0 }); r.inv = 9;
+        let top = 0; r.tap = true; for (let t = 0; t < 1.2; t += dt) { G.update(r, dt); r.tap = false; top = Math.max(top, p.y); }
+        if (top < 1.95) out.push(fps + ' fps: Sprunghöhe ' + top.toFixed(2));
+        for (const s of r.plats.filter(q => q.float)) {
+          const xm = (s.x0 + s.x1) / 2;
+          for (const [y0, vy] of [[s.y + 9, 0], [s.y - 0.4, 0.5]]) {   // tiefer Fall / Füße knapp in der Kiste
+            Object.assign(p, { x: xm, y: y0, vx: 0, vy, ground: false, coyote: 0, buf: 0 }); run(dt, 1.6);
+            if (!(p.ground && Math.abs(p.y - s.y) < 1e-6)) out.push(fps + ' fps: durchgefallen bei x=' + xm.toFixed(1) + ' (y=' + p.y.toFixed(2) + ')');
+          }
+          const base = Math.max(...r.plats.filter(q => q !== s && q.y < s.y && q.x1 > s.x0 - 3 && q.x0 < s.x1 + 3).map(q => q.y));   // höchste Absprungfläche daneben
+          if (fps === 60 && s.y - base > 1.95) out.push('Plattform unerreichbar: ' + s.y.toFixed(2));
+        }
+      }
+      Object.assign(p, keep, { y: 0, vy: 0 }); r.lives = lives; r.inv = 0; I.move.x = mx; I.jumpHeld = jh;
+      return out;
+    });
+    assert.deepEqual(jr, [], 'Jump & Run: ' + jr.slice(0, 5).join('; '));
     await p.evaluate(() => AMC.Game.arcade('run')); await p.waitForTimeout(1200);
     await p.keyboard.press('Space'); await p.waitForFunction(() => AMC.Arcade.state().phase !== 'ready', null, { timeout: 5000 }); await p.waitForTimeout(400); await p.evaluate(() => AMC.Input.fire('left')); await p.waitForFunction(() => AMC.Arcade.state().p.lane === 0, null, { timeout: 5000 }).catch(() => {});
     assert.ok(await p.evaluate(() => { const r = AMC.Arcade.state(); return r && r.id === 'run' && r.phase !== 'ready' && r.p.z < 0 && r.p.lane === 0; }), 'Endlos-Läufer rennt');

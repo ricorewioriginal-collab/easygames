@@ -85,7 +85,7 @@ class FakeFetcher : Fetcher {
 
     override fun download(url: String, out: OutputStream, onBytes: (Int) -> Unit) {
         requests.add(url)
-        val data = files[url] ?: throw HttpStatusException(404, url)
+        val data = files[url.substringBefore('?')] ?: throw HttpStatusException(404, url)
         val now = inFlight.incrementAndGet()
         maxInFlight.accumulateAndGet(now) { a, b -> maxOf(a, b) }
         try {

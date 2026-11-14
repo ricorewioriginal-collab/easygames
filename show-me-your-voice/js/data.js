@@ -293,21 +293,6 @@
   ];
 
 
-  // Musikquellen: die RicoReWi-Sender auf laut.fm (dieselbe Liste wie in den anderen easygames-Spielen).
-  // Im Auftritt erkennt das Spiel die Beats im laufenden Programm und erzeugt daraus die Noten. Quelle und Titel werden angezeigt.
-  const STATIONS = [
-    { slug: 'ricorewi', name: 'RicoReWi Radio', style: 'pop', desc: 'Der Hauptsender – bunt gemischt' },
-    { slug: 'chartradio24', name: 'Chartradio 24', style: 'pop', desc: 'Aktuelle Hits' },
-    { slug: 'rockradio24', name: 'Rockradio 24', style: 'rock', desc: 'Gitarren und Gas' },
-    { slug: 'schlagerpop24', name: 'Schlagerpop 24', style: 'ballade', desc: 'Schlager und Gefühl' },
-    { slug: 'rapradio24', name: 'Rapradio 24', style: 'soul', desc: 'Rap, R&B und Groove' },
-    { slug: 'clubradio24', name: 'Clubradio 24', style: 'pop', desc: 'Dance und Club' },
-    { slug: 'kultradio24', name: 'Kultradio 24', style: 'pop', desc: 'Kult-Hits der 80er und 90er' },
-    { slug: 'yourtime-fm', name: 'YourTime-FM', style: 'pop', desc: 'Musik für jede Zeit' },
-    { slug: 'anmacha24', name: 'AnMaCha 24', style: 'pop', desc: 'Das AnMaCha-Programm' },
-    { slug: 'christmasradio24', name: 'Christmasradio 24', style: 'winter', desc: 'Weihnachtsmusik (Winterglanz-Gala)' }
-  ];
-
   // Jury-Gespräch vor dem Auftritt (Casting und Freies Casting). s = Sympathie je Juror (fließt sichtbar in dessen Wertung), v = Votes
   const INTERVIEW = [
     { q: 'Marc: „Erzähl kurz – wer steht da vor uns?“', a: [
@@ -821,6 +806,6 @@
   JURY.forEach(j => { j.img = 'img/kk-' + j.id + '.jpg'; });
   COACH.img = 'img/kk-sophie.jpg';
   [HOST, COACH].concat(CANDIDATES).forEach(c => { c.look = Object.assign({}, c.look, { kk: 'img/kk-' + c.id + '.jpg' }); });
-  const DATA = { MAIN_JURY, STATIONS, INTERVIEW, HOST_Q, EVENTS, CRIT, JURY, COACH, HOST, CANDIDATES, STYLES, SONGS, MOTTOS, APPROACH, ACTION, ROUNDS, COMMUNITY, TRAINING, ACHIEVEMENTS, ARCHIVE, KARAOKE, REWARDS };
+  const DATA = { MAIN_JURY, INTERVIEW, HOST_Q, EVENTS, CRIT, JURY, COACH, HOST, CANDIDATES, STYLES, SONGS, MOTTOS, APPROACH, ACTION, ROUNDS, COMMUNITY, TRAINING, ACHIEVEMENTS, ARCHIVE, KARAOKE, REWARDS };
   if (typeof module !== 'undefined' && module.exports) module.exports = DATA; else root.SMYV_DATA = DATA;
 })(typeof window !== 'undefined' ? window : globalThis);

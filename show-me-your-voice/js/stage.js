@@ -10,7 +10,7 @@
   const SCALE = [0, 2, 4, 5, 7, 9, 11, 12];
   const BASE = { tief: 48, mittel: 55, hoch: 60 };
   const TRAVEL = { langsam: 1.9, normal: 1.5, schnell: 1.15 };
-  const W_PERF = 0.05, W_GOOD = 0.1, W_OK = 0.15;
+  const W_PERF = 0.05, W_GOOD = 0.1, W_OK = 0.15, KL_EARLY = 0.08, KL_LATE = 0.26;   // KL_*: Fenster fürs Ansingen (Stimme braucht etwas länger als ein Tastendruck)
 
   function levelToSemi(lv) { lv = Math.max(0, Math.min(7, lv)); const i = Math.min(6, Math.floor(lv)); return SCALE[i] + (SCALE[i + 1] - SCALE[i]) * (lv - i); }
   function semiToLevel(s) { if (s <= 0) return s / 2; if (s >= 12) return 7 + (s - 12) / 2; for (let i = 0; i < 7; i++) if (s <= SCALE[i + 1]) return i + (s - SCALE[i]) / (SCALE[i + 1] - SCALE[i]); return 7; }
@@ -57,6 +57,26 @@
     return cues;
   }
 
+  // Klavierlicht-Song (o.ext.kl): Noten = echte Melodie im Takt der Musik, Spur nach Melodieverlauf (wie in Klavierlicht)
+  function klNotes(all, v0, p, shows) {
+    const out = [];
+    for (const n of all) { const t = n.t - v0; if (t < 1.2 || t > p.len - 0.8) continue; if (shows.some(s => t > s.t - 0.6 && t < s.t + s.win + 0.4)) continue; out.push({ t, lane: n.lane, p: n.p, st: 0 }); }
+    return out;
+  }
+  // Gesangsteil zum Song: Linie folgt der Melodie. ref liegt eine ganze Zahl Oktaven über base – so passt die Linie zur Tonart der Begleitung
+  function klSegs(mel, v0, p, base) {
+    const sel = mel.filter(m => m[0] - v0 >= 1.2 && m[0] - v0 + Math.min(m[2], 0.25) <= p.len - 0.8);
+    if (!sel.length) return [];
+    const ps = sel.map(m => m[1]).sort((a, b) => a - b), med = ps[ps.length >> 1], ref = base + 12 * Math.round((med - 6 - base) / 12), segs = [];
+    for (const [t0, m, d0] of sel) {
+      let semi = m - ref; while (semi < 0) semi += 12; while (semi > 12) semi -= 12;
+      const t = t0 - v0, d = Math.min(d0, p.len - 0.8 - t), lv = semiToLevel(semi), last = segs[segs.length - 1];
+      if (last && Math.abs(last.lv - lv) < 0.01 && t - (last.t + last.d) < 0.08) { last.d = t + d - last.t; continue; }
+      if (d >= 0.12) segs.push({ t, d: Math.max(0.15, d * 0.94), lv, got: 0 });
+    }
+    return segs;
+  }
+
   // ---------- Engine ----------
   function Stage(o) {
     this.o = o; this.cv = o.canvas; this.cx = this.cv.getContext('2d');
@@ -94,10 +114,11 @@
     this.t0 = performance.now(); this.pauseAt = 0; this.lastBeat = -1; this.combo = 0; this.maxCombo = 0; this.streak = 0;
     this.cnt = { n: 0, p: 0, g: 0, o: 0, m: 0 }; this.pitchT = 0; this.pitchGot = 0; this.trail = []; this.lv = 3.5;
     this.showHit = 0; this.cueSum = 0; this.cuePts = 0; this.missRow = 0; this.partStars = 0; this.curSeg = null; this.voiced = false; this.now = 0; this.vArm = true; this.vLast = -9;
-    if (p.type === 'rhythm') { const g = genRhythm(p); this.notes = p.live ? [] : g.notes; this.shows = g.shows; this.lastSpawn = -9; this.minGap = Math.max(0.2, 0.62 - 0.4 * (p.density || 0.75)); }
-    if (p.type === 'pitch') this.segs = genPitch(p);
+    const kl = ex && ex.kl; this.kl = !!kl;
+    if (p.type === 'rhythm') { const g = genRhythm(p); this.notes = kl ? klNotes(kl.notes, this.v0, p, g.shows) : p.live ? [] : g.notes; this.shows = g.shows; this.lastSpawn = -9; this.minGap = Math.max(0.2, 0.62 - 0.4 * (p.density || 0.75)); }
+    if (p.type === 'pitch') this.segs = kl ? klSegs(kl.mel, this.v0, p, this.mic ? this.base : 48) : genPitch(p);
     if (p.type === 'cues') this.cues = genCues(p);
-    this.sg = null; this.lowT = 0;   // Musik: Radio (live/plain), YouTube-Song (o.ext) oder nur ein leiser Takt-Klick (p.click)
+    this.sg = null; this.lowT = 0;   // Musik: Klavierlicht-Song oder YouTube-Song (o.ext) oder nur ein leiser Takt-Klick (p.click)
     if (p.type === 'pitch' && !this.mic) A.voiceOn();
     if (this.o.onPart) this.o.onPart(this.pi, p);
   };
@@ -248,7 +269,6 @@
     const p = this.part; if (!p) return;
     if (p.click && (p.type === 'rhythm' || p.type === 'pitch')) { const b = Math.floor((now - (p.phase || 0)) * p.bpm / 60); if (b > this.lastBeat) { this.lastBeat = b; if (b >= 0) A.sfx('tick'); } }   // ohne Musik: leiser Takt
     if (p.type === 'rhythm') {
-      if (p.live) this.spawnLive(now);
       this.updRhythm(now);
       // Jury-Stopp (Casting): Publikum lange auf dem Tiefpunkt → die Jury bricht ab
       if (this.o.juryStop && now > 8) { this.lowT = this.energy < 0.18 ? this.lowT + dt : 0; if (this.lowT > 3) { if (this.o.onEvent) this.o.onEvent('stop'); this.abort(); return; } }
@@ -259,30 +279,12 @@
     this.draw(now);
     if (now >= p.len) { this.last = null; this.next(); }
   };
-  // Live-Noten aus dem Radio: erkannter Beat jetzt → Note erreicht die Trefferlinie, wenn der verzögerte Ton erklingt
-  P.spawnLive = function (now) {
-    const on = A.radioOnsets(now); if (!on.length || now > this.part.len - this.travel - 0.4) return;
-    const o = on.sort((a, b) => b.s - a.s)[0], t = now + this.travel;
-    if (t - this.lastSpawn < this.minGap || this.shows.some(s => t > s.t - 0.6 && t < s.t + s.win + 0.4)) return;
-    this.notes.push({ t, lane: o.lane, st: 0 }); this.lastSpawn = t;
-  };
-  // Radio bricht mitten im Auftritt ab: ab jetzt vorbereitete Noten zu einem leisen Takt-Klick
-  P.radioLost = function () {
-    this.parts.forEach(q => { q.live = false; q.plain = false; });
-    const p = this.part; if (!p || this.done) return;
-    p.live = false; p.plain = false;
-    if (p.type === 'rhythm') {
-      const from = Math.max(this.now + this.travel, this.notes.length ? this.notes[this.notes.length - 1].t + this.minGap : 0);
-      genRhythm(p).notes.forEach(n => { if (n.t >= from) this.notes.push(n); });
-    }
-    this.parts.forEach(q => { q.click = true; }); p.click = true;
-  };
   P.updRhythm = function (now) {
-    const t = now - this.offset;
-    if (this.mic) this.voiceHit(t);
+    const t = now - this.offset, late = this.mic && this.kl ? KL_LATE : W_OK;
+    if (this.mic) { if (this.kl) this.voiceKl(t); else this.voiceHit(t); }
     for (const n of this.notes) {
       if (n.t > t) break;
-      if (!n.st && t - n.t > W_OK) { n.st = 4; this.cnt.m++; this.combo = 0; this.streak = 0; this.energy = Math.max(0, this.energy - 0.05); this.missRow++; this.pop('VERPASST', '#ff5470', n.lane); if (this.missRow === 4 && this.o.onEvent) this.o.onEvent('miss', 4); }
+      if (!n.st && t - n.t > late) { n.st = 4; this.cnt.m++; this.combo = 0; this.streak = 0; this.energy = Math.max(0, this.energy - 0.05); this.missRow++; this.pop('VERPASST', '#ff5470', n.lane); if (this.missRow === 4 && this.o.onEvent) this.o.onEvent('miss', 4); }
     }
     for (const s of this.shows) {
       if (s.st === 0 && t >= s.t && !s.cued) { s.cued = true; A.sfx('cue'); if (this.o.captions) this.o.captions('🔔 Show-Moment: ' + CUES[s.lane][1]); }
@@ -299,6 +301,23 @@
     let best = null, bd = 9;
     for (const n of this.notes) { if (n.st) continue; const d = Math.abs(n.t - t); if (d < bd) { bd = d; best = n; } if (n.t > t + W_OK) break; }
     if (best && bd <= W_OK) { this.held[best.lane] = true; setTimeout(() => { this.held[best.lane] = false; }, 110); this.judge(best, bd); }
+  };
+  // Mikrofon bei Klavierlicht-Songs: Die Note zählt nur, wenn der richtige Ton (Oktave egal) zur richtigen Zeit kommt.
+  // Wertung nach Tonhöhe: genau → PERFECT, knapp → GUT, gerade noch → OK.
+  P.voiceKl = function (t) {
+    const lv = A.micLevel(); if (lv == null) return;
+    this.vFloor += (lv - this.vFloor) * (lv < this.vFloor ? 0.1 : 0.01);
+    if (lv < this.vFloor * 1.6 + 0.012) return;
+    const m = A.micPitch(); if (m == null) return;
+    for (const n of this.notes) {
+      if (n.t > t + KL_EARLY) break;
+      if (n.st || t - n.t > KL_LATE || n.p == null) continue;
+      let d = ((m - n.p) % 12 + 12) % 12; d = Math.min(d, 12 - d);
+      if (d > 1.5) continue;
+      this.held[n.lane] = true; setTimeout(() => { this.held[n.lane] = false; }, 110);
+      this.judge(n, d <= 0.6 ? 0 : d <= 1 ? W_GOOD : W_OK);
+      return;
+    }
   };
   P.updPitch = function (now, dt) {
     if (this.mic) {

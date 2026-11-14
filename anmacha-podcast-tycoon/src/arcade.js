@@ -135,7 +135,8 @@
           const gap = 2.2 + rand() * 1.6; for (let i = 1; i < 4; i++) mics.push({ x: x + gap * i / 4, y: 1.6 + Math.sin(i / 4 * Math.PI) * 1.4 });
           x += gap; const len = 6 + rand() * 8; plats.push({ x0: x, x1: x + len, y: 0 }); if (len > 9) drums.push({ x: x + len / 2, a: x + 1.2, b: x + len - 1.2, v: 2 + rand() * 1.2 }); x += len;
         } else if (kind < 0.75) {   // Graben mit schwebender Plattform
-          const gap = 5 + rand() * 2.5, py = 1.8 + rand() * 1.3, pw = 2.6 + rand() * 1.4, px = x + gap / 2 - pw / 2;
+          const gap = 5 + rand() * 2.5, py = 1.5 + rand() * 0.45,   // ≤ 1,95: vom Boden erreichbar (Sprunghöhe 2,0)
+                 pw = 2.6 + rand() * 1.4, px = x + gap / 2 - pw / 2;
           plats.push({ x0: px, x1: px + pw, y: py, float: true }); mics.push({ x: px + pw / 2, y: py + 1.3 });
           x += gap; const len = 5 + rand() * 6; plats.push({ x0: x, x1: x + len, y: 0 }); x += len;
         } else {   // Treppe aus Kisten
@@ -170,13 +171,19 @@
       const p = r.p, f = r.fig;
       if (r.phase === 'play') {
         const want = I.move.x * (I.sprint ? 8.2 : 5.8);
-        p.vx = U.damp(p.vx, want, p.ground ? 14 : 6, dt); if (Math.abs(want) > 0.3) p.face = Math.sign(want);
+        if (Math.abs(want) > 0.3) p.face = Math.sign(want);
         p.coyote = p.ground ? 0.12 : p.coyote - dt; p.buf = (I.hit('jump') || I.hit('ok') || r.tap) ? 0.14 : p.buf - dt;
         if (p.buf > 0 && p.coyote > 0) { p.vy = 10.6; p.ground = false; p.coyote = 0; p.buf = 0; p.cut = false; AMC.Audio.sfx('jump'); if (f) f.play('jump', { restart: true, fade: 0.05 }); }
         if (!I.jumpHeld && p.vy > 3 && !p.cut) { p.vy *= 0.55; p.cut = true; }
-        p.vy -= 28 * dt; const py0 = p.y; p.x += p.vx * dt; p.y += p.vy * dt; p.x = Math.max(-5.5, p.x);
-        const wasGround = p.ground; p.ground = false;
-        if (p.vy <= 0) for (const s of r.plats) if (p.x > s.x0 - 0.25 && p.x < s.x1 + 0.25 && py0 >= s.y - 0.05 && p.y <= s.y) { p.y = s.y; p.vy = 0; p.ground = true; break; }
+        // Physik in festen Teilschritten (≤ 1/120 s): gleiche Sprunghöhe bei 15, 30 oder 120 fps, kein Durchtunneln.
+        // Landen: Füße überqueren die Oberkante – oder stecken nach einem knappen Sprung noch in der Kiste (Kantenhilfe).
+        const wasGround = p.ground, n = Math.min(24, Math.max(1, Math.ceil(dt * 120))), h = dt / n;
+        for (let k = 0; k < n; k++) {
+          p.vx = U.damp(p.vx, want, p.ground ? 14 : 6, h);
+          p.vy -= 28 * h; const py0 = p.y; p.x += p.vx * h; p.y += p.vy * h; p.x = Math.max(-5.5, p.x);
+          p.ground = false;
+          if (p.vy <= 0) for (const s of r.plats) { const lip = s.float ? 0.5 : 0.05; if (p.x > s.x0 - 0.35 && p.x < s.x1 + 0.35 && py0 >= s.y - lip && p.y <= s.y) { p.y = s.y; p.vy = 0; p.ground = true; break; } }
+        }
         if (p.ground && !wasGround) AMC.Audio.sfx('land');
         // Mikros
         r.mics.forEach(m => { if (m.g.visible && Math.abs(m.x - p.x) < 0.7 && m.y > p.y - 0.2 && m.y < p.y + 1.9) { m.g.visible = false; r.notes++; r.score += 10; AMC.Audio.sfx('collect'); W.particles.burst(m.x, m.y, 0, 0xffd23f, 10, { speed: 3 }); } });

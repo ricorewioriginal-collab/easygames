@@ -785,8 +785,8 @@
      "Heiltränke gibt es im Laden gegen Rissplitter."
     ]
    },
-   "size": 30536140,
-   "files": 694,
+   "size": 32681174,
+   "files": 826,
    "offline": true,
    "cloud": {
     "game": "zotik2",
@@ -797,7 +797,21 @@
     "v9": "promo/zotik-trailer-9x16.mp4",
     "p16": "promo/zotik-trailer-16x9.jpg",
     "p9": "promo/zotik-trailer-9x16.jpg"
-   }
+   },
+   "trailers": [
+    {
+     "v16": "promo/zotik-trailer-16x9.mp4",
+     "v9": "promo/zotik-trailer-9x16.mp4",
+     "p16": "promo/zotik-trailer-16x9.jpg",
+     "p9": "promo/zotik-trailer-9x16.jpg"
+    },
+    {
+     "v16": "promo/zotik-trailer2-16x9.mp4",
+     "v9": "promo/zotik-trailer2-9x16.mp4",
+     "p16": "promo/zotik-trailer2-16x9.jpg",
+     "p9": "promo/zotik-trailer2-9x16.jpg"
+    }
+   ]
   },
   {
    "id": "riftzone",
@@ -1023,8 +1037,8 @@
      "Ohne Internet oder bei Senderproblemen spielt das Spiel eigene Beats; in den Einstellungen lässt sich die Musikquelle festlegen."
     ]
    },
-   "size": 5872780,
-   "files": 85,
+   "size": 5899699,
+   "files": 89,
    "offline": true,
    "cloud": {
     "game": "show-me-your-voice",
@@ -3156,8 +3170,8 @@
      "Jingles bei sinkendem Hype einsetzen."
     ]
    },
-   "size": 10259300,
-   "files": 170,
+   "size": 15365094,
+   "files": 611,
    "offline": true,
    "cloud": {
     "game": "anmacha-podcast-tycoon",

@@ -72,7 +72,7 @@
     {
       "t": "Auf der Bühne",
       "list": [
-        "Rhythmus: Noten fallen in vier Spuren. Drück, wenn sie den Kreis unten berühren: Perfect (±50 ms), Gut (±100 ms), OK (±150 ms). Treffer in Folge bauen die Combo auf.",
+        "Noten im Takt (Klavierlicht-Songs): Die Noten sind die echte Melodie des gewählten Songs, das Klavier spielt die Begleitung. Drück, wenn sie den Kreis unten berühren: Perfect (±50 ms), Gut (±100 ms), OK (±150 ms). Mit Mikro singst du jede Note im richtigen Ton an (Oktave egal). Treffer in Folge bauen die Combo auf.",
         "Show-Momente: Mitten im Song erscheint ein Publikums-Signal (👏 🙌 💃 🎤) mit einer Spur. Drück diese Spur rechtzeitig – das bringt Bühnenpräsenz, Applaus und Votes.",
         "Gesang: Halte den Mikro-Punkt auf der blauen Melodielinie.",
         "Im Casting kann die Jury bei schwacher Leistung abbrechen („✋ Die Jury bricht ab“)."
@@ -120,7 +120,7 @@
     {
       "t": "Musikquellen und Einstellungen",
       "list": [
-        "📻 Radio (Standard): Live-Programm der RicoReWi-Sender auf laut.fm; die Noten entstehen live aus dem Programm, Sender und Titel stehen oben. Erlaubt der Stream keine Analyse, folgen die Noten dem Takt des Stils.",
+        "🎹 Klavierlicht-Songs (Noten-Modus): über 120 gemeinfreie Lieder – Kinderlieder, Weihnachten, Volkslieder, Klassik und Bach-Choräle – mit eigenem Klaviersatz. Auswahl nach Kategorie oder Suche, 🎲 wählt zufällig. Titel, Komponist und Rechte stehen oben und im Ergebnis. Die Lieder liegen im Spiel und laufen auch offline.",
         "🎵 Songs von YouTube: Suche über die iTunes-Suche, Video von YouTube, Taktlage aus Liedtext-Zeitstempeln.",
         "Ohne Internet laufen die Noten zu einem leisen Takt-Klick.",
         "Einstellungen: Musikquelle, Jury (wechselnd oder fest), Musik- und Effekt-Lautstärke, Mikrofon, Stimmlage, Notentempo, Audio-Versatz (Noten früher/später), Schwierigkeit (leicht, normal, schwer), Weniger Bewegung, große Schrift, Farbenblind-Modus und Untertitel."
@@ -266,11 +266,11 @@
     },
     {
       "q": "Die Noten passen nicht zur Musik.",
-      "a": "Stell in den Einstellungen den Audio-Versatz ein (Noten früher oder später). Erlaubt ein Radiostream keine Analyse, folgen die Noten dem Takt des gewählten Stils."
+      "a": "Stell in den Einstellungen den Audio-Versatz ein (Noten früher oder später). Mit Mikro ohne Kopfhörer spielt das Klavier nur die Begleitung, damit das Mikro die Melodie nicht mithört."
     },
     {
       "q": "Ohne Internet höre ich keine Musik.",
-      "a": "Radio, YouTube und Karaoke-Videos brauchen Internet. Ohne Verbindung laufen die Noten zu einem leisen Takt-Klick."
+      "a": "YouTube und Karaoke-Videos brauchen Internet. Die Klavierlicht-Songs im Noten-Modus liegen im Spiel und laufen auch offline."
     },
     {
       "q": "Ich bin rausgeflogen – ist alles weg?",

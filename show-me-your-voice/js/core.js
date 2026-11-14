@@ -506,7 +506,7 @@
   }
 
   // ---------- Speicherstand ----------
-  const DEF_SETTINGS = { source: 'radio', jury: 'wechsel', music: 0.7, sfx: 0.8, mute: false, mic: false, range: 'mittel', speed: 'normal', offset: 0,
+  const DEF_SETTINGS = { jury: 'wechsel', music: 0.7, sfx: 0.8, mute: false, mic: false, range: 'mittel', speed: 'normal', offset: 0,
     difficulty: 'normal', reduced: false, big: false, cb: false, captions: true };
   function freshSave() { return { v: 1, profile: null, season: null, settings: Object.assign({}, DEF_SETTINGS), best: 0, wins: 0, tutorial: false, singCh: {}, singBest: 0, daily: {}, dailyBoard: 0, rew: { mic: 'std', stage: 'chairs' } }; }
   function repair(s) {
