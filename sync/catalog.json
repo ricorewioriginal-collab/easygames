@@ -38,7 +38,8 @@
    "cloud": {
     "game": "ricolife",
     "prefix": "ricolife.save.,ricolife.profile"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "ricorail",
@@ -71,7 +72,8 @@
    "cloud": {
     "game": "ricorail",
     "prefix": "ricorail."
-   }
+   },
+   "trailer": null
   },
   {
    "id": "ricoville",
@@ -104,7 +106,8 @@
    "cloud": {
     "game": "ricoville",
     "prefix": "ricoville.save,ricoville.profile"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "ricopoly",
@@ -139,7 +142,8 @@
    "cloud": {
     "game": "ricopoly",
     "prefix": "ricopoly.v1."
-   }
+   },
+   "trailer": null
   },
   {
    "id": "krawallvoegel",
@@ -173,7 +177,8 @@
    "cloud": {
     "game": "krawallvoegel",
     "prefix": "easygames.krawallvoegel"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "funkblasen",
@@ -207,7 +212,8 @@
    "cloud": {
     "game": "funkblasen",
     "prefix": "easygames.funkblasen.v1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "mahjong",
@@ -241,7 +247,8 @@
    "cloud": {
     "game": "mahjong",
     "prefix": "easygames.mahjong.v1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "pestwacht",
@@ -276,7 +283,8 @@
    "cloud": {
     "game": "pestwacht",
     "prefix": "easygames.pestwacht"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "colorpop-universe",
@@ -311,7 +319,8 @@
    "cloud": {
     "game": "colorpop-universe",
     "prefix": "colorpop-universe-v1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "rico-flap",
@@ -343,7 +352,8 @@
    "cloud": {
     "game": "rico-flap",
     "prefix": "easygames.rico-flap.v1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "kiko-sterneninseln",
@@ -375,7 +385,8 @@
    "cloud": {
     "game": "kiko-sterneninseln",
     "prefix": "kiko-sterneninseln-v1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "kraterkommando",
@@ -407,7 +418,8 @@
    "cloud": {
     "game": "kraterkommando",
     "prefix": "easygames.kraterkommando."
-   }
+   },
+   "trailer": null
   },
   {
    "id": "radio-maze",
@@ -439,7 +451,8 @@
    "cloud": {
     "game": "radio-maze",
     "prefix": "easygames.radio-maze.v1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "zeitsprung-wissen",
@@ -475,7 +488,8 @@
    "cloud": {
     "game": "zeitsprung-wissen",
     "prefix": "zw-save-v1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "zeitsprung-movie",
@@ -511,7 +525,8 @@
    "cloud": {
     "game": "zeitsprung-movie",
     "prefix": "zm-save-v1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "zeitsprung-radio",
@@ -547,7 +562,8 @@
    "cloud": {
     "game": "zeitsprung-radio",
     "prefix": "zr-save-v2"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "zeitsprung-castingshow",
@@ -578,7 +594,8 @@
    "cloud": {
     "game": "zeitsprung-castingshow",
     "prefix": "zc-save-v1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "mimori",
@@ -625,7 +642,8 @@
    "cloud": {
     "game": "mimori",
     "prefix": "easygames.mimori.v1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "pufi-farbwind",
@@ -662,7 +680,8 @@
    "cloud": {
     "game": "pufi-farbwind",
     "prefix": "easygames.pufi-farbwind"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "lumo",
@@ -694,7 +713,8 @@
    "cloud": {
     "game": "lumo",
     "prefix": "easygames.lumo.v1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "taschi",
@@ -722,12 +742,18 @@
      "Rian nimmt immer den Starter, der deinen schlägt – nimm ein Taschi mit, das dagegen stark ist."
     ]
    },
-   "size": 17968005,
+   "size": 17969826,
    "files": 166,
    "offline": true,
    "cloud": {
     "game": "taschi",
     "prefix": "easygames.taschi.eight-lights.v1,taschi.settings.v3"
+   },
+   "trailer": {
+    "v16": "promo/taschi-trailer-16x9.mp4",
+    "v9": "promo/taschi-trailer-9x16.mp4",
+    "p16": "promo/taschi-trailer-16x9.jpg",
+    "p9": "promo/taschi-trailer-9x16.jpg"
    }
   },
   {
@@ -765,6 +791,12 @@
    "cloud": {
     "game": "zotik2",
     "prefix": "zotik2_save_"
+   },
+   "trailer": {
+    "v16": "promo/zotik-trailer-16x9.mp4",
+    "v9": "promo/zotik-trailer-9x16.mp4",
+    "p16": "promo/zotik-trailer-16x9.jpg",
+    "p9": "promo/zotik-trailer-9x16.jpg"
    }
   },
   {
@@ -798,7 +830,8 @@
    "cloud": {
     "game": "riftzone",
     "prefix": "riftzone.settings,riftzone.friends,riftzone.profile,riftzone.mode"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "aeru",
@@ -829,7 +862,8 @@
    "cloud": {
     "game": "aeru",
     "prefix": "aeru-save-v1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-radio-surfer",
@@ -861,7 +895,8 @@
    "cloud": {
     "game": "radio-surfer",
     "prefix": "anmachaRadioSurfer"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-radio-match",
@@ -894,7 +929,8 @@
    "cloud": {
     "game": "radio-match",
     "prefix": "anmacha-radio-match-v1,royal-radio-match-v2"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-flipper",
@@ -924,7 +960,8 @@
    "cloud": {
     "game": "flipper",
     "prefix": "anmachaFlipper,anmachaPinball"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-beat-surfer",
@@ -954,7 +991,8 @@
    "cloud": {
     "game": "beat-surfer",
     "prefix": "anmachaBeat"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "show-me-your-voice",
@@ -991,7 +1029,8 @@
    "cloud": {
     "game": "show-me-your-voice",
     "prefix": "smyv-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "prismrush",
@@ -1021,7 +1060,8 @@
    "cloud": {
     "game": "prismrush",
     "prefix": "prismrush.save"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-memory",
@@ -1053,7 +1093,8 @@
    "cloud": {
     "game": "memory",
     "prefix": "anmachaMemory"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-quest-rpg",
@@ -1089,7 +1130,8 @@
    "cloud": {
     "game": "quest-rpg",
     "prefix": "anmachaQuest"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-snake",
@@ -1120,7 +1162,8 @@
    "cloud": {
     "game": "snake",
     "prefix": "anmachaSnake"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-tower-defense",
@@ -1150,7 +1193,8 @@
    "cloud": {
     "game": "tower-defense",
     "prefix": "anmachaTD"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-quiz",
@@ -1185,7 +1229,8 @@
    "cloud": {
     "game": "quiz",
     "prefix": "amq"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-koffer-dealer",
@@ -1222,7 +1267,8 @@
    "cloud": {
     "game": "koffer-dealer",
     "prefix": "akd"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-showdown",
@@ -1257,7 +1303,8 @@
    "cloud": {
     "game": "showdown",
     "prefix": "asd"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-gesucht",
@@ -1292,7 +1339,8 @@
    "cloud": {
     "game": "gesucht",
     "prefix": "ggMute,ggSave,ggTts"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-kart",
@@ -1327,7 +1375,8 @@
    "cloud": {
     "game": "kart",
     "prefix": "akChar,akKart,akLogo,akMute,akName,akSave,akTts"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "wobbel",
@@ -1358,7 +1407,8 @@
    "cloud": {
     "game": "wobbel",
     "prefix": "wobbelSave1,wobbelCustom1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-hoererwahl",
@@ -1392,7 +1442,8 @@
    "cloud": {
     "game": "hoererwahl",
     "prefix": "hwName,hwTeam,hoererwahl1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-frequenzrad",
@@ -1427,7 +1478,8 @@
    "cloud": {
     "game": "frequenzrad",
     "prefix": "frName,frequenzrad1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "funkmaler",
@@ -1464,7 +1516,8 @@
    "cloud": {
     "game": "funkmaler",
     "prefix": "funkmaler-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "winzflitzer",
@@ -1498,7 +1551,8 @@
    "cloud": {
     "game": "winzflitzer",
     "prefix": "winzflitzer-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "funkgolf",
@@ -1532,7 +1586,8 @@
    "cloud": {
     "game": "funkgolf",
     "prefix": "funkgolf-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "tortenschlacht",
@@ -1571,7 +1626,8 @@
    "cloud": {
     "game": "tortenschlacht",
     "prefix": "tortenschlacht-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "funkgalgen",
@@ -1609,7 +1665,8 @@
    "cloud": {
     "game": "funkgalgen",
     "prefix": "funkgalgen-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "frequenzminen",
@@ -1642,7 +1699,8 @@
    "cloud": {
     "game": "frequenzminen",
     "prefix": "frequenzminen-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "sendemast-sumo",
@@ -1680,7 +1738,8 @@
    "cloud": {
     "game": "sendemast-sumo",
     "prefix": "sendemast-sumo-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "wolkenhopser",
@@ -1714,7 +1773,8 @@
    "cloud": {
     "game": "wolkenhopser",
     "prefix": "wolkenhopser-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "deluxe-2048",
@@ -1746,7 +1806,8 @@
    "cloud": {
     "game": "deluxe-2048",
     "prefix": "deluxe-2048-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "huepfstrasse",
@@ -1778,7 +1839,8 @@
    "cloud": {
     "game": "huepfstrasse",
     "prefix": "huepfstrasse-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "easyclash",
@@ -1816,7 +1878,8 @@
    "cloud": {
     "game": "easyclash",
     "prefix": "easyclash-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "werwolf-nacht",
@@ -1853,7 +1916,8 @@
    "cloud": {
     "game": "werwolf-nacht",
     "prefix": "werwolf-nacht-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "fall-akte",
@@ -1887,7 +1951,8 @@
    "cloud": {
     "game": "fall-akte",
     "prefix": "fall-akte-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "brainrot-parkour",
@@ -1923,7 +1988,8 @@
    "cloud": {
     "game": "brainrot-parkour",
     "prefix": "brainrot-parkour-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "groove-arena",
@@ -1963,7 +2029,8 @@
    "cloud": {
     "game": "groove-arena",
     "prefix": "groove-arena-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "beat-studio",
@@ -1997,7 +2064,8 @@
    "cloud": {
     "game": "beat-studio",
     "prefix": "beat-studio-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "sonnenhof",
@@ -2033,7 +2101,8 @@
    "cloud": {
     "game": "sonnenhof",
     "prefix": "sonnenhof-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "klavierlicht",
@@ -2071,7 +2140,8 @@
    "cloud": {
     "game": "klavierlicht",
     "prefix": "klavierlicht-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "radio-bingo",
@@ -2110,7 +2180,8 @@
    "cloud": {
     "game": "radio-bingo",
     "prefix": "radio-bingo-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "schatzfieber",
@@ -2144,7 +2215,8 @@
    "cloud": {
     "game": "schatzfieber",
     "prefix": "schatzfieber-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "challenge-show",
@@ -2181,7 +2253,8 @@
    "cloud": {
     "game": "challenge-show",
     "prefix": "challenge-show-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "stadt-land-plus",
@@ -2218,7 +2291,8 @@
    "cloud": {
     "game": "stadt-land-plus",
     "prefix": "stadt-land-plus-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "konfetti-party",
@@ -2255,7 +2329,8 @@
    "cloud": {
     "game": "konfetti-party",
     "prefix": "konfetti-party-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "kuechen-chaos",
@@ -2292,7 +2367,8 @@
    "cloud": {
     "game": "kuechen-chaos",
     "prefix": "kuechen-chaos-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "oma-rennen",
@@ -2329,7 +2405,8 @@
    "cloud": {
     "game": "oma-rennen",
     "prefix": "oma-rennen-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "bowling-bahn",
@@ -2364,7 +2441,8 @@
    "cloud": {
     "game": "bowling-bahn",
     "prefix": "bowling-bahn-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "darts-arena",
@@ -2399,7 +2477,8 @@
    "cloud": {
     "game": "darts-arena",
     "prefix": "darts-arena-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "funk-billard",
@@ -2435,7 +2514,8 @@
    "cloud": {
     "game": "funk-billard",
     "prefix": "funk-billard-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-preisradar",
@@ -2470,7 +2550,8 @@
    "cloud": {
     "game": "preisradar",
     "prefix": "prName,preisradar1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-funkparcours",
@@ -2507,7 +2588,8 @@
    "cloud": {
     "game": "funkparcours",
     "prefix": "fpPhoneName,fpBest3,fpNames,fpChars,fpSnd"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "FunkhausReality",
@@ -2540,7 +2622,8 @@
    "cloud": {
     "game": "funkhaus",
     "prefix": "fhPhoneName,fhHumans,fhSnd,fhTts"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "MachMichAus",
@@ -2574,7 +2657,8 @@
    "cloud": {
     "game": "machmichaus",
     "prefix": "mmPhoneName,mmHumans,mmSnd,mmTts"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "fabelkick",
@@ -2610,7 +2694,8 @@
    "cloud": {
     "game": "fabelkick",
     "prefix": "easygames.fabelkick.v1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "turbokick",
@@ -2645,7 +2730,8 @@
    "cloud": {
     "game": "turbokick",
     "prefix": "turbokick.save"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "partyverse",
@@ -2681,7 +2767,8 @@
    "cloud": {
     "game": "partyverse",
     "prefix": "partyverse.save"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-gold-reels",
@@ -2715,7 +2802,8 @@
    "cloud": {
     "game": "gold-reels",
     "prefix": "agr"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-markthalle",
@@ -2748,7 +2836,8 @@
    "cloud": {
     "game": "markthalle",
     "prefix": "amh_"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-urwaldlager",
@@ -2779,7 +2868,8 @@
    "cloud": {
     "game": "urwaldlager",
     "prefix": "ul_"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-spielesammlung",
@@ -2812,7 +2902,8 @@
    "cloud": {
     "game": "spielesammlung",
     "prefix": "anmacha-sg-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-kartenrausch",
@@ -2847,7 +2938,8 @@
    "cloud": {
     "game": "stapelrausch",
     "prefix": "kartenrausch-,stapelrausch-name"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-solitaire",
@@ -2879,7 +2971,8 @@
    "cloud": {
     "game": "anmacha-solitaire",
     "prefix": "anmacha-solitaire-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "saftblitz",
@@ -2913,7 +3006,8 @@
    "cloud": {
     "game": "saftblitz",
     "prefix": "saftblitz-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "wortfunk",
@@ -2950,7 +3044,8 @@
    "cloud": {
     "game": "wortfunk",
     "prefix": "wortfunk-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "wortgitter",
@@ -2986,7 +3081,8 @@
    "cloud": {
     "game": "wortgitter",
     "prefix": "wortgitter-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "gay-life",
@@ -3019,7 +3115,8 @@
    "cloud": {
     "game": "gay-life",
     "prefix": "anmachaGayLife"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "anmacha-podcast-tycoon",
@@ -3060,6 +3157,12 @@
    "cloud": {
     "game": "anmacha-podcast-tycoon",
     "prefix": "anmachaPodcastTycoon"
+   },
+   "trailer": {
+    "v16": "promo/anmacha-podcast-tycoon-trailer-16x9.mp4",
+    "v9": "promo/anmacha-podcast-tycoon-trailer-9x16.mp4",
+    "p16": "promo/anmacha-podcast-tycoon-trailer-16x9.jpg",
+    "p9": "promo/anmacha-podcast-tycoon-trailer-9x16.jpg"
    }
   },
   {
@@ -3091,7 +3194,8 @@
    "cloud": {
     "game": "klotzfunk",
     "prefix": "klotzfunk."
-   }
+   },
+   "trailer": null
   },
   {
    "id": "bunte-insel",
@@ -3126,6 +3230,12 @@
    "cloud": {
     "game": "bunte-insel",
     "prefix": "bunteInsel.,bunteInsel_"
+   },
+   "trailer": {
+    "v16": "promo/bunte-insel-trailer-16x9.mp4",
+    "v9": "promo/bunte-insel-trailer-9x16.mp4",
+    "p16": "promo/bunte-insel-trailer-16x9.jpg",
+    "p9": "promo/bunte-insel-trailer-9x16.jpg"
    }
   },
   {
@@ -3161,7 +3271,8 @@
    "cloud": {
     "game": "anmacha-undercover",
     "prefix": "anmachaUndercover"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "spinwelten",
@@ -3197,7 +3308,8 @@
    "cloud": {
     "game": "spinwelten",
     "prefix": "spinweltenSave,spinweltenSlot"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "zeitsprung-kinderserien",
@@ -3232,7 +3344,8 @@
    "cloud": {
     "game": "zeitsprung-kinderserien",
     "prefix": "zk-save-v1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "zeitsprung-eurovision",
@@ -3267,7 +3380,8 @@
    "cloud": {
     "game": "zeitsprung-eurovision",
     "prefix": "ze-save-v1"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "funk-survivor",
@@ -3299,7 +3413,8 @@
    "cloud": {
     "game": "funk-survivor",
     "prefix": "funksurvivor-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "ich-bin-das-licht",
@@ -3331,7 +3446,8 @@
    "cloud": {
     "game": "ich-bin-das-licht",
     "prefix": "ibdl-"
-   }
+   },
+   "trailer": null
   },
   {
    "id": "leuchtfeuer",
@@ -3363,7 +3479,8 @@
    "cloud": {
     "game": "leuchtfeuer",
     "prefix": "lf-"
-   }
+   },
+   "trailer": null
   }
  ]
 }

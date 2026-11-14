@@ -19,6 +19,8 @@ export function regionPool(r, habitat = 'grass') {
   const k = r + ':' + habitat;
   if (cache.has(k)) return cache.get(k);
   const region = REGIONS[r];
+  // Sternengipfel (16) und Innenräume haben keine wilden Taschis
+  if (!region) { cache.set(k, []); return []; }
   const primary = HABITAT_TYPES[habitat] || region.types;
   const extra = BIOME_EXTRA[region.biome] || [];
   const ids = SPECIES_IDS.filter(id => !SPECIES[id].ancient && id !== 'schnurrik');

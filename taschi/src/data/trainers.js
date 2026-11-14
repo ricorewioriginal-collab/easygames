@@ -132,6 +132,7 @@ function guildTeam(seed, types, size, lv, ace) { return buildTeam('guild:' + see
 
 export const GUILD_SITES = REGIONS.filter(r => r.guild !== undefined).map(r => r.guild);
 // guild battles per site index (0..6) plus 7 = Sternengipfel finale
+// (Varga am Gipfel liegt über dem Himmelskrone-Champion, die Liga steigt danach weiter an)
 const G = [];
 const gl = (r) => REGIONS[r].gym.level;
 G[0] = [
@@ -164,9 +165,9 @@ G[6] = [
   { id: 'g6_selma', member: 'selma', team: guildTeam('g6b', ['flug', 'feuer', 'geist'], 5, gl(14) + 1, 'form_5_2') }
 ];
 G[7] = [
-  { id: 'g7_grunts', member: 'grunt', format: 'double', team: guildTeam('g7a', ['normal', 'geist'], 4, gl(15) + 1) },
-  { id: 'g7_twins', member: 'kett', format: 'double', team: guildTeam('g7b', ['elektro', 'erde', 'eis'], 4, gl(15) + 2) },
-  { id: 'g7_varga', member: 'varga', team: guildTeam('g7c', ['geist', 'eis', 'erde', 'feuer'], 6, gl(15) + 4) }
+  { id: 'g7_grunts', member: 'grunt', format: 'double', team: guildTeam('g7a', ['normal', 'geist'], 4, gl(15) + 3) },
+  { id: 'g7_twins', member: 'kett', format: 'double', team: guildTeam('g7b', ['elektro', 'erde', 'eis'], 4, gl(15) + 4) },
+  { id: 'g7_varga', member: 'varga', team: guildTeam('g7c', ['geist', 'eis', 'erde', 'feuer'], 6, gl(15) + 6) }
 ];
 export const GUILD_BATTLES = G;
 G.forEach((list, site) => list.forEach((t, i) => reg({

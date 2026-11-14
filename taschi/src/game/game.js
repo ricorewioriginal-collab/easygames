@@ -36,7 +36,7 @@ import * as Ride from '../logic/ride.js';
 import * as Raid from '../logic/raid.js';
 import { preloadModels } from '../engine/models.js';
 const nameOf = (m) => m.nick || SPECIES[m.id].name;
-import { ULME, GUILD_SCENES, LEAGUE_FINALE, CREDITS, CHAPTERS, RIVAL, professorLines } from '../data/story.js';
+import { ULME, GUILD_SCENES, LEAGUE_FINALE, CREDITS, CHAPTERS, RIVAL, professorLines, playerText } from '../data/story.js';
 import { makeMonster, healMonster, maxHp, evolve, teachMove } from '../logic/monster.js';
 import { gainsText } from '../logic/battle.js';
 import { AMBUSHES, ARRIVALS, JUNA, PUZZLE_TIPS } from '../data/adventure.js';
@@ -66,6 +66,7 @@ export class Game {
     this.audio = new Audio(this.settings);
     this.ui = new UI(root, { audio: this.audio, input: this.input, settings: this.settings });
     this.ui.voice.getPlayer = () => this.save?.player;
+    this.ui.textFilter = (t) => playerText(t, this.save?.player?.gender);
     this.preview = new Preview();
     this.store = createStore(localStorage);
     this.slot = this.store.selected();
@@ -927,7 +928,7 @@ export class Game {
       }
       const t = TRAINERS[def.id];
       const npc = this.world.npcs.find(x => x.trainer === def.id);
-      if (def.member !== 'grunt' && def !== list[0]) { npc?.ch.setTalking(true, 'angry'); await this.ui.say([{ who: t.name, text: guildTaunt(def.member) }], { guild: true }); npc?.ch.setTalking(false); }
+      if (def.member !== 'grunt' && def !== list[0]) { npc?.ch.setTalking(true, 'angry'); await this.ui.say([{ who: t.name, text: guildTaunt(def.member, site) }], { guild: true }); npc?.ch.setTalking(false); }
       const res = await this.trainerBattle(t, npc);
       if (res.outcome !== 'win') return;
       if (npc) { npc.ch.hold('defeat'); }
@@ -936,7 +937,7 @@ export class Game {
     s.guild[site] = 'done';
     await this.ui.say(scene.win, { guild: true });
     P.grantReward(s, { coins: 300 + site * 150, items: { superball: 3 + site, trank: 2 } });
-    if (site === 6) { Items.add(s.bag, 'brixcode', 1); this.ui.toast('Erhalten: Brix’ Zugangskarte', '🗝'); if (!s.flags.meisterball) { s.flags.meisterball = true; Items.add(s.bag, 'meisterball', 1); await this.ui.say([{ who: 'Brix', text: 'Und nimm das hier. Mein Prototyp: ein Meisterkapsel. Er fängt jedes Taschi – ich will nie wieder, dass jemand ihn für Varga baut.' }]); this.ui.toast('Erhalten: Meisterkapsel', '◉'); } }
+    if (site === 6) { Items.add(s.bag, 'brixcode', 1); this.ui.toast('Erhalten: Brix’ Zugangskarte', '🗝'); if (!s.flags.meisterball) { s.flags.meisterball = true; Items.add(s.bag, 'meisterball', 1); await this.ui.say([{ who: 'Brix', text: 'Und nimm das hier. Mein Prototyp: eine Meisterkapsel. Sie fängt jedes Taschi – ich will nie wieder, dass jemand so etwas für Varga baut.' }]); this.ui.toast('Erhalten: Meisterkapsel', '◉'); } }
     if (site === 7) return this.summitFinale();
     this.ui.toast('Die Schattengilde ist aus der Region vertrieben! Gefangene Taschis befreit.', '✦');
     this.world.refreshBeacons();
@@ -1435,7 +1436,9 @@ function lookOfTrainer(t) {
   const roleFor = { leader: 'leader', champion: 'champion', rematch: 'champion', league: t.id === 'league_4' ? 'lyra' : 'champion', gymTrainer: 'trainer', route: t.format === 'double' ? 'kind' : 'trainer', guild: { varga: 'varga', selma: 'selma', brix: 'brix', kett: 'twin', grunt: 'grunt' }[t.member] };
   return { role: roleFor[t.lookKind || t.kind] || 'trainer', name: t.name };
 }
-function guildTaunt(member) {
+function guildTaunt(member, site) {
+  // am Gipfel zweifeln die Zwillinge schon (Hinterhalt am Wolkenweg)
+  if (site === 7 && member === 'kett') return 'Wir haben Varga ein letztes Mal versprochen, den Weg zu bewachen. – Danach hören wir auf. Ehrlich!';
   return { varga: 'Du schon wieder. Diesmal halte ich mich nicht zurück.', selma: 'Bühne frei für meinen großen Auftritt!', brix: 'Bitte … mach es mir nicht so schwer.', kett: 'Diesmal sind wir vorbereitet! – Sind wir? – Ja!' }[member] || 'Aus dem Weg!';
 }
 function landmarkText(r, kind) {
