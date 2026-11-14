@@ -119,6 +119,15 @@ function cloudOf(g) {
   return null;
 }
 
+// Trailer je Spiel: promo/<id>-trailer-16x9.mp4 (+ -9x16.mp4, gleichnamige .jpg als Vorschaubild) – liegt die Datei dort, zeigen
+// Startseite, Spiele-Hub (ricorewi.de, ricorewi-radio.de) und Apps den Trailer automatisch. promo/ bleibt außerhalb der App-Dateiliste (Stream von der Homepage).
+function trailerOf(id) {
+  const f = k => fs.existsSync(path.join(root, 'promo', `${id}-trailer-${k}`)) ? `promo/${id}-trailer-${k}` : null;
+  const v16 = f('16x9.mp4'), v9 = f('9x16.mp4');
+  if (!v16 && !v9) return null;
+  return { v16: v16 || v9, v9: v9 || v16, p16: f('16x9.jpg'), p9: f('9x16.jpg') };
+}
+
 // Katalog (Spiele mit Anleitung, Modi, Größe)
 const catalog = {
   schema: 1, links: LINKS,
@@ -127,7 +136,7 @@ const catalog = {
     return {
       id: g.id, title: g.title, desc: g.desc, icon: g.icon || null, img: g.img || null, bg: g.bg || null, glow: g.glow || null, path: g.path,
       modes: m, multiplayer: mp, guide: GUIDES[g.id] || null,
-      size: sizes[g.id] || 0, files: counts[g.id] || 0, offline: !isUrl(g.path), cloud: cloudOf(g)
+      size: sizes[g.id] || 0, files: counts[g.id] || 0, offline: !isUrl(g.path), cloud: cloudOf(g), trailer: trailerOf(g.id)
     };
   })
 };

@@ -57,7 +57,7 @@
     '.egh-hero-b{padding:22px;display:flex;flex-direction:column;gap:10px;justify-content:center}.egh-eyebrow{color:var(--a2);font-weight:800;letter-spacing:.12em;font-size:.72rem;text-transform:uppercase}' +
     '.egh-hero-b h3{margin:0;font-size:clamp(1.3rem,3.2vw,2rem);line-height:1.15}.egh-hero-b p{margin:0;color:var(--m);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}' +
     '.egh-play{align-self:flex-start;padding:11px 22px;border-radius:999px;border:0;background:linear-gradient(135deg,var(--a),var(--a2));color:#0a0a12;font-weight:800}' +
-    '.egh h4{margin:18px 0 10px;font-size:1.05rem}.egh-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}.egh-row .egh-it{flex:0 0 150px}' +
+    '.egh h4{margin:18px 0 10px;font-size:1.05rem}.egh-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}.egh-trs{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}.egh-tr{flex:0 0 min(260px,72vw);display:grid;gap:6px;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}.egh-tr span{position:relative;display:block;aspect-ratio:16/9;border-radius:var(--r);overflow:hidden;border:1px solid var(--l);background:#000 center/cover}.egh-tr span::after{content:"▶";position:absolute;inset:auto auto 10px 10px;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--a),var(--a2));color:#0a0a12;font-size:15px}.egh-tr:hover span,.egh-tr:focus-visible span{outline:2px solid var(--a)}.egh-tv{position:fixed;inset:0;z-index:2147482400;background:rgba(0,0,0,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px}.egh-tv video{max-width:min(100%,1100px);max-height:calc(100vh - 110px);border-radius:12px;background:#000}.egh-tv div{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.egh-tv button{padding:10px 20px;border-radius:999px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;font:inherit;font-weight:700;cursor:pointer}.egh-tv button[data-tvplay]{border:0;background:linear-gradient(135deg,#b57cff,#22d3ee);color:#0a0a12}.egh-row .egh-it{flex:0 0 150px}' +
     '.egh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}' +
     '.egh-it{position:relative;min-width:0;display:flex}.egh-card{position:relative;display:flex;flex-direction:column;width:100%;min-width:0;height:100%;margin:0;color:inherit;font:inherit;text-transform:none;letter-spacing:normal;text-align:left;padding:0;border-radius:var(--r);overflow:hidden;border:1px solid var(--l);background:var(--c);transition:transform .15s,border-color .15s}' +
     '.egh-card:hover,.egh-card:focus-visible{transform:translateY(-3px);border-color:var(--a);outline:none}' +
@@ -202,11 +202,13 @@
     var hero = '', pick = !q && !S.cat ? dayPick() : null;
     if (pick) hero = '<section class="egh-hero"><div class="egh-hero-i" style="background-image:' + esc(pick.img ? 'none' : (pick.bg || 'none')) + '">' + (pick.img ? '<img src="' + esc(EG + pick.img) + '" alt="">' : esc(pick.icon || '🎮')) + '</div>' +
       '<div class="egh-hero-b"><span class="egh-eyebrow">Spiel des Tages</span><h3>' + esc(short(pick.title)) + '</h3><p>' + esc(pick.desc || '') + '</p><button class="egh-play" type="button" data-play="' + esc(pick.id) + '">▶ Jetzt spielen</button></div></section>';
+    var trs = !q && !S.cat ? S.games.filter(function (g) { return g.trailer && !/^https?:/.test(g.path); }) : [];
+    var tr = trs.length ? '<h4>🎬 Trailer</h4><div class="egh-trs">' + trs.map(function (g) { var t = g.trailer, pic = t.p16 || t.p9 || g.img; return '<button class="egh-tr" type="button" data-tr="' + esc(g.id) + '" aria-label="Trailer: ' + esc(short(g.title)) + '"><span style="background-image:url(&quot;' + esc(pic ? EG + pic : '') + '&quot;)"></span><b>' + esc(short(g.title)) + '</b></button>'; }).join('') + '</div>' : '';
     var rec = '', rl = !q && !S.cat ? recents().map(function (id) { return S.games.filter(function (g) { return g.id === id; })[0]; }).filter(Boolean) : [];
     if (rl.length) rec = '<h4>Weiterspielen</h4><div class="egh-row">' + rl.map(cardHtml).join('') + '</div>';
     var title = S.cat === '__fav' ? 'Meine Favoriten' : S.cat ? ((S.cats.list.filter(function (c) { return c.id === S.cat; })[0] || {}).label || '') : 'Alle Spiele';
     m.el.innerHTML = '<div class="egh"><div class="egh-bar"><input class="egh-s" type="search" placeholder="Spiel suchen …" aria-label="Spiel suchen" value="' + esc(S.q) + '" autocomplete="off"><span class="egh-n">' + list.length + ' Spiele</span></div>' +
-      '<div class="egh-chips" role="group" aria-label="Kategorien">' + chips + '</div>' + hero + rec + '<h4>' + esc(title) + '</h4>' +
+      '<div class="egh-chips" role="group" aria-label="Kategorien">' + chips + '</div>' + hero + tr + rec + '<h4>' + esc(title) + '</h4>' +
       (list.length ? '<div class="egh-grid">' + list.map(cardHtml).join('') + '</div>' : '<div class="egh-empty">' + (S.cat === '__fav' ? 'Noch keine Favoriten – tippe auf ♡ bei einem Spiel.' : 'Nichts gefunden.') + '</div>') + '</div>';
     var root0 = m.el.firstChild, th = m.theme || {};
     Object.keys(th).forEach(function (k) { root0.style.setProperty('--egh-' + k, th[k]); });
@@ -234,6 +236,20 @@
     root.addEventListener('message', function (e) { if (e.source === d.querySelector('iframe').contentWindow && e.data && (e.data.type === 'easygames:close' || e.data === 'easygames:close')) close(); });
     S.pl = d; return d;
   }
+  /* ───────── Trailer (automatisch aus dem Katalog: promo/<id>-trailer-16x9.mp4 / -9x16.mp4) ───────── */
+  function trailer(id) {
+    var g = S.games.filter(function (x) { return x.id === id && x.trailer; })[0]; if (!g) return;
+    var t = g.trailer, port = root.matchMedia && root.matchMedia('(orientation: portrait)').matches, d = doc.createElement('div');
+    d.className = 'egh-tv'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-label', 'Trailer: ' + short(g.title));
+    d.innerHTML = '<video controls autoplay playsinline></video><div><button type="button" data-tvplay>▶ ' + esc(short(g.title)) + ' spielen</button><button type="button" data-tvx>✕ Schließen</button></div>';
+    var v = d.querySelector('video'), pic = port ? (t.p9 || t.p16) : (t.p16 || t.p9);
+    if (pic) v.poster = EG + pic; v.src = EG + (port ? t.v9 : t.v16);
+    var shut = function () { v.pause(); v.removeAttribute('src'); d.remove(); doc.removeEventListener('keydown', esc1); }, esc1 = function (e) { if (e.key === 'Escape') shut(); };
+    d.querySelector('[data-tvx]').onclick = shut;
+    d.querySelector('[data-tvplay]').onclick = function () { shut(); open(g.id); };
+    d.addEventListener('click', function (e) { if (e.target === d) shut(); });
+    doc.addEventListener('keydown', esc1); doc.body.appendChild(d); d.querySelector('[data-tvx]').focus({ preventScroll: true });
+  }
   function fs(d) { try { var p = (d.requestFullscreen || d.webkitRequestFullscreen).call(d); if (p && p.catch) p.catch(function () { }); } catch (e) { } }
   function armHide() { clearTimeout(S.hideT); S.hideT = setTimeout(function () { if (S.pl && !S.pl.hidden) S.pl.classList.add('egh-nb'); }, 4000); }
   function open(id) {
@@ -258,8 +274,8 @@
     // Breite Kartenbilder (z. B. 1200×630) nicht beschneiden: ganz zeigen, Spielfarbe als Hintergrund
     el.addEventListener('load', function (e) { var i = e.target; if (i.tagName === 'IMG' && i.parentNode && i.parentNode.classList.contains('egh-ci') && i.naturalWidth > i.naturalHeight * 1.25) i.classList.add('egh-wide'); }, true);
     el.addEventListener('click', function (e) {
-      var h = e.target.closest('[data-fav]'), p = e.target.closest('[data-play]'), c = e.target.closest('[data-cat]');
-      if (h) { e.stopPropagation(); toggleFav(h.dataset.fav); } else if (p) open(p.dataset.play); else if (c) { S.cat = c.dataset.cat; renderAll(); }
+      var h = e.target.closest('[data-fav]'), p = e.target.closest('[data-play]'), c = e.target.closest('[data-cat]'), t = e.target.closest('[data-tr]');
+      if (t) trailer(t.dataset.tr); else if (h) { e.stopPropagation(); toggleFav(h.dataset.fav); } else if (p) open(p.dataset.play); else if (c) { S.cat = c.dataset.cat; renderAll(); }
     });
     el.innerHTML = '<div class="egh"><div class="egh-empty">Spiele werden geladen …</div></div>';
     (S.games.length ? Promise.resolve() : Promise.all([loadCatalog(), loadCats()])).then(function () { render(m); deep(); sync.seen = (LS.getItem(FAV) || '') + '|' + (LS.getItem(REC) || ''); syncNow(); })
@@ -273,5 +289,5 @@
   root.addEventListener('anmacha-account-changed', function () { sync.ver = ''; syncNow(); });
   function auto() { [].forEach.call(doc.querySelectorAll('[data-anmacha-hub]'), function (el) { mount(el); }); }
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', auto); else auto();
-  root.AnMaChaHub = { mount: mount, open: open, base: EG, preview: function (id) { var g = S.games.filter(function (x) { return x.id === id; })[0]; return g ? { title: short(g.title), desc: g.desc || '', image: new URL('share/' + g.id + '.jpg', EG).href, page: new URL('share/' + g.id + '.html', EG).href } : null; }, shareUrl: function (id) { var g = S.games.filter(function (x) { return x.id === id; })[0]; return g ? shareUrl(g) : null; } };
+  root.AnMaChaHub = { mount: mount, open: open, trailer: trailer, base: EG, preview: function (id) { var g = S.games.filter(function (x) { return x.id === id; })[0]; return g ? { title: short(g.title), desc: g.desc || '', image: new URL('share/' + g.id + '.jpg', EG).href, page: new URL('share/' + g.id + '.html', EG).href } : null; }, shareUrl: function (id) { var g = S.games.filter(function (x) { return x.id === id; })[0]; return g ? shareUrl(g) : null; } };
 })(window);
