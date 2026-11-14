@@ -30,7 +30,8 @@ export function createKayKit({ T, G, TOUCH }) {
      werden die passenden Felder neu eingefärbt, der Helligkeitsverlauf bleibt erhalten. o.pal = { hair, skin, top, top2, pants, eye } */
   const RC = { hair: { '*': [[1, 0]] }, skin: { '*': [[0, 0]] }, eye: { '*': [[2, 0]] }, pants: { '*': [[3, 2]], ad_kn: [], ad_ba: [[3, 2]] },
     top: { ad_ma: [[0, 1]], ad_ro: [[0, 1], [5, 0]], ad_rh: [[0, 1], [5, 0]], ad_ra: [[7, 0]], ad_kn: [[7, 0]], ad_ba: [[7, 0]] },
-    top2: { ad_ma: [[1, 1], [2, 1]], ad_ro: [[1, 1]], ad_rh: [[1, 1]], ad_ra: [[0, 1]], ad_kn: [[0, 1], [6, 0]], ad_ba: [[2, 1]] } };
+    top2: { ad_ma: [[1, 1], [2, 1]], ad_ro: [[1, 1]], ad_rh: [[1, 1]], ad_ra: [[0, 1]], ad_kn: [[0, 1], [6, 0]], ad_ba: [[2, 1]] },
+    shirt: { ad_ra: [[5, 0], [6, 0]] } };   // helles Hemd (Waldläufer)
   const rtex = new Map();
   function recolor(img, id, pal) {
     const key = id + JSON.stringify(pal); if (rtex.has(key)) return rtex.get(key);
@@ -43,7 +44,7 @@ export function createKayKit({ T, G, TOUCH }) {
         x.putImageData(d, c * cw, r * ch); } }
     const tx = new T.CanvasTexture(cv); tx.flipY = false; tx.encoding = T.sRGBEncoding; tx.anisotropy = 4; rtex.set(key, tx); return tx;
   }
-  /** Figur: o.h Zielhöhe (m), o.r / o.l Requisit in der rechten/linken Hand, o.tint Farbton (0..1 Mischung o.tk), o.hide RegExp: Teile ausblenden (Helm, Hut, Umhang …), o.pal Farben je Rolle (siehe recolor) */
+  /** Figur: o.h Zielhöhe (m), o.r / o.l Requisit in der rechten/linken Hand, o.tint Farbton (0..1 Mischung o.tk), o.hide RegExp: Teile ausblenden (Helm, Hut, Umhang …), o.pal Farben je Rolle (siehe recolor), o.deco(P, modell) hängt Zubehör an die Knochen */
   function char(id, o = {}) {
     const root = new T.Group(), P = { root, id, ready: false, mixer: null, act: {}, cur: '', want: 'Idle_A', once: null, swing: 0, bones: {}, speed: 1 };
     Promise.all([load(id), anims(), (o.r || o.l) ? load('props') : null]).then(([g, cl]) => {
@@ -55,6 +56,7 @@ export function createKayKit({ T, G, TOUCH }) {
       if (o.hide) c.traverse(m => { if (m.isMesh && o.hide.test(m.name)) m.visible = false; });
       if (o.tint) c.traverse(m => { if (m.isMesh && m.material.color && m.material.map) { m.material = m.material.clone(); m.material.color.lerp(new T.Color(o.tint), o.tk ?? .35); } });
       for (const s of ['r', 'l']) if (o[s]) { const w = prop(o[s]), b = P.bones[WPN[s]]; if (b) { b.add(w); if (o[s + 'rot']) w.rotation.set(...o[s + 'rot']); } }
+      if (o.deco) o.deco(P, c);   // eigenes Zubehör an den Knochen (Frisur, Bart, Schmuck)
       root.add(c); P.mixer = new T.AnimationMixer(c);
       for (const n in cl) P.act[n] = P.mixer.clipAction(cl[n]);
       for (const n of ['Death_A', 'Hit_A', 'Spawn_Ground', 'Throw', 'Use_Item', 'Interact']) if (P.act[n]) { P.act[n].setLoop(T.LoopOnce, 1); P.act[n].clampWhenFinished = true; }

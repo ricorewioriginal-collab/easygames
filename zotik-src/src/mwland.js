@@ -448,6 +448,57 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       for (const [x, z, w2, d, hh, dm] of [[-22, -40, 6, 6, 3.6, 1.6], [10, -46, 6, 5, 3.2, 0], [18, -22, 7, 6, 4, 1.8], [-26, -66, 6, 6, 3.4, 0], [16, -70, 7, 5, 3.6, 1.6], [-14, -78, 6, 6, 3, 0]]) flat(x, z, w2, d, hh, [WL, SA][(x + z) & 1], dm);
       minaret(-18, -10, 11);
     },
+    ricorewi(b, w, A) {
+      const K = kit(b), WL = 0xece4f4, PU = 0x6a34a8, NV = 0x2a2440, P = { tex: 'plaster' };
+      b.tmap = { 0xece4f4: 'plaster', 0x8a7aa0: 'stone', 0x5a4a3a: 'wood' };
+      // Leuchtschild mit Schrift (Canvas, einmal je Welt)
+      const sign = (x, y, z, sw, sh, txt, bg, fg, ry) => { const cv = document.createElement('canvas'); cv.width = 512; cv.height = Math.round(512 * sh / sw); const c = cv.getContext('2d');
+        c.fillStyle = bg; c.fillRect(0, 0, cv.width, cv.height); c.fillStyle = fg; c.font = '800 ' + Math.round(cv.height * .52) + 'px system-ui,sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.shadowColor = fg; c.shadowBlur = 18; c.fillText(txt, cv.width / 2, cv.height / 2 + 2);
+        const tx = new T.CanvasTexture(cv); const m = new T.Mesh(new T.PlaneGeometry(sw, sh), new T.MeshBasicMaterial({ map: tx, toneMapped: false })); m.position.set(x, y, z); m.rotation.y = ry || 0; b.g.add(m); return m; };
+      // Der Sendeturm: begehbarer Turm, darüber ein Gittermast mit dreizehn leuchtenden Ringen
+      K.tower(0, -90, 3.6, 16, 0xd8d0e8, PU, 4, { crown: 1 });
+      for (let i = 0; i < 4; i++) b.cyl(0, 20 + i * 4, -90, .55 - i * .1, 4, 0x9a9ab0, { mat: { m: .8, r: .3 } });
+      for (let i = 0; i < 13; i++) { const r = b.tor(0, 21 + i * 1.05, -90, 1.6 - i * .07, [0xa05aff, 0xff6ab0, 0x5ad8ff][i % 3], { d: .12, mat: { e: [0xa05aff, 0xff6ab0, 0x5ad8ff][i % 3], ei: 1.8 } }); r.rotation.x = Math.PI / 2; A.spin(r, .4 + (i % 3) * .2); }
+      b.sph(0, 37, -90, .45, .45, .45, 0xff3a6a, { mat: { e: 0xff3a6a, ei: 3 }, cast: false }); b.glow(0xff3a6a, 8, 0, 37, -90, .9); b.glow(0xa05aff, 14, 0, 26, -90, 2.2);
+      sign(0, 12.6, -86.3, 6.4, 1.3, 'RicoReWi', '#2a1a4a', '#ffd45a');
+      // Dreizehn Sendemasten rund um den Turm (je ein Sender)
+      const ring = w.ms.find(m => m.t === 'ring'); for (const [x, z] of ring.pts) { b.cyl(x, 0, z, .14, 4.2, 0x8a8aa0, { solid: 1, mat: { m: .8, r: .3 } }); b.cone(x, 4.2, z, .3, .5, 0x5a5a70); b.sph(x, 4.75, z, .2, .2, .2, 0xa05aff, { mat: { e: 0xa05aff, ei: 2.4 }, cast: false }); const d = b.cyl(x, 3.4, z, .45, .08, 0xd8d8e8, { mat: { m: .6, r: .3 } }); d.rotation.z = .6; }
+      // Das Studio: Haus mit „ON AIR“-Leuchte, Satellitenschüssel und Antenne
+      K.house(-38, -24, 10, 7, 4.2, WL, NV, 0, { chimney: 0 });
+      sign(-38, 5.2, -20.35, 3.4, .9, 'ON AIR', '#3a0a14', '#ff3a4a'); b.glow(0xff3a4a, 4, -38, 5.2, -19.6, .7);
+      { const d = b.sph(-34, 6.4, -25, .9, .9, .25, 0xd8d8e8, { mat: { m: .7, r: .3 } }); d.rotation.x = -.6; b.cyl(-34, 4.6, -25, .08, 1.6, 0x8a8aa0); }
+      b.cyl(-42, 4.2, -26, .06, 3.4, 0x8a8aa0); b.sph(-42, 7.7, -26, .12, .12, .12, 0xff3a6a, { mat: { e: 0xff3a6a, ei: 2.4 }, cast: false });
+      // Frequenzplatz: großer Lautsprecher als Brunnen, schwebende Noten
+      b.cyl(2, 0, -38, 3.2, .6, 0x5a5070, { solid: 1 }); b.box(2, .6, -38, 2.6, 3.4, 2.2, NV, { solid: 1 });
+      for (const [y, r] of [[1.6, .8], [3.1, .55]]) { const sp = b.cyl(2, y, -36.85, r, .1, 0x1a1a22); sp.rotation.x = Math.PI / 2; b.cyl(2, y, -36.78, r * .35, .08, 0xa05aff, { mat: { e: 0xa05aff, ei: 1.4 } }).rotation.x = Math.PI / 2; }
+      for (let i = 0; i < 6; i++) { const n = b.box(2 + Math.cos(i) * 2.4, 4.6 + (i % 3) * .5, -38 + Math.sin(i) * 2.4, .28, .42, .06, [0xffd45a, 0xff6ab0, 0x5ad8ff][i % 3], { mat: { e: [0xffd45a, 0xff6ab0, 0x5ad8ff][i % 3], ei: 1.6 }, cast: false }); A.bob(n, .35, 1.4 + i * .2); }
+      for (const [x, z] of [[-8, -30], [12, -30], [-8, -46], [12, -46], [-2, -12], [6, -60]]) K.lamp(x, z, 0xd8b8ff);
+      // easygames-Spielhalle: Halle mit Leuchtschrift, davor Spielautomaten (jeder öffnet ein echtes Spiel)
+      K.house(48, -12, 12, 7, 4.4, WL, 0x1a4a4a, 0, {});
+      sign(48, 5.6, -8.35, 5.6, 1.2, 'easygames', '#0a2a2a', '#4af0c0'); b.glow(0x4af0c0, 5, 48, 5.6, -7.6, .8);
+      const SCR = [0x4af0c0, 0xffd45a, 0xff6ab0, 0x5ad8ff, 0xa05aff];
+      w.ints.filter(q => /^Automat/.test(q[2])).forEach(([x, z], i) => { const ry = Math.atan2(44 - x, -26 - z) + Math.PI, sx = Math.sin(ry), sz = Math.cos(ry), cx = x - sx * 1.3, cz = z - sz * 1.3;
+        b.box(cx, 0, cz, 1.1, 1.9, .8, 0x1a1a2a, { solid: 1, ry }); const sc = b.box(cx + sx * .41, 1.25, cz + sz * .41, .82, .6, .02, SCR[i % 5], { mat: { e: SCR[i % 5], ei: 1.8 }, cast: false, ry }); A.bob(sc, .015, 3 + i);
+        b.box(cx + sx * .45, .82, cz + sz * .45, .9, .1, .3, 0x3a3a4a, { ry }); b.sph(cx + sx * .5 - .2 * sz, .9, cz + sz * .5 + .2 * sx, .06, .06, .06, 0xff3a4a, { mat: { e: 0xff3a4a, ei: 2 }, cast: false }); b.glow(SCR[i % 5], 2.4, cx + sx, 1.3, cz + sz, .5); });
+      // Bühne der Stimmen: Bühne mit Sternenwand, Scheinwerfer, und das Portal zu Show Me Your Voice
+      b.box(-56, 0, -66, 8, .9, 5, 0x3a2a4a, { solid: 1 }); b.box(-56, .9, -68.3, 8, 5, .3, 0x1a1030, { solid: 1 });
+      for (let i = 0; i < 14; i++) b.sph(-59.4 + (i % 7) * 1.1, 2.2 + (i > 6 ? 1.6 : 0) + (i % 2) * .4, -68.1, .1, .1, .05, 0xffd45a, { mat: { e: 0xffd45a, ei: 2.6 }, cast: false });
+      sign(-56, 5.4, -68.1, 6, 1.1, 'SHOW ME YOUR VOICE', '#1a1030', '#ff6ab0');
+      for (const s of [-1, 1]) { b.cyl(-56 + s * 4.6, 0, -63.4, .1, 4.6, 0x3a3a4a); const l = b.cone(-56 + s * 4.6, 4.6, -63.4, .35, .6, 0x2a2a3a); l.rotation.x = -.8; b.glow(0xfff0d0, 5, -56 + s * 3.6, 1.6, -65, 1); }
+      { const pg = b.tor(-66, 2.4, -73, 1.7, 0xff6ab0, { d: .4, mat: { e: 0xff6ab0, ei: 1.6, m: .6 } }); pg.scale.y = 1.35; A.spin(pg, 0); const sf = b.cyl(-66, 2.4, -73, 1.55, .05, 0xffc8e8, { mat: { e: 0xa05aff, ei: 1.2 }, cast: false }); sf.rotation.x = Math.PI / 2; sf.scale.z = 1.35; A.bob(sf, .05, 2);
+        b.box(-66, 0, -73, 4.2, .25, 1.6, 0x3a2a4a, { solid: 1 }); b.glow(0xff6ab0, 9, -66, 2.4, -72, 1.4); sign(-66, 5.2, -72.9, 3.6, .7, 'Zur Show', '#2a0a2a', '#ffd45a'); }
+      // Tab-Archipel: schwebende Fenster, jedes ein offener Tab
+      for (let i = 0; i < 9; i++) { const a = i * .7, x = 62 + Math.cos(a) * (6 + i * .7), z = -72 + Math.sin(a) * (6 + i * .7), y = 3 + (i % 4) * 1.4, c = [0xa05aff, 0x5ad8ff, 0xff6ab0][i % 3];
+        const f = b.box(x, y, z, 2.6, 1.6, .08, 0xf4f0f8, { cast: false, ry: a }); A.bob(f, .3, 1.2 + i * .15); const t = b.box(x, y + .88, z, 2.6, .22, .1, c, { mat: { e: c, ei: 1.2 }, cast: false, ry: a }); A.bob(t, .3, 1.2 + i * .15); }
+      // Buchturm: begehbarer Turm, davor zwei Lesepulte und Bücherstapel
+      K.tower(-40, -118, 4, 14, 0x8a7aa0, 0x3a2a5a, 4.4);
+      for (const [x, z] of [[-46, -105.3], [-34, -109.3]]) { b.box(x, 0, z, .9, 1.1, .6, 0x5a4a3a, { solid: 1 }); const bk = b.box(x, 1.15, z, .8, .08, .55, 0xf4ecd8, { cast: false }); bk.rotation.x = -.35; b.glow(0xffe8b0, 2.4, x, 1.6, z + .4, .5); }
+      for (let i = 0; i < 12; i++) b.box(-50 + (i % 4) * .2, i * .32, -112 + (i % 3) * .3, 1.4, .3, 1, [0x8a2a3a, 0x2a4a8a, 0x3a6a3a, 0xd8a040][i % 4], { solid: i === 0, ry: i * .3 });
+      // Gasse der Acts: Plakatwände der Musik-Acts, Bühnenlichter, Noten
+      const ACT = [['Giftkind', '#14101a', '#b06aff'], ['Love United', '#3a0a1a', '#ff7aa8'], ['ModeReWi', '#0a1a2a', '#5ad8ff'], ['Slytheris', '#0a1a10', '#6ae08a'], ['Straßenkind', '#2a1a0a', '#ffb050'], ['Kapitän Kater', '#0a1430', '#ffd45a']];
+      ACT.forEach(([n, bg, fg], i) => { const x = 22 + (i % 3) * 8, z = i < 3 ? -100.5 : -112; b.box(x, 0, z, 6, 3.6, .4, 0x2a2a34, { solid: 1 }); sign(x, 2.3, z + (i < 3 ? -.21 : .21), 5.4, 1.4, n, bg, fg, i < 3 ? Math.PI : 0); });
+      for (let i = 0; i < 5; i++) { const n = b.box(24 + i * 4, 4.4 + (i % 2) * .6, -106, .3, .45, .06, 0xffd45a, { mat: { e: 0xffd45a, ei: 1.6 }, cast: false }); A.bob(n, .4, 1.6 + i * .3); }
+    },
     kurbelhafen(b, w, A) {
       const K = kit(b), WH = 0xe8e8e8, GR = 0x8a8a8a, BK = 0x1e1e1e, P = { tex: 'plaster', to: { s: .45, gain: 1.7, n: .6, e: 0x3a3a3a, ei: 1 } };
       b.tmap = { 0x5a5a5a: 'wood', 0x6a6a6a: 'wood', 0x7a7a7a: 'stone' };

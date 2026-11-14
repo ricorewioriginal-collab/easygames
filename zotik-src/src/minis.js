@@ -24,6 +24,7 @@ export const ISLE = {
   29: { n: 'Wunderland', g: 0x5aaa52, r: 0x8a7a9a, lf: 0xd84a8a, h: [0xf4f0e6, 0xd82a3a], lm: 'mush', c: 0xff7ab0 },
   30: { n: 'Marionettenland', g: 0x7a9a42, r: 0x8a7a5a, lf: 0x4a7a3a, h: [0xd8a060, 0xc83a2a], lm: 'puppet', c: 0xffb060, tree: 'pine' },
   31: { n: 'Stadt der Kuppeln', g: 0xd8b880, r: 0xb89060, lf: 0x5a9a4a, h: [0xf0e4c8, 0xd8a020], lm: 'kuppel', c: 0xffc040, tree: 'palm' },
+  33: { n: 'RicoReWi', g: 0x4a6a58, r: 0x5a5070, lf: 0x7a4ab8, h: [0xece4f4, 0x5a2a8a], lm: 'radio', c: 0xa05aff },
   32: { n: 'Kurbelhafen', g: 0x9a9a9a, r: 0x6a6a6a, lf: 0x5a5a5a, h: [0xe8e8e8, 0x2a2a2a], lm: 'steamer', c: 0xffffff },
   27: { n: 'Große Mauer', g: 0x6a8a4a, r: 0x7a6a5a, lf: 0x4a7a3a, h: [0xc8b8a0, 0xc83a2a], lm: 'wall', c: 0xff6a4a, tree: 'pine' },
 };
@@ -66,6 +67,7 @@ export function createMinis(C) {
     mush(g, d) { add(g, G.cyl, M(0xf0e8d8), 0, .3, 0, .1, .6, .1); add(g, G.sph, M(d.h[1]), 0, .62, 0, .36, .16, .36); for (let i = 0; i < 4; i++) add(g, G.sph0, M(d.h[0]), Math.cos(i * 1.6) * .2, .72, Math.sin(i * 1.6) * .2, .05, .03, .05); add(g, G.box, M(d.h[0]), .4, .2, .1, .18, .26, .02, 0, .4, .1); },
     puppet(g, d) { add(g, G.cyl, M(d.h[1]), 0, .32, 0, .14, .3, .1); add(g, G.sph, M(d.h[0]), 0, .6, 0, .13, .14, .13); add(g, G.cone0, M(d.h[0]), 0, .6, .2, .025, .22, .025, 1.5708, 0, 0); add(g, G.cone0, M(0x3a8a3a), 0, .8, 0, .11, .2, .11); for (const x of [-.06, .06]) add(g, G.cyl0, M(d.h[0]), x, .1, 0, .025, .2, .025); },
     kuppel(g, d) { add(g, G.box, M(d.h[0]), 0, .2, 0, .7, .4, .7); add(g, G.sph, M(d.h[1]), 0, .45, 0, .32, .3, .32); add(g, G.cone0, M(d.h[1]), 0, .8, 0, .04, .16, .04); for (const x of [-.45, .45]) { add(g, G.cyl, M(d.h[0]), x, .4, 0, .07, .8, .07); add(g, G.sph0, M(d.h[1]), x, .84, 0, .09, .09, .09); } add(g, G.sph0, em(0xffc040, 1.5), 0, .25, .36, .06, .1, .02); },
+    radio(g, d) { add(g, G.cyl, M(d.h[0]), 0, .1, 0, .22, .2, .22); for (let i = 0; i < 4; i++) add(g, G.cyl0, M(0x8a8aa0, { m: .8, r: .3 }), 0, .3 + i * .2, 0, .05 - i * .008, .22, .05 - i * .008); for (let i = 0; i < 3; i++) add(g, G.tor, em(d.c, 1.6), 0, .45 + i * .22, 0, .16 - i * .03, .16 - i * .03, .03, Math.PI / 2, 0, 0); add(g, G.sph, em(0xff4a8a, 2), 0, 1.12, 0, .05, .05, .05); },
     steamer(g, d) { add(g, G.box, M(d.h[0]), 0, .14, 0, .9, .2, .36); add(g, G.box, M(d.h[1]), 0, .3, 0, .5, .14, .28); for (const x of [-.12, .12]) { add(g, G.cyl, M(d.h[1]), x, .52, 0, .06, .32, .06); add(g, G.cyl0, M(0xd82a2a), x, .7, 0, .065, .05, .065); } for (const z of [-.2, .2]) add(g, G.cyl, M(d.h[1]), -.1, .2, z, .16, .05, .16, 1.5708, 0, 0); },
     wall(g, d) { add(g, G.box, M(d.h[0]), 0, .18, 0, 1.1, .3, .14, 0, .3, 0); for (const x of [-.45, .45]) { add(g, G.box, M(d.h[0]), x, .3, x * .3, .22, .55, .22); add(g, G.cone0, M(d.h[1]), x, .66, x * .3, .2, .18, .2, 0, Math.PI / 4, 0); } add(g, G.sph0, em(0xff6a4a, 1.5), .45, .48, .25, .05, .07, .05); },
   };
