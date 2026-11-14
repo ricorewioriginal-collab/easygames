@@ -59,6 +59,7 @@
     document.querySelectorAll('.scr.on').forEach(s => s.classList.remove('on'));
     const el = document.getElementById(id); cur = id; el.classList.add('on'); el.scrollTop = 0;
     if (BG[id]) setBg(BG[id], !['sTitle', 'sOut', 'sWin'].includes(id));
+    if (window.SMYV3D) SMYV3D.mode(id === 'sTitle' || id === 'sLoad' ? 'title' : id === 'sMenu' ? 'menu' : BG[id] || 'stage');
     if (RENDER[id]) RENDER[id](arg);
     focusFirst(el);
   }
@@ -509,7 +510,7 @@
   }
 
   // ---------- Bühne ----------
-  function stopAll() { if (stage) { stage.stop(); stage = null; } A.micStop(); airStop(); ytStop(); }
+  function stopAll() { if (window.SMYV3D) SMYV3D.unbind(); if (stage) { stage.stop(); stage = null; } A.micStop(); airStop(); ytStop(); }
   async function runStage(cfg) {
     A.init(); applySettings();
     let mic = false, radio = false;
@@ -568,7 +569,8 @@
         const imgs = $('#juryStrip').querySelectorAll('[data-j]'); const cls = k === 'combo' ? 'nod' : k === 'show' ? 'wow' : 'frown';
         imgs.forEach((im, i) => { if (k !== 'miss' || i === 0) { im.classList.add(cls); setTimeout(() => im.classList.remove(cls), 700); } });
       },
-      onDone: out => { stage = null; A.micStop(); airStop(); ytStop(); finishStage(out); } });
+      onDone: out => { if (window.SMYV3D) SMYV3D.unbind(); stage = null; A.micStop(); airStop(); ytStop(); finishStage(out); } });
+    if (window.SMYV3D) { SMYV3D.bind(stage); SMYV3D.text(cfg.title ? cfg.title.replace(/[^\p{L}\p{N} &!-]/gu, '').trim() : ''); }
     if (cfg.ext) { cfg.ext.P.play(); setTimeout(() => { if (stage && flow === cfg && cfg.ext && !cfg.ext.P.playing() && !stage.paused) overlay(`<h3>▶ Song starten</h3><p class="muted">Der Browser wartet auf deinen Tipp, bevor das Video mit Ton startet.</p><button class="btn gold" type="button" data-act="go">▶ Los geht's</button>`, { go: () => { closeOv(); if (cfg.ext) cfg.ext.P.play(); }, esc: () => { closeOv(); if (cfg.ext) cfg.ext.P.play(); } }); }, 3000); }
   }
   // ---------- Echter Song (YouTube): Video suchen, Tempo aus der iTunes-Hörprobe, Taktlage aus lrclib ----------

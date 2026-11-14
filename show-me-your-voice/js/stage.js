@@ -338,7 +338,8 @@
   P.draw = function (now) {
     const c = this.cx, w = this.w, h = this.h, p = this.part;
     c.setTransform(this.dpr, 0, 0, this.dpr, 0, 0); c.clearRect(0, 0, w, h);
-    if (!this.reduced) { // weiche Lichtkegel im Takt
+    const hw3 = document.body.classList.contains('has3d');   // 3D-Studio zeichnet Licht und Notenbahn selbst
+    if (!this.reduced && !hw3) { // weiche Lichtkegel im Takt
       const beat = p.bpm ? (now * p.bpm / 60) % 1 : 0, a = 0.06 + 0.06 * (1 - beat) * this.energy;
       for (let i = 0; i < 3; i++) {
         const x = w * (0.2 + 0.3 * i) + Math.sin(now * 0.6 + i * 2) * w * 0.08, gr = c.createLinearGradient(x, 0, x, h);
@@ -384,17 +385,17 @@
     c.textAlign = 'center';
   };
   P.drawRhythm = function (t) {
-    const c = this.cx, g = this.laneGeo(), col = this.colors, top = 50;
-    for (let i = 0; i < 4; i++) {
+    const c = this.cx, g = this.laneGeo(), col = this.colors, top = 50, hw3 = document.body.classList.contains('has3d');
+    if (!hw3) for (let i = 0; i < 4; i++) {
       const x = g.x0 + i * g.lw;
       c.fillStyle = this.held[i] ? 'rgba(255,255,255,.14)' : 'rgba(10,8,40,.38)'; c.fillRect(x + 2, top, g.lw - 4, this.h - top);
       c.strokeStyle = col[i]; c.lineWidth = 3; c.globalAlpha = this.held[i] ? 1 : 0.55;
       c.beginPath(); c.arc(x + g.lw / 2, g.hitY, Math.min(30, g.lw * 0.36), 0, Math.PI * 2); c.stroke(); c.globalAlpha = 1;
       c.fillStyle = 'rgba(255,255,255,.55)'; c.font = '700 16px system-ui,sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(SYM[i], x + g.lw / 2, g.hitY);
     }
-    c.fillStyle = 'rgba(255,255,255,.35)'; c.fillRect(g.x0, g.hitY - 1, g.W, 2);
+    if (!hw3) c.fillStyle = 'rgba(255,255,255,.35)', c.fillRect(g.x0, g.hitY - 1, g.W, 2);
     const rad = Math.min(26, g.lw * 0.32), span = g.hitY - top;
-    for (const n of this.notes) {
+    if (!hw3) for (const n of this.notes) {
       const dt = n.t - t; if (dt > this.travel) break;
       if (n.st && n.st !== 4) continue; if (n.st === 4 && dt < -0.3) continue;
       const y = g.hitY - dt / this.travel * span, x = g.x0 + (n.lane + 0.5) * g.lw;
