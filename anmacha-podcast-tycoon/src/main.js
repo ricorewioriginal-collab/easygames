@@ -203,7 +203,7 @@
     if (at) { const S = AMC.Play.state(), st = S.stations && S.stations.find(x => x.id === at); if (st) { S.pl.x = st.x; S.pl.z = st.z; if (S.fo) { S.fo.x = st.x + 1.2; S.fo.z = st.z + 1; } } }
     UI.showTouch(true);
     AMC.Play.msg(mode === 'jagd' ? '🏃 Themenjagd! 3 Minuten – sammle alles!' : mode === 'race' ? '🏁 Funk-Rennen! Lauf durch alle 10 Tore – die Uhr läuft!' : mode === 'free' ? '🏙️ Funkhaus-Viertel · ' + (I.device === 'touch' ? '⏸' : I.device === 'pad' ? 'Start' : 'Esc') + ' = Gesamtmenü' : '🎙️ ' + ch.title + ' – los geht\'s!', 2.6);
-    if (!Save.data.seenIntro) { Save.data.seenIntro = true; Save.save(); setTimeout(() => UI.toast(I.device === 'touch' ? 'Links bewegen, rechts wischen = Kamera. ⤴ Springen, 📣 Welle, 💨 Ausweichen, ⇄ Wechsel' : I.device === 'pad' ? 'Linker Stick laufen, rechter Stick Kamera, A springen, X Welle, RT ausweichen, Y Andrew/Marco' : 'WASD laufen, Maus ziehen = Kamera, Leertaste springen, E Welle, C ausweichen, Q wechseln, Umschalt sprinten', 7000), 800); }
+    if (!Save.data.seenIntro) { Save.data.seenIntro = true; Save.save(); setTimeout(() => !(AMC.Home.active && AMC.Home.active()) && UI.toast(I.device === 'touch' ? 'Links bewegen, rechts wischen = Kamera. ⤴ Springen, 📣 Welle, 💨 Ausweichen, ⇄ Wechsel' : I.device === 'pad' ? 'Linker Stick laufen, rechter Stick Kamera, A springen, X Welle, RT ausweichen, Y Andrew/Marco' : 'WASD laufen, Maus ziehen = Kamera, Leertaste springen, E Welle, C ausweichen, Q wechseln, Umschalt sprinten', 7000), 800); }
   }
   function cityEnd(mode, ch, res) {
     UI.showTouch(false);

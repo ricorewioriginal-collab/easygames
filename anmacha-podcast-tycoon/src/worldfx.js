@@ -348,7 +348,7 @@
     for (const p of V.people) {
       const d = Math.hypot(p.x - x, p.z - z); if (d > r || !p.wrap.visible || p.talking) continue; n++;
       p.yaw = Math.atan2(x - p.x, z - p.z); p.wrap.rotation.y = p.yaw;
-      if (kind === 'honk') { anim(p, Math.random() < 0.5 ? 'arms' : 'knock'); p.t = 1.4; if (p.beh === 'walk' && d < 6) { p.tx = p.x - (x - p.x) / (d || 1) * 4; p.tz = p.z - (z - p.z) / (d || 1) * 4; p.wait = 0; } }
+      if (kind === 'honk') { anim(p, Math.random() < 0.5 ? 'arms' : 'yes'); p.t = 1.4; if (p.beh === 'walk' && d < 6) { p.tx = p.x - (x - p.x) / (d || 1) * 4; p.tz = p.z - (z - p.z) / (d || 1) * 4; p.wait = 0; } }
       else if (kind === 'dance') { p.cur = null; anim(p, 'dance'); p.t = 3 + Math.random() * 2; p.wait = 3; }
       else { p.cur = null; anim(p, kind); p.t = 1.6; p.wait = 1.6; }
     }

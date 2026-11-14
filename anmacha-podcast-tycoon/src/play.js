@@ -901,11 +901,11 @@
       p.dodge = 0.42; p.cd2 = 0.75; const dx = mag > 0.1 ? wx : Math.sin(p.yaw), dz = mag > 0.1 ? wz : Math.cos(p.yaw); p.vx = dx * 15; p.vz = dz * 15; AMC.Audio.sfx('dash');
     }
     const it = interactTarget(), held = I.keys.has('KeyE') || I.keys.has('Enter') || padHeld(2) || AMC.UI.touchHeld('x');
-    if (S.net === 'guest') { if (I.hit('act')) { if (!it || !it.hold) { if (!(p.cd > 0)) { doWave(p, true); p.cd = 0.9; p.busy = 0.35; setAnim(p, 'push', { speed: 1.6, once: true, restart: true }); AMC.Audio.sfx('wave'); } } S.events.push(['act']); } S.holding = !!(it && it.hold && held); if (S.holding) { p.busy = 0.1; setAnim(p, 'knock'); } }
+    if (S.net === 'guest') { if (I.hit('act')) { if (!it || !it.hold) { if (!(p.cd > 0)) { doWave(p, true); p.cd = 0.9; p.busy = 0.35; setAnim(p, 'push', { speed: 1.6, once: true, restart: true }); AMC.Audio.sfx('wave'); } } S.events.push(['act']); } S.holding = !!(it && it.hold && held); if (S.holding) { p.busy = 0.1; setAnim(p, 'push'); } }
     else if (I.hit('act')) { if (it && it.run) it.run(); else if (!it || !it.hold) doWave(); }
     if (!S) return;   // Aktion hat die Stadt verlassen (z. B. Senderhaus betreten)
     if (S.net !== 'guest' && it && it.hold && held) {
-      const r = it.hold; r.prog += dt / (H.id === 'marco' ? 0.8 : 1.6); p.busy = 0.1; setAnim(p, 'knock');
+      const r = it.hold; r.prog += dt / (H.id === 'marco' ? 0.8 : 1.6); p.busy = 0.1; setAnim(p, 'push');
       if (Math.random() < dt * 12) W.particles.burst(r.x, r.y + 1, r.z, 0x3dd6ff, 3, { speed: 3, life: 0.4 });
       if (r.prog >= 1) { r.fixed = true; r.led.material.color.set(0x30ff60); r.gl.material.color.set(0x30ff60); AMC.Audio.sfx('perfect'); msg('🔧 Verteiler läuft wieder!', 2); S.score += 500; W.particles.burst(r.x, r.y + 1.2, r.z, 0x30ff60, 30); }
     }

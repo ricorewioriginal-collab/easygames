@@ -61,7 +61,7 @@
       if (r.phase === 'ready') { r.phase = 'play'; }
       if (r.phase !== 'play') return;
       if (r.st === 'aim') { r.aim = Math.sin((r.t + r.ph) * 2.2) * 0.95; r.arrow.position.set(r.aim, 0.25, -1.4); r.ball.position.x = 0; if (tap) { r.st = 'pow'; r.bar.visible = true; AMC.Audio.sfx('move'); } }
-      else if (r.st === 'pow') { r.pow = osc(r.t, 3.4); setBar(r.bar, r.pow, 0.72, 1); if (tap) { r.st = 'roll'; r.arrow.visible = false; r.bar.visible = false; r.vz = 7 + r.pow * 9; r.hook = (Math.random() - 0.5) * 0.25 * (1.1 - r.pow); AMC.Audio.sfx('whoosh'); if (r.fig) r.fig.play('knock', { restart: true, fade: 0.05 }); } }
+      else if (r.st === 'pow') { r.pow = osc(r.t, 3.4); setBar(r.bar, r.pow, 0.72, 1); if (tap) { r.st = 'roll'; r.arrow.visible = false; r.bar.visible = false; r.vz = 7 + r.pow * 9; r.hook = (Math.random() - 0.5) * 0.25 * (1.1 - r.pow); AMC.Audio.sfx('whoosh'); if (r.fig) r.fig.play('push', { restart: true, fade: 0.05 }); } }
       else if (r.st === 'roll') {
         r.bz -= r.vz * dt; const k = -r.bz / 18; r.bx = r.aim * k + r.hook * k * k * 4; r.ball.position.set(r.bx, 0.32, r.bz); r.ball.rotation.x -= r.vz * dt * 4;
         if (Math.abs(r.bx) > 1.25) { r.bx = Math.sign(r.bx) * 1.42; r.ball.position.x = r.bx; r.ball.position.y = 0.18; }   // Rinne
@@ -356,7 +356,7 @@
       const cam = W.camera; cam.position.set(0, 1.8, K.camDist(4)); cam.lookAt(0, 1.1, -11);
     },
     kick(r) {
-      AMC.Audio.sfx('whoosh'); if (r.fig) r.fig.play('knock', { restart: true, fade: 0.05 });
+      AMC.Audio.sfx('whoosh'); if (r.fig) r.fig.play('push', { restart: true, fade: 0.05 });
       const guess = Math.random() < 0.35 + r.shot * 0.06 ? r.ax : (Math.random() - 0.5) * 6;   // Torwart ahnt die Ecke immer öfter
       r.fly = { t: 0, dive: U.clamp(guess, -3.2, 3.2) }; if (r.mate) r.mate.play('jump', { restart: true, fade: 0.05 });
     },
