@@ -2,6 +2,7 @@
    Die Gruppe steht vorn, bis zu drei Gegner der Region gegenüber. Kamera mit Einstellungen je Aktion, Ausfallschritte,
    Zauber mit Effekten, Schwächen und Bruch, IP-Künste, Sieg mit Fanfare, eigene Kampfmusik.
    Befehle über das Kommandomenü der Dialoge (Handy, PC, TV, Controller gleich); „Auto“ kämpft bis zum Ende selbst. */
+import { BEI, bOn, bLock } from './beistand.js';
 export function createSeaBattle(C) {
   const { scene, camera, say, sfx, toast, banner, dnum, emit } = C;
   const EL = { fire: ['🔥', 0xff7a3a, 'Feuer'], ice: ['❄️', 0x9ae0ff, 'Eis'], storm: ['⚡', 0xfff27a, 'Blitz'], light: ['✨', 0xffe8a0, 'Licht'], nature: ['🌿', 0x7aff8a, 'Natur'] };
@@ -128,11 +129,21 @@ export function createSeaBattle(C) {
       o.push({ t: '⚔️ Angriff', fn: () => tgt(f => res({ k: 'atk', f })) });
       if (m.mag) o.push({ t: '✨ Magie', fn: () => say([['Zotik', 'Welcher Zauber? (MP ' + Math.floor(S.mp) + ')']], null, [...SPELLS.map(sp => ({ t: sp.t + ' · ' + sp.mp + ' MP', fn: () => S.mp < sp.mp ? (toast('Nicht genug MP'), again()) : sp.all || sp.heal ? res({ k: 'spell', sp }) : tgt(f => res({ k: 'spell', sp, f })) })), { t: '↩ Zurück', fn: again }]) });
       const [an] = art(m.id); o.push({ t: an + (m.ip >= 40 ? ' ⭐' : ' · IP ' + m.ip + '/40'), fn: () => m.ip >= 40 ? res({ k: 'art' }) : (toast('IP füllen sich durch Treffer und Abwehr'), again()) });
+      const co = up().length > 1, ob = (k, ok, why, fn) => o.push({ t: BEI[k].em + ' ' + BEI[k].n + (ok ? why : ' · ' + bLock(k)), fn: ok ? fn : () => (toast('Wird mit dem Kernsplitter ' + BEI[k].rb + ' der Geschichte freigeschaltet'), again()) });
+      if (S.party && S.party.length) o.push({ t: '🤝 Teamangriff · ' + Math.floor(S.tg || 0) + '%', fn: () => (S.tg || 0) >= 100 ? res({ k: 'team' }) : (toast('🤝 Teamleiste füllt sich durch Treffer'), again()) });
+      ob('focus', bOn(S, 'focus'), ' · ' + BEI.focus.mp + ' MP', () => S.mp < BEI.focus.mp ? (toast('Zu wenig MP'), again()) : pickFocus(m, L, again, res));
+      if (up().length) ob('summon', bOn(S, 'summon'), B.sum ? ' · schon da' : ' · ' + BEI.summon.mp + ' MP', () => B.sum || S.mp < BEI.summon.mp ? (toast(B.sum ? 'Der Nebelfenn ist schon da' : 'Zu wenig MP'), again()) : res({ k: 'summon' }));
+      if (co) ob('attr', bOn(S, 'attr'), ' · IP ' + up().reduce((a, p) => a + Math.floor(p.ip), 0) + '/' + 40 * Math.min(3, up().length), () => up().reduce((a, p) => a + p.ip, 0) >= 40 * Math.min(3, up().length) ? res({ k: 'attr' }) : (toast('Alle brauchen genug IP'), again()));
       if (S.potions > 0) o.push({ t: '🧪 Trank (' + S.potions + ')', fn: () => res({ k: 'pot' }) });
       o.push({ t: '🛡️ Abwehr', fn: () => res({ k: 'guard' }) }, { t: '⏩ Auto', fn: () => { B.auto = 1; toast('⏩ Auto-Kampf bis zum Ende'); res(autoCmd(m)); } });
       if (!B.boss) o.push({ t: B.sea ? '🏃 Davonsegeln' : '🏃 Flucht', fn: () => res({ k: 'flee' }) });
       say([[m.n, m.n + ' ist am Zug.']], null, o);
     });
+  }
+  function pickFocus(m, L, again, res, got) {
+    got = got || []; const rest = L.filter(f => !got.includes(f));
+    if (!rest.length || got.length >= 3) return res({ k: 'focus', fs: got });
+    say([[m.n, 'Zielfeuer: ' + (got.length ? got.length + ' markiert' : 'Wen anvisieren?') + ' (bis 3)']], null, [...rest.map(f => ({ t: '🎯 ' + tagF(f), fn: () => pickFocus(m, L, again, res, got.concat(f)) })), ...(got.length ? [{ t: '🔥 Feuer frei!', fn: () => res({ k: 'focus', fs: got }) }] : []), { t: '↩ Zurück', fn: again }]);
   }
   function autoCmd(m) {
     const S = C.S(), L = live(), low = up().filter(p => p.hp < p.max * .4), [, ty] = art(m.id);
@@ -154,6 +165,7 @@ export function createSeaBattle(C) {
       await doCmd(m, c); if (!B) return; await wait(260);
     }
     if (!B) return; B.cur = null; B.idle = null; hud();
+    if (B.sum > 0 && live().length) { const f = live().sort((x, y) => x.hp - y.hp)[0], z = B.party[0]; B.sum--; B.curF = f; shotSide(f, partyA(z)); await wait(350); C.MFX().bolt(B.sumM.position.x, B.sumM.position.y, B.sumM.position.z, f.base.x, f.base.y + f.h * .5, f.base.z, 0xbfe8ff, .3); hit(f, z.atk() * .7, null, 'storm', false); await wait(450); if (!B) return; B.curF = null; if (!B.sum && B.sumM) { scene.remove(B.sumM); B.sumM = null; } if (!live().length) return win(); }
     for (const f of live()) { if (!B || B.over) return; if (!up().length) return lose(); if (f.dead) continue; await foeAct(f); if (!B) return; await wait(240); }
     if (!B || B.over) return; if (!live().length) return win(); if (!up().length) return lose();
     B.turn++; round();
@@ -186,6 +198,22 @@ export function createSeaBattle(C) {
         for (let i = 0; i < (ty === 'multi' ? 3 : 1); i++) { MF.flare(p.x, p.y - .3, p.z, el ? EL[el][1] : 0xffffff, 3.6, .45); FX.pillar(f.base.x, f.base.y, f.base.z, el ? EL[el][1] : 0xc8d8ff, 1.2, 6, .7); if (!f.dead) hit(f, m.atk() * (ty === 'multi' ? 1.1 : 2.4), null, el, true); C.hitStop(.08); B.shk = .45; await wait(260); } } }
       await wait(800); return; }
     if (c.k === 'pot') { S.potions--; const p = up().sort((x, y) => x.hp / x.max - y.hp / y.max)[0], pa = partyA(p), h = Math.round(p.max * .5); if (a.kk) C.KK.once(a.kk, 'Use_Item'); p.hp = Math.min(p.max, p.hp + h); sfx('heal'); MF.heal(pa.base.x, pa.base.y, pa.base.z); dnum(pa.base.x, pa.base.y + 2.2, pa.base.z, '+' + h, 'h'); hud(); await wait(700); return; }
+    if (c.k === 'focus') { S.mp = Math.max(0, S.mp - BEI.focus.mp); const T0 = (c.fs || []).filter(f => !f.dead); if (!T0.length) return; banner('🎯 Zielfeuer', T0.length + ' Ziele'); sfx('skill1'); shotOver(a, T0[0]); hud(); await wait(500);
+      for (const f of T0) { MF.circle(f.base.x, f.base.y, f.base.z, 0xff6a6a, 1.4, .8); await wait(160); }
+      for (let r = 0; r < 2; r++) for (const f of T0) { if (f.dead) continue; MF.bolt(a.base.x, a.base.y + 1.3, a.base.z, f.base.x, f.base.y + f.h * .5, f.base.z, 0xffd070, .2); sfx('slash'); hit(f, m.atk() * .85, m, null, false); await wait(150); }
+      await wait(500); return; }
+    if (c.k === 'team') { S.tg = 0; B.curF = null; const L = live(); banner('🤝 Teamangriff', 'Gefährten & Zotik'); flashScr(); sfx('skill2'); const cc = center(L); shot(P3(cc, -9, 4, 6), { x: cc.x, y: cc.y + 1, z: cc.z }, 1.6); await wait(300);
+      for (const p of up()) { const pa = partyA(p); if (pa) MF.swirl(pa.base.x, pa.base.y, pa.base.z, p.col || 0xffffff, 1.2, 2, .8); }
+      for (const f of L) { if (f.dead) continue; const p = top(f); MF.starfall(p.x, f.base.y, p.z, 0xffe8a0, .7, () => { if (B && !f.dead) hit(f, m.atk() * 1.7, m, 'light', true); }); await wait(180); }
+      for (const p of up()) { const h = Math.round(p.max * .15); p.hp = Math.min(p.max, p.hp + h); } hud(); await wait(1100); return; }
+    if (c.k === 'summon') { S.mp = Math.max(0, S.mp - BEI.summon.mp); B.sum = 3; flashScr(); banner('🌫️ ' + BEI.summon.n, 'Ein Verbündeter erscheint'); sfx('skill2'); shotFace(a);
+      const g = new C.T.Mesh(new C.T.SphereGeometry(.7, 14, 10), new C.T.MeshBasicMaterial({ color: 0xbfe8ff, transparent: true, opacity: .75 })); const p0 = at(-1, 5); g.position.set(p0.x, gy(p0.x, p0.z) + 1.4, p0.z); scene.add(g); B.sumM = g;
+      MF.circle(p0.x, gy(p0.x, p0.z), p0.z, 0xbfe8ff, 2.4, 1.2); await wait(900);
+      for (const p of up()) { const h = Math.round(p.max * .25), pa = partyA(p); p.hp = Math.min(p.max, p.hp + h); if (pa) { MF.heal(pa.base.x, pa.base.y, pa.base.z); dnum(pa.base.x, pa.base.y + 2.1, pa.base.z, '+' + h, 'h'); } } hud();
+      for (const f of live()) { hit(f, m.atk() * 1.0, m, 'storm', true); await wait(140); } await wait(500); return; }
+    if (c.k === 'attr') { for (const p of up().slice(0, 3)) p.ip -= 40; banner('💥 ' + BEI.attr.n, 'Große Attraktion'); flashScr(); sfx('crit'); const L = live(), cc = center(L); shot(P3(cc, -9, 4, 6), { x: cc.x, y: cc.y + 1, z: cc.z }, 2); await wait(400);
+      for (let i = 0; i < 3; i++) { for (const f of live()) { const p = top(f); MF.flare(p.x, p.y, p.z, 0xffe27a, 3.4, .4); FX.pillar(f.base.x, f.base.y, f.base.z, 0xfff2c0, 1.4, 8, .8); hit(f, m.atk() * 1.4, m, ELS[i % 5], true); } await wait(480); }
+      await wait(500); return; }
     if (c.k === 'guard') { B.guard[m.id] = 1; m.ip = Math.min(100, m.ip + 10); MF.ring(a.base.x, a.base.y + .2, a.base.z, 0x8ad0ff, 1.6, .7, 1.2); toast('🛡️ ' + m.n + ' wehrt ab'); hud(); await wait(450); }
   }
   function hit(f, dmg, m, el, big) {
@@ -198,7 +226,7 @@ export function createSeaBattle(C) {
     if (tag === 'break') { dnum(p.x, p.y + 1, p.z, 'BRUCH!', 'b'); sfx('crit'); C.hitStop(.14); flashScr(); }
     C.FXH().impact(p.x, p.y - .5, p.z, el ? EL[el][1] : 0xfff0c0, big || !!tag); emit(p.x, p.y - .5, p.z, el ? EL[el][1] : 0xffffff, 10, 3, .4, .3, 0);
     if (f.kk) C.KK.once(f.kk, 'Hit_A'); sfx('hit'); B.shk = Math.max(B.shk, big ? .3 : .16);
-    if (m) m.ip = Math.min(100, m.ip + (tag ? 14 : 8));
+    if (m) { m.ip = Math.min(100, m.ip + (tag ? 14 : 8)); if (C.gAdd) C.gAdd('tg', tag ? 9 : 5); }
     if (f.hp <= 0) { f.dead = 1; f.dt = 0; sfx('kill'); C.FXH().soul(p.x, p.y - .4, p.z, f.d.col || 0xc8f4ff); C.MFX().burstShards(p.x, p.y - .4, p.z, f.d.col || 0xc8f4ff, 1); if (f.kk) C.KK.ko(f.kk, true); }
     hud();
   }
@@ -234,7 +262,7 @@ export function createSeaBattle(C) {
   }
   function lose() { if (!B || B.over) return; B.over = 1; stopMusic(); banner(B.sea ? 'Die Nautilux treibt ab' : 'Die Gruppe zieht sich zurück', 'Zurück in Sicherheit'); const S = C.S(); S.hp = Math.round(C.maxHp() * .3); for (const m of B.party) if (m.a) { m.a.ko = false; m.a.hp = Math.round(m.max * .3); if (m.a.P.kk) C.KK.ko(m.a.P.kk, false); } end(); C.lose(); }
   function end() {
-    if (!B) return; stopMusic(); for (const f of B.foes) scene.remove(f.root);
+    if (!B) return; stopMusic(); if (B.sumM) scene.remove(B.sumM); for (const f of B.foes) scene.remove(f.root);
     for (const m of B.party) { const a = m.act; if (!a) continue; a.root.position.set(a.base.x, a.base.y, a.base.z); a.root.rotation.set(0, a.face, 0); if (m.a) { m.a.x = a.base.x; m.a.z = a.base.z; m.a.face = a.face; } if (a.kk && !(m.a && m.a.ko)) C.KK.ko(a.kk, false); }
     if (B.ship) B.ship.root.position.set(B.ship.base.x, B.ship.base.y, B.ship.base.z);
     const S = C.S(); if (S.hp < 1) S.hp = 1; B = null; coolT = performance.now() + 3500; H.hidden = true; q('.rb-r').classList.remove('on'); C.$('hud').hidden = false; C.setOn(false);
