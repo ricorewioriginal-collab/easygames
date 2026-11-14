@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "af1035a5dd23",
- "generated": "2026-11-14T19:52:03+00:00",
- "commit": "cfbae9fcb478d9a16e3d5a332638eede2701f75b",
+ "version": "df15bd08dd91",
+ "generated": "2026-11-14T19:59:03+00:00",
+ "commit": "02eaf7a186374ecd42a4b57d5435ef01d14df67b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3224,7 +3224,7 @@
   {
    "p": "anmacha-podcast-tycoon/vo/160wak7.mp3",
    "s": 10892,
-   "h": "f73eb6050c0d971e13b4745143aec50b510b4720753549bf119d6d9dfe22302d"
+   "h": "0e18a6a9bcc83d2894045d88685d82c71e5f241b61b842d9b0fe7dd7728c6099"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/16fecv4.mp3",
@@ -3499,7 +3499,7 @@
   {
    "p": "anmacha-podcast-tycoon/vo/1f3gtbp.mp3",
    "s": 5204,
-   "h": "10d047669cdfab76a93c2c5df74d2126fd5d35702454a2cbb7cb88580841082c"
+   "h": "5a4792919850d7338c0229b1168e653284861b5cfaae352a80fd35fb94742278"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/1f47btn.mp3",
@@ -3508,8 +3508,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/vo/1f53icn.mp3",
-   "s": 6356,
-   "h": "0c62340c68b46013db44555a07f9f51dc761842dfd4ddb0961eb318bc787c253"
+   "s": 5348,
+   "h": "9e5607083fc0d73bb8c149f351a00b178fe431d55700c1c1c2772c6ae851b137"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/1f6x3ud.mp3",
@@ -3529,7 +3529,7 @@
   {
    "p": "anmacha-podcast-tycoon/vo/1fhswu7.mp3",
    "s": 3260,
-   "h": "1dfcbd8a5e903762490e89413a1e95edd5f575b669c1f97e5a0bb8fa48f8b185"
+   "h": "bc2a593628e66168933502b472b7b9150aabbdc2228d643ebf0b7f601a6e771b"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/1fkpy2g.mp3",
@@ -3629,7 +3629,7 @@
   {
    "p": "anmacha-podcast-tycoon/vo/1ii8tq3.mp3",
    "s": 7580,
-   "h": "bb90c372b6831a7ec0e0e6e3ccbbbb7c7d384ba0bbe432fe3bec3aee80b6d0dd"
+   "h": "f3992402b6eb1573aeb0417d41df8e3fddf7d6cb5fe13183c29f477fb02eacf2"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/1iir5fc.mp3",
@@ -3648,8 +3648,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/vo/1j1vn1b.mp3",
-   "s": 7292,
-   "h": "c3e0b39938d58ce4fc4212ef2c16ca1856ef58d21fa2e68e37ff1674b8660205"
+   "s": 6428,
+   "h": "be8e6b2b015299f4f8f014f7128c711875dd5adadfb42a329992e0f82dd1f0df"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/1jklrdf.mp3",
@@ -3768,8 +3768,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/vo/1nznji5.mp3",
-   "s": 2828,
-   "h": "aaeb06a7e7178327fe7bae76d0f05afdceff93c413f098844ef0b53d44bfa8fb"
+   "s": 1172,
+   "h": "cd2f01827d01647313cc3bf193c5c6dabce6563b411c20b4bb64ad408844af98"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/1o3lhj8.mp3",
@@ -3823,8 +3823,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/vo/1ppjprk.mp3",
-   "s": 6356,
-   "h": "33acad15713511d1d8a651d50a7a9a89c5478f92fe9d325cff71b63c6c5e1a47"
+   "s": 6428,
+   "h": "dedeb77c6189f29108de04b84e488e25ad8618613fcd62a9f4a4ce23c4b6cc8d"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/1prxh6o.mp3",
@@ -3884,7 +3884,7 @@
   {
    "p": "anmacha-podcast-tycoon/vo/1rpaofa.mp3",
    "s": 4412,
-   "h": "00c6ea10a505ed08c1fba4b4f38d42f9c4b6e21d5a53a7ebd2ae69fb8fb2d2aa"
+   "h": "c8285e9ae5548b3dfdeaf499eb14b4bc41adfcdfb433c76ba4ed6482c95c134c"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/1rqqc2b.mp3",
@@ -3894,7 +3894,7 @@
   {
    "p": "anmacha-podcast-tycoon/vo/1ruymjx.mp3",
    "s": 11324,
-   "h": "f5ec68408821360c9f54c577b277cfcbddf6876d84975ae46b6c18e24fd1635b"
+   "h": "5875445fc4db9a057e103391453c1863c8c18f3260786d7b73eb656987d3e939"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/1s5d267.mp3",
@@ -4209,7 +4209,7 @@
   {
    "p": "anmacha-podcast-tycoon/vo/53q7sw.mp3",
    "s": 27236,
-   "h": "4b5226fbca2e5ac11fb31de234e2f35889aa1e29f6634368c318e48a281a60ff"
+   "h": "4a9da6eb5b6240ad6549f1a1a109bcf0c0ef9f4499bfbf50a4c488aa9f4cd24b"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/5hd1cc.mp3",
@@ -4269,7 +4269,7 @@
   {
    "p": "anmacha-podcast-tycoon/vo/7hf1an.mp3",
    "s": 6428,
-   "h": "23903b0f0cf127c5024856c0f991d11a20cc6ba8b77da0b706d7e4a1c38f3e0a"
+   "h": "07127129398ea6e36f018cec7e7c5c4c875bdabce17246113f24ef32d09a579e"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/7nvlo.mp3",
@@ -4389,7 +4389,7 @@
   {
    "p": "anmacha-podcast-tycoon/vo/aikiq2.mp3",
    "s": 18740,
-   "h": "b63739979f283ed5d1729a25151353ca9ea1b563f0c87421a653f1a9a1cbfe14"
+   "h": "e8366891b119716d2360ba98e80ba5e1cff0e462be2f58ddc39fe6aa8d76c851"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/aj56jz.mp3",
@@ -4544,7 +4544,7 @@
   {
    "p": "anmacha-podcast-tycoon/vo/fc2dae.mp3",
    "s": 2540,
-   "h": "794ff828079696a743ecc99269d945d13fe85e628cd48e0532b2d0201c8f05d7"
+   "h": "141df72b24de80135f548194f5803aa82377ce50243024cb375b4bd2176a0f8e"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/fc8q0l.mp3",
@@ -4568,8 +4568,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/vo/gig4m0.mp3",
-   "s": 18884,
-   "h": "0bb5adcfe6a0ad6373f91654a9684602e62ed70b1cac17b551d7c11e69017f2f"
+   "s": 18668,
+   "h": "9abdb043f2aaa7dd145bee678d26170ecb1fe6d4a987ee6d4c4b249d97c79b06"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/givilr.mp3",
@@ -5093,8 +5093,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/vo/vh87cy.mp3",
-   "s": 5204,
-   "h": "d4187e4e1ed38260fec9f2c71330af9b37ba4dbf88d960ab8ef5833dcfaab3a6"
+   "s": 5420,
+   "h": "1c293a58c54d9fe432c6fee4e90b6d5137616f2fbe511748f4b7b3a43d0641e5"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/vi1p4y.mp3",
@@ -5179,7 +5179,7 @@
   {
    "p": "anmacha-podcast-tycoon/vo/ys6336.mp3",
    "s": 31916,
-   "h": "b7efffe4da9b7d5490e3c2293261293bec413de8a8486cea11063ee9c2f986bf"
+   "h": "f16ab5bb857fd5eac81e01cb5519eb40fb9c7ce78407b9fbc3ed61c1e60bc7d6"
   },
   {
    "p": "anmacha-podcast-tycoon/vo/yu0xta.mp3",
@@ -12964,7 +12964,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262493,
-   "h": "06956d305e5abff612e9e552a4276618b30b59451926c6e281c57e82f1b1202a"
+   "h": "529564933ae4b886f6cba7f53db66f277aaccc4eb5a89018404b12e216c0f8e1"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -15452,9 +15452,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-BrrPcLyy.js",
-   "s": 1946998,
-   "h": "09b8949ffa0c7d501fd6121a7f348f4d11b04612eae9f17bca7bfb9d5bfb494c"
+   "p": "zotik/assets/index-B_HnBJEi.js",
+   "s": 1947974,
+   "h": "d1103841adba5e663ebf8ba8be4e1b07b95e79424cd9ef1119f2325babe6f7e8"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -15474,7 +15474,7 @@
   {
    "p": "zotik/index.html",
    "s": 74333,
-   "h": "243970cd738aab0f553098c3025e5784d35e15eb90ab67d0a69fbad31271f505"
+   "h": "4483d305b6595b4303326d407dbdf4af1f5b9e37148134aecf8327e3ccadde7f"
   },
   {
    "p": "zotik/manifest.webmanifest",

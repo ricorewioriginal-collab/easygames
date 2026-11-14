@@ -129,14 +129,18 @@ class Library(
      * Holt Manifest und Katalog, hält die Basis aktuell und erkennt neue Spiele und Updates.
      * Wirft nicht bei fehlendem Netz: dann online=false und der letzte Stand bleibt.
      */
-    fun refresh(cancel: AtomicBoolean = AtomicBoolean(false), onCatalog: () -> Unit = {}): RefreshResult {
+    fun refresh(cancel: AtomicBoolean = AtomicBoolean(false), onCatalog: () -> Unit = {}): RefreshResult = refresh(cancel, false, onCatalog)
+
+    /** [fresh]: Manifest am CDN-Cache vorbei holen (ohne ETag, mit Cache-Buster), z. B. nach einer falschen Prüfsumme. */
+    private fun refresh(cancel: AtomicBoolean, fresh: Boolean, onCatalog: () -> Unit): RefreshResult {
         val before = games.map { it.id }.toSet()
         val mText: String
         val cText: String
         val m: Manifest
         val c: Catalog
         try {
-            val resp = fetcher.getManifest(base + "sync/manifest.json", synchronized(lock) { state.etag })
+            val resp = if (fresh) fetcher.getManifest(base + "sync/manifest.json?t=" + now(), null)
+                else fetcher.getManifest(base + "sync/manifest.json", synchronized(lock) { state.etag })
             if (resp.notModified && manifest != null && catalog != null) {
                 syncBase(manifest!!, cancel)
                 return RefreshResult(true, false, emptyList(), updates())
@@ -183,6 +187,24 @@ class Library(
      * Wirft bei Fehlern (kein Netz, Prüfsumme) – der bisherige Stand bleibt dann unverändert.
      */
     fun install(id: String, cancel: AtomicBoolean = AtomicBoolean(false), progress: (Long, Long) -> Unit = { _, _ -> }) {
+        try {
+            installOnce(id, cancel, progress)
+        } catch (e: ChecksumException) {
+            // Kurz nach einer Veröffentlichung passen Manifest und Datei am CDN oft noch nicht zusammen
+            // (Manifest wird nach dem Merge neu erzeugt, CDN cacht bis zu 10 Min.). Frisches Manifest holen und
+            // genau einmal neu versuchen; ist es unverändert, eine verständliche Meldung statt „Prüfsumme“.
+            val before = manifest?.version
+            val r = refresh(cancel, true) {}
+            if (!r.online || manifest?.version == before) throw IOException("Update wird gerade veröffentlicht – bitte in ein paar Minuten nochmal versuchen.", e)
+            try {
+                installOnce(id, cancel, progress)
+            } catch (e2: ChecksumException) {
+                throw IOException("Update wird gerade veröffentlicht – bitte in ein paar Minuten nochmal versuchen.", e2)
+            }
+        }
+    }
+
+    private fun installOnce(id: String, cancel: AtomicBoolean, progress: (Long, Long) -> Unit) {
         val m = manifest ?: throw IOException("Keine Spieleliste – bitte mit dem Internet verbinden.")
         val g = find(id) ?: throw IOException("Spiel nicht gefunden.")
         if (!baseReady) syncBase(m, cancel)
@@ -360,17 +382,19 @@ class Library(
                 val md = Hashing.newDigest()
                 var got = 0L
                 FileOutputStream(tmp).use { out ->
-                    fetcher.download(base + encodePath(e.p), object : java.io.OutputStream() {
+                    // Ab dem 2. Versuch am CDN-Cache vorbei: dieselbe Datei, aber eigene Cache-Adresse je Prüfsumme.
+                    val url = base + encodePath(e.p) + if (attempt > 1) "?v=" + e.h.take(16) else ""
+                    fetcher.download(url, object : java.io.OutputStream() {
                         override fun write(b: Int) { out.write(b); md.update(b.toByte()) }
                         override fun write(b: ByteArray, off: Int, len: Int) { out.write(b, off, len); md.update(b, off, len) }
                     }) { n ->
                         if (cancel.get() || failed.get()) throw SyncCancelledException()
                         got += n
-                        if (got > e.s) throw IOException("Datei zu groß: ${e.p}")
+                        if (got > e.s) throw ChecksumException(e.p)
                         onBytes(n)
                     }
                 }
-                if (got != e.s || Hashing.toHex(md.digest()) != e.h) throw IOException("Prüfsumme stimmt nicht: ${e.p}")
+                if (got != e.s || Hashing.toHex(md.digest()) != e.h) throw ChecksumException(e.p)
                 return
             } catch (ex: SyncCancelledException) {
                 throw ex
@@ -378,7 +402,7 @@ class Library(
                 throw ex
             } catch (ex: IOException) {
                 if (attempt >= 3) throw ex
-                Thread.sleep(500L * attempt)
+                Thread.sleep(if (ex is ChecksumException) 1500L * attempt else 500L * attempt)
             }
         }
     }
@@ -455,3 +479,6 @@ class Library(
         }
     }
 }
+
+/** Datei passt nicht zum Manifest (Größe oder SHA-256). */
+class ChecksumException(val path: String) : IOException("Prüfsumme stimmt nicht: $path")
