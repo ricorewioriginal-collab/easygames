@@ -191,10 +191,10 @@
     AMC.Audio.music('show');
     buildUi();
     setTimeout(() => { if (!S) return; AMC.Audio.sfx('onair'); say('n', 'Wir sind ON AIR!'); }, 300);
-    setTimeout(() => { if (!S) return; say(S.speaker, U.pick(['Hallo und herzlich willkommen zu AnMaCha – Der Podcast!', 'Seid Ihr bereit, angemacht zu werden? Willkommen!', 'Hey, willkommen zu einer neuen Folge – mit Marco und Andrew!']));
+    later(1500, () => { if (!S) return; say(S.speaker, U.pick(['Hallo und herzlich willkommen zu AnMaCha – Der Podcast!', 'Seid Ihr bereit, angemacht zu werden? Willkommen!', 'Hey, willkommen zu einer neuen Folge – mit Marco und Andrew!']));
       const n = S.homeNote; if (n && n.cards.length) pop('💡 ' + n.cards.length + ' Idee' + (n.cards.length > 1 ? 'n' : '') + ' von zu Hause!<small>als Bonus-Themen</small>', 'good');
       if (n && n.tired.length) setTimeout(() => S && pop('😴 ' + n.tired.join(' & ') + ' ist durch …<small>Zu Hause schlafen, essen, entspannen!</small>', 'miss'), 900);
-      nextRound(); }, 1500);
+      nextRound(); });
   };
   SH.stop = function () { SH.active = false; if (S && S.mini && S.mini.ctl) S.mini.ctl.destroy(); S = null; const u = U.$('showUi'); if (u) u.remove(); ST.leave(); };
 
@@ -220,14 +220,18 @@
     U.$('shCombo').innerHTML = S.combo > 1 ? '🔥 Kombo ×' + S.combo.toFixed(1) : '🎙️ ' + D.HOSTS[S.speaker].name;
     U.$('shSpec').style.width = S.special + '%';
   }
+  let sayN = 0;
   function say(who, text) {
     const box = U.$('shSay'); if (!box) return;
     box.hidden = false; box.classList.remove('pop'); void box.offsetWidth; box.classList.add('pop');
     const name = who === 'n' ? 'AnMaCha24' : D.HOSTS[who].name;
     U.$('shWho').textContent = name; U.$('shTxt').textContent = text; U.$('shFace').src = who === 'n' ? AMC.UI.podLogo : AMC.UI.face(who);
     box.style.setProperty('--hc', who === 'n' ? '#ff8a1e' : D.HOSTS[who].color);
-    if (who !== 'n') { ST.focus = who; const f = W.hosts[who]; f && f.play(U.pick(['yes', 'arms']), { fade: 0.25 }); f && f.talk && f.talk(true); setTimeout(() => { if (f) { f.play('idle', { fade: 0.4 }); f.talk && f.talk(false); } }, 1800); }
-    AMC.Audio.sfx('talk'); if (AMC.Voice) AMC.Voice.say(who, text);
+    const f = who !== 'n' ? W.hosts[who] : null, t0 = Date.now(), my = (sayN = (sayN || 0) + 1);
+    // Mund und Geste laufen, bis die Stimme fertig ist (mindestens 1,8 s)
+    const stop = () => { if (my !== sayN) return; const rest = 1800 - (Date.now() - t0); if (rest > 0) return setTimeout(stop, rest); if (f) { f.play('idle', { fade: 0.4 }); f.talk && f.talk(false); } };
+    if (f) { ST.focus = who; f.play(U.pick(['yes', 'arms']), { fade: 0.25 }); f.talk && f.talk(true); }
+    AMC.Audio.sfx('talk'); if (!(AMC.Voice && AMC.Voice.say(who, text, stop))) setTimeout(stop, 1800);
     if (AMC.Save.data.settings.subtitles === false) box.hidden = true;
   }
   function chatLine(name, text, cls) {
@@ -286,20 +290,20 @@
     S.phase = 'busy';
     const r = W.hosts.rico; if (r) { r.play('arms', { fade: 0.2 }); setTimeout(() => r.play('idle', { fade: 0.4 }), 1800); }
     say('rico', U.pick(D.RICO_LINES));
-    setTimeout(() => {
+    later(1400, () => {
       if (!S || S.ended) return;
       const other = S.speaker === 'andrew' ? 'marco' : 'andrew';
       if (Math.random() < 0.6) { const add = Math.round(S.listeners * 0.06 + 40 + S.round * 15); S.listeners += add; pop('📱 RicoReWi hat\'s geteilt!<small>+' + U.fmt(add) + ' 🎧</small>', 'good'); chatLine('RicoReWi', 'Clip ist online! #AnMaCha 🚀', 'hype'); say(other, U.pick(['Rico, wir sind LIVE!', 'Danke, Rico. Jetzt raus hier.', 'Er hat schon wieder ein Tool gebaut …'])); }
       else { S.hype = Math.max(0, S.hype - 6); pop('🤳 Handy im Bild!<small>Stimmung −6</small>', 'miss'); chat('bad'); say(other, U.pick(['Rico! Kamera weg vom Mischpult!', 'Nicht jetzt, Rico!', 'Wer hat ihn reingelassen?!'])); }
-      updTop(); setTimeout(() => S && !S.ended && openMenu(), 1600);
-    }, 2000);
+      updTop(); later(900, () => S && !S.ended && openMenu());
+    });
   }
   // --- Verrückte Idee aus dem Alltag oder dem Internet: kurzer Schlagabtausch, die Hörer lieben's
   function idea() {
     S.phase = 'busy';
     const [w1, l1, w2, l2] = U.pick(D.IDEAS), id = x => x === 'a' ? 'andrew' : 'marco';
     pop('💡 Verrückte Idee!', 'good'); say(id(w1), l1);
-    setTimeout(() => { if (!S || S.ended) return; say(id(w2), l2); AMC.Audio.sfx('laugh'); chat('good', 2); S.hype = Math.min(100, S.hype + 5); S.special = Math.min(100, S.special + 6); updTop(); setTimeout(() => S && !S.ended && openMenu(), 1700); }, 2600);
+    later(1200, () => { if (!S || S.ended) return; say(id(w2), l2); AMC.Audio.sfx('laugh'); chat('good', 2); S.hype = Math.min(100, S.hype + 5); S.special = Math.min(100, S.special + 6); updTop(); later(900, () => S && !S.ended && openMenu()); });
   }
   function refillCards() {
     const free = S.cards.filter(c => !c.used);
@@ -377,7 +381,9 @@
     S.flash = q >= 0.8 ? 1 : 0;
     updTop();
   }
-  function nextSoon(ms) { S.phase = 'wait'; setTimeout(() => S && !S.ended && nextRound(), ms || 1300); }
+  // Nächster Schritt erst, wenn die laufende Sprachzeile zu Ende ist – nichts wird abgeschnitten
+  const later = (ms, fn) => AMC.Voice && AMC.Voice.after ? AMC.Voice.after(ms, fn) : setTimeout(fn, ms);
+  function nextSoon(ms) { S.phase = 'wait'; const s0 = S; later(ms || 1300, () => S === s0 && !S.ended && nextRound()); }
 
   // --- Pointe: Tastenfolge
   function punchline() {
@@ -450,7 +456,7 @@
   }
   function solveIncident() {
     const inc = S.incident; U.$('shInc').hidden = true; S.phase = 'busy';
-    const done = q => { S.incident = null; if (q >= 0.8) { pop('Gerettet!', 'good'); S.hype = Math.min(100, S.hype + 6); chat('good'); } else { pop('Autsch …', 'miss'); S.hype = Math.max(0, S.hype - 14); S.listeners = Math.max(0, Math.round(S.listeners * 0.95)); chat('bad', 2); } updTop(); setTimeout(() => S && openMenu(), 700); };
+    const done = q => { S.incident = null; if (q >= 0.8) { pop('Gerettet!', 'good'); S.hype = Math.min(100, S.hype + 6); chat('good'); } else { pop('Autsch …', 'miss'); S.hype = Math.max(0, S.hype - 14); S.listeners = Math.max(0, Math.round(S.listeners * 0.95)); chat('bad', 2); } updTop(); later(700, () => S && !S.ended && openMenu()); };
     if (inc.id === 'pegel') startMini('mixer', { time: 8 + Math.min(4, S.round * 0.4) }, done);
     else if (inc.id === 'kabel') startMini('cables', { n: S.round > 4 ? 5 : 4, time: 20 }, done);
     else {
@@ -487,7 +493,7 @@
       box.querySelectorAll('.pads button').forEach(b => b.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); padPress(b.dataset.k); }));
     }
   }
-  function endMini(q) { const m = S.mini; if (!m || m.done) return; m.done = true; setTimeout(() => { if (!S) return; const b = U.$('shMini'); b.hidden = true; if (m.ctl) { m.ctl.destroy(); b.innerHTML = ''; } S.mini = null; m.cb(q); }, m.ctl ? 60 : 380); }
+  function endMini(q) { const m = S.mini; if (!m || m.done) return; m.done = true; setTimeout(() => { if (!S || S.mini !== m) return; const b = U.$('shMini'); b.hidden = true; if (m.ctl) { m.ctl.destroy(); b.innerHTML = ''; } S.mini = null; m.cb(q); }, m.ctl ? 60 : m.reveal ? 2600 : 380); }   // Antwort der Hörerfrage bleibt lesbar stehen
   function seqPress(k) {
     const m = S.mini; if (!m || m.kind !== 'seq' || m.done) return;
     const spans = U.$('mgSeq').children;
@@ -504,12 +510,19 @@
     if (k === m.lit) { m.hits++; AMC.Audio.sfx(U.pick(['tick', 'combo', 'cheer'])); U.$('mgCnt').textContent = m.hits; if (m.hits >= m.need) { AMC.Audio.sfx('perfect'); return endMini(1); } padLight(m); }
     else { AMC.Audio.sfx('miss'); m.hits = Math.max(0, m.hits - 1); U.$('mgCnt').textContent = m.hits; }
   }
-  function pickDone() { const m = S.mini, r = m.opts[m.sel]; const ok = r === m.right; U.$('shMini').querySelectorAll('.pick-o button').forEach((b, i) => b.classList.add(m.opts[i] === m.right ? 'right' : 'wrong')); AMC.Audio.sfx(ok ? 'perfect' : 'miss'); endMini(ok ? 1 : 0.3); }
+  function pickDone() {
+    const m = S.mini; if (!m || m.kind !== 'pick' || m.done || m.t < 0.45) return;
+    const r = m.opts[m.sel], ok = r === m.right, box = U.$('shMini');
+    box.querySelectorAll('.pick-o button').forEach((b, i) => { b.classList.add(m.opts[i] === m.right ? 'right' : 'wrong'); b.classList.toggle('sel', i === m.sel); b.disabled = true; });
+    const h = box.querySelector('.mg-help'); if (h) h.innerHTML = ok ? '✅ <b>Richtig!</b>' : '❌ Leider falsch – richtig ist <b>' + U.esc(D.RUBRICS[m.right] ? D.RUBRICS[m.right].icon + ' ' + D.RUBRICS[m.right].name : m.right) + '</b>';
+    AMC.Audio.sfx(ok ? 'perfect' : 'miss'); m.reveal = true; endMini(ok ? 1 : 0.3);
+  }
   function updMini(dt) {
     const m = S.mini; if (!m) return;
     if (m.ctl) { if (!m.done) m.ctl.update(dt); return; }
     if (m.done) return;
     m.t += dt;
+    if (m.t < 0.45) { m.tap = false; return; }   // derselbe Tastendruck, der das Menü bestätigt hat, zählt nicht schon als Antwort
     const press = m.tap || I.hit('ok') || I.hit('jump'); m.tap = false;
     if (m.kind === 'ring') {
       // Ring schrumpft von 1 auf 0 – Ziel bei 0,35
