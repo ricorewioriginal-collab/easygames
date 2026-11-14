@@ -77,6 +77,7 @@ interface Actions {
     fun page(rel: String) {}
     fun share(g: Game) {}
     fun open(url: String) {}
+    fun trailer(url: String) {}
     fun refresh() {}
     fun setAuto(on: Boolean) {}
     fun setWifiOnly(on: Boolean) {}
