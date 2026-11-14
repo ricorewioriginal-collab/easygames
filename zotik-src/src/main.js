@@ -1906,7 +1906,8 @@ function travelNodes(){const L=[],add=(n,x,y,o)=>L.push(Object.assign({n,x,y},o)
   add(13,5,14,{open:chOpen(13)});
   for(let n=1;n<=MAXCH;n++)add(n,5+(n-1)*9,n%2?60:36,{open:chOpen(n),done:chDone(n)});
   add(14,23,12,{open:chOpen(14),done:!!S.fl.pix_done});
-  for(const w of MW){const s=MWX().st(w.id);add(w.n,9.5+(w.link-1)*9,86,{open:MWX().unlocked(w),done:!!s.done,mw:w,prog:(s.m||0)+'/'+w.ms.length})}
+  /* Märchenwelten: mehrere hängen am selben Kapitel – gleichmäßig verteilt und versetzt in zwei Reihen, damit sich Inseln und Namen nicht überlappen */
+  const MWS=MW.slice().sort((a,b)=>a.link-b.link||a.n-b.n);MWS.forEach((w,i)=>{const s=MWX().st(w.id);add(w.n,12+i*(84/Math.max(1,MWS.length-1)),i%2?75:88,{open:MWX().unlocked(w),done:!!s.done,mw:w,prog:(s.m||0)+'/'+w.ms.length})});
   return L}
 function travelHTML(){const L=travelNodes(),P=n=>L.find(q=>q.n===n),sel=P(mState.tw)||P(curCh)||L[1];
   const seg=(a,b,lit,cl)=>a&&b?`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" class="${cl||''}${lit?' lit':''}"/>`:'';
