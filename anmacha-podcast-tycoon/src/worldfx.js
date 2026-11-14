@@ -202,7 +202,17 @@
     prop('campfire', 1.4, 66, -161, 0); W.glow(0xff9a30, 2.6, g, 66, 0.8, -161);
     screen(2, 8, 45, 9, -165.5, 0, true);
 
-    // --- 🏙️ Medienstadt: Video-Wände an den Kreuzungen
+    // --- 📻 Wellenburg (Gisela-Roadtrip): Hauptstraße, Skyline, Verkehr, Camping, Video-Wände
+    road(302, 428, -4.5, 4.5, 0x3a3d44); road(360.5, 369.5, -66, 66, 0x3a3d44);
+    [312, 326, 340, 354, 378, 392, 406, 420].forEach((x, i) => { tower(['skyscraper_a', 'building_b', 'skyscraper_c', 'building_d', 'skyscraper_b', 'building_a', 'skyscraper_a', 'building_e'][i], 9, x, -62, 0); if (x > 360) tower(['building_c', 'skyscraper_b', 'building_a', 'skyscraper_c'][i % 4], 9, x, 62, Math.PI); });
+    [-22, 12].forEach(z => tower('skyscraper_b', 8, 424, z, -Math.PI / 2));
+    [[328, 36, 0.3], [336, 42, -0.5], [344, 35, 1.1]].forEach(([x, z, r]) => { prop('tent', 3.4, x, z, r); solid(x, z, 2.8, 2.8, 2); });
+    prop('campfire', 1.5, 336, 34.5, 0); W.glow(0xff9a30, 2.8, g, 336, 0.8, 34.5);
+    prop('van', 4.4, 352, 42, Math.PI / 2); solid(352, 42, 4.4, 2.2, 2);
+    screen(0, 14, 395, 15, -29.6, 0, false); screen(1, 8, 374, 10, 10, Math.PI, true); screen(2, 7, 304, 9, 14, Math.PI / 2, true);
+    const wbP = loopPath([[306, -2.2], [420, -2.2], [423, 0], [420, 2.2], [306, 2.2], [303, 0]]), wbQ = loopPath([[367.2, -62], [367.2, 62], [365, 65], [362.8, 62], [362.8, -62], [365, -65]]);
+    for (let i = 0; i < [2, 3, 4][q]; i++) vehicle(CARS[(i + 2) % CARS.length], 4.2, i % 2 ? wbQ : wbP, i * 40, 7 + i);
+    
     [[52, 52, -Math.PI * 0.75], [-52, 52, Math.PI * 0.75], [52, -52, -Math.PI * 0.25], [-52, -52, Math.PI * 0.25], [83, 9, -Math.PI / 2], [-83, -9, Math.PI / 2]].forEach(([x, z, r], i) => { if (!C.solidAt(x, 9, z) && !C.solidAt(x, 0.6, z)) screen(i % 3, 7, x, 9, z, r, true); });
 
     // --- Menschen: Publikum vor Bühne und Arena, Spaziergänger in Stadt und Welten, Leute am Lagerfeuer
@@ -210,7 +220,7 @@
     const P = (x, z, beh, o) => list.push(Object.assign({ x, z, beh, seed: seed++ }, o || {}));
     for (let i = 0, n = N(14); i < n; i++) { const x = -10 + (i % 6) * 4 + U.rand(-0.8, 0.8), z = 172 + Math.floor(i / 6) * 3.4 + U.rand(-0.6, 0.6); P(x, Math.min(z, 181), 'cheer', { face: 0 }); }
     for (let i = 0, n = N(8); i < n; i++) { const x = -197 + (i % 4) * 7 + U.rand(-1, 1), z = -10 + Math.floor(i / 4) * 3; P(x, z, 'cheer', { face: Math.PI }); }
-    [[0, 160, 5, 30], [-170, 8, 4, 26], [165, 4, 4, 30], [40, -150, 3, 24]].forEach(([x, z, n, r]) => { for (let i = 0; i < N(n); i++) { const a = i / n * 6.28, px = x + Math.cos(a) * r * 0.5, pz = z + Math.sin(a) * r * 0.5; if (freeAt(px, pz)) P(px, pz, 'walk', { r }); } });
+    [[0, 160, 5, 30], [-170, 8, 4, 26], [165, 4, 4, 30], [40, -150, 3, 24], [380, 12, 5, 34]].forEach(([x, z, n, r]) => { for (let i = 0; i < N(n); i++) { const a = i / n * 6.28, px = x + Math.cos(a) * r * 0.5, pz = z + Math.sin(a) * r * 0.5; if (freeAt(px, pz)) P(px, pz, 'walk', { r }); } });
     [[64, -159], [68, -159.5]].forEach(([x, z]) => P(x, z, 'sit', { face: Math.atan2(66 - x, -161 - z) }));
     if (q) P(-50, 205.8, 'sit', { face: Math.atan2(2, -1.8) });
     for (let i = 0, n = N(12); i < n; i++) { const r = C.ROADS[i % 3], s = U.rand(-80, 80), side = i % 2 ? 7.2 : -7.2, x = i % 4 < 2 ? r + side : s, z = i % 4 < 2 ? s : r + side; if (freeAt(x, z)) P(x, z, 'walk', { r: 22 }); }
