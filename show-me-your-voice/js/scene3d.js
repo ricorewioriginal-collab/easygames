@@ -134,7 +134,8 @@ function makeChar(sp) {
   base.traverse(o => { if (!o.isSkinnedMesh && !o.isMesh) return;
     const n = o.name; if (PART.head.test(n) || PART.arms.test(n) || PART.legs.test(n) || PART.hat.test(n) || PART.cape.test(n)) drop.push(o); });
   drop.forEach(o => o.parent.remove(o));
-  const take = (cls, re) => { const src = KK[cls].scene; src.traverse(o => { if (!o.isSkinnedMesh || !re.test(o.name)) return;
+  const take = (cls, re) => { const src = KK[cls].scene; src.traverse(o => { if (!o.isMesh || !re.test(o.name)) return;
+    if (!o.isSkinnedMesh) { const at = bones[o.parent && o.parent.name]; if (at) { const m = o.clone(); at.add(m); } return; }   // Hut/Helm/Umhang hängen fest an einem Knochen
     const m = o.clone(); m.bind(new THREE.Skeleton(o.skeleton.bones.map(b => bones[b.name] || b), o.skeleton.boneInverses), o.bindMatrix);
     const host = bones.root ? bones.root.parent : base; host.add(m); }); };
   take(sp.head, PART.head); take(sp.arms, PART.arms); take(sp.legs, PART.legs);
@@ -163,9 +164,15 @@ const BODY_OF = { sakko: 'knight', glitzer: 'mage', lederjacke: 'rogue', hoodie:
 function specFor(id, lk) {
   if (NAMED[id]) return NAMED[id];
   const R = rngOf([...String(id)].reduce((a, c) => a * 31 + c.charCodeAt(0), 7)), pick = a => a[Math.floor(R() * a.length)], cls = KCLS.slice(0, 4);
-  lk = lk || {}; const body = lk.kkBody || BODY_OF[lk.outfit] || pick(cls);
+  lk = lk || {}; const body = BODY_OF[lk.outfit] || pick(cls);
   const HAIR = { lang: 'rogue', dutt: 'rogue', locken: 'rogue_hooded', kurz: 'knight', buzz: 'barbarian', undercut: 'mage', stachelig: 'knight' };
-  return { head: lk.kkHead || (FEM.test(id) ? pick(['rogue', 'rogue_hooded']) : /^p/.test(id) && HAIR[lk.hair] ? HAIR[lk.hair] : pick(['knight', 'barbarian', 'mage'])), body, arms: R() < 0.6 ? body : pick(cls), legs: pick(cls),
+  const ok = v => v && v !== 'auto' && v !== 'none' ? v : null, A = window.SMYVAvatar;
+  if (/^p/.test(id) && (ok(lk.kkHead) || ok(lk.kkBody) || ok(lk.kkArms) || ok(lk.kkLegs) || lk.kkHat || lk.kkCape || lk.kkC2 != null)) {
+    const sp = { head: ok(lk.kkHead) || HAIR[lk.hair] || 'knight', body: ok(lk.kkBody) || body, arms: ok(lk.kkArms) || body, legs: ok(lk.kkLegs) || body, hat: ok(lk.kkHat), cape: ok(lk.kkCape),
+      c1: col2d(lk.outfitColor) ?? OUTFIT[0], c2: A && Number.isFinite(lk.kkC2) ? parseInt(A.OPT.kkC2[lk.kkC2 % A.OPT.kkC2.length].slice(1), 16) : 0x222233, skin: lk.skin || 0 };
+    return sp;
+  }
+  return { head: (FEM.test(id) ? pick(['rogue', 'rogue_hooded']) : /^p/.test(id) && HAIR[lk.hair] ? HAIR[lk.hair] : pick(['knight', 'barbarian', 'mage'])), body, arms: R() < 0.6 ? body : pick(cls), legs: pick(cls),
     hat: lk.acc === 'hut' ? 'mage' : null, cape: R() < 0.2 ? pick(cls) : null, c1: col2d(lk.outfitColor) ?? OUTFIT[(lk.outfitColor || 0) % OUTFIT.length], c2: pick(OUTFIT), skin: lk.skin || 0 };
 }
 function col2d(i) { const A = window.SMYVAvatar, L = A && A.OPT.outfitColor; if (!L || !Number.isFinite(i)) return null; return parseInt(L[i % L.length].slice(1), 16); }

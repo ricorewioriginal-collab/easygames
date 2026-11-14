@@ -9,16 +9,27 @@
     outfitColor: ['#1d1f3a', '#5b2a86', '#e0245e', '#0aa4c9', '#f4b400', '#2e2e2e', '#f2f2f7', '#d4af37', '#c0c4cc', '#ff2d95'],   // ab 7: Belohnungen
     acc: ['keine', 'brille', 'sonnenbrille', 'ohrring', 'kopfhoerer', 'cap', 'hut'],
     beard: ['keiner', 'stoppeln', 'vollbart'],
-    piercing: ['keins', 'nase', 'ohr', 'beide']
+    piercing: ['keins', 'nase', 'ohr', 'beide'],
+    // 3D-Figur (KayKit-Teile, frei kombinierbar)
+    kkHead: ['auto', 'knight', 'mage', 'rogue', 'barbarian', 'rogue_hooded'], kkBody: ['auto', 'knight', 'mage', 'rogue', 'barbarian'],
+    kkArms: ['auto', 'knight', 'mage', 'rogue', 'barbarian'], kkLegs: ['auto', 'knight', 'mage', 'rogue', 'barbarian'],
+    kkHat: ['none', 'knight', 'mage', 'barbarian'], kkCape: ['none', 'knight', 'mage', 'rogue', 'barbarian'],
+    kkC2: ['#1d1f3a', '#5b2a86', '#e0245e', '#0aa4c9', '#f4b400', '#2e2e2e', '#f2f2f7']
   };
   const LABEL = {
     hair: { kurz: 'Kurz', undercut: 'Undercut', stachelig: 'Stachelig', lang: 'Lang', locken: 'Locken', dutt: 'Dutt', buzz: 'Raspel' },
     outfit: { hoodie: 'Hoodie', lederjacke: 'Lederjacke', tshirt: 'T-Shirt', glitzer: 'Glitzer-Top', sakko: 'Sakko' },
     acc: { keine: 'Keins', brille: 'Brille', sonnenbrille: 'Sonnenbrille', ohrring: 'Ohrringe', kopfhoerer: 'Kopfhörer', cap: 'Cap', hut: 'Hut' },
     beard: { keiner: 'Kein Bart', stoppeln: 'Stoppeln', vollbart: 'Vollbart' },
-    piercing: { keins: 'Keins', nase: 'Nasenring', ohr: 'Ohr-Tunnel', beide: 'Nase + Ohr' }
+    piercing: { keins: 'Keins', nase: 'Nasenring', ohr: 'Ohr-Tunnel', beide: 'Nase + Ohr' },
+    kkHead: { auto: 'Passend zur Frisur', knight: 'Scheitel, blond', mage: 'Wuschelkopf', rogue: 'Lange Haare', barbarian: 'Glatze mit Bart', rogue_hooded: 'Kapuze' },
+    kkBody: { auto: 'Passend zum Outfit', knight: 'Bühnen-Jacke', mage: 'Robe mit Kragen', rogue: 'Leder-Look', barbarian: 'Streetwear' },
+    kkArms: { auto: 'Passend', knight: 'Schulterpolster', mage: 'Weite Ärmel', rogue: 'Armstulpen', barbarian: 'Muskel-Look' },
+    kkLegs: { auto: 'Passend', knight: 'Stiefel', mage: 'Weite Hose', rogue: 'Schnürstiefel', barbarian: 'Fellstiefel' },
+    kkHat: { none: 'Kein Hut', knight: 'Helm', mage: 'Spitzhut', barbarian: 'Hörnerhelm' },
+    kkCape: { none: 'Kein Umhang', knight: 'Bühnen-Cape', mage: 'Langer Mantel', rogue: 'Kurzer Umhang', barbarian: 'Fell-Umhang' }
   };
-  const DEF = { skin: 1, hair: 'undercut', hairColor: 6, outfit: 'hoodie', outfitColor: 0, acc: 'keine', beard: 'keiner', piercing: 'keins' };
+  const DEF = { skin: 1, hair: 'undercut', hairColor: 6, outfit: 'hoodie', outfitColor: 0, acc: 'keine', beard: 'keiner', piercing: 'keins', kkHead: 'auto', kkBody: 'auto', kkArms: 'auto', kkLegs: 'auto', kkHat: 'none', kkCape: 'none', kkC2: 0 };
 
   function shade(hex, f) {
     const n = parseInt(hex.slice(1), 16);

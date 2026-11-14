@@ -168,6 +168,10 @@
   // ---------- Avatar ----------
   const ROWS = [['skin', 'Hautton', 'sw'], ['hair', 'Frisur', 'step'], ['hairColor', 'Haarfarbe', 'sw'], ['beard', 'Bart', 'step'],
     ['outfit', 'Outfit', 'step'], ['outfitColor', 'Outfit-Farbe', 'sw'], ['acc', 'Accessoire', 'step'], ['piercing', 'Piercing', 'step']];
+  // Mit 3D: KayKit-Figur aus Teilen zusammenstellen (Kopf, Oberteil, Arme, Beine, Hut, Umhang, Farben)
+  const ROWS3D = [['kkHead', 'Kopf & Haare', 'step'], ['skin', 'Hautton', 'sw'], ['kkBody', 'Oberteil', 'step'], ['outfitColor', 'Outfit-Farbe', 'sw'],
+    ['kkArms', 'Arme', 'step'], ['kkLegs', 'Beine', 'step'], ['kkC2', 'Hose & Schuhe', 'sw'], ['kkHat', 'Kopfbedeckung', 'step'], ['kkCape', 'Umhang', 'step']];
+  const rows = () => (window.SMYV3D && SMYV3D.isReady && SMYV3D.isReady() ? ROWS3D : ROWS);
   const edit = { look: null, mode: 'career', expr: 'neutral' };
   function openAvatar(mode) {
     edit.mode = mode; edit.look = Object.assign({}, AV.DEF, mode === 'edit' && save.profile ? save.profile.look : {});
@@ -175,9 +179,9 @@
     go('sAvatar');
     $('#avaName').value = mode === 'edit' || mode === 'free' || mode === 'prof' || mode === 'sing' ? (save.profile ? save.profile.name : '') : '';
   }
-  function drawAva() { $('#avaPrev').innerHTML = AV.svg(edit.look, edit.expr); }
+  function drawAva() { $('#avaPrev').innerHTML = AV.svg(edit.look, edit.expr); if (window.SMYV3D && SMYV3D.player) SMYV3D.player(edit.look); }
   RENDER.sAvatar = () => {
-    $('#avaRows').innerHTML = ROWS.map(([k, label, kind]) => {
+    $('#avaRows').innerHTML = rows().map(([k, label, kind]) => {
       if (kind === 'sw') return `<div class="optRow"><span>${label}</span><div class="sw">${AV.OPT[k].map((c, i) => { const rw = k === 'outfitColor' && colorReward(i), lock = rw && !S.unlocked(save, rw);
         return `<button type="button" data-k="${k}" data-v="${i}" style="background:${c}" aria-label="${label} ${i + 1}${rw ? ' · ' + rw.name + (lock ? ', gesperrt: ab ' + rw.need + ' Sternen' : '') : ''}" ${lock ? 'disabled class="lock" title="🔒 ab ' + rw.need + ' Sternen beim Vorsingen"' : ''} aria-pressed="${edit.look[k] === i}"></button>`; }).join('')}</div></div>`;
       return `<div class="optRow"><span>${label}</span><div class="stepper"><button class="btn sm" type="button" data-k="${k}" data-d="-1" aria-label="${label} zurück">◀</button><b id="av_${k}">${AV.LABEL[k][edit.look[k]]}</b><button class="btn sm" type="button" data-k="${k}" data-d="1" aria-label="${label} weiter">▶</button></div></div>`;
@@ -198,7 +202,7 @@
   });
   const colorReward = i => D.REWARDS.find(r => r.type === 'color' && r.idx === i);
   $('#avaRnd').onclick = () => {
-    ROWS.forEach(([k, , kind]) => { const l = AV.OPT[k]; edit.look[k] = kind === 'sw' ? Math.floor(Math.random() * l.length) : rnd(l); });
+    rows().forEach(([k, , kind]) => { const l = AV.OPT[k]; edit.look[k] = kind === 'sw' ? Math.floor(Math.random() * l.length) : rnd(l); });
     if (colorReward(edit.look.outfitColor) && !S.unlocked(save, colorReward(edit.look.outfitColor))) edit.look.outfitColor = Math.floor(Math.random() * 7);
     RENDER.sAvatar();
   };
