@@ -463,6 +463,10 @@ html.dev-kb .hm-emo [data-kb]::after { content: attr(data-kb); }
 .cut-face img { width: 100%; height: 100%; object-fit: cover; } .cut-face em { font-style: normal; font-size: 30px; }
 .cut-sub b { color: var(--or); font-size: 15px; } .cut-sub p { margin: 2px 0 0; font-size: 17px; line-height: 1.35; }
 .cut-skip { position: absolute; right: 16px; top: calc(11vh + 12px); appearance: none; border: 1px solid var(--line); background: rgba(0, 0, 0, .5); color: #fff; border-radius: 12px; padding: 6px 12px; font: inherit; cursor: pointer; }
+.cut.orig .cut-sub { box-shadow: 0 0 0 2px #ffd45a, 0 0 28px rgba(255, 212, 90, .45); }
+.cut.orig .cut-sub b::after { content: ' · 🎙️ Originalstimme'; color: #ffd45a; font-weight: 600; font-size: 12px; }
+.cut.orig .cut-face { box-shadow: 0 0 0 2px #ffd45a; animation: cutTalk .5s ease-in-out infinite alternate; }
+@keyframes cutTalk { to { transform: scale(1.06); } }
 @keyframes cutPop { from { transform: translateX(-50%) translateY(8px); } to { transform: translateX(-50%); } }
 .cutting #hud, .cutting .touch, .cutting #bubble { opacity: 0; pointer-events: none; transition: opacity .3s; }
 /* Gespräche mit Passanten */
