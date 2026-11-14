@@ -52,11 +52,8 @@ server.listen(0, '127.0.0.1', async () => {
     await p.evaluate(() => { const S = AMC.Play.state(); S.pl.x = 0; S.pl.z = 98; AMC.Worlds.ferry('ferry:hin'); });
     await p.waitForFunction(() => !AMC.Play.state().ferry, null, { timeout: 40000 }).catch(() => {});
     assert.ok(await p.evaluate(() => AMC.Play.state().pl.z > 120), 'Fähre bringt zur Festival-Insel');
-<<<<<<< HEAD
     // Optik: Tag und Nacht nach der Spieluhr, Wetter je Tag, Laternen nachts
     assert.ok(await p.evaluate(() => { const c = AMC.Career.state(), m0 = c.min, S = AMC.Play.state(); c.min = 13 * 60; AMC.Atmos.apply(); const day = S.env.sun.intensity; c.min = 23 * 60; AMC.Atmos.apply(); const night = S.env.sun.intensity, lit = S.lampGlow ? S.lampGlow.visible : true; c.min = m0; AMC.Atmos.apply(); return night < day && lit && AMC.Atmos.night() === false && ['sun', 'cloud', 'rain'].includes(AMC.Atmos.weather().id); }), 'Tag und Nacht, Wetter');
-=======
->>>>>>> origin/main
     // Etappe 5: Wochen-Event, goldene Kassetten, Rückschlag bei der Auswertung
     assert.ok(await p.evaluate(() => { const w = AMC.Events.week(); return w.name && w.need > 0 && AMC.Play.state().goldTapes.length >= 15; }), 'Wochen-Event und Kassetten in der Stadt');
     await p.evaluate(() => { const S = AMC.Play.state(), c = S.goldTapes[0]; S.pl.x = c.x; S.pl.z = c.z; S.pl.y = c.y - 1; });
