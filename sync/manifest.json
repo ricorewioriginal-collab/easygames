@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "eb5c67517240",
- "generated": "2026-11-14T17:45:40+00:00",
- "commit": "1a0ff6988ae74d0f83001219d6889b0eb42c58c3",
+ "version": "3224a9bb7603",
+ "generated": "2026-11-14T17:48:38+00:00",
+ "commit": "f1bc1d332e12cc87f6c16fc49edba3adc8181dbf",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10202,9 +10202,14 @@
    "h": "5740f60ba1fb9581f9be876e0315f004eb1fac36bde6b26cf445850fc6145cb1"
   },
   {
-   "p": "show-me-your-voice/vo/rico-intro-casting-0.mp3",
+   "p": "show-me-your-voice/vo/rico-intro-battle-0.mp3",
    "s": 150498,
    "h": "0693c9f33056a41760349b3009e949b4792e28e77f36b81a832df347bdfbb1a1"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-intro-casting-1.mp3",
+   "s": 158021,
+   "h": "18f537ff3308a611bc68bbe93a10f721b993445f13483501fe4176cb396afcb6"
   },
   {
    "p": "show-me-your-voice/vo/rico-intro-finale-0.mp3",
@@ -10215,6 +10220,16 @@
    "p": "show-me-your-voice/vo/rico-intro-halbfinale-0.mp3",
    "s": 94909,
    "h": "2d49435b4837ee4bb462c2b6f64c0fd68ff7879b741c6cb08b13523784e89ba6"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-intro-motto-0.mp3",
+   "s": 104940,
+   "h": "b6765648a1122d4e773041b6315a471449d98f9d0e7761c904de21df3843ab17"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-intro-recall-0.mp3",
+   "s": 111209,
+   "h": "2badd3b1f368446c6ecf5809debfab2a928879047fee906d89e90639f800382b"
   },
   {
    "p": "show-me-your-voice/vo/rico-out-0.mp3",
@@ -10644,7 +10659,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262491,
-   "h": "9a4233caf0964741c79e887324d6ce904e90c82c490c5836de2449ed254f9daa"
+   "h": "90996e85bc5880005e88dafaf4c77abd517458d5d4c452653c6109f6d192b9b8"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
