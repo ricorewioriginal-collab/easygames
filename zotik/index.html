@@ -329,8 +329,13 @@ body.touch #mbox{backdrop-filter:none!important;-webkit-backdrop-filter:none!imp
 @media(hover:hover){.mb button:hover{border-color:var(--gold);box-shadow:0 0 12px rgba(255,200,100,.25)}}
 .mb button:focus-visible,#tabs button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){#menu:not([hidden]),#menu:not([hidden]) #mbox,.ov:not([hidden]) .glass,#thelp:not([hidden]) .glass{animation:none}}
+
+/* Menü: Scrollbalken ausblenden (Scrollen per Rad, Wischen, rechtem Stick bleibt), Auswahlrahmen gleitet weich */
+#menu *{scrollbar-width:none}#menu *::-webkit-scrollbar{display:none}
+#menu .pfoc{transition:box-shadow .14s ease-out,transform .14s ease-out,background .14s}
+#mcont,#tabs,#mchar{scroll-behavior:smooth}
 </style>
-  <script type="module" crossorigin src="./assets/index-DFrj_FqE.js"></script>
+  <script type="module" crossorigin src="./assets/index-B2-skxJn.js"></script>
 </head>
 <body>
 <canvas id="cv"></canvas><div id="vig"></div><div id="hurt"></div><div id="fx"></div>
