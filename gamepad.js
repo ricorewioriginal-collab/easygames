@@ -124,7 +124,7 @@
     var SKEY = 'easygames-padstyle', CKEY = 'easygames-padconfirm', kindC = null, swapC = null, ownMap = false;
     function pref(k, v) { if (v === undefined) { try { return root.localStorage.getItem(k) || 'auto'; } catch (e) { return 'auto'; } } try { if (v && v !== 'auto') root.localStorage.setItem(k, v); else root.localStorage.removeItem(k); } catch (e) { } kindC = swapC = null; return v || 'auto'; }
     function detect() { var l; try { l = rawGet() || []; } catch (e) { l = []; } for (var i = 0; i < l.length; i++) { var id = l[i] && !notPad(l[i]) ? String(l[i].id || '') : ''; if (!id) continue; ownMap = !!M[id];
-      if (/054c|playstation|dualsense|dualshock|wireless controller/i.test(id)) return 'ps'; if (/057e|nintendo|pro controller|joy-?con|switch/i.test(id)) return 'switch'; return 'xbox'; } return 'xbox'; }
+      if (/xbox|045e|xinput/i.test(id)) return 'xbox'; if (/054c|playstation|dualsense|dualshock|wireless controller/i.test(id)) return 'ps'; if (/057e|nintendo|pro controller|joy-?con|switch/i.test(id)) return 'switch'; return 'xbox'; } return 'xbox'; }
     function kind() { if (kindC === null) { var s = pref(SKEY); kindC = /^(xbox|ps|switch)$/.test(s) ? s : detect(); } return kindC; }
     function swapAB() { if (swapC === null) { var c = pref(CKEY); swapC = c === 'right' || (c !== 'bottom' && kind() === 'switch' && (detect(), !ownMap)); } return swapC; }   // eigene Belegung (Windows-App) hat Vorrang
     ['gamepadconnected', 'gamepaddisconnected'].forEach(function (t) { root.addEventListener(t, function () { kindC = swapC = null; }); });
