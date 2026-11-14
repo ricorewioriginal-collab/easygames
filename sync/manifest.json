@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "957dee0f241b",
- "generated": "2026-11-14T22:21:31+00:00",
- "commit": "70a1fb2d42d1958b4c7f26f047ff2cc9b7696972",
+ "version": "ea2ce0a983d3",
+ "generated": "2026-11-14T22:30:53+00:00",
+ "commit": "668ed31e75713d791fe060c1a2576a4ba0323105",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9918,8 +9918,8 @@
   },
   {
    "p": "guides/zotik.json",
-   "s": 73785,
-   "h": "58180c93750247a3c62228bbdf10322bca3bd9bd0bb39d593cf99e7e7dd55c2a"
+   "s": 74186,
+   "h": "71625be13a6a2c986f4eebd1db46ad1c8a43796bee5adb31ca3e0014b0f819ff"
   },
   {
    "p": "heute.html",
@@ -12984,7 +12984,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262891,
-   "h": "2b56e4a04559d48c172b3348ed7487c1b3aea4e4824e231190c0c3e70e6a99b1"
+   "h": "453bcdf11001f008a86992407fce1f4bbcc9f8d0c4c07ba9bfb43a866cee5b69"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -15472,9 +15472,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-INqJRXVL.js",
-   "s": 2000745,
-   "h": "bd938766e603ee52c73a7f869e29aa90fab53aa9e70d5f206af1cef0335b20f3"
+   "p": "zotik/assets/index-CZBkM33N.js",
+   "s": 2019273,
+   "h": "7b18f40591aca46e4e06e1777746e4f618e7524687c7ecbf09cd57a225cbbdf2"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -15494,7 +15494,7 @@
   {
    "p": "zotik/index.html",
    "s": 76145,
-   "h": "31a585af7f2164fbbbeeb4454ba978f4d6d48d103a8f4f4037f6a2c473e3e512"
+   "h": "95a78e439d517a859699a608ea4a7f527e8814566666c94a72b321f391284da6"
   },
   {
    "p": "zotik/manifest.webmanifest",
