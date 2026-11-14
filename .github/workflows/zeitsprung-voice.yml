@@ -4,7 +4,7 @@ on:
     branches-ignore: [main]
     paths:
       - 'zeitsprung/vo/lines.json'
-      - 'tools/zeitsprung-voice/**'
+      - 'tools/zeitsprung-voice/gen-edge.py'
       - '.github/workflows/zeitsprung-voice.yml'
   workflow_dispatch:
 permissions:
