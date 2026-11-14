@@ -153,8 +153,22 @@
     [[322, 30, 30, 0.2], [348, 30, 30, 0.2]].forEach(([x, z, d]) => B(0.2, 1, d, 0x8a6a48, x, 0.6, z + 10, false)); sign(['🏕️ Camping Wellenburg'], 335, 3.4, 26, 7, 0, '#6cff8a'); C.addStation('world:camping', '🏕️ Camping: Nacht mit Gisela', 335, 28, 3);
     B(14, 5, 10, 0x6a3a5a, 400, 2.5, 35, true); sign(['💿 Plattenladen Rille'], 400, 4.3, 29.9, 8, 0, '#ff3da8'); C.addStation('world:platten', '💿 Plattenladen Rille', 400, 27.5, 2.8);
     sign(['📻 Willkommen in Wellenburg', 'Partnerstadt der Medienstadt'], 304, 5, -8, 9, -Math.PI / 2, '#ffd23f');
+    // --- Arcade-Stände in den Welten: dieselben 3D-Spiele wie im Arcade-Menü (arcade2.js), Station 'arc:<id>'
+    ARC_SPOTS.forEach(([id, x, z]) => {
+      const gm = AMC.Arcade && AMC.Arcade.GAMES.find(q => q.id === id); if (!gm) return;
+      const col = { bowl: 0xff3da8, hoop: 0xff8a1e, kart: 0x3aa7a0, stack: 0xffd23f, goal: 0x6cff8a }[id] || 0xa46bff;
+      B(6, 0.25, 4.4, 0x24202e, x, 0.12, z, false);
+      B(1.3, 2.2, 1.0, 0x1a1428, x - 1.2, 1.35, z - 1.2, true); B(1.0, 0.7, 0.05, col, x - 1.2, 1.75, z - 0.68, false, { e: col, ei: 1.1 }); B(1.36, 0.36, 1.06, col, x - 1.2, 2.6, z - 1.2, false, { e: col, ei: 0.7 }); B(1.0, 0.1, 0.4, 0x111111, x - 1.2, 1.15, z - 0.55, false);
+      B(1.3, 2.2, 1.0, 0x1a1428, x + 1.2, 1.35, z - 1.2, true); B(1.0, 0.7, 0.05, col, x + 1.2, 1.75, z - 0.68, false, { e: col, ei: 1.1 }); B(1.36, 0.36, 1.06, col, x + 1.2, 2.6, z - 1.2, false, { e: col, ei: 0.7 }); B(1.0, 0.1, 0.4, 0x111111, x + 1.2, 1.15, z - 0.55, false);
+      sign([gm.icon + ' ' + gm.name], x, 3.7, z - 1.6, 5.6, 0, '#' + col.toString(16).padStart(6, '0'));
+      W.glow(col, 2.5, g, x, 2.2, z);
+      C.addStation('arc:' + id, '🕹️ ' + gm.icon + ' ' + gm.name + ' spielen', x, z + 1.2, 2.6);
+    });
   };
 
+  // Arcade-Stände: [Spiel, x, z] – Insel, Hafen, Wellenburg, Berg, RicoReWi-Universum
+  const ARC_SPOTS = [['bowl', -50, 180], ['hoop', 170, 15], ['kart', 357, 50], ['stack', 52, -195], ['goal', -195, 10]];
+  WO.ARC_SPOTS = ARC_SPOTS;
   // ------------------------------------------------------------------ Bewegung: Riesenrad, Leuchtturm, Fähre
   WO.update = function (dt) {
     const S = C && C.S; if (!V || V.S !== S) return;

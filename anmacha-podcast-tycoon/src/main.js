@@ -133,9 +133,10 @@
     s.o.onKey = () => { if (I.hit('swap')) { sw(); return true; } return false; };
     s.el.querySelectorAll('[data-a]').forEach(b => b.onclick = () => startArcade(b.dataset.a));
   }
-  function startArcade(id) {
+  /** from: Station in der Welt ('arc:<id>') – danach geht es dorthin zurück */
+  function startArcade(id, from) {
     UI.closeAll(); stopAll(); G.mode = 'arcade'; AMC.Studio.leave(); AMC.Audio.music('party'); UI.showTouch(id === 'jump');
-    AMC.Arcade.start(id, G.host, next => { UI.showTouch(false); if (next === 'again') startArcade(id); else { backToMenu(); if (next === 'arcade') arcadeMenu(); } });
+    AMC.Arcade.start(id, G.host, next => { UI.showTouch(false); if (next === 'again') startArcade(id, from); else if (from) { hub(from); if (next === 'arcade') arcadeMenu(); } else { backToMenu(); if (next === 'arcade') arcadeMenu(); } });
   }
   G.arcade = startArcade;
   function walkStudio() {
@@ -188,6 +189,7 @@
       if (id.startsWith('sender:') && AMC.Career) AMC.Career.mark('tour');
       if (id.startsWith('sender:')) { const sl = id.slice(7); UI.closeAll(); stopAll(); G.mode = 'home'; UI.showTouch(true); AMC.Audio.music('menu'); AMC.Home.station(sl, G.host, back); return; }
       if (id.startsWith('room:')) { const k = +id.slice(5); UI.closeAll(); stopAll(); G.mode = 'home'; UI.showTouch(true); AMC.Audio.music('menu'); AMC.Home.room(k, G.host, back); return; }
+      if (id.startsWith('arc:')) { UI.closeAll(); return startArcade(id.slice(4), id); }
       if (id.startsWith('bus:')) return AMC.Transit.menu(id);
       if (id.startsWith('place:')) return AMC.District.open(id.slice(6));
       if (id.startsWith('world:')) return AMC.Worlds.open(id.slice(6));

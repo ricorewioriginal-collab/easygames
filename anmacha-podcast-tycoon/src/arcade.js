@@ -289,6 +289,8 @@
     fan: s => Math.round(s / 15)
   };
   const IMPL = { flap: FLAP, jump: JUMP, run: RUN };
+  // Erweiterungen (arcade2.js) hängen sich hier an
+  AR.IMPL = IMPL; AR.kit = { M, addFig, camDist, skyTex, logoBoard, goldMic, building, best };
 
   // ------------------------------------------------------------------ Rahmen: Start, Oberfläche, Ende
   AR.start = function (id, host, onClose) {
@@ -297,7 +299,7 @@
     const sc = new T.Scene(), g = new T.Group(); sc.add(g);
     sc.add(new T.HemisphereLight(0xfff1e0, 0x404058, 1.0));
     const sun = new T.DirectionalLight(0xffffff, 1.1); sun.position.set(5, 12, 8); sc.add(sun);
-    R = { id, G, host, other, sc, g, onClose, phase: 'ready', score: 0, t: 0, tap: false, swipe: null };
+    R = { id, G, host, other, sc, g, onClose, phase: 'ready', score: 0, t: 0, tap: false, swipe: null, hold: 0 };
     R.say = say; R.crash = crash; R.finish = finish;
     G.build(R);
     W.particles.attach(sc);
@@ -311,10 +313,11 @@
     el.querySelector('#arcPause').onclick = () => AMC.Game.pause && AMC.Game.pause();
     const tz = el.querySelector('#arcTouch'); let st = null;
     if (id === 'jump') tz.hidden = true;
-    tz.addEventListener('pointerdown', e => { e.preventDefault(); st = { x: e.clientX, y: e.clientY, done: false }; if (id === 'flap') R && (R.tap = true); });
+    tz.addEventListener('pointerdown', e => { e.preventDefault(); st = { x: e.clientX, y: e.clientY, done: false }; if (R && (id === 'flap' || G.tapDown)) R.tap = true; if (R && G.steer) R.hold = e.clientX < root.innerWidth / 2 ? -1 : 1; });
     tz.addEventListener('pointermove', e => { if (!st || st.done || !R) return; const dx = e.clientX - st.x, dy = e.clientY - st.y; if (Math.hypot(dx, dy) > 28) { st.done = true; R.swipe = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'); } });
-    tz.addEventListener('pointerup', () => { if (st && !st.done && R && id === 'run') R.tap = true; st = null; });
-    msg(id === 'jump' ? 'Lauf bis zu Gisela!' : (I.device === 'touch' ? 'Tippen' : I.device === 'pad' ? AMC.glyph('a') : 'Leertaste') + ' zum Start');
+    tz.addEventListener('pointerup', () => { if (st && !st.done && R && id === 'run') R.tap = true; st = null; if (R) R.hold = 0; });
+    tz.addEventListener('pointercancel', () => { st = null; if (R) R.hold = 0; });
+    msg(G.intro ? G.intro() : id === 'jump' ? 'Lauf bis zu Gisela!' : (I.device === 'touch' ? 'Tippen' : I.device === 'pad' ? AMC.glyph('a') : 'Leertaste') + ' zum Start');
     if (id === 'jump') setTimeout(() => msg(''), 1800);
     U.$('arcHelp').innerHTML = G.help();
     setTimeout(() => say('🎙️ ' + D.HOSTS[host].name + ': „' + U.pick(LINES.start[host]) + '“'), 300);
@@ -358,10 +361,11 @@
     R.t += dt;
     R.G.update(R, dt);
     R.tap = false;
-    if (R.phase === 'play' && R.id !== 'jump' && R.t > 0.2) msg('');
+    if (R.phase === 'play' && R.id !== 'jump' && R.t > 0.2 && !R.keepMsg) msg('');
+    if (R.G.hud) { const h = R.G.hud(R); if (h !== R.hudTxt) { R.hudTxt = h; msg(h); } }
     if (R.fig) R.fig.update(dt); if (R.mate) R.mate.update(dt);
     W.particles.update(dt);
-    const sEl = U.$('arcScore'); if (sEl) { const v = U.fmt(R.score); if (sEl.textContent !== v) sEl.textContent = v; }
+    const sEl = U.$('arcScore'); if (sEl) { const v = R.G.score ? R.G.score(R) : U.fmt(R.score); if (sEl.textContent !== v) sEl.textContent = v; }
     if (R.id === 'jump') { const h = U.$('arcHelp'); if (h && R.t > 6 && !h.hidden) h.hidden = true; const lv = '❤️'.repeat(Math.max(0, R.lives)) + ' · 🎙️ ' + R.notes; if (sEl && R.phase === 'play') sEl.textContent = U.fmt(R.score) + ' · ' + lv; }
   };
   AR.render = function () { if (R) W.renderer.render(R.sc, W.camera); };
