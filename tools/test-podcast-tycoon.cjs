@@ -238,6 +238,30 @@ server.listen(0, '127.0.0.1', async () => {
     await p.evaluate(() => AMC.Game.arcade('jump')); await p.waitForTimeout(1200);
     await p.keyboard.down('KeyD'); await p.waitForFunction(() => AMC.Arcade.state().p.x > 0.3, null, { timeout: 8000 }).catch(() => {}); await p.keyboard.up('KeyD');
     assert.ok(await p.evaluate(() => { const r = AMC.Arcade.state(); return r && r.id === 'jump' && r.p.x > 0.3 && r.plats.length > 10 && r.goal > 100; }), 'Jump & Run läuft');
+    // Kein Durchfallen bei Handy-Bildraten: gleiche Sprunghöhe, Landen auf jeder Plattform (auch nach tiefem Fall und knappem Sprung)
+    const jr = await p.evaluate(() => {
+      const r = AMC.Arcade.state(), G = r.G, p = r.p, I = AMC.Input, out = [], keep = { ...p }, lives = r.lives;
+      const mx = I.move.x, jh = I.jumpHeld; I.move.x = 0; I.jumpHeld = true;
+      const run = (dt, sec) => { for (let t = 0; t < sec; t += dt) { G.update(r, dt); r.tap = false; } };
+      for (const fps of [120, 60, 30, 20, 15, 10]) {
+        const dt = 1 / fps;
+        Object.assign(p, { x: 1, y: 0, vx: 0, vy: 0, ground: true, coyote: 0.1, buf: 0 }); r.inv = 9;
+        let top = 0; r.tap = true; for (let t = 0; t < 1.2; t += dt) { G.update(r, dt); r.tap = false; top = Math.max(top, p.y); }
+        if (top < 1.95) out.push(fps + ' fps: Sprunghöhe ' + top.toFixed(2));
+        for (const s of r.plats.filter(q => q.float)) {
+          const xm = (s.x0 + s.x1) / 2;
+          for (const [y0, vy] of [[s.y + 9, 0], [s.y - 0.4, 0.5]]) {   // tiefer Fall / Füße knapp in der Kiste
+            Object.assign(p, { x: xm, y: y0, vx: 0, vy, ground: false, coyote: 0, buf: 0 }); run(dt, 1.6);
+            if (!(p.ground && Math.abs(p.y - s.y) < 1e-6)) out.push(fps + ' fps: durchgefallen bei x=' + xm.toFixed(1) + ' (y=' + p.y.toFixed(2) + ')');
+          }
+          const base = Math.max(...r.plats.filter(q => q !== s && q.y < s.y && q.x1 > s.x0 - 3 && q.x0 < s.x1 + 3).map(q => q.y));   // höchste Absprungfläche daneben
+          if (fps === 60 && s.y - base > 1.95) out.push('Plattform unerreichbar: ' + s.y.toFixed(2));
+        }
+      }
+      Object.assign(p, keep, { y: 0, vy: 0 }); r.lives = lives; r.inv = 0; I.move.x = mx; I.jumpHeld = jh;
+      return out;
+    });
+    assert.deepEqual(jr, [], 'Jump & Run: ' + jr.slice(0, 5).join('; '));
     await p.evaluate(() => AMC.Game.arcade('run')); await p.waitForTimeout(1200);
     await p.keyboard.press('Space'); await p.waitForFunction(() => AMC.Arcade.state().phase !== 'ready', null, { timeout: 5000 }); await p.waitForTimeout(400); await p.evaluate(() => AMC.Input.fire('left')); await p.waitForFunction(() => AMC.Arcade.state().p.lane === 0, null, { timeout: 5000 }).catch(() => {});
     assert.ok(await p.evaluate(() => { const r = AMC.Arcade.state(); return r && r.id === 'run' && r.phase !== 'ready' && r.p.z < 0 && r.p.lane === 0; }), 'Endlos-Läufer rennt');
