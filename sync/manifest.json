@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5ff006dcf507",
- "generated": "2026-11-14T20:27:51+01:00",
- "commit": "761368b0bc2fdf7fad6739d2114e860f2143f416",
+ "version": "92f1e069b3a5",
+ "generated": "2026-11-14T19:33:57+00:00",
+ "commit": "09889753361e315a3a6bcd15f4ce2b465a2167d6",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2873,8 +2873,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/rico-live.js",
-   "s": 21501,
-   "h": "594a8a37d00f982f13a5b504f6b091d904965cbdfa0ff0789117dd64e31fea7f"
+   "s": 21577,
+   "h": "809e049deae545f23d13c97dd169436d31cd5f96c7692e7951d272385d6370d2"
   },
   {
    "p": "anmacha-podcast-tycoon/src/rooms.js",
@@ -10694,7 +10694,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262492,
-   "h": "25a6906092d8bf989e6a15d79cde3b789593a293a47efa9ff1a1bd7e4aafc9b9"
+   "h": "173bce4809719c96921896cbb4ae81833cdb2a536b433a8d154aaa98554d8cbf"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

@@ -27,14 +27,14 @@
     const wall = mk(new T.PlaneGeometry(9.6, 4.8), basic(0xffffff, { map: tex })); wall.position.set(-4.4, 3.4, 0); wall.rotation.y = Math.PI / 2; g.add(wall);
     const frame = mk(new T.BoxGeometry(0.3, 5.3, 10.1), new T.MeshStandardMaterial({ color: 0x14121c, roughness: 0.4, metalness: 0.6 })); frame.position.set(-4.6, 3.4, 0); g.add(frame);
     // Ringlicht auf Stativ
-    const ring = mk(new T.TorusGeometry(0.62, 0.07, 12, 48), basic(0xfff4e0)); ring.position.set(1.6, 2.05, 1.5); ring.rotation.y = Math.PI / 2 + 0.5; g.add(ring);
-    const pole = mk(new T.CylinderGeometry(0.03, 0.03, 1.6, 8), new T.MeshStandardMaterial({ color: 0x222222, metalness: 0.8, roughness: 0.3 })); pole.position.set(1.6, 1.25, 1.5); g.add(pole);
+    const ring = mk(new T.TorusGeometry(0.62, 0.07, 12, 48), basic(0xfff4e0)); ring.position.set(-1.3, 2.05, 2.7); ring.rotation.y = Math.PI / 2 - 0.9; g.add(ring);
+    const pole = mk(new T.CylinderGeometry(0.03, 0.03, 1.6, 8), new T.MeshStandardMaterial({ color: 0x222222, metalness: 0.8, roughness: 0.3 })); pole.position.set(-1.3, 1.25, 2.7); g.add(pole);
     const phone = mk(new T.BoxGeometry(0.05, 0.32, 0.17), basic(0x111111)); phone.position.copy(ring.position); phone.rotation.y = ring.rotation.y; g.add(phone);
-    W.glow(0xfff4e0, 2.6, g, 1.6, 2.05, 1.5);
+    W.glow(0xfff4e0, 2.6, g, -1.3, 2.05, 2.7);
     // Lichtkegel (sichtbar) und echte Spots
     const beams = [];
     [[LOOK.c[0], -2.8, 3.4], [LOOK.c[1], -2.8, -3.4], [LOOK.c[2], 3.6, 0]].forEach(([c, x, z], i) => {
-      const cone = mk(new T.ConeGeometry(1.6, 9, 32, 1, true), basic(c, { transparent: true, opacity: 0.16, depthWrite: false, blending: T.AdditiveBlending, side: T.DoubleSide }));
+      const cone = mk(new T.ConeGeometry(1.6, 9, 32, 1, true), basic(c, { transparent: true, opacity: 0.11, depthWrite: false, blending: T.AdditiveBlending, side: T.DoubleSide }));
       cone.geometry.translate(0, -4.5, 0); const pivot = new T.Group(); pivot.position.set(x, 8.6, z); pivot.add(cone); g.add(pivot);
       const head = mk(new T.CylinderGeometry(0.25, 0.32, 0.5, 12), new T.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.8, roughness: 0.3 })); head.position.copy(pivot.position); g.add(head);
       W.glow(c, 2.2, g, x, 8.4, z);
@@ -92,13 +92,14 @@
   const R = Math.PI / 2;   // Blick nach +x (zum Publikum)
   const PARK = [-16, 0.2, 30];  // Stadtpark, neben dem Brunnen (Publikum Richtung Osten)
   const SCENES = {
-    rico: { t: '📱 Ricos Live-Show', at: [-192, 0.12, -2], look: { c: [0xff3da8, 0x3dd6ff, 0xffd45a, 0x7a2bd8], title: 'RicoReWi', sub: '× AnMaCha – Der Podcast', hot: 300, chat: ['💬 „hallo?“  💬 „wer ist live?“', '💬 „Rico, mach lauter!“  💬 „Anmacher 🔥“'], view: 4 },
+    rico: { t: '📱 Ricos Live-Show', at: [-182, 0.12, 8],   // beim Live-Studio, frei von Straße (z ±2,2), Laternen und Bänken
+      look: { c: [0xff3da8, 0x3dd6ff, 0xffd45a, 0x7a2bd8], title: 'RicoReWi', sub: '× AnMaCha – Der Podcast', hot: 300, chat: ['💬 „hallo?“  💬 „wer ist live?“', '💬 „Rico, mach lauter!“  💬 „Anmacher 🔥“'], view: 4 },
       shots: () => [
-        { cam: [X + 18, 10, Z + 12], to: [X + 9, 3.4, Z + 4.5], look: [X, 2, Z], dur: 6, fx, pose: () => { place('rico', -0.4, 0, R, 'arms'); place('andrew', 6.2, 1.3, -R, 'idle'); place('marco', 6.2, -1.3, -R, 'idle'); confetti(2, 6); AMC.Audio.sfx('whoosh'); },
+        { cam: [X + 18, 10, Z + 12], to: [X + 9, 3.4, Z + 4.5], look: [X, 2, Z], dur: 6, fx, pose: () => { place('rico', -0.4, 0, R, 'arms'); place('andrew', 4.8, 1.3, -R, 'idle'); place('marco', 4.8, -1.3, -R, 'idle'); confetti(2, 6); AMC.Audio.sfx('whoosh'); },
           lines: [['rico', 'Licht an, Kamera läuft – willkommen im RicoReWi-Universum!', clip(1)]] },
         { cam: [X + 3.6, 2.3, Z + 1.9], to: [X + 2.7, 2.05, Z + 1], look: [X - 0.4, 1.75, Z], dur: 7, fx, pose: () => place('rico', -0.4, 0, R + 0.25, 'idle'),
           lines: [['rico', 'Andrew, Marco: Ich hab euch ein Tool gebaut, das eure Hörer live zählt. Gerade sind es … vier.', clip(2)]] },
-        { cam: [X + 1.5, 2.4, Z + 4.2], to: [X + 2.4, 2.2, Z + 3.4], look: [X + 6.2, 1.5, Z], dur: 6, fx, pose: () => { place('andrew', 6.2, 1.3, -R, 'yes'); place('marco', 6.2, -1.3, -R, 'idle'); },
+        { cam: [X + 1.6, 2.1, Z + 2.6], to: [X + 2.2, 2, Z + 2], look: [X + 4.8, 1.5, Z], dur: 6, fx, pose: () => { place('andrew', 4.8, 1.3, -R, 'yes'); place('marco', 4.8, -1.3, -R, 'idle'); },
           lines: [['marco', 'Vier? Einer davon bin ich. Mit meinem Zweit-Account.'], ['andrew', 'Und meine Mutter. Auf drei Handys.']] },
         { cam: [X + 7, 4.5, Z - 6], to: [X + 5, 2.6, Z - 3.6], look: [X - 0.4, 2, Z], dur: 7, fx: dt => { fx(dt); if (set) set.goal = 400; }, pose: () => { place('rico', -0.4, 0, R, 'arms'); if (set) set.rain = 9; AMC.Audio.sfx('cheer'); },
           lines: [['rico', 'Kein Stress. Aus vier werden vierhundert, wenn ihr euch was traut.', clip(3)]] },
