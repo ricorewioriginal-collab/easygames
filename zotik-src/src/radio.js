@@ -115,5 +115,5 @@ export function createRadio({ ducking, muteMusic, getVolOk }) {
 
   if (cfg.on) { draw(); const resume = () => { removeEventListener('pointerdown', resume, true); if (cfg.on) set(true); }; addEventListener('pointerdown', resume, true); muteMusic(true); }
   else draw();
-  return { open, close, set, get on() { return cfg.on; } };
+  return { open, close, set, pick, get on() { return cfg.on; } };
 }

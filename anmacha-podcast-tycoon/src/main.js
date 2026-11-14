@@ -76,6 +76,9 @@
       mi('koop', '🌐', 'Online-Koop', 'Zu zweit auf zwei Geräten: Andrew & Marco – per Link, Code oder QR') +
       mi('walk', '🚶', 'Studio betreten', 'Zu Fuß durchs Studio: Pult, Rico, Einrichten, Musikshop') +
       (AMC.Events ? mi('week', AMC.Events.week().icon, 'Woche ' + AMC.Events.week().n + ': ' + AMC.Events.week().name, AMC.Events.week().goal + ' ' + AMC.Events.week().have + '/' + AMC.Events.week().need + ' · 📼 ' + AMC.Events.tapes() + '/20 Kassetten') : '') +
+      (AMC.Acts ? mi('acts', '📖', 'Story-Akte', AMC.Acts.state().done ? '🏆 Alle Akte geschafft' : AMC.Acts.state().title + ' · ' + U.fmt(AMC.Acts.state().have) + '/' + U.fmt(AMC.Acts.state().need)) : '') +
+      (AMC.Guests ? mi('guests', '🎙️', 'Studiogäste', (AMC.Guests.today() ? 'Heute: ' + AMC.Guests.today().name : 'Noch kein Gast für heute') + ' · ' + AMC.Guests.list().filter(g => g.open).length + '/' + AMC.Guests.ROSTER.length + ' freigeschaltet') : '') +
+      (AMC.Feed ? mi('app', '📱', 'AnMaCha-App', U.fmt(AMC.Feed.followers()) + ' Follower · Trend ' + AMC.Feed.trend().tag) : '') +
       mi('friends', '❤️', 'Freundebuch', (AMC.Social ? Object.keys((Save.data.social || {}).f || {}).length + ' Bekanntschaften · 💖 ' + AMC.Social.superfans() + ' Superfans' : '')) +
       mi('home', '🏠', 'Zuhause', 'Andrews Wohnung & Marcos Haus · ' + ['andrew', 'marco'].map(id => D.HOSTS[id].name + ' ' + Math.round(AMC.Home.mood(id) * 100) + ' % fit').join(' · ')) +
       mi('arcade', '🕹️', 'Arcade: 3D-Minispiele', AMC.Arcade.GAMES.map(g => g.name).join(' · ')) +
@@ -98,7 +101,7 @@
     el.querySelector('#mHost').onclick = swapHost;
     s.o.onKey = () => { if (I.hit('swap')) { swapHost(); return true; } return false; };
     updHost();
-    const go = { resume, arcade: arcadeMenu, walk: walkStudio, friends: () => AMC.Social.book(), week: () => AMC.Events.panel(), home: homeMenu, music: () => AMC.Home.musicShop(), studio: studioEdit, story: storyMenu, live: startLive, jagd: () => startCity('jagd'), race: () => startCity('race'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
+    const go = { resume, arcade: arcadeMenu, walk: walkStudio, friends: () => AMC.Social.book(), guests: () => AMC.Guests.panel(), acts: () => AMC.Acts.panel(), app: () => AMC.Feed.panel(), week: () => AMC.Events.panel(), home: homeMenu, music: () => AMC.Home.musicShop(), studio: studioEdit, story: storyMenu, live: startLive, jagd: () => startCity('jagd'), race: () => startCity('race'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
     el.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go[b.dataset.go]());
     G.menu = s;
   }
@@ -377,7 +380,7 @@
     const s = UI.open('<div class="panel glass"><header><h2>⚙️ Einstellungen</h2><button class="btn small" data-nav id="eBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
       rng('sMus', '🎵 Spielmusik', st.music) + rng('sSfx', '🔊 Effekte', st.sfx) + rng('sRad', '📻 Radio & Podcast', st.radio) +
       '<label class="set"><span>🖥️ Grafik</span><select data-nav id="sQ"><option value="auto">Automatisch</option><option value="low">Niedrig (schnell)</option><option value="mid">Mittel</option><option value="high">Hoch</option></select></label>' +
-      tog('sInv', '🎥 Kamera umkehren (oben/unten)', st.invert) + tog('sShake', '📳 Bildschirm wackeln', st.shake) + tog('sSub', '💬 Sprechblasen in der Aufnahme', st.subtitles !== false) +
+      tog('sInv', '🎥 Kamera umkehren (oben/unten)', st.invert) + tog('sShake', '📳 Bildschirm wackeln', st.shake) + tog('sSub', '💬 Sprechblasen in der Aufnahme', st.subtitles !== false) + tog('sVoice', '🗣️ Stimmen in Zwischensequenzen', st.voice !== false) +
       '<label class="set"><span>🎯 Kamera-Empfindlichkeit</span><input type="range" min="0.4" max="2" step="0.1" value="' + st.sens + '" data-nav id="sSens"></label>' +
       '<button type="button" class="btn danger" data-nav id="sReset">🗑️ Spielstand zurücksetzen</button></div>', { back: () => UI.close(s) });
     const el = s.el, $ = id => el.querySelector('#' + id);
@@ -389,8 +392,8 @@
     $('sQ').value = st.quality; $('sQ').onchange = e => { st.quality = e.target.value; Save.save(); UI.toast('🖥️ Grafik wird beim nächsten Start übernommen.'); };
     $('sQ').addEventListener('keydown', e => { if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') e.preventDefault(); });
     s.o.onKey = () => { const f = s.focus; if (f && f.id === 'sQ' && (I.hit('left') || I.hit('right') || I.hit('ok'))) { const o = ['auto', 'low', 'mid', 'high'], i = (o.indexOf(f.value) + (I.hit('left') ? 3 : 1)) % 4; f.value = o[i]; f.onchange({ target: f }); AMC.Audio.sfx('tick'); return true; } return false; };
-    const t = (id, key) => $(id).onclick = () => { st[key] = !(key === 'subtitles' ? st[key] !== false : st[key]); $(id).classList.toggle('on', key === 'subtitles' ? st[key] !== false : st[key]); $(id).querySelector('i').textContent = $(id).classList.contains('on') ? 'An' : 'Aus'; Save.save(); };
-    t('sInv', 'invert'); t('sShake', 'shake'); t('sSub', 'subtitles');
+    const t = (id, key) => $(id).onclick = () => { const dflt = key === 'subtitles' || key === 'voice'; st[key] = !(dflt ? st[key] !== false : st[key]); $(id).classList.toggle('on', dflt ? st[key] !== false : st[key]); $(id).querySelector('i').textContent = $(id).classList.contains('on') ? 'An' : 'Aus'; Save.save(); };
+    t('sInv', 'invert'); t('sShake', 'shake'); t('sSub', 'subtitles'); t('sVoice', 'voice');
     $('sReset').onclick = () => UI.confirm('Wirklich den ganzen Spielstand löschen?', () => { Save.reset(); G.host = 'andrew'; UI.closeAll(); hub(); UI.toast('Spielstand zurückgesetzt.'); });
   }
   function controls() {

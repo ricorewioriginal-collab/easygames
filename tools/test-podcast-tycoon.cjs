@@ -20,10 +20,11 @@ server.listen(0, '127.0.0.1', async () => {
     await p.goto(url);
     await p.waitForFunction(() => document.getElementById('loading').classList.contains('done'), null, { timeout: 180000 });
     assert.match(await p.title(), /AnMaCha – Der Podcast/);
+    await p.evaluate(() => { AMC.Save.data.acts = { cur: 0, seen: { 0: 1 }, w: {} }; });   // Story-Szenen nicht automatisch starten (eigener Test unten)
     await p.click('#tStart'); await p.waitForFunction(() => AMC.Game.mode === 'play' && AMC.Play.state() && AMC.Play.state().mode === 'free', null, { timeout: 20000 });
     // Kein separates Hauptmenü: Start führt in die Stadt, das Gesamtmenü öffnet sich dort (Pause) mit allen Funktionen
     await p.evaluate(() => AMC.Game.pause()); await p.waitForSelector('.main-menu.in-city [data-go=story]');
-    assert.ok(await p.evaluate(() => ['resume', 'story', 'live', 'jagd', 'race', 'quiz', 'koop', 'walk', 'week', 'friends', 'home', 'arcade', 'music', 'studio', 'shop', 'radio', 'settings', 'controls', 'credits'].every(g => document.querySelector('.main-menu [data-go=' + g + ']'))), 'Gesamtmenü hat alle Funktionen');
+    assert.ok(await p.evaluate(() => ['resume', 'story', 'live', 'jagd', 'race', 'quiz', 'koop', 'walk', 'week', 'acts', 'guests', 'app', 'friends', 'home', 'arcade', 'music', 'studio', 'shop', 'radio', 'settings', 'controls', 'credits'].every(g => document.querySelector('.main-menu [data-go=' + g + ']'))), 'Gesamtmenü hat alle Funktionen');
     await p.click('[data-go=resume]'); await p.waitForTimeout(300);
     assert.ok(await p.evaluate(() => !document.querySelector('.main-menu') && AMC.Game.mode === 'play'), 'Weiter in der Stadt');
     // Club-Feeling in der Stadt: Emote-Leiste, Tanzen, Stadt-Vibe
@@ -54,6 +55,12 @@ server.listen(0, '127.0.0.1', async () => {
     assert.ok(await p.evaluate(() => AMC.Play.state().pl.z > 120), 'Fähre bringt zur Festival-Insel');
     // Optik: Tag und Nacht nach der Spieluhr, Wetter je Tag, Laternen nachts
     assert.ok(await p.evaluate(() => { const n = AMC.WorldFX.count(); return Object.keys(AMC.World.models).filter(k => /sky|sedan|cargo|palm/.test(k)).length >= 6 && n.cars >= 6 && n.screens >= 8; }), 'Welt-Upgrade: CC0-Modelle, Verkehr, Video-Wände');
+    assert.ok(await p.evaluate(() => ['catch', 'frame', 'quiz'].every(k => { const box = document.createElement('div'); box.style.cssText = 'position:fixed;width:400px;height:300px'; document.body.appendChild(box); const c = AMC.Minis.start(box, k, { qs: [['Frage?', 'Ja', 'Nein', 'Vielleicht', 'Egal']] }, () => {}); for (let i = 0; i < 30; i++) c.update(0.05); c.destroy(); box.remove(); return true; })), 'Neue Minispiele: Fangen, Kamera-Shot, Quiz');
+    assert.ok(await p.evaluate(() => ['druck', 'kanal9', 'museum', 'merch', 'riesenrad', 'leucht', 'turm', 'casting', 'werkstatt', 'tiktok'].every(id => AMC.Worlds.PLACES[id][2].some(a => typeof a[2] === 'string' && a[2] !== 'stage'))), 'Welt-Orte haben abwechslungsreiche Minispiele');
+    assert.ok(await p.evaluate(() => { AMC.Save.data.fan += 500; const t = AMC.Career.state().today; delete t.guest; AMC.Guests.meet('kanal9'); const ok = AMC.Guests.book('jana'), part = AMC.Guests.part(); const f0 = AMC.Feed.followers(); const m = AMC.Feed.act('reply'), again = AMC.Feed.act('reply'); return ok && part && part[1] >= 0.12 && m && again === null && AMC.Feed.followers() > f0 && AMC.Feed.parts().length >= 1 && !AMC.Guests.book('gisela'); }), 'Studiogäste und AnMaCha-App');
+    assert.ok(await p.evaluate(() => { const s1 = AMC.Guests.panel(); const a = !!s1.el.querySelector('#guL [data-g]'); AMC.UI.close(s1); const s2 = AMC.Feed.panel(); const b = !!s2.el.querySelector('.fd-post'); AMC.UI.close(s2); return a && b; }), 'Gäste- und App-Fenster');
+    assert.ok(await p.evaluate(() => { const S = AMC.Play.state(); AMC.Save.data.settings.voice = false; const ok = AMC.Cut.play(AMC.Acts.ACTS[1].intro(S)); const on = AMC.Cut.active() && !!document.querySelector('.cut #cutT').textContent; for (let i = 0; i < 5; i++) AMC.Cut.tick(0.1); AMC.Cut.skip(); return ok && on && !AMC.Cut.active() && AMC.Acts.ACTS.length === 5 && AMC.Acts.state().title.includes('Akt 1'); }), 'Zwischensequenz und Story-Akte');
+    assert.ok(await p.evaluate(() => { const c = AMC.Career.state(), e0 = c.eps; c.eps = Math.max(1, e0); AMC.Acts.update(2); const adv = AMC.Acts.state().i === 1 && AMC.Cut.active(); AMC.Cut.skip(); c.eps = e0; return adv; }), 'Akt geschafft: Szene und nächster Akt');
     await p.waitForFunction(() => AMC.WorldFX.count().people >= 5, null, { timeout: 60000 });
     assert.ok(await p.evaluate(() => { const c = AMC.Career.state(), m0 = c.min, S = AMC.Play.state(); c.min = 13 * 60; AMC.Atmos.apply(); const day = S.env.sun.intensity; c.min = 23 * 60; AMC.Atmos.apply(); const night = S.env.sun.intensity, lit = S.lampGlow ? S.lampGlow.visible : true; c.min = m0; AMC.Atmos.apply(); return night < day && lit && AMC.Atmos.night() === false && ['sun', 'cloud', 'rain'].includes(AMC.Atmos.weather().id); }), 'Tag und Nacht, Wetter');
     // Etappe 5: Wochen-Event, goldene Kassetten, Rückschlag bei der Auswertung

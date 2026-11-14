@@ -82,8 +82,8 @@
       "t": "Vier Welten rund um die Stadt",
       "p": [
         "Die Medienstadt liegt am Wasser. Ohne Ladepause erreichst du vier weitere Welten: 🚢 Medienhafen im Osten über die Brücke, 📡 Funkturm-Berg im Norden über den Damm, 🎪 Festival-Insel im Süden mit der Fähre (Anleger am Ende der Hauptstraße) und ✳️ das RicoReWi-Universum im Westen über die Neonbrücke. Gisela fährt über Brücken und Damm, der Bus hält in jeder Welt.",
-        "Medienhafen: Kanal 9 Studios (Morgenshow, Kulissen-Tour), Druckerei, Funk-Leuchtturm. Festival-Insel: Hauptbühne (Auftritt im Takt), Riesenrad, Merch-Stand. Funkturm-Berg: Fernsehturm-Aussicht, Radio-Museum, Funkerhütte (Kurzwelle einstellen). Jede Aktion geht einmal am Tag.",
-        "✳️ RicoReWi-Universum: Music Arena mit den zehn Acts (Giftkind, Love United, RicoReWi, ModeReWi, Slytheris, Straßenkind, KAPITÄN KATER, XXXPLICIT, MIMBALO, AERUMA) und Künstlerradio, das RicoReWi × AnMaCha Radioportal mit allen Streams, die Bücherei, die Casting-Show „Show me your Voice“, die Builder-Werkstatt und das Live-Studio. Story: Rico lädt euch ein – wer alle sechs Orte besucht, wird Teil seines Universums (300 🎟️, Freundschaft mit Rico, Idee für eine Spezialfolge).",
+        "Medienhafen: Kanal 9 Studios (Morgenshow, Kamera-Minispiel, Kulissen-Tour), Druckerei (Zeitungen fangen), Funk-Leuchtturm (Funksignale nachsenden). Festival-Insel: Hauptbühne (Auftritt im Takt), Riesenrad (Fotos aus der Gondel), Merch-Kanone (Shirts fangen). Funkturm-Berg: Fernsehturm (Aussicht, Sendeleitung stecken), Radio-Museum (Quiz), Funkerhütte (Kurzwelle einstellen). Jede Aktion geht einmal am Tag; je besser das Minispiel, desto mehr 🎟️ und Funken.",
+        "✳️ RicoReWi-Universum: Music Arena mit den zehn Acts (Giftkind, Love United, RicoReWi, ModeReWi, Slytheris, Straßenkind, KAPITÄN KATER, XXXPLICIT, MIMBALO, AERUMA) und Künstlerradio, das RicoReWi × AnMaCha Radioportal mit allen Streams, die Bücherei, die Casting-Show „Show me your Voice“ (Melodie nachsingen), die Builder-Werkstatt (Studio verkabeln) und das Live-Studio (Pointen-Timing). Story: Rico lädt euch ein – wer alle sechs Orte besucht, wird Teil seines Universums (300 🎟️, Freundschaft mit Rico, Idee für eine Spezialfolge).",
         "Überall ist jetzt mehr los: echte 3D-Modelle (Hochhäuser, Autos, Frachtschiffe, Palmen, Satellitenschüsseln), Verkehr auf Brücken und Damm, viele Menschen – Publikum vor Bühne und Arena, Spaziergänger, Leute am Lagerfeuer – und Video-Wände mit Live-Show, Eilmeldungen, Werbung, Wetter und Wochen-Event. Abends leuchten Neon und Scheinwerfer, über der Festival-Insel gibt es Feuerwerk. Autos halten an, wenn du vor ihnen stehst."
       ]
     },
@@ -290,6 +290,20 @@
       "t": "Wertung und Speichern",
       "p": [
         "Sterne pro Kapitel hängen von den Hörern der Live-Aufnahme ab. Rekorde für Live-Show, Themenjagd, Funk-Rennen und Quiz werden gespeichert. Der Spielstand liegt lokal im Browser und wird mit Google-Anmeldung über die AnMaCha-Cloud gesichert. In den Einstellungen gibt es Lautstärken, Grafikqualität, Kamera-Empfindlichkeit, Achsen umkehren, Bildschirmwackeln und Untertitel."
+      ]
+    },
+    {
+      "t": "Studiogäste und AnMaCha-App",
+      "p": [
+        "🎙️ Studiogäste (Gesamtmenü): Wen ihr in den Welten trefft, könnt ihr für die Abendfolge buchen – einen Gast pro Tag. Funker Otto (Funkerhütte), Dr. Ruth Welle (Radio-Museum), Paul Presse (Druckerei), Jana Kanal (Kanal 9), der Festival-Headliner (Insel), Acts aus der Music Arena, RicoReWi selbst (nach seinem Universum), Prof. Hall ab 2.000 und ein Überraschungs-Promi ab 20.000 Abos. Gisela kommt immer gratis. Jeder Gast bringt Hörer; passt sein Thema zu euren meisten Themen-Funken, gibt es +6 % extra, Stammgäste bringen mehr.",
+        "📱 AnMaCha-App: Follower, Trend des Tages und ein Feed, der Folgen, Gäste, Kassetten und Wochenziele mitschreibt. Jeden Tag: Story posten (+2 %), Umfrage (Community wählt ein Thema – 3 passende Funken sammeln: +5 %), Kommentare beantworten (Freundschaft mit Fans) und beim Trend mitmachen (+5 %, wenn das Trend-Thema gesammelt wurde). Mehr Follower geben dauerhaft bis zu +10 % Hörer."
+      ]
+    },
+    {
+      "t": "Story-Akte und Festival-Finale",
+      "p": [
+        "📖 In der Stadt erzählt die Story der Medienstadt fünf Akte mit Zwischensequenzen (Kamerafahrt, Untertitel, Stimmen): Akt 1 Garage mit Mikro (erste Folge), Akt 2 Über die Brücken (alle vier Welten besuchen), Akt 3 Ricos Einladung (alle sechs Orte im RicoReWi-Universum), Akt 4 Die Stimme der Stadt (3 Studiogäste und 1.000 Follower) und das Finale: Ab 8.000 Abos ruft das Radio-Festival – geht auf der Festival-Insel zur Hauptbühne und spielt den großen Abschluss-Auftritt.",
+        "Szenen weiterschalten mit Ⓐ, Leertaste oder Tippen, überspringen mit Ⓑ oder Esc. Stimmen lassen sich in den Einstellungen ausschalten. Im Gesamtmenü unter „📖 Story-Akte“ seht ihr Ziel und Fortschritt und könnt geschaffte Szenen noch einmal ansehen. Jeder Akt bringt 🎟️, das Finale 1.000 und mehr plus einen großen Abo-Schub."
       ]
     }
   ],
