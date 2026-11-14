@@ -860,7 +860,7 @@ function sfx(n){if(FXH){if(n==='heal'&&mode==='play')FXH.circle(pl.x,pl.y,pl.z,0
 
 /* ================= Spielstand ================= */
 let KEY='zotik2_save_slot1';const slotKey=n=>'zotik2_save_slot'+n;
-const DEF=()=>({v:1,ch:1,cd:{},x:0,z:13,ry:Math.PI,hp:100,mp:40,lvl:1,xp:0,shards:0,potions:2,herbs:0,stage:0,kr:0,kw:0,boss:false,got:{},side:0,sideK:0,blade:false,blade2:false,party:[],fl:{},pz:{},orun:0,end:{s:[0,0,0,0,0,0,0],ess:0},ending:'',ng:0,hall:0,sq:{},mem:0,trk:[],cas:{n:0,best:0,off:true},gear:{w:'',a:'',c:''},inv:{},felli:{lv:1,xp:0,on:1},tools:[],tool:0,cave:{best:0,f:1,seed:1},items:{ether:0,fruit:0,phoenix:0},up:{},mag:0,sk:{},bstR:{},ip:0,rg:0,tg:0,fk:0,obst:{},chests:{},t:0,snd:true,cos:{fur:0,scarf:2,outfit:0},bst:{},ach:{},cnt:{brk:0,pd:0,rx:0,cmb:0,sharp:0,rad:0},mat:{},sharp:0,dif:1,chx:{},chk:0,rad:0,rev:{},home:{t:0,acc:'open',inc:0},emo:{},gc:{},gim:{},titles:[],ev:{}});
+const DEF=()=>({v:1,ch:1,cd:{},x:0,z:13,ry:Math.PI,hp:100,mp:40,lvl:1,xp:0,shards:0,potions:2,herbs:0,stage:0,kr:0,kw:0,boss:false,got:{},side:0,sideK:0,blade:false,blade2:false,party:[],fl:{},pz:{},orun:0,end:{s:[0,0,0,0,0,0,0],ess:0},ending:'',ng:0,hall:0,sq:{},mem:0,trk:[],cas:{n:0,best:0,off:true},gear:{w:'',a:'',c:''},inv:{},felli:{lv:1,xp:0,on:1},tools:[],tool:0,cave:{best:0,f:1,seed:1},items:{ether:0,fruit:0,phoenix:0},up:{},mag:0,sk:{},bstR:{},ip:0,rg:0,tg:0,fk:0,obst:{},chests:{},t:0,snd:true,cos:{fur:0,scarf:2,outfit:0},bst:{},ach:{},cnt:{brk:0,pd:0,rx:0,cmb:0,sharp:0,rad:0},mat:{},sharp:0,dif:1,chx:{},chk:0,rad:0,rev:{},home:{t:0,acc:'open',inc:0},emo:{},gc:{},gim:{},titles:[],ev:{},seen:{}});
 let S=DEF();
 function loadSave(k){try{const j=localStorage.getItem(k||KEY);if(!j)return null;const o=JSON.parse(j);if(!o||o.v!==1)return null;const d=DEF();for(const k in d){const v=d[k];if(v&&typeof v==='object'&&!Array.isArray(v)){const q=o[k];o[k]=q&&typeof q==='object'&&!Array.isArray(q)?Object.assign(v,q):v}}return Object.assign(d,o)}catch(e){return null}}
 function slotInfo(n){try{const j=localStorage.getItem(slotKey(n));if(!j)return null;const o=JSON.parse(j);return o&&o.v===1?o:null}catch(e){return null}}
@@ -966,7 +966,7 @@ function talkProf(){const st=S.stage;
   if(st===4)return say([['Professorium','Da bist du! Mein Resonator hat die Quelle geortet: die Risshöhle, am Ende des Weges im Norden.'],['Zotik','Und was ist da drin?'],['Professorium','Ein Mondwolf, der den Riss bewacht. Hier, ich habe deiner Reiseklinge einen Mondkristall eingesetzt. Sie schneidet jetzt deutlich schärfer!'],['Zotik','Sie leuchtet. Danke, Professorium!'],['Professorium','Der Wolf heult, bevor er zuschlägt, und springt dich an. Weich dem Ring aus!']],()=>{S.blade=true;toast('⚔ Reiseklinge verbessert (+10 Angriff)');setStage(5)});
   if(st===5||st===6)return say([['Professorium','Denk dran: Lichtstoß für die Ferne, Funkenwirbel, wenn er dich umzingelt. Und trinke rechtzeitig!']]);
   if(profArc())return;
-  say([['Professorium',pick(['Die Nautilux ist startklar. Naja, fast. Sie hat noch keinen Namen ... ach doch, den hat sie ja.','Weltenreisen sind eine Frage der Resonanz, mein Freund!','Ich habe den Mondkristall noch einmal vermessen. Er singt!'])]])}
+  say([['Professorium',pick(['Die Nautilux ist startklar. Naja, fast. Sie hat noch keinen Namen ... ach doch, den hat sie ja.','Weltenreisen sind eine Frage der Resonanz, mein Freund!','Ich habe den Mondkristall noch einmal vermessen. Er singt!'])]],null,S.fl.naut?[{t:'🔧 Nautilux-Werkstatt',fn:()=>setTimeout(nautShop,80)},{t:'Weiter',fn:()=>{}}]:undefined)}
 function talkBoro(){
   if(S.side===0)return say([['Boro','Zotik! Gut, dass du da bist. Die Dornenwölfe aus dem Wald reißen mir die Zäune ein.'],['Boro','Erledige vier von ihnen, dann schmiede ich dir etwas Ordentliches.']],()=>{S.side=1;S.sideK=0;sfx('quest');toast('📜 Nebenaufgabe: Wolfsplage');refreshQuest();saveGame(true)});
   if(S.side===1)return say([['Boro',`Noch ${Math.max(0,4-S.sideK)} Dornenwölfe, Zotik. Sie lauern im Wald, nördlich vom Dorf.`]]);
@@ -979,7 +979,7 @@ function buy(n,c){if(S.shards<c){toast('Nicht genug Splitter');return}S.shards-=
 
 /* ================= XP ================= */
 function gainXp(n){if((S.fl.bless||0)>(S.t||0))n=Math.round(n*1.25);S.xp+=n;cGain(n);dnum(pl.x,pl.y+2.4,pl.z,'+'+n+' EP','x');let up=0;while(S.xp>=xpNeed()&&S.lvl<XT.LVCAP){S.xp-=xpNeed();S.lvl++;up++}
-  if(up){S.hp=maxHp();S.mp=maxMp();sfx('level');FXH.pillar(pl.x,pl.y,pl.z,0xffd45a,1.2,7,1.6,pl);banner('Stufe '+S.lvl,'Neue Kraft erwacht');emit(pl.x,pl.y+1,pl.z,0xffe08a,60,6,1.4,.9,-2,3);fxRing(pl.x,pl.z,0xffd45a,6,.9)}}
+  if(up){S.hp=maxHp();S.mp=maxMp();sfx('level');FXH.pillar(pl.x,pl.y,pl.z,0xffd45a,1.2,7,1.6,pl);banner('Stufe '+S.lvl,'Neue Kraft erwacht');emit(pl.x,pl.y+1,pl.z,0xffe08a,60,6,1.4,.9,-2,3);fxRing(pl.x,pl.z,0xffd45a,6,.9);for(const m of [10,20,30])if(S.lvl>=m&&CUT['MEM_LV'+m]&&!S.fl['mlv'+m]){S.fl['mlv'+m]=1;cutLater('MEM_LV'+m)}}}
 
 /* ================= Spieler & Welt-Akteure ================= */
 const pl={x:0,z:13,y:0,vx:0,vz:0,face:Math.PI,atk:-1,atkT:0,combo:0,comboT:0,buf:0,hit:false,dash:0,dx:0,dz:1,iframes:0,dead:false,spin:0,kx:0,kz:0,mv:0,cd:{s1:0,s2:0,s3:0,dg:0},sheath:0,hurtCd:0};
@@ -1347,7 +1347,7 @@ function interact(){if(!nearI||dlg.on||pl.dead)return;const o=nearI;sfx('ui');
 
 /* ================= Menü ================= */
 function toggleMenu(on,tab){menuOpen=on;$('menu').hidden=!on;if(on){mState.shop=false;renderMenu(tab||'quest');sfx('ui');MN.zone='tabs';MN.on=document.documentElement.classList.contains('eg-pad')||REMOTE;MN.i=Math.max(0,mnItems().findIndex(b=>b.classList.contains('on')));mnMark()}else{saveGame(true);X.course=0}if(!on)for(const k in keys)keys[k]=false}
-const TABS=[['quest','📜','Aufgaben'],['travel','🌍','Weltreise'],['inv','🎒','Inventar'],['equip','🛡️','Ausrüstung'],['party','🧑‍🤝‍🧑','Gruppe'],['felli','🌿','Felli'],['skills','✨','Fähigkeiten'],['help','🎮','Steuerung'],['coop','👥','Koop'],['chron','📖','Chronik'],['camp','⛺','Camp'],['events','🎉','Events'],['home','🏡','Zuhause']];
+const TABS=[['quest','📜','Aufgaben'],['travel','🌍','Weltreise'],['inv','🎒','Inventar'],['equip','🛡️','Ausrüstung'],['party','🧑‍🤝‍🧑','Gruppe'],['felli','🌿','Felli'],['skills','✨','Fähigkeiten'],['help','🎮','Steuerung'],['coop','👥','Koop'],['chron','📖','Chronik'],['mem','🎞️','Erinnerungen'],['camp','⛺','Camp'],['events','🎉','Events'],['home','🏡','Zuhause']];
 /* Menü wie an der Konsole (Controller, Tastatur, Fernbedienung): links die Reiter, rechts der Inhalt.
    ↑↓ Reiter wählen (Inhalt wechselt sofort) · → bzw. A in den Inhalt · im Inhalt Steuerkreuz wählt, A bestätigt/rüstet aus,
    ← am linken Rand oder B zurück zu den Reitern · B auf den Reitern schließt · LB/RB (Q/E) Reiter vor/zurück. Maus und Touch bleiben, wie sie sind. */
@@ -1356,7 +1356,7 @@ function mnVis(el){if(!el||el.disabled||el.hidden)return false;const r=el.getBou
 function mnItems(){if(MN.zone==='tabs')return[...$('tabs').querySelectorAll('button')].filter(mnVis);
   return[...$('mcont').querySelectorAll('button,select,input,textarea,a[href],[data-nav]'),...document.querySelectorAll('#mbox .mb button')].filter(mnVis)}
 function mnMark(){document.querySelectorAll('#menu .pfoc').forEach(x=>x.classList.remove('pfoc'));if(!menuOpen||!MN.on)return;let l=mnItems();
-  if(MN.zone==='content'&&!l.length){MN.zone='tabs';l=mnItems()}if(MN.zone==='tabs'&&!l.length){MN.zone='content';MN.i=0;l=mnItems()}if(!l.length)return;MN.i=clamp(MN.i,0,l.length-1);const el=l[MN.i];el.classList.add('pfoc');try{el.scrollIntoView({block:'nearest',inline:'nearest'})}catch(e){}try{el.focus({preventScroll:true})}catch(e){}}
+  if(MN.zone==='content'&&!l.length){MN.zone='tabs';l=mnItems()}if(MN.zone==='tabs'&&!l.length){MN.zone='content';MN.i=0;l=mnItems()}if(!l.length)return;MN.i=clamp(MN.i,0,l.length-1);const el=l[MN.i];el.classList.add('pfoc');try{el.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'})}catch(e){}try{el.focus({preventScroll:true})}catch(e){}}
 function mnTabs(){return TABS.filter(q=>q[0]!=='travel'||S.stage>=8)}
 function mnTab(d){if(mState.shop)return;const l=mnTabs(),k=l.findIndex(q=>q[0]===mState.tab),n=l[(k+d+l.length)%l.length];sfx('ui');renderMenu(n[0]);if(MN.zone==='tabs')MN.i=mnItems().findIndex(b=>b.classList.contains('on'));else MN.i=0;mnMark()}
 function mnMove(dx,dy){const l=mnItems();if(!l.length)return;const cur=l[MN.i]||l[0];
@@ -1374,7 +1374,7 @@ function mnOk(){const el=mnItems()[MN.i];if(!el)return;if(MN.zone==='tabs'){mnEn
   if(el.tagName==='INPUT'&&/^(text|search|number)$/.test(el.type||'text')){el.focus();return}
   const z=MN.zone,i=MN.i;el.click();setTimeout(()=>{if(!menuOpen)return;MN.zone=z;MN.i=i;mnMark()},40)}
 function mnBack(){if(MN.zone==='content'&&!mState.shop&&$('tabs').querySelector('button')){MN.zone='tabs';MN.i=mnItems().findIndex(b=>b.classList.contains('on'));sfx('ui');mnMark();return}toggleMenu(false)}
-function menuKey(e){const k=e.code;if(document.activeElement&&/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)&&!/^(Escape|Enter|NumpadEnter|ArrowUp|ArrowDown)$/.test(k))return false;
+function menuKey(e){const k=e.code;if(MNP.on&&!e.isTrusted&&e.keyCode){e.preventDefault();return true}if(document.activeElement&&/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)&&!/^(Escape|Enter|NumpadEnter|ArrowUp|ArrowDown)$/.test(k))return false;
   const mv={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[k];
   if(mv){e.preventDefault();if(!MN.on){MN.on=true;mnMark();return true}mnMove(mv[0],mv[1]);return true}
   if(k==='Enter'||k==='NumpadEnter'||k==='KeyJ'){e.preventDefault();if(e.repeat)return true;if(!MN.on){MN.on=true;mnMark();return true}mnOk();return true}
@@ -1383,6 +1383,24 @@ function menuKey(e){const k=e.code;if(document.activeElement&&/^(INPUT|TEXTAREA)
   if(k==='KeyE'||k==='Digit2'||k==='PageDown'){e.preventDefault();MN.on=true;mnTab(1);return true}
   return false}
 addEventListener('pointerdown',e=>{if(menuOpen&&e.isTrusted&&MN.on){MN.on=false;mnMark()}},true);
+/* Controller im Menü direkt abfragen: Steuerkreuz und linker Stick in alle vier Richtungen, ruhige Wiederholung beim Halten,
+   A bestätigt, B zurück, LB/RB Reiter, Start schließt, rechter Stick scrollt weich. Die von gamepad.js nachgeahmten Tasten werden im Menü dann verschluckt,
+   sonst wären ← → im Menü „Zurück“ und „Bestätigen“ und die Auswahl springt. */
+const MNP={on:false,prev:null,dir:-1,t:0};
+function mnPad(now){if(!menuOpen||!navigator.getGamepads||!document.documentElement.classList.contains('eg-pad')){MNP.on=false;MNP.prev=null;return}
+  let gs;try{gs=[...navigator.getGamepads()].filter(Boolean)}catch(e){return}if(!gs.length){MNP.on=false;return}
+  const b=[],d=[0,0,0,0];let ry=0;for(const g of gs){for(let i=0;i<16;i++){const x=g.buttons[i];if(x&&(x.pressed||x.value>.5))b[i]=1}const ax=g.axes[0]||0,ay=g.axes[1]||0;if(ay<-.5)d[0]=1;if(ay>.5)d[1]=1;if(ax<-.5)d[2]=1;if(ax>.5)d[3]=1;if(Math.abs(g.axes[3]||0)>Math.abs(ry))ry=g.axes[3]||0}
+  for(let i=0;i<4;i++)if(b[12+i])d[i]=1;
+  const p=MNP.prev;MNP.prev={b,d};MNP.on=true;if(!p)return;   /* erstes Bild nach dem Öffnen: nur merken (Start ist noch gedrückt) */
+  const hit=i=>b[i]&&!p.b[i];
+  const cur=d.indexOf(1),MV=[[0,-1],[0,1],[-1,0],[1,0]];
+  if(cur<0)MNP.dir=-1;else if(cur!==MNP.dir){MNP.dir=cur;MNP.t=now+340;if(!MN.on){MN.on=true;mnMark()}else mnMove(...MV[cur])}
+  else if(now>=MNP.t){MNP.t=now+120;mnMove(...MV[cur])}
+  if(hit(0)){if(!MN.on){MN.on=true;mnMark()}else mnOk()}
+  else if(hit(1)){if(!MN.on){MN.on=true;mnMark()}else mnBack()}
+  else if(hit(4)){MN.on=true;mnTab(-1)}else if(hit(5)){MN.on=true;mnTab(1)}
+  else if(hit(9))toggleMenu(false);
+  if(Math.abs(ry)>.2){const c=$('mcont');if(c)c.scrollTop+=ry*14}}
 /* Kamera mit dem rechten Stick (gamepad.js liefert jedes Pad im Standard-Layout) */
 function padCam(dt){if(mode!=='play'||menuOpen||!navigator.getGamepads)return;let rx=0,ry=0;try{for(const g of navigator.getGamepads()){if(!g)continue;const x=g.axes[2]||0,y=g.axes[3]||0;if(Math.abs(x)>Math.abs(rx))rx=x;if(Math.abs(y)>Math.abs(ry))ry=y}}catch(e){return}
   const dz=v=>Math.abs(v)<.18?0:(v-Math.sign(v)*.18)/.82;rx=dz(rx);ry=dz(ry);if(rx)camYaw-=rx*2.6*dt;if(ry)camPitch=clamp(camPitch+ry*1.5*dt,.08,1.1)}
@@ -1404,8 +1422,8 @@ function renderMenu(tab){mState.tab=tab;const t=$('tabs'),c=$('mcont');menuChrom
   if(tab==='skills')h+=`<div class="row"><span>⚔ Klingenkombo (${KH('atk')})</span><span>3 Hiebe</span></div><div class="row"><span>💨 Ausweichen (${KH('dodge')})</span><span>Unverwundbar</span></div><div class="row"><span>⤴ Springen (${KH('jump')})</span><span>Auf Platten und über Hindernisse</span></div><div class="row"><span>🌀 Funkenwirbel (1)</span><span>18 Mana</span></div><div class="row"><span>✨ Lichtstoß (2)</span><span>22 Mana</span></div><div class="row"><span>🧪 Heiltrank (3 / R)</span><span>+60 % Leben</span></div><p style="color:var(--dim);font-size:13px">Treffer laden Mana auf. Rote Kreise am Boden zeigen Angriffe an: rechtzeitig ausweichen!</p>`;
   if(tab==='help')h+=controlsHTML()+INP.optionsHTML()+`<h3>Optionen</h3><div class="row"><span>🆘 Feststecken? Befreit dich an einen freien Ort</span><span><button class="cpb" id="optFree">Befreien</button></span></div><div class="row"><span>📺 Fernbedienung (nur Pfeile, OK und Zurück)</span><span><button class="cpb" id="optRem">${REMOTE?'an – ausschalten':'aus – einschalten'}</button></span></div><div class="row"><span>🎰 Casino (Kristallslots, nur Spiel-Splitter)</span><span><button class="cpb" id="optCas">${S.cas&&S.cas.off?'aus – einschalten':'an – ausschalten'}</button></span></div>`;
   if(tab==='travel')h+=travelHTML();
-  if(tab==='party')h+=partyHTML();if(tab==='events')h+=XO.eventsHTML();if(tab==='home')h+=XO.homeHTML();if(tab==='chron')h+=XT.chronHTML();if(tab==='camp')h+=LF().campHTML()+XT.campHTML();if(tab==='coop')h+=coopHTML();if(tab==='equip')h+=equipHTML();if(tab==='felli')h+=felliHTML()+LF().soulHTML();if(tab==='skills')h=skHTML()+artHTML()+h+extSkillsHTML();
-  c.innerHTML=h;if(tab==='party')partyBind(c);c.querySelectorAll('.trv').forEach(b=>b.onclick=()=>travel(+b.dataset.n));
+  if(tab==='party')h+=partyHTML();if(tab==='events')h+=XO.eventsHTML();if(tab==='home')h+=XO.homeHTML();if(tab==='chron')h+=XT.chronHTML();if(tab==='mem')h+=memHTML();if(tab==='camp')h+=LF().campHTML()+XT.campHTML();if(tab==='coop')h+=coopHTML();if(tab==='equip')h+=equipHTML();if(tab==='felli')h+=felliHTML()+LF().soulHTML();if(tab==='skills')h=skHTML()+artHTML()+h+extSkillsHTML();
+  c.innerHTML=h;if(tab==='mem')c.querySelectorAll('[data-mem]').forEach(b=>b.onclick=()=>{sfx('ui');replayCut(b.dataset.mem)});if(tab==='party')partyBind(c);c.querySelectorAll('.trv').forEach(b=>b.onclick=()=>travel(+b.dataset.n));
   c.querySelectorAll('[data-tw]').forEach(b=>b.onclick=()=>{sfx('ui');mState.tw=+b.dataset.tw;renderMenu('travel')});{const o=c.querySelector('.wn.on');if(o)try{o.scrollIntoView({block:'nearest',inline:'center'})}catch(e){}}
   c.querySelectorAll('[data-es]').forEach(b=>b.onclick=()=>{sfx('ui');mState.es=b.dataset.es;mState.ep='';renderMenu('equip')});c.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{const id=b.dataset.pick;if(mState.ep===id&&gearSet()[GEAR[id].s]!==id){equip(id);renderMenu('equip');return}sfx('ui');mState.ep=id;renderMenu('equip')});{const gc=c.querySelector('#goCas');if(gc)gc.onclick=()=>travel(3)}if(tab==='coop')coopBind();extBind(c,tab);LF().bind(c,tab,()=>renderMenu(tab));if(tab==='camp')XT.bind(c,()=>renderMenu('camp'));XO.bind(c,tab,()=>renderMenu(tab));if(tab==='help')INP.bindOptions(c,()=>renderMenu('help'));{const or=$('optRem');if(or)or.onclick=()=>{setRemote(!REMOTE,true);sfx('ui');toast(REMOTE?'📺 Fernbedienung an: ↑↓ laufen · ←→ drehen · OK Angriff/Aktion · Zurück Befehle':'📺 Fernbedienung aus');renderMenu('help')}}{const of=$('optFree');if(of)of.onclick=()=>{unstuck()}}const oc=$('optCas');if(oc)oc.onclick=()=>{S.cas.off=!S.cas.off;sfx('ui');toast(S.cas.off?'🎰 Casino ausgeschaltet':'🎰 Casino eingeschaltet');saveGame(true);renderMenu('help')}}
 $('mResume').onclick=()=>toggleMenu(false);$('saveBtn').onclick=()=>saveGame();
@@ -1601,7 +1619,7 @@ function bootDone(){const L=$('load');if(!L)return;setTimeout(()=>{L.classList.a
 function frame(now){
   requestAnimationFrame(frame);skyMat.uniforms.uTm.value=now/1000;const rdt=(now-lastT)/1000;let dt=Math.min(rdt,.05);lastT=now;
   if(!MP.on){if(hitStop>0){hitStop-=rdt;dt*=.04}else if(slowT>0){slowT-=rdt;dt*=.4}}
-  time+=dt;qualityTick(rdt);
+  time+=dt;qualityTick(rdt);if(menuOpen)mnPad(now);
   for(const o of animObjs)o.fn(time,dt);
   if(mode==='flight'){FL.update(dt);FL.render();if(first){first=false;bootDone()}return}
   if(mode==='pix'){PX().frame(rdt);return}if(mode==='ride'){RIDEX().frame(rdt);return}
@@ -1822,10 +1840,10 @@ function travel(n){
   /* Abstecher wie bei Kingdom Hearts: Auf dem Weg zum nächsten Kapitel liegt eine Märchenwelt */
   if(!X.noDetour&&n<MW_FIRST&&curCh<MW_FIRST){const w=MWX().detourFor(curCh,n);if(w){const C2=CHP[n];say([['Zotik','Auf dem Weg nach '+C2.name+' leuchtet etwas zwischen den Sternen: '+w.em+' '+w.name+'. Ein Abstecher?']],null,[{t:w.em+' Abstecher: '+w.name,fn:()=>{X.noDetour=1;travel(w.n);X.noDetour=0}},{t:'🚀 Direkt nach '+C2.name,fn:()=>{MWX().decline(w);X.noDetour=1;travel(n);X.noDetour=0}}]);return}}
   /* Reiseart wie bei Lufia: fliegen (Nautilux), übers Weltmeer segeln oder zu Fuß wandern */
-  if(!MP.on&&!X.jr&&!X.noFlight&&n<12&&curCh<12){const C3=n===1?{name:'Lunaris'}:CHP[n],go=m=>{const f=()=>{if(dlg.on)return setTimeout(f,200);X.jr=m;X.noDetour=1;travel(n);X.jr=0;X.noDetour=0};setTimeout(f,80)},o=[];if(S.fl.naut)o.push({t:'🚀 Mit der Nautilux fliegen',fn:()=>go('fly')});o.push({t:S.fl.naut?'🚤 Mit der Nautilux übers Weltmeer':'⛵ Übers Weltmeer segeln',fn:()=>go('sea')},{t:'🥾 Zu Fuß wandern (dauert länger)',fn:()=>go('walk')},{t:'✨ Sofort reisen',fn:()=>go('fade')});say([['Zotik','Wie reisen wir nach '+C3.name+'?']],null,o);return}
+  if(!MP.on&&!X.jr&&!X.noFlight&&n<12&&curCh<12){const C3=n===1?{name:'Lunaris'}:CHP[n],go=m=>{const f=()=>{if(dlg.on)return setTimeout(f,200);X.jr=m;X.noDetour=1;travel(n);X.jr=0;X.noDetour=0};setTimeout(f,80)},o=[];if(S.fl.naut)o.push({t:'🚀 Mit der Nautilux fliegen',fn:()=>go('fly')},{t:'🔧 Werkstatt: Schiff aufrüsten',fn:()=>setTimeout(nautShop,80)});o.push({t:S.fl.naut?'🚤 Mit der Nautilux übers Weltmeer':'⛵ Übers Weltmeer segeln',fn:()=>go('sea')},{t:'🥾 Zu Fuß wandern (dauert länger)',fn:()=>go('walk')},{t:'✨ Sofort reisen',fn:()=>go('fade')});say([['Zotik','Wie reisen wir nach '+C3.name+'?']],null,o);return}
   if(!MP.on&&n!==12&&n!==13&&n!==14&&n!==15&&curCh!==13&&curCh!==12&&curCh!==14&&curCh!==15&&(S.fl.naut||X.jr==='sea'||X.jr==='walk')&&X.jr!=='fade'&&!X.noFlight){const jm=X.jr==='sea'||X.jr==='walk'?X.jr:null;const from=curCh,C=n===1?{name:'Lunaris'}:CHP[n],F0=from===1?{name:'Lunaris'}:CHP[from]||{name:'?'},th0=flyTheme(from),th1=flyTheme(n);$('fade').style.opacity=1;
     setTimeout(()=>{mode='flight';$('hud').hidden=true;$('fade').style.opacity=0;
-      FL.start({fromName:F0.name,toName:C.name,color:n>=MW_FIRST?MWX().W(n).col:n===1?0x9ab8ff:(C.rift||0x8ad0ff),dist:n>=MW_FIRST||from>=MW_FIRST?1:Math.abs(n-from),from:th0,to:th1,medium:jm,fromN:from,toN:n,naut:!!S.fl.naut,onDone:r=>{mode='play';$('hud').hidden=false;if(r.reward){S.shards+=r.reward;toast(jm==='sea'?`⛵ Seereise: +${r.reward} Splitter`:jm==='walk'?`🥾 Wanderung: +${r.reward} Splitter`:`🚀 Flug: +${r.reward} Splitter · ${r.kills} Drohnen`)}
+      FL.start({fromName:F0.name,toName:C.name,color:n>=MW_FIRST?MWX().W(n).col:n===1?0x9ab8ff:(C.rift||0x8ad0ff),dist:n>=MW_FIRST||from>=MW_FIRST?1:Math.abs(n-from),from:th0,to:th1,medium:jm,fromN:from,toN:n,naut:!!S.fl.naut,parts:S.fl.parts||{},onDone:r=>{mode='play';$('hud').hidden=false;if(r.reward){S.shards+=r.reward;toast(jm==='sea'?`⛵ Seereise: +${r.reward} Splitter`:jm==='walk'?`🥾 Wanderung: +${r.reward} Splitter`:`🚀 Flug: +${r.reward} Splitter · ${r.kills} Drohnen`)}
         const fd=$('fade');fd.style.transition='none';fd.style.background='#'+th1.fog.toString(16).padStart(6,'0');fd.style.opacity=1;void fd.offsetWidth;fd.style.transition='';X.landSwoop=1;wloadShow(n);setTimeout(arrive,90);setTimeout(()=>{fd.style.background=''},1400)}})},450);return}
   if(n>=MW_FIRST||curCh>=MW_FIRST){sfx('portal');FXH.pillar(pl.x,pl.y,pl.z,0xe0b0ff,1.4,9,1,pl)}else sfx('quest');$('fade').style.opacity=1;wloadShow(n);
   setTimeout(arrive,650);
@@ -1867,14 +1885,23 @@ const PROF_ARC=[{need:2,l:[['Professorium','Ich summe seit Tagen dieselbe Melodi
   {need:6,l:[['Professorium','Zotik … ich muss dir etwas sagen. Ich war beim Großen Bruch dabei. Im Team, das den Kern stabilisieren sollte.'],['Professorium','Danach habe ich meine Erinnerungen gelöscht. Absichtlich. Ich wollte nicht mehr wissen, was wir getan haben.'],['Zotik','Und jetzt?'],['Professorium','Jetzt baue ich Luftschiffe. Das ist leichter.']]},
   {need:8,l:[['Professorium','Hier, nimm diesen Kristall. Darin liegt, was ich vergessen habe.'],['Professorium','Bewahre ihn auf. Falls ich es eines Tages doch wissen will … oder du es wissen musst.'],['Zotik','Ich passe darauf auf, versprochen.']]}];
 function profArc(){S.arc=S.arc||{};const k=PROF_ARC.findIndex((a,i)=>!S.arc['P'+i]&&chDone(a.need));if(k<0)return false;S.arc['P'+k]=1;saveGame(true);say(PROF_ARC[k].l.map(x=>x.slice()));return true}
+/* ---- Nautilux-Werkstatt: Teile kaufen, die den Flug verändern (Kanone, Hülle, Triebwerk, Schildgenerator, Magnet) ---- */
+const NPARTS=[['g','🔫 Riss-Kanone','mehr Schaden und Schüsse, schnelleres Feuer',[2,5,8]],['h','🛠️ Panzerhülle','+25 Hülle je Stufe',[3,6,9]],['e','🚀 Triebwerk','wendiger',[4,7,10]],['s','🛡️ Schildgenerator','Start mit Schild',[5,8,10]],['m','🧲 Splittermagnet','zieht Ringe und Extras an',[6]]];   /* Stufe n wird frei, wenn das Kapitel in der Liste geschafft ist */
+function nautShop(){const P=(S.fl.parts=S.fl.parts||{});say([['Professorium',`Meine Werkstatt! Jedes Kapitel liefert mir neue Bauteile. Du hast ${S.shards} 💎. Welches Teil baue ich ein?`]],null,[...NPARTS.map(([k,n,d,req])=>{const lv=P[k]||0,cost=60*(lv+1);if(lv>=req.length)return{t:`${n} (max.)`,fn:()=>nautShop()};if(!chDone(req[lv]))return{t:`${n} Stufe ${lv+1} · 🔒 nach Kapitel ${req[lv]}`,fn:()=>{say([['Professorium',`Dafür fehlt mir noch ein Bauteil aus Kapitel ${req[lv]}. Bring mir den Riss dort in Ordnung, dann baue ich es ein.`]],()=>nautShop())}};return {t:`${n} Stufe ${lv+1} · ${cost} 💎`,fn:()=>{if(S.shards<cost){toast('Zu wenig Splitter');return nautShop()}S.shards-=cost;P[k]=lv+1;sfx('level');toast(`🔧 ${n} Stufe ${lv+1}: ${d}`);saveGame(true);setTimeout(nautShop,300)}}}),{t:'Fertig',fn:()=>{}}])}
 /* ---- Nautilux-Flug zwischen den Welten ---- */
-const FLH=(()=>{const d=document.createElement('div');d.id='flt';d.hidden=true;d.innerHTML='<div class="ft"><b id="flTo"></b><small id="flFrom"></small></div><div class="fb"><i id="flP"></i></div><div class="fs">🛡️ <b id="flHp">100</b> · 💎 <b id="flGot">0</b></div><button id="flSkip">Überspringen ▸</button><div class="fh">Ausweichen: Stick / WASD / Joystick · Feuer automatisch</div>';document.body.appendChild(d);
+const FLH=(()=>{const d=document.createElement('div');d.id='flt';d.hidden=true;d.innerHTML='<div class="ft"><b id="flTo"></b><small id="flFrom"></small></div><div class="fb"><i id="flP"></i></div><div class="fs">🛡️ <b id="flHp">100</b> · 💎 <b id="flGot">0</b> <span id="flPw"></span> <span id="flCo"></span></div><div id="flCh"><i></i></div><div id="flPop"></div><button id="flSkip">Überspringen ▸</button><button id="flInv">↕</button><button id="flFire">🔫<small>Feuer</small></button><div class="fh"></div>';document.body.appendChild(d);
   d.querySelector('#flSkip').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();FL.skip()});
+  // Feuer-Knopf (halten = Schnellfeuer, lange halten + loslassen = Riss-Strahl) und Steuerung umkehren (gemerkt)
+  const st={fire:false,inv:(()=>{try{return localStorage.getItem('zotik_flyinv')==='1'}catch(e){return false}})()};
+  const fb=d.querySelector('#flFire'),ib=d.querySelector('#flInv'),fireOn=e=>{e.preventDefault();e.stopPropagation();st.fire=true;try{fb.setPointerCapture(e.pointerId)}catch(_){}},fireOff=()=>{st.fire=false};
+  fb.addEventListener('pointerdown',fireOn);fb.addEventListener('pointerup',fireOff);fb.addEventListener('pointercancel',fireOff);fb.addEventListener('lostpointercapture',fireOff);
+  const invTxt=()=>{ib.textContent=st.inv?'↕ umgekehrt':'↕ normal'};invTxt();
+  ib.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();st.inv=!st.inv;try{localStorage.setItem('zotik_flyinv',st.inv?'1':'0')}catch(_){}invTxt()});
   // Touch: irgendwo aufs Bild tippen und ziehen = steuern
-  let o=null;const vec=[0,0];d.addEventListener('pointerdown',e=>{o=[e.clientX,e.clientY];d.setPointerCapture(e.pointerId)});d.addEventListener('pointermove',e=>{if(!o)return;vec[0]=Math.max(-1,Math.min(1,(e.clientX-o[0])/60));vec[1]=Math.max(-1,Math.min(1,-(e.clientY-o[1])/60))});
+  let o=null;const vec=[0,0];d.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;o=[e.clientX,e.clientY];d.setPointerCapture(e.pointerId)});d.addEventListener('pointermove',e=>{if(!o)return;vec[0]=Math.max(-1,Math.min(1,(e.clientX-o[0])/60));vec[1]=Math.max(-1,Math.min(1,-(e.clientY-o[1])/60))});
   const up=()=>{o=null;vec[0]=vec[1]=0};d.addEventListener('pointerup',up);d.addEventListener('pointercancel',up);
-  return{vec,show(a,b,m){$('flFrom').textContent='von '+a;$('flTo').textContent=(m==='sea'?'⛵ ':m==='walk'?'🥾 ':'')+'Kurs: '+b;d.querySelector('.fh').textContent=m?'Lenken: Stick / WASD / Joystick · Kisten und Ringe sammeln, Hindernissen ausweichen':'Ausweichen: Stick / WASD / Joystick · Feuer automatisch';d.hidden=false},update(o){$('flP').style.width=Math.round(o.prog*100)+'%';$('flHp').textContent=Math.round(o.hp);$('flGot').textContent=o.got},hide(){d.hidden=true}}})();
-const FL=createFlight({renderer,makeShip:()=>{const sv=[naut.spin,naut.ex],g=makeNaut();naut.spin=sv[0];naut.ex=sv[1];return g},makeIsle:n=>MINI.island(n),makeWalker:()=>{const f=makeFox();return{root:f.root,anim:(t,mv)=>animFox(f,t,mv,false)}},inputVec:()=>{const v=inputVec();return(v[0]||v[1])?v:FLH.vec},sfx,hud:FLH});
+  let popT=0;return{vec,st,pop(t){const p=$('flPop');p.textContent=t;p.style.opacity=1;clearTimeout(popT);popT=setTimeout(()=>{p.style.opacity=0},1800)},show(a,b,m){$('flFrom').textContent='von '+a;$('flTo').textContent=(m==='sea'?'⛵ ':m==='walk'?'🥾 ':'')+'Kurs: '+b;d.querySelector('.fh').textContent=m?'Lenken: Stick / WASD / Joystick · Kisten und Ringe sammeln, Hindernissen ausweichen':'Lenken: Stick / WASD (oben = hoch) · '+KH('atk')+' / Leertaste halten = Schnellfeuer, lange halten + loslassen = Riss-Strahl · Block-Wände zerschießen, Extras einsammeln';fb.style.display=m?'none':'';ib.style.display=m?'none':'';$('flPw').textContent='';$('flCo').textContent='';d.hidden=false},update(o){$('flP').style.width=Math.round(o.prog*100)+'%';$('flHp').textContent=Math.round(o.hp);$('flGot').textContent=o.got;$('flPw').textContent=o.pw||'';$('flCo').textContent=o.combo>=2?'×'+o.combo:'';$('flCh').firstChild.style.width=Math.round((o.chg||0)*100)+'%'},hide(){d.hidden=true}}})();
+const FL=createFlight({renderer,makeShip:()=>{const sv=[naut.spin,naut.ex],g=makeNaut();naut.spin=sv[0];naut.ex=sv[1];return g},makeIsle:n=>MINI.island(n),makeWalker:()=>{const f=makeFox();return{root:f.root,anim:(t,mv)=>animFox(f,t,mv,false)}},inputVec:()=>{const v=inputVec();return(v[0]||v[1])?v:FLH.vec},fireHeld:()=>FLH.st.fire||!!keys[INP.code('atk')]||!!keys.Space,invertY:()=>FLH.st.inv,sfx,hud:FLH});
 addEventListener('keydown',e=>{if(mode==='flight'&&(e.code==='Escape'||e.code==='Backspace')){e.preventDefault();FL.skip()}});
 const MINI=createMinis({T,M,mk,G,glow});
 const hx=c=>'#'+((c||0)>>>0).toString(16).padStart(6,'0');
@@ -1888,7 +1915,8 @@ function travelNodes(){const L=[],add=(n,x,y,o)=>L.push(Object.assign({n,x,y},o)
   add(13,5,14,{open:chOpen(13)});
   for(let n=1;n<=MAXCH;n++)add(n,5+(n-1)*9,n%2?60:36,{open:chOpen(n),done:chDone(n)});
   add(14,23,12,{open:chOpen(14),done:!!S.fl.pix_done});
-  for(const w of MW){const s=MWX().st(w.id);add(w.n,9.5+(w.link-1)*9,86,{open:MWX().unlocked(w),done:!!s.done,mw:w,prog:(s.m||0)+'/'+w.ms.length})}
+  /* Märchenwelten: mehrere hängen am selben Kapitel – gleichmäßig verteilt und versetzt in zwei Reihen, damit sich Inseln und Namen nicht überlappen */
+  const MWS=MW.slice().sort((a,b)=>a.link-b.link||a.n-b.n);MWS.forEach((w,i)=>{const s=MWX().st(w.id);add(w.n,12+i*(84/Math.max(1,MWS.length-1)),i%2?75:88,{open:MWX().unlocked(w),done:!!s.done,mw:w,prog:(s.m||0)+'/'+w.ms.length})});
   return L}
 function travelHTML(){const L=travelNodes(),P=n=>L.find(q=>q.n===n),sel=P(mState.tw)||P(curCh)||L[1];
   const seg=(a,b,lit,cl)=>a&&b?`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" class="${cl||''}${lit?' lit':''}"/>`:'';
@@ -1948,7 +1976,27 @@ function cineShot(who,i){if(mode!=='play'||!scene)return;const f=cineFocus(who),
   else if(k===2){const a=ang+Math.PI/2;p=[mx+Math.sin(a)*(sep+4),gy+2.4,mz+Math.cos(a)*(sep+4)];l=[mx,gy+1.3,mz];dr=[Math.sin(ang)*.35,0,Math.cos(ang)*.35]}
   else{const a=ang+Math.PI*.75;p=[mx+Math.sin(a)*7,gy+3.6,mz+Math.cos(a)*7];l=[mx,gy+1.2,mz];dr=[Math.cos(a)*.5,-.1,-Math.sin(a)*.5]}
   CAMO={t:0,p,l,dlg:true,drift:dr}}
-function cutscene(id,cb){const L=CUT[id];if(!L){cb&&cb();return}document.body.classList.add('cut');say(L.map(l=>l.slice()),()=>{document.body.classList.remove('cut');cineClear();cb&&cb()})}
+Object.assign(CUT,{
+"CJ_nia":[["Nia","Hey, Wolkenträumer! Ich bin Nia. Wenn ihr schon halb Elaris auf den Kopf stellt, will ich wenigstens dabei sein."],["Zotik","Ein Bogen mehr kann nicht schaden."],["Nia","Ein Bogen? Ich bin die beste Schützin zwischen hier und Valdoria. Gewöhn dich schon mal dran."],["Felli","Pip!"]],
+"CJ_rovan":[["Rovan","Ich habe lange geschwiegen. Doch der Klang des Kerns ruft mich zurück."],["Zotik","Du kennst die Geschichte des Risses?"],["Rovan","Ich war dabei. Ich erzähle sie, wenn die Zeit reif ist. Bis dahin halte ich euch den Rücken frei."]],
+"CJ_kael":[["Kael","Zwei Klingen sind besser als eine. Und ich schulde dem Berg noch einen Gefallen."],["Zotik","Willkommen im Team, Kael."],["Kael","Pass auf dich auf, Weltenhörer. Ich pass auf den Rest auf."]],
+"CJ_mirael":[["Mirael","Die Sterne haben euren Weg lange vorhergesagt. Ich wollte sehen, ob sie lügen."],["Nia","Und? Tun sie es?"],["Mirael","Bisher nicht. Das ist fast beunruhigend."]],
+"CJ_toren":[["Toren","Ein Schmied kennt jede Naht eines Dings. Und diese Welt hat überall Nähte, die aufplatzen."],["Zotik","Dann flick sie mit uns."],["Toren","Mit Hammer und Geduld. Gehen wir."]],
+"CJ_eryn":[["Eryn","Ich habe die Nacht gesehen, in der Welten sich spiegeln. Ich will nicht, dass sie je wieder dunkel wird."],["Lyra","Dann bist du hier richtig."],["Eryn","Ich hoffe es. Zeigt mir den Weg."]],
+"CJ_prof":[["Professorium","Faszinierend! Ein lebender Resonanzträger, und er läuft einfach herum und isst Äpfel."],["Zotik","Ich esse nicht nur Äpfel."],["Professorium","Das werde ich gewissenhaft notieren. Ich komme mit, ich muss doch alles dokumentieren."]],
+"CJ_mira":[["Mira","Das Dorf kann kurz ohne mich auskommen. Der Riss kann es nicht."],["Zotik","Danke, Mira. Mit dir fühlt es sich an wie Zuhause."],["Mira","Dann macht es zu einem. Los jetzt."]],
+"CJ_rico":[["RiCARDO","Funkcheck, eins, zwei. Hört mich jemand? Gut. Dann sende ich ab jetzt live aus eurer Mitte."],["Nia","Das ist der Typ vom Radio!"],["RiCARDO","Hier läuft der Soundtrack eures Abenteuers. Und ich spiele nur Hits."]],
+"CJ_aera":[["Aera","Wolken tragen mich, aber diesmal trage ich mich selbst. Ich komme mit."],["Nia","Endlich jemand, der mir den Himmel erklärt, ohne dass mir schwindelig wird."],["Aera","Das habe ich nicht versprochen."]],
+"MEM_LV10":[["Erzähler","Eine Rast am Wegrand. Zotik betrachtet seine Hände. Der Klang des Kerns antwortet leiser, aber näher."],["Zotik","Vor ein paar Tagen wusste ich nicht einmal, dass es andere Welten gibt."],["Felli","Pip pip."],["Zotik","Ja. Ich auch. Weiter geht's."]],
+"MEM_LV20":[["Erzähler","Nachts am Feuer. Die Sterne über den Welten stehen enger, als sie sollten."],["Lyra","Du bist nicht mehr der Junge aus Lunaris."],["Zotik","Doch. Nur ein bisschen lauter."],["Nia","Und deutlich besser im Ausweichen."]],
+"MEM_LV30":[["Erzähler","Ein stiller Morgen. Weit unten rauschen die Wolken, und der Kern summt ganz nah."],["Zotik","Ich höre ihn jetzt jeden Tag. Er klingt nicht mehr fremd."],["Rovan","Dann hörst du ihn richtig."],["Zotik","Ich bin bereit."]]
+});
+const CUTN={LUN:'Lunaris',ELA:'Elaris',VAL:'Valdoria',SOL:'Solmera',AQU:'Aqualis',FRO:'Frosthain',IGN:'Ignara',NOC:'Noctaris',AST:'Astralis',ELY:'Elyndra',FACE:'Gesichter des Risses',ENDING:'Ende',CJ:'Neuer Gefährte',MEM:'Erinnerung',RB:'Splitterschlüssel'};
+function cutName(id){const[a,b]=id.split('_'),w=CUTN[a]||'Zotik';let k=b||'';if(/ARRIVAL/.test(id))k='Ankunft';else if(/DEFEAT/.test(id))k='Nach dem Kampf';else if(a==='CJ'||a==='ENDING')k=(PARTY[(b||'').toLowerCase()]||{}).n||b;else if(a==='MEM')k=k.replace('LV','Stufe ');else k=k.charAt(0)+k.slice(1).toLowerCase();return w+' · '+k}
+function memHTML(){const seen=S.seen||{},ids=Object.keys(CUT),got=ids.filter(i=>seen[i]);let h='<h3>🎞️ Erinnerungen ('+got.length+'/'+ids.length+')</h3><div class="row"><span>Alle Szenen, die du erlebt hast, kannst du hier noch einmal ansehen.</span></div>';for(const i of ids){h+=seen[i]?'<div class="row"><span><b>'+cutName(i)+'</b><br><small>'+(CUT[i][0][1]||'').slice(0,70).replace(/</g,'&lt;')+'…</small></span><span><button class="cpb" data-mem="'+i+'">▶ Ansehen</button></span></div>':'<div class="row"><span>🔒 ???</span><span>noch nicht erlebt</span></div>'}return h}
+function replayCut(id){if(!CUT[id])return;toggleMenu(false);setTimeout(()=>cutscene(id),250)}
+function cutLater(id,n=0){if((dlg.on||menuOpen||mode!=='play')&&n<40)return setTimeout(()=>cutLater(id,n+1),1500);cutscene(id)}
+function cutscene(id,cb){const L=CUT[id];if(!L){cb&&cb();return}if(S&&S.seen&&!S.seen[id]){S.seen[id]=1;saveGame(true)}document.body.classList.add('cut');say(L.map(l=>l.slice()),()=>{document.body.classList.remove('cut');cineClear();cb&&cb()})}
 const CODE={2:'ELA',3:'VAL',4:'SOL',5:'AQU',6:'FRO',7:'IGN',8:'NOC',9:'AST',10:'ELY'},PZK={2:'ELA_TURM',3:'VAL_VALVES',4:'SOL_MIRRORS',5:'AQU_CURRENTS',6:'FRO_ICE',7:'IGN_VALVES',8:'NOC_MEMORY',9:'AST_DIALS',10:'ELY_ECHO'};
 function cutOf(n){if(n===11)return{arr:'END_ARRIVAL'};const ks=Object.keys(CUT).filter(k=>k.startsWith(CODE[n]+'_')),r={arr:CODE[n]+'_ARRIVAL'};r.def=ks.find(k=>k.endsWith('_DEFEAT'));const rest=ks.filter(k=>k!==r.arr&&k!==r.def);r.boss=rest[rest.length-1];r.mid=rest.length>1?rest[0]:null;return r}
 function lyraBridge(cb){if(!S.fl.bridge){S.fl.bridge=1;saveGame(true);cutscene('LUN_LYRA_BRIDGE',cb)}else if(cb)cb()}
@@ -2106,7 +2154,7 @@ function leadSkill2(){const id=S.lead,k=CSK2[id];if(!k||pl.dead||dlg.on||pl.cd.s
   else if(id==='mira'){const h=Math.round(maxHp()*.35);S.hp=Math.min(maxHp(),S.hp+h);dnum(pl.x,pl.y+2.3,pl.z,'+'+h,'h');fxRing(pl.x,pl.z,col,8,.6);sfx('heal');for(const c of CMP){if(c.ko)cmpRevive(c,.4);else c.hp=Math.min(cmax(c.id),c.hp+cmax(c.id)*.3)}S.mp=Math.min(maxMp(),S.mp+15)}}
 function leadRanged(){const d=S.lead&&PARTY[S.lead];return d&&!d.melee?d:null}
 function setLead(id){if(id&&!CMP.some(a=>a.id===id))return;if(naut.on&&id)return toast('Erst aus der Nautilux aussteigen');S.lead=id||undefined;fox.root.visible=!id&&!naut.on;const a=id&&CMP.find(c=>c.id===id);if(a){a.ko=false;a.P.root.visible=true}if(X.deck)X.deck.dirty=true;document.querySelectorAll('#mates .pm').forEach(e=>e.classList.toggle('lead',e.dataset.id===id));sfx('pick');toast(id?'🔄 Du steuerst jetzt '+PARTY[id].n+(CSK[id]?' · Fähigkeit 1: '+CSK[id].em+' '+CSK[id].n:''):'🦊 Du steuerst wieder Zotik')}
-function joinParty(id){if(S.party.includes(id))return;if(PERM.includes(id)&&kept().length>=3){const o=kept().find(x=>!PERM.includes(x));if(o){partyLeave(o,true);S.res=S.res||[];if(!S.res.includes(o))S.res.push(o);toast('🏕️ '+PARTY[o].n+' wartet im Camp')}}S.party.push(id);addCmp(id);rebuildMates();sfx('level');toast('🤝 '+PARTY[id].n+' schließt sich dir an');saveGame(true)}
+function joinParty(id){if(S.party.includes(id))return;if(PERM.includes(id)&&kept().length>=3){const o=kept().find(x=>!PERM.includes(x));if(o){partyLeave(o,true);S.res=S.res||[];if(!S.res.includes(o))S.res.push(o);toast('🏕️ '+PARTY[o].n+' wartet im Camp')}}S.party.push(id);addCmp(id);rebuildMates();sfx('level');toast('🤝 '+PARTY[id].n+' schließt sich dir an');saveGame(true);if(CUT['CJ_'+id]&&!S.fl['cj_'+id]){S.fl['cj_'+id]=1;cutLater('CJ_'+id)}}
 /* Platz neben Zotik, quer zur Blickrichtung der Kamera (nie in der Sichtlinie) */
 const CSLOT=[[-2.6,.3],[2.6,.3],[-4.3,1.4],[4.3,1.4]];
 function trailUpd(){const T=X.trail||(X.trail=[]),l=T[T.length-1];if(!l||Math.hypot(pl.x-l[0],pl.z-l[1])>8){T.length=0;T.push([pl.x,pl.z])}else if(Math.hypot(pl.x-l[0],pl.z-l[1])>.45){T.push([pl.x,pl.z]);if(T.length>80)T.shift()}}
@@ -3329,7 +3377,7 @@ function ruinGate(n,g,wc){const S0=TWS[n]||TWS[1],wm=TX.tri(S0.t,n===1?wc:S0.w,{
   if(S0.moss)for(const s of [-1,1])g.add(mk(G.sph,M(0x4a7a30,{r:.9}),s*1.6,3.1,.25,.55,.4,.5,false));
   g.add(glow(S0.gl,4,0,3.9,.5,.5))}
 function buildRuin(n,col,outside){const P=n+'r',spec=RUIN[n]||RUIN[1],wc=col||0x6a6c8c;
-  const fl=mk(G.box,TX.tri('cobble',0x9a9aa8,{s:.45,gain:2.3,r:1,e:0x1e1610,ei:1}),0,-.05,350,26,.1,34,false);fl.receiveShadow=true;scene.add(fl);ruinDress(n,wc);
+  const fl=mk(G.box,TX.tri('cobble',0x9a9aa8,{s:.45,gain:2.3,r:1,e:0x1e1610,ei:1}),0,-.05,350,26,.1,34,false);fl.receiveShadow=true;scene.add(fl);{const gr=mk(G.box,TX.tri('cobble',0x5a5a68,{s:.45,gain:1.6,r:1,e:0x120e0a,ei:1}),0,-3.2,350,220,6,220,false);gr.receiveShadow=true;scene.add(gr)}ruinDress(n,wc);
   /* Außenmauern mit Eingang im Süden */
   obWall(0,333,13,.5,wc);obWall(-13,350,.5,17,wc);obWall(13,350,.5,17,wc);obWall(-7.5,367,5.5,.5,wc);obWall(7.5,367,5.5,.5,wc);
   /* Zwischenwände mit Durchgang (x -2..2) */
@@ -3351,6 +3399,9 @@ function buildRuin(n,col,outside){const P=n+'r',spec=RUIN[n]||RUIN[1],wc=col||0x
   X.rpz=RMS().build(kind,RUIN_AREA[kind],{lv:n,R:mul32(9001+n*77),tx:0,tz:338,solved:!!S.obst[gid]},()=>ruinGuard(RW));
   /* Wie in klassischen Dungeons: Hinterhalt beim Betreten der ersten beiden Räume */
   animObjs.push({fn(){if(X.rw!==RW||pl.dead||dlg.on||MP.role==='guest'||Math.abs(pl.x)>12.5)return;RW.secs.forEach((q,i)=>{if(!RW.done[i]&&pl.z>q[0]&&pl.z<q[1]){RW.done[i]=1;ruinWave(RW,i)}})}});
+  /* Feststecken in der Ruine: läuft man 6 s ohne Fortschritt, kommt ein Hinweis, nach 14 s befreit das Spiel automatisch */
+  {let sx=0,sz=0,st=0,hint=0;animObjs.push({fn(t,dt){if(X.rw!==RW||pl.z<300)return;const [ix,iy]=dlg.on?[0,0]:inputVec();if(!(ix||iy)||pl.dead||dlg.on||naut.on||X.hook||MP.role==='guest'||menuOpen){st=0;hint=0;sx=pl.x;sz=pl.z;return}
+    if(Math.hypot(pl.x-sx,pl.z-sz)>.6){st=0;hint=0;sx=pl.x;sz=pl.z;return}st+=dt;if(st>6&&!hint){hint=1;toast('Feststecken? Menü → Steuerung → 🆘 Befreien')}if(st>14){st=0;hint=0;unstuck()}}})}
   /* Ein- und Ausgang */
   const [ox,oz]=outside,y=hgt(ox,oz),g=new T.Group();g.position.set(ox,y,oz);ruinGate(n,g,wc);scene.add(g);addCol(ox-1.6,oz,.6);addCol(ox+1.6,oz,.6);
   const need=[...new Set(spec.map(k=>({block:'',block2:'',water:'ice',hook:'hook',crack:'bomb',crack2:'bomb',thorn:'fire',thorn2:'fire',torch:'fire',torch2:'fire'})[k]).filter(Boolean))];
@@ -3374,7 +3425,7 @@ function unstuck(){if(pl.dead||X.hook||naut.on)return toast('Gerade nicht mögli
   for(let r=1;r<=40&&bx===null;r+=1.5)for(let a=0;a<16;a++){const x=pl.x+Math.cos(a*.3927)*r,z=pl.z+Math.sin(a*.3927)*r;if(ok(x,z)&&ok(x+1.2,z)&&ok(x-1.2,z)&&ok(x,z+1.2)&&ok(x,z-1.2)){bx=x;bz=z;break}}
   if(bx===null){const sp=WLD&&WLD.spawn?WLD.spawn:[0,9];bx=sp[0];bz=sp[1]}
   ruinGo(bx,bz,pl.face,false);toast('🆘 Befreit – du stehst an einem freien Ort')}
-function ruinGo(x,z,face,inside){$('fade').style.opacity=1;setTimeout(()=>{pl.x=x;pl.z=z;pl.y=hgt(x,z);pl.vx=pl.vz=0;pl.face=face;camYaw=face+Math.PI;camTarget.set(pl.x,pl.y+1.5,pl.z);camPos.set(pl.x,pl.y+4,pl.z+(inside?8:-8));fel.x=pl.x+1;fel.z=pl.z+1;placeParty();lockOff();$('fade').style.opacity=0;if(inside)banner('Werkzeug-Ruine','Schiebe, sprenge, brenne, friere');},400)}
+function ruinGo(x,z,face,inside){$('fade').style.opacity=1;setTimeout(()=>{pl.x=x;pl.z=z;pl.y=hgt(x,z);pl.vx=pl.vz=0;pl.face=face;camYaw=face+Math.PI;camTarget.set(pl.x,pl.y+1.5,pl.z);camPos.set(pl.x,pl.y+4,pl.z+(inside?8:-8));fel.x=pl.x+1;fel.z=pl.z+1;placeParty();lockOff();$('fade').style.opacity=0;if(inside)banner('Werkzeug-Ruine','Ausgang im Süden · schiebe, sprenge, brenne, friere');},400)}
 function ruinSpot(h,blk,path,R){for(let t=0;t<400;t++){const z=-70-R()*60,side=R()<.5?-1:1,x=path(z)+side*(WLD&&WLD.cw?6+R()*4:9+R()*6);if(Math.abs(x)>110)continue;   /* Areal-Welten: näher am Weg (Gasse) */let ok=!blk(x,z)&&h(x,z)<5.5;for(let a=0;a<8&&ok;a++){const px=x+Math.cos(a*.785)*3,pz=z+Math.sin(a*.785)*3;if(blk(px,pz))ok=false}
     if(ok&&COL.some(c=>Math.hypot(c.x-x,c.z-z)<c.r+3.2))ok=false;if(ok)return[x,z]}return[path(-90)+8,-90]}
 /* ---------------- Echogrotte ---------------- */
