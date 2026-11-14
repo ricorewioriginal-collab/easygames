@@ -119,7 +119,7 @@ export function createOnline(C) {
   /* ---------- Emotes ---------- */
   const emoOk = id => { const e = EMO.find(x => x[0] === id); if (!e) return false; if (e[3] === 'frei' || emo()[id]) return true;
     if (id === 'blade') return C.chDone(1); if (id === 'chair') return C.chDone(3); if (id === 'robot') return Object.keys(S().ach || {}).length >= 8; return false };
-  let cur = null;
+  let cur = null, hold = false;
   function emoAnim(f, id, t, pos, dt) {
     const b = f.body, A = f.arms, L = f.legs, s = Math.sin, k = Math.min(1, t * 4), rnd = Math.random, P = pos;
     const fx = (c, n, up, g) => { if (rnd() < dt * n) C.emit(P.x + (rnd() - .5) * .8, P.y + 1 + rnd(), P.z + (rnd() - .5) * .8, c, 1, 1.5, .9, .45, g ?? -1, up ?? 1) };
@@ -222,9 +222,12 @@ export function createOnline(C) {
     ev, events: evs,
     kill(e) { const h = evs().reduce((a, x) => a + (x.herb || 0), 0); if (h && Math.random() < h) { S().herbs++; C.toast('🌿 Kraut gefunden') } },
     npc, emoOk,
+    /* Fotomodus: Pose halten ('' = keine) */
+    pose(id) { hold = !!id; cur = id && emoOk(id) ? { id, t: 0 } : null },
+    poses: () => EMO.filter(e => emoOk(e[0])).map(e => ({ id: e[0], icon: e[1], name: e[2] })),
     emote(id) { if (!emoOk(id)) return C.toast('🔒 Noch nicht freigeschaltet'); cur = { id, t: 0 }; C.toggleMenu(false) },
     emoIdx: () => cur ? EMO.findIndex(x => x[0] === cur.id) + 1 : 0, emoT: () => cur ? Math.round(cur.t * 10) / 10 : 0,
-    player(f, dt, pl) { if (!cur) return; if (pl.mv > .1 || pl.atk >= 0 || pl.dash > 0 || pl.dead) { cur = null; return } cur.t += dt; emoAnim(f, cur.id, cur.t, f.root.position, dt); if (cur.t > 3.4) cur = null },
+    player(f, dt, pl) { if (!cur) return; if (pl.mv > .1 || pl.atk >= 0 || pl.dash > 0 || pl.dead) { cur = null; return } cur.t += dt; emoAnim(f, cur.id, cur.t, f.root.position, dt); if (cur.t > 3.4 && !hold) cur = null },
     remote(f, idx, t, dt) { const e = EMO[idx - 1]; if (e) emoAnim(f, e[0], t, f.root.position, dt) },
     tick(dt) {
       if (C.inLunaris() && grp.userData.t !== (home().t || 0)) rebuild();
