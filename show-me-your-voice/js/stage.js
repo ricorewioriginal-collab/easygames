@@ -355,7 +355,8 @@
     for (const f of this.fx) {
       const k = f.t / 0.8; c.globalAlpha = 1 - k; c.fillStyle = f.col;
       c.font = `900 ${Math.round(22 * f.s * (1 + 0.2 * (1 - k)))}px system-ui,sans-serif`;
-      c.fillText(f.txt, f.x, f.y - k * 40);
+      const hw = c.measureText(f.txt).width / 2 + 6;   // am Rand (schmales Handy) nicht abschneiden
+      c.fillText(f.txt, Math.min(this.w - hw, Math.max(hw, f.x)), f.y - k * 40);
     }
     c.globalAlpha = 1;
     this.drawHud(now);

@@ -28,7 +28,7 @@
       "list": [
         "🎤 Casting: Du kommst mit mindestens 2 von 3 Jury-Ja weiter. Bei genau einem Ja gibt es eine Zugabe a cappella. Rico hat einmal pro Staffel ein Goldenes Ticket: Bei genau einem Ja und mindestens 55 Punkten Performance bist du trotzdem weiter.",
         "🔁 Gruppen-Recall: Du singst in einer Dreiergruppe (Rhythmus, Gruppenteil, Gesang), bewertet wird jede Stimme einzeln. Die Top 8 der Gesamtwertung kommen in die Mottoshow.",
-        "🎭 Mottoshow: Motto „Best of 80er & 90er“, „Iconic Hits“ oder „Herzensmomente“. Die Top 6 kommen ins Battle.",
+        "🎭 Mottoshow: Motto „Best of 80er & 90er“, „Iconic Hits“, „Herzensmomente“, „Deutsch-Pop-Nacht“, „Party-Hymnen“ oder „Film & Musical“. Die Top 6 kommen ins Battle.",
         "⚔️ Battle: Duelle nach der Rangfolge der Vorrunde (Platz 1 gegen Letzten, 2 gegen Vorletzten …). Die Jury-Mehrheit gewinnt das Duell. Von den Verlierern wird der mit den meisten Votes gerettet.",
         "⭐ Halbfinale: Gesang und Rhythmus. Die Top 3 erreichen das Finale, Votes zählen 30 %.",
         "👑 Finale: Platz 1 bis 3 nach Gesamtwertung."
@@ -232,7 +232,14 @@
         "Herz der Community: in einer Runde die meisten Votes geholt.",
         "Top 6: die Mottoshow überstanden.",
         "Durchhalter: das Finale erreicht.",
-        "Sieger: eine Staffel gewonnen."
+        "Sieger: eine Staffel gewonnen.",
+        "Einstimmig: im Casting alle drei Jury-Ja holen.",
+        "Goldenes Ticket: mit nur einem Ja, aber mindestens 55 Performance-Punkten rettet dich Rico (einmal pro Staffel).",
+        "Duellant: ein Battle gewinnen.",
+        "Gerettet: ein Battle verlieren, aber die meisten Votes aller Verlierer haben.",
+        "Makellos: einen Auftritt mit mindestens 95 Performance-Punkten.",
+        "Fan-Liebling: 100 Fans – Community-Aktionen, Show-Momente und gute Auftritte helfen.",
+        "Legende: drei Staffeln gewinnen."
       ]
     },
     {
@@ -253,7 +260,10 @@
       "q": "Das Mikrofon funktioniert nicht.",
       "a": "Schalte das Mikrofon in den Einstellungen ein und erlaube den Zugriff im Browser. Das Spiel erkennt nur die Tonhöhe und nimmt in der Karriere nichts auf. Mit Kopfhörern zählt die Musik nicht mit."
     },
-    {"q": "Kann ich ein USB- oder SingStar-Mikrofon benutzen?", "a": "Ja. In den Einstellungen (Mikrofon-Modus an) unter „🎤 Welches Mikrofon“ das Gerät wählen – USB-Mikrofon, Headset, Kamera-Mikro oder den SingStar-Empfänger. Beim SingStar-Empfänger wählt das Spiel automatisch den Kanal „Links (blau)“; für das rote Mikro „Rechts (rot)“ wählen. Mit „Mikrofon testen“ siehst du Pegel und erkannten Ton."},
+    {
+      "q": "Kann ich ein USB- oder SingStar-Mikrofon benutzen?",
+      "a": "Ja. In den Einstellungen (Mikrofon-Modus an) unter „🎤 Welches Mikrofon“ das Gerät wählen – USB-Mikrofon, Headset, Kamera-Mikro oder den SingStar-Empfänger. Beim SingStar-Empfänger wählt das Spiel automatisch den Kanal „Links (blau)“; für das rote Mikro „Rechts (rot)“ wählen. Mit „Mikrofon testen“ siehst du Pegel und erkannten Ton."
+    },
     {
       "q": "Die Noten passen nicht zur Musik.",
       "a": "Stell in den Einstellungen den Audio-Versatz ein (Noten früher oder später). Erlaubt ein Radiostream keine Analyse, folgen die Noten dem Takt des gewählten Stils."

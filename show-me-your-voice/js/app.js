@@ -13,7 +13,8 @@
   const jur = id => D.JURY.find(j => j.id === id);
   // Bild eines Jurors: Foto (Stammjury) oder gezeichneter Avatar (Gastjuroren)
   const jimg = (j, cls) => j.img ? `<img class="${cls || 'jimg'}" src="${j.img}" alt="${esc(j.name)}">` : `<span class="${cls || 'jimg'} jav" role="img" aria-label="${esc(j.name)}">${AV.svg(j.look, 'neutral')}</span>`;
-  const ico = (i, cls) => `<span class="ico ${cls || ''}" style="background-position:${(i / 9 * 100).toFixed(3)}% 0" aria-hidden="true"></span>`;
+  const ico = (i, cls) => typeof i === 'string' ? `<span class="ico emo ${cls || ''}" aria-hidden="true">${i}</span>`
+    : `<span class="ico ${cls || ''}" style="background-position:${(i / 9 * 100).toFixed(3)}% 0" aria-hidden="true"></span>`;
   const meter = (v, max) => `<div class="meter"><i style="width:${Math.max(0, Math.min(100, v / (max || 100) * 100))}%"></i></div>`;
 
   let save = load(), cur = 'sLoad', stage = null, flow = null, timers = [];
@@ -365,7 +366,7 @@
     if (e.target.closest('#bGo')) { backTo.sTalk = 'sPrep'; go('sTalk', prepMode); }
   });
   // ---------- Jury verteilt Songs (wie bei DSDS): manchmal im Recall und in der Mottoshow ----------
-  const ASSIGN_POOL = { retro: ['retro'], iconic: ['pop', 'rock', 'soul', 'party'], herz: ['ballade', 'soul', 'deutsch'] };
+  const ASSIGN_POOL = { retro: ['retro'], iconic: ['pop', 'rock', 'soul', 'party'], herz: ['ballade', 'soul', 'deutsch'], deutsch: ['deutsch'], party: ['party'], film: ['ballade', 'pop'] };
   function assignOf(s) {
     const def = s && D.ROUNDS[s.round]; if (!def || (def.id !== 'recall' && def.id !== 'motto')) return null;
     const R = S.rng(S.hash(s.seed + ':assign:' + s.round)); if (R() > 0.45) return null;   // nicht immer – etwa jedes zweite Mal
@@ -397,7 +398,9 @@
     talk.mode = mode || talk.mode; talk.qi = 0; talk.symp = {}; talk.votes = 0; talk.log = [];
     const s = save.season, career = talk.mode === 'career', def = career ? D.ROUNDS[s.round] : D.ROUNDS[0];
     talk.casting = def.id === 'casting';
-    talk.list = talk.casting ? D.INTERVIEW : [D.HOST_Q[(s ? s.round : 0) % D.HOST_Q.length]];
+    const vr = career && s ? s.seed : Math.floor(Math.random() * 1e6);   // Fragen wechseln je Staffel
+    talk.list = talk.casting ? ['Marc', 'Lena', 'David'].map((n, i) => { const g = D.INTERVIEW.filter(q => q.q.startsWith(n)); return g[(vr >>> i) % g.length]; })
+      : [D.HOST_Q[((s ? s.round : 0) + vr) % D.HOST_Q.length]];
     let wait = '';
     if (career && talk.casting) {
       const me = s.order.indexOf('p'), before = s.order.slice(0, me).map(cand);
