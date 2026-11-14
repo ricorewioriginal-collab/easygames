@@ -42,7 +42,7 @@
   button{font:inherit;color:inherit;cursor:pointer}
   .hidden{display:none!important}
   .daybar{display:flex;gap:10px;align-items:center;margin:0 0 12px;padding:10px 14px;border:1px solid #ffc53d66;border-radius:14px;background:#ffc53d14;color:inherit;text-decoration:none;font-weight:600}
-  .promo{margin:0 0 12px;border:1px solid #8a5cff66;border-radius:14px;background:#8a5cff14}.promo summary{cursor:pointer;padding:10px 14px;font-weight:600}.promo video{display:block;width:min(100%,360px);max-height:70vh;margin:0 auto 14px;border-radius:12px;background:#000}
+  .promo{margin:0 0 12px;border:1px solid #8a5cff66;border-radius:14px;background:#8a5cff14}.promo summary{cursor:pointer;padding:10px 14px;font-weight:600}.promo video{display:block;width:min(100%,360px);max-height:70vh;margin:0 auto 14px;border-radius:12px;background:#000}#promoTrailer video.wide{width:min(100%,760px)}.trtabs{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0 10px 10px}.trtabs .pill[aria-selected=true]{background:#8a5cff;color:#fff;border-color:#8a5cff}.promo .promoplay{display:flex;align-items:center;width:max-content;margin:0 auto 14px}
   .daybar small{opacity:.8;font-weight:500}.daybar .go{margin-left:auto;white-space:nowrap}
   main{max-width:1040px;margin:0 auto;padding:calc(22px + env(safe-area-inset-top)) 18px 56px}
   header{margin-bottom:22px}
@@ -411,6 +411,7 @@
       </nav>
     <div class="appbar hidden" id="appBar"></div>
     <a class="daybar hidden" id="dayBar" href="heute.html"></a>
+    <details class="promo" id="promoTrailer"><summary>🎬 Neue Trailer: Taschi, Zotik, Bunte Insel, AnMaCha</summary><div class="trtabs" id="trTabs" role="tablist"></div><video id="trVid" controls playsinline preload="none"></video><a class="pill promoplay" id="trPlay" href="taschi/">▶ Jetzt kostenlos spielen</a></details>
     <details class="promo" id="promo"><summary>🎬 Video: Radio hören und nebenbei zocken</summary><video id="promoVid" controls playsinline preload="none" poster="https://ricorewioriginal-collab.github.io/easygames/promo/easygames-promo.jpg"></video></details>
   </header>
   <section class="feat hide-embed" id="feat"><div class="hero hidden" id="hero" aria-label="Empfohlenes Spiel"></div><div class="featside hidden" id="featSide" aria-label="Beliebte Spiele"></div></section>
@@ -1083,6 +1084,21 @@ catalog.then(c => {
 })();
 
 // ----- Tagesspiel und Serie (Hinweis): Spiel des Tages (für alle gleich), Serie, ob heute schon eingetragen; Benachrichtigung höchstens einmal am Tag und nur, wenn der Browser/die App sie schon erlaubt hat -----
+(function trailers() {
+  var B = 'https://ricorewioriginal-collab.github.io/easygames/promo/', d = document.getElementById('promoTrailer'), v = document.getElementById('trVid'), tabs = document.getElementById('trTabs'), play = document.getElementById('trPlay');
+  var list = [['taschi', '✨ Taschi'], ['zotik', '💠 Zotik'], ['bunte-insel', '🚓 Bunte Insel'], ['anmacha-podcast-tycoon', '🎙️ AnMaCha']], cur = 0;
+  var fmt = function () { return matchMedia('(orientation: portrait)').matches ? '9x16' : '16x9'; };
+  var show = function (i, load) {
+    cur = i; var id = list[i][0], k = fmt(), f = B + id + '-trailer-' + k;
+    [].forEach.call(tabs.children, function (b, j) { b.setAttribute('aria-selected', j === i); });
+    v.className = k === '16x9' ? 'wide' : ''; v.poster = f + '.jpg'; play.href = id + '/';
+    if (v.getAttribute('src') !== f + '.mp4') v.src = f + '.mp4';
+    if (load) v.play().catch(function () {});
+  };
+  list.forEach(function (t, i) { var b = document.createElement('button'); b.type = 'button'; b.className = 'pill'; b.setAttribute('role', 'tab'); b.textContent = t[1]; b.onclick = function () { show(i, true); }; tabs.appendChild(b); });
+  d.addEventListener('toggle', function once() { d.removeEventListener('toggle', once); show(0, false); });
+  d.addEventListener('toggle', function () { if (!this.open) v.pause(); });
+})();
 document.getElementById('promo').addEventListener('toggle', function () { var v = document.getElementById('promoVid'); if (this.open) { if (!v.src) v.src = 'https://ricorewioriginal-collab.github.io/easygames/promo/easygames-promo.mp4'; } else v.pause(); });
 (function dayBar() {
   if (embedMode) return;
