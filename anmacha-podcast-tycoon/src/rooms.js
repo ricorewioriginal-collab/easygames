@@ -221,7 +221,7 @@
       if (shifts(t.id) >= lim) { say('Für heute genug geschuftet (' + lim + '/' + lim + ' Schichten). Morgen wieder!'); AMC.Audio.sfx('miss'); return; }
       const n0 = K.needs(R.who); if (n0.energy < 12) { say('😴 Zu müde für eine Schicht. Erst ausruhen – zu Hause, in Gisela oder mit Kaffee.'); AMC.Audio.sfx('miss'); return; }
       const box = U.el('div', 'sh-mini'); box.id = 'hmMini'; U.$('homeUi').appendChild(box); R.busy = 99;
-      if (me) { me.play(J.mini === 'rhythm' || J.mini === 'simon' ? 'dance' : 'knock', { fade: 0.2 }); R.w.anim = 'busy'; }
+      if (me) { me.play(J.mini === 'rhythm' || J.mini === 'simon' ? 'dance' : 'push', { fade: 0.2 }); R.w.anim = 'busy'; }
       const go = song => {
         if (!K.alive(R)) { box.remove(); return; }
         const o = Object.assign({ color: t.col }, J.o, song ? { song } : {});
