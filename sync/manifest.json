@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3f44fe0d21f2",
- "generated": "2026-11-14T22:38:36+00:00",
- "commit": "e0d2a05cc27c42b20255f5cb31ea71f60580ad8f",
+ "version": "4eaaef92d6b3",
+ "generated": "2026-11-14T23:39:52+01:00",
+ "commit": "bf0dbf93707510142b6e1c78001eb1b762114f50",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -12984,7 +12984,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262891,
-   "h": "bfc69ca49657ca094383d22b54d74f9ad2d141354f09aad1635c70ae3f4b1071"
+   "h": "82ef9461c05b90c8247975805ddde21afb8dfbd37d4954d72548c1aa176e10cd"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -15493,8 +15493,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 76433,
-   "h": "1370f73631f8bcc786de84863b6a7943e8b7ff011663b7bbf0831954373ecc04"
+   "s": 76448,
+   "h": "20e2dc023f584f57dd378e8a2741b5bef2f088c48a60b12a7b11442c5390e6d7"
   },
   {
    "p": "zotik/manifest.webmanifest",
