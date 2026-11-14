@@ -69,8 +69,10 @@
     tick() { noise(now(), 0.03, 0.12, 6000); },
     hit(m) { tone('triangle', mtof(m), now(), 0.22, 0.32); tone('sine', mtof(m + 12), now(), 0.12, 0.08); },
     miss() { noise(now(), 0.09, 0.18, 0, fx, 400); },
-    click() { tone('square', 880, now(), 0.04, 0.08); },
-    move() { tone('sine', 660, now(), 0.03, 0.05); },
+    // UI-Klang der Show: weiches Glas-Pling, Auswahl als kleiner Dur-Akkord, Bildwechsel als Luftzug
+    click() { [76, 83, 88].forEach((m, i) => tone('triangle', mtof(m), now() + i * 0.018, 0.16, 0.07)); },
+    move() { const m = [72, 74, 76, 79, 81][(SFX.mi = ((SFX.mi || 0) + 1) % 5)]; tone('sine', mtof(m), now(), 0.09, 0.06); tone('sine', mtof(m + 12), now(), 0.05, 0.02); },
+    whoosh() { for (let i = 0; i < 6; i++) noise(now() + i * 0.025, 0.05, 0.035 * (1 - i / 7), 900 + i * 700); },
     yes() { [60, 64, 67, 72].forEach((m, i) => tone('triangle', mtof(m + 12), now() + i * 0.07, 0.25, 0.25)); },
     no() { [62, 58].forEach((m, i) => tone('sawtooth', mtof(m), now() + i * 0.16, 0.3, 0.12)); },
     buzzer() { tone('sawtooth', 110, now(), 0.6, 0.18); tone('square', 116, now(), 0.6, 0.08); },
