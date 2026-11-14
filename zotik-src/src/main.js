@@ -3329,7 +3329,7 @@ function ruinGate(n,g,wc){const S0=TWS[n]||TWS[1],wm=TX.tri(S0.t,n===1?wc:S0.w,{
   if(S0.moss)for(const s of [-1,1])g.add(mk(G.sph,M(0x4a7a30,{r:.9}),s*1.6,3.1,.25,.55,.4,.5,false));
   g.add(glow(S0.gl,4,0,3.9,.5,.5))}
 function buildRuin(n,col,outside){const P=n+'r',spec=RUIN[n]||RUIN[1],wc=col||0x6a6c8c;
-  const fl=mk(G.box,TX.tri('cobble',0x9a9aa8,{s:.45,gain:2.3,r:1,e:0x1e1610,ei:1}),0,-.05,350,26,.1,34,false);fl.receiveShadow=true;scene.add(fl);ruinDress(n,wc);
+  const fl=mk(G.box,TX.tri('cobble',0x9a9aa8,{s:.45,gain:2.3,r:1,e:0x1e1610,ei:1}),0,-.05,350,26,.1,34,false);fl.receiveShadow=true;scene.add(fl);{const gr=mk(G.box,TX.tri('cobble',0x5a5a68,{s:.45,gain:1.6,r:1,e:0x120e0a,ei:1}),0,-3.2,350,220,6,220,false);gr.receiveShadow=true;scene.add(gr)}ruinDress(n,wc);
   /* Außenmauern mit Eingang im Süden */
   obWall(0,333,13,.5,wc);obWall(-13,350,.5,17,wc);obWall(13,350,.5,17,wc);obWall(-7.5,367,5.5,.5,wc);obWall(7.5,367,5.5,.5,wc);
   /* Zwischenwände mit Durchgang (x -2..2) */
@@ -3351,6 +3351,9 @@ function buildRuin(n,col,outside){const P=n+'r',spec=RUIN[n]||RUIN[1],wc=col||0x
   X.rpz=RMS().build(kind,RUIN_AREA[kind],{lv:n,R:mul32(9001+n*77),tx:0,tz:338,solved:!!S.obst[gid]},()=>ruinGuard(RW));
   /* Wie in klassischen Dungeons: Hinterhalt beim Betreten der ersten beiden Räume */
   animObjs.push({fn(){if(X.rw!==RW||pl.dead||dlg.on||MP.role==='guest'||Math.abs(pl.x)>12.5)return;RW.secs.forEach((q,i)=>{if(!RW.done[i]&&pl.z>q[0]&&pl.z<q[1]){RW.done[i]=1;ruinWave(RW,i)}})}});
+  /* Feststecken in der Ruine: läuft man 6 s ohne Fortschritt, kommt ein Hinweis, nach 14 s befreit das Spiel automatisch */
+  {let sx=0,sz=0,st=0,hint=0;animObjs.push({fn(t,dt){if(X.rw!==RW||pl.z<300)return;const [ix,iy]=dlg.on?[0,0]:inputVec();if(!(ix||iy)||pl.dead||dlg.on||naut.on||X.hook||MP.role==='guest'||menuOpen){st=0;hint=0;sx=pl.x;sz=pl.z;return}
+    if(Math.hypot(pl.x-sx,pl.z-sz)>.6){st=0;hint=0;sx=pl.x;sz=pl.z;return}st+=dt;if(st>6&&!hint){hint=1;toast('Feststecken? Menü → Steuerung → 🆘 Befreien')}if(st>14){st=0;hint=0;unstuck()}}})}
   /* Ein- und Ausgang */
   const [ox,oz]=outside,y=hgt(ox,oz),g=new T.Group();g.position.set(ox,y,oz);ruinGate(n,g,wc);scene.add(g);addCol(ox-1.6,oz,.6);addCol(ox+1.6,oz,.6);
   const need=[...new Set(spec.map(k=>({block:'',block2:'',water:'ice',hook:'hook',crack:'bomb',crack2:'bomb',thorn:'fire',thorn2:'fire',torch:'fire',torch2:'fire'})[k]).filter(Boolean))];
@@ -3374,7 +3377,7 @@ function unstuck(){if(pl.dead||X.hook||naut.on)return toast('Gerade nicht mögli
   for(let r=1;r<=40&&bx===null;r+=1.5)for(let a=0;a<16;a++){const x=pl.x+Math.cos(a*.3927)*r,z=pl.z+Math.sin(a*.3927)*r;if(ok(x,z)&&ok(x+1.2,z)&&ok(x-1.2,z)&&ok(x,z+1.2)&&ok(x,z-1.2)){bx=x;bz=z;break}}
   if(bx===null){const sp=WLD&&WLD.spawn?WLD.spawn:[0,9];bx=sp[0];bz=sp[1]}
   ruinGo(bx,bz,pl.face,false);toast('🆘 Befreit – du stehst an einem freien Ort')}
-function ruinGo(x,z,face,inside){$('fade').style.opacity=1;setTimeout(()=>{pl.x=x;pl.z=z;pl.y=hgt(x,z);pl.vx=pl.vz=0;pl.face=face;camYaw=face+Math.PI;camTarget.set(pl.x,pl.y+1.5,pl.z);camPos.set(pl.x,pl.y+4,pl.z+(inside?8:-8));fel.x=pl.x+1;fel.z=pl.z+1;placeParty();lockOff();$('fade').style.opacity=0;if(inside)banner('Werkzeug-Ruine','Schiebe, sprenge, brenne, friere');},400)}
+function ruinGo(x,z,face,inside){$('fade').style.opacity=1;setTimeout(()=>{pl.x=x;pl.z=z;pl.y=hgt(x,z);pl.vx=pl.vz=0;pl.face=face;camYaw=face+Math.PI;camTarget.set(pl.x,pl.y+1.5,pl.z);camPos.set(pl.x,pl.y+4,pl.z+(inside?8:-8));fel.x=pl.x+1;fel.z=pl.z+1;placeParty();lockOff();$('fade').style.opacity=0;if(inside)banner('Werkzeug-Ruine','Ausgang im Süden · schiebe, sprenge, brenne, friere');},400)}
 function ruinSpot(h,blk,path,R){for(let t=0;t<400;t++){const z=-70-R()*60,side=R()<.5?-1:1,x=path(z)+side*(WLD&&WLD.cw?6+R()*4:9+R()*6);if(Math.abs(x)>110)continue;   /* Areal-Welten: näher am Weg (Gasse) */let ok=!blk(x,z)&&h(x,z)<5.5;for(let a=0;a<8&&ok;a++){const px=x+Math.cos(a*.785)*3,pz=z+Math.sin(a*.785)*3;if(blk(px,pz))ok=false}
     if(ok&&COL.some(c=>Math.hypot(c.x-x,c.z-z)<c.r+3.2))ok=false;if(ok)return[x,z]}return[path(-90)+8,-90]}
 /* ---------------- Echogrotte ---------------- */
