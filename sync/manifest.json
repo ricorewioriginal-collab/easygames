@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "0fe2957f0db7",
- "generated": "2026-11-14T17:49:42+00:00",
- "commit": "c7bf943c47d43f633eae134b0cc79cefeeca347f",
+ "version": "0ce33f0f46e8",
+ "generated": "2026-11-14T19:30:22+01:00",
+ "commit": "403e413357e5f0a02e56a13937f0f214ca3380dd",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9652,6 +9652,11 @@
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
   },
   {
+   "p": "riftzone/client/public/heightmap.bin",
+   "s": 1182722,
+   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
+  },
+  {
    "p": "riftzone/client/src/ui/styles.css",
    "s": 30181,
    "h": "28c5e1ddb893c40dd6896ecc6a3d7d5ee09244423276d839b5aecb7a32579129"
@@ -10048,8 +10053,8 @@
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 191625,
-   "h": "06f10398bfccb25b14e0847c6c52db3b871e3547079975f7eff73f18c3b9693c"
+   "s": 191643,
+   "h": "1b60fdec865e64be2e03435b90a4e7abb0f16f84e20da3486597c393f0cd18e8"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
@@ -10664,7 +10669,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262491,
-   "h": "e7640c1bab7f4ec6bbc158e68b88c4ac2ca89614d083498856995d9cb3d7b08d"
+   "h": "f80cf6571e689081dbe3644da1a64deef21e8c8a09e75e2da56d0771b43da63a"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
