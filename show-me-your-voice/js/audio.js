@@ -128,7 +128,12 @@
     if (micPref.device) a.deviceId = { exact: micPref.device };
     let stream;
     try { stream = await navigator.mediaDevices.getUserMedia({ audio: a }); }
-    catch (e) { if (!micPref.device || (e.name !== 'OverconstrainedError' && e.name !== 'NotFoundError')) throw e; delete a.deviceId; stream = await navigator.mediaDevices.getUserMedia({ audio: a }); }   // gewähltes Gerät fehlt: Standard
+    catch (e) {
+      // Verweigert/gesperrt: nicht noch einmal fragen. Sonst (Android: Gerät belegt, Wunsch-Einstellungen nicht erfüllbar, altes Gerät weg) mit Standard-Mikro und ohne Wünsche erneut.
+      if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) throw e;
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    }
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
     if (!micWant || mic) { if (!mic || mic.stream !== stream) stream.getTracks().forEach(t => t.stop()); return !!mic; }   // inzwischen wieder gestoppt
     const src = ctx.createMediaStreamSource(stream), an = ctx.createAnalyser();
     let node = src, tr = stream.getAudioTracks()[0], set = tr && tr.getSettings ? tr.getSettings() : {};
@@ -139,6 +144,8 @@
     mic = { stream, src, node, an, buf: new Float32Array(1024), label: (tr && tr.label) || '', channels: set.channelCount || 1, ch: node === src ? 'mix' : micPref.ch };
     return true;
   }
+  // Freigabe-Status ohne Nachfrage: 'granted', 'denied', 'prompt' oder '' (Browser kann es nicht sagen)
+  async function micPerm() { try { const st = await navigator.permissions.query({ name: 'microphone' }); return st.state || ''; } catch (e) { return ''; } }
   function micStop() {
     micWant = false; if (!mic) return;
     const rn = mic.rec ? mic.rec.nodes : null;
@@ -254,5 +261,5 @@
   }
 
   root.SMYVAudio = { radioOnLost: cb => { onLost = cb; }, radioStart, radioStop, radioMute, radioOnsets, radioSong, radioActive: () => !!radio, radioPlain: () => !!(radio && radio.plain), init, setVolume, ok, chordTones, sfx, guide, voiceOn, voiceSet, voiceOff,
-    micStart, micStop, micPitch, micLevel, micActive: () => !!mic, micDevices, micSetPrefs, micInfo: () => (mic ? { label: mic.label, channels: mic.channels, ch: mic.ch } : null), micStream: () => (mic ? mic.stream : null), micRecStream, micRecPre: () => (mic && mic.rec ? REC_PRE : 0), mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
+    micStart, micStop, micPerm, micPitch, micLevel, micActive: () => !!mic, micDevices, micSetPrefs, micInfo: () => (mic ? { label: mic.label, channels: mic.channels, ch: mic.ch } : null), micStream: () => (mic ? mic.stream : null), micRecStream, micRecPre: () => (mic && mic.rec ? REC_PRE : 0), mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
 })(window);

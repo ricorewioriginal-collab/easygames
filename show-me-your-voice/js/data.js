@@ -155,8 +155,8 @@
   const HOST = { id: 'rico', name: 'Rico', role: 'Showmaster',
     look: { skin: 1, hair: 'stachelig', hairColor: 1, beard: 'vollbart', outfit: 'tshirt', outfitColor: 1, acc: 'keine', piercing: 'beide', mic: true },
     intro: {
-      casting: ['Herzlich willkommen bei SHOW ME YOUR VOICE! Ich bin Rico – und heute zählt nur eins: deine Stimme.',
-        'Die Jury ist bereit, das Publikum ist laut. {n}, die Bühne gehört dir!'],
+      casting: ['Hi, ich bin RicoReWi und ich bin der Moderator hier von SHOW ME YOUR VOICE. Schön, dass ihr dabei seid! Heute zählt nur eins: deine Stimme.',
+        'Hi, ich bin RicoReWi und ich bin der Moderator hier von SHOW ME YOUR VOICE. Schön, dass ihr dabei seid! Die Jury ist bereit, das Publikum ist laut. {n}, die Bühne gehört dir!'],
       recall: ['Recall! Nur die Top {x} ziehen in die Mottoshow. Performance, Jury und eure Votes entscheiden.'],
       motto: ['Mottoshow! Heute Abend: {motto}. Nur die Top {x} kommen ins Battle.'],
       battle: ['Battle-Zeit! Zwei Stimmen, eine Bühne. Die Jury entscheidet – und eure Votes können eine Person retten.'],

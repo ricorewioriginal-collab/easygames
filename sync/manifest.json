@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "362ce4f97908",
- "generated": "2026-11-14T16:41:04+00:00",
- "commit": "d8c5e0800e0b7aee73a7f89ec9054ae1e18568b8",
+ "version": "f57c146c4f10",
+ "generated": "2026-11-14T17:45:14+01:00",
+ "commit": "98f3538772727609fc7ed0a9648047e1291f7517",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10008,8 +10008,8 @@
   },
   {
    "p": "show-me-your-voice/img/kk-rico.jpg",
-   "s": 14652,
-   "h": "d4529b5fad7b7add2d24218487a124b49fc85aa725adcd8bfa97493c02ffc823"
+   "s": 12703,
+   "h": "aaf751047887c4879bf2c9079221847c27ea5bc31955844c9715d2683283c1e0"
   },
   {
    "p": "show-me-your-voice/img/kk-ruben.jpg",
@@ -10048,13 +10048,13 @@
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 183673,
-   "h": "67dbd40601c7d532234bb399084c84227b88c58fa88a821c68945fc6645400d2"
+   "s": 191625,
+   "h": "06f10398bfccb25b14e0847c6c52db3b871e3547079975f7eff73f18c3b9693c"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
-   "s": 18736,
-   "h": "bed5926051a6a38fa221d91b8498cf863a2a41d47d456976e53a9ee90585d972"
+   "s": 19203,
+   "h": "4e9ba791f65b8c097ca3a5c1cde43019dbe100d161dc3a2cd017afb2b28f8fe0"
   },
   {
    "p": "show-me-your-voice/js/avatar.js",
@@ -10068,8 +10068,8 @@
   },
   {
    "p": "show-me-your-voice/js/data.js",
-   "s": 69785,
-   "h": "e28e860cf6d43144a315326c0a3ce0b06cb9f0093c9957ab10db9f0ae6429946"
+   "s": 69930,
+   "h": "0a383e36cf405fab89da158c4025c272f53e4c6d575526f15c8177dffb593c60"
   },
   {
    "p": "show-me-your-voice/js/media.js",
@@ -10078,8 +10078,8 @@
   },
   {
    "p": "show-me-your-voice/js/scene3d.js",
-   "s": 45587,
-   "h": "6d9f4430ff7545d0810cbf943acb74383e4f01857c907ffaf2ba790acb119892"
+   "s": 49480,
+   "h": "13f296a9a7a50e1f6c63e227c376580176da1272c85a46dbdb3f1ecea89cccc7"
   },
   {
    "p": "show-me-your-voice/js/stage.js",
@@ -10093,13 +10093,18 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 49326,
-   "h": "2b195bd3796327a43675c129b4672a411dc283e5081058972ef666059461d5c1"
+   "s": 53953,
+   "h": "abaf7ba2f5bb02428675afb6e043221d47484aff8d52ee834ebdb97297ae3d42"
   },
   {
    "p": "show-me-your-voice/sw.js",
    "s": 2004,
    "h": "33aa0f8334cf0092973dceabfe23bc4c26268441c046822bc345ee66f2480949"
+  },
+  {
+   "p": "show-me-your-voice/ultrastar.json",
+   "s": 9755,
+   "h": "0c08a471891157f1fde4d34a5e1882b49c59c81471e61c304500bdeb7f845ae6"
   },
   {
    "p": "show-me-your-voice/vendor/three/addons/environments/RoomEnvironment.js",
@@ -10574,7 +10579,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262491,
-   "h": "b1c92813a6bc71948957204749de48e9180265b7b255941827c4373cbdedae2b"
+   "h": "3af196d004662995d41eb2ee9b5af0cfde4cfa7cd4bb2ebaccc420a6d2a67fb7"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
