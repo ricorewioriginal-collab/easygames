@@ -150,6 +150,23 @@ class LibraryTest {
         assertTrue(File(dir, "tmp").listFiles().orEmpty().isEmpty())
     }
 
+    @Test fun staleManifestRightAfterPublishHealsItself() {
+        // Wie nach schnellen Merges: App kennt noch das alte Manifest, der Server liefert schon die neue Datei.
+        val l = lib(); l.refresh()
+        val neu = gameFiles + ("a/index.html" to "<html>A v2</html><script src=\"../b/lib.js\"></script>")
+        net.publish("v2", content(games3, baseFiles + neu))
+        l.install("a")
+        assertEquals("<html>A v2</html><script src=\"../b/lib.js\"></script>", l.open("a/index.html")!!.readText())
+        assertTrue(l.status(l.find("a")!!).installed)
+        assertTrue("Wiederholung geht am CDN-Cache vorbei", net.requests.any { it.contains("a/index.html?v=") })
+    }
+
+    @Test fun mismatchWithoutNewManifestGivesClearMessage() {
+        val l = lib(); l.refresh()
+        net.files[T.BASE + "a/index.html"] = T.bytes("noch nicht veröffentlicht")
+        try { l.install("a"); fail() } catch (e: IOException) { assertTrue(e.message!!.contains("gerade veröffentlicht")) }
+    }
+
     @Test fun playTimeAndUnsafePaths() {
         val l = lib(); l.refresh(); l.install("b")
         l.addPlayTime("b", 90); l.addPlayTime("b", 30)
