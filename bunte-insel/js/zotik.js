@@ -212,7 +212,8 @@ BI.createZotik = function (G) {
     for (let i = 0; i < A.stones.length; i++) if (nr(A.stones[i].x, A.stones[i].z, 2.2)) return { k: 'zstone', i, label: ['🌙', 'Mondstein drehen'] };
     if (nr(A.riss.x, A.riss.z - 3, 5)) return { k: 'zriss', label: ['🐺', S().st >= 7 ? 'Mondwolf streicheln' : 'Zum Mondwolf'] };
     if (nr(A.camp.x, A.camp.z, 3.2)) return { k: 'zfire', label: ['🔥', 'Am Lagerfeuer ausruhen'] };
-    for (const g of A.gates) if (nr(g.x, g.z, 3.2)) return { k: 'zgate', i: g.i, label: ['🌀', 'Durch das Tor: ' + gateNames[g.i].replace(/^\S+\s/, '')] };
+    { let g = null, gd = 2.8; for (const q of A.gates) { const d = Math.hypot(P.x - q.x, P.z - q.z); if (d < gd) { gd = d; g = q; } } /* Tore stehen dicht: immer das nächste */
+      if (g) return { k: 'zgate', i: g.i, label: ['🌀', 'Durch das Tor: ' + gateNames[g.i].replace(/^\S+\s/, '')] }; }
     if (nr(X(0), Z(0), 7.4)) return { k: 'zcrystal', label: ['💎', 'Kristallbrunnen berühren'] };
     return null;
   };

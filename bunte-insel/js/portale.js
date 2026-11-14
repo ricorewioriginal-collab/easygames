@@ -127,6 +127,18 @@ BI.createPortale = function (G) {
     seenT -= dt; if (seenT > 0) return; seenT = .5;
     for (const q of K.list) if (!has('po_seen_' + q.D.game) && Math.hypot(P.x - q.x, P.z - q.z) < 18) { flag('po_seen_' + q.D.game); say('🌀 ' + q.D.who[1] + ' ' + q.D.who[0] + ': „Siehst du das Portal? Es führt zu ' + q.D.icon + ' ' + q.D.name + '!“', 5200); }
   };
+  /* Rückkehr aus einem Spiel (?from=<ordner>, Knopf aus rueckweg.js oder AERUs Portal): direkt vor dem passenden Portal ankommen */
+  const FROM = (typeof location !== 'undefined' && (location.search.match(/[?&]from=([a-z0-9-]+)/) || [])[1]) || '';
+  K.arrive = FROM === 'taschi' || BI.GAME_PORTALS.some(D => D.game === FROM) ? FROM : null;
+  if (K.arrive) { try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { } }
+  const upd = K.update; K.update = function (dt, t) {
+    if (K.arrive && K.ready && (!G.playing || G.playing())) {
+      const id = K.arrive, q = id === 'taschi' ? W.spots.taschiportal : K.at(id), D = BI.GAME_PORTALS.find(D => D.game === id); K.arrive = null;
+      if (q) { P.veh = null; P.x = q.x; P.z = q.z; P.y = W.groundY(q.x, q.z); P.vy = 0; }
+      setTimeout(() => say('🌀 Willkommen zurück auf der Bunten Insel' + (D ? ' – frisch aus ' + D.icon + ' ' + D.name : id === 'taschi' ? ' – frisch aus dem Taschi-Abenteuer' : '') + '!', 3600), 500);
+    }
+    upd(dt, t);
+  };
   K.dbg = { list: K.list };
   return K;
 };
