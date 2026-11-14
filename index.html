@@ -141,11 +141,12 @@
   #detail{position:fixed;inset:0;z-index:40;background:#080B12;overflow:auto;overscroll-behavior:contain}
   .dsheet{max-width:860px;margin:0 auto;padding-bottom:calc(40px + env(safe-area-inset-bottom))}
   .dhero{position:relative;width:100%;aspect-ratio:16/8;max-height:46vh;display:flex;align-items:center;justify-content:center;font-size:clamp(70px,16vw,130px);overflow:hidden}
-  .dhero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .dhero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.dhero video{position:absolute;inset:0;z-index:2;width:100%;height:100%;object-fit:contain;background:#000}
   .dhero::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#080B12 0%,rgba(8,11,18,0) 55%)}
   .dhero .ib{position:absolute;top:calc(12px + env(safe-area-inset-top));left:12px;z-index:3;background:rgba(8,11,18,.7)}
   .dhero span{position:relative;z-index:1;filter:drop-shadow(0 6px 16px rgba(0,0,0,.5))}
   .dhead{padding:0 18px;margin-top:-34px;position:relative;z-index:2}
+  .dhero.has-vid+.dhead{margin-top:12px}
   .dhead h2{margin:0 0 8px;font-size:clamp(24px,5vw,36px);line-height:1.15}
   .dhead .badges i{font-size:12.5px;padding:3px 10px}
   .dactions{margin-top:14px}
@@ -629,7 +630,7 @@ GAMES.forEach((g, i) => {
   if (i >= GAMES.length - NEWN) { const nt = document.createElement('span'); nt.className = 'nb'; nt.textContent = 'NEU'; b.querySelector('.icon').appendChild(nt); }
   const fv = document.createElement('button'); fv.type = 'button'; fv.className = 'fav'; fv.tabIndex = isTv ? -1 : 0; fv.dataset.fav = g.id;
   fv.addEventListener('click', () => toggleFav(g.id));
-  b.addEventListener('click', () => openGame(i));
+  b.addEventListener('click', () => openDetail(i, 'info'));   // Kachel: erst die Spielseite (Trailer, Infos), dort „Spielen“
   const h = document.createElement('button');
   h.className = 'help'; h.textContent = '📖 Details'; h.setAttribute('aria-label', 'Handbuch und Details: ' + g.title);
   h.addEventListener('click', () => openDetail(i, 'info'));
@@ -889,9 +890,10 @@ function miniCard(j, onOpen) {
 function openDetail(i, tab) {
   if (di < 0) ret2 = document.activeElement;
   di = i; const g = GAMES[i];
-  const hero = $('dHero'); [...hero.querySelectorAll('img,span')].forEach(n => n.remove());
+  const hero = $('dHero'); [...hero.querySelectorAll('img,span,video')].forEach(n => n.remove());
   hero.style.background = g.bg || '#222';
   if (g.img) { const im = el('img'); im.src = pic(g); im.alt = ''; hero.appendChild(im); } else hero.appendChild(el('span', '', g.icon || '🎮'));
+  const tr = TRAILERS[g.id]; hero.classList.toggle('has-vid', !!tr); if (tr) { const v = el('video'); v.controls = true; v.playsInline = true; v.preload = 'none'; if (tr.p16 || tr.p9) v.poster = TRAILER_BASE + (tr.p16 || tr.p9); v.src = TRAILER_BASE + tr.v16; v.setAttribute('aria-label', 'Trailer'); hero.appendChild(v); }   // Trailer automatisch aus dem Katalog, lädt online erst beim Abspielen
   $('dTitle').textContent = g.title; $('dBadges').textContent = ''; modeBadges(g, $('dBadges'));
   if (window.AnMaChaRating) window.AnMaChaRating.mount($('dRating'), { subject: 'game:' + g.id, title: g.title });   // Sterne (zentral, Google zur Verifizierung)
   $('dTv').classList.toggle('hidden', !isMulti(g));
@@ -903,7 +905,7 @@ function openDetail(i, tab) {
   $('detail').classList.remove('hidden'); $('detail').scrollTop = 0; document.body.style.overflow = 'hidden';
   setTab(tab || 'info'); $('dPlay').focus({ preventScroll: true });
 }
-function closeDetail() { $('detail').classList.add('hidden'); di = -1; if (cur < 0) document.body.style.overflow = ''; if (ret2 && document.contains(ret2)) ret2.focus({ preventScroll: true }); }
+function closeDetail() { const tv = $('dHero').querySelector('video'); if (tv) tv.pause(); $('detail').classList.add('hidden'); di = -1; if (cur < 0) document.body.style.overflow = ''; if (ret2 && document.contains(ret2)) ret2.focus({ preventScroll: true }); }
 const openGuide = i => openDetail(i, 'manual');         // bisherige Aufrufe (Taste i, 📖 im Spielfenster) öffnen das Handbuch
 $('vHelp').addEventListener('click', () => openDetail(cur, 'manual'));
 $('dClose').addEventListener('click', closeDetail);
@@ -970,7 +972,7 @@ function recents() { try { const a = JSON.parse(localStorage.getItem('eg-recent'
 function remember(id) { try { localStorage.setItem('eg-recent', JSON.stringify([id, ...recents().filter(x => x !== id)].slice(0, 8))); } catch (e) {} }
 function renderRecent() {
   const ids = recents(), row = $('recentRow'); row.textContent = '';
-  ids.forEach(id => row.appendChild(miniCard(GAMES.findIndex(g => g.id === id), j => openGame(j))));
+  ids.forEach(id => row.appendChild(miniCard(GAMES.findIndex(g => g.id === id), j => openDetail(j, 'info'))));
   recentOn = ids.length > 0; filt();
 }
 
@@ -1014,7 +1016,7 @@ function renderRecent() {
   const side = $('featSide'); side.appendChild(el('h2', 'ftitle', '🔥 Beliebt bei uns'));
   POP.map(id => GAMES.findIndex(x => x.id === id)).filter(j => j >= 0 && j !== i && GAMES[j].img).slice(0, 4).forEach(j => {
     const x = GAMES[j], bt = el('button', 'pop'), im = el('img'); im.src = pic(x); im.alt = ''; im.loading = 'lazy'; bt.style.background = x.bg || '#222';
-    const t = el('span', 'pt'); t.append(el('b', '', String(x.title).split(' – ')[0]), el('small', '', (CATI[CATS.of[x.id]] || {}).short || '')); bt.append(im, t); bt.onclick = () => openGame(j); side.appendChild(bt);
+    const t = el('span', 'pt'); t.append(el('b', '', String(x.title).split(' – ')[0]), el('small', '', (CATI[CATS.of[x.id]] || {}).short || '')); bt.append(im, t); bt.onclick = () => openDetail(j, 'info'); side.appendChild(bt);
   });
   side.classList.toggle('hidden', side.children.length < 2);
 })();
@@ -1026,7 +1028,7 @@ function renderRecent() {
     const x = GAMES[j], b = el('button', 'vc'), c = CATI[CATS.of[x.id]], vi = el('div', 'vi'); b.type = 'button'; b.dataset.gid = x.id; if (c) b.dataset.c = c.id;
     vi.style.background = x.bg || '#222'; if (x.img) { const im = el('img'); im.src = pic(x); im.alt = ''; im.loading = 'lazy'; vi.appendChild(im); } else vi.appendChild(el('span', '', x.icon || '🎮'));
     if (j >= GAMES.length - NEWN) vi.appendChild(el('span', 'nb', 'NEU'));
-    b.append(vi, el('span', 'vg', c ? c.short : 'Spiel'), el('span', 'vt', String(x.title).split(' – ')[0])); b.onclick = () => openGame(j); return b;
+    b.append(vi, el('span', 'vg', c ? c.short : 'Spiel'), el('span', 'vt', String(x.title).split(' – ')[0])); b.onclick = () => openDetail(j, 'info'); return b;
   };
   const row = (title, idx) => { if (idx.length < 3) return; const s = el('section', 'vrow'), sc = el('div', 'vscroll'); s.appendChild(el('h2', '', title)); idx.forEach(j => sc.appendChild(cardOf(j))); s.appendChild(sc); host.appendChild(s); };
   // Sammlungen
@@ -1084,6 +1086,7 @@ catalog.then(c => {
 })();
 
 // ----- Trailer: kommen automatisch aus dem Katalog (promo/<id>-trailer-16x9.mp4 bzw. -9x16.mp4, siehe tools/build-sync.js) -----
+var TRAILERS = {}, TRAILER_BASE = 'https://ricorewioriginal-collab.github.io/easygames/';
 (function trailers() {
   var B = 'https://ricorewioriginal-collab.github.io/easygames/', d = document.getElementById('promoTrailer'), v = document.getElementById('trVid'), tabs = document.getElementById('trTabs'), play = document.getElementById('trPlay');
   var list = [], cur = 0;
@@ -1097,6 +1100,7 @@ catalog.then(c => {
   };
   catalog.then(function (c) {
     list = ((c && c.games) || []).filter(function (g) { return g.trailer && !/^https?:/.test(g.path); });
+    list.forEach(function (g) { TRAILERS[g.id] = g.trailer; });
     if (!list.length) return;
     var short = function (t) { return String(t).split(/ [–:-] /)[0]; };
     document.getElementById('trSum').textContent = '🎬 Trailer: ' + list.map(function (g) { return short(g.title); }).join(', ');
