@@ -181,6 +181,7 @@ export function createKayKit({ T, G, TOUCH }) {
           const loc = new T.Matrix4().multiplyMatrices(inv, o.matrixWorld);
           const im = new T.InstancedMesh(o.geometry, o.material, by[k].length); im.castShadow = !TOUCH; im.receiveShadow = true;
           by[k].forEach((q, i) => { (q._h || (q._h = [])).push([im, i]); ob.position.set(q.x, q.y || 0, q.z); ob.rotation.set(0, q.ry || 0, 0); ob.scale.setScalar(q.h ? q.h / PH[k] * (q.s || 1) : q.s || 1); ob.updateMatrix(); M4.multiplyMatrices(ob.matrix, loc); im.setMatrixAt(i, M4); });
+          if (by[k].some(q => q.tint)) { const cc = new T.Color(); by[k].forEach((q, i) => im.setColorAt(i, cc.set(q.tint || 0xffffff))); im.instanceColor.needsUpdate = true; }
           im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere && im.computeBoundingSphere(); im.frustumCulled = false; par.add(im); });
       }
     }).catch(e => console.warn('KayKit-Requisiten', f, e && e.message));
