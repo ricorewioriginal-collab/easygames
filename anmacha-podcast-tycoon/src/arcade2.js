@@ -289,7 +289,7 @@
       let keep = t[size] - Math.abs(off);
       if (keep <= 0.05) {   // daneben: Turm fertig
         r.falls.push({ m: c.m, vy: 0, rx: 2, rz: 1 }); r.cur = null; r.phase = 'over'; AMC.Audio.sfx('lose');
-        if (r.fig) r.fig.play('down', { once: true }); r.say('💥 ' + r.n + ' Etagen! ' + D.HOSTS[r.other].name + ': „Der Mast wackelt …“'); setTimeout(() => r.finish(), 1600); return;
+        if (r.fig) r.fig.play('crouch', {}); r.say('💥 ' + r.n + ' Etagen! ' + D.HOSTS[r.other].name + ': „Der Mast wackelt …“'); setTimeout(() => r.finish(), 1600); return;
       }
       const perfect = Math.abs(off) < 0.1;
       if (perfect) { keep = t[size]; c[ax] = t[ax]; r.perfectN++; AMC.Audio.sfx('perfect'); W.particles.burst(c.x, c.y, c.z, 0xffffff, 24, { speed: 4 }); if (r.perfectN % 3 === 0 && t[size] < 3) { keep = Math.min(3, keep + 0.25); } }
