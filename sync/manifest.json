@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1a026c092330",
- "generated": "2026-11-14T22:02:20+00:00",
- "commit": "c6591e3460d7ece8693b7f8b955fa0c207dfb207",
+ "version": "957dee0f241b",
+ "generated": "2026-11-14T22:21:31+00:00",
+ "commit": "70a1fb2d42d1958b4c7f26f047ff2cc9b7696972",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7558,8 +7558,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 109942,
-   "h": "4c97def2c8f4858d997528457a3e5c810d7296b562a282ce6ec790d3b47d5571"
+   "s": 110139,
+   "h": "fba9a941393c95a6430d9bb53ed4734ace98c1e467209403ff93d9eeb0c852a4"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -7618,8 +7618,8 @@
   },
   {
    "p": "bunte-insel/js/bunte-insel.min.js",
-   "s": 2179001,
-   "h": "e820d87512791d24aba0a7a2284d36a72895b243eb5bd26047a10b39f4acbc4c"
+   "s": 2185137,
+   "h": "1dedae31ae41036c11db935aa916d470ca5b4b2b23329cdc3b9d9ccc9af22c64"
   },
   {
    "p": "bunte-insel/js/camp.js",
@@ -7718,8 +7718,8 @@
   },
   {
    "p": "bunte-insel/js/gamepad.js",
-   "s": 22474,
-   "h": "c6502d80841191b2d2faae0b6c741e7d31ef3c7ac1cb45f222ab72f6f96ecc9a"
+   "s": 31442,
+   "h": "082c463e0018d8c35b503f1316fbc30e43668e4ef60dbcff0816d9898b1cda22"
   },
   {
    "p": "bunte-insel/js/garden.js",
@@ -7798,8 +7798,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 324448,
-   "h": "678c86fe4983f23454e543fed671ebbe6952cd840449a5d5da2ff8fc2baa31b8"
+   "s": 324512,
+   "h": "9adde41d27185298fd6f2db22bae0967aa8880c8c0f9bdfaa2ddc7d588cdfb9b"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -9123,8 +9123,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 81921,
-   "h": "382901e9ba2839c48ec9b394b5d8f833d2c8b965adc77b64cb372828a4b06e63"
+   "s": 81970,
+   "h": "5196cb5f83094c54f7405025ba9c556db379eca4bc29d52b4cc3b362882e5275"
   },
   {
    "p": "games.js",
@@ -12984,7 +12984,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262891,
-   "h": "5ce984f42dcbd32fbbb7f23cfa9af74a1699c2316f75aed6ebfdf0af768ef589"
+   "h": "2b56e4a04559d48c172b3348ed7487c1b3aea4e4824e231190c0c3e70e6a99b1"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -15472,9 +15472,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-CPceHewG.js",
-   "s": 1954457,
-   "h": "812e5de9be1a0fd00d9663543fb34cafeebb3d9aa0243854ce18e89bde32dfde"
+   "p": "zotik/assets/index-INqJRXVL.js",
+   "s": 2000745,
+   "h": "bd938766e603ee52c73a7f869e29aa90fab53aa9e70d5f206af1cef0335b20f3"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -15493,8 +15493,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 74656,
-   "h": "6588b0aaf383e8e0ba2145bc0f6e7ef77860f397956ab3612ba0a2e8f9a5b8db"
+   "s": 76145,
+   "h": "31a585af7f2164fbbbeeb4454ba978f4d6d48d103a8f4f4037f6a2c473e3e512"
   },
   {
    "p": "zotik/manifest.webmanifest",
