@@ -5,6 +5,7 @@
 - Gebäude (`models/bld_*.glb`): Quaternius „Ultimate Buildings“ – CC0.
 - Katze (`models/cat.glb`): Quaternius „Ultimate Monsters“ – CC0.
 - Bäume, Brunnen, Felsen (`models/tree*.glb`, `fountain-round.glb`, `rock-large.glb`, `models/Textures/colormap.png`): Kenney – CC0.
+- Welt-Upgrade (`models/cc0/*.glb`: Hochhäuser, Häuser, Autos, Frachtschiff, Satellitenschüssel, Palmen, Zelte, Büsche, Lagerfeuer, Kisten, Fässer): Kenney City Kit (Commercial), Car Kit, Nature Kit, Space Kit – CC0, über `@netforge/asset-library-files` (Details `models/cc0/CREDITS.txt`).
 - Sounds `sounds/coins.mp3`, `enter.mp3`, `buy.mp3`: Kenney – CC0.
 - Schrift Fredoka: SIL Open Font License (`../vendor/fonts/`).
 - Three.js r128: MIT.
