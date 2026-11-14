@@ -52,7 +52,8 @@ export function createExtra(C) {
     ['rx', '🌪️ Elementarmagier', '10 Elementreaktionen auslösen', () => cnt().rx >= 10], ['sharp', '🔨 Schmied', 'Schärfe die Klinge fünfmal', () => (S().sharp || 0) >= 5],
     ['bst', '📖 Bestiarium', '10 Gegnerarten entdecken', () => Object.keys(S().bst || {}).length >= 10], ['rad', '📻 Funker', 'Wechsle den Sender im Weltenradio', () => cnt().rad >= 1],
     ['c5', '🌍 Weltenreisender', 'Schließe 5 Kapitel ab', () => CHAP.filter(c => C.chDone(c[0])).length >= 5],
-    ['c10', '🌌 Weltenretter', 'Schließe alle 10 Kapitel ab', () => CHAP.every(c => C.chDone(c[0]))], ['end', '🎬 Schicksalswahl', 'Wähle ein Ende', () => !!S().ending]
+    ['c10', '🌌 Weltenretter', 'Schließe alle 10 Kapitel ab', () => CHAP.every(c => C.chDone(c[0]))], ['foto', '📷 Fotograf', 'Nimm 10 Fotos mit der Erinnerungslinse auf', () => (S().foto | 0) >= 10], ['emb', '🏵️ Zeichensucher', 'Finde 25 Forscherzeichen', () => Object.values(S().emb || {}).reduce((a, v) => a + [0, 1, 2, 3, 4].filter(i => (v | 0) & (1 << i)).length, 0) >= 25],
+    ['end', '🎬 Schicksalswahl', 'Wähle ein Ende', () => !!S().ending]
   ];
   function unlock() {
     if (S().chx && S().chk) return;
