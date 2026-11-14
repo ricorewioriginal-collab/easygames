@@ -174,24 +174,41 @@
   const both = (k, v) => AMC.Home && ['andrew', 'marco'].forEach(id => { const n = AMC.Home.needs(id); n[k] = Math.max(0, Math.min(100, n[k] + v)); });
   const idea = txt => { const n = AMC.Home && AMC.Home.needs(C.S.pl.H.id); if (!n || (n.ideas || []).length >= 3) return false; n.ideas.push(txt); return true; };
   const abos = k => { const c = AMC.Career && AMC.Career.state(), a = Math.round(10 + (c ? c.abos : 100) * k); if (c) c.abos += a; return a; };
+  // Museums-Quiz: [Frage, richtige Antwort, drei falsche]
+  const QUIZ = [
+    ['Wofür steht UKW?', 'Ultrakurzwelle', 'Unterhaltungs-Kanal-Welle', 'Universal-Kabel-Weg', 'Umschalt-Kurz-Wahl'],
+    ['Wann lief in Deutschland die erste offizielle Radiosendung?', '1923', '1899', '1949', '1968'],
+    ['Woraus ist das Wort „Podcast“ entstanden?', 'iPod + Broadcast', 'Pod-Kapsel + Cast', 'Podium + Castle', 'Postkarte + Cast'],
+    ['Auf welchem Frequenzbereich sendet UKW-Radio in Deutschland?', '87,5 bis 108 MHz', '10 bis 20 kHz', '2,4 GHz', '500 bis 600 MHz'],
+    ['Wofür steht DAB?', 'Digital Audio Broadcasting', 'Deutscher Antennen-Bund', 'Direkt Auf Band', 'Digitales Abend-Brot'],
+    ['Wer gilt als Pionier der drahtlosen Funktelegrafie?', 'Guglielmo Marconi', 'Thomas Edison', 'Konrad Zuse', 'Alexander von Humboldt'],
+    ['Was ist ein Jingle?', 'Kurze Erkennungsmelodie', 'Ein Mikrofon-Typ', 'Ein Störgeräusch', 'Die Sendezeit-Uhr'],
+    ['In welcher Einheit misst man eine Frequenz?', 'Hertz', 'Watt', 'Dezibel', 'Ohm'],
+    ['Wie heißen die beiden Hosts von AnMaCha?', 'Andrew und Marco', 'Anna und Mareike', 'Anton und Max', 'Andi und Chris'],
+    ['Wie heißt der Camper von Andrew und Marco?', 'Gisela', 'Gertrud', 'Helga', 'Brigitte']
+  ];
   const PLACES = {
     kanal9: ['📺 Kanal 9 Studios', 'Das große TV-Haus im Hafen.', [
       ['🎙️ Gast in der Morgenshow', () => { const a = abos(0.04); funken('tv', 4); return '📺 Live im Fernsehen! +' + a + ' Abos, +4 TV-Funken'; }],
+      ['🎥 Kamerafrau für einen Tag (Minispiel)', q => { const f = Save.earn(15 + Math.round(q * 45)); funken('tv', 1 + Math.round(q * 3)); return (q >= 0.75 ? '🎥 Die Regie will euch fest anstellen!' : q >= 0.4 ? '🎥 Ordentliche Bilder.' : '🎥 Viel Wackelkamera …') + ' +' + f + ' 🎟️'; }, 'frame', { title: '🎥 Kanal 9: Kamera 2', subj: ['🎙️', '💃', '🧑‍🍳', '🦜'], shots: 4 }],
       ['🎬 Kulissen-Tour', () => { both('fun', 25); return '🎬 Pappwände, echte Kameras – beide sind begeistert.'; }]]],
     druck: ['🗞️ Druckerei Morgenpost', 'Hier wird die Zeitung von morgen gedruckt.', [
-      ['📰 Druckfrische Ausgabe lesen', () => { funken('serious', 3); return '📰 Exklusiv vor allen anderen gelesen! +3 Ernst-Funken' + (idea('Schlagzeile von morgen') ? ' · 💡 Idee' : ''); }]]],
+      ['📰 Druckfrische Ausgabe lesen', () => { funken('serious', 3); return '📰 Exklusiv vor allen anderen gelesen! +3 Ernst-Funken' + (idea('Schlagzeile von morgen') ? ' · 💡 Idee' : ''); }],
+      ['🗞️ An der Druckmaschine helfen (Minispiel)', q => { const f = Save.earn(10 + Math.round(q * 40)); funken('serious', 1 + Math.round(q * 3)); return (q >= 0.75 ? '🗞️ Keine Zeitung ging verloren!' : '🗞️ Ein paar Blätter fliegen durch die Halle.') + ' +' + f + ' 🎟️'; }, 'catch', { title: '🗞️ Druckerei: Zeitungen fangen', good: ['📰', '📰', '🗞️', '⭐'], bad: ['🔥', '💣'], basket: '📥' }]]],
     leucht: ['🗼 Funk-Leuchtturm', 'Ein alter Leuchtturm mit eigener Funkstation.', [
-      ['📡 Grüße übers Meer funken', () => { funken('feel', 3); const f = Save.earn(15); return '📡 Ein Fischkutter funkt zurück: „Wir hören euch!“ +3 Feelgood-Funken, +' + f + ' 🎟️'; }]]],
+      ['📡 Grüße übers Meer funken (Minispiel)', q => { funken('feel', 1 + Math.round(q * 3)); const f = Save.earn(10 + Math.round(q * 30)); return (q >= 0.6 ? '📡 Ein Fischkutter funkt zurück: „Wir hören euch!“' : '📡 Nur Rauschen kommt zurück.') + ' +' + f + ' 🎟️'; }, 'simon', { title: '📡 Funksignale nachsenden', rounds: 3, len: 3 }]]],
     buehne: ['🎤 Festival-Hauptbühne', 'Tausende Fans warten. Spiel ein Lied im Takt!', [
       ['🎸 Live-Auftritt (Rhythmus)', null, 'stage']]],
     riesenrad: ['🎡 Riesenrad', 'Der beste Blick über Insel, Stadt und Hafen.', [
-      ['🎡 Eine Runde fahren', () => { both('fun', 30); both('energy', 5); funken('feel', 2); return '🎡 Ganz oben sieht man den Funkturm! Beide entspannen. +2 Feelgood-Funken'; }]]],
+      ['🎡 Eine Runde fahren und Fotos machen', q => { both('fun', 30); both('energy', 5); funken('feel', 1 + Math.round(q * 3)); const f = Save.earn(10 + Math.round(q * 30)); return '🎡 Ganz oben sieht man den Funkturm!' + (q >= 0.75 ? ' Die Fotos gehen viral.' : '') + ' +' + f + ' 🎟️'; }, 'frame', { title: '🎡 Fotos aus der Gondel', subj: ['🕊️', '🎈', '🪁'], shots: 3 }]]],
     merch: ['👕 Merch-Stand', 'AnMaCha-Shirts, Tassen und Sticker.', [
-      ['👕 Merch verkaufen', () => { const f = Save.earn(25 + Math.round((AMC.Career ? AMC.Career.state().abos : 100) / 200)); return '👕 Ausverkauft! +' + f + ' 🎟️'; }]]],
+      ['👕 Merch-Kanone: Shirts fangen und verteilen', q => { const f = Save.earn(15 + Math.round(q * 30) + Math.round((AMC.Career ? AMC.Career.state().abos : 100) / 200)); return (q >= 0.75 ? '👕 Ausverkauft!' : '👕 Ein paar Shirts landen im Matsch.') + ' +' + f + ' 🎟️'; }, 'catch', { title: '👕 Merch-Kanone', good: ['👕', '🧢', '☕', '🎧'], bad: ['🌧️', '💣'], basket: '📦' }]]],
     turm: ['📡 Fernsehturm', '220 Meter hoch, ganz oben ein Café mit Aussicht.', [
-      ['🌄 Aussicht genießen', () => { both('energy', 15); funken('feel', 3); return '🌄 Die ganze Medienstadt liegt euch zu Füßen. +3 Feelgood-Funken'; }]]],
+      ['🌄 Aussicht genießen', () => { both('energy', 15); funken('feel', 3); return '🌄 Die ganze Medienstadt liegt euch zu Füßen. +3 Feelgood-Funken'; }],
+      ['🔌 Sendeleitung im Turm stecken (Minispiel)', q => { funken('tech', 1 + Math.round(q * 3)); const f = Save.earn(10 + Math.round(q * 40)); return (q >= 0.75 ? '🔌 Sendung läuft in HD!' : '🔌 Bild flackert noch ein bisschen.') + ' +' + f + ' 🎟️'; }, 'cables', { title: '🔌 Fernsehturm: Sendeleitung', n: 4 }]]],
     museum: ['📻 Radio-Museum', 'Röhrenradios, Volksempfänger und die erste Piratensender-Antenne.', [
-      ['🏛️ Ausstellung ansehen', () => { funken('tech', 3); return '📻 Radio-Geschichte zum Anfassen. +3 Technik-Funken' + (idea('Radio-Geschichte: vom Volksempfänger zum Podcast') ? ' · 💡 Idee' : ''); }]]],
+      ['🏛️ Ausstellung ansehen', () => { funken('tech', 3); return '📻 Radio-Geschichte zum Anfassen. +3 Technik-Funken' + (idea('Radio-Geschichte: vom Volksempfänger zum Podcast') ? ' · 💡 Idee' : ''); }],
+      ['❓ Museums-Quiz (Minispiel)', q => { funken('serious', 1 + Math.round(q * 3)); const f = Save.earn(10 + Math.round(q * 50)); return (q >= 1 ? '❓ Alles richtig – ihr bekommt die goldene Röhre!' : q >= 0.5 ? '❓ Gut mitgedacht!' : '❓ Da hilft nur: nochmal reinhören.') + ' +' + f + ' 🎟️'; }, 'quiz', { title: '❓ Radio-Museum: Quiz', n: 4, qs: QUIZ }]]],
     arena: ['🎵 RicoReWi Music Arena', 'Viele Stimmen, viele Gefühle: Giftkind, Love United, RicoReWi, ModeReWi, Slytheris, Straßenkind, KAPITÄN KATER, XXXPLICIT, MIMBALO und AERUMA.', [
       ['🎧 Künstlerradio hören (RicoReWi Radio)', () => { if (AMC.Media) AMC.Media.playStation('ricorewi'); funken('musik', 3); return '🎧 Das Künstlerradio läuft! Alle Acts in einem Stream. +3 Musik-Funken'; }],
       ['🎤 Act als Podcast-Gast einladen', () => { const a = U.pick(['Giftkind', 'Love United', 'ModeReWi', 'Slytheris', 'Straßenkind', 'KAPITÄN KATER', 'MIMBALO', 'AERUMA']); return '🎤 ' + a + ' kommt in die nächste Folge!' + (idea('Musik-Gast: ' + a) ? ' · 💡 Idee' : ' (Kopf voll – erst aufnehmen)'); }]]],
@@ -200,12 +217,13 @@
       ['🗳️ Für den Lieblingssender abstimmen', () => { const st = U.pick(D.STATIONS), f = Save.earn(10); return '🗳️ Stimme für ' + st.name + ' abgegeben! +' + f + ' 🎟️'; }]]],
     buecher: ['📚 RicoReWi-Bücherei', 'Nicht nur Beats, auch Bücher: „Ich bin das Licht“, „Zotik – Die Splitter der Welten“, „Leuchtfeuer“ und der TikTok-Live-Ratgeber.', [
       ['📖 Ein Buch lesen', () => { const b = U.pick(['Ich bin das Licht', 'Zotik – Die Splitter der Welten', 'Leuchtfeuer', 'TikTok & TikTok Live Ratgeber']); both('energy', 10); funken('feel', 2); return '📖 „' + b + '“ – ein Kapitel und schon hängen geblieben. +2 Feelgood-Funken' + (idea('Buchtipp: ' + b) ? ' · 💡 Idee' : ''); }]]],
-    casting: ['★ Show me your Voice', 'Die Casting-Show mit Talenten und Stimmen aus der Creator-Welt. Sing im Takt!', [
-      ['🎙️ Vorsingen (Rhythmus)', null, 'stage']]],
+    casting: ['★ Show me your Voice', 'Die Casting-Show mit Talenten und Stimmen aus der Creator-Welt. Sing die Melodie der Jury nach!', [
+      ['🎙️ Melodie nachsingen (Minispiel)', q => { const a = abos(0.01 + q * 0.03), f = Save.earn(10 + Math.round(q * 40)); funken('musik', 1 + Math.round(q * 3)); return (q >= 0.75 ? '★ Die Jury: „Ihr seid weiter!“' : '★ Die Jury: „Übt noch ein bisschen.“') + ' +' + a + ' Abos, +' + f + ' 🎟️'; }, 'simon', { title: '★ Show me your Voice', rounds: 3, len: 3 }]]],
     werkstatt: ['⌘ Builder-Werkstatt', 'Games, Apps und Radiosoftware: easygames, AnMaCha Cast, laut.fm Manager, RicoReWi Radio und Senderwelt.', [
-      ['🛠️ Mit Rico an einer App basteln', () => { funken('tech', 4); return '🛠️ Rico zeigt AnMaCha Cast: Radioautomation, Live-Studio, Podcast. +4 Technik-Funken' + (idea('Tech-Tipp: Radio aus dem eigenen Studio') ? ' · 💡 Idee' : ''); }]]],
+      ['🛠️ Mit Rico an einer App basteln', () => { funken('tech', 4); return '🛠️ Rico zeigt AnMaCha Cast: Radioautomation, Live-Studio, Podcast. +4 Technik-Funken' + (idea('Tech-Tipp: Radio aus dem eigenen Studio') ? ' · 💡 Idee' : ''); }],
+      ['🔌 Studio verkabeln (Minispiel)', q => { funken('tech', 1 + Math.round(q * 3)); const f = Save.earn(10 + Math.round(q * 40)); return (q >= 0.75 ? '🔌 Rico: „Sauber gesteckt, Profi!“' : '🔌 Rico lacht: „Fast!“') + ' +' + f + ' 🎟️'; }, 'cables', { title: '🔌 Werkstatt: Studio verkabeln', n: 5 }]]],
     tiktok: ['📱 Live-Studio', 'Ringlicht an, Kamera läuft: ein Live-Stream mit der Community.', [
-      ['🔴 Live gehen', () => { const f = Save.earn(20), a = abos(0.015); funken('feel', 1); return '🔴 Live! Herzen regnen über den Bildschirm. +' + a + ' Abos, +' + f + ' 🎟️'; }]]],
+      ['🔴 Live gehen und Pointen setzen (Minispiel)', q => { const f = Save.earn(10 + Math.round(q * 30)), a = abos(0.01 + q * 0.02); funken('feel', 1 + Math.round(q * 2)); return (q >= 0.75 ? '🔴 Herzen regnen über den Bildschirm!' : '🔴 Der Stream läuft, die Witze nicht ganz.') + ' +' + a + ' Abos, +' + f + ' 🎟️'; }, 'qte', { title: '🔴 Live: Pointen-Timing', n: 4 }]]],
     funker: ['📶 Funkerhütte', 'Ein alter Funker zeigt euch, wie man Kurzwelle sauber einstellt.', [
       ['🎛️ Kurzwelle einstellen (Minispiel)', null, 'mixer']]]
   };
@@ -221,6 +239,7 @@
       used[key(i)] = 1; if (AMC.Career) AMC.Career.mark('tour'); AMC.UI.close(s); ricoQuest(id);
       if (a[2] === 'stage') return stage();
       if (a[2] === 'mixer') return mini('mixer', { color: '#3dd6ff', label: '📶 Kurzwelle' }, q => { const f = Save.earn(10 + Math.round(q * 40)); funken('tech', q >= 0.6 ? 3 : 1); AMC.UI.toast((q >= 0.75 ? '📶 Glasklarer Empfang aus Neuseeland!' : q >= 0.45 ? '📶 Rauschen, aber man versteht was.' : '📶 Nur Pfeifen …') + ' +' + f + ' 🎟️', 4000); });
+      if (a[2]) return mini(a[2], Object.assign({ color: '#ffd23f' }, a[3]), q => { AMC.Audio.sfx(q >= 0.5 ? 'applause' : 'miss'); if (AMC.WorldFX && q >= 0.5) AMC.WorldFX.cheer(); Save.save(); AMC.UI.toast(a[1](q), 4400); });
       AMC.Audio.sfx('buy'); Save.save(); AMC.UI.toast(a[1](), 4200);
     });
   };
