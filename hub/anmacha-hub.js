@@ -57,7 +57,7 @@
     '.egh-hero-b{padding:22px;display:flex;flex-direction:column;gap:10px;justify-content:center}.egh-eyebrow{color:var(--a2);font-weight:800;letter-spacing:.12em;font-size:.72rem;text-transform:uppercase}' +
     '.egh-hero-b h3{margin:0;font-size:clamp(1.3rem,3.2vw,2rem);line-height:1.15}.egh-hero-b p{margin:0;color:var(--m);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}' +
     '.egh-play{align-self:flex-start;padding:11px 22px;border-radius:999px;border:0;background:linear-gradient(135deg,var(--a),var(--a2));color:#0a0a12;font-weight:800}' +
-    '.egh h4{margin:18px 0 10px;font-size:1.05rem}.egh-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}.egh-trs{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}.egh-tr{flex:0 0 min(260px,72vw);display:grid;gap:6px;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}.egh-tr span{position:relative;display:block;aspect-ratio:16/9;border-radius:var(--r);overflow:hidden;border:1px solid var(--l);background:#000 center/cover}.egh-tr span::after{content:"▶";position:absolute;inset:auto auto 10px 10px;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--a),var(--a2));color:#0a0a12;font-size:15px}.egh-tr:hover span,.egh-tr:focus-visible span{outline:2px solid var(--a)}.egh-tv{position:fixed;inset:0;z-index:2147482400;background:rgba(0,0,0,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px}.egh-tv video{max-width:min(100%,1100px);max-height:calc(100vh - 110px);border-radius:12px;background:#000}.egh-tv div{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.egh-tv button{padding:10px 20px;border-radius:999px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;font:inherit;font-weight:700;cursor:pointer}.egh-tv button[data-tvplay]{border:0;background:linear-gradient(135deg,#b57cff,#22d3ee);color:#0a0a12}.egh-row .egh-it{flex:0 0 150px}' +
+    '.egh h4{margin:18px 0 10px;font-size:1.05rem}.egh-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}.egh-trs{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}.egh-tr{flex:0 0 min(260px,72vw);display:grid;gap:6px;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}.egh-tr span{position:relative;display:block;aspect-ratio:16/9;border-radius:var(--r);overflow:hidden;border:1px solid var(--l);background:#000 center/cover}.egh-tr span::after{content:"▶";position:absolute;inset:auto auto 10px 10px;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--a),var(--a2));color:#0a0a12;font-size:15px}.egh-tr:hover span,.egh-tr:focus-visible span{outline:2px solid var(--a)}.egh-dt{position:fixed;inset:0;z-index:2147482400;background:rgba(4,6,16,.86);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}.egh-dt>div{width:min(100%,760px);max-height:calc(100vh - 32px);overflow:auto;border-radius:18px;background:#0f1538;color:#eef1ff;border:1px solid rgba(255,255,255,.14);box-shadow:0 20px 60px rgba(0,0,0,.5)}.egh-dt-m{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#000 center/cover;border:0}.egh-dt-b{padding:16px 18px 20px;display:grid;gap:10px}.egh-dt h3{margin:0;font-size:1.35rem}.egh-dt small{color:#9aa5bd}.egh-dt p{margin:0;color:#c3cbdd;line-height:1.55}.egh-dt ul{margin:0;padding-left:20px;color:#c3cbdd;line-height:1.5}.egh-dt-a{display:flex;flex-wrap:wrap;gap:8px}.egh-dt-a button{padding:10px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;font:inherit;font-weight:700;cursor:pointer}.egh-dt-a button[data-dplay]{border:0;background:linear-gradient(135deg,#b57cff,#22d3ee);color:#0a0a12}.egh-dt h4{margin:6px 0 0;font-size:1rem}.egh-tv{position:fixed;inset:0;z-index:2147482400;background:rgba(0,0,0,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px}.egh-tv video{max-width:min(100%,1100px);max-height:calc(100vh - 110px);border-radius:12px;background:#000}.egh-tv div{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.egh-tv button{padding:10px 20px;border-radius:999px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;font:inherit;font-weight:700;cursor:pointer}.egh-tv button[data-tvplay]{border:0;background:linear-gradient(135deg,#b57cff,#22d3ee);color:#0a0a12}.egh-row .egh-it{flex:0 0 150px}' +
     '.egh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}' +
     '.egh-it{position:relative;min-width:0;display:flex}.egh-card{position:relative;display:flex;flex-direction:column;width:100%;min-width:0;height:100%;margin:0;color:inherit;font:inherit;text-transform:none;letter-spacing:normal;text-align:left;padding:0;border-radius:var(--r);overflow:hidden;border:1px solid var(--l);background:var(--c);transition:transform .15s,border-color .15s}' +
     '.egh-card:hover,.egh-card:focus-visible{transform:translateY(-3px);border-color:var(--a);outline:none}' +
@@ -184,7 +184,7 @@
   function cardHtml(g) {
     var isF = favs().indexOf(g.id) >= 0, img = g.img ? '<img src="' + esc(EG + g.img) + '" alt="" loading="lazy" decoding="async">' : esc(g.icon || '🎮');
     var c = (S.cats && S.cats.list || []).filter(function (x) { return x.id === catOf(g); })[0];
-    return '<div class="egh-it"><button class="egh-card" type="button" data-play="' + esc(g.id) + '" aria-label="' + esc(short(g.title)) + ' spielen">' +
+    return '<div class="egh-it"><button class="egh-card" type="button" data-det="' + esc(g.id) + '" aria-label="' + esc(short(g.title)) + ': Spielseite öffnen">' +
       '<span class="egh-ci" style="background-image:' + esc(g.bg || 'none') + '">' + img + '</span>' +
       '<span class="egh-cb"><b>' + esc(short(g.title)) + '</b><span>' + esc(c ? c.icon + ' ' + c.short : '🎮 Spiel') + (g.multiplayer ? ' · 👥' : '') + '</span></span></button>' +
       '<button class="egh-heart" type="button" data-fav="' + esc(g.id) + '" aria-pressed="' + isF + '" aria-label="' + (isF ? 'Aus Favoriten entfernen' : 'Zu Favoriten') + '">' + (isF ? '♥' : '♡') + '</button></div>';
@@ -236,6 +236,28 @@
     root.addEventListener('message', function (e) { if (e.source === d.querySelector('iframe').contentWindow && e.data && (e.data.type === 'easygames:close' || e.data === 'easygames:close')) close(); });
     S.pl = d; return d;
   }
+  /* ───────── Spielseite: Kachel antippen zeigt erst Trailer, Beschreibung und Anleitung, dann „Spiel starten“ ───────── */
+  function detail(id) {
+    var g = S.games.filter(function (x) { return x.id === id; })[0]; if (!g) return;
+    var t = g.trailer, gd = g.guide || {}, d = doc.createElement('div');
+    var c = (S.cats && S.cats.list || []).filter(function (x) { return x.id === catOf(g); })[0], m = g.modes || {};
+    var tags = [c ? c.icon + ' ' + c.short : '🎮 Spiel'].concat(m.online ? ['🌐 Online'] : [], g.multiplayer ? ['👥 Mehrspieler'] : [], m.pad ? ['🎮 Controller'] : []).join(' · ');
+    var li = function (a) { return a && a.length ? '<ul>' + a.slice(0, 6).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' : ''; };
+    var media = t ? '<video class="egh-dt-m" controls playsinline preload="metadata"' + ((t.p16 || t.p9) ? ' poster="' + esc(EG + (t.p16 || t.p9)) + '"' : '') + ' src="' + esc(EG + t.v16) + '"></video>'
+      : (g.img ? '<div class="egh-dt-m" style="background-image:url(&quot;' + esc(EG + g.img) + '&quot;);background-size:contain;background-repeat:no-repeat;background-color:#000"></div>' : '');
+    d.className = 'egh-dt'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-label', short(g.title));
+    d.innerHTML = '<div>' + media + '<div class="egh-dt-b"><h3>' + esc(short(g.title)) + '</h3><small>' + esc(tags) + '</small>' +
+      '<div class="egh-dt-a"><button type="button" data-dplay>▶ Spiel starten</button><button type="button" data-dgd>📖 Anleitung</button><button type="button" data-dx>✕ Schließen</button></div>' +
+      '<p>' + esc(g.desc || '') + '</p>' + (gd.anleitung ? '<h4>So wird gespielt</h4><p>' + esc(gd.anleitung) + '</p>' : '') +
+      (gd.steuerung && gd.steuerung.length ? '<h4>Steuerung</h4>' + li(gd.steuerung) : '') + (gd.tipps && gd.tipps.length ? '<h4>Tipps</h4>' + li(gd.tipps) : '') + '</div></div>';
+    var v = d.querySelector('video');
+    var shut = function () { if (v) { v.pause(); v.removeAttribute('src'); } d.remove(); doc.removeEventListener('keydown', k); }, k = function (e) { if (e.key === 'Escape') shut(); };
+    d.querySelector('[data-dx]').onclick = shut;
+    d.querySelector('[data-dplay]').onclick = function () { shut(); open(g.id); };
+    d.querySelector('[data-dgd]').onclick = function () { var u = new URL('anleitung.html', EG); u.searchParams.set('game', g.id); root.open(u.href, '_blank', 'noopener'); };
+    d.addEventListener('click', function (e) { if (e.target === d) shut(); });
+    doc.addEventListener('keydown', k); doc.body.appendChild(d); d.querySelector('[data-dplay]').focus({ preventScroll: true });
+  }
   /* ───────── Trailer (automatisch aus dem Katalog: promo/<id>-trailer-16x9.mp4 / -9x16.mp4) ───────── */
   function trailer(id) {
     var g = S.games.filter(function (x) { return x.id === id && x.trailer; })[0]; if (!g) return;
@@ -274,8 +296,8 @@
     // Breite Kartenbilder (z. B. 1200×630) nicht beschneiden: ganz zeigen, Spielfarbe als Hintergrund
     el.addEventListener('load', function (e) { var i = e.target; if (i.tagName === 'IMG' && i.parentNode && i.parentNode.classList.contains('egh-ci') && i.naturalWidth > i.naturalHeight * 1.25) i.classList.add('egh-wide'); }, true);
     el.addEventListener('click', function (e) {
-      var h = e.target.closest('[data-fav]'), p = e.target.closest('[data-play]'), c = e.target.closest('[data-cat]'), t = e.target.closest('[data-tr]');
-      if (t) trailer(t.dataset.tr); else if (h) { e.stopPropagation(); toggleFav(h.dataset.fav); } else if (p) open(p.dataset.play); else if (c) { S.cat = c.dataset.cat; renderAll(); }
+      var h = e.target.closest('[data-fav]'), p = e.target.closest('[data-play]'), c = e.target.closest('[data-cat]'), t = e.target.closest('[data-tr]'), dt = e.target.closest('[data-det]');
+      if (t) detail(t.dataset.tr); else if (dt && !h) detail(dt.dataset.det); else if (h) { e.stopPropagation(); toggleFav(h.dataset.fav); } else if (p) open(p.dataset.play); else if (c) { S.cat = c.dataset.cat; renderAll(); }
     });
     el.innerHTML = '<div class="egh"><div class="egh-empty">Spiele werden geladen …</div></div>';
     (S.games.length ? Promise.resolve() : Promise.all([loadCatalog(), loadCats()])).then(function () { render(m); deep(); sync.seen = (LS.getItem(FAV) || '') + '|' + (LS.getItem(REC) || ''); syncNow(); })
@@ -289,5 +311,5 @@
   root.addEventListener('anmacha-account-changed', function () { sync.ver = ''; syncNow(); });
   function auto() { [].forEach.call(doc.querySelectorAll('[data-anmacha-hub]'), function (el) { mount(el); }); }
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', auto); else auto();
-  root.AnMaChaHub = { mount: mount, open: open, trailer: trailer, base: EG, preview: function (id) { var g = S.games.filter(function (x) { return x.id === id; })[0]; return g ? { title: short(g.title), desc: g.desc || '', image: new URL('share/' + g.id + '.jpg', EG).href, page: new URL('share/' + g.id + '.html', EG).href } : null; }, shareUrl: function (id) { var g = S.games.filter(function (x) { return x.id === id; })[0]; return g ? shareUrl(g) : null; } };
+  root.AnMaChaHub = { mount: mount, open: open, trailer: trailer, detail: detail, base: EG, preview: function (id) { var g = S.games.filter(function (x) { return x.id === id; })[0]; return g ? { title: short(g.title), desc: g.desc || '', image: new URL('share/' + g.id + '.jpg', EG).href, page: new URL('share/' + g.id + '.html', EG).href } : null; }, shareUrl: function (id) { var g = S.games.filter(function (x) { return x.id === id; })[0]; return g ? shareUrl(g) : null; } };
 })(window);
