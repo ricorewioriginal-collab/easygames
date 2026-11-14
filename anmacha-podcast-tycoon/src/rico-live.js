@@ -99,34 +99,34 @@
           lines: [['rico', 'Licht an, Kamera läuft – willkommen im RicoReWi-Universum!', clip(1)]] },
         { cam: [X + 3.6, 2.3, Z + 1.9], to: [X + 2.7, 2.05, Z + 1], look: [X - 0.4, 1.75, Z], dur: 7, fx, pose: () => place('rico', -0.4, 0, R + 0.25, 'idle'),
           lines: [['rico', 'Andrew, Marco: Ich hab euch ein Tool gebaut, das eure Hörer live zählt. Gerade sind es … vier.', clip(2)]] },
-        { cam: [X + 1.6, 2.1, Z + 2.6], to: [X + 2.2, 2, Z + 2], look: [X + 4.8, 1.5, Z], dur: 6, fx, pose: () => { place('andrew', 4.8, 1.3, -R, 'yes'); place('marco', 4.8, -1.3, -R, 'idle'); },
-          lines: [['marco', 'Vier? Einer davon bin ich. Mit meinem Zweit-Account.'], ['andrew', 'Und meine Mutter. Auf drei Handys.']] },
-        { cam: [X + 7, 4.5, Z - 6], to: [X + 5, 2.6, Z - 3.6], look: [X - 0.4, 2, Z], dur: 7, fx: dt => { fx(dt); if (set) set.goal = 400; }, pose: () => { place('rico', -0.4, 0, R, 'arms'); if (set) set.rain = 9; AMC.Audio.sfx('cheer'); },
-          lines: [['rico', 'Kein Stress. Aus vier werden vierhundert, wenn ihr euch was traut.', clip(3)]] },
+        { cam: [X + 1.6, 2.1, Z + 2.6], to: [X + 2.2, 2, Z + 2], look: [X + 4.8, 1.5, Z], dur: 6, fx, pose: () => { place('andrew', 4.8, 1.3, -R, 'idle'); place('marco', 4.8, -1.3, -R, 'idle'); },
+          lines: [['marco', 'Vier? Einer davon bin ich. Mit meinem Zweit-Account.', { gest: 'arms' }], ['andrew', 'Und meine Mutter. Auf drei Handys.', { wait: 0.3, gest: 'yes', do: () => AMC.Audio.sfx('laugh') }]] },
+        { cam: [X + 7, 4.5, Z - 6], to: [X + 5, 2.6, Z - 3.6], look: [X - 0.4, 2, Z], dur: 7, fx, pose: () => place('rico', -0.4, 0, R, 'idle'),
+          lines: [['rico', 'Kein Stress. Aus vier werden vierhundert, wenn ihr euch was traut.', Object.assign(clip(3), { gest: 'arms', do: () => { if (set) { set.goal = 400; set.rain = 9; } AMC.Audio.sfx('cheer'); } })]] },
         { cam: [X + 2, 1.7, Z + 5.2], to: [X + 2.4, 1.9, Z - 5.2], look: [X - 0.4, 1.7, Z], dur: 8, fx, pose: () => place('rico', -0.4, 0, R, 'idle'),
           lines: [['rico', 'Ich bin RicoReWi. Und das hier ist echt – kein Filter, kein Fake.', clip(4)]] },
-        { cam: [X + 11, 3.2, Z], to: [X + 17, 7.5, Z + 7], look: [X + 1, 2, Z], dur: 9, fx: dt => { fx(dt); if (set && Math.random() < dt * 2.2) confetti(1, U.rand(4, 7)); }, pose: () => { place('rico', -0.4, 0, R, 'dance'); place('andrew', 2.2, 1.4, -R + 0.4, 'dance'); place('marco', 2.2, -1.4, -R - 0.4, 'dance'); if (set) { set.goal = 4000; set.rain = 14; } confetti(4, 6); AMC.Audio.sfx('applause'); if (AMC.WorldFX) AMC.WorldFX.cheer(); },
-          lines: [['rico', 'Und jetzt: Bühne frei für AnMaCha – der Podcast!', clip(5)], ['andrew', 'Rico, du bist komplett verrückt.'], ['marco', 'Genau deshalb kommt er in unsere Show.']] }
+        { cam: [X + 11, 3.2, Z], to: [X + 17, 7.5, Z + 7], look: [X + 1, 2, Z], dur: 9, fx: dt => { fx(dt); if (set && Math.random() < dt * 2.2) confetti(1, U.rand(4, 7)); }, pose: () => { place('rico', -0.4, 0, R, 'idle'); place('andrew', 2.2, 1.4, -R + 0.4, 'idle'); place('marco', 2.2, -1.4, -R - 0.4, 'idle'); },
+          lines: [['rico', 'Und jetzt: Bühne frei für AnMaCha – der Podcast!', Object.assign(clip(5), { gest: null, do: () => { ['rico', 'andrew', 'marco'].forEach(id => W.hosts[id] && W.hosts[id].play('dance', { fade: 0.3 })); if (set) { set.goal = 4000; set.rain = 14; } confetti(4, 6); AMC.Audio.sfx('applause'); } })], ['andrew', 'Rico, du bist komplett verrückt.', { gest: null, wait: 0.4 }], ['marco', 'Genau deshalb kommt er in unsere Show.', { gest: null }]] }
       ] },
-    andrew: { t: '☀️ Andrews Morgen-Show', at: PARK, need: () => career().eps >= 2, look: { c: [0xffb03d, 0xff5a3d, 0xffe27a, 0xff8a1e], bg: ['#4a1f0b', '#3a2a0b', '#5a2a12'], title: 'Andrew', sub: 'Die Morgen-Show · live im Stadtpark', hot: 200, chat: ['💬 „Mikro an?“  💬 „guten Morgen 😴“', '💬 „ANDREW 😂“  💬 „Mikro war aus!!“'], view: 12 },
+    andrew: { t: '☀️ Andrews Morgen-Show', at: PARK, need: () => act() >= 1 && career().eps >= 2, hint: '☀️ Andrew probt im Stadtpark seine Morgen-Show – schau vorbei!', look: { c: [0xffb03d, 0xff5a3d, 0xffe27a, 0xff8a1e], bg: ['#4a1f0b', '#3a2a0b', '#5a2a12'], title: 'Andrew', sub: 'Die Morgen-Show · live im Stadtpark', hot: 200, chat: ['💬 „Mikro an?“  💬 „guten Morgen 😴“', '💬 „ANDREW 😂“  💬 „Mikro war aus!!“'], view: 12 },
       shots: () => [
         { cam: [X + 16, 9, Z + 10], to: [X + 8, 3.2, Z + 4], look: [X, 2, Z], dur: 6, fx, pose: () => { place('andrew', -0.4, 0, R, 'arms'); confetti(2, 6); AMC.Audio.sfx('whoosh'); },
           lines: [['andrew', 'Guten Morgen, Medienstadt! Hier ist Andrew – live aus dem Stadtpark!']] },
         { cam: [X + 3.4, 2.2, Z + 1.8], to: [X + 2.6, 2, Z + 0.9], look: [X - 0.4, 1.75, Z], dur: 7, fx, pose: () => place('andrew', -0.4, 0, R + 0.2, 'idle'),
           lines: [['andrew', 'Marco schläft noch. Also mache ich die Show heute allein. Was soll schon schiefgehen?']] },
-        { cam: [X + 7, 4.5, Z - 6], to: [X + 5, 2.6, Z - 3.6], look: [X - 0.4, 2, Z], dur: 6, fx: dt => { fx(dt); if (set) set.goal = 380; }, pose: () => { place('andrew', -0.4, 0, R, 'dance'); if (set) set.rain = 8; },
-          lines: [['n', 'Drei Minuten später …'], ['andrew', 'Okay, das Mikro war die ganze Zeit aus. Aber ich sah dabei fantastisch aus!']] },
-        { cam: [X + 10, 3, Z], to: [X + 15, 6.5, Z + 6], look: [X + 1, 2, Z], dur: 7, fx: dt => { fx(dt); if (set && Math.random() < dt * 1.6) confetti(1, U.rand(4, 7)); }, pose: () => { place('andrew', -0.4, 0, R, 'yes'); confetti(3, 6); AMC.Audio.sfx('applause'); },
-          lines: [['andrew', 'Morgen gleich nochmal. Diesmal mit Ton!']] }] },
-    marco: { t: '🌙 Marco unplugged', at: PARK, need: () => career().eps >= 4, look: { c: [0x6c8cff, 0x3dd6ff, 0xc9a0ff, 0x2a3a8a], bg: ['#0b1030', '#101a3a', '#1a0b3a'], title: 'Marco', sub: 'Unplugged · ganz ehrlich', hot: 150, chat: ['💬 „so ruhig heute“  💬 „💙“', '💬 „Gisela 😭“  💬 „Andrew, Schlüssel her!“'], view: 30 },
+        { cam: [X + 7, 4.5, Z - 6], to: [X + 5, 2.6, Z - 3.6], look: [X - 0.4, 2, Z], dur: 6, fx, pose: () => place('andrew', -0.4, 0, R, 'idle'),
+          lines: [['n', 'Drei Minuten später …', { wait: 0.2 }], ['andrew', 'Okay, das Mikro war die ganze Zeit aus. Aber ich sah dabei fantastisch aus!', { wait: 0.6, gest: null, do: () => { const f = W.hosts.andrew; f && f.play('dance', { fade: 0.3 }); if (set) { set.goal = 380; set.rain = 8; } AMC.Audio.sfx('laugh'); } }]] },
+        { cam: [X + 10, 3, Z], to: [X + 15, 6.5, Z + 6], look: [X + 1, 2, Z], dur: 7, fx: dt => { fx(dt); if (set && Math.random() < dt * 1.6) confetti(1, U.rand(4, 7)); }, pose: () => place('andrew', -0.4, 0, R, 'idle'),
+          lines: [['andrew', 'Morgen gleich nochmal. Diesmal mit Ton!', { gest: 'yes', do: () => { confetti(3, 6); AMC.Audio.sfx('applause'); } }]] }] },
+    marco: { t: '🌙 Marco unplugged', at: PARK, need: () => act() >= 2 && career().eps >= 4, hint: '🌙 Marco spielt im Stadtpark unplugged – schau vorbei!', look: { c: [0x6c8cff, 0x3dd6ff, 0xc9a0ff, 0x2a3a8a], bg: ['#0b1030', '#101a3a', '#1a0b3a'], title: 'Marco', sub: 'Unplugged · ganz ehrlich', hot: 150, chat: ['💬 „so ruhig heute“  💬 „💙“', '💬 „Gisela 😭“  💬 „Andrew, Schlüssel her!“'], view: 30 },
       shots: () => [
         { cam: [X + 14, 6, Z - 9], to: [X + 7.5, 2.8, Z - 3.5], look: [X, 1.8, Z], dur: 7, fx, pose: () => { place('marco', -0.4, 0, R, 'idle'); if (set) set.rain = 0.3; },
           lines: [['marco', 'Hallo zusammen. Heute ganz ruhig – nur ich, eine Gitarre, die ich nicht spielen kann, und ihr.']] },
         { cam: [X + 3.4, 2.1, Z - 1.8], to: [X + 2.6, 1.95, Z - 0.9], look: [X - 0.4, 1.7, Z], dur: 7, fx, pose: () => place('marco', -0.4, 0, R - 0.2, 'idle'),
           lines: [['marco', 'Andrew sagt immer, wir müssen lauter werden. Ich finde, wir müssen ehrlicher werden.']] },
-        { cam: [X + 2, 1.7, Z + 5], to: [X + 2.4, 1.9, Z - 5], look: [X - 0.4, 1.7, Z], dur: 7, fx: dt => { fx(dt); if (set) set.goal = 260; }, pose: () => { place('marco', -0.4, 0, R, 'yes'); if (set) set.rain = 6; },
-          lines: [['marco', 'Und falls jemand Gisela gesehen hat: Andrew, gib bitte die Schlüssel zurück.'], ['gisela', 'Tröööt!']] }] },
-    duo: { t: '🎙️ Der Mitternachts-Talk', at: PARK, need: () => career().abos >= 2000, look: { c: [0xff3da8, 0xffd45a, 0x3dd6ff, 0x7a2bd8], title: 'AnMaCha', sub: 'Der Mitternachts-Talk · Andrew & Marco', hot: 2500, chat: ['💬 „Mitternacht 🌙“  💬 „los geht’s!“', '💬 „Anmacher 🔥🔥“  💬 „Plakat!!“'], view: 1800 },
+        { cam: [X + 2, 1.7, Z + 5], to: [X + 2.4, 1.9, Z - 5], look: [X - 0.4, 1.7, Z], dur: 7, fx, pose: () => place('marco', -0.4, 0, R, 'idle'),
+          lines: [['marco', 'Und falls jemand Gisela gesehen hat: Andrew, gib bitte die Schlüssel zurück.', { gest: 'arms', do: () => { if (set) { set.goal = 260; set.rain = 6; } } }], ['gisela', 'Tröööt!', { wait: 0.7, do: () => AMC.Audio.sfx('laugh') }]] }] },
+    duo: { t: '🎙️ Der Mitternachts-Talk', at: PARK, need: () => act() >= 3 && career().abos >= 2000, hint: '🎙️ Mitternachts-Talk im Stadtpark – Andrew und Marco warten auf dich!', look: { c: [0xff3da8, 0xffd45a, 0x3dd6ff, 0x7a2bd8], title: 'AnMaCha', sub: 'Der Mitternachts-Talk · Andrew & Marco', hot: 2500, chat: ['💬 „Mitternacht 🌙“  💬 „los geht’s!“', '💬 „Anmacher 🔥🔥“  💬 „Plakat!!“'], view: 1800 },
       shots: () => [
         { cam: [X + 16, 9, Z + 10], to: [X + 8, 3.2, Z + 4], look: [X, 2, Z], dur: 6, fx, pose: () => { place('andrew', -0.2, 1.3, R - 0.25, 'arms'); place('marco', -0.2, -1.3, R + 0.25, 'idle'); confetti(2, 6); AMC.Audio.sfx('whoosh'); },
           lines: [['andrew', 'Mitternachts-Talk! Marco, sag den Leuten, warum wir das hier machen.']] },
@@ -135,12 +135,13 @@
         { cam: [X + 3.6, 2.2, Z + 2.6], to: [X + 2.8, 2, Z + 1.6], look: [X - 0.2, 1.75, Z + 1.3], dur: 6, fx: dt => { fx(dt); if (set) set.goal = 2000; }, pose: () => { place('andrew', -0.2, 1.3, R - 0.5, 'yes'); if (set) set.rain = 6; AMC.Audio.sfx('cheer'); },
           lines: [['andrew', 'Zweitausend Abos, Marco! Zweitausend Menschen, die uns freiwillig zuhören!']] },
         { cam: [X + 7, 4.5, Z - 6], to: [X + 5, 2.6, Z - 3.6], look: [X - 0.2, 2, Z], dur: 6, fx, pose: () => place('marco', -0.2, -1.3, R, 'idle'),
-          lines: [['marco', 'Freiwillig. Das schreiben wir aufs Plakat.']] },
-        { cam: [X + 11, 3.2, Z], to: [X + 17, 7.5, Z + 7], look: [X + 1, 2, Z], dur: 8, fx: dt => { fx(dt); if (set && Math.random() < dt * 2.2) confetti(1, U.rand(4, 7)); }, pose: () => { place('andrew', -0.2, 1.3, R, 'dance'); place('marco', -0.2, -1.3, R, 'dance'); if (set) { set.goal = 3200; set.rain = 14; } confetti(4, 6); AMC.Audio.sfx('applause'); if (AMC.WorldFX) AMC.WorldFX.cheer(); },
-          lines: [['andrew', 'Medienstadt – gute Nacht!'], ['marco', 'Und morgen wieder: AnMaCha!']] }] }
+          lines: [['marco', 'Freiwillig. Das schreiben wir aufs Plakat.', { wait: 0.5, do: () => AMC.Audio.sfx('laugh') }]] },
+        { cam: [X + 11, 3.2, Z], to: [X + 17, 7.5, Z + 7], look: [X + 1, 2, Z], dur: 8, fx: dt => { fx(dt); if (set && Math.random() < dt * 2.2) confetti(1, U.rand(4, 7)); }, pose: () => { place('andrew', -0.2, 1.3, R, 'idle'); place('marco', -0.2, -1.3, R, 'idle'); },
+          lines: [['andrew', 'Medienstadt – gute Nacht!', { gest: null, do: () => { ['andrew', 'marco'].forEach(id => W.hosts[id] && W.hosts[id].play('dance', { fade: 0.3 })); if (set) { set.goal = 3200; set.rain = 14; } confetti(4, 6); AMC.Audio.sfx('applause'); if (AMC.WorldFX) AMC.WorldFX.cheer(); } }], ['marco', 'Und morgen wieder: AnMaCha!', { gest: null }]] }] }
   };
   SC.LIST = SCENES;
   const career = () => AMC.Career ? AMC.Career.state() : { eps: 0, abos: 0 };
+  const act = () => ((Save.data.acts || {}).cur) || 0;   // Szenen gehören in ihren Story-Akt (Andrew ab Akt 2, Marco ab Akt 3, Duo ab Akt 4)
   const sst = () => { const d = Save.data.scenes = Save.data.scenes || {}; if ((Save.data.ricoLive || {}).seen) d.rico = 1; return d; };
   SC.seen = id => !!sst()[id];
   /** Szene abspielen; done läuft danach (auch wenn sie nicht starten kann). */
@@ -157,12 +158,25 @@
 
   // Andrew/Marco/beide: starten von selbst, sobald ihr Ziel erreicht ist (frei in der Stadt, nichts anderes offen)
   if (AMC.Acts && AMC.Acts.update) {
-    const up = AMC.Acts.update; let wait = 3;
+    // Lichtsäule über dem Stadtpark zeigt, wo die nächste Szene wartet
+    let pole = null;
+    const beam = S => {
+      if (!S) { if (pole && pole.parent) pole.parent.remove(pole); return; }
+      if (!pole) { const T = root.THREE; pole = new T.Mesh(new T.CylinderGeometry(1.2, 1.2, 60, 20, 1, true), new T.MeshBasicMaterial({ color: 0xffd23f, transparent: true, opacity: 0.22, depthWrite: false, blending: T.AdditiveBlending, side: T.DoubleSide, toneMapped: false })); pole.position.set(PARK[0], 30, PARK[2]); pole.userData.dyn = true; }
+      if (pole.parent !== S.group) S.group.add(pole);
+    };
+    // Nur eine Szene zur Zeit, nie direkt hinter einer anderen Zwischensequenz, und erst, wenn man in den Stadtpark kommt (Hinweis vorher)
+    const up = AMC.Acts.update; let wait = 3, hintT = 0;
     AMC.Acts.update = function (dt) {
       up.apply(AMC.Acts, arguments);
-      if ((wait -= dt) > 0) return; wait = 2;
+      if ((wait -= dt) > 0) return; wait = 1;
       const S = AMC.Play.state(); if (!S || S.mode !== 'free' || S.net || S.drive || AMC.Cut.active() || AMC.UI.isOpen() || (AMC.Worlds && AMC.Worlds.busy && AMC.Worlds.busy())) return;
-      const id = ['andrew', 'marco', 'duo'].find(k => !SC.seen(k) && SCENES[k].need()); if (id) SC.play(id);
+      const a = Save.data.acts || {}; if (!(a.seen || {})[a.cur || 0] && (a.cur || 0) < 5) return;   // erst die Einleitung des laufenden Akts
+      if (AMC.Acts.lastCut && Date.now() - AMC.Acts.lastCut < 45000) return;
+      const id = ['andrew', 'marco', 'duo'].find(k => !SC.seen(k) && SCENES[k].need()); if (!id) return beam(null);
+      beam(S);
+      if (Math.hypot(S.pl.x - PARK[0], S.pl.z - PARK[2]) < 26) { beam(null); SC.play(id); return; }
+      if ((hintT -= 1) <= 0) { hintT = 120; AMC.UI.toast(SCENES[id].hint, 5200); }
     };
   }
   // Story-Menü: gesehene Szenen nochmal ansehen

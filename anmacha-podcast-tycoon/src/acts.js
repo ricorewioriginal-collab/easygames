@@ -55,18 +55,28 @@
       a.onended = end; a.onerror = fall; const pr = a.play(); if (pr && pr.catch) pr.catch(fall); return true;
     } catch (e) { return speak(who, txt, end); }
   }
-  const hush = () => { try { if (AMC.Babble) AMC.Babble.stop(); if (clip) { clip.pause(); clip = null; } root.speechSynthesis && speechSynthesis.cancel(); } catch (e) { /* egal */ } };
+  let vTok = 0, vBusy = false;   // läuft gerade eine Sprachzeile (Clip, Sprachausgabe oder Brabbeln)?
+  const hush = () => { vTok++; vBusy = false; try { if (AMC.Babble) AMC.Babble.stop(); if (clip) { clip.pause(); clip = null; } root.speechSynthesis && speechSynthesis.cancel(); } catch (e) { /* egal */ } };
 
   /** Zwischensequenz abspielen. shots = [{ cam: [x,y,z], to: [x,y,z], look: [x,y,z], lines: [[wer, text], …], pose: fn(S) }] */
   // Stimmen außerhalb der Zwischensequenzen: Story-Dialoge (UI.dialog) und Live-Aufnahme (show.js say)
   const SHORT = { a: 'andrew', m: 'marco', r: 'rico', n: 'n' };
   AMC.Voice = {
-    say(w, t) {
-      if (C || !t) return false; const who = SHORT[w] || w; hush();
-      const src = AC.voClip(who, t); if (src) return playClip(src, who, t, () => {});
-      return WHO[who] ? speak(who, t.replace(/\{\w+\}/g, ''), () => {}) : (AMC.Babble ? AMC.Babble.say(who, t) : false);
+    say(w, t, end) {
+      if (C || !t) { if (end) end(); return false; } const who = SHORT[w] || w; hush();
+      const tok = vTok, fin = () => { if (tok !== vTok) return; vBusy = false; if (end) end(); };
+      const src = AC.voClip(who, t);
+      const on = src ? playClip(src, who, t, fin) : WHO[who] ? speak(who, t.replace(/\{\w+\}/g, ''), fin) : (AMC.Babble ? AMC.Babble.say(who, t, fin) : false);
+      vBusy = !!on; if (!on && end) setTimeout(fin, 0);
+      return on;
     },
-    stop: () => { if (!C) hush(); }
+    stop: () => { if (!C) hush(); },
+    busy: () => vBusy || !!C,
+    /** fn erst ausführen, wenn mindestens ms vergangen sind UND die laufende Sprachzeile zu Ende ist (höchstens 12 s extra warten) */
+    after(ms, fn) {
+      const t0 = Date.now(), tick = () => { const dt = Date.now() - t0; if (dt < ms || (vBusy && dt < ms + 12000)) return setTimeout(tick, 120); setTimeout(fn, vBusy ? 0 : 280); };
+      setTimeout(tick, Math.min(ms, 120));
+    }
   };
   CUT.play = function (shots, done) {
     const S = AMC.Play.state(); if (!S || C || (AMC.Worlds && AMC.Worlds.busy && AMC.Worlds.busy())) return false;
@@ -81,31 +91,48 @@
   CUT.active = () => !!C;
   function shot(i) {
     const s = C.shots[i]; C.si = i; C.t = 0; C.li = -1; if (s.pose) try { s.pose(C.S); } catch (e) { /* Pose ist nur Schmuck */ }
+    // Kamerafahrt so lang wie das Gesprochene: die Fahrt endet mit der letzten Zeile, nicht mittendrin
+    C.dur = Math.max(s.dur || 7, s.lines.reduce((a, l) => a + need(l[1]) + 0.5 + ((l[2] || {}).wait || 0), 0.6));
+    C.wait = i === 0 ? 0 : (s.wait || 0.35);   // kurzer Atemzug nach dem Schnitt, bevor die erste Zeile startet
+    C.pend = 0;
     next();
   }
+  const need = t => Math.max(2.4, String(t).length * 0.062);   // Lesezeit, falls keine Stimme läuft
+  const GEST = { '!': 'arms', '?': 'yes' };
+  let mouth = null;
+  const shut = () => { if (mouth) { const f = mouth; mouth = null; f.talk(false); if (f.gest && f.curName === f.gest) f.play(f.back || 'idle', { fade: 0.35 }); f.gest = null; } };
   function line(i) {
-    const s = C.shots[C.si], l = s.lines[i]; C.li = i; C.lt = 0; C.spoke = false;
+    const s = C.shots[C.si], l = s.lines[i]; C.li = i; C.lt = 0; C.spoke = false; C.gap = 0;
     const w = WHO[l[0]] || [l[0], '💬'], face = C.el.querySelector('#cutF'), o = l[2] || {};
     face.innerHTML = w[1] && !o.src ? '<em>' + w[1] + '</em>' : '<img alt="" src="' + AMC.UI.face(l[0]) + '">';
     C.el.classList.toggle('orig', !!o.src);
     C.el.querySelector('#cutN').textContent = w[0]; C.el.querySelector('#cutT').textContent = l[1];
     const sub = C.el.querySelector('.cut-sub'); sub.classList.remove('pop'); void sub.offsetWidth; sub.classList.add('pop');
-    C.need = Math.max(2.6, l[1].length * 0.065);
-    if (clip) hush();
-    const said = () => { if (C && C.li === i) C.spoke = true; };
+    C.need = need(l[1]);
+    hush(); shut();
+    // Regie zur Zeile: Aktion (o.do), Geste des Sprechers, Mund bewegt sich, bis die Stimme fertig ist
+    if (o.do) try { o.do(C.S); } catch (e) { /* Regie ist nur Schmuck */ }
+    const tok = vTok, said = () => { if (C && C.li === i && tok === vTok) { C.spoke = true; shut(); } };
     const src = o.src || AC.voClip(l[0], l[1]);
     C.talking = src ? playClip(src, l[0], l[1], said) : speak(l[0], l[1], said);
-    const f = W.hosts[l[0]]; if (f && f.talk) { f.talk(true); setTimeout(() => f.talk(false), C.need * 900); }
+    const f = W.hosts[l[0]];
+    if (f && f.talk && f.root.parent && f.root.visible !== false) {
+      f.talk(true); mouth = f;
+      const g = o.gest !== undefined ? o.gest : (f.curName === 'idle' ? GEST[(l[1].trim().slice(-1))] : null);
+      if (g) { f.back = f.curName || 'idle'; f.gest = g; f.play(g, { fade: 0.25 }); }
+      if (!C.talking) setTimeout(() => { if (mouth === f) shut(); }, C.need * 850);
+    }
     if (l[0] !== 'n' && l[0] !== 'gisela') AMC.Audio.sfx('talk');
   }
+  // Nächster Schritt: erst Pause (o.wait / Atemzug), dann Zeile; am Ende der Einstellung die nächste Kamera
   function next() {
     if (!C || C.ended) return; const s = C.shots[C.si];
-    if (C.li + 1 < s.lines.length) return line(C.li + 1);
+    if (C.li + 1 < s.lines.length) { const w = C.li < 0 ? C.wait : ((s.lines[C.li + 1][2] || {}).wait || 0); if (w > 0 && !C.pend) { C.pend = w; return; } C.pend = 0; return line(C.li + 1); }
     if (C.si + 1 < C.shots.length) return shot(C.si + 1);
     finish();
   }
   function finish() {
-    if (!C || C.ended) return; C.ended = true; hush(); const c = C;
+    if (!C || C.ended) return; C.ended = true; hush(); shut(); const c = C; AC.lastCut = Date.now();
     c.el.classList.remove('on'); document.body.classList.remove('cutting'); setTimeout(() => c.el.remove(), 400);
     AMC.UI.showTouch && AMC.UI.showTouch(true); if (AMC.CityVibe && AMC.CityVibe.state()) I.dpadEmotes = true;
     W.cam.cur = null; C = null; if (c.done) c.done();
@@ -114,15 +141,19 @@
   // Läuft statt Play.update: Kamera fahren, Welt lebt weiter
   CUT.tick = function (dt) {
     if (!C) return false; const s = C.shots[C.si];
-    C.t += dt; C.lt += dt;
-    const k = U.clamp(C.t / (s.dur || 7), 0, 1), e = k * k * (3 - 2 * k), a = s.cam, b = s.to || s.cam, L = s.look;
+    // Regie-Zeit in echter Zeit (ruckelnde Geräte bremsen dt, die Stimme läuft aber in Echtzeit weiter)
+    const nw = performance.now(), rdt = Math.min(0.25, Math.max(dt, (nw - (C.rt || nw)) / 1000)); C.rt = nw;
+    C.t += dt; C.lt += rdt;
+    const k = U.clamp(C.t / (C.dur || s.dur || 7), 0, 1), e = k * k * (3 - 2 * k), a = s.cam, b = s.to || s.cam, L = s.look;
     W.camera.position.set(a[0] + (b[0] - a[0]) * e, a[1] + (b[1] - a[1]) * e, a[2] + (b[2] - a[2]) * e); W.camera.lookAt(L[0], L[1], L[2]);
     if (W.particles) W.particles.update(dt); if (AMC.WorldFX) AMC.WorldFX.update(dt); if (AMC.Worlds) AMC.Worlds.update(dt);
     ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent) f.update(dt); });
     if (s.fx) s.fx(dt, C.t);
     if (I.hit('back') || I.hit('pause')) { finish(); return true; }
+    if (C.pend > 0) { if ((C.pend -= rdt) <= 0) { C.pend = -1; next(); } return true; }   // Pause in der Regie
     if (I.hit('ok') && C.lt > 0.25) next();
-    else if (C.lt > C.need && (C.spoke || !C.talking || C.lt > C.need + 6)) next();
+    else if (C.li >= 0 && (C.spoke || !C.talking) && C.lt > (C.talking ? 0.6 : C.need)) { if ((C.gap += rdt) > 0.4) next(); }   // nach der Stimme kurz durchatmen
+    else if (C.li >= 0 && C.talking && !C.spoke && C.lt > C.need + 14) next();   // Notbremse, falls ein Clip hängt
     return true;
   };
 
@@ -178,6 +209,7 @@
     if ((V.t -= dt) > 0 || AMC.UI.isOpen() || (AMC.Worlds && AMC.Worlds.busy && AMC.Worlds.busy()) || S.drive) return; V.t = 1;
     if (a.cur >= ACTS.length) return; const d = ACTS[a.cur];
     if (!a.seen[a.cur] && !d.finale && d.ok()) { a.seen[a.cur] = 1; a.cur++; Save.save(); const f = Save.earn(d.reward); AMC.UI.toast('📖 ' + d.t + ' schon geschafft! +' + f + ' 🎟️', 3200); return; }   // Spielstand ist schon weiter
+    if (!a.seen[a.cur] && AC.lastCut && Date.now() - AC.lastCut < 40000) return;   // neuer Akt erst nach etwas freiem Spiel, nicht direkt hinter der letzten Szene
     if (!a.seen[a.cur]) { a.seen[a.cur] = 1; Save.save(); CUT.play(d.intro(S), () => AMC.UI.toast('📖 ' + d.t + ': ' + d.goal, 5000)); return; }
     if (d.finale) { if (finaleReady() && Math.hypot(S.pl.x, S.pl.z - 186) < 7) finale(S); return; }
     if (d.ok()) { const r = d.outro ? d.outro(S) : null; a.cur++; Save.save(); const f = Save.earn(d.reward); AMC.Audio.sfx('win'); const after = () => AMC.UI.toast('📖 ' + d.t + ' geschafft! +' + f + ' 🎟️', 4200); if (r) CUT.play(r, after); else after(); }
