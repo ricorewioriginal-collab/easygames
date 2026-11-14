@@ -205,8 +205,14 @@
   function placeGuest(mode) {
     clearGuest(); clearTimeout(ST_.to1); clearTimeout(ST_.to2);
     const g = AMC.Guests && AMC.Guests.today(), f = g && FIGS.find(x => x.id === g.id); if (!f || mode === 'quiz' || mode === 'menu') return;
-    ST_.id = f.id; const pos = [[1.75, -1.75], [2.5, -1.45]];
-    f.models.forEach((m, k) => figure(m).then(o => { if (!o || ST_.id !== f.id || !ST.group) return; o.position.set(pos[k][0], 0, pos[k][1]); o.rotation.y = -0.45; ST.group.add(o); ST_.guest.push(o); }));
+    ST_.id = f.id; const pos = [[1.75, -1.75], [2.75, -1.95]];
+    // Kleine Gäste (Kind, Hund, Taschis) stehen auf einem Gästepodest, damit sie über das Pult schauen
+    f.models.forEach((m, k) => figure(m).then(o => {
+      if (!o || ST_.id !== f.id || !ST.group) return; const T = root.THREE, lift = Math.max(0, 1.6 - (MODELS[m] || [1.6])[0]);
+      const grp = new T.Group(); grp.position.set(pos[k][0], 0, pos[k][1]); grp.rotation.y = -0.45; o.position.y = lift; grp.add(o);
+      if (lift > 0.05) { W.cyl(0.42, 0.48, lift, W.mat(0x2a2440, { r: 0.5 }), 0, lift / 2, 0, grp, 20); W.cyl(0.43, 0.43, 0.03, W.mat(0xff8a1e, { e: 0xff6a00, ei: 1.2 }), 0, lift, 0, grp, 20); }
+      grp.userData.lift = lift; ST.group.add(grp); ST_.guest.push(grp);
+    }));
     if (mode === 'show') {
       ST_.to1 = setTimeout(() => ST.mode === 'show' && AMC.UI.bubble(f.name, f.hi, '🎙️ Studiogast'), 1800);
       ST_.to2 = setTimeout(() => ST.mode === 'show' && AMC.UI.bubble(f.name, f.show[1], '🎙️ Studiogast'), 26000);
@@ -229,7 +235,7 @@
   const stUpd0 = ST.update;
   ST.update = function (dt, o) {
     const r = stUpd0.apply(this, arguments);
-    const t = ST.t || 0; ST_.guest.forEach((g, k) => { g.position.y = Math.abs(Math.sin(t * 1.8 + k)) * 0.04; g.rotation.y = -0.45 + Math.sin(t * 0.7 + k) * 0.12; });
+    const t = ST.t || 0; ST_.guest.forEach((g, k) => { const o = g.children[0]; if (o) o.position.y = (g.userData.lift || 0) + Math.abs(Math.sin(t * 1.8 + k)) * 0.04; g.rotation.y = -0.45 + Math.sin(t * 0.7 + k) * 0.12; });
     if (ST_.pap) { ST_.pap.position.y = 2.6 + Math.sin(t * 1.2) * 0.15; ST_.pap.rotation.y = Math.sin(t * 0.5) * 0.4; }
     return r;
   };
