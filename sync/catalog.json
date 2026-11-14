@@ -681,7 +681,7 @@
      "Heiltränke gibt es im Laden gegen Rissplitter."
     ]
    },
-   "size": 33175698,
+   "size": 33179660,
    "files": 857,
    "offline": true,
    "cloud": {
@@ -2504,7 +2504,12 @@
     "game": "funkparcours",
     "prefix": "fpPhoneName,fpBest3,fpNames,fpChars,fpSnd"
    },
-   "trailer": null
+   "trailer": {
+    "v16": "promo/anmacha-funkparcours-trailer-16x9.mp4",
+    "v9": "promo/anmacha-funkparcours-trailer-9x16.mp4",
+    "p16": "promo/anmacha-funkparcours-trailer-16x9.jpg",
+    "p9": "promo/anmacha-funkparcours-trailer-9x16.jpg"
+   }
   },
   {
    "id": "FunkhausReality",
