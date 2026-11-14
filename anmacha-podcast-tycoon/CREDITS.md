@@ -16,3 +16,6 @@
 
 ## Musikwünsche
 Melodien aus Klavierlicht (`../klavierlicht/archiv`): gemeinfreie Volksweisen und Klassik, Quellen je Lied in der Datei (`lic`, `src`). Klavierklang wird im Browser erzeugt.
+
+## Gastfiguren aus anderen easygames-Spielen
+`models/gaeste/*.glb`: Originalfiguren aus Zotik (Zotik), Bunte Insel (Jannis, Blitz, Pappnase), AERU (Aeru) und TASCHI (Zuckli, Glutzahn) – eigene Entwürfe der easygames-Spiele, mit `tools/bake-podcast-gaeste.cjs` aus deren Figurencode gebacken, nicht nachgebaut. Vorschaubilder an den Portalen: `card.*` der jeweiligen Spiele.

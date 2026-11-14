@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "14dfc2207051",
- "generated": "2026-11-14T20:10:03+01:00",
- "commit": "bc27bc32553de18c9d20e7613a03355a2a22b15b",
+ "version": "71e6ab16dd45",
+ "generated": "2026-11-14T19:23:15+00:00",
+ "commit": "a168ec60982033205e2ece581f2d20ec78d30b38",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -353,8 +353,8 @@
   },
   {
    "p": "aeru/index.html",
-   "s": 15655,
-   "h": "48182f7534e2ac15eecfa7f045bf79f4b20958f5ac03ec5019e145372d361621"
+   "s": 15723,
+   "h": "8fe7c9d3f6d0a3041a9361481335c089e01aa878c39f448a8d611a024d8e5d1b"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -2238,8 +2238,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/index.html",
-   "s": 7266,
-   "h": "684b692b0260b6d8b32602884c8040e4d1c8c28cb84ed12d916db36320659b67"
+   "s": 7307,
+   "h": "9ac37097dd379abe14203af98822f985cf87717645dfec79fa4bc77d05eb1a60"
   },
   {
    "p": "anmacha-podcast-tycoon/manifest.webmanifest",
@@ -2395,6 +2395,41 @@
    "p": "anmacha-podcast-tycoon/models/fountain-round.glb",
    "s": 84848,
    "h": "8d19741e2cca6cbdce114b950b4aa12af625979bbc17b2910ef2366834af5565"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/gaeste/aeru.glb",
+   "s": 114084,
+   "h": "17080bf953d89922150790f725fbde606810730825f5393ab4131335f251d27c"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/gaeste/blitz.glb",
+   "s": 480356,
+   "h": "eb22e4515c83d98c3f0de2864f06a89a4398a64847adf56f71233de0864a9201"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/gaeste/jannis.glb",
+   "s": 874204,
+   "h": "2cd797c1ac3b428cf80658a4b4cf10e461b6431eb3f7435085f356547f125ff0"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/gaeste/pappnase.glb",
+   "s": 441760,
+   "h": "196636a062efa5bb88efbd0a4e40f1bc50cfceaee1033a29bf6ed4677389dbfd"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/gaeste/taschi-blitzi.glb",
+   "s": 1005500,
+   "h": "32c3b47c46ac00dd39625c81fa2d1309718a4e0afe0b13ff06119a7911e791e1"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/gaeste/taschi-glutzahn.glb",
+   "s": 1157560,
+   "h": "a1f8b58217e8efa5b7cca932cff84260a3f59d6d3d2cada92d7d735ac2a126aa"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/gaeste/zotik.glb",
+   "s": 1107000,
+   "h": "a94cf77f144016b888c959906ffccada6548e61e624e6cfa53d1ebca59191495"
   },
   {
    "p": "anmacha-podcast-tycoon/models/kaykit/city.png",
@@ -2722,6 +2757,11 @@
    "h": "e8d81b97297de62699b92559cee7b247da84b1815df2515e42fd5a318a30b8d7"
   },
   {
+   "p": "anmacha-podcast-tycoon/rueckweg.js",
+   "s": 2455,
+   "h": "ac1ef3072d322ca01f5f3a6cb04e6ecd60f1949e19084a3bab503b561574e7f4"
+  },
+  {
    "p": "anmacha-podcast-tycoon/sounds/buy.mp3",
    "s": 5277,
    "h": "d80627936cf852364af1e0b6e1734591c46cd8b0d7a140bdb81a00cf8ad6caff"
@@ -2775,6 +2815,11 @@
    "p": "anmacha-podcast-tycoon/src/core.js",
    "s": 12405,
    "h": "ae17f72ef688420a926daf562ddc420947b119fd2f9e8a054c9d4699c15cd6ee"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/src/crossover.js",
+   "s": 20574,
+   "h": "277f1c72925685f74b6503dcf59ffc2e09a40261509c62d6f180d0aa364aee24"
   },
   {
    "p": "anmacha-podcast-tycoon/src/data.js",
@@ -5258,8 +5303,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 109874,
-   "h": "ed64cfa357b9005dae8107f9cddd456cd6c4e64a72239f40a00a9dac57217eaa"
+   "s": 109942,
+   "h": "4c97def2c8f4858d997528457a3e5c810d7296b562a282ce6ec790d3b47d5571"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -10663,8 +10708,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 262492,
-   "h": "fd279b7bad6a6bbd4fdaaafb8a926a6b10b11182d6ab954d73c32174765fec90"
+   "s": 262493,
+   "h": "39b5a4328d8395d45939ae199769827cb08388fea5c84f222071b7f588ce7898"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -11103,8 +11148,8 @@
   },
   {
    "p": "taschi/index.html",
-   "s": 5076,
-   "h": "7dd96476af01d1b8be1b00ad7017a4145fba2eae514ca3380cd9cef2ad002ff5"
+   "s": 5144,
+   "h": "1b7e2f13b15de8539ab3457d4498f360069b5c532a2f41635f0fc74f147b0be1"
   },
   {
    "p": "taschi/src/core/audio.js",
@@ -13173,8 +13218,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 74265,
-   "h": "62604f49651d8a367aaff9f5fef9c7c823f4aa51c7b937fb8c7d34dcb6024a15"
+   "s": 74333,
+   "h": "243970cd738aab0f553098c3025e5784d35e15eb90ab67d0a69fbad31271f505"
   },
   {
    "p": "zotik/manifest.webmanifest",
