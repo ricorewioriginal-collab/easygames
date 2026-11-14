@@ -68,3 +68,23 @@ export function createAmbient() {
     f.frequency.setTargetAtTime(p[0], t, .8); f.Q.value = p[1]; g.gain.setTargetAtTime(p[2], t, 1.2); lg.gain.setTargetAtTime(p[2] * .6, t, 1.2); lfo.frequency.value = p[3];
   };
 }
+
+/* ---- Lichtstrahlen: wenige weiche Bänder schräg durch die Luft (additiv, ohne Tiefenschreiben, nur Optik) ---- */
+const RAYS = { 2: 0xd8ffb0, 3: 0xffe8b8, 9: 0xfff0c0, 10: 0xfff4d8, 24: 0xfff0d0, 25: 0xffd8ec };
+export function createRays({ scene, TOUCH, curCh }) {
+  const c = document.createElement('canvas'); c.width = 16; c.height = 128; const x = c.getContext('2d');
+  const gr = x.createLinearGradient(0, 0, 16, 0); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(.5, 'rgba(255,255,255,1)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, 16, 128);
+  const gv = x.createLinearGradient(0, 0, 0, 128); gv.addColorStop(0, 'rgba(0,0,0,.2)'); gv.addColorStop(.35, 'rgba(0,0,0,0)'); gv.addColorStop(.75, 'rgba(0,0,0,0)'); gv.addColorStop(1, 'rgba(0,0,0,.9)'); x.globalCompositeOperation = 'destination-out'; x.fillStyle = gv; x.fillRect(0, 0, 16, 128);
+  const tex = new T.CanvasTexture(c), N = TOUCH ? 4 : 7, grp = new T.Group(), geo = new T.PlaneGeometry(1, 1), list = [];
+  for (let i = 0; i < N; i++) {
+    const mat = new T.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, blending: T.AdditiveBlending, side: T.DoubleSide, fog: false, opacity: 0 });
+    const m = new T.Mesh(geo, mat); m.renderOrder = 4; grp.add(m); list.push({ m, a: i / N * 6.283 + Math.random(), d: 9 + Math.random() * 16, w: 2.2 + Math.random() * 2.5, ph: Math.random() * 6 });
+  }
+  grp.visible = false; grp.frustumCulled = false; scene.add(grp); let cur = -1;
+  return function (t, cx, cy, cz, scale) {
+    const n = curCh(), col = RAYS[n]; grp.visible = !!col && scale > .4; if (!grp.visible) return;
+    if (n !== cur) { cur = n; for (const o of list) o.m.material.color.setHex(col) }
+    for (const o of list) { const a = o.a + Math.sin(t * .05 + o.ph) * .2, k = .5 + .5 * Math.sin(t * .35 + o.ph);
+      o.m.position.set(cx + Math.cos(a) * o.d, cy + 5.5, cz + Math.sin(a) * o.d); o.m.rotation.set(0, -a + 1.57, .28); o.m.scale.set(o.w, 14, 1); o.m.material.opacity = .05 + .05 * k; }
+  };
+}
