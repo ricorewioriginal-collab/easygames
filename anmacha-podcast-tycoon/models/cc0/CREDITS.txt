@@ -1,0 +1,4 @@
+3D-Modelle in diesem Ordner: CC0 1.0 (Public Domain), Nennung freiwillig.
+Kenney (https://www.kenney.nl): City Kit (Commercial) 2.1 (building_*, skyscraper_*), Car Kit (sedan, taxi, van,
+police_car, delivery_van), Nature Kit (tree_palm, tent, bush, campfire, crate, barrels), Space Kit (satellite_dish), cargo_ship.
+Bezogen über das npm-Paket @netforge/asset-library-files 0.2.0 (CC0-Sammlung), für three.js r128 entpackt (ohne Meshopt und Quantisierung).

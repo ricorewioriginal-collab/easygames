@@ -56,10 +56,12 @@
 
     // Modelle (alle CC0): Quaternius-Gebäude, Kenney-Bäume/Brunnen/Felsen, easygames-Figuren
     const files = ['bld_2Story_Mat', 'bld_1Story_Sign_Mat', 'bld_2Story_GableRoof_Mat', 'bld_2Story_Slim_Mat', 'tree', 'tree-high-round', 'fountain-round', 'rock-large'];
-    let done = 0; const total = files.length + 3, tick = l => { done++; progress && progress(done / total, l); };
+    let done = 0; const total = files.length + 4, tick = l => { done++; progress && progress(done / total, l); };
     const loader = new T.GLTFLoader();
     W.models = {};
     await Promise.all(files.map(f => new Promise(res => loader.load('models/' + f + '.glb', g => { W.models[f] = bake(g.scene); tick('3D-Modelle'); res(); }, null, () => { tick('3D-Modelle'); res(); }))));
+    // CC0-Modelle (Kenney via @netforge/asset-library-files): Hochhäuser, Autos, Schiffe, Natur
+    await Promise.all(W.CC0.map(f => new Promise(res => loader.load('models/cc0/' + f + '.glb', g => { W.models[f] = bake(g.scene); res(); }, null, () => res())))); tick('Stadt & Welten');
     W.kit = root.EasyFiguren ? root.EasyFiguren.create({ THREE: T, base: '../figuren/', srgb: true }) : null;
     if (W.kit) {
       await W.kit.load().catch(() => {}); tick('Menschen & Bewegungen');
@@ -95,6 +97,15 @@
     const size = box.getSize(new T.Vector3());
     return { parts, box, size };
   }
+  W.CC0 = ['skyscraper_a', 'skyscraper_b', 'skyscraper_c', 'building_a', 'building_b', 'building_c', 'building_d', 'building_e', 'sedan', 'taxi', 'van', 'police_car', 'delivery_van', 'cargo_ship', 'satellite_dish', 'tree_palm', 'tent', 'bush', 'campfire', 'crate', 'barrels'];
+  /** Einzelnes Modell als Gruppe (geteilte Geometrie), Boden-Mitte im Ursprung; s = Zielgröße (Breite/Länge oder mit byHeight Höhe). */
+  W.prop = function (name, s, opts) {
+    const M = W.models[name]; if (!M) return null; opts = opts || {};
+    const k = s ? s / (opts.byHeight ? M.size.y : Math.max(M.size.x, M.size.z)) : 1, g = new T.Group(), inner = new T.Group();
+    inner.scale.setScalar(k); inner.position.set(-(M.box.min.x + M.box.max.x) / 2 * k, -M.box.min.y * k, -(M.box.min.z + M.box.max.z) / 2 * k);
+    M.parts.forEach(pt => { const m = new T.Mesh(pt.g, pt.m); m.castShadow = opts.shadow !== false; m.receiveShadow = true; inner.add(m); });
+    g.add(inner); g.userData.size = M.size.clone().multiplyScalar(k); return g;
+  };
   /** Instanzen eines Modells setzen: list = [{x,z,rot,s, y}] (s = Zielbreite in m). Liefert Maße je Eintrag. */
   W.instances = function (group, name, list, opts) {
     const M = W.models[name]; if (!M || !list.length) return [];
