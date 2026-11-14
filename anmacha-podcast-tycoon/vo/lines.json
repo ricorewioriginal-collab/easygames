@@ -1,502 +1,432 @@
-[
-{
-"who": "andrew",
-"text": "marco"
-},
-{
-"who": "n",
-"text": "Medienstadt. Zwei Freunde, ein Mikrofon – und ein Camper namens Gisela."
-},
-{
-"who": "andrew",
-"text": "Marco, wir machen das jetzt richtig. Ein Podcast, den die ganze Stadt hört."
-},
-{
-"who": "marco",
-"text": "Die ganze Stadt? Andrew, uns hören gerade drei Leute. Und eine davon ist deine Mutter."
-},
-{
-"who": "andrew",
-"text": "Dann fangen wir eben mit vier an. Erste Folge – heute Abend!"
-},
-{
-"who": "marco",
-"text": "Folge eins ist draußen!"
-},
-{
-"who": "andrew",
-"text": "Und die Kommentare sind … überraschend nett!"
-},
-{
-"who": "n",
-"text": "Doch jenseits des Wassers warten noch vier Welten."
-},
-{
-"who": "andrew",
-"text": "Siehst du die Brücke? Dahinter liegt der Medienhafen mit Kanal 9."
-},
-{
-"who": "marco",
-"text": "Im Norden der Funkturm, im Süden die Festival-Insel …"
-},
-{
-"who": "andrew",
-"text": "… und im Westen leuchtet alles in Neon. Lass uns überall hin!"
-},
-{
-"who": "n",
-"text": "Hafen, Berg, Insel und Neon-Universum – überall kennt man jetzt AnMaCha."
-},
-{
-"who": "rico",
-"text": "Hey, ihr zwei! Ich bin Rico. Kommt rüber über die Neonbrücke – ich zeig euch mein Universum."
-},
-{
-"who": "marco",
-"text": "Musik, Bücher, Apps … der Typ macht alles gleichzeitig?"
-},
-{
-"who": "rico",
-"text": "Ich habe nicht zu viele Ideen. Die Welt hat nur zu wenig Tabs offen."
-},
-{
-"who": "rico",
-"text": "Ab heute seid ihr Teil meines Universums. Und ich komme gern mal in eure Show!"
-},
-{
-"who": "andrew",
-"text": "Deal! Studiogast RicoReWi – das wird groß."
-},
-{
-"who": "jana",
-"text": "Ihr zwei seid das Stadtgespräch! Wer bei euch zu Gast ist, landet morgen in den Nachrichten."
-},
-{
-"who": "andrew",
-"text": "Dann holen wir die besten Gäste ins Studio."
-},
-{
-"who": "marco",
-"text": "Und posten alles in der App. Gisela braucht auch Follower."
-},
-{
-"who": "n",
-"text": "Tausend Follower, drei Studiogäste. Die Medienstadt hat eine neue Stimme."
-},
-{
-"who": "n",
-"text": "Eine Nachricht von der Festival-Insel …"
-},
-{
-"who": "jana",
-"text": "Das Radio-Festival braucht einen Abschluss-Act. Und alle wollen nur euch!"
-},
-{
-"who": "marco",
-"text": "Live? Vor tausend Leuten?"
-},
-{
-"who": "andrew",
-"text": "Vor tausend Leuten. Und Gisela fährt uns hin."
-},
-{
-"who": "fans",
-"text": "AN-MA-CHA! AN-MA-CHA!"
-},
-{
-"who": "andrew",
-"text": "Medienstadt! Seid ihr bereit, angemacht zu werden?"
-},
-{
-"who": "marco",
-"text": "Das hier ist für alle, die von Anfang an zugehört haben!"
-},
-{
-"who": "n",
-"text": "Die Insel bebt. Die ganze Medienstadt singt mit."
-},
-{
-"who": "rico",
-"text": "Was für ein Auftritt! AnMaCha forever!"
-},
-{
-"who": "andrew",
-"text": "Marco … wir haben’s geschafft."
-},
-{
-"who": "marco",
-"text": "Ja. Und morgen Abend? Neue Folge."
-},
-{
-"who": "marco",
-"text": "Vier? Einer davon bin ich. Mit meinem Zweit-Account."
-},
-{
-"who": "andrew",
-"text": "Und meine Mutter. Auf drei Handys."
-},
-{
-"who": "andrew",
-"text": "Rico, du bist komplett verrückt."
-},
-{
-"who": "marco",
-"text": "Genau deshalb kommt er in unsere Show."
-},
-{
-"who": "andrew",
-"text": "Guten Morgen, Medienstadt! Hier ist Andrew – live aus dem Stadtpark!"
-},
-{
-"who": "andrew",
-"text": "Marco schläft noch. Also mache ich die Show heute allein. Was soll schon schiefgehen?"
-},
-{
-"who": "n",
-"text": "Drei Minuten später …"
-},
-{
-"who": "andrew",
-"text": "Okay, das Mikro war die ganze Zeit aus. Aber ich sah dabei fantastisch aus!"
-},
-{
-"who": "andrew",
-"text": "Morgen gleich nochmal. Diesmal mit Ton!"
-},
-{
-"who": "marco",
-"text": "Hallo zusammen. Heute ganz ruhig – nur ich, eine Gitarre, die ich nicht spielen kann, und ihr."
-},
-{
-"who": "marco",
-"text": "Andrew sagt immer, wir müssen lauter werden. Ich finde, wir müssen ehrlicher werden."
-},
-{
-"who": "marco",
-"text": "Und falls jemand Gisela gesehen hat: Andrew, gib bitte die Schlüssel zurück."
-},
-{
-"who": "andrew",
-"text": "Mitternachts-Talk! Marco, sag den Leuten, warum wir das hier machen."
-},
-{
-"who": "marco",
-"text": "Weil du um Mitternacht nicht schlafen kannst – und ich zu nett bin, um Nein zu sagen."
-},
-{
-"who": "andrew",
-"text": "Zweitausend Abos, Marco! Zweitausend Menschen, die uns freiwillig zuhören!"
-},
-{
-"who": "marco",
-"text": "Freiwillig. Das schreiben wir aufs Plakat."
-},
-{
-"who": "andrew",
-"text": "Medienstadt – gute Nacht!"
-},
-{
-"who": "marco",
-"text": "Und morgen wieder: AnMaCha!"
-},
-{
-"who": "marco",
-"text": "Ohne das Mikro klingt Andrew wie ein Toaster."
-},
-{
-"who": "andrew",
-"text": "Hey! … Okay, stimmt. Wir sammeln alles ein."
-},
-{
-"who": "marco",
-"text": "Und Andrew klingt wieder wie Andrew."
-},
-{
-"who": "andrew",
-"text": "Ich nehm das als Kompliment."
-},
-{
-"who": "andrew",
-"text": "Zu Fuß schaffen wir das nie."
-},
-{
-"who": "marco",
-"text": "Dann leihen wir uns ein Auto. Gisela verzeiht uns das."
-},
-{
-"who": "marco",
-"text": "Wir sind im Fernsehen, Andrew."
-},
-{
-"who": "andrew",
-"text": "Mama wird so stolz sein."
-},
-{
-"who": "marco",
-"text": "Das riecht nach Ralf Rauschmann."
-},
-{
-"who": "andrew",
-"text": "Dann suchen wir die Dinger und schalten sie ab!"
-},
-{
-"who": "andrew",
-"text": "Kabel-Kalle hat alles gestanden. Rauschmann steckt dahinter."
-},
-{
-"who": "marco",
-"text": "Das ist noch nicht vorbei."
-},
-{
-"who": "andrew",
-"text": "Conny Glitzer?! Ich hab ihr Poster über dem Bett!"
-},
-{
-"who": "marco",
-"text": "Das wollte ich nicht wissen."
-},
-{
-"who": "andrew",
-"text": "Ich … ähm … wir … Mikro!"
-},
-{
-"who": "marco",
-"text": "Er meint: Herzlich willkommen bei AnMaCha."
-},
-{
-"who": "marco",
-"text": "Ich kenn da ein Café …"
-},
-{
-"who": "andrew",
-"text": "Und ich kenn den schnellsten Weg zurück."
-},
-{
-"who": "marco",
-"text": "Man sieht’s. Du vibrierst."
-},
-{
-"who": "andrew",
-"text": "Eine Umfrage-Rundreise. Ich hol die Snacks."
-},
-{
-"who": "marco",
-"text": "Ich hol das Mikro. Du hast genug Snacks."
-},
-{
-"who": "andrew",
-"text": "Notiert: Rock für starke Arme."
-},
-{
-"who": "marco",
-"text": "Das … sind wir."
-},
-{
-"who": "andrew",
-"text": "Wir sind der Kater-Podcast. Ich liebe es."
-},
-{
-"who": "marco",
-"text": "Wir sind offiziell Stadtgespräch."
-},
-{
-"who": "andrew",
-"text": "Wir haben eine Titelmelodie auf Vinyl?"
-},
-{
-"who": "marco",
-"text": "Roadtrip! Ich hol Gisela … oder irgendein Auto."
-},
-{
-"who": "andrew",
-"text": "Ich hab Gänsehaut."
-},
-{
-"who": "marco",
-"text": "Das ist der Fahrtwind."
-},
-{
-"who": "marco",
-"text": "Rauschmann?"
-},
-{
-"who": "andrew",
-"text": "Kriegen wir dafür Backstage-Pässe?"
-},
-{
-"who": "marco",
-"text": "Rauschmanns Hauptquartier."
-},
-{
-"who": "andrew",
-"text": "Zeit, den Stecker zu ziehen. Wortwörtlich."
-},
-{
-"who": "marco",
-"text": "Dann mach was Nettes. Wir helfen dir sogar."
-},
-{
-"who": "andrew",
-"text": "Erste Regel: Kein Störsender."
-},
-{
-"who": "andrew",
-"text": "Ich hab Höhenangst."
-},
-{
-"who": "marco",
-"text": "Du hast Mikrofonangst, wenn du Höhenangst hast. Los!"
-},
-{
-"who": "andrew",
-"text": "FAST sicher?!"
-},
-{
-"who": "n",
-"text": "Die ganze Medienstadt schaut nach oben. Auf dem Turm blinkt es orange: AnMaCha ist live."
-},
-{
-"who": "marco",
-"text": "Andrew, wir sind ganz oben."
-},
-{
-"who": "andrew",
-"text": "Ja. Und ich schau nicht runter."
-},
-{
-"who": "andrew",
-"text": "Ich kann Milchschaum! … Glaube ich."
-},
-{
-"who": "marco",
-"text": "Wir lernen die Leute kennen. Und die Leute uns."
-},
-{
-"who": "andrew",
-"text": "Ich hab drei Hörer beim Kaffeekochen gewonnen."
-},
-{
-"who": "marco",
-"text": "Ich bring das Klavierlicht-Notenheft mit."
-},
-{
-"who": "andrew",
-"text": "Ich hab ihn heute Nacht schon gesummt. Ich hab nicht geschlafen."
-},
-{
-"who": "marco",
-"text": "Werbung? Wir sind unabhängig!"
-},
-{
-"who": "andrew",
-"text": "Wir sind unabhängig UND pleite. Ich sprech den Spot."
-},
-{
-"who": "marco",
-"text": "Wir bleiben trotzdem unabhängig."
-},
-{
-"who": "andrew",
-"text": "Und satt."
-},
-{
-"who": "marco",
-"text": "Gisela bekommt alles, was sie will."
-},
-{
-"who": "andrew",
-"text": "Auch ein zweites Bett? Für mich?"
-},
-{
-"who": "marco",
-"text": "Wir reden darüber."
-},
-{
-"who": "marco",
-"text": "Gisela, du bist bereit für die Tour."
-},
-{
-"who": "andrew",
-"text": "Meine Frisur hält alles aus."
-},
-{
-"who": "marco",
-"text": "Deine Puste nicht."
-},
-{
-"who": "andrew",
-"text": "Bühnenduft!"
-},
-{
-"who": "marco",
-"text": "Ein Quiz über uns? Das können wir!"
-},
-{
-"who": "andrew",
-"text": "Wie hieß noch mal unser erster Sponsor …?"
-},
-{
-"who": "marco",
-"text": "Grüße an die Oma!"
-},
-{
-"who": "andrew",
-"text": "Wir kennen inzwischen jeden Bäcker persönlich!"
-},
-{
-"who": "marco",
-"text": "Dann holen wir sie alle ins Boot."
-},
-{
-"who": "marco",
-"text": "Die Medienstadt gehört den Hörern."
-},
-{
-"who": "andrew",
-"text": "Gibt es dafür eine Schärpe?"
-},
-{
-"who": "marco",
-"text": "Das dauert."
-},
-{
-"who": "andrew",
-"text": "Legenden haben Zeit."
-},
-{
-"who": "n",
-"text": "Feuerwerk über der Medienstadt. Auf allen Kanälen: AnMaCha – Der Podcast."
-},
-{
-"who": "andrew",
-"text": "Marco … wir sind Legenden."
-},
-{
-"who": "marco",
-"text": "Und Gisela auch."
-},
-{
-"who": "marco",
-"text": "Zugestellt. Wir sind die schnellsten Podcaster der Stadt."
-},
-{
-"who": "andrew",
-"text": "Genug Stoff für drei Folgen!"
-},
-{
-"who": "marco",
-"text": "Die Fotos gehen in die App. Die Follower lieben uns."
-},
-{
-"who": "marco",
-"text": "Wellenburg! Gisela, du hast es geschafft – ganz ohne Panne."
-},
-{
-"who": "andrew",
-"text": "Hier ist die Radio-Messe … und da drüben: Radio Funkloch. Ralf Rauschmann sendet von hier!"
-},
-{
-"who": "marco",
-"text": "Dann machen wir hier die beste Roadtrip-Folge aller Zeiten."
-}
-]
+[{"who":"andrew","text":"marco"},
+{"who":"n","text":"Medienstadt. Zwei Freunde, ein Mikrofon – und ein Camper namens Gisela."},
+{"who":"andrew","text":"Marco, wir machen das jetzt richtig. Ein Podcast, den die ganze Stadt hört."},
+{"who":"marco","text":"Die ganze Stadt? Andrew, uns hören gerade drei Leute. Und eine davon ist deine Mutter."},
+{"who":"andrew","text":"Dann fangen wir eben mit vier an. Erste Folge – heute Abend!"},
+{"who":"marco","text":"Folge eins ist draußen!"},
+{"who":"andrew","text":"Und die Kommentare sind … überraschend nett!"},
+{"who":"n","text":"Doch jenseits des Wassers warten noch vier Welten."},
+{"who":"andrew","text":"Siehst du die Brücke? Dahinter liegt der Medienhafen mit Kanal 9."},
+{"who":"marco","text":"Im Norden der Funkturm, im Süden die Festival-Insel …"},
+{"who":"andrew","text":"… und im Westen leuchtet alles in Neon. Lass uns überall hin!"},
+{"who":"n","text":"Hafen, Berg, Insel und Neon-Universum – überall kennt man jetzt AnMaCha."},
+{"who":"rico","text":"Hey, ihr zwei! Ich bin Rico. Kommt rüber über die Neonbrücke – ich zeig euch mein Universum."},
+{"who":"marco","text":"Musik, Bücher, Apps … der Typ macht alles gleichzeitig?"},
+{"who":"rico","text":"Ich habe nicht zu viele Ideen. Die Welt hat nur zu wenig Tabs offen."},
+{"who":"rico","text":"Ab heute seid ihr Teil meines Universums. Und ich komme gern mal in eure Show!"},
+{"who":"andrew","text":"Deal! Studiogast RicoReWi – das wird groß."},
+{"who":"jana","text":"Ihr zwei seid das Stadtgespräch! Wer bei euch zu Gast ist, landet morgen in den Nachrichten."},
+{"who":"andrew","text":"Dann holen wir die besten Gäste ins Studio."},
+{"who":"marco","text":"Und posten alles in der App. Gisela braucht auch Follower."},
+{"who":"n","text":"Tausend Follower, drei Studiogäste. Die Medienstadt hat eine neue Stimme."},
+{"who":"n","text":"Eine Nachricht von der Festival-Insel …"},
+{"who":"jana","text":"Das Radio-Festival braucht einen Abschluss-Act. Und alle wollen nur euch!"},
+{"who":"marco","text":"Live? Vor tausend Leuten?"},
+{"who":"andrew","text":"Vor tausend Leuten. Und Gisela fährt uns hin."},
+{"who":"fans","text":"AN-MA-CHA! AN-MA-CHA!"},
+{"who":"andrew","text":"Medienstadt! Seid ihr bereit, angemacht zu werden?"},
+{"who":"marco","text":"Das hier ist für alle, die von Anfang an zugehört haben!"},
+{"who":"n","text":"Die Insel bebt. Die ganze Medienstadt singt mit."},
+{"who":"rico","text":"Was für ein Auftritt! AnMaCha forever!"},
+{"who":"andrew","text":"Marco … wir haben’s geschafft."},
+{"who":"marco","text":"Ja. Und morgen Abend? Neue Folge."},
+{"who":"marco","text":"Vier? Einer davon bin ich. Mit meinem Zweit-Account."},
+{"who":"andrew","text":"Und meine Mutter. Auf drei Handys."},
+{"who":"andrew","text":"Rico, du bist komplett verrückt."},
+{"who":"marco","text":"Genau deshalb kommt er in unsere Show."},
+{"who":"andrew","text":"Guten Morgen, Medienstadt! Hier ist Andrew – live aus dem Stadtpark!"},
+{"who":"andrew","text":"Marco schläft noch. Also mache ich die Show heute allein. Was soll schon schiefgehen?"},
+{"who":"n","text":"Drei Minuten später …"},
+{"who":"andrew","text":"Okay, das Mikro war die ganze Zeit aus. Aber ich sah dabei fantastisch aus!"},
+{"who":"andrew","text":"Morgen gleich nochmal. Diesmal mit Ton!"},
+{"who":"marco","text":"Hallo zusammen. Heute ganz ruhig – nur ich, eine Gitarre, die ich nicht spielen kann, und ihr."},
+{"who":"marco","text":"Andrew sagt immer, wir müssen lauter werden. Ich finde, wir müssen ehrlicher werden."},
+{"who":"marco","text":"Und falls jemand Gisela gesehen hat: Andrew, gib bitte die Schlüssel zurück."},
+{"who":"andrew","text":"Mitternachts-Talk! Marco, sag den Leuten, warum wir das hier machen."},
+{"who":"marco","text":"Weil du um Mitternacht nicht schlafen kannst – und ich zu nett bin, um Nein zu sagen."},
+{"who":"andrew","text":"Zweitausend Abos, Marco! Zweitausend Menschen, die uns freiwillig zuhören!"},
+{"who":"marco","text":"Freiwillig. Das schreiben wir aufs Plakat."},
+{"who":"andrew","text":"Medienstadt – gute Nacht!"},
+{"who":"marco","text":"Und morgen wieder: AnMaCha!"},
+{"who":"marco","text":"Ohne das Mikro klingt Andrew wie ein Toaster."},
+{"who":"andrew","text":"Hey! … Okay, stimmt. Wir sammeln alles ein."},
+{"who":"marco","text":"Und Andrew klingt wieder wie Andrew."},
+{"who":"andrew","text":"Ich nehm das als Kompliment."},
+{"who":"andrew","text":"Zu Fuß schaffen wir das nie."},
+{"who":"marco","text":"Dann leihen wir uns ein Auto. Gisela verzeiht uns das."},
+{"who":"marco","text":"Wir sind im Fernsehen, Andrew."},
+{"who":"andrew","text":"Mama wird so stolz sein."},
+{"who":"marco","text":"Das riecht nach Ralf Rauschmann."},
+{"who":"andrew","text":"Dann suchen wir die Dinger und schalten sie ab!"},
+{"who":"andrew","text":"Kabel-Kalle hat alles gestanden. Rauschmann steckt dahinter."},
+{"who":"marco","text":"Das ist noch nicht vorbei."},
+{"who":"andrew","text":"Conny Glitzer?! Ich hab ihr Poster über dem Bett!"},
+{"who":"marco","text":"Das wollte ich nicht wissen."},
+{"who":"andrew","text":"Ich … ähm … wir … Mikro!"},
+{"who":"marco","text":"Er meint: Herzlich willkommen bei AnMaCha."},
+{"who":"marco","text":"Ich kenn da ein Café …"},
+{"who":"andrew","text":"Und ich kenn den schnellsten Weg zurück."},
+{"who":"marco","text":"Man sieht’s. Du vibrierst."},
+{"who":"andrew","text":"Eine Umfrage-Rundreise. Ich hol die Snacks."},
+{"who":"marco","text":"Ich hol das Mikro. Du hast genug Snacks."},
+{"who":"andrew","text":"Notiert: Rock für starke Arme."},
+{"who":"marco","text":"Das … sind wir."},
+{"who":"andrew","text":"Wir sind der Kater-Podcast. Ich liebe es."},
+{"who":"marco","text":"Wir sind offiziell Stadtgespräch."},
+{"who":"andrew","text":"Wir haben eine Titelmelodie auf Vinyl?"},
+{"who":"marco","text":"Roadtrip! Ich hol Gisela … oder irgendein Auto."},
+{"who":"andrew","text":"Ich hab Gänsehaut."},
+{"who":"marco","text":"Das ist der Fahrtwind."},
+{"who":"marco","text":"Rauschmann?"},
+{"who":"andrew","text":"Kriegen wir dafür Backstage-Pässe?"},
+{"who":"marco","text":"Rauschmanns Hauptquartier."},
+{"who":"andrew","text":"Zeit, den Stecker zu ziehen. Wortwörtlich."},
+{"who":"marco","text":"Dann mach was Nettes. Wir helfen dir sogar."},
+{"who":"andrew","text":"Erste Regel: Kein Störsender."},
+{"who":"andrew","text":"Ich hab Höhenangst."},
+{"who":"marco","text":"Du hast Mikrofonangst, wenn du Höhenangst hast. Los!"},
+{"who":"andrew","text":"FAST sicher?!"},
+{"who":"n","text":"Die ganze Medienstadt schaut nach oben. Auf dem Turm blinkt es orange: AnMaCha ist live."},
+{"who":"marco","text":"Andrew, wir sind ganz oben."},
+{"who":"andrew","text":"Ja. Und ich schau nicht runter."},
+{"who":"andrew","text":"Ich kann Milchschaum! … Glaube ich."},
+{"who":"marco","text":"Wir lernen die Leute kennen. Und die Leute uns."},
+{"who":"andrew","text":"Ich hab drei Hörer beim Kaffeekochen gewonnen."},
+{"who":"marco","text":"Ich bring das Klavierlicht-Notenheft mit."},
+{"who":"andrew","text":"Ich hab ihn heute Nacht schon gesummt. Ich hab nicht geschlafen."},
+{"who":"marco","text":"Werbung? Wir sind unabhängig!"},
+{"who":"andrew","text":"Wir sind unabhängig UND pleite. Ich sprech den Spot."},
+{"who":"marco","text":"Wir bleiben trotzdem unabhängig."},
+{"who":"andrew","text":"Und satt."},
+{"who":"marco","text":"Gisela bekommt alles, was sie will."},
+{"who":"andrew","text":"Auch ein zweites Bett? Für mich?"},
+{"who":"marco","text":"Wir reden darüber."},
+{"who":"marco","text":"Gisela, du bist bereit für die Tour."},
+{"who":"andrew","text":"Meine Frisur hält alles aus."},
+{"who":"marco","text":"Deine Puste nicht."},
+{"who":"andrew","text":"Bühnenduft!"},
+{"who":"marco","text":"Ein Quiz über uns? Das können wir!"},
+{"who":"andrew","text":"Wie hieß noch mal unser erster Sponsor …?"},
+{"who":"marco","text":"Grüße an die Oma!"},
+{"who":"andrew","text":"Wir kennen inzwischen jeden Bäcker persönlich!"},
+{"who":"marco","text":"Dann holen wir sie alle ins Boot."},
+{"who":"marco","text":"Die Medienstadt gehört den Hörern."},
+{"who":"andrew","text":"Gibt es dafür eine Schärpe?"},
+{"who":"marco","text":"Das dauert."},
+{"who":"andrew","text":"Legenden haben Zeit."},
+{"who":"n","text":"Feuerwerk über der Medienstadt. Auf allen Kanälen: AnMaCha – Der Podcast."},
+{"who":"andrew","text":"Marco … wir sind Legenden."},
+{"who":"marco","text":"Und Gisela auch."},
+{"who":"marco","text":"Zugestellt. Wir sind die schnellsten Podcaster der Stadt."},
+{"who":"andrew","text":"Genug Stoff für drei Folgen!"},
+{"who":"marco","text":"Die Fotos gehen in die App. Die Follower lieben uns."},
+{"who":"marco","text":"Wellenburg! Gisela, du hast es geschafft – ganz ohne Panne."},
+{"who":"andrew","text":"Hier ist die Radio-Messe … und da drüben: Radio Funkloch. Ralf Rauschmann sendet von hier!"},
+{"who":"marco","text":"Dann machen wir hier die beste Roadtrip-Folge aller Zeiten."},
+{"who":"n","text":"Sommer 2020. Aus der AnMaCha-Show soll ein Podcast werden. Zwei Mikrofone, eine Idee – und sehr viel Kabel."},
+{"who":"marco","text":"Andrew, ich hab die Mikros angeschlossen. Also … zwei von drei Kabeln. Das dritte ist Deko."},
+{"who":"andrew","text":"Perfekt. Fehlen nur noch Themen. Die liegen ja quasi auf der Straße."},
+{"who":"marco","text":"Wortwörtlich! Schau, da leuchtet was. Themen-Funken! Lass uns die einsammeln, bevor die Störsender sie wegrauschen."},
+{"who":"n","text":"Sammle Themen-Funken in der Stadt und bring sie ins AnMaCha-Funkhaus. Mit {x} sendest du eine Schallwelle gegen Störsender."},
+{"who":"andrew","text":"Folge 1 ist im Kasten! Da muss man erstmal reinwachsen."},
+{"who":"marco","text":"Und ich wachse schon. Vor allem in den Kabelsalat."},
+{"who":"n","text":"Heiligabend. Draußen schneit es, drinnen läuft Christmasradio24 – und die neue Folge braucht Gäste mit Geschichten."},
+{"who":"andrew","text":"Wir fragen einfach Leute in der Stadt nach ihrem Weihnachtstyp. Plätzchen-Typ, Geschenke-in-letzter-Minute-Typ …"},
+{"who":"marco","text":"Ich bin der Typ, der die Lichterkette entwirrt. Seit drei Stunden."},
+{"who":"n","text":"Finde drei Gäste (Sprechblase ⭐) und bring sie ins Funkhaus. Sie folgen dir, wenn du mit ihnen sprichst."},
+{"who":"marco","text":"Frohe Weihnachten an alle da draußen!"},
+{"who":"andrew","text":"Und denkt dran: Es ist alles Typsache."},
+{"who":"n","text":"Silvesternacht. Lineares Fernsehen, Klapphandys, Dating online oder offline – die Folge wird ein Rückblick."},
+{"who":"andrew","text":"Erinnerst du dich an Klapphandys? Zack, zu. Das war noch Auflegen mit Gefühl!"},
+{"who":"marco","text":"Und an Fernseher mit Röhre. Die waren so schwer wie unser Mischpult."},
+{"who":"n","text":"Sammle Themen-Funken und drei goldene Erinnerungen (🌟) über den Dächern. Springe mit {a}, sprinte mit {rb}."},
+{"who":"andrew","text":"Frohes Neues! Und ein Hoch auf die Nostalgie."},
+{"who":"marco","text":"Ich nehm mein Klapphandy mit ins Jahr. Für die Akustik."},
+{"who":"n","text":"Staffel 2 startet. Doch kurz vor der Aufnahme rauscht es auf allen Kanälen: Die Störsender haben den Sendemast gekapert!"},
+{"who":"marco","text":"Drei Verteiler oben am Mast sind verstellt. Ich kenne jedes Kabel da oben persönlich."},
+{"who":"andrew","text":"Dann klettern wir hoch. Ma' wird ja wohl mal noch einen Sendemast reparieren dürfen!"},
+{"who":"n","text":"Steige den Sendemast hinauf und repariere drei Verteiler mit {x}. Marco repariert schneller."},
+{"who":"andrew","text":"Signal steht! Staffel 2 kann kommen."},
+{"who":"marco","text":"Und ich hab Höhenangst überwunden. Für etwa vier Minuten."},
+{"who":"n","text":"Staffel 3. Die Folge über die Bahn soll pünktlich erscheinen. Ironisch, dass ausgerechnet der Zug nicht pünktlich ist."},
+{"who":"andrew","text":"Der Zug fällt aus! Wir müssen zu Fuß durch die Stadt, alle Haltestellen abklappern."},
+{"who":"marco","text":"Zehn Haltestellen, ein Fahrplan und null Verspätung. Wir zeigen der Bahn, wie das geht!"},
+{"who":"n","text":"Lauf durch alle Haltestellen-Tore, bevor die Zeit abläuft. Jedes Tor gibt Zeit dazu."},
+{"who":"marco","text":"Pünktlich! Wir! Das glaubt uns keiner."},
+{"who":"andrew","text":"Schreib es in dein Tagebuch, Marco."},
+{"who":"n","text":"Staffel 4. Die Welt braucht gute Nachrichten – und die Störsender versuchen, genau die zu verschlucken."},
+{"who":"andrew","text":"Diese Folge wird ganz viel Feelgood. Und Köttbullar. Frag nicht."},
+{"who":"marco","text":"Ich frag nicht. Ich ess sie nur."},
+{"who":"n","text":"Sammle vor allem Feelgood-Funken (☀️). Je mehr passende Funken, desto stärker die Karten in der Aufnahme."},
+{"who":"andrew","text":"So viele gute Nachrichten in einer Folge!"},
+{"who":"marco","text":"Und kein einziges Köttbullar übrig."},
+{"who":"n","text":"Diese Folge wird LIVE aufgenommen – vor der 1996er-Party der Rückspul Helden. Die Stadt leuchtet in Neonfarben."},
+{"who":"marco","text":"1996! Kassetten, Discman, Tamagotchi. Ich hab meine Bauchtasche dabei."},
+{"who":"andrew","text":"Wir brauchen die Party-Playlist. Zehn Kassetten sind in der Stadt verteilt – und die Gäste wollen tanzen!"},
+{"who":"n","text":"Sammle zehn Kassetten (📼). Bringe tanzende Gäste mit {x} in Stimmung – das gibt Bonuszeit."},
+{"who":"andrew","text":"Was für eine authentische Folge!"},
+{"who":"marco","text":"Ich glaub, mein Tamagotchi hat gerade Hunger."},
+{"who":"n","text":"München, Podfluencer Festival 2026. Side-Stage, LIVE im Radio auf AnMaCha24 – der Start in die neue Staffel."},
+{"who":"andrew","text":"Das ist es, Marco. Die große Bühne. Das neue Gesicht von AnMaCha."},
+{"who":"marco","text":"Und ausgerechnet jetzt taucht DAS FUNKLOCH auf. Der größte Störsender, den die Stadt je gesehen hat."},
+{"who":"rico","text":"Leute! Ich hab recherchiert: Die Drohne gehört Ralf Rauschmann. Der betreibt den Piratensender „Radio Funkloch“ und ist neidisch auf euch."},
+{"who":"andrew","text":"Dann rauschen wir zurück. Seid ihr bereit, angemacht zu werden?"},
+{"who":"n","text":"Hol die Störsender-Drohne „Funkloch“ runter: Weiche den Rauschwellen aus ({rt}) und triff sie mit Schallwellen ({x}), wenn ihr Schild offen ist. Danach wartet Rauschmann selbst – auf eine ordentliche Rangelei."},
+{"who":"marco","text":"Wir haben es geschafft. LIVE. Vor allen."},
+{"who":"andrew","text":"Danke an alle, die uns seit 2020 zuhören. Das hier ist erst der Anfang."},
+{"who":"n","text":"Das neue Gesicht von AnMaCha – Der Podcast. Die neue Staffel beginnt. Hört rein: überall, wo es Podcasts gibt."},
+{"who":"n","text":"Nach dem Festival ist Ruhe eingekehrt. Doch im Archiv rauscht es: Das Funkloch hat Bruchstücke alter Folgen in der Stadt verstreut."},
+{"who":"marco","text":"Folge 4, „Imbisskind“. Mensakind oder Imbisskind – die Frage hat damals die Nation gespalten."},
+{"who":"andrew","text":"Ich bin ganz klar Imbisskind. Und die Fans haben Hunger! Am Imbiss warten Bestellungen."},
+{"who":"n","text":"Hol am Imbiss-Wagen die Bestellungen ab ({x}) und bring sie zu den hungrigen Fans (🍟). Du kannst drei Tüten gleichzeitig tragen."},
+{"who":"andrew","text":"Alle satt, alle glücklich. Imbisskind forever!"},
+{"who":"marco","text":"Ich hab eine Pommes gefunden. Im Mischpult. Von 2021."},
+{"who":"n","text":"Elektroautos, Verkaufs-Apps und ein Geburtstag – Folge 11. Doch mitten in der Aufnahme springt eine Katze aufs Mischpult und flitzt mit dem Studio-Schlüssel davon."},
+{"who":"marco","text":"Das ist die Katze aus dem Gurken-Video! Die hat vor gar nichts Angst. Außer vor Gurken."},
+{"who":"andrew","text":"Dann fangen wir sie ein. Ganz vorsichtig. Und ohne Gurke."},
+{"who":"n","text":"Fang die Katze dreimal ein. Sie ist flink – sprinte mit {rb} und schneide ihr den Weg ab. Andrew ist schneller."},
+{"who":"marco","text":"Schlüssel zurück, Katze glücklich."},
+{"who":"andrew","text":"Und die Gurke? Die bleibt im Kühlschrank. Für immer."},
+{"who":"n","text":"Folge 12: Künstliche Intelligenz. Das Funkloch hat sich das Thema zu Herzen genommen – und eine Armee von KI-Drohnen gebaut."},
+{"who":"andrew","text":"Die quatschen alle gleichzeitig! „Als KI-Sprachmodell kann ich nicht …“ Hör' mir uff!"},
+{"who":"marco","text":"DSL oder Glasfaser – egal. Wir schalten die einfach ab. Mit Gefühl. Und mit Schallwellen."},
+{"who":"n","text":"Schalte 12 KI-Drohnen mit der Schallwelle ({x}) ab. Marcos Technik-Welle schafft eine Drohne mit einem Treffer."},
+{"who":"andrew","text":"Ruhe im Äther. Herrlich."},
+{"who":"marco","text":"Ich hab eine Drohne behalten. Sie heißt jetzt Klaus und sagt nur noch „Hallo“."},
+{"who":"n","text":"Jubiläums-Folge 20: Camping, Urlaub und ein Wohnmobil namens Gisela. Die ganze Stadt feiert – bis der Himmel violett wird."},
+{"who":"marco","text":"Es ist zurück. DAS FUNKLOCH 2.0. Größer, lauter und mit Update."},
+{"who":"rico","text":"Rauschmann hat seine Drohne aufgerüstet. Ich hab’s auf seinem Insta gesehen. Er hat 12 Follower. Alle Bots."},
+{"who":"andrew","text":"Wir haben es einmal geschafft, wir schaffen es wieder. Gisela glaubt an uns!"},
+{"who":"n","text":"Das Funkloch 2.0 hält mehr aus und ruft mehr Drohnen. Weiche aus ({rt}), spring über Rauschwellen ({a}) und triff es mit {x}, wenn der Schild offen ist."},
+{"who":"andrew","text":"Zwanzig Folgen. Ein Funkloch. Zweimal besiegt."},
+{"who":"marco","text":"Und Gisela hat nicht mal einen Kratzer."},
+{"who":"n","text":"Staffel 2 ist im Kasten. Danke an alle, die AnMaCha hören – und weiter geht es überall, wo es Podcasts gibt!"},
+{"who":"n","text":"Aus dem Podcast wird ein Sender: AnMaCha24 geht rund um die Uhr auf Sendung. Erste Nacht, erste Livesendung – und das Programm ist noch leer."},
+{"who":"marco","text":"Wir brauchen Themen für acht Stunden. Wie viele haben wir?"},
+{"who":"andrew","text":"Drei. Und eins davon ist „Marco hat Hunger“."},
+{"who":"rico","text":"Keine Panik! Ich hab ein Tool gebaut, das Themen findet. Es hat bisher „Marco hat Hunger“ gefunden."},
+{"who":"n","text":"Sammle 16 Themen-Funken in der nächtlichen Stadt, dazu 4 goldene ({x} für die Schallwelle gegen Störsender)."},
+{"who":"andrew","text":"Acht Stunden durchgesendet. Ich höre jetzt Stimmen."},
+{"who":"marco","text":"Das sind die Hörer, Andrew. Die rufen an."},
+{"who":"n","text":"Clubradio24 legt auf – aber das Funkloch hat die Club-Mixtapes in der ganzen Stadt versteckt."},
+{"who":"marco","text":"Ohne Mixtapes spielen wir Fahrstuhlmusik. Vier Stunden lang."},
+{"who":"andrew","text":"Ich mag Fahrstuhlmusik."},
+{"who":"rico","text":"Ich hab schon 40 Clubnacht-Posts geplant. Mit Countdown. Der Countdown läuft seit gestern."},
+{"who":"marco","text":"Genau deshalb suchen wir jetzt die Mixtapes!"},
+{"who":"n","text":"Finde 12 Mixtapes 📼 zwischen den Neonlichtern, bevor die Clubnacht beginnt."},
+{"who":"andrew","text":"Der Bass wackelt bis zum Funkhaus."},
+{"who":"marco","text":"Das ist nicht der Bass, das ist Gisela. Die tanzt mit."},
+{"who":"n","text":"Christmasradio24 sendet die große Weihnachtsshow. Es schneit, es glitzert – und die Gäste stecken im Schnee fest."},
+{"who":"andrew","text":"Marco, du hast gesagt, du fährst sie mit Gisela ab."},
+{"who":"marco","text":"Gisela hat Sommerreifen. Und Gefühle."},
+{"who":"n","text":"Bring 4 Gäste rechtzeitig ins Funkhaus. Sprich sie an ({x}) und lauf mit ihnen zur Tür."},
+{"who":"marco","text":"Frohe Weihnachten an alle Hörer!"},
+{"who":"andrew","text":"Und an Gisela. Die steht jetzt mit Lichterkette vorm Haus."},
+{"who":"n","text":"YourTime-FM schickt AnMaCha auf Tour: Eine Sendung an jeder Haltestelle der Stadt. Gisela ist leider in der Werkstatt."},
+{"who":"andrew","text":"Was ist diesmal kaputt?"},
+{"who":"marco","text":"Nichts! Sie bekommt nur … Spoiler. Und neue Blumen."},
+{"who":"n","text":"Erreiche alle 10 Haltestellen, bevor die Bahn weiterfährt. Sprinte mit {rb}."},
+{"who":"andrew","text":"Zehn Haltestellen, zehn Sendungen. Meine Füße senden SOS."},
+{"who":"marco","text":"Nächstes Mal fährt Gisela. Versprochen. Vielleicht."},
+{"who":"n","text":"Rockradio24 eröffnet mit einem Konzert vor dem Funkhaus. Doch über der Bühne schwebt Rauschmanns größte Störsender-Drohne aller Zeiten."},
+{"who":"rico","text":"Rauschmann nennt sich jetzt „Rauschkönig“. Er trägt eine Krone. Aus Antennen."},
+{"who":"andrew","text":"Der hat echt eine Krone auf? Okay, die Drohne zuerst – und dann reden wir mit ihm. Mit den Händen."},
+{"who":"marco","text":"Dann zeigen wir ihm, wie Rock klingt. Gisela, Hupe bereit!"},
+{"who":"n","text":"Die Rauschkönig-Drohne ist stärker als alles zuvor. Weiche aus ({rt}), spring über Rauschwellen ({a}) und triff sie mit {x}, wenn der Schild offen ist. Danach: Rangelei mit dem Rauschkönig persönlich."},
+{"who":"marco","text":"Der Rauschkönig hat aufgegeben. Er moderiert jetzt eine Gartensendung. Und mein Trommelfell ist weg."},
+{"who":"andrew","text":"Podcast, Radio, Rockkonzert. Was kommt als Nächstes?"},
+{"who":"n","text":"Staffel 3 ist im Kasten. Alle AnMaCha-Radios senden wieder – hört rein auf anmacha.de!"},
+{"who":"marco","text":"Was, wenn wir die nächste Folge komplett in Gisela aufnehmen? Während der Fahrt. Auf der Autobahn."},
+{"who":"andrew","text":"Und wer fährt? Du hältst das Mikro!"},
+{"who":"andrew","text":"Ich hab im Internet gelesen: Pflanzen wachsen besser mit Podcast. Ich nehm jetzt für meinen Basilikum auf."},
+{"who":"marco","text":"Der Basilikum hat schon mehr Hörer als wir."},
+{"who":"marco","text":"Wir brauchen einen eigenen Jingle für Werbepausen. Gesungen. Von mir."},
+{"who":"andrew","text":"Dann brauchen wir auch Ohrstöpsel als Merch."},
+{"who":"andrew","text":"Neuer Trend: Leute hören Podcasts auf doppelter Geschwindigkeit. Wir reden ab jetzt einfach halb so schnell."},
+{"who":"marco","text":"Daaas … iiist … geeeniaaal."},
+{"who":"marco","text":"Ich hab beim Einkaufen einen Typen gesehen, der seinen Einkaufszettel als Sprachnachricht hatte. Fünf Minuten lang."},
+{"who":"andrew","text":"Das ist kein Einkaufszettel, das ist ein Hörbuch."},
+{"who":"andrew","text":"Lass uns ein Radio-Gewinnspiel machen! Der Preis: ein Tag mit Gisela."},
+{"who":"marco","text":"Gisela braucht Urlaub, kein Gewinnspiel."},
+{"who":"marco","text":"Ich will einen Smart-Kühlschrank, der unsere Folgen ankündigt, wenn man ihn aufmacht."},
+{"who":"andrew","text":"Und bei Gurken schreit er."},
+{"who":"andrew","text":"Die KI hat mir ein Rezept für Köttbullar geschrieben. Mit Gummibärchen."},
+{"who":"marco","text":"Das probieren wir live. Für die Wissenschaft."},
+{"who":"marco","text":"Wir machen eine Folge nur mit Geräuschen. Kein einziges Wort."},
+{"who":"andrew","text":"… Mmmh."},
+{"who":"andrew","text":"Was, wenn jeder Hörer ein Wort aussucht und wir daraus die Folge bauen?"},
+{"who":"marco","text":"Dann heißt die Folge „Banane Glasfaser Oma“."},
+{"who":"rico","text":"Kommt rüber über die Westbrücke ins RicoReWi-Universum! Musik, Radio, Bücher, Apps – alles da."},
+{"who":"rico","text":"Im Radioportal laufen alle AnMaCha-Streams an einem Ort. Habt ihr schon abgestimmt?"},
+{"who":"rico","text":"Ich hab nicht zu viele Ideen. Die Welt hat nur zu wenig Tabs offen."},
+{"who":"rico","text":"Leute, ich hab ein neues Tool gebaut! Es plant, wann wir planen."},
+{"who":"rico","text":"Kurze Frage: Darf ich das live auf TikTok streamen? … Zu spät, läuft schon."},
+{"who":"rico","text":"Ich hab eine Tabelle für unsere Tabellen angelegt."},
+{"who":"rico","text":"Der Algorithmus liebt euch heute! Also … zu 3 Prozent."},
+{"who":"rico","text":"Kann einer von euch mal kurz in die Kamera winken? Für die Story. Und für die Story von der Story."},
+{"who":"rico","text":"Ich hab die Folge schon geschnitten. Ihr habt sie noch gar nicht aufgenommen? Egal, sieht gut aus."},
+{"who":"rico","text":"Neue Idee: Ein Radiosender nur für Radiosender."},
+{"who":"rico","text":"Mein Handy hat 4 % Akku und 900 Benachrichtigungen. Alles läuft nach Plan."},
+{"who":"rico","text":"Ich hab den Podcast-Feed optimiert. Er ist jetzt 0,2 Sekunden schneller und komplett lila."},
+{"who":"rico","text":"Psst – ich bin gar nicht da. Ich bin nur ein Hologramm aus dem Planungs-Tool."},
+{"who":"andrew","text":"Serious 15 – jetzt wird es kurz ernst. Versprochen: nur 15 Minuten!"},
+{"who":"marco","text":"Serious 15 – jetzt wird es kurz ernst. Versprochen: nur 15 Minuten!"},
+{"who":"andrew","text":"Reißverschlussverkehr: Warum schaffen wir das eigentlich nicht?"},
+{"who":"marco","text":"Reißverschlussverkehr: Warum schaffen wir das eigentlich nicht?"},
+{"who":"andrew","text":"Smartphone-Sucht – ich schau nur noch kurz … oh, schon drei Stunden."},
+{"who":"marco","text":"Smartphone-Sucht – ich schau nur noch kurz … oh, schon drei Stunden."},
+{"who":"andrew","text":"Online oder regional einkaufen? Wir haben da eine Meinung. Oder zwei."},
+{"who":"marco","text":"Online oder regional einkaufen? Wir haben da eine Meinung. Oder zwei."},
+{"who":"andrew","text":"Barrierefreiheit geht uns alle an – auch im Radio."},
+{"who":"marco","text":"Barrierefreiheit geht uns alle an – auch im Radio."},
+{"who":"andrew","text":"Zusammenhalt in der Gesellschaft: Mehr reden, weniger schreien."},
+{"who":"marco","text":"Zusammenhalt in der Gesellschaft: Mehr reden, weniger schreien."},
+{"who":"andrew","text":"Tech-News! Neue Fritzbox, neues Glück – oder erst mal Kabel prüfen?"},
+{"who":"marco","text":"Tech-News! Neue Fritzbox, neues Glück – oder erst mal Kabel prüfen?"},
+{"who":"andrew","text":"Soundbars: Warum? Wofür? Und warum hängt da schon wieder ein Kabel raus?"},
+{"who":"marco","text":"Soundbars: Warum? Wofür? Und warum hängt da schon wieder ein Kabel raus?"},
+{"who":"andrew","text":"Internet über DSL oder Glasfaser – wer hat die längste Leitung?"},
+{"who":"marco","text":"Internet über DSL oder Glasfaser – wer hat die längste Leitung?"},
+{"who":"andrew","text":"Künstliche Intelligenz moderiert bald selbst? Nicht mit uns!"},
+{"who":"marco","text":"Künstliche Intelligenz moderiert bald selbst? Nicht mit uns!"},
+{"who":"andrew","text":"Elektroautos und Verkaufs-Apps – die Zukunft hat Akku."},
+{"who":"marco","text":"Elektroautos und Verkaufs-Apps – die Zukunft hat Akku."},
+{"who":"andrew","text":"Kabel ist Kabel, sagt man. Ich sage: Kabel ist Leidenschaft!"},
+{"who":"marco","text":"Kabel ist Kabel, sagt man. Ich sage: Kabel ist Leidenschaft!"},
+{"who":"andrew","text":"Musik-Anmacher: Dieser Song läuft heute rauf und runter auf AnMaCha24!"},
+{"who":"marco","text":"Musik-Anmacher: Dieser Song läuft heute rauf und runter auf AnMaCha24!"},
+{"who":"andrew","text":"Der ESC-Rückblick – wer hat getanzt, wer hat gewackelt?"},
+{"who":"marco","text":"Der ESC-Rückblick – wer hat getanzt, wer hat gewackelt?"},
+{"who":"andrew","text":"House Is A Feeling – Clubradio24 lässt grüßen!"},
+{"who":"marco","text":"House Is A Feeling – Clubradio24 lässt grüßen!"},
+{"who":"andrew","text":"90er-Hits vor der 1996er-Party – Kassette rein, Lautstärke hoch!"},
+{"who":"marco","text":"90er-Hits vor der 1996er-Party – Kassette rein, Lautstärke hoch!"},
+{"who":"andrew","text":"Schlager oder Rap? Bei uns läuft beides – nur nicht gleichzeitig."},
+{"who":"marco","text":"Schlager oder Rap? Bei uns läuft beides – nur nicht gleichzeitig."},
+{"who":"andrew","text":"Musik, die mich anmacht – das ist nicht nur ein Slogan!"},
+{"who":"marco","text":"Musik, die mich anmacht – das ist nicht nur ein Slogan!"},
+{"who":"andrew","text":"TV-Anmacher: Diese Serie müsst ihr gesehen haben!"},
+{"who":"marco","text":"TV-Anmacher: Diese Serie müsst ihr gesehen haben!"},
+{"who":"andrew","text":"All-inclusive-Streaming: Wie viele Abos sind eigentlich zu viele?"},
+{"who":"marco","text":"All-inclusive-Streaming: Wie viele Abos sind eigentlich zu viele?"},
+{"who":"andrew","text":"Sportabos für die Bundesliga – man braucht inzwischen einen Taschenrechner."},
+{"who":"marco","text":"Sportabos für die Bundesliga – man braucht inzwischen einen Taschenrechner."},
+{"who":"andrew","text":"Der neue Streaming-Start – wir haben schon mal reingeschaut."},
+{"who":"marco","text":"Der neue Streaming-Start – wir haben schon mal reingeschaut."},
+{"who":"andrew","text":"Slow-TV: Stundenlang Zugfahrt gucken. Und ja, es ist großartig."},
+{"who":"marco","text":"Slow-TV: Stundenlang Zugfahrt gucken. Und ja, es ist großartig."},
+{"who":"andrew","text":"Lineares Fernsehen – erinnert sich noch wer an die Fernbedienung mit Kabel?"},
+{"who":"marco","text":"Lineares Fernsehen – erinnert sich noch wer an die Fernbedienung mit Kabel?"},
+{"who":"andrew","text":"Feelgood! Heute gibt es nur gute Nachrichten. Und Köttbullar."},
+{"who":"marco","text":"Feelgood! Heute gibt es nur gute Nachrichten. Und Köttbullar."},
+{"who":"andrew","text":"Giselas Camper – die schönste Reise beginnt auf dem Campingplatz."},
+{"who":"marco","text":"Giselas Camper – die schönste Reise beginnt auf dem Campingplatz."},
+{"who":"andrew","text":"Ein Hörer hat uns geschrieben: Ihr rettet meinen Montag!"},
+{"who":"marco","text":"Ein Hörer hat uns geschrieben: Ihr rettet meinen Montag!"},
+{"who":"andrew","text":"Hausgrillen statt Urlaub – Sommer ist, was man draus macht."},
+{"who":"marco","text":"Hausgrillen statt Urlaub – Sommer ist, was man draus macht."},
+{"who":"andrew","text":"Zeit für Dein nächstes Abenteuer – und für ein Eis."},
+{"who":"marco","text":"Zeit für Dein nächstes Abenteuer – und für ein Eis."},
+{"who":"andrew","text":"Gute Laune ist ansteckend. Bitte weitersagen!"},
+{"who":"marco","text":"Gute Laune ist ansteckend. Bitte weitersagen!"},
+{"who":"andrew","text":"Wenig Interessantes aus unserem Leben – also los, wir haben viel davon!"},
+{"who":"marco","text":"Wenig Interessantes aus unserem Leben – also los, wir haben viel davon!"},
+{"who":"andrew","text":"Marcos Tagebuch: Liebes Tagebuch, heute war wieder Kabel-Tag."},
+{"who":"marco","text":"Marcos Tagebuch: Liebes Tagebuch, heute war wieder Kabel-Tag."},
+{"who":"andrew","text":"Andrew hat diese Woche … nichts erlebt. Und das erzählt er jetzt ausführlich."},
+{"who":"marco","text":"Andrew hat diese Woche … nichts erlebt. Und das erzählt er jetzt ausführlich."},
+{"who":"n","text":"Wir sind ON AIR!"},
+{"who":"andrew","text":"Hallo und herzlich willkommen zu AnMaCha – Der Podcast!"},
+{"who":"marco","text":"Hallo und herzlich willkommen zu AnMaCha – Der Podcast!"},
+{"who":"andrew","text":"Seid Ihr bereit, angemacht zu werden? Willkommen!"},
+{"who":"marco","text":"Seid Ihr bereit, angemacht zu werden? Willkommen!"},
+{"who":"andrew","text":"Hey, willkommen zu einer neuen Folge – mit Marco und Andrew!"},
+{"who":"marco","text":"Hey, willkommen zu einer neuen Folge – mit Marco und Andrew!"},
+{"who":"andrew","text":"Musikwunsch von "},
+{"who":"marco","text":"Musikwunsch von "},
+{"who":"andrew","text":" + w.t + "},
+{"who":"marco","text":" + w.t + "},
+{"who":"andrew","text":", w.from + "},
+{"who":"marco","text":", w.from + "},
+{"who":"andrew","text":"Grüße an "},
+{"who":"marco","text":"Grüße an "},
+{"who":"andrew","text":"! Hier kommt „"},
+{"who":"marco","text":"! Hier kommt „"},
+{"who":"andrew","text":"Rico, wir sind LIVE!"},
+{"who":"marco","text":"Rico, wir sind LIVE!"},
+{"who":"andrew","text":"Danke, Rico. Jetzt raus hier."},
+{"who":"marco","text":"Danke, Rico. Jetzt raus hier."},
+{"who":"andrew","text":"Er hat schon wieder ein Tool gebaut …"},
+{"who":"marco","text":"Er hat schon wieder ein Tool gebaut …"},
+{"who":"andrew","text":"Rico! Kamera weg vom Mischpult!"},
+{"who":"marco","text":"Rico! Kamera weg vom Mischpult!"},
+{"who":"andrew","text":"Nicht jetzt, Rico!"},
+{"who":"marco","text":"Nicht jetzt, Rico!"},
+{"who":"andrew","text":"Wer hat ihn reingelassen?!"},
+{"who":"marco","text":"Wer hat ihn reingelassen?!"},
+{"who":"andrew","text":"Und dann sag ich zu ihm …"},
+{"who":"marco","text":"Und dann sag ich zu ihm …"},
+{"who":"andrew","text":"Wartet, wartet – jetzt kommt der Knaller!"},
+{"who":"marco","text":"Wartet, wartet – jetzt kommt der Knaller!"},
+{"who":"andrew","text":"Das glaubt ihr nicht …"},
+{"who":"marco","text":"Das glaubt ihr nicht …"},
+{"who":"andrew","text":"Pass auf, Pointe kommt!"},
+{"who":"marco","text":"Pass auf, Pointe kommt!"},
+{"who":"andrew","text":"HAHAHA! Ich kann nicht mehr!"},
+{"who":"marco","text":"HAHAHA! Ich kann nicht mehr!"},
+{"who":"andrew","text":"Ich lach mich weg!"},
+{"who":"marco","text":"Ich lach mich weg!"},
+{"who":"andrew","text":"Das kommt in die Highlights!"},
+{"who":"marco","text":"Das kommt in die Highlights!"},
+{"who":"andrew","text":"… Ich hab's nicht verstanden."},
+{"who":"marco","text":"… Ich hab's nicht verstanden."},
+{"who":"andrew","text":"Grillenzirpen …"},
+{"who":"marco","text":"Grillenzirpen …"},
+{"who":"andrew","text":"Okay. Weiter im Text!"},
+{"who":"marco","text":"Okay. Weiter im Text!"},
+{"who":"andrew","text":"Übernehm ich!"},
+{"who":"marco","text":"Übernehm ich!"},
+{"who":"andrew","text":"Da muss ich direkt einhaken!"},
+{"who":"marco","text":"Da muss ich direkt einhaken!"},
+{"who":"andrew","text":"Darf ich kurz? Danke!"},
+{"who":"marco","text":"Darf ich kurz? Danke!"},
+{"who":"andrew","text":"Mein Stichwort!"},
+{"who":"marco","text":"Mein Stichwort!"},
+{"who":"andrew","text":"Liebes Tagebuch … diese Woche war ein Kabel-Abenteuer, das ihr nicht glauben werdet!"},
+{"who":"marco","text":"Liebes Tagebuch … diese Woche war ein Kabel-Abenteuer, das ihr nicht glauben werdet!"},
+{"who":"andrew","text":"Musik-Moment! Diesen Song müsst ihr hören – Lautstärke hoch!"},
+{"who":"marco","text":"Musik-Moment! Diesen Song müsst ihr hören – Lautstärke hoch!"},
+{"who":"andrew","text":"Soundboard-Zeit! Wer drückt am schnellsten?"},
+{"who":"marco","text":"Soundboard-Zeit! Wer drückt am schnellsten?"},
+{"who":"andrew","text":"Ich hab neue Effekte – hört mal!"},
+{"who":"marco","text":"Ich hab neue Effekte – hört mal!"},
+{"who":"andrew","text":"Tusch, Hupe, Applaus – los geht's!"},
+{"who":"marco","text":"Tusch, Hupe, Applaus – los geht's!"},
+{"who":"andrew","text":"Frage aus dem Postfach!"},
+{"who":"marco","text":"Frage aus dem Postfach!"},
+{"who":"andrew","text":"Ein Hörer will was wissen …"},
+{"who":"marco","text":"Ein Hörer will was wissen …"},
+{"who":"andrew","text":"Hörerfrage – mal sehen, ob wir das wissen!"},
+{"who":"marco","text":"Hörerfrage – mal sehen, ob wir das wissen!"},
+{"who":"andrew","text":"Genau so! Danke für die Frage!"},
+{"who":"marco","text":"Genau so! Danke für die Frage!"},
+{"who":"andrew","text":"Richtig – Gruß zurück!"},
+{"who":"marco","text":"Richtig – Gruß zurück!"},
+{"who":"andrew","text":"Richtig wäre: "},
+{"who":"marco","text":"Richtig wäre: "},
+{"who":"andrew","text":". Nächstes Mal!"},
+{"who":"marco","text":". Nächstes Mal!"},
+{"who":"andrew","text":"]), inc.id === "},
+{"who":"marco","text":"]), inc.id === "},
+{"who":"andrew","text":"Uiii, was pfeift denn da so?!"},
+{"who":"marco","text":"Uiii, was pfeift denn da so?!"},
+{"who":"andrew","text":"Wer hat denn hier die Kabel verknotet?"},
+{"who":"marco","text":"Wer hat denn hier die Kabel verknotet?"},
+{"who":"andrew","text":"Wir haben einen Anrufer in der Leitung!"},
+{"who":"marco","text":"Wir haben einen Anrufer in der Leitung!"},
+{"who":"andrew","text":"Das war's für heute – danke fürs Zuhören! Bis zur nächsten Folge!"},
+{"who":"marco","text":"Das war's für heute – danke fürs Zuhören! Bis zur nächsten Folge!"},
+{"who":"andrew","text":"Tschüss und bleibt angemacht!"},
+{"who":"marco","text":"Tschüss und bleibt angemacht!"},
+{"who":"andrew","text":"Danke an alle da draußen. Wir hören uns!"},
+{"who":"marco","text":"Danke an alle da draußen. Wir hören uns!"}]

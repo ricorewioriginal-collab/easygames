@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sprachclips für „AnMaCha – Der Podcast“ mit Edge-TTS: je Zeile eine MP3 (mono, 24 kHz, 32 kbit/s) + vo/index.json.
+"""Sprachclips für „AnMaCha – Der Podcast“ mit Edge-TTS: je Zeile eine MP3 (mono, 24 kHz, 24 kbit/s) + vo/index.json.
 Aufruf: pip install edge-tts && python3 tools/podcast-voice/gen-edge.py
 Läuft automatisch per GitHub-Workflow (.github/workflows/podcast-voice.yml), sobald sich vo/lines.json ändert.
 Schlüssel = FNV-1a("wer|Text") base36, identisch zu voKey() in anmacha-podcast-tycoon/src/acts.js."""
@@ -22,6 +22,7 @@ def key(who, text):
         if not h: return n
 def clean(t):
     t = re.sub(r'AnMaCha', 'Anmacher', t, flags=re.I); t = re.sub(r'AN-MA-CHA', 'An-ma-cher', t)
+    t = re.sub(r'\{(\w+)\}', lambda m: {'x': 'Aktion', 'a': 'Springen', 'rb': 'Sprint', 'rt': 'Ausweichen', 'b': 'Zurück'}.get(m.group(1), ''), t)
     t = re.sub(r'[\U0001F000-\U0001FFFF☀-➿️]', '', t)
     return t.replace('…', '...').replace('–', ',').strip()
 async def one(sem, who, text, index):
@@ -33,7 +34,7 @@ async def one(sem, who, text, index):
             try:
                 tmp = tempfile.mktemp(suffix='.mp3')
                 await edge_tts.Communicate(clean(text), v, pitch='%+dHz' % p, rate='%+d%%' % r, proxy=PROXY).save(tmp)
-                subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', tmp, '-ac', '1', '-ar', '24000', '-b:a', '32k', '-af', 'silenceremove=start_periods=1:start_threshold=-50dB,areverse,silenceremove=start_periods=1:start_threshold=-50dB,areverse', f], check=True)
+                subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', tmp, '-ac', '1', '-ar', '24000', '-b:a', '24k', '-af', 'silenceremove=start_periods=1:start_threshold=-50dB,areverse,silenceremove=start_periods=1:start_threshold=-50dB,areverse', f], check=True)
                 os.remove(tmp); index.append(k); return
             except Exception as e: err = e; await asyncio.sleep(2)
     print('FEHLER', who, text[:50], err)

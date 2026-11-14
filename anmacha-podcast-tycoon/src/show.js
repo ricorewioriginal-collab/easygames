@@ -227,7 +227,7 @@
     U.$('shWho').textContent = name; U.$('shTxt').textContent = text; U.$('shFace').src = who === 'n' ? AMC.UI.podLogo : AMC.UI.face(who);
     box.style.setProperty('--hc', who === 'n' ? '#ff8a1e' : D.HOSTS[who].color);
     if (who !== 'n') { ST.focus = who; const f = W.hosts[who]; f && f.play(U.pick(['yes', 'arms']), { fade: 0.25 }); f && f.talk && f.talk(true); setTimeout(() => { if (f) { f.play('idle', { fade: 0.4 }); f.talk && f.talk(false); } }, 1800); }
-    AMC.Audio.sfx('talk');
+    AMC.Audio.sfx('talk'); if (AMC.Voice) AMC.Voice.say(who, text);
     if (AMC.Save.data.settings.subtitles === false) box.hidden = true;
   }
   function chatLine(name, text, cls) {

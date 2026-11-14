@@ -58,6 +58,16 @@
   const hush = () => { try { if (AMC.Babble) AMC.Babble.stop(); if (clip) { clip.pause(); clip = null; } root.speechSynthesis && speechSynthesis.cancel(); } catch (e) { /* egal */ } };
 
   /** Zwischensequenz abspielen. shots = [{ cam: [x,y,z], to: [x,y,z], look: [x,y,z], lines: [[wer, text], …], pose: fn(S) }] */
+  // Stimmen außerhalb der Zwischensequenzen: Story-Dialoge (UI.dialog) und Live-Aufnahme (show.js say)
+  const SHORT = { a: 'andrew', m: 'marco', r: 'rico', n: 'n' };
+  AMC.Voice = {
+    say(w, t) {
+      if (C || !t) return false; const who = SHORT[w] || w; hush();
+      const src = AC.voClip(who, t); if (src) return playClip(src, who, t, () => {});
+      return WHO[who] ? speak(who, t.replace(/\{\w+\}/g, ''), () => {}) : (AMC.Babble ? AMC.Babble.say(who, t) : false);
+    },
+    stop: () => { if (!C) hush(); }
+  };
   CUT.play = function (shots, done) {
     const S = AMC.Play.state(); if (!S || C || (AMC.Worlds && AMC.Worlds.busy && AMC.Worlds.busy())) return false;
     const el = U.el('div', 'cut', '<i class="cut-bar t"></i><i class="cut-bar b"></i><div class="cut-sub glass"><span class="cut-face" id="cutF"></span><div><b id="cutN"></b><p id="cutT"></p></div></div><button type="button" class="cut-skip" id="cutS">' + AMC.glyph('b') + ' Überspringen</button>');
