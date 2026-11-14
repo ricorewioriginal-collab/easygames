@@ -49,7 +49,7 @@ export function createSeaBattle(C) {
   const q = s => H.querySelector(s), pct = (a, b) => Math.max(0, Math.min(100, a / b * 100)).toFixed(1) + '%', hx = c => '#' + (c >>> 0).toString(16).padStart(6, '0');
   function hud() {
     if (!B) return; const S = C.S();
-    q('.rb-p').innerHTML = B.party.map(m => `<div class="rb-c${m === B.cur ? ' on' : ''}${m.hp <= 0 ? ' ko' : ''}" style="--c:${hx(m.col)}"><b>${m.n} <small>Lv ${C.clv ? C.clv(m.id) : ''}</small><small>${Math.max(0, Math.ceil(m.hp))}/${m.max}</small></b><div class="rb-bar"><i style="width:${pct(m.hp, m.max)}"></i></div>${m.id === 'zotik' ? `<div class="rb-bar mp"><i style="width:${pct(S.mp, C.maxMp())}"></i></div>` : ''}<div class="rb-bar ip${m.ip >= 40 ? ' full' : ''}"><i style="width:${pct(m.ip, 100)}"></i></div></div>`).join('');
+    q('.rb-p').innerHTML = B.party.map(m => `<div class="rb-c${m === B.cur ? ' on' : ''}${m.hp <= 0 ? ' ko' : ''}" style="--c:${hx(m.col)}"><b>${faceOf(m)} ${m.n} <small>Lv ${C.clv ? C.clv(m.id) : ''}</small><small>${Math.max(0, Math.ceil(m.hp))}/${m.max}</small></b><div class="rb-bar"><i style="width:${pct(m.hp, m.max)}"></i></div>${m.id === 'zotik' ? `<div class="rb-bar mp"><i style="width:${pct(S.mp, C.maxMp())}"></i></div>` : ''}<div class="rb-bar atb"><i style="width:${pct(m.ct || 0, 100)}"></i></div><div class="rb-bar ip${m.ip >= 40 ? ' full' : ''}"><i style="width:${pct(m.ip, 100)}"></i></div></div>`).join('');
     q('.rb-f').innerHTML = B.foes.map(f => `<div class="rb-c${f === B.curF ? ' on' : ''}${f.dead ? ' ko' : ''}" style="--c:${hx(f.d.col || 0xff7a7a)}"><b>${f.name}<small>${EL[f.d.weak][0]} ${f.broken ? '<span class="rb-brk x">BRUCH</span>' : `<span class="rb-brk">${'◆'.repeat(Math.max(0, f.brk))}</span>`}</small></b><div class="rb-bar"><i style="width:${pct(f.hp, f.max)}"></i></div></div>`).join('');
   }
   const flashScr = () => { const w = q('.rb-w'); w.classList.remove('on'); void w.offsetWidth; w.classList.add('on'); };
@@ -63,6 +63,45 @@ export function createSeaBattle(C) {
   }
   function stopMusic() { if (mus) clearInterval(mus); mus = null; }
   function fanfare() { if (!C.tone) return; [[523, 0], [523, .12], [523, .24], [659, .36], [784, .6], [659, .78], [1047, .96]].forEach(([f, d]) => { C.tone(f, .3, 'square', .07, null, d); C.tone(f / 2, .3, 'triangle', .06, null, d); }); }
+
+  /* ---------- ATB: Zeitleiste (WAIT → COM → ACT), Zugreihenfolge, Zielinfo, Ergebnis ---------- */
+  const st2 = document.createElement('style'); st2.textContent = `#rbh .rb-ord{position:absolute;left:50%;top:max(10px,env(safe-area-inset-top));transform:translateX(-50%);display:flex;gap:5px;align-items:center;padding:4px 10px;background:rgba(10,14,34,.72);border:1px solid rgba(150,190,255,.25);border-radius:30px}
+#rbh .rb-ord b{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;font-size:14px;background:#14204a;border:2px solid var(--c,#8ad0ff);transition:all .3s}#rbh .rb-ord b.f{background:#3a1424;border-radius:6px;font-size:13px}
+#rbh .rb-ord b.n{width:38px;height:38px;font-size:20px;box-shadow:0 0 14px var(--c)}
+#rbh .rb-tl{position:absolute;left:50%;top:calc(max(10px,env(safe-area-inset-top)) + 52px);transform:translateX(-50%);width:min(520px,52vw);height:52px}
+#rbh .rb-tr{position:absolute;left:0;right:0;top:20px;height:12px;border-radius:6px;background:linear-gradient(90deg,#14204a 0,#1f3a80 60%,#2a6aff 78%,#e23a3a 100%);border:1px solid rgba(190,220,255,.5)}
+#rbh .rb-tr span{position:absolute;top:-17px;font:700 11px system-ui;letter-spacing:.1em;text-shadow:0 0 6px #000}#rbh .rb-tr .w{left:1%;color:#9ab8ff}#rbh .rb-tr .c{left:56%;color:#7ac8ff}#rbh .rb-tr .a{right:1%;color:#ff8a8a}
+#rbh .rb-mf,#rbh .rb-mp{position:absolute;left:0;right:0}#rbh .rb-mf{top:0}#rbh .rb-mp{top:30px}
+#rbh .rb-mk{position:absolute;width:22px;height:22px;margin-left:-11px;display:grid;place-items:center;border-radius:50%;font:700 12px system-ui;font-style:normal;background:#14204a;border:2px solid #8ad0ff;transition:left .55s cubic-bezier(.3,.8,.3,1),opacity .3s,transform .2s}
+#rbh .rb-mk.f{background:#3a1424;border-color:#ff7a7a;border-radius:5px}#rbh .rb-mk.dead{opacity:0;pointer-events:none}#rbh .rb-mk.now{transform:scale(1.35);z-index:2;box-shadow:0 0 12px #fff}
+#rbh .rb-ti{position:absolute;left:50%;top:calc(max(10px,env(safe-area-inset-top)) + 112px);transform:translateX(-50%);min-width:200px;padding:6px 12px;background:linear-gradient(90deg,rgba(14,22,60,.9),rgba(14,22,60,.6));border:1px solid rgba(255,140,140,.5);border-radius:8px;font-size:12px}
+#rbh .rb-ti small{letter-spacing:.14em;color:#ff9a9a}#rbh .rb-ti b{display:block;font-size:14px}#rbh .rb-ti span{opacity:.85}
+.rb-bar.atb{height:4px}.rb-bar.atb i{background:linear-gradient(90deg,#4a8aff,#e8f4ff)}
+#rbh .rb-r.res{top:50%;width:min(720px,94vw);padding:12px 16px;pointer-events:auto;text-align:left;background:linear-gradient(180deg,rgba(24,28,92,.94),rgba(12,14,44,.96));border:2px solid #e8c96a;border-radius:10px;box-shadow:0 0 0 2px #5a3a10,0 0 40px rgba(0,0,0,.6)}
+.rb-r .rs{margin-bottom:8px;padding:8px 12px;border:1px solid rgba(232,201,106,.5);border-radius:6px;background:rgba(8,10,40,.5)}.rb-r h3{margin:0 0 4px;font:italic 800 22px Georgia,serif;color:#fff;text-shadow:0 0 8px #6aa0ff}
+.rb-r .rr{display:flex;justify-content:space-between;max-width:340px;font-size:15px}.rb-r .rr em{color:#ffd24a;font-style:normal;font-weight:800}
+.rb-r .rc{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}.rb-r .rm{text-align:center;border-top:3px solid var(--c);padding-top:4px}
+.rb-r .pt{font-size:34px;height:54px;display:grid;place-items:center;background:rgba(255,255,255,.08);border-radius:6px}.rb-r .nm{font-weight:800;margin:3px 0}.rb-r .lv b{color:#ffd24a;font-size:20px}
+.rb-r .up{color:#7aff9a;font-weight:800;letter-spacing:.1em;animation:rbip .5s infinite alternate}.rb-r .ln{display:flex;justify-content:space-between;font-size:12px;opacity:.95}.rb-r small{opacity:.7}
+@media (max-width:700px){#rbh .rb-tl{top:calc(max(10px,env(safe-area-inset-top)) + 124px);width:92vw}#rbh .rb-ti{top:calc(max(10px,env(safe-area-inset-top)) + 188px)}#rbh .rb-ord{top:calc(max(10px,env(safe-area-inset-top)) + 80px)}}`;
+  document.head.appendChild(st2);
+  H.insertAdjacentHTML('beforeend', '<div class="rb-ord"></div><div class="rb-tl"><div class="rb-tr"><span class="w">WAIT</span><span class="c">COM</span><span class="a">ACT</span></div><div class="rb-mf"></div><div class="rb-mp"></div></div><div class="rb-ti" hidden></div>');
+  const faceOf = m => m.id === 'zotik' ? '🦊' : ((C.PARTY && C.PARTY[m.id]) || {}).em || '⭐';
+  const posCt = ct => (Math.max(0, Math.min(100, ct)) * .92 + 4).toFixed(1) + '%';
+  const COST = { atk: 0, spell: -8, art: -25, team: -35, attr: -35, summon: -15, focus: -10, pot: 8, guard: 28, flee: 0 };
+  const PN = { M: 'Manuell', A: 'Angriff', S: 'Schutz', H: 'Heilung' };
+  const DES = [[/Teamangriff/, 'Gemeinsamer Angriff aller Gefährten. Braucht die volle Teamleiste.'], [/Angriff/, 'Greift mit der Waffe an. Treffer verzögern die Zeitleiste des Gegners.'], [/Magie/, 'Zauber nutzen Schwächen: wiederholte Treffer brechen den Gegner und unterbrechen seinen Zug.'],
+    [/Zielfeuer/, 'Bis zu drei Ziele markieren und mit einer Salve belegen.'], [/Nebelfenn/, 'Ruft einen Verbündeten, der drei Runden mitkämpft und die Gruppe heilt.'], [/Sternenbund/, 'Große Gruppen-Attraktion. Verbraucht IP der ganzen Gruppe.'], [/Taktik/, 'Rolle der Gefährten wählen: sie handeln dann selbstständig, Zotik behält die Befehle.'],
+    [/Trank/, 'Heilt das Gruppenmitglied mit den wenigsten LP.'], [/Abwehr/, 'Halbiert den Schaden bis zum nächsten Zug und lädt die Zeitleiste schneller.'], [/Auto/, 'Der Kampf läuft selbstständig bis zum Ende.'], [/Flucht|Davonsegeln/, 'Versucht zu entkommen. Bei Bossen nicht möglich.'], [/IP|Rissblitz|Heilwelle|Mondlicht|Kühlnebel|Provokation|Pfeilhagel|Schattenklinge|Runensiegel|Teslafeld|Sternsturz|Volltreffer/, 'Fähigkeit: braucht volle IP, die durch Treffer und Abwehr entstehen.']];
+  function pickNext() { const L = [...up(), ...live()]; let b = null, bt = 1e9; for (const a of L) { const t = Math.max(0, (100 - a.ct) / a.sp); if (t < bt - .001 || (Math.abs(t - bt) <= .001 && a.party)) { bt = t; b = a; } } return { a: b, t: bt, L }; }
+  function simulate(n) { const L = [...up(), ...live()].map(a => ({ a, ct: a.ct, sp: a.sp })), out = [];
+    for (let i = 0; i < n && L.length; i++) { let b = null, bt = 1e9; for (const o of L) { const t = Math.max(0, (100 - o.ct) / o.sp); if (t < bt - .001 || (Math.abs(t - bt) <= .001 && o.a.party)) { bt = t; b = o; } } for (const o of L) o.ct += o.sp * bt; out.push(b.a); b.ct = 0; } return out; }
+  function atbUI() {
+    if (!B) return; const mk = (box, list, cls) => { for (const a of list) { if (!a.el) { a.el = document.createElement('i'); a.el.className = 'rb-mk ' + cls; a.el.textContent = a.ico; box.appendChild(a.el); } a.el.style.left = posCt(a.ct); a.el.classList.toggle('dead', !!a.dead || a.hp <= 0); a.el.classList.toggle('now', a === B.cur || a === B.curF); } };
+    mk(q('.rb-mf'), B.foes, 'f'); mk(q('.rb-mp'), B.party, 'p');
+    q('.rb-ord').innerHTML = simulate(8).map((a, i) => `<b class="${a.party ? 'p' : 'f'}${i === 0 ? ' n' : ''}" style="--c:${hx(a.party ? a.col || 0x8ad0ff : a.d.col || 0xff7a7a)}">${a.ico}</b>`).join('');
+  }
+  function showTI(f) { const t = q('.rb-ti'); B && (B.tgt = f); if (!f) { t.hidden = true; return; } B.curF = f; hud(); t.hidden = false; t.innerHTML = `<small>ZIELINFO</small><b>Lv. ${f.lv} · ${f.name}</b><div class="rb-bar"><i style="width:${pct(f.hp, f.max)}"></i></div><span>${Math.max(0, Math.ceil(f.hp))}/${f.max} LP · Schwäche ${EL[f.d.weak][0]} ${EL[f.d.weak][2]}${f.broken ? ' · BRUCH' : ''}</span>`; }
 
   /* ---------- Figuren auf der Bühne ---------- */
   let B = null, coolT = 0;   /* coolT: Zeitpunkt (ms), bis zu dem nach einem Kampf kein neuer beginnt */
@@ -112,7 +151,10 @@ export function createSeaBattle(C) {
     const c = center(B.foes), o = { x: B.ox, y: gy(B.ox, B.oz), z: B.oz }; camera.position.set(o.x + B.sx * 9 + B.fx * 3, o.y + 2.2, o.z + B.sz * 9 + B.fz * 3);
     shot({ x: c.x + B.sx * 5 - B.fx * 4, y: c.y + 2.4, z: c.z + B.sz * 5 - B.fz * 4 }, { x: c.x, y: c.y + 1.2, z: c.z }, 1.4);
     for (const f of B.foes) if (C.MFX) C.MFX().circle(f.base.x, gy(f.base.x, f.base.z), f.base.z, f.d.col || 0xff6a6a, 2.2 * f.sc, 1.2);
-    setTimeout(() => B && round(), 1700);
+    B.party.forEach((m, i) => { m.party = 1; m.ico = faceOf(m); m.sp = m.id === 'zotik' ? 11 : 9.4 + (i % 3) * .7; m.ct = rnd(35, 75); });
+    B.foes.forEach(f => { f.ico = (f.name.replace('★ ', '')[0] || '?'); f.sp = Math.min(13, 6.5 + f.lv * .12 + (f.d.hov ? 1.5 : 0) + (f.boss ? 2 : 0)); f.ct = rnd(10, 55); });
+    q('.rb-mf').innerHTML = q('.rb-mp').innerHTML = ''; showTI(null); atbUI(); { const f0 = pickNext().a; if (f0.party) setTimeout(() => B && toast('⚡ Initiative! Die Gruppe ist zuerst dran'), 900); }
+    setTimeout(() => B && loop(), 1700);
   }
   const live = () => B.foes.filter(f => !f.dead), up = () => B.party.filter(m => m.hp > 0);
 
@@ -125,7 +167,7 @@ export function createSeaBattle(C) {
   function ask(m) {
     return new Promise(res => {
       const S = C.S(), L = live(), again = () => ask(m).then(res), o = [];
-      const tgt = fn => L.length === 1 ? fn(L[0]) : say([[m.n, 'Welches Ziel?']], null, [...L.map(f => ({ t: tagF(f), fn: () => fn(f) })), { t: '↩ Zurück', fn: again }]);
+      const tgt = fn => L.length === 1 ? fn(L[0]) : say([[m.n, 'Welches Ziel?']], null, [...L.map(f => ({ t: tagF(f), fn: () => fn(f), h: () => showTI(f) })), { t: '↩ Zurück', fn: again }]);
       o.push({ t: '⚔️ Angriff', fn: () => tgt(f => res({ k: 'atk', f })) });
       if (m.mag) o.push({ t: '✨ Magie', fn: () => say([['Zotik', 'Welcher Zauber? (MP ' + Math.floor(S.mp) + ')']], null, [...SPELLS.map(sp => ({ t: sp.t + ' · ' + sp.mp + ' MP', fn: () => S.mp < sp.mp ? (toast('Nicht genug MP'), again()) : sp.all || sp.heal ? res({ k: 'spell', sp }) : tgt(f => res({ k: 'spell', sp, f })) })), { t: '↩ Zurück', fn: again }]) });
       const [an] = art(m.id); o.push({ t: an + (m.ip >= 40 ? ' ⭐' : ' · IP ' + m.ip + '/40'), fn: () => m.ip >= 40 ? res({ k: 'art' }) : (toast('IP füllen sich durch Treffer und Abwehr'), again()) });
@@ -134,9 +176,11 @@ export function createSeaBattle(C) {
       ob('focus', bOn(S, 'focus'), ' · ' + BEI.focus.mp + ' MP', () => S.mp < BEI.focus.mp ? (toast('Zu wenig MP'), again()) : pickFocus(m, L, again, res));
       if (up().length) ob('summon', bOn(S, 'summon'), B.sum ? ' · schon da' : ' · ' + BEI.summon.mp + ' MP', () => B.sum || S.mp < BEI.summon.mp ? (toast(B.sum ? 'Der Nebelfenn ist schon da' : 'Zu wenig MP'), again()) : res({ k: 'summon' }));
       if (co) ob('attr', bOn(S, 'attr'), ' · IP ' + up().reduce((a, p) => a + Math.floor(p.ip), 0) + '/' + 40 * Math.min(3, up().length), () => up().reduce((a, p) => a + p.ip, 0) >= 40 * Math.min(3, up().length) ? res({ k: 'attr' }) : (toast('Alle brauchen genug IP'), again()));
+      if (m === B.party[0] && co) ob('tact', bOn(S, 'tact'), ' · ' + PN[B.para || 'M'], () => say([[m.n, 'Taktik der Gefährten?']], null, [...Object.entries(PN).map(([k, n]) => ({ t: (B.para || 'M') === k ? '▶ ' + n : n, fn: () => { B.para = k; toast('🎭 Taktik: ' + n); again(); } })), { t: '↩ Zurück', fn: again }]));
       if (S.potions > 0) o.push({ t: '🧪 Trank (' + S.potions + ')', fn: () => res({ k: 'pot' }) });
       o.push({ t: '🛡️ Abwehr', fn: () => res({ k: 'guard' }) }, { t: '⏩ Auto', fn: () => { B.auto = 1; toast('⏩ Auto-Kampf bis zum Ende'); res(autoCmd(m)); } });
       if (!B.boss) o.push({ t: B.sea ? '🏃 Davonsegeln' : '🏃 Flucht', fn: () => res({ k: 'flee' }) });
+      o.forEach(x => { if (!x.d) { const r = DES.find(z => z[0].test(x.t)); if (r) x.d = r[1]; } }); showTI(null);
       say([[m.n, m.n + ' ist am Zug.']], null, o);
     });
   }
@@ -155,20 +199,32 @@ export function createSeaBattle(C) {
   }
 
   /* ---------- Ablauf einer Runde ---------- */
-  async function round() {
-    for (const m of B.party) {
-      if (!B || B.over) return; if (m.hp <= 0) continue; if (!live().length) return win();
-      B.cur = m; B.guard[m.id] = 0; if (B.taunt === m) B.taunt = null; hud();
-      const a = partyA(m); if (a) { const b = a.base; B.shot = null; B.idle = { x: b.x, y: b.y, z: b.z }; }
-      const c = B.auto ? autoCmd(m) : await ask(m); if (!B) return;
-      if (c.k === 'flee') return flee();
-      await doCmd(m, c); if (!B) return; await wait(260);
+  function paraCmd(m) {
+    const S = C.S(), low = up().filter(p => p.hp < p.max * .5), [, ty] = art(m.id), P = B.para;
+    if (P === 'H') { if (m.ip >= 40 && ty === 'heal' && low.length) return { k: 'art' }; if (low.length && S.potions > 0 && m.hp < m.max * .5) return { k: 'pot' }; return { k: 'guard' }; }
+    if (P === 'S') { if (m.ip >= 40 && (ty === 'taunt' || (ty === 'heal' && low.length))) return { k: 'art' }; return { k: 'guard' }; }
+    return autoCmd(m);
+  }
+  async function sumStrike() {
+    const f = live().sort((x, y) => x.hp - y.hp)[0], z = B.party[0]; if (!f || !B.sumM) return; B.sum--; B.curF = f; shotSide(f, partyA(z)); await wait(350); if (!B) return;
+    C.MFX().bolt(B.sumM.position.x, B.sumM.position.y, B.sumM.position.z, f.base.x, f.base.y + f.h * .5, f.base.z, 0xbfe8ff, .3); hit(f, z.atk() * .7, null, 'storm', false); await wait(450); if (!B) return;
+    B.curF = null; if (!B.sum && B.sumM) { scene.remove(B.sumM); B.sumM = null; }
+  }
+  /* Zeitleiste: wer zuerst 100 erreicht, ist dran; Treffer schieben die Leiste des Gegners zurück (verzögern) oder setzen sie bei Bruch weit zurück (unterbrechen) */
+  async function loop() {
+    while (B && !B.over) {
+      if (!live().length) return win(); if (!up().length) return lose();
+      const { a: b, t: bt, L } = pickNext(); for (const a of L) a.ct = Math.min(100, a.ct + a.sp * bt); b.ct = 100; atbUI(); await wait(Math.min(650, 120 + bt * 80)); if (!B || B.over) return;
+      if (b.party) {
+        const m = b; B.cur = m; B.guard[m.id] = 0; if (B.taunt === m) B.taunt = null; hud(); atbUI();
+        const a = partyA(m); if (a) { const bs = a.base; B.shot = null; B.idle = { x: bs.x, y: bs.y, z: bs.z }; }
+        const c = B.auto ? autoCmd(m) : (B.para && B.para !== 'M' && m !== B.party[0]) ? paraCmd(m) : await ask(m); if (!B) return; showTI(null);
+        if (c.k === 'flee') { if (await flee()) return; m.ct = 0; B.cur = null; continue; }
+        await doCmd(m, c); if (!B) return; m.ct = COST[c.k] || 0; B.cur = null; B.idle = null; if (B.sum > 0 && live().length) await sumStrike(); if (!B) return; hud(); atbUI(); await wait(260);
+      } else {
+        if (b.dead) continue; B.curF = b; atbUI(); await foeAct(b); if (!B) return; b.ct = 0; B.turn++; atbUI(); await wait(240);
+      }
     }
-    if (!B) return; B.cur = null; B.idle = null; hud();
-    if (B.sum > 0 && live().length) { const f = live().sort((x, y) => x.hp - y.hp)[0], z = B.party[0]; B.sum--; B.curF = f; shotSide(f, partyA(z)); await wait(350); C.MFX().bolt(B.sumM.position.x, B.sumM.position.y, B.sumM.position.z, f.base.x, f.base.y + f.h * .5, f.base.z, 0xbfe8ff, .3); hit(f, z.atk() * .7, null, 'storm', false); await wait(450); if (!B) return; B.curF = null; if (!B.sum && B.sumM) { scene.remove(B.sumM); B.sumM = null; } if (!live().length) return win(); }
-    for (const f of live()) { if (!B || B.over) return; if (!up().length) return lose(); if (f.dead) continue; await foeAct(f); if (!B) return; await wait(240); }
-    if (!B || B.over) return; if (!live().length) return win(); if (!up().length) return lose();
-    B.turn++; round();
   }
   async function doCmd(m, c) {
     const S = C.S(), a = partyA(m), FX = C.FXH(), MF = C.MFX();
@@ -226,6 +282,7 @@ export function createSeaBattle(C) {
     if (tag === 'break') { dnum(p.x, p.y + 1, p.z, 'BRUCH!', 'b'); sfx('crit'); C.hitStop(.14); flashScr(); }
     C.FXH().impact(p.x, p.y - .5, p.z, el ? EL[el][1] : 0xfff0c0, big || !!tag); emit(p.x, p.y - .5, p.z, el ? EL[el][1] : 0xffffff, 10, 3, .4, .3, 0);
     if (f.kk) C.KK.once(f.kk, 'Hit_A'); sfx('hit'); B.shk = Math.max(B.shk, big ? .3 : .16);
+    { const near = f.ct >= 60; f.ct = tag === 'break' ? -35 : Math.max(-25, f.ct - (tag === 'weak' ? 30 : near ? 22 : 10)); if (near || tag) dnum(p.x, p.y + 1.3, p.z, tag === 'break' ? 'UNTERBROCHEN!' : '⏳ verzögert', tag === 'break' ? 'b' : 'x'); atbUI(); }
     if (m) { m.ip = Math.min(100, m.ip + (tag ? 14 : 8)); if (C.gAdd) C.gAdd('tg', tag ? 9 : 5); }
     if (f.hp <= 0) { f.dead = 1; f.dt = 0; sfx('kill'); C.FXH().soul(p.x, p.y - .4, p.z, f.d.col || 0xc8f4ff); C.MFX().burstShards(p.x, p.y - .4, p.z, f.d.col || 0xc8f4ff, 1); if (f.kk) C.KK.ko(f.kk, true); }
     hud();
@@ -233,7 +290,7 @@ export function createSeaBattle(C) {
   async function foeAct(f) {
     if (f.broken) { f.broken--; if (!f.broken) f.brk = f.brk0; const p = top(f); dnum(p.x, p.y, p.z, '💫 benommen', 'x'); hud(); await wait(600); return; }
     const T0 = up(); if (!T0.length) return; const m = B.taunt && B.taunt.hp > 0 ? B.taunt : T0[Math.random() * T0.length | 0], a = partyA(m), MF = C.MFX();
-    B.curF = f; hud(); const aoe = f.boss && B.turn % 3 === 2; shotSide(f, a); f.charge = .6; sfx('roar'); await wait(520); if (!B) return;
+    B.curF = f; hud(); const aoe = f.boss && ((f.acts = (f.acts || 0) + 1) % 3 === 0); shotSide(f, a); f.charge = .6; sfx('roar'); await wait(520); if (!B) return;
     if (aoe) { banner(f.d.n, B.sea ? 'Mahlstrom!' : 'Beben!'); const c = center(B.party.map(partyA).filter(Boolean)); MF.ring(c.x, c.y + .2, c.z, f.d.col || 0xa06aff, 6, .9, 0); MF.circle(c.x, c.y, c.z, f.d.col || 0xa06aff, 5, 1); await wait(400); for (const p of up()) hurt(p, f.atk * .7); }
     else if (f.d.hov) { const p = top(f), col = EL[ELS[(ELS.indexOf(f.d.weak) + 2) % 5]][1]; MF.flare(p.x, p.y - .4, p.z, col, 2, .4); await wait(250); MF.bolt(p.x, p.y - .4, p.z, a.base.x, a.base.y + 1.1, a.base.z, col, .3); await wait(200); hurt(m, f.atk); }
     else { lunge(f, a.base.x, a.base.z, 99, .9, 1); if (f.kk) C.KK.once(f.kk, 'Throw'); await wait(360); hurt(m, f.atk); }
@@ -253,16 +310,19 @@ export function createSeaBattle(C) {
     const xp = B.foes.reduce((s, f) => s + Math.round((6 + 4 * f.lv) * (f.boss ? 4 : 1.3)), 0), sh = B.foes.reduce((s, f) => s + Math.round(2 + f.lv * .5) * (f.boss ? 4 : 1), 0); S.shards += sh;
     const potion = Math.random() < .25 ? (S.potions = (S.potions || 0) + 1, 1) : 0, gear = Math.random() < (B.boss ? 1 : .15) ? C.cgDrop(reg(B.k) + (B.boss ? 2 : 0)) : '';
     for (const m of up()) { const a = partyA(m); if (a) { a.hop = 1.8; if (a.kk) C.KK.once(a.kk, 'Interact'); } }
-    B.vic = 1; hud(); const r = q('.rb-r'); r.innerHTML = `<h2>SIEG</h2><div>+${xp} EP · +${sh} 💎${potion ? ' · 🧪 Trank' : ''}${gear ? '<br>🎁 ' + gear + ' (Gefährten)' : ''}</div>`; r.classList.add('on');
-    await wait(2600); const fin = B && B.ref; end(); C.gainXp(xp); if (fin) fin.gone = 1;
+    B.vic = 1; showTI(null); hud(); const snap = () => B.party.map(m => Object.assign({ m }, C.cinfo ? C.cinfo(m.id) : { lv: 0, xp: 0, need: 1 })), b0 = snap(); C.gainXp(xp); const b1 = snap(), r = q('.rb-r');
+    r.className = 'rb-r res'; r.innerHTML = `<div class="rs"><h3>Beute</h3><div class="rr"><span>Erfahrung</span><b>${xp} <em>EP</em></b></div><div class="rr"><span>Splitter</span><b>${sh} <em>💎</em></b></div>${potion ? '<div class="rr"><span>Fund</span><b>🧪 Trank</b></div>' : ''}${gear ? '<div class="rr"><span>Ausrüstung</span><b>🎁 ' + gear + '</b></div>' : ''}</div>
+      <div class="rs"><h3>Danach</h3><div class="rc">${b1.map((x, i) => `<div class="rm" style="--c:${hx(x.m.col || 0x8ad0ff)}"><div class="pt">${faceOf(x.m)}</div><div class="nm">${x.m.n}</div><div class="lv">Stufe <b>${x.lv}</b></div>${x.lv > b0[i].lv ? '<div class="up">STUFE AUF!</div>' : ''}<div class="ln"><span>EP</span><b>${x.xp}</b></div><div class="ln"><span>Nächste Stufe</span><b>${Math.max(0, x.need - x.xp)}</b></div></div>`).join('')}</div></div><small>Tippen oder Taste zum Fortfahren</small>`;
+    r.classList.add('on'); await new Promise(res => { let d = 0; const done = () => { if (d) return; d = 1; removeEventListener('keydown', done); r.removeEventListener('pointerdown', done); res(); }; setTimeout(done, 8000); setTimeout(() => { addEventListener('keydown', done); r.addEventListener('pointerdown', done); }, 900); });
+    const fin = B && B.ref; end(); if (fin) fin.gone = 1;
   }
   async function flee() {
-    if (Math.random() < .75) { toast(B.sea ? '🚤 Entkommen!' : '🏃 Entkommen!'); for (const m of up()) { const a = partyA(m); if (a && !a.ship) lunge(a, a.base.x - B.fx * 9, a.base.z - B.fz * 9, 5, .9); } sfx('dodge'); await wait(650); if (B && B.ref && B.ref.x !== undefined) { B.ref.x -= B.fx * -6; B.ref.z -= B.fz * -6; } end(); }
-    else { toast('Der Weg ist abgeschnitten!'); await wait(600); if (!B) return; B.cur = null; for (const f of live()) { await foeAct(f); if (!B) return; } if (!up().length) return lose(); B.turn++; round(); }
+    if (Math.random() < .75) { toast(B.sea ? '🚤 Entkommen!' : '🏃 Entkommen!'); for (const m of up()) { const a = partyA(m); if (a && !a.ship) lunge(a, a.base.x - B.fx * 9, a.base.z - B.fz * 9, 5, .9); } sfx('dodge'); await wait(650); if (B && B.ref && B.ref.x !== undefined) { B.ref.x -= B.fx * -6; B.ref.z -= B.fz * -6; } end(); return true; }
+    toast('Der Weg ist abgeschnitten!'); await wait(600); return false;
   }
   function lose() { if (!B || B.over) return; B.over = 1; stopMusic(); banner(B.sea ? 'Die Nautilux treibt ab' : 'Die Gruppe zieht sich zurück', 'Zurück in Sicherheit'); const S = C.S(); S.hp = Math.round(C.maxHp() * .3); for (const m of B.party) if (m.a) { m.a.ko = false; m.a.hp = Math.round(m.max * .3); if (m.a.P.kk) C.KK.ko(m.a.P.kk, false); } end(); C.lose(); }
   function end() {
-    if (!B) return; stopMusic(); if (B.sumM) scene.remove(B.sumM); for (const f of B.foes) scene.remove(f.root);
+    if (!B) return; stopMusic(); if (B.sumM) scene.remove(B.sumM); if (B.tl) scene.remove(B.tl); q('.rb-mf').innerHTML = q('.rb-mp').innerHTML = ''; q('.rb-ti').hidden = true; q('.rb-r').className = 'rb-r'; for (const f of B.foes) scene.remove(f.root);
     for (const m of B.party) { const a = m.act; if (!a) continue; a.root.position.set(a.base.x, a.base.y, a.base.z); a.root.rotation.set(0, a.face, 0); if (m.a) { m.a.x = a.base.x; m.a.z = a.base.z; m.a.face = a.face; } if (a.kk && !(m.a && m.a.ko)) C.KK.ko(a.kk, false); }
     if (B.ship) B.ship.root.position.set(B.ship.base.x, B.ship.base.y, B.ship.base.z);
     const S = C.S(); if (S.hp < 1) S.hp = 1; B = null; coolT = performance.now() + 3500; H.hidden = true; q('.rb-r').classList.remove('on'); C.$('hud').hidden = false; C.setOn(false);
@@ -288,6 +348,8 @@ export function createSeaBattle(C) {
     B.cl = B.cl || { x: l.x, y: l.y, z: l.z }; B.cl.x += (l.x - B.cl.x) * k; B.cl.y += (l.y - B.cl.y) * k; B.cl.z += (l.z - B.cl.z) * k;
     if (B.shk > 0) { B.shk -= dt; camera.position.x += rnd(-.18, .18); camera.position.y += rnd(-.12, .12); }
     camera.lookAt(B.cl.x, B.cl.y, B.cl.z);
+    if (B.tgt && B.cur && !B.vic) { const a = partyA(B.cur), f = B.tgt; if (!B.tl) { const g = new C.T.BufferGeometry(); g.setFromPoints([new C.T.Vector3(), new C.T.Vector3()]); B.tl = new C.T.Line(g, new C.T.LineBasicMaterial({ color: 0xff5a5a, transparent: true, opacity: .9 })); B.tl.frustumCulled = false; scene.add(B.tl); }
+      const ps = B.tl.geometry.attributes.position; ps.setXYZ(0, a.root.position.x, a.root.position.y + 1.5, a.root.position.z); ps.setXYZ(1, f.root.position.x, f.root.position.y + f.h * .5, f.root.position.z); ps.needsUpdate = true; B.tl.visible = true; } else if (B.tl) B.tl.visible = false;
     /* Gruppe */
     const fc = center(live().length ? live() : B.foes);
     if (B.ship) { pose(B.ship, dt); B.ship.root.rotation.y = Math.atan2(fc.x - B.ship.base.x, fc.z - B.ship.base.z); B.ship.root.position.y += Math.sin(t * 1.6) * .08; }
