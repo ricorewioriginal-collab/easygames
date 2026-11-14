@@ -55,6 +55,7 @@
   function setBg(name, dim) { const el = $('#bg'); el.style.backgroundImage = 'url(img/bg-' + name + '.jpg)'; el.classList.toggle('dim', !!dim); }
   const RENDER = {};
   function go(id, arg) {
+    if (id !== cur && cur !== 'sLoad') A.sfx('whoosh');
     clearTimers();
     document.querySelectorAll('.scr.on').forEach(s => s.classList.remove('on'));
     const el = document.getElementById(id); cur = id; el.classList.add('on'); el.scrollTop = 0;
@@ -137,7 +138,7 @@
       ['⚙️ Mehr', [['prof', '👤', 'Profil & Erfolge', p ? esc(p.name) + ' · Level ' + S.level(p.xp) : 'Noch kein Avatar.'], ['set', '⚙️', 'Einstellungen', 'Ton, Mikrofon, Jury, Barrierefreiheit.'], ['help', '🎮', 'Steuerung & Tutorial', 'So wird gespielt.'], ['cred', 'ℹ️', 'Credits', 'Über SHOW ME YOUR VOICE und die Musik-Quellen.']]]];
     $('#menuList').innerHTML = G.map(([h, items]) => `<p class="mGroup">${h}</p>` + items.filter(Boolean).map(([id, ic, t, d, sub2]) => `<button class="mi${id === 'cont' || (!running && id === 'new') ? ' hero' : ''}" data-m="${id}" data-i="${esc(d)}" data-ic="${ic}" type="button"><i>${ic}</i><b>${t}</b>${sub2 ? `<small>${sub2}</small>` : ''}</button>`).join('')).join('');
     $('#menuWho').textContent = p ? p.name : 'Willkommen im Studio!'; $('#menuStat').textContent = p ? 'Level ' + S.level(p.xp) + ' · ' + (p.fans || 0) + ' Fans' : 'Bau dir deinen Avatar und ab ins Casting';
-    const info = b => { if (!b) return; $('#menuInfo').innerHTML = `<i>${b.dataset.ic}</i><b>${b.querySelector('b').textContent}</b><p>${b.dataset.i}</p>`; };
+    const info = b => { if (!b) return; const box = $('#menuInfo'); box.style.animation = 'none'; void box.offsetWidth; box.style.animation = ''; if (b.scrollIntoView && document.body.classList.contains('has3d')) b.scrollIntoView({ block: 'nearest', inline: 'nearest' }); box.innerHTML = `<i>${b.dataset.ic}</i><b>${b.querySelector('b').textContent}</b><p>${b.dataset.i}</p>`; };
     $('#menuList').querySelectorAll('.mi').forEach(b => { b.onfocus = b.onmouseenter = () => info(b); }); info($('#menuList .mi'));
   };
   $('#menuList').addEventListener('click', e => {

@@ -281,7 +281,7 @@ window.dispatchEvent(new Event('smyv3d'));
 
 function drawHighway() {
   const p = st && st.part; const on = !!(p && p.type === 'rhythm' && st.cv && !st.done);
-  HW.visible = on; desk.visible = !on; judges.forEach(x => { x.j.visible = !on; }); if (!on) return;
+  const hideJ = on || shotName === 'menu' || shotName === 'title'; HW.visible = on; desk.visible = !hideJ; judges.forEach(x => { x.j.visible = !hideJ; }); if (!on) return;
   const W = innerWidth, H = innerHeight, rc = st.cv.getBoundingClientRect(), g = st.laneGeo();
   const yHit = rc.top + g.hitY, xs = [0, 1, 2, 3].map(i => rc.left + g.x0 + (i + 0.5) * g.lw);
   const pts = xs.map(x => screenToFloor(x, yHit, W, H)); if (pts.some(v => !v)) { HW.visible = false; return; }

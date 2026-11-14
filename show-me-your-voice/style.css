@@ -442,3 +442,39 @@ body.walking #backBox { z-index: 3; }
 img.ava.kk { aspect-ratio: 3/4; object-fit: cover; object-position: 50% 20%; border-radius: 14px; box-shadow: 0 0 0 2px rgba(255,42,160,.35), 0 8px 22px rgba(0,0,0,.45); background: #1c0a2c; }
 .host img.ava.kk { aspect-ratio: 1; border-radius: 50%; object-position: 50% 12%; }
 img.jimg { object-fit: cover; object-position: 50% 15%; }
+/* Hauptmenü „Spotlight-Leiste“ (eigener SMYV-Look): Kachelreihe oben, Bühne in der Mitte, Infotext unten links */
+@media (min-width: 900px) and (min-aspect-ratio: 5/4) {
+  body.has3d #sMenu .tvMenu { max-width: none; height: 100%; min-height: 100vh; box-sizing: border-box; padding: 3vh 4vw 4vh; display: flex; flex-direction: column; }
+  body.has3d #sMenu .tvBody { display: flex; flex-direction: column; flex: 1; gap: 0; }
+  body.has3d #sMenu #menuList { flex-direction: row; align-items: center; gap: 16px; overflow-x: auto; overflow-y: visible; scroll-snap-type: x proximity; padding: 26px 40vw 64px 6px; scrollbar-width: none; margin: 2vh -4vw 0 0; }
+  body.has3d #sMenu #menuList::-webkit-scrollbar { display: none; }
+  body.has3d #sMenu .mGroup { flex: 0 0 2px; height: 86px; margin: 0 6px; font-size: 0; padding: 0; background: linear-gradient(180deg, transparent, rgba(255, 201, 60, .6), transparent); opacity: .7; }
+  body.has3d #sMenu .mi { display: flex; flex: 0 0 118px; height: 118px; padding: 0 !important; flex-direction: column; justify-content: center; align-items: center; gap: 0; text-align: center; border-radius: 26px !important; scroll-snap-align: start;
+    background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, .16), rgba(255, 255, 255, .02) 70%), rgba(12, 6, 26, .62) !important; }
+  body.has3d #sMenu .mi.hero { flex-basis: 236px; background: linear-gradient(135deg, rgba(255, 184, 0, .55), rgba(255, 42, 160, .35)), rgba(12, 6, 26, .62) !important; }
+  body.has3d #sMenu .mi i { font-style: normal; font-size: 2.7em; line-height: 1; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .5)); transition: transform .2s; }
+  body.has3d #sMenu .mi b { position: absolute; top: calc(100% + 12px); left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: 1.05em; letter-spacing: .02em; opacity: 0; transition: opacity .15s; text-shadow: 0 2px 10px #000; }
+  body.has3d #sMenu .mi.hero b { position: static; transform: none; opacity: 1; margin-top: 8px; font-size: 1.15em; }
+  body.has3d #sMenu .mi small { display: none; }
+  body.has3d #sMenu .mi:hover, body.has3d #sMenu .mi:focus-visible { transform: scale(1.16); z-index: 2;
+    box-shadow: 0 0 0 3px var(--gold), 0 0 0 7px rgba(255, 42, 160, .45), 0 18px 50px rgba(255, 42, 160, .55); }
+  body.has3d #sMenu .mi:hover b, body.has3d #sMenu .mi:focus-visible b { opacity: 1; }
+  body.has3d #sMenu .mi:focus-visible i { transform: translateY(-4px) scale(1.08); }
+  /* Equalizer-Balken unter der gewählten Kachel – Markenzeichen der Show */
+  body.has3d #sMenu .mi:focus-visible::before { content: ''; position: absolute; left: 22%; right: 22%; bottom: 10px; height: 10px; border-radius: 3px;
+    background: repeating-linear-gradient(90deg, var(--gold) 0 4px, transparent 4px 8px); -webkit-mask: linear-gradient(0deg, #000, #000); animation: eq .5s steps(4) infinite alternate; transform-origin: bottom; }
+  body.has3d #sMenu .tvInfo { position: static; margin-top: auto; max-width: 620px; min-height: 0; text-align: left; padding: 0 0 2vh; background: none !important; border: 0 !important; box-shadow: none !important; backdrop-filter: none; -webkit-backdrop-filter: none; animation: infoIn .35s cubic-bezier(.2, .8, .2, 1); }
+  body.has3d #sMenu .tvInfo i { display: none; }
+  body.has3d #sMenu .tvInfo b { font-family: Impact, 'Arial Black', sans-serif; font-weight: 400 !important; font-size: clamp(2.4em, 4.4vw, 4.2em) !important; line-height: 1; letter-spacing: .01em; text-shadow: 0 4px 30px rgba(255, 42, 160, .6), 0 2px 0 #000; }
+  body.has3d #sMenu .tvInfo p { font-size: 1.15em; color: #f1e6ff; text-shadow: 0 2px 12px #000; max-width: 52ch; }
+  body.has3d #sMenu .padHint { position: absolute; right: 4vw; bottom: 3vh; margin: 0; opacity: .75; }
+}
+@keyframes eq { from { transform: scaleY(.3); } to { transform: scaleY(1); } }
+@keyframes infoIn { from { opacity: 0; transform: translateY(14px); } }
+@media (prefers-reduced-motion: reduce) { body.has3d #sMenu .mi:focus-visible::before, body.has3d #sMenu .tvInfo { animation: none; } }
+@media (min-width: 900px) and (min-aspect-ratio: 5/4) { body.has3d #sMenu .mi.hero { flex-direction: row; gap: 12px; padding: 0 22px !important; } body.has3d #sMenu .mi.hero b { margin: 0; text-align: left; white-space: normal; } body.has3d #sMenu .mi.hero:focus-visible::before { bottom: 12px; } }
+/* Bildwechsel: Lichtvorhang statt hartem Schnitt */
+body.has3d .scr.on { animation: scrIn3d .42s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes scrIn3d { from { opacity: 0; transform: translateY(18px) scale(.985); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+@media (prefers-reduced-motion: reduce) { body.has3d .scr.on { animation: none; } }
+body.reduced.has3d .scr.on { animation: none; }
