@@ -32,6 +32,7 @@
   AC.voiceFor = who => { try { const v = pickVoice(who); return v ? v.name : ''; } catch (e) { return ''; } };
   function speak(who, txt, end) {
     if (!voiceOn() || who === 'gisela') { if (who === 'gisela') AMC.Audio.sfx('horn'); return false; }
+    if (!WHO[who] && AMC.Babble) return AMC.Babble.say(who, txt, end);   // NPCs brabbeln
     try {
       const w = WHO[who] || WHO.n, u = new SpeechSynthesisUtterance(txt.replace(/AnMaCha/gi, 'Anmacher').replace(/[^\p{L}\p{N}\s.,!?'„“…–-]/gu, ''));
       u.lang = 'de-DE'; u.pitch = w[2]; u.rate = w[3];
@@ -39,6 +40,11 @@
       u.onend = end; u.onerror = end; speechSynthesis.cancel(); speechSynthesis.speak(u); return true;
     } catch (e) { return false; }
   }
+  // Aufgenommene Sprachclips (Edge-Stimmen, tools/podcast-voice): laufen auf jedem Gerät gleich, sonst Sprachausgabe
+  let VO = null;
+  try { fetch('vo/index.json').then(r => r.ok ? r.json() : []).then(a => { VO = new Set(a || []); }).catch(() => { VO = new Set(); }); } catch (e) { VO = new Set(); }
+  const voKey = (who, txt) => { let h = 0x811c9dc5; const s = who + '|' + txt; for (let i = 0; i < s.length; i++) h = Math.imul((h ^ s.charCodeAt(i)) >>> 0, 16777619) >>> 0; return h.toString(36); };
+  AC.voKey = voKey; AC.voClip = (who, txt) => { const k = voKey(who, txt); return VO && VO.has(k) ? 'vo/' + k + '.mp3' : null; };
   // Echte Sprachaufnahme (z. B. RicoReWis Originalstimme); fällt bei Fehlern auf die Sprachausgabe zurück
   let clip = null;
   function playClip(src, who, txt, end) {
@@ -49,7 +55,7 @@
       a.onended = end; a.onerror = fall; const pr = a.play(); if (pr && pr.catch) pr.catch(fall); return true;
     } catch (e) { return speak(who, txt, end); }
   }
-  const hush = () => { try { if (clip) { clip.pause(); clip = null; } root.speechSynthesis && speechSynthesis.cancel(); } catch (e) { /* egal */ } };
+  const hush = () => { try { if (AMC.Babble) AMC.Babble.stop(); if (clip) { clip.pause(); clip = null; } root.speechSynthesis && speechSynthesis.cancel(); } catch (e) { /* egal */ } };
 
   /** Zwischensequenz abspielen. shots = [{ cam: [x,y,z], to: [x,y,z], look: [x,y,z], lines: [[wer, text], …], pose: fn(S) }] */
   CUT.play = function (shots, done) {
@@ -77,7 +83,8 @@
     C.need = Math.max(2.6, l[1].length * 0.065);
     if (clip) hush();
     const said = () => { if (C && C.li === i) C.spoke = true; };
-    C.talking = o.src ? playClip(o.src, l[0], l[1], said) : speak(l[0], l[1], said);
+    const src = o.src || AC.voClip(l[0], l[1]);
+    C.talking = src ? playClip(src, l[0], l[1], said) : speak(l[0], l[1], said);
     const f = W.hosts[l[0]]; if (f && f.talk) { f.talk(true); setTimeout(() => f.talk(false), C.need * 900); }
     if (l[0] !== 'n' && l[0] !== 'gisela') AMC.Audio.sfx('talk');
   }
