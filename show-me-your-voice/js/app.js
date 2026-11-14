@@ -1988,5 +1988,5 @@
     imgs.forEach(u => { const im = new Image(); im.onload = im.onerror = () => { n++; $('#loadBar').style.width = Math.round(n / imgs.length * 100) + '%'; $('#loadTip').textContent = tips[Math.min(tips.length - 1, Math.floor(n / imgs.length * tips.length))]; if (n === imgs.length) setTimeout(done, 400); }; im.src = u; });
     setTimeout(done, 4000);
   })();
-  window.SMYVApp = { state: () => ({ cur, save, prep, stage: !!stage, flow: flow && flow.mode }), go, stageObj: () => stage, assignOf, prepGo: m => { RENDER.sPrep(m); go('sPrep', m); } };
+  window.SMYVApp = { state: () => ({ cur, save, prep, stage: !!stage, flow: flow && flow.mode }), go, stageObj: () => stage, sing: () => sing, assignOf, prepGo: m => { RENDER.sPrep(m); go('sPrep', m); } };
 })();
