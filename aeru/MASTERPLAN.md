@@ -47,7 +47,7 @@ Messung im Browsertest (Software-Rendering, nicht repräsentativ für echte Ger�
 | --- | --- | --- |
 | 1 | Bestandsaufnahme (dieses Dokument) | erledigt |
 | 2 | Bewegung und Kamera: Zustände als kleine State-Machine kapseln, Landungsrolle, Kamera-Kollision mit allen Wänden, Kamera hebt sich beim Gleiten | offen |
-| 3 | Weltenarchitektur: **Talboden mit Tafelbergen, Felstreppen, Weltgrenze** (Schritt 9). Danach eigener Grundriss je Welt über Daten in `content.js` | Talboden erledigt |
+| 3 | Weltenarchitektur: Talboden (Schritt 9), dann **Höhenfeld-Gelände, Variante B** (Schritt 10, Entscheidung RiCARDO 13.11.2026). Danach eigener Grundriss je Welt über Daten in `content.js` | Höhenfeld erledigt |
 | 4 | Leveldesign je Welt: Hauptpfad mit Landmarke, Rundwege, 3 Höhenebenen, versteckter Bereich, Höhle, ein besonderer Moment | offen |
 | 5 | Gameplay: Schlüssel und Schatzkammer je Welt, weitere Zeit- und Flug-Challenges, Fähigkeiten-Upgrades | teilweise (Flugprüfung, Kopfstoß, Schwimmen, Klettern) |
 | 6 | Performance: Plattformen und Felsen bündeln, LOD für Modelle, Messung auf echten Geräten | offen |
@@ -62,7 +62,7 @@ Messung im Browsertest (Software-Rendering, nicht repräsentativ für echte Ger�
 | B. Höhenfeld-Gelände (Heightmap) je Welt mit Schrägen | organische Hügel, Täler, Schluchten wie im Vorbild | `floorAt`, Kollision, Kamera und alle Platzierungen müssen umgestellt werden; größter Umbau |
 | C. Mischform: Höhenfeld nur für den Talboden, Inseln bleiben Flächen | organischer Boden, Inseln unverändert | zwei Bodenarten in der Kollision |
 
-Empfehlung: **C**, weil es den größten sichtbaren Gewinn bei begrenztem Risiko bringt. Dieser Umbau wird erst nach Freigabe gemacht.
+Entschieden: **B** (RiCARDO, 13.11.2026). Umgesetzt in Schritt 10: Hochflächen bleiben oben eben, damit alle Inhalte gültig bleiben; Hänge, Grate und Talhügel kommen aus `heightAt()`.
 
 ## Regeln für jede Phase
 
