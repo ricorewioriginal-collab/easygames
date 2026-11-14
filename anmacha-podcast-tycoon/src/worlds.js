@@ -160,6 +160,8 @@
     C.msg(hin ? '⛴️ Leinen los! Kurs auf die Festival-Insel' : '⛴️ Zurück in die Stadt', 2.2);
   };
   // Minispiel mitten in der Welt (Stadt pausiert, Kamera bleibt)
+  WO.play = (kind, o, cb) => { if (V && !V.mini) mini(kind, o, cb); };
+  WO.busy = () => !!(V && V.mini);
   WO.tick = function (dt) { if (!V || !V.mini) return false; V.mini.ctl.update(dt); return true; };
   function mini(kind, o, cb) {
     const box = U.el('div', 'sh-mini wm-mini'); document.body.appendChild(box); AMC.UI.showTouch(false); AMC.Input.dpadEmotes = false;
