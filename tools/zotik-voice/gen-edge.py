@@ -16,14 +16,15 @@ def key(who, text):
     d = '0123456789abcdefghijklmnopqrstuvwxyz'
     while h: n = d[h % 36] + n; h //= 36
     return n
-M = dict(C='de-DE-ConradNeural', K='de-DE-KatjaNeural', KI='de-DE-KillianNeural', A='de-DE-AmalaNeural', F='de-DE-FlorianMultilingualNeural',
-         S='de-DE-SeraphinaMultilingualNeural', CH='de-DE-ChristophNeural', T='de-DE-TanjaNeural', J='de-AT-JonasNeural', I='de-AT-IngridNeural', JA='de-CH-JanNeural', L='de-CH-LeniNeural')
-# Figur -> (Stimme, Tonhöhe Hz, Tempo %)
-CAST = {'Zotik':('KI',6,6),'RiCARDO':('F',0,2),'Lyra':('K',0,0),'Mira':('A',4,2),'Professorium':('CH',-10,-12),'Felli':('L',22,12),'Nia':('S',6,6),
- 'Rovan':('C',-2,-3),'Erzähler':('C',-6,-8),'Eryn':('T',0,0),'Veyra':('I',-4,-5),'Aera':('A',10,0),'Vexa':('K',-12,-6),'Nerea':('L',0,-3),'Kael':('J',0,3),
- 'Falk':('JA',-8,-6),'Nuri':('S',16,10),'Harlan':('CH',-14,-10),'Brenna':('I',2,3),'Toren':('JA',-4,-4),'Mirrel':('S',-2,0),'Mara':('T',-3,0),'Korrod':('C',-16,-14),
- 'Boro':('J',-14,-6),'Ashen':('JA',-14,-12),'Sela':('A',6,2),'Hanno':('F',-6,0),'Mirael':('K',6,-4),'Bruno':('CH',-8,2),'Orun':('C',-14,-12),'Merle':('L',-4,0)}
-pools = {'m': ['C','KI','F','CH','J','JA'], 'w': ['K','A','S','T','I','L']}
+M = dict(AN='en-US-AndrewMultilingualNeural', BR='en-US-BrianMultilingualNeural', RE='fr-FR-RemyMultilingualNeural', GI='it-IT-GiuseppeMultilingualNeural',
+         HY='ko-KR-HyunsuMultilingualNeural', FL='de-DE-FlorianMultilingualNeural', AV='en-US-AvaMultilingualNeural', EM='en-US-EmmaMultilingualNeural',
+         VI='fr-FR-VivienneMultilingualNeural', SE='de-DE-SeraphinaMultilingualNeural')
+# Figur -> (Stimme, Tonhöhe Hz, Tempo %). Mehrsprachige Neural-Stimmen sprechen Deutsch akzentfrei.
+CAST = {'Zotik':('AN',4,4),'RiCARDO':('BR',0,0),'Lyra':('AV',0,0),'Mira':('EM',4,2),'Professorium':('GI',-8,-10),'Felli':('VI',20,10),'Nia':('SE',6,4),
+ 'Rovan':('RE',0,-2),'Erzähler':('FL',-4,-8),'Eryn':('EM',-3,0),'Veyra':('SE',-4,-4),'Aera':('VI',6,0),'Vexa':('AV',-10,-5),'Nerea':('EM',3,-3),'Kael':('HY',0,2),
+ 'Falk':('BR',-8,-6),'Nuri':('VI',14,8),'Harlan':('GI',-12,-10),'Brenna':('AV',4,2),'Toren':('HY',-4,-4),'Mirrel':('SE',-2,0),'Mara':('EM',-4,0),'Korrod':('BR',-16,-14),
+ 'Boro':('RE',-12,-6),'Ashen':('FL',-14,-12),'Sela':('AV',6,2),'Hanno':('AN',-6,0),'Mirael':('VI',0,-3),'Bruno':('HY',-8,0),'Orun':('GI',-14,-12),'Merle':('SE',4,0)}
+pools = {'m': ['AN','BR','RE','GI','HY','FL'], 'w': ['AV','EM','VI','SE']}
 def voice(who, vox):
     if who in CAST:
         v, p, r = CAST[who]; return M[v], p, r
@@ -34,7 +35,7 @@ def voice(who, vox):
         g = 'w' if h & 1 else 'm'
     h = 0
     for c in who: h = (h * 31 + ord(c)) & 0xffffffff
-    return M[pools[g][h % 6]], ((h >> 3) % 9 - 4) * 3 + (-8 if g == 'm' and who in vox and vox[who][1] < .7 else 0), ((h >> 5) % 7 - 3) * 2
+    return M[pools[g][h % len(pools[g])]], ((h >> 3) % 9 - 4) * 3 + (-8 if g == 'm' and who in vox and vox[who][1] < .7 else 0), ((h >> 5) % 7 - 3) * 2
 def clean(t):
     t = re.sub(r'<[^>]*>', ' ', t); t = re.sub(r'[\U0001F000-\U0001FFFF☀-➿️]', '', t)
     return t.replace('…', '...').strip()
