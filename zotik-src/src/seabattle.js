@@ -49,7 +49,7 @@ export function createSeaBattle(C) {
   const q = s => H.querySelector(s), pct = (a, b) => Math.max(0, Math.min(100, a / b * 100)).toFixed(1) + '%', hx = c => '#' + (c >>> 0).toString(16).padStart(6, '0');
   function hud() {
     if (!B) return; const S = C.S();
-    q('.rb-p').innerHTML = B.party.map(m => `<div class="rb-c${m === B.cur ? ' on' : ''}${m.hp <= 0 ? ' ko' : ''}" style="--c:${hx(m.col)}"><b>${faceOf(m)} ${m.n} <small>Lv ${C.clv ? C.clv(m.id) : ''}</small><small>${Math.max(0, Math.ceil(m.hp))}/${m.max}</small></b><div class="rb-bar"><i style="width:${pct(m.hp, m.max)}"></i></div>${m.id === 'zotik' ? `<div class="rb-bar mp"><i style="width:${pct(S.mp, C.maxMp())}"></i></div>` : ''}<div class="rb-bar atb"><i style="width:${pct(m.ct || 0, 100)}"></i></div><div class="rb-bar ip${m.ip >= 40 ? ' full' : ''}"><i style="width:${pct(m.ip, 100)}"></i></div></div>`).join('');
+    q('.rb-p').innerHTML = B.party.map(m => { const fc = C.face ? C.face(m.id) : ''; return `<div class="rb-c${m === B.cur ? ' on' : ''}${m.hp <= 0 ? ' ko' : ''}" style="--c:${hx(m.col)}"><div class="rb-pt" style="${fc ? 'background-image:url(' + fc + ')' : ''}">${fc ? '' : faceOf(m)}</div><div class="rb-ci"><b>${m.n} <small>Lv ${C.clv ? C.clv(m.id) : ''}</small></b><div class="rr2"><span>LP</span><div class="rb-bar"><i style="width:${pct(m.hp, m.max)}"></i></div><em>${Math.max(0, Math.ceil(m.hp))}</em></div>${m.id === 'zotik' ? `<div class="rr2"><span>MP</span><div class="rb-bar mp"><i style="width:${pct(S.mp, C.maxMp())}"></i></div><em>${Math.floor(S.mp)}</em></div>` : ''}<div class="rr2"><span>ZT</span><div class="rb-bar atb"><i style="width:${pct(m.ct || 0, 100)}"></i></div><em></em></div><div class="rb-bar ip${m.ip >= 40 ? ' full' : ''}"><i style="width:${pct(m.ip, 100)}"></i></div></div></div>`; }).join('');
     q('.rb-f').innerHTML = B.foes.map(f => `<div class="rb-c${f === B.curF ? ' on' : ''}${f.dead ? ' ko' : ''}" style="--c:${hx(f.d.col || 0xff7a7a)}"><b>${f.name}<small>${EL[f.d.weak][0]} ${f.broken ? '<span class="rb-brk x">BRUCH</span>' : `<span class="rb-brk">${'◆'.repeat(Math.max(0, f.brk))}</span>`}</small></b><div class="rb-bar"><i style="width:${pct(f.hp, f.max)}"></i></div></div>`).join('');
   }
   const flashScr = () => { const w = q('.rb-w'); w.classList.remove('on'); void w.offsetWidth; w.classList.add('on'); };
@@ -84,6 +84,21 @@ export function createSeaBattle(C) {
 .rb-r .pt{font-size:34px;height:54px;display:grid;place-items:center;background:rgba(255,255,255,.08);border-radius:6px}.rb-r .nm{font-weight:800;margin:3px 0}.rb-r .lv b{color:#ffd24a;font-size:20px}
 .rb-r .up{color:#7aff9a;font-weight:800;letter-spacing:.1em;animation:rbip .5s infinite alternate}.rb-r .ln{display:flex;justify-content:space-between;font-size:12px;opacity:.95}.rb-r small{opacity:.7}
 @media (max-width:700px){#rbh .rb-tl{top:calc(max(10px,env(safe-area-inset-top)) + 124px);width:92vw}#rbh .rb-ti{top:calc(max(10px,env(safe-area-inset-top)) + 188px)}#rbh .rb-ord{top:calc(max(10px,env(safe-area-inset-top)) + 80px)}}`;
+  st2.textContent += `
+body.rbat #dlg{left:auto;right:max(14px,env(safe-area-inset-right));bottom:auto;top:calc(max(10px,env(safe-area-inset-top)) + 128px);transform:none;width:min(330px,46vw);padding:0;gap:0;grid-template-columns:56px 1fr;grid-template-areas:"port name" "opts opts" "txt txt";border-radius:6px;background:linear-gradient(180deg,rgba(14,44,92,.94),rgba(6,18,46,.94));border:1px solid rgba(120,200,255,.55);box-shadow:0 8px 30px rgba(0,0,0,.5);cursor:default}
+body.rbat #dlg>div:nth-child(2){display:contents}body.rbat #dPort{grid-area:port;width:56px;height:56px;border-radius:6px 0 0 0;border:0;border-right:1px solid rgba(120,200,255,.4)}
+body.rbat #dName{grid-area:name;align-self:center;padding:0 14px;font-size:20px;margin:0;background:linear-gradient(90deg,rgba(90,170,255,.35),transparent);height:100%;display:flex;align-items:center}
+body.rbat #dText{grid-area:txt;font-size:13px;line-height:1.35;min-height:46px;padding:8px 12px;color:#cfe4ff;border-top:1px solid rgba(120,200,255,.35);background:rgba(4,10,30,.6)}
+body.rbat #dOpts{grid-area:opts;flex-direction:column;flex-wrap:nowrap;gap:0;max-height:52vh;overflow-y:auto}
+body.rbat #dOpts button{border-radius:0;border:0;border-top:1px solid rgba(120,200,255,.18);background:rgba(20,56,110,.5);text-align:left;padding:9px 14px 9px 26px;font-size:15px;position:relative;width:100%}
+body.rbat #dOpts button.sel{background:linear-gradient(90deg,#2a9ad8,#173e86);color:#fff}body.rbat #dOpts button.sel::before{content:'◆';position:absolute;left:8px;color:#fff;font-size:11px;top:50%;transform:translateY(-50%)}
+body.rbat #dNext,body.rbat #dSkip{display:none}
+#rbh .rb-p{top:auto;bottom:max(10px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);flex-direction:row;width:auto;max-width:96vw;gap:8px}#rbh .rb-f{left:max(10px,env(safe-area-inset-left));right:auto}
+#rbh .rb-p .rb-c{width:min(214px,29vw);display:flex;gap:8px;align-items:center;padding:6px 8px;border-left-width:1px;border-bottom:3px solid var(--c);background:linear-gradient(180deg,rgba(14,22,56,.9),rgba(8,12,34,.92));transition:transform .25s,box-shadow .25s}
+#rbh .rb-p .rb-c.on{transform:translateY(-12px);box-shadow:0 0 0 1px var(--c),0 6px 22px rgba(80,170,255,.45)}
+.rb-pt{flex:0 0 46px;height:46px;border-radius:8px;border:2px solid var(--c);background:#16224e center/cover no-repeat;display:grid;place-items:center;font-size:24px}
+.rb-ci{flex:1;min-width:0}.rb-ci b{display:flex;justify-content:space-between;font-size:13px}.rb-ci .rr2{display:flex;align-items:center;gap:5px;font-size:10px;opacity:.95}.rb-ci .rr2 span{width:14px;color:#9ab8ff}.rb-ci .rr2 .rb-bar{flex:1}.rb-ci .rr2 em{font-style:normal;width:34px;text-align:right}
+@media (max-height:520px){body.rbat #dlg{top:auto;bottom:86px;max-height:62vh}body.rbat #dOpts{max-height:36vh}}`;
   document.head.appendChild(st2);
   H.insertAdjacentHTML('beforeend', '<div class="rb-ord"></div><div class="rb-tl"><div class="rb-tr"><span class="w">WAIT</span><span class="c">COM</span><span class="a">ACT</span></div><div class="rb-mf"></div><div class="rb-mp"></div></div><div class="rb-ti" hidden></div>');
   const faceOf = m => m.id === 'zotik' ? '🦊' : ((C.PARTY && C.PARTY[m.id]) || {}).em || '⭐';
@@ -146,7 +161,7 @@ export function createSeaBattle(C) {
     B.party.push(z0);
     C.CMP().filter(a => !a.ko && !a.guest && a.id !== S.lead).slice(0, 3).forEach((a, i) => { const p = C.PARTY[a.id], m = { id: a.id, n: p.n, col: p.col, ip: 20, a, melee: !!p.melee, get hp() { return a.hp; }, set hp(v) { a.hp = v; }, get max() { return C.cmax(a.id); }, atk: () => C.cAtk(a.id) * 1.4, crit: () => C.cg(a.id, 'crit'), def: () => C.cg(a.id, 'def') };
       if (!sea) { m.act = mkAct(a.P.root, i + 1); m.act.P = a.P; m.act.kk = a.P.kk || null; } B.party.push(m); });
-    C.setOn(true); C.$('hud').hidden = true; H.hidden = false; q('.rb-r').classList.remove('on'); flashScr(); sfx('roar'); music(rare); hud();
+    C.setOn(true); document.body.classList.add('rbat'); if (ref && ref.hide) ref.hide(); if (ref && ref.P && ref.P.root) ref.P.root.visible = false; C.$('hud').hidden = true; H.hidden = false; q('.rb-r').classList.remove('on'); flashScr(); sfx('roar'); music(rare); hud();
     banner(rare ? '⚠️ ' + B.foes[0].d.n : sea ? '🌊 Seekampf' : '⚔️ Kampf', rare ? 'Eine gewaltige Bestie!' : B.foes.map(f => f.d.n).join(' · '));
     const c = center(B.foes), o = { x: B.ox, y: gy(B.ox, B.oz), z: B.oz }; camera.position.set(o.x + B.sx * 9 + B.fx * 3, o.y + 2.2, o.z + B.sz * 9 + B.fz * 3);
     shot({ x: c.x + B.sx * 5 - B.fx * 4, y: c.y + 2.4, z: c.z + B.sz * 5 - B.fz * 4 }, { x: c.x, y: c.y + 1.2, z: c.z }, 1.4);
@@ -171,6 +186,7 @@ export function createSeaBattle(C) {
       o.push({ t: '⚔️ Angriff', fn: () => tgt(f => res({ k: 'atk', f })) });
       if (m.mag) o.push({ t: '✨ Magie', fn: () => say([['Zotik', 'Welcher Zauber? (MP ' + Math.floor(S.mp) + ')']], null, [...SPELLS.map(sp => ({ t: sp.t + ' · ' + sp.mp + ' MP', fn: () => S.mp < sp.mp ? (toast('Nicht genug MP'), again()) : sp.all || sp.heal ? res({ k: 'spell', sp }) : tgt(f => res({ k: 'spell', sp, f })) })), { t: '↩ Zurück', fn: again }]) });
       const [an] = art(m.id); o.push({ t: an + (m.ip >= 40 ? ' ⭐' : ' · IP ' + m.ip + '/40'), fn: () => m.ip >= 40 ? res({ k: 'art' }) : (toast('IP füllen sich durch Treffer und Abwehr'), again()) });
+      const sw = up().filter(p => p !== m && p.ct >= 50); if (sw.length) o.splice(1, 0, { t: '🔁 Wechsel · ' + sw.map(p => p.n).join(', '), d: 'Ein anderer Gefährte in der COM-Zone übernimmt den Zug.', fn: () => sw.length === 1 ? res({ k: 'swap', to: sw[0] }) : say([[m.n, 'Wer übernimmt?']], null, [...sw.map(p => ({ t: p.n + ' · Lv ' + (C.clv ? C.clv(p.id) : ''), fn: () => res({ k: 'swap', to: p }) })), { t: '↩ Zurück', fn: again }]) });
       const co = up().length > 1, ob = (k, ok, why, fn) => o.push({ t: BEI[k].em + ' ' + BEI[k].n + (ok ? why : ' · ' + bLock(k)), fn: ok ? fn : () => (toast('Wird mit dem Kernsplitter ' + BEI[k].rb + ' der Geschichte freigeschaltet'), again()) });
       if (S.party && S.party.length) o.push({ t: '🤝 Teamangriff · ' + Math.floor(S.tg || 0) + '%', fn: () => (S.tg || 0) >= 100 ? res({ k: 'team' }) : (toast('🤝 Teamleiste füllt sich durch Treffer'), again()) });
       ob('focus', bOn(S, 'focus'), ' · ' + BEI.focus.mp + ' MP', () => S.mp < BEI.focus.mp ? (toast('Zu wenig MP'), again()) : pickFocus(m, L, again, res));
@@ -216,9 +232,11 @@ export function createSeaBattle(C) {
       if (!live().length) return win(); if (!up().length) return lose();
       const { a: b, t: bt, L } = pickNext(); for (const a of L) a.ct = Math.min(100, a.ct + a.sp * bt); b.ct = 100; atbUI(); await wait(Math.min(650, 120 + bt * 80)); if (!B || B.over) return;
       if (b.party) {
-        const m = b; B.cur = m; B.guard[m.id] = 0; if (B.taunt === m) B.taunt = null; hud(); atbUI();
+        let m = b; B.cur = m; B.guard[m.id] = 0; if (B.taunt === m) B.taunt = null; hud(); atbUI();
         const a = partyA(m); if (a) { const bs = a.base; B.shot = null; B.idle = { x: bs.x, y: bs.y, z: bs.z }; }
-        const c = B.auto ? autoCmd(m) : (B.para && B.para !== 'M' && m !== B.party[0]) ? paraCmd(m) : await ask(m); if (!B) return; showTI(null);
+        let c = B.auto ? autoCmd(m) : (B.para && B.para !== 'M' && m !== B.party[0]) ? paraCmd(m) : await ask(m); if (!B) return;
+        while (c && c.k === 'swap') { m = c.to; B.cur = m; B.guard[m.id] = 0; hud(); atbUI(); { const a2 = partyA(m); if (a2) { const bs = a2.base; B.shot = null; B.idle = { x: bs.x, y: bs.y, z: bs.z }; } } c = await ask(m); if (!B) return; }
+        showTI(null);
         if (c.k === 'flee') { if (await flee()) return; m.ct = 0; B.cur = null; continue; }
         await doCmd(m, c); if (!B) return; m.ct = COST[c.k] || 0; B.cur = null; B.idle = null; if (B.sum > 0 && live().length) await sumStrike(); if (!B) return; hud(); atbUI(); await wait(260);
       } else {
@@ -322,7 +340,7 @@ export function createSeaBattle(C) {
   }
   function lose() { if (!B || B.over) return; B.over = 1; stopMusic(); banner(B.sea ? 'Die Nautilux treibt ab' : 'Die Gruppe zieht sich zurück', 'Zurück in Sicherheit'); const S = C.S(); S.hp = Math.round(C.maxHp() * .3); for (const m of B.party) if (m.a) { m.a.ko = false; m.a.hp = Math.round(m.max * .3); if (m.a.P.kk) C.KK.ko(m.a.P.kk, false); } end(); C.lose(); }
   function end() {
-    if (!B) return; stopMusic(); if (B.sumM) scene.remove(B.sumM); if (B.tl) scene.remove(B.tl); q('.rb-mf').innerHTML = q('.rb-mp').innerHTML = ''; q('.rb-ti').hidden = true; q('.rb-r').className = 'rb-r'; for (const f of B.foes) scene.remove(f.root);
+    if (!B) return; document.body.classList.remove('rbat'); if (B.ref && !B.ref.gone) { if (B.ref.show) B.ref.show(); if (B.ref.P && B.ref.P.root) B.ref.P.root.visible = true; } stopMusic(); if (B.sumM) scene.remove(B.sumM); if (B.tl) scene.remove(B.tl); q('.rb-mf').innerHTML = q('.rb-mp').innerHTML = ''; q('.rb-ti').hidden = true; q('.rb-r').className = 'rb-r'; for (const f of B.foes) scene.remove(f.root);
     for (const m of B.party) { const a = m.act; if (!a) continue; a.root.position.set(a.base.x, a.base.y, a.base.z); a.root.rotation.set(0, a.face, 0); if (m.a) { m.a.x = a.base.x; m.a.z = a.base.z; m.a.face = a.face; } if (a.kk && !(m.a && m.a.ko)) C.KK.ko(a.kk, false); }
     if (B.ship) B.ship.root.position.set(B.ship.base.x, B.ship.base.y, B.ship.base.z);
     const S = C.S(); if (S.hp < 1) S.hp = 1; B = null; coolT = performance.now() + 3500; H.hidden = true; q('.rb-r').classList.remove('on'); C.$('hud').hidden = false; C.setOn(false);
