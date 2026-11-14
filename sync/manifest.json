@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "fad382f72bd9",
- "generated": "2026-11-14T01:05:57+01:00",
- "commit": "3b3c51f292ed2ae9086b85b4fa25729e5a826c3c",
+ "version": "d40ab0fd2260",
+ "generated": "2026-11-14T00:42:33+00:00",
+ "commit": "103319be0e0901dc63d944426edb325b94b64b57",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -343,18 +343,18 @@
   },
   {
    "p": "aeru/content.js",
-   "s": 4620,
-   "h": "86247d7fdec9b3c70d5f86b89a0e7eae0fb96b9420fb6e5e59e7e0c9d4f66c76"
+   "s": 4813,
+   "h": "cb3194737a879e723630d425de31ba4b3a31ab17cf3600e491e62e27e807ab4f"
   },
   {
    "p": "aeru/game.js",
-   "s": 198988,
-   "h": "f614c0bf3ad38ca50b05c981cc5cb4388fb35004f5fbad4ae2b4d5d6755f7b20"
+   "s": 209356,
+   "h": "40aecddb26c2a5dab382459ffd6226dbd21ce09576fae22f63292b905e1f014d"
   },
   {
    "p": "aeru/index.html",
    "s": 15598,
-   "h": "cf7b60f94f179828aaf4a76ccc26eea8baf6ce0d39fb95843500f7eecad46f30"
+   "h": "38f73d85331d70cb26397af4be9a3d0cecba0f083ba3e177efccdd8efe7047dd"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -393,8 +393,8 @@
   },
   {
    "p": "aeru/models/scenery.glb",
-   "s": 292172,
-   "h": "7d30b5d145b3cf89b2ce68bf78f2a5277f825b1b8d1cdfff97f28167f19dcf06"
+   "s": 667644,
+   "h": "acab92dd25496c1eb56f3691d0f1d20067bccb1b810cd4c3a951db1511865480"
   },
   {
    "p": "aeru/quests.js",
@@ -2173,8 +2173,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/index.html",
-   "s": 6801,
-   "h": "ede601cc58351bf8389dcfb1b1ce6eaee969d19e03668c183ad5d554e7587537"
+   "s": 6877,
+   "h": "74098065399068b0c35af6bae42dc66582bd0f03acb43878ae59e7338727d2a1"
   },
   {
    "p": "anmacha-podcast-tycoon/manifest.webmanifest",
@@ -2210,6 +2210,121 @@
    "p": "anmacha-podcast-tycoon/models/cat.glb",
    "s": 62220,
    "h": "20fbb85ebf3ab576511fa5f5bea6fbfc52c245d053e5964dfe96778e187e9c9f"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/CC0-1.0.txt",
+   "s": 7048,
+   "h": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/CREDITS.txt",
+   "s": 458,
+   "h": "d8412b213ce109abb3bf070d5b12679987d0dd51180769c3e00abbd784b6723b"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/barrels.glb",
+   "s": 8068,
+   "h": "5419fe8cc69fdc5c20277654ea0f258accc085a6a0978d824d1ada3c7c8ae28c"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/building_a.glb",
+   "s": 69472,
+   "h": "33fdea7c997786f189b3e94d09e746da4c9257f40d4dbb2326fd673a8a90d3f1"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/building_b.glb",
+   "s": 69648,
+   "h": "e23d2f421d865a9b368e2b198cdea9bc80c90cae97fc2d497df632e6ba4572b4"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/building_c.glb",
+   "s": 64168,
+   "h": "badc3270f9fcc7c734c7ac05f47e6d6acb31530df209634a2716a2a5f1d08c1a"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/building_d.glb",
+   "s": 60844,
+   "h": "0336203a5ac69c936d3797a8ff7afcb058adc9946c169ce8b7baa83fabac3627"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/building_e.glb",
+   "s": 84132,
+   "h": "1e969b5a4674dd1ab8c61c07bcf46ea7d55f539a61458b044a6c1eba423022a6"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/bush.glb",
+   "s": 3172,
+   "h": "715c5e8c2083a5d09f0f4e002024c1e079f1237ba81ba30075abd465709325e3"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/campfire.glb",
+   "s": 12220,
+   "h": "f71ad57295caccb5663b5413a1d06d2bc11953160b593134a105b59248db1e7e"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/cargo_ship.glb",
+   "s": 14568,
+   "h": "abf37f4965d9b4f172ae8942fd7f70eec33c4ebc9cee71fa062b19f1cb7c36c0"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/crate.glb",
+   "s": 42512,
+   "h": "68ef3f305b863cd8eaba1d8ec26b931c97730ab691ced2b919297ee04aefc3d1"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/delivery_van.glb",
+   "s": 76940,
+   "h": "3386c15a1a932f4a33ae5982ce8f31e0186585b266c74546c9597cd872c5d7e9"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/police_car.glb",
+   "s": 77820,
+   "h": "9f1fd4f82c0c40fde14b138d69dc98682bc62fd55fa2a203c26816558e8f8d10"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/satellite_dish.glb",
+   "s": 10852,
+   "h": "388751f7b30f3e182b3d750c9fa6a32d5745b8f51775d31b8646aa68874b9798"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/sedan.glb",
+   "s": 68076,
+   "h": "1ed3efe5514f1c57233c89820ec901b3dd5159a5a363f0030a07748789209a1c"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/skyscraper_a.glb",
+   "s": 77824,
+   "h": "19ba0a9084a7adc607b1cbe4e1881081cdd00f6183639300a63e07a5712c7559"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/skyscraper_b.glb",
+   "s": 94484,
+   "h": "69b5815691a58cc6529b5f5a9a5d81dc1e74a335a125e82a0dd02d116d446adf"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/skyscraper_c.glb",
+   "s": 95644,
+   "h": "8fef9df2206bf2a02125952a5764c75fc4e808b3c4fd01217176c9cd142f2a78"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/taxi.glb",
+   "s": 65940,
+   "h": "ce480ae0eec40c5f0daf48b6caadc3dd1ee1be3a24b4b7da97ae4643961340f3"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/tent.glb",
+   "s": 11112,
+   "h": "a3b07c3c08027c9a3957e364eed00d779902fa6be34eca363f27d2f9d9c21eb2"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/tree_palm.glb",
+   "s": 11460,
+   "h": "6e3832cfed58335476e86873aa39ae2455f1a4f840da42991fff6290885373f3"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/van.glb",
+   "s": 70412,
+   "h": "bedb014608b137782d525129c50958af4493959eb1491b99ce2024ed2ec93960"
   },
   {
    "p": "anmacha-podcast-tycoon/models/fountain-round.glb",
@@ -2252,6 +2367,11 @@
    "h": "e97d2b700e9cb6bfc0a668bc832ccaf2e0dbef29a02fd5e23ff0bcb949ecabe9"
   },
   {
+   "p": "anmacha-podcast-tycoon/src/atmos.js",
+   "s": 4922,
+   "h": "b1a2d143ede6041d719fdf27408999037383b96fe3db43dc0e4cd72fa2eb27ea"
+  },
+  {
    "p": "anmacha-podcast-tycoon/src/audio.js",
    "s": 15223,
    "h": "85e52a0e29cac6404d07134fd2d6a8df4f00ea19b40e9da76e99009f21ce8860"
@@ -2263,8 +2383,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/career.js",
-   "s": 8782,
-   "h": "f0c9f6682f8fb1e29700d3d175ca1da4b7d5454314cb27b23dad28569e5d2314"
+   "s": 8952,
+   "h": "1d83fd6456b1dbda2cae6e115176c3f898b081d152a16f877a907f930ab21ff1"
   },
   {
    "p": "anmacha-podcast-tycoon/src/core.js",
@@ -2283,8 +2403,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/drive.js",
-   "s": 22370,
-   "h": "d854a9bde11ae56f619019056acae8e1ade14b33d05a9de1e530f2d1d88d8f89"
+   "s": 22480,
+   "h": "4d8a7e2ef341f243bd24dacd74c9fecc1384395c11d4473105fda71a85199f27"
   },
   {
    "p": "anmacha-podcast-tycoon/src/events.js",
@@ -2318,13 +2438,13 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/people.js",
-   "s": 34326,
-   "h": "9a4a8b83a72010127e1ca075dcfc544d5bdf67ff071d26b23264c6f4e00a9fcd"
+   "s": 34991,
+   "h": "c87a22f73fcea3881b776784b008551f30682babaef3df423961dc5416e77aee"
   },
   {
    "p": "anmacha-podcast-tycoon/src/play.js",
-   "s": 101756,
-   "h": "6ada4e5fcd07ee356cc2bf9b1e68160afb19f0dd76b6af190a76e7aa478c44a5"
+   "s": 102313,
+   "h": "7b4345305700ef04a88a58887c2a6f1ad48b3726a474935db28644543088e727"
   },
   {
    "p": "anmacha-podcast-tycoon/src/quiz.js",
@@ -2368,8 +2488,13 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/world.js",
-   "s": 22862,
-   "h": "ace902d85ba025827615cf31ba3afe80854878fde5806b3b7bbb93ff9b65cc4c"
+   "s": 24173,
+   "h": "f447aaecd255f06b13ca72c5b763764816a00c949b7b698598cb06d038db9940"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/src/worldfx.js",
+   "s": 24066,
+   "h": "c7d9a3446daf13bedae4ab2bd1551cb4bdf67f8b9c467daa8e62588bb323b662"
   },
   {
    "p": "anmacha-podcast-tycoon/src/worlds.js",
@@ -6678,8 +6803,8 @@
   },
   {
    "p": "guides/anmacha-podcast-tycoon.json",
-   "s": 36634,
-   "h": "399977a94b67479aec57dabe6933eb5c9533734ea0f2d10d22cd57aec4f28c98"
+   "s": 37402,
+   "h": "c104a458f5e2b4354b9f95792947ec7d27feaa72d504c8c6ce36d05d1a98892a"
   },
   {
    "p": "guides/anmacha-preisradar.json",
@@ -9819,7 +9944,7 @@
   {
    "p": "sync/catalog.json",
    "s": 259012,
-   "h": "e7de47771fea827452fcc5141cdf801d7bf19b3e82652b70428517a34058be49"
+   "h": "0ff0f52baf3d2ea1e191381dd76596bc5c39951723692e9ca2a905ae86935eb7"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -12307,9 +12432,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-BMBPIPgl.js",
-   "s": 1908542,
-   "h": "5286d2dfd1e122679193356d6f94c2f3a42019479154564e40415e8ffadb2813"
+   "p": "zotik/assets/index-DdSkoUUt.js",
+   "s": 1910100,
+   "h": "df48cb106783cde48b179a9ebc3b82ee05ad5f07b4e3be226e540274d029297a"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -12329,7 +12454,7 @@
   {
    "p": "zotik/index.html",
    "s": 72669,
-   "h": "c1e15a4971f44bc5d3340164807489cfda53296a5863d23ccf23ce61c5449992"
+   "h": "2cf792b1073645f6db9f361fd0aa1b2fb9d34fc47190459d378ef98d85bc537f"
   },
   {
    "p": "zotik/manifest.webmanifest",

@@ -41,7 +41,7 @@
     const nT = [3, 5, 8][W.quality] || 4;
     for (let i = 0; i < nT; i++) {
       const road = C.ROADS[i % 3], axis = i % 2 ? 'x' : 'z', dir = i % 4 < 2 ? 1 : -1, s = -80 + rng() * 160;
-      const g = carMesh(cols[Math.floor(rng() * cols.length)]); S.group.add(g);
+      const g = (W.models && W.models.sedan && W.prop(['sedan', 'taxi', 'van', 'police_car', 'delivery_van'][i % 5], 4.2)) || carMesh(cols[Math.floor(rng() * cols.length)]); S.group.add(g);
       S.traffic.push({ g, road, axis, dir, s, v: 9 + rng() * 4, base: 9 + rng() * 4, stop: 0 });
     }
     // Kabeldiebe (nur frei spielen und Themenjagd): echte Menschen, mit denen man rangelt
