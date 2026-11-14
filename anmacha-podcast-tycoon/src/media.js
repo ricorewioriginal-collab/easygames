@@ -73,7 +73,7 @@
   M.playStation = function (slug) {
     if (slug && D.STATIONS.some(s => s.slug === slug)) M.slug = slug;
     store.slug = M.slug; save(); release(); const t = ++token;
-    Object.assign(M, { kind: 'radio', err: '', title: '', artist: '', playing: false, loading: true, pos: 0, dur: 0 }); emit();
+    Object.assign(M, { kind: 'radio', err: '', title: '', artist: '', playing: false, loading: true, pos: 0, dur: 0 }); emit(); duck(true);   // sofort leiser: man hört gleich, dass das Radio startet
     if (typeof root.Audio !== 'function') return fail('Dein Gerät kann keine Streams abspielen.', t);
     start('https://stream.laut.fm/' + encodeURIComponent(M.slug) + '?t=' + Date.now(), t);
   };
