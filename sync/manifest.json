@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "025b37c4d30b",
- "generated": "2026-11-14T00:59:09+01:00",
- "commit": "4f218354e474d22f2f8029b17aad5815e5fabfc6",
+ "version": "fad382f72bd9",
+ "generated": "2026-11-14T01:05:57+01:00",
+ "commit": "3b3c51f292ed2ae9086b85b4fa25729e5a826c3c",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -343,18 +343,18 @@
   },
   {
    "p": "aeru/content.js",
-   "s": 3324,
-   "h": "bab8ee796c5da78f61147cf16bde7b212a24b64e161bf2e340413380aacb445a"
+   "s": 4620,
+   "h": "86247d7fdec9b3c70d5f86b89a0e7eae0fb96b9420fb6e5e59e7e0c9d4f66c76"
   },
   {
    "p": "aeru/game.js",
-   "s": 197538,
-   "h": "966ba04d40c88e6779871c4eb48b370216b2cc474b4f63f775f0e1167f68e376"
+   "s": 198988,
+   "h": "f614c0bf3ad38ca50b05c981cc5cb4388fb35004f5fbad4ae2b4d5d6755f7b20"
   },
   {
    "p": "aeru/index.html",
    "s": 15598,
-   "h": "397dc5a70d1ac9756d40f3d7c52e65c719d055e8e6e4f136b3875138b723a3c8"
+   "h": "cf7b60f94f179828aaf4a76ccc26eea8baf6ce0d39fb95843500f7eecad46f30"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -9819,7 +9819,7 @@
   {
    "p": "sync/catalog.json",
    "s": 259012,
-   "h": "3dc406fcdb590baddafe65b3743c3f2dfd0107a1161166d436f786d46da3fc8c"
+   "h": "e7de47771fea827452fcc5141cdf801d7bf19b3e82652b70428517a34058be49"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

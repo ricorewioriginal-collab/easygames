@@ -366,22 +366,27 @@ function makeUpdraft(x, z, y = 0, height = 12, temporary = false) {
 // mit begehbaren Hängen, Landbrücken als Grate, eine Mulde für den See. Zum Rand steigt das Gelände zu den Bergen an.
 // Hochflächen bleiben oben eben auf ihrer alten Höhe – alles, was dort steht, bleibt gültig.
 const VALLEY_Y = -6, TERRAIN_HALF = 170, WORLD_R = 150, SLOPE = .85, STEP_UP = .45;
-let terrain = {pl: [], ri: [], ba: [], ph: 0};
-function resetTerrain(index) { terrain = {pl: [], ri: [], ba: [], ph: index * 1.7}; }
-function hills(x, z) {
-  const p = terrain.ph;
-  return 1.6 * Math.sin(x * .045 + 1.3 + p) * Math.cos(z * .038 - p * .6) + 1.1 * Math.sin(x * .021 - z * .033 + .7 + p * .4) + .55 * Math.sin((x + z) * .09 + p);
+// Charakter je Welt aus content.js `land`: hills (Hügelhöhe), freq (Hügeldichte), deep (tieferes Tal), klamm (Schluchten als Strecken
+// [ax, az, bx, bz, Breite]), props/parts (Bewuchs im Tal).
+let terrain = {pl: [], ri: [], ba: [], kl: [], ph: 0, amp: 1, fq: 1, base: VALLEY_Y};
+function resetTerrain(index) {
+  const L = levels[index]?.land || {};
+  terrain = {pl: [], ri: [], ba: [], kl: (L.klamm || []).map(([ax, az, bx, bz, w]) => ({ax, az, bx, bz, w})), ph: index * 1.7, amp: L.hills ?? 1, fq: L.freq ?? 1, base: VALLEY_Y - (L.deep ?? 0)};
 }
+function hills(x, z) {
+  const p = terrain.ph; x *= terrain.fq; z *= terrain.fq;
+  return terrain.amp * (1.6 * Math.sin(x * .045 + 1.3 + p) * Math.cos(z * .038 - p * .6) + 1.1 * Math.sin(x * .021 - z * .033 + .7 + p * .4) + .55 * Math.sin((x + z) * .09 + p));
+}
+const segDist = (q, x, z) => { const vx = q.bx - q.ax, vz = q.bz - q.az, t = clamp(((x - q.ax) * vx + (z - q.az) * vz) / (vx * vx + vz * vz), 0, 1); return Math.hypot(x - q.ax - vx * t, z - q.az - vz * t); };
 function heightAt(x, z) {
   const rr = Math.hypot(x, z);
-  let h = VALLEY_Y + hills(x, z) + (rr > 128 ? Math.min(rr - 128, 40) * 1.4 : 0);
+  let h = terrain.base + hills(x, z) + (rr > 128 ? Math.min(rr - 128, 40) * 1.4 : 0);
+  // Schluchten: flacher Grund 5,5 m unter dem Tal, Hänge begehbar. Grate und Hochflächen liegen darüber.
+  for (const q of terrain.kl) h = Math.min(h, terrain.base - 5.5 + Math.max(0, segDist(q, x, z) - q.w / 2) * 1.1);
   // Erst Seeufer und Seemulde, danach die übrigen Hochflächen: Wo ein Gebiet in den See ragt, liegt sein Ufer obenauf.
   for (const q of terrain.ba) { const d = Math.hypot(x - q.x, z - q.z); h = Math.max(h, d - q.r - 1.6 <= 0 ? 0 : -(d - q.r - 1.6) * SLOPE); if (d < q.r) h = Math.min(h, q.y); }
   for (const q of terrain.pl) { const d = Math.hypot(x - q.x, z - q.z) - q.r; h = Math.max(h, d <= 0 ? q.y : q.y - d * SLOPE); }
-  for (const q of terrain.ri) {
-    const vx = q.bx - q.ax, vz = q.bz - q.az, t = clamp(((x - q.ax) * vx + (z - q.az) * vz) / (vx * vx + vz * vz), 0, 1);
-    const d = Math.hypot(x - q.ax - vx * t, z - q.az - vz * t) - q.w / 2; h = Math.max(h, d <= 0 ? q.y : q.y - d * SLOPE);
-  }
+  for (const q of terrain.ri) { const d = segDist(q, x, z) - q.w / 2; h = Math.max(h, d <= 0 ? q.y : q.y - d * SLOPE); }
   return h;
 }
 // Landbrücke als Grat zwischen zwei Hochflächen (die Brückenplatte bleibt als begehbarer Weg darauf).
@@ -403,8 +408,8 @@ function buildTerrain(index) {
   // Talwiese beleben: Baumgruppen und Felsen auf flachen Stellen (nur mit Modellen, ein InstancedMesh je Teil).
   if (!useSceneryModels() || !models.castle) return;
   let seed = 4021 + index * 97; const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-  const parts = ['trees_A', 'trees_B', 'tree_A', 'rock_A', 'tree_B', 'trees_A', 'rock_C', 'tree_A'];
-  for (let i = 0; i < 80; i++) {
+  const parts = cfg.land?.parts || ['trees_A', 'trees_B', 'tree_A', 'rock_A', 'tree_B', 'trees_A', 'rock_C', 'tree_A'];
+  for (let i = 0, n = cfg.land?.props || 80; i < n; i++) {
     const a = rand() * TAU, rr = 34 + rand() * 92, x = Math.cos(a) * rr, z = Math.sin(a) * rr, y = heightAt(x, z);
     if (y > -2 || Math.abs(heightAt(x + 2.5, z) - heightAt(x - 2.5, z)) > 1.2 || Math.abs(heightAt(x, z + 2.5) - heightAt(x, z - 2.5)) > 1.2 || solids.some(s => s.r ? Math.hypot(x - s.x, z - s.z) < s.r + 3 : Math.abs(x - s.x) < s.w / 2 + 3 && Math.abs(z - s.z) < s.d / 2 + 3)) continue;
     // Höhe je Teil passend zur Breite (Felsen sind flach, Baumgruppen breit); Kollision wie bei Bäumen, damit auch die Kamera ausweicht.
@@ -545,13 +550,19 @@ const REGION_DEFS = [{id: 'n', name: 'Nordgebiet', x: 0, z: -76, r: 20, axis: 'z
   {id: 'o', name: 'Ostgebiet', x: 70, z: -14, r: 19, axis: 'x', at: -14, side: 1},
   {id: 'w', name: 'Westgebiet', x: -70, z: -16, r: 19, axis: 'x', at: -16, side: -1},
   {id: 's', name: 'Südgebiet', x: -22, z: 74, r: 20, axis: 'z', at: -14, side: 1}];
-const GATE_NEXT = {x: 0, z: -91}, GATE_PREV = {x: -22, z: 89};
+// Eigener Grundriss je Welt: content.js `land.regions` verschiebt und skaliert die Gebiete ({x, z, r, at}); die Tore wandern mit.
+const layoutOf = index => REGION_DEFS.map(d => ({...d, ...(levels[index].land?.regions?.[d.id] || {})}));
+function gatesOf(index) {
+  const [n, , , s] = layoutOf(index), k = s.r / 20;
+  return {next: {x: n.x, z: n.z - (n.r - 5)}, prev: {x: s.x, z: s.z + (s.r - 5)}, home: {x: s.x - 14 * k, z: s.z - 4 * k}, arrive: {x: s.x - 9.2 * k, y: 0, z: s.z - 2.6 * k}};
+}
+let GATE_NEXT = {x: 0, z: -91}, GATE_PREV = {x: -22, z: 89}, HOME_GATE = {x: -36, z: 70}, HOME_ARRIVE = {x: -31.2, y: 0, z: 71.4};
 // See am Ostgebiet (Schwimmen) und Rankenwand am Westgebiet (Klettern) – in jeder Welt.
 let lake = null, climbWall = null, trial = null;
 const TRIAL_TIME = 60;
 const waterMat = new T.MeshStandardMaterial({color: linearColor('#4fb6d6'), emissive: linearColor('#1f6f8f'), emissiveIntensity: .25, roughness: .12, transparent: true, opacity: .74});
 // Heimathain: die Heimatwelt (in Welt 1, östlich über eine eigene Brücke) mit einem Levelportal je Welt. In jeder anderen Welt führt das Heimtor im Südgebiet zurück.
-const HUB = {x: 70, z: 36, r: 22, at: 20}, HOME_GATE = {x: -36, z: 70}, HOME_ARRIVE = {x: -31.2, y: 0, z: 71.4};
+const HUB = {x: 70, z: 36, r: 22, at: 20};
 const hubAngle = i => (-30 + (i - 1) * 36) * Math.PI / 180;
 const hubPortal = (i, rr = 14) => ({x: HUB.x + Math.cos(hubAngle(i)) * rr, z: HUB.z + Math.sin(hubAngle(i)) * rr});
 const reserved = (x, z, m) => [GATE_NEXT, GATE_PREV, HOME_GATE].some(g => Math.hypot(g.x - x, g.z - z) < m);
@@ -586,7 +597,8 @@ function buildRegions(index) {
   let seed = 9187 + index * 71; const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
   const got = regionSave('jewels', index), freed = regionSave('dragons', index), egg = regionSave('eggs', index);
   const addJewel = (kind, x, z, y = 0, hidden = false) => { const id = jewels.length; jewels.push({id, kind, v: JEWEL[kind].v, x, y: y + 1, z, got: got.includes(id), hidden}); return jewels[id]; };
-  for (const def of REGION_DEFS) {
+  ({next: GATE_NEXT, prev: GATE_PREV, home: HOME_GATE, arrive: HOME_ARRIVE} = gatesOf(index));
+  for (const def of layoutOf(index)) {
     const rg = {...def}; regions.push(rg);
     island(rg.x, rg.z, rg.r, 0);
     // Brücke vom Hauptland zum Gebiet (achsparallel, Oberkante auf Bodenhöhe, je 1,5 m Überlappung)
@@ -606,7 +618,7 @@ function buildRegions(index) {
     for (let i = 0; i < 6; i++) place('gruen', i / 6 * TAU + rand(), rg.r * .55);
     for (let i = 0; i < 2; i++) place('blau', rand() * TAU, rg.r * .3);
     // Kristalldrache gegenüber der Brücke
-    const di = REGION_DEFS.indexOf(def), dx = rg.axis === 'x' ? rg.x + rg.side * rg.r * .45 : rg.x - 7, dz = rg.axis === 'x' ? rg.z + 7 : rg.z + rg.side * rg.r * .4;
+    const di = regions.length - 1, dx = rg.axis === 'x' ? rg.x + rg.side * rg.r * .45 : rg.x - 7, dz = rg.axis === 'x' ? rg.z + 7 : rg.z + rg.side * rg.r * .4;
     const st = new T.Mesh(statueGeometry(), freed.includes(di) ? freedMat : crystalMat); st.position.set(dx, 0, dz); st.rotation.y = Math.atan2(rg.x - dx, rg.z - dz) + Math.PI; st.castShadow = true; world.add(st);
     mesh('cylinder', cfg.accent, dx, .15, dz, 1.6, .3, 1.6);
     treeColliders.push({x: dx, z: dz, trunk: .9, trunkTop: 2.2, crown: 1.3, cy: -100, ch: 0, rock: true, statue: true});
@@ -614,7 +626,7 @@ function buildRegions(index) {
     dragonStatues.push({id: di, x: dx, z: dz, m: st, freed: freed.includes(di), name, text});
     // Burgturm am Gebietsrand (frei von Brücke, Weg, Statue, Stufenturm, Toren und Edelsteinen)
     const away = Math.atan2(rg.z - ez, rg.x - ex), tw = index % 2 ? 'red' : 'blue';
-    for (const off of [.9, -.9, 1.5, -1.5, 2.2, -2.2]) {
+    for (const off of [.9, -.9, 1.5, -1.5, 2.2, -2.2, 2.8, -2.8, .4, -.4]) {
       const a = away + off, x = rg.x + Math.cos(a) * rg.r * .74, z = rg.z + Math.sin(a) * rg.r * .74;
       if (nearBridge(x, z, 6) || Math.hypot(x - dx, z - dz) < 6 || Math.hypot(x - tx - 1, z - tz + 1) < 7 || reserved(x, z, 8) || jewels.some(j => Math.hypot(j.x - x, j.z - z) < 4)) continue;
       prop((di % 2 ? 'towerB_' : 'towerA_') + tw, x, z, 10, a + Math.PI / 2, 2.3); rg.keep = {x, z}; break;
@@ -701,7 +713,7 @@ function buildRegions(index) {
     treeColliders.push({x: H.x, z: H.z, trunk: 1.3, trunkTop: 3, crown: 1.8, cy: -100, ch: 0, rock: true, statue: true});
     for (let i = 1; i < LEVEL_COUNT; i++) {
       const p = hubPortal(i), open = !!save.cores[i - 1], short = levels[i].name.split(' · ')[1];
-      worldGates.push(makeWorldGate({id: 'hub' + i, ...p, rot: Math.atan2(H.x - p.x, H.z - p.z), to: i, need: i - 1, arrive: HOME_ARRIVE, name: (i + 1) + ' · ' + short, color: open ? levels[i].accent : '#59647b', rim: open ? '#ffe3a4' : '#8b8799'}));
+      worldGates.push(makeWorldGate({id: 'hub' + i, ...p, rot: Math.atan2(H.x - p.x, H.z - p.z), to: i, need: i - 1, arrive: gatesOf(i).arrive, name: (i + 1) + ' · ' + short, color: open ? levels[i].accent : '#59647b', rim: open ? '#ffe3a4' : '#8b8799'}));
     }
     // Burg des Ältesten im Norden, Türme zwischen den Portalen am Rand
     prop('castle_blue', H.x + 2.6, H.z - 15, 17, 0, 4.4);
@@ -785,7 +797,7 @@ function updateRegions(dt) {
     const need = g.id === 'next' ? save.level : g.need;
     if (need != null && !save.cores[need]) { if (time > gateTold) { gateTold = time + 4; toast(g.id === 'next' ? 'Das Weltentor erwacht, wenn der Leuchtkern dieser Welt leuchtet' : 'Dieses Portal erwacht, wenn der Leuchtkern von ' + levels[need].name.split(' · ')[1] + ' leuchtet'); sfx.wrong(); } continue; }
     sfx.portal(); retrigger($('fade'), 'on');
-    const arrive = g.arrive || (g.id === 'next' ? {x: GATE_PREV.x, y: 0, z: GATE_PREV.z - 5} : {x: GATE_NEXT.x, y: 0, z: GATE_NEXT.z + 5});
+    const to = gatesOf(g.to), arrive = g.arrive || (g.id === 'next' ? {x: to.prev.x, y: 0, z: to.prev.z - 5} : {x: to.next.x, y: 0, z: to.next.z + 5});
     travel(g.to, arrive);
     if (g.id === 'home') toast(`Heimathain · Drachen ${totalDragons()} / ${LEVEL_COUNT * 4} · Dracheneier ${totalEggs()} / ${LEVEL_COUNT}`);
     return;
@@ -854,7 +866,7 @@ function buildLevel(index, titleOnly = false) {
   world = new T.Group(); scene.add(world);
   resetTerrain(0); sceneryPlan = []; crates = []; clearFalter(); regions = []; jewels = []; jewelBatches = []; dragonStatues = []; thief = null; worldGates = []; chests = []; boostRings = []; gusts = []; updrafts = []; flightRings = []; solids = []; treeColliders = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
   clearEffects(); particlePool.forEach(p => { p.life = 0; p.m.visible = false; });
-  clearInput(); accumulator = 0; save.level = index; terrain.ph = index * 1.7;
+  clearInput(); accumulator = 0; save.level = index; resetTerrain(index);
   const cfg = levels[index];
   sky.material.uniforms.top.value.set(cfg.sky); sky.material.uniforms.bottom.value.set(cfg.fog); sky.material.uniforms.dim.value = 0; scene.fog = new T.Fog(linearColor(cfg.fog), 85, 215);
   sun.color.set(cfg.light.sun); sun.intensity = cfg.light.sunI * lightScale; hemi.intensity = cfg.light.hemi * lightScale;
@@ -2037,7 +2049,7 @@ if (TEST) window.aeruTest = {
   lose: () => { state.hp = 1; invulnerable = 0; hurt(); },
   perf: () => { let objects = 0; scene.traverse(() => objects++); const info = renderer.info?.render || {}; return {...lastPerf, calls: info.calls, triangles: info.triangles, pixelRatio: renderer.getPixelRatio?.(), objects, quality: settings.quality === 'auto' ? autoLevel : settings.quality, renderScale, geometries: renderer.info?.memory?.geometries, textures: renderer.info?.memory?.textures}; },
   sky: SKY, rammId: () => rammId,
-  trial: () => trial && {active: trial.active, t: trial.t, start: {...trial.start}, got: trial.jewel.got, hidden: trial.jewel.hidden, items: trial.items.map(o => ({kind: o.kind, x: o.x, y: o.y, z: o.z, got: o.got}))}, terrain: () => ({valleyY: VALLEY_Y, worldR: WORLD_R, plateaus: terrain.pl.map(q => ({...q})), ridges: terrain.ri.map(q => ({...q}))}), heightAt, water: () => lake && {...lake}, climbWall: () => climbWall && {...climbWall}, crates: () => crates.map(c => ({x: c.x, y: c.y, z: c.z, broken: c.broken, steel: !!c.steel})), falter: () => falterPool.filter(f => f.life > 0).map(f => ({x: f.x, y: f.y, z: f.z})), funkel: () => ({x: funkelPos.x, y: funkelPos.y, z: funkelPos.z, color: funkelColor()}), spawnFalter, hurt,
+  trial: () => trial && {active: trial.active, t: trial.t, start: {...trial.start}, got: trial.jewel.got, hidden: trial.jewel.hidden, items: trial.items.map(o => ({kind: o.kind, x: o.x, y: o.y, z: o.z, got: o.got}))}, terrain: () => ({valleyY: terrain.base, klamm: terrain.kl.map(q => ({...q})), worldR: WORLD_R, plateaus: terrain.pl.map(q => ({...q})), ridges: terrain.ri.map(q => ({...q}))}), heightAt, water: () => lake && {...lake}, climbWall: () => climbWall && {...climbWall}, crates: () => crates.map(c => ({x: c.x, y: c.y, z: c.z, broken: c.broken, steel: !!c.steel})), falter: () => falterPool.filter(f => f.life > 0).map(f => ({x: f.x, y: f.y, z: f.z})), funkel: () => ({x: funkelPos.x, y: funkelPos.y, z: funkelPos.z, color: funkelColor()}), spawnFalter, hurt,
   regions: () => regions.map(r => ({id: r.id, x: r.x, z: r.z, r: r.r, bridge: r.bridge, axis: r.axis, at: r.at, entry: r.entry, tower: r.tower})), jewels: () => jewels.map(j => ({id: j.id, kind: j.kind, v: j.v, x: j.x, y: j.y, z: j.z, got: j.got, hidden: j.hidden})),
   statues: () => dragonStatues.map(d => ({id: d.id, x: d.x, z: d.z, freed: d.freed})), thief: () => thief && {x: thief.x, z: thief.z, caught: thief.caught}, gates: () => worldGates.map(g => ({id: g.id, x: g.x, z: g.z, to: g.to, need: g.need, arrive: g.arrive})), hub: () => hub && {x: hub.x, z: hub.z, r: hub.r, bridge: hub.bridge, at: hub.at, entry: hub.entry}, setCore: (i, v = true) => { save.cores[i] = v; }, jewelValue, jewelTotal,
   portals: () => gamePortals.map(p => ({id: p.id, x: p.x, z: p.z, url: p.url})), navigated: () => window.__aeruNavigate || null, cam: () => ({yaw: camYaw, pitch: camPitch}), stick: (x, y) => { moveX = x; moveY = y; }, padInput: () => ({x: padX, y: padY}),

@@ -35,7 +35,7 @@ Messung im Browsertest (Software-Rendering, nicht repräsentativ für echte Ger�
 **Konkrete Schwachstellen**
 1. Welt fühlte sich wie Einzelinseln an, viele Stellen zum Herausfallen. → in Schritt 9 behoben (Talboden).
 2. Ebenen ohne Schrägen: Gelände wirkt kantig, Höhenebenen nur über Stufen und Inseln.
-3. Alle 7 Welten nutzen denselben Grundriss (Hauptland + 4 Gebiete an gleichen Stellen), nur Farben und Gegner unterscheiden sich.
+3. Alle 7 Welten nutzten denselben Grundriss. → in Schritt 11 behoben (eigener Grundriss und Talcharakter je Welt).
 4. Wenig Vertikalität innerhalb der Gebiete (Stufenturm, Klippe, Himmelsinseln).
 5. Keine Höhlen und Innenräume.
 6. Draw Calls schwanken mit Anzahl Einzelmeshes (Plattformen, Felsen); hier lässt sich weiter bündeln.
@@ -47,7 +47,7 @@ Messung im Browsertest (Software-Rendering, nicht repräsentativ für echte Ger�
 | --- | --- | --- |
 | 1 | Bestandsaufnahme (dieses Dokument) | erledigt |
 | 2 | Bewegung und Kamera: Zustände als kleine State-Machine kapseln, Landungsrolle, Kamera-Kollision mit allen Wänden, Kamera hebt sich beim Gleiten | offen |
-| 3 | Weltenarchitektur: Talboden (Schritt 9), dann **Höhenfeld-Gelände, Variante B** (Schritt 10, Entscheidung RiCARDO 13.11.2026). Danach eigener Grundriss je Welt über Daten in `content.js` | Höhenfeld erledigt |
+| 3 | Weltenarchitektur: Talboden (Schritt 9), dann **Höhenfeld-Gelände, Variante B** (Schritt 10, Entscheidung RiCARDO 13.11.2026). Danach eigener Grundriss je Welt über Daten in `content.js` (Schritt 11) | erledigt |
 | 4 | Leveldesign je Welt: Hauptpfad mit Landmarke, Rundwege, 3 Höhenebenen, versteckter Bereich, Höhle, ein besonderer Moment | offen |
 | 5 | Gameplay: Schlüssel und Schatzkammer je Welt, weitere Zeit- und Flug-Challenges, Fähigkeiten-Upgrades | teilweise (Flugprüfung, Kopfstoß, Schwimmen, Klettern) |
 | 6 | Performance: Plattformen und Felsen bündeln, LOD für Modelle, Messung auf echten Geräten | offen |
