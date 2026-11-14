@@ -94,7 +94,7 @@ fun HomeScreen(s: UiState, nav: Nav, a: Actions) {
             Column {
                 SectionTitle("🎬  Trailer")
                 LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(trailers, key = { "tr-" + it.first.game.id + "-" + it.second }) { (g, _, t) -> GameCard(g, s, 132.dp) { a.open(Origin.PUBLIC + t) } }
+                    items(trailers, key = { "tr-" + it.first.game.id + "-" + it.second }) { (g, _, t) -> GameCard(g, s, 132.dp) { a.trailer(Origin.PUBLIC + t) } }
                 }
             }
         }
