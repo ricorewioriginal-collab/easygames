@@ -437,7 +437,7 @@ export function createMaerchen(C) {
 
   /* ---------- Ankunft: Titelkarte, Kameraflug, Gast ---------- */
   function titleCard(w) {
-    if (!title) { title = document.createElement('div'); title.style.cssText = 'position:fixed;left:0;right:0;top:30%;text-align:center;pointer-events:none;z-index:8;opacity:0;transition:opacity .8s;font-family:Georgia,serif;text-shadow:0 2px 12px #000a'; document.body.appendChild(title); }
+    if (!title) { title = document.createElement('div'); title.style.cssText = 'position:fixed;left:0;right:0;top:38%;text-align:center;pointer-events:none;z-index:8;opacity:0;transition:opacity .8s;font-family:Georgia,serif;text-shadow:0 2px 12px #000a'; document.body.appendChild(title); }
     title.innerHTML = `<div style="font-size:clamp(14px,2.4vw,20px);letter-spacing:.4em;color:#ffe8b0">${w.em} MÄRCHENWELT</div><div style="font-size:clamp(34px,7vw,72px);margin:.1em 0;background:linear-gradient(180deg,#fff,${hex(w.col)});-webkit-background-clip:text;background-clip:text;color:transparent">${w.name}</div><div style="font-size:clamp(13px,2vw,18px);color:#e8e0f0">${w.sub}</div>`;
     title.style.opacity = 1; setTimeout(() => { if (title) title.style.opacity = 0; }, 3400);
   }
