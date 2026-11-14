@@ -139,7 +139,8 @@
     const m4 = new T.Matrix4();
     lamps.forEach(([x, z], i) => { m4.makeTranslation(x, 2.5, z); pole.setMatrixAt(i, m4); m4.makeTranslation(x, 5.05, z); head.setMatrixAt(i, m4); });
     pole.castShadow = true; g.add(pole, head);
-    if (night) S.glows.push(glowCloud(lamps.map(([x, z]) => [x, 4.9, z]), 0xffcf80, 3.2));
+    if (S.mode === 'free') S.lampMat = head.material;   // Tag und Nacht (atmos.js) schaltet die Laternen
+    if (night || S.mode === 'free') { const lg = glowCloud(lamps.map(([x, z]) => [x, 4.9, z]), 0xffcf80, 3.2); S.glows.push(lg); if (!night) { S.lampGlow = lg; lg.visible = false; } }
     // Neon-Party: bunte Lichtpunkte über den Straßen
     if (neon) { const pts = [], cols = [0xff3da8, 0x3dd6ff, 0xffe03d, 0x9b5cff]; for (let i = 0; i < 90; i++) pts.push([U.rand(-85, 85), U.rand(6, 9), ROADS[i % 3] + U.rand(-4, 4)]); S.glows.push(glowCloud(pts, cols, 1.6, true)); }
     // Funkhaus, Park, Sendemast
@@ -470,6 +471,7 @@
     buildHud();
     if (AMC.CityVibe) AMC.CityVibe.start(S);
     if (AMC.Career) AMC.Career.start(S);
+    if (AMC.Atmos) AMC.Atmos.start(S);
     AMC.Audio.music(sky === 'party' ? 'party' : ch && ch.obj.type === 'boss' ? 'city' : 'city');
     return S;
   };
@@ -480,6 +482,7 @@
     if (AMC.Career) AMC.Career.stop();
     if (AMC.District) AMC.District.stop();
     if (AMC.Worlds) AMC.Worlds.stop();
+    if (AMC.Atmos) AMC.Atmos.stop();
     ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent) f.root.parent.remove(f.root); });
     S.npcs.forEach(n => { if (n.fig) n.fig.dispose(); n.fig = null; });
     if (S.cat) { if (S.cat.mixer) S.cat.mixer.stopAllAction(); S.group.remove(S.cat.m); }
@@ -697,6 +700,7 @@
   function talk(n) {
     n.talked = true; S.talks++; n.icon.visible = false; n.mark.visible = false;
     n.fig.root.rotation.y = Math.atan2(S.pl.x - n.x, S.pl.z - n.z); setAnim(n, 'yes');
+    if (n.fig.talk) { n.fig.talk(true); setTimeout(() => n.fig && n.fig.talk(false), 1800); }
     setTimeout(() => n.fig && setAnim(n, 'idle'), 1600);
     const [text, rub] = n.line;
     S.got[rub] += 2; drawRub();
@@ -855,7 +859,7 @@
     S.hurtT += dt; if (S.hurtT > 4) S.energy = Math.min(100, S.energy + dt * 6);
     // Zeit
     if (S.left > 0 && S.mode !== 'free') { S.left -= dt; if (S.left <= 0) { S.left = 0; if (S.mode === 'jagd') return finish(true, 'time'); if (!S.done) return finish(false, 'time'); } }
-    updPickups(dt); updDrones(dt); updNpcs(dt); if (AMC.Transit) AMC.Transit.update(dt); if (AMC.District) AMC.District.update(dt); if (AMC.Events) AMC.Events.update(dt); if (AMC.Worlds) AMC.Worlds.update(dt); if (AMC.CityVibe) AMC.CityVibe.update(dt, S); if (AMC.Career) AMC.Career.update(dt, S); updObjective(dt); updRings(dt);
+    updPickups(dt); updDrones(dt); updNpcs(dt); if (AMC.Transit) AMC.Transit.update(dt); if (AMC.District) AMC.District.update(dt); if (AMC.Events) AMC.Events.update(dt); if (AMC.Worlds) AMC.Worlds.update(dt); if (AMC.Atmos) AMC.Atmos.update(dt); if (AMC.CityVibe) AMC.CityVibe.update(dt, S); if (AMC.Career) AMC.Career.update(dt, S); updObjective(dt); updRings(dt);
     if (S.rico) { S.rico.f.update(dt); if (S.rico.t > 0) S.rico.t -= dt; }
     if (S.gisela) { if (S.gisela.t > 0) S.gisela.t -= dt; S.gisela.g.position.y = S.gisela.t > 0 ? Math.abs(Math.sin(S.time * 18)) * 0.06 : 0; }
     if (S.boss) updBoss(dt);
@@ -873,7 +877,7 @@
     if (S.stageLights) S.stageLights.forEach((l, i) => { l.target.position.set(PARK.x + Math.sin(S.time * 0.9 + i * 1.7) * 9, 0, PARK.z + Math.cos(S.time * 0.7 + i) * 8); });
     W.particles.update(dt);
     // Licht folgt (Schatten um den Spieler)
-    const sun = S.env.sun, sp0 = W.SKIES[S.sky].sunPos;
+    const sun = S.env.sun, sp0 = S.sunPos || W.SKIES[S.sky].sunPos;
     sun.position.set(p.x + sp0[0] * 0.5, sp0[1] * 0.5, p.z + sp0[2] * 0.5); sun.target.position.set(p.x, 0, p.z);
     W.updateCamera(dt, p, solidAt);
     updHud(dt);
@@ -1124,7 +1128,7 @@
     if (S.boss) { const b = S.boss, U2 = b.m.userData; U2.ring.rotation.z += dt * 2; if (U2.shield) U2.shield.visible = b.open <= 0; U2.eye.material.color.set(b.open > 0 ? 0x30ff90 : 0xff2a3a); b.m.position.set(b.x, b.y, b.z); b.m.visible = b.state !== 'dead'; }
     S.shocks = (S.shocks || []).filter(s => { s.r += dt * 10; s.m.scale.set(s.r, s.r, 1); s.m.material.opacity = Math.max(0, 0.9 - s.r / 34); const p = S.pl, d = Math.hypot(p.x - s.x, p.z - s.z); if (!s.hit && Math.abs(d - s.r) < 0.7 && p.y < 1.06 && !(p.dodge > 0)) { s.hit = true; guestKnock(s.x, s.z); } if (s.r > 30) { S.group.remove(s.m); return false; } return true; });
     S.beacon.rotation.y += dt; W.particles.update(dt);
-    const sun = S.env.sun, sp0 = W.SKIES[S.sky].sunPos, p = S.pl;
+    const sun = S.env.sun, sp0 = S.sunPos || W.SKIES[S.sky].sunPos, p = S.pl;
     sun.position.set(p.x + sp0[0] * 0.5, sp0[1] * 0.5, p.z + sp0[2] * 0.5); sun.target.position.set(p.x, 0, p.z);
     W.updateCamera(dt, p, solidAt); updHud(dt);
     if ((S.netT -= dt) <= 0) { S.netT = 1 / 15; P.netSend && P.netSend({ t: 'i', p: meState(p, sp), hold: S.holding ? 1 : 0, e: S.events.splice(0) }); }

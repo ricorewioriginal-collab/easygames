@@ -59,7 +59,7 @@
   };
   function draw() {
     if (!V || !V.el) return; const c = st(), ph = CR.phase(), rk = CR.rank();
-    V.el.innerHTML = '<div class="cr-top"><b>📅 Tag ' + c.day + '</b>' + (AMC.Events ? '<span title="' + U.esc(AMC.Events.week().name) + '">' + AMC.Events.week().icon + '</span>' : '') + '<span>🕗 ' + clock(c.min) + '</span><span>' + ph[1] + '</span></div>' +
+    V.el.innerHTML = '<div class="cr-top"><b>📅 Tag ' + c.day + '</b>' + (AMC.Events ? '<span title="' + U.esc(AMC.Events.week().name) + '">' + AMC.Events.week().icon + '</span>' : '') + (AMC.Atmos ? '<span title="' + AMC.Atmos.weather().name + '">' + AMC.Atmos.weather().icon + '</span>' : '') + '<span>🕗 ' + clock(c.min) + '</span><span>' + ph[1] + '</span></div>' +
       '<div class="cr-mid"><span title="Abonnenten">👥 ' + U.fmt(Math.round(c.abos)) + ' Abos</span><span>' + rk.icon + ' ' + rk.name + '</span></div>' +
       '<div class="cr-plan">' + CR.plan().map(p => '<i class="' + (p.ok ? 'ok' : '') + '" title="' + U.esc(p.name) + '">' + p.icon + (p.ok ? '✓' : '') + '</i>').join('') + '<em>🎙️ ' + (ph[0] === 'abend' ? 'Jetzt aufnehmen!' : 'Aufnahme am Abend') + '</em></div>';
   }
@@ -85,7 +85,7 @@
     const mood = AMC.Home ? (AMC.Home.mood('andrew') + AMC.Home.mood('marco')) / 2 : 0.7;
     const studio = AMC.StudioEdit ? AMC.StudioEdit.bonus().lis : 0, gis = AMC.Camper ? AMC.Camper.value() : 0, songs = Math.min(10, (Save.data.songs || []).length);
     const parts = [
-      ['💡 Ideen', ideas * 0.08], ['📋 Tagesplan', done * 0.05], ['🌆 Prime-Time', ph === 'abend' ? 0.2 : 0], ['🛠️ Studio', studio], ['🚐 Gisela', gis * 0.02], ['🎹 Musik', songs * 0.01], ['❤️ Fans', AMC.Social ? AMC.Social.bonus() : 0], ['😊 Fitness', (mood - 0.6) * 0.5]
+      ['💡 Ideen', ideas * 0.08], ['📋 Tagesplan', done * 0.05], ['🌆 Prime-Time', ph === 'abend' ? 0.2 : 0], ['🛠️ Studio', studio], ['🚐 Gisela', gis * 0.02], ['🎹 Musik', songs * 0.01], ['❤️ Fans', AMC.Social ? AMC.Social.bonus() : 0], ['🌧️ Regenwetter', AMC.Atmos ? AMC.Atmos.bonus() : 0], ['😊 Fitness', (mood - 0.6) * 0.5]
     ].concat(ev.parts).filter(p => Math.abs(p[1]) >= 0.005);
     const factor = Math.max(0.5, 1 + parts.reduce((a, p) => a + p[1], 0));
     const base = Math.max(0, r.listeners || 0), hoerer = Math.round(base * factor);

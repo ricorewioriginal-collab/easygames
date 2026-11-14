@@ -247,7 +247,7 @@
     const hc = new T.Vector3(0, hd.y + 0.08, 0.02), R = [0.086, 0.115, 0.1];
     const jaw = v => { const yy = v.y / R[1]; if (yy < 0) { const k = Math.pow(-yy, 1.4); v.x *= 1 - 0.22 * k; v.z = v.z * (1 - 0.12 * k) + (v.z > 0 ? 0.004 * k : 0); } if (yy > 0.3 && v.z > 0) v.z *= 0.97; };
     const surfZ = (x, y) => { const jy = y / R[1], k = jy < 0 ? Math.pow(-jy, 1.4) : 0, rx = R[0] * (1 - 0.22 * k); const q = 1 - (x / rx) * (x / rx) - jy * jy; return Math.sqrt(Math.max(0, q)) * R[2] * (1 - 0.12 * k) + 0.004 * k; };
-    const headW = [['Head', 1]];
+    const headW = [['Head', 1]], eyesAt = [];
     bd.add(ellipsoid(hc, R, 30, 22, jaw), cSkin, headW);
     for (const s of [1, -1]) {
       bd.add(ellipsoid(hc.clone().add(new T.Vector3(s * R[0] * 0.97, 0.0, -0.008)), [0.014, 0.03, 0.021], 10, 8), shade(cSkin, 0.95), headW);   // Ohr
@@ -257,6 +257,7 @@
       bd.add(ellipsoid(e.clone().add(new T.Vector3(0, 0, 0.0075)), [0.0076, 0.0076, 0.003], 10, 6), C(L.eyes || '#4b6b8a'), headW);
       bd.add(ellipsoid(e.clone().add(new T.Vector3(0, 0, 0.0098)), [0.0036, 0.0036, 0.0016], 8, 5), C('#0d0d10'), headW);
       bd.add(ellipsoid(e.clone().add(new T.Vector3(0, 0.0112, 0.0)), [0.0168, 0.0042, 0.0102], 12, 6), shade(cSkin, 0.93), headW);   // Oberlid
+      eyesAt.push(e.clone());
       // Augenbraue
       const by = 0.034, bz = surfZ(s * 0.033, by) + 0.002;
       bd.add(tube(hc.clone().add(new T.Vector3(s * 0.014, by - 0.001, bz - 0.001)), hc.clone().add(new T.Vector3(s * 0.05, by + 0.002 - 0.004, bz - 0.012)), Y,
@@ -363,6 +364,8 @@
     fig.mats.length = 0; fig.mats.push(mat); fig.body = body;
     const headB = B('Head'), headInv = headB.matrixWorld.clone().invert();
     const toHead = m => { m.updateMatrix(); m.matrix.premultiply(headInv); m.matrix.decompose(m.position, m.quaternion, m.scale); headB.add(m); fig.extra.push(m); return m; };
+    // Augenlider zum Blinzeln (liegen sonst flach im Oberlid)
+    fig.lids = eyesAt.map(e => { const l = new T.Mesh(new T.SphereGeometry(1, 10, 6), new T.MeshStandardMaterial({ color: shade(cSkin, 0.93), roughness: 0.7 })); l.scale.set(0.0166, 0.0116, 0.0104); l.position.copy(e).add(new T.Vector3(0, 0.0004, 0.0006)); toHead(l); fig.extra.pop(); fig.mats.push(l.material); l.visible = false; return l; });
     // Mund: Lippen (dunkel) + Zähne, skaliert beim Sprechen
     {
       const mg = new T.Group(); mg.position.copy(mouthPos);
@@ -412,10 +415,11 @@
         const open = talk ? 0.65 + Math.abs(Math.sin(talkT)) * 0.9 + Math.sin(talkT * 2.7) * 0.2 : 1;
         fig.mouth.scale.y += (open - fig.mouth.scale.y) * Math.min(1, dt * 18);
       }
+      if (fig.lids && fig.lids.length) { blinkT -= dt; const shut = blinkT < 0.12 && blinkT > 0; fig.lids.forEach(l => (l.visible = shut)); if (blinkT <= 0) blinkT = 2 + Math.random() * 4; }
     };
     fig.look = L0; fig.people = true;
     const baseDispose = fig.dispose;
-    fig.dispose = () => { baseDispose(); geo.dispose(); [fig.mouth, fig.ear].forEach(g => g && g.traverse(o => { if (o.geometry) o.geometry.dispose(); })); };
+    fig.dispose = () => { baseDispose(); geo.dispose(); [fig.mouth, fig.ear].concat(fig.lids || []).forEach(g => g && g.traverse(o => { if (o.geometry) o.geometry.dispose(); })); };
     return fig;
   };
 })(typeof window !== 'undefined' ? window : globalThis);
