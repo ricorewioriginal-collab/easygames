@@ -104,7 +104,7 @@
   function updPeople(dt, pl) {
     const near = [];
     for (const p of V.people) {
-      const d = Math.hypot(p.x - pl.x, p.z - pl.z); p.wrap.visible = d < 120; if (d > 80) continue;
+      const d = Math.hypot(p.x - pl.x, p.z - pl.z); p.wrap.visible = d < (W.quality > 1 ? 120 : 70); if (d > 80) continue;
       p.t -= dt;
       if (p.talking) { p.wrap.rotation.y = p.yaw; near.push(p); continue; }
       if (p.beh === 'walk') {
@@ -169,6 +169,39 @@
     W.instances(g, 'kk_trafficlight_a', L.light, { byHeight: true }); W.instances(g, 'kk_bench', L.bench); W.instances(g, 'kk_bush', L.bush, { byHeight: true });
     W.instances(g, 'kk_firehydrant', L.hyd, { byHeight: true }); W.instances(g, 'kk_dumpster', L.dump); W.instances(g, k % 2 ? 'kk_box_a' : 'kk_box_b', L.box);
     V.kit = L;
+  }
+
+  // KayKit in den Welten: Laternen, Bänke, Büsche, Mülleimer; Wellenburg mit KayKit-Häusern, Wasserturm auf dem Berg
+  function kitWorlds(S, g, solid) {
+    const WO = AMC.Worlds; if (!WO || !W.models.kk_streetlight) return;
+    const nearSt = (x, z, r) => (S.stations || []).some(s => Math.hypot(s.x - x, s.z - z) < r);
+    const nearLink = (x, z, m) => WO.LINKS.some(l => x > l.x0 - m && x < l.x1 + m && z > l.z0 - m && z < l.z1 + m);
+    const free = (x, z, r) => !nearSt(x, z, r + 4) && !nearLink(x, z, r + 6) && WO.inside(x, z, r + 1) && ![[0, 0], [r, 0], [-r, 0], [0, r], [0, -r], [r, r], [-r, -r]].some(([a, b]) => C.solidAt(x + a, 1, z + b));
+    const L = { lamp: [], bench: [], bush: [], trash: [], bld: {}, tower: [] };
+    WO.WORLDS.forEach((w, wi) => {
+      const r = U.seeded(4200 + wi * 71), area = (w.x1 - w.x0) * (w.z1 - w.z0), n = Math.round(area / 260);
+      for (let i = 0; i < n; i++) {
+        const x = U.lerp(w.x0 + 4, w.x1 - 4, r()), z = U.lerp(w.z0 + 4, w.z1 - 4, r()), k = i % 5, rot = Math.floor(r() * 4) * Math.PI / 2;
+        if (k === 0) { if (free(x, z, 0.6)) { L.lamp.push({ x, z, rot, s: 4.6, y: 0.12 }); solid(x, z, 0.4, 0.4, 4.4); } }
+        else if (k === 1) { if (free(x, z, 1.3)) { L.bench.push({ x, z, rot, s: 2.1, y: 0.12 }); solid(x, z, rot % Math.PI ? 0.6 : 2.1, rot % Math.PI ? 2.1 : 0.6, 0.5); } }
+        else if (k === 4) { if (free(x, z, 0.5)) { L.trash.push({ x, z, rot, s: 1, y: 0.12 }); solid(x, z, 0.5, 0.5, 1); } }
+        else if (free(x, z, 0.7)) L.bush.push({ x, z, rot: r() * 6, s: 1 + r() * 0.6, y: 0.12 });
+      }
+      if (w.id === 'wellen') {
+        const names = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        for (let i = 0; i < 40 && Object.values(L.bld).reduce((a, b) => a + b.length, 0) < 12; i++) {
+          const side = i % 4, t = r(), x = side < 2 ? U.lerp(w.x0 + 10, w.x1 - 10, t) : side === 2 ? w.x0 + 7 : w.x1 - 7, z = side < 2 ? (side ? w.z1 - 7 : w.z0 + 7) : U.lerp(w.z0 + 10, w.z1 - 10, t);
+          if (!free(x, z, 5)) continue;
+          const nm = 'kk_building_' + names[Math.floor(r() * 8)], rot = side === 0 ? 0 : side === 1 ? Math.PI : side === 2 ? Math.PI / 2 : -Math.PI / 2;
+          (L.bld[nm] = L.bld[nm] || []).push({ x, z, rot, s: 8 + r() * 5, y: 0.12 }); solid(x, z, 9, 9, 12);
+        }
+      }
+      if (w.id === 'berg') for (let i = 0; i < 20 && !L.tower.length; i++) { const x = U.lerp(w.x0 + 12, w.x1 - 12, r()), z = U.lerp(w.z0 + 12, w.z1 - 12, r()); if (free(x, z, 4)) { L.tower.push({ x, z, rot: 0, s: 14, y: 0.12 }); solid(x, z, 6, 6, 14); } }
+    });
+    W.instances(g, 'kk_streetlight', L.lamp, { byHeight: true }); W.instances(g, 'kk_bench', L.bench); W.instances(g, 'kk_bush', L.bush, { byHeight: true });
+    W.instances(g, 'kk_trash_a', L.trash, { byHeight: true }); W.instances(g, 'kk_watertower', L.tower, { byHeight: true });
+    for (const nm in L.bld) W.instances(g, nm, L.bld[nm], { byHeight: true });
+    V.kitW = L;
   }
 
   // ------------------------------------------------------------------ Aufbau
@@ -258,6 +291,7 @@
     [[64, -159], [68, -159.5]].forEach(([x, z]) => P(x, z, 'sit', { face: Math.atan2(66 - x, -161 - z) }));
     if (q) P(-50, 205.8, 'sit', { face: Math.atan2(2, -1.8) });
     for (let i = 0, n = N(12); i < n; i++) { const r = C.ROADS[i % 3], s = U.rand(-80, 80), side = i % 2 ? 7.2 : -7.2, x = i % 4 < 2 ? r + side : s, z = i % 4 < 2 ? s : r + side; if (freeAt(x, z)) P(x, z, 'walk', { r: 22 }); }
+    kitWorlds(S, g, solid);
     spawnPeople(list);
   };
   // Scheinwerfer: Lichtkegel, der hin und her schwenkt

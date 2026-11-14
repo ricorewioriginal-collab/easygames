@@ -132,12 +132,22 @@ server.listen(0, '127.0.0.1', async () => {
     assert.ok(await p.evaluate(() => !AMC.Play.state().drive), 'Aus dem Leihauto aussteigen');
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(); let n = null; for (let i = 0; i < 400 && !n; i++) n = AMC.WorldFX.nearPerson(S.pl.x + (i % 20 - 10) * 8, S.pl.z + (Math.floor(i / 20) - 10) * 8, 6); if (!n) return 'keine Person'; const s = AMC.Talk.open(n, { S, drawRub: () => {} }); const ok = !!s.el.querySelector('[data-o]') && !!AMC.Talk.who(n).job; s.el.querySelector('[data-o="0"]').click(); const got = Object.values(S.got).reduce((a, b) => a + b, 0) >= 2; AMC.UI.closeAll(); n.talking = false; return ok && got; }), 'Passanten ansprechen: Interview');
     // RicoReWi als dritte spielbare Figur
-    for (let i = 0; i < 8 && (await p.evaluate(() => AMC.Play.state().pl.id !== 'rico')); i++) { await p.evaluate(() => AMC.Input.fire('swap')); await p.waitForTimeout(900); }
+    for (let i = 0; i < 8 && (await p.evaluate(() => AMC.Play.state().pl.id !== 'rico')); i++) { await p.evaluate(() => { if (AMC.Cut.active()) AMC.Cut.skip(); AMC.Input.fire('swap'); }); await p.waitForTimeout(900); }
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(); return S.pl.id === 'rico' && S.pl.fig === AMC.World.hosts.rico && (!S.rico || S.rico.away); }), 'RicoReWi spielbar');
-    for (let i = 0; i < 8 && (await p.evaluate(() => AMC.Play.state().pl.id !== 'marco')); i++) { await p.evaluate(() => AMC.Input.fire('swap')); await p.waitForTimeout(900); }
+    for (let i = 0; i < 8 && (await p.evaluate(() => AMC.Play.state().pl.id !== 'marco')); i++) { await p.evaluate(() => { if (AMC.Cut.active()) AMC.Cut.skip(); AMC.Input.fire('swap'); }); await p.waitForTimeout(900); }
     assert.ok(await p.evaluate(() => AMC.Play.state().pl.id === 'marco'), 'Zurück zu Marco');
     // Begehbares Funkhaus: Menüpunkte als Orte in der Welt
     assert.ok(await p.evaluate(() => AMC.Play.state().stations.filter(s => s.id.startsWith('room:')).length >= 20), 'Stadtgebäude haben Türen');
+    // Aufträge (missions.js): Auftraggeber ansprechen, Szene, Teile sammeln, Gebäude betreten, abliefern
+    await p.evaluate(() => { AMC.Save.data.missions = null; }); await p.waitForFunction(() => AMC.Missions.mapDots().some(d => d.t === '❗'), null, { timeout: 20000 });
+    assert.ok(await p.evaluate(async () => { const S = AMC.Play.state(), d = AMC.Missions.mapDots().find(x => x.t === '❗'); S.pl.x = d.x + 1.2; S.pl.z = d.z; S.pl.y = 0.16; await new Promise(r => setTimeout(r, 2500)); const t = AMC.Missions.interact(S.pl); if (!t) return 'kein Auftraggeber'; t.run(); await new Promise(r => setTimeout(r, 800)); AMC.Cut.skip(); return AMC.Missions.active() && AMC.Missions.active().id === 'mikro'; }), 'Auftrag annehmen');
+    for (let i = 0; i < 20 && (await p.evaluate(() => AMC.Missions.active().step === 0)); i++) { await p.evaluate(() => { if (AMC.Cut.active()) AMC.Cut.skip(); const S = AMC.Play.state(), d = AMC.Missions.mapDots().find(x => x.ring); if (d) { S.pl.x = d.x; S.pl.z = d.z; } }); await p.waitForTimeout(1200); }
+    assert.equal(await p.evaluate(() => AMC.Missions.active().step), 1, 'Mikro-Teile eingesammelt');
+    await p.evaluate(() => { const S = AMC.Play.state(), st = S.stations.find(s => s.id.startsWith('room:') && AMC.Rooms.kind(+s.id.slice(5)).id === 'tonstudio'); AMC.Missions.enter(st.id); });
+    assert.equal(await p.evaluate(() => AMC.Missions.active().step), 2, 'Tonstudio betreten zählt');
+    for (let i = 0; i < 4 && (await p.evaluate(() => !!AMC.Missions.active())); i++) { await p.evaluate(() => { if (AMC.Cut.active()) AMC.Cut.skip(); const S = AMC.Play.state(), st = S.stations.find(s => s.id === 'live'); S.pl.x = st.x; S.pl.z = st.z + 1; }); await p.waitForTimeout(1000); }
+    await p.evaluate(() => AMC.Cut.active() && AMC.Cut.skip()); await p.waitForTimeout(500);
+    assert.ok(await p.evaluate(() => !AMC.Missions.active() && !!AMC.Save.data.missions.done.mikro), 'Auftrag abgeschlossen');
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(), ids = S.stations.map(s => s.id); return ['menu', 'live', 'edit', 'story', 'quiz', 'radio', 'shop', 'koop', 'arcade', 'music', 'home:andrew', 'home:marco'].every(i => ids.includes(i)); }), 'Alle Menüpunkte als Orte');
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(); return !S.col.some(c => 22.5 > c.x0 && 22.5 < c.x1 && -25 > c.z0 && -25 < c.z1 && c.bot < 1 && c.top > 1); }), 'Funkhaus innen begehbar');
     await p.evaluate(() => { window.__act = null; AMC.Play.onAction = id => { window.__act = id; }; const S = AMC.Play.state(), st = S.stations.find(s => s.id === 'shop'); S.pl.x = st.x; S.pl.z = st.z; S.pl.y = 0.2; }); await p.waitForTimeout(400);

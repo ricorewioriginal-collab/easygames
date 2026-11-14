@@ -324,8 +324,13 @@ html.eg-pad .tb, html.dev-pad #touch { display: none; }
   .t-pod { width: min(260px, 64vw); }
   .h-tl { width: calc(100vw - 140px - var(--safe-l) - var(--safe-r)); } #hMap { width: 104px; height: 104px; }
   .h-rub span { padding: 2px 6px; font-size: 12px; }
-  html.dev-touch .h-bl { top: calc(226px + var(--safe-t)); }
-  .h-msg { top: 38%; font-size: 18px; }
+  .h-obj { padding: 7px 10px; } .h-obj span { font-size: 13.5px; margin: 1px 0 5px; }
+  .h-tl .h-host { order: 9; min-width: 0; padding: 5px 10px 5px 5px; gap: 8px; border-radius: 14px; } .h-tl .h-host img { width: 36px; height: 36px; border-radius: 10px; } .h-tl .h-host b { font-size: 14.5px; } .h-tl .h-host small { font-size: 11px; margin-top: 1px; } .h-tl .h-en { width: 110px; }
+  .h-msg { top: 33%; font-size: 18px; }
+  #nowplaying { bottom: calc(226px + var(--safe-b)); }
+  html.dev-touch .cv-feed { bottom: calc(330px + var(--safe-b)); }
+  html.dev-touch .h-prompt { bottom: calc(278px + var(--safe-b)); left: calc(10px + var(--safe-l)); transform: none; max-width: calc(100vw - 100px - var(--safe-l) - var(--safe-r)); white-space: normal; font-size: 15px; }
+  html.dev-touch #toasts { top: 45%; bottom: auto; left: calc(10px + var(--safe-l)); transform: none; width: calc(100vw - 100px - var(--safe-l) - var(--safe-r)); }
   .cr-day { flex-direction: row; flex-wrap: wrap; gap: 2px 8px; padding: 4px 8px; font-size: 11px; } .cr-day .cr-top, .cr-day .cr-mid { gap: 6px; } .cr-day .cr-top span:last-child, .cr-day .cr-plan em { display: none; } .cr-plan i { padding: 0 4px; }
   .sh-say { top: calc(58px + var(--safe-t)); }
   .sh-cmd { left: calc(8px + var(--safe-l)); right: calc(8px + var(--safe-r)); width: auto; bottom: calc(8px + var(--safe-b)); }
@@ -464,3 +469,15 @@ html.dev-kb .hm-emo [data-kb]::after { content: attr(data-kb); }
 .talk header h2 small { font-size: 0.6em; opacity: 0.75; font-weight: 600; margin-left: 6px; }
 .talk-say { font-size: 1.05rem; line-height: 1.4; margin: 6px 0 4px; padding: 12px 14px; border-radius: 14px; background: rgba(255, 255, 255, 0.07); display: flex; gap: 12px; align-items: center; }
 .talk-say img.talk-logo { width: 64px; height: 64px; border-radius: 12px; flex: none; object-fit: cover; }
+/* Hochformat: Innenräume (steht am Ende, damit es die Grundregeln überschreibt) */
+@media (orientation: portrait) and (max-width: 640px) {
+  .hm-say { top: auto; bottom: calc(290px + var(--safe-b)); left: calc(10px + var(--safe-l)); transform: none; width: calc(100vw - 96px - var(--safe-l) - var(--safe-r)); font-size: 14px; padding: 8px 12px; } html:not(.dev-touch) .hm-say { bottom: calc(110px + var(--safe-b)); }
+  html.dev-touch .hm-use { bottom: calc(226px + var(--safe-b)); }
+  .hm-desc { max-width: none; }
+  .hm-top { max-width: calc(100vw - 96px - var(--safe-l) - var(--safe-r)); }
+}
+/* Querformat flach (Handy quer): Emote-Leiste rechts neben die Karte, Meldung in die Mitte – nichts liegt über der linken HUD-Spalte */
+@media (max-height: 560px) and (orientation: landscape) {
+  .cv-ui .hm-emo { left: auto; right: calc(120px + var(--safe-r)); transform: none; }
+  .h-msg { top: 44%; font-size: 18px; }
+}
