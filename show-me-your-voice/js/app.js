@@ -1254,11 +1254,11 @@
   const GRADE = { perfekt: '✨ Perfekt!', super: '🔥 Super!', gut: '👍 Gut', daneben: '😬 Daneben' };
   async function singStart() {
     if (!save.profile && !sing.party) { openAvatar('sing'); return; }
-    if (!save.settings.mic) { micConsent(() => { if (save.settings.mic) singStart(); else RENDER.sSing(); }); return; }
+    if (!save.settings.mic) { micConsent(() => { if (save.settings.mic) singStart(); else RENDER.sSing(); }, singNoMic); return; }
     const pk = singPick();
     if (sing.song === 'own' && sing.own.trim() && !pk.vid) { toast('Das ist kein YouTube-Link. Kopiere die Adresse des Videos (youtube.com/watch?v=… oder youtu.be/…).', 4000); return; }
     airStop(); A.init(); A.micStop();
-    try { await A.micStart(true, !!save.settings.hp); } catch (e) { save.settings.mic = false; persist(); micConsent(() => RENDER.sSing()); return; }
+    try { await A.micStart(true, !!save.settings.hp); } catch (e) { save.settings.mic = false; persist(); micConsent(() => RENDER.sSing(), singNoMic); return; }
     if (cur !== 'sSing' || sing.run) { if (!sing.run) A.micStop(); return; }
     if (sing.recUrl) { URL.revokeObjectURL(sing.recUrl); sing.recUrl = null; sing.recBlob = null; }
     const cx = sing.ctx, career = !!(cx && cx.mode === 'career'), s = save.season;
@@ -1628,7 +1628,15 @@
     applySettings(); persist(); RENDER.sSettings();
     const nb = $(`#setBox [data-s="${k}"][data-v="${raw}"]`); if (nb) nb.focus();
   });
-  function micConsent(after) {
+  // „Ohne Mikrofon“ beim Vorsingen: Casting/Story laufen als Bühne mit Tasten/Touch weiter (gleiche Runde, gleiche Jury).
+  function singNoMic() {
+    const cx = sing.ctx;
+    if (cx && cx.mode === 'career') { startCareerRound(); return; }
+    if (cx && cx.mode === 'free') { startFree(); return; }
+    RENDER.sSing(); toast('🎹 Freies Vorsingen bewertet nur deine Stimme. Ohne Mikro spielst du Story oder Freies Casting mit Tasten/Touch.', 5000);
+  }
+  function micConsent(after, no) {
+    const skip = () => { closeOv(); if (no) no(); };
     overlay(`<h3>🎙️ Mikrofon-Modus</h3><p>Das Spiel hört deine Stimme: In Notenteilen trifft jeder angesungene Ton die Note am Ring, in Gesangsteilen bewegt deine <b>Tonhöhe</b> den Mikro-Punkt.</p>
       <p class="muted">Ausgewertet wird nur Tonhöhe und Lautstärke, direkt auf deinem Gerät. Nichts wird gespeichert oder gesendet; beim Freien Vorsingen kannst du deine Aufnahme direkt anhören, danach ist sie weg. Das Mikrofon ist nur während des Auftritts an. Kopfhörer helfen, damit die Musik nicht mitzählt.</p>
       <button class="btn gold" type="button" data-act="ok">Mikrofon erlauben</button><button class="btn" type="button" data-act="no">Ohne Mikrofon spielen</button>`,
@@ -1647,25 +1655,26 @@
             : '<p>Dein Browser hat das Mikrofon für diese Seite gesperrt. Tippe oben in der Adresszeile auf das Schloss/Einstellungen-Symbol, erlaube das Mikrofon und versuch es noch einmal.</p>'}
             <p class="muted">Ist es dort auch gesperrt: In den Website-Einstellungen des Browsers das Mikrofon erlauben.</p>
             <button class="btn gold" type="button" data-act="open">↗ Spiel direkt öffnen</button><button class="btn" type="button" data-act="no">Mit Tasten/Touch weiter</button>`,
-          { open: () => { closeOv(); window.open(location.href.split('#')[0], '_blank', 'noopener'); }, no: closeOv });
+          { open: () => { closeOv(); window.open(location.href.split('#')[0], '_blank', 'noopener'); }, no: skip });
           return;
         }
         (after || RENDER.sSettings)();
-        micHelp(e, after);
+        micHelp(e, after, no);
         return;
       }
       (after || RENDER.sSettings)();
-    }, no: closeOv });
+    }, no: skip });
   }
 
   // Mikro klappt nicht: Grund nennen, passende Schritte fürs Gerät zeigen, „Nochmal versuchen“ (neuer Tipp = neue Nutzergeste).
   // Wird die Freigabe in den Browser-Einstellungen geändert, geht es von selbst weiter.
-  async function micHelp(e, after) {
+  async function micHelp(e, after, no) {
     const n = (e && e.name) || (e && e.message) || '', st = await A.micPerm(), ua = navigator.userAgent;
     const android = /Android/i.test(ua), ios = /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1), app = /wv\)|; wv/.test(ua) || location.host === 'appassets.androidplatform.net';
     let why, steps;
     if (!window.isSecureContext || n === 'nosupport') { why = 'Dieser Browser erlaubt hier kein Mikrofon.'; steps = '<li>Öffne das Spiel direkt über <b>https://ricorewioriginal-collab.github.io/easygames/show-me-your-voice/</b> in Chrome, Safari oder der easygames-App.</li>'; }
     else if (n === 'NotFoundError') { why = 'Es wurde kein Mikrofon gefunden.'; steps = '<li>Headset oder Mikro anschließen bzw. Bluetooth verbinden.</li><li>Dann auf „Nochmal versuchen“ tippen.</li>'; }
+    else if (app && (n === 'NotReadableError' || n === 'AbortError' || n === 'TrackStartError') && st !== 'denied') { why = 'Die easygames-App konnte das Mikrofon nicht starten.'; steps = '<li>Installiere die neueste easygames-App (ältere Versionen geben das Mikrofon nicht ans Spiel weiter).</li><li>Oder öffne das Spiel in Chrome: <b>ricorewioriginal-collab.github.io/easygames/show-me-your-voice/</b></li>'; }
     else if (n === 'NotReadableError' || n === 'AbortError' || n === 'TrackStartError') { why = 'Das Mikrofon wird gerade von einer anderen App benutzt.'; steps = '<li>Anruf, Sprachmemo, WhatsApp-Sprachnachricht oder Bildschirmaufnahme beenden.</li><li>Dann auf „Nochmal versuchen“ tippen.</li>'; }
     else {
       why = st === 'denied' ? 'Dein Browser hat das Mikrofon für dieses Spiel gesperrt.' : 'Das Mikrofon wurde nicht freigegeben.';
@@ -1678,13 +1687,13 @@
     overlay(`<h3>🎙️ Mikrofon klappt noch nicht</h3><p><b>${why}</b></p><ol class="micSteps">${steps}</ol>
       <p class="muted">Ohne Mikro kannst du mit Tasten/Touch weiterspielen.${n ? ' <small>(' + esc(n) + ')</small>' : ''}</p>
       <button class="btn gold" type="button" data-act="retry">🔄 Nochmal versuchen</button><button class="btn" type="button" data-act="no">Ohne Mikrofon weiter</button>`,
-    { retry: () => { closeOv(); micConsentTry(after); }, no: closeOv });
-    try { const ps = await navigator.permissions.query({ name: 'microphone' }); ps.onchange = () => { if (ps.state === 'granted' && !save.settings.mic) { ps.onchange = null; closeOv(); micConsentTry(after); } }; } catch (x) { /* Browser ohne Permissions-API */ }
+    { retry: () => { closeOv(); micConsentTry(after, no); }, no: () => { closeOv(); if (no) no(); } });
+    try { const ps = await navigator.permissions.query({ name: 'microphone' }); ps.onchange = () => { if (ps.state === 'granted' && !save.settings.mic) { ps.onchange = null; closeOv(); micConsentTry(after, no); } }; } catch (x) { /* Browser ohne Permissions-API */ }
   }
-  async function micConsentTry(after) {
+  async function micConsentTry(after, no) {
     A.init();
     try { await A.micStart(); A.micStop(); save.settings.mic = true; persist(); toast('🎙️ Mikrofon bereit – sing einfach los!'); (after || RENDER.sSettings)(); }
-    catch (e) { micHelp(e, after); }
+    catch (e) { micHelp(e, after, no); }
   }
 
   // ---------- Tutorial ----------
