@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "6f97e99627fd",
- "generated": "2026-11-14T18:14:37+00:00",
- "commit": "ac80f19f9092dcd58c7c0374a2d006511e1dab1f",
+ "version": "e80b2510804c",
+ "generated": "2026-11-14T18:15:33+00:00",
+ "commit": "a196b58d9f45492956787bdf3ec34096dcb655db",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10048,13 +10048,13 @@
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 192847,
-   "h": "db85707d74625e653a00c3d67e5b4317c38c5d36310f176d3b474943bb660cb0"
+   "s": 197728,
+   "h": "a31e0543d3b972423ebf8afdd54666900d6a1cc40f8d0ba805f5c1b977ed1dfd"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
-   "s": 19203,
-   "h": "4e9ba791f65b8c097ca3a5c1cde43019dbe100d161dc3a2cd017afb2b28f8fe0"
+   "s": 19859,
+   "h": "98b757b7a9758b3f853c29dca4477e51e9bfd765dfb53bfe5654913689bc2d8f"
   },
   {
    "p": "show-me-your-voice/js/avatar.js",
@@ -10093,8 +10093,8 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 53953,
-   "h": "abaf7ba2f5bb02428675afb6e043221d47484aff8d52ee834ebdb97297ae3d42"
+   "s": 54738,
+   "h": "88d897e2471b8be055e70f0d2bda6b39e8adde695a003646902ba5ef109466d2"
   },
   {
    "p": "show-me-your-voice/sw.js",
@@ -10664,7 +10664,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262491,
-   "h": "fd5a0dc7d8d7d653f8d155b08046de1b277e254e45604d857e379b4ca50a207d"
+   "h": "d40c0a2eb0a963a2ff5a6cda0a6368c57211798468c788e30ff71f2179540b1e"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

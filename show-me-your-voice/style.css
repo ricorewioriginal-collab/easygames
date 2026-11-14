@@ -528,3 +528,15 @@ details.tips summary { cursor: pointer; }
   .settings .srow { grid-template-columns: 1fr; gap: 8px; }
   .settings select[data-sel], .settings .micMeter { max-width: none; width: 100%; }
 }
+
+/* Duett (2 Mikros): Punkte blau oben rechts, rot darunter; Ergebnis nebeneinander */
+.ssScore.r2 { top: 64px; }
+.ssScreen[data-lane="bottom"] .ssScore.r2 { top: auto; bottom: 64px; }
+.ssScore.r2 b { color: #f87171; }
+.ssScore.r2 small { color: #fca5a5; }
+.duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+.duoCol { display: flex; flex-direction: column; gap: 3px; padding: 12px 8px; border-radius: 14px; background: rgba(255,255,255,.06); border: 2px solid transparent; }
+.duoCol big { font-size: 1.8em; font-weight: 900; color: var(--gold); font-variant-numeric: tabular-nums; }
+.duoCol.win { border-color: var(--gold); box-shadow: 0 0 18px rgba(255,201,60,.35); }
+.duoCol span { font-weight: 800; color: var(--gold); }
+.duoSet { margin-top: 6px; }

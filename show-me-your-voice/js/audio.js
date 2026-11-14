@@ -109,8 +109,10 @@
   let micWant = false;
   // Mikrofon-Auswahl (Einstellungen): Gerät (deviceId, '' = Standard) und Kanal – 'mix' (mono/beide), 'left' bzw. 'right'
   // (SingStar-Empfänger ist ein Stereo-Gerät: blaues Mikro links, rotes rechts).
-  let micPref = { device: '', ch: 'mix' };
+  let micPref = { device: '', ch: 'mix' }, micDuo = false;
   function micSetPrefs(p) { micPref = { device: (p && p.device) || '', ch: p && (p.ch === 'left' || p.ch === 'right') ? p.ch : 'mix' }; }
+  // Duett: beide Kanäle eines Stereo-Mikros getrennt auswerten (SingStar-Empfänger: links blau, rechts rot). Gilt ab dem nächsten micStart.
+  function micDuet(on) { micDuo = !!on; }
   async function micDevices() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return [];
     const l = await navigator.mediaDevices.enumerateDevices();
@@ -123,7 +125,7 @@
     if (!init() || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('nosupport');
     micWant = true; if (mic) return true;
     // Ein Kanal (SingStar): Stereo anfordern und ohne Bearbeitung – die würde beide Mikros zu einem zusammenmischen
-    const split = micPref.ch !== 'mix';
+    const split = micPref.ch !== 'mix' || micDuo;
     const a = { echoCancellation: !split && !(voice && hp), noiseSuppression: !split && !voice, autoGainControl: !split && !(voice && hp), channelCount: split ? 2 : 1 };
     if (micPref.device) a.deviceId = { exact: micPref.device };
     let stream;
@@ -137,11 +139,13 @@
     if (!micWant || mic) { if (!mic || mic.stream !== stream) stream.getTracks().forEach(t => t.stop()); return !!mic; }   // inzwischen wieder gestoppt
     const src = ctx.createMediaStreamSource(stream), an = ctx.createAnalyser();
     let node = src, tr = stream.getAudioTracks()[0], set = tr && tr.getSettings ? tr.getSettings() : {};
+    let node2 = null, an2 = null;
     if (split && (set.channelCount || 2) >= 2) {   // nur den gewählten Kanal auswerten und aufnehmen
-      const sp = ctx.createChannelSplitter(2), g = ctx.createGain(); src.connect(sp); sp.connect(g, micPref.ch === 'right' ? 1 : 0); node = g;
+      const sp = ctx.createChannelSplitter(2), g = ctx.createGain(); src.connect(sp); sp.connect(g, micDuo ? 0 : micPref.ch === 'right' ? 1 : 0); node = g;
+      if (micDuo) { node2 = ctx.createGain(); sp.connect(node2, 1); an2 = ctx.createAnalyser(); an2.fftSize = 2048; node2.connect(an2); }
     }
     an.fftSize = 2048; node.connect(an);          // nicht mit den Lautsprechern verbunden: kein Echo, keine Aufnahme
-    mic = { stream, src, node, an, buf: new Float32Array(1024), label: (tr && tr.label) || '', channels: set.channelCount || 1, ch: node === src ? 'mix' : micPref.ch };
+    mic = { stream, src, node, an, node2, an2, buf: new Float32Array(1024), label: (tr && tr.label) || '', channels: set.channelCount || 1, ch: node === src ? 'mix' : micDuo ? 'left' : micPref.ch };
     return true;
   }
   // Freigabe-Status ohne Nachfrage: 'granted', 'denied', 'prompt' oder '' (Browser kann es nicht sagen)
@@ -149,7 +153,7 @@
   function micStop() {
     micWant = false; if (!mic) return;
     const rn = mic.rec ? mic.rec.nodes : null;
-    try { mic.stream.getTracks().forEach(t => t.stop()); mic.src.disconnect(); if (mic.node !== mic.src) mic.node.disconnect(); } catch (e) {}
+    try { mic.stream.getTracks().forEach(t => t.stop()); mic.src.disconnect(); if (mic.node !== mic.src) mic.node.disconnect(); if (mic.node2) mic.node2.disconnect(); } catch (e) {}
     if (rn) setTimeout(() => rn.forEach(n => { try { n.disconnect(); } catch (e) {} }), 900);   // erst nach dem Vorlauf: das Ende des letzten Tons kommt noch in die Aufnahme
     mic = null;
   }
@@ -176,16 +180,18 @@
     } catch (e) { return mic.stream; }
   }
   // Lautstärke (RMS) fürs Treffen der Noten mit der Stimme; null ohne Mikrofon
-  function micLevel() {
-    if (!mic) return null;
-    const b = mic.buf; mic.an.getFloatTimeDomainData(b);
+  // k = 1: zweites Mikro im Duett (rechter Kanal)
+  const micAn = k => (!mic ? null : k ? mic.an2 : mic.an);
+  function micLevel(k) {
+    const an = micAn(k); if (!an) return null;
+    const b = mic.buf; an.getFloatTimeDomainData(b);
     let rms = 0; for (let i = 0; i < b.length; i++) rms += b[i] * b[i];
     return Math.sqrt(rms / b.length);
   }
   // Grundton per Autokorrelation (70–1000 Hz). Liefert MIDI-Ton (Kommazahl) oder null bei Stille.
-  function micPitch() {
-    if (!mic) return null;
-    const b = mic.buf; mic.an.getFloatTimeDomainData(b);
+  function micPitch(k) {
+    const an = micAn(k); if (!an) return null;
+    const b = mic.buf; an.getFloatTimeDomainData(b);
     let rms = 0; for (let i = 0; i < b.length; i++) rms += b[i] * b[i];
     rms = Math.sqrt(rms / b.length); if (rms < 0.012) return null;
     const sr = ctx.sampleRate, minL = Math.floor(sr / 1000), maxL = Math.min(b.length - 1, Math.floor(sr / 70));
@@ -261,5 +267,5 @@
   }
 
   root.SMYVAudio = { radioOnLost: cb => { onLost = cb; }, radioStart, radioStop, radioMute, radioOnsets, radioSong, radioActive: () => !!radio, radioPlain: () => !!(radio && radio.plain), init, setVolume, ok, chordTones, sfx, guide, voiceOn, voiceSet, voiceOff,
-    micStart, micStop, micPerm, micPitch, micLevel, micActive: () => !!mic, micDevices, micSetPrefs, micInfo: () => (mic ? { label: mic.label, channels: mic.channels, ch: mic.ch } : null), micStream: () => (mic ? mic.stream : null), micRecStream, micRecPre: () => (mic && mic.rec ? REC_PRE : 0), mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
+    micStart, micStop, micPerm, micDuet, micDuetOn: () => !!(mic && mic.an2), micPitch, micLevel, micActive: () => !!mic, micDevices, micSetPrefs, micInfo: () => (mic ? { label: mic.label, channels: mic.channels, ch: mic.ch } : null), micStream: () => (mic ? mic.stream : null), micRecStream, micRecPre: () => (mic && mic.rec ? REC_PRE : 0), mtof, ctxTime: () => (ctx ? ctx.currentTime : 0) };
 })(window);
