@@ -75,12 +75,32 @@ export function createRadio({ ducking, muteMusic, getVolOk }) {
     const v = Math.max(0, Math.min(1, cfg.vol * duck));
     if (Math.abs(v - vol) > 0.002) { vol = v; try { au.volume = v; } catch (e) { /* iOS: fest */ } }
   }
-  function load() {
-    if (!au) { au = new Audio(); au.preload = 'none'; au.setAttribute('playsinline', ''); au.addEventListener('error', again); au.addEventListener('stalled', again); au.addEventListener('ended', again); }
-    au.src = 'https://stream.laut.fm/' + cfg.st + '?t=' + Date.now(); vol = -1; applyVol();
-    const p = au.play(); if (p && p.catch) p.catch(() => { /* wartet auf Fingertipp */ });
+  let tries = 0, armed = false;
+  const GEST = ['pointerdown', 'touchend', 'click', 'keydown'];
+  function arm() { /* Autoplay gesperrt: beim nächsten Tippen/Taste starten, bis es klappt */
+    if (armed) return; armed = true;
+    const go = () => { GEST.forEach(g => removeEventListener(g, go, true)); armed = false; if (cfg.on) start(true); };
+    GEST.forEach(g => addEventListener(g, go, true));
   }
-  function again() { if (!cfg.on) return; clearTimeout(retry); retry = setTimeout(() => { if (cfg.on && au && (au.paused || au.error || au.readyState < 2)) load(); }, 3500); }
+  function start(fresh) {
+    if (!cfg.on || !au) return;
+    if (fresh || !au.src) { au.src = 'https://stream.laut.fm/' + cfg.st + '?t=' + Date.now(); vol = -1; applyVol(); }
+    const p = au.play();
+    if (p && p.catch) p.catch(e => { if (e && e.name === 'NotAllowedError') arm(); else if (e && e.name !== 'AbortError') again(); });
+  }
+  function load() {
+    if (!au) {
+      au = new Audio(); au.preload = 'none'; au.setAttribute('playsinline', '');
+      ['error', 'stalled', 'ended', 'emptied'].forEach(n => au.addEventListener(n, again));
+      au.addEventListener('pause', () => { if (cfg.on && !document.hidden) setTimeout(() => { if (cfg.on && au.paused) again(); }, 800); });
+      au.addEventListener('playing', () => { tries = 0; clearTimeout(retry); });
+    }
+    tries = 0; start(true);
+  }
+  function again() {
+    if (!cfg.on) return; clearTimeout(retry);
+    retry = setTimeout(() => { if (cfg.on && au && (au.paused || au.error || au.readyState < 2)) { tries++; start(tries > 1 || !!au.error); } }, Math.min(1500 * (tries + 1), 10000));
+  }
   async function poll() {
     if (!cfg.on || document.hidden) return;
     const id = cfg.st;
@@ -95,14 +115,15 @@ export function createRadio({ ducking, muteMusic, getVolOk }) {
     else { clearInterval(tm); clearTimeout(retry); if (au) { au.pause(); au.removeAttribute('src'); au.load(); } }
     muteMusic(on); draw();
   }
-  function pick(id) { cfg.st = id; save(); song = null; if (!cfg.on) set(true); else { load(); poll(); } draw(); }
+  function pick(id) { const same = id === cfg.st; cfg.st = id; save(); song = null; if (!cfg.on) set(true); else if (!same || !playing()) { load(); poll(); } draw(); }
 
   $('rSw').onclick = () => set(!cfg.on);
   $('rVol').oninput = e => { cfg.vol = e.target.value / 100; save(); $('rPct').textContent = e.target.value + ' %'; applyVol(); };
   $('rClose').onclick = () => close();
   box.addEventListener('pointerdown', e => { if (e.target === box) close(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !box.hidden) { close(); e.stopPropagation(); } }, true);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { poll(); if (cfg.on && au && au.paused) start(true); } });
+  addEventListener('online', () => { if (cfg.on && au && (au.paused || au.error)) start(true); });
   function open() { draw(); box.hidden = false; }
   function close() { box.hidden = true; }
 
@@ -113,7 +134,7 @@ export function createRadio({ ducking, muteMusic, getVolOk }) {
     applyVol(); muteMusic(true);
   }, 250);
 
-  if (cfg.on) { draw(); const resume = () => { removeEventListener('pointerdown', resume, true); if (cfg.on) set(true); }; addEventListener('pointerdown', resume, true); muteMusic(true); }
+  if (cfg.on) { draw(); muteMusic(true); load(); poll(); clearInterval(tm); tm = setInterval(poll, 15000); }
   else draw();
   return { open, close, set, pick, get on() { return cfg.on; } };
 }
