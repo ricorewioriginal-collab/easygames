@@ -1356,7 +1356,7 @@ function mnVis(el){if(!el||el.disabled||el.hidden)return false;const r=el.getBou
 function mnItems(){if(MN.zone==='tabs')return[...$('tabs').querySelectorAll('button')].filter(mnVis);
   return[...$('mcont').querySelectorAll('button,select,input,textarea,a[href],[data-nav]'),...document.querySelectorAll('#mbox .mb button')].filter(mnVis)}
 function mnMark(){document.querySelectorAll('#menu .pfoc').forEach(x=>x.classList.remove('pfoc'));if(!menuOpen||!MN.on)return;let l=mnItems();
-  if(MN.zone==='content'&&!l.length){MN.zone='tabs';l=mnItems()}if(MN.zone==='tabs'&&!l.length){MN.zone='content';MN.i=0;l=mnItems()}if(!l.length)return;MN.i=clamp(MN.i,0,l.length-1);const el=l[MN.i];el.classList.add('pfoc');try{el.scrollIntoView({block:'nearest',inline:'nearest'})}catch(e){}try{el.focus({preventScroll:true})}catch(e){}}
+  if(MN.zone==='content'&&!l.length){MN.zone='tabs';l=mnItems()}if(MN.zone==='tabs'&&!l.length){MN.zone='content';MN.i=0;l=mnItems()}if(!l.length)return;MN.i=clamp(MN.i,0,l.length-1);const el=l[MN.i];el.classList.add('pfoc');try{el.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'})}catch(e){}try{el.focus({preventScroll:true})}catch(e){}}
 function mnTabs(){return TABS.filter(q=>q[0]!=='travel'||S.stage>=8)}
 function mnTab(d){if(mState.shop)return;const l=mnTabs(),k=l.findIndex(q=>q[0]===mState.tab),n=l[(k+d+l.length)%l.length];sfx('ui');renderMenu(n[0]);if(MN.zone==='tabs')MN.i=mnItems().findIndex(b=>b.classList.contains('on'));else MN.i=0;mnMark()}
 function mnMove(dx,dy){const l=mnItems();if(!l.length)return;const cur=l[MN.i]||l[0];
@@ -1374,7 +1374,7 @@ function mnOk(){const el=mnItems()[MN.i];if(!el)return;if(MN.zone==='tabs'){mnEn
   if(el.tagName==='INPUT'&&/^(text|search|number)$/.test(el.type||'text')){el.focus();return}
   const z=MN.zone,i=MN.i;el.click();setTimeout(()=>{if(!menuOpen)return;MN.zone=z;MN.i=i;mnMark()},40)}
 function mnBack(){if(MN.zone==='content'&&!mState.shop&&$('tabs').querySelector('button')){MN.zone='tabs';MN.i=mnItems().findIndex(b=>b.classList.contains('on'));sfx('ui');mnMark();return}toggleMenu(false)}
-function menuKey(e){const k=e.code;if(document.activeElement&&/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)&&!/^(Escape|Enter|NumpadEnter|ArrowUp|ArrowDown)$/.test(k))return false;
+function menuKey(e){const k=e.code;if(MNP.on&&!e.isTrusted&&e.keyCode){e.preventDefault();return true}if(document.activeElement&&/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)&&!/^(Escape|Enter|NumpadEnter|ArrowUp|ArrowDown)$/.test(k))return false;
   const mv={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[k];
   if(mv){e.preventDefault();if(!MN.on){MN.on=true;mnMark();return true}mnMove(mv[0],mv[1]);return true}
   if(k==='Enter'||k==='NumpadEnter'||k==='KeyJ'){e.preventDefault();if(e.repeat)return true;if(!MN.on){MN.on=true;mnMark();return true}mnOk();return true}
@@ -1383,6 +1383,24 @@ function menuKey(e){const k=e.code;if(document.activeElement&&/^(INPUT|TEXTAREA)
   if(k==='KeyE'||k==='Digit2'||k==='PageDown'){e.preventDefault();MN.on=true;mnTab(1);return true}
   return false}
 addEventListener('pointerdown',e=>{if(menuOpen&&e.isTrusted&&MN.on){MN.on=false;mnMark()}},true);
+/* Controller im Menü direkt abfragen: Steuerkreuz und linker Stick in alle vier Richtungen, ruhige Wiederholung beim Halten,
+   A bestätigt, B zurück, LB/RB Reiter, Start schließt, rechter Stick scrollt weich. Die von gamepad.js nachgeahmten Tasten werden im Menü dann verschluckt,
+   sonst wären ← → im Menü „Zurück“ und „Bestätigen“ und die Auswahl springt. */
+const MNP={on:false,prev:null,dir:-1,t:0};
+function mnPad(now){if(!menuOpen||!navigator.getGamepads||!document.documentElement.classList.contains('eg-pad')){MNP.on=false;MNP.prev=null;return}
+  let gs;try{gs=[...navigator.getGamepads()].filter(Boolean)}catch(e){return}if(!gs.length){MNP.on=false;return}
+  const b=[],d=[0,0,0,0];let ry=0;for(const g of gs){for(let i=0;i<16;i++){const x=g.buttons[i];if(x&&(x.pressed||x.value>.5))b[i]=1}const ax=g.axes[0]||0,ay=g.axes[1]||0;if(ay<-.5)d[0]=1;if(ay>.5)d[1]=1;if(ax<-.5)d[2]=1;if(ax>.5)d[3]=1;if(Math.abs(g.axes[3]||0)>Math.abs(ry))ry=g.axes[3]||0}
+  for(let i=0;i<4;i++)if(b[12+i])d[i]=1;
+  const p=MNP.prev;MNP.prev={b,d};MNP.on=true;if(!p)return;   /* erstes Bild nach dem Öffnen: nur merken (Start ist noch gedrückt) */
+  const hit=i=>b[i]&&!p.b[i];
+  const cur=d.indexOf(1),MV=[[0,-1],[0,1],[-1,0],[1,0]];
+  if(cur<0)MNP.dir=-1;else if(cur!==MNP.dir){MNP.dir=cur;MNP.t=now+340;if(!MN.on){MN.on=true;mnMark()}else mnMove(...MV[cur])}
+  else if(now>=MNP.t){MNP.t=now+120;mnMove(...MV[cur])}
+  if(hit(0)){if(!MN.on){MN.on=true;mnMark()}else mnOk()}
+  else if(hit(1)){if(!MN.on){MN.on=true;mnMark()}else mnBack()}
+  else if(hit(4)){MN.on=true;mnTab(-1)}else if(hit(5)){MN.on=true;mnTab(1)}
+  else if(hit(9))toggleMenu(false);
+  if(Math.abs(ry)>.2){const c=$('mcont');if(c)c.scrollTop+=ry*14}}
 /* Kamera mit dem rechten Stick (gamepad.js liefert jedes Pad im Standard-Layout) */
 function padCam(dt){if(mode!=='play'||menuOpen||!navigator.getGamepads)return;let rx=0,ry=0;try{for(const g of navigator.getGamepads()){if(!g)continue;const x=g.axes[2]||0,y=g.axes[3]||0;if(Math.abs(x)>Math.abs(rx))rx=x;if(Math.abs(y)>Math.abs(ry))ry=y}}catch(e){return}
   const dz=v=>Math.abs(v)<.18?0:(v-Math.sign(v)*.18)/.82;rx=dz(rx);ry=dz(ry);if(rx)camYaw-=rx*2.6*dt;if(ry)camPitch=clamp(camPitch+ry*1.5*dt,.08,1.1)}
@@ -1601,7 +1619,7 @@ function bootDone(){const L=$('load');if(!L)return;setTimeout(()=>{L.classList.a
 function frame(now){
   requestAnimationFrame(frame);skyMat.uniforms.uTm.value=now/1000;const rdt=(now-lastT)/1000;let dt=Math.min(rdt,.05);lastT=now;
   if(!MP.on){if(hitStop>0){hitStop-=rdt;dt*=.04}else if(slowT>0){slowT-=rdt;dt*=.4}}
-  time+=dt;qualityTick(rdt);
+  time+=dt;qualityTick(rdt);if(menuOpen)mnPad(now);
   for(const o of animObjs)o.fn(time,dt);
   if(mode==='flight'){FL.update(dt);FL.render();if(first){first=false;bootDone()}return}
   if(mode==='pix'){PX().frame(rdt);return}if(mode==='ride'){RIDEX().frame(rdt);return}
