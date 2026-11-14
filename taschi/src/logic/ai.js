@@ -66,7 +66,7 @@ export function chooseAction(b, side, slot, rng) {
       if (data.power > 0) {
         const dmg = expectedDamage(me, f.m, mv.id);
         score = dmg;
-        // sicherer K.o. – außer das Ziel hält sich mit einem Fokusband bei vollen KP
+        // sicherer K.o. – außer das Ziel hält sich mit einem Haltegurt bei vollen KP
         const banded = f.m.held === 'fokusband' && f.m.hp >= maxHp(f.m);
         if (level >= 3 && dmg >= f.m.hp && !banded) score += 400; // secure KO
         if (level >= 3 && data.pp <= 10 && dmg < f.m.hp * 0.4) score *= 0.7; // save strong moves

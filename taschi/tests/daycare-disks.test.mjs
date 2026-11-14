@@ -92,7 +92,7 @@ test('Trainer: starke Gegner tragen Gegenstände, Revanche wächst mit', () => {
   assert.match(dayKey(new Date(2026, 0, 5)), /^2026-01-05$/);
 });
 
-test('KI: heilt Status mit Heilkraut und schont Fokusband-Ziele nicht als sicheren K.o.', () => {
+test('KI: heilt Status mit Heilkraut und schont Haltegurt-Ziele nicht als sicheren K.o.', () => {
   const rng = createRng('ai');
   const me = makeMonster('blitzi', 20, rng), foe = makeMonster('glutzahn', 20, rng);
   foe.status = 'schlaf';

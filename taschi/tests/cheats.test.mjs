@@ -38,7 +38,7 @@ test('Maximale Entwicklung und Items lassen sich zurücknehmen', () => {
   assert.equal(JSON.stringify(back.dex), JSON.stringify(start().s.dex), 'Dex wie vorher');
   assert.equal(back.coins, coins);
   assert.equal(back.bag.taschiball, bag.taschiball);
-  assert.ok(!back.bag.trank, 'verbrauchte Tränke werden nicht zurückgezaubert');
+  assert.ok(!back.bag.trank, 'verbrauchte Heiltropfen werden nicht zurückgezaubert');
   assert.ok(!Cheats.anyOn(back));
 });
 

@@ -22,7 +22,7 @@ const ABILITY_BY_TYPE = {
   eis: { kind: 'core', name: 'Frostkern', text: 'Eis-Attacken +30 %, wenn höchstens ein Drittel KP übrig ist.' },
   gestein: { kind: 'rock', name: 'Felsenhaut', text: 'Erleidet 10 % weniger Schaden.' },
   erde: { kind: 'rock', name: 'Erdpanzer', text: 'Erleidet 10 % weniger Schaden.' },
-  flug: { kind: 'tail', name: 'Rückenwind', text: '10 % mehr Schaden, wenn es schneller als das Ziel ist.' },
+  flug: { kind: 'tail', name: 'Aufwind', text: '10 % mehr Schaden, wenn es schneller als das Ziel ist.' },
   geist: { kind: 'veil', name: 'Schattenschleier', text: 'Sehr effektive Treffer richten 15 % weniger Schaden an.' },
   normal: { kind: 'thick', name: 'Dickfell', text: 'Volltreffer richten keinen Extraschaden an.' }
 };

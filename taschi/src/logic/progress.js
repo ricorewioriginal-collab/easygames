@@ -147,7 +147,7 @@ export function mainObjective(s) {
   if (s.league < 5) return { text: 'Bestehe Meisterprüfung ' + (s.league + 1) + '/5 der Sternenliga am Sternengipfel.', region: 16, target: 'league' };
   const legends = ['tiefenlied', 'sturmkron', 'mondhueter', 'auraflamme'].filter(id => s.dex[id] !== 2).length;
   if (legends) return { text: 'Postgame: Finde die ' + legends + ' verbleibenden uralten Wächter.', region: null, target: 'legend' };
-  return { text: 'Postgame: Vervollständige den Taschidex (' + caughtCount(s) + '/' + SPECIES_IDS.length + ') und fordere Champions zur Revanche.', region: null, target: null };
+  return { text: 'Postgame: Vervollständige den Taschibuch (' + caughtCount(s) + '/' + SPECIES_IDS.length + ') und fordere Champions zur Revanche.', region: null, target: null };
 }
 
 export function chapterOf(s) {

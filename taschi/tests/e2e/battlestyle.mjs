@@ -1,5 +1,5 @@
 // Browsertest: Kampf in der offenen Welt (Wiese und Wasser), Befehlsmenü rechts unten,
-// Plaketten mit Level/Geschlecht, Wurf mit Leuchtspur, Namensschilder, Begleiter-Plakette, Taschidex.
+// Plaketten mit Level/Geschlecht, Wurf mit Leuchtspur, Namensschilder, Begleiter-Plakette, Taschibuch.
 // Run: node tests/e2e/battlestyle.mjs [screenshot-dir]
 import assert from 'node:assert/strict';
 import { startSeeded, G, advance, teleport } from './helpers.mjs';
@@ -66,10 +66,10 @@ try {
   assert.equal(await G(page, () => window.__taschi.battleScene.inWorld && window.__taschi.battleScene.surf), true, 'kein Wasserkampf');
   await shot('bs-battle-water');
   await endBattle();
-  // Taschidex: Raster + großes Modell
+  // Taschibuch: Raster + großes Modell
   await G(page, async () => { const { openPauseMenu } = await import('./src/ui/menus.js'); openPauseMenu(window.__taschi, 'dex'); });
   await frames(30);
-  assert.ok(await G(page, () => document.querySelector('#dexbig canvas') && document.querySelectorAll('.dexcell').length > 50), 'Taschidex-Raster fehlt');
+  assert.ok(await G(page, () => document.querySelector('#dexbig canvas') && document.querySelectorAll('.dexcell').length > 50), 'Taschibuch-Raster fehlt');
   await page.keyboard.press('ArrowRight'); await frames(20);
   await shot('bs-dex');
   await page.keyboard.press('Escape'); await frames(10);

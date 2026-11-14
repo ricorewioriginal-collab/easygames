@@ -35,7 +35,7 @@ for(let region=0;region<12;region++)for(let i=0;i<16;i++){
  const evo=i<14&&stage!==2?['form_'+region+'_'+(i+1),17+stage*15+region]:undefined;
  SPEC[id]={name:REGIONS[region]+ENDINGS[i],type,color:tint.getHex(),hp:base.hp+(region%4)*3+stage*20,atk:base.atk+(i%4)*2+stage*13,def:base.def+(i%5)*2+stage*12,speed:base.speed+(region%3)*3+stage*9,catch:Math.max(.12,base.catch-(region%4)*.025-stage*.1),moves:['stoss',type==='normal'?'hieb':TYPE_MOVE[type]],evo,bio:'Ein Wesen aus der Region '+REGIONS[region]+'. Seine Form entwickelt sich mit seiner Umgebung.'};
 }
-const MOVES={stoss:['Kugelstoß','normal',40],hieb:['Wirbelhieb','normal',65],funken:['Funkenschlag','elektro',48],glut:['Glutfunken','feuer',48],ranke:['Rankenhieb','pflanze',48],spritzer:['Wasserperlen','wasser',48],fluegel:['Windstoß','flug',48],stein:['Steinwurf','gestein',48],spuk:['Spukhauch','geist',48]};
+const MOVES={stoss:['Kugelstoß','normal',40],hieb:['Wirbelhieb','normal',65],funken:['Funkenschlag','elektro',48],glut:['Glutfunken','feuer',48],ranke:['Dornenranke','pflanze',48],spritzer:['Wasserperlen','wasser',48],fluegel:['Böenschlag','flug',48],stein:['Brockenwurf','gestein',48],spuk:['Spukhauch','geist',48]};
 const ADV={feuer:{pflanze:2,wasser:.5,gestein:.5},wasser:{feuer:2,gestein:2,pflanze:.5},pflanze:{wasser:2,gestein:2,feuer:.5,flug:.5},elektro:{wasser:2,flug:2,pflanze:.5},gestein:{feuer:2,flug:2},flug:{pflanze:2,gestein:.5},geist:{geist:2,normal:0},normal:{geist:0}};
 const GYMS=[['Fels-Fiete','felsling',8],['Perla','quappi',11],['Käpt’n Volt','blitzi',14],['Blüte','samenling',17],['Forscher Nilo','kaeferli',19],['Jette vom Team Funke','knister',21],['Kapitän Rumo','glutzahn',24],['Meisterin Aurelia','blitzor',27],['Kira vom Nebelpass','geisterchen',30],['Rokko vom Gletscher','panzerlon',32],['Taro vom Waldturm','bluetling',34],['Mira vom Sturmfeld','knister',36],['Nona der Kristallhöhle','felsling',38],['Lio der Mondbucht','funkli',40],['Sora vom Sonnenplateau','glutdrach',42],['Großmeisterin Aurelia','blitzor',45]];
 const SAVE='easygames.taschi.eight-lights.v1',SELECTED=SAVE+'.selected';
@@ -291,7 +291,7 @@ function regionalTalk(p){
  const r=regions[p.region];
  if(p.npc===0){
   const count=Object.keys(save.dex).filter(id=>save.dex[id]===2).length;
-  dialog('Professor '+PROF_NAMES[r.id]+' · '+r.name,'<p>„Unsere Region ist berühmt für '+REGION_TYPES[r.id].map(t=>TYPES[t]+' '+t).join(' und ')+'. Halte Ausschau nach besonderen Taschis!“</p><p>Dein Taschidex: '+count+' Arten gefangen.</p>',[
+  dialog('Professor '+PROF_NAMES[r.id]+' · '+r.name,'<p>„Unsere Region ist berühmt für '+REGION_TYPES[r.id].map(t=>TYPES[t]+' '+t).join(' und ')+'. Halte Ausschau nach besonderen Taschis!“</p><p>Dein Taschibuch: '+count+' Arten gefangen.</p>',[
    ['Team versorgen',()=>{save.team.forEach(m=>{m.hp=maxHp(m);for(const move of SPEC[m.id].moves)ensurePP(m)[move]=maxPP(move)});stats();close();toast('Professor '+PROF_NAMES[r.id]+' hat dein Team geheilt.')}],
    ['Über die Region',()=>regionSelect()],['Weiter',close]
   ]);return;
@@ -363,7 +363,7 @@ function regionAction(p){
  if(p.kind==='chest'){
   if(save.chests[r.id]){toast('Diese Schatztruhe wurde bereits geöffnet.');return}
   save.chests[r.id]=true;save.balls+=4;save.potions+=2;save.coins+=80+r.id*10;stats();
-  dialog('Schatztruhe geöffnet!','Du findest 4 Taschibälle, 2 Tränke und '+(80+r.id*10)+' Sternmünzen.',choice());return;
+  dialog('Schatztruhe geöffnet!','Du findest 4 Taschibälle, 2 Heiltropfen und '+(80+r.id*10)+' Sternmünzen.',choice());return;
  }
  if(save.puzzles[r.id]){toast('Dieses Rätsel wurde bereits gelöst.');return}
  const answer=(r.id*3+2)%3;
@@ -452,9 +452,9 @@ function villageVisit(v){
   ['Im Dorf ausruhen',()=>{save.team.forEach(m=>{m.hp=maxHp(m);for(const move of SPEC[m.id].moves)ensurePP(m)[move]=maxPP(move)});close();toast('Deine Taschis sind ausgeruht!')}],
   ['Wiese erkunden',()=>{close();findWild(task.type)}],
  ];
- if(!completed&&n>=2)options.unshift(['Aufgabe abschließen',()=>{save.quests[v.name]=true;save.balls+=8;save.potions+=4;stats();dialog('Nebenaufgabe erfüllt!',task.person+' schenkt dir 8 Taschibälle und 4 Tränke. Danke für deine Hilfe!',choice())}]);
+ if(!completed&&n>=2)options.unshift(['Aufgabe abschließen',()=>{save.quests[v.name]=true;save.balls+=8;save.potions+=4;stats();dialog('Nebenaufgabe erfüllt!',task.person+' schenkt dir 8 Taschibälle und 4 Heiltropfen. Danke für deine Hilfe!',choice())}]);
  options.push(['Weiterziehen',close]);
- dialog('Willkommen in '+v.name,'<p><b>'+task.person+'</b>: '+task.story+'</p><p>Fangfortschritt: '+n+'/2 · '+(completed?'✓ Auftrag abgeschlossen':'Belohnung: 8 Taschibälle, 4 Tränke')+'</p>',options);
+ dialog('Willkommen in '+v.name,'<p><b>'+task.person+'</b>: '+task.story+'</p><p>Fangfortschritt: '+n+'/2 · '+(completed?'✓ Auftrag abgeschlossen':'Belohnung: 8 Taschibälle, 4 Heiltropfen')+'</p>',options);
 }
 function townLabel(title,x,z,height=4){
  const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;
@@ -540,7 +540,7 @@ function caveInteract(target){
   if(save.crystals[id]){toast('Dieser Kristall wurde bereits gefunden.');return}
   save.crystals[id]=true;
   save.balls+=3;save.potions+=1;stats();
-  dialog('Kristall geborgen!','Du findest drei Taschibälle und einen Trank. Ein Höhlen-Taschi taucht auf!',[
+  dialog('Kristall geborgen!','Du findest drei Taschibälle und einen Heiltropfen. Ein Höhlen-Taschi taucht auf!',[
   ['Kampf beginnen',()=>{close();findWild()}],['Weiter erkunden',close]]);
  }
 }
@@ -701,7 +701,7 @@ function bagMenu(){
  if(!combat)return;
  dialog('Fangbeutel','<p>Setze deine Ausrüstung im Kampf ein.</p>',[
  ['◉ Taschiball · '+save.balls,capture,save.balls===0||!!combat.isGym],
- ['🧪 Trank · '+save.potions,potion,save.potions===0],
+ ['🧪 Heiltropfen · '+save.potions,potion,save.potions===0],
  ['↩ Zurück',()=>battleMenu()]
  ]);$('panel').classList.add('battle');
 }
@@ -721,9 +721,9 @@ function attack(id){const c=combat;if(!c)return;const me=first();if(!me||ensureP
 function win(log){audioTone(784,.3,.07);const c=combat,me=first();const xp=35+c.enemy.lv*24;save.coins+=10+Math.floor(c.enemy.lv/2);me.xp+=xp;let extra=' +'+xp+' EP.';while(me.xp>=me.lv*me.lv*.9+12&&me.lv<60){me.xp-=Math.floor(me.lv*me.lv*.9+12);me.lv++;const old=maxHp({...me,lv:me.lv-1});me.hp+=maxHp(me)-old;extra+=' Level '+me.lv+'!';const evo=SPEC[me.id].evo;if(evo&&me.lv>=evo[1]){me.id=evo[0];save.dex[me.id]=2;extra+=' Entwicklung zu '+SPEC[me.id].name+'!'}}if(c.queue?.length){const next=c.queue.shift();c.enemy=next;updateBattleScene();persist();battleMenu(log+' '+SPEC[me.id].name+' bekommt '+xp+' EP. '+(c.queue.length+1)+' gegnerische Taschis warten noch.');return}if(c.championIndex!==null){save.champions ||= {};save.champions[c.championIndex]=true;save.coins+=200;extra+=' Champion der Region '+REGION_NAMES[c.championIndex]+' besiegt! ★200';}if(c.leagueIndex!==null){save.league=Math.max(Number(save.league)||0,c.leagueIndex+1);save.coins+=250;extra+=' Sternenliga-Prüfung '+save.league+'/5 gewonnen!';if(save.league===5)extra+=' Du bist Sternenmeister der Taschi-Region!';}if(c.trainerId!==null){save.trainers ||= {};save.trainers[c.trainerId]=1;if(c.trainerId>=200){save.guild ||= {};save.guild[c.trainerId-200]=true;save.balls+=6;save.coins+=150;extra+=' Die gefangenen Taschis sind befreit! Du erhältst 6 Bälle und ★150.'}else{save.coins+=70;extra+=' Trainerduell gewonnen! ★70'}}if(c.isGym){save.team.forEach(m=>m.hp=Math.max(m.hp,Math.round(maxHp(m)*.7)));save.badges=Math.max(save.badges,c.isGym);save.balls+=3;save.potions+=1;save.coins+=65+c.enemy.lv*3;extra+=' Licht-Siegel '+save.badges+'/16 verdient!';if(save.badges===16)extra+=' Alle 16 Siegel errungen! Die Sternenliga ist nun im Menü verfügbar.';if(save.badges%4===0)extra+=' Ein neues Storykapitel wurde freigeschaltet!'}save.wins++;updateFollower();combat=null;updateBattleScene();transition(GAME_STATES.RESULT);stats();dialog('Gewonnen!','<p>'+log+extra+'</p>',c.isGym&&save.badges%4===0?[['Neues Storykapitel',chapterDialog],['Weiterspielen',close]]:choice())}
 function capture(){audioTone(510,.12,.06);const c=combat;if(!c||c.isGym||save.balls<=0)return;save.balls--;const e=c.enemy;const rate=Math.min(.94,SPEC[e.id].catch*(.65+1.5*(1-e.hp/maxHp(e))));if(Math.random()<rate){save.dex[e.id]=2;if(save.team.length<6)save.team.push(e);else save.box.push(e);combat=null;updateFollower();updateBattleScene();transition(GAME_STATES.RESULT);stats();dialog('Gefangen!','<p>'+SPEC[e.id].name+' ist jetzt dein Freund! '+(save.team.includes(e)?'Im Team.':'Im Lager.')+'</p>',choice())}else enemyTurn('Der Taschiball wackelt … oh nein, entwischt!')}
 function potion(){if(!combat||save.potions<1)return;const m=first();save.potions--;m.hp=Math.min(maxHp(m),m.hp+35);enemyTurn(SPEC[m.id].name+' erhält bis zu 35 KP!')}
-function team(){dialog('Dein Taschi-Team','<p>Tippe auf ein Taschi, um es nach vorne zu stellen. Maximale Teamgröße: sechs.</p>'+save.team.map((m,i)=>'<p>'+(i?'':'⭐ ')+summary(m)+'</p>').join('')+'<p>Lager: '+save.box.length+' · Tränke: '+save.potions+' · Bälle: '+save.balls+'</p>',[...save.team.map((m,i)=>[SPEC[m.id].name+' führen',()=>{save.team.splice(i,1);save.team.unshift(m);updateFollower();close()}]),['Lager verwalten',storage],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Schließen',close]])}
+function team(){dialog('Dein Taschi-Team','<p>Tippe auf ein Taschi, um es nach vorne zu stellen. Maximale Teamgröße: sechs.</p>'+save.team.map((m,i)=>'<p>'+(i?'':'⭐ ')+summary(m)+'</p>').join('')+'<p>Lager: '+save.box.length+' · Heiltropfen: '+save.potions+' · Bälle: '+save.balls+'</p>',[...save.team.map((m,i)=>[SPEC[m.id].name+' führen',()=>{save.team.splice(i,1);save.team.unshift(m);updateFollower();close()}]),['Lager verwalten',storage],['Abenteuerbuch',journalView],['Reisekarte',mapView],['Schließen',close]])}
 function storage(){dialog('Taschi-Lager','<p>Hier kannst du Team-Taschis und gelagerte Taschis tauschen.</p>',[...save.box.map((m,i)=>['Aufnehmen: '+SPEC[m.id].name,()=>{if(save.team.length>=6){toast('Team ist voll');return}save.box.splice(i,1);save.team.push(m);updateFollower();storage()}]),...save.team.map((m,i)=>['Einlagern: '+SPEC[m.id].name,()=>{if(save.team.length<2){toast('Behalte mindestens ein Taschi');return}save.team.splice(i,1);save.box.push(m);updateFollower();storage()}]),['Zurück',team]])}
-function dex(){dialog('Taschidex','<p>'+Object.keys(SPEC).length+' Arten: Entdecke regionale Taschis in Wiesen, Dörfern, Bergen und Höhlen.</p>'+Object.entries(SPEC).map(([id,s])=>'<div style="padding:7px;border-bottom:1px solid #ccd">'+(save.dex[id]?TYPES[s.type]+' '+s.name+(save.dex[id]===2?' ✓':' · gesehen'):'???')+'</div>').join(''),choice())}
+function dex(){dialog('Taschibuch','<p>'+Object.keys(SPEC).length+' Arten: Entdecke regionale Taschis in Wiesen, Dörfern, Bergen und Höhlen.</p>'+Object.entries(SPEC).map(([id,s])=>'<div style="padding:7px;border-bottom:1px solid #ccd">'+(save.dex[id]?TYPES[s.type]+' '+s.name+(save.dex[id]===2?' ✓':' · gesehen'):'???')+'</div>').join(''),choice())}
 function enterCave(c){const stage=caveSteps[c.name]||0;dialog(c.name,'<p>Vor dir liegt ein begehbares Höhlensystem mit drei Kristallen, wilden Taschis und einem Ausgang.</p>',[['Höhle betreten',()=>caveEnter(c)],['Tiefer erkunden',()=>{caveSteps[c.name]=(stage+1)%3;close();findWild()}],['Kristalle untersuchen',()=>{save.balls+=2;stats();dialog('Kristallfund','Du findest zwei Taschibälle zwischen den Kristallen.',choice())}],['Höhle verlassen',close]])}
 
 
@@ -738,7 +738,7 @@ const STAR_LEAGUE=[
 function leagueMenu(){
  if(save.badges<16){dialog('Sternenliga','Erst mit allen 16 Licht-Siegeln darfst du die fünf Meisterprüfungen beginnen.',[['Zurück',close]]);return}
  const rank=Math.max(0,Math.min(5,Number(save.league)||0));
- if(rank===5){dialog('Sternenliga','Du bist Sternenmeister! Du kannst erneut antreten oder deinen Taschidex vervollständigen.',[['Erneut antreten',()=>{save.league=0;stats();leagueMenu()}],['Zurück',close]]);return}
+ if(rank===5){dialog('Sternenliga','Du bist Sternenmeister! Du kannst erneut antreten oder deinen Taschibuch vervollständigen.',[['Erneut antreten',()=>{save.league=0;stats();leagueMenu()}],['Zurück',close]]);return}
  const opponent=STAR_LEAGUE[rank];
  dialog('Sternenliga · Prüfung '+(rank+1)+'/5','<p>'+opponent[0]+' erwartet dich. Jedes Duell zählt, dein Fortschritt bleibt gespeichert. Bereite dein Team gut vor.</p>',[
  ['Herausfordern',()=>{if(!first()){toast('Heile zuerst dein Team!');return}battle(make(opponent[1],opponent[2]),false,null,rank)}],
@@ -838,9 +838,9 @@ function recordVisit(place){save.visited ||= {};save.visited[place.name||place.l
 
 
 function shop(){
- dialog('Fangladen · Sternmünzen','<p>Guthaben: ★ '+save.coins+' · Bälle: '+save.balls+' · Tränke: '+save.potions+'</p>',[
+ dialog('Fangladen · Sternmünzen','<p>Guthaben: ★ '+save.coins+' · Bälle: '+save.balls+' · Heiltropfen: '+save.potions+'</p>',[
  ['5 Taschibälle · ★ 30',()=>buy(30,()=>save.balls+=5),save.coins<30],
- ['3 Tränke · ★ 45',()=>buy(45,()=>save.potions+=3),save.coins<45],
+ ['3 Heiltropfen · ★ 45',()=>buy(45,()=>save.potions+=3),save.coins<45],
  ['10 Taschibälle · ★ 55',()=>buy(55,()=>save.balls+=10),save.coins<55],
  ['Zurück',close]
  ]);

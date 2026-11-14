@@ -1,5 +1,5 @@
 // Secondary renderer for UI: live 3D previews (starter balls, status page,
-// Taschidex, character creator) and cached portrait thumbnails.
+// Taschibuch, character creator) and cached portrait thumbnails.
 import { THREE } from './three.js';
 import { createCreature, displayScale } from './creatures.js';
 import { createCharacter } from './characters.js';

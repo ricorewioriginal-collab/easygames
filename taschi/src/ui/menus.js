@@ -1,4 +1,4 @@
-// Pause menu with tabs (Team, Taschidex, Tasche, Quests, Karte, Trainer,
+// Pause menu with tabs (Team, Taschibuch, Tasche, Quests, Karte, Trainer,
 // Optionen, System) plus shop, storage, travel and status pages.
 import { regionMapPanel } from './regionmap.js';
 import { h, typeBadge, hpBar, FocusNav } from './ui.js';
@@ -21,7 +21,7 @@ import * as Cheats from '../logic/cheats.js';
 import { openCheats } from './cheats.js';
 import { openRadio } from './radio.js';
 
-const TABS = [['team', 'Team'], ['dex', 'Taschidex'], ['bag', 'Tasche'], ['quests', 'Quests'], ['map', 'Karte'], ['card', 'Trainer'], ['options', 'Optionen'], ['system', 'System']];
+const TABS = [['team', 'Team'], ['dex', 'Taschibuch'], ['bag', 'Tasche'], ['quests', 'Quests'], ['map', 'Karte'], ['card', 'Trainer'], ['options', 'Optionen'], ['system', 'System']];
 export const fmtTime = (s) => Math.floor(s / 3600) + ' h ' + String(Math.floor(s / 60) % 60).padStart(2, '0') + ' min';
 const nameOf = (m) => m.nick || SPECIES[m.id].name;
 
@@ -155,7 +155,7 @@ const TAB_RENDER = {
         h('div.optrow', { style: { justifyContent: 'center' } }, h('button.bigbtn.focusable', { onclick: async () => { await game.openWardrobe(); rerender(); } }, h('span.ic', {}, '👕'), 'Umkleiden'))),
       h('div', {}, h('div.statgrid', {},
         'Spielzeit', h('span'), h('b', {}, fmtTime(s.playTime)),
-        'Taschidex', h('span'), h('b', {}, P.caughtCount(s) + ' / ' + SPECIES_IDS.length),
+        'Taschibuch', h('span'), h('b', {}, P.caughtCount(s) + ' / ' + SPECIES_IDS.length),
         'Siegel', h('span'), h('b', {}, s.badges + ' / 16'),
         'Champions', h('span'), h('b', {}, Object.keys(s.champions).length + ' / 16'),
         'Sternenliga', h('span'), h('b', {}, s.league + ' / 5'),
