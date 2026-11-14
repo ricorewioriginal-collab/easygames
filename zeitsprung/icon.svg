@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><defs>
+  <linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#ffe7b0"/><stop offset="1" stop-color="#ffb347"/></linearGradient>
+  <linearGradient id="sg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5ee7ff"/><stop offset=".5" stop-color="#ffcf6e"/><stop offset="1" stop-color="#ff5fa8"/></linearGradient>
+  <linearGradient id="mg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5ee7ff"/><stop offset=".5" stop-color="#8a5cff"/><stop offset="1" stop-color="#ff5fa8"/></linearGradient>
+  <linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5ee7ff"/><stop offset="1" stop-color="#ffcf6e"/></linearGradient>
+  <linearGradient id="ag" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#5ee7ff"/><stop offset="1" stop-color="#ffe08a"/></linearGradient>
+  <filter id="gl" x="-20%" y="-40%" width="140%" height="180%"><feGaussianBlur stdDeviation="6" result="b"/><feColorMatrix in="b" values="1 0 0 0 1  0 .7 0 0 .55  0 0 .3 0 .2  0 0 0 .55 0"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs><rect width="256" height="256" rx="56" fill="#07081a"/>
+  <g transform="translate(128 128)">
+    <circle r="104" fill="url(#mg)"/>
+    <circle r="89.44" fill="#0a0b1d"/>
+    <circle r="89.44" fill="none" stroke="url(#rg)" stroke-width="9.36" stroke-dasharray="20.8 10.4" opacity=".9"/>
+    <path d="M-52 29.120000000000005 C -20.8 -57.2, 26 -64.48, 45.76 -12.48" fill="none" stroke="url(#ag)" stroke-width="17.68" stroke-linecap="round"/>
+    <path d="M64.48 -31.2 L52 13.52 L16.64 -12.48 Z" fill="#ffe08a" stroke="#ffe08a" stroke-width="5.2" stroke-linejoin="round"/>
+    <circle cx="-52" cy="29.120000000000005" r="12.48" fill="#5ee7ff"/>
+  </g></svg>

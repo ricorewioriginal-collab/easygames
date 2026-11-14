@@ -455,145 +455,41 @@
    "trailer": null
   },
   {
-   "id": "zeitsprung-wissen",
-   "title": "ZEITSPRUNG WISSEN",
-   "desc": "Moderierte 3D-Wissensshow nach dem Zeitstrahl-Prinzip: 236 Ereignisse aus Geschichte, Politik, Erdkunde, Wissenschaft und Kultur von 776 v. Chr. bis heute, dazu 377 Wissensfragen, „Was war zuerst?“-Runden, 38 Bildrätsel, 16 historische Clips und 25 Songs zu den Ereignissen. A–D-Jahreswahl oder Zeitstrahl, TV-Modus und Handy-Controller per WR-Code/PIN, Google-Speicherung und App-Installation.",
-   "icon": "🌍",
-   "img": "zeitsprung-wissen/card.png",
-   "bg": "linear-gradient(145deg,#0f2f55,#1f6f8b 55%,#ffd37c)",
-   "glow": "rgba(124,240,216,.5)",
-   "path": "zeitsprung-wissen/",
+   "id": "zeitsprung",
+   "title": "ZEITSPRUNG – Die große Zeitreise-Show",
+   "desc": "Alle Zeitsprung-Ausgaben in einem Spiel: die moderierte Quiz-, Zeitstrahl- und Musikshow im echten 3D-TV-Studio. Wissen, Movie, Radio, Castingshow, Kinderserien und Eurovision einzeln wählbar oder im Gesamtmodus „Zeitsprung-Nacht“ Akt für Akt durch alle Ausgaben mit Gesamtwertung und Siegerehrung. Zeitstrahl wie bei Hitster, Wissensfragen, Song-, Clip- und Bildrunden, Moderator Vito mit einheitlicher neuronaler Stimme, KayKit-Spielfiguren je Ausgabe, Spiegelboden, Lichtshow und Konfetti. Steuerung per Touch, Maus, Tastatur, Gamepad, Buzz!-Buzzer und PS Move, dazu TV-Modus und Handys als Controller per Code, QR oder Link.",
+   "icon": "⏳",
+   "img": "zeitsprung/card.png",
+   "bg": "linear-gradient(145deg,#120f3a,#5b2a8f 50%,#ffcf6e)",
+   "glow": "rgba(255,207,110,.55)",
+   "path": "zeitsprung/",
    "modes": {
     "pad": true,
     "online": true
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "ZEITSPRUNG WISSEN funktioniert wie Hitster, nur mit Weltgeschehen statt Hits: Alle starten mit demselben Ereignis auf ihrem Zeitstrahl. In Zeitstrahlrunden ordnest du ein neues Ereignis zeitlich ein – entweder per Jahreswahl aus A–D oder als Profi direkt in die passende Lücke deines Zeitstrahls. Zu vielen Ereignissen gibt es einen historischen Clip von Wikimedia Commons oder einen passenden Song über Deezer. Dazwischen kommen Wissensfragen zu Geschichte, Politik, Erdkunde, Wissenschaft und Allgemeinwissen, „Was war zuerst?“-Runden, Songrunden und Bildrätsel. Jede richtige Antwort bringt einen Punkt, wer zuerst 8 Punkte hat, gewinnt. Im TV-Modus verbinden sich bis zu vier Handys per WR-Code und PIN.",
+    "anleitung": "ZEITSPRUNG vereint alle Zeitsprung-Ausgaben in einem 3D-TV-Studio: Wissen, Movie, Radio, Castingshow, Kinderserien und Eurovision. Im Hauptmenü wählst du eine Ausgabe oder den Gesamtmodus „Zeitsprung-Nacht“. Jede Ausgabe spielt sich wie gewohnt: Ereignisse, Songs oder Momente auf den Zeitstrahl legen (Jahr aus A–D oder als Profi in die passende Lücke), dazu Quiz-, Song-, Clip- und Bildrunden. Jede richtige Antwort bringt einen Punkt, 8 Punkte gewinnen. Im Gesamtmodus springt die Show Akt für Akt durch die Ausgaben, alle Punkte landen in der Gesamtwertung und am Ende gibt es eine Siegerehrung. Vor dem Start wählt jeder Spieler Namen und Spielfigur, Controller und Buzzer treten mit einem Knopfdruck bei.",
     "steuerung": [
-     "Maus/Touch: Antwort A–D oder Lücke im Zeitstrahl antippen",
-     "Tastatur: A–D bzw. 1–4 für Antworten, 1–9 für Lücken im Zeitstrahl",
-     "▶ Clip / ♫ Song startet die Medien zum Ereignis, ↻ wählt ein anderes Ereignis",
-     "TV-Modus: Handys scannen den QR-Code und geben die PIN ein"
+     "Touch/Maus: Karten, Antworten A–D und Lücken im Zeitstrahl antippen",
+     "Tastatur: ←→↑↓ Auswahl, Enter bestätigen, A–D bzw. 1–4 Antworten, 1–9 Lücken, Esc Menü",
+     "Gamepad: Steuerkreuz/Stick Auswahl, A bestätigen, B zurück, X Clip/Song, Y anderes Ereignis, Start Menü, LB/RB Ausgabe wechseln",
+     "Buzz!-Buzzer (PC, Chrome/Edge): Blau/Orange/Grün/Gelb = A–D, roter Buzzer = weiter bzw. Clip starten",
+     "PS Move (PC per USB): □ △ ○ ✕ = A–D, Move-Taste = weiter, T = Clip/Song",
+     "🌐 Online & Handys: QR-Code scannen oder Link öffnen, das Handy wird zum Controller"
     ],
     "tipps": [
-     "Starte mit „Jahr aus A–D wählen“ – das ist deutlich leichter als das Einordnen.",
-     "Nutze Clips und Songs: Schwarz-Weiß-Bilder, Musikstil und Sprache verraten oft das Jahrzehnt.",
-     "Im Profi-Modus zählt nur die Reihenfolge – gleiches Jahr wie ein Nachbar gilt auch als richtig."
+     "Mit mehreren Controllern antwortet nur der Spieler am Zug – wie am echten Buzzer-Pult.",
+     "Im Gesamtmodus lohnt sich jede Runde: Punkte aus allen Akten zählen zusammen.",
+     "Stockt die Grafik, stell in den Einstellungen „Ausgewogen“ oder „Leistung“ ein."
     ]
    },
-   "size": 243877,
-   "files": 16,
+   "size": 4273512,
+   "files": 41,
    "offline": true,
    "cloud": {
-    "game": "zeitsprung-wissen",
-    "prefix": "zw-save-v1"
-   },
-   "trailer": null
-  },
-  {
-   "id": "zeitsprung-movie",
-   "title": "ZEITSPRUNG MOVIE",
-   "desc": "Moderierte 3D-Filmshow mit 398 Fragen: 318 Film- und Serienquizfragen, 38 Hörfragen mit Deezer/Spotify-Musik und 42 Bildrätsel. Dazu 12 Trailer, A–D-Jahreswahl oder Zeitleiste, TV-Modus und Handy-Controller per WR-Code/PIN, Google-Speicherung und App-Installation.",
-   "icon": "🎬",
-   "img": "zeitsprung-movie/card.png",
-   "bg": "linear-gradient(145deg,#241248,#74418e 55%,#ffd37c)",
-   "glow": "rgba(255,211,124,.5)",
-   "path": "zeitsprung-movie/",
-   "modes": {
-    "pad": true,
-    "online": true
-   },
-   "multiplayer": true,
-   "guide": {
-    "anleitung": "ZEITSPRUNG MOVIE ist eine moderierte 3D-Filmshow: Moderator Vito stellt 318 Quizfragen zu Filmen, Studios, Serien und Filmwissen, 38 Hörfragen mit Filmmusik und Serienintros (Deezer/Spotify) und 42 Bildrätsel. In Trailerrunden siehst du einen von 12 Filmtrailern und wählst das Kinostartjahr aus A–D oder ordnest den Film auf deiner Zeitleiste ein. Jede richtige Antwort bringt einen Punkt, wer zuerst 8 Punkte hat, gewinnt. Solo oder mit bis zu vier Spielern – am selben Gerät oder im TV-Modus mit Handys als Controller (WR-Code und PIN).",
-    "steuerung": [
-     "Touch: Antwort A–D oder Lücke in der Zeitleiste antippen, dann „Nächste Runde →“.",
-     "PC: Maus wie Touch; Tastatur A–D oder 1–4 für Antworten, 1–9 für Zeitleisten-Lücken.",
-     "Controller: Steuerkreuz springt zwischen den Knöpfen, A drückt, rechter Stick ist ein Mauszeiger.",
-     "TV-Modus: Handys scannen den QR-Code und geben WR-Code und PIN ein; jedes Handy ist ein Spielerplatz."
-    ],
-    "tipps": [
-     "Läuft ein Trailer oder Song nicht, tausche ihn mit ↻ ohne Nachteil aus.",
-     "Gefragt ist immer der ursprüngliche Kinostart, nicht der deutsche Start.",
-     "Studiofragen kommen oft – merk dir, welches Studio hinter welchem Film steht."
-    ]
-   },
-   "size": 328474,
-   "files": 17,
-   "offline": true,
-   "cloud": {
-    "game": "zeitsprung-movie",
-    "prefix": "zm-save-v1"
-   },
-   "trailer": null
-  },
-  {
-   "id": "zeitsprung-radio",
-   "title": "ZEITSPRUNG RADIO",
-   "desc": "Moderierte 3D-Musikshow mit Vito: 790 Quizfragen zu Charts, Songtiteln, Biografien, gemeinfreien Songtexten, ESC und Castingshows, Musikrunden mit A–D-Jahreswahl oder Zeitleiste, direkte Deezer/Spotify-Clips, TV-Modus und Handy-Controller per WR-Code/PIN. Google-Speicherung und App-Installation.",
-   "icon": "💿",
-   "img": "zeitsprung-radio/card.png",
-   "bg": "linear-gradient(145deg,#19142a,#ff4c93 55%,#ffcb61)",
-   "glow": "rgba(255,76,147,.5)",
-   "path": "zeitsprung-radio/",
-   "modes": {
-    "pad": true,
-    "online": true
-   },
-   "multiplayer": true,
-   "guide": {
-    "anleitung": "ZEITSPRUNG RADIO ist eine moderierte Musikshow im 3D-Studio mit Moderator Vito. Reihum bekommt jeder Spieler eine Runde: In Musikrunden hörst du einen Song im eingebetteten Player (Deezer, Spotify oder YouTube) und wählst sein Erscheinungsjahr aus A–D – oder du setzt ihn an die richtige Stelle deiner Zeitleiste. In Quizrunden beantwortest du eine von 790 Fragen zu Charts, Interpreten, Songtiteln, Biografien, Songtexten, ESC und Castingshows mit vier Antworten. Jede richtige Antwort bringt einen Punkt, wer zuerst 8 Punkte hat, gewinnt. 1 bis 4 Spieler spielen an einem Gerät oder im TV-Modus mit Handys als Controller (WR-Code und PIN). Eine laufende Show wird gespeichert und lässt sich im Hauptmenü fortsetzen.",
-    "steuerung": [
-     "Touch/Maus: Antwort A–D oder die passende Lücke (+) der Zeitleiste antippen, „▶ Musik abspielen“ öffnet den Player, darin auf Play tippen.",
-     "PC: A, B, C, D oder 1–4 wählen die Antwort, in der Zeitleiste wählen 1–9 die Lücke von links.",
-     "Controller: Steuerkreuz springt zwischen den Knöpfen, A drückt.",
-     "Handy-Controller: Code und PIN vom Fernseher eingeben, dann am Handy antworten, Musik am TV starten und weiterschalten."
-    ],
-    "tipps": [
-     "Bei „Jahr aus A–D“ liegen die falschen Jahre höchstens 6 Jahre neben dem richtigen – achte auf Jahrzehnt und Klang.",
-     "In der Zeitleiste zählt bei gleichem Jahr jede passende Lücke.",
-     "Sperrt ein Anbieter den Clip, hilft „♫ Quelle wechseln“ oder „↻ Anderer Song“."
-    ]
-   },
-   "size": 279182,
-   "files": 14,
-   "offline": true,
-   "cloud": {
-    "game": "zeitsprung-radio",
-    "prefix": "zr-save-v2"
-   },
-   "trailer": null
-  },
-  {
-   "id": "zeitsprung-castingshow",
-   "title": "ZEITSPRUNG CASTINGSHOW",
-   "desc": "Moderierte 3D-Castingshow-Quizshow mit Vito nach dem Zeitstrahl-Prinzip: 265 Show-Momente und 1247 Fragen zu DSDS (alle Sieger und Top 10), Das Supertalent, The Voice, Popstars, GNTM, Idol, X Factor und Got Talent – auch abgesetzte Shows. Dazu 31 YouTube-Videos (Castings, Auftritte, Siegersongs), 44 Siegersongs über Deezer und 31 Bildrätsel. A–D-Jahreswahl oder Zeitstrahl, TV-Modus und Handy-Controller per WR-Code/PIN, Google-Speicherung und App-Installation.",
-   "icon": "🎤",
-   "img": "zeitsprung-castingshow/card.png",
-   "bg": "linear-gradient(145deg,#2a0c42,#a0287a 55%,#ffd37c)",
-   "glow": "rgba(255,95,174,.5)",
-   "path": "zeitsprung-castingshow/",
-   "modes": {
-    "pad": true,
-    "online": true
-   },
-   "multiplayer": true,
-   "guide": {
-    "anleitung": "ZEITSPRUNG CASTINGSHOW funktioniert wie Hitster, nur mit Castingshows: Jeder Spieler startet mit einem Show-Moment auf seinem Zeitstrahl. In Zeitstrahlrunden ordnest du einen neuen Moment ein – zum Beispiel einen Staffelsieg bei DSDS, Das Supertalent, The Voice oder American Idol –, entweder per Jahreswahl aus A–D oder als Profi direkt in die passende Lücke. Zu vielen Momenten gibt es ein YouTube-Video (Casting, Auftritt, Siegersong) oder den Siegersong über Deezer. Dazwischen kommen Quizfragen zu Gewinnern, Top-10-Kandidaten, Jury, Coaches und Moderatoren, „Was war zuerst?“-Runden, Songrunden („Aus welcher Show stammt dieser Siegersong?“) und Bildrätsel. Jede richtige Antwort bringt einen Punkt, wer zuerst 8 Punkte hat, gewinnt. Im TV-Modus verbinden sich bis zu vier Handys per WR-Code und PIN.",
-    "steuerung": [
-     "Maus/Touch: Antwort A–D oder Lücke im Zeitstrahl antippen",
-     "Tastatur: A–D bzw. 1–4 für Antworten, 1–9 für Lücken im Zeitstrahl",
-     "▶ Video / ♫ Song startet die Medien zum Moment, ↻ wählt einen anderen Moment",
-     "TV-Modus: Handys scannen den QR-Code und geben die PIN ein"
-    ]
-   },
-   "size": 285477,
-   "files": 17,
-   "offline": true,
-   "cloud": {
-    "game": "zeitsprung-castingshow",
-    "prefix": "zc-save-v1"
+    "game": "zeitsprung",
+    "prefix": "zs-"
    },
    "trailer": null
   },
@@ -3341,78 +3237,6 @@
    "cloud": {
     "game": "spinwelten",
     "prefix": "spinweltenSave,spinweltenSlot"
-   },
-   "trailer": null
-  },
-  {
-   "id": "zeitsprung-kinderserien",
-   "title": "ZEITSPRUNG KINDERSERIEN",
-   "desc": "Moderierte Zeitstrahl-Quizshow mit Vito zu Kinderserien von 1990 bis 2026: 66 Serienmomente, 97 Fragen, 33 Intro-Hörfragen und 30 Symbolrätsel. Von Disneys Große Pause über SpongeBob und Kim Possible bis Bluey. A–D-Jahreswahl oder Zeitstrahl, Solo, TV-Modus und bis zu vier Handy-Controller per WR-Code/PIN.",
-   "icon": "📺",
-   "img": "zeitsprung-kinderserien/card.png",
-   "bg": "linear-gradient(145deg,#28105a,#784ab1 55%,#ffd678)",
-   "glow": "rgba(104,232,255,.5)",
-   "path": "zeitsprung-kinderserien/",
-   "modes": {
-    "pad": true,
-    "online": true
-   },
-   "multiplayer": true,
-   "guide": {
-    "anleitung": "ZEITSPRUNG KINDERSERIEN ist ein moderiertes Zeitstrahlspiel mit bekannten Serien von 1990 bis 2026. Zu Beginn wird ein zufälliger Startmoment gezogen, der bei allen als erste Karte im Zeitstrahl liegt. Ordne weitere Serienstarts und besondere Momente zeitlich ein: wähle einfach ein Jahr aus A–D oder setze als Profi die Karte direkt in deinen Zeitstrahl. Dazwischen folgen Fragen zu Figuren und Serienwelten, Intro-Hörfragen, Symbolrätsel und ‚Was war zuerst?‘-Runden. Bekannte Intros von Disneys Große Pause, SpongeBob, Kim Possible und vielen weiteren Serien starten im eingebetteten YouTube- oder Deezer-Player. Jede richtige Antwort gibt einen Punkt; mit acht Punkten gewinnst du. Solo oder mit bis zu vier Spielern am TV und Handy-Controllern.",
-    "steuerung": [
-     "Maus/Touch: A–D-Antwort oder Lücke im Zeitstrahl antippen",
-     "Tastatur: A–D oder 1–4 für Antworten, 1–9 für Zeitstrahl-Lücken",
-     "▶ Intro abspielen startet die Hörfrage; ↻ wählt ein anderes Intro oder einen anderen Moment",
-     "TV-Modus: Handys scannen den QR-Code und geben WR-Code und PIN ein"
-    ],
-    "tipps": [
-     "Das Jahr meint den Originalstart der Serie; bei Rückkehrern und neuen Intros das Jahr des genannten Ereignisses.",
-     "Wenn ein externer Player in deinem Land nicht startet, wähle direkt ein anderes Intro."
-    ]
-   },
-   "size": 165007,
-   "files": 16,
-   "offline": true,
-   "cloud": {
-    "game": "zeitsprung-kinderserien",
-    "prefix": "zk-save-v1"
-   },
-   "trailer": null
-  },
-  {
-   "id": "zeitsprung-eurovision",
-   "title": "ZEITSPRUNG EUROVISION",
-   "desc": "ESC-Zeitstrahlspiel und Fanarchiv von 1956 bis 2026: alle 70 ausgetragenen Wettbewerbe, 2020 als ausgefallenes Jahr, vier Sieger 1969, über 300 Quizfragen, 73 Siegersongs als Hörfragen und 26 Symbolrätsel. Mit Vito, Solo, TV-Modus und bis zu vier Handy-Controllern.",
-   "icon": "🎤",
-   "img": "zeitsprung-eurovision/card.png",
-   "bg": "linear-gradient(145deg,#43146d,#2d1859 55%,#ff91bf)",
-   "glow": "rgba(255,145,191,.55)",
-   "path": "zeitsprung-eurovision/",
-   "modes": {
-    "pad": true,
-    "online": true
-   },
-   "multiplayer": true,
-   "guide": {
-    "anleitung": "ZEITSPRUNG EUROVISION führt durch alle ESC-Jahre von 1956 bis 2026. Ordne Austragungen auf dem Zeitstrahl ein oder wähle das richtige Jahr aus A–D. Dazu kommen Fragen zu Gastgebern, Ländern, Künstlern und Siegersongs, Hörfragen und Symbolrätsel. Im durchsuchbaren Fanarchiv stehen alle 70 Wettbewerbe, der vierfache Sieg 1969 und die ausgefallene Ausgabe 2020. Jede richtige Antwort bringt einen Punkt; acht Punkte gewinnen. Solo oder mit bis zu vier Spielern am TV und Handy-Controllern.",
-    "steuerung": [
-     "Maus/Touch: A–D-Antwort oder Lücke im Zeitstrahl antippen",
-     "Tastatur: A–D oder 1–4 für Antworten, 1–9 für Zeitstrahl-Lücken",
-     "♫ Song anhören startet die Hörfrage; ↻ wählt eine andere Ausgabe",
-     "TV-Modus: Handys scannen den QR-Code und geben WR-Code und PIN ein"
-    ],
-    "tipps": [
-     "Das Jahr der Austragung wird erst nach der Antwort aufgelöst. 2020 wurde der ESC abgesagt.",
-     "Die Siegersongs werden über Deezer gesucht; ihre Verfügbarkeit kann je nach Region variieren."
-    ]
-   },
-   "size": 166723,
-   "files": 19,
-   "offline": true,
-   "cloud": {
-    "game": "zeitsprung-eurovision",
-    "prefix": "ze-save-v1"
    },
    "trailer": null
   },
