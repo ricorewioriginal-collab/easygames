@@ -482,7 +482,10 @@
     if (AMC.Career) AMC.Career.stop();
     if (AMC.District) AMC.District.stop();
     if (AMC.Worlds) AMC.Worlds.stop();
+<<<<<<< HEAD
     if (AMC.Atmos) AMC.Atmos.stop();
+=======
+>>>>>>> origin/main
     ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent) f.root.parent.remove(f.root); });
     S.npcs.forEach(n => { if (n.fig) n.fig.dispose(); n.fig = null; });
     if (S.cat) { if (S.cat.mixer) S.cat.mixer.stopAllAction(); S.group.remove(S.cat.m); }
@@ -859,7 +862,11 @@
     S.hurtT += dt; if (S.hurtT > 4) S.energy = Math.min(100, S.energy + dt * 6);
     // Zeit
     if (S.left > 0 && S.mode !== 'free') { S.left -= dt; if (S.left <= 0) { S.left = 0; if (S.mode === 'jagd') return finish(true, 'time'); if (!S.done) return finish(false, 'time'); } }
+<<<<<<< HEAD
     updPickups(dt); updDrones(dt); updNpcs(dt); if (AMC.Transit) AMC.Transit.update(dt); if (AMC.District) AMC.District.update(dt); if (AMC.Events) AMC.Events.update(dt); if (AMC.Worlds) AMC.Worlds.update(dt); if (AMC.Atmos) AMC.Atmos.update(dt); if (AMC.CityVibe) AMC.CityVibe.update(dt, S); if (AMC.Career) AMC.Career.update(dt, S); updObjective(dt); updRings(dt);
+=======
+    updPickups(dt); updDrones(dt); updNpcs(dt); if (AMC.Transit) AMC.Transit.update(dt); if (AMC.District) AMC.District.update(dt); if (AMC.Events) AMC.Events.update(dt); if (AMC.Worlds) AMC.Worlds.update(dt); if (AMC.CityVibe) AMC.CityVibe.update(dt, S); if (AMC.Career) AMC.Career.update(dt, S); updObjective(dt); updRings(dt);
+>>>>>>> origin/main
     if (S.rico) { S.rico.f.update(dt); if (S.rico.t > 0) S.rico.t -= dt; }
     if (S.gisela) { if (S.gisela.t > 0) S.gisela.t -= dt; S.gisela.g.position.y = S.gisela.t > 0 ? Math.abs(Math.sin(S.time * 18)) * 0.06 : 0; }
     if (S.boss) updBoss(dt);

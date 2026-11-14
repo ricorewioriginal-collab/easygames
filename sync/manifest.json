@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "6063ef1a0756",
- "generated": "2026-11-13T23:58:14+00:00",
- "commit": "7b62bf344d04e333abaa79ecd5aceb3d7b7337c6",
+ "version": "82578bcc8067",
+ "generated": "2026-11-14T00:06:04+00:00",
+ "commit": "8aea0240c830e1ba87fc03114219af7892bd9b4c",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -348,13 +348,13 @@
   },
   {
    "p": "aeru/game.js",
-   "s": 196322,
-   "h": "56e9ff1933f2c0610724ff3a46f197b13d2729d21792d1ddfa6873e9dc94cd90"
+   "s": 197538,
+   "h": "966ba04d40c88e6779871c4eb48b370216b2cc474b4f63f775f0e1167f68e376"
   },
   {
    "p": "aeru/index.html",
-   "s": 15593,
-   "h": "dad1907d8668a28438cf63e2f5d5ac03c3e89d04a02956a64ded919ce4000510"
+   "s": 15598,
+   "h": "397dc5a70d1ac9756d40f3d7c52e65c719d055e8e6e4f136b3875138b723a3c8"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -2173,8 +2173,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/index.html",
-   "s": 6838,
-   "h": "62a9e841dc3d76b74728e1e041784b27a59347f7373ce0bb086d809175106613"
+   "s": 6921,
+   "h": "21052019f7155d41f82eba684098bd18d270a09661d124e31a75bc9e90e1a5f3"
   },
   {
    "p": "anmacha-podcast-tycoon/manifest.webmanifest",
@@ -2328,8 +2328,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/play.js",
-   "s": 102186,
-   "h": "92adb4c854fabd59296305619ead1ab9d63bcb14627bff71eabd74255c51e624"
+   "s": 102598,
+   "h": "f7ca20d98c014c2faca0d3c13cfb8c9b0081c7b7db712e7eda0b2ef9659744db"
   },
   {
    "p": "anmacha-podcast-tycoon/src/quiz.js",
@@ -6613,8 +6613,8 @@
   },
   {
    "p": "guides/aeru.json",
-   "s": 24952,
-   "h": "0f69c03607c9338543f1ec87581ca816e1428f2ecbfa8203bf269ff0c8eb1a32"
+   "s": 25000,
+   "h": "257373f161dea557561170892fd0a174b58ec9f99f9540616b88c6d9a6d08103"
   },
   {
    "p": "guides/anmacha-beat-surfer.json",
@@ -9824,7 +9824,7 @@
   {
    "p": "sync/catalog.json",
    "s": 259012,
-   "h": "5d1afb3dd72f7c5280da73a20fb4847627da70743e576d23e23d93d3f96556f3"
+   "h": "f078018c7a763f59cad58a4ade27ad70e3d27da16d6db56f43cf08082c3c98a2"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -12312,9 +12312,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-D4chFlYd.js",
-   "s": 1905799,
-   "h": "159e50ea60706e7bbd81e6c948504881535d98cf8d2223c2273260a737a8942a"
+   "p": "zotik/assets/index-BMBPIPgl.js",
+   "s": 1908542,
+   "h": "5286d2dfd1e122679193356d6f94c2f3a42019479154564e40415e8ffadb2813"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -12334,7 +12334,7 @@
   {
    "p": "zotik/index.html",
    "s": 72669,
-   "h": "081f536fc7335a1297f8263d265472a6daef50c096367e7d61eeddd7be3db787"
+   "h": "c1e15a4971f44bc5d3340164807489cfda53296a5863d23ccf23ce61c5449992"
   },
   {
    "p": "zotik/manifest.webmanifest",

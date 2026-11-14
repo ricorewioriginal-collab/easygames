@@ -68,8 +68,9 @@ function flyTo(h, tx, ty, tz, {maxTicks = 900, land = false} = {}) {
   api.teleport(28, -2.5, 2, -Math.PI / 2); h.tick(1); api.flight(); h.key('KeyD'); h.tick(20); h.up('KeyD'); assert(h.snap().state.x < 30.5, 'Fels direkt unter der Insel ist fest');
   h.tick(400);
   // Kantenschutz: Laufen bis zur Kante hält kurz an, weiter drücken lässt Aeru bewusst hinunter.
-  api.teleport(42, 1, 2, -Math.PI / 2); h.tick(30); h.key('KeyD'); h.tick(24); s = h.snap().state; assert(s.onGround && s.y === 1, 'Kantenschutz hält an der Kante');
-  h.tick(40); h.up('KeyD'); assert(h.snap().state.y < 1, 'weiter drücken: bewusst hinunter'); h.tick(400);
+  // (Inselränder sind seit dem Höhenfeld Hänge; Kanten gibt es noch an Plattformen, hier die oberste Turmstufe auf 3 m.)
+  api.teleport(2, 3, -20, -Math.PI / 2); h.tick(30); h.key('KeyD'); h.tick(24); s = h.snap().state; assert(s.onGround && s.y === 3, 'Kantenschutz hält an der Kante');
+  h.tick(40); h.up('KeyD'); assert(h.snap().state.y < 3, 'weiter drücken: bewusst hinunter'); h.tick(400);
   ok('Kantenhilfe, Kantenschutz, Fels unter Inseln fest');
   // Kamera bleibt über dem Boden.
   for (let i = 0; i < 30; i++) h.frame()(1000 + i * 16);
@@ -213,7 +214,7 @@ function flyTo(h, tx, ty, tz, {maxTicks = 900, land = false} = {}) {
     for (const r of lay.rings) assert(!blocked(r.x, r.y - 1, r.z), `Ring auf Insel ${level} steckt in einem Baum`);
     for (const n of s.npcs) assert(!blocked(n.x, n.y, n.z), `Figur ${n.id} auf Insel ${level} steckt in einem Baum`);
     for (const it of story.items.filter(i => i.level === level)) assert(onGround(it.x, it.y, it.z), `Objekt ${it.id} erreichbar`);
-    for (const r of lay.rings) assert(r.y < 14 && lay.solids.some(sd => Math.hypot(r.x - sd.x, r.z - sd.z) < (sd.r || 6) + 12), `Ring auf Insel ${level} in Flugreichweite`);
+    for (const r of lay.rings) assert(r.y < 14 && lay.solids.concat(api.terrain().plateaus).some(sd => Math.hypot(r.x - sd.x, r.z - sd.z) < (sd.r || 6) + 12), `Ring auf Insel ${level} in Flugreichweite`);
     for (const [id, def] of Object.entries(story.npcs)) for (const a of def.appear || []) if (a.level === level) assert(onGround(a.x, a.y, a.z), `Auftrittsort von ${id} auf Insel ${level}`);
   }
   // Echte Wege: verborgene Stufen (Kapitel 2) mit Sprüngen, Kristalltürme (Kapitel 5) per Aufwind, je ein Ring im Flug.
