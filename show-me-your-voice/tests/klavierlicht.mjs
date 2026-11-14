@@ -61,6 +61,16 @@ const waitRes = p => p.waitForSelector('#sResult.on, #resBox:visible', { timeout
   await waitRes(p); await p.waitForTimeout(800);
   const res = await p.evaluate(() => document.body.innerText); ok(/Klavierlicht-Song: „Jingle Bells“/.test(res), 'Quelle im Ergebnis');
   await shot(p, 'kl-ergebnis-pc');
+  // Jury teilt im Noten-Modus Klavierlicht-Stücke zu (Recall/Mottoshow, nicht immer)
+  const ka = await p.evaluate(() => { const A = window.SMYVApp, sv = A.state().save, s = sv.season; s.status = 'backstage'; let hit = 0;
+    for (let k = 0; k < 40; k++) { s.seed = 1000 + k; s.round = 2; if (A.klAssignOf(s)) hit++; }
+    for (let k = 0; k < 40 && !A.klAssignOf(s); k++) s.seed = 3000 + k; const a = A.klAssignOf(s); A.state().prep.how = 'game'; A.go('sMenu'); A.go('sBack'); return { hit, t: a && a.kl.title, n: a && a.name }; });
+  await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on');
+  const kt = await p.textContent('#prepBox');
+  ok(ka.hit > 5 && ka.hit < 35 && /Klavierlicht-Stück zugeteilt/.test(kt) && kt.includes(ka.t) && (await p.$$eval('#klList [data-kl]', l => l.length)) === 1, `Jury teilt Klavierlicht-Stück zu (${ka.hit}/40): ${ka.n} → ${ka.t}`);
+  await shot(p, 'kl-jury-zuteilung');
+  await p.click('#bGo'); await p.waitForSelector('#sTalk.on');
+  ok((await p.evaluate(() => window.SMYVApp.state().prep.kl.title)) === ka.t, 'zugeteiltes Stück wird gespielt');
   ok(!net.some(u => /laut\.fm/.test(u)), 'keine Radio-Anfragen');
   ok(!errs.length, 'keine Fehler ' + errs.join(' | '));
 }

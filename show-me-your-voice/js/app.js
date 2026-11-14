@@ -371,7 +371,8 @@
     prepMode = mode || prepMode;
     const career = prepMode === 'career', s = save.season, def = career ? D.ROUNDS[s.round] : D.ROUNDS[0];
     const motto = career && def.id === 'motto' ? D.MOTTOS[s.motto] : null;
-    const asg = career ? assignOf(s) : null;
+    const asg = career ? assignOf(s) : null, kasg = career && prep.how !== 'sing' ? klAssignOf(s) : null;
+    if (kasg) prep.kl = kasg.kl;
     if (asg) { if (!prep.song || prep.song.asg !== asg.t) prep.song = { artist: asg.artist, title: asg.title, style: asg.style, asg: asg.t }; prep.music = 'yt'; prep.style = asg.style; }
     else if (prep.song && prep.song.asg) { prep.song = null; prep.music = ''; }
     if (prep.music === 'yt' && !prep.song) prep.music = '';
@@ -386,14 +387,15 @@
     $('#prepBox').innerHTML = `
       <header class="bar"><button class="btn sm" data-back type="button">← Zurück</button><h2>${career ? def.icon + ' ' + def.name : '🎤 Freies Casting'}</h2><span class="onair">● LIVE</span></header>
       <div class="showCard">${motto ? `<p class="motto">🎭 Motto: <b>${motto.name}</b></p>` : ''}<div class="flow">${flow2.map(x => `<span>${x}</span>`).join('<i>›</i>')}</div><p class="muted">${esc(career ? def.rule : 'Zum Üben – zählt nicht für die Staffel. Weiter mit 2 von 3 Jury-Ja.')}</p>${rivalTxt}</div>
-      ${real ? asgBox : ''}
+      ${real ? asgBox : kasg ? `<div class="banner gold assign">${kasg.img ? `<img class="jimg" src="${kasg.img}" alt="">` : ''}<span>🎯 <b>${esc(kasg.name)}</b> hat dir ein Klavierlicht-Stück zugeteilt:<br><b>„${esc(kasg.kl.title)}“</b></span></div>` : ''}
       <h3><span class="stepN">1</span> Auftritt</h3><div class="opts two">${opt('how', 'game', '🎹 Klavierlicht-Songs', 'Echte Noten im Takt – Tasten, Touch, Controller oder Mikro')}${opt('how', 'sing', '🎙️ Echt singen', 'Ins Mikro singen – die Jury hört zu')}</div>
       ${real ? `<p class="optDesc">🎙️ ${asg ? 'Die Karaoke-Version deines Songs liegt bereit.' : 'Den Song wählst du gleich: Karaoke mit Lyrics, a cappella oder dein eigener.'} Am besten mit Kopfhörern.</p>
       <h3><span class="stepN">2</span> Bühnen-Aktion</h3>${pickRow('action', D.ACTION)}` : `
+      ${kasg ? `<h3><span class="stepN">2</span> Dein Song</h3><div class="opts songs" id="klList">${klOpt(kasg.kl, true)}</div>` : `
       <h3><span class="stepN">2</span> Dein Song <small class="muted">(${KL.cached().length} Klavierlicht-Songs)</small></h3>
       <div class="opts genres" id="klCats">${klCatsHtml(prep.klCat)}</div>
       <div class="songFind"><input id="klQ" type="search" enterkeyhint="search" autocomplete="off" value="${esc(prep.klQ)}" placeholder="🔎 Song oder Komponist suchen" aria-label="Song suchen"><button class="btn sm" type="button" id="klRnd">🎲 Überrasch mich</button></div>
-      <div class="opts songs" id="klList">${klListHtml(prep.klCat, prep.klQ, prep.kl)}</div>
+      <div class="opts songs" id="klList">${klListHtml(prep.klCat, prep.klQ, prep.kl)}</div>`}
       <p class="optDesc">${prep.kl ? `🎹 <b>${esc(prep.kl.title)}</b> · ${esc(prep.kl.artist || '')} – ${esc(prep.kl.lic || 'gemeinfrei')}` : 'Wähle einen Song – ohne Auswahl spielt ein Zufalls-Song aus der Kategorie.'} Die Noten sind die echte Melodie, das Klavier spielt dazu.</p>
       <h3><span class="stepN">3</span> Dein Stil</h3>${pickRow('approach', D.APPROACH)}
       <h3><span class="stepN">4</span> Bühnen-Aktion</h3>${pickRow('action', D.ACTION)}
@@ -432,6 +434,13 @@
     if (fg.length && R() < 0.6) gs = fg;   // Juroren verteilen gern Songs aus ihrem Lieblingsstil
     if (!gs.length) return null; const g = gs[Math.floor(R() * gs.length)], i = Math.floor(R() * g.songs.length), [t, vid, ch] = g.songs[i], parts = t.split(' – ');
     return { by: jid, name: j ? j.name : 'Die Jury', img: j ? j.img : '', g: g.id, i, t, artist: parts.length > 1 ? parts[0] : '', title: parts.length > 1 ? parts.slice(1).join(' – ') : t, vid, ch, style: D.STYLES[g.style] ? g.style : 'pop' };
+  }
+  // Jury teilt im Noten-Modus ein Klavierlicht-Stück zu – gleiche Runden und Häufigkeit wie bei den Karaoke-Songs, gern im Lieblingsstil
+  function klAssignOf(s) {
+    const a = assignOf(s); if (!a) return null;
+    const R = S.rng(S.hash(s.seed + ':klassign:' + s.round)), fav = Object.keys(D.STYLES).find(k => D.STYLES[k].fav === a.by);
+    let l = KL.cached(); const fl = l.filter(x => KL.styleOf(x) === fav); if (fl.length && R() < 0.6) l = fl;
+    const x = l[Math.floor(R() * l.length)]; return x ? { by: a.by, name: a.name, img: a.img, kl: x } : null;
   }
   function randomSong() { const g = D.KARAOKE[Math.floor(Math.random() * D.KARAOKE.length)], x = g.songs[Math.floor(Math.random() * g.songs.length)], pt = x[0].split(' – '); prep.song = { artist: pt[0], title: pt.slice(1).join(' – ') || x[0], style: D.STYLES[g.style] ? g.style : 'pop' }; prep.music = 'yt'; prep.style = prep.song.style; toast('🎲 ' + x[0], 2200); }
   function pickSong() { songSearchOv(x => { prep.song = x; prep.music = 'yt'; prep.style = x.style; RENDER.sPrep(prepMode); const b = $('#prepBox [data-v="yt"]'); if (b) b.focus(); }, prep.song && prep.song.artist ? prep.song.artist : ''); }
@@ -2008,5 +2017,5 @@
     imgs.forEach(u => { const im = new Image(); im.onload = im.onerror = () => { n++; $('#loadBar').style.width = Math.round(n / imgs.length * 100) + '%'; $('#loadTip').textContent = tips[Math.min(tips.length - 1, Math.floor(n / imgs.length * tips.length))]; if (n === imgs.length) setTimeout(done, 400); }; im.src = u; });
     setTimeout(done, 4000);
   })();
-  window.SMYVApp = { state: () => ({ cur, save, prep, stage: !!stage, flow: flow && flow.mode }), go, stageObj: () => stage, sing: () => sing, assignOf, prepGo: m => { RENDER.sPrep(m); go('sPrep', m); } };
+  window.SMYVApp = { state: () => ({ cur, save, prep, stage: !!stage, flow: flow && flow.mode }), go, stageObj: () => stage, sing: () => sing, assignOf, klAssignOf, prepGo: m => { RENDER.sPrep(m); go('sPrep', m); } };
 })();
