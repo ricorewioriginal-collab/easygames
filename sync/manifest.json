@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1012c1b2e3d4",
- "generated": "2026-11-14T13:34:41+01:00",
- "commit": "80aaf2907d5dfda80a8e06b4bf88fca36b71cf10",
+ "version": "44cf0958b845",
+ "generated": "2026-11-14T13:52:30+01:00",
+ "commit": "046a2e1d0bfa30aff5cae368d7ffe4ea67bef988",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7723,8 +7723,8 @@
   },
   {
    "p": "index.html",
-   "s": 101289,
-   "h": "1e21a1aa40e7586643a5ccbedacf90fc366c391bc47825416d3b3d0cf5520bcf"
+   "s": 101774,
+   "h": "3e836e31c2a5d8e216811a43d7bd406d7eceba6d178f3d7e0c5fab1fcd7a7a9f"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -10348,8 +10348,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 259013,
-   "h": "a48f6a0bdee93682f4c60aaa711a9cd77197101b32095b639db4c310957cf8e4"
+   "s": 261733,
+   "h": "659cdc376771dd5f243a8b8e385b0072981d645bdd0e23418d9ad3e17401b245"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
