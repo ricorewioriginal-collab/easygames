@@ -51,10 +51,10 @@
       }
     }
     // Verkehr: Autos fahren auf den Straßen hin und her
-    const nT = [3, 5, 8][W.quality] || 4;
+    const nT = [4, 6, 10][W.quality] || 5;
     for (let i = 0; i < nT; i++) {
       const road = C.ROADS[i % 3], axis = i % 2 ? 'x' : 'z', dir = i % 4 < 2 ? 1 : -1, s = -80 + rng() * 160;
-      const TM = [['kk_car_sedan', 'Limousine'], ['taxi', 'Taxi'], ['kk_car_hatchback', 'Kompaktwagen'], ['van', 'Kleinbus'], ['kk_car_taxi', 'Taxi'], ['police_car', 'Polizeiauto'], ['kk_car_stationwagon', 'Kombi'], ['delivery_van', 'Lieferwagen']], tm = TM[i % TM.length];
+      const TM = [['kk_car_sedan', 'Limousine'], ['taxi', 'Taxi'], ['suv', 'SUV'], ['van', 'Kleinbus'], ['hatchback_sports', 'Sportwagen'], ['police_car', 'Polizeiauto'], ['kk_car_taxi', 'Taxi'], ['delivery_van', 'Lieferwagen'], ['kk_car_stationwagon', 'Kombi'], ['garbage_truck', 'Müllwagen'], ['ambulance', 'Krankenwagen'], ['kk_car_hatchback', 'Kompaktwagen']], tm = TM[i % TM.length];
       const g = (W.models && W.models[tm[0]] && W.prop(tm[0], 4.2)) || (W.models && W.models.sedan && W.prop('sedan', 4.2)) || carMesh(cols[Math.floor(rng() * cols.length)]); S.group.add(g);
       S.traffic.push({ g, road, axis, dir, s, v: 9 + rng() * 4, base: 9 + rng() * 4, stop: 0, name: tm[1] });
     }

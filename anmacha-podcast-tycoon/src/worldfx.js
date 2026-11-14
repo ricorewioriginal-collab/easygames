@@ -5,7 +5,7 @@
   'use strict';
   const AMC = root.AMC, U = AMC.U, W = AMC.World, D = AMC.Data, Save = AMC.Save;
   const FX = AMC.WorldFX = {};
-  const CARS = ['sedan', 'taxi', 'van', 'police_car', 'delivery_van'];
+  const CARS = ['sedan', 'taxi', 'van', 'suv', 'police_car', 'delivery_van', 'hatchback_sports', 'firetruck'];
   let C = null, T = null, V = null;
 
   // ------------------------------------------------------------------ Video-Wände: ein Programm aus Live-Show, Nachrichten, Werbung, Visualizer, Wetter
@@ -336,7 +336,7 @@
     V.ambT -= dt; if (V.ambT <= 0) { V.ambT = 7 + Math.random() * 6; if (atStage || atArena) { AMC.Audio.sfx('cheer'); V.hype = 2.5; } else if (wName && /hafen/.test(wName) && Math.random() < 0.5) AMC.Audio.sfx('horn'); }
   };
   FX.cheer = function () { if (V) { V.hype = 4; V.people.forEach(p => { if (p.beh === 'cheer') p.t = 0; }); } };
-  const CAR_NAME = { sedan: 'Limousine', taxi: 'Taxi', van: 'Kleinbus', police_car: 'Polizeiauto', delivery_van: 'Lieferwagen' };
+  const CAR_NAME = { sedan: 'Limousine', taxi: 'Taxi', van: 'Kleinbus', police_car: 'Polizeiauto', delivery_van: 'Lieferwagen', suv: 'SUV', hatchback_sports: 'Sportwagen', firetruck: 'Feuerwehr', garbage_truck: 'Müllwagen', ambulance: 'Krankenwagen' };
   /** Fahrzeug in der Nähe, das gerade (fast) steht – zum Leihen */
   FX.nearCar = (x, z, r) => { if (!V) return null; const c = V.cars.find(c => !c.ship && c.v < 3 && Math.hypot(c.g.position.x - x, c.g.position.z - z) < r); if (c) c.name = CAR_NAME[c.model] || 'Auto'; return c || null; };
   /** Nächste Person (zum Ansprechen) und Animation von außen */

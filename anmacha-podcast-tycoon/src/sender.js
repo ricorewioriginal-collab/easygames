@@ -236,7 +236,7 @@
     put(R.who, hw - 2.5, hd - 1.6, Math.PI); put(R.other, R.mate.x, R.mate.z, -0.9, 'yes');
     R.figs = [W.hosts[R.other]].filter(Boolean);
     if (cfg.rico && W.hosts.rico) { put('rico', -1.2, -2.2, 0.3); R.figs.push(W.hosts.rico); }
-    const solids = () => B.props.filter(p => SOLID[p.k]).map(p => ({ x: p.x, z: p.z, r: SOLID[p.k] })).concat([{ x: R.mate.x, z: R.mate.z, r: 0.4 }]).concat(R.fans.map(f => ({ x: f.x, z: f.z, r: 0.35 })));
+    const solids = () => B.props.filter(p => SOLID[p.k]).map(p => ({ x: p.x, z: p.z, r: SOLID[p.k] })).concat([{ x: R.mate.x, z: R.mate.z, r: 0.4 }]).concat(R.fans.map(f => ({ x: f.x, z: f.z, r: 0.35 }))).concat(AMC.OnAir ? AMC.OnAir.solids(R) : []);
     const gp = cfg.game.kind === 'beat' ? { x: 0, z: 0.6 } : { x: 0, z: 1.5 };
     R.gameSpot = gp;
     const spots = () => {
@@ -245,6 +245,7 @@
       list.push({ x: gp.x, z: gp.z, r: 1.4, label: '🎮 3D-Spiel: ' + cfg.game.name + (Save.data.senderBest && Save.data.senderBest[st.slug] ? ' · Rekord ' + U.fmt(Save.data.senderBest[st.slug]) : ''), run: () => startGame(R) });
       list.push({ x: hw - 1.6, z: hd - 0.6, r: 1.4, label: '🎧 ' + st.name + ' live hören', run: () => { AMC.Media.playStation(st.slug); K.say('📻 ' + st.name + ' läuft – ' + st.desc); bumpVibe(R, 4); } });
       list.push({ x: R.mate.x, z: R.mate.z, r: 1.6, label: '💬 Mit ' + D.HOSTS[R.other].name + ' quatschen', run: () => { K.say(D.HOSTS[R.other].name + ': „' + U.pick(cfg.talk) + '“', 4600); const f = W.hosts[R.other]; if (f) { f.play('yes', { restart: true }); setTimeout(() => f.play('idle', { fade: 0.3 }), 1500); } } });
+      if (AMC.OnAir) list.push(...AMC.OnAir.spots(R));
       list.push({ x: -hw + 0.9, z: R.doorZ, r: 1.5, label: '🚪 Raus in die Stadt', run: () => AMC.Home.close() });
       return list;
     };
@@ -255,8 +256,10 @@
     const ui = K.hud(st.icon + ' ' + st.name, '');
     const top = ui.querySelector('.hm-top');
     top.insertAdjacentHTML('beforeend', '<small class="hm-desc">' + U.esc(cfg.room + ' · ' + st.desc) + '</small><div class="hm-vibe"><span>🔥 Vibe</span><i><em id="sdVibe"></em></i><b id="sdLv"></b></div>');
-    ui.insertAdjacentHTML('beforeend', '<div class="hm-emo" id="sdEmo"><button type="button" data-e="dance" data-pad="✚↑" data-kb="Leer">💃<small>Tanzen</small></button><button type="button" data-e="yes" data-pad="✚←" data-kb="1">👋<small>Winken</small></button><button type="button" data-e="arms" data-pad="✚→" data-kb="2">🙌<small>Jubeln</small></button><button type="button" data-e="roll" data-pad="✚↓" data-kb="3">🤸<small>Rolle</small></button><button type="button" data-e="swap" data-pad="Y" data-kb="Q">⇄<small>' + U.esc(D.HOSTS[R.other].name) + '</small></button></div><div class="hm-feed" id="sdFeed"></div><div class="hm-lanes" id="sdLanes" hidden></div>');
+    ui.insertAdjacentHTML('beforeend', '<div class="hm-emo" id="sdEmo"><button type="button" data-e="dance" data-pad="✚↑" data-kb="Leer">💃<small>Tanzen</small></button><button type="button" data-e="yes" data-pad="✚←" data-kb="1">👋<small>Winken</small></button><button type="button" data-e="arms" data-pad="✚→" data-kb="2">🙌<small>Jubeln</small></button><button type="button" data-e="punch" data-pad="✚↓" data-kb="3">👊<small>Hype</small></button><button type="button" data-e="swap" data-pad="Y" data-kb="Q">⇄<small>' + U.esc(D.HOSTS[R.other].name) + '</small></button></div><div class="hm-feed" id="sdFeed"></div><div class="hm-lanes" id="sdLanes" hidden></div>');
     ui.querySelector('#sdEmo').addEventListener('click', e => { const b = e.target.closest('[data-e]'); if (b) emote(R, b.dataset.e); });
+    // Pult, Auftragsbrett und Sender-Ruf (onair.js)
+    if (AMC.OnAir) AMC.OnAir.setup(R, K, { feed: (who, text) => feed(R, who, text), bubble, bumpVibe });
     K.drawNeeds(); drawVibe(R); if (AMC.UI.touchCtx) AMC.UI.touchCtx('sender');
     W.particles.attach(B.sc);
     AMC.Audio.sfx('door');
@@ -268,7 +271,7 @@
     setTimeout(() => K.say(D.HOSTS[R.other].name + ': „' + cfg.talk[0] + '“ · ' + AMC.glyph('a') + ' tanzen, ' + AMC.glyph('y') + ' wechseln', 5200), 400);
     spawnFans(R);
     R.tick = dt => tick(R, dt);
-    R.dispose = () => { I.dpadEmotes = false; R.fans.forEach(f => { if (f.fig) f.fig.dispose(); if (f.bub) f.bub.remove(); }); if (R.game) endGame(R, true); if (R.stopSong) R.stopSong(); };
+    R.dispose = () => { I.dpadEmotes = false; if (AMC.OnAir && R.oa) AMC.OnAir.stop(R); R.fans.forEach(f => { if (f.fig) f.fig.dispose(); if (f.bub) f.bub.remove(); }); if (R.game) endGame(R, true); if (R.stopSong) R.stopSong(); };
     return R;
   };
 
@@ -311,7 +314,8 @@
     else if (f.wish === 'song') { const s = U.pick(AMC.Data.WISHES.concat(AMC.Home.ownedSongs())); AMC.Audio.song(s.id).catch(() => null).then(song => { if (song && K.alive(R)) { if (R.stopSong) R.stopSong(); R.stopSong = AMC.Audio.playSong(song, { from: song.mel[0][0], sec: 7, vel: 0.6 }); } }); K.say('🎵 „' + s.t + '“ für ' + f.name + ' – live auf ' + R.st.name + '!', 3600); }
     else AMC.Audio.sfx('ok');
     W.particles.burst(f.x, 2, f.z, hex(R.st.color), 18, { speed: 3 });
-    Save.earn(w.fan); bumpVibe(R, w.vibe); setWish(R, f, null);
+    Save.earn(w.fan); bumpVibe(R, Math.round(w.vibe * (AMC.OnAir && AMC.OnAir.level(R.slug) >= 1 ? 1.5 : 1))); setWish(R, f, null);
+    if (AMC.OnAir) AMC.OnAir.event(R, 'wish');
     const n = K.needs(R.who); n.fun = Math.min(100, n.fun + 4); Save.save(); K.drawNeeds();
   }
   function bubble(R, f, text) { if (!f.bub) return; f.bub.textContent = text; f.bub.hidden = false; f.bubT = 3.2; f.bub.classList.remove('pop'); void f.bub.offsetWidth; f.bub.classList.add('pop'); }
@@ -332,6 +336,7 @@
       K.say('🎉 PARTY-LEVEL ' + cur + ' bei ' + R.st.name + '! Alle tanzen! +' + fan + ' 🎟️', 4200);
       R.fans.forEach(f => { f.danceT = 9; bubble(R, f, U.pick(['🎉🎉🎉', 'PARTYYY!', 'Bester Abend!', U.pick(R.cfg.lines)])); });
       drawVibe(R);
+      if (AMC.OnAir) AMC.OnAir.event(R, 'party');
     }
   }
   function drawVibe(R) {
@@ -344,8 +349,8 @@
     if (e === 'swap') return swap(R);
     if (e === 'dance') { R.dancing = !R.dancing; AMC.Audio.sfx(R.dancing ? 'combo' : 'ui'); if (!R.dancing && me) { me.play('idle', { fade: 0.2 }); R.w.anim = 'idle'; } return; }
     if (!me) return;
-    R.dancing = false; me.play(e, { restart: true, fade: 0.1, once: e === 'roll' }); R.w.anim = e; R.w.busy = e === 'roll' ? 1.1 : 1.6; AMC.Audio.sfx(e === 'arms' ? 'cheer' : 'ui');
-    R.fans.forEach(f => { if (Math.hypot(f.x - R.w.x, f.z - R.w.z) < 4.5) { f.fig.play(e === 'roll' ? 'arms' : e, { restart: true, fade: 0.1 }); f.danceT = 1.4; } });
+    R.dancing = false; me.play(e, { restart: true, fade: 0.1 }); R.w.anim = e; R.w.busy = 1.6; AMC.Audio.sfx(e === 'arms' ? 'cheer' : 'ui');
+    R.fans.forEach(f => { if (Math.hypot(f.x - R.w.x, f.z - R.w.z) < 4.5) { f.fig.play(e === 'punch' ? 'arms' : e, { restart: true, fade: 0.1 }); f.danceT = 1.4; } });
     bumpVibe(R, 3);
   }
   function swap(R) {
@@ -374,14 +379,15 @@
   }
   function tick(R, dt) {
     const me = W.hosts[R.who];
+    if (AMC.OnAir && AMC.OnAir.tick(R, dt)) { I.dpadEmotes = false; animFans(R, dt, false); animRoom(R, dt); (R.figs || []).forEach(f => f.update(dt)); return true; }
     // Tür: wer in die Tür läuft, geht raus
     if (R.w.x < -R.cfg.w / 2 + 0.75 && Math.abs(R.w.z - R.doorZ) < 0.8 && I.move.x < -0.4) { R.outT = (R.outT || 0) + dt; if (R.outT > 0.25) { AMC.Home.close(); return true; } } else R.outT = 0;
     I.dpadEmotes = !R.game;
     if (R.game) { R.game.update(dt); animFans(R, dt, true); return true; }
     if (I.hit('swap')) swap(R);
     if (I.hit('jump')) emote(R, 'dance');
-    if (I.device === 'pad') { if (I.hit('k1')) emote(R, 'dance'); if (I.hit('k2')) emote(R, 'yes'); if (I.hit('k3')) emote(R, 'arms'); if (I.hit('k4')) emote(R, 'roll'); }
-    else { if (I.hit('k1')) emote(R, 'yes'); if (I.hit('k2')) emote(R, 'arms'); if (I.hit('k3')) emote(R, 'roll'); }
+    if (I.device === 'pad') { if (I.hit('k1')) emote(R, 'dance'); if (I.hit('k2')) emote(R, 'yes'); if (I.hit('k3')) emote(R, 'arms'); if (I.hit('k4')) emote(R, 'punch'); }
+    else { if (I.hit('k1')) emote(R, 'yes'); if (I.hit('k2')) emote(R, 'arms'); if (I.hit('k3')) emote(R, 'punch'); }
     // Vibe: tanzen in der Nähe der Fans füllt, sonst sinkt er langsam
     const near = R.fans.filter(f => Math.hypot(f.x - R.w.x, f.z - R.w.z) < 4.5).length;
     if (R.dancing) { R.vibe = Math.min(100, R.vibe + dt * (1.5 + near * 1.2)); if (R.vibe >= 100) bumpVibe(R, 0); }
@@ -455,7 +461,7 @@
     const fan = Save.earn(15 + Math.round(q * 85)), n = K.needs(R.who);
     n.fun = Math.min(100, n.fun + 12); n.energy = Math.max(0, n.energy - 6);
     if (q >= 0.6 && (n.ideas || []).length < 3) n.ideas.push(R.st.name + ': ' + R.cfg.game.name);
-    Save.save(); K.drawNeeds();
+    Save.save(); K.drawNeeds(); if (AMC.OnAir) AMC.OnAir.event(R, 'game', q);
     K.say((q >= 0.8 ? '🔥 Die ' + R.st.name + '-Fans rasten aus!' : q >= 0.5 ? '👍 Starke Runde!' : '😅 Naja … die Technik war schuld.') + ' ' + U.fmt(score) + ' Punkte' + (rec ? ' · 🏆 Rekord!' : '') + ' · +' + fan + ' 🎟️' + (q >= 0.6 ? ' · 💡 Show-Idee!' : ''), 5200);
     AMC.Audio.sfx(q >= 0.5 ? 'applause' : 'miss');
     bumpVibe(R, Math.round(q * 40));
@@ -563,7 +569,7 @@
         const p = it.m.position;
         if (p.y < 1.9 && p.y > 0.4 && Math.abs(p.x - G.x) < 0.75) {
           R.g.remove(it.m);
-          if (it.bad) { G.lives--; G.combo = 0; AMC.Audio.sfx('hit'); W.particles.burst(p.x, p.y, p.z, 0x888888, 14, { speed: 3 }); if (me) { me.play('down', { restart: true, once: true, fade: 0.05 }); G.pose = 0.8; } K.say('💥 ' + U.pick(['Autsch!', 'Das war ' + g.badTxt + '!', 'Rauschen im Kopf …']) + ' ' + '❤️'.repeat(Math.max(0, G.lives)), 1600); }
+          if (it.bad) { G.lives--; G.combo = 0; AMC.Audio.sfx('hit'); W.particles.burst(p.x, p.y, p.z, 0x888888, 14, { speed: 3 }); if (me) { me.play('crouch', { restart: true, fade: 0.05 }); G.pose = 0.6; } K.say('💥 ' + U.pick(['Autsch!', 'Das war ' + g.badTxt + '!', 'Rauschen im Kopf …']) + ' ' + '❤️'.repeat(Math.max(0, G.lives)), 1600); }
           else { G.caught++; G.combo++; G.score += 50 * (1 + Math.min(4, Math.floor(G.combo / 5))); AMC.Audio.sfx('collect'); W.particles.burst(p.x, p.y, p.z, col, 12, { speed: 3 }); if (me && G.combo % 5 === 0) { me.play('arms', { restart: true, fade: 0.05 }); G.pose = 0.6; } }
           return false;
         }

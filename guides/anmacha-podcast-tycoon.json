@@ -150,7 +150,7 @@
         "Wie im Club: Drinnen sind Fans des Senders, die herumlaufen, im Chat schreiben, Sprechblasen zeigen und mittanzen. Wenn du tanzt, kommen sie zu dir und tanzen mit."
       ],
       "list": [
-        "💃 Tanzen: Springen-Taste (Leertaste, A, ⤴) oder Knopf „Tanzen“. Dazu Winken, Jubeln und Rolle (Tasten 1 bis 3 oder die Emote-Leiste).",
+        "💃 Tanzen: Springen-Taste (Leertaste, A, ⤴) oder Knopf „Tanzen“. Dazu Winken, Jubeln und Hype (Tasten 1 bis 3 oder die Emote-Leiste).",
         "⇄ Figurenwechsel: Q, Y oder der Knopf mit dem Namen. Du spielst dann den Partner, der andere tanzt mit.",
         "🔥 Vibe: Tanzen bei den Fans und erfüllte Fan-Wünsche füllen den Vibe-Balken. Ist er voll, steigt das Party-Level des Senders (bis 5) und alle feiern. Das bringt Fan-Punkte.",
         "Fan-Wünsche (Symbol über dem Kopf): Autogramm, Selfie, zusammen tanzen, Songwunsch (Klavierlicht) oder plaudern. Hingehen und Aktion drücken.",
@@ -158,6 +158,22 @@
         "🎧 Radio-Ecke: Der Sender läuft live. 💬 Partner: Marco oder Andrew erzählen etwas über den Sender.",
         "Sender-Tour: Jeder erste Besuch bringt 40 Fan-Punkte, alle 13 Häuser zusammen bringen 500 extra.",
         "Story (Staffel 3): Im Senderhaus des Kapitel-Senders wartet ein Interview mit Bonus-Funken. Das Haus ist auf der Karte als farbiges Quadrat markiert."
+      ]
+    },
+    {
+      "t": "On-Air-Pult, Sender-Aufträge und Sender-Ruf",
+      "p": [
+        "In jedem Senderhaus steht an der Rückwand ein On-Air-Pult mit roter „ON AIR“-Leuchte, daneben hängt das Auftragsbrett. Beides hängt mit dem Rest des Spiels zusammen: Ideen und Themen-Funken aus der Stadt helfen im Sender, und gute Sendungen bringen eurem Podcast mehr Hörer.",
+        "🎙️ Gastmoderation: Geh zum Pult und drück Benutzen (E, X oder den leuchtenden Knopf). Die Sendeuhr hat fünf Slots: Anmoderation, Song ansagen, Hörer am Telefon, Jingle & Werbung, Abmoderation. Wähle je Slot einen Befehl (Pfeile oder Steuerkreuz, dann Leertaste/A, am Handy antippen) und rede dann rein, wenn die Nadel im grünen Feld ist."
+      ],
+      "list": [
+        "🎯 Befehl im Stil des Senders: sicher und gut. 🕗/📚 Standard: solide. 🎲 Risiko: mit gutem Timing oft ein Volltreffer, sonst Funkstille.",
+        "💡 Joker: Hast du eine Idee aus der Stadt dabei, kannst du sie einbauen (einmal pro Sendung). Das gibt die beste Wertung und Cross-Promo.",
+        "🎙️ „AnMaCha – Der Podcast bewerben“ in der Werbepause bringt Cross-Promo.",
+        "Ergebnis: Einschaltquote und 1 bis 5 Sterne, Sender-Ruf, Tickets und Cross-Promo (bis +25 % Hörer bei eurer nächsten Podcast-Folge). Ab 4 Sternen gibt es eine neue Show-Idee.",
+        "📋 Sender-Auftrag: Jeder Sender hat jeden Tag einen eigenen Auftrag, z. B. 3 Fan-Wünsche erfüllen, Party-Level erreichen, im Senderspiel 60 % schaffen, eine Sendung mit ★★★ moderieren, 3 Themen-Funken einer Rubrik mitbringen oder eine Idee abgeben. Belohnung: Ruf und Tickets.",
+        "⭐ Sender-Ruf (je Sender): Bekannt (Fans geben 50 % mehr Vibe), Gastmoderator (Spezialbefehl Sender-Jingle), Stammgast am Mikro (+1 % Hörer je Folge), Sendergesicht (doppelte Auftrags-Tickets), Partnersender (+3 % Hörer in jeder Folge). Ruf gibt es auch für Fan-Wünsche, Party-Level und das Senderspiel.",
+        "Story-Auftrag „Die Sender-Allianz“ (Producer Jonas, Radio-Lounge): 3 Gastmoderationen mit ★★★ und bei 3 Sendern Ruf ★★."
       ]
     },
     {
@@ -342,7 +358,7 @@
       "p": [
         "📋 In der Stadt und in den Welten warten Auftraggeber mit einem ❗ über dem Kopf (Story-Aufträge) oder einem ❔ (Tagesjobs). Sprich sie an: Eine kurze Szene erklärt den Auftrag, danach zeigt eine orange Lichtsäule das nächste Ziel, auch auf der Karte.",
         "Ein Auftrag hat mehrere Schritte: hinfahren (manchmal auf Zeit oder nur im Auto), Teile einsammeln, Leute befragen, Gäste begleiten (sie steigen mit ins Auto), ein Minispiel vor Ort oder eine Rangelei mit Rauschmanns Leuten. Der Fortschritt bleibt erhalten, auch wenn du zwischendurch ein Gebäude betrittst.",
-        "Es gibt 18 Story-Aufträge in zwei Kapiteln, die nacheinander freigeschaltet werden, und jeden Tag 3 neue Tagesjobs (Kurier, Funken-Regen, Fotojob). Kapitel 2 („Die Stadt hört zu“) führt durch die Läden: Schichten, Ruf-Stufen, Gisela ausbauen und Partner gewinnen – bis zur Jubiläumsfolge vom Fernsehturm. Belohnung: Fan-Punkte, Abos, Themen-Funken und manchmal eine Idee. Übersicht und Abbrechen im Gesamtmenü unter „📋 Auftragsbuch“."
+        "Es gibt 19 Story-Aufträge in zwei Kapiteln, die nacheinander freigeschaltet werden, und jeden Tag 3 neue Tagesjobs (Kurier, Funken-Regen, Fotojob). Kapitel 2 („Die Stadt hört zu“) führt durch die Läden: Schichten, Ruf-Stufen, Gisela ausbauen und Partner gewinnen – bis zur Jubiläumsfolge vom Fernsehturm. Belohnung: Fan-Punkte, Abos, Themen-Funken und manchmal eine Idee. Übersicht und Abbrechen im Gesamtmenü unter „📋 Auftragsbuch“."
       ]
     }
   ],
@@ -357,7 +373,8 @@
         "Spielst du Andrew und willst Gisela fahren: einfach hingehen und X/E drücken – das Spiel wechselt automatisch zu Marco.",
         "Fahren: Stick oder W/S für Gas und Rückwärts, am Controller auch RT (Gas) und LT (Bremse/rückwärts). Lenken klappt auch beim Rangieren. Wer sich festfährt, wird nach kurzer Zeit automatisch auf die Straße zurückgesetzt.",
         "Jedes Auto im Verkehr ist fahrbar: Vor ein haltendes Auto stellen und mit X/E „Auto leihen“ – in der Stadt und in allen Welten.",
-        "Schick Marco und Andrew vor wichtigen Aufnahmen nach Hause: ausgeschlafen und satt bringen sie mehr Start-Hype, und Schreibtisch-Ideen werden zu starken Themenkarten."
+        "Schick Marco und Andrew vor wichtigen Aufnahmen nach Hause: ausgeschlafen und satt bringen sie mehr Start-Hype, und Schreibtisch-Ideen werden zu starken Themenkarten.",
+        "Vor dem Abend ins Senderhaus: Eine Gastmoderation am On-Air-Pult bringt Cross-Promo, also mehr Hörer für die Aufnahme am Abend. Eine Idee als Joker macht die Sendung fast sicher zu ★★★★."
       ]
     },
     {
@@ -521,7 +538,8 @@
         "15 Fit für die Live-Tour (Kim, Fitnessstudio): Aerobic-Schicht, Vorher-Nachher-Fotos beim Friseur, zur Music Arena.",
         "16 Der erste Fanclub (Malte, Fan-WG): WG-Quiz gewinnen, Recherche-Quiz in der Bücherei, Ruf ★★★ in der Fan-WG.",
         "17 Die Stadt steht hinter euch (Bürgermeisterin Hilde, Funkhaus): in 4 Läden Ruf ★★★, dann Hilde berichten.",
-        "18 Legenden der Medienstadt (Jonas, Radio-Lounge): Gisela komplett ausbauen, 3 Partner-Läden (★★★★★), Jubiläumsfolge vom Fernsehturm.",
+        "18 Die Sender-Allianz (Jonas, Radio-Lounge): 3 Gastmoderationen mit ★★★ am On-Air-Pult in Senderhäusern, dann bei 3 Sendern Ruf „Gastmoderator“ (★★). Tipp: Joker-Idee und Song-Ansage im grünen Feld.",
+        "19 Legenden der Medienstadt (Jonas, Radio-Lounge): Gisela komplett ausbauen, 3 Partner-Läden (★★★★★), Jubiläumsfolge vom Fernsehturm.",
         "Tipp: Minispiel nicht geschafft? Einfach nochmal starten. Zeit abgelaufen? Der Schritt beginnt neu.",
         "Langzeit-Tipp: Pro Tag jeden Laden besuchen (Gespräche, Aktion, zwei Schichten). So steigt der Ruf gleichmäßig, Partner-Läden geben dauerhaft mehr Hörer."
       ]
