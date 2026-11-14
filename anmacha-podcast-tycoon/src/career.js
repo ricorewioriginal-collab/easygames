@@ -85,7 +85,7 @@
     const mood = AMC.Home ? (AMC.Home.mood('andrew') + AMC.Home.mood('marco')) / 2 : 0.7;
     const studio = AMC.StudioEdit ? AMC.StudioEdit.bonus().lis : 0, gis = AMC.Camper ? AMC.Camper.value() : 0, songs = Math.min(10, (Save.data.songs || []).length);
     const parts = [
-      ['💡 Ideen', ideas * 0.08], ['📋 Tagesplan', done * 0.05], ['🌆 Prime-Time', ph === 'abend' ? 0.2 : 0], ['🛠️ Studio', studio], ['🚐 Gisela', gis * 0.02], ['🤝 Partner-Läden', AMC.Rooms ? AMC.Rooms.bonus() : 0], ['🎹 Musik', songs * 0.01], ['❤️ Fans', AMC.Social ? AMC.Social.bonus() : 0], ['🌧️ Regenwetter', AMC.Atmos ? AMC.Atmos.bonus() : 0], ['🚐 Roadtrip-Folge', (((c.today || {}).places) || {}).roadtrip ? 0.1 : 0], ['😊 Fitness', (mood - 0.6) * 0.5]
+      ['💡 Ideen', ideas * 0.08], ['📋 Tagesplan', done * 0.05], ['🌆 Prime-Time', ph === 'abend' ? 0.2 : 0], ['🛠️ Studio', studio], ['🚐 Gisela', gis * 0.02], ['🤝 Partner-Läden', AMC.Rooms ? AMC.Rooms.bonus() : 0], ['📻 Partnersender', AMC.OnAir ? AMC.OnAir.bonus() : 0], ['🎙️ Cross-Promo im Radio', AMC.OnAir ? AMC.OnAir.promo() : 0], ['🎹 Musik', songs * 0.01], ['❤️ Fans', AMC.Social ? AMC.Social.bonus() : 0], ['🌧️ Regenwetter', AMC.Atmos ? AMC.Atmos.bonus() : 0], ['🚐 Roadtrip-Folge', (((c.today || {}).places) || {}).roadtrip ? 0.1 : 0], ['😊 Fitness', (mood - 0.6) * 0.5]
     ].concat(AMC.Guests && AMC.Guests.part() ? [AMC.Guests.part()] : [], AMC.Feed ? AMC.Feed.parts() : [], ev.parts).filter(p => Math.abs(p[1]) >= 0.005);
     const factor = Math.max(0.5, 1 + parts.reduce((a, p) => a + p[1], 0));
     const base = Math.max(0, r.listeners || 0), hoerer = Math.round(base * factor);
@@ -94,7 +94,7 @@
     const weg = Math.round(c.abos * ev.lost);
     c.abos = Math.max(50, c.abos + neu - weg); c.eps++; c.skips = 0; if (AMC.Events) AMC.Events.mark('eps'); c.total += hoerer; c.best = Math.max(c.best, hoerer);
     c.log = (c.log || []).concat({ day: c.day, h: hoerer, abos: Math.round(c.abos) }).slice(-14);
-    if (AMC.Guests) AMC.Guests.after(); if (AMC.Feed) AMC.Feed.episode(hoerer, c.day);
+    if (AMC.Guests) AMC.Guests.after(); if (AMC.OnAir) AMC.OnAir.after(); if (AMC.Feed) AMC.Feed.episode(hoerer, c.day);
     const day = c.day; c.day++; c.min = DAY0; c.today = fresh();
     Save.earn(fan); Save.save();
     const rk = CR.rank(c.abos), up = rk.name !== rk0.name;

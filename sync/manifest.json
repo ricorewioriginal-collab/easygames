@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "afbd8b772d94",
- "generated": "2026-11-14T20:27:51+01:00",
- "commit": "761368b0bc2fdf7fad6739d2114e860f2143f416",
+ "version": "947837511c5c",
+ "generated": "2026-11-14T20:01:00+00:00",
+ "commit": "4fa32eb31347c260100c356030a15d4c18661883",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -353,8 +353,8 @@
   },
   {
    "p": "aeru/index.html",
-   "s": 15655,
-   "h": "48182f7534e2ac15eecfa7f045bf79f4b20958f5ac03ec5019e145372d361621"
+   "s": 15723,
+   "h": "8fe7c9d3f6d0a3041a9361481335c089e01aa878c39f448a8d611a024d8e5d1b"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -2238,8 +2238,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/index.html",
-   "s": 7266,
-   "h": "684b692b0260b6d8b32602884c8040e4d1c8c28cb84ed12d916db36320659b67"
+   "s": 7344,
+   "h": "c6aea5de61b4bda68786e79698ea471aeca3e2357d33f0058b1cc669bcd8b2d6"
   },
   {
    "p": "anmacha-podcast-tycoon/manifest.webmanifest",
@@ -2250,26 +2250,6 @@
    "p": "anmacha-podcast-tycoon/models/Textures/colormap.png",
    "s": 11143,
    "h": "4aac939dc33195e35caf8c382ee3cb170054da763577f22d3c22692ec6afccdf"
-  },
-  {
-   "p": "anmacha-podcast-tycoon/models/bld_1Story_Sign_Mat.glb",
-   "s": 181276,
-   "h": "e69eea8b3b6813cf9aba8e0add317852e71088e294951b1f3da55d73d3d11b92"
-  },
-  {
-   "p": "anmacha-podcast-tycoon/models/bld_2Story_GableRoof_Mat.glb",
-   "s": 231212,
-   "h": "f8e74085d52582237b32dde59e393bdfcc0a267e34a23cbeda066c5a8a088800"
-  },
-  {
-   "p": "anmacha-podcast-tycoon/models/bld_2Story_Mat.glb",
-   "s": 281848,
-   "h": "c3e7c8dd2cffbf7689aeba655fb1287b274f2b7fcd374c929bf48b53ab561716"
-  },
-  {
-   "p": "anmacha-podcast-tycoon/models/bld_2Story_Slim_Mat.glb",
-   "s": 203652,
-   "h": "cdc7c37d68a4d38869dd6d77281304d8c61f3c4e505b938cc408dccc0f0d3062"
   },
   {
    "p": "anmacha-podcast-tycoon/models/cat.glb",
@@ -2283,8 +2263,13 @@
   },
   {
    "p": "anmacha-podcast-tycoon/models/cc0/CREDITS.txt",
-   "s": 458,
-   "h": "d8412b213ce109abb3bf070d5b12679987d0dd51180769c3e00abbd784b6723b"
+   "s": 576,
+   "h": "519961633a8c0810e03b8cce397504f046fe7b961e93803cda555312f5aa41fa"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/ambulance.glb",
+   "s": 91132,
+   "h": "b712c674c7db817fa32b85a20ae9ef56ffc11d3ad9ed4e064d003f65fa39a768"
   },
   {
    "p": "anmacha-podcast-tycoon/models/cc0/barrels.glb",
@@ -2317,9 +2302,29 @@
    "h": "1e969b5a4674dd1ab8c61c07bcf46ea7d55f539a61458b044a6c1eba423022a6"
   },
   {
+   "p": "anmacha-podcast-tycoon/models/cc0/building_f.glb",
+   "s": 92284,
+   "h": "34b6d6258a669a3b296c809f3411ce44da109499a8d6330a88bb5a80fc5c3c42"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/building_g.glb",
+   "s": 104688,
+   "h": "c9c337c3019db87b1746cd2d7683ba99f375a5f2018d973b53d751e38ce4a951"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/building_h.glb",
+   "s": 79972,
+   "h": "454933411f5aefde8a9acb1916fe162d791a1046a3bf5b4367f5611d38606ec9"
+  },
+  {
    "p": "anmacha-podcast-tycoon/models/cc0/bush.glb",
    "s": 3172,
    "h": "715c5e8c2083a5d09f0f4e002024c1e079f1237ba81ba30075abd465709325e3"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/bush_large.glb",
+   "s": 4640,
+   "h": "941f2b23e99a228a8b2f4189c99c8d69afbc0bb8a5a95cecedb65b29149d23a6"
   },
   {
    "p": "anmacha-podcast-tycoon/models/cc0/campfire.glb",
@@ -2340,6 +2345,26 @@
    "p": "anmacha-podcast-tycoon/models/cc0/delivery_van.glb",
    "s": 76940,
    "h": "3386c15a1a932f4a33ae5982ce8f31e0186585b266c74546c9597cd872c5d7e9"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/firetruck.glb",
+   "s": 92828,
+   "h": "709ed1d54e0918eaf133733d87b94f8eb350efdce0cc38e17c0b56a3eb722dac"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/flower_red.glb",
+   "s": 5424,
+   "h": "7c7cccaa0c1b93af9faa8aba07c51a373108a02f67589300f2551ee44a96c5d1"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/garbage_truck.glb",
+   "s": 109092,
+   "h": "f24ea23ab7064b2f64fefdf45918a1407060cb9a769ee3b79d93eda29ac65157"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/hatchback_sports.glb",
+   "s": 71376,
+   "h": "4ad554353415d2bfe255e037557b3a15f87ab50e5527ea2356fa61586dacaf5e"
   },
   {
    "p": "anmacha-podcast-tycoon/models/cc0/police_car.glb",
@@ -2372,6 +2397,11 @@
    "h": "8fef9df2206bf2a02125952a5764c75fc4e808b3c4fd01217176c9cd142f2a78"
   },
   {
+   "p": "anmacha-podcast-tycoon/models/cc0/suv.glb",
+   "s": 80764,
+   "h": "fcc2dabdea7aa9144c93ba5166601d3eda81729345af1a54a7860b49a726d16c"
+  },
+  {
    "p": "anmacha-podcast-tycoon/models/cc0/taxi.glb",
    "s": 65940,
    "h": "ce480ae0eec40c5f0daf48b6caadc3dd1ee1be3a24b4b7da97ae4643961340f3"
@@ -2382,9 +2412,24 @@
    "h": "a3b07c3c08027c9a3957e364eed00d779902fa6be34eca363f27d2f9d9c21eb2"
   },
   {
+   "p": "anmacha-podcast-tycoon/models/cc0/tree_autumn.glb",
+   "s": 12292,
+   "h": "905df29339fd6706c95e01368d89330e2123c50aa2e4247fab0a110e1c2c6d31"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/tree_oak.glb",
+   "s": 10700,
+   "h": "9fb6092a03886fff321f2fc99df319b2267be1b255e7df87ee7e6a2c8e8db5b6"
+  },
+  {
    "p": "anmacha-podcast-tycoon/models/cc0/tree_palm.glb",
    "s": 11460,
    "h": "6e3832cfed58335476e86873aa39ae2455f1a4f840da42991fff6290885373f3"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/cc0/tree_pine.glb",
+   "s": 11004,
+   "h": "35cc910070997f6608bbb4b2157c29e40cbaa4199bd2bcd2d15965e5b9334a98"
   },
   {
    "p": "anmacha-podcast-tycoon/models/cc0/van.glb",
@@ -2395,6 +2440,41 @@
    "p": "anmacha-podcast-tycoon/models/fountain-round.glb",
    "s": 84848,
    "h": "8d19741e2cca6cbdce114b950b4aa12af625979bbc17b2910ef2366834af5565"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/gaeste/aeru.glb",
+   "s": 114084,
+   "h": "17080bf953d89922150790f725fbde606810730825f5393ab4131335f251d27c"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/gaeste/blitz.glb",
+   "s": 480356,
+   "h": "eb22e4515c83d98c3f0de2864f06a89a4398a64847adf56f71233de0864a9201"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/gaeste/jannis.glb",
+   "s": 874204,
+   "h": "2cd797c1ac3b428cf80658a4b4cf10e461b6431eb3f7435085f356547f125ff0"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/gaeste/pappnase.glb",
+   "s": 441760,
+   "h": "196636a062efa5bb88efbd0a4e40f1bc50cfceaee1033a29bf6ed4677389dbfd"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/gaeste/taschi-blitzi.glb",
+   "s": 1005500,
+   "h": "32c3b47c46ac00dd39625c81fa2d1309718a4e0afe0b13ff06119a7911e791e1"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/gaeste/taschi-glutzahn.glb",
+   "s": 1157560,
+   "h": "a1f8b58217e8efa5b7cca932cff84260a3f59d6d3d2cada92d7d735ac2a126aa"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/gaeste/zotik.glb",
+   "s": 1107000,
+   "h": "a94cf77f144016b888c959906ffccada6548e61e624e6cfa53d1ebca59191495"
   },
   {
    "p": "anmacha-podcast-tycoon/models/kaykit/city.png",
@@ -2722,6 +2802,11 @@
    "h": "e8d81b97297de62699b92559cee7b247da84b1815df2515e42fd5a318a30b8d7"
   },
   {
+   "p": "anmacha-podcast-tycoon/rueckweg.js",
+   "s": 2455,
+   "h": "ac1ef3072d322ca01f5f3a6cb04e6ecd60f1949e19084a3bab503b561574e7f4"
+  },
+  {
    "p": "anmacha-podcast-tycoon/sounds/buy.mp3",
    "s": 5277,
    "h": "d80627936cf852364af1e0b6e1734591c46cd8b0d7a140bdb81a00cf8ad6caff"
@@ -2743,13 +2828,13 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/arcade.js",
-   "s": 31523,
-   "h": "68a4afbd1f03ae0bcbbf06dafa749965c8569864aa0766c933a45d3debef1ed0"
+   "s": 31513,
+   "h": "87d136877cb37ef5aa34f6640b22c5277056e868f236b1f791fe6f9c88fc69e6"
   },
   {
    "p": "anmacha-podcast-tycoon/src/arcade2.js",
-   "s": 31296,
-   "h": "3734ed47f06755f97352350baa897ca3d91cbebd7a763957c6d9a5950374e369"
+   "s": 31286,
+   "h": "d5fa48d978e1daf9977f16978ca9073066a33eb163b4af07620a212c759690f4"
   },
   {
    "p": "anmacha-podcast-tycoon/src/atmos.js",
@@ -2768,13 +2853,18 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/career.js",
-   "s": 9271,
-   "h": "7aa473d452064740f3c48e117202b17ce4f4f0fe9493360f73aff46fa479afc6"
+   "s": 9433,
+   "h": "28730f5ecc0c2c38b7fa20c2011f11b0120735a66deb623f77478a2aa15efb58"
   },
   {
    "p": "anmacha-podcast-tycoon/src/core.js",
    "s": 12405,
    "h": "ae17f72ef688420a926daf562ddc420947b119fd2f9e8a054c9d4699c15cd6ee"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/src/crossover.js",
+   "s": 20574,
+   "h": "277f1c72925685f74b6503dcf59ffc2e09a40261509c62d6f180d0aa364aee24"
   },
   {
    "p": "anmacha-podcast-tycoon/src/data.js",
@@ -2788,8 +2878,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/drive.js",
-   "s": 30808,
-   "h": "15616415f74e8801c56c3347a05ea146fb273650a4ba7f7a4b9c9a01beb1f714"
+   "s": 30925,
+   "h": "a8be47cc48b8424af275ffdf01c43d63550fee25cd8b2be9fb87b1ea405c55db"
   },
   {
    "p": "anmacha-podcast-tycoon/src/events.js",
@@ -2803,8 +2893,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/home.js",
-   "s": 37890,
-   "h": "9939ec419a1c93444c06e44b1b875e5eac6d7bf3194c6ffd7fd7cfd782bb4f2a"
+   "s": 37950,
+   "h": "109dc86e85a1f9e1db03331654b6369e71813459646149e00659c12afcfc4bfd"
   },
   {
    "p": "anmacha-podcast-tycoon/src/main.js",
@@ -2823,13 +2913,18 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/missions.js",
-   "s": 41835,
-   "h": "0ebe71f957536a98479b033809254fbd0bb1bd49f14d32893917dc168215b905"
+   "s": 43207,
+   "h": "2e2399e2f43a23075226815035200ee0e3d12b3449cb4c820761c4ec7e7ca906"
   },
   {
    "p": "anmacha-podcast-tycoon/src/net.js",
    "s": 11079,
    "h": "d596f4600213bdfbbdc43475d4ade70a842931c35bae466de60e29cf632b3da4"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/src/onair.js",
+   "s": 24987,
+   "h": "2c26582c1e2a2793f9e148ff6947b348795593c48b1257009b6bfab43886b64f"
   },
   {
    "p": "anmacha-podcast-tycoon/src/people.js",
@@ -2838,13 +2933,13 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/play.js",
-   "s": 109810,
-   "h": "0e861e0e6ed4649e051a1b3afb65d8b0a173555494aa561f5d0f365d6a32d082"
+   "s": 111917,
+   "h": "86d52ad514ae20f6e6d2a93db51c47af30d8e3fca21922c5a56f527eeb11f9a1"
   },
   {
    "p": "anmacha-podcast-tycoon/src/quiz.js",
-   "s": 7959,
-   "h": "fec10feb729df74e4b11517c94cc45643ddeab3587f32dd5941451acc6e2b8bc"
+   "s": 7949,
+   "h": "3f439d24190c289a94e24e09fef502b2b57f4e8bd1199375b6619829cac6414e"
   },
   {
    "p": "anmacha-podcast-tycoon/src/rooms.js",
@@ -2853,8 +2948,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/sender.js",
-   "s": 66336,
-   "h": "3dc3f660920ce2ec5109ab99c7fbb1896131b613a56f14dd23251f677689b535"
+   "s": 66966,
+   "h": "185a164dcb099a68c5a8883d1ba7b535d40daeb1c65df7576dc5cf76b339a28d"
   },
   {
    "p": "anmacha-podcast-tycoon/src/show.js",
@@ -2883,8 +2978,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/ui.js",
-   "s": 19821,
-   "h": "748caefcb5eb46c307be3a8efb327ce9e4db3550a5194386520394d37c574a13"
+   "s": 20999,
+   "h": "d8ad1888cf0bc515a1e1960967d354fdff351a413d17cf8ac726127a95d4182a"
   },
   {
    "p": "anmacha-podcast-tycoon/src/vibe.js",
@@ -2893,13 +2988,13 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/world.js",
-   "s": 35345,
-   "h": "bc60aa52e260c29bc8430538c9c20558e04e5f77676bb19f3ab63efa73497a1b"
+   "s": 35466,
+   "h": "c2c619fbaa4a5a69d7c0eafc7253ea023b18fe1fb79fad0336117d602f9e0aea"
   },
   {
    "p": "anmacha-podcast-tycoon/src/worldfx.js",
-   "s": 34825,
-   "h": "75d3a69e34e40016093ddcc872fa1d3e7ccb5a66b5ec26455a1bb9f284ae7a46"
+   "s": 34989,
+   "h": "df8696697b85e1848030b15fd193dead129c563383f8c902b6286b8d5b1541ca"
   },
   {
    "p": "anmacha-podcast-tycoon/src/worlds.js",
@@ -2908,8 +3003,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/style.css",
-   "s": 68070,
-   "h": "c509e38021cd05fbccd2e81434dc528c688d003aa0a07c21a42c2995cf31f260"
+   "s": 75411,
+   "h": "745e6126c8ad9aabc04fa574c3e7db76f1aed0230f64ed740dcaa1a54f709902"
   },
   {
    "p": "anmacha-podcast-tycoon/sw.js",
@@ -5258,8 +5353,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 109874,
-   "h": "ed64cfa357b9005dae8107f9cddd456cd6c4e64a72239f40a00a9dac57217eaa"
+   "s": 109942,
+   "h": "4c97def2c8f4858d997528457a3e5c810d7296b562a282ce6ec790d3b47d5571"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -7218,8 +7313,8 @@
   },
   {
    "p": "guides/anmacha-podcast-tycoon.json",
-   "s": 48755,
-   "h": "8827dabb2170558598440b2701a36f03774f0284365b5c8a4c4c7e95f763d430"
+   "s": 51312,
+   "h": "0eef2cd031f15dfa6099ba07e5fe38c79a61b09d2f13836bc5d3e4bd5aa0e0ea"
   },
   {
    "p": "guides/anmacha-preisradar.json",
@@ -10048,8 +10143,8 @@
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 195534,
-   "h": "1d2909da33362d50f101f29998f8c551947c871142421474e66282e313611130"
+   "s": 195582,
+   "h": "5c51307bbe4787cd831384005ae3889a43699b5478b426f07ce5b6abcb636741"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
@@ -10683,8 +10778,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 262492,
-   "h": "3bab9fcff421551783cf7615fb8cd874fe0add41103d108cb2f0b1a591b02600"
+   "s": 262493,
+   "h": "94e03c03fd3e60c6703fb6f68c97d1491c48da39efaa1bc7e7e402f169ced074"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -11123,8 +11218,8 @@
   },
   {
    "p": "taschi/index.html",
-   "s": 5076,
-   "h": "7dd96476af01d1b8be1b00ad7017a4145fba2eae514ca3380cd9cef2ad002ff5"
+   "s": 5144,
+   "h": "1b7e2f13b15de8539ab3457d4498f360069b5c532a2f41635f0fc74f147b0be1"
   },
   {
    "p": "taschi/src/core/audio.js",
@@ -13172,9 +13267,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-BrrPcLyy.js",
-   "s": 1946998,
-   "h": "09b8949ffa0c7d501fd6121a7f348f4d11b04612eae9f17bca7bfb9d5bfb494c"
+   "p": "zotik/assets/index-B_HnBJEi.js",
+   "s": 1947974,
+   "h": "d1103841adba5e663ebf8ba8be4e1b07b95e79424cd9ef1119f2325babe6f7e8"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -13193,8 +13288,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 74265,
-   "h": "62604f49651d8a367aaff9f5fef9c7c823f4aa51c7b937fb8c7d34dcb6024a15"
+   "s": 74333,
+   "h": "4483d305b6595b4303326d407dbdf4af1f5b9e37148134aecf8327e3ccadde7f"
   },
   {
    "p": "zotik/manifest.webmanifest",
