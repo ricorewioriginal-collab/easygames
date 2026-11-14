@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "cd13dfb3f8b4",
- "generated": "2026-11-14T00:35:50+00:00",
- "commit": "8dd10c3c80a024d3c3e8b72e1dc848da5e80f4fc",
+ "version": "d40ab0fd2260",
+ "generated": "2026-11-14T00:42:33+00:00",
+ "commit": "103319be0e0901dc63d944426edb325b94b64b57",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -343,18 +343,18 @@
   },
   {
    "p": "aeru/content.js",
-   "s": 3324,
-   "h": "bab8ee796c5da78f61147cf16bde7b212a24b64e161bf2e340413380aacb445a"
+   "s": 4813,
+   "h": "cb3194737a879e723630d425de31ba4b3a31ab17cf3600e491e62e27e807ab4f"
   },
   {
    "p": "aeru/game.js",
-   "s": 197538,
-   "h": "966ba04d40c88e6779871c4eb48b370216b2cc474b4f63f775f0e1167f68e376"
+   "s": 209356,
+   "h": "40aecddb26c2a5dab382459ffd6226dbd21ce09576fae22f63292b905e1f014d"
   },
   {
    "p": "aeru/index.html",
    "s": 15598,
-   "h": "397dc5a70d1ac9756d40f3d7c52e65c719d055e8e6e4f136b3875138b723a3c8"
+   "h": "38f73d85331d70cb26397af4be9a3d0cecba0f083ba3e177efccdd8efe7047dd"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -393,8 +393,8 @@
   },
   {
    "p": "aeru/models/scenery.glb",
-   "s": 292172,
-   "h": "7d30b5d145b3cf89b2ce68bf78f2a5277f825b1b8d1cdfff97f28167f19dcf06"
+   "s": 667644,
+   "h": "acab92dd25496c1eb56f3691d0f1d20067bccb1b810cd4c3a951db1511865480"
   },
   {
    "p": "aeru/quests.js",
@@ -9944,7 +9944,7 @@
   {
    "p": "sync/catalog.json",
    "s": 259012,
-   "h": "063d2cf84098a33ef27841f6d60696bb64edd2a3943117d52c617fc1e5c89535"
+   "h": "0ff0f52baf3d2ea1e191381dd76596bc5c39951723692e9ca2a905ae86935eb7"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
