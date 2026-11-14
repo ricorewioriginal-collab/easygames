@@ -51,7 +51,8 @@ const srv = http.createServer((q, r) => {
   await p.clock.runFor(61000); for (let i = 0; i < 12 && (await p.locator('.egh-grid .egh-card').count()) === n; i++) { await new Promise(r => setTimeout(r, 300)); await p.clock.runFor(1000); }
   assert.strictEqual(await p.locator('.egh-grid .egh-card').count(), n + 1); console.log('PASS Echtzeit: neues Spiel erscheint ohne Neuladen');
   // Spielen: Vollbild-Fenster mit iframe auf die Spielseite
-  await p.click('.egh-grid .egh-card'); await p.waitForSelector('.egh-pl:not([hidden]) iframe');
+  await p.click('.egh-grid .egh-card'); await p.waitForSelector('.egh-dt [data-dplay]'); console.log('PASS Kachel öffnet zuerst die Spielseite');
+  await p.click('.egh-dt [data-dplay]'); await p.waitForSelector('.egh-pl:not([hidden]) iframe');
   assert.match(await p.$eval('.egh-pl iframe', f => f.getAttribute('src')), /^http:\/\/127\.0\.0\.1:\d+\/[^?]+\/?/); console.log('PASS Spielen: Vollbild-Fenster dieser Seite');
   await p.click('.egh-pl .egh-pl-t');   // Navigation ist beim Start ausgeblendet: erst über „▾“ einblenden
   await p.click('.egh-pl [data-x]'); assert.ok(await p.$eval('.egh-pl', e => e.hidden));
