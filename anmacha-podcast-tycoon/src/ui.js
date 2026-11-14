@@ -113,9 +113,10 @@
       typing = setInterval(() => { k += 2; if (k >= t.length) { clearInterval(typing); typing = null; txt.innerHTML = full; return; } txt.textContent = t.slice(0, k).replace(/\{\w*\}?$/, '').replace(/\{\w+\}/g, '…'); }, 16);
       if (H) AMC.Audio.sfx('talk');
       if (AMC.Studio && AMC.Studio.react && AMC.Studio.mode === 'menu') AMC.Studio.react(w, t);
+      if (AMC.Voice) AMC.Voice.say(w, t);
     }
     function nextLine() { if (typing) { clearInterval(typing); typing = null; txt.innerHTML = full; return; } i++; if (i >= lines.length) done(); else show(); }
-    function done() { clearInterval(typing); if (AMC.Studio && AMC.Studio.react) AMC.Studio.react(null); if (!s.closed) { s.closed = true; UI.close(s); cb && cb(); } }
+    function done() { clearInterval(typing); if (AMC.Voice) AMC.Voice.stop(); if (AMC.Studio && AMC.Studio.react) AMC.Studio.react(null); if (!s.closed) { s.closed = true; UI.close(s); cb && cb(); } }
     el.querySelector('#dlgNext').onclick = nextLine; el.querySelector('#dlgSkip').onclick = done;
     el.addEventListener('pointerdown', e => { if (!e.target.closest('button')) nextLine(); });
     s.o.onKey = () => { if (I.hit('jump') || I.hit('act')) { nextLine(); return true; } return false; };

@@ -14,16 +14,60 @@
   };
   let C = null;   // aktive Zwischensequenz
   const voiceOn = () => (Save.data.settings || {}).voice !== false && root.speechSynthesis && root.SpeechSynthesisUtterance;
+  // Feste Stimmen für Andrew und Marco: Microsoft-Natural-Stimmen (Edge), sonst die beste männliche deutsche Gerätestimme
+  const VOICE = { andrew: ['conrad', 'florian', 'jonas', 'stefan', 'jan'], marco: ['killian', 'jonas', 'florian', 'jan', 'stefan'], rico: ['florian', 'jan', 'jonas'], n: ['florian', 'conrad', 'stefan'] };
+  const hq = v => /natural|neural|online|premium|enhanced/i.test(v.name);
+  let vCache = null;
+  function pickVoice(who) {
+    const all = (speechSynthesis.getVoices() || []).filter(v => /^de([-_]|$)/i.test(v.lang || ''));
+    if (!all.length) return null;
+    if (!vCache || vCache.n !== all.length) vCache = { n: all.length, by: {} };
+    if (who in vCache.by) return vCache.by[who];
+    const find = names => { for (const n of names) { const r = new RegExp('\\b' + n + '\\b', 'i'), hit = all.filter(v => r.test(v.name)).sort((a, b) => hq(b) - hq(a))[0]; if (hit) return hit; } return null; };
+    let v = VOICE[who] ? find(VOICE[who]) : null;
+    if (who === 'marco') { const a = pickVoice('andrew'); if (v && a && v.name === a.name) v = find(VOICE.marco.filter(n => !new RegExp('\\b' + n + '\\b', 'i').test(a.name))); }
+    return (vCache.by[who] = v);
+  }
+  try { root.speechSynthesis && speechSynthesis.addEventListener && speechSynthesis.addEventListener('voiceschanged', () => { vCache = null; }); } catch (e) { /* egal */ }
+  AC.voiceFor = who => { try { const v = pickVoice(who); return v ? v.name : ''; } catch (e) { return ''; } };
   function speak(who, txt, end) {
     if (!voiceOn() || who === 'gisela') { if (who === 'gisela') AMC.Audio.sfx('horn'); return false; }
+    if (!WHO[who] && AMC.Babble) return AMC.Babble.say(who, txt, end);   // NPCs brabbeln
     try {
       const w = WHO[who] || WHO.n, u = new SpeechSynthesisUtterance(txt.replace(/AnMaCha/gi, 'Anmacher').replace(/[^\p{L}\p{N}\s.,!?'„“…–-]/gu, ''));
-      u.lang = 'de-DE'; u.pitch = w[2]; u.rate = w[3]; u.onend = end; u.onerror = end; speechSynthesis.cancel(); speechSynthesis.speak(u); return true;
+      u.lang = 'de-DE'; u.pitch = w[2]; u.rate = w[3];
+      const v = pickVoice(who); if (v) { u.voice = v; u.lang = v.lang; if (hq(v)) { u.pitch = 1; u.rate = Math.min(w[3], 1.05); } }   // Natural-Stimmen klingen unverstellt am besten
+      u.onend = end; u.onerror = end; speechSynthesis.cancel(); speechSynthesis.speak(u); return true;
     } catch (e) { return false; }
   }
-  const hush = () => { try { root.speechSynthesis && speechSynthesis.cancel(); } catch (e) { /* egal */ } };
+  // Aufgenommene Sprachclips (Edge-Stimmen, tools/podcast-voice): laufen auf jedem Gerät gleich, sonst Sprachausgabe
+  let VO = null;
+  try { fetch('vo/index.json').then(r => r.ok ? r.json() : []).then(a => { VO = new Set(a || []); }).catch(() => { VO = new Set(); }); } catch (e) { VO = new Set(); }
+  const voKey = (who, txt) => { let h = 0x811c9dc5; const s = who + '|' + txt; for (let i = 0; i < s.length; i++) h = Math.imul((h ^ s.charCodeAt(i)) >>> 0, 16777619) >>> 0; return h.toString(36); };
+  AC.voKey = voKey; AC.voClip = (who, txt) => { const k = voKey(who, txt); return VO && VO.has(k) ? 'vo/' + k + '.mp3' : null; };
+  // Echte Sprachaufnahme (z. B. RicoReWis Originalstimme); fällt bei Fehlern auf die Sprachausgabe zurück
+  let clip = null;
+  function playClip(src, who, txt, end) {
+    if ((Save.data.settings || {}).voice === false) return false;
+    try {
+      const a = clip = new Audio(src), st = Save.data.settings || {}; a.volume = U.clamp(st.sfx == null ? 1 : st.sfx * 1.1, 0, 1);
+      let fell = false; const fall = () => { if (fell || clip !== a) return; fell = true; if (!speak(who, txt, end)) end(); };
+      a.onended = end; a.onerror = fall; const pr = a.play(); if (pr && pr.catch) pr.catch(fall); return true;
+    } catch (e) { return speak(who, txt, end); }
+  }
+  const hush = () => { try { if (AMC.Babble) AMC.Babble.stop(); if (clip) { clip.pause(); clip = null; } root.speechSynthesis && speechSynthesis.cancel(); } catch (e) { /* egal */ } };
 
   /** Zwischensequenz abspielen. shots = [{ cam: [x,y,z], to: [x,y,z], look: [x,y,z], lines: [[wer, text], …], pose: fn(S) }] */
+  // Stimmen außerhalb der Zwischensequenzen: Story-Dialoge (UI.dialog) und Live-Aufnahme (show.js say)
+  const SHORT = { a: 'andrew', m: 'marco', r: 'rico', n: 'n' };
+  AMC.Voice = {
+    say(w, t) {
+      if (C || !t) return false; const who = SHORT[w] || w; hush();
+      const src = AC.voClip(who, t); if (src) return playClip(src, who, t, () => {});
+      return WHO[who] ? speak(who, t.replace(/\{\w+\}/g, ''), () => {}) : (AMC.Babble ? AMC.Babble.say(who, t) : false);
+    },
+    stop: () => { if (!C) hush(); }
+  };
   CUT.play = function (shots, done) {
     const S = AMC.Play.state(); if (!S || C || (AMC.Worlds && AMC.Worlds.busy && AMC.Worlds.busy())) return false;
     const el = U.el('div', 'cut', '<i class="cut-bar t"></i><i class="cut-bar b"></i><div class="cut-sub glass"><span class="cut-face" id="cutF"></span><div><b id="cutN"></b><p id="cutT"></p></div></div><button type="button" class="cut-skip" id="cutS">' + AMC.glyph('b') + ' Überspringen</button>');
@@ -41,12 +85,16 @@
   }
   function line(i) {
     const s = C.shots[C.si], l = s.lines[i]; C.li = i; C.lt = 0; C.spoke = false;
-    const w = WHO[l[0]] || [l[0], '💬'], face = C.el.querySelector('#cutF');
-    face.innerHTML = w[1] ? '<em>' + w[1] + '</em>' : '<img alt="" src="' + AMC.UI.face(l[0]) + '">';
+    const w = WHO[l[0]] || [l[0], '💬'], face = C.el.querySelector('#cutF'), o = l[2] || {};
+    face.innerHTML = w[1] && !o.src ? '<em>' + w[1] + '</em>' : '<img alt="" src="' + AMC.UI.face(l[0]) + '">';
+    C.el.classList.toggle('orig', !!o.src);
     C.el.querySelector('#cutN').textContent = w[0]; C.el.querySelector('#cutT').textContent = l[1];
     const sub = C.el.querySelector('.cut-sub'); sub.classList.remove('pop'); void sub.offsetWidth; sub.classList.add('pop');
     C.need = Math.max(2.6, l[1].length * 0.065);
-    C.talking = speak(l[0], l[1], () => { if (C && C.li === i) C.spoke = true; });
+    if (clip) hush();
+    const said = () => { if (C && C.li === i) C.spoke = true; };
+    const src = o.src || AC.voClip(l[0], l[1]);
+    C.talking = src ? playClip(src, l[0], l[1], said) : speak(l[0], l[1], said);
     const f = W.hosts[l[0]]; if (f && f.talk) { f.talk(true); setTimeout(() => f.talk(false), C.need * 900); }
     if (l[0] !== 'n' && l[0] !== 'gisela') AMC.Audio.sfx('talk');
   }
@@ -101,10 +149,11 @@
       outro: () => [{ cam: [0, 60, 60], to: [0, 70, 20], look: [0, 0, -20], dur: 7, lines: [['n', 'Hafen, Berg, Insel und Neon-Universum – überall kennt man jetzt AnMaCha.']]}] },
     { t: 'Akt 3 · Ricos Einladung', goal: 'Entdeckt alle sechs Orte im RicoReWi-Universum.', prog: () => [AMC.Worlds ? AMC.Worlds.ricoQuest().n : 0, 6], ok: () => !!(Save.data.ricoU || {}).done, reward: 150,
       intro: () => [{ cam: [-80, 9, 16], to: [-100, 8, 12], look: [-140, 6, 0], dur: 7, lines: [
+        ['rico', 'Licht an, Kamera läuft – willkommen im RicoReWi-Universum!', { src: 'sounds/rico/live-1.mp3' }],
         ['rico', 'Hey, ihr zwei! Ich bin Rico. Kommt rüber über die Neonbrücke – ich zeig euch mein Universum.'],
         ['marco', 'Musik, Bücher, Apps … der Typ macht alles gleichzeitig?']]},
         { cam: [-150, 14, 26], to: [-165, 10, 18], look: [-185, 7, -20], dur: 6, lines: [['rico', 'Ich habe nicht zu viele Ideen. Die Welt hat nur zu wenig Tabs offen.']]}],
-      outro: () => [{ cam: [-160, 8, 20], to: [-172, 6, 10], look: [-185, 6, -20], dur: 6, lines: [['rico', 'Ab heute seid ihr Teil meines Universums. Und ich komme gern mal in eure Show!'], ['andrew', 'Deal! Studiogast RicoReWi – das wird groß.']]}] },
+      outro: () => [{ cam: [-160, 8, 20], to: [-172, 6, 10], look: [-185, 6, -20], dur: 6, lines: [['rico', 'Ich bin RicoReWi. Und das hier ist echt – kein Filter, kein Fake.', { src: 'sounds/rico/live-4.mp3' }], ['rico', 'Ab heute seid ihr Teil meines Universums. Und ich komme gern mal in eure Show!'], ['andrew', 'Deal! Studiogast RicoReWi – das wird groß.']]}] },
     { t: 'Akt 4 · Die Stimme der Stadt', goal: 'Holt 3 verschiedene Studiogäste und erreicht 1.000 Follower in der AnMaCha-App.', prog: () => [Math.min(3, guestsMet()) + (AMC.Feed && AMC.Feed.followers() >= 1000 ? 1 : 0), 4], ok: () => guestsMet() >= 3 && AMC.Feed && AMC.Feed.followers() >= 1000, reward: 250,
       intro: () => [{ cam: [150, 6, -4], to: [156, 9, -8], look: [158, 14, -16], dur: 7, lines: [
         ['jana', 'Ihr zwei seid das Stadtgespräch! Wer bei euch zu Gast ist, landet morgen in den Nachrichten.'],
@@ -138,7 +187,7 @@
     const fw = (dt, t) => { if (Math.random() < dt * 2.5) W.particles.burst(U.rand(-30, 30), U.rand(30, 44), U.rand(200, 214), [0xff3da8, 0x3dd6ff, 0xffd23f, 0x6cff8a][Math.floor(Math.random() * 4)], 40, { speed: 9, grav: 3, life: 1.6, size: 0.9, up: 0 }); };
     const onStage = S => { HOSTS_AT(S, 0, 1.42, 194, Math.PI, 'yes'); if (AMC.WorldFX) AMC.WorldFX.cheer(); AMC.Audio.sfx('cheer'); };
     CUT.play([{ cam: [0, 5, 172], to: [0, 4, 182], look: [0, 3, 194], dur: 8, pose: onStage, fx: fw, lines: [
-      ['fans', 'AN-MA-CHA! AN-MA-CHA!'], ['andrew', 'Medienstadt! Seid ihr bereit, angemacht zu werden?'], ['marco', 'Das hier ist für alle, die von Anfang an zugehört haben!']]}], () => {
+      ['rico', 'Und jetzt: Bühne frei für AnMaCha – der Podcast!', { src: 'sounds/rico/live-5.mp3' }], ['fans', 'AN-MA-CHA! AN-MA-CHA!'], ['andrew', 'Medienstadt! Seid ihr bereit, angemacht zu werden?'], ['marco', 'Das hier ist für alle, die von Anfang an zugehört haben!']]}], () => {
       AMC.Audio.song && AMC.Audio.song((U.pick(D.WISHES) || {}).id).then(song => {
         if (!AMC.Worlds || !AMC.Worlds.play) return outro(S, 0.8);
         AMC.Worlds.play('rhythm', { song: song || null, color: '#ff3da8', speed: 1.1, n: 24, hard: true, title: '🎆 Finale: Das große Radio-Festival' }, q => outro(S, q));
