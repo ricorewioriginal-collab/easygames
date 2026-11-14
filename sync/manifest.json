@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c48531ce9c21",
- "generated": "2026-11-14T11:50:29+00:00",
- "commit": "f4f2e30895efed8f73eafd2f710679f22bd65458",
+ "version": "1012c1b2e3d4",
+ "generated": "2026-11-14T13:34:41+01:00",
+ "commit": "80aaf2907d5dfda80a8e06b4bf88fca36b71cf10",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7723,8 +7723,8 @@
   },
   {
    "p": "index.html",
-   "s": 99290,
-   "h": "f837af4e3859634456f74e42463ca8729d710740dcb00d912530acda170aa793"
+   "s": 101289,
+   "h": "1e21a1aa40e7586643a5ccbedacf90fc366c391bc47825416d3b3d0cf5520bcf"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
