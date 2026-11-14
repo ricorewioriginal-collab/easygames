@@ -225,9 +225,20 @@
   let touchCtx = 'city';
   UI.touchCtx = function (ctx, over) {
     touchCtx = TOUCH_CTX[ctx] ? ctx : 'city';
-    const c = Object.assign({}, TOUCH_CTX[touchCtx], over), t = U.$('touch'); if (!t) return;
-    ['a', 'x', 'b', 'y'].forEach(k => { const b = t.querySelector('.tb[data-k=' + k + ']'); if (!b) return; TOUCH_FIRE[k] = c[k][2]; b.innerHTML = c[k][0] + '<small>' + c[k][1] + '</small>'; b.setAttribute('aria-label', c[k][1]); });
-    t.dataset.ctx = touchCtx;
+    const c = curCtx = Object.assign({}, TOUCH_CTX[touchCtx], over), t = U.$('touch'); if (!t) return;
+    ['a', 'x', 'b', 'y'].forEach(k => { const b = t.querySelector('.tb[data-k=' + k + ']'); if (!b) return; TOUCH_FIRE[k] = c[k][2]; b.innerHTML = c[k][0] + '<small>' + c[k][1] + '</small>'; b.setAttribute('aria-label', c[k][1]); b.classList.remove('hot'); });
+    t.dataset.ctx = touchCtx; hintTxt = null;
+  };
+  // Der „Benutzen“-Knopf (Ⓧ, in Häusern Ⓐ) zeigt die Aktion in der Nähe direkt an und leuchtet – gleiche Taste wie am Controller/Tastatur
+  let hintTxt = null, curCtx = TOUCH_CTX.city;
+  UI.touchHint = function (label) {
+    const t = U.$('touch'); if (!t || t.hidden) return;
+    const txt = label ? String(label).replace(/<[^>]*>/g, '').trim() : null; if (txt === hintTxt) return; hintTxt = txt;
+    const k = ['x', 'a'].find(q => [].concat(curCtx[q][2]).includes('act')) || 'x', b = t.querySelector('.tb[data-k=' + k + ']'); if (!b) return;
+    if (!txt) { const c = curCtx[k]; b.innerHTML = c[0] + '<small>' + c[1] + '</small>'; b.classList.remove('hot'); return; }
+    const m = txt.match(/^(\S+)\s+(.*)$/), icon = m && !/[A-Za-zÄÖÜäöü0-9]/.test(m[1]) ? m[1] : '👆';
+    let word = (m && icon !== '👆' ? m[2] : txt).split(' · ')[0].split(/:\s*/).pop().trim(); while (word.length > 14 && word.includes(' ')) word = word.slice(word.indexOf(' ') + 1); if (word.length > 15) word = word.slice(0, 14) + '…';
+    b.innerHTML = icon + '<small>' + U.esc(word) + '</small>'; b.classList.add('hot');
   };
   UI.showTouch = on => { const t = U.$('touch'); t.hidden = !(on && I.device === 'touch'); };
   root.addEventListener('pointerdown', e => { if (e.target.closest && e.target.closest('.sh-mini')) UI.pointerHeld = true; });

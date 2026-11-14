@@ -371,7 +371,7 @@
     if (R.kind !== 'sender') { I.dpadEmotes = true; if (I.hit('k4')) { const b = document.querySelector('#homeUi .hm-act .btn:not(#hmBack)'); if (b) { AMC.Audio.sfx('ok'); b.click(); return; } } }
     if (I.hit('back')) { HM.close(); return; }
     const s = R.w.near(), b = U.$('hmUse');
-    if (b) { const txt = s ? AMC.glyph('x') + ' ' + s.label : ''; if (b.innerHTML !== txt) b.innerHTML = txt; b.hidden = !s; }
+    if (b) { const txt = s ? AMC.glyph('x') + ' ' + s.label : ''; if (b.innerHTML !== txt) b.innerHTML = txt; b.hidden = !s; if (AMC.UI.touchHint) AMC.UI.touchHint(s ? s.label : null); }
     if (R.sc) { R.g.traverse(o => { if (o.userData.spin) o.rotation.y += dt * (o.userData.spin === true ? 4 : o.userData.spin); }); W.particles.update(dt); }
     else { AMC.Studio.update(dt); }
   };

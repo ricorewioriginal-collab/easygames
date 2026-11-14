@@ -544,3 +544,64 @@ html.dev-touch .home-ui:not(:has(.hm-emo)) .hm-use { bottom: calc(24px + var(--s
 }
 .home-ui:has(.sd-game) .hm-feed { display: none; }
 @media (orientation: portrait) and (max-width: 700px) { .sd-game { top: calc(58px + var(--safe-t)); width: auto; max-width: calc(100vw - 24px); } }
+
+/* ================================================================ Steuerung v2 (Runde 5)
+   Touch-Knöpfe in Controller-Farben (Ⓐ grün, Ⓑ rot, Ⓧ blau, Ⓨ gelb), Beschriftung als lesbares Schild, Ⓧ leuchtet mit der Aktion
+   in der Nähe (UI.touchHint). Radio/Pause und Emotes liegen nie auf Minikarte oder Aufträgen. */
+#touch .tb { background: radial-gradient(circle at 50% 30%, rgba(52, 58, 82, .94), rgba(14, 16, 26, .9)); border: 3px solid var(--tc, rgba(255, 255, 255, .35)); box-shadow: 0 6px 16px rgba(0, 0, 0, .45), inset 0 2px 0 rgba(255, 255, 255, .14); color: #fff; transition: transform .08s, box-shadow .2s, background .2s; }
+#touch .tb-a { --tc: #3ddc84; width: 84px; height: 84px; font-size: 32px; right: 56px; }
+#touch .tb-b { --tc: #ff5a64; } #touch .tb-x { --tc: #46a8ff; } #touch .tb-y { --tc: #ffd23f; }
+#touch .tb.small { --tc: rgba(255, 255, 255, .28); }
+#touch .tb.down { transform: scale(.9); background: var(--tc); }
+#touch .tb small { bottom: -13px; padding: 1px 8px; border-radius: 99px; background: rgba(8, 10, 18, .9); border: 1.5px solid var(--tc); font: 700 11px Fredoka, system-ui, sans-serif; text-shadow: none; letter-spacing: .2px; }
+#touch .tb.hot { background: radial-gradient(circle at 50% 30%, #6fc2ff, #1c5fae); box-shadow: 0 0 0 3px rgba(70, 168, 255, .55), 0 0 26px rgba(70, 168, 255, .9); animation: tbHot 1.2s ease-in-out infinite; }
+#touch .tb.hot small { background: #1c5fae; color: #fff; }
+@keyframes tbHot { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+.stick { background: radial-gradient(circle, rgba(255, 255, 255, .05), rgba(255, 255, 255, .12)); border: 2px solid rgba(255, 255, 255, .28); box-shadow: inset 0 0 18px rgba(0, 0, 0, .35); }
+/* Stadt: Radio/Pause unter der Minikarte (vorher darüber gelegt) */
+body:has(#hud:not([hidden]) #hMap) .ttop { top: calc(178px + var(--safe-t)); flex-direction: column; }
+@media (orientation: portrait) and (max-width: 700px) {
+  body:has(#hud:not([hidden]) #hMap) .ttop { top: calc(124px + var(--safe-t)); }
+  /* Emotes der Stadt: rechte Spalte unter Radio/Pause statt über dem Auftrag */
+  html.dev-touch .cv-ui .hm-emo { top: calc(232px + var(--safe-t)); bottom: auto; right: calc(8px + var(--safe-r)); left: auto; transform: none; flex-direction: column; padding: 4px; gap: 4px; }
+  html.dev-touch .cv-ui .hm-emo button { width: 46px; height: 46px; font-size: 18px; }
+}
+@media (max-height: 560px) and (orientation: landscape) {
+  body:has(#hud:not([hidden]) #hMap) .ttop { top: calc(116px + var(--safe-t)); flex-direction: row; }
+  html.dev-touch .cv-ui .hm-emo { top: calc(8px + var(--safe-t)); bottom: auto; left: 50%; right: auto; transform: translateX(-50%); flex-direction: row; padding: 4px; gap: 4px; }
+  html.dev-touch .cv-ui .hm-emo button { width: 44px; height: 44px; font-size: 17px; }
+  #touch .tb-a { width: 76px; height: 76px; font-size: 28px; }
+}
+
+/* ================================================================ Senderhaus: On-Air-Pult, Sender-Auftrag, Ruf (onair.js) */
+.oa-hud { display: flex; flex-direction: column; gap: 3px; margin-top: 5px; font-size: 12px; line-height: 1.25; }
+.oa-rep { color: #ffd23f; font-weight: 700; letter-spacing: .5px; } .oa-rep small { color: var(--mut); font-weight: 600; letter-spacing: 0; margin-left: 4px; }
+.oa-job { padding: 3px 8px; border-radius: 9px; background: rgba(255, 255, 255, .08); border-left: 3px solid var(--or); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.oa-job.ok { border-left-color: #3ddc84; opacity: .8; }
+.oa-show { position: absolute; left: 50%; bottom: calc(14px + var(--safe-b)); transform: translateX(-50%); width: min(560px, calc(100vw - 24px - var(--safe-l) - var(--safe-r))); padding: 12px 14px; border-radius: 20px; pointer-events: auto; z-index: 9; animation: popIn .25s; border: 1px solid rgba(255, 64, 64, .45); box-shadow: 0 0 30px rgba(255, 40, 40, .25), 0 12px 40px rgba(0, 0, 0, .5); }
+.oa-show header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+.oa-show header b { color: #ff6060; font-size: 15px; letter-spacing: .4px; }
+.oa-clock { display: flex; gap: 4px; } .oa-clock i { font-style: normal; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: rgba(255, 255, 255, .08); font-size: 14px; opacity: .55; }
+.oa-clock i.on { background: #ff4040; opacity: 1; box-shadow: 0 0 12px rgba(255, 64, 64, .8); } .oa-clock i.ok { background: rgba(61, 220, 132, .4); opacity: 1; }
+.oa-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12.5px; color: var(--mut); margin-bottom: 6px; } .oa-meta em { font-style: normal; color: #fff; font-weight: 700; }
+.oa-sit { margin: 4px 0 8px; font-size: 15px; line-height: 1.3; }
+.oa-cmd { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.oa-cmd button { width: 100%; display: flex; align-items: center; gap: 10px; text-align: left; border: 0; border-left: 4px solid transparent; border-radius: 12px; padding: 9px 12px; background: rgba(255, 255, 255, .07); color: #fff; font: 600 14.5px Fredoka, system-ui, sans-serif; cursor: pointer; }
+.oa-cmd button span { font-size: 18px; width: 24px; text-align: center; flex: none; }
+.oa-cmd button small { margin-left: auto; font-size: 11px; padding: 1px 7px; border-radius: 99px; background: rgba(255, 255, 255, .14); color: var(--or2); flex: none; }
+.oa-cmd button.on, .oa-cmd button:hover { background: linear-gradient(90deg, rgba(255, 64, 64, .45), rgba(255, 138, 30, .18)); border-left-color: #ff4040; }
+.oa-cmd button.on::after { content: '◀'; margin-left: 6px; color: #ffd23f; font-size: 12px; }
+.oa-help { margin: 6px 0 0; font-size: 12px; color: var(--mut); }
+.oa-ramp { position: relative; height: 26px; border-radius: 13px; background: linear-gradient(90deg, #2a1420, #3a2030); overflow: hidden; margin: 6px 0 10px; border: 1px solid rgba(255, 255, 255, .15); }
+.oa-ramp b { position: absolute; top: 0; bottom: 0; background: linear-gradient(90deg, rgba(61, 220, 132, .4), rgba(61, 220, 132, .9), rgba(61, 220, 132, .4)); }
+.oa-ramp i { position: absolute; top: -2px; bottom: -2px; width: 4px; margin-left: -2px; background: #fff; box-shadow: 0 0 10px #fff; border-radius: 2px; }
+.oa-now { width: 100%; font-size: 17px; padding: 12px; }
+.oa-res { font-size: 30px; color: #ffd23f; text-align: center; margin: 4px 0; letter-spacing: 3px; }
+.oa-show [data-end] { width: 100%; }
+.home-ui:has(.oa-show) .hm-emo, .home-ui:has(.oa-show) .hm-use, .home-ui:has(.oa-show) .hm-say, .home-ui:has(.oa-show) .hm-feed { display: none; }
+@media (max-height: 560px) and (orientation: landscape) {
+  .oa-show { left: auto; right: calc(10px + var(--safe-r)); transform: none; bottom: calc(8px + var(--safe-b)); width: min(440px, 52vw); max-height: calc(100dvh - 16px - var(--safe-t) - var(--safe-b)); overflow-y: auto; padding: 8px 10px; }
+  .oa-sit { font-size: 13px; margin: 2px 0 5px; } .oa-cmd button { padding: 6px 10px; font-size: 13px; } .oa-meta { font-size: 11.5px; margin-bottom: 3px; } .oa-clock i { width: 22px; height: 22px; font-size: 12px; }
+  .oa-hud { font-size: 11px; } .oa-job { -webkit-line-clamp: 1; }
+}
+.oa-st { color: #ffd23f; letter-spacing: 1px; } .oa-st i { font-style: normal; color: rgba(255, 255, 255, .22); }

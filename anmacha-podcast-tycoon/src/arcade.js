@@ -330,7 +330,7 @@
   function crash() {
     if (!R || R.phase === 'over') return;
     R.phase = 'over'; AMC.Audio.sfx('lose'); R.p.vy = Math.max(R.p.vy || 0, 4);
-    if (R.fig) R.fig.play('down', { once: true, fade: 0.1 });
+    if (R.fig) R.fig.play('crouch', { fade: 0.1 });
     if (R.mate) R.mate.play('arms');
     const pos = R.fig ? R.fig.root.position : { x: 0, y: 0, z: 0 };
     W.particles.burst(pos.x, pos.y + 1, pos.z, 0xff5a5a, 24, { speed: 5 });
