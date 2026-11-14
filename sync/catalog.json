@@ -3168,7 +3168,21 @@
     "v9": "promo/anmacha-podcast-tycoon-trailer-9x16.mp4",
     "p16": "promo/anmacha-podcast-tycoon-trailer-16x9.jpg",
     "p9": "promo/anmacha-podcast-tycoon-trailer-9x16.jpg"
-   }
+   },
+   "trailers": [
+    {
+     "v16": "promo/anmacha-podcast-tycoon-trailer-16x9.mp4",
+     "v9": "promo/anmacha-podcast-tycoon-trailer-9x16.mp4",
+     "p16": "promo/anmacha-podcast-tycoon-trailer-16x9.jpg",
+     "p9": "promo/anmacha-podcast-tycoon-trailer-9x16.jpg"
+    },
+    {
+     "v16": "promo/anmacha-podcast-tycoon-trailer2-16x9.mp4",
+     "v9": "promo/anmacha-podcast-tycoon-trailer2-9x16.mp4",
+     "p16": "promo/anmacha-podcast-tycoon-trailer2-16x9.jpg",
+     "p9": "promo/anmacha-podcast-tycoon-trailer2-9x16.jpg"
+    }
+   ]
   },
   {
    "id": "anmacha-klotzfunk",
