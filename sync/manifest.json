@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9f1a0ce84cbe",
- "generated": "2026-11-14T03:16:11+01:00",
- "commit": "b69c243d3b8248a6d9a1d6cbf23a7bf37ea008c2",
+ "version": "14fc2857e807",
+ "generated": "2026-11-14T12:19:04+01:00",
+ "commit": "02e138a691a993546e62b7a137a27df9469727b8",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -353,8 +353,8 @@
   },
   {
    "p": "aeru/index.html",
-   "s": 15598,
-   "h": "8943096e87bd0b4f71c611eb7de2f34160bacea8845e4a30d0dc16a0074b4942"
+   "s": 15655,
+   "h": "48182f7534e2ac15eecfa7f045bf79f4b20958f5ac03ec5019e145372d361621"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -2013,8 +2013,8 @@
   },
   {
    "p": "anmacha-markthalle/index.html",
-   "s": 39693,
-   "h": "910188fc7d79a2611590465b0c8a994fada56c2fd99c2773a0e98954a06def54"
+   "s": 39750,
+   "h": "3d1629d8e4feff5ddb9f2dd710160517946c3e157f922cbe36f539f58450570a"
   },
   {
    "p": "anmacha-markthalle/logo.svg",
@@ -2173,8 +2173,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/index.html",
-   "s": 6951,
-   "h": "838d9cf5a6073f1c76927f8b2f4f71b11eeb91abb36a69a0952f473bc614d522"
+   "s": 7008,
+   "h": "06c321f05c41fbe185e1c9020d4024e9148395515cc3c0c327fc28d6a43bf5c6"
   },
   {
    "p": "anmacha-podcast-tycoon/manifest.webmanifest",
@@ -4864,7 +4864,7 @@
   {
    "p": "bunte-insel/index.html",
    "s": 109874,
-   "h": "a5ddb79fba08a010a34684c46d73bcc6ae8220780d3c24a11a723d0870691f89"
+   "h": "ed64cfa357b9005dae8107f9cddd456cd6c4e64a72239f40a00a9dac57217eaa"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -4923,8 +4923,8 @@
   },
   {
    "p": "bunte-insel/js/bunte-insel.min.js",
-   "s": 2178240,
-   "h": "bd284471a4a95e5ace2087223ddacfa22707df065889386b58275080223b54ba"
+   "s": 2179001,
+   "h": "e820d87512791d24aba0a7a2284d36a72895b243eb5bd26047a10b39f4acbc4c"
   },
   {
    "p": "bunte-insel/js/camp.js",
@@ -5103,8 +5103,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 324415,
-   "h": "0df4be6554512072b46ded2106430faa107de239ca32c8190459b4f8ee06f155"
+   "s": 324448,
+   "h": "678c86fe4983f23454e543fed671ebbe6952cd840449a5d5da2ff8fc2baa31b8"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -5168,8 +5168,8 @@
   },
   {
    "p": "bunte-insel/js/portale.js",
-   "s": 14364,
-   "h": "17fd917f330ef4447b7a7bf1b7b854e50fd90afd1635ab8ac304ffa1e6da9a70"
+   "s": 15403,
+   "h": "42adbfcf2e26d41af3980395ee11bdc31ea594c3e3668b6a0c936538cf71e03c"
   },
   {
    "p": "bunte-insel/js/prisma.js",
@@ -5333,8 +5333,8 @@
   },
   {
    "p": "bunte-insel/js/zotik.js",
-   "s": 50595,
-   "h": "80a34e167a4e77a74ce7471b81de9134e818b02fa3d139183be0e9bb38d7c6ee"
+   "s": 50736,
+   "h": "36cb22d7a8b19eb42c4871fd3908ad60f40993d8c2eb3d36eccebffd46afab54"
   },
   {
    "p": "bunte-insel/manifest.webmanifest",
@@ -5425,6 +5425,11 @@
    "p": "bunte-insel/radio/logos/16.png",
    "s": 50105,
    "h": "d3caecb017b6b6f0501b03aa67449e4e174f87d41c304001dec69611cff349e6"
+  },
+  {
+   "p": "bunte-insel/rueckweg.js",
+   "s": 2376,
+   "h": "569a1c9baf8a6f3cb53987b569817553e564baa04ad71744e8ee7981d6374a4f"
   },
   {
    "p": "bunte-insel/sounds/bonk.mp3",
@@ -6438,8 +6443,8 @@
   },
   {
    "p": "gay-life/index.html",
-   "s": 30711,
-   "h": "4aa735a2c989f394c424ffec2f18c7e20f95352d13bdfb2a37c23334c84cd6c5"
+   "s": 30768,
+   "h": "abbaa3672129b0a2e6e32ea49d92dd255fc70e33d258d4842272a2dae902035e"
   },
   {
    "p": "gay-life/js/assets.js",
@@ -9959,7 +9964,7 @@
   {
    "p": "sync/catalog.json",
    "s": 259012,
-   "h": "4b76bd5ff98fd9d74b30d92b85979513cd5a209ceab13d54a36192d8fbb90c99"
+   "h": "bfab52727b8bad40c98508935be46b274482a2261d7fb3b8bd016d5ee1c67db6"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -10398,8 +10403,8 @@
   },
   {
    "p": "taschi/index.html",
-   "s": 5019,
-   "h": "f4489fcaabaf67c96adee7542ad96e18e1830e2073000e3b3a19ace1c13dfa03"
+   "s": 5076,
+   "h": "7dd96476af01d1b8be1b00ad7017a4145fba2eae514ca3380cd9cef2ad002ff5"
   },
   {
    "p": "taschi/src/core/audio.js",

@@ -38,6 +38,8 @@ const r = await p.evaluate(async () => {
   s().fought = 1; out.st7 = await until(() => s().st === 7, 8000);
   await talk('mira'); out.st8 = await until(() => s().st === 8, 15000); out.q4 = s().q === 4;
   out.log = z.log().rows.slice(0, 7).every(r => r.ok);
+  /* Jedes Weltentor führt in seine eigene Welt (Tore stehen dicht nebeneinander) */
+  out.gates = Z.gates.every(g => { go(g.x, g.z + 1); const q = z.near(); return q && q.k === 'zgate' && q.i === g.i; });
   /* Alter Spielstand (q = 4) gilt als geschafft */
   b.save.zotik = { q: 4, shards: [], pts: 0, paid: 0, fought: 1, visit: 1, gates: 1, ship: 0, felli: 0, talk: {} }; out.old = z.log().rows[6].ok === true;
   return out;
@@ -51,6 +53,7 @@ ok(r.gateClosed, 'Weltentore sind vor der Quest ansprechbar (schlafen noch)');
 ok(r.t0 && r.st1 && r.st2 && r.st3, 'Quest: Mira → 3 Mondkräuter → zurück zu Mira');
 ok(r.st4 && r.st5 && r.st6, 'Quest: 5 Riftlinge beruhigt → Professorium → Mondtor auf Vollmond');
 ok(r.wolfNear && r.game && r.st7 && r.st8 && r.q4 && r.log, 'Quest: Mondwolf beruhigt → Bericht an Mira, Aufgaben-Log vollständig');
+ok(r.gates, 'Jedes der 6 Weltentore führt in seine eigene Welt');
 ok(r.old, 'Alter Spielstand (Quest geschafft) bleibt geschafft');
 ok(!errs.length, 'keine Fehler auf der Seite ' + errs.slice(0, 3).join(' | '));
 await browser.close(); process.exit(fails ? 1 : 0);
