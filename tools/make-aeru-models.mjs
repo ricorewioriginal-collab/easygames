@@ -17,7 +17,8 @@ fs.mkdirSync(OUT, { recursive: true });
 const io = new NodeIO().registerExtensions([KHRMeshQuantization]);
 
 const SCENERY = ['garden_tree_green', 'garden_tree_pink', 'garden_tree_yellow', 'ancient_tree_pink_1', 'ancient_tree_yellow_1',
-  'rock_big_1', 'rock_big_2', 'grass_green_group', 'grass_purple_group'];
+  'rock_big_1', 'rock_big_2', 'grass_green_group', 'grass_purple_group',
+  'pine1', 'pine2', 'birch1', 'birch3', 'creepy_tree1', 'rock_big_3', 'rock_medium_1', 'column_1', 'arch', 'lamp'];
 {
   const doc = await io.read(path.join(ROOT, 'zotik/models/wz/wz.glb')), sc = doc.getRoot().listScenes()[0], keep = new Set(SCENERY.map(n => 'p:' + n));
   for (const n of sc.listChildren()) if (!keep.has(n.getName())) { sc.removeChild(n); n.dispose(); }

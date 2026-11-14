@@ -130,7 +130,7 @@ Fensterwechsel oder verdeckter Tab pausiert das Spiel und löst alle gedrückten
 
 ## Weite Welten
 
-- **Gebiete:** Jede Welt hat vier zusätzliche Gebiete (Nord r 20, Ost r 19, West r 19, Süd r 20) auf Bodenhöhe, verbunden durch 4 m breite Brücken mit 1,5 m Überlappung. Der Brückenzugang auf der Hauptinsel bleibt frei von Bäumen und Felsen; Kantenschutz gilt auf den Brücken.
+- **Gebiete:** Jede Welt hat vier zusätzliche Gebiete (r 18–22, Lage je Welt eigen über `land.regions` in `content.js`; Welt 1: Nord r 20, Ost r 19, West r 19, Süd r 20) auf Bodenhöhe, verbunden durch 4 m breite Brücken mit 1,5 m Überlappung. Der Brückenzugang auf der Hauptinsel bleibt frei von Bäumen und Felsen; Kantenschutz gilt auf den Brücken.
 - **Edelsteine:** Rot 1, Grün 2, Blau 5, Gold 10, Lila 25; 208–235 Wert je Welt, gespeichert je Welt (`save.jewels`). Gezeichnet als ein InstancedMesh je Farbe (5 Draw Calls). Funkel holt sie aus 2,4 m heran; Ton steigt mit Wert und Kette.
 - **Kristalldrachen:** eine Statue je Gebiet (eine Geometrie, ein Draw Call), Berühren befreit (Dialog, Rastpunkt), gespeichert in `save.dragons`.
 - **Eierdieb:** im Ostgebiet, flieht mit 9 m/s (Laufen 7,4, Ansturm 12,5), bleibt im Gebiet und weicht am Rand entlang aus. Gefangen per Rammstoß/Ansturm oder Feueratem aus der Nähe; gespeichert in `save.eggs`.
@@ -142,3 +142,5 @@ Fensterwechsel oder verdeckter Tab pausiert das Spiel und löst alle gedrückten
 - **Feueratem:** ersetzt den Windstoß optisch und klanglich (Flammenringe, Funken, Knistern); Reichweite und Treffer bleiben gleich, Laternen werden damit entzündet.
 - **Sprachausgabe:** Dialogzeilen werden mit der deutschen Gerätestimme vorgelesen (Drachen tiefer, Pip höher); Einstellung „Sprachausgabe“, eingebettet über `cloud/anmacha-cloud.js`.
 
+
+- **Talcharakter je Welt** (`land` in `content.js`): `hills`/`freq` (Hügel), `deep` (Tal tiefer, Wolkenriffe), `klamm` (Schluchten mit flachem Grund 5,5 m unter dem Tal, Kristallklamm), `props`/`parts` (Bewuchs). Weltentor, Rücktor und Heimtor liegen relativ zu Nord- und Südgebiet.

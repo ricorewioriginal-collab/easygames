@@ -107,16 +107,44 @@ function mesh(shape, c, x = 0, y = 0, z = 0, sx = 1, sy = sx, sz = sx, parent = 
 }
 function ring(x, y, z, r, c, parent = world) { const m = new T.Mesh(ringGeo(r), mat(c, true)); m.position.set(x, y, z); parent.add(m); return m; }
 const wingGeos = [-1, 1].map(s => { const g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute([0, 0, 0, s * 1.8, .5, .3, s * 1.15, 0, 1.05, 0, 0, 0, s * 1.6, .85, -.3, s * 1.8, .5, .3], 3)); g.computeVertexNormals(); shared.add(g); return g; });
+// Drachen (Aeru, Mira, Statuen, Vesper): weich schattierte Rundformen statt Facetten, Gelenke als Gruppen für den Laufzyklus.
+// Vorne ist −z. Der Körper hängt in userData.rig (Wippen beim Laufen), Beine drehen um die Hüfte, der Schwanz schwingt in drei Gliedern.
+const smoothMats = new Map(), orbGeo = new T.SphereGeometry(1, 16, 11), hornGeo = new T.ConeGeometry(1, 1, 12); shared.add(orbGeo); shared.add(hornGeo);
+function smat(c, gloss = .55) { const k = c + gloss; if (!smoothMats.has(k)) smoothMats.set(k, new T.MeshStandardMaterial({color: linearColor(c), roughness: gloss, metalness: 0})); return smoothMats.get(k); }
+function part(parent, geo, c, x, y, z, sx, sy, sz, rx = 0, rz = 0, gloss) { const m = new T.Mesh(geo, smat(c, gloss)); m.position.set(x, y, z); m.scale.set(sx, sy, sz); m.rotation.set(rx, 0, rz); m.castShadow = true; parent.add(m); return m; }
 function dragon(c = '#46b6ad', accent = '#e8b875', scale = 1) {
-  const g = new T.Group();
-  mesh('ball', c, 0, .85, 0, .6, .65, .92, g); mesh('ball', '#daebc6', 0, .75, -.42, .44, .43, .47, g); mesh('ball', c, 0, 1.5, -.65, .55, .54, .6, g); mesh('ball', c, 0, 1.28, -1.12, .45, .28, .47, g); mesh('ball', '#bedcc2', 0, 1.12, -1.16, .33, .11, .3, g);
-  for (const s of [-1, 1]) { mesh('ball', '#fff6d6', s * .37, 1.61, -1.02, .17, .19, .1, g); mesh('ball', '#172c36', s * .38, 1.62, -1.11, .075, .105, .035, g); mesh('cone', accent, s * .32, 2, -.44, .13, .65, .13, g).rotation.z = s * -.25; mesh('cone', c, s * .57, 1.55, -.37, .23, .6, .13, g).rotation.z = s * -.9; }
-  const legs = []; for (const x of [-.4, .4]) for (const z of [-.4, .5]) { legs.push(mesh('ball', c, x, .3, z, .22, .38, .3, g)); mesh('ball', accent, x, .13, z - .15, .2, .12, .23, g); }
-  const tail = new T.Group(); tail.position.set(0, .7, .6); mesh('cone', c, 0, -.02, .65, .32, 1.7, .35, tail).rotation.x = Math.PI / 2; mesh('cone', accent, 0, .06, 1.4, .21, .6, .12, tail).rotation.x = 1; g.add(tail);
-  for (let i = 0; i < 5; i++) mesh('cone', accent, 0, 1.45 - i * .12, .05 + i * .3, .12, .3, .12, g);
+  const g = new T.Group(), rig = new T.Group(); g.add(rig);
+  const belly = '#f1e6c4', dark = '#18242e', light = new T.Color(c).lerp(new T.Color('#ffffff'), .25).getStyle();
+  // Rumpf, Bauch, Hals
+  part(rig, orbGeo, c, 0, .9, .05, .6, .58, .86, -.12); part(rig, orbGeo, belly, 0, .76, -.18, .46, .42, .62, -.2, 0, .7);
+  part(rig, orbGeo, c, 0, 1.22, -.52, .3, .38, .3, .55);
+  // Kopf: groß und rund, kurze Schnauze, große Augen, zurückgeschwungene Hörner, Ohrflossen
+  const head = new T.Group(); head.position.set(0, 1.58, -.78); rig.add(head);
+  part(head, orbGeo, c, 0, 0, 0, .46, .42, .48); part(head, orbGeo, light, 0, -.11, -.36, .32, .24, .34); part(head, orbGeo, belly, 0, -.2, -.3, .27, .12, .3, 0, 0, .7);
+  for (const s of [-1, 1]) {
+    part(head, orbGeo, dark, s * .1, -.06, -.66, .035, .03, .02);
+    part(head, orbGeo, '#fffaf0', s * .22, .07, -.3, .15, .18, .11, 0, 0, .25); part(head, orbGeo, dark, s * .24, .06, -.38, .085, .11, .05, 0, 0, .2); part(head, orbGeo, '#ffffff', s * .21, .11, -.42, .025, .03, .015, 0, 0, .1);
+    part(head, orbGeo, c, s * .22, .21, -.3, .15, .05, .1, 0, s * -.25);
+    part(head, hornGeo, accent, s * .2, .33, .14, .085, .52, .085, -1.05, s * -.2, .45);
+    part(head, hornGeo, c, s * .43, .02, .1, .2, .42, .06, -.3, s * -1.25);
+  }
+  // Rückenkamm
+  for (let i = 0; i < 6; i++) part(rig, hornGeo, accent, 0, 1.48 - i * .1 - (i > 2 ? (i - 2) * .04 : 0), -.32 + i * .26, .07, .22 - i * .015, .12, -.35 - i * .08);
+  // Beine: Gruppe dreht um die Hüfte (vorne links, vorne rechts, hinten links, hinten rechts)
+  const legs = [];
+  for (const [x, z, k] of [[-.34, -.42, .9], [.34, -.42, .9], [-.38, .48, 1.05], [.38, .48, 1.05]]) {
+    const L = new T.Group(); L.position.set(x, .62, z); rig.add(L);
+    part(L, orbGeo, c, 0, -.12, 0, .2 * k, .28 * k, .22 * k); part(L, orbGeo, c, 0, -.38, .02, .13, .2, .14); part(L, orbGeo, accent, 0, -.55, -.09, .17, .09, .23, 0, 0, .6);
+    legs.push(L);
+  }
+  // Schwanz: drei Glieder, Spitze als Windblatt
+  const tail = new T.Group(); tail.position.set(0, .85, .78); rig.add(tail); let seg = tail; const tailSegs = [];
+  for (let i = 0; i < 3; i++) { const t = new T.Group(); t.position.set(0, i ? -.04 : 0, i ? .42 - i * .05 : 0); seg.add(t); part(t, orbGeo, c, 0, 0, .22, .24 - i * .06, .22 - i * .055, .32); tailSegs.push(t); seg = t; }
+  part(seg, hornGeo, accent, 0, .08, .62, .16, .42, .05, Math.PI / 2 + .35); part(seg, hornGeo, accent, 0, -.02, .58, .05, .3, .12, Math.PI / 2 - .2);
+  // Flügel: Haut plus Knochen
   const wings = [];
-  [-1, 1].forEach((s, i) => { const w = new T.Group(); w.position.set(s * .45, 1.1, .1); const wm = new T.Mesh(wingGeos[i], mat(accent, false, true)); wm.castShadow = true; w.add(wm); mesh('cone', c, s * .75, .25, .08, .07, 1.65, .07, w).rotation.z = s * -1.18; g.add(w); wings.push(w); });
-  g.scale.setScalar(scale); g.userData = {wings, legs, tail}; return g;
+  [-1, 1].forEach((s, i) => { const w = new T.Group(); w.position.set(s * .42, 1.12, .02); const wm = new T.Mesh(wingGeos[i], mat(accent, false, true)); wm.castShadow = true; w.add(wm); part(w, hornGeo, c, s * .75, .25, .08, .06, 1.65, .06, 0, s * -1.18); part(w, orbGeo, c, 0, 0, 0, .1, .1, .1); rig.add(w); wings.push(w); });
+  g.scale.setScalar(scale); g.userData = {wings, legs, tail, tailSegs, head, rig}; return g;
 }
 const player = dragon(); scene.add(player);
 const shadow = new T.Mesh(new T.CircleGeometry(.75, 24), new T.MeshBasicMaterial({color: 0x183940, transparent: true, opacity: .28, depthWrite: false})); shadow.rotation.x = -Math.PI / 2; scene.add(shadow);
@@ -366,22 +394,27 @@ function makeUpdraft(x, z, y = 0, height = 12, temporary = false) {
 // mit begehbaren Hängen, Landbrücken als Grate, eine Mulde für den See. Zum Rand steigt das Gelände zu den Bergen an.
 // Hochflächen bleiben oben eben auf ihrer alten Höhe – alles, was dort steht, bleibt gültig.
 const VALLEY_Y = -6, TERRAIN_HALF = 170, WORLD_R = 150, SLOPE = .85, STEP_UP = .45;
-let terrain = {pl: [], ri: [], ba: [], ph: 0};
-function resetTerrain(index) { terrain = {pl: [], ri: [], ba: [], ph: index * 1.7}; }
-function hills(x, z) {
-  const p = terrain.ph;
-  return 1.6 * Math.sin(x * .045 + 1.3 + p) * Math.cos(z * .038 - p * .6) + 1.1 * Math.sin(x * .021 - z * .033 + .7 + p * .4) + .55 * Math.sin((x + z) * .09 + p);
+// Charakter je Welt aus content.js `land`: hills (Hügelhöhe), freq (Hügeldichte), deep (tieferes Tal), klamm (Schluchten als Strecken
+// [ax, az, bx, bz, Breite]), props/parts (Bewuchs im Tal).
+let terrain = {pl: [], ri: [], ba: [], kl: [], ph: 0, amp: 1, fq: 1, base: VALLEY_Y};
+function resetTerrain(index) {
+  const L = levels[index]?.land || {};
+  terrain = {pl: [], ri: [], ba: [], kl: (L.klamm || []).map(([ax, az, bx, bz, w]) => ({ax, az, bx, bz, w})), ph: index * 1.7, amp: L.hills ?? 1, fq: L.freq ?? 1, base: VALLEY_Y - (L.deep ?? 0)};
 }
+function hills(x, z) {
+  const p = terrain.ph; x *= terrain.fq; z *= terrain.fq;
+  return terrain.amp * (1.6 * Math.sin(x * .045 + 1.3 + p) * Math.cos(z * .038 - p * .6) + 1.1 * Math.sin(x * .021 - z * .033 + .7 + p * .4) + .55 * Math.sin((x + z) * .09 + p));
+}
+const segDist = (q, x, z) => { const vx = q.bx - q.ax, vz = q.bz - q.az, t = clamp(((x - q.ax) * vx + (z - q.az) * vz) / (vx * vx + vz * vz), 0, 1); return Math.hypot(x - q.ax - vx * t, z - q.az - vz * t); };
 function heightAt(x, z) {
   const rr = Math.hypot(x, z);
-  let h = VALLEY_Y + hills(x, z) + (rr > 128 ? Math.min(rr - 128, 40) * 1.4 : 0);
+  let h = terrain.base + hills(x, z) + (rr > 128 ? Math.min(rr - 128, 40) * 1.4 : 0);
+  // Schluchten: flacher Grund 5,5 m unter dem Tal, Hänge begehbar. Grate und Hochflächen liegen darüber.
+  for (const q of terrain.kl) h = Math.min(h, terrain.base - 5.5 + Math.max(0, segDist(q, x, z) - q.w / 2) * 1.1);
   // Erst Seeufer und Seemulde, danach die übrigen Hochflächen: Wo ein Gebiet in den See ragt, liegt sein Ufer obenauf.
   for (const q of terrain.ba) { const d = Math.hypot(x - q.x, z - q.z); h = Math.max(h, d - q.r - 1.6 <= 0 ? 0 : -(d - q.r - 1.6) * SLOPE); if (d < q.r) h = Math.min(h, q.y); }
   for (const q of terrain.pl) { const d = Math.hypot(x - q.x, z - q.z) - q.r; h = Math.max(h, d <= 0 ? q.y : q.y - d * SLOPE); }
-  for (const q of terrain.ri) {
-    const vx = q.bx - q.ax, vz = q.bz - q.az, t = clamp(((x - q.ax) * vx + (z - q.az) * vz) / (vx * vx + vz * vz), 0, 1);
-    const d = Math.hypot(x - q.ax - vx * t, z - q.az - vz * t) - q.w / 2; h = Math.max(h, d <= 0 ? q.y : q.y - d * SLOPE);
-  }
+  for (const q of terrain.ri) { const d = segDist(q, x, z) - q.w / 2; h = Math.max(h, d <= 0 ? q.y : q.y - d * SLOPE); }
   return h;
 }
 // Landbrücke als Grat zwischen zwei Hochflächen (die Brückenplatte bleibt als begehbarer Weg darauf).
@@ -395,27 +428,88 @@ function buildTerrain(index) {
     const x = pos.getX(i), z = pos.getZ(i), h = heightAt(x, z);
     const slope = Math.max(Math.abs(heightAt(x + 1, z) - heightAt(x - 1, z)), Math.abs(heightAt(x, z + 1) - heightAt(x, z - 1))) / 2;
     // Auf Hochflächen liegt das Gelände knapp unter der Grasplatte, damit nichts flimmert.
-    pos.setY(i, h - (terrain.pl.some(q => Math.hypot(x - q.x, z - q.z) < q.r - .4) ? .06 : 0));
+    pos.setY(i, h);
     c.copy(h > -1.5 ? top : low).lerp(rock, clamp((slope - .45) / .5, 0, 1)); col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
   }
   geo.setAttribute('color', new T.BufferAttribute(col, 3)); geo.computeVertexNormals();
-  const m = new T.Mesh(geo, own(new T.MeshStandardMaterial({vertexColors: true, roughness: .95}))); m.receiveShadow = true; world.add(m);
+  const m = new T.Mesh(geo, groundMat('terrain', true)); m.receiveShadow = true; world.add(m); grassField(index);
   // Talwiese beleben: Baumgruppen und Felsen auf flachen Stellen (nur mit Modellen, ein InstancedMesh je Teil).
   if (!useSceneryModels() || !models.castle) return;
   let seed = 4021 + index * 97; const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-  const parts = ['trees_A', 'trees_B', 'tree_A', 'rock_A', 'tree_B', 'trees_A', 'rock_C', 'tree_A'];
-  for (let i = 0; i < 80; i++) {
+  const parts = cfg.land?.parts || ['garden_tree_green', 'birch1', 'pine1', 'rock_big_1', 'garden_tree_yellow', 'birch3', 'rock_medium_1', 'pine2'];
+  for (let i = 0, n = Math.round((cfg.land?.props || 80) * (preset === QUALITY.hoch ? 1 : .6)); i < n; i++) {
     const a = rand() * TAU, rr = 34 + rand() * 92, x = Math.cos(a) * rr, z = Math.sin(a) * rr, y = heightAt(x, z);
     if (y > -2 || Math.abs(heightAt(x + 2.5, z) - heightAt(x - 2.5, z)) > 1.2 || Math.abs(heightAt(x, z + 2.5) - heightAt(x, z - 2.5)) > 1.2 || solids.some(s => s.r ? Math.hypot(x - s.x, z - s.z) < s.r + 3 : Math.abs(x - s.x) < s.w / 2 + 3 && Math.abs(z - s.z) < s.d / 2 + 3)) continue;
     // Höhe je Teil passend zur Breite (Felsen sind flach, Baumgruppen breit); Kollision wie bei Bäumen, damit auch die Kamera ausweicht.
     const name = parts[i % parts.length], [h, w] = VALLEY_PART[name], k = .85 + rand() * .3, hh = h * k, ww = w * k;
     prop(name, x, z, hh, rand() * TAU, 0, y - .1);
-    if (name.startsWith('rock')) treeColliders.push({x, z, trunk: ww * .4, trunkTop: y + hh, crown: ww * .45, cy: -100, ch: 0, rock: true, prop: name});
+    if (/^(rock|column)/.test(name)) treeColliders.push({x, z, trunk: ww * .4, trunkTop: y + hh, crown: ww * .45, cy: -100, ch: 0, rock: true, prop: name});
     else treeColliders.push({x, z, trunk: .5, trunkTop: y + hh * .4, crown: ww * .42, cy: y + hh * .65, ch: hh * .35, prop: name});
   }
 }
+// Bodentextur: feine Grashalme und Flecken in Grautönen (einmal erzeugt), in Weltkoordinaten projiziert und mit der Bodenfarbe
+// multipliziert. Eine zweite, grobe Abtastung bricht die Wiederholung. Gilt für Gelände, Inselplatten und Plattformoberseiten.
+let groundTex = null; const groundMats = new Map(), windUniform = {value: 0};
+function groundTexture() {
+  if (groundTex !== null) return groundTex;
+  let seed = 77; const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  groundTex = canvasTexture(256, 256, (x, w, h) => {
+    x.fillStyle = 'rgb(222,222,214)'; x.fillRect(0, 0, w, h);
+    for (let i = 0; i < 90; i++) { const cx = rnd() * w, cy = rnd() * h, r = 10 + rnd() * 26, v = 196 + rnd() * 50 | 0; x.fillStyle = `rgba(${v},${v},${v - 8},.35)`; for (const ox of [-w, 0, w]) for (const oy of [-h, 0, h]) { x.beginPath(); x.arc?.(cx + ox, cy + oy, r, 0, TAU); x.fill?.(); } }
+    x.lineWidth = 1.3; x.lineCap = 'round';
+    for (let i = 0; i < 2600; i++) { const px = rnd() * w, py = rnd() * h, a = rnd() * TAU, l = 3 + rnd() * 6, v = rnd() < .5 ? 150 + rnd() * 50 | 0 : 236 + rnd() * 19 | 0;
+      x.strokeStyle = `rgb(${v},${v},${Math.max(0, v - 18)})`; for (const ox of [-w, 0, w]) for (const oy of [-h, 0, h]) { x.beginPath(); x.moveTo?.(px + ox, py + oy); x.lineTo?.(px + ox + Math.cos(a) * l, py + oy + Math.sin(a) * l); x.stroke?.(); } }
+  });
+  if (groundTex) { groundTex.wrapS = groundTex.wrapT = T.RepeatWrapping; groundTex.anisotropy = 4; shared.add(groundTex); }
+  return groundTex;
+}
+function worldUv(material, scale = .3) {
+  material.onBeforeCompile = sh => {
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec2 vGroundUv;').replace('#include <begin_vertex>', `#include <begin_vertex>\nvGroundUv = (modelMatrix * vec4(position, 1.0)).xz * ${scale.toFixed(3)};`);
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec2 vGroundUv;').replace('#include <map_fragment>',
+      'vec4 texelColor = texture2D(map, vGroundUv) * (0.82 + 0.3 * texture2D(map, vGroundUv * 0.11 + 0.37).r);\ntexelColor = mapTexelToLinear(texelColor);\ndiffuseColor *= texelColor;');
+  };
+  return material;
+}
+function groundMat(c, vertexColors = false) {
+  const k = c + vertexColors; if (groundMats.has(k)) return groundMats.get(k);
+  const tex = groundTexture(), m = new T.MeshStandardMaterial({color: vertexColors ? 0xffffff : linearColor(c), roughness: .95, vertexColors, ...(tex ? {map: tex} : {})});
+  if (tex) { worldUv(m); m.color.multiplyScalar(1.12); } groundMats.set(k, m); return m;
+}
+// Dichtes Gras: ein InstancedMesh aus Halmbüscheln (drei gekreuzte Halme, unten dunkel, oben hell), die im Wind wiegen.
+// Auf Hochflächen und flachem Talboden, frei von Wegen und Brücken. Sparsam: aus.
+function grassField(index) {
+  const n = preset === QUALITY.hoch ? 14000 : preset === QUALITY.ausgewogen ? 6000 : 0; if (!n || canvasMode) return;
+  const cfg = levels[index], pos = [], col = [], base = new T.Color(linearColor(cfg.grass)).multiplyScalar(.62), tip = new T.Color(linearColor(cfg.grass)).lerp(new T.Color(linearColor('#e8eca0')), .18);
+  for (let b = 0; b < 4; b++) { const a = b / 4 * Math.PI + .3, ox = Math.cos(a + 1.6) * .1 * (b % 2 ? 1 : -1), oz = Math.sin(a + 1.6) * .1 * (b % 2 ? 1 : -1), ca = Math.cos(a) * .075, sa = Math.sin(a) * .075, h = b % 2 ? .7 : 1, lean = .18 * (b - 1.5);
+    pos.push(ox - ca, 0, oz - sa, ox + ca, 0, oz + sa, ox + lean * Math.cos(a + 1.6), h, oz + lean * Math.sin(a + 1.6)); col.push(base.r, base.g, base.b, base.r, base.g, base.b, tip.r, tip.g, tip.b); }
+  const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); geo.setAttribute('color', new T.Float32BufferAttribute(col, 3)); geo.computeVertexNormals();
+  // Normalen nach oben: Halme werden wie der Boden beleuchtet (kein Flackern von Rück- und Vorderseite).
+  const nr = geo.attributes.normal; for (let i = 0; i < nr.count; i++) nr.setXYZ(i, 0, 1, 0);
+  const m = new T.MeshStandardMaterial({vertexColors: true, roughness: 1, side: T.DoubleSide});
+  m.onBeforeCompile = sh => { sh.uniforms.uWind = windUniform; sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nuniform float uWind;').replace('#include <begin_vertex>',
+    '#include <begin_vertex>\nvec4 gw = instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0); float sway = sin(uWind * 1.7 + gw.x * .35 + gw.z * .22) * .5 + sin(uWind * 2.9 + gw.x * .9) * .25; transformed.x += sway * position.y * .22; transformed.z += sway * position.y * .12;');
+    // Beide Seiten wie die Oberseite beleuchten (sonst wirkt die Rückseite schwarz).
+    sh.fragmentShader = sh.fragmentShader.replace('#include <normal_fragment_begin>', '#include <normal_fragment_begin>\nnormal = normalize(vNormal);'); };
+  const inst = new T.InstancedMesh(geo, own(m), n); inst.receiveShadow = true; inst.castShadow = false; inst.frustumCulled = false;
+  let seed = 911 + index * 13; const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  const spots = terrain.pl.filter(q => q.y <= 2), dummy = new T.Object3D(); let k = 0;
+  const area = spots.reduce((s, q) => s + q.r * q.r, 0);
+  for (let tries = 0; k < n && tries < n * 3; tries++) {
+    let x, z;
+    if (tries % 4 === 3) { const a = rnd() * TAU, r = 30 + rnd() * 70; x = Math.cos(a) * r; z = Math.sin(a) * r; } // Talboden
+    else { let pick = rnd() * area, q = spots[0]; for (const s of spots) { pick -= s.r * s.r; if (pick <= 0) { q = s; break; } } const a = rnd() * TAU, r = Math.sqrt(rnd()) * (q.r - .5); x = q.x + Math.cos(a) * r; z = q.z + Math.sin(a) * r; }
+    const y = floorAt(x, z, 3);
+    if (y < -20 || Math.abs(heightAt(x + 1, z) - heightAt(x - 1, z)) > .9 || (Math.abs(x) < 2.6 && z > -17 && z < 20) || nearBridge(x, z, 2.6) || (lake && Math.hypot(x - lake.x, z - lake.z) < lake.r + .3) || solids.some(s => !s.r && s.y > y + .1 && Math.abs(x - s.x) < s.w / 2 && Math.abs(z - s.z) < s.d / 2)) continue;
+    const s = .7 + rnd() * .7; dummy.position.set(x, y - .02, z); dummy.rotation.set(0, rnd() * TAU, 0); dummy.scale.set(s, s * (.4 + rnd() * .35), s); dummy.updateMatrix(); inst.setMatrixAt(k++, dummy.matrix);
+  }
+  inst.count = k; inst.instanceMatrix.needsUpdate = true; world.add(inst); grassCount = k;
+}
+let grassCount = 0;
 // Talteile: Höhe und Breite in Metern (aus den Maßen der Modelle).
-const VALLEY_PART = {trees_A: [4.5, 6], trees_B: [4.2, 6.5], tree_A: [6, 2.9], tree_B: [5.5, 3.2], rock_A: [.5, 2.2], rock_C: [1.1, 2]};
+const VALLEY_PART = {trees_A: [4.5, 6], trees_B: [4.2, 6.5], tree_A: [6, 2.9], tree_B: [5.5, 3.2], rock_A: [.5, 2.2], rock_C: [1.1, 2],
+  pine1: [7.4, 4.1], pine2: [9.4, 4.45], birch1: [7, 4.45], birch3: [7.6, 4.8], creepy_tree1: [5.5, 2.8], garden_tree_green: [5.4, 4.1], garden_tree_yellow: [5.4, 4.1], garden_tree_pink: [5.4, 4.1],
+  ancient_tree_yellow_1: [6, 6.9], ancient_tree_pink_1: [6, 6.9], rock_big_1: [4.5, 3.7], rock_big_2: [4.6, 3.8], rock_big_3: [6, 4.7], rock_medium_1: [2.2, 1.8], column_1: [5.7, 2.2]};
 
 // ───────── Himmelsinseln, Truhen, Schwung-Ringe ─────────
 // Drei kleine Inseln pro Welt weit draußen: Aufwind nehmen, hinausfliegen, landen. Jede trägt eine Himmelstruhe, einen Rastpunkt und eine Ringstraße.
@@ -545,13 +639,19 @@ const REGION_DEFS = [{id: 'n', name: 'Nordgebiet', x: 0, z: -76, r: 20, axis: 'z
   {id: 'o', name: 'Ostgebiet', x: 70, z: -14, r: 19, axis: 'x', at: -14, side: 1},
   {id: 'w', name: 'Westgebiet', x: -70, z: -16, r: 19, axis: 'x', at: -16, side: -1},
   {id: 's', name: 'Südgebiet', x: -22, z: 74, r: 20, axis: 'z', at: -14, side: 1}];
-const GATE_NEXT = {x: 0, z: -91}, GATE_PREV = {x: -22, z: 89};
+// Eigener Grundriss je Welt: content.js `land.regions` verschiebt und skaliert die Gebiete ({x, z, r, at}); die Tore wandern mit.
+const layoutOf = index => REGION_DEFS.map(d => ({...d, ...(levels[index].land?.regions?.[d.id] || {})}));
+function gatesOf(index) {
+  const [n, , , s] = layoutOf(index), k = s.r / 20;
+  return {next: {x: n.x, z: n.z - (n.r - 5)}, prev: {x: s.x, z: s.z + (s.r - 5)}, home: {x: s.x - 14 * k, z: s.z - 4 * k}, arrive: {x: s.x - 9.2 * k, y: 0, z: s.z - 2.6 * k}};
+}
+let GATE_NEXT = {x: 0, z: -91}, GATE_PREV = {x: -22, z: 89}, HOME_GATE = {x: -36, z: 70}, HOME_ARRIVE = {x: -31.2, y: 0, z: 71.4};
 // See am Ostgebiet (Schwimmen) und Rankenwand am Westgebiet (Klettern) – in jeder Welt.
 let lake = null, climbWall = null, trial = null;
 const TRIAL_TIME = 60;
 const waterMat = new T.MeshStandardMaterial({color: linearColor('#4fb6d6'), emissive: linearColor('#1f6f8f'), emissiveIntensity: .25, roughness: .12, transparent: true, opacity: .74});
 // Heimathain: die Heimatwelt (in Welt 1, östlich über eine eigene Brücke) mit einem Levelportal je Welt. In jeder anderen Welt führt das Heimtor im Südgebiet zurück.
-const HUB = {x: 70, z: 36, r: 22, at: 20}, HOME_GATE = {x: -36, z: 70}, HOME_ARRIVE = {x: -31.2, y: 0, z: 71.4};
+const HUB = {x: 70, z: 36, r: 22, at: 20};
 const hubAngle = i => (-30 + (i - 1) * 36) * Math.PI / 180;
 const hubPortal = (i, rr = 14) => ({x: HUB.x + Math.cos(hubAngle(i)) * rr, z: HUB.z + Math.sin(hubAngle(i)) * rr});
 const reserved = (x, z, m) => [GATE_NEXT, GATE_PREV, HOME_GATE].some(g => Math.hypot(g.x - x, g.z - z) < m);
@@ -586,7 +686,8 @@ function buildRegions(index) {
   let seed = 9187 + index * 71; const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
   const got = regionSave('jewels', index), freed = regionSave('dragons', index), egg = regionSave('eggs', index);
   const addJewel = (kind, x, z, y = 0, hidden = false) => { const id = jewels.length; jewels.push({id, kind, v: JEWEL[kind].v, x, y: y + 1, z, got: got.includes(id), hidden}); return jewels[id]; };
-  for (const def of REGION_DEFS) {
+  ({next: GATE_NEXT, prev: GATE_PREV, home: HOME_GATE, arrive: HOME_ARRIVE} = gatesOf(index));
+  for (const def of layoutOf(index)) {
     const rg = {...def}; regions.push(rg);
     island(rg.x, rg.z, rg.r, 0);
     // Brücke vom Hauptland zum Gebiet (achsparallel, Oberkante auf Bodenhöhe, je 1,5 m Überlappung)
@@ -606,7 +707,7 @@ function buildRegions(index) {
     for (let i = 0; i < 6; i++) place('gruen', i / 6 * TAU + rand(), rg.r * .55);
     for (let i = 0; i < 2; i++) place('blau', rand() * TAU, rg.r * .3);
     // Kristalldrache gegenüber der Brücke
-    const di = REGION_DEFS.indexOf(def), dx = rg.axis === 'x' ? rg.x + rg.side * rg.r * .45 : rg.x - 7, dz = rg.axis === 'x' ? rg.z + 7 : rg.z + rg.side * rg.r * .4;
+    const di = regions.length - 1, dx = rg.axis === 'x' ? rg.x + rg.side * rg.r * .45 : rg.x - 7, dz = rg.axis === 'x' ? rg.z + 7 : rg.z + rg.side * rg.r * .4;
     const st = new T.Mesh(statueGeometry(), freed.includes(di) ? freedMat : crystalMat); st.position.set(dx, 0, dz); st.rotation.y = Math.atan2(rg.x - dx, rg.z - dz) + Math.PI; st.castShadow = true; world.add(st);
     mesh('cylinder', cfg.accent, dx, .15, dz, 1.6, .3, 1.6);
     treeColliders.push({x: dx, z: dz, trunk: .9, trunkTop: 2.2, crown: 1.3, cy: -100, ch: 0, rock: true, statue: true});
@@ -614,7 +715,7 @@ function buildRegions(index) {
     dragonStatues.push({id: di, x: dx, z: dz, m: st, freed: freed.includes(di), name, text});
     // Burgturm am Gebietsrand (frei von Brücke, Weg, Statue, Stufenturm, Toren und Edelsteinen)
     const away = Math.atan2(rg.z - ez, rg.x - ex), tw = index % 2 ? 'red' : 'blue';
-    for (const off of [.9, -.9, 1.5, -1.5, 2.2, -2.2]) {
+    for (const off of [.9, -.9, 1.5, -1.5, 2.2, -2.2, 2.8, -2.8, .4, -.4]) {
       const a = away + off, x = rg.x + Math.cos(a) * rg.r * .74, z = rg.z + Math.sin(a) * rg.r * .74;
       if (nearBridge(x, z, 6) || Math.hypot(x - dx, z - dz) < 6 || Math.hypot(x - tx - 1, z - tz + 1) < 7 || reserved(x, z, 8) || jewels.some(j => Math.hypot(j.x - x, j.z - z) < 4)) continue;
       prop((di % 2 ? 'towerB_' : 'towerA_') + tw, x, z, 10, a + Math.PI / 2, 2.3); rg.keep = {x, z}; break;
@@ -701,7 +802,7 @@ function buildRegions(index) {
     treeColliders.push({x: H.x, z: H.z, trunk: 1.3, trunkTop: 3, crown: 1.8, cy: -100, ch: 0, rock: true, statue: true});
     for (let i = 1; i < LEVEL_COUNT; i++) {
       const p = hubPortal(i), open = !!save.cores[i - 1], short = levels[i].name.split(' · ')[1];
-      worldGates.push(makeWorldGate({id: 'hub' + i, ...p, rot: Math.atan2(H.x - p.x, H.z - p.z), to: i, need: i - 1, arrive: HOME_ARRIVE, name: (i + 1) + ' · ' + short, color: open ? levels[i].accent : '#59647b', rim: open ? '#ffe3a4' : '#8b8799'}));
+      worldGates.push(makeWorldGate({id: 'hub' + i, ...p, rot: Math.atan2(H.x - p.x, H.z - p.z), to: i, need: i - 1, arrive: gatesOf(i).arrive, name: (i + 1) + ' · ' + short, color: open ? levels[i].accent : '#59647b', rim: open ? '#ffe3a4' : '#8b8799'}));
     }
     // Burg des Ältesten im Norden, Türme zwischen den Portalen am Rand
     prop('castle_blue', H.x + 2.6, H.z - 15, 17, 0, 4.4);
@@ -785,7 +886,7 @@ function updateRegions(dt) {
     const need = g.id === 'next' ? save.level : g.need;
     if (need != null && !save.cores[need]) { if (time > gateTold) { gateTold = time + 4; toast(g.id === 'next' ? 'Das Weltentor erwacht, wenn der Leuchtkern dieser Welt leuchtet' : 'Dieses Portal erwacht, wenn der Leuchtkern von ' + levels[need].name.split(' · ')[1] + ' leuchtet'); sfx.wrong(); } continue; }
     sfx.portal(); retrigger($('fade'), 'on');
-    const arrive = g.arrive || (g.id === 'next' ? {x: GATE_PREV.x, y: 0, z: GATE_PREV.z - 5} : {x: GATE_NEXT.x, y: 0, z: GATE_NEXT.z + 5});
+    const to = gatesOf(g.to), arrive = g.arrive || (g.id === 'next' ? {x: to.prev.x, y: 0, z: to.prev.z - 5} : {x: to.next.x, y: 0, z: to.next.z + 5});
     travel(g.to, arrive);
     if (g.id === 'home') toast(`Heimathain · Drachen ${totalDragons()} / ${LEVEL_COUNT * 4} · Dracheneier ${totalEggs()} / ${LEVEL_COUNT}`);
     return;
@@ -802,10 +903,12 @@ const totalJewelsSaved = () => (save.jewels || []).reduce((n, a) => n + (a?.leng
 
 // ───────── Inselbau ─────────
 // Inseln am Boden (y ≤ 2) sind Hochflächen im Gelände (Grasplatte oben, Hänge ringsum); hohe Himmelsinseln schweben weiter.
-function island(x, z, r, y = 0) { const cfg = levels[save.level]; mesh('cylinder', cfg.grass, x, y - .6, z, r, 1.2, r);
+function island(x, z, r, y = 0) { const cfg = levels[save.level];
+  // Hochflächen sind Teil des Geländes (dessen Oberfläche liegt hier eben auf y); nur Himmelsinseln bekommen eine eigene Platte.
   if (y <= 2) { terrain.pl.push({x, z, r, y}); return; }
+  mesh('cylinder', cfg.grass, x, y - .6, z, r, 1.2, r).material = groundMat(cfg.grass);
   const base = mesh('cone', cfg.rock, x, y - 5.2, z, r * .99, 9, r * .99); base.rotation.z = Math.PI; solids.push({x, z, r, y, thick: 9.7}); for (let i = 0; i < 7; i++) { const a = i / 7 * TAU; mesh('rock', cfg.rock, x + Math.cos(a) * r * .7, y - 5.2, z + Math.sin(a) * r * .7, 3, 4, 3); } }
-function platform(x, z, w, d, y) { mesh('box', levels[save.level].rock, x, y - .5, z, w, 1, d); mesh('box', levels[save.level].grass, x, y + .015, z, w + .1, .08, d + .1); solids.push({x, z, w, d, y, thick: 1}); }
+function platform(x, z, w, d, y) { mesh('box', levels[save.level].rock, x, y - .5, z, w, 1, d); mesh('box', levels[save.level].grass, x, y + .015, z, w + .1, .08, d + .1).material = groundMat(levels[save.level].grass); solids.push({x, z, w, d, y, thick: 1}); }
 function floorAt(x, z, limit = Infinity) { let y = heightAt(x, z); if (y > limit) y = -100; for (const s of solids) { if (s.y > limit) continue; if (s.r ? Math.hypot(x - s.x, z - s.z) < s.r - .1 : Math.abs(x - s.x) < s.w / 2 + .2 && Math.abs(z - s.z) < s.d / 2 + .2) y = Math.max(y, s.y); } return y; }
 function tree(x, z, s = 1) { const cfg = levels[save.level]; fallbackTrees.push({x, z, s}); treeColliders.push({x, z, trunk: .45 * s, trunkTop: 2.6 * s, crown: 2.4 * s, cy: 4.45 * s, ch: 1.7 * s}); if (useSceneryModels()) { sceneryPlan.push({kind: 'tree', x, z, s}); return; } mesh('cone', '#7f7b68', x, 2 * s, z, .4 * s, 4 * s, .4 * s); for (let i = 0; i < 3; i++) mesh('ball', cfg.leaf, x + (i - 1) * .75 * s, (4 + i * .45) * s, z + (i % 2) * .4, 2.5 * s, 1.8 * s, 2 * s); }
 function arch(x, z) { const c = levels[save.level].accent; for (const s of [-1, 1]) { mesh('box', c, x + s * 2.5, 2.5, z, .8, 5, .9); mesh('box', c, x + s * 2.5, .3, z, 1.3, .6, 1.4); mesh('box', c, x + s * 2.5, 5, z, 1.25, .4, 1.3); } const r = ring(x, 4.8, z, 2.5, c); r.scale.y = .6; mesh('box', c, x, 6.2, z, 5.5, .4, 1); }
@@ -854,7 +957,7 @@ function buildLevel(index, titleOnly = false) {
   world = new T.Group(); scene.add(world);
   resetTerrain(0); sceneryPlan = []; crates = []; clearFalter(); regions = []; jewels = []; jewelBatches = []; dragonStatues = []; thief = null; worldGates = []; chests = []; boostRings = []; gusts = []; updrafts = []; flightRings = []; solids = []; treeColliders = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
   clearEffects(); particlePool.forEach(p => { p.life = 0; p.m.visible = false; });
-  clearInput(); accumulator = 0; save.level = index; terrain.ph = index * 1.7;
+  clearInput(); accumulator = 0; save.level = index; resetTerrain(index);
   const cfg = levels[index];
   sky.material.uniforms.top.value.set(cfg.sky); sky.material.uniforms.bottom.value.set(cfg.fog); sky.material.uniforms.dim.value = 0; scene.fog = new T.Fog(linearColor(cfg.fog), 85, 215);
   sun.color.set(cfg.light.sun); sun.intensity = cfg.light.sunI * lightScale; hemi.intensity = cfg.light.hemi * lightScale;
@@ -1178,8 +1281,15 @@ function animatePlayer(dt, input, gliding) {
   const squash = state.landing > 0 ? 1 - state.landing * 1.2 : 1; player.scale.set(1 / Math.sqrt(squash), squash, 1 / Math.sqrt(squash));
   player.visible = invulnerable <= .3 || Math.floor(time * 12) % 2 === 0;
   player.userData.wings.forEach((w, i) => { const flapping = state.vy > 1 && !state.onGround; const target = (i ? 1 : -1) * (gliding || flapping ? -.18 + Math.sin(time * (flapping ? 13 : 4)) * (flapping ? .45 : .08) : .5 + Math.sin(time * 3) * .16); w.rotation.z = approach(w.rotation.z, target, 12, dt); });
-  player.userData.tail.rotation.y = Math.sin(time * 5) * .15;
-  player.userData.legs.forEach((l, i) => l.rotation.x = state.onGround && length > .1 ? Math.sin(state.distance * 2.4 + i * 2) * .45 : -.15);
+  // Laufzyklus: diagonale Beinpaare, Körper wippt mit jedem Schritt, Kopf nickt, Schwanz schwingt gegen. In der Luft Beine angezogen.
+  const ud = player.userData, speed = Math.hypot(state.vx, state.vz), run = state.onGround ? clamp(speed / 7, 0, 1.3) : 0, ph = state.distance * 2.1;
+  ud.legs.forEach((l, i) => { const front = i < 2, step = (i === 0 || i === 3) ? 0 : Math.PI;
+    l.rotation.x = approach(l.rotation.x, state.onGround ? Math.sin(ph + step) * .75 * run : front ? -.55 : .7, state.onGround ? 30 : 10, dt); });
+  ud.rig.position.y = state.onGround ? Math.abs(Math.sin(ph)) * .09 * run + Math.sin(time * 2.2) * .012 * (1 - Math.min(run, 1)) : 0;
+  ud.rig.rotation.x = approach(ud.rig.rotation.x, state.onGround ? .05 * run : state.vy > 0 ? -.12 : .1, 6, dt);
+  ud.head.rotation.x = Math.sin(ph * 2) * .05 * run + (state.onGround ? 0 : state.vy > 0 ? .15 : -.12);
+  ud.head.rotation.y = approach(ud.head.rotation.y, clamp(-input.x * .35, -.35, .35), 6, dt);
+  ud.tailSegs.forEach((t, i) => { t.rotation.y = Math.sin((run > .1 ? ph : time * 2.4) - i * .7) * (run > .1 ? .16 : .1) * (1 + i * .3); t.rotation.x = state.onGround ? .05 * i : -.12; });
   flightTrail.visible = (gliding || starGlow && !state.onGround) && Math.hypot(state.vx, state.vz) > 2; flightTrail.position.set(state.x, state.y, state.z); flightTrail.rotation.y = state.yaw;
 }
 function respawn(message) {
@@ -1509,6 +1619,7 @@ function travel(index, arrive = null) {
 
 // ───────── Kamera ─────────
 function updateCamera(dt) {
+  windUniform.value = time;
   tmpVec.set(state.x, state.y, state.z); visualPosition.lerp(tmpVec, 1 - Math.exp(-dt * 24)); player.position.copy(visualPosition);
   // Kamerahilfe: Rückkehr hinter Aeru, wenn der Spieler die Kamera eine Weile nicht bewegt hat.
   if (settings.camAssist && time > camManualUntil && mode === 'play') {
@@ -1525,7 +1636,7 @@ function updateCamera(dt) {
     const ox = cameraTarget.x - t.x, oy = cameraTarget.y - t.cy, oz = cameraTarget.z - t.z, R = t.crown + .6;
     const dx = cameraGoal.x - cameraTarget.x, dy = cameraGoal.y - cameraTarget.y, dz = cameraGoal.z - cameraTarget.z;
     const a = dx * dx + dy * dy + dz * dz, b = 2 * (ox * dx + oy * dy + oz * dz), c = ox * ox + oy * oy + oz * oz - R * R, disc = b * b - 4 * a * c;
-    if (c > 0 && disc > 0) { const hit = (-b - Math.sqrt(disc)) / (2 * a); if (hit > 0 && hit < 1) cameraGoal.set(cameraTarget.x + dx * Math.max(.3, hit), cameraTarget.y + dy * Math.max(.3, hit), cameraTarget.z + dz * Math.max(.3, hit)); }
+    if (c > 0 && disc > 0) { const hit = (-b - Math.sqrt(disc)) / (2 * a); if (hit > 0 && hit < 1) { const k = Math.max(.55, hit); cameraGoal.set(cameraTarget.x + dx * k, cameraTarget.y + dy * k, cameraTarget.z + dz * k); if (hit < .55) cameraGoal.y = Math.min(cameraTarget.y + 9, Math.max(cameraGoal.y, t.cy + R + .4)); } }
   }
   // Gelände zwischen Aeru und Kamera (Hang, Hochfläche): Die Kamera hebt sich darüber, statt im Hang zu stecken.
   cameraGoal.y = Math.max(cameraGoal.y, heightAt(cameraGoal.x, cameraGoal.z) + .9, heightAt((cameraGoal.x + cameraTarget.x) / 2, (cameraGoal.z + cameraTarget.z) / 2) + .6);
@@ -2037,7 +2148,7 @@ if (TEST) window.aeruTest = {
   lose: () => { state.hp = 1; invulnerable = 0; hurt(); },
   perf: () => { let objects = 0; scene.traverse(() => objects++); const info = renderer.info?.render || {}; return {...lastPerf, calls: info.calls, triangles: info.triangles, pixelRatio: renderer.getPixelRatio?.(), objects, quality: settings.quality === 'auto' ? autoLevel : settings.quality, renderScale, geometries: renderer.info?.memory?.geometries, textures: renderer.info?.memory?.textures}; },
   sky: SKY, rammId: () => rammId,
-  trial: () => trial && {active: trial.active, t: trial.t, start: {...trial.start}, got: trial.jewel.got, hidden: trial.jewel.hidden, items: trial.items.map(o => ({kind: o.kind, x: o.x, y: o.y, z: o.z, got: o.got}))}, terrain: () => ({valleyY: VALLEY_Y, worldR: WORLD_R, plateaus: terrain.pl.map(q => ({...q})), ridges: terrain.ri.map(q => ({...q}))}), heightAt, water: () => lake && {...lake}, climbWall: () => climbWall && {...climbWall}, crates: () => crates.map(c => ({x: c.x, y: c.y, z: c.z, broken: c.broken, steel: !!c.steel})), falter: () => falterPool.filter(f => f.life > 0).map(f => ({x: f.x, y: f.y, z: f.z})), funkel: () => ({x: funkelPos.x, y: funkelPos.y, z: funkelPos.z, color: funkelColor()}), spawnFalter, hurt,
+  trial: () => trial && {active: trial.active, t: trial.t, start: {...trial.start}, got: trial.jewel.got, hidden: trial.jewel.hidden, items: trial.items.map(o => ({kind: o.kind, x: o.x, y: o.y, z: o.z, got: o.got}))}, terrain: () => ({valleyY: terrain.base, klamm: terrain.kl.map(q => ({...q})), worldR: WORLD_R, plateaus: terrain.pl.map(q => ({...q})), ridges: terrain.ri.map(q => ({...q}))}), heightAt, water: () => lake && {...lake}, climbWall: () => climbWall && {...climbWall}, crates: () => crates.map(c => ({x: c.x, y: c.y, z: c.z, broken: c.broken, steel: !!c.steel})), falter: () => falterPool.filter(f => f.life > 0).map(f => ({x: f.x, y: f.y, z: f.z})), funkel: () => ({x: funkelPos.x, y: funkelPos.y, z: funkelPos.z, color: funkelColor()}), spawnFalter, hurt,
   regions: () => regions.map(r => ({id: r.id, x: r.x, z: r.z, r: r.r, bridge: r.bridge, axis: r.axis, at: r.at, entry: r.entry, tower: r.tower})), jewels: () => jewels.map(j => ({id: j.id, kind: j.kind, v: j.v, x: j.x, y: j.y, z: j.z, got: j.got, hidden: j.hidden})),
   statues: () => dragonStatues.map(d => ({id: d.id, x: d.x, z: d.z, freed: d.freed})), thief: () => thief && {x: thief.x, z: thief.z, caught: thief.caught}, gates: () => worldGates.map(g => ({id: g.id, x: g.x, z: g.z, to: g.to, need: g.need, arrive: g.arrive})), hub: () => hub && {x: hub.x, z: hub.z, r: hub.r, bridge: hub.bridge, at: hub.at, entry: hub.entry}, setCore: (i, v = true) => { save.cores[i] = v; }, jewelValue, jewelTotal,
   portals: () => gamePortals.map(p => ({id: p.id, x: p.x, z: p.z, url: p.url})), navigated: () => window.__aeruNavigate || null, cam: () => ({yaw: camYaw, pitch: camPitch}), stick: (x, y) => { moveX = x; moveY = y; }, padInput: () => ({x: padX, y: padY}),

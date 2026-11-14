@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "2e0c0fc99174",
- "generated": "2026-11-14T00:33:33+00:00",
- "commit": "3c9a2f5848be8247d9275bdad2144df59871b821",
+ "version": "2cb06b149ecf",
+ "generated": "2026-11-14T00:50:20+00:00",
+ "commit": "a61ae97c82afa40a82d700922d5d24b0e1337da7",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -343,18 +343,18 @@
   },
   {
    "p": "aeru/content.js",
-   "s": 3324,
-   "h": "bab8ee796c5da78f61147cf16bde7b212a24b64e161bf2e340413380aacb445a"
+   "s": 4813,
+   "h": "cb3194737a879e723630d425de31ba4b3a31ab17cf3600e491e62e27e807ab4f"
   },
   {
    "p": "aeru/game.js",
-   "s": 197538,
-   "h": "966ba04d40c88e6779871c4eb48b370216b2cc474b4f63f775f0e1167f68e376"
+   "s": 209356,
+   "h": "40aecddb26c2a5dab382459ffd6226dbd21ce09576fae22f63292b905e1f014d"
   },
   {
    "p": "aeru/index.html",
    "s": 15598,
-   "h": "397dc5a70d1ac9756d40f3d7c52e65c719d055e8e6e4f136b3875138b723a3c8"
+   "h": "38f73d85331d70cb26397af4be9a3d0cecba0f083ba3e177efccdd8efe7047dd"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -393,8 +393,8 @@
   },
   {
    "p": "aeru/models/scenery.glb",
-   "s": 292172,
-   "h": "7d30b5d145b3cf89b2ce68bf78f2a5277f825b1b8d1cdfff97f28167f19dcf06"
+   "s": 667644,
+   "h": "acab92dd25496c1eb56f3691d0f1d20067bccb1b810cd4c3a951db1511865480"
   },
   {
    "p": "aeru/quests.js",
@@ -9944,7 +9944,7 @@
   {
    "p": "sync/catalog.json",
    "s": 259012,
-   "h": "d1ffbb4f32fdbecadd7fd8bdf76e77ba5137d9909562d6b5224a7f544f4ac6c4"
+   "h": "18fbe6d79097b9ce8a0560385de4d82fe3185f7ab04f19037c272fe5d663f798"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -12432,9 +12432,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-BMBPIPgl.js",
-   "s": 1908542,
-   "h": "5286d2dfd1e122679193356d6f94c2f3a42019479154564e40415e8ffadb2813"
+   "p": "zotik/assets/index-DdSkoUUt.js",
+   "s": 1910100,
+   "h": "df48cb106783cde48b179a9ebc3b82ee05ad5f07b4e3be226e540274d029297a"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -12454,7 +12454,7 @@
   {
    "p": "zotik/index.html",
    "s": 72669,
-   "h": "c1e15a4971f44bc5d3340164807489cfda53296a5863d23ccf23ce61c5449992"
+   "h": "2cf792b1073645f6db9f361fd0aa1b2fb9d34fc47190459d378ef98d85bc537f"
   },
   {
    "p": "zotik/manifest.webmanifest",
