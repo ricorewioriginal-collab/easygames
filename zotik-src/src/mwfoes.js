@@ -188,6 +188,15 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
         leg(-.24, .55, .1, .55, .13, st, true); leg(.24, .55, .1, .55, .13, st, true); arm(-1, 1.3, .7, .1, st, .45); arm(1, 1.3, .7, .1, st, .45);
         for (const s of [-1, 1]) { const w = mk(G.sph0, C(dim(col, .85), { r: 1 }), s * .75, 1.45, -.35, .85, .07, .5); w.rotation.set(.4, 0, s * .55); b.add(w); }
         tail.position.set(0, .7, -.4); tail.addm(mk(G.cone0, st, 0, -.35, 0, .08, .8, .08)).rotation.x = Math.PI; break; }
+      case 'baer': {   // Baloo: massiger brauner Bär, runde Ohren, helle Schnauze, Tapsfüße (Kipling)
+        const fur = C(col, { r: .95 }); quad(1.15, fur);
+        for (const s of [-1, 1]) head.add(mk(G.sph, fur, s * .2, .24, -.04, .1, .1, .07)); head.add(mk(G.sph, C(0xd8c0a0), 0, -.08, .26, .16, .12, .15)); head.add(mk(G.sph0, C(0x1a1410), 0, -.02, .4, .06, .05, .04, false)); eyes(head, .08, .22, .1, 0x2a1a10);
+        b.add(mk(G.sph0, C(0xd8c0a0), 0, .78, .5, .22, .2, .15, false)); tail.addm(mk(G.sph0, fur, 0, -.1, 0, .12, .12, .12)); break; }
+      case 'mungo': {   // Rikki-tikki-tavi: schlanker Mungo, spitze Schnauze, buschiger Schwanz
+        const fur = C(col, { r: .9 }); b.add(mk(G.sph, fur, 0, .35, 0, .2, .2, .55)); head.position.set(0, .42, .55); head.add(mk(G.sph, fur, 0, 0, 0, .13, .13, .16)); head.addm(mk(G.cone0, C(dim(col, .8)), 0, -.02, .16, .07, .2, .07)).rotation.x = Math.PI / 2;
+        for (const s of [-1, 1]) head.add(mk(G.sph0, fur, s * .09, .1, -.03, .04, .05, .02)); eyes(head, .04, .1, .06, 0x2a1a10);
+        for (const [x, z] of [[-.12, .3], [.12, .3], [-.12, -.28], [.12, -.28]]) leg(x, .2, z, .2, .035, fur, true);
+        tail.position.set(0, .38, -.5); tail.rotation.x = -.4; tail.addm(mk(G.cone0, fur, 0, -.35, 0, .11, .7, .11)).rotation.x = Math.PI; break; }
       case 'elefant': {   // Hathi: großer grauer Elefant mit Rüssel, Stoßzähnen und weiten Ohren
         const hide = C(col, { r: .9, e: dim(col, .18), ei: 1 }); b.add(mk(G.sph, hide, 0, 1.55, -.05, .85, .8, 1.15)); head.position.set(0, 1.85, 1.05); head.add(mk(G.sph, hide, 0, 0, 0, .5, .52, .5));
         for (let i = 0; i < 5; i++) { const t = mk(G.cyl0, hide, 0, -.3 - i * .26, .42 + i * .04, .17 - i * .022, .3, .17 - i * .022); t.rotation.x = .25 - i * .08; head.add(t); }
@@ -237,5 +246,5 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
   }
 
   const make = (kind, col, boss) => HOVER.has(kind) ? hover(kind, col) : walker(kind, col, boss);
-  return { make, has: k => HOVER.has(k) || ['zauberer', 'marionette', 'karte', 'hase', 'herzkoenigin', 'pirat', 'hook', 'krokodil', 'giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'wache', 'schattenritter', 'spartoi', 'riese', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf'].includes(k), HOVER };
+  return { make, has: k => HOVER.has(k) || ['zauberer', 'marionette', 'karte', 'hase', 'herzkoenigin', 'pirat', 'hook', 'krokodil', 'giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'baer', 'mungo', 'wache', 'schattenritter', 'spartoi', 'riese', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf'].includes(k), HOVER };
 }
