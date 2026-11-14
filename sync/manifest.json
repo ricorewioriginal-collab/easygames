@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e9fc5b29a43c",
- "generated": "2026-11-14T01:08:46+00:00",
- "commit": "8e14e50429bb841b08f2441aeab9aac9817de523",
+ "version": "79c38829da88",
+ "generated": "2026-11-14T01:16:26+00:00",
+ "commit": "8b3ce062acb482c7d65ec767fcb49f7d595bcebc",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2174,7 +2174,7 @@
   {
    "p": "anmacha-podcast-tycoon/index.html",
    "s": 6951,
-   "h": "8c9deb1b9721613aa9289513373e3899c39111d822e38665546e232c4a47e195"
+   "h": "838d9cf5a6073f1c76927f8b2f4f71b11eeb91abb36a69a0952f473bc614d522"
   },
   {
    "p": "anmacha-podcast-tycoon/manifest.webmanifest",
@@ -2388,8 +2388,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/career.js",
-   "s": 9133,
-   "h": "da4fedecbd2a46b34b2f35cd9f7303874f6c0f0f9794304a9e1bf66ba7caa840"
+   "s": 9211,
+   "h": "061f4c83cce60e244c42145f16a87afddcac027582d511001bc9fc71be8bdb6e"
   },
   {
    "p": "anmacha-podcast-tycoon/src/core.js",
@@ -2503,13 +2503,13 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/worldfx.js",
-   "s": 24066,
-   "h": "c7d9a3446daf13bedae4ab2bd1551cb4bdf67f8b9c467daa8e62588bb323b662"
+   "s": 25343,
+   "h": "8f7f902be8ccc434c64e107874c5d7d04006b319bcb3d7a856cd147f9a3504a3"
   },
   {
    "p": "anmacha-podcast-tycoon/src/worlds.js",
-   "s": 31300,
-   "h": "052b920531dfa11256bc976d306cf2b6f033cb049577e1c1423041f6ed4d4e0c"
+   "s": 37295,
+   "h": "e7c0eddf22c59dc4426f53afb37c03ab273415156420021da111f43111296dc0"
   },
   {
    "p": "anmacha-podcast-tycoon/style.css",
@@ -6813,8 +6813,8 @@
   },
   {
    "p": "guides/anmacha-podcast-tycoon.json",
-   "s": 39614,
-   "h": "7d16f1febdd7b7a071b94c4144991874dbafac39f415381f0e32808c6da0e0ed"
+   "s": 40181,
+   "h": "fa1f4133f551db1070ece5465b3f86dd0f63d2d3a2d2470f1678d1e7a97afe52"
   },
   {
    "p": "guides/anmacha-preisradar.json",
@@ -9954,7 +9954,7 @@
   {
    "p": "sync/catalog.json",
    "s": 259012,
-   "h": "436aaea5631a9b49499bc4b9e230ae070ca0d61fd21d15fd5b9c0b8e83f9d4f2"
+   "h": "c2aa6614af05c587f89ab401ba3e1764b012e89aa3f9c600a10bd57c2b535c16"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
