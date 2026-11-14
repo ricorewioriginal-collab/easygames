@@ -1,0 +1,34 @@
+name: ZEITSPRUNG – Vitos Stimme (Edge-TTS)
+on:
+  push:
+    branches-ignore: [main]
+    paths:
+      - 'zeitsprung/vo/lines.json'
+      - 'tools/zeitsprung-voice/gen-edge.py'
+      - '.github/workflows/zeitsprung-voice.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: zeitsprung-voice-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  voice:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - name: Edge-TTS und ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg && pip install edge-tts
+      - name: Sprachclips erzeugen
+        run: python3 tools/zeitsprung-voice/gen-edge.py
+      - name: Clips einchecken
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add zeitsprung/vo
+          if ! git diff --cached --quiet; then
+            git commit -m "ZEITSPRUNG: Vitos Sprachclips (Edge-TTS) erzeugt"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/zeitsprung-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="ZEITSPRUNG"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#05060f">
+<meta name="description" content="ZEITSPRUNG – Die große Zeitreise-Show: alle Zeitsprung-Ausgaben in einem 3D-TV-Studio. Wissen, Movie, Radio, Castingshow, Kinderserien und Eurovision einzeln oder im Gesamtmodus, mit Moderator Vito, Buzzern, Controllern und Handys.">
+<meta property="og:title" content="ZEITSPRUNG – Die große Zeitreise-Show">
+<meta property="og:description" content="Quiz, Zeitstrahl und Musik in einem 3D-TV-Studio: sechs Ausgaben, ein Gesamtmodus, Buzzer, Controller, Handys und TV.">
+<meta property="og:image" content="https://ricorewioriginal-collab.github.io/easygames/zeitsprung/card.png">
+<title>ZEITSPRUNG · Die große Zeitreise-Show</title>
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="../pwa-icons/zeitsprung-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preload" href="fonts/unbounded.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+<script src="../cloud/fire-peer.js"></script>
+<script>window.EASYGAMES_PAD_NORMAL_ONLY = 1;</script>
+<script src="../gamepad.js"></script>
+<script type="module" src="app.js"></script>
+</head>
+<body data-view="boot">
+<canvas id="studio" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+<iframe id="show" title="Zeitsprung-Show" hidden allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture; gamepad; hid; screen-wake-lock; web-share"></iframe>
+
+<header id="hud" class="hud">
+  <a class="hud-logo" href="../" aria-label="easygames Startseite"><img src="logo.svg" alt="ZEITSPRUNG"></a>
+  <span id="hudEdition" class="hud-edition"></span>
+  <span id="hudAct" class="hud-act" hidden></span>
+  <div class="hud-actions">
+    <span class="onair"><i></i>ON AIR</span>
+    <button id="btnHome" class="hud-btn" type="button" aria-label="Hauptmenü" title="Hauptmenü (M)">⌂</button>
+    <button id="btnPair" class="hud-btn" type="button" aria-label="Online und Handys" title="🌐 Online & Handys">🌐</button>
+    <button id="btnVoice" class="hud-btn" type="button" aria-label="Moderation an oder aus" aria-pressed="true" title="Moderation">🎙</button>
+    <button id="btnFull" class="hud-btn" type="button" aria-label="Vollbild" title="Vollbild">⛶</button>
+    <button id="btnSettings" class="hud-btn" type="button" aria-label="Einstellungen" title="Einstellungen">⚙</button>
+  </div>
+</header>
+
+<section id="boot" class="view boot" aria-live="polite">
+  <img class="boot-logo" src="logo.svg" alt="ZEITSPRUNG">
+  <div class="boot-bar"><i id="bootBar"></i></div>
+  <p id="bootText">Das Studio wird ausgeleuchtet …</p>
+</section>
+
+<section id="title" class="view title-view">
+  <img class="title-logo" src="logo.svg" alt="ZEITSPRUNG – Die große Zeitreise-Show">
+  <p class="title-claim">DIE GROSSE ZEITREISE-SHOW</p>
+  <button id="pressStart" class="press-start" type="button"><span id="pressText">Drücke eine Taste</span></button>
+  <p class="title-devices">📺 TV · 💻 PC · 📱 Handy · 🎮 Controller · 🔴 Buzzer</p>
+</section>
+
+<section id="menu" class="view menu-view">
+  <div class="menu-info">
+    <span class="kicker" id="menuKicker">AUSGABE</span>
+    <h1 id="menuTitle">GESAMTMODUS</h1>
+    <p id="menuTag" class="menu-tag"></p>
+    <p id="menuDesc" class="menu-desc"></p>
+    <ul id="menuStats" class="menu-stats"></ul>
+    <div class="menu-actions">
+      <button id="menuPlay" class="btn btn-main" type="button">▶ Show starten</button>
+      <button id="menuOnline" class="btn btn-glass" type="button">🌐 Online & Handys</button>
+      <button id="menuGuide" class="btn btn-glass" type="button">📖 Anleitung</button>
+      <a id="menuExtra" class="btn btn-glass" hidden></a>
+    </div>
+    <p class="menu-online-note">🌐 Online: Mitspieler treten per Link, QR-Code oder Code von überall bei – das Handy wird zum Buzzer.</p>
+  </div>
+  <nav id="carousel" class="carousel" aria-label="Ausgaben"></nav>
+</section>
+
+<section id="setup" class="view setup-view">
+  <div class="panel setup-panel">
+    <div class="panel-head"><span class="kicker" id="setupKicker">SHOW VORBEREITEN</span><button id="setupBack" class="link-btn" type="button">← Ausgaben</button></div>
+    <h2 id="setupTitle">Wer spielt mit?</h2>
+    <div id="playerRows" class="player-rows"></div>
+    <button id="addPlayer" class="btn btn-ghost" type="button">＋ Spieler hinzufügen</button>
+    <p class="join-hint" id="joinHint">🎮 Controller oder Buzzer: einen Knopf drücken, um einem Spieler beizutreten.</p>
+    <div class="setup-options">
+      <label class="field" id="fieldCategory"><span>THEMENWELT</span><select id="optCategory"></select></label>
+      <label class="field" id="fieldMode"><span>ZEITSTRAHLRUNDEN</span><select id="optMode"></select></label>
+      <label class="field" id="fieldActs" hidden><span>LÄNGE DER AKTE</span><select id="optActs"><option value="1">Kurz · 1 Runde je Spieler</option><option value="2" selected>Normal · 2 Runden je Spieler</option><option value="3">Lang · 3 Runden je Spieler</option></select></label>
+      <label class="field" id="fieldEditions" hidden><span>AUSGABEN</span><select id="optEditions"><option value="6">Alle 6 Ausgaben</option><option value="3">3 zufällige Ausgaben</option></select></label>
+    </div>
+    <div class="setup-actions">
+      <button id="setupStart" class="btn btn-main" type="button">▶ Show starten</button>
+      <button id="setupResume" class="btn btn-glass" type="button" hidden>↺ Fortsetzen</button>
+      <button id="setupOnline" class="btn btn-glass" type="button">🌐 Online & Handys</button>
+    </div>
+  </div>
+</section>
+
+<section id="interlude" class="view interlude" aria-live="polite">
+  <div class="interlude-card">
+    <span class="kicker" id="interKicker">AKT 1</span>
+    <h2 id="interTitle">WISSEN</h2>
+    <p id="interText"></p>
+    <ol id="interBoard" class="inter-board"></ol>
+    <div class="interlude-actions"><button id="interGo" class="btn btn-main" type="button">Weiter ▶</button><button id="interMenu" class="btn btn-glass" type="button">⌂ Hauptmenü</button></div>
+  </div>
+</section>
+
+<div id="settings" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <div class="panel modal-card">
+    <div class="panel-head"><h2 id="settingsTitle">Einstellungen</h2><button id="settingsClose" class="link-btn" type="button" aria-label="Schließen">✕</button></div>
+    <label class="field"><span>GRAFIK</span><select id="optQuality"><option value="auto">Automatisch</option><option value="high">Ultra · Spiegelungen, Schatten, Bloom</option><option value="medium">Ausgewogen</option><option value="low">Leistung · für ältere Geräte</option></select></label>
+    <label class="field"><span>MODERATION (VITO)</span><select id="optVoice"><option value="on">An</option><option value="off">Aus</option></select></label>
+    <label class="field"><span>LAUTSTÄRKE STIMME & STUDIO</span><input id="optVolume" type="range" min="0" max="100" value="90"></label>
+    <div class="field"><span>BUZZER & FUNKCONTROLLER (PC)</span>
+      <div class="hid-row"><button id="connectBuzz" class="btn btn-glass" type="button">🔴 Buzz!-Buzzer verbinden</button><button id="connectMove" class="btn btn-glass" type="button">🟣 PS Move verbinden</button></div>
+      <small id="hidNote" class="note">Buzz!-Buzzer (USB-Empfänger) und PS Move (per USB) laufen in Chrome und Edge am PC. Gamepads werden automatisch erkannt.</small>
+    </div>
+    <div class="field"><span>VERBUNDENE GERÄTE</span><ul id="deviceList" class="device-list"></ul></div>
+    <p class="note" id="voiceInfo"></p>
+    <div class="field"><span>SPIELSTAND & KONTO</span><div id="cloudMount" class="cloud-mount"></div></div>
+  </div>
+</div>
+
+<div id="hints" class="hints" aria-hidden="true"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="../cloud/anmacha-cloud.js" data-game="zeitsprung" data-prefix="zs-" data-mount="#cloudMount" defer></script>
+<script src="../egstat.js" defer></script>
+</body>
+</html>
