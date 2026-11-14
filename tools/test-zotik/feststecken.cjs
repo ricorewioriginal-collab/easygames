@@ -8,4 +8,8 @@ const { chromium, ARGS, open, intro } = require('./lib.cjs');
   await p.evaluate(() => __zotik.unstuck()); await w(900);
   const r = await p.evaluate(() => { const Z = __zotik, b = Z.OB.find(o => o.t === 'block'); return { out: Z.pl.z < 300, back: Math.hypot(b.x - b.x0, b.z - b.z0) < .01, blocked: Z.pBlocked(Z.pl.x, Z.pl.z) }; });
   ok('draußen vor der Ruine', r.out && !r.blocked); ok('Block zurückgesetzt', r.back);
+  /* Automatisch: 14 s gegen die Wand laufen in der Ruine befreit */
+  await p.evaluate(() => { const Z = __zotik; Z.ruinGo(0, 364, Math.PI, true); }); await w(800);
+  await p.evaluate(() => { const Z = __zotik; Z.pl.x = 6; Z.pl.z = 366.5; Z.keys.KeyS = true; Z.keys.ArrowDown = true; for (let i = 0; i < 480 && Z.pl.z > 300; i++) { Z.pl.x = 6; Z.pl.z = 366.5; Z.step(1 / 30, 1); } Z.keys.KeyS = false; Z.keys.ArrowDown = false; }); await w(900);
+  ok('automatisch befreit', await p.evaluate(() => __zotik.pl.z < 300));
   ok('keine Fehler', !p.errs.length, [...new Set(p.errs)].join(' | ')); console.log(`${res.filter(Boolean).length}/${res.length} bestanden`); await b.close(); })().catch(e => { console.log('ABBRUCH', e.message.slice(0, 400)); process.exit(1); });

@@ -179,6 +179,7 @@
     { id: 'outro', icon: '🌙', name: 'Abmoderation', sit: R => 'Die Sendung ist fast vorbei. Letzte Worte an die ' + R.st.name + '-Hörer?',
       opts: R => [['❤️', 'Fans grüßen: „Musik, die mich anmacht!“', 0.9], ['📅', 'Ausblick auf die nächste Sendung', 0.7], ['🎲', D.HOSTS[R.other].name + ' das letzte Wort geben', -1]] }
   ];
+  const now = () => Date.now();
   OA.start = function (R) {
     if (!R.oa || R.oa.show || R.game) return;
     const me = W.hosts[R.who];
@@ -186,7 +187,7 @@
     if (me) { me.root.position.set(R.w.x, 0, R.w.z); me.root.rotation.y = 0; me.play('idle', { fade: 0.2 }); }
     AMC.UI.showTouch(false);
     const el = U.el('div', 'oa-show glass'); el.id = 'oaShow'; U.$('homeUi').appendChild(el);
-    el.addEventListener('click', e => { const b = e.target.closest('[data-o]'); if (b) { S.sel = +b.dataset.o; choose(R); } else if (e.target.closest('[data-now]')) hitNow(R); });
+    el.addEventListener('click', e => { const b = e.target.closest('[data-o]'); if (b) { S.sel = +b.dataset.o; choose(R); } else if (e.target.closest('[data-now]')) hitNow(R); else if (e.target.closest('[data-go]') && S.phase === 'wait' && now() >= S.lock) next(R); });
     const lv = OA.level(R.slug), abos = AMC.Career ? AMC.Career.state().abos : 120;
     const S = R.oa.show = { i: -1, sel: 0, phase: 'pick', score: 0, sum: 0, live: Math.round(600 + lv * 450 + abos * 0.4), needle: 0, dir: 1, zone: 0.5, t: 0, el, promo: 0, idea: false };
     R.oa.deskG.userData.sign.material.opacity = 1;
@@ -201,7 +202,7 @@
   function next(R) {
     const S = R.oa.show; S.i++;
     if (S.i >= SLOTS.length) return finish(R);
-    const slot = SLOTS[S.i]; S.phase = 'pick'; S.sel = 0; S.slot = slot; S.list = opts(R, slot); S.sit = slot.sit(R);
+    const slot = SLOTS[S.i]; S.phase = 'pick'; S.sel = 0; S.slot = slot; S.list = opts(R, slot); S.sit = slot.sit(R); S.lock = now() + 600;
     draw(R);
   }
   function draw(R) {
@@ -215,7 +216,7 @@
   function choose(R) {
     const S = R.oa.show; if (!S || S.phase !== 'pick') return;
     const o = S.list[S.sel]; if (!o) return;
-    S.pick = o; S.phase = 'ramp'; S.needle = 0; S.dir = 1; S.zone = U.rand(0.35, 0.85); S.speed = 0.75 + S.i * 0.14;
+    S.pick = o; S.phase = 'ramp'; S.needle = 0; S.dir = 1; S.zone = U.rand(0.35, 0.85); S.speed = 0.75 + S.i * 0.14; S.lock = now() + 400;
     AMC.Audio.sfx('ui'); draw(R);
   }
   function hitNow(R) {
@@ -227,7 +228,9 @@
     if (S.pick[3] === 'idea') { const n = R.oa.K.needs(R.who); n.ideas.shift(); R.oa.K.drawNeeds(); S.idea = true; S.promo += 0.04; }
     S.live = Math.round(S.live * (0.92 + sc * 0.22));
     react(R, sc, tq, risky);
-    setTimeout(() => { if (R.oa && R.oa.show === S) next(R); }, 1500);
+    // Ergebnis in Ruhe lesen: weiter per Tippen/Ⓐ, sonst nach 5 s von selbst
+    S.waitT = now() + 5000; S.lock = now() + 700;
+    const b = S.el.querySelector('.oa-now'); if (b) { b.disabled = false; b.removeAttribute('data-now'); b.setAttribute('data-go', ''); b.innerHTML = 'Weiter' + (I.device === 'touch' ? '' : ' ' + AMC.glyph('a')); }
   }
   function react(R, sc, tq, risky) {
     const me = W.hosts[R.who], mate = W.hosts[R.other], S = R.oa.show, api = R.oa.api;
@@ -272,7 +275,9 @@
     const cam = W.camera, k = 1 - Math.exp(-dt * 3), dx = R.oa.desk.x, dz = R.oa.desk.z;
     S.cp = S.cp || cam.position.clone(); S.ct = S.ct || new T.Vector3(dx, 1.2, dz);
     S.cp.lerp(new T.Vector3(dx * 0.7, 3.3, dz + 4.6), k); S.ct.lerp(new T.Vector3(dx, 1.3, dz), k); cam.position.copy(S.cp); cam.lookAt(S.ct);
-    const ok = I.hit('ok') || I.hit('jump') || I.hit('act');
+    let ok = I.hit('ok') || I.hit('jump') || I.hit('act');
+    if (now() < (S.lock || 0)) ok = false;   // Tastendruck vom letzten Schritt zählt nicht doppelt
+    if (S.phase === 'wait') { if (ok || now() >= S.waitT) next(R); return true; }
     if (S.phase === 'pick') {
       if (I.hit('up') || I.hit('k1')) { S.sel = (S.sel + S.list.length - 1) % S.list.length; AMC.Audio.sfx('ui'); draw(R); }
       else if (I.hit('down') || I.hit('k4')) { S.sel = (S.sel + 1) % S.list.length; AMC.Audio.sfx('ui'); draw(R); }
