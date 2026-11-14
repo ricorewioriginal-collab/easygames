@@ -19,6 +19,7 @@ node tools/test-zotik/ausbau.cjs        # Fähigkeitenbaum, Doppelsprung, Bestia
 node tools/test-zotik/kuenste.cjs       # Riss-Künste: Sperre, Wirkung jedes Zaubers und jeder passiven Kunst, Ankündigung
 node tools/test-zotik/bosse.cjs 2 10     # eigene Angriffe jedes Bosses und Zwischengegners, Schildträger, Springer, Dreifachschuss
 node tools/test-zotik/weltregeln.cjs     # eigene Weltregel jeder Welt 2–10: Wirkung, erreichbare Stellen, Truhen auf den Platten
+node tools/test-zotik/foto.cjs          # Erinnerungslinse (Fotomodus: Kamera, Filter, Pose, Foto) und Forscherzeichen (5 je Welt, Echo nur durch die Linse)
 ```
 
 Die Tests nutzen `?debug` (`__zotik`) und schalten das Zeichnen ab (`__zotik.noRender`), damit sie auch ohne Grafikkarte schnell laufen.
