@@ -101,10 +101,21 @@
     for (let k = 0; k < 8; k++) { const a = Math.random() * 6.28, r = 4 + Math.random() * (p.r || 18), x = p.hx + Math.cos(a) * r, z = p.hz + Math.sin(a) * r; if (freeAt(x, z)) { p.tx = x; p.tz = z; return; } }
     p.tx = p.hx; p.tz = p.hz;
   }
+  // Ferne Menschen als einfache Silhouetten (ein Zeichenaufruf für alle), echte Figuren nur in der Nähe
+  const IMP_COL = ['#ff8a1e', '#2f6bff', '#e64a7a', '#22b07d', '#f4f4f4', '#8a4dff', '#ffd23f', '#1d1d24'];
+  function impostors() {
+    if (V.imp || !V.people.length) return V.imp;
+    const pts = [[0, 0], [0.17, 0], [0.2, 0.85], [0.25, 1.32], [0.11, 1.44], [0.15, 1.58], [0.12, 1.74], [0, 1.8]].map(([x, y]) => new T.Vector2(x, y));
+    const im = new T.InstancedMesh(new T.LatheGeometry(pts, 7), new T.MeshStandardMaterial({ roughness: 0.8 }), 160);
+    im.count = 0; im.frustumCulled = false; im.castShadow = false; im.userData.dyn = true; V.S.group.add(im); V.imp = im; V.impC = new T.Color(); V.impM = new T.Matrix4();
+    return im;
+  }
   function updPeople(dt, pl) {
-    const near = [];
+    const near = [], NEAR = W.quality > 1 ? 70 : 34, FAR = W.quality > 1 ? 150 : 110, im = impostors(); let n = 0;
     for (const p of V.people) {
-      const d = Math.hypot(p.x - pl.x, p.z - pl.z); p.wrap.visible = d < (W.quality > 1 ? 120 : 70); if (d > 80) continue;
+      const d = Math.hypot(p.x - pl.x, p.z - pl.z); p.wrap.visible = d < NEAR;
+      if (im && d >= NEAR && d < FAR && n < 160) { V.impM.makeRotationY(p.yaw || 0).setPosition(p.x, 0.12 + (p.y || 0), p.z); im.setMatrixAt(n, V.impM); im.setColorAt(n, V.impC.set(IMP_COL[(p.seed || 0) % IMP_COL.length])); n++; }
+      if (d > 80) continue;
       p.t -= dt;
       if (p.talking) { p.wrap.rotation.y = p.yaw; near.push(p); continue; }
       if (p.beh === 'walk') {
@@ -127,8 +138,9 @@
       }
       near.push(p);
     }
-    // Animationen nur in der Nähe rechnen (fern: halbe Rate)
-    for (const p of near) { p.k = (p.k || 0) + 1; const far = Math.hypot(p.x - pl.x, p.z - pl.z) > 40; if (!far) p.fig.update(dt); else if (p.k % 2) p.fig.update(dt * 2); }
+    if (im) { im.count = n; im.instanceMatrix.needsUpdate = true; if (im.instanceColor) im.instanceColor.needsUpdate = true; }
+    // Animationen nur für sichtbare Figuren rechnen (weiter weg: halbe Rate)
+    for (const p of near) { if (!p.wrap.visible) continue; p.k = (p.k || 0) + 1; const far = Math.hypot(p.x - pl.x, p.z - pl.z) > 25; if (!far) p.fig.update(dt); else if (p.k % 2) p.fig.update(dt * 2); }
   }
 
   // ------------------------------------------------------------------ Fahrzeuge auf festen Runden (bremsen vor dem Spieler)
@@ -330,6 +342,18 @@
   /** Nächste Person (zum Ansprechen) und Animation von außen */
   FX.nearPerson = (x, z, r) => { if (!V) return null; let best = null, bd = r; for (const p of V.people) { const d = Math.hypot(p.x - x, p.z - z); if (d < bd && p.wrap.visible) { bd = d; best = p; } } return best; };
   FX.anim = (p, n) => { if (p && p.fig) { p.cur = null; anim(p, n); } };
+  /** Passanten in der Nähe reagieren (Hupe: erschrecken und zur Seite, Tanzen: mittanzen, Jubel: mitjubeln) */
+  FX.react = function (x, z, r, kind) {
+    if (!V) return 0; let n = 0;
+    for (const p of V.people) {
+      const d = Math.hypot(p.x - x, p.z - z); if (d > r || !p.wrap.visible || p.talking) continue; n++;
+      p.yaw = Math.atan2(x - p.x, z - p.z); p.wrap.rotation.y = p.yaw;
+      if (kind === 'honk') { anim(p, Math.random() < 0.5 ? 'arms' : 'knock'); p.t = 1.4; if (p.beh === 'walk' && d < 6) { p.tx = p.x - (x - p.x) / (d || 1) * 4; p.tz = p.z - (z - p.z) / (d || 1) * 4; p.wait = 0; } }
+      else if (kind === 'dance') { p.cur = null; anim(p, 'dance'); p.t = 3 + Math.random() * 2; p.wait = 3; }
+      else { p.cur = null; anim(p, kind); p.t = 1.6; p.wait = 1.6; }
+    }
+    return n;
+  };
   FX.take = c => { if (!V) return false; const i = V.cars.indexOf(c); if (i < 0) return false; V.cars.splice(i, 1); return true; };
   FX.count = () => V ? { people: V.people.length, cars: V.cars.length, screens: V.screens.length, kit: V.kit ? Object.values(V.kit).reduce((a, l) => a + l.length, 0) : 0 } : { people: 0, cars: 0, screens: 0 };
   FX.stop = function () {

@@ -71,6 +71,72 @@
   const mark = key => { (Save.data.rooms = Save.data.rooms || {})[key] = day(); Save.save(); };
   const hex = c => new root.THREE.Color(c).getHex();
 
+  // ------------------------------------------------------------------ Spieltiefe: Schichten, Ruf und Spezial-Aktionen je Haus-Art
+  // job: Minispiel-Schicht (x, z, Minispiel, Optionen), sp: Spezial-Aktion ab Ruf-Stufe 3 (einmal am Tag)
+  const Q_RADIO = [['Wann lief in Deutschland die erste Radiosendung?', '1923', '1955', '1899', '1971'], ['Was misst „Hörer pro Stunde“?', 'Reichweite', 'Lautstärke', 'Kabellänge', 'Sendemast-Höhe'], ['Wie heißt Marcos Camper?', 'Gisela', 'Gerda', 'Gundula', 'Greta'], ['Was ist ein Jingle?', 'Kurze Erkennungsmelodie', 'Ein Kabel', 'Eine Antenne', 'Ein Mikrofonständer'], ['Wofür steht UKW?', 'Ultrakurzwelle', 'Unter-Kanal-Welle', 'Universal-Klang-Werk', 'Ultra-Kabel-Weg'], ['Was braucht ein Podcast zwingend?', 'Ein Mikrofon', 'Einen Camper', 'Ein Orchester', 'Einen Fernsehturm'], ['Wer ist bei AnMaCha der Feelgood-Typ?', 'Andrew', 'Marco', 'Ralf Rauschmann', 'Gisela'], ['Was verhindert ein Pop-Schutz?', 'Plopp-Laute', 'Regen', 'Werbung', 'Funklöcher']];
+  const Q_WG = [['Wie viele Chips braucht ein Podcast-Abend?', 'Mehr als gedacht', 'Keine', 'Genau drei', 'Nur Salzstangen'], ['Wer darf Gisela fahren?', 'Nur Marco', 'Jeder', 'Andrew allein', 'Der Kiosk-Besitzer'], ['Wie heißt der Gegenspieler der Medienstadt?', 'Ralf Rauschmann', 'Kalle Klang', 'Udo Unwucht', 'Bernd Brumm'], ['Was ist ein Abo?', 'Ein Fan, der jede Folge hört', 'Ein Kabel', 'Ein Rezept', 'Ein Wohnmobil'], ['Wie spricht man AnMaCha aus?', 'Anmacher', 'An-Ma-Scha', 'Anmatscha', 'Ammacka'], ['Was hilft gegen Lampenfieber?', 'Gute Vorbereitung', 'Kaffee auf das Mikro', 'Lauter schreien', 'Licht aus']];
+  const JOB = {
+    cafe: { x: 3.6, z: 1.4, label: '☕ Barista-Schicht', mini: 'catch', o: { title: '☕ Barista-Schicht: Bestellungen fangen', good: ['☕', '🥐', '🍰'], bad: ['🪳', '💣'], basket: '🍽️' },
+      sp: { x: -4.4, z: 2.0, label: '🎙️ Café-Live-Talk mit den Gästen', fan: 70, idea: 'Café-Live-Talk: Stimmen aus der Stadt', need: { fun: 15 }, say: 'Das ganze Café redet mit – das klingt wie ein Live-Publikum!' } },
+    baecker: { x: 3.4, z: 1.2, label: '🥐 Backstube-Schicht', mini: 'catch', o: { title: '🥐 Frisch aus dem Ofen fangen', good: ['🥐', '🥖', '🧁'], bad: ['🔥', '🪳'], basket: '🧺' },
+      sp: { x: 1.0, z: 1.8, label: '🧺 Brötchen-Abo für das Team', fan: 30, need: { hunger: 45, energy: 10 }, both: true, say: 'Jeden Morgen frische Brötchen im Funkhaus. Marco weint ein bisschen vor Glück.' } },
+    tonstudio: { x: 3.6, z: -1.4, label: '🎚️ Session als Gastmusiker', mini: 'rhythm', o: { label: 'Studio-Session', n: 14 },
+      sp: { x: 2.2, z: 2.4, label: '🎛️ Profi-Mastering der nächsten Folge', fan: 60, idea: 'Gemasterter Sound wie im Radio', need: { fun: 10 }, say: 'Kompressor, EQ, ein bisschen Magie – die nächste Folge klingt wie ein Kinofilm.' } },
+    wg: { x: 3.4, z: 1.4, label: '❓ WG-Quizabend', mini: 'quiz', o: { title: '❓ WG-Quizabend', qs: Q_WG, n: 4 },
+      sp: { x: 0.8, z: 2.6, label: '📣 Fanclub-Treffen veranstalten', fan: 50, fans: 12, need: { fun: 25, energy: -6 }, say: 'Zwölf neue Fanclub-Mitglieder! Sie haben T-Shirts mit Giselas Gesicht.' } },
+    agentur: { x: 3.4, z: 1.6, label: '😂 Werbespot einsprechen', mini: 'qte', o: { title: '😂 Werbespot: Pointen auf den Punkt', n: 5 },
+      sp: { x: -2.6, z: 1.6, label: '📊 Große Kampagne starten', fan: 160, need: { energy: -10 }, say: 'Plakate in der ganzen Stadt: „AnMaCha – Der Podcast“. Rauschmann kocht vor Wut.' } },
+    buecher: { x: 3.8, z: 1.8, label: '🔎 Recherche-Quiz', mini: 'quiz', o: { title: '🔎 Fakten-Check in der Bücherei', qs: Q_RADIO, n: 4 },
+      sp: { x: -3.6, z: -1.8, label: '📖 Hörbuch-Lesung aufnehmen', fan: 70, idea: 'Hörbuch-Special mit RicoReWi-Geschichte', need: { fun: 12 }, say: 'Die Lesung wird ein Hit. Die Bibliothekarin hat nur zweimal „Psst“ gesagt.' } },
+    fitness: { x: 3.6, z: 2.2, label: '🕺 Aerobic-Kurs nachtanzen', mini: 'simon', o: { title: '🕺 Aerobic: Bewegungen nachmachen', rounds: 3, len: 3 },
+      sp: { x: -2.6, z: 2.4, label: '🏅 Personal Training', fan: 20, need: { energy: 30, fun: 20, hunger: -10 }, both: true, say: 'Danach fühlt ihr euch unbesiegbar. Und ein bisschen wie Pudding.' } },
+    friseur: { x: 2.8, z: 0.6, label: '📸 Vorher-Nachher-Fotos', mini: 'frame', o: { title: '📸 Vorher-Nachher für den Salon', subj: ['💇', '✂️', '💈'], shots: 3 },
+      sp: { x: 1.0, z: 2.2, label: '💅 Promi-Styling vor der Show', fan: 40, hype: true, need: { fun: 25 }, say: 'Frisch gestylt für die Kamera. Die nächste Folge startet mit extra Stimmung!' } },
+    kiosk: { x: 2.6, z: 0.8, label: '🗞️ Zeitungen sortieren', mini: 'catch', o: { title: '🗞️ Zeitungen und Tratsch fangen', good: ['📰', '🗞️', '⭐'], bad: ['💣', '🧨'], basket: '📦' },
+      sp: { x: 0.4, z: 1.8, label: '🤫 Exklusiver Tratsch', fan: 40, idea: 'Exklusiv: Was Rauschmann wirklich plant', need: { fun: 10 }, say: 'Der Kioskbesitzer flüstert: Rauschmann kauft Batterien für einen riesigen Störsender …' } },
+    platten: { x: 3.6, z: 1.6, label: '🎧 DJ-Set auflegen', mini: 'rhythm', o: { label: 'DJ-Set in der Plattenbörse', n: 16 },
+      sp: { x: -0.4, z: 2.8, label: '💎 Rarität ergattern', fan: 90, idea: 'Raritäten-Special: Platten mit Geschichte', need: { fun: 20 }, say: 'Eine signierte Klavierlicht-Pressung! Die kommt in die Sendung.' } }
+  };
+  RM.JOB = JOB;
+  const REP = [0, 3, 8, 15, 25, 40], REP_N = ['Neu hier', 'Bekannt', 'Stammgast', 'Freund des Hauses', 'VIP', 'Partner'];
+  const PERK = ['', 'Aktion halber Preis', 'Schichten +25 % und eine Schicht mehr', 'Spezial-Aktion freigeschaltet', 'Aktion wirkt doppelt', 'Partner: +3 % Hörer in jeder Folge'];
+  const rep = () => (Save.data.rep = Save.data.rep || {});
+  RM.xp = id => rep()[id] || 0;
+  RM.level = id => { const x = RM.xp(id); let l = 0; while (l < 5 && x >= REP[l + 1]) l++; return l; };
+  RM.partners = () => KINDS.filter(t => RM.level(t.id) >= 5).length;
+  RM.bonus = () => RM.partners() * 0.03;
+  RM.levels = () => KINDS.reduce((a, t) => a + RM.level(t.id), 0);
+  const stars = l => '★'.repeat(l) + '☆'.repeat(5 - l);
+  function gain(t, n, at) {
+    const l0 = RM.level(t.id); rep()[t.id] = RM.xp(t.id) + n; Save.save(); const l1 = RM.level(t.id);
+    if (l1 > l0) {
+      AMC.Audio.sfx('win'); AMC.UI.toast('⭐ Ruf in „' + RM.name(at.k) + '“: ' + REP_N[l1] + ' ' + stars(l1) + (PERK[l1] ? ' · Neu: ' + PERK[l1] : ''), 4200);
+      if (at.R && K.alive(at.R) && at.R.w) W.particles.burst(at.R.w.x, 2, at.R.w.z, 0xffd23f, 50, { speed: 6 });
+      if (l1 === 5 && AMC.Feed) AMC.Feed.post(t.icon, RM.name(at.k) + ' ist jetzt offizieller AnMaCha-Partner!', 'story');
+    }
+    if (AMC.Missions && AMC.Missions.job) AMC.Missions.job(t.id, -1);
+  }
+  RM.gain = (id, n) => { const t = KINDS.find(x => x.id === id); if (t) gain(t, n, { k: KINDS.indexOf(t) }); };
+  function repPanel(t, k) {
+    const l = RM.level(t.id), x = RM.xp(t.id), nx = REP[Math.min(5, l + 1)];
+    const rows = REP_N.map((n, i) => '<div class="st-item' + (i === l ? ' on' : '') + '"><span class="st-ic">' + (i <= l ? '⭐' : '🔒') + '</span><span><b>' + stars(i) + ' ' + n + '</b><small>' + (PERK[i] || 'Erster Besuch') + ' · ab ' + REP[i] + ' Ruf</small></span></div>').join('');
+    const all = KINDS.map(o => o.icon + ' ' + stars(RM.level(o.id))).join(' · ');
+    const s = AMC.UI.open('<div class="panel glass"><header><h2>⭐ Ruf: ' + U.esc(RM.name(k)) + '</h2><button class="btn small" data-nav id="rpB">' + AMC.glyph('b') + ' Zurück</button></header><p class="hint">Ruf ' + x + (l < 5 ? ' / ' + nx + ' bis „' + REP_N[l + 1] + '“' : ' · Partner!') + '. Ruf bekommt ihr durch Schichten, Aktionen und Gespräche. Er gilt für alle Häuser dieser Art.</p><div class="st-list">' + rows + '</div><p class="hint">Alle Läden: ' + all + ' · Partner ' + RM.partners() + '/' + KINDS.length + '</p></div>', { back: () => AMC.UI.close(s) });
+    s.el.querySelector('#rpB').onclick = () => AMC.UI.close(s);
+  }
+  // Schichten am Tag (Zähler je Haus-Art)
+  const shifts = id => { const j = (Save.data.jobs = Save.data.jobs || {}), e = j[id]; return e && e.d === day() ? e.n : 0; };
+  const addShift = id => { const j = (Save.data.jobs = Save.data.jobs || {}); j[id] = { d: day(), n: shifts(id) + 1, tot: ((j[id] || {}).tot || 0) + 1 }; Save.save(); };
+  RM.shiftsTotal = () => Object.values(Save.data.jobs || {}).reduce((a, e) => a + (e.tot || 0), 0);
+  // Station sichtbar machen: Leuchtring am Boden und schwebendes Symbol
+  function marker(g, x, z, icon, col, locked) {
+    const ring = new T.Mesh(new T.RingGeometry(0.55, 0.68, 32), new T.MeshBasicMaterial({ color: hex(col), transparent: true, opacity: locked ? 0.25 : 0.7, toneMapped: false, side: T.DoubleSide }));
+    ring.rotation.x = -Math.PI / 2; ring.position.set(x, 0.03, z); g.add(ring);
+    const tx = W.textTex([locked ? '🔒' : icon], { w: 128, h: 128, size: 80, bg: '#14161f', accent: col }), sp = new T.Sprite(new T.SpriteMaterial({ map: tx, transparent: true, opacity: locked ? 0.55 : 1 }));
+    sp.scale.set(0.6, 0.6, 1); sp.position.set(x, 1.9, z); sp.userData.bob = Math.random() * 6; g.add(sp);
+    return { ring, sp };
+  }
+
   function build(t, k) {
     const sc = new T.Scene(), g = new T.Group(); sc.add(g); sc.background = new T.Color(0x07080d);
     const hw = t.w / 2, hd = t.d / 2;
@@ -113,11 +179,16 @@
         R.npcs.push(n); R.figs.push(fig);
       }
     })();
-    const say = txt => K.say(txt, 4600);
+    const say = txt => K.say(txt, 4600), J = JOB[t.id], lvl = () => RM.level(t.id);
+    const mk = { job: marker(B.g, J.job ? J.x : J.x, J.z, J.label.split(' ')[0], t.col, false), sp: marker(B.g, J.sp.x, J.sp.z, J.sp.label.split(' ')[0], '#ffd23f', lvl() < 3) };
     const spots = () => {
       const list = R.npcs.map(n => ({ x: n.x, z: n.z, r: 1.7, label: '💬 ' + n.name + ' (' + n.role + ')', run: () => talk(n) }));
       const a = t.act, used = done(key + ':act');
-      list.push({ x: a.x, z: a.z, r: 1.4, label: used ? a.label.split(' · ')[0] + ' · heute schon' : a.label, run: () => act() });
+      const cost = a.cost && lvl() >= 1 ? Math.ceil(a.cost / 2) : a.cost;
+      list.push({ x: a.x, z: a.z, r: 1.4, label: used ? a.label.split(' · ')[0] + ' · heute schon' : cost !== a.cost ? a.label.replace(a.cost + ' 🎟️', cost + ' 🎟️ (Stammgast)') : a.label, run: () => act() });
+      const lim = lvl() >= 2 ? 3 : 2, n = shifts(t.id);
+      list.push({ x: J.x, z: J.z, r: 1.3, label: J.label + (n >= lim ? ' · morgen wieder' : ' · Schicht ' + (n + 1) + '/' + lim), run: () => job() });
+      list.push({ x: J.sp.x, z: J.sp.z, r: 1.3, label: lvl() < 3 ? '🔒 ' + J.sp.label.replace(/^\S+ /, '') + ' · ab Ruf ★★★' : J.sp.label + (done(key + ':sp') ? ' · heute schon' : ''), run: () => special() });
       list.push({ x: -hw + 1.4, z: hd - 0.5, r: 1.3, label: '🚪 Raus in die Stadt', run: () => AMC.Home.close() });
       return list;
     };
@@ -128,11 +199,11 @@
       AMC.Audio.sfx('talk');
     }
     function act() {
-      const a = t.act; if (done(key + ':act')) { say('Heute schon gemacht – morgen wieder!'); AMC.Audio.sfx('miss'); return; }
-      if (a.cost && Save.data.fan < a.cost) { say('Zu wenig Fan-Punkte (' + a.cost + ' 🎟️ nötig).'); AMC.Audio.sfx('miss'); return; }
-      if (a.cost) Save.data.fan -= a.cost;
+      const a = t.act, cost = a.cost && lvl() >= 1 ? Math.ceil(a.cost / 2) : a.cost, x2 = lvl() >= 4 ? 2 : 1; if (done(key + ':act')) { say('Heute schon gemacht – morgen wieder!'); AMC.Audio.sfx('miss'); return; }
+      if (cost && Save.data.fan < cost) { say('Zu wenig Fan-Punkte (' + cost + ' 🎟️ nötig).'); AMC.Audio.sfx('miss'); return; }
+      if (cost) Save.data.fan -= cost;
       mark(key + ':act');
-      const n = K.needs(R.who); Object.entries(a.need || {}).forEach(([kk, v]) => { n[kk] = U.clamp((n[kk] || 0) + v, 0, 100); });
+      const n = K.needs(R.who); Object.entries(a.need || {}).forEach(([kk, v]) => { n[kk] = U.clamp((n[kk] || 0) + v * (v > 0 ? x2 : 1), 0, 100); });
       let extra = '';
       if (a.idea) { n.ideas = n.ideas || []; if (n.ideas.length < 3) { n.ideas.push(a.idea); extra += ' · 💡 Idee für die Aufnahme'; } else extra += ' · 💡 Ideen-Speicher voll'; }
       if (a.fan) extra += ' · +' + Save.earn(a.fan) + ' 🎟️';
@@ -142,12 +213,59 @@
       W.particles.burst(a.x, 1.6, a.z, hex(t.col), 30, { speed: 5 }); AMC.Audio.sfx('perfect');
       say((AMC.Data.HOSTS[R.who] || {}).name + ': „' + a.say + '“' + extra);
       if (AMC.Career) AMC.Career.mark('dance');
+      gain(t, 1, { k, R });
+    }
+    // Schicht: Minispiel im Laden, bringt Fan-Punkte, Ruf und manchmal eine Idee
+    function job() {
+      if (R.mini) return; const lim = lvl() >= 2 ? 3 : 2;
+      if (shifts(t.id) >= lim) { say('Für heute genug geschuftet (' + lim + '/' + lim + ' Schichten). Morgen wieder!'); AMC.Audio.sfx('miss'); return; }
+      const n0 = K.needs(R.who); if (n0.energy < 12) { say('😴 Zu müde für eine Schicht. Erst ausruhen – zu Hause, in Gisela oder mit Kaffee.'); AMC.Audio.sfx('miss'); return; }
+      const box = U.el('div', 'sh-mini'); box.id = 'hmMini'; U.$('homeUi').appendChild(box); R.busy = 99;
+      if (me) { me.play(J.mini === 'rhythm' || J.mini === 'simon' ? 'dance' : 'knock', { fade: 0.2 }); R.w.anim = 'busy'; }
+      const go = song => {
+        if (!K.alive(R)) { box.remove(); return; }
+        const o = Object.assign({ color: t.col }, J.o, song ? { song } : {});
+        R.mini = { box, ctl: AMC.Minis.start(box, J.mini, o, q => {
+          if (!K.alive(R)) return;
+          R.mini.ctl.destroy(); box.remove(); R.mini = null; R.busy = 0; R.w.anim = '';
+          addShift(t.id);
+          const n = K.needs(R.who), fan = Save.earn(Math.round((14 + q * 46) * (lvl() >= 2 ? 1.25 : 1)));
+          n.energy = Math.max(0, n.energy - 8); n.fun = Math.min(100, n.fun + 4 + q * 8);
+          let extra = ''; if (q >= 0.7 && (n.ideas || []).length < 3) { n.ideas = n.ideas || []; n.ideas.push(t.icon + ' Geschichte aus der Schicht: ' + RM.name(k)); extra = ' · 💡 Idee'; }
+          Save.save(); K.drawNeeds();
+          say((q >= 0.85 ? '🔥 Mitarbeiter des Tages!' : q >= 0.5 ? '👍 Gute Schicht!' : '😅 Holprige Schicht – aber bezahlt wird trotzdem.') + ' +' + fan + ' 🎟️ · +' + (q >= 0.75 ? 2 : 1) + ' Ruf' + extra);
+          AMC.Audio.sfx(q >= 0.6 ? 'applause' : 'ok'); if (me) me.play(q >= 0.6 ? 'arms' : 'idle', { restart: true, fade: 0.2 });
+          gain(t, q >= 0.75 ? 2 : 1, { k, R });
+          if (AMC.Missions && AMC.Missions.job) AMC.Missions.job(t.id, q);
+        }) };
+      };
+      if (J.mini === 'rhythm') AMC.Audio.song(U.pick(D.WISHES.concat(AMC.Home.ownedSongs ? AMC.Home.ownedSongs() : [])).id).catch(() => null).then(go); else go(null);
+    }
+    // Spezial-Aktion ab Ruf-Stufe 3, einmal am Tag
+    function special() {
+      const sp = J.sp;
+      if (lvl() < 3) { say('🔒 Erst Ruf ★★★ in diesem Laden (jetzt ' + stars(lvl()) + '). Schichten, Aktionen und Gespräche bringen Ruf.'); AMC.Audio.sfx('miss'); return; }
+      if (done(key + ':sp')) { say('Heute schon gemacht – morgen wieder!'); AMC.Audio.sfx('miss'); return; }
+      mark(key + ':sp');
+      (sp.both ? ['andrew', 'marco'] : [R.who]).forEach(id => { const n = K.needs(id); Object.entries(sp.need || {}).forEach(([kk, v]) => { n[kk] = U.clamp((n[kk] || 0) + v, 0, 100); }); });
+      const n = K.needs(R.who); let extra = '';
+      if (sp.idea) { n.ideas = n.ideas || []; if (n.ideas.length < 3) { n.ideas.push(sp.idea); extra += ' · 💡 Idee'; } }
+      if (sp.fans && AMC.Social) AMC.Social.add(RM.name(k), sp.fans);
+      if (sp.hype) { Save.data.hypeBoost = 8; extra += ' · +8 Stimmung in der nächsten Folge'; }
+      if (sp.fan) extra += ' · +' + Save.earn(sp.fan) + ' 🎟️';
+      Save.save(); K.drawNeeds(); R.busy = 1.4;
+      if (me) me.play('arms', { restart: true, fade: 0.15 });
+      W.particles.burst(sp.x, 1.8, sp.z, 0xffd23f, 50, { speed: 6 }); AMC.Audio.sfx('star');
+      say((AMC.Data.HOSTS[R.who] || {}).name + ': „' + sp.say + '“' + extra);
+      gain(t, 2, { k, R });
     }
     R.talkN = 0;
     R.w = K.walker({ x: -hw + 1.4, z: hd - 1.2, fig: me, bounds: { x0: -hw + 0.6, x1: hw - 0.6, z0: -hd + 0.7, z1: hd - 0.4 }, solids: () => B.solids.concat(R.npcs.map(n => ({ x: n.x, z: n.z, r: 0.4 }))), spots, camOff: [0, 6 + t.d * 0.05, 6.4 + t.d * 0.12] });
     R.dispose = () => { R.figs.forEach(f => { if (f.root.parent) f.root.parent.remove(f.root); f.dispose && f.dispose(); }); };
-    K.hud(t.icon + ' ' + RM.name(k), '');
-    const top = document.querySelector('#homeUi .hm-top'); if (top) top.insertAdjacentHTML('beforeend', '<small class="hm-desc">Hier läuft ' + U.esc(B.st.name) + ' · Leute ansprechen und ' + U.esc(t.act.label.split(' · ')[0]) + '</small>');
+    const ui = K.hud(t.icon + ' ' + RM.name(k), '<button type="button" class="btn small" id="rmRep">⭐ Ruf</button>');
+    ui.querySelector('#rmRep').onclick = () => repPanel(t, k);
+    const top = document.querySelector('#homeUi .hm-top'); if (top) top.insertAdjacentHTML('beforeend', '<small class="hm-desc">' + stars(lvl()) + ' ' + REP_N[lvl()] + ' · ' + U.esc(B.st.name) + ' läuft · Aktion, Schicht und Spezial an den Leuchtringen</small>');
+    R.tick = () => { [mk.job, mk.sp].forEach(m => { m.sp.position.y = 1.9 + Math.sin(R.t * 2.4 + m.sp.userData.bob) * 0.1; m.ring.material.opacity = (m === mk.sp && lvl() < 3 ? 0.2 : 0.5) + Math.sin(R.t * 3) * 0.15; }); return false; };
     K.drawNeeds();
     W.particles.attach(B.sc);
     AMC.Audio.sfx('door');

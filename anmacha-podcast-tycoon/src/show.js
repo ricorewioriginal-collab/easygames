@@ -181,7 +181,7 @@
   let S = null;
   /** cfg: { mode:'story'|'arcade', rounds, goal:[1,2,3 Sterne], cards:[{rub,power,label}] , host } */
   SH.start = function (cfg) {
-    S = { cfg, round: 0, rounds: cfg.rounds || 6, hype: Math.min(90, 55 + (AMC.Save.has('neon') ? 10 : 0) + (AMC.StudioEdit ? AMC.StudioEdit.bonus().hype : 0)), listeners: 0, combo: 1, lastSpeaker: '', speaker: cfg.host || 'andrew', jingles: AMC.Save.has('jingle') ? 4 : 3, special: 0, swapUsed: false,
+    S = { cfg, round: 0, rounds: cfg.rounds || 6, hype: Math.min(90, 55 + (AMC.Save.has('neon') ? 10 : 0) + (AMC.StudioEdit ? AMC.StudioEdit.bonus().hype : 0) + ((b => (AMC.Save.data.hypeBoost = 0, b))(AMC.Save.data.hypeBoost || 0))), listeners: 0, combo: 1, lastSpeaker: '', speaker: cfg.host || 'andrew', jingles: AMC.Save.has('jingle') ? 4 : 3, special: 0, swapUsed: false,
       cards: (cfg.cards || []).map(c => Object.assign({ used: false }, c)), phase: 'intro', menu: 'root', sel: 0, t: 0, mini: null, incident: null, chatT: 0, log: [], arcade: cfg.mode === 'arcade', ended: false };
     // Sims-Teil: Stimmung der beiden und Ideen von zu Hause
     const hb = AMC.Home && !cfg.test ? AMC.Home.showBonus() : null;

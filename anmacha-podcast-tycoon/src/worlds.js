@@ -97,7 +97,7 @@
     // Fährschiff
     const boat = new T.Group(); W.box(6, 1.2, 10, M(0xffffff, { r: 0.5 }), 0, 0.4, 0, boat, true); W.box(6.2, 0.3, 10.2, M(0x3aa7a0), 0, 1.1, 0, boat, true);
     W.box(3, 1.6, 3, M(0xff8a1e, { r: 0.5 }), 0, 2.0, -2.5, boat, true); W.box(2.6, 0.6, 0.05, M(0x223344, { r: 0.1, m: 0.4 }), 0, 2.3, -0.98, boat, false);
-    boat.position.set(0, 0, 109); g.add(boat); V.boat = boat;
+    boat.position.set(0, 0, 109); boat.userData.dyn = true; g.add(boat); V.boat = boat;
 
     // --- Medienhafen: TV-Studios, Druckerei, Container, Kräne, Leuchtturm
     B(28, 12, 20, 0x2b3448, 158, 6, -26, true); sign(['📺 KANAL 9 · Studios'], 158, 9, -15.9, 14, 0, '#3dd6ff');
@@ -123,7 +123,7 @@
     B(30, 1.4, 14, 0x222228, 0, 0.7, 196, true); B(30, 0.4, 0.4, 0x888888, 0, 12, 190, false); [-15, 15].forEach(x => B(0.5, 12, 0.5, 0x888888, x, 6, 190, false));
     const led = new T.Mesh(new T.PlaneGeometry(22, 8), new T.MeshBasicMaterial({ color: 0xff3da8, toneMapped: false })); led.position.set(0, 7, 202.8); led.rotation.y = Math.PI; g.add(led); V.led = led; B(24, 10, 0.6, 0x111111, 0, 6, 203.3, true);
     sign(['🎤 AnMaCha Radio-Festival'], 0, 12.8, 189.6, 16, Math.PI, '#ff3da8'); C.addStation('world:buehne', '🎤 Auftritt auf der Hauptbühne', 0, 186, 3.5);
-    const wheel = new T.Group(); wheel.position.set(-40, 13, 170); g.add(wheel); V.wheel = wheel;
+    const wheel = new T.Group(); wheel.userData.dyn = true; wheel.position.set(-40, 13, 170); g.add(wheel); V.wheel = wheel;
     const rim = new T.Mesh(new T.TorusGeometry(10, 0.3, 8, 40), M(0xffffff, { m: 0.5, r: 0.3 })); wheel.add(rim);
     for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; const sp = W.box(0.15, 10, 0.15, M(0xcccccc), Math.cos(a) * 5, Math.sin(a) * 5, 0, wheel, false); sp.rotation.z = a + Math.PI / 2; const cab = W.box(1.4, 1.4, 1.4, M([0xff3da8, 0x3dd6ff, 0xffd23f, 0x6cff8a][i % 4]), Math.cos(a) * 10, Math.sin(a) * 10 - 1, 0, wheel, false); cab.userData.cab = true; }
     [-2, 2].forEach(z => { const l = W.box(0.5, 14, 0.5, M(0x888888), -40, 6, 170 + z, g, true); l.rotation.x = z > 0 ? 0.15 : -0.15; }); C.addBox(-41, -39, 168, 172, 14);

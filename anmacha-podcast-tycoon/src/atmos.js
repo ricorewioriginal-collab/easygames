@@ -26,7 +26,7 @@
     V.rain = new T.Points(geo, new T.PointsMaterial({ color: 0xd6e8ff, size: 0.12, transparent: true, opacity: 0.85, depthWrite: false })); V.rain.frustumCulled = false; V.rain.visible = false; S.scene.add(V.rain);
     AT.apply(true);
   };
-  AT.stop = function () { if (V && V.rain) { V.rain.parent && V.rain.parent.remove(V.rain); V.rain.geometry.dispose(); } V = null; if (W.renderer) W.renderer.toneMappingExposure = 1.08; };
+  AT.stop = function () { if (V && V.wet && V.S) wet(V.S, false); if (V && V.rain) { V.rain.parent && V.rain.parent.remove(V.rain); V.rain.geometry.dispose(); } V = null; if (W.renderer) W.renderer.toneMappingExposure = 1.08; };
 
   function mix(a, b, k, out) { return out.set(a).lerp(V.tmp2.set(b), k); }
   // Himmel, Licht und Nebel für die aktuelle Uhrzeit setzen
@@ -48,10 +48,25 @@
     if (S.lampMat) { S.lampMat.emissive.setHex(V.nightK > 0.3 ? 0xffd890 : 0x222222); S.lampMat.emissiveIntensity = 0.2 + V.nightK * 1.8; }
     if (S.lampGlow) S.lampGlow.visible = V.nightK > 0.3;
     if (V.rain) V.rain.visible = w.id === 'rain';
+    if (!!V.wet !== (w.id === 'rain')) wet(S, w.id === 'rain');
   };
+  // Nasse Straßen bei Regen: dunkle, matte Flächen (Asphalt, Gehwege) glänzen; nach dem Regen wieder matt
+  function wet(S, on) {
+    V.wet = on; const seen = new Set();
+    S.group.traverse(o => {
+      const m = o.isMesh && !o.isSkinnedMesh && o.material; if (!m || Array.isArray(m) || seen.has(m) || m.roughness == null) return; seen.add(m);
+      if (on) { if (m.roughness >= 0.8 && m.color && m.color.r + m.color.g + m.color.b < 0.5 && !m.userData.dry) { m.userData.dry = [m.roughness, m.metalness]; m.roughness = 0.22; m.metalness = 0.35; } }
+      else if (m.userData.dry) { m.roughness = m.userData.dry[0]; m.metalness = m.userData.dry[1]; delete m.userData.dry; }
+    });
+  }
   AT.update = function (dt) {
     if (!V) return;
     V.t -= dt; if (V.t <= 0) { V.t = 0.25; AT.apply(); }
+    if (V.rain && V.rain.visible && (V.splT = (V.splT || 0) - dt) <= 0 && W.particles) {
+      // Pfützen-Spritzer rund um die Kamera
+      V.splT = 0.07; const cam = W.camera.position, a = Math.random() * 6.28, r = 2 + Math.random() * 9;
+      W.particles.burst(cam.x + Math.cos(a) * r, 0.2, cam.z + Math.sin(a) * r, 0xdfe9ff, 3, { speed: 1.2, life: 0.3, size: 0.18 });
+    }
     if (V.rain && V.rain.visible) {
       const p = V.rain.geometry.attributes.position, a = p.array, cam = W.camera.position; V.rain.position.set(cam.x, 0, cam.z);
       for (let i = 1; i < a.length; i += 3) { a[i] -= dt * 18; if (a[i] < 0) a[i] += 22; }

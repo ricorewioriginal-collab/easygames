@@ -110,7 +110,7 @@
       "t": "Stadtbus und Gisela von innen",
       "p": [
         "🚌 Stadtbus „AnMaCha-Linie 1“: Acht Haltestellen verbinden die Viertel (Funkhaus, Stadtpark, Sendemast, Imbiss am Ring, Senderviertel Ost, Campingplatz, Südstadt, Westend). Der orange Bus fährt sichtbar seine Runde und ist auf der Karte markiert. An einer Haltestelle Aktion drücken und das Ziel wählen, die Fahrt ist kostenlos.",
-        "🚐 Gisela von innen: Geh hinter Gisela und drück Aktion („Gisela von innen“). Drinnen sitzt Marco am Steuer, Andrew darf nur mit ihm rein. Mit „🛠️ Ausbauen“ kaufst du für Fan-Punkte Klappbett, Mini-Küche, mobiles Studio, Sitzecke, Lichterkette, Solardach, Markise und die Heck-Erweiterung, die Gisela länger macht."
+        "🚐 Gisela ist ein modernes Alkoven-Wohnmobil (6,5 m, Tür rechts, Markisenkasten, LED-Licht, Dachklima, Leiter). Hinein geht es an der Tür rechts oder hinten: Aktion drücken („Gisela von innen“); links oder vorn steigt Marco ans Steuer. Drinnen ist viel Platz: Bett hinten, Küche, mobiles Studio, Sitzecke und vorn die Fahrerkabine, in der Marco sitzt. Andrew darf nur mit ihm rein. Mit „🛠️ Ausbauen“ kaufst du für Fan-Punkte Klappbett, Mini-Küche, mobiles Studio, Sitzecke, Lichterkette, Solardach, Markise und die Heck-Erweiterung, die Gisela länger macht."
       ],
       "list": [
         "Ausbauten sind sichtbar, innen und teils außen an Gisela (Solardach, Lichterkette, Markise, Heck).",
@@ -309,7 +309,13 @@
     {
       "t": "Alle Gebäude betretbar",
       "p": [
-        "🚪 Jedes Gebäude in der Stadt hat eine Tür mit Schild. Drinnen warten zehn Arten von Orten, eingerichtet mit KayKit-Möbeln: ☕ Café (Cappuccino: Energie), 🥐 Bäckerei (Hunger), 🎚️ Tonstudio (Jingle: Idee für die Aufnahme), 🛋️ Fan-WG (Zocken: Spaß), 💼 Werbeagentur (Sponsor-Deal: 60 🎟️), 📚 Bücherei (Recherche: Idee), 🏋️ Fitnessstudio, 💈 Friseur, 🗞️ Kiosk (Schlagzeile: Idee) und 💿 Plattenbörse. Jede Aktion geht einmal am Tag, die Leute drinnen lassen sich ansprechen (+❤️ fürs Freundebuch). Jeder neu entdeckte Ort bringt 15 🎟️, und überall hängt das Logo eines echten Senders."
+        "🚪 Jedes Gebäude in der Stadt hat eine Tür mit Schild. Drinnen warten zehn Arten von Orten, eingerichtet mit KayKit-Möbeln: ☕ Café (Cappuccino: Energie), 🥐 Bäckerei (Hunger), 🎚️ Tonstudio (Jingle: Idee für die Aufnahme), 🛋️ Fan-WG (Zocken: Spaß), 💼 Werbeagentur (Sponsor-Deal: 60 🎟️), 📚 Bücherei (Recherche: Idee), 🏋️ Fitnessstudio, 💈 Friseur, 🗞️ Kiosk (Schlagzeile: Idee) und 💿 Plattenbörse. Jede Aktion geht einmal am Tag, die Leute drinnen lassen sich ansprechen (+❤️ fürs Freundebuch). Jeder neu entdeckte Ort bringt 15 🎟️, und überall hängt das Logo eines echten Senders.",
+        "🎯 Jeder Laden hat drei Leuchtringe: die Tagesaktion, eine Schicht mit Minispiel (Barista fangen, Gastmusiker im Takt, WG- und Recherche-Quiz, Werbespot-Pointen, Aerobic nachmachen, Vorher-Nachher-Fotos, Zeitungen sortieren, DJ-Set) und eine Spezial-Aktion. Schichten bringen 14–75 🎟️, Ruf und bei gutem Ergebnis eine Idee; zwei Schichten am Tag (ab ★★ drei). Wer unter 12 Energie hat, muss erst ausruhen."
+      ],
+      "list": [
+        "⭐ Ruf je Laden-Art (gilt für alle Häuser dieser Art): Gespräche (+1 am Tag je Person), Tagesaktion (+1), Schicht (+1, ab 75 % +2), Spezial (+2). Stufen: Bekannt (3), Stammgast (8), Freund des Hauses (15), VIP (25), Partner (40).",
+        "Vorteile: ★ Aktion halber Preis · ★★ Schichten +25 % und eine Schicht mehr · ★★★ Spezial-Aktion (einmal am Tag, z. B. Café-Live-Talk, Brötchen-Abo, Profi-Mastering, Fanclub-Treffen, Große Kampagne, Promi-Styling für +8 Stimmung) · ★★★★ Aktion wirkt doppelt · ★★★★★ Partner: +3 % Hörer in jeder Folge.",
+        "„⭐ Ruf“ oben rechts im Laden zeigt alle Stufen und den Ruf aller Läden."
       ]
     },
     {
@@ -330,7 +336,7 @@
       "p": [
         "📋 In der Stadt und in den Welten warten Auftraggeber mit einem ❗ über dem Kopf (Story-Aufträge) oder einem ❔ (Tagesjobs). Sprich sie an: Eine kurze Szene erklärt den Auftrag, danach zeigt eine orange Lichtsäule das nächste Ziel, auch auf der Karte.",
         "Ein Auftrag hat mehrere Schritte: hinfahren (manchmal auf Zeit oder nur im Auto), Teile einsammeln, Leute befragen, Gäste begleiten (sie steigen mit ins Auto), ein Minispiel vor Ort oder eine Rangelei mit Rauschmanns Leuten. Der Fortschritt bleibt erhalten, auch wenn du zwischendurch ein Gebäude betrittst.",
-        "Es gibt 10 Story-Aufträge, die nacheinander freigeschaltet werden, und jeden Tag 3 neue Tagesjobs (Kurier, Funken-Regen, Fotojob). Belohnung: Fan-Punkte, Abos, Themen-Funken und manchmal eine Idee. Übersicht und Abbrechen im Gesamtmenü unter „📋 Auftragsbuch“."
+        "Es gibt 18 Story-Aufträge in zwei Kapiteln, die nacheinander freigeschaltet werden, und jeden Tag 3 neue Tagesjobs (Kurier, Funken-Regen, Fotojob). Kapitel 2 („Die Stadt hört zu“) führt durch die Läden: Schichten, Ruf-Stufen, Gisela ausbauen und Partner gewinnen – bis zur Jubiläumsfolge vom Fernsehturm. Belohnung: Fan-Punkte, Abos, Themen-Funken und manchmal eine Idee. Übersicht und Abbrechen im Gesamtmenü unter „📋 Auftragsbuch“."
       ]
     }
   ],
@@ -502,7 +508,16 @@
         "8 Strom für das Festival (Kemal, Hauptbühne): 6 Kabeltrommeln sammeln, Bühne verkabeln.",
         "9 Showdown bei Radio Funkloch (Edda, Funkerhütte): nach Wellenburg, Störsender abklemmen, Ralf Rauschmann stellen.",
         "10 Live vom Fernsehturm (Jonas, Fernsehturm): Turmwart Bernd sprechen, Pointen-Minispiel.",
-        "Tipp: Minispiel nicht geschafft? Einfach nochmal starten. Zeit abgelaufen? Der Schritt beginnt neu."
+        "11 Stammgast werden (Barista Lotte, Café): Barista-Schicht schaffen, im Café Ruf ★ erreichen.",
+        "12 Der perfekte Jingle (Sanne, Tonstudio): Gastmusiker-Session mit mindestens 50 %, DJ-Set in der Plattenbörse, zurück ins Funkhaus.",
+        "13 Ein Sponsor für AnMaCha (Vera, Werbeagentur): Werbespot einsprechen, am Kiosk Zeitungen sortieren, bei der Agentur Ruf ★★.",
+        "14 Gisela wird Tourbus (Rosi, Marcos Haus): 3 Ausbauten in Gisela, dann im Auto zum Campingplatz in Wellenburg.",
+        "15 Fit für die Live-Tour (Kim, Fitnessstudio): Aerobic-Schicht, Vorher-Nachher-Fotos beim Friseur, zur Music Arena.",
+        "16 Der erste Fanclub (Malte, Fan-WG): WG-Quiz gewinnen, Recherche-Quiz in der Bücherei, Ruf ★★★ in der Fan-WG.",
+        "17 Die Stadt steht hinter euch (Bürgermeisterin Hilde, Funkhaus): in 4 Läden Ruf ★★★, dann Hilde berichten.",
+        "18 Legenden der Medienstadt (Jonas, Radio-Lounge): Gisela komplett ausbauen, 3 Partner-Läden (★★★★★), Jubiläumsfolge vom Fernsehturm.",
+        "Tipp: Minispiel nicht geschafft? Einfach nochmal starten. Zeit abgelaufen? Der Schritt beginnt neu.",
+        "Langzeit-Tipp: Pro Tag jeden Laden besuchen (Gespräche, Aktion, zwei Schichten). So steigt der Ruf gleichmäßig, Partner-Läden geben dauerhaft mehr Hörer."
       ]
     }
   ],

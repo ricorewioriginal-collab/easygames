@@ -481,3 +481,7 @@ html.dev-kb .hm-emo [data-kb]::after { content: attr(data-kb); }
   .cv-ui .hm-emo { left: auto; right: calc(120px + var(--safe-r)); transform: none; }
   .h-msg { top: 44%; font-size: 18px; }
 }
+/* Kamerafahrt beim Betreten eines Gebäudes */
+canvas.push-in { transform: scale(1.18); transition: transform .48s cubic-bezier(.5, 0, .9, .4); }
+.enter-fade { position: fixed; inset: 0; z-index: 44; background: radial-gradient(circle, rgba(10, 8, 20, .2), #07060c 70%); opacity: 0; transition: opacity .45s; pointer-events: none; }
+.enter-fade.on { opacity: 1; } .enter-fade.off { opacity: 0; }

@@ -40,7 +40,7 @@
       S.busStops.push({ st, x, z });
     });
     // Der Bus
-    const bus = new T.Group(), B = (w, h, d, c, x, y, z, o) => W.box(w, h, d, M(c, o), x, y, z, bus, true);
+    const bus = new T.Group(); bus.userData.dyn = true; const B = (w, h, d, c, x, y, z, o) => W.box(w, h, d, M(c, o), x, y, z, bus, true);
     B(2.4, 2.4, 9, 0xff8a1e, 0, 1.6, 0, { r: 0.5 }); B(2.42, 0.7, 8.6, 0x223344, 0, 2.1, 0, { r: 0.1, m: 0.4 }); B(2.44, 0.18, 9.02, 0x3aa7a0, 0, 0.6, 0);
     B(2.3, 0.9, 0.06, 0x223344, 0, 2.0, 4.52, { r: 0.1, m: 0.4 });
     const ln = W.textTex(['1 · Funkhaus'], { w: 256, h: 64, size: 40, bg: '#111', fg: '#ffd23f', accent: '#111' }); const lm = new T.Mesh(new T.PlaneGeometry(1.6, 0.4), new T.MeshBasicMaterial({ map: ln, toneMapped: false })); lm.position.set(0, 2.65, 4.53); bus.add(lm);

@@ -86,30 +86,75 @@
       case 'disco': { C(0.01, 0.01, 1.2, 0x888888, 0, 3.0, 0); const b = new T.Mesh(new T.IcosahedronGeometry(0.32, 1), new T.MeshStandardMaterial({ color: 0xdddddd, metalness: 1, roughness: 0.15, flatShading: true })); b.position.y = 2.35; g.add(b); const gl = W.glow(0xffffff, 1.4, g, 0, 2.35, 0); anims.push((t, o) => { b.rotation.y = t * 1.2; gl.material.color.setHSL((t * 0.15 + o.seed) % 1, 1, 0.7); }); break; }
       case 'arcade': { B(0.8, 1.8, 0.75, 0x1d1240, 0, 0.9, 0, { r: 0.5 }); B(0.82, 0.12, 0.6, 0xff3da8, 0, 1.0, 0.1, { e: 0x800040 }); const scr = new T.Mesh(new T.PlaneGeometry(0.6, 0.45), new T.MeshBasicMaterial({ color: 0x3dd6ff, toneMapped: false })); scr.position.set(0, 1.42, 0.38); scr.rotation.x = -0.15; g.add(scr); S(0.04, 0xff2020, -0.15, 1.08, 0.3); S(0.03, 0xffd23f, 0.1, 1.08, 0.3); S(0.03, 0x40d070, 0.2, 1.08, 0.3); anims.push((t, o) => scr.material.color.setHSL((t * 0.25 + o.seed) % 1, 0.8, 0.55)); break; }
       case 'aqua': { B(1.3, 0.75, 0.5, 0x2a2c34, 0, 0.375, 0); const gl = new T.Mesh(new T.BoxGeometry(1.25, 0.65, 0.45), new T.MeshStandardMaterial({ color: W.lin(0x5ac8ff), transparent: true, opacity: 0.35, roughness: 0.05 })); gl.position.y = 1.08; g.add(gl); const fish = []; for (let i = 0; i < 4; i++) { const f = S(0.04, [0xff8a1e, 0xffd23f, 0xff3da8, 0x3dd6ff][i], 0, 1.0 + i * 0.08, 0, { e: 0x201000 }); f.scale.set(1.6, 1, 0.6); fish.push(f); } anims.push((t, o) => fish.forEach((f, i) => { const a = t * (0.6 + i * 0.15) + i * 1.7 + o.seed; f.position.x = Math.sin(a) * 0.48; f.position.z = Math.cos(a * 1.3) * 0.12; f.rotation.y = Math.cos(a) > 0 ? 0 : Math.PI; })); W.glow(0x5ac8ff, 1.6, g, 0, 1.1, 0); break; }
-      case 'gisela': { B(0.9, 0.35, 0.9, 0x16171c, 0, 0.175, 0); const c = E.camper(0.42); c.position.y = 0.36; c.rotation.y = 0.6; g.add(c); anims.push(t => { c.rotation.y = 0.6 + t * 0.3; }); break; }
+      case 'gisela': { B(0.9, 0.35, 0.9, 0x16171c, 0, 0.175, 0); const c = E.camper(0.3); c.position.y = 0.36; c.rotation.y = 0.6; g.add(c); anims.push(t => { c.rotation.y = 0.6 + t * 0.3; }); break; }
       case 'cat': B(0.6, 0.06, 0.6, 0xc8b08a, 0, 0.03, 0); C(0.08, 0.08, 1.1, 0xd8c8a0, 0, 0.58, 0); B(0.5, 0.06, 0.5, 0xc8b08a, 0, 0.75, 0); B(0.45, 0.06, 0.45, 0xc8b08a, 0, 1.15, 0); { const body = S(0.12, 0x333333, 0, 1.28, 0); body.scale.set(1.3, 0.8, 0.9); const h = S(0.08, 0x333333, 0.14, 1.36, 0); S(0.015, 0x6cff8a, 0.21, 1.38, 0.03, { e: 0x30ff60 }); S(0.015, 0x6cff8a, 0.21, 1.38, -0.03, { e: 0x30ff60 }); anims.push((t, o) => { h.position.y = 1.36 + Math.sin(t * 2 + o.seed) * 0.01; }); } break;
       case 'pickle': { C(0.11, 0.11, 0.3, 0xddeeff, 0, 0.15, 0); const p = S(0.05, 0x3a8a2a, 0, 0.16, 0); p.scale.set(1, 2.6, 1); C(0.115, 0.115, 0.04, 0xcc3333, 0, 0.32, 0); break; }
       case 'cables': B(0.6, 0.35, 0.45, 0x6b4a30, 0, 0.175, 0); for (let i = 0; i < 6; i++) { const c = new T.Mesh(new T.TorusGeometry(0.12 + i * 0.01, 0.015, 6, 18), M([0x111111, 0xff8a1e, 0x3dd6ff, 0xff3da8][i % 4])); c.position.set((i % 3 - 1) * 0.15, 0.4, (i % 2 - 0.5) * 0.12); c.rotation.set(1.2 + i * 0.4, i, 0.3 * i); g.add(c); } break;
     }
     return g;
   }
-  /** Gisela – Marcos umgebauter Camper (auch für Stadt und Szenen); s = Maßstab */
+  /** Gisela – Marcos Alkoven-Wohnmobil (auch für Stadt und Szenen); s = Maßstab, vorn = +z, Tür rechts (+x).
+      Maße: 6,5 m lang, 2,25 m breit, 2,95 m hoch. */
   E.camper = function (s) {
     T = root.THREE;
     const g = new T.Group(), B = (w, h, d, c, x, y, z, o) => W.box(w, h, d, M(c, o), x, y, z, g);
-    B(2.0, 0.95, 4.4, 0xf2efe6, 0, 1.15, 0, { r: 0.5 });             // Aufbau (cremeweiß)
-    B(2.02, 0.5, 4.42, 0x3aa7a0, 0, 0.6, 0, { r: 0.5 });             // unten türkis
-    B(2.04, 0.08, 4.44, 0xff8a1e, 0, 0.88, 0, { r: 0.5 });           // AnMaCha-Streifen
-    B(1.9, 0.5, 3.0, 0xf2efe6, 0, 1.85, -0.5, { r: 0.5 });           // Aufstelldach
-    B(1.7, 0.45, 0.06, 0x223344, 0, 1.3, 2.21, { r: 0.1, m: 0.4 });   // Frontscheibe
-    [-1.01, 1.01].forEach(x => { B(0.04, 0.4, 1.4, 0x223344, x, 1.3, -0.6, { r: 0.1, m: 0.4 }); B(0.04, 0.4, 0.7, 0x223344, x, 1.3, 1.3, { r: 0.1, m: 0.4 }); });
-    [[-0.85, 1.45], [0.85, 1.45], [-0.85, -1.45], [0.85, -1.45]].forEach(([x, z]) => { const w = W.cyl(0.34, 0.34, 0.26, M(0x1a1a1a, { r: 0.8 }), x, 0.34, z, g, 18); w.rotation.z = Math.PI / 2; const h = W.cyl(0.16, 0.16, 0.27, M(0xdddddd, { m: 0.8, r: 0.3 }), x, 0.34, z, g, 12); h.rotation.z = Math.PI / 2; });
-    [-0.65, 0.65].forEach(x => { const l = W.cyl(0.12, 0.12, 0.05, M(0xfff4c0, { e: 0xffe080, ei: 1.2 }), x, 0.85, 2.22, g, 12); l.rotation.x = Math.PI / 2; });
-    // Name auf der Seite
-    const tex = W.textTex(['Gisela'], { w: 256, h: 96, size: 64, bg: '#f2efe6', fg: '#ff8a1e', accent: '#f2efe6' });
-    [-1.03, 1.03].forEach(x => { const p = new T.Mesh(new T.PlaneGeometry(1.3, 0.48), new T.MeshBasicMaterial({ map: tex, transparent: true })); p.position.set(x, 1.15, 0.6); p.rotation.y = x > 0 ? Math.PI / 2 : -Math.PI / 2; g.add(p); });
-    // Blumen-Aufkleber (Hippie-Camper)
-    [[1.03, 0.6, -1.3], [-1.03, 0.62, -1.1]].forEach(([x, y, z]) => { for (let i = 0; i < 5; i++) { const p = new T.Mesh(new T.CircleGeometry(0.09, 10), M(0xffd23f)); const a = i / 5 * Math.PI * 2; p.position.set(x * 1.002, y + Math.sin(a) * 0.12, z + Math.cos(a) * 0.12); p.rotation.y = x > 0 ? Math.PI / 2 : -Math.PI / 2; g.add(p); } });
+    const CREAM = 0xf4f1ea, TQ = 0x3aa7a0, OR = 0xff8a1e, GLASS = { r: 0.08, m: 0.6 }, DARK = 0x1d2230;
+    // Aufbau: abgerundetes Seitenprofil mit Alkoven über der Fahrerkabine, extrudiert über die Breite
+    const sh = new T.Shape();
+    sh.moveTo(-3.05, 0.5); sh.lineTo(3.08, 0.5); sh.quadraticCurveTo(3.22, 0.5, 3.22, 0.66); sh.lineTo(3.22, 1.02);
+    sh.quadraticCurveTo(3.2, 1.22, 2.98, 1.27); sh.lineTo(2.72, 1.36); sh.lineTo(2.12, 2.0); sh.lineTo(2.5, 2.1);
+    sh.quadraticCurveTo(2.7, 2.14, 2.72, 2.38); sh.quadraticCurveTo(2.72, 2.86, 2.28, 2.88); sh.lineTo(-2.9, 2.88);
+    sh.quadraticCurveTo(-3.15, 2.88, -3.15, 2.62); sh.lineTo(-3.15, 0.7); sh.quadraticCurveTo(-3.15, 0.5, -3.05, 0.5);
+    const bg = new T.ExtrudeGeometry(sh, { depth: 2.06, bevelEnabled: true, bevelSize: 0.06, bevelThickness: 0.07, bevelSegments: 3, curveSegments: 8 });
+    bg.rotateY(-Math.PI / 2); bg.translate(1.03, 0, 0); bg.computeVertexNormals();
+    const body = new T.Mesh(bg, M(CREAM, { r: 0.42, m: 0.05 })); body.castShadow = body.receiveShadow = true; g.add(body);
+    // Schürze, Zierstreifen, Seitenschweller
+    B(2.26, 0.4, 6.22, TQ, 0, 0.72, 0.02, { r: 0.45 });
+    B(2.27, 0.07, 6.24, OR, 0, 0.96, 0.02, { r: 0.4 });
+    [-1.135, 1.135].forEach(x => { B(0.02, 0.05, 4.6, TQ, x, 1.06, -0.6, { r: 0.4 }); B(0.02, 0.05, 3.2, OR, x, 2.66, -1.2, { r: 0.4 }); });
+    // Frontscheibe (schräg), Seitenfenster, Alkovenfenster, Heckfenster
+    const ws = B(1.96, 0.93, 0.03, 0x1a2638, 0, 1.69, 2.47, GLASS); ws.rotation.x = Math.atan2(-0.6, 0.64);
+    [-1.14, 1.14].forEach(x => {
+      [[-1.9, 1.0], [-0.3, 0.9]].forEach(([z, w]) => { B(0.05, 0.62, w + 0.1, 0x2a2e38, x, 1.78, z, { r: 0.5 }); B(0.06, 0.52, w, 0x1a2638, x, 1.78, z, GLASS); });
+      B(0.05, 0.5, 0.56, 0x1a2638, x, 1.66, 2.3, GLASS);                       // Kabinenfenster
+      B(0.05, 0.22, 0.6, 0x1a2638, x, 2.5, 2.2, GLASS);                        // Alkoven-Seitenfenster
+    });
+    B(1.1, 0.2, 0.05, 0x1a2638, 0, 2.5, 2.79, GLASS);
+    B(1.0, 0.5, 0.05, 0x1a2638, 0, 1.9, -3.23, GLASS);
+    // Tür rechts mit Fenster, Griff und Trittstufe
+    B(0.04, 1.75, 0.72, 0xe6e2d8, 1.15, 1.45, 1.15, { r: 0.45 }); B(0.05, 0.4, 0.42, 0x1a2638, 1.16, 1.95, 1.15, GLASS);
+    B(0.05, 0.05, 0.16, 0x888c94, 1.18, 1.45, 0.88, { m: 0.8, r: 0.3 }); B(0.36, 0.06, 0.6, 0x2a2e38, 1.25, 0.42, 1.15, { m: 0.5, r: 0.4 });
+    // Markisen-Kasten (rechts oben), Dach: Klimaanlage, Dachluken, Antenne
+    B(0.12, 0.14, 3.8, 0xdddddd, 1.2, 2.74, -0.5, { r: 0.35, m: 0.3 });
+    B(0.8, 0.26, 0.85, 0xeeeeee, 0, 3.08, -1.25, { r: 0.4 }); B(0.6, 0.04, 0.6, 0x9aa0ab, 0, 3.22, -1.25, { r: 0.5, m: 0.4 });
+    [-2.45, 1.5].forEach(z => { B(0.55, 0.1, 0.55, 0xd8d4ca, 0, 2.99, z, { r: 0.4 }); B(0.45, 0.04, 0.45, 0x5a6b8a, 0, 3.05, z, { t: 0.7, r: 0.2 }); });
+    W.cyl(0.012, 0.012, 0.5, M(0x222222), -0.7, 3.18, 0.6, g, 5);
+    // Leiter hinten, Heckleuchten, Nummernschilder
+    [-0.85, -0.55].forEach(x => B(0.04, 2.0, 0.04, 0x9aa0ab, x, 1.85, -3.3, { m: 0.8, r: 0.3 }));
+    for (let i = 0; i < 6; i++) B(0.32, 0.03, 0.04, 0x9aa0ab, -0.7, 1.05 + i * 0.32, -3.3, { m: 0.8, r: 0.3 });
+    [-1.0, 1.0].forEach(x => B(0.14, 0.7, 0.04, 0xff2a2a, x, 1.25, -3.23, { e: 0xff2a2a, ei: 0.6, r: 0.3 }));
+    const plate = W.textTex(['AMC · 2026'], { w: 256, h: 64, size: 40, bg: '#f4f1ea', fg: '#1a1a1a', accent: '#1a3a8a' });
+    [[3.24, 0], [-3.24, Math.PI]].forEach(([z, ry]) => { const p = new T.Mesh(new T.PlaneGeometry(0.52, 0.13), new T.MeshBasicMaterial({ map: plate })); p.position.set(0, 0.62, z + (z > 0 ? 0.03 : -0.03)); p.rotation.y = ry; g.add(p); });
+    // Front: Kühlergrill, LED-Scheinwerfer mit Tagfahrlicht, Stoßfänger, Spiegel
+    B(2.2, 0.26, 0.2, 0x2a2e38, 0, 0.62, 3.2, { r: 0.5 });
+    B(1.1, 0.26, 0.04, 0x15171c, 0, 0.98, 3.29, { r: 0.4, m: 0.4 });
+    [-0.78, 0.78].forEach(x => { B(0.42, 0.13, 0.04, 0xdfe8ff, x, 1.08, 3.27, { e: 0xcfe0ff, ei: 1.3, r: 0.2 }); B(0.42, 0.025, 0.045, 0xffffff, x, 1.0, 3.28, { e: 0xffffff, ei: 2 }); });
+    [-1, 1].forEach(sd => { B(0.24, 0.04, 0.04, 0x15171c, sd * 1.2, 1.6, 2.62); B(0.06, 0.28, 0.16, 0x15171c, sd * 1.34, 1.6, 2.62, { r: 0.4 }); });
+    // Räder mit Alufelgen und Radläufen
+    const tire = M(0x16171a, { r: 0.85 }), rim = M(0xcfd3da, { m: 0.85, r: 0.25 }), arch = M(0x2a2e38, { r: 0.6 });
+    [[2.3], [-1.75]].forEach(([z]) => [-1, 1].forEach(sd => {
+      const w = W.cyl(0.42, 0.42, 0.3, tire, sd * 0.94, 0.42, z, g, 20); w.rotation.z = Math.PI / 2;
+      const h = W.cyl(0.25, 0.25, 0.31, rim, sd * 0.94, 0.42, z, g, 10); h.rotation.z = Math.PI / 2;
+      const a = new T.Mesh(new T.TorusGeometry(0.48, 0.06, 6, 14, Math.PI), arch); a.position.set(sd * 1.12, 0.46, z); a.rotation.y = Math.PI / 2; g.add(a);
+    }));
+    // Beschriftung: Name groß auf beiden Seiten, Podcast-Schriftzug oben
+    const tex = W.textTex(['Gisela'], { w: 384, h: 112, size: 84, bg: '#f4f1ea', fg: '#ff8a1e', accent: '#f4f1ea' });
+    const tex2 = W.textTex(['AnMaCha · Der Podcast on Tour'], { w: 512, h: 64, size: 34, bg: '#f4f1ea', fg: '#3aa7a0', accent: '#f4f1ea' });
+    [-1.145, 1.145].forEach(x => {
+      const ry = x > 0 ? Math.PI / 2 : -Math.PI / 2, zz = x > 0 ? -1.3 : -0.9;
+      const p = new T.Mesh(new T.PlaneGeometry(1.5, 0.42), new T.MeshBasicMaterial({ map: tex })); p.position.set(x, 1.27, zz); p.rotation.y = ry; g.add(p);
+      const q = new T.Mesh(new T.PlaneGeometry(2.6, 0.32), new T.MeshBasicMaterial({ map: tex2 })); q.position.set(x, 2.38, -1.2); q.rotation.y = ry; g.add(q);
+    });
     g.scale.setScalar(s || 1);
     return g;
   };

@@ -100,14 +100,14 @@
     PF.ema += (dt - PF.ema) * 0.05; PF.frame++;
     if (R.shadowMap.enabled && !R.shadowMap.autoUpdate) R.shadowMap.needsUpdate = PF.frame % (PF.ema > 1 / 40 ? 3 : 2) === 0;
     if ((PF.t += dt) < 1.2) return; PF.t = 0;
-    if (PF.ema > 1 / 45 && PF.scale > 0.55) { PF.scale = Math.max(0.55, PF.scale - 0.15); PF.good = 0; W.resize(); }
+    if (PF.ema > 1 / 45 && PF.scale > 0.8) { PF.scale = Math.max(0.8, PF.scale - 0.1); PF.good = 0; W.resize(); }
     else if (PF.ema < 1 / 56 && PF.scale < 1) { if (++PF.good >= 4) { PF.good = 0; PF.scale = Math.min(1, PF.scale + 0.1); W.resize(); } }
     else PF.good = 0;
   };
   W.perfState = () => ({ scale: PF.scale, fps: Math.round(1 / PF.ema) });
   W.resize = function () {
     if (!W.renderer) return;
-    const w = root.innerWidth, h = root.innerHeight, dpr = Math.max(0.6, Math.min(root.devicePixelRatio || 1, [1, 1.5, 2][W.quality]) * PF.scale);
+    const w = root.innerWidth, h = root.innerHeight, dr = root.devicePixelRatio || 1, dpr = Math.max(Math.min(dr, 1.25), Math.min(dr, [1, 1.5, 2][W.quality]) * PF.scale);   // nie unscharf: mindestens 1,25-fach auf scharfen Displays
     W.renderer.setPixelRatio(dpr); W.renderer.setSize(w, h, false);
     W.camera.aspect = w / h; W.camera.fov = w / h < 0.8 ? 72 : 60; W.camera.updateProjectionMatrix();
   };
@@ -116,9 +116,24 @@
   function bake(scene) {
     scene.updateMatrixWorld(true);
     const parts = [], box = new T.Box3();
-    scene.traverse(o => { if (o.isMesh) { const g = o.geometry.clone(); g.applyMatrix4(o.matrixWorld); parts.push({ g, m: o.material }); g.computeBoundingBox(); box.union(g.boundingBox); } });
+    scene.traverse(o => { if (o.isMesh) { const g = o.geometry.clone(); g.applyMatrix4(o.matrixWorld); if (!g.attributes.normal) g.computeVertexNormals(); parts.push({ g, m: o.material }); g.computeBoundingBox(); box.union(g.boundingBox); } });
     const size = box.getSize(new T.Vector3());
-    return { parts, box, size };
+    return { parts: joinParts(parts), box, size };
+  }
+  // Teile mit gleichem Material zu einer Geometrie verbinden (ein Modell = meist ein Zeichenaufruf)
+  function joinParts(parts) {
+    const by = new Map(); parts.forEach(p => { const k = p.m.uuid + '|' + Object.keys(p.g.attributes).sort().join(','); (by.get(k) || by.set(k, []).get(k)).push(p); });
+    const out = [];
+    by.forEach(list => {
+      if (list.length === 1) return out.push(list[0]);
+      const names = Object.keys(list[0].g.attributes).filter(n => n === 'position' || n === 'normal' || n === 'uv' || n === 'color');
+      let nv = 0, ni = 0; list.forEach(p => { nv += p.g.attributes.position.count; ni += p.g.index ? p.g.index.count : p.g.attributes.position.count; });
+      const g = new T.BufferGeometry(), I = new (nv > 65535 ? Uint32Array : Uint16Array)(ni);
+      names.forEach(n => { const sz = list[0].g.attributes[n].itemSize, A = new Float32Array(nv * sz); let o = 0; list.forEach(p => { const a = p.g.attributes[n]; for (let i = 0; i < a.count; i++) for (let c = 0; c < sz; c++) A[(o + i) * sz + c] = c === 0 ? a.getX(i) : c === 1 ? a.getY(i) : c === 2 ? a.getZ(i) : a.getW(i); o += a.count; }); g.setAttribute(n, new T.BufferAttribute(A, sz)); });
+      let vo = 0, io = 0; list.forEach(p => { const pg = p.g, cnt = pg.index ? pg.index.count : pg.attributes.position.count; for (let t = 0; t < cnt; t++) I[io++] = vo + (pg.index ? pg.index.getX(t) : t); vo += pg.attributes.position.count; });
+      g.setIndex(new T.BufferAttribute(I, 1)); g.computeBoundingBox(); g.computeBoundingSphere(); out.push({ g, m: list[0].m });
+    });
+    return out;
   }
   W.KK = ['kk_bench', 'kk_box_a', 'kk_box_b', 'kk_building_a', 'kk_building_b', 'kk_building_c', 'kk_building_d', 'kk_building_e', 'kk_building_f', 'kk_building_g', 'kk_building_h', 'kk_bush', 'kk_car_hatchback', 'kk_car_police', 'kk_car_sedan', 'kk_car_stationwagon', 'kk_car_taxi', 'kk_dumpster', 'kk_firehydrant', 'kk_streetlight', 'kk_trafficlight_a', 'kk_trafficlight_b', 'kk_trafficlight_c', 'kk_trash_a', 'kk_trash_b', 'kk_watertower',
     'kf_armchair', 'kf_armchair_pillows', 'kf_bed_double_a', 'kf_bed_single_a', 'kf_book_set', 'kf_cabinet_medium_decorated', 'kf_cabinet_small', 'kf_chair_a', 'kf_chair_a_wood', 'kf_chair_b', 'kf_chair_stool', 'kf_couch', 'kf_couch_pillows', 'kf_lamp_standing', 'kf_lamp_table', 'kf_pictureframe_large_a', 'kf_pictureframe_medium', 'kf_pillow_a', 'kf_rug_oval_a', 'kf_rug_rectangle_a', 'kf_rug_rectangle_stripes_a', 'kf_shelf_a_big', 'kf_shelf_b_large_decorated', 'kf_table_low', 'kf_table_medium', 'kf_table_medium_long', 'kf_table_small'];
@@ -145,11 +160,14 @@
       const c = Math.abs(Math.cos(p.rot || 0)), sn = Math.abs(Math.sin(p.rot || 0));
       dims.push({ w: (M.size.x * c + M.size.z * sn) * s, d: (M.size.x * sn + M.size.z * c) * s, h: M.size.y * s + (p.y || 0) });
     });
-    M.parts.forEach(pt => {
-      const im = new T.InstancedMesh(pt.g, pt.m, mats.length);
-      mats.forEach((m, i) => im.setMatrixAt(i, m)); im.instanceMatrix.needsUpdate = true;
-      im.castShadow = opts.shadow !== false; im.receiveShadow = true; group.add(im);
-    });
+    // statt InstancedMesh: je Material und 48-m-Feld eine zusammengefasste Geometrie – Sichtprüfung je Feld, wenige Zeichenaufrufe
+    group.updateMatrixWorld(true); const inv = new T.Matrix4().copy(group.matrixWorld).invert(), buckets = new Map(), sh = opts.shadow !== false;
+    M.parts.forEach((pt, pi) => mats.forEach(m => {
+      const o = new T.Mesh(pt.g, pt.m); o.matrixWorld.multiplyMatrices(group.matrixWorld, m); o.castShadow = sh; o.receiveShadow = true; o.userData.inst = true;
+      const e = m.elements, k = pt.m.uuid + '|' + pi + '|' + Math.floor(e[12] / 48) + ',' + Math.floor(e[14] / 48) + '|' + (pt.g.attributes.uv ? 1 : 0);
+      (buckets.get(k) || buckets.set(k, []).get(k)).push(o);
+    }));
+    mergeBuckets(group, buckets, inv);
     return dims;
   };
 
@@ -268,6 +286,68 @@
       }
       const g = this.points.geometry; g.attributes.position.needsUpdate = true; g.attributes.color.needsUpdate = true; g.attributes.size.needsUpdate = true;
     }
+  }
+
+  // ------------------------------------------------------------------ Statische Geometrie zusammenfassen (weniger Zeichenaufrufe)
+  // Phase 1 merkt sich Lage und Sichtbarkeit aller einfachen Bauteile, Phase 2 (Sekunden später) verschmilzt die unveränderten
+  // je Material und 48-m-Feld zu einem Mesh. Bewegte, versteckte, transparente, animierte Teile und alles, was keep enthält, bleiben einzeln.
+  const MERGE_TYPES = /^(Box|Cylinder|Plane|Sphere|Torus|Circle|Cone|Octahedron|Ring|Extrude|Shape|Lathe)(Buffer)?Geometry$/;
+  W.mergePrep = function (root) {
+    root.updateMatrixWorld(true); const snap = new Map();
+    root.traverse(o => { if (o.isMesh && !o.isSkinnedMesh && !o.isInstancedMesh && MERGE_TYPES.test(o.geometry.type) && !Array.isArray(o.material) && !o.material.transparent && o.geometry.attributes.normal) snap.set(o, o.matrixWorld.clone()); });
+    return snap;
+  };
+  W.mergeRun = function (root, snap, keep) {
+    root.updateMatrixWorld(true); root.updateWorldMatrix && root.updateWorldMatrix(true, false);
+    const inv = new T.Matrix4().copy(root.matrixWorld).invert(), buckets = new Map();
+    const visibleChain = o => { for (let a = o; a && a !== root; a = a.parent) { if (!a.visible || keep.has(a) || a.userData.dyn) return false; } return true; };
+    snap.forEach((m0, o) => {
+      if (!o.parent || !visibleChain(o) || !o.matrixWorld.equals(m0) || o.material.transparent || o.onBeforeRender !== T.Object3D.prototype.onBeforeRender) return;
+      const g = o.geometry, e = o.matrixWorld.elements, cell = Math.floor(e[12] / 48) + ',' + Math.floor(e[14] / 48);
+      const k = o.material.uuid + '|' + (o.castShadow ? 1 : 0) + (o.receiveShadow ? 1 : 0) + '|' + cell + '|' + (g.attributes.uv ? 1 : 0) + '|' + (o.renderOrder || 0);
+      (buckets.get(k) || buckets.set(k, []).get(k)).push(o);
+    });
+    return mergeBuckets(root, buckets, inv);
+  };
+  function mergeBuckets(root, buckets, inv) {
+    let merged = 0, made = 0; const m4 = new T.Matrix4(), n3 = new T.Matrix3(), v = new T.Vector3();
+    buckets.forEach(list => {
+      if (list.length < 2 && !list[0].userData.inst) return;
+      let nv = 0, ni = 0; const uv = !!list[0].geometry.attributes.uv;
+      list.forEach(o => { const g = o.geometry; nv += g.attributes.position.count; ni += g.index ? g.index.count : g.attributes.position.count; });
+      const P = new Float32Array(nv * 3), N = new Float32Array(nv * 3), UV = uv ? new Float32Array(nv * 2) : null, I = new (nv > 65535 ? Uint32Array : Uint16Array)(ni);
+      let vo = 0, io = 0;
+      list.forEach(o => {
+        const g = o.geometry, pa = g.attributes.position, na = g.attributes.normal, ua = g.attributes.uv;
+        m4.multiplyMatrices(inv, o.matrixWorld); n3.getNormalMatrix(m4); const flip = m4.determinant() < 0;
+        const fast = !pa.isInterleavedBufferAttribute && !na.isInterleavedBufferAttribute && !pa.normalized && pa.itemSize === 3 && na.itemSize === 3, me = m4.elements, ne = n3.elements;
+        if (fast) {
+          const pr = pa.array, nr = na.array;
+          for (let i = 0, j = vo * 3; i < pa.count * 3; i += 3, j += 3) {
+            const x = pr[i], y = pr[i + 1], z = pr[i + 2];
+            P[j] = me[0] * x + me[4] * y + me[8] * z + me[12]; P[j + 1] = me[1] * x + me[5] * y + me[9] * z + me[13]; P[j + 2] = me[2] * x + me[6] * y + me[10] * z + me[14];
+            const a = nr[i], b = nr[i + 1], c = nr[i + 2], nx = ne[0] * a + ne[3] * b + ne[6] * c, ny = ne[1] * a + ne[4] * b + ne[7] * c, nz = ne[2] * a + ne[5] * b + ne[8] * c, l = Math.hypot(nx, ny, nz) || 1;
+            N[j] = nx / l; N[j + 1] = ny / l; N[j + 2] = nz / l;
+          }
+        } else for (let i = 0; i < pa.count; i++) {
+          v.fromBufferAttribute(pa, i).applyMatrix4(m4); P[(vo + i) * 3] = v.x; P[(vo + i) * 3 + 1] = v.y; P[(vo + i) * 3 + 2] = v.z;
+          v.fromBufferAttribute(na, i).applyMatrix3(n3).normalize(); N[(vo + i) * 3] = v.x; N[(vo + i) * 3 + 1] = v.y; N[(vo + i) * 3 + 2] = v.z;
+        }
+        if (UV) { if (ua && !ua.isInterleavedBufferAttribute && !ua.normalized && ua.itemSize === 2) UV.set(ua.array.subarray(0, pa.count * 2), vo * 2); else for (let i = 0; i < pa.count; i++) { UV[(vo + i) * 2] = ua ? ua.getX(i) : 0; UV[(vo + i) * 2 + 1] = ua ? ua.getY(i) : 0; } }
+        const cnt = g.index ? g.index.count : pa.count, ix = g.index ? g.index.array : null;
+        for (let t = 0; t < cnt; t += 3) {
+          const a = ix ? ix[t] : t, b = ix ? ix[t + 1] : t + 1, c = ix ? ix[t + 2] : t + 2;
+          I[io++] = vo + a; I[io++] = vo + (flip ? c : b); I[io++] = vo + (flip ? b : c);
+        }
+        vo += pa.count;
+      });
+      const geo = new T.BufferGeometry(); geo.setAttribute('position', new T.BufferAttribute(P, 3)); geo.setAttribute('normal', new T.BufferAttribute(N, 3)); if (UV) geo.setAttribute('uv', new T.BufferAttribute(UV, 2));
+      geo.setIndex(new T.BufferAttribute(I, 1)); geo.computeBoundingSphere(); geo.computeBoundingBox();
+      const f = list[0], mesh = new T.Mesh(geo, f.material); mesh.castShadow = f.castShadow; mesh.receiveShadow = f.receiveShadow; mesh.renderOrder = f.renderOrder || 0; mesh.userData.merged = list.length;
+      root.add(mesh); made++;
+      list.forEach(o => { if (o.parent) o.parent.remove(o); merged++; });
+    });
+    return { merged, made };
   }
 
   // ------------------------------------------------------------------ Bausteine für Requisiten
