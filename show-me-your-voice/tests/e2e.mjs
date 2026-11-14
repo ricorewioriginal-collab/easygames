@@ -33,7 +33,7 @@ async function page(vp, touch) {
   const p = await c.newPage();
   p.on('pageerror', e => errs.push(e.message));
   p.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|net::/i.test(m.text())) errs.push(m.text()); });
-  await p.goto(base); await p.waitForSelector('#sTitle.on');
+  await p.goto(base); await p.waitForSelector('#sTitle.on'); await p.evaluate(() => { window.SMYVApp.state().prep.how = 'game'; });   // Tests prüfen den Rhythmus-Modus
   return p;
 }
 // Test-Bot: trifft Noten perfekt (q = Trefferquote), folgt der Linie, reagiert auf Signale. Kürzt alle Runden.
@@ -92,7 +92,7 @@ async function playRound(p) {
 // ---------- PC: komplette Staffel gewinnen ----------
 const p = await page({ width: 1280, height: 800 });
 await shot(p, '01-titel');
-await p.keyboard.press('Enter'); await p.waitForSelector('#sMenu.on'); await shot(p, '02-menue');
+await p.keyboard.press('Enter'); await p.waitForSelector('#sMenu.on'); await p.evaluate(() => { window.SMYVApp.state().prep.how = 'game'; });   await shot(p, '02-menue');   // Tests prüfen den Rhythmus-Modus
 await p.keyboard.press('ArrowDown'); ok(await p.evaluate(() => document.activeElement && document.activeElement.dataset.m === 'free'), 'Pfeiltasten bewegen den Fokus im Menü');
 await p.click('[data-m="new"]'); await p.waitForSelector('#sAvatar.on');
 await p.fill('#avaName', 'Testy <Star>'); await p.click('[data-k="hair"][data-d="1"]'); await p.click('[data-k="skin"][data-v="3"]'); await shot(p, '03-avatar');
@@ -131,7 +131,7 @@ ok(!(await p.evaluate(() => window.SMYVAudio.micActive())), 'Mikrofon nach dem A
 await p.waitForTimeout(800); ok(await p.isVisible('#ovBox [data-act="c0"]'), 'Backstage-Ereignis erscheint im Recall'); await shot(p, '11b-ereignis');
 let s = await st(p); ok(s.round === 1 && s.status === 'backstage', 'Casting bestanden → Recall freigeschaltet');
 // Neuladen: Stand bleibt
-await p.reload(); await p.waitForSelector('#sTitle.on'); await p.keyboard.press('Enter'); await p.waitForSelector('#sMenu.on');
+await p.reload(); await p.waitForSelector('#sTitle.on'); await p.evaluate(() => { window.SMYVApp.state().prep.how = 'game'; }); await p.keyboard.press('Enter'); await p.waitForSelector('#sMenu.on');
 ok(/fortsetzen/.test(await p.textContent('#menuList')), 'Nach Neuladen: Karriere fortsetzen');
 await p.click('[data-m="cont"]'); await p.waitForSelector('#sBack.on'); await bot(p, 1, 7);
 for (let i = 0; i < 6 && (await st(p)).status === 'backstage'; i++) {
@@ -226,7 +226,7 @@ await m.close();
   await c.route(/stream\.laut\.fm/, r => r.fulfill({ status: 200, body: WAV, contentType: 'audio/wav' }));   // ohne Access-Control-Allow-Origin
   await c.route(/api\.laut\.fm/, r => r.fulfill({ status: 200, body: JSON.stringify({ title: 'Testbeat', artist: { name: 'Test-Interpret' } }), contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' } }));
   const q = await c.newPage(); q.on('pageerror', e => errs.push(e.message));
-  await q.goto(base); await q.waitForSelector('#sTitle.on'); await q.keyboard.press('Enter'); await q.waitForSelector('#sMenu.on');
+  await q.goto(base); await q.waitForSelector('#sTitle.on'); await q.evaluate(() => { window.SMYVApp.state().prep.how = 'game'; }); await q.keyboard.press('Enter'); await q.waitForSelector('#sMenu.on');
   await q.evaluate(() => { window.SMYV.D.ROUNDS.forEach(r => { r.len = 16; }); });
   await q.click('[data-m="new"]'); await q.click('#avaOk'); await q.waitForSelector('#sBack.on');
   await q.evaluate(() => { const A = window.SMYVAudio, orig = A.radioStart; A.radioStart = (s, d, u, plain) => (plain ? orig(s, d, u, true) : Promise.reject(new Error('cors'))); });   // Analyse verweigert wie bei fehlender CORS-Freigabe

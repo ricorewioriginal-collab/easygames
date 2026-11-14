@@ -123,6 +123,7 @@ const KK = {}, KCLS = ['knight', 'mage', 'rogue', 'barbarian', 'rogue_hooded'];
 let kmoves = {}, singer = null, mix = null, sAct = {}, judges = [], kkReady = false;
 const loader = new GLTFLoader();
 const PART = { head: /_(Head|Head_Hooded)$/, body: /_Body$/, arms: /_Arm(Left|Right)$/, legs: /_Leg(Left|Right)$/, hat: /_(Hat|Helmet)$/, cape: /_Cape$/ };
+const SKINT = [0xffffff, 0xf6e2d2, 0xe0b896, 0xb98563, 0x8e6047, 0xfff0e6];
 const SKIN = [0xffe0c8, 0xf1c27d, 0xc68642, 0x8d5524, 0xffd5b8];
 const OUTFIT = [0xff2aa0, 0x3a86ff, 0xffc93c, 0x22c55e, 0x8a5cf6, 0xffffff, 0x222233, 0xff6b3d, 0x2ad4ff, 0xe11d48];
 function rngOf(seed) { let x = (seed >>> 0) || 1; return () => ((x = (x * 1664525 + 1013904223) >>> 0) / 4294967296); }
@@ -139,15 +140,56 @@ function makeChar(sp) {
   take(sp.head, PART.head); take(sp.arms, PART.arms); take(sp.legs, PART.legs);
   if (sp.hat) take(sp.hat, PART.hat); if (sp.cape) take(sp.cape, PART.cape);
   base.traverse(o => { if (!o.isMesh) return; o.castShadow = true; o.frustumCulled = false; o.material = o.material.clone();
-    const n = o.name; if (PART.body.test(n) || PART.cape.test(n)) o.material.color.set(sp.c1).lerp(new THREE.Color(0xffffff), 0.35);
-    else if (PART.legs.test(n)) o.material.color.set(sp.c2).lerp(new THREE.Color(0xffffff), 0.4);
-    else if (PART.arms.test(n)) o.material.color.set(sp.c1).lerp(new THREE.Color(0xffffff), 0.55); });
+    const n = o.name; if (PART.body.test(n) || PART.cape.test(n)) o.material.color.set(sp.c1).lerp(new THREE.Color(0xffffff), 0.12);
+    else if (PART.head.test(n) && sp.skin != null) o.material.color.set(SKINT[sp.skin % SKINT.length]);
+    else if (PART.legs.test(n)) o.material.color.set(sp.c2).lerp(new THREE.Color(0xffffff), 0.2);
+    else if (PART.arms.test(n)) o.material.color.set(sp.c1).lerp(new THREE.Color(0xffffff), 0.35); });
   const g = new THREE.Group(); g.add(base); const bb = new THREE.Box3().setFromObject(base); base.scale.setScalar(1.75 / Math.max(0.5, bb.max.y - bb.min.y));
   const m = new THREE.AnimationMixer(base);
   return { f: g, m, base, play(name, fade) { const c = kmoves[name]; if (!c) return; const a = m.clipAction(c); if (this.cur === a) return; a.reset().play(); if (this.cur && fade !== 0) a.crossFadeFrom(this.cur, fade || 0.3, false); this.cur = a; } };
 }
 function specOf(seed) { const R = rngOf(seed), pick = a => a[Math.floor(R() * a.length)], cls = KCLS.slice(0, 4);
   return { head: pick(KCLS), body: pick(cls), arms: pick(cls), legs: pick(cls), hat: R() < 0.35 ? pick(['knight', 'mage', 'barbarian']) : null, cape: R() < 0.25 ? pick(cls) : null, c1: pick(OUTFIT), c2: pick(OUTFIT) }; }
+// Feste Figuren der Show (Jury, Coach, Moderator) und Ableitung aus dem alten 2D-Look für Gäste und Kandidaten
+const NAMED = {
+  marc: { head: 'knight', body: 'knight', arms: 'knight', legs: 'rogue', c1: 0x222233, c2: 0x222233 },
+  lena: { head: 'rogue', body: 'mage', arms: 'rogue', legs: 'rogue', c1: 0xff2aa0, c2: 0x8a5cf6 },
+  david: { head: 'barbarian', body: 'rogue', arms: 'barbarian', legs: 'knight', c1: 0x3a86ff, c2: 0x222233, skin: 3 },
+  sophie: { head: 'rogue_hooded', body: 'mage', arms: 'mage', legs: 'rogue', c1: 0xffc93c, c2: 0xffffff },
+  rico: { head: 'knight', body: 'barbarian', arms: 'barbarian', legs: 'rogue', c1: 0xff6b3d, c2: 0x222233, cape: 'knight' }
+};
+const FEM = /^(lena|sophie|nina|jule|greta|mira|nova|elif|clara|yuki)$/;
+const BODY_OF = { sakko: 'knight', glitzer: 'mage', lederjacke: 'rogue', hoodie: 'barbarian', tshirt: 'barbarian' };
+function specFor(id, lk) {
+  if (NAMED[id]) return NAMED[id];
+  const R = rngOf([...String(id)].reduce((a, c) => a * 31 + c.charCodeAt(0), 7)), pick = a => a[Math.floor(R() * a.length)], cls = KCLS.slice(0, 4);
+  lk = lk || {}; const body = lk.kkBody || BODY_OF[lk.outfit] || pick(cls);
+  const HAIR = { lang: 'rogue', dutt: 'rogue', locken: 'rogue_hooded', kurz: 'knight', buzz: 'barbarian', undercut: 'mage', stachelig: 'knight' };
+  return { head: lk.kkHead || (FEM.test(id) ? pick(['rogue', 'rogue_hooded']) : /^p/.test(id) && HAIR[lk.hair] ? HAIR[lk.hair] : pick(['knight', 'barbarian', 'mage'])), body, arms: R() < 0.6 ? body : pick(cls), legs: pick(cls),
+    hat: lk.acc === 'hut' ? 'mage' : null, cape: R() < 0.2 ? pick(cls) : null, c1: col2d(lk.outfitColor) ?? OUTFIT[(lk.outfitColor || 0) % OUTFIT.length], c2: pick(OUTFIT), skin: lk.skin || 0 };
+}
+function col2d(i) { const A = window.SMYVAvatar, L = A && A.OPT.outfitColor; if (!L || !Number.isFinite(i)) return null; return parseInt(L[i % L.length].slice(1), 16); }
+function lookOfId(id) { const D = window.SMYV_DATA || {}; const all = [].concat(D.CANDIDATES || [], D.JURY || [], D.HOST || [], D.COACH || []); const c = all.find(x => x.id === id); return c && c.look; }
+let pSpec = null;
+function playerSpec() { return pSpec || Object.assign(specOf(look.seed), look.tint ? { c1: look.tint } : {});
+}
+// Porträt einer Figur als Bild (Jury-Kacheln, Kandidaten, Avatar-Vorschau)
+let pr = null;
+function portrait(sp, w, h, anim) {
+  if (!kkReady) return null; w = w || 240; h = h || 320;
+  if (!pr) { const c = document.createElement('canvas'); pr = { r: new THREE.WebGLRenderer({ canvas: c, antialias: true, preserveDrawingBuffer: true, alpha: false }), s: new THREE.Scene(), cam: new THREE.PerspectiveCamera(24, 0.75, 0.1, 50) };
+    pr.r.toneMapping = THREE.ACESFilmicToneMapping; pr.r.outputColorSpace = THREE.SRGBColorSpace;
+    pr.s.environment = new THREE.PMREMGenerator(pr.r).fromScene(new RoomEnvironment(), 0.04).texture; pr.s.environmentIntensity = 0.5;
+    pr.s.background = cvTex(256, 340, (g, W, H) => { const gr = g.createRadialGradient(W / 2, H * 0.38, 10, W / 2, H * 0.5, H * 0.8); gr.addColorStop(0, '#5a1650'); gr.addColorStop(0.55, '#1c0a2c'); gr.addColorStop(1, '#07040d'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+      for (let i = 0; i < 26; i++) { g.fillStyle = `rgba(255,${150 + Math.random() * 100},${90 + Math.random() * 120},${0.06 + Math.random() * 0.12})`; g.beginPath(); g.arc(Math.random() * W, Math.random() * H, 4 + Math.random() * 18, 0, 7); g.fill(); } });
+    const key = new THREE.DirectionalLight(0xfff1e6, 2.6); key.position.set(1.5, 3, 4); pr.s.add(key);
+    const rimA = new THREE.DirectionalLight(0xff2aa0, 3.2); rimA.position.set(-3, 2, -2); pr.s.add(rimA);
+    const rimB = new THREE.DirectionalLight(0xffc93c, 2.2); rimB.position.set(3, 1.5, -2); pr.s.add(rimB); pr.s.add(new THREE.AmbientLight(0x6a5080, 0.6)); }
+  pr.r.setSize(w, h, false); pr.cam.aspect = w / h; pr.cam.updateProjectionMatrix();
+  const c = makeChar(sp); c.play(anim || 'Idle', 0); c.m.update(0.4); pr.s.add(c.f); c.f.rotation.y = -0.32; c.f.updateMatrixWorld(true);
+  pr.cam.position.set(0.3, 1.3, 4.6); pr.cam.lookAt(0, 1.05, 0);
+  pr.r.render(pr.s, pr.cam); const url = pr.r.domElement.toDataURL('image/jpeg', 0.88); pr.s.remove(c.f); return url;
+}
 const look = { tint: null, seed: 7 };
 function addMic() {
   const mic = new THREE.Group(); const mm = new THREE.MeshStandardMaterial({ color: 0x222228, metalness: 1, roughness: 0.25 });
@@ -158,10 +200,10 @@ function addMic() {
 }
 function buildStageFigures() {
   if (singer) { s.remove(singer.f); }
-  singer = makeChar(Object.assign(specOf(look.seed), look.tint ? { c1: look.tint } : {})); singer.f.position.set(0, FLOOR, 0); s.add(singer.f); singer.play('Idle', 0); mix = singer.m;
+  singer = makeChar(playerSpec()); singer.f.position.set(0, FLOOR, 0); s.add(singer.f); singer.play('Idle', 0); mix = singer.m;
   if (!judges.length) {   // Jury sitzt am Pult und schaut zur Bühne
     const chairM = new THREE.MeshPhysicalMaterial({ color: 0x1a1a24, roughness: 0.3, clearcoat: 1 });
-    judges = [-2.3, 0, 2.3].map((x, i) => { const j = makeChar(specOf(900 + i * 37)); j.f.position.set(x, 0, 7.75); j.f.rotation.y = Math.PI; s.add(j.f); j.play('Sit_Chair_Idle', 0); j.m.setTime(i * 0.6);
+    judges = [-2.3, 0, 2.3].map((x, i) => { const j = makeChar(NAMED[['marc', 'lena', 'david'][i]]); j.f.position.set(x, 0, 7.75); j.f.rotation.y = Math.PI; s.add(j.f); j.play('Sit_Chair_Idle', 0); j.m.setTime(i * 0.6);
       const ch = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.12, 0.7), chairM); ch.position.set(x, 0.45, 7.8); s.add(ch); const bk = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.9, 0.1), chairM); bk.position.set(x, 0.95, 8.15); s.add(bk);
       return { j: j.f, jm: j.m, c: j }; });
   }
@@ -223,6 +265,9 @@ const API = window.SMYV3D = {
   jury(i, on) { if (buzz[i]) buzz[i].material.color.set(on ? 0xff1a30 : 0x551018); },
   cheer(n) { boom(n || 160, 0, 8.5, 0, 5, [0xffd23f, 0xff4d8d, 0x3a86ff, 0x22c55e, 0xffffff]); },
   ready: true,
+  portrait(id, lk, w, h) { return portrait(typeof id === 'object' ? id : specFor(id, lk), w, h); },
+  spec: specFor, isReady() { return kkReady; },
+  player(lk) { pSpec = lk ? Object.assign({}, lk.kkSpec || specFor('p' + (lk.seed || ''), lk)) : null; if (!kkReady) return; buildStageFigures(); if (player) { const pos = player.position.clone(), ry = player.rotation.y; V.remove(player); const p = makeChar(playerSpec()); p.f.position.copy(pos); p.f.rotation.y = ry; V.add(p.f); player = p.f; pMix = p.m; p.play('Idle', 0); pAct = p; } },
   dbg() { return { cam: cam.position.toArray().map(v => +v.toFixed(2)), walk: walkSt.on, x: walkSt.x, z: walkSt.z, player: !!player, moves: Object.keys(kmoves).length }; }
 };
 window.dispatchEvent(new Event('smyv3d'));
@@ -312,16 +357,16 @@ const moves = kmoves;
 const walkSt = { on: false, spots: [], onUse: null, x: 0, z: 2.5, rot: Math.PI, target: null, keys: {}, near: null, labels: null };
 const SPOTS = { stage: [0, -5.2, '🎤 Zur Bühne'], train: [-5.4, -3, '🏋️ Proberaum'], comm: [4.5, -0.6, '📱 Community-Ecke'], cands: [-2.6, 1.6, '👥 Kandidaten'], prof: [6.6, 4.1, '👤 Schminktisch'],
   coach: [-7.2, -0.8, '🎓 Vocal-Coach'], host: [2.4, -3.6, '🎙️ Rico'], menu: [-8.1, 2, '🏠 Menü'] };
-function figure(seed, anim, x, z, ry, par) { const c = makeChar(specOf(seed)); c.f.position.set(x, 0, z); c.f.rotation.y = ry || 0; (par || V).add(c.f); c.play(anim, 0); c.m.setTime(Math.random() * 2); return c; }
+function figure(seed, anim, x, z, ry, par) { const c = makeChar(typeof seed === 'string' ? specFor(seed, lookOfId(seed)) : specOf(seed)); c.f.position.set(x, 0, z); c.f.rotation.y = ry || 0; (par || V).add(c.f); c.play(anim, 0); c.m.setTime(Math.random() * 2); return c; }
 function buildFigures() {
   if (!kkReady || player) return;
-  const p = makeChar(Object.assign(specOf(look.seed), look.tint ? { c1: look.tint } : {})); p.f.position.set(0, 0, 2.5); V.add(p.f); player = p.f; pMix = p.m; p.play('Idle', 0); pAct = p;
-  npcs.push(figure(101, 'Idle', -2.9, 1.1, 0.6), figure(202, 'Cheer', -2.0, 1.9, -0.9), figure(303, 'Interact', -3.4, 2.2, 1.2));
-  npcs.push(figure(404, 'Sit_Chair_Idle', 4.0, -1.85, 0), figure(505, 'Sit_Chair_Idle', 5.2, -1.85, 0));   // auf dem Sofa
-  npcs.push(figure(606, 'Spellcast_Raise', -5.4, -3.6, 0.2));   // Proberaum
-  npcs.push(figure(707, 'Interact', -7.2, -0.3, 1.4));   // Coach
-  npcs.push(figure(808, 'Idle', 2.4, -4.2, 0));          // Rico
-  zitFig = [-1.8, 0, 1.8].map((x, i) => figure(1001 + i * 11, i === 1 ? 'Sit_Chair_Idle' : 'Sit_Chair_Idle', x, -0.45, 0, Z));
+  const p = makeChar(playerSpec()); p.f.position.set(0, 0, 2.5); V.add(p.f); player = p.f; pMix = p.m; p.play('Idle', 0); pAct = p;
+  npcs.push(figure('mira', 'Idle', -2.9, 1.1, 0.6), figure('jaxx', 'Cheer', -2.0, 1.9, -0.9), figure('lio', 'Interact', -3.4, 2.2, 1.2));
+  npcs.push(figure('nova', 'Sit_Chair_Idle', 4.0, -1.85, 0), figure('tamo', 'Sit_Chair_Idle', 5.2, -1.85, 0));   // auf dem Sofa
+  npcs.push(figure('elif', 'Spellcast_Raise', -5.4, -3.6, 0.2));   // Proberaum
+  npcs.push(figure('sophie', 'Interact', -7.2, -0.3, 1.4));   // Coach
+  npcs.push(figure('rico', 'Idle', 2.4, -4.2, 0));          // Rico
+  zitFig = [-1.8, 0, 1.8].map((x, i) => figure(['clara', 'benno', 'ruben'][i], i === 1 ? 'Sit_Chair_Idle' : 'Sit_Chair_Idle', x, -0.45, 0, Z));
 }
 function walkLabels() {
   const box = document.getElementById('walkSpots'); if (!box) return null;
@@ -363,11 +408,13 @@ Object.assign(API, {
 });
 
 // ---------- Schleife ----------
-const clock = new THREE.Clock(); let tAcc = 0, lastE = 0.4, raf = 0;
+const clock = new THREE.Clock(); let slowT = 0, quality = 2, tAcc = 0, lastE = 0.4, raf = 0;
 function frame() {
   raf = requestAnimationFrame(frame);
   if (document.hidden) return;
-  const dt = Math.min(0.05, clock.getDelta()); tAcc += dt; const t = reduced ? 1 : tAcc;
+  const rawDt = clock.getDelta(), dt = Math.min(0.05, rawDt); tAcc += dt;
+  slowT = rawDt > 0.045 ? slowT + rawDt : Math.max(0, slowT - rawDt * 0.5);   // langsames Gerät: Qualität automatisch senken
+  if (slowT > 2.5 && quality > 0) { quality--; slowT = 0; if (quality === 1) { comp = null; r.shadowMap.enabled = false; } else { r.setPixelRatio(0.7); s.fog.density = 0.03; } } const t = reduced ? 1 : tAcc;
   const e = st ? (st.energy != null ? st.energy : 0.5) : 0.45; lastE += (e - lastE) * 0.05;
   const beat = st && st.part && st.part.bpm ? 1 - ((st.now * st.part.bpm / 60) % 1) : 0.5 + 0.5 * Math.sin(t * 2);
   // Kamera

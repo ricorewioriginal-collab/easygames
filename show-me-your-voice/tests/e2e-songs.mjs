@@ -32,7 +32,7 @@ await c.route(/\/api\/v1\/search|instances\.json|piped-instances/, r => r.fulfil
 await c.route(/lrclib\.net/, r => r.fulfill({ body: JSON.stringify({ syncedLyrics: LRC }), contentType: 'application/json', headers: cors }));
 await c.route(/laut\.fm/, r => r.fulfill({ status: 503, body: '' }));
 const p = await c.newPage(); p.on('pageerror', e => errs.push(e.message)); p.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|net::/i.test(m.text())) errs.push(m.text()); });
-await p.goto(base); await p.waitForSelector('#sTitle.on'); await p.keyboard.press('Enter'); await p.waitForSelector('#sMenu.on');
+await p.goto(base); await p.waitForSelector('#sTitle.on'); await p.keyboard.press('Enter'); await p.waitForSelector('#sMenu.on'); await p.evaluate(() => { window.SMYVApp.state().prep.how = 'game'; });   // Tests prüfen den Rhythmus-Modus
 await p.evaluate(() => { window.SMYV.D.ROUNDS.forEach(r => { r.len = 14; }); });
 await p.click('[data-m="new"]'); await p.click('#avaOk'); await p.waitForSelector('#sBack.on'); await p.click('[data-b="stage"]'); await p.waitForSelector('#sPrep.on');
 ok(!(await p.locator('#prepBox [data-v^="own:"]').count()), 'keine eigenen Web-Audio-Songs mehr');

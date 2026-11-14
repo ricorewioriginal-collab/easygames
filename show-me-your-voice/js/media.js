@@ -69,6 +69,24 @@
       const L = Math.log(1e-6 + eL), H = Math.log(1e-6 + eH); s.push({ t: i / sr, v: Math.max(0, L - prevL) * 1.6 + Math.max(0, H - prevH) }); prevL = L; prevH = H; }
     return tempo(s);
   }
+  // Tonart aus der Hörprobe: Chroma über Goertzel-Filter (C2–H5), dann Krumhansl-Profil (SMYV.keyFromChroma)
+  async function keyOf(url) {
+    if (!url) return null; const AC = root.OfflineAudioContext || root.webkitOfflineAudioContext; if (!AC) return null;
+    const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 9000);
+    let buf; try { const r = await fetch(url, { signal: ac.signal, referrerPolicy: 'no-referrer' }); if (!r.ok) return null; buf = await r.arrayBuffer(); } catch (e) { return null; } finally { clearTimeout(tm); }
+    let au; try { const oc = new AC(1, 11025, 11025); au = await new Promise((res, rej) => { const p = oc.decodeAudioData(buf, res, rej); if (p && p.then) p.then(res, rej); }); } catch (e) { return null; }
+    return keyFromSamples(au.getChannelData(0), au.sampleRate);
+  }
+  function keyFromSamples(d, sr) {
+    const N = 2048, ch = new Array(12).fill(0), co = [];
+    for (let m = 36; m < 84; m++) { const f = 440 * Math.pow(2, (m - 69) / 12); co.push({ pc: m % 12, c: 2 * Math.cos(2 * Math.PI * f / sr) }); }
+    for (let i = 0; i + N <= d.length; i += N * 2) {
+      const fr = new Array(12).fill(0);
+      for (const q of co) { let s1 = 0, s2 = 0; for (let j = 0; j < N; j++) { const w = 0.5 - 0.5 * Math.cos(2 * Math.PI * j / N), s0 = d[i + j] * w + q.c * s1 - s2; s2 = s1; s1 = s0; } fr[q.pc] += Math.sqrt(Math.max(0, s1 * s1 + s2 * s2 - q.c * s1 * s2)); }
+      const mx = Math.max(...fr); if (mx > 0) fr.forEach((v, k) => { ch[k] += v / mx; });
+    }
+    return root.SMYV && root.SMYV.keyFromChroma ? root.SMYV.keyFromChroma(ch) : null;
+  }
   function tempo(samples) {
     const lo = 72, hi = 178; if (samples.length < 60) return null; const t0 = samples[0].t, t1 = samples[samples.length - 1].t, hz = 100, n = Math.floor((t1 - t0) * hz); if (n < 300) return null;
     const g = new Float32Array(n); for (const s of samples) { const i = Math.round((s.t - t0) * hz); if (i >= 0 && i < n) g[i] = Math.max(g[i], s.v); }
@@ -102,5 +120,5 @@
     P.info = () => { try { return P.yt.getVideoData() || {}; } catch (e) { return {}; } };
     return P;
   }
-  root.SMYVMedia = { songs, videos, videoFor, lyrics, lrcTimes, phaseFrom, tempoOf, tempo, idFromUrl, player, loadApi };
+  root.SMYVMedia = { keyOf, keyFromSamples, songs, videos, videoFor, lyrics, lrcTimes, phaseFrom, tempoOf, tempo, idFromUrl, player, loadApi };
 })(typeof window !== 'undefined' ? window : globalThis);

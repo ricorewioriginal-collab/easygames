@@ -29,7 +29,17 @@
   const one = (list, v) => list.includes(v) ? v : list[0];
 
   // expr: neutral | happy | shock | sad
+  // KayKit-Porträt (3D-Look): festes Bild der Figur oder live gerenderte Vorschau, sonst die alte Zeichnung
+  const kkCache = {};
+  function kkSrc(look) {
+    if (look && look.kk) return look.kk;
+    const T = root.SMYV3D; if (!look || !T || !T.isReady || !T.isReady()) return '';
+    const key = JSON.stringify(look); if (kkCache[key]) return kkCache[key];
+    const sp = Object.assign({}, look.kkSpec || T.spec(look.kkId || 'p' + (look.seed || ''), look));
+    return (kkCache[key] = T.portrait(sp, 0, 240, 320) || '');
+  }
   function svg(look, expr, extraClass) {
+    const kk = kkSrc(look); if (kk) return `<img class="ava kk ${extraClass || ''}" src="${kk}" alt="">`;
     const L = Object.assign({}, DEF, look || {});
     const skin = pickC(OPT.skin, L.skin, 1), sk2 = shade(skin, 0.86);
     const hc = pickC(OPT.hairColor, L.hairColor, 0), hc2 = shade(hc, 0.75);

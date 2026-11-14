@@ -817,6 +817,10 @@
     { id: 'neon', type: 'color', name: '💖 Neon-Outfit', idx: 9, need: 12 }
   ];
 
+  // Einheitlicher 3D-Look: KayKit-Porträts (img/kk-<id>.jpg, gerendert aus js/scene3d.js)
+  JURY.forEach(j => { j.img = 'img/kk-' + j.id + '.jpg'; });
+  COACH.img = 'img/kk-sophie.jpg';
+  [HOST, COACH].concat(CANDIDATES).forEach(c => { c.look = Object.assign({}, c.look, { kk: 'img/kk-' + c.id + '.jpg' }); });
   const DATA = { MAIN_JURY, STATIONS, INTERVIEW, HOST_Q, EVENTS, CRIT, JURY, COACH, HOST, CANDIDATES, STYLES, SONGS, MOTTOS, APPROACH, ACTION, ROUNDS, COMMUNITY, TRAINING, ACHIEVEMENTS, ARCHIVE, KARAOKE, REWARDS };
   if (typeof module !== 'undefined' && module.exports) module.exports = DATA; else root.SMYV_DATA = DATA;
 })(typeof window !== 'undefined' ? window : globalThis);

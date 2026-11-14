@@ -231,7 +231,8 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="js/stage.js"></script>
 <script src="js/app.js"></script>
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
-<script type="module" src="js/scene3d.js"></script>
+<script type="module">let off = false; try { off = localStorage.getItem('smyv-3d') === 'off'; } catch (e) { /* egal */ } const q = new URLSearchParams(location.search);
+  if (!off && !q.has('no3d') && !(navigator.webdriver && !q.has('3d'))) import('./js/scene3d.js').catch(() => { /* ohne WebGL bleibt das Hintergrundbild */ });</script>
 <script src="../cloud/anmacha-cloud.js" data-game="show-me-your-voice" data-prefix="smyv-" defer></script>
 </body>
 </html>

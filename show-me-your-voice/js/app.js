@@ -19,7 +19,7 @@
 
   let save = load(), cur = 'sLoad', stage = null, flow = null, timers = [];
   const backTo = {};
-  const prep = { music: 'radio:ricorewi', style: 'pop', approach: 'gefuehl', action: 'publikum', how: 'game' };
+  const prep = { music: 'radio:ricorewi', style: 'pop', approach: 'gefuehl', action: 'publikum', how: 'sing' };   // Story: echt singen ist Standard, Rhythmus bleibt wählbar
   const sysReduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ---------- Speicher ----------
@@ -60,6 +60,7 @@
     const el = document.getElementById(id); cur = id; el.classList.add('on'); el.scrollTop = 0;
     if (BG[id]) setBg(BG[id], !['sTitle', 'sOut', 'sWin'].includes(id));
     if (window.SMYV3D && id !== 'sBack' && SMYV3D.walkEnd) SMYV3D.walkEnd();
+    if (window.SMYV3D && SMYV3D.player) { const lk = save.profile && save.profile.look, k = JSON.stringify(lk || null); if (k !== go.lk && (!SMYV3D.isReady || SMYV3D.isReady())) { go.lk = k; SMYV3D.player(lk); } }
     if (window.SMYV3D) SMYV3D.mode(id === 'sTitle' || id === 'sLoad' ? 'title' : id === 'sMenu' ? 'menu' : BG[id] || 'stage');
     if (RENDER[id]) RENDER[id](arg);
     focusFirst(el);
@@ -697,6 +698,8 @@
     if (out.pitch) st.push(`🎤 Gesang ${pct(out.pitch.q)}`);
     if (out.show) st.push(`👏 Show-Momente ${out.show.hit}/${out.show.total}`);
     const sg = out.sing;
+    if (sg && sg.treff != null) st.push(`🎼 Noten getroffen ${Math.round(sg.treff)} % (${sg.uHit} von ${sg.uNotes})`);
+    if (sg && sg.inkey != null) st.push(`🎼 In der Tonart (${sg.key}) ${Math.round(sg.inkey)} %`);
     if (sg) st.push(`🎯 Intonation ${Math.round(sg.inton)}`, `〰️ Stabilität ${Math.round(sg.stab)}`, `↕️ Umfang ${nf(sg.semis)} Halbtöne${sg.semis ? ` (${noteName(sg.low)}–${noteName(sg.high)})` : ''}`,
       `🎚️ Dynamik ${Math.round(sg.dyn)}`, `⏱️ ${nf(sg.voiced)} s gesungen`);
     const ext = sing.recBlob && /mp4/.test(sing.recBlob.type) ? 'm4a' : sing.recBlob && /ogg/.test(sing.recBlob.type) ? 'ogg' : 'webm';
@@ -767,7 +770,7 @@
       if (box.querySelector('.vbar')) {
         busy = true; sfx('drumroll', 1.4, '🥁 Die Votes werden ausgezählt');
         later(() => box.querySelectorAll('.vbar i').forEach(b => { b.style.width = b.dataset.w + '%'; }), 120);
-        later(() => { const z = $('#zit'); if (z) { z.hidden = false; sfx('cue', 0, '🪑 Zitterbank'); } busy = false; }, reduced() ? 300 : 2200);
+        later(() => { const z = $('#zit'); if (z) { z.hidden = false; if (window.SMYV3D && SMYV3D.zitter) SMYV3D.zitter(); sfx('cue', 0, '🪑 Zitterbank'); } busy = false; }, reduced() ? 300 : 2200);
       }
       if (last && !ctx.free) celebrate(ctx.res);
       if (last && ctx.free) sfx(ctx.fc.pass ? 'yes' : 'no');
@@ -1012,7 +1015,7 @@
   const stars = n => '★'.repeat(n) + '☆'.repeat(3 - n);
   const genre = id => D.KARAOKE.find(g => g.id === id);
   const ytId = s => { s = String(s || '').trim(); const m = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/) || s.match(/^([\w-]{11})$/); return m ? m[1] : null; };
-  const sing = { g: 'pop', song: 0, own: '', q: '', title: '', len: 60, run: null, recUrl: null, recBlob: null, ctx: null, party: null, daily: false };   // ctx: echtes Vorsingen in Karriere/Freiem Casting
+  const sing = { g: 'pop', song: 0, own: '', q: '', title: '', len: 60, run: null, recUrl: null, recBlob: null, ctx: null, party: null, daily: false, ultra: null };   // ctx: echtes Vorsingen in Karriere/Freiem Casting
   function openSingRound(mode) {
     const s = save.season, career = mode === 'career';
     if (career && (!s || s.status !== 'backstage')) { go('sBack'); return; }
@@ -1116,6 +1119,8 @@
         <div class="row2"><button class="btn sm violet" type="button" id="singFind">🔍 Karaoke-Version auf YouTube suchen</button>${navigator.clipboard && navigator.clipboard.readText ? '<button class="btn sm" type="button" id="singPaste">📋 Link einfügen</button>' : ''}</div>
         <p class="hint" style="text-align:left">Video suchen, Link kopieren und hier einfügen. Am besten klappen Karaoke-Kanäle wie Musisi, Stingray oder Zoom Karaoke. Nicht jedes Video darf eingebettet werden – dann sagt dir das Spiel Bescheid.</p>` : ''}</div>` : ''}
       ${sing.ctx && sing.ctx.mode === 'online' ? `<p class="hint" style="text-align:left">⏱️ Online singen alle ${ONLINE_SING} Sekunden. Such dir schnell deinen Song aus – die Runde läuft schon.</p>` : `<h3>3 · Länge</h3><div class="seg">${[30, 60, 90, 0].map(n => `<button class="btn" type="button" data-sl="${n}" aria-pressed="${sing.len === n}">${n ? n + ' s' : '🎵 Ganzer Song'}</button>`).join('')}</div>`}
+      <label class="btn sm" for="singUltra" style="display:inline-block">🎼 UltraStar-Notendatei laden${sing.ultra ? ' ✅ ' + esc(sing.ultra.title || 'geladen') : ''}</label><input type="file" id="singUltra" accept=".txt,text/plain" hidden>
+      <p class="hint" style="text-align:left">Mit Notendatei (UltraStar-Format, .txt) wertet die Jury jede Note des Songs einzeln. Ohne Datei prüft sie, ob deine Töne zur Tonart des Songs passen.</p>
       <button class="btn sm" type="button" id="singHp" aria-pressed="${!!save.settings.hp}">🎧 Ich singe mit Kopfhörern ${save.settings.hp ? '✅' : ''}</button>
       <p class="hint" style="text-align:left">🎧 Am besten mit Kopfhörern singen, sonst hört das Mikrofon die Musik mit. Mit Kopfhörern (Knopf an) nimmt das Spiel deine Stimme ohne Echo-Filter auf – das klingt deutlich natürlicher. Die Zeit läuft ab deinem ersten Ton, „Ganzer Song“ endet mit dem Video.${g ? ' Karaoke-Videos kommen von YouTube; alle Rechte an der Musik liegen bei den Urhebern.' : ''}</p>
       <details class="panel rew"><summary><b>🎁 Mikro & Bühne</b> · deine Sterne: <span class="stars">${st}</span> von ${D.KARAOKE.length * 3} ★</summary>
@@ -1125,6 +1130,11 @@
       <button class="btn gold xl" type="button" id="singGo" data-focus style="width:100%;margin-top:10px">🎤 Vorsingen starten</button>`;
     covLoad($('#singList')); if (sing.q) songRes();
   };
+  $('#singBox').addEventListener('change', e => {   // UltraStar-Notendatei
+    if (e.target.id !== 'singUltra' || !e.target.files || !e.target.files[0]) return;
+    const f = e.target.files[0]; if (f.size > 400000) { toast('Die Datei ist zu groß für eine Notendatei.', 3000); return; }
+    f.text().then(t => { const u = S.ultraParse(t); if (!u) { toast('Das ist keine gültige UltraStar-Datei (#BPM und Noten fehlen).', 3500); return; } sing.ultra = u; toast('🎼 ' + (u.title || 'Notendatei') + ': ' + u.notes.length + ' Noten geladen', 2500); RENDER.sSing(); });
+  });
   $('#singBox').addEventListener('input', e => {
     if (e.target.id === 'singTitle') sing.title = e.target.value;
     else if (e.target.id === 'singLink') { sing.own = e.target.value; sing.ch = ''; }
@@ -1217,6 +1227,10 @@
       mic: (D.REWARDS.find(r => r.id === save.rew.mic) || D.REWARDS[0]).color };
     const ds = S.dailySong(S.dailyDay());
     run.daily = !cx && !sing.party && sing.daily && pk.vid === ds.vid && run.len === 60 ? S.dailyDay() : null;
+    run.ultra = sing.ultra || null; run.t0 = performance.now();
+    if (pk.vid && !run.ultra && MD && MD.keyOf) {   // Tonart des Songs aus der iTunes-Hörprobe, damit die Jury echte Töne prüft
+      MD.songs(pk.title.replace(/\s*[–-]\s*/, ' '), 1).then(r => r && r[0] && r[0].preview ? MD.keyOf(r[0].preview) : null).then(k => { if (!k || sing.run !== run) return; run.key = k; const el = $('#singKey'); if (el) el.textContent = '🎼 Tonart: ' + S.keyName(k); }).catch(() => {});
+    }
     if (career) {
       run.playId = s && s.status === 'backstage' ? S.startRound(s) : null;
       if (run.playId == null) { sing.run = null; A.micStop(); go('sBack'); return; }
@@ -1239,7 +1253,7 @@
       </div>
       ${pk.vid ? `<p class="hint ssCredit">${D.KARAOKE.some(x => x.songs.some(y => y[1] === pk.vid)) ? cov(pk.title, pk.vid, 'sm') : ''}<span>${esc(pk.credit)} · <a href="https://www.youtube.com/watch?v=${pk.vid}" target="_blank" rel="noopener">YouTube ↗</a></span></p><p class="banner lose" id="singErr" hidden>Dieses Video darf hier nicht abgespielt werden. Brich ab und wähle einen anderen Song – oder sing einfach a cappella weiter.</p>` : `<p class="hint">${esc(pk.credit)}</p>`}
       <div class="chairs" aria-label="Blind Audition: Die Jury dreht sich um, wenn du überzeugst">${run.panel.map(jur).map(j => `<div class="chair" data-c="${j.id}"><span class="back">🪑</span>${jimg(j, 'js')}<small>${esc(j.name)}</small></div>`).join('')}</div>
-      <div class="panel singLive"><div class="singTop"><b id="singNote">–</b><span id="singCents"></span><span id="singTime">Sing los – die Zeit startet mit deinem ersten Ton</span></div>
+      <div class="panel singLive"><div class="singTop"><b id="singNote">–</b><span id="singCents"></span><span id="singKey" class="muted">${run.ultra ? '🎼 Notendatei: ' + esc(run.ultra.title || 'UltraStar') : ''}</span><span id="singTime">Sing los – die Zeit startet mit deinem ersten Ton</span></div>
         <div class="meter"><i id="singLv"></i></div></div>
       <div class="row2"><button class="btn gold" id="singStop" type="button" data-focus>⏹ Fertig – zur Jury</button>${run.playId != null ? '' : '<button class="btn" id="singX" type="button">✖ Abbrechen</button>'}</div>`;
     focusFirst($('#singBox'));
@@ -1253,7 +1267,7 @@
       const inf = d.event === 'infoDelivery' && d.info;   // Länge und Position des Videos für „Ganzer Song“
       if (!inf) return;
       if (inf.duration > 0) run.dur = inf.duration;
-      if (typeof inf.currentTime === 'number') run.vt = inf.currentTime;
+      if (typeof inf.currentTime === 'number') { run.vt = inf.currentTime; run.vtAt = performance.now(); }
       if (run.started && run.dur && run.vt != null) {
         const el = run.frames.length * 0.05;
         run.len = Math.min(FULL_MAX, el + Math.max(0, run.dur - run.vt) + 1.5);
@@ -1286,6 +1300,15 @@
         if (((n % 12) + 12) % 12 === 0) { c2.fillStyle = 'rgba(255,255,255,.6)'; c2.fillText(noteName(n), 4, y(n) + 4 * dpr); }
       }
       const nx = w * 0.82, step = nx / 160, x0 = i => nx - (vw.length - i) * step;
+      const vtNow = run.vt != null && run.vtAt ? run.vt + (performance.now() - run.vtAt) / 1000 : (!pk.vid ? (performance.now() - run.t0) / 1000 : null);
+      if (run.ultra && vtNow != null) {   // Zielnoten aus der Notendatei (Oktave passend zu deiner Stimme)
+        c2.font = (10 * dpr) + 'px sans-serif';
+        for (const n of run.ultra.notes) { const xa = nx + (n.t - vtNow) / 0.05 * step, xb = nx + (n.t + n.d - vtNow) / 0.05 * step; if (xb < 0) continue; if (xa > w) break;
+          const pp = n.p + 12 * Math.round((mid - n.p) / 12), yy = y(pp);
+          c2.fillStyle = n.gold ? 'rgba(255,201,60,.35)' : 'rgba(255,255,255,.22)'; c2.strokeStyle = n.gold ? '#ffc93c' : 'rgba(255,255,255,.7)'; c2.lineWidth = dpr;
+          c2.beginPath(); if (c2.roundRect) c2.roundRect(xa, yy - rh * 0.42, Math.max(4, xb - xa - 2), rh * 0.84, rh * 0.42); else c2.rect(xa, yy - rh * 0.42, Math.max(4, xb - xa - 2), rh * 0.84); c2.fill(); c2.stroke();
+          if (n.txt && xb - xa > 18) { c2.fillStyle = '#fff'; c2.fillText(n.txt.trim(), xa + 3, yy + rh * 0.95); } }
+      }
       c2.fillStyle = 'rgba(255,255,255,.18)'; c2.fillRect(nx, 0, Math.max(1, dpr), h);   // „Jetzt“-Linie
       for (let i = 0; i < vw.length;) {   // Balken: gleiche Halbton-Stufe am Stück
         const r = vw[i].r; if (r == null) { i++; continue; }
@@ -1319,7 +1342,7 @@
     const online = !!(cx && cx.mode === 'online'), jmods = career && s ? s.mods : null, jsymp = cx && cx.talk ? S.mergeSymp(cx.talk.symp, jmods && jmods.symp) : null;
     run.jury = crit => S.judge(crit, online ? cx.style : pk.style, run.jseed, run.jround, run.jwho, online ? null : jsymp, run.panel);
     function chairs() {   // jede Sekunde: Würde jemand aus der Jury jetzt Ja sagen? Dann dreht er/sie sich um – und bei Nein wieder weg.
-      const part = S.singScore(run.frames, run.party || !save.profile ? null : save.profile.attrs, 0.05);
+      const part = S.singScore(run.frames, run.party || !save.profile ? null : save.profile.attrs, 0.05, { key: run.key, ultra: run.ultra });
       if (part.sing.voiced < 8) return;
       if (cx && cx.sel) S.singCareer(part, career && s ? s.lastPerf : null, jmods, cx.sel.action);   // wie die Wertung am Ende
       run.jury(part.crit).forEach(v => {
@@ -1347,7 +1370,8 @@
         for (; run.acc >= 0.05; run.acc -= 0.05) {
           let lv = { r: null, ok: false };
           if (run.started) {
-            run.frames.push({ m: m == null ? null : Math.round(m * 100) / 100, l: Math.round(l * 1e4) / 1e4 });
+            const vt = run.vt != null && run.vtAt ? run.vt + (performance.now() - run.vtAt) / 1000 : pk.vid ? null : (performance.now() - run.t0) / 1000;   // Songzeit für die Notendatei
+            run.frames.push(Object.assign({ m: m == null ? null : Math.round(m * 100) / 100, l: Math.round(l * 1e4) / 1e4 }, vt != null ? { vt: Math.round(vt * 100) / 100 } : {}));
             lv = run.live.push(m); run.pts = lv.total; if (lv.ev) showPop(lv.ev);
             const ph = run.ph;
             if (m != null) { if (ph.sil >= 12) { ph.n = 0; ph.ok = 0; } ph.sil = 0; ph.n++; if (lv.ok) ph.ok++; }
@@ -1385,7 +1409,7 @@
       let url = null, blob = null;
       try { if (chunks.length) { blob = new Blob(chunks, { type: chunks[0].type || 'audio/webm' }); url = URL.createObjectURL(blob); } } catch (e) { url = null; blob = null; }
       sing.recUrl = url; sing.recBlob = blob;
-      const p = save.profile, g = genre(sing.g), res = S.singScore(run.frames, run.party || !p ? null : p.attrs, 0.05);
+      const p = save.profile, g = genre(sing.g), res = S.singScore(run.frames, run.party || !p ? null : p.attrs, 0.05, { key: run.key, ultra: run.ultra });
       const out = { sing: res.sing, rec: url, pts: fin.total, combo: fin.best, title: S.singTitle(res.perf), turned: Object.keys(run.turned), song: run.pk.title };
       if (run.party) {   // Karaoke-Abend: Punkte notieren, Jury-Urteil zeigen, dann zurück zur Rangliste
         const oc = Object.assign(res, { style: run.pk.style, symp: null }), fc = S.freeCasting(null, oc, run.seed), nm = party.players[run.party.i];

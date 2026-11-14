@@ -438,3 +438,7 @@ body.walking #backBox .coach, body.walking #backBox .host { display: none; }
 @media (max-width: 720px) { body.walking #backBox { left: 8px; right: 8px; width: auto; top: auto; bottom: calc(8px + env(safe-area-inset-bottom)); max-height: 42vh; } .walkHud { display: none; } .walkJoy { bottom: calc(44vh + 16px); } }
 .walkJoy[hidden], .walkHud[hidden] { display: none; }
 body.walking #backBox { z-index: 3; }
+/* KayKit-Porträts statt Zeichnungen */
+img.ava.kk { aspect-ratio: 3/4; object-fit: cover; object-position: 50% 20%; border-radius: 14px; box-shadow: 0 0 0 2px rgba(255,42,160,.35), 0 8px 22px rgba(0,0,0,.45); background: #1c0a2c; }
+.host img.ava.kk { aspect-ratio: 1; border-radius: 50%; object-position: 50% 12%; }
+img.jimg { object-fit: cover; object-position: 50% 15%; }
