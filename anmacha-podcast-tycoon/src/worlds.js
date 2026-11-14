@@ -236,7 +236,7 @@
     s.el.querySelector('#woB').onclick = () => AMC.UI.close(s);
     s.el.querySelector('#woL').addEventListener('click', e => {
       const b = e.target.closest('[data-w]'); if (!b || b.getAttribute('aria-disabled')) return; const i = +b.dataset.w, a = pl[2][i];
-      used[key(i)] = 1; if (AMC.Career) AMC.Career.mark('tour'); AMC.UI.close(s); ricoQuest(id);
+      used[key(i)] = 1; if (AMC.Career) AMC.Career.mark('tour'); AMC.UI.close(s); ricoQuest(id); if (AMC.Guests) AMC.Guests.meet(id);
       if (a[2] === 'stage') return stage();
       if (a[2] === 'mixer') return mini('mixer', { color: '#3dd6ff', label: '📶 Kurzwelle' }, q => { const f = Save.earn(10 + Math.round(q * 40)); funken('tech', q >= 0.6 ? 3 : 1); AMC.UI.toast((q >= 0.75 ? '📶 Glasklarer Empfang aus Neuseeland!' : q >= 0.45 ? '📶 Rauschen, aber man versteht was.' : '📶 Nur Pfeifen …') + ' +' + f + ' 🎟️', 4000); });
       if (a[2]) return mini(a[2], Object.assign({ color: '#ffd23f' }, a[3]), q => { AMC.Audio.sfx(q >= 0.5 ? 'applause' : 'miss'); if (AMC.WorldFX && q >= 0.5) AMC.WorldFX.cheer(); Save.save(); AMC.UI.toast(a[1](q), 4400); });
@@ -249,7 +249,7 @@
   function ricoQuest(id) {
     if (!RICO_IDS.includes(id)) return; const q = Save.data.ricoU = Save.data.ricoU || { seen: {} }; if (q.seen[id]) return; q.seen[id] = 1;
     const st = WO.ricoQuest();
-    if (st.n >= st.of && !q.done) { q.done = true; const f = Save.earn(300); if (AMC.Social) AMC.Social.add('RicoReWi', 30); idea('Spezialfolge: Zu Gast im RicoReWi-Universum');
+    if (st.n >= st.of && !q.done) { q.done = true; const f = Save.earn(300); if (AMC.Feed) AMC.Feed.post('✳️', 'Zu Gast im RicoReWi-Universum – danke Rico! Ab heute könnt ihr ihn als Studiogast buchen.', 'story'); if (AMC.Social) AMC.Social.add('RicoReWi', 30); idea('Spezialfolge: Zu Gast im RicoReWi-Universum');
       setTimeout(() => AMC.UI.bubble('RicoReWi', 'Ihr habt alles gesehen! Musik, Radio, Bücher, Casting, Apps – das ist mein Universum. Und ab heute seid ihr ein Teil davon. AnMaCha forever! 🧡', 'Story-Kapitel geschafft · +' + f + ' 🎟️'), 600); }
     else setTimeout(() => C.msg('✳️ RicoReWi-Universum: ' + st.n + '/' + st.of + ' Orte entdeckt', 2.4), 400);
     Save.save();
