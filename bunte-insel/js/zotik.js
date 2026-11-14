@@ -10,7 +10,6 @@
 BI.ZOTIK = { x: 0, z: 380, S: .625, R: 70, hill: { x: 50, z: -52, R: 36, tiers: 8 }, bridge: { x0: -2.5, x1: 2.5, z0: 207, z1: 310 } }; /* Insel südlich der Hauptinsel, Brücke ab dem Steg */
 
 /* ---------- Moosling „Felli“: kleiner Waldgeist (eigene Figur) ---------- */
-/* ---------- Moosling „Felli“: kleiner Waldgeist (eigene Figur) ---------- */
 BI.makeMoosling = function () {
   const G = 0x9be05a, G2 = 0xd0f08a, DK = 0x4a8a2a, root = new THREE.Group(), inner = new THREE.Group(), mat = BI.mat(); root.add(inner);
   const mesh = (fn, x, y, z) => { const b = new BI.Batch(); fn(b); const g = new THREE.Group(); g.add(b.mesh(mat)); g.position.set(x, y, z); inner.add(g); return g; };
@@ -248,7 +247,7 @@ BI.createZotik = function (G) {
     rR.m.rotation.z = t * .4; rR.sw.material.opacity = (s.st >= 7 ? .2 : .4) + .1 * Math.sin(t * 2); mR.m.rotation.z = t * .6; mR.sw.material.opacity = s.st >= 6 ? .5 + .2 * Math.sin(t * 3) : .1;
     fire.scale.set(1 + .12 * Math.sin(t * 11), 1 + .2 * Math.sin(t * 7.3), 1 + .12 * Math.cos(t * 9)); if (Math.random() < dt * 8) fx.emit(A.camp.x + (Math.random() - .5) * .8, 1.6, A.camp.z + (Math.random() - .5) * .8, 0, 1.6, 0, .9, 26, 1, .6, .2, -1, .9);
     gateR.forEach((g, i) => { g.m.rotation.z = t * .5 + i; g.sw.material.opacity = (s.st >= 8 ? .55 : .14) + .1 * Math.sin(t * 2.4 + i); });
-    for (const n of NPC) { const dn = Math.hypot(P.x - n.x, P.z - n.z); if (dn < 9) n.c.group.rotation.y += BI.angDiff(n.c.group.rotation.y, Math.atan2(P.x - n.x, P.z - n.z)) * Math.min(1, dt * 4); else if (n.home) n.c.group.rotation.y += BI.angDiff(n.c.group.rotation.y, Math.atan2(n.home.x - n.x, n.home.z - n.z)) * Math.min(1, dt * 2); n.c.pose && n.c.pose(t * 1.3 + n.x, 0, dn < 5); }
+    for (const n of NPC) { const dn = Math.hypot(P.x - n.x, P.z - n.z); if (dn < 9) n.c.group.rotation.y += BI.angDiff(n.c.group.rotation.y, Math.atan2(P.x - n.x, P.z - n.z)) * Math.min(1, dt * 4); else if (n.home) n.c.group.rotation.y += BI.angDiff(n.c.group.rotation.y, Math.atan2(n.home.x - n.x, n.home.z - n.z)) * Math.min(1, dt * 2); n.c.pose && n.c.pose(t * 1.3 + n.x, 0, dn < 5); if (n.t) n.t.visible = dn > 4; }
     felli.set('idle', t); { const px = felli.root.position.x, pz = felli.root.position.z; felli.root.rotation.y += BI.angDiff(felli.root.rotation.y, Math.atan2(P.x - px, P.z - pz)) * Math.min(1, dt * 3); }
     /* Mondwolf: wach und wachsam – nach dem Kampf ruhig und fröhlich */
     { const calm = s.st >= 7; wolf.position.y = calm ? Math.abs(Math.sin(t * 3)) * .15 : 0; wolf.rotation.y = Math.PI + (calm ? Math.sin(t * 1.3) * .4 : Math.sin(t * .6) * .15); wolfSign.visible = !calm || Math.hypot(P.x - wolf.position.x, P.z - wolf.position.z) < 12; }
