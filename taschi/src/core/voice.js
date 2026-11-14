@@ -36,7 +36,7 @@ export const CAST = {
   'Torwächter': { sex: 'm', age: 'adult', tone: 'gruff' },
   'Fels-Fiete': { sex: 'm', age: 'adult', tone: 'gruff' },
   'Perla': { sex: 'f', age: 'adult', tone: 'bright' },
-  'Käpt’n Volt': { sex: 'm', age: 'adult', tone: 'gruff' },
+  'Käpt’n Watt': { sex: 'm', age: 'adult', tone: 'gruff' },
   'Blüte': { sex: 'f', age: 'teen', tone: 'warm' },
   'Nilo': { sex: 'm', age: 'adult', tone: 'calm' },
   'Jette': { sex: 'f', age: 'teen', tone: 'bright' },
@@ -131,7 +131,7 @@ export class Voice {
   get speaking() { return this.mode === 'speech' && !!this.synth && (this.voices.all.length > 0 || !this.synth.getVoices?.().length); }
   get on() { return this.mode !== 'off'; }
   // Spielerfigur: Stimme nach gewähltem Geschlecht (m/f/divers)
-  profile(who) { const pl = this.getPlayer?.(); return profileFor(who, pl?.name && who === pl.name ? { sex: pl.gender === 'f' ? 'f' : pl.gender === 'm' ? 'm' : 'n' } : null); }
+  profile(who) { const pl = this.getPlayer?.(); return profileFor(who, pl?.name && who === pl.name ? { sex: pl.gender === 'w' ? 'f' : pl.gender === 'm' ? 'm' : 'n' } : null); }
   pickVoice(p) {
     const V = this.voices, group = p.sex === 'f' ? V.f : p.sex === 'm' ? V.m : [];
     const list = group.length ? group : V.all;

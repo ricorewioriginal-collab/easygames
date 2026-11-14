@@ -22,7 +22,7 @@ export const INTRO_SLIDES = [
 export const ULME = {
   greet: [
     { who: 'Professor Ulme', text: 'Da bist du ja! Willkommen in Sonnenhain. Ich bin Professor Ulme – ich erforsche die Bindung zwischen Menschen und Taschis.', mood: 'happy' },
-    { who: 'Professor Ulme', text: 'Taschis sind Wesen, die in Wiesen, Meeren, Wäldern und sogar in den Wolken leben. Mit einem Taschi-Kapsel kannst du ein Taschi einladen, dich zu begleiten.', mood: 'talk' },
+    { who: 'Professor Ulme', text: 'Taschis sind Wesen, die in Wiesen, Meeren, Wäldern und sogar in den Wolken leben. Mit einer Taschi-Kapsel kannst du ein Taschi einladen, dich zu begleiten.', mood: 'talk' },
     { who: 'Professor Ulme', text: 'Aber hör gut zu: Die sechzehn Lichter am Himmel werden schwächer. Und seit Wochen fängt eine Bande namens Schattengilde wilde Taschis ein.', mood: 'worried' },
     { who: 'Professor Ulme', text: 'Ich brauche jemanden, der durch alle Regionen reist, die Licht-Siegel sammelt und herausfindet, was die Gilde vorhat.', mood: 'talk' },
     { who: 'Professor Ulme', text: 'Unter meiner Glaskuppel liegen drei Taschi-Kapseln auf dem Podest. Geh hinein und sieh sie dir einzeln an. Wähle mit dem Herzen!', mood: 'happy' }
@@ -125,7 +125,8 @@ export const GUILD_SCENES = [
     win: [
       { who: 'Kommandantin Varga', text: 'Interessant. Du bist stärker als erwartet. Das ändert nichts.', mood: 'talk' },
       { who: 'Kommandantin Varga', text: 'Am Ende werden alle verstehen, dass ich recht habe.', mood: 'angry' },
-      { who: 'Erzähler', text: 'Varga steigt in den Ballon. Brix bleibt am Steg zurück und starrt ins Wasser.', mood: 'talk' }
+      { who: 'Erzähler', text: 'Varga steigt in den Ballon. Brix bleibt am Steg zurück und starrt ins Wasser.', mood: 'talk' },
+      { who: 'Erzähler', text: 'In den zurückgelassenen Käfigen am Steg sitzen gestohlene Taschis – auch Rians erstes Taschi. Du öffnest jeden Käfig.', mood: 'happy' }
     ]
   },
   { // Wipfelreich
@@ -155,11 +156,11 @@ export const GUILD_SCENES = [
     title: 'Brix’ Entscheidung',
     intro: [
       { who: 'Brix', text: 'Du! Bitte, hilf mir! Ich habe die Gilde verlassen. Selma soll mich zurückbringen!', mood: 'worried' },
-      { who: 'Selma', text: 'Verräter! Varga will ihre Zugangskarte zurück. Und dich gleich mit!', mood: 'angry' }
+      { who: 'Selma', text: 'Verräter! Varga will deine Zugangskarte zurück. Und dich gleich mit!', mood: 'angry' }
     ],
     win: [
       { who: 'Selma', text: 'Das … war mein letzter Auftritt für die Gilde. Ich gehe in den Ruhestand. Mit Stil.', mood: 'sad' },
-      { who: 'Brix', text: 'Danke. Hier – Brix’ Zugangskarte. Damit lässt sich die Sperre am Sternengipfel lösen.', mood: 'happy' },
+      { who: 'Brix', text: 'Danke. Hier – meine Zugangskarte. Damit lässt sich die Sperre am Sternengipfel lösen.', mood: 'happy' },
       { who: 'Brix', text: 'Varga will alle sechzehn Lichter in ihre Maschine leiten. Wenn sie es schafft, erlöschen sie für immer. Du musst sie aufhalten!', mood: 'worried' }
     ]
   },
@@ -175,6 +176,7 @@ export const GUILD_SCENES = [
       { who: 'Professor Ulme', text: 'Weil die Lichter nicht gefangen werden wollen, Varga. Sie leuchten, wenn Menschen und Taschis einander vertrauen.', mood: 'talk' },
       { who: 'Brix', text: 'Die Maschine ist aus. Alle gespeicherten Lichter fließen zurück an den Himmel!', mood: 'happy' },
       { who: 'Kommandantin Varga', text: '… Ich habe mich geirrt. Die Gilde ist aufgelöst. Ich werde helfen, die gestohlenen Taschis nach Hause zu bringen.', mood: 'sad' },
+      { who: 'Kora', text: 'Wir helfen mit. Kett und ich kennen jedes Versteck der Gilde.', mood: 'sad' },
       { who: 'Professor Astra', text: 'Die sechzehn Lichter leuchten wieder. Das Tor der Sternenliga steht dir offen, Champion.', mood: 'happy' }
     ]
   }
@@ -229,7 +231,7 @@ export const RIVAL = {
     },
     { // Kristallberg
       before: [
-        { text: 'Mein Taschi ist wieder bei mir! Die Gilde hat in den Kristallen nach Energie gesucht und die gefangenen Taschis zurückgelassen.', mood: 'happy' },
+        { text: 'Mein Taschi ist wieder bei mir! Du hast es im Nebelmoor aus dem Gildenkäfig am Stelzensteg befreit.', mood: 'happy' },
         { text: 'Das verdanke ich dir. Und deshalb kämpfe ich jetzt mit allem, was ich habe – das bin ich dir schuldig!', mood: 'happy' }
       ],
       win: [{ text: 'Unglaublich. Du bist wirklich die beste Person, gegen die ich je verloren habe. Bis zur Himmelskrone!', mood: 'happy' }],
@@ -248,3 +250,19 @@ export const RIVAL = {
     }
   ]
 };
+
+// Anrede der Spielfigur: Texte sind im generischen Maskulinum geschrieben,
+// bei „Weiblich“ werden die Titel der Spielfigur angepasst (Lyra bleibt Lyra).
+const FEMININE = [
+  [/\bder neue Sternenmeister\b(?!in)/g, 'die neue Sternenmeisterin'],
+  [/\bDer Sternenmeister\b(?!in)/g, 'Die Sternenmeisterin'],
+  [/\b([Ee])in würdiger Sternenmeister\b(?!in)/g, '$1ine würdige Sternenmeisterin'],
+  [/\b([Ee])in Sternenmeister\b(?!in)/g, '$1ine Sternenmeisterin'],
+  [/\bSternenmeister\b(?!in)/g, 'Sternenmeisterin'],
+  [/\bfür den Sieger\b/g, 'für die Siegerin'],
+  [/\bPartner\b(?=[.!,])/g, 'Partnerin']
+];
+export function playerText(text, gender) {
+  if (gender !== 'w' || typeof text !== 'string') return text;
+  return FEMININE.reduce((t, [re, to]) => t.replace(re, to), text);
+}
