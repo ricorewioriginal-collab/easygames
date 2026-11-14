@@ -18,7 +18,7 @@ let r;
 try { r = new THREE.WebGLRenderer({ canvas: cv, antialias: !mobile, powerPreference: 'high-performance', preserveDrawingBuffer: q.has('cap') }); }
 catch (e) { throw new Error('3D nicht verfügbar'); }
 document.getElementById('bg').after(cv); document.body.classList.add('has3d');
-r.setPixelRatio(Math.min(devicePixelRatio || 1, mobile ? 1.25 : 1.75));
+r.setPixelRatio(Math.min(devicePixelRatio || 1, mobile ? 1.6 : 1.75));   // Handy: schärfer als vorher (1.25 sah pixelig aus)
 r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 0.9;
 r.shadowMap.enabled = !mobile; r.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -140,14 +140,42 @@ function makeChar(sp) {
     const host = bones.root ? bones.root.parent : base; host.add(m); }); };
   take(sp.head, PART.head); take(sp.arms, PART.arms); take(sp.legs, PART.legs);
   if (sp.hat) take(sp.hat, PART.hat); if (sp.cape) take(sp.cape, PART.cape);
+  if (sp.hairStyle === 'spiky' && bones.head) bones.head.add(spikyHair(sp.hairCol || 0x4a3020));
   base.traverse(o => { if (!o.isMesh) return; o.castShadow = true; o.frustumCulled = false; o.material = o.material.clone();
     const n = o.name; if (PART.body.test(n) || PART.cape.test(n)) o.material.color.set(sp.c1).lerp(new THREE.Color(0xffffff), 0.12);
     else if (PART.head.test(n) && sp.skin != null) o.material.color.set(SKINT[sp.skin % SKINT.length]);
     else if (PART.legs.test(n)) o.material.color.set(sp.c2).lerp(new THREE.Color(0xffffff), 0.2);
-    else if (PART.arms.test(n)) o.material.color.set(sp.c1).lerp(new THREE.Color(0xffffff), 0.35); });
+    else if (PART.arms.test(n)) o.material.color.set(sp.c1).lerp(new THREE.Color(0xffffff), 0.35);
+    // Eigene Farben statt Tönung (Rico): Haare/Bart-Feld des Kopfes, Shirt und Hose einfarbig – Hautfelder bleiben
+    if (sp.paint) { const pt = PART.head.test(n) ? (sp.hairCol != null ? { 1: sp.hairCol } : null) : PART.body.test(n) || PART.arms.test(n) ? { all: sp.paint.shirt } : PART.legs.test(n) ? { all: sp.paint.pants } : null;
+      if (pt && o.material.map) { o.material.map = paintTex(o.material.map, pt); o.material.color.set(0xffffff); } } });
   const g = new THREE.Group(); g.add(base); const bb = new THREE.Box3().setFromObject(base); base.scale.setScalar(1.75 / Math.max(0.5, bb.max.y - bb.min.y));
   const m = new THREE.AnimationMixer(base);
   return { f: g, m, base, play(name, fade) { const c = kmoves[name]; if (!c) return; const a = m.clipAction(c); if (this.cur === a) return; a.reset().play(); if (this.cur && fade !== 0) a.crossFadeFrom(this.cur, fade || 0.3, false); this.cur = a; } };
+}
+// Farbfelder der KayKit-Textur (8×4 Verläufe, Feld 0 = Haut, 1 = Haare/Bart, 2 = Augen) neu einfärben; Ergebnis je Textur und Farbe gemerkt
+const paintMem = new Map();
+function paintTex(tex, pt) {
+  const key = tex.uuid + JSON.stringify(pt); if (paintMem.has(key)) return paintMem.get(key);
+  const im = tex.image, W = im.width, H = im.height, c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d'); g.drawImage(im, 0, 0);
+  const fill = (cx, cy, col) => { const a = new THREE.Color(col), gr = g.createLinearGradient(0, cy * H / 4, 0, (cy + 1) * H / 4); gr.addColorStop(0, '#' + a.clone().lerp(new THREE.Color(0xffffff), 0.18).getHexString()); gr.addColorStop(1, '#' + a.clone().multiplyScalar(0.55).getHexString()); g.fillStyle = gr; g.fillRect(cx * W / 8, cy * H / 4, W / 8, H / 4); };
+  if (pt.all != null) { for (let y = 0; y < 4; y++) for (let x = 0; x < 8; x++) if (!(y === 0 && (x === 0 || x === 2))) fill(x, y, pt.all); }
+  Object.keys(pt).forEach(k => { if (k !== 'all') fill(+k, 0, pt[k]); });
+  const t = new THREE.CanvasTexture(c); t.flipY = tex.flipY; t.colorSpace = tex.colorSpace; t.magFilter = tex.magFilter; t.minFilter = tex.minFilter; t.wrapS = tex.wrapS; t.wrapT = tex.wrapT;
+  paintMem.set(key, t); return t;
+}
+// Hochgestylte, strubbelige Haare + Ohrring (Rico), hängen am Kopf-Knochen
+function spikyHair(col) {
+  const g = new THREE.Group(), m = new THREE.MeshStandardMaterial({ color: col, roughness: 0.85 }), dark = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.6, roughness: 0.3 });
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.56, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.36), m); cap.position.set(0, 0.64, -0.03); cap.scale.set(1.02, 1, 1.04); g.add(cap);
+  const R = rngOf(42);
+  for (let i = 0; i < 17; i++) { const a = (i / 17) * Math.PI * 2, rr = 0.12 + R() * 0.3, x = Math.cos(a) * rr, z = Math.sin(a) * rr * 1.05 + 0.06;
+    const sp = new THREE.Mesh(new THREE.ConeGeometry(0.13 + R() * 0.05, 0.34 + R() * 0.2, 5), m);
+    sp.position.set(x, 1.12 - rr * 0.35, z); sp.rotation.set(z * 0.9 + 0.2, R() * 2, -x * 0.9); g.add(sp); }
+  const quiff = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.42, 6), m); quiff.position.set(0.06, 1.16, 0.32); quiff.rotation.set(0.75, 0, -0.15); g.add(quiff);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.016, 6, 14), dark); ring.position.set(-0.56, 0.36, 0.02); ring.rotation.y = Math.PI / 2; g.add(ring);
+  const cross = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.12, 0.02), dark); cross.position.set(-0.57, 0.27, 0.02); g.add(cross);
+  g.traverse(o => { if (o.isMesh) o.castShadow = true; }); return g;
 }
 function specOf(seed) { const R = rngOf(seed), pick = a => a[Math.floor(R() * a.length)], cls = KCLS.slice(0, 4);
   return { head: pick(KCLS), body: pick(cls), arms: pick(cls), legs: pick(cls), hat: R() < 0.35 ? pick(['knight', 'mage', 'barbarian']) : null, cape: R() < 0.25 ? pick(cls) : null, c1: pick(OUTFIT), c2: pick(OUTFIT) }; }
@@ -157,7 +185,8 @@ const NAMED = {
   lena: { head: 'rogue', body: 'mage', arms: 'rogue', legs: 'rogue', c1: 0xff2aa0, c2: 0x8a5cf6 },
   david: { head: 'barbarian', body: 'rogue', arms: 'barbarian', legs: 'knight', c1: 0x3a86ff, c2: 0x222233, skin: 3 },
   sophie: { head: 'rogue_hooded', body: 'mage', arms: 'mage', legs: 'rogue', c1: 0xffc93c, c2: 0xffffff },
-  rico: { head: 'knight', body: 'barbarian', arms: 'barbarian', legs: 'rogue', c1: 0xff6b3d, c2: 0x222233, cape: 'knight' }
+  // Rico wie RicoReWi selbst: braune hochgestylte Haare, brauner Vollbart, lila T-Shirt, Ohrring
+  rico: { head: 'barbarian', body: 'rogue', arms: 'barbarian', legs: 'rogue', c1: 0xffffff, c2: 0xffffff, hairStyle: 'spiky', hairCol: 0x3d2716, paint: { shirt: 0x3a1a5e, pants: 0x262f45 } }
 };
 const FEM = /^(lena|sophie|nina|jule|greta|mira|nova|elif|clara|yuki)$/;
 const BODY_OF = { sakko: 'knight', glitzer: 'mage', lederjacke: 'rogue', hoodie: 'barbarian', tshirt: 'barbarian' };
@@ -241,7 +270,7 @@ const VX = 80, ZX = -80;   // Villa und Zitterraum liegen neben dem Studio
 const SHOTS = {
   stage: { p: [0, 3.9, 14.5], t: [0, 1.5, 0], fov: 30, hue: 320, orbit: 0.35 },
   title: { p: [0, 3.4, 13.5], t: [0, 2.1, -1], fov: 34, hue: 300, orbit: 0.6 },
-  menu: { p: [-4.5, 3.8, 13], t: [0.5, 1.5, 0], fov: 32, hue: 280, orbit: 0.4 },
+  menu: { p: [-4.5, 3.8, 13], t: [0.5, 1.5, 0], fov: 32, hue: 280, orbit: 0.4, up: 0.34 },   // up: im Hochformat Bild nach oben schieben, unten liegen die Kacheln
   backstage: { p: [VX + 7, 6.5, 10], t: [VX, 0.8, 0], fov: 46, hue: 30, orbit: 0.2, dim: 0.75 },
   zitter: { p: [ZX, 1.9, 7.5], t: [ZX, 1.35, 0], fov: 34, hue: 230, orbit: 0.25, dim: 1 },
   chairs: { p: [0.4, 2.1, 3.2], t: [0, 1.25, 7.8], fov: 40, hue: 200, orbit: 0.2 },
@@ -252,13 +281,13 @@ const SHOTS = {
   playP: { p: [0, 5.2, 13.5], t: [0, 0.6, 1.5], fov: 52, hue: 320, orbit: 0 }
 };
 let shot = SHOTS.title, shotName = 'title', blend = 1;
-const camP = new THREE.Vector3(...shot.p), camT = new THREE.Vector3(...shot.t); let camFov = shot.fov, dim = 1;
+const camP = new THREE.Vector3(...shot.p), camT = new THREE.Vector3(...shot.t); let camFov = shot.fov, dim = 1, camUp = 0, camUpSet = 0;
 function setShot(name) { const n = SHOTS[name] ? name : 'stage'; if (n === shotName) return; shotName = n; shot = SHOTS[n]; blend = 0; if (n === 'win') boom(240, 0, 9, 0, 6, [0xffd23f, 0xff4d8d, 0x3a86ff, 0xffffff]); }
 
 // ---------- Nachbearbeitung ----------
 let comp = null;
 if (!mobile && !reduced && !q.has('nobloom')) { comp = new EffectComposer(r); comp.addPass(new RenderPass(s, cam)); comp.addPass(new UnrealBloomPass(new THREE.Vector2(256, 256), 0.5, 0.5, 0.82)); comp.addPass(new OutputPass()); }
-function resize() { const w = innerWidth, h = innerHeight; r.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); if (comp) comp.setSize(w, h); }
+function resize() { const w = innerWidth, h = innerHeight; r.setSize(w, h, false); cam.aspect = w / h; camUpSet = -1; cam.updateProjectionMatrix(); if (comp) comp.setSize(w, h); }
 addEventListener('resize', resize); resize();
 
 // ---------- Auftritt ----------
@@ -429,7 +458,9 @@ function frame() {
   const orb = shot.orbit * Math.sin(t * 0.15);
   const tp = new THREE.Vector3(...shot.p); tp.x += orb * 3; tp.y += Math.sin(t * 0.3) * 0.1 * shot.orbit;
   if (!walkSt.on) camP.lerp(tp, reduced ? 1 : 0.02 + k * 0.06); if (!walkSt.on) camT.lerp(new THREE.Vector3(...shot.t), reduced ? 1 : 0.04 + k * 0.06); camFov += (shot.fov - camFov) * 0.06;
-  cam.position.copy(camP); cam.lookAt(camT); if (Math.abs(cam.fov - camFov) > 0.01) { cam.fov = camFov; cam.updateProjectionMatrix(); }
+  const upT = innerHeight > innerWidth * 1.15 ? (shot.up || 0) : 0; camUp += (upT - camUp) * (reduced ? 1 : 0.08); if (Math.abs(camUp - upT) < 0.002) camUp = upT;
+  cam.position.copy(camP); cam.lookAt(camT);
+  if (Math.abs(cam.fov - camFov) > 0.01 || camUp !== camUpSet) { cam.fov = camFov; camUpSet = camUp; if (camUp) cam.setViewOffset(innerWidth, innerHeight, 0, innerHeight * camUp, innerWidth, innerHeight); else cam.clearViewOffset(); cam.updateProjectionMatrix(); }
   dim += ((shot.dim || 1) - dim) * 0.05; s.fog.density += ((walkSt.on || shotName === 'backstage' ? 0.006 : shotName === 'zitter' ? 0.02 : 0.03) - s.fog.density) * 0.1; r.toneMappingExposure = 0.55 + 0.4 * dim;
   ledHue += ((shot.hue) - ledHue) * 0.03;
   // Licht

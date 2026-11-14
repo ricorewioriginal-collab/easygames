@@ -478,3 +478,53 @@ body.has3d .scr.on { animation: scrIn3d .42s cubic-bezier(.2, .8, .2, 1) both; }
 @keyframes scrIn3d { from { opacity: 0; transform: translateY(18px) scale(.985); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
 @media (prefers-reduced-motion: reduce) { body.has3d .scr.on { animation: none; } }
 body.reduced.has3d .scr.on { animation: none; }
+
+/* ================= Handy (Hochformat): aufgeräumt wie auf der Konsole =================
+   3D-Bühne oben als „Fenster“, Bedienung darunter; auf Inhalts-Bildschirmen dunkelt ein Schleier die Figuren ab, damit nichts durch Text scheint. */
+.singLead { margin: 0 2px 10px; color: #eee6ff; }
+.usLine { display: flex; align-items: center; gap: 10px; margin: 12px 0 8px; padding: 10px 12px; border-radius: 16px; background: rgba(255, 201, 60, .1); border: 1px solid rgba(255, 201, 60, .35); }
+.usLine > span { flex: 1; min-width: 0; } .usLine small { display: block; color: var(--muted); font-size: .82em; }
+.usLine .btn { flex: none; }
+.usSync { display: inline-flex; gap: 4px; } .usSync .btn { min-height: 34px; padding: 4px 10px; }
+.goBar { position: sticky; bottom: 0; margin: 12px -12px 0; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); background: linear-gradient(180deg, transparent, rgba(5, 2, 16, .92) 35%); z-index: 2; }
+.goBar .btn { width: 100%; }
+#singBox:has(.goBar) { padding-bottom: 0; }
+.ovBox .micSteps { text-align: left; margin: 8px 0; padding-left: 1.3em; } .ovBox .micSteps li { margin: 6px 0; }
+details.tips summary { cursor: pointer; }
+@media (max-width: 899px), (max-aspect-ratio: 5/4) {
+  body.has3d .scr:not(#sStage):not(#sTitle):not(#sMenu)::before { background: linear-gradient(180deg, rgba(5, 2, 16, .55), rgba(5, 2, 16, .9) 30%, rgba(5, 2, 16, .94)); }
+  body.walking .scr#sBack::before { background: none !important; }
+  .toast { top: auto; bottom: calc(16px + env(safe-area-inset-bottom)); max-width: min(92vw, 420px); font-size: .9em; padding: 10px 14px; background: rgba(20, 10, 46, .96); box-shadow: 0 10px 30px rgba(0, 0, 0, .5); }
+  /* Hauptmenü: Figur oben im Bühnenlicht, Kacheln unten im 2er-Raster */
+  body.has3d #sMenu { padding-left: 12px; padding-right: 12px; }
+  body.has3d #sMenu .tvMenu { min-height: 100%; display: flex; flex-direction: column; }
+  body.has3d #sMenu .tvHead { width: 100%; border-radius: 22px; }
+  body.has3d #sMenu .tvHead .logo.sm { width: 44px; height: 44px; border-radius: 12px; }
+  body.has3d #sMenu .tvBody { margin-top: max(30vh, 210px); display: block; }
+  body.has3d #sMenu #menuList { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: none; padding: 14px 0 6px; position: relative; }
+  body.has3d #sMenu #menuList::before { content: ''; position: absolute; inset: -40px -12px -200vh; z-index: -1; pointer-events: none; background: linear-gradient(180deg, transparent, rgba(5, 2, 16, .85) 60px, rgba(5, 2, 16, .94)); }
+  body.has3d #sMenu .mGroup { grid-column: 1 / -1; margin: 8px 2px 0; }
+  body.has3d #sMenu .mi { display: grid; grid-template-columns: 1fr; align-content: space-between; min-height: 92px; padding: 12px 14px !important; gap: 6px; text-align: left; border-radius: 20px !important; }
+  body.has3d #sMenu .mi i { font-style: normal; font-size: 1.7em; line-height: 1; }
+  body.has3d #sMenu .mi b { font-size: .95em; line-height: 1.15; }
+  body.has3d #sMenu .mi { justify-items: start; }
+  body.has3d #sMenu .mi.hero { grid-column: 1 / -1; min-height: 84px; display: flex; align-items: center; gap: 14px; }
+  body.has3d #sMenu .mi.hero i { font-size: 2.1em; }
+  body.has3d #sMenu .mi.hero small { display: block; margin-top: 2px; }
+  body.has3d #sMenu .mi.hero b { font-size: 1.15em; }
+  body.has3d #sMenu .mi:hover:not(:focus-visible) { transform: none; box-shadow: none; background: linear-gradient(90deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .03)), rgba(10, 6, 24, .55) !important; }
+  body.has3d #sMenu .mi.hero:hover:not(:focus-visible) { background: linear-gradient(90deg, rgba(255, 184, 0, .45), rgba(255, 42, 160, .25)), rgba(10, 6, 24, .6) !important; }
+  body.has3d #sMenu .mi:active { transform: scale(.97); }
+  body.has3d #sMenu .padHint { display: none; }
+  /* Freies Vorsingen: Genres als Wischleiste, Länge kompakt, Start-Knopf immer erreichbar */
+  #singBox .opts.genres { display: flex; overflow-x: auto; scroll-snap-type: x proximity; gap: 8px; margin: 0 -12px; padding: 2px 12px 6px; scrollbar-width: none; }
+  #singBox .opts.genres::-webkit-scrollbar { display: none; }
+  #singBox .opts.genres .opt { flex: 0 0 min(64vw, 230px); scroll-snap-align: start; }
+  #singBox .panel.daily { padding: 12px; } #singBox .panel.daily p { font-size: .92em; }
+  #singBox h3 { margin: 16px 2px 8px; }
+  #singBox .seg .btn { font-size: .8em; padding: 6px 4px; }
+  #singBox .opts.songs { max-height: none; }
+  .bar h2 { font-size: 1.05em; }
+  .settings .srow { grid-template-columns: 1fr; gap: 8px; }
+  .settings select[data-sel], .settings .micMeter { max-width: none; width: 100%; }
+}

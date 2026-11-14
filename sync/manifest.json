@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "362ce4f97908",
- "generated": "2026-11-14T16:41:04+00:00",
- "commit": "d8c5e0800e0b7aee73a7f89ec9054ae1e18568b8",
+ "version": "0fe2957f0db7",
+ "generated": "2026-11-14T17:49:42+00:00",
+ "commit": "c7bf943c47d43f633eae134b0cc79cefeeca347f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10008,8 +10008,8 @@
   },
   {
    "p": "show-me-your-voice/img/kk-rico.jpg",
-   "s": 14652,
-   "h": "d4529b5fad7b7add2d24218487a124b49fc85aa725adcd8bfa97493c02ffc823"
+   "s": 12703,
+   "h": "aaf751047887c4879bf2c9079221847c27ea5bc31955844c9715d2683283c1e0"
   },
   {
    "p": "show-me-your-voice/img/kk-ruben.jpg",
@@ -10048,13 +10048,13 @@
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 183673,
-   "h": "67dbd40601c7d532234bb399084c84227b88c58fa88a821c68945fc6645400d2"
+   "s": 191625,
+   "h": "06f10398bfccb25b14e0847c6c52db3b871e3547079975f7eff73f18c3b9693c"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
-   "s": 18736,
-   "h": "bed5926051a6a38fa221d91b8498cf863a2a41d47d456976e53a9ee90585d972"
+   "s": 19203,
+   "h": "4e9ba791f65b8c097ca3a5c1cde43019dbe100d161dc3a2cd017afb2b28f8fe0"
   },
   {
    "p": "show-me-your-voice/js/avatar.js",
@@ -10068,8 +10068,8 @@
   },
   {
    "p": "show-me-your-voice/js/data.js",
-   "s": 69785,
-   "h": "e28e860cf6d43144a315326c0a3ce0b06cb9f0093c9957ab10db9f0ae6429946"
+   "s": 69930,
+   "h": "0a383e36cf405fab89da158c4025c272f53e4c6d575526f15c8177dffb593c60"
   },
   {
    "p": "show-me-your-voice/js/media.js",
@@ -10078,8 +10078,8 @@
   },
   {
    "p": "show-me-your-voice/js/scene3d.js",
-   "s": 45587,
-   "h": "6d9f4430ff7545d0810cbf943acb74383e4f01857c907ffaf2ba790acb119892"
+   "s": 49480,
+   "h": "13f296a9a7a50e1f6c63e227c376580176da1272c85a46dbdb3f1ecea89cccc7"
   },
   {
    "p": "show-me-your-voice/js/stage.js",
@@ -10093,13 +10093,18 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 49326,
-   "h": "2b195bd3796327a43675c129b4672a411dc283e5081058972ef666059461d5c1"
+   "s": 53953,
+   "h": "abaf7ba2f5bb02428675afb6e043221d47484aff8d52ee834ebdb97297ae3d42"
   },
   {
    "p": "show-me-your-voice/sw.js",
    "s": 2004,
    "h": "33aa0f8334cf0092973dceabfe23bc4c26268441c046822bc345ee66f2480949"
+  },
+  {
+   "p": "show-me-your-voice/ultrastar.json",
+   "s": 9755,
+   "h": "0c08a471891157f1fde4d34a5e1882b49c59c81471e61c304500bdeb7f845ae6"
   },
   {
    "p": "show-me-your-voice/vendor/three/addons/environments/RoomEnvironment.js",
@@ -10175,6 +10180,91 @@
    "p": "show-me-your-voice/vendor/three/three.module.min.js",
    "s": 670681,
    "h": "3e690ac7d180b0aadf0891bea39eec643e29e2d3e75c99b18689518665f69ba6"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-advance-0.mp3",
+   "s": 66488,
+   "h": "80599c465eb00f6bf0b088a8094282d2558023c49f07bff2072531d1e771e2f5"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-advance-1.mp3",
+   "s": 56875,
+   "h": "3c7e190733abd364c09cf6e9cc8264d16f0887804a5ef3f89d4ca349cae4ae47"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-advance-2.mp3",
+   "s": 51441,
+   "h": "06515c3122247374a03c7b14fb2259ad3ac5a7bd9920f4192d57d2022f67f20b"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-golden.mp3",
+   "s": 94909,
+   "h": "5740f60ba1fb9581f9be876e0315f004eb1fac36bde6b26cf445850fc6145cb1"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-intro-battle-0.mp3",
+   "s": 150498,
+   "h": "0693c9f33056a41760349b3009e949b4792e28e77f36b81a832df347bdfbb1a1"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-intro-casting-0.mp3",
+   "s": 151333,
+   "h": "9e9a517ebc0e17c9543faf2c8126838506bc2120b91362a0ca1e3d6333eae4f7"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-intro-casting-1.mp3",
+   "s": 158021,
+   "h": "18f537ff3308a611bc68bbe93a10f721b993445f13483501fe4176cb396afcb6"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-intro-finale-0.mp3",
+   "s": 107448,
+   "h": "3761b1ccd2efa225805772a9f02d8b3bf69db9f4f531d4c872153c7ffaa2c0d6"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-intro-halbfinale-0.mp3",
+   "s": 94909,
+   "h": "2d49435b4837ee4bb462c2b6f64c0fd68ff7879b741c6cb08b13523784e89ba6"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-intro-motto-0.mp3",
+   "s": 104940,
+   "h": "b6765648a1122d4e773041b6315a471449d98f9d0e7761c904de21df3843ab17"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-intro-recall-0.mp3",
+   "s": 111209,
+   "h": "2badd3b1f368446c6ecf5809debfab2a928879047fee906d89e90639f800382b"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-out-0.mp3",
+   "s": 89476,
+   "h": "e5d8c67fb417c75806418da38f696b94647928fba30288850c3064341dc078e1"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-out-1.mp3",
+   "s": 79027,
+   "h": "d9c62879bfa3caad1787a364d5d6d1ccdb22035cce83c9f68b5fabee243f4452"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-saved.mp3",
+   "s": 96163,
+   "h": "b756743015e42298b20fd2254d357d2df146903ef7bfe3f14fb7749528701199"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-welcome-0.mp3",
+   "s": 121658,
+   "h": "ae846b49724fb3481aea4fa7069bacb80ae83bc1d75eff704af543e9f33d5c81"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-welcome-1.mp3",
+   "s": 114135,
+   "h": "0d5e32ea1cc7c4ca26fd0d2db7b179f4854379ceab8e6dfe86e5848a6d2380be"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-winner.mp3",
+   "s": 75265,
+   "h": "cab174f522bfd356bad4236b1164739884bc09a66f35c9c9aab7aea704c185bc"
   },
   {
    "p": "show-voice.js",
@@ -10574,7 +10664,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262491,
-   "h": "b1c92813a6bc71948957204749de48e9180265b7b255941827c4373cbdedae2b"
+   "h": "e7640c1bab7f4ec6bbc158e68b88c4ac2ca89614d083498856995d9cb3d7b08d"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
