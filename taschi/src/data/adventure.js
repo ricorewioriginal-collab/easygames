@@ -15,7 +15,7 @@ export const AMBUSHES = {
     win: [
       { who: 'Gildenhelfer', text: 'Autsch! Das war … nicht Teil des Plans.', mood: 'sad' },
       { who: 'Kommandantin Varga', text: '(Aus dem Funkgerät:) Bericht. Wieso höre ich Kampfgeräusche?', mood: 'angry' },
-      { who: 'Gildenhelfer', text: 'Ä-äh, Kommandantin! Ein Trainer aus Sonnenhain! Ich ziehe mich zurück!', mood: 'worried' },
+      { who: 'Gildenhelfer', text: 'Ä-äh, Kommandantin! Jemand aus Sonnenhain mit einem Taschi! Ich ziehe mich zurück!', mood: 'worried' },
       { who: 'Erzähler', text: 'Der Helfer flieht. Über den Wipfeln gleitet ein violett-oranger Ballon nach Norden. Das befreite {mon} hüpft dankbar zurück ins Gras.', mood: 'talk' }
     ]
   },
@@ -103,11 +103,11 @@ export const AMBUSHES = {
   15: {
     title: 'Vorhut vor dem Gipfel', member: 'kett', format: 'double', where: 'Wolkenweg',
     intro: [
-      { who: 'Kora', text: 'Kett, das ist er. Der Grund, warum wir sechzehnmal verloren haben.', mood: 'worried' },
-      { who: 'Kett', text: 'Fünfzehnmal! Heute nicht. Varga braucht dieses {mon} für die Maschine!', mood: 'angry' }
+      { who: 'Kora', text: 'Kett, da ist unser Lieblingsproblem. Wegen dieser Nervensäge haben wir schon viermal verloren.', mood: 'worried' },
+      { who: 'Kett', text: 'Dreimal! Der Hafen zählt nicht. Heute nicht! Varga braucht dieses {mon} für die Maschine!', mood: 'angry' }
     ],
     win: [
-      { who: 'Kora', text: 'Sechzehnmal, Kett.', mood: 'sad' },
+      { who: 'Kora', text: 'Fünfmal, Kett. Und der Hafen zählt.', mood: 'sad' },
       { who: 'Kett', text: 'Weißt du was, Kora? Vielleicht sind wir auf der falschen Seite.', mood: 'sad' },
       { who: 'Erzähler', text: 'Die Zwillinge sehen sich lange an und lassen das {mon} frei. Hoch über den Wolken glüht der Sternengipfel.', mood: 'talk' }
     ]

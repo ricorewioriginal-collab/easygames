@@ -157,6 +157,7 @@ export class UI {
   say(lines, { choices = null, onLine = null, guild = false, cancelIndex = null } = {}) {
     if (!Array.isArray(lines)) lines = [lines];
     lines = lines.map(l => typeof l === 'string' ? { text: l } : l);
+    if (this.textFilter) lines = lines.map(l => l.text ? { ...l, text: this.textFilter(l.text) } : l);
     return new Promise(resolve => {
       const box = h('div.dlg'), nameEl = h('div.name' + (guild ? '.guild' : '')), textEl = h('div'), next = h('div.next', {}, '▼');
       box.append(nameEl, textEl, next);

@@ -52,6 +52,7 @@
     const R = W.renderer = new T.WebGLRenderer({ canvas, antialias: W.quality > 0, powerPreference: 'high-performance', alpha: false });
     R.outputEncoding = T.sRGBEncoding; R.toneMapping = T.ACESFilmicToneMapping; R.toneMappingExposure = 1.08;
     R.shadowMap.enabled = W.quality > 0; R.shadowMap.type = W.quality > 1 ? T.PCFSoftShadowMap : T.PCFShadowMap;
+    if (touch) R.shadowMap.autoUpdate = false;   // Handy: Schatten nur jedes 2./3. Bild (W.perf)
     W.camera = new T.PerspectiveCamera(60, 1, 0.1, 900);
     W.resize(); root.addEventListener('resize', W.resize);
     W.glowTex = canvasTex(64, 64, (g, w) => { const gr = g.createRadialGradient(w / 2, w / 2, 0, w / 2, w / 2, w / 2); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, w); });
@@ -92,9 +93,21 @@
     if (parent) { parent.add(f.root); f.root.position.copy(pos); f.root.rotation.y = rot; f.play('idle'); }
     return f;
   };
+  // Flüssig auf jedem Gerät: Auflösung passt sich der Bildrate an, Schatten werden auf dem Handy seltener neu berechnet
+  const PF = { scale: 1, ema: 1 / 60, t: 0, good: 0, frame: 0 };
+  W.perf = function (dt) {
+    const R = W.renderer; if (!R || document.hidden || dt <= 0) return;
+    PF.ema += (dt - PF.ema) * 0.05; PF.frame++;
+    if (R.shadowMap.enabled && !R.shadowMap.autoUpdate) R.shadowMap.needsUpdate = PF.frame % (PF.ema > 1 / 40 ? 3 : 2) === 0;
+    if ((PF.t += dt) < 1.2) return; PF.t = 0;
+    if (PF.ema > 1 / 45 && PF.scale > 0.55) { PF.scale = Math.max(0.55, PF.scale - 0.15); PF.good = 0; W.resize(); }
+    else if (PF.ema < 1 / 56 && PF.scale < 1) { if (++PF.good >= 4) { PF.good = 0; PF.scale = Math.min(1, PF.scale + 0.1); W.resize(); } }
+    else PF.good = 0;
+  };
+  W.perfState = () => ({ scale: PF.scale, fps: Math.round(1 / PF.ema) });
   W.resize = function () {
     if (!W.renderer) return;
-    const w = root.innerWidth, h = root.innerHeight, dpr = Math.min(root.devicePixelRatio || 1, [1, 1.5, 2][W.quality]);
+    const w = root.innerWidth, h = root.innerHeight, dpr = Math.max(0.6, Math.min(root.devicePixelRatio || 1, [1, 1.5, 2][W.quality]) * PF.scale);
     W.renderer.setPixelRatio(dpr); W.renderer.setSize(w, h, false);
     W.camera.aspect = w / h; W.camera.fov = w / h < 0.8 ? 72 : 60; W.camera.updateProjectionMatrix();
   };

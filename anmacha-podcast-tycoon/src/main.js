@@ -76,6 +76,7 @@
       mi('koop', '🌐', 'Online-Koop', 'Zu zweit auf zwei Geräten: Andrew & Marco – per Link, Code oder QR') +
       mi('walk', '🚶', 'Studio betreten', 'Zu Fuß durchs Studio: Pult, Rico, Einrichten, Musikshop') +
       (AMC.Events ? mi('week', AMC.Events.week().icon, 'Woche ' + AMC.Events.week().n + ': ' + AMC.Events.week().name, AMC.Events.week().goal + ' ' + AMC.Events.week().have + '/' + AMC.Events.week().need + ' · 📼 ' + AMC.Events.tapes() + '/20 Kassetten') : '') +
+      (AMC.Missions ? mi('missions', '📋', 'Auftragsbuch', (AMC.Missions.active() ? '▶ ' + AMC.Missions.active().t + ' · ' : '') + 'Story-Aufträge ' + AMC.Missions.progress().done + '/' + AMC.Missions.progress().of + ' · Tagesjobs') : '') +
       (AMC.Acts ? mi('acts', '📖', 'Story-Akte', AMC.Acts.state().done ? '🏆 Alle Akte geschafft' : AMC.Acts.state().title + ' · ' + U.fmt(AMC.Acts.state().have) + '/' + U.fmt(AMC.Acts.state().need)) : '') +
       (AMC.Guests ? mi('guests', '🎙️', 'Studiogäste', (AMC.Guests.today() ? 'Heute: ' + AMC.Guests.today().name : 'Noch kein Gast für heute') + ' · ' + AMC.Guests.list().filter(g => g.open).length + '/' + AMC.Guests.ROSTER.length + ' freigeschaltet') : '') +
       (AMC.Feed ? mi('app', '📱', 'AnMaCha-App', U.fmt(AMC.Feed.followers()) + ' Follower · Trend ' + AMC.Feed.trend().tag) : '') +
@@ -101,7 +102,7 @@
     el.querySelector('#mHost').onclick = swapHost;
     s.o.onKey = () => { if (I.hit('swap')) { swapHost(); return true; } return false; };
     updHost();
-    const go = { resume, arcade: arcadeMenu, walk: walkStudio, friends: () => AMC.Social.book(), guests: () => AMC.Guests.panel(), acts: () => AMC.Acts.panel(), app: () => AMC.Feed.panel(), week: () => AMC.Events.panel(), home: homeMenu, music: () => AMC.Home.musicShop(), studio: studioEdit, story: storyMenu, live: startLive, jagd: () => startCity('jagd'), race: () => startCity('race'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
+    const go = { resume, arcade: arcadeMenu, walk: walkStudio, friends: () => AMC.Social.book(), guests: () => AMC.Guests.panel(), acts: () => AMC.Acts.panel(), missions: () => AMC.Missions.panel(), app: () => AMC.Feed.panel(), week: () => AMC.Events.panel(), home: homeMenu, music: () => AMC.Home.musicShop(), studio: studioEdit, story: storyMenu, live: startLive, jagd: () => startCity('jagd'), race: () => startCity('race'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
     el.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go[b.dataset.go]());
     G.menu = s;
   }
@@ -440,6 +441,7 @@
   function frame(now) {
     requestAnimationFrame(frame);
     let dt = (now - last) / 1000; last = now; if (dt > 0.1) dt = 0.1;
+    if (W.perf) W.perf(dt);
     I.update(dt);
     const uiBusy = UI.update();
     if (!uiBusy) {

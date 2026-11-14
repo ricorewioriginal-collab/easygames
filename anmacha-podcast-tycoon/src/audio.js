@@ -162,8 +162,10 @@
     const stepDur = 60 / T.bpm / 4;
     const run = () => {
       if (s.stop || !A.ctx) return;
-      while (s.t < A.ctx.currentTime + 0.25) { playStep(T, s.step, s.t, stepDur); s.t += stepDur; s.step++; }
-      setTimeout(run, 60);
+      // großzügiger Vorlauf: ruckelnde Bilder (Handy) verzögern die Timer, die Musik läuft trotzdem gleichmäßig weiter
+      const now = A.ctx.currentTime; if (s.t < now) s.t = now + 0.05;
+      while (s.t < now + 0.7) { playStep(T, s.step, s.t, stepDur); s.t += stepDur; s.step++; }
+      setTimeout(run, 120);
     };
     run();
   };

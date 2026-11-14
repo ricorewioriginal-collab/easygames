@@ -13,7 +13,7 @@ export const REGIONS = [
     landmark: { kind: 'mill', name: 'Alte Wassermühle' },
     professor: { name: 'Ulme', title: 'Professor Ulme', focus: 'Bindung zwischen Menschen und Taschis' },
     gym: { leader: 'Fels-Fiete', ace: 'felsling', level: 8, mechanic: 'plates', theme: 'Moosgarten-Arena',
-      intro: 'Na, ein frischer Trainer! Meine Arena ist ein Steingarten – schieb die Moosfindlinge auf die Platten, dann reden wir.',
+      intro: 'Na, ein neues Gesicht! Meine Arena ist ein Steingarten – schieb die Moosfindlinge auf die Platten, dann reden wir.',
       defeat: 'Fest wie ein Fels und doch flink – du hast dir das Moos-Siegel verdient!' },
     champion: { name: 'Meisterin Lin', ace: 'bluetling', intro: 'Ich hüte dieses Tal seit Jahren. Zeig mir, dass deine Bindung zu deinen Taschis echt ist.', defeat: 'Das Moostal ist stolz auf dich. Der Weg zur Korallküste steht dir offen.' },
     puzzle: { kind: 'runes', name: 'Mühlstein-Runen', hint: 'Die Wandbilder an der Mühle zeigen, welches Zeichen jeder Stein tragen muss.' },
@@ -63,7 +63,7 @@ export const REGIONS = [
     weather: ['clear', 'storm', 'clear'], ambience: 'wind', music: 'spark',
     landmark: { kind: 'windmills', name: 'Windradfeld' },
     professor: { name: 'Volt', title: 'Professor Volt', focus: 'Energie und Elektro-Taschis' },
-    gym: { leader: 'Käpt’n Volt', ace: 'blitzi', level: 14, mechanic: 'switches', theme: 'Generator-Arena',
+    gym: { leader: 'Käpt’n Watt', ace: 'blitzi', level: 14, mechanic: 'switches', theme: 'Generator-Arena',
       intro: 'Strom fließt nur durch geschlossene Kreise! Bring alle Generatoren zum Laufen, dann kämpfen wir.', defeat: 'Ha! Volle Ladung – das Funken-Siegel ist deins!' },
     champion: { name: 'Donnerfürstin Edda', ace: 'blitzor', intro: 'Ich bin die Ruhe vor dem Sturm. Und dann der Sturm.', defeat: 'Du leuchtest heller als jeder Blitz. Weiter zum Blütenhain!' },
     puzzle: { kind: 'plates', name: 'Transformator-Platten', hint: 'Schiebe die Spulen auf die Kontaktplatten. Jede Platte braucht genau eine Spule.' },
@@ -114,7 +114,7 @@ export const REGIONS = [
     professor: { name: 'Bork', title: 'Professor Bork', focus: 'Insekten und Waldökologie' },
     gym: { leader: 'Forscher Nilo', ace: 'kaeferli', level: 19, mechanic: 'maze', theme: 'Heckenlabyrinth',
       intro: 'Im Wald verliert man sich leicht. Achte auf die Blätter, die anders schimmern.', defeat: 'Du hast den verborgenen Pfad gefunden – das Wald-Siegel ist verdient.' },
-    champion: { name: 'Waldmeister Rian', ace: 'kaeferli', intro: 'Der Wald prüft jeden. Heute prüfe ich dich.', defeat: 'Die Bäume flüstern deinen Namen. Weiter zur Sturmklippe!' },
+    champion: { name: 'Waldmeister Hagen', ace: 'kaeferli', intro: 'Der Wald prüft jeden. Heute prüfe ich dich.', defeat: 'Die Bäume flüstern deinen Namen. Weiter zur Sturmklippe!' },
     puzzle: { kind: 'maze', name: 'Wurzelpfad', hint: 'Zwischen den Wurzeln glimmen manche Blätter. Folge ihnen.' },
     cave: 'Flüsterhöhle', guild: 1,
     npcs: [
@@ -139,7 +139,7 @@ export const REGIONS = [
     professor: { name: 'Aeris', title: 'Professorin Aeris', focus: 'Thermik und Flugbahnen' },
     gym: { leader: 'Jette vom Team Funke', ace: 'knister', level: 21, mechanic: 'switches', theme: 'Windkanal-Arena',
       intro: 'Die Ventilatoren müssen alle im Gleichtakt laufen. Schaffst du das?', defeat: 'Du fliegst wirklich hoch! Hier ist das Sturm-Siegel.' },
-    champion: { name: 'Sturmmeister Taro', ace: 'flatterling', intro: 'Der Wind entscheidet, wer fliegt. Heute entscheide ich.', defeat: 'Hoch hinaus, Champion. Im Süden glüht schon das Glutland.' },
+    champion: { name: 'Sturmmeister Arvid', ace: 'flatterling', intro: 'Der Wind entscheidet, wer fliegt. Heute entscheide ich.', defeat: 'Hoch hinaus, Champion. Hinter dem Nordtor glüht schon das Glutland.' },
     puzzle: { kind: 'crystals', name: 'Spiegel der Windwacht', hint: 'Drehe die Spiegel, bis das Sonnenlicht den Turm erreicht.' },
     villageQuest: 'Winddorf',
     npcs: [
@@ -188,8 +188,8 @@ export const REGIONS = [
     landmark: { kind: 'observatory', name: 'Sternwarte Lichtenau' },
     professor: { name: 'Nova', title: 'Professorin Nova', focus: 'Sternbilder und die 16 Lichter' },
     gym: { leader: 'Meisterin Aurelia', ace: 'blitzor', level: 27, mechanic: 'crystals', theme: 'Planetarium-Arena',
-      intro: 'Lenke das Sternenlicht durch die Spiegel zum Tor. Dann zeig mir dein Licht.', defeat: 'Deine Reise hat gerade erst begonnen – und doch strahlst du schon. Das Stern-Siegel ist deins.' },
-    champion: { name: 'Sternenhüter Aven', ace: 'funkli', intro: 'Die Sterne haben mir deinen Besuch angekündigt.', defeat: 'Ein neuer Stern ist aufgegangen. Das Nebelmoor liegt im Süden.' },
+      intro: 'Lenke das Sternenlicht durch die Spiegel zum Tor. Dann zeig mir dein Licht.', defeat: 'Die Hälfte deiner Reise liegt hinter dir – und du strahlst schon jetzt. Das Stern-Siegel ist deins.' },
+    champion: { name: 'Sternenhüter Aven', ace: 'funkli', intro: 'Die Sterne haben mir deinen Besuch angekündigt.', defeat: 'Ein neuer Stern ist aufgegangen. Hinter dem Nordtor wartet das Nebelmoor.' },
     puzzle: { kind: 'switches', name: 'Sternbild-Steine', hint: 'Ein Sternbild ist vollständig, wenn alle Steine leuchten. Jeder Stein beeinflusst seine Nachbarn.' },
     npcs: [
       { role: 'handwerker', name: 'Linsenschleifer Benedikt', lines: { pre: ['Ich schleife Linsen für die Sternwarte. Eine Linse braucht drei Monate.'], post: ['Aurelia ist die beste Trainerin, die ich kenne. Sie kehrt angeblich als Großmeisterin zurück.'], done: ['Siehst du den neuen Stern? Ich hab ihn nach dir benannt.'] } },
@@ -337,7 +337,7 @@ export const REGIONS = [
     professor: { name: 'Luna', title: 'Professorin Luna', focus: 'Gezeiten und Mondphasen' },
     gym: { leader: 'Lio der Mondbucht', ace: 'funkli', level: 40, mechanic: 'order', theme: 'Gezeiten-Arena',
       intro: 'Die Mondphasen wechseln in fester Folge. Tritt auf die Platten in der richtigen Reihenfolge.', defeat: 'Du folgst dem Mond wie die Flut. Das Mond-Siegel gehört dir.' },
-    champion: { name: 'Mondmeisterin Nova', ace: 'geisterchen', intro: 'Bei Mondlicht kämpfe ich am besten. Leider für dich.', defeat: 'Der Mond verneigt sich. Weiter zur Sonnenhöhe.' },
+    champion: { name: 'Mondmeisterin Selene', ace: 'geisterchen', intro: 'Bei Mondlicht kämpfe ich am besten. Leider für dich.', defeat: 'Der Mond verneigt sich. Weiter zur Sonnenhöhe.' },
     puzzle: { kind: 'runes', name: 'Mondphasen-Säulen', hint: 'Die Muscheln am Strand zeigen die Phase, die jede Säule tragen muss.' },
     cave: 'Mondhöhle', legend: 'mondhueter',
     npcs: [
@@ -409,8 +409,8 @@ export const GYM_ORDER = REGIONS.map(r => r.gym.leader);
 
 // Star League (unchanged names/aces/levels from v1)
 export const STAR_LEAGUE = [
-  { name: 'Hüterin des Waldes', ace: 'bluetling', level: 46, types: ['pflanze', 'erde'], intro: 'Der Wald ist geduldig. Ich auch.' },
-  { name: 'Hüter des Meeres', ace: 'panzerlon', level: 49, types: ['wasser', 'eis'], intro: 'Das Meer gibt nichts zurück. Ich auch nicht.' },
+  { name: 'Hüterin des Waldes', ace: 'bluetling', level: 50, types: ['pflanze', 'erde'], intro: 'Der Wald ist geduldig. Ich auch.' },
+  { name: 'Hüter des Meeres', ace: 'panzerlon', level: 51, types: ['wasser', 'eis'], intro: 'Das Meer gibt nichts zurück. Ich auch nicht.' },
   { name: 'Hüterin der Berge', ace: 'felsling', level: 52, types: ['gestein', 'erde'], intro: 'Berge weichen nicht.' },
   { name: 'Hüter des Sturms', ace: 'blitzor', level: 55, types: ['elektro', 'flug'], intro: 'Spürst du die Spannung?' },
   { name: 'Sternenmeisterin Lyra', ace: 'glutdrach', level: 58, types: ['feuer', 'geist', 'normal'], intro: 'Sechzehn Lichter haben dich hierher geführt. Lass uns sehen, ob sie richtig gewählt haben.' }

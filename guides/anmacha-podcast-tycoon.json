@@ -324,6 +324,14 @@
         "🚐 Vom Medienhafen führt die Autobahn nach Osten in die zweite Stadt Wellenburg (mit Raststätte „Funkpause“). Fahrt mit Gisela hin: Die erste Ankunft startet eine Szene und bringt 200 🎟️ plus eine Idee, jede weitere 40 🎟️. Am selben Tag gibt die Abendfolge als Roadtrip-Folge +10 % Hörer.",
         "In Wellenburg warten Radio-Messe (Mischpult und Quiz), das Studio von Radio Funkloch (Kabel), der Campingplatz (Pause) und ein Plattenladen (Platten fangen)."
       ]
+    },
+    {
+      "t": "Aufträge (❗ und ❔)",
+      "p": [
+        "📋 In der Stadt und in den Welten warten Auftraggeber mit einem ❗ über dem Kopf (Story-Aufträge) oder einem ❔ (Tagesjobs). Sprich sie an: Eine kurze Szene erklärt den Auftrag, danach zeigt eine orange Lichtsäule das nächste Ziel, auch auf der Karte.",
+        "Ein Auftrag hat mehrere Schritte: hinfahren (manchmal auf Zeit oder nur im Auto), Teile einsammeln, Leute befragen, Gäste begleiten (sie steigen mit ins Auto), ein Minispiel vor Ort oder eine Rangelei mit Rauschmanns Leuten. Der Fortschritt bleibt erhalten, auch wenn du zwischendurch ein Gebäude betrittst.",
+        "Es gibt 10 Story-Aufträge, die nacheinander freigeschaltet werden, und jeden Tag 3 neue Tagesjobs (Kurier, Funken-Regen, Fotojob). Belohnung: Fan-Punkte, Abos, Themen-Funken und manchmal eine Idee. Übersicht und Abbrechen im Gesamtmenü unter „📋 Auftragsbuch“."
+      ]
     }
   ],
   "ratgeber": [
@@ -480,6 +488,22 @@
         "51 Sterne gibt es in der Story. Für 3 Sterne: viele Funken aller Farben, alle Goldenen Erinnerungen, Perfekt-Treffer im Ring und Jingles bei sinkendem Hype. Profi-Mikrofone und Jingle-Paket aus dem Fanshop helfen.",
         "Nach jedem Kapitel kannst du die echte Folge direkt im Spiel anhören."
       ]
+    },
+    {
+      "t": "Alle Story-Aufträge",
+      "list": [
+        "1 Das verschwundene Mikro (Sanne, Funkhaus): 5 Mikro-Teile sammeln, ins Tonstudio, zurück ins Funkhaus.",
+        "2 Eilzustellung für Kanal 9 (Jonas, Radio-Lounge): in 90 s mit einem Auto zu Kanal 9, Mia sprechen, Kamera-Minispiel.",
+        "3 Rauschen über dem Meer (Edda, Leuchtturm): 4 Störsender finden, Funksignale nachspielen, Kabel-Kalle an der Druckerei stellen.",
+        "4 Star-Gast abholen (Bea, Music Arena): Conny Glitzer ins Funkhaus begleiten – am schnellsten mit dem Auto.",
+        "5 Koffein-Notfall (Tim, Empfang): ins Café, dann in 75 s zurück zum Empfang.",
+        "6 Die große Straßenumfrage (Lale, Quizbühne): Olaf an der Druckerei, Helga am Radio-Museum, Jule am Merch-Stand befragen, dann zurück.",
+        "7 Die verschollene Erstpressung (Rudi, Klavierlicht): im Auto nach Wellenburg zum Plattenladen, Fang-Minispiel, in 150 s im Auto zurück.",
+        "8 Strom für das Festival (Kemal, Hauptbühne): 6 Kabeltrommeln sammeln, Bühne verkabeln.",
+        "9 Showdown bei Radio Funkloch (Edda, Funkerhütte): nach Wellenburg, Störsender abklemmen, Ralf Rauschmann stellen.",
+        "10 Live vom Fernsehturm (Jonas, Fernsehturm): Turmwart Bernd sprechen, Pointen-Minispiel.",
+        "Tipp: Minispiel nicht geschafft? Einfach nochmal starten. Zeit abgelaufen? Der Schritt beginnt neu."
+      ]
     }
   ],
   "faq": [
@@ -506,6 +530,10 @@
     {
       "q": "Wo ist das Menü in der Stadt?",
       "a": "Drück ⏸, Esc oder Start: Dann öffnet sich das Gesamtmenü mit allen Funktionen. Alternativ am Empfang im Funkhaus. Viele Menüpunkte haben außerdem einen eigenen Ort in der Stadt (Funkhaus, Läden, Senderhäuser, die Häuser von Andrew und Marco)."
+    },
+    {
+      "q": "Ruckelt das Spiel auf meinem Handy?",
+      "a": "Das Spiel passt die Bildschärfe automatisch an, bis es flüssig läuft, und zeichnet weit entfernte Dinge im Nebel gar nicht erst. In den Einstellungen kannst du die Grafik zusätzlich auf „Niedrig“ stellen."
     }
   ]
 }
