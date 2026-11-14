@@ -113,9 +113,10 @@
       typing = setInterval(() => { k += 2; if (k >= t.length) { clearInterval(typing); typing = null; txt.innerHTML = full; return; } txt.textContent = t.slice(0, k).replace(/\{\w*\}?$/, '').replace(/\{\w+\}/g, '…'); }, 16);
       if (H) AMC.Audio.sfx('talk');
       if (AMC.Studio && AMC.Studio.react && AMC.Studio.mode === 'menu') AMC.Studio.react(w, t);
+      if (AMC.Voice) AMC.Voice.say(w, t);
     }
     function nextLine() { if (typing) { clearInterval(typing); typing = null; txt.innerHTML = full; return; } i++; if (i >= lines.length) done(); else show(); }
-    function done() { clearInterval(typing); if (AMC.Studio && AMC.Studio.react) AMC.Studio.react(null); if (!s.closed) { s.closed = true; UI.close(s); cb && cb(); } }
+    function done() { clearInterval(typing); if (AMC.Voice) AMC.Voice.stop(); if (AMC.Studio && AMC.Studio.react) AMC.Studio.react(null); if (!s.closed) { s.closed = true; UI.close(s); cb && cb(); } }
     el.querySelector('#dlgNext').onclick = nextLine; el.querySelector('#dlgSkip').onclick = done;
     el.addEventListener('pointerdown', e => { if (!e.target.closest('button')) nextLine(); });
     s.o.onKey = () => { if (I.hit('jump') || I.hit('act')) { nextLine(); return true; } return false; };
@@ -205,14 +206,40 @@
     const end = e => { for (const p of e.changedTouches) if (p.identifier === id) { id = null; I.touch.mx = I.touch.my = 0; knob.style.transform = ''; } };
     stick.addEventListener('touchend', end); stick.addEventListener('touchcancel', end);
     function move(p) { let dx = p.clientX - cx, dy = p.clientY - cy; const l = Math.hypot(dx, dy); if (l > R) { dx *= R / l; dy *= R / l; } knob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; I.touch.mx = dx / R; I.touch.my = -dy / R; }
-    const MAP = { a: 'jump', x: 'act', b: 'dodge', y: 'swap', radio: 'radio', pause: 'pause' };
+    const MAP = TOUCH_FIRE;
     t.querySelectorAll('.tb').forEach(b => {
       const k = b.dataset.k;
-      b.addEventListener('touchstart', e => { e.preventDefault(); held[k] = true; if (k === 'a') I.touch.jump = true; I.fire(MAP[k]); if (k === 'a' || k === 'x') I.fire('ok'); b.classList.add('down'); }, { passive: false });
+      b.addEventListener('touchstart', e => { e.preventDefault(); held[k] = true; if (k === 'a') I.touch.jump = true; [].concat(MAP[k]).forEach(f => I.fire(f)); if (k === 'a' || k === 'x') I.fire('ok'); b.classList.add('down'); }, { passive: false });
       const up = e => { e.preventDefault(); held[k] = false; if (k === 'a') I.touch.jump = false; b.classList.remove('down'); };
       b.addEventListener('touchend', up); b.addEventListener('touchcancel', up);
-      b.addEventListener('click', () => { if (I.device !== 'touch') I.fire(MAP[k]); });
+      b.addEventListener('click', () => { if (I.device !== 'touch') [].concat(MAP[k]).forEach(f => I.fire(f)); });
     });
+    UI.touchCtx(touchCtx);
+  };
+  // Knöpfe passen sich dem Ort an: gleiche Positionen wie am Controller (Ⓐ Ⓧ Ⓑ Ⓨ), Symbol und Beschriftung zeigen, was sie gerade tun
+  const TOUCH_FIRE = { a: 'jump', x: 'act', b: 'dodge', y: 'swap', radio: 'radio', pause: 'pause' };
+  const TOUCH_CTX = {
+    city: { a: ['⤴', 'Springen', 'jump'], x: ['📣', 'Welle', 'act'], b: ['💨', 'Ausweichen', 'dodge'], y: ['⇄', 'Wechseln', 'swap'] },
+    home: { a: ['👆', 'Benutzen', 'act'], x: ['👆', 'Benutzen', 'act'], b: ['🚪', 'Raus', ['back', 'dodge']], y: ['⇄', 'Wechseln', 'swap'] },
+    sender: { a: ['💃', 'Tanzen', 'jump'], x: ['👆', 'Benutzen', 'act'], b: ['🚪', 'Raus', ['back', 'dodge']], y: ['⇄', 'Wechseln', 'swap'] }
+  };
+  let touchCtx = 'city';
+  UI.touchCtx = function (ctx, over) {
+    touchCtx = TOUCH_CTX[ctx] ? ctx : 'city';
+    const c = curCtx = Object.assign({}, TOUCH_CTX[touchCtx], over), t = U.$('touch'); if (!t) return;
+    ['a', 'x', 'b', 'y'].forEach(k => { const b = t.querySelector('.tb[data-k=' + k + ']'); if (!b) return; TOUCH_FIRE[k] = c[k][2]; b.innerHTML = c[k][0] + '<small>' + c[k][1] + '</small>'; b.setAttribute('aria-label', c[k][1]); b.classList.remove('hot'); });
+    t.dataset.ctx = touchCtx; hintTxt = null;
+  };
+  // Der „Benutzen“-Knopf (Ⓧ, in Häusern Ⓐ) zeigt die Aktion in der Nähe direkt an und leuchtet – gleiche Taste wie am Controller/Tastatur
+  let hintTxt = null, curCtx = TOUCH_CTX.city;
+  UI.touchHint = function (label) {
+    const t = U.$('touch'); if (!t || t.hidden) return;
+    const txt = label ? String(label).replace(/<[^>]*>/g, '').trim() : null; if (txt === hintTxt) return; hintTxt = txt;
+    const k = ['x', 'a'].find(q => [].concat(curCtx[q][2]).includes('act')) || 'x', b = t.querySelector('.tb[data-k=' + k + ']'); if (!b) return;
+    if (!txt) { const c = curCtx[k]; b.innerHTML = c[0] + '<small>' + c[1] + '</small>'; b.classList.remove('hot'); return; }
+    const m = txt.match(/^(\S+)\s+(.*)$/), icon = m && !/[A-Za-zÄÖÜäöü0-9]/.test(m[1]) ? m[1] : '👆';
+    let word = (m && icon !== '👆' ? m[2] : txt).split(' · ')[0].split(/:\s*/).pop().trim(); while (word.length > 14 && word.includes(' ')) word = word.slice(word.indexOf(' ') + 1); if (word.length > 15) word = word.slice(0, 14) + '…';
+    b.innerHTML = icon + '<small>' + U.esc(word) + '</small>'; b.classList.add('hot');
   };
   UI.showTouch = on => { const t = U.$('touch'); t.hidden = !(on && I.device === 'touch'); };
   root.addEventListener('pointerdown', e => { if (e.target.closest && e.target.closest('.sh-mini')) UI.pointerHeld = true; });

@@ -126,6 +126,12 @@
         { t: 'partners', n: 4, lv: 3, st: 'live', txt: 'In 4 Läden Ruf ★★★ erreichen' },
         { t: 'talk', who: { name: 'Bürgermeisterin Hilde', seed: 2607 }, st: 'live', txt: 'Der Bürgermeisterin berichten', lines: [['Bürgermeisterin Hilde', 'Vier Läden, ein ganzes Viertel – alle stehen hinter euch. Rauschmann kriegt keine Frequenz!'], ['marco', 'Die Medienstadt gehört den Hörern.']] }],
       outro: [['Bürgermeisterin Hilde', 'Ab heute seid ihr offizielle Stadt-Podcaster.'], ['andrew', 'Gibt es dafür eine Schärpe?'], ['Bürgermeisterin Hilde', 'Nein.']] },
+    { id: 'allianz', icon: '📻', t: 'Die Sender-Allianz', giver: { name: 'Producer Jonas', seed: 77, st: 'radio' }, reward: { fan: 600, abos: 800, rub: { musik: 4, feel: 3 }, idea: 'Sender-Allianz: Live-Schalte in alle Senderhäuser' },
+      intro: [['Producer Jonas', 'Rauschmann kauft Werbezeit bei allen Sendern. Holt euch die Sender selbst – moderiert bei ihnen, erledigt ihre Aufträge!'], ['andrew', 'Gastmoderation? Ich hab eine Radiostimme.'], ['marco', 'Du hast eine Morgenstimme. Den ganzen Tag.']],
+      steps: [
+        { t: 'onair', n: 3, st: 'sender:rapradio24', txt: '3 Gastmoderationen mit ★★★ am On-Air-Pult (in den Senderhäusern)' },
+        { t: 'senders', n: 3, lv: 2, st: 'sender:clubradio24', txt: 'Bei 3 Sendern Ruf „Gastmoderator“ (★★) erreichen' }],
+      outro: [['Producer Jonas', 'Drei Sender stehen hinter euch. Rauschmanns Werbung läuft ins Leere!'], ['marco', 'Musik, die mich anmacht.'], ['andrew', 'Und Moderation, die mich anmacht!']] },
     { id: 'legende', icon: '🏆', t: 'Legenden der Medienstadt', giver: { name: 'Producer Jonas', seed: 77, st: 'radio' }, reward: { fan: 900, abos: 1200, rub: { feel: 4, tv: 4, fun: 4, musik: 4 }, idea: 'Jubiläumsfolge: Legenden der Medienstadt' },
       intro: [['Producer Jonas', 'Das letzte Kapitel: Werdet überall Partner, baut Gisela komplett aus – und dann die große Jubiläumsfolge vom Fernsehturm.'], ['marco', 'Das dauert.'], ['andrew', 'Legenden haben Zeit.']],
       steps: [
@@ -231,6 +237,8 @@
     if (s.t === 'rep') return !!RM && RM.level(s.kind) >= s.lv;
     if (s.t === 'gisela') return !!AMC.Camper && AMC.Camper.value() >= s.n;
     if (s.t === 'partners') return !!RM && RM.KINDS.filter(k => RM.level(k.id) >= s.lv).length >= s.n;
+    if (s.t === 'senders') return !!AMC.OnAir && AMC.OnAir.count(s.lv) >= s.n;
+    if (s.t === 'onair') return !!AMC.OnAir && AMC.OnAir.shows() >= s.n;
     return false;
   }
   function stepDone(s) {
@@ -246,6 +254,8 @@
   };
   /** Gisela ausgebaut (aus camper.js) */
   MS.camper = function () { const s = step(); if (s && s.t === 'gisela' && cond(s)) stepDone(s); };
+  /** Gastmoderation oder Sender-Ruf geändert (aus onair.js) */
+  MS.onair = function () { const s = step(); if (s && (s.t === 'senders' || s.t === 'onair') && cond(s)) stepDone(s); };
   function step() { const d = cur(); return d ? d.steps[st().step] : null; }
   function stepSetup() {
     drop(V.npc); V.npc = null; V.items.forEach(i => i.m.parent && i.m.parent.remove(i.m)); V.items = []; V.rival = false; V.timer = 0; V.miniBusy = false;
@@ -283,7 +293,7 @@
     if (V.beam.visible) { const r = V.beam.userData.ring; r.scale.setScalar(1 + Math.sin(V.t * 4) * 0.12); }
     const s = step(); if (!s) return; aim();
     if (AMC.Cut && AMC.Cut.active()) return;
-    if ((s.t === 'rep' || s.t === 'gisela' || s.t === 'partners') && cond(s)) return advance();
+    if ((s.t === 'rep' || s.t === 'gisela' || s.t === 'partners' || s.t === 'senders' || s.t === 'onair') && cond(s)) return advance();
     const p = S.pl, drv = !!S.drive, dT = V.target ? Math.hypot(V.target.x - p.x, V.target.z - p.z) : 1e9;
     if (V.timer > 0) {
       V.timer -= dt;

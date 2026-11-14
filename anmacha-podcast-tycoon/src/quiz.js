@@ -69,7 +69,7 @@
     [0, 1].forEach(p => {
       const ok = S.ans[p] === r, f = W.hosts[S.ids[p]];
       if (ok) { const pts = 100 + Math.round(Math.max(0, S.limit - S.at[p]) * 10) + (p === firstRight ? 50 : 0); S.score[p] += pts; f && f.play('yes', { fade: 0.2 }); W.particles.burst(p ? 1.6 : -1.6, 2.2, 2.3, p ? 0x3dd6ff : 0xff8a1e, 26, { speed: 5 }); }
-      else f && f.play('down', { fade: 0.2, once: true });
+      else f && f.play('crouch', { fade: 0.2 });
       setTimeout(() => f && f.play('idle', { fade: 0.4 }), 1500);
       U.$('qzS' + p).textContent = U.fmt(S.score[p]);
     });

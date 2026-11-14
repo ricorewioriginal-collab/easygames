@@ -58,8 +58,8 @@
     W.glowTex = canvasTex(64, 64, (g, w) => { const gr = g.createRadialGradient(w / 2, w / 2, 0, w / 2, w / 2, w / 2); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, w); });
     W.glowTex.encoding = T.LinearEncoding;
 
-    // Modelle (alle CC0): Quaternius-Gebäude, Kenney-Bäume/Brunnen/Felsen, easygames-Figuren
-    const files = ['bld_2Story_Mat', 'bld_1Story_Sign_Mat', 'bld_2Story_GableRoof_Mat', 'bld_2Story_Slim_Mat', 'tree', 'tree-high-round', 'fountain-round', 'rock-large'];
+    // Modelle (alle CC0): Kenney-Bäume/Brunnen/Felsen, easygames-Figuren (Stadthäuser: KayKit + Kenney, siehe W.KK/W.CC0)
+    const files = ['tree', 'tree-high-round', 'fountain-round', 'rock-large'];
     let done = 0; const total = files.length + 5, tick = l => { done++; progress && progress(done / total, l); };
     const loader = new T.GLTFLoader();
     W.models = {};
@@ -137,7 +137,8 @@
   }
   W.KK = ['kk_bench', 'kk_box_a', 'kk_box_b', 'kk_building_a', 'kk_building_b', 'kk_building_c', 'kk_building_d', 'kk_building_e', 'kk_building_f', 'kk_building_g', 'kk_building_h', 'kk_bush', 'kk_car_hatchback', 'kk_car_police', 'kk_car_sedan', 'kk_car_stationwagon', 'kk_car_taxi', 'kk_dumpster', 'kk_firehydrant', 'kk_streetlight', 'kk_trafficlight_a', 'kk_trafficlight_b', 'kk_trafficlight_c', 'kk_trash_a', 'kk_trash_b', 'kk_watertower',
     'kf_armchair', 'kf_armchair_pillows', 'kf_bed_double_a', 'kf_bed_single_a', 'kf_book_set', 'kf_cabinet_medium_decorated', 'kf_cabinet_small', 'kf_chair_a', 'kf_chair_a_wood', 'kf_chair_b', 'kf_chair_stool', 'kf_couch', 'kf_couch_pillows', 'kf_lamp_standing', 'kf_lamp_table', 'kf_pictureframe_large_a', 'kf_pictureframe_medium', 'kf_pillow_a', 'kf_rug_oval_a', 'kf_rug_rectangle_a', 'kf_rug_rectangle_stripes_a', 'kf_shelf_a_big', 'kf_shelf_b_large_decorated', 'kf_table_low', 'kf_table_medium', 'kf_table_medium_long', 'kf_table_small'];
-  W.CC0 = ['skyscraper_a', 'skyscraper_b', 'skyscraper_c', 'building_a', 'building_b', 'building_c', 'building_d', 'building_e', 'sedan', 'taxi', 'van', 'police_car', 'delivery_van', 'cargo_ship', 'satellite_dish', 'tree_palm', 'tent', 'bush', 'campfire', 'crate', 'barrels'];
+  W.CC0 = ['skyscraper_a', 'skyscraper_b', 'skyscraper_c', 'building_a', 'building_b', 'building_c', 'building_d', 'building_e', 'sedan', 'taxi', 'van', 'police_car', 'delivery_van', 'cargo_ship', 'satellite_dish', 'tree_palm', 'tent', 'bush', 'campfire', 'crate', 'barrels',
+    'building_f', 'building_g', 'building_h', 'tree_oak', 'tree_autumn', 'tree_pine', 'bush_large', 'flower_red', 'suv', 'hatchback_sports', 'garbage_truck', 'ambulance', 'firetruck'];
   /** Einzelnes Modell als Gruppe (geteilte Geometrie), Boden-Mitte im Ursprung; s = Zielgröße (Breite/Länge oder mit byHeight Höhe). */
   W.prop = function (name, s, opts) {
     const M = W.models[name]; if (!M) return null; opts = opts || {};

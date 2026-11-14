@@ -71,10 +71,10 @@
       if (worlds) continue;   // rundherum liegen Hafen, Insel, Berg und das RicoReWi-Universum
       const b = W.box(w, h, w, skyMat, Math.cos(a) * rr, h / 2, Math.sin(a) * rr, g, false); b.rotation.y = -a;
     }
-    // Gebäude je Block (Quaternius, als Instanzen)
-    const types = ['bld_2Story_Mat', 'bld_1Story_Sign_Mat', 'bld_2Story_GableRoof_Mat', 'bld_2Story_Slim_Mat'].filter(t => W.models[t]);
+    // Gebäude je Block: bunte KayKit-Stadthäuser (Läden mit Markisen, Wassertürme) und Kenney-Geschäftshäuser, als Instanzen
+    const types = ['kk_building_a', 'kk_building_b', 'kk_building_c', 'kk_building_d', 'kk_building_e', 'kk_building_f', 'kk_building_g', 'kk_building_h', 'building_c', 'building_f', 'building_g', 'building_h'].filter(t => W.models[t]);
     const place = {}; types.forEach(t => (place[t] = []));
-    const trees = [], treesB = [], flat = [];
+    const trees = [], treesB = [], flat = [], flowers = [], hedges = [];
     BLOCKS.forEach(bx => BLOCKS.forEach(bz => {
       if (bx === 22.5 && bz === -22.5) return;   // Funkhaus
       if (bx === PARK.x && bz === PARK.z) return;   // Park / Bühne
@@ -84,7 +84,7 @@
       const spots = [[bx - 8, bz - sz * 9, sz > 0 ? 0 : Math.PI], [bx + 8, bz - sz * 9, sz > 0 ? 0 : Math.PI], [bx - sx * 9, bz + sz * 8, sx > 0 ? Math.PI / 2 : -Math.PI / 2]];
       spots.forEach((sp, i) => {
         if (!types.length) return;
-        const t = types[Math.floor(rng() * types.length)], w = 12 + rng() * 2.5;
+        const t = types[Math.floor(rng() * types.length)], w = (t.startsWith('kk_') ? 11 : 10.5) + rng() * 2.5;
         place[t].push({ x: sp[0], z: sp[1], rot: sp[2], s: w, i });
       });
       // Flachbau mit Kisten-Treppe (begehbares Dach)
@@ -92,11 +92,16 @@
       flat.push({ x: fx, z: fz, w: 9, d: 8, h: fh, sx, sz });
       trees.push({ x: bx + sx * 15.5, z: bz - sz * 1, rot: rng() * 6, s: 4.2 + rng() });
       treesB.push({ x: bx - sx * 1, z: bz + sz * 15.5, rot: rng() * 6, s: 5.5 + rng() * 1.5 });
+      // Straßengrün: Baumreihe am Gehweg, Blumenbeete und Hecken an den Ecken
+      const hs = Math.abs(Math.sin(bx * 12.9898 + bz * 78.233)) * 6;   // eigene Streuung, damit die übrige Stadt-Anordnung gleich bleibt
+      [-11, 11].forEach(o => trees.push({ x: bx + o, z: bz + sz * 16, rot: hs + o, s: 4 + (hs % 1) * 1.2 }));
+      flowers.push({ x: bx - sx * 15.6, z: bz - sz * 15.6, rot: hs, s: 1.3 }, { x: bx - sx * 13.8, z: bz - sz * 15.8, rot: hs * 2, s: 1.1 }, { x: bx - sx * 15.8, z: bz - sz * 13.8, rot: hs * 3, s: 1.1 });
+      hedges.push({ x: bx + sx * 15.6, z: bz + sz * 15.6, rot: hs, s: 2.2 + (hs % 1) * 0.6 });
     }));
     const doors = [];
     for (const t of types) {
       const dims = W.instances(g, t, place[t]);
-      place[t].forEach((p, i) => { const d = dims[i]; if (d) { addBox(p.x - d.w / 2, p.x + d.w / 2, p.z - d.d / 2, p.z + d.d / 2, d.h * (t.includes('Gable') ? 0.72 : 1)); doors.push({ p, d }); } });
+      place[t].forEach((p, i) => { const d = dims[i]; if (d) { addBox(p.x - d.w / 2, p.x + d.w / 2, p.z - d.d / 2, p.z + d.d / 2, d.h); doors.push({ p, d }); } });
     }
     // Jedes Gebäude betretbar: Tür zur nächsten Straße, Schild, Ort im Inneren (rooms.js)
     if (S.mode === 'free' && !S.cfg.net && AMC.Rooms) {
@@ -139,7 +144,14 @@
     });
     buildVenues(g, flat);
     // Bäume (Kenney)
-    if (!snow) { W.instances(g, 'tree', trees, { byHeight: true }); W.instances(g, 'tree-high-round', treesB, { byHeight: true }); }
+    if (!snow) {
+      // Laubbäume, Eichen, Kiefern und ein paar Herbstbäume gemischt (Kenney Nature Kit)
+      const kinds = ['tree_oak', 'tree', 'tree_oak', 'tree_pine', 'tree-high-round', 'tree_autumn'].filter(k => W.models[k]), byK = {};
+      trees.concat(treesB).forEach((t, i) => { const k = kinds[(i * 7 + Math.abs(Math.floor(t.x * 3 + t.z))) % kinds.length] || 'tree'; (byK[k] = byK[k] || []).push(k === 'tree_pine' ? Object.assign({}, t, { s: t.s * 1.25 }) : t); });
+      for (const k in byK) W.instances(g, k, byK[k], { byHeight: true });
+      if (W.models.flower_red) W.instances(g, 'flower_red', flowers, { shadow: false });
+      if (W.models.bush_large) W.instances(g, 'bush_large', hedges, { byHeight: false });
+    }
     else {
       const pine = M(0x2f5a3a, { r: 0.9 }), snowM = M(0xf4f8ff, { r: 0.8 });
       trees.concat(treesB).forEach(t => { W.cyl(0.25, 0.3, 1.4, M(0x6b4a30), t.x, 0.7, t.z, g); const c = W.cyl(0, 2.2, 4.2, pine, t.x, 3.4, t.z, g, 10); c.castShadow = true; W.cyl(0, 1.0, 1.4, snowM, t.x, 5.1, t.z, g, 10); });
@@ -178,8 +190,8 @@
 
   function buildFunkhaus(g, night) {
     const F = FUNKHAUS, M = W.mat, w = F.x1 - F.x0, d = F.z1 - F.z0, cx = (F.x0 + F.x1) / 2, cz = (F.z0 + F.z1) / 2;
-    const glassTex = W.canvasTex(256, 256, (c, W2, H) => { c.fillStyle = '#121826'; c.fillRect(0, 0, W2, H); for (let y = 0; y < H; y += 32) { c.fillStyle = night ? 'rgba(255,190,110,.55)' : 'rgba(120,170,230,.35)'; c.fillRect(0, y + 6, W2, 18); c.fillStyle = '#0a0d14'; for (let x = 0; x < W2; x += 32) c.fillRect(x, y, 3, 32); } }, [3, 2]);
-    const glass = new T.MeshStandardMaterial({ map: glassTex, roughness: 0.15, metalness: 0.6, emissive: 0xffffff, emissiveMap: glassTex, emissiveIntensity: night ? 0.7 : 0.25 });
+    const glassTex = W.canvasTex(256, 256, (c, W2, H) => { c.fillStyle = night ? '#121826' : '#3a5578'; c.fillRect(0, 0, W2, H); for (let y = 0; y < H; y += 32) { const gr = c.createLinearGradient(0, y + 6, W2, y + 24); gr.addColorStop(0, night ? 'rgba(255,190,110,.6)' : 'rgba(170,215,255,.85)'); gr.addColorStop(0.5, night ? 'rgba(255,210,140,.75)' : 'rgba(225,242,255,.95)'); gr.addColorStop(1, night ? 'rgba(255,190,110,.6)' : 'rgba(150,200,245,.85)'); c.fillStyle = gr; c.fillRect(0, y + 6, W2, 18); c.fillStyle = '#e8ebf0'; c.fillRect(0, y, W2, 3); for (let x = 0; x < W2; x += 32) c.fillRect(x, y, 3, 32); } }, [3, 2]);
+    const glass = new T.MeshStandardMaterial({ map: glassTex, roughness: 0.3, metalness: 0.1, emissive: 0xffffff, emissiveMap: glassTex, emissiveIntensity: night ? 0.7 : 0.2 });
     // Begehbar: Glasfassade als vier Wände, Eingang offen, Dach drüber (wirft keinen Schatten, damit innen Tageslicht ist)
     const inner = M(0xece4d6, { r: 0.85 }), band = M(0xff8a1e, { e: 0xff6a00, ei: 0.8 }), T2 = 0.6, dl = F.door.x - 1.6, dr = F.door.x + 1.6;
     const wall = (x0, x1, z0, z1, y0, y1, inFace) => { const mats = [glass, glass, glass, glass, glass, glass]; mats[inFace] = inner; const m = W.box(x1 - x0, y1 - y0, z1 - z0, mats, (x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2, g, false); addBox(x0, x1, z0, z1, y1, y0); return m; };
@@ -205,9 +217,9 @@
     S.doorMesh = doorMesh;
     // Riesen-Mikrofon vor dem Funkhaus (Wahrzeichen)
     const mg = new T.Group(); mg.position.set(door.x - 8, 0.16, F.z1 + 6); g.add(mg);
-    W.cyl(1.4, 1.6, 0.5, M(0x16171c, { r: 0.3, m: 0.6 }), 0, 0.25, 0, mg);
-    W.cyl(0.12, 0.12, 4.5, M(0x2c2e38, { m: 0.8, r: 0.3 }), 0, 2.7, 0, mg);
-    const head = new T.Mesh(new T.SphereGeometry(1, 24, 16), M(0x9aa0ad, { m: 0.9, r: 0.25 })); head.scale.set(0.9, 1.25, 0.9); head.position.y = 5.8; head.castShadow = true; mg.add(head);
+    W.cyl(1.4, 1.6, 0.5, M(0x3a3d48, { r: 0.5, m: 0.2 }), 0, 0.25, 0, mg);
+    W.cyl(0.12, 0.12, 4.5, M(0x6a6e7a, { m: 0.3, r: 0.4 }), 0, 2.7, 0, mg);
+    const head = new T.Mesh(new T.SphereGeometry(1, 24, 16), M(0xc4c9d4, { m: 0.25, r: 0.35 })); head.scale.set(0.9, 1.25, 0.9); head.position.y = 5.8; head.castShadow = true; mg.add(head);
     W.cyl(0.95, 0.95, 0.3, M(0xff8a1e, { e: 0xff6a00, ei: 0.7 }), 0, 4.9, 0, mg);
     addBox(door.x - 9.6, door.x - 6.4, F.z1 + 4.4, F.z1 + 7.6, 0.5); addBox(door.x - 8.3, door.x - 7.7, F.z1 + 5.7, F.z1 + 6.3, 9);
   }
@@ -429,7 +441,7 @@
     pushOut(e, 0.38);
     // Decke (unter Plattformen)
     const gr = groundAt(e.x, e.z, e.y);
-    if (e.y <= gr) { if (!e.onGround && e.vy < -6) e.landT = 0.18; e.y = gr; e.vy = 0; e.onGround = true; e.jumps = 0; }
+    if (e.y <= gr) { if (!e.onGround && e.vy < -6) { e.landT = 0.18; if (e === S.pl && W.particles) W.particles.burst(e.x, gr + 0.1, e.z, 0x8a8478, 10, { speed: 2.4, up: 0.5, size: 0.32 }); } e.y = gr; e.vy = 0; e.onGround = true; e.jumps = 0; }
     else if (e.y > gr + 0.05) e.onGround = false;
     if (e.y < -20) { e.x = FUNKHAUS.door.x; e.z = FUNKHAUS.door.z + 4; e.y = 2; e.vy = 0; }
     const sp = Math.hypot(e.vx, e.vz);
@@ -449,6 +461,7 @@
     if (sp < 3.2) return setAnim(e, 'walk');
     if (sp < 8.6) { setAnim(e, 'jog'); e.fig && e.fig.speed(sp / 6.5); return; }
     setAnim(e, 'sprint'); e.fig && e.fig.speed(sp / 10);
+    if (e === S.pl && W.particles && (e.dustN = (e.dustN || 0) + 1) % 8 === 0) W.particles.burst(e.x, e.y + 0.08, e.z, 0x7a766c, 3, { speed: 1.2, up: 0.4, size: 0.26 });   // Staub beim Sprinten
   }
 
   // ------------------------------------------------------------------ Start eines Levels
@@ -678,7 +691,7 @@
       else if (S.left > 0 || S.mode === 'jagd' || (S.ch && S.type !== 'free')) { te.hidden = false; te.textContent = '⏱ ' + U.time(S.left); te.classList.toggle('warn', S.left < 20); } else te.hidden = true;
       U.$('hEn').style.width = S.energy + '%';
       const pr = U.$('hPrompt'), near = interactTarget();
-      pr.innerHTML = near ? AMC.glyph('x') + ' ' + near.label : '';
+      pr.innerHTML = near ? AMC.glyph('x') + ' ' + near.label : ''; if (AMC.UI.touchHint) AMC.UI.touchHint(near ? near.label : null);
       if (S.boss) { const b = U.$('hBoss'); b.hidden = S.boss.state === 'intro'; U.$('hBossBar').style.width = (S.boss.hp / S.boss.max * 100) + '%'; }
     }
     if (S.msgT > 0 && (S.msgT -= dt) <= 0) { const m = U.$('hMsg'); m && m.classList.remove('on'); }
@@ -901,11 +914,11 @@
       p.dodge = 0.42; p.cd2 = 0.75; const dx = mag > 0.1 ? wx : Math.sin(p.yaw), dz = mag > 0.1 ? wz : Math.cos(p.yaw); p.vx = dx * 15; p.vz = dz * 15; AMC.Audio.sfx('dash');
     }
     const it = interactTarget(), held = I.keys.has('KeyE') || I.keys.has('Enter') || padHeld(2) || AMC.UI.touchHeld('x');
-    if (S.net === 'guest') { if (I.hit('act')) { if (!it || !it.hold) { if (!(p.cd > 0)) { doWave(p, true); p.cd = 0.9; p.busy = 0.35; setAnim(p, 'push', { speed: 1.6, once: true, restart: true }); AMC.Audio.sfx('wave'); } } S.events.push(['act']); } S.holding = !!(it && it.hold && held); if (S.holding) { p.busy = 0.1; setAnim(p, 'knock'); } }
+    if (S.net === 'guest') { if (I.hit('act')) { if (!it || !it.hold) { if (!(p.cd > 0)) { doWave(p, true); p.cd = 0.9; p.busy = 0.35; setAnim(p, 'push', { speed: 1.6, once: true, restart: true }); AMC.Audio.sfx('wave'); } } S.events.push(['act']); } S.holding = !!(it && it.hold && held); if (S.holding) { p.busy = 0.1; setAnim(p, 'push'); } }
     else if (I.hit('act')) { if (it && it.run) it.run(); else if (!it || !it.hold) doWave(); }
     if (!S) return;   // Aktion hat die Stadt verlassen (z. B. Senderhaus betreten)
     if (S.net !== 'guest' && it && it.hold && held) {
-      const r = it.hold; r.prog += dt / (H.id === 'marco' ? 0.8 : 1.6); p.busy = 0.1; setAnim(p, 'knock');
+      const r = it.hold; r.prog += dt / (H.id === 'marco' ? 0.8 : 1.6); p.busy = 0.1; setAnim(p, 'push');
       if (Math.random() < dt * 12) W.particles.burst(r.x, r.y + 1, r.z, 0x3dd6ff, 3, { speed: 3, life: 0.4 });
       if (r.prog >= 1) { r.fixed = true; r.led.material.color.set(0x30ff60); r.gl.material.color.set(0x30ff60); AMC.Audio.sfx('perfect'); msg('🔧 Verteiler läuft wieder!', 2); S.score += 500; W.particles.burst(r.x, r.y + 1.2, r.z, 0x30ff60, 30); }
     }

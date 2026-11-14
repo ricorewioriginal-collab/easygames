@@ -119,7 +119,7 @@
     R.busy = R.w.busy = 1.8; if (f) f.root.rotation.y = Math.atan2(p.x - R.w.x, -1.3 - R.w.z);
     const play = a => { if (f) { f.play(a, { fade: 0.2 }); R.w.anim = a; } };
     if (u.id === 'bett') { play('crouch'); n.energy = Math.min(100, n.energy + 45 * k); K.say('😴 Ein Nickerchen in Gisela. Das Dach knistert gemütlich.'); AMC.Audio.sfx('swap'); }
-    else if (u.id === 'kueche') { play('knock'); n.hunger = Math.min(100, n.hunger + 35 * k); K.say(R.who === 'andrew' ? '🍳 Andrew kocht. Marco hält den Feuerlöscher bereit.' : '🍳 Marco macht Camper-Nudeln. Mit extra Liebe.'); AMC.Audio.sfx('collect'); }
+    else if (u.id === 'kueche') { play('push'); n.hunger = Math.min(100, n.hunger + 35 * k); K.say(R.who === 'andrew' ? '🍳 Andrew kocht. Marco hält den Feuerlöscher bereit.' : '🍳 Marco macht Camper-Nudeln. Mit extra Liebe.'); AMC.Audio.sfx('collect'); }
     else if (u.id === 'sofa') { play('yes'); n.fun = Math.min(100, n.fun + 20 * k); if ((n.ideas || []).length < 3 && Math.random() < 0.5) { n.ideas.push('Roadtrip-Folge aus Gisela'); K.say('💡 Idee am Tisch: Eine Roadtrip-Folge direkt aus Gisela!'); } else K.say('💬 Ihr plant die nächste Tour. Ziel: irgendwo mit WLAN.'); }
     else if (u.id === 'heck') { play('dance'); R.busy = R.w.busy = 5; n.fun = Math.min(100, n.fun + 25 * k); const w = U.pick(D.WISHES.concat(AMC.Home.ownedSongs())); K.say('💿 Auf dem Plattenspieler: „' + w.t + '“', 5000); AMC.Audio.song(w.id).then(song => { if (song && K.alive(R)) R.stopSong = AMC.Audio.playSong(song, { from: song.mel[0][0], sec: 5, vel: 0.6 }); }).catch(() => {}); }
     else if (u.id === 'studio') return session(R);

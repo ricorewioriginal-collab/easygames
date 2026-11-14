@@ -203,7 +203,7 @@
     if (at) { const S = AMC.Play.state(), st = S.stations && S.stations.find(x => x.id === at); if (st) { S.pl.x = st.x; S.pl.z = st.z; if (S.fo) { S.fo.x = st.x + 1.2; S.fo.z = st.z + 1; } } }
     UI.showTouch(true);
     AMC.Play.msg(mode === 'jagd' ? '🏃 Themenjagd! 3 Minuten – sammle alles!' : mode === 'race' ? '🏁 Funk-Rennen! Lauf durch alle 10 Tore – die Uhr läuft!' : mode === 'free' ? '🏙️ Funkhaus-Viertel · ' + (I.device === 'touch' ? '⏸' : I.device === 'pad' ? 'Start' : 'Esc') + ' = Gesamtmenü' : '🎙️ ' + ch.title + ' – los geht\'s!', 2.6);
-    if (!Save.data.seenIntro) { Save.data.seenIntro = true; Save.save(); setTimeout(() => UI.toast(I.device === 'touch' ? 'Links bewegen, rechts wischen = Kamera. ⤴ Springen, 📣 Welle, 💨 Ausweichen, ⇄ Wechsel' : I.device === 'pad' ? 'Linker Stick laufen, rechter Stick Kamera, A springen, X Welle, RT ausweichen, Y Andrew/Marco' : 'WASD laufen, Maus ziehen = Kamera, Leertaste springen, E Welle, C ausweichen, Q wechseln, Umschalt sprinten', 7000), 800); }
+    if (!Save.data.seenIntro) { Save.data.seenIntro = true; Save.save(); setTimeout(() => !(AMC.Home.active && AMC.Home.active()) && UI.toast(I.device === 'touch' ? 'Links bewegen, rechts wischen = Kamera. ⤴ Springen, 📣 Welle, 💨 Ausweichen, ⇄ Wechsel' : I.device === 'pad' ? 'Linker Stick laufen, rechter Stick Kamera, A springen, X Welle, RT ausweichen, Y Andrew/Marco' : 'WASD laufen, Maus ziehen = Kamera, Leertaste springen, E Welle, C ausweichen, Q wechseln, Umschalt sprinten', 7000), 800); }
   }
   function cityEnd(mode, ch, res) {
     UI.showTouch(false);
@@ -384,7 +384,7 @@
     const s = UI.open('<div class="panel glass"><header><h2>⚙️ Einstellungen</h2><button class="btn small" data-nav id="eBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
       rng('sMus', '🎵 Spielmusik', st.music) + rng('sSfx', '🔊 Effekte', st.sfx) + rng('sRad', '📻 Radio & Podcast', st.radio) +
       '<label class="set"><span>🖥️ Grafik</span><select data-nav id="sQ"><option value="auto">Automatisch</option><option value="low">Niedrig (schnell)</option><option value="mid">Mittel</option><option value="high">Hoch</option></select></label>' +
-      tog('sInv', '🎥 Kamera umkehren (oben/unten)', st.invert) + tog('sShake', '📳 Bildschirm wackeln', st.shake) + tog('sSub', '💬 Sprechblasen in der Aufnahme', st.subtitles !== false) + tog('sVoice', '🗣️ Stimmen in Zwischensequenzen', st.voice !== false) +
+      tog('sInv', '🎥 Kamera umkehren (oben/unten)', st.invert) + tog('sShake', '📳 Bildschirm wackeln', st.shake) + tog('sSub', '💬 Sprechblasen in der Aufnahme', st.subtitles !== false) + tog('sVoice', '🗣️ Stimmen (Szenen, Story, Aufnahme)', st.voice !== false) +
       '<label class="set"><span>🎯 Kamera-Empfindlichkeit</span><input type="range" min="0.4" max="2" step="0.1" value="' + st.sens + '" data-nav id="sSens"></label>' +
       '<button type="button" class="btn danger" data-nav id="sReset">🗑️ Spielstand zurücksetzen</button></div>', { back: () => UI.close(s) });
     const el = s.el, $ = id => el.querySelector('#' + id);

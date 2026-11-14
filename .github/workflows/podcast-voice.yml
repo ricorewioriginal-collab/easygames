@@ -1,0 +1,30 @@
+name: AnMaCha Podcast – Sprachclips (Edge-TTS)
+on:
+  push:
+    branches-ignore: [main]
+    paths:
+      - 'anmacha-podcast-tycoon/vo/lines.json'
+      - 'tools/podcast-voice/**'
+      - '.github/workflows/podcast-voice.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  voice:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Edge-TTS und ffmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg && pip install edge-tts
+      - name: Sprachclips erzeugen
+        run: python3 tools/podcast-voice/gen-edge.py
+      - name: Clips einchecken
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add anmacha-podcast-tycoon/vo
+          if ! git diff --cached --quiet; then
+            git commit -m "AnMaCha Podcast: Sprachclips (Edge-TTS) erzeugt"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi

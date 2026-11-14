@@ -1030,7 +1030,12 @@
   const stars = n => '★'.repeat(n) + '☆'.repeat(3 - n);
   const genre = id => D.KARAOKE.find(g => g.id === id);
   const ytId = s => { s = String(s || '').trim(); const m = s.match(/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/|\/live\/)([\w-]{11})/) || s.match(/^([\w-]{11})$/); return m ? m[1] : null; };
-  const sing = { g: 'pop', song: 0, own: '', q: '', title: '', len: 60, run: null, recUrl: null, recBlob: null, ctx: null, party: null, daily: false, ultra: null };   // ctx: echtes Vorsingen in Karriere/Freiem Casting
+  const sing = { g: 'pop', song: 0, own: '', q: '', title: '', len: 60, run: null, recUrl: null, recBlob: null, ctx: null, party: null, daily: false, ultra: null, duet: false, duoName: '' };   // ctx: echtes Vorsingen in Karriere/Freiem Casting
+  // Duett (2 Mikros am SingStar-Empfänger): blau = links, rot = rechts. Beim Karaoke-Abend singen der aktuelle und der nächste Sänger.
+  function duoNames() {
+    if (sing.party) { const n = party.players.length, i = sing.party.i; return [party.players[i], party.players[(i + 1) % n]]; }
+    return [(save.profile && save.profile.name) || 'Blau', S.cleanName(sing.duoName || '') || 'Rot'];
+  }
   function openSingRound(mode) {
     const s = save.season, career = mode === 'career';
     if (career && (!s || s.status !== 'backstage')) { go('sBack'); return; }
@@ -1158,6 +1163,7 @@
       ${sing.ctx && sing.ctx.mode === 'online' ? `<p class="hint" style="text-align:left">⏱️ Online singen alle ${ONLINE_SING} Sekunden. Such dir schnell deinen Song aus – die Runde läuft schon.</p>` : `<h3>3 · Länge</h3><div class="seg">${[30, 60, 90, 0].map(n => `<button class="btn" type="button" data-sl="${n}" aria-pressed="${sing.len === n}">${n ? n + ' s' : '🎵 Ganzer Song'}</button>`).join('')}</div>`}
       ${usLine()}
       <button class="btn sm" type="button" id="singHp" aria-pressed="${!!save.settings.hp}">🎧 Ich singe mit Kopfhörern ${save.settings.hp ? '✅' : ''}</button>
+      ${plain || pt ? `<button class="btn sm" type="button" id="singDuet" aria-pressed="${!!sing.duet}">👥 Duett mit 2 Mikros (SingStar blau + rot) ${sing.duet ? '✅' : ''}</button>${sing.duet ? `<div class="panel duoSet"><p class="hint" style="text-align:left">🔵 <b>${esc(duoNames()[0])}</b> singt ins blaue, 🔴 <b>${esc(duoNames()[1])}</b> ins rote Mikro. Beide werden getrennt bewertet. Braucht den SingStar-USB-Empfänger oder ein anderes Stereo-Mikro (am PC unter Einstellungen → Mikrofon wählen).</p>${plain ? `<label class="field">Name Mikro Rot<input id="singDuoName" type="text" maxlength="16" value="${esc(sing.duoName)}" placeholder="Rot"></label>` : ''}</div>` : ''}` : ''}
       <details class="panel tips"><summary><b>ℹ️ Tipps, Datenschutz & Rechte</b></summary>
       <p class="hint" style="text-align:left">🎧 Am besten mit Kopfhörern singen, sonst hört das Mikrofon die Musik mit. Mit Kopfhörern (Knopf an) nimmt das Spiel deine Stimme ohne Echo-Filter auf – das klingt deutlich natürlicher. Die Zeit läuft ab deinem ersten Ton, „Ganzer Song“ endet mit dem Video. Passen die Noten nicht genau zum Video, schiebst du sie beim Singen mit ⏪/⏩.</p>
       <p class="hint" style="text-align:left">🔒 Ausgewertet wird nur auf deinem Gerät. Deine Aufnahme kannst du danach anhören; sie wird nicht gespeichert oder gesendet.</p>
@@ -1178,6 +1184,7 @@
     if (e.target.id === 'singTitle') sing.title = e.target.value;
     else if (e.target.id === 'singLink') { sing.own = e.target.value; sing.ch = ''; }
     else if (e.target.id === 'singQ') { sing.q = e.target.value; songRes(); }
+    else if (e.target.id === 'singDuoName') sing.duoName = e.target.value;
   });
   $('#singBox').addEventListener('click', e => {
     const us = e.target.closest('[data-us]'); if (us) { const r = sing.run; if (r && r.ultra) { const d = +us.dataset.us; r.ultra = Object.assign({}, r.ultra, { notes: r.ultra.notes.map(n => Object.assign({}, n, { t: n.t + d })) }); } return; }
@@ -1202,6 +1209,7 @@
     if (r) { const x = D.REWARDS.find(y => y.id === r.dataset.rw); if (x && S.unlocked(save, x)) { save.rew[x.type] = x.id; persist(); RENDER.sSing(); const d = $('#singBox details.rew'); if (d) d.open = true; const nb = $(`#singBox [data-rw="${x.id}"]`); if (nb) nb.focus(); } return; }
     if (e.target.closest('#singDaily')) { const ds = S.dailySong(S.dailyDay()); sing.g = ds.g; sing.song = ds.i; sing.len = 60; sing.daily = true; singStart(); return; }
     if (e.target.closest('#singFind')) { karaSearch(sing.title.trim()); return; }
+    if (e.target.closest('#singDuet')) { sing.duet = !sing.duet; RENDER.sSing(); const nb = $('#singDuet'); if (nb) nb.focus(); return; }
     if (e.target.closest('#singHp')) { save.settings.hp = !save.settings.hp; persist(); RENDER.sSing(); const nb = $('#singHp'); if (nb) nb.focus(); return; }
     if (e.target.closest('#singGo')) singStart();
     else if (e.target.closest('#singStop')) singFinish();
@@ -1254,17 +1262,22 @@
   const GRADE = { perfekt: '✨ Perfekt!', super: '🔥 Super!', gut: '👍 Gut', daneben: '😬 Daneben' };
   async function singStart() {
     if (!save.profile && !sing.party) { openAvatar('sing'); return; }
-    if (!save.settings.mic) { micConsent(() => { if (save.settings.mic) singStart(); else RENDER.sSing(); }); return; }
+    if (!save.settings.mic) { micConsent(() => { if (save.settings.mic) singStart(); else RENDER.sSing(); }, singNoMic); return; }
     const pk = singPick();
     if (sing.song === 'own' && sing.own.trim() && !pk.vid) { toast('Das ist kein YouTube-Link. Kopiere die Adresse des Videos (youtube.com/watch?v=… oder youtu.be/…).', 4000); return; }
     airStop(); A.init(); A.micStop();
-    try { await A.micStart(true, !!save.settings.hp); } catch (e) { save.settings.mic = false; persist(); micConsent(() => RENDER.sSing()); return; }
+    const duo = !!sing.duet && !sing.ctx && !sing.daily; if (A.micDuet) A.micDuet(duo);
+    try { await A.micStart(true, !!save.settings.hp); } catch (e) { if (A.micDuet) A.micDuet(false); save.settings.mic = false; persist(); micConsent(() => RENDER.sSing(), singNoMic); return; }
+    if (A.micDuet) A.micDuet(false);   // gilt nur für diesen Auftritt
+    const duet = duo && !!(A.micDuetOn && A.micDuetOn());
+    if (duo && !duet) toast('👥 Kein Stereo-Mikro erkannt – das Duett braucht den SingStar-Empfänger. Ihr singt jetzt solo.', 4500);
     if (cur !== 'sSing' || sing.run) { if (!sing.run) A.micStop(); return; }
     if (sing.recUrl) { URL.revokeObjectURL(sing.recUrl); sing.recUrl = null; sing.recBlob = null; }
     const cx = sing.ctx, career = !!(cx && cx.mode === 'career'), s = save.season;
     const run = sing.run = { pk, frames: [], started: false, acc: 0, last: performance.now(), raf: 0, chunks: [], rec: null, len: sing.len, ended: false, view: [], playId: null, done: false,
       seed: (Date.now() >>> 0) || 1, live: S.liveScorer(sing.len || 180, 0.05), turned: {}, pts: 0, party: sing.party, ph: { n: 0, ok: 0, sil: 0 },
-      mic: (D.REWARDS.find(r => r.id === save.rew.mic) || D.REWARDS[0]).color };
+      mic: duet ? '#3b82f6' : (D.REWARDS.find(r => r.id === save.rew.mic) || D.REWARDS[0]).color,
+      duet, names: duet ? duoNames() : null, frames2: [], view2: [], pts2: 0, live2: duet ? S.liveScorer(sing.len || 180, 0.05) : null };
     const ds = S.dailySong(S.dailyDay());
     run.daily = !cx && !sing.party && sing.daily && pk.vid === ds.vid && run.len === 60 ? S.dailyDay() : null;
     run.ultra = sing.ultra || null; run.t0 = performance.now();
@@ -1283,16 +1296,16 @@
     if (isOnline) run.len = ONLINE_SING;
     run.full = !run.len;   // ganzer Song: endet mit dem Video (oder spätestens nach FULL_MAX), a cappella mit „Fertig“
     if (run.full) run.len = FULL_MAX;
-    $('#singBox').innerHTML = `<header class="bar"><span></span><h2>${run.party ? '🎉 ' + esc(party.players[run.party.i]) + ': ' : run.daily ? '📅 ' : '🎙️ '}${esc(pk.title)}</h2><span></span></header>
+    $('#singBox').innerHTML = `<header class="bar"><span></span><h2>${run.duet ? '👥 ' + esc(run.names.join(' & ')) + ': ' : run.party ? '🎉 ' + esc(party.players[run.party.i]) + ': ' : run.daily ? '📅 ' : '🎙️ '}${esc(pk.title)}</h2><span></span></header>
       <div class="ssScreen${pk.vid ? '' : ' novid'}" id="singScr" data-lane="${LANES.includes(save.settings.lane) ? save.settings.lane : 'top'}">
         ${pk.vid ? `<div class="video"><iframe id="singVid" src="https://www.youtube-nocookie.com/embed/${pk.vid}?autoplay=1&rel=0&playsinline=1&enablejsapi=1${save.settings.mute ? '&mute=1' : ''}" title="Karaoke-Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>` : ''}
         <div class="ssLane"><canvas id="singCv" aria-label="Deine Töne als Notenbalken"></canvas><div class="singPop" id="singPop" aria-live="polite"></div></div>
-        <div class="ssScore"><b id="singPts">0</b><small id="singRank">${S.singTitle(0)}</small></div>
+        <div class="ssScore"><b id="singPts">0</b><small id="singRank">${S.singTitle(0)}</small></div>${run.duet ? `<div class="ssScore r2"><b id="singPts2">0</b><small>🔴 ${esc(run.names[1])}</small></div>` : ''}
         <div class="ssPhrase" id="singPhr" aria-live="polite"></div>
         <div class="ssBtns">${pk.vid ? '<button type="button" id="singLane" title="Notenbahn oben, unten oder unter dem Video" aria-label="Notenbahn verschieben">⇅</button>' : ''}${document.fullscreenEnabled ? '<button type="button" id="singFs" title="Vollbild" aria-label="Vollbild">⛶</button>' : ''}</div>
       </div>
       ${pk.vid ? `<p class="hint ssCredit">${D.KARAOKE.some(x => x.songs.some(y => y[1] === pk.vid)) ? cov(pk.title, pk.vid, 'sm') : ''}<span>${esc(pk.credit)} · <a href="https://www.youtube.com/watch?v=${pk.vid}" target="_blank" rel="noopener">YouTube ↗</a></span></p><p class="banner lose" id="singErr" hidden>Dieses Video darf hier nicht abgespielt werden. Brich ab und wähle einen anderen Song – oder sing einfach a cappella weiter.</p>` : `<p class="hint">${esc(pk.credit)}</p>`}
-      <div class="chairs" aria-label="Blind Audition: Die Jury dreht sich um, wenn du überzeugst">${run.panel.map(jur).map(j => `<div class="chair" data-c="${j.id}"><span class="back">🪑</span>${jimg(j, 'js')}<small>${esc(j.name)}</small></div>`).join('')}</div>
+      ${run.duet ? '' : `<div class="chairs" aria-label="Blind Audition: Die Jury dreht sich um, wenn du überzeugst">${run.panel.map(jur).map(j => `<div class="chair" data-c="${j.id}"><span class="back">🪑</span>${jimg(j, 'js')}<small>${esc(j.name)}</small></div>`).join('')}</div>`}
       <div class="panel singLive"><div class="singTop"><b id="singNote">–</b><span id="singCents"></span><span id="singKey" class="muted">${run.ultra ? '🎼 Noten: ' + esc(run.ultra.title || 'UltraStar') : ''}</span>${run.ultra ? '<span class="usSync"><button class="btn sm" type="button" data-us="-0.3" aria-label="Noten früher">⏪</button><button class="btn sm" type="button" data-us="0.3" aria-label="Noten später">⏩</button></span>' : ''}<span id="singTime">Sing los – die Zeit startet mit deinem ersten Ton</span></div>
         <div class="meter"><i id="singLv"></i></div></div>
       <div class="row2"><button class="btn gold" id="singStop" type="button" data-focus>⏹ Fertig – zur Jury</button>${run.playId != null ? '' : '<button class="btn" id="singX" type="button">✖ Abbrechen</button>'}</div>`;
@@ -1311,7 +1324,7 @@
       if (run.started && run.dur && run.vt != null) {
         const el = run.frames.length * 0.05;
         run.len = Math.min(FULL_MAX, el + Math.max(0, run.dur - run.vt) + 1.5);
-        if (!run.scaled) { run.scaled = true; run.live.setLen(run.len); }   // Länge kam erst nach dem ersten Ton: Punkte doch auf den ganzen Song verteilen
+        if (!run.scaled) { run.scaled = true; run.live.setLen(run.len); if (run.live2) run.live2.setLen(run.len); }   // Länge kam erst nach dem ersten Ton: Punkte doch auf den ganzen Song verteilen
       }
       if (inf.playerState === 0 && run.started) singFinish();
     };
@@ -1319,7 +1332,7 @@
       w.postMessage(JSON.stringify({ event: 'command', func: 'addEventListener', args: ['onError'], id: 'smyv', channel: 'widget' }), '*');
       w.postMessage(JSON.stringify({ event: 'command', func: 'addEventListener', args: ['onStateChange'], id: 'smyv', channel: 'widget' }), '*'); } catch (x) { /* egal */ } }); }
     try {
-      const ms = A.micRecStream() || A.micStream();
+      const ms = run.duet ? null : A.micRecStream() || A.micStream();   // Duett: keine Aufnahme (beide Stimmen auf einer Spur)
       if (ms && window.MediaRecorder) {
         const mt = REC_TYPES.find(t => MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t));
         run.rec = new MediaRecorder(ms, Object.assign({ audioBitsPerSecond: 128000 }, mt ? { mimeType: mt } : {}));
@@ -1332,8 +1345,9 @@
     function draw() {   // Notenbahn wie bei SingStar: gehaltene Töne als Balken (gold = sauber), Linie = deine echte Tonhöhe, Kugel = jetzt
       const cw = Math.round(cv.clientWidth * dpr), chh = Math.round(cv.clientHeight * dpr);
       if (cw > 0 && chh > 0 && (cw !== cv.width || chh !== cv.height)) { cv.width = cw; cv.height = chh; }   // passt sich Bahn-Lage, Drehen und Vollbild an
-      const w = cv.width, h = cv.height, vw = run.view, rs = vw.filter(v => v.r != null).slice(-60).map(v => v.r).sort((a, b) => a - b);
-      const mid = rs.length ? rs[rs.length >> 1] : 62, rows = 12, lo = Math.round(mid) - 6, rh = h / rows, y = m => h - (m - lo + 0.5) * rh;
+      const w = cv.width, h = cv.height, vw = run.view, med = V => { const q = V.filter(v => v.r != null).slice(-60).map(v => v.r).sort((a, b) => a - b); return q.length ? q[q.length >> 1] : null; };
+      const ms = [med(vw)].concat(run.duet ? [med(run.view2)] : []).filter(x => x != null);   // Duett: Mitte zwischen beiden Stimmen
+      const mid = ms.length ? ms.reduce((a, x) => a + x, 0) / ms.length : 62, rows = 12, lo = Math.round(mid) - 6, rh = h / rows, y = m => h - (m - lo + 0.5) * rh;
       c2.clearRect(0, 0, w, h); c2.font = (11 * dpr) + 'px sans-serif';
       for (let n = lo; n < lo + rows; n++) {
         c2.fillStyle = n % 2 ? 'rgba(255,255,255,.045)' : 'rgba(255,255,255,0)'; c2.fillRect(0, y(n) - rh / 2, w, rh);
@@ -1350,24 +1364,27 @@
           if (n.txt && xb - xa > 18) { c2.fillStyle = '#fff'; c2.fillText(n.txt.trim(), xa + 3, yy + rh * 0.95); } }
       }
       c2.fillStyle = 'rgba(255,255,255,.18)'; c2.fillRect(nx, 0, Math.max(1, dpr), h);   // „Jetzt“-Linie
-      for (let i = 0; i < vw.length;) {   // Balken: gleiche Halbton-Stufe am Stück
-        const r = vw[i].r; if (r == null) { i++; continue; }
-        let j = i, ok = 0; while (j < vw.length && vw[j].r != null && Math.round(vw[j].r * 2) === Math.round(r * 2)) { if (vw[j].ok) ok++; j++; }
+      const voice = (V, mc) => {
+      for (let i = 0; i < V.length;) {   // Balken: gleiche Halbton-Stufe am Stück
+        const r = V[i].r; if (r == null) { i++; continue; }
+        let j = i, ok = 0; while (j < V.length && V[j].r != null && Math.round(V[j].r * 2) === Math.round(r * 2)) { if (V[j].ok) ok++; j++; }
         const good = ok / (j - i) >= 0.6, bx = x0(i), bw = Math.max(step, (j - i) * step - 2), by = y(r) - rh * 0.4, bh = rh * 0.8;
-        const gc = run.mic === 'rainbow' ? `hsl(${Math.round((bx / w * 300 + performance.now() / 15) % 360)},90%,62%)` : run.mic;
+        const gc = mc === 'rainbow' ? `hsl(${Math.round((bx / w * 300 + performance.now() / 15) % 360)},90%,62%)` : mc;
         c2.fillStyle = good ? gc : '#60a5fa'; c2.shadowColor = good ? gc : 'transparent'; c2.shadowBlur = good ? 12 * dpr : 0;
         c2.beginPath(); if (c2.roundRect) c2.roundRect(bx, by, bw, bh, bh / 2); else c2.rect(bx, by, bw, bh); c2.fill(); c2.shadowBlur = 0;
         i = j;
       }
       c2.strokeStyle = 'rgba(255,255,255,.85)'; c2.lineWidth = 2 * dpr; c2.beginPath(); let pen = false;
-      vw.forEach((v, i) => { if (v.m == null) { pen = false; return; } const px = x0(i) + step / 2, py = y(v.m); if (pen) c2.lineTo(px, py); else c2.moveTo(px, py); pen = true; });
+      V.forEach((v, i) => { if (v.m == null) { pen = false; return; } const px = x0(i) + step / 2, py = y(v.m); if (pen) c2.lineTo(px, py); else c2.moveTo(px, py); pen = true; });
       c2.stroke();
-      const last = vw[vw.length - 1];
+      const last = V[V.length - 1];
       if (last && last.m != null) {   // Tonhöhen-Kugel wie bei SingStar
-        const by = Math.max(rh / 2, Math.min(h - rh / 2, y(last.m))), col = last.ok ? (run.mic === 'rainbow' ? '#ffc93c' : run.mic) : '#ffffff';
+        const by = Math.max(rh / 2, Math.min(h - rh / 2, y(last.m))), col = last.ok ? (mc === 'rainbow' ? '#ffc93c' : mc) : '#ffffff';
         c2.fillStyle = col; c2.shadowColor = col; c2.shadowBlur = 16 * dpr;
         c2.beginPath(); c2.arc(nx, by, rh * 0.42, 0, Math.PI * 2); c2.fill(); c2.shadowBlur = 0;
       }
+      };
+      voice(vw, run.mic); if (run.duet) voice(run.view2, '#ef4444');
     }
     const PHRASE = [[0.75, '🌟 Perfekte Phrase!', 'perfekt'], [0.55, '🔥 Super Phrase!', 'super'], [0.35, '👍 Gute Phrase', 'gut'], [0, '😅 Naja …', 'daneben']];
     function phrase() {   // nach jeder Gesangsphrase (≥ 1,5 s singen, dann ≥ 0,6 s Pause) ein Urteil wie bei SingStar – nur Anzeige, Punkte bleiben gleich
@@ -1399,37 +1416,40 @@
       if (cur !== 'sSing' || sing.run !== run) { singEnd(); return; }
       run.acc += Math.min(0.25, (now - run.last) / 1000); run.last = now;
       if (run.acc >= 0.05) {
-        const m = A.micPitch(), l = A.micLevel() || 0;
-        if (!run.started && m != null) {
+        const m = A.micPitch(), l = A.micLevel() || 0, m2 = run.duet ? A.micPitch(1) : null, l2 = run.duet ? A.micLevel(1) || 0 : 0;
+        if (!run.started && (m != null || m2 != null)) {
           run.started = true; if (run.rec) try { run.rec.start(1000); } catch (e) { run.rec = null; }
           if (run.ultra && run.ultra.auto && run.vt != null && run.vtAt) {   // Community-Noten passen zur Original-Aufnahme, nicht zum Karaoke-Video: am ersten gesungenen Ton ausrichten
             const sh = run.vt + (performance.now() - run.vtAt) / 1000 - run.ultra.notes[0].t; if (Math.abs(sh) > 0.25) usShift(run, sh);
           }
           if (run.full) {   // Punkte auf die echte Restlänge des Songs verteilen
             const rest = run.dur && run.vt != null ? run.dur - run.vt : 0;
-            run.live = S.liveScorer(rest > 20 ? Math.min(FULL_MAX, rest) : 180, 0.05); run.scaled = rest > 20 || !pk.vid;
+            run.live = S.liveScorer(rest > 20 ? Math.min(FULL_MAX, rest) : 180, 0.05); if (run.duet) run.live2 = S.liveScorer(rest > 20 ? Math.min(FULL_MAX, rest) : 180, 0.05); run.scaled = rest > 20 || !pk.vid;
             if (rest > 20) run.len = Math.min(FULL_MAX, rest + 1.5); else if (!pk.vid) run.len = FULL_ACAP;
           }
         }
         for (; run.acc >= 0.05; run.acc -= 0.05) {
-          let lv = { r: null, ok: false };
+          let lv = { r: null, ok: false }, lv2 = { r: null, ok: false };
           if (run.started) {
             const vt = run.vt != null && run.vtAt ? run.vt + (performance.now() - run.vtAt) / 1000 : pk.vid ? null : (performance.now() - run.t0) / 1000;   // Songzeit für die Notendatei
             run.frames.push(Object.assign({ m: m == null ? null : Math.round(m * 100) / 100, l: Math.round(l * 1e4) / 1e4 }, vt != null ? { vt: Math.round(vt * 100) / 100 } : {}));
             lv = run.live.push(m); run.pts = lv.total; if (lv.ev) showPop(lv.ev);
+            if (run.duet) { run.frames2.push(Object.assign({ m: m2 == null ? null : Math.round(m2 * 100) / 100, l: Math.round(l2 * 1e4) / 1e4 }, vt != null ? { vt: Math.round(vt * 100) / 100 } : {})); lv2 = run.live2.push(m2); run.pts2 = lv2.total; }
             const ph = run.ph;
             if (m != null) { if (ph.sil >= 12) { ph.n = 0; ph.ok = 0; } ph.sil = 0; ph.n++; if (lv.ok) ph.ok++; }
             else if (++ph.sil === 12 && ph.n >= 30) phrase();
-            if (run.frames.length % 20 === 0) chairs();
+            if (run.frames.length % 20 === 0 && !run.duet) chairs();
           }
           run.view.push({ m, r: lv.r, ok: lv.ok }); if (run.view.length > 160) run.view.shift();
+          if (run.duet) { run.view2.push({ m: m2, r: lv2.r, ok: lv2.ok }); if (run.view2.length > 160) run.view2.shift(); }
         }
         $('#singLv').style.width = Math.min(100, l / 0.15 * 100) + '%';
         const off = run.live.state.off, ct = m == null ? null : Math.round((m - off - Math.round(m - off)) * 100);
         $('#singNote').textContent = m == null ? '–' : noteName(m);
         $('#singCents').textContent = ct == null ? '' : (ct > 0 ? '+' : '') + ct + ' ct';
         $('#singCents').className = ct == null ? '' : Math.abs(ct) <= 20 ? 'ok' : 'off';
-        $('#singPts').textContent = run.pts.toLocaleString('de-DE'); $('#singRank').textContent = S.singTitle(run.pts / 100);
+        $('#singPts').textContent = run.pts.toLocaleString('de-DE'); $('#singRank').textContent = run.duet ? '🔵 ' + run.names[0] : S.singTitle(run.pts / 100);
+        if (run.duet) $('#singPts2').textContent = run.pts2.toLocaleString('de-DE');
         const el = run.frames.length * 0.05;
         if (run.started) $('#singTime').textContent = tm(el) + ' / ' + (run.full && !run.dur && pk.vid ? '🎵' : tm(run.len));
         draw();
@@ -1443,9 +1463,9 @@
   function finalTurned(run, crit) { return run.jury(crit).filter(v => v.yes && run.turned[v.id]).map(v => v.id); }
   function singFinish() {
     const run = sing.run; if (!run || run.ended) return;
-    if (run.frames.filter(f => f.m != null).length < 40) { RENDER.sSing(); toast('🎙️ Ich habe kaum Gesang gehört. Sing etwas länger oder näher am Mikrofon.', 3500); return; }
+    if (Math.max(run.frames.filter(f => f.m != null).length, run.duet ? run.frames2.filter(f => f.m != null).length : 0) < 40) { RENDER.sSing(); toast('🎙️ Ich habe kaum Gesang gehört. Sing etwas länger oder näher am Mikrofon.', 3500); return; }
     const rec = run.rec, chunks = run.chunks, cx = sing.ctx, pre = A.micRecPre ? A.micRecPre() : 0; run.rec = null; run.done = true;   // singEnd soll Aufnahme und Runde nicht verwerfen
-    const fin = run.live.end();
+    const fin = run.live.end(), fin2 = run.live2 ? run.live2.end() : null;
     singEnd();
     let doneOnce = false;
     const done = () => {
@@ -1453,6 +1473,7 @@
       let url = null, blob = null;
       try { if (chunks.length) { blob = new Blob(chunks, { type: chunks[0].type || 'audio/webm' }); url = URL.createObjectURL(blob); } } catch (e) { url = null; blob = null; }
       sing.recUrl = url; sing.recBlob = blob;
+      if (run.duet) { duetResult(run, fin, fin2); return; }
       const p = save.profile, g = genre(sing.g), res = S.singScore(run.frames, run.party || !p ? null : p.attrs, 0.05, { key: run.key, ultra: run.ultra });
       const out = { sing: res.sing, rec: url, pts: fin.total, combo: fin.best, title: S.singTitle(res.perf), turned: Object.keys(run.turned), song: run.pk.title };
       if (run.party) {   // Karaoke-Abend: Punkte notieren, Jury-Urteil zeigen, dann zurück zur Rangliste
@@ -1493,6 +1514,21 @@
     };
     if (rec && rec.state !== 'inactive') { rec.onstop = done; setTimeout(() => { try { rec.stop(); } catch (e) { done(); } }, pre * 1000 + 80); setTimeout(done, 2500); }   // Vorlauf abwarten: sonst fehlt das Ende des letzten Tons
     else done();
+  }
+
+  function duetResult(run, fin, fin2) {
+    const r = [run.frames, run.frames2].map(f => S.singScore(f, null, 0.05, { key: run.key, ultra: run.ultra })), pts = [fin.total, fin2.total], nm = run.names;
+    const w = pts[0] === pts[1] ? -1 : pts[0] > pts[1] ? 0 : 1;
+    if (run.party) {
+      const n = party.players.length, i = run.party.i;
+      [0, 1].forEach(k => party.scores[(i + k) % n].push({ pts: pts[k], perf: r[k].perf, title: S.singTitle(r[k].perf), song: run.pk.title, yes: 0 }));
+      party.turn += Math.min(2, n); sing.party = null;
+    } else { save.singBest = Math.max(save.singBest || 0, pts[0]); if (save.profile) save.profile.xp += Math.round(r[0].perf / 4); persist(); }
+    A.sfx('yes');
+    const col = (k, ic) => `<div class="duoCol${w === k ? ' win' : ''}"><b>${ic} ${esc(nm[k])}</b><big>${pts[k].toLocaleString('de-DE')}</big><small>${esc(S.singTitle(r[k].perf))}</small><small class="muted">Intonation ${Math.round(r[k].sing.inton)} % · Stabilität ${Math.round(r[k].sing.stab)} %</small>${w === k ? '<span>🏆 gewinnt</span>' : ''}</div>`;
+    overlay(`<h3>👥 Duett-Ergebnis</h3><p class="muted">„${esc(run.pk.title)}“</p><div class="duo">${col(0, '🔵')}${col(1, '🔴')}</div>
+      <p><b>${w < 0 ? 'Unentschieden – perfekt im Gleichklang!' : esc(nm[w]) + ' holt das Duett!'}</b></p><button class="btn gold" type="button" data-act="ok" data-focus>Weiter</button>`,
+    { ok: () => { closeOv(); if (run.party) go('sParty'); else RENDER.sSing(); } });
   }
 
   // ---------- Karaoke-Abend: mehrere Sänger nacheinander an einem Gerät ----------
@@ -1628,7 +1664,15 @@
     applySettings(); persist(); RENDER.sSettings();
     const nb = $(`#setBox [data-s="${k}"][data-v="${raw}"]`); if (nb) nb.focus();
   });
-  function micConsent(after) {
+  // „Ohne Mikrofon“ beim Vorsingen: Casting/Story laufen als Bühne mit Tasten/Touch weiter (gleiche Runde, gleiche Jury).
+  function singNoMic() {
+    const cx = sing.ctx;
+    if (cx && cx.mode === 'career') { startCareerRound(); return; }
+    if (cx && cx.mode === 'free') { startFree(); return; }
+    RENDER.sSing(); toast('🎹 Freies Vorsingen bewertet nur deine Stimme. Ohne Mikro spielst du Story oder Freies Casting mit Tasten/Touch.', 5000);
+  }
+  function micConsent(after, no) {
+    const skip = () => { closeOv(); if (no) no(); };
     overlay(`<h3>🎙️ Mikrofon-Modus</h3><p>Das Spiel hört deine Stimme: In Notenteilen trifft jeder angesungene Ton die Note am Ring, in Gesangsteilen bewegt deine <b>Tonhöhe</b> den Mikro-Punkt.</p>
       <p class="muted">Ausgewertet wird nur Tonhöhe und Lautstärke, direkt auf deinem Gerät. Nichts wird gespeichert oder gesendet; beim Freien Vorsingen kannst du deine Aufnahme direkt anhören, danach ist sie weg. Das Mikrofon ist nur während des Auftritts an. Kopfhörer helfen, damit die Musik nicht mitzählt.</p>
       <button class="btn gold" type="button" data-act="ok">Mikrofon erlauben</button><button class="btn" type="button" data-act="no">Ohne Mikrofon spielen</button>`,
@@ -1647,26 +1691,27 @@
             : '<p>Dein Browser hat das Mikrofon für diese Seite gesperrt. Tippe oben in der Adresszeile auf das Schloss/Einstellungen-Symbol, erlaube das Mikrofon und versuch es noch einmal.</p>'}
             <p class="muted">Ist es dort auch gesperrt: In den Website-Einstellungen des Browsers das Mikrofon erlauben.</p>
             <button class="btn gold" type="button" data-act="open">↗ Spiel direkt öffnen</button><button class="btn" type="button" data-act="no">Mit Tasten/Touch weiter</button>`,
-          { open: () => { closeOv(); window.open(location.href.split('#')[0], '_blank', 'noopener'); }, no: closeOv });
+          { open: () => { closeOv(); window.open(location.href.split('#')[0], '_blank', 'noopener'); }, no: skip });
           return;
         }
         (after || RENDER.sSettings)();
-        micHelp(e, after);
+        micHelp(e, after, no);
         return;
       }
       (after || RENDER.sSettings)();
-    }, no: closeOv });
+    }, no: skip });
   }
 
   // Mikro klappt nicht: Grund nennen, passende Schritte fürs Gerät zeigen, „Nochmal versuchen“ (neuer Tipp = neue Nutzergeste).
   // Wird die Freigabe in den Browser-Einstellungen geändert, geht es von selbst weiter.
-  async function micHelp(e, after) {
+  async function micHelp(e, after, no) {
     const n = (e && e.name) || (e && e.message) || '', st = await A.micPerm(), ua = navigator.userAgent;
     const android = /Android/i.test(ua), ios = /iPhone|iPad|iPod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1), app = /wv\)|; wv/.test(ua) || location.host === 'appassets.androidplatform.net';
     let why, steps;
     if (!window.isSecureContext || n === 'nosupport') { why = 'Dieser Browser erlaubt hier kein Mikrofon.'; steps = '<li>Öffne das Spiel direkt über <b>https://ricorewioriginal-collab.github.io/easygames/show-me-your-voice/</b> in Chrome, Safari oder der easygames-App.</li>'; }
     else if (n === 'NotFoundError') { why = 'Es wurde kein Mikrofon gefunden.'; steps = '<li>Headset oder Mikro anschließen bzw. Bluetooth verbinden.</li><li>Dann auf „Nochmal versuchen“ tippen.</li>'; }
-    else if (n === 'NotReadableError' || n === 'AbortError' || n === 'TrackStartError') { why = 'Das Mikrofon wird gerade von einer anderen App benutzt.'; steps = '<li>Anruf, Sprachmemo, WhatsApp-Sprachnachricht oder Bildschirmaufnahme beenden.</li><li>Dann auf „Nochmal versuchen“ tippen.</li>'; }
+    else if (app && (n === 'NotReadableError' || n === 'AbortError' || n === 'TrackStartError') && st !== 'denied') { why = 'Die easygames-App konnte das Mikrofon nicht starten.'; steps = '<li>Installiere die neueste easygames-App (ältere Versionen geben das Mikrofon nicht ans Spiel weiter).</li><li>Android-Schnelleinstellungen (oben herunterwischen): <b>Mikrofonzugriff</b> muss an sein.</li><li>Oder öffne das Spiel in Chrome: <b>ricorewioriginal-collab.github.io/easygames/show-me-your-voice/</b></li>'; }
+    else if (n === 'NotReadableError' || n === 'AbortError' || n === 'TrackStartError') { why = 'Das Mikrofon wird gerade von einer anderen App benutzt.'; steps = '<li>Anruf, Sprachmemo, WhatsApp-Sprachnachricht oder Bildschirmaufnahme beenden.</li>' + (android ? '<li>Android-Schnelleinstellungen (oben herunterwischen): <b>Mikrofonzugriff</b> muss an sein.</li>' : '') + '<li>Dann auf „Nochmal versuchen“ tippen.</li>'; }
     else {
       why = st === 'denied' ? 'Dein Browser hat das Mikrofon für dieses Spiel gesperrt.' : 'Das Mikrofon wurde nicht freigegeben.';
       steps = app ? '<li>Android-Einstellungen → Apps → <b>easygames</b> → Berechtigungen → Mikrofon → <b>Zulassen</b>.</li>'
@@ -1678,13 +1723,13 @@
     overlay(`<h3>🎙️ Mikrofon klappt noch nicht</h3><p><b>${why}</b></p><ol class="micSteps">${steps}</ol>
       <p class="muted">Ohne Mikro kannst du mit Tasten/Touch weiterspielen.${n ? ' <small>(' + esc(n) + ')</small>' : ''}</p>
       <button class="btn gold" type="button" data-act="retry">🔄 Nochmal versuchen</button><button class="btn" type="button" data-act="no">Ohne Mikrofon weiter</button>`,
-    { retry: () => { closeOv(); micConsentTry(after); }, no: closeOv });
-    try { const ps = await navigator.permissions.query({ name: 'microphone' }); ps.onchange = () => { if (ps.state === 'granted' && !save.settings.mic) { ps.onchange = null; closeOv(); micConsentTry(after); } }; } catch (x) { /* Browser ohne Permissions-API */ }
+    { retry: () => { closeOv(); micConsentTry(after, no); }, no: () => { closeOv(); if (no) no(); } });
+    try { const ps = await navigator.permissions.query({ name: 'microphone' }); ps.onchange = () => { if (ps.state === 'granted' && !save.settings.mic) { ps.onchange = null; closeOv(); micConsentTry(after, no); } }; } catch (x) { /* Browser ohne Permissions-API */ }
   }
-  async function micConsentTry(after) {
+  async function micConsentTry(after, no) {
     A.init();
     try { await A.micStart(); A.micStop(); save.settings.mic = true; persist(); toast('🎙️ Mikrofon bereit – sing einfach los!'); (after || RENDER.sSettings)(); }
-    catch (e) { micHelp(e, after); }
+    catch (e) { micHelp(e, after, no); }
   }
 
   // ---------- Tutorial ----------

@@ -742,7 +742,7 @@
      "Rian nimmt immer den Starter, der deinen schlägt – nimm ein Taschi mit, das dagegen stark ist."
     ]
    },
-   "size": 17969944,
+   "size": 17970012,
    "files": 166,
    "offline": true,
    "cloud": {
@@ -785,8 +785,8 @@
      "Heiltränke gibt es im Laden gegen Rissplitter."
     ]
    },
-   "size": 22209899,
-   "files": 96,
+   "size": 32680672,
+   "files": 826,
    "offline": true,
    "cloud": {
     "game": "zotik2",
@@ -856,7 +856,7 @@
      "Das Tagebuch zeigt das aktuelle Ziel; ein Kompass und ein Lichtstrahl weisen den Weg."
     ]
    },
-   "size": 3860010,
+   "size": 3860078,
    "files": 20,
    "offline": true,
    "cloud": {
@@ -1023,7 +1023,7 @@
      "Ohne Internet oder bei Senderproblemen spielt das Spiel eigene Beats; in den Einstellungen lässt sich die Musikquelle festlegen."
     ]
    },
-   "size": 5865236,
+   "size": 5872780,
    "files": 85,
    "offline": true,
    "cloud": {
@@ -3156,8 +3156,8 @@
      "Jingles bei sinkendem Hype einsetzen."
     ]
    },
-   "size": 5139118,
-   "files": 151,
+   "size": 15357460,
+   "files": 611,
    "offline": true,
    "cloud": {
     "game": "anmacha-podcast-tycoon",
@@ -3243,7 +3243,7 @@
      "Gekämpft wird nur in der Kampfarena und auf der Wald-Insel (das Waldtor im alten Verbotenen Wald bringt dich hin)."
     ]
    },
-   "size": 7228642,
+   "size": 7228710,
    "files": 139,
    "offline": true,
    "cloud": {

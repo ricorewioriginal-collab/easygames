@@ -111,13 +111,31 @@
     U.$('ui').appendChild(el);
     el.querySelector('#hmBack').onclick = () => HM.close();
     el.querySelector('#hmUse').onclick = () => use();
+    // Radio-Zeile im Kopf statt schwebender Titelleiste (nichts liegt übereinander)
+    const top = el.querySelector('.hm-top'), np = U.el('button', 'hm-np'); np.type = 'button'; np.hidden = true; top.appendChild(np);
+    np.onclick = () => AMC.UI.radio();
+    const drawNp = M => { if (!np.isConnected) return; const on = M.kind && (M.active() || M.err); np.hidden = !on; if (!on) return; const L = M.label(); np.innerHTML = '<i class="np-eq' + (M.playing ? ' on' : '') + '"><i></i><i></i><i></i></i><span>' + U.esc(M.err || (L.src + ' · ' + L.main + (M.title && L.sub ? ' – ' + L.sub : ''))) + '</span>'; layout(); };
+    el._unsub = AMC.Media.subscribe(drawNp); drawNp(AMC.Media);
+    const ex = el.querySelector('.hm-act .btn:not(#hmBack)'), exT = ex ? ex.textContent.trim() : '', exI = exT.split(' ')[0];
+    if (AMC.UI.touchCtx) AMC.UI.touchCtx('home', ex ? { x: [exI, exT.slice(exI.length).trim() || 'Extra', 'k4'] } : null);
+    requestAnimationFrame(layout);
     return el;
   }
+  /** Maße für das CSS: Unterkante des Kopfs und Breite der Knopfleiste (je Gerät/Ausrichtung unterschiedlich). */
+  function layout() {
+    const el = U.$('homeUi'); if (!el) return;
+    const top = el.querySelector('.hm-top'), act = el.querySelector('.hm-act');
+    if (act) el.style.setProperty('--act-w', Math.ceil(act.getBoundingClientRect().width) + 'px');
+    if (top) { const b = Math.ceil(top.getBoundingClientRect().bottom) + 'px'; el.style.setProperty('--top-b', b); document.documentElement.style.setProperty('--hm-top-b', b); }
+  }
+  HM.layout = layout;
+  root.addEventListener('resize', () => setTimeout(layout, 60));
   function drawNeeds() {
     const box = U.$('hmNeeds'); if (!box || !R) return;
     const n = needs(R.who);
     box.innerHTML = NEEDS.map(([k, ic, nm]) => '<span class="hm-n' + (n[k] < 30 ? ' low' : '') + '" title="' + nm + '">' + ic + '<i><em style="width:' + Math.round(n[k]) + '%"></em></i></span>').join('') +
       '<span class="hm-n idea" title="Ideen für die nächste Aufnahme">💡 ' + (n.ideas || []).length + '/3</span>';
+    layout();
   }
   function say(text, ms) {
     const b = U.$('hmSay'); if (!b) return; b.hidden = false; if (text.indexOf('<kbd') >= 0) b.innerHTML = text; else b.textContent = text; b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
@@ -192,13 +210,13 @@
     const play = a => { if (f) { f.play(a, { fade: 0.2 }); R.w.anim = a; } };
     const line = a => U.pick((LINES[a] && LINES[a][hid]) || ['Herrlich.']);
     if (s.act === 'sleep') { play('crouch'); flash(); n.energy = Math.min(100, n.energy + 60 * k); n.hunger = Math.max(0, n.hunger - 10); say('😴 ' + line('sleep')); AMC.Audio.sfx('swap'); }
-    else if (s.act === 'eat') { play('knock'); n.hunger = Math.min(100, n.hunger + 40 * k); n.fun = Math.min(100, n.fun + 5); say('🍳 ' + line('eat')); AMC.Audio.sfx('collect'); W.particles.burst(s.x, 1.3, s.z, 0xff8a1e, 16, { speed: 2 }); }
+    else if (s.act === 'eat') { play('push'); n.hunger = Math.min(100, n.hunger + 40 * k); n.fun = Math.min(100, n.fun + 5); say('🍳 ' + line('eat')); AMC.Audio.sfx('collect'); W.particles.burst(s.x, 1.3, s.z, 0xff8a1e, 16, { speed: 2 }); }
     else if (s.act === 'tv') { play('yes'); n.fun = Math.min(100, n.fun + 35 * k); n.energy = Math.max(0, n.energy - 4); say('📺 ' + line('tv')); AMC.Audio.sfx('static'); }
-    else if (s.act === 'plant') { play('knock'); n.fun = Math.min(100, n.fun + 15 * k); say('🌿 ' + line('plant')); W.particles.burst(s.x, 1, s.z, 0x40d070, 14, { speed: 2 }); }
-    else if (s.act === 'tech') { play('knock'); n.energy = Math.max(0, n.energy - 6); n.fun = Math.min(100, n.fun + 20 * k); if ((n.ideas || []).length < 3 && Math.random() < 0.5 + lv * 0.2) { n.ideas.push('Technik-Trick aus der Werkbank'); say('🔧 ' + line('tech') + ' 💡 Neue Idee!'); } else say('🔧 ' + line('tech')); AMC.Audio.sfx('plug'); W.particles.burst(s.x, 1.1, s.z, 0x3dd6ff, 12, { speed: 3 }); }
+    else if (s.act === 'plant') { play('push'); n.fun = Math.min(100, n.fun + 15 * k); say('🌿 ' + line('plant')); W.particles.burst(s.x, 1, s.z, 0x40d070, 14, { speed: 2 }); }
+    else if (s.act === 'tech') { play('push'); n.energy = Math.max(0, n.energy - 6); n.fun = Math.min(100, n.fun + 20 * k); if ((n.ideas || []).length < 3 && Math.random() < 0.5 + lv * 0.2) { n.ideas.push('Technik-Trick aus der Werkbank'); say('🔧 ' + line('tech') + ' 💡 Neue Idee!'); } else say('🔧 ' + line('tech')); AMC.Audio.sfx('plug'); W.particles.burst(s.x, 1.1, s.z, 0x3dd6ff, 12, { speed: 3 }); }
     else if (s.act === 'music') { R.busy = R.w.busy = 0; pianoPick(hid, lv, line('music')); }
     else if (s.act === 'desk') {
-      play('knock'); n.energy = Math.max(0, n.energy - 5);
+      play('push'); n.energy = Math.max(0, n.energy - 5);
       if ((n.ideas || []).length >= 3) say('💡 Der Kopf ist voll! Erst mal eine Folge aufnehmen und die Ideen loswerden.');
       else {
         const idea = U.pick(D.IDEAS.filter(x => x[0] === (hid === 'marco' ? 'm' : 'a'))) || U.pick(D.IDEAS);
@@ -353,7 +371,7 @@
     if (R.kind !== 'sender') { I.dpadEmotes = true; if (I.hit('k4')) { const b = document.querySelector('#homeUi .hm-act .btn:not(#hmBack)'); if (b) { AMC.Audio.sfx('ok'); b.click(); return; } } }
     if (I.hit('back')) { HM.close(); return; }
     const s = R.w.near(), b = U.$('hmUse');
-    if (b) { const txt = s ? AMC.glyph('x') + ' ' + s.label : ''; if (b.innerHTML !== txt) b.innerHTML = txt; b.hidden = !s; }
+    if (b) { const txt = s ? AMC.glyph('x') + ' ' + s.label : ''; if (b.innerHTML !== txt) b.innerHTML = txt; b.hidden = !s; if (AMC.UI.touchHint) AMC.UI.touchHint(s ? s.label : null); }
     if (R.sc) { R.g.traverse(o => { if (o.userData.spin) o.rotation.y += dt * (o.userData.spin === true ? 4 : o.userData.spin); }); W.particles.update(dt); }
     else { AMC.Studio.update(dt); }
   };
@@ -366,7 +384,8 @@
     if (r.dispose) r.dispose();
     if (r.stopSong) r.stopSong();
     document.querySelectorAll('.hm-bub').forEach(e => e.remove());
-    const ui = U.$('homeUi'); if (ui) ui.remove();
+    const ui = U.$('homeUi'); if (ui) { if (ui._unsub) ui._unsub(); ui.remove(); }
+    if (AMC.UI.touchCtx) AMC.UI.touchCtx('city');
     if (r.marks) r.marks.forEach(m => AMC.Studio.group.remove(m));
     if (r.mini) { r.mini.ctl.destroy(); r.mini.box.remove(); }
     if (r.sc) { ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent === r.g) r.g.remove(f.root); }); r.sc.traverse(o => { if (o.geometry && !o.isSkinnedMesh) o.geometry.dispose(); }); }
