@@ -5,6 +5,9 @@
    cables  – Kabelsalat: verknotete Kabel verfolgen und den richtigen Stecker zum Gerät finden
    mixer   – Rückkopplung: drei Regler im grünen Bereich halten, bevor es pfeift
    simon   – Soundboard: Tusch, Hupe (Gisela!), Applaus und Lacher nachspielen – die Folge wird immer länger
+   catch   – Fangen: Korb links/rechts, Gutes fangen, Störsender ausweichen (Druckerei, Merch)
+   frame   – Kamera-Shot: Motiv im Sucher halten und im richtigen Moment abdrücken (Kanal 9, Riesenrad)
+   quiz    – Quiz: vier Antworten auf dem Steuerkreuz (Radio-Museum)
    Jedes Spiel meldet am Ende eine Qualität 0…1 an die Live-Aufnahme. */
 (function (root) {
   'use strict';
@@ -61,7 +64,7 @@
         game.draw(g, W, H);
         // Kopfzeile
         g.fillStyle = 'rgba(0,0,0,.45)'; rr(g, 10, 10, W - 20, 34, 12); g.fill();
-        g.font = '700 16px Fredoka, system-ui, sans-serif'; g.textBaseline = 'middle'; g.textAlign = 'left'; g.fillStyle = o.color || '#ff8a1e'; g.fillText(game.title || o.label || '', 22, 27);
+        g.font = '700 16px Fredoka, system-ui, sans-serif'; g.textBaseline = 'middle'; g.textAlign = 'left'; g.fillStyle = o.color || '#ff8a1e'; g.fillText(o.title || game.title || o.label || '', 22, 27);
         if (game.right) { g.textAlign = 'right'; g.fillStyle = '#fff'; g.fillText(game.right(), W - 22, 27); }
         if (game.bar != null) { const b = U.clamp(game.bar(), 0, 1); g.fillStyle = 'rgba(255,255,255,.12)'; rr(g, 16, 48, W - 32, 5, 3); g.fill(); g.fillStyle = b < 0.25 ? '#ff5a5a' : '#ff8a1e'; rr(g, 16, 48, (W - 32) * b, 5, 3); g.fill(); }
         if (game.help) { g.font = '500 13px Fredoka, system-ui, sans-serif'; g.textAlign = 'center'; g.fillStyle = 'rgba(255,255,255,.7)'; g.fillText(game.help(), W / 2, H - 14); }
@@ -356,6 +359,134 @@
           g.font = '600 11px Fredoka, system-ui'; g.fillStyle = on ? '#10131f' : '#fff'; g.fillText(P[1] + ' ' + ARROW[d], p[0], p[1] + r * 0.5);
         }
         if (phase === 'input') { g.font = '700 14px Fredoka, system-ui'; g.fillStyle = '#ffd23f'; g.textAlign = 'center'; g.fillText(input + ' / ' + len(), W / 2, H / 2 + 6); }
+      }
+    };
+  };
+  // ------------------------------------------------------------------ Gemeinsame Steuerung: Richtung halten (Stick, Pfeile, WASD, Steuerkreuz)
+  function axis() {
+    let x = I.move.x || 0, y = I.move.y || 0;
+    if (I.keys.has('ArrowLeft') || I.keys.has('KeyA')) x = -1; if (I.keys.has('ArrowRight') || I.keys.has('KeyD')) x = 1;
+    if (I.keys.has('ArrowUp') || I.keys.has('KeyW')) y = -1; if (I.keys.has('ArrowDown') || I.keys.has('KeyS')) y = 1;
+    const pad = I.pads && I.pads()[0], b = i => pad && pad.buttons[i] && pad.buttons[i].pressed;
+    if (b(14)) x = -1; if (b(15)) x = 1; if (b(12)) y = -1; if (b(13)) y = 1;
+    return [x, y];
+  }
+  function wrap(g, txt, x, y, maxW, lh) {
+    const words = String(txt).split(' '), lines = []; let l = '';
+    for (const w of words) { const t = l ? l + ' ' + w : w; if (g.measureText(t).width > maxW && l) { lines.push(l); l = w; } else l = t; }
+    if (l) lines.push(l); lines.forEach((ln, i) => g.fillText(ln, x, y + (i - (lines.length - 1) / 2) * lh));
+  }
+
+  // ------------------------------------------------------------------ Fangen
+  GAMES.catch = function (o, api) {
+    const good = o.good || ['📰', '📰', '⭐'], bad = o.bad || ['💣'], dur = o.time || 14;
+    let time = 0, x = 0.5, items = [], spawn = 0.3, got = 0, total = 0, hits = 0, drag = null, wob = 0;
+    return {
+      title: '🧺 Fangen',
+      right: () => got + ' gefangen' + (hits ? ' · ' + hits + '× 💥' : ''),
+      bar: () => 1 - time / dur,
+      help: () => helpTxt('← → bewegen · ' + bad[0] + ' ausweichen', '← → oder A/D bewegen · ' + bad[0] + ' ausweichen', 'Korb ziehen · ' + bad[0] + ' ausweichen'),
+      update(dt, taps) {
+        time += dt; wob = Math.max(0, wob - dt * 3);
+        x = U.clamp(x + axis()[0] * dt * 1.3, 0.06, 0.94);
+        for (const tp of taps) { if (tp.type === 'down') drag = tp.id; if ((tp.type === 'down' || tp.type === 'move') && tp.id === drag) x = U.clamp(tp.x / api.W, 0.06, 0.94); if (tp.type === 'up') drag = null; }
+        if ((spawn -= dt) <= 0 && time < dur - 1) {
+          spawn = 0.5 - Math.min(0.22, time * 0.016); const b = Math.random() < (o.badRate || 0.24);
+          items.push({ x: 0.08 + Math.random() * 0.84, y: 64, v: 110 + time * 10 + Math.random() * 70, e: b ? U.pick(bad) : U.pick(good), bad: b, r: (Math.random() - 0.5) * 3, a: 0 }); if (!b) total++;
+        }
+        const by = api.H - 62;
+        for (const it of items) {
+          it.y += it.v * dt; it.a += it.r * dt;
+          if (!it.done && it.y > by - 18 && it.y < by + 16 && Math.abs(it.x - x) * api.W < 46) {
+            it.done = true; const X = it.x * api.W;
+            if (it.bad) { hits++; api.shake = 14; api.flash('#ff3a3a', 0.35); sfx('hit'); api.pop('AUTSCH', X, by - 30, '#ff6a6a', 22); wob = 1; }
+            else { got++; sfx('collect'); note(72 + PENTA[got % PENTA.length], 0.12, 'triangle', 0.06); api.burst(X, by - 10, '#ffd23f', 8, 120); api.pop('+1', X, by - 30, '#6cff8a', 20); }
+          }
+          if (it.y > api.H + 20) it.done = true;
+        }
+        items = items.filter(i => !i.done);
+        if (time >= dur) api.end(U.clamp(got / Math.max(1, total) * 1.1 - hits * 0.1, 0, 1));
+      },
+      draw(g, W, H) {
+        g.globalAlpha = 0.07; for (let i = 0; i < 8; i++) { g.fillStyle = i % 2 ? '#fff' : '#ff8a1e'; g.fillRect(i * W / 8, 60, W / 8, H - 60); } g.globalAlpha = 1;
+        g.textAlign = 'center'; g.textBaseline = 'middle';
+        for (const it of items) { g.save(); g.translate(it.x * W, it.y); g.rotate(it.a); g.font = '30px system-ui'; if (it.bad) { g.shadowColor = '#ff3a3a'; g.shadowBlur = 16; } g.fillText(it.e, 0, 0); g.restore(); }
+        const bx = x * W, by = H - 62; g.fillStyle = 'rgba(255,210,63,.18)'; g.beginPath(); g.ellipse(bx, by + 18, 50, 9, 0, 0, 7); g.fill();
+        g.save(); g.translate(bx, by); g.rotate(Math.sin(time * 40) * 0.2 * wob); g.font = '46px system-ui'; g.fillText(o.basket || '🧺', 0, 0); g.restore();
+      }
+    };
+  };
+
+  // ------------------------------------------------------------------ Kamera-Shot
+  GAMES.frame = function (o, api) {
+    const shots = o.shots || 3, dur = o.time || 18, subj = o.subj || ['🎙️'];
+    let time = 0, cam = { x: 0.5, y: 0.55 }, tg = { x: 0.3, y: 0.5, vx: 0.22, vy: 0.15, e: subj[0] }, taken = 0, score = 0, cool = 0, photos = [], drag = null;
+    const shoot = () => {
+      if (cool > 0) return; cool = 0.5;
+      const d = Math.hypot((cam.x - tg.x) * api.W, (cam.y - tg.y) * api.H), q = d < 16 ? 1 : d < 34 ? 0.75 : d < 60 ? 0.4 : 0.05;
+      score += q; taken++; photos.push({ e: tg.e, q }); api.flash('#ffffff', 0.7); sfx('spark');
+      api.pop(q >= 1 ? 'TITELBILD!' : q >= 0.75 ? 'SCHARF!' : q >= 0.4 ? 'GEHT SO' : 'VERWACKELT', api.W / 2, api.H * 0.24, q >= 0.75 ? '#6cff8a' : q >= 0.4 ? '#3dd6ff' : '#ff6a6a', 26);
+      tg.e = subj[taken % subj.length]; tg.vx *= 1.25; tg.vy *= 1.25;
+      if (taken >= shots) api.end(score / shots);
+    };
+    return {
+      title: '📸 Kamera-Shot',
+      right: () => '📷 ' + taken + '/' + shots,
+      bar: () => 1 - time / dur,
+      help: () => helpTxt('Stick/Steuerkreuz zielen · Ⓐ abdrücken', 'Pfeile/WASD zielen · Leertaste abdrücken', 'Aufs Motiv tippen = Foto'),
+      update(dt, taps) {
+        time += dt; cool -= dt;
+        const [ax, ay] = axis(); cam.x = U.clamp(cam.x + ax * dt * 0.55, 0.08, 0.92); cam.y = U.clamp(cam.y + ay * dt * 0.55, 0.25, 0.86);
+        tg.x += tg.vx * dt + Math.sin(time * 2.3) * dt * 0.08; tg.y += tg.vy * dt + Math.cos(time * 1.7) * dt * 0.06;
+        if (tg.x < 0.12 || tg.x > 0.88) { tg.vx *= -1; tg.x = U.clamp(tg.x, 0.12, 0.88); } if (tg.y < 0.3 || tg.y > 0.82) { tg.vy *= -1; tg.y = U.clamp(tg.y, 0.3, 0.82); }
+        for (const tp of taps) { if (tp.type === 'down') { cam.x = tp.x / api.W; cam.y = tp.y / api.H; drag = tp.id; shoot(); } }
+        if (okHit()) shoot();
+        if (!api.ended && time >= dur) api.end(score / shots);
+      },
+      draw(g, W, H) {
+        const sky = g.createLinearGradient(0, 60, 0, H); sky.addColorStop(0, '#2b4c7e'); sky.addColorStop(1, '#f4a261'); g.fillStyle = sky; g.fillRect(12, 60, W - 24, H - 90);
+        g.fillStyle = '#1b2236'; for (let i = 0; i < 12; i++) { const bw = W / 12, bh = 30 + ((i * 53) % 70); g.fillRect(i * bw + 12, H - 30 - bh, bw - 4, bh); }
+        g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '44px system-ui'; g.fillText(tg.e, tg.x * W, tg.y * H);
+        const cx = cam.x * W, cy = cam.y * H, fw = 110, fh = 74; g.strokeStyle = '#fff'; g.lineWidth = 3;
+        [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sy]) => { g.beginPath(); g.moveTo(cx + sx * fw / 2, cy + sy * (fh / 2 - 16)); g.lineTo(cx + sx * fw / 2, cy + sy * fh / 2); g.lineTo(cx + sx * (fw / 2 - 20), cy + sy * fh / 2); g.stroke(); });
+        g.lineWidth = 1.5; g.beginPath(); g.moveTo(cx - 10, cy); g.lineTo(cx + 10, cy); g.moveTo(cx, cy - 10); g.lineTo(cx, cy + 10); g.stroke();
+        if (Math.floor(time * 2) % 2) { g.fillStyle = '#ff2a3a'; g.beginPath(); g.arc(cx - fw / 2 + 10, cy - fh / 2 + 10, 4, 0, 7); g.fill(); }
+        photos.forEach((p, i) => { const x = 30 + i * 52, y = H - 52; g.fillStyle = '#fff'; g.fillRect(x - 20, y - 18, 40, 36); g.font = '20px system-ui'; g.fillText(p.e, x, y - 2); g.fillStyle = p.q >= 0.75 ? '#2ecc71' : p.q >= 0.4 ? '#3498db' : '#e74c3c'; g.fillRect(x - 20, y + 12, 40 * Math.max(0.15, p.q), 4); });
+      }
+    };
+  };
+
+  // ------------------------------------------------------------------ Quiz
+  GAMES.quiz = function (o, api) {
+    const qs = U.shuffle((o.qs || []).slice()).slice(0, o.n || 4).map(q => { const opts = U.shuffle(q.slice(1)); return { q: q[0], opts, right: opts.indexOf(q[1]) }; });
+    let i = 0, ok = 0, t = 0, pick = -1, fb = 0; const per = o.per || 10;
+    const pos = (W, H, k) => { const cx = W / 2, cy = H / 2 + 34, dx = Math.min(130, W / 4.2), dy = Math.min(52, H / 7); return [[cx - dx, cy], [cx, cy + dy], [cx, cy - dy], [cx + dx, cy]][k]; };   // links, unten, oben, rechts
+    const choose = k => {
+      if (pick >= 0) return; pick = k; fb = 1.1; const P = pos(api.W, api.H, k);
+      if (k === qs[i].right) { ok++; sfx('combo'); api.burst(P[0], P[1], '#6cff8a', 16); api.pop('RICHTIG!', api.W / 2, api.H - 52, '#6cff8a', 24); }
+      else { sfx('miss'); api.shake = 10; api.flash('#ff3a3a', 0.25); api.pop(k < 0 ? 'ZEIT UM!' : 'LEIDER FALSCH', api.W / 2, api.H - 52, '#ff6a6a', 22); }
+    };
+    return {
+      title: '❓ Quiz',
+      right: () => 'Frage ' + Math.min(qs.length, i + 1) + '/' + qs.length + ' · ✓ ' + ok,
+      bar: () => pick >= 0 ? 0 : 1 - t / per,
+      help: () => helpTxt('Steuerkreuz: Antwort wählen', 'Pfeiltasten: Antwort wählen', 'Antwort antippen'),
+      update(dt, taps) {
+        if (!qs.length) return api.end(0.5);
+        if (pick >= 0) { if ((fb -= dt) <= 0) { i++; pick = -1; t = 0; if (i >= qs.length) api.end(ok / qs.length); } return; }
+        t += dt; if (t >= per) return choose(-1);
+        const d = dirHit(); if (d) choose(DIRS.indexOf(d));
+        for (const tp of taps) if (tp.type === 'down') { let bk = -1, bd = 1e9; for (let k = 0; k < 4; k++) { const P = pos(api.W, api.H, k), dd = Math.hypot(tp.x - P[0], tp.y - P[1]); if (dd < bd) { bd = dd; bk = k; } } if (bd < 90) choose(bk); }
+      },
+      draw(g, W, H) {
+        const Q = qs[Math.min(i, qs.length - 1)]; if (!Q) return;
+        g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = '#fff'; g.font = '700 17px Fredoka, system-ui'; wrap(g, Q.q, W / 2, 84, W - 60, 21);
+        for (let k = 0; k < 4; k++) {
+          const [x, y] = pos(W, H, k), bw = Math.min(170, W / 2.6), bh = 40, right = pick >= 0 && k === Q.right, wrong = pick === k && k !== Q.right;
+          g.fillStyle = right ? '#2ecc71' : wrong ? '#e74c3c' : 'rgba(255,255,255,.09)'; rr(g, x - bw / 2, y - bh / 2, bw, bh, 12); g.fill();
+          g.lineWidth = 2; g.strokeStyle = COL[DIRS[k]]; rr(g, x - bw / 2, y - bh / 2, bw, bh, 12); g.stroke();
+          g.fillStyle = '#fff'; g.font = '600 12px Fredoka, system-ui'; wrap(g, ARROW[DIRS[k]] + ' ' + Q.opts[k], x, y, bw - 14, 14);
+        }
       }
     };
   };
