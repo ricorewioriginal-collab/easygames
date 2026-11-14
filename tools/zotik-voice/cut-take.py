@@ -16,7 +16,7 @@ def segcost(k,start,end):
     d=end-start;e=chars[k]*rate+0.3
     return 2.0*abs(math.log(max(d,0.05)/e))
 def silcost(j):
-    L=S[j][1]-S[j][0];return 3.0*max(0,1.0-L)*2 - 1.0*min(L,1.1)
+    L=S[j][1]-S[j][0];return 20.0*max(0,0.9-L) - 1.0*min(L,1.1)
 INF=1e18
 dp=[[INF]*M for _ in range(K)];bk=[[-1]*M for _ in range(K)]
 for j in range(M): dp[0][j]=segcost(0,0.0,S[j][0])+silcost(j)
