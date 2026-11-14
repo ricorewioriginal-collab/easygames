@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "af728ad2d17e",
- "generated": "2026-11-14T16:35:05+00:00",
- "commit": "613e50bcd91e482f44be74bc717e07654f8cc022",
+ "version": "7883191d54f8",
+ "generated": "2026-11-14T16:40:41Z",
+ "commit": "f898c897396f8050d1014bcd265c57d6c50ce781",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9842,6 +9842,36 @@
    "h": "4a300da54fab86834b92b1e5630f47cdd16e129b00896834531edf69f57d193a"
   },
   {
+   "p": "show-me-your-voice/assets3d/kk-barbarian.glb",
+   "s": 320488,
+   "h": "93026e81bdf11e6edfb41bff98cf1c1c1776dadb35f1b277f28348a2b45b3aab"
+  },
+  {
+   "p": "show-me-your-voice/assets3d/kk-knight.glb",
+   "s": 335628,
+   "h": "5a9956f43f925d34977482634cec848769998df966229695d4f34ee047f3b205"
+  },
+  {
+   "p": "show-me-your-voice/assets3d/kk-mage.glb",
+   "s": 317312,
+   "h": "2afd91e3fac5b539c1a768276c311b36189c6c11b1ae3af7f8eb6c45a2aa4e5d"
+  },
+  {
+   "p": "show-me-your-voice/assets3d/kk-moves.json",
+   "s": 474825,
+   "h": "5a44e1e8d2ea8b0cd8733409a4d6369b7c4b7cbadae803cee2e022cf5e87d5c4"
+  },
+  {
+   "p": "show-me-your-voice/assets3d/kk-rogue.glb",
+   "s": 310848,
+   "h": "8ae32094fdf0f5a9bb0da137c611fc40e6ab189f3c54a3f90063e9f85be2162b"
+  },
+  {
+   "p": "show-me-your-voice/assets3d/kk-rogue_hooded.glb",
+   "s": 292460,
+   "h": "360c36eb542638223ea430f1bce5883a20db95edc3aa83a616d62a4e07349104"
+  },
+  {
    "p": "show-me-your-voice/card.jpg",
    "s": 57766,
    "h": "1f186bf8c7aa8e4f704ff906ffba21a62c9c96c08f41a9d0df267ac9af30a06d"
@@ -9902,49 +9932,159 @@
    "h": "25d13245d0643f340f7b2223de6f10c1fb434d9e52966478a4729ae8bc5a272a"
   },
   {
+   "p": "show-me-your-voice/img/kk-benno.jpg",
+   "s": 14681,
+   "h": "486a7fd721fe8a9cdcea50ad5a44bc475ebd66594675149fd524d2822e6544ad"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-clara.jpg",
+   "s": 14715,
+   "h": "79d60df767cb51b566042ebf0c651256baad11bf32b59b21e7683c17b15ac1ea"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-david.jpg",
+   "s": 14556,
+   "h": "529ac3056722f443ba6f758f542f2b41932758f4622fdc9252aba7550ae2f2e6"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-elif.jpg",
+   "s": 15670,
+   "h": "cbfd5243c63270cd1b6be338a8f7c73d552807a1d8d15d4963f118af5df9f39a"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-fenja.jpg",
+   "s": 13875,
+   "h": "bebf2639e3156a70851fef6a72e195ed32a6d690f6a750345a7f7aac598dfe87"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-greta.jpg",
+   "s": 14567,
+   "h": "8ff546970340bc018f261a91a986bacf5c97ffc177c2341728624869d5a1e5ff"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-jaxx.jpg",
+   "s": 13730,
+   "h": "5eb015335339a0868051d34d7d61075bee84122f8a0d7068a4853b5bb5fbe801"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-jule.jpg",
+   "s": 15288,
+   "h": "a2aa066be2fa03f2d7859e5a62b9757c81fb65bb4ce3beb27d19ad6de478ff77"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-kofi.jpg",
+   "s": 13839,
+   "h": "3dbbdc02537754a700137e6ea07e87bccb65433cc47955da587cd82c7e316c57"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-lena.jpg",
+   "s": 14995,
+   "h": "7656efd3029bc2f21c7752d34eefd31a39c4b3cf902b6ae4926b3b12b4392315"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-lio.jpg",
+   "s": 14921,
+   "h": "833dbfba5f38fb5d47172cce7f72f9d7662b3eee6bf3efcdf0ee826efab8d7ac"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-marc.jpg",
+   "s": 13147,
+   "h": "724240e73581d1aaf97e3e691a4591ad604dd3485b9302322e0ca818b2ce99f3"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-mira.jpg",
+   "s": 14661,
+   "h": "57f459921208ae730c6177030d3c5cc7d4f0cf1ab7d0ae87494f23e3fd6e05c0"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-nina.jpg",
+   "s": 14329,
+   "h": "744499b91b00d6248627e360c83c08560bc87bc3312ab7eb1b38f2ddb0fcf739"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-nova.jpg",
+   "s": 14619,
+   "h": "1d8d47ea1bf18e6aef2142e432c48ae9ced3c3a0600de0549472c80d4048baa7"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-rico.jpg",
+   "s": 14652,
+   "h": "d4529b5fad7b7add2d24218487a124b49fc85aa725adcd8bfa97493c02ffc823"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-ruben.jpg",
+   "s": 13618,
+   "h": "7a1befa9684c6708fb23177a8b0ce724a0aacdfd8b683e6bb4e08fa9f922ae87"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-sophie.jpg",
+   "s": 15256,
+   "h": "a98ecbcaa12bd377a4e02c26b53aa226f22eaef1e3d30545530c169945b4ab08"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-tamo.jpg",
+   "s": 14113,
+   "h": "eb835a702a2a4a172b0e83d56f28793ff5b7aa48a2333b3a55fb5ddc9be1302f"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-tarik.jpg",
+   "s": 15035,
+   "h": "e8e459ddc38f7d1ed9e35cbb66b028e563eeea677f1274fbfba47acabe6a7bbf"
+  },
+  {
+   "p": "show-me-your-voice/img/kk-yuki.jpg",
+   "s": 14566,
+   "h": "ac6d4e8aca3ca5bc3e021ea64e948157c7e7df67f2a7df3bc6b64f6688d67d46"
+  },
+  {
    "p": "show-me-your-voice/img/logo.jpg",
    "s": 61184,
    "h": "ad20ff7016c3a18a928c538a3640b27a5c7dd2e2bfca222fc0a01bcd372e0297"
   },
   {
    "p": "show-me-your-voice/index.html",
-   "s": 19738,
-   "h": "4fc04325561b193d83e8beb6ab4b9f1ce72a0531e4c9da6d90ee1e6a5149ee08"
+   "s": 20506,
+   "h": "e8c091b747f0e55a347b93b793fdf363ef9964fef3e0272f9173e9391ab33622"
   },
   {
    "p": "show-me-your-voice/js/app.js",
-   "s": 176788,
-   "h": "f1e4ceae918da8edcf0480a805da9cb484744c406ca74929cecdc0a8de69eb3f"
+   "s": 183673,
+   "h": "67dbd40601c7d532234bb399084c84227b88c58fa88a821c68945fc6645400d2"
   },
   {
    "p": "show-me-your-voice/js/audio.js",
-   "s": 18351,
-   "h": "2172b91aa541baaa97c674116948f8d8dacd6b69fe1c0e862d2aee457e3b7157"
+   "s": 18736,
+   "h": "bed5926051a6a38fa221d91b8498cf863a2a41d47d456976e53a9ee90585d972"
   },
   {
    "p": "show-me-your-voice/js/avatar.js",
-   "s": 9388,
-   "h": "33a31fa9bb3ea9aff31b24539b6a489aec309f41e1eb26a3c77570680f1bcc19"
+   "s": 11418,
+   "h": "030a6a3a90776e1369650f5c0ccf24ac7e23263f0a0066407410ee93bc8efe89"
   },
   {
    "p": "show-me-your-voice/js/core.js",
-   "s": 32805,
-   "h": "0d340da8938791ad0c4c304ed0d3356f1ab0b2679db48403110826dabff15589"
+   "s": 37071,
+   "h": "4d9de6c702961280cce16ac1e3329170215ffa99707cbb851e67950635a83edc"
   },
   {
    "p": "show-me-your-voice/js/data.js",
-   "s": 69472,
-   "h": "0928ec3da2f9d3a8e8d80f5118bb7987e37c0d994016d96caae28ad1bb01bac2"
+   "s": 69785,
+   "h": "e28e860cf6d43144a315326c0a3ce0b06cb9f0093c9957ab10db9f0ae6429946"
   },
   {
    "p": "show-me-your-voice/js/media.js",
-   "s": 13426,
-   "h": "2e325f8a56b30c3c19a6bfa55c2ee53576033a0995b1b2fead722c9de1311b25"
+   "s": 15055,
+   "h": "536e88b6a1a16fc31b801f3fb90369081dbc9b41ef0cf0b3b84fe923467d51da"
+  },
+  {
+   "p": "show-me-your-voice/js/scene3d.js",
+   "s": 45587,
+   "h": "6d9f4430ff7545d0810cbf943acb74383e4f01857c907ffaf2ba790acb119892"
   },
   {
    "p": "show-me-your-voice/js/stage.js",
-   "s": 32457,
-   "h": "9b2eb7528b2fb6ff498dda6cf30c418ee295f18075387d686ea963297e37284e"
+   "s": 32654,
+   "h": "25dae1f6eedae11ab5ac0311c11c525495ffcfc5d2aecf2365e8942057777d83"
   },
   {
    "p": "show-me-your-voice/manifest.webmanifest",
@@ -9953,13 +10093,88 @@
   },
   {
    "p": "show-me-your-voice/style.css",
-   "s": 35854,
-   "h": "005cf91c1605ff7bccb9791ac1274f3004f4da5fd539b367c2434d74d6d951a4"
+   "s": 49326,
+   "h": "2b195bd3796327a43675c129b4672a411dc283e5081058972ef666059461d5c1"
   },
   {
    "p": "show-me-your-voice/sw.js",
    "s": 2004,
    "h": "33aa0f8334cf0092973dceabfe23bc4c26268441c046822bc345ee66f2480949"
+  },
+  {
+   "p": "show-me-your-voice/vendor/three/addons/environments/RoomEnvironment.js",
+   "s": 3735,
+   "h": "e21f41b7ef2016f2984a5d27850b42dffa797a6a194a138e288b06576d765a7b"
+  },
+  {
+   "p": "show-me-your-voice/vendor/three/addons/loaders/GLTFLoader.js",
+   "s": 108522,
+   "h": "d073b438e6a07e1359741dd5d6c76c953420cc0d4fd84eb1bdde94315540e6a3"
+  },
+  {
+   "p": "show-me-your-voice/vendor/three/addons/postprocessing/EffectComposer.js",
+   "s": 4651,
+   "h": "d234e578618fa816955ebdc059c049c577e203e650e33cf22bde3f232c29e669"
+  },
+  {
+   "p": "show-me-your-voice/vendor/three/addons/postprocessing/MaskPass.js",
+   "s": 2231,
+   "h": "328cf7db0da5d9be83ffe39d54b01d5ac1fddf108cc98182ddbb056f5c8b537f"
+  },
+  {
+   "p": "show-me-your-voice/vendor/three/addons/postprocessing/OutputPass.js",
+   "s": 2398,
+   "h": "13817fc7a87f662d29d2c5e00f44d3a4588c9afac4a372de0cacb0e44e368ffd"
+  },
+  {
+   "p": "show-me-your-voice/vendor/three/addons/postprocessing/Pass.js",
+   "s": 1706,
+   "h": "b3c6128340eaa37e40a6a2f1b738e894c855239417d50959759b34a2b5e89f92"
+  },
+  {
+   "p": "show-me-your-voice/vendor/three/addons/postprocessing/RenderPass.js",
+   "s": 1915,
+   "h": "1c90c085312871c4bcdccfcf519499c6276dd503363fcf7cb7f703add45cf4a2"
+  },
+  {
+   "p": "show-me-your-voice/vendor/three/addons/postprocessing/ShaderPass.js",
+   "s": 1576,
+   "h": "3b28a1ee27e0eb96c0eab137a1f442ccf127a926904eced2d51e125ec44af781"
+  },
+  {
+   "p": "show-me-your-voice/vendor/three/addons/postprocessing/UnrealBloomPass.js",
+   "s": 12406,
+   "h": "8f09315c0cec117a0ca2494d3e3586035b3c4323d6dcb037537cc51b04c3cdba"
+  },
+  {
+   "p": "show-me-your-voice/vendor/three/addons/shaders/CopyShader.js",
+   "s": 571,
+   "h": "4e3346db194db56a596cd074e9bdb39fb5eb52040c333e0d29dc4eb1324d3b1d"
+  },
+  {
+   "p": "show-me-your-voice/vendor/three/addons/shaders/LuminosityHighPassShader.js",
+   "s": 1192,
+   "h": "3d841cc594a0c1767d1b0185720b32761a0133c5f1b70b56658e28f2fb9b7900"
+  },
+  {
+   "p": "show-me-your-voice/vendor/three/addons/shaders/OutputShader.js",
+   "s": 1393,
+   "h": "53a52e430c27bc36ceaab8ae90a2b4af7b02672d7ee4b29d6ba3c28e09c92c2a"
+  },
+  {
+   "p": "show-me-your-voice/vendor/three/addons/utils/BufferGeometryUtils.js",
+   "s": 31906,
+   "h": "9be041e96308775d00e2695cc607645b9a9b64fd7c0e759dd8f7c00a8d92becb"
+  },
+  {
+   "p": "show-me-your-voice/vendor/three/addons/utils/SkeletonUtils.js",
+   "s": 8007,
+   "h": "83748c5072a5ce96e9d68d8efda908a1f1a06c0b5fd2618edc3e54a361a8fd5b"
+  },
+  {
+   "p": "show-me-your-voice/vendor/three/three.module.min.js",
+   "s": 670681,
+   "h": "3e690ac7d180b0aadf0891bea39eec643e29e2d3e75c99b18689518665f69ba6"
   },
   {
    "p": "show-voice.js",
@@ -10358,8 +10573,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 261956,
-   "h": "4a25146ee03fb444b60a148677cc545c3da5b89b93b283ab492af997163c9d64"
+   "s": 261957,
+   "h": "3703ec849da96da38786ba7e7981ebac51918c884b8d4305170d097c0350204b"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
