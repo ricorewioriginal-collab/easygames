@@ -281,9 +281,9 @@ BI.HEROES = [
   { id: 'kay', name: 'Popstar Kay', icon: '🎤', o: { shirt: 0xe8672a, pants: 0x8d929c, hair: 0xf3d98a, skin: 0xf3c9a0, style: 'mullet', beard: 4, beardc: 0x6b4423, brow: 3, ctype: 3, rainbow: true, earring: 1, necklace: 0xffd23f, nosering: true, lip: 0xb23c35, shoeT: 1, shoe: 0x23262d, scale: 1.03 } },
   /* Zotik, der Weltenhörer: Fuchs-Mensch (eigene Erfindung) mit grünem Schal, Lederriemen, fingerlosen Handschuhen und buschigem Schwanz */
   { id: 'zotik', name: 'Zotik', icon: '🦊', o: { shirt: 0x6b4a2a, pants: 0x3a2a1a, hair: 0xf08a24, skin: 0xe8832a, style: 'shaggy', fox: true, eye: 0x3fb04a, brow: 2, mouth: 'none', sleeve: 2, scarf: 0x3fa04a, harness: 0x5a3a1e, gloves: 0x4a2e18, shoeT: 1, shoe: 0x4a2e18, ctype: 5, blush: false } },
-  { id: 'lyra', name: 'Lyra', icon: '✨', o: { shirt: 0x1d2a6a, pants: 0x2a2a3a, hair: 0x3fa0ff, skin: 0xf3c9a0, style: 'long', cape: true } },
-  { id: 'rovan', name: 'Rovan', icon: '⚔️', o: { shirt: 0x5a3a2a, pants: 0x2a2a2a, hair: 0x222222, skin: 0xd8a070, style: 'short', beard: 5, beardc: 0x222222, ctype: 3, brow: 3, build: 2, scale: 1.04 } },
-  { id: 'nia', name: 'Nia', icon: '🏹', o: { shirt: 0x2f6a4a, pants: 0x3a2a1a, hair: 0x4a3322, skin: 0xe0a979, style: 'ponytail', glassT: 3, cape: true } },
+  { id: 'lyra', name: 'Lyra', icon: '✨', o: { shirt: 0x2e2c4a, pants: 0x2a2638, hair: 0xff9ad0, skin: 0xf3c9a0, style: 'wavy', cape: true, necklace: 0xd8a84a, clip: 0xb06cff, shoeT: 1, shoe: 0x7a4a26 } },
+  { id: 'rovan', name: 'Rovan', icon: '⚔️', o: { shirt: 0x5a78b0, pants: 0x4a3424, hair: 0x7a4a2a, skin: 0xe0a979, style: 'short', cape: true, ctype: 3, brow: 3, build: 2, shoeT: 1, shoe: 0x3a2a1e, scale: 1.04 } },
+  { id: 'nia', name: 'Nia', icon: '🏹', o: { shirt: 0xa8c878, pants: 0x4a6a2a, hair: 0x6ac05a, skin: 0xf3c9a0, style: 'ponytail', eye: 0x3aa04a, shoeT: 1, shoe: 0x5a3a22 } },
   /* Figuren aus den Welten (eigene Erfindungen, inspiriert von den Vorbildern der Inseln) */
   { id: 'muschel', name: 'Käpt’n Muschel', icon: '⚓', world: 'DAMPF', o: { shirt: 0x2a4a8a, pants: 0xffffff, hair: 0xe8e8e8, skin: 0xe0a979, style: 'bald', beard: 5, beardc: 0xe8e8e8, hat: 'cap', build: 2, glassT: 1, wrink: 1, hsc: .98 } },
   { id: 'glimmer', name: 'Fee Glimmer', icon: '🧚‍♀️', world: 'MAERCHEN', o: { shirt: 0x6bff9a, pants: 0x35c870, hair: 0xfff3a0, skin: 0xf6d2b0, style: 'bun', dress: true, wings: true, hat: 'flowers', scale: .95 } },
@@ -293,7 +293,7 @@ BI.HEROES = [
   { id: 'schwammi', name: 'Schwammi', icon: '🧽', world: 'SCHWAMM', o: { shirt: 0xffffff, pants: 0x8a5a2a, hair: 0xffe14a, skin: 0xffe14a, style: 'bald', freckles: true, mouth: 'grin', eyeS: 2, scale: .9, logo: 0xffd23f } },
   { id: 'lena', name: 'Trainerin Lena', icon: '⚽', world: 'FUSSBALL', o: { shirt: 0x2fae5a, pants: 0xffffff, hair: 0x6b4423, skin: 0xf3c9a0, style: 'ponytail', logo: 0xffffff, shoe: 0xffd23f } },
   { id: 'okeana', name: 'Orakel Okeana', icon: '🔱', world: 'ATLANTIS', o: { shirt: 0x2fd0d0, pants: 0x2fd0d0, hair: 0x3fa0ff, skin: 0xe8b48a, style: 'long', dress: true, hat: 'crown', necklace: 0xffffff, earring: 2 } },
-  { id: 'mira', name: 'Mira von Lunaris', icon: '🔮', world: 'ZOTIK', o: { shirt: 0x7a3fd0, pants: 0x2a2a3a, hair: 0xff9a5a, skin: 0xe0a979, style: 'wavy', cape: true, earring: 1 } },
+  { id: 'mira', name: 'Mira von Lunaris', icon: '🌙', world: 'ZOTIK', o: { shirt: 0xc8d8ff, pants: 0x22336e, hair: 0x4a86f0, skin: 0xf3c9a0, style: 'long', cape: true, dress: true, earring: 1, necklace: 0xb06cff, clip: 0xb06cff, eye: 0x3a8cff } },
   { id: 'frida', name: 'Funkmeisterin Frida', icon: '📻', world: 'RADIO', o: { shirt: 0xff5a8a, pants: 0x3a3a4a, hair: 0x222222, skin: 0x8d5a3b, style: 'curly', hat: 'headphones' } },
   { id: 'bruno', name: 'Parkchef Bruno', icon: '🎡', world: 'PARK', o: { shirt: 0xe8453c, pants: 0x23262d, hair: 0x6b4423, skin: 0xf3c9a0, hat: 'tophat', beard: 4, beardc: 0x6b4423, build: 2, logo: 0xffd23f } },
   { id: 'berta', name: 'Baumeisterin Berta', icon: '🧱', world: 'BAULAND', o: { shirt: 0xffd23f, pants: 0x3d9aff, hair: 0x8a5a33, skin: 0xffd2a8, style: 'bun', hat: 'helmet', overall: true, shoeT: 1, shoe: 0x5a3d2b } },

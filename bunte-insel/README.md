@@ -343,19 +343,21 @@ Was es sonst nirgends gibt: **Aqua-Gleiter** (schwebende Fahrzeuge), **Schwerelo
 
 Sparsam: eigene Meshes, nur in der Nähe sichtbar; unter der Erde werden die großen Hauptwelt-Meshes, Himmel, Wolken und Wetter ausgeblendet. Dateien: `js/atlantis.js`, `js/world.js` (Laufregeln), `js/minis2.js` (Rätsel), `js/vehicles.js` (Gleiter).
 
-### ⭐ Zotik – Lunaris, die Hauptstadt der Splitter (eigenes Rollenspiel-Universum)
+### 🌙 Zotik – Lunaris, das Dorf am Mondblick (eigenes Rollenspiel-Universum)
 
-Zotik ist Ricos eigenes 3D-Rollenspiel-Projekt (Fantasy, schwebende Inseln, Weltenreisen). Hier steht seine Hauptstadt **Lunaris** als Insel **südlich der Hauptinsel**: Man läuft über die **Brücke am Steg** (oder 🧭 → Zotik), genau wie bei den anderen Welten – ohne Portal. Nur Atlantis wird über den Eingang am See betreten. Der Lichtstrahl des Mondkristalls ist schon von der Hauptinsel aus zu sehen.
+Zotik ist Ricos eigenes 3D-Rollenspiel (Ordner `../zotik`). Die Welt in der Bunten Insel folgt dem **aktuellen Zotik-Spiel** (Kapitel 1 „Der erste Riss“), in Optik und Inhalt: Lunaris liegt als Insel **südlich der Hauptinsel**, man läuft über die **Brücke am Steg** (oder 🧭 → Zotik). Die Lichtsäule vom Schloss auf der schwebenden Insel ist schon von der Hauptinsel aus zu sehen.
 
-- **Stadt:** Plaza mit Mondkristall-Brunnen, Markt „Wanderhand“ (Händler Rurik), Taverne, Akademie-Turm, **Burg Lunaris auf einem 8-stufigen Hügel**, Hafen, schwebende Nachbarinseln, leuchtende Mondbäume.
-- **Bewohner mit Dialog:** Mira (Questgeberin), Rurik, Lyra, Rovan, Nia, Professorium. **Moosling Felli** streicheln = neuer **Partner** (wie Zündel/Willi).
-- **Quest „Der Ruf des Kristalls“:** Mira → Hinweis im Hafen → Riss an der Akademie (**Elementar-Kampf**) → Mira berichten (+10 ⭐); steht im 📋 Aufgaben-Log.
-- **Luftschiff Nautilux** im Hafen: einsteigen, fliegen (Steigen/Sinken), landen, aussteigen.
-- **Weltentore (nach der Quest):** 6 Tore zu Drachenhöhen, Fellretter-Bucht, Dampfer-Hafen, Regenbogenwelt, Bauland und Atlantis – Weltenhüpfen.
-- **Währung Splitter 💠:** 64 Splitter liegen in Lunaris; **10 Splitter = 1 ⭐** (automatisch, wie die Diamanten der Drachenwelt). Goldene zählen 5.
-- **Neue Vorlagen:** Lyra, Rovan und Nia stehen neben Zotik im Charakter-Studio (für alle wählbar).
-- Dateien: `js/zotik.js`, `js/world.js` (Laufregeln), `js/minis2.js` (Elementar-Kampf), `js/vehicles.js` (Nautilux), `js/themes.js` (Musik „Lunaris“).
-- **Rechtliches:** Zotik, seine Welt und alle Figuren sind Ricos eigene Erfindung; von Fantasy-Spielen sind nur allgemeine Ideen (schwebende Inseln, Weltentore, Elementkreis) übernommen, keine geschützten Figuren, Namen oder Bilder. Keine Rechtsberatung.
+- **Dorf am Mondblick:** Kristallbrunnen auf dem gepflasterten Platz, Wirtshaus „Mondschein“, Tränke-Laden, Magieladen (begehbar), Boros Schmiede (Ausrüstung), Markt am Nordweg, Brunnen, Laternen, Trittstein-Wege mit Randsteinen.
+- **Mondwald (Süden):** blaue Mondtannen, türkise Kugelbäume, leuchtende Mondbäume, rosa Fantasiebäume, lila Gräser, Glühwürmchen. **Mondtor** mit drei Mondsteinen, am Ende das **Risstor** mit dem **Mondwolf-Alpha**.
+- **Professoriums Werkstatt (Westen):** Messing-Kuppel mit Leuchttür und Antenne; davor parkt die **Nautilux**.
+- **Camp der Weltenreisenden (Nordwesten):** Lagerfeuer mit Lyra, Nia und Rovan, zwei Zelte.
+- **Mondblick-Hügel:** 8 begehbare Fels-Terrassen, oben der Mondturm (begehbar). **Weltentor-Platz:** 6 Tore (nach der Quest) und das große Tor ins Zotik-Spiel. **Schwebende Inseln** am Himmel, die größte mit Schloss.
+- **Figuren nach den Master-Sheets:** Mira (blaue Haare, Mondschmuck), Professorium (Fliegerbrille, Technikrucksack), Lyra (rosa Wellen), Nia (grünes Haar), Rovan (blaues Hemd), Boro, Elwen, Sari, Pip, Finn, **Moosling Felli** (Partner).
+- **Quest „Der erste Riss“** (kindgerecht, niemand wird besiegt): Mira am Brunnen → 3 Mondkräuter → 5 Riftlinge mit Licht beruhigen → Professorium (Mondlaterne) → Mondsteine auf Vollmond 🌕 → Mondwolf am Risstor (**Elementar-Kampf**, danach ist er ein Freund) → Mira berichten (+10 ⭐, Weltentore offen). Im 📋 Aufgaben-Log und als Inselgeschichte.
+- **Währung Splitter 💠:** 48 Splitter, **10 Splitter = 1 ⭐**.
+- **Freie 3D-Modelle:** Häuser, Markt, Brunnen, Wachturm, Schloss (KayKit Medieval Builder, CC0) und Fantasiebäume, Gräser, Lampen, Torbogen (Wizp, CC0) – dieselben Pakete wie im Zotik-Spiel, gebacken in `models/welt.bin` und erst in der Nähe geladen (`models/LIZENZEN.md`). Bis dahin (oder mit `?deko=0`) einfache Ersatzformen.
+- Dateien: `js/zotik.js`, `js/deko.js` (Modelle), `js/world.js` (Laufregeln), `js/minis2.js` (Elementar-Kampf), `js/vehicles.js` (Nautilux), `js/themes.js` (Musik „Lunaris“). Test: `tests/welten.mjs`, `tests/zotik.mjs`.
+- **Rechtliches:** Zotik, seine Welt und alle Figuren sind Ricos eigene Erfindung; von Fantasy-Spielen sind nur allgemeine Ideen (schwebende Inseln, Weltentore, Elementkreis) übernommen. Keine Rechtsberatung.
 
 ### 📻 Funkwelle – die Radio-Welt (13 Sender mit Live-Stream)
 

@@ -30,7 +30,7 @@ BI.TAFELN = {
   lighthouse: ['💡🌊', 'Leuchtturm', 'Der Leuchtturm zeigt den Schiffen den Weg.'],
   dampf: ['🎬🚢', 'Kino-Schiff', 'Im Dampfer-Hafen gibt es Filme.'],
   drachen: ['🐉🔥', 'Drachen', 'Hier wohnen die Drachen. Sie sind freundlich.'],
-  zotik: ['⭐🏰', 'Lunaris', 'Willkommen in Lunaris! Sammle bunte Splitter.'],
+  zotik: ['🌙💧', 'Lunaris', 'Willkommen im Dorf am Mondblick! Mira wartet am Kristallbrunnen.'],
   radio: ['📻🎵', 'Radio-Welt', 'In der Funkwelle spielt Musik von vielen Radiosendern.'],
   schluessel: ['🗝️💛', 'Schlüsselreich', 'Willkommen im Schlüsselreich! Zünde Laternen an, fahre mit dem Auto die Ringstraße und öffne fünf Schlüssellöcher.'],
   statue_s: ['🗽🗝️', 'Lichtwanderer Lio', 'Die große Statue zeigt Lio. Er hat alle Welten mit dem Lichtschlüssel gerettet.'],
