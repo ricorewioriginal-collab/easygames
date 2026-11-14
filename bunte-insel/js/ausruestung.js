@@ -1,6 +1,6 @@
 'use strict';
 /* Bunte Insel – Ausrüstung 🎒⚔️: Waffen, Schilde, Amulett und Tränke für die Kämpfe auf der Wald-Insel (klein auf der Hauptinsel, groß auf der Wald-Insel).
-   Kaufen mit Sternen bei Händlern (Waldhändlerin Fenja, Rurik „Wanderhand“ in Lunaris, Kampfmeister Kai), anlegen im selben Fenster.
+   Kaufen mit Sternen bei Händlern (Waldhändlerin Fenja, Boro (Schmiede in Lunaris), Kampfmeister Kai), anlegen im selben Fenster.
    Kindgerecht: keine echten Waffen-Details, alles bunt und ohne Blut. Spielstand: save.gear = { own, w, sh, amu } (nur ergänzt). */
 BI.GEAR = {
   weapons: [
@@ -63,14 +63,14 @@ BI.createGear = function (G) {
     const row = (icon, name, txt, btn) => { const r = el('div', 'display:flex;align-items:center;gap:8px;margin:5px 0;background:#fff;border:3px solid #f0d8a8;border-radius:14px;padding:6px 8px'); r.appendChild(el('div', 'font-size:30px;flex:none', icon)); const m = el('div', 'flex:1;min-width:0'); m.appendChild(el('div', 'font-weight:900;color:#4a2a1a', name)); m.appendChild(el('div', 'font-size:12px;color:#7a5a3a;line-height:1.2', txt)); r.appendChild(m); r.appendChild(btn); list.appendChild(r); return r; };
     const btn = (t, col, fn) => { const b = el('button', 'flex:none;border:0;border-radius:12px;padding:8px 10px;font:inherit;font-weight:900;color:#fff;background:' + col + ';min-width:84px', t); b.type = 'button'; b.onclick = () => { A.pop && A.pop(); fn(); draw(); }; return b; };
     const done = t => el('div', 'flex:none;font-weight:900;color:#2a9a4a;min-width:84px;text-align:center', t);
-    /* ohne Händler (Knopf 🎒 im Kampf): nur anlegen – kaufen geht bei Fenja, Rurik oder Kai */
+    /* ohne Händler (Knopf 🎒 im Kampf): nur anlegen – kaufen geht bei Fenja, Boro oder Kai */
     const shop = (q, k) => K.seller ? btn(q.price + ' ⭐ kaufen', '#e0902a', () => buy(q, k)) : el('div', 'flex:none;font-size:12px;font-weight:700;color:#9a7a5a;min-width:84px;text-align:center', '🛒 bei Fenja');
     head('⚔️ Waffen');
     for (const q of D.weapons) row(q.icon, q.name, q.txt, s.w === q.id ? done('✔ in der Hand') : K.owns(q.id) ? btn('Anlegen', '#3f8cff', () => { s.w = q.id; persist(); say(q.icon + ' ' + q.name + ' angelegt!', 1600); }) : shop(q, 'w'));
     head('🛡️ Schutz');
     for (const q of D.shields) row(q.icon, q.name, q.txt, s.sh === q.id ? btn('Ablegen', '#8a96a8', () => { s.sh = ''; persist(); }) : K.owns(q.id) ? btn('Anlegen', '#3f8cff', () => { s.sh = q.id; persist(); say(q.icon + ' ' + q.name + ' angelegt!', 1600); }) : shop(q, 's'));
     for (const q of D.extras) row(q.icon, q.name, q.txt, s.amu ? done('✔ trägst du') : shop(q, 'x'));
-    if (!K.seller) { card.appendChild(el('div', 'font-size:13px;color:#7a5a3a;margin-top:6px', 'Neues kaufen: Waldhändlerin Fenja (Wald-Insel), Rurik (Lunaris) oder Kampfmeister Kai.')); return void card.appendChild(closeBtn()); }
+    if (!K.seller) { card.appendChild(el('div', 'font-size:13px;color:#7a5a3a;margin-top:6px', 'Neues kaufen: Waldhändlerin Fenja (Wald-Insel), Boro (Lunaris) oder Kampfmeister Kai.')); return void card.appendChild(closeBtn()); }
     head('🧪 Tränke');
     const iv = G.inv ? G.inv() : null;
     for (const [id, icon, name, pr, txt] of D.potions) row(icon, name + (iv ? ' (' + (iv[id] | 0) + ')' : ''), txt, btn(pr + ' ⭐ kaufen', '#e0902a', () => { if ((save.stars | 0) < pr) { say('⭐ Dafür fehlen dir noch Sterne.', 2000); return; } if (!iv) return; G.addStars(-pr); iv[id] = (iv[id] | 0) + 1; persist(); say(icon + ' ' + name + ' im Rucksack!', 1600); }));
