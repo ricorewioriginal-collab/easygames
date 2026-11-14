@@ -36,7 +36,7 @@
     for (let i = 0; i < TAPES; i++) {
       const [x, y, z] = C.freeSpot(rng, 10);
       if (got[i]) continue;
-      const g = new T.Group(); g.position.set(x, y + 1.0, z); g.scale.setScalar(1.6);
+      const g = new T.Group(); g.userData.dyn = true; g.position.set(x, y + 1.0, z); g.scale.setScalar(1.6);
       W.box(0.7, 0.44, 0.1, gold, 0, 0, 0, g, false); [-0.17, 0.17].forEach(o => W.cyl(0.08, 0.08, 0.12, dark, o, 0.02, 0, g, 10).rotation.x = Math.PI / 2);
       S.group.add(g); S.goldTapes.push({ i, x, y: y + 1.0, z, g });
     }

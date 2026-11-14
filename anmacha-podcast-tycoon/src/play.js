@@ -726,14 +726,21 @@
       }
     }
     for (const r of S.relays) if (!r.fixed && Math.hypot(r.x - p.x, r.z - p.z) < 2.2 && Math.abs(r.y - p.y) < 1.6) return { label: 'Verteiler reparieren (halten)', hold: r };
-    if (S.gisela && S.gisela.t <= 0 && Math.hypot(S.gisela.x - p.x, S.gisela.z - p.z) < 3.6) return { label: 'Gisela hupen 📯', run: honk };
+    if (S.gisela && S.gisela.t <= 0 && Math.hypot(S.gisela.x - p.x, S.gisela.z - p.z) < 4.6) return { label: 'Gisela hupen 📯', run: honk };
     if (S.rico && !S.rico.away && S.rico.t <= 0 && Math.hypot(S.rico.x - p.x, S.rico.z - p.z) < 2.6) return { label: 'Mit RicoReWi quatschen 📱', run: ricoTalk };
     if (S.imbiss && Math.hypot(S.imbiss.x - p.x, S.imbiss.z - p.z) < 3.4 && S.carry < 3 && S.fed + S.carry < S.hungryNeed) return { label: 'Bestellungen abholen 🍟', run: pickOrder };
     if (S.ch && S.ch.radio && !S.senderDone && p === S.pl && S.stations) { const st = S.stations.find(x => x.id === 'sender:' + S.ch.radio); if (st && Math.hypot(st.x - p.x, st.z - p.z) < st.r) { const ss = D.STATIONS.find(x => x.slug === S.ch.radio); return { label: '🎙️ Interview bei ' + ss.name + ' (Bonus)', run: () => senderInterview(ss) }; } }
     const tk = AMC.Talk && p === S.pl && S.mode === 'free' && !S.net && !(S.stations || []).some(st => Math.hypot(st.x - p.x, st.z - p.z) < st.r) ? AMC.Talk.target(p, CTX) : null; if (tk) return tk;
     const bw = AMC.Drive && p === S.pl && !(S.stations || []).some(st => Math.hypot(st.x - p.x, st.z - p.z) < st.r) ? AMC.Drive.borrowTarget(p) : null; if (bw) return bw;
-    if (S.mode === 'free' && S.net !== 'guest' && p === S.pl && S.stations) for (const st of S.stations) if (Math.hypot(st.x - p.x, st.z - p.z) < st.r && p.y < 2) return { label: st.label, run: () => { AMC.Audio.sfx('door'); if (AMC.Missions) AMC.Missions.enter(st.id); if (P.onAction) P.onAction(st.id); else finish(true); } };
+    if (S.mode === 'free' && S.net !== 'guest' && p === S.pl && S.stations) for (const st of S.stations) if (Math.hypot(st.x - p.x, st.z - p.z) < st.r && p.y < 2) return { label: st.label, run: () => { AMC.Audio.sfx('door'); if (AMC.Missions) AMC.Missions.enter(st.id); if (P.onAction && /^(room:|sender:|home:)/.test(st.id)) pushIn(() => P.onAction && P.onAction(st.id)); else if (P.onAction) P.onAction(st.id); else finish(true); } };
     return null;
+  }
+  // Kamerafahrt beim Betreten: Bild schiebt sich auf die Tür zu und blendet ab, dann Szenenwechsel
+  let pushing = false;
+  function pushIn(go) {
+    if (pushing) return; pushing = true; const cv = W.renderer.domElement, f = U.el('div', 'enter-fade'); document.body.appendChild(f);
+    cv.classList.add('push-in'); requestAnimationFrame(() => f.classList.add('on'));
+    setTimeout(() => { pushing = false; try { go(); } finally { cv.classList.remove('push-in'); f.classList.add('off'); setTimeout(() => f.remove(), 450); } }, 480);
   }
   function talk(n) {
     n.talked = true; S.talks++; n.icon.visible = false; n.mark.visible = false;
@@ -850,12 +857,30 @@
     P.onEnd && P.onEnd(res);
   }
 
+  // Alles, worauf der Spielzustand zeigt, kann sich später bewegen oder verschwinden – das bleibt beim Zusammenfassen einzeln
+  function keepSet() {
+    const keep = new Set(), seen = new Set();
+    const walk = (v, d) => {
+      if (!v || typeof v !== 'object' || seen.has(v)) return; seen.add(v);
+      if (v.isObject3D) { if (v !== S.group && v !== S.scene) keep.add(v); return; }
+      if (d <= 0 || v.isMaterial || v.isTexture || v.isBufferGeometry || v.nodeType) return;
+      if (Array.isArray(v)) { for (const x of v) walk(x, d - 1); return; }
+      const pr = Object.getPrototypeOf(v); if (pr !== Object.prototype && pr !== null) return;
+      for (const k in v) walk(v[k], d - 1);
+    };
+    for (const k in S) walk(S[k], 3);
+    return keep;
+  }
   // ------------------------------------------------------------------ Bild für Bild
   P.update = function (dt) {
     if (!S || S.ended) return;
     if (AMC.Cut && AMC.Cut.tick(dt)) return;   // Zwischensequenz
     if (AMC.Worlds && AMC.Worlds.tick(dt)) return;   // Minispiel in einer Welt
     S.time += dt;
+    // Statische Stadt nach ein paar Sekunden zusammenfassen: Momentaufnahme bei 1,5 s, verschmelzen bei 4 s (was sich bewegt hat, bleibt einzeln)
+    const age = (performance.now() - (S.born || (S.born = performance.now()))) / 1000;
+    if (!S.merged && !S.mergeSnap && age > 2.5 && W.mergePrep) S.mergeSnap = W.mergePrep(S.group);
+    else if (S.mergeSnap && age > 6) { S.merged = W.mergeRun(S.group, S.mergeSnap, keepSet()); S.mergeSnap = null; }
     const p = S.pl, H = p.H, cam = W.cam;
     const driving = !S.net && AMC.Drive ? AMC.Drive.update(dt) : false;
     let sp = 0; const f = S.fo;
@@ -984,7 +1009,9 @@
     const p = S.pl;
     for (const n of S.npcs) {
       if (!n.fig) continue;
-      n.fig.update(dt);
+      // weit weg: unsichtbar und ohne Animation (spart am Handy viel), Gäste und Begleiter immer sichtbar
+      const far = !n.follow && Math.hypot(n.x - p.x, n.z - p.z) > (W.quality > 1 ? 80 : 45); n.fig.root.visible = !far || !!n.guest;
+      if (!far) n.fig.update(dt); else if ((n.k = (n.k || 0) + 1) % 4 === 0) n.fig.update(dt * 4);
       if (n.icon && n.icon.visible) n.icon.position.y = 2.35 + Math.sin(S.time * 3 + n.x) * 0.08;
       if (n.follow && !n.delivered) {
         const dx = p.x - n.x, dz = p.z - n.z, d = Math.hypot(dx, dz);
@@ -1039,7 +1066,7 @@
     if (!AMC.StudioEdit) return;
     const g = AMC.StudioEdit.camper(1); if (AMC.Camper) AMC.Camper.decorate(g); g.position.set(x, 0, z); g.rotation.y = h; S.group.add(g);
     g.traverse(o => { if (o.isMesh) { o.castShadow = W.quality > 0; o.receiveShadow = true; } });
-    const c = Math.cos(h), sn = Math.sin(h), hw = 1.1, hl = 2.3, xs = [], zs = [];
+    const c = Math.cos(h), sn = Math.sin(h), hw = 1.15, hl = AMC.Camper && AMC.Camper.has('heck') ? 3.5 : 3.25, xs = [], zs = [];
     [[-hw, -hl], [hw, -hl], [-hw, hl], [hw, hl]].forEach(([a, b]) => { xs.push(x + a * c + b * sn); zs.push(z - a * sn + b * c); });
     addBox(Math.min(...xs) + 0.4, Math.max(...xs) - 0.4, Math.min(...zs) + 0.4, Math.max(...zs) - 0.4, 2.1);
     S.gisela = { x, z, g, t: 0, honk: 0 };

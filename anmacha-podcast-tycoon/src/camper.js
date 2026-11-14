@@ -26,16 +26,16 @@
   // Außen an Gisela sichtbar (Stadt, Studio-Deko)
   CP.decorate = function (g) {
     T = root.THREE; const M = (c, o) => W.mat(c, o || { r: 0.6 });
-    if (has('solar')) [-0.5, 0.5].forEach(z => { W.box(1.5, 0.05, 0.9, M(0x1a2a5a, { m: 0.6, r: 0.25 }), 0, 2.14, -0.5 + z * 1.2, g, false); });
-    if (has('licht')) for (let i = 0; i < 12; i++) { const b = new T.Mesh(new T.SphereGeometry(0.05, 6, 5), M([0xffd23f, 0xff3da8, 0x3dd6ff][i % 3], { e: [0xffd23f, 0xff3da8, 0x3dd6ff][i % 3], ei: 1.6 })); b.position.set(1.04, 1.62 + Math.sin(i) * 0.04, -2 + i * 0.36); g.add(b); }
-    if (has('markise')) { const a = W.box(0.05, 0.04, 3.0, M(0xff8a1e), 1.9, 1.75, -0.4, g, false); W.box(1.9, 0.03, 3.0, M(0xff8a1e, { r: 0.8 }), 1.95, 1.72, -0.4, g, false).rotation.z = -0.12; [-1.8, 1.0].forEach(z => W.cyl(0.03, 0.03, 1.7, M(0xcccccc, { m: 0.6 }), 2.8, 0.85, z, g, 6)); [[2.4, -1], [2.4, 0.3]].forEach(([x, z]) => { W.box(0.5, 0.06, 0.5, M(0x2f7a3a), x, 0.45, z, g, false); W.box(0.5, 0.5, 0.06, M(0x2f7a3a), x, 0.7, z - 0.25, g, false); }); a.visible = true; }
-    if (has('heck')) { W.box(1.6, 0.9, 0.7, M(0xf2efe6, { r: 0.5 }), 0, 1.15, -2.5, g, false); W.box(1.62, 0.4, 0.72, M(0x3aa7a0, { r: 0.5 }), 0, 0.55, -2.5, g, false); }
+    if (has('solar')) [-0.45, 0.45].forEach(z => { W.box(1.7, 0.05, 0.82, M(0x1a2a5a, { m: 0.6, r: 0.25 }), 0, 3.0, z, g, false); W.box(1.74, 0.03, 0.86, M(0xcccccc, { m: 0.7 }), 0, 2.97, z, g, false); });
+    if (has('licht')) for (let i = 0; i < 14; i++) { const c = [0xffd23f, 0xff3da8, 0x3dd6ff][i % 3], b = new T.Mesh(new T.SphereGeometry(0.05, 6, 5), M(c, { e: c, ei: 1.6 })); b.position.set(1.2, 2.58 - Math.abs(Math.sin(i * 0.8)) * 0.08, -2.3 + i * 0.3); g.add(b); }
+    if (has('markise')) { const aw = W.box(1.9, 0.03, 3.6, M(0xff8a1e, { r: 0.8 }), 2.12, 2.6, -0.5, g, false); aw.rotation.z = -0.1; for (let i = 0; i < 6; i++) W.box(1.9, 0.031, 0.3, M(0xf4f1ea, { r: 0.8 }), 2.12, 2.6, -2.05 + i * 0.6, g, false).rotation.z = -0.1; [-2.2, 1.2].forEach(z => W.cyl(0.03, 0.03, 2.45, M(0xcccccc, { m: 0.6 }), 3.0, 1.22, z, g, 6)); [[2.3, -1.4], [2.3, -0.2]].forEach(([x, z]) => { W.box(0.5, 0.06, 0.5, M(0x2f7a3a), x, 0.45, z, g, false); W.box(0.5, 0.5, 0.06, M(0x2f7a3a), x + 0.22, 0.7, z, g, false).rotation.y = Math.PI / 2; }); W.cyl(0.35, 0.35, 0.04, M(0xf4f1ea), 2.4, 0.7, -0.8, g, 16); W.cyl(0.03, 0.03, 0.7, M(0x888888, { m: 0.6 }), 2.4, 0.35, -0.8, g, 6); }
+    if (has('heck')) { W.box(2.0, 1.7, 0.7, M(0xf4f1ea, { r: 0.45 }), 0, 1.55, -3.5, g, false); W.box(2.02, 0.4, 0.72, M(0x3aa7a0, { r: 0.45 }), 0, 0.72, -3.5, g, false); [-0.6, 0.6].forEach(x => { const b = new T.Mesh(new T.TorusGeometry(0.3, 0.03, 6, 16), M(0x222222)); b.position.set(x, 1.4, -3.9); b.rotation.y = Math.PI / 2; g.add(b); }); }
   };
 
   // ------------------------------------------------------------------ Innenraum
   function build() {
     const sc = new T.Scene(), g = new T.Group(); sc.add(g);
-    const L = has('heck') ? 7.0 : 5.4, hl = L / 2, hd = 1.2, M = (c, o) => W.mat(c, o || { r: 0.7 });
+    const L = has('heck') ? 10.0 : 8.6, hl = L / 2, hd = 1.65, M = (c, o) => W.mat(c, o || { r: 0.7 });
     sc.background = new T.Color(0x1b2030);
     sc.add(new T.HemisphereLight(0xfff1e0, 0x3a3040, 0.9));
     const sun = new T.DirectionalLight(0xffe8c8, 0.9); sun.position.set(2, 8, 6); sc.add(sun);
@@ -44,14 +44,14 @@
     const ft = W.canvasTex(128, 128, (c, w, h) => { c.fillStyle = '#a07850'; c.fillRect(0, 0, w, h); c.fillStyle = 'rgba(0,0,0,.12)'; for (let y = 0; y < h; y += 16) c.fillRect(0, y, w, 2); }, [L, 2]);
     const fl = new T.Mesh(new T.PlaneGeometry(L, hd * 2), new T.MeshStandardMaterial({ map: ft, roughness: 0.8 })); fl.rotation.x = -Math.PI / 2; g.add(fl);
     const wallM = M(0xf2efe6, { r: 0.85 }), tq = M(0x3aa7a0), or = M(0xff8a1e, { e: 0xff8a1e, ei: 0.2 });
-    W.box(L, 2.2, 0.12, wallM, 0, 1.1, -hd, g, false); W.box(L, 0.5, 0.13, tq, 0, 0.25, -hd + 0.01, g, false); W.box(L, 0.06, 0.14, or, 0, 0.53, -hd + 0.02, g, false);
-    W.box(0.12, 2.2, hd * 2, wallM, -hl, 1.1, 0, g, false); W.box(0.12, 2.2, hd * 2, wallM, hl, 1.1, 0, g, false);
+    W.box(L, 2.5, 0.12, wallM, 0, 1.25, -hd, g, false); W.box(L, 0.5, 0.13, tq, 0, 0.25, -hd + 0.01, g, false); W.box(L, 0.06, 0.14, or, 0, 0.53, -hd + 0.02, g, false);
+    W.box(0.12, 2.5, hd * 2, wallM, -hl, 1.25, 0, g, false); W.box(0.12, 2.5, hd * 2, wallM, hl, 1.25, 0, g, false);
     W.box(L, 0.08, hd * 2, M(0xe6e1d4), 0, 2.24, 0, g, false).visible = false;
     // Fenster mit Stadtblick
     const view = W.canvasTex(256, 128, (c, w, h) => { const gr = c.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#7ec8ff'); gr.addColorStop(1, '#ffd9a8'); c.fillStyle = gr; c.fillRect(0, 0, w, h); c.fillStyle = '#5a6b8a'; for (let i = 0; i < 9; i++) { const bw = 18 + (i * 7) % 20, bh = 30 + (i * 13) % 50; c.fillRect(i * 30, h - bh, bw, bh); } c.fillStyle = '#3d6b35'; c.fillRect(0, h - 10, w, 10); });
-    [-1.4, 1.0].forEach(x => { if (Math.abs(x) > hl - 0.6) return; const m = new T.Mesh(new T.PlaneGeometry(1.1, 0.6), new T.MeshBasicMaterial({ map: view })); m.position.set(x, 1.45, -hd + 0.07); g.add(m); W.box(1.2, 0.06, 0.06, M(0x666666), x, 1.78, -hd + 0.08, g, false); W.box(1.2, 0.06, 0.06, M(0x666666), x, 1.12, -hd + 0.08, g, false); });
+    [-2.7, -0.7, 1.3].forEach(x => { if (Math.abs(x) > hl - 0.6) return; const m = new T.Mesh(new T.PlaneGeometry(1.1, 0.6), new T.MeshBasicMaterial({ map: view })); m.position.set(x, 1.45, -hd + 0.07); g.add(m); W.box(1.2, 0.06, 0.06, M(0x666666), x, 1.78, -hd + 0.08, g, false); W.box(1.2, 0.06, 0.06, M(0x666666), x, 1.12, -hd + 0.08, g, false); });
     // Fahrerkabine vorn (+x)
-    const cab = hl - 0.6;
+    const cab = hl - 0.7;
     [-0.5, 0.5].forEach(z => { W.box(0.6, 0.45, 0.55, M(0x2a2c36), cab, 0.45, z, g, false); W.box(0.12, 0.7, 0.55, M(0x2a2c36), cab - 0.3, 0.95, z, g, false); });
     W.box(0.35, 0.5, hd * 2 - 0.1, M(0x1a1a1e), hl - 0.18, 0.9, 0, g, false);
     const wheel = new T.Mesh(new T.TorusGeometry(0.2, 0.03, 8, 20), M(0x111111)); wheel.position.set(hl - 0.42, 1.2, -0.5); wheel.rotation.y = Math.PI / 2; wheel.rotation.x = 0.4; g.add(wheel);
@@ -60,8 +60,8 @@
     // Wackeldackel
     const dog = new T.Mesh(new T.SphereGeometry(0.07, 8, 6), M(0x8a5a3a)); dog.position.set(hl - 0.3, 1.25, 0.6); g.add(dog); dog.userData.wobble = true;
     // Ausbau-Plätze
-    const P = {}, xs = has('heck') ? { heck: -hl + 0.8, bett: -hl + 2.4, kueche: -0.3, studio: 1.1, sofa: hl - 1.7 } : { bett: -hl + 0.95, kueche: -0.6, studio: 0.6, sofa: hl - 1.6 };
-    const slot = (id, x) => { const o = new T.Group(); o.position.set(x, 0, 0); g.add(o); P[id] = { x, o }; return o; };
+    const BACK = -(hd - 1.2), P = {}, xs = has('heck') ? { heck: -hl + 0.8, bett: -hl + 2.2, kueche: -1.0, studio: 0.6, sofa: hl - 2.7 } : { bett: -hl + 1.0, kueche: -1.5, studio: 0.2, sofa: hl - 2.4 };
+    const slot = (id, x) => { const o = new T.Group(); o.position.set(x, 0, BACK); g.add(o); P[id] = { x, o }; return o; };
     Object.keys(xs).forEach(id => slot(id, xs[id]));
     // Bett
     if (has('bett')) { const o = P.bett.o; W.box(1.5, 0.45, 1.3, M(0x5a4030), 0, 0.22, -0.5, o, false); W.box(1.45, 0.16, 1.25, M(0x3a8be0), 0, 0.52, -0.5, o, false); W.box(0.4, 0.14, 0.9, M(0xffffff), -0.5, 0.66, -0.5, o, false); }
@@ -75,10 +75,10 @@
     if (P.heck) { const o = P.heck.o; W.box(0.9, 0.7, 0.6, M(0x5a4030), 0, 0.35, -0.85, o, false); const disc = W.cyl(0.24, 0.24, 0.02, M(0x111111), 0, 0.72, -0.85, o, 20); disc.userData.spin = 2; W.box(0.08, 0.6, 0.08, M(0x333333), -0.3, 1.0, -0.6, o, false); const bike = new T.Mesh(new T.TorusGeometry(0.28, 0.03, 6, 16), M(0x222222)); bike.position.set(0.1, 0.5, 0.75); o.add(bike); const bike2 = bike.clone(); bike2.position.x = -0.6; o.add(bike2); }
     // Lichterkette an der Decke
     const lights = [];
-    if (has('licht')) for (let i = 0; i < 18; i++) { const c = [0xffd23f, 0xff3da8, 0x3dd6ff, 0x6cff8a][i % 4], b = new T.Mesh(new T.SphereGeometry(0.045, 6, 5), M(c, { e: c, ei: 1.6 })); b.position.set(-hl + 0.3 + i * (L - 0.6) / 17, 2.02 - Math.abs(Math.sin(i * 0.9)) * 0.12, -hd + 0.15); g.add(b); lights.push(b); }
+    if (has('licht')) for (let i = 0; i < 18; i++) { const c = [0xffd23f, 0xff3da8, 0x3dd6ff, 0x6cff8a][i % 4], b = new T.Mesh(new T.SphereGeometry(0.045, 6, 5), M(c, { e: c, ei: 1.6 })); b.position.set(-hl + 0.3 + i * (L - 0.6) / 17, 2.32 - Math.abs(Math.sin(i * 0.9)) * 0.12, -hd + 0.15); g.add(b); lights.push(b); }
     // Gisela-Schild an der Rückwand
     const sign = W.textTex(['🚐 Gisela', 'Ausbaustufe ' + CP.value() + '/' + UP.length], { w: 512, h: 128, size: 52, accent: '#ff8a1e' });
-    const sm = new T.Mesh(new T.PlaneGeometry(1.4, 0.35), new T.MeshBasicMaterial({ map: sign, toneMapped: false })); sm.position.set(has('heck') ? -1.6 : -0.1, 1.95, -hd + 0.08); g.add(sm);
+    const sm = new T.Mesh(new T.PlaneGeometry(1.4, 0.35), new T.MeshBasicMaterial({ map: sign, toneMapped: false })); sm.position.set(-1.7, 2.2, -hd + 0.08); g.add(sm);
     return { sc, g, L, hl, hd, P, lights, cab };
   }
   function ghost(o, M) { const m = W.box(0.9, 0.04, 0.6, M(0xffffff, { t: 0.25 }), 0, 0.03, -0.75, o, false); m.material.transparent = true; m.material.opacity = 0.25; const t = W.textTex(['🛠️'], { w: 96, h: 96, size: 60, bg: '#14161f', accent: '#ff8a1e' }); const s = new T.Sprite(new T.SpriteMaterial({ map: t })); s.scale.set(0.35, 0.35, 1); s.position.set(0, 0.9, -0.75); o.add(s); }
@@ -89,22 +89,22 @@
     const B = build(), who = host || 'marco', other = who === 'andrew' ? 'marco' : 'andrew';
     const R = K.begin({ kind: 'camper', who, sc: B.sc, g: B.g, B, onClose, busy: 0, t: 0, figs: [] });
     const put = (id, x, z, ry, anim) => { const f = W.hosts[id]; if (!f) return null; if (f.root.parent) f.root.parent.remove(f.root); B.g.add(f.root); f.root.visible = true; f.root.position.set(x, 0, z); f.root.rotation.set(0, ry, 0); if (f.talk) f.talk(false); f.play(anim || 'idle', { fade: 0.2 }); return f; };
-    put(who, B.hl - 1.6, 0.5, Math.PI);
+    put(who, B.cab - 1.6, 0.7, Math.PI);
     const mate = put(other, B.cab, 0.5, -Math.PI / 2, 'idle'); if (mate) R.figs.push(mate);
     const spots = () => {
       const L = [];
-      UP.filter(u => B.P[u.id]).forEach(u => { const p = B.P[u.id]; L.push(has(u.id) ? { x: p.x, z: -0.2, r: 1.0, label: useLabel(u), run: () => use(R, u, B) } : { x: p.x, z: -0.2, r: 1.0, label: '🛠️ Hier fehlt was: ' + u.icon + ' ' + u.name + ' (' + u.cost + ' 🎟️)', run: () => shop(R) }); });
+      UP.filter(u => B.P[u.id]).forEach(u => { const p = B.P[u.id]; L.push(has(u.id) ? { x: p.x, z: -0.65, r: 1.0, label: useLabel(u), run: () => use(R, u, B) } : { x: p.x, z: -0.65, r: 1.0, label: '🛠️ Hier fehlt was: ' + u.icon + ' ' + u.name + ' (' + u.cost + ' 🎟️)', run: () => shop(R) }); });
       L.push({ x: B.cab, z: 0.2, r: 1.0, label: '💬 Mit ' + D.HOSTS[other].name + ' quatschen', run: () => talk(R, other) });
       L.push({ x: -B.hl + 0.5, z: 0.6, r: 0.9, label: '🚪 Raus in die Stadt', run: () => AMC.Home.close() });
       return L;
     };
-    R.w = K.walker({ x: B.hl - 1.6, z: 0.5, fig: W.hosts[who], bounds: { x0: -B.hl + 0.4, x1: B.cab - 0.5, z0: -0.15, z1: 0.85 }, solids: () => [], spots, camOff: [0, 3.9, 4.6] });
+    R.w = K.walker({ x: B.cab - 1.6, z: 0.7, fig: W.hosts[who], bounds: { x0: -B.hl + 0.4, x1: B.cab - 0.5, z0: -0.6, z1: 1.35 }, solids: () => [], spots, camOff: [0, 4.4, 5.8] });
     const ui = K.hud('🚐 Gisela · ' + D.HOSTS[who].name + ' an Bord', '<button type="button" class="btn small" id="cpBuild">🛠️ Ausbauen</button>');
     ui.querySelector('#cpBuild').onclick = () => shop(R);
     K.drawNeeds(); W.particles.attach(B.sc);
     AMC.Audio.sfx('door');
     setTimeout(() => K.say(who === 'andrew' ? 'Marco: „Andrew, du darfst rein. Aber NUR mit mir. Und Schuhe aus!“' : CP.value() ? 'Marco: „Willkommen in Gisela! Ausbaustufe ' + CP.value() + ' von ' + UP.length + '. Sie wird immer schöner.“' : 'Marco: „Gisela ist noch leer. Mit „🛠️ Ausbauen“ machen wir sie zum rollenden Studio!“', 5200), 300);
-    R.tick = dt => { B.g.traverse(o => { if (o.userData.wobble) o.position.y = 1.25 + Math.sin(R.t * 9) * 0.02; if (o.userData.blink) o.material.emissiveIntensity = 0.5 + 0.5 * Math.sin(R.t * 4); }); B.lights.forEach((b, i) => { b.material.emissiveIntensity = 1 + Math.sin(R.t * 3 + i) * 0.6; }); if (B.P.kueche && has('kueche') && Math.random() < dt * 2) W.particles.burst(B.P.kueche.x - 0.25, 1.15, -0.85, 0xffffff, 1, { speed: 0.4 }); return false; };
+    R.tick = dt => { B.g.traverse(o => { if (o.userData.wobble) o.position.y = 1.25 + Math.sin(R.t * 9) * 0.02; if (o.userData.blink) o.material.emissiveIntensity = 0.5 + 0.5 * Math.sin(R.t * 4); }); B.lights.forEach((b, i) => { b.material.emissiveIntensity = 1 + Math.sin(R.t * 3 + i) * 0.6; }); if (B.P.kueche && has('kueche') && Math.random() < dt * 2) W.particles.burst(B.P.kueche.x - 0.25, 1.15, -1.3, 0xffffff, 1, { speed: 0.4 }); return false; };
     R.dispose = () => {};
     return R;
   };
@@ -116,7 +116,7 @@
   }
   function use(R, u, B) {
     const n = K.needs(R.who), f = W.hosts[R.who], k = has('licht') ? 1.25 : 1, p = B.P[u.id];
-    R.busy = R.w.busy = 1.8; if (f) f.root.rotation.y = Math.atan2(p.x - R.w.x, -0.85 - R.w.z);
+    R.busy = R.w.busy = 1.8; if (f) f.root.rotation.y = Math.atan2(p.x - R.w.x, -1.3 - R.w.z);
     const play = a => { if (f) { f.play(a, { fade: 0.2 }); R.w.anim = a; } };
     if (u.id === 'bett') { play('crouch'); n.energy = Math.min(100, n.energy + 45 * k); K.say('😴 Ein Nickerchen in Gisela. Das Dach knistert gemütlich.'); AMC.Audio.sfx('swap'); }
     else if (u.id === 'kueche') { play('knock'); n.hunger = Math.min(100, n.hunger + 35 * k); K.say(R.who === 'andrew' ? '🍳 Andrew kocht. Marco hält den Feuerlöscher bereit.' : '🍳 Marco macht Camper-Nudeln. Mit extra Liebe.'); AMC.Audio.sfx('collect'); }
@@ -161,5 +161,5 @@
       setTimeout(() => { const r = AMC.Home._state(); if (r && r.kind === 'camper') { K.say('✨ Neu in Gisela: ' + u.icon + ' ' + u.name + '!'); W.particles.burst(r.w.x, 1.6, r.w.z, 0xffd23f, 40, { speed: 5 }); } }, 500);
     });
   }
-  CP.buy = function (id) { const u = UP.find(x => x.id === id); if (!u || has(id)) return false; Save.data.fan -= u.cost; const gz = Save.data.gisela = Save.data.gisela || {}; gz.up = gz.up || {}; gz.up[id] = 1; Save.save(); return true; };
+  CP.buy = function (id) { const u = UP.find(x => x.id === id); if (!u || has(id)) return false; Save.data.fan -= u.cost; const gz = Save.data.gisela = Save.data.gisela || {}; gz.up = gz.up || {}; gz.up[id] = 1; Save.save(); if (AMC.Missions && AMC.Missions.camper) AMC.Missions.camper(); return true; };
 })(typeof window !== 'undefined' ? window : globalThis);

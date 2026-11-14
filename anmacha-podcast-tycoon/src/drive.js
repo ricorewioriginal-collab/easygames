@@ -29,7 +29,7 @@
     T = root.THREE; C = ctx; const S = C.S;
     S.cars = []; S.traffic = []; S.drive = null; S.errand = null; S.thieves = [];
     // Gisela fahrbar machen (Box aus play.js)
-    if (S.gisela) S.cars.push({ g: S.gisela.g, x: S.gisela.x, z: S.gisela.z, h: S.gisela.g.rotation.y, v: 0, gisela: true, box: S.col[S.col.length - 1], name: 'Gisela', max: 13, len: 2.3, wid: 1.1 });
+    if (S.gisela) S.cars.push({ g: S.gisela.g, x: S.gisela.x, z: S.gisela.z, h: S.gisela.g.rotation.y, v: 0, gisela: true, box: S.col[S.col.length - 1], name: 'Gisela', max: 13, len: 3.2, wid: 1.15 });
     // Geparkte Autos am Straßenrand
     const rng = S.rng, cols = [0xd8342c, 0x2c6fd8, 0xf2f2f2, 0x2a2a2e, 0xffc12e, 0x37a35b];
     [[5.5, -60, 0], [-39.5, 10, Math.PI], [52, 5.5, Math.PI / 2], [-15, -39.5, -Math.PI / 2]].forEach(([x, z, h], i) => {
@@ -64,7 +64,7 @@
   };
 
   function carMesh(color) {
-    const g = new T.Group(), body = W.mat(color, { r: 0.35, m: 0.4 }), glass = W.mat(0x1d2a38, { r: 0.1, m: 0.5 }), dark = W.mat(0x161616, { r: 0.8 });
+    const g = new T.Group(); g.userData.dyn = true; const body = W.mat(color, { r: 0.35, m: 0.4 }), glass = W.mat(0x1d2a38, { r: 0.1, m: 0.5 }), dark = W.mat(0x161616, { r: 0.8 });
     W.box(1.8, 0.55, 4.0, body, 0, 0.62, 0, g); W.box(1.6, 0.5, 2.0, glass, 0, 1.12, -0.2, g); W.box(1.62, 0.08, 2.02, body, 0, 1.4, -0.2, g);
     [[-0.85, 1.25], [0.85, 1.25], [-0.85, -1.25], [0.85, -1.25]].forEach(([x, z]) => { const w = W.cyl(0.32, 0.32, 0.24, dark, x, 0.32, z, g, 14); w.rotation.z = Math.PI / 2; });
     [-0.6, 0.6].forEach(x => { W.box(0.3, 0.12, 0.04, W.mat(0xfff4c0, { e: 0xffe080, ei: 1 }), x, 0.7, 2.01, g, false); W.box(0.3, 0.1, 0.04, W.mat(0xff2a2a, { e: 0xff2020, ei: 0.8 }), x, 0.72, -2.01, g, false); });
@@ -133,7 +133,7 @@
     const S = C.S, last = S.errand ? S.errand.e : null;
     const e = U.pick(ERRANDS.filter(x => x !== last));
     if (S.errand && S.errand.g) S.group.remove(S.errand.g);
-    const g = new T.Group(); g.position.set(e.x, 0, e.z); S.group.add(g);
+    const g = new T.Group(); g.userData.dyn = true; g.position.set(e.x, 0, e.z); S.group.add(g);
     const ring = new T.Mesh(new T.TorusGeometry(3, 0.15, 8, 40), W.mat(e.event ? 0xff3da8 : 0xffd23f, { e: e.event ? 0xff3da8 : 0xffb000, ei: 1.4 })); ring.rotation.x = Math.PI / 2; ring.position.y = 0.2; g.add(ring);
     const col = new T.Mesh(new T.CylinderGeometry(0.4, 0.4, 30, 12, 1, true), new T.MeshBasicMaterial({ color: e.event ? 0xff3da8 : 0xffd23f, transparent: true, opacity: 0.25, depthWrite: false })); col.position.y = 15; g.add(col);
     S.errand = { e, g, ring };
@@ -160,8 +160,10 @@
     const S = C && C.S; if (!S || !S.cars || S.drive || S.net) return null;
     for (const th of S.thieves) if (th.fig && !th.done && th.down < 0.15 && Math.hypot(th.x - p.x, th.z - p.z) < 2.3) return { label: 'Rangeln 🤼', run: () => scuffle(th) };
     for (const car of S.cars) {
-      if (Math.hypot(car.x - p.x, car.z - p.z) > 3.4) continue;
-      if (car.gisela && AMC.Play.onAction && AMC.Camper && (Math.sin(car.h) * (p.x - car.x) + Math.cos(car.h) * (p.z - car.z)) < -1.2) return { label: '🛠️ Gisela von innen: ' + (AMC.Camper.value() ? 'Ausbau ' + AMC.Camper.value() + '/' + AMC.Camper.UP.length : 'ausbauen'), run: () => { S.giselaAt = { x: car.x, z: car.z, h: car.h }; AMC.Save.data.giselaAt = S.giselaAt; AMC.Play.onAction('camper'); } };
+      if (Math.hypot(car.x - p.x, car.z - p.z) > (car.gisela ? 4.6 : 3.4)) continue;
+      const lon = Math.sin(car.h) * (p.x - car.x) + Math.cos(car.h) * (p.z - car.z), lat = Math.cos(car.h) * (p.x - car.x) - Math.sin(car.h) * (p.z - car.z);
+      // Gisela: rechts an der Tür oder hinten geht es hinein, links/vorn ans Steuer
+      if (car.gisela && AMC.Play.onAction && AMC.Camper && (lon < -2.4 || (lat > 0.6 && lon < 2.0))) return { label: '🛠️ Gisela von innen: ' + (AMC.Camper.value() ? 'Ausbau ' + AMC.Camper.value() + '/' + AMC.Camper.UP.length : 'ausbauen'), run: () => { S.giselaAt = { x: car.x, z: car.z, h: car.h }; AMC.Save.data.giselaAt = S.giselaAt; AMC.Play.onAction('camper'); } };
       if (car.gisela && p.H.id !== 'marco') return { label: 'Marco ans Steuer von Gisela 🚐', run: () => { C.swapHost('marco'); setTimeout(() => C.S && enter(car), 250); } };
       return { label: (car.gisela ? 'Mit Gisela fahren 🚐' : 'Einsteigen: ' + car.name + ' 🚗'), run: () => enter(car) };
     }
@@ -186,8 +188,11 @@
     const S = C.S, p = S.pl; if (S.drive) return;
     S.drive = car; car.v = 0; car.cool = 0.4;
     const i = S.col.indexOf(car.box); if (i >= 0) S.col.splice(i, 1);
-    [p, S.fo].forEach(e => { if (e && e.fig) e.fig.root.visible = false; });
-    W.cam.dist0 = W.cam.dist; W.cam.dist = car.gisela ? 10 : 9;
+    // Einsteigen: beide laufen kurz zur Tür, dann geht die Tür zu (Puff + Sound)
+    const sx = Math.cos(car.h), sz = -Math.sin(car.h);
+    car.board = { t: 0, dur: 0.38, door: [car.x + sx * 1.1, car.z + sz * 1.1], from: [p, S.fo].filter(e => e && e.fig).map(e => ({ e, x: e.x, z: e.z })) };
+    car.board.from.forEach(f => { f.e.fig.play('walk', { fade: 0.1 }); f.e.anim = 'walk'; f.e.fig.root.rotation.y = Math.atan2(car.board.door[0] - f.x, car.board.door[1] - f.z); });
+    W.cam.dist0 = W.cam.dist; W.cam.dist = car.gisela ? 12 : 9;
     AMC.Audio.sfx(car.gisela ? 'horn' : 'door');
     const k = I.device === 'pad' ? ['Ⓐ', 'Ⓑ', 'Ⓧ'] : I.device === 'touch' ? ['Springen', 'Ausweichen', 'Welle'] : ['Leertaste', 'C', 'E'];
     C.msg((car.gisela ? '🚐 Marco fährt Gisela – ganz achtsam. ' : '🚗 ' + car.name + ' – ') + 'Lenken mit dem Stick, ' + k[0] + ' hupt, ' + k[1] + ' bremst, ' + k[2] + ' steigt aus.', 3.4);
@@ -199,7 +204,8 @@
     p.x = car.x + sx * 1.9; p.z = car.z + sz * 1.9; p.y = 0.16; p.vx = p.vz = p.vy = 0;
     if (C.solidAt(p.x, 1, p.z)) { p.x = car.x - sx * 1.9; p.z = car.z - sz * 1.9; }
     if (S.fo) { S.fo.x = p.x - sz * 1.4; S.fo.z = p.z + sx * 1.4; S.fo.y = 0.16; }
-    [p, S.fo].forEach(e => { if (e && e.fig) { e.fig.root.visible = true; e.fig.root.position.set(e.x, e.y, e.z); } });
+    [p, S.fo].forEach(e => { if (e && e.fig) { e.fig.root.visible = true; e.fig.root.position.set(e.x, e.y, e.z); e.fig.root.scale.setScalar(0.75); pops.push({ f: e.fig, t: 0 }); e.fig.play('yes', { restart: true, fade: 0.1 }); e.anim = 'yes'; e.busy = 0.5; } });
+    W.particles.burst(car.x + sx * 1.2, 0.8, car.z + sz * 1.2, 0xdddddd, 14, { speed: 2.5 });
     const c = Math.cos(car.h), s = Math.sin(car.h), xs = [], zs = [];
     [[-car.wid, -car.len], [car.wid, -car.len], [-car.wid, car.len], [car.wid, car.len]].forEach(([a, b]) => { xs.push(car.x + a * c + b * s); zs.push(car.z - a * s + b * c); });
     C.addBox(Math.min(...xs) + 0.3, Math.max(...xs) - 0.3, Math.min(...zs) + 0.3, Math.max(...zs) - 0.3, car.gisela ? 2.1 : 1.4); car.box = S.col[S.col.length - 1];
@@ -208,12 +214,31 @@
     AMC.Audio.sfx('door');
   }
   /** true = Fahren übernimmt diesen Frame (play.js überspringt das Laufen) */
+  // kleine Animationen nach dem Aussteigen (Figur „ploppt“ auf volle Größe)
+  const pops = [];
+  function updPops(dt) { for (let i = pops.length - 1; i >= 0; i--) { const q = pops[i]; q.t += dt; const k = Math.min(1, q.t / 0.25); q.f.root.scale.setScalar(0.75 + 0.25 * (1 - Math.pow(1 - k, 3)) + Math.sin(k * Math.PI) * 0.06); if (k >= 1) { q.f.root.scale.setScalar(1); pops.splice(i, 1); } } }
+  // Scheinwerfer bei Nacht: eigenes Auto, geparkte und fahrende Autos
+  function lights(g, len, on) {
+    if (!g) return; if (!g.userData.hl && on) { const z = len || 2.05; g.userData.hl = [-0.6, 0.6].map(x => W.glow(0xfff2c0, 1.8, g, x, 0.72, z)).concat([-0.6, 0.6].map(x => W.glow(0xff3020, 0.9, g, x, 0.75, -z))); }
+    if (g.userData.hl) g.userData.hl.forEach(s => (s.visible = on));
+  }
+  let lightT = 0;
+  function updLights(dt, S) {
+    if ((lightT -= dt) > 0) return; lightT = 1; const night = !!(AMC.Atmos && AMC.Atmos.night && AMC.Atmos.night());
+    S.cars.forEach(c => !c.gisela && lights(c.g, 2.05, night && (c === S.drive || Math.hypot(c.x - S.pl.x, c.z - S.pl.z) < 60)));
+    (S.traffic || []).forEach(t => lights(t.g, 2.05, night && Math.hypot(t.g.position.x - S.pl.x, t.g.position.z - S.pl.z) < 60));
+  }
   DR.update = function (dt) {
     const S = C && C.S; if (!S || !S.cars) return false;
+    updPops(dt); updLights(dt, S);
     updTraffic(dt); updThieves(dt); updErrand(dt); andrewGuard();
     const car = S.drive; if (!car) return false;
     const p = S.pl;
-    [p, S.fo].forEach(e => { if (e && e.fig) e.fig.root.visible = false; });
+    if (car.board && car.board.t < car.board.dur) {
+      const B = car.board; B.t += dt; const k = Math.min(1, B.t / B.dur);
+      B.from.forEach(f => { const r = f.e.fig.root; r.position.set(f.x + (B.door[0] - f.x) * k, 0.16, f.z + (B.door[1] - f.z) * k); f.e.fig.update(dt); if (k >= 1) r.visible = false; });
+      if (k >= 1) { AMC.Audio.sfx('door'); W.particles.burst(B.door[0], 0.8, B.door[1], 0xdddddd, 12, { speed: 2.5 }); }
+    } else [p, S.fo].forEach(e => { if (e && e.fig) e.fig.root.visible = false; });
     if (car.cool > 0) car.cool -= dt;
     if (I.hit('act') && car.cool <= 0) { car.leave = true; if (Math.abs(car.v) > 3) C.msg('Bremsen … und aussteigen.', 1.2); }
     if (car.leave && Math.abs(car.v) < 3) { car.leave = false; exit(); return true; }
@@ -257,6 +282,12 @@
     car.x = nx; car.z = nz;
     car.g.position.set(car.x, Math.abs(car.v) > 1 ? Math.abs(Math.sin(S.time * 14)) * 0.025 : 0, car.z); car.g.rotation.y = car.h;
     car.g.rotation.z = U.damp(car.g.rotation.z || 0, -steer * Math.min(1, Math.abs(car.v) / 12) * 0.05, 6, dt);
+    // Driften: scharfe Kurve bei Tempo oder Handbremse → Funken und Reifenqualm an den Hinterrädern
+    if (!car.gisela && ((Math.abs(steer) > 0.6 && sp > 11) || (hb && sp > 6)) && (car.sparkT = (car.sparkT || 0) - dt) <= 0) {
+      car.sparkT = 0.06; const bx = car.x - Math.sin(car.h) * 1.6, bz = car.z - Math.cos(car.h) * 1.6, rx = Math.cos(car.h) * 0.8, rz = -Math.sin(car.h) * 0.8;
+      W.particles.burst(bx + rx, 0.25, bz + rz, 0xffb040, 4, { speed: 3, life: 0.35, size: 0.35 }); W.particles.burst(bx - rx, 0.25, bz - rz, 0xcfcfcf, 3, { speed: 1.5, life: 0.6, size: 0.6 });
+      if (!car.screechT || S.time > car.screechT) { car.screechT = S.time + 0.7; AMC.Audio.sfx('whoosh'); }
+    }
     if (car.gisela) { S.gisela.x = car.x; S.gisela.z = car.z; }
     // Spieler fährt mit
     p.x = car.x; p.z = car.z; p.y = 0.16; p.yaw = car.h; S.dist = (S.dist || 0) + Math.abs(car.v) * dt;
@@ -288,6 +319,7 @@
     else C.msg(U.pick(CARCRASH), 2);
   }
   function honkPeds(car) {
+    if (AMC.WorldFX && AMC.WorldFX.react) AMC.WorldFX.react(car.x, car.z, 12, 'honk');
     for (const n of C.S.npcs) if (n.fig && Math.hypot(n.x - car.x, n.z - car.z) < 10) { n.fig.root.rotation.y = Math.atan2(car.x - n.x, car.z - n.z); C.setAnim(n, car.gisela ? 'yes' : 'arms'); setTimeout(() => n.fig && C.setAnim(n, 'idle'), 1400); }
   }
   function pushPeds(car) {

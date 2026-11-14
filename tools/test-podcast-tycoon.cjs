@@ -85,6 +85,7 @@ server.listen(0, '127.0.0.1', async () => {
     // Gisela von innen: ausbauen und betreten
     await p.evaluate(() => { AMC.Save.data.fan += 400; AMC.Camper.buy('bett'); AMC.Camper.buy('studio'); AMC.Play.onAction('camper'); }); await p.waitForTimeout(1200);
     assert.ok(await p.evaluate(() => { const r = AMC.Home._state(); return r && r.kind === 'camper' && AMC.Camper.has('bett') && AMC.Camper.has('studio') && !!r.B.P.studio; }), 'Gisela innen begehbar und ausgebaut');
+    assert.ok(await p.evaluate(() => { const R = AMC.Rooms, x0 = R.xp('kiosk'); R.gain('kiosk', 3); return Object.keys(R.JOB).length === R.KINDS.length && R.level('kiosk') >= 1 && R.xp('kiosk') === x0 + 3 && AMC.Missions.STORY.length === 18 && typeof AMC.Missions.job === 'function'; }), 'Läden: Ruf, Schichten und Kapitel 2');
     await p.evaluate(() => AMC.Home.close()); await p.waitForFunction(() => AMC.Game.mode === 'play' && AMC.Play.state() && AMC.Play.state().mode === 'free', null, { timeout: 15000 });
     // Stadt: Kapitel 1 starten, nach vorn laufen (Bordstein darf nicht blockieren)
     await p.evaluate(() => AMC.Game.playChapter(0)); await p.waitForTimeout(3000);

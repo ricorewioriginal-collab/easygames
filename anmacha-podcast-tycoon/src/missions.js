@@ -10,7 +10,8 @@
 
   // ------------------------------------------------------------------ Aufträge
   // Schritt-Typen: at (Ort erreichen, car = im Auto, time = Sekunden), enter (Gebäude betreten), talk (Person befragen, Szene),
-  // collect (n Teile einsammeln), mini (Minispiel vor Ort, need = Mindestergebnis), rival (Rangelei), escort (Gast begleiten)
+  // collect (n Teile einsammeln), mini (Minispiel vor Ort, need = Mindestergebnis), rival (Rangelei), escort (Gast begleiten),
+  // job (Schicht in einem Laden), rep (Ruf-Stufe in einem Laden), gisela (n Camper-Ausbauten), partners (n Läden mit Ruf-Stufe lv)
   const STORY = [
     { id: 'mikro', icon: '🎙️', t: 'Das verschwundene Mikro', giver: { name: 'Tontechnikerin Sanne', seed: 41, st: 'live' }, reward: { fan: 80, abos: 60, rub: { tech: 3 } },
       intro: [['Tontechnikerin Sanne', 'Katastrophe! Unser Großmembran-Mikro ist beim Umzug in Einzelteile zerfallen – überall im Viertel verstreut.'], ['marco', 'Ohne das Mikro klingt Andrew wie ein Toaster.'], ['andrew', 'Hey! … Okay, stimmt. Wir sammeln alles ein.']],
@@ -77,7 +78,61 @@
       steps: [
         { t: 'talk', who: { name: 'Turmwart Bernd', seed: 1999 }, st: 'world:turm', txt: 'Mit Turmwart Bernd sprechen', lines: [['Turmwart Bernd', 'Der Aufzug ist frisch gewartet. Fast sicher. Viel Erfolg da oben!'], ['andrew', 'FAST sicher?!']] },
         { t: 'mini', kind: 'qte', st: 'world:turm', need: 0.4, o: { title: '🔴 Live vom Turm: Pointen-Timing', n: 5 }, txt: 'Live-Folge vom Turm: Pointen setzen' }],
-      outro: [['n', 'Die ganze Medienstadt schaut nach oben. Auf dem Turm blinkt es orange: AnMaCha ist live.'], ['marco', 'Andrew, wir sind ganz oben.'], ['andrew', 'Ja. Und ich schau nicht runter.']] }
+      outro: [['n', 'Die ganze Medienstadt schaut nach oben. Auf dem Turm blinkt es orange: AnMaCha ist live.'], ['marco', 'Andrew, wir sind ganz oben.'], ['andrew', 'Ja. Und ich schau nicht runter.']] },
+    // ---- Kapitel 2: Die Stadt hört zu (Läden, Ruf, Gisela, Partner) ----
+    { id: 'stammgast', icon: '☕', t: 'Stammgast werden', giver: { name: 'Barista Lotte', seed: 2101, st: 'room:kind=cafe' }, reward: { fan: 180, abos: 240, rub: { feel: 3, fun: 2 } },
+      intro: [['Barista Lotte', 'Ihr wollt wissen, was die Stadt denkt? Dann arbeitet mal eine Schicht hinter meiner Theke.'], ['andrew', 'Ich kann Milchschaum! … Glaube ich.'], ['marco', 'Wir lernen die Leute kennen. Und die Leute uns.']],
+      steps: [
+        { t: 'job', kind: 'cafe', st: 'room:kind=cafe', need: 0.4, txt: 'Barista-Schicht im Café schaffen' },
+        { t: 'rep', kind: 'cafe', lv: 1, st: 'room:kind=cafe', txt: 'Im Café „Bekannt“ werden (Ruf ★)' }],
+      outro: [['Barista Lotte', 'Die Leute reden über euch. Gut! Meistens.'], ['andrew', 'Ich hab drei Hörer beim Kaffeekochen gewonnen.']] },
+    { id: 'jingle', icon: '🎚️', t: 'Der perfekte Jingle', giver: { name: 'Tontechnikerin Sanne', seed: 41, st: 'room:kind=tonstudio' }, reward: { fan: 200, abos: 260, rub: { musik: 3, tech: 2 } },
+      intro: [['Tontechnikerin Sanne', 'Euer Intro klingt wie 2019. Spielt im Tonstudio als Gastmusiker mit – dann bauen wir euch einen neuen Jingle.'], ['marco', 'Ich bring das Klavierlicht-Notenheft mit.']],
+      steps: [
+        { t: 'job', kind: 'tonstudio', st: 'room:kind=tonstudio', need: 0.5, txt: 'Session als Gastmusiker im Tonstudio (gut spielen)' },
+        { t: 'job', kind: 'platten', st: 'room:kind=platten', need: 0.4, txt: 'Samples in der Plattenbörse auflegen' },
+        { t: 'at', st: 'live', txt: 'Den neuen Jingle ins Funkhaus bringen' }],
+      outro: [['Tontechnikerin Sanne', 'Da-da-DAMM! Das ist ein Jingle, den man im Schlaf summt.'], ['andrew', 'Ich hab ihn heute Nacht schon gesummt. Ich hab nicht geschlafen.']] },
+    { id: 'sponsor', icon: '💼', t: 'Ein Sponsor für AnMaCha', giver: { name: 'Agenturchefin Vera', seed: 2203, st: 'room:kind=agentur' }, reward: { fan: 260, abos: 300, rub: { tv: 3, serious: 2 } },
+      intro: [['Agenturchefin Vera', 'Wir hätten einen Sponsor. Aber erst will er hören, ob ihr Werbung könnt.'], ['marco', 'Werbung? Wir sind unabhängig!'], ['andrew', 'Wir sind unabhängig UND pleite. Ich sprech den Spot.']],
+      steps: [
+        { t: 'job', kind: 'agentur', st: 'room:kind=agentur', need: 0.5, txt: 'Werbespot in der Agentur einsprechen' },
+        { t: 'job', kind: 'kiosk', st: 'room:kind=kiosk', need: 0.4, txt: 'Am Kiosk Flyer und Zeitungen verteilen' },
+        { t: 'rep', kind: 'agentur', lv: 2, st: 'room:kind=agentur', txt: 'Bei der Agentur „Stammgast“ werden (Ruf ★★)' }],
+      outro: [['Agenturchefin Vera', 'Der Sponsor ist begeistert. „Präsentiert von Klickfang“ – ab der nächsten Folge.'], ['marco', 'Wir bleiben trotzdem unabhängig.'], ['andrew', 'Und satt.']] },
+    { id: 'tourbus', icon: '🚐', t: 'Gisela wird Tourbus', giver: { name: 'Mechanikerin Rosi', seed: 2304, st: 'home:marco' }, reward: { fan: 300, abos: 320, rub: { fun: 3, feel: 2 } },
+      intro: [['Mechanikerin Rosi', 'Euer Camper ist toll – aber für eine Podcast-Tour braucht Gisela mehr Ausstattung.'], ['marco', 'Gisela bekommt alles, was sie will.'], ['andrew', 'Auch ein zweites Bett? Für mich?'], ['marco', 'Wir reden darüber.']],
+      steps: [
+        { t: 'gisela', n: 3, st: 'home:marco', txt: 'Gisela innen ausbauen (3 Ausbauten, „🛠️ Ausbauen“ im Camper)' },
+        { t: 'at', st: 'world:camping', car: true, txt: 'Probefahrt zum Campingplatz in Wellenburg' }],
+      outro: [['Mechanikerin Rosi', 'Läuft wie ein Kätzchen. Ein sehr großes, cremeweißes Kätzchen.'], ['marco', 'Gisela, du bist bereit für die Tour.']] },
+    { id: 'fit', icon: '🏋️', t: 'Fit für die Live-Tour', giver: { name: 'Trainerin Kim', seed: 2405, st: 'room:kind=fitness' }, reward: { fan: 260, abos: 320, rub: { fun: 3, feel: 2 } },
+      intro: [['Trainerin Kim', 'Zwei Stunden live auf der Bühne? Dafür braucht ihr Puste. Und eine Frisur, die das aushält.'], ['andrew', 'Meine Frisur hält alles aus.'], ['marco', 'Deine Puste nicht.']],
+      steps: [
+        { t: 'job', kind: 'fitness', st: 'room:kind=fitness', need: 0.5, txt: 'Aerobic-Kurs im Fitnessstudio nachtanzen' },
+        { t: 'job', kind: 'friseur', st: 'room:kind=friseur', need: 0.4, txt: 'Vorher-Nachher-Fotos beim Friseur' },
+        { t: 'at', st: 'world:arena', txt: 'Zur Generalprobe in die Music Arena' }],
+      outro: [['Trainerin Kim', 'Ihr seid bereit. Und ihr riecht nach Haarspray.'], ['andrew', 'Bühnenduft!']] },
+    { id: 'fanclub', icon: '🛋️', t: 'Der erste Fanclub', giver: { name: 'WG-Chef Malte', seed: 2506, st: 'room:kind=wg' }, reward: { fan: 320, abos: 400, rub: { feel: 3, fun: 3 } },
+      intro: [['WG-Chef Malte', 'Wir wollen den offiziellen AnMaCha-Fanclub gründen. Aber erst müsst ihr unseren Quizabend überleben.'], ['marco', 'Ein Quiz über uns? Das können wir!'], ['andrew', 'Wie hieß noch mal unser erster Sponsor …?']],
+      steps: [
+        { t: 'job', kind: 'wg', st: 'room:kind=wg', need: 0.5, txt: 'WG-Quizabend gewinnen' },
+        { t: 'job', kind: 'buecher', st: 'room:kind=buecher', need: 0.5, txt: 'Fakten in der Bücherei checken' },
+        { t: 'rep', kind: 'wg', lv: 3, st: 'room:kind=wg', txt: 'Bei der Fan-WG „Freund des Hauses“ werden (Ruf ★★★)' }],
+      outro: [['WG-Chef Malte', 'Der Fanclub ist gegründet! Mitgliedsnummer 1: meine Oma.'], ['marco', 'Grüße an die Oma!']] },
+    { id: 'netz', icon: '🤝', t: 'Die Stadt steht hinter euch', giver: { name: 'Bürgermeisterin Hilde', seed: 2607, st: 'live' }, reward: { fan: 500, abos: 700, rub: { serious: 3, feel: 3, tv: 3 } },
+      intro: [['Bürgermeisterin Hilde', 'Rauschmann will die Frequenzen der Stadt kaufen. Nur wenn die Läden hinter euch stehen, kann ich das verhindern.'], ['andrew', 'Wir kennen inzwischen jeden Bäcker persönlich!'], ['marco', 'Dann holen wir sie alle ins Boot.']],
+      steps: [
+        { t: 'partners', n: 4, lv: 3, st: 'live', txt: 'In 4 Läden Ruf ★★★ erreichen' },
+        { t: 'talk', who: { name: 'Bürgermeisterin Hilde', seed: 2607 }, st: 'live', txt: 'Der Bürgermeisterin berichten', lines: [['Bürgermeisterin Hilde', 'Vier Läden, ein ganzes Viertel – alle stehen hinter euch. Rauschmann kriegt keine Frequenz!'], ['marco', 'Die Medienstadt gehört den Hörern.']] }],
+      outro: [['Bürgermeisterin Hilde', 'Ab heute seid ihr offizielle Stadt-Podcaster.'], ['andrew', 'Gibt es dafür eine Schärpe?'], ['Bürgermeisterin Hilde', 'Nein.']] },
+    { id: 'legende', icon: '🏆', t: 'Legenden der Medienstadt', giver: { name: 'Producer Jonas', seed: 77, st: 'radio' }, reward: { fan: 900, abos: 1200, rub: { feel: 4, tv: 4, fun: 4, musik: 4 }, idea: 'Jubiläumsfolge: Legenden der Medienstadt' },
+      intro: [['Producer Jonas', 'Das letzte Kapitel: Werdet überall Partner, baut Gisela komplett aus – und dann die große Jubiläumsfolge vom Fernsehturm.'], ['marco', 'Das dauert.'], ['andrew', 'Legenden haben Zeit.']],
+      steps: [
+        { t: 'gisela', n: 8, st: 'home:marco', txt: 'Gisela komplett ausbauen (8/8)' },
+        { t: 'partners', n: 3, lv: 5, st: 'live', txt: '3 Läden als Partner gewinnen (Ruf ★★★★★)' },
+        { t: 'mini', kind: 'qte', st: 'world:turm', need: 0.5, o: { title: '🏆 Jubiläumsfolge live vom Turm', n: 6 }, txt: 'Jubiläumsfolge live vom Fernsehturm' }],
+      outro: [['n', 'Feuerwerk über der Medienstadt. Auf allen Kanälen: AnMaCha – Der Podcast.'], ['andrew', 'Marco … wir sind Legenden.'], ['marco', 'Und Gisela auch.']] }
   ];
   // Tagesjobs: jeden Tag neu, beliebig wiederholbar (einer pro Tag je Vorlage)
   const DAILY = [
@@ -170,6 +225,27 @@
     stepSetup();
   }
   function cur() { const m = st(); return def(m.cur); }
+  // Bedingungen für Fortschritt außerhalb der Stadt (Läden, Gisela)
+  function cond(s) {
+    const RM = AMC.Rooms;
+    if (s.t === 'rep') return !!RM && RM.level(s.kind) >= s.lv;
+    if (s.t === 'gisela') return !!AMC.Camper && AMC.Camper.value() >= s.n;
+    if (s.t === 'partners') return !!RM && RM.KINDS.filter(k => RM.level(k.id) >= s.lv).length >= s.n;
+    return false;
+  }
+  function stepDone(s) {
+    const m = st(); m.step++; Save.save(); AMC.UI.toast('✅ ' + s.txt, 2600);
+    if (m.step >= cur().steps.length) complete(true); else if (V) stepSetup();
+  }
+  /** Schicht oder Ruf-Änderung in einem Laden (aus rooms.js; q = Ergebnis, -1 = nur Ruf) */
+  MS.job = function (kind, q) {
+    const s = step(); if (!s) return;
+    if (s.t === 'job' && s.kind === kind && q >= (s.need || 0.3)) return stepDone(s);
+    if (q < 0 && (s.t === 'rep' || s.t === 'partners') && cond(s)) return stepDone(s);
+    if (q >= 0 && s.t === 'job' && s.kind === kind) AMC.UI.toast('😬 Für den Auftrag braucht es eine bessere Schicht – nochmal versuchen!', 2800);
+  };
+  /** Gisela ausgebaut (aus camper.js) */
+  MS.camper = function () { const s = step(); if (s && s.t === 'gisela' && cond(s)) stepDone(s); };
   function step() { const d = cur(); return d ? d.steps[st().step] : null; }
   function stepSetup() {
     drop(V.npc); V.npc = null; V.items.forEach(i => i.m.parent && i.m.parent.remove(i.m)); V.items = []; V.rival = false; V.timer = 0; V.miniBusy = false;
@@ -207,6 +283,7 @@
     if (V.beam.visible) { const r = V.beam.userData.ring; r.scale.setScalar(1 + Math.sin(V.t * 4) * 0.12); }
     const s = step(); if (!s) return; aim();
     if (AMC.Cut && AMC.Cut.active()) return;
+    if ((s.t === 'rep' || s.t === 'gisela' || s.t === 'partners') && cond(s)) return advance();
     const p = S.pl, drv = !!S.drive, dT = V.target ? Math.hypot(V.target.x - p.x, V.target.z - p.z) : 1e9;
     if (V.timer > 0) {
       V.timer -= dt;

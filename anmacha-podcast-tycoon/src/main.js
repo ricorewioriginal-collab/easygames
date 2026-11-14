@@ -197,7 +197,7 @@
       ({ live: startLive, edit: studioEdit, story: storyMenu, quiz: quizMenu, radio: () => UI.radio(), shop: () => shop(), koop: () => AMC.Net.lobby(), music: () => AMC.Home.musicShop(), arcade: arcadeMenu, menu: mainMenu })[id]();
     };
     AMC.Play.start({ mode, chapter: ch, host: G.host });
-    if (at === 'camper') { const S = AMC.Play.state(); if (S.gisela) { const h = S.cars && S.cars.find(c => c.gisela) ? S.cars.find(c => c.gisela).h : 0; S.pl.x = S.gisela.x - Math.sin(h) * 5; S.pl.z = S.gisela.z - Math.cos(h) * 5; W.cam.yaw = h + Math.PI; if (S.fo) { S.fo.x = S.pl.x + 1.2; S.fo.z = S.pl.z; } } }
+    if (at === 'camper') { const S = AMC.Play.state(); if (S.gisela) { const h = S.cars && S.cars.find(c => c.gisela) ? S.cars.find(c => c.gisela).h : 0; S.pl.x = S.gisela.x + Math.cos(h) * 2.1 + Math.sin(h) * 1.6; S.pl.z = S.gisela.z - Math.sin(h) * 2.1 + Math.cos(h) * 1.6; W.cam.yaw = h + Math.PI; if (S.fo) { S.fo.x = S.pl.x + 1.2; S.fo.z = S.pl.z; } } }
     if (at) { const S = AMC.Play.state(), st = S.stations && S.stations.find(x => x.id === at); if (st) { S.pl.x = st.x; S.pl.z = st.z; if (S.fo) { S.fo.x = st.x + 1.2; S.fo.z = st.z + 1; } } }
     UI.showTouch(true);
     AMC.Play.msg(mode === 'jagd' ? '🏃 Themenjagd! 3 Minuten – sammle alles!' : mode === 'race' ? '🏁 Funk-Rennen! Lauf durch alle 10 Tore – die Uhr läuft!' : mode === 'free' ? '🏙️ Funkhaus-Viertel · ' + (I.device === 'touch' ? '⏸' : I.device === 'pad' ? 'Start' : 'Esc') + ' = Gesamtmenü' : '🎙️ ' + ch.title + ' – los geht\'s!', 2.6);
