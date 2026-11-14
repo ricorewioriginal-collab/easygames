@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5bd11b02a538",
- "generated": "2026-11-14T01:19:15+00:00",
- "commit": "c58d286f3b7f1044739f0ac5cc988eabdf7cc0c7",
+ "version": "9cc7791031bd",
+ "generated": "2026-11-14T01:21:39+00:00",
+ "commit": "f31e55d2cbce765613cb49aa6807c02f262263a9",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -348,13 +348,13 @@
   },
   {
    "p": "aeru/game.js",
-   "s": 209356,
-   "h": "40aecddb26c2a5dab382459ffd6226dbd21ce09576fae22f63292b905e1f014d"
+   "s": 215315,
+   "h": "8890e73b7d73880104a7c0cc3df930f9c3e997d64a3de3fc07b876c11b73d70c"
   },
   {
    "p": "aeru/index.html",
    "s": 15598,
-   "h": "38f73d85331d70cb26397af4be9a3d0cecba0f083ba3e177efccdd8efe7047dd"
+   "h": "8943096e87bd0b4f71c611eb7de2f34160bacea8845e4a30d0dc16a0074b4942"
   },
   {
    "p": "aeru/manifest.webmanifest",
@@ -398,8 +398,8 @@
   },
   {
    "p": "aeru/quests.js",
-   "s": 19186,
-   "h": "43ab7902df0922c2df164cdb1d9c6de8e099bd85023cb178ff4ef42e6ce67086"
+   "s": 19291,
+   "h": "39261cd2a18d92e7352c0db94cc56b10ae132c5ba68d9c5b89bc58e3e9dc8242"
   },
   {
    "p": "aeru/rueckweg.js",
@@ -408,8 +408,8 @@
   },
   {
    "p": "aeru/story.js",
-   "s": 45421,
-   "h": "94862cf081d69f6004c9c8f08fed69461fa16a3744c104987ed601e75018f8b1"
+   "s": 48333,
+   "h": "6181b1b18c7f9197e3914cc5368e3791eaa47f5112e9d391d3329e10007111ee"
   },
   {
    "p": "aeru/style.css",
@@ -6748,8 +6748,8 @@
   },
   {
    "p": "guides/aeru.json",
-   "s": 25000,
-   "h": "257373f161dea557561170892fd0a174b58ec9f99f9540616b88c6d9a6d08103"
+   "s": 26078,
+   "h": "4ab273f5f7f78028955fd9a67af8e72606fcc091461e39ba11bca773852144a4"
   },
   {
    "p": "guides/anmacha-beat-surfer.json",
@@ -9959,7 +9959,7 @@
   {
    "p": "sync/catalog.json",
    "s": 259012,
-   "h": "87fab51459c7460fe985f6f7d3594217d02e396afa8f40aa12bf03b637cd141a"
+   "h": "88340d904bec012b6794b4cac101880c8d012824b39f56ba10a87015513c6f75"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
