@@ -439,3 +439,9 @@ html.dev-kb .hm-emo [data-kb]::after { content: attr(data-kb); }
 .so-bar i { display: block; height: 100%; background: linear-gradient(90deg, #ff3da8, #ffd23f); }
 /* Minispiel mitten in einer Welt (Bühne, Funkerhütte) */
 .sh-mini.wm-mini { position: fixed; z-index: 60; }
+
+/* AnMaCha-App: Feed */
+.fd-feed { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; max-height: 38vh; overflow: auto; }
+.fd-post { display: flex; gap: 10px; padding: 9px 10px; border-radius: 13px; background: rgba(255, 255, 255, .05); border: 1px solid var(--line); }
+.fd-ic { font-size: 22px; } .fd-post b { font-size: 13px; } .fd-post small { color: var(--mut); font-size: 11px; }
+.fd-post p { margin: 2px 0 4px; font-size: 14px; } .fd-post em { font-style: normal; color: var(--mut); font-size: 12px; }

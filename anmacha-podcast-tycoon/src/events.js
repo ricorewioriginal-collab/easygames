@@ -21,7 +21,7 @@
   // Fortschritt melden (aus Career.mark, Episode, Kassetten, Gesprächen)
   EV.mark = function (k, n) {
     const w = wk(), e = EV.week(); w.c[k] = (w.c[k] || 0) + (n || 1);
-    if (!w.done && k === e.key && w.c[k] >= e.need) { w.done = true; Save.earn(e.reward); Save.save(); AMC.Audio.sfx('applause'); AMC.UI.toast(e.icon + ' Wochenziel geschafft: ' + e.name + '! +' + e.reward + ' 🎟️', 4200); }
+    if (!w.done && k === e.key && w.c[k] >= e.need) { w.done = true; Save.earn(e.reward); if (AMC.Feed) AMC.Feed.post(e.icon, e.name + ': Wochenziel geschafft! Danke an alle Fans 🙌', 'woche'); Save.save(); AMC.Audio.sfx('applause'); AMC.UI.toast(e.icon + ' Wochenziel geschafft: ' + e.name + '! +' + e.reward + ' 🎟️', 4200); }
   };
 
   // ------------------------------------------------------------------ Goldene Kassetten in der Stadt
@@ -52,7 +52,7 @@
         const n = EV.tapes(), big = n % 5 === 0, fp = Save.earn(big ? 80 : 15); Save.save();
         W.particles.burst(c.x, c.y, c.z, 0xffd23f, 26, { speed: 4 }); AMC.Audio.sfx(big ? 'star' : 'collect');
         C.msg('📼 Goldene Kassette ' + n + '/' + TAPES + ' · +' + fp + ' 🎟️' + (n === TAPES ? ' · Alle gefunden! 🏆' : big ? ' · Meilenstein!' : ''), 2.6);
-        EV.mark('tape');
+        EV.mark('tape'); if (big && AMC.Feed) AMC.Feed.post('📼', n + ' goldene Kassetten gefunden! Wer findet die nächste?', 'kassette');
       }
     }
   };
