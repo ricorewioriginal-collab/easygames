@@ -421,3 +421,20 @@ body.has3d #sStage { background: transparent; }
 .loadBar { border-radius: 999px; overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .btn::after { display: none; } .tvInfo i, #sTitle .logo.big { animation: none; } .mi:hover, .mi:focus-visible, .btn:hover { transform: none; } }
 .mi.hero { color: #fff; } .mi.hero small { color: #ffe9b0; }
+/* Kandidaten-Villa: Figur läuft im 3D-Raum, die Backstage-Übersicht wird zum Seiten-Dock */
+body.walking #sBack { pointer-events: none; }
+body.walking #sBack > * { pointer-events: auto; }
+body.walking #backBox { position: fixed; right: max(12px, env(safe-area-inset-right)); top: calc(10px + env(safe-area-inset-top)); width: min(400px, 40vw); max-height: calc(100% - 20px); overflow-y: auto; margin: 0; font-size: .86em; }
+body.walking #backBox .panel { padding: 10px; } body.walking #backBox .tree { display: none; } body.walking #backBox .grid3 { grid-template-columns: 1fr 1fr; }
+body.walking #backBox .coach, body.walking #backBox .host { display: none; }
+.walkSpots { position: fixed; left: 0; top: 0; width: 0; height: 0; overflow: visible; z-index: 2; }
+.wSpot { position: absolute; left: 0; top: 0; pointer-events: auto; white-space: nowrap; border-radius: 999px; padding: 6px 12px; font-weight: 800; font-size: .85em; color: #fff; cursor: pointer;
+  background: rgba(10, 6, 24, .7); border: 1px solid var(--edge); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: opacity .2s, background .2s; }
+.wSpot.near { background: linear-gradient(180deg, #ffe58a, #ffb800); color: #2a1600; box-shadow: var(--glow); }
+.wSpot.near::after { content: ' · Ⓐ'; }
+.walkHud { position: fixed; left: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); max-width: 56vw; padding: 8px 14px; border-radius: 14px; background: var(--glass); border: 1px solid var(--edge); font-size: .8em; color: var(--muted); backdrop-filter: blur(10px); z-index: 2; }
+.walkJoy { position: fixed; left: 28px; bottom: calc(70px + env(safe-area-inset-bottom)); width: 120px; height: 120px; border-radius: 50%; background: rgba(255, 255, 255, .08); border: 2px solid var(--edge); touch-action: none; z-index: 3; display: grid; place-items: center; }
+.walkJoy i { width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(180deg, #ffe58a, #ffb800); box-shadow: 0 4px 16px rgba(0, 0, 0, .5); }
+@media (max-width: 720px) { body.walking #backBox { left: 8px; right: 8px; width: auto; top: auto; bottom: calc(8px + env(safe-area-inset-bottom)); max-height: 42vh; } .walkHud { display: none; } .walkJoy { bottom: calc(44vh + 16px); } }
+.walkJoy[hidden], .walkHud[hidden] { display: none; }
+body.walking #backBox { z-index: 3; }

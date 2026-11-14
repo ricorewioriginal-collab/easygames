@@ -59,6 +59,7 @@
     document.querySelectorAll('.scr.on').forEach(s => s.classList.remove('on'));
     const el = document.getElementById(id); cur = id; el.classList.add('on'); el.scrollTop = 0;
     if (BG[id]) setBg(BG[id], !['sTitle', 'sOut', 'sWin'].includes(id));
+    if (window.SMYV3D && id !== 'sBack' && SMYV3D.walkEnd) SMYV3D.walkEnd();
     if (window.SMYV3D) SMYV3D.mode(id === 'sTitle' || id === 'sLoad' ? 'title' : id === 'sMenu' ? 'menu' : BG[id] || 'stage');
     if (RENDER[id]) RENDER[id](arg);
     focusFirst(el);
@@ -106,6 +107,7 @@
   }
   addEventListener('keydown', e => {
     if (cur === 'sStage' && stage && !stage.paused) return;      // Bühne verarbeitet selbst
+    if (cur === 'sBack' && document.body.classList.contains('walking') && $('#ov').hidden && /^(Arrow(Up|Down|Left|Right)|Key[WASD]|Enter|Space|KeyF)$/.test(e.code) && !(e.target && e.target.closest && e.target.closest('input,textarea,select'))) { e.preventDefault(); return; }   // Villa: Figur läuft
     if (!$('#ov').hidden) { if (e.code === 'Escape') { e.preventDefault(); if (ovEsc) ovEsc(); } else navKeys(e, $('#ovBox')); return; }
     if (cur === 'sTitle' && (e.code === 'Enter' || e.code === 'Space' || e.code === 'KeyF')) { e.preventDefault(); start(); return; }
     if (e.code === 'Escape') { const b = document.querySelector('#' + cur + ' [data-back]'); if (b) { e.preventDefault(); b.click(); } return; }
@@ -249,7 +251,24 @@
       </div>
       <div class="panel coach" style="margin-top:12px"><img src="${D.COACH.img}" alt="Sophie"><p><b>Sophie (Vocal-Coach):</b> ${esc(tip)}</p></div>`;
     if (S.rollEvent(s)) later(backEvent, 600);
+    if (window.SMYV3D && SMYV3D.walk) {   // begehbare Kandidaten-Villa: Orte lösen dieselben Aktionen aus wie die Knöpfe
+      SMYV3D.walk(['stage', 'train', 'comm', 'cands', 'prof', 'coach', 'host', 'menu'], k => {
+        if (cur !== 'sBack' || !$('#ov').hidden) return;
+        if (k === 'coach') { toast('🎓 Sophie: ' + rnd(D.COACH.tips), 4000); return; }
+        if (k === 'host') { toast('🎙️ Rico: ' + hostLine(save.season, D.ROUNDS[save.season.round]), 4500); return; }
+        const b = $('#backBox [data-b="' + k + '"]'); if (b && !b.disabled) b.click(); else if (b) toast('Dafür ist in dieser Runde nichts mehr übrig.', 2500);
+      });
+      $('#walkHud').hidden = false; $('#walkJoy').hidden = !matchMedia('(pointer: coarse)').matches;
+    }
   };
+  (() => {   // Touch-Joystick für die Villa
+    const j = $('#walkJoy'), k = j.querySelector('i'); let id = null, c = null;
+    const mv = e => { if (e.pointerId !== id) return; const dx = e.clientX - c.x, dy = e.clientY - c.y, d = Math.min(1, Math.hypot(dx, dy) / 50), a = Math.atan2(dy, dx);
+      k.style.transform = `translate(${Math.cos(a) * d * 40}px,${Math.sin(a) * d * 40}px)`; if (window.SMYV3D) SMYV3D.joy(Math.cos(a) * d, Math.sin(a) * d); };
+    const up = e => { if (e.pointerId !== id) return; id = null; k.style.transform = ''; if (window.SMYV3D) SMYV3D.joy(null); };
+    j.addEventListener('pointerdown', e => { id = e.pointerId; const r = j.getBoundingClientRect(); c = { x: r.left + r.width / 2, y: r.top + r.height / 2 }; try { j.setPointerCapture(id); } catch (x) {} mv(e); });
+    j.addEventListener('pointermove', mv); j.addEventListener('pointerup', up); j.addEventListener('pointercancel', up);
+  })();
   // Backstage-Drama: einmal pro Runde ab dem Recall, eine Entscheidung ist Pflicht
   function backEvent() {
     const s = save.season, ev = S.rollEvent(s); if (!ev || cur !== 'sBack') return;

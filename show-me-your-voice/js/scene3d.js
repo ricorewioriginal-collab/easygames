@@ -135,7 +135,7 @@ loader.load('assets3d/singer.glb', g => {
   judges = [-2.3, 0, 2.3].map((x, i) => { const j = SU.clone(singer); j.scale.setScalar(0.92); j.position.set(x, -0.3, 7.9); j.rotation.y = Math.PI;
     j.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); o.material.color.multiply(new THREE.Color(tints[i]).offsetHSL(0, 0, 0.55)); o.castShadow = false; } });
     s.add(j); const jm = new THREE.AnimationMixer(j); jm.clipAction(g.animations[0]).play(); jm.setTime(i * 0.7); jm.timeScale = 0; return { j, jm }; });
-  setTint(look.tint);
+  setTint(look.tint); buildFigures();
 }, undefined, () => {});
 const look = { tint: null };
 function setTint(hex) { look.tint = hex; if (!singer || !hex) return; singer.traverse(o => { if (o.isMesh && /pant|top|cloth|body/i.test(o.name + (o.material && o.material.name))) { o.material = o.material.clone(); o.material.color = new THREE.Color(hex); } }); }
@@ -157,12 +157,14 @@ function noteMesh(k) { while (noteMeshes.length <= k) { const m = new THREE.Mesh
 const ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -FLOOR - 0.02), tmpV = new THREE.Vector3();
 function screenToFloor(px, py, W, H) { ray.setFromCamera(new THREE.Vector2(px / W * 2 - 1, -(py / H) * 2 + 1), cam); return ray.ray.intersectPlane(plane, tmpV) ? tmpV.clone() : null; }
 
+const VX = 80, ZX = -80;   // Villa und Zitterraum liegen neben dem Studio
 // ---------- Kamera-Einstellungen je Bildschirm ----------
 const SHOTS = {
   stage: { p: [0, 3.2, 13.5], t: [0, 2, 0], fov: 30, hue: 320, orbit: 0.35 },
   title: { p: [0, 2.2, 11.5], t: [0, 2.6, -1], fov: 34, hue: 300, orbit: 0.6 },
   menu: { p: [-4.5, 2.4, 11], t: [0.5, 2.2, 0], fov: 32, hue: 280, orbit: 0.4 },
-  backstage: { p: [7.5, 1.9, 6], t: [0, 1.4, 0], fov: 40, hue: 30, orbit: 0.25, dim: 0.5 },
+  backstage: { p: [VX + 7, 6.5, 10], t: [VX, 0.8, 0], fov: 46, hue: 30, orbit: 0.2, dim: 0.75 },
+  zitter: { p: [ZX, 1.9, 7.5], t: [ZX, 1.35, 0], fov: 34, hue: 230, orbit: 0.25, dim: 1 },
   chairs: { p: [0.4, 2.1, 3.2], t: [0, 1.25, 7.8], fov: 40, hue: 200, orbit: 0.2 },
   arena: { p: [0, 4.8, 16], t: [0, 2.4, 0], fov: 34, hue: 45, orbit: 0.5 },
   win: { p: [0, 1.6, 6], t: [0, 1.6, 0], fov: 36, hue: 48, orbit: 0.9 },
@@ -190,7 +192,8 @@ const API = window.SMYV3D = {
   unbind() { st = null; HW.visible = false; },
   jury(i, on) { if (buzz[i]) buzz[i].material.color.set(on ? 0xff1a30 : 0x551018); },
   cheer(n) { boom(n || 160, 0, 8.5, 0, 5, [0xffd23f, 0xff4d8d, 0x3a86ff, 0x22c55e, 0xffffff]); },
-  ready: true
+  ready: true,
+  dbg() { return { cam: cam.position.toArray().map(v => +v.toFixed(2)), walk: walkSt.on, x: walkSt.x, z: walkSt.z, player: !!player, moves: Object.keys(moves) }; }
 };
 window.dispatchEvent(new Event('smyv3d'));
 
@@ -217,6 +220,123 @@ function drawHighway() {
   for (; k < noteMeshes.length; k++) noteMeshes[k].visible = false;
 }
 
+
+// ---------- Kandidaten-Villa (begehbar) und Zitterraum ----------
+function cvTex(w, h, draw, rep) { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; if (rep) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rep[0], rep[1]); } t.anisotropy = 4; return t; }
+const wood = cvTex(512, 512, (g, w, h) => { for (let i = 0; i < 8; i++) { const y = i * h / 8; g.fillStyle = `hsl(28,${35 + (i % 3) * 6}%,${26 + (i * 7 % 9)}%)`; g.fillRect(0, y, w, h / 8 - 2); for (let k = 0; k < 40; k++) { g.strokeStyle = 'rgba(0,0,0,.08)'; g.beginPath(); const yy = y + Math.random() * h / 8; g.moveTo(0, yy); g.bezierCurveTo(w / 3, yy + 4, w * 2 / 3, yy - 4, w, yy); g.stroke(); } g.fillStyle = 'rgba(0,0,0,.5)'; g.fillRect((i * 173) % w, y, 2, h / 8); } }, [6, 5]);
+const city = cvTex(1024, 512, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#0b0a2a'); gr.addColorStop(0.6, '#3a1250'); gr.addColorStop(1, '#ff6a3d'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  for (let i = 0; i < 70; i++) { const bw = 20 + Math.random() * 50, bh = 80 + Math.random() * 260, x = Math.random() * w; g.fillStyle = '#07061a'; g.fillRect(x, h - bh, bw, bh); for (let k = 0; k < bh / 9; k++) for (let j = 0; j < bw / 8; j++) if (Math.random() < 0.3) { g.fillStyle = `rgba(255,${200 + Math.random() * 55},${120 + Math.random() * 80},.85)`; g.fillRect(x + 2 + j * 8, h - bh + 4 + k * 9, 4, 5); } } });
+const neon = (txt, col) => cvTex(512, 128, (g, w, h) => { g.fillStyle = 'rgba(0,0,0,0)'; g.clearRect(0, 0, w, h); g.font = '900 78px Impact, "Arial Black", sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = col; g.shadowBlur = 28; g.fillStyle = '#fff'; g.fillText(txt, w / 2, h / 2); g.fillText(txt, w / 2, h / 2); });
+const V = new THREE.Group(); V.position.x = VX; s.add(V);
+const VW = 18, VD = 13;
+const vFloor = new THREE.Mesh(new THREE.PlaneGeometry(VW, VD), new THREE.MeshStandardMaterial({ map: wood, roughness: 0.45, metalness: 0.05 })); vFloor.rotation.x = -Math.PI / 2; vFloor.receiveShadow = true; V.add(vFloor);
+const wallM = new THREE.MeshStandardMaterial({ color: 0x8f86a8, roughness: 0.9 });
+const addBox = (w, h, d, x, y, z, m, par) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.castShadow = b.receiveShadow = true; (par || V).add(b); return b; };
+addBox(VW, 4, 0.2, 0, 2, -VD / 2, wallM); addBox(0.2, 4, VD, -VW / 2, 2, 0, wallM); addBox(0.2, 4, VD, VW / 2, 2, 0, wallM);
+const win = new THREE.Mesh(new THREE.PlaneGeometry(7, 2.6), new THREE.MeshBasicMaterial({ map: city, toneMapped: false, color: 0xbbbbbb })); win.position.set(VW / 2 - 0.12, 2.1, -1); win.rotation.y = -Math.PI / 2; V.add(win);
+for (let i = -1; i <= 1; i++) addBox(0.08, 2.7, 0.08, VW / 2 - 0.15, 2.1, -1 + i * 3.5 / 1.5, metal);
+const rug = new THREE.Mesh(new THREE.CircleGeometry(2.6, 64), new THREE.MeshStandardMaterial({ color: 0x5a2a8a, roughness: 1 })); rug.rotation.x = -Math.PI / 2; rug.position.set(4.5, 0.01, 0.5); V.add(rug);
+// Sofa-Ecke mit Ringlicht (Community)
+const sofaM = new THREE.MeshPhysicalMaterial({ color: 0xff3d8a, roughness: 0.7, sheen: 1, sheenColor: new THREE.Color(0xffaad0) });
+addBox(3.6, 0.5, 1.1, 4.5, 0.25, -1.7, sofaM); addBox(3.6, 0.9, 0.3, 4.5, 0.7, -2.2, sofaM); addBox(0.3, 0.75, 1.1, 2.75, 0.5, -1.7, sofaM); addBox(0.3, 0.75, 1.1, 6.25, 0.5, -1.7, sofaM);
+addBox(1.4, 0.4, 0.8, 4.5, 0.2, 0.4, new THREE.MeshPhysicalMaterial({ color: 0x111111, roughness: 0.1, clearcoat: 1 }));
+const ringL = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.04, 12, 48), new THREE.MeshBasicMaterial({ color: 0xffffff, toneMapped: false })); ringL.position.set(7.2, 1.7, -0.6); ringL.rotation.y = -0.8; V.add(ringL);
+addBox(0.03, 1.6, 0.03, 7.2, 0.8, -0.6, metal);
+// Proberaum-Ecke (Training): Mikro, Lautsprecher, Spiegelwand
+addBox(0.05, 2.6, 4, -VW / 2 + 0.15, 1.6, -3.5, new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 1, roughness: 0.05 }));
+addBox(0.7, 1.2, 0.6, -6.6, 0.6, -5.6, new THREE.MeshStandardMaterial({ color: 0x18181c, roughness: 0.6 })); addBox(0.7, 1.2, 0.6, -4.2, 0.6, -5.6, new THREE.MeshStandardMaterial({ color: 0x18181c, roughness: 0.6 }));
+addBox(0.02, 1.5, 0.02, -5.4, 0.75, -3.6, metal); addBox(0.3, 0.02, 0.3, -5.4, 0.01, -3.6, metal);
+// Schminktisch mit Lichterspiegel (Profil)
+addBox(2, 0.08, 0.7, 6.6, 0.85, 4.9, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 })); addBox(1.6, 1.2, 0.05, 6.6, 1.8, 5.3, new THREE.MeshStandardMaterial({ color: 0xcfd8ff, metalness: 1, roughness: 0.05 }));
+for (let i = 0; i < 8; i++) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 8), new THREE.MeshBasicMaterial({ color: 0xfff1c0, toneMapped: false })); const a = i / 8 * Math.PI * 2; b.position.set(6.6 + Math.cos(a) * 0.9, 1.8 + Math.sin(a) * 0.68, 5.25); V.add(b); }
+// Küchentresen + Pflanzen
+addBox(3.2, 1, 0.9, -5, 0.5, 4.6, new THREE.MeshPhysicalMaterial({ color: 0x222230, roughness: 0.2, clearcoat: 1 }));
+addBox(3.3, 0.06, 1, -5, 1.02, 4.6, new THREE.MeshStandardMaterial({ color: 0xf2efe8, roughness: 0.15 }));
+const leafM = new THREE.MeshStandardMaterial({ color: 0x2f8a4a, roughness: 0.7 });
+[[-8.2, -0.6], [8.2, 3.4], [-1.6, -5.8], [1.6, -5.8]].forEach(([x, z]) => { addBox(0.5, 0.6, 0.5, x, 0.3, z, new THREE.MeshStandardMaterial({ color: 0xd8cfc0, roughness: 0.8 })); for (let k = 0; k < 7; k++) { const l = new THREE.Mesh(new THREE.SphereGeometry(0.28, 14, 10), leafM); l.scale.set(1, 1.6, 0.4); l.position.set(x + Math.sin(k * 2) * 0.22, 0.95 + k * 0.08, z + Math.cos(k * 2) * 0.22); l.rotation.set(Math.sin(k) * 0.6, k, Math.cos(k) * 0.6); l.castShadow = true; V.add(l); } });
+// Bühnentür mit Neonschild und Ausgang
+addBox(1.8, 2.6, 0.12, 0, 1.3, -VD / 2 + 0.12, new THREE.MeshStandardMaterial({ color: 0x1b1030, roughness: 0.4, metalness: 0.4 }));
+const sign = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 0.6), new THREE.MeshBasicMaterial({ map: neon('ZUR BÜHNE', '#ff2aa0'), transparent: true, toneMapped: false })); sign.position.set(0, 3.0, -VD / 2 + 0.2); V.add(sign);
+const exitS = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.4), new THREE.MeshBasicMaterial({ map: neon('MENÜ', '#3aff8a'), transparent: true, toneMapped: false })); exitS.position.set(-VW / 2 + 0.2, 2.9, 2); exitS.rotation.y = Math.PI / 2; V.add(exitS);
+addBox(0.12, 2.4, 1.4, -VW / 2 + 0.12, 1.2, 2, new THREE.MeshStandardMaterial({ color: 0x0f2a1a, roughness: 0.5 }));
+// Licht
+V.add(new THREE.HemisphereLight(0xfff0e0, 0x302040, 0.7));
+[[-4, -2], [4, -1], [0, 3.5]].forEach(([x, z], i) => { const L = new THREE.PointLight(i === 1 ? 0xffb0d8 : 0xffe2b8, 30, 16, 1.4); L.position.set(x, 3.6, z); V.add(L);
+  const lamp = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.06, 28), new THREE.MeshBasicMaterial({ color: 0xfff4e0, toneMapped: false })); lamp.position.set(x, 3.95, z); V.add(lamp); });
+const doorL = new THREE.SpotLight(0xff2aa0, 30, 8, 0.6, 0.6); doorL.position.set(0, 3.8, -4); doorL.target.position.set(0, 0, -VD / 2); V.add(doorL, doorL.target);
+
+// Zitterraum: dunkler Raum, drei Plätze im Spot, Uhr läuft
+const Z = new THREE.Group(); Z.position.x = ZX; s.add(Z);
+const zFloor = new THREE.Mesh(new THREE.CircleGeometry(9, 64), new THREE.MeshPhysicalMaterial({ color: 0x0a0a14, roughness: 0.25, metalness: 0.5, clearcoat: 1 })); zFloor.rotation.x = -Math.PI / 2; zFloor.receiveShadow = true; Z.add(zFloor);
+const zWall = new THREE.Mesh(new THREE.CylinderGeometry(9, 9, 6, 64, 1, true, Math.PI * 0.75, Math.PI * 1.5), new THREE.MeshStandardMaterial({ color: 0x14102a, roughness: 0.8, side: THREE.BackSide })); zWall.position.y = 3; Z.add(zWall);
+const benchM = new THREE.MeshPhysicalMaterial({ color: 0x2a2a3a, metalness: 0.6, roughness: 0.3, clearcoat: 1 });
+addBox(5.4, 0.45, 0.8, 0, 0.22, -0.6, benchM, Z);
+const zLogo = new THREE.Mesh(new THREE.PlaneGeometry(6, 1.4), new THREE.MeshBasicMaterial({ map: neon('ZITTERBANK', '#ffd23f'), transparent: true, toneMapped: false })); zLogo.position.set(0, 3.6, -3); Z.add(zLogo);
+const zSpots = [-1.8, 0, 1.8].map(x => { const L = new THREE.SpotLight(0xffffff, 60, 12, 0.28, 0.5, 1.4); L.position.set(x, 6, 1.5); L.target.position.set(x, 0, -0.2); if (r.shadowMap.enabled && x === 0) L.castShadow = true; Z.add(L, L.target);
+  const c = new THREE.Mesh(new THREE.ConeGeometry(Math.tan(0.28) * 6.4, 6.4, 32, 1, true), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.05, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide })); c.position.set(x, 3, 0.65); c.rotation.x = -0.3; Z.add(c); return { L, c }; });
+Z.add(new THREE.HemisphereLight(0x4040a0, 0x050510, 0.25));
+
+// Figuren in Villa und Zitterraum (aus dem Sänger-Modell, mit echten Bewegungen)
+let moves = {}, player = null, pMix = null, pAct = {}, npcs = [], zitFig = [];
+const walkSt = { on: false, spots: [], onUse: null, x: 0, z: 2.5, rot: Math.PI, target: null, keys: {}, near: null, labels: null };
+const SPOTS = { stage: [0, -5.2, '🎤 Zur Bühne'], train: [-5.4, -3, '🏋️ Proberaum'], comm: [4.5, -0.6, '📱 Community-Ecke'], cands: [-2.6, 1.6, '👥 Kandidaten'], prof: [6.6, 4.1, '👤 Schminktisch'],
+  coach: [-7.2, -0.8, '🎓 Vocal-Coach'], host: [2.4, -3.6, '🎙️ Rico'], menu: [-8.1, 2, '🏠 Menü'] };
+function figure(tint, anim, x, z, ry, par) {
+  const f = SU.clone(singer); f.traverse(o => { if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; if (tint) { o.material = o.material.clone(); o.material.color.multiply(new THREE.Color(tint)); } } });
+  f.position.set(x, 0, z); f.rotation.y = ry || 0; (par || V).add(f);
+  const m = new THREE.AnimationMixer(f); const clip = moves[anim]; if (clip) { const a = m.clipAction(clip); a.play(); a.time = Math.random() * clip.duration; }
+  return { f, m };
+}
+function buildFigures() {
+  if (!singer || player || !moves.idle) return;
+  const p = figure(null, null, 0, 2.5, Math.PI); player = p.f; pMix = p.m; ['idle', 'walk'].forEach(k => { pAct[k] = pMix.clipAction(moves[k]); }); pAct.idle.play();
+  npcs.push(figure(0x6aa8ff, 'idle', -2.9, 1.1, 0.6), figure(0xff8a6a, 'agree', -2.0, 1.9, -0.9), figure(0x7aff9a, 'headShake', -3.4, 2.2, 1.2));
+  npcs.push(figure(0xff7ad8, 'agree', -7.2, -0.3, 1.4));   // Coach
+  npcs.push(figure(0x9a7aff, 'idle', 2.4, -4.2, 0));       // Rico
+  zitFig = [-1.8, 0, 1.8].map((x, i) => figure([0xb0d0ff, null, 0xffc0a0][i], i === 1 ? 'sad_pose' : 'idle', x, -0.2, 0, Z));
+}
+fetch('assets3d/moves.json').then(r2 => r2.json()).then(list => { list.forEach(j => { moves[j.name] = THREE.AnimationClip.parse(j); }); buildFigures(); }).catch(() => {});
+function walkLabels() {
+  const box = document.getElementById('walkSpots'); if (!box) return null;
+  box.innerHTML = walkSt.spots.map(k => `<button type="button" class="wSpot" data-w="${k}">${SPOTS[k][2]}</button>`).join('');
+  box.onclick = e => { const b = e.target.closest('[data-w]'); if (!b) return; walkSt.target = b.dataset.w; };
+  return [...box.querySelectorAll('[data-w]')];
+}
+function useSpot(k) { walkSt.target = null; if (walkSt.onUse) walkSt.onUse(k); }
+addEventListener('keydown', e => { if (!walkSt.on) return; walkSt.keys[e.code] = true; if (/^(Enter|Space|KeyF|NumpadEnter)$/.test(e.code) && walkSt.near && !e.repeat) { e.preventDefault(); useSpot(walkSt.near); } });
+addEventListener('keyup', e => { walkSt.keys[e.code] = false; });
+function stepWalk(dt) {
+  if (!walkSt.on || !player) return;
+  let ix = 0, iz = 0; const K = walkSt.keys;
+  if (K.ArrowLeft || K.KeyA) ix -= 1; if (K.ArrowRight || K.KeyD) ix += 1; if (K.ArrowUp || K.KeyW) iz -= 1; if (K.ArrowDown || K.KeyS) iz += 1;
+  const gp = navigator.getGamepads ? [...navigator.getGamepads()].find(g => g && g.axes && g.axes.length >= 2) : null;
+  if (gp && Math.hypot(gp.axes[0], gp.axes[1]) > 0.25) { ix += gp.axes[0]; iz += gp.axes[1]; }
+  if (walkSt.joy) { ix += walkSt.joy.x; iz += walkSt.joy.y; }
+  if (ix || iz) walkSt.target = null;
+  if (walkSt.target) { const sp = SPOTS[walkSt.target], dx = sp[0] - walkSt.x, dz = sp[1] - walkSt.z, d = Math.hypot(dx, dz); if (d < 0.5) useSpot(walkSt.target); else { ix = dx / d; iz = dz / d; } }
+  const mag = Math.min(1, Math.hypot(ix, iz)), spd = 3.4 * mag;
+  if (mag > 0.05) { walkSt.x = Math.max(-VW / 2 + 0.6, Math.min(VW / 2 - 0.6, walkSt.x + ix / Math.hypot(ix, iz) * spd * dt)); walkSt.z = Math.max(-VD / 2 + 0.7, Math.min(VD / 2 - 0.5, walkSt.z + iz / Math.hypot(ix, iz) * spd * dt));
+    const want = Math.atan2(ix, iz); let d = want - walkSt.rot; d = Math.atan2(Math.sin(d), Math.cos(d)); walkSt.rot += d * Math.min(1, dt * 10); }
+  player.position.set(walkSt.x, 0, walkSt.z); player.rotation.y = walkSt.rot;
+  const moving = mag > 0.05, A2 = moving ? pAct.walk : pAct.idle, B2 = moving ? pAct.idle : pAct.walk;
+  if (!A2.isRunning()) { A2.reset().play(); A2.crossFadeFrom(B2, 0.25, false); }
+  pAct.walk.timeScale = 0.6 + mag * 0.7;
+  // nächster Punkt
+  let near = null, nd = 1.6; for (const k of walkSt.spots) { const sp = SPOTS[k], d = Math.hypot(sp[0] - walkSt.x, sp[1] - walkSt.z); if (d < nd) { nd = d; near = k; } }
+  walkSt.near = near;
+  // Beschriftungen über den Orten
+  if (walkSt.labels) walkSt.labels.forEach(b => { const sp = SPOTS[b.dataset.w]; tmpV.set(VX + sp[0], 2.3, sp[1]).project(cam); const vis = tmpV.z < 1;
+    b.style.transform = `translate(-50%,-50%) translate(${(tmpV.x * 0.5 + 0.5) * innerWidth}px,${(-tmpV.y * 0.5 + 0.5) * innerHeight}px)`; b.style.opacity = vis ? 1 : 0; b.classList.toggle('near', b.dataset.w === near); });
+  // Kamera folgt
+  const tp = new THREE.Vector3(VX + walkSt.x * 0.8, 5.2, walkSt.z + 7.5); camP.lerp(tp, Math.min(1, dt * 3)); camT.lerp(new THREE.Vector3(VX + walkSt.x, 1.1, walkSt.z - 1), Math.min(1, dt * 4));
+}
+Object.assign(API, {
+  walk(spots, onUse) { walkSt.on = true; walkSt.spots = spots.filter(k => SPOTS[k]); walkSt.onUse = onUse; walkSt.keys = {}; walkSt.target = null; setShot('backstage'); walkSt.labels = walkLabels(); buildFigures(); camP.set(VX + walkSt.x * 0.8, 5.2, walkSt.z + 7.5); camT.set(VX + walkSt.x, 1.1, walkSt.z - 1); document.body.classList.add('walking'); },
+  walkEnd() { const hud = document.getElementById('walkHud'), jy = document.getElementById('walkJoy'); if (hud) hud.hidden = true; if (jy) jy.hidden = true; walkSt.on = false; walkSt.keys = {}; walkSt.target = null; document.body.classList.remove('walking'); const box = document.getElementById('walkSpots'); if (box) box.innerHTML = ''; walkSt.labels = null; },
+  joy(x, y) { walkSt.joy = x == null ? null : { x, y }; },
+  zitter(names) { setShot('zitter'); }
+});
+
 // ---------- Schleife ----------
 const clock = new THREE.Clock(); let tAcc = 0, lastE = 0.4, raf = 0;
 function frame() {
@@ -229,9 +349,9 @@ function frame() {
   blend = Math.min(1, blend + dt * 0.9); const k = reduced ? 1 : 1 - Math.pow(1 - blend, 3);
   const orb = shot.orbit * Math.sin(t * 0.15);
   const tp = new THREE.Vector3(...shot.p); tp.x += orb * 3; tp.y += Math.sin(t * 0.3) * 0.1 * shot.orbit;
-  camP.lerp(tp, reduced ? 1 : 0.02 + k * 0.06); camT.lerp(new THREE.Vector3(...shot.t), reduced ? 1 : 0.04 + k * 0.06); camFov += (shot.fov - camFov) * 0.06;
+  if (!walkSt.on) camP.lerp(tp, reduced ? 1 : 0.02 + k * 0.06); if (!walkSt.on) camT.lerp(new THREE.Vector3(...shot.t), reduced ? 1 : 0.04 + k * 0.06); camFov += (shot.fov - camFov) * 0.06;
   cam.position.copy(camP); cam.lookAt(camT); if (Math.abs(cam.fov - camFov) > 0.01) { cam.fov = camFov; cam.updateProjectionMatrix(); }
-  dim += ((shot.dim || 1) - dim) * 0.05; r.toneMappingExposure = 0.55 + 0.4 * dim;
+  dim += ((shot.dim || 1) - dim) * 0.05; s.fog.density += ((walkSt.on || shotName === 'backstage' ? 0.006 : shotName === 'zitter' ? 0.02 : 0.03) - s.fog.density) * 0.1; r.toneMappingExposure = 0.55 + 0.4 * dim;
   ledHue += ((shot.hue) - ledHue) * 0.03;
   // Licht
   beams.forEach((b, i) => {
@@ -244,6 +364,8 @@ function frame() {
   if (Math.floor(t * 20) !== Math.floor((t - dt) * 20)) drawLed(t, lastE);
   if (mix) { mix.timeScale = st ? 0.6 + lastE * 0.7 : 0.45; mix.update(reduced ? 0 : dt); }
   placeAud(t, st ? lastE : 0.25);
+  if (pMix) pMix.update(dt); npcs.concat(zitFig).forEach(n => n.m.update(dt)); stepWalk(dt);
+  if (shotName === 'zitter') zitFig.forEach((n, i) => { zSpots[i].L.intensity = 40 + 30 * Math.max(0, Math.sin(t * 3 + i * 2.1)); });
   dust.rotation.y = t * 0.02;
   // Konfetti
   for (let i = 0; i < CN; i++) { if (cp[i * 3 + 1] < -5) continue; cvel[i * 3 + 1] -= 4.5 * dt; cvel[i * 3] *= 0.99; cvel[i * 3 + 2] *= 0.99; cp[i * 3] += cvel[i * 3] * dt; cp[i * 3 + 1] += Math.max(-2.2, cvel[i * 3 + 1]) * dt; cp[i * 3 + 2] += cvel[i * 3 + 2] * dt; if (cp[i * 3 + 1] < 0) cp[i * 3 + 1] = -50; }
