@@ -129,6 +129,7 @@ fun DetailScreen(g: GameUi, s: UiState, nav: Nav, a: Actions) {
             }
             Text(g.game.desc, Modifier.padding(vertical = 18.dp), color = Color(0xFFC3CBDD), fontSize = 14.5.sp, lineHeight = 22.sp)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                g.game.trailer?.let { t -> OutlineButton("🎬 Trailer") { a.open(Origin.PUBLIC + t) } }
                 OutlineButton("📖 Anleitung") { nav.open(Screen.GuideOf(id)) }
                 OutlineButton("↗ Im Browser") { a.open(Origin.PUBLIC + g.game.entry) }
                 if (g.status.installed && !running) OutlineButton(if (confirm) "Wirklich entfernen?" else "🗑 Deinstallieren", danger = true) {

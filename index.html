@@ -411,7 +411,7 @@
       </nav>
     <div class="appbar hidden" id="appBar"></div>
     <a class="daybar hidden" id="dayBar" href="heute.html"></a>
-    <details class="promo" id="promoTrailer"><summary>🎬 Neue Trailer: Taschi, Zotik, Bunte Insel, AnMaCha</summary><div class="trtabs" id="trTabs" role="tablist"></div><video id="trVid" controls playsinline preload="none"></video><a class="pill promoplay" id="trPlay" href="taschi/">▶ Jetzt kostenlos spielen</a></details>
+    <details class="promo" id="promoTrailer" hidden><summary id="trSum">🎬 Trailer</summary><div class="trtabs" id="trTabs" role="tablist"></div><video id="trVid" controls playsinline preload="none"></video><a class="pill promoplay" id="trPlay" href="taschi/">▶ Jetzt kostenlos spielen</a></details>
     <details class="promo" id="promo"><summary>🎬 Video: Radio hören und nebenbei zocken</summary><video id="promoVid" controls playsinline preload="none" poster="https://ricorewioriginal-collab.github.io/easygames/promo/easygames-promo.jpg"></video></details>
   </header>
   <section class="feat hide-embed" id="feat"><div class="hero hidden" id="hero" aria-label="Empfohlenes Spiel"></div><div class="featside hidden" id="featSide" aria-label="Beliebte Spiele"></div></section>
@@ -1083,23 +1083,31 @@ catalog.then(c => {
   }).catch(() => {});
 })();
 
-// ----- Tagesspiel und Serie (Hinweis): Spiel des Tages (für alle gleich), Serie, ob heute schon eingetragen; Benachrichtigung höchstens einmal am Tag und nur, wenn der Browser/die App sie schon erlaubt hat -----
+// ----- Trailer: kommen automatisch aus dem Katalog (promo/<id>-trailer-16x9.mp4 bzw. -9x16.mp4, siehe tools/build-sync.js) -----
 (function trailers() {
-  var B = 'https://ricorewioriginal-collab.github.io/easygames/promo/', d = document.getElementById('promoTrailer'), v = document.getElementById('trVid'), tabs = document.getElementById('trTabs'), play = document.getElementById('trPlay');
-  var list = [['taschi', '✨ Taschi'], ['zotik', '💠 Zotik'], ['bunte-insel', '🚓 Bunte Insel'], ['anmacha-podcast-tycoon', '🎙️ AnMaCha']], cur = 0;
+  var B = 'https://ricorewioriginal-collab.github.io/easygames/', d = document.getElementById('promoTrailer'), v = document.getElementById('trVid'), tabs = document.getElementById('trTabs'), play = document.getElementById('trPlay');
+  var list = [], cur = 0;
   var fmt = function () { return matchMedia('(orientation: portrait)').matches ? '9x16' : '16x9'; };
   var show = function (i, load) {
-    cur = i; var id = list[i][0], k = fmt(), f = B + id + '-trailer-' + k;
+    cur = i; var g = list[i], t = g.trailer, k = fmt(), src = B + (k === '9x16' ? t.v9 : t.v16), pic = k === '9x16' ? (t.p9 || t.p16) : (t.p16 || t.p9);
     [].forEach.call(tabs.children, function (b, j) { b.setAttribute('aria-selected', j === i); });
-    v.className = k === '16x9' ? 'wide' : ''; v.poster = f + '.jpg'; play.href = id + '/';
-    if (v.getAttribute('src') !== f + '.mp4') v.src = f + '.mp4';
+    v.className = k === '16x9' ? 'wide' : ''; v.poster = pic ? B + pic : ''; play.href = g.path;
+    if (v.getAttribute('src') !== src) v.src = src;
     if (load) v.play().catch(function () {});
   };
-  list.forEach(function (t, i) { var b = document.createElement('button'); b.type = 'button'; b.className = 'pill'; b.setAttribute('role', 'tab'); b.textContent = t[1]; b.onclick = function () { show(i, true); }; tabs.appendChild(b); });
-  d.addEventListener('toggle', function once() { d.removeEventListener('toggle', once); show(0, false); });
-  d.addEventListener('toggle', function () { if (!this.open) v.pause(); });
+  catalog.then(function (c) {
+    list = ((c && c.games) || []).filter(function (g) { return g.trailer && !/^https?:/.test(g.path); });
+    if (!list.length) return;
+    var short = function (t) { return String(t).split(/ [–:-] /)[0]; };
+    document.getElementById('trSum').textContent = '🎬 Trailer: ' + list.map(function (g) { return short(g.title); }).join(', ');
+    list.forEach(function (g, i) { var b = document.createElement('button'); b.type = 'button'; b.className = 'pill'; b.setAttribute('role', 'tab'); b.textContent = (g.icon ? g.icon + ' ' : '') + short(g.title); b.onclick = function () { show(i, true); }; tabs.appendChild(b); });
+    d.hidden = false;
+    d.addEventListener('toggle', function once() { d.removeEventListener('toggle', once); show(0, false); });
+    d.addEventListener('toggle', function () { if (!this.open) v.pause(); });
+  });
 })();
 document.getElementById('promo').addEventListener('toggle', function () { var v = document.getElementById('promoVid'); if (this.open) { if (!v.src) v.src = 'https://ricorewioriginal-collab.github.io/easygames/promo/easygames-promo.mp4'; } else v.pause(); });
+// ----- Tagesspiel und Serie (Hinweis): Spiel des Tages (für alle gleich), Serie, ob heute schon eingetragen; Benachrichtigung höchstens einmal am Tag und nur, wenn der Browser/die App sie schon erlaubt hat -----
 (function dayBar() {
   if (embedMode) return;
   const load = f => new Promise(res => { const s = document.createElement('script'); s.src = f; s.onload = s.onerror = res; document.head.appendChild(s); });
