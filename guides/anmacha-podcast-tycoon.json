@@ -33,7 +33,7 @@
       "list": [
         "Andrew: schneller, springt höher. Seine Feelgood-Welle hat einen großen Radius und betäubt Störsender. Stark in Musik-Anmacher und Feelgood.",
         "Marco: kräftiger. Seine Technik-Welle schaltet Störsender sofort ab und repariert Geräte doppelt so schnell. Stark in Tech-News und TV-Anmacher.",
-        "Du kannst jederzeit wechseln (Y / Q / ⇄). Wer gerade nicht spielt, läuft hinterher."
+        "Du kannst jederzeit wechseln (Y / Q / ⇄): Andrew → Marco → RicoReWi. RicoReWi ist die dritte spielbare Figur – flink, sprunggewaltig und mit großer Tool-Welle; in der Stadt, in den Welten, Senderhäusern und der Arcade. Wer gerade nicht spielt, läuft hinterher. Gisela fährt weiterhin nur Marco."
       ]
     },
     {
@@ -67,7 +67,7 @@
       "t": "Tagesablauf und Karriere",
       "p": [
         "🌅 Der Himmel folgt der Spieluhr: Morgenrot, Tag, Abendrot zur Prime-Time und Nacht mit Sternen und leuchtenden Laternen. Jeder Tag hat sein Wetter (☀️ Sonne, ⛅ Wolken, 🌧️ Regen, Symbol oben im Tages-HUD). Bei Regen bleiben die Leute zu Hause und hören mehr zu: +5 % Hörer bei der Aufnahme.",
-        "Jeder Spieltag hat einen roten Faden, oben links stehen Tag, Uhrzeit, Abos und Rang. 🌅 Morgen: Ideen sammeln (Schreibtisch zu Hause, Sitzecke in Gisela). ☀️ Tag: In der Stadt Themen-Funken sammeln, mit Fans reden oder tanzen, Besorgungen machen, Bus fahren oder Senderhäuser besuchen. 🌆 Abend ab 18 Uhr: Prime-Time, ab ins Funkhaus zur Aufnahme. 🌙 Nacht: Auswertung, dann beginnt ein neuer Tag.",
+        "Jeder Spieltag hat einen roten Faden, oben links stehen Tag, Uhrzeit, Abos und Rang. 🌅 Morgen: Ideen sammeln (Schreibtisch zu Hause, Sitzecke in Gisela). ☀️ Tag: In der Stadt Themen-Funken sammeln, mit Fans reden oder tanzen, Besorgungen machen, Bus fahren oder Senderhäuser besuchen (mit den echten Senderlogos von ricorewi-radio.de an Fassade, Dachwerbung, Video-Wänden und im Senderraum). 🌆 Abend ab 18 Uhr: Prime-Time, ab ins Funkhaus zur Aufnahme. 🌙 Nacht: Auswertung, dann beginnt ein neuer Tag.",
         "Die Uhr läuft in der Stadt (eine Spielminute in etwa 0,7 Sekunden). Ohne Aufnahme bis 23:30 Uhr endet der Tag und ihr verliert 3 % der Abos."
       ],
       "list": [
@@ -188,7 +188,7 @@
     {
       "t": "Arcade: 3D-Minispiele",
       "p": [
-        "Unter „🕹️ Arcade“ im Gesamtmenü, im Arcade-Laden in der Stadt oder am Arcade-Automaten im begehbaren Studio spielst du mit Andrew oder Marco (wechseln mit Ⓨ/Q). Punkte bringen Fan-Punkte, jedes Spiel hat einen eigenen Rekord."
+        "Unter „🕹️ Arcade“ im Gesamtmenü, im Arcade-Laden in der Stadt oder am Arcade-Automaten im begehbaren Studio spielst du mit Andrew, Marco oder RicoReWi (wechseln mit Ⓨ/Q). Punkte bringen Fan-Punkte, jedes Spiel hat einen eigenen Rekord."
       ],
       "list": [
         "📡 Funkwellen-Flug: Tippen, Leertaste oder Ⓐ lässt dich hüpfen. Flieg durch die Lücken zwischen den Funkmasten, jeder Mast bringt einen Punkt.",
@@ -307,6 +307,18 @@
       ]
     },
     {
+      "t": "Alle Gebäude betretbar",
+      "p": [
+        "🚪 Jedes Gebäude in der Stadt hat eine Tür mit Schild. Drinnen warten zehn Arten von Orten, eingerichtet mit KayKit-Möbeln: ☕ Café (Cappuccino: Energie), 🥐 Bäckerei (Hunger), 🎚️ Tonstudio (Jingle: Idee für die Aufnahme), 🛋️ Fan-WG (Zocken: Spaß), 💼 Werbeagentur (Sponsor-Deal: 60 🎟️), 📚 Bücherei (Recherche: Idee), 🏋️ Fitnessstudio, 💈 Friseur, 🗞️ Kiosk (Schlagzeile: Idee) und 💿 Plattenbörse. Jede Aktion geht einmal am Tag, die Leute drinnen lassen sich ansprechen (+❤️ fürs Freundebuch). Jeder neu entdeckte Ort bringt 15 🎟️, und überall hängt das Logo eines echten Senders."
+      ]
+    },
+    {
+      "t": "Leute ansprechen",
+      "p": [
+        "💬 Jede Person in Stadt und Welten lässt sich ansprechen (hingehen, X/E). Alle haben Namen, einen Beruf passend zur Gegend und einen Lieblingssender. Im Gespräch wählst du: kurzes Interview für die Folge (+2 Themen-Funken im Herzensthema der Person), „Was hörst du so?“ (zeigt das echte Senderlogo), Tipps fürs Spiel, Tratsch aus der Stadt (+2 🎟️) oder Fan-Aktionen wie Selfie und Autogramm für das Freundebuch. Jede Frage geht einmal am Tag pro Person."
+      ]
+    },
+    {
       "t": "Gisela-Roadtrip nach Wellenburg",
       "p": [
         "🚐 Vom Medienhafen führt die Autobahn nach Osten in die zweite Stadt Wellenburg (mit Raststätte „Funkpause“). Fahrt mit Gisela hin: Die erste Ankunft startet eine Szene und bringt 200 🎟️ plus eine Idee, jede weitere 40 🎟️. Am selben Tag gibt die Abendfolge als Roadtrip-Folge +10 % Hörer.",
@@ -323,6 +335,8 @@
         "Weiche Störsendern mit Ausweichen aus – während der Rolle bist du kurz unverwundbar.",
         "Spar dir Fan-Punkte zuerst für Profi-Mikrofone und Jingle-Paket – sie helfen bei jedem Stern.",
         "Spielst du Andrew und willst Gisela fahren: einfach hingehen und X/E drücken – das Spiel wechselt automatisch zu Marco.",
+        "Fahren: Stick oder W/S für Gas und Rückwärts, am Controller auch RT (Gas) und LT (Bremse/rückwärts). Lenken klappt auch beim Rangieren. Wer sich festfährt, wird nach kurzer Zeit automatisch auf die Straße zurückgesetzt.",
+        "Jedes Auto im Verkehr ist fahrbar: Vor ein haltendes Auto stellen und mit X/E „Auto leihen“ – in der Stadt und in allen Welten.",
         "Schick Marco und Andrew vor wichtigen Aufnahmen nach Hause: ausgeschlafen und satt bringen sie mehr Start-Hype, und Schreibtisch-Ideen werden zu starken Themenkarten."
       ]
     },

@@ -17,7 +17,7 @@
   function speak(who, txt, end) {
     if (!voiceOn() || who === 'gisela') { if (who === 'gisela') AMC.Audio.sfx('horn'); return false; }
     try {
-      const w = WHO[who] || WHO.n, u = new SpeechSynthesisUtterance(txt.replace(/[^\p{L}\p{N}\s.,!?'„“…–-]/gu, ''));
+      const w = WHO[who] || WHO.n, u = new SpeechSynthesisUtterance(txt.replace(/AnMaCha/gi, 'Anmacher').replace(/[^\p{L}\p{N}\s.,!?'„“…–-]/gu, ''));
       u.lang = 'de-DE'; u.pitch = w[2]; u.rate = w[3]; u.onend = end; u.onerror = end; speechSynthesis.cancel(); speechSynthesis.speak(u); return true;
     } catch (e) { return false; }
   }

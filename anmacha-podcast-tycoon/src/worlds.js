@@ -66,7 +66,9 @@
     S.areas = true; V = { S, ferry: null, mini: null, cur: null };
     const g = S.group, M = (c, o) => W.mat(c, o || { r: 0.7 });
     const B = (w, h, d, c, x, y, z, solid, o) => { const m = W.box(w, h, d, M(c, o), x, y, z, g, true); if (solid) C.addBox(x - w / 2, x + w / 2, z - d / 2, z + d / 2, y + h / 2, y - h / 2); return m; };
-    const sign = (txt, x, y, z, w, ry, acc) => { const t = W.textTex(txt, { w: 512, h: 128, size: 54, accent: acc || '#ff8a1e' }); const m = new T.Mesh(new T.PlaneGeometry(w, w / 4), new T.MeshBasicMaterial({ map: t, toneMapped: false, side: T.DoubleSide })); m.position.set(x, y, z); m.rotation.y = ry || 0; g.add(m); return m; };
+    // Schild von beiden Seiten lesbar (Rückseite eigene Fläche statt gespiegelter Schrift)
+    const sign = (txt, x, y, z, w, ry, acc) => { const t = W.textTex(txt, { w: 1024, h: 256, size: 108, accent: acc || '#ff8a1e' }), mat = new T.MeshBasicMaterial({ map: t, toneMapped: false }), geo = new T.PlaneGeometry(w, w / 4);
+      const m = new T.Group(), f = new T.Mesh(geo, mat), b = new T.Mesh(geo, mat); b.rotation.y = Math.PI; b.position.z = -0.03; m.add(f, b); m.position.set(x, y, z); m.rotation.y = ry || 0; g.add(m); return m; };
     // Wasser rund um die Stadt
     const water = new T.MeshStandardMaterial({ color: W.lin(0x1d5f8f), roughness: 0.25, metalness: 0.15, transparent: true, opacity: 0.92 });
     [[0, -171, 500, 158], [0, 171, 500, 158], [-171, 0, 158, 184], [171, 0, 158, 184]].forEach(([x, z, w, d]) => { const p = new T.Mesh(new T.PlaneGeometry(w, d), water); p.rotation.x = -Math.PI / 2; p.position.set(x, 0.04, z); g.add(p); });

@@ -120,10 +120,24 @@ server.listen(0, '127.0.0.1', async () => {
     for (let i = 0; i < 6 && !(await p.evaluate(() => !!AMC.Play.state().drive)); i++) { await p.evaluate(() => { const S = AMC.Play.state(); S.pl.x = S.gisela.x - 2.5; S.pl.z = S.gisela.z; AMC.Input.fire('act'); }); await p.waitForTimeout(500); }
     assert.ok(await p.evaluate(() => !!AMC.Play.state().drive && AMC.Play.state().drive.gisela), 'Marco sitzt in Gisela');
     await p.keyboard.down('KeyW'); await p.waitForTimeout(1200); await p.keyboard.up('KeyW');
+    assert.ok(await p.evaluate(() => { const c = AMC.Play.state().drive, r = { x: c.x, z: c.z, h: c.h }, AI = AMC.Input; for (let i = 0; i < 80; i++) { AI.move.y = -1; AMC.Drive.update(0.03); } AI.move.y = 0; return c.v < 0 && ((c.x - r.x) * Math.sin(r.h) + (c.z - r.z) * Math.cos(r.h)) < -1; }), 'Rückwärts fahren klappt');
+    // Festgefahren an der Wand: Rückwärts kommt man immer frei
+    assert.ok(await p.evaluate(() => { const S = AMC.Play.state(), c = S.drive, x0 = c.x, z0 = c.z; S.col.push({ x0: c.x + Math.sin(c.h) * 2.6 - 3, x1: c.x + Math.sin(c.h) * 2.6 + 3, z0: c.z + Math.cos(c.h) * 2.6 - 3, z1: c.z + Math.cos(c.h) * 2.6 + 3, top: 3, bot: -1, test: 1 }); const AI = AMC.Input; AI.move.y = -1; c.v = 0; for (let i = 0; i < 60; i++) { AMC.Drive.update(0.03); AI.move.y = -1; } AI.move.y = 0; S.col = S.col.filter(b => !b.test); return Math.hypot(c.x - x0, c.z - z0) > 0.8; }), 'Aus der Ecke rückwärts frei');
     for (let i = 0; i < 6 && (await p.evaluate(() => !!AMC.Play.state().drive)); i++) { await p.evaluate(() => AMC.Input.fire('act')); await p.waitForTimeout(800); }
     await p.waitForTimeout(1500);
     assert.ok(await p.evaluate(() => !AMC.Play.state().drive), 'Aussteigen klappt');
+    assert.ok(await p.evaluate(() => { const S = AMC.Play.state(), t = S.traffic[0]; t.v = 0; t.stop = 9; S.pl.x = t.g.position.x + 2; S.pl.z = t.g.position.z; const it = AMC.Drive.borrowTarget(S.pl); if (!it || !/leihen/.test(it.label)) return false; it.run(); const ok = !!S.drive && S.drive.lent; S.drive.v = 0; return ok; }), 'Stadtverkehr: Auto leihen');
+    for (let i = 0; i < 12 && (await p.evaluate(() => !!AMC.Play.state().drive)); i++) { await p.evaluate(() => { AMC.Play.state().drive.v = 0; AMC.Input.fire('act'); }); await p.waitForTimeout(900); }
+    await p.waitForTimeout(1000);
+    assert.ok(await p.evaluate(() => !AMC.Play.state().drive), 'Aus dem Leihauto aussteigen');
+    assert.ok(await p.evaluate(() => { const S = AMC.Play.state(); let n = null; for (let i = 0; i < 400 && !n; i++) n = AMC.WorldFX.nearPerson(S.pl.x + (i % 20 - 10) * 8, S.pl.z + (Math.floor(i / 20) - 10) * 8, 6); if (!n) return 'keine Person'; const s = AMC.Talk.open(n, { S, drawRub: () => {} }); const ok = !!s.el.querySelector('[data-o]') && !!AMC.Talk.who(n).job; s.el.querySelector('[data-o="0"]').click(); const got = Object.values(S.got).reduce((a, b) => a + b, 0) >= 2; AMC.UI.closeAll(); n.talking = false; return ok && got; }), 'Passanten ansprechen: Interview');
+    // RicoReWi als dritte spielbare Figur
+    for (let i = 0; i < 8 && (await p.evaluate(() => AMC.Play.state().pl.id !== 'rico')); i++) { await p.evaluate(() => AMC.Input.fire('swap')); await p.waitForTimeout(900); }
+    assert.ok(await p.evaluate(() => { const S = AMC.Play.state(); return S.pl.id === 'rico' && S.pl.fig === AMC.World.hosts.rico && (!S.rico || S.rico.away); }), 'RicoReWi spielbar');
+    for (let i = 0; i < 8 && (await p.evaluate(() => AMC.Play.state().pl.id !== 'marco')); i++) { await p.evaluate(() => AMC.Input.fire('swap')); await p.waitForTimeout(900); }
+    assert.ok(await p.evaluate(() => AMC.Play.state().pl.id === 'marco'), 'Zurück zu Marco');
     // Begehbares Funkhaus: Menüpunkte als Orte in der Welt
+    assert.ok(await p.evaluate(() => AMC.Play.state().stations.filter(s => s.id.startsWith('room:')).length >= 20), 'Stadtgebäude haben Türen');
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(), ids = S.stations.map(s => s.id); return ['menu', 'live', 'edit', 'story', 'quiz', 'radio', 'shop', 'koop', 'arcade', 'music', 'home:andrew', 'home:marco'].every(i => ids.includes(i)); }), 'Alle Menüpunkte als Orte');
     assert.ok(await p.evaluate(() => { const S = AMC.Play.state(); return !S.col.some(c => 22.5 > c.x0 && 22.5 < c.x1 && -25 > c.z0 && -25 < c.z1 && c.bot < 1 && c.top > 1); }), 'Funkhaus innen begehbar');
     await p.evaluate(() => { window.__act = null; AMC.Play.onAction = id => { window.__act = id; }; const S = AMC.Play.state(), st = S.stations.find(s => s.id === 'shop'); S.pl.x = st.x; S.pl.z = st.z; S.pl.y = 0.2; }); await p.waitForTimeout(400);
@@ -144,6 +158,9 @@ server.listen(0, '127.0.0.1', async () => {
     assert.ok(await p.evaluate(() => !!AMC.Home._state().game && !!document.getElementById('sdGame')), '3D-Senderspiel läuft');
     await p.evaluate(() => { AMC.Home.close(true); AMC.Home.station('anmacha24', 'andrew', () => {}); AMC.Sender._startGame(AMC.Home._state()); }); await p.waitForTimeout(1500);
     assert.ok(await p.evaluate(() => AMC.Home._state().cfg.game.kind === 'catch' && !!AMC.Home._state().game), '3D-Fangspiel läuft');
+    // Begehbare Stadtgebäude (rooms.js): Möbel, Leute, Aktion
+    await p.evaluate(() => { AMC.Home.close(true); AMC.Save.data.rooms = {}; AMC.Home.room(2, 'andrew', () => {}); }); await p.waitForTimeout(2500);
+    assert.ok(await p.evaluate(() => { const R = AMC.Home._state(); if (!R || R.kind !== 'room') return false; const n0 = (AMC.Home.needs('andrew').ideas || []).length, sp = R.w.near ? null : null; const a = AMC.Rooms.kind(2).act; R.w.x = a.x; R.w.z = a.z; const s = R.w.near(); if (!s) return 'kein Ort'; s.run(); const n1 = (AMC.Home.needs('andrew').ideas || []).length; return R.g.children.length > 15 && (n1 > n0 || n0 >= 3) && R.npcs.length >= 1; }), 'Tonstudio betreten: Möbel, Leute, Jingle-Idee');
     await p.evaluate(() => { AMC.Home.close(true); AMC.Game.mode = 'menu'; });
     await p.evaluate(() => { AMC.Play.stop(); AMC.UI.closeAll(); });
     // Sims-Teil: Zuhause (Bedürfnisse, Schreibtisch-Idee), begehbares Studio, Musikshop, Gegenspieler zum Rangeln

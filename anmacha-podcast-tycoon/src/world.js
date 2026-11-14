@@ -36,7 +36,10 @@
     return canvasTex(o.w, o.h, (g, w, h) => {
       g.fillStyle = o.bg; roundRect(g, 0, 0, w, h, 18); g.fill(); g.strokeStyle = o.accent; g.lineWidth = 8; roundRect(g, 6, 6, w - 12, h - 12, 14); g.stroke();
       g.textAlign = 'center'; g.textBaseline = 'middle';
-      lines.forEach((l, i) => { g.fillStyle = i === 0 ? o.fg : o.accent; g.font = '700 ' + (i === 0 ? o.size : Math.round(o.size * 0.55)) + 'px Fredoka, system-ui, sans-serif'; g.fillText(l, w / 2, h / 2 + (i - (lines.length - 1) / 2) * o.size * 0.95); });
+      // Schrift passt sich an: nichts wird abgeschnitten (Breite und Höhe)
+      const sizes = lines.map((l, i) => { let px = i === 0 ? o.size : Math.round(o.size * 0.55); g.font = '700 ' + px + 'px Fredoka, system-ui, sans-serif'; const tw = g.measureText(l).width; if (tw > w - 44) px = Math.floor(px * (w - 44) / tw); return px; });
+      const tot = sizes.reduce((a, b) => a + b * 1.08, 0), k = tot > h - 24 ? (h - 24) / tot : 1; let y = h / 2 - tot * k / 2;
+      lines.forEach((l, i) => { const px = Math.max(10, Math.floor(sizes[i] * k)); g.fillStyle = i === 0 ? o.fg : o.accent; g.font = '700 ' + px + 'px Fredoka, system-ui, sans-serif'; y += px * 1.08 / 2; g.fillText(l, w / 2, y); y += px * 1.08 / 2; });
     });
   };
   W.glowTex = null;
@@ -56,12 +59,15 @@
 
     // Modelle (alle CC0): Quaternius-Gebäude, Kenney-Bäume/Brunnen/Felsen, easygames-Figuren
     const files = ['bld_2Story_Mat', 'bld_1Story_Sign_Mat', 'bld_2Story_GableRoof_Mat', 'bld_2Story_Slim_Mat', 'tree', 'tree-high-round', 'fountain-round', 'rock-large'];
-    let done = 0; const total = files.length + 4, tick = l => { done++; progress && progress(done / total, l); };
+    let done = 0; const total = files.length + 5, tick = l => { done++; progress && progress(done / total, l); };
     const loader = new T.GLTFLoader();
     W.models = {};
     await Promise.all(files.map(f => new Promise(res => loader.load('models/' + f + '.glb', g => { W.models[f] = bake(g.scene); tick('3D-Modelle'); res(); }, null, () => { tick('3D-Modelle'); res(); }))));
     // CC0-Modelle (Kenney via @netforge/asset-library-files): Hochhäuser, Autos, Schiffe, Natur
     await Promise.all(W.CC0.map(f => new Promise(res => loader.load('models/cc0/' + f + '.glb', g => { W.models[f] = bake(g.scene); res(); }, null, () => res())))); tick('Stadt & Welten');
+    // KayKit (Kay Lousberg, CC0): City Builder Bits + Furniture Bits – ein gemeinsames Material je Paket (eine Textur statt vieler)
+    const kkMat = {}; ['city', 'furniture'].forEach(k => { const t = new T.TextureLoader().load('models/kaykit/' + k + '.png'); t.encoding = T.sRGBEncoding; t.flipY = false; kkMat[k] = new T.MeshStandardMaterial({ map: t, roughness: 0.75, metalness: 0.05 }); });
+    await Promise.all(W.KK.map(f => new Promise(res => loader.load('models/kaykit/' + f + '.glb', g => { const m = kkMat[f.startsWith('kf_') ? 'furniture' : 'city']; g.scene.traverse(o => { if (o.isMesh) { if (o.material && o.material.dispose) o.material.dispose(); o.material = m; } }); W.models[f] = bake(g.scene); res(); }, null, () => res())))); tick('Möbel & Straßen');
     W.kit = root.EasyFiguren ? root.EasyFiguren.create({ THREE: T, base: '../figuren/', srgb: true }) : null;
     if (W.kit) {
       await W.kit.load().catch(() => {}); tick('Menschen & Bewegungen');
@@ -73,6 +79,10 @@
     W.ready = true;
   };
   /** Figur neu bauen (Outfit gewechselt); bleibt an derselben Stelle der Szene */
+  /** Echtes Senderlogo als Textur (zwischengespeichert) */
+  const logoCache = {};
+  W.logoTex = slug => { if (!logoCache[slug]) { const t = new THREE.TextureLoader().load(AMC.UI.senderLogo(slug)); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; logoCache[slug] = t; } return logoCache[slug]; };
+  W.logoPlane = (slug, size) => new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshBasicMaterial({ map: W.logoTex(slug), toneMapped: false }));
   W.rebuildHost = async function (id) {
     if (!W.kit) return;
     const old = W.hosts[id], parent = old && old.root.parent, pos = old && old.root.position.clone(), rot = old ? old.root.rotation.y : 0;
@@ -97,6 +107,8 @@
     const size = box.getSize(new T.Vector3());
     return { parts, box, size };
   }
+  W.KK = ['kk_bench', 'kk_box_a', 'kk_box_b', 'kk_building_a', 'kk_building_b', 'kk_building_c', 'kk_building_d', 'kk_building_e', 'kk_building_f', 'kk_building_g', 'kk_building_h', 'kk_bush', 'kk_car_hatchback', 'kk_car_police', 'kk_car_sedan', 'kk_car_stationwagon', 'kk_car_taxi', 'kk_dumpster', 'kk_firehydrant', 'kk_streetlight', 'kk_trafficlight_a', 'kk_trafficlight_b', 'kk_trafficlight_c', 'kk_trash_a', 'kk_trash_b', 'kk_watertower',
+    'kf_armchair', 'kf_armchair_pillows', 'kf_bed_double_a', 'kf_bed_single_a', 'kf_book_set', 'kf_cabinet_medium_decorated', 'kf_cabinet_small', 'kf_chair_a', 'kf_chair_a_wood', 'kf_chair_b', 'kf_chair_stool', 'kf_couch', 'kf_couch_pillows', 'kf_lamp_standing', 'kf_lamp_table', 'kf_pictureframe_large_a', 'kf_pictureframe_medium', 'kf_pillow_a', 'kf_rug_oval_a', 'kf_rug_rectangle_a', 'kf_rug_rectangle_stripes_a', 'kf_shelf_a_big', 'kf_shelf_b_large_decorated', 'kf_table_low', 'kf_table_medium', 'kf_table_medium_long', 'kf_table_small'];
   W.CC0 = ['skyscraper_a', 'skyscraper_b', 'skyscraper_c', 'building_a', 'building_b', 'building_c', 'building_d', 'building_e', 'sedan', 'taxi', 'van', 'police_car', 'delivery_van', 'cargo_ship', 'satellite_dish', 'tree_palm', 'tent', 'bush', 'campfire', 'crate', 'barrels'];
   /** Einzelnes Modell als Gruppe (geteilte Geometrie), Boden-Mitte im Ursprung; s = Zielgröße (Breite/Länge oder mit byHeight Höhe). */
   W.prop = function (name, s, opts) {

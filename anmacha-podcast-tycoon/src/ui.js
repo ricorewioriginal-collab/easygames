@@ -8,6 +8,7 @@
 
   // ------------------------------------------------------------------ Bilder
   UI.podLogo = 'img/podcast-logo.jpg';   // offizielles Podcast-Logo (Marco & Andrew)
+  UI.senderLogo = slug => 'img/sender/' + slug + '.jpg';   // echte Senderlogos von ricorewi-radio.de
   UI.logoUrl = () => 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><circle cx="60" cy="60" r="56" fill="#111218" stroke="#ff8a1e" stroke-width="6"/><path d="M47 35 L88 60 L47 85Z" fill="#ff8a1e"/></svg>');
   UI.face = id => UI.faces[id] || 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#17181d"/><circle cx="50" cy="42" r="22" fill="#f0c8a8"/><path d="M28 38 Q50 8 72 38" fill="' + (id === 'marco' ? '#6b4528' : '#c9844a') + '"/>' + (id === 'marco' ? '<path d="M30 48 Q50 82 70 48 Q60 62 50 62 Q40 62 30 48Z" fill="#6b4528"/>' : '') + '<circle cx="50" cy="84" r="8" fill="#ff8a1e"/></svg>');
 
@@ -134,7 +135,7 @@
     if (UI.stack.some(s => s.o.cls === 'radio-screen')) return;
     const M = AMC.Media;
     M.refresh();
-    const st = D.STATIONS.map(s => '<button type="button" class="st-item" data-nav data-st="' + s.slug + '" style="--c:' + s.color + '"><span class="st-ic">' + s.icon + '</span><span><b>' + U.esc(s.name) + '</b><small>' + U.esc(s.desc) + '</small></span><span class="st-eq"><i></i><i></i><i></i></span></button>').join('');
+    const st = D.STATIONS.map(s => '<button type="button" class="st-item" data-nav data-st="' + s.slug + '" style="--c:' + s.color + '"><span class="st-ic"><img src="' + UI.senderLogo(s.slug) + '" alt="" loading="lazy"></span><span><b>' + U.esc(s.name) + '</b><small>' + U.esc(s.desc) + '</small></span><span class="st-eq"><i></i><i></i><i></i></span></button>').join('');
     const s = UI.open(
       '<div class="panel glass wide radio"><header><h2>📻 Radio &amp; Podcast</h2><button class="btn small" data-nav id="rClose">' + AMC.glyph('b') + ' Zurück</button></header>' +
       '<div class="np-card" id="rNow"></div>' +

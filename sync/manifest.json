@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3fe25e373364",
- "generated": "2026-11-14T11:21:37+00:00",
- "commit": "de9ec93bd4b7ae0494f8bf8be376eb5bd0b804f0",
+ "version": "c48531ce9c21",
+ "generated": "2026-11-14T11:50:29+00:00",
+ "commit": "f4f2e30895efed8f73eafd2f710679f22bd65458",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2172,9 +2172,74 @@
    "h": "316b47334c940f04ccb592aaeb0f9734e43fbae05bb6e03a7af50b27e0402daa"
   },
   {
+   "p": "anmacha-podcast-tycoon/img/sender/anmacha24.jpg",
+   "s": 22087,
+   "h": "dacc9e99c97ecaf28fdc53bb3b021b1b176254403addcd7b0457c278463d2bd9"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/img/sender/chartradio24.jpg",
+   "s": 23297,
+   "h": "0c2c76e649c7b92ed65e9ae0baad14373749c0c75ada769574dcc6491b2ed4dd"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/img/sender/christmasradio24.jpg",
+   "s": 30577,
+   "h": "404fb9f699b1939fa99aa22c8c4e7865280ab1130ef7c335777c78cd6c891337"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/img/sender/clubradio24.jpg",
+   "s": 22812,
+   "h": "f71d2b2172be0b3168ea7f3d60567b615bf47eef24e5443ec5c0042432678c6f"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/img/sender/kultradio24.jpg",
+   "s": 16115,
+   "h": "e3eaebd1774608e5d069f5c0f5fc572096d6473018a1b2c320f8c108761dca7f"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/img/sender/radiofloh.jpg",
+   "s": 24652,
+   "h": "8663b4ea49a0e6470ff72c75adaae4f1ab47be05f05a7c7c8cd053aa355f0305"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/img/sender/rapradio24.jpg",
+   "s": 24673,
+   "h": "97f6064b26c9346448b0302cc2bafe3a2ca2c2122775cffb3a5534236eef94c4"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/img/sender/ricorewi.jpg",
+   "s": 17038,
+   "h": "e3eb147a8aa27978a8af00eeff313f8d3ba4593e08ada4d3c01bf29defb88eae"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/img/sender/rockradio24.jpg",
+   "s": 10715,
+   "h": "87306ad8504a3498ef27f053bfb2e2912eb7d3a52f4fa910ad67c3f75aeccd5c"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/img/sender/schlagerpop24.jpg",
+   "s": 20544,
+   "h": "571fc9b5daf783eab6bf39993ecc18562f7ee71815559cdee0cd944152cdc3b4"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/img/sender/special-radio.jpg",
+   "s": 14364,
+   "h": "4ed73cdce09c1dde86dd98fb72d6dbf6951b793000c30b725385156f26350d71"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/img/sender/yourtime-fm.jpg",
+   "s": 18667,
+   "h": "6a0eb75215c48579a16eec5265e6d6804631c60da497f2d83f1eb18323c6d1bb"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/img/sender/zockerfm.jpg",
+   "s": 13836,
+   "h": "174f37c950ad4697ae86cbdcd74aadd9e88eee9e5bbd6604861c7e3d8fa0aaa2"
+  },
+  {
    "p": "anmacha-podcast-tycoon/index.html",
-   "s": 7008,
-   "h": "06c321f05c41fbe185e1c9020d4024e9148395515cc3c0c327fc28d6a43bf5c6"
+   "s": 7081,
+   "h": "154f0bc5f6ea7a5d6287b563d54347ff403c545fbc8d64ab853faf260379cecf"
   },
   {
    "p": "anmacha-podcast-tycoon/manifest.webmanifest",
@@ -2332,6 +2397,316 @@
    "h": "8d19741e2cca6cbdce114b950b4aa12af625979bbc17b2910ef2366834af5565"
   },
   {
+   "p": "anmacha-podcast-tycoon/models/kaykit/city.png",
+   "s": 19885,
+   "h": "6d2d9a5a13bce32209cd8c04572ab170504d68f34b1519165c9b0c41871e235b"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/furniture.png",
+   "s": 15605,
+   "h": "de62db37a80d1801c3d9eb674890ae04b04469e0c149481a51fa250562c628dc"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_armchair.glb",
+   "s": 18368,
+   "h": "8a871d1776fa15bc00750eb9f2b7425d5261afb8c19e41c41363b2c22fb38bbd"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_armchair_pillows.glb",
+   "s": 21484,
+   "h": "5cab04e90f0a872196323736c29cb98a6a02148a91caa2353d9f9bc956be6bf8"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_bed_double_a.glb",
+   "s": 25688,
+   "h": "a3a610bc67d7f2c6b5aa53386e10cff92e967a20e8e023c1ccbb8d4258b4c019"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_bed_single_a.glb",
+   "s": 23084,
+   "h": "b0f70a8df67e6de82c0d893becf663f01d69ee3fdc16168d0d3bc8b899f6675e"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_book_set.glb",
+   "s": 12664,
+   "h": "886b952118326207af2ec5d6ee65bc2a941d3c6b029011b878316c09616b89b8"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_cabinet_medium_decorated.glb",
+   "s": 50092,
+   "h": "eab371b34d47689068d8324a9e94ca4d1e801d8b6c29387274601803dcd2f027"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_cabinet_small.glb",
+   "s": 20496,
+   "h": "dc63692a7e1ef0044958a022bcd1db233d796788d3817b3545013a6f5eefb5dd"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_chair_a.glb",
+   "s": 17560,
+   "h": "7fa06ee7e451b013d5ccd096071d645fb66e5461273ea57131119942331adc53"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_chair_a_wood.glb",
+   "s": 17568,
+   "h": "c2ad907cd8f55bb218ff0d1ec0f74f0cca26adec29e1432a257b5c72d7b82654"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_chair_b.glb",
+   "s": 19324,
+   "h": "4c6960b58ed692e0b8c1c1cd2b31ad5d647c807c5a5ce325ba2d2db2e7d48669"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_chair_stool.glb",
+   "s": 11904,
+   "h": "9b81f8acb825fbbb22ee9873278503b684e1c84d9e538eade639b8333665c1dc"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_couch.glb",
+   "s": 22468,
+   "h": "a5e1e0667f66d63b015d087ef3e30202830d4547c782504395baa33534f960e2"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_couch_pillows.glb",
+   "s": 28692,
+   "h": "75752868d398962b1bff75084d76f7864e35cc02c01e420d25ad1b5bb7025a2a"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_lamp_standing.glb",
+   "s": 12712,
+   "h": "e5a1ca0cfcd34e55340d5e75a899714b7fec067bd17c5b1667b981ce79ce72fb"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_lamp_table.glb",
+   "s": 13880,
+   "h": "57fee1e54df7aa49bc49146115de3ff62fc46e122cf735bcc2d11cb369450133"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_pictureframe_large_a.glb",
+   "s": 4268,
+   "h": "e7d4ab982eaf3ceb2b2106bcc0732722ae71fd3fda39300ed144c84953aa9e11"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_pictureframe_medium.glb",
+   "s": 4268,
+   "h": "5256ac30cb4fb9fa4ddf57e68184315c0f805834a9b49ffe7a6cf2fbb53e9ebf"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_pillow_a.glb",
+   "s": 3792,
+   "h": "59020de2e84bbfd543f50f3b6b65ec285a51f2de265c6aa96e4c9c416d3ee03b"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_rug_oval_a.glb",
+   "s": 7564,
+   "h": "55d0460428140fafa61addd6d33b56105c14971657c140b21c8bcab6ce28aa6a"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_rug_rectangle_a.glb",
+   "s": 2804,
+   "h": "ac7004e7f372432a6063c3f1c9baf9245961106172009c03d3b910ae194b7fa1"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_rug_rectangle_stripes_a.glb",
+   "s": 3724,
+   "h": "37a7c0ec3f82cc220484593feaf496eef91108d8c6bbfd34697b8ef57e39eba7"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_shelf_a_big.glb",
+   "s": 11160,
+   "h": "139fb77732cf0ccee23d45cc7c346532eb6e1fb900a088f03f3e7284358968ae"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_shelf_b_large_decorated.glb",
+   "s": 26860,
+   "h": "50b3c7eeaf736e5a0bd8b1472f1e133068bb89ba42c827fc8a4960354fe0effc"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_table_low.glb",
+   "s": 13432,
+   "h": "0e24d17bd4ea91ff8d9c56923f6407ea198d2e4b0a99d9db2e03f8694f969cf4"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_table_medium.glb",
+   "s": 10332,
+   "h": "69f67ab2010549c66c9d14c92f057c9596d656f6b60f20158bab8b2e99e7ec6c"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_table_medium_long.glb",
+   "s": 10340,
+   "h": "63459fbe394abc310b9d93c1ff79ac0369fad966d71250dc1642452bf56d61ed"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kf_table_small.glb",
+   "s": 10340,
+   "h": "51cb8cf12df1d25dcbff8b526494b62921d52262efc16fbf2d770879d3f76211"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_base.glb",
+   "s": 4436,
+   "h": "0693052e007f22070b65fa4851c876195ca2e174ea07e8a116e65b12b7feb8ad"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_bench.glb",
+   "s": 3900,
+   "h": "684487c28569ddf01aa5ef8c51cc8889ab6e8d2c1532e0895e12f484e94fbc28"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_box_a.glb",
+   "s": 3336,
+   "h": "1538fbd6f4673cbc6be826e4280af3a24f20c1403c5681b9cc138862b2168d13"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_box_b.glb",
+   "s": 2432,
+   "h": "ddb3ddfffde017a6d23dc8714a8ea91c6a2dd5ba92d8ac80a628bc74dfbf17ca"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_building_a.glb",
+   "s": 50532,
+   "h": "505cee655d7f18cafa45d96199efca26573918aca19519deffce78bfd19b258d"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_building_b.glb",
+   "s": 66488,
+   "h": "9c91e1a8a0bedb324d69454e8f2376e188758920112fe37a89c7c0a85e641412"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_building_c.glb",
+   "s": 62528,
+   "h": "1eb2b7091a516670570767ed3f7b9fe92ec8bc5d54cec96f58fde58228d9f49f"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_building_d.glb",
+   "s": 70848,
+   "h": "22392d8ea9daeb9013110d6b4da7ee21bf6f5875fb17460d37d5b27c48a99189"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_building_e.glb",
+   "s": 85892,
+   "h": "8e7557f2060c5e2f339cf21243497c9ec8e4afa16e9e9fecb48f29088cc027fe"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_building_f.glb",
+   "s": 85100,
+   "h": "d975d99e721d21f03813f87e1616c5da8fc51e799f0da4fada899c864c157dcd"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_building_g.glb",
+   "s": 104764,
+   "h": "49d51e12afebfabcbba162e97c6ba162ff45edc5bbbf886c50cdf34f454f97d3"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_building_h.glb",
+   "s": 119120,
+   "h": "70540ad2c3538c459b9ff7350bc43cda5aa44711571bde7c3cc800efc9c37694"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_bush.glb",
+   "s": 4132,
+   "h": "ff241f064bcbc5facfd4e1b73f793e14086cdaae47d85b9e47965735fae5f60c"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_car_hatchback.glb",
+   "s": 59640,
+   "h": "c1e9747bb4d8343495833ce8f5d94b26c2e2576832df967d7d539ded38304d7f"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_car_police.glb",
+   "s": 68232,
+   "h": "643abf130e7e7af77142399134b888ec9f02817615ef72b5bcc2a88e4086814f"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_car_sedan.glb",
+   "s": 61388,
+   "h": "dd805add24f1722bc8e9bfdf9c74c9109dadd1158e0eb417cda236b473d5149a"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_car_stationwagon.glb",
+   "s": 62264,
+   "h": "5940d26aa926169b29977e9973e8a8c4f2acd9bfebdcc8fd82b580375ed7737f"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_car_taxi.glb",
+   "s": 64756,
+   "h": "a8db016f64d70f24f3998256fcd891d198974f0b68dcc2cc336b33a9203799a3"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_dumpster.glb",
+   "s": 9256,
+   "h": "ceb8ef581f0845e2bacd737ba6c24810104d6c550bf981691412ade5b27d1491"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_firehydrant.glb",
+   "s": 9164,
+   "h": "87cd14ff0a6f298538ef1d22d2fcedc922d6a1aaa1a05d95859abe5c2b684c79"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_road_corner.glb",
+   "s": 8420,
+   "h": "f4e9ab0a5e7dbc1ac6fd4cba076852e21414c0eecbd673326d83956f1f933f83"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_road_corner_curved.glb",
+   "s": 8996,
+   "h": "482280b8e4ed534662408f22ca74972bb8ec2cf3557cbe9a547f3b47403ddcf5"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_road_junction.glb",
+   "s": 10756,
+   "h": "849fd70dea6a095f2150b8eee1376e1afd3816f0b67fb7044eefdafc4888a981"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_road_straight.glb",
+   "s": 4692,
+   "h": "83484e693c0dc3194d6e2fb7cfd3012da2ea62d5a437875a74c274368a4bd01d"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_road_straight_crossing.glb",
+   "s": 5120,
+   "h": "a0da44135bfe5769e1e550c70797dda572a97ddbd920cb22b7dfdeb5876d9939"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_road_tsplit.glb",
+   "s": 8560,
+   "h": "84e16a454f89a88a74ce367019cad0e6a68a13b38f7ebf452de0628105649118"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_streetlight.glb",
+   "s": 8248,
+   "h": "4ae9136d27e1e60b869c98bc3c9ab35e772fbbb35f9c030e3bf32beb9358d0c8"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_trafficlight_a.glb",
+   "s": 31780,
+   "h": "31b885001c6e5b081f698747a97a5fab1a35c3f97b003cbbee0433eccf04dc67"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_trafficlight_b.glb",
+   "s": 36708,
+   "h": "5dae56c751d05de0028355d8da2462e847cebffa98d7ec85ebe6234a991c8e09"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_trafficlight_c.glb",
+   "s": 25252,
+   "h": "142366ac4bc11e325696846d315f4312fb504e170bf6e4e0e2a80624f80336be"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_trash_a.glb",
+   "s": 1700,
+   "h": "5807d9346e131f578c5578e0593d3d27dcc9a236ab17027155d18cf1d5f27fcd"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_trash_b.glb",
+   "s": 1704,
+   "h": "20cb98b9acc4604a77c84518af0b950523eed0df271e7bce5a5db90cfd92ea5f"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/models/kaykit/kk_watertower.glb",
+   "s": 9376,
+   "h": "6f387501df590f325a8c5bbd6dc96691e468e3a9d9254ddf3b1ec71cfe15d9b5"
+  },
+  {
    "p": "anmacha-podcast-tycoon/models/rock-large.glb",
    "s": 18876,
    "h": "425bea0dd3c8d9198a067a2faad1df8860c5b9eb53560ce5c67347a79852b9d1"
@@ -2363,8 +2738,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/acts.js",
-   "s": 16340,
-   "h": "0efb447741cc371b1c5035962df2d627c4befd21a412f6fc49e1abcd90f6a92b"
+   "s": 16373,
+   "h": "500e7d1d3dc0292cb8aab51f07ef45d1c5b7d580a3618d95be0a9051ad840042"
   },
   {
    "p": "anmacha-podcast-tycoon/src/arcade.js",
@@ -2398,8 +2773,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/data.js",
-   "s": 45616,
-   "h": "806b1ce012f80a69d384233dfcfd6413ff2ca365d5ab6d85b6b746ad7feee396"
+   "s": 45969,
+   "h": "8dbeaf0ec63d15cae870b8697816f99891aa4efa88bde457178f759f5dfb9640"
   },
   {
    "p": "anmacha-podcast-tycoon/src/district.js",
@@ -2408,8 +2783,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/drive.js",
-   "s": 22480,
-   "h": "4d8a7e2ef341f243bd24dacd74c9fecc1384395c11d4473105fda71a85199f27"
+   "s": 27399,
+   "h": "0a2202d975ed4a924b2df63f62f722fbd7cc447394cea648f581ac74f29fcc62"
   },
   {
    "p": "anmacha-podcast-tycoon/src/events.js",
@@ -2423,13 +2798,13 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/home.js",
-   "s": 36057,
-   "h": "b2c98ac75f68339b054a338189571c31ad8f4f68e2ae3b74c22fbee0bd303aa1"
+   "s": 36190,
+   "h": "650c6c29e5109fce8af41ff0edbb5e3e67276bc5db5304c9bc39eeeafeeff807"
   },
   {
    "p": "anmacha-podcast-tycoon/src/main.js",
-   "s": 46595,
-   "h": "9fb5bff8b695bbb16a0526ce6bb8fe03477d6cbff38d8d4b886412b539783d4c"
+   "s": 46783,
+   "h": "be1d217cb44817aa236a65b6fd6cf82c0933044359ccc95a2d810bcad9f6a1e5"
   },
   {
    "p": "anmacha-podcast-tycoon/src/media.js",
@@ -2448,13 +2823,13 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/people.js",
-   "s": 34991,
-   "h": "c87a22f73fcea3881b776784b008551f30682babaef3df423961dc5416e77aee"
+   "s": 36345,
+   "h": "a80ed7d9e5465ad32238c1777c5e0f6489a430135fa5cce5f16ebdded02b77b0"
   },
   {
    "p": "anmacha-podcast-tycoon/src/play.js",
-   "s": 102486,
-   "h": "b5e2752da38587dbcd9643d8dfc1a73706eb6415aa854f3b0d976e0f6c792efb"
+   "s": 105777,
+   "h": "f92c00c93df40a1894c6ca544e1e3050c203602452a2de865837097918953138"
   },
   {
    "p": "anmacha-podcast-tycoon/src/quiz.js",
@@ -2462,9 +2837,14 @@
    "h": "fec10feb729df74e4b11517c94cc45643ddeab3587f32dd5941451acc6e2b8bc"
   },
   {
+   "p": "anmacha-podcast-tycoon/src/rooms.js",
+   "s": 17596,
+   "h": "1d5445a775b496569411702476fd71d2505c1d258900c296d7bfbba9a3d42771"
+  },
+  {
    "p": "anmacha-podcast-tycoon/src/sender.js",
-   "s": 64250,
-   "h": "b26e3b82e989980a5cd4f0aa2461ee1c9c66c163440dce056eb8688d1a6f3312"
+   "s": 64591,
+   "h": "00df3b8f7f3d9a6737a85071e85a2d7ca59d8fd29d1888f17673cc7e4861b7ea"
   },
   {
    "p": "anmacha-podcast-tycoon/src/show.js",
@@ -2482,14 +2862,19 @@
    "h": "1dee758d24d8b13ffe5117b7c0abd6e631a600ef335d65ba05234cad85f5d1af"
   },
   {
+   "p": "anmacha-podcast-tycoon/src/talk.js",
+   "s": 11005,
+   "h": "03bf5dc4e744b05641308119847bb28aaaba29ee42495178fd1ba1b4403af4e1"
+  },
+  {
    "p": "anmacha-podcast-tycoon/src/transit.js",
    "s": 6999,
    "h": "283f044449e6d1495d8e1e82ad327df5f22da43030b8eb7c80e59f7782628ee2"
   },
   {
    "p": "anmacha-podcast-tycoon/src/ui.js",
-   "s": 18469,
-   "h": "75c1138fc515df81b22980b3a882a79ee33f4ab95c5a35ddb01a6c4df57071b7"
+   "s": 18620,
+   "h": "345b01af8800395afe26bda48435d3a548f99dadb99723764948f530d0c2340c"
   },
   {
    "p": "anmacha-podcast-tycoon/src/vibe.js",
@@ -2498,23 +2883,23 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/world.js",
-   "s": 24173,
-   "h": "f447aaecd255f06b13ca72c5b763764816a00c949b7b698598cb06d038db9940"
+   "s": 26854,
+   "h": "bc695a06c5e2f209d62156724c0ad10b4e810704ca02d9d8ea25aba2f88c2b6d"
   },
   {
    "p": "anmacha-podcast-tycoon/src/worldfx.js",
-   "s": 25343,
-   "h": "8f7f902be8ccc434c64e107874c5d7d04006b319bcb3d7a856cd147f9a3504a3"
+   "s": 29781,
+   "h": "94858962547a876548a3f419061f4e05552e0ec0eac526e89cc3e23ccbb5601f"
   },
   {
    "p": "anmacha-podcast-tycoon/src/worlds.js",
-   "s": 37295,
-   "h": "e7c0eddf22c59dc4426f53afb37c03ab273415156420021da111f43111296dc0"
+   "s": 37503,
+   "h": "0498ddb81365286d7d179f3ac66c47540eb74f0916038da42854d5fadb7fdfa7"
   },
   {
    "p": "anmacha-podcast-tycoon/style.css",
-   "s": 59772,
-   "h": "940fe8ca80b08d0012c1012b15b0be79c59d52aace244edef28d0259b589322c"
+   "s": 60306,
+   "h": "eab6695a368da7b7a518f03c2abf69922f766d1fcd19774c8b9d80473fe94e78"
   },
   {
    "p": "anmacha-podcast-tycoon/sw.js",
@@ -6823,8 +7208,8 @@
   },
   {
    "p": "guides/anmacha-podcast-tycoon.json",
-   "s": 40181,
-   "h": "fa1f4133f551db1070ece5465b3f86dd0f63d2d3a2d2470f1678d1e7a97afe52"
+   "s": 42174,
+   "h": "04e5f29a7092da24c5977d5ddf1d0a70297e12e573fed7c492070f7ed3912961"
   },
   {
    "p": "guides/anmacha-preisradar.json",
@@ -9963,8 +10348,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 259012,
-   "h": "7864fb76bd6588705d957c39ec8180f89956a4d49f9bd1a31b8bae585817d104"
+   "s": 259013,
+   "h": "a48f6a0bdee93682f4c60aaa711a9cd77197101b32095b639db4c310957cf8e4"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
