@@ -102,7 +102,7 @@
    "t": "Kämpfen",
    "list": [
     "Gekämpft wird nur in der Kampfarena der Hauptinsel und auf der Wald-Insel (das Waldtor im alten Wald bringt dich hin), außerdem in einzelnen Welt-Abenteuern wie der Schattenarena.",
-    "Ausrüstung kaufst du bei Waldhändlerin Fenja (Wald-Insel), Rurik in Lunaris oder Kampfmeister Kai (Arena): Stock, Schwert, Bogen, Hammer, Zauberstab, Schilde, Herz-Amulett und Tränke. Das Schwert verbesserst du in der Schmiede der Rätsel-Insel gegen ⭐.",
+    "Ausrüstung kaufst du bei Waldhändlerin Fenja (Wald-Insel), Boro (Schmiede in Lunaris) oder Kampfmeister Kai (Arena): Stock, Schwert, Bogen, Hammer, Zauberstab, Schilde, Herz-Amulett und Tränke. Das Schwert verbesserst du in der Schmiede der Rätsel-Insel gegen ⭐.",
     "💪 Kampfstufe: Jedes besiegte Monster gibt Erfahrung, höhere Stufe = mehr Herzen und stärkere Schläge.",
     "Das Kapselmonster kämpft mit, wird gefüttert und entwickelt sich bis Stufe 5.",
     "Wird die Lebensanzeige leer, ist der Kampf vorbei – verloren geht nichts."
@@ -181,7 +181,7 @@
     "easygames-Treff: jeder neue Gast +1 ⭐.",
     "Jeder Sticker +2 ⭐ – viele gibt es für einfache Dinge wie Foto machen, Rucksack öffnen oder Seifenblasen pusten.",
     "Inselreise: pro Ziel +1 ⭐, pro Kapitel +5 ⭐, am Ende das Insel-Fest mit +20 ⭐.",
-    "Inselgeschichten: pro Akt +3 ⭐, am Ende +10 ⭐ und ein Sticker.",
+    "Inselgeschichten: pro Akt +3 ⭐, am Ende +10 ⭐, ein Sticker und ein 🌟 Weltenlicht. Alle Weltenlichter zusammen = großes „Fest der Welten“ (+30 ⭐, Sticker).",
     "Funkwelle: jeder der 13 Sender 20 Sekunden lang hören +1 ⭐, alle 13 zusammen +10 ⭐.",
     "Hüpfland: Sternblöcke +1 ⭐ (alle 12 +5 ⭐), 20 Münzen = 1 ⭐, Kart-Sieg 5 ⭐, Brocko +10 ⭐.",
     "Sammelsachen in den Welten: je 10 Orichalcum-Splitter (Atlantis), Splitter (Lunaris) oder Noten (Funkwelle) geben 1 ⭐, je 10 Wert Funkelsteine (Drachenhöhen) ebenfalls."
@@ -280,7 +280,7 @@
     "🚢 Das Orchester der Farben – erzählt von Käpt’n Muschel: Akt 1: Öffne alle 6 Farbeimer im Dampfer-Hafen · Akt 2: Spiele alle 6 Instrumente und finde alle 8 Noten · Akt 3: Sieh dir einen Stummfilm im Freiluftkino an",
     "🐉 Zündels Himmelsflug – erzählt von Drachenwächterin Brisa: Akt 1: Zünde alle 6 Fackeln an (Zündel hilft) · Akt 2: Befreie alle 6 Kristall-Freunde und fliege durch alle 8 Flugringe · Akt 3: Öffne das Himmelstor und spiele „Drachenflug“",
     "⚽ Der goldene Pokal – erzählt von Trainerin Lena: Akt 1: Schieß einmal richtig (Knopf am Ball) · Akt 2: Schieße 5 Tore · Akt 3: Schieße 25 Tore · Akt 4: Gewinne das Fußball-Turnier → 🏆 Pokalsieger",
-    "🦊 Der Ruf des Kristalls – erzählt von Mira: Akt 1: Besuche Lunaris und sprich mit Mira in der Taverne · Akt 2: Finde den Hinweis im Hafen · Akt 3: Untersuche den Riss an der Akademie (Elementar-Kampf) · Akt 4: Berichte Mira vom Kampf",
+    "🦊 Der erste Riss – erzählt von Mira: Akt 1: Besuche Lunaris und sprich mit Mira am Kristallbrunnen · Akt 2: Sammle 3 Mondkräuter und beruhige 5 Riftlinge im Mondwald · Akt 3: Öffne das Mondtor (alle Mondsteine auf Vollmond 🌕) und beruhige den Mondwolf am Risstor (Elementar-Kampf) · Akt 4: Berichte Mira am Kristallbrunnen",
     "📻 Die dreizehn Sender – erzählt von Funkmeisterin Frida: Akt 1: Höre einen Sender (Radio am Platz, 20 Sekunden zuhören) · Akt 2: Sieh dir das Visual Radio an einem Bildschirm an · Akt 3: Höre alle 13 Sender",
     "🔱 Das Herz von Atlantis – erzählt von Orakel Okeana: Akt 1: Sieh dir alle 5 Hologramme im Archiv an · Akt 2: Berühre das Herz auf dem Stufenberg und spiele die Kristall-Harfe · Akt 3: Hüpfe in die Schwerelos-Halle und fahre mit einem Aqua-Gleiter",
     "🌀 Das Portal der Taschis – erzählt von Professor Ulme: Akt 1: Sprich mit Professor Ulme an der Arena · Akt 2: Sieh dir die Statue an und finde das Portal in der Arena · Akt 3: Reise durchs Portal ins Taschi-Spiel",
@@ -383,7 +383,7 @@
    "list": [
     "🏖️ Badestrand: Meer, Wasserrutsche, Hüpfburg, Rutschen-Sticker.",
     "🔱 Atlantis (Treppe nach unten an der Küste): Hologramm-Archiv, Stufenberg, Kristall-Harfe, Schwerelos-Halle, Aqua-Gleiter.",
-    "🦊 Zotik – Lunaris: Quest „Der Ruf des Kristalls“ (Mira → Hinweis im Hafen → Riss an der Akademie → Bericht).",
+    "🦊 Zotik – Lunaris, Dorf am Mondblick: Quest „Der erste Riss“ (Mira am Kristallbrunnen → 3 Mondkräuter → 5 Riftlinge beruhigen → Professorium → Mondtor auf Vollmond 🌕 → Mondwolf am Risstor → Bericht).",
     "📻 Funkwelle: 13 Sender je 20 Sekunden hören (+1 ⭐, alle +10 ⭐).",
     "🐉 Drachenhöhen: Fackeln, Kristall-Freunde, Flugringe, Himmelstor „Drachenflug“.",
     "🚢 Dampfer-Hafen: Farbeimer, Orchester, Noten, Stummfilm. 🏗️ Bauland: Blöcke bauen, Startblock. ⚽ Fußball-Arena: Tore schießen, Turnier.",
@@ -490,7 +490,7 @@
     "🚢 Ehren-Matrose: Schaffe die Geschichte vom Dampfer-Hafen (Das Orchester der Farben)",
     "🐉 Drachenfreund: Schaffe die Geschichte der Drachenhöhen (Zündels Himmelsflug)",
     "⚽ Arena-Meisterin: Schaffe die Geschichte der Fußball-Arena (Der goldene Pokal)",
-    "🦊 Held von Lunaris: Schaffe die Geschichte von Zotik & Lunaris (Der Ruf des Kristalls)",
+    "🦊 Held von Lunaris: Schaffe die Geschichte von Zotik & Lunaris (Der erste Riss)",
     "📻 Funkmeister: Schaffe die Geschichte der Funkwelle (Die dreizehn Sender)",
     "🔱 Hüter von Atlantis: Schaffe die Geschichte von Atlantis (Das Herz von Atlantis)",
     "🌠 Wunschreisender: Besuche die Wunsch-Insel hinter dem Schlüsselreich",

@@ -12,13 +12,15 @@
     { id: 'westbr', x0: -131, x1: -86, z0: -4.6, z1: 4.6 },         // Brücke ins RicoReWi-Universum
     { id: 'damm', x0: 40.5, x1: 49.5, z0: -133, z1: -86 },           // Damm zum Berg
     { id: 'steg', x0: -4, x1: 4, z0: 86, z1: 104 },                  // Fähranleger Stadt
-    { id: 'steg2', x0: -4, x1: 4, z0: 122, z1: 139 }                 // Fähranleger Insel
+    { id: 'steg2', x0: -4, x1: 4, z0: 122, z1: 139 },                // Fähranleger Insel
+    { id: 'autobahn', x0: 212, x1: 302, z0: -5, z1: 5 }              // Autobahn vom Hafen nach Wellenburg (Gisela-Roadtrip)
   ];
   const WORLDS = [
     { id: 'hafen', name: '🚢 Medienhafen', x0: 128, x1: 214, z0: -44, z1: 44, col: 0x8a8f99 },
     { id: 'insel', name: '🎪 Festival-Insel', x0: -62, x1: 62, z0: 136, z1: 214, col: 0xd8c48a },
     { id: 'berg', name: '📡 Funkturm-Berg', x0: -10, x1: 100, z0: -212, z1: -130, col: 0x6f8f55 },
-    { id: 'rico', name: '✳️ RicoReWi-Universum', x0: -214, x1: -128, z0: -44, z1: 44, col: 0x2a2440 }
+    { id: 'rico', name: '✳️ RicoReWi-Universum', x0: -214, x1: -128, z0: -44, z1: 44, col: 0x2a2440 },
+    { id: 'wellen', name: '📻 Wellenburg', x0: 300, x1: 430, z0: -70, z1: 70, col: 0x8d8a82, far: true }
   ];
   WO.WORLDS = WORLDS; WO.LINKS = LINKS;
   const AREAS = [CITY].concat(LINKS, WORLDS);
@@ -36,7 +38,7 @@
   // freier Platz in einer Welt (für Fans und Funken)
   WO.spot = function (rng, solidAt) {
     for (let k = 0; k < 30; k++) {
-      const w = WORLDS[Math.floor(rng() * WORLDS.length)], x = U.lerp(w.x0 + 4, w.x1 - 4, rng()), z = U.lerp(w.z0 + 4, w.z1 - 4, rng());
+      const w = WORLDS[Math.floor(rng() * (WORLDS.length - 1))], x = U.lerp(w.x0 + 4, w.x1 - 4, rng()), z = U.lerp(w.z0 + 4, w.z1 - 4, rng());
       if (!solidAt(x, 0.6, z) && !solidAt(x + 0.8, 0.6, z) && !solidAt(x, 0.6, z + 0.8)) return [x, 0.12, z];
     }
     return null;
@@ -134,6 +136,21 @@
     sign(['📡 Fernsehturm · Aussicht'], 45, 5, -170.8, 8, 0, '#6cff8a'); C.addStation('world:turm', '📡 Hoch auf den Fernsehturm', 45, -168, 3);
     B(20, 7, 12, 0x9a7a5a, 10, 3.5, -150, true); sign(['📻 Radio-Museum'], 10, 6, -143.9, 10, 0, '#ffd23f'); C.addStation('world:museum', '📻 Radio-Museum', 10, -141.5, 3);
     B(7, 4, 6, 0x6a4a32, 82, 2, -150, true); B(0.15, 14, 0.15, 0x888888, 86, 7, -152, false); sign(['📶 Funkerhütte'], 82, 4.6, -146.9, 5, 0, '#3dd6ff'); C.addStation('world:funker', '📶 Funkerhütte', 82, -144.5, 2.6);
+    // --- Gisela-Roadtrip: Autobahn übers Wasser und Land, dahinter die zweite Stadt Wellenburg
+    { const land = new T.Mesh(new T.PlaneGeometry(230, 320), M(0x5f9a45, { r: 0.95 })); land.rotation.x = -Math.PI / 2; land.position.set(365, 0.02, 0); land.receiveShadow = true; g.add(land); }
+    B(90, 0.3, 10, 0x3a3d44, 257, 0.06, 0, false); C.addBox(212, 302, -5, 5, 0.12);
+    [-5.1, 5.1].forEach(z => B(90, 0.8, 0.25, 0xd8dde6, 257, 0.6, z, false));
+    for (let x = 218; x < 252; x += 8) B(1.2, 1, 6, 0x9aa0a8, x, -0.4, 0, false);
+    for (let x = 216; x < 300; x += 6) B(2.4, 0.02, 0.2, M(0xffffff, { r: 0.6 }), x, 0.22, 0, false);
+    sign(['🚐 A1 → Wellenburg · 90 m'], 214, 5, -6.5, 7, -Math.PI / 2, '#ffd23f'); sign(['🏙️ ← Medienstadt'], 298, 5, 6.5, 6, Math.PI / 2, '#3dd6ff');
+    B(10, 3.4, 7, 0xf2f2f2, 272, 1.7, 16, true); B(12, 0.4, 9, 0xd03030, 272, 3.6, 16, false); sign(['⛽ Raststätte Funkpause'], 272, 4.8, 12.4, 7, 0, '#ff6a6a');
+    // Wellenburg: Messe, Konkurrenz-Sender, Camping, Plattenladen
+    B(40, 11, 20, 0x5a6b8a, 395, 5.5, -40, true); sign(['📻 RADIO-MESSE WELLENBURG'], 395, 9, -29.9, 20, 0, '#3dd6ff'); C.addStation('world:messe', '📻 Radio-Messe besuchen', 395, -27, 3.2);
+    B(18, 8, 16, 0x1d1d24, 335, 4, -40, true); W.cyl(0.3, 0.5, 26, M(0x666666), 340, 21, -44, g, 8); V.funkGlow = W.glow(0xff3030, 3, g, 340, 34, -44);
+    sign(['🏴‍☠️ Radio Funkloch'], 335, 6.4, -31.9, 9, 0, '#ff3a3a'); C.addStation('world:funkloch', '🏴‍☠️ Radio Funkloch (Ralf Rauschmann)', 335, -29.5, 3);
+    [[322, 30, 30, 0.2], [348, 30, 30, 0.2]].forEach(([x, z, d]) => B(0.2, 1, d, 0x8a6a48, x, 0.6, z + 10, false)); sign(['🏕️ Camping Wellenburg'], 335, 3.4, 26, 7, 0, '#6cff8a'); C.addStation('world:camping', '🏕️ Camping: Nacht mit Gisela', 335, 28, 3);
+    B(14, 5, 10, 0x6a3a5a, 400, 2.5, 35, true); sign(['💿 Plattenladen Rille'], 400, 4.3, 29.9, 8, 0, '#ff3da8'); C.addStation('world:platten', '💿 Plattenladen Rille', 400, 27.5, 2.8);
+    sign(['📻 Willkommen in Wellenburg', 'Partnerstadt der Medienstadt'], 304, 5, -8, 9, -Math.PI / 2, '#ffd23f');
   };
 
   // ------------------------------------------------------------------ Bewegung: Riesenrad, Leuchtturm, Fähre
@@ -151,7 +168,20 @@
       if (f.t >= 1) { V.ferry = null; S.ferry = false; p.z = f.z1 > f.z0 ? 128 : 100; p.y = 0.2; p.busy = 0; C.msg(f.z1 > f.z0 ? '🎪 Willkommen auf der Festival-Insel!' : '🏙️ Zurück in der Medienstadt', 2.4); }
     } else { const home = 109 + Math.sin(t * 0.6) * 0.3; V.boat.position.z = home; }
     V.boat.position.y = Math.sin(t * 1.4) * 0.08;
+    if (V.funkGlow) V.funkGlow.material.opacity = 0.4 + Math.abs(Math.sin(t * 2)) * 0.6;
+    // Gisela-Roadtrip: mit Gisela nach Wellenburg fahren
+    const car = S.drive; if (car && car.gisela && car.x > 302 && !V.trip) { V.trip = true; roadtrip(S); }
   };
+  function roadtrip(S) {
+    const t = today(), r = Save.data.roadtrip = Save.data.roadtrip || { n: 0 }; if (t.roadtrip) return; t.roadtrip = 1; r.n++; Save.save();
+    if (AMC.Career) AMC.Career.mark('tour'); if (AMC.Events) AMC.Events.mark('tour');
+    const first = r.n === 1, f = Save.earn(first ? 200 : 40); if (first) idea('Roadtrip-Folge aus Wellenburg');
+    if (AMC.Feed) AMC.Feed.post('🚐', 'Roadtrip mit Gisela nach Wellenburg! Wer ist auch hier? 📻', 'story');
+    const msg = () => AMC.UI.toast('🚐 Roadtrip nach Wellenburg' + (first ? ' – zum ersten Mal!' : '') + ' +' + f + ' 🎟️ · heute +10 % Hörer (Roadtrip-Folge)', 4600);
+    if (first && AMC.Cut) AMC.Cut.play([{ cam: [318, 10, 18], to: [330, 7, 10], look: [365, 4, -10], dur: 8, lines: [
+      ['marco', 'Wellenburg! Gisela, du hast es geschafft – ganz ohne Panne.'], ['andrew', 'Hier ist die Radio-Messe … und da drüben: Radio Funkloch. Ralf Rauschmann sendet von hier!'],
+      ['marco', 'Dann machen wir hier die beste Roadtrip-Folge aller Zeiten.'], ['gisela', 'Tröööt!']]}], msg); else msg();
+  }
   WO.ferry = function (id) {
     const S = C && C.S; if (!V || V.ferry) return;
     const hin = id === 'ferry:hin';
@@ -160,6 +190,8 @@
     C.msg(hin ? '⛴️ Leinen los! Kurs auf die Festival-Insel' : '⛴️ Zurück in die Stadt', 2.2);
   };
   // Minispiel mitten in der Welt (Stadt pausiert, Kamera bleibt)
+  WO.play = (kind, o, cb) => { if (V && !V.mini) mini(kind, o, cb); };
+  WO.busy = () => !!(V && V.mini);
   WO.tick = function (dt) { if (!V || !V.mini) return false; V.mini.ctl.update(dt); return true; };
   function mini(kind, o, cb) {
     const box = U.el('div', 'sh-mini wm-mini'); document.body.appendChild(box); AMC.UI.showTouch(false); AMC.Input.dpadEmotes = false;
@@ -227,6 +259,17 @@
     funker: ['📶 Funkerhütte', 'Ein alter Funker zeigt euch, wie man Kurzwelle sauber einstellt.', [
       ['🎛️ Kurzwelle einstellen (Minispiel)', null, 'mixer']]]
   };
+  Object.assign(PLACES, {
+    messe: ['📻 Radio-Messe Wellenburg', 'Neueste Mikrofone, Mischpulte und Sender – und jede Menge Fachpublikum.', [
+      ['🎛️ Neues Mischpult testen (Minispiel)', q => { funken('tech', 1 + Math.round(q * 3)); const f = Save.earn(15 + Math.round(q * 40)); return (q >= 0.75 ? '🎛️ Der Hersteller schenkt euch ein Vorführgerät!' : '🎛️ Kling ganz okay.') + ' +' + f + ' 🎟️'; }, 'mixer', { title: '🎛️ Messe: Mischpult-Test', time: 10 }],
+      ['❓ Messe-Quiz am Stand (Minispiel)', q => { funken('serious', 1 + Math.round(q * 3)); const f = Save.earn(15 + Math.round(q * 45)); return '❓ ' + (q >= 0.75 ? 'Hauptgewinn am Stand!' : 'Trostpreis: ein Kugelschreiber.') + ' +' + f + ' 🎟️'; }, 'quiz', { title: '❓ Radio-Messe: Quiz', n: 4, qs: QUIZ }]]],
+    funkloch: ['🏴‍☠️ Radio Funkloch', 'Ralf Rauschmanns Piratensender. Die Tür steht offen, der Störsender brummt.', [
+      ['🔌 Störsender abklemmen (Minispiel)', q => { funken('serious', 2 + Math.round(q * 3)); const f = Save.earn(20 + Math.round(q * 60)); return (q >= 0.75 ? '🔌 Funkstille bei Funkloch! Die ganze Stadt hört wieder klar.' : '🔌 Rauschmann flickt das Kabel schon wieder …') + ' +' + f + ' 🎟️'; }, 'cables', { title: '🔌 Funkloch: Störsender abklemmen', n: 5 }]]],
+    camping: ['🏕️ Camping Wellenburg', 'Gisela parkt unter Bäumen, Lagerfeuer, Sternenhimmel.', [
+      ['🔥 Nacht mit Gisela am Lagerfeuer', () => { both('energy', 40); both('fun', 20); funken('feel', 3); return '🔥 Marcos Geschichten, Andrews Würstchen, Giselas Hupe um Mitternacht. Beide sind erholt. +3 Feelgood-Funken' + (idea('Lagerfeuer-Talk aus Wellenburg') ? ' · 💡 Idee' : ''); }]]],
+    platten: ['💿 Plattenladen Rille', 'Vinyl bis unter die Decke – und ein Besitzer, der jede Platte kennt.', [
+      ['💿 Raritäten fangen (Minispiel)', q => { funken('musik', 1 + Math.round(q * 4)); const f = Save.earn(10 + Math.round(q * 40)); return (q >= 0.75 ? '💿 Eine Erstpressung! Die kommt ins Studio.' : '💿 Ein paar Platten landen im Grabbelkorb.') + ' +' + f + ' 🎟️'; }, 'catch', { title: '💿 Plattenladen: Raritäten fangen', good: ['💿', '📀', '🎵'], bad: ['🕷️', '💣'], basket: '🧺' }]]]
+  });
   WO.PLACES = PLACES;
   WO.open = function (id) {
     const pl = PLACES[id]; if (!pl || !V) return;

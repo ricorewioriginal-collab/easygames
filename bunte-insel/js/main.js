@@ -1396,7 +1396,7 @@
   const kitchen = BI.createKitchen({ W, A, fx, P, say, persist, addStars: n => addStars(n), inv: () => garden.inv(), cropIcon: k => garden.CROPS[k] && garden.CROPS[k].icon, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const room = BI.createRoom({ scene, A, fx, P, save, persist, say, setStick, changed: () => shareRoomSoon(), updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   let istory = null; let smode = null; /* Story-Modus (weiter unten) */
-  const story = BI.createStory({ talk: (n, i, l) => { if (dlg) dlg.show({ name: n, icon: i, lines: l }); else say(n + ': „' + l.join(' ') + '“', 6000); }, islandGoal: () => istory ? istory.goal() : null, worldLog: () => smode ? smode.worldLog() : null, A, fx, P, save, say, addStars: n => addStars(n), persist, earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f), guideTo: id => { const d = DEST.find(x => x.id === id); if (d) setGuide(d); },
+  const story = BI.createStory({ talk: (n, i, l) => { if (dlg) dlg.show({ name: n, icon: i, lines: l }); else say(n + ': „' + l.join(' ') + '“', 6000); }, islandGoal: () => istory ? istory.goal() : null, lights: () => istory && istory.lights ? istory.lights() : null, worldLog: () => smode ? smode.worldLog() : null, A, fx, P, save, say, addStars: n => addStars(n), persist, earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f), guideTo: id => { const d = DEST.find(x => x.id === id); if (d) setGuide(d); },
     destLocked: id => { const d = DEST.find(x => x.id === id), q = d && d.at(); return !!(q && smode && smode.lockedAt(q.x, q.z)); },
     farmGoal: () => farm.questText(),
     log: () => ({ extras: [istory.log(), innen.log(), themen.log(), bade.log(), mplus.log(), schwamm.log(), raetsel.log(), schluessel.log(), sammeln.log(), dampf.log(), drachen.log(), prisma.log(), bauland.log(), fussball.log(), huepf.log(), taschi.log(), wunsch.log(), maerchen.log(), schatz.log(), atlantis.log(), zotik.log(), radio.log(), wald.log()].filter(Boolean), farm: farm.log(), einsatz: einsatz.log(), tycoon: tycoon.log(), mission: mission ? { icon: (MTITLE[mission.kind] || ['📦'])[0], title: (MTITLE[mission.kind] || [0, 'Auftrag'])[1], i: Math.min(mission.i + 1, mission.steps.length), n: mission.steps.length } : offer ? { icon: (MTITLE[offer.kind] || ['📦'])[0], title: (MTITLE[offer.kind] || [0, 'Auftrag'])[1] + ' (angeboten)', i: 0, n: 0 } : null,
@@ -1601,7 +1601,7 @@
     { id: 'drachen', icon: '🐉', name: 'Drachenhöhen', at: () => ({ x: BI.DRACHEN.x, z: BI.DRACHEN.z - 38 }) },
     { id: 'prisma', icon: '🌀', name: 'Prisma-Archipel', at: () => BI.PRISMA.entry },
     { id: 'atlantis', icon: '🔱', name: 'Atlantis (Treppe an der Küste)', at: () => { const q = W.spots.atlPortal; return { x: q.x + Math.sin(q.ry) * 5.8, z: q.z + Math.cos(q.ry) * 5.8 }; } },
-    { id: 'zotik', icon: '⭐', name: 'Zotik – Lunaris (Insel im Süden)', at: () => ({ x: BI.ZOTIK.x, z: BI.ZOTIK.z - BI.ZOTIK.R + 16 }) },
+    { id: 'zotik', icon: '🌙', name: 'Zotik – Lunaris, Dorf am Mondblick (Insel im Süden)', at: () => ({ x: BI.ZOTIK.x, z: BI.ZOTIK.z - BI.ZOTIK.R + 16 }) },
     { id: 'radio', icon: '📻', name: 'Funkwelle – 13 Radiosender (Insel im Südosten)', at: () => { const R = BI.RADIO; return { x: R.x + Math.sin(R.rot) * (R.R - 14), z: R.z + Math.cos(R.rot) * (R.R - 14) }; } },
     { id: 'maerchen', icon: '🏰', name: 'Märchenland (Insel im Nordwesten)', at: () => ({ x: BI.MAERCHEN.entry.x, z: BI.MAERCHEN.entry.z }) },
     { id: 'bade', icon: '🏖️', name: 'Badestrand & Wasserpark', at: () => W.bade.at(176, 4) },
@@ -1655,11 +1655,13 @@
       ['pbuero', '🏢', 'Park-Büro (Park-Tycoon)', () => ({ x: PK.office.x, z: PK.office.z + 4.2 }), 'orte'],
       ['scooter', '🚗', 'Autoscooter', () => ({ x: (PK.arena.x0 + PK.arena.x1) / 2, z: PK.arena.z1 + 3 }), 'orte'],
       ['funkturm', '📡', 'Funkturm (13 Sender)', () => ({ x: R.x, z: R.z + 7 }), 'orte'],
-      ['zmarkt', '🛒', 'Lunaris: Markt „Wanderhand“', () => zp(-34, 8), 'orte'],
-      ['ztaverne', '🍺', 'Lunaris: Taverne', () => zp(36, 20), 'orte'],
-      ['zakademie', '🎓', 'Lunaris: Akademie', () => zp(50, 58), 'orte'],
-      ['zburg', '🏰', 'Lunaris: Burg auf dem Hügel', () => zp(50, -20), 'orte'],
-      ['zhafen', '⚓', 'Lunaris: Hafen (Luftschiff)', () => zp(0, 72), 'orte'],
+      ['zmarkt', '💧', 'Lunaris: Kristallbrunnen & Markt', () => zp(0, -14), 'orte'],
+      ['ztaverne', '⚒️', 'Lunaris: Boros Schmiede', () => zp(26, -6), 'orte'],
+      ['zakademie', '⚙️', 'Lunaris: Professoriums Werkstatt (Nautilux)', () => zp(-48, 4), 'orte'],
+      ['zburg', '🗼', 'Lunaris: Mondblick-Hügel', () => zp(50, -12), 'orte'],
+      ['zhafen', '🌲', 'Lunaris: Mondwald & Mondtor', () => zp(0, 32), 'orte'],
+      ['zcamp', '🔥', 'Lunaris: Camp der Weltenreisenden', () => zp(-46, -34), 'orte'],
+      ['zriss', '🐺', 'Lunaris: Risstor (Mondwolf)', () => zp(0, 86), 'orte'],
       ['ztore', '🌀', 'Lunaris: Weltentore', () => ({ x: BI.ZOTIK.gateC.x, z: BI.ZOTIK.gateC.z }), 'orte'],
       ['zspiel', '💠', 'Tor zum Zotik-Spiel (Schwesterspiel)', () => ({ x: BI.ZOTIK.zportal.x, z: BI.ZOTIK.zportal.z + 5 }), 'spiele'],
       ['zstatue', '🦊', 'Lunaris: Zotik-Statue', () => ({ x: BI.ZOTIK.statue.x, z: BI.ZOTIK.statue.z + 7 }), 'orte']

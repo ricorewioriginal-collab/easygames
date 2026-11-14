@@ -14,21 +14,25 @@ Alle Inhalte stehen als Daten in `story.js`. Die Quest-Engine (`quests.js`) lies
 | 6 | Morgenruinen | Der letzte Morgen | Leuchtfeuer, Hafenwindwege, Finale gegen die Stille (3 Phasen, Anker im Flug). Abspann, dann freies Weiterspielen. |
 | 7 | Nachtgarten | Samen im Himmel | Epilog nach dem Abspann: Aus der Stille sind dunkle Samen gefallen. Sorel, Mott und Pilla bitten Aeru, Nachtmotten zu vertreiben, drei Nachtsamen von den Himmelsinseln zu holen und sich der Nachtblüte zu stellen (3 Phasen, Dornenkugeln). |
 
+## Roter Faden
+
+Die Stille legt sich über die Sterneninseln. Sie lässt den Wind erlahmen, bannt die Alten jeder Welt in Kristall, und kleine Diebe tragen Dracheneier fort. In jeder Welt befreit Aeru die vier Alten in den Gebieten hinter den Brücken (Hauptquestschritt `dragons`); erst danach gibt der Hüter den Leuchtkern, der das Weltentor öffnet. Die Diebe arbeiten für Vesper, den Sammler: Er gibt in den Wolkenriffen die Eier zurück und wird vom Gegner zum Verbündeten. Die Stille selbst ist eingesperrter Wind, den Aeru im Himmelshafen befreit; aus ihr fallen die Samen des Nachtgartens.
+
 ## Hauptquests (Reihenfolge)
 
 Jede Hauptquest setzt die vorige voraus (`when: 'done:…'`). Leuchtkerne gibt es nur als Belohnung von Hauptquests; das Tor zur nächsten Insel öffnet sich erst mit dem Kern der aktuellen Insel.
 
 1. `c1_wake` Wach auf → Mira → drei Windlaternen → Mira
-2. `c1_trace` Edda → drei Nebelkäfer → Feder auf der Ostinsel → Mira · **Kern 1**
+2. `c1_trace` Edda → drei Nebelkäfer → Feder auf der Ostinsel → vier Kristalldrachen → Mira · **Kern 1**
 3. `c2_voices` Ankunft → Oru → drei Bernsteintropfen → Oru
-4. `c2_song` Laternen in Liedreihenfolge → Oru · **Kern 2**
-5. `c3_gate` Ankunft → Sela → Ivo → vier Sturmfunken → drei Laternen → Sela
+4. `c2_song` Laternen in Liedreihenfolge → vier Kristalldrachen → Oru · **Kern 2**
+5. `c3_gate` Ankunft → Sela → Ivo → vier Sturmfunken → drei Laternen → vier Kristalldrachen → Sela
 6. `c3_storm` Boss Vesper → Sela · **Kern 3**
-7. `c4_reefs` Ankunft → Luma → Tessa (Westriff) → drei Ringe → Vesper (Ostriff) → Luma → Vesper · **Kern 4**
-8. `c5_truth` Ankunft → Yara → Turmlaternen → Elin → drei Stille-Schatten → drei Ringe → Yara · **Kern 5**
-9. `c6_harbor` Ankunft → Neri → Juno → Leuchtfeuer → Ringe → Neri
+7. `c4_reefs` Ankunft → Luma → Tessa (Westriff) → drei Ringe → Vesper (Ostriff) → Luma → vier Kristalldrachen → Vesper · **Kern 4**
+8. `c5_truth` Ankunft → Yara → Turmlaternen → Elin → drei Stille-Schatten → drei Ringe → vier Kristalldrachen → Yara · **Kern 5**
+9. `c6_harbor` Ankunft → Neri → Juno → Leuchtfeuer → Ringe → vier Kristalldrachen → Neri
 10. `c6_finale` Boss Stille → Neri und Vesper · **Kern 6, Abspann**
-11. `c7_garden` Ankunft → Sorel → vier Nachtmotten → drei Nachtsamen (Himmelsinseln Ost, West, Süd) → Pilla
+11. `c7_garden` Ankunft → Sorel → vier Nachtmotten → drei Nachtsamen (Himmelsinseln Ost, West, Süd) → vier Kristalldrachen → Pilla
 12. `c7_bloom` Boss Nachtblüte → Sorel · **Kern 7**
 
 Nebenquest `c7_mott` (Laternen für die Nacht). Der Epilog ist optional: Der Abspann kommt nach Kapitel 6.

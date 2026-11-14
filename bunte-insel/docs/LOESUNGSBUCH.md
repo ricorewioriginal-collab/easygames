@@ -308,12 +308,12 @@ Betrittst du eine Welt, erzählt dir eine Figur dort ihre Geschichte in Akten. J
 - Akt 3: Schieße 25 Tore → Aufgabe der Welt
 - Akt 4: Gewinne das Fußball-Turnier → 🏆 Pokalsieger
 
-### 🦊 Der Ruf des Kristalls – erzählt von Mira
+### 🦊 Der erste Riss – erzählt von Mira
 
-- Akt 1: Besuche Lunaris und sprich mit Mira in der Taverne → Aufgabe der Welt
-- Akt 2: Finde den Hinweis im Hafen → Aufgabe der Welt
-- Akt 3: Untersuche den Riss an der Akademie (Elementar-Kampf) → Aufgabe der Welt
-- Akt 4: Berichte Mira vom Kampf → Aufgabe der Welt
+- Akt 1: Besuche Lunaris und sprich mit Mira am Kristallbrunnen → Aufgabe der Welt
+- Akt 2: Sammle 3 Mondkräuter und beruhige 5 Riftlinge im Mondwald → Aufgabe der Welt
+- Akt 3: Öffne das Mondtor (Vollmond 🌕) und beruhige den Mondwolf → Aufgabe der Welt
+- Akt 4: Berichte Mira am Kristallbrunnen → Aufgabe der Welt
 
 ### 📻 Die dreizehn Sender – erzählt von Funkmeisterin Frida
 
@@ -412,7 +412,7 @@ Brücke im Nordwesten. Märchenpark mit Schloss, Basar, Taxi und Umzug.
 
 - 🏖️ Badestrand: Meer, Wasserrutsche, Hüpfburg, Rutschen-Sticker.
 - 🔱 Atlantis (Treppe nach unten an der Küste): Hologramm-Archiv, Stufenberg, Kristall-Harfe, Schwerelos-Halle, Aqua-Gleiter.
-- 🦊 Zotik – Lunaris: Quest „Der Ruf des Kristalls“ (Mira → Hinweis im Hafen → Riss an der Akademie → Bericht).
+- 🦊 Zotik – Lunaris, Dorf am Mondblick: Quest „Der erste Riss“ (Mira am Kristallbrunnen → 3 Mondkräuter → 5 Riftlinge beruhigen → Professorium → Mondtor auf Vollmond 🌕 → Mondwolf am Risstor → Bericht).
 - 📻 Funkwelle: 13 Sender je 20 Sekunden hören (+1 ⭐, alle +10 ⭐).
 - 🐉 Drachenhöhen: Fackeln, Kristall-Freunde, Flugringe, Himmelstor „Drachenflug“.
 - 🚢 Dampfer-Hafen: Farbeimer, Orchester, Noten, Stummfilm. 🏗️ Bauland: Blöcke bauen, Startblock. ⚽ Fußball-Arena: Tore schießen, Turnier.
@@ -594,8 +594,8 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 - 🐟 Fische im Sammelbuch: 0 von 14 (am See & Strand angeln)
 - 🐞 Käfer im Sammelbuch: 0 von 14 (Kescher im Gras)
 - 🐚 Funde im Sammelbuch: 0 von 14 (glitzernde Stellen am Strand)
-- 🦋 Heute: Käfertag – Heute wimmelt es von Käfern und Faltern – seltene sind häufiger, die ersten 5 Fänge geben extra ⭐!
-- 🌟 Tagesglück: heute 🦋 Flatterlinde fangen (+2 ⭐)
+- 🏖️ Heute: Buddel-Fest – Heute glitzert der Strand an mehr Stellen – seltene Funde sind häufiger, die ersten 5 geben extra ⭐!
+- 🌟 Tagesglück: heute 🐝 Brummi fangen (+2 ⭐)
 
 ### 🎬 Dampfer-Hafen
 
@@ -668,15 +668,18 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 - 🔶 Orichalcum-Splitter sammeln: 0 (alle 10 = 1 ⭐)
 - 🕹️ Strömungs-Rätsel am Spielautomaten spielen
 
-### ⭐ Zotik – Lunaris
+### 🌙 Zotik – Lunaris
 
-- 🌀 Lunaris besuchen (Brücke am Steg im Süden der Hauptinsel)
-- 💬 Quest „Der Ruf des Kristalls“: Sprich mit Mira in der Taverne.
-- 📜 Finde den Hinweis im Hafen.
-- ⚡ Untersuche den Riss an der Akademie. (Elementar-Kampf)
-- 🏆 Berichte Mira vom Kampf.
-- 🚢 Mit dem Luftschiff Nautilux fliegen
+- 🌉 Lunaris besuchen (Brücke am Steg im Süden der Hauptinsel)
+- 💬 Quest „Der erste Riss“: Sprich mit Mira am Kristallbrunnen.
+- 🌿 Drei Mondkräuter im Mondwald sammeln und zu Mira bringen
+- ✨ Beruhige 5 Riftlinge im Mondwald mit Licht.
+- 🌕 Professorium besuchen und das Mondtor öffnen (alle Mondsteine auf Vollmond)
+- 🐺 Den Mondwolf am Risstor beruhigen (Elementar-Kampf)
+- 🏆 Kehre zu Mira zurück. – die Weltentore öffnen sich
+- 🚤 Mit der Nautilux fliegen (parkt an Professoriums Werkstatt)
 - 🦊 Die große Zotik-Statue bewundern
+- 🔥 Am Lagerfeuer der Weltenreisenden ausruhen
 - 🌀 Durch ein Weltentor reisen
 - 💠 Splitter sammeln: 0 (alle 10 = 1 ⭐)
 
@@ -702,11 +705,11 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 
 ### 🚪 Gebäude erkunden
 
-- 🚪 Gebäude betreten: 0 von 48 (5 für den Sticker)
+- 🚪 Gebäude betreten: 0 von 49 (5 für den Sticker)
 - 🏘️ 20 verschiedene Gebäude betreten
 - 🎁 Schatztruhen in Gebäuden öffnen: 0 von 10
 
-### 📜 Inselgeschichten
+### 📜 Inselgeschichten · 🌟 Fest der Welten
 
 - 🍄 Der Sonnenstern – noch nicht begonnen (geh auf die Insel)
 - 🗿 Die Prüfung der Uralten – noch nicht begonnen (geh auf die Insel)
@@ -721,7 +724,7 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 - 🚢 Das Orchester der Farben – noch nicht begonnen (geh auf die Insel)
 - 🐉 Zündels Himmelsflug – noch nicht begonnen (geh auf die Insel)
 - ⚽ Der goldene Pokal – noch nicht begonnen (geh auf die Insel)
-- 🦊 Der Ruf des Kristalls – noch nicht begonnen (geh auf die Insel)
+- 🦊 Der erste Riss – noch nicht begonnen (geh auf die Insel)
 - 📻 Die dreizehn Sender – noch nicht begonnen (geh auf die Insel)
 - 🔱 Das Herz von Atlantis – noch nicht begonnen (geh auf die Insel)
 - 🌀 Das Portal der Taschis – noch nicht begonnen (geh auf die Insel)
@@ -828,7 +831,7 @@ So bekommst du jeden Sticker:
 | 🚢 Ehren-Matrose | Schaffe die Geschichte vom Dampfer-Hafen (Das Orchester der Farben) |
 | 🐉 Drachenfreund | Schaffe die Geschichte der Drachenhöhen (Zündels Himmelsflug) |
 | ⚽ Arena-Meisterin | Schaffe die Geschichte der Fußball-Arena (Der goldene Pokal) |
-| 🦊 Held von Lunaris | Schaffe die Geschichte von Zotik & Lunaris (Der Ruf des Kristalls) |
+| 🦊 Held von Lunaris | Schaffe die Geschichte von Zotik & Lunaris (Der erste Riss) |
 | 📻 Funkmeister | Schaffe die Geschichte der Funkwelle (Die dreizehn Sender) |
 | 🔱 Hüter von Atlantis | Schaffe die Geschichte von Atlantis (Das Herz von Atlantis) |
 | 🌠 Wunschreisender | Besuche die Wunsch-Insel hinter dem Schlüsselreich |
@@ -886,6 +889,7 @@ So bekommst du jeden Sticker:
 | 🃏 Kartensammler | Sammle alle 12 Runenkarten am Kartenautomaten |
 | 💠 Digi-Partner | Lass dein Partner-Ei mit Datenwürfeln bis zur 3. Stufe wachsen |
 | 🌀 Prisma-Chronik | Schließe die Geschichte des Prisma-Archipels ab |
+| 🌟 Fest der Welten | Schaffe alle Inselgeschichten – dann feiern alle Welten zusammen |
 | 🎒 Gut gerüstet | Kauf dir Ausrüstung für den Wald |
 | 🌲 Waldläufer | Betritt die große Wald-Insel hinter der Rätsel-Insel |
 | 💪 Kampfstufe 5 | Erreiche Kampfstufe 5 auf der Wald-Insel |

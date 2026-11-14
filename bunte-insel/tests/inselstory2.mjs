@@ -17,7 +17,7 @@ const res = await p.evaluate(async keys => {
       if (g.log === 'dampf') { if (r === 0) m.col = [1, 1, 1, 1, 1, 1]; if (r === 1) m.inst = [1, 1, 1, 1, 1, 1]; if (r === 2) m.notes = [0, 1, 2, 3, 4, 5, 6, 7]; if (r === 3) m.film = 1; }
       if (g.log === 'drachen') { if (r === 0) m.fackeln = [1, 1, 1, 1, 1, 1]; if (r === 1) m.freunde = [1, 1, 1, 1, 1, 1]; if (r === 2) m.ringe = 8; if (r === 4) m.tor = 1; }
       if (g.log === 'fussball') { if (r === 0) m.played = 1; if (r === 1) m.goals = Math.max(m.goals, 5); if (r === 2) m.goals = 25; }
-      if (g.log === 'zotik') { if (r === 0) m.visit = 1; if (r >= 1 && r <= 4) m.q = Math.max(m.q, r); }
+      if (g.log === 'zotik') { if (r === 0) m.visit = 1; if (r >= 1 && r <= 6) m.st = Math.max(m.st || 0, [0, 1, 3, 4, 6, 7, 8][r]); }
       if (g.log === 'radio') { if (r === 1) m.done = m.done.length ? m.done : ['a']; if (r === 2) { m.all = 1; m.done = Array.from({ length: 13 }, (_, i) => 'x' + i); } if (r === 3) m.visual = 1; }
       if (g.log === 'atlantis') { if (r === 1) m.holo = [1, 1, 1, 1, 1]; if (r === 2) m.herz = 1; if (r === 3) m.harp = 1; if (r === 4) m.lowg = 1; if (r === 5) m.glider = 1; }
       if (g.log === 'wunsch') { m.visit = 1; if (r >= 1) m.fruit = [1, 1, 1]; if (r === 2) m.talk = { sym: 1 }; if (r === 3) m.cave = 1; if (r === 5 || r === 6) { m.raft = 1; m.trial = 1; m.parts = [1, 1, 1, 1, 1, 1]; } if (r === 7) m.tower = 1; if (r === 8) m.chests = [1, 1, 1]; if (r === 9) m.dark = 2; if (r === 10) m.rounds = 3; if (r === 11) m.boss = 1; }

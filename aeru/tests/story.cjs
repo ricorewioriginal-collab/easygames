@@ -69,6 +69,7 @@ function createDriver(h) {
       case 'item': { const t = s.target; assert(t, 'Zielpfeil zum Objekt fehlt'); at(t.x, t.y - 1.2, t.z); break; }
       case 'ring': { const t = s.target; assert(t, 'Zielpfeil zum Ring fehlt'); at(t.x, t.y - 1, t.z); break; }
       case 'boss': fightBoss(goal.id); break;
+      case 'dragons': { const t = s.target; assert(t, 'Zielpfeil zum Kristalldrachen fehlt'); at(t.x + 1.2, 0, t.z); settle(2); break; }
       default: throw new Error('Unbekannter Zieltyp ' + goal.type);
     }
     return true;
