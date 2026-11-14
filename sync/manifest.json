@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e10bea3a93c0",
- "generated": "2026-11-14T20:31:55Z",
- "commit": "53e8c53adc641984914ed0030c686d5c1c7c7776",
+ "version": "280933bf6326",
+ "generated": "2026-11-14T20:34:45+00:00",
+ "commit": "60088626f8f3c113366e79e7191ebfe731bb8da1",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2853,8 +2853,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/arcade.js",
-   "s": 31513,
-   "h": "87d136877cb37ef5aa34f6640b22c5277056e868f236b1f791fe6f9c88fc69e6"
+   "s": 32003,
+   "h": "537e98b4bc92d5d63eb12abd965594b0564bad98b0beb0820566ae30b3276577"
   },
   {
    "p": "anmacha-podcast-tycoon/src/arcade2.js",
@@ -12984,7 +12984,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262493,
-   "h": "a0a773ef43487ceb30876961f5ce173127fb453304b075e3f49182f145b111f9"
+   "h": "c9d6652a4885d1f1d4d6376f6090c2cefb22a9cf105d9638f4580fa594ee748f"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
