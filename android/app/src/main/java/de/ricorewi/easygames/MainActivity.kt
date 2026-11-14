@@ -135,6 +135,8 @@ class MainActivity : ComponentActivity(), Actions {
         startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text).putExtra(Intent.EXTRA_SUBJECT, Repo.short(g)), "Spiel teilen"))
     }
 
+    override fun trailer(url: String) = TrailerActivity.start(this, url)
+
     override fun open(url: String) {
         try {
             val view = Intent(Intent.ACTION_VIEW, Uri.parse(url)).addCategory(Intent.CATEGORY_BROWSABLE)
