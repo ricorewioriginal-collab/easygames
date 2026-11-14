@@ -896,22 +896,22 @@ function zvKey(w,t){let h=0x811c9dc5;const s=w+'|'+t;for(let i=0;i<s.length;i++)
 function zvLoad(){if(ZV===null){ZV={};fetch('voice/index.json').then(r=>r.ok?r.json():{}).then(j=>{ZV=j}).catch(()=>{})}}
 function zvFile(w,t){return ZV&&ZV[zvKey(w,t)]}
 function zvPreload(w,t){const f=zvFile(w,t);if(f){try{fetch('voice/'+f).catch(()=>{})}catch(e){}}}
-function zvPlay(w,t,onEnd){const f=zvFile(w,t);if(!f)return false;try{const a=new Audio('voice/'+f);a.volume=.95;ZVA=a;a.onended=()=>{if(ZVA===a)onEnd&&onEnd()};const p=a.play();if(p&&p.catch)p.catch(()=>{});return true}catch(e){return false}}
+function zvPlay(w,t,onEnd){const f=zvFile(w,t);if(!f){if(ZV&&window.__zotik&&Object.keys(ZV).length)console.log('ZVMISS\t'+w+'\t'+t);return false}try{const a=new Audio('voice/'+f);a.volume=.95;ZVA=a;a.onended=()=>{if(ZVA===a)onEnd&&onEnd()};const p=a.play();if(p&&p.catch)p.catch(()=>{});return true}catch(e){return false}}
 function zotikStopVoice(){try{if(ZVA){ZVA.onended=null;ZVA.pause();ZVA=null}if(window.speechSynthesis)window.speechSynthesis.cancel()}catch(e){}}
 /* Eigene Stimme je Figur: Geschlecht (w/m) wählt eine passende Gerätestimme, Tonhöhe und Tempo machen sie unverwechselbar. Unbekannte Namen bekommen eine feste Stimme aus dem Namen. */
 const VOX={Zotik:['m',1.18,1.06],RiCARDO:['m',.95,1.04],Lyra:['w',1.12,1],Mira:['w',1.25,1.02],Professorium:['m',.78,.9],Felli:['w',1.7,1.15],Nia:['w',1.35,1.08],Rovan:['m',.85,.96],Erzähler:['m',.95,.92],Eryn:['w',1.05,1],Veyra:['w',.9,.94],Aera:['w',1.3,1],Vexa:['w',.8,.95],Nerea:['w',1.2,.96],Kael:['m',.92,1.04],Falk:['m',.75,.92],Nuri:['w',1.45,1.1],Harlan:['m',.7,.9],Brenna:['w',1,1.04],Toren:['m',.82,.95],Mirrel:['w',1.1,.98],Mara:['w',1.05,1],Korrod:['m',.6,.86],Boro:['m',.68,.92],Ashen:['m',.72,.88],Sela:['w',1.2,1],Hanno:['m',.9,.98],Mirael:['w',1.15,.95],Bruno:['m',.7,.95],Finn:['m',1.3,1.1],Elwen:['w',1.35,1],Sari:['w',1.1,1.05],Mondwolf:['m',.5,.82],Grauwächter:['m',.45,.8],Moosling:['m',1.6,1.15],Kind:['w',1.5,1.06],Großmutter:['w',.86,.86],Merle:['w',1.15,1.02],Pia:['w',1.25,1.04],Tomi:['m',1.4,1.1],Ilse:['w',.95,.92],'???':['m',.6,.85]};
-const VFEM=/female|frau|weib|anna|petra|katja|hedda|marlene|vicki|helena|steffi|amala|seraphina|elke|gisela|klara|conni|louisa|ingrid|tanja|maja/i,VMAL=/\bmale|mann|markus|stefan|hans|conrad|killian|florian|christoph|ralf|bernd|jonas|daniel|yannick|viktor|kasper|kai/i;
 function voxOf(who){let v=VOX[who];if(!v){let h=0;for(const c of String(who||''))h=(h*31+c.charCodeAt(0))>>>0;v=[h&1?'w':'m',.8+(h%9)*.06,.92+(h>>4)%5*.04]}return v}
-function voxVoice(g){try{const all=window.speechSynthesis.getVoices().filter(x=>/^de/i.test(x.lang));if(!all.length)return null;const re=g==='w'?VFEM:VMAL,bad=g==='w'?VMAL:VFEM;return all.find(x=>re.test(x.name)&&!(g==='w'&&VMAL.test(x.name)))||all.find(x=>!bad.test(x.name))||null}catch(e){return null}}
 function zotikSpeak(text,who,onEnd){
-  if(!zotikSpeechOn||!text)return;
-  zotikStopVoice();zvLoad();if(who&&zvPlay(who,text,onEnd))return;
-  if(!window.speechSynthesis||!window.SpeechSynthesisUtterance)return;
-  try{
-    const u=new SpeechSynthesisUtterance(String(text).replace(/<[^>]*>/g,' ')),v=voxOf(who),vo=voxVoice(v[0]);
-    u.lang='de-DE';u.pitch=Math.min(2,v[1]*(vo?1:v[0]==='w'?1.12:.92));u.rate=v[2];if(vo){u.voice=vo;u.lang=vo.lang}
-    window.speechSynthesis.speak(u);
-  }catch(e){}
+  if(!zotikSpeechOn||!text)return false;
+  zotikStopVoice();zvLoad();return !!(who&&zvPlay(who,text,onEnd))
+}
+/* Zeilen ohne Sprachclip: Tiergebrabbel (Animal-Crossing-Art) – kurze Töne je Buchstabe, Tonlage je Figur aus VOX */
+function dlgBlip(){
+  if(!zotikSpeechOn){sfx('talk');return}
+  if(dlg.cl)return;
+  const c=dlg.txt.charCodeAt(dlg.pos-1);if(!(c>64))return;
+  const v=voxOf(dlg.who),base=(v[0]==='w'?330:210)*Math.min(1.9,Math.max(.6,v[1])),k=(c*7+dlg.pos)%11;
+  tone(base*(1+(k-5)*.045),.055,'triangle',.05)
 }
 function zotikSpeechUi(){const b=document.getElementById('mSpeech');if(b){b.textContent=zotikSpeechOn?'🗣️ Sprachausgabe: an':'🗣️ Sprachausgabe: aus';b.setAttribute('aria-pressed',String(zotikSpeechOn))}}
 document.getElementById('mSpeech').onclick=()=>{
@@ -925,7 +925,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)zotikStopVo
 const dlg={on:false,lines:[],i:0,cb:null,opts:null,txt:'',pos:0,tm:0};
 const dlgQ=[];function dlgNext(){if(!dlg.on&&dlgQ.length)say(...dlgQ.shift())}
 function say(lines,cb,opts){if(dlg.on){dlgQ.push([lines,cb,opts]);return}dlg.on=true;dlg.lines=lines;dlg.i=0;dlg.cb=cb||null;dlg.opts=opts||null;$('dlg').hidden=false;showLine();pl.vx=pl.vz=0}
-function showLine(){const l=dlg.lines[dlg.i],p=PORT[l[0]]||PORT['???'];$('dName').textContent=l[0];$('dName').style.color=p[1];$('dPort').textContent=p[2]?'':p[0];$('dPort').style.backgroundImage=p[2]?'url('+FACE[p[2]]+')':'';$('dPort').style.borderColor=p[1];dlg.txt=l[1];dlg.pos=0;{const k=dlg.i,cu=document.body.classList.contains('cut');zotikSpeak(dlg.txt,l[0],cu?()=>setTimeout(()=>{if(dlg.on&&dlg.i===k&&dlg.lines[k]===l&&!dlg.opts&&dlg.pos>=dlg.txt.length)dlgAdvance()},650):null);const n=dlg.lines[dlg.i+1];if(n)zvPreload(n[0],n[1])}if(document.body.classList.contains('cut'))cineShot(l[0],dlg.i);$('dText').textContent='';$('dOpts').hidden=true;$('dNext').hidden=false;dlg.tm=0}
+function showLine(){const l=dlg.lines[dlg.i],p=PORT[l[0]]||PORT['???'];$('dName').textContent=l[0];$('dName').style.color=p[1];$('dPort').textContent=p[2]?'':p[0];$('dPort').style.backgroundImage=p[2]?'url('+FACE[p[2]]+')':'';$('dPort').style.borderColor=p[1];dlg.txt=l[1];dlg.pos=0;{const k=dlg.i,cu=document.body.classList.contains('cut');dlg.who=l[0];dlg.cl=zotikSpeak(dlg.txt,l[0],cu?()=>setTimeout(()=>{if(dlg.on&&dlg.i===k&&dlg.lines[k]===l&&!dlg.opts&&dlg.pos>=dlg.txt.length)dlgAdvance()},650):null);const n=dlg.lines[dlg.i+1];if(n)zvPreload(n[0],n[1])}if(document.body.classList.contains('cut'))cineShot(l[0],dlg.i);$('dText').textContent='';$('dOpts').hidden=true;$('dNext').hidden=false;dlg.tm=0}
 function cutSkip(){if(!dlg.on||!document.body.classList.contains('cut'))return;const cb=dlg.cb;dlg.on=false;zotikStopVoice();$('dlg').hidden=true;if(cb)cb();dlgNext()}
 function dlgAdvance(){
   if(!dlg.on)return;
@@ -936,7 +936,7 @@ function dlgAdvance(){
 }
 function optSel(i){const bs=[...$('dOpts').children];if(!bs.length)return;dlg.sel=(i+bs.length)%bs.length;bs.forEach((b,k)=>b.classList.toggle('sel',k===dlg.sel))}
 function showOpts(){const o=$('dOpts');o.innerHTML='';dlg.optT=performance.now();for(const [oi,op] of dlg.opts.entries()){const b=document.createElement('button');b.textContent=(TOUCH?'':(oi+1)+' · ')+op.t;b.onclick=e=>{e.stopPropagation();dlg.on=false;zotikStopVoice();$('dlg').hidden=true;sfx('ui');op.fn&&op.fn();dlgNext()};o.appendChild(b)}o.hidden=false;$('dNext').hidden=true;if(!TOUCH)optSel(0)}
-function dlgTick(dt){if(!dlg.on)return;if(dlg.pos<dlg.txt.length){dlg.tm+=dt;while(dlg.tm>.022&&dlg.pos<dlg.txt.length){dlg.tm-=.022;dlg.pos++;if(dlg.pos%3===0)sfx('talk')}$('dText').textContent=dlg.txt.slice(0,dlg.pos);if(dlg.pos>=dlg.txt.length&&dlg.i===dlg.lines.length-1&&dlg.opts)showOpts()}}
+function dlgTick(dt){if(!dlg.on)return;if(dlg.pos<dlg.txt.length){dlg.tm+=dt;while(dlg.tm>.022&&dlg.pos<dlg.txt.length){dlg.tm-=.022;dlg.pos++;if(dlg.pos%2===0)dlgBlip()}$('dText').textContent=dlg.txt.slice(0,dlg.pos);if(dlg.pos>=dlg.txt.length&&dlg.i===dlg.lines.length-1&&dlg.opts)showOpts()}}
 $('dlg').addEventListener('pointerdown',e=>{e.stopPropagation();dlgAdvance()});
 $('dSkip').addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();cutSkip()});
 addEventListener('keydown',e=>{if(e.code==='Escape'&&dlg.on&&document.body.classList.contains('cut')){e.preventDefault();cutSkip()}});
