@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3224a9bb7603",
- "generated": "2026-11-14T17:48:38+00:00",
- "commit": "f1bc1d332e12cc87f6c16fc49edba3adc8181dbf",
+ "version": "0fe2957f0db7",
+ "generated": "2026-11-14T17:49:42+00:00",
+ "commit": "c7bf943c47d43f633eae134b0cc79cefeeca347f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10207,6 +10207,11 @@
    "h": "0693c9f33056a41760349b3009e949b4792e28e77f36b81a832df347bdfbb1a1"
   },
   {
+   "p": "show-me-your-voice/vo/rico-intro-casting-0.mp3",
+   "s": 151333,
+   "h": "9e9a517ebc0e17c9543faf2c8126838506bc2120b91362a0ca1e3d6333eae4f7"
+  },
+  {
    "p": "show-me-your-voice/vo/rico-intro-casting-1.mp3",
    "s": 158021,
    "h": "18f537ff3308a611bc68bbe93a10f721b993445f13483501fe4176cb396afcb6"
@@ -10659,7 +10664,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262491,
-   "h": "90996e85bc5880005e88dafaf4c77abd517458d5d4c452653c6109f6d192b9b8"
+   "h": "e7640c1bab7f4ec6bbc158e68b88c4ac2ca89614d083498856995d9cb3d7b08d"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
