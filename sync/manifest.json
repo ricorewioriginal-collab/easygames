@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e574d34c76a1",
- "generated": "2026-11-14T21:40:40+01:00",
- "commit": "f41d0039dd2909f0e33464b99bc96db01c987d2d",
+ "version": "8311aad6cb87",
+ "generated": "2026-11-14T21:41:04+01:00",
+ "commit": "5a7ea3f2f3163c5e6de0a3d303fc1b4f4fa5f205",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2848,8 +2848,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/acts.js",
-   "s": 20566,
-   "h": "d1d49eefaecdcab5cf31e6891bfa0989826b6a1b2bf33c669ef81e545c10d6c2"
+   "s": 23474,
+   "h": "62f9b3af6ccc8ce8044ab8aa9442790301121f1ad6c0016894743c89bc9fa7d0"
   },
   {
    "p": "anmacha-podcast-tycoon/src/arcade.js",
@@ -2928,8 +2928,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/main.js",
-   "s": 47440,
-   "h": "84d0123f69f12ba903f7d2a031ead2fb58c22edd3c74c52aa1164f0417369e0c"
+   "s": 47575,
+   "h": "a72b2ac1a8dbbf18d8ba51b35c8f54302b7455fc8990b73f1c8a72181aec2f45"
   },
   {
    "p": "anmacha-podcast-tycoon/src/media.js",
@@ -2953,8 +2953,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/onair.js",
-   "s": 24987,
-   "h": "2c26582c1e2a2793f9e148ff6947b348795593c48b1257009b6bfab43886b64f"
+   "s": 25608,
+   "h": "946d86627440d89b804bbe9b854bea01856f07039d6e1dd241f4cb35dfe2d65c"
   },
   {
    "p": "anmacha-podcast-tycoon/src/people.js",
@@ -2973,8 +2973,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/rico-live.js",
-   "s": 21577,
-   "h": "809e049deae545f23d13c97dd169436d31cd5f96c7692e7951d272385d6370d2"
+   "s": 23806,
+   "h": "e4d74abc6177b63b5870ee7dd7364dd0ffcaaaa7fbf3818838a169ef693100c0"
   },
   {
    "p": "anmacha-podcast-tycoon/src/rooms.js",
@@ -2988,8 +2988,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/show.js",
-   "s": 47963,
-   "h": "567b2a6bcd733972e56efd38749656bcd11275eb988cd498b10f42319aefff0a"
+   "s": 49083,
+   "h": "e0b7f535bb33a799efc905342105499df599ef536ca02f1b0ae661fd39b3d067"
   },
   {
    "p": "anmacha-podcast-tycoon/src/social.js",
@@ -12984,7 +12984,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262891,
-   "h": "392466782092355cd060769aed70e56e988326d65b1b8a4508f9b7464f1514e2"
+   "h": "f15ddcb6f2f8442888ade091cfd800e9d7916f8e78d5dc662129cf8ff246a7bf"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

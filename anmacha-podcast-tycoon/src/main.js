@@ -269,7 +269,7 @@
     return cards;
   }
   function startShow(mode, ch, res) {
-    stopAll(); G.mode = 'show';
+    stopAll(); G.mode = 'show'; UI.showTouch(false);   // Stadt-Steuerung (Stick, Springen …) verdeckt sonst die Antworten
     const cards = mode === 'story' ? cardsFrom(res, ch) : AMC.Career ? AMC.Career.cards() : [];
     AMC.Show.start({
       mode: mode === 'story' ? 'story' : 'arcade', rounds: ch ? ch.show.rounds : 99, goal: ch ? ch.show.goal : [300, 600, 900], cards, host: ((res && res.host) || G.host) === 'rico' ? 'andrew' : ((res && res.host) || G.host),
@@ -336,13 +336,13 @@
       '<div class="row wrap"><button class="btn primary big" data-nav data-first id="q1">👤 1 Spieler<small>gegen den KI-Kollegen</small></button><button class="btn big" data-nav id="q2">👥 2 Spieler<small>' + (pads > 1 ? '2 Controller erkannt' : 'Tastatur geteilt, 2 Controller oder Handy') + '</small></button></div>' +
       '<p class="hint">Rekord (1 Spieler): ' + U.fmt(Save.data.best.quiz) + ' Punkte</p></div>', { back: () => UI.close(s) });
     s.el.querySelector('#qBack').onclick = () => UI.close(s);
-    const go = n => { UI.closeAll(); stopAll(); G.mode = 'quiz'; AMC.Quiz.start({ players: n, host: G.host, onEnd: r => quizEnd(r) }); };
+    const go = n => { UI.closeAll(); stopAll(); G.mode = 'quiz'; UI.showTouch(false); AMC.Quiz.start({ players: n, host: G.host, onEnd: r => quizEnd(r) }); };
     s.el.querySelector('#q1').onclick = () => go(1); s.el.querySelector('#q2').onclick = () => go(2);
   }
   function quizEnd(r) {
     const n = id => D.HOSTS[id].name;
     const fp = Save.earn(r.score[0] / 10);
-    results({ fan: fp, title: r.win < 0 ? '🤝 Unentschieden!' : '🏆 ' + n(r.ids[r.win]) + ' gewinnt!', stars: r.two ? (r.win >= 0 ? 3 : 2) : r.win === 0 ? 3 : r.score[0] > 600 ? 1 : 0, lines: [[n(r.ids[0]), U.fmt(r.score[0])], [n(r.ids[1]), U.fmt(r.score[1])], fanLine(fp)], again: () => { stopAll(); G.mode = 'quiz'; AMC.Quiz.start({ players: r.two ? 2 : 1, host: G.host, onEnd: quizEnd }); } });
+    results({ fan: fp, title: r.win < 0 ? '🤝 Unentschieden!' : '🏆 ' + n(r.ids[r.win]) + ' gewinnt!', stars: r.two ? (r.win >= 0 ? 3 : 2) : r.win === 0 ? 3 : r.score[0] > 600 ? 1 : 0, lines: [[n(r.ids[0]), U.fmt(r.score[0])], [n(r.ids[1]), U.fmt(r.score[1])], fanLine(fp)], again: () => { stopAll(); G.mode = 'quiz'; UI.showTouch(false); AMC.Quiz.start({ players: r.two ? 2 : 1, host: G.host, onEnd: quizEnd }); } });
   }
 
   // ------------------------------------------------------------------ Fanshop: Outfits & Studio-Upgrades
