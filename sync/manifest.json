@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "ac59844d0ac4",
- "generated": "2026-11-14T21:55:47+00:00",
- "commit": "41faddd47bf3bb8e74f8aa3e9be8b66b3f001c96",
+ "version": "9bb8742b8608",
+ "generated": "2026-11-14T22:56:29+01:00",
+ "commit": "f1d192559cce68e1881c4d6c4354a03c420f734f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -12984,7 +12984,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262891,
-   "h": "2a48c32c928872a4d00626bc07069b21a2bcc2a44a7ee68fed117543e4371815"
+   "h": "85d45c9dbe9406215939097614089901f516822cf3245817792beb24ad34660a"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -15472,9 +15472,9 @@
    "h": "f781289e14a665221685b76c0df8f6c2fe57e8efa8f7331e21476ddffd13add1"
   },
   {
-   "p": "zotik/assets/index-D5z_zaaq.js",
-   "s": 1949694,
-   "h": "2c4396d7e88ed5aae3404e803084b60076e3dd940e91675cc6677b76ccad8966"
+   "p": "zotik/assets/index-BRXf6B8Q.js",
+   "s": 1954378,
+   "h": "37499c4d81ffc52e41613a64c2f4cc8b46bf619f81d1844209eae709f2be6fad"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -15494,7 +15494,7 @@
   {
    "p": "zotik/index.html",
    "s": 74653,
-   "h": "86304fd094caa6547580140aaaf62694b36faee19c72888328498357bbc7e7e7"
+   "h": "9ec41dabb3662ca0ddc3bd324bc19b4206a0c66c88cf17549082f9a39732e46e"
   },
   {
    "p": "zotik/manifest.webmanifest",
@@ -16042,6 +16042,11 @@
    "h": "a4cf86f03415e3ba34767946f0b0c3ce0788f308e98ee5d27d8f331b2df9efdb"
   },
   {
+   "p": "zotik/voice/11ja4fb.mp3",
+   "s": 5637,
+   "h": "a8e0d1627d537bb722cecb395f7effc350c740917074455aaf59b5f82c94e7f6"
+  },
+  {
    "p": "zotik/voice/11lh83d.mp3",
    "s": 20685,
    "h": "a8c5c3abf280e3ecddc874926cb8ad68a15e2b320d2eff1d97ffaf5e5aa6dc6a"
@@ -16065,6 +16070,11 @@
    "p": "zotik/voice/11t2sm4.mp3",
    "s": 15069,
    "h": "cf63326b6112f81004eb0e6100da8bee4637e17aae45028f8a1ad9c7789d2fe8"
+  },
+  {
+   "p": "zotik/voice/11x45sg.mp3",
+   "s": 18093,
+   "h": "b818028bb680b9fd879559fb29dfe0e573ab0cee774da6d284476a8c95b92561"
   },
   {
    "p": "zotik/voice/1253myy.mp3",
@@ -16397,6 +16407,11 @@
    "h": "295f382372448d3310c526ac36d0d213380aa84add0d51291e9e772cf06c4041"
   },
   {
+   "p": "zotik/voice/17fm9xa.mp3",
+   "s": 6141,
+   "h": "0dd18c8de40cf6a03d885c1192f0c7bcb4f72608dc0a4aed3d21ecf2583bf8c6"
+  },
+  {
    "p": "zotik/voice/17p4amg.mp3",
    "s": 4917,
    "h": "0f2879ebc89cd45a72a561a73047dcf1b53f24651bb34fc99fdd79ed1f7ad4b6"
@@ -16405,6 +16420,11 @@
    "p": "zotik/voice/17pza80.mp3",
    "s": 6789,
    "h": "6080641089490581f2e8bbc988e2c9c5ca0f9035285f49eb672d0eb4d837453a"
+  },
+  {
+   "p": "zotik/voice/17tj73l.mp3",
+   "s": 13917,
+   "h": "8c944cca99e1a2b61950b5d210df1cb48c71cbbd0c04674f7c811f849c25fd9d"
   },
   {
    "p": "zotik/voice/17xhhu4.mp3",
@@ -16422,6 +16442,16 @@
    "h": "813a2526036ad7e0ec87f34624ad4048efa51896e5df61c46bc594b6249b6b13"
   },
   {
+   "p": "zotik/voice/17zp6uf.mp3",
+   "s": 13197,
+   "h": "ebf7e9e632ce3765a6fc614fadde5884b96f0e671636b5958395e388ea701378"
+  },
+  {
+   "p": "zotik/voice/181id2h.mp3",
+   "s": 17157,
+   "h": "29a9519783c145b36393990b34ed6ac16efdf00982c8d3d06bba63ff24c6daf6"
+  },
+  {
    "p": "zotik/voice/183yntv.mp3",
    "s": 6645,
    "h": "a0d87b3da10545d157ba040cdd7d67d3762c863d588cde201ce02214604dfc42"
@@ -16435,6 +16465,11 @@
    "p": "zotik/voice/18eoeum.mp3",
    "s": 5853,
    "h": "ddd0dc1fcfaa61e6a74e5cfcd360213420bd4e622787d1629b639a3701420200"
+  },
+  {
+   "p": "zotik/voice/18fn8jn.mp3",
+   "s": 26229,
+   "h": "4cbbc9cd539eb3ae2efd862b03571d98e8145df85491651c3d5484a38271aab3"
   },
   {
    "p": "zotik/voice/18k8dkk.mp3",
@@ -16587,6 +16622,11 @@
    "h": "49f19aa69ec8188fd9f7ec967b84ebdc084426d24c6e18a66bbd2dde7a13162e"
   },
   {
+   "p": "zotik/voice/1c32r9f.mp3",
+   "s": 21837,
+   "h": "db62d4715c0c37664d32ab4b7ed02a274a939016b7b76b1f5b92653d2511cd10"
+  },
+  {
    "p": "zotik/voice/1c7b8pr.mp3",
    "s": 22269,
    "h": "d9c9fffd96bcf9b8eaacb6647021cc88d621dbcc015e3394bc8d62251eb9ce70"
@@ -16605,6 +16645,11 @@
    "p": "zotik/voice/1co8g5e.mp3",
    "s": 2469,
    "h": "a93f5a1be28ca615c24b2b3224eee32189a5483d4ef124d454eb65a25e7239f7"
+  },
+  {
+   "p": "zotik/voice/1dir8uq.mp3",
+   "s": 14565,
+   "h": "92c6cce01c54ac479e4b17a37275e4567e8f4cf3361609dcb4f2d7d8be2933a2"
   },
   {
    "p": "zotik/voice/1dk34nh.mp3",
@@ -16812,6 +16857,11 @@
    "h": "f60f673a0af9f5fd48da3f2ecb5a56fe0fa59edc7dbb3ad31b3d2c65186b3330"
   },
   {
+   "p": "zotik/voice/1h1d35e.mp3",
+   "s": 15069,
+   "h": "9227e6e90a890a68814fd5ee727cc81988ef46a0ae91034e9ce9a7c4b1e5f79c"
+  },
+  {
    "p": "zotik/voice/1h5gbm8.mp3",
    "s": 5565,
    "h": "e00307913ecca84913288f52b746091169c5096a2945468b7710aca063779119"
@@ -16987,6 +17037,11 @@
    "h": "a51b406cc4bd96504b8a2a4bab10e06670d3313c5381264aac9a6d738041aff4"
   },
   {
+   "p": "zotik/voice/1jckjpf.mp3",
+   "s": 6069,
+   "h": "1649f5592d61b1557d84f4aaa766545f3e2088b621d011ab0b89fe0f780d7290"
+  },
+  {
    "p": "zotik/voice/1jg6ylk.mp3",
    "s": 15861,
    "h": "1faec3c92ef486a16abcc1887148379d41eabae18da19b2ec76c9421052249f8"
@@ -17145,6 +17200,11 @@
    "p": "zotik/voice/1mmmrlz.mp3",
    "s": 13845,
    "h": "8da44b03cec6687878a2f4257751d03d5e5ff926ff19312fb93417426ff87a15"
+  },
+  {
+   "p": "zotik/voice/1mncz98.mp3",
+   "s": 7869,
+   "h": "8ac716260e1c210ed0f4cb6a6defcee9f5d4f1df7027f65d61b0a2c011a4c239"
   },
   {
    "p": "zotik/voice/1moefyy.mp3",
@@ -17337,6 +17397,11 @@
    "h": "3cd6d1e38ff62b665a6190d60e379c357e389303ce89983e72df4360c9ed5873"
   },
   {
+   "p": "zotik/voice/1q5w4up.mp3",
+   "s": 15285,
+   "h": "ded838879b000640eedc6a041ddc4aceaebc9f917cefe932647ab2f5ee1213d1"
+  },
+  {
    "p": "zotik/voice/1q7y0gg.mp3",
    "s": 6933,
    "h": "3ceab6a526bf2bdf697f2c48a755b8c584cc98657cdc5d0be4a674ddd7942253"
@@ -17497,6 +17562,11 @@
    "h": "d165d08de8c5326ecb626723690f751c693354734a0be0223e45c01edc0ff0a8"
   },
   {
+   "p": "zotik/voice/1tdhj6b.mp3",
+   "s": 23781,
+   "h": "0b626bf244864a87b5af201720aecd79f345aed05f2909a451c61ed4e92a7cde"
+  },
+  {
    "p": "zotik/voice/1tehfv2.mp3",
    "s": 2469,
    "h": "acab3bb0c0711c175bbb533e6189f14041e730bb607dc59b5b07eb79b24cd1b1"
@@ -17540,6 +17610,11 @@
    "p": "zotik/voice/1u35lmz.mp3",
    "s": 17085,
    "h": "ef6f02843c95e72aad0cae6b8fded453776b62da8459f95c146c5a54f5f8bd01"
+  },
+  {
+   "p": "zotik/voice/1u3jxvj.mp3",
+   "s": 4341,
+   "h": "ce8ab35b957f11826bbc480b8564bcbd40ae1e2bacb839c8f877e287b52d03de"
   },
   {
    "p": "zotik/voice/1u5soe.mp3",
@@ -17590,6 +17665,11 @@
    "p": "zotik/voice/1uoshb8.mp3",
    "s": 18381,
    "h": "c508466989926f181797082fcedf904cc2da3ed0df72fa563f17a80aeb508cc0"
+  },
+  {
+   "p": "zotik/voice/1v1b7a4.mp3",
+   "s": 12045,
+   "h": "93579310cf1342cd90e429b9e5d9a070b92cae55a9aa34c4db00f7fd371bf200"
   },
   {
    "p": "zotik/voice/1v2zpok.mp3",
@@ -17777,6 +17857,11 @@
    "h": "583018e378dd7f48dadf5fecfe946dc29ac2d3c45f84439810f84653f2473d06"
   },
   {
+   "p": "zotik/voice/1xuiu36.mp3",
+   "s": 6933,
+   "h": "72952cf763bde38d4e4e5fbbde3ca87df91069b12775467262b4621722d5178c"
+  },
+  {
    "p": "zotik/voice/1xvi75w.mp3",
    "s": 7005,
    "h": "142f0d921a268a1df5df9890e19c1fd63f2b599df18f9494967fcbe1b3f804cb"
@@ -17845,6 +17930,11 @@
    "p": "zotik/voice/2rm9n.mp3",
    "s": 19245,
    "h": "ecb2e855631e3c9f9655a3f23c3fe47ad21a2a73448fe4411f20ebba4800d299"
+  },
+  {
+   "p": "zotik/voice/2ytj8j.mp3",
+   "s": 3621,
+   "h": "5f6da7f07f0df6ff52cab7b78ba3ff80b151d4872996f1f0ee5884cdff1e1dfa"
   },
   {
    "p": "zotik/voice/39861c.mp3",
@@ -18082,6 +18172,11 @@
    "h": "c0732b6aaccc1f1a9a001cb85392c7cefe9910a876980280b0355ba301c56f5b"
   },
   {
+   "p": "zotik/voice/6zcubg.mp3",
+   "s": 7725,
+   "h": "8f312f4e7933f186dc65601446ff33984a069005a846952023591a90151df457"
+  },
+  {
    "p": "zotik/voice/70f1yl.mp3",
    "s": 18885,
    "h": "dc70070c1810233ba428c75f90daa7cb8dc3cbcff6ee43150aa621e1511f8fd0"
@@ -18120,6 +18215,11 @@
    "p": "zotik/voice/7sx3go.mp3",
    "s": 9813,
    "h": "0e1b71580b5c05345d7a529aae42315aff9fc777bdfc78bd20318640a4235a82"
+  },
+  {
+   "p": "zotik/voice/7thw1f.mp3",
+   "s": 13557,
+   "h": "161811553b163423bca8f004dfa684fd50350aae30ae700df94b6165b8b5f74b"
   },
   {
    "p": "zotik/voice/80a3rl.mp3",
@@ -18175,6 +18275,11 @@
    "p": "zotik/voice/8xhex2.mp3",
    "s": 21693,
    "h": "774a18c6ae5a13573e85e1acc45b51cbb831635ad6e9a8a499f58432260cb9d0"
+  },
+  {
+   "p": "zotik/voice/8xngne.mp3",
+   "s": 19749,
+   "h": "1f02beec3110693d3b2fa8f2b2f2ab623c93d111c2a74801999e99c5ca9f630e"
   },
   {
    "p": "zotik/voice/92o2zx.mp3",
@@ -18310,6 +18415,11 @@
    "p": "zotik/voice/b9trub.mp3",
    "s": 24285,
    "h": "62d1eb71a0b58684fef52621276758e9b6580834762316815f86ef71357d2938"
+  },
+  {
+   "p": "zotik/voice/bbb4c0.mp3",
+   "s": 19461,
+   "h": "cf2702030d62a441b0f6e04c39fa36633a3337e106a08c0636747d1db56cdb94"
   },
   {
    "p": "zotik/voice/bcrert.mp3",
@@ -18587,6 +18697,11 @@
    "h": "1c2ed65647838122d90452f937765fe9c2eef5ecb0285f57e5d5f18f091a115f"
   },
   {
+   "p": "zotik/voice/g1daij.mp3",
+   "s": 12621,
+   "h": "7c71ab18d94989e00a72d88824940a7e8990b6ac0c996b86849ddba729e96628"
+  },
+  {
    "p": "zotik/voice/g2gufx.mp3",
    "s": 8301,
    "h": "57698e7af444cdd450e6246abfd1b873780ba04a333c9eb042162afbf3278dae"
@@ -18640,6 +18755,11 @@
    "p": "zotik/voice/hd1bu2.mp3",
    "s": 9237,
    "h": "63b10ecef0c6bf889a6d3c3b5c08c066426b0977a837de371e69393896cab7c0"
+  },
+  {
+   "p": "zotik/voice/hdnu11.mp3",
+   "s": 19461,
+   "h": "c1a1fcb0a118377ef3bba312ef7d618f7fd1c0aa562886125a750c278afa1095"
   },
   {
    "p": "zotik/voice/hfa9yn.mp3",
@@ -18723,8 +18843,8 @@
   },
   {
    "p": "zotik/voice/index.json",
-   "s": 12893,
-   "h": "d28e2d0c274dacf401e26c19a0a9deaf87f29e3ad14923036273123cb6d2a984"
+   "s": 17461,
+   "h": "801361d6d658fbb06fe858f834e713f68aaaf20c09e02d9b32551b8cc389aa3d"
   },
   {
    "p": "zotik/voice/iomjj3.mp3",
@@ -18797,6 +18917,11 @@
    "h": "1995c38fe3a5a12951649cb9f22a247c64a4222238be474587b007aebae37dc6"
   },
   {
+   "p": "zotik/voice/k67vb5.mp3",
+   "s": 13413,
+   "h": "dc7c46646407bcee45ba2173893df62431a222562e7e9aeea431e87a570ed865"
+  },
+  {
    "p": "zotik/voice/k6p31s.mp3",
    "s": 39261,
    "h": "8f1f03878ef16fe053b7f24873b228bb43080cd9ae20f04f3605b26304f9851e"
@@ -18835,6 +18960,11 @@
    "p": "zotik/voice/kku9rp.mp3",
    "s": 3837,
    "h": "3f2672318f4c6024b6d94025a9e0088d353af229f2aab098304ff8e1a42a2412"
+  },
+  {
+   "p": "zotik/voice/kmesdn.mp3",
+   "s": 4269,
+   "h": "dbbb9e20b54fb5af62aedef1a698f68db18f0b81754f7c053beba52db793a498"
   },
   {
    "p": "zotik/voice/knh11u.mp3",
@@ -19157,6 +19287,21 @@
    "h": "b3fe1a818c1d805ec3c85832f02a2ad6c93a523cd6dc5d2ed695aeda6b19eb8d"
   },
   {
+   "p": "zotik/voice/psfr8c.mp3",
+   "s": 24645,
+   "h": "649279dc6b56d493f456268c9730abc307fb010ba03bbb612ce189474888a932"
+  },
+  {
+   "p": "zotik/voice/pu6n7r.mp3",
+   "s": 1965,
+   "h": "a72a7e2bf97095b35f35e614369d91d8f79e6e030e285591cfae63dc97e3b7dc"
+  },
+  {
+   "p": "zotik/voice/q40h06.mp3",
+   "s": 9021,
+   "h": "185073de922b075d1795ab9ed19294cb3d1bbfc20e631b9d68ca008af097e23a"
+  },
+  {
    "p": "zotik/voice/q8uc68.mp3",
    "s": 3045,
    "h": "509343ce3fb1e50d7d3b8644b638ba714a90a91d6ba1eed1a2334662880f7b12"
@@ -19265,6 +19410,11 @@
    "p": "zotik/voice/s3fubj.mp3",
    "s": 8085,
    "h": "910c911239097b218439dd51c8cd20a4b115e7b571f8f6554165e6b674063fe9"
+  },
+  {
+   "p": "zotik/voice/sbdu1a.mp3",
+   "s": 8805,
+   "h": "dc82cb0a09779dd770bc4f8ca3dc37d271ddc5505a4517731d9f09e04e9ee378"
   },
   {
    "p": "zotik/voice/si9xsw.mp3",
@@ -19420,6 +19570,11 @@
    "p": "zotik/voice/w00ati.mp3",
    "s": 15717,
    "h": "89090dfdca100479b5dd2c6e3f08b1c907a91ac10bc7e79122f61704d1b4b150"
+  },
+  {
+   "p": "zotik/voice/w48fp9.mp3",
+   "s": 19317,
+   "h": "a2429f462fb47b4cd33ef2b60a5c2b9fe2763563fbbf79cce4fc303a7c8d554f"
   },
   {
    "p": "zotik/voice/w5a3yd.mp3",
