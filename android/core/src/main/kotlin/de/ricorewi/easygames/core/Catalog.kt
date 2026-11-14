@@ -25,6 +25,8 @@ data class Game(
     val tipps: List<String>,
     /** Trailer (Pfad auf der easygames-Homepage, z. B. `promo/taschi-trailer-16x9.mp4`), automatisch aus promo/ – oder null. */
     val trailer: String? = null,
+    /** Alle Trailer, wenn ein Spiel mehrere hat (promo/<id>-trailer2-…); sonst leer – dann gilt [trailer]. */
+    val trailers: List<String> = emptyList(),
 ) {
     /** Startseite des Spiels im Inhalt. */
     val entry: String get() = "$folder/"
@@ -67,6 +69,7 @@ class Catalog private constructor(val games: List<Game>, val links: Map<String, 
                     steuerung = strings(guide.optJSONArray("steuerung")),
                     tipps = strings(guide.optJSONArray("tipps")),
                     trailer = g.optJSONObject("trailer")?.optString("v16")?.takeIf { it.startsWith("promo/") && Manifest.isSafePath(it) },
+                    trailers = g.optJSONArray("trailers")?.let { a -> (0 until a.length()).mapNotNull { i -> a.optJSONObject(i)?.optString("v16")?.takeIf { it.startsWith("promo/") && Manifest.isSafePath(it) } } } ?: emptyList(),
                 )
             }
             val links = LinkedHashMap<String, String>()

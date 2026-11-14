@@ -88,12 +88,13 @@ fun HomeScreen(s: UiState, nav: Nav, a: Actions) {
         }
         val fresh = s.games.filter { it.status.isNew }
         if (fresh.isNotEmpty()) item { GameRow("Neu bei easygames", fresh, s, nav, action = "Alle") { nav.showLibrary("new") } }
-        val trailers = s.games.filter { it.game.trailer != null }   // automatisch aus dem Katalog (promo/<id>-trailer-*.mp4), Video lädt online
+        // automatisch aus dem Katalog (promo/<id>-trailer-*.mp4, weitere: -trailer2-…), Video lädt online; jeder Trailer eine Karte
+        val trailers = s.games.flatMap { g -> g.game.trailers.ifEmpty { listOfNotNull(g.game.trailer) }.mapIndexed { i, t -> Triple(g, i, t) } }
         if (trailers.isNotEmpty()) item {
             Column {
                 SectionTitle("🎬  Trailer")
                 LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(trailers, key = { "tr-" + it.game.id }) { g -> GameCard(g, s, 132.dp) { a.open(Origin.PUBLIC + g.game.trailer) } }
+                    items(trailers, key = { "tr-" + it.first.game.id + "-" + it.second }) { (g, _, t) -> GameCard(g, s, 132.dp) { a.open(Origin.PUBLIC + t) } }
                 }
             }
         }
