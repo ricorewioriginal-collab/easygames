@@ -24,8 +24,8 @@ export const REGIONS = [
       { role: 'familie', name: 'Familie Linde', lines: { pre: ['Wir picknicken jeden Sonntag am Mühlteich. Die Quappis springen dann aus dem Wasser.'], post: ['Unser Sohn erzählt nur noch von deinem Arenakampf.'], done: ['Pass auf dich auf, da draußen. Und komm uns besuchen!'] } },
       { role: 'reisender', name: 'Wanderin Oda', lines: { pre: ['Ich komme von der Korallküste. Das Nordtor öffnet sich erst für Trainer, die Champion Lin besiegt haben.'], post: ['Lin wartet im Pavillon am Hügel östlich der Stadt.'], done: ['Vielleicht sehen wir uns an der Küste wieder.'] } },
       { role: 'trainer', name: 'Trainer Kolja', lines: { pre: ['Hast du schon einmal einen Typenvorteil genutzt? Pflanze schlägt Wasser, Feuer schlägt Pflanze.'], post: ['Felsling ist hart, aber Wasser und Pflanze wirken gut gegen Gestein.'], done: ['Ich trainiere hier weiter, bis ich dich einhole!'] } },
-      { role: 'haendler', name: 'Händlerin Grete', lines: { pre: ['Im Laden gibt es Taschi-Kapseln und Tränke. Je mehr Siegel du hast, desto mehr führen wir.'], post: ['Mit zwei Siegeln bekommst du Kraftpulver.'], done: ['Sternsplitter kaufe ich dir gern teuer ab.'] } },
-      { role: 'forscher', name: 'Assistent Jo', lines: { pre: ['Ich helfe Professor Ulme bei der Bindungsforschung. Taschis, die man gut behandelt, kämpfen mutiger.'], post: ['Der Professor will dir bald neue Aufträge geben.'], done: ['Der Taschidex wächst! Der Professor ist begeistert.'] } }
+      { role: 'haendler', name: 'Händlerin Grete', lines: { pre: ['Im Laden gibt es Taschi-Kapseln und Heiltropfen. Je mehr Siegel du hast, desto mehr führen wir.'], post: ['Mit zwei Siegeln bekommst du Kraftpulver.'], done: ['Sternsplitter kaufe ich dir gern teuer ab.'] } },
+      { role: 'forscher', name: 'Assistent Jo', lines: { pre: ['Ich helfe Professor Ulme bei der Bindungsforschung. Taschis, die man gut behandelt, kämpfen mutiger.'], post: ['Der Professor will dir bald neue Aufträge geben.'], done: ['Der Taschibuch wächst! Der Professor ist begeistert.'] } }
     ],
     quests: [
       { id: 'q0_mira', title: 'Waldwege bewahren', giver: 'Waldhüterin Mira', kind: 'catchType', type: 'pflanze', count: 2, legacyKey: 'Moosbach', desc: 'Zeige Waldhüterin Mira zwei verschiedene Pflanzen-Taschis.', reward: { items: { taschiball: 8, trank: 4 } } },
@@ -46,11 +46,11 @@ export const REGIONS = [
     npcs: [
       { role: 'handwerker', name: 'Netzflickerin Ylva', lines: { pre: ['Die Möwen-Taschis stibitzen meine Garnrollen. Frechdachse!', 'Am Leuchtturm sieht man bei klarem Wetter bis zum Funkenfeld.'], post: ['Perla trainiert jeden Morgen im Hafenbecken.'], done: ['Tiefenlied, der Wächter der Strömung, soll in der Grotte unter dem Leuchtturm schlafen.'] } },
       { role: 'kind', name: 'Malte', lines: { pre: ['Ich sammle Muscheln. Die mit den Punkten sind am schönsten!'], post: ['Hast du die singenden Muscheln in der Arena gehört?'], done: ['Wenn ich groß bin, fahre ich mit Kapitän Marek zur See!'] } },
-      { role: 'haendler', name: 'Fischhändler Bo', lines: { pre: ['Frischer Fang! Leider nur für Menschen – Taschis mögen lieber Beeren.'], post: ['Für Siegelträger gibt es Supertränke im Laden.'], done: ['Champion, für dich gibt’s Rabatt aufs Lächeln.'] } },
+      { role: 'haendler', name: 'Fischhändler Bo', lines: { pre: ['Frischer Fang! Leider nur für Menschen – Taschis mögen lieber Beeren.'], post: ['Für Siegelträger gibt es Heiltinkturen im Laden.'], done: ['Champion, für dich gibt’s Rabatt aufs Lächeln.'] } },
       { role: 'reisender', name: 'Seglerin Inka', lines: { pre: ['Hinter dem Hafen beginnt die Strandroute. Achte auf Flatterlinge in den Dünen.'], post: ['Der Pfad zum Funkenfeld liegt im Norden, über die Felsbrücke.'], done: ['Der Wind dreht. Gute Reise!'] } },
       { role: 'trainer', name: 'Schwimmer Tobi', lines: { pre: ['Wasser-Taschis sind gegen Feuer stark. Aber Elektro trifft sie hart!'], post: ['Revanche? Irgendwann!'], done: ['Respekt, Champion.'] } },
       { role: 'familie', name: 'Oma Hedda', lines: { pre: ['Mein Enkel spielt am Strand. Wenn du ihn siehst, sag ihm, es gibt Fischbrötchen.'], post: ['Du bist der Trainer, über den alle reden!'], done: ['Komm wieder, wenn die Kirschen blühen.'] } },
-      { role: 'forscher', name: 'Biologe Erik', lines: { pre: ['Wir zählen die Vogelschwärme an der Küste. Fang ruhig einige – der Bestand ist gesund.'], post: ['Professorin Marea hat eine neue Theorie über Strömungen.'], done: ['Die Daten aus deinem Taschidex sind Gold wert.'] } }
+      { role: 'forscher', name: 'Biologe Erik', lines: { pre: ['Wir zählen die Vogelschwärme an der Küste. Fang ruhig einige – der Bestand ist gesund.'], post: ['Professorin Marea hat eine neue Theorie über Strömungen.'], done: ['Die Daten aus deinem Taschibuch sind Gold wert.'] } }
     ],
     quests: [
       { id: 'q1_nele', title: 'Geschichten des Meeres', giver: 'Fischerin Nele', kind: 'catchType', type: 'wasser', count: 2, legacyKey: 'Korallendorf', desc: 'Fange zwei verschiedene Wasser-Taschis für Fischerin Nele.', reward: { items: { taschiball: 8, trank: 4 } } },
@@ -95,7 +95,7 @@ export const REGIONS = [
     npcs: [
       { role: 'handwerker', name: 'Gärtner Hiro', lines: { pre: ['Die Kirschbäume blühen hier das ganze Jahr. Man sagt, Geist-Taschis halten sie wach.'], post: ['Blüte pflegt die Arena selbst. Jede Pflanze hat einen Namen.'], done: ['Nimm eine Blüte mit auf die Reise.'] } },
       { role: 'kind', name: 'Suki', lines: { pre: ['Nachts tanzen Lichter zwischen den Bäumen. Das sind Geisterchen!'], post: ['Hattest du Angst in der Arena? Ich hätte gezittert.'], done: ['Geisterchen haben dich lieb, glaub ich.'] } },
-      { role: 'haendler', name: 'Teehändlerin Mei', lines: { pre: ['Blütentee beruhigt die Nerven vor Arenakämpfen.'], post: ['Ab drei Siegeln gibt es Belebungskraut im Laden.'], done: ['Für Champions immer eine Tasse gratis.'] } },
+      { role: 'haendler', name: 'Teehändlerin Mei', lines: { pre: ['Blütentee beruhigt die Nerven vor Arenakämpfen.'], post: ['Ab drei Siegeln gibt es Weckwurz im Laden.'], done: ['Für Champions immer eine Tasse gratis.'] } },
       { role: 'reisender', name: 'Pilger Anselm', lines: { pre: ['Ich besuche jeden Schrein der sechzehn Regionen. Dieser hier ist der friedlichste.'], post: ['Der Laternenpfad ist ein altes Gebet. Die Punkte sagen, wie man ihn geht.'], done: ['Mögen dich die sechzehn Lichter leiten.'] } },
       { role: 'trainer', name: 'Trainer Ren', lines: { pre: ['Normal-Attacken treffen Geist-Taschis nicht. Lerne das, bevor du gegen Blüte antrittst!'], post: ['Du hast es also geschafft. Nicht schlecht.'], done: ['Ich gehe jetzt in den Käferwald trainieren.'] } },
       { role: 'familie', name: 'Familie Sakura', lines: { pre: ['Wir verkaufen Blütenkränze am Schrein.'], post: ['Unsere Tochter will auch Trainerin werden!'], done: ['Bring uns einmal ein Taschi aus dem Himmelreich mit!'] } },
@@ -145,7 +145,7 @@ export const REGIONS = [
     npcs: [
       { role: 'handwerker', name: 'Seilerin Kaja', lines: { pre: ['Ich spanne die Seile für die Hängebrücken. Stabil wie Felsen!'], post: ['Jette hat das Team Funke gegründet, eine Gruppe junger Elektro-Trainer.'], done: ['Die Brücken halten dich jederzeit.'] } },
       { role: 'kind', name: 'Benno', lines: { pre: ['Mein Drachen fliegt höher als jeder Flatterling!'], post: ['Lässt du mich mal dein Siegel halten?'], done: ['Ich will auch so stark werden!'] } },
-      { role: 'haendler', name: 'Krämer Wendel', lines: { pre: ['Bei Sturm verkaufe ich mehr Tränke. Seltsam, nicht?'], post: ['Supertränke sind jetzt vorrätig.'], done: ['Für dich lege ich etwas zurück.'] } },
+      { role: 'haendler', name: 'Krämer Wendel', lines: { pre: ['Bei Sturm verkaufe ich mehr Heiltropfen. Seltsam, nicht?'], post: ['Heiltinkturen sind jetzt vorrätig.'], done: ['Für dich lege ich etwas zurück.'] } },
       { role: 'reisender', name: 'Pilotin Liv', lines: { pre: ['Ich möchte zwei Flug-Taschis sehen, die über den Hügeln leben.'], post: ['Der Aufwind an der Klippe trägt Flatterlinge bis zu den Wolken.'], done: ['Ich fliege dir voraus – bis Himmelskrone!'] } },
       { role: 'trainer', name: 'Gleitflieger Arno', lines: { pre: ['Elektro-Attacken treffen Flug-Taschis besonders hart.'], post: ['Jette ist schnell – aber du warst schneller.'], done: ['Gute Thermik, Champion!'] } },
       { role: 'familie', name: 'Leuchtwärter Brandt', lines: { pre: ['Bei Gewitter muss ich die Turmlampe festhalten. Ehrlich!'], post: ['Der Turm leuchtet heller, seit du das Rätsel gelöst hast.'], done: ['Komm uns besuchen, wenn der Sturm ruht.'] } },
@@ -170,7 +170,7 @@ export const REGIONS = [
     npcs: [
       { role: 'handwerker', name: 'Schmiedin Sira', lines: { pre: ['Unser Schmiedefeuer lebt von Mut. Zeige mir zwei verschiedene Feuer-Taschis.'], post: ['Rumo war früher Kapitän. Jetzt schmiedet er nur noch Siege.'], done: ['Ich schmiede dir ein Abzeichen für deinen Rucksack.'] } },
       { role: 'kind', name: 'Tarek', lines: { pre: ['Die Gilde hat ein Tor in den Berg gebaut. Da drin brummt es ganz laut!'], post: ['Ist die Gilde jetzt weg? Mama sagt, sie forschen an Kristallen.'], done: ['Du bist mutiger als ein Glutdrach!'] } },
-      { role: 'haendler', name: 'Händler Kasim', lines: { pre: ['Hitzeschutzcreme? Leider aus. Aber Tränke habe ich!'], post: ['Ätherperlen gibt es ab sechs Siegeln.'], done: ['Bester Kunde des Jahres!'] } },
+      { role: 'haendler', name: 'Händler Kasim', lines: { pre: ['Hitzeschutzcreme? Leider aus. Aber Heiltropfen habe ich!'], post: ['Klarperlen gibt es ab sechs Siegeln.'], done: ['Bester Kunde des Jahres!'] } },
       { role: 'reisender', name: 'Geologin Tilda', lines: { pre: ['Die Bernsteingrotte im Westen ist voller eingeschlossener Funken.'], post: ['Die Forschungsstation der Gilde liegt am Fuß des Glutkegels.'], done: ['Die Gesteinsproben sind wieder sicher.'] } },
       { role: 'trainer', name: 'Feuerspucker Marco', lines: { pre: ['Wasser und Erde löschen Feuer. Rumo weiß das und hat vorgesorgt.'], post: ['Kein Rauch ohne Feuer – und kein Sieg ohne dich.'], done: ['Revanche bei Sonnenaufgang!'] } },
       { role: 'familie', name: 'Familie Asch', lines: { pre: ['Seit die Gilde da ist, bebt der Boden öfter.'], post: ['Endlich wieder Ruhe im Tal.'], done: ['Hier, eine heiße Suppe für den Weg.'] } },
@@ -201,7 +201,7 @@ export const REGIONS = [
       { role: 'forscher', name: 'Professorin Novas Teleskop-Assistent Edo', lines: { pre: ['Die Professorin glaubt, die Lichter sind mit den uralten Wächtern verbunden.'], post: ['Du sollst ihr berichten, was die Gilde vorhat.'], done: ['Alle Daten deuten auf den Sternengipfel.'] } }
     ],
     quests: [
-      { id: 'q7_stars', title: 'Nachtlichter', giver: 'Professorin Nova', kind: 'dexCount', count: 30, desc: 'Registriere 30 gefangene Arten im Taschidex.', reward: { coins: 400, items: { sternball: 2 } } },
+      { id: 'q7_stars', title: 'Nachtlichter', giver: 'Professorin Nova', kind: 'dexCount', count: 30, desc: 'Registriere 30 gefangene Arten im Taschibuch.', reward: { coins: 400, items: { sternball: 2 } } },
       { id: 'q7_lens', title: 'Die Linse', giver: 'Linsenschleifer Benedikt', kind: 'find', target: 'lostItem', desc: 'Eine frisch geschliffene Linse ist aus dem Korb gefallen.', reward: { coins: 250, items: { aetherperle: 2 } } }
     ]
   }),
@@ -243,7 +243,7 @@ export const REGIONS = [
     npcs: [
       { role: 'handwerker', name: 'Eisschnitzerin Runa', lines: { pre: ['Meine Figuren schmelzen nie – Eis-Taschis kühlen sie.'], post: ['Rokko liebt seine Eisblöcke mehr als seine Taschis. Fast.'], done: ['Eine Eisfigur von dir steht jetzt am Platz!'] } },
       { role: 'kind', name: 'Kalle', lines: { pre: ['Wir rutschen auf dem Spiegelsee! Komm mit!'], post: ['Hast du Rokkos Eisrutschen geschafft?'], done: ['Schneeballschlacht?'] } },
-      { role: 'haendler', name: 'Pelzhändler Gunnar', lines: { pre: ['Warme Handschuhe für Trainer! Und Tränke, natürlich.'], post: ['Vitaltränke gibt’s ab zehn Siegeln.'], done: ['Für dich nur das Beste.'] } },
+      { role: 'haendler', name: 'Pelzhändler Gunnar', lines: { pre: ['Warme Handschuhe für Trainer! Und Heiltropfen, natürlich.'], post: ['Großtinkturen gibt’s ab zehn Siegeln.'], done: ['Für dich nur das Beste.'] } },
       { role: 'reisender', name: 'Bergsteigerin Frida', lines: { pre: ['Der Eiskristall, den manche Raureif-Taschis zur Entwicklung brauchen, liegt in Truhen am See.'], post: ['Im Norden geht es durch den Pass ins Wipfelreich.'], done: ['Wir sehen uns auf dem nächsten Gipfel!'] } },
       { role: 'trainer', name: 'Skifahrer Lasse', lines: { pre: ['Feuer und Gestein schlagen Eis. Denk dran!'], post: ['Du hast Rokko geschlagen? Respekt!'], done: ['Abfahrt, Champion!'] } },
       { role: 'familie', name: 'Familie Frost', lines: { pre: ['Im Winter heizen wir mit Glut-Taschis aus dem Süden.'], post: ['Heißer Kakao für den Sieger?'], done: ['Du gehörst jetzt zum Tal.'] } },
@@ -293,7 +293,7 @@ export const REGIONS = [
     npcs: [
       { role: 'handwerker', name: 'Kupferschmied Amon', lines: { pre: ['Meine Blitzableiter schützen die ganze Stadt.'], post: ['Mira hat meine Kupferstäbe für ihre Arena gekauft.'], done: ['Sturmkron soll bei Gewitter über der Steppe kreisen.'] } },
       { role: 'kind', name: 'Zaid', lines: { pre: ['Wenn es donnert, verstecke ich mich nicht mehr. Ich zähle!'], post: ['Eins, zwei, drei … BUMM! Toller Kampf!'], done: ['Ich will Sturmkron sehen!'] } },
-      { role: 'haendler', name: 'Karawanenhändlerin Leyla', lines: { pre: ['Meine Karawane bringt Waren aus allen Regionen.'], post: ['Für Siegelträger: Vitaltränke!'], done: ['Möge der Wind dir Rückenwind geben.'] } },
+      { role: 'haendler', name: 'Karawanenhändlerin Leyla', lines: { pre: ['Meine Karawane bringt Waren aus allen Regionen.'], post: ['Für Siegelträger: Großtinkturen!'], done: ['Möge der Wind dir Aufwind geben.'] } },
       { role: 'reisender', name: 'Nomade Tariq', lines: { pre: ['Die Herden ziehen, wenn die Gewitter kommen.'], post: ['Der Kristallberg liegt hinter den roten Felsen.'], done: ['Die Steppe ehrt dich.'] } },
       { role: 'trainer', name: 'Steppenreiterin Kima', lines: { pre: ['Erde schlägt Elektro und Feuer. Merk dir das hier draußen.'], post: ['Mira ist zäh. Du bist zäher.'], done: ['Auf ein Rennen?'] } },
       { role: 'familie', name: 'Familie Grollmann', lines: { pre: ['Unser Dach ist aus Kupfer. Es singt bei Gewitter.'], post: ['Wir haben deinen Sieg im Radio gehört!'], done: ['Bleib zum Steppenfest!'] } },
@@ -368,7 +368,7 @@ export const REGIONS = [
     npcs: [
       { role: 'handwerker', name: 'Töpferin Ines', lines: { pre: ['Ich brenne meine Krüge in der Sonne. Kein Ofen nötig!'], post: ['Sora zeichnet die Sonnenbahn jeden Tag nach.'], done: ['Ein Krug für dich, mit Sonnenmuster.'] } },
       { role: 'kind', name: 'Juri', lines: { pre: ['Auraflamme soll über dem Tempel kreisen, wenn ein wahrer Champion kommt!'], post: ['Bist du der wahre Champion?'], done: ['Ich hab es gewusst!'] } },
-      { role: 'haendler', name: 'Marktfrau Sabah', lines: { pre: ['Sonnenhut, Wasser, Tränke – alles für die Hochebene!'], post: ['Der letzte Laden vor Himmelskrone – deck dich ein!'], done: ['Strahlende Grüße, Champion.'] } },
+      { role: 'haendler', name: 'Marktfrau Sabah', lines: { pre: ['Sonnenhut, Wasser, Heiltropfen – alles für die Hochebene!'], post: ['Der letzte Laden vor Himmelskrone – deck dich ein!'], done: ['Strahlende Grüße, Champion.'] } },
       { role: 'reisender', name: 'Brix (ehem. Schattengilde)', lines: { pre: ['Ich … ich war bei der Gilde. Ich habe die Fanggeräte gebaut. Es tut mir leid.'], post: ['Varga will am Sternengipfel alle Lichter in eine Maschine leiten. Ich gebe dir meine Zugangskarte.'], done: ['Ich arbeite jetzt für Professor Solan. Ich mache es wieder gut.'] } },
       { role: 'trainer', name: 'Falknerin Dina', lines: { pre: ['Gestein und Wasser löschen Feuer-Flug-Taschis.'], post: ['Sora hat mich mit einem Glutdrach besiegt.'], done: ['Flieg hoch, Champion!'] } },
       { role: 'familie', name: 'Familie Sonnberg', lines: { pre: ['Unsere Terrassen trocknen die besten Früchte der Region.'], post: ['Probier mal unsere Aprikosen!'], done: ['Komm zur Erntezeit wieder.'] } },
@@ -399,7 +399,7 @@ export const REGIONS = [
       { role: 'forscher', name: 'Professorin Astras Archivar Sirius', lines: { pre: ['Die Sternenliga wurde vor 500 Jahren gegründet, um die Lichter zu schützen.'], post: ['Varga wurde am Sternengipfel gesehen. Beeil dich!'], done: ['Ein neues Kapitel in der Chronik – deins.'] } }
     ],
     quests: [
-      { id: 'q15_dex', title: 'Chronik der Taschis', giver: 'Professorin Astra', kind: 'dexCount', count: 80, desc: 'Registriere 80 gefangene Arten im Taschidex.', reward: { coins: 1000, items: { sternball: 5 } } },
+      { id: 'q15_dex', title: 'Chronik der Taschis', giver: 'Professorin Astra', kind: 'dexCount', count: 80, desc: 'Registriere 80 gefangene Arten im Taschibuch.', reward: { coins: 1000, items: { sternball: 5 } } },
       { id: 'q15_compass', title: 'Der Wolkenkompass', giver: 'Wolkenweberin Alva', kind: 'find', target: 'lostItem', desc: 'Alvas Kompass ist auf einer der Wolkeninseln liegen geblieben.', reward: { coins: 600, items: { vitaltrank: 2 } } }
     ]
   })

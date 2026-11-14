@@ -350,7 +350,7 @@ export class Game {
       const res = await this.trainerBattle(t, n, { music: stage === 4 ? 'champion' : 'trainer' });
       if (res.outcome === 'win') {
         await say(lines.win);
-        if (stage === 4) { P.grantReward(s, { items: { vitaltrank: 3, sternball: 3, levelbonbon: 2 } }); this.ui.toast('Von Rian erhalten: 3× Vitaltrank, 3× Sternkapsel, 2× EP-Bonbon', '🎒'); }
+        if (stage === 4) { P.grantReward(s, { items: { vitaltrank: 3, sternball: 3, levelbonbon: 2 } }); this.ui.toast('Von Rian erhalten: 3× Großtinktur, 3× Sternkapsel, 2× Stufenhonig', '🎒'); }
       } else if (res.outcome === 'lose') await say(lines.lose);
     } finally {
       this.busy--;
@@ -579,7 +579,7 @@ export class Game {
       case 'save': this.saveNow(true); this.audio.sfx('item'); return this.ui.say([{ text: 'Du trägst deine Reise ins Buch ein. Der Spielstand wurde gesichert.' }]);
       case 'travel': { const to = await openTravel(this); if (to !== null && to !== undefined) { this.ui.toast('Das Flugtaxi hebt ab …', '✈'); await this.travelToRegion(to, 'heal'); } return; }
       case 'shop': return openShop(this, REGIONS[Math.min(15, r)].npcs.find(n => n.role === 'haendler')?.name || 'Verkäufer');
-      case 'dexinfo': return this.ui.say([{ who: 'Forschungscomputer', text: 'Taschidex-Auswertung: ' + P.caughtCount(s) + ' gefangene und ' + P.seenCount(s) + ' gesehene Arten. Hinweis: Manche Taschis zeigen sich nur nachts, in Höhlen oder am Wasser.' }]);
+      case 'dexinfo': return this.ui.say([{ who: 'Forschungscomputer', text: 'Taschibuch-Auswertung: ' + P.caughtCount(s) + ' gefangene und ' + P.seenCount(s) + ' gesehene Arten. Hinweis: Manche Taschis zeigen sich nur nachts, in Höhlen oder am Wasser.' }]);
       case 'crystal': return this.caveCrystal(e);
       case 'rare': return this.rareEncounter();
       case 'machine': return this.ui.say([{ text: 'Auf dem Display der Maschine steht: „Projekt Lichtspeicher – Zielwert: 16 Lichter“. Daneben kleben Zettel mit zittriger Schrift: „Brix, prüfe die Kristallspannung!“' }]);
@@ -778,7 +778,7 @@ export class Game {
     this.audio.sfx('item');
     s.flags.firstQuest = true; s.flags.travelStarted = true;
     for (const q of P.regionQuests(0)) if (q.id === 'q0_lost') P.acceptQuest(s, q);
-    this.ui.toast('Erhalten: 5× Taschi-Kapsel, 2× Heilkapsel, 3× Trank, Pfadkarte', '🎒');
+    this.ui.toast('Erhalten: 5× Taschi-Kapsel, 2× Pflegekapsel, 3× Heiltropfen, Pfadkarte', '🎒');
     setTimeout(() => this.ui.toast('Vom Südpfad hallen Hilferufe herüber …', '⚠'), 2600);
     // Ulme walks back to his lab
     const lab = this.world.current.layout.buildings.find(b => b.kind === 'lab');
@@ -936,7 +936,7 @@ export class Game {
     s.guild[site] = 'done';
     await this.ui.say(scene.win, { guild: true });
     P.grantReward(s, { coins: 300 + site * 150, items: { superball: 3 + site, trank: 2 } });
-    if (site === 6) { Items.add(s.bag, 'brixcode', 1); this.ui.toast('Erhalten: Brix’ Zugangskarte', '🗝'); if (!s.flags.meisterball) { s.flags.meisterball = true; Items.add(s.bag, 'meisterball', 1); await this.ui.say([{ who: 'Brix', text: 'Und nimm das hier. Mein Prototyp: ein Meisterkapsel. Er fängt jedes Taschi – ich will nie wieder, dass jemand ihn für Varga baut.' }]); this.ui.toast('Erhalten: Meisterkapsel', '◉'); } }
+    if (site === 6) { Items.add(s.bag, 'brixcode', 1); this.ui.toast('Erhalten: Brix’ Zugangskarte', '🗝'); if (!s.flags.meisterball) { s.flags.meisterball = true; Items.add(s.bag, 'meisterball', 1); await this.ui.say([{ who: 'Brix', text: 'Und nimm das hier. Mein Prototyp: ein Kronkapsel. Er fängt jedes Taschi – ich will nie wieder, dass jemand ihn für Varga baut.' }]); this.ui.toast('Erhalten: Kronkapsel', '◉'); } }
     if (site === 7) return this.summitFinale();
     this.ui.toast('Die Schattengilde ist aus der Region vertrieben! Gefangene Taschis befreit.', '✦');
     this.world.refreshBeacons();
@@ -984,7 +984,7 @@ export class Game {
     await this.credits();
     s.story.chapter = 6;
     this.saveNow(true);
-    await this.ui.say([{ text: 'Postgame: Die vier uralten Wächter warten an ihren Schreinen, alle Champions fordern dich zur Revanche heraus – und der Taschidex ist noch nicht vollständig!' }]);
+    await this.ui.say([{ text: 'Postgame: Die vier uralten Wächter warten an ihren Schreinen, alle Champions fordern dich zur Revanche heraus – und der Taschibuch ist noch nicht vollständig!' }]);
   }
   credits() {
     return new Promise(res => {
@@ -1407,13 +1407,13 @@ export class Game {
       for (const id of offers) await this.offerMove(m, id);
     }
   }
-  // Taschidex milestones: rewards for every new chapter of the collection
+  // Taschibuch milestones: rewards for every new chapter of the collection
   dexRewards() {
     const s = this.save, n = Object.values(s.dex).filter(v => v === 2).length;
     const STEPS = [[10, { superball: 5 }], [25, { supertrank: 5, sternball: 2 }], [50, { levelbonbon: 3, sternball: 3 }], [100, { levelbonbon: 5, vitaltrank: 5 }], [150, { sternball: 10 }], [200, { levelbonbon: 10 }], [260, { sternball: 20, levelbonbon: 20 }]];
     for (const [need, items] of STEPS) if (n >= need && !(s.flags.dexReward >= need)) {
       s.flags.dexReward = need; P.grantReward(s, { items });
-      this.ui.toast('Taschidex: ' + need + ' Arten gefangen! Belohnung: ' + Object.entries(items).map(([k, v]) => v + '× ' + (ITEMS[k]?.name || k)).join(', '), '📕');
+      this.ui.toast('Taschibuch: ' + need + ' Arten gefangen! Belohnung: ' + Object.entries(items).map(([k, v]) => v + '× ' + (ITEMS[k]?.name || k)).join(', '), '📕');
     }
   }
   evolveInWorld(m, ev) {

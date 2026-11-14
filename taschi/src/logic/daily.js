@@ -27,9 +27,9 @@ export function outbreak(s, today = dayKey()) {
 
 // Glücksrad im Heilzentrum: einmal pro Tag. Gewichte summieren sich auf 100.
 export const WHEEL = [
-  { label: '★ 200', coins: 200, w: 22 }, { label: '3× Trank', items: { trank: 3 }, w: 18 }, { label: '2× Superkapsel', items: { superball: 2 }, w: 14 },
+  { label: '★ 200', coins: 200, w: 22 }, { label: '3× Heiltropfen', items: { trank: 3 }, w: 18 }, { label: '2× Plus-Kapsel', items: { superball: 2 }, w: 14 },
   { label: '★ 500', coins: 500, w: 10 }, { label: 'Heilbeere', items: { heilbeere: 1 }, w: 10 }, { label: '2× Klarbeere', items: { klarbeere: 2 }, w: 8 },
-  { label: 'EP-Bonbon', items: { levelbonbon: 1 }, w: 8 }, { label: 'Sternsplitter', items: { sternsplitter: 1 }, w: 6 }, { label: '★ 1500', coins: 1500, w: 3 }, { label: 'Sternkapsel ×3', items: { sternball: 3 }, w: 1 }
+  { label: 'Stufenhonig', items: { levelbonbon: 1 }, w: 8 }, { label: 'Sternsplitter', items: { sternsplitter: 1 }, w: 6 }, { label: '★ 1500', coins: 1500, w: 3 }, { label: 'Sternkapsel ×3', items: { sternball: 3 }, w: 1 }
 ];
 export function wheelReady(s, today = dayKey()) { return s.daily?.wheel !== today; }
 export function spinWheel(s, rng, today = dayKey()) {

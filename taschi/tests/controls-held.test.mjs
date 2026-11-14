@@ -65,7 +65,7 @@ test('Heilbeere heilt unter halben KP und wird verbraucht', () => {
   assert.fail('Heilbeere hat nie gewirkt');
 });
 
-test('Klarbeere heilt Status sofort, Fokusband rettet bei vollen KP', () => {
+test('Klarbeere heilt Status sofort, Haltegurt rettet bei vollen KP', () => {
   const rng = createRng('clear');
   let cured = false;
   for (let k = 0; k < 20 && !cured; k++) {
@@ -80,9 +80,9 @@ test('Klarbeere heilt Status sofort, Fokusband rettet bei vollen KP', () => {
   for (let k = 0; k < 20 && !saved; k++) {
     weak.hp = maxHp(weak); weak.held = 'fokusband';
     const ev = runTurn(duel(weak, strong, 'f' + k), [{ type: 'move', move: weak.moves[0].id, slot: 0 }]);
-    if (ev.some(e => e.t === 'text' && /Fokusband/.test(e.text))) { saved = true; assert.equal(weak.held, undefined); }
+    if (ev.some(e => e.t === 'text' && /Haltegurt/.test(e.text))) { saved = true; assert.equal(weak.held, undefined); }
   }
-  assert.ok(saved, 'Fokusband hat nie gewirkt');
+  assert.ok(saved, 'Haltegurt hat nie gewirkt');
 });
 
 test('Lernband gibt 50 % mehr EP', () => {

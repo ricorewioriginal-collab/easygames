@@ -78,7 +78,7 @@ export function judgeBite(pressAt, biteAt, window = BITE_WINDOW) {
 }
 
 // Every catchable species must be obtainable in at least one table (or as
-// evolution of an obtainable species). Used by tests and the Taschidex.
+// evolution of an obtainable species). Used by tests and the Taschibuch.
 export function obtainableSpecies() {
   const out = new Set();
   for (let r = 0; r < REGIONS.length; r++) for (const h of Object.keys(HABITAT_TYPES)) for (const [id] of regionPool(r, h)) {

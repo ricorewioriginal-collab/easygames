@@ -1,5 +1,5 @@
 // Browser test for the expansion: meadow encounters, ball choice, move
-// manager, EP candy, Taschidex/map tabs and the rival meeting.
+// manager, EP candy, Taschibuch/map tabs and the rival meeting.
 // Run: node tests/e2e/expansion.mjs [screenshot-dir]
 import assert from 'node:assert/strict';
 import { startSeeded, G, advance, waitState, waitIdle, teleport } from './helpers.mjs';
@@ -72,7 +72,7 @@ try {
   step('Attacke vergessen und beim Attacken-Erinnerer neu gelernt');
   for (let k = 0; k < 4 && await page.locator('.screen').count() > 1; k++) { await page.locator('.screen').last().locator('.closebtn').click(); await page.waitForTimeout(300); }
   await page.locator('.tab', { hasText: 'Tasche' }).click(); await page.waitForTimeout(200);
-  await page.getByText('EP-Bonbon').first().click(); await page.waitForTimeout(200);
+  await page.getByText('Stufenhonig').first().click(); await page.waitForTimeout(200);
   const lv0 = await G(page, () => window.__taschi.save.team.find(m => m.id === 'wollini').lv);
   await page.locator('.card', { hasText: 'Wuschelschaf' }).last().click();
   // level 16: Wuschelschaf evolves outside of battle – allow it, then skip the texts
@@ -85,8 +85,8 @@ try {
   const grown = await G(page, () => window.__taschi.save.team.find(m => m.id === 'wollmond' || m.id === 'wollini'));
   assert.equal(grown.lv, lv0 + 1);
   assert.equal(grown.id, 'wollmond', 'Entwicklung außerhalb des Kampfes');
-  step('EP-Bonbon: Level 16, Wuschelschaf entwickelt sich zu Wollmond');
-  for (const tab of ['Taschidex', 'Karte']) { await page.locator('.tab', { hasText: tab }).click(); await page.waitForTimeout(600); await shot('23-tab-' + tab); }
+  step('Stufenhonig: Level 16, Wuschelschaf entwickelt sich zu Wollmond');
+  for (const tab of ['Taschibuch', 'Karte']) { await page.locator('.tab', { hasText: tab }).click(); await page.waitForTimeout(600); await shot('23-tab-' + tab); }
   for (let k = 0; k < 4 && await page.locator('.screen').count(); k++) { await page.keyboard.press('Escape'); await page.waitForTimeout(200); }
   await waitIdle(page);
 

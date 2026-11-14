@@ -47,7 +47,7 @@ export function applyItem(id, m, { inBattle = false } = {}) {
     return { ok: true, text: name + ' ist wieder bei Kräften!' };
   }
   if (it.category === 'heal' && it.heal) {
-    if (m.hp <= 0) return { ok: false, text: name + ' ist erschöpft und braucht ein Belebungskraut.' };
+    if (m.hp <= 0) return { ok: false, text: name + ' ist erschöpft und braucht ein Weckwurz.' };
     if (m.hp >= maxHp(m)) return { ok: false, text: name + ' hat bereits volle KP.' };
     const before = m.hp;
     m.hp = Math.min(maxHp(m), m.hp + it.heal);
