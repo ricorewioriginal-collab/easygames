@@ -1396,7 +1396,7 @@
   const kitchen = BI.createKitchen({ W, A, fx, P, say, persist, addStars: n => addStars(n), inv: () => garden.inv(), cropIcon: k => garden.CROPS[k] && garden.CROPS[k].icon, setStick, updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   const room = BI.createRoom({ scene, A, fx, P, save, persist, say, setStick, changed: () => shareRoomSoon(), updateButtons: f => updateButtons(f), earn: id => kids.earn(id) });
   let istory = null; let smode = null; /* Story-Modus (weiter unten) */
-  const story = BI.createStory({ talk: (n, i, l) => { if (dlg) dlg.show({ name: n, icon: i, lines: l }); else say(n + ': „' + l.join(' ') + '“', 6000); }, islandGoal: () => istory ? istory.goal() : null, worldLog: () => smode ? smode.worldLog() : null, A, fx, P, save, say, addStars: n => addStars(n), persist, earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f), guideTo: id => { const d = DEST.find(x => x.id === id); if (d) setGuide(d); },
+  const story = BI.createStory({ talk: (n, i, l) => { if (dlg) dlg.show({ name: n, icon: i, lines: l }); else say(n + ': „' + l.join(' ') + '“', 6000); }, islandGoal: () => istory ? istory.goal() : null, lights: () => istory && istory.lights ? istory.lights() : null, worldLog: () => smode ? smode.worldLog() : null, A, fx, P, save, say, addStars: n => addStars(n), persist, earn: id => kids.earn(id), setStick, updateButtons: f => updateButtons(f), guideTo: id => { const d = DEST.find(x => x.id === id); if (d) setGuide(d); },
     destLocked: id => { const d = DEST.find(x => x.id === id), q = d && d.at(); return !!(q && smode && smode.lockedAt(q.x, q.z)); },
     farmGoal: () => farm.questText(),
     log: () => ({ extras: [istory.log(), innen.log(), themen.log(), bade.log(), mplus.log(), schwamm.log(), raetsel.log(), schluessel.log(), sammeln.log(), dampf.log(), drachen.log(), prisma.log(), bauland.log(), fussball.log(), huepf.log(), taschi.log(), wunsch.log(), maerchen.log(), schatz.log(), atlantis.log(), zotik.log(), radio.log(), wald.log()].filter(Boolean), farm: farm.log(), einsatz: einsatz.log(), tycoon: tycoon.log(), mission: mission ? { icon: (MTITLE[mission.kind] || ['📦'])[0], title: (MTITLE[mission.kind] || [0, 'Auftrag'])[1], i: Math.min(mission.i + 1, mission.steps.length), n: mission.steps.length } : offer ? { icon: (MTITLE[offer.kind] || ['📦'])[0], title: (MTITLE[offer.kind] || [0, 'Auftrag'])[1] + ' (angeboten)', i: 0, n: 0 } : null,
@@ -1427,7 +1427,7 @@
   const wunsch = BI.createWunsch({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), setStick, addVeh: (t_, x, z, h) => addVeh(t_, x, z, h), getNightT: () => nightT, setNightT: v => { nightT = v; } });
   const taschi = BI.createTaschi({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), fanfare: () => A.fanfare && A.fanfare(), setStick, showLines: (n, i, l) => dlg && dlg.show({ name: n, icon: i, lines: l }), indoors: () => !!(innen && innen.inside), beamHeil: () => { const d = DEST.find(x => x.id === 'ta_heil'); if (d) beamTo(d); } }); taschi.build();
   const freunde = BI.createFreunde({ save, persist, say, addStars: n => addStars(n), earn: id => kids.earn(id) });
-  const portale = BI.createPortale({ scene, W, P, say, save, persist, setStick, earn: id => kids.earn(id), fanfare: () => A.fanfare && A.fanfare() }); portale.build();
+  const portale = BI.createPortale({ scene, W, P, say, save, persist, setStick, playing: () => state === 'play', earn: id => kids.earn(id), fanfare: () => A.fanfare && A.fanfare() }); portale.build();
   const flair = BI.createFlair({ scene, W, P, fx, A, say, save, persist, addStars: n => addStars(n) }); flair.build();
   BI.buildDeko({ W, scene, eco: !!save.eco });
   const fussball = BI.createFussball({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), net: () => net, me: () => selfId(), earn: id => kids.earn(id), humansAt: (x, z, r) => 1 + [...remote.values()].filter(a => Math.hypot(a.x - x, a.z - z) < r).length }); fussball.people(town.folk); const huepf = BI.createHuepf({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), vehicles: () => vehicles, setStick }); huepf.people(town.folk);
@@ -1444,7 +1444,7 @@
   const sammeln = BI.createSammeln({ scene, W, A, fx, P, say, save, persist, addStars: n => addStars(n), earn: id => kids.earn(id), note: k => meta.note(k), night: () => night, setStick, updateButtons: f => updateButtons(f), zoo: () => farm.openBook(), room: () => room.build(), share: () => shareRoomSoon(), rainbow: () => weather && weather.rainbow() });
   const pad = BI.createGamepad({ inp, cam, P, say, state: () => state, busy: () => uiBusy(), mini: () => mini.active, miniGame: () => mini.cur(), setStick });
   const konsole = BI.createKonsole({ save, pad: () => pad, resume: () => pause(false), pause: () => pause(true), setGfx: k => { save.gfx = k; persist(); quality = baseQuality(); resize(); } });
-  istory = BI.createInselStory({ inside: k => k === 'ATLANTIS' && !!atlantis.inside, folk: () => town.folk, logs: () => ({ dampf: () => dampf.log(), drachen: () => drachen.log(), fussball: () => fussball.log(), zotik: () => zotik.log(), radio: () => radio.log(), atlantis: () => atlantis.log(), taschi: () => taschi.log(), wunsch: () => wunsch.log(), einsatz: () => { const E = save.einsatz || { done: [], cur: null }; return { state: E }; } }), save, say, persist, P, addStars: n => addStars(n), earn: id => kids.earn(id), speak: t => A.speak && A.speak(t), fanfare: () => A.fanfare && A.fanfare(), lockedAt: (x, z) => smode.lockedAt(x, z) });
+  istory = BI.createInselStory({ inside: k => k === 'ATLANTIS' && !!atlantis.inside, folk: () => town.folk, logs: () => ({ dampf: () => dampf.log(), drachen: () => drachen.log(), fussball: () => fussball.log(), zotik: () => zotik.log(), radio: () => radio.log(), atlantis: () => atlantis.log(), taschi: () => taschi.log(), wunsch: () => wunsch.log(), einsatz: () => { const E = save.einsatz || { done: [], cur: null }; return { state: E }; } }), save, say, persist, P, fx, addStars: n => addStars(n), earn: id => kids.earn(id), speak: t => A.speak && A.speak(t), fanfare: () => A.fanfare && A.fanfare(), lockedAt: (x, z) => smode.lockedAt(x, z) });
   const kb = BI.createKeys({ say, pad }); $('bKeys').addEventListener('click', () => kb.open());
   /* Geheimcodes, Handbuch/Lösungsbuch, Fehler melden */
   const cheats = BI.createCheats({ save, say, persist, P, fx, A, setStick, taschiAll: () => taschi.cheatAll(), huepfAll: () => huepf.cheatAll(), wunschAll: () => { wunsch.cheatAll(); gear.unlockAll(); wald.cheatAll(); themen.cheatAll(); }, addStars: n => addStars(n), char: () => char, goHome, daily: () => kids.daily(), stickerIds: () => kids.all().map(q => q[0]), shopIds: () => SHOP.map(q => q.id), unlockPets: () => { const mm = save.mascots || (save.mascots = []); for (const q of BI.PETS) if (q.mascot && !mm.includes(q.id)) mm.push(q.id); }, finishStory: () => story.finish(), applyStory: () => smode.apply(), refreshStars: () => { $('starN').textContent = save.stars; } });
@@ -1601,7 +1601,7 @@
     { id: 'drachen', icon: '🐉', name: 'Drachenhöhen', at: () => ({ x: BI.DRACHEN.x, z: BI.DRACHEN.z - 38 }) },
     { id: 'prisma', icon: '🌀', name: 'Prisma-Archipel', at: () => BI.PRISMA.entry },
     { id: 'atlantis', icon: '🔱', name: 'Atlantis (Treppe an der Küste)', at: () => { const q = W.spots.atlPortal; return { x: q.x + Math.sin(q.ry) * 5.8, z: q.z + Math.cos(q.ry) * 5.8 }; } },
-    { id: 'zotik', icon: '⭐', name: 'Zotik – Lunaris (Insel im Süden)', at: () => ({ x: BI.ZOTIK.x, z: BI.ZOTIK.z - BI.ZOTIK.R + 16 }) },
+    { id: 'zotik', icon: '🌙', name: 'Zotik – Lunaris, Dorf am Mondblick (Insel im Süden)', at: () => ({ x: BI.ZOTIK.x, z: BI.ZOTIK.z - BI.ZOTIK.R + 16 }) },
     { id: 'radio', icon: '📻', name: 'Funkwelle – 13 Radiosender (Insel im Südosten)', at: () => { const R = BI.RADIO; return { x: R.x + Math.sin(R.rot) * (R.R - 14), z: R.z + Math.cos(R.rot) * (R.R - 14) }; } },
     { id: 'maerchen', icon: '🏰', name: 'Märchenland (Insel im Nordwesten)', at: () => ({ x: BI.MAERCHEN.entry.x, z: BI.MAERCHEN.entry.z }) },
     { id: 'bade', icon: '🏖️', name: 'Badestrand & Wasserpark', at: () => W.bade.at(176, 4) },
@@ -1655,11 +1655,13 @@
       ['pbuero', '🏢', 'Park-Büro (Park-Tycoon)', () => ({ x: PK.office.x, z: PK.office.z + 4.2 }), 'orte'],
       ['scooter', '🚗', 'Autoscooter', () => ({ x: (PK.arena.x0 + PK.arena.x1) / 2, z: PK.arena.z1 + 3 }), 'orte'],
       ['funkturm', '📡', 'Funkturm (13 Sender)', () => ({ x: R.x, z: R.z + 7 }), 'orte'],
-      ['zmarkt', '🛒', 'Lunaris: Markt „Wanderhand“', () => zp(-34, 8), 'orte'],
-      ['ztaverne', '🍺', 'Lunaris: Taverne', () => zp(36, 20), 'orte'],
-      ['zakademie', '🎓', 'Lunaris: Akademie', () => zp(50, 58), 'orte'],
-      ['zburg', '🏰', 'Lunaris: Burg auf dem Hügel', () => zp(50, -20), 'orte'],
-      ['zhafen', '⚓', 'Lunaris: Hafen (Luftschiff)', () => zp(0, 72), 'orte'],
+      ['zmarkt', '💧', 'Lunaris: Kristallbrunnen & Markt', () => zp(0, -14), 'orte'],
+      ['ztaverne', '⚒️', 'Lunaris: Boros Schmiede', () => zp(26, -6), 'orte'],
+      ['zakademie', '⚙️', 'Lunaris: Professoriums Werkstatt (Nautilux)', () => zp(-48, 4), 'orte'],
+      ['zburg', '🗼', 'Lunaris: Mondblick-Hügel', () => zp(50, -12), 'orte'],
+      ['zhafen', '🌲', 'Lunaris: Mondwald & Mondtor', () => zp(0, 32), 'orte'],
+      ['zcamp', '🔥', 'Lunaris: Camp der Weltenreisenden', () => zp(-46, -34), 'orte'],
+      ['zriss', '🐺', 'Lunaris: Risstor (Mondwolf)', () => zp(0, 86), 'orte'],
       ['ztore', '🌀', 'Lunaris: Weltentore', () => ({ x: BI.ZOTIK.gateC.x, z: BI.ZOTIK.gateC.z }), 'orte'],
       ['zspiel', '💠', 'Tor zum Zotik-Spiel (Schwesterspiel)', () => ({ x: BI.ZOTIK.zportal.x, z: BI.ZOTIK.zportal.z + 5 }), 'spiele'],
       ['zstatue', '🦊', 'Lunaris: Zotik-Statue', () => ({ x: BI.ZOTIK.statue.x, z: BI.ZOTIK.statue.z + 7 }), 'orte']

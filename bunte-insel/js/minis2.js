@@ -392,7 +392,7 @@
         const x = g.bx(i), eff = (i + 1) % 5 === e && kills < 4 && ko <= 0; rr(c, x - g.bs * .5, g.by - g.bs * .5, g.bs, g.bs, 16); c.fillStyle = cd > 0 ? 'rgba(255,255,255,.1)' : EL[i].c + 'cc'; c.fill(); c.lineWidth = eff ? 5 : 2; c.strokeStyle = eff ? '#fff' : 'rgba(255,255,255,.4)'; c.stroke();
         h.emoji(EL[i].e, x, g.by - 4, g.bs * .5); c.font = 'bold ' + Math.round(g.bs * .17) + 'px Fredoka, system-ui, sans-serif'; c.fillStyle = '#fff'; c.fillText(EL[i].n, x, g.by + g.bs * .36);
       }
-      for (let i = 0; i < 5; i++) h.emoji(i < hearts ? '❤️' : '🖤', 28 + i * 30, H - 16 - g.bs * 1.65, 24);
+      for (let i = 0; i < 5; i++) h.emoji(i < hearts ? '❤️' : '🖤', 28 + i * 30, g.by - g.bs * .5 - 22, 24);
       if (flash > 0) { c.fillStyle = 'rgba(255,60,60,' + flash * .8 + ')'; c.fillRect(0, 0, W, H); }
       c.font = '600 ' + Math.round(Math.min(16, W * .03)) + 'px Fredoka, system-ui, sans-serif'; c.fillStyle = 'rgba(255,255,255,.75)'; c.fillText('Feuer › Natur › Licht › Schatten › Wasser › Feuer', W / 2, H - 8);
     };

@@ -28,12 +28,16 @@ BI.Deko = (function () {
     fetch(URL).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(b => { parse(b); K.ready = true; K.loading = false; for (const f of K.cbs.splice(0)) try { f(); } catch (e) { console.warn(e); } })
       .catch(() => { K.loading = false; K.failed = true; });
   };
+  /* Zweites Paket welt.bin (KayKit Medieval Builder + Wizp, dieselben CC0-Modelle wie im Zotik-Spiel): erst laden, wenn eine Welt es braucht */
+  const wcb = []; let wst = 0;
+  K.welt = function (f) { if (wst === 2) return f(); if (wst === 3) return; wcb.push(f); if (wst) return; wst = 1; if (typeof location !== 'undefined' && /[?&]deko=0/.test(location.search)) { wst = 3; return; }
+    fetch('models/welt.bin').then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(b => { parse(b); wst = 2; for (const g of wcb.splice(0)) try { g(); } catch (e) { console.warn(e); } }).catch(() => { wst = 3; }); };
   /* Platzieren (vor oder nach dem Laden): name, x, y, z, Größe s (Faktor), Drehung ry, Kollisionsradius cr (0 = keiner) */
   K.add = (name, x, y, z, s, ry, cr) => { K.list.push({ name, x, y, z, s, ry: ry || 0, cr: cr || 0 }); };
   const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _e = new THREE.Euler(), _b = new THREE.Box3();
-  K.flush = function (scene, W) {
+  K.flush = function (scene, W, keep) {
     const CELL = 120, by = new Map(); let n = 0;
-    for (const it of K.list.splice(0)) { const g = K.G[it.name]; if (!g) continue; const key = it.name + '|' + Math.floor(it.x / CELL) + ',' + Math.floor(it.z / CELL); (by.get(key) || by.set(key, []).get(key)).push(it); if (it.cr && W) W.addCircle(it.x, it.z, it.cr, false, 3); }
+    for (const it of K.list.splice(0)) { const g = K.G[it.name]; if (!g) { if (keep) K.list.push(it); continue; } const key = it.name + '|' + Math.floor(it.x / CELL) + ',' + Math.floor(it.z / CELL); (by.get(key) || by.set(key, []).get(key)).push(it); if (it.cr && W) W.addCircle(it.x, it.z, it.cr, false, 3); }
     for (const [key, L] of by) {
       const src = K.G[key.split('|')[0]], g = new THREE.BufferGeometry(); for (const a in src.attributes) g.setAttribute(a, src.attributes[a]); g.setIndex(src.index);
       const m = new THREE.InstancedMesh(g, BI.mat(), L.length); _b.makeEmpty(); let rmax = 0;
@@ -76,4 +80,15 @@ BI.buildDeko = function (c) {
     for (const s of [-1, 1]) { const sx = Math.cos(face) * s, sz = -Math.sin(face) * s, x = m.x + sx * 7.5 + Math.sin(face) * 1.5, z = m.z + sz * 7.5 + Math.cos(face) * 1.5; D.add('pillar_decorated', x, 0, z, .95, face, 1.1); D.add(s < 0 ? 'banner_patternB_blue' : 'banner_patternA_red', x + Math.sin(face) * 1.0, 0, z + Math.cos(face) * 1.0, .85, face); }
   }
   D.onReady(() => { if (W.useTreeModels) W.useTreeModels(D); D.flush(scene, W); });
+  /* Zweite Stufe (welt.bin, Wizp + KayKit, CC0): Fantasie-Gräser, Blattpflanzen und Felsen auf der Hauptinsel und in den Märchen-/Regenbogen-/Schlüssel-Welten,
+     rosa Fantasiebäume im Märchenland. Erst 25 s nach dem Start (oder sobald Lunaris lädt), damit der Spielstart nicht wartet. Ohne Datei bleibt alles wie bisher. */
+  const WL = [], wr = BI.rng(777), wadd = (nm, x, z, s, cr) => { WL.push([nm, x, W.groundY(x, z), z, s, wr() * TAU, cr]); };
+  const wscatter = (O, n, kinds, min) => { for (let t = 0, got = 0; t < n * 30 && got < n; t++) { const a = wr() * TAU, d = (min || 10) + Math.sqrt(wr()) * (O.R * .85 - (min || 10)), x = O.x + Math.sin(a) * d, z = O.z + Math.cos(a) * d, [nm, s, cr] = kinds[(wr() * kinds.length) | 0], k = .8 + wr() * .5; if (!okAt(x, z, cr ? cr + .8 : 1.2)) continue; wadd(nm, x, z, s * k, cr * k); got++; } };
+  const GRAS = [['wz_grass_green', 1.6, 0], ['wz_grass_green', 1.4, 0], ['wz_plant', .9, 0], ['wz_rock_med', .7, .5]], FEE = [['wz_garden_pink', .8, .5], ['wz_grass_purple', 1.6, 0], ['wz_plant', 1, 0]];
+  const many = eco ? .5 : 1;
+  wscatter({ x: 0, z: 0, R: 150 }, Math.round(60 * many), GRAS, 40);
+  for (const k of ['PARK', 'DRACHEN', 'BAULAND', 'PUPS', 'DAMPF']) { const O = BI[k]; if (O && O.R) wscatter(O, Math.round(10 * many), GRAS, 12); }
+  for (const k of ['MAERCHEN', 'RAINBOW', 'SCHLUESSEL', 'PRISMA']) { const O = BI[k]; if (O && O.R) wscatter(O, Math.round(16 * many), FEE, 12); }
+  const wgo = () => D.welt(() => { for (const it of WL) D.add(...it); D.flush(scene, W, true); });
+  setTimeout(wgo, 25000); BI.dekoWelt = wgo;
 };

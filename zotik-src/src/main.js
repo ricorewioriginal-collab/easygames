@@ -517,6 +517,14 @@ function house(x,z,w,d,h,wall,roof,ry,opt){
 const TWR=[];const TWS={1:{w:0x6a6c8c,t:'stone',r:'cone',rc:0x4a5ac8,gl:0x8ab0ff},2:{w:0x8a7458,t:'wood',r:'cone',rc:0x3a6a3a,gl:0xa0ff8a,moss:1},3:{w:0x9a9aa8,t:'brick',r:'spire',rc:0x3a3e4e,gl:0xffd890},4:{w:0xd8b880,t:'plaster',r:'dome',rc:0xd8a040,gl:0xffb050},
   5:{w:0x70c8c0,t:'coral',r:'shell',rc:0xf0e8e0,gl:0x8ae8ff},6:{w:0xc8d8e8,t:'stone',r:'cone',rc:0xf4f8ff,gl:0x9ae0ff,ice:1},7:{w:0x3a3030,t:'rock',r:'forge',rc:0x2a2020,gl:0xff5a1a},8:{w:0x4a4258,t:'stone',r:'spire',rc:0x2a1e3a,gl:0xb070ff},
   9:{w:0xe8e0f0,t:'marble',r:'ring',rc:0xd8c8ff,gl:0xffe8a0},10:{w:0xd0c8f0,t:'marble',r:'crystal',rc:0xc8a0ff,gl:0xc8a0ff}};
+/* Skyline-Türme (Valdoria): fünf Bauarten statt gleicher Kästen – Stufenturm, Rundturm, Giebelhaus mit Turmspitze, Uhrturm, Zwillingsturm */
+const SKYM={};function skyTower(bg,k,w,d,hb,C){const wc=[0x5a5a70,0x6a5a60,0x4a5068,0x7a6a5a,0x5a6070][k],wm=SKYM[wc]||(SKYM[wc]=TX.tri(k===3?'plaster':'brick',wc,{s:.5,gain:1.6})),rm=SKYM.r||(SKYM.r=TX.tri('slate',0x3a3e52,{s:.6,gain:1.5})),lit=SKYM.l||(SKYM.l=M(0xffc060,{e:0xffa030,ei:1.1})),trim=M(C.hub[2]);
+  const win=(y0,ww,dd,h)=>{for(let j=0;j<Math.floor(h/3);j++)bg.add(mk(G.box,lit,0,y0+2+j*3,dd/2+.03,ww*.6,.7,.05,false))};
+  if(k===0){let y=0,ww=w,dd=d;for(let i=0;i<3;i++){const hh=hb*[.5,.3,.2][i];bg.add(mk(G.box,wm,0,y+hh/2,0,ww,hh,dd));win(y,ww,dd,hh);bg.add(mk(G.box,trim,0,y+hh+.2,0,ww+.4,.4,dd+.4));y+=hh+.4;ww*=.72;dd*=.72}bg.add(mk(G.cone,rm,0,y+1.5,0,ww*.6,3,dd*.6))}
+  else if(k===1){const r=Math.min(w,d)/2;bg.add(mk(G.cyl,wm,0,hb/2,0,r,hb,r));win(0,r*1.4,r*2,hb);bg.add(mk(G.cyl,trim,0,hb+.3,0,r+.35,.6,r+.35));bg.add(mk(G.cone,rm,0,hb+.6+r*1.1,0,r+.5,r*2.2,r+.5))}
+  else if(k===2){bg.add(mk(G.box,wm,0,hb*.3,0,w,hb*.6,d));win(0,w,d,hb*.6);bg.add(mk(G.cone,rm,0,hb*.6+1.6,0,w*.72,3.2,d*.72));const tw=Math.min(w,d)*.35;bg.add(mk(G.box,wm,w*.3,hb*.6+hb*.2,d*.3,tw,hb*.4,tw));bg.add(mk(G.cone,rm,w*.3,hb+1.8,d*.3,tw*.75,3.6,tw*.75))}
+  else if(k===3){bg.add(mk(G.box,wm,0,hb/2,0,w*.8,hb,d*.8));win(0,w*.8,d*.8,hb*.7);{const c=mk(G.cyl,M(0xf4ead0,{e:0xffe0a0,ei:.9}),0,hb-1.6,d*.4+.05,1.3,.12,1.3,false);c.rotation.x=Math.PI/2;bg.add(c)}bg.add(mk(G.box,wm,0,hb+1.4,0,w*.55,2.8,d*.55));bg.add(mk(G.cone,rm,0,hb+4.2,0,w*.5,3,d*.5))}
+  else{const tw=w*.38;for(const s of [-1,1]){const hh=hb*(s<0?1:.82);bg.add(mk(G.box,wm,s*w*.3,hh/2,0,tw,hh,d*.7));win(0,tw,d*.7,hh);bg.add(mk(G.cone,rm,s*w*.3,hh+1.6,0,tw*.7,3.2,d*.5))}bg.add(mk(G.box,trim,0,hb*.55,0,w*.3,.6,d*.4))}}
 function lookTower(n,x,z,face){const TQ={n,x,z,face};TWR.push(TQ);const S0=TWS[n]||TWS[1],y=hgt(x,z),g=new T.Group(),R=3.6,Ht=11.2,th=.5,wm=TX.tri(S0.t,S0.w,{s:.45,gain:1.7,n:.7,e:0x2a2018,ei:1}),st=TX.tri('stone',0xb8b0a4,{s:.6,gain:1.8});
   g.position.set(x,y,z);scene.add(g);TQ.g=g;const NS=20,gap=.34;
   for(let i=0;i<NS;i++){const a=i/NS*6.283,da=Math.abs(Math.atan2(Math.sin(a-face),Math.cos(a-face)));const sx=Math.sin(a)*R,sz=Math.cos(a)*R,seg=2*R*Math.sin(Math.PI/NS)+.08;
@@ -2405,7 +2413,7 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
   for(let i=0;i<170;i++){const z=-145+i*1.04,sd=i%2?-1:1,x=pathx(z)+sd*(3.1+R()*.8),hh=h(x,z);if(hh>7)continue;const sc=.3+R()*.38;put2(iPa,x,hh+.055,z,sc,.07,sc*(.65+R()*.7),R()*6.28,i%5===0?0xb9acc0:P.path)}
   /* Gebäude-Skyline (Valdoria) */
   if(C.trees.includes('tower')){const twr=new T.Group();let t=0;tries=0;while(t<46&&tries++<2000){const x=rr(-120,120),z=rr(-220,60);if(!(AM?!CA.void&&AM.E(x,z)>12&&Math.abs(x)<118&&z>-226&&z<64&&h(x,z)<8:free(x,z,42))||Math.hypot(x,z)<42)continue;const w=rr(5,10),d=rr(5,10),hb=rr(8,24),bg=new T.Group();bg.position.set(x,h(x,z),z);bg.rotation.y=R()*3;
-    bg.add(mk(G.box,M(rp([0x5a5a70,0x6a5a60,0x4a5068]),{r:.9}),0,hb/2,0,w,hb,d));for(let j=0;j<Math.floor(hb/3);j++)bg.add(mk(G.box,M(0xffc060,{e:0xffa030,ei:1.1}),0,2+j*3,d/2+.03,w*.7,.7,.05,false));bg.add(mk(G.box,M(C.hub[2]),0,hb+.4,0,w+.5,.8,d+.5));twr.add(bg);addCol(x,z,Math.hypot(w,d)/2);t++}scene.add(mergeStatic(twr))}
+    skyTower(bg,t%5,w,d,hb,C);twr.add(bg);addCol(x,z,Math.hypot(w,d)/2);t++}scene.add(mergeStatic(twr))}
   if(AM){const ag=new T.Group();scene.add(ag);const wl=[],bA={house:(...a)=>house(...a),box(x,y,z,w,hh,d,col){ag.add(mk(G.box,M(col),x,y+hh/2,z,w,hh,d))},cyl(x,y,z,r,hh,col){ag.add(mk(G.cyl0,M(col),x,y+hh/2,z,r,hh,r))},sph(x,y,z,sx,sy,sz,col,op){ag.add(mk(G.sph0,M(col,(op&&op.mat)||{}),x,y,z,sx,sy,sz,false))},glow(c,sz,x,y,z,a){ag.add(glow(c,sz,x,y,z,a))},addCol};
     arealDress({C:{KK,TX,T,PLAT,addCol,colFree,inHouse:(x,z,r)=>inHouseR(x,z,r),climb:o=>clbAdd(o)},w:CW,b:bA,g:ag,h,M:AM,R2:R,blk,busy:[],roadD:(x,z)=>Math.abs(x-pathx(z)),wallList:wl,TOUCH,mk,G,MAT:M});
     TNC=1;for(const [x,z,k] of wl)tree(k,x,z);TNC=0}
@@ -3383,13 +3391,39 @@ const CST={21:{k:'castle',name:'Schloss der Königin',boss:'Spiegelritter',col:0
   23:{k:'watchtower',name:'Turm der Meerhexe',boss:'Korallenwächter',col:0x6ad8ff,s:9},24:{k:'dom',th:'dom',name:'Kathedrale Notre-Dame',boss:'Steinerner Wasserspeier',col:0xffd070,at:[0,-70.8]},
   25:{k:'castle',name:'Burg der Morgana',boss:'Schwarzer Ritter',col:0x8ab8ff,s:9},26:{k:'castle',name:'Burg von Tiryns',boss:'Eurystheus’ Leibwache',col:0xffc060,s:9},
   27:{k:'watchtower',name:'Wachturm am Pass',boss:'Hauptmann der Eindringlinge',col:0xff6a4a,s:9.5}};
+/* Burgen der Märchenwelten: eigene Tönung und Schmuck je Welt (Kollision unverändert) */
+const CDR={21:{tint:0xe4d4ff,crown:'crystal',ban:0x9a4aff,base:'crystal'},22:{tint:0xb8cc98,crown:'leaf',ban:0xe8a040,base:'vine'},23:{tint:0x98dcd4,crown:'pearl',ban:0x3ac8e8,base:'coral'},
+  25:{tint:0xdce6ff,crown:'flag',ban:0x2a5ad8,base:'banner'},26:{tint:0xfff2d8,crown:'gold',ban:0xd84a2a,base:'column'},27:{tint:0xeccca8,crown:'pagoda',ban:0xd82a2a,base:'lantern'}};
+function castleLook(n,c,x,y,z,ry,rad){const D=CDR[n];if(!D)return;const g=new T.Group();g.position.set(x,y,z);g.rotation.y=ry;scene.add(g);const bm=M(D.ban,{r:.8}),pole=M(0x4a3a2a,{r:.9});
+  /* Sockelschmuck rund um die Burg (außerhalb der Kollision, Tor vorne frei) */
+  for(let i=0;i<10;i++){const a=(i+.5)/10*6.283;if(Math.abs(Math.atan2(Math.sin(a),Math.cos(a)))<.6)continue;const r=rad+1.2,px=Math.sin(a)*r,pz=Math.cos(a)*r,py=hgt(x+Math.sin(a+ry)*r,z+Math.cos(a+ry)*r)-y;
+    if(D.base==='crystal')g.add(mk(G.cone,M(0xc8a0ff,{e:0x8a4aff,ei:1.2,r:.2}),px,py+.9,pz,.35,1.8+(i%3)*.6,.35));
+    else if(D.base==='vine'){g.add(mk(G.sph,M(0x4a7a30,{r:.9}),px,py+.4,pz,1,.6,.9,false));g.add(mk(G.cone,M(0xff8ac8,{e:0x803060,ei:.5}),px,py+.9,pz,.2,.3,.2,false))}
+    else if(D.base==='coral'){for(let k=0;k<3;k++)g.add(mk(G.cyl,M([0xff7a8a,0xffa04a,0xc86aff][(i+k)%3],{r:.6,e:0x401020,ei:.3}),px+(k-1)*.35,py+.6+k*.2,pz,.12,1.2+k*.4,.12));g.add(mk(G.sph,M(0xf8f0e8,{r:.3}),px,py+.15,pz+.4,.3,.2,.3,false))}
+    else if(D.base==='banner'){g.add(mk(G.cyl,pole,px,py+2,pz,.07,4,.07));const b=mk(G.box,bm,px,py+3.1,pz,.05,1.6,.9);b.rotation.y=a;g.add(b)}
+    else if(D.base==='column'){g.add(mk(G.cyl,M(0xf4ecdc,{r:.5}),px,py+1.6,pz,.3,3.2,.3));g.add(mk(G.box,M(0xf4ecdc,{r:.5}),px,py+3.3,pz,.8,.2,.8))}
+    else if(D.base==='lantern'){g.add(mk(G.cyl,pole,px,py+1.2,pz,.06,2.4,.06));g.add(mk(G.sph,M(0xff4a2a,{e:0xff6a2a,ei:1.4}),px,py+2.5,pz,.3,.38,.3,false));g.add(glow(0xff8a4a,2.2,px,py+2.5,pz,.4))}}
+  /* Krone auf der Spitze, sobald die Modellhöhe bekannt ist */
+  let tr=0;const top=()=>{const H=KK.heightOf(c.k);if(!H){if(tr++<40)setTimeout(top,250);return}const h=H*c.s-.3,cr=D.crown;
+    if(cr==='crystal')for(let i=0;i<3;i++)g.add(mk(G.cone,M(0xd8b0ff,{e:0x9a5aff,ei:1.4,r:.2}),(i-1)*.7,h+1+(i===1?.6:0),0,.35,i===1?3:2,.35));
+    else if(cr==='leaf')for(let i=0;i<5;i++){const a=i/5*6.283,m=mk(G.sph,M(0x3a8a3a,{r:.9}),Math.sin(a)*1,h+.4,Math.cos(a)*1,1.2,.25,.5,false);m.rotation.y=a;g.add(m)}
+    else if(cr==='pearl'){g.add(mk(G.sph,M(0xfff8f0,{e:0x6ad8ff,ei:.6,r:.15}),0,h+.9,0,.7,.7,.7,false));g.add(glow(0x8ae8ff,4,0,h+.9,0,.5))}
+    else if(cr==='flag'){g.add(mk(G.cyl,pole,0,h+1.5,0,.06,3,.06));g.add(mk(G.box,bm,.6,h+2.5,0,1.2,.7,.04))}
+    else if(cr==='gold'){g.add(mk(G.sph,M(0xffd060,{m:.7,r:.3}),0,h+.3,0,1.4,.9,1.4));g.add(mk(G.cone,M(0xffd060,{m:.7,r:.3}),0,h+1.6,0,.15,.8,.15,false))}
+    else if(cr==='pagoda')for(let i=0;i<3;i++)g.add(mk(G.cone,M(0xb82a2a,{r:.7}),0,h+.4+i*1.1,0,2.4-i*.6,.7,2.4-i*.6))};
+  top()}
 function castleSite(n){const c=CST[n];if(!c||!WLD||!WLD.mw||MP.on)return;const w=WLD.mw,R0=w.R||58,cz0=w.cz??-36,rad=c.k==='castle'?8.4:5.4,rr=mul32(n*97+5);
   const poi=[[0,12],...(w.npcs||[]).map(d=>[d.x,d.z]),...(w.chests||[]),w.key?[w.key[0],w.key[1]]:[0,-999]];for(const m of w.ms||[]){for(const q of m.pts||[])poi.push([q[0],q[1]]);if(m.at)poi.push(m.at)}
-  let best=null;for(let t=0;t<500&&!best;t++){const a=rr()*6.283,d=R0*(.45+rr()*.42),x=Math.sin(a)*d,z=cz0+Math.cos(a)*d;if(blocked(x,z))continue;const y0=hgt(x,z);let ok=true;
-    for(let k=0;k<12&&ok;k++){const b=k/12*6.283;for(const r of [rad*.6,rad+2.5]){const px=x+Math.cos(b)*r,pz=z+Math.sin(b)*r;if(blocked(px,pz)||Math.abs(hgt(px,pz)-y0)>1.4)ok=false}}
-    if(ok&&poi.some(p=>Math.hypot(p[0]-x,p[1]-z)<rad+7))ok=false;if(ok&&COL.some(q=>Math.hypot(q.x-x,q.z-z)<q.r+rad+1))ok=false;if(ok)best=[x,z,y0]}
+  /* zwei Durchgänge: streng, dann mit etwas mehr Hang und engerem Rand (große Areal-Welten fanden sonst keinen Platz) */
+  let best=null;for(let t=0;t<1600&&!best;t++){const lax=t>=500,a=rr()*6.283,d=R0*((lax?.25:.45)+rr()*(lax?.65:.42)),x=Math.sin(a)*d,z=cz0+Math.cos(a)*d;if(blocked(x,z))continue;const y0=hgt(x,z);let ok=true;
+    for(let k=0;k<12&&ok;k++){const b=k/12*6.283;for(const r of [rad*.6,rad+(lax?1.6:2.5)]){const px=x+Math.cos(b)*r,pz=z+Math.sin(b)*r;if(blocked(px,pz)||Math.abs(hgt(px,pz)-y0)>(lax?2.2:1.4))ok=false}}
+    if(ok&&poi.some(p=>Math.hypot(p[0]-x,p[1]-z)<rad+(lax?5:7)))ok=false;if(ok&&COL.some(q=>Math.hypot(q.x-x,q.z-z)<q.r+rad+1))ok=false;if(ok)best=[x,z,y0]}
+  /* Rückfall: Raster absuchen und den flachsten freien Platz nehmen */
+  if(!best&&!c.at){let sc=3.6;for(let x=-R0;x<=R0;x+=4)for(let z=cz0-R0;z<=cz0+R0;z+=4){if(blocked(x,z)||Math.hypot(x,z)<14)continue;const y0=hgt(x,z);let mx=0,ok=true;
+      for(let k=0;k<12&&ok;k++){const b=k/12*6.283;for(const r of [rad*.6,rad+1.4]){const px=x+Math.cos(b)*r,pz=z+Math.sin(b)*r;if(blocked(px,pz))ok=false;else mx=Math.max(mx,Math.abs(hgt(px,pz)-y0))}}
+      if(!ok||mx>=sc||poi.some(p=>Math.hypot(p[0]-x,p[1]-z)<rad+1.8)||COL.some(q=>q.r>1.2&&Math.hypot(q.x-x,q.z-z)<q.r+rad+.5))continue;{const r2=Math.atan2(-x,cz0-z)+Math.PI,ex=x+Math.sin(r2)*(rad+3),ez=z+Math.cos(r2)*(rad+3);if(blocked(ex,ez)||blocked(x+Math.sin(r2)*(rad+5.5),z+Math.cos(r2)*(rad+5.5))||Math.abs(hgt(ex,ez)-y0)>1.2)continue}sc=mx;best=[x,z,y0]}}
   if(c.at)best=[c.at[0],c.at[1]-rad-.6,0];if(!best)return;const [x,z,y]=best,ry=c.at?0:Math.atan2(-x,cz0-z)+Math.PI,fx=Math.sin(ry),fz=Math.cos(ry);   // Tor zeigt zur Weltmitte; Notre-Dame: Hauptportal der Kathedrale
-  if(!c.at){KK.place(scene,[{k:c.k,x,y:y-.3,z,ry,s:c.s}],'kb');addCol(x,z,rad)}
+  if(!c.at){KK.place(scene,[{k:c.k,x,y:y-.3,z,ry,s:c.s,tint:(CDR[n]||{}).tint}],'kb');addCol(x,z,rad);castleLook(n,c,x,y,z,ry,rad)}
   const gx=x+fx*(rad+.6),gz=z+fz*(rad+.6),gy=hgt(gx,gz);if(!c.at)KK.place(scene,[{k:'wall_doorway',x:gx,y:gy-.05,z:gz,ry,s:.9},{k:'torch_mounted',x:gx+Math.cos(ry)*2.3+fx*.4,y:gy+2.4,z:gz-Math.sin(ry)*2.3+fz*.4,ry},{k:'torch_mounted',x:gx-Math.cos(ry)*2.3+fx*.4,y:gy+2.4,z:gz+Math.sin(ry)*2.3+fz*.4,ry}],'kb');
   const pt=mk(G.box,M(c.col,{e:c.col,ei:1.3,t:1}),gx,gy+1.5,gz,2.4,3,.08,false);pt.rotation.y=ry;pt.material.transparent=true;pt.material.opacity=.55;scene.add(pt);scene.add(glow(c.col,5,gx+fx*.6,gy+1.4,gz+fz*.6,.5));
   if(!c.at)for(const s of [-1,1])addCol(gx+Math.cos(ry)*s*2.2,gz-Math.sin(ry)*s*2.2,.6);

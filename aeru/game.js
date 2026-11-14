@@ -60,12 +60,12 @@ const QUALITY_ORDER = ['sparsam', 'ausgewogen', 'hoch'];
 let autoLevel = matchMedia('(pointer:coarse)').matches ? 'ausgewogen' : 'hoch', renderScale = 1, preset = QUALITY.ausgewogen;
 renderer.setSize(innerWidth, innerHeight);
 if (Number(T.REVISION) < 150) renderer.outputEncoding = T.sRGBEncoding; else renderer.outputColorSpace = T.SRGBColorSpace;
-renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.toneMapping = T.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.08;
 renderer.shadowMap.type = T.PCFSoftShadowMap;
 const scene = new T.Scene(), camera = new T.PerspectiveCamera(innerHeight > innerWidth ? 58 : 52, innerWidth / innerHeight, .1, 320);
 // Physikalische Lichteinheiten ab r155: alte Intensitäten mal π behalten den ursprünglichen Look.
 const lightScale = Number(T.REVISION) < 150 ? 1 : Math.PI;
-const hemi = new T.HemisphereLight(0xe4f4ff, 0x40533d, .7 * lightScale); scene.add(hemi);
+const hemi = new T.HemisphereLight(0xeaf2ff, 0x5a5236, .7 * lightScale); scene.add(hemi);
 const sun = new T.DirectionalLight(0xffefd5, 1.05 * lightScale); sun.position.set(-22, 45, 28); sun.castShadow = true;
 Object.assign(sun.shadow.camera, {left: -45, right: 45, top: 45, bottom: -45, near: 1, far: 110}); sun.shadow.camera.updateProjectionMatrix(); sun.shadow.bias = -.0007; scene.add(sun);
 const sky = new T.Mesh(new T.SphereGeometry(280, 24, 16), new T.ShaderMaterial({side: T.BackSide, uniforms: {top: {value: new T.Color('#397f95')}, bottom: {value: new T.Color('#d5d9bf')}, dim: {value: 0}},
@@ -500,12 +500,56 @@ function grassField(index) {
     if (tries % 4 === 3) { const a = rnd() * TAU, r = 30 + rnd() * 70; x = Math.cos(a) * r; z = Math.sin(a) * r; } // Talboden
     else { let pick = rnd() * area, q = spots[0]; for (const s of spots) { pick -= s.r * s.r; if (pick <= 0) { q = s; break; } } const a = rnd() * TAU, r = Math.sqrt(rnd()) * (q.r - .5); x = q.x + Math.cos(a) * r; z = q.z + Math.sin(a) * r; }
     const y = floorAt(x, z, 3);
-    if (y < -20 || Math.abs(heightAt(x + 1, z) - heightAt(x - 1, z)) > .9 || (Math.abs(x) < 2.6 && z > -17 && z < 20) || nearBridge(x, z, 2.6) || (lake && Math.hypot(x - lake.x, z - lake.z) < lake.r + .3) || solids.some(s => !s.r && s.y > y + .1 && Math.abs(x - s.x) < s.w / 2 && Math.abs(z - s.z) < s.d / 2)) continue;
+    if (y < -20 || Math.abs(heightAt(x + 1, z) - heightAt(x - 1, z)) > .9 || (Math.abs(x) < 2.6 && z > -17 && z < 20) || nearBridge(x, z, 2.6) || onPath(x, z) || (lake && Math.hypot(x - lake.x, z - lake.z) < lake.r + .3) || solids.some(s => !s.r && s.y > y + .1 && Math.abs(x - s.x) < s.w / 2 && Math.abs(z - s.z) < s.d / 2)) continue;
     const s = .7 + rnd() * .7; dummy.position.set(x, y - .02, z); dummy.rotation.set(0, rnd() * TAU, 0); dummy.scale.set(s, s * (.4 + rnd() * .35), s); dummy.updateMatrix(); inst.setMatrixAt(k++, dummy.matrix);
   }
   inst.count = k; inst.instanceMatrix.needsUpdate = true; world.add(inst); grassCount = k;
 }
 let grassCount = 0;
+// Steinwege mit erhöhten Randsteinen (nur Aussehen): Kurven durch Wegpunkte, dem Boden angeschmiegt. Alle Wege einer Welt
+// teilen sich zwei Geometrien (Pflaster, Randsteine), also zwei Draw Calls. pathPts merkt sich die Mittellinie (Gras bleibt frei).
+let pathList = [], pathPts = [], cobbleTex = null;
+function stonePath(pts, w = 2.6) { if (pts.length > 1) pathList.push({pts, w}); }
+function cobbleTexture() {
+  if (cobbleTex !== null) return cobbleTex;
+  let seed = 31; const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  cobbleTex = canvasTexture(128, 128, (x, w, h) => {
+    x.fillStyle = 'rgb(150,138,118)'; x.fillRect(0, 0, w, h);
+    for (let row = 0; row < 8; row++) for (let col = -1; col < 5; col++) {
+      const bw = 30, bh = 16, px = col * 32 + (row % 2) * 16 + rnd() * 3, py = row * 16 + rnd() * 2, v = 196 + rnd() * 44 | 0;
+      x.fillStyle = `rgb(${v},${v - 10 | 0},${v - 30 | 0})`; x.beginPath(); x.roundRect ? x.roundRect(px + 1.5, py + 1.5, bw - 3, bh - 3, 5) : x.rect?.(px + 1.5, py + 1.5, bw - 3, bh - 3); x.fill?.();
+      x.fillStyle = 'rgba(255,250,235,.25)'; x.fillRect(px + 4, py + 3, bw - 12, 3);
+    }
+  });
+  if (cobbleTex) { cobbleTex.wrapS = cobbleTex.wrapT = T.RepeatWrapping; cobbleTex.anisotropy = 4; shared.add(cobbleTex); }
+  return cobbleTex;
+}
+function buildPaths() {
+  pathPts = []; if (!pathList.length) return;
+  const P = [], U = [], I = [], C = [], CI = [], lift = .05, curbW = .32, curbH = .16;
+  for (const {pts, w} of pathList) {
+    const curve = new T.CatmullRomCurve3(pts.map(([x, z]) => new T.Vector3(x, 0, z))), len = curve.getLength(), n = Math.max(2, Math.ceil(len / .6));
+    const base = P.length / 3, cbase = C.length / 3;
+    for (let i = 0; i <= n; i++) {
+      const t = i / n, p = curve.getPointAt(t), d = curve.getTangentAt(t), nx = -d.z, nz = d.x, hw = w / 2;
+      pathPts.push({x: p.x, z: p.z, r: hw + curbW});
+      for (const s of [-1, 1]) { const x = p.x + nx * hw * s, z = p.z + nz * hw * s; P.push(x, floorAt(x, z, .6) + lift, z); U.push(s < 0 ? 0 : w / 2.2, t * len / 2.2); }
+      for (const s of [-1, 1]) for (const [o, hgt] of [[0, 0], [0, curbH], [curbW, curbH], [curbW, 0]]) {
+        const x = p.x + nx * (hw + o) * s, z = p.z + nz * (hw + o) * s; C.push(x, floorAt(x, z, .6) + lift + hgt - (hgt ? 0 : .08), z);
+      }
+      if (i) {
+        const a = base + (i - 1) * 2; I.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+        for (let s = 0; s < 2; s++) for (let k = 0; k < 3; k++) { const c0 = cbase + (i - 1) * 8 + s * 4 + k, c1 = c0 + 8; s ? CI.push(c0, c0 + 1, c1, c1, c0 + 1, c1 + 1) : CI.push(c0, c1, c0 + 1, c0 + 1, c1, c1 + 1); }
+      }
+    }
+  }
+  const g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(P, 3)); g.setAttribute('uv', new T.Float32BufferAttribute(U, 2)); g.setIndex(I); g.computeVertexNormals();
+  const tex = cobbleTexture(), pm = own(new T.MeshStandardMaterial({color: linearColor('#e4d6b8'), roughness: .9, ...(tex ? {map: tex} : {}), polygonOffset: true, polygonOffsetFactor: -2}));
+  const m = new T.Mesh(g, pm); m.receiveShadow = true; world.add(m);
+  const cg = new T.BufferGeometry(); cg.setAttribute('position', new T.Float32BufferAttribute(C, 3)); cg.setIndex(CI); cg.computeVertexNormals();
+  const cm = new T.Mesh(cg, own(new T.MeshStandardMaterial({color: linearColor('#b39f80'), roughness: .85, side: T.DoubleSide}))); cm.receiveShadow = true; cm.castShadow = true; world.add(cm);
+}
+const onPath = (x, z, m = .3) => pathPts.some(p => Math.abs(p.x - x) < p.r + m && Math.abs(p.z - z) < p.r + m && Math.hypot(p.x - x, p.z - z) < p.r + m);
 // Talteile: Höhe und Breite in Metern (aus den Maßen der Modelle).
 const VALLEY_PART = {trees_A: [4.5, 6], trees_B: [4.2, 6.5], tree_A: [6, 2.9], tree_B: [5.5, 3.2], rock_A: [.5, 2.2], rock_C: [1.1, 2],
   pine1: [7.4, 4.1], pine2: [9.4, 4.45], birch1: [7, 4.45], birch3: [7.6, 4.8], creepy_tree1: [5.5, 2.8], garden_tree_green: [5.4, 4.1], garden_tree_yellow: [5.4, 4.1], garden_tree_pink: [5.4, 4.1],
@@ -720,6 +764,24 @@ function buildRegions(index) {
       if (nearBridge(x, z, 6) || Math.hypot(x - dx, z - dz) < 6 || Math.hypot(x - tx - 1, z - tz + 1) < 7 || reserved(x, z, 8) || jewels.some(j => Math.hypot(j.x - x, j.z - z) < 4)) continue;
       prop((di % 2 ? 'towerB_' : 'towerA_') + tw, x, z, 10, a + Math.PI / 2, 2.3); rg.keep = {x, z}; break;
     }
+    // Burgmauer: ein Bogen am Gebietsrand gegenüber der Brücke, offen an Toren, Turm, Statue, See und Rankenwand; Ecktürme mit Fahne.
+    { const RW = rg.r - .9, away0 = Math.atan2(rg.z - ez, rg.x - ex), step = 6 / RW, tw2 = index % 2 ? 'red' : 'blue', ends = [];
+      const lakeAt = {x: rg.x + rg.r + 5, z: rg.z}, cliffAt = {x: rg.x - rg.r - 1, z: rg.z}; let run = null;
+      for (let a = away0 - 1.3; a <= away0 + 1.3 + 1e-6; a += step) {
+        const x = rg.x + Math.cos(a) * RW, z = rg.z + Math.sin(a) * RW;
+        const free = !(reserved(x, z, 6.5) || rg.keep && Math.hypot(x - rg.keep.x, z - rg.keep.z) < 6 || Math.hypot(x - dx, z - dz) < 4.5 || (di === 1 && Math.hypot(x - lakeAt.x, z - lakeAt.z) < 12) || (di === 2 && Math.hypot(x - cliffAt.x, z - cliffAt.z) < 7.5) || jewels.some(j => Math.hypot(j.x - x, j.z - z) < 2.5) || nearBridge(x, z, 5));
+        if (!free) { if (run) ends.push(run.a1); run = null; continue; }
+        prop('wall', x, z, 3.3, -a - Math.PI / 2);
+        for (const k of [-2, 0, 2]) treeColliders.push({x: x - Math.sin(a) * k, z: z + Math.cos(a) * k, trunk: 1.05, trunkTop: 3.3, crown: .2, cy: -100, ch: 0, rock: true, prop: 'wall'});
+        if (!run) { run = {a0: a}; ends.push(a - step / 2); } run.a1 = a + step / 2;
+      }
+      if (run) ends.push(run.a1);
+      for (const a of ends) { const x = rg.x + Math.cos(a) * RW, z = rg.z + Math.sin(a) * RW; prop('towerA_' + tw2, x, z, 6.5, a, 1.5); prop('flag_' + tw2, x, z, 1.4, a + 1, 0, 6.4); }
+    }
+    // Steinweg vom Brückenende zur Gebietsmitte und auf dem Hauptland die letzten Meter zur Brücke
+    { const bx = rg.axis === 'x' ? b : rg.at, bz = rg.axis === 'x' ? rg.at : b, cx = rg.x + (ex - rg.x) * .25, cz = rg.z + (ez - rg.z) * .25, px = -(cz - ez) * .12, pz = (cx - ex) * .12;
+      stonePath([[bx, bz], [ex, ez], [(ex + cx) / 2 + px, (ez + cz) / 2 + pz], [cx, cz]], 2.6);
+      const a0 = a - rg.side * 7; stonePath(rg.axis === 'x' ? [[a0, rg.at], [a0 + rg.side * 3.5, rg.at], [a, rg.at]] : [[rg.at, a0], [rg.at, a0 + rg.side * 3.5], [rg.at, a]], 2.6); }
     // Bäume (meiden Brücke, Turm, Statue, Edelsteine)
     for (let i = 0; i < 6; i++) {
       const ang = rand() * TAU, rr = 5 + rand() * (rg.r - 7), x = rg.x + Math.cos(ang) * rr, z = rg.z + Math.sin(ang) * rr;
@@ -855,7 +917,7 @@ function updateRegions(dt) {
     state.checkpoint = {x: d.x + 2.5 * Math.sign(state.x - d.x || 1), y: 0, z: d.z}; save.checkpoint = {level: save.level, ...state.checkpoint};
     spark(d.x, 2, d.z, '#ffe6a6', 30); sfx.story(); rumble(160, .5); persist(); updateHUD();
     const role = 'Kristalldrache · ' + levels[save.level].name.split(' · ')[1];
-    openDialog('drache_' + save.level + '_' + d.id, [{name: d.name, role, portrait: '✺', who: 'drache', text: d.text}, {name: d.name, role, portrait: '✺', who: 'drache', text: `Befreit: ${regionSave('dragons').length} von 4 Drachen dieser Welt. Ich bewahre hier deinen Rastpunkt.`}], () => {});
+    openDialog('drache_' + save.level + '_' + d.id, [{name: d.name, role, portrait: '✺', who: 'drache', text: d.text}, {name: d.name, role, portrait: '✺', who: 'drache', text: `Befreit: ${regionSave('dragons').length} von 4 Drachen dieser Welt. Ich bewahre hier deinen Rastpunkt.`}], () => quests.emit({type: 'dragon', level: save.level}));
   }
   // Eierdieb: flieht, sobald Aeru näher kommt; nur der Ansturm ist schnell genug.
   if (thief && !thief.caught) {
@@ -955,7 +1017,7 @@ function buildLevel(index, titleOnly = false) {
   for (const d of disposables) d.dispose(); disposables = [];
   world.traverse(o => { if (o.isMesh && !shared.has(o.geometry)) o.geometry.dispose(); if (o.isInstancedMesh) o.dispose?.(); });
   world = new T.Group(); scene.add(world);
-  resetTerrain(0); sceneryPlan = []; crates = []; clearFalter(); regions = []; jewels = []; jewelBatches = []; dragonStatues = []; thief = null; worldGates = []; chests = []; boostRings = []; gusts = []; updrafts = []; flightRings = []; solids = []; treeColliders = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
+  resetTerrain(0); pathList = []; pathPts = []; sceneryPlan = []; crates = []; clearFalter(); regions = []; jewels = []; jewelBatches = []; dragonStatues = []; thief = null; worldGates = []; chests = []; boostRings = []; gusts = []; updrafts = []; flightRings = []; solids = []; treeColliders = []; gems = []; torches = []; enemies = []; npcs = new Map(); items = []; fallbackTrees = []; clouds = []; checkpoints = []; anchors = []; boss = null; birds = null; pond = null;
   clearEffects(); particlePool.forEach(p => { p.life = 0; p.m.visible = false; });
   clearInput(); accumulator = 0; save.level = index; resetTerrain(index);
   const cfg = levels[index];
@@ -969,12 +1031,12 @@ function buildLevel(index, titleOnly = false) {
   if (index >= 3) makeUpdraft(0, 5, 0, 13);
   buildSky(index);
   // Bergkulisse rundum (weit draußen, nur zum Ansehen)
+  stonePath(Array.from({length: 12}, (_, i) => [Math.sin(i * .6) * 1.4, 21 - i * 2.6]), 2.8); buildPaths();
   buildTerrain(index);
   if (preset !== QUALITY.sparsam) for (let i = 0; i < 9; i++) { const ang = i / 9 * TAU + index * .37, rr = 185 + (i * 37 % 23), h = 75 + (i * 53 % 30); prop(i % 2 ? 'mountain_B' : 'mountain_C', Math.cos(ang) * rr, Math.sin(ang) * rr, h, ang * 3 + i, 0, -48); }
   if (index === 4) { platform(-13, -4, 7, 7, 5); platform(12, -7, 7, 7, 7); makeUpdraft(-13, 1, 0, 14); makeUpdraft(12, -1, 0, 16); for (const [x, z] of [[-13, -4], [12, -7]]) for (let j = 0; j < 5; j++) mesh('gem', cfg.accent, x - 3 + j * 1.5, 1.2, z + 4, .65, 2.8, .65).rotation.z = (j - 2) * .15; }
   if (index === 5) { for (const sign of [-1, 1]) { for (let j = 0; j < 4; j++) platform(sign * (8 + j * 3), -2 - j * 2, 4, 4, .6 + j * .6); makeUpdraft(sign * 16, 2, 0, 14); } }
   (cfg.rings || []).forEach(([x, y, z], id) => { const got = save.rings[index].includes(id); const m = ring(x, y, z, 2.5, '#ffe9a8'); m.material = own(new T.MeshBasicMaterial({color: got ? 0x60c4a4 : 0xffd277, toneMapped: false})); m.rotation.y = id === 1 ? Math.PI / 2 : 0; flightRings.push({x, y, z, id, m, got}); });
-  for (let i = 0; i < 15; i++) { const z = 19 - i * 2.5; mesh('cylinder', '#d4c9a2', Math.sin(i * .6) * 1.4, .04, z, 1.6, .06, 1.2).rotation.y = i; }
   let seed = 5432 + index * 34; const rand = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
   for (let i = 0; i < 38; i++) { const a = rand() * TAU, r = 17 + rand() * 8, x = Math.cos(a) * r, z = Math.sin(a) * r; if (floorAt(x, z) < -.1 || Math.abs(x) < 6 || dist({x, z}, {x: -14, z: -6}) < 4 || dist({x, z}, {x: 14, z: -7}) < 4 || dist({x, z}, {x: 20, z: 12}) < 3.5 || GAME_PORTALS.some(p => dist({x, z}, p) < 5.5) || !crateSpotFree(x, z) || nearBridge(x, z, 4.5)) continue; tree(x, z, .65 + rand() * .6); }
   for (let i = 0; i < 65; i++) { const a = rand() * TAU, r = rand() * 25, x = Math.cos(a) * r, z = Math.sin(a) * r; if (useSceneryModels()) { if (i % 3 === 0 && floorAt(x, z) > -.1) sceneryPlan.push({kind: 'grass', x, z, s: .8 + (i % 5) * .1, yaw: i}); } else mesh('cone', i % 3 ? '#b4ca9d' : cfg.accent, x, .18, z, .08, .36, .08); }
@@ -1019,7 +1081,7 @@ function batchScenery() {
 const worldApi = {
   level: () => save.level,
   playing: () => mode !== 'title',
-  count: (type, level) => type === 'lantern' ? save.lit[level].length : save.rings[level].length,
+  count: (type, level) => type === 'lantern' ? save.lit[level].length : type === 'dragon' ? regionSave('dragons', level).length : save.rings[level].length,
   hasGem: (level, id) => save.collected[level].includes(id),
   dialog: (id, lines, done) => openDialog(id, lines, done),
   grantCore(level) { save.cores[level] = true; if (level === save.level && core) { core.visible = true; spark(0, 5, -20, '#ffe6a9', 35); } sfx.story(); toast(level === LEVEL_COUNT - 1 ? 'Horizontkern befreit · Alle sechs Leuchtkerne leuchten' : 'Leuchtkern erhalten · Das Sternentor ist offen'); persist(); },
@@ -1677,6 +1739,7 @@ function objectiveTarget(o) {
     case 'item': { const it = nearest(items.filter(i => i.m.visible)); return it && {x: it.x, y: it.y, z: it.z, label: it.label}; }
     case 'gem': { const gm = nearest(gems.filter(x => !x.got && g.ids.includes(x.id))); return gm && {x: gm.x, y: gm.y, z: gm.z, label: 'Splitter'}; }
     case 'boss': return {x: 0, y: 3, z: -18.5, label: 'Oberes Tor'};
+    case 'dragons': { const d = nearest(dragonStatues.filter(d => !d.freed)); return d && {x: d.x, y: 3, z: d.z, label: d.name + ' · Kristalldrache'}; }
     case 'arrive': return save.cores[save.level] ? {x: PORTAL.x, y: 5, z: PORTAL.z, label: 'Sternentor'} : null;
   }
   return null;
