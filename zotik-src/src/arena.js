@@ -129,13 +129,19 @@ export function createArena(c) {
   /* ---- Bau in Valdoria ---- */
   function build(n, mir) {
     run.cur = null; spot = null; if (n !== 3) return;
-    const cand = [[0, -34], [38 * mir, -10], [-38 * mir, -12], [0, 52], [44 * mir, 14]]; let ax, az;
-    for (const [x, z] of cand) { let ok = c.colFree(x, z, 9); for (let a = 0; ok && a < 8; a++) if (c.blocked(x + Math.cos(a * .785) * 11, z + Math.sin(a * .785) * 11)) ok = false; if (ok) { ax = x; az = z; break } }
-    if (ax === undefined) { ax = cand[0][0]; az = cand[0][1] }
+    /* freie Fläche suchen: abseits von Markt (Mitte), Hafen und Wohnung, mit möglichst viel Platz ringsum */
+    let ax, az, best = -1;
+    for (let x = -64; x <= 64; x += 4) for (let z = -76; z <= 64; z += 4) {
+      if (Math.hypot(x, z) < 34 || Math.hypot(x + 30 * mir, z - 30) < 22 || Math.hypot(x - 30 * mir, z - 28) < 22 || c.blocked(x, z)) continue;
+      let r = 0; while (r < 22 && c.colFree(x, z, r + 2)) r += 2; if (r < 14) continue;
+      let ok = true; for (let a = 0; ok && a < 12; a++) if (c.blocked(x + Math.cos(a * .5236) * 14, z + Math.sin(a * .5236) * 14)) ok = false;
+      const sc = r * 10 - Math.hypot(x, z) * .2; if (ok && sc > best) { best = sc; ax = x; az = z }
+    }
+    if (ax === undefined) { ax = 0; az = -56 }
     spot = { x: ax, z: az }; const { T, mk, G, M, glow } = c, g = new T.Group(), y = c.hgt(ax, az); g.position.set(ax, y, az);
     g.add(mk(G.cyl, M(0x6a5a4a, { r: .8 }), 0, .3, 0, 7, .6, 7)); const rg = mk(G.tor, M(0xff9a4a, { e: 0xff6a20, ei: 1.2 }), 0, .7, 0, 6.8, 6.8, .2, false); rg.rotation.x = Math.PI / 2; g.add(rg);
     for (let k = 0; k < 8; k++) { const a = k * .785; g.add(mk(G.cyl0, M(0x9a8a7a), Math.cos(a) * 6.2, 2.4, Math.sin(a) * 6.2, .55, 4.8, .55)); g.add(mk(G.oct, M(0xff9a4a, { e: 0xff7a20, ei: 1.6 }), Math.cos(a) * 6.2, 5.2, Math.sin(a) * 6.2, .4, .6, .4, false)) }
-    const fl = mk(G.oct, M(0xffd070, { e: 0xffa030, ei: 1.8 }), 0, 2.2, 0, .6, .9, .6, false); g.add(fl); g.add(glow(0xffa040, 6, 0, 2.2, 0, .6)); g.add(mk(G.cyl0, M(0x6a5a4a), 0, 1, 0, .7, 1.6, .7)); c.scene.add(g); c.addCol(ax, az, .8);
+    const fl = mk(G.oct, M(0xffd070, { e: 0xffa030, ei: 1.8 }), 0, 2.2, 0, .6, .9, .6, false); g.add(fl); g.add(glow(0xffa040, 2.6, 0, 2.2, 0, .45)); g.add(mk(G.cyl0, M(0x6a5a4a), 0, 1, 0, .7, 1.6, .7)); c.scene.add(g); c.addCol(ax, az, .8);
     c.anim((t, dt) => { fl.rotation.y = t; fl.position.y = 2.2 + Math.sin(t * 2) * .12; const r = run.cur; if (!r) return;
       if (!c.playing()) return; r.t += dt; if (Math.hypot(c.pl.x - ax, c.pl.z - az) > 50) { abort(); return c.toast('Du hast die Arena verlassen – Kampf abgebrochen.') }
       if (r.gap > 0) { r.gap -= dt; if (r.gap <= 0) nextRound() } });
