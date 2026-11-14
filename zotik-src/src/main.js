@@ -664,12 +664,35 @@ function makeProf(){
   root.scale.setScalar(1.12);mergeChar(P);anime(root);return AF.dress(P,'prof',{cast:1})}
 
 /* Begleiter als KayKit-Figuren, Farben nach Master-Sheet (Rollen siehe KK.recolor) */
+/* RiCARDO (RicoReWi) nach Foto: nach oben gestylte braune Haare, Vollbart, Septum, Kreuz-Ohrring links, lila Shirt, Kopfhörer um den Hals */
+function ricoDeco(P) { const hb = P.bones.head; if (!hb) return; const g = new T.Group(); hb.add(g);
+  const col = h => new T.Color(h).convertSRGBToLinear(), M = h => new T.MeshToonMaterial({ color: col(h) });
+  const HAIR = M(0x4a2a12), BEARD = M(0x3e2412), BK = M(0x1a171c), PU = M(0x8a40c8), MET = new T.MeshStandardMaterial({ color: col(0xe0e4ec), metalness: .9, roughness: .25 });
+  const add = (geo, m, x, y, z, rx, ry, rz, sx, sy, sz) => { const o = new T.Mesh(geo, m); o.position.set(x, y, z); o.rotation.set(rx || 0, ry || 0, rz || 0); if (sx) o.scale.set(sx, sy, sz); g.add(o); return o; };
+  const cone = new T.ConeGeometry(1, 1, 5), ball = new T.SphereGeometry(1, 12, 8);
+  // nach oben gestylte Haare: Spitzen auf dem Oberkopf, vorn höher
+  for (const [x, z, h, r, rx, rz] of [[0, .36, .3, .1, .45, 0], [-.14, .32, .26, .09, .4, .3], [.14, .32, .26, .09, .4, -.3], [-.06, .18, .3, .1, .2, .12], [.07, .18, .3, .1, .2, -.12], [-.2, .14, .22, .09, .15, .45], [.2, .14, .22, .09, .15, -.45], [0, .02, .26, .1, 0, 0], [-.12, -.08, .2, .09, -.15, .25], [.12, -.08, .2, .09, -.15, -.25]])
+    add(cone, HAIR, x, .84 + h * .4, z, rx, 0, rz, r * 1.15, h * 1.3, r * 1.15);
+  // Vollbart: Kinn und Kieferlinie bis zu den Ohren
+  add(ball, BEARD, 0, .13, .45, -.25, 0, 0, .17, .1, .065);
+  for (const s of [-1, 1]) { add(ball, BEARD, s * .19, .16, .42, -.15, s * .55, 0, .12, .09, .06); add(ball, BEARD, s * .27, .18, .38, -.1, s * .8, 0, .1, .1, .06); add(ball, BEARD, s * .1, .14, .45, -.2, s * .3, 0, .12, .09, .06); add(ball, BEARD, s * .33, .23, .31, 0, s * 1.05, 0, .09, .11, .06); add(ball, BEARD, s * .37, .27, .25, 0, s * 1.2, 0, .07, .1, .055); add(ball, BEARD, s * .4, .3, .18, 0, s * 1.35, 0, .06, .1, .05); }
+  // Septum-Piercing unter der Nase
+  add(new T.TorusGeometry(.028, .008, 6, 14), MET, 0, .27, .58, .2, 0, 0);
+  // Kreuz-Ohrring am linken Ohr
+  const ear = new T.Group(); ear.position.set(.47, .32, .04); g.add(ear); const bx = new T.BoxGeometry(1, 1, 1);
+  { const r = new T.Mesh(new T.TorusGeometry(.022, .006, 5, 10), BK); r.position.y = -.01; ear.add(r); }
+  for (const [w, h, y] of [[.024, .13, -.1], [.075, .024, -.07]]) { const m = new T.Mesh(bx, BK); m.scale.set(w, h, .018); m.position.y = y; ear.add(m); }
+  // Kopfhörer um den Hals (Radiomacher)
+  add(new T.TorusGeometry(.36, .03, 6, 22, Math.PI), BK, 0, -.02, .02, Math.PI * .5 + .25, 0, 0);
+  for (const s of [-1, 1]) add(new T.CylinderGeometry(.11, .11, .08, 14), PU, s * .36, -.02, .06, 0, 0, Math.PI / 2);
+  P.deco = g; }
 const CAST_KK={mira:['ad_ma',/Hat/,{r:'staff'},{hair:0x4a86f0,top:0xc8d8ff,top2:0x22336e,pants:0x22336e,eye:0x6a9af0},1.62],
   lyra:['ad_ma',/Hat/,{r:'staff'},{hair:0xff9ad0,top:0x2e2c4a,top2:0x6a2aa8,pants:0x2a2638,eye:0x8a4ac8},1.6],
   nia:['ad_ro',/^$/,{l:'bow_withString'},{hair:0x6ac05a,top:0xa8c878,top2:0x4a6a2a,pants:0x4a6a2a,eye:0x3a8a3a},1.56],
   rovan:['ad_kn',/Helmet|Visor/,{r:'sword_1handed',l:'shield_badge_color'},{hair:0x7a4a2a,top:0x5a78b0,top2:0x2a3a5a,pants:0x4a3424,eye:0x6a4a2a},1.82],
   prof:['ad_ra',/Quiver/,{r:'crossbow_1handed'},{hair:0xf4f4f4,top:0xefe4c8,top2:0xb98a4a,pants:0x5a4030},1.74],
-  kael:['ad_rh',/Mask/,{r:'dagger',l:'dagger'}],mirael:['ad_ma',/Hat/,{r:'staff'}],toren:['ad_kn',/Helmet|Visor/,{r:'hammer_A'}],eryn:['ad_ma',/Hat/,{r:'spellbook_open'}],aera:['ad_ro',/^$/,{r:'staff_A'}]};
+  kael:['ad_rh',/Mask/,{r:'dagger',l:'dagger'}],mirael:['ad_ma',/Hat/,{r:'staff'}],toren:['ad_kn',/Helmet|Visor/,{r:'hammer_A'}],eryn:['ad_ma',/Hat/,{r:'spellbook_open'}],aera:['ad_ro',/^$/,{r:'staff_A'}],
+  rico:['ad_ra',/Cape|Quiver/,{deco:P=>ricoDeco(P)},{hair:0x3a2414,shirt:0x6a34a8,top:0x3a2a22,top2:0x2a2232,pants:0x2a3040,eye:0x4a3020},1.78]};
 function kkCast(id){const c=CAST_KK[id]||CAST_KK.rovan,g=c[3]?null:GLOOK[id],pal=c[3]||{hair:g.hair,top:g.cloth,top2:g.cape||g.cloth2,pants:g.cloth2,eye:g.eye};
   const P=KK.char(c[0],{h:c[4]||1.66*(g&&g.sc||1),hide:c[1],pal,...c[2]});return{root:P.root,kk:P}}
 function makeVillager(o){
@@ -826,7 +849,7 @@ let zotikSpeechOn=false;
 try{zotikSpeechOn=localStorage.getItem(ZOTIK_SPEECH_KEY)==='1'}catch(e){}
 function zotikStopVoice(){try{if(window.speechSynthesis)window.speechSynthesis.cancel()}catch(e){}}
 /* Eigene Stimme je Figur: Geschlecht (w/m) wählt eine passende Gerätestimme, Tonhöhe und Tempo machen sie unverwechselbar. Unbekannte Namen bekommen eine feste Stimme aus dem Namen. */
-const VOX={Zotik:['m',1.18,1.06],Lyra:['w',1.12,1],Mira:['w',1.25,1.02],Professorium:['m',.78,.9],Felli:['w',1.7,1.15],Nia:['w',1.35,1.08],Rovan:['m',.85,.96],Erzähler:['m',.95,.92],Eryn:['w',1.05,1],Veyra:['w',.9,.94],Aera:['w',1.3,1],Vexa:['w',.8,.95],Nerea:['w',1.2,.96],Kael:['m',.92,1.04],Falk:['m',.75,.92],Nuri:['w',1.45,1.1],Harlan:['m',.7,.9],Brenna:['w',1,1.04],Toren:['m',.82,.95],Mirrel:['w',1.1,.98],Mara:['w',1.05,1],Korrod:['m',.6,.86],Boro:['m',.68,.92],Ashen:['m',.72,.88],Sela:['w',1.2,1],Hanno:['m',.9,.98],Mirael:['w',1.15,.95],Bruno:['m',.7,.95],Finn:['m',1.3,1.1],Elwen:['w',1.35,1],Sari:['w',1.1,1.05],Mondwolf:['m',.5,.82],Grauwächter:['m',.45,.8],Moosling:['m',1.6,1.15],Kind:['w',1.5,1.06],Großmutter:['w',.86,.86],Merle:['w',1.15,1.02],Pia:['w',1.25,1.04],Tomi:['m',1.4,1.1],Ilse:['w',.95,.92],'???':['m',.6,.85]};
+const VOX={Zotik:['m',1.18,1.06],RiCARDO:['m',.95,1.04],Lyra:['w',1.12,1],Mira:['w',1.25,1.02],Professorium:['m',.78,.9],Felli:['w',1.7,1.15],Nia:['w',1.35,1.08],Rovan:['m',.85,.96],Erzähler:['m',.95,.92],Eryn:['w',1.05,1],Veyra:['w',.9,.94],Aera:['w',1.3,1],Vexa:['w',.8,.95],Nerea:['w',1.2,.96],Kael:['m',.92,1.04],Falk:['m',.75,.92],Nuri:['w',1.45,1.1],Harlan:['m',.7,.9],Brenna:['w',1,1.04],Toren:['m',.82,.95],Mirrel:['w',1.1,.98],Mara:['w',1.05,1],Korrod:['m',.6,.86],Boro:['m',.68,.92],Ashen:['m',.72,.88],Sela:['w',1.2,1],Hanno:['m',.9,.98],Mirael:['w',1.15,.95],Bruno:['m',.7,.95],Finn:['m',1.3,1.1],Elwen:['w',1.35,1],Sari:['w',1.1,1.05],Mondwolf:['m',.5,.82],Grauwächter:['m',.45,.8],Moosling:['m',1.6,1.15],Kind:['w',1.5,1.06],Großmutter:['w',.86,.86],Merle:['w',1.15,1.02],Pia:['w',1.25,1.04],Tomi:['m',1.4,1.1],Ilse:['w',.95,.92],'???':['m',.6,.85]};
 const VFEM=/female|frau|weib|anna|petra|katja|hedda|marlene|vicki|helena|steffi|amala|seraphina|elke|gisela|klara|conni|louisa|ingrid|tanja|maja/i,VMAL=/\bmale|mann|markus|stefan|hans|conrad|killian|florian|christoph|ralf|bernd|jonas|daniel|yannick|viktor|kasper|kai/i;
 function voxOf(who){let v=VOX[who];if(!v){let h=0;for(const c of String(who||''))h=(h*31+c.charCodeAt(0))>>>0;v=[h&1?'w':'m',.8+(h%9)*.06,.92+(h>>4)%5*.04]}return v}
 function voxVoice(g){try{const all=window.speechSynthesis.getVoices().filter(x=>/^de/i.test(x.lang));if(!all.length)return null;const re=g==='w'?VFEM:VMAL,bad=g==='w'?VMAL:VFEM;return all.find(x=>re.test(x.name)&&!(g==='w'&&VMAL.test(x.name)))||all.find(x=>!bad.test(x.name))||null}catch(e){return null}}
@@ -984,7 +1007,7 @@ function ensureBoss(){if(S.boss||boss)return;boss=spawnEnemy('boss',ARENA.x,AREN
 /* ---- Kampf-Verfeinerung: Schwächen & Bruch (Lufia/FF), Treffergefühl & Kombo (KH), Perfektes Ausweichen ---- */
 const EL={fire:['🔥','Feuer'],light:['✨','Licht'],nature:['🌿','Natur'],ice:['❄️','Eis'],storm:['⚡','Sturm']};
 const weakOf=e=>e.d.weak||(e.d.base==='rift'?'light':'fire');
-let _mw=null;const MWX=()=>_mw||(_mw=createMaerchen({jumpPath:(n,o)=>jumpPath(n,o),bounce:v=>{pl.vy=v;pl.air=true;pl.dj=false},tint:(m,c,k)=>tintModel(m,c,k),house:(...a)=>house(...a),inHouse:(x,z,r)=>inHouseR(x,z,r),climb:o=>clbAdd(o),climbDome:(...a)=>clbDome(...a),climbDisc:(...a)=>clbDisc(...a),folk:(n,o,w)=>folkNpc(n,o,w),T,G,PG,M,mk,glow,mergeStatic,scene,keyHint:KH,inMode:()=>INP.mode(),S:()=>S,MP:()=>MP,CHP,setWLD:w=>{WLD=w},W:()=>WLD,setAtmos,tooSteep,addCol,colFree,rng:mul32,animObjs,emit,pl,addNpc,CR:()=>CR(),makeVillager,ED,spawnEnemy,INT,say:(...a)=>say(...a),travel:n=>travel(n),$,sfx:n=>sfx(n),banner:(...a)=>banner(...a),toast:(...a)=>toast(...a),saveGame:q=>saveGame(q),
+let _mw=null;const MWX=()=>_mw||(_mw=createMaerchen({kkCast:id=>kkCast(id),onSeal:w=>{if(w.id==='ricorewi')recruit('rico')},jumpPath:(n,o)=>jumpPath(n,o),bounce:v=>{pl.vy=v;pl.air=true;pl.dj=false},tint:(m,c,k)=>tintModel(m,c,k),house:(...a)=>house(...a),inHouse:(x,z,r)=>inHouseR(x,z,r),climb:o=>clbAdd(o),climbDome:(...a)=>clbDome(...a),climbDisc:(...a)=>clbDisc(...a),folk:(n,o,w)=>folkNpc(n,o,w),T,G,PG,M,mk,glow,mergeStatic,scene,keyHint:KH,inMode:()=>INP.mode(),S:()=>S,MP:()=>MP,CHP,setWLD:w=>{WLD=w},W:()=>WLD,setAtmos,tooSteep,addCol,colFree,rng:mul32,animObjs,emit,pl,addNpc,CR:()=>CR(),makeVillager,ED,spawnEnemy,INT,say:(...a)=>say(...a),travel:n=>travel(n),$,sfx:n=>sfx(n),banner:(...a)=>banner(...a),toast:(...a)=>toast(...a),saveGame:q=>saveGame(q),
   setBoss:e=>{boss=e},clearBoss:()=>{$('boss').hidden=true;boss=null},FX:()=>FXH,gainXp:x=>gainXp(x),giveGear:id=>giveGear(id),time:()=>time,setMBG:c=>{MBG=c},
   TX,PLAT,TOUCH,KK,makeChest:g=>makeChest(g),chests,CMP,PARTY,PORT,setCam:o=>setCam(o),snapCam:()=>snapCam(),hurtE:(...a)=>hurtE(...a),shake:v=>{camShake=Math.max(camShake,v)},makeNaut:()=>makeNaut(),chDone:n=>chDone(n),openTravel:()=>toggleMenu(true,'travel'),E:()=>E,dlgOn:()=>dlg.on}));
 let _sb=null;const SBX=()=>_sb||(_sb=createSeaBattle({T,scene,camera,say:(...a)=>say(...a),sfx:(...a)=>sfx(...a),toast:(...a)=>toast(...a),banner:(...a)=>banner(...a),dnum:(...a)=>dnum(...a),emit:(...a)=>emit(...a),S:()=>S,pl,wl:OW_WL,CMP:()=>CMP,PARTY,cmax:id=>cmax(id),maxHp:()=>maxHp(),atkV:()=>atkV(),gainXp:n=>gainXp(n),makeKind:(k,c)=>CR().makeKind(k,c,false),makeCreature:(k,sl,c)=>CR().makeCreature(k,sl,c),makeExtra:(k,i)=>CR().makeExtra(k,i),ED,CHP,WLV,eHp,eDm,maxMp:()=>maxMp(),KK,fox,naut:()=>naut,hgt:(x,z)=>hgt(x,z),$,FXH:()=>FXH,MFX:()=>MFX,tone:(...a)=>tone(...a),noise:(...a)=>noise(...a),hitStop:v=>{hitStop=Math.max(hitStop,v)},animHuman:(P,t,mv)=>animHuman(P,t,mv),foxAnim:(mv,ap)=>{animFox(fox,time,mv,ap>=0?0:-1);fox.body.rotation.set(0,0,0);if(ap>=0)atkPose(fox,ap,0)},water:(x,z)=>!WLD||!WLD.water||WLD.water(x,z),cAtk:id=>cAtk(id),cg:(id,k)=>cg(id,k),cgDrop:n=>cgDrop(n),setOn:v=>{X.sea=v;if(v&&WLD&&WLD.clearTrees)X.trees=WLD.clearTrees(pl.x,pl.z,24);else if(!v&&X.trees){X.trees();X.trees=null}},lose:()=>{const d=WLD&&WLD.docks&&WLD.docks.slice().sort((a,b)=>Math.hypot(a.x-pl.x,a.z-pl.z)-Math.hypot(b.x-pl.x,b.z-pl.z))[0];if(d){pl.x=d.x;pl.z=d.z}}}));
@@ -1852,7 +1875,7 @@ const PZD={"LUN_MOONGATE":{"name":"Mondtor","kind":"dials","hints":["Die drei Sc
 /* ================= Zwischensequenzen ================= */
 Object.assign(PORT,{'Erzähler':['📖','#c8c8e8'],Lyra:['📘','#6a8ad9'],Rovan:['🛡️','#7a6a5a'],Orun:['🔥','#ffb040'],Mirael:['✨','#c8a0ff'],'Wurzelkönigin':['🌿','#3aff7a'],'Kanalwächter':['⚙️','#5ac8e0'],Kharos:['🏜️','#ffa030'],Neryx:['🌊','#3a7aff'],Avarn:['❄️','#6ac8ff'],Magmarion:['🌋','#ff4a1a'],'Erinnerungshüter':['🌙','#c84aff'],Solyra:['⭐','#ffd0ff'],Elyon:['🔮','#fff0b0']});
 /* Filmische Kamera in Zwischensequenzen: je Zeile eine neue Einstellung (Totale, Über-die-Schulter, Nahaufnahme, Zweier), langsam fahrend */
-const CNM={lyra:'Lyra',nia:'Nia',rovan:'Rovan',kael:'Kael',mirael:'Mirael',toren:'Toren',eryn:'Eryn',aera:'Aera',prof:'Professorium',mira:'Mira'};
+const CNM={lyra:'Lyra',nia:'Nia',rovan:'Rovan',kael:'Kael',mirael:'Mirael',toren:'Toren',eryn:'Eryn',aera:'Aera',prof:'Professorium',mira:'Mira',rico:'RiCARDO'};
 const CFACE={Vexa:0xb03aff,Korrod:0x7a9a3a,Mirrel:0x3ad8d8,Ashen:0x8a8a9a},CAPP=[];
 function cineApp(who){const col=CFACE[who];if(!col)return null;let a=CAPP.find(o=>o.who===who);if(a)return a;const n=CAPP.length,an=pl.face+(n%2?.55:-.55),x=pl.x+Math.sin(an)*5.5,z=pl.z+Math.cos(an)*5.5,y=hgt(x,z),g=new T.Group();
   g.add(mk(G.cone,M(0x14101e,{r:.9}),0,1.1,0,.7,2.2,.7));g.add(mk(G.sph,M(0x14101e),0,2.35,0,.42,.46,.42));const mask=mk(G.sph,M(col,{e:col,ei:1.6}),0,2.38,.3,.32,.38,.14,false);g.add(mask);
@@ -1919,7 +1942,7 @@ function openPuzzle(key,onSolve){
 const PARTY={lyra:{n:'Lyra',col:0x6a8ad9,css:'#6a8ad9',em:'📘',atk:7,rng:9,cd:1.6,heal:25,hcd:10,thr:.45},nia:{n:'Nia',col:0xd9a03a,css:'#d9a03a',em:'🏹',atk:6,rng:10,cd:1},rovan:{n:'Rovan',col:0x7a6a5a,css:'#8a7a6a',em:'🛡️',atk:11,rng:2.2,cd:1.8,melee:1},
   kael:{n:'Kael',col:0x8a3ac8,css:'#8a5ad8',em:'🗡️',atk:9,rng:2,cd:.9,melee:1},mirael:{n:'Mirael',col:0x2ab0c8,css:'#3ac0d8',em:'🔧',atk:6,rng:9,cd:1.3,heal:14,hcd:14,thr:.35},
   toren:{n:'Toren',col:0xd8602a,css:'#e0703a',em:'🔨',atk:12,rng:2.3,cd:1.7,melee:1},eryn:{n:'Eryn',col:0x6a5ac8,css:'#7a6ad8',em:'📜',atk:7,rng:10,cd:1.4},
-  prof:{n:'Professorium',col:0x4fe8ff,css:'#4fe8ff',em:'🥽',atk:8,rng:10,cd:1.3},mira:{n:'Mira',col:0x3b82f0,css:'#3b82f0',em:'💙',atk:7,rng:9,cd:1.4,heal:18,hcd:12,thr:.4},aera:{n:'Aera',col:0xe8c040,css:'#f0c84a',em:'🌟',atk:9,rng:3,cd:1.1,melee:1}};
+  prof:{n:'Professorium',col:0x4fe8ff,css:'#4fe8ff',em:'🥽',atk:8,rng:10,cd:1.3},mira:{n:'Mira',col:0x3b82f0,css:'#3b82f0',em:'💙',atk:7,rng:9,cd:1.4,heal:18,hcd:12,thr:.4},rico:{n:'RiCARDO',col:0xa05aff,css:'#a05aff',em:'🎧',atk:9,rng:9,cd:1.2},aera:{n:'Aera',col:0xe8c040,css:'#f0c84a',em:'🌟',atk:9,rng:3,cd:1.1,melee:1}};
 /* Gäste je Region (Charakter-Master): kommen in ihrer Welt dazu, verabschieden sich nach dem Kapitel – Kael und Eryn können auf Wunsch dauerhaft bleiben */
 const GUEST={3:'kael',5:'mirael',7:'toren',8:'eryn',9:'aera'},PERM=['lyra','nia','rovan'],
   GLOOK={kael:{cloth:0x3a2a4a,cloth2:0x2a2a30,hair:0x1a1418,eye:0x8a5ac8,hs:4,cape:0x5a2a7a,sc:1.02},mirael:{cloth:0x2a6a8a,cloth2:0x5a4a3a,hair:0xe0703a,eye:0x2ab0c8,hs:1,apron:0x8a6a3a,sc:.95},
@@ -1940,12 +1963,12 @@ function makeCmp(id){let P;
   P.root.visible=true;scene.add(P.root);KEEPX.add(P.root);return P}
 function addCmp(id){if(CMP.some(a=>a.id===id))return;CMP.push({id,P:makeCmp(id),x:pl.x+(CMP.length%2?2:-2),z:pl.z+2.5,face:pl.face,t:Math.random()*9,cd:1,hc:3,mv:0,hp:cmax(id),ko:false,kot:0,skc:0,taunt:0,calm:0})}
 /* Gefährten als echte Gruppe (wie Lufia/Final Fantasy): eigene KP, K.O., eigene Fähigkeit per Befehl, Taktik */
-const CHP0={lyra:60,nia:65,rovan:115,kael:75,mirael:65,toren:110,eryn:62,aera:80,prof:72,mira:62},cmax=id=>Math.round(((CHP0[id]||70)+cLv(id)*9+cg(id,'hp')));
+const CHP0={lyra:60,nia:65,rovan:115,kael:75,mirael:65,toren:110,eryn:62,aera:80,prof:72,mira:62,rico:78},cmax=id=>Math.round(((CHP0[id]||70)+cLv(id)*9+cg(id,'hp')));
 /* Gefährten wachsen selbst: eigene Stufe, eigene EP (aktive Gruppe voll, Reserve im Camp zur Hälfte) und eigene Ausrüstung in drei Fächern */
 const CG={g_w1:{s:'w',t:'Eschen',atk:3,tier:1},g_w2:{s:'w',t:'Mondsilber',atk:8,tier:3},g_w3:{s:'w',t:'Glut',atk:15,tier:6},g_w4:{s:'w',t:'Sternen',atk:24,tier:9},
   g_a1:{s:'a',n:'Reiseumhang',hp:30,def:.05,tier:1},g_a2:{s:'a',n:'Rindenweste',hp:70,def:.1,tier:3},g_a3:{s:'a',n:'Korallenpanzer',hp:120,def:.15,tier:6},g_a4:{s:'a',n:'Sternenmantel',hp:200,def:.2,tier:9},
   g_c1:{s:'c',n:'Glücksbrosche',crit:.08,tier:2},g_c2:{s:'c',n:'Heilstein',heal:.5,tier:4},g_c3:{s:'c',n:'Eilring',spd:.25,tier:7},g_c4:{s:'c',n:'Bandkristall',atk:6,hp:60,crit:.05,tier:10}};
-const CWN={lyra:'Buch',nia:'Bogen',rovan:'Hammer',kael:'Dolch',mirael:'Schlüssel',toren:'Hammer',eryn:'Schriftrolle',prof:'Apparat',mira:'Stab',aera:'Klinge'};
+const CWN={lyra:'Buch',nia:'Bogen',rovan:'Hammer',kael:'Dolch',mirael:'Schlüssel',toren:'Hammer',eryn:'Schriftrolle',prof:'Apparat',mira:'Stab',aera:'Klinge',rico:'Mikrofon'};
 const cgName=(k,id)=>{const d=CG[k];return !d?'–':d.s==='w'?d.t+'-'+(CWN[id]||'Waffe'):d.n},cgInfo=k=>{const d=CG[k];if(!d)return'';return[d.atk&&'+'+d.atk+' Angriff',d.hp&&'+'+d.hp+' LP',d.def&&'−'+Math.round(d.def*100)+' % Schaden',d.crit&&'+'+Math.round(d.crit*100)+' % Kritisch',d.heal&&'+'+Math.round(d.heal*100)+' % Heilung',d.spd&&'+'+Math.round(d.spd*100)+' % Tempo'].filter(Boolean).join(' · ')};
 function cSt(id){S.cl=S.cl||{};S.cinv=S.cinv||{};if(!S.cl[id]){S.cl[id]={lv:Math.max(1,(S.lvl||1)-1),xp:0,g:{w:'g_w1',a:'g_a1',c:''}};S.cinv.g_w1=(S.cinv.g_w1||0)+1;S.cinv.g_a1=(S.cinv.g_a1||0)+1}return S.cl[id]}
 const cLv=id=>cSt(id).lv,cg=(id,k)=>{let v=0;const g=cSt(id).g;for(const sl in g){const d=CG[g[sl]];if(d&&d[k])v+=d[k]}return v};
@@ -1964,7 +1987,7 @@ function partyBind(c){c.querySelectorAll('[data-cg]').forEach(b=>b.onclick=()=>{
 const CSK={lyra:{n:'Heilwelle',em:'💚',cd:18,d:'heilt alle, belebt K.O.-Gefährten'},nia:{n:'Zielschuss',em:'🎯',cd:9,d:'starker Schuss aufs Ziel'},rovan:{n:'Provokation',em:'📣',cd:15,d:'Gegner greifen Rovan an'},
   kael:{n:'Rissdolche',em:'🗡️',cd:9,ty:'shot',d:'schneller Treffer aufs Ziel'},mirael:{n:'Kühlnebel',em:'💧',cd:20,ty:'heal',d:'heilt die Gruppe'},toren:{n:'Glutschlag',em:'🔥',cd:15,ty:'taunt',d:'zieht Gegner auf Toren'},
   eryn:{n:'Erinnerungspfeil',em:'📜',cd:10,ty:'shot',d:'starker Treffer aufs Ziel'},aera:{n:'Sternenlanze',em:'🌟',cd:10,ty:'shot',d:'Lanzenstoß aufs Ziel'},
-  prof:{n:'Nautilux-Salve',em:'🚤',cd:12,ty:'shot',d:'Kristallkanone aufs Ziel'},mira:{n:'Mondlicht',em:'🌙',cd:20,ty:'heal',d:'heilt die Gruppe'}};
+  prof:{n:'Nautilux-Salve',em:'🚤',cd:12,ty:'shot',d:'Kristallkanone aufs Ziel'},mira:{n:'Mondlicht',em:'🌙',cd:20,ty:'heal',d:'heilt die Gruppe'},rico:{n:'Jingle',em:'🎵',cd:10,ty:'shot',d:'Klangstoß aufs Ziel'}};
 let CTGT=null;
 function cmpHurt(a,dmg){if(a.ko)return;dmg=Math.max(1,Math.round(dmg*(a.id==='rovan'?(a.taunt>0?.45:.75):1)*(1-cg(a.id,'def'))));a.hp-=dmg;a.calm=0;dnum(a.x,hgt(a.x,a.z)+2.2,a.z,dmg,'p');
   if(a.hp<=0){a.hp=0;a.ko=true;a.kot=0;sfx('hurt');toast('💫 '+PARTY[a.id].n+' ist K.O. – Lyras Heilwelle oder eine Kampfpause hilft');X.deck.dirty=true}}
@@ -2007,12 +2030,12 @@ function miraJoin(){if(S.fl.gk_mira||!chDone(2))return;say([['Mira','Zotik. Ich 
 /* Figur selbst steuern (wie Lufia/Final Fantasy): eine Figur der Gruppe übernimmt den Platz von Zotik – Bewegung, Kombos, Ausweichen bleiben gleich;
    Fernkämpfer schießen statt zu schlagen, Spezialangriff 1 ist die eigene Technik der Figur. Zotik läuft dann unsichtbar mit (wie der Anführer in Lufia). */
 /* Eigene Kampfart je Figur: Element (wirkt auf Schwächen), eigener Zauber als Anführer (Fähigkeit 2) und je Kapitelwelt eine besondere Waffe für eine Figur */
-const CEL={lyra:'light',nia:'nature',kael:'storm',mirael:'ice',toren:'fire',eryn:'ice',aera:'light',prof:'storm',mira:'ice'};
+const CEL={lyra:'light',nia:'nature',kael:'storm',mirael:'ice',toren:'fire',eryn:'ice',aera:'light',prof:'storm',mira:'ice',rico:'storm'};
 const WWG={2:{id:'nia',n:'Bogen der Erinnerung'},3:{id:'kael',n:'Sternstahl-Dolche'},4:{id:'prof',n:'Tesla-Monokel'},5:{id:'mirael',n:'Korallenschlüssel'},6:{id:'rovan',n:'Frostwall-Schild'},7:{id:'toren',n:'Glutherz-Hammer'},8:{id:'eryn',n:'Feder des Archivs'},9:{id:'aera',n:'Sternenlanze Polaris'},10:{id:'lyra',n:'Stab der Morgenröte'},11:{id:'mira',n:'Mondsichel-Stab'}};
 const cwOf=id=>{for(const n in WWG)if(WWG[n].id===id&&chDone(+n))return WWG[n];return null},cwMul=id=>cwOf(id)?1.3:1,elCol=el=>({light:0xfff0a0,nature:0x7dff8a,storm:0xb0a0ff,ice:0x9ae8ff,fire:0xff8a3a})[el]||0xffffff;
 const CSK2={lyra:{n:'Sternenregen',em:'🌠',mp:24,d:'Lichtstrahlen im Fächer, heilt die Gruppe ein wenig'},nia:{n:'Pfeilhagel',em:'🍃',mp:22,d:'Pfeile regnen aufs Ziel und fesseln es'},rovan:{n:'Schildwall',em:'🛡️',mp:20,d:'stößt alle zurück, zieht sie auf dich, 6 s weniger Schaden'},
   kael:{n:'Schattenschritt',em:'⚡',mp:20,d:'blitzschneller Stoß durch alle Gegner vor dir'},mirael:{n:'Frostmine',em:'❄️',mp:22,d:'Eisexplosion um dich, verlangsamt'},toren:{n:'Glutbeben',em:'🔥',mp:26,d:'schwerer Feuerschlag rundum'},
-  eryn:{n:'Zeitsiegel',em:'⏳',mp:24,d:'verlangsamt alle Gegner weit um dich und trifft sie'},aera:{n:'Polarstoß',em:'🌟',mp:22,d:'durchschlagende Sternenlanze'},prof:{n:'Tesla-Kette',em:'⚡',mp:24,d:'Blitz springt über bis zu 5 Gegner'},mira:{n:'Mondschild',em:'🌙',mp:22,d:'heilt stark und füllt Mana der Gruppe'}};
+  eryn:{n:'Zeitsiegel',em:'⏳',mp:24,d:'verlangsamt alle Gegner weit um dich und trifft sie'},aera:{n:'Polarstoß',em:'🌟',mp:22,d:'durchschlagende Sternenlanze'},prof:{n:'Tesla-Kette',em:'⚡',mp:24,d:'Blitz springt über bis zu 5 Gegner'},mira:{n:'Mondschild',em:'🌙',mp:22,d:'heilt stark und füllt Mana der Gruppe'},rico:{n:'Frequenzwelle',em:'🎧',mp:24,d:'Klangwelle rundum: trifft, lässt Gegner taumeln, stärkt die Gruppe'}};
 function aoeHit(x,z,r,dmg,el,col){fxRing(x,z,col,r,.6);emit(x,hgt(x,z)+.5,z,col,36,r,.8,.7,0);let n=0;for(const e of E){if(e.dead)continue;const dx=e.x-x,dz=e.z-z,d=Math.hypot(dx,dz)||1;if(d<r+e.rad){hurtE(e,dmg,dx/d*.8,dz/d*.8,false,el);n++}}return n}
 function leadSkill2(){const id=S.lead,k=CSK2[id];if(!k||pl.dead||dlg.on||pl.cd.s2>0)return;if(S.mp<k.mp){toast('Zu wenig Mana');return}S.mp-=k.mp;pl.cd.s2=3.2;const el=CEL[id],col=elCol(el),P=atkV()*cwMul(id),ax=Math.sin(pl.face),az=Math.cos(pl.face),y=pl.y+1.2;
   banner(k.em+' '+k.n,PARTY[id].n);sfx('skill2');const a=CMP.find(c=>c.id===id);if(a)a.P.hit=.5;MFX.circle(pl.x,pl.y,pl.z,col,2.8,1);MFX.flare(pl.x,y+.4,pl.z,col,3,.4);if(/mirael|eryn/.test(id))MFX.burstShards(pl.x,y,pl.z,col,1.4);if(id==='toren')MFX.swirl(pl.x,pl.y,pl.z,col,3.5,3,.7);if(id==='rovan')MFX.ring(pl.x,pl.y+.3,pl.z,col,6,.6);if(id==='mira'||id==='lyra')MFX.heal(pl.x,pl.y,pl.z,col);
@@ -2025,6 +2048,7 @@ function leadSkill2(){const id=S.lead,k=CSK2[id];if(!k||pl.dead||dlg.on||pl.cd.s
   else if(id==='eryn'){aoeHit(pl.x,pl.z,12,P*1.2,'ice',col);for(const e of E)if(!e.dead&&Math.hypot(e.x-pl.x,e.z-pl.z)<12)e.slowU=time+6}
   else if(id==='aera'){proj(pl.x+ax*.6,y,pl.z+az*.6,ax*36,az*36,P*3.2,false,col,1.6,el);}
   else if(id==='prof'){let x=pl.x,z=pl.z;const hit=new Set();for(let i=0;i<5;i++){let b=null,bd=9;for(const e of E){if(e.dead||hit.has(e))continue;const d=Math.hypot(e.x-x,e.z-z);if(d<bd){bd=d;b=e}}if(!b)break;hit.add(b);hurtE(b,P*(2.2-i*.25),0,0,false,'storm');emit(b.x,hgt(b.x,b.z)+1.2,b.z,col,14,2,.4,.5,0);x=b.x;z=b.z}if(!hit.size)toast('⚡ Kein Ziel in Reichweite')}
+  else if(id==='rico'){aoeHit(pl.x,pl.z,8,P*1.7,'storm',col);for(const e of E)if(!e.dead&&Math.hypot(e.x-pl.x,e.z-pl.z)<8)e.rootU=time+1.6;MFX.ring(pl.x,pl.y+.3,pl.z,col,8,.6);for(const c of CMP)if(!c.ko)c.hp=Math.min(cmax(c.id),c.hp+cmax(c.id)*.12);S.mp=Math.min(maxMp(),S.mp+8)}
   else if(id==='mira'){const h=Math.round(maxHp()*.35);S.hp=Math.min(maxHp(),S.hp+h);dnum(pl.x,pl.y+2.3,pl.z,'+'+h,'h');fxRing(pl.x,pl.z,col,8,.6);sfx('heal');for(const c of CMP){if(c.ko)cmpRevive(c,.4);else c.hp=Math.min(cmax(c.id),c.hp+cmax(c.id)*.3)}S.mp=Math.min(maxMp(),S.mp+15)}}
 function leadRanged(){const d=S.lead&&PARTY[S.lead];return d&&!d.melee?d:null}
 function setLead(id){if(id&&!CMP.some(a=>a.id===id))return;if(naut.on&&id)return toast('Erst aus der Nautilux aussteigen');S.lead=id||undefined;fox.root.visible=!id&&!naut.on;const a=id&&CMP.find(c=>c.id===id);if(a){a.ko=false;a.P.root.visible=true}if(X.deck)X.deck.dirty=true;document.querySelectorAll('#mates .pm').forEach(e=>e.classList.toggle('lead',e.dataset.id===id));sfx('pick');toast(id?'🔄 Du steuerst jetzt '+PARTY[id].n+(CSK[id]?' · Fähigkeit 1: '+CSK[id].em+' '+CSK[id].n:''):'🦊 Du steuerst wieder Zotik')}
