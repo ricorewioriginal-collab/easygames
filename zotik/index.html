@@ -319,6 +319,16 @@ body.touch #bDodge .bl,body.touch #bUse .bl,body.touch #bJump .bl,body.touch #bS
 #mbox .mb button{padding:6px 14px!important;font-size:13px!important}#mbox .mb>span,#mbox .mb small{font-size:10.5px!important;max-width:170px!important;line-height:1.2}
 @media (max-height:480px){#mbox .mb{flex-wrap:nowrap!important;overflow-x:auto;justify-content:flex-start!important;scrollbar-width:none}#mbox .mb>span,#mbox .mb small{display:none!important}#mbox .mb button{white-space:nowrap;padding:5px 11px!important;font-size:12px!important}#mchar{padding:3px 7px!important;gap:6px}.mc-f{width:30px!important;height:30px!important}.mc-i{gap:2px}.mc-b{height:10px!important}.mc-b span{font-size:8px!important;line-height:10px!important}}
 body.touch #mbox{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+
+/* UI-Feinschliff: weiches Einblenden der Menüs, Tasten mit sanfter Rückmeldung (nur Optik) */
+@keyframes mIn{from{opacity:0}to{opacity:1}}@keyframes mUp{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+#menu:not([hidden]){animation:mIn .18s ease-out}#menu:not([hidden]) #mbox{animation:mUp .22s cubic-bezier(.2,.8,.2,1)}
+.ov:not([hidden]) .glass,#thelp:not([hidden]) .glass{animation:mUp .2s cubic-bezier(.2,.8,.2,1)}
+.mb button,#tabs button{transition:background .15s,border-color .15s,transform .12s,box-shadow .15s}
+.mb button:active,#tabs button:active{transform:scale(.97)}
+@media(hover:hover){.mb button:hover{border-color:var(--gold);box-shadow:0 0 12px rgba(255,200,100,.25)}}
+.mb button:focus-visible,#tabs button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){#menu:not([hidden]),#menu:not([hidden]) #mbox,.ov:not([hidden]) .glass,#thelp:not([hidden]) .glass{animation:none}}
 </style>
   <script type="module" crossorigin src="./assets/index-BrrPcLyy.js"></script>
 </head>
