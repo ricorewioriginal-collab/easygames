@@ -24,7 +24,13 @@ def clean(t):
     t = re.sub(r'AnMaCha', 'Anmacher', t, flags=re.I); t = re.sub(r'AN-MA-CHA', 'An-ma-cher', t)
     t = re.sub(r'\{(\w+)\}', lambda m: {'x': 'Aktion', 'a': 'Springen', 'rb': 'Sprint', 'rt': 'Ausweichen', 'b': 'Zurück'}.get(m.group(1), ''), t)
     t = re.sub(r'[\U0001F000-\U0001FFFF☀-➿️]', '', t)
+    # Aussprache: Ausrufe nicht buchstabieren lassen, betonte GROSSWÖRTER normal schreiben (Abkürzungen bleiben)
+    for a, b in SAY: t = re.sub(a, b, t)
+    t = re.sub(r'\b[A-ZÄÖÜ]{2,}\b', lambda m: m.group(0) if m.group(0) in ABBR else m.group(0).capitalize(), t)
     return t.replace('…', '...').replace('–', ',').strip()
+ABBR = {'DSL', 'ESC', 'SOS', 'KI', 'TV', 'FM'}
+SAY = [(r'\bUiii\b', 'Huiii'), (r'\bMmmh\b', 'Hmmm'), (r'\bDaaas\b', 'Daas'), (r'\biiist\b', 'iist'), (r'\bgeeeniaaal\b', 'genial'),
+       (r'\bHAHAHA\b', 'Hahaha'), (r'\bFAST\b', 'fast'), (r'\bUND\b', 'und'), (r'\bDAS\b', 'das'), (r'\bLIVE\b', 'live'), (r'\bON AIR\b', 'On Air')]
 async def one(sem, who, text, index):
     k = key(who, text); f = os.path.join(ROOT, k + '.mp3')
     if os.path.exists(f): index.append(k); return
