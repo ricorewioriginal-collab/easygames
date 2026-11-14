@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f57c146c4f10",
- "generated": "2026-11-14T17:45:14+01:00",
- "commit": "98f3538772727609fc7ed0a9648047e1291f7517",
+ "version": "0b5a9b05408b",
+ "generated": "2026-11-14T17:41:50+00:00",
+ "commit": "212826853f7e0c26a9ab4d0ec5d0107c819207c8",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10182,6 +10182,66 @@
    "h": "3e690ac7d180b0aadf0891bea39eec643e29e2d3e75c99b18689518665f69ba6"
   },
   {
+   "p": "show-me-your-voice/vo/rico-advance-0.mp3",
+   "s": 66488,
+   "h": "80599c465eb00f6bf0b088a8094282d2558023c49f07bff2072531d1e771e2f5"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-advance-1.mp3",
+   "s": 56875,
+   "h": "3c7e190733abd364c09cf6e9cc8264d16f0887804a5ef3f89d4ca349cae4ae47"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-advance-2.mp3",
+   "s": 51441,
+   "h": "06515c3122247374a03c7b14fb2259ad3ac5a7bd9920f4192d57d2022f67f20b"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-golden.mp3",
+   "s": 94909,
+   "h": "5740f60ba1fb9581f9be876e0315f004eb1fac36bde6b26cf445850fc6145cb1"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-intro-casting-0.mp3",
+   "s": 150498,
+   "h": "0693c9f33056a41760349b3009e949b4792e28e77f36b81a832df347bdfbb1a1"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-intro-halbfinale-0.mp3",
+   "s": 94909,
+   "h": "2d49435b4837ee4bb462c2b6f64c0fd68ff7879b741c6cb08b13523784e89ba6"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-out-0.mp3",
+   "s": 89476,
+   "h": "e5d8c67fb417c75806418da38f696b94647928fba30288850c3064341dc078e1"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-out-1.mp3",
+   "s": 79027,
+   "h": "d9c62879bfa3caad1787a364d5d6d1ccdb22035cce83c9f68b5fabee243f4452"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-saved.mp3",
+   "s": 96163,
+   "h": "b756743015e42298b20fd2254d357d2df146903ef7bfe3f14fb7749528701199"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-welcome-0.mp3",
+   "s": 121658,
+   "h": "ae846b49724fb3481aea4fa7069bacb80ae83bc1d75eff704af543e9f33d5c81"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-welcome-1.mp3",
+   "s": 114135,
+   "h": "0d5e32ea1cc7c4ca26fd0d2db7b179f4854379ceab8e6dfe86e5848a6d2380be"
+  },
+  {
+   "p": "show-me-your-voice/vo/rico-winner.mp3",
+   "s": 75265,
+   "h": "cab174f522bfd356bad4236b1164739884bc09a66f35c9c9aab7aea704c185bc"
+  },
+  {
    "p": "show-voice.js",
    "s": 3181,
    "h": "2affd4b5a1fbdad10a44fc25f668003ecc73add98d08e27aeab6674412b29ead"
@@ -10579,7 +10639,7 @@
   {
    "p": "sync/catalog.json",
    "s": 262491,
-   "h": "3af196d004662995d41eb2ee9b5af0cfde4cfa7cd4bb2ebaccc420a6d2a67fb7"
+   "h": "dea41dba695bac95a5dc17d559b9e68d5af545ea36cd051498e053afdd1d9c75"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
