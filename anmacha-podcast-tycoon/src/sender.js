@@ -245,9 +245,11 @@
       list.push({ x: gp.x, z: gp.z, r: 1.4, label: '🎮 3D-Spiel: ' + cfg.game.name + (Save.data.senderBest && Save.data.senderBest[st.slug] ? ' · Rekord ' + U.fmt(Save.data.senderBest[st.slug]) : ''), run: () => startGame(R) });
       list.push({ x: hw - 1.6, z: hd - 0.6, r: 1.4, label: '🎧 ' + st.name + ' live hören', run: () => { AMC.Media.playStation(st.slug); K.say('📻 ' + st.name + ' läuft – ' + st.desc); bumpVibe(R, 4); } });
       list.push({ x: R.mate.x, z: R.mate.z, r: 1.6, label: '💬 Mit ' + D.HOSTS[R.other].name + ' quatschen', run: () => { K.say(D.HOSTS[R.other].name + ': „' + U.pick(cfg.talk) + '“', 4600); const f = W.hosts[R.other]; if (f) { f.play('yes', { restart: true }); setTimeout(() => f.play('idle', { fade: 0.3 }), 1500); } } });
-      list.push({ x: -hw + 1.2, z: hd - 0.6, r: 1.3, label: '🚪 Raus in die Stadt', run: () => AMC.Home.close() });
+      list.push({ x: -hw + 0.9, z: R.doorZ, r: 1.5, label: '🚪 Raus in die Stadt', run: () => AMC.Home.close() });
       return list;
     };
+    // Ausgang: sichtbare Tür links vorne mit leuchtender Fußmatte; reinlaufen oder Ⓧ führt raus
+    R.doorZ = hd - 1.6; door(B.g, -hw, R.doorZ, st.color);
     R.w = K.walker({ x: hw - 2.5, z: hd - 1.6, fig: W.hosts[R.who], bounds: { x0: -hw + 0.6, x1: hw - 0.6, z0: -hd + 0.8, z1: hd - 0.4 }, solids, spots, camOff: [0, 6.4 + cfg.d * 0.05, 6.6 + cfg.d * 0.12], anim: v => R.dancing && v < 0.3 ? 'dance' : null });
     // Oberfläche: Bedürfnisse, Vibe, Emotes
     const ui = K.hud(st.icon + ' ' + st.name, '');
@@ -255,9 +257,11 @@
     top.insertAdjacentHTML('beforeend', '<small class="hm-desc">' + U.esc(cfg.room + ' · ' + st.desc) + '</small><div class="hm-vibe"><span>🔥 Vibe</span><i><em id="sdVibe"></em></i><b id="sdLv"></b></div>');
     ui.insertAdjacentHTML('beforeend', '<div class="hm-emo" id="sdEmo"><button type="button" data-e="dance" data-pad="✚↑" data-kb="Leer">💃<small>Tanzen</small></button><button type="button" data-e="yes" data-pad="✚←" data-kb="1">👋<small>Winken</small></button><button type="button" data-e="arms" data-pad="✚→" data-kb="2">🙌<small>Jubeln</small></button><button type="button" data-e="roll" data-pad="✚↓" data-kb="3">🤸<small>Rolle</small></button><button type="button" data-e="swap" data-pad="Y" data-kb="Q">⇄<small>' + U.esc(D.HOSTS[R.other].name) + '</small></button></div><div class="hm-feed" id="sdFeed"></div><div class="hm-lanes" id="sdLanes" hidden></div>');
     ui.querySelector('#sdEmo').addEventListener('click', e => { const b = e.target.closest('[data-e]'); if (b) emote(R, b.dataset.e); });
-    K.drawNeeds(); drawVibe(R);
+    K.drawNeeds(); drawVibe(R); if (AMC.UI.touchCtx) AMC.UI.touchCtx('sender');
     W.particles.attach(B.sc);
     AMC.Audio.sfx('door');
+    // Beim Betreten läuft automatisch der Sender des Hauses (alles, was vorher lief, wird dabei beendet)
+    const M = AMC.Media; if (M && !(M.kind === 'radio' && M.slug === st.slug && M.active())) M.playStation(st.slug);
     // Sender-Tour
     const v = Save.data.senders = Save.data.senders || {};
     if (!v[st.slug]) { v[st.slug] = 1; Save.earn(40); const n = Object.keys(v).length; if (n >= D.STATIONS.length) { Save.earn(500); setTimeout(() => AMC.UI.toast('🏆 Sender-Tour komplett! Alle ' + n + ' Senderhäuser besucht: +500 🎟️'), 1200); } else setTimeout(() => AMC.UI.toast('📻 Neues Senderhaus! +40 🎟️ · Sender-Tour ' + n + '/' + D.STATIONS.length), 900); Save.save(); }
@@ -270,7 +274,7 @@
 
   // ------------------------------------------------------------------ Fans
   const WISH = {
-    autograph: { icon: '✍️', label: '✍️ Autogramm geben', vibe: 10, fan: 8, anim: 'knock' },
+    autograph: { icon: '✍️', label: '✍️ Autogramm geben', vibe: 10, fan: 8, anim: 'push' },
     selfie: { icon: '🤳', label: '🤳 Selfie machen', vibe: 12, fan: 10, anim: 'yes' },
     dance: { icon: '💃', label: '💃 Zusammen tanzen', vibe: 18, fan: 12, anim: 'dance' },
     song: { icon: '🎵', label: '🎵 Songwunsch spielen', vibe: 16, fan: 12, anim: 'dance' },
@@ -300,7 +304,7 @@
     const me = W.hosts[R.who], H = D.HOSTS[R.who];
     f.fig.root.rotation.y = Math.atan2(R.w.x - f.x, R.w.z - f.z);
     if (me) { me.root.rotation.y = Math.atan2(f.x - R.w.x, f.z - R.w.z); me.play(w.anim, { restart: true, fade: 0.1 }); R.w.anim = w.anim; R.w.busy = f.wish === 'dance' || f.wish === 'song' ? 3 : 1.4; }
-    f.fig.play(w.anim === 'knock' ? 'yes' : w.anim, { restart: true, fade: 0.1 }); f.danceT = f.wish === 'dance' || f.wish === 'song' ? 4 : 1.5;
+    f.fig.play(w.anim === 'push' ? 'yes' : w.anim, { restart: true, fade: 0.1 }); f.danceT = f.wish === 'dance' || f.wish === 'song' ? 4 : 1.5;
     const lines = { autograph: 'Danke, ' + H.name + '! Das kommt an die Wand!', selfie: 'Selfie mit ' + H.name + '! Geht sofort in die Story!', dance: 'Wuhuu! ' + H.name + ' kann ja richtig tanzen!', song: 'Mein Lieblingslied! Auf ' + R.st.name + '!', talk: U.pick(R.cfg.lines) };
     bubble(R, f, lines[f.wish]); feed(R, f.name, lines[f.wish]);
     if (f.wish === 'selfie') { const fl = U.el('div', 'hm-selfie'); document.body.appendChild(fl); setTimeout(() => fl.remove(), 600); AMC.Audio.sfx('star'); }
@@ -357,8 +361,21 @@
   }
 
   // ------------------------------------------------------------------ Schleife im Senderhaus
+  function door(g, x, z, color) {
+    const d = new T.Group(); d.position.set(x + 0.12, 0, z); g.add(d);
+    const fr = W.mat(0x2a2230), glow = W.mat(hex(color), { e: hex(color), ei: 0.9 });
+    W.box(0.14, 2.5, 0.16, fr, 0, 1.25, -0.72, d, false); W.box(0.14, 2.5, 0.16, fr, 0, 1.25, 0.72, d, false); W.box(0.14, 0.16, 1.6, fr, 0, 2.5, 0, d, false);
+    W.box(0.06, 2.34, 1.3, W.mat(0x0c0e16, { e: 0x3a4a70, ei: 0.35 }), 0.02, 1.17, 0, d, false);
+    W.box(0.05, 0.08, 1.4, glow, 0.1, 2.38, 0, d, false);
+    const t = W.textTex(['🚪 AUSGANG'], { w: 256, h: 64, size: 34, bg: '#0c3a1c', accent: '#3ddc84' });
+    const sg = new T.Mesh(new T.PlaneGeometry(1.2, 0.3), new T.MeshBasicMaterial({ map: t, toneMapped: false })); sg.position.set(0.12, 2.82, 0); sg.rotation.y = Math.PI / 2; d.add(sg);
+    const mat = new T.Mesh(new T.PlaneGeometry(1.1, 1.5), new T.MeshBasicMaterial({ color: 0x3ddc84, transparent: true, opacity: 0.35, toneMapped: false })); mat.rotation.x = -Math.PI / 2; mat.position.set(0.65, 0.015, 0); d.add(mat);
+    d.userData.mat = mat; return d;
+  }
   function tick(R, dt) {
     const me = W.hosts[R.who];
+    // Tür: wer in die Tür läuft, geht raus
+    if (R.w.x < -R.cfg.w / 2 + 0.75 && Math.abs(R.w.z - R.doorZ) < 0.8 && I.move.x < -0.4) { R.outT = (R.outT || 0) + dt; if (R.outT > 0.25) { AMC.Home.close(); return true; } } else R.outT = 0;
     I.dpadEmotes = !R.game;
     if (R.game) { R.game.update(dt); animFans(R, dt, true); return true; }
     if (I.hit('swap')) swap(R);

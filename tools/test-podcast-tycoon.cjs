@@ -162,6 +162,8 @@ server.listen(0, '127.0.0.1', async () => {
     // Club-Feeling: eigener Raum, Fans, Tanzen, Figurenwechsel, 3D-Spiel
     assert.ok(await p.evaluate(() => { const r = AMC.Home._state(); return r.slug === 'clubradio24' && r.cfg.floor[0] === 'led' && (AMC.Save.data.senders || {}).clubradio24; }), 'Clubradio24 hat eigenen Raum');
     assert.equal(new Set(await p.evaluate(() => Object.values(AMC.Sender.HOUSES).map(h => h.wallTex + '/' + h.floor[0] + '/' + h.light))).size, 13, 'alle 13 Häuser unterschiedlich');
+    assert.ok(await p.evaluate(() => AMC.Media.kind === 'radio' && AMC.Media.slug === 'clubradio24'), 'Senderhaus startet seinen Sender automatisch');
+    assert.ok(await p.evaluate(() => { const R = AMC.Home._state(); return R.doorZ != null && R.w.near && document.querySelector('#homeUi .hm-np') && getComputedStyle(document.getElementById('nowplaying')).display === 'none'; }), 'Senderhaus hat Ausgang, Radio-Zeile im Kopf statt schwebender Leiste');
     await p.waitForFunction(() => AMC.Home._state().fans.length >= 3, null, { timeout: 20000 });
     await p.evaluate(() => document.querySelector('#sdEmo [data-e=dance]').click()); await p.waitForFunction(() => AMC.Home._state().w.fig.curName === 'dance', null, { timeout: 8000 }).catch(() => {});
     assert.ok(await p.evaluate(() => AMC.Home._state().dancing && AMC.Home._state().w.fig.curName === 'dance'), 'Tanzen sichtbar');
@@ -171,6 +173,10 @@ server.listen(0, '127.0.0.1', async () => {
     assert.ok(await p.evaluate(() => !!AMC.Home._state().game && !!document.getElementById('sdGame')), '3D-Senderspiel läuft');
     await p.evaluate(() => { AMC.Home.close(true); AMC.Home.station('anmacha24', 'andrew', () => {}); AMC.Sender._startGame(AMC.Home._state()); }); await p.waitForTimeout(1500);
     assert.ok(await p.evaluate(() => AMC.Home._state().cfg.game.kind === 'catch' && !!AMC.Home._state().game), '3D-Fangspiel läuft');
+    // Ausgang: in die Tür laufen führt raus in die Stadt
+    await p.evaluate(() => { AMC.Home.close(true); window.__out = 0; AMC.Home.station('rapradio24', 'andrew', () => { window.__out = 1; }); const R = AMC.Home._state(); R.w.x = -R.cfg.w / 2 + 0.8; R.w.z = R.doorZ; AMC.Input.touch.mx = -1; });
+    await p.waitForFunction(() => window.__out === 1, null, { timeout: 8000 }).catch(() => {});
+    assert.ok(await p.evaluate(() => { AMC.Input.touch.mx = 0; return window.__out === 1 && !AMC.Home.active(); }), 'Tür im Senderhaus führt raus');
     // Begehbare Stadtgebäude (rooms.js): Möbel, Leute, Aktion
     await p.evaluate(() => { AMC.Home.close(true); AMC.Save.data.rooms = {}; AMC.Home.room(2, 'andrew', () => {}); }); await p.waitForTimeout(2500);
     assert.ok(await p.evaluate(() => { const R = AMC.Home._state(); if (!R || R.kind !== 'room') return false; const n0 = (AMC.Home.needs('andrew').ideas || []).length, sp = R.w.near ? null : null; const a = AMC.Rooms.kind(2).act; R.w.x = a.x; R.w.z = a.z; const s = R.w.near(); if (!s) return 'kein Ort'; s.run(); const n1 = (AMC.Home.needs('andrew').ideas || []).length; return R.g.children.length > 15 && (n1 > n0 || n0 >= 3) && R.npcs.length >= 1; }), 'Tonstudio betreten: Möbel, Leute, Jingle-Idee');
