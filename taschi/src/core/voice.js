@@ -185,7 +185,7 @@ export class Voice {
 
   // Stimmprobe in den Optionen
   sample(i) {
-    const list = [['Professor Ulme', 'Willkommen in meinem Labor! Bereit für dein erstes Taschi?', 'happy'], ['Rivale Rian', 'Ha! Diesmal schlage ich dich, wetten?', 'happy'], ['Kommandantin Varga', 'Die Schattengilde lässt sich nicht aufhalten.', 'angry'], ['Arenaleitung Perla', 'Zeig mir, wie stark deine Taschis sind!', 'talk'], ['Wirtin Ilse', 'Setz dich, Kind, die Suppe ist gleich fertig.', 'happy'], ['Pia', 'Guck mal, da hinten im Gras hat was geraschelt!', 'surprised'], ['Forschungscomputer', 'Daten gespeichert. Taschidex aktualisiert.', 'talk']];
+    const list = [['Professor Ulme', 'Willkommen in meinem Labor! Bereit für dein erstes Taschi?', 'happy'], ['Rivale Rian', 'Ha! Diesmal schlage ich dich, wetten?', 'happy'], ['Kommandantin Varga', 'Die Schattengilde lässt sich nicht aufhalten.', 'angry'], ['Arenaleitung Perla', 'Zeig mir, wie stark deine Taschis sind!', 'talk'], ['Wirtin Ilse', 'Setz dich, Kind, die Suppe ist gleich fertig.', 'happy'], ['Pia', 'Guck mal, da hinten im Gras hat was geraschelt!', 'surprised'], ['Forschungscomputer', 'Daten gespeichert. Taschibuch aktualisiert.', 'talk']];
     const [who, text, mood] = list[i % list.length];
     if (this.speaking) this.speak(text, who, mood);
     else if (this.on && this.audio?.ctx) { let k = 0; const step = () => { if (k < text.length) { this.tick(text[k++], who, mood); setTimeout(step, 28); } }; step(); }

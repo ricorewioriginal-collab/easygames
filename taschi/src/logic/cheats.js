@@ -10,7 +10,7 @@ import { makeMonster, maxHp, maxPP, MAX_LEVEL } from './monster.js';
 export const CHEAT_LEVEL = 50, ITEM_COUNT = 99, CHEAT_COINS = 999999;
 
 export const CHEATS = [
-  { id: 'allmons', kind: 'gift', group: 'Sammeln', icon: '📚', name: 'Alle Taschis freischalten', desc: 'Taschidex komplett, jedes fehlende Taschi kommt mit Lv ' + CHEAT_LEVEL + ' ins Lager.' },
+  { id: 'allmons', kind: 'gift', group: 'Sammeln', icon: '📚', name: 'Alle Taschis freischalten', desc: 'Taschibuch komplett, jedes fehlende Taschi kommt mit Lv ' + CHEAT_LEVEL + ' ins Lager.' },
   { id: 'maxevo', kind: 'gift', group: 'Sammeln', icon: '🧬', name: 'Maximale Entwicklung', desc: 'Dein Team erreicht die Endstufe und Lv ' + MAX_LEVEL + '.' },
   { id: 'items', kind: 'gift', group: 'Sammeln', icon: '🎒', name: 'Alle Items', desc: 'Jedes Item ×' + ITEM_COUNT + ' und ' + CHEAT_COINS.toLocaleString('de-DE') + ' Sternmünzen.' },
   { id: 'god', kind: 'toggle', group: 'Kampf', icon: '🛡', name: 'Unbesiegbar', desc: 'Deine Taschis nehmen keinen Schaden.' },

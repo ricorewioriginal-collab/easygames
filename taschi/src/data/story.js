@@ -9,7 +9,7 @@ export const CHAPTERS = [
   { title: 'Risse im Nebel', text: 'Brix zweifelt. Varga will die sechzehn Lichter in Kristallen bündeln und kontrollieren. Die Professoren der Regionen schließen sich zusammen – und auch Rian hat erfahren, wie skrupellos die Gilde ist.' },
   { title: 'Der Weg zum Sternengipfel', text: 'Mit Brix’ Zugangskarte kannst du die Sperre am Sternengipfel lösen. Varga wartet dort mit ihrer Maschine.' },
   { title: 'Die Sternenliga', text: 'Die Lichter leuchten wieder. Nun warten die fünf Meisterprüfungen der Sternenliga auf dich.' },
-  { title: 'Sternenmeister', text: 'Du bist Sternenmeister. Die Legenden der vier Wächter, stärkere Champions und ein vollständiger Taschidex warten.' }
+  { title: 'Sternenmeister', text: 'Du bist Sternenmeister. Die Legenden der vier Wächter, stärkere Champions und ein vollständiger Taschibuch warten.' }
 ];
 
 export const INTRO_SLIDES = [
@@ -34,8 +34,8 @@ export const ULME = {
   ],
   afterBattle: [
     { who: 'Professor Ulme', text: 'Großartig gemacht! Du hast ein echtes Gespür für Taschis.', mood: 'happy' },
-    { who: 'Professor Ulme', text: 'Hier sind fünf Taschi-Kapseln, zwei Heilkapseln, drei Tränke und die Pfadkarte. Im Laden gibt es mit jedem Siegel neue Kapselsorten – jede hat ihre Stärke.', mood: 'talk' },
-    { who: 'Professor Ulme', text: 'Dein erster Auftrag: Löse das Mühlstein-Rätsel an der alten Wassermühle, dann öffnet Fels-Fiete seine Arena. Und fang unterwegs ein paar Taschis für deinen Taschidex!', mood: 'talk' },
+    { who: 'Professor Ulme', text: 'Hier sind fünf Taschi-Kapseln, zwei Pflegekapseln, drei Heiltropfen und die Pfadkarte. Im Laden gibt es mit jedem Siegel neue Kapselsorten – jede hat ihre Stärke.', mood: 'talk' },
+    { who: 'Professor Ulme', text: 'Dein erster Auftrag: Löse das Mühlstein-Rätsel an der alten Wassermühle, dann öffnet Fels-Fiete seine Arena. Und fang unterwegs ein paar Taschis für deinen Taschibuch!', mood: 'talk' },
     { who: 'Professor Ulme', text: 'Wenn du Hilfe brauchst: Im Heilzentrum werden deine Taschis versorgt, im Laden gibt es Ausrüstung. Viel Glück!', mood: 'happy' }
   ]
 };
@@ -186,7 +186,7 @@ export const LEAGUE_FINALE = [
   { who: 'Sternenmeisterin Lyra', text: 'Fünf Prüfungen, sechzehn Siegel und eine ganze Welt voller Freundschaften. Du bist der neue Sternenmeister.', mood: 'happy' },
   { who: 'Professor Ulme', text: 'Ich wusste es vom ersten Tag an! Erinnerst du dich an das Podest in Sonnenhain?', mood: 'happy' },
   { who: 'Brix', text: 'Schnurrik möchte dich begleiten. Es hat sich selbst entschieden – und ich finde, das ist das Schönste, was passieren kann.', mood: 'happy' },
-  { who: 'Sternenmeisterin Lyra', text: 'Deine Reise ist nicht vorbei. Die vier uralten Wächter, die Champions und der vollständige Taschidex warten auf dich.', mood: 'talk' }
+  { who: 'Sternenmeisterin Lyra', text: 'Deine Reise ist nicht vorbei. Die vier uralten Wächter, die Champions und der vollständige Taschibuch warten auf dich.', mood: 'talk' }
 ];
 
 export const CREDITS = [

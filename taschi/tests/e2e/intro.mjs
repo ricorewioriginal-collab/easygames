@@ -87,7 +87,7 @@ export async function run({ shots = null, width = 1280, height = 720, touch = fa
     await interactWith(page, (e) => e.kind === 'shop');
     await page.waitForSelector('.panel');
     const coins0 = await G(page, () => window.__taschi.save.coins);
-    await page.locator('.row', { hasText: 'Trank' }).first().getByRole('button', { name: '×1', exact: true }).click();
+    await page.locator('.row', { hasText: 'Heiltropfen' }).first().getByRole('button', { name: '×1', exact: true }).click();
     await page.waitForTimeout(200);
     await shot('09-shop');
     const coins1 = await G(page, () => window.__taschi.save.coins);
@@ -117,7 +117,7 @@ export async function run({ shots = null, width = 1280, height = 720, touch = fa
     // pause menu tabs
     await page.keyboard.press('Escape');
     await page.waitForSelector('.tabs');
-    for (const tab of ['Taschidex', 'Tasche', 'Quests', 'Karte', 'Trainer', 'Optionen', 'System']) { await page.locator('.tab', { hasText: tab }).click(); await page.waitForTimeout(250); if (tab === 'Karte') await shot('10-menu-map'); }
+    for (const tab of ['Taschibuch', 'Tasche', 'Quests', 'Karte', 'Trainer', 'Optionen', 'System']) { await page.locator('.tab', { hasText: tab }).click(); await page.waitForTimeout(250); if (tab === 'Karte') await shot('10-menu-map'); }
     await page.locator('.tab', { hasText: 'Team' }).click();
     await page.waitForTimeout(300);
     await shot('11-menu-team');

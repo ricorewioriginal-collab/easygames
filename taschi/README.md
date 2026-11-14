@@ -25,12 +25,12 @@ Die 3D-Lichtintensität und Kameradistanz sind für mobiles Spielen reduziert, u
 
 - **Wiesen mit hohem Gras:** Jede Region hat jetzt 6 bis 12 große, unregelmäßige Wiesen entlang der Routen und in den Seitenfeldern (vorher nur wenige kleine Flecken). Wege und Wasser schneiden das Gras aus, sodass man wie im Vorbild wählen kann: über den Weg oder durchs Gras. Am Ufer wachsen Schilfwiesen mit Wasser-Taschis, Blumenwiesen haben eigene Bewohner. Grasdichte richtet sich nach der Grafikstufe.
 - **Größere begehbare Welt:** Die Regionen sind fast doppelt so groß (260 statt 200 Einheiten, gleiche Geländeauflösung). Tore liegen weiter außen, dazwischen neue Routenabschnitte mit Wiesen. Alte Spielstände bleiben gültig; landet eine gespeicherte Position in einem Baum, startet man am Heilzentrum.
-- **11 Kapselsorten:** Taschi-Kapsel, Heilkapsel (heilt das gefangene Taschi), Superkapsel, Netzkapsel (×3 bei Wasser/Pflanze), Flinkkapsel (×4 in Runde 1), Dämmerkapsel (×3 nachts und in Höhlen), Freundkapsel (sofort hohe Freundschaft), Levelkapsel (bis ×4, wenn dein Taschi höher ist), Timerkapsel (wird pro Runde besser), Sternkapsel und ein einmaliger Meisterkapsel (Geschenk von Brix). Heil- und Taschibälle gibt es ab Start, die übrigen mit den ersten Siegeln. Jeder Ball hat seine eigene Farbe im Kampf.
+- **11 Kapselsorten:** Taschi-Kapsel, Pflegekapsel (heilt das gefangene Taschi), Plus-Kapsel, Uferkapsel (×3 bei Wasser/Pflanze), Flinkkapsel (×4 in Runde 1), Nachtkapsel (×3 nachts und in Höhlen), Herzkapsel (sofort hohe Freundschaft), Stufenkapsel (bis ×4, wenn dein Taschi höher ist), Geduldkapsel (wird pro Runde besser), Sternkapsel und ein einmaliger Kronkapsel (Geschenk von Brix). Heil- und Taschibälle gibt es ab Start, die übrigen mit den ersten Siegeln. Jeder Ball hat seine eigene Farbe im Kampf.
 - **Drei Entwicklungsstufen:** Alle Starter und Original-Linien haben jetzt drei Stufen (z. B. Glutzahn → Glutdrach → Magmadrach, Plätscherchen → Krustomar → Gezeitenlon, Samenling → Blütling → Florakron, Pelzlo → Fellisto → Fellmajor). Dazu acht neue Familien mit je drei Stufen (Flöckchen, Buddelmaus, Wuschelschaf, Glimmstein, Tröpfli, Laternchen, Summbit, Pilzling). **260 Arten**, 81 Linien mit drei Stufen.
-- **Leveln und Attacken:** 28 neue Attacken, jede Art lernt über die Level eine vollständige Typ-Reihe plus Attacken ihres zweiten Typs. EP skalieren wie im Vorbild nach Levelunterschied (schwächere Taschis holen schneller auf), gute Freundschaft gibt 20 % mehr EP, Level-ups zeigen die Wertzuwächse. Bei vier Attacken fragt das Spiel, welche vergessen werden soll – auch nach Entwicklungen, die neue Attacken mitbringen. Unter **Team → Taschi → Attacken verwalten** lassen sich Attacken vergessen und beim **Attacken-Erinnerer** (★80) früher verpasste Attacken neu lernen. Neues Item **EP-Bonbon** (ein Level, inklusive Entwicklung).
+- **Leveln und Attacken:** 28 neue Attacken, jede Art lernt über die Level eine vollständige Typ-Reihe plus Attacken ihres zweiten Typs. EP skalieren wie im Vorbild nach Levelunterschied (schwächere Taschis holen schneller auf), gute Freundschaft gibt 20 % mehr EP, Level-ups zeigen die Wertzuwächse. Bei vier Attacken fragt das Spiel, welche vergessen werden soll – auch nach Entwicklungen, die neue Attacken mitbringen. Unter **Team → Taschi → Attacken verwalten** lassen sich Attacken vergessen und beim **Attacken-Erinnerer** (★80) früher verpasste Attacken neu lernen. Neues Item **Stufenhonig** (ein Level, inklusive Entwicklung).
 - **Rivale Rian:** Rian wählt das Taschi, das gegen deinen Starter im Vorteil ist, und fordert dich bei Ankunft in Korallküste, Käferwald, Nebelmoor, Kristallberg und Himmelskrone heraus. Das Team wächst mit, die Geschichte führt von Konkurrenz über die Schattengilde bis zum gemeinsamen Weg zum Sternengipfel.
 
-Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmeister) sowie die Browsertests `tests/e2e/intro.mjs` und `tests/e2e/expansion.mjs` (Gras-Begegnung, Ballauswahl, Attacken vergessen/erinnern, EP-Bonbon mit Entwicklung, Rivalenkampf) ohne Browserfehler. Ein Test auf echten Handys steht weiterhin aus.
+Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmeister) sowie die Browsertests `tests/e2e/intro.mjs` und `tests/e2e/expansion.mjs` (Gras-Begegnung, Ballauswahl, Attacken vergessen/erinnern, Stufenhonig mit Entwicklung, Rivalenkampf) ohne Browserfehler. Ein Test auf echten Handys steht weiterhin aus.
 
 ## Switch-Features: Foto, Fliegen, Raids, Koop, Stimmen (November 2026)
 
@@ -39,7 +39,7 @@ Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmei
 - **⭐ Sternennest-Raids** (`src/logic/raid.js`): ein Nest je Region (`L.nest`), täglich ein Riese in Endform (1–5 Sterne, KP ×3–6 über `m.boss`, zwei Aktionen pro Runde). Doppelkampf mit Ranger-Helfer (`m.ally`, wählt per KI) oder Freund online; danach Belohnung und sicherer Fang.
 - **🤝 Koop-Erkunden** (`src/game/coop.js`): Im Online-Menü „Zusammen erkunden“ – die Verbindung bleibt offen, beide sehen sich in derselben Region (Namensschild), können winken, wieder tauschen/kämpfen und gemeinsam Raids bestreiten (gemeinsame KP über `raidDmg`).
 - **🎲 Zufallstausch** (`src/ui/wonder.js`): Partnersuche über feste Tauschplätze (`taschi-wonder-v1-0…5`) mit `Link.joinAt`/`hostAt`, vermittelt über `cloud/fire-peer.js`.
-- **🗣 Sprachausgabe** (`src/core/voice.js`): Jede Figur hat ein eigenes Stimmprofil (`CAST` bzw. aus Name/Titel: Geschlecht, Alter, Klangfarbe, Tonhöhe, Tempo, Stimmung je Zeile). „🗣 Sprache“ nutzt die Web Speech API und wählt pro Figur eine passende deutsche Systemstimme; „💬 Plappern“ erzeugt Silbenlaute per WebAudio (Fallback ohne Sprachausgabe). Optionen › Audio (`voice`: true/'babble'/false, `voiceVolume`, `voiceRate`, Stimmprobe). **🐾 Taschi-Rufe** (`src/core/cries.js`): eigener Ruf je Art aus Name, Größe, Typ und Tempo – beim Erscheinen im Kampf, beim Einwechseln, tief beim Besiegtwerden, im Taschidex (🔊 Ruf) und bei der Starterwahl. Test: `tests/e2e/voices.mjs`. **🎬 Zwischensequenzen** (`game.cutscene`): Kinobalken und kreisende Kamera bei Rivale, Wächter-Schrein und Raids.
+- **🗣 Sprachausgabe** (`src/core/voice.js`): Jede Figur hat ein eigenes Stimmprofil (`CAST` bzw. aus Name/Titel: Geschlecht, Alter, Klangfarbe, Tonhöhe, Tempo, Stimmung je Zeile). „🗣 Sprache“ nutzt die Web Speech API und wählt pro Figur eine passende deutsche Systemstimme; „💬 Plappern“ erzeugt Silbenlaute per WebAudio (Fallback ohne Sprachausgabe). Optionen › Audio (`voice`: true/'babble'/false, `voiceVolume`, `voiceRate`, Stimmprobe). **🐾 Taschi-Rufe** (`src/core/cries.js`): eigener Ruf je Art aus Name, Größe, Typ und Tempo – beim Erscheinen im Kampf, beim Einwechseln, tief beim Besiegtwerden, im Taschibuch (🔊 Ruf) und bei der Starterwahl. Test: `tests/e2e/voices.mjs`. **🎬 Zwischensequenzen** (`game.cutscene`): Kinobalken und kreisende Kamera bei Rivale, Wächter-Schrein und Raids.
 - Tests: `tests/switch-features.test.mjs`, Browsertests `tests/e2e/switch.mjs` (Foto, Fliegen, Raid) und `tests/e2e/online.mjs` (inkl. Koop-Raid).
 
 ## Spielfigur und Zotik (November 2026)
@@ -56,7 +56,7 @@ Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmei
 - **Maus:** Zeigen markiert Einträge, Linksklick wählt, Rechtsklick = zurück.
 - **Steuerung auf einen Blick:** Übersicht aller Aktionen für Tastatur, Controller und Touch in den Einstellungen.
 - **Angeln:** Am Ufer von Seen, Flüssen, Meer und Buchten erscheint „Angeln“ (Angel von Anglerin Mira beim ersten Mal). Reaktionsspiel: beim „❗“ sofort bestätigen. Am Haken hängen vor allem Wasser- und Eis-Taschis, manchmal ein größeres.
-- **Getragene Gegenstände:** Heilbeere, Klarbeere, Lernband, Kraftband, Fokusband – im Laden, anlegen über Team › Taschi › „🎒 Trägt“ oder die Tasche. Wirken im Kampf von selbst, Beeren und Fokusband werden verbraucht.
+- **Getragene Gegenstände:** Heilbeere, Klarbeere, Lernband, Kraftband, Haltegurt – im Laden, anlegen über Team › Taschi › „🎒 Trägt“ oder die Tasche. Wirken im Kampf von selbst, Beeren und Haltegurt werden verbraucht.
 - Tests: `tests/controls-held.test.mjs`, Browsertest `node tests/e2e/controls.mjs [Bildordner]` (simulierter Switch Pro Controller).
 
 ## Modernerer Look und deutliche Entwicklungsstufen (November 2026)
@@ -89,7 +89,7 @@ Geprüft: `npm test` (31 Tests inklusive Durchlauf-Simulation bis zum Sternenmei
 - **Pension Sonnenblume** (Wirtin Ilse, in jedem Heilzentrum): zwei Taschis abgeben, sie bekommen beim Laufen 1 EP pro Schritt. Gebühr beim Abholen ★100 + ★25 je gewonnenem Level. Haben beide einen gemeinsamen Typ (oder dieselbe Linie), liegt manchmal ein Ei bereit.
 - **Zucht:** Das Ei schlüpft nach 700–2600 Schritten (Team-Menü zeigt Fortschritt). Das Junge ist die Grundform des ersten Elternteils (Lv 1), erbt drei Werte, eventuell das Wesen und bis zu zwei Erbattacken. Logik: `src/logic/daycare.js`.
 - **Attacken-Disks:** 23 Disks im Laden (nach Siegeln freigeschaltet), mehrfach nutzbar. Normal-Attacken lernt jedes Taschi, sonst muss der Typ passen; die Tasche zeigt „Kann lernen“.
-- **Schlauere Trainer:** Trainer tragen ab dem 2. Siegel Items, die KI heilt Status mit Heilkraut, stärkt sich mit Angriffsplus und beachtet Fokusband und Klarbeere. Besiegte Trainer fordern einmal pro Tag eine **Revanche** (Team auf deiner Stufe).
+- **Schlauere Trainer:** Trainer tragen ab dem 2. Siegel Items, die KI heilt Status mit Heilkraut, stärkt sich mit Angriffsplus und beachtet Haltegurt und Klarbeere. Besiegte Trainer fordern einmal pro Tag eine **Revanche** (Team auf deiner Stufe).
 - **Tagesereignisse** (`src/logic/daily.js`): Massenausbruch einer Art in einer besuchten Region (Quests-Reiter, dreifache Schillerchance), **Glücksrad** im Heilzentrum einmal pro Tag.
 - **Taschi-Camp** (Team › „⛺ Taschi-Camp“): streicheln, Ball spielen, Taschi-Keks füttern; bis 40 Freundschaft pro Taschi und Tag. Beste Freunde halten manchmal einen K.o.-Treffer aus und schütteln Status ab.
 - **Kampfturm** (Terminal im Heilzentrum, ab 8 Siegeln): drei Taschis auf Lv 50 ohne Taschen-Items gegen endlos viele Trainer, 7 Kämpfe pro Etage mit Etagenboss. Turmpunkte (TP) gegen seltene Belohnungen tauschen. Originale bleiben unverändert. Logik: `src/logic/tower.js`.
@@ -107,7 +107,7 @@ Trainer-Look: Trainer, Arenaleiter, Champions und standardmäßig die Spielerfig
 
 - PC: WASD/Pfeiltasten bewegen, E = Interaktion, Escape = Pause.
 - Handy: Touch-Joystick und Aktionsschaltflächen.
-- **Team**, **Taschidex**, **Karte**, **Pause** und **Musik an/aus** als sichtbare Schaltflächen.
+- **Team**, **Taschibuch**, **Karte**, **Pause** und **Musik an/aus** als sichtbare Schaltflächen.
 - Pause: Reisekarte, Abenteuerbuch, Geschichte, Spielstand als JSON exportieren oder importieren. Drei Speicherplätze und Neustart je Spielplatz.
 - Drei wählbare lokale Speicherplätze und automatisches Speichern im Browser, unabhängiger Schlüssel `easygames.taschi.eight-lights.v1`.
 - Import prüft Dateigröße und Spielstandsformat; beschädigte Eingaben werden abgewiesen.
@@ -140,9 +140,9 @@ Das HUD und die Kampfmenüs sind als kompakte, fokussierbare Spiel-Overlays gest
 
 ## Spielsysteme
 
-- (Stand vor dem Update vom 16. Oktober 2026, siehe oben) 17 grundlegende Taschi-Arten plus **192 prozedural erzeugte neue Arten mit eigenen Namen, Typen, Werten und teils Entwicklungsreihen**, zusammen 209 Einträge im Taschidex. Die zusätzlichen Arten besitzen unterschiedliche prozedurale Merkmale, nutzen aber einen gemeinsamen Baukasten. Das sind **keine 209 einzeln handmodellierten 3D-Kreaturen**.
+- (Stand vor dem Update vom 16. Oktober 2026, siehe oben) 17 grundlegende Taschi-Arten plus **192 prozedural erzeugte neue Arten mit eigenen Namen, Typen, Werten und teils Entwicklungsreihen**, zusammen 209 Einträge im Taschibuch. Die zusätzlichen Arten besitzen unterschiedliche prozedurale Merkmale, nutzen aber einen gemeinsamen Baukasten. Das sind **keine 209 einzeln handmodellierten 3D-Kreaturen**.
 - Acht Elementtypen und elementbasierte Wirksamkeiten, Angriffs- und Verteidigungswerte, EP, Levelaufstiege und einige Entwicklungen.
-- Starterwahl, Wildbegegnungen, Fangchance abhängig von restlichen KP, Team mit sechs Plätzen, Lagerverwaltung, Heilung und Tränke. Sternmünzen aus Kämpfen und ein kaufbasierter Fangladen.
+- Starterwahl, Wildbegegnungen, Fangchance abhängig von restlichen KP, Team mit sechs Plätzen, Lagerverwaltung, Heilung und Heiltropfen. Sternmünzen aus Kämpfen und ein kaufbasierter Fangladen.
 - 16 aufeinanderfolgende Arenen; spätere Arena-Meister besitzen Teams aus mehreren Taschis. Im Kampf können eigene Begleiter gewechselt werden. Nach jeder bestandenen Arena folgen Licht-Siegel und Belohnungen.
 - Eigenständige 3D-Kampfplattform mit sichtbaren Modellen beider Taschis.
 - 6 Dörfer mit eigenen Bewohnern, Aufgaben, Begegnungen, Belohnungen und Rastaktionen; 4 Höhlen mit **begehbarem einfachem 3D-Interieur**, Kristallsuche, Wildbegegnungen und Ausgang.
@@ -196,5 +196,5 @@ Die sechzehn Stadtregionen erhalten jeweils eine eingefärbte Bodenfläche und t
 - **Kampf in der offenen Welt:** Draußen findet der Kampf direkt in der Weltszene statt (`BattleScene.buildWorldStage`), ausgerichtet vom Spieler zum Gegner, auch auf Flüssen und Seen beim Surfen (`World.waterAt`). Taschis und Leute in der Nähe werden ausgeblendet; Innenräume, Turm, Raids und Online-Kämpfe nutzen weiter die Bühne.
 - **Befehlsmenü rechts unten** (Kampf, Taschis, Tasche, Flucht mit Symbolen, gelbe Auswahl mit Pfeil), Textleiste unten, kompakte Plaketten mit „Lv.“, ♂/♀ (`genderOf`, nur Anzeige), Typ-Symbol, KP-Zahl in der Leiste und Team-Kapselleiste.
 - **Welt:** Namensschilder über wilden Taschis (Level, Geschlecht, ◉ gefangen), wilde Taschis lassen sich ansprechen (Aktion = Kampf), Begleiter-Plakette links unten. Wurf mit Leuchtspur (`Trail`).
-- **Taschidex:** Raster mit Bildern, großes 3D-Modell mit Nummer und Name daneben.
+- **Taschibuch:** Raster mit Bildern, großes 3D-Modell mit Nummer und Name daneben.
 - Test: `tests/e2e/battlestyle.mjs`.
