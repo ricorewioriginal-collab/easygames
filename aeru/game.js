@@ -917,7 +917,7 @@ function updateRegions(dt) {
     state.checkpoint = {x: d.x + 2.5 * Math.sign(state.x - d.x || 1), y: 0, z: d.z}; save.checkpoint = {level: save.level, ...state.checkpoint};
     spark(d.x, 2, d.z, '#ffe6a6', 30); sfx.story(); rumble(160, .5); persist(); updateHUD();
     const role = 'Kristalldrache · ' + levels[save.level].name.split(' · ')[1];
-    openDialog('drache_' + save.level + '_' + d.id, [{name: d.name, role, portrait: '✺', who: 'drache', text: d.text}, {name: d.name, role, portrait: '✺', who: 'drache', text: `Befreit: ${regionSave('dragons').length} von 4 Drachen dieser Welt. Ich bewahre hier deinen Rastpunkt.`}], () => {});
+    openDialog('drache_' + save.level + '_' + d.id, [{name: d.name, role, portrait: '✺', who: 'drache', text: d.text}, {name: d.name, role, portrait: '✺', who: 'drache', text: `Befreit: ${regionSave('dragons').length} von 4 Drachen dieser Welt. Ich bewahre hier deinen Rastpunkt.`}], () => quests.emit({type: 'dragon', level: save.level}));
   }
   // Eierdieb: flieht, sobald Aeru näher kommt; nur der Ansturm ist schnell genug.
   if (thief && !thief.caught) {
@@ -1081,7 +1081,7 @@ function batchScenery() {
 const worldApi = {
   level: () => save.level,
   playing: () => mode !== 'title',
-  count: (type, level) => type === 'lantern' ? save.lit[level].length : save.rings[level].length,
+  count: (type, level) => type === 'lantern' ? save.lit[level].length : type === 'dragon' ? regionSave('dragons', level).length : save.rings[level].length,
   hasGem: (level, id) => save.collected[level].includes(id),
   dialog: (id, lines, done) => openDialog(id, lines, done),
   grantCore(level) { save.cores[level] = true; if (level === save.level && core) { core.visible = true; spark(0, 5, -20, '#ffe6a9', 35); } sfx.story(); toast(level === LEVEL_COUNT - 1 ? 'Horizontkern befreit · Alle sechs Leuchtkerne leuchten' : 'Leuchtkern erhalten · Das Sternentor ist offen'); persist(); },
@@ -1739,6 +1739,7 @@ function objectiveTarget(o) {
     case 'item': { const it = nearest(items.filter(i => i.m.visible)); return it && {x: it.x, y: it.y, z: it.z, label: it.label}; }
     case 'gem': { const gm = nearest(gems.filter(x => !x.got && g.ids.includes(x.id))); return gm && {x: gm.x, y: gm.y, z: gm.z, label: 'Splitter'}; }
     case 'boss': return {x: 0, y: 3, z: -18.5, label: 'Oberes Tor'};
+    case 'dragons': { const d = nearest(dragonStatues.filter(d => !d.freed)); return d && {x: d.x, y: 3, z: d.z, label: d.name + ' · Kristalldrache'}; }
     case 'arrive': return save.cores[save.level] ? {x: PORTAL.x, y: 5, z: PORTAL.z, label: 'Sternentor'} : null;
   }
   return null;

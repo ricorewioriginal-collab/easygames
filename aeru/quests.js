@@ -9,7 +9,7 @@ const STATE = {LOCKED: 'locked', AVAILABLE: 'available', ACTIVE: 'active', PARTI
 const STATE_LABEL = {locked: 'Noch nicht verfügbar', available: 'Verfügbar', active: 'Aktiv', partial: 'Teilziel erfüllt', ready: 'Bereit zum Abschluss', done: 'Abgeschlossen'};
 // Weltzustände (Laternen, Ringe, Splitter) zählen nur rückwirkend, wenn der Schritt es ausdrücklich vorsieht (retro)
 // oder sie nur innerhalb des Schritts entstehen können (Rätselreihenfolge). Zähler und Objekte laufen erst ab Aktivierung.
-const passive = g => ['arrive', 'boss', 'enemy', 'item'].includes(g.type) || (['lantern', 'ring', 'gem'].includes(g.type) && (g.retro || g.order));
+const passive = g => ['arrive', 'boss', 'enemy', 'item', 'dragons'].includes(g.type) || (['lantern', 'ring', 'gem'].includes(g.type) && (g.retro || g.order));
 
 const grid = (fill) => Array.from({length: WORLDS}, fill);
 function freshSave() {
@@ -78,6 +78,7 @@ function create(story, save, world) {
       case 'enemy': return r.n >= g.count;
       case 'item': return g.ids.every(id => r.items.includes(id));
       case 'boss': return save.flags['boss:' + g.id] === true;
+      case 'dragons': return world.count('dragon', level) >= g.count;
       default: throw new Error('Unbekannter Zieltyp ' + g.type);
     }
   }
@@ -202,7 +203,7 @@ function create(story, save, world) {
   function describe(a) {
     const g = a.step.goal, level = a.quest.level;
     let have = null, need = null;
-    if (g.type === 'lantern' || g.type === 'ring') { have = Math.min(g.count, world.count(g.type, level)); need = g.count; }
+    if (g.type === 'lantern' || g.type === 'ring' || g.type === 'dragons') { have = Math.min(g.count, world.count(g.type, level)); need = g.count; }
     if (g.type === 'enemy') { have = a.record.n; need = g.count; }
     if (g.type === 'item') { have = a.record.items.length; need = g.ids.length; }
     if (g.type === 'gem') { have = g.ids.filter(id => world.hasGem(level, id)).length; need = g.ids.length; }
