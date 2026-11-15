@@ -312,5 +312,4 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
 
   const make = (kind, col, boss) => HOVER.has(kind) ? hover(kind, col) : walker(kind, col, boss);
   return { make, has: k => HOVER.has(k) || ['zauberer', 'marionette', 'karte', 'hase', 'herzkoenigin', 'pirat', 'hook', 'krokodil', 'giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'baer', 'mungo', 'wache', 'schattenritter', 'spartoi', 'riese', 'dornling', 'fahlhirsch', 'kroete', 'sheriff_s', 'nadler', 'katze', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf', 'kuerbis', 'scheuche', 'kopflos'].includes(k), HOVER };
-  return { make, has: k => HOVER.has(k) || ['zauberer', 'marionette', 'karte', 'hase', 'herzkoenigin', 'pirat', 'hook', 'krokodil', 'giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'baer', 'mungo', 'wache', 'schattenritter', 'spartoi', 'riese', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf', 'kuerbis', 'scheuche', 'kopflos'].includes(k), HOVER };
 }
