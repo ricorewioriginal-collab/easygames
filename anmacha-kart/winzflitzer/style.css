@@ -314,3 +314,6 @@ html[data-inp="touch"] .pCtl { display: none; }
   .loadArt { flex: 1; }
 }
 body.press .topbar { display: none !important; }
+
+/* Kart Rush: weiche Vignette über dem Rennbild (Tiefe, moderner Look) */
+#view{position:fixed;inset:0}#view::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(10,6,30,.28) 100%)}

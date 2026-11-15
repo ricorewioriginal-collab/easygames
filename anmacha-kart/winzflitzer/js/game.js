@@ -20,6 +20,9 @@
   try { renderer = new THREE.WebGLRenderer({ antialias: SET.q >= 2, powerPreference: 'high-performance' }); }
   catch (e) { document.body.innerHTML = '<p style="padding:30px;font:18px system-ui;color:#fff">WebGL wird nicht unterstützt – bitte einen aktuellen Browser verwenden.</p>'; return; }
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, [1, 1.5, 2][SET.q]));
+  // Moderne Ausleuchtung: kräftigere Farben und echte Schatten ab Grafikstufe „Mittel“ – die Spielzeug-Optik bleibt
+  renderer.domElement.style.filter = 'saturate(1.12) contrast(1.06)';
+  renderer.shadowMap.enabled = SET.q >= 1; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   $('view').appendChild(renderer.domElement);
   var camera = new THREE.PerspectiveCamera(40, 1, 1, 700);
   function resize() { var w = innerWidth, h = innerHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); }
@@ -55,9 +58,16 @@
     var T = this.T = getTrack(cfg.track);
     var scene = this.scene = new THREE.Scene();
     var th = T.theme;
-    scene.add(new THREE.HemisphereLight(0xffffff, new THREE.Color(th.groundCol).multiplyScalar(0.6), 0.75));
-    var sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(30, 80, 40); scene.add(sun);
+    scene.add(new THREE.HemisphereLight(0xf2f6ff, new THREE.Color(th.groundCol).multiplyScalar(0.6), 0.6));
+    var sun = this.sun = new THREE.DirectionalLight(0xfff2e0, 0.82); sun.position.set(30, 80, 40); scene.add(sun); scene.add(sun.target);
+    var fill = new THREE.DirectionalLight(0x9fc4ff, 0.22); fill.position.set(-40, 30, -30); scene.add(fill);
     this.world = WF.buildWorld(scene, T);
+    this.shadows = SET.q >= 1 && this.kind !== 'attract';
+    if (this.shadows) {
+      sun.castShadow = true; var sc = sun.shadow; sc.mapSize.set(SET.q >= 2 ? 2048 : 1024, SET.q >= 2 ? 2048 : 1024); sc.bias = -0.0006; sc.normalBias = 0.02; sc.radius = 3;
+      sc.camera.near = 10; sc.camera.far = 220;
+      scene.traverse(function (o) { if (!o.isMesh || (o.material && o.material.transparent)) return; o.receiveShadow = true; var bb = o.geometry && (o.geometry.boundingSphere || (o.geometry.computeBoundingSphere(), o.geometry.boundingSphere)); o.castShadow = !!bb && bb.radius < 120; });
+    }
     this.fx = new WF.FX(scene, [60, 140, 220][SET.q]);
     var sim = this.sim = new WF.Sim(T, { laps: cfg.laps || T.def.laps });
     this.cars = []; this.humans = [];
@@ -72,7 +82,7 @@
     if (this.kind === 'race') order.sort(function (a, b) { return (a.human ? 1 : 0) - (b.human ? 1 : 0) || a.skill - b.skill; });
     order.forEach(function (c) { c.place(T.gridSlot(slot++)); });
     sim.cars.forEach(function (c) {
-      var m = WF.makeVehicle(c.type, c.color); scene.add(m); scene.add(m.shadow); c.mesh = m;
+      var m = WF.makeVehicle(c.type, c.color); scene.add(m); scene.add(m.shadow); c.mesh = m; if (self.shadows) { m.traverse(function (o) { if (o.isMesh && o !== m.shadow) { o.castShadow = true; o.receiveShadow = true; } }); m.shadow.material = WF.softShadowMat || (WF.softShadowMat = Object.assign(m.shadow.material.clone(), { opacity: 0.55 })); }
       if (c.human && (self.humans.length > 1 || self.kind === 'duel' || self.kind === 'race')) { var mk = marker(c.color, self.humans.length > 1 ? c.pi : -1); scene.add(mk); c.marker = mk; }
       self.cars.push(c);
     });
@@ -366,6 +376,7 @@
     var shx = 0, shz = 0; if (this.shake > 0.01) { shx = (Math.random() - 0.5) * this.shake; shz = (Math.random() - 0.5) * this.shake; this.shake *= Math.exp(-dt * 9); }
     camera.position.set(cam.x + shx, cam.y + dist * Math.sin(tilt), cam.z + dist * Math.cos(tilt) + shz);
     camera.lookAt(cam.x + shx, cam.y, cam.z + shz);
+    if (this.shadows) { var S = this.sun, e = dist * 0.75 + 8; S.position.set(cam.x + 30, cam.y + 80, cam.z + 40); S.target.position.set(cam.x, cam.y, cam.z + dist * 0.18); S.target.updateMatrixWorld(); var sc2 = S.shadow.camera; if (sc2.right !== e) { sc2.left = -e; sc2.right = e; sc2.top = e; sc2.bottom = -e; sc2.updateProjectionMatrix(); } }
     renderer.render(this.scene, camera);
     if (this.kind !== 'attract') this.hud();
   };
