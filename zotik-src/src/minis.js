@@ -25,6 +25,7 @@ export const ISLE = {
   30: { n: 'Marionettenland', g: 0x7a9a42, r: 0x8a7a5a, lf: 0x4a7a3a, h: [0xd8a060, 0xc83a2a], lm: 'puppet', c: 0xffb060, tree: 'pine' },
   31: { n: 'Stadt der Kuppeln', g: 0xd8b880, r: 0xb89060, lf: 0x5a9a4a, h: [0xf0e4c8, 0xd8a020], lm: 'kuppel', c: 0xffc040, tree: 'palm' },
   33: { n: 'RicoReWi', g: 0x4a6a58, r: 0x5a5070, lf: 0x7a4ab8, h: [0xece4f4, 0x5a2a8a], lm: 'radio', c: 0xa05aff },
+  34: { n: 'Sherwood', g: 0x3a7a32, r: 0x6a5a40, lf: 0x2a6a22, h: [0x8a6a42, 0x3a6a2a], lm: 'bigtree', c: 0x6aca4a },
   32: { n: 'Kurbelhafen', g: 0x9a9a9a, r: 0x6a6a6a, lf: 0x5a5a5a, h: [0xe8e8e8, 0x2a2a2a], lm: 'steamer', c: 0xffffff },
   35: { n: 'Gullivers Inseln', g: 0x6a9a4a, r: 0x6a7090, lf: 0x4a8a3a, h: [0xf0e4d0, 0xc83a3a], lm: 'ship', c: 0x6ab8e8, tree: 'palm' },
   27: { n: 'Große Mauer', g: 0x6a8a4a, r: 0x7a6a5a, lf: 0x4a7a3a, h: [0xc8b8a0, 0xc83a2a], lm: 'wall', c: 0xff6a4a, tree: 'pine' },

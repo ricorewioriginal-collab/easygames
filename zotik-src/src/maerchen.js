@@ -9,7 +9,7 @@ import { makeLand } from './mwland.js';
 import { createMwFoes } from './mwfoes.js';
 export const MW_FIRST = 21, MW_LAST = 36, MW = WORLDS;
 const CX = 0; let CZ = -36, R = 58; const PATHX = z => Math.sin(z * .08) * 5;
-const GTEX = { spiegel: 'forest', dschungel: 'forest', notredame: 'cobble', theben: 'sand', meer: 'sand', mauer: 'grass', camelot: 'grass', nimmerland: 'grass', wunderland: 'grass', pinocchio: 'grass', aladdin: 'sand', kurbelhafen: 'grass', ricorewi: 'grass', gulliver: 'grass' };
+const GTEX = { spiegel: 'forest', dschungel: 'forest', notredame: 'cobble', theben: 'sand', meer: 'sand', mauer: 'grass', camelot: 'grass', nimmerland: 'grass', wunderland: 'grass', pinocchio: 'grass', aladdin: 'sand', kurbelhafen: 'grass', ricorewi: 'grass', gulliver: 'grass', robinhood: 'forest' };
 const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 const hex = n => '#' + n.toString(16).padStart(6, '0');
 
@@ -195,6 +195,7 @@ export function createMaerchen(C) {
         else g.add(mk(i % 4 === 1 ? G.box : G.tor, M([0, 0x6a3a1a, 0x4a3a2a, 0x3a2a1a][i % 4], { r: .6 }), 0, .5, 0, .5, .3, .4)); g.add(glow(0xffe08a, 2.2, 0, .9, 0, .6)); break; }
       case 'shield': { const c = [0x2a6a3a, 0xe8e8f0, 0xc83a2a, 0xd8b040, 0x3a5aa8, 0x6a3a8a][i % 6], sh = mk(G.cyl, M(c, { r: .45, m: .3 }), 0, .7, 0, .42, .07, .42); sh.rotation.x = 1.5708; g.add(sh);
         g.add(mk(G.box, M(0xf0e0b0, { m: .6, r: .3 }), 0, .7, .05, .08, .56, .03, false)); g.add(mk(G.box, M(0xf0e0b0, { m: .6, r: .3 }), 0, .78, .05, .44, .08, .03, false)); g.add(glow(0xffe8a0, 2.2, 0, .8, 0, .7)); break; }
+      case 'arrow': { const sh = mk(G.cyl0, M(0x8a6a3a), 0, .35, 0, .025, .9, .025); sh.rotation.z = .5; g.add(sh); g.add(mk(G.cone0, M(0xb8b8c4, { m: .9, r: .3 }), -.2, .6, 0, .06, .14, .06, false)).rotation.z = Math.PI / 2 + .5; for (let k = 0; k < 3; k++) g.add(mk(G.box, M([0xc83a2a, 0xf4f0e0, 0x3a6a3a][k]), .24 + k * .02, .1 + k * .03, 0, .12, .02, .05, false)); g.add(glow(0xffe8a0, 2, 0, .4, 0, .7)); break; }
       default: g.add(mk(G.oct, M(0xffe08a, { e: 0xffc040, ei: 2 }), 0, .5, 0, .25, .35, .25)); g.add(glow(0xffd860, 2, 0, .5, 0, .8));
     }
     return g;
@@ -223,7 +224,8 @@ export function createMaerchen(C) {
   }
   function findModel(look) {
     const g = new T.Group();
-    if (look === 'goat') { const P = FOE.make('rothund', 0xf0ece0, false); P.root.scale.setScalar(.6); g.add(P.root); for (const sx of [-1, 1]) { const hn = mk(G.cone, M(0x8a7a5a), sx * .1, .85, .62, .04, .22, .04); hn.rotation.x = -.5; g.add(hn); } for (const lx of [-.14, .14]) for (const lz of [-.25, .3]) g.add(mk(G.sph0, M(0xe8c040, { m: .8 }), lx, .04, lz, .06, .06, .06, false)); }
+    if (look === 'hune') { const P = C.folk('Little John', { g: 'm', cloth: 0x3a6a2a, cloth2: 0x5a4030, hair: 0x6a3a1a, skin: 0xe0b090, beard: 1, wide: 1.3, sc: 1.18 }, { pal: 1, r: 'staff' }); g.add(P.root); }
+    else if (look === 'goat') { const P = FOE.make('rothund', 0xf0ece0, false); P.root.scale.setScalar(.6); g.add(P.root); for (const sx of [-1, 1]) { const hn = mk(G.cone, M(0x8a7a5a), sx * .1, .85, .62, .04, .22, .04); hn.rotation.x = -.5; g.add(hn); } for (const lx of [-.14, .14]) for (const lz of [-.25, .3]) g.add(mk(G.sph0, M(0xe8c040, { m: .8 }), lx, .04, lz, .06, .06, .06, false)); }
     else if (look === 'pranger') { const P = C.folk('Quasimodo', { g: 'm', cloth: 0x6a5232, cloth2: 0x4a3a28, hair: 0xb04a22, skin: 0xe0b090, wide: 1.35, sc: .92, hood: 1 }, { pal: 1 }); g.add(P.root);   // Pranger: Holzbühne, Pfosten, Querbalken
       g.add(mk(G.box, M(0x6a4a30, { r: .9 }), 0, -.15, 0, 3, .3, 3), mk(G.box, M(0x5a3a24, { r: .9 }), 0, 1, -.35, .22, 2.6, .22), mk(G.box, M(0x5a3a24, { r: .9 }), 0, 1.75, -.2, 1.6, .22, .2)); P.root.position.y = 0; }
     else if (look === 'shadow') { const P = C.folk('Schatten', { g: 'm', cloth: 0x0a0812, cloth2: 0x0a0812, hair: 0x0a0812, skin: 0x14101c, sc: .82, hs: 4 }, { pal: 1 }); g.add(P.root); g.add(glow(0x6a4aff, 3, 0, 1, 0, .5)); }
