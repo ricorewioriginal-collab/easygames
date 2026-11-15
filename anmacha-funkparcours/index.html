@@ -75,6 +75,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 </section>
 
 <section id="game" class="screen" hidden>
+  <div id="tip" class="tip glass" hidden aria-live="polite"><b></b><span></span></div>
   <div class="top">
     <button class="ib" id="bGMenu" aria-label="Pause">☰</button>
     <div class="rinfo glass"><small id="rCourse">Vorrunde</small><b id="rName">Läufer</b></div>
@@ -133,6 +134,8 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <button class="pz-it" id="bPSnd">🔊 Ton: an</button>
     <button class="pz-it" id="bPVoice">🎙️ Kommentator: an</button>
     <button class="pz-it" id="bPView">🎥 Ansicht: seitlich</button>
+    <button class="pz-it" id="bPCam">🔄 Kamera zurücksetzen</button>
+    <button class="pz-it" id="bPTips">💡 Hinweise: an</button>
     <button class="pz-it" id="bQuit">⏏ Zum Hauptmenü</button>
   </div>
   <div class="pz-keys"><span class="k-key"><kbd>←</kbd><kbd>→</kbd> laufen · <kbd>Leertaste</kbd> springen · <kbd>↓</kbd> ducken · <kbd>Esc</kbd> weiter</span><span class="k-pad"><kbd class="gp">L</kbd> laufen · <kbd class="gp a">A</kbd> springen · <kbd class="gp b">B</kbd> ducken · <kbd class="gp">☰</kbd> weiter</span></div>
