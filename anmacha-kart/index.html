@@ -79,6 +79,8 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   .keymap{display:grid;gap:4px;width:100%}.maprow{display:grid;grid-template-columns:minmax(110px,1.2fr) 1fr 1fr;gap:6px;align-items:center;text-align:left;font-size:13px}.maprow.head{font-weight:800;opacity:.75}.maprow .chip{min-height:34px;justify-content:flex-start}.maprow kbd{margin-right:3px}
   .vp .nm{position:absolute;left:10px;top:calc(10px + clamp(50px,9vw,78px) + 6px);max-width:clamp(50px,9vw,78px);padding:1px 7px;border-radius:999px;background:rgba(10,14,40,.78);border:1px solid var(--sc);font-weight:800;font-size:11px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .vp .item{position:absolute;left:10px;top:10px;width:clamp(50px,9vw,78px);aspect-ratio:1;border-radius:50%;border:4px solid #fff;background:radial-gradient(circle at 50% 35%,#3a3f58,#12141f 70%);box-shadow:0 0 0 3px rgba(20,22,34,.85),0 0 16px var(--sc);display:grid;place-items:center;font-size:clamp(26px,5.4vw,44px)}
+  .vp .item2{position:absolute;left:calc(10px + clamp(50px,9vw,78px) * .62);top:calc(10px + clamp(50px,9vw,78px) * .72);width:calc(clamp(50px,9vw,78px) * .55);aspect-ratio:1;border-radius:50%;border:3px solid #5ad1ff;background:radial-gradient(circle at 50% 35%,#2a3f58,#10141f 70%);display:grid;place-items:center;font-size:calc(clamp(50px,9vw,78px) * .3);z-index:1}
+  .vp .item2.empty{border-color:rgba(90,209,255,.45);background:rgba(10,14,40,.6)}.vp .item2.empty::after{content:'⇄';color:rgba(255,255,255,.5);font-size:.8em}.vp .item2.roll{animation:spin .25s linear infinite}.vp .item2 small{display:none}
   .vp .item.empty{border-color:rgba(223,232,255,.6);background:rgba(10,14,40,.6);box-shadow:none}
   .vp .item.empty::after{content:'ITEM';font:900 clamp(9px,1.8vw,12px) 'Trebuchet MS',sans-serif;letter-spacing:.06em;color:rgba(255,255,255,.55)}
   .vp .item.roll{animation:spin .25s linear infinite}
@@ -112,10 +114,13 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   .tc .tb-b{--bc:#ff5468;transform:translateX(calc(var(--s) * -.775))}
   .tc .tb-d{--bc:#ffb020;transform:translateX(calc(var(--s) * .775))}
   .tc .tb-i{--bc:#ff4fd8;transform:translateY(calc(var(--s) * -.775))}
+  .chmode{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 10px}.chmode .sep{width:10px}.chmode .info{flex-basis:100%;opacity:.75}
+  .tc .tb-sw{--bc:#5ad1ff;transform:translate(calc(var(--s) * -.85),calc(var(--s) * -.85)) scale(.72)}
   /* Solo am Touch-Gerät: Platzierung, Runde und Tempo nach oben, damit nichts unter Joystick oder Tasten liegt */
   body.touch.racing .vp:only-child .nm{display:none}
   body.touch.racing .vp:only-child{--st:env(safe-area-inset-top,0px);--hl:calc(24px + clamp(50px,9vw,78px) + env(safe-area-inset-left,0px))}
   body.touch.racing .vp:only-child .item{top:calc(10px + var(--st));left:calc(10px + env(safe-area-inset-left,0px))}
+  body.touch.racing .vp:only-child .item2{top:calc(10px + var(--st) + clamp(50px,9vw,78px) * .72);left:calc(10px + env(safe-area-inset-left,0px) + clamp(50px,9vw,78px) * .62)}
   body.touch.racing .vp:only-child canvas{top:calc(6px + var(--st))}
   body.touch.racing .vp:only-child .pos{right:auto;bottom:auto;left:var(--hl);top:calc(8px + var(--st));padding:0 .12em 0 .06em;font-size:clamp(36px,10vmin,58px)}
   body.touch.racing .vp:only-child .lap{left:var(--hl);bottom:auto;top:calc(16px + var(--st) + clamp(36px,10vmin,58px))}
@@ -458,7 +463,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <div class="console-pane console-showroom" data-pane="2" hidden>
       <div class="showcase"><div class="showcase-stage" id="kartStage"></div><div class="showcase-info"><span class="showcase-kicker">DEINE 3D-RENNBÜHNE</span><strong id="kartStageName">Fahrer auswählen</strong><span id="kartStageWorld">Deine Welt</span><small>Mit dem Finger drehen</small></div></div>
       <div class="pc console-player" id="pcard"></div>
-      <h3 class="console-heading">FAHRER AUSWÄHLEN</h3><div class="chars" id="chars"></div>
+      <h3 class="console-heading">FAHRER AUSWÄHLEN</h3><div class="row chmode" id="chmode"></div><div class="chars" id="chars"></div>
     </div>
     <div class="console-pane console-showroom" data-pane="3" hidden>
       <div class="showcase" id="kartStageMount"><div class="showcase-stage" id="kartStageSlot"></div><div class="showcase-info"><span class="showcase-kicker">DEINE 3D-RENNBÜHNE</span><strong id="kartStageNameKart">Kart wählen</strong><span id="kartStageWorldKart">Tempo · Beschleunigung · Handling · Gewicht</span><small>Das Fahrzeug auf der Bühne drehen</small></div></div>
@@ -517,12 +522,12 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 
 <script src="audio.js?v=20261115-wt10"></script>
 <script src="chars.js?v=20261115-wt9"></script>
-<script src="track.js?v=20261115-wt12"></script>
+<script src="track.js?v=20261115-wt13"></script>
 <script src="oma.js?v=20261115-wt1"></script>
-<script src="sim.js?v=20261115-wt11"></script>
+<script src="sim.js?v=20261115-wt12"></script>
 <script src="nav.js?v=20261115-wt1"></script>
 <script src="radio.js?v=20261115-wt1"></script>
-<script src="game.js?v=20261115-wt13"></script>
+<script src="game.js?v=20261115-wt14"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="kart" data-prefix="akChar,akKart,akLogo,akMute,akName,akSave,akTts" defer></script>
 <script src="../gamepad.js" data-pad="info" data-pad-labels="a=Gas · Bestätigen; b=Bremsen · Zurück; rt=Gas; dpad=Lenken · Menü; ls=Lenken; lt=Bremsen; rb=Driften; x=Driften; y=Item; lb=Item · Seite; start=Pause · Los" defer></script>
 <script src="../egstat.js" defer></script>

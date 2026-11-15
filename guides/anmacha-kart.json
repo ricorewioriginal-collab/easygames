@@ -92,6 +92,23 @@
       ]
     },
     {
+      "t": "Tandem: zwei Fahrer pro Kart",
+      "list": [
+        "In der Einrichtung unter Fahrer wählst du „👥 Tandem“ (Standard) oder „👤 Solo“. Im Tandem fährt vorne dein Fahrer, hinten steht dein Beifahrer – beide wählst du über die Knöpfe „Fahrer“ und „Beifahrer“.",
+        "Fahrer tauschen: ○ (PlayStation), X (Switch), B (Xbox), E oder V auf der Tastatur, am Handy der kleine Knopf ⇄ TAUSCH links oben an den Tasten. Beide springen die Plätze.",
+        "Zwei Items: Der Beifahrer hält ein zweites Item (kleiner Kreis neben dem Item-Feld). Ist ein Platz frei, nimmt eine Itembox es auf. Nach dem Tausch kommt das Item des Beifahrers nach vorn und kann benutzt werden.",
+        "Spezialitem: Jede Figur hat ein eigenes Spezialitem, das nur aus Itemboxen kommt – je nachdem, wer gerade vorne fährt. 🗿 Riesenfels rollt nach vorn, räumt Fallen ab und wirft alle in seiner Bahn um. ☄️ Funk-Komet trifft die bis zu drei nächsten Fahrer vor dir. 💖 Herzschild gibt Schild, Turbo und drei Münzen. 🔥 Feuerspur gibt langen Turbo und hinterlässt Flammen.",
+        "Doppelturbo-Start: Gas im Raketenstart-Fenster drücken und zusätzlich Drift halten, wenn es losgeht – beide schieben an (🚀🚀 DOPPELTURBO-START!)."
+      ]
+    },
+    {
+      "t": "Zeitfahren mit Geist und Weltentour-Cup",
+      "list": [
+        "Im Zeitfahren wird deine beste Runde je Strecke gespeichert. Beim nächsten Versuch fährt sie als durchscheinender Geist mit – schlägst du sie, wird der neue Geist gespeichert (👻).",
+        "Weltentour-Cup (alle Strecken): im Grand Prix ganz unten. Alle Strecken nacheinander mit Punktewertung."
+      ]
+    },
+    {
       "t": "Mehrspieler, Online und TV",
       "list": [
         "👥 Mehrspieler – Rennen eröffnen: Ein Handy, Tablet oder PC eröffnet den Raum. Freunde scannen den QR-Code oder geben den Raumcode ein und fahren auf ihrem eigenen Bildschirm.",
@@ -303,6 +320,10 @@
     {
       "q": "Wie ändere ich die Tastenbelegung am Controller?",
       "a": "⚙️ Optionen → Tastenbelegung ändern: Aktion antippen, dann die gewünschte Taste am Controller drücken. Daneben lässt sich die Tastatur genauso belegen. „Standard“ stellt die Original-Belegung wieder her."
+    },
+    {
+      "q": "Wie tausche ich Fahrer und Beifahrer?",
+      "a": "Im Tandem mit ○ (PlayStation), X (Switch), B (Xbox), E/V auf der Tastatur oder dem Knopf ⇄ TAUSCH am Handy. Das Item des Beifahrers kommt dabei nach vorn."
     }
   ]
 }
