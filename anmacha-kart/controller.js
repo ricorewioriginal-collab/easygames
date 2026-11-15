@@ -66,7 +66,7 @@ window.startController = function () {
     if (M && M.rid === m.r) return;
     const tr = trC[m.tr] || (trC[m.tr] = Track.build(Track.DEFS[m.tr])); View.setTrack(tr); View.resize(innerWidth, innerHeight, 1);
     M = { rid: m.r, me: m.me, karts: m.karts.map((a, i) => ({ k: i, logo: a[0], char: a[1], kart: a[2], x: 0, z: 0, th: 0, px: null, pz: 0, pth: 0, vf: 0, steer: 0, drift: 0, spinT: 0, boostT: 0, shieldT: 0, rough: false, dTier: 0, item: null, itemN: 0 })),
-      boxes: m.boxes.map(b => ({ x: b[0], z: b[1], cd: 0 })), pads: m.pads.map(q => ({ x: q[0], z: q[1], th: q[2] })), hazards: [], proj: [], events: [], ok: false };
+      boxes: m.boxes.map(b => ({ x: b[0], z: b[1], cd: 0 })), coins: (m.coins || []).map(c => ({ x: c[0], z: c[1], f: c[2], cd: 0 })), pads: m.pads.map(q => ({ x: q[0], z: q[1], th: q[2] })), hazards: [], proj: [], events: [], ok: false };
     View.setupRace(M, [m.me]); if (!trC.warm) { trC.warm = 1; try { View.warmup(); } catch (e) {} }
     if (ph === 'race') viewStart();
   }
@@ -76,7 +76,7 @@ window.startController = function () {
     const a = m.k, n = M.karts.length; if (!Array.isArray(a) || a.length < n * 13) return;
     for (let i = 0; i < n; i++) { const k = M.karts[i], o = i * 13; k.px = M.ok ? k.x : a[o]; k.pz = M.ok ? k.z : a[o + 1]; k.pth = M.ok ? k.th : a[o + 2];
       k.x = a[o]; k.z = a[o + 1]; k.th = a[o + 2]; k.vf = a[o + 3]; k.steer = a[o + 4]; k.drift = a[o + 5]; k.spinT = a[o + 6]; k.boostT = a[o + 7]; k.shieldT = a[o + 8]; k.rough = !!a[o + 9]; k.dTier = a[o + 10]; k.item = a[o + 11] || null; k.itemN = a[o + 12]; }
-    const b = String(m.b || ''); M.boxes.forEach((x, i) => { x.cd = b[i] === '1' ? 1 : 0; });
+    const b = String(m.b || ''); M.boxes.forEach((x, i) => { x.cd = b[i] === '1' ? 1 : 0; }); const cs = String(m.c || ''); M.coins.forEach((x, i) => { x.cd = cs[i] === '1' ? 1 : 0; }); if (Array.isArray(m.cn)) M.karts.forEach((q, i) => { q.coins = m.cn[i] | 0; });
     M.hazards = (m.h || []).map(h => ({ kind: h[0], x: h[1], z: h[2] })); M.proj = (m.p || []).map(q => ({ kind: q[0], x: q[1], z: q[2], th: q[3] }));
     if (Array.isArray(m.e) && m.e.length) M.events = M.events.concat(m.e);
     const now = performance.now(); if (M.ok) ivl += (Math.min(120, Math.max(25, now - recvAt)) - ivl) * 0.2; recvAt = now; M.ok = true;
