@@ -50,8 +50,15 @@ export class App {
     const unlock = (): void => audio.unlock();
     window.addEventListener('pointerdown', unlock, { passive: true });
     window.addEventListener('keydown', unlock, { passive: true });
+    // Leiser Tick beim Überfahren von Kacheln und Knöpfen (wie im Konsolen-Menü)
+    let lastTick: Element | null = null;
+    this.ui.addEventListener('pointerover', (e) => {
+      const b = (e.target as HTMLElement).closest?.('.tile, .qbtn, button.btn, button.chip');
+      if (b && b !== lastTick && (e as PointerEvent).pointerType === 'mouse') audio.sfx('tick');
+      lastTick = b;
+    });
     this.ui.addEventListener('click', (e) => {
-      const b = (e.target as HTMLElement).closest('button.btn, .card.pick, button.chip');
+      const b = (e.target as HTMLElement).closest('button.btn, .card.pick, button.chip, .tile, .qbtn');
       if (b && !(b as HTMLButtonElement).disabled) audio.sfx(b.classList.contains('back') ? 'back' : 'click');
     });
     document.addEventListener('visibilitychange', () => (document.hidden ? this.engine.stop() : this.engine.start()));

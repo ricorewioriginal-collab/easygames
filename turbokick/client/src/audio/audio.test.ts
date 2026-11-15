@@ -133,8 +133,8 @@ describe('music.ts – reine Notenerzeugung', () => {
       expect(s.bpm).toBeLessThan(220);
       expect(s.loop ? s.bars % s.prog.length : 0).toBe(0);
     }
-    expect(THEMES.menu.bpm).toBe(100);
-    expect(THEMES.match.bpm).toBe(124);
+    expect(THEMES.menu.bpm).toBe(96);
+    expect(THEMES.match.bpm).toBe(126);
     expect(THEMES.overtime.bpm).toBeGreaterThan(THEMES.match.bpm);
   });
 
@@ -209,7 +209,7 @@ describe('music.ts – reine Notenerzeugung', () => {
 
 describe('sfx.ts – Klangrezepte', () => {
   it('alle geforderten Namen haben ein sinnvolles Rezept', () => {
-    expect(SFX_NAMES.length).toBe(20);
+    expect(SFX_NAMES.length).toBe(27);
     expect(Object.keys(SFX_RECIPES).sort()).toEqual([...SFX_NAMES].sort());
     for (const n of SFX_NAMES) {
       const r = SFX_RECIPES[n];
