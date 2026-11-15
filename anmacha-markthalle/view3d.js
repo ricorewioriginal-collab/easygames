@@ -4,7 +4,7 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
   const T3 = THREE, D = Data, P = D.PRODUCTS, S0 = 1 / 1.6;
   let radioLeds = [], R, scene, cam, topCam, cv, W = 0, H = 0, aspect = 1, world = null, worldKey = '', ceil = null, heat = null, heatT = 0, sun, hemi, ghost = null, carryG = null, carryKey = '', rampG = null, rampKey = '', messG = null, messKey = '', skyOut = null, lights = [], roofs = null, envTex = null, models = {}, modelsV = 0;
   const boxHits = [], occl = [];
-  const st = { yaw: 0, pitch: 0, top: false, bob: 0, radioOn: false, q: 1, zoom: 1, panX: 0, panY: 0, port: false, hh: 20, sw: 18, sh: 12 }, objs = new Map(), people = new Map(), hits = [], ray = new T3.Raycaster(), dummy = new T3.Object3D(), v2 = new T3.Vector2();
+  const st = { yaw: 0, pitch: 0, top: false, tp: false, tpD: 1.75, bob: 0, radioOn: false, q: 1, zoom: 1, panX: 0, panY: 0, port: false, hh: 20, sw: 18, sh: 12 }, objs = new Map(), people = new Map(), hits = [], ray = new T3.Raycaster(), dummy = new T3.Object3D(), v2 = new T3.Vector2();
   const geo = { box: new T3.BoxGeometry(1, 1, 1), sph: new T3.SphereGeometry(.5, 14, 10), cyl: new T3.CylinderGeometry(.5, .5, 1, 14), plane: new T3.PlaneGeometry(1, 1), cone: new T3.ConeGeometry(.5, 1, 12) };
   const mats = {}, mat = (c, o) => { const k = c + (o ? JSON.stringify(o) : ''); return mats[k] || (mats[k] = new T3.MeshStandardMaterial(Object.assign({ color: c, roughness: .8, metalness: 0, envMapIntensity: .55 }, o || {}))); };
   const shade = (g, cast, recv) => { g.traverse(o => { if (o.isMesh) { o.castShadow = !!cast; o.receiveShadow = !!recv; } }); return g; };
@@ -300,8 +300,8 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
   }
   function renderSplit() {
     const hw = Math.floor(W / 2), a = hw / Math.max(1, H), m1 = avatar1(); st.split = true; cam.aspect = cam2.aspect = a; cam.updateProjectionMatrix(); cam2.updateProjectionMatrix(); R.setScissorTest(true);
-    m1.visible = false; av2.visible = true; R.setViewport(0, 0, hw, H); R.setScissor(0, 0, hw, H); R.render(scene, cam);
-    m1.visible = true; av2.visible = false; R.setViewport(hw, 0, W - hw, H); R.setScissor(hw, 0, W - hw, H); R.render(scene, cam2);
+    m1.visible = !!st.tp && !figG; av2.visible = true; R.setViewport(0, 0, hw, H); R.setScissor(0, 0, hw, H); R.render(scene, cam);
+    m1.visible = !(figG && figG.visible); av2.visible = false; R.setViewport(hw, 0, W - hw, H); R.setScissor(hw, 0, W - hw, H); R.render(scene, cam2);
     R.setScissorTest(false); R.setViewport(0, 0, W, H); av2.visible = true; m1.visible = false;
   }
   function renderOne() { if (st.split) { st.split = false; cam.aspect = aspect; cam.updateProjectionMatrix(); } R.render(scene, st.top ? topCam : cam); }
@@ -418,13 +418,42 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
   function look(dx, dy) { st.yaw -= dx; st.pitch = Math.max(-1.25, Math.min(1.1, st.pitch - dy)); }
   const move = (fwd, side) => { const f = [-Math.sin(st.yaw), -Math.cos(st.yaw)], r = [Math.cos(st.yaw), -Math.sin(st.yaw)]; return [f[0] * fwd + r[0] * side, f[1] * fwd + r[1] * side]; };
   function setTop(b) { st.top = !!b; if (ceil) ceil.visible = !st.top; if (roofs) roofs.visible = !st.top; }
+  // Figur-Ansicht (Third Person): Kamera hinter der eigenen, animierten Spielfigur (easygames-Figuren, Quaternius CC0)
+  function setTp(b) { st.tp = !!b; }
+  let fig = null, figG = null, figLoad = false, figYaw = 0, figX = null, figZ = 0, hold = null; const camRay = new T3.Raycaster(), TV = new T3.Vector3(), TD = new T3.Vector3(), ARM = new T3.Vector3();
+  function ensureFig() {
+    if (figLoad || typeof EasyFiguren === 'undefined') return; figLoad = true;
+    try { EasyFiguren.create({ THREE: T3, base: '../figuren/' }).make({ body: 'm', skin: '#e8b98f', hair: { style: 'short', color: '#4a2f17' }, top: '#00b8d9', topStyle: 'tee', bottom: '#2b3a55', bottomStyle: 'pants', shoes: '#f4f4f8', hat: { type: 'cap', color: '#00e5ff' } })
+      .then(f => { fig = f; figG = new T3.Group(); figG.scale.setScalar(S0); figG.add(f.root); f.root.traverse(o => { if (o.isMesh) o.castShadow = true; }); scene.add(figG); }).catch(() => {}); } catch (e) {}
+  }
+  function syncFig(p, dt, show) {
+    if (!hold) { hold = new T3.Group(); scene.add(hold); }
+    if (figX == null) { figX = p.x; figZ = p.y; }
+    const dx = p.x - figX, dz = p.y - figZ, jump = Math.hypot(dx, dz) > 1, v = dt > 0 && !jump ? Math.hypot(dx, dz) / dt * 1.6 : 0; figX = p.x; figZ = p.y;   // m/s
+    { const a = v > .3 ? Math.atan2(dx, dz) : st.yaw + Math.PI; let d = a - figYaw; d = Math.atan2(Math.sin(d), Math.cos(d)); figYaw += d * Math.min(1, dt * (v > .3 ? 12 : 5)); }   // beim Laufen in Laufrichtung, im Stand zur Blickrichtung
+    hold.position.set(p.x + Math.sin(figYaw) * .3, .58, p.y + Math.cos(figYaw) * .3); hold.rotation.y = figYaw;
+    if (!figG) return; figG.visible = show && st.tpD > .5; if (!show) return; figG.position.set(p.x, 0, p.y); figG.rotation.y = figYaw;
+    const c = p.carry.length > 0; if (v < .3) fig.play('idle'); else if (v < 3) { fig.play('walk'); fig.speed(Math.max(.6, Math.min(2, v / 1.4))); } else if (v < 6.5 || c) { fig.play('jog'); fig.speed(Math.max(.7, Math.min(2, v / 4))); } else { fig.play('sprint'); fig.speed(Math.max(.7, Math.min(2, v / 6.5))); }
+    fig.update(dt); if (c) { ARM.set(Math.sin(figYaw), -.35, Math.cos(figYaw)).normalize(); fig.aimArm('l', ARM, .85); fig.aimArm('r', ARM, .85); }
+  }
+  function tpCam(p, dt) {   // Kamera über der Schulter, weicht Wänden aus und bleibt unter der Decke
+    const cy = Math.cos(st.pitch); TD.set(-Math.sin(st.yaw) * cy, Math.sin(st.pitch), -Math.cos(st.yaw) * cy); TV.set(p.x + Math.cos(st.yaw) * .22, .95, p.y - Math.sin(st.yaw) * .22);
+    let want = aspect < .8 ? 2.6 : 1.75;   // Hochformat: weiter weg, damit die Figur nicht den Bildschirm füllt camRay.set(TV, TD.clone().negate()); camRay.far = want + .2; const h = camRay.intersectObjects(occl, false)[0]; if (h) want = Math.max(.25, h.distance - .2);
+    st.tpD = want < st.tpD ? want : st.tpD + (want - st.tpD) * Math.min(1, dt * 4);
+    cam.position.copy(TV).addScaledVector(TD, -st.tpD); cam.position.y = Math.min(cam.position.y, 2.1 - .14); cam.rotation.set(st.pitch, st.yaw, 0);
+  }
   function zoomBy(f) { st.zoom = Math.max(.35, Math.min(1.1, st.zoom * f)); }
   function panBy(dx, dy) { const k = 2 * st.hh * Math.tan(topCam.fov * Math.PI / 360) / Math.max(1, H); if (st.port) { st.panY -= dx * k; st.panX += dy * k; } else { st.panX -= dx * k; st.panY -= dy * k; } }
   function pick(cx, cy, maxD) {   // Bildschirmposition (Pixel im Canvas) -> Objekt-ID
-    setV2(cx, cy); const c = st.top ? topCam : cam; ray.setFromCamera(v2, c); ray.far = maxD || 6; const hs = ray.intersectObjects(hits, false); ray.far = Infinity; return hs.length ? { id: hs[0].object.userData.oid, d: hs[0].distance } : null;
+    setV2(cx, cy); const c = st.top ? topCam : cam; ray.setFromCamera(v2, c); const nr = !st.top && st.tp ? Math.max(0, st.tpD - .2) : 0; ray.near = nr; ray.far = (maxD || 6) + nr; const hs = ray.intersectObjects(hits, false); ray.far = Infinity; ray.near = 0; return hs.length ? { id: hs[0].object.userData.oid, d: hs[0].distance } : null;
   }
   function pickBox(cx, cy, maxD) {   // Karton unter Fadenkreuz/Finger (Wände verdecken)
-    if (!boxHits.length || st.top) return null; setV2(cx, cy); ray.setFromCamera(v2, cam); ray.far = maxD || 3; const hs = ray.intersectObjects(boxHits.concat(occl), false); ray.far = Infinity; const h = hs[0]; return h && h.object.userData.bid != null ? { id: h.object.userData.bid, d: h.distance } : null;
+    if (!boxHits.length || st.top) return null; setV2(cx, cy); ray.setFromCamera(v2, cam); const nr = st.tp ? Math.max(0, st.tpD - .2) : 0; ray.near = nr; ray.far = (maxD || 3) + nr; const hs = ray.intersectObjects(boxHits.concat(occl), false); ray.far = Infinity; ray.near = 0; const h = hs[0]; return h && h.object.userData.bid != null ? { id: h.object.userData.bid, d: h.distance } : null;
+  }
+  function nearBox(p, maxD) {   // Figur-Ansicht: Hilfe beim Zielen – nächster Karton vor der Figur in Reichweite
+    const fx = -Math.sin(st.yaw), fz = -Math.cos(st.yaw); let best = null;
+    for (const o of boxHits) { if (o.userData.bid == null || !o.visible) continue; o.getWorldPosition(TV); const dx = TV.x - p.x, dz = TV.z - p.y, d = Math.hypot(dx, dz); if (d > (maxD || 1.7) || d < 1e-3 || (dx * fx + dz * fz) / d < .55) continue; if (!best || d < best.d) best = { id: o.userData.bid, d }; }
+    if (best) best.d += st.tpD; return best;
   }
   function floorPt(cx, cy) { setV2(cx, cy); ray.setFromCamera(v2, st.top ? topCam : cam); const o = ray.ray.origin, d = ray.ray.direction; if (d.y > -1e-4) return null; const t = -o.y / d.y; return [o.x + d.x * t, o.z + d.z * t]; }
   function floorAt(cx, cy) { setV2(cx, cy); ray.setFromCamera(v2, st.top ? topCam : cam); const o = ray.ray.origin, d = ray.ray.direction; if (Math.abs(d.y) < 1e-4) return null; const t = -o.y / d.y; if (t < 0) return null; return [Math.floor(o.x + d.x * t), Math.floor(o.z + d.z * t)]; }
@@ -437,19 +466,22 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
       const mx = (1 - Math.min(1, st.zoom)) * S.W / 2 + .5, my = (1 - Math.min(1, st.zoom)) * S.H / 2 + .5; const LW = Sim.whLayout(S); st.panX = Math.max(-mx + LW.x0 - 1, Math.min(mx, st.panX)); st.panY = Math.max(-my + Sim.YARD_Y - 1, Math.min(my, st.panY)); const cx = S.W / 2 + st.panX, cz = S.H / 2 + st.panY;
       if (port) { topCam.up.set(1, 0, 0); topCam.position.set(cx - hh * .28, hh, cz); topCam.lookAt(cx - .3, 0, cz); } else { topCam.up.set(0, 1, 0); topCam.position.set(cx, hh, cz + hh * .28); topCam.lookAt(cx, 0, cz + .3); }
     }
+    else if (st.tp) tpCam(p, dt);
     else { const mv = Math.hypot(p.vx, p.vy) > .1 ? 1 : 0; st.bob += dt * 9 * mv; cam.position.set(p.x, .98 + Math.sin(st.bob) * .012 * mv, p.y); cam.rotation.set(st.pitch, st.yaw, 0); }
     // getragene Kartons
-    const ck = p.carry.map(b => b.empty ? '~' : b.p).join(','); if (ck !== carryKey || !carryG) { carryKey = ck; if (carryG) cam.remove(carryG); carryG = new T3.Group(); carryG.position.set(.12, -.34, -.72); p.carry.forEach((b, i) => { const c = cartonMesh(b.p, b.empty); c.position.set(0, i * .34, 0); c.rotation.y = -.25; c.scale.setScalar(.8); carryG.add(c); }); cam.add(carryG); }
-    carryG.visible = !st.top && p.carry.length > 0;
+    const ck = p.carry.map(b => b.empty ? '~' : b.p).join(','); if (ck !== carryKey || !carryG) { carryKey = ck; if (carryG && carryG.parent) carryG.parent.remove(carryG); carryG = new T3.Group(); p.carry.forEach((b, i) => { const c = cartonMesh(b.p, b.empty); c.position.set(0, i * .34, 0); c.rotation.y = -.25; c.scale.setScalar(.8); carryG.add(c); }); }
+    const ext = st.top || st.tp, showFig = ext && !!figG; if (ext) ensureFig(); syncFig(p, dt, ext);
+    const cp = showFig ? hold : cam; if (carryG.parent !== cp) { cp.add(carryG); if (cp === cam) carryG.position.set(.12, -.34, -.72); else carryG.position.set(0, 0, 0); carryG.rotation.y = cp === cam ? 0 : .25; }
+    carryG.visible = p.carry.length > 0 && (showFig ? figG.visible : !ext);
     // Ghost
     if (opt.ghost && (opt.place || opt.cursor)) { const t = opt.place ? D.OBJ[opt.place.k] : null, w = t ? (opt.place.rot ? t.h : t.w) : 1, h = t ? (opt.place.rot ? t.w : t.h) : 1; if (!ghost) { ghost = new T3.Mesh(geo.box, new T3.MeshBasicMaterial({ color: '#00ffc8', transparent: true, opacity: .45 })); scene.add(ghost); } ghost.visible = true; ghost.material.color.set(t ? '#00ffc8' : '#ff9a1f'); ghost.scale.set(w - .06, t ? (t.cap || t.store ? 1.0 : .9) : 1.25, h - .06); ghost.position.set(opt.ghost.x + w / 2, ghost.scale.y / 2, opt.ghost.y + h / 2); } else if (ghost) ghost.visible = false;
     // Heatmap
     if (opt.heat) { heatT -= dt; if (!heat) { heat = { c: document.createElement('canvas'), m: null }; heat.c.width = S.W; heat.c.height = S.H; heat.t = new T3.CanvasTexture(heat.c); heat.t.magFilter = T3.NearestFilter; heat.m = mesh(geo.plane, new T3.MeshBasicMaterial({ map: heat.t, transparent: true, depthWrite: false }), S.W / 2, .03, S.H / 2, S.W, S.H, 1); heat.m.rotation.x = -Math.PI / 2; scene.add(heat.m); } if (heatT <= 0) { heatT = .5; const g = heat.c.getContext('2d'); if (heat.c.width !== S.W || heat.c.height !== S.H) { heat.c.width = S.W; heat.c.height = S.H; } g.clearRect(0, 0, S.W, S.H); let mx = 1; S.heat.forEach(v => { if (v > mx) mx = v; }); for (let y = 0; y < S.H; y++) for (let x = 0; x < S.W; x++) { const v = S.heat[y * S.W + x]; if (v > .2) { g.fillStyle = `rgba(255,${Math.round(160 - 140 * v / mx)},30,${Math.min(.8, .15 + .65 * v / mx)})`; g.fillRect(x, y, 1, 1); } } heat.t.needsUpdate = true; } heat.m.visible = true; } else if (heat) heat.m.visible = false;
     // Spieler-Figur in der Vogelperspektive
-    if (!st.top) { const m = people.get('player'); if (m) m.visible = false; } else { let m = people.get('player'); if (!m) { m = makeHuman({ skin: '#e8b98f', hair: '#4a2f17', hs: 'short', top: '#00b8d9', bottom: '#2b3a55', shoe: '#fff', vest: '#00e5ff' }); people.set('player', m); scene.add(m); } m.visible = true; m.position.set(p.x, 0, p.y); m.rotation.y = Math.PI + st.yaw; m.userData.lx = p.x; }
+    if (!(st.top || st.tp) || figG) { const m = people.get('player'); if (m) m.visible = false; } else { let m = people.get('player'); if (!m) { m = makeHuman({ skin: '#e8b98f', hair: '#4a2f17', hs: 'short', top: '#00b8d9', bottom: '#2b3a55', shoe: '#fff', vest: '#00e5ff' }); people.set('player', m); scene.add(m); } m.visible = true; m.position.set(p.x, 0, p.y); m.rotation.y = Math.PI + st.yaw; m.userData.lx = p.x; }
     radioLeds = radioLeds.filter(l => l.parent); radioLeds.forEach(l => { l.material.color.set(st.radioOn ? (Math.sin(now / 160) > 0 ? '#00ffc8' : '#ff2d95') : '#555'); });
     syncBeacon(opt, now); updateFly(dt);
     if (coopFrame(S, dt, opt)) renderSplit(); else renderOne();
   }
-  return { addFly, setQuality, init, resize, render, look, move, setTop, zoomBy, panBy, pick, pickBox, floorPt, floorAt, st, people, st2, look2, move2, aim2, get ready() { return !!R; } };
+  return { addFly, setQuality, init, resize, render, look, move, setTop, setTp, nearBox, zoomBy, panBy, pick, pickBox, floorPt, floorAt, st, people, st2, look2, move2, aim2, get ready() { return !!R; } };
 })();
