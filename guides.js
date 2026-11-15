@@ -407,15 +407,15 @@ window.EASYGAMES_GUIDES = {
   ]
  },
  "anmacha-urwaldlager": {
-  "anleitung": "Ein begehbares 3D-Dschungelcamp mit erfundenen Mitcampern. Du hältst das Camp am Laufen (Holz, Wasser, Feuer, Kochen, Schlafen), pflegst Beziehungen und bestehst täglich Prüfungen. Eine simulierte Publikumsgunst aus Sympathie, Leistung und Unterhaltung entscheidet über Ausscheidungen und den Champion am Ende der Staffel.",
+  "anleitung": "Promi-Show in 3D, im Dschungel oder im TV-Studio. Erstelle deinen Promi, zieh mit erfundenen Mitcampern ins Lager und überstehe die Staffel: Morgens wählen die simulierten Zuschauer, wer in die Urwaldprüfung muss, jeder Stern ist eine Portion fürs Abendessen. Im Camp hilfst du mit, redest mit den anderen, sprichst ins Buschtelefon und knackst Schatzkisten. In den letzten Tagen muss jeden Abend jemand gehen, am Ende gibt es ein Finale mit drei Prüfungen und eine Krönung.",
   "steuerung": [
-   "PC: W A S D laufen, Shift rennen; Maus ziehen oder Klick ins Bild = umsehen (Esc gibt die Maus frei), Mausrad = Zoom. E = Aktion (zeigt immer, was gerade geht), Q = Frucht essen, Tab = Übersicht (Buschtrommel), P oder Esc = Pause, 1 bis 4 oder Klick = Antworten im Gespräch.",
-   "Touch: Links ziehen = virtueller Joystick (ganz außen = rennen), rechts wischen = umsehen. Große grüne Kontext-Taste = Aktion, Taste Essen, 🥁 oben rechts = Übersicht, ❚❚ = Pause, Antworten antippen.",
-   "Controller: linker Stick laufen, A Aktion, X Frucht essen, Y Übersicht, LT rennen, B zurück, Start Pause."
+   "Tastatur: W A S D laufen (Shift rennt), Maus = Kamera, E/Leertaste/Enter = bestätigen und Kommando, F = zweite Aktion (z. B. ducken, Beine anziehen), Tab = Buschtrommel, 1–9 = Kommandomenü, Esc = Pause, H halten = Prüfung abbrechen.",
+   "Controller (PlayStation, Switch, Xbox): linker Stick laufen, rechter Stick Kamera, ✕/A bestätigen, □/Y zweite Aktion, ○/B zurück, △/X Buschtrommel, Steuerkreuz = Kommandomenü, Options/+ = Pause, Create/− halten = Abbruch.",
+   "Handy: Stick links laufen, rechts wischen = Kamera, grüne Taste = Aktion, zweite Taste = Ducken/Springen, Kommandos antippen; hoch und quer spielbar."
   ],
   "tipps": [
-   "Jede Prüfung erklärt vor dem Start ihre eigene Steuerung für PC und Touch.",
-   "Auf schwachen Handys in den Einstellungen Grafik: Niedrig wählen."
+   "Jede Prüfung erklärt vorher ihre Steuerung – üben kannst du alle neun unter „Prüfungen spielen“.",
+   "Wer im Camp hilft, gewinnt Sympathie; Lästern bringt Unterhaltung, kostet aber Freunde."
   ]
  },
  "anmacha-spielesammlung": {
