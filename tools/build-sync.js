@@ -33,11 +33,22 @@ const MODES = loadJs('modes.js', 'window.EASYGAMES_MODES') || {};
 const GUIDES = loadJs('guides.js', 'window.EASYGAMES_GUIDES') || {};
 const isUrl = p => /^[a-z]+:\/\//i.test(p);
 
+// Von Git ignorierte Dateien (z. B. lokal gebaute riftzone/client/public/heightmap.bin) liegen nicht auf GitHub – stünden sie in der
+// Dateiliste, meldeten die Apps „HTTP 404“. Ordner mit Schrägstrich am Ende (git --directory), Dateien ohne.
+const IGNORED = (() => {
+  try {
+    const out = execFileSync('git', ['ls-files', '--others', '--ignored', '--exclude-standard', '--directory'], { cwd: root, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+    return out.split('\n').filter(Boolean);
+  } catch (e) { return []; }   // kein Git (z. B. entpacktes Archiv): alles wie bisher
+})();
+const IGN_FILES = new Set(IGNORED.filter(p => !p.endsWith('/'))), IGN_DIRS = IGNORED.filter(p => p.endsWith('/'));
+const ignored = r => IGN_FILES.has(r) || IGN_DIRS.some(d => (r + '/').startsWith(d));
+
 function walk(dir, rel, out) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const r = rel ? rel + '/' + e.name : e.name;
-    if (e.isDirectory()) { if (!SKIP_DIRS.has(e.name)) walk(path.join(dir, e.name), r, out); }
-    else if (e.isFile() && !SKIP_FILE.test(r)) out.push(r);
+    if (e.isDirectory()) { if (!SKIP_DIRS.has(e.name) && !ignored(r)) walk(path.join(dir, e.name), r, out); }
+    else if (e.isFile() && !SKIP_FILE.test(r) && !ignored(r)) out.push(r);
   }
 }
 
