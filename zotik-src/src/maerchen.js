@@ -7,9 +7,9 @@ import { arealMask, arealHeight, arealCutDepth, arealDress } from './mwareal.js'
 import { WORLDS } from './mwdata.js';
 import { makeLand } from './mwland.js';
 import { createMwFoes } from './mwfoes.js';
-export const MW_FIRST = 21, MW_LAST = 33, MW = WORLDS;
+export const MW_FIRST = 21, MW_LAST = 36, MW = WORLDS;
 const CX = 0; let CZ = -36, R = 58; const PATHX = z => Math.sin(z * .08) * 5;
-const GTEX = { spiegel: 'forest', dschungel: 'forest', notredame: 'cobble', theben: 'sand', meer: 'sand', mauer: 'grass', camelot: 'grass', nimmerland: 'grass', wunderland: 'grass', pinocchio: 'grass', aladdin: 'sand', kurbelhafen: 'grass', ricorewi: 'grass' };
+const GTEX = { spiegel: 'forest', dschungel: 'forest', notredame: 'cobble', theben: 'sand', meer: 'sand', mauer: 'grass', camelot: 'grass', nimmerland: 'grass', wunderland: 'grass', pinocchio: 'grass', aladdin: 'sand', kurbelhafen: 'grass', ricorewi: 'grass', gulliver: 'grass' };
 const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 const hex = n => '#' + n.toString(16).padStart(6, '0');
 
@@ -233,6 +233,7 @@ export function createMaerchen(C) {
     else if (look === 'catfox') { const F = FOE.make('rothund', 0xc86a2a, false), K = FOE.make('tiger', 0x5a5a62, false); F.root.scale.setScalar(.7); K.root.scale.setScalar(.5); F.root.position.x = -.8; K.root.position.x = .8; g.add(F.root, K.root); }
     else if (look === 'kaa') { const P = C.CR().makeKind('schlange', 0xb0a040, false); P.root.scale.setScalar(2.2); g.add(P.root); }
     else if (look === 'crone') { const P = C.folk('Alte', { g: 'f', cloth: 0x3a2a3a, cloth2: 0x2a2a2a, cape: 0x2a1a2a, hair: 0xd0d0d0, sc: .9 }, { pal: 1 }); g.add(P.root); g.add(mk(G.cyl, M(0x8a6a3a), .45, .75, .2, .3, .25, .3)); for (let i = 0; i < 4; i++) g.add(mk(G.sph, M(0xc8202a, { r: .3 }), .35 + (i % 2) * .2, .95, .1 + (i > 1 ? .2 : 0), .1, .1, .1)); }
+    else if (look === 'wicht') { const P = C.folk('Schatzmeister', { g: 'm', cloth: 0x3a6aa8, cloth2: 0xe8e0d0, hair: 0x2a2a2a, skin: 0xf0d4b8, hat: 1, sc: .34 }, { pal: 1 }); g.add(P.root); }
     else if (look === 'lady') { const P = C.folk('Dame', { g: 'f', cloth: 0xd8e8f8, cloth2: 0x8ab0d8, hair: 0x8a5a2a, sc: 1 }, { pal: 1 }); g.add(P.root); g.add(glow(0xd8f0ff, 4, 0, 1.2, 0, .6)); }
     else { const P = C.folk('Kind', { g: 'm', cloth: 0x3a5a8a, cloth2: 0xe8e0d0, hair: 0x6a4a2a, sc: .7 }, { pal: 1 }); g.add(P.root); }
     g.add(glow(0xffe08a, 2.4, 0, 1.6, 0, .45)); return g;
@@ -532,6 +533,7 @@ export function createMaerchen(C) {
   function tick(dt) {
     if (!cur) return; const s = st(cur.w.id), m = mis(), pl = C.pl;
     if (!cur.guest && !C.dlgOn() && s.seen) addGuest();
+    if (cur.guest && cur.w.gs) cur.guest.P.root.scale.setScalar(cur.w.gs(cur.guest.x, cur.guest.z));
     if (cur.npcP) for (const id in cur.npcP) { const P = cur.npcP[id]; P.hid = !!(m && m.hide === id); if (P.hid) P.root.visible = false; }   // Figur ist gerade woanders (z. B. am Pranger)
     for (let i = cur.items.length - 1; i >= 0; i--) { const it = cur.items[i]; it.o.rotation.y += dt * 1.6; it.o.position.y = cur.h(it.x, it.z) + Math.sin(C.time() * 2.6 + i) * .12;
       if (m && m.t === 'collect' && s.st === 1 && Math.hypot(pl.x - it.x, pl.z - it.z) < 1.8 && !pl.dead) { s.got[it.i] = 1; C.scene.remove(it.o); cur.items.splice(i, 1); C.sfx('pick'); C.emit(it.x, cur.h(it.x, it.z) + .6, it.z, 0xffe08a, 18, 3, .7, .5, -2);
