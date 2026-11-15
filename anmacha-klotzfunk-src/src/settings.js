@@ -3,10 +3,12 @@ const KEY = 'klotzfunk.settings';
 
 // Grafikstufen: Pixeldichte-Obergrenze, Sichtweite (Chunks), Wolken, Arbeitsbudget fürs Nachladen (ms je Bild)
 export const QUALITY = {
-  eco: { name: 'Eco', dpr: 0.75, view: 3, clouds: false, budget: 3 },
-  mobile: { name: 'Mobil', dpr: 1.25, view: 4, clouds: true, budget: 4 },
-  standard: { name: 'Standard', dpr: 1.5, view: 6, clouds: true, budget: 6 },
-  high: { name: 'Hoch', dpr: 2, view: 9, clouds: true, budget: 8 }
+// Etappe 11: shadow = Größe der Schattenkarte (0 = aus), shadowR = Schattenbereich um den Spieler, shadowEvery = jedes n-te Bild,
+// vclouds = 3D-Wolken aus Blöcken, post = Leuchten/Farbabstimmung, wind = wiegende Blätter
+  eco: { name: 'Eco', dpr: 0.75, view: 3, clouds: false, budget: 3, shadow: 0, vclouds: false, post: false, wind: false },
+  mobile: { name: 'Mobil', dpr: 1.25, view: 4, clouds: true, budget: 4, shadow: 1024, shadowR: 28, shadowEvery: 3, vclouds: false, post: false, wind: true },
+  standard: { name: 'Standard', dpr: 1.5, view: 6, clouds: true, budget: 6, shadow: 2048, shadowR: 44, shadowEvery: 1, vclouds: true, post: true, wind: true },
+  high: { name: 'Hoch', dpr: 2, view: 9, clouds: true, budget: 8, shadow: 2048, shadowR: 60, shadowEvery: 1, vclouds: true, post: true, wind: true }
 };
 
 export const DEFAULTS = {

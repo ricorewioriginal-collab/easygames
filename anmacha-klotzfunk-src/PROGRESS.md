@@ -207,6 +207,38 @@ Ids 80–146 hinten angehängt, alte Ids unverändert, alte Spielstände laden u
 
 Ids 147–173 hinten angehängt; alte Spielstände unverändert. Die Deko ist offline in der App enthalten (liegt im Build-Ordner).
 
+## 2m. Modernisierung, Etappe 11: Grafik 2026 und freies Drehen der Deko (1.13.0) ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Sonnenschatten | Schattenkarte aus Sicht der Sonne (2048² bei Standard/Hoch, 1024² und jedes 3. Bild bei Mobil), auf Texel gerastet (kein Flimmern), 12 gedrehte Stichproben für weiche Kanten; Blätter werfen Schatten mit Lücken, Deko wirft Schatten | `src/fx.js`, `src/game.js`, `src/deco.js` |
+| Blocklicht | Lampen, Laternen, Neon, Kristalle, Magma und leuchtende Deko erhellen ihre Umgebung (Stufe 14, −1 je Block, Wände halten auf), weich über die Ecken gemittelt, warmes Licht; im Mesher/Worker berechnet | `src/mesher.js` |
+| Atmosphäre | Dunst mit Grundschleier, in Richtung Sonne warm aufgehellt; heller Hof um die Sonne; kräftigere Sonne, kühleres Umgebungslicht | `src/fx.js`, `src/game.js` |
+| 3D-Wolken | Wolken aus großen Blöcken (64×64 Zellen je Kachel, nahtlos wiederholt), oben hell, unten dunkler, ziehen mit dem Wind | `src/fx.js` |
+| Nachbearbeitung | Leuchten (Bloom) um Sonne, Lampen und helle Flächen, weich abgefangene Lichter, etwas mehr Tiefe, Vignette, Dithering gegen Farbstufen; MSAA im Bildpuffer | `src/fx.js` |
+| Bewegung | Blätter und Pflanzen-Spitzen wiegen sich im Wind (gleiche Ecken bewegen sich gleich, keine Risse) | `src/game.js`, `src/mesher.js` |
+| Deko drehen | Beim Setzen schaut ein Stück zum Spieler, Wandstücke zeigen von der Wand weg; R / Umschalt+R, Schleichen + Setzen (Controller) oder ⟳ (Touch) dreht um 90°; Drehung im Spielstand (`rot`, optional) | `src/world.js`, `src/storage.js`, `src/game.js`, `src/main.js` |
+
+Grafikstufen: Eco ohne Effekte, Mobil mit kleinen Schatten und Wind, Standard/Hoch mit allem. Alte Spielstände unverändert (neues Feld `rot` optional). Shader rechnen weiter in Anzeigefarben und geben linear aus, damit direkte Ausgabe und Nachbearbeitung gleich aussehen.
+Bekannt: Drehung wird im Mehrspieler noch nicht übertragen; Tiere und Figuren bekommen kein Blocklicht.
+
+---
+
+## 2n. Etappe 12: Fanwelten und voll ausgestattete Survival-Welt (1.14.0) ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Bauhelfer | Pläne (`Plan`) mit Zellen je Chunk und Bauplätzen, die das Gelände ebnen; Helfer für Räume, Fenster, Türen, Satteldächer aus Treppen, Türme, Kegel, Hallen, Gänge, Treppenstollen, Höhlen, Schrift (3×5), Bäume, Figuren; deterministisch beim Erzeugen jedes Chunks | `src/blueprint.js` |
+| Große Häuser | `bigHouse`: zwei Stockwerke, 11×11 innen, Leiter ins Obergeschoss, Satteldach; Einrichtung je Rolle (Wohnen, Bauer, Schmied, Funker, Hirte, Wirt, Laden, Heiler, Labor) mit KayKit-Möbeln | `src/blueprint.js` |
+| Survival-Welt (Generator 4) | Dörfer mit großen, eingerichteten Häusern (Abstand 13), Feld, Brunnen, Laternen; begehbare Höhlenhallen mit Treppenstollen zur Oberfläche; hohes Gras auf Wiesen. Alte Welten behalten ihren Generator | `src/structures.js`, `src/world.js` |
+| Fanwelten | Im Menü „Neue Welt“ wählbar: **Taschi-Land** (Heilzentrum, Labor, Arena, Statuen, Glimmstein-Höhle), **Zotik: Lunaris** (Mondblick-Dorf, Kirche mit Turm, Schmiede, Wirtshaus, Weltentor, Risshöhle, Abendlicht), **AnMaCha – der Podcast** (Funkhaus mit Studios, Sendemast mit Leiter, Bühne „LIVE“, Café, Plattenladen, Straßen), **Märchenwald** (Dornröschen-Schloss, Rapunzel-Turm, Hexenhaus aus Lebkuchen, Großmutters Haus, Zwergenmine). Rundherum normale, zufällige Welt zum Weiterbauen | `src/fanworlds.js`, `src/main.js` |
+| Neue Blöcke | Mondstein, Mondlaub, Lebkuchen, Zuckerguss, Rosenhecke, Schaumstoff, On-Air-Leuchte, Goldblock, Kapselhülle, hohes Gras (Ids 174–183), mit Rezepten | `src/blocks.js`, `src/textures.js`, `src/crafting.js` |
+| Mehrspieler | Fanwelt wird an Gäste übertragen (`preset`, Protokoll 2) | `src/mp.js`, `src/net.js` |
+
+Spielstände: neues optionales Feld `preset`; Generator 1–3 unverändert. Tests: `tests/fanworlds.test.js` (Häuser begehbar, Leiter, Dorf, Höhle, alle Fanwelten).
+Bekannt: Deko-Drehung wird im Mehrspieler noch nicht übertragen.
+
+
 ---
 
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)

@@ -1,7 +1,9 @@
 // Chunk-Mesher: Flächen-Culling, weiche Ecken-Beleuchtung (Ambient Occlusion + Himmelslicht),
 // je Chunk bis zu drei Meshes (opak / transparent / Funk-Logos).
 import { CS, H, ATLAS_COLS, ATLAS_ROWS } from './consts.js';
-import { B, OPAQUE, LOGO0, EMIT, TRANS, SELF, CROSS, FLAT, SHAPE, TILES, isLogo as isLogoId } from './blocks.js';
+import { B, OPAQUE, LOGO0, EMIT, TRANS, SELF, CROSS, FLAT, SHAPE, TILES, BLOCKS, isLogo as isLogoId } from './blocks.js';
+// Blätter wiegen sich im Wind (Code 4 im Shader), Pflanzen-Spitzen ebenso (Code 5)
+const LEAFY = new Uint8Array(256); for (const b of BLOCKS) if (b && /LEAVES$/.test(b.key)) LEAFY[b.id] = 1;
 import { shapeBoxes, decoRot, decoLift } from './shapes.js';
 export { TILES };
 
@@ -63,16 +65,62 @@ export function meshInput(world, chunk) {
   if (!nb) return null;
   const hms = [];
   for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) hms.push(world.heightmap(world.getChunk(chunk.cx + dx, chunk.cz + dz)));
-  return { nb, hms, maxY: chunk.maxY };
+  return { nb, hms, maxY: chunk.maxY, rot: world.rot ? world.rot.get(chunk.key) || null : null };
 }
 
 export function buildMesh(world, chunk) {
   const inp = meshInput(world, chunk);
-  return inp ? meshFrom(inp.nb, inp.hms, inp.maxY) : null;
+  return inp ? meshFrom(inp.nb, inp.hms, inp.maxY, inp.rot) : null;
 }
 
-// reiner Mesher ohne Welt-Objekt: nb[4] ist der Chunk selbst
-export function meshFrom(nb, hms, maxY) {
+// Blocklicht (Etappe 11): Lampen, Laternen, Kristalle, Magma und leuchtende Deko erhellen ihre Umgebung.
+// Stufe LR an der Quelle, −1 je Schritt, feste Blöcke halten es auf; berechnet im Bereich Chunk ± LR (aus der 3×3-Nachbarschaft).
+export const LR = 14;
+const LW = CS + 2 * LR;
+let lightBuf = null, lightQ = null;
+// nb (optional): 3×3-Chunkdaten für die schnelle Suche nach Lichtquellen
+export function blockLight(get, top, nb = null) {
+  const yMax = Math.min(H - 1, top + LR);
+  const src = [];
+  if (nb) {
+    for (let cz = -1; cz <= 1; cz++) for (let cx = -1; cx <= 1; cx++) {
+      const d = nb[(cz + 1) * 3 + cx + 1], x0 = Math.max(0, -LR - cx * CS), x1 = Math.min(CS - 1, CS + LR - 1 - cx * CS);
+      const z0 = Math.max(0, -LR - cz * CS), z1 = Math.min(CS - 1, CS + LR - 1 - cz * CS), lim = Math.min(d.length, (yMax + 1) << 8);
+      for (let i = 0; i < lim; i++) {
+        if (!EMIT[d[i]]) continue;
+        const lx = i & 15, lz = (i >> 4) & 15;
+        if (lx >= x0 && lx <= x1 && lz >= z0 && lz <= z1) src.push(cx * CS + lx, i >> 8, cz * CS + lz);
+      }
+    }
+  } else {
+    for (let y = 0; y <= yMax; y++) for (let z = -LR; z < CS + LR; z++) for (let x = -LR; x < CS + LR; x++) if (EMIT[get(x, y, z)]) src.push(x, y, z);
+  }
+  if (!src.length) return null;
+  const n = LW * LW * (yMax + 1);
+  if (!lightBuf || lightBuf.length < n) { lightBuf = new Uint8Array(n); lightQ = new Int32Array(n); }
+  const L = lightBuf, Q = lightQ; L.fill(0, 0, n);
+  let qh = 0, qt = 0;
+  for (let k = 0; k < src.length; k += 3) { const i = (src[k] + LR) + (src[k + 2] + LR) * LW + src[k + 1] * LW * LW; L[i] = LR; Q[qt++] = i; }
+  const LWW = LW * LW;
+  while (qh < qt) {
+    const i = Q[qh++], v = L[i] - 1;
+    if (v <= 0) continue;
+    const y = (i / LWW) | 0, r = i - y * LWW, z = (r / LW) | 0, x = r - z * LW;
+    for (let k = 0; k < 6; k++) {
+      const nx = x + (k === 0 ? 1 : k === 1 ? -1 : 0), ny = y + (k === 2 ? 1 : k === 3 ? -1 : 0), nz = z + (k === 4 ? 1 : k === 5 ? -1 : 0);
+      if (nx < 0 || nz < 0 || ny < 0 || nx >= LW || nz >= LW || ny > yMax) continue;
+      const j = nx + nz * LW + ny * LWW;
+      if (L[j] >= v || OPAQUE[get(nx - LR, ny, nz - LR)]) continue;
+      L[j] = v; Q[qt++] = j;
+    }
+  }
+  return (x, y, z) => (y < 0 || y > yMax || x < -LR || z < -LR || x >= CS + LR || z >= CS + LR) ? 0 : L[(x + LR) + (z + LR) * LW + y * LWW] / LR;
+}
+// Code (0..7: Leuchten, Wasser, Blätter, Pflanze) und Blocklicht (0..1, 64 Stufen) in einem Wert
+const packB = (code, bl) => code + 8 * Math.round(bl * 63);
+
+// reiner Mesher ohne Welt-Objekt: nb[4] ist der Chunk selbst; rot: selbst gedrehte Deko (Index -> 0..3) oder null
+export function meshFrom(nb, hms, maxY, rot = null) {
   const data = nb[4];
   const idxOf = (x, z) => (z < 0 ? 0 : z >= CS ? 2 : 1) * 3 + (x < 0 ? 0 : x >= CS ? 2 : 1);
   const get = (x, y, z) => {
@@ -86,19 +134,20 @@ export function meshFrom(nb, hms, maxY) {
   };
   const O = new Part(), T = new Part(), L = new Part(), br = [0, 0, 0, 0], deco = [];
   const top = Math.min(H - 1, maxY + 1);
+  const blf = blockLight(get, top, nb), bl = blf || (() => 0);
   for (let y = 0; y <= top; y++) {
     for (let z = 0; z < CS; z++) {
       for (let x = 0; x < CS; x++) {
         const t = data[x + (z << 4) + (y << 8)];
         if (t === B.AIR) continue;
-        if (CROSS[t]) { cross(O, x, y, z, TILES[t][0], sky(x, y, z)); continue; }
+        if (CROSS[t]) { cross(O, x, y, z, TILES[t][0], sky(x, y, z), bl(x, y, z)); continue; }
         if (FLAT[t]) { // Schiene längs x, wenn nur dort Nachbarschienen liegen (auch eine Stufe höher/tiefer)
           const r = (ax, az) => get(x + ax, y, z + az) === t || get(x + ax, y + 1, z + az) === t || get(x + ax, y - 1, z + az) === t;
-          flat(O, x, y, z, TILES[t][0], sky(x, y, z), (r(1, 0) || r(-1, 0)) && !r(0, 1) && !r(0, -1));
+          flat(O, x, y, z, TILES[t][0], sky(x, y, z), (r(1, 0) || r(-1, 0)) && !r(0, 1) && !r(0, -1), bl(x, y, z));
           continue;
         }
-        if (SHAPE[t] === 8) { deco.push(x, y, z, t, decoRot(get, x, y, z), sky(x, y, z), decoLift(get, x, y, z)); continue; } // KayKit-Modell (deco.js)
-        if (SHAPE[t]) { boxes(TRANS[t] ? T : O, x, y, z, shapeBoxes(t, get, x, y, z), TILES[t], get, sky); continue; }
+        if (SHAPE[t] === 8) { const rr = rot ? rot.get(x + (z << 4) + (y << 8)) : undefined; deco.push(x, y, z, t, rr != null ? rr : decoRot(get, x, y, z), sky(x, y, z), decoLift(get, x, y, z), bl(x, y, z)); continue; } // KayKit-Modell (deco.js)
+        if (SHAPE[t]) { boxes(TRANS[t] ? T : O, x, y, z, shapeBoxes(t, get, x, y, z), TILES[t], get, sky, bl); continue; }
         const isLogo = isLogoId(t);
         const part = isLogo ? L : TRANS[t] ? T : O;
         const lamp = EMIT[t];
@@ -120,10 +169,12 @@ export function meshFrom(nb, hms, maxY) {
             const a = useAo ? (b1 && b2 ? 0 : 3 - (b1 + b2 + b3)) : 3;
             // weiches Himmelslicht: Mittel aus Flächenzelle und drei Nachbarzellen (feste Zellen zählen wie die Flächenzelle)
             const s = (sc + (b1 ? sc : sky(x1, y1, z1)) + (b2 ? sc : sky(x2, y2, z2)) + (b3 ? sc : sky(x3, y3, z3))) / 4;
+            let lc = 0;
+            if (blf) { const l0 = bl(x + f.n[0], y + f.n[1], z + f.n[2]); lc = (l0 + (b1 ? l0 : bl(x1, y1, z1)) + (b2 ? l0 : bl(x2, y2, z2)) + (b3 ? l0 : bl(x3, y3, z3))) / 4; }
             br[k] = AO[a] * (0.5 + 0.5 * s);
             part.pos.push(x + c.p[0], y + c.p[1] - (lower && c.p[1] === 1 ? 0.12 : 0), z + c.p[2]);
             part.uv.push(u0 + c.i * du, v0 + c.j * dv);
-            part.col.push(AO[a], s, t === B.WATER ? 3 : lamp, fi); // 3 = Wasser (Wellen im Shader)
+            part.col.push(AO[a], s, packB(t === B.WATER ? 3 : LEAFY[t] ? 4 : lamp, lc), fi); // 3 = Wasser (Wellen im Shader), 4 = Blätter (Wind)
           }
           const b = part.n * 4;
           if (br[0] + br[2] < br[1] + br[3]) part.idx.push(b + 1, b + 2, b + 3, b + 1, b + 3, b);
@@ -138,14 +189,15 @@ export function meshFrom(nb, hms, maxY) {
 
 // Formblock: je Quader sechs Flächen; Flächen auf der Blockgrenze entfallen, wenn dort ein voller Block anliegt.
 // Textur: passender Ausschnitt der Kachel (eine Stufe zeigt die untere Hälfte), Helligkeit: Himmelslicht der Zelle und leichte Fugen-Schattierung
-function boxes(P, x, y, z, list, tiles, get, sky) {
-  const s0 = sky(x, y, z);
+function boxes(P, x, y, z, list, tiles, get, sky, bl) {
+  const s0 = sky(x, y, z), l0 = bl(x, y, z);
   for (const bx of list) {
     for (let fi = 0; fi < 6; fi++) {
       const f = FACES[fi], ax = f.n[0] ? 0 : f.n[1] ? 1 : 2, pos = f.n[ax] > 0;
       const edge = pos ? bx[ax + 3] >= 1 : bx[ax] <= 0;
       if (edge && OPAQUE[get(x + f.n[0], y + f.n[1], z + f.n[2])]) continue;
       const s = edge ? (sky(x + f.n[0], y + f.n[1], z + f.n[2]) + s0) / 2 : s0;
+      const lb = edge ? packB(0, (bl(x + f.n[0], y + f.n[1], z + f.n[2]) + l0) / 2) : packB(0, l0);
       const [u0, v0, du, dv] = tileUv(tiles[f.k], false);
       const ao = edge ? 1 : 0.84;
       for (let k = 0; k < 4; k++) {
@@ -154,7 +206,7 @@ function boxes(P, x, y, z, list, tiles, get, sky) {
         const tu = (f.a[ia] > 0 ? p[ia] : 1 - p[ia]), tv = (f.b[ib] > 0 ? p[ib] : 1 - p[ib]);
         P.pos.push(x + p[0], y + p[1], z + p[2]);
         P.uv.push(u0 + tu * du, v0 + tv * dv);
-        P.col.push(ao, s, 0, fi);
+        P.col.push(ao, s, lb, fi);
       }
       const b = P.n * 4; P.idx.push(b, b + 1, b + 2, b, b + 2, b + 3); P.n++;
     }
@@ -163,7 +215,7 @@ function boxes(P, x, y, z, list, tiles, get, sky) {
 
 // Pflanze: zwei diagonale Flächen, beidseitig (opakes Mesh, Alpha-Ausschnitt)
 const CROSS_Q = [[[0.15, 0.15], [0.85, 0.85]], [[0.85, 0.15], [0.15, 0.85]]];
-function cross(P, x, y, z, tile, s) {
+function cross(P, x, y, z, tile, s, l = 0) {
   const [u0, v0, du, dv] = tileUv(tile, false);
   for (const [[ax, az], [bx, bz]] of CROSS_Q) {
     for (const flip of [0, 1]) {
@@ -171,7 +223,7 @@ function cross(P, x, y, z, tile, s) {
       const pts = flip ? [[bx, bz], [ax, az]] : [[ax, az], [bx, bz]];
       P.pos.push(x + pts[0][0], y, z + pts[0][1], x + pts[1][0], y, z + pts[1][1], x + pts[1][0], y + 1, z + pts[1][1], x + pts[0][0], y + 1, z + pts[0][1]);
       P.uv.push(u0, v0, u0 + du, v0, u0 + du, v0 + dv, u0, v0 + dv);
-      for (let k = 0; k < 4; k++) P.col.push(0.9, s, 0, 4);
+      for (let k = 0; k < 4; k++) P.col.push(0.9, s, packB(k > 1 ? 5 : 0, l), 4); // oben im Wind
       P.idx.push(b, b + 1, b + 2, b, b + 2, b + 3);
       P.n++;
     }
@@ -179,7 +231,7 @@ function cross(P, x, y, z, tile, s) {
 }
 
 // Bodenplatte (Schiene): eine waagerechte Fläche knapp über dem Block darunter, von oben und unten sichtbar
-function flat(P, x, y, z, tile, s, alongX) {
+function flat(P, x, y, z, tile, s, alongX, l = 0) {
   const [u0, v0, du, dv] = tileUv(tile, false), h = y + 0.0625;
   // Textur-Koordinaten je Ecke (x, z), (x, z+1), (x+1, z+1), (x+1, z): Schienen laufen entlang v
   const uvz = [u0, v0, u0, v0 + dv, u0 + du, v0 + dv, u0 + du, v0], uvx = [u0, v0, u0 + du, v0, u0 + du, v0 + dv, u0, v0 + dv];
@@ -188,7 +240,7 @@ function flat(P, x, y, z, tile, s, alongX) {
     const b = P.n * 4;
     if (flip) { P.pos.push(x, h, z, x + 1, h, z, x + 1, h, z + 1, x, h, z + 1); P.uv.push(q[0], q[1], q[6], q[7], q[4], q[5], q[2], q[3]); }
     else { P.pos.push(x, h, z, x, h, z + 1, x + 1, h, z + 1, x + 1, h, z); P.uv.push(...q); }
-    for (let k = 0; k < 4; k++) P.col.push(0.95, s, 0, flip ? 5 : 4);
+    for (let k = 0; k < 4; k++) P.col.push(0.95, s, packB(0, l), flip ? 5 : 4);
     P.idx.push(b, b + 1, b + 2, b, b + 2, b + 3);
     P.n++;
   }

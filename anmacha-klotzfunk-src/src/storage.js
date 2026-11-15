@@ -46,6 +46,24 @@ export function decodeEdits(obj) {
   return edits;
 }
 
+// Selbst gedrehte Deko: { Chunk-Key: [Index, Drehung, …] } (optional im Spielstand)
+export function encodeRot(rot) {
+  const out = {};
+  if (rot) for (const [k, m] of rot) if (m.size) { const a = []; for (const [i, r] of m) a.push(i, r); out[k] = a; }
+  return out;
+}
+export function decodeRot(obj) {
+  const rot = new Map();
+  if (!obj || typeof obj !== 'object') return rot;
+  for (const k of Object.keys(obj)) {
+    const v = obj[k], key = Number(k), m = new Map();
+    if (!Array.isArray(v) || !Number.isFinite(key)) continue;
+    for (let i = 0; i + 1 < v.length; i += 2) if (Number.isInteger(v[i]) && v[i] >= 0 && v[i] < 65536 && Number.isInteger(v[i + 1])) m.set(v[i], v[i + 1] & 3);
+    if (m.size) rot.set(key, m);
+  }
+  return rot;
+}
+
 // ---------- Prüfen ----------
 export function validSave(s) {
   return !!s && typeof s === 'object' && Number.isFinite(s.seed) && MODES.includes(s.mode) && typeof s.name === 'string' &&
@@ -58,7 +76,7 @@ export function readWorld(i) { const s = parse(get(W(i))); return validSave(s) ?
 export function readBackup(i) { const s = parse(get(BK(i))); return validSave(s) ? s : null; }
 export function hasBackup(i) { return get(BK(i)) !== null; }
 
-const metaOf = save => ({ name: save.name, mode: save.mode, seed: save.seed, gen: save.gen || 1, savedAt: save.savedAt, q: save.story ? (save.story.done ? -1 : save.story.i) : undefined, qc: save.story ? save.story.c : undefined });
+const metaOf = save => ({ name: save.name, mode: save.mode, seed: save.seed, gen: save.gen || 1, preset: save.preset || undefined, savedAt: save.savedAt, q: save.story ? (save.story.done ? -1 : save.story.i) : undefined, qc: save.story ? save.story.c : undefined });
 
 // gibt true bei Erfolg zurück. Ein misslungener Schreibversuch lässt den alten Stand unverändert.
 export function writeWorld(i, save) {

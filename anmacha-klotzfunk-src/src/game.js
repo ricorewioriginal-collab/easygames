@@ -1,10 +1,11 @@
 // Spielkern: Rendering, Chunk-Streaming, Physik-Schleife, Bauen/Abbauen, Tag-Nacht, Speicherstand.
 import * as THREE from 'three';
 import { World, B, CS, H, NAMES, LOGO0, SPECIAL0, SPECIAL_COUNT, isLogo, normGen } from './world.js';
-import { BLOCKS, SHAPE, stairFor } from './blocks.js';
+import { BLOCKS, SHAPE, stairFor, DECO, DECO_DEF, decoFacing } from './blocks.js';
 import { DecoLayer } from './deco.js';
+import { FX_GLSL, fxUniforms, Shadows, VoxelClouds, Post, SHADOW_LAYER } from './fx.js';
 import { BIOME_NAMES } from './worldgen.js';
-import { encodeEdits, decodeEdits, SAVE_VERSION } from './storage.js';
+import { encodeEdits, decodeEdits, encodeRot, decodeRot, SAVE_VERSION } from './storage.js';
 import { QUALITY } from './settings.js';
 import { MAX_STACK } from './crafting.js';
 import { buildMesh, meshInput, cubeData } from './mesher.js';
@@ -20,49 +21,62 @@ import { Vitals, fallDamage } from './survival.js';
 import { Mobs, rollDrops } from './mobs.js';
 import { MobView } from './mobview.js';
 import { Player, raycast, EYE } from './physics.js';
+import { decoRot } from './shapes.js';
 import { playBreak, playPlace, playDeny, setRadio, playStep, playSplash, playCall, playClick, playClank, playBeep, playJingle, playHurt } from './audio.js';
 import { campaignOf, questProgress } from './quests.js';
 import { solve, ON_ID, OFF_ID } from './signal.js';
 import { nearestVillage } from './structures.js';
+import { fanSkip } from './fanworlds.js';
 
 export const DAY_LENGTH = 480; // Sekunden pro Tag
 const REACH = 6;
 
-// Block-Shader: Beleuchtung pro Vertex aus Flächenrichtung, Sonne/Mond, Himmelslicht und Ambient Occlusion
+// Block-Shader: Umgebungslicht pro Vertex (Flächenrichtung, Himmelslicht, Ambient Occlusion), Sonne pro Pixel mit weichem Schatten,
+// Blätter und Pflanzen wiegen sich im Wind, Dunst mit Sonnenschein (fx.js)
 const VERT = `
-attribute vec4 aCol; varying vec2 vUv; varying vec3 vLight; varying float vDist; varying float vRb; varying float vWater; varying vec3 vWp;
-uniform vec3 uAmb; uniform vec3 uSunCol; uniform vec3 uSunDir;
+attribute vec4 aCol; varying vec2 vUv; varying vec3 vAmb; varying vec3 vSun; varying float vEm; varying float vBl; varying float vDist; varying float vRb; varying float vWater; varying vec3 vWp; varying vec3 vN;
+uniform vec3 uAmb; uniform vec3 uSunCol; uniform vec3 uSunDir; uniform float uTime; uniform float uWind;
 void main(){
-  float lb = aCol.b; vWater = lb > 2.5 ? 1.0 : 0.0; if (lb > 2.5) lb = 0.0;
+  float q = floor((aCol.b + 0.5) / 8.0); vBl = q / 63.0; float lb = aCol.b - q * 8.0; float code = lb > 2.5 ? floor(lb + 0.5) : 0.0; vWater = code == 3.0 ? 1.0 : 0.0; if (lb > 2.5) lb = 0.0;
   float f = aCol.a;
   vec3 n = f < 0.5 ? vec3(1.,0.,0.) : f < 1.5 ? vec3(-1.,0.,0.) : f < 2.5 ? vec3(0.,0.,1.) : f < 3.5 ? vec3(0.,0.,-1.) : f < 4.5 ? vec3(0.,1.,0.) : vec3(0.,-1.,0.);
+  vN = n;
   float sky = aCol.g;
-  vec3 amb = uAmb * (0.62 + 0.38 * (n.y * 0.5 + 0.5)) * (0.5 + 0.5 * sky);
-  vec3 dir = uSunCol * max(dot(n, uSunDir), 0.0) * sky;
-  vLight = max((amb + dir) * aCol.r, vec3(min(lb, 1.0)));
+  vAmb = uAmb * (0.62 + 0.38 * (n.y * 0.5 + 0.5)) * (0.5 + 0.5 * sky) * aCol.r;
+  vSun = uSunCol * max(dot(n, uSunDir), 0.0) * sky * (0.35 + 0.65 * aCol.r);
+  vEm = min(lb, 1.0);
   vRb = lb > 1.5 ? 1.0 : 0.0;
-  vWp = (modelMatrix * vec4(position, 1.0)).xyz;
+  vec4 wp = modelMatrix * vec4(position, 1.0);
+  if (code > 3.5 && uWind > 0.0) { // Wind: gleiche Ecken bewegen sich gleich (keine Risse zwischen Blättern)
+    float ph = uTime * 1.6 + wp.x * 0.7 + wp.z * 0.5 + wp.y * 0.3;
+    float amp = (code > 4.5 ? 0.09 : 0.035) * uWind * sky;
+    wp.x += sin(ph) * amp; wp.z += cos(ph * 0.8 + 1.3) * amp; wp.y += sin(ph * 1.3) * amp * 0.3;
+  }
+  vWp = wp.xyz;
   vUv = uv;
-  vec4 mv = modelViewMatrix * vec4(position, 1.0);
+  vec4 mv = viewMatrix * wp;
   vDist = length(mv.xyz);
   gl_Position = projectionMatrix * mv;
 }`;
 const FRAG = `
 uniform sampler2D uMap; uniform vec3 uFog; uniform vec2 uFogRange; uniform float uCut; uniform float uTime; uniform vec3 uSunCol; uniform vec3 uSunDir;
-varying vec2 vUv; varying vec3 vLight; varying float vDist; varying float vRb; varying float vWater; varying vec3 vWp;
+varying vec2 vUv; varying vec3 vAmb; varying vec3 vSun; varying float vEm; varying float vBl; varying float vDist; varying float vRb; varying float vWater; varying vec3 vWp; varying vec3 vN;
+${FX_GLSL}
 void main(){
   vec4 t = texture2D(uMap, vUv);
   if (t.a < uCut) discard;
-  vec3 c = t.rgb * vLight;
+  float sh = dot(vSun, vSun) > 0.0 ? shadowAt(vWp, vN) : 1.0;
+  vec3 light = max(vAmb + vSun * sh + blockGlow(vBl), vec3(vEm));
+  vec3 c = t.rgb * light;
   float alpha = t.a;
   if (vWater > 0.5) { // Wasser: wandernde Wellen, Sonnenglitzern, am flachen Blickwinkel spiegelt der Himmel
     float w = sin(vWp.x * 1.7 + uTime * 1.3) * sin(vWp.z * 1.3 - uTime * 1.1) + 0.5 * sin((vWp.x + vWp.z) * 3.1 + uTime * 2.3);
     vec3 V = normalize(cameraPosition - vWp);
     float fres = pow(1.0 - abs(V.y), 3.0);
     c *= 0.9 + 0.1 * w;
-    c += uSunCol * pow(max(0.0, w * 0.4 + 0.45), 10.0) * 0.6 * smoothstep(0.0, 0.2, uSunDir.y);
-    c = mix(c, uFog, fres * 0.5);
-    alpha = mix(alpha, 0.92, fres * 0.6);
+    c += uSunCol * pow(max(0.0, w * 0.4 + 0.45), 10.0) * 0.8 * smoothstep(0.0, 0.2, uSunDir.y) * sh;
+    c = mix(c, uFog + uFogSun * 0.5, fres * 0.55);
+    alpha = mix(alpha, 0.94, fres * 0.6);
   }
   if (vRb > 0.5) { // Regenbogen-Block: wandernde Farben
     float hue = fract((vUv.x + vUv.y) * 14.0 + uTime * 0.25 + t.r * 0.35);
@@ -70,7 +84,8 @@ void main(){
     c = rb * (0.55 + 0.6 * t.r);
   }
   c = mix(vec3(dot(c, vec3(0.299, 0.587, 0.114))), c, 1.1); c = c * 1.15 / (1.0 + 0.15 * c); // etwas kräftigere Farben, weiche Lichter
-  gl_FragColor = vec4(mix(c, uFog, smoothstep(uFogRange.x, uFogRange.y, vDist)), alpha);
+  gl_FragColor = vec4(toLinear(applyFog(c, vWp, vDist, uFog, uFogRange, uSunDir)), alpha);
+  #include <colorspace_fragment>
 }`;
 const DOME_VERT = `varying vec3 vDir; void main(){ vDir = normalize(position); vec4 p = projectionMatrix * modelViewMatrix * vec4(position, 1.0); gl_Position = p.xyww; }`;
 const DOME_FRAG = `
@@ -79,14 +94,19 @@ void main(){
   float h = clamp(vDir.y, 0.0, 1.0);
   vec3 c = mix(uHor, uZen, pow(h, 0.5));
   c += uGlow * pow(max(dot(normalize(vDir), uSunN), 0.0), 6.0);
-  gl_FragColor = vec4(c, 1.0);
+  c += uGlow * 0.6 * pow(max(dot(normalize(vDir), uSunN), 0.0), 64.0); // heller Hof um die Sonne
+  c = max(c, 0.0);
+  gl_FragColor = vec4(mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(0.04045, c)), 1.0);
+  #include <colorspace_fragment>
 }`;
 const CLOUD_VERT = `
 uniform vec2 uOff; varying vec2 vUv; varying float vD;
 void main(){ vec4 wp = modelMatrix * vec4(position, 1.0); vUv = (wp.xz + uOff) / 520.0; vD = length(position.xy) / 1200.0; gl_Position = projectionMatrix * viewMatrix * wp; }`;
 const CLOUD_FRAG = `
 uniform sampler2D uTex; uniform vec3 uCol; varying vec2 vUv; varying float vD;
-void main(){ float a = texture2D(uTex, vUv).a * (1.0 - smoothstep(0.45, 0.95, vD)) * 0.9; gl_FragColor = vec4(uCol, a); }`;
+void main(){ float a = texture2D(uTex, vUv).a * (1.0 - smoothstep(0.45, 0.95, vD)) * 0.9; vec3 c = max(uCol, 0.0); gl_FragColor = vec4(mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(0.04045, c)), a);
+  #include <colorspace_fragment>
+}`;
 
 const lerp = (a, b, t) => a + (b - a) * t;
 // Schritt-Geräusch nach Untergrund
@@ -133,7 +153,7 @@ export class Game {
     this.uni = {
       uAmb: { value: new THREE.Vector3(0.44, 0.5, 0.62) }, uSunCol: { value: new THREE.Vector3(0.6, 0.57, 0.5) },
       uSunDir: { value: new THREE.Vector3(0, 1, 0.25).normalize() }, uFog: { value: new THREE.Vector3(0.68, 0.84, 0.95) },
-      uFogRange: { value: new THREE.Vector2(40, 90) }, uTime: { value: 0 }
+      uFogRange: { value: new THREE.Vector2(40, 90) }, uTime: { value: 0 }, uWind: { value: 1 }, ...fxUniforms()
     };
     const mk = (map, cut, trans, uni) => new THREE.ShaderMaterial({
       vertexShader: VERT, fragmentShader: FRAG, transparent: trans, depthWrite: !trans, side: trans ? THREE.DoubleSide : THREE.FrontSide,
@@ -142,6 +162,8 @@ export class Game {
     this.matO = mk(this.atlasTex, 0.5, false, this.uni);
     this.matT = mk(this.atlasTex, 0.02, true, this.uni);
     this.matL = mk(this.logoTex, 0.5, false, this.uni);
+    this.shadows = new Shadows(this.uni); this.shadows.setAtlas(this.atlasTex); // weiche Sonnenschatten (fx.js)
+    this.post = null; this.postOn = false; this.msaa = quality !== 'eco' && !(coarse && dpr >= 2.5);
     this.deco = new DecoLayer(this.group, this.uni); // KayKit-Möbel und -Requisiten (lädt erst, wenn eins in Sicht kommt)
     this.deco.onReady = () => { if (!this.running && this.world) this.render(); };
 
@@ -181,6 +203,7 @@ export class Game {
     this.clouds.rotation.x = -Math.PI / 2; this.clouds.frustumCulled = false;
     this.chunkSphereR = Math.hypot(CS / 2, H / 2, CS / 2) + 1;
     this.scene.add(this.clouds);
+    this.vclouds = new VoxelClouds(this.scene, this.uni); this.vcloudsOn = false; // 3D-Wolken ab Grafikstufe Standard
 
     // Zielmarkierung
     const edges = new THREE.EdgesGeometry(new THREE.BoxGeometry(1.004, 1.004, 1.004));
@@ -199,7 +222,7 @@ export class Game {
     // Block in der Hand
     const handUni = {
       uAmb: { value: new THREE.Vector3(0.62, 0.64, 0.7) }, uSunCol: { value: new THREE.Vector3(0.5, 0.46, 0.38) },
-      uSunDir: { value: new THREE.Vector3(0.35, 0.8, 0.5).normalize() }, uFog: { value: new THREE.Vector3() }, uFogRange: { value: new THREE.Vector2(1e5, 2e5) }, uTime: this.uni.uTime
+      uSunDir: { value: new THREE.Vector3(0.35, 0.8, 0.5).normalize() }, uFog: { value: new THREE.Vector3() }, uFogRange: { value: new THREE.Vector2(1e5, 2e5) }, uTime: this.uni.uTime, uWind: { value: 0 }, ...fxUniforms()
     };
     const hm = map => { const m = mk(map, 0.5, false, handUni); m.depthTest = false; return m; };
     this.handMatO = hm(this.atlasTex); this.handMatL = hm(this.logoTex);
@@ -257,6 +280,10 @@ export class Game {
     const q = QUALITY[name] || QUALITY.standard;
     this.qName = name; this.autoQ = !!auto;
     this.maxDpr = q.dpr; this.dprScale = 1; this.budget = q.budget; this.cloudsOn = q.clouds; this.maxView = q.view;
+    this.shadows.configure(q.shadow || 0, q.shadowR || 40, q.shadowEvery || 1);
+    this.vcloudsOn = !!q.vclouds; this.uni.uWind.value = q.wind === false ? 0 : 1;
+    this.postOn = !!q.post;
+    if (this.postOn && !this.post) try { this.post = new Post(this.renderer, this.scene, this.camera, this.msaa); } catch (e) { this.postOn = false; }
     this.perf.acc = this.perf.n = this.perf.good = 0;
     if (this.menuMode) this.savedView = q.view; else this.setViewDist(q.view);
     this.resize();
@@ -296,8 +323,10 @@ export class Game {
 
   resize() {
     const w = window.innerWidth, h = window.innerHeight;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.maxDpr) * this.dprScale);
+    const pr = Math.min(window.devicePixelRatio || 1, this.maxDpr) * this.dprScale;
+    this.renderer.setPixelRatio(pr);
     this.renderer.setSize(w, h, false);
+    if (this.post) this.post.setSize(w, h, pr);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     if (!this.running && this.world) this.render();
@@ -310,14 +339,16 @@ export class Game {
     this.leaveMenu();
     // Generator: alte Spielstände (ohne Angabe) behalten exakt ihre Originalwelt
     this.gen = normGen(save.gen);
-    this.world = new World(save.seed, decodeEdits(save.edits), this.gen);
+    this.world = new World(save.seed, decodeEdits(save.edits), this.gen, save.preset);
+    this.preset = this.world.preset;
+    this.world.rot = decodeRot(save.rot);
     this.name = save.name; this.seed = save.seed; this.mode = save.mode;
     this.time = save.time ?? 0.08;
     this.hotbar = (Array.isArray(save.hotbar) && save.hotbar.length === 9) ? save.hotbar.map(t => (Number.isInteger(t) && known(t) ? t : 0)) : [1, 2, 3, 4, 5, 6, 7, 8, 9];
     this.sel = save.sel ?? 0;
     this.inv = save.inv ? { ...save.inv } : { [B.DIRT]: 20, [B.PLANKS]: 10, [B.GLASS]: 4 };
     // neue Story-Welten (Generator 3) spielen „Das große Rauschen“, alte die 15 Aufträge
-    this.story = save.mode === 'story' ? (save.story ? { ...save.story } : { i: 0, p: 0, max: 0, done: false, c: this.gen === 3 ? 'rauschen' : undefined }) : null;
+    this.story = save.mode === 'story' ? (save.story ? { ...save.story } : { i: 0, p: 0, max: 0, done: false, c: this.gen >= 3 ? 'rauschen' : undefined }) : null;
     if (this.story && !this.story.c) delete this.story.c;
     this.sigStats = { receivers: 0, machines: 0, reach: 0, senders: 0 }; this.sigRetry = false;
     if (!save.inv && save.mode === 'survival') {
@@ -328,7 +359,7 @@ export class Game {
     this.handType = -1;
     // Überleben (nur im Überlebensmodus): Gesundheit/Hunger, Werkzeug-Abnutzung, Grab mit verlorenen Sachen
     // Story ab Generator 3 („Das große Rauschen“) spielt mit den Überlebensregeln; alte Story-Welten bleiben wie gehabt
-    this.survival = save.mode === 'survival' || (save.mode === 'story' && this.gen === 3);
+    this.survival = save.mode === 'survival' || (save.mode === 'story' && this.gen >= 3);
     this.vitals = this.survival ? new Vitals(save.vit || {}) : null;
     this.dead = false; this.mine = null; this.player.impact = 0;
     this.dur = {};
@@ -342,10 +373,10 @@ export class Game {
     const g = save.grave;
     this.grave = g && [g.x, g.y, g.z].every(Number.isFinite) && g.inv && typeof g.inv === 'object' ? g : null;
     // Tiere: in Überleben und Kreativ (Story bleibt unverändert)
-    this.mobs = new Mobs(this.world, save.seed, save.mobs, save.mode !== 'story' || this.gen === 3);
-    if (this.gen === 3) this.mobs.findVillages = (px, pz) => { // Dörfer der Region und der Nachbarregionen
+    this.mobs = new Mobs(this.world, save.seed, save.mobs, save.mode !== 'story' || this.gen >= 3);
+    if (this.gen >= 3) this.mobs.findVillages = (px, pz) => { // Dörfer der Region und der Nachbarregionen
       const out = [], rx = regionOf(px), rz = regionOf(pz);
-      for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) { const v = villageIn(this.seed, rx + dx, rz + dz); if (v) out.push(v); }
+      for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) { const v = villageIn(this.seed, rx + dx, rz + dz, this.gen); if (v && !(this.world.preset && fanSkip(rx + dx, rz + dz))) out.push(v); }
       return out;
     };
     this.mobs.onAdd = m => this.mobView.add(m); this.mobs.onRemove = m => this.mobView.remove(m);
@@ -455,7 +486,9 @@ export class Game {
       age: Math.round(this.age), farm: this.farm.plants.size ? this.farm.serialize() : undefined,
       arm: this.armor.kopf || this.armor.brust ? [this.armor.kopf, this.armor.brust, this.armWear.kopf, this.armWear.brust] : undefined,
       veh: this.vehicles && this.vehicles.list.length ? this.vehicles.serialize() : undefined,
-      map: this.map ? this.map.serialize() : undefined
+      map: this.map ? this.map.serialize() : undefined,
+      rot: this.world.rot.size ? encodeRot(this.world.rot) : undefined,
+      preset: this.preset || undefined
     };
   }
 
@@ -521,6 +554,8 @@ export class Game {
     const c = this.camera, dir = this.lookDir || (this.lookDir = new THREE.Vector3());
     dir.set(0, 0, -1).applyEuler(c.rotation);
     this.target = this.dead ? null : raycast(w, c.position.x, c.position.y, c.position.z, dir.x, dir.y, dir.z, REACH);
+    const onDeco = !!(this.target && SHAPE[this.target.type] === 8);
+    if (onDeco !== this.onDeco) { this.onDeco = onDeco; if (this.onDecoTarget) this.onDecoTarget(onDeco); } // Taste „Drehen“ zeigen
     if (this.target) { this.hl.position.set(this.target.x + 0.5, this.target.y + 0.5, this.target.z + 0.5); this.hl.visible = true; }
     else this.hl.visible = false;
     this.updateGhost();
@@ -882,7 +917,7 @@ export class Game {
       s.i++; s.p = 0; s.max = 0;
       if (s.i >= list.length) s.done = true;
       else if (list[s.i].k === 'visit') { // Wegpunkt zum nächsten Dorf
-        const v = nearestVillage(this.seed, this.player.x, this.player.z);
+        const v = nearestVillage(this.seed, this.player.x, this.player.z, 2, this.gen);
         if (v) this.wp = { x: v.x, y: v.y + 1, z: v.z };
       }
       this.unsaved = true; playJingle();
@@ -986,8 +1021,20 @@ export class Game {
     return false;
   }
 
+  // angeschautes Deko-Stück um 90° drehen (Taste R, Schleichen + Setzen, Touch-Taste ⟳)
+  rotateDeco(step = 1) {
+    const t = this.target;
+    if (!t || SHAPE[t.type] !== 8) return false;
+    const w = this.world, cur = w.getRot(t.x, t.y, t.z) ?? decoRot((x, y, z) => w.getBlock(x, y, z), t.x, t.y, t.z);
+    if (!w.setRot(t.x, t.y, t.z, (cur + step + 4) & 3)) return false;
+    this.unsaved = true; this.swing = 1; playClick(); this.actCool = 0.25;
+    if (!this.running) { this.flushDirty(); this.render(); }
+    return true;
+  }
+
   placeBlock() {
     const t = this.target, type = this.hotbar[this.sel];
+    if (t && SHAPE[t.type] === 8 && this.input.sneak) return this.placeFirst ? this.rotateDeco() : false; // Schleichen + Setzen dreht
     // Dorfbewohner ansprechen (wenn er vor dem Zielblock steht)
     const c = this.camera.position, d = this.lookDir, mh = this.mobs && d ? this.mobs.raycast(c.x, c.y, c.z, d.x, d.y, d.z, REACH) : null;
     if (mh && mh.mob.npc && (!t || mh.t < t.t)) { this.onTrade(mh.mob); this.questEvent('talk', 0); this.actCool = 0.5; return false; }
@@ -1034,6 +1081,8 @@ export class Game {
     if (p.x + hw > x && p.x - hw < x + 1 && p.z + hw > z && p.z - hw < z + 1 && p.y + 1.8 > y && p.y < y + 1) return false;
     const put = SHAPE[type] === 2 ? stairFor(type, this.yaw) : type; // Treppe steigt in Blickrichtung
     if (!this.world.setBlock(x, y, z, put)) return false;
+    // Deko schaut zum Spieler; Wandstücke (Bild, Fackel, Banner) an einer Wand zeigen von ihr weg
+    if (SHAPE[type] === 8) this.world.setRot(x, y, z, DECO_DEF[DECO[type]].wall && t.ny === 0 ? decoFacing(t.nx, t.nz) : decoFacing(Math.sin(this.yaw), Math.cos(this.yaw)));
     this.record(x, y, z, cur, put);
     if (this.mode !== 'creative') this.inv[type]--;
     this.unsaved = true; this.swing = 1; playPlace(); this.onChange();
@@ -1265,7 +1314,7 @@ export class Game {
     if (!inp) return false;
     const nb = inp.nb.map(a => a.slice()), hms = inp.hms.map(a => a.slice());
     c.pending = c.ver = ++this.meshSeq; this.mwJobs++;
-    this.mw.postMessage({ key: c.key, ver: c.ver, nb, hms, maxY: inp.maxY }, nb.map(a => a.buffer));
+    this.mw.postMessage({ key: c.key, ver: c.ver, nb, hms, maxY: inp.maxY, rot: inp.rot }, nb.map(a => a.buffer));
     return true;
   }
   onMeshed({ key, ver, r }) {
@@ -1304,6 +1353,7 @@ export class Game {
     g.boundingSphere = new THREE.Sphere(new THREE.Vector3(CS / 2, H / 2, CS / 2), this.chunkSphereR);
     if (m) { m.geometry.dispose(); m.geometry = g; return; }
     m = new THREE.Mesh(g, mat);
+    if (mat !== this.matT) { m.layers.enable(SHADOW_LAYER); m.userData.atlas = mat === this.matO; } // wirft Schatten (Blätter mit Lücken)
     m.position.set(c.cx * CS, 0, c.cz * CS);
     m.matrixAutoUpdate = false; m.updateMatrix();
     this.group.add(m);
@@ -1324,9 +1374,9 @@ export class Game {
     const dir = this.uni.uSunDir.value;
     if (sunUp) dir.set(co, s, 0.25); else dir.set(-co, -s, 0.25);
     dir.normalize();
-    const sc = sunUp ? mix3([1.0, 0.6, 0.36], [1.0, 0.96, 0.86], smooth(0, 0.4, s)).map(v => v * 0.62 * I) : [0.42 * I, 0.52 * I, 0.85 * I];
+    const sc = sunUp ? mix3([1.0, 0.6, 0.36], [1.0, 0.95, 0.84], smooth(0, 0.4, s)).map(v => v * 0.8 * I) : [0.42 * I, 0.52 * I, 0.85 * I]; // kräftigere Sonne: Schatten lesen sich
     this.uni.uSunCol.value.set(sc[0], sc[1], sc[2]);
-    const amb = mix3([0.17, 0.21, 0.36], [0.44, 0.5, 0.62], day);
+    const amb = mix3([0.17, 0.21, 0.36], [0.38, 0.45, 0.6], day); // etwas kühleres, schwächeres Umgebungslicht
     this.light = 0.38 + 0.62 * day;
     this.uni.uAmb.value.set(amb[0] + dw * 0.12, amb[1] + dw * 0.06, amb[2] + dw * 0.02);
 
@@ -1359,12 +1409,19 @@ export class Game {
     this.starMat.opacity = Math.max(0, Math.min(1, (0.12 - s) * 3)) * (under ? 0 : 1);
     this.stars.rotation.z = a;
     this.clouds.position.set(c.x, 105, c.z);
-    this.clouds.visible = !under && this.cloudsOn;
     const cl = mix3([0.2, 0.23, 0.36], [1, 1, 1], day);
     this.cloudU.uCol.value.set(cl[0] + dw * 0.0, cl[1] - dw * 0.18, cl[2] - dw * 0.3);
+    this.clouds.visible = !under && this.cloudsOn && !this.vcloudsOn;
+    this.vclouds.update(c, this.uni.uTime.value, [cl[0], cl[1] - dw * 0.18, cl[2] - dw * 0.3], !under && this.cloudsOn && this.vcloudsOn);
+    // Dunst leuchtet in Richtung der Sonne (morgens und abends kräftig)
+    const fs = under ? 0 : 0.35 * day + 0.5 * dw;
+    this.uni.uFogSun.value.set(1.0 * fs, 0.78 * fs, 0.55 * fs);
   }
 
-  render() { this.renderer.render(this.scene, this.camera); }
+  render() {
+    if (this.world) this.shadows.update(this.renderer, this.scene, this.group, this.camera.position, this.uni.uSunDir.value, !this.running);
+    if (this.postOn && this.post) this.post.render(); else this.renderer.render(this.scene, this.camera);
+  }
 
   biomeName() {
     const b = this.world ? this.world.biomeAt(this.player.x, this.player.z) : -1;

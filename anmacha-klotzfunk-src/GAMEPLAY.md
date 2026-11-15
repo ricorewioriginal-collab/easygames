@@ -3,7 +3,7 @@
 ## Startmenü und Laden
 Das Startmenü ist wie bei einer Konsole aufgebaut: links die Hauptliste, rechts die gewählte Seite, unten die Tastenhinweise.
 - **▶ Weiterspielen** (sobald es einen Spielstand gibt) lädt die zuletzt gespielte Welt.
-- **🌍 Welten**: drei Speicherplätze; neue Welt mit Modus und Startwert erzeugen, laden, als Datei sichern (⤓), Sicherung zurückholen (↺), löschen.
+- **🌍 Welten**: drei Speicherplätze; neue Welt mit Modus, Startwert und **Welt** (Zufallswelt oder Fanwelt) erzeugen, laden, als Datei sichern (⤓), Sicherung zurückholen (↺), löschen.
 - **👥 Mitspielen**, **⚙ Einstellungen**, **❔ Anleitung** (Steuerung und Tipps), **☁ Speicherdaten** (Import, Google-Sicherung).
 - Bedienung: Maus/Finger, **Pfeiltasten + Enter, Esc zurück** oder **Controller** (Steuerkreuz/Stick, Bestätigen wählt, Zurück schließt). Am Handy hat jede Seite eine Zurück-Taste ‹.
 - Der **Ladebildschirm** zeigt Welt und Modus, einen echten Fortschritt (erst das Erzeugen, dann den Aufbau der Umgebung um dich herum) und wechselnde Tipps. Das Spiel startet, sobald die Umgebung steht.
@@ -59,8 +59,22 @@ Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und d
 
 ## Deko (ab 1.12)
 - Reiter **Deko**: 27 Möbel und Requisiten im KayKit-Stil (Stuhl, Sessel, Sofa, Tisch, Bett, Kommode, Regal, Lampen, Bilderrahmen, Teppich, Parkbank, Straßenlaterne, Ampel, Hydrant, Fass, Truhe, Kerzen, Wandfackel, Banner, Kisten …). Im Überlebensmodus an der Werkbank herstellen.
-- Stücke stellen sich mit dem Rücken zur Wand; Stühle neben einem Tisch drehen sich zum Tisch. Bilder, Fackeln und Banner hängen an der Wand. Eine Tischlampe auf einem Tisch steht auf der Tischplatte.
-- Lampen, Laternen, Kerzen und Fackeln leuchten. Tisch, Kommode, Regal, Fass, Truhe und Kisten sind fest, auf Stühle, Sofa und Bett kann man treten.
+- Beim Setzen schaut ein Stück zu dir; Bilder, Fackeln und Banner an einer Wand hängen daran. Eine Tischlampe auf einem Tisch steht auf der Tischplatte. Alte, nie gedrehte Stücke richten sich wie bisher aus (Rücken zur Wand, Stühle zum Tisch).
+- **Drehen (ab 1.13):** auf das Stück schauen und **R** (Umschalt+R = zurück), **Schleichen + Setzen** (Controller: Schleichen-Taste halten + LT) oder Touch-Taste **⟳** oben. Die Drehung wird gespeichert. Im Mehrspieler sehen Gäste noch die automatische Ausrichtung.
+- Lampen, Laternen, Kerzen und Fackeln leuchten und erhellen ihre Umgebung (wie alle Leuchtblöcke ab 1.13). Tisch, Kommode, Regal, Fass, Truhe und Kisten sind fest, auf Stühle, Sofa und Bett kann man treten.
+
+## Grafik (ab 1.13)
+- **Standard/Hoch:** weiche Sonnenschatten, 3D-Wolken aus Blöcken, Leuchten um helle Lichter (Bloom), Dunst mit Sonnenschein, wiegende Blätter und Pflanzen.
+- **Mobil:** Schatten (kleiner, seltener erneuert) und wiegende Blätter, flache Wolken, kein Leuchten. **Eco:** keine Effekte.
+- Lampen, Laternen, Neon, Kristalle, Magma und leuchtende Deko erhellen ihre Umgebung (bis 14 Blöcke, Wände halten das Licht auf).
+
+## Fanwelten (ab 1.14)
+Beim Anlegen einer Welt (Überleben oder Kreativ) unter **Welt** wählbar. Jede Fanwelt ist fertig gebaut, alle Häuser und Höhlen sind groß und begehbar, rundherum geht die normale Welt weiter, damit du sie ausbauen kannst.
+- **🐉 Taschi-Land:** Heilzentrum, Labor, Arena mit Rängen, Taschi-Statuen, Glimmstein-Höhle, Wiesen mit hohem Gras.
+- **🦊 Zotik: Lunaris:** Dorf am Mondblick mit Kirche und Turm, Schmiede, Wirtshaus, Weltentor und Risshöhle im Mondwald; startet am Abend.
+- **🎙️ AnMaCha – der Podcast:** Funkhaus mit Studios, Sendemast (Leiter bis zur Plattform), Bühne „LIVE“, Café, Plattenladen, Straßen mit Laternen.
+- **🏰 Märchenwald:** Dornröschen-Schloss, Rapunzel-Turm, Hexenhaus aus Lebkuchen, Großmutters Haus, Zwergenmine.
+- Neue Blöcke dafür (auch frei baubar): Mondstein, Mondlaub, Lebkuchen, Zuckerguss, Rosenhecke, Schaumstoff, On-Air-Leuchte, Goldblock, Kapselhülle, hohes Gras.
 
 ## Weltkarte
 - 🗺, **M** oder Antippen der Minikarte öffnet die Karte. Zu sehen ist nur, was du schon entdeckt hast (Umkreis von etwa 5 Chunks um deine Wege).
@@ -102,7 +116,7 @@ Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und d
 - **Rüstung** (Werkbank: Helm aus 5, Harnisch aus 8 Kupfer- oder Eisenbarren) wählen und Setzen drücken = anlegen. Jeder Schild über den Herzen mindert Gegner-Schaden um 5 % (Eisen komplett: 40 %). Rüstung nutzt sich je Treffer ab.
 
 ## Dörfer
-- Neue Welten haben Dörfer: Brunnen, Wege, Häuser, ein Weizenfeld und einen Funkmast. Neue Überlebens- und Kreativwelten beginnen am Dorfplatz.
+- Neue Welten haben Dörfer: Brunnen, Wege, Häuser, ein Weizenfeld und einen Funkmast. Ab 1.14 sind die Häuser groß (zwei Stockwerke, Leiter nach oben) und voll eingerichtet, und begehbare Höhlenhallen mit Treppe zur Oberfläche liegen in der Landschaft. Neue Überlebens- und Kreativwelten beginnen am Dorfplatz.
 - In jedem Haus wohnt jemand: **Bäuerin Frieda**, **Schmied Kalle**, **Funkerin Lotte**, **Hirte Mats**. Morgens gehen sie zur Arbeit, mittags auf den Dorfplatz, abends nach Hause.
 - **Handeln:** Setzen-Taste auf einen Bewohner. Jeder hat eigene Angebote, z. B. Äpfel oder Kupferbarren für Weizen, Werkzeug für Kohle und Kristalle, Radio-Blöcke für Kupfer.
 - Dorfbewohner lassen sich nicht angreifen, und im Dorf erscheinen keine Gegner.

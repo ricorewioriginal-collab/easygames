@@ -179,6 +179,16 @@ Jeder Block hat eine feste Id. Ids stehen in Spielständen und werden nie umnumm
 | 171 | Wandfackel | Deko | – | – | – | ja | 0.5 | – |
 | 172 | Banner | Deko | – | – | – | – | 0.5 | – |
 | 173 | Kistenstapel | Deko | ja | – | – | – | 0.5 | – |
+| 174 | Mondstein | Bauen | ja | ja | – | – | 1.6 | spitzhacke |
+| 175 | Mondblätter | Natur | ja | – | – | – | 0.2 | – |
+| 176 | Lebkuchen | Bauen | ja | ja | – | – | 0.8 | axt |
+| 177 | Zuckerguss | Bauen | ja | ja | – | – | 0.6 | – |
+| 178 | Rosenhecke | Natur | ja | – | – | – | 0.3 | – |
+| 179 | Akustikschaum | Bauen | ja | ja | – | – | 0.4 | – |
+| 180 | On-Air-Schild | Licht | ja | ja | – | ja | 0.5 | – |
+| 181 | Goldblock | Bauen | ja | ja | – | – | 2 | spitzhacke |
+| 182 | Kapselblock | Bauen | ja | ja | – | – | 0.8 | – |
+| 183 | Hohes Gras | Natur | – | – | – | – | 0 | – |
 
 **Spalten:** fest = man kann nicht hindurchlaufen · verdeckt = Nachbarflächen werden nicht gezeichnet · Härte × 0,9 = Abbauzeit mit der Hand in Sekunden (nur Überleben); das passende Werkzeug teilt sie durch sein Tempo · Stufe n+ = braucht mindestens eine Spitzhacke dieser Stufe (1 Holz, 2 Stein, 3 Kupfer, 4 Eisen), sonst lässt sich der Block nicht abbauen.
 

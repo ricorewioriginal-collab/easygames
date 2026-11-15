@@ -9,7 +9,7 @@ import { villageIn, mineIn, nearestVillage, REGION, workSpot } from '../src/stru
 const SEED = 12345;
 function around(w, x, z, r = 2) { for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++) w.ensure((x >> 4) + dx, (z >> 4) + dz); }
 
-test('Neue Welten nutzen Generator 3', () => assert.equal(GEN_LATEST, 3));
+test('Neue Welten nutzen Generator 4', () => assert.equal(GEN_LATEST, 4));
 
 test('Dorf: fest je Seed, Häuser mit Tür, Brunnen, Feld und Funkmast', () => {
   const v = nearestVillage(SEED);

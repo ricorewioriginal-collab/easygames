@@ -7,6 +7,10 @@ const Sim = (() => {
   const wrap = a => { while (a > Math.PI) a -= PI2; while (a < -Math.PI) a += PI2; return a; };
   const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
   const tmp = { i: 0, f: 0, d: 0 }, tp = { x: 0, z: 0, tx: 0, tz: 0 };
+  // Kreuzende Strecken: Objekte auf der Brücke und darunter berühren sich nicht.
+  const lv_ = { i: 0, f: 0, d: 0 };
+  const lvl = (S, o) => { if (o.f != null && o.k != null) return S.tr.height(o.f); if (o.f != null && o._si == null) return S.tr.height(o.f); S.tr.nearest(o.x, o.z, o._si == null ? -1 : o._si, lv_); o._si = lv_.i; return S.tr.height(lv_.f); };
+  const same = (S, a, b) => !S.tr.crossPt || Math.abs(lvl(S, a) - lvl(S, b)) < 4;
   const kartDef = i => (typeof KARTS !== 'undefined' && KARTS[i % KARTS.length]) || { mv: 1, ma: 1, mt: 1, mr: 0.55, md: 1, mw: 1 };
 
   function create(opt) {                                   // opt: {track, laps, racers:[{name,logo,char,kart,human,skill,assist}], items:bool}
@@ -93,12 +97,12 @@ const Sim = (() => {
     const fx = Math.sin(k.th), fz = Math.cos(k.th);
     if (base === 'boost') k.boostT = Math.max(k.boostT, 2.0);
     else if (base === 'shield') k.shieldT = 7;
-    else if (base === 'mine') S.hazards.push({ kind: 'mine', x: k.x - fx * 3.8, z: k.z - fz * 3.8, t: 40, owner: k.k, arm: 1.2 });
-    else if (base === 'banana') S.hazards.push({ kind: 'banana', x: k.x - fx * 3.4, z: k.z - fz * 3.4, t: 60, owner: k.k, arm: 0.9 });
-    else if (base === 'rock') S.proj.push({ kind: 'rock', x: k.x + fx * 3, z: k.z + fz * 3, th: k.th + (Math.random() - 0.5) * 0.12, owner: k.k, t: 5.5, spd: 50 + Math.max(0, k.vf) * 0.6, arm: 0.2, bounces: 0 });
+    else if (base === 'mine') S.hazards.push({ kind: 'mine', x: k.x - fx * 3.8, z: k.z - fz * 3.8, t: 40, owner: k.k, _si: k.i, arm: 1.2 });
+    else if (base === 'banana') S.hazards.push({ kind: 'banana', x: k.x - fx * 3.4, z: k.z - fz * 3.4, t: 60, owner: k.k, _si: k.i, arm: 0.9 });
+    else if (base === 'rock') S.proj.push({ kind: 'rock', x: k.x + fx * 3, z: k.z + fz * 3, th: k.th + (Math.random() - 0.5) * 0.12, owner: k.k, _si: k.i, t: 5.5, spd: 50 + Math.max(0, k.vf) * 0.6, arm: 0.2, bounces: 0 });
     else if (base === 'rocket') {
       let tg = -1, best = 1e9; S.karts.forEach(o => { if (o === k) return; const dr = o.rp - k.rp; if (dr > 0 && dr < 90 && dr < best) { best = dr; tg = o.k; } });
-      S.proj.push({ kind: 'rocket', x: k.x + fx * 2.5, z: k.z + fz * 2.5, th: k.th, owner: k.k, target: tg, t: 7, spd: 62, arm: 0.25 });
+      S.proj.push({ kind: 'rocket', x: k.x + fx * 2.5, z: k.z + fz * 2.5, th: k.th, owner: k.k, _si: k.i, target: tg, t: 7, spd: 62, arm: 0.25 });
     } else if (base === 'flash') { const hitIds = []; S.karts.forEach(o => { if (o !== k && o.rp > k.rp && !o.finished && hit(S, o, k.k, 'flash', 1.7, 0.1)) hitIds.push(o.k); }); emit(S, { t: 'flash', k: k.k, ids: hitIds }); }
     else if (base === 'fog') { const ids = []; S.karts.forEach(o => { if (o !== k && o.rp > k.rp && !o.finished) { o.blindT = 4; ids.push(o.k); } }); emit(S, { t: 'fog', k: k.k, ids }); }
   }
@@ -131,7 +135,7 @@ const Sim = (() => {
     let drafting = false;
     if (!k.finished && S.state === 'race' && !k.rough && k.spinT <= 0 && k.vf > VMAX * 0.38) {
       for (const other of S.karts) {
-        if (other === k || other.finished || other.vf < VMAX * 0.38) continue;
+        if (other === k || other.finished || other.vf < VMAX * 0.38 || !same(S, k, other)) continue;
         const dx = other.x - k.x, dz = other.z - k.z;
         const forward = dx * Math.sin(k.th) + dz * Math.cos(k.th);
         const sideways = Math.abs(dx * Math.cos(k.th) - dz * Math.sin(k.th));
@@ -173,7 +177,7 @@ const Sim = (() => {
     if (lapNow > k.lap && k.rp >= 0) { if (k.lap >= 1) { const lt = S.t - k.lapStart; k.lapTimes.push(lt); emit(S, { t: 'lap', k: k.k, lap: k.lap, time: lt }); } k.lap = lapNow; k.lapStart = S.t; }
     if (!k.finished && k.rp >= S.laps * N) { k.finished = true; k.finT = S.t; k.auto = true; if (k.human) S.finishedHumans++; emit(S, { t: 'finish', k: k.k, time: S.t }); }
     if (S.state === 'race') {
-      if (S.items) S.boxes.forEach(b => { if (b.cd > 0) return; if ((b.x - k.x) ** 2 + (b.z - k.z) ** 2 < 12 && !k.item && k.itemT <= 0 && !k.finished) { b.cd = 3.5; k.itemT = 0.9; k.itemPending = true; emit(S, { t: 'box', k: k.k }); } });
+      if (S.items) S.boxes.forEach(b => { if (b.cd > 0) return; if ((b.x - k.x) ** 2 + (b.z - k.z) ** 2 < 12 && same(S, b, k) && !k.item && k.itemT <= 0 && !k.finished) { b.cd = 3.5; k.itemT = 0.9; k.itemPending = true; emit(S, { t: 'box', k: k.k }); } });
       S.pads.forEach(p => {
         if ((p.x - k.x) ** 2 + (p.z - k.z) ** 2 >= 20 || k.boostT >= 1.1) return;
         const mechanic = S.tr.def.mechanic;
@@ -207,7 +211,7 @@ const Sim = (() => {
     for (let a = 0; a < S.karts.length; a++) for (let b = a + 1; b < S.karts.length; b++) {
       const p = S.karts[a], q = S.karts[b];
       let dx = q.x - p.x, dz = q.z - p.z, d2 = dx * dx + dz * dz;
-      if (d2 >= (2 * R) ** 2) continue;
+      if (d2 >= (2 * R) ** 2 || !same(S, p, q)) continue;
       if (d2 < 1e-8) { dx = Math.sin(p.th) || 1; dz = Math.cos(p.th); d2 = dx * dx + dz * dz; }
       const d = Math.sqrt(d2), nx = dx / d, nz = dz / d, total = p.mw + q.mw;
       const fp = q.mw / total, fq = p.mw / total;
@@ -236,7 +240,7 @@ const Sim = (() => {
     // Fallen: Störsignal / Bananenschale
     for (let i = S.hazards.length - 1; i >= 0; i--) {
       const h = S.hazards[i]; h.t -= dt; h.arm -= dt; let used = h.t <= 0; const rr = h.kind === 'banana' ? 3.2 : 5;
-      if (!used) S.karts.forEach(k => { if (used || k.spinT > 0) return; if ((h.x - k.x) ** 2 + (h.z - k.z) ** 2 < rr && (h.owner !== k.k || h.arm < 0)) { const ok = h.kind === 'banana' ? hit(S, k, h.owner, 'banana', 1.0, 0.55) : hit(S, k, h.owner, 'mine', 1.3, 0.25); if (ok) { used = !h.fixed; emit(S, { t: h.kind === 'banana' ? 'splat' : 'boom', x: h.x, z: h.z }); } } });
+      if (!used) S.karts.forEach(k => { if (used || k.spinT > 0) return; if ((h.x - k.x) ** 2 + (h.z - k.z) ** 2 < rr && same(S, h, k) && (h.owner !== k.k || h.arm < 0)) { const ok = h.kind === 'banana' ? hit(S, k, h.owner, 'banana', 1.0, 0.55) : hit(S, k, h.owner, 'mine', 1.3, 0.25); if (ok) { used = !h.fixed; emit(S, { t: h.kind === 'banana' ? 'splat' : 'boom', x: h.x, z: h.z }); } } });
       if (used) S.hazards.splice(i, 1);
     }
     // Geschosse: Raketen (zielsuchend) und Steine (prallen von Wänden ab)
@@ -248,7 +252,7 @@ const Sim = (() => {
       }
       r.x += Math.sin(r.th) * r.spd * dt; r.z += Math.cos(r.th) * r.spd * dt;
       if (r.kind === 'rock') { S.tr.nearest(r.x, r.z, -1, tmp); if (Math.abs(tmp.d) > S.tr.wallD - 1.2) { const ta = Math.atan2(S.tr.T[tmp.i * 2], S.tr.T[tmp.i * 2 + 1]); r.th = 2 * ta - r.th; r.bounces++; S.tr.at(tmp.f, Math.sign(tmp.d) * (S.tr.wallD - 3), tp); r.x = tp.x; r.z = tp.z; emit(S, { t: 'rockBounce', x: r.x, z: r.z }); if (r.bounces > 3) dead = true; } }
-      S.karts.forEach(k => { if (dead || k.spinT > 0 || (k.k === r.owner && r.arm > 0)) return; const vx = r.x - oldX, vz = r.z - oldZ, len2 = vx * vx + vz * vz, along = len2 > 0 ? clamp(((k.x - oldX) * vx + (k.z - oldZ) * vz) / len2, 0, 1) : 0, hx = oldX + vx * along, hz = oldZ + vz * along; if ((hx - k.x) ** 2 + (hz - k.z) ** 2 < (r.kind === 'rock' ? 4.8 : 5.5)) { hit(S, k, r.owner, r.kind, r.kind === 'rock' ? 1.15 : 1.3, r.kind === 'rock' ? 0.3 : 0.25); dead = true; emit(S, { t: r.kind === 'rock' ? 'smash' : 'boom', x: r.x, z: r.z }); } });
+      S.karts.forEach(k => { if (dead || k.spinT > 0 || !same(S, r, k) || (k.k === r.owner && r.arm > 0)) return; const vx = r.x - oldX, vz = r.z - oldZ, len2 = vx * vx + vz * vz, along = len2 > 0 ? clamp(((k.x - oldX) * vx + (k.z - oldZ) * vz) / len2, 0, 1) : 0, hx = oldX + vx * along, hz = oldZ + vz * along; if ((hx - k.x) ** 2 + (hz - k.z) ** 2 < (r.kind === 'rock' ? 4.8 : 5.5)) { hit(S, k, r.owner, r.kind, r.kind === 'rock' ? 1.15 : 1.3, r.kind === 'rock' ? 0.3 : 0.25); dead = true; emit(S, { t: r.kind === 'rock' ? 'smash' : 'boom', x: r.x, z: r.z }); } });
       if (dead) S.proj.splice(i, 1);
     }
     // Portale überspringen einen Streckenabschnitt und erhalten Rundenzählung/Rankings.

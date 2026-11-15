@@ -16,6 +16,7 @@ import { MapScreen } from './mapui.js';
 import { ACTIONS, keyBinds, rebind, actionOf, keyName } from './controls.js';
 import { PB, PAD_BUTTONS, PAD_ACTIONS, padStyle, padLabel, STYLE_NAMES, confirmBtn, backBtn, padBinds, padRebind, readPad, navPick, rumble } from './gamepad.js';
 import { version } from '../package.json';
+import { FANWORLDS, FAN_IDS } from './fanworlds.js';
 
 const $ = id => document.getElementById(id);
 const canvas = $('c');
@@ -252,6 +253,8 @@ game.onBuildMode = m => {
   toast('Bauform: ' + m.name);
 };
 $('bBuild').onclick = () => game.cycleBuild(1);
+$('bRot').onclick = () => game.rotateDeco(1);
+game.onDecoTarget = on => { $('bRot').hidden = !on; };
 
 // ---------- Story: Auftragsanzeige, Banner, Liste ----------
 let questMin = false, bannerTimer = 0;
@@ -382,11 +385,12 @@ function renderSlots() {
       const ql = meta.qc === 'rauschen' ? RAUSCHEN : QUESTS, qn = meta.q ?? 0;
       const pill = st ? `<span class="pill st">📜 Story · ${meta.q === -1 ? 'abgeschlossen' : (ql[qn] && ql[qn].c ? 'Kapitel ' + ql[qn].c + ' · ' : '') + 'Auftrag ' + (qn + 1) + '/' + ql.length}</span>` : `<span class="pill ${cr ? 'cr' : ''}">${cr ? 'Kreativ' : 'Überleben'}</span>`;
       h += `<div class="card"><div class="top"><div class="ico">${st ? '📜' : cr ? '🕊' : '⛏'}</div><div class="ttl"><b>${esc(meta.name)}</b>${pill}</div></div>
-        <small>${st ? 'Feste Story-Welt' : 'Startwert ' + esc(meta.seed)}${(meta.gen || 1) < GEN_LATEST ? ' · klassische Welt' : ''} · zuletzt ${d}</small>
+        <small>${meta.preset && FANWORLDS[meta.preset] ? FANWORLDS[meta.preset].emoji + ' ' + esc(FANWORLDS[meta.preset].name) + ' · ' : ''}${st ? 'Feste Story-Welt' : 'Startwert ' + esc(meta.seed)}${(meta.gen || 1) < GEN_LATEST ? ' · klassische Welt' : ''} · zuletzt ${d}</small>
         <div class="row"><button class="go" data-act="load" data-i="${i}">▶ Weiterspielen</button><button data-act="exp" data-i="${i}" aria-label="Welt exportieren" title="Welt als Datei sichern">⤓</button>${hasBackup(i) ? `<button data-act="bak" data-i="${i}" aria-label="Sicherung laden" title="Ältere Sicherung wiederherstellen">↺</button>` : ''}<button data-act="del" data-i="${i}" aria-label="Welt löschen" title="Welt löschen">🗑</button></div></div>`;
     } else {
       h += `<div class="card new"><div class="top"><div class="ico">✨</div><div class="ttl"><b>Neue Welt ${i + 1}</b><span class="pill">frei</span></div></div>
         <div class="seed"><input id="seed${i}" placeholder="Startwert (leer = Zufall)" maxlength="24" autocomplete="off"><button data-act="dice" data-i="${i}" aria-label="Zufälliger Startwert" title="Zufälliger Startwert">🎲</button></div>
+        <label class="wsel"><span>Welt</span><select id="world${i}" aria-label="Welt wählen"><option value="">🌍 Zufallswelt – Dörfer, Höhlen, Biome</option>${FAN_IDS.map(k => `<option value="${k}">${FANWORLDS[k].emoji} ${FANWORLDS[k].name}</option>`).join('')}</select></label>
         <div class="seg three" id="mode${i}"><button class="on" data-mode="survival">⛏ Überleben<small>Rohstoffe, Hunger</small></button><button data-mode="creative">🕊 Kreativ<small>alles, fliegen</small></button><button data-mode="story">📜 Story<small>6 Kapitel</small></button></div>
         <button class="go" data-act="new" data-i="${i}">Welt erzeugen</button></div>`;
     }
@@ -444,6 +448,7 @@ $('slots').addEventListener('click', e => {
     for (const x of sg.parentNode.children) x.classList.toggle('on', x === sg);
     const card = sg.closest('.card'), story = sg.dataset.mode === 'story', inp = card.querySelector('input');
     inp.disabled = story; inp.placeholder = story ? 'feste Story-Welt' : 'Startwert (leer = Zufall)'; card.querySelector('[data-act=dice]').disabled = story;
+    const ws = card.querySelector('select'); if (ws) { ws.disabled = story; if (story) ws.value = ''; }
     return;
   }
   const b = e.target.closest('[data-act]'); if (!b) return;
@@ -464,10 +469,10 @@ $('slots').addEventListener('click', e => {
     const when = new Date(bk.savedAt).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' });
     if (confirm(`Sicherung vom ${when} wiederherstellen? Der aktuelle Stand wird dafür zur Sicherung.`)) { toast(restoreBackup(i) ? 'Sicherung wiederhergestellt' : 'Wiederherstellen fehlgeschlagen'); renderSlots(); }
   } else {
-    const mode = $('mode' + i).querySelector('.on').dataset.mode;
-    launch(i, { name: mode === 'story' ? 'Story ' + (i + 1) : 'Welt ' + (i + 1), seed: mode === 'story' ? 777 : parseSeed($('seed' + i).value), mode,
-      // neue Story-Welten: „Das große Rauschen“ auf Generator 3 mit Dorf (Startwert 777)
-      gen: GEN_LATEST });
+    const mode = $('mode' + i).querySelector('.on').dataset.mode, fan = mode !== 'story' && FANWORLDS[$('world' + i).value] ? $('world' + i).value : null;
+    launch(i, { name: mode === 'story' ? 'Story ' + (i + 1) : fan ? FANWORLDS[fan].name : 'Welt ' + (i + 1), seed: mode === 'story' ? 777 : parseSeed($('seed' + i).value), mode,
+      // neue Story-Welten: „Das große Rauschen“ mit Dorf (Startwert 777); Fanwelten: fertige Orte rund um den Start
+      gen: GEN_LATEST, preset: fan || undefined, time: fan && FANWORLDS[fan].time != null ? FANWORLDS[fan].time : undefined });
   }
 });
 
@@ -568,6 +573,8 @@ function launch(i, save) {
 }
 function welcome(save) {
   if (game.story && game.story.i === 0 && game.story.p === 0 && save.px === undefined) showBanner(game.story.c ? `📻 Kapitel 1: ${CHAPTERS[1].t}<small>${CHAPTERS[1].d} Dein Auftrag steht links (J blendet ihn aus).</small>` : '📜 Willkommen in der Funkzentrale!<small>Dein erster Auftrag steht links. J blendet ihn ein oder aus.</small>');
+  const fw = save.px === undefined && FANWORLDS[save.preset];
+  if (fw) showBanner(`${fw.emoji} ${fw.name}<small>${fw.desc}. Alles ist begehbar – bau es weiter aus!</small>`);
   if (!game.unsaved && save.px === undefined) saveNow(false);
 }
 
@@ -598,6 +605,7 @@ function syncKeys() {
   const fly = game.player.flying;
   inp.sprint = k('sprint') || (!fly && k('sneak'));
   inp.down = fly && k('sneak') || touchActive.down;
+  inp.sneak = k('sneak');
   inp.jump = k('jump') || touchActive.jump;
 }
 const touchActive = { joy: false, jump: false, down: false };
@@ -642,6 +650,7 @@ window.addEventListener('keydown', e => {
   if (act === 'inv') { e.preventDefault(); openInventory(); return; }
   if (act === 'fly') { toggleFly(); return; }
   if (act === 'build') { game.cycleBuild(e.shiftKey ? -1 : 1); return; }
+  if (act === 'rotate') { if (!game.rotateDeco(e.shiftKey ? -1 : 1)) toast('Schau auf ein Deko-Stück zum Drehen'); return; }
   if (act === 'hook') { game.fireHook(); return; }
   if (act === 'wp') { game.toggleWaypoint(); return; }
   if (act === 'map') { openMap(); return; }
@@ -827,6 +836,7 @@ function padLoop(now) {
   if (r.lx || r.ly) look(curve(r.lx) * 900 * dt, curve(r.ly) * 600 * dt * (settings.padInvertY ? -1 : 1), SENS * settings.padSens);
   inp.jump = h.jump || keys.has(binds.jump) || touchActive.jump;
   inp.down = (h.sneak && fly) || touchActive.down || (fly && keys.has(binds.sneak));
+  inp.sneak = h.sneak || keys.has(binds.sneak);
   if (!moving && h.sneak !== !!pad.sneak) { if (h.sneak) inp.sprint = !fly; else syncKeys(); } // im Stand: schleichen, aus Fahrzeugen aussteigen
   pad.sneak = h.sneak;
   if (h.break !== pad.rt) { pad.rt = h.break; game.breakHeld = pad.rt; }

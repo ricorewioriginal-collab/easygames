@@ -123,10 +123,10 @@ export class MapScreen {
       if (label) { c.lineWidth = 3; c.strokeStyle = 'rgba(0,0,0,.7)'; c.strokeText(label, px, py + f); c.fillStyle = '#fff'; c.fillText(label, px, py + f); }
     };
     c.fillStyle = '#fff';
-    if (g.world.gen === 3) { // Dörfer, sobald ihr Platz entdeckt ist
+    if (g.world.gen >= 3) { // Dörfer, sobald ihr Platz entdeckt ist
       const r0x = regionOf(x0), r1x = regionOf(x0 + W / z), r0z = regionOf(z0), r1z = regionOf(z0 + Hh / z);
       if ((r1x - r0x + 1) * (r1z - r0z + 1) <= 64) for (let rz = r0z; rz <= r1z; rz++) for (let rx = r0x; rx <= r1x; rx++) {
-        const v = villageIn(g.seed, rx, rz);
+        const v = villageIn(g.seed, rx, rz, g.world.gen);
         if (v && map.has(v.x >> 4, v.z >> 4)) icon(v.x, v.z, '🏘', z >= 0.5 ? 'Dorf' : '');
       }
     }
