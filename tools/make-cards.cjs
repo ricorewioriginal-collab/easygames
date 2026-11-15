@@ -22,6 +22,7 @@ const CARDS = {
   'anmacha-spielesammlung': ['ANMACHA · 3D', ['SPIELE-', 'SAMMLUNG'], '🎲', ['♟️', '🎯']],
   'anmacha-kartensammlung': ['ANMACHA · 3D', ['KARTEN-', 'SAMMLUNG'], '🃏', ['🌈', '🎯']],
   'gay-life': ['LEBENSSIMULATION', ['GAY', 'LIFE!'], '🏳️‍🌈', ['🏠', '🍸']],
+  'pride-city': ['QUEERE LEBENSSIMULATION', ['PRIDE', 'CITY'], '🏳️‍🌈', ['🪩', '🏠']],
   'anmacha-klotzfunk': ['VOXEL-SANDBOX · 3D', ['KLOTZ-', 'FUNK'], '🧱', ['⛏️', '💎']],
   'partyverse': ['3D-PARTYSPIEL', ['PARTY-', 'VERSE'], '🎲', ['🎉', '🎈']],
   'fabelkick': ['FANTASY-FUSSBALL · 3D', ['FABEL', 'KICK'], '⚽', ['🐒', '🐉']],

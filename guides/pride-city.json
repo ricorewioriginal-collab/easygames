@@ -1,0 +1,147 @@
+{
+ "id": "pride-city",
+ "handbuch": [
+  {
+   "t": "Worum geht es?",
+   "p": [
+    "Pride City ist eine queere 3D-Lebenssimulation. Du ziehst nach Rainbow City, findest Freund*innen und hilfst der Szene, das Regenbogenhaus vor dem Verkauf an einen Investor zu retten. Die Geschichte ist in Kapitel aufgeteilt; Kapitel 1 „Ankommen“ ist komplett spielbar, die nächsten Kapitel folgen mit Updates.",
+    "Alle Figuren sind erwachsen und frei erfunden. Zustimmung zählt, ein Nein wird respektiert."
+   ]
+  },
+  {
+   "t": "Start und Menü",
+   "list": [
+    "Fortsetzen: lädt deinen Spielstand.",
+    "Neues Spiel: startet mit dem Charakter-Editor. Findet das Spiel einen alten Gay-Life!-Spielstand, kannst du Name, Erspartes und Glitzer übernehmen.",
+    "Story: zeigt die Kapitel und deine bisherigen Entscheidungen.",
+    "Minispiele: Tanz-Battle direkt spielen; weitere Minispiele folgen.",
+    "Optionen: Grafik (automatisch, niedrig, mittel, hoch), Musik, Effekte, Kamera-Tempo, Kamera umkehren, Vollbild und Google-Spielstand.",
+    "Mitwirkende: Herkunft und Lizenzen der Grafiken."
+   ]
+  },
+  {
+   "t": "Deine Figur",
+   "p": [
+    "Im Editor wählst du eine von fünf Figuren, eine Farbwelt (Regenbogen, Progress, Trans, Bi, Lesbisch, Pan, Nichtbinär, Ace, Aro, Gay, Bear, Leder, Neon-Nacht), einen von sechs Hauttönen, Umhang und Hut, deinen Namen und deine Pronomen. Über das Pausenmenü (Kleiderschrank) oder den Kleiderschrank in deiner Wohnung änderst du alles jederzeit."
+   ]
+  },
+  {
+   "t": "In der Stadt",
+   "list": [
+    "Oben links steht dein aktuelles Ziel, ein Stern über Figuren oder Orten zeigt, wohin es geht.",
+    "Oben rechts: Wochentag und Uhrzeit, Geld und Ruf.",
+    "Gehst du nah an eine Figur oder Tür, erscheint ein Hinweis; mit der Aktionstaste sprichst du oder gehst hinein.",
+    "Ein Spieltag dauert etwa 16 Minuten. Nachts leuchten Neon-Schilder und Laternen, auf dem Platz wird getanzt.",
+    "Autos halten an, wenn du vor ihnen stehst."
+   ]
+  },
+  {
+   "t": "Orte",
+   "list": [
+    "Café Kaffeeklatsch: Cappuccino und Regenbogenkuchen bei Mo.",
+    "Deine Wohnung: Schlafen bis 8 Uhr (speichert) und Kleiderschrank.",
+    "Regenbogenhaus: Treffpunkt der Szene, hier kannst du spenden.",
+    "Club Prisma: Tanz-Battle gegen Rex.",
+    "Späti Lecker: Snacks bei Bruno.",
+    "Pride Plaza mit Brunnen, Flaggen aller Communitys und Bühne, dazu der Regenbogenpark."
+   ]
+  },
+  {
+   "t": "Tanz-Battle",
+   "p": [
+    "Pfeile fliegen auf vier Leuchtspuren heran. Drücke die passende Richtung, wenn ein Pfeil den Ring erreicht: Perfekt bringt 100, Super 70, Gut 40 Punkte plus Combo-Bonus. Drei Runden werden immer dichter. Wer am Ende mehr Punkte hat als Rex, gewinnt."
+   ]
+  },
+  {
+   "t": "Fortschritt und Speichern",
+   "p": [
+    "Das Spiel speichert automatisch bei wichtigen Schritten, beim Schlafen und beim Verlassen. Im Pausenmenü kannst du jederzeit speichern. In den Optionen sicherst du den Spielstand mit deinem Google-Konto und spielst auf anderen Geräten weiter."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Einsteiger",
+   "list": [
+    "Folge dem Stern: Er zeigt immer das nächste Story-Ziel.",
+    "Halte Sprinten gedrückt (Shift, RT oder Turbo), um schneller voranzukommen.",
+    "Dreh die Kamera mit dem rechten Stick, der Maus oder durch Wischen, wenn ein Gebäude die Sicht verdeckt."
+   ]
+  },
+  {
+   "t": "Unterschriften",
+   "list": [
+    "Frag freundlich und erkläre, worum es geht – dann unterschreiben die meisten.",
+    "Drängeln führt zu einem Nein. Das ist okay: Es gibt genug andere Leute in der Stadt.",
+    "Wer gerade keinen Kopf dafür hat und dabei respektiert wird, bringt dir trotzdem Ruf."
+   ]
+  },
+  {
+   "t": "Tanz-Battle meistern",
+   "list": [
+    "Schau auf den Ring, nicht auf die Pfeile weit hinten.",
+    "Combos bringen bis zu 50 Bonuspunkte pro Pfeil – eine lange Serie ist mehr wert als einzelne perfekte Treffer.",
+    "In Runde 3 kommen Doppel-Pfeile auf halben Schlägen: Rhythmus mitzählen hilft."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "Nova öffnet den Club erst um 21 Uhr – vor der Tür kannst du einfach warten.",
+    "Wer im Battle auf Zurück drückt, gibt auf; du kannst Rex danach jederzeit erneut herausfordern."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Kapitel 1: Ankommen",
+   "steps": [
+    "Geh die Hauptstraße hinunter zum Café Kaffeeklatsch und sprich mit Mo. Deine Antwort, wie du dich fühlst, merkt sich das Spiel.",
+    "Geh nach Süden zu deiner Wohnung (Tür an der Hauptstraße) und bring den Koffer hinein.",
+    "Sprich im Norden hinter der großen Kreuzung vor dem Regenbogenhaus mit Jules und wähle deinen Weg: laut, kreativ oder diplomatisch.",
+    "Sammle drei Unterschriften bei Figuren mit ✍️: Lena (Pride Plaza), Hilde (Bank am Platz), Kim (Nordwesten), Sam (Süden an der Hauptstraße) oder Tariq (Regenbogenpark im Südosten). Antworte freundlich und erkläre, worum es geht.",
+    "Bring die Liste zu Jules.",
+    "Geh zum Club Prisma und sprich mit Nova. Vor 21 Uhr wählst du „Bis 21 Uhr warten“.",
+    "Gewinne das Tanz-Battle gegen Rex. Bei einer Niederlage sprichst du Nova einfach erneut an.",
+    "Kapitel 1 ist geschafft: 120 € und 15 Ruf."
+   ]
+  },
+  {
+   "t": "Pride-Sticker (8)",
+   "list": [
+    "Pride Plaza, Südseite.",
+    "Regenbogenpark, Südteil.",
+    "Nordwestliche Stadtecke.",
+    "Östlicher Stadtrand, nördlich der Mitte.",
+    "Südwestlicher Stadtrand.",
+    "Nördlicher Stadtrand, östlich der Hauptstraße.",
+    "Nordwesten, nahe dem Regenbogenhaus.",
+    "Südöstlich der Hauptkreuzung.",
+    "Jeder Sticker bringt 10 Glitzer, alle zusammen 10 Ruf."
+   ]
+  },
+  {
+   "t": "Nach Kapitel 1",
+   "list": [
+    "Im freien Spiel kannst du Rex im Club Prisma beliebig oft herausfordern; ein Sieg bringt 25 € und 2 Ruf.",
+    "Täglicher Cappuccino bei Mo bringt beim ersten Mal am Tag 1 Ruf.",
+    "Spenden im Regenbogenhaus: 10 € für 2 Ruf.",
+    "Kapitel 2 „Wurzeln schlagen“ folgt im nächsten Update; deine Entscheidungen aus Kapitel 1 bleiben gespeichert."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Was ist mit meinem Gay-Life!-Spielstand?",
+   "a": "Beim ersten neuen Spiel bietet Pride City an, Name, Erspartes und Glitzer zu übernehmen. Gay Life! bleibt bis zum Abschluss des Relaunchs weiter spielbar."
+  },
+  {
+   "q": "Gibt es Mehrspieler?",
+   "a": "Noch nicht in Pride City. Der Mehrspieler aus Gay Life! wird in einem späteren Update übernommen."
+  },
+  {
+   "q": "Läuft das Spiel auf dem Handy?",
+   "a": "Ja, im Hoch- und Querformat mit Touch-Steuerung. Die Grafikstufe passt sich automatisch an."
+  }
+ ]
+}
