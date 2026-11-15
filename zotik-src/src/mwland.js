@@ -10,7 +10,7 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       // Fachwerk-/Steinhaus mit Satteldach, Tür, leuchtenden Fenstern
       house(x, z, w, d, h, wall, roof, ry, o = {}) {
         /* begehbar: dasselbe Haus wie in den Kapitelwelten (Tür, Innenraum mit Einrichtung, Dach blendet beim Eintreten aus) */
-        if (b.house && !o.solid && w >= 4.5 && d >= 3.8) return { g: b.house(x, z, w, d, Math.max(2.9, Math.min(h, 4.2)), wall, roof, ry || 0, { hs: { w: 'plaster', r: dark(roof) ? 'slate' : 'roof', f: 'gable', win: o.dark ? 0xb08aff : undefined }, chimney: o.chimney, kind: w >= 8.5 ? 'tavern' : 'home', dim: .4, rug: o.dark ? 0x3a2a5a : undefined }) };
+        if (b.house && !o.solid && w >= 4.5 && d >= 3.8) return { g: b.house(x, z, w, d, Math.max(2.9, Math.min(h, 4.2)), wall, roof, ry || 0, { hs: Object.assign({ w: 'plaster', r: dark(roof) ? 'slate' : 'roof', f: 'gable', win: o.dark ? 0xb08aff : undefined }, o.hs), chimney: o.chimney, kind: o.kind || (w >= 8.5 ? 'tavern' : 'home'), dim: .4, rug: o.dark ? 0x3a2a5a : undefined, chest: o.chest }) };
         const g = new T.Group(); g.position.set(x, 0, z); g.rotation.y = ry || 0; b.g.add(g); const bb = { g };
         g.add(mk(G.box, b.mat(wall, 'plaster', o.dark ? null : { s: .45, gain: 1.7, n: .6, e: 0x3a3026, ei: 1 }), 0, h / 2, 0, w, h, d));
         if (o.beams) for (const sx of [-w / 2, w / 2]) g.add(mk(G.box, b.mat(o.beams, 'wood'), sx, h / 2, 0, .26, h, d + .05, false));
@@ -539,6 +539,70 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       for (const [x, z] of [[-44, -102], [-36, -98]]) { b.cyl(x, 0, z, .25, 1.4, 0x5a5a5a); b.ico(x, 1.9, z, .9, .5, .9, 0x6a6a6a); }
       for (let i = 0; i < 10; i++) b.box(-40 + Math.cos(i * 2.3) * 5, .05, -100 + Math.sin(i * 1.7) * 5, .3, .12, .16, 0xc8c8c8, { cast: false, ry: i });
       b.glow(0xffffff, 10, -40, 1.5, -100, .35);
+    },
+    sleepyhollow(b, w, A) {
+      const K = kit(b), SHI = 0x9a5a32, DK = 0x3a3a46, STN = 0x8a8478, ORG = [0xd0661a, 0xe0a82a, 0xa02a1a];
+      b.tmap = { 0x4a3220: 'wood', 0x5a4a3a: 'wood', 0x6a4a2a: 'wood', 0x8a6a4a: 'wood', 0x8a8478: 'stone', 0x7a7468: 'stone' };
+      const fc = (x, z, tx, tz) => Math.atan2(tx - x, tz - z), H = (x, z, ww, d, hh, wall, roof, tx, tz, o) => K.house(x, z, ww, d, hh, wall, roof, fc(x, z, tx, tz), o);
+      const pump = (x, z, s, lit) => { const y = b.h(x, z); b.sph(x, y + .3 * s, z, .42 * s, .34 * s, .42 * s, 0xe0701a, { mat: lit ? { e: 0xd06010, ei: 1.3 } : { e: 0x5a2205, ei: .3 }, cast: false }); b.cyl(x, y + .52 * s, z, .05 * s, .2 * s, 0x4a5a2a, { lo: 1, cast: false }); };
+      const hay = (x, z, s) => b.cone(x, b.h(x, z), z, 1.1 * s, 1.7 * s, 0xd8b050, { lo: 1, solid: 1 });
+      const orb = (x, y, z, c, s) => { b.sph(x, y, z, .16 * s, .2 * s, .16 * s, c, { mat: { e: c, ei: 2.4 }, cast: false }); b.glow(c, 2.6 * s, x, y, z, .6); };
+      // Dorfanger: Erntebaum mit Laternen und Kürbissen in der Mitte, Wirtshaus, Schmiede, Häuser (alle begehbar)
+      { const cx = 4, cz = -18, y = b.h(cx, cz); b.cyl(cx, y, cz, .75, 5, 0x4a3220, { solid: 1, tex: 'bark' });
+        for (let i = 0; i < 5; i++) b.ico(cx + Math.cos(i * 1.26) * 1.5, y + 5.4 + (i % 2) * .6, cz + Math.sin(i * 1.26) * 1.5, 2.3, 1.5, 2.3, ORG[i % 3]);
+        for (let i = 0; i < 7; i++) { const a = i * .9; orb(cx + Math.cos(a) * 2.7, y + 3.4 + (i % 3) * .5, cz + Math.sin(a) * 2.7, 0xffb040, 1); }
+        for (let i = 0; i < 8; i++) pump(cx + Math.cos(i * .785) * 3, cz + Math.sin(i * .785) * 3, 1, i % 2); }
+      H(12, -26, 11, 8, 4, 0xa85a3a, SHI, 4, -18, { kind: 'tavern', hs: { w: 'brick' }, chimney: 1 });
+      H(14, -10, 8, 6, 3.6, 0x7a6a5a, DK, 4, -18, { kind: 'smith', hs: { w: 'stone' }, chimney: 1 });
+      H(-11, -16, 6.4, 5, 3.4, 0x8a6a4a, SHI, 4, -18, { hs: { w: 'wood' }, chest: { id: 'sh_anger', reward: { shards: 30, potions: 1 } } });
+      for (const [x, z] of [[-3, -8], [10, -18], [-2, -26], [20, -18]]) K.lamp(x, z, 0xffb040);
+      b.box(9, 0, -14, 2.2, 1.6, .15, 0x6a4a2a, { tex: 'wood' }); b.box(9, 1.6, -14, 2.5, .12, .22, 0x4a3220); b.box(8.1, 0, -14, .15, 1.6, .15, 0x4a3220); b.box(9.9, 0, -14, .15, 1.6, .15, 0x4a3220);
+      hay(20, -24, 1); hay(-12, -26, .9);
+      // Schulhaus mit Glockenrahmen, Bänken zum Unterricht im Freien und Birken
+      H(-52, -24, 9, 7, 3.6, 0x8a4a32, DK, -42, -20, { hs: { w: 'brick' }, chimney: 1 });
+      b.box(-41, 0, -27, .25, 2.8, .25, 0x4a3220, { tex: 'wood' }); b.box(-37, 0, -27, .25, 2.8, .25, 0x4a3220, { tex: 'wood' }); b.box(-39, 2.7, -27, 4.2, .25, .3, 0x4a3220, { tex: 'wood' });
+      { const bl = b.cone(-39, 1.3, -27, .5, .9, 0xb08a3a, { mat: { m: .85, r: .3 }, lo: 1 }); A.bob(bl, .08, 1.6); }
+      for (let i = 0; i < 3; i++) { b.box(-44 + i * 2.8, 0, -12, 2, .5, .6, 0x6a4a2a, { tex: 'wood' }); b.box(-44 + i * 2.8, .5, -12.6, 2, .5, .12, 0x6a4a2a, { tex: 'wood' }); }
+      K.lamp(-45, -14, 0xffb040);
+      // Hof Van Ripper: Bauernhaus, rote Scheune, Heuhaufen, Pflug, Gunpowder
+      H(56, -30, 9, 6.5, 3.8, 0xa8764a, SHI, 52, -22, { hs: { w: 'wood' }, chimney: 1 });
+      H(60, -14, 11, 8, 4.2, 0x8a2a1a, DK, 52, -22, { hs: { w: 'wood' }, kind: 'home', chest: { id: 'sh_ripper', reward: { shards: 30, potions: 1 } } });
+      hay(44, -30, 1.1); hay(46, -32, .8); hay(66, -26, 1);
+      b.box(44, .5, -14, 2.6, .3, 1.1, 0x5a4030, { tex: 'wood' }); b.box(45.2, .8, -14, .1, .1, 2.2, 0x4a3220); b.cyl(43, .45, -13, .45, .12, 0x3a2a1e, { lo: 1 });
+      { const g = A.creature('reiter', 0x6a5a4a, .9); g.position.set(46, b.h(46, -18), -18); g.rotation.y = 1.9; g.children[0].children.forEach((c, k) => { if (k >= 8) c.visible = false; }); b.addCol(46, -18, 1.1); }
+      // Hof Van Tassel: Festhalle, Scheune, Mostpresse, Kürbisacker und Maisfeld (hier versteckt sich der Schulmeister)
+      H(-62, -86, 13, 8.5, 4.2, 0xb0623a, SHI, -56, -76, { kind: 'tavern', hs: { w: 'brick' }, chimney: 1, chest: { id: 'sh_tassel', reward: { shards: 40, potions: 2 } } });
+      H(-44, -86, 10, 8, 4.2, 0x8a3a22, DK, -56, -76, { hs: { w: 'wood' }, kind: 'home' });
+      H(-68, -70, 5.5, 4.4, 3.2, 0x8a6a4a, SHI, -56, -76, { hs: { w: 'wood' } });
+      for (let j = 0; j < 3; j++) for (let i = 0; i < 9; i++) pump(-66 + i * 2.4, -62 + j * 2.6, 1 + ((i + j) % 3) * .15, (i + j) % 4 === 0);
+      for (let i = 0; i < 70; i++) { const a = i * 2.4, r = 3 + Math.sqrt(i) * 1.15, x = -42 + Math.cos(a) * r, z = -66 + Math.sin(a) * r; if (Math.hypot(x + 42, z + 66) < 3) continue; const y = b.h(x, z); b.cyl(x, y, z, .06, 2, 0xb89a48, { lo: 1, cast: false }); b.cone(x, y + 1.5, z, .24, 1.1, 0xc8a850, { lo: 1, cast: false }); }
+      hay(-48, -92, 1.2); hay(-66, -92, 1); K.fence(-78, -70, -78, -84, 0x6a4a2a);
+      for (const [x, z] of [[-56, -68], [-48, -76], [-66, -78]]) K.lamp(x, z, 0xffb040);
+      // Die Alte Holländische Kirche: Steinkirche mit Glockenturm, Küsterhaus, Friedhofszaun
+      H(52, -92, 12, 8, 4.2, STN, DK, 52, -80, { kind: 'church', hs: { w: 'stone' } });
+      K.tower(63, -90, 2.6, 12, STN, DK, 5, { win: 0xffd890 });
+      H(38, -84, 6, 5, 3.4, 0x8a6a4a, SHI, 52, -82, { hs: { w: 'wood' } });
+      K.fence(43, -72, 48, -72, 0x4a4a52); K.fence(56, -72, 62, -72, 0x4a4a52); K.fence(43, -72, 41, -78, 0x4a4a52); K.fence(62, -72, 64, -78, 0x4a4a52);
+      for (const [x, z] of [[49.5, -72], [54.5, -72]]) K.lamp(x, z, 0xa0c8ff);
+      // Überdachte Brücke über den Kirchbach: Bohlen, Seitenwände, Dach, Laternen – hier verschwindet der Reiter
+      { const bz = -42, L = 18, W = 4.4;
+        b.box(0, -.05, bz, 9, .22, L, 0x6a4a2a, { tex: 'wood', cast: false });
+        for (const s of [-1, 1]) { b.box(s * W, 0, bz, .3, 1.3, L, 0x5a4a3a, { tex: 'wood', solid: 1 }); for (let i = 0; i < 5; i++) b.box(s * W, 1.3, bz - L / 2 + .3 + i * (L - .6) / 4, .34, 3.2, .34, 0x4a3220, { tex: 'wood' }); b.box(s * W, 4.5, bz, .3, .3, L, 0x4a3220, { tex: 'wood' });
+          const r = b.box(s * 2.5, 4.5, bz, 5.8, .26, L + 1.2, 0x6a3a22, { tex: 'wood' }); r.rotation.z = -s * .26; r.position.y = 5.25; }
+        b.box(0, 5.85, bz, .4, .3, L + 1.2, 0x4a3220, { tex: 'wood' });
+        for (const z of [bz - 5, bz + 5]) { b.cyl(0, 4.3, z, .03, .9, 0x2a2a2e, { lo: 1, cast: false }); orb(0, 3.5, z, 0xffa040, 1.4); }
+      }
+      // Tulpenbaum auf dem Hügel: mächtiger Stamm, herbstgoldene Krone, flüsternde Wurzeln, Laterne
+      { const x = -6, z = -110, y = b.h(x, z); b.cyl(x, y, z, 1.6, 10, 0x6a5a4a, { solid: 1, tex: 'bark' });
+        for (const [dx, dy, dz, s] of [[0, 12, 0, 5], [3.5, 10.5, 1.5, 3.6], [-3.5, 11, -1.5, 3.8], [1.5, 14, -2, 3], [-2, 9.5, 3, 3.2]]) b.ico(x + dx, y + dy, z + dz, s, s * .7, s, 0xe0a82a);
+        for (let i = 0; i < 5; i++) { const a = i * 1.26, r = b.cone(x + Math.cos(a) * 1.8, y + .6, z + Math.sin(a) * 1.8, .45, 1.8, 0x5a4a3a, { lo: 1 }); r.rotation.z = Math.cos(a) * .6; r.rotation.x = -Math.sin(a) * .6; }
+        { const lt = b.sph(x + 2.8, y + 6, z + 2.4, .22, .28, .22, 0xffa040, { mat: { e: 0xff8a10, ei: 2.4 }, cast: false }); A.bob(lt, .15, 1.2); b.glow(0xffa040, 4, x + 2.8, y + 6, z + 2.4, .7); } }
+      K.arch(0, -84, 6, 5.4, STN, 0, .8);
+      // Wileys Sumpf: Fischerhütte, Boot, Schilf und tanzende Lichter über dem Wasser
+      H(-34, -108, 5.5, 4.5, 3.2, 0x5a4a3a, DK, -48, -114, { hs: { w: 'wood' }, chest: { id: 'sh_wiley', reward: { shards: 30, potions: 1 } } });
+      b.box(-47, -.4, -105, 3, .4, 1.2, 0x4a3220, { tex: 'wood', cast: false }); b.box(-47, 0, -105, 3.2, .1, .1, 0x3a2a1e, { cast: false });
+      for (const [px, pz, pr] of [[-52, -110, 7], [-40, -122, 5]]) for (let i = 0; i < 14; i++) { const a = i * .45 + pr, x = px + Math.cos(a) * (pr + .8), z = pz + Math.sin(a) * (pr + .8); if (Math.hypot(x + 34, z + 108) < 5) continue; b.cone(x, b.h(x, z), z, .1, 1.6 + (i % 3) * .3, 0x7a7a4a, { lo: 1, cast: false }); }
+      for (let i = 0; i < 7; i++) { const a = i * .9, x = -49 + Math.cos(a) * (3 + i % 3 * 2), z = -113 + Math.sin(a) * (3 + i % 3 * 2), o = b.sph(x, 1.3 + (i % 3) * .5, z, .14, .18, .14, 0x70ffc8, { mat: { e: 0x40ffa0, ei: 2.6 }, cast: false }); A.bob(o, .3, 1.4 + i * .2); b.glow(0x40ffa0, 2, x, 1.5, z, .5); }
     },
     camelot(b, w, A) {
       const K = kit(b), S = 0xeae6de, B2 = 0x3a5aa8;
