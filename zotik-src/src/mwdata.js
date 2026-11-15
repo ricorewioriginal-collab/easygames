@@ -1,3 +1,4 @@
+import { GULLIVER } from './mwgulliver.js';
 // Märchenwelten – Inhalte (Gebiete, Figuren, Aufträge, Gegner, Flug-Thema). Gebaut wird in maerchen.js / mwland.js.
 // Koordinaten: Spielfläche ist ein Kreis um (0, -36) mit Radius 58; Ankunft bei (0, 12), die Nautilux parkt bei (-7, 15).
 // link = nach welchem Kapitel die Welt als Abstecher auf dem Weg liegt (Lunaris = 1 … Ignara = 7).
@@ -845,4 +846,5 @@ export const WORLDS = [
         d: [L('Erzähler', 'Dreizehn Sender auf einmal. Das Funkloch füllt sich mit Musik, bis es platzt – in tausend bunte Töne.'), L('Erzähler', 'Der Sendeturm leuchtet, und der Riss über der Insel schließt sich mit einem Jingle.'), L('RiCARDO', 'Zotik, ich habe deine Geschichte nur aufgeschrieben. Aber ab jetzt will ich sie miterleben. Darf ich mit?')] }
     ],
     outro: [L('RiCARDO', 'Dann los, Team. Das Sendegebiet läuft, die Sender spielen, und ich komme mit. Im Camp findest du mich, wenn du mich brauchst.'), L('Regie-Robo Cast', 'Sendeplan aktualisiert: RiCARDO ist auf Tour. Ich halte die Stellung.')] },
+  GULLIVER,
 ];
