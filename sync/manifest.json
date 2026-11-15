@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "59f56cbf40ad",
- "generated": "2026-11-15T14:45:18+00:00",
- "commit": "f3476aad85afac9808907b9b122f0243781dfd6e",
+ "version": "909d27fd8692",
+ "generated": "2026-11-15T15:40:27+00:00",
+ "commit": "ec8fc120f3a56d5dbb95a104b140df9d98a992a7",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1683,8 +1683,8 @@
   },
   {
    "p": "anmacha-funkparcours/main.js",
-   "s": 34830,
-   "h": "5d43b87af9f324732c37f68556b433d430cee73685ed017456bc652264e18c33"
+   "s": 34856,
+   "h": "d10baad8412cfe246d61282071144b8831171fcb26ddba96bf124a1cbe9e9c94"
   },
   {
    "p": "anmacha-funkparcours/manifest.webmanifest",
@@ -13804,7 +13804,7 @@
   {
    "p": "sync/catalog.json",
    "s": 250403,
-   "h": "ecf93835202be304200fa34db0599d2db9e17b09d18d9235488107e1377e416c"
+   "h": "3f5463cbb9da2ddb694af8b4d0f181b0385c8ac1b3b9755813bd83204cb377a0"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

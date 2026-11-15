@@ -285,6 +285,6 @@ if (JOIN) {
   $('bSnd').onclick = toggleSnd; $('aSnd').onclick = toggleSnd; $('aMenu').onclick = () => pause(true);
   addEventListener('keydown', e => { if ((e.code === 'Escape' || e.code === 'KeyP') && !$('game').hidden && !pending && !paused) { e.preventDefault(); pause(true); } });
   document.addEventListener('visibilitychange', () => { if (document.hidden && G && G.phase === 'run') pause(true); });
-  window.__fp = { get G() { return G; }, S, arena, COURSES, ui, vo: commentator, host, makeCourse, start, loadScene }; requestAnimationFrame(loop);
+  window.__fp = { get G() { return G; }, input: () => readInput(), S, arena, COURSES, ui, vo: commentator, host, makeCourse, start, loadScene }; requestAnimationFrame(loop);
   await texDone; booting = false; ui.boot.ready(() => { show('menu'); ui.menu.show('show'); });
 }
