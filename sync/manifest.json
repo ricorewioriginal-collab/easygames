@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "49afe11c5058",
- "generated": "2026-11-15T20:57:37+01:00",
- "commit": "0016e54b29b2862f8b2fd97a4662fb7cc8b0f01d",
+ "version": "73888e4299ec",
+ "generated": "2026-11-15T20:59:01+01:00",
+ "commit": "e1a8c7845efc48dd71a249fc22c42c6e9128ab3f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10198,8 +10198,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 82033,
-   "h": "b95c332c8e855a2ccc7a94bd9e3563ea854c80df464bfffde25ff16f973fd10e"
+   "s": 82937,
+   "h": "0987b9af0eb9db34d9b0365337aa29c4fff51fe62db1ec1f3a7020ff55a83aea"
   },
   {
    "p": "games.js",
@@ -13097,6 +13097,11 @@
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
   },
   {
+   "p": "riftzone/client/public/heightmap.bin",
+   "s": 1182722,
+   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
+  },
+  {
    "p": "riftzone/client/src/ui/styles.css",
    "s": 30181,
    "h": "28c5e1ddb893c40dd6896ecc6a3d7d5ee09244423276d839b5aecb7a32579129"
@@ -14129,7 +14134,7 @@
   {
    "p": "sync/catalog.json",
    "s": 245426,
-   "h": "860aef6b8d3286fa23e2a271edf910695b01e08de1c5209e2fb9f1cd215bb1b0"
+   "h": "746cd990a23db0db3bcf56c5ee014784d8beab2c156bd02bff3ea88ccba2d5fc"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
