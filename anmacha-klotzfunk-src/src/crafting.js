@@ -112,6 +112,19 @@ RECIPES.push(
     ['candles', [[B.WOOL, 1], [B.COAL, 1]]], ['torch', [[I.STICK, 1], [B.COAL, 1]]], ['banner', [[B.WOOL, 4], [I.STICK, 1]]], ['crates', [[B.PLANKS, 6]]]
   ].map(([k, need]) => ({ id: 'deco_' + k, give: [DK(k), k === 'torch' || k === 'candles' ? 4 : 1], need, st: 'werkbank' }))
 );
+// Fanwelten (Etappe 12): neue Baustoffe an der Werkbank
+RECIPES.push(
+  { id: 'moonstone', give: [B.MOONSTONE, 4], need: [[B.STONE, 4], [B.CRYSTAL, 1]], st: 'werkbank' },
+  { id: 'moonleaves', give: [B.MOONLEAVES, 4], need: [[B.LEAVES, 4], [B.CRYSTAL, 1]], st: 'werkbank' },
+  { id: 'gingerbread', give: [B.GINGERBREAD, 4], need: [[I.WHEAT, 3], [B.CLAY, 1]], st: 'werkbank' },
+  { id: 'icing', give: [B.ICING, 4], need: [[B.SNOW, 2], [B.FLOWERS, 1]], st: 'werkbank' },
+  { id: 'roseleaves', give: [B.ROSELEAVES, 4], need: [[B.LEAVES, 4], [B.FLOWERS, 1]], st: 'werkbank' },
+  { id: 'foam', give: [B.FOAM, 4], need: [[B.WOOL, 2], [B.COAL, 1]], st: 'werkbank' },
+  { id: 'onair', give: [B.ONAIR, 1], need: [[B.NEON_R, 1], [B.GLASS, 1]], st: 'werkbank' },
+  { id: 'goldblock', give: [B.GOLDBLOCK, 1], need: [[B.COPPERBLOCK, 1], [B.CRYSTAL, 2]], st: 'werkbank' },
+  { id: 'capsule', give: [B.CAPSULE, 2], need: [[B.CONCRETE2, 1], [B.CONCRETE0, 1]], st: 'werkbank' },
+  { id: 'tallgrass', give: [B.TALLGRASS, 4], need: [[B.GRASS, 1]] }
+);
 for (const r of RECIPES) r.cat = (ITEMS[r.give[0]] || BLOCKS[r.give[0]]).cat;
 export const STATION_NAMES = { werkbank: 'Werkbank', ofen: 'Schmelzofen' };
 const STATION_ACC = { werkbank: 'eine Werkbank', ofen: 'einen Schmelzofen' };

@@ -12,10 +12,10 @@
       "t": "Hauptmenü und Welten",
       "list": [
         "▶ Weiterspielen: lädt die zuletzt gespielte Welt.",
-        "🌍 Welten: 3 Speicherplätze. Auf einem freien Platz gibst du einen Startwert ein (leer = Zufall, 🎲 würfelt) und wählst den Modus. Gespeicherte Welten zeigen Modus, Startwert und Datum; ⤓ sichert eine Welt als Datei, ↺ lädt eine ältere Sicherung, 🗑 löscht.",
+        "🌍 Welten: 3 Speicherplätze. Auf einem freien Platz gibst du einen Startwert ein (leer = Zufall, 🎲 würfelt) und wählst den Modus und die Welt: Zufallswelt oder eine fertige Fanwelt. Gespeicherte Welten zeigen Modus, Startwert und Datum; ⤓ sichert eine Welt als Datei, ↺ lädt eine ältere Sicherung, 🗑 löscht.",
         "👥 Mitspielen: in der Welt eines Freundes spielen.",
         "⚙ Einstellungen, ❔ Anleitung und ☁ Speicherdaten (Welt als .json-Datei importieren, optionale Google-Sicherung).",
-        "Neue Welten beginnen in einem Dorf."
+        "Neue Welten beginnen in einem Dorf mit großen, eingerichteten Häusern; Fanwelten beginnen auf ihrem Hauptplatz."
       ]
     },
     {
@@ -24,6 +24,19 @@
         "⛏ Überleben: Rohstoffe, Hunger und Herzen. Abbauen dauert je nach Härte, Werkzeuge machen es schneller und nutzen sich ab. Stürze aus großer Höhe, Ertrinken, Magma und Hunger kosten Herzen, Gegner greifen an (abschaltbar).",
         "🕊 Kreativ: alle Blöcke unbegrenzt, Fliegen mit F oder doppelt Leertaste (Umschalt sinkt), Rückgängig mit Strg+Z oder ↶, Wiederholen mit Strg+Y, dazu Kopieren und Einfügen als Bauform. Dorfbewohner handeln hier nicht („Im Kreativmodus hast du doch schon alles!“).",
         "📜 Story „Das große Rauschen“: 6 Kapitel mit 25 Aufträgen auf einer festen Story-Welt, mit den Überlebensregeln."
+      ]
+    },
+    {
+      "t": "Fanwelten",
+      "p": [
+        "Fertig gebaute Welten zum Erkunden und Weiterbauen. Alle Häuser und Höhlen sind groß und begehbar, Obergeschosse erreichst du über Leitern. Rundherum geht die normale Welt weiter."
+      ],
+      "list": [
+        "🐉 Taschi-Land: Heilzentrum, Labor, Arena, Taschi-Statuen, Glimmstein-Höhle.",
+        "🦊 Zotik: Lunaris: Dorf am Mondblick mit Kirche, Schmiede, Wirtshaus, Weltentor und Risshöhle; startet am Abend.",
+        "🎙️ AnMaCha – der Podcast: Funkhaus mit Studios, Sendemast mit Plattform, Bühne „LIVE“, Café, Plattenladen.",
+        "🏰 Märchenwald: Dornröschen-Schloss, Rapunzel-Turm, Hexenhaus aus Lebkuchen, Großmutters Haus, Zwergenmine.",
+        "Neue Blöcke: Mondstein, Mondlaub, Lebkuchen, Zuckerguss, Rosenhecke, Schaumstoff, On-Air-Leuchte, Goldblock, Kapselhülle, hohes Gras."
       ]
     },
     {
@@ -299,6 +312,10 @@
     {
       "q": "Das Gamepad reagiert nicht.",
       "a": "Drücke einmal eine Taste am Gamepad, damit der Browser es erkennt. Die Belegung steht in den Einstellungen."
+    },
+    {
+      "q": "Wie komme ich in eine Fanwelt?",
+      "a": "🌍 Welten, freien Platz wählen, Modus Überleben oder Kreativ und unter „Welt“ z. B. Märchenwald wählen. Bestehende Welten bleiben, wie sie sind; eine Fanwelt gibt es nur für neue Welten."
     }
   ]
 }

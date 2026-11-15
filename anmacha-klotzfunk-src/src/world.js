@@ -3,12 +3,13 @@ import { B, NAMES, LOGO0, LOGO_COUNT, LOGO_NAMES, SPECIAL0, SPECIAL_COUNT, SPECI
 import { biomeColumn, decorateChunk, BIOME, GEN2_SPAWN_BIOMES } from './worldgen.js';
 import { SIG_BLOCKS } from './signal.js';
 import { placeStructures, nearestVillage, villageIn, regionOf, VR } from './structures.js';
+import { FANWORLDS, fanPlan, fanSpawn, fanSkip } from './fanworlds.js';
 export { B, NAMES, LOGO0, LOGO_COUNT, LOGO_NAMES, SPECIAL0, SPECIAL_COUNT, SPECIAL_NAMES, SOLID, OPAQUE, SKYBLOCK, EMIT, isLogo };
 import { CS, H, SEA } from './consts.js';
 import { hash, fbm } from './noise.js';
 export { CS, H, SEA };
-export const GEN_LATEST = 3; // Generator für neue Welten
-export const normGen = g => (g === 2 || g === 3 ? g : 1); // fehlt/unbekannt = Originalwelt
+export const GEN_LATEST = 4; // Generator für neue Welten (4 = wie 3, plus große eingerichtete Dörfer, Höhlenhallen, hohes Gras)
+export const normGen = g => (g === 2 || g === 3 || g === 4 ? g : 1); // fehlt/unbekannt = Originalwelt
 const H1_MAX = 52;           // Höhengrenze der Originalwelt (Generator 1), nie ändern
 
 export function terrainHeight(seed, wx, wz) {
@@ -21,9 +22,10 @@ export function terrainHeight(seed, wx, wz) {
 export function chunkKey(cx, cz) { return (cx + 32768) * 65536 + (cz + 32768); }
 
 export class World {
-  constructor(seed, edits, gen = 1) {
+  constructor(seed, edits, gen = 1, preset = null) {
     this.seed = seed | 0;
     this.gen = normGen(gen);
+    this.preset = this.gen >= 4 && FANWORLDS[preset] ? preset : null; // fertige Fanwelt rund um den Ursprung
     this.chunks = new Map();
     this.edits = edits || new Map(); // key -> Map(index -> type)
     this.dirty = new Set();
@@ -63,7 +65,9 @@ export class World {
   generate(cx, cz, key) {
     const data = new Uint8Array(CS * CS * H);
     let maxY = this.gen >= 2 ? decorateChunk(this.seed, cx, cz, data) : this.generate1(cx, cz, data);
-    if (this.gen === 3) maxY = placeStructures(this.seed, cx, cz, data, maxY, (x, y, z) => this.radios.set(`${x},${y},${z}`, [x, y, z]));
+    const radio = (x, y, z) => this.radios.set(`${x},${y},${z}`, [x, y, z]);
+    if (this.gen >= 3) maxY = placeStructures(this.seed, cx, cz, data, maxY, radio, this.gen, this.preset ? fanSkip : null);
+    if (this.preset) { const p = fanPlan(this.preset, this.seed); if (p.touches(cx, cz)) maxY = p.apply(cx, cz, data, (x, z) => biomeColumn(this.seed, x, z, this.colTmp || (this.colTmp = {})).h, maxY, radio); }
     return this.finish(cx, cz, key, data, maxY);
   }
 
@@ -198,8 +202,9 @@ export class World {
   // Sicherer Startpunkt: erste Landfläche ohne Baum (Generator 2: in Ebene, Wald oder Blumenwiese)
   // village = false: nicht im Dorf starten (Story: das Dorf ist ein Auftrag)
   findSpawn(village = true) {
-    if (this.gen === 3 && village) { // am Dorfplatz des nächsten Dorfes, sonst wie Generator 2
-      const v = nearestVillage(this.seed);
+    if (this.preset) { const sp = fanSpawn(this.preset, this.seed); this.ensure(Math.floor(sp.x) >> 4, Math.floor(sp.z) >> 4); return sp; }
+    if (this.gen >= 3 && village) { // am Dorfplatz des nächsten Dorfes, sonst wie Generator 2
+      const v = nearestVillage(this.seed, 0, 0, 2, this.gen);
       if (v) { this.ensure(v.x >> 4, (v.z + 3) >> 4); return { x: v.x + 0.5, y: v.y + 1.01, z: v.z + 3.5 }; }
     }
     if (this.gen >= 2) {
@@ -251,8 +256,8 @@ export class World {
   }
   // Dorf, in dessen Bereich (x, z) liegt (nur Generator 3), sonst null
   villageAt(x, z) {
-    if (this.gen !== 3) return null;
-    const v = villageIn(this.seed, regionOf(Math.floor(x)), regionOf(Math.floor(z)));
+    if (this.gen < 3) return null;
+    const v = villageIn(this.seed, regionOf(Math.floor(x)), regionOf(Math.floor(z)), this.gen);
     return v && Math.hypot(v.x + 0.5 - x, v.z + 0.5 - z) <= VR + 4 ? v : null;
   }
 }

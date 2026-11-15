@@ -64,11 +64,20 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   /* Rennen-HUD */
   #hud{position:fixed;inset:0;z-index:3;pointer-events:none}
   .vp{position:absolute;overflow:hidden}
-  .vp .pos{position:absolute;right:12px;bottom:6px;font:900 clamp(34px,7vw,72px)/1 'Trebuchet MS',sans-serif;font-style:italic;color:#ffd24a;-webkit-text-stroke:2px #5a3a00;text-shadow:0 0 16px var(--sc),0 4px 0 #000}
-  .vp .pos small{font-size:.42em;color:#fff;-webkit-text-stroke:0}
-  .vp .lap{position:absolute;left:10px;bottom:8px;padding:5px 12px;border-radius:10px;background:rgba(10,14,40,.78);border:1px solid rgba(255,255,255,.3);font:900 clamp(13px,2.6vw,20px) 'Trebuchet MS',sans-serif;color:#fff}
+  .vp .pos{position:absolute;right:14px;bottom:4px;font:700 clamp(46px,9vw,96px)/1 Fredoka,'Trebuchet MS',sans-serif;font-style:italic;letter-spacing:-.02em;background:linear-gradient(180deg,#fff3b0 0,#ffc21a 45%,#ff7a00 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:3px #fff;filter:drop-shadow(0 4px 0 rgba(60,20,0,.85)) drop-shadow(0 0 14px rgba(255,140,0,.45));padding-right:.08em}
+  .vp .pos[data-p="2"]{background-image:linear-gradient(180deg,#ffffff 0,#bfe8ff 45%,#3aa0ff 100%);filter:drop-shadow(0 4px 0 rgba(0,30,70,.85)) drop-shadow(0 0 14px rgba(60,160,255,.45))}
+  .vp .pos[data-p="3"]{background-image:linear-gradient(180deg,#ffe0c0 0,#e8925a 50%,#a84a1a 100%)}
+  .vp .pos[data-p="n"]{background-image:linear-gradient(180deg,#ffe9d0 0,#ff9a3a 50%,#e8501a 100%)}
+  .vp .pos small{font-size:.55em}
+  .vp .lap{position:absolute;left:10px;bottom:8px;display:flex;gap:6px;font:700 clamp(14px,2.8vw,24px)/1 Fredoka,'Trebuchet MS',sans-serif;color:#fff}
+  .vp .lap>span{display:flex;align-items:center;gap:6px;padding:5px 11px 5px 7px;border-radius:12px;background:linear-gradient(180deg,rgba(40,44,60,.88),rgba(16,18,28,.88));border:2px solid rgba(255,255,255,.22);box-shadow:0 3px 0 rgba(0,0,0,.35)}
+  .vp .lap small{font-size:.7em;opacity:.85}
+  .vp .lap b{font-size:.9em}
+  .vp .lap .cn i{width:1.05em;height:1.05em;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff6b0,#ffc928 45%,#d88a00);box-shadow:inset 0 0 0 2px #b06a00}
+  .vp .lap .cn.max{color:#ffd24a}
+  body.racing>button[aria-label="Mit Google speichern"]{display:none!important}
   .vp .nm{position:absolute;left:10px;top:calc(10px + clamp(50px,9vw,78px) + 6px);max-width:clamp(50px,9vw,78px);padding:1px 7px;border-radius:999px;background:rgba(10,14,40,.78);border:1px solid var(--sc);font-weight:800;font-size:11px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .vp .item{position:absolute;left:10px;top:10px;width:clamp(50px,9vw,78px);aspect-ratio:1;border-radius:50%;border:4px solid #dfe8ff;background:radial-gradient(circle,#2a3a8a,#0a1040);box-shadow:0 0 14px var(--sc);display:grid;place-items:center;font-size:clamp(26px,5.4vw,44px)}
+  .vp .item{position:absolute;left:10px;top:10px;width:clamp(50px,9vw,78px);aspect-ratio:1;border-radius:50%;border:4px solid #fff;background:radial-gradient(circle at 50% 35%,#3a3f58,#12141f 70%);box-shadow:0 0 0 3px rgba(20,22,34,.85),0 0 16px var(--sc);display:grid;place-items:center;font-size:clamp(26px,5.4vw,44px)}
   .vp .item.empty{border-color:rgba(223,232,255,.6);background:rgba(10,14,40,.6);box-shadow:none}
   .vp .item.empty::after{content:'ITEM';font:900 clamp(9px,1.8vw,12px) 'Trebuchet MS',sans-serif;letter-spacing:.06em;color:rgba(255,255,255,.55)}
   .vp .item.roll{animation:spin .25s linear infinite}
@@ -103,8 +112,8 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   .tc .tb-i{--bc:#ff4fd8;transform:translateY(calc(var(--s) * -.775))}
   /* Solo am Touch-Gerät: Platzierung, Runde und Tempo nach oben, damit nichts unter Joystick oder Tasten liegt */
   body.touch.racing .vp:only-child .nm{display:none}
-  body.touch.racing .vp:only-child .pos{right:auto;bottom:auto;left:calc(20px + clamp(50px,9vw,78px));top:8px;font-size:clamp(28px,8vmin,48px)}
-  body.touch.racing .vp:only-child .lap{left:calc(20px + clamp(50px,9vw,78px));bottom:auto;top:calc(14px + clamp(28px,8vmin,48px))}
+  body.touch.racing .vp:only-child .pos{right:auto;bottom:auto;left:calc(20px + clamp(50px,9vw,78px));top:6px;font-size:clamp(36px,10vmin,58px)}
+  body.touch.racing .vp:only-child .lap{left:calc(20px + clamp(50px,9vw,78px));bottom:auto;top:calc(12px + clamp(36px,10vmin,58px))}
   body.touch.racing .vp:only-child .spd{bottom:auto;top:56px}
   .kcards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:560px}
   .kcards button{padding:8px 6px;border-radius:12px;border:2px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);text-align:left;font-weight:800;font-size:13px}
@@ -498,12 +507,13 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div id="ctl"></div>
 <div id="err" hidden><div><h2>Oh nein</h2><p class="sub" id="errTxt"></p></div></div>
 
-<script src="audio.js?v=20261115-wt4"></script>
-<script src="chars.js?v=20261115-wt8"></script>
-<script src="track.js?v=20261115-wt5"></script>
-<script src="sim.js?v=20261115-wt5"></script>
+<script src="audio.js?v=20261115-wt9"></script>
+<script src="chars.js?v=20261115-wt9"></script>
+<script src="track.js?v=20261115-wt11"></script>
+<script src="oma.js?v=20261115-wt1"></script>
+<script src="sim.js?v=20261115-wt10"></script>
 <script src="nav.js?v=20261115-wt1"></script>
-<script src="game.js?v=20261115-wt4"></script>
+<script src="game.js?v=20261115-wt11"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="kart" data-prefix="akChar,akKart,akLogo,akMute,akName,akSave,akTts" defer></script>
 <script src="../gamepad.js" data-pad="info" data-pad-labels="a=Gas · Bestätigen; b=Bremsen · Zurück; rt=Gas; dpad=Lenken · Menü; ls=Lenken; lt=Bremsen; rb=Driften; x=Driften; y=Item; lb=Item · Seite; start=Pause · Los" defer></script>
 <script src="../egstat.js" defer></script>

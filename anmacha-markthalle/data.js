@@ -88,7 +88,8 @@ const Data = (() => {
     job: { name: 'Berufstätige', e: '💼', age: [24, 60], w: 20, n: [1, 3], q: [1, 2], tol: .25, pat: 38, spd: 2.5, likes: { getr: 1.6, snack: 1.3, brot: 1.5, elektro: 1.3, presse: 1.4, bio: 1.3, alk: 1.2 }, music: 'chill', recipe: .1 },
     spar: { name: 'Sparfuchs', e: '🏷️', age: [22, 70], w: 8, n: [5, 9], q: [1, 3], tol: 0, pat: 120, spd: 1.9, likes: {}, music: 'pop', recipe: .2, hunt: 1 },
     infl: { name: 'Influencerin', e: '🤳', age: [18, 32], w: 1.2, n: [2, 3], q: [1, 1], tol: .3, pat: 70, spd: 2, likes: {}, music: 'pop', recipe: .1, minLvl: 6 },
-    krit: { name: 'Testerin', e: '🧐', age: [30, 50], w: 1.5, n: [3, 4], q: [1, 1], tol: .2, pat: 80, spd: 1.8, likes: {}, music: 'chill', recipe: .2, minLvl: 4 }
+    krit: { name: 'Testerin', e: '🧐', age: [30, 50], w: 1.5, n: [3, 4], q: [1, 1], tol: .2, pat: 80, spd: 1.8, likes: {}, music: 'chill', recipe: .2, minLvl: 4 },
+    insp: { name: 'Kontrolleurin', e: '🕵️‍♀️', age: [35, 60], w: 0, n: [3, 3], q: [1, 1], tol: 1, pat: 400, spd: 1.6, likes: {}, music: '-', recipe: 0, minLvl: 99 }
   };
   const GENRES = { pop: { name: 'Pop', e: '🎤', notes: [0, 4, 7, 9, 7, 4], bpm: 118 }, rock: { name: 'Rock', e: '🎸', notes: [0, 0, 7, 5, 0, 10], bpm: 136 }, schlager: { name: 'Schlager', e: '🪗', notes: [0, 4, 7, 12, 9, 7], bpm: 104 }, chill: { name: 'Chillout', e: '🌴', notes: [0, 3, 7, 10, 7, 3], bpm: 84 } };
   const RECIPES = [
@@ -103,7 +104,36 @@ const Data = (() => {
     baecker: { name: 'Bäckerin', e: '🧑‍🍳', wage: 5500, lvl: 4, desc: 'Backt tagsüber frische Ware in der Backstation nach.' },
     robo: { name: 'Regalbot', e: '🤖', wage: 0, buy: 150000, lvl: 7, desc: 'Füllt tagsüber leise Regale. Kein Lohn, nur Strom.' }
   };
-  const TRAITS = [['flink', 'flink (+25 % Tempo)'], ['gruendlich', 'gründlich (+Sauberkeit)'], ['freundlich', 'freundlich (Kunden zufriedener)'], ['schusselig', 'schusselig (macht Pfützen)'], ['fleissig', 'fleißig (kein Murren)']];
+  const TRAITS = [['flink', 'flink (+25 % Tempo)'], ['gruendlich', 'gründlich (+Sauberkeit)'], ['freundlich', 'freundlich (Kunden zufriedener)'], ['schusselig', 'schusselig (macht Pfützen)'], ['fleissig', 'fleißig (kein Murren)'], ['plauder', 'plaudert gern (Kunden zufriedener, etwas langsamer)'], ['eule', 'Nachteule (Spätschicht ohne Laune-Verlust)'], ['lerche', 'Frühaufsteher (Frühschicht ohne Laune-Verlust)']];
+  // Schichten: Anteil des Tages (0 = Öffnung, 1 = Ladenschluss) und Lohn-Faktor
+  const SHIFTS = { ganz: { n: 'Ganztags', e: '🕗', f: 1, a: 0, b: 1 }, frueh: { n: 'Frühschicht (bis 14 Uhr)', e: '🌅', f: .6, a: 0, b: .5 }, spaet: { n: 'Spätschicht (ab 14 Uhr)', e: '🌙', f: .6, a: .5, b: 1 } };
+  // Wochenmarkt vor dem Laden: regionale Höfe liefern jeden Morgen an deine Stände (ohne Lizenz)
+  const FARMS = [
+    { id: 'obst', n: 'Obsthof Sonnenwinkel', e: '🍎', p: ['apfel'], lvl: 2, col: '#2f9e44' }, { id: 'gemuese', n: 'Gemüsehof Grünland', e: '🥕', p: ['karotte', 'tomate', 'gurke'], lvl: 2, col: '#5a8f3a' },
+    { id: 'eier', n: 'Hühnerhof Lindenhof', e: '🥚', p: ['eier', 'bioeier'], lvl: 3, col: '#c98a3a' }, { id: 'imker', n: 'Imkerei Summhain', e: '🍯', p: ['honig'], lvl: 3, col: '#f59f00' },
+    { id: 'backhaus', n: 'Dorfbäckerei Korn', e: '🥨', p: ['brezel', 'brot', 'biobrot'], lvl: 4, col: '#b8803a' }, { id: 'weide', n: 'Weidehof Bergblick', e: '🐄', p: ['biomilch', 'kaese'], lvl: 5, col: '#3a7bb0' }
+  ];
+  const STALLS = [{ price: 60000, lvl: 2 }, { price: 90000, lvl: 4 }, { price: 140000, lvl: 6 }], STALL_CAP = 24, STALL_DELIV = 12;
+  // Café vor dem Laden: Kunden trinken nach dem Einkauf einen Kaffee (Kaffee- und Kuchen-Kartons füllen es auf)
+  const CAFE = [{ n: 'kein Café' }, { n: 'Kaffeebar', price: 60000, lvl: 2, p: .16, seats: 2 }, { n: 'Café-Terrasse', price: 150000, lvl: 4, p: .26, seats: 6 }, { n: 'Bistro & Bäckertheke', price: 350000, lvl: 7, p: .36, seats: 10 }];
+  const CAFE_FILL = { kaffee: ['cup', 8], kuchen: ['cake', 8], torte: ['cake', 12], croissant: ['cake', 1], muffin: ['cake', 1], donut: ['cake', 1], waffel: ['cake', 1] }, CUP = 220, CAKE = 290;
+  // Konkurrent Billigo: Aktionen, die er gegen dich startet
+  const RIVAL = {
+    liefer: { e: '🛵', n: 'Billigo-Lieferdienst', d: 'Billigo liefert jetzt nach Hause – 3 Tage etwas weniger Kundschaft.', days: 3, spawn: .92 },
+    flyer: { e: '📰', n: 'Billigo-Flyer', d: 'Billigo verteilt heute Flyer im Viertel.', days: 1, spawn: .94 },
+    abwerben: { e: '🤝', n: 'Abwerbe-Versuch', d: 'Billigo lockt dein Personal mit mehr Lohn – unzufriedene Leute könnten kündigen.', days: 1, spawn: 1 },
+    skandal: { e: '😬', n: 'Billigo-Skandal', d: 'Gammelfleisch bei Billigo! Viele Kunden kommen jetzt zu dir.', days: 2, spawn: 1.12 },
+    kopie: { e: '📋', n: 'Billigo kopiert dich', d: 'Billigo verkauft deinen Bestseller heute 15 % billiger.', days: 1, spawn: 1 }
+  };
+  // Ereignisse des Tages (Erklärung für Fenster und Wegweiser)
+  const EVENTS = {
+    ausflug: { e: '🚌', n: 'Busausflug', d: 'Eine Schulklasse kommt vorbei – viele Studenten und Snacks.' }, stromausfall: { e: '⚡', n: 'Stromausfall', d: 'Kühlung, Licht und SB-Kassen fallen kurz aus. Notstrom rettet die Kühlware.' },
+    promi: { e: '🧐', n: 'Testerin', d: 'Eine Testerin bewertet deinen Laden besonders streng.' }, kontrolle: { e: '🕵️‍♀️', n: 'Lebensmittelkontrolle', d: 'Das Amt prüft Sauberkeit und abgelaufene Ware. Mängel kosten Bußgeld, eine saubere Prüfung bringt Ruf.' },
+    rivalsale: { e: '🏪', n: 'Billigo-Rabattschlacht', d: 'Billigo senkt die Preise einer Warengruppe um 18 %.' }, streik: { e: '🚚', n: 'Lieferstreik droht', d: 'Morgen kommt womöglich keine Lieferung.' },
+    hitze: { e: '🔥', n: 'Hitzewelle', d: 'Kühlware, Eis und Getränke sind gefragt. Ohne Klimaanlage schwitzen Kunden und Personal.' }, ansturm: { e: '🛒', n: 'Großeinkauf vor dem Feiertag', d: 'Alle kaufen vor dem Feiertag ein: mehr Kunden mit vollen Einkaufslisten.' },
+    bruecke: { e: '🎉', n: 'Brückentag', d: 'Viele haben frei – am Vormittag ist richtig viel los.' }, bande: { e: '🦹', n: 'Diebesbande', d: 'Die Polizei warnt: Heute sind Ladendiebe unterwegs. Wachmann und Kameras helfen.' },
+    rohr: { e: '🚰', n: 'Wasserrohrbruch', d: 'Überall Pfützen – schnell wischen, sonst leidet der Ruf.' }, wetter: { e: '🌦️', n: 'Wetterumschwung', d: 'Das Wetter ändert sich im Lauf des Tages.' }
+  };
   const FIRST = ['Mia', 'Ben', 'Lena', 'Paul', 'Emma', 'Noah', 'Hanna', 'Finn', 'Lea', 'Jonas', 'Sara', 'Tom', 'Nele', 'Ole', 'Ida', 'Max', 'Jule', 'Karl', 'Rosa', 'Uwe', 'Gerda', 'Hugo', 'Tina', 'Yusuf', 'Aylin', 'Piotr', 'Greta', 'Arne', 'Fritzi', 'Bruno'];
   const LAST = ['Brandt', 'Kuhn', 'Vogel', 'Sommer', 'Lindner', 'Wolter', 'Ebert', 'Pohl', 'Funk', 'Jäger', 'Haas', 'Krause', 'Neumann', 'Albers', 'Roth'];
   const UPGRADES = [
@@ -113,14 +143,21 @@ const Data = (() => {
     { id: 'drohne', name: 'Express-Drohne', e: '🚁', price: 100000, lvl: 5, desc: 'Bestellungen kommen in 40 Sekunden (+25 % Gebühr).' }, { id: 'regalpl', name: 'Regal-Plus', e: '📚', price: 120000, lvl: 5, desc: '+25 % Fassungsvermögen aller Regale.' },
     { id: 'notstrom', name: 'Notstrom', e: '🔋', price: 110000, lvl: 6, desc: 'Stromausfälle verderben nichts mehr.' }, { id: 'auto', name: 'Nachbestell-Regeln', e: '🔁', price: 140000, lvl: 8, desc: 'Schaltet am Bestell-PC Regeln frei: Der PC bestellt Waren automatisch nach.' },
     { id: 'app', name: 'Bestell-App', e: '📱', price: 80000, lvl: 3, desc: 'Du bestellst von überall im Laden, ohne zum Bestell-PC zu gehen.' }, { id: 'tuer', name: 'Automatik-Schiebetür', e: '🚪', price: 250000, lvl: 5, desc: 'Die Tür öffnet von selbst. +3 % Kundschaft.' },
-    { id: 'idscan', name: 'Alterscheck-Scanner', e: '🪪', price: 120000, lvl: 5, desc: 'Prüft Ausweise automatisch: erkennt Fälschungen, Jugendschutz ohne Kopfrechnen.' }, { id: 'kassensys', name: 'Kassensystem', e: '🧾', price: 180000, lvl: 4, desc: 'Berechnet Wechselgeld und Kartenbetrag automatisch – kein Kopfrechnen und Tippen an der Kasse.' }, { id: 'park', name: 'Parkplatz', e: '🅿️', price: 500000, lvl: 7, desc: 'Parkplätze vor dem Laden. +6 % Kundschaft.' }
+    { id: 'idscan', name: 'Alterscheck-Scanner', e: '🪪', price: 120000, lvl: 5, desc: 'Prüft Ausweise automatisch: erkennt Fälschungen, Jugendschutz ohne Kopfrechnen.' }, { id: 'kassensys', name: 'Kassensystem', e: '🧾', price: 180000, lvl: 4, desc: 'Berechnet Wechselgeld und Kartenbetrag automatisch – kein Kopfrechnen und Tippen an der Kasse.' }, { id: 'park', name: 'Parkplatz', e: '🅿️', price: 500000, lvl: 7, desc: 'Parkplätze vor dem Laden. +6 % Kundschaft.' },
+    { id: 'spaet', name: 'Spätverkauf bis 22 Uhr', e: '🌙', price: 90000, lvl: 4, desc: 'Zwei Stunden länger offen: Feierabend-Kundschaft und Nachtschwärmer. Strom und Zuschlag +€15/Tag.' }, { id: 'rette', name: 'Rette-mich-App', e: '🥡', price: 60000, lvl: 3, desc: 'Ware mit MHD heute verkauft die App abends automatisch als Rette-mich-Tüte (35 % vom Preis) statt Tonne.' },
+    { id: 'pause', name: 'Pausenraum', e: '🛋️', price: 70000, lvl: 3, desc: 'Dein Personal erholt sich zwischendurch – die Laune sinkt nur halb so schnell.' }, { id: 'treue', name: 'Treuekarte', e: '💳', price: 90000, lvl: 4, desc: 'Stammkunden kommen öfter und lassen sich von Billigo kaum weglocken.' },
+    { id: 'schirm', name: 'Schirmständer & Fußmatte', e: '☂️', price: 25000, lvl: 2, desc: 'Bei Regen, Schnee und Gewitter tragen Kunden viel weniger Nässe in den Laden.' }
   ];
+  // Lagerhalle neben dem Hof (Ausbaustufen) und Lager-Regale darin; Maße in Feldern (1 Feld ≈ 1,6 m)
+  const WAREHOUSE = [{ n: 'Lagerraum', w: 6, d: 7, price: 0 }, { n: 'Lagerhalle', w: 8, d: 8, price: 120000, lvl: 2 }, { n: 'Große Halle', w: 10, d: 11, price: 350000, lvl: 5 }, { n: 'Logistikzentrum', w: 13, d: 14, price: 900000, lvl: 9 }], RACK_PRICE = 25000;
   const EXPAND = [{ n: 'Kiosk', W: 18, H: 12, price: 0 }, { n: 'Laden', W: 22, H: 14, price: 150000, lvl: 3 }, { n: 'Markt', W: 26, H: 16, price: 400000, lvl: 6 }, { n: 'Supermarkt', W: 30, H: 18, price: 900000, lvl: 10 }, { n: 'Großmarkt', W: 36, H: 20, price: 2000000, lvl: 14 }, { n: 'Hypermarkt', W: 42, H: 22, price: 4500000, lvl: 18 }];
   const SIGNCOLS = [['#0f2b5a', 'Marine'], ['#7a1f1f', 'Rot'], ['#1f5a2f', 'Grün'], ['#5a2f8a', 'Violett'], ['#8a4a0f', 'Orange'], ['#222831', 'Schwarz']];
   const FLOORS = { fliese: { n: 'Fliesen', price: 0, lvl: 1, appeal: 0 }, parkett: { n: 'Parkett', price: 180000, lvl: 4, appeal: .03 }, marmor: { n: 'Marmor', price: 600000, lvl: 9, appeal: .06 } };
   const WALLS = { beige: { n: 'Sand', c: '#e9e2d2' }, gruen: { n: 'Salbei', c: '#cfe3c8' }, blau: { n: 'Himmel', c: '#cfe0f0' }, gelb: { n: 'Butter', c: '#f3e6a8' }, grau: { n: 'Beton', c: '#c9ccd2' } };
   const WEATHER = { sonne: { e: '☀️', name: 'Sonnig', spawn: 1, cat: { getr: 1.1 } }, heiss: { e: '🔥', name: 'Hitzewelle', spawn: 1.1, cat: { getr: 1.5, frost: 1.6, obst: 1.2 }, prod: { eis: 2.2, sonnencreme: 6, kohle: 4 } },
-    regen: { e: '🌧️', name: 'Regen', spawn: .8, cat: {}, prod: { schirm: 14 }, mess: 2 }, kalt: { e: '🥶', name: 'Kälte', spawn: .9, cat: {}, prod: { tee: 2.2, kaffee: 1.6, kratzer: 12 } }, wolke: { e: '⛅', name: 'Wolkig', spawn: 1, cat: {} } };
+    regen: { e: '🌧️', name: 'Regen', spawn: .8, cat: {}, prod: { schirm: 14 }, mess: 2, wet: 1 }, kalt: { e: '🥶', name: 'Kälte', spawn: .9, cat: {}, prod: { tee: 2.2, kaffee: 1.6, kratzer: 12 } }, wolke: { e: '⛅', name: 'Wolkig', spawn: 1, cat: {} },
+    gewitter: { e: '⛈️', name: 'Gewitter', spawn: .7, cat: {}, prod: { schirm: 16, kerze: 1.8, batterie: 1.8 }, mess: 3, wet: 1.6 }, nebel: { e: '🌫️', name: 'Nebel', spawn: .9, cat: {}, prod: { tee: 1.4, suppe: 1.4 } },
+    schnee: { e: '🌨️', name: 'Schnee', spawn: .75, cat: {}, prod: { kratzer: 14, tee: 2, kaffee: 1.5, suppe: 1.8 }, mess: 2, wet: 1.2 } };
   const QUESTS = [
     { id: 'items', t: 'Verkaufe {n} Artikel', n: [40, 90], key: 'items', r: 4000 }, { id: 'cust', t: 'Bediene {n} Kunden', n: [20, 50], key: 'served', r: 4000 },
     { id: 'rev', t: 'Erziele {n} € Umsatz', n: [250, 700], key: 'rev', r: 5000, div: 100 }, { id: 'happy', t: 'Bringe {n} Kunden richtig glücklich nach Hause', n: [8, 20], key: 'happy', r: 5000 },
@@ -132,16 +169,18 @@ const Data = (() => {
     ['umsatz500', 'Guter Tag', '💶', 'Mache an einem Tag 500 € Umsatz.', 15000], ['umsatz2000', 'Rekordtag', '💰', 'Mache an einem Tag 2.000 € Umsatz.', 80000], ['team3', 'Kleines Team', '👥', 'Beschäftige 3 Mitarbeiter.', 15000],
     ['ruf4', 'Beliebter Laden', '😍', 'Erreiche 4 Sterne Ruf.', 30000], ['rezept10', 'Hobbykoch-Dealer', '🍝', 'Erfülle 10 Rezept-Einkäufe.', 25000], ['dieb5', 'Scharfe Augen', '🚔', 'Erwische 5 Ladendiebe.', 20000],
     ['anbau2', 'Platz da!', '🏗️', 'Baue den Laden zweimal aus.', 40000], ['radio', 'Auf Sendung', '📻', 'Kaufe das Radiostudio.', 10000], ['stamm25', 'Familienbetrieb', '❤️', 'Gewinne 25 Stammkunden.', 30000],
-    ['buzz', 'Gesprächsthema', '🔥', 'Erreiche einen Online-Hype von +20 %.', 40000], ['kunden1000', 'Tausendsassa', '🧑‍🤝‍🧑', 'Bediene insgesamt 1.000 Kunden.', 50000], ['jugend5', 'Jugendschützer', '🪪', 'Lehne 5 Verkäufe an Minderjährige ab.', 20000], ['recycling', 'Recycling-Profi', '♻️', 'Entsorge 50 leere Kartons im Container.', 20000], ['reich', 'Kleiner Millionär', '💎', 'Habe 10.000 € auf dem Konto.', 50000], ['pre10', 'Lieferprofi', '📋', 'Liefere 10 Vorbestellungen aus.', 30000]
+    ['buzz', 'Gesprächsthema', '🔥', 'Erreiche einen Online-Hype von +20 %.', 40000], ['kunden1000', 'Tausendsassa', '🧑‍🤝‍🧑', 'Bediene insgesamt 1.000 Kunden.', 50000], ['jugend5', 'Jugendschützer', '🪪', 'Lehne 5 Verkäufe an Minderjährige ab.', 20000], ['recycling', 'Recycling-Profi', '♻️', 'Entsorge 50 leere Kartons im Container.', 20000], ['reich', 'Kleiner Millionär', '💎', 'Habe 10.000 € auf dem Konto.', 50000], ['pre10', 'Lieferprofi', '📋', 'Liefere 10 Vorbestellungen aus.', 30000],
+    ['retter', 'Lebensmittelretter', '🥡', 'Rette 50 Artikel vor der Tonne (Rabatt oder Rette-mich-Tüte).', 30000], ['regional', 'Regional-Held', '🧑‍🌾', 'Verkaufe 200 Artikel am Wochenmarkt-Stand.', 30000], ['kaffee', 'Kaffeeklatsch', '☕', 'Verkaufe 300 Tassen und Kuchenstücke im Café.', 30000],
+    ['wunsch', 'Wunscherfüller', '🙋', 'Erfülle 15 Kundenwünsche.', 25000], ['platzhirsch', 'Platzhirsch', '👑', 'Erreiche 65 % Marktanteil gegen Billigo.', 60000], ['siegel', 'Hygiene-Siegel', '🏅', 'Bestehe 3 Lebensmittelkontrollen ohne Mängel.', 30000], ['koop', 'Teamwork', '🤝', 'Schließe einen Tag im Koop-Modus zu zweit ab.', 15000], ['team', 'Gute Stimmung', '😊', 'Halte 3 Mitarbeiter gleichzeitig über 80 % Laune.', 20000]
   ];
   // Jahreszeiten (je 28 Tage) mit Feiertagswochen: w = Wetter-Gewichte, prod = Nachfrage-Faktor je Ware
   const SEASONS = [
-    { n: 'Frühling', e: '🌷', w: { sonne: .25, wolke: .3, regen: .3, heiss: .05, kalt: .1 }, prod: { eier: 1.3, schoko: 1.1, apfel: 1.1 }, hol: { from: 20, to: 24, n: 'Osterwoche', e: '🐰', prod: { eier: 2.2, schoko: 2, kuchen: 1.8, broetchen: 1.3, honig: 1.5, butter: 1.4 } } },
-    { n: 'Sommer', e: '☀️', w: { sonne: .4, wolke: .15, regen: .15, heiss: .28, kalt: .02 }, prod: { eis: 1.4, wasser: 1.3, limo: 1.3, ananas: 1.4 }, hol: { from: 12, to: 16, n: 'Grillfest', e: '🍖', prod: { wurst: 2.4, kohle: 3, broetchen: 1.6, limo: 1.6, hack: 1.8, haehnchen: 1.6, chips: 1.4 } } },
-    { n: 'Herbst', e: '🍂', w: { sonne: .2, wolke: .3, regen: .35, heiss: .02, kalt: .13 }, prod: { tee: 1.4, kerze: 1.4, schirm: 1.3 }, hol: { from: 22, to: 26, n: 'Halloween', e: '🎃', prod: { schoko: 2.4, gummi: 2.4, kekse: 1.8, kerze: 2.5, chips: 1.5 } } },
-    { n: 'Winter', e: '❄️', w: { sonne: .15, wolke: .3, regen: .1, heiss: 0, kalt: .45 }, prod: { tee: 1.6, kaffee: 1.4, kratzer: 1.6, kerze: 1.4 }, hol: { from: 18, to: 24, n: 'Weihnachtszeit', e: '🎄', prod: { nuesse: 2.3, kekse: 2.4, schoko: 2, honig: 2, kaffee: 1.6, kerze: 2.4, mehl: 1.6, butter: 1.6, eier: 1.5, haehnchen: 1.8 } } }
+    { n: 'Frühling', e: '🌷', w: { sonne: .25, wolke: .27, regen: .28, heiss: .05, kalt: .08, gewitter: .04, nebel: .03 }, prod: { eier: 1.3, schoko: 1.1, apfel: 1.1 }, hol: { from: 20, to: 24, n: 'Osterwoche', e: '🐰', prod: { eier: 2.2, schoko: 2, kuchen: 1.8, broetchen: 1.3, honig: 1.5, butter: 1.4 } } },
+    { n: 'Sommer', e: '☀️', w: { sonne: .38, wolke: .15, regen: .13, heiss: .26, kalt: .01, gewitter: .07 }, prod: { eis: 1.4, wasser: 1.3, limo: 1.3, ananas: 1.4 }, hol: { from: 12, to: 16, n: 'Grillfest', e: '🍖', prod: { wurst: 2.4, kohle: 3, broetchen: 1.6, limo: 1.6, hack: 1.8, haehnchen: 1.6, chips: 1.4 } } },
+    { n: 'Herbst', e: '🍂', w: { sonne: .2, wolke: .27, regen: .3, heiss: .02, kalt: .1, nebel: .1, gewitter: .01 }, prod: { tee: 1.4, kerze: 1.4, schirm: 1.3 }, hol: { from: 22, to: 26, n: 'Halloween', e: '🎃', prod: { schoko: 2.4, gummi: 2.4, kekse: 1.8, kerze: 2.5, chips: 1.5 } } },
+    { n: 'Winter', e: '❄️', w: { sonne: .15, wolke: .25, regen: .08, heiss: 0, kalt: .27, schnee: .18, nebel: .07 }, prod: { tee: 1.6, kaffee: 1.4, kratzer: 1.6, kerze: 1.4 }, hol: { from: 18, to: 24, n: 'Weihnachtszeit', e: '🎄', prod: { nuesse: 2.3, kekse: 2.4, schoko: 2, honig: 2, kaffee: 1.6, kerze: 2.4, mehl: 1.6, butter: 1.6, eier: 1.5, haehnchen: 1.8 } } }
   ];
   const fmt = c => (c < 0 ? '−' : '') + (Math.abs(c) / 100).toFixed(2).replace('.', ',') + ' €';
-  return { SIGNCOLS, FLOORS, WALLS, SEASONS, ACH, CATS, PRODUCTS, OBJ, TYPES, GENRES, RECIPES, STAFF, TRAITS, FIRST, LAST, UPGRADES, EXPAND, WEATHER, QUESTS, fmt };
+  return { SHIFTS, FARMS, STALLS, STALL_CAP, STALL_DELIV, CAFE, CAFE_FILL, CUP, CAKE, RIVAL, EVENTS, SIGNCOLS, FLOORS, WALLS, SEASONS, ACH, CATS, PRODUCTS, OBJ, TYPES, GENRES, RECIPES, STAFF, TRAITS, FIRST, LAST, UPGRADES, EXPAND, WAREHOUSE, RACK_PRICE, WEATHER, QUESTS, fmt };
 })();
 if (typeof module !== 'undefined') module.exports = Data;

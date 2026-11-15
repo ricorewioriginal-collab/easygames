@@ -28,7 +28,8 @@
         "Du startest mit 2.000 € und einem Kiosk (18×12 Felder) mit Rampe, Altpapier-Container, Bestell-PC, zwei Obst- und Brotkörben, zwei Regalen, einem Kühlregal, einer Kasse und dem Marktradio. Frei sind die Warengruppen Obst & Gemüse, Backwaren, Getränke sowie Frische & Kühlung."
       ],
       "steps": [
-        "Kartons holen: Lauf zur Warenannahme (Rampe), ein Karton wird automatisch genommen. Der gelbe Wegweiser oben zeigt immer den nächsten Schritt.",
+        "Kartons holen: Geh durchs gelb-schwarze Tor hinten links (an der Rampe) in den Hof. Dort stehen die gelieferten Kartons in der Warenannahme neben dem Lieferwagen. Ziel mit dem Fadenkreuz auf einen Karton (oder tipp ihn an) und drück E / A – genau dieser Karton wird genommen. Der gelbe Wegweiser oben zeigt immer den nächsten Schritt.",
+        "Kartons abstellen: Mit R (Tastatur), RB (Controller) oder dem blauen Knopf ⬇️ Abstellen (Touch) stellst du den getragenen Karton dort ab, wo du hinschaust – auf den Boden (bis zu 4 übereinander), zurück in die Warenannahme oder in ein Regal der Lagerhalle.",
         "Regale einräumen: Geh zum markierten Regal, die Ware räumt sich Stück für Stück ein. Leere Kartons kommen in den ♻️ Altpapier-Container.",
         "Preise prüfen: unter „Preise“ oder per Tippen aufs Regal. Marktpreis plus 8 Prozent gilt als fair. Bleib kurz am Regal stehen, dann steckst du das Preisschild auf.",
         "Laden öffnen: oben auf „LADEN ÖFFNEN“. Geöffnet ist von 8 bis 20 Uhr – bei Tempo 1× sind das rund 10 Minuten, mit 2× oder 4× schneller. Danach heißt es „Feierabend!“ und die letzten Kunden werden noch bedient.",
@@ -70,12 +71,12 @@
     {
       "t": "Bedienung",
       "list": [
-        "PC: W A S D oder Pfeiltasten laufen, Shift rennen; Maus ziehen = umsehen (Q fängt die Maus ein, Esc gibt sie frei). E oder Leertaste = Aktion (Karton nehmen, einräumen, scannen; gedrückt halten = schnell). Klick oder F zeigt Infos und Preise. V wechselt Draufsicht und Ego-Ansicht, Mausrad zoomt, R dreht beim Bauen.",
+        "PC: W A S D oder Pfeiltasten laufen, Shift rennen; Maus ziehen = umsehen (Q fängt die Maus ein, Esc gibt sie frei). E oder Leertaste = Aktion (Karton nehmen, einräumen, scannen; gedrückt halten = schnell). Klick oder F zeigt Infos und Preise. V wechselt die Ansicht: Ego → Figur-Ansicht (du siehst deine eigene Spielfigur von hinten und läufst selbst durch Laden, Hof und Lager) → Draufsicht, Mausrad zoomt, R dreht beim Bauen.",
         "PC-Fenster: Tasten 1 bis 9 und 0 öffnen Bestell-PC, Laden, Bauen, Preise, Personal, Radio, Ausbau, Zahlen, Ziele und Menü; Tab oder C = Befehlsmenü, H = Anleitung, O = Laden öffnen/Feierabend, P = Pause, + und − = Tempo, Esc schließt Fenster. In Fenstern: Pfeile wählen, Enter bestätigt, Q/E wechseln Reiter.",
-        "Controller (PlayStation, Switch, Xbox – Symbole und Knopf-Hinweise passen sich an): linker Stick laufen, rechter Stick umsehen, A/✕ Aktion (halten = schnell einräumen/scannen), X/□ Befehlsmenü mit allen Fenstern, Y/△ Regal ansehen (Preiskarte mit Fokus), LT/L2 rennen, LB/L1 Draufsicht/Ego, RB/R1 dreht beim Bauen, Select Laden öffnen/Feierabend, Start Pausemenü. In allen Fenstern und Menüs: Steuerkreuz oder linker Stick wählen (Leuchtrahmen), A bestätigt, B schließt, LB/RB wechseln die Reiter, rechter Stick scrollt. Bauen: Steuerkreuz/Stick schiebt das Feld, A setzt, RB dreht, B beendet. Bei Nintendo-Controllern bestätigt A rechts wie auf der Switch.",
+        "Controller (PlayStation, Switch, Xbox – Symbole und Knopf-Hinweise passen sich an): linker Stick laufen, rechter Stick umsehen, A/✕ Aktion (halten = schnell einräumen/scannen), X/□ Befehlsmenü mit allen Fenstern, Y/△ Regal ansehen (Preiskarte mit Fokus), LT/L2 rennen, LB/L1 Ansicht wechseln (Ego · Figur · Draufsicht), RB/R1 dreht beim Bauen, Select Laden öffnen/Feierabend, Start Pausemenü. In allen Fenstern und Menüs: Steuerkreuz oder linker Stick wählen (Leuchtrahmen), A bestätigt, B schließt, LB/RB wechseln die Reiter, rechter Stick scrollt. Bauen: Steuerkreuz/Stick schiebt das Feld, A setzt, RB dreht, B beendet. Bei Nintendo-Controllern bestätigt A rechts wie auf der Switch.",
         "Steuerung einstellen: ⚙️ Optionen → 🎮 Controller (Symbole, Bestätigen-Knopf unten oder rechts, Knöpfe belegen) und ⌨️ Tastatur (jede Spieltaste frei belegen, Standard-Tasten zurückholen). Alles wird gespeichert.",
         "TV (Smart-TV, TV-Box oder Browser am Fernseher): Der TV-Modus schaltet sich automatisch ein (oder unter ⚙️ Optionen → 📺 TV-Modus): größere Schrift, sichere Ränder, Knopf-Hinweise unten. Mit der Fernbedienung: Pfeile laufen und wählen, OK = Aktion/Bestätigen, Zurück = Pausemenü mit ☰ Befehlsmenü. ⛶ Vollbild unter Optionen.",
-        "Touch: linke Bildschirmhälfte ziehen = laufen (Joystick erscheint unter dem Daumen), rechte Hälfte wischen = umsehen. Antippen von Regal, Kasse oder Rampe benutzt sie oder zeigt Infos; gelber Knopf = Aktion (halten = schnell). 👁️ Draufsicht mit Zwei-Finger-Zoom und Verschieben, Tempo-Knopf oben rechts (1× → 2× → 4× → Pause), ☰ Menü (Befehlsmenü) für Laden, Personal, Ziele, Ausbau, Zahlen, Radio und Einstellungen. Im Querformat siehst du mehr vom Laden."
+        "Touch: linke Bildschirmhälfte ziehen = laufen (Joystick erscheint unter dem Daumen), rechte Hälfte wischen = umsehen. Antippen von Regal, Kasse oder Rampe benutzt sie oder zeigt Infos; gelber Knopf = Aktion (halten = schnell). Ansicht-Knopf unten links: Ego, 🧍 Figur-Ansicht oder 👁️ Draufsicht mit Zwei-Finger-Zoom und Verschieben, Tempo-Knopf oben rechts (1× → 2× → 4× → Pause), ☰ Menü (Befehlsmenü) für Laden, Personal, Ziele, Ausbau, Zahlen, Radio und Einstellungen. Im Querformat siehst du mehr vom Laden."
       ]
     },
     {
@@ -86,6 +87,19 @@
         "Hygiene-Inspektion: Kommt sie zum Feierabend und liegen mehr als 2 Pfützen oder Müllhaufen herum, kostet jeder weitere 50 € Strafe.",
         "Erfahrung gibt es für Verkäufe, Ziele, Vorbestellungen, Diebesfänge und den Tagesgewinn. Stufe für Stufe wird mehr freigeschaltet.",
         "Gespeichert wird automatisch alle 45 Sekunden und am Tagesende, auf Wunsch zusätzlich mit Google."
+      ]
+    },
+    {
+      "t": "Neue Systeme im Überblick",
+      "p": [
+        "Frische & MHD: Über Regalen mit kurzer Haltbarkeit erscheinen ⏰ (MHD heute/morgen), 🏷️ (reduziert) und 🤢 (abgelaufen). Stell dich davor und drück die Aktion: Der Rabattaufkleber −30 % bringt die Ware noch raus. Abgelaufenes bleibt über Nacht im Regal und muss aussortiert werden, sonst kostet es Ruf. Mit der Rette-mich-App (Ausbau) gehen markierte Waren abends als Tüte statt in die Tonne.",
+        "Personal mit Charakter: Jede Kraft hat Stärken, Laune und einen Schichtplan (Ganztags, Früh- oder Spätschicht). Loben hebt die Laune, eine Prämie (25 €, abends abgerechnet) noch mehr. Schlechte Laune macht langsam, ein Pausenraum hilft.",
+        "Kunden: Fehlt Ware, äußern Kunden Wünsche (Fenster „Kunden & Sterne“). Stammkunden haben Lieblingsprodukte. Die Sterne setzen sich aus Preis, Auswahl, Sauberkeit, Frische und Service zusammen.",
+        "Ereignisse: Hitzewelle, Feiertage, Stromausfall, Ladendiebe, Lebensmittelkontrolle, Busausflüge, Promi-Besuch, Rohrbruch, Streik beim Rivalen und mehr – angekündigt oben neben dem Wetter.",
+        "Draußen: Vor dem Laden kaufst du Wochenmarkt-Stände (ab Stufe 2) für regionale Höfe und ein Café (Kaffeebar, Terrasse, Bistro). Bring Kaffee- und Kuchenkartons an die Theke, Gäste setzen sich an die Tische.",
+        "Rivale Billigo: Das Fenster „Viertel“ zeigt den Marktanteil. Billigo macht Aktionen (Lieferdienst, Flyer, Abwerben, Kopie deiner Angebote). Kontern mit eigenen Flyern (150 €) oder der Preisgarantie (25 €/Tag).",
+        "Tag, Nacht & Wetter: Die Sonne wandert, abends gehen die Laternen an. Regen, Schnee und Gewitter machen den Boden nass und schmutzig, Nebel und Gewitter halten Kunden zu Hause, Hitze bringt Eis- und Getränkekäufer. Mit dem Spätverkauf bist du bis 22 Uhr offen.",
+        "Koop zu zweit: Unter Menü → Optionen „👥 Koop“ einschalten. Der Bildschirm teilt sich. Spieler 2 nimmt einen zweiten Controller (A = Aktion, RB = abstellen, LT = rennen) oder die Tastatur: ↑↓ laufen, ←→ drehen, Enter = Aktion, Strg rechts = abstellen, Shift rechts = rennen. Kasse und Geld sind gemeinsam."
       ]
     }
   ],
@@ -115,7 +129,8 @@
       "t": "Profi-Tricks",
       "list": [
         "Diebe: Rennt jemand mit 🚨 los, hinlaufen, E zum Schubsen, nochmal E zum Festhalten – das bringt eine Fangprämie. Kameras markieren Diebe, Wachmänner schrecken ab.",
-        "Lager-Regale schaffen je 10 Plätze mehr an der Rampe – sonst warten Kartons draußen, wenn die Rampe voll ist.",
+        "Die Lagerhalle neben dem Hof (durchs Tor, dann links) ist dein Vorratslager: Kartons in ihre Regale stellen macht die Warenannahme frei, wartende Lieferungen rücken nach. Unter „Mein Laden“ vergrößerst du die Halle (Lagerraum → Lagerhalle → Große Halle → Logistikzentrum) und kaufst Lager-Regale mit je 12 Plätzen.",
+        "Lager-Regale im Laden (Bauen) schaffen zusätzlich je 10 Plätze in der Warenannahme.",
         "Die Wettervorhersage steht im Spiel: Bei Hitzewelle Eis, Getränke, Sonnencreme und Grillkohle, bei Regen Schirme, bei Kälte Tee, Kaffee und Eiskratzer bestellen.",
         "Feiertagswochen (Ostern, Grillfest, Halloween, Weihnachten) rechtzeitig vorbereiten – das Spiel kündigt sie am Vortag an.",
         "Nachbestell-Regeln (ab Stufe 8) bestellen jeden Morgen automatisch nach, wenn der Bestand unter deine Grenze fällt.",
@@ -131,6 +146,18 @@
         "Nur eine Kasse bei vielen Kunden: Lange Schlangen kosten Zufriedenheit.",
         "Kredit ohne Plan: Jeden Abend kosten 3 Prozent Zinsen.",
         "Pfützen liegen lassen – bei einer Inspektion gibt es Strafe."
+      ]
+    },
+    {
+      "t": "Tipps zu Frische, Team und Rivale",
+      "list": [
+        "Kleb Rabattaufkleber schon am Vortag (MHD morgen) – reduzierte Ware verkauft sich fast immer.",
+        "Sortiere 🤢-Regale vor dem Öffnen aus: Die Lebensmittelkontrolle verhängt sonst ein Bußgeld.",
+        "Teile Früh- und Spätschicht so ein, dass mittags beide da sind – Schichtkräfte kosten nur 60 % Lohn.",
+        "Lob jeden Tag einmal – es kostet nichts und hält die Laune oben.",
+        "Erfülle Kundenwünsche: Jeder erfüllte Wunsch gibt Ruf und Sterne.",
+        "Bei Regen lohnt sich der Schirmständer: weniger Pfützen, weniger Putzen.",
+        "Wenn Billigo einen Lieferdienst startet, hilft ein Flyer-Tag, Marktanteil zurückzuholen."
       ]
     }
   ],
@@ -312,6 +339,16 @@
         "💎 Kleiner Millionär: Habe 10.000 € auf dem Konto. Belohnung 500 €.",
         "📋 Lieferprofi: Liefere 10 Vorbestellungen aus. Belohnung 300 €."
       ]
+    },
+    {
+      "t": "Draußen, Café und Koop freischalten",
+      "steps": [
+        "Stufe 2: ersten Marktstand kaufen (Fenster „Markt & Café“), Hof wählen, Kartons vom Stand ins Regal bringen. Kaffeebar eröffnen und Kaffee/Kuchen bestellen.",
+        "Stufe 3: Rette-mich-App und Pausenraum kaufen.",
+        "Stufe 4: zweiter Stand, Café-Terrasse, Spätverkauf und Treuekarte.",
+        "Stufe 6–7: dritter Stand und Bistro – jetzt trägt das Café spürbar zum Gewinn bei.",
+        "Jederzeit: Koop einschalten, wenn jemand mitspielen will – Spieler 2 kann einräumen, scannen und kassieren."
+      ]
     }
   ],
   "faq": [
@@ -329,7 +366,7 @@
     },
     {
       "q": "Die Kartons stapeln sich draußen.",
-      "a": "Die Rampe fasst 18 Kartons, jedes Lager-Regal 10 mehr. Räum zügig ein oder stell Lager-Regale auf."
+      "a": "Die Warenannahme im Hof fasst 18 Kartons, jedes Lager-Regal im Laden 10 mehr. Räum zügig ein, trag Kartons in die Lagerhalle neben dem Hof oder stell sie frei ab – dann rücken wartende Lieferungen nach."
     },
     {
       "q": "Kann ich bei der Kasse rechnen lassen?",
@@ -338,6 +375,14 @@
     {
       "q": "Ist das Geld weg, ist das Spiel vorbei?",
       "a": "Nein, das Konto kann ins Minus rutschen. Mit einem Kredit unter „Ausbau & Bank“ überbrückst du Engpässe, zahlst aber jeden Abend 3 Prozent Zinsen."
+    },
+    {
+      "q": "Wie spielen wir zu zweit?",
+      "a": "Menü → Optionen → „👥 Koop“. Spieler 2 nimmt einen zweiten Controller oder die Pfeiltasten mit Enter. Der Bildschirm teilt sich, Geld und Laden sind gemeinsam."
+    },
+    {
+      "q": "Warum liegt Ware mit 🤢 im Regal?",
+      "a": "Sie ist abgelaufen. Stell dich davor und drück die Aktion zum Aussortieren. Bleibt sie eine zweite Nacht liegen, sinkt dein Ruf."
     }
   ]
 }

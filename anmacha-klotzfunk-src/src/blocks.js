@@ -151,6 +151,19 @@ export const DECO0 = 147;
 DECO_DEF.forEach(([key, name, emoji, solid, wall, emit, top, tile], k) => {
   DEF.push([DECO0 + k, 'DECO_' + key.toUpperCase(), name, 'deko', [tile, tile, tile], { shape: 'deco', opaque: 0, solid: solid ? 1 : 0, emit: emit ? 1 : 0, hard: 0.5, emoji, icon: tile, color: 0x9a7a5a, map: [150, 120, 90] }]);
 });
+// ab 174: Fanwelten (Etappe 12) – Taschi-Land, Zotik: Lunaris, AnMaCha Funkhaus, Märchenwald
+DEF.push(
+  [174, 'MOONSTONE', 'Mondstein', 'bau', [100, 100, 100], { hard: 1.6, tool: 'spitzhacke', color: 0x5a6ab8, map: [90, 106, 184], icon: 100 }],
+  [175, 'MOONLEAVES', 'Mondblätter', 'natur', [101, 101, 101], { opaque: 0, self: 1, hard: 0.2, color: 0x4a70c0, map: [74, 112, 192], icon: 101 }],
+  [176, 'GINGERBREAD', 'Lebkuchen', 'bau', [102, 102, 102], { hard: 0.8, tool: 'axt', color: 0xa8642c, map: [168, 100, 44], icon: 102 }],
+  [177, 'ICING', 'Zuckerguss', 'bau', [103, 103, 103], { hard: 0.6, color: 0xf6e8f0, map: [246, 232, 240], icon: 103 }],
+  [178, 'ROSELEAVES', 'Rosenhecke', 'natur', [104, 104, 104], { opaque: 0, self: 1, hard: 0.3, color: 0x2e7a34, map: [60, 120, 52], icon: 104 }],
+  [179, 'FOAM', 'Akustikschaum', 'bau', [105, 105, 105], { hard: 0.4, color: 0x2a2c34, map: [42, 44, 52], icon: 105 }],
+  [180, 'ONAIR', 'On-Air-Schild', 'licht', [106, 106, 106], { emit: 1, hard: 0.5, color: 0xe02a3a, map: [224, 42, 58], icon: 106 }],
+  [181, 'GOLDBLOCK', 'Goldblock', 'bau', [107, 107, 107], { hard: 2.0, tool: 'spitzhacke', color: 0xe8c040, map: [232, 192, 64], icon: 107 }],
+  [182, 'CAPSULE', 'Kapselblock', 'bau', [108, 108, 108], { hard: 0.8, color: 0xd83a3a, map: [216, 58, 58], icon: 108 }],
+  [183, 'TALLGRASS', 'Hohes Gras', 'natur', [109, 109, 109], { shape: 'cross', solid: 0, opaque: 0, hard: 0, color: 0x5aa03a, map: [90, 160, 58], icon: 109 }]
+);
 for (let i = 0; i < LOGO_COUNT; i++) DEF.push([LOGO0 + i, 'LOGO' + (i + 1), LOGO_NAMES[i], 'funk', null, { logo: 1, hard: 0.5, color: 0x1a2040, map: [60, 70, 110] }]);
 DEF.sort((a, b) => a[0] - b[0]);
 
