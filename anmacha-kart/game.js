@@ -265,7 +265,7 @@ function initHost() {
 
   // ------------------------------------------------------------------ Start: Solo / Mehrspieler
   LD.start(); LD.creep(0.4);
-  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt2'); }).then(() => LD.add(0.05))]).then(async () => {
+  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt3'); }).then(() => LD.add(0.05))]).then(async () => {
     View.init($('cv'), logos); LD.add(0.05, 'Rennstrecke wird gebaut …'); await nextPaint();
     curTrackIdx = save.track; View.setTrack(getTrack(save.track)); View.resize(innerWidth, innerHeight, 1); LD.add(0.1, 'Shader werden vorgewärmt …'); await nextPaint();
     View.warmup(); ready = true; $('loadInfo').textContent = `${TR.length} Strecken · ${KARTS.length} Karts · ${CHARS.length} Figuren · ${logos.length} Sender-Logos`; renderMenu();
@@ -377,7 +377,7 @@ function initHost() {
     nVp = Math.min(4, R.vis.length); $('tbar').classList.toggle('mid', nVp > 1); View.resize(innerWidth, innerHeight, nVp); View.setupRace(S, R.vis.slice(0, 4)); buildHud(); buildMap();
     humans.forEach(p => { if (p.conn && p.view) sendRace(p); });
     document.body.classList.add('racing'); $('menu').hidden = true; $('res').hidden = true; $('hud').hidden = false; $('tbar').hidden = false; AUD.bed('race');
-    const raceLoad = $('raceLoad'); raceLoad.hidden = false; raceLoad.querySelector('.race-load-title').textContent = TR[tIdx].name; raceLoad.querySelector('.race-load-sub').textContent = GP.free ? 'FREIES FAHREN' : GP.gp ? Track.CUPS[save.cup].name : 'ARCADE-RENNEN'; raceLoad.querySelector('.race-load-tip').textContent = ['Drifte durch Kurven und löse einen Mini-Turbo aus.','Nutze Boostfelder und Windschatten zum Überholen.','Meide Hindernisse – wähle deine Ideallinie.'][tIdx % 3]; R.introLoading = true; R.introTimer = setTimeout(() => { if (R && R.S === S) { R.introLoading = false; raceLoad.hidden = true; push('grid'); } }, 1350); paused = false;
+    const raceLoad = $('raceLoad'); raceLoad.hidden = false; raceLoad.querySelector('.race-load-title').textContent = TR[tIdx].name; raceLoad.querySelector('.race-load-sub').textContent = GP.free ? 'FREIES FAHREN' : GP.gp ? Track.CUPS[save.cup].name : 'ARCADE-RENNEN'; raceLoad.querySelector('.race-load-tip').textContent = ['Drifte durch Kurven und löse einen Mini-Turbo aus.','Nutze Boostfelder und Windschatten zum Überholen.','Meide Hindernisse – wähle deine Ideallinie.'][tIdx % 3]; R.introLoading = true; const t0 = performance.now(); View.prepare(racers.map(r => r.char), 6000).then(() => { if (!R || R.S !== S) return; R.introTimer = setTimeout(() => { if (R && R.S === S) { R.introLoading = false; raceLoad.hidden = true; push('grid'); } }, Math.max(0, 1350 - (performance.now() - t0))); }); paused = false;
   }
   function banner(t, sub, ms, cls) { const b = $('banner'); b.innerHTML = esc(t) + (sub ? '<small>' + esc(sub) + '</small>' : ''); b.className = 'pop'; b.style.color = cls || '#fff'; b.hidden = false; void b.offsetWidth; clearTimeout(banner.k); if (ms) banner.k = setTimeout(() => { b.hidden = true; }, ms); }
   // HUD je Fahrer
