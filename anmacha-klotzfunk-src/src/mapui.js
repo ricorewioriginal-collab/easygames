@@ -59,6 +59,7 @@ export class MapScreen {
     const r = this.cv.getBoundingClientRect(), k = this.scale(), z = ZOOMS[this.zi];
     return { x: this.cx + ((e.clientX - r.left) * k - this.cv.width / 2) / z, z: this.cz + ((e.clientY - r.top) * k - this.cv.height / 2) / z };
   }
+  zoomLevel() { return ZOOMS[this.zi]; }
   zoom(d) { this.zi = Math.max(0, Math.min(ZOOMS.length - 1, this.zi + d)); this.draw(); }
   select(x, z) {
     const g = this.game, cx = Math.floor(x / 16), cz = Math.floor(z / 16);

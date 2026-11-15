@@ -29,6 +29,11 @@ export const DEFAULTS = {
   mpName: '',           // Mehrspieler: eigener Name
   minimap: true,        // Minikarte oben links
   keys: {},             // eigene Tastenbelegung (Aktion -> KeyboardEvent.code)
+  padKeys: {},          // eigene Controller-Belegung (Aktion -> Tastennummer im Standard-Layout)
+  padSens: 1,           // Kamera mit dem rechten Stick
+  padRumble: 0.8,       // Vibrationsstärke (0 = aus)
+  padDead: 0.18,        // Totzone der Sticks
+  padInvertY: false,    // rechter Stick: oben/unten umkehren
   touchPos: {}          // verschobene Touch-Tasten (id -> [x, y] in Bildschirmanteilen)
 };
 

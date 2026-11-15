@@ -238,6 +238,26 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
         b.add(mk(G.box, ro, 0, 2.05, -.05, .5, .65, .34)); b.add(mk(G.sph, C(0xd8b090), 0, 2.6, 0, .17, .2, .17)); b.add(mk(G.cone0, mt, 0, 2.85, 0, .2, .3, .2));
         const ln = mk(G.cyl0, C(0x5a3a22), .3, 2.2, .7, .03, 2.6, .03); ln.rotation.x = 1.2; b.add(ln); b.add(mk(G.box, C(boss ? 0xc8202a : 0x8a6a2a), .3, 2.85, -.4, .02, .35, .45, false));
         tail.position.set(0, 1.3, -.95); tail.addm(mk(G.cone0, C(0x1a1410), 0, -.3, 0, .1, .7, .1)).rotation.x = Math.PI; break; }
+      case 'dornling': {   // Dornling (Sherwood): Wurzelkobold aus Dickicht, Dornen am Rücken, grün glühende Augen
+        const bark = C(col, { r: .95, e: dim(col, .25), ei: 1 }), thorn = C(0xe0d8a8, { r: .5, e: 0x6a6a48, ei: .8 }); b.add(mk(G.sph, bark, 0, .7, 0, .34, .36, .3));
+        for (let i = 0; i < 9; i++) { const a = i * .7, t = mk(G.cone0, thorn, Math.cos(a) * .26, .45 + (i % 3) * .22, Math.sin(a) * .2 - .02, .05, .26, .05, false); t.rotation.set(Math.sin(a) * 1.1, 0, -Math.cos(a) * 1.1); b.add(t); }
+        head.position.set(0, 1.12, .08); head.add(mk(G.sph, bark, 0, 0, 0, .2, .2, .2)); for (const s of [-1, 1]) { const h = mk(G.cone0, thorn, s * .11, .17, -.02, .04, .2, .04); h.rotation.z = -s * .3; head.add(h); } eyes(head, .02, .17, .07, 0xa0ff50, 1.3);
+        leg(-.14, .45, 0, .45, .07, bark, true); leg(.14, .45, 0, .45, .07, bark, true); arm(-1, .95, .7, .06, bark, .34); arm(1, .95, .7, .06, bark, .34); b.add(glow(0x80ff40, 1.6, 0, .8, 0, .25)); break; }
+      case 'fahlhirsch': {   // Fahlhirsch (Sherwood): bleicher Hirsch, Geweih wie Wurzelwerk, Riss-Glimmen in den Rippen
+        const fur = C(col, { r: .9, e: dim(col, .2), ei: .6 }); quad(1.05, fur); head.add(mk(G.sph, fur, 0, -.04, .2, .14, .14, .24)); eyes(head, .07, .24, .1, 0xc8ff90);
+        for (const s of [-1, 1]) { const m = mk(G.cyl0, C(0x8a7a5a, { r: .9 }), s * .1, .35, -.05, .035, .5, .035); m.rotation.z = -s * .45; head.add(m); for (let i = 0; i < 3; i++) { const t = mk(G.cone0, C(0xa89a78), s * (.22 + i * .07), .4 + i * .13, -.05 + i * .04, .03, .22, .03, false); t.rotation.set(.4, 0, -s * .5); head.add(t); } }
+        b.add(glow(0x8affc0, 2, 0, .9, 0, .4)); tail.add(mk(G.cone0, fur, 0, -.12, 0, .07, .24, .07)); break; }
+      case 'kroete': {   // Zöllnerkröte (Sherwood): fette Kröte mit Geldbeutel, Zöllnerhut und breitem Maul
+        const sk = C(col, { r: .7, e: dim(col, .25), ei: 1 }); b.add(mk(G.sph, sk, 0, .5, 0, .55, .42, .6)); b.add(mk(G.sph0, C(0xd8d8a0, { e: 0x5a5a38, ei: .8 }), 0, .38, .22, .4, .3, .35, false)); head.position.set(0, .72, .5); head.add(mk(G.sph, sk, 0, 0, 0, .4, .26, .34));
+        head.add(mk(G.box, C(0x2a1a14), 0, -.08, .3, .5, .05, .06, false)); for (const s of [-1, 1]) head.add(mk(G.sph0, E(0xffd040, 1.4), s * .2, .2, .1, .09, .09, .09, false)); head.add(mk(G.cyl0, C(0x3a2a4a), 0, .3, -.02, .28, .16, .28)); head.add(mk(G.cyl0, C(0x3a2a4a), 0, .22, -.02, .42, .03, .42));
+        b.add(mk(G.sph, C(0xd8a020, { m: .8, r: .3, e: 0x6a4a10, ei: .8 }), .5, .55, -.05, .2, .22, .2)); for (const [x, z] of [[-.4, .35], [.4, .35], [-.4, -.3], [.4, -.3]]) leg(x, .3, z, .3, .11, sk, true); break; }
+      case 'sheriff_s': {   // Der Eiserne Sheriff: riesige Rüstung, Hirschgeweih am Helm, roter Riss-Splitter in der Brust, Streitkolben
+        const s = 1.3, ar = C(col, { m: .8, r: .35, e: dim(col, .2), ei: 1 }), dk = C(dim(col, .5), { m: .5, r: .5 }); b.add(mk(G.box, ar, 0, 1.35 * s, 0, .78 * s, .8 * s, .5 * s)); b.add(mk(G.oct, E(0xff3a4a, 2.2), 0, 1.4 * s, .26 * s, .16, .26, .1, false)); b.add(glow(0xff3a4a, 3, 0, 1.4 * s, .3, .5));
+        b.add(mk(G.box, C(0x8a2a2a), 0, 1.0 * s, .02, .8 * s, .12, .52 * s)); head.position.set(0, 2.0 * s, 0); head.add(mk(G.sph, ar, 0, 0, 0, .28, .3, .27)); head.add(mk(G.box, C(0x0a0a10), 0, .02, .22, .32, .05, .08, false)); eyes(head, .02, .26, .08, 0xff3030, 1.4);
+        for (const sx of [-1, 1]) { const m = mk(G.cyl0, C(0x8a7a5a), sx * .16, .36, -.04, .045, .6, .045); m.rotation.z = -sx * .4; head.add(m); for (let i = 0; i < 3; i++) { const t = mk(G.cone0, C(0xa89a78), sx * (.3 + i * .08), .42 + i * .15, -.04, .035, .24, .035, false); t.rotation.set(.3, 0, -sx * .5); head.add(t); } }
+        leg(-.2 * s, .8 * s, 0, .8 * s, .15 * s, dk, true); leg(.2 * s, .8 * s, 0, .8 * s, .15 * s, dk, true); const al = arm(-1, 1.65 * s, .75 * s, .12 * s, ar, .5 * s), ax = arm(1, 1.65 * s, .75 * s, .12 * s, ar, .5 * s);
+        ax.add(mk(G.cyl0, C(0x4a3020), 0, -.9, .3, .05, 1.4, .05)); ax.add(mk(G.sph, C(0x5a5a68, { m: .8, r: .3 }), 0, -1.6, .35, .3, .3, .3)); for (let i = 0; i < 6; i++) { const t = mk(G.cone0, C(0x8a8a98, { m: .9 }), Math.cos(i * 1.05) * .28, -1.6, .35 + Math.sin(i * 1.05) * .28, .05, .16, .05, false); t.rotation.set(Math.sin(i * 1.05) * 1.5, 0, -Math.cos(i * 1.05) * 1.5); ax.add(t); }
+        al.add(mk(G.sph, C(0xd8a020, { m: .8, r: .3, e: 0x6a4a10, ei: .6 }), -.12, -.7, .1, .2, .22, .2)); break; }
       case 'steppenwolf': {
         quad(.95, C(col, { r: .9 })); head.add(mk(G.sph, C(dim(col, .8)), 0, -.06, .26, .14, .12, .22)); for (const s of [-1, 1]) head.add(mk(G.cone0, C(col), s * .14, .24, -.05, .06, .18, .04)); eyes(head, .06, .24, .1, 0xc8e0ff);
         tail.addm(mk(G.cone0, C(col), 0, -.3, 0, .13, .7, .13)).rotation.x = Math.PI; b.add(mk(G.sph0, C(0xf0f0f4), 0, .7, .5, .22, .16, .3, false)); break; }
@@ -248,5 +268,5 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
   }
 
   const make = (kind, col, boss) => HOVER.has(kind) ? hover(kind, col) : walker(kind, col, boss);
-  return { make, has: k => HOVER.has(k) || ['zauberer', 'marionette', 'karte', 'hase', 'herzkoenigin', 'pirat', 'hook', 'krokodil', 'giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'baer', 'mungo', 'wache', 'schattenritter', 'spartoi', 'riese', 'nadler', 'katze', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf'].includes(k), HOVER };
+  return { make, has: k => HOVER.has(k) || ['zauberer', 'marionette', 'karte', 'hase', 'herzkoenigin', 'pirat', 'hook', 'krokodil', 'giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'baer', 'mungo', 'wache', 'schattenritter', 'spartoi', 'riese', 'dornling', 'fahlhirsch', 'kroete', 'sheriff_s', 'nadler', 'katze', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf'].includes(k), HOVER };
 }

@@ -8,12 +8,13 @@ import { RECIPES, checkRecipe, craft, craftable, recipeMatches, MAX_STACK, STATI
 import { ITEMS, ITEM_LIST, isItem, nameOf, toolOf } from './items.js';
 import { MAX_HP, MAX_FOOD, MAX_AIR } from './survival.js';
 import { loadSettings, saveSettings, DEFAULTS, autoBase } from './settings.js';
-import { unlockAudio, sfx } from './audio.js';
+import { unlockAudio, sfx, feel } from './audio.js';
 import { QUESTS, RAUSCHEN, CHAPTERS, campaignOf, questProgress } from './quests.js';
 import { TRADES, GREET } from './trades.js';
 import { Multiplayer } from './mp.js';
 import { MapScreen } from './mapui.js';
-import { ACTIONS, keyBinds, rebind, actionOf, keyName, readPad } from './controls.js';
+import { ACTIONS, keyBinds, rebind, actionOf, keyName } from './controls.js';
+import { PB, PAD_BUTTONS, PAD_ACTIONS, padStyle, padLabel, STYLE_NAMES, confirmBtn, backBtn, padBinds, padRebind, readPad, navPick, rumble } from './gamepad.js';
 import { version } from '../package.json';
 
 const $ = id => document.getElementById(id);
@@ -431,10 +432,8 @@ for (const b of document.querySelectorAll('.pg-back')) b.onclick = menuBack;
 $('mContinue').onclick = () => { if (lastSlot >= 0) loadSlot(lastSlot); };
 $('mmVer').textContent = version;
 function renderHints(kind) {
-  const H = {
-    pad: [['A', 'Auswählen', 1], ['B', 'Zurück', 1], ['✚', 'Bewegen', 1]],
-    keys: [['↑↓', 'Auswählen'], ['Enter', 'Bestätigen'], ['Esc', 'Zurück']]
-  }[kind] || [];
+  const H = kind === 'pad' ? [[padLabel(pad.style, confirmBtn(pad.style)), 'Auswählen', 1], [padLabel(pad.style, backBtn(pad.style)), 'Zurück', 1], ['✚', 'Bewegen', 1]]
+    : [['↑↓', 'Auswählen'], ['Enter', 'Bestätigen'], ['Esc', 'Zurück']];
   $('mmHints').innerHTML = H.map(([k, t, p]) => `<span><kbd class="${p ? 'pad' : ''}">${k}</kbd>${t}</span>`).join('');
 }
 renderHints('keys');
@@ -732,53 +731,127 @@ window.addEventListener('pointerdown', e => { if (e.pointerType === 'touch') ena
   $('bHook').addEventListener('pointerdown', e => { e.preventDefault(); unlockAudio(); game.fireHook(); });
 })();
 
-// ---------- Gamepad (läuft nur, solange eins verbunden ist) ----------
-const pad = { active: false, prev: [], raf: 0, last: 0, sT: 0, sdir: 0 };
-function padLoop(now) {
-  const gp = [...(navigator.getGamepads ? navigator.getGamepads() : [])].find(g => g && g.connected);
-  if (!gp) { pad.raf = 0; pad.active = false; $('sPad').textContent = 'Kein Gamepad erkannt – eine Taste am Gamepad drücken.'; return; }
-  pad.raf = requestAnimationFrame(padLoop);
-  const dt = Math.min(0.05, (now - (pad.last || now)) / 1000); pad.last = now;
-  const before = pad.prev, r = readPad(gp, before); pad.prev = r.buttons;
-  if (r.buttons.some(Boolean) || r.r || r.f) unlockAudio();
-  const edge = i => r.buttons[i] && !before[i];
-  if (state === 'menu' || state === 'settings' || state === 'mp') { // Menüs: Steuerkreuz/Stick bewegt, A wählt, B zurück
-    const dir = edge(13) || edge(15) ? 1 : edge(12) || edge(14) ? -1 : 0;
-    const sy = -r.f, sdir = Math.abs(sy) > 0.6 ? Math.sign(sy) : 0;
-    let move = dir;
-    if (sdir && (sdir !== pad.sdir || now - pad.sT > 260)) { move = sdir; pad.sT = now; }
-    pad.sdir = sdir;
-    if (state === 'menu') {
-      if (move) menuMove(move);
-      if (edge(0) && document.activeElement && $('menu').contains(document.activeElement)) document.activeElement.click();
-      if (edge(1)) menuBack();
-    } else if (edge(1)) { if (state === 'settings') closeSettings(); else $('mpClose').onclick(); }
+// ---------- Controller (läuft nur, solange einer verbunden ist): Spiel, alle Menüs, Belegung, Vibration ----------
+const pad = { active: false, prev: [], raf: 0, last: 0, idx: -1, style: 'generic', used: 0, cap: null, rt: false, lt: false, run: false, dir: '', dirT: 0, dirN: 0 };
+let pbinds = padBinds(settings.padKeys);
+function curPad() {
+  const l = navigator.getGamepads ? [...navigator.getGamepads()] : [];
+  const g = l[pad.idx]; if (g && g.connected) return g;
+  const any = l.find(x => x && x.connected); if (any) { pad.idx = any.index; pad.style = padStyle(any.id); } return any || null;
+}
+// Vibration nur, wenn gerade mit dem Controller gespielt wird
+feel.fn = k => { if (pad.raf && performance.now() - pad.used < 30000) rumble(curPad(), k, settings.padRumble); };
+const PAD_SCREENS = { inventory: 'inv', settings: 'set', mp: 'mp', map: 'map', trade: 'trade', dead: 'dead' };
+function padRoot() {
+  if (state === 'menu') return menuPg ? $(PAGES[menuPg]) : $('mmNav');
+  if (state === 'paused') return $('qlog').hidden ? $('pause') : $('qlog');
+  return PAD_SCREENS[state] ? $(PAD_SCREENS[state]) : null;
+}
+function padBack() {
+  if (state === 'menu') menuBack();
+  else if (state === 'paused') { if (!$('qlog').hidden) show('qlog', false); else resume(); }
+  else if (state === 'inventory') closeInventory();
+  else if (state === 'settings') { if (pad.cap || capture) { pad.cap = capture = null; renderSettings(); } else closeSettings(); }
+  else if (state === 'mp') $('mpClose').onclick();
+  else if (state === 'map') closeMap();
+  else if (state === 'trade') closeTrade();
+  else if (state === 'layout') endLayout();
+}
+const fire = (el, type) => el.dispatchEvent(new Event(type, { bubbles: true }));
+function padFocus(el) { el.focus({ preventScroll: true, focusVisible: true }); el.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
+function padNav(dir) {
+  const root = padRoot(); if (!root) return;
+  const list = focusables(root); if (!list.length) return;
+  const i = list.indexOf(document.activeElement), el = list[i];
+  if (el && (dir === 'left' || dir === 'right')) {
+    const s = dir === 'right' ? 1 : -1;
+    if (el.type === 'range') { if (s > 0) el.stepUp(); else el.stepDown(); fire(el, 'input'); fire(el, 'change'); return; }
+    if (el.tagName === 'SELECT') { const n = el.options.length; el.selectedIndex = (el.selectedIndex + s + n) % n; fire(el, 'change'); return; }
+  }
+  if (i < 0) { padFocus(root.querySelector('.cell:not([disabled]),.go,.big') || list.find(e => !e.classList.contains('x')) || list[0]); return; } // erster sinnvoller Platz statt „Schließen“
+  const rects = list.map(e => { const r = e.getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
+  let j = navPick(rects, i, dir);
+  if (j < 0 && (dir === 'up' || dir === 'down')) j = (i + (dir === 'down' ? 1 : -1) + list.length) % list.length; // oben/unten: am Ende umlaufen
+  if (j >= 0) padFocus(list[j]);
+}
+function scrollBox(el) { for (let e = el; e && e !== document.body; e = e.parentElement) { const o = getComputedStyle(e).overflowY; if ((o === 'auto' || o === 'scroll') && e.scrollHeight > e.clientHeight) return e; } return null; }
+// Richtungen von Steuerkreuz und linkem Stick, mit Wiederholung beim Halten
+function padDir(r, now) {
+  const b = r.buttons, d = b[PB.UP] ? 'up' : b[PB.DOWN] ? 'down' : b[PB.LEFT] ? 'left' : b[PB.RIGHT] ? 'right'
+    : r.f > 0.55 ? 'up' : r.f < -0.55 ? 'down' : r.r < -0.55 ? 'left' : r.r > 0.55 ? 'right' : '';
+  if (d !== pad.dir) { pad.dir = d; pad.dirT = now; pad.dirN = 0; return d; }
+  if (d && now - pad.dirT > (pad.dirN ? 110 : 380)) { pad.dirT = now; pad.dirN++; return d; }
+  return '';
+}
+function padMenus(r, edge, now, dt) {
+  if (pad.cap) { // Einstellungen: nächste gedrückte Taste wird die neue Belegung
+    const k = r.buttons.findIndex((v, i) => v && i < PAD_BUTTONS && edge(i));
+    if (k >= 0) { const nb = padRebind(pbinds, pad.cap, k); if (nb) { pbinds = nb; settings.padKeys = { ...nb }; saveSettings(settings); } pad.cap = null; renderPad(); }
     return;
   }
-  if (state === 'paused') { if (r.pause) resume(); return; }
-  if (state === 'inventory') { if (r.inv || r.back) closeInventory(); return; }
-  if (state === 'map') { if (r.map || r.back) closeMap(); return; }
-  if (state === 'trade') { if (r.back) closeTrade(); return; }
-  if (state !== 'playing') return;
-  const inp = game.input, moving = r.r || r.f;
-  if (moving) { pad.active = true; inp.r = r.r; inp.f = r.f; inp.sprint = r.sprint; }
-  else if (pad.active) { pad.active = false; inp.f = inp.r = 0; inp.sprint = false; syncKeys(); }
-  if (r.lx || r.ly) look(r.lx * 900 * dt, r.ly * 600 * dt, SENS * settings.mouseSens);
-  inp.jump = r.jump || keys.has(binds.jump) || touchActive.jump;
-  inp.down = (r.down && game.player.flying) || touchActive.down;
-  if (r.buttons[7] !== pad.rt) { pad.rt = r.buttons[7]; game.breakHeld = pad.rt; }
-  if (r.buttons[6] !== pad.lt) { pad.lt = r.buttons[6]; game.placeHeld = pad.lt; }
-  if (r.hook) game.fireHook();
-  if (r.prev) game.selectSlot((game.sel + 8) % 9);
-  if (r.next) game.selectSlot((game.sel + 1) % 9);
-  if (r.inv) openInventory();
-  else if (r.map) openMap();
-  else if (r.pause) pause();
+  if (state === 'paused' && r.hit.pause) { resume(); return; }
+  if (state === 'inventory' && r.hit.inv) { closeInventory(); return; }
+  if (state === 'map' && r.hit.map) { closeMap(); return; }
+  if (edge(backBtn(pad.style))) { padBack(); return; }
+  const d = padDir(r, now); if (d) padNav(d);
+  if (edge(confirmBtn(pad.style))) {
+    const root = padRoot(), a = document.activeElement;
+    if (root && a && root.contains(a) && a !== document.body) a.click(); else if (root) { const l = focusables(root); if (l[0]) padFocus(l[0]); }
+  }
+  if (state === 'inventory') { // Schultertasten: Reiter, Trigger: Hotbar-Platz, X: in freien Platz legen
+    if (edge(PB.LB) || edge(PB.RB)) { const tabs = [...$('invTabs').querySelectorAll('[data-cat]')], k = tabs.findIndex(t => t.dataset.cat === invCat); const t = tabs[(k + (edge(PB.RB) ? 1 : -1) + tabs.length) % tabs.length]; if (t) t.click(); }
+    if (edge(PB.LT) || edge(PB.RT)) { game.selectSlot((game.sel + (edge(PB.RT) ? 1 : 8)) % 9); renderHotbar(); }
+    if (edge(PB.W) && document.activeElement && document.activeElement.closest('#invGrid,#recipes')) document.activeElement.dispatchEvent(new MouseEvent('click', { bubbles: true, shiftKey: true }));
+  }
+  if (state === 'map') { // Schultertasten zoomen, rechter Stick verschiebt die Karte
+    if (edge(PB.LB)) worldMap.zoom(-1); if (edge(PB.RB)) worldMap.zoom(1);
+    if (r.lx || r.ly) { const k = 160 * dt / Math.max(0.25, worldMap.zoomLevel ? worldMap.zoomLevel() : 1); worldMap.cx += r.lx * k; worldMap.cz += r.ly * k; worldMap.draw(); }
+  } else if (r.ly) { const box = scrollBox(document.activeElement) || (padRoot() && padRoot().querySelector('.panel')); if (box) box.scrollTop += r.ly * 18; }
+}
+const curve = v => v * (0.45 + 0.55 * Math.abs(v)); // feiner zielen bei wenig Ausschlag
+function padLoop(now) {
+  const gp = curPad();
+  if (!gp) { pad.raf = 0; pad.active = false; renderPad(); renderHints('keys'); return; }
+  pad.raf = requestAnimationFrame(padLoop);
+  const dt = Math.min(0.05, (now - (pad.last || now)) / 1000); pad.last = now;
+  const before = pad.prev, r = readPad(gp, before, pbinds, settings.padDead); pad.prev = r.buttons;
+  const edge = i => r.buttons[i] && !before[i];
+  if (r.buttons.some(Boolean) || r.r || r.f || r.lx || r.ly) { if (!pad.used || now - pad.used > 5000) { document.body.classList.add('pad'); if (state === 'menu') renderHints('pad'); } pad.used = now; unlockAudio(); }
+  if (state === 'loading') return;
+  if (state !== 'playing') { padMenus(r, edge, now, dt); return; }
+  const inp = game.input, moving = r.r || r.f, fly = game.player.flying, h = r.held;
+  if (r.hit.sprint) pad.run = !pad.run; // L3 schaltet Rennen ein, bis man stehen bleibt
+  if (moving) { pad.active = true; inp.r = r.r; inp.f = r.f; inp.sprint = pad.run || (!fly && h.sneak); }
+  else if (pad.active) { pad.active = false; pad.run = false; inp.f = inp.r = 0; inp.sprint = false; syncKeys(); }
+  if (r.lx || r.ly) look(curve(r.lx) * 900 * dt, curve(r.ly) * 600 * dt * (settings.padInvertY ? -1 : 1), SENS * settings.padSens);
+  inp.jump = h.jump || keys.has(binds.jump) || touchActive.jump;
+  inp.down = (h.sneak && fly) || touchActive.down || (fly && keys.has(binds.sneak));
+  if (!moving && h.sneak !== !!pad.sneak) { if (h.sneak) inp.sprint = !fly; else syncKeys(); } // im Stand: schleichen, aus Fahrzeugen aussteigen
+  pad.sneak = h.sneak;
+  if (h.break !== pad.rt) { pad.rt = h.break; game.breakHeld = pad.rt; }
+  if (h.place !== pad.lt) { pad.lt = h.place; game.placeHeld = pad.lt; }
+  if (r.hit.hook) { rumble(gp, 'hook', settings.padRumble); game.fireHook(); }
+  if (r.hit.prev) game.selectSlot((game.sel + 8) % 9);
+  if (r.hit.next) game.selectSlot((game.sel + 1) % 9);
+  if (r.hit.fly) toggleFly();
+  if (r.hit.wp) game.toggleWaypoint();
+  if (r.hit.build) game.cycleBuild(1);
+  if (r.hit.quests) { questMin = !questMin; renderQuest(); }
+  if (r.hit.undo && game.mode === 'creative') game.undo(false);
+  if (r.hit.inv) openInventory();
+  else if (r.hit.map) openMap();
+  else if (r.hit.pause) pause();
 }
 window.addEventListener('gamepadconnected', e => {
-  toast(`🎮 Gamepad verbunden`); renderHints('pad'); $('sPad').textContent = `Erkannt: ${String(e.gamepad.id).slice(0, 40)}`;
+  pad.idx = e.gamepad.index; pad.style = padStyle(e.gamepad.id); pad.used = performance.now();
+  document.body.classList.add('pad');
+  toast(`🎮 ${STYLE_NAMES[pad.style]} verbunden`); renderHints('pad'); renderPad();
+  rumble(e.gamepad, 'done', settings.padRumble);
   if (!pad.raf) pad.raf = requestAnimationFrame(padLoop);
 });
+window.addEventListener('gamepaddisconnected', e => { if (e.gamepad.index === pad.idx) { pad.idx = -1; toast('🎮 Controller getrennt'); releaseInput(); if (state === 'playing') pause(); } });
+// Maus oder Tastatur benutzt: Fokusrahmen des Controllers ausblenden
+window.addEventListener('mousemove', () => { if (pad.used && performance.now() - pad.used > 1500) document.body.classList.remove('pad'); }, { passive: true });
 
 // ---------- Fenster ----------
 window.addEventListener('resize', () => game.resize());
@@ -853,8 +926,9 @@ function applySettings() {
   document.body.classList.toggle('lefty', settings.lefty);
 }
 const SET_RANGES = [['sMouse', 'mouseSens', v => v.toFixed(1) + '×'], ['sTouch', 'touchSens', v => v.toFixed(1) + '×'], ['sJoy', 'joySens', v => v.toFixed(1) + '×'],
-  ['sBtn', 'btnScale', v => Math.round(v * 100) + ' %'], ['sSfx', 'sfxVol', v => Math.round(v * 100) + ' %'], ['sMus', 'musicVol', v => Math.round(v * 100) + ' %'], ['sAmb', 'ambVol', v => Math.round(v * 100) + ' %']];
-const SET_CHECKS = [['sLefty', 'lefty'], ['sInvY', 'invertY'], ['sPlace', 'placeDelay'], ['sFps', 'showFps'], ['sEnemy', 'enemies'], ['sPreview', 'preview']];
+  ['sBtn', 'btnScale', v => Math.round(v * 100) + ' %'], ['sSfx', 'sfxVol', v => Math.round(v * 100) + ' %'], ['sMus', 'musicVol', v => Math.round(v * 100) + ' %'], ['sAmb', 'ambVol', v => Math.round(v * 100) + ' %'],
+  ['sPadSens', 'padSens', v => v.toFixed(1) + '×'], ['sPadRum', 'padRumble', v => v ? Math.round(v * 100) + ' %' : 'aus'], ['sPadDead', 'padDead', v => Math.round(v * 100) + ' %']];
+const SET_CHECKS = [['sPadInv', 'padInvertY'], ['sLefty', 'lefty'], ['sInvY', 'invertY'], ['sPlace', 'placeDelay'], ['sFps', 'showFps'], ['sEnemy', 'enemies'], ['sPreview', 'preview']];
 // ---------- Tastenbelegung ----------
 let capture = null; // Aktion, die gerade eine neue Taste bekommt
 function renderKeys() {
@@ -868,6 +942,23 @@ function renderKeys() {
     l.append(b); box.append(l);
   }
 }
+// Controller-Belegung: Feld wählen (A/Klick), dann die neue Taste am Controller drücken
+function renderPad() {
+  const box = $('sPadKeys'); if (!box) return;
+  const gp = pad.raf ? curPad() : null;
+  $('sPad').textContent = gp ? `Erkannt: ${STYLE_NAMES[pad.style]} (${String(gp.id).slice(0, 48)})${gp.vibrationActuator || (gp.hapticActuators && gp.hapticActuators.length) ? ' · mit Vibration' : ''}` : 'Kein Controller erkannt – eine Taste am Controller drücken.';
+  box.textContent = '';
+  for (const [a, label] of PAD_ACTIONS) {
+    const l = document.createElement('label'), b = document.createElement('button');
+    l.textContent = label; b.dataset.pa = a;
+    b.textContent = pad.cap === a ? 'Taste drücken …' : padLabel(pad.style, pbinds[a]);
+    b.className = pad.cap === a ? 'wait' : '';
+    l.append(b); box.append(l);
+  }
+}
+$('sPadKeys').addEventListener('click', e => { const b = e.target.closest('button[data-pa]'); if (!b) return; e.preventDefault(); pad.cap = b.dataset.pa; renderPad(); b.focus(); });
+$('sPadTest').onclick = () => { const g = curPad(); toast(g && rumble(g, 'hurt', Math.max(0.5, settings.padRumble)) ? '📳 Vibration' : 'Dieser Controller oder Browser kann nicht vibrieren'); };
+$('sPadReset').onclick = () => { settings.padKeys = {}; pbinds = padBinds({}); saveSettings(settings); renderPad(); toast('Controller-Belegung zurückgesetzt'); };
 $('sKeys').addEventListener('click', e => { const b = e.target.closest('button[data-a]'); if (!b) return; e.preventDefault(); capture = b.dataset.a; renderKeys(); });
 
 // ---------- Touch-Tasten verschieben ----------
@@ -905,7 +996,7 @@ $('touch').addEventListener('pointermove', e => {
 $('touch').addEventListener('pointerup', e => { if (state === 'layout') { e.stopPropagation(); layoutDrag = null; } }, { capture: true });
 
 function renderSettings() {
-  renderKeys();
+  renderKeys(); renderPad();
   $('sQuality').value = settings.quality; $('sDeath').value = settings.deathLoss;
   for (const [id, k, f] of SET_RANGES) { $(id).value = settings[k]; $(id + 'V').textContent = f(settings[k]); }
   for (const [id, k] of SET_CHECKS) $(id).checked = settings[k];
@@ -924,12 +1015,12 @@ $('sDeath').onchange = e => { settings.deathLoss = e.target.value; changed(false
 for (const [id, k, f] of SET_RANGES) $(id).oninput = e => { settings[k] = Number(e.target.value); $(id + 'V').textContent = f(settings[k]); changed(false); };
 for (const [id, k] of SET_CHECKS) $(id).onchange = e => { settings[k] = e.target.checked; changed(false); };
 $('sReset').onclick = () => {
-  settings = { ...DEFAULTS, keys: {}, touchPos: {}, stun: settings.stun, mpName: settings.mpName };
-  binds = keyBinds(settings.keys); placeButtons(); mapOn = settings.minimap; $('mm').classList.toggle('off', !mapOn);
+  settings = { ...DEFAULTS, keys: {}, padKeys: {}, touchPos: {}, stun: settings.stun, mpName: settings.mpName };
+  binds = keyBinds(settings.keys); pbinds = padBinds({}); placeButtons(); mapOn = settings.minimap; $('mm').classList.toggle('off', !mapOn);
   changed(true); renderSettings(); toast('Standard wiederhergestellt');
 };
 function openSettings() { setReturn = state; renderSettings(); setState('settings'); }
-function closeSettings() { if (state !== 'settings') return; capture = null; setState(setReturn); if (setReturn === 'paused') { $('vd').value = game.viewDist; $('vdVal').textContent = game.viewDist; } }
+function closeSettings() { if (state !== 'settings') return; capture = null; pad.cap = null; setState(setReturn); if (setReturn === 'paused') { $('vd').value = game.viewDist; $('vdVal').textContent = game.viewDist; } }
 $('pSettings').onclick = openSettings;
 $('mSettings').onclick = openSettings;
 $('setClose').onclick = closeSettings;

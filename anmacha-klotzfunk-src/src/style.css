@@ -279,3 +279,6 @@ body[data-st=layout] .tz{pointer-events:none}
 .ld-tip{margin:10px 0 0;padding:12px 16px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);font-size:14px;line-height:1.45;min-height:3.2em}
 .ld-tip b{display:block;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--cy);margin-bottom:4px}
 body.touch .mm-foot .hints{visibility:hidden}
+/* Controller: deutlicher Fokusrahmen in allen Menüs */
+body.pad :focus{outline:3px solid #ffd84a!important;outline-offset:2px;box-shadow:0 0 0 6px rgba(255,216,74,.25)}
+body.pad .cell:focus,body.pad .rec button:focus{transform:scale(1.04)}

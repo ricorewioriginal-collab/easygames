@@ -5,7 +5,7 @@ Das Startmenü ist wie bei einer Konsole aufgebaut: links die Hauptliste, rechts
 - **▶ Weiterspielen** (sobald es einen Spielstand gibt) lädt die zuletzt gespielte Welt.
 - **🌍 Welten**: drei Speicherplätze; neue Welt mit Modus und Startwert erzeugen, laden, als Datei sichern (⤓), Sicherung zurückholen (↺), löschen.
 - **👥 Mitspielen**, **⚙ Einstellungen**, **❔ Anleitung** (Steuerung und Tipps), **☁ Speicherdaten** (Import, Google-Sicherung).
-- Bedienung: Maus/Finger, **Pfeiltasten + Enter, Esc zurück** oder **Gamepad** (Steuerkreuz/Stick, A wählt, B zurück). Am Handy hat jede Seite eine Zurück-Taste ‹.
+- Bedienung: Maus/Finger, **Pfeiltasten + Enter, Esc zurück** oder **Controller** (Steuerkreuz/Stick, Bestätigen wählt, Zurück schließt). Am Handy hat jede Seite eine Zurück-Taste ‹.
 - Der **Ladebildschirm** zeigt Welt und Modus, einen echten Fortschritt (erst das Erzeugen, dann den Aufbau der Umgebung um dich herum) und wechselnde Tipps. Das Spiel startet, sobald die Umgebung steht.
 
 ## Steuerung
@@ -31,16 +31,22 @@ Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und d
 
 **Tastenbelegung (PC):** ⚙ Einstellungen → Tastatur: Feld anklicken, neue Taste drücken (Esc bricht ab). Liegt die Taste schon auf einer anderen Aktion, tauschen beide. Esc, Tab und 1–9 sind fest. Die Pfeiltasten laufen immer.
 
-**Gamepad** (Standard-Layout, z. B. Xbox- oder PlayStation-Controller): wird nach dem ersten Tastendruck erkannt.
-| Gamepad | Aktion |
-|---|---|
-| linker / rechter Stick | laufen / umschauen |
-| A / B | springen / runter (Fliegen) und Fenster schließen |
-| X / Y | Seilhaken / Inventar |
-| LB / RB | Hotbar-Platz zurück / weiter |
-| RT / LT | abbauen / setzen |
-| L3 | rennen |
-| Select / Start | Weltkarte / Pause (Start setzt auch fort) |
+**Controller** (Xbox, PlayStation, Switch Pro und andere mit Standard-Layout): wird nach dem ersten Tastendruck erkannt; Name und Tastensymbole passen sich an (✕○□△ bei PlayStation, B/A/Y/X bei Switch). Alle 16 Tasten sind in ⚙ Einstellungen → Controller frei belegbar (Feld wählen, neue Taste drücken; doppelte Tasten tauschen). Dazu Kamera-Empfindlichkeit, Totzone, Umkehren und Vibrationsstärke (Abbauen, Setzen, Treffer, Auftrag erledigt).
+
+| Xbox | PlayStation | Switch | Aktion |
+|---|---|---|---|
+| linker / rechter Stick | | | laufen / umschauen (feiner bei wenig Ausschlag) |
+| A | ✕ | B | springen / hoch |
+| B | ○ | A | schleichen, runter (Fliegen), aus Fahrzeugen aussteigen |
+| X / Y | □ / △ | Y / X | Seilhaken / Inventar |
+| LB / RB | L1 / R1 | L / R | Hotbar zurück / weiter |
+| LT / RT | L2 / R2 | ZL / ZR | setzen, benutzen / abbauen, angreifen |
+| L3 | L3 | LS | Rennen ein (bis zum Stehenbleiben) |
+| R3 | R3 | RS | Rückgängig (Kreativ) |
+| ✚ ↑ ↓ ← → | | | Fliegen (Kreativ) · Wegpunkt · Bauform · Aufträge ein/aus |
+| Ansicht / Menü | Create / Options | − / + | Weltkarte / Pause |
+
+**Menüs mit dem Controller:** Startmenü, Pause, Inventar, Handel, Karte, Einstellungen, Mehrspieler und Umkipp-Fenster: Steuerkreuz oder linker Stick wählt (räumlich, auch in Rastern), Bestätigen-Taste drückt, Zurück-Taste schließt. Bestätigen ist A (Xbox), ✕ (PlayStation) und – wie bei Nintendo üblich – A rechts (Switch). Schieberegler und Auswahllisten ändert man mit ← →, der rechte Stick scrollt. Im Inventar wechseln LB/RB die Reiter, LT/RT den Hotbar-Platz, X legt den gewählten Block in einen freien Platz. Auf der Karte zoomen LB/RB, der rechte Stick verschiebt. Textfelder (Startwert, Name, Codes) öffnen die Bildschirm-Tastatur von easygames.
 
 ## Weltkarte
 - 🗺, **M** oder Antippen der Minikarte öffnet die Karte. Zu sehen ist nur, was du schon entdeckt hast (Umkreis von etwa 5 Chunks um deine Wege).
