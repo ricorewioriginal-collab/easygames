@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="de" data-input="kb">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#1a0f38" />
+    <meta name="description" content="Pride City – Ein Leben in allen Farben. Queere 3D-Lebenssimulation in Rainbow City: eigene Figur in Pride-Farben, Story mit Entscheidungen, Tanz-Battle in 3D. Für Handy, PC, TV und Controller." />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Pride City" />
+    <link rel="icon" href="./card.jpg" />
+    <title>Pride City – Ein Leben in allen Farben</title>
+    <script src="../cloud/anmacha-cloud.js" data-game="pride-city" data-prefix="prideCity." data-mount="#cloudMount" data-hint="Spielstand mit deinem Google-Konto sichern und auf allen Geräten weiterspielen." defer></script>
+  </head>
+  <body>
+    <canvas id="scene" aria-label="Spielansicht" tabindex="0"></canvas>
+    <div id="ui"></div>
+    <div id="cloudMount" class="hidden"></div>
+    <noscript>Pride City benötigt JavaScript.</noscript>
+    <script type="module" src="/src/main.ts"></script>
+    <script src="../gamepad.js" data-pad="info dlg=off" data-pad-labels="ls=Laufen; rs=Kamera drehen; dpad=Laufen / Menü wählen; a=Aktion / Bestätigen; b=Zurück / Pause; x=Handy (bald); y=Menü; lb=Kamera links; rb=Kamera rechts; rt=Sprinten; r3=Kamera hinter die Figur; select=Karte (bald); start=Menü" defer></script>
+    <script src="../egstat.js" defer></script>
+  </body>
+</html>
