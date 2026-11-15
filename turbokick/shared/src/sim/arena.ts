@@ -117,7 +117,7 @@ export function goalAt(x: number, y: number, z: number): TeamId | -1 {
   return -1;
 }
 
-/** Boost-Pads: 6 große + 28 kleine, symmetrisch (Spiegelung an x und z). Reihenfolge ist fest (Determinismus). */
+/** Ladezellen: 6 Kristalle + 28 kleine Waben, symmetrisch (Spiegelung an x und z). Reihenfolge ist fest (Determinismus). */
 function buildPads(): Array<{ pos: Vec3; big: boolean }> {
   const out: Array<{ pos: Vec3; big: boolean }> = [];
   const mirror = (x: number, z: number, big: boolean): void => {
@@ -125,19 +125,18 @@ function buildPads(): Array<{ pos: Vec3; big: boolean }> {
     const zs = z === 0 ? [1] : [1, -1];
     for (const sx of xs) for (const sz of zs) out.push({ pos: [x * sx, 0, z * sz], big });
   };
-  // große: vier Ecken nahe den Torlinien + zwei an den Seitenwänden (Mitte)
-  mirror(30, 42, true);
-  mirror(33, 0, true);
-  // kleine: 5 Viertelpunkte (x4) + 3 Mittellinie x=0 (x2) + 1 Querlinie z=0 (x2) = 28
-  mirror(22, 38, false);
-  mirror(12, 24, false);
-  mirror(28, 16, false);
-  mirror(18, 8, false);
-  mirror(30, 28, false);
-  mirror(0, 40, false);
-  mirror(0, 26, false);
-  mirror(0, 12, false);
-  mirror(20, 0, false);
+  // NEXORB-Raster: vier Energiekristalle auf den Diagonalen, zwei Torwächter-Kristalle vor den Toren
+  mirror(28, 24, true);
+  mirror(0, 44, true);
+  // kleine Waben: zwei versetzte Bögen je Viertel (x4) + Mittelachse (x2) + Querachse (x2) = 28
+  mirror(12, 8, false);
+  mirror(24, 12, false);
+  mirror(35, 18, false);
+  mirror(10, 22, false);
+  mirror(20, 34, false);
+  mirror(33, 38, false);
+  mirror(0, 30, false);
+  mirror(16, 0, false);
   return out;
 }
 

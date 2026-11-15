@@ -65,10 +65,10 @@ export const de: Record<string, string> = {
     'Zwei Teams, ein Energie-Orb: Bringe ihn mit deinem Wagen durch das gegnerische Portal. Wer nach der Spielzeit mehr Treffer hat, gewinnt. Bei Gleichstand gibt es eine Verlängerung – der nächste Treffer entscheidet.',
   'help.nitro': 'Schub & Energie',
   'help.nitroText':
-    'Fahre über leuchtende Ladezellen (kleine Waben +12, große Energiekristalle +100), um Energie zu laden. Halte die Schub-Taste für kräftigen Vortrieb – am Boden und in der Luft. Bei Höchsttempo (Hyperspeed) schaltest du Gegner per Rammstoß aus (Knockout); sie kehren nach kurzer Zeit zurück.',
+    'Fahre über leuchtende Ladezellen (kleine Waben +12, große Energiekristalle +100), um Energie zu laden. Auch ein Drift mit der Handbremse lädt Energie nach. Halte die Schub-Taste für kräftigen Vortrieb – am Boden und in der Luft. Bei Höchsttempo (Hyperspeed) schaltest du Gegner per Rammstoß aus (Knockout); sie kehren nach kurzer Zeit zurück.',
   'help.moves': 'Fahrkünste',
   'help.movesText':
-    'Der Sprung öffnet die Luftsteuerung (Nase, Drehung, Rollen). Ein zweiter Druck kurz danach löst einen Hechtstoß (Dash) aus oder – ohne Richtung – einen Doppelsprung. Mit genug Tempo fährst du die Wände und Rundungen hinauf. Mit der Orb-Kamera behältst du Wagen und Orb gleichzeitig im Blick.',
+    'Der Sprung öffnet die Luftsteuerung (Nase, Drehung, Rollen). Ein zweiter Druck kurz danach löst einen Hechtstoß (Dash) aus oder – ohne Richtung – einen Doppelsprung. Ein Hechtstoß in den Orb schießt deutlich härter. Mit genug Tempo fährst du die Wände und Rundungen hinauf. Landest du auf dem Dach, richtet sich dein Wagen von selbst wieder auf. Mit der Orb-Kamera behältst du Wagen und Orb gleichzeitig im Blick.',
   'help.rules': 'Regeln',
   'help.rulesText':
     'Nach jedem Tor gibt es einen neuen Anstoß mit Countdown. Eigentore zählen für den Gegner. Mit dem Ende der Uhr endet das Spiel sofort (ein Tor im selben Moment zählt noch). Die Teams heißen Nova (Lime, ▲) und Flux (Violett, ◆).',

@@ -2,7 +2,7 @@ import { arenaSdf } from './arena';
 import { quatBasis } from './math';
 import { ARENA, BALL_RADIUS, CAR_HALF, TICK_DT, type BallState, type CarState, type SimEvent } from './types';
 
-/** Werte der Plasmakugel */
+/** Werte des Energie-Orbs */
 export const BALL_TUNING = {
   gravity: 6.5,
   restitution: 0.6,
@@ -21,6 +21,8 @@ export const BALL_TUNING = {
   carFriction: 0.35,
   powerBase: 0.55,
   powerSpeed: 0.4,
+  /** Hechtstoß (Dash) in den Orb: Kraftfaktor */
+  dashPower: 1.3,
   powerRefSpeed: 23,
   hitFlatten: 0.35,
   hitLift: 0.1,
@@ -168,7 +170,8 @@ function collideCar(
     hnz = nz;
   }
   const phys = -(1 + T.carRestitution) * vn;
-  const k = T.powerBase + T.powerSpeed * Math.min(1, rel / T.powerRefSpeed);
+  const k =
+    (T.powerBase + T.powerSpeed * Math.min(1, rel / T.powerRefSpeed)) * (car.dodgeTimer > 0 ? T.dashPower : 1);
   const pow = k * rel;
   const dvx = nx * phys + hnx * pow;
   const dvy = ny * phys + hny * pow;

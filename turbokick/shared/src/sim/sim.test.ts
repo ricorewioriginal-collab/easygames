@@ -26,6 +26,31 @@ function randomInput(rng: Rng): Partial<CarInput> {
   };
 }
 
+describe('NEXORB: Selbstaufrichten und Drift-Energie', () => {
+  it('ein Auto auf dem Dach richtet sich ohne Eingabe innerhalb von 3 s auf', () => {
+    const car = createCarState(0, 0);
+    car.pos = [5, CAR_HALF[1] + 0.02, -10];
+    car.quat = [0, 0, 1, 0]; // 180° um z: Dach unten
+    for (let i = 0; i < 180; i++) stepCar(car, {}, TICK_DT, []);
+    const up = 1 - 2 * (car.quat[0] ** 2 + car.quat[2] ** 2);
+    expect(up).toBeGreaterThan(0.9);
+    expect(car.wheelsOnSurface).toBeGreaterThanOrEqual(3);
+  });
+  it('Driften mit Handbremse lädt Energie, normales Fahren nicht', () => {
+    const drift = createCarState(0, 0);
+    drift.pos = [0, CAR_HALF[1], -20];
+    drift.boost = 0;
+    for (let i = 0; i < 90; i++) stepCar(drift, { throttle: 1 }, TICK_DT, []);
+    for (let i = 0; i < 60; i++) stepCar(drift, { throttle: 1, steer: 1, handbrake: true }, TICK_DT, []);
+    expect(drift.boost).toBeGreaterThan(2);
+    const plain = createCarState(1, 0);
+    plain.pos = [0, CAR_HALF[1], -20];
+    plain.boost = 0;
+    for (let i = 0; i < 150; i++) stepCar(plain, { throttle: 1, steer: 1 }, TICK_DT, []);
+    expect(plain.boost).toBe(0);
+  });
+});
+
 describe('Auto: Fahrmodell', () => {
   it('stabilisiert teilweisen Bodenkontakt trotz gleichzeitig gesendeter Gas-/Pitch-Eingabe', () => {
     for (const angle of [-0.4, -0.2, -0.1, 0.1, 0.2, 0.4]) {
