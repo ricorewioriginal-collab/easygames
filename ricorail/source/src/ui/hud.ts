@@ -67,6 +67,7 @@ export class Hud {
         btn('❓', () => this.g.showHelp(), 'tbtn', { title: 'Hilfe (F1)', 'aria-label': 'Hilfe' }),
         btn('🗺', () => this.act('map'), 'tbtn', { title: 'Karte (M)', 'aria-label': 'Karte' }),
         btn('🎥', () => this.act('camera'), 'tbtn', { title: 'Kamera (C)', 'aria-label': 'Kamera wechseln' }),
+        drive ? btn('☰', () => this.g.toggleCommandMenu(), 'tbtn', { title: 'Befehlsmenü: alle Funktionen (F3 / RB)', 'aria-label': 'Befehlsmenü' }) : null,
         P('warp', btn('×1', () => this.act('timewarp'), 'tbtn', { title: 'Zeitraffer (Tab)', 'aria-label': 'Zeitraffer' })),
         mode === 'world' && !s.player ? btn('⏭', () => this.g.watchNext(), 'tbtn', { title: 'Nächstem Zug folgen (R / RB)', 'aria-label': 'Nächstem Zug folgen' }) : null,
         drive && game.canConduct() ? P('condBtn', btn('🎫', () => this.act('conductor'), 'tbtn', { title: 'Schaffner-Modus: Zug fährt selbst, du kontrollierst Fahrkarten (F4)', 'aria-label': 'Schaffner-Modus' })) : null));
@@ -231,7 +232,7 @@ export class Hud {
     const pl0 = w.plans.get(t.id);
     if (this.simple && pl0?.state === 'dwell' && Math.abs(t.v) < 0.1) this.put('ctl', `⏱ Abfahrt ${hhmm(pl0.dwellUntil)} – bitte warten`);
     else if (this.simple) this.put('ctl', L > 0.02 ? `▲ Fahrstufe F${stufe(L)} · ${Math.round(L * 100)} %` : L < -0.02 ? `▼ Bremsstufe B${stufe(L)} · ${Math.round(-L * 100)} %` : t.meta.assistBrake ? '▼ Bremsassistent' : Math.abs(t.v) < 0.1 ? '▲ Hebel hoch = losfahren' : '● Rollen');
-    else this.put('ctl', `Wender ${rv} · Fahren ${Math.round(c.throttle * 100)} % · Bremse ${Math.round(Math.max(c.brake, this.g.getBrake()) * 100)} %`);
+    else this.put('ctl', `Wender ${rv} · Hebel ${this.g.leverLabel()} · Fahren ${Math.round(c.throttle * 100)} % · Bremse ${Math.round(Math.max(c.brake, this.g.getBrake()) * 100)} %`);
     const air = `HLL ${t.brake.pipe.toFixed(1)} bar · Bz ${(t.brake.cyl * 3.8).toFixed(1)} bar`;
     const extra = t.traction === 'steam' ? `Kessel ${t.boiler.toFixed(1)} bar · Wasser ${Math.round(t.glass * 100)} % · Feuer ${Math.round(t.fire * 100)} %` : t.traction === 'electric' ? `Stromabn. ${c.panto ? 'oben' : 'unten'} · HS ${c.mainSwitch ? 'ein' : 'aus'}` : `Motor ${c.engine ? 'an' : 'aus'} · ${Math.round(t.engineRpm * 100)} %`;
     this.html('ctlinfo', air + extra + t.ai, () => [h('div', null, air), h('div', { class: 'muted' }, extra), t.ai ? h('div', null, '🤖 Automatik fährt') : '']);
