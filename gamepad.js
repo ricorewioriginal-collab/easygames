@@ -39,6 +39,8 @@
  *   Belegung aus der Windows-App (window.EASYGAMES_PADMAPS) oder localStorage „easygames-padmaps“ ({ "<Pad-ID>": Belegung }).
  *   Davon profitieren auch Spiele mit eigener Controller-Steuerung: Die Apps spielen nur diesen Teil in jede Seite ein
  *   (window.EASYGAMES_PAD_NORMAL_ONLY = 1 vor der Datei). API: EasyGamesPadNormal.raw(), .std(pad), .maps(), .setMap(id, map|null).
+ * Modus „plain“ (window.EASYGAMES_PAD = 'plain', setzt die Windows-App in Spielfenstern): nur die Knopf-Belegung des Spiels und die Belegung
+ *   der App – kein Leuchtrahmen, keine Belegungs-Übersicht, keine Fenster-/Menü-Übernahme, keine Knopf-Symbole, kein Zeiger, kein Select + Start.
  * Ohne angeschlossenen Controller läuft nichts mit (keine Schleife, kein Overlay).
  * Spiele mit eigener Controller-Steuerung binden die Datei nicht ein, damit nichts doppelt reagiert.
  * API: EasyGamesPad.enabled(false) hält alles an, EasyGamesPad.focus(el) setzt den Leuchtrahmen, EasyGamesPad.hud(el) wählt Knöpfe in el
@@ -203,7 +205,7 @@
   (((me && me.getAttribute('data-pad')) || '') + ' ' + (root.EASYGAMES_PAD || '')).split(/\s+/).forEach(function (t) {
     if (!t) return;
     if (t === 'nonav') { opt.nav = false; return; }
-    if (t === 'info') return;
+    if (t === 'info' || t === 'plain') return;
     var hm = /^hud=(select|l3|r3|off)$/.exec(t); if (hm) { opt.hud = hm[1]; return; }
     if (t.indexOf('menu=') === 0) { opt.menu = t.slice(5).replace(/_/g, ' '); return; }   // Menü-Bildschirme des Spiels (CSS-Selektor, Komma = mehrere): dort führt gamepad.js
     if (t === 'dlg=off') { opt.dlg = false; return; }   // Spiel führt selbst durch alle seine Fenster: keine Fenster-Hilfe   // Taste zum Halten für die Bildschirm-Knöpfe (info-Spiele), Standard Select
@@ -220,6 +222,9 @@
     var i = t.indexOf('='); if (i < 0) return;
     var k = t.slice(0, i).trim().toLowerCase(), v = t.slice(i + 1).trim(); if (k && v) LABEL[k] = v;
   });
+  // plain (Windows-App: window.EASYGAMES_PAD = 'plain'): nur die Knopf-Belegung des Spiels (Tasten/Bildschirm-Knöpfe) und die Belegung der App –
+  // kein Leuchtrahmen, keine Belegungs-Übersicht, keine Fenster-/Menü-Führung, keine Knopf-Symbole, kein Zeiger, kein Fenster mit Select + Start.
+  if (/(^|\s)plain(\s|$)/.test(root.EASYGAMES_PAD || '')) { opt.plain = true; opt.nav = false; opt.dlg = false; opt.menu = ''; opt.hud = 'off'; if (opt.rs === 'cursor') opt.rs = 'scroll'; }
   // data-pad="info": keine Tasten-/Knopf-Nachahmung (das Spiel steuert selbst), nur Controller-Modus, Belegung und Knopf-Symbole
   if (/(^|\s)info(\s|$)/.test((me && me.getAttribute('data-pad')) || '')) opt.info = true;
 
@@ -385,7 +390,7 @@
     root.setTimeout(function () { if (!b.isConnected || dlg || osk || menu) return; var c = usable(b); if (!c && !below(b)) return; clearRing(); if (c) click(b, c.x, c.y); else b.click(); }, 160);
   }
   function drawRing() {
-    if (!focusEl) return;
+    if (!focusEl || opt.plain) return;
     var c = usable(focusEl); if (!c) { clearRing(); return; }
     if (!ring) ring = el('border:3px solid #ffd400;border-radius:10px;box-shadow:0 0 0 2px #000,0 0 18px rgba(255,212,0,.85);box-sizing:border-box;');
     ring.style.transform = 'translate(' + (c.r.left - 5) + 'px,' + (c.r.top - 5) + 'px)'; ring.style.width = (c.r.width + 10) + 'px'; ring.style.height = (c.r.height + 10) + 'px'; show(ring, true);
@@ -453,6 +458,7 @@
   // Hauptknopf eines Fensters in der Bildmitte („Los geht's“, „OK“, „Weiter“ …), sonst der erste Knopf außer Schließen/Zurück
   var OK_RX = /^\W*(los|ok|weiter|start|starten|spielen|fertig|bestätigen|übernehmen|ja|annehmen|auswählen|eröffnen|verstanden|alles klar)/i;
   function firstInWin() {
+    if (opt.plain) return false;
     var wb = winBox(); if (!wb) return false;
     var keep = scopeEl; scopeEl = wb; var l = candidates(), c = null, i; scopeEl = keep;
     for (i = 0; i < l.length && !c; i++) if (OK_RX.test((l[i].e.textContent || '').trim())) c = l[i];
@@ -510,7 +516,7 @@
       for (i = 0; i < 4 && !go; i++) if ((s.d[i] && !p.d[i]) || (s.ls[i] && !p.ls[i])) go = true;
       if (go) setPad(true); }
     if (padOn && now > badgeT) { badgeT = now + 400; drawBadges(); }
-    if (s.b[8] && s.b[9] && !(p.b[8] && p.b[9])) { releaseAll(); menuOpen(); return; }   // Select + Start: Belegung ansehen und ändern
+    if (!opt.plain && s.b[8] && s.b[9] && !(p.b[8] && p.b[9])) { releaseAll(); menuOpen(); return; }   // Select + Start: Belegung ansehen und ändern
     for (i = 0; i < 4; i++) if ((s.d[i] && !p.d[i]) || (s.ls[i] && !p.ls[i])) dirT = root.performance.now();
     if (!osk && s.b[0] && !p.b[0]) { var fa = doc.activeElement; if (fa && oskField(fa) && usable(fa)) { releaseAll(); oskOpen(fa); return; } }   // A auf einem Textfeld: Tastatur
     if (now > oskScanT) { oskScanT = now + 300; if (oskScan()) return; }   // neu erschienenes Textfeld (Name, Code …) → Tastatur
@@ -944,7 +950,7 @@
   function legendBox() { if (!legendEl) legendEl = el('left:50%;top:auto;bottom:16px;transform:translateX(-50%);max-width:92vw;padding:10px 14px;border-radius:14px;background:rgba(8,10,20,.9);color:#fff;font:600 13px/1.55 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.5);text-align:left;columns:2 220px;column-gap:20px'); return legendEl; }
   function legend(ms) {
     clearTimeout(legendTimer);
-    if (!ms) { show(legendEl, false); return; }
+    if (!ms || opt.plain) { show(legendEl, false); return; }
     var l = legendList(); if (!l.length) return;
     legendBox();
     legendEl.style.columns = '2 220px'; legendEl.style.minWidth = '';
@@ -954,6 +960,7 @@
     legendTimer = root.setTimeout(function () { show(legendEl, false); }, ms);
   }
   function drawBadges() {
+    if (opt.plain) return;
     for (var k in BIND) {
       var e = null; try { e = doc.querySelector(BIND[k]); } catch (x) {}
       var b = badges[k], c = padOn && e && usable(e);
