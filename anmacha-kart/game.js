@@ -78,7 +78,7 @@ const Pads = {
   list() { try { return Array.from(navigator.getGamepads ? navigator.getGamepads() : []).filter(Boolean); } catch (e) { return []; } },
   read(pad) {
     if (!pad) return { s: 0, g: 0, b: 0, d: 0, i: 0 }; const a = pad.axes || [], bt = pad.buttons || [], pr = i => bt[i] && (bt[i].pressed || bt[i].value > 0.5); let s = a[0] || 0;
-    s = Math.abs(s) < 0.14 ? 0 : Math.sign(s) * (Math.abs(s) - 0.14) / 0.86; if (pr(14)) s = -1; else if (pr(15)) s = 1;
+    s = Math.abs(s) < 0.14 ? 0 : Math.sign(s) * Math.pow((Math.abs(s) - 0.14) / 0.86, 1.35);   // weiche Kurve: feine Korrekturen um die Mitte, voller Einschlag außen if (pr(14)) s = -1; else if (pr(15)) s = 1;
     // Belegung wie an der Konsole: PlayStation/Xbox ✕/A Gas, ○/B Bremse, □/X Drift · Nintendo A (rechts) Gas, B (unten) Bremse, Y Drift; R/RB Drift, L/LB + △/Y/X Item, Trigger Gas/Bremse
     const nin = Pads.style(pad) === 'nin';
     return { s, g: pr(nin ? 1 : 0) || pr(7) || pr(12) ? 1 : 0, b: pr(nin ? 0 : 1) || pr(6) || pr(13) ? 1 : 0, d: pr(5) || pr(2) ? 1 : 0, i: pr(4) || pr(3) ? 1 : 0 };
@@ -265,7 +265,7 @@ function initHost() {
 
   // ------------------------------------------------------------------ Start: Solo / Mehrspieler
   LD.start(); LD.creep(0.4);
-  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt3'); }).then(() => LD.add(0.05))]).then(async () => {
+  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt4'); }).then(() => LD.add(0.05))]).then(async () => {
     View.init($('cv'), logos); LD.add(0.05, 'Rennstrecke wird gebaut …'); await nextPaint();
     curTrackIdx = save.track; View.setTrack(getTrack(save.track)); View.resize(innerWidth, innerHeight, 1); LD.add(0.1, 'Shader werden vorgewärmt …'); await nextPaint();
     View.warmup(); ready = true; $('loadInfo').textContent = `${TR.length} Strecken · ${KARTS.length} Karts · ${CHARS.length} Figuren · ${logos.length} Sender-Logos`; renderMenu();
@@ -488,17 +488,18 @@ function initHost() {
     if (!R) { dtAcc += dt; if ((menuView !== 'title' || $('menu').hidden || !$('top').hidden) && (skip = (skip + 1) % 3)) return; View.renderMenu(dtAcc, tAll); dtAcc = 0; return; }
     const live = !paused && !R.ended;
     if (live) {
-      const ff = window.__ffwd || 1; acc += dt * ff; let n = 0; const S = R.S;
-      while (acc >= 1 / 60 && n++ < 5 * ff && !R.introLoading) { acc -= 1 / 60; snap(S); Sim.step(S, 1 / 60, readInputs()); S.events.forEach(onEvent); for (const e of S.events) if (FXE[e.t] && R.fxq.length < 40) R.fxq.push({ t: e.t, x: e.x == null ? undefined : r2(e.x), z: e.z == null ? undefined : r2(e.z), k: e.k, ids: e.ids, item: e.item }); if (S.state === 'done') break; }
+      const ff = window.__ffwd || 1; acc += dt * ff; let n = 0; const S = R.S, fe = [];
+      while (acc >= 1 / 60 && n++ < 5 * ff && !R.introLoading) { acc -= 1 / 60; snap(S); Sim.step(S, 1 / 60, readInputs()); S.events.forEach(onEvent); for (const e of S.events) fe.push(e); for (const e of S.events) if (FXE[e.t] && R.fxq.length < 40) R.fxq.push({ t: e.t, x: e.x == null ? undefined : r2(e.x), z: e.z == null ? undefined : r2(e.z), k: e.k, ids: e.ids, item: e.item }); if (S.state === 'done') break; }
+      S.events = fe;                      // alle Ereignisse dieses Bildes an die Effekte (auch bei 30 fps keine verschluckten Treffer/Turbos)
       if (acc >= 1 / 60) acc = 0;        // Rückstand nach Hängern verwerfen statt aufzustauen
       if (S.state === 'grid' && !R.introLoading) { const c = Math.ceil(S.count - 0.2); if (c !== R.lastCount && c >= 1 && c <= 3) { R.lastCount = c; banner(String(c), '', 900, c === 1 ? '#ffd24a' : '#fff'); AUD.sfx.beep(false); } }
-      const k0 = S.karts[0]; AUD.engine(S.state !== 'done' && !paused, Math.max(0, k0.vf) / 36, k0.boostT > 0);
+      const k0 = S.karts[0]; AUD.engine(S.state !== 'done' && !paused, Math.max(0, k0.vf) / 36, k0.boostT > 0, k0.drift && k0.vf > 10 ? (k0.dTier || 0) + 1 : 0);
       updateHud(dt); if ((R.snapAt -= dt) <= 0) { R.snapAt = 0.05; sendSnap(); } R.pushAt -= dt; if (R.pushAt <= 0) { R.pushAt = 0.15; push(S.state === 'grid' ? 'grid' : 'race'); }
       if (S.state === 'done' && !GP.free) finishRace();
     }
     if (paused) { if (!R.dirty) return; R.dirty = false; View.renderRace(R.S, 0, tAll, nVp, 1); return; }
     dtAcc += dt; if (!live && (skip = (skip + 1) % 2)) return;
-    View.renderRace(R.S, dtAcc, tAll, nVp, live ? Math.min(1, acc * 60) : 1); dtAcc = 0; if (live) View.perf(raw);
+    View.renderRace(R.S, dtAcc, tAll, nVp, live ? Math.min(1, acc * 60) : 1); dtAcc = 0; if (R.S.events.length) R.S.events = []; if (live) View.perf(raw);
   }
   // Tastatur
   const KEYS = { ArrowUp: 'g', w: 'g', W: 'g', ArrowLeft: 'l', a: 'l', A: 'l', ArrowRight: 'r', d: 'r', D: 'r', ArrowDown: 'b', s: 'b', S: 'b', Shift: 'd', z: 'd', Z: 'd', ' ': 'i', Enter: 'i', x: 'i', X: 'i' };
