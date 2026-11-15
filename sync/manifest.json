@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "6c71d3d033a3",
- "generated": "2026-11-15T03:31:24+01:00",
- "commit": "7b262e3fb723d96a9a2f45314f17bf190b6298cd",
+ "version": "8303e2bc0a9f",
+ "generated": "2026-11-15T02:31:42+00:00",
+ "commit": "36de27e9f129086a39dac01b7db084dec12b6545",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2387,6 +2387,61 @@
    "h": "92a676d688d0a82a0712c9173290f85b4c60f6470c7ac3c9d202c2a96eeec445"
   },
   {
+   "p": "anmacha-markthalle/assets/env/warehouse.jpg",
+   "s": 22027,
+   "h": "fecec639a67b829c057df32570fc8fa32135be259d07893ad5ae16753d5f7ea9"
+  },
+  {
+   "p": "anmacha-markthalle/assets/models/cars/Textures/colormap.png",
+   "s": 10219,
+   "h": "02bb3fb87365927d16e265d27caae405aeef5819b6bde5a989ff5e435318de4d"
+  },
+  {
+   "p": "anmacha-markthalle/assets/models/cars/vehicle-truck-red.glb",
+   "s": 92436,
+   "h": "eca99bd9ab0a2b02125f915e65d1ec8f1c5a93be7c6d4840efdac6633f47772c"
+  },
+  {
+   "p": "anmacha-markthalle/assets/models/cars/vehicle-truck-yellow.glb",
+   "s": 93480,
+   "h": "1ebd83174eab6d2fdf69eb5d8e32bd06a23a86d9edc4fe915a4160430a7c36a5"
+  },
+  {
+   "p": "anmacha-markthalle/assets/models/city/Textures/colormap.png",
+   "s": 10108,
+   "h": "106cf02e0d6dccded6d9f90c2ae6a51eb94c6301645fea159e834c44ed4708a3"
+  },
+  {
+   "p": "anmacha-markthalle/assets/models/city/building-small-a.glb",
+   "s": 39660,
+   "h": "22ce989013bd16b1732e81798e343cf85f947e92b6c93825b18131feded48e07"
+  },
+  {
+   "p": "anmacha-markthalle/assets/models/city/building-small-b.glb",
+   "s": 49764,
+   "h": "0bc8459045975158524753d6b648ff77e5f91fe8c033bc4886930b6d55543a2b"
+  },
+  {
+   "p": "anmacha-markthalle/assets/models/city/building-small-c.glb",
+   "s": 70088,
+   "h": "3ea0f46fbed4e0acba7fda365cd968b3f23a6e02b9fee79dd54c99c42ffadf2f"
+  },
+  {
+   "p": "anmacha-markthalle/assets/models/city/building-small-d.glb",
+   "s": 39348,
+   "h": "0ab476fbd7956cea52e590a8e68e351ce2f6fc04df158aa3f5a76b7744bf37a0"
+  },
+  {
+   "p": "anmacha-markthalle/assets/models/city/grass-trees-tall.glb",
+   "s": 47016,
+   "h": "d23e3b722453236bf6f4f8922b7bf64f81a7f3f804848a89c4b100ccbf13abef"
+  },
+  {
+   "p": "anmacha-markthalle/assets/models/city/grass-trees.glb",
+   "s": 38160,
+   "h": "cb06d03cc1c64ca7e7692c0aef3628d8e7cd4afee69093025f9ddd668653a4ce"
+  },
+  {
    "p": "anmacha-markthalle/assets/prompts/ps_circle.svg",
    "s": 606,
    "h": "7749fe0886d9d832bff47324ab1fbe7f9f3475b7de69dbc01743365b9451d94c"
@@ -2583,18 +2638,18 @@
   },
   {
    "p": "anmacha-markthalle/data.js",
-   "s": 24890,
-   "h": "3d4e176d7feff5e15549b96d0ca6e058d10c5adeb0b1b9ec25a295c99bab6223"
+   "s": 25281,
+   "h": "06189399a1a39412d799b906291a622cac75dd0cc34ceca54546a1559e49cc36"
   },
   {
    "p": "anmacha-markthalle/game.js",
-   "s": 104548,
-   "h": "7c0ee1809020d89cb9b87856d8351c960ebaf0765045cf9619bb985a99aa6e55"
+   "s": 108564,
+   "h": "02eb50c9393bda8db413ee604b7a90f474c10af4f4a14a69e6cbf4ebfe54c57f"
   },
   {
    "p": "anmacha-markthalle/index.html",
-   "s": 39750,
-   "h": "3d1629d8e4feff5ddb9f2dd710160517946c3e157f922cbe36f539f58450570a"
+   "s": 40305,
+   "h": "bea907a5c38c7688c78894a03b92c423921341faaca3544dd7b00b9f64ae7363"
   },
   {
    "p": "anmacha-markthalle/logo.svg",
@@ -2613,13 +2668,13 @@
   },
   {
    "p": "anmacha-markthalle/nav.js",
-   "s": 17615,
-   "h": "ab77f73f40431c1fb1324d17bc810ee21151b1a47701f01f604d4bd82790aa43"
+   "s": 17690,
+   "h": "7dc53951e28825484a8e94e28ccca36d2e2855be41e480da6f527d518afeffcf"
   },
   {
    "p": "anmacha-markthalle/sim.js",
-   "s": 67677,
-   "h": "9b3af55c84f52fe8f47b9f955ee52c4f9693ce118ff08425177da851af981ee6"
+   "s": 75856,
+   "h": "f29904389d89b3dda75f01b5d5bd46b5c2ff20ba7289c660954b996f64c89d44"
   },
   {
    "p": "anmacha-markthalle/sw.js",
@@ -2628,8 +2683,8 @@
   },
   {
    "p": "anmacha-markthalle/view3d.js",
-   "s": 60726,
-   "h": "19aebbea6c2cf71840ba28b54a80bba7ca0555b38bc1d1fa725424a6549cb2c1"
+   "s": 78768,
+   "h": "fc6f834f06429bef2569c143d79469146d57ba4411d5ddb3f20aab061fb6b570"
   },
   {
    "p": "anmacha-memory/card.jpg",
@@ -10108,8 +10163,8 @@
   },
   {
    "p": "guides/anmacha-markthalle.json",
-   "s": 26223,
-   "h": "cd7beb8f45f7ddc0e460b9f44826a0a030cabde559ee0ca107cc466a883fc7e2"
+   "s": 27114,
+   "h": "f7ab1cd5fcabd9b96713e47548fd402fc5b99a2b9bb99b83ca4e9f3cdcbc7f1d"
   },
   {
    "p": "guides/anmacha-memory.json",
@@ -13589,7 +13644,7 @@
   {
    "p": "sync/catalog.json",
    "s": 253668,
-   "h": "b03ac73990ed553b13d6c1bbb77f940d6891585202e4822eeed041cc48ebb7a6"
+   "h": "5c858cbcdc5fb3867b1621e7e43d26dd42a7af6e01f25a01e3931d6338eab9fc"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

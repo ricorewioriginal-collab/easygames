@@ -219,7 +219,7 @@
     if (!(padOn() || B.classList.contains('tv'))) return null;
     if (!padOn()) return [['dpad', '↑↓←→', 'Laufen'], [null, 'OK', 'Aktion'], [null, 'Zurück', 'Menü & Befehle'], [null, 'Tab', 'Befehle']];   // TV-Fernbedienung / Tastatur am TV
     if (G.building()) return [['dpad', '↑↓←→', 'Feld wählen'], ['a', 'Enter', 'Setzen'], ['rb', kn('r'), 'Drehen'], ['b', 'Esc', 'Fertig']];
-    return [['x', kn('c'), 'Befehle'], ['a', kn('e'), 'Aktion'], ['y', kn('f'), 'Ansehen'], ['lb', kn('v'), 'Ansicht'], ['select', kn('o'), G.phaseLabel()], ['start', 'Esc', 'Pause']];
+    return [['x', kn('c'), 'Befehle'], ['a', kn('e'), 'Aktion']].concat(G.carrying && G.carrying() ? [['rb', kn('r'), 'Abstellen']] : [], [['y', kn('f'), 'Ansehen'], ['lb', kn('v'), 'Ansicht'], ['select', kn('o'), G.phaseLabel()], ['start', 'Esc', 'Pause']]);
   }
   const nb = document.createElement('div'); nb.id = 'navbar'; nb.setAttribute('aria-hidden', 'true'); nb.hidden = true; B.appendChild(nb); let nbH = '';
   function bar() {
