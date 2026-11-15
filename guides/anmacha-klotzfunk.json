@@ -49,6 +49,16 @@
       ]
     },
     {
+      "t": "Formblöcke und neue Baustoffe",
+      "list": [
+        "Reiter „Formen“: Stufen und Treppen aus 8 Baustoffen, Holzzaun, Steinmauer, Glasscheibe, Holztür und Leiter.",
+        "Treppen steigen in Blickrichtung; auf Stufen und Treppen läuft man ohne Springen hinauf. Stufe auf Stufe ergibt einen vollen Block.",
+        "Zäune, Mauern und Scheiben verbinden sich von selbst mit Nachbarn.",
+        "Tür: zwei Türblöcke übereinander, antippen öffnet und schließt beide. Leiter an eine Wand setzen und mit Springen hochklettern.",
+        "Neue Baustoffe: Steinziegel, Glattstein, dunkle Bretter, Birkenbretter, Dachziegel, Bücherregal, Laterne, Kupfer- und Eisenblock, Strohballen, Beton in 8 Farben und Buntglas."
+      ]
+    },
+    {
       "t": "Das Funknetz",
       "list": [
         "Ein Schalter (Setzen = umlegen) speist Signalleitungen und einen Funksender daneben.",
@@ -63,7 +73,7 @@
         "PC: W A S D oder Pfeile laufen, Maus umschauen (Klick ins Bild fängt die Maus), Leertaste springen, Strg oder Umschalt rennen, Linksklick abbauen, Rechtsklick setzen (halten wiederholt), 1–9 oder Mausrad Block wählen, E Inventar, Q Seilhaken, M Weltkarte, B Wegpunkt, G Bauform, J Aufträge (Story), Esc Pause. Alle Tasten sind in den Einstellungen frei belegbar.",
         "Inventar: Block auf einen Hotbar-Platz ziehen, Umschalt-Klick legt ihn in einen freien Platz, Hotbar-Platz ins Raster ziehen leert ihn. Sortierung nach Art, Name oder Menge, „nur Vorrat“. Beim Herstellen stellt Umschalt-Klick 5-mal her.",
         "Touch: linke Hälfte wischen = laufen (weit ziehen = rennen), rechte Hälfte wischen = umschauen; Tasten Sprung, Runter, Abbauen, Setzen, Fliegen, Haken, dazu Hotbar, 🎒 Inventar, 🗺 Karte, 📍 Wegpunkt, ▦ Bauform, ↶ Rückgängig und ⏸ Pause. Tastengröße, Empfindlichkeit, Linkshänder und die Position der Tasten stellst du in den Einstellungen ein.",
-        "Gamepad: linker Stick laufen, rechter Stick umsehen, A springen, B runter und zurück, X Seilhaken, Y Inventar, LB/RB Hotbar, RT abbauen, LT setzen, L3 rennen, Select Karte, Start Pause."
+        "Controller (Xbox, PlayStation, Switch): linker Stick laufen, rechter Stick umschauen, A/✕ springen, B/○ schleichen und aussteigen, X/□ Seilhaken, Y/△ Inventar, LB/RB Hotbar, LT/RT setzen/abbauen, L3 rennen, R3 rückgängig (Kreativ), Steuerkreuz Fliegen, Wegpunkt, Bauform und Aufträge, Ansicht/Create/− Karte, Menü/Options/+ Pause. Alle Menüs gehen mit Steuerkreuz und Bestätigen-Taste, im Inventar wechseln LB/RB die Reiter. In den Einstellungen sind alle 16 Tasten belegbar, dazu Kamera, Totzone und Vibration."
       ]
     },
     {

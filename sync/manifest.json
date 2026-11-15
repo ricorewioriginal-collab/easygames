@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "6dacf72ff720",
- "generated": "2026-11-15T01:41:49+00:00",
- "commit": "b1bb4b1688bad924dd78fb38ac622d0cefb03c91",
+ "version": "976856e6c088",
+ "generated": "2026-11-15T01:42:40+00:00",
+ "commit": "b33939c32d6eed75dc855706e8aac0edce20c1aa",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2102,14 +2102,14 @@
    "h": "2765c54b525b5473aef7c81034c6f39b724b2be74a45545f85d85a6a45ed01cf"
   },
   {
-   "p": "anmacha-klotzfunk/assets/index-uyrfgsdi.js",
-   "s": 700077,
-   "h": "60b549e4c77e20054c82e4fb0a9f5e1aade35ce3a0517cd52b5409fa92afab63"
+   "p": "anmacha-klotzfunk/assets/index-DycjPh1B.js",
+   "s": 711506,
+   "h": "967cf06e0057025b746093b8b48cdef10fc3a77882d5d7e7d8e3894802fe657e"
   },
   {
-   "p": "anmacha-klotzfunk/assets/meshworker-D6QDB5xl.js",
-   "s": 11527,
-   "h": "19c96d5db110219244398e53e0d5607cf6f16302dadf2f7590e62a713912125f"
+   "p": "anmacha-klotzfunk/assets/meshworker-f07_iv9J.js",
+   "s": 16630,
+   "h": "a615ed09a1387d121a19e141a101962958ae039710c12248bb5d4a1dcf77465e"
   },
   {
    "p": "anmacha-klotzfunk/card.jpg",
@@ -2119,7 +2119,7 @@
   {
    "p": "anmacha-klotzfunk/index.html",
    "s": 23926,
-   "h": "c770e9c95f039bc3fc4be76df9b6d398cc5ab23febc01f3bfccda2a334620583"
+   "h": "fd98d3a7e6c3b1f40670e272539591e6ab36e349dd93f85490e319254ef14152"
   },
   {
    "p": "anmacha-klotzfunk/logo.svg",
@@ -10038,8 +10038,8 @@
   },
   {
    "p": "guides/anmacha-klotzfunk.json",
-   "s": 19910,
-   "h": "4f2a1ee357f90ad5b540161619db0e269bb38cdeeb36f9cdc965829e2be05270"
+   "s": 21012,
+   "h": "d3f13626e55fb7c6dd7ad0264bbd3a5dad6b4424f2f5b2a37fa7d47b56599159"
   },
   {
    "p": "guides/anmacha-koffer-dealer.json",
@@ -13529,7 +13529,7 @@
   {
    "p": "sync/catalog.json",
    "s": 253487,
-   "h": "8f996f996aaa77f748001e441697c7f4146b891a49ab01e0d5d20f942480e5c2"
+   "h": "a92155ce35f6a9e12cfb416f83b86ca8c4c9db59f84cefcd02029bb483eb0e8d"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

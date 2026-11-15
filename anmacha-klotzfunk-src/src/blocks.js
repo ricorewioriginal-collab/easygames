@@ -8,6 +8,8 @@
 // icon (Atlas-Kachel für Hotbar/Inventar), inv (im Inventar wählbar),
 // shape ('cross' = Pflanze, 'flat' = Bodenplatte), tier (Mindeststufe der Spitzhacke, damit der Block im Überlebensmodus etwas abwirft), station (Werkbank/Ofen),
 // drop (abgebauter Block gibt diese Id statt der eigenen, z. B. eingeschaltete Signalblöcke).
+// Formblöcke (Etappe 9): shape 'slab' (Stufe, full = Block aus zwei Stufen), 'stair' (dir 0–3 = steigt nach −z, +x, +z, −x; eigene Id je Richtung),
+// 'fence', 'wall', 'pane' (verbinden sich mit Nachbarn), 'door' (eigene Id für offen), 'ladder' (klebt an der Wand, man klettert). Geometrie: shapes.js
 
 export const LOGO0 = 11, LOGO_COUNT = 16, SPECIAL0 = 27, SPECIAL_COUNT = 11;
 export const LOGO_NAMES = ['RicoReWi', 'YourTime-FM', 'RapRadio 24', 'SchlagerPop 24', 'ChartRadio 24', 'ClubRadio 24', 'AnMaCha 24', 'RadioFloh!',
@@ -15,7 +17,7 @@ export const LOGO_NAMES = ['RicoReWi', 'YourTime-FM', 'RapRadio 24', 'SchlagerPo
 
 export const CATS = [
   { id: 'natur', name: 'Natur' }, { id: 'erz', name: 'Erze & Steine' }, { id: 'bau', name: 'Bauen' },
-  { id: 'licht', name: 'Licht' }, { id: 'spezial', name: 'Spezial' }, { id: 'technik', name: 'Funktechnik' }, { id: 'funk', name: 'Funk-Logos' }
+  { id: 'form', name: 'Formen' }, { id: 'licht', name: 'Licht' }, { id: 'spezial', name: 'Spezial' }, { id: 'technik', name: 'Funktechnik' }, { id: 'funk', name: 'Funk-Logos' }
 ];
 
 const DEF = [
@@ -92,6 +94,45 @@ const DEF = [
   // ab 79: Fahrzeuge (Schiene ist eine flache Platte auf dem Block darunter)
   [79, 'RAIL', 'Schiene', 'technik', [75, 75, 75], { shape: 'flat', solid: 0, opaque: 0, hard: 0.4, color: 0x8a7a6a, map: [140, 120, 100], icon: 75 }]
 ];
+// ab 80: Modernisierung (Etappe 9) – neue Baustoffe, Licht, Beton, Buntglas
+DEF.push(
+  [80, 'STONEBRICK', 'Steinziegel', 'bau', [76, 76, 76], { hard: 1.5, tool: 'spitzhacke', color: 0x8a8c92, map: [138, 140, 146], icon: 76 }],
+  [81, 'SMOOTH', 'Glattstein', 'bau', [77, 77, 77], { hard: 1.5, tool: 'spitzhacke', color: 0xa4a6ac, map: [164, 166, 172], icon: 77 }],
+  [82, 'DARKPLANKS', 'Dunkle Bretter', 'bau', [78, 78, 78], { hard: 1.0, tool: 'axt', color: 0x563a24, map: [86, 58, 36], icon: 78 }],
+  [83, 'BIRCH', 'Birkenbretter', 'bau', [79, 79, 79], { hard: 1.0, tool: 'axt', color: 0xd8c08e, map: [216, 192, 142], icon: 79 }],
+  [84, 'ROOF', 'Dachziegel', 'bau', [80, 80, 80], { hard: 1.2, tool: 'spitzhacke', color: 0xa84a36, map: [168, 74, 54], icon: 80 }],
+  [85, 'BOOKS', 'Bücherregal', 'bau', [8, 81, 8], { hard: 1.0, tool: 'axt', color: 0x8a5a34, map: [138, 90, 52], icon: 81 }],
+  [86, 'LANTERN', 'Laterne', 'licht', [82, 82, 82], { emit: 1, hard: 0.5, color: 0xffcc66, map: [255, 204, 102], icon: 82 }],
+  [87, 'COPPERBLOCK', 'Kupferblock', 'bau', [83, 83, 83], { hard: 2.0, tool: 'spitzhacke', color: 0xc8743c, map: [210, 124, 72], icon: 83 }],
+  [88, 'IRONBLOCK', 'Eisenblock', 'bau', [84, 84, 84], { hard: 2.4, tool: 'spitzhacke', color: 0xc8cad2, map: [200, 202, 210], icon: 84 }],
+  [89, 'HAY', 'Strohballen', 'natur', [86, 85, 86], { hard: 0.4, color: 0xd8b450, map: [216, 180, 80], icon: 85 }]
+);
+['weiß', 'schwarz', 'rot', 'orange', 'gelb', 'grün', 'blau', 'lila'].forEach((n, k) => {
+  const c = [[236, 238, 240], [36, 38, 44], [190, 44, 44], [232, 120, 30], [240, 200, 40], [70, 160, 60], [40, 90, 190], [130, 60, 180]][k];
+  DEF.push([90 + k, 'CONCRETE' + k, 'Beton ' + n, 'bau', [87 + k, 87 + k, 87 + k], { hard: 1.4, tool: 'spitzhacke', color: (c[0] << 16) | (c[1] << 8) | c[2], map: c, icon: 87 + k }]);
+});
+['rot', 'blau', 'grün'].forEach((n, k) => {
+  const c = [[220, 60, 70], [70, 120, 230], [70, 200, 110]][k];
+  DEF.push([98 + k, 'STAINED' + k, 'Buntglas ' + n, 'bau', [95 + k, 95 + k, 95 + k], { trans: 1, hard: 0.3, color: (c[0] << 16) | (c[1] << 8) | c[2], map: c, icon: 95 + k }]);
+});
+// Stufen (101–108) und Treppen (109–140, je Material 4 Richtungen) aus diesen Baustoffen
+export const FORM_MATS = [['PLANKS', 'Bretter', 7, 8], ['COBBLE', 'Bruchstein', 67, 62], ['BRICK', 'Ziegel', 36, 25], ['STONEBRICK', 'Steinziegel', 80, 76],
+  ['SANDSTONE', 'Sandstein', 55, 48], ['MARBLE', 'Marmor', 37, 26], ['DARKPLANKS', 'Dunkle Bretter', 82, 78], ['SMOOTH', 'Glattstein', 81, 77]];
+const matOf = id => DEF.find(d => d[0] === id)[5];
+FORM_MATS.forEach(([k, n, full, tile], i) => {
+  const m = matOf(full), base = { hard: m.hard, tool: m.tool, color: m.color, map: m.map, opaque: 0, icon: tile };
+  DEF.push([101 + i, k + '_SLAB', n + '-Stufe', 'form', [tile, tile, tile], { ...base, shape: 'slab', full }]);
+  for (let d = 0; d < 4; d++) DEF.push([109 + i * 4 + d, k + '_STAIRS' + (d ? d : ''), n + '-Treppe', d ? '' : 'form', [tile, tile, tile],
+    { ...base, shape: 'stair', dir: d, inv: d ? 0 : 1, drop: d ? 109 + i * 4 : 0 }]);
+});
+DEF.push(
+  [141, 'FENCE', 'Holzzaun', 'form', [8, 8, 8], { shape: 'fence', opaque: 0, hard: 1.0, tool: 'axt', color: 0xac8652, map: [172, 134, 82], icon: 8 }],
+  [142, 'WALL', 'Steinmauer', 'form', [62, 62, 62], { shape: 'wall', opaque: 0, hard: 1.6, tool: 'spitzhacke', color: 0x808086, map: [120, 120, 126], icon: 62 }],
+  [143, 'PANE', 'Glasscheibe', 'form', [9, 9, 9], { shape: 'pane', trans: 1, hard: 0.3, color: 0xcfe8f0, map: [200, 230, 240], icon: 9 }],
+  [144, 'DOOR', 'Holztür', 'form', [8, 98, 8], { shape: 'door', opaque: 0, hard: 1.0, tool: 'axt', color: 0x9a6a3c, map: [154, 106, 60], icon: 98 }],
+  [145, 'DOOR_OPEN', 'Holztür (offen)', '', [8, 98, 8], { shape: 'door', opaque: 0, solid: 0, hard: 1.0, tool: 'axt', color: 0x9a6a3c, map: [154, 106, 60], inv: 0, drop: 144 }],
+  [146, 'LADDER', 'Leiter', 'form', [99, 99, 99], { shape: 'ladder', opaque: 0, solid: 0, hard: 0.4, tool: 'axt', color: 0x8a6034, map: [138, 96, 52], icon: 99 }]
+);
 for (let i = 0; i < LOGO_COUNT; i++) DEF.push([LOGO0 + i, 'LOGO' + (i + 1), LOGO_NAMES[i], 'funk', null, { logo: 1, hard: 0.5, color: 0x1a2040, map: [60, 70, 110] }]);
 DEF.sort((a, b) => a[0] - b[0]);
 
@@ -107,14 +148,17 @@ export const TRANS = new Uint8Array(MAX_ID);
 export const SELF = new Uint8Array(MAX_ID);
 export const CROSS = new Uint8Array(MAX_ID); // Pflanzen: zwei gekreuzte Flächen statt Würfel
 export const FLAT = new Uint8Array(MAX_ID);  // flache Platte am Boden (Schiene)
+export const SHAPE_KINDS = ['', 'slab', 'stair', 'fence', 'wall', 'pane', 'door', 'ladder'];
+export const SHAPE = new Uint8Array(MAX_ID); // Formblock-Art (Index in SHAPE_KINDS), 0 = Würfel/Pflanze/Platte
 export const TILES = {};
 
 for (const [id, key, name, cat, tiles, p] of DEF) {
   if (BLOCKS[id]) throw new Error('Block-Id doppelt: ' + id);
-  const b = { id, key, name, cat, tiles, solid: 1, opaque: 1, trans: 0, self: 0, emit: 0, hard: 1, tool: null, color: 0xdddddd, map: [200, 200, 210], icon: 0, inv: 1, logo: 0, station: null, tier: 0, shape: null, drop: 0, ...p };
+  const b = { id, key, name, cat, tiles, solid: 1, opaque: 1, trans: 0, self: 0, emit: 0, hard: 1, tool: null, color: 0xdddddd, map: [200, 200, 210], icon: 0, inv: 1, logo: 0, station: null, tier: 0, shape: null, drop: 0, dir: 0, full: 0, ...p };
   if (b.trans) b.opaque = 0;
   BLOCKS[id] = b; B[key] = id; NAMES[id] = name;
   SOLID[id] = b.solid; OPAQUE[id] = b.opaque; TRANS[id] = b.trans; SELF[id] = b.self; EMIT[id] = b.emit; CROSS[id] = b.shape === 'cross' ? 1 : 0; FLAT[id] = b.shape === 'flat' ? 1 : 0;
+  SHAPE[id] = Math.max(0, SHAPE_KINDS.indexOf(b.shape || ''));
   SKYBLOCK[id] = b.opaque || b.self ? 1 : 0;
   if (tiles) TILES[id] = tiles;
 }
@@ -122,4 +166,9 @@ export const isLogo = t => t >= LOGO0 && t < LOGO0 + LOGO_COUNT;
 export const SPECIAL_NAMES = NAMES.slice(SPECIAL0, SPECIAL0 + SPECIAL_COUNT);
 // alle wählbaren Blöcke in Anzeige-Reihenfolge
 export const INV_BLOCKS = BLOCKS.filter(b => b && b.inv).map(b => b.id);
+// Treppe in Blickrichtung: Grund-Id (Richtung 0) + Richtung aus dem Blickwinkel (steigt vom Spieler weg)
+export function stairFor(base, yaw) {
+  const fx = -Math.sin(yaw), fz = -Math.cos(yaw), d = Math.abs(fx) > Math.abs(fz) ? (fx > 0 ? 1 : 3) : (fz > 0 ? 2 : 0);
+  return base + d;
+}
 export const CROPS = [B.WHEAT0, B.WHEAT1, B.WHEAT2, B.WHEAT3]; // Wachstumsstufen

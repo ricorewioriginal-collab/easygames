@@ -1,7 +1,7 @@
 // Spielkern: Rendering, Chunk-Streaming, Physik-Schleife, Bauen/Abbauen, Tag-Nacht, Speicherstand.
 import * as THREE from 'three';
 import { World, B, CS, H, NAMES, LOGO0, SPECIAL0, SPECIAL_COUNT, isLogo, normGen } from './world.js';
-import { BLOCKS } from './blocks.js';
+import { BLOCKS, SHAPE, stairFor } from './blocks.js';
 import { BIOME_NAMES } from './worldgen.js';
 import { encodeEdits, decodeEdits, SAVE_VERSION } from './storage.js';
 import { QUALITY } from './settings.js';
@@ -985,6 +985,16 @@ export class Game {
       if (this.world.setBlock(t.x, t.y, t.z, to)) { this.record(t.x, t.y, t.z, t.type, to); this.swing = 1; playClick(); this.unsaved = true; this.onToast(to === B.SWITCH_ON ? 'Schalter an' : 'Schalter aus'); }
       return true;
     }
+    // Tür öffnen/schließen (die ganze Türsäule); mit einer Tür in der Hand oben drauf setzt man die zweite Hälfte
+    if (t && (t.type === B.DOOR || t.type === B.DOOR_OPEN) && !(type && SHAPE[type] === 6 && t.ny === 1)) {
+      if (!this.placeFirst) return false;
+      this.toggleDoor(t.x, t.y, t.z); return true;
+    }
+    // Stufe auf gleiche Stufe gesetzt: wird zum vollen Block
+    if (t && type === t.type && BLOCKS[type].full && t.ny === 1 && (this.mode === 'creative' || this.inv[type] > 0)) {
+      const full = BLOCKS[type].full;
+      if (this.world.setBlock(t.x, t.y, t.z, full)) { this.record(t.x, t.y, t.z, t.type, full); if (this.mode !== 'creative') this.inv[type]--; this.unsaved = true; this.swing = 1; playPlace(); this.onChange(); return true; }
+    }
     // Werkbank/Ofen benutzen statt daneben zu bauen (Kreativ: keine Rezepte, dort wird gebaut)
     if (t && this.mode !== 'creative' && BLOCKS[t.type] && BLOCKS[t.type].station) { this.onStation(BLOCKS[t.type].station); this.actCool = 0.5; return false; }
     if (type && armorOf(type)) return this.equip(type);
@@ -1005,12 +1015,21 @@ export class Game {
     // nicht in den eigenen Körper bauen
     const p = this.player, hw = 0.3;
     if (p.x + hw > x && p.x - hw < x + 1 && p.z + hw > z && p.z - hw < z + 1 && p.y + 1.8 > y && p.y < y + 1) return false;
-    if (!this.world.setBlock(x, y, z, type)) return false;
-    this.record(x, y, z, cur, type);
+    const put = SHAPE[type] === 2 ? stairFor(type, this.yaw) : type; // Treppe steigt in Blickrichtung
+    if (!this.world.setBlock(x, y, z, put)) return false;
+    this.record(x, y, z, cur, put);
     if (this.mode !== 'creative') this.inv[type]--;
     this.unsaved = true; this.swing = 1; playPlace(); this.onChange();
     this.questEvent('place', type);
     return true;
+  }
+
+  // Tür: alle übereinanderliegenden Türblöcke schalten gemeinsam
+  toggleDoor(x, y, z) {
+    const w = this.world, isD = v => v === B.DOOR || v === B.DOOR_OPEN, to = w.getBlock(x, y, z) === B.DOOR ? B.DOOR_OPEN : B.DOOR;
+    let y0 = y; while (y0 > 0 && isD(w.getBlock(x, y0 - 1, z))) y0--;
+    for (let yy = y0; yy < H && isD(w.getBlock(x, yy, z)); yy++) { const was = w.getBlock(x, yy, z); if (was !== to && w.setBlock(x, yy, z, to)) this.record(x, yy, z, was, to); }
+    this.swing = 1; this.unsaved = true; playClick();
   }
 
   selectSlot(i) { this.sel = ((i % 9) + 9) % 9; this.onChange(); }

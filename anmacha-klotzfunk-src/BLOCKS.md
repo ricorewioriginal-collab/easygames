@@ -85,6 +85,73 @@ Jeder Block hat eine feste Id. Ids stehen in Spielständen und werden nie umnumm
 | 77 | Funktor | Funktechnik | ja | ja | – | – | 2 | spitzhacke |
 | 78 | Funktor (offen) | – | – | – | – | – | 2 | spitzhacke |
 | 79 | Schiene | Funktechnik | – | – | – | – | 0.4 | – |
+| 80 | Steinziegel | Bauen | ja | ja | – | – | 1.5 | spitzhacke |
+| 81 | Glattstein | Bauen | ja | ja | – | – | 1.5 | spitzhacke |
+| 82 | Dunkle Bretter | Bauen | ja | ja | – | – | 1 | axt |
+| 83 | Birkenbretter | Bauen | ja | ja | – | – | 1 | axt |
+| 84 | Dachziegel | Bauen | ja | ja | – | – | 1.2 | spitzhacke |
+| 85 | Bücherregal | Bauen | ja | ja | – | – | 1 | axt |
+| 86 | Laterne | Licht | ja | ja | – | ja | 0.5 | – |
+| 87 | Kupferblock | Bauen | ja | ja | – | – | 2 | spitzhacke |
+| 88 | Eisenblock | Bauen | ja | ja | – | – | 2.4 | spitzhacke |
+| 89 | Strohballen | Natur | ja | ja | – | – | 0.4 | – |
+| 90 | Beton weiß | Bauen | ja | ja | – | – | 1.4 | spitzhacke |
+| 91 | Beton schwarz | Bauen | ja | ja | – | – | 1.4 | spitzhacke |
+| 92 | Beton rot | Bauen | ja | ja | – | – | 1.4 | spitzhacke |
+| 93 | Beton orange | Bauen | ja | ja | – | – | 1.4 | spitzhacke |
+| 94 | Beton gelb | Bauen | ja | ja | – | – | 1.4 | spitzhacke |
+| 95 | Beton grün | Bauen | ja | ja | – | – | 1.4 | spitzhacke |
+| 96 | Beton blau | Bauen | ja | ja | – | – | 1.4 | spitzhacke |
+| 97 | Beton lila | Bauen | ja | ja | – | – | 1.4 | spitzhacke |
+| 98 | Buntglas rot | Bauen | ja | – | ja | – | 0.3 | – |
+| 99 | Buntglas blau | Bauen | ja | – | ja | – | 0.3 | – |
+| 100 | Buntglas grün | Bauen | ja | – | ja | – | 0.3 | – |
+| 101 | Bretter-Stufe | Formen | ja | – | – | – | 1 | axt |
+| 102 | Bruchstein-Stufe | Formen | ja | – | – | – | 1.6 | spitzhacke |
+| 103 | Ziegel-Stufe | Formen | ja | – | – | – | 1.5 | spitzhacke |
+| 104 | Steinziegel-Stufe | Formen | ja | – | – | – | 1.5 | spitzhacke |
+| 105 | Sandstein-Stufe | Formen | ja | – | – | – | 1.2 | spitzhacke |
+| 106 | Marmor-Stufe | Formen | ja | – | – | – | 1.5 | spitzhacke |
+| 107 | Dunkle Bretter-Stufe | Formen | ja | – | – | – | 1 | axt |
+| 108 | Glattstein-Stufe | Formen | ja | – | – | – | 1.5 | spitzhacke |
+| 109 | Bretter-Treppe | Formen | ja | – | – | – | 1 | axt |
+| 110 | Bretter-Treppe | – | ja | – | – | – | 1 | axt |
+| 111 | Bretter-Treppe | – | ja | – | – | – | 1 | axt |
+| 112 | Bretter-Treppe | – | ja | – | – | – | 1 | axt |
+| 113 | Bruchstein-Treppe | Formen | ja | – | – | – | 1.6 | spitzhacke |
+| 114 | Bruchstein-Treppe | – | ja | – | – | – | 1.6 | spitzhacke |
+| 115 | Bruchstein-Treppe | – | ja | – | – | – | 1.6 | spitzhacke |
+| 116 | Bruchstein-Treppe | – | ja | – | – | – | 1.6 | spitzhacke |
+| 117 | Ziegel-Treppe | Formen | ja | – | – | – | 1.5 | spitzhacke |
+| 118 | Ziegel-Treppe | – | ja | – | – | – | 1.5 | spitzhacke |
+| 119 | Ziegel-Treppe | – | ja | – | – | – | 1.5 | spitzhacke |
+| 120 | Ziegel-Treppe | – | ja | – | – | – | 1.5 | spitzhacke |
+| 121 | Steinziegel-Treppe | Formen | ja | – | – | – | 1.5 | spitzhacke |
+| 122 | Steinziegel-Treppe | – | ja | – | – | – | 1.5 | spitzhacke |
+| 123 | Steinziegel-Treppe | – | ja | – | – | – | 1.5 | spitzhacke |
+| 124 | Steinziegel-Treppe | – | ja | – | – | – | 1.5 | spitzhacke |
+| 125 | Sandstein-Treppe | Formen | ja | – | – | – | 1.2 | spitzhacke |
+| 126 | Sandstein-Treppe | – | ja | – | – | – | 1.2 | spitzhacke |
+| 127 | Sandstein-Treppe | – | ja | – | – | – | 1.2 | spitzhacke |
+| 128 | Sandstein-Treppe | – | ja | – | – | – | 1.2 | spitzhacke |
+| 129 | Marmor-Treppe | Formen | ja | – | – | – | 1.5 | spitzhacke |
+| 130 | Marmor-Treppe | – | ja | – | – | – | 1.5 | spitzhacke |
+| 131 | Marmor-Treppe | – | ja | – | – | – | 1.5 | spitzhacke |
+| 132 | Marmor-Treppe | – | ja | – | – | – | 1.5 | spitzhacke |
+| 133 | Dunkle Bretter-Treppe | Formen | ja | – | – | – | 1 | axt |
+| 134 | Dunkle Bretter-Treppe | – | ja | – | – | – | 1 | axt |
+| 135 | Dunkle Bretter-Treppe | – | ja | – | – | – | 1 | axt |
+| 136 | Dunkle Bretter-Treppe | – | ja | – | – | – | 1 | axt |
+| 137 | Glattstein-Treppe | Formen | ja | – | – | – | 1.5 | spitzhacke |
+| 138 | Glattstein-Treppe | – | ja | – | – | – | 1.5 | spitzhacke |
+| 139 | Glattstein-Treppe | – | ja | – | – | – | 1.5 | spitzhacke |
+| 140 | Glattstein-Treppe | – | ja | – | – | – | 1.5 | spitzhacke |
+| 141 | Holzzaun | Formen | ja | – | – | – | 1 | axt |
+| 142 | Steinmauer | Formen | ja | – | – | – | 1.6 | spitzhacke |
+| 143 | Glasscheibe | Formen | ja | – | ja | – | 0.3 | – |
+| 144 | Holztür | Formen | ja | – | – | – | 1 | axt |
+| 145 | Holztür (offen) | – | – | – | – | – | 1 | axt |
+| 146 | Leiter | Formen | – | – | – | – | 0.4 | axt |
 
 **Spalten:** fest = man kann nicht hindurchlaufen · verdeckt = Nachbarflächen werden nicht gezeichnet · Härte × 0,9 = Abbauzeit mit der Hand in Sekunden (nur Überleben); das passende Werkzeug teilt sie durch sein Tempo · Stufe n+ = braucht mindestens eine Spitzhacke dieser Stufe (1 Holz, 2 Stein, 3 Kupfer, 4 Eisen), sonst lässt sich der Block nicht abbauen.
 

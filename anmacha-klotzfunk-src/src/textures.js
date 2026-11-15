@@ -463,11 +463,101 @@ const PAINT = [
     if (Math.abs(u - 0.22) < 0.055 || Math.abs(u - 0.78) < 0.055) return [...add(mix([150, 150, 158], [200, 200, 208], 1 - Math.abs(u - (u < 0.5 ? 0.22 : 0.78)) / 0.055), grain(x, y, 62, 6)), 255];
     if ((v * 4) % 1 < 0.42 && u > 0.08 && u < 0.92) return [...add(mix([104, 72, 42], [132, 94, 56], fbm(u, v, 6, 2, 172)), grain(x, y, 63, 8)), 255];
     return [0, 0, 0, 0];
+  },
+  // ab 76: Modernisierung (Etappe 9) – neue Baustoffe
+  // 76 Steinziegel: versetzte große Ziegel mit Fugen
+  (u, v, x, y) => {
+    const row = Math.floor(v * 4), gu = u * 2 + (row & 1) * 0.5, fu = gu % 1, fv = (v * 4) % 1;
+    let c = mix([112, 114, 120], [150, 152, 158], hash(Math.floor(gu), row, 180) * 0.5 + fbm(u, v, 6, 2, 181) * 0.5);
+    if (fu < 0.04 || fv < 0.08) c = [78, 78, 84]; else if (fv < 0.16) c = add(c, 12);
+    return [...add(c, grain(x, y, 70, 7)), 255];
+  },
+  // 77 Glattstein: polierte Platte mit hellem Rand
+  (u, v, x, y) => {
+    const e = Math.min(u, v, 1 - u, 1 - v);
+    let c = mix([150, 152, 158], [176, 178, 184], fbm(u, v, 3, 3, 182));
+    if (e < 0.04) c = [118, 120, 126]; else if (e < 0.08) c = add(c, 14);
+    return [...add(c, grain(x, y, 71, 4)), 255];
+  },
+  // 78 Dunkle Bretter, 79 Birkenbretter: Bretter neu eingefärbt
+  (u, v, x, y) => { const c = PAINT[8](u, v, x, y); return [c[0] * 0.5, c[1] * 0.4, c[2] * 0.34, 255]; },
+  (u, v, x, y) => { const c = PAINT[8](u, v, x, y); return [Math.min(255, c[0] * 1.2 + 30), Math.min(255, c[1] * 1.2 + 30), Math.min(255, c[2] * 1.15 + 34), 255]; },
+  // 80 Dachziegel: rote Schindeln in Reihen
+  (u, v, x, y) => {
+    const row = Math.floor(v * 5), gu = u * 4 + (row & 1) * 0.5, fv = (v * 5) % 1, fu = gu % 1;
+    let c = mix([150, 58, 44], [196, 86, 62], hash(Math.floor(gu), row, 183) * 0.5 + fbm(u, v, 6, 2, 184) * 0.4);
+    c = add(c, (fv - 0.5) * -40);
+    if (fv > 0.88 || fu < 0.05) c = [96, 34, 28];
+    return [...add(c, grain(x, y, 72, 8)), 255];
+  },
+  // 81 Bücherregal: zwei Bretter mit bunten Buchrücken
+  (u, v, x, y) => {
+    const fv = (v * 2) % 1;
+    if (fv < 0.14 || u < 0.06 || u > 0.94) { const c = PAINT[8](u, v, x, y); return [c[0] * 0.8, c[1] * 0.8, c[2] * 0.8, 255]; }
+    const k = Math.floor(u * 9) + Math.floor(v * 2) * 9, h = hash(k, 1, 185), top = 0.14 + hash(k, 2, 186) * 0.25;
+    if (fv < top) return [40, 28, 18, 255];
+    const C = [[160, 40, 40], [40, 90, 160], [50, 130, 60], [190, 150, 50], [110, 60, 140], [180, 100, 40]];
+    let c = C[Math.floor(h * C.length)];
+    if ((u * 9) % 1 < 0.1) c = add(c, -40); if (Math.abs(fv - 0.55) < 0.04) c = add(c, 50);
+    return [...add(c, grain(x, y, 73, 8)), 255];
+  },
+  // 82 Laterne: Eisenrahmen um warmes Licht
+  (u, v, x, y) => {
+    const e = Math.min(u, v, 1 - u, 1 - v);
+    if (e < 0.12 || Math.abs(u - 0.5) < 0.04) return [...add([52, 52, 58], grain(x, y, 74, 8)), 255];
+    const d = Math.hypot(u - 0.5, v - 0.55);
+    return [...mix([255, 236, 170], [255, 170, 60], Math.min(1, d * 2.2)), 255];
+  },
+  // 83 Kupferblock, 84 Eisenblock: Metallplatten mit Glanz und Nieten
+  ...[[[186, 98, 52], [236, 150, 92]], [[176, 178, 186], [226, 228, 234]]].map(([a, b], k) => (u, v, x, y) => {
+    const e = Math.min(u, v, 1 - u, 1 - v);
+    let c = mix(a, b, fbm(u, v, 3, 2, 187 + k) * 0.6 + (1 - v) * 0.4);
+    if (e < 0.05) c = add(c, -50); else if (e < 0.09) c = add(c, 26);
+    if (Math.hypot(((u * 2) % 1) - 0.5, ((v * 2) % 1) - 0.5) > 0.44 && e > 0.09 && e < 0.16) c = add(c, -30);
+    return [...add(c, grain(x, y, 75 + k, 5)), 255];
+  }),
+  // 85 Strohballen Seite, 86 oben
+  (u, v, x, y) => {
+    let c = mix([196, 160, 64], [232, 204, 100], pn(u * 3, v * 40, 3, 40, 189));
+    if (Math.abs(v - 0.3) < 0.04 || Math.abs(v - 0.7) < 0.04) c = [120, 84, 40];
+    return [...add(c, grain(x, y, 77, 12)), 255];
+  },
+  (u, v, x, y) => {
+    const d = Math.hypot(u - 0.5, v - 0.5);
+    let c = mix([200, 166, 70], [238, 210, 110], ((d * 14 + fbm(u, v, 6, 2, 190) * 2) % 1));
+    if (Math.abs(u - 0.3) < 0.04 || Math.abs(u - 0.7) < 0.04) c = [120, 84, 40];
+    return [...add(c, grain(x, y, 78, 10)), 255];
+  },
+  // 87–94 Beton in acht Farben: glatt mit feiner Körnung
+  ...[[236, 238, 240], [36, 38, 44], [190, 44, 44], [232, 120, 30], [240, 200, 40], [70, 160, 60], [40, 90, 190], [130, 60, 180]].map((col, k) => (u, v, x, y) =>
+    [...add(add(col, (fbm(u, v, 5, 3, 191 + k) - 0.5) * 18), grain(x, y, 79 + k, 7)), 255]),
+  // 95–97 Buntglas rot, blau, grün: Rahmen und getönte Scheibe
+  ...[[220, 60, 70], [70, 120, 230], [70, 200, 110]].map((col, k) => (u, v, x, y) => {
+    const e = Math.min(u, v, 1 - u, 1 - v);
+    if (e < 0.06) return [...add(mix(col, [255, 255, 255], 0.35), grain(x, y, 90 + k, 6)), 255];
+    const sh = (u + v) % 0.5 < 0.06 ? 40 : 0;
+    return [...add(col, sh), 120];
+  }),
+  // 98 Holztür: Rahmen, Füllung, kleines Fenster, Griff
+  (u, v, x, y) => {
+    const e = Math.min(u, 1 - u), c0 = PAINT[8](u, v, x, y);
+    let c = [c0[0] * 0.8, c0[1] * 0.68, c0[2] * 0.56];
+    if (e < 0.1 || v < 0.06 || v > 0.94 || Math.abs(v - 0.5) < 0.03) c = add(c, -34);
+    if (v < 0.4 && v > 0.12 && e > 0.18) return [150, 200, 230, 150];
+    if (Math.hypot(u - 0.8, v - 0.55) < 0.05) c = [210, 190, 90];
+    return [...c, 255];
+  },
+  // 99 Leiter: zwei Holme, Sprossen, Rest durchsichtig
+  (u, v, x, y) => {
+    if (Math.abs(u - 0.18) < 0.07 || Math.abs(u - 0.82) < 0.07 || ((v * 4) % 1 < 0.16 && u > 0.12 && u < 0.88)) {
+      const c = PAINT[8](u, v, x, y); return [c[0] * 0.85, c[1] * 0.8, c[2] * 0.75, 255];
+    }
+    return [0, 0, 0, 0];
   }
 ];
 export const TILE_COUNT = PAINT.length;
 // Kachel-Rand: leichte Kante, die jeden Block als Körper lesbar macht
-const BEVEL = new Set([0, 1, 2, 3, 4, 5, 6, 8, 14, 15, 18, 19, 25, 26, 27, 28, 29, 30, 31, 32, 33, 35, 37, 38, 39, 41, 42, 43, 45, 46, 47, 48, 49, 52, 53, 54, 55, 61, 63, 64, 65, 66, 67, 68, 69, 70, 73]);
+const BEVEL = new Set([76, 77, 78, 79, 80, 83, 84, 85, 87, 88, 89, 90, 91, 92, 93, 94, 0, 1, 2, 3, 4, 5, 6, 8, 14, 15, 18, 19, 25, 26, 27, 28, 29, 30, 31, 32, 33, 35, 37, 38, 39, 41, 42, 43, 45, 46, 47, 48, 49, 52, 53, 54, 55, 61, 63, 64, 65, 66, 67, 68, 69, 70, 73]);
 
 export function drawAtlas() {
   const cv = document.createElement('canvas');
