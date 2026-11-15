@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "2450dd4308e4",
- "generated": "2026-11-15T01:26:48+00:00",
- "commit": "45da79a52deed497ac9a6dbabf791fe262454af6",
+ "version": "dfc32eb56975",
+ "generated": "2026-11-15T02:28:43+01:00",
+ "commit": "83fb55a118d3d37262b07a06dbb4fce12b5d86ce",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10448,8 +10448,8 @@
   },
   {
    "p": "guides/zotik.json",
-   "s": 94184,
-   "h": "191520a8a9407b94416ad16e4afef1a0bb9bc0e9d36d57b0e59f5bc5304c6d5e"
+   "s": 95282,
+   "h": "d231f3a3beb673fce81abdd3356568e45cac8cae45a9f1b9ff2d5ea028198fdd"
   },
   {
    "p": "heute.html",
