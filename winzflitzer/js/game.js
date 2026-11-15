@@ -7,7 +7,9 @@
   // ---------------- Speicherstand
   var SAVE = WF.store.get('save', null) || {};
   SAVE.best = SAVE.best || {}; SAVE.stats = SAVE.stats || { races: 0, wins: 0, champs: 0, duels: 0 };
-  var SET = Object.assign({ sfx: true, music: true, q: TOUCH ? 1 : 2, zoom: 1, touch: 'dir', pad: 'classic', diff: 1 }, WF.store.get('set', {}));
+  var SET = Object.assign({ sfx: true, music: true, q: TOUCH ? 1 : 2, zoom: 1, touch: 'keys', diff: 1, steer: 1, vib: true }, WF.store.get('set', {}));
+  if (SET.touch !== 'stick') SET.touch = 'keys'; delete SET.pad; // frühere Auto-Lenkung gibt es nicht mehr
+  WF.Input.vibrate = SET.vib;
   function save() { WF.store.set('save', SAVE); }
   function saveSet() { WF.store.set('set', SET); }
   WF.Audio.sfx = SET.sfx; WF.Audio.music = SET.music;
@@ -89,7 +91,20 @@
       WF.Audio.song(T.theme.music);
     }
     this.vtmp = new THREE.Vector3(); this.gtmp = {};
-    this.lapShown = 0;
+    this.lapShown = 0; this.shake = 0;
+    if (!T.theme.water && T.theme.veh !== 'heli') this.skid = makeSkid(scene, [160, 320, 480][SET.q]);
+  }
+
+  // Bremsspuren: ein InstancedMesh als Ringpuffer (ein Draw-Call)
+  function makeSkid(scene, n) {
+    var geo = new THREE.PlaneGeometry(0.2, 0.62); geo.rotateX(-Math.PI / 2);
+    var mat = new THREE.MeshBasicMaterial({ color: 0x14121e, transparent: true, opacity: 0.3, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+    var m = new THREE.InstancedMesh(geo, mat, n); m.count = 0; m.frustumCulled = false; m.renderOrder = 1; scene.add(m);
+    return { m: m, n: n, i: 0, o: new THREE.Object3D() };
+  }
+  function skidMark(S, x, y, z, a) {
+    var o = S.o; o.position.set(x, y, z); o.rotation.set(0, a, 0); o.updateMatrix();
+    S.m.setMatrixAt(S.i, o.matrix); S.i = (S.i + 1) % S.n; if (S.m.count < S.n) S.m.count++; S.m.instanceMatrix.needsUpdate = true;
   }
 
   function marker(col, pi) {
@@ -99,20 +114,25 @@
 
   Race.prototype.dispose = function () { disposeScene(this.scene); WF.Audio.engines([]); };
 
-  Race.prototype.readInput = function (c) {
-    var o = c.inp, dev = c.dev;
+  // Eingabe des Spielers: voll manuell. Digitale Lenkung (Tasten, Steuerkreuz) wird weich hochgefahren, analoge bleibt direkt.
+  Race.prototype.readInput = function (c, dt) {
+    var o = c.inp, dev = c.dev, r = this.rin || (this.rin = {});
     if (dev === 'any') {
-      var best = { thr: 0, steer: 0, fire: false, dir: null, brake: false }, tmp = {};
-      var devs = ['kb', 'touch']; var P = WF.Input.pads(); for (var i = 0; i < P.length; i++) if (P[i]) devs.push('pad' + i);
+      var best = { thr: 0, steer: 0, fire: false, hb: false, analog: false }, tmp = {};
+      var devs = ['kb']; if (TOUCH) devs.push('touch'); var P = WF.Input.pads(); for (var i = 0; i < P.length; i++) if (P[i]) devs.push('pad' + i);
       devs.forEach(function (d) {
-        if (d === 'touch' && !TOUCH) return;
-        WF.Input.read(d, tmp, { padMode: SET.pad, autoGas: false });
+        WF.Input.read(d, tmp);
         if (Math.abs(tmp.thr) > Math.abs(best.thr)) best.thr = tmp.thr;
-        if (Math.abs(tmp.steer) > Math.abs(best.steer)) best.steer = tmp.steer;
-        if (tmp.fire) best.fire = true; if (tmp.dir && !best.dir) { best.dir = tmp.dir; best.brake = tmp.brake; }
+        if (Math.abs(tmp.steer) > Math.abs(best.steer)) { best.steer = tmp.steer; best.analog = tmp.analog; }
+        if (tmp.fire) best.fire = true; if (tmp.hb) best.hb = true;
       });
-      o.thr = best.thr; o.steer = best.steer; o.fire = best.fire; o.dir = best.dir; o.brake = best.brake;
-    } else WF.Input.read(dev, o, { padMode: SET.pad });
+      r.thr = best.thr; r.steer = best.steer; r.fire = best.fire; r.hb = best.hb; r.analog = best.analog;
+    } else WF.Input.read(dev, r);
+    var cur = c.steerS || 0, want = r.steer * [0.8, 1, 1.15][SET.steer == null ? 1 : SET.steer];
+    if (r.analog) cur = WF.lerp(cur, want, 1 - Math.exp(-dt * 22));
+    else { var rate = (want === 0 || want * cur < 0) ? 11 : 6.5; cur += WF.clamp(want - cur, -rate * dt, rate * dt); }
+    c.steerS = cur;
+    o.thr = r.thr; o.steer = WF.clamp(cur, -1, 1); o.hb = r.hb; o.fire = r.fire;
     if (o.fire && !this.lastFire[c.id]) this.sim.fire(c);
     this.lastFire[c.id] = o.fire;
   };
@@ -132,7 +152,7 @@
         if (this.kind !== 'attract') { msg('LOS!', '', 0.8); WF.Audio.play('go'); }
       }
     }
-    for (var i = 0; i < this.humans.length; i++) { var h = this.humans[i]; if (h.human) this.readInput(h); }
+    for (var i = 0; i < this.humans.length; i++) { var h = this.humans[i]; if (h.human) this.readInput(h, dt); }
     if (this.phase === 'roundEnd') { this.post -= dt; if (this.post <= 0) this.nextRound(); }
     var steps = Math.ceil(dt / (1 / 60)), hstep = dt / steps;
     for (var s = 0; s < steps; s++) sim.step(hstep);
@@ -154,15 +174,16 @@
     for (var i = 0; i < ev.length; i++) {
       var e = ev[i], c = e.a, hum = c && c.human, att = this.kind === 'attract', near = c && c.x != null && Math.hypot(c.x - this.cam.x, c.z - this.cam.z) < 30;
       switch (e.t) {
-        case 'wall': if (!att && near) WF.Audio.play('wall', Math.min(1, e.b / 14)); fx.burst(c.x, c.y + 0.4, c.z, 4, 3, 0.25, 0.35, '#ffe08a', 6); break;
-        case 'bump': if (!att && near) WF.Audio.play('bump', Math.min(1, e.b / 12)); fx.burst((c.x + e.a.x) / 2, c.y + 0.5, c.z, 5, 3, 0.3, 0.4, '#ffffff', 4); break;
-        case 'fall': if (!att && hum) { WF.Audio.play('fall'); msg('', 'Abgestürzt!', 1.2); } break;
+        case 'wall': if (!att && near) WF.Audio.play('wall', Math.min(1, e.b / 14)); fx.burst(c.x, c.y + 0.4, c.z, 4, 3, 0.25, 0.35, '#ffe08a', 6); if (hum) { this.feel(c, Math.min(1, e.b / 16), 0.5, 140); this.shake = Math.max(this.shake, Math.min(0.6, e.b / 30)); } break;
+        case 'bump': if (!att && near) WF.Audio.play('bump', Math.min(1, e.b / 12)); fx.burst((c.x + e.a.x) / 2, c.y + 0.5, c.z, 5, 3, 0.3, 0.4, '#ffffff', 4); if (hum) this.feel(c, Math.min(0.8, e.b / 14), 0.3, 110); break;
+        case 'fall': if (!att && hum) { WF.Audio.play('fall'); msg('', 'Abgestürzt!', 1.2); this.feel(c, 0.9, 0.9, 320); } break;
+        case 'mini': if (!att && hum) { WF.Audio.play('boost'); sub(e.b > 1.7 ? 'Super-Turbo!' : 'Mini-Turbo!', 0.8); this.feel(c, 0.2, 0.7, 180); } break;
         case 'lost': if (!att && hum) sub('Zurück auf die Strecke!', 1.2); break;
-        case 'land': if (!att && near) WF.Audio.play('land', e.b); fx.burst(c.x, c.y + 0.1, c.z, 6, 4, 0.4, 0.5, dust, 3); break;
-        case 'boost': if (!att && hum) WF.Audio.play('boost'); break;
+        case 'land': if (!att && near) WF.Audio.play('land', e.b); fx.burst(c.x, c.y + 0.1, c.z, 6, 4, 0.4, 0.5, dust, 3); if (hum) this.feel(c, e.b * 0.7, e.b * 0.4, 120); break;
+        case 'boost': if (!att && hum) { WF.Audio.play('boost'); this.feel(c, 0.1, 0.5, 200); } break;
         case 'shot': if (!att && near) WF.Audio.play('shot'); fx.burst(c.x + Math.sin(c.a), c.y + 0.6, c.z + Math.cos(c.a), 4, 4, 0.3, 0.25, '#ffd23f', 0); break;
         case 'boom': if (!att) WF.Audio.play('boom'); fx.burst(c.x, c.y, c.z, 12, 6, 0.5, 0.5, '#ff8c1a', 4); fx.burst(c.x, c.y, c.z, 6, 3, 0.7, 0.8, '#555555', -2); break;
-        case 'hit': if (!att && c.human) sub('Getroffen!', 1); break;
+        case 'hit': if (!att && c.human) { sub('Getroffen!', 1); this.feel(c, 1, 0.6, 300); } break;
         case 'pot': if (!att) WF.Audio.play('clack', 1); break;
         case 'clack': if (!att && near) WF.Audio.play('clack', Math.min(1, e.b / 10)); break;
         case 'lap':
@@ -187,6 +208,9 @@
     }
     ev.length = 0;
   };
+
+  // Rütteln am Controller des Spielers
+  Race.prototype.feel = function (c, strong, weak, ms) { if (c.dev && c.dev !== 'touch' && c.dev.indexOf('kb') !== 0) WF.Input.rumble(c.dev, strong, weak, ms); };
 
   Race.prototype.lapDone = function (c, t) {
     if (!this.bestGhostT || t < this.bestGhostT) { this.bestGhostT = t; this.bestRec = this.rec; }
@@ -296,6 +320,16 @@
         fx.spawn(c.x - Math.sin(c.a) * 0.6, c.y + 0.15, c.z - Math.cos(c.a) * 0.6, (Math.random() - 0.5) * 2, 1 + Math.random(), (Math.random() - 0.5) * 2, boat ? 0.35 : 0.28, 0.45, boat ? '#ffffff' : ({ breakfast: '#eadbc0', desk: '#dddddd', garden: '#9ccf8f', sandbox: '#e3c98a', pool: '#c9f0d8', workbench: '#ead7ae', kids: '#cfc8ff' }[th]), 4);
       if (fly && sp > 2 && Math.random() < 0.15) fx.spawn(c.x, c.y + 0.1, c.z, (Math.random() - 0.5) * 3, 0.3, (Math.random() - 0.5) * 3, 0.25, 0.4, '#b7e3a8', 0);
       if (c.stun > 0 && Math.random() < 0.5) fx.spawn(c.x, c.y + 0.8, c.z, 0, 1.5, 0, 0.3, 0.6, '#666666', -1);
+      // Drift: Funken (weiß → blau → orange = Mini-Turbo bereit) und Bremsspuren
+      var sa = Math.sin(c.a), ca = Math.cos(c.a), rx = c.x - sa * 0.45, rz = c.z - ca * 0.45;
+      if (c.drift && Math.random() < 0.7) { var side = Math.random() < 0.5 ? 0.34 : -0.34;
+        fx.spawn(rx + ca * side, c.y + 0.12, rz - sa * side, (Math.random() - 0.5) * 2, 1.2 + Math.random(), (Math.random() - 0.5) * 2, 0.16, 0.3, c.driftT > 1.7 ? '#ff8c1a' : c.driftT > 0.85 ? '#4d9bff' : '#e6ecff', 6); }
+      if (self.skid && c.grounded && c.fallT <= 0 && (c.drift || c.slip > 4.2 || (c.inp.thr < 0 && c.speed > 8))) {
+        if (c._sk == null || Math.hypot(c.x - c._skx, c.z - c._skz) > 0.38) {
+          skidMark(self.skid, rx + ca * 0.33, c.y + 0.03, rz - sa * 0.33, c.a); skidMark(self.skid, rx - ca * 0.33, c.y + 0.03, rz + sa * 0.33, c.a);
+          c._sk = 1; c._skx = c.x; c._skz = c.z;
+        }
+      } else c._sk = null;
     });
     // Billardkugeln
     if (sim.movers.length) {
@@ -329,10 +363,23 @@
     cam.x = WF.lerp(cam.x, tgt.x + cam.lx, k); cam.z = WF.lerp(cam.z, tgt.z + cam.lz, k); cam.y = WF.lerp(cam.y, Math.max(0, tgt.fallT > 0 ? cam.y : tgt.y), k);
     var asp = camera.aspect, wv = WF.clamp(34 * Math.sqrt(asp / 1.6), 17, 40) * [0.82, 1, 1.25][SET.zoom] * (this.kind === 'attract' ? 1.15 : 1);
     var dist = wv / (2 * Math.tan(20 * Math.PI / 180) * asp), tilt = 62 * Math.PI / 180;
-    camera.position.set(cam.x, cam.y + dist * Math.sin(tilt), cam.z + dist * Math.cos(tilt));
-    camera.lookAt(cam.x, cam.y, cam.z);
+    var shx = 0, shz = 0; if (this.shake > 0.01) { shx = (Math.random() - 0.5) * this.shake; shz = (Math.random() - 0.5) * this.shake; this.shake *= Math.exp(-dt * 9); }
+    camera.position.set(cam.x + shx, cam.y + dist * Math.sin(tilt), cam.z + dist * Math.cos(tilt) + shz);
+    camera.lookAt(cam.x + shx, cam.y, cam.z + shz);
     renderer.render(this.scene, camera);
     if (this.kind !== 'attract') this.hud();
+  };
+
+  // Übersichtsbild der Strecke mit Startaufstellung für den Ladebildschirm
+  Race.prototype.snapshot = function (box) {
+    var T = this.T, gr = T.theme.ground, asp = camera.aspect, cam2 = new THREE.PerspectiveCamera(40, asp, 1, 900);
+    var span = Math.max(gr.w / asp, gr.d) * 0.62, h = span / Math.tan(20 * Math.PI / 180);
+    cam2.position.set(gr.x, h * 0.86, gr.z + h * 0.5); cam2.lookAt(gr.x, 0, gr.z + gr.d * 0.04);
+    this.sim.cars.forEach(function (c) { c.mesh.position.set(c.x, c.y, c.z); c.mesh.rotation.y = c.a; c.mesh.shadow.position.set(c.x, c.y + 0.06, c.z); });
+    renderer.render(this.scene, cam2);
+    var src = renderer.domElement, c = document.createElement('canvas'), W = c.width = 960, H = c.height = 600, sw = src.width, sh = src.height, s = Math.max(W / sw, H / sh);
+    c.getContext('2d').drawImage(src, (W - sw * s) / 2, (H - sh * s) / 2, sw * s, sh * s);
+    box.innerHTML = ''; box.appendChild(c);
   };
 
   Race.prototype.hud = function () {
@@ -403,11 +450,11 @@
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
   // ---------------- Hauptschleife
-  var last = performance.now(), attractSkip = false, timeScale = 1;
+  var last = performance.now(), attractSkip = false, timeScale = 1, holdUntil = 0;
   function frame(now) {
     requestAnimationFrame(frame);
     var dt = Math.min(0.05, (now - last) / 1000); last = now;
-    if (document.hidden || !race) return;
+    if (document.hidden || !race || now < holdUntil) return;
     if (race.kind === 'attract') { attractSkip = !attractSkip; if (attractSkip && SET.q < 2) return; dt *= SET.q < 2 ? 2 : 1; dt = Math.min(dt, 0.05); }
     pollMenuInput();
     if (paused) return;
@@ -418,18 +465,61 @@
   }
   requestAnimationFrame(frame);
 
+  var KINDN = { race: 'Rennen', time: 'Zeitfahren', bonus: 'Bonusrunde', duel: 'Duell' };
+  var TIPS = [
+    'Halte <b>Drift</b> in engen Kurven – wer lange driftet, bekommt beim Loslassen einen <b>Mini-Turbo</b>. Blaue Funken: bereit, orange: Super-Turbo.',
+    'Pinke Pfeil-Streifen geben <b>Turbo</b>.',
+    'Über Lücken springst du nur mit <b>vollem Schwung</b>.',
+    'Milch, Öl und Seife sind <b>rutschig</b>, Honig und Sägespäne <b>bremsen</b>.',
+    'Im Duell gilt: Wer aus dem Bild fällt, <b>verliert ein Licht</b>. Bleib vorne!',
+    'Steckst du fest? <b>Bremse halten</b> fährt rückwärts.',
+    'Panzer schießen: Ein Treffer bringt Gegner kurz <b>ins Trudeln</b>.',
+    'Den <b>Kamera-Zoom</b> wechselst du im Rennen mit Select / Create / − oder der Taste C.',
+    'In der Meisterschaft bringt dich <b>Platz 1 oder 2</b> weiter. Der letzte Computer-Fahrer scheidet aus.',
+    'Lenken geht aus Sicht des Fahrers: <b>rechts heißt im Uhrzeigersinn</b> – egal, wohin dein Flitzer gerade zeigt.'
+  ];
+  function ctlHtml(gun) {
+    var L = [['gas', 'Gas'], ['brake', 'Bremse'], ['steer', 'Lenken'], ['drift', 'Drift']]; if (gun) L.push(['fire', 'Schießen']);
+    return L.map(function (a) { return '<span>' + WF.Input.glyph(a[0]) + ' ' + a[1] + '</span>'; }).join('');
+  }
+  function loading(cfg, cb) {
+    var T = getTrack(cfg.track), th = T.theme, v = WF.VEHICLES[th.veh], laps = cfg.laps && cfg.laps < 50 ? cfg.laps : T.def.laps, L = $('load'), bar = $('loadBar');
+    $('loadKick').textContent = (cfg.champ ? 'Meisterschaft' : KINDN[cfg.kind] || 'Rennen') + (cfg.kind === 'duel' ? '' : ' · ' + laps + ' Runden');
+    $('loadName').textContent = T.def.name;
+    $('loadSub').textContent = th.icon + ' ' + th.name + ' · ' + v.icon + ' ' + v.name;
+    var art = $('loadArt'); art.innerHTML = ''; art.appendChild(preview(cfg.track, 640, 400)); art.firstChild.className = 'flat';
+    $('loadCtl').innerHTML = WF.Input.last === 'touch' ? '<span>👆 Links lenken · rechts Gas, Bremse und Drift</span>' : ctlHtml(th.veh === 'tank');
+    $('loadTip').innerHTML = '💡 ' + TIPS[(Math.random() * TIPS.length) | 0];
+    hideScreens(); document.body.classList.remove('menu');
+    bar.style.transition = 'none'; bar.style.width = '0'; L.classList.remove('out'); L.hidden = false; void bar.offsetWidth; bar.style.transition = ''; bar.style.width = '55%';
+    var t0 = performance.now(); holdUntil = t0 + 1e9;
+    setTimeout(function () {
+      requestAnimationFrame(function () {
+        cb(); bar.style.width = '100%';
+        if (race && race.kind !== 'attract') try { race.snapshot(art); } catch (e) {}
+        var wait = Math.max(250, 1150 - (performance.now() - t0));
+        holdUntil = performance.now() + wait + 120;
+        setTimeout(function () { L.classList.add('out'); last = performance.now(); setTimeout(function () { L.hidden = true; }, 380); }, wait);
+      });
+    }, 60);
+  }
+  var ctlTimer = 0;
   function startRace(cfg) {
+    var play = cfg.kind !== 'attract';
+    if (play && !cfg._go) { loading(cfg, function () { cfg._go = true; try { startRace(cfg); } finally { delete cfg._go; } }); return; }
     if (race) race.dispose();
     paused = false; $('ovPause').hidden = true;
     race = new Race(cfg);
-    var play = cfg.kind !== 'attract';
     $('hud').hidden = !play;
     WF.Input.capture = play;
     if (play) {
       hideScreens();
       var gun = race.T.theme.veh === 'tank';
       var touchHuman = race.humans.some(function (h) { return h.dev === 'touch' || (h.dev === 'any' && TOUCH); });
-      WF.Input.touchOn(touchHuman, SET.touch === 'keys' ? 'keys' : 'dir', gun);
+      WF.Input.touchOn(touchHuman, SET.touch, gun);
+      document.body.classList.remove('menu', 'atHome', 'press');
+      var hc = $('hCtl'); hc.innerHTML = race.humans.length === 1 ? ctlHtml(gun) : ''; hc.classList.add('show');
+      clearTimeout(ctlTimer); ctlTimer = setTimeout(function () { hc.classList.remove('show'); }, 6500);
       $('mini').style.display = race.kind === 'duel' && race.cars.length > 2 ? 'none' : '';
       $('hPos').style.display = race.kind === 'race' ? '' : 'none';
       $('hTime').style.display = race.kind === 'duel' ? 'none' : '';
@@ -446,32 +536,60 @@
     WF.Audio.song(8);
   }
 
-  // ---------------- Menüs
-  var stack = [], current = 'sTitle';
+  // ---------------- Menüs (Konsolen-Stil: Kopfleiste, Kacheln, Knopf-Hinweise unten)
+  var stack = [], current = 'sPress';
+  var TITLES = { sPress: '', sTitle: '', sDriver: 'Fahrer', sTrack: 'Strecke', sLadder: '', sLobby: 'Mehrspieler', sResult: 'Ergebnis', sSettings: 'Optionen', sHelp: 'Steuerung' };
+  var PROMPTS = {
+    sPress: [['ok', 'Start']], sTitle: [['move', 'Auswählen'], ['ok', 'Bestätigen']], sDriver: [['ok', 'Auswählen'], ['back', 'Zurück']],
+    sTrack: [['tabs', 'Welt wechseln'], ['ok', 'Los'], ['back', 'Zurück']], sLadder: [['ok', 'Bestätigen'], ['back', 'Hauptmenü']],
+    sLobby: [['join', 'Beitreten'], ['ok', 'Bestätigen'], ['back', 'Zurück']], sResult: [['ok', 'Bestätigen']], sSettings: [['move', 'Ändern'], ['back', 'Zurück']],
+    sHelp: [['tabs', 'Ansicht'], ['back', 'Zurück']], pause: [['ok', 'Bestätigen'], ['back', 'Weiter']]
+  };
+  function prompts() {
+    var k = !$('ovPause').hidden ? 'pause' : current; var L = PROMPTS[k] || [];
+    $('pbar').innerHTML = L.map(function (p) { return '<span data-act="' + p[0] + '">' + WF.Input.glyph(p[0]) + ' ' + p[1] + '</span>'; }).join('');
+    var d = WF.Input.last, kd = WF.Input.kind();
+    $('tbDev').textContent = d === 'pad' ? '🎮 ' + ({ ps: 'PlayStation', switch: 'Switch', xbox: 'Xbox' }[kd]) : d === 'touch' ? '👆 Touch' : '⌨️ Tastatur';
+    var pt = $('pressTxt'); if (pt) pt.innerHTML = d === 'touch' ? 'Tippen zum Starten' : 'Drücke ' + WF.Input.glyph('ok');
+    if (current === 'sLobby') lobbyHint();
+    if (current === 'sHelp') buildHelp();
+    if (!$('ovPause').hidden) $('pCtl').innerHTML = race ? ctlHtml(race.T.theme.veh === 'tank') : '';
+  }
+  addEventListener('wf:input', function () { prompts(); if (WF.Input.last !== 'touch' && !focusEl && (current || !$('ovPause').hidden)) autoFocus(); });
+  function clock() { var d = new Date(); $('tbClock').textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  clock(); setInterval(clock, 15000);
   function hideScreens() { document.querySelectorAll('.scr').forEach(function (s) { s.classList.remove('on'); }); current = null; }
   function show(id, noPush) {
-    if (!noPush && current && current !== id) stack.push(current);
+    if (!noPush && current && current !== id && current !== 'sPress') stack.push(current);
     hideScreens(); $(id).classList.add('on'); current = id;
+    var B = document.body.classList; B.add('menu'); B.toggle('atHome', id === 'sTitle' || id === 'sPress'); B.toggle('press', id === 'sPress');
+    $('tbTitle').textContent = TITLES[id] || '';
     $('hud').hidden = true; WF.Input.touchOn(false); WF.Input.capture = false;
     if (!race || race.kind !== 'attract') attract();
-    focusFirst();
+    setFocus(null); prompts();
+    if (WF.Input.last !== 'touch') autoFocus();
   }
   function back() {
     WF.Audio.play('click');
-    var id = stack.pop() || 'sTitle'; show(id, true);
+    if (!stack.length) { home(); return; }
+    show(stack.pop(), true);
   }
   function home() { stack = []; show('sTitle', true); titleStat(); }
   document.addEventListener('click', function (e) {
     WF.Audio.init();
-    var b = e.target.closest('[data-back]'); if (b) { back(); return; }
-    var g = e.target.closest('[data-go]'); if (g) { WF.Audio.play('click'); go(g.getAttribute('data-go')); }
+    var b = e.target.closest('[data-back]'); if (b) { menuBack(); return; }
+    var g = e.target.closest('[data-go]'); if (g) { WF.Audio.play('click'); go(g.getAttribute('data-go')); return; }
+    var a = e.target.closest('[data-act]'); if (a) { var k = a.getAttribute('data-act'); if (k === 'ok') activate(); else if (k === 'back') menuBack(); else if (k === 'tabs') tabsStep(1); return; }
+    if (current === 'sPress' && e.target.closest('#sPress')) pressStart();
   });
+  document.addEventListener('pointerover', function (e) { var t = e.target.closest && e.target.closest('[data-desc]'); if (t && current === 'sTitle') $('tileDesc').textContent = t.getAttribute('data-desc'); });
   addEventListener('pointerdown', function () { WF.Audio.init(); }, { once: false, passive: true });
   addEventListener('keydown', function () { WF.Audio.init(); });
+  function pressStart() { if (current !== 'sPress') return; WF.Audio.init(); WF.Audio.play('go'); home(); }
 
   function go(k) {
     if (k === 'settings') { buildSettings(); show('sSettings'); }
-    else if (k === 'help') show('sHelp');
+    else if (k === 'help') { helpKind = null; show('sHelp'); buildHelp(); }
     else if (k === 'champ') champStart();
     else if (k === 'h2h') h2hStart();
     else if (k === 'multi') lobby();
@@ -511,23 +629,31 @@
     return c;
   }
   function trace(g, T, w, h, s) { var gr = T.theme.ground; g.beginPath(); for (var i = 0; i < T.N; i += 3) { var x = w / 2 + (T.x[i] - gr.x) * s, y = h / 2 + (T.z[i] - gr.z) * s; i ? g.lineTo(x, y) : g.moveTo(x, y); } g.closePath(); }
+  // Strecken nach Welten in Reitern (L1/R1, Q/E oder antippen)
+  var trkTheme = 0, trkCb = null, tabStep = function () {};
   function pickTrack(title, cb) {
-    $('trkTitle').textContent = title;
-    var grid = $('trkGrid'); grid.innerHTML = '';
-    Object.keys(WF.THEMES).forEach(function (k) {
-      var th = WF.THEMES[k], v = WF.VEHICLES[th.veh];
-      var h4 = document.createElement('h4'); h4.textContent = th.icon + ' ' + th.name + ' – ' + v.icon + ' ' + v.name; grid.appendChild(h4);
-      var row = document.createElement('div'); row.className = 'trow'; grid.appendChild(row);
-      WF.TRACKS.filter(function (t) { return t.theme === k; }).forEach(function (t) {
-        var d = document.createElement('div'); d.className = 'tcard'; d.tabIndex = 0;
-        d.appendChild(preview(t.id, 160, 96));
+    $('trkTitle').textContent = title; trkCb = cb;
+    var keys = Object.keys(WF.THEMES);
+    function draw() {
+      var tabs = $('trkTabs'), pad = WF.Input.last === 'pad';
+      tabs.innerHTML = (pad ? WF.Input.padGlyph(4) : '') + keys.map(function (k, i) { var th = WF.THEMES[k]; return '<button class="tab' + (i === trkTheme ? ' on' : '') + '" data-t="' + i + '">' + th.icon + ' ' + esc(th.name) + '</button>'; }).join('') + (pad ? WF.Input.padGlyph(5) : '');
+      tabs.onclick = function (e) { var t = e.target.closest('[data-t]'); if (!t) return; trkTheme = +t.getAttribute('data-t'); WF.Audio.play('click'); draw(); };
+      var on = tabs.querySelector('.tab.on'); if (on) try { on.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {}
+      var k = keys[trkTheme], th = WF.THEMES[k], v = WF.VEHICLES[th.veh];
+      $('trkInfo').textContent = th.name + ' · gefahren wird mit: ' + v.icon + ' ' + v.name;
+      var grid = $('trkGrid'); grid.innerHTML = '';
+      WF.TRACKS.filter(function (t) { return t.theme === k; }).forEach(function (t, n) {
+        var d = document.createElement('div'); d.className = 'tcard' + (n === 0 ? ' pri' : ''); d.tabIndex = 0;
+        d.appendChild(preview(t.id, 320, 192));
         var b = SAVE.best[t.id];
-        d.insertAdjacentHTML('beforeend', '<b>' + esc(t.name) + '</b><small>' + (b && b.lap ? '⏱ ' + WF.fmtTime(b.lap) : '&nbsp;') + '</small>');
-        d.onclick = function () { WF.Audio.play('click'); cb(t.id); };
-        row.appendChild(d);
+        d.insertAdjacentHTML('beforeend', '<b>' + esc(t.name) + '</b><small>' + (t.laps || 3) + ' Runden' + (b && b.lap ? ' · Bestzeit ⏱ ' + WF.fmtTime(b.lap) : '') + '</small>');
+        d.onclick = function () { WF.Audio.play('click'); trkCb(t.id); };
+        grid.appendChild(d);
       });
-    });
-    show('sTrack');
+      setFocus(null); if (WF.Input.last !== 'touch') autoFocus();
+    }
+    tabStep = function (dir) { trkTheme = (trkTheme + dir + keys.length) % keys.length; WF.Audio.play('click'); draw(); };
+    show('sTrack'); draw();
   }
 
   // ----- Einzelrennen
@@ -711,7 +837,10 @@
       WF.Audio.play('click');
       pickTrack('👥 Strecke wählen', function (id) { multiRace(id); });
     };
-    show('sLobby');
+    show('sLobby'); lobbyHint();
+  }
+  function lobbyHint() {
+    $('lobHint').innerHTML = 'Zum Mitmachen <b>Gas geben</b>: ' + WF.Input.glyph('gas', 'kb').replace('↑', '↑') + ' (Pfeiltasten), <i class="g k">W</i> (W A S D), ' + WF.Input.padGlyph(0) + ' am Controller' + (TOUCH ? ' oder ein freies Feld antippen' : '') + '. Bis zu 4 Spieler. Gewertet wird wie im Duell: Wer die anderen aus dem Bild fährt, punktet.';
   }
   function lobbyJoin(dev) {
     if (lob.slots.some(function (s) { return s.dev === dev; })) return;
@@ -745,100 +874,155 @@
       } });
   }
 
-  // ----- Einstellungen
+  // ----- Optionen
+  function padStyle(v) { var n = window.EasyGamesPadNormal; if (v === undefined) return (n && n.style ? n.style() : SET.padstyle) || 'auto'; SET.padstyle = v; WF.Input.forceKind = v === 'auto' ? null : v; if (n && n.style) try { n.style(v); } catch (e) {} saveSet(); prompts(); }
   function buildSettings() {
     var L = [
-      ['Ton', 'sfx', [[true, 'An'], [false, 'Aus']]],
-      ['Musik', 'music', [[true, 'An'], [false, 'Aus']]],
-      ['Grafik', 'q', [[0, 'Sparsam'], [1, 'Normal'], [2, 'Schön']]],
-      ['Kamera', 'zoom', [[0, 'Nah'], [1, 'Normal'], [2, 'Weit']]],
-      ['Touch-Steuerung', 'touch', [['dir', 'Stick-Richtung'], ['keys', 'Tasten']]],
-      ['Controller-Lenkung', 'pad', [['classic', 'Klassisch'], ['dir', 'Stick-Richtung']]],
-      ['Gegner', 'diff', [[0, 'Leicht'], [1, 'Normal'], [2, 'Schwer']]]
+      ['🔊 Ton', 'sfx', [[true, 'An'], [false, 'Aus']]],
+      ['🎵 Musik', 'music', [[true, 'An'], [false, 'Aus']]],
+      ['✨ Grafik', 'q', [[0, 'Sparsam'], [1, 'Normal'], [2, 'Schön']]],
+      ['🎥 Kamera', 'zoom', [[0, 'Nah'], [1, 'Normal'], [2, 'Weit']]],
+      ['🛞 Lenkung', 'steer', [[0, 'Sanft'], [1, 'Normal'], [2, 'Direkt']]],
+      ['🎮 Controller-Symbole', 'padstyle', [['auto', 'Automatisch'], ['ps', 'PlayStation'], ['switch', 'Switch'], ['xbox', 'Xbox']]],
+      ['📳 Vibration', 'vib', [[true, 'An'], [false, 'Aus']]],
+      ['👆 Touch-Lenkung', 'touch', [['keys', 'Lenktasten ◀ ▶'], ['stick', 'Lenk-Schieber']]],
+      ['🤖 Gegner', 'diff', [[0, 'Leicht'], [1, 'Normal'], [2, 'Schwer']]]
     ];
     var el = $('setList');
-    el.innerHTML = L.map(function (r) { return '<div class="opt"><span>' + r[0] + '</span><div class="chips" data-k="' + r[1] + '">' + r[2].map(function (o) { return '<button class="chip' + (SET[r[1]] === o[0] ? ' on' : '') + '" data-v=\'' + JSON.stringify(o[0]) + '\'>' + o[1] + '</button>'; }).join('') + '</div></div>'; }).join('') +
-      '<p class="hint">Grafik „Sparsam“ schont Akku und ältere Handys. Änderungen an der Grafik wirken nach dem Neuladen.</p>';
+    el.innerHTML = L.map(function (r) { var cur = r[1] === 'padstyle' ? padStyle() : SET[r[1]]; return '<div class="opt"><span>' + r[0] + '</span><div class="chips" data-k="' + r[1] + '">' + r[2].map(function (o) { return '<button class="chip' + (cur === o[0] ? ' on' : '') + '" data-v=\'' + JSON.stringify(o[0]) + '\'>' + o[1] + '</button>'; }).join('') + '</div></div>'; }).join('') +
+      '<p class="hint">Grafik „Sparsam“ schont Akku und ältere Handys; sie wirkt ganz nach dem Neuladen. Die Controller-Belegung kannst du jederzeit mit Select + Start ändern.</p>';
     el.querySelectorAll('.chips').forEach(function (c) {
       chips(c, function (v) {
-        var k = c.getAttribute('data-k'); SET[k] = JSON.parse(v); saveSet();
+        var k = c.getAttribute('data-k'); v = JSON.parse(v);
+        if (k === 'padstyle') { padStyle(v); return; }
+        SET[k] = v; saveSet();
         if (k === 'sfx' || k === 'music') { WF.Audio.sfx = SET.sfx; WF.Audio.music = SET.music; WF.Audio.apply(); }
         if (k === 'q') renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, [1, 1.5, 2][SET.q]));
+        if (k === 'vib') { WF.Input.vibrate = v; if (v) WF.Input.rumble('any', 0.5, 0.5, 150); }
       });
     });
+  }
+
+  // ----- Steuerung (Tabelle je Controller-Art)
+  var helpKind = null, HK = [['ps', 'PlayStation'], ['switch', 'Switch'], ['xbox', 'Xbox'], ['kb', 'Tastatur'], ['touch', 'Touch']];
+  function helpStep(dir) { var i = HK.map(function (h) { return h[0]; }).indexOf(helpKind); helpKind = HK[(i + dir + HK.length) % HK.length][0]; WF.Audio.play('click'); buildHelp(); }
+  function tabsStep(dir) { if (current === 'sTrack') tabStep(dir); else if (current === 'sHelp') helpStep(dir); }
+  function buildHelp() {
+    if (!helpKind) helpKind = WF.Input.last === 'pad' ? WF.Input.kind() : WF.Input.last === 'touch' ? 'touch' : 'kb';
+    var k = helpKind, el = $('helpKinds');
+    el.innerHTML = HK.map(function (h) { return '<button class="chip' + (h[0] === k ? ' on' : '') + '" data-v="' + h[0] + '">' + h[1] + '</button>'; }).join('');
+    el.onclick = function (e) { var b = e.target.closest('.chip'); if (!b) return; helpKind = b.getAttribute('data-v'); WF.Audio.play('click'); buildHelp(); };
+    function P(list) { return list.map(function (i) { return i === 'ls' ? '<i class="g w stick">L</i>' : i === 'dpad' ? '<i class="g w">✚</i>' : WF.Input.padGlyph(i, k); }).join(' '); }
+    function K(t) { return t.split(' ').map(function (x) { return x === '/' || x === 'oder' ? x : '<i class="g k">' + x + '</i>'; }).join(' '); }
+    var rows = k === 'kb' ? [['Gas', K('↑ / W')], ['Bremse / Rückwärts', K('↓ / S')], ['Lenken', K('← → / A D')], ['Drift (Mini-Turbo)', K('Leertaste / Shift')], ['Schießen (Panzer)', K('Enter / Q E')], ['Pause', K('Esc / P')], ['Kamera-Zoom', K('C')], ['Menü', K('Enter') + ' bestätigen · ' + K('Esc') + ' zurück']]
+      : k === 'touch' ? [['Gas', 'grüner Knopf GAS (rechts unten)'], ['Bremse / Rückwärts', 'roter Knopf BREMSE'], ['Lenken', 'links ◀ ▶ antippen – oder in den Optionen der Lenk-Schieber'], ['Drift (Mini-Turbo)', 'blauer Knopf DRIFT, zusammen mit Gas'], ['Schießen (Panzer)', '💥'], ['Pause', '❚❚ oben rechts']]
+      : [['Gas', P([0]) + ' oder ' + P([7])], ['Bremse / Rückwärts', P([1]) + ' oder ' + P([6])], ['Lenken', P(['ls']) + ' oder ' + P(['dpad'])], ['Drift (Mini-Turbo)', P([2]) + ' oder ' + P([4])], ['Schießen (Panzer)', P([3]) + ' oder ' + P([5])], ['Pause', P([9])], ['Kamera-Zoom', P([8])], ['Menü', P([0]) + ' bestätigen · ' + P([1]) + ' zurück'], ['Belegung ändern', P([8]) + ' + ' + P([9])]];
+    $('helpCtl').innerHTML = '<tr><th>Aktion</th><th>Belegung</th></tr>' + rows.map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>'; }).join('') +
+      (k === 'kb' ? '<tr><td colspan="2" style="color:var(--muted);font-weight:600">Zu zweit an einer Tastatur: Spieler 1 fährt mit den Pfeilen, Shift rechts (Drift) und Enter (Schießen); Spieler 2 mit W A S D, Leertaste (Drift) und Q / E (Schießen).</td></tr>' : '');
   }
 
   // ----- Pause
   function pause(on) {
     if (!race || race.kind === 'attract') return;
     paused = on; $('ovPause').hidden = !on; WF.Audio.suspend(on);
-    $('pSound').textContent = '🔊 Ton: ' + (SET.sfx ? 'an' : 'aus'); $('pMusic').textContent = '🎵 Musik: ' + (SET.music ? 'an' : 'aus');
-    if (on) focusFirst(); else last = performance.now();
+    document.body.classList.toggle('paused', on);
+    $('pSound').textContent = 'Ton: ' + (SET.sfx ? 'an' : 'aus'); $('pMusic').textContent = 'Musik: ' + (SET.music ? 'an' : 'aus');
+    setFocus(null);
+    if (on) { prompts(); if (WF.Input.last !== 'touch') autoFocus(); } else last = performance.now();
   }
   $('bPause').onclick = function () { pause(true); };
   $('pCont').onclick = function () { pause(false); };
   $('pRestart').onclick = function () { var cfg = race.cfg; pause(false); startRace(cfg); };
   $('pQuit').onclick = function () {
-    var k = race.kind; pause(false); WF.Audio.suspend(false);
+    pause(false); WF.Audio.suspend(false);
     if (race.cfg.champ && SAVE.champ && !SAVE.champ.over) {
       // Aufgeben in der Meisterschaft kostet ein Leben
       SAVE.champ.lives--; if (SAVE.champ.lives <= 0) SAVE.champ.over = true; SAVE.champ.opp = null; save();
     }
     home();
   };
-  $('pSound').onclick = function () { SET.sfx = !SET.sfx; saveSet(); WF.Audio.sfx = SET.sfx; WF.Audio.apply(); this.textContent = '🔊 Ton: ' + (SET.sfx ? 'an' : 'aus'); };
-  $('pMusic').onclick = function () { SET.music = !SET.music; saveSet(); WF.Audio.music = SET.music; WF.Audio.apply(); this.textContent = '🎵 Musik: ' + (SET.music ? 'an' : 'aus'); };
-  document.addEventListener('visibilitychange', function () { if (document.hidden && race && race.kind !== 'attract' && !paused) pause(true); });
+  $('pSound').onclick = function () { SET.sfx = !SET.sfx; saveSet(); WF.Audio.sfx = SET.sfx; WF.Audio.apply(); this.textContent = 'Ton: ' + (SET.sfx ? 'an' : 'aus'); };
+  $('pMusic').onclick = function () { SET.music = !SET.music; saveSet(); WF.Audio.music = SET.music; WF.Audio.apply(); this.textContent = 'Musik: ' + (SET.music ? 'an' : 'aus'); };
+  document.addEventListener('visibilitychange', function () { if (document.hidden && race && race.kind !== 'attract' && !paused && !current) pause(true); });
 
-  // ----- Tastatur/Controller in Menüs (Fokus springt zwischen Knöpfen)
+  // ----- Tastatur/Controller in Menüs: Fokus springt räumlich zwischen Knöpfen, immer sichtbar wie an der Konsole
   var focusEl = null;
   function focusables() {
     var root = !$('ovPause').hidden ? $('ovPause') : current ? $(current) : null; if (!root) return [];
-    return Array.prototype.filter.call(root.querySelectorAll('.btn, .chip, .card-it[data-d], .tcard, .slot, a.back'), function (e) { return e.offsetParent !== null; });
+    return Array.prototype.filter.call(root.querySelectorAll('.btn, .chip, .card-it[data-d], .tcard, .slot, .tile, .dk, .tab, .pressGo'), function (e) { return e.offsetParent !== null; });
   }
-  function setFocus(e) { if (focusEl) focusEl.classList.remove('focus'); focusEl = e; if (e) { e.classList.add('focus'); try { e.scrollIntoView({ block: 'nearest' }); } catch (er) {} } }
-  function focusFirst() { setFocus(null); }
+  function setFocus(e) {
+    if (focusEl) focusEl.classList.remove('focus'); focusEl = e;
+    if (e) { e.classList.add('focus'); try { e.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (er) {} if (e.hasAttribute('data-desc')) $('tileDesc').textContent = e.getAttribute('data-desc'); }
+  }
+  function autoFocus() {
+    var list = focusables(); if (!list.length) return;
+    var pick = list.filter(function (e) { return e.classList.contains('sel'); })[0] || list.filter(function (e) { return e.classList.contains('pri'); })[0] || list[0];
+    setFocus(pick);
+  }
   function move(dx, dy) {
     var list = focusables(); if (!list.length) return;
-    if (!focusEl || list.indexOf(focusEl) < 0) { setFocus(list.filter(function (e) { return e.classList.contains('pri'); })[0] || list[0]); return; }
+    if (!focusEl || list.indexOf(focusEl) < 0) { autoFocus(); return; }
     var r = focusEl.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2, best = null, bd = 1e9;
     list.forEach(function (e) {
       if (e === focusEl) return; var q = e.getBoundingClientRect(), x = q.left + q.width / 2 - cx, y = q.top + q.height / 2 - cy;
       var along = x * dx + y * dy; if (along <= 4) return;
       var d = along + Math.abs(x * dy + y * dx) * 2.2; if (d < bd) { bd = d; best = e; }
     });
-    if (best) { setFocus(best); WF.Audio.play('click'); }
+    if (best) { setFocus(best); WF.Audio.play('tick'); }
   }
-  function activate() { if (focusEl && focusables().indexOf(focusEl) >= 0) focusEl.click(); else move(0, 1); }
-  function menuBack() { if (!$('ovPause').hidden) { pause(false); return; } if (current && current !== 'sTitle') { var b = $(current).querySelector('[data-back]'); if (b) back(); else if (current === 'sLadder' || current === 'sResult') home(); } }
+  function activate() {
+    if (current === 'sPress') { pressStart(); return; }
+    if (!focusEl || focusables().indexOf(focusEl) < 0) { autoFocus(); return; }
+    var f = focusEl; f.click();
+    if (f.matches('.card-it[data-d]') && current === 'sDriver') $('drvOk').click(); // Fahrer gewählt = weiter wie an der Konsole
+  }
+  function menuBack() {
+    if (!$('ovPause').hidden) { pause(false); return; }
+    if (current === 'sPress' || !current) return;
+    if (current === 'sTitle') { WF.Audio.play('click'); stack = []; show('sPress', true); return; }
+    if (current === 'sLadder' || current === 'sResult') { WF.Audio.play('click'); home(); return; }
+    back();
+  }
+  function cycleZoom() { SET.zoom = (SET.zoom + 1) % 3; saveSet(); sub('Kamera: ' + ['Nah', 'Normal', 'Weit'][SET.zoom], 0.9); }
 
   function pollMenuInput() {
     var keys = WF.Input.takePressed(), pads = WF.Input.padEdges(), inRace = race && race.kind !== 'attract' && !paused && !current;
     keys.forEach(function (k) {
-      if (inRace) { if (k === 'Escape' || k === 'KeyP') pause(true); return; }
+      if (inRace) { if (k === 'Escape' || k === 'KeyP') pause(true); else if (k === 'KeyC') cycleZoom(); return; }
+      if (current === 'sPress') { if (k !== 'Escape' && k.indexOf('Shift') < 0) pressStart(); return; }
       if (current === 'sLobby') {
-        if (k === 'ArrowUp') { lobbyJoin('kbA'); return; } if (k === 'KeyW') { lobbyJoin('kbB'); return; }
-        if (k === 'ArrowDown' || k === 'ArrowLeft' || k === 'ArrowRight' || k === 'KeyA' || k === 'KeyS' || k === 'KeyD') return;
+        if (k === 'ArrowUp') { if (!lob.slots.some(function (s) { return s.dev === 'kbA'; })) { lobbyJoin('kbA'); return; } } if (k === 'KeyW') { lobbyJoin('kbB'); return; }
+        if (k === 'KeyA' || k === 'KeyS' || k === 'KeyD') return;
       }
       if (k === 'ArrowUp') move(0, -1); else if (k === 'ArrowDown') move(0, 1); else if (k === 'ArrowLeft') move(-1, 0); else if (k === 'ArrowRight') move(1, 0);
       else if (k === 'Enter' || k === 'Space' || k === 'NumpadEnter') activate();
       else if (k === 'Escape' || k === 'Backspace') menuBack();
+      else if (k === 'KeyQ' || k === 'PageUp') tabsStep(-1); else if (k === 'KeyE' || k === 'PageDown') tabsStep(1);
     });
     pads.forEach(function (p) {
       WF.Audio.init();
-      if (inRace) { if (p.b === 9) pause(true); return; }
+      if (inRace) { if (p.b === 9) pause(true); else if (p.b === 8) cycleZoom(); return; }
+      if (current === 'sPress') { if (p.b === 0 || p.b === 9) pressStart(); return; }
       if (current === 'sLobby' && p.b === 0 && !lob.slots.some(function (s) { return s.dev === 'pad' + p.i; })) { lobbyJoin('pad' + p.i); return; }
       if (p.b === 12) move(0, -1); else if (p.b === 13) move(0, 1); else if (p.b === 14) move(-1, 0); else if (p.b === 15) move(1, 0);
-      else if (p.b === 0 || p.b === 9) activate(); else if (p.b === 1) menuBack();
+      else if (p.b === 0 || (p.b === 9 && !$('ovPause').hidden)) activate(); else if (p.b === 1) menuBack(); else if (p.b === 9 && $('ovPause').hidden) activate();
+      else if (p.b === 4) tabsStep(-1); else if (p.b === 5) tabsStep(1);
     });
   }
 
-  // ----- Start
+  // ----- Start: Boot-Bildschirm, dann „Drücke Start“ über der Demo-Fahrt
   if (window.self !== window.top) { try { $('backLink').target = '_top'; } catch (e) {} }
+  if (SET.padstyle && SET.padstyle !== 'auto') WF.Input.forceKind = SET.padstyle;
   titleStat();
-  attract();
-  show('sTitle', true);
+  var bootBar = $('bootBar'); bootBar.style.width = '35%';
+  requestAnimationFrame(function () { setTimeout(function () {
+    $('bootTxt').textContent = 'Lade Strecke …';
+    attract(); bootBar.style.width = '100%';
+    show('sPress', true);
+    setTimeout(function () { $('boot').classList.add('out'); setTimeout(function () { $('boot').hidden = true; }, 400); }, 520);
+  }, 120); });
   // für automatische Tests: WF.game.timeScale = 4 lässt die Zeit schneller laufen
-  WF.game = { startRace: startRace, get race() { return race; }, home: home, SET: SET, SAVE: SAVE, parTime: parTime, pause: pause,
+  WF.game = { startRace: startRace, get race() { return race; }, renderer: renderer, home: home, SET: SET, SAVE: SAVE, parTime: parTime, pause: pause, show: show, go: go,
     get timeScale() { return timeScale; }, set timeScale(v) { timeScale = v; } };
 })();
