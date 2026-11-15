@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "03fbe447ca7a",
- "generated": "2026-11-15T14:49:17+01:00",
- "commit": "52349d4c625d10baf55d3713ce0b9f7ef04bdf0d",
+ "version": "d2951569963a",
+ "generated": "2026-11-15T15:04:35+01:00",
+ "commit": "6ea87c3c902b2dcdb0dd6794c535d553da7771f3",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1948,18 +1948,18 @@
   },
   {
    "p": "anmacha-kart/controller.js",
-   "s": 15651,
-   "h": "3d8c1084bff6337a062946e3c9cd21da0295a2c0c0ff571bc7354d8fc08d6df4"
+   "s": 15795,
+   "h": "bef1056dcf31516df07f6ad32c47458ced88da55b535136fd15f12c332028b79"
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 64771,
-   "h": "ee6c17eda4044dab6b15e418aea979b588b9f7bf0ad1490afa683737b26956de"
+   "s": 65045,
+   "h": "eb4ed9a44c233997518a39c46791edf04cb0f38ac2031ba3d34372e14beabad2"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 60054,
-   "h": "dcd2c375893224501641720b239c03fa2507d17d28bd5e099868761b56a50f0c"
+   "s": 60057,
+   "h": "1b1b48bf21c13d2439cfdb077ed6c55a787db4af9421f13ecc129078adbae7b7"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -2093,8 +2093,8 @@
   },
   {
    "p": "anmacha-kart/sim.js",
-   "s": 24751,
-   "h": "b1a327e4877f8df5d67994db609224e2a6921ddd7d3d9184a649157c58cfeb8d"
+   "s": 26290,
+   "h": "e20df5039ee111a8a0d849984ae8c0b2317b81c693fcbe2cee07e1ef62adbda5"
   },
   {
    "p": "anmacha-kart/sw.js",
@@ -2103,13 +2103,13 @@
   },
   {
    "p": "anmacha-kart/track.js",
-   "s": 27905,
-   "h": "782cf896965b9939bc448fe598e48865c52358b2f2994ff348ae2d7ad06e7d80"
+   "s": 31450,
+   "h": "64dee27d1c3c9992af51040a7983a786018c78ca4601f583231f2783e1116bf3"
   },
   {
    "p": "anmacha-kart/view.js",
-   "s": 152272,
-   "h": "ea71e73b9dca9d7c5243e2eb1c2764a6e3551991342f97320ef896c5423e54ff"
+   "s": 158255,
+   "h": "c253fc4c8e8b94b8868985f642c64b8a152c97b23227f257abac72f026a518de"
   },
   {
    "p": "anmacha-kart/zotik-fox.js",
@@ -10158,8 +10158,8 @@
   },
   {
    "p": "guides/anmacha-kart.json",
-   "s": 19310,
-   "h": "a1c97787fcb17f0de26c7d9d6bac95d8c119d58e03d51970b359b9785cc978bd"
+   "s": 19735,
+   "h": "e0678588b5c36f083cfc948162adc5ce5cb0cd5e60b5bf02fed90fc34a7df600"
   },
   {
    "p": "guides/anmacha-kartenrausch.json",
@@ -13659,7 +13659,7 @@
   {
    "p": "sync/catalog.json",
    "s": 253683,
-   "h": "58f37d13cd8069ffc35a398eda36a9e29a9095f7890cea6ed78288f131261841"
+   "h": "617ef43b8e10683c68bc4e1242f28a6e21841b195b56ef5af4e779836e90a075"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
