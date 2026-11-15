@@ -1261,9 +1261,9 @@
   {
    "id": "anmacha-kart",
    "title": "Kart Rush: Weltentour",
-   "desc": "Arcade-Kartrennen in 3D wie auf der Konsole: 33 Strecken mit eigener Form und Welt (Herz, Acht mit Brücke, Stern, Kleeblatt …), 13 Cups, 36 KayKit-Fahrer inkl. echtem Zotik und der Oma-Bande (aus Oma-Rennen) auf Raketen-Rollatoren, 11 Karts, Bananen, Steine & Blitze. Volle Controller-Steuerung (PlayStation, Nintendo, Xbox), Touch, Kippen zum Lenken – solo, im Splitscreen oder mit bis zu 4 Handys.",
+   "desc": "Arcade-Kartrennen in 3D wie auf der Konsole: 33 Strecken mit eigener Form und Welt, 14 Cups, 50/100/150 cc und Spiegel, Tandem mit zwei Fahrern pro Kart, Spezialitems, Geister-Zeitfahren, Battle in 3 Arenen (Ballonjagd, Funkpokal, Bomben-Duell) und Koop-Kart zu zweit. 36 Fahrer inkl. Zotik und der Oma-Bande, 11 Karts, 13 Radiosender. Volle Controller-Steuerung (PlayStation, Nintendo, Xbox), Touch, Kippen zum Lenken – solo, im Splitscreen oder mit bis zu 4 Handys.",
    "icon": "🏎️",
-   "img": "anmacha-kart/card.png",
+   "img": "anmacha-kart/card.jpg",
    "bg": "linear-gradient(145deg,#2a78e8,#00e5ff 50%,#ff2d95)",
    "glow": "rgba(42,120,232,.55)",
    "path": "anmacha-kart/",
@@ -1286,7 +1286,7 @@
      "Die Oma-Bande aus dem früheren Oma-Rennen fährt jetzt hier mit: sieben Omas und Opa Kalle, der Raketen-Rollator und sechs Stadt-Strecken im Kaffee-Cup, Kuchen-Cup und Großen Rentenpokal."
     ]
    },
-   "size": 4275087,
+   "size": 4324615,
    "files": 39,
    "offline": true,
    "cloud": {

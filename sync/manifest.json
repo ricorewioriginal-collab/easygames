@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e0430f206fa7",
- "generated": "2026-11-15T19:10:18+00:00",
- "commit": "297ff95a3675210be1242289d1d14eb8035b7c60",
+ "version": "5bf3e239cb9f",
+ "generated": "2026-11-15T20:18:11+01:00",
+ "commit": "db04a825dfee4fba27b633c5d0bb700d27d2ec74",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2142,9 +2142,9 @@
    "h": "93db6ea3263b100519b3bb7d98c011f5477b8944a69d83e12b4b6613e66892b6"
   },
   {
-   "p": "anmacha-kart/card.png",
-   "s": 8289,
-   "h": "b32c5e2050a1d402e7e5de3bb0c1e065a973afac3148a4c3d867208a4aa63b95"
+   "p": "anmacha-kart/card.jpg",
+   "s": 56299,
+   "h": "be9e9ae6265ef265fa18306578e2d88e5cc0c46c33312bb6cbadf7490b49ef53"
   },
   {
    "p": "anmacha-kart/chars.js",
@@ -2158,13 +2158,13 @@
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 87224,
-   "h": "2a6b55ee0e6fe2d914aaef3238f20ee13eb0aff73f01d80fe76e8478b3672679"
+   "s": 88742,
+   "h": "63e621f4e4d725dc8ebc45054eb14c2dd4fa5286632c73d27c31b24c6d0a71dc"
   },
   {
    "p": "anmacha-kart/index.html",
    "s": 68480,
-   "h": "06c5ede2c1aa6ab7a93c53824241992547096e7f52ef1a38082623e3bd887485"
+   "h": "dc020df64f2a2fb5439a814770f495892627d735d6d2a4289bc9e017e364c998"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -10063,8 +10063,8 @@
   },
   {
    "p": "games.js",
-   "s": 55675,
-   "h": "68759790c66b7a19040da0378632779d7126d9a258f2d70a114a04cbf62c3f64"
+   "s": 55740,
+   "h": "f3bc955ad9f32ad25b5caf8bd6960161c93971cbb252a99050c5dc18d72c7be8"
   },
   {
    "p": "gay-life/card.jpg",
@@ -13998,8 +13998,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 251134,
-   "h": "ca872c34b5a9d8de77f21aa102c58616defb6d0257fd15909d933ec31df00989"
+   "s": 251199,
+   "h": "b55b9efc409ee1450f8d8fc3747aa5e01fdb889b310aa87385ce4eb84b3e70c2"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -14872,6 +14872,11 @@
    "h": "761dd76889613419d7f81c5d885f69fe9d15e264e7e537475381bf1ddc19a005"
   },
   {
+   "p": "thumbs/anmacha-kart.webp",
+   "s": 29546,
+   "h": "4a94af0588e7014761e3c089be700ef1ec7766abd9e6323c1131fdb85be6ce7f"
+  },
+  {
    "p": "thumbs/anmacha-kartenrausch.webp",
    "s": 16864,
    "h": "8f0883a4a7e6fec0e71c336f5f511b85d74b6cf3c17b4db19b53583eac392774"
@@ -15143,8 +15148,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2188,
-   "h": "6a702e5ea8e30f6441549fc1c7dd4a9713c63d1e9a2434a5d4bc22caf9791827"
+   "s": 2216,
+   "h": "d465a583394390e56cde5f735be1ec80b5859cd443e8aef1414e1b23ed594716"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
