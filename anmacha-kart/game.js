@@ -114,7 +114,7 @@ const LD = (() => {
 // Ein Bild Zeit lassen, damit der Ladebalken zwischen schweren Schritten gezeichnet wird
 const nextPaint = () => new Promise(r => { let ok = false; const f = () => { if (!ok) { ok = true; r(); } }; requestAnimationFrame(() => setTimeout(f, 0)); setTimeout(f, 120); });
 
-if (JOIN) { LD.stop(); document.body.classList.add('ctrl'); loadScript('controller.js?v=20261115-wt9').then(() => window.startController && window.startController()).catch(e => { $('err').hidden = false; $('errTxt').textContent = e.message; }); }
+if (JOIN) { LD.stop(); document.body.classList.add('ctrl'); loadScript('controller.js?v=20261115-wt10').then(() => window.startController && window.startController()).catch(e => { $('err').hidden = false; $('errTxt').textContent = e.message; }); }
 else initHost();
 
 function initHost() {
@@ -265,7 +265,7 @@ function initHost() {
 
   // ------------------------------------------------------------------ Start: Solo / Mehrspieler
   LD.start(); LD.creep(0.4);
-  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt9'); }).then(() => LD.add(0.05))]).then(async () => {
+  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt10'); }).then(() => LD.add(0.05))]).then(async () => {
     View.init($('cv'), logos); LD.add(0.05, 'Rennstrecke wird gebaut …'); await nextPaint();
     curTrackIdx = save.track; View.setTrack(getTrack(save.track)); View.resize(innerWidth, innerHeight, 1); LD.add(0.1, 'Shader werden vorgewärmt …'); await nextPaint();
     View.warmup(); ready = true; $('loadInfo').textContent = `${TR.length} Strecken · ${KARTS.length} Karts · ${CHARS.length} Figuren · ${logos.length} Sender-Logos`; renderMenu();
@@ -409,12 +409,12 @@ function initHost() {
   function push(ph) { R && R.humans.forEach((p, i) => { if (!p.conn) return; const k = R.S.karts[i]; send(p.conn, { t: 'st', ph, pos: k.rank, n: R.S.karts.length, lap: Math.max(1, Math.min(R.S.laps, k.lap)), laps: R.S.laps, item: k.item ? ITEM_ICON[k.item] + (k.itemN > 1 ? '×' + k.itemN : '') : '', roll: k.itemT > 0, spd: Math.round(Math.max(0, k.vf) * 3.24), fin: k.finished }); }); }
   const isHuman = ki => ki < R.humans.length;
   // Eigenes Rennbild am Handy: einmal Strecke/Karts, dann ~20× pro Sekunde der Zustand (das Handy zeichnet und glättet selbst)
-  let raceNo = 0; const r2 = v => Math.round(v * 100) / 100, FXE = { coin: 1, boom: 1, splat: 1, smash: 1, rockBounce: 1, hit: 1, pad: 1, flash: 1, use: 1, fog: 1 };
+  let raceNo = 0; const r2 = v => Math.round(v * 100) / 100, FXE = { trick: 1, coin: 1, boom: 1, splat: 1, smash: 1, rockBounce: 1, hit: 1, pad: 1, flash: 1, use: 1, fog: 1 };
   function sendRace(p) { const S = R.S; send(p.conn, { t: 'race', r: R.rid, tr: R.tIdx, items: S.items, me: R.humans.indexOf(p), karts: S.karts.map(k => [k.logo, k.char, k.kart]), boxes: S.boxes.map(b => [r2(b.x), r2(b.z)]), coins: S.coins.map(c => [r2(c.x), r2(c.z), r2(c.f)]), pads: S.pads.map(q => [r2(q.x), r2(q.z), r2(q.th)]) }); }
   function sendSnap() {
     const S = R.S, vw = R.humans.filter(p => p.conn && p.view && !p.gone); if (!vw.length) { R.fxq.length = 0; return; }
     const k = []; for (const q of S.karts) k.push(r2(q.x), r2(q.z), Math.round(q.th * 1000) / 1000, r2(q.vf), r2(q.steer), r2(q.drift || 0), r2(q.spinT), q.boostT > 0 ? 1 : 0, Math.round(q.shieldT * 10) / 10, q.rough ? 1 : 0, q.dTier || 0, q.item || 0, q.itemN || 0);
-    const m = { t: 's', r: R.rid, k, b: S.boxes.map(b => b.cd > 0 ? 1 : 0).join(''), c: S.coins.map(c => c.cd > 0 ? 1 : 0).join(''), cn: S.karts.map(q => q.coins || 0), h: S.hazards.map(h => [h.kind, r2(h.x), r2(h.z)]), p: S.proj.map(q => [q.kind, r2(q.x), r2(q.z), r2(q.th)]), e: R.fxq.splice(0) };
+    const m = { t: 's', r: R.rid, k, b: S.boxes.map(b => b.cd > 0 ? 1 : 0).join(''), c: S.coins.map(c => c.cd > 0 ? 1 : 0).join(''), cn: S.karts.map(q => q.coins || 0), ai: S.karts.map(q => q.airT > 0 ? Math.round(q.airT * 100) / 100 + ':' + Math.round(q.airMax * 100) / 100 : 0), h: S.hazards.map(h => [h.kind, r2(h.x), r2(h.z)]), p: S.proj.map(q => [q.kind, r2(q.x), r2(q.z), r2(q.th)]), e: R.fxq.splice(0) };
     vw.forEach(p => send(p.conn, m));
   }
   // Vibration je Ereignis (Gamepad des Spielers bzw. Handy): [stark, schwach, ms]
@@ -430,6 +430,8 @@ function initHost() {
       case 'go': banner('LOS!', '', 800, '#7cff9a'); AUD.sfx.beep(true); break;
       case 'box': if (isHuman(e.k)) AUD.sfx.box(); break;
       case 'coin': if (isHuman(e.k)) AUD.sfx.coin(); break;
+      case 'jump': if (isHuman(e.k)) AUD.sfx.pad(); break;
+      case 'trick': if (isHuman(e.k)) { AUD.sfx.coin(); hmsg(e.k, 'TRICK!', 0.9); } break;
       case 'got': if (isHuman(e.k)) { AUD.sfx.got(); hmsg(e.k, ITEM_NAME[e.item], 1.2); } break;
       case 'use': if (isHuman(e.k)) { ({ boost: AUD.sfx.boost, shield: AUD.sfx.shield, rocket: AUD.sfx.rocket, mine: AUD.sfx.drop, banana: AUD.sfx.drop, rock: AUD.sfx.throw, flash: () => {}, fog: AUD.sfx.fogs })[e.item](); } break;
       case 'hit': if (isHuman(e.k)) { if (e.kind === 'banana') AUD.sfx.slip(); else if (e.kind !== 'flash') AUD.sfx.hit(); hmsg(e.k, { banana: 'AUSGERUTSCHT!', rock: 'FELSBROCKEN!', flash: 'FUNK-BLITZ!', rocket: 'GETROFFEN!', mine: 'STÖRSIGNAL!' }[e.kind] || 'GETROFFEN!', 1.3); const p = R.humans[e.k]; if (p.conn) send(p.conn, { t: 'ev', e: 'hit' }); } break;

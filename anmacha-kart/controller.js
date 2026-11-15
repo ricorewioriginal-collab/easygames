@@ -76,7 +76,7 @@ window.startController = function () {
     const a = m.k, n = M.karts.length; if (!Array.isArray(a) || a.length < n * 13) return;
     for (let i = 0; i < n; i++) { const k = M.karts[i], o = i * 13; k.px = M.ok ? k.x : a[o]; k.pz = M.ok ? k.z : a[o + 1]; k.pth = M.ok ? k.th : a[o + 2];
       k.x = a[o]; k.z = a[o + 1]; k.th = a[o + 2]; k.vf = a[o + 3]; k.steer = a[o + 4]; k.drift = a[o + 5]; k.spinT = a[o + 6]; k.boostT = a[o + 7]; k.shieldT = a[o + 8]; k.rough = !!a[o + 9]; k.dTier = a[o + 10]; k.item = a[o + 11] || null; k.itemN = a[o + 12]; }
-    const b = String(m.b || ''); M.boxes.forEach((x, i) => { x.cd = b[i] === '1' ? 1 : 0; }); const cs = String(m.c || ''); M.coins.forEach((x, i) => { x.cd = cs[i] === '1' ? 1 : 0; }); if (Array.isArray(m.cn)) M.karts.forEach((q, i) => { q.coins = m.cn[i] | 0; });
+    const b = String(m.b || ''); M.boxes.forEach((x, i) => { x.cd = b[i] === '1' ? 1 : 0; }); const cs = String(m.c || ''); M.coins.forEach((x, i) => { x.cd = cs[i] === '1' ? 1 : 0; }); if (Array.isArray(m.cn)) M.karts.forEach((q, i) => { q.coins = m.cn[i] | 0; }); if (Array.isArray(m.ai)) M.karts.forEach((q, i) => { const v = String(m.ai[i] || 0).split(':'); q.airT = +v[0] || 0; q.airMax = +v[1] || 1; });
     M.hazards = (m.h || []).map(h => ({ kind: h[0], x: h[1], z: h[2] })); M.proj = (m.p || []).map(q => ({ kind: q[0], x: q[1], z: q[2], th: q[3] }));
     if (Array.isArray(m.e) && m.e.length) M.events = M.events.concat(m.e);
     const now = performance.now(); if (M.ok) ivl += (Math.min(120, Math.max(25, now - recvAt)) - ivl) * 0.2; recvAt = now; M.ok = true;
