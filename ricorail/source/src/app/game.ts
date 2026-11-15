@@ -104,6 +104,7 @@ export class Game {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: this.qual.world.level !== 'low', powerPreference: 'high-performance' });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.qual.pixel));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping; this.renderer.toneMappingExposure = 1.15;
     this.renderer.shadowMap.enabled = this.qual.world.shadows;
     this.rig = new CameraRig(innerWidth / innerHeight);
     this.view = new WorldView(this.renderer, this.scene, s.world.net, this.qual.world);
