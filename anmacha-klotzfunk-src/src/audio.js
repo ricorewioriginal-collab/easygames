@@ -25,9 +25,12 @@ function burst(freq, dur, vol, type = 'lowpass', amb = false) {
   src.connect(f); f.connect(g); g.connect(ctx.destination);
   src.start(t); src.stop(t + dur + 0.02);
 }
-export const playBreak = () => burst(1100, 0.14, 0.5);
-export const playPlace = () => burst(600, 0.09, 0.4);
-export const playDeny = () => burst(220, 0.1, 0.3);
+// Vibration am Controller zu den Klängen (main.js setzt feel.fn, solange ein Controller benutzt wird)
+export const feel = { fn: null };
+const fx = k => { if (feel.fn) feel.fn(k); };
+export const playBreak = () => { fx('break'); burst(1100, 0.14, 0.5); };
+export const playPlace = () => { fx('place'); burst(600, 0.09, 0.4); };
+export const playDeny = () => { fx('deny'); burst(220, 0.1, 0.3); };
 
 // Ton mit Tonhöhen-Verlauf (f0 → f1), optional Vibrato; amb = Umgebungs-Lautstärke
 function voice(type, f0, f1, dur, vol, amb, vib = 0, delay = 0) {
@@ -68,8 +71,8 @@ export function playCall(key, d) { const v = Math.max(0, 1 - d / 20); if (v > 0 
 export const playClick = () => voice('square', 1800, 900, 0.04, 0.12, false);
 export const playClank = () => { burst(700, 0.25, 0.3, 'bandpass'); voice('square', 160, 110, 0.18, 0.1, false); };
 export const playBeep = () => voice('sine', 880, 880, 0.12, 0.12, false);
-export const playJingle = () => [0, 4, 7, 12].forEach((n, i) => voice('triangle', 523 * Math.pow(2, n / 12), 523 * Math.pow(2, n / 12), 0.22, 0.14, false, 0, i * 0.11));
-export const playHurt = () => { voice('sawtooth', 300, 120, 0.18, 0.16, false); burst(800, 0.1, 0.2); };
+export const playJingle = () => fx('done') || [0, 4, 7, 12].forEach((n, i) => voice('triangle', 523 * Math.pow(2, n / 12), 523 * Math.pow(2, n / 12), 0.22, 0.14, false, 0, i * 0.11));
+export const playHurt = () => { fx('hurt'); voice('sawtooth', 300, 120, 0.18, 0.16, false); burst(800, 0.1, 0.2); };
 
 // ---------- Radio-Block: kleiner Beat-Generator (Kick, Hi-Hat, Clap, Bass, Arpeggio) ----------
 const radio = { on: false, timer: 0, next: 0, step: 0, master: null, seed: 0, vol: 0 };

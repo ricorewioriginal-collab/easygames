@@ -165,6 +165,20 @@ Grenzen stehen in MULTIPLAYER.md (Vorrat der Gäste nur für den Besuch, Tiere n
 | Startmenü | Hauptliste links (Weiterspielen mit letzter Welt, Welten, Mitspielen, Einstellungen, Anleitung, Speicherdaten), Seiten rechts, Fußleiste mit Tastenhinweisen (Tastatur oder Gamepad) und Version; Pfeiltasten/Enter/Esc und Gamepad (Steuerkreuz, Stick, A, B); am Handy Liste und Seiten nacheinander mit Zurück-Taste | `index.html`, `src/main.js`, `src/style.css` |
 | Ladebildschirm | Logo, Weltname, Modus, Fortschrittsbalken mit echtem Stand (Erzeugen, dann Anteil fertiger Chunks im Umkreis über `game.areaReady`), wechselnde Tipps; höchstens 10 s, dann geht es trotzdem los. Nach dem Laden wartet das Spiel am PC auf einen Klick ins Bild statt ins Pausemenü zu springen | `src/main.js`, `src/game.js` |
 
+
+## 2j. Modernisierung, Etappe 8: vollständige Controller-Steuerung (1.10.0) ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Erkennung | Xbox, PlayStation (DualShock/DualSense), Switch (Pro/Joy-Con) über Name und Hersteller-Id; Tastensymbole je Hersteller (✕○□△, B/A/Y/X, A/B/X/Y) in Hinweisen, Einstellungen und Belegung | `src/gamepad.js` |
+| Belegung | alle 16 Tasten belegbar (16 Aktionen, neu: Rückgängig, Fliegen, Wegpunkt, Bauform, Aufträge auf R3 und Steuerkreuz), Tausch bei doppelter Taste, gespeichert in `settings.padKeys` (fehlt in alten Einstellungen ⇒ Standard) | `src/gamepad.js`, `src/main.js`, `src/settings.js` |
+| Menüs | alle Fenster (Start, Pause, Inventar, Handel, Karte, Einstellungen, Mehrspieler, Umkippen) räumlich mit Steuerkreuz/Stick, Halten wiederholt; Bestätigen/Zurück je Hersteller (Switch: A rechts); Regler und Listen mit ← →, rechter Stick scrollt; Inventar: LB/RB Reiter, LT/RT Hotbar, X in freien Platz; Karte: LB/RB Zoom, rechter Stick verschiebt; gelber Fokusrahmen | `src/main.js`, `src/style.css` |
+| Spiel | Rennen per L3 einrasten, feinere Kamera bei wenig Ausschlag, Empfindlichkeit/Totzone/Umkehren einstellbar; im Stand schleichen und aussteigen; Controller getrennt ⇒ Pause | `src/main.js` |
+| Vibration | Abbauen, Setzen, Verweigern, Treffer, Auftrag erledigt, Seilhaken; Chrome/Edge (`vibrationActuator`) und Firefox (`hapticActuators`), Stärke 0–100 %, Testknopf | `src/gamepad.js`, `src/audio.js` |
+| Easygames-Controller | gemeinsame `gamepad.js` (Modus „info“) liefert weiter Bildschirm-Tastatur für Textfelder und Belegungsübersicht; Beschriftungen auf die neue Belegung angepasst | `index.html` |
+
+Nicht prüfbar: echte Controller (nur simuliert, siehe TESTING.md). Native `confirm()`-Abfragen (Welt löschen) bedient der Browser selbst, dort hilft die gemeinsame easygames-`gamepad.js` nicht.
+
 ---
 
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)
@@ -190,7 +204,7 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 | 18 | Spielmodi | ✅ | 4 | Story nutzt die Überlebensregeln ✅ |
 | 19 | Multiplayer | ✅ | 6 | WebRTC ohne Server ✅; später Vorrat der Gäste beim Gastgeber speichern, Fahrzeuge teilen |
 | 20 | Smartphone | ✅ | 1 / 7 | Tasten verschiebbar ✅, Vorschau ✅; fehlt: Test auf echten Geräten |
-| 21 | Desktop | ✅ | 7 | Tastenbelegung ✅, Gamepad ✅; später Gamepad-Belegung ändern, Bedienung der Menüs mit dem Gamepad |
+| 21 | Desktop / Konsole | ✅ | 7 / 8 | Tastenbelegung ✅, Controller vollständig (Belegung, Menüs, Vibration, PS/Switch/Xbox) ✅; fehlt: Test mit echtem Controller |
 | 22 | Inventar/HUD | ✅ | 1 / 2 / 7 | Ziehen, Schnellverschieben, Sortieren, Haltbarkeit ✅; Stapel teilen entfällt (Vorrat je Blockart) |
 | 23 | Karten | ✅ | 7 | Weltkarte, Markierungen, Dörfer, Funkstationen ✅; später verlassene Minen eintragen |
 | 24 | Speicher | ✅ | 1 | IndexedDB erst nötig, wenn Welten > ~1 MB werden (siehe unten) |
@@ -223,7 +237,9 @@ npm install
 npm test          # alle Tests, ~2 s
 npm run bench     # Chunk-Erzeugung/Meshing messen (Seed 12345, Radius 6, Generator 2)
 npm run docs      # BLOCKS.md und CRAFTING.md aus dem Code erzeugen
-npm run build     # schreibt ../anmacha-klotzfunk/ (mit committen!)
+npm run build     # schreibt ../anmacha-klotzfunk/ (mit committen!); leert den Ordner: danach
+                  # git checkout -- ../anmacha-klotzfunk/{card.jpg,logo.svg,manifest.webmanifest,sw.js}
+                  # und (im Repo-Hauptordner) python3 tools/make-pwa.py anmacha-klotzfunk
 ```
 
 Regeln, die nicht gebrochen werden dürfen:
@@ -274,6 +290,6 @@ Damit sind alle geplanten Etappen umgesetzt. Offen bleibt vor allem, was sich hi
 - In alten Generator-1-Welten gibt es keine Erze, dort reichen die Werkzeuge bis Stein.
 - Ein Gegenstand in der Hand ist im schmalen Hochformat am Handy kaum zu sehen (liegt am Bildrand); die Hotbar zeigt ihn.
 - Es gibt kein Wetter und keine Türen, darum auch keine Wetter- oder Türgeräusche. Die Klänge wurden nur auf fehlerfreien Ablauf geprüft, nicht angehört.
-- Das Gamepad wurde nur simuliert (Gamepad-API im Browser-Test), nicht mit einem echten Controller. Menüs bedient man weiter mit Maus oder Finger; das Gamepad steuert das Spiel, schließt Fenster und pausiert.
+- Der Controller wurde nur simuliert (Gamepad-API im Browser-Test), nicht mit einem echten Gerät. Safari am iPhone kennt keine Vibration am Controller.
 - Ziehen & Ablegen im Inventar geht mit der Maus; am Handy legt Antippen in den gewählten Platz.
 - Die Weltkarte zeigt ein Farbfeld je 4×4 Blöcke; Bauwerke sind darauf nicht einzeln zu erkennen.
