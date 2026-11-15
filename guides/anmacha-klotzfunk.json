@@ -12,7 +12,8 @@
       "t": "Hauptmenü und Welten",
       "list": [
         "▶ Weiterspielen: lädt die zuletzt gespielte Welt.",
-        "🌍 Welten: 3 Speicherplätze. Auf einem freien Platz gibst du einen Startwert ein (leer = Zufall, 🎲 würfelt) und wählst den Modus und die Welt: Zufallswelt oder eine fertige Fanwelt. Gespeicherte Welten zeigen Modus, Startwert und Datum; ⤓ sichert eine Welt als Datei, ↺ lädt eine ältere Sicherung, 🗑 löscht.",
+        "✚ Neue Welt: Name und Modus wählen, dann das Gelände: Landschaft (Hügel, Wälder, Höhlen, ohne Bauwerke – Standard in Kreativ), Flach (ebenes Grasland) oder Abenteuer (mit Dörfern und Minen). Oder eine Vorlage zum Weiterbauen: Story-Welt, Taschi-Land, Zotik: Lunaris, AnMaCha oder Märchenwald. Startwert leer = Zufall, 🎲 würfelt.",
+        "🌍 Meine Welten: beliebig viele Welten, die zuletzt gespielte steht vorn. ✎ benennt um, ⧉ legt eine Kopie an, ⤓ sichert als Datei, ↺ lädt eine ältere Sicherung, 🗑 löscht.",
         "👥 Mitspielen: in der Welt eines Freundes spielen.",
         "⚙ Einstellungen, ❔ Anleitung und ☁ Speicherdaten (Welt als .json-Datei importieren, optionale Google-Sicherung).",
         "Neue Welten beginnen in einem Dorf mit großen, eingerichteten Häusern; Fanwelten beginnen auf ihrem Hauptplatz."
@@ -110,7 +111,7 @@
     {
       "t": "Speichern und Einstellungen",
       "list": [
-        "Welten liegen in diesem Browser, ohne Google-Anmeldung nur dort. Im Pausemenü gibt es 💾 Speichern; mit ⤓ sicherst du eine Welt als Datei, unter ☁ Speicherdaten lädst du sie wieder in einen freien Platz. Optional sichert die Google-Anmeldung deine Welten.",
+        "Welten liegen in diesem Browser, ohne Google-Anmeldung nur dort. Im Pausemenü gibt es 💾 Speichern; mit ⤓ sicherst du eine Welt als Datei, unter ☁ Speicherdaten lädst du sie als neue Welt wieder ein. Optional sichert die Google-Anmeldung deine Welten.",
         "Pausemenü: Sichtweite, Tageszeit, ⏱ Zeit läuft, 👥 Mehrspieler, 📜 Aufträge, Ton, Vollbild, Hauptmenü.",
         "Einstellungen: Grafik (Automatisch, Eco, Mobil, Standard, Hoch), Empfindlichkeiten, Tastengröße, drei Lautstärken (Effekte, Radio-Musik, Umgebung), Verhalten beim Umkippen, Linkshänder, Blick umkehren, Setzen-Wiederholung, Bildrate, Gegner im Überleben an/aus, Vorschau des nächsten Blocks, Tastenbelegung und Touch-Tasten verschieben."
       ]
@@ -315,7 +316,7 @@
     },
     {
       "q": "Wie komme ich in eine Fanwelt?",
-      "a": "🌍 Welten, freien Platz wählen, Modus Überleben oder Kreativ und unter „Welt“ z. B. Märchenwald wählen. Bestehende Welten bleiben, wie sie sind; eine Fanwelt gibt es nur für neue Welten."
+      "a": "✚ Neue Welt, Modus Überleben oder Kreativ und unter „Vorlagen zum Weiterbauen“ z. B. Märchenwald wählen. Bestehende Welten bleiben, wie sie sind; eine Fanwelt gibt es nur für neue Welten."
     }
   ]
 }

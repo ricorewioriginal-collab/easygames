@@ -15,10 +15,12 @@
 <div id="hud" hidden>
   <div id="cross"></div>
   <div id="info"></div>
-  <canvas id="mm" width="56" height="56" aria-label="Minikarte"></canvas>
-  <div id="quest" hidden></div>
+  <div id="hudL">
+    <canvas id="mm" width="56" height="56" aria-label="Minikarte"></canvas>
+    <canvas id="vit" width="200" height="34" hidden aria-label="Gesundheit und Hunger"></canvas>
+    <div id="quest" hidden></div>
+  </div>
   <div id="banner"></div>
-  <canvas id="vit" width="200" height="34" hidden aria-label="Gesundheit und Hunger"></canvas>
   <div id="mine"><i></i></div>
   <div id="bmode" hidden></div>
   <div id="hotbar"></div>
@@ -49,24 +51,39 @@
 </div>
 
 <section id="menu" class="screen">
-  <div class="mm-side">
+  <div class="mm-home">
     <header class="mm-head">
-      <div class="logo" aria-label="KLOTZFUNK 3D"><span class="word">KLOTZFUNK</span><span class="badge">3D</span></div>
+      <img class="logo-img" src="klotzfunk-logo.svg" alt="KLOTZFUNK 3D" width="1132" height="150" draggable="false">
       <p class="tag">Bauen · Entdecken · Funken</p>
     </header>
     <nav class="mm-nav" id="mmNav" aria-label="Hauptmenü">
       <button class="mi hero-mi" id="mContinue" hidden><i>▶</i><span><b>Weiterspielen</b><small id="mContinueSub"></small></span></button>
-      <button class="mi" data-page="worlds"><i>🌍</i><span><b>Welten</b><small>Neue Welt erzeugen oder Spielstand laden</small></span></button>
-      <button class="mi" id="mJoin"><i>👥</i><span><b>Mitspielen</b><small>In der Welt von Freunden spielen</small></span></button>
+      <button class="mi" data-page="new"><i>✚</i><span><b>Neue Welt</b><small>Kreativ, Überleben oder Story</small></span></button>
+      <button class="mi" data-page="worlds"><i>🌍</i><span><b>Meine Welten</b><small id="mWorldsSub">Laden, umbenennen, kopieren</small></span></button>
+      <button class="mi" id="mJoin"><i>👥</i><span><b>Mitspielen</b><small>Bei Freunden spielen</small></span></button>
       <button class="mi" id="mSettings"><i>⚙</i><span><b>Einstellungen</b><small>Grafik, Ton, Steuerung</small></span></button>
-      <button class="mi" data-page="help"><i>❔</i><span><b>Anleitung</b><small>Steuerung, Tipps und Inhalte</small></span></button>
+      <button class="mi" data-page="help"><i>❔</i><span><b>Anleitung</b><small>Steuerung und Tipps</small></span></button>
       <button class="mi" data-page="data"><i>☁</i><span><b>Speicherdaten</b><small>Import und Google-Sicherung</small></span></button>
     </nav>
   </div>
 
   <div class="mm-page" id="pgWorlds" hidden>
-    <div class="pg-head"><button class="pg-back" aria-label="Zurück">‹</button><h2>Welten</h2><span class="pg-sub">3 Speicherplätze</span></div>
+    <div class="pg-head"><button class="pg-back" aria-label="Zurück">‹</button><h2>Meine Welten</h2><span class="pg-sub" id="worldCount"></span></div>
     <div id="slots"></div>
+  </div>
+  <div class="mm-page" id="pgNew" hidden>
+    <div class="pg-head"><button class="pg-back" aria-label="Zurück">‹</button><h2>Neue Welt</h2></div>
+    <div class="nw">
+      <label class="nw-f"><span>Name</span><input id="nwName" maxlength="40" autocomplete="off" placeholder="Meine Welt"></label>
+      <div class="nw-f"><span>Spielmodus</span>
+        <div class="seg three" id="nwMode"><button data-mode="creative" class="on">🕊 Kreativ<small>alles, fliegen</small></button><button data-mode="survival">⛏ Überleben<small>Rohstoffe, Hunger</small></button><button data-mode="story">📜 Story<small>6 Kapitel</small></button></div>
+      </div>
+      <div class="nw-f"><span>Gelände</span><div class="wt" id="nwBase"></div></div>
+      <div class="nw-f"><span>Vorlagen zum Weiterbauen</span><div class="wt" id="nwTpl"></div></div>
+      <div class="nw-f" id="nwSeedF"><span>Startwert</span><div class="seed"><input id="nwSeed" placeholder="leer = Zufall" maxlength="24" autocomplete="off"><button id="nwDice" aria-label="Zufälliger Startwert" title="Zufälliger Startwert">🎲</button></div></div>
+      <p class="sub" id="nwInfo"></p>
+      <button class="go" id="nwGo">▶ Welt erzeugen</button>
+    </div>
   </div>
   <div class="mm-page" id="pgHelp" hidden>
     <div class="pg-head"><button class="pg-back" aria-label="Zurück">‹</button><h2>Anleitung</h2></div>
@@ -91,7 +108,7 @@
   <div class="mm-page" id="pgData" hidden>
     <div class="pg-head"><button class="pg-back" aria-label="Zurück">‹</button><h2>Speicherdaten</h2></div>
     <p class="sub">Welten liegen nur in diesem Browser. Mit ⤓ auf einer Welt sicherst du sie als Datei, hier liest du eine Datei wieder ein.</p>
-    <button id="mImport" class="mi small"><i>⤒</i><span><b>Welt importieren</b><small>.json-Datei in einen freien Platz laden</small></span></button>
+    <button id="mImport" class="mi small"><i>⤒</i><span><b>Welt importieren</b><small>.json-Datei als neue Welt laden</small></span></button>
     <input id="importFile" type="file" accept=".json,application/json" hidden>
     <h3>Google-Sicherung (optional)</h3>
     <div id="cloudbox"></div>
@@ -243,8 +260,10 @@
 </section>
 
 <section id="loading" class="screen" hidden>
+  <div class="ld-sky" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <div class="ld">
-    <div class="logo" aria-hidden="true"><span class="word">KLOTZFUNK</span><span class="badge">3D</span></div>
+    <img class="logo-img" src="klotzfunk-logo.svg" alt="" width="1132" height="150" draggable="false">
+    <div class="ld-cube" aria-hidden="true"><b></b><b></b><b></b></div>
     <div class="ld-world"><b id="ldName"></b><span id="ldMode"></span></div>
     <div class="ld-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="ldBar"><i id="ldFill"></i></div>
     <p class="ld-step" id="ldStep">Welt wird erzeugt …</p>

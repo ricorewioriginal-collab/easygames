@@ -339,8 +339,8 @@ export class Game {
     this.leaveMenu();
     // Generator: alte Spielstände (ohne Angabe) behalten exakt ihre Originalwelt
     this.gen = normGen(save.gen);
-    this.world = new World(save.seed, decodeEdits(save.edits), this.gen, save.preset);
-    this.preset = this.world.preset;
+    this.world = new World(save.seed, decodeEdits(save.edits), this.gen, save.preset, save.terrain);
+    this.preset = this.world.preset; this.terrain = this.world.terrain;
     this.world.rot = decodeRot(save.rot);
     this.name = save.name; this.seed = save.seed; this.mode = save.mode;
     this.time = save.time ?? 0.08;
@@ -374,7 +374,7 @@ export class Game {
     this.grave = g && [g.x, g.y, g.z].every(Number.isFinite) && g.inv && typeof g.inv === 'object' ? g : null;
     // Tiere: in Überleben und Kreativ (Story bleibt unverändert)
     this.mobs = new Mobs(this.world, save.seed, save.mobs, save.mode !== 'story' || this.gen >= 3);
-    if (this.gen >= 3) this.mobs.findVillages = (px, pz) => { // Dörfer der Region und der Nachbarregionen
+    if (this.world.structs) this.mobs.findVillages = (px, pz) => { // Dörfer der Region und der Nachbarregionen
       const out = [], rx = regionOf(px), rz = regionOf(pz);
       for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) { const v = villageIn(this.seed, rx + dx, rz + dz, this.gen); if (v && !(this.world.preset && fanSkip(rx + dx, rz + dz))) out.push(v); }
       return out;
@@ -488,7 +488,7 @@ export class Game {
       veh: this.vehicles && this.vehicles.list.length ? this.vehicles.serialize() : undefined,
       map: this.map ? this.map.serialize() : undefined,
       rot: this.world.rot.size ? encodeRot(this.world.rot) : undefined,
-      preset: this.preset || undefined
+      preset: this.preset || undefined, terrain: this.terrain || undefined
     };
   }
 
