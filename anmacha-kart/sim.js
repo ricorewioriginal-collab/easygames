@@ -19,13 +19,13 @@ const Sim = (() => {
 
   function create(opt) {                                   // opt: {track, laps, racers:[{name,logo,char,kart,human,skill,assist}], items:bool}
     const ccV = [0.8, 0.9, 1, 1][opt.cc == null ? 2 : opt.cc] || 1, ccA = [0.86, 0.93, 1, 1][opt.cc == null ? 2 : opt.cc] || 1, tr = opt.track, N = tr.N, sw = Math.min(1.35, tr.W / 20), S = { tr, laps: opt.laps || 3, items: opt.items !== false, free: !!opt.free, battle: BATTLE[opt.battle] ? opt.battle : null, t: 0, state: 'grid', count: 3.2, karts: [], boxes: [], hazards: [], proj: [], pads: [], events: [], finishedHumans: 0, humans: 0 };
-    if (S.battle) { S.lim = BATTLE[S.battle].lim; S.goal = BATTLE[S.battle].goal || 0; S.laps = 1e6; }
+    if (S.battle) { S.lim = BATTLE[S.battle].lim; S.goal = BATTLE[S.battle].goal || 0; S.laps = 1e6; S.teams = !!opt.teams; if (S.teams && S.battle === 'bomb') S.goal *= 2; }
     const nR = opt.racers.length, slot = opt.racers.map((_, k) => k); if (opt.shuffle) for (let a = slot.length - 1; a > 0; a--) { const b = Math.floor(Math.random() * (a + 1)), t = slot[a]; slot[a] = slot[b]; slot[b] = t; }
     opt.racers.forEach((r, k) => {
       const sl = slot[k], row = sl >> 1, side = sl % 2 ? 1 : -1, f0 = S.battle ? (N * sl / nR) % N : N - (row * 2 + 2); tr.at(f0, side * (S.battle ? tr.half * 0.45 : 4.5 * sw), tp); const kd = kartDef(r.kart || 0);
       const kt = { k, name: r.name, logo: r.logo, char: r.char, kart: r.kart || 0, assist: r.assist || 0, human: !!r.human, skill: r.skill == null ? 1 : r.skill, color: r.color, mv: kd.mv * ccV, ma: kd.ma * ccA, mt: kd.mt, mr: kd.mr, md: kd.md, mw: kd.mw,
         x: tp.x, z: tp.z, th: Math.atan2(tp.tx, tp.tz), vx: 0, vz: 0, vf: 0, steer: 0, drift: 0, driftT: 0, boostT: 0, spinT: 0, spinDur: 0, inv: 0, shieldT: 0, blindT: 0, slowT: 0, item: null, itemN: 0, itemT: 0, co: r.co, sp: r.sp || null, sp2: r.sp2 || null, sw: false, swT: 0, swPrev: false, item2: null, item2N: 0, fireT: 0, fireAt: 0, rp: -(row * 2 + 2), prevF: f0, f: f0, d: side * 4.5, i: f0 | 0, lap: 0, lapStart: 0, lapTimes: [], finished: false, finT: 0, rank: sl + 1, auto: !r.human, off: (Math.random() - 0.5) * 8, rough: false, hitT: 0, pulse: 0, draftT: 0, draftCharge: 0, itemPrev: false, speedVar: 0.96 + Math.random() * 0.06, dTier: 0, bal: S.battle === 'ball' ? 3 : 0, pts: 0, hold: 0, out: false, capCd: 0 };
-      if (S.battle) { kt.rp = 0; kt.prevF = f0; kt.lap = 1; if (kt.sp === 'comet') kt.sp = 'giga'; if (kt.sp2 === 'comet') kt.sp2 = 'giga'; }
+      if (S.battle) { kt.team = S.teams ? (r.team != null ? r.team : k % 2) : -1; kt.rp = 0; kt.prevF = f0; kt.lap = 1; if (kt.sp === 'comet') kt.sp = 'giga'; if (kt.sp2 === 'comet') kt.sp2 = 'giga'; }
       if (kt.human) S.humans++; S.karts.push(kt);
     });
     // Münzen: 8 Reihen à 3 auf wechselnden Spuren. Jede Münze gibt einen kleinen Schub und +0,5 % Spitze (max. 10).
@@ -99,8 +99,12 @@ const Sim = (() => {
     for (const i of ITEMS) { x -= w[i]; if (x <= 0) return i; } return 'boost';
   }
   // Treffer: dur = Dauer des Wegdrehens/Ausrutschens, keep = Resttempo
+  // Battle-Teams: Mitspieler im eigenen Team treffen sich nicht
+  const mate = (S, a, b) => !!(S.teams && a && b && a !== b && a.team === b.team);
+  function teamScore(S, t) { let v = 0; S.karts.forEach(k => { if (k.team !== t) return; v += S.battle === 'ball' ? (k.out ? 0 : 100 + k.bal) : S.battle === 'cap' ? k.hold : k.pts; }); return v; }
   function hit(S, k, by, kind, dur, keep) {
     if (k.inv > 0 || k.out) return false;
+    if (by >= 0 && mate(S, S.karts[by], k)) return false;
     if (k.shieldT > 0) { k.shieldT = 0; k.inv = 0.8; emit(S, { t: 'shieldHit', k: k.k }); return false; }
     k.coins = Math.max(0, (k.coins || 0) - 2); k.spinT = dur || 1.3; k.spinDur = k.spinT; k.inv = (dur || 1.3) + 1.1; k.vf *= keep == null ? 0.25 : keep; k.drift = 0; k.driftT = 0; k.boostT = 0; emit(S, { t: 'hit', k: k.k, by, kind: kind || 'hit' }); bHit(S, k, by); return true;
   }
@@ -114,7 +118,7 @@ const Sim = (() => {
   function bOut(S, k) { k.out = true; k.finished = true; k.finT = S.t; k.vx = k.vz = k.vf = 0; k.item = k.item2 = null; if (k.human) S.finishedHumans++; emit(S, { t: 'out', k: k.k, x: k.x, z: k.z }); }
   function bDrop(S, k) { const o = S.obj; o.holder = -1; o.cd = 0.6; k.capCd = 1.4; S.tr.nearest(k.x - Math.sin(k.th) * 4, k.z - Math.cos(k.th) * 4, -1, tmp); S.tr.at(tmp.f, clamp(tmp.d, -S.tr.half + 3, S.tr.half - 3), tp); o.x = tp.x; o.z = tp.z; o.f = tmp.f; o.d = clamp(tmp.d, -S.tr.half + 3, S.tr.half - 3); emit(S, { t: 'drop', k: k.k, x: o.x, z: o.z }); }
   // Battle: nächster Gegner vor (dir > 0) bzw. hinter (dir < 0) dem Kart innerhalb von d Metern
-  function bNear(S, k, d, dir) { const fx = Math.sin(k.th), fz = Math.cos(k.th); return S.karts.some(o => { if (o === k || o.out) return false; const dx = o.x - k.x, dz = o.z - k.z, f = dx * fx + dz * fz, l = Math.abs(dx * fz - dz * fx); return f * dir > 0 && Math.abs(f) < d && l < 9; }); }
+  function bNear(S, k, d, dir) { const fx = Math.sin(k.th), fz = Math.cos(k.th); return S.karts.some(o => { if (o === k || o.out || mate(S, k, o)) return false; const dx = o.x - k.x, dz = o.z - k.z, f = dx * fx + dz * fz, l = Math.abs(dx * fz - dz * fx); return f * dir > 0 && Math.abs(f) < d && l < 9; }); }
   function useItem(S, k) {
     const it = k.item; if (!it || k.itemT > 0) return; const base = it.replace('3', ''), left = Math.max(0, k.itemN - 1); k.itemN = left; if (!left) k.item = null; emit(S, { t: 'use', k: k.k, item: base, left });
     const fx = Math.sin(k.th), fz = Math.cos(k.th);
@@ -125,7 +129,7 @@ const Sim = (() => {
     else if (base === 'rock') S.proj.push({ kind: 'rock', x: k.x + fx * (k.aim < 0 ? -3.5 : 3), z: k.z + fz * (k.aim < 0 ? -3.5 : 3), th: k.th + (k.aim < 0 ? Math.PI : 0) + (Math.random() - 0.5) * 0.12, owner: k.k, _si: k.i, t: 5.5, spd: 50 + Math.max(0, k.vf) * 0.6, arm: 0.2, bounces: 0 });
     else if (base === 'bomb') S.proj.push({ kind: 'bomb', x: k.x + fx * (k.aim < 0 ? -3.5 : 3), z: k.z + fz * (k.aim < 0 ? -3.5 : 3), th: k.th + (k.aim < 0 ? Math.PI : 0), owner: k.k, _si: k.i, t: 2.2, spd: k.aim < 0 ? 9 : 30 + Math.max(0, k.vf) * 0.55, arm: 0.45, bounces: 0 });
     else if (base === 'rocket') {
-      let tg = -1, best = 1e9; S.karts.forEach(o => { if (o === k || o.out) return; if (S.battle) { const dx = o.x - k.x, dz = o.z - k.z, d = Math.hypot(dx, dz); if (d < 140 && (dx * fx + dz * fz) / (d || 1) > 0.2 && d < best) { best = d; tg = o.k; } return; } const dr = o.rp - k.rp; if (dr > 0 && dr < 90 && dr < best) { best = dr; tg = o.k; } });
+      let tg = -1, best = 1e9; S.karts.forEach(o => { if (o === k || o.out || mate(S, k, o)) return; if (S.battle) { const dx = o.x - k.x, dz = o.z - k.z, d = Math.hypot(dx, dz); if (d < 140 && (dx * fx + dz * fz) / (d || 1) > 0.2 && d < best) { best = d; tg = o.k; } return; } const dr = o.rp - k.rp; if (dr > 0 && dr < 90 && dr < best) { best = dr; tg = o.k; } });
       S.proj.push({ kind: 'rocket', x: k.x + fx * 2.5, z: k.z + fz * 2.5, th: k.th, owner: k.k, _si: k.i, target: tg, t: 7, spd: 62, arm: 0.25 });
     } else if (base === 'flash') { const hitIds = []; S.karts.forEach(o => { if (o !== k && o.rp > k.rp && !o.finished && hit(S, o, k.k, 'flash', 1.7, 0.1)) hitIds.push(o.k); }); emit(S, { t: 'flash', k: k.k, ids: hitIds }); }
     else if (base === 'giga') S.proj.push({ kind: 'giga', x: k.x + fx * 3.5, z: k.z + fz * 3.5, th: k.th, owner: k.k, _si: k.i, t: 6.5, spd: 46 + Math.max(0, k.vf) * 0.5, arm: 0.3, bounces: 0 });
@@ -139,7 +143,7 @@ const Sim = (() => {
   function botInput(S, k) {
     const tr = S.tr, N = tr.N, la = 7 + Math.min(10, Math.abs(k.vf) * 0.28), f = k.f + la; let off = k.off;
     // Battle: seitlich auf das Ziel (Pokal, Pokalträger, nächster Gegner) zuhalten
-    if (S.battle && (k.bT == null || (k.bT -= S.dt || 0.016) <= 0)) { k.bT = 0.4; k.tgD = null; k.tg = null; if (S.battle) { const o = S.obj; let tg = null; if (o && o.holder !== k.k) tg = o.holder >= 0 ? S.karts[o.holder] : o; if (!tg) { let bd = 1e9; S.karts.forEach(q => { if (q === k || q.out) return; let df = q.f - k.f; if (df < 0) df += N; if (df < bd) { bd = df; tg = q; } }); } if (tg) { if (tg.d == null) { tr.nearest(tg.x, tg.z, -1, tmp); tg.d = tmp.d; } let df = (tg.f == null ? 0 : tg.f) - k.f; if (df < 0) df += N; if (df < 70) { k.tgD = tg.d; k.tg = tg; } } } }
+    if (S.battle && (k.bT == null || (k.bT -= S.dt || 0.016) <= 0)) { k.bT = 0.4; k.tgD = null; k.tg = null; if (S.battle) { const o = S.obj; let tg = null; if (o && o.holder !== k.k && !(o.holder >= 0 && mate(S, k, S.karts[o.holder]))) tg = o.holder >= 0 ? S.karts[o.holder] : o; if (!tg) { let bd = 1e9; S.karts.forEach(q => { if (q === k || q.out || mate(S, k, q)) return; let df = q.f - k.f; if (df < 0) df += N; if (df < bd) { bd = df; tg = q; } }); } if (tg) { if (tg.d == null) { tr.nearest(tg.x, tg.z, -1, tmp); tg.d = tmp.d; } let df = (tg.f == null ? 0 : tg.f) - k.f; if (df < 0) df += N; if (df < 70) { k.tgD = tg.d; k.tg = tg; } } } }
     if (S.battle && k.tgD != null) off = k.tgD;
     tr.at(f, clamp(off, -tr.half + 4, tr.half - 4), tp);
     if (k.tg) { const dx = k.tg.x - k.x, dz = k.tg.z - k.z, dd = Math.hypot(dx, dz); if (dd < 30 && (dx * Math.sin(k.th) + dz * Math.cos(k.th)) > dd * 0.35) { tp.x = k.tg.x; tp.z = k.tg.z; } }
@@ -285,7 +289,7 @@ const Sim = (() => {
         attacker.vf = Math.max(0, attacker.vf * 0.96);
         emit(S, { t: 'bump', k: attacker.k, o: victim.k, v: impact });
         // Battle: mit Turbo rammen klaut einen Ballon bzw. den Pokal
-        if (S.battle && attacker.boostT > 0 && impact > 5 && victim.inv <= 0) {
+        if (S.battle && attacker.boostT > 0 && impact > 5 && victim.inv <= 0 && !mate(S, attacker, victim)) {
           if (S.battle === 'ball' && victim.bal > 0) { victim.bal--; attacker.bal = Math.min(5, attacker.bal + 1); victim.inv = 1.5; emit(S, { t: 'steal', k: attacker.k, o: victim.k }); if (victim.bal <= 0) bOut(S, victim); }
           else if (S.battle === 'cap' && S.obj.holder === victim.k) { S.obj.holder = attacker.k; victim.capCd = 1.4; victim.inv = 1.2; emit(S, { t: 'steal', k: attacker.k, o: victim.k }); }
         }
@@ -352,20 +356,22 @@ const Sim = (() => {
   }
   // Battle: Pokal aufnehmen/halten, Ende bei Zeitablauf, letztem Überlebenden oder erreichtem Ziel
   function bStep(S, dt) {
-    const o = S.obj; if (o) { o.cd = Math.max(0, o.cd - dt); if (o.holder >= 0) { const h = S.karts[o.holder]; h.hold += dt; o.x = h.x; o.z = h.z; o.f = h.f; o.d = h.d; if (h.hold >= S.goal) S.win = h.k; }
+    const o = S.obj; if (o) { o.cd = Math.max(0, o.cd - dt); if (o.holder >= 0) { const h = S.karts[o.holder]; h.hold += dt; o.x = h.x; o.z = h.z; o.f = h.f; o.d = h.d; if (S.teams) { if (teamScore(S, h.team) >= S.goal) S.winTeam = h.team; } else if (h.hold >= S.goal) S.win = h.k; }
       else if (o.cd <= 0) for (const k of S.karts) if (!k.out && k.capCd <= 0 && k.spinT <= 0 && (k.x - o.x) ** 2 + (k.z - o.z) ** 2 < 30) { o.holder = k.k; emit(S, { t: 'grab', k: k.k }); break; } }
-    if (S.battle === 'bomb') S.karts.forEach(k => { if (k.pts >= S.goal) S.win = k.k; });
-    const alive = S.karts.filter(k => !k.out).length;
-    if (S.t >= S.lim || S.win != null || (S.battle === 'ball' && alive <= 1)) { S.state = 'done'; emit(S, { t: 'done' }); }
+    if (S.teams) { S.tsc = [teamScore(S, 0), teamScore(S, 1)]; if (S.battle === 'bomb') S.tsc.forEach((v, t) => { if (v >= S.goal) S.winTeam = t; }); }
+    else if (S.battle === 'bomb') S.karts.forEach(k => { if (k.pts >= S.goal) S.win = k.k; });
+    const alive = S.karts.filter(k => !k.out), aliveN = S.teams ? new Set(alive.map(k => k.team)).size : alive.length;
+    if (S.t >= S.lim || S.win != null || S.winTeam != null || (S.battle === 'ball' && aliveN <= 1)) { if (S.teams && S.winTeam == null) { const a = teamScore(S, 0), b = teamScore(S, 1); S.winTeam = a === b ? -1 : a > b ? 0 : 1; } S.state = 'done'; emit(S, { t: 'done' }); }
   }
   // Wertung im Battle: Ballons (Überlebende zuerst), Haltezeit bzw. Punkte
-  const bCmp = S => S.battle === 'ball' ? (a, b) => (a.out - b.out) || (a.out ? b.finT - a.finT : b.bal - a.bal || b.pts - a.pts) : S.battle === 'cap' ? (a, b) => b.hold - a.hold || b.pts - a.pts : (a, b) => b.pts - a.pts || a.k - b.k;
+  const bCmp = S => S.teams ? (a, b) => { const w = S.winTeam; return ((b.team === w) - (a.team === w)) || bCmp1(S)(a, b); } : bCmp1(S);
+  const bCmp1 = S => S.battle === 'ball' ? (a, b) => (a.out - b.out) || (a.out ? b.finT - a.finT : b.bal - a.bal || b.pts - a.pts) : S.battle === 'cap' ? (a, b) => b.hold - a.hold || b.pts - a.pts : (a, b) => b.pts - a.pts || a.k - b.k;
   function rubber(S, k, inp) {
     const hs = S.karts.filter(h => h.human); if (!hs.length) return; const ref = hs.reduce((m, h) => Math.max(m, h.rp), -1e9), gap = k.rp - ref;
     inp.cap = (inp.cap || 1) * clamp(1 - gap * 0.0012, 0.94, 1.06);
   }
   function results(S) {
-    if (S.battle) return S.karts.slice().sort(bCmp(S)).map((k, i) => ({ k, pos: i + 1, time: S.t, finished: !k.out, best: null, score: S.battle === 'ball' ? k.bal : S.battle === 'cap' ? k.hold : k.pts }));
+    if (S.battle) return S.karts.slice().sort(bCmp(S)).map((k, i) => ({ k, pos: i + 1, time: S.t, finished: !k.out, best: null, team: k.team, score: S.battle === 'ball' ? k.bal : S.battle === 'cap' ? k.hold : k.pts }));
     const N = S.tr.N; return S.karts.map(k => ({ k, t: k.finished ? k.finT : S.t + (S.laps * N - k.rp) / Math.max(8, Math.abs(k.vf)) + 5 })).sort((a, b) => a.t - b.t).map((r, i) => ({ k: r.k, pos: i + 1, time: r.t, finished: r.k.finished, best: r.k.lapTimes.length ? Math.min(...r.k.lapTimes) : null }));
   }
   return { create, step, results, ITEMS, SPECIALS, VMAX, BATTLE };

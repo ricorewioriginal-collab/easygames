@@ -79,11 +79,11 @@
     (cfg.cpus || []).forEach(function (d, k) { sim.add(new WF.Car(sim, { id: 'c' + k, name: d.name, color: d.col, skill: Math.min(1.04, d.skill * mul), style: d.style, driver: d })); });
     // Startaufstellung: Menschen hinten (wie im Original: man muss sich nach vorn kämpfen), im Duell gemischt
     var order = sim.cars.slice();
-    if (this.kind === 'race') order.sort(function (a, b) { return (a.human ? 1 : 0) - (b.human ? 1 : 0) || a.skill - b.skill; });
+    if (this.kind === 'race' || this.kind === 'ko') order.sort(function (a, b) { return (a.human ? 1 : 0) - (b.human ? 1 : 0) || a.skill - b.skill; });
     order.forEach(function (c) { c.place(T.gridSlot(slot++)); });
     sim.cars.forEach(function (c) {
       var m = WF.makeVehicle(c.type, c.color); scene.add(m); scene.add(m.shadow); c.mesh = m; if (self.shadows) { m.traverse(function (o) { if (o.isMesh && o !== m.shadow) { o.castShadow = true; o.receiveShadow = true; } }); m.shadow.material = WF.softShadowMat || (WF.softShadowMat = Object.assign(m.shadow.material.clone(), { opacity: 0.55 })); }
-      if (c.human && (self.humans.length > 1 || self.kind === 'duel' || self.kind === 'race')) { var mk = marker(c.color, self.humans.length > 1 ? c.pi : -1); scene.add(mk); c.marker = mk; }
+      if (c.human && (self.humans.length > 1 || self.kind === 'duel' || self.kind === 'race' || self.kind === 'ko')) { var mk = marker(c.color, self.humans.length > 1 ? c.pi : -1); scene.add(mk); c.marker = mk; }
       self.cars.push(c);
     });
     // Geist (Zeitfahren)
@@ -208,7 +208,7 @@
         case 'finish':
           if (hum && !att) {
             var place = this.sim.finishOrder.indexOf(c) + 1;
-            if (this.kind === 'race') msg(place + '.', place === 1 ? 'Sieg! 🏆' : 'Ziel!', 2);
+            if (this.kind === 'race' || this.kind === 'ko') msg(place + '.', place === 1 ? 'Sieg! 🏆' : 'Ziel!', 2);
             else msg('Ziel!', WF.fmtTime(c.time), 2);
             WF.Audio.play(place <= 2 || this.kind !== 'race' ? 'finish' : 'lose');
             c.human = false; // Autopilot fährt weiter
@@ -234,7 +234,8 @@
       if (sim.finishOrder.length || this.t > 70) this.cfg.onEnd && this.cfg.onEnd();
       return;
     }
-    if (this.kind === 'race' || this.kind === 'time' || this.kind === 'bonus') {
+    if (this.kind === 'ko' && this.phase === 'run') this.knockout();
+    if (this.kind === 'race' || this.kind === 'ko' || this.kind === 'time' || this.kind === 'bonus') {
       var allDone = this.humans.every(function (h) { return h.done; });
       if (allDone && this.phase === 'run') { this.phase = 'post'; this.post = 2.6; }
       if (this.phase === 'post') { this.post -= dt; if (this.post <= 0) { this.phase = 'done'; this.finish(); } }
@@ -257,6 +258,21 @@
       alive = sim.cars.filter(function (c) { return c.alive; });
       if (alive.length <= 1 || this.roundT > 40) this.roundWon(alive.length === 1 ? alive[0] : lead);
     }
+  };
+
+  // K.-o.-Rennen: Wer eine Runde als Letzter beendet, scheidet aus (bis zum Finale zu zweit)
+  Race.prototype.knockout = function () {
+    var sim = this.sim, ko = this.koList || (this.koList = []), L = ko.length + 1;
+    var alive = sim.cars.filter(function (c) { return c.alive !== false; });
+    if (alive.length <= 2 || L >= sim.laps) return;
+    var through = alive.filter(function (c) { return c.lap > L || c.done; });
+    if (through.length < alive.length - 1) return;
+    var out = alive.filter(function (c) { return through.indexOf(c) < 0; })[0]; if (!out) return;
+    out.alive = false; out.mesh.visible = false; out.mesh.shadow.visible = false; if (out.marker) out.marker.visible = false; ko.push(out);
+    WF.Audio.play('out');
+    if (this.humans.indexOf(out) >= 0) { out.done = true; out.human = false; msg('K.-o.', 'Ausgeschieden!', 2); WF.Audio.play('lose'); }
+    else msg('', '💥 ' + out.name + ' ist raus!', 1.4);
+    if (alive.length - 1 === 2) sub('Finale: nur noch zwei!', 1.6);
   };
 
   Race.prototype.leader = function () {
@@ -294,8 +310,8 @@
     var sim = this.sim, res = { kind: this.kind, track: this.cfg.track };
     if (this.kind === 'duel') { res.winner = this.matchWinner; res.cars = sim.cars; res.points = this.points; }
     else {
-      var fin = sim.finishOrder.slice(), rest = sim.order().filter(function (c) { return fin.indexOf(c) < 0; });
-      res.order = fin.concat(rest);
+      var fin = sim.finishOrder.slice(), ko = this.koList || [], rest = sim.order().filter(function (c) { return fin.indexOf(c) < 0 && ko.indexOf(c) < 0; });
+      res.order = fin.concat(rest, ko.slice().reverse()); res.ko = ko;
       res.humans = this.humans;
       if (this.kind === 'time' || this.kind === 'bonus') { var h = this.humans[0]; res.time = h.time; res.best = h.best; res.laps = h.lapTimes; res.ghost = this.bestRec; res.ghostT = this.bestGhostT; }
     }
@@ -399,9 +415,9 @@
       this.hudInit = true;
       $('hLights').innerHTML = ''; $('hPos').innerHTML = ''; $('hLap').textContent = ''; $('hTime').textContent = '';
     }
-    if (this.kind === 'race' && h) {
-      var ord = sim.order(), p = ord.indexOf(h) + 1;
-      var ph = p + '.<small>/' + ord.length + '</small>';
+    if ((this.kind === 'race' || this.kind === 'ko') && h) {
+      var ord = sim.order().filter(function (c) { return c.alive !== false; }), p = ord.indexOf(h) + 1;
+      var ph = p ? p + '.<small>/' + ord.length + '</small>' : '💥';
       if (ph !== this._ph) { $('hPos').innerHTML = ph; this._ph = ph; }
     }
     if (h && this.kind !== 'duel') {
@@ -532,7 +548,7 @@
       var hc = $('hCtl'); hc.innerHTML = race.humans.length === 1 ? ctlHtml(gun) : ''; hc.classList.add('show');
       clearTimeout(ctlTimer); ctlTimer = setTimeout(function () { hc.classList.remove('show'); }, 6500);
       $('mini').style.display = race.kind === 'duel' && race.cars.length > 2 ? 'none' : '';
-      $('hPos').style.display = race.kind === 'race' ? '' : 'none';
+      $('hPos').style.display = race.kind === 'race' || race.kind === 'ko' ? '' : 'none';
       $('hTime').style.display = race.kind === 'duel' ? 'none' : '';
       $('hLap').style.display = race.kind === 'duel' ? 'none' : '';
       $('hMsg').classList.remove('show'); $('hSub').classList.remove('show');
@@ -588,6 +604,7 @@
   function home() { stack = []; show('sTitle', true); titleStat(); }
   document.addEventListener('click', function (e) {
     WF.Audio.init();
+    var bl = e.target.closest('#backLink'); if (bl) { e.preventDefault(); toKart(); return; }
     var b = e.target.closest('[data-back]'); if (b) { menuBack(); return; }
     var g = e.target.closest('[data-go]'); if (g) { WF.Audio.play('click'); go(g.getAttribute('data-go')); return; }
     var a = e.target.closest('[data-act]'); if (a) { var k = a.getAttribute('data-act'); if (k === 'ok') activate(); else if (k === 'back') menuBack(); else if (k === 'tabs') tabsStep(1); return; }
@@ -604,6 +621,7 @@
     else if (k === 'champ') champStart();
     else if (k === 'h2h') h2hStart();
     else if (k === 'multi') lobby();
+    else if (k === 'ko') pickDriver('🥊 K.-o.-Rennen – Fahrer wählen', true, function (d) { pickTrack('K.-o.-Rennen: Strecke', function (id) { koRace(d, id); }); });
     else if (k === 'single') pickDriver('🏁 Einzelrennen – Fahrer wählen', true, function (d) { pickTrack('Strecke wählen', function (id) { singleRace(d, id); }); });
     else if (k === 'time') pickTrack('⏱️ Zeitfahren – Strecke wählen', function (id) { timeTrial(id); });
   }
@@ -673,6 +691,15 @@
     startRace({ kind: 'race', track: id, players: [{ dev: 'any', drv: d }], cpus: opp, skillMul: DIFF[SET.diff], onEnd: function (r) {
       recordRace(r);
       results(r, 'Einzelrennen', [['↻ Nochmal', function () { singleRace(d, id); }], ['🗺️ Strecke', function () { pickTrack('Strecke wählen', function (n) { singleRace(d, n); }); }], ['🏠 Menü', home]]);
+    } });
+  }
+  // ----- K.-o.-Rennen: 4 Fahrer, nach jeder Runde fliegt der Letzte raus
+  function koRace(d, id) {
+    var opp = WF.DRIVERS.filter(function (x) { return x.id !== d.id; }).sort(function () { return Math.random() - 0.5; }).slice(0, 3);
+    startRace({ kind: 'ko', track: id, laps: 3, players: [{ dev: 'any', drv: d }], cpus: opp, skillMul: DIFF[SET.diff], onEnd: function (r) {
+      recordRace(r); var h = r.humans[0], out = r.ko.indexOf(h) >= 0;
+      if (!out && r.order[0] === h) { SAVE.stats.ko = (SAVE.stats.ko || 0) + 1; save(); }
+      results(r, out ? '💥 K.-o.-Rennen · ausgeschieden' : r.order[0] === h ? '🥊 K.-o.-Sieger!' : '🥊 K.-o.-Rennen', [['↻ Nochmal', function () { koRace(d, id); }], ['🗺️ Strecke', function () { pickTrack('K.-o.-Rennen: Strecke', function (n) { koRace(d, n); }); }], ['🏠 Menü', home]]);
     } });
   }
   function recordRace(r) {
@@ -988,10 +1015,13 @@
     var f = focusEl; f.click();
     if (f.matches('.card-it[data-d]') && current === 'sDriver') $('drvOk').click(); // Fahrer gewählt = weiter wie an der Konsole
   }
+  // Eingebettet in Kart Rush: zurück in dessen Hauptmenü (eigene Ebene im selben Fenster), sonst Seitenwechsel
+  var EMBED = /[?&]embed=1/.test(location.search) && window.parent !== window;
+  function toKart() { WF.Audio.play('click'); if (EMBED) { window.parent.postMessage({ eg: 'winz-back' }, location.origin); } else location.href = '../' + location.search.replace(/[?&]embed=1/, ''); }
   function menuBack() {
     if (!$('ovPause').hidden) { pause(false); return; }
-    if (current === 'sPress' || !current) return;
-    if (current === 'sTitle') { WF.Audio.play('click'); stack = []; show('sPress', true); return; }
+    if (!current) return;
+    if (current === 'sPress' || current === 'sTitle') { toKart(); return; }
     if (current === 'sLadder' || current === 'sResult') { WF.Audio.play('click'); home(); return; }
     back();
   }
@@ -1030,7 +1060,7 @@
   requestAnimationFrame(function () { setTimeout(function () {
     $('bootTxt').textContent = 'Lade Strecke …';
     attract(); bootBar.style.width = '100%';
-    show('sPress', true);
+    if (EMBED) { document.documentElement.classList.add('embed'); home(); } else show('sPress', true);
     setTimeout(function () { $('boot').classList.add('out'); setTimeout(function () { $('boot').hidden = true; }, 400); }, 520);
   }, 120); });
   // für automatische Tests: WF.game.timeScale = 4 lässt die Zeit schneller laufen

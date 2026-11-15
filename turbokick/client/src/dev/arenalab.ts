@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { BOOST_PADS } from '@shared/sim';
+import { BOOST_PADS, RING_POSITIONS } from '@shared/sim';
 import { ARENA, BALL_RADIUS, BIG_PAD_RESPAWN, CAR_HALF, SMALL_PAD_RESPAWN } from '@shared/sim/types';
 import type { PadState, SimState } from '@shared/sim/types';
 import { createArena } from '../render/arena';
@@ -97,6 +97,12 @@ export function startArenaLab(params: URLSearchParams): void {
     prevTouch: -1,
     winner: -1,
     rngState: 1,
+    mode: 'chaos',
+    gravityScale: 1,
+    charge: 100,
+    chargeTeam: 0,
+    chargeCd: 0,
+    rings: RING_POSITIONS.map((p) => ({ pos: [p[0], p[1], p[2]] as [number, number, number], timer: 0 })),
   };
 
   // Kamera

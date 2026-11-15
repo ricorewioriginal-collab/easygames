@@ -5,11 +5,14 @@ import type { CarState, Phase, SimState } from './types';
  * Kompakter Netzwerk-Schnappschuss (Little Endian). Enthält den gesamten dynamischen Zustand für sauberes Weiterrechnen
  * (Rollback-Vorhersage): Float32 für alle Vektoren/Zeiten (Fehler ~1e-6 relativ, damit diskrete Schwellen der Sim nicht kippen),
  * Quaternion als drei Float32 (w ≥ 0 wird rekonstruiert), Phase/Uhr als Float64.
- * Aufbau: Kopf (35 B) | je Auto 71 B | Ball 36 B | je Pad 2 B | Prüfsumme (FNV-1a, 4 B). Sechs Autos + 34 Pads: 569 Byte.
+ * Aufbau: Kopf (35 B) | je Auto 71 B | Ball 36 B | je Pad 2 B | Modus 9 B | je Ring 2 B | Prüfsumme (FNV-1a, 4 B).
+ * Sechs Autos + 34 Pads ohne Ringe: 578 Byte.
  */
 const MAGIC0 = 0x54;
 const MAGIC1 = 0x4b;
-const VERSION = 3;
+const VERSION = 4;
+/** Modus-Block: Ladung f32, Sperrzeit f32, Team i8, dann je Ring u16 */
+const MODE_BYTES = 9;
 const HEADER = 35;
 const CAR_BYTES = 71;
 const BALL_BYTES = 36;
@@ -32,14 +35,14 @@ function fnv(b: Uint8Array, end: number): number {
   return h >>> 0;
 }
 
-function sizeFor(nCars: number, nPads: number): number {
-  return HEADER + nCars * CAR_BYTES + BALL_BYTES + nPads * 2 + 4;
+function sizeFor(nCars: number, nPads: number, nRings: number): number {
+  return HEADER + nCars * CAR_BYTES + BALL_BYTES + nPads * 2 + MODE_BYTES + nRings * 2 + 4;
 }
 
 export function encodeSnapshot(s: SimState): Uint8Array {
   const nCars = s.cars.length;
   const nPads = s.pads.length;
-  const out = new Uint8Array(sizeFor(nCars, nPads));
+  const out = new Uint8Array(sizeFor(nCars, nPads, s.rings.length));
   const dv = new DataView(out.buffer);
   let o = 0;
   out[o++] = MAGIC0;
@@ -108,6 +111,13 @@ export function encodeSnapshot(s: SimState): Uint8Array {
     dv.setUint16(o, p.active ? 0 : Math.max(1, u16(p.timer, PAD_TIME_SCALE)), true);
     o += 2;
   }
+  f32(s.charge);
+  f32(s.chargeCd);
+  dv.setInt8(o++, s.chargeTeam);
+  for (const r of s.rings) {
+    dv.setUint16(o, u16(r.timer, PAD_TIME_SCALE), true);
+    o += 2;
+  }
   dv.setUint32(o, fnv(out, o), true);
   return out;
 }
@@ -120,7 +130,7 @@ export function decodeSnapshot(bytes: Uint8Array, into: SimState): boolean {
     const nCars = bytes[3] as number;
     const nPads = bytes[4] as number;
     if (nCars !== into.cars.length || nPads !== into.pads.length) return false;
-    if (bytes.length !== sizeFor(nCars, nPads)) return false;
+    if (bytes.length !== sizeFor(nCars, nPads, into.rings.length)) return false;
     const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
     const end = bytes.length - 4;
     if (dv.getUint32(end, true) !== fnv(bytes, end)) return false;
@@ -209,6 +219,16 @@ export function decodeSnapshot(bytes: Uint8Array, into: SimState): boolean {
       p.active = t === 0;
       p.timer = t / PAD_TIME_SCALE;
     }
+    const charge = f32();
+    const cd = f32();
+    const ct = dv.getInt8(o++);
+    into.charge = Number.isFinite(charge) ? Math.min(100, Math.max(0, charge)) : 0;
+    into.chargeCd = Number.isFinite(cd) ? Math.max(0, cd) : 0;
+    into.chargeTeam = ct === 0 || ct === 1 ? ct : -1;
+    for (const r of into.rings) {
+      r.timer = dv.getUint16(o, true) / PAD_TIME_SCALE;
+      o += 2;
+    }
     return true;
   } catch {
     return false;
@@ -231,6 +251,10 @@ export function interpolateStates(a: SimState, b: SimState, k: number, out: SimS
   out.prevTouch = src.prevTouch;
   out.winner = src.winner;
   out.rngState = src.rngState;
+  out.charge = src.charge;
+  out.chargeTeam = src.chargeTeam;
+  out.chargeCd = src.chargeCd;
+  for (let i = 0; i < Math.min(out.rings.length, src.rings.length); i++) out.rings[i]!.timer = src.rings[i]!.timer;
   const n = Math.min(out.cars.length, a.cars.length, b.cars.length);
   for (let i = 0; i < n; i++) {
     const ca = a.cars[i] as CarState;

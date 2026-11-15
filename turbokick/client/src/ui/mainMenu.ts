@@ -31,7 +31,7 @@ export function create(app: App, _params?: RouteParams): ScreenView {
     h(
       'div',
       { class: 'logo' },
-      h('div', { class: 'wordmark' }, 'TURBO', h('em', null, 'KICK')),
+      h('div', { class: 'wordmark', 'aria-label': 'NEXORB' }, 'NEX', h('span', { class: 'orb' }), h('em', null, 'RB')),
       h('div', { class: 'sub' }, t('menu.tagline')),
     ),
     h(

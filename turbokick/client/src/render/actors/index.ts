@@ -182,7 +182,17 @@ export function createActors(quality: QualitySettings, count: number): ActorsVie
       // Ball
       const lt = state.lastTouch;
       const toucher = lt >= 0 ? cars[lt] : undefined;
-      ball.update(d, state.ball, toucher ? TEAM_COLORS[toucher.team === 1 ? 1 : 0].main : -1);
+      const chg = (state.charge ?? 0) > 0 && (state.chargeTeam ?? -1) >= 0;
+      ball.update(
+        d,
+        state.ball,
+        chg
+          ? TEAM_COLORS[state.chargeTeam === 1 ? 1 : 0].main
+          : toucher
+            ? TEAM_COLORS[toucher.team === 1 ? 1 : 0].main
+            : -1,
+        chg ? state.charge / 100 : 0,
+      );
       ballShadow.update(ball.x, ball.y, ball.z, 0, true);
       if (d > 0 && ball.speed > 15 && q > 0.01) {
         tmp.set(ball.x, ball.y, ball.z);

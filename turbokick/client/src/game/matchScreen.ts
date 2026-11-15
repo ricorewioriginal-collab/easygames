@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type { CarInput, SimEvent, SimState, TeamId } from '@shared/sim/types';
+import { modeRules, type CarInput, type SimEvent, type SimState, type TeamId } from '@shared/sim/types';
 import { Rng } from '@shared/rng';
 import type { App } from '../app/app';
 import { TEAM_NAMES, teamColorHex } from '../app/theme';
@@ -77,6 +77,9 @@ export class MatchScreen implements Screen {
     this.hud.layout(n > 1);
     this.input = new LocalInput(this.el, defaultBindings(n as 1 | 2, app.touch), {
       touchLayout: s.touchControls,
+      padPreset: s.padPreset,
+      invertY: s.padInvertY,
+      rumble: s.padRumble,
     });
     this.el.classList.toggle('is-touch', app.touch);
     this.el.append(this.hud.el, this.overlay);
@@ -218,6 +221,7 @@ export class MatchScreen implements Screen {
   private updateHud(st: SimState): void {
     this.hud.setScore(st.score[0], st.score[1]);
     this.hud.setClock(st.clock, st.overtime, this.session.training);
+    this.hud.setCharge(modeRules(st.mode).overcharge, st.charge, st.chargeTeam);
     if (st.phase === 'countdown') this.hud.setCountdown(Math.max(1, Math.ceil(st.phaseTimer)));
     else this.hud.setCountdown(null);
     this.session.localCars.forEach((c, i) => {
@@ -271,6 +275,12 @@ export class MatchScreen implements Screen {
     return this.teamOf(this.session.localCars[0] ?? 0);
   }
 
+  /** Vibration für den lokalen Spieler, der dieses Auto steuert */
+  private rumbleCar(car: number, strong: number, weak: number, ms: number): void {
+    const p = this.session.localCars.indexOf(car);
+    if (p === 0 || p === 1) this.input.rumble(p, strong, weak, ms);
+  }
+
   private handleEvents(events: ReadonlyArray<SimEvent>): void {
     const { audio, engine } = this.app;
     void engine;
@@ -290,6 +300,7 @@ export class MatchScreen implements Screen {
           const hard = e.ballSpeed > 22;
           audio.sfx(hard ? 'hitHard' : 'hit', { volume: Math.min(1, 0.3 + e.ballSpeed / 40) });
           if (hard && me.has(e.car)) this.chase.forEach((c) => c.shake(Math.min(0.5, e.ballSpeed / 80)));
+          if (me.has(e.car)) this.rumbleCar(e.car, hard ? 0.55 : 0.15, hard ? 0.8 : 0.4, hard ? 160 : 70);
           break;
         }
         case 'jump':
@@ -297,6 +308,7 @@ export class MatchScreen implements Screen {
           break;
         case 'pad':
           if (me.has(e.car)) audio.sfx(e.big ? 'padBig' : 'pad');
+          if (me.has(e.car) && e.big) this.rumbleCar(e.car, 0, 0.5, 120);
           break;
         case 'wall':
           if (e.speed > 12) audio.sfx('wall', { volume: Math.min(1, e.speed / 40) });
@@ -307,6 +319,8 @@ export class MatchScreen implements Screen {
           if (a && e.attacker !== e.victim) a.demos++;
           this.hud.note(`${this.nameOf(e.attacker)} ✕ ${this.nameOf(e.victim)}`, this.teamOf(e.attacker));
           if (me.has(e.victim)) this.chase.forEach((c) => c.shake(0.5, 0.5));
+          if (me.has(e.victim)) this.rumbleCar(e.victim, 1, 1, 420);
+          if (me.has(e.attacker)) this.rumbleCar(e.attacker, 0.6, 0.9, 200);
           break;
         }
         case 'respawn':
@@ -316,6 +330,9 @@ export class MatchScreen implements Screen {
           this.arena.celebrate(e.team);
           const mine = e.team === this.myTeam;
           audio.sfx(mine ? 'goal' : 'goalConceded');
+          this.session.localCars.forEach((c) =>
+            this.rumbleCar(c, mine ? 0.8 : 0.4, mine ? 1 : 0.3, mine ? 650 : 300),
+          );
           audio.crowdCheer(1);
           const sc = this.stats[e.scorer];
           if (sc && e.scorer >= 0) sc.goals++;
@@ -324,7 +341,7 @@ export class MatchScreen implements Screen {
           const who = e.scorer >= 0 ? this.nameOf(e.scorer) : t('hud.ownGoal');
           const own = e.scorer >= 0 && this.teamOf(e.scorer) !== e.team;
           this.hud.show(
-            t('hud.goal'),
+            (e.points ?? 1) > 1 ? t('hud.super') : t('hud.goal'),
             own
               ? `${t('hud.ownGoal')} · ${who}`
               : `${who}${e.assist >= 0 ? ' · ' + t('hud.assist') + ' ' + this.nameOf(e.assist) : ''} · ${Math.round(e.speed * 3.6)} km/h`,
@@ -333,6 +350,20 @@ export class MatchScreen implements Screen {
           this.chase.forEach((c) => c.shake(0.6, 0.8));
           break;
         }
+        case 'ring':
+          if (me.has(e.car)) {
+            audio.sfx('padBig', { pitch: 1.35 });
+            this.rumbleCar(e.car, 0.3, 0.7, 180);
+            this.hud.note(`◎ ${t('hud.ring')} +30`, this.teamOf(e.car));
+            this.chase.forEach((c) => c.shake(0.15, 0.3));
+          }
+          break;
+        case 'charge':
+          if (e.level >= 100) {
+            audio.sfx('padBig', { pitch: 0.7, volume: 0.8 });
+            this.hud.note(`⚡ ${t('hud.charged')} · ${TEAM_NAMES[e.team as 0 | 1]}`, e.team as 0 | 1);
+          }
+          break;
         case 'overtime':
           audio.sfx('overtime');
           audio.music('overtime');
@@ -446,6 +477,7 @@ export class MatchScreen implements Screen {
       minutes: ls.minutes,
       arena: this.session.arena,
       nitro: ls.nitro,
+      gameMode: ls.gameMode,
       splitVersus: true,
       name: this.app.store.data.profile.name,
       garage: this.app.store.data.garage,

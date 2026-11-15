@@ -1,7 +1,7 @@
 export type ArenaTheme = 'neon' | 'eis' | 'canyon';
 
-/** Teamfarben: 0 = Funken (orange), 1 = Frost (cyan-blau) */
-export const TEAM_COLORS: readonly [number, number] = [0xff7a1a, 0x2ac8ff];
+/** Teamfarben: 0 = Nova (lime), 1 = Flux (violett) */
+export const TEAM_COLORS: readonly [number, number] = [0xb4ff2e, 0xa24dff];
 
 export const ARENA_THEMES: ReadonlyArray<{
   id: ArenaTheme;
@@ -104,8 +104,8 @@ export function palette(theme: ArenaTheme): Palette {
         lineB: 0xcdf1ff,
         glass: 0x0b2a4a,
         glassAlpha: 0.1,
-        padBig: 0xffd83a,
-        padSmall: 0xc4ff52,
+        padBig: 0xfff1b8,
+        padSmall: 0xffb02e,
         padOff: 0x0d1c30,
         stand: 0x4a7aa8,
         standTop: 0x9fd0f0,
@@ -140,8 +140,8 @@ export function palette(theme: ArenaTheme): Palette {
         lineB: 0xffd36a,
         glass: 0x3a1608,
         glassAlpha: 0.12,
-        padBig: 0xffe23d,
-        padSmall: 0xb6ff4a,
+        padBig: 0xfff1b8,
+        padSmall: 0xffb02e,
         padOff: 0x1c0f0a,
         stand: 0x7a3a22,
         standTop: 0xc4733b,
@@ -176,8 +176,8 @@ export function palette(theme: ArenaTheme): Palette {
         lineB: 0x32e6ff,
         glass: 0x140a36,
         glassAlpha: 0.09,
-        padBig: 0xffe33a,
-        padSmall: 0xb8ff4a,
+        padBig: 0xfff1b8,
+        padSmall: 0xffb02e,
         padOff: 0x0b0d1c,
         stand: 0x1a1738,
         standTop: 0x3a2e78,

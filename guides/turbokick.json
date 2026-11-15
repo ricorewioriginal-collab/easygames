@@ -4,17 +4,17 @@
     {
       "t": "Ziel des Spiels",
       "p": [
-        "TURBOKICK ist 3D-Auto-Fußball: Zwei Teams – Funken (orange) und Frost (blau) – versuchen, eine große Plasmakugel mit ihren Autos ins gegnerische Tor zu schießen. Wer nach der Spielzeit mehr Tore hat, gewinnt.",
+        "NEXORB ist 3D-Arena-Derby: Zwei Teams – Nova (lime) und Flux (violett) – versuchen, eine großen Energie-Orb mit ihren Autos ins gegnerische Tor zu schießen. Wer nach der Spielzeit mehr Tore hat, gewinnt.",
         "Bei Gleichstand gibt es eine Verlängerung: Das nächste Tor gewinnt (Golden Goal)."
       ]
     },
     {
       "t": "Hauptmenü",
       "list": [
-        "Spielen: Spielart, Teamgröße, Spieldauer, Bot-Stärke, Arena und Nitro-Felder wählen, dann „Anstoß!“.",
+        "Spielen: Spielart, Teamgröße, Spieldauer, Bot-Stärke, Arena und Ladezellen wählen, dann „Anstoß!“.",
         "Online mit Freunden: Direktverbindung zwischen den Browsern per QR-Code oder Text-Code, ohne Server und ohne Konto.",
         "Garage: Name, Karosserie, Aufkleber und Akzentfarbe deines Autos.",
-        "Statistik: Spiele, Siege, Siegquote, Tore, Vorlagen, Crashs, Siegesserie und Rekord, Online-Spiele und Spielzeit.",
+        "Statistik: Spiele, Siege, Siegquote, Tore, Vorlagen, Knockouts, Siegesserie und Rekord, Online-Spiele und Spielzeit.",
         "Anleitung: Regeln und die vollständige Tastentabelle.",
         "Optionen und Credits."
       ]
@@ -24,32 +24,43 @@
       "list": [
         "Schnelles Spiel: Du gegen Bots – allein oder mit Bot-Teamkameraden.",
         "Splitscreen zu zweit: Zwei Spieler an einem Gerät, geteilter Bildschirm (Tastatur oder Gamepads). Zweiter Spieler: „Gegeneinander“ oder „Zusammen gegen Bots“.",
-        "Training: Freies Spiel ohne Gegner und ohne Uhr: Ball, Nitro, Wände – übe Schüsse und Sprünge (R setzt zurück).",
+        "Training: Freies Spiel ohne Gegner und ohne Uhr: Orb, Schub, Wände – übe Schüsse und Sprünge (R setzt zurück).",
         "Teamgröße: 1 vs 1, 2 vs 2 oder 3 vs 3. Freie Plätze füllen Bots.",
         "Spieldauer: 1, 3, 5 oder 10 Minuten.",
         "Bot-Stärke: Anfänger, Fahrer, Profi oder Legende.",
         "Arena: Neon-Metropole, Eis-Dom, Sonnen-Canyon oder Zufall.",
-        "Nitro-Felder: „Nitro-Felder an“ oder „Nur Start-Nitro“.",
+        "Ladezellen: „Ladezellen an“ oder „Nur Start-Schub“.",
         "Deine letzte Auswahl wird gespeichert."
+      ]
+    },
+    {
+      "t": "Regel-Modi",
+      "list": [
+        "Klassisch: Orb ins gegnerische Tor, jeder Treffer zählt einen Punkt.",
+        "Überladung: Jede Berührung lädt den Orb um 25 % für dein Team (die Leiste unter dem Spielstand zeigt den Stand in Teamfarbe). Berührt der Gegner, übernimmt er die Ladung. Bei 100 % ist der Orb überladen – der nächste Treffer dieses Teams zählt als SUPERTREFFER doppelt.",
+        "Turboringe (Überladung und Chaos): Fünf goldene Ringe schweben über dem Feld. Fährst oder fliegst du hindurch, bekommst du +30 Schub und einen Tempostoß; danach lädt der Ring 8 Sekunden nach.",
+        "Mondball: halbe Schwerkraft – höhere Sprünge, langsam fallende Flugbälle, viele Luftduelle.",
+        "Chaos: Überladung, Turboringe und geringe Schwerkraft gleichzeitig.",
+        "Den Modus wählst du unter Spielen → Regeln oder als Gastgeber in der Online-Lobby; Training ist immer klassisch."
       ]
     },
     {
       "t": "Regeln und Spielablauf",
       "list": [
         "Vor jedem Anstoß läuft ein Countdown von 3 Sekunden („Mach dich bereit“).",
-        "Nach jedem Tor („TOR!“) gibt es eine kurze Pause und einen neuen Anstoß. Eigentore zählen für den Gegner. Hat ein Teamkamerad den Ball direkt vor dem Torschützen berührt, bekommt er eine Vorlage.",
+        "Nach jedem Tor („TOR!“) gibt es eine kurze Pause und einen neuen Anstoß. Eigentore zählen für den Gegner. Hat ein Teamkamerad den Orb direkt vor dem Torschützen berührt, bekommt er eine Vorlage.",
         "Mit dem Ende der Uhr endet das Spiel sofort; ein Tor im selben Moment zählt noch.",
         "Steht es unentschieden, beginnt die „Verlängerung“ – „Das nächste Tor gewinnt“.",
-        "Am Ende zeigt die Tabelle Fahrer, Tore, Vorlagen und Crashs. „Revanche“ startet sofort neu."
+        "Am Ende zeigt die Tabelle Fahrer, Tore, Vorlagen und Knockouts. „Revanche“ startet sofort neu."
       ]
     },
     {
-      "t": "Nitro",
+      "t": "Schub",
       "list": [
-        "Jedes Auto startet mit 33 Nitro, das Maximum ist 100. Volles Nitro reicht für etwa 3 Sekunden Dauerschub.",
-        "Kleine Nitro-Felder geben +12 und sind nach 4 Sekunden wieder da, große Kanister geben +100 und kommen nach 10 Sekunden zurück. Die Arena hat 6 große und 28 kleine Felder.",
-        "Halte die Boost-Taste für kräftigen Schub – am Boden und in der Luft.",
-        "Supersonic: Bei sehr hohem Tempo kannst du Gegner mit einem Rammstoß zerstören („Crash“). Sie kehren nach 3 Sekunden zurück."
+        "Jedes Auto startet mit 33 Schub, das Maximum ist 100. Volles Schub reicht für etwa 3 Sekunden Dauerschub.",
+        "Kleine Ladezellen geben +12 und sind nach 4 Sekunden wieder da, große Energiekristalle geben +100 und kommen nach 10 Sekunden zurück. Die Arena hat 6 große und 28 kleine Felder.",
+        "Halte die Schub-Taste für kräftigen Schub – am Boden und in der Luft.",
+        "Hyperspeed: Bei sehr hohem Tempo kannst du Gegner mit einem Rammstoß zerstören („Crash“). Sie kehren nach 3 Sekunden zurück."
       ]
     },
     {
@@ -60,31 +71,32 @@
         "In der Luft: hoch/runter neigt die Nase, links/rechts dreht (Gieren). Mit gehaltener Air-Roll-Taste rollst du stattdessen.",
         "Wände: Mit genug Tempo fährst du die Wände und die Rundungen hinauf.",
         "Handbremse/Drift: enge Kurven und schnelles Wenden.",
-        "Ball-Kamera: schaltet um, damit du Auto und Ball im Blick behältst. Rückblick zeigt kurz nach hinten."
+        "Orb-Kamera: schaltet um, damit du Auto und Orb im Blick behältst. Rückblick zeigt kurz nach hinten."
       ]
     },
     {
       "t": "Steuerung (vollständig)",
       "list": [
-        "Gas/Rückwärts: W/S · Pfeil hoch/runter · Gamepad RT/LT · Touch Stick hoch/runter.",
+        "Gas/Rückwärts: W/S · Pfeil hoch/runter · Controller RT/LT (R2/L2, ZR/ZL) · Touch Stick hoch/runter.",
         "Menüs mit dem Controller: Steuerkreuz oder linker Stick wählt (gelber Rahmen), A bestätigt, B geht zurück, ←/→ verstellt Schieberegler – wie an der Konsole.",
         "Lenken: A/D · Pfeil links/rechts · linker Stick · Touch Stick seitlich.",
         "Luft – Nase runter/hoch und Gieren: wie Gas/Lenken (W/S, A/D bzw. linker Stick).",
-        "Air-Roll (mit Lenken = Rollen): Strg links oder E · Strg rechts oder Num 2 · RB.",
-        "Sprung (zweimal = Flip): Leertaste · Enter oder Num 0 · A · SPRUNG.",
-        "Boost (halten): Shift links · Shift rechts oder Num 1 · X · BOOST.",
-        "Handbremse/Drift: Q · Num 3 oder Punkt · B · DRIFT.",
-        "Ballkamera umschalten: C · Num 5 oder Komma · Y · BALL.",
-        "Rückblick: F · Num 6 · LB oder R3.",
-        "Zurücksetzen (Training): R · Num 4 · Back.",
-        "Pause: Esc oder P · Num 9 (Esc geht auch) · Start · II.",
+        "Air-Roll: Strg links oder E + Lenken · Strg rechts oder Num 2 + Lenken · Controller LB/RB (L1/R1, L/R) rollt direkt links/rechts.",
+        "Sprung (zweimal = Hechtstoß): Leertaste · Enter oder Num 0 · A (✕, Switch B) · SPRUNG.",
+        "Schub (halten): Shift links · Shift rechts oder Num 1 · B (○, Switch A) · SCHUB.",
+        "Handbremse/Drift (lädt Energie): Q · Num 3 oder Punkt · X (□, Switch Y) oder L3 · DRIFT.",
+        "Orb-Kamera umschalten: C · Num 5 oder Komma · Y (△, Switch X) oder Steuerkreuz hoch · ORB.",
+        "Rückblick: F · Num 6 · R3, rechter Stick runter oder Steuerkreuz runter.",
+        "Zurücksetzen (Training): R · Num 4 · View (Create, Switch −).",
+        "Pause: Esc oder P · Num 9 (Esc geht auch) · Menu (Options, Switch +) · II.",
+        "Controller-Belegungen unter Optionen → Controller: NEXORB (Standard, oben), Klassisch (X Schub, B Drift, RB freie Luftrolle) und Schultertasten (RB Schub, LB Drift). Dazu Vibration, Umkehrung der Luft-Pitch-Achse und die Knopf-Symbole (Xbox, PlayStation, Switch – automatisch erkannt).",
         "Im Einzelspiel funktionieren beide Tastatur-Belegungen und das erste Gamepad gleichzeitig. Im Splitscreen fährt Spieler 1 mit WASD bzw. Gamepad 1, Spieler 2 mit den Pfeiltasten bzw. Gamepad 2."
       ]
     },
     {
       "t": "Touch-Steuerung",
       "p": [
-        "Links der Stick, rechts die Knöpfe SPRUNG, BOOST und DRIFT, oben BALL (Ball-Kamera) und II (Pause).",
+        "Links der Stick, rechts die Knöpfe SPRUNG, BOOST und DRIFT, oben BALL (Orb-Kamera) und II (Pause).",
         "In den Optionen gibt es die „Einfache Touch-Steuerung“: Der Stick zeigt die Richtung auf dem Bildschirm – das Auto lenkt selbst dorthin und gibt Gas. Aus = klassisch (hoch = Gas, seitlich = lenken)."
       ]
     },
@@ -108,7 +120,7 @@
       "list": [
         "Ton: Gesamtlautstärke, Musik, Effekte, Stumm, Hörprobe.",
         "Grafik: Qualität Automatisch, Niedrig, Mittel, Hoch.",
-        "Kamera: Sichtfeld, Kameraabstand, Ball-Kamera beim Start, Kamerawackeln.",
+        "Kamera: Sichtfeld, Kameraabstand, Orb-Kamera beim Start, Kamerawackeln.",
         "Barrierefreiheit: Weniger Bewegung und Effekte, Hoher Kontrast, Große Schrift, Teamfarben für Rot-, Grün- oder Blau-Schwäche.",
         "Daten: „Spielstand sichern“ (Datei), „Spielstand laden“, „Alles zurücksetzen“.",
         "Statistik, Garage und Einstellungen liegen in deinem Browser; mit Google-Anmeldung werden sie geräteübergreifend gesichert."
@@ -119,38 +131,40 @@
     {
       "t": "Tipps für Einsteiger",
       "list": [
-        "Starte mit Bot-Stärke „Anfänger“ im 1 vs 1. Diese Bots springen nicht und nutzen kaum Nitro.",
-        "Schalte die Ball-Kamera ein (C, Y oder BALL), dann verlierst du die Kugel nie aus den Augen.",
-        "Fahr über die kleinen Nitro-Felder auf deinem Weg – sie sind nach 4 Sekunden wieder voll.",
-        "Übe im Training: Ball zurücksetzen mit R, so oft du willst."
+        "Starte mit Bot-Stärke „Anfänger“ im 1 vs 1. Diese Bots springen nicht und nutzen kaum Schub.",
+        "Schalte die Orb-Kamera ein (C, Y oder BALL), dann verlierst du die Kugel nie aus den Augen.",
+        "Fahr über die kleinen Ladezellen auf deinem Weg – sie sind nach 4 Sekunden wieder voll.",
+        "Übe im Training: Orb zurücksetzen mit R, so oft du willst."
       ]
     },
     {
       "t": "Strategien für Fortgeschrittene",
       "list": [
-        "Nicht alle auf den Ball: Im 2 vs 2 und 3 vs 3 sollte einer hinten bleiben und das Tor sichern.",
-        "Große Kanister (+100) in den Ecken und an den Seiten gezielt mitnehmen, wenn du ohnehin zurückfährst.",
-        "Flip zum Schuss: Kurz vor dem Ball springen und mit Richtung erneut drücken – der Salto-Stoß gibt dem Ball viel Kraft.",
-        "Wände nutzen: Mit Tempo die Wand hochfahren und den Ball von oben in die Mitte spielen.",
-        "Supersonic-Rammstöße schalten einen Verteidiger für 3 Sekunden aus – ideal kurz vor einem Torschuss."
+        "Nicht alle auf den Orb: Im 2 vs 2 und 3 vs 3 sollte einer hinten bleiben und das Tor sichern.",
+        "Große Energiekristalle (+100) in den Ecken und an den Seiten gezielt mitnehmen, wenn du ohnehin zurückfährst.",
+        "Flip zum Schuss: Kurz vor dem Orb springen und mit Richtung erneut drücken – der Salto-Stoß gibt dem Orb viel Kraft.",
+        "Wände nutzen: Mit Tempo die Wand hochfahren und den Orb von oben in die Mitte spielen.",
+        "Hyperspeed-Rammstöße schalten einen Verteidiger für 3 Sekunden aus – ideal kurz vor einem Torschuss.",
+        "Überladung: Wenn der Orb fast voll in deiner Farbe ist, nicht hektisch wegschlagen – eine kontrollierte Berührung mehr macht ihn überladen. Gegnerische Ladung brichst du mit jeder eigenen Berührung."
       ]
     },
     {
       "t": "Profi-Tricks",
       "list": [
-        "Doppelsprung ohne Richtung erreicht hohe Bälle; mit Boost in der Luft kommst du noch höher.",
+        "Doppelsprung ohne Richtung erreicht hohe Orbs; mit Schub in der Luft kommst du noch höher.",
         "Air-Roll (Strg/E/RB) hilft, das Auto in der Luft auszurichten und auf allen vier Rädern zu landen – so fährst du sofort weiter.",
-        "Handbremse in der Ecke: Drift um 180 Grad, um nach einem verpassten Ball schnell zurückzukommen.",
-        "Spar Nitro für die Verlängerung: Das nächste Tor entscheidet, und der erste am Ball hat die beste Chance.",
-        "Rückblick (F, LB/R3) zeigt dir, ob ein Gegner dich gleich rammt."
+        "Handbremse in der Ecke: Drift um 180 Grad, um nach einem verpassten Orb schnell zurückzukommen.",
+        "Spar Schub für die Verlängerung: Das nächste Tor entscheidet, und der erste am Orb hat die beste Chance.",
+        "Rückblick (F, LB/R3) zeigt dir, ob ein Gegner dich gleich rammt.",
+        "Turboringe liegen auf festen Wegen: seitlich über den Mittelkreis-Flanken, vor beiden Strafräumen und hoch über der Mitte – fahr gezielt hindurch, um mit vollem Schub anzukommen."
       ]
     },
     {
       "t": "Häufige Fehler",
       "list": [
-        "Dauerboost: Nitro ist nach 3 Sekunden leer. Lieber kurz und gezielt.",
+        "Dauerboost: Schub ist nach 3 Sekunden leer. Lieber kurz und gezielt.",
         "Den eigenen Strafraum leer lassen – Konter gegen leere Tore sind tödlich.",
-        "Den Ball ins eigene Tor drücken: Eigentore zählen für den Gegner.",
+        "Den Orb ins eigene Tor drücken: Eigentore zählen für den Gegner.",
         "Online: Als Gastgeber das Spiel verlassen beendet die Partie für alle."
       ]
     }
@@ -159,10 +173,10 @@
     {
       "t": "Die Bot-Stufen und wie du sie schlägst",
       "list": [
-        "Anfänger: reagiert spät (0,35 s), zielt ungenau, springt nicht, nutzt selten Nitro und macht oft Fehler. Strategie: Ball flach vor dir hertreiben, die Bots kommen an hohe Bälle nicht heran.",
-        "Fahrer: springt, nutzt Nitro öfter, dosiert die Schusskraft und holt sich Nitro-Felder. Strategie: hohe Bälle und Wandspiel nutzen – Doppelsprünge und Flips kann diese Stufe noch nicht.",
-        "Profi: reagiert schnell (0,1 s), kann Doppelsprung, Flip und Handbremse und macht nur selten Fehler. Strategie: Positionsspiel, Nitro kontrollieren und auf seine seltenen Patzer warten.",
-        "Legende: reagiert fast sofort (0,04 s), zielt präzise auf das Tor, nutzt immer Nitro, rammt Gegner (Crash) und erreicht sehr hohe Bälle. Strategie: Nie ohne Rückendeckung angreifen, Nitro-Felder kontrollieren und Supersonic-Rammstöße vermeiden, indem du nicht frontal entgegenfährst."
+        "Anfänger: reagiert spät (0,35 s), zielt ungenau, springt nicht, nutzt selten Schub und macht oft Fehler. Strategie: Orb flach vor dir hertreiben, die Bots kommen an hohe Orbs nicht heran.",
+        "Fahrer: springt, nutzt Schub öfter, dosiert die Schusskraft und holt sich Ladezellen. Strategie: hohe Orbs und Wandspiel nutzen – Doppelsprünge und Flips kann diese Stufe noch nicht.",
+        "Profi: reagiert schnell (0,1 s), kann Doppelsprung, Flip und Handbremse und macht nur selten Fehler. Strategie: Positionsspiel, Schub kontrollieren und auf seine seltenen Patzer warten.",
+        "Legende: reagiert fast sofort (0,04 s), zielt präzise auf das Tor, nutzt immer Schub, rammt Gegner (Crash) und erreicht sehr hohe Orbs. Strategie: Nie ohne Rückendeckung angreifen, Ladezellen kontrollieren und Hyperspeed-Rammstöße vermeiden, indem du nicht frontal entgegenfährst."
       ]
     },
     {
@@ -170,35 +184,54 @@
       "list": [
         "1 vs 1: Du bist Stürmer und Torwart zugleich. Schieße nur, wenn du danach rechtzeitig zurückkommst.",
         "2 vs 2: Einer greift an, einer sichert. Nach jedem Angriff Rollen tauschen.",
-        "3 vs 3: Dreieck bilden – einer am Ball, einer in Lauerstellung, einer hinten.",
+        "3 vs 3: Dreieck bilden – einer am Orb, einer in Lauerstellung, einer hinten.",
         "Splitscreen zusammen: Teilt euch Angriff und Abwehr fest auf.",
-        "Kurze Spiele (1 Minute): Gleich zum Anstoß voll auf den Ball, jeder Fehler zählt.",
-        "Nur Start-Nitro: Die 33 Start-Nitro sind alles, was du hast – für den entscheidenden Schuss aufheben."
+        "Kurze Spiele (1 Minute): Gleich zum Anstoß voll auf den Orb, jeder Fehler zählt.",
+        "Nur Start-Schub: Die 33 Start-Schub sind alles, was du hast – für den entscheidenden Schuss aufheben.",
+        "Mondball und Chaos: Bleib eher am Boden und warte, bis der Orb herunterkommt – wer zu früh springt, hängt lange in der Luft."
       ]
     },
     {
       "t": "Anstoß-Plan",
       "steps": [
         "Beim Countdown Gas halten, damit du sofort losfährst.",
-        "Mit Nitro direkt auf den Ball zu, kurz davor springen und nach vorn flippen.",
-        "Im Team: Der Spieler, der am nächsten am Ball steht, geht zum Anstoß, die anderen sammeln Nitro und sichern."
+        "Mit Schub direkt auf den Orb zu, kurz davor springen und nach vorn flippen.",
+        "Im Team: Der Spieler, der am nächsten am Orb steht, geht zum Anstoß, die anderen sammeln Schub und sichern."
       ]
     },
     {
       "t": "Arenen und Statistik",
       "list": [
         "Arenen: Neon-Metropole, Eis-Dom und Sonnen-Canyon. „Zufall“ wählt eine davon aus. Die Spielregeln sind überall gleich.",
-        "Statistik: Spiele, Siege, Siegquote, Tore, Vorlagen, Crashs, aktuelle Siegesserie und Rekordserie, Online-Spiele und gesamte Spielzeit. Die Statistik liegt nur in deinem Browser.",
-        "Garage: 5 Karosserien (Flitzer, Brocken, Libelle, Pfeil, Käfer), 4 Aufkleber (Keins, Streifen, Blitz, Punkte) und Akzentfarben (Team, Lime, Magenta, Gold, Violett, Weiß, Türkis, Rot) – alles von Anfang an frei."
+        "Statistik: Spiele, Siege, Siegquote, Tore, Vorlagen, Knockouts, aktuelle Siegesserie und Rekordserie, Online-Spiele und gesamte Spielzeit. Die Statistik liegt nur in deinem Browser.",
+        "Garage: 11 Karosserien (Flitzer, Brocken, Libelle, Pfeil, Käfer und die modernen Volta, Kodiak, Sprint, Prisma, Sandfloh, Nimbus), 8 Lackmuster (Keins, Streifen, Blitz, Punkte, Waben, Zweifarbig, Startnummer, Chevrons) und Akzentfarben (Team, Lime, Magenta, Gold, Violett, Weiß, Türkis, Rot) – alles von Anfang an frei."
       ]
     }
   ],
   "faq": [
-    { "q": "Mein Freund kann sich online nicht verbinden.", "a": "Lass „Verbindungshilfe nutzen (STUN)“ an, wenn ihr in verschiedenen Netzen seid. Sehr strenge Netze (Firma, Schule, manche Mobilfunk-Anbieter) blockieren Direktverbindungen – dann hilft ein anderes Netz oder der Wechsel von WLAN auf Mobilfunk." },
-    { "q": "Die Kamera zum Scannen geht nicht.", "a": "Erlaube den Kamerazugriff im Browser. Ohne Kamera kannst du den Text-Code kopieren und einfügen – zum Beispiel über einen Messenger." },
-    { "q": "Wie viele Spieler gehen online?", "a": "Bis zu 6 (3 vs 3): der Gastgeber und bis zu fünf eingeladene Mitspieler. Leere Plätze füllen Bots." },
-    { "q": "Wie sichere ich meinen Spielstand?", "a": "In den Optionen unter „Daten“ mit „Spielstand sichern“ als Datei speichern und mit „Spielstand laden“ wiederherstellen." },
-    { "q": "Auf dem Handy ist die Steuerung schwer.", "a": "Schalte in den Optionen die „Einfache Touch-Steuerung“ ein: Das Auto fährt selbst in die Richtung, in die du den Stick ziehst." },
-    { "q": "Das Spiel ruckelt.", "a": "Stelle in den Optionen die Grafikqualität auf „Niedrig“ oder „Mittel“ und schalte „Weniger Bewegung und Effekte“ ein." }
+    {
+      "q": "Mein Freund kann sich online nicht verbinden.",
+      "a": "Lass „Verbindungshilfe nutzen (STUN)“ an, wenn ihr in verschiedenen Netzen seid. Sehr strenge Netze (Firma, Schule, manche Mobilfunk-Anbieter) blockieren Direktverbindungen – dann hilft ein anderes Netz oder der Wechsel von WLAN auf Mobilfunk."
+    },
+    {
+      "q": "Die Kamera zum Scannen geht nicht.",
+      "a": "Erlaube den Kamerazugriff im Browser. Ohne Kamera kannst du den Text-Code kopieren und einfügen – zum Beispiel über einen Messenger."
+    },
+    {
+      "q": "Wie viele Spieler gehen online?",
+      "a": "Bis zu 6 (3 vs 3): der Gastgeber und bis zu fünf eingeladene Mitspieler. Leere Plätze füllen Bots."
+    },
+    {
+      "q": "Wie sichere ich meinen Spielstand?",
+      "a": "In den Optionen unter „Daten“ mit „Spielstand sichern“ als Datei speichern und mit „Spielstand laden“ wiederherstellen."
+    },
+    {
+      "q": "Auf dem Handy ist die Steuerung schwer.",
+      "a": "Schalte in den Optionen die „Einfache Touch-Steuerung“ ein: Das Auto fährt selbst in die Richtung, in die du den Stick ziehst."
+    },
+    {
+      "q": "Das Spiel ruckelt.",
+      "a": "Stelle in den Optionen die Grafikqualität auf „Niedrig“ oder „Mittel“ und schalte „Weniger Bewegung und Effekte“ ein."
+    }
   ]
 }

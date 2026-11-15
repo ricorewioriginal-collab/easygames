@@ -63,13 +63,15 @@ export class BallPredictor {
   readonly vy = new Float64Array(PRED_MAX + 1);
   readonly vz = new Float64Array(PRED_MAX + 1);
   n = 0;
+  /** Schwerkraft der Vorhersage (Modus Mondball: kleiner) */
+  gravity: number = BALL_TUNING.gravity;
   private readonly sd = new Float64Array(4);
 
   predict(px: number, py: number, pz: number, vx: number, vy: number, vz: number, steps: number): void {
     const n = steps > PRED_MAX ? PRED_MAX : steps < 1 ? 1 : steps;
     const h = PRED_STEP / 2;
     const sd = this.sd;
-    const g = BALL_TUNING.gravity;
+    const g = this.gravity;
     const drag = 1 - BALL_TUNING.airDrag * h;
     this.x[0] = px;
     this.y[0] = py;

@@ -9,7 +9,7 @@ export const CAR_TUNING = {
   stick: 4.0,
   maxSpeed: 14,
   maxSpeedReverse: 9,
-  accel: 16,
+  accel: 19,
   accelReverse: 12,
   brake: 28,
   coast: 2.5,
@@ -26,10 +26,10 @@ export const CAR_TUNING = {
   latGripHandbrake: 1.6,
   handbrakeDecel: 5,
   /** Kurvenradius = turnRadiusMin + turnRadiusSpread * (v/maxSpeed)² */
-  turnRadiusMin: 2.2,
+  turnRadiusMin: 2.0,
   turnRadiusSpread: 9,
-  maxYawRate: 2.9,
-  steerSmooth: 14,
+  maxYawRate: 3.1,
+  steerSmooth: 18,
   alignGain: 10,
   alignSmooth: 12,
   jumpImpulse: 3.0,
@@ -58,6 +58,13 @@ export const CAR_TUNING = {
   demolishSeconds: 3,
   startBoost: 33,
   carRestitution: 0.35,
+  /** NEXORB: Driften lädt Energie (pro Sekunde bei voller Querrutsch-Geschwindigkeit driftChargeRef) */
+  driftCharge: 7,
+  driftChargeRef: 8,
+  /** NEXORB: Selbstaufrichten auf Dach/Seite, wenn langsam (Hüpfer + Drehung) */
+  recoverSpeed: 2,
+  recoverHop: 2.4,
+  recoverSpin: 5,
 } as const;
 
 const T = CAR_TUNING;
@@ -275,6 +282,7 @@ export function stepCar(
   raw: Partial<CarInput> | undefined,
   dt: number,
   events: SimEvent[],
+  gravity: number = T.gravity,
 ): void {
   const prevJump = car.input.jump;
   sanitizeInto(car.input, raw);
@@ -378,8 +386,31 @@ export function stepCar(
     }
   }
 
+  // Selbstaufrichten: liegt das Auto langsam auf Dach oder Seite, hüpft es kurz und dreht sich auf die Räder
+  if (surface && !grounded && car.dodgeTimer <= 0 && !car.jumpUsed) {
+    const up = ay0 * nx + ay1 * ny + ay2 * nz;
+    const sp = vel[0] * vel[0] + vel[1] * vel[1] + vel[2] * vel[2];
+    const vIn = vel[0] * nx + vel[1] * ny + vel[2] * nz;
+    if (up < 0.3 && sp < T.recoverSpeed * T.recoverSpeed && vIn < 0.5) {
+      let cx = ay1 * nz - ay2 * ny;
+      let cy = ay2 * nx - ay0 * nz;
+      let cz = ay0 * ny - ay1 * nx;
+      if (cx * cx + cy * cy + cz * cz < 0.09) {
+        cx = az0;
+        cy = az1;
+        cz = az2;
+      }
+      vel[0] += nx * T.recoverHop;
+      vel[1] += ny * T.recoverHop;
+      vel[2] += nz * T.recoverHop;
+      w[0] = cx * T.recoverSpin;
+      w[1] = cy * T.recoverSpin;
+      w[2] = cz * T.recoverSpin;
+    }
+  }
+
   // Schwerkraft immer
-  vel[1] -= T.gravity * dt;
+  vel[1] -= gravity * dt;
 
   // --- Sprung gehalten
   if (car.jumpUsed && car.jumpTimer < T.jumpHoldTime) {
@@ -448,6 +479,13 @@ export function stepCar(
         a += T.boostAccel * k;
       }
       const grip = Math.min(1, (inp.handbrake ? T.latGripHandbrake : T.latGrip) * dt);
+      if (inp.handbrake && !wantBoost) {
+        const slip = vs < 0 ? -vs : vs;
+        if (slip > 2 && car.boost < 100) {
+          car.boost += T.driftCharge * Math.min(1, slip / T.driftChargeRef) * dt;
+          if (car.boost > 100) car.boost = 100;
+        }
+      }
       const dvf = a * dt;
       const dvs = -vs * grip;
       vel[0] += fx * dvf + sx * dvs;

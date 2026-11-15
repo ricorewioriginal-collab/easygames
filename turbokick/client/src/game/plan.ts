@@ -1,5 +1,5 @@
 import type { Difficulty, StartPlayer } from '@shared/net/p2p';
-import type { TeamId } from '@shared/sim/types';
+import type { GameMode, TeamId } from '@shared/sim/types';
 import { Rng } from '@shared/rng';
 import type { Garage } from '../app/save';
 import type { LocalPlan } from './session';
@@ -12,6 +12,7 @@ export interface PlanOptions {
   minutes: number;
   arena: string;
   nitro: boolean;
+  gameMode: GameMode;
   /** Splitscreen: zweiter Mensch im anderen Team (true) oder im eigenen Team (false) */
   splitVersus: boolean;
   name: string;
@@ -19,9 +20,21 @@ export interface PlanOptions {
   seed: number;
 }
 
-const BODIES = ['pfeil', 'brocken', 'libelle', 'kaefer', 'flitzer'];
-const DECALS = ['streifen', 'blitz', 'punkte', 'keins'];
-const BOT_NAMES = ['Blitz', 'Drift', 'Kolben', 'Nitro', 'Rotor', 'Funke', 'Turbo', 'Ritzel'];
+const BODIES = [
+  'volta',
+  'pfeil',
+  'kodiak',
+  'brocken',
+  'prisma',
+  'libelle',
+  'sprint',
+  'kaefer',
+  'nimbus',
+  'flitzer',
+  'sandfloh',
+];
+const DECALS = ['streifen', 'blitz', 'punkte', 'keins', 'waben', 'split', 'nummer', 'pfeile'];
+const BOT_NAMES = ['Blitz', 'Drift', 'Kolben', 'Puls', 'Rotor', 'Funke', 'Kern', 'Ritzel'];
 
 /** Baut aus den Menü-Einstellungen die Fahrzeugliste einer lokalen Partie (Team 0 zuerst) */
 export function buildLocalPlan(o: PlanOptions): LocalPlan {
@@ -76,6 +89,7 @@ export function buildLocalPlan(o: PlanOptions): LocalPlan {
     matchSeconds: o.mode === 'training' ? 3600 : o.minutes * 60,
     arena: o.arena,
     nitro: o.nitro,
+    mode: o.gameMode,
     training: o.mode === 'training',
     localCars,
   };

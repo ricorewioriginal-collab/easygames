@@ -8,95 +8,59 @@ let platesGeo: THREE.BufferGeometry | null = null;
 let coreGeo: THREE.BufferGeometry | null = null;
 
 /**
- * Hexagon-Hülle: dual zur Ikosphäre (12 Fünfecke + Sechsecke, „Goldberg“-Körper). Jede Platte ist leicht
- * gewölbt (Pyramidendach), schrumpft zur Mitte und lässt eine Fuge, durch die der Kern leuchtet.
+ * Facetten-Hülle des Energie-Orbs: Dreieckskacheln einer Ikosphäre (Stufe 1), jede Kachel leicht nach außen
+ * gewölbt und zur Mitte geschrumpft, sodass der leuchtende Kern durch die Fugen scheint. Bänder aus helleren
+ * Kacheln entlang zweier Großkreise geben dem Orb eine eigene, gut lesbare Drehung.
  */
 function buildPlates(): THREE.BufferGeometry {
-  const ico = new THREE.IcosahedronGeometry(1, 2);
+  const ico = new THREE.IcosahedronGeometry(1, 1);
   const pa = ico.getAttribute('position');
-  const triCount = pa.count / 3;
-  const key = (i: number): string =>
-    `${pa.getX(i).toFixed(4)},${pa.getY(i).toFixed(4)},${pa.getZ(i).toFixed(4)}`;
-  const verts = new Map<string, { v: THREE.Vector3; tris: number[] }>();
-  const centroids: THREE.Vector3[] = [];
-  for (let t = 0; t < triCount; t++) {
-    const c = new THREE.Vector3();
-    for (let k = 0; k < 3; k++) {
-      const i = t * 3 + k;
-      c.x += pa.getX(i);
-      c.y += pa.getY(i);
-      c.z += pa.getZ(i);
-      const kk = key(i);
-      let e = verts.get(kk);
-      if (!e) {
-        e = { v: new THREE.Vector3(pa.getX(i), pa.getY(i), pa.getZ(i)).normalize(), tris: [] };
-        verts.set(kk, e);
-      }
-      e.tris.push(t);
-    }
-    centroids.push(c.normalize());
-  }
-
   const pos: number[] = [];
   const col: number[] = [];
-  const push = (v: THREE.Vector3, r: number, c: THREE.Color): void => {
-    pos.push(v.x * r, v.y * r, v.z * r);
-    col.push(c.r, c.g, c.b);
-  };
-  const tri = (
-    a: THREE.Vector3,
-    ra: number,
-    ca: THREE.Color,
-    b: THREE.Vector3,
-    rb: number,
-    cb: THREE.Color,
-    c: THREE.Vector3,
-    rc: number,
-    cc: THREE.Color,
-  ): void => {
-    push(a, ra, ca);
-    push(b, rb, cb);
-    push(c, rc, cc);
-  };
-
-  const t1 = new THREE.Vector3();
-  const t2 = new THREE.Vector3();
+  const a = new THREE.Vector3();
+  const b = new THREE.Vector3();
+  const c = new THREE.Vector3();
+  const m = new THREE.Vector3();
   const base = new THREE.Color();
   const top = new THREE.Color();
-  let idx = 0;
-  for (const { v, tris } of verts.values()) {
-    idx++;
-    // Ecken sortieren (gegen den Uhrzeigersinn von außen)
-    t1.set(1, 0, 0);
-    if (Math.abs(v.x) > 0.9) t1.set(0, 1, 0);
-    t1.addScaledVector(v, -t1.dot(v)).normalize();
-    t2.crossVectors(v, t1);
-    const corners = tris
-      .map((ti) => centroids[ti] as THREE.Vector3)
-      .map((c) => ({ c, a: Math.atan2(c.dot(t2), c.dot(t1)) }))
-      .sort((p, q) => p.a - q.a)
-      .map((p) => p.c);
-    const pent = corners.length === 5;
-    // Plattenfarbe: dunkles Blau-Schwarz, Fünfecke etwas heller/violetter; leichte Streuung je Platte
-    const jitter = ((idx * 2654435761) % 1000) / 1000;
-    if (pent) {
-      base.setRGB(0.1, 0.1, 0.22);
-      top.setRGB(0.3, 0.26, 0.62);
+  const push = (v: THREE.Vector3, r: number, cc: THREE.Color): void => {
+    pos.push(v.x * r, v.y * r, v.z * r);
+    col.push(cc.r, cc.g, cc.b);
+  };
+  const tris = pa.count / 3;
+  for (let t = 0; t < tris; t++) {
+    a.fromBufferAttribute(pa, t * 3).normalize();
+    b.fromBufferAttribute(pa, t * 3 + 1).normalize();
+    c.fromBufferAttribute(pa, t * 3 + 2).normalize();
+    m.copy(a).add(b).add(c).normalize();
+    const band = Math.abs(m.y) < 0.2 || Math.abs(m.x) < 0.2;
+    const jitter = ((t * 2654435761) % 1000) / 1000;
+    if (band) {
+      base.setRGB(0.16, 0.14, 0.3);
+      top.setRGB(0.55, 0.5, 0.9);
     } else {
-      const g = 0.05 + jitter * 0.03;
-      base.setRGB(g * 0.8, g * 0.95, g * 1.7);
-      top.setRGB(g * 1.9, g * 2.3, g * 4.0);
+      const k = 0.06 + jitter * 0.03;
+      base.setRGB(k * 1.1, k, k * 1.6);
+      top.setRGB(k * 2.6, k * 2.4, k * 3.6);
     }
-    const ring = corners.map((c) => new THREE.Vector3().copy(v).lerp(c, 0.87).normalize());
-    const apex = R * 1.045;
-    for (let i = 0; i < ring.length; i++) {
-      const a = ring[i] as THREE.Vector3;
-      const b = ring[(i + 1) % ring.length] as THREE.Vector3;
-      // Dach
-      tri(v, apex, top, a, R, base, b, R, base);
-      // Randwand nach unten (fast unsichtbar, gibt der Fuge Tiefe)
-      tri(a, R, base, a, R * 0.93, base, b, R, base);
-      tri(b, R, base, a, R * 0.93, base, b, R * 0.93, base);
+    const ra = a.clone().lerp(m, 0.14).normalize();
+    const rb = b.clone().lerp(m, 0.14).normalize();
+    const rc = c.clone().lerp(m, 0.14).normalize();
+    const apex = R * 1.05;
+    for (const [p, q] of [
+      [ra, rb],
+      [rb, rc],
+      [rc, ra],
+    ] as const) {
+      push(m, apex, top);
+      push(p, R, base);
+      push(q, R, base);
+      push(p, R, base);
+      push(p, R * 0.92, base);
+      push(q, R, base);
+      push(q, R, base);
+      push(p, R * 0.92, base);
+      push(q, R * 0.92, base);
     }
   }
   const g = new THREE.BufferGeometry();
@@ -109,7 +73,9 @@ function buildPlates(): THREE.BufferGeometry {
   return g;
 }
 
-/** Die Plasmakugel: Kern, Hex-Hülle, Lichthof; Farbe wechselt zur Teamfarbe des letzten Berührers. */
+let ringGeo: THREE.BufferGeometry | null = null;
+
+/** Der Energie-Orb: Kern, Facetten-Hülle, zwei Kreiselringe, Lichthof; Farbe wechselt zur Teamfarbe des letzten Berührers. */
 export class BallActor {
   readonly root = new THREE.Group();
   private readonly spinRoot = new THREE.Group();
@@ -118,6 +84,8 @@ export class BallActor {
   private readonly coreMat: THREE.MeshBasicMaterial;
   private readonly plateMat: THREE.MeshStandardMaterial;
   private readonly halo: THREE.Sprite;
+  private readonly rings: THREE.Mesh[] = [];
+  private readonly ringMat: THREE.MeshBasicMaterial;
   private readonly halo2: THREE.Sprite;
   private readonly cur = new THREE.Color(NEUTRAL_GLOW);
   private readonly tgt = new THREE.Color(NEUTRAL_GLOW);
@@ -152,6 +120,17 @@ export class BallActor {
     this.core = new THREE.Mesh(coreGeo, this.coreMat);
     this.spinRoot.add(this.core, this.plates);
     this.root.add(this.spinRoot);
+    if (!ringGeo) {
+      ringGeo = new THREE.TorusGeometry(R * 1.16, R * 0.035, 6, 48);
+      markShared(ringGeo);
+    }
+    this.ringMat = new THREE.MeshBasicMaterial({ color: NEUTRAL_GLOW, transparent: true, opacity: 0.85 });
+    for (let i = 0; i < 2; i++) {
+      const r = new THREE.Mesh(ringGeo, this.ringMat);
+      r.rotation.x = Math.PI / 2 + (i ? 0.9 : -0.35);
+      this.rings.push(r);
+      this.root.add(r);
+    }
     const mk = (op: number): THREE.Sprite => {
       const s = new THREE.Sprite(
         new THREE.SpriteMaterial({
@@ -183,7 +162,8 @@ export class BallActor {
   }
 
   /** teamColor: 0xRRGGBB oder −1 für neutral */
-  update(dt: number, ball: BallState, teamColor: number): void {
+  /** charge: Ladestand 0…1 (Überladung) – größerer, pulsierender Schein, bei 1 voll überladen */
+  update(dt: number, ball: BallState, teamColor: number, charge = 0): void {
     this.t += dt;
     if (finite3(ball.pos)) {
       this.root.position.set(ball.pos[0], ball.pos[1], ball.pos[2]);
@@ -207,24 +187,37 @@ export class BallActor {
     this.tgt.set(teamColor >= 0 ? teamColor : NEUTRAL_GLOW);
     this.cur.lerp(this.tgt, Math.min(1, dt * 7));
     this.flash = Math.max(0, this.flash - dt * 5);
-    const pulse = 1 + 0.05 * Math.sin(this.t * 6.5) + this.flash * 0.25;
+    const ch = isNum(charge) ? Math.max(0, Math.min(1, charge)) : 0;
+    const full = ch >= 1 ? 1 : 0;
+    const pulse =
+      1 + (0.05 + full * 0.12) * Math.sin(this.t * (6.5 + full * 6)) + this.flash * 0.25 + ch * 0.25;
     this.tmpC.copy(this.cur).lerp(this.white, 0.35 + this.flash * 0.5);
     this.coreMat.color.copy(this.tmpC);
     this.plateMat.emissive
       .copy(this.cur)
       .multiplyScalar(0.09 + 0.05 * Math.sin(this.t * 4) + this.flash * 0.25);
     this.core.scale.setScalar(pulse);
+    this.ringMat.color.copy(this.tmpC);
+    const spin = this.t * (1.2 + Math.min(3, this.speed * 0.05) + ch * 3);
+    const r0 = this.rings[0];
+    const r1 = this.rings[1];
+    if (r0) r0.rotation.z = spin;
+    if (r1) {
+      r1.rotation.z = -spin * 1.3;
+      r1.rotation.y = this.t * 0.4;
+    }
     this.halo.material.color.copy(this.cur);
     this.halo2.material.color.copy(this.tmpC);
     this.halo.scale.setScalar(R * 5.4 * pulse);
     this.halo2.scale.setScalar(R * 2.9 * pulse);
-    this.halo.material.opacity = 0.62 + this.flash * 0.3;
+    this.halo.material.opacity = Math.min(1, 0.62 + this.flash * 0.3 + ch * 0.3);
     if (!isNum(this.speed)) this.speed = 0;
   }
 
   dispose(): void {
     this.plateMat.dispose();
     this.coreMat.dispose();
+    this.ringMat.dispose();
     this.halo.material.dispose();
     this.halo2.material.dispose();
     this.root.removeFromParent();

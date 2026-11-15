@@ -30,7 +30,15 @@ import {
   type SimEvent,
   type SimState,
   type Vec3,
+  CHARGE_COOLDOWN,
+  CHARGE_PER_TOUCH,
+  RING_BOOST,
+  RING_RADIUS,
+  RING_RESPAWN,
+  RING_SPEED,
+  modeRules,
 } from './types';
+import { RING_POSITIONS } from './arena';
 
 const PAD_RADIUS_BIG = 1.8;
 const PAD_RADIUS_SMALL = 1.2;
@@ -65,6 +73,14 @@ export function createSimState(config: SimConfig): SimState {
     prevTouch: -1,
     winner: -1,
     rngState: config.seed >>> 0,
+    mode: config.mode ?? 'klassik',
+    gravityScale: modeRules(config.mode).gravityScale,
+    charge: 0,
+    chargeTeam: -1,
+    chargeCd: 0,
+    rings: modeRules(config.mode).rings
+      ? RING_POSITIONS.map((p) => ({ pos: [p[0], p[1], p[2]] as Vec3, timer: 0 }))
+      : [],
   };
   const rng = new Rng(config.seed);
   placeKickoff(state, rng);
@@ -98,6 +114,12 @@ export function cloneState(s: SimState): SimState {
     prevTouch: s.prevTouch,
     winner: s.winner,
     rngState: s.rngState,
+    mode: s.mode,
+    gravityScale: s.gravityScale,
+    charge: s.charge,
+    chargeTeam: s.chargeTeam,
+    chargeCd: s.chargeCd,
+    rings: s.rings.map((r) => ({ pos: cloneVec(r.pos), timer: r.timer })),
   };
 }
 
@@ -118,6 +140,14 @@ export function copyStateInto(src: SimState, dst: SimState): void {
   dst.prevTouch = src.prevTouch;
   dst.winner = src.winner;
   dst.rngState = src.rngState;
+  dst.mode = src.mode;
+  dst.gravityScale = src.gravityScale;
+  dst.charge = src.charge;
+  dst.chargeTeam = src.chargeTeam;
+  dst.chargeCd = src.chargeCd;
+  if (dst.rings.length !== src.rings.length)
+    dst.rings = src.rings.map((r) => ({ pos: cloneVec(r.pos), timer: r.timer }));
+  else for (let i = 0; i < src.rings.length; i++) dst.rings[i]!.timer = src.rings[i]!.timer;
   if (dst.cars.length !== src.cars.length)
     dst.cars = src.cars.map((c) => cloneState({ ...src, cars: [c], pads: [] }).cars[0] as CarState);
   else {
@@ -220,6 +250,11 @@ export function hashState(s: SimState): number {
     h = mix(h, p.active ? 1 : 0);
     h = mix(h, p.timer);
   }
+  h = mix(h, s.gravityScale);
+  h = mix(h, s.charge);
+  h = mix(h, s.chargeTeam);
+  h = mix(h, s.chargeCd);
+  for (const r of s.rings) h = mix(h, r.timer);
   return h >>> 0;
 }
 
@@ -243,10 +278,12 @@ export class Sim {
   private info: BallStepInfo = { wallSpeed: 0 };
   private readonly training: boolean;
   private readonly onTouch: (id: number) => void;
+  private readonly overcharge: boolean;
 
   constructor(config: SimConfig) {
     this.config = config;
     this.training = config.training === true;
+    this.overcharge = modeRules(config.mode).overcharge;
     this.state = createSimState(config);
     this.rng = new Rng(this.state.rngState);
     this.prevPos = new Float64Array(Math.max(1, config.cars.length) * 3);
@@ -334,13 +371,16 @@ export class Sim {
         }
         continue;
       }
-      stepCar(car, inputs[i], dt, ev);
+      stepCar(car, inputs[i], dt, ev, CAR_TUNING.gravity * s.gravityScale);
     }
     collideCars(cars, ev);
 
     // Ball
     const side = s.phase === 'goal' ? (s.ball.pos[2] > 0 ? 1 : -1) : 0;
-    stepBall(s.ball, cars, this.prevPos, dt, ev, side, this.onTouch, this.info);
+    const evBefore = ev.length;
+    stepBall(s.ball, cars, this.prevPos, dt, ev, side, this.onTouch, this.info, BALL_TUNING.gravity * s.gravityScale);
+    if (this.overcharge && s.phase === 'playing') this.updateCharge(dt, ev, evBefore);
+    if (s.rings.length > 0) this.updateRings(dt, ev);
     if (this.info.wallSpeed >= BALL_TUNING.wallEventSpeed) ev.push({ t: 'wall', speed: this.info.wallSpeed });
 
     // Pads
@@ -362,6 +402,60 @@ export class Sim {
 
   private restart(): void {
     this.resetKickoff();
+  }
+
+  /** Überladung: Berührungen eines Teams laden den Orb (je CHARGE_PER_TOUCH), das andere Team übernimmt mit seiner ersten Berührung */
+  private updateCharge(dt: number, ev: SimEvent[], from: number): void {
+    const s = this.state;
+    if (s.chargeCd > 0) s.chargeCd = Math.max(0, s.chargeCd - dt);
+    for (let i = from; i < ev.length; i++) {
+      const e = ev[i]!;
+      if (e.t !== 'touch' || e.speed < 2 || s.chargeCd > 0) continue;
+      const car = s.cars[e.car];
+      if (!car) continue;
+      const team = car.team;
+      if (s.chargeTeam !== team) {
+        s.chargeTeam = team;
+        s.charge = CHARGE_PER_TOUCH;
+      } else s.charge = Math.min(100, s.charge + CHARGE_PER_TOUCH);
+      s.chargeCd = CHARGE_COOLDOWN;
+      ev.push({ t: 'charge', team, level: s.charge });
+      break;
+    }
+  }
+
+  /** Turbo-Ringe: Durchfahren gibt Energie und einen Schub in Fahrtrichtung */
+  private updateRings(dt: number, ev: SimEvent[]): void {
+    const s = this.state;
+    const playing = s.phase === 'playing';
+    const r2 = RING_RADIUS * RING_RADIUS;
+    for (let i = 0; i < s.rings.length; i++) {
+      const ring = s.rings[i]!;
+      if (ring.timer > 0) {
+        ring.timer = Math.max(0, ring.timer - dt);
+        continue;
+      }
+      if (!playing) continue;
+      for (const car of s.cars) {
+        if (car.demolished > 0) continue;
+        const dx = car.pos[0] - ring.pos[0];
+        const dy = car.pos[1] - ring.pos[1];
+        const dz = car.pos[2] - ring.pos[2];
+        if (dx * dx + dy * dy + dz * dz > r2) continue;
+        car.boost = Math.min(MAX_BOOST, car.boost + RING_BOOST);
+        const v = car.vel;
+        const sp = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+        if (sp > 1) {
+          const k = Math.min(sp + RING_SPEED, CAR_TUNING.speedCap) / sp;
+          v[0] *= k;
+          v[1] *= k;
+          v[2] *= k;
+        }
+        ring.timer = RING_RESPAWN;
+        ev.push({ t: 'ring', car: car.id, ring: i });
+        break;
+      }
+    }
   }
 
   private updatePads(dt: number, ev: SimEvent[]): void {

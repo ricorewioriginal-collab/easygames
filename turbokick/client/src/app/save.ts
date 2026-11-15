@@ -1,4 +1,5 @@
 /** Lokale Speicherung: versioniert, validiert, beschädigungssicher. Es gibt KEINE Konten und keine Cloud – alles bleibt im Browser. */
+import { GAME_MODES, type GameMode } from '@shared/sim/types';
 export const SAVE_VERSION = 2;
 const KEY = 'turbokick.save';
 const BACKUP = 'turbokick.save.backup';
@@ -28,6 +29,10 @@ export interface Settings {
   ballCam: boolean;
   /** Einfache Touch-Steuerung: Der Stick zeigt die Richtung auf dem Bildschirm, das Auto lenkt selbst dorthin */
   touchAssist: boolean;
+  /** Controller: Belegung, Luft-Pitch umkehren, Vibration */
+  padPreset: 'nexorb' | 'klassik' | 'schulter';
+  padInvertY: boolean;
+  padRumble: boolean;
   /** Öffentlichen STUN-Dienst für Verbindungen ohne Server nutzen */
   useStun: boolean;
   language: string;
@@ -60,18 +65,18 @@ export interface SaveData {
   garage: Garage;
   achievements: Record<string, number>;
   stats: Stats;
-  lastSetup: { teamSize: 1 | 2 | 3; difficulty: Difficulty; minutes: number; arena: ArenaChoice; nitro: boolean };
+  lastSetup: { teamSize: 1 | 2 | 3; difficulty: Difficulty; minutes: number; arena: ArenaChoice; nitro: boolean; gameMode: GameMode };
 }
 
 export function defaultSave(): SaveData {
   return {
     version: SAVE_VERSION,
-    settings: { master: 0.8, music: 0.5, sfx: 0.9, muted: false, quality: 'auto', reducedMotion: false, highContrast: false, largeText: false, colorMode: 'standard', cameraShake: true, touchControls: 'auto', fov: 100, camDistance: 1, ballCam: true, touchAssist: true, useStun: true, language: 'de' },
+    settings: { master: 0.8, music: 0.5, sfx: 0.9, muted: false, quality: 'auto', reducedMotion: false, highContrast: false, largeText: false, colorMode: 'standard', cameraShake: true, touchControls: 'auto', fov: 100, camDistance: 1, ballCam: true, touchAssist: true, padPreset: 'nexorb', padInvertY: false, padRumble: true, useStun: true, language: 'de' },
     profile: { name: 'Fahrer' },
     garage: { body: 'flitzer', decal: 'keins', accent: '' },
     achievements: {},
     stats: { matches: 0, wins: 0, goals: 0, assists: 0, demos: 0, saves: 0, playSeconds: 0, onlineMatches: 0, bestStreak: 0, streak: 0 },
-    lastSetup: { teamSize: 2, difficulty: 'normal', minutes: 3, arena: 'zufall', nitro: true },
+    lastSetup: { teamSize: 2, difficulty: 'normal', minutes: 3, arena: 'zufall', nitro: true, gameMode: 'klassik' },
   };
 }
 
@@ -103,6 +108,9 @@ export function sanitize(raw: unknown): SaveData {
     camDistance: num(s.camDistance, 1, 0.7, 1.4),
     ballCam: bool(s.ballCam, true),
     touchAssist: bool(s.touchAssist, true),
+    padPreset: oneOf(s.padPreset, ['nexorb', 'klassik', 'schulter'], 'nexorb'),
+    padInvertY: bool(s.padInvertY, false),
+    padRumble: bool(s.padRumble, true),
     useStun: bool(s.useStun, true),
     language: str(s.language, 'de', 8),
   };
@@ -123,6 +131,7 @@ export function sanitize(raw: unknown): SaveData {
     minutes: Math.round(num(ls.minutes, 3, 1, 10)),
     arena: oneOf(ls.arena, ['neon', 'eis', 'canyon', 'zufall'], 'zufall'),
     nitro: bool(ls.nitro, true),
+    gameMode: oneOf(ls.gameMode, GAME_MODES, 'klassik'),
   };
   return { version: SAVE_VERSION, settings, profile: { name: name || d.profile.name }, garage, achievements, stats, lastSetup };
 }

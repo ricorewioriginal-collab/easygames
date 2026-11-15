@@ -1,0 +1,16 @@
+<!doctype html><meta charset="utf-8"><title>Vorschau</title><style>body{margin:0;background:#9cd}</style>
+<script src="../vendor/three.min.js"></script><script src="../vendor/GLTFLoader.js"></script>
+<script src="../js/core.js"></script><script src="../js/assets.js"></script><script>UL.base="../"</script>
+<script>
+addEventListener("DOMContentLoaded",async()=>{const T=THREE;const base=document.createElement('base');
+const r=new T.WebGLRenderer({antialias:true});r.setSize(1200,600);r.outputEncoding=T.sRGBEncoding;document.body.appendChild(r.domElement);
+const s=new T.Scene();s.background=new T.Color(0x9ccbe0);s.add(new T.HemisphereLight(0xffffff,0x557744,0.9));const d=new T.DirectionalLight(0xffffff,0.8);d.position.set(3,6,5);s.add(d);
+const cam=new T.PerspectiveCamera(40,2,0.1,100);
+const mode=location.hash.slice(1)||'figs';
+await UL.A.loadAll();
+if(mode==='figs'){cam.position.set(0,1.6,7.5);cam.lookAt(0,0.9,0);
+const looks=[{model:'knight',shirt:0xc8372d,pants:0xb79a6a,hat:'busch'},{model:'mage',shirt:0xc8372d,pants:0xb79a6a,skin:2,glasses:true},{model:'rogue',shirt:0xc8372d,pants:0xb79a6a,hat:'band',skin:1},{model:'rogue_hooded',shirt:0x333a48,pants:0x2a2f3a,accent:0xff5577,skin:3},{model:'barbarian',shirt:0xc8372d,pants:0xb79a6a,hat:'cap',skin:4},{model:'knight',shirt:0x1f2a44,pants:0x1f2a44,accent:0xffffff,mic:true,cards:true},{model:'rogue',shirt:0x7a1f3d,pants:0x22283a,accent:0xffd36b,mic:true}];
+looks.forEach((l,i)=>{const f=new UL.A.Figure(l);f.root.position.x=(i-3)*1.2;s.add(f.root);f.set(i%2?'idle':'walk');f.update(0.3);});}
+else {cam.position.set(0,6,16);cam.lookAt(0,1,0);const names=location.hash.slice(1).split(',');names.forEach((n,i)=>{const p=UL.A.sized(n,n.startsWith('tree')||n.startsWith('palm')||n.includes('ancient')?5:1.5);p.position.x=(i-names.length/2)*3;s.add(p)});}
+r.render(s,cam);window.DONE=1;});
+</script>

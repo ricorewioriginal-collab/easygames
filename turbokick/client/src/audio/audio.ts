@@ -1,4 +1,4 @@
-// TURBOKICK: selbstgemachte Audio-Engine (Web Audio API, keine Audiodateien).
+// NEXORB: selbstgemachte Audio-Engine (Web Audio API, keine Audiodateien).
 // Musik entsteht prozedural (music.ts), Soundeffekte aus Klangrezepten (sfx.ts),
 // Motoren/Boost als Dauerklänge (engine.ts), dazu Stadion-Publikum.
 // Ohne AudioContext (Node, Tests, alte Browser) tut alles nichts und wirft nie.

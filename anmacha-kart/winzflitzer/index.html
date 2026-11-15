@@ -53,6 +53,7 @@
 <!-- Kopfleiste und Knopf-Hinweise wie an der Konsole -->
 <header class="topbar" id="topbar">
   <button class="tbBack" data-back aria-label="Zurück">‹</button>
+  <span class="tbBrand"><b>KART RUSH</b><span>WINZFLITZER</span></span>
   <img class="tbLogo" src="logo.svg" alt="Winzflitzer 3D">
   <span class="tbTitle" id="tbTitle"></span>
   <span class="tbRight"><span class="tbDev" id="tbDev"></span><span class="tbClock" id="tbClock"></span></span>
@@ -76,6 +77,7 @@
       <button class="tile t2" data-go="h2h" data-desc="Du gegen einen Gegner auf einem Bildschirm: Wer den anderen aus dem Bild fährt, holt sich ein Licht. Besiege alle 11 Fahrer der Reihe nach."><span class="ti">⚔️</span><b>Kopf-an-Kopf</b><small>11 Duelle</small></button>
       <button class="tile t3" data-go="multi" data-desc="2 bis 4 Spieler an einem Gerät: Tastatur zu zweit, bis zu 4 Controller oder Touch. Wer die anderen aus dem Bild drängt, punktet."><span class="ti">👥</span><b>Mehrspieler</b><small>2–4 an einem Gerät</small></button>
       <button class="tile t4" data-go="single" data-desc="Ein schnelles Rennen gegen 3 Computer-Fahrer auf einer Strecke deiner Wahl."><span class="ti">🏁</span><b>Einzelrennen</b><small>Freie Strecke</small></button>
+      <button class="tile t6" data-go="ko" data-desc="4 Fahrer, 3 Runden: Wer eine Runde als Letzter beendet, fliegt raus. In der letzten Runde fahren nur noch zwei um den Sieg."><span class="ti">🥊</span><b>K.-o.-Rennen</b><small>Letzter fliegt raus</small></button>
       <button class="tile t5" data-go="time" data-desc="Allein gegen die Uhr – und gegen den Geist deiner besten Runde."><span class="ti">⏱️</span><b>Zeitfahren</b><small>mit Geist</small></button>
     </div>
     <p class="desc" id="tileDesc"></p>
@@ -163,6 +165,7 @@
       <li><b>🏆 Meisterschaft:</b> 27 Rennen gegen je 3 Gegner. Platz 1 oder 2 bringt dich weiter, sonst kostet es ein Leben und du fährst das Rennen noch einmal. Wer als letzter Computer-Fahrer ankommt, scheidet aus. Nach jedem dritten Rennen gibt es eine Bonusrunde um ein Extraleben.</li>
       <li><b>⚔️ Kopf-an-Kopf:</b> Du gegen einen Gegner, ein Bildschirm. Wer den anderen aus dem Bild fährt, holt sich ein Licht. Alle 8 Lichter gewinnen das Duell. Schlag alle 11 Gegner der Reihe nach!</li>
       <li><b>👥 Mehrspieler:</b> 2–4 Spieler an einem Gerät (Tastatur zu zweit, Controller, Touch). Wer vorne bleibt und die anderen aus dem Bild drängt, punktet.</li>
+      <li><b>🥊 K.-o.-Rennen:</b> 4 Fahrer, 3 Runden. Nach jeder Runde scheidet der Letzte aus, die letzte Runde ist das Finale zu zweit.</li>
       <li><b>🏁 Einzelrennen</b> und <b>⏱️ Zeitfahren</b> (mit Geist deiner besten Runde) auf allen 27 Strecken.</li>
       <li><b>Fahrzeuge:</b> Sportflitzer, Formel-Winzlinge, Speedboote, Hubschrauber, Geländewagen, Kugelflitzer, Panzer (schießen!) und Monstertrucks – jedes fährt sich anders.</li>
       <li><b>Strecke:</b> Pinke Pfeil-Streifen geben Turbo. Milch, Öl und Seife sind rutschig, Honig und Sägespäne bremsen, der Abfluss-Strudel zieht dich mit. Rampen lassen dich springen – über Lücken nur mit Schwung! Wer von der Tischkante fällt, verliert Zeit.</li>

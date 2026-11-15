@@ -339,15 +339,15 @@ window.EASYGAMES_GUIDES = {
   ]
  },
  "turbokick": {
-  "anleitung": "3D-Auto-Fußball: Fahre mit deinem Boliden, nutze Nitro und Sprünge und schieße die große Plasmakugel ins gegnerische Tor. Modi: schnelles Spiel gegen Bots (1v1, 2v2, 3v3, 4 Stufen), Splitscreen zu zweit, Training und Online mit Freunden per QR-Code oder Text-Code. Bei Gleichstand gibt es eine Verlängerung (Golden Goal).",
+  "anleitung": "3D-Arena-Derby: Fahre mit deinem Boliden, nutze Schub und Sprünge und schieße die großen Energie-Orb ins gegnerische Tor. Modi: schnelles Spiel gegen Bots (1v1, 2v2, 3v3, 4 Stufen), Splitscreen zu zweit, Training und Online mit Freunden per QR-Code oder Text-Code. Regeln: Klassisch, Überladung (Orb lädt sich durch Berührungen auf, bei 100 % zählt der Treffer doppelt, goldene Turboringe geben Schub), Mondball (halbe Schwerkraft) und Chaos (alles zusammen). Bei Gleichstand gibt es eine Verlängerung (Golden Goal).",
   "steuerung": [
-   "PC Spieler 1: W/S Gas und Rückwärts, A/D Lenken, Leertaste Sprung (zweimal = Doppelsprung/Flip), Shift Nitro (halten), Q Handbremse/Drift, linke Strg oder E Air-Roll, C Ball-Kamera, F Rückblick, R Training zurücksetzen, Esc oder P Pause.",
-   "PC Spieler 2 (Splitscreen): Pfeile fahren und lenken, Enter Sprung, rechte Shift Nitro, Num 3 Handbremse, rechte Strg Air-Roll, Num 5 Ball-Kamera, Num 6 Rückblick, Num 4 Training zurücksetzen.",
-   "Gamepad: RT/LT Gas/Rückwärts, linker Stick Lenken, A Sprung, X Nitro, B Handbremse, RB Air-Roll, Y Ball-Kamera, LB oder R3 Rückblick, Back Training zurücksetzen, Start Pause.",
+   "PC Spieler 1: W/S Gas und Rückwärts, A/D Lenken, Leertaste Sprung (zweimal = Doppelsprung/Flip), Shift Schub (halten), Q Handbremse/Drift, linke Strg oder E Air-Roll, C Orb-Kamera, F Rückblick, R Training zurücksetzen, Esc oder P Pause.",
+   "PC Spieler 2 (Splitscreen): Pfeile fahren und lenken, Enter Sprung, rechte Shift Schub, Num 3 Handbremse, rechte Strg Air-Roll, Num 5 Orb-Kamera, Num 6 Rückblick, Num 4 Training zurücksetzen.",
+   "Controller (Xbox / PlayStation / Switch, Belegung NEXORB): RT·R2·ZR Gas, LT·L2·ZL Rückwärts, linker Stick Lenken und Luftsteuerung, A·✕·B Sprung, B·○·A Schub, X·□·Y Drift (lädt Energie), Y·△·X Orb-Kamera, LB/RB·L1/R1·L/R Air-Roll links/rechts, R3 oder rechter Stick runter Rückblick, View·Create·− Training zurücksetzen, Menu·Options·+ Pause. Weitere Belegungen (Klassisch, Schultertasten), Vibration und Umkehrung unter Optionen → Controller.",
    "Touch: Stick (hoch/runter Gas, seitlich Lenken), Knöpfe SPRUNG, BOOST, DRIFT, BALL, II für Pause."
   ],
   "tipps": [
-   "Nitro gibt es am Boden und in der Luft.",
+   "Schub gibt es am Boden und in der Luft.",
    "Die vollständige Tastentabelle steht im Spiel unter Anleitung."
   ]
  },
@@ -407,15 +407,15 @@ window.EASYGAMES_GUIDES = {
   ]
  },
  "anmacha-urwaldlager": {
-  "anleitung": "Ein begehbares 3D-Dschungelcamp mit erfundenen Mitcampern. Du hältst das Camp am Laufen (Holz, Wasser, Feuer, Kochen, Schlafen), pflegst Beziehungen und bestehst täglich Prüfungen. Eine simulierte Publikumsgunst aus Sympathie, Leistung und Unterhaltung entscheidet über Ausscheidungen und den Champion am Ende der Staffel.",
+  "anleitung": "Promi-Show in 3D, im Dschungel oder im TV-Studio. Erstelle deinen Promi, zieh mit erfundenen Mitcampern ins Lager und überstehe die Staffel: Morgens wählen die simulierten Zuschauer, wer in die Urwaldprüfung muss, jeder Stern ist eine Portion fürs Abendessen. Im Camp hilfst du mit, redest mit den anderen, sprichst ins Buschtelefon und knackst Schatzkisten. In den letzten Tagen muss jeden Abend jemand gehen, am Ende gibt es ein Finale mit drei Prüfungen und eine Krönung.",
   "steuerung": [
-   "PC: W A S D laufen, Shift rennen; Maus ziehen oder Klick ins Bild = umsehen (Esc gibt die Maus frei), Mausrad = Zoom. E = Aktion (zeigt immer, was gerade geht), Q = Frucht essen, Tab = Übersicht (Buschtrommel), P oder Esc = Pause, 1 bis 4 oder Klick = Antworten im Gespräch.",
-   "Touch: Links ziehen = virtueller Joystick (ganz außen = rennen), rechts wischen = umsehen. Große grüne Kontext-Taste = Aktion, Taste Essen, 🥁 oben rechts = Übersicht, ❚❚ = Pause, Antworten antippen.",
-   "Controller: linker Stick laufen, A Aktion, X Frucht essen, Y Übersicht, LT rennen, B zurück, Start Pause."
+   "Tastatur: W A S D laufen (Shift rennt), Maus = Kamera, E/Leertaste/Enter = bestätigen und Kommando, F = zweite Aktion (z. B. ducken, Beine anziehen), Tab = Buschtrommel, 1–9 = Kommandomenü, Esc = Pause, H halten = Prüfung abbrechen.",
+   "Controller (PlayStation, Switch, Xbox): linker Stick laufen, rechter Stick Kamera, ✕/A bestätigen, □/Y zweite Aktion, ○/B zurück, △/X Buschtrommel, Steuerkreuz = Kommandomenü, Options/+ = Pause, Create/− halten = Abbruch.",
+   "Handy: Stick links laufen, rechts wischen = Kamera, grüne Taste = Aktion, zweite Taste = Ducken/Springen, Kommandos antippen; hoch und quer spielbar."
   ],
   "tipps": [
-   "Jede Prüfung erklärt vor dem Start ihre eigene Steuerung für PC und Touch.",
-   "Auf schwachen Handys in den Einstellungen Grafik: Niedrig wählen."
+   "Jede Prüfung erklärt vorher ihre Steuerung – üben kannst du alle neun unter „Prüfungen spielen“.",
+   "Wer im Camp hilft, gewinnt Sympathie; Lästern bringt Unterhaltung, kostet aber Freunde."
   ]
  },
  "anmacha-spielesammlung": {

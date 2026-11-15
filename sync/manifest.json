@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b277a44d1f27",
- "generated": "2026-11-15T19:58:19+00:00",
- "commit": "b96124484828e23ecbfdbb47cc46c98073c26528",
+ "version": "a7a10944a072",
+ "generated": "2026-11-15T21:07:00+00:00",
+ "commit": "affa156b74000a45747029e8faad1370ce3d625b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2158,13 +2158,13 @@
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 88862,
-   "h": "3c61fb10c588c70e4d6a3b4abcc7bdfe722b8a71c7d7e3c5b7244917b03b3a93"
+   "s": 91333,
+   "h": "008708b8928eb584aae937b0e99c0be19d36d5def4288da2930fa4e7f7b03352"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 71779,
-   "h": "78c533902651524cf8875265c8d0b67fa7b687cfc16df16b8034a7e745cc47cc"
+   "s": 72344,
+   "h": "47b917afd276d5af706f2bfe0e060040f2ffc14248aebac03cf38b22db52d98a"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -2308,8 +2308,8 @@
   },
   {
    "p": "anmacha-kart/sim.js",
-   "s": 37489,
-   "h": "cefe0d5075c99b98f9201ad36bc6cd13cd78f6ddf3b7523029e5ff75dad9a23a"
+   "s": 38760,
+   "h": "78eba1a59ab9821ee0f26a329aca17d9ba1f93480e800aba7b77db08e5776973"
   },
   {
    "p": "anmacha-kart/sw.js",
@@ -2318,8 +2318,8 @@
   },
   {
    "p": "anmacha-kart/track.js",
-   "s": 36870,
-   "h": "5aef49d68136e94ed81beda1552fe25ddada2ad1fbaeb2ac072146a76257d3aa"
+   "s": 37188,
+   "h": "bd8b73c5fec03e80ec0fbb8bf14ff50b63816a500f933328d99d144e82359023"
   },
   {
    "p": "anmacha-kart/view.js",
@@ -2333,8 +2333,8 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/index.html",
-   "s": 9755,
-   "h": "0953e3723b4d634cbba5f4bf1ade3660dff157ec2de3c60a09af504d41a9ebef"
+   "s": 10242,
+   "h": "8ab9c370a201c9695bbeb5cd42dc30a84419eec4da35c863de90798f5b285c68"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/audio.js",
@@ -2348,8 +2348,8 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/js/game.js",
-   "s": 73812,
-   "h": "79ed7721ede17ccc6b0c86c02cc2f279275762e9a2e61a869a899aefb7af1138"
+   "s": 76715,
+   "h": "e68a3576e56331d43f6318bcbb7a2b03b720b0bf5f87056d647751058de17276"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/input.js",
@@ -2388,8 +2388,8 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/style.css",
-   "s": 29409,
-   "h": "f084b8567b968cd51240613809f32bf633abc2dbb561ccd0c5dce49ec8ecfc1d"
+   "s": 32098,
+   "h": "0b99ad39cefb87b2d78aae83501ef7a585d314020c22bb44403a84f36891110c"
   },
   {
    "p": "anmacha-kart/zotik-fox.js",
@@ -8247,59 +8247,129 @@
    "h": "623602da0420541133607c08d24cd3baaaeb223e0c6d240cf24a54c13017ca02"
   },
   {
-   "p": "anmacha-urwaldlager/audio.js",
-   "s": 6324,
-   "h": "7bc48157f77eb59ccf9310e92abeb9e2313eaf63822ed41393bf82be68b846e4"
-  },
-  {
-   "p": "anmacha-urwaldlager/avatar.js",
-   "s": 6633,
-   "h": "0c7f120ba749c7092acf058a95b3d230a1fff7669a7f0421a98545e276d33d21"
-  },
-  {
-   "p": "anmacha-urwaldlager/camp.js",
-   "s": 53134,
-   "h": "b1f40c9ad29833aeef040230cdda2262998a43d3b17ad205ecf6695173abf64b"
-  },
-  {
    "p": "anmacha-urwaldlager/card.jpg",
-   "s": 42405,
-   "h": "1f8b2d4aff3f9b045982ceea8ef33289340135aaa1f5477597cda39632bb618f"
-  },
-  {
-   "p": "anmacha-urwaldlager/data.js",
-   "s": 26112,
-   "h": "513c5857fbe989df7d821806c8b4d3e1f7c91636a8edd4e35f2be8502219fc74"
-  },
-  {
-   "p": "anmacha-urwaldlager/engine.js",
-   "s": 21205,
-   "h": "0fad83cc53bc3ae627ad6dbe30cc98d0a1aa5a9e3ac92658ae10a1da7ed5c8a6"
-  },
-  {
-   "p": "anmacha-urwaldlager/events.js",
-   "s": 21133,
-   "h": "f57a3fc0a4c9d6ce674e8996e9795dc5e950f4248ad91d6d96e5a8e99f554e8a"
+   "s": 59077,
+   "h": "432b3fc300761c54beef4010498f168ed8b5925add0fcd9198f68613ed91a110"
   },
   {
    "p": "anmacha-urwaldlager/index.html",
-   "s": 7114,
-   "h": "f5ffd62c09ee778965008b5da71a6bf6391e1f289d12839a61d66ba451333c61"
+   "s": 7718,
+   "h": "cae28d48cefd9a15c8f9820a642dd3ee27e759b3a520f0b58e133c3d0cc5c308"
   },
   {
-   "p": "anmacha-urwaldlager/input.js",
-   "s": 8507,
-   "h": "d40d7f464ce4679ad162571e2671972bf879c9fa0768700bb0a41d1214f77294"
+   "p": "anmacha-urwaldlager/js/assets.js",
+   "s": 22202,
+   "h": "7c1233ea9053878471b4e80fea5b6cd114cf5baf0eabd19d49aeaa66ff7a322a"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/audio.js",
+   "s": 10040,
+   "h": "39bd8cbbcdf041a8aa9971313272c012c8cee7024b0bcf91f87cd50c9ba34a45"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/camp.js",
+   "s": 33726,
+   "h": "fc668d76b2d5d58955c28bf2cb6daf7c08519098b1ac911ee7fc89b9687f1e46"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/core.js",
+   "s": 3579,
+   "h": "fdc29b03107858d56e909a11555afe7e47b9f0c48c7df98152afff65cc3db30a"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/data.js",
+   "s": 22685,
+   "h": "30bbd957687843e2a87eb30b78a5a2738d6d41e4fa388be6b863ac34100fb644"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/input.js",
+   "s": 13404,
+   "h": "5c6b931f04f18d07c65679bc68372c948c8e8e89adec180e839a75efe5bfa888"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/main.js",
+   "s": 2605,
+   "h": "569b9764e6d71553516fb19e021c26fcc8e132a403fda011db3580b88667d5c8"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/menus.js",
+   "s": 20310,
+   "h": "a992146ff2dab18587dad551444a30f39ec15501632a1125415e062460f32671"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/render.js",
+   "s": 25534,
+   "h": "4b83a991928fb87e675be2970f3f693eb104cd15b6148bb530b69b99de0d0b88"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/show.js",
+   "s": 18488,
+   "h": "ccb68cae1e175f84cb794a59c05578f3e96a812b5eeab38d25023002b40e30bc"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/stage.js",
+   "s": 9322,
+   "h": "698c848e52bc368bea18f8452f7cf064c142942c6534e05fb2b7c116bb948eeb"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/dinner.js",
+   "s": 10488,
+   "h": "994329ddd741e915542fc9096e1eebf4eb9218028fbe1737104b8d83c43243ac"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/dusche.js",
+   "s": 9470,
+   "h": "05a561a63c520e8006dcf428b08bddfa356d9bb2a4f3e6315d083fbc0f148da7"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/kisten.js",
+   "s": 11418,
+   "h": "696b9ab21b21788d33a6a9fd25af329102dfbb85a42b2d7252f657b7b67255e2"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/kit.js",
+   "s": 13537,
+   "h": "3983d6d7c9ca18df417d65b961339d85ac6e17d734248841a72966f7eb8e818a"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/parcours.js",
+   "s": 13005,
+   "h": "5dc1c8a96a0a45a49d8a6f6fd1bb94b178a3fdc3d074f5bd781fed83e5caa9d6"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/quiz.js",
+   "s": 7385,
+   "h": "790525d8d7d2d8893ec71791e501fad4a9d158d1496d869c95b0789957dda5b2"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/seilbahn.js",
+   "s": 10996,
+   "h": "91728c5444a6149fb18583b92838655a943e324de6cab69afaea00301e719007"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/steg.js",
+   "s": 9123,
+   "h": "56bb412c31d479c056a1e4eb8ae5a56aea9ae456d0f0a221c24fdbae652ca23f"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/tauchen.js",
+   "s": 8603,
+   "h": "5b6a41933084bf8b3541e1f417937a714edd49ab2bdd3d3eb414a52b72544443"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/tunnel.js",
+   "s": 10813,
+   "h": "1896e9259324a3dd39107ddc79748ab902d21ffd65c5cacb982c87a1364a6edf"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/ui.js",
+   "s": 12344,
+   "h": "a59c706cf5dba124fe3ceeb9094567ea206d399bccc4b9502f9e6d56c0c426fb"
   },
   {
    "p": "anmacha-urwaldlager/logo.svg",
-   "s": 1931,
-   "h": "fd38b0e17d2a96908b67a72f3cbf65f902647ae782b761e285adc562bc4d5031"
-  },
-  {
-   "p": "anmacha-urwaldlager/main.js",
-   "s": 10203,
-   "h": "7d11f51515393e59f2d5f67698ce31731f84d0b87652c7850e917a100fd827d5"
+   "s": 3124,
+   "h": "819e2be72de39d1121a42c17341cd96400b947fc984870dfac18a2d77cac0dc3"
   },
   {
    "p": "anmacha-urwaldlager/manifest.webmanifest",
@@ -8307,104 +8377,79 @@
    "h": "69c54735e8ead921640a351c45e1e474da0ddc9b3d737e0e0dd7f6f87b2481dd"
   },
   {
-   "p": "anmacha-urwaldlager/season.js",
-   "s": 34999,
-   "h": "f96533e2b8238bbd44d5648a63a1fefc348526f6fefd03de3f25f95047a0e6df"
+   "p": "anmacha-urwaldlager/models/figuren/anim.glb",
+   "s": 495076,
+   "h": "57b74ee1613b04cc9b6ba3d742a8a98fc36b3ee8db0674ecc81ce1a224c545fa"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/figuren/barbarian.glb",
+   "s": 180204,
+   "h": "a0d3d1b6606382a835741fb203edd0d499751b51e1ba898cf1513c55b7da688c"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/figuren/knight.glb",
+   "s": 178000,
+   "h": "9c1640a0e9800cc90d0a41634128c0dff39c9791a1bd59344e0cea432465ceb9"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/figuren/mage.glb",
+   "s": 175860,
+   "h": "7a924eb1c0c5a2efea230806c579b45f6fddf317e2c20ada2c11c986733205f8"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/figuren/rogue.glb",
+   "s": 159668,
+   "h": "1da79f27e2a32445b8335451d71d8abf818ebbf55758c31e2d91bdb78cf05a7e"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/figuren/rogue_hooded.glb",
+   "s": 148804,
+   "h": "fc1c4bc779205a5587ca52820e68ce12f3b45fce5c2e3e0a399618919ee89f93"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/set.glb",
+   "s": 1475372,
+   "h": "b4f24c4293180beaeab22871783270ba4830bb9c817f4de7189606807304f534"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/tiere/bat.glb",
+   "s": 130056,
+   "h": "f3ea88c2aef596164549d1efadf460cc6d291505e010b01536182eafd92e12a8"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/tiere/bee.glb",
+   "s": 97724,
+   "h": "f6cf453440bcb44c94a3cb3426e06f9b51632f185a0010f026e8f04986c411b7"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/tiere/crab.glb",
+   "s": 112872,
+   "h": "f601e62de79fe4f1b22c2669799621a9efc7407c8783c905f03b6d968884dfac"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/tiere/frog.glb",
+   "s": 325336,
+   "h": "080037b1919269893476dfc822118ba38322a3c5684db719d0abc59470b0065e"
   },
   {
    "p": "anmacha-urwaldlager/style.css",
-   "s": 28270,
-   "h": "3d9e8db86d2006fb7738d79071dfd96731d90c98a29233559c1a84367ccfb895"
+   "s": 21893,
+   "h": "8d9b960569b6c9c629b7a86744237f120ed4838486bb1664c52491fd003158ba"
   },
   {
    "p": "anmacha-urwaldlager/sw.js",
-   "s": 1995,
-   "h": "0a15aa77c011d0eb0b1576904697fe40ef8db5660fd3c75bd8bb3b20ca5d5a79"
+   "s": 1999,
+   "h": "5840e53f03e5144cdee8e86c2f3efb94fccc879080ad7f06966ef10f4b93c658"
   },
   {
-   "p": "anmacha-urwaldlager/trials.js",
-   "s": 35972,
-   "h": "1c01af3c9eea466652c3b60a12f229968c67549ef3dbaf321360b8e14ca53a7c"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/bruecke.js",
-   "s": 10195,
-   "h": "03e1724c918bced1cbf4700160eb5bbac6d9afa550b2ba9d31a1c04064bf56e7"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/core.js",
-   "s": 16988,
-   "h": "9e3e35ca660954da0f911975c997dd48e9b3e6c4673d4c3c28c3300394adcf90"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/dinner.js",
-   "s": 52041,
-   "h": "0e8372adf02daf79bafb3c147342c9448b111f1911969fa6705e3174707fc1f2"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/dunkel.js",
-   "s": 34487,
-   "h": "9138d8b91678f40aa11a7e331afff828e1284a0f91161ff497264ce793eb72c1"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/hoehe.js",
-   "s": 27651,
-   "h": "66abe6c22f75cc72e10f6f96245ebb4263d5312cfe0716722381f3d3cf8d2699"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/labyrinth.js",
-   "s": 41551,
-   "h": "3c2f7687d5ab62667267eb471bb9ebc6553765ffae50f9fe7b2e4063c1915c51"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/liane.js",
-   "s": 30344,
-   "h": "f2bcc1e3838618ae680772632d9bbc87694128b7ea14ea037b8ea6bc47906332"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/parcours.js",
-   "s": 23986,
-   "h": "470b3122926f233bc448bd9bfbb7d06c5f5a6bccc0c505bd738987fb4ac9b2aa"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/schatz.js",
-   "s": 37391,
-   "h": "d7992c32240e38bea120a2b8cfad5fadbf9f4483777b90f317e27012beaff548"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/staffel.js",
-   "s": 5087,
-   "h": "b01b274dd79a4901753aa329ea548f492bf903ee9ec567f36464c975e3da70fb"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/tauchen.js",
-   "s": 30792,
-   "h": "4389d5c3dbb16e1f2d42cc2e01a75ea991d37f964f025a5bbb11ed7c16eb3bff"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/totem.js",
-   "s": 25258,
-   "h": "0067f2399b8d22105c20160a3bfbbe4ac8471e74cbe0ba7540c713d584c9dafd"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/tunnel.js",
-   "s": 35040,
-   "h": "2ab34cacc756549e81d2ef8bee668871bf3c7f15b64781cb44bc3a0337c60079"
-  },
-  {
-   "p": "anmacha-urwaldlager/ui.js",
-   "s": 53045,
-   "h": "88d6b05903e787506700daa73736f6b3e4590832b4d4d0a88fe95f30d9478e14"
+   "p": "anmacha-urwaldlager/vendor/GLTFLoader.js",
+   "s": 96550,
+   "h": "5c15967ba830918a9caea6338712c994c354bccd4edc4569bde411c3ec06a3e6"
   },
   {
    "p": "anmacha-urwaldlager/vendor/three.min.js",
    "s": 603445,
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
-  },
-  {
-   "p": "anmacha-urwaldlager/world.js",
-   "s": 43923,
-   "h": "7263f09ae3d0d49870b730b0aaf77f27d347f481544a68d870c038ec44630bfb"
   },
   {
    "p": "beat-studio/card.jpg",
@@ -10198,13 +10243,13 @@
   },
   {
    "p": "gamepad.js",
-   "s": 82033,
-   "h": "b95c332c8e855a2ccc7a94bd9e3563ea854c80df464bfffde25ff16f973fd10e"
+   "s": 82937,
+   "h": "0987b9af0eb9db34d9b0365337aa29c4fff51fe62db1ec1f3a7020ff55a83aea"
   },
   {
    "p": "games.js",
-   "s": 54761,
-   "h": "66eabc0d08b5e1d834768d0b0f43bb533231407054606e3a322e8f39b8611e66"
+   "s": 54871,
+   "h": "5c7e62ec940a92e486d00cd55d067ee417181b503c19dcaf851d7617451a900f"
   },
   {
    "p": "gay-life/card.jpg",
@@ -10508,8 +10553,8 @@
   },
   {
    "p": "guides.js",
-   "s": 169260,
-   "h": "1814814358638cf18f390f80ca3f0feb3b71fe2fc8ff5becf57885c95d906833"
+   "s": 169990,
+   "h": "fa379e7406f5accb3b84ecb45ac72387532e15e392b0a68c66e7e1d904afafdf"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10563,8 +10608,8 @@
   },
   {
    "p": "guides/anmacha-kart.json",
-   "s": 48869,
-   "h": "be656bb9a4278a352bed13f79ff3ff5489aaeae756d19db5098e2f6153280425"
+   "s": 49730,
+   "h": "ad25edb7140e4c14eab5fa29ee6adaf212e7d45c9fd82e4a524dafb16374b679"
   },
   {
    "p": "guides/anmacha-kartensammlung.json",
@@ -10648,8 +10693,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 19470,
-   "h": "b27c726cd87e55bb3f79c1be42dd114d6d08f8880d867f06ed7a412246abec07"
+   "s": 10696,
+   "h": "e215ffb1b216c424816e227f8fc46e2c4eedb624ba655098874bc1377005c31c"
   },
   {
    "p": "guides/beat-studio.json",
@@ -10918,8 +10963,8 @@
   },
   {
    "p": "guides/turbokick.json",
-   "s": 13610,
-   "h": "b2427fd5c67516ea097ea79b73d77ea8f39b7ee83ac13553498150ddf59ea83f"
+   "s": 15862,
+   "h": "fbd41f23c03ac4d805a7a84d43342faf6bdeb169725b00c883a18a82bf610583"
   },
   {
    "p": "guides/werwolf-nacht.json",
@@ -14128,8 +14173,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 245426,
-   "h": "85c192e747eadeda064f87c14feb928d787973ee29763691db8c89816778b8b7"
+   "s": 246266,
+   "h": "3b31ee3da59cad2d0fba560edf5e5818d002e9008511815ae3de499128107e4e"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -15078,8 +15123,8 @@
   },
   {
    "p": "thumbs/anmacha-urwaldlager.webp",
-   "s": 14884,
-   "h": "7ac6b18805592af736dc6dda855cc461acf52caecbca5ee3c29ed5cf7b832b38"
+   "s": 31610,
+   "h": "352e3dd603461b1f48ff5371d2a0ffc2d85c38bc78c26a279f86780fec780ff5"
   },
   {
    "p": "thumbs/beat-studio.webp",
@@ -15274,7 +15319,7 @@
   {
    "p": "thumbs/thumbs.js",
    "s": 2158,
-   "h": "f7df8ee54229a7705ac015116fec64f37621e853e396c925d6e15cf761f45d53"
+   "h": "efb0808e8b818df2c5b067a93dd0b0e4a1bcdfce6952fff20f976c12b4f9142a"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
@@ -15283,8 +15328,8 @@
   },
   {
    "p": "thumbs/turbokick.webp",
-   "s": 13234,
-   "h": "17a2d8a442ce068f505d6272d440b64e3b1a3888697381ffc2f02559506d6713"
+   "s": 10804,
+   "h": "919ca2a6555d8b293d1aebbf9af498c9ada4a883ff7e818d38feebd375dc392b"
   },
   {
    "p": "thumbs/werwolf-nacht.webp",
@@ -15352,19 +15397,19 @@
    "h": "60954a6f54ae18ab7ee795db0f0a99e3bcc2b036fc7d41f5afc56894e7f3d0a3"
   },
   {
-   "p": "turbokick/app/assets/actorslab-LE03rGj_.js",
-   "s": 4844,
-   "h": "19390d10f6846444742dc9cf635747de18706b0126243d48f26007700aeed770"
+   "p": "turbokick/app/assets/actorslab-C36HxRlx.js",
+   "s": 4944,
+   "h": "5d74da1a24d85484731fa30ca649b27005e42ba978739b776c62fe3473f4a98f"
   },
   {
-   "p": "turbokick/app/assets/app-BWzuDmLP.js",
-   "s": 41513,
-   "h": "cfaecd4268d7c464dfaa083c10e703ffa46ca2d3f3115ec6af3b9680d8f307b4"
+   "p": "turbokick/app/assets/app-vz2wX3pi.js",
+   "s": 43647,
+   "h": "6b20aa808a12b747dfd0c943f220d03d2ac56e133cd9650e4d8d3d123c51d1d9"
   },
   {
-   "p": "turbokick/app/assets/arenalab-BlMUEUs_.js",
-   "s": 3010,
-   "h": "4c743f2c44545c587eba4a6583073521798785417ffea108c0655bff70edf7ec"
+   "p": "turbokick/app/assets/arenalab-4dIkl6pe.js",
+   "s": 3096,
+   "h": "90b97d60879692cca471af1a651d353628f574c102584b03c1f5a10683565f3e"
   },
   {
    "p": "turbokick/app/assets/common-BrUHktys.js",
@@ -15377,154 +15422,154 @@
    "h": "2e3f71087c90c4dae7ca455acf37e8679e2d5b03f46bce3ad1f5089fecca0806"
   },
   {
-   "p": "turbokick/app/assets/controller-DoLiQnBo.js",
-   "s": 12970,
-   "h": "ff57e4b4414e2be55949f5a97723078ceece5480830b36c4f676c040054aba24"
+   "p": "turbokick/app/assets/controller-BrINECta.js",
+   "s": 13316,
+   "h": "674e20c33dacce34e839ef4ff390e63505fc0eb92fbcbdf0f73cff36931a24af"
   },
   {
-   "p": "turbokick/app/assets/credits-BuEjQDXr.js",
+   "p": "turbokick/app/assets/credits-Br4Q-ibo.js",
    "s": 934,
-   "h": "6745f7c0cfd91ac8cedf7b032ec6e7bb4aaec1b4f955f7a2c09e7768dd807fdc"
+   "h": "5d1fdd03ebe6f198f4c04c6beecf1b1670bbeadee8af667948a66cf80069f89a"
   },
   {
-   "p": "turbokick/app/assets/engine-BUX5TC5o.js",
-   "s": 523498,
-   "h": "253d09dfc5d52aed2deb3f6dfd26454d292d2ad5aa9dbe07b6387097b92470d2"
+   "p": "turbokick/app/assets/engine-DTskIBfD.js",
+   "s": 524893,
+   "h": "c80c89bfb647021320d1c72ffdf69b3f4b035736a6b8c369f3009a81953b0d95"
   },
   {
-   "p": "turbokick/app/assets/garage-DkXsEsH-.js",
-   "s": 1731,
-   "h": "63b7753ed16b5dda41274bac23cd83d0d94b5d7e8005927c934c37a688e249a6"
+   "p": "turbokick/app/assets/gamepad-Cd_lZpFr.js",
+   "s": 3002,
+   "h": "826ead614601b10385ea3d171c13a2afd099c234f0d64b7937146f6e360a94e2"
   },
   {
-   "p": "turbokick/app/assets/help-DaUiH0w9.js",
-   "s": 1016,
-   "h": "a169506907825b3588b3d8c5dccd57dfd81ce319974a6d08635f1fb757288032"
+   "p": "turbokick/app/assets/garage-Bdpp5dzH.js",
+   "s": 1703,
+   "h": "920804fcf96c96b97a28b87c153a67d08605f34b8371c258e50dfb917993a837"
   },
   {
-   "p": "turbokick/app/assets/index-BJN_Dd16.js",
-   "s": 3062,
-   "h": "6be520721013f66ebbe6c69096c22b672b0ec14e36b4daccea91efa7782e5b66"
+   "p": "turbokick/app/assets/help-lhN2CM5C.js",
+   "s": 1610,
+   "h": "a64daa927169513aa27f3b25a79feec8834d436fefd059db45f757659d26f62d"
   },
   {
-   "p": "turbokick/app/assets/index-BfBUqHXu.css",
-   "s": 11265,
-   "h": "f042b2c5b4cba72575b90cdee2cdc97343c6c4f0e16ed48de6d2777b84be014c"
+   "p": "turbokick/app/assets/index-Ci2iOAIv.js",
+   "s": 3030,
+   "h": "825313234b687216dd90b669b89b88229048a3bc712438270f79bb1f9230a245"
   },
   {
-   "p": "turbokick/app/assets/index-CjkLaGiw.js",
-   "s": 56591,
-   "h": "d719294fa4f057e4ef59ee3b1fff11f815ab50965f39555ba315fa7b70441d0b"
+   "p": "turbokick/app/assets/index-D7zigaQ3.js",
+   "s": 45280,
+   "h": "e183587c776da69dbfa8ff1d8620c014fbf2ed58af76ffd47072188c002d3ac5"
   },
   {
-   "p": "turbokick/app/assets/index-Daz4bIJM.js",
-   "s": 38475,
-   "h": "dce89e9037e3ff50cbcd56ae20737541e9be974965f0526512fbc71887ec2f14"
+   "p": "turbokick/app/assets/index-Dfq3AT_P.js",
+   "s": 57849,
+   "h": "871f36fe4d9929bb7cfbd8b7e1256a7d81bb7d84effcdd4af329e5f2c891533c"
   },
   {
-   "p": "turbokick/app/assets/mainMenu-CD533oMc.js",
-   "s": 2889,
-   "h": "1128e65977010152bcb6a7cec58d5a34ad10e3e9395c8abe7c71a6d5415ff959"
+   "p": "turbokick/app/assets/index-V5xbn7MQ.css",
+   "s": 13524,
+   "h": "4287bb25ede18db3c5870ab802899d288336d84587c56a066c392bd019bec861"
   },
   {
-   "p": "turbokick/app/assets/matchScreen-B4mX07w3.js",
-   "s": 17790,
-   "h": "5521c266ce494fc2cc7234107b8d0fa1589c90227cbc6d083ea0de8ed731edbf"
+   "p": "turbokick/app/assets/mainMenu-BHGQOdB7.js",
+   "s": 2904,
+   "h": "f8868f4be50b7f97f0056ddafcc01cb212cadefd98cfacd26364d0dd376baa8b"
   },
   {
-   "p": "turbokick/app/assets/options-CmVAw5g6.js",
-   "s": 2649,
-   "h": "2b3d5b05ff5408131f8c7110a6523ad3ade0490aeb92f253dc7ca24cb3b23b49"
+   "p": "turbokick/app/assets/matchScreen-Dl9A2VoY.js",
+   "s": 19791,
+   "h": "02b4bd9b52c3b913f43158e86ec9aa055e03b31b6d71c041f71798bc22677a7c"
   },
   {
-   "p": "turbokick/app/assets/p2p-Cxst7Bja.js",
-   "s": 174619,
-   "h": "b9b513de96850dc887ecba36cee39cf5c6aca845824915a5a703981c22383dd7"
+   "p": "turbokick/app/assets/options-DhtOMFWK.js",
+   "s": 3236,
+   "h": "da5a73b26b3b98709176be3db34769d1180d3fe1fd182ebedec2729ec73d577a"
   },
   {
-   "p": "turbokick/app/assets/p2p-ZvRawAIL.js",
-   "s": 3375,
-   "h": "c2a6a51a2b8df7f53a834626afc23d06de915c1d547366d0efdb5b525e60a943"
+   "p": "turbokick/app/assets/p2p-BSc48N20.js",
+   "s": 3461,
+   "h": "fb8ba65eee4f194b6ef28b8c61444c3a0c2c72889cfed81a2075b56675428838"
   },
   {
-   "p": "turbokick/app/assets/plan-CpyhmBgv.js",
-   "s": 1262,
-   "h": "052e963f0a6ad0670c76ad735c97dbc26cf772d1922d7b2dfa3cb83409b917f8"
+   "p": "turbokick/app/assets/p2p-D4h-5C8v.js",
+   "s": 175014,
+   "h": "a758b848dabe001bd1273f408f6900af916d4080fec086f5e4e22043f56b584b"
   },
   {
-   "p": "turbokick/app/assets/play-BlJwae3A.js",
-   "s": 2156,
-   "h": "12768e84a0af734aadc93f78207b9f91fe887d2c29f4abecbde32e1d8fb4dae3"
+   "p": "turbokick/app/assets/plan-BHLlH7Qe.js",
+   "s": 1365,
+   "h": "28e04a8201f5568484292076b87308e5b07c457895c04f23d2404c800af434f3"
   },
   {
-   "p": "turbokick/app/assets/session-OpoCbuRc.js",
-   "s": 28910,
-   "h": "c57bfe94b34e4c72fea1bac6e4bccecf613059344c28f02f60bcfdd4115c6c87"
+   "p": "turbokick/app/assets/play-LcYuNCce.js",
+   "s": 2327,
+   "h": "6ddc858516ff1e39f1a43aa0868acbf1f4ec8f7fac068aa4b8c9672aa83d6e7b"
   },
   {
-   "p": "turbokick/app/assets/sim-Dsj4uYHN.js",
-   "s": 24605,
-   "h": "6d9888ba4612a055e84ab990fb37d8191d21637e70efa556821e78c23e0a8899"
+   "p": "turbokick/app/assets/session-Bk5opxC9.js",
+   "s": 29561,
+   "h": "4f295106fad1d9bde42bec78f3d565f657da7441ae2b287f2358cebcbfc3f2cc"
   },
   {
-   "p": "turbokick/app/assets/stats-D982iLc1.js",
+   "p": "turbokick/app/assets/sim-BgVRaD1Y.js",
+   "s": 27331,
+   "h": "6a5c4876d9e2d49468031395142da63d367ac88ed55243a99d513a4bf79b9922"
+  },
+  {
+   "p": "turbokick/app/assets/stats-D4eamE3R.js",
    "s": 933,
-   "h": "044d7379609d5b15f0e0b4b5f5a1eb969803a24801c2c1d5374ce1e02c7a8866"
+   "h": "6b82ff253e167d4649f3894d97dbd6a8db6f472e7a8b63efac345347d6c7ddd6"
   },
   {
-   "p": "turbokick/app/assets/types-BwFz-Uy_.js",
-   "s": 659,
-   "h": "86a8d76ebed26e89d2144fac36f796f16b15c0a360f597d8ae2fcec777ca4a3a"
-  },
-  {
-   "p": "turbokick/app/assets/types-DmtRZn9o.js",
-   "s": 537,
-   "h": "3363e8efb0be15f8572d96f94992df85e87b7ddd35b124b1caedac1d80438d6f"
+   "p": "turbokick/app/assets/types-C-glLoTB.js",
+   "s": 1171,
+   "h": "9c4a963134f3c5a5055eac1894555f5600e5b953bfba1d18824efa917995f2e7"
   },
   {
    "p": "turbokick/app/index.html",
-   "s": 1008,
-   "h": "64557757a019afc1160672a5a88632f1b4d86d97db2e24e316eec5d56a18b172"
+   "s": 1098,
+   "h": "1b3e6d8101c1f17ac1dcca5f3ffb78167478d5cf1354e69a9b68ddd4cc83a669"
   },
   {
    "p": "turbokick/card.png",
-   "s": 100957,
-   "h": "8b45a131071942458f8b0e661a75416c1d225b8993409c5dd162ed0b1501b1da"
+   "s": 107099,
+   "h": "76f56db0be472bebba3734ad5c110d55aaa607dbb3e485913fe37d218c545a48"
   },
   {
    "p": "turbokick/client/index.html",
-   "s": 911,
-   "h": "ad065e28dbf9acb81876550eee325a0b6dda32d38648fb7021c4bfc0a0b7c69b"
+   "s": 1001,
+   "h": "59816613fc3f2fb496d1caa2d44f4b2cad24b1769c0b8bb8b56b71df478da645"
   },
   {
    "p": "turbokick/client/src/input/touch.css",
-   "s": 3503,
-   "h": "43368f505bc02b21a0c00c74a0560ee18c41b3997c32ec801847fa6ca2a8be2e"
+   "s": 3500,
+   "h": "4d98d9f62ac5cfdcab9ea9a404ecb00318e824bce8e7572580ea4257d12e716e"
   },
   {
    "p": "turbokick/client/src/style.css",
-   "s": 14256,
-   "h": "d64261353c5960280e2f6666e1b6fba756b15a2c4f1f041113e496eef3cbeaeb"
+   "s": 17117,
+   "h": "86e6c3db027c2b87b78e2c13735b5f8feebdf0bafa066078b8af5bc3d6b6e30f"
   },
   {
    "p": "turbokick/index.html",
-   "s": 4375,
-   "h": "28150df10b3b4887956ae6e67c25583dbf7a9da2ba0e5bcc39e3d39ebdb3cab3"
+   "s": 4366,
+   "h": "ef7385759fb97eabf36d597d136332ee315a64f86f71af767bd5c441e069afee"
   },
   {
    "p": "turbokick/logo.png",
-   "s": 185541,
-   "h": "6bb1095433a6c0a070670760f1ecb06f8750111cc4da3e68906a356ac48d79bd"
+   "s": 388892,
+   "h": "736f11327d83d2f27fb2c14bc6967d4b15d1781250bcb426adeb54bb2211178d"
   },
   {
    "p": "turbokick/manifest.webmanifest",
-   "s": 749,
-   "h": "47ac1b66fa38b40916829e531d26675867296d496193a949fb0cc383d1ae5b60"
+   "s": 743,
+   "h": "47ff8e2e16c9b272ebfd98dfde9f42a504b242f8d984f877ea52c4e7aefcd99c"
   },
   {
    "p": "turbokick/sw.js",
-   "s": 1973,
-   "h": "e79be3f1829f2a05e0c365f6fe8ee88af56ce9c64e3a473e335fd35ad01e0ca0"
+   "s": 1974,
+   "h": "0614b2a80bed8353f5144cc19c0622b59c8f540ad5533295b23d1880c710df58"
   },
   {
    "p": "vendor/fonts/fredoka-latin-wght-normal.woff2",
@@ -69632,9 +69677,9 @@
    "h": "9e629369f7a54ab0b5ef047ea685f1a41154903e478869c95eca8a5590cc4681"
   },
   {
-   "p": "zotik/assets/index-BARJxIzk.js",
-   "s": 2126751,
-   "h": "1f10bafc2a3539c46dd9e540c2af0a1a0fa09033b1197eb6e56f15ef15cfb490"
+   "p": "zotik/assets/index-9yAP_Loh.js",
+   "s": 2129274,
+   "h": "1b8b41b90238659a78ad282ffa2ca5eee966c8873ea9400e84797b079e401cbf"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -69654,7 +69699,7 @@
   {
    "p": "zotik/index.html",
    "s": 78317,
-   "h": "ef51124c011d66ea12b7dcc24abf1519d691b9fe4a8805666ef9110a6225a2c9"
+   "h": "d24174cb56edd32c1fede611a8fc9ee7b483cb31d15751726188cd067fb247b5"
   },
   {
    "p": "zotik/manifest.webmanifest",

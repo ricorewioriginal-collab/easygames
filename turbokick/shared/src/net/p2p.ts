@@ -1,4 +1,4 @@
-import { clampInput, type CarInput, type SimEvent, type TeamId } from '../sim/types';
+import { clampInput, GAME_MODES, type CarInput, type GameMode, type SimEvent, type TeamId } from '../sim/types';
 
 /** Nachrichten für den Online-Modus ohne Server (WebRTC-Datenkanäle). Der Gastgeber führt die Simulation aus, Gäste senden nur Eingaben. */
 export const P2P_VERSION = 1;
@@ -27,6 +27,7 @@ export interface P2PLobby {
   teamSize: 1 | 2 | 3;
   minutes: number;
   arena: string;
+  mode?: GameMode;
   slots: P2PSlot[];
 }
 
@@ -43,6 +44,7 @@ export interface StartMessage {
   matchSeconds: number;
   arena: string;
   nitro: boolean;
+  mode: GameMode;
   /** Fahrzeug dieses Gastes */
   you: number;
   players: StartPlayer[];
@@ -123,7 +125,12 @@ export function parseToHost(raw: unknown): ToHost | null {
   }
 }
 
+const cleanMode = (v: unknown): GameMode =>
+  (GAME_MODES as readonly string[]).includes(v as string) ? (v as GameMode) : 'klassik';
+
 const EVENT_TYPES = new Set([
+  'ring',
+  'charge',
   'countdown',
   'kickoff',
   'touch',
@@ -171,6 +178,7 @@ export function parseToGuest(raw: unknown): ToGuest | null {
           teamSize: ts,
           minutes: typeof l.minutes === 'number' ? Math.max(1, Math.min(10, Math.round(l.minutes))) : 3,
           arena: token(l.arena, 'neon'),
+          mode: cleanMode(l.mode),
           slots,
         },
       };
@@ -212,6 +220,7 @@ export function parseToGuest(raw: unknown): ToGuest | null {
           matchSeconds: secs,
           arena: token(m.arena, 'neon'),
           nitro: m.nitro !== false,
+          mode: cleanMode(m.mode),
           you: m.you,
           players,
         },

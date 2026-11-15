@@ -89,6 +89,7 @@ export function create(app: App, _params?: RouteParams): ScreenView {
       minutes: ls.minutes,
       arena: ls.arena === 'zufall' ? 'neon' : ls.arena,
       nitro: ls.nitro,
+      mode: ls.gameMode,
     });
     cleanups.push(() => room.close());
     const invitesBox = h('div', { class: 'invites' });

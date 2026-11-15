@@ -94,7 +94,7 @@
     {
       "t": "Tandem: zwei Fahrer pro Kart",
       "list": [
-        "In der Einrichtung unter Fahrer wählst du „👥 Tandem“ (Standard) oder „👤 Solo“. Im Tandem fährt vorne dein Fahrer, hinten steht dein Beifahrer – beide wählst du über die Knöpfe „Fahrer“ und „Beifahrer“.",
+        "Tandem ist ein eigener Modus: Starte ihn über die Kachel „👥 Tandem-Rennen“ im Hauptmenü oder stelle in der Einrichtung unter Renneinstellungen „Fahrer pro Kart: 👥 Tandem“ ein. Normale Rennen, Cups und Zeitfahren fährst du klassisch mit einem Fahrer und einem Item. Im Mehrspieler gehen alle Modi, auch Tandem, Zeitfahren, Freies Fahren und Battle. Im Tandem fährt vorne dein Fahrer, hinten steht dein Beifahrer – beide wählst du über die Knöpfe „Fahrer“ und „Beifahrer“.",
         "Fahrer tauschen: ○ (PlayStation), X (Switch), B (Xbox), E oder V auf der Tastatur, am Handy der kleine Knopf ⇄ TAUSCH links oben an den Tasten. Beide springen die Plätze.",
         "Zwei Items: Der Beifahrer hält ein zweites Item (kleiner Kreis neben dem Item-Feld). Ist ein Platz frei, nimmt eine Itembox es auf. Nach dem Tausch kommt das Item des Beifahrers nach vorn und kann benutzt werden.",
         "Spezialitem: Jede Figur hat ein eigenes Spezialitem, das nur aus Itemboxen kommt – je nachdem, wer gerade vorne fährt. 🗿 Riesenfels rollt nach vorn, räumt Fallen ab und wirft alle in seiner Bahn um. ☄️ Funk-Komet trifft die bis zu drei nächsten Fahrer vor dir. 💖 Herzschild gibt Schild, Turbo und drei Münzen. 🔥 Feuerspur gibt langen Turbo und hinterlässt Flammen.",
@@ -140,7 +140,8 @@
     {
       "t": "Battle-Modus",
       "p": [
-        "Im Hauptmenü öffnet die Kachel „🎈 Battle“ den Kampfmodus. Gefahren wird in drei eigenen Arenen (Funkturm-Arena, Neon-Kessel, Sandburg-Ring): breite Rundkurse mit Mittelinsel, vielen Item-Boxen und Boost-Feldern, gegen 7 Gegner.",
+        "Im Hauptmenü öffnet die Kachel „🎈 Battle“ den Kampfmodus. Gefahren wird in fünf eigenen Arenen (Funkturm-Arena, Neon-Kessel, Sandburg-Ring, Eiskristall-Kuppel, Lava-Krater): breite Rundkurse mit Mittelinsel, vielen Item-Boxen und Boost-Feldern, gegen 7 Gegner.",
+        "Teams Rot gegen Blau: Über dem Modus wählst du „Jeder gegen jeden“ oder „Teams: Rot gegen Blau“. Im Team-Battle fahren 4 rote gegen 4 blaue Karts. Eigene Teamkollegen kannst du weder treffen noch beklauen. Bei der Ballonjagd gewinnt das Team, das als letztes noch Fahrer hat. Beim Funkpokal zählt die Haltezeit des ganzen Teams (25 s), beim Bomben-Duell die Treffer des ganzen Teams (10).",
         "Ballonjagd: Jeder startet mit 3 Ballons. Jeder Treffer lässt einen platzen; wer keinen mehr hat, scheidet aus. Rammst du jemanden mit Turbo, klaust du ihm einen Ballon (höchstens 5). Gewinner ist, wer zuletzt übrig bleibt oder nach 3 Minuten die meisten Ballons hat.",
         "Funkpokal erobern: Schnapp dir den goldenen Funkpokal und halte ihn 25 Sekunden. Wirst du getroffen, fällt er herunter; Turbo-Rammen klaut ihn direkt. Nach 3 Minuten gewinnt die längste Haltezeit.",
         "Bomben-Duell: Aus den Boxen kommen nur Bomben. Sie rollen aus und explodieren nach gut 2 Sekunden oder sobald jemand drüberfährt; die Druckwelle trifft alle in der Nähe. 5 Treffer gewinnen, sonst zählen nach 2,5 Minuten die Punkte."
@@ -170,6 +171,7 @@
       "t": "Winzflitzer: Hauptmenü und Modi",
       "list": [
         "🏆 Meisterschaft: 27 Rennen gegen je 3 Computer-Gegner, mit Leben und Bonusrunden.",
+        "🥊 K.-o.-Rennen: 4 Fahrer, 3 Runden. Wer eine Runde als Letzter beendet, scheidet aus – die letzte Runde ist das Finale zu zweit.",
         "⚔️ Kopf-an-Kopf: Du gegen einen Gegner auf einem Bildschirm – 11 Duelle der Reihe nach.",
         "👥 Mehrspieler (1 Gerät): 2 bis 4 Spieler an einem Gerät (Tastatur zu zweit, Controller, Touch), auf Wunsch mit Computer-Fahrern.",
         "🏁 Einzelrennen: ein Rennen auf einer frei gewählten Strecke gegen 3 zufällige Gegner.",

@@ -38,7 +38,19 @@ export function startActorsLab(params: URLSearchParams): void {
   const decalP = params.get('decal');
   const ids = CAR_BODIES.map((b) => b.id);
   const all = bodyP === 'all';
-  const decals: CarDecal[] = ['streifen', 'blitz', 'punkte', 'keins', 'streifen'];
+  const decals: CarDecal[] = [
+    'streifen',
+    'blitz',
+    'punkte',
+    'keins',
+    'waben',
+    'split',
+    'nummer',
+    'pfeile',
+    'streifen',
+    'waben',
+    'keins',
+  ];
   const teams: TeamId[] = teamP === 'both' ? [0, 1] : [teamP === '1' ? 1 : 0];
 
   // Autos: eine Reihe je Team
@@ -71,9 +83,9 @@ export function startActorsLab(params: URLSearchParams): void {
   const key = new THREE.DirectionalLight(0xffffff, 1.6);
   key.position.set(4, 10, 6);
   scene.add(key);
-  const rimA = new THREE.PointLight(0xff7a1a, 12, 14);
+  const rimA = new THREE.PointLight(0xb4ff2e, 12, 14);
   rimA.position.set(-6, 2.5, -4);
-  const rimB = new THREE.PointLight(0x19c8ff, 12, 14);
+  const rimB = new THREE.PointLight(0xa24dff, 12, 14);
   rimB.position.set(6, 2.5, -4);
   scene.add(rimA, rimB);
   const ground = new THREE.Mesh(
@@ -141,6 +153,12 @@ export function startActorsLab(params: URLSearchParams): void {
     prevTouch: -1,
     winner: -1,
     rngState: 1,
+    mode: 'klassik',
+    gravityScale: 1,
+    charge: 0,
+    chargeTeam: -1,
+    chargeCd: 0,
+    rings: [],
   };
 
   const qa = new THREE.Quaternion();
@@ -227,7 +245,7 @@ export function startActorsLab(params: URLSearchParams): void {
     }
     if (modeGoal && every(t0, t, 5, 1)) {
       b.pos = [0, 1.4, -1];
-      events.push({ t: 'goal', team: (Math.floor(t / 5) % 2) as TeamId, scorer: 0, assist: -1, speed: 40 });
+      events.push({ t: 'goal', team: (Math.floor(t / 5) % 2) as TeamId, scorer: 0, assist: -1, speed: 40, points: 1 });
     }
     // Pads
     if (every(t0, t, 2.2, 0.4)) events.push({ t: 'pad', car: 0, pad: 0, big: true });

@@ -6,42 +6,38 @@ import { fmtTime } from '../ui/common';
 
 const SVGNS = 'http://www.w3.org/2000/svg';
 
-/** Nitro-Anzeige: Ring um eine Zahl */
+/** Energie-Anzeige: Sechseck aus sechs Ladesegmenten um die Zahl, dazu Tempo-Zeile */
 export class BoostGauge {
   readonly el = h('div', { class: 'boost' });
-  private arc: SVGCircleElement;
+  private segs: SVGPolygonElement[] = [];
   private num = h('div', { class: 'num' });
   private speed = h('div', { class: 'speed' });
   private lastB = -1;
   private lastS = -1;
+  private lastBoosting = false;
   constructor() {
     const svg = document.createElementNS(SVGNS, 'svg');
     svg.setAttribute('viewBox', '0 0 100 100');
-    const bg = document.createElementNS(SVGNS, 'circle');
-    for (const [k, v] of Object.entries({
-      cx: '50',
-      cy: '50',
-      r: '42',
-      fill: 'rgba(5,6,20,0.7)',
-      stroke: 'rgba(255,255,255,0.15)',
-      'stroke-width': '9',
-    }))
-      bg.setAttribute(k, v);
-    this.arc = document.createElementNS(SVGNS, 'circle');
-    for (const [k, v] of Object.entries({
-      cx: '50',
-      cy: '50',
-      r: '42',
-      fill: 'none',
-      stroke: '#b6ff3b',
-      'stroke-width': '9',
-      'stroke-linecap': 'butt',
-      transform: 'rotate(-90 50 50)',
-      'stroke-dasharray': '264',
-      'stroke-dashoffset': '264',
-    }))
-      this.arc.setAttribute(k, v);
-    svg.append(bg, this.arc);
+    const pt = (r: number, deg: number): string => {
+      const a = (deg * Math.PI) / 180;
+      return `${(50 + Math.cos(a) * r).toFixed(2)},${(50 + Math.sin(a) * r).toFixed(2)}`;
+    };
+    const bg = document.createElementNS(SVGNS, 'polygon');
+    bg.setAttribute('points', [0, 1, 2, 3, 4, 5].map((i) => pt(49, -90 + i * 60)).join(' '));
+    bg.setAttribute('fill', 'rgba(6,5,18,0.78)');
+    bg.setAttribute('stroke', 'rgba(255,255,255,0.14)');
+    bg.setAttribute('stroke-width', '1.5');
+    svg.append(bg);
+    for (let i = 0; i < 6; i++) {
+      const a0 = -90 + i * 60 + 3;
+      const a1 = -90 + (i + 1) * 60 - 3;
+      const seg = document.createElementNS(SVGNS, 'polygon');
+      seg.setAttribute('points', [pt(45, a0), pt(45, a1), pt(35, a1), pt(35, a0)].join(' '));
+      seg.setAttribute('fill', '#ffc23d');
+      seg.setAttribute('fill-opacity', '0.12');
+      svg.append(seg);
+      this.segs.push(seg);
+    }
     this.el.append(svg, this.num);
     this.speed.append(h('b'), 'km/h');
   }
@@ -53,10 +49,20 @@ export class BoostGauge {
     if (b !== this.lastB) {
       this.lastB = b;
       this.num.textContent = String(b);
-      this.arc.setAttribute('stroke-dashoffset', String(264 * (1 - b / MAX_BOOST)));
-      this.arc.setAttribute('stroke', b < 20 ? '#ff4d5e' : '#b6ff3b');
+      const f = (b / MAX_BOOST) * 6;
+      const col = b < 20 ? '#ff4d6d' : b >= MAX_BOOST ? '#fff1b8' : '#ffc23d';
+      this.segs.forEach((s, i) => {
+        const k = Math.max(0, Math.min(1, f - i));
+        s.setAttribute('fill', col);
+        s.setAttribute('fill-opacity', String(0.12 + 0.88 * k));
+      });
+      this.el.classList.toggle('low', b < 20);
+      this.el.classList.toggle('full', b >= MAX_BOOST);
     }
-    this.arc.style.filter = boosting ? 'drop-shadow(0 0 6px #b6ff3b)' : '';
+    if (boosting !== this.lastBoosting) {
+      this.lastBoosting = boosting;
+      this.el.classList.toggle('on', boosting);
+    }
     const k = Math.round(kmh);
     if (k !== this.lastS) {
       this.lastS = k;
@@ -68,12 +74,16 @@ export class BoostGauge {
 /** Anzeige über dem Spielfeld: Spielstand, Uhr, Ansagen, Countdown, Ereignisliste */
 export class Hud {
   readonly el = h('div', { class: 'hud' });
-  private s0 = h('div', { class: 'team t0' }, '0');
-  private s1 = h('div', { class: 'team t1' }, '0');
+  private s0 = h('div', { class: 'score' }, '0');
+  private s1 = h('div', { class: 'score' }, '0');
   private clock = h('div', { class: 'clock' }, '5:00');
   private banner = h('div', { class: 'banner' });
   private count = h('div', { class: 'count', 'aria-live': 'assertive' });
   private feed = h('div', { class: 'feed', 'aria-live': 'polite' });
+  private chargeFill = h('i');
+  private chargeLbl = h('span');
+  private charge = h('div', { class: 'charge' }, h('div', { class: 'bar' }, this.chargeFill), this.chargeLbl);
+  private lastCharge = '-';
   readonly gauges: BoostGauge[] = [];
   readonly menuBtn: HTMLButtonElement;
   private bannerTimer: ReturnType<typeof setTimeout> | null = null;
@@ -86,7 +96,14 @@ export class Hud {
       '☰',
     );
     this.el.append(
-      h('div', { class: 'scorebar' }, this.s0, this.clock, this.s1),
+      h(
+        'div',
+        { class: 'scorebar' },
+        h('div', { class: 'team t0' }, h('span', { class: 'tag' }, TEAM_SYMBOL[0] + ' ' + TEAM_NAMES[0]), this.s0),
+        this.clock,
+        h('div', { class: 'team t1' }, this.s1, h('span', { class: 'tag' }, TEAM_NAMES[1] + ' ' + TEAM_SYMBOL[1])),
+      ),
+      this.charge,
       this.feed,
       this.banner,
       this.count,
@@ -109,8 +126,16 @@ export class Hud {
   }
 
   setScore(a: number, b: number): void {
-    this.s0.textContent = String(a);
-    this.s1.textContent = String(b);
+    for (const [el, v] of [
+      [this.s0, a],
+      [this.s1, b],
+    ] as const) {
+      if (el.textContent === String(v)) continue;
+      el.textContent = String(v);
+      el.classList.remove('bump');
+      void el.offsetWidth;
+      el.classList.add('bump');
+    }
   }
   setClock(sec: number, overtime: boolean, training: boolean): void {
     const txt = training ? '∞' : overtime ? t('hud.overtime') : fmtTime(sec);
@@ -119,6 +144,18 @@ export class Hud {
     this.clock.textContent = txt;
     this.clock.classList.toggle('ot', overtime);
     this.clock.classList.toggle('low', !overtime && !training && sec <= 10);
+  }
+  /** Überladung: Ladestand des Orbs in der Teamfarbe, ab 100 % pulsierend */
+  setCharge(on: boolean, level: number, team: number): void {
+    const key = on ? `${team}:${Math.round(level)}` : '';
+    if (key === this.lastCharge) return;
+    this.lastCharge = key;
+    this.charge.hidden = !on;
+    if (!on) return;
+    const full = level >= 100;
+    this.charge.className = 'charge' + (team === 0 || team === 1 ? ' t' + team : '') + (full ? ' full' : '');
+    this.chargeFill.style.width = `${Math.max(0, Math.min(100, level))}%`;
+    this.chargeLbl.textContent = full ? t('hud.charged') : `⚡ ${Math.round(level)} %`;
   }
   setCountdown(n: number | null): void {
     if (n === null) {

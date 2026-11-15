@@ -3,8 +3,8 @@ import * as THREE from 'three';
 /** Gemeinsame Hilfen der Akteure: Teamfarben, prozedurale Texturen, Mesh-Baukasten, Blob-Schatten. */
 
 export const TEAM_COLORS = [
-  { main: 0xff7a1a, accent: 0xffd08a },
-  { main: 0x19c8ff, accent: 0xb8f3ff },
+  { main: 0xb4ff2e, accent: 0xeaffb8 },
+  { main: 0xa24dff, accent: 0xdcc2ff },
 ] as const;
 export const NEUTRAL_GLOW = 0xdfe8ff;
 
