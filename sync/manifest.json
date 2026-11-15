@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e95bf2d50968",
- "generated": "2026-11-15T21:08:46+01:00",
- "commit": "a96512c0abe19b2b7e2fe1135a0a6e89b786cee1",
+ "version": "6d9b489aba41",
+ "generated": "2026-11-15T21:13:50+01:00",
+ "commit": "2de6d6489a69fba0e4ce816a947fa1a94ab8b5b4",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2158,13 +2158,13 @@
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 90012,
-   "h": "e01f34364615dd426082ccf715040233ff51b2f874954c5e45bdafd47187e226"
+   "s": 90188,
+   "h": "0db431f18b4410f432d69a6ec3395732827e19b188cea1d46408fe672f26df9b"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 71779,
-   "h": "1b5a9a4832f190c55fa70cb8bc40191ed98f13a5d2a99dba48fbb08268133067"
+   "s": 72160,
+   "h": "df714d3f6bb15e7eb7e86e9d4acb64471fbf709169ae3dce0cd5d56afda10771"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -10563,8 +10563,8 @@
   },
   {
    "p": "guides/anmacha-kart.json",
-   "s": 49314,
-   "h": "b024e7e1b61e0bd82a4702098f6b3dcb61db00076a754174a96ea48d29f6daed"
+   "s": 49585,
+   "h": "ebcc827c085a625eb890431992a134a04e02c21e10af7ac785b03df6a7fcac73"
   },
   {
    "p": "guides/anmacha-kartensammlung.json",
@@ -14129,7 +14129,7 @@
   {
    "p": "sync/catalog.json",
    "s": 245426,
-   "h": "0d95d9f4ffed2c6411d662435e543a2e54c0f531262edfd866a330d7beff8efc"
+   "h": "613052c80ef872c7b8a9133b6730141f754b3808f1f53232af9dcedce40ae0c0"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
