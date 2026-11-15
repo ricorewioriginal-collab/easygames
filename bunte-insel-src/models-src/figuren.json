@@ -1,0 +1,62 @@
+{
+ "kn_body": [
+  "../../taschi/assets/kaykit/characters/Knight.glb",
+  "Knight_Body"
+ ],
+ "kn_arm": [
+  "../../taschi/assets/kaykit/characters/Knight.glb",
+  "Knight_ArmRight"
+ ],
+ "kn_leg": [
+  "../../taschi/assets/kaykit/characters/Knight.glb",
+  "Knight_LegRight"
+ ],
+ "ba_body": [
+  "../../taschi/assets/kaykit/characters/Barbarian.glb",
+  "Barbarian_Body"
+ ],
+ "ba_arm": [
+  "../../taschi/assets/kaykit/characters/Barbarian.glb",
+  "Barbarian_ArmRight"
+ ],
+ "ba_leg": [
+  "../../taschi/assets/kaykit/characters/Barbarian.glb",
+  "Barbarian_LegRight"
+ ],
+ "ma_body": [
+  "../../taschi/assets/kaykit/characters/Mage.glb",
+  "Mage_Body"
+ ],
+ "ma_arm": [
+  "../../taschi/assets/kaykit/characters/Mage.glb",
+  "Mage_ArmRight"
+ ],
+ "ro_body": [
+  "../../taschi/assets/kaykit/characters/Rogue.glb",
+  "Rogue_Body"
+ ],
+ "ro_arm": [
+  "../../taschi/assets/kaykit/characters/Rogue.glb",
+  "Rogue_ArmRight"
+ ],
+ "ro_leg": [
+  "../../taschi/assets/kaykit/characters/Rogue.glb",
+  "Rogue_LegRight"
+ ],
+ "ra_body": [
+  "../../taschi/assets/kaykit/characters/Ranger.glb",
+  "Ranger_Body"
+ ],
+ "ra_arm": [
+  "../../taschi/assets/kaykit/characters/Ranger.glb",
+  "Ranger_ArmRight"
+ ],
+ "ra_leg": [
+  "../../taschi/assets/kaykit/characters/Ranger.glb",
+  "Ranger_LegRight"
+ ],
+ "rh_body": [
+  "../../taschi/assets/kaykit/characters/Rogue_Hooded.glb",
+  "RogueHooded_Body"
+ ]
+}

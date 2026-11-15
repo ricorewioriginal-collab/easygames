@@ -426,8 +426,11 @@ Brücke im Nordwesten. Märchenpark mit Schloss, Basar, Taxi und Umzug.
 Brücke im Osten. Die Taschis sind in ihr eigenes easygames-Spiel umgezogen – mit Fangen, Kämpfen und Orden. In Taschi-Land steht dafür das große Portal.
 
 - 🔬 Professor Ulme steht vor der Arena und erklärt, wohin die Taschis gezogen sind.
-- 🗿 Die große Statue auf dem Platz hält den allerersten Taschiball.
+- 🗿 Die große Statue auf dem Platz hält die allererste Taschi-Kapsel.
 - 🌀 Das Portal steht mitten in der Arena: hineingehen (Aktion-Knopf) → „Los geht’s!“. Das Inselspiel wird gespeichert, dann öffnet sich das Taschi-Spiel. Mit „Zurück“ im Browser kommst du wieder auf die Insel.
+- 🐾 Echte Taschis aus dem Taschi-Spiel laufen, hüpfen und schweben frei herum: hingehen und mit dem Aktion-Knopf streicheln – sie hüpfen vor Freude und erzählen von sich. 5 verschiedene gestreichelt = Taschi-Freund (⭐ +5).
+- 🎒 Vier Taschi-Trainer (Lea, Ben, Ida, Tom) spazieren mit ihrem Partner-Taschi über die Insel und erzählen vom Taschi-Spiel.
+- ✨ Am Starter-Tisch und auf der Statue siehst du die Taschi-Kapseln – genau wie im Taschi-Spiel.
 - 🎈 Der Heißluftballon hinten im Lager ist ein Fahrzeug zum Einsteigen.
 
 > 💡 Alte Spielstände mit Taschi-Team bleiben gespeichert – es geht nichts verloren.
@@ -641,6 +644,7 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 - 🗿 Die große Statue auf dem Platz ansehen
 - 🌀 Das Taschi-Portal in der Arena finden
 - 🚀 Durchs Portal ins Taschi-Spiel reisen
+- 🐾 5 verschiedene Taschis streicheln
 
 ### ✨ Märchenland
 

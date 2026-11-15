@@ -15,23 +15,34 @@ BI.TASCHI = (function () {
   return T;
 })();
 
+/* Taschi-Kapsel wie im aktuellen Taschi-Spiel (statt Ball): liegende Pille mit farbiger und dunkler Hälfte, hellen Ringen an den Enden und
+   leuchtendem Energiering in der Mitte. b = Batch, glow = Leucht-Batch (oder null), (x, y, z) = Mitte, r = Radius, ry = Richtung der Längsachse */
+BI.kapsel = function (b, glow, x, y, z, r, top, ry) {
+  ry = ry || 0; const hl = r * .55, ax = Math.cos(ry), az = -Math.sin(ry), Z = Math.PI / 2;
+  for (const [s, c] of [[1, top], [-1, 0x2e3446]]) {
+    b.cyl(x + ax * s * hl / 2, y - hl / 2, z + az * s * hl / 2, r, r, hl, c, 16, 0, ry, Z);
+    b.sph(x + ax * s * hl, y, z + az * s * hl, r, c, 2);
+    b.cyl(x + ax * s * (hl + r * .5), y - r * .06, z + az * s * (hl + r * .5), r * .9, r * .9, r * .12, 0xdfe6ee, 16, 0, ry, Z);
+  }
+  (glow || b).cyl(x, y - r * .1, z, r * 1.06, r * 1.06, r * .2, 0x8ff0ff, 20, 0, ry, Z);
+};
 BI.buildTaschiGround = function (c) {
   const { W, st, lamp, ROADY } = c, T = BI.TASCHI, TAU = Math.PI * 2, rn = BI.rng(5151), at = T.at, E = T.entry;
   W.spots.taschi = { x: E.x, z: E.z }; W.taschi = T;
   st.disc(T.x, T.z, T.R + 9, 0, 0x7fd66b, 80); st.ring(T.x, T.z, T.R - 5, T.R + 9, .012, 0xf1e3b0, 80);
   BI.buildIsleBridge(c, T);
   const P = (a, b) => at(a, b), pave = (a, b, r, col) => { const p = P(a, b); st.disc(p.x, p.z, r, ROADY + .01, col, 40); };
-  /* Platz: Pflaster mit großem Ball-Zeichen, Weg zum Eingang */
-  { const e = E; st.disc(e.x, e.z, 9, ROADY + .01, 0xf0e4c8, 36); st.ring(e.x, e.z, 6.5, 7.6, ROADY + .02, 0xe8453c, 36); const s = P(T.statue.a, T.statue.b); pave(T.statue.a, T.statue.b, 18, 0xe8dcc0); const q = P(T.statue.a, T.statue.b); st.ring(q.x, q.z, 12, 13.2, ROADY + .03, 0xe8453c, 48); st.ring(q.x, q.z, 6.6, 7.2, ROADY + .03, 0xffffff, 40); st.strip((e.x + s.x) / 2, (e.z + s.z) / 2, 4, Math.hypot(s.x - e.x, s.z - e.z), T.bridge.ry, ROADY + .015, 0xd8c8a0); }
+  /* Platz: Pflaster mit großem Kapsel-Zeichen (roter Ring, leuchtender Innenring wie bei der Taschi-Kapsel), Weg zum Eingang */
+  { const e = E; st.disc(e.x, e.z, 9, ROADY + .01, 0xf0e4c8, 36); st.ring(e.x, e.z, 6.5, 7.6, ROADY + .02, 0xe8453c, 36); const s = P(T.statue.a, T.statue.b); pave(T.statue.a, T.statue.b, 18, 0xe8dcc0); const q = P(T.statue.a, T.statue.b); st.ring(q.x, q.z, 12, 13.2, ROADY + .03, 0xe8453c, 48); st.ring(q.x, q.z, 6.6, 7.2, ROADY + .03, 0x8ff0ff, 40); st.strip((e.x + s.x) / 2, (e.z + s.z) / 2, 4, Math.hypot(s.x - e.x, s.z - e.z), T.bridge.ry, ROADY + .015, 0xd8c8a0); }
   /* Gebäude: (a,b) Mitte, w Seitenlänge, wall/roof Farben */
   const house = (a, b, w, hh, wall, roof, cross) => { const p = P(a, b), r = w * .72; st.box(p.x, 0, p.z, w, hh, w, wall, T.bridge.ry); st.box(p.x, hh, p.z, w + 1, .35, w + 1, roof, T.bridge.ry); st.cyl(p.x, hh + .35, p.z, 0, r + .8, 3.2, roof, 4, 0, T.bridge.ry + Math.PI / 4); W.addBox(p.x - w / 2 - .1, p.z - w / 2 - .1, p.x + w / 2 + .1, p.z + w / 2 + .1, false, hh + 3);
     for (const sd of [-1, 1]) for (const k of [-1, 1]) { const wx = p.x + (Math.cos(T.bridge.ry) * k * w * .25 + Math.sin(T.bridge.ry) * sd * w * .5), wz = p.z + (-Math.sin(T.bridge.ry) * k * w * .25 + Math.cos(T.bridge.ry) * sd * w * .5); st.box(wx, 1.4, wz, 1.5, 1.4, 1.5, 0x9fd8ff, T.bridge.ry); }
     if (cross) { st.box(p.x, hh + 4.2, p.z, .8, 2.4, .8, 0xffffff); st.box(p.x, hh + 4.7, p.z, 2.4, .8, .8, 0xffffff); } return p; };
   house(-38, 28, 12, 5, 0xf4f4fa, 0xe8453c, 0);                   /* Labor */
-  { const p = P(-38, 28); st.sph(p.x, 10.4, p.z, 1.0, 0xe8453c, 1); st.sph(p.x, 10.4, p.z, 1.01, 0xffffff, 1, 1, .12, 1); }
+  { const p = P(-38, 28); BI.kapsel(st, lamp, p.x, 10.2, p.z, .9, 0xe8453c, T.bridge.ry + Math.PI / 2); } /* Kapsel-Zeichen auf dem Labordach */
   house(-38, -28, 11, 4.6, 0xffd6e0, 0xe8453c, 1);                /* Heilhaus */
   house(-16, -30, 9, 4, 0xd8ecff, 0x3f8cff, 0);                   /* Fangladen */
-  /* Professor-Statue (groß): Sockel, Hose, Kittel, Arme (rechts hoch mit riesigem Taschiball), Kopf mit Haaren, Brille, Lächeln – schaut zum Eingang */
+  /* Professor-Statue (groß): Sockel, Hose, Kittel, Arme (rechts hoch mit riesiger Taschi-Kapsel), Kopf mit Haaren, Brille, Lächeln – schaut zum Eingang */
   { const q = P(T.statue.a, T.statue.b), fx0 = -T.ux, fz0 = -T.uz, ry = Math.atan2(fx0, fz0), sx0 = fz0, sz0 = -fx0;
     const at2 = (f, sd) => [q.x + fx0 * f + sx0 * sd, q.z + fz0 * f + sz0 * sd], bx = (f, sd, y, w, h, d, col) => { const [x, z] = at2(f, sd); st.box(x, y, z, w, h, d, col, ry); }, sp = (f, sd, y, r, col, sx, sy, sz) => { const [x, z] = at2(f, sd); st.sph(x, y, z, r, col, 1, sx || 1, sy || 1, sz || 1); };
     st.cyl(q.x, 0, q.z, 5.2, 5.6, 1.1, 0xb8bac4, 24); st.cyl(q.x, 1.1, q.z, 4.2, 4.6, .6, 0xc8cad4, 24);
@@ -40,18 +51,18 @@ BI.buildTaschiGround = function (c) {
     bx(1.24, 1.1, 9.4, 1.0, 1.0, .1, 0xe8453c); /* Anstecker */
     bx(0, -2.9, 6.9, 1.3, 3.9, 1.4, 0xf4f4f8); sp(.1, -2.9, 6.7, .75, 0xe9c9a8);          /* linker Arm hängt */
     bx(0, 2.9, 9.8, 1.3, 3.3, 1.4, 0xf4f4f8); sp(.1, 2.9, 13.4, .8, 0xe9c9a8);           /* rechter Arm hoch */
-    { const [x, z] = at2(.1, 2.9); st.sph(x, 15.4, z, 2.0, 0xe8453c, 2); st.sph(x, 15.4, z, 2.03, 0xffffff, 2, 1, .5, 1); st.sph(x, 15.4, z, 2.07, 0x2a2230, 2, 1, .09, 1); const [x2, z2] = at2(2.0, 2.9); st.sph(x2, 15.4, z2, .5, 0xffffff, 1); st.sph(x2, 15.4, z2, .3, 0xe8453c, 1); lamp.sph(x, 17.9, z, .4, 0xfff3b0, 1); }
+    { const [x, z] = at2(.1, 2.9); BI.kapsel(st, lamp, x, 15.2, z, 1.45, 0xe8453c, ry + Math.PI / 2); lamp.sph(x, 17.3, z, .35, 0xfff3b0, 1); }
     sp(0, 0, 12.3, 1.6, 0xe9c9a8); sp(-.35, 0, 13.35, 1.55, 0xd8d8e2, 1.05, .6, 1.05); for (const sd of [-1, 1]) sp(-.4, sd * 1.45, 12.6, .6, 0xd8d8e2, .8, 1.2, 1);
     for (const sd of [-1, 1]) { bx(1.55, sd * .62, 12.5, .95, .75, .12, 0x333a4a); bx(1.6, sd * .62, 12.6, .62, .5, .1, 0x9fd8ff); sp(1.5, sd * .62, 12.9, .1, 0x2a2230); } bx(1.56, 0, 12.8, .45, .12, .12, 0x333a4a); sp(1.65, 0, 12.1, .25, 0xdcb494); bx(1.55, 0, 11.45, 1.0, .14, .1, 0xb86a5a);
     W.addCircle(q.x, q.z, 5.4, false, 16); }
-  /* Starter-Tisch vor dem Labor: drei Taschibälle */
-  { const q = P(-30, 16); st.cyl(q.x, 0, q.z, 2.4, 2.6, 1.1, 0xc8803c, 14); for (let i = 0; i < 3; i++) { const bx = q.x + Math.sin(i * 2.1) * 1.2, bz = q.z + Math.cos(i * 2.1) * 1.2; st.sph(bx, 1.5, bz, .45, [0xe8453c, 0x3f8cff, 0x4cc05a][i], 1); st.sph(bx, 1.5, bz, .47, 0xffffff, 1, 1, .4, 1); } W.addCircle(q.x, q.z, 2.6, false, 1.3); }
+  /* Starter-Tisch vor dem Labor: drei Taschi-Kapseln (rot, blau, grün) */
+  { const q = P(-30, 16); st.cyl(q.x, 0, q.z, 2.4, 2.6, 1.1, 0xc8803c, 14); for (let i = 0; i < 3; i++) { const bx = q.x + Math.sin(i * 2.1) * 1.2, bz = q.z + Math.cos(i * 2.1) * 1.2; BI.kapsel(st, lamp, bx, 1.43, bz, .3, [0xe8453c, 0x3f8cff, 0x4cc05a][i], i * 2.1 + .6); } W.addCircle(q.x, q.z, 2.6, false, 1.3); }
   /* Arena: runde Mauer mit Tor zum Platz, Boden mit Kampfkreis, Tribünen-Fahnen */
   { const A = T.arena, m = P(A.a, A.b), N = 30, gate = Math.atan2(E.x - m.x, E.z - m.z); st.disc(m.x, m.z, A.r - 1.2, ROADY + .01, 0xe3d4a8, 48); st.ring(m.x, m.z, 9, 10, ROADY + .03, 0xe8453c, 40); st.ring(m.x, m.z, 3.2, 3.8, ROADY + .03, 0xffffff, 28); st.disc(m.x, m.z, 1.1, ROADY + .04, 0xe8453c, 14);
     st.rect(m.x - 1, m.z - 10, m.x + 1, m.z + 10, ROADY, 0xe3d4a8);
     const COL = [0xa89878, 0x3f9cff, 0xffd23f, 0x4cc05a, 0xf0c038];
     for (let i = 0; i < N; i++) { const a = i / N * TAU, da = Math.abs(Math.atan2(Math.sin(a - gate), Math.cos(a - gate))); if (da < .24) continue; const x = m.x + Math.sin(a) * A.r, z = m.z + Math.cos(a) * A.r; st.box(x, 0, z, 4.4, 5.4, 1.6, 0xefe6d2, a); st.box(x, 5.4, z, 4.6, .5, 1.9, COL[i % 5], a); W.addCircle(x, z, 1.5, false, 5.4); if (i % 5 === 0) { st.box(x - Math.sin(a) * .9, 2.2, z - Math.cos(a) * .9, .2, 3, 1.2, COL[(i / 5) % 5 | 0], a); } }
-    for (const s of [-1, 1]) { const a = gate + s * .27, x = m.x + Math.sin(a) * A.r, z = m.z + Math.cos(a) * A.r; st.cyl(x, 0, z, 1.0, 1.1, 8, 0xd8c8a0, 10); st.sph(x, 8.5, z, 1.2, 0xe8453c, 1); W.addCircle(x, z, 1.2, false, 8); }
+    for (const s of [-1, 1]) { const a = gate + s * .27, x = m.x + Math.sin(a) * A.r, z = m.z + Math.cos(a) * A.r; st.cyl(x, 0, z, 1.0, 1.1, 8, 0xd8c8a0, 10); BI.kapsel(st, lamp, x, 8.9, z, .8, 0xe8453c, a + Math.PI / 2); W.addCircle(x, z, 1.2, false, 8); }
     lamp.sph(m.x, 9, m.z, .5, 0xfff3b0, 1);
     [[-1.3, 0xa89878], [-.65, 0x3f9cff], [.65, 0xffd23f], [1.3, 0x4cc05a]].forEach(([o, col]) => { const q = T.arenaPos(o, 17.5); st.box(q.x, 0, q.z, 3, 4.6, .3, col, q.h); st.box(q.x, 0, q.z, 3.4, .3, 1.2, 0xd8c8a0, q.h); W.addBox(q.x - 1.6, q.z - 1.6, q.x + 1.6, q.z + 1.6, false, 1); });
     { const q = T.arenaPos(0, 16.5); st.cyl(q.x, 0, q.z, 2.6, 2.9, .7, 0xffd23f, 16); st.cyl(q.x, .7, q.z, 1.6, 1.8, .15, 0xfff0a0, 16); const b = T.arenaPos(0, 19.5); st.box(b.x, 0, b.z, 5, 5.2, .3, 0xb36bff, b.h); st.sph(b.x, 4.8, b.z, .6, 0xffd23f, 1); W.addCircle(q.x, q.z, 2.9, false, .7); } }

@@ -1,0 +1,54 @@
+{
+ "t_mushnub": [
+  "../../taschi/assets/models/mushnub.glb",
+  null
+ ],
+ "t_pinkblob": [
+  "../../taschi/assets/models/pinkblob.glb",
+  null
+ ],
+ "t_greenblob": [
+  "../../taschi/assets/models/greenblob.glb",
+  null
+ ],
+ "t_cat": [
+  "../../taschi/assets/models/cat.glb",
+  null
+ ],
+ "t_pigeon": [
+  "../../taschi/assets/models/pigeon.glb",
+  null
+ ],
+ "t_alpaking": [
+  "../../taschi/assets/models/alpaking.glb",
+  null
+ ],
+ "t_armabee": [
+  "../../taschi/assets/models/armabee.glb",
+  null
+ ],
+ "t_glub": [
+  "../../taschi/assets/models/glub.glb",
+  null
+ ],
+ "t_yeti": [
+  "../../taschi/assets/models/yeti.glb",
+  null
+ ],
+ "t_alien": [
+  "../../taschi/assets/models/alien.glb",
+  null
+ ],
+ "t_chicken": [
+  "../../taschi/assets/models/chicken.glb",
+  null
+ ],
+ "t_cactoro": [
+  "../../taschi/assets/models/cactoro.glb",
+  null
+ ],
+ "t_ghost": [
+  "../../taschi/assets/models/ghost.glb",
+  null
+ ]
+}

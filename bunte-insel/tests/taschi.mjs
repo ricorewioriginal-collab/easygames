@@ -21,7 +21,14 @@ const r = await p.evaluate(async () => {
   document.getElementById('taGo').click(); await sl(100); out.travel = !document.getElementById('taPortalAsk') && !!b.save.flags.ta_reise && b.save.stk.includes('taschi_meister');
   out.url = BI.TASCHI_GAME_URL.startsWith('../taschi/index.html');
   const pr = t.dbg.npcs.find(q => q.id === 'prof'); P.x = pr.x + 1; P.z = pr.z; await sl(200); const n2 = t.near(); out.prof = !!n2 && n2.id === 'prof'; t.act(n2); out.profFlag = !!b.save.flags.ta_ulme;
-  t.act({ k: 'npc', id: 'statue' }); out.log = t.log().rows.length === 4 && t.log().rows.every(r => r.ok);
+  t.act({ k: 'npc', id: 'statue' }); out.log = t.log().rows.length === 5 && t.log().rows.slice(0, 4).every(r => r.ok);
+  /* echte Taschis laufen frei herum (taschis.bin), Streicheln, KayKit-Trainer mit Partner-Taschi, Kapsel statt Ball */
+  for (let i = 0; i < 120 && !t.petsReady; i++) await sl(250); const pets = t.dbg.pets; out.pets = pets.length >= 15 && pets.every(q => q.g.visible);
+  const x0 = pets.map(q => q.x + ',' + q.z).join('|'); await sl(5000); out.move = pets.map(q => q.x + ',' + q.z).join('|') !== x0;
+  P.x = pets[0].x + 1; P.z = pets[0].z; await sl(300); const np = t.near(); out.petNear = !!np && (np.k === 'pet' || np.k === 'trainer');
+  for (const q of pets) t.act({ k: 'pet', t: q }); out.petted = !!b.save.flags.ta_freunde && pets[0].happy > 0 && t.log().rows.every(r => r.ok);
+  const w = t.dbg.walkers; out.trainer = w.length === 4 && w.every(q => q.c.group.visible) && (!BI.Figuren.ready || !!w[0].c._own) && typeof BI.kapsel === 'function';
+  t.act({ k: 'trainer', w: w[0], label: [] }); out.trainerTalk = !!b.save.flags.ta_trainer;
   const st = BI.INSELSTORY.find(q => q.key === 'TASCHI'); out.story = st.acts.length === 3 && st.acts.every(a => a.goal.every(g => b.istory.goalDone(g)));
   b.save.flags.ta_ulme = 0; b.save.flags.ta_reise = 0; b.cheats.redeem('TASCHIMEISTER'); out.cheat = t.log().rows.every(r => r.ok);
   out.balloon = W.vehicleSpawns.some(v => v.type === 'funkenballon');
@@ -30,6 +37,7 @@ const r = await p.evaluate(async () => {
 });
 ok(r.isle, 'Insel im Osten mit Portal-Platz'); ok(r.gone, 'Taschi-Funktionen entfernt (keine Arten, kein Fanggras, keine Knöpfe)');
 ok(r.near && r.found, 'Portal erkannt, Sticker Portal-Finder'); ok(r.ask && r.travel && r.url, 'Rückfrage → Reise ins Taschi-Spiel (../taschi/), Sticker Portal-Reisender');
-ok(r.prof && r.profFlag, 'Professor Ulme erzählt vom Portal'); ok(r.log && r.story, 'Aufgaben (4) und Inselgeschichte (3 Akte) lösbar'); ok(r.cheat, 'Geheimcode TASCHIMEISTER');
+ok(r.prof && r.profFlag, 'Professor Ulme erzählt vom Portal'); ok(r.log && r.story, 'Aufgaben (5) und Inselgeschichte (3 Akte) lösbar'); ok(r.cheat, 'Geheimcode TASCHIMEISTER');
+ok(r.pets && r.move, 'Echte Taschis laufen frei herum'); ok(r.petNear && r.petted, 'Taschis streicheln → Aufgabe Taschi-Freund'); ok(r.trainer && r.trainerTalk, 'KayKit-Trainer spazieren und erzählen');
 ok(r.balloon, 'Heißluftballon bleibt als Fahrzeug'); ok(r.oldSave, 'Alter Taschi-Spielstand bleibt erhalten');
 ok(errs.length === 0, 'keine JS-Fehler ' + errs.slice(0, 3).join(' | ')); console.log(fails ? fails + ' FEHLER' : 'Alles gut ✅'); await browser.close(); process.exit(fails ? 1 : 0);

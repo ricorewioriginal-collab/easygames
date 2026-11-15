@@ -419,15 +419,19 @@ BI.makeChar = function (o) {
   if (J) o = Object.assign({ shirt: 0x1d2342, pants: 0x7a5230, skin: 0xffd6b3, hair: 0xf3d98a, hat: 'none', shoe: 0x1d2a44 }, o);
   const shirt = o.shirt != null ? o.shirt : 0xff5a5a, pants = o.pants != null ? o.pants : 0x3d4a7a, skin = o.skin != null ? o.skin : 0xffd2a8, hair = o.hair != null ? o.hair : 0x6b4423, hat = o.hat || 'none';
   const root = new THREE.Group(), body = new BI.CharacterBatch(); root.userData.opts = o0;
+  /* KayKit-Körper (js/figuren.js): Rumpf, Arme, Beine aus den KayKit-Modellen, umgefärbt; Kopf, Gesicht, Frisur und Hut bleiben (Wiedererkennung) */
+  const FG = BI.Figuren, KK = FG && FG.use(o) ? FG.variant(o) : null, kkB = !!KK && FG.body(body, o, KK, shirt, pants, skin);
+  if (J) { const dz = kkB ? .03 : 0; // bunter Aufdruck wie beim Marvel-Shirt
+    body.sph(0, 1.085, .152 + dz, .17, 0xffffff, 3, 1, .2, .1); body.sph(0, .975, .156 + dz, .11, 0x3fd18a, 3, 1, .45, .12); body.sph(0, .86, .16 + dz, .1, 0x9a5be0, 3, 1, 1, .12); body.sph(0, .86, .168 + dz, .045, 0xe8eaff, 3, 1, 1, .1); body.sph(0, .75, .156 + dz, .14, 0xff5fa8, 3, 1, .36, .12); /* runde, weiche Aufdruck-Formen */
+  }
+  if (!kkB) {
   body.profile(0,.5,0,[[0,0],[.21,0],[.225,.035],[.225,.2],[.20,.22],[0,.22]],.62,pants);
   body.profile(0,.66,0,[[0,0],[.238,0],[.25,.035],[.245,.16],[.245,.37],[.228,.47],[.15,.50],[0,.50]],.66,shirt);
-  if (J) { // bunter Aufdruck wie beim Marvel-Shirt
-    body.sph(0, 1.085, .152, .17, 0xffffff, 3, 1, .2, .1); body.sph(0, .975, .156, .11, 0x3fd18a, 3, 1, .45, .12); body.sph(0, .86, .16, .1, 0x9a5be0, 3, 1, 1, .12); body.sph(0, .86, .168, .045, 0xe8eaff, 3, 1, 1, .1); body.sph(0, .75, .156, .14, 0xff5fa8, 3, 1, .36, .12); /* runde, weiche Aufdruck-Formen */
-  }
   if (o.rainbow) { const RB = [0x9b4de0, 0x3f8cff, 0x4cd07d, 0xffd23f, 0xff8a1f, 0xe8453c], coat = (o.ctype | 0) === 3; for (let k = 0; k < 6; k++) { if (coat) body.box(0, .70 + k * .052, .165, .27, .052, .02, RB[k]); else body.profile(0, .71 + k * .052, 0, [[.2535, 0], [.2535, .052]], .66, RB[k]); } } // Regenbogen-Pride-Shirt (Mantel offen: Streifen in der Mitte)
   body.arc(0,1.17,.15,.105,.055,.015,new THREE.Color(shirt).multiplyScalar(.72).getHex(),Math.PI,BI.TAU,10);
   body.profile(0,.665,0,[[.242,0],[.247,.02]],.66,new THREE.Color(shirt).multiplyScalar(.86).getHex());
   if(!J&&!o.overall&&o.logo==null) body.sph(-.12,.98,.143,.034,new THREE.Color(shirt).lerp(new THREE.Color(0xffffff),.45).getHex(),3,1,1,.35); /* kleiner runder Anstecker statt eckiger Brusttasche */
+  }
   const BLD = [[.86, .9], [1, 1], [1.14, 1.1], [1.3, 1.3]][o.build != null ? Math.max(0, Math.min(3, o.build | 0)) : 1], hd = new BI.CharacterBatch();
   const FS = [[1, 1.05, 1], [.93, 1.14, .97], [1.06, .98, 1.02], [.98, 1.08, 1]][(o.face | 0) & 3];
   hd.sph(0, 1.42, 0, .285, skin, 2, FS[0], FS[1], FS[2]);
@@ -435,7 +439,7 @@ BI.makeChar = function (o) {
   const mz = (o.beard | 0) >= 5 ? .285 : .255, dz = mz - .255, lip = o.lip != null ? o.lip : 0xc2453d;
   { const sk2 = new THREE.Color(skin).multiplyScalar(.86).getHex(), hc = new THREE.Color(hair).multiplyScalar(.8).getHex(), ey = o.eye != null ? o.eye : 0x3a2a1a, bc = o.beardc != null ? o.beardc : hair;
     body.cyl(0, 1.1, 0, .085, .095, .12, skin, 8); // Hals
-    for (const sd of [-1, 1]) { body.sph(sd * .27, 1.1, 0, .105, shirt, 1, 1, 1, 1); hd.sph(sd * .262, 1.42, 0, .05, skin, 0, .55, 1, .9); } // Schultern + Ohren
+    for (const sd of [-1, 1]) { if (!kkB) body.sph(sd * .27, 1.1, 0, .105, shirt, 1, 1, 1, 1); hd.sph(sd * .262, 1.42, 0, .05, skin, 0, .55, 1, .9); } // Schultern + Ohren
     BI.characterFace(hd, o, skin, hair, FS, J);
     const bd = o.beard | 0; // Bart
     if (bd === 1) hd.sph(0, 1.3, 0, .28, new THREE.Color(skin).lerp(new THREE.Color(bc), .2).getHex(), 1, .95, .42, 1); /* Bartstoppeln: weicher Schatten am Kinn, Mund liegt davor */
@@ -503,18 +507,19 @@ BI.makeChar = function (o) {
   const HK = BI.HEAD_K; /* etwas größerer Kopf (moderner Trickfilm-Look), skaliert um den Hals – Hüte, Haare und Gesicht wachsen mit */
   if (!sepHead) { const hp = hd.p; for (let i = 0; i < hp.length; i += 3) { hp[i] *= HK; hp[i + 1] = 1.2 + (hp[i + 1] - 1.2) * HK; hp[i + 2] *= HK; } for (const k of ['p', 'n', 'c']) { const a = hd[k], b = body[k]; for (let i = 0; i < a.length; i++) b.push(a[i]); } }
   const mat = BI.charMat ? BI.charMat() : BI.mat(), bm = body.mesh(mat); bm.position.y = .1; bm.scale.set(BLD[0], 1, BLD[1]); root.add(bm);
-  if (sepHead) { const hg = new THREE.Group(), hm = hd.mesh(mat); hg.position.set(0, 1.3, 0); hm.position.set(0, -1.2, 0); hg.scale.setScalar(hsc * HK); hg.add(hm); root.add(hg); }
+  let hg = null; if (sepHead) { const hm = hd.mesh(mat); hg = new THREE.Group(); hg.position.set(0, 1.3, 0); hm.position.set(0, -1.2, 0); hg.scale.setScalar(hsc * HK); hg.add(hm); root.add(hg); }
   function arm(sleeve, hand, x, y) { // Ärmel bis zum Ellbogen (lang = ganzer Arm, ohne = Haut), Unterarm in Hautfarbe, runde Hand
-    const sl = o.sleeve | 0, g = new THREE.Group(), b = new BI.CharacterBatch(); b.cyl(0, -.25, 0, .082, .07, .25, sl === 2 ? hand : sleeve, 6); b.sph(0, -.25, 0, .07, sl === 1 ? sleeve : hand, 3); b.cyl(0, -.44, 0, .062, .052, .2, sl === 1 ? sleeve : hand, 6); b.sph(0, -.47, .01, .072, hand, 1, .95, 1.1, .9); b.sph(x<0?.051:-.051,-.445,.036,.027,hand,0,.8,1.1,1);
-    if (o.gloves) { b.cyl(0, -.44, 0, .068, .064, .09, o.gloves, 8); b.cyl(0, -.5, 0, .06, .06, .035, o.gloves, 8); } // fingerlose Handschuhe
+    const sl = o.sleeve | 0, g = new THREE.Group(), b = new BI.CharacterBatch();
+    if (!(kkB && FG.arm(b, o, KK, x, sleeve, hand))) { b.cyl(0, -.25, 0, .082, .07, .25, sl === 2 ? hand : sleeve, 6); b.sph(0, -.25, 0, .07, sl === 1 ? sleeve : hand, 3); b.cyl(0, -.44, 0, .062, .052, .2, sl === 1 ? sleeve : hand, 6); b.sph(0, -.47, .01, .072, hand, 1, .95, 1.1, .9); b.sph(x<0?.051:-.051,-.445,.036,.027,hand,0,.8,1.1,1);
+    if (o.gloves) { b.cyl(0, -.44, 0, .068, .064, .09, o.gloves, 8); b.cyl(0, -.5, 0, .06, .06, .035, o.gloves, 8); } } // fingerlose Handschuhe
     if (o.watch && x < 0) { b.box(0, -.4, 0, .13, .055, .13, 0x23262d); b.box(0, -.4, .068, .07, .045, .012, 0xffd23f); }
     g.add(b.mesh(mat)); g.position.set(x * BLD[0], y, 0); g.scale.set(lx, 1, lx); root.add(g); return g;
   }
   function leg(pant, shoeC, x, y) { // Oberschenkel, Wade, Schuh (Turnschuh / Stiefel / Sandale / barfuß)
     const bt = o.bot | 0, st = o.shoeT | 0, lc = bt >= 2 ? skin : pant, lo = bt === 1 || bt >= 2 ? skin : pant, g = new THREE.Group(), b = new BI.CharacterBatch();
-    b.cyl(0, -.34, 0, .105, .088, .34, lc, 6); b.sph(0, -.34, 0, .088, lo, 3); b.cyl(0, -.58, 0, .088, .07, .26, lo, 6);
+    if (!(kkB && FG.leg(b, o, KK, x, pant, shoeC, skin))) { b.cyl(0, -.34, 0, .105, .088, .34, lc, 6); b.sph(0, -.34, 0, .088, lo, 3); b.cyl(0, -.58, 0, .088, .07, .26, lo, 6);
     if (st === 2 || st === 3) { b.box(0, -.62, .045, .17, .06, .3, skin); b.sph(0, -.6, .17, .087, skin, 3, 1, .6, 1.1); if (st === 2) { b.box(0, -.56, .08, .18, .03, .05, shoeC); b.box(0, -.56, -.02, .18, .03, .05, shoeC); } }
-    else { b.box(0, -.62, .045, .17, .09, .3, shoeC); b.sph(0, -.6, .17, .087, shoeC, 3, 1, .75, 1.1); b.box(0,-.615,.047,.176,.032,.31,0xfff6e5); b.box(0, -.55, -.02, .15, .03, .12, 0xffffff); for(const zz of [.05,.095])b.box(0,-.54,zz,.105,.009,.012,0xfff6e5); if (st === 1) b.cyl(0, -.52, 0, .098, .098, .2, shoeC, 6); }
+    else { b.box(0, -.62, .045, .17, .09, .3, shoeC); b.sph(0, -.6, .17, .087, shoeC, 3, 1, .75, 1.1); b.box(0,-.615,.047,.176,.032,.31,0xfff6e5); b.box(0, -.55, -.02, .15, .03, .12, 0xffffff); for(const zz of [.05,.095])b.box(0,-.54,zz,.105,.009,.012,0xfff6e5); if (st === 1) b.cyl(0, -.52, 0, .098, .098, .2, shoeC, 6); } }
     g.add(b.mesh(mat)); g.position.set(x * BLD[0], y, 0); g.scale.set(lx, 1, lx); root.add(g); return g;
   }
   const shoe = o.shoe != null ? o.shoe : 0x2a2a3a, legL = leg(pants, shoe, -.13, .62), legR = leg(pants, shoe, .13, .62);
@@ -529,8 +534,8 @@ BI.makeChar = function (o) {
     const rm = remoteMesh = rb.mesh(mat); rm.position.set(0, -.55, .13); armR.add(rm);
   }
   root.scale.setScalar(o.scale || .95);
-  return {
-    group: root, legL, legR, armL, armR, remote: remoteMesh,
+  const ch = {
+    group: root, legL, legR, armL, armR, remote: remoteMesh, _own: { root: hg ? [bm, hg] : [bm], legL: legL.children[0], legR: legR.children[0], armL: armL.children[0], armR: armR.children[0] },
     dispose() { root.traverse(m => { if(m.geometry)m.geometry.dispose(); if(m.isSprite){if(m.material.map)m.material.map.dispose();m.material.dispose();} }); if(root.parent)root.parent.remove(root); },
     pose(phase, amp, wave) {
       const s = Math.sin(phase) * amp;
@@ -548,6 +553,8 @@ BI.makeChar = function (o) {
     },
     sit() { legL.rotation.x = legR.rotation.x = -1.35; armL.rotation.x = armR.rotation.x = -1.0; armR.rotation.z = 0; }
   };
+  if (!KK && FG && !FG.ready) FG.later(ch);
+  return ch;
 };
 
 /* ---- Pappnase: orangefarbener Ballon mit aufgemaltem Gesicht (Filzstift-Look) ---- */

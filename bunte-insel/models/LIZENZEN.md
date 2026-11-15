@@ -16,4 +16,11 @@ aus den unveränderten Quelldateien in `bunte-insel-src/models-src/`).
 | `kb_house`, `kb_market`, `kb_well`, `kb_watchtower`, `kb_castle` | [KayKit Medieval Builder Pack](https://kaylousberg.itch.io/kaykit-medieval-builder-pack) von Kay Lousberg (`zotik/models/kb/kb.glb`) | **CC0 1.0** |
 | `wz_tree_pink`, `wz_garden_pink`, `wz_grass_purple`, `wz_grass_green`, `wz_rock_big`, `wz_rock_med`, `wz_lamp`, `wz_arch`, `wz_plant` | „Lowpoly Stylized Fantasy Environment Pack“ von [Wizp](https://wizp.itch.io) (`zotik/models/wz/wz.glb`) | **CC0** laut Seite (frei nutzbar, nur nicht als Paket weiterverkaufen) |
 
+`figuren.bin` enthält Rumpf, rechten Arm und rechtes Bein von sechs Figuren aus den **KayKit Adventurers 2.0** von Kay Lousberg
+(Knight, Barbarian, Mage, Rogue, Ranger, Rogue_Hooded – dieselben Dateien wie in `../taschi/assets/kaykit/characters/`, Auswahl in
+`bunte-insel-src/models-src/figuren.json`), Lizenz **CC0 1.0** (https://kaylousberg.itch.io/kaykit-adventurers). Im Spiel umgefärbt und mit eigenen Köpfen kombiniert (`js/figuren.js`).
+
+`taschis.bin` enthält 13 Taschi-Modelle aus dem **Ultimate Monsters Bundle** von Quaternius (https://quaternius.com), dieselben Dateien wie im Taschi-Spiel
+(`../taschi/assets/models/`, Auswahl in `bunte-insel-src/models-src/taschis.json`), Lizenz **CC0 1.0** (`../taschi/assets/models/LICENSE.txt`).
+
 CC0 = gemeinfrei, Namensnennung nicht nötig – wir nennen die Urheber trotzdem gern. Alle übrigen 3D-Formen der Insel entstehen im Code.
