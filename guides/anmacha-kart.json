@@ -136,6 +136,22 @@
         "Sechs Stadt-Strecken: Marktplatz-Meile, Kurpark-Kurven (Tauben auf der Strecke), Einkaufszentrum (Rolltreppen-Portale), Strandpromenade, Weihnachtsmarkt und Geisterstunde im Altenheim. Sie stecken im ☕ Kaffee-Cup, 🍰 Kuchen-Cup und im 🏆 Großen Rentenpokal.",
         "Fährst du eine Oma, heißen die Items wie früher (Rheuma-Rakete, Gebiss, Handtasche, Wollknäuel, Pralinen-Lenkrakete, Regenschirm, Hörgeräte-Pfiff, Puderwolke) und deine Oma kommentiert Treffer und Siege. Auf den Oma-Strecken fährt die Oma-Bande als Gegner mit."
       ]
+    },
+    {
+      "t": "Battle-Modus",
+      "p": [
+        "Im Hauptmenü öffnet die Kachel „🎈 Battle“ den Kampfmodus. Gefahren wird in drei eigenen Arenen (Funkturm-Arena, Neon-Kessel, Sandburg-Ring): breite Rundkurse mit Mittelinsel, vielen Item-Boxen und Boost-Feldern, gegen 7 Gegner.",
+        "Ballonjagd: Jeder startet mit 3 Ballons. Jeder Treffer lässt einen platzen; wer keinen mehr hat, scheidet aus. Rammst du jemanden mit Turbo, klaust du ihm einen Ballon (höchstens 5). Gewinner ist, wer zuletzt übrig bleibt oder nach 3 Minuten die meisten Ballons hat.",
+        "Funkpokal erobern: Schnapp dir den goldenen Funkpokal und halte ihn 25 Sekunden. Wirst du getroffen, fällt er herunter; Turbo-Rammen klaut ihn direkt. Nach 3 Minuten gewinnt die längste Haltezeit.",
+        "Bomben-Duell: Aus den Boxen kommen nur Bomben. Sie rollen aus und explodieren nach gut 2 Sekunden oder sobald jemand drüberfährt; die Druckwelle trifft alle in der Nähe. 5 Treffer gewinnen, sonst zählen nach 2,5 Minuten die Punkte."
+      ]
+    },
+    {
+      "t": "Koop-Kart: zu zweit in einem Kart",
+      "p": [
+        "Mit der Kachel „🤝 Koop-Kart“ (oder Mehrspieler → Koop, bzw. dem Schalter in der Kopplung) teilen sich je zwei Spieler ein Kart: Spieler 1 lenkt, gibt Gas, bremst und driftet, Spieler 2 wirft die Items (Stick/Pfeil nach hinten = nach hinten werfen) und tauscht die Fahrer.",
+        "Der Beifahrer ist die Figur des zweiten Spielers. Das klappt mit Tastatur, Gamepad und Handy, in allen Modi einschließlich Battle. Bei vier Spielern fahren zwei Koop-Karts."
+      ]
     }
   ],
   "ratgeber": [
@@ -187,6 +203,15 @@
         "Im Kurpark laufen Tauben über die Strecke – außen herum fahren, sonst drehst du dich.",
         "Im Einkaufszentrum bringen dich die leuchtenden Portale (Rolltreppen) ein Stück nach vorne.",
         "Der Raketen-Rollator beschleunigt gut und lenkt flink, ist aber etwas leichter – im Gedränge lieber Abstand halten."
+      ]
+    },
+    {
+      "t": "Battle-Tipps",
+      "list": [
+        "Ballonjagd: Raketen suchen sich im Battle den nächsten Gegner vor dir – ideal gegen Flüchtende.",
+        "Spare einen Turbo, um einem Gegner mit Ballon-Vorsprung einen Ballon abzunehmen.",
+        "Funkpokal: Wer ihn hält, fährt am besten mit Schild oder Bananen hinter sich.",
+        "Bomben-Duell: Wirf Bomben nach vorn in Gegnergruppen und fahr nicht selbst hinterher – die Druckwelle trifft auch dich."
       ]
     }
   ],
@@ -324,6 +349,14 @@
     {
       "q": "Wie tausche ich Fahrer und Beifahrer?",
       "a": "Im Tandem mit ○ (PlayStation), X (Switch), B (Xbox), E/V auf der Tastatur oder dem Knopf ⇄ TAUSCH am Handy. Das Item des Beifahrers kommt dabei nach vorn."
+    },
+    {
+      "q": "Wie spiele ich Battle?",
+      "a": "Hauptmenü → 🎈 Battle, dann Modus (Ballonjagd, Funkpokal erobern, Bomben-Duell) und Arena wählen."
+    },
+    {
+      "q": "Können zwei Spieler ein Kart fahren?",
+      "a": "Ja: 🤝 Koop-Kart. Der erste Spieler fährt, der zweite wirft Items und tauscht die Fahrer."
     }
   ]
 }
