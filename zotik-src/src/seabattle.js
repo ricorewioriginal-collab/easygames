@@ -49,7 +49,7 @@ export function createSeaBattle(C) {
   const q = s => H.querySelector(s), pct = (a, b) => Math.max(0, Math.min(100, a / b * 100)).toFixed(1) + '%', hx = c => '#' + (c >>> 0).toString(16).padStart(6, '0');
   function hud() {
     if (!B) return; const S = C.S();
-    q('.rb-p').innerHTML = B.party.map(m => { const fc = C.face ? C.face(m.id) : ''; return `<div class="rb-c${m === B.cur ? ' on' : ''}${m.hp <= 0 ? ' ko' : ''}" style="--c:${hx(m.col)}"><div class="rb-pt" style="${fc ? 'background-image:url(' + fc + ')' : ''}">${fc ? '' : faceOf(m)}</div><div class="rb-ci"><b>${m.n} <small>Lv ${C.clv ? C.clv(m.id) : ''}</small></b><div class="rr2"><span>LP</span><div class="rb-bar"><i style="width:${pct(m.hp, m.max)}"></i></div><em>${Math.max(0, Math.ceil(m.hp))}</em></div>${m.id === 'zotik' ? `<div class="rr2"><span>MP</span><div class="rb-bar mp"><i style="width:${pct(S.mp, C.maxMp())}"></i></div><em>${Math.floor(S.mp)}</em></div>` : ''}<div class="rr2"><span>ZT</span><div class="rb-bar atb"><i style="width:${pct(m.ct || 0, 100)}"></i></div><em></em></div><div class="rb-bar ip${m.ip >= 40 ? ' full' : ''}"><i style="width:${pct(m.ip, 100)}"></i></div></div></div>`; }).join('');
+    q('.rb-p').innerHTML = B.party.map((m, i) => { const fc = C.face ? C.face(m.id) : ''; return `<div data-i="${i}" class="rb-c${m === B.cur ? ' on' : ''}${B.pick && m.hp > 0 && m.ct >= 100 ? ' rdy' : ''}${m.hp <= 0 ? ' ko' : ''}" style="--c:${hx(m.col)}"><div class="rb-pt" style="${fc ? 'background-image:url(' + fc + ')' : ''}">${fc ? '' : faceOf(m)}</div><div class="rb-ci"><b>${m.n} <small>Lv ${C.clv ? C.clv(m.id) : ''}</small></b><div class="rr2"><span>LP</span><div class="rb-bar"><i style="width:${pct(m.hp, m.max)}"></i></div><em>${Math.max(0, Math.ceil(m.hp))}</em></div>${m.id === 'zotik' ? `<div class="rr2"><span>MP</span><div class="rb-bar mp"><i style="width:${pct(S.mp, C.maxMp())}"></i></div><em>${Math.floor(S.mp)}</em></div>` : ''}<div class="rr2"><span>ZT</span><div class="rb-bar atb"><i style="width:${pct(m.ct || 0, 100)}"></i></div><em></em></div><div class="rb-bar ip${m.ip >= 40 ? ' full' : ''}"><i style="width:${pct(m.ip, 100)}"></i></div></div></div>`; }).join('');
     q('.rb-f').innerHTML = B.foes.map(f => `<div class="rb-c${f === B.curF ? ' on' : ''}${f.dead ? ' ko' : ''}" style="--c:${hx(f.d.col || 0xff7a7a)}"><b>${f.name}<small>${EL[f.d.weak][0]} ${f.broken ? '<span class="rb-brk x">BRUCH</span>' : `<span class="rb-brk">${'◆'.repeat(Math.max(0, f.brk))}</span>`}</small></b><div class="rb-bar"><i style="width:${pct(f.hp, f.max)}"></i></div></div>`).join('');
   }
   const flashScr = () => { const w = q('.rb-w'); w.classList.remove('on'); void w.offsetWidth; w.classList.add('on'); };
@@ -125,6 +125,12 @@ body.rbat #dlg{top:max(8px,env(safe-area-inset-top));bottom:max(8px,env(safe-are
 body.rbat #dOpts{max-height:none}body.rbat #dOpts button{padding:7px 10px 7px 24px;font-size:14px}
 body.rbat #dName{font-size:17px}}`;
   document.head.appendChild(st3);
+  const st4 = document.createElement('style'); st4.textContent = `#rbh .rb-p .rb-c.rdy{pointer-events:auto;cursor:pointer;border-color:#ffd45a;animation:rbrdy .8s infinite alternate}#rbh .rb-p .rb-c.rdy.on{box-shadow:0 0 0 2px #ffd45a,0 0 24px rgba(255,212,90,.7)}
+@keyframes rbrdy{to{filter:brightness(1.35)}}
+#rbh .rb-hint{position:absolute;left:50%;bottom:calc(max(8px,env(safe-area-inset-bottom)) + 150px);transform:translateX(-50%);max-width:92vw;padding:8px 16px;border-radius:20px;background:rgba(10,14,34,.88);border:1px solid rgba(255,212,90,.6);font-size:14px;font-weight:700;color:#ffe9a0;text-align:center;opacity:0;transition:opacity .25s;pointer-events:none}#rbh .rb-hint.on{opacity:1}
+@media (orientation:landscape) and (max-height:520px){#rbh .rb-hint{bottom:calc(max(8px,env(safe-area-inset-bottom)) + 96px)}}`;
+  document.head.appendChild(st4);
+
   H.insertAdjacentHTML('beforeend', '<div class="rb-ord"></div><div class="rb-tl"><div class="rb-tr"><span class="w">WAIT</span><span class="c">COM</span><span class="a">ACT</span></div><div class="rb-mf"></div><div class="rb-mp"></div></div><div class="rb-ti" hidden></div>');
   const faceOf = m => m.id === 'zotik' ? '🦊' : ((C.PARTY && C.PARTY[m.id]) || {}).em || '⭐';
   const posCt = ct => (Math.max(0, Math.min(100, ct)) * .92 + 4).toFixed(1) + '%';
@@ -245,6 +251,19 @@ body.rbat #dName{font-size:17px}}`;
     return { k: 'atk', f: L.slice().sort((a, b) => a.hp - b.hp)[0] };
   }
 
+  /* JRPG-Ablauf: Sind Figuren bereit (Zeitleiste voll), leuchten ihre Karten – erst nach Antippen/Bestätigen öffnet sich das Befehlsmenü dieser Figur */
+  function pickChar(b) {
+    if (!B || B.auto || up().length < 2 || (B.para && B.para !== 'M' && b !== B.party[0])) return b;
+    const R = B.party.filter(p => p.hp > 0 && p.ct >= 100); if (!R.includes(b)) R.unshift(b);
+    return new Promise(res => {
+      let i = R.indexOf(b); const hint = q('.rb-hint') || H.appendChild(Object.assign(document.createElement('div'), { className: 'rb-hint' }));
+      const set = () => { B.cur = R[i]; hud(); atbUI(); hint.textContent = '👆 ' + R[i].n + ' ist bereit – Figur antippen, dann Befehl wählen'; hint.classList.add('on'); };
+      const done = m => { removeEventListener('keydown', key, true); q('.rb-p').removeEventListener('click', click); hint.classList.remove('on'); if (B) B.pick = 0; res(m); };
+      const click = e => { const c = e.target.closest('.rb-c.rdy'); if (c) { const m = B.party[+c.dataset.i]; if (m) { e.stopPropagation(); done(m); } } };
+      const key = e => { const k = e.code; if (/^(Enter|Space|KeyJ|KeyK|NumpadEnter)$/.test(k)) { e.preventDefault(); e.stopImmediatePropagation(); if (!e.repeat) done(R[i]); } else if (/^Arrow(Left|Up)$/.test(k) || (/^Arrow(Right|Down)$/.test(k))) { e.preventDefault(); e.stopImmediatePropagation(); i = (i + (/Left|Up/.test(k) ? R.length - 1 : 1)) % R.length; set(); } };
+      B.pick = 1; B.pickDone = () => done(R[i]); q('.rb-p').addEventListener('click', click); addEventListener('keydown', key, true); set();
+    });
+  }
   /* ---------- Ablauf einer Runde ---------- */
   function paraCmd(m) {
     const S = C.S(), low = up().filter(p => p.hp < p.max * .5), [, ty] = art(m.id), P = B.para;
@@ -263,7 +282,7 @@ body.rbat #dName{font-size:17px}}`;
       if (!live().length) return win(); if (!up().length) return lose();
       const { a: b, t: bt, L } = pickNext(); for (const a of L) a.ct = Math.min(100, a.ct + a.sp * bt); b.ct = 100; atbUI(); await wait(Math.min(650, 120 + bt * 80)); if (!B || B.over) return;
       if (b.party) {
-        let m = b; B.cur = m; B.guard[m.id] = 0; if (B.taunt === m) B.taunt = null; hud(); atbUI();
+        let m = await pickChar(b); if (!B || B.over) return; B.cur = m; B.guard[m.id] = 0; if (B.taunt === m) B.taunt = null; hud(); atbUI();
         const a = partyA(m); if (a) { const bs = a.base; B.shot = null; B.idle = { x: bs.x, y: bs.y, z: bs.z }; }
         let c = B.auto ? autoCmd(m) : (B.para && B.para !== 'M' && m !== B.party[0]) ? paraCmd(m) : await ask(m); if (!B) return;
         while (c && c.k === 'swap') { m = c.to; B.cur = m; B.guard[m.id] = 0; hud(); atbUI(); { const a2 = partyA(m); if (a2) { const bs = a2.base; B.shot = null; B.idle = { x: bs.x, y: bs.y, z: bs.z }; } } c = await ask(m); if (!B) return; }
