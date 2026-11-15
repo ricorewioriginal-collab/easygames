@@ -32,7 +32,7 @@ if (out) await tv.screenshot({ path: out + '/or-30-lobby.jpg', type: 'jpeg', qua
 await tv.evaluate(() => { OmaApp.A.speed = 4; OmaApp.SET.laps = 2; });
 await phones[0].click('#cGo'); await tv.waitForFunction(() => !!OmaApp.R, null, { timeout: 5000 }); ok(true, 'Handy startet das Rennen');
 const R0 = await tv.evaluate(() => ({ n: OmaApp.R.S.karts.length, views: OmaApp.R.views.length })); ok(R0.n === 8 && R0.views === 2, '8 Omas, geteilter Bildschirm für 2 Handys');
-// Handy 1: Steuerung wie AnMaCha Kart Rush – Joystick links nach rechts ziehen, GAS-Taste der Raute halten
+// Handy 1: Steuerung wie Kart Rush: Weltentour – Joystick links nach rechts ziehen, GAS-Taste der Raute halten
 const gb = await phones[0].locator('#cz .tb-g').boundingBox(), jb = await phones[0].locator('#cz .jb').boundingBox();
 const gx = gb.x + gb.width / 2, gy = gb.y + gb.height / 2, jx = jb.x + jb.width / 2, jy = jb.y + jb.height / 2;
 await phones[0].dispatchEvent('#cz', 'pointerdown', { pointerId: 7, clientX: gx, clientY: gy, bubbles: true });

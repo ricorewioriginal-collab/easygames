@@ -1,11 +1,13 @@
 'use strict';
-/* AnMaCha Kart Rush – Host/Solo: Menü, Rennablauf, Splitscreen-HUD, Handy-Kopplung (PeerJS). Controller: controller.js */
+/* Kart Rush: Weltentour – Host/Solo: Menü, Rennablauf, Splitscreen-HUD, Handy-Kopplung (PeerJS). Controller: controller.js */
 const $ = id => document.getElementById(id);
 const qp = new URLSearchParams(location.search);
 const JOIN = (qp.get('join') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6), PH = qp.get('ph') || '', TV = qp.has('tv') || /SmartTV|Smart-TV|Tizen|Web0S|WebOS|NetCast|HbbTV|AFTS|AFTM|AFTB|AFTT|AFTN|Android TV|GoogleTV|AppleTV|BRAVIA|CrKey|Viera|Roku|VIDAA|Fire TV|FireTV/i.test(navigator.userAgent);
 const NAMES = ['RicoReWi Music & Media', 'YourTime-FM', 'RapRadio 24', 'SchlagerPop 24', 'ChartRadio 24', 'ClubRadio 24', 'AnMaCha 24', 'RadioFloh!', 'RockRadio 24', 'ChristmasRadio 24', 'KultRadio 24', 'Zocker-FM', 'Special-Radio'];
-const CDN = { three: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', peer: 'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js', qr: 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js' };
-const loadScript = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('Laden fehlgeschlagen: ' + src)); document.head.appendChild(s); });
+// Bibliotheken zuerst aus ../vendor (offline, App), sonst vom CDN
+const CDN = { three: ['../vendor/three-r128.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'], peer: ['../vendor/peerjs-1.5.4.min.js', 'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js'], qr: ['../vendor/qrcode-generator-1.4.4.js', 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js'], jsqr: ['../vendor/jsqr-1.4.0.js', 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js'] };
+const loadOne = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => { s.remove(); rej(new Error('Laden fehlgeschlagen: ' + src)); }; document.head.appendChild(s); });
+const loadScript = src => Array.isArray(src) ? src.reduce((p, u) => p.catch(() => loadOne(u)), Promise.reject()) : loadOne(src);
 const peerCfg = () => { if (!PH) return {}; const [h, p] = PH.split(':'); return { host: h, port: +p || 9000, path: '/', secure: false }; };
 const esc = s => String(s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
 const fmtT = t => { if (t == null || !isFinite(t)) return '–'; const m = Math.floor(t / 60), s = t - m * 60; return m + ':' + (s < 10 ? '0' : '') + s.toFixed(2); };
@@ -16,12 +18,15 @@ const itemHtml = (it, n) => it ? ITEM_ICON[it] + (it.endsWith('3') && n > 1 ? '<
 const GP_PTS = [15, 12, 10, 8, 6, 4, 2, 1];
 const ordinal = n => n + '.';
 
-// Neigungssteuerung (optional, Handy): liefert TILT.v in -1..1
+// Neigungssteuerung (optional, Handy): liefert TILT.v in -1..1 – mit Mitte setzen, Empfindlichkeit und Glättung
 const TILT = {
-  on: false, inv: false, v: 0,
+  on: false, inv: false, v: 0, raw: 0, zero: 0, sens: 1, SENS: [34, 25, 17],
   async enable() { try { if (window.DeviceOrientationEvent && DeviceOrientationEvent.requestPermission) { const r = await DeviceOrientationEvent.requestPermission(); if (r !== 'granted') return false; } } catch (e) { return false; }
-    if (!TILT.h) { TILT.h = e => { const a = (screen.orientation && screen.orientation.angle != null) ? screen.orientation.angle : (window.orientation || 0); let raw = a === 90 ? e.beta : (a === 270 || a === -90) ? -e.beta : a === 180 ? -e.gamma : e.gamma; raw = (raw || 0) / 25; TILT.v = Math.max(-1, Math.min(1, TILT.inv ? -raw : raw)); if (Math.abs(TILT.v) < 0.06) TILT.v = 0; }; addEventListener('deviceorientation', TILT.h); }
+    if (!TILT.h) { TILT.h = e => { const a = (screen.orientation && screen.orientation.angle != null) ? screen.orientation.angle : (window.orientation || 0); TILT.raw = (a === 90 ? e.beta : (a === 270 || a === -90) ? -e.beta : a === 180 ? -e.gamma : e.gamma) || 0;
+      let r = (TILT.raw - TILT.zero) / TILT.SENS[TILT.sens]; r = Math.max(-1, Math.min(1, TILT.inv ? -r : r)); const ab = Math.abs(r); r = ab < 0.05 ? 0 : Math.sign(r) * (ab - 0.05) / 0.95;
+      TILT.v += (r - TILT.v) * 0.45; if (Math.abs(TILT.v) < 0.02) TILT.v = 0; }; addEventListener('deviceorientation', TILT.h); }
     TILT.on = true; return true; },
+  center() { TILT.zero = TILT.raw; },
   disable() { TILT.on = false; TILT.v = 0; }
 };
 const clampN = (v, a, b) => v < a ? a : v > b ? b : v;
@@ -74,8 +79,14 @@ const Pads = {
   read(pad) {
     if (!pad) return { s: 0, g: 0, b: 0, d: 0, i: 0 }; const a = pad.axes || [], bt = pad.buttons || [], pr = i => bt[i] && (bt[i].pressed || bt[i].value > 0.5); let s = a[0] || 0;
     s = Math.abs(s) < 0.14 ? 0 : Math.sign(s) * (Math.abs(s) - 0.14) / 0.86; if (pr(14)) s = -1; else if (pr(15)) s = 1;
-    return { s, g: pr(0) || pr(7) || pr(12) ? 1 : 0, b: pr(6) || pr(1) || pr(13) ? 1 : 0, d: pr(5) || pr(2) ? 1 : 0, i: pr(4) || pr(3) ? 1 : 0 };
+    // Belegung wie an der Konsole: PlayStation/Xbox ✕/A Gas, ○/B Bremse, □/X Drift · Nintendo A (rechts) Gas, B (unten) Bremse, Y Drift; R/RB Drift, L/LB + △/Y/X Item, Trigger Gas/Bremse
+    const nin = Pads.style(pad) === 'nin';
+    return { s, g: pr(nin ? 1 : 0) || pr(7) || pr(12) ? 1 : 0, b: pr(nin ? 0 : 1) || pr(6) || pr(13) ? 1 : 0, d: pr(5) || pr(2) ? 1 : 0, i: pr(4) || pr(3) ? 1 : 0 };
   },
+  pref: 'auto',
+  style(pad) { return Pads.pref !== 'auto' ? Pads.pref : pad && self.Nav ? Nav.styleOf(pad.id) : 'xbox'; },
+  // [Glyphe, Text] für Hilfe und Hinweise (Glyphen-Schlüssel wie in Nav.GLYPH: a/b/x/y = unten/rechts/links/oben bei Xbox-Namen)
+  legend(st) { const nin = st === 'nin'; return [[nin ? 'b' : 'a', 'Gas'], [nin ? 'a' : 'b', 'Bremse / rückwärts'], ['r', 'Driften (halten)'], ['x', 'Driften'], ['l', 'Item benutzen'], ['y', 'Item'], ['rt', 'Gas'], ['lt', 'Bremse'], ['st', 'Pause']]; },
   any() { const m = { s: 0, g: 0, b: 0, d: 0, i: 0 }; Pads.list().forEach(p => { const r = Pads.read(p); if (Math.abs(r.s) > Math.abs(m.s)) m.s = r.s; m.g |= r.g; m.b |= r.b; m.d |= r.d; m.i |= r.i; }); return m; }
 };
 
@@ -122,7 +133,6 @@ function initHost() {
   const loadLogos = () => Promise.all(Array.from({ length: 13 }, (_, i) => probe(i + 1).then(r => { LD.add(0.15 / 13); return r; }))).then(r => { logos = r.filter(Boolean); });
   const logoSrc = i => { const l = logos.find(x => x.idx === i); return l ? l.src : 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='; };
   const nextLogo = i => { if (!logos.length) return i; const ids = logos.map(l => l.idx), p = ids.indexOf(i); return ids[(p + 1) % ids.length]; };
-  (function brand() { const c = []; ['', '../'].forEach(d => ['png', 'jpg', 'jpeg', 'svg', 'webp'].forEach(e => c.push(`${d}logo.${e}`))); const tryAt = i => i >= c.length ? Promise.resolve(null) : new Promise(res => { const im = new Image(); im.onload = () => res(c[i]); im.onerror = () => res(tryAt(i + 1)); im.src = c[i]; }); tryAt(0).then(s => { if (!s) return; const im = $('brandImg'); im.src = s; im.hidden = false; $('brandText').hidden = true; if (!s.startsWith('../')) $('brandSub').hidden = true; }); })();
 
   // ------------------------------------------------------------------ Menü
   function renderMenu() {
@@ -144,10 +154,11 @@ function initHost() {
     $('kcards').innerHTML = KARTS.map((k, i) => `<button class="${save.kart === i ? 'on' : ''}" data-kt="${i}"><b>${k.emoji}</b>${k.name}${rng.map((r, j) => `<div class="bar"><i style="width:${Math.round(Math.max(8, Math.min(100, (k[r[0]] - r[1]) / (r[2] - r[1]) * 100)))}%"></i></div>`).join('')}<div class="st">${esc(k.desc)}</div></button>`).join('');
     $('kcards').querySelectorAll('[data-kt]').forEach(b => b.onclick = () => { save.kart = +b.dataset.kt; persist(); renderMenu(); });
     $('assist').innerHTML = ['Aus', 'Leicht', 'Stark'].map((s, i) => `<button class="chip ${assistLvl() === i ? 'on' : ''}" data-a="${i}">${s}</button>`).join(''); $('assist').querySelectorAll('[data-a]').forEach(b => b.onclick = () => { save.assist = +b.dataset.a; persist(); renderMenu(); });
-    const pads = Pads.list(); $('padInfo').hidden = !pads.length; if (pads.length) $('padInfo').textContent = '🎮 Gamepad erkannt: ' + pads.map(p => p.id.slice(0, 28)).join(' · ');
-    $('bSolo').disabled = $('bMulti').disabled = $('bGoSetup').disabled = !ready; $('bSolo').textContent = ready ? '▶ SOLO FAHREN' : 'LADEN …';
+    const pads = Pads.list(); $('padInfo').hidden = !pads.length; if (pads.length) $('padInfo').textContent = '🎮 ' + (self.Nav ? Nav.GLYPH[Pads.style(pads[0])].name : 'Controller') + (pads.length > 1 ? ' ×' + pads.length : '');
+    document.querySelectorAll('#hmTiles .tile').forEach(t => { if (t.id !== 'bTop' && t.id !== 'bTv') t.disabled = !ready; }); $('bGoSetup').disabled = !ready;
+    renderOpts();
     const ch = CHARS[save.char % CHARS.length], kt = KARTS[save.kart % KARTS.length], where = save.rmode === 'gp' ? Track.CUPS[save.cup].name : TR[save.track].name, mode = { race: 'Einzelrennen', gp: 'Cup', tt: 'Zeitfahren', free: 'Freies Fahren' }[save.rmode] || '';
-    $('selSum').innerHTML = `<b>${ch.emoji}</b><span>${esc((save.name || '').trim() || ch.name)} · ${kt.emoji} ${esc(kt.name)}<small>${esc(mode)} · ${esc(where)} · ${save.laps} Runden</small></span><i>✎ Ändern</i>`;
+    $('selSum').innerHTML = `<b>${ch.emoji}</b><span>${esc((save.name || '').trim() || ch.name)}<small>${kt.emoji} ${esc(kt.name)} · ${esc(where)}</small></span><i>✎</i>`; void mode;
     $('bGoSetup').textContent = setupFor === 'multi' ? 'HANDYS KOPPELN ▶' : 'LOS! ▶'; $('setTitle').textContent = setupFor === 'multi' ? 'MEHRSPIELER EINRICHTEN' : 'RENNEN EINRICHTEN';
     if (ready && View.previewKart) {
       View.previewKart($(setupStep === 3 ? 'kartStageSlot' : 'kartStage'), save.char, save.kart, save.logo);
@@ -155,8 +166,31 @@ function initHost() {
       $('kartStageWorld').textContent = CHARS[save.char].cup ? CHARS[save.char].cup + ' · ' + CHARS[save.char].kind : 'Original-Fahrer · ' + CHARS[save.char].kind; $('kartStageNameKart').textContent = KARTS[save.kart].name; $('kartStageWorldKart').textContent = KARTS[save.kart].desc;
     }
   }
-  const syncSnd = () => { $('bSnd').textContent = AUD.muted ? '🔇' : '🔊'; $('bMenuSnd').textContent = AUD.muted ? '🔇 Ton aus' : '🔊 Ton an'; };
-  const togSnd = () => { AUD.setMute(!AUD.muted); syncSnd(); if (!R && !AUD.muted) AUD.bed('menu'); };
+  // ------------------------------------------------------------------ Optionen (Ton, Lenkhilfe, Controller, Vibration, Kippen)
+  function chipRow(el, opts, cur, fn) { el.innerHTML = opts.map(([v, t]) => `<button class="chip ${v === cur ? 'on' : ''}" data-v="${v}">${t}</button>`).join(''); el.querySelectorAll('[data-v]').forEach(b => b.onclick = () => { fn(b.dataset.v); renderMenu(); }); }
+  function renderOpts() {
+    chipRow($('oSnd'), [['1', '🔊 An'], ['0', '🔇 Aus']], AUD.muted ? '0' : '1', v => { if ((v === '0') !== AUD.muted) togSnd(); });
+    chipRow($('oAssist'), [['0', 'Aus'], ['1', 'Leicht'], ['2', 'Stark']], String(assistLvl()), v => { save.assist = +v; persist(); });
+    chipRow($('oPad'), [['auto', 'Automatisch'], ['ps', 'PlayStation'], ['nin', 'Nintendo'], ['xbox', 'Xbox']], save.padStyle || 'auto', v => { save.padStyle = v; Pads.pref = v; if (v !== 'auto') Nav.style = v; persist(); Nav.hints(); });
+    chipRow($('oRumble'), [['1', 'An'], ['0', 'Aus']], save.rumble === false ? '0' : '1', v => { save.rumble = v === '1'; persist(); if (save.rumble) Nav.rumble(0.6, 0.6, 180); });
+    chipRow($('oTiltSens'), [['0', 'Sanft'], ['1', 'Normal'], ['2', 'Direkt']], String(TILT.sens), v => { TILT.sens = +v; save.tiltSens = TILT.sens; persist(); });
+    $('tiltBtn').textContent = TILT.on ? '✓ An' : 'Aus'; $('tiltBtn').classList.toggle('on', TILT.on); $('tiltInv').classList.toggle('on', TILT.inv); $('tiltCal').disabled = !TILT.on;
+    const st = Pads.pref !== 'auto' ? Pads.pref : Nav.style, G = k => Nav.GLYPH[st] && `<kbd class="gl gl-${st} gk-${k}">${Nav.GLYPH[st][k]}</kbd>`, K = t => `<kbd class="gl gl-key">${t}</kbd>`;
+    $('oHelp').innerHTML = `<h5>🎮 CONTROLLER (${Nav.GLYPH[st].name})</h5><div><kbd class="gl gl-key">🕹️</kbd> Stick / Steuerkreuz lenken</div>` + Pads.legend(st).map(([k, t]) => `<div>${G(k)} ${t}</div>`).join('') +
+      `<h5>⌨️ TASTATUR</h5><div>${K('W')}${K('↑')} Gas</div><div>${K('A')}${K('D')} Lenken</div><div>${K('S')}${K('↓')} Bremse</div><div>${K('Shift')} Driften</div><div>${K('Space')} Item</div><div>${K('Esc')} Pause</div>` +
+      `<h5>📱 HANDY</h5><div>Links Joystick lenken</div><div>Rechts GAS · BREMSE · DRIFT · ITEM</div><div>Optional: Handy kippen zum Lenken</div>`;
+  }
+  $('bOpts').onclick = () => { renderOpts(); $('opts').hidden = false; }; $('bOptsClose').onclick = () => { $('opts').hidden = true; };
+  Pads.pref = save.padStyle || 'auto'; if (Pads.pref !== 'auto') Nav.style = Pads.pref; TILT.sens = save.tiltSens == null ? 1 : save.tiltSens;
+  // Kacheln im Hauptmenü: Modus wählen und direkt zur Streckenwahl
+  document.querySelectorAll('#hmTiles [data-go]').forEach(t => t.onclick = () => { if (!ready) return; save.rmode = t.dataset.go; persist(); openSetup('solo', 1); });
+  $('bGarage').onclick = () => openSetup('solo', 2);
+  const hmDesc = el => { const d = el && el.dataset && el.dataset.d; if (d) $('hmDesc').textContent = d; };
+  document.querySelectorAll('#hmTiles .tile').forEach(t => { t.addEventListener('focus', () => hmDesc(t)); t.addEventListener('pointerenter', () => hmDesc(t)); });
+  new MutationObserver(() => { const f = document.querySelector('#hmTiles .tile.pf'); if (f) hmDesc(f); }).observe($('hmTiles'), { attributes: true, subtree: true, attributeFilter: ['class'] });
+  const clock = () => { const d = new Date(); $('hmClock').textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }; clock(); setInterval(clock, 15000);
+  const syncSnd = () => { $('bSnd').textContent = AUD.muted ? '🔇' : '🔊'; $('bMenuSnd').textContent = AUD.muted ? '🔇' : '🔊'; };
+  function togSnd() { AUD.setMute(!AUD.muted); syncSnd(); if (!R && !AUD.muted) AUD.bed('menu'); }
   $('bSnd').onclick = $('bMenuSnd').onclick = togSnd; syncSnd();
   // Handy: Code vom Fernseher eintippen → Seite wird zum Lenkrad (gleiche Logik wie ?join=CODE per QR)
   { const norm = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4), box = $('joinBox'), inp = $('joinIn'), msg = $('joinMsg');
@@ -191,7 +225,7 @@ function initHost() {
         }
         if (!qrDetector) {
           qrStatus.textContent = 'QR-Erkennung wird geladen …';
-          if (!window.jsQR) await loadScript('https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js');
+          if (!window.jsQR) await loadScript(CDN.jsqr);
           qrLibrary = window.jsQR;
           if (!qrLibrary) throw new Error('QR-Erkennung nicht verfügbar');
         }
@@ -241,14 +275,14 @@ function initHost() {
   renderMenu(); document.addEventListener('pointerdown', () => AUD.unlock(), { once: true }); document.addEventListener('pointerdown', () => { if (!R && ready && !AUD.muted) AUD.bed('menu'); }, { once: true });
   addEventListener('resize', () => { if (ready) { View.resize(innerWidth, innerHeight, nVp); layoutHud(); if (R) R.dirty = true; } });
   if (coarse) $('kbToggle').textContent = '👆 Spieler an diesem Gerät';
-  buildTouch($('tcSolo'), tc); if (coarse) { $('tiltRow').hidden = false; $('tiltBtn').onclick = async () => { if (TILT.on) TILT.disable(); else await TILT.enable(); $('tiltBtn').classList.toggle('on', TILT.on); }; $('tiltInv').onclick = () => { TILT.inv = !TILT.inv; $('tiltInv').classList.toggle('on', TILT.inv); }; }
+  buildTouch($('tcSolo'), tc); if (coarse) { $('tiltRow').hidden = false; $('tiltBtn').onclick = async () => { if (TILT.on) TILT.disable(); else if (await TILT.enable()) setTimeout(TILT.center, 300); renderOpts(); }; $('tiltCal').onclick = () => { TILT.center(); Nav.rumble(0.3, 0.3, 60); }; $('tiltInv').onclick = () => { TILT.inv = !TILT.inv; renderOpts(); }; }
   function showView(v) {
     menuView = v; $('menu').hidden = false; $('mTitle').hidden = v !== 'title'; $('mMulti').hidden = v !== 'multi'; $('mSetup').hidden = v !== 'setup'; $('menu').classList.toggle('title', v === 'title'); $('mBox').classList.toggle('wide', v !== 'title');
     const el = v === 'title' ? $('mTitle') : v === 'multi' ? $('mMulti') : $('mSetup'); el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); $('menu').scrollTop = 0;
   }
   $('multiHost').onclick = () => openSetup('multi'); $('multiLocal').onclick = () => { setupFor = 'multi'; renderMenu(); openLobby(); }; $('multiBack').onclick = () => showView('title');
-  const openSetup = mode => { if (!ready) return; setupFor = mode; AUD.sfx.select(); renderMenu(); showView('setup'); setSetupStep(0); };
-  $('bSolo').onclick = () => openSetup('solo'); $('bMulti').onclick = () => showView('multi'); $('selSum').onclick = () => openSetup('solo');
+  const openSetup = (mode, step) => { if (!ready) return; setupFor = mode; AUD.sfx.select(); renderMenu(); showView('setup'); setSetupStep(step || 0); };
+  $('bMulti').onclick = () => showView('multi'); $('selSum').onclick = () => openSetup('solo', 2);
   let setupStep = 0;
   function setSetupStep(step) {
     setupStep = Math.max(0, Math.min(3, step));
@@ -383,7 +417,14 @@ function initHost() {
     const m = { t: 's', r: R.rid, k, b: S.boxes.map(b => b.cd > 0 ? 1 : 0).join(''), h: S.hazards.map(h => [h.kind, r2(h.x), r2(h.z)]), p: S.proj.map(q => [q.kind, r2(q.x), r2(q.z), r2(q.th)]), e: R.fxq.splice(0) };
     vw.forEach(p => send(p.conn, m));
   }
+  // Vibration je Ereignis (Gamepad des Spielers bzw. Handy): [stark, schwach, ms]
+  const RUMBLE = { hit: [0.9, 0.6, 320], boom: [1, 0.8, 380], wall: [0.5, 0.3, 120], bump: [0.35, 0.5, 90], pad: [0.1, 0.6, 160], miniturbo: [0.2, 0.7, 200], go: [0.3, 0.5, 160], got: [0, 0.35, 60], finish: [0.6, 0.6, 450] };
+  function buzz(e) {
+    const r = RUMBLE[e.t]; if (!r || save.rumble === false || !R) return; const ks = e.t === 'go' ? R.humans.map((_, i) => i) : e.t === 'bump' ? [e.k, e.o] : [e.k];
+    for (const ki of ks) { const p = R.humans[ki]; if (!p || p.conn) continue; const m = e.t === 'miniturbo' ? 0.6 + 0.2 * (e.tier || 1) : 1; Nav.rumble(r[0] * m, r[1] * m, r[2], p.pad != null ? p.pad : null); }
+  }
   function onEvent(e) {
+    buzz(e);
     const S = R.S;
     switch (e.t) {
       case 'go': banner('LOS!', '', 800, '#7cff9a'); AUD.sfx.beep(true); break;
@@ -435,7 +476,7 @@ function initHost() {
   function toMenu() { if (R && R.introTimer) clearTimeout(R.introTimer); $('raceLoad').hidden = true; R = null; $('res').hidden = true; $('pause').hidden = true; $('hud').hidden = true; $('tbar').hidden = true; $('banner').hidden = true; document.body.classList.remove('racing'); AUD.engine(false); AUD.bed('menu'); showView('title'); nVp = 1; View.resize(innerWidth, innerHeight, 1); players.forEach(p => { if (p.conn) send(p.conn, { t: 'st', ph: 'lobby' }); }); players = players.filter(p => p.conn && !p.gone); if (TV) openLobby(); }
   $('bPause').onclick = () => { if (R && !R.ended) { paused = true; R.dirty = true; $('pause').hidden = false; } }; $('bResume').onclick = () => { paused = false; $('pause').hidden = true; }; $('bQuit').onclick = toMenu;
   // Controller: im Rennen liest das Spiel den Pad selbst (Gas, Lenken …) – die Menü-Steuerung von gamepad.js ruht dann; Start = Pause
-  let padStart = false; setInterval(() => { const racing = !!(R && !R.ended && !paused); if (window.EasyGamesPad && EasyGamesPad.enabled() === racing) EasyGamesPad.enabled(!racing); const st = Pads.list().some(p => p.buttons && p.buttons[9] && p.buttons[9].pressed); if (st && !padStart && racing) $('bPause').click(); padStart = st; }, 80);
+  let padStart = false; setInterval(() => { const racing = !!(R && !R.ended && !paused); const typing = !racing && document.activeElement && document.activeElement.tagName === 'INPUT'; if (window.EasyGamesPad && EasyGamesPad.enabled() !== typing) EasyGamesPad.enabled(typing); const st = Pads.list().some(p => p.buttons && p.buttons[9] && p.buttons[9].pressed); if (st && !padStart && racing) $('bPause').click(); padStart = st; }, 80);
 
   // ------------------------------------------------------------------ Hauptschleife
   // Feste 60-Hz-Simulation; gezeichnet wird zwischen den letzten beiden Schritten interpoliert (flüssig auch bei 90/120/144 Hz).
@@ -461,9 +502,9 @@ function initHost() {
   }
   // Tastatur
   const KEYS = { ArrowUp: 'g', w: 'g', W: 'g', ArrowLeft: 'l', a: 'l', A: 'l', ArrowRight: 'r', d: 'r', D: 'r', ArrowDown: 'b', s: 'b', S: 'b', Shift: 'd', z: 'd', Z: 'd', ' ': 'i', Enter: 'i', x: 'i', X: 'i' };
-  addEventListener('keydown', e => { if (e.target && e.target.tagName === 'INPUT') return; const k = KEYS[e.key]; if (k) { kb[k] = 1; if (R) e.preventDefault(); } if (e.key === 'm' || e.key === 'M') togSnd(); if (e.key === 'Escape' && R && !R.ended) $('bPause').click();
-    if (!R && ready && !e.repeat && !$('menu').hidden && $('top').hidden && !lobbyOpen && !/^(INPUT|BUTTON|SUMMARY)$/.test(e.target && e.target.tagName)) { if (e.key === 'Enter') (menuView === 'title' ? $('bSolo') : $('bGoSetup')).click(); else if (e.key === 'Escape' && menuView === 'setup') showView('title'); } });
+  addEventListener('keydown', e => { if (e.target && e.target.tagName === 'INPUT') return; const k = KEYS[e.key]; if (k) { kb[k] = 1; if (R) e.preventDefault(); } if (e.key === 'm' || e.key === 'M') togSnd(); if (e.key === 'Escape' && R && !R.ended) $('bPause').click(); });
   addEventListener('keyup', e => { const k = KEYS[e.key]; if (k) kb[k] = 0; });
   addEventListener('blur', () => { Object.keys(kb).forEach(k => kb[k] = 0); });
+  Nav.init({ racing: () => !!(R && !R.ended && !paused && $('pause').hidden) });
   window.__ak = { get R() { return R; }, kb, tc, save, beginSeries, get players() { return players; }, set players(v) { players = v; } };
 }

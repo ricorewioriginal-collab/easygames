@@ -54,7 +54,7 @@ const GAMES = [
     path: 'anmacha-showdown/', desc: 'Das Mikro-Duell: 7 Mini-Spiele gegen den Moderator oder zu zweit – wer zuerst 15 Punkte hat, gewinnt.' },
   { id: 'anmacha-gesucht', title: 'AnMaCha Gesucht & Gefunden', icon: '🔎', img: 'anmacha-gesucht/card.png', bg: 'linear-gradient(145deg,#c4143f,#7a3dff 55%,#00e5ff)', glow: 'rgba(196,20,63,.5)',
     path: 'anmacha-gesucht/', desc: 'Das Ratestudio: Hinweis-Raten, Fragen-Raten, Gesichter-Radar und Stirnband-Party – allein oder mit bis zu 4 Spielern.' },
-  { id: 'anmacha-kart', title: 'AnMaCha Kart Rush', icon: '🏎️', img: 'anmacha-kart/card.png', bg: 'linear-gradient(145deg,#2a78e8,#00e5ff 50%,#ff2d95)', glow: 'rgba(42,120,232,.55)',
+  { id: 'anmacha-kart', title: 'Kart Rush: Weltentour', icon: '🏎️', img: 'anmacha-kart/card.png', bg: 'linear-gradient(145deg,#2a78e8,#00e5ff 50%,#ff2d95)', glow: 'rgba(42,120,232,.55)',
     path: 'anmacha-kart/', desc: 'Arcade-Kartrennen in 3D: 5 Welten (Strand, Geistergruft, Fantasia …), 6 Karts, 12 Figuren, Bananen, Steine & Blitze – solo am Handy oder mit bis zu 4 Handys als Lenkrad.' },
   { id: 'wobbel', title: 'Wobbel', icon: '🟣', img: 'wobbel/card.png', bg: 'linear-gradient(145deg,#4ab8ff,#ff6fb0 60%,#ffb347)', glow: 'rgba(74,184,255,.55)',
     path: 'wobbel/', desc: 'Das Schiebe-Puzzle in 3D von RicoReWi: Kisten auf Ziele schieben – mit Wasser, Farben, Eis und Schlüsseln in 5 Welten.' },

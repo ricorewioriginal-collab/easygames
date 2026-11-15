@@ -144,7 +144,7 @@ body.racing .pbtn { bottom: auto; top: max(10px, env(safe-area-inset-top)); left
 }
 @media (max-height: 520px) { .cItem { font-size: 34px; } .panel { padding: 12px 16px; } .podium { min-height: 170px; } .pd.p1 .blk { height: 90px; } .pd.p2 .blk { height: 60px; } .pd.p3 .blk { height: 40px; } }
 
-/* Touch-Steuerung wie AnMaCha Kart Rush: Joystick links, Tasten-Raute rechts (unten GAS, links BREMSE, rechts DRIFT, oben ITEM) */
+/* Touch-Steuerung wie Kart Rush: Weltentour: Joystick links, Tasten-Raute rechts (unten GAS, links BREMSE, rechts DRIFT, oben ITEM) */
 .tc{position:fixed;inset:0;z-index:4;display:none;touch-action:none;-webkit-touch-callout:none;--s:clamp(54px,15.5vmin,92px);--j:clamp(104px,28vmin,156px);--e:calc(16px + env(safe-area-inset-bottom))}
 .tc .joy{position:absolute;left:0;top:0;bottom:0;width:50%}
 .tc .jb{position:absolute;left:calc(22px + env(safe-area-inset-left));bottom:calc(var(--e) + 6px);width:var(--j);height:var(--j);border-radius:50%;border:2px solid rgba(255,255,255,.16);background:radial-gradient(circle,rgba(255,255,255,.02) 45%,rgba(255,255,255,.07));box-shadow:0 10px 30px rgba(0,0,0,.35);pointer-events:none;opacity:.75;transition:opacity .15s,transform .18s ease-out;will-change:transform}

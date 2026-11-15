@@ -1,4 +1,4 @@
-/* Küchen-Chaos – Touch-Steuerung nach dem Vorbild von AnMaCha Kart Rush: links virtueller Joystick (hier in alle Richtungen: st.x, st.y),
+/* Küchen-Chaos – Touch-Steuerung nach dem Vorbild von Kart Rush: Weltentour: links virtueller Joystick (hier in alle Richtungen: st.x, st.y),
  * rechts 4 Tasten im Raute-Layout (Belegung frei: [taste, text, x, y, symbol]). Ein Daumen zwischen zwei Tasten drückt beide. */
 (function () {
   'use strict';

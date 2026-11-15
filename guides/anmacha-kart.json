@@ -4,21 +4,16 @@
     {
       "t": "Ziel des Spiels",
       "p": [
-        "AnMaCha Kart Rush ist ein Arcade-Rennspiel in 3D mit Sender-Logos auf den Karts. Acht Fahrer starten in jedem Rennen. Wer nach der eingestellten Rundenzahl zuerst über die Ziellinie fährt, gewinnt.",
+        "Kart Rush: Weltentour ist ein Arcade-Rennspiel in 3D mit Sender-Logos auf den Karts. Acht Fahrer starten in jedem Rennen. Wer nach der eingestellten Rundenzahl zuerst über die Ziellinie fährt, gewinnt.",
         "Unterwegs helfen dir Drift-Turbos, Boost-Felder, Windschatten und Radio-Items. Mit Items bremst du Gegner aus – und die Gegner dich."
       ]
     },
     {
       "t": "Start und Menü",
       "p": [
-        "Nach dem Ladebalken erscheint der Titel. Von hier startest du ein Solo-Rennen, öffnest 👥 Mehrspieler oder 🌐 Online spielen, siehst die 🏆 Bestzeiten, schaltest 🔊 Ton um oder öffnest den 📺 TV-Modus. Auf Handys gibt es zusätzlich „📱 Kippen zum Lenken“ und „⇄ Richtung tauschen“."
-      ],
-      "steps": [
-        "1 · Modus: Einzelrennen, Cup (3 Strecken), Zeitfahren (allein, ohne Items) oder Freies Fahren (ohne Zeitlimit, Gegner und Rundenzwang). Dazu die Renneinstellungen: Runden (2, 3 oder 5), Gegner (Anfänger, Normal, Profi) und Lenkhilfe (Aus, Leicht, Stark).",
-        "2 · Strecke: eine der 18 Strecken oder im Cup-Modus einer der 7 Cups.",
-        "3 · Fahrer: einer von 19 Fahrern auf der 3D-Rennbühne (mit dem Finger drehbar).",
-        "4 · Kart: eines von 6 Fahrzeugen mit Werten für Tempo, Beschleunigung, Handling und Gewicht.",
-        "Mit WEITER → geht es Schritt für Schritt weiter, mit ← ZURÜCK zurück. Deine Auswahl merkt sich das Spiel."
+        "Nach dem Ladebalken erscheint das Hauptmenü im Konsolen-Stil: unten eine Reihe großer Kacheln – 🏆 Grand Prix, 🏁 Einzelrennen, ⏱️ Zeitfahren, 🛞 Freies Fahren, 🌐 Online & Handys, 🧰 Garage, 📊 Bestzeiten und 📺 TV-Modus. Oben rechts stehen Uhr, Ton, ⚙️ Optionen und dein Profil (Fahrer und Kart).",
+        "Eine Modus-Kachel führt direkt zur Streckenwahl. Die Einrichtung hat vier Seiten (Modus, Strecke, Fahrer, Kart); mit L/R am Controller oder Q/E an der Tastatur blätterst du, Start bzw. Leertaste geht weiter.",
+        "In ⚙️ Optionen stellst du Ton, Lenkhilfe, die Controller-Tasten (Automatisch, PlayStation, Nintendo, Xbox), Vibration und am Handy das Kippen zum Lenken ein."
       ]
     },
     {
@@ -62,10 +57,13 @@
     {
       "t": "Bedienung",
       "list": [
-        "PC: Pfeil hoch oder W Gas, Pfeil links/rechts oder A/D lenken, Pfeil runter oder S bremsen, Shift oder Z driften, Leertaste, Enter oder X Item, Esc Pause, M Ton an/aus. Im Menü startet Enter.",
-        "Handy: links der Joystick zum Lenken, rechts vier Tasten wie am Controller – unten GAS, links Bremse, rechts Drift, oben Item. Legst du den Daumen zwischen GAS und DRIFT, drückst du beide. Optional „📱 Kippen zum Lenken“ und „⇄ Richtung tauschen“.",
-        "Gamepad: Stick oder Steuerkreuz lenken, A, RT oder Steuerkreuz hoch Gas, B, LT oder Steuerkreuz runter bremsen, RB oder X driften, Y oder LB Item.",
-        "Im Pausenmenü: WEITER oder Rennen beenden."
+        "PC: Pfeil hoch oder W Gas, Pfeil links/rechts oder A/D lenken, Pfeil runter oder S bremsen, Shift oder Z driften, Leertaste, Enter oder X Item, Esc Pause, M Ton. In allen Menüs: Pfeiltasten wählen, Enter bestätigen, Esc zurück.",
+        "Handy: links Joystick lenken, rechts die Tasten-Raute – unten GAS, links BREMSE, rechts DRIFT, oben ITEM. Daumen zwischen GAS und DRIFT drückt beides.",
+        "Kippen zum Lenken (Handy): in ⚙️ Optionen einschalten, „◎ Mitte setzen“ legt die Geradeaus-Haltung fest, Empfindlichkeit Sanft/Normal/Direkt, „⇄ Richtung“ tauscht links und rechts.",
+        "🎮 Controller wie an der Konsole – das Spiel erkennt PlayStation-, Nintendo- und Xbox-Controller und zeigt die passenden Tastensymbole. Stick oder Steuerkreuz lenkt, R/RB driftet, L/LB benutzt das Item, R2/ZR/RT Gas, L2/ZL/LT Bremse, Start/Options/+ Pause.",
+        "PlayStation/Xbox: ✕/A Gas, ○/B Bremse, □/X Drift, △/Y Item. Nintendo: A (rechts) Gas, B (unten) Bremse, Y Drift, X Item. Im Menü bestätigt ✕/A bzw. an Nintendo-Controllern A, zurück geht es mit ○/B bzw. B.",
+        "Vibration: Treffer, Wand, Rempler, Boost-Felder und Mini-Turbos lassen den Controller (oder das Handy) vibrieren – abschaltbar in den Optionen.",
+        "TV-Fernbedienung: Pfeiltasten wählen, OK bestätigt, Zurück-Taste geht zurück."
       ]
     },
     {
@@ -216,7 +214,7 @@
     },
     {
       "q": "Kippen zum Lenken funktioniert nicht.",
-      "a": "Tippe im Titel auf „📱 Kippen zum Lenken“ und erlaube den Bewegungssensor. Lenkt das Kart verkehrt herum, tippe auf „⇄ Richtung tauschen“."
+      "a": "Öffne ⚙️ Optionen und tippe bei „📱 Handy kippen zum Lenken“ auf „Aus“, um es einzuschalten, und erlaube den Bewegungssensor. Halte das Handy gerade und tippe „◎ Mitte setzen“. Lenkt das Kart verkehrt herum, tippe auf „⇄ Richtung“."
     },
     {
       "q": "Kein Ton?",
@@ -225,6 +223,10 @@
     {
       "q": "Warum kann ich im Zeitfahren keine Items nutzen?",
       "a": "Das Zeitfahren ist absichtlich ohne Items, Gegner und feste Hindernisse – damit die Bestzeiten vergleichbar bleiben."
+    },
+    {
+      "q": "Welche Controller funktionieren?",
+      "a": "Jeder Gamepad, den der Browser erkennt: PlayStation (DualShock, DualSense), Nintendo Switch Pro Controller und Joy-Con, Xbox und die meisten anderen USB-/Bluetooth-Pads. Die Tastensymbole passen sich automatisch an; in ⚙️ Optionen kannst du die Art auch fest einstellen. Für den Splitscreen fügst du in der Lobby weitere Gamepad-Spieler hinzu."
     }
   ]
 }

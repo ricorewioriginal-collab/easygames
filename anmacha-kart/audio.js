@@ -33,6 +33,8 @@ const AUD = (() => {
   const SFX = {
     click: () => note(1400, 0.05, 'square', 0.025),
     select: () => { note(hz(72), 0.12, 'triangle', 0.07); note(hz(79), 0.16, 'triangle', 0.05, 0.05); },
+    tick: () => note(hz(84), 0.05, 'sine', 0.035),
+    back: () => { note(hz(76), 0.08, 'triangle', 0.05); note(hz(69), 0.1, 'triangle', 0.04, 0.04); },
     beep: hi => note(hi ? 1320 : 660, hi ? 0.5 : 0.18, 'square', hi ? 0.07 : 0.06),
     box: () => { [76, 80, 83, 88].forEach((n, i) => note(hz(n), 0.12, 'square', 0.035, i * 0.05, { lp: 3000 })); },
     got: () => { note(hz(84), 0.15, 'triangle', 0.06); note(hz(91), 0.2, 'triangle', 0.05, 0.08); },
