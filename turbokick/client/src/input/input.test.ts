@@ -13,6 +13,8 @@ import {
   PAD_BUTTON,
   gamepadButtons,
   gamepadToInput,
+  kindFromId,
+  padGlyph,
   shapeAxis,
   STICK_DEADZONE,
   type PadLike,
@@ -162,13 +164,12 @@ describe('Gamepad', () => {
     expect(shapeAxis(0.5)).toBeLessThan(mid);
   });
 
-  it('Mapping: Sticks, Trigger, Knöpfe', () => {
+  it('Mapping: Sticks, Trigger, Knöpfe (Belegung NEXORB und Klassisch)', () => {
     const i = gamepadToInput(
-      pad([0.8, -1], [PAD_BUTTON.A, PAD_BUTTON.X, PAD_BUTTON.B], {
+      pad([0.8, -1], [PAD_BUTTON.A, PAD_BUTTON.B, PAD_BUTTON.X], {
         [PAD_BUTTON.RT]: 1,
         [PAD_BUTTON.LT]: 0.25,
       }),
-      'gamepad0',
     );
     expect(i.jump && i.boost && i.handbrake).toBe(true);
     expect(i.throttle).toBeCloseTo(0.75, 6);
@@ -176,22 +177,43 @@ describe('Gamepad', () => {
     expect(i.pitch).toBeCloseTo(-1, 6);
     expect(i.yaw).toBe(i.steer);
     expect(i.roll).toBe(0);
-    const r = gamepadToInput(pad([0.8, 0], [PAD_BUTTON.RB]), 'gamepad1');
-    expect(r.yaw).toBe(0);
-    expect(r.roll).toBeGreaterThan(0.5);
+    // NEXORB: LB/RB rollen direkt
+    expect(gamepadToInput(pad([0, 0], [PAD_BUTTON.LB])).roll).toBe(-1);
+    expect(gamepadToInput(pad([0, 0], [PAD_BUTTON.RB])).roll).toBe(1);
+    // Klassisch: X Schub, B Drift, RB freie Luftrolle
+    const k = gamepadToInput(pad([0.8, 0], [PAD_BUTTON.X, PAD_BUTTON.RB]), { preset: 'klassik' });
+    expect(k.boost).toBe(true);
+    expect(k.handbrake).toBe(false);
+    expect(k.yaw).toBe(0);
+    expect(k.roll).toBeGreaterThan(0.5);
+    // Schultertasten: RB Schub, LB Drift
+    const sh = gamepadToInput(pad([0, 0], [PAD_BUTTON.RB, PAD_BUTTON.LB]), { preset: 'schulter' });
+    expect(sh.boost && sh.handbrake).toBe(true);
+    // Y invertiert
+    expect(gamepadToInput(pad([0, -1]), { invertY: true }).pitch).toBeCloseTo(1, 6);
   });
 
   it('Boden-/Luftmodus trennt die Achsen; kaputte Pads ergeben neutrale Eingabe', () => {
-    expect(gamepadToInput(pad([1, 1]), 'gamepad0', false)).toMatchObject({ pitch: 0, yaw: 0, roll: 0 });
-    expect(gamepadToInput(pad([1, 1]), 'gamepad0', true)).toMatchObject({ throttle: 0, steer: 0 });
-    const broken = gamepadToInput({ axes: [], buttons: [] }, 'gamepad0');
+    expect(gamepadToInput(pad([1, 1]), { airborne: false })).toMatchObject({ pitch: 0, yaw: 0, roll: 0 });
+    expect(gamepadToInput(pad([1, 1]), { airborne: true })).toMatchObject({ throttle: 0, steer: 0 });
+    const broken = gamepadToInput({ axes: [], buttons: [] });
     expect(broken).toEqual(clampInput({}));
+  });
+
+  it('Symbole je Controller-Art und Erkennung', () => {
+    expect(kindFromId('Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 0ce6)')).toBe('ps');
+    expect(kindFromId('Pro Controller (STANDARD GAMEPAD Vendor: 057e Product: 2009)')).toBe('switch');
+    expect(kindFromId('Xbox Wireless Controller (STANDARD GAMEPAD Vendor: 045e)')).toBe('xbox');
+    expect(padGlyph(PAD_BUTTON.A, 'ps', false)).toBe('✕');
+    expect(padGlyph(PAD_BUTTON.A, 'switch', false)).toBe('B');
+    expect(padGlyph(PAD_BUTTON.RT, 'switch', false)).toBe('ZR');
+    expect(padGlyph(PAD_BUTTON.Y, 'xbox', false)).toBe('Y');
   });
 
   it('alle Achsen-/Knopfkombinationen bleiben gültig', () => {
     for (const ax of [-3, -1, -0.5, 0, 0.1, 0.5, 1, 7, NaN]) {
       for (const ay of [-1, 0, 1]) {
-        const inp = gamepadToInput(pad([ax, ay], [0, 1, 2, 5], { 6: 1, 7: 1 }), 'gamepad0');
+        const inp = gamepadToInput(pad([ax, ay], [0, 1, 2, 4, 5], { 6: 1, 7: 1 }));
         expect(clampInput(inp)).toEqual(inp);
       }
     }
@@ -204,7 +226,7 @@ describe('Gamepad', () => {
       pause: true,
       rearView: false,
     });
-    expect(gamepadButtons(pad([], [PAD_BUTTON.LB, PAD_BUTTON.BACK]))).toEqual({
+    expect(gamepadButtons(pad([], [PAD_BUTTON.R3, PAD_BUTTON.BACK]))).toEqual({
       ballCam: false,
       reset: true,
       pause: false,

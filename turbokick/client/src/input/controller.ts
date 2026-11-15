@@ -1,11 +1,16 @@
 import { NEUTRAL_CAR_INPUT, clampInput, type CarInput } from '@shared/sim/types';
 import {
+  PAD_BUTTON,
+  PAD_PRESETS,
   gamepadButtons,
   gamepadToInput,
-  padIndexOf,
+  padGlyph,
   type GamepadSchemeId,
+  type PadAction,
   type PadButtons,
+  type PadKind,
   type PadLike,
+  type PadPreset,
 } from './gamepad';
 import { KEY_SCHEMES, keysToInput, rampInput, schemeCodes, type KeySchemeId } from './keys';
 import { TouchControls, type TouchLayout } from './touch';
@@ -27,69 +32,110 @@ export const CONTROL_SCHEMES: readonly ControlScheme[] = [
   { id: 'touch', name: 'Touch' },
 ];
 
-/** Belegungstabelle für die Anleitung (Spalten = Schemata) */
+/** Belegungstabelle für die Anleitung (Spalten = Schemata); `pad` = Aktion der Controller-Belegung oder feste Achse */
+export type HelpPad = PadAction | 'throttle' | 'steer' | 'pitch' | 'yaw';
 export const CONTROL_HELP: ReadonlyArray<{
   action: string;
   wasd: string;
   pfeile: string;
-  gamepad: string;
+  pad: HelpPad;
   touch: string;
 }> = [
   {
     action: 'Gas / Rückwärts',
     wasd: 'W / S',
     pfeile: 'Pfeil hoch / runter',
-    gamepad: 'RT / LT',
+    pad: 'throttle',
     touch: 'Stick hoch / runter',
   },
   {
     action: 'Lenken',
     wasd: 'A / D',
     pfeile: 'Pfeil links / rechts',
-    gamepad: 'Linker Stick links / rechts',
+    pad: 'steer',
     touch: 'Stick links / rechts',
   },
   {
     action: 'Luft: Nase runter / hoch',
     wasd: 'W / S',
     pfeile: 'Pfeil hoch / runter',
-    gamepad: 'Linker Stick hoch / runter',
+    pad: 'pitch',
     touch: 'Stick hoch / runter',
   },
   {
     action: 'Luft: Gieren links / rechts',
     wasd: 'A / D',
     pfeile: 'Pfeil links / rechts',
-    gamepad: 'Linker Stick links / rechts',
+    pad: 'yaw',
     touch: 'Stick links / rechts',
   },
   {
-    action: 'Air-Roll (mit Lenken = Rollen)',
-    wasd: 'Strg links oder E',
-    pfeile: 'Strg rechts oder Num 2',
-    gamepad: 'RB',
+    action: 'Air-Roll links',
+    wasd: 'Strg links oder E + A',
+    pfeile: 'Strg rechts + ←',
+    pad: 'rollLeft',
     touch: '–',
   },
   {
-    action: 'Sprung (zweimal = Flip)',
+    action: 'Air-Roll rechts',
+    wasd: 'Strg links oder E + D',
+    pfeile: 'Strg rechts + →',
+    pad: 'rollRight',
+    touch: '–',
+  },
+  {
+    action: 'Freie Luftrolle (Stick = Rollen)',
+    wasd: 'Strg links oder E',
+    pfeile: 'Strg rechts oder Num 2',
+    pad: 'rollFree',
+    touch: '–',
+  },
+  {
+    action: 'Sprung (zweimal = Hechtstoß)',
     wasd: 'Leertaste',
     pfeile: 'Enter oder Num 0',
-    gamepad: 'A',
+    pad: 'jump',
     touch: 'SPRUNG',
   },
   {
-    action: 'Boost (halten)',
+    action: 'Schub (halten)',
     wasd: 'Shift links',
     pfeile: 'Shift rechts oder Num 1',
-    gamepad: 'X',
+    pad: 'boost',
     touch: 'SCHUB',
   },
-  { action: 'Handbremse / Drift', wasd: 'Q', pfeile: 'Num 3 oder Punkt', gamepad: 'B', touch: 'DRIFT' },
-  { action: 'Orb-Kamera umschalten', wasd: 'C', pfeile: 'Num 5 oder Komma', gamepad: 'Y', touch: 'ORB' },
-  { action: 'Rückblick', wasd: 'F', pfeile: 'Num 6', gamepad: 'LB oder R3', touch: '–' },
-  { action: 'Zurücksetzen (Training)', wasd: 'R', pfeile: 'Num 4', gamepad: 'Back', touch: '–' },
-  { action: 'Pause', wasd: 'Esc oder P', pfeile: 'Num 9 (Esc geht auch)', gamepad: 'Start', touch: 'II' },
+  {
+    action: 'Handbremse / Drift (lädt Energie)',
+    wasd: 'Q',
+    pfeile: 'Num 3 oder Punkt',
+    pad: 'handbrake',
+    touch: 'DRIFT',
+  },
+  { action: 'Orb-Kamera umschalten', wasd: 'C', pfeile: 'Num 5 oder Komma', pad: 'ballCam', touch: 'ORB' },
+  { action: 'Rückblick', wasd: 'F', pfeile: 'Num 6', pad: 'rearView', touch: '–' },
+  { action: 'Zurücksetzen (Training)', wasd: 'R', pfeile: 'Num 4', pad: 'reset', touch: '–' },
+  { action: 'Pause', wasd: 'Esc oder P', pfeile: 'Num 9 (Esc geht auch)', pad: 'pause', touch: 'II' },
 ];
+
+/** Controller-Spalte der Anleitung als Text mit Symbolen der gewählten Controller-Art */
+export function padHelpText(what: HelpPad, preset: PadPreset, kind: PadKind, live = true): string {
+  const g = (i: number): string => padGlyph(i, kind, live);
+  switch (what) {
+    case 'throttle':
+      return `${g(PAD_BUTTON.RT)} / ${g(PAD_BUTTON.LT)}`;
+    case 'steer':
+    case 'yaw':
+      return 'Linker Stick ← →';
+    case 'pitch':
+      return 'Linker Stick ↑ ↓';
+    default: {
+      const list = PAD_PRESETS[preset][what];
+      const extra = what === 'rearView' ? ['Rechter Stick ↓'] : [];
+      const parts = [...list.map(g), ...extra];
+      return parts.length ? parts.join(' oder ') : '–';
+    }
+  }
+}
 
 export function defaultBindings(players: 1 | 2, touch: boolean): InputBinding[] {
   const b: InputBinding[] = [];
@@ -157,7 +203,18 @@ export class LocalInput {
   private readonly touch: TouchControls | null;
   private readonly touchPlayers: Array<0 | 1>;
 
-  constructor(area: HTMLElement, bindings: InputBinding[], opts?: { touchLayout?: TouchLayout }) {
+  private readonly padOpts: { preset: PadPreset; invertY: boolean; rumble: boolean };
+
+  constructor(
+    area: HTMLElement,
+    bindings: InputBinding[],
+    opts?: { touchLayout?: TouchLayout; padPreset?: PadPreset; invertY?: boolean; rumble?: boolean },
+  ) {
+    this.padOpts = {
+      preset: opts?.padPreset ?? 'nexorb',
+      invertY: opts?.invertY ?? false,
+      rumble: opts?.rumble ?? true,
+    };
     this.slots = bindings.map((binding) => ({
       binding,
       ramp: { ...NEUTRAL_CAR_INPUT },
@@ -225,16 +282,47 @@ export class LocalInput {
     for (const p of this.pending) Object.assign(p, noEvents());
   }
 
+  /**
+   * Gamepad 1/2 = erster/zweiter angeschlossener Controller mit Standard-Belegung (gamepad.js normalisiert auch
+   * PlayStation-, Switch- und andere Controller auf dieses Layout). Andere HID-Geräte mit hängenden Achsen, wie sie
+   * manche Handys/Adapter melden, werden übersprungen.
+   */
   private padOf(scheme: GamepadSchemeId): PadLike | null {
-    const p = getPads()[padIndexOf(scheme)];
-    // Nur Controller mit Standard-Belegung (kein Zufalls-HID-Gerät mit hängenden Achsen, wie es manche Handys/Adapter melden)
-    if (
-      p &&
-      (p as { mapping?: string }).mapping !== undefined &&
-      (p as { mapping?: string }).mapping !== 'standard'
-    )
-      return null;
-    return p ?? null;
+    const want = scheme === 'gamepad0' ? 0 : 1;
+    const list = getPads();
+    let n = 0;
+    for (let i = 0; i < list.length; i++) {
+      const p = list[i];
+      if (!p) continue;
+      if (p.mapping !== undefined && p.mapping !== 'standard') continue;
+      if (n === want) return p;
+      n++;
+    }
+    return null;
+  }
+
+  /** Vibration am Controller eines lokalen Spielers (falls unterstützt und eingeschaltet) */
+  rumble(player: 0 | 1, strong: number, weak: number, ms: number): void {
+    if (!this.padOpts.rumble) return;
+    for (const slot of this.slots) {
+      if (slot.binding.player !== player || !isPadScheme(slot.binding.scheme)) continue;
+      const pad = this.padOf(slot.binding.scheme) as
+        | (PadLike & { vibrationActuator?: { playEffect?: (t: string, p: object) => Promise<unknown> } })
+        | null;
+      const act = pad?.vibrationActuator;
+      if (!act?.playEffect) continue;
+      try {
+        void act
+          .playEffect('dual-rumble', {
+            duration: Math.round(ms),
+            strongMagnitude: Math.min(1, Math.max(0, strong)),
+            weakMagnitude: Math.min(1, Math.max(0, weak)),
+          })
+          .catch(() => {});
+      } catch {
+        /* nicht unterstützt */
+      }
+    }
   }
 
   /** Gamepad-Flanken in `pending` übernehmen */
@@ -242,7 +330,7 @@ export class LocalInput {
     if (!isPadScheme(slot.binding.scheme)) return null;
     const pad = this.padOf(slot.binding.scheme);
     const cur: PadButtons = pad
-      ? gamepadButtons(pad)
+      ? gamepadButtons(pad, this.padOpts.preset)
       : { ballCam: false, reset: false, pause: false, rearView: false };
     const p = this.pending[slot.binding.player];
     if (cur.ballCam && !slot.prevButtons.ballCam) p.ballCam = true;
@@ -267,7 +355,11 @@ export class LocalInput {
         out = merge(out, slot.ramp);
       } else if (isPadScheme(scheme)) {
         const pad = this.pollPad(slot);
-        if (pad) out = merge(out, gamepadToInput(pad, scheme));
+        if (pad)
+          out = merge(
+            out,
+            gamepadToInput(pad, { preset: this.padOpts.preset, invertY: this.padOpts.invertY }),
+          );
       } else if (this.touch?.visible) {
         const s = this.touch.read();
         out = merge(out, {

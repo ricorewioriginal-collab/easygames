@@ -66,18 +66,19 @@
     {
       "t": "Steuerung (vollständig)",
       "list": [
-        "Gas/Rückwärts: W/S · Pfeil hoch/runter · Gamepad RT/LT · Touch Stick hoch/runter.",
+        "Gas/Rückwärts: W/S · Pfeil hoch/runter · Controller RT/LT (R2/L2, ZR/ZL) · Touch Stick hoch/runter.",
         "Menüs mit dem Controller: Steuerkreuz oder linker Stick wählt (gelber Rahmen), A bestätigt, B geht zurück, ←/→ verstellt Schieberegler – wie an der Konsole.",
         "Lenken: A/D · Pfeil links/rechts · linker Stick · Touch Stick seitlich.",
         "Luft – Nase runter/hoch und Gieren: wie Gas/Lenken (W/S, A/D bzw. linker Stick).",
-        "Air-Roll (mit Lenken = Rollen): Strg links oder E · Strg rechts oder Num 2 · RB.",
-        "Sprung (zweimal = Flip): Leertaste · Enter oder Num 0 · A · SPRUNG.",
-        "Schub (halten): Shift links · Shift rechts oder Num 1 · X · BOOST.",
-        "Handbremse/Drift: Q · Num 3 oder Punkt · B · DRIFT.",
-        "Orb-Kamera umschalten: C · Num 5 oder Komma · Y · BALL.",
-        "Rückblick: F · Num 6 · LB oder R3.",
-        "Zurücksetzen (Training): R · Num 4 · Back.",
-        "Pause: Esc oder P · Num 9 (Esc geht auch) · Start · II.",
+        "Air-Roll: Strg links oder E + Lenken · Strg rechts oder Num 2 + Lenken · Controller LB/RB (L1/R1, L/R) rollt direkt links/rechts.",
+        "Sprung (zweimal = Hechtstoß): Leertaste · Enter oder Num 0 · A (✕, Switch B) · SPRUNG.",
+        "Schub (halten): Shift links · Shift rechts oder Num 1 · B (○, Switch A) · SCHUB.",
+        "Handbremse/Drift (lädt Energie): Q · Num 3 oder Punkt · X (□, Switch Y) oder L3 · DRIFT.",
+        "Orb-Kamera umschalten: C · Num 5 oder Komma · Y (△, Switch X) oder Steuerkreuz hoch · ORB.",
+        "Rückblick: F · Num 6 · R3, rechter Stick runter oder Steuerkreuz runter.",
+        "Zurücksetzen (Training): R · Num 4 · View (Create, Switch −).",
+        "Pause: Esc oder P · Num 9 (Esc geht auch) · Menu (Options, Switch +) · II.",
+        "Controller-Belegungen unter Optionen → Controller: NEXORB (Standard, oben), Klassisch (X Schub, B Drift, RB freie Luftrolle) und Schultertasten (RB Schub, LB Drift). Dazu Vibration, Umkehrung der Luft-Pitch-Achse und die Knopf-Symbole (Xbox, PlayStation, Switch – automatisch erkannt).",
         "Im Einzelspiel funktionieren beide Tastatur-Belegungen und das erste Gamepad gleichzeitig. Im Splitscreen fährt Spieler 1 mit WASD bzw. Gamepad 1, Spieler 2 mit den Pfeiltasten bzw. Gamepad 2."
       ]
     },

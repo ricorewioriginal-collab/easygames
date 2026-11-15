@@ -260,6 +260,15 @@ textarea.field {
     monospace;
   word-break: break-all;
 }
+.mut {
+  color: var(--mut);
+  font-size: 0.9em;
+}
+.padcell {
+  font-weight: 800;
+  white-space: nowrap;
+  color: #fff;
+}
 .chips {
   display: flex;
   flex-wrap: wrap;
