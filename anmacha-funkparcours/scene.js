@@ -5,6 +5,7 @@
    Flüssig: Läufer und bewegte Teile werden zwischen zwei Physikschritten weich überblendet. Qualität passt sich langsamen Geräten an. */
 import { movePos, swingBall, ropeAt, rungY, railY, fmtTime, PH, PH_DUCK, LOG_HW, LOG_HH, LADDER_HOP, DT } from './engine.js';
 import { charLook } from './chars.js';
+import { makeZotik, animZotik } from './zotikfig.js';
 const T = window.THREE;
 /** Farben (sRGB): Stahl, Polster, Akzente */
 export const PAL = { steel: 0x15171c, steel2: 0x2b2f38, pad: 0xff6a1a, amber: 0xffb11f, blue: 0x2a7bff, cyan: 0x45d4ff, red: 0xff2b2b, white: 0xf4f7ff, gold: 0xffc93a, mat: 0x23262e };
@@ -210,13 +211,19 @@ export class Arena {
     const r = { g, body, ci, color, logo, ghost, fig: null, toon: null, F: { state: 'idle' }, face: 1, prevX: 0, prevY: 0, st: '', alive: true };
     const L = charLook(ci, color, this.kit && this.kit.fromRoster), done = () => { if (!r.alive) return false; return true; };
     if (L.look && this.kit) {
-      r.ready = this.kit.make(L.look).then(f => {
+      const P = !ghost && window.AMC && window.AMC.People;   // Figur mit Gesicht (Augen, Brauen, Mund, Blinzeln) wie im Podcast-Spiel; Geist bleibt die schlichte Figur
+      r.ready = (P ? P.make(this.kit, L.look) : this.kit.make(L.look)).then(f => {
         if (!done()) { f.dispose(); return; } r.fig = f; body.add(f.root);
         if (ghost) f.ghost(0.38, 0x2a8aa8); else { f.root.traverse(o => { o.castShadow = !!o.isMesh; }); this.addDecal(r); }
       }).catch(e => console.warn('Figur', e));
+    } else if (L.toon && L.toon.id === 'zo-zotik') {   // Zotik: Original-Figur aus dem Spiel ZOTIK (Fell, Schal, Klinge)
+      const z = makeZotik(T, matchMedia('(pointer:coarse)').matches), m = z.root; m.updateMatrixWorld(true);
+      const h = new T.Box3().setFromObject(m).getSize(new T.Vector3()).y, sc = Math.min(1, 1.85 / h); m.scale.setScalar(sc); m.userData.s = sc; m.userData.reach = 1.55 * sc;
+      m.traverse(o => { if (o.isMesh) { o.castShadow = !ghost && !o.isInstancedMesh; if (ghost) { o.material = o.material.clone(); o.material.transparent = true; o.material.opacity = 0.38; o.material.depthWrite = false; } } });
+      r.toon = m; r.zotik = z.P; body.add(m); r.ready = Promise.resolve();
     } else if (L.toon) {
       r.ready = toonReady().then(M => {
-        if (!done()) return; const m = M.build(L.toon); m.scale.setScalar(1.12); r.toon = m; body.add(m);
+        if (!done()) return; const m = M.build(L.toon); m.scale.setScalar(1.12); M.apply(m, { state: 'idle' }, 1, 0); m.updateMatrixWorld(true); { const h = new T.Box3().setFromObject(m).getSize(new T.Vector3()).y; if (h > 2.05) m.scale.multiplyScalar(1.85 / h); m.userData.s = m.scale.x; } r.toon = m; body.add(m);   // riesige Wesen auf Läufergröße gebracht
         m.traverse(o => { if (!o.isMesh) return; o.castShadow = !ghost; const ms = [].concat(o.material); ms.forEach(mt => { if (mt.color && !mt.userData.lin) { mt.color.convertSRGBToLinear(); if (mt.emissive) mt.emissive.convertSRGBToLinear(); mt.userData.lin = true; } }); if (ghost) { o.material = o.material.clone(); o.material.transparent = true; o.material.opacity = 0.38; o.material.depthWrite = false; } });
       }).catch(e => console.warn('Figur', e));
     }
@@ -224,7 +231,7 @@ export class Arena {
   }
   // Senderlogo auf der Brust (am Brustknochen, folgt der Bewegung)
   addDecal(r) {
-    const f = r.fig, sp = f && f.bones.spine_03; if (!sp) return;
+    const f = r.fig, sp = f && f.bones.spine_03; if (!sp || f.look.logo) return;   // eigenes Brust-Logo (Podcast-Hosts) bleibt sichtbar
     const m = new T.Mesh(C('decal', () => new T.PlaneGeometry(0.15, 0.15)), new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2 }));
     f.root.updateMatrixWorld(true); const p = new T.Vector3(); sp.getWorldPosition(p); f.root.worldToLocal(p); m.position.set(p.x, p.y + 0.02, p.z + (f.look.body === 'w' ? 0.165 : 0.155)); m.rotation.x = -0.08; f.root.add(m); f.root.updateMatrixWorld(true); sp.attach(m);
     r.decal = m; this.setLogo(r, r.logo);
@@ -233,6 +240,7 @@ export class Arena {
   setLogo(r, i) { r.logo = i; if (!r.decal) return; new T.TextureLoader().load(this.logos[i % this.logos.length], t => { if (!r.alive || !r.decal) { t.dispose(); return; } t.encoding = T.sRGBEncoding; if (r.decal.material.map) r.decal.material.map.dispose(); r.decal.material.map = t; r.decal.material.needsUpdate = true; }); }
   setLook(color, logo, ci) {
     if (ci != null && ci !== this.runner.ci) { const x = this.runner.prevX; this.disposeRunner(this.runner); this.runner = this.makeRunner(color, logo, ci); this.runner.prevX = x; this.s.add(this.runner.g); return this.runner.ready; }
+    if (this.runner.fig && this.runner.fig.people && color !== this.runner.color) { const x = this.runner.prevX, ci2 = this.runner.ci; this.disposeRunner(this.runner); this.runner = this.makeRunner(color, logo, ci2); this.runner.prevX = x; this.s.add(this.runner.g); return this.runner.ready; }   // Gesichts-Figuren: Farben stecken im Körper → neu bauen
     const r = this.runner; r.color = color; if (r.fig) { const L = charLook(r.ci, color, this.kit.fromRoster).look; if (L) r.fig.recolor({ top: L.top, hat: L.hat }); } this.setLogo(r, logo); return r.ready;
   }
   // ---------------------------------------------------------------- Parcours
@@ -477,11 +485,15 @@ export class Arena {
       else if (st === 'stun') { clip = 'knock'; once = true; }
       if (st !== r.st || clip !== r.clip) { f.play(clip, { once, fade: st === 'air' || r.st === 'air' ? 0.12 : 0.18 }); r.clip = clip; }
       f.speed(sp); f.reach(reach); g.position.y += oy; f.update(dt);
+    } else if (r.zotik) {
+      r.tt = (r.tt || 0) + dt; animZotik(r.zotik, st === 'run' && spd < 0.3 ? 'idle' : st || 'idle', r.tt, Math.min(1, spd / 6));
+      if (st === 'hang' || st === 'ledge' || st === 'ladder') g.position.y += PH - r.toon.userData.reach;
+      r.toon.scale.y = r.toon.userData.s * (st === 'duck' || st === 'slide' ? PH_DUCK / PH + 0.08 : 1);
     } else if (r.toon) {
       const M = window.ECModel, F = r.F; F.state = { run: 'walk', wall: 'dash', pull: 'finale', air: 'air', hang: 'finale', ledge: 'finale', ladder: 'finale', win: 'win', fall: 'thrown', stun: 'hit', duck: 'block', slide: 'block' }[st] || 'idle';
       r.tt = (r.tt || 0) + dt * (st === 'run' ? Math.max(0.6, spd / 3.2) : 1); M.apply(r.toon, F, dt, r.tt);
       if (st === 'hang' || st === 'ledge' || st === 'ladder') g.position.y += PH - 2.05;
-      r.toon.scale.y = 1.12 * (st === 'duck' || st === 'slide' ? PH_DUCK / PH + 0.08 : 1);
+      r.toon.scale.y = (r.toon.userData.s || 1.12) * (st === 'duck' || st === 'slide' ? PH_DUCK / PH + 0.08 : 1);
     }
     // Am Seil: Figur um die Hände drehen (gleicher Winkel wie das Seil)
     const a = sim && sim.rope ? sim.rope.a || 0 : 0; g.rotation.z = a;

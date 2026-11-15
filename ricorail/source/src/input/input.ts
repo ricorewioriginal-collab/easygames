@@ -85,9 +85,12 @@ export class Input {
     this.axis.lever = rt > 0.05 || lt > 0.05 ? rt - lt : -dz(gp.axes[1] ?? 0);
     this.axis.lookX = dz(gp.axes[2] ?? 0); this.axis.lookY = dz(gp.axes[3] ?? 0);
     const map: [number, Action][] = [[0, 'doors'], [1, 'emergency'], [2, 'horn'], [3, 'camera'], [4, 'pzb'], [5, 'reverser'], [8, 'map'], [9, 'pause'], [12, 'throttleUp'], [13, 'throttleDown'], [14, 'brakeDown'], [15, 'brakeUp']];
+    // Offenes Fenster (Pause, Dialog, Ergebnis): Knöpfe gehören der Menüsteuerung (ui/padnav.ts), nur Start bleibt Pause
+    const menu = !!document.querySelector('.overlay');
+    if (menu) { this.axis.lever = 0; this.axis.lookX = 0; this.axis.lookY = 0; }
     for (const [i, a] of map) {
       const p = !!gp.buttons[i]?.pressed;
-      if (p !== !!this.gpPrev[i]) this.emit(a, p);
+      if (p !== !!this.gpPrev[i] && (!menu || a === 'pause' || !p)) this.emit(a, p);
       this.gpPrev[i] = p;
     }
   }

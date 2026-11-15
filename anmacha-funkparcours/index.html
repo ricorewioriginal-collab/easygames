@@ -44,21 +44,21 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 
 <section id="menu" class="screen">
   <div class="cm">
-    <div class="cm-left">
-      <img class="cm-logo" id="brandImg" alt="Titanparcours" hidden>
-      <div class="wordmark cm-word" id="brandText">TITAN<span>PARCOURS</span></div>
-      <div class="cm-tag">Das Hindernis-Zeitspiel</div>
-      <nav class="cm-nav" id="cmNav">
-        <button class="cm-it" id="bPlay" data-m="show"><span class="ic">🏆</span><span class="lb">Show starten<small>1–4 Läufer · 3 Parcours</small></span></button>
-        <button class="cm-it" id="bTrain" data-m="train"><span class="ic">⏱</span><span class="lb">Training<small>Bestzeit jagen</small></span></button>
-        <button class="cm-it" id="bPairMenu" data-m="pair"><span class="ic">🌐</span><span class="lb">Online & Handys<small>Handys als Steuer-Pads, auch online</small></span></button>
-        <button class="cm-it" id="bRules" data-m="rules"><span class="ic">📖</span><span class="lb">So wird gespielt</span></button>
-        <button class="cm-it" id="bSound" data-m="sound"><span class="ic">🔊</span><span class="lb">Ton: an</span></button>
-        <button class="cm-it" id="bHome" data-m="home"><span class="ic">🏠</span><span class="lb">Alle Spiele</span></button>
-      </nav>
-    </div>
-    <div class="cm-panel glass" id="cmPanel"></div>
-    <div class="cm-foot"><span class="cm-keys" id="cmKeys"></span><span class="sponsor"><span>präsentiert vom</span><img src="logos/16.png" alt="RicoReWi Radioportal" width="30" height="30"></span></div>
+    <header class="cm-top">
+      <div class="cm-brand"><img class="cm-logo" id="brandImg" alt="Titanparcours" hidden><div class="wordmark cm-word" id="brandText">TITAN<span>PARCOURS</span></div><div class="cm-tag">Das Hindernis-Zeitspiel</div></div>
+      <div class="cm-status"><span class="cm-pad" id="cmPad" title="Gamepad verbunden" hidden></span><span class="cm-clock" id="cmClock"></span><span class="sponsor"><span>präsentiert vom</span><img src="logos/16.png" alt="RicoReWi Radioportal" width="30" height="30"></span></div>
+    </header>
+    <nav class="cm-nav" id="cmNav" aria-label="Hauptmenü">
+      <button class="cm-it hero" id="bPlay" data-m="show" style="--i:0;--t1:#ff7a1f;--t2:#b8320a"><span class="ic"></span><span class="lb">Show starten<small>1–4 Läufer · 3 Parcours</small></span></button>
+      <button class="cm-it" id="bTrain" data-m="train" style="--i:1;--t1:#2e8bff;--t2:#123a8a"><span class="ic"></span><span class="lb">Training<small>Bestzeit jagen</small></span></button>
+      <button class="cm-it" id="bChars" data-m="chars" style="--i:2;--t1:#5b6cff;--t2:#26206b"><span class="ic"></span><span class="lb">Läufer<small id="cmCharName">Figur wählen</small></span></button>
+      <button class="cm-it" id="bPairMenu" data-m="pair" style="--i:3;--t1:#18b4a8;--t2:#0b4b55"><span class="ic"></span><span class="lb">Online & Handys<small>Handys als Pads, auch online</small></span></button>
+      <button class="cm-it" id="bRules" data-m="rules" style="--i:4;--t1:#ffc93c;--t2:#8a5a00"><span class="ic"></span><span class="lb">So wird gespielt<small>Steuerung & Regeln</small></span></button>
+      <button class="cm-it" id="bSound" data-m="sound" style="--i:5;--t1:#7d8596;--t2:#2a2f3b"><span class="ic"></span><span class="lb">Ton: an</span></button>
+      <button class="cm-it" id="bHome" data-m="home" style="--i:6;--t1:#4a5162;--t2:#1b1f29"><span class="ic"></span><span class="lb">Alle Spiele<small>Zur Sammlung</small></span></button>
+    </nav>
+    <div class="cm-panel" id="cmPanel"></div>
+    <div class="cm-foot"><span class="cm-keys" id="cmKeys"></span></div>
   </div>
 </section>
 
@@ -99,7 +99,16 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div id="big" hidden></div>
 <div id="redfx" aria-hidden="true"></div>
 
-<div id="pick" class="dialog" hidden><div class="panel glass wide" id="pickBox"><h2 id="pickTitle">Figur wählen</h2><div class="sub" id="pickWho"></div><div id="pickList"></div><button class="btn green" id="bPickOk">Fertig</button></div></div>
+<div id="pick" class="dialog" hidden><div class="pk-wrap" id="pickBox">
+  <header class="pk-head"><div class="pk-ttl"><small>Figurenwahl</small><h2 id="pickTitle">Figur wählen</h2></div><div class="pk-pls" id="pickPls"></div></header>
+  <div class="pk-main">
+    <div class="pk-stage"><canvas id="pickCv" aria-label="3D-Vorschau der Figur – ziehen zum Drehen"></canvas><div class="pk-drag">↻ ziehen zum Drehen</div></div>
+    <div class="pk-info" id="pickInfo"><div class="pk-game" id="pickWho"></div><h2 class="pk-name" id="pickName"></h2><div class="pk-role" id="pickRole"></div><p class="pk-motto" id="pickMotto"></p><div class="pk-stats" id="pickStats"></div><small class="pk-fair">Stil-Profil für die Show – alle Figuren laufen mit derselben Physik.</small></div>
+  </div>
+  <div class="pk-tabs" id="pickTabs"></div>
+  <div id="pickList" class="pk-strip"></div>
+  <div class="pk-foot"><span class="pk-keys"><span class="k-key"><kbd>←</kbd><kbd>→</kbd> Figur · <kbd>↑</kbd><kbd>↓</kbd> Spiel · <kbd>Enter</kbd> Fertig</span><span class="k-pad"><kbd class="gp">✚</kbd> Figur · <kbd class="gp">LB</kbd><kbd class="gp">RB</kbd> Spiel · <kbd class="gp a">A</kbd> Fertig</span></span><button class="btn ghost" id="bPickRand">🎲 Zufall</button><button class="btn green" id="bPickOk">Fertig ✓</button></div>
+</div></div>
 
 <div id="card" class="dialog" hidden><div class="panel glass wide" id="cardBox"></div></div>
 
@@ -119,7 +128,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <li><b>Steuerung:</b> <span class="k-key">← → / A D laufen · Leertaste / ↑ / W springen (länger halten = höher) · E / F / X greifen · ↓ / S / Shift ducken, mit Anlauf rutschen · Esc = Pause.</span><span class="k-pad">Stick oder Steuerkreuz laufen · <kbd class="gp a">A</kbd> springen (länger halten = höher) · <kbd class="gp b">B</kbd> oder Stick runter ducken, mit Anlauf rutschen · <kbd class="gp x">X</kbd> oder <kbd class="gp">RB</kbd> greifen · <kbd class="gp">☰</kbd> Start = Pause.</span> Auf dem Handy: Stick links (runterziehen = ducken), rechts „Springen“, „Greifen“ und „Ducken“.</li>
     <li><b>Selbst zupacken:</b> An Hangelstangen, Seil, Ringen, Griffleisten und Lachsleiter musst du im Sprung die <b>Greifen-Taste</b> drücken, sobald du in Griffweite bist (der Knopf leuchtet dann). Zu früh oder zu spät = Wasser. Springen = loslassen bzw. weiterhechten, auch am Ende der Hangelstangen.</li>
     <li><b>Hindernisse:</b> Trittsteine, Stufensprung, Drehwalzen (weiterlaufen, sie schieben zurück), Rollstämme (ducken!), Sandsäcke, Bruchplatten, Seilschwung, Tunnel mit niedrigen Toren (ducken oder durchrutschen), Ringschwung, Klippenhänger (Griffleisten, mit Sprung zur nächsten), Lachsleiter (im Takt springen, zu früh rutscht die Stange ab), Schiebebrücke, Fahrstuhl, Trampolin, Hangelstangen und die Steilwand mit <b>drei Versuchen</b>.</li>
-    <li><b>Figuren:</b> Bei „Neue Show" oder „Training" wählst du für jeden Läufer eine Figur (🧍-Knopf neben dem Namen).</li>
+    <li><b>Figuren:</b> Im Hauptmenü unter „Läufer“ oder in der Einrichtung (Knopf unter dem Namen) wählst du für jeden Läufer eine Figur – mit 3D-Vorschau zum Drehen.</li>
     <li><b>Show:</b> Vorrunde, Halbfinale, Finale. Platz 1 bekommt die meisten Punkte. Ein Geist zeigt den bisher Schnellsten.</li>
     <li><b>Training:</b> Ein Parcours, deine Bestzeit wird gespeichert – und als Geist mitgeschickt. Im Pausemenü kannst du den Lauf neu starten.</li>
     <li><b>Handys:</b> Über „🌐 Online & Handys" wird jedes Handy zum Pad eines Läufers und sagt „Bereit".</li>

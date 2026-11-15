@@ -82,7 +82,7 @@ h3{font-size:calc(16px*var(--fs));margin:.6em 0 .3em;color:var(--acc)}
 .menu .btn small{display:block;font-weight:400;color:var(--muted);font-size:.8em}
 .menu .btn.dis{opacity:.55}
 .hero{border-radius:18px;padding:16px 18px 10px;margin-bottom:14px;background:linear-gradient(90deg,rgba(10,20,36,.92) 0,rgba(10,20,36,.55) 60%,rgba(10,20,36,.35)),url(card.svg) center 25%/cover;border:1px solid var(--line)}
-.hero .logo{margin:0;font-size:calc(26px*var(--fs))}.hero .sub{margin:4px 0 2px;color:var(--txt);font-size:1.05em}.hero .small{margin:0}
+.hero .logo{margin:0;font-size:calc(28px*var(--fs));line-height:1.1}.hero .logo b{display:block;font-size:.55em;letter-spacing:.12em;text-transform:uppercase;margin-top:2px}.hero .sub{margin:4px 0 2px;color:var(--txt);font-size:1.05em}.hero .small{margin:0}
 .menu2{display:grid;gap:12px;max-width:760px}
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
 .btn.tile{display:flex;gap:12px;align-items:center;text-align:left;padding:12px 14px;min-height:64px;border-radius:14px}
@@ -179,6 +179,16 @@ table.t td,table.t th{padding:5px 6px;border-bottom:1px solid #22395a;text-align
 @media (max-width:700px){.tiles{grid-template-columns:1fr 1fr}.btn.tile{flex-direction:column;align-items:flex-start;gap:4px;padding:10px}.btn.tile.big{flex-direction:row;align-items:center}.hud{font-size:.9em}.hud .speed{font-size:1.8em}.menu{max-width:none}.hud .ctlinfo{display:none}.hud .bc{left:max(8px,env(safe-area-inset-left));top:calc(max(8px,env(safe-area-inset-top)) + 150px);bottom:auto;transform:none;flex-direction:column;align-items:flex-start;max-width:46vw}.hud .tt{max-height:18vh}}
 /* Hochformat (Handy): kompakter, nichts über dem Führerstandspult stapeln */
 @media (orientation:portrait) and (max-width:700px){.toasts{top:24vh}.hero{background:linear-gradient(180deg,rgba(10,20,36,.6),rgba(10,20,36,.92)),url(card.svg) center 20%/cover}.hud .tl{max-width:56vw}.hud .tr{max-width:42vw}.hud .tr .tbtn{width:40px;height:40px;font-size:1em;border-radius:11px}.hud .inf{display:none}.hud .lim{width:38px;height:38px;border-width:4px}.hud .lim.next{width:30px;height:30px}.hud .tt{max-height:12vh}.hud .tbtns{grid-template-columns:48px}.hud .tbtns .tbtn{width:48px;height:48px}.lever{height:min(34vh,230px)}.hud .bc{top:auto;bottom:max(8px,env(safe-area-inset-bottom));left:max(8px,env(safe-area-inset-left));right:132px;max-width:none;flex-direction:row;flex-wrap:wrap;align-items:flex-end}.hud .bc .btn{padding:8px 10px;font-size:.9em}.hud .msgs{font-size:.8em}}
+/* Konsolen-Bedienung (Gamepad/Pfeiltasten): deutlicher Fokus, Tastenleiste */
+.btn,.card,select{transition:transform .12s ease,box-shadow .12s ease,background .12s ease}
+body.pad .btn:focus,body.pad .card:focus,body.pad select:focus,body.pad input:focus{outline:3px solid var(--acc);outline-offset:2px;box-shadow:0 0 0 6px rgba(242,169,0,.22),0 10px 28px rgba(0,0,0,.55);transform:scale(1.03);position:relative;z-index:2}
+body.pad .btn.tile:focus{background:linear-gradient(90deg,#2c5287,#1b3150)}
+body.pad .btn.tile.primary:focus{background:#ffbe1a}
+.padhint{position:fixed;left:50%;bottom:max(10px,env(safe-area-inset-bottom));transform:translateX(-50%);display:none;gap:16px;padding:7px 16px;border-radius:999px;background:rgba(6,12,22,.86);border:1px solid var(--line);font-size:.85em;color:var(--txt);z-index:80;pointer-events:none;white-space:nowrap}
+.padhint.on{display:flex}
+.padhint i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:50%;margin-right:5px;background:#2a4466;font-weight:800;font-size:.85em}
+.padhint i.a{background:#3ccf6e;color:#062}.padhint i.b{background:#e5484d;color:#fff}
+body.pad .screen{padding-bottom:64px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 body.cb .lamp.go{background:#4aa3ff;box-shadow:0 0 10px #4aa3ff}
 `;

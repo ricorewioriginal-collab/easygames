@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "d28b66043dbc",
- "generated": "2026-11-15T18:52:31+01:00",
- "commit": "11f9cad7fc746bb498f0a60fca9a61e6b69c247e",
+ "version": "dc537b50a18d",
+ "generated": "2026-11-15T18:05:58+00:00",
+ "commit": "bc5d763947479ffa35c083340e5cdf2b3c47cb86",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1568,8 +1568,8 @@
   },
   {
    "p": "anmacha-funkparcours/chars.js",
-   "s": 3646,
-   "h": "95f9ddf5cd9ce0878c15c372956dc7b19d1f856075a5d8ce3cd88f2d39d9f3d4"
+   "s": 10719,
+   "h": "cf378db19f47e42c40ca75ae7cab97bd12bbe5c94c2ab2c5c35a3fdaeb047eef"
   },
   {
    "p": "anmacha-funkparcours/commentary.js",
@@ -1593,8 +1593,8 @@
   },
   {
    "p": "anmacha-funkparcours/index.html",
-   "s": 14204,
-   "h": "b11a2798a86db6e69c78ca65769bf53b523a6e36bcc26cf2e5a695e1b6e125d0"
+   "s": 16002,
+   "h": "3b7d82a5094781aa13fc53be2b1e063a224087202e33362a446b0fd25b532f00"
   },
   {
    "p": "anmacha-funkparcours/logo.png",
@@ -1683,8 +1683,8 @@
   },
   {
    "p": "anmacha-funkparcours/main.js",
-   "s": 37407,
-   "h": "7a1c6b23fa1bcbb8cffc9089a14f36a00d497706ac86a39ceff6d6307c3a2eae"
+   "s": 42932,
+   "h": "18c0bc80d18c17805c3a4df939f030a49435e8904b2f50f0ddd4e59ca038072c"
   },
   {
    "p": "anmacha-funkparcours/manifest.webmanifest",
@@ -1693,8 +1693,8 @@
   },
   {
    "p": "anmacha-funkparcours/menu.js",
-   "s": 9506,
-   "h": "b56228fcea2a088b04ecc6bafd5ad9cd1479489511d627264ec0b6812a2a4290"
+   "s": 12255,
+   "h": "1dfc83a825d325464294e219cb155e6591bca9a1a2c8bbc7b73c1561c25b15a2"
   },
   {
    "p": "anmacha-funkparcours/pair.js",
@@ -1702,9 +1702,14 @@
    "h": "0947d8fa314cc82af68a2d18e7565f841ca91d90f2d493a96754d1b7ff7e781f"
   },
   {
+   "p": "anmacha-funkparcours/pickview.js",
+   "s": 10675,
+   "h": "19a11510ec85d5631ae408c37e800b9174feee2b1293b1b617e561924a3c143d"
+  },
+  {
    "p": "anmacha-funkparcours/scene.js",
-   "s": 76195,
-   "h": "78a0536c55d811bc8db9775ca1233788d2e375ba28147b7880a5ade3937909ba"
+   "s": 78234,
+   "h": "ad1c5591c04ab9af1bef7cb9c235eab1e599d7dbbc1218c99e6c5e3426a6b6ca"
   },
   {
    "p": "anmacha-funkparcours/stick.js",
@@ -1713,8 +1718,8 @@
   },
   {
    "p": "anmacha-funkparcours/style.css",
-   "s": 25355,
-   "h": "279229ab934dadcf1f094c17e1f9e8aeab09759ab812abb7d01e0e0d3727ec59"
+   "s": 33906,
+   "h": "ae37d1e8738efed2954e7bdf2d3f52460a5e8c259a6f0feb5220ecfafd7dc7b9"
   },
   {
    "p": "anmacha-funkparcours/sw.js",
@@ -1725,6 +1730,11 @@
    "p": "anmacha-funkparcours/tips.js",
    "s": 3858,
    "h": "74cb9ad7aaa842123d87e3597c464d5097444cde53a5e17a3a9c5ffcdc793e07"
+  },
+  {
+   "p": "anmacha-funkparcours/zotikfig.js",
+   "s": 17114,
+   "h": "6615cdc3eb0db4bb7ee15e8b625f4d8b0143f28e5e5e1c8776edd5f8bac8a429"
   },
   {
    "p": "anmacha-gesucht/audio.js",
@@ -2148,13 +2158,13 @@
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 78940,
-   "h": "5d6806720ba98e9f5b841af24deca746a40636153ad55cfbcaefab6ceb9462c1"
+   "s": 80155,
+   "h": "5bc88d94e1ca40f2e49491cc22d284bf5477a736e103bea37d8b0b606d6c1ad8"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 62793,
-   "h": "94046162a68f7096f4a84a83b24f8e97a2088326a5bcc0b958489cd42f639e8d"
+   "s": 67513,
+   "h": "498a81be4ea572426c9d3e3137427d15747941992b4bdecaa2572a4016dac3e0"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -10053,8 +10063,8 @@
   },
   {
    "p": "games.js",
-   "s": 55668,
-   "h": "59af31f638f257b5ac0cbd17c280df0d49739405dc1081d14704888324a74597"
+   "s": 55675,
+   "h": "68759790c66b7a19040da0378632779d7126d9a258f2d70a114a04cbf62c3f64"
   },
   {
    "p": "gay-life/card.jpg",
@@ -10358,8 +10368,8 @@
   },
   {
    "p": "guides.js",
-   "s": 173557,
-   "h": "b2f7dfaeafb0ea1e7a912d5f62580d871cbc14c6429678869e001476b12db2a8"
+   "s": 173564,
+   "h": "247615f754461c93c3d516d881f6b9e0bf12c7147fe415699b7bdc7189e9565d"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10713,8 +10723,8 @@
   },
   {
    "p": "guides/ricorail.json",
-   "s": 36339,
-   "h": "c89d52b250c4f5e28e3063b99c200826d79fa0e73d4c5cfe8fd4dfb742223cc9"
+   "s": 36403,
+   "h": "1769326078ff55ecb47b9baa120aeb528e59531d9563dc58da32aecf354e5df4"
   },
   {
    "p": "guides/ricoville.json",
@@ -12662,14 +12672,14 @@
    "h": "b1a597ac448c28ef7efd2d49a802d593755bdf72d6babe32d25fe795cc920985"
   },
   {
-   "p": "ricorail/assets/ricorail-c8e7dadfbc.js",
-   "s": 1056573,
-   "h": "c8e7dadfbcdbadb1b4d6b430b7331fb8f609d3c15b9812021ae50cc565908f76"
+   "p": "ricorail/assets/ricorail-2369efe1ac.js",
+   "s": 1062837,
+   "h": "2369efe1acb1492374862d5b478e104e80d70141bc428b4e394445452d1443d7"
   },
   {
    "p": "ricorail/card.svg",
-   "s": 2430,
-   "h": "b1e69c7c1475396e60f194cae02e8c5e90317aa57a302e6e7950431a5bdab4e8"
+   "s": 2437,
+   "h": "407dbcb70e711fb8c19e7831861b1cdb657d846b553a36552dfc938b7e544e7a"
   },
   {
    "p": "ricorail/data/licences.json",
@@ -12703,23 +12713,23 @@
   },
   {
    "p": "ricorail/index.html",
-   "s": 3509,
-   "h": "d23147d465d8b6d19080eed99f3d0823a3e0f5b1aacc67adb738485f653e32f4"
+   "s": 3256,
+   "h": "3c4edbf85d896bcf00ee622f49e042fb9e50da896010c515d89eb787621355f7"
   },
   {
    "p": "ricorail/manifest.webmanifest",
-   "s": 805,
-   "h": "fde706e81eb9c4a4f8b552226b6b41e9e6775bf62554601ee25c68953745f06a"
+   "s": 816,
+   "h": "9373b6c7e3b15e931d1c4386a17b4ec5044621157b2982501e347a8d7e42a2a0"
   },
   {
    "p": "ricorail/sw.js",
    "s": 1812,
-   "h": "aed926f0d62cdd9507050042d0658a8219c7d7dc0258dea368082e456f506617"
+   "h": "7997950de8b35723a3ad0b73bfc455c7d8dc997e7645e53e731f61b581073a2d"
   },
   {
    "p": "ricorail/version.json",
    "s": 74,
-   "h": "e28a134abc40c0fa11febbd31aa67e58e8e5062a5f4cb6461f75064ce4ba150a"
+   "h": "14793d40a57fb9f474e7580edfd2e160fef3422cc7c41ebbbeaef761fbadac85"
   },
   {
    "p": "ricoville/assets/index-Ba31iYgM.js",
@@ -13858,8 +13868,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 251120,
-   "h": "4a4b68fb8dc1387fed7aa1f042cbd67026f1ed06993ef9a4dbbb9289e2669b87"
+   "s": 251134,
+   "h": "3637fc59036d3045e76f04c5a16cd97febe4b320673c342a3a88e7f3437fd3f1"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

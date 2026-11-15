@@ -14,7 +14,7 @@ export const SAVE_TEXT = {
   restoredPrev: 'Spielstand war beschädigt – letzte gute Kopie wiederhergestellt.',
   newer: 'Spielstand stammt aus einer neueren Version – unbekannte Daten bleiben erhalten.',
   importBadJson: 'Import fehlgeschlagen: keine gültige JSON-Datei.',
-  importBadShape: 'Import fehlgeschlagen: Datei enthält keinen RicoRail-Spielstand.',
+  importBadShape: 'Import fehlgeschlagen: Datei enthält keinen Easygames Train Simulator-Spielstand.',
   importSaveFail: 'Import fehlgeschlagen: konnte nicht gespeichert werden – alte Daten bleiben erhalten.',
   importOk: 'Spielstand importiert.',
   netSaveFail: 'Netz konnte nicht gespeichert werden.',

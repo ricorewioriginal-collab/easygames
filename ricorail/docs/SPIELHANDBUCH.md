@@ -1,4 +1,4 @@
-# Spielhandbuch – RicoRail Simulator 3D
+# Spielhandbuch – Easygames Train Simulator 3D
 
 *Deine Eisenbahn. Deine Strecken. Deine Welt.*
 
