@@ -2,12 +2,15 @@
 'use strict';
 (function () {
   const I = FK.Input = {};
-  const BTN = ['a', 'b', 'x', 'y', 'lb', 'rb', 'rt', 'start', 'lt'];
-  const PADMAP = { a: 0, b: 1, x: 2, y: 3, lb: 4, rb: 5, lt: 6, rt: 7, start: 9 };
+  // Alle Knöpfe im Standard-Layout (gamepad.js bringt Xbox, PlayStation 2–5, Switch und Adapter in diese Anordnung)
+  const BTN = ['a', 'b', 'x', 'y', 'lb', 'rb', 'lt', 'rt', 'select', 'start', 'l3', 'r3', 'up', 'down', 'left', 'right', 'home'];
+  const PADMAP = { a: 0, b: 1, x: 2, y: 3, lb: 4, rb: 5, lt: 6, rt: 7, select: 8, start: 9, l3: 10, r3: 11, up: 12, down: 13, left: 14, right: 15, home: 16 };
   const KEYMAP = {
     Space: 'a', KeyK: 'a', KeyJ: 'b', KeyL: 'y', KeyI: 'x', KeyQ: 'lb', KeyE: 'rb', ShiftLeft: 'rt', ShiftRight: 'rt',
-    Escape: 'start', KeyP: 'start', KeyF: 'lt'
+    Escape: 'start', KeyP: 'start', KeyF: 'lt', KeyG: 'l3', KeyV: 'right', KeyT: 'up', KeyR: 'r3', KeyM: 'select'
   };
+  let wheel = 0; // Mausrad = Kamera-Zoom
+  addEventListener('wheel', e => { if (document.body.dataset.screen === 'hud') { wheel += Math.sign(e.deltaY); setType('kb'); } }, { passive: true });
   const keys = new Set();
   const touchBtn = {};
   const stick = { x: 0, y: 0, id: null, ox: 0, oy: 0 };
@@ -106,21 +109,26 @@
     }
     const l = Math.hypot(mx, my); if (l > 1) { mx /= l; my /= l; }
     kb.mx = mx; kb.my = my;
+    // Kamera mit Tastatur: Z/C drehen, Mausrad oder +/- zoomen
+    kb.rx = (keys.has('KeyC') ? 1 : 0) - (keys.has('KeyZ') ? 1 : 0);
+    kb.ry = (keys.has('Minus') || keys.has('NumpadSubtract') ? 1 : 0) - (keys.has('Equal') || keys.has('NumpadAdd') || keys.has('BracketRight') ? 1 : 0) + wheel * 4; wheel = 0;
 
     const list = pads(), live = {};
     list.forEach(p => { if (p && p.connected) live['pad' + p.index] = true; });
     for (const id in dev) if (id !== 'kb' && !live[id]) { delete dev[id]; delete padPrevMenu[id]; } // getrennter Controller: nichts bleibt gedrückt
     list.forEach(p => {
       if (!p || !p.connected) return;
-      const id = 'pad' + p.index, d = dev[id] || (dev[id] = { down: {}, prev: {}, mx: 0, my: 0 });
+      const id = 'pad' + p.index, d = dev[id] || (dev[id] = { down: {}, prev: {}, mx: 0, my: 0, rx: 0, ry: 0 });
       d.prev = d.down; d.down = {};
       for (const b of BTN) { const bt = p.buttons[PADMAP[b]]; if (bt && (bt.pressed || bt.value > 0.4)) d.down[b] = true; }
       let x = dz(p.axes[0] || 0), y = dz(p.axes[1] || 0);
+      const ll = Math.hypot(x, y); if (ll > 1) { x /= ll; y /= ll; }
+      d.mx = x; d.my = y;
+      d.rx = dz(p.axes[2] || 0); d.ry = dz(p.axes[3] || 0); // rechter Stick: Kamera
+      // Steuerkreuz fürs Menü wie ein Stick
       const B = p.buttons;
       if (B[14] && B[14].pressed) x = -1; if (B[15] && B[15].pressed) x = 1;
       if (B[12] && B[12].pressed) y = -1; if (B[13] && B[13].pressed) y = 1;
-      const ll = Math.hypot(x, y); if (ll > 1) { x /= ll; y /= ll; }
-      d.mx = x; d.my = y;
       // Menü-Navigation mit Wiederholung
       const m = padPrevMenu[id] || (padPrevMenu[id] = { dir: '', t: 0, btn: {} });
       const dir = Math.abs(x) > 0.55 || Math.abs(y) > 0.55 ? (Math.abs(x) > Math.abs(y) ? (x > 0 ? 'right' : 'left') : (y > 0 ? 'down' : 'up')) : '';
@@ -130,12 +138,15 @@
       m.dir = dir;
       if (d.down.a && !d.prev.a) menuQ.push('ok');
       if (d.down.b && !d.prev.b) menuQ.push('back');
-      if (d.down.start && !d.prev.start) menuQ.push('start');
+      if ((d.down.start && !d.prev.start) || (d.down.home && !d.prev.home)) menuQ.push('start');
       if (Object.keys(d.down).length || dir) { setType('pad'); if (FK.onAnyInput) FK.onAnyInput(); }
     });
   };
 
-  I.get = id => dev[id] || { down: {}, prev: {}, mx: 0, my: 0 };
+  const NONE = { down: {}, prev: {}, mx: 0, my: 0, rx: 0, ry: 0 };
+  I.get = id => dev[id] || NONE;
+  // Knopf-Symbol passend zum Controller (Xbox A/B/X/Y, PlayStation ✕○□△, Switch B/A/Y/X)
+  I.glyph = k => { try { if (window.EasyGamesPad && EasyGamesPad.glyph) return EasyGamesPad.glyph(k); } catch (e) { /* */ } return ({ a: 'A', b: 'B', x: 'X', y: 'Y', lb: 'LB', rb: 'RB', lt: 'LT', rt: 'RT', select: 'Select', start: 'Start', l3: 'L3', r3: 'R3' })[k] || k; };
   I.down = (id, b) => !!I.get(id).down[b];
   I.pressed = (id, b) => { const d = I.get(id); return !!d.down[b] && !d.prev[b]; };
   I.released = (id, b) => { const d = I.get(id); return !d.down[b] && !!d.prev[b]; };
