@@ -15,6 +15,7 @@ import { TrackEditor } from '../editor/editor';
 import { t, setLang } from '../i18n/strings';
 import * as Ty from '../modes/tycoon';
 import { startPadNav } from '../ui/padnav';
+import { startInputHints, HINT_CSS } from '../ui/inputhint';
 import { KidsGame, KIDS_TRAINS, KIDS_CSS, type KidsTrain } from '../modes/kids';
 import { BRAND, BRAND_SUB, BRAND_FULL, SLOGAN } from './brand';
 
@@ -48,7 +49,7 @@ const S = (): Settings => store.active.settings;
 
 // ------------------------------------------------------------------ Start
 async function boot() {
-  const st = document.createElement('style'); st.textContent = CSS + KIDS_CSS; document.head.appendChild(st);
+  const st = document.createElement('style'); st.textContent = CSS + KIDS_CSS + HINT_CSS; document.head.appendChild(st);
   canvas = document.getElementById('scene') as HTMLCanvasElement ?? document.body.appendChild(h('canvas', { id: 'scene' }));
   ui = document.getElementById('ui') ?? document.body.appendChild(h('div', { id: 'ui' }));
   const load = h('div', { class: 'loading' }, h('div', { class: 'logo', style: 'font-size:1.6em' }, BRAND, ' ', h('b', null, BRAND_SUB)), h('div', { class: 'muted' }, 'Lade …'));
@@ -62,7 +63,7 @@ async function boot() {
   load.remove();
   if (store.notice) toast(store.notice, 'warn', 6000);
   if (store.lastError) toast(store.lastError, 'warn', 6000);
-  startPadNav();
+  startPadNav(); startInputHints();
   menu();
 }
 

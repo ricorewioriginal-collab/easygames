@@ -7,6 +7,7 @@ import type { Action } from '../input/input';
 import { lookahead } from '../operations/lookahead';
 import { Map2D } from './map2d';
 import { h, btn, clear, hhmm, toast } from './dom';
+import { hint, inputMode, padName } from './inputhint';
 
 type Mode = 'drive' | 'box' | 'world';
 
@@ -55,7 +56,12 @@ export class Hud {
         P('halt', h('div', { class: 'halt' }, '')),
         P('info', h('div', { class: 'small muted inf', style: 'margin-top:4px' }, '')),
         P('ctl', h('div', { class: 'small', style: 'margin-top:2px' }, ''))));
-      if (simple) toast(touch ? 'Hebel nach oben = fahren, nach unten = bremsen. Türen und Technik macht das Spiel.' : 'W = fahren, S = bremsen. Türen und Technik macht das Spiel.', 'info', 6000);
+      // „So fährst du“ passend zum Gerät
+      const m = inputMode(), rest = simple ? ' Türen und Technik macht das Spiel.' : '';
+      const how = m === 'pad' ? `🎮 ${padName(7)} = Fahrschalter auf (fahren), ${padName(6)} = ab (bremsen), ${padName(5)} = alle Funktionen.`
+        : m === 'touch' || touch ? '👆 Hebel am Rand nach oben ziehen = fahren, nach unten = bremsen, ☰ = alle Funktionen.'
+        : '⌨️ W = Fahrschalter auf (fahren), S = ab (bremsen), F3 = alle Funktionen, F1 = Hilfe.';
+      toast(how + rest, 'info', 7000);
     } else {
       tl.appendChild(h('div', { class: 'box' }, P('clock', h('div', { style: 'font-weight:700;font-size:1.3em' }, '')), P('info', h('div', { class: 'small muted' }, ''))));
     }
@@ -63,14 +69,14 @@ export class Hud {
 
     const tr = h('div', { class: 'tr' },
       h('div', { class: 'row', style: 'gap:6px' },
-        btn('⏸', () => this.g.setPaused(true), 'tbtn', { title: 'Pause (Esc)', 'aria-label': 'Pause' }),
-        btn('❓', () => this.g.showHelp(), 'tbtn', { title: 'Hilfe (F1)', 'aria-label': 'Hilfe' }),
-        btn('🗺', () => this.act('map'), 'tbtn', { title: 'Karte (M)', 'aria-label': 'Karte' }),
-        btn('🎥', () => this.act('camera'), 'tbtn', { title: 'Kamera (C)', 'aria-label': 'Kamera wechseln' }),
-        drive ? btn('☰', () => this.g.toggleCommandMenu(), 'tbtn', { title: 'Befehlsmenü: alle Funktionen (F3 / RB)', 'aria-label': 'Befehlsmenü' }) : null,
-        P('warp', btn('×1', () => this.act('timewarp'), 'tbtn', { title: 'Zeitraffer (Tab)', 'aria-label': 'Zeitraffer' })),
-        mode === 'world' && !s.player ? btn('⏭', () => this.g.watchNext(), 'tbtn', { title: 'Nächstem Zug folgen (R / RB)', 'aria-label': 'Nächstem Zug folgen' }) : null,
-        drive && game.canConduct() ? P('condBtn', btn('🎫', () => this.act('conductor'), 'tbtn', { title: 'Schaffner-Modus: Zug fährt selbst, du kontrollierst Fahrkarten (F4)', 'aria-label': 'Schaffner-Modus' })) : null));
+        btn(['⏸', hint('pause')], () => this.g.setPaused(true), 'tbtn', { title: 'Pause (Esc)', 'aria-label': 'Pause' }),
+        btn(['❓', hint('help')], () => this.g.showHelp(), 'tbtn', { title: 'Hilfe (F1)', 'aria-label': 'Hilfe' }),
+        btn(['🗺', hint('map')], () => this.act('map'), 'tbtn', { title: 'Karte (M)', 'aria-label': 'Karte' }),
+        btn(['🎥', hint('camera')], () => this.act('camera'), 'tbtn', { title: 'Kamera (C)', 'aria-label': 'Kamera wechseln' }),
+        drive ? btn(['☰', hint('menu')], () => this.g.toggleCommandMenu(), 'tbtn', { title: 'Befehlsmenü: alle Funktionen (F3 / RB)', 'aria-label': 'Befehlsmenü' }) : null,
+        P('warp', btn(['×1', hint('timewarp')], () => this.act('timewarp'), 'tbtn', { title: 'Zeitraffer (Tab)', 'aria-label': 'Zeitraffer' })),
+        mode === 'world' && !s.player ? btn(['⏭', hint(null, { kb: 'R', pad: 5 })], () => this.g.watchNext(), 'tbtn', { title: 'Nächstem Zug folgen (R / RB)', 'aria-label': 'Nächstem Zug folgen' }) : null,
+        drive && game.canConduct() ? P('condBtn', btn(['🎫', hint('conductor')], () => this.act('conductor'), 'tbtn', { title: 'Schaffner-Modus: Zug fährt selbst, du kontrollierst Fahrkarten (F4)', 'aria-label': 'Schaffner-Modus' })) : null));
     if (drive) tr.appendChild(P('stop', h('div', { class: 'box small' }, '')));
     const narrow = innerWidth < 700;
     this.goalsOpen = !narrow;
@@ -89,17 +95,18 @@ export class Hud {
     if (drive) {
       // Fahr-/Bremshebel: oben = Fahren, Mitte = 0, unten = Bremsen
       const knob = h('div', { class: 'knob' });
-      const lever = h('div', { class: 'lever', role: 'slider', 'aria-label': 'Fahr- und Bremshebel', 'aria-valuemin': '-100', 'aria-valuemax': '100', tabindex: '0' },
+      const left = settings.touchLayout === 'left';
+      const lever = h('div', { class: left ? 'lever l' : 'lever', role: 'slider', 'aria-label': 'Fahr- und Bremshebel', 'aria-valuemin': '-100', 'aria-valuemax': '100', tabindex: '0' },
         h('div', { class: 'lbl', style: 'top:1px' }, 'Fahren'), h('div', { class: 'mid', style: 'top:50%' }), h('div', { class: 'lbl', style: 'bottom:1px' }, 'Bremsen'),
+        h('div', { class: 'lkeys', 'aria-hidden': 'true' }, '▲', hint('throttleUp'), ' ▼', hint('throttleDown')),
         // Raststufen wie am echten Fahr-/Bremshebel: F1–F4 oben, B1–B4 unten
         ...[-4, -3, -2, -1, 1, 2, 3, 4].map((k) => h('div', { class: `notch ${k > 0 ? 'f' : 'b'}`, style: `top:calc(20px + (100% - 40px) * ${(1 - (k / 4 + 1) / 2).toFixed(3)})` }, k > 0 ? `F${k}` : `B${-k}`)),
         knob);
       this.knob = knob; this.leverEl = lever;
       lever.addEventListener('pointerdown', this.lpd); lever.addEventListener('pointermove', this.lpm);
       lever.addEventListener('pointerup', this.lpu); lever.addEventListener('pointercancel', this.lpu);
-      const left = settings.touchLayout === 'left';
       const B = (label: string, a: Action, title: string, hold = false) => {
-        const b = h('button', { class: 'tbtn', type: 'button', title, 'aria-label': title }, label);
+        const b = h('button', { class: 'tbtn', type: 'button', title, 'aria-label': title }, label, hint(a));
         if (hold) {
           b.addEventListener('pointerdown', (e) => { e.preventDefault(); e.stopPropagation(); this.g.onAction(a, true); b.classList.add('on'); });
           const up = () => { if (b.classList.contains('on')) { this.g.onAction(a, false); b.classList.remove('on'); } };
@@ -113,7 +120,6 @@ export class Hud {
           B('📯', 'horn', 'Signalhorn (H)', true), B('🛑', 'emergency', 'Schnellbremsung (Leertaste)'),
           B('⚠', 'pzb', 'Wachsam / Sifa (V)'), B('🚪', 'doors', 'Türen freigeben (T)'),
           B('⇅', 'reverser', 'Richtungswender vor (R)'), B('⇵', 'reverserBack', 'Richtungswender zurück (⇧R)'));
-      if (!touch) btns.style.display = 'none';
       const side = h('div', { class: left ? 'bl' : 'br', style: 'display:flex;gap:8px;align-items:flex-end' + (left ? '' : ';flex-direction:row-reverse') }, lever, btns);
       kids.push(side); this.driveEls.push(side);
       if (!simple) { const ci = h('div', { class: left ? 'br' : 'bl' }, P('ctlinfo', h('div', { class: 'box small ctlinfo', style: 'min-width:130px' }, ''))); kids.push(ci); this.driveEls.push(ci); }
@@ -322,7 +328,7 @@ export class Hud {
     const key = list.map((x) => x[1]).join(',');
     if (!this.ctxBtns || this.cache.ctx === key) return;
     this.cache.ctx = key; clear(this.ctxBtns);
-    for (const [label, a] of list) this.ctxBtns.appendChild(btn(label, () => this.act(a), 'btn small'));
+    for (const [label, a] of list) this.ctxBtns.appendChild(btn([label, hint(a)], () => this.act(a), 'btn small'));
   }
 
   dispose() {
