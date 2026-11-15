@@ -14,20 +14,20 @@ const Sim = (() => {
   const kartDef = i => (typeof KARTS !== 'undefined' && KARTS[i % KARTS.length]) || { mv: 1, ma: 1, mt: 1, mr: 0.55, md: 1, mw: 1 };
 
   function create(opt) {                                   // opt: {track, laps, racers:[{name,logo,char,kart,human,skill,assist}], items:bool}
-    const tr = opt.track, N = tr.N, S = { tr, laps: opt.laps || 3, items: opt.items !== false, free: !!opt.free, t: 0, state: 'grid', count: 3.2, karts: [], boxes: [], hazards: [], proj: [], pads: [], events: [], finishedHumans: 0, humans: 0 };
+    const ccV = [0.8, 0.9, 1, 1][opt.cc == null ? 2 : opt.cc] || 1, ccA = [0.86, 0.93, 1, 1][opt.cc == null ? 2 : opt.cc] || 1, tr = opt.track, N = tr.N, sw = Math.min(1.35, tr.W / 20), S = { tr, laps: opt.laps || 3, items: opt.items !== false, free: !!opt.free, t: 0, state: 'grid', count: 3.2, karts: [], boxes: [], hazards: [], proj: [], pads: [], events: [], finishedHumans: 0, humans: 0 };
     const slot = opt.racers.map((_, k) => k); if (opt.shuffle) for (let a = slot.length - 1; a > 0; a--) { const b = Math.floor(Math.random() * (a + 1)), t = slot[a]; slot[a] = slot[b]; slot[b] = t; }
     opt.racers.forEach((r, k) => {
-      const sl = slot[k], row = sl >> 1, side = sl % 2 ? 1 : -1, f0 = N - (row * 2 + 2); tr.at(f0, side * 4.5, tp); const kd = kartDef(r.kart || 0);
-      const kt = { k, name: r.name, logo: r.logo, char: r.char, kart: r.kart || 0, assist: r.assist || 0, human: !!r.human, skill: r.skill == null ? 1 : r.skill, color: r.color, mv: kd.mv, ma: kd.ma, mt: kd.mt, mr: kd.mr, md: kd.md, mw: kd.mw,
+      const sl = slot[k], row = sl >> 1, side = sl % 2 ? 1 : -1, f0 = N - (row * 2 + 2); tr.at(f0, side * 4.5 * sw, tp); const kd = kartDef(r.kart || 0);
+      const kt = { k, name: r.name, logo: r.logo, char: r.char, kart: r.kart || 0, assist: r.assist || 0, human: !!r.human, skill: r.skill == null ? 1 : r.skill, color: r.color, mv: kd.mv * ccV, ma: kd.ma * ccA, mt: kd.mt, mr: kd.mr, md: kd.md, mw: kd.mw,
         x: tp.x, z: tp.z, th: Math.atan2(tp.tx, tp.tz), vx: 0, vz: 0, vf: 0, steer: 0, drift: 0, driftT: 0, boostT: 0, spinT: 0, spinDur: 0, inv: 0, shieldT: 0, blindT: 0, slowT: 0, item: null, itemN: 0, itemT: 0, rp: -(row * 2 + 2), prevF: f0, f: f0, d: side * 4.5, i: f0 | 0, lap: 0, lapStart: 0, lapTimes: [], finished: false, finT: 0, rank: sl + 1, auto: !r.human, off: (Math.random() - 0.5) * 8, rough: false, hitT: 0, pulse: 0, draftT: 0, draftCharge: 0, itemPrev: false, speedVar: 0.96 + Math.random() * 0.06, dTier: 0 };
       if (kt.human) S.humans++; S.karts.push(kt);
     });
     // Münzen: 8 Reihen à 3 auf wechselnden Spuren. Jede Münze gibt einen kleinen Schub und +0,5 % Spitze (max. 10).
-    S.coins = []; if (S.items) for (let r = 0; r < 8; r++) { const lane = [-3.2, 3.2, 0, -5.4, 5.4, 0, 3.2, -3.2][r]; for (let j = 0; j < 3; j++) { const f = (N * (r + 0.32) / 8 + j * 5) % N; tr.at(f, lane, tp); S.coins.push({ x: tp.x, z: tp.z, f, cd: 0 }); } }
-    if (S.items) for (let s = 0; s < 6; s++) for (let o = -1; o <= 1; o++) { const f = N * (s + 0.5) / 6; tr.at(f, o * 5.5, tp); S.boxes.push({ x: tp.x, z: tp.z, cd: 0, f }); }
+    S.coins = []; if (S.items) for (let r = 0; r < 8; r++) { const lane = [-3.2, 3.2, 0, -5.4, 5.4, 0, 3.2, -3.2][r] * sw; for (let j = 0; j < 3; j++) { const f = (N * (r + 0.32) / 8 + j * 5) % N; tr.at(f, lane, tp); S.coins.push({ x: tp.x, z: tp.z, f, cd: 0 }); } }
+    if (S.items) for (let s = 0; s < 6; s++) for (let o = -1; o <= 1; o++) { const f = N * (s + 0.5) / 6; tr.at(f, o * 5.5 * sw, tp); S.boxes.push({ x: tp.x, z: tp.z, cd: 0, f }); }
     // Boost-Linien in Kurvenausgängen und auf langen Geraden. Mehrere Spuren fördern Überholmanöver.
     [0.12, 0.24, 0.36, 0.49, 0.61, 0.74, 0.86, 0.95].forEach((fr, idx) => {
-      const lane = idx % 3 === 0 ? -4.2 : idx % 3 === 1 ? 4.2 : 0;
+      const lane = (idx % 3 === 0 ? -4.2 : idx % 3 === 1 ? 4.2 : 0) * sw;
       tr.at(N * fr, lane, tp);
       S.pads.push({ x: tp.x, z: tp.z, f: N * fr, th: Math.atan2(tp.tx, tp.tz) });
     });
@@ -35,7 +35,7 @@ const Sim = (() => {
     // In Zeitfahren ohne Items bleibt die Ideallinie für Bestzeiten frei.
     if (S.items) for (let idx = 0; idx < 9; idx++) {
       const fr = (idx + 0.63) / 10;
-      const lane = idx % 2 ? 5.0 : -5.0;
+      const lane = (idx % 2 ? 5.0 : -5.0) * sw;
       tr.at(N * fr, lane, tp);
       S.hazards.push({ kind: idx % 3 === 0 ? 'mine' : 'banana', x: tp.x, z: tp.z, t: 1e9, owner: -1, arm: -1, fixed: true });
     }
@@ -55,11 +55,11 @@ const Sim = (() => {
       const pattern = patterns[mechanic];
       if (pattern) {
         pattern.pads.forEach((fraction, i) => {
-          const f = N * fraction; tr.at(f, (i % 2 ? 5 : -5), tp);
+          const f = N * fraction; tr.at(f, (i % 2 ? 5 : -5) * sw, tp);
           S.pads.push({ x:tp.x, z:tp.z, f, th:Math.atan2(tp.tx,tp.tz) });
         });
         if (S.items) pattern.hazards.forEach((fraction, i) => {
-          tr.at(N * fraction, i % 2 ? 6 : -6, tp);
+          tr.at(N * fraction, (i % 2 ? 6 : -6) * sw, tp);
           S.hazards.push({ kind: i % 2 ? 'mine' : 'banana', x:tp.x, z:tp.z, t:1e9, owner:-1, arm:-1, fixed:true });
         });
       }
@@ -99,9 +99,9 @@ const Sim = (() => {
     const fx = Math.sin(k.th), fz = Math.cos(k.th);
     if (base === 'boost') k.boostT = Math.max(k.boostT, 2.0);
     else if (base === 'shield') k.shieldT = 7;
-    else if (base === 'mine') S.hazards.push({ kind: 'mine', x: k.x - fx * 3.8, z: k.z - fz * 3.8, t: 40, owner: k.k, _si: k.i, arm: 1.2 });
-    else if (base === 'banana') S.hazards.push({ kind: 'banana', x: k.x - fx * 3.4, z: k.z - fz * 3.4, t: 60, owner: k.k, _si: k.i, arm: 0.9 });
-    else if (base === 'rock') S.proj.push({ kind: 'rock', x: k.x + fx * 3, z: k.z + fz * 3, th: k.th + (Math.random() - 0.5) * 0.12, owner: k.k, _si: k.i, t: 5.5, spd: 50 + Math.max(0, k.vf) * 0.6, arm: 0.2, bounces: 0 });
+    else if (base === 'mine') S.hazards.push({ kind: 'mine', x: k.x + fx * (k.aim > 0 ? 16 : -3.8), z: k.z + fz * (k.aim > 0 ? 16 : -3.8), t: 40, owner: k.k, _si: k.i, arm: 1.2 });
+    else if (base === 'banana') S.hazards.push({ kind: 'banana', x: k.x + fx * (k.aim > 0 ? 16 : -3.4), z: k.z + fz * (k.aim > 0 ? 16 : -3.4), t: 60, owner: k.k, _si: k.i, arm: 0.9 });
+    else if (base === 'rock') S.proj.push({ kind: 'rock', x: k.x + fx * (k.aim < 0 ? -3.5 : 3), z: k.z + fz * (k.aim < 0 ? -3.5 : 3), th: k.th + (k.aim < 0 ? Math.PI : 0) + (Math.random() - 0.5) * 0.12, owner: k.k, _si: k.i, t: 5.5, spd: 50 + Math.max(0, k.vf) * 0.6, arm: 0.2, bounces: 0 });
     else if (base === 'rocket') {
       let tg = -1, best = 1e9; S.karts.forEach(o => { if (o === k) return; const dr = o.rp - k.rp; if (dr > 0 && dr < 90 && dr < best) { best = dr; tg = o.k; } });
       S.proj.push({ kind: 'rocket', x: k.x + fx * 2.5, z: k.z + fz * 2.5, th: k.th, owner: k.k, _si: k.i, target: tg, t: 7, spd: 62, arm: 0.25 });
@@ -130,7 +130,7 @@ const Sim = (() => {
     k.pulse = Math.max(0, k.pulse - dt); k.hitT = Math.max(0, k.hitT - dt); k.blindT = Math.max(0, k.blindT - dt); k.slowT = Math.max(0, k.slowT - dt);
     if (k.itemT > 0) k.itemT -= dt;
     k.inv = Math.max(0, k.inv - dt); k.shieldT = Math.max(0, k.shieldT - dt); k.boostT = Math.max(0, k.boostT - dt);
-    if (S.state === 'grid') inp = { s: 0, b: 0, d: false, i: false, gas: 0, g: 0 };
+    if (S.state === 'grid') { if (k.human) { if (inp.g && k.gs == null) k.gs = S.count; else if (!inp.g) k.gs = null; } inp = { s: 0, b: 0, d: false, i: false, gas: 0, g: 0 }; }
     if (k.spinT > 0) { k.spinT -= dt; inp = { s: 0, b: 0, d: false, i: false, gas: 0 }; k.th += dt * 11; }
     const boost = k.boostT > 0, capBase = (k.human || k.finished ? VMAX * k.mv : VMAX * k.mv * (inp.cap || 1)), cap = capBase * (1 + 0.005 * (k.coins || 0)) * (boost ? 1.42 : 1) * (k.onCut && !boost ? 0.84 : 1) * (k.rough ? k.mr : 1);
     // Windschatten: dicht hinter einem schnell fahrenden Rivalen liegt eine echte Überholchance.
@@ -206,12 +206,12 @@ const Sim = (() => {
       });
       if (k.itemPending && k.itemT <= 0) { k.itemPending = false; k.item = rollItem(S, k); k.itemN = k.item.endsWith('3') ? 3 : 1; emit(S, { t: 'got', k: k.k, item: k.item }); }
     }
-    if ((inp.itemPress || (inp.i && !k.itemPrev)) && S.state === 'race' && !k.finished) useItem(S, k); k.itemPrev = !!inp.i;
+    if ((inp.itemPress || (inp.i && !k.itemPrev)) && S.state === 'race' && !k.finished) { k.aim = inp.aim || 0; useItem(S, k); } k.itemPrev = !!inp.i;
   }
 
   function step(S, dt, inputs) {
     S.dt = dt; S.t += dt; S.events.length = 0;
-    if (S.state === 'grid') { S.count -= dt; if (S.count <= 0) { S.state = 'race'; S.t = 0; S.karts.forEach(k => { k.lapStart = 0; }); emit(S, { t: 'go' }); } }
+    if (S.state === 'grid') { S.count -= dt; if (S.count <= 0) { S.state = 'race'; S.t = 0; S.karts.forEach(k => { k.lapStart = 0; const gs = k.human ? k.gs : (Math.random() < [0.2, 0.4, 0.65][k.skill || 0] ? 1.5 : null); if (gs == null) return; if (gs >= 1.2 && gs <= 2.05) { k.boostT = 1.4; k.vf = VMAX * 0.5; emit(S, { t: 'rocket', k: k.k, tier: 2 }); } else if (gs >= 0.25 && gs < 1.2) { k.boostT = 0.6; emit(S, { t: 'rocket', k: k.k, tier: 1 }); } else if (gs > 2.4 && k.human) { k.spinT = 0.8; k.spinDur = 0.8; emit(S, { t: 'stall', k: k.k }); } }); emit(S, { t: 'go' }); } }
     const order = S.karts.slice().sort((a, b) => (a.finished && b.finished) ? a.finT - b.finT : a.finished ? -1 : b.finished ? 1 : b.rp - a.rp); order.forEach((k, i) => k.rank = i + 1); S.order = order;
     S.karts.forEach((k, i) => {
       let inp = k.auto ? botInput(S, k) : (inputs && inputs[i]) || { s: 0, g: 0, b: 0, d: false, i: false };

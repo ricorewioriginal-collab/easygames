@@ -64,7 +64,7 @@ window.startController = function () {
     if (!viewOn) return;
     try { await loadView(); } catch (e) { return; }
     if (M && M.rid === m.r) return;
-    const tr = trC[m.tr] || (trC[m.tr] = Track.build(Track.DEFS[m.tr])); View.setTrack(tr); View.resize(innerWidth, innerHeight, 1);
+    const tk = m.mi ? 'm' + m.tr : m.tr, tr = trC[tk] || (trC[tk] = Track.build(m.mi ? Track.mirror(Track.DEFS[m.tr]) : Track.DEFS[m.tr])); View.setTrack(tr); View.resize(innerWidth, innerHeight, 1);
     M = { rid: m.r, me: m.me, karts: m.karts.map((a, i) => ({ k: i, logo: a[0], char: a[1], kart: a[2], x: 0, z: 0, th: 0, px: null, pz: 0, pth: 0, vf: 0, steer: 0, drift: 0, spinT: 0, boostT: 0, shieldT: 0, rough: false, dTier: 0, item: null, itemN: 0 })),
       boxes: m.boxes.map(b => ({ x: b[0], z: b[1], cd: 0 })), coins: (m.coins || []).map(c => ({ x: c[0], z: c[1], f: c[2], cd: 0 })), pads: m.pads.map(q => ({ x: q[0], z: q[1], th: q[2] })), hazards: [], proj: [], events: [], ok: false };
     View.setupRace(M, [m.me]); if (!trC.warm) { trC.warm = 1; try { View.warmup(); } catch (e) {} }

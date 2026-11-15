@@ -115,9 +115,9 @@ export const rng = seed => { let a = seed >>> 0 || 1; return () => { a = (a + 0x
 /** Hindernis-Bausteine: jeder beginnt am Ende einer Plattform und endet auf einer Plattform. d = Schwierigkeit 0 (Vorrunde) … 2 (Finale), R = Zufall 0…1 */
 export const MODULES = {
   stones: (b, d, R) => { const n = 4 + d + (R() < 0.5 ? 1 : 0), l = []; for (let i = 0; i < n; i++) l.push({ g: 2.0 + 0.3 * d + R() * 0.35, w: 2.0 - 0.2 * d - R() * 0.2, dy: i === 0 ? 0 : (i % 2 ? 0.3 : -0.3) * (R() < 0.7 ? 1 : 0) }); b.stones(l).rest(3, 0, 2.0); },
-  rolls: (b, d, R) => { b.rolls(3 + d, { g0: 1.3, r: 0.8 - 0.05 * d, v: -(1.6 + 0.6 * d + R() * 0.3) }).rest(3, 0, 1.6); },
+  rolls: (b, d, R) => { b.rolls(3 + d, { g0: 1.3, r: 0.8 - 0.05 * d, v: -(1.4 + 0.4 * d + R() * 0.2) }).rest(3, 0, 1.6); },
   logs: (b, d, R) => { b.logs(10 + d, 2 + (d > 0 ? 1 : 0), { period: 3.0 - 0.2 * d - R() * 0.2 }); },
-  sinkers: (b, d) => { b.sinkers(4 + d, 2.0 + 0.2 * d, 2.0 - 0.25 * d, 0.7 - 0.12 * d).rest(3, 0, 2.0); },
+  sinkers: (b, d) => { b.sinkers(4 + d, 2.0 + 0.15 * d, 2.0 - 0.2 * d, 0.75 - 0.08 * d).rest(3, 0, 1.4); },
   rope: (b, d) => { b.rope(5.0 + 0.2 * d, { amp: 0.6 + 0.02 * d, period: 2.6 - 0.1 * d }).rest(3.2, 0, 0); },
   tunnel: (b, d) => { b.tunnel(9 + d, 2 + (d > 0 ? 1 : 0)).rest(1.5, 0, 0); },
   ledges: (b, d) => { b.ledges([[[2.6, 0], [2.4, 1.0]], [[2.4, 0], [2.0, 1.0], [2.0, 1.1]], [[2.2, 0], [1.8, 1.1], [1.8, 1.2]]][d], { h: 2.4 + 0.05 * d }); },
@@ -126,9 +126,9 @@ export const MODULES = {
   bars: (b, d) => { b.bars(10 + 1.2 * d, 2.4, 2.6, 0); },
   ladder: (b, d) => { b.ladder(4 + d).rest(2.4, 0, 2.2); },
   swings: (b, d) => { b.swings(12 + 2 * d, 2 + (d > 0 ? 1 : 0), { period: 2.8 - 0.1 * d }); },
-  slider: (b, d) => { b.mover({ g: 2.2, w: 2.4 - 0.2 * d, ax: 3, period: 4.2 - 0.3 * d }).rest(2.6, 0, 2.0); },
+  slider: (b, d) => { b.mover({ g: 0.8, w: 2.8 - 0.1 * d, ax: 2.2, period: 5.6 - 0.2 * d }).rest(2.6, 0, 0.8 + 0.1 * d); },
   lift: (b, d) => { b.mover({ g: 2.2, w: 2.2, ax: 0, ay: 0.9 + 0.15 * d, period: 3.6 - 0.3 * d, dy: 0.2 }).rest(3, 0, 2.0); },
-  orbs: (b, d, R) => { b.orbs(3 + d, { amp: 0.18 + 0.04 * d, period: 3.2 - 0.2 * d - R() * 0.2, step: 2.6 + 0.15 * d }); },
+  orbs: (b, d, R) => { b.orbs(3 + d, { amp: 0.16 + 0.02 * d, period: 3.4 - 0.1 * d - R() * 0.2, step: 2.5 + 0.05 * d, g1: 1.6 }); },
   slant: (b, d) => { b.slant(5 + d, { drop: 1.2 + 0.2 * d }); },
   glider: (b, d, R) => { b.glider(7 + 1.5 * d, { amp: 0.4 + 0.05 * d, waves: 1 + 0.5 * Math.floor(R() * 2 + d * 0.5) }); },
   climb: (b, d, R) => { b.ladder(5 + d, { kind: R() < 0.5 ? 'pole' : 'rope', gap: 0.6 }).rest(2.4, 0, 2.2); },
@@ -188,7 +188,7 @@ export class Sim {
       else if (o.k === 'move') { const p = movePos(o, t), q = movePos(o, t - DT); out.push({ i, x0: p.x, x1: p.x + o.w, top: p.y, bot: p.y - 0.5, vx: (p.x - q.x) / DT, vy: (p.y - q.y) / DT }); }
       else if (o.k === 'sink') { const k = this.sinks[i]; if (!k.gone) out.push({ i, x0: o.x, x1: o.x + o.w, top: o.y + k.y, bot: o.y + k.y - 0.5, vx: 0, vy: k.vy }); }
       else if (o.k === 'roll') out.push({ i, x0: o.x, x1: o.x + o.w, top: o.y, bot: o.y - 2 * o.r + 0.2, vx: o.v, vy: 0 });
-      else if (o.k === 'orb') { const b = swingBall(o, t), q = swingBall(o, t - DT); out.push({ i, x0: b.x - o.r * 0.62, x1: b.x + o.r * 0.62, top: b.y + o.r * 0.8, bot: b.y - o.r * 0.6, vx: (b.x - q.x) / DT, vy: (b.y - q.y) / DT, orb: true }); }
+      else if (o.k === 'orb') { const b = swingBall(o, t), q = swingBall(o, t - DT); out.push({ i, x0: b.x - o.r * 0.8, x1: b.x + o.r * 0.8, top: b.y + o.r * 0.8, bot: b.y - o.r * 0.6, vx: (b.x - q.x) / DT, vy: (b.y - q.y) / DT, orb: true }); }
       else if (o.k === 'tramp') out.push({ i, x0: o.x, x1: o.x + o.w, top: o.y, bot: o.y - 0.5, vx: 0, vy: 0 });
       else if (o.k === 'wall') out.push({ i, x0: o.x, x1: o.x + o.w, top: o.y + o.h, bot: -5, vx: 0, vy: 0, wall: true });
       else if (o.k === 'gate') out.push({ i, x0: o.x, x1: o.x + o.w, top: o.y + o.h, bot: o.y + o.gap, vx: 0, vy: 0, gate: true });
@@ -209,8 +209,8 @@ export class Sim {
     const hx = this.x, hy = this.y + PH;
     for (let i = 0; i < this.c.o.length; i++) {
       const o = this.c.o[i]; if (o.k !== 'rope') continue; const { a } = ropeAt(o, this.t), dx = Math.sin(a), dy = -Math.cos(a), px = hx - o.px, py = hy - o.py, d = px * dx + py * dy;
-      if (d < (o.ring ? o.len - 0.4 : 1.4) || d > o.len + (o.ring ? 0.25 : 0.15)) continue;
-      if (Math.abs(px * dy - py * dx) < (o.ring ? 0.5 : 0.45)) return { i, d: o.ring ? o.len : Math.min(d, o.len - 0.05) };
+      if (d < (o.ring ? o.len - 0.6 : 1.4) || d > o.len + (o.ring ? 0.45 : 0.15)) continue;
+      if (Math.abs(px * dy - py * dx) < (o.ring ? 0.75 : 0.45)) return { i, d: o.ring ? o.len : Math.min(d, o.len - 0.05) };
     }
     return null;
   }
@@ -228,7 +228,7 @@ export class Sim {
   }
   /** Griff des Kurvengleiters in Reichweite? (wartet dort, wo man ihn losgelassen hat) */
   nearGlide() {
-    for (let i = 0; i < this.c.o.length; i++) { const o = this.c.o[i]; if (o.k !== 'glide') continue; const hx = this.gx[i] != null ? this.gx[i] : o.x1, hy = railY(o, hx) - 0.35, head = this.y + PH; if (Math.abs(this.x - hx) < 0.55 && head >= hy - 0.6 && head <= hy + 0.35) return i; }
+    for (let i = 0; i < this.c.o.length; i++) { const o = this.c.o[i]; if (o.k !== 'glide') continue; const hx = this.gx[i] != null ? this.gx[i] : o.x1, hy = railY(o, hx) - 0.35, head = this.y + PH; if (Math.abs(this.x - hx) < 0.8 && head >= hy - 0.8 && head <= hy + 0.5) return i; }
     return -1;
   }
   /** im Spinnenkamin (in der Luft zwischen den Wänden)? */
@@ -259,7 +259,7 @@ export class Sim {
       const o = this.c.o[this.glide.i], g = this.glide; this.duck = false; this.face = 1;
       const sl = (railY(o, g.x + 0.05) - railY(o, g.x - 0.05)) / 0.1; g.v += (-G * sl * 0.5 - 0.15 * g.v) * dt; g.v = Math.max(GLIDE_MIN, g.v); g.x = Math.min(o.x2, g.x + g.v * dt); if (g.x >= o.x2) g.v = 0;
       this.gx[g.i] = g.x; this.x = g.x; this.y = railY(o, g.x) - 0.35 - PH; this.vx = g.v; this.vy = 0;
-      if (J && !this.prevJ) { this.glide = null; this.grabCool = 0.4; this.vx = 4.6 + g.v * 0.25; this.vy = 5.6; this.boost = true; this.prevJ = J; }
+      if (J && !this.prevJ && this.t - (this.glide.t0 || 0) > 0.3) { this.glide = null; this.grabCool = 0.4; this.vx = 4.6 + g.v * 0.25; this.vy = 5.6; this.boost = true; this.prevJ = J; }
       else { this.prevJ = J; this.dist = Math.max(this.dist, this.x); this.hazards(); this.check(); return; }
     }
     // Spinnenkamin: jeder Sprung stemmt höher, sonst rutscht man langsam ab; oben raus auf die Plattform
@@ -274,7 +274,8 @@ export class Sim {
     if (this.rope) {
       const o = this.c.o[this.rope.i], { a, da } = ropeAt(o, this.t), d = this.rope.d; this.rope.a = a; this.rope.da = da; this.face = 1; this.duck = false;
       this.vx = d * da * Math.cos(a); this.vy = d * da * Math.sin(a); this.x = o.px + d * Math.sin(a); this.y = o.py - d * Math.cos(a) - PH;
-      if (J && !this.prevJ) { this.rope = null; this.grabCool = o.ring ? 0.3 : 0.4; this.vx += 1.2; this.vy += 3.6; this.boost = true; this.prevJ = J; }
+      if (J && !this.prevJ && this.t - (this.rope.t0 || 0) > 0.3) { this.rope = null;   // kurz nach dem Greifen zählt Springen nicht als Loslassen
+        this.grabCool = o.ring ? 0.3 : 0.4; this.vx = o.ring ? Math.max(this.vx + 1.2, 4.4) : this.vx + 1.2; this.vy = o.ring ? Math.max(this.vy + 3.6, 5.2) : this.vy + 3.6; this.boost = true; this.prevJ = J; }   // Ringe: Absprung trägt immer bis zum nächsten Ring (verzeiht schlechtes Timing)
       else { this.prevJ = J; this.dist = Math.max(this.dist, this.x); this.hazards(); this.check(); return; }
     }
     // Lachsleiter: Sprung im Takt = eine Sprosse höher; zu früh = abrutschen; oben = Absprung auf die Plattform
@@ -326,9 +327,9 @@ export class Sim {
     this.grabCool -= dt;
     if (!this.onGround && ctl && this.grabCool <= 0 && this.gbuf > 0) {
       const b = this.nearBar(); if (b) { this.gbuf = 0; this.grabs++; this.hang = { bar: b.i }; this.vx = 0; this.vy = 0; this.y = barY(b.o, this.x) - PH; this.duck = false; this.hazards(); return; }
-      const gi = this.nearGlide(); if (gi >= 0) { this.gbuf = 0; this.grabs++; const o = this.c.o[gi], hx = this.gx[gi] != null ? this.gx[gi] : o.x1; this.glide = { i: gi, x: hx, v: Math.max(2.4, this.vx * 0.6) }; this.x = hx; this.y = railY(o, hx) - 0.35 - PH; this.vx = this.vy = 0; this.duck = false; return; }
+      const gi = this.nearGlide(); if (gi >= 0) { this.gbuf = 0; this.grabs++; const o = this.c.o[gi], hx = this.gx[gi] != null ? this.gx[gi] : o.x1; this.glide = { t0: this.t, i: gi, x: hx, v: Math.max(2.4, this.vx * 0.6) }; this.x = hx; this.y = railY(o, hx) - 0.35 - PH; this.vx = this.vy = 0; this.duck = false; return; }
       const ci = this.nearChim(); if (ci >= 0) { this.gbuf = 0; this.grabs++; this.chim = { i: ci, cool: 0.1 }; this.vx = this.vy = 0; this.duck = false; this.boost = false; return; }
-      const rp = this.nearRope(); if (rp) { this.gbuf = 0; this.grabs++; this.rope = rp; this.boost = false; this.duck = false; return; }
+      const rp = this.nearRope(); if (rp) { this.gbuf = 0; this.grabs++; this.rope = rp; rp.t0 = this.t; this.boost = false; this.duck = false; return; }
       const li = this.nearLadder(); if (li >= 0) { this.gbuf = 0; this.grabs++; this.ladder = { i: li, k: 0, cool: 0.15 }; this.vx = 0; this.vy = 0; this.duck = false; this.x = this.c.o[li].x; this.y = rungY(this.c.o[li], 0) - PH; return; }
     }
     this.vy -= G * dt; const vIn = this.vy;   // Fallgeschwindigkeit vor dem Aufsetzen (für das Trampolin)
@@ -378,7 +379,7 @@ export class Sim {
   }
   /** waagerecht bewegen und seitlich an festen Flächen anhalten */
   moveX(dx) {
-    this.x += dx; const h = this.h;
+    this.x += dx; const h = this.h; if (this.onGround && this.x < 0.3) { this.x = 0.3; if (this.vx < 0) this.vx = 0; }   // Startpodest: hinten Absperrung, man fällt nicht rückwärts ins Wasser
     for (const s of this.solids) {
       if (!(this.y < s.top && this.y + h > s.bot + 0.02 && this.x + PW / 2 > s.x0 && this.x - PW / 2 < s.x1)) continue;
       // Kantenhilfe: knapp verfehlte Kante wird noch erwischt (nicht an Wand und Toren)
@@ -396,7 +397,8 @@ export class Sim {
     for (const s of this.solids) {
       if (!(this.x + PW / 2 > s.x0 + 0.02 && this.x - PW / 2 < s.x1 - 0.02)) continue;
       const topPrev = s.top - s.vy * dt;
-      if (this.vy <= 0.01 && y0 >= topPrev - 0.03 && this.y <= s.top + 0.001) { this.y = s.top; this.vy = 0; this.onGround = true; this.ground = s; }
+      if (this.vy <= 0.01 && y0 >= topPrev - 0.03 && this.y <= s.top + 0.001) { if (s.orb && !this.onGround) this.vx = Math.max(-2.4, Math.min(2.4, this.vx - s.vx)) + s.vx;   // Pendelkugel: weiche Landung, man rutscht nicht gleich drüber
+        this.y = s.top; this.vy = 0; this.onGround = true; this.ground = s; }
       else if (this.vy > 0 && y0 + h <= s.bot + 0.05 && this.y + h > s.bot) { this.y = s.bot - h; this.vy = 0; }
     }
   }

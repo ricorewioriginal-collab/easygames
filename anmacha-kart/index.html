@@ -76,6 +76,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   .vp .lap .cn i{width:1.05em;height:1.05em;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff6b0,#ffc928 45%,#d88a00);box-shadow:inset 0 0 0 2px #b06a00}
   .vp .lap .cn.max{color:#ffd24a}
   body.racing>button[aria-label="Mit Google speichern"]{display:none!important}
+  .keymap{display:grid;gap:4px;width:100%}.maprow{display:grid;grid-template-columns:minmax(110px,1.2fr) 1fr 1fr;gap:6px;align-items:center;text-align:left;font-size:13px}.maprow.head{font-weight:800;opacity:.75}.maprow .chip{min-height:34px;justify-content:flex-start}.maprow kbd{margin-right:3px}
   .vp .nm{position:absolute;left:10px;top:calc(10px + clamp(50px,9vw,78px) + 6px);max-width:clamp(50px,9vw,78px);padding:1px 7px;border-radius:999px;background:rgba(10,14,40,.78);border:1px solid var(--sc);font-weight:800;font-size:11px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .vp .item{position:absolute;left:10px;top:10px;width:clamp(50px,9vw,78px);aspect-ratio:1;border-radius:50%;border:4px solid #fff;background:radial-gradient(circle at 50% 35%,#3a3f58,#12141f 70%);box-shadow:0 0 0 3px rgba(20,22,34,.85),0 0 16px var(--sc);display:grid;place-items:center;font-size:clamp(26px,5.4vw,44px)}
   .vp .item.empty{border-color:rgba(223,232,255,.6);background:rgba(10,14,40,.6);box-shadow:none}
@@ -92,6 +93,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   @keyframes pop{from{transform:translate(-50%,-50%) scale(1.8);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
   #tbar{position:fixed;z-index:6;left:50%;transform:translateX(-50%);top:calc(6px + env(safe-area-inset-top));display:flex;gap:8px}
   #tbar.mid{top:50%;transform:translate(-50%,-50%)}
+  @media (orientation:portrait){body.touch #tbar:not(.mid){left:auto;right:calc(8px + env(safe-area-inset-right,0px));transform:none;top:calc(18px + env(safe-area-inset-top,0px) + clamp(76px,16vw,130px));flex-direction:column;gap:7px}}
   /* Touch-Steuerung (Solo am Handy) und Controller */
   .tc{position:fixed;inset:0;z-index:4;display:none;touch-action:none;-webkit-touch-callout:none;--s:clamp(54px,15.5vmin,92px);--j:clamp(104px,28vmin,156px);--e:calc(16px + env(safe-area-inset-bottom))}
   body.touch.racing .tc.solo{display:block}
@@ -103,7 +105,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   .tc .jk{position:absolute;left:29%;top:29%;width:42%;height:42%;border-radius:50%;background:radial-gradient(circle at 38% 32%,#fff,#d4d9e4 70%,#aab2c2);box-shadow:0 0 0 4px var(--acc,#ff2d95),0 8px 18px rgba(0,0,0,.5);will-change:transform}
   .tc .jb:not(.act) .jk{transition:transform .12s ease-out}
   .tc .pad{position:absolute;right:calc(14px + env(safe-area-inset-right));bottom:var(--e);width:calc(var(--s) * 2.55);height:calc(var(--s) * 2.55);pointer-events:none}
-  .tc .tbtn{position:absolute;left:50%;top:50%;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center;font:800 clamp(11px,calc(var(--s) * .16),19px) Inter,system-ui,'Segoe UI',Roboto,sans-serif;letter-spacing:.04em;color:var(--bc);background:rgba(16,18,24,.78);border:3px solid var(--bc);box-shadow:0 8px 20px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);transition:background .06s,color .06s,scale .06s;user-select:none}
+  .tc .tbtn{position:absolute;left:50%;top:50%;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center;font:800 clamp(10px,calc(var(--s) * .135),16px) Inter,system-ui,'Segoe UI',Roboto,sans-serif;letter-spacing:0;white-space:nowrap;overflow:hidden;color:var(--bc);background:rgba(16,18,24,.78);border:3px solid var(--bc);box-shadow:0 8px 20px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);transition:background .06s,color .06s,scale .06s;user-select:none}
   .tc .tbtn i{font-style:normal;font-size:1.5em;line-height:1}
   .tc .tbtn.on{background:var(--bc);color:#0c0e13;scale:.93;box-shadow:0 0 22px var(--bc)}
   .tc .tb-g{--bc:#2ee58a;transform:translateY(calc(var(--s) * .775))}
@@ -112,9 +114,12 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   .tc .tb-i{--bc:#ff4fd8;transform:translateY(calc(var(--s) * -.775))}
   /* Solo am Touch-Gerät: Platzierung, Runde und Tempo nach oben, damit nichts unter Joystick oder Tasten liegt */
   body.touch.racing .vp:only-child .nm{display:none}
-  body.touch.racing .vp:only-child .pos{right:auto;bottom:auto;left:calc(20px + clamp(50px,9vw,78px));top:6px;font-size:clamp(36px,10vmin,58px)}
-  body.touch.racing .vp:only-child .lap{left:calc(20px + clamp(50px,9vw,78px));bottom:auto;top:calc(12px + clamp(36px,10vmin,58px))}
-  body.touch.racing .vp:only-child .spd{bottom:auto;top:56px}
+  body.touch.racing .vp:only-child{--st:env(safe-area-inset-top,0px);--hl:calc(24px + clamp(50px,9vw,78px) + env(safe-area-inset-left,0px))}
+  body.touch.racing .vp:only-child .item{top:calc(10px + var(--st));left:calc(10px + env(safe-area-inset-left,0px))}
+  body.touch.racing .vp:only-child canvas{top:calc(6px + var(--st))}
+  body.touch.racing .vp:only-child .pos{right:auto;bottom:auto;left:var(--hl);top:calc(8px + var(--st));padding:0 .12em 0 .06em;font-size:clamp(36px,10vmin,58px)}
+  body.touch.racing .vp:only-child .lap{left:var(--hl);bottom:auto;top:calc(16px + var(--st) + clamp(36px,10vmin,58px))}
+  body.touch.racing .vp:only-child .spd{left:var(--hl);transform:none;bottom:auto;top:calc(56px + var(--st) + clamp(36px,10vmin,58px))}
   .kcards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:560px}
   .kcards button{padding:8px 6px;border-radius:12px;border:2px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);text-align:left;font-weight:800;font-size:13px}
   .kcards button b{font-size:22px;margin-right:4px}
@@ -399,7 +404,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div id="hud" hidden></div>
 <div id="banner" hidden></div>
 <div id="fxFlash"></div>
-<div id="tbar" hidden><button class="ib" id="bPause" aria-label="Pause">⏸</button><button class="ib" id="bSnd" aria-label="Ton">🔊</button></div>
+<div id="tbar" hidden><button class="ib" id="bPause" aria-label="Pause">⏸</button><button class="ib" id="bSnd" aria-label="Ton">🔊</button><button class="ib" id="bLook" aria-label="Zurückschauen (halten)">👀</button><button class="ib" id="bCam" aria-label="Kamera wechseln">🎥</button><button class="ib" id="bRadio" aria-label="Radio: nächster Sender (lange drücken = aus)">📻</button></div>
 <div class="tc solo" id="tcSolo"></div>
 
 <div id="raceLoad" hidden aria-live="polite"><div class="race-load-body"><div class="race-load-kicker">KART RUSH · WELTENTOUR</div><div class="race-load-title">STRECKE</div><div class="race-load-sub">ARCADE-RENNEN</div><div class="race-load-line"><i></i></div><div class="race-load-tip">Mach dich bereit!</div></div></div>
@@ -445,7 +450,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     </div></header>
     <div class="console-pane" data-pane="0">
       <h3 class="console-heading">WIE MÖCHTEST DU FAHREN?</h3><div class="console-choices" id="rmode"></div>
-      <div class="console-options"><h3>RENNEINSTELLUNGEN</h3><div class="console-options-grid"><div><h4>RUNDEN</h4><div class="row" id="laps"></div></div><div><h4>GEGNER</h4><div class="row" id="skill"></div></div><div><h4>LENKHILFE</h4><div class="row" id="assist"></div></div></div></div>
+      <div class="console-options"><h3>RENNEINSTELLUNGEN</h3><div class="console-options-grid"><div><h4>RUNDEN</h4><div class="row" id="laps"></div></div><div><h4>KLASSE</h4><div class="row" id="ccls"></div></div><div><h4>GEGNER</h4><div class="row" id="skill"></div></div><div><h4>LENKHILFE</h4><div class="row" id="assist"></div></div></div></div>
     </div>
     <div class="console-pane" data-pane="1" hidden>
       <h3 class="console-heading" id="trackHeading">DEINE RENNWELT</h3><div class="console-track-grid" id="tracks"></div>
@@ -492,6 +497,9 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <div class="opt"><h4>🎮 Controller-Tasten</h4><div class="row" id="oPad"></div></div>
     <div class="opt"><h4>📳 Vibration</h4><div class="row" id="oRumble"></div></div>
     <div class="opt" id="tiltRow" hidden><h4>📱 Handy kippen zum Lenken</h4><div class="row"><button class="chip" id="tiltBtn">Aus</button><button class="chip" id="tiltCal">◎ Mitte setzen</button><button class="chip" id="tiltInv">⇄ Richtung</button></div><div class="row" id="oTiltSens"></div></div>
+    <div class="opt wide"><h4>🎛️ Tastenbelegung ändern</h4><div class="keymap" id="oMap"></div></div>
+    <div class="opt"><h4>🎥 Kamera</h4><div class="row" id="oCam"></div></div>
+    <div class="opt"><h4>📻 Radio</h4><div class="row" id="oRadio"></div></div>
     <div class="opt wide"><h4>Steuerung</h4><div class="ctlhelp" id="oHelp"></div></div>
   </div>
   <button class="ghost nav-back" id="bOptsClose">Schließen</button>
@@ -507,13 +515,14 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div id="ctl"></div>
 <div id="err" hidden><div><h2>Oh nein</h2><p class="sub" id="errTxt"></p></div></div>
 
-<script src="audio.js?v=20261115-wt9"></script>
+<script src="audio.js?v=20261115-wt10"></script>
 <script src="chars.js?v=20261115-wt9"></script>
-<script src="track.js?v=20261115-wt11"></script>
+<script src="track.js?v=20261115-wt12"></script>
 <script src="oma.js?v=20261115-wt1"></script>
-<script src="sim.js?v=20261115-wt10"></script>
+<script src="sim.js?v=20261115-wt11"></script>
 <script src="nav.js?v=20261115-wt1"></script>
-<script src="game.js?v=20261115-wt11"></script>
+<script src="radio.js?v=20261115-wt1"></script>
+<script src="game.js?v=20261115-wt13"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="kart" data-prefix="akChar,akKart,akLogo,akMute,akName,akSave,akTts" defer></script>
 <script src="../gamepad.js" data-pad="info" data-pad-labels="a=Gas · Bestätigen; b=Bremsen · Zurück; rt=Gas; dpad=Lenken · Menü; ls=Lenken; lt=Bremsen; rb=Driften; x=Driften; y=Item; lb=Item · Seite; start=Pause · Los" defer></script>
 <script src="../egstat.js" defer></script>
