@@ -4,7 +4,7 @@
   {
    "t": "Ziel des Spiels",
    "p": [
-    "ZOTIK – Die Splitter der Welten ist ein 3D-Action-Rollenspiel. Du spielst Zotik, einen Weltenhörer, der das Summen der Risse hört. Mit dem Seelenbegleiter Felli und später mit Lyra, Nia und Rovan reist du durch zehn Welten – von Lunaris bis Elyndra – und schließt den Riss, der die Welten bedroht. Danach wartet das Endspiel im Weltenriss mit sieben Siegeln und drei möglichen Enden.",
+    "ZOTIK – Die Splitter der Welten ist ein 3D-Action-Rollenspiel. Du spielst Zotik, einen Weltenhörer, der das Summen der Risse hört. Mit dem Seelenbegleiter Felli und später mit Lyra, Nia und Rovan reist du durch zehn Kapitelwelten – von Lunaris bis Elyndra – und schließt den Riss, der die Welten bedroht. Danach wartet das Endspiel im Weltenriss mit sieben Siegeln und drei möglichen Enden. Dazu kommen die Märchenwelten (Abstecher zwischen den Kapiteln), die Arena von Valdoria, die Weltkarte und das Meer.",
     "Unterwegs sprichst du mit Figuren, erfüllst Haupt- und Nebenaufgaben, löst Rätsel, kämpfst gegen Gegner und Bosse und sammelst Rissplitter (die Währung), Heiltränke, Ausrüstung und Erfahrung (bis Stufe 100)."
    ]
   },
@@ -32,6 +32,9 @@
     "🌿 Felli: Stufe, Entwicklung, Angriff, Füttern und „Kämpft mit“ an/aus.",
     "✨ Fähigkeiten: alle Kampftechniken.",
     "🎮 Steuerung: Tasten und Optionen (hier lässt sich auch das Casino ein- und ausschalten).",
+    "🎞️ Erinnerungen: alle Szenen, die du erlebt hast, zum erneuten Ansehen (▶ Ansehen). Noch nicht gesehene Szenen sind mit 🔒 ??? markiert.",
+    "📷 Linse: Forscherzeichen und Fotomodus (siehe „Erinnerungslinse und Forscherzeichen“). Dazu 📖 Chronik, ⛺ Camp, 🎉 Events und 🏡 Zuhause.",
+    "⚔️ Kampf: Der Knopf neben 🔊 Ton schaltet das Kampfsystem um (Auto, Echtzeit, Rundenbasiert) – siehe „Kampfsystem wählen“.",
     "👥 Koop: Raum öffnen für einen zweiten Spieler.",
     "Dazu 💾 Speichern, 🔊 Ton an/aus und 🗣️ Sprachausgabe.",
     "Oben im Menü steht die Welt, in der du gerade bist. Unten links zeigt die Figurenkarte Stufe, Leben, Mana, Splitter und Spielzeit."
@@ -92,6 +95,77 @@
    ]
   },
   {
+   "t": "Kampfsystem wählen: Auto, Echtzeit oder Rundenkampf",
+   "p": [
+    "Wie du kämpfst, stellst du selbst ein: im Menü mit dem Knopf „⚔️ Kampf“ (neben 🔊 Ton) oder im Kommandomenü mit „⚔️ Kampf: …“ (wechseln). Die Wahl wird gespeichert und gilt ab dem nächsten Kampf im ganzen Spiel."
+   ],
+   "list": [
+    "Auto (Voreinstellung): In den Welten kämpfst du in Echtzeit, auf der Weltkarte und auf dem Meer rundenbasiert.",
+    "Echtzeit: Du kämpfst überall in Echtzeit – ausweichen, Klingenkombo, Fähigkeiten auf Tasten.",
+    "Rundenbasiert: Du kämpfst überall als RPG-Rundenkampf.",
+    "Rundenkampf: Deine Gruppe (Zotik und bis zu drei Gefährten) steht den Gegnern gegenüber. Oben zeigt eine Zeitleiste (WAIT – COM – ACT), wer wann dran ist, und die Zugreihenfolge der nächsten Runden. Treffer verzögern die Leiste eines Gegners; bricht ein Gegner (wiederholte Treffer seiner Schwäche), ist sein Zug unterbrochen. Unten stehen die Figurenkarten mit Leben, Mana und IP, am Rand Zielinfo mit Stufe, Leben und Schwäche des Gegners.",
+    "Befehle im Rundenkampf (Hauptliste): ⚔️ Angriff, ✨ Magie ▸ (Feuer, Eis, Blitz auf alle, Licht, Heilung der Gruppe – je mit Mana), 🌠 Fähigkeiten ▸ (Kunst mit voller IP, Teamangriff, Zielfeuer, Nebelfenn, Sternenbund), 🔁 Wechsel (ein anderer Gefährte in der COM-Zone übernimmt den Zug), 🎭 Taktik, 🧪 Trank, 🛡️ Abwehr (halbiert den Schaden bis zum nächsten Zug), ⏩ Auto (der Kampf läuft selbstständig bis zum Ende), 🏃 Flucht (bei Bossen nicht möglich) und ⚙️ Kampfsystem wechseln.",
+    "Jeder Gegner hat eine Schwäche (🔥 Feuer, ❄️ Eis, ⚡ Blitz, ✨ Licht, 🌿 Natur). Triffst du sie, brichst du ihn schneller.",
+    "Nach dem Sieg zeigt ein Ergebnisbild Erfahrung und Beute. Gefährten sammeln eigene Erfahrung und haben eine eigene Stufe (am HUD und im Rundenkampf sichtbar); wer nicht mitkämpft, bekommt die Hälfte."
+   ]
+  },
+  {
+   "t": "Beistand im Kampf: Zielfeuer, Nebelfenn, Taktik und Sternenbund",
+   "p": [
+    "Vier Beistandsfähigkeiten gelten in Echtzeit und im Rundenkampf. Sie werden mit den Kernsplittern der Hauptgeschichte freigeschaltet (Kapitel 2 bis 8 geben je einen Kernsplitter). Vorher steht im Menü „🔒 Kernsplitter …“."
+   ],
+   "list": [
+    "🎯 Zielfeuer (10 Mana, ab Kernsplitter 2 / Kapitel 2): markiert bis zu drei Ziele und belegt sie mit einer Salve.",
+    "🎭 Taktik (ab Kernsplitter 3 / Kapitel 3): legt die Rolle der Gefährten im Rundenkampf fest – Manuell, Angriff, Schutz oder Heilung. Die Gefährten handeln dann selbstständig, Zotik behält die Befehle. (Außerhalb des Rundenkampfs schaltet „⚙️ Taktik“ unter Rufen zwischen Angreifen und Schützen um.)",
+    "🌫️ Nebelfenn rufen (25 Mana, ab Kernsplitter 4 / Kapitel 4): Eine Beschwörung. Der Nebelfenn greift kurz mit an und heilt dich (in Echtzeit etwa 8 Sekunden lang, dann 40 Sekunden Wartezeit; im Rundenkampf kämpft er drei Runden mit und heilt die Gruppe).",
+    "💥 Sternenbund (ab Kernsplitter 6 / Kapitel 6): große Gruppen-Attraktion. In Echtzeit braucht sie die volle Teamleiste, im Rundenkampf IP von der ganzen Gruppe.",
+    "🤝 Teamangriffe: Ist die Teamleiste voll, ruft ein Gefährte seine Spezialattacke (Lyra 🌠 Sternenregen, Nia 🏹 Pfeilhagel, Rovan 🛡️ Schildsturm). Im Rundenkampf heißt der Befehl „🤝 Teamangriff“."
+   ]
+  },
+  {
+   "t": "Kommandomenü und Schnellaktionen",
+   "list": [
+    "Das Kommandomenü („Kommando“ – am Handy ☰ Befehle, am Controller Steuerkreuz) bleibt für alle Geräte gleich: Angriff (bei Personen und Truhen „▸ Sprechen/Öffnen“), Spezialangriff ▸, Magie ▸, Item ▸, Rufen ▸, Werkzeug ▸ und die Schnellaktionen.",
+    "⚔️ Kampf: wechseln – schaltet Auto, Echtzeit und Rundenbasiert um, mitten im Spiel und im Rundenkampf.",
+    "📻 Sender: wechseln – schaltet den nächsten der 13 Radiosender des Abenteurer-Radios ein; der gewählte Sender wird gemerkt.",
+    "🌍 Schnellreise ▸ (sobald das Weltentor in Lunaris offen und die Weltkarte erreichbar ist): springt direkt in jede erreichte Welt; ✓ markiert Welten, die du abgeschlossen hast.",
+    "Unter Spezialangriff ▸ findest du Gefährten-Techniken, Team- und Beistandsbefehle, Riss- und Sternform und die IP-Techniken deiner Ausrüstung; unter Rufen ▸ Wiederbeleben (25 Mana), Taktik, die Figurenwahl („Lyra steuern“) und die Nautilux."
+   ]
+  },
+  {
+   "t": "Die Arena von Valdoria",
+   "p": [
+    "Garrik leitet die Arena von Valdoria. Nach jeder gerettenen Kapitelwelt (Kapitel 2 bis 10) öffnen sich weitere Turniere; ein Hinweis erscheint, sobald ein neuer Pokal frei ist. Gekämpft wird mit dem normalen Kampfsystem gegen Wesen der Welten, die du gerettet hast. Nur der Gastgeber startet im Koop Kämpfe; wer die Arena verlässt, bricht den Kampf ab."
+   ],
+   "list": [
+    "🥉 Bronzepokal (nach 3 geretteten Welten, 3 Runden), 🥈 Silberpokal (5 Welten, 4 Runden), 🥇 Goldpokal (8 Welten, 5 Runden), 🏆 Platinpokal (6 Runden, erst nach einem gewählten Ende und mit allen neun Kapitelwelten). Im Finale kämpfst du gegen Wächter und Bosse der Welten.",
+    "Der erste Sieg bringt Titel und Gegenstände (Bronze: 3 Tränke, Silber: 2 Äther, Gold: 2 Kristallfrüchte, Platin: ein Phönix-Trank), Splitter und Arenapunkte; jeder Pokal ist wiederholbar.",
+    "👑 Superbosse (Reiter „Superbosse“): Der Urwolf (nach dem Silberpokal), Orun, Schatten des Risses (nach dem Goldpokal) und der Namenlose Kern (nach dem Platinpokal). Der erste Sieg gibt Uralt-Ausrüstung und einen Titel (Urwolf-Bezwinger, Rissbezwinger, Kernbezwinger), danach sind sie wiederholbar.",
+    "Revanche: Kämpfe noch einmal gegen alte Weltenbosse (der erste Sieg gibt doppelte Belohnung).",
+    "Rangliste: Deine Arenapunkte stehen in einer lokalen Tafel neben Kael, Mirael, Eryn, Toren, Aera, Professorium und Veyra."
+   ]
+  },
+  {
+   "t": "Erinnerungslinse und Forscherzeichen",
+   "p": [
+    "Am Ende von Kapitel 2 schenkt Elaris dir die Erinnerungslinse (Menü → 📷 Linse). Sie zeigt Verborgenes und hält Erinnerungen fest."
+   ],
+   "list": [
+    "📷 Fotomodus: freie Kamera mit sieben Filtern (Original, Warm, Kühl, Schwarzweiß, Retro, Traum, Nacht), Posen für die Gruppe und vier Rahmen (Ohne, Kino, Polaroid, Siegel). Das Spiel steht dabei still. Maus ziehen = drehen, Rad = zoomen, Shift oder rechte Taste = schieben; Touch: ziehen = drehen, zwei Finger = zoomen und schieben; Controller: Sticks, A = Foto, B = zurück, X = Pose, Y = Rahmen, LB/RB = Filter. Das Foto wird gespeichert bzw. geteilt.",
+    "🏵️ Forscherzeichen: Die Forscher, die den Weltenkern teilten, haben in jeder Welt (Kapitel 2 bis 10 und alle Märchenwelten) fünf Zeichen hinterlassen. Vier liegen versteckt im Gelände, das fünfte („Echo“) ist nur durch die Linse zu sehen und muss fotografiert werden. Jedes Zeichen gibt Splitter und Erfahrung (das Echo mehr), alle fünf einer Welt zusätzlich einen Kernsplitter, einen Phönix-Trank und Splitter.",
+    "Den Stand aller Welten zeigt der Reiter Linse („Forscherzeichen x/…“)."
+   ]
+  },
+  {
+   "t": "Szenen, Erinnerungen und Stimmen",
+   "list": [
+    "🎞️ Erinnerungen (Menü): Jede Zwischensequenz, die du einmal gesehen hast, kannst du dort wieder abspielen.",
+    "Cutscenes lassen sich überspringen.",
+    "🗣️ Dialogzeilen werden mit gesprochenen Sprachclips vertont; Zeilen ohne Clip klingen als kurzes Tiergebrabbel (kurze Töne je Buchstabe) in der Tonlage der Figur. Sprachausgabe und Ton lassen sich im Menü ausschalten.",
+    "📻 Das Abenteurer-Radio spielt die 13 RicoReWi-Sender als Hintergrundmusik; der Sender wechselt über das Kommandomenü (📻 Sender) oder an den Sendemasten der RicoReWi-Welt."
+   ]
+  },
+  {
    "t": "Bosse und besondere Gegner",
    "p": [
     "Ab Elaris kämpft jeder Weltenboss und jeder Zwischengegner anders. Beim ersten Einsatz eines neuen Angriffs erscheint eine kurze Warnung."
@@ -135,6 +209,7 @@
    "t": "Gefährten, Lagerfeuer und die Vier Gesichter",
    "list": [
     "💞 Bindung: Lyra, Nia und Rovan haben je eine Bindung von 0 bis 100 (Stufe alle 20). Sie wächst mit jedem gemeinsamen Sieg (Bosse viel mehr), mit Gesprächen und persönlichen Kapiteln. Höhere Bindung = stärkere Gefährten und stärkere Teamangriffe.",
+    "📈 Begleiter-Level: Gefährten haben eine eigene Stufe (bis 100) und sammeln Erfahrung bei jedem Kampf – Gefährten in Reserve (im Camp) bekommen die Hälfte. Die Stufe steht am HUD und im Rundenkampf; sie erhöht Angriff und Leben des Gefährten, dazu kommt seine Ausrüstung.",
     "🥽 Professorium und 💙 Mira: Nach Kapitel 1 schließt sich Professorium mit seiner Nautilux dem Team an (Fähigkeit 🚤 Nautilux-Salve). Kehrst du nach Kapitel 2 nach Lunaris zurück, kommt auch Mira mit (🌙 Mondlicht heilt die Gruppe). In Lunaris bleiben beide an ihrem Platz im Dorf. Sind schon drei Gefährten dabei, warten Neue im Camp.",
     "🧭 Gäste je Region: In Valdoria kämpft Kael (Rissdolche) mit, in Aqualis Mirael (heilt), in Ignara Toren (Hammer), in Noctaris Eryn (Erinnerungspfeil) und in Astralis Aera (Sternenlanze). Nach dem Weltboss verabschieden sie sich – Kael und Eryn fragen, ob sie bleiben dürfen. Wer bleibt, wartet im Camp, wenn schon drei Gefährten dabei sind; am Feuer unter „👥 Gruppe“ stellst du deine drei aktiven Gefährten auf (Lyra bleibt immer dabei).",
     "🏛️ Wahrzeichen: Jede Kapitelwelt von Elaris bis Elyndra hat in ihrer Wildnis ein eigenes Bauwerk (z. B. Baum der Erinnerung, Uhrturm der Gilde, Sonnenobelisk, Eisthron, Sternwarte). Dort startest du eine Prüfung in drei Runden; beim ersten Sieg gibt es viele Splitter und zwei Tränke, danach ist sie wiederholbar.",
@@ -150,13 +225,15 @@
    "list": [
     "🚀 Märchenwelten liegen zwischen den Kapiteln. Reist du mit der Nautilux in das nächste Kapitel (zum Beispiel von Lunaris nach Elaris), leuchtet unterwegs eine Märchenwelt auf und Zotik fragt nach einem Abstecher. Wählst du „Direkt“, fliegst du weiter; die Märchenwelt bleibt dann jederzeit über das Reise-Menü erreichbar.",
     "🌠 Jeder Flug mit der Nautilux passt zum Ziel: Himmel, Nebel und Hindernisse wechseln von der alten Welt über den Riss in die neue Welt (Äpfel und Spiegelsplitter im Spiegelwald, Glocken und Wasserspeier vor Notre-Dame, Säulen und Amphoren vor Theben, Blasen und Fische über dem Meer …). Am Ende taucht die Nautilux in die neue Welt ein, die Kamera fährt herab und eine Titelkarte zeigt den Ort.",
-    "🌍 Sieben Welten nach gemeinfreien Vorlagen: 🍎 Der Spiegelwald (Schneewittchen, Brüder Grimm), 🐯 Dschungel von Seeonee (Das Dschungelbuch, Rudyard Kipling), 🔔 Notre-Dame von Paris (Victor Hugo), 🦁 Theben (Herakles), 🐚 Das Meerkönigreich (Die kleine Meerjungfrau, H. C. Andersen), 🏮 Die Große Mauer (Ballade von Hua Mulan) und ⚔️ Camelot (Artussage). Die Reihenfolge der Abstecher folgt den Kapiteln 1 bis 7.",
+    "🌍 Gemeinfreie Vorlagen, eigene Gestaltung: 🍎 Der Spiegelwald (Schneewittchen, Brüder Grimm), 🐯 Dschungel von Seeonee (Das Dschungelbuch, Kipling), 🔔 Notre-Dame von Paris (Victor Hugo), 🦁 Theben (Herakles), 🐚 Das Meerkönigreich (Die kleine Meerjungfrau, H. C. Andersen), 🏮 Die Große Mauer (Ballade von Hua Mulan), ⚔️ Camelot (Artussage), 🧚 Nimmerland (Peter Pan, J. M. Barrie), 🎩 Wunderland (Alice im Wunderland, Lewis Carroll), 🪵 Das Land der Marionetten (Pinocchio, Carlo Collodi), 🧞 Die Stadt der tausend Kuppeln (Aladdin, Tausendundeine Nacht), ⛵ Gullivers Inseln (Jonathan Swift) sowie 🎞️ Der Kurbelhafen, eine eigene Geschichte im Stil der frühen Zeichentrickfilme (um 1928, in Schwarzweiß). Jede Welt wird nach dem Kapitel freigeschaltet, zwischen dem sie liegt (z. B. Spiegelwald nach Kapitel 1, Gullivers Inseln nach Kapitel 3).",
     "🗺️ Jede Welt hat mehrere Gebiete mit eigenem Namen (Banner beim Betreten), eigene Gegner nach der Vorlage, Truhen, Krüge zum Zerschlagen, Inschriften und eigene Mechaniken: Spiegeltore im Spiegelwald, Lianen zum Schwingen im Dschungel, Klettern auf den Glockenturm von Notre-Dame, Strömungen und Blasensäulen im Meerkönigreich.",
-    "🤝 In jeder Märchenwelt schließt sich ein Gast aus der Geschichte an und kämpft mit (der Jäger, Grauer Bruder, Esmeralda, Herakles, die kleine Meerjungfrau, Hua Mulan, Artus). Beim Verlassen der Welt bleibt er zurück.",
-    "📜 Jede Welt hat vier bis fünf Aufträge nach der Vorlage: Dinge einsammeln, Stellen auslösen (Glocken, Signalfeuer, Runensteine, Muschelhörner), jemanden finden, Gegnerwellen zurückschlagen und Bosse. Wer einen Auftrag vergibt, trägt ein ❗ über dem Kopf; den Stand zeigen das Auftragsfeld oben rechts und die Menüseite „Aufträge“.",
+    "🤝 In jeder Märchenwelt schließt sich ein Gast aus der Geschichte an und kämpft mit (zum Beispiel der Jäger, Grauer Bruder, Esmeralda, Herakles, die kleine Meerjungfrau, Hua Mulan, Artus, Peter Pan, die Grinsekatze, Alidoro, der Dschinn des Rings, Pip oder Lemuel Gulliver). Beim Verlassen der Welt bleibt er zurück.",
+    "📜 Jede Welt hat sieben bis zwölf Aufträge nach der Vorlage: Dinge einsammeln, Stellen auslösen (Glocken, Signalfeuer, Runensteine, Muschelhörner), jemanden finden, Gegnerwellen zurückschlagen und Bosse. Wer einen Auftrag vergibt, trägt ein ❗ über dem Kopf; den Stand zeigen das Auftragsfeld oben rechts und die Menüseite „Aufträge“.",
     "△ Reaktionsbefehl: Taumelt ein Boss (bei etwa 60 % und 30 % Leben), erscheint für sieben Sekunden eine gemeinsame Aktion mit dem Gast, etwa „Excalibur!“ mit Artus oder „Ringen!“ mit Herakles. Drück dann die Aktionstaste – der Treffer kostet den Boss ein großes Stück Leben.",
-    "🔑 Sind alle Aufträge erfüllt, erscheint am Wahrzeichen ein Schlüsselloch aus Licht. Versiegle es: Das bringt 300 Splitter, 2 Heiltränke, einen Phönix-Trank und viel Erfahrung. Wer alle sieben Welten versiegelt, erhält die Erzählerklinge (Waffe, Angriff 38, Technik Weltenschnitt). Weiter geht es an der geparkten Nautilux neben dem Ankunftsplatz.",
+    "🔑 Sind alle Aufträge erfüllt, erscheint am Wahrzeichen ein Schlüsselloch aus Licht. Versiegle es: Das bringt 300 Splitter, 2 Heiltränke, einen Phönix-Trank und viel Erfahrung. Wer alle Märchenwelten versiegelt (die RicoReWi-Welt zählt mit), erhält die Erzählerklinge (Waffe, Angriff 38, Technik Weltenschnitt). Weiter geht es an der geparkten Nautilux neben dem Ankunftsplatz.",
     "📈 Die Gegner in den Märchenwelten richten sich nach deiner Stufe. Im Mehrspieler werden keine Abstecher angeboten.",
+    "⛵ Gullivers Inseln (Welt 35) spielen mit der Größe: In Liliput bist du mit Gulliver ein Riese, Häuser und Soldaten sind winzig; in Brobdingnag wirkt alles riesig (Bauernhof, Kornfeld, Hofkatze, die Königsstadt Lorbrulgrud); die Schwebeinsel Laputa liegt als Plateau hoch über dem Land. Neue Gegner: Rissnadler, Riesenwespen, Magnetbrocken, die Hofkatze, die Wespenkönigin und der Magnetkern.",
+    "Weitere Welten (Robin Hood in Sherwood, Sleepy Hollow) sind in Arbeit und werden in diesem Handbuch ergänzt, sobald sie im Spiel sind.",
     "📻 Eine Welt ist keine Märchenvorlage: RicoReWi – Das Sendegebiet (nach Kapitel 6) zeigt die Welt hinter Zotik, mit Radiosendern, Musik-Acts, Büchern und einer easygames-Spielhalle. Dort triffst du RiCARDO, der Zotiks Geschichte aufgeschrieben hat, und kannst ihn ins Team holen.",
     "🎨 Alle Figuren sind eigene Gestaltungen nach den Büchern und Sagen, nicht nach Filmen. Böden, Mauern, Dächer und Felsen nutzen freie Texturen (CC0, Poly Haven) – in den Märchenwelten wie in den normalen Welten."
    ]
@@ -330,7 +407,9 @@
     "Die Nautilux feuert selbst auf den nächsten Gegner im selben Bereich (Himmel, Seeoberfläche, unter Wasser). Besiegte Gegner bringen Erfahrung und Splitter und kehren nach einer Weile zurück.",
     "🔮 Riss-Form (nach Kapitel 10): rammt mit voller Kraft und ist am schnellsten.",
     "Reisen zwischen den Kapitelwelten: Am Weltentor wählst du, wie du reist – 🚀 mit der Nautilux fliegen, 🚤 mit der Nautilux übers Weltmeer (vor der Nautilux mit dem Segelschiff ⛵), 🥾 zu Fuß über den Wanderpfad (dauert deutlich länger, dafür mehr Kisten am Weg) oder ✨ sofort. Auf dem Meer fährst du an kleinen Inseln vorbei, die wie die Welten aussehen (Weltenbaum, Pyramide, Eisspitzen, Vulkan, Camelot …), und am Horizont wartet die Insel deines Ziels. Strudeln und Riffen ausweichen, Treibkisten sammeln.",
-    "🗺️ Weltkarte (sobald das Weltentor in Lunaris offen ist): Die Welten hängen nahtlos zusammen. Jede Kapitelwelt ist vom Meer umgeben; im Süden führt ein Damm als Wegpfad durch ein Lichttor hinaus – lauf hindurch (oder benutz den Wegweiser), dann stehst du auf der Weltkarte. Erdwege führen von Welt zu Welt, jede Insel zeigt ihr Wahrzeichen; mit A betrittst du die Welt. Versiegelte Welten (Kuppel) öffnen sich erst im Kapitel. An den Stegen (Valdoria, Solmera, Lunaris-Küste u. a.) rufst du die Nautilux und fährst übers Meer zu den Märcheninseln."
+    "🗺️ Weltkarte (sobald das Weltentor in Lunaris offen ist): Die Welten hängen nahtlos zusammen. Jede Kapitelwelt ist vom Meer umgeben; im Süden führt ein Damm als Wegpfad durch ein Lichttor hinaus – lauf hindurch (oder benutz den Wegweiser), dann stehst du auf der Weltkarte. Erdwege führen von Welt zu Welt, jede Insel zeigt ihr Wahrzeichen; mit A betrittst du die Welt. Versiegelte Welten (Kuppel) öffnen sich erst im Kapitel. An den Stegen (Valdoria, Solmera, Lunaris-Küste u. a.) rufst du die Nautilux und fährst übers Meer zu den Märcheninseln.",
+    "✈️ Flug zwischen den Welten (modernisiert): Lenken mit Stick, WASD oder Joystick (oben = hoch; „↕“ kehrt die Steuerung um, wird gemerkt). Feuer halten = Schnellfeuer, lange halten und loslassen = Riss-Strahl. Block-Wände lassen sich zerschießen, Extras (Welt davor / Welt danach) geben Kräfte, wilde Flieger greifen an, Ringe und Kisten bringen Splitter. Mit „Überspringen ▸“ kommst du sofort ans Ziel.",
+    "🔧 Nautilux-Werkstatt (bei Professorium, außerdem in der Reise-Auswahl am Weltentor als „Werkstatt: Schiff aufrüsten“): Hier kaufst du mit Splittern Bauteile, die den Flug verändern – 🔫 Riss-Kanone (nach Kapitel 2, 5, 8), 🛠️ Panzerhülle (3, 6, 9), 🚀 Triebwerk (4, 7, 10), 🛡️ Schildgenerator (5, 8, 10) und 🧲 Splittermagnet (6). Jede Stufe kostet 60 Splitter mehr (60, 120, 180 …) und wird erst frei, wenn das genannte Kapitel geschafft ist."
    ]
   },
   {
@@ -362,7 +441,9 @@
     "Geh nach schweren Kämpfen in die Kirche: Der Segen heilt kostenlos und weckt gefallene Gefährten. Vor einem Boss lohnt sich die Spende für den Sternensegen.",
     "Probier das Springen gleich in Lunaris aus: Der Sprungpfad neben dem Waldweg bringt Splitter und einen Heiltrank.",
     "📖 Märchenwelten passen sich deiner Stufe an. Nimm den Abstecher ruhig mit: Truhen, Krüge, Aufträge und das Schlüsselloch bringen viel Erfahrung, Splitter und Phönix-Tränke, und der Gast kämpft an deiner Seite.",
-    "Weltrennen: Bleib eher in der Mitte der Bahn, von dort erreichst du beide Seiten schnell. Splitter-Reihen kommen immer zu dritt untereinander."
+    "Weltrennen: Bleib eher in der Mitte der Bahn, von dort erreichst du beide Seiten schnell. Splitter-Reihen kommen immer zu dritt untereinander.",
+    "Probier alle drei Kampfsysteme aus (⚔️ Kampf im Menü). Rundenbasiert ist ruhiger und gut für Handy und TV, Echtzeit fordert Ausweichen und Reaktion.",
+    "Hol dir die Erinnerungslinse am Ende von Kapitel 2 – dann lohnt es, in jeder Welt nach den Forscherzeichen zu suchen (Kernsplitter und Phönix-Tränke)."
    ]
   },
   {
@@ -376,7 +457,10 @@
     "Sammle Fell, Rissstaub und Kernsplitter und lass in der Schmiede deine beste Waffe und Rüstung verstärken – +3 bringt 45 % mehr auf alle Werte. Ein Phönix-Trank im Gepäck rettet Bosskämpfe.",
     "Fähigkeitenbaum: Die ersten Ränge sind billig. Verteile früh breit (je Rang 1 und 2) und spare erst später für Rang 4 und 5. Sprungkraft 3 mit dem Doppelsprung macht Sprungräume und Sprungpfade deutlich leichter.",
     "Kombiniere die Riss-Künste: Wirbelwind zieht die Gegner zusammen, Dornenranke hält sie fest, dann Sturzschlag oder Sternenfall mitten hinein.",
-    "Nutze die Weltregeln für dich: In Aqualis bringen dich die Luftblasen zu Truhen auf den Korallenplatten, in Astralis erreichst du mit dem hohen Sprung Platten ohne Doppelsprung, und in Elyndra lohnt jeder Zauber doppelt, wenn die Gegner stehen bleiben."
+    "Nutze die Weltregeln für dich: In Aqualis bringen dich die Luftblasen zu Truhen auf den Korallenplatten, in Astralis erreichst du mit dem hohen Sprung Platten ohne Doppelsprung, und in Elyndra lohnt jeder Zauber doppelt, wenn die Gegner stehen bleiben.",
+    "Im Rundenkampf zuerst die Schwäche des Gegners ausnutzen: Wiederholte Treffer brechen ihn und unterbrechen seinen Zug. Beim Zielwählen zeigt die Zielinfo Stufe, Leben und Schwäche des Gegners.",
+    "Stell im Rundenkampf die Taktik der Gefährten auf „Heilung“ oder „Schutz“, wenn du selbst Schaden austeilst; IP füllen sich durch Treffer und Abwehr, ⭐ im Menü zeigt, was bereit ist.",
+    "Nebelfenn und Sternenbund sparen Tränke: Den Nebelfenn vor einem schweren Boss rufen, Zielfeuer gegen mehrere schwache Gegner."
    ]
   },
   {
@@ -386,7 +470,9 @@
     "Mit der Nautilux als U-Boot und Luftschiff erreichst du Schatztruhen, die zu Fuß unerreichbar sind.",
     "In der Echogrotte zählt nur, was du dort findest – nimm sie als Herausforderung, nicht zum Leveln.",
     "Halle der 100: Jede zehnte Prüfung ist ein Boss und bringt 500 × Rang Splitter und 3 Tränke extra.",
-    "Das Casino nutzt nur Spiel-Splitter. Die beste Chance auf Gewinn ist gering – setz nur, was du übrig hast (oder schalte es in den Optionen ab)."
+    "Das Casino nutzt nur Spiel-Splitter. Die beste Chance auf Gewinn ist gering – setz nur, was du übrig hast (oder schalte es in den Optionen ab).",
+    "Arena: Die Superbosse (Urwolf, Orun, Namenloser Kern) sind sehr zäh. Bring Äther, Tränke und die Weltwaffen mit; der erste Sieg gibt Uralt-Ausrüstung.",
+    "Nautilux-Werkstatt: Kanone und Panzerhülle zuerst – sie helfen in jedem Flug. Mit dem Splittermagnet sammelst du Ringe fast von allein."
    ]
   },
   {
@@ -395,7 +481,8 @@
     "Ohne Tränke in einen Bosskampf gehen.",
     "Rätsel-Hinweise ignorieren: Jedes Rätsel hat drei Hinweise, der letzte verrät die Lösung fast vollständig.",
     "Splitter horten und beim Fallen 10 % verlieren – gib sie lieber für Ausrüstung aus.",
-    "Werkzeug-Ruinen zu früh betreten, bevor du das nötige Werkzeug hast."
+    "Werkzeug-Ruinen zu früh betreten, bevor du das nötige Werkzeug hast.",
+    "Du findest die Linse nicht? Sie kommt erst am Ende von Kapitel 2 (Elaris). Davor ist der Reiter 📷 gesperrt."
    ]
   }
  ],
@@ -536,6 +623,19 @@
    ]
   },
   {
+   "t": "Arena, Beistand und Forscherzeichen: Reihenfolge",
+   "list": [
+    "Kapitel 2 (Elaris): Erinnerungslinse und Zielfeuer (Kernsplitter 2) – ab jetzt Forscherzeichen suchen.",
+    "Kapitel 3 (Valdoria): Taktik (Kernsplitter 3). Nach 3 geretteten Welten öffnet Garrik den Bronzepokal in der Arena.",
+    "Kapitel 4 (Solmera): Nebelfenn (Kernsplitter 4) und Rissfluss (Wandlauf, Rissschienen, Rissstangen).",
+    "Kapitel 5: Silberpokal (5 gerettete Welten) – danach Superboss Der Urwolf.",
+    "Kapitel 6 (Frosthain): Sternenbund (Kernsplitter 6) – große Gruppen-Attraktion.",
+    "Nach 8 geretteten Welten: Goldpokal – danach Superboss Orun, Schatten des Risses.",
+    "Nach einem gewählten Ende und allen neun Kapitelwelten: Platinpokal – danach Superboss Der Namenlose Kern.",
+    "Alle fünf Forscherzeichen einer Welt (4 sichtbar, 1 Echo per Linse): Kernsplitter, Phönix-Trank und Splitter."
+   ]
+  },
+  {
    "t": "Märchenwelten: alle Aufträge",
    "list": [
     "🍎 Spiegelwald (Abstecher nach Kapitel 1): 1) Erzbart – sieben Grubenlaternen einsammeln. 2) Kieselzahn – vier Erzadern im Erzstollen freischlagen. 3) Schneewittchen – sechs Spiegelsplitter am Spiegelsee besiegen. 4) Röschen (Giftküche im Osten) – neun Giftäpfel in drei Wellen besiegen. 5) Schneewittchen – die alte Krämerin mit den Äpfeln finden. 6) Köhler Brand (Dornenwald im Westen) – die Schatten des Jägers besiegen. 7) Brummelbart (gläserner Sarg im Nordwesten) – sieben Kerzen entzünden. 8) Der Königssohn (Splitterkluft im Osten) – den Splittersturm besiegen. 9) Schneewittchen – die Spiegelkönigin vor ihrem Schloss (Reaktion: Spiegel zurückwerfen). Der Spiegelwald ist jetzt so weitläufig wie eine Kapitelwelt. Die Spiegeltore bringen dich schnell von Gebiet zu Gebiet.",
@@ -545,8 +645,16 @@
     "🐚 Meerkönigreich (nach Kapitel 5): 1) Großmutter – Perlen für den Schlossgarten sammeln. 2) Älteste Schwester – die Lichter der Menschenstadt: fünf Laternen am Ufer einsammeln. 3) Älteste Schwester – den Schiffsjungen im Wrack finden. 4) Älteste Schwester – die Sturmnacht: neun Gegner beim Sturmwrack (drei Wellen). 5) Meerkönig – den Polypenwald der Hexe freikämpfen (zwölf Polypen in drei Wellen). 6) Meerkönig – die drei Muschelhörner blasen; jedes beruhigt einen Strudel, der dich sonst abdrängt. Blasensäulen werfen dich hoch. 7) Meerkönig – die Meerhexe vor ihrem Haus (Reaktion mit der kleinen Meerjungfrau: Trank zurückschleudern). Neue Gebiete: Eisberg, Garten des Marmorjünglings, Sturmwrack, Polypenwald, Säule der Töchter der Luft.",
     "🏮 Große Mauer (nach Kapitel 6): 1) Vater Hua – Pferd, Sattel, Zaumzeug und Peitsche auf den vier Märkten kaufen. 2) Kampfgefährte – das Nachtlager am Gelben Fluss gegen acht Steppenwölfe verteidigen (zwei Wellen). 3) Feldherr – die drei Gongs der Nachtwache anschlagen (Turm im Osten, West- und Ostturm an der Mauer). 4) Kampfgefährte – zwölf Reiter in den Schwarzen Bergen jenseits des westlichen Mauerendes (drei Wellen). 5) Feldherr – die drei Signalfeuer entzünden. 6) Feldherr – das Tor gegen sechs Steppenreiter halten. 7) Feldherr – den Sturmreiter besiegen (Reaktion mit Mulan: Trommelsignal). Über die Brücke am Gelben Fluss erreichst du die Halle des Lichts und die Karawanenrast.",
     "⚔️ Camelot (nach Kapitel 7): 1) Sir Kay – fünf Schattenritter auf dem Turnierplatz in zwei Runden. 2) Sir Ector – die sechs Wappenschilde der Ritter einsammeln (über die ganze Welt verteilt, auch beim Steinkreis und am Berg Badon). 3) Sir Gawain – die Riesenbrut am Michaelsberg im Osten besiegen (drei Wellen). 4) Sir Lancelot – die Schlacht am Berg Badon im Süden: zwölf Sachsenkrieger in drei Wellen. 5) Merlin – die Runensteine des Mutes, der Treue und der Demut wecken. 6) Merlin – die Dame vom See am See von Avalon finden. 7) Merlin – den Schwarzen Ritter (Reaktion mit Artus: Excalibur!). Weitere Gebiete mit Truhen und Inschriften: Wald von Brocéliande, Grüne Kapelle und Gralskapelle.",
+    "🧚 Nimmerland (nach Kapitel 8): 1) Wendy – Peters Schatten im Westen finden. 2) Tootles – sechs Piraten am Hängebaum zurückschlagen (zwei Wellen). 3) Nibs – sechs Häufchen Feenstaub für Glöckchen einsammeln. 4) Glöckchen – die drei Glocken des Feenhains läuten. 5) Tigerlilie – am Strafenfelsen sieben Piraten besiegen (zwei Wellen). 6) Peter Pan – das Tick-Tack-Krokodil im Sumpf besiegen (vier Krokodile). 7) Michael – vier Eier des Nimmervogels am Ufer im Osten sammeln. 8) John – die Jolly Roger in Kidds Bucht entern: neun Schattenpiraten in drei Wellen. 9) Peter Pan – Käpt’n Hook (Reaktion mit Peter: Tick-Tack!). Lianen und Sterne (Portale) bringen dich schnell durch die Insel; Gast ist Peter Pan.",
+    "🎩 Wunderland (nach Kapitel 9): 1) Weißes Kaninchen – Fächer und Glacéhandschuh einsammeln. 2) Alice – sechs Kartensoldaten besiegen (zwei Wellen). 3) Hutmacher – die stehengebliebenen Uhren auslösen. 4) Hutmacher – die Haselmaus finden. 5) Raupe – am Pilz sieben Kartensoldaten (Pik) besiegen (zwei Wellen). 6) Gärtner – die Rosenstöcke rot malen (auslösen). 7) König – die gestohlenen Herztörtchen einsammeln. 8) Herzogin – die Krocketpartie: neun Krocket-Flamingos in drei Wellen. 9) Alice – die Herzkönigin im Herzschloss (Reaktion mit Alice: Nur ein Kartenspiel!). Gast ist die Grinsekatze. Gebiete u. a.: Kaninchenbau, verrückte Teegesellschaft, Rosengarten, Hinter den Spiegeln.",
+    "🪵 Das Land der Marionetten (nach Kapitel 10): 1) Geppetto – Pinocchio finden, er ist weggelaufen. 2) Geppetto – die Fibelseiten einsammeln. 3) Feuerfresser – im Marionettentheater sechs Schattenmarionetten besiegen (zwei Wellen). 4) Pinocchio – die Gruben am Wunderfeld auslösen. 5) Pinocchio – Fuchs und Kater finden. 6) Fee – die grüne Schlange besiegen (zwei Wellen). 7) Docht – die Leuchtfeuer für Geppetto auslösen. 8) Taube – die Haie der Bucht: acht Gegner in drei Wellen. 9) Fee – der Riesenhai in der Bucht (Reaktion mit Pinocchio: Durchs offene Maul!). Gast ist Alidoro. Gebiete u. a.: Geppettos Werkstatt, Gasthaus zum Roten Krebs, Spielzeugland, Strand.",
+    "🧞 Die Stadt der tausend Kuppeln (Aladdin, nach Kapitel 4): 1) Aladdins Mutter – Aladdin in der Höhle finden. 2) Aladdin – die Juwelenfrüchte in der Schatzhöhle einsammeln. 3) Dschinn – die Wächter der Höhle: sechs Wüstenskorpione (zwei Wellen). 4) Dschinn – die Öllampen der Höhle auslösen. 5) Aladdin – den Lampenhändler finden (neue Lampen gegen alte). 6) Wesir – die Palastwache: acht verzauberte Wachen (zwei Wellen). 7) Prinzessin – die Juwelenschalen sammeln. 8) Dschinn – die Rauchgeister: neun Gegner in drei Wellen. 9) Prinzessin – der Zauberer aus dem Maghreb (Reaktion mit Aladdin: Der Ring!). Gast ist der Dschinn des Rings. Gebiete u. a.: Großer Basar, Palast des Sultans, Schatzhöhle, Oase, Badehaus.",
+    "🎞️ Der Kurbelhafen (nach Kapitel 5, eigene Geschichte im Zeichentrickstil in Schwarzweiß): 1) Kapitän Kurbel – den Schiffsjungen im Lagerhaus finden. 2) Tuba – die Notenblätter einsammeln. 3) Tuba – die Tintenkleckse: sechs Gegner in zwei Wellen. 4) Ottokar – die Dampfpfeifen auslösen. 5) Plüsch – den Fremden mit dem Zylinder finden (der Mann mit dem Radiergummi). 6) Plüsch – die Hafenrüpel: acht Gegner (zwei Wellen). 7) Flimmer – die Filmrollen einsammeln. 8) Müllerin – die Kurbelratten: neun Gegner in drei Wellen. 9) Kapitän Kurbel – Graf Radiergummi in der Radier-Lücke (Reaktion mit Kapitän Kurbel: Tuut-Tuut!). Gast ist Pip. Gebiete u. a.: Lagerhaus, Hauptstraße, Musikhalle, Windmühle, Filmpalast.",
+    "⛵ Gullivers Inseln (nach Kapitel 3, Welt 35): 1) Reldresal – die Fäden vom Ufer einsammeln. 2) Reldresal – sechs Rissnadler in Mildendo besiegen (zwei Wellen). 3) Kaiser Golbasto – den Schatzmeister auf dem Seil finden. 4) Admiral Bolgolam – die Signalfeuer von Blefuscu auslösen. 5) Der Bauer – Glumdalclitch im Kornfeld finden (Brobdingnag). 6) Der Bauer – Wespen im Kornfeld: acht Gegner in drei Wellen. 7) Glumdalclitch – die Beschläge des Reisekastens einsammeln. 8) Glumdalclitch – die Hofkatze besiegen (zwei Angriffe). 9) Der König – die Wespenkönigin im Kornfeld. 10) König von Laputa – die Magnetsteine auf der Schwebeinsel auslösen. 11) Klatscher – Magnetbrocken auf dem Plateau (sieben Gegner in zwei Wellen). 12) König von Laputa – der Magnetkern. Gast ist Lemuel Gulliver. Achte auf die Größe: In Liliput bist du neben Gulliver ein Riese, in Brobdingnag winzig.",
     "📻 RicoReWi – Das Sendegebiet (nach Kapitel 6): RiCARDO (RicoReWi) begrüßt dich bei der Ankunft und kämpft mit. 1) Regie-Robo Cast – die rauschende Technikerin hinter dem Studio finden. 2) Cast – sechs Rauschgeister im Studio (zwei Wellen). 3) Dreizehn Frequenzen: alle 13 Sendemasten rund um den Sendeturm einstellen; danach schaltet jeder Mast den echten Sender im Abenteurer-Radio ein. 4) Turmwärterin Lumen – sechs Seiten des Buchs „Zotik – Die Splitter der Welten“ am Buchturm. 5) Spielhallenwart Pixel – fünf Spielmodule rund um die easygames-Spielhalle. 6) Pixel – acht Pixelkäfer (zwei Wellen). 7) Kapitän Kater – Straßenkind hinter der Gasse der Acts finden. 8) Kapitän Kater – neun Störsender auf dem Frequenzplatz (drei Wellen). 9) Das Funkloch am Sendeturm (Reaktion mit RiCARDO: Volle Lautstärke!). Nach dem Versiegeln gehört RiCARDO dauerhaft zum Team (Fähigkeiten Jingle und Frequenzwelle). Die Automaten der Spielhalle, die Lesepulte im Buchturm und das Portal an der Bühne öffnen echte easygames-Spiele, darunter Show Me Your Voice; dein Spielstand wird vorher gespeichert.",
-    "💡 Bosse wachen auf, sobald du ihnen nahe kommst, und rufen in der zweiten Hälfte Helfer. Spar dir starke Angriffe für den Reaktionsbefehl auf – er trifft immer."
+    "💡 Bosse wachen auf, sobald du ihnen nahe kommst, und rufen in der zweiten Hälfte Helfer. Spar dir starke Angriffe für den Reaktionsbefehl auf – er trifft immer.",
+    "Weitere Märchenwelten (Robin Hood in Sherwood, Sleepy Hollow) folgen – ihre Aufträge werden hier ergänzt, sobald die Welten im Spiel sind.",
+    "Belohnung je versiegelter Welt: 300 Splitter, 2 Heiltränke, ein Phönix-Trank und viel Erfahrung; sind alle Märchenwelten versiegelt, gibt es die Erzählerklinge."
    ]
   },
   {
@@ -600,6 +708,22 @@
   {
    "q": "An manchen Stellen komme ich nicht weiter – ist da eine unsichtbare Wand?",
    "a": "Nein. Gesperrt sind nur sichtbar steile Hänge, Wasser, Wände und Gegenstände. Der Weltrand steigt zu einem Hang an, statt unsichtbar zu enden."
+  },
+  {
+   "q": "Wie stelle ich den Rundenkampf ein?",
+   "a": "Im Menü auf „⚔️ Kampf“ tippen (oder im Kommandomenü „⚔️ Kampf: wechseln“): Auto – Echtzeit in den Welten, Rundenkampf auf Weltkarte und Meer; Echtzeit – überall Echtzeit; Rundenbasiert – überall Rundenkampf. Die Wahl gilt ab dem nächsten Kampf."
+  },
+  {
+   "q": "Zielfeuer, Nebelfenn oder Sternenbund sind gesperrt.",
+   "a": "Sie werden mit den Kernsplittern der Hauptgeschichte frei: Zielfeuer nach Kapitel 2, Taktik nach Kapitel 3, Nebelfenn nach Kapitel 4, Sternenbund nach Kapitel 6. Schließe die Kapitelwelt ab, dann ist der Befehl bereit."
+  },
+  {
+   "q": "Wo ist die Arena?",
+   "a": "In Valdoria (Kapitel 3) bei Garrik. Das erste Turnier öffnet sich, sobald drei Kapitelwelten gerettet sind."
+  },
+  {
+   "q": "Wie bekomme ich alle Forscherzeichen?",
+   "a": "Vier liegen sichtbar im Gelände, das fünfte (Echo) zeigt nur die Erinnerungslinse (Menü → Linse, ab Kapitel 2): Fotomodus öffnen und das Echo fotografieren."
   }
  ]
 }
