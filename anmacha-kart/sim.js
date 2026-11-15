@@ -22,6 +22,8 @@ const Sim = (() => {
         x: tp.x, z: tp.z, th: Math.atan2(tp.tx, tp.tz), vx: 0, vz: 0, vf: 0, steer: 0, drift: 0, driftT: 0, boostT: 0, spinT: 0, spinDur: 0, inv: 0, shieldT: 0, blindT: 0, slowT: 0, item: null, itemN: 0, itemT: 0, rp: -(row * 2 + 2), prevF: f0, f: f0, d: side * 4.5, i: f0 | 0, lap: 0, lapStart: 0, lapTimes: [], finished: false, finT: 0, rank: sl + 1, auto: !r.human, off: (Math.random() - 0.5) * 8, rough: false, hitT: 0, pulse: 0, draftT: 0, draftCharge: 0, itemPrev: false, speedVar: 0.96 + Math.random() * 0.06, dTier: 0 };
       if (kt.human) S.humans++; S.karts.push(kt);
     });
+    // Münzen: 8 Reihen à 3 auf wechselnden Spuren. Jede Münze gibt einen kleinen Schub und +0,5 % Spitze (max. 10).
+    S.coins = []; if (S.items) for (let r = 0; r < 8; r++) { const lane = [-3.2, 3.2, 0, -5.4, 5.4, 0, 3.2, -3.2][r]; for (let j = 0; j < 3; j++) { const f = (N * (r + 0.32) / 8 + j * 5) % N; tr.at(f, lane, tp); S.coins.push({ x: tp.x, z: tp.z, f, cd: 0 }); } }
     if (S.items) for (let s = 0; s < 6; s++) for (let o = -1; o <= 1; o++) { const f = N * (s + 0.5) / 6; tr.at(f, o * 5.5, tp); S.boxes.push({ x: tp.x, z: tp.z, cd: 0, f }); }
     // Boost-Linien in Kurvenausgängen und auf langen Geraden. Mehrere Spuren fördern Überholmanöver.
     [0.12, 0.24, 0.36, 0.49, 0.61, 0.74, 0.86, 0.95].forEach((fr, idx) => {
@@ -90,7 +92,7 @@ const Sim = (() => {
   function hit(S, k, by, kind, dur, keep) {
     if (k.inv > 0) return false;
     if (k.shieldT > 0) { k.shieldT = 0; k.inv = 0.8; emit(S, { t: 'shieldHit', k: k.k }); return false; }
-    k.spinT = dur || 1.3; k.spinDur = k.spinT; k.inv = (dur || 1.3) + 1.1; k.vf *= keep == null ? 0.25 : keep; k.drift = 0; k.driftT = 0; k.boostT = 0; emit(S, { t: 'hit', k: k.k, by, kind: kind || 'hit' }); return true;
+    k.coins = Math.max(0, (k.coins || 0) - 2); k.spinT = dur || 1.3; k.spinDur = k.spinT; k.inv = (dur || 1.3) + 1.1; k.vf *= keep == null ? 0.25 : keep; k.drift = 0; k.driftT = 0; k.boostT = 0; emit(S, { t: 'hit', k: k.k, by, kind: kind || 'hit' }); return true;
   }
   function useItem(S, k) {
     const it = k.item; if (!it || k.itemT > 0) return; const base = it.replace('3', ''), left = Math.max(0, k.itemN - 1); k.itemN = left; if (!left) k.item = null; emit(S, { t: 'use', k: k.k, item: base, left });
@@ -130,7 +132,7 @@ const Sim = (() => {
     k.inv = Math.max(0, k.inv - dt); k.shieldT = Math.max(0, k.shieldT - dt); k.boostT = Math.max(0, k.boostT - dt);
     if (S.state === 'grid') inp = { s: 0, b: 0, d: false, i: false, gas: 0, g: 0 };
     if (k.spinT > 0) { k.spinT -= dt; inp = { s: 0, b: 0, d: false, i: false, gas: 0 }; k.th += dt * 11; }
-    const boost = k.boostT > 0, capBase = (k.human || k.finished ? VMAX * k.mv : VMAX * k.mv * (inp.cap || 1)), cap = capBase * (boost ? 1.42 : 1) * (k.rough ? k.mr : 1);
+    const boost = k.boostT > 0, capBase = (k.human || k.finished ? VMAX * k.mv : VMAX * k.mv * (inp.cap || 1)), cap = capBase * (1 + 0.005 * (k.coins || 0)) * (boost ? 1.42 : 1) * (k.rough ? k.mr : 1);
     // Windschatten: dicht hinter einem schnell fahrenden Rivalen liegt eine echte Überholchance.
     let drafting = false;
     if (!k.finished && S.state === 'race' && !k.rough && k.spinT <= 0 && k.vf > VMAX * 0.38) {
@@ -178,6 +180,7 @@ const Sim = (() => {
     if (!k.finished && k.rp >= S.laps * N) { k.finished = true; k.finT = S.t; k.auto = true; if (k.human) S.finishedHumans++; emit(S, { t: 'finish', k: k.k, time: S.t }); }
     if (S.state === 'race') {
       if (S.items) S.boxes.forEach(b => { if (b.cd > 0) return; if ((b.x - k.x) ** 2 + (b.z - k.z) ** 2 < 12 && same(S, b, k) && !k.item && k.itemT <= 0 && !k.finished) { b.cd = 3.5; k.itemT = 0.9; k.itemPending = true; emit(S, { t: 'box', k: k.k }); } });
+      S.coins.forEach(c => { if (c.cd > 0 || k.finished) return; if ((c.x - k.x) ** 2 + (c.z - k.z) ** 2 < 6.5 && same(S, c, k)) { c.cd = 9; k.coins = Math.min(10, (k.coins || 0) + 1); k.boostT = Math.max(k.boostT, 0.22); emit(S, { t: 'coin', k: k.k, x: c.x, z: c.z }); } });
       S.pads.forEach(p => {
         if ((p.x - k.x) ** 2 + (p.z - k.z) ** 2 >= 20 || k.boostT >= 1.1) return;
         const mechanic = S.tr.def.mechanic;
@@ -286,7 +289,7 @@ const Sim = (() => {
         if (hit(S,k,-1,'creature',0.6,0.7)) { c.cd = 2; emit(S,{t:'creature',k:k.k,x:c.x,z:c.z}); break; }
       }
     }
-    S.boxes.forEach(b => { if (b.cd > 0) b.cd -= dt; });
+    S.boxes.forEach(b => { if (b.cd > 0) b.cd -= dt; }); S.coins.forEach(c => { if (c.cd > 0) c.cd -= dt; });
     if (S.humans > 0 && S.finishedHumans >= S.humans && S.state === 'race') { S.state = 'done'; emit(S, { t: 'done' }); }
     if (!S.free && S.state === 'race' && S.t > 60 * 12) S.state = 'done';
   }

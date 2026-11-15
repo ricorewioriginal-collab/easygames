@@ -36,6 +36,7 @@ const AUD = (() => {
     tick: () => note(hz(84), 0.05, 'sine', 0.035),
     back: () => { note(hz(76), 0.08, 'triangle', 0.05); note(hz(69), 0.1, 'triangle', 0.04, 0.04); },
     beep: hi => note(hi ? 1320 : 660, hi ? 0.5 : 0.18, 'square', hi ? 0.07 : 0.06),
+    coin: () => { note(hz(88), 0.07, 'square', 0.03, 0, { lp: 5000 }); note(hz(95), 0.16, 'square', 0.03, 0.06, { lp: 5000 }); },
     box: () => { [76, 80, 83, 88].forEach((n, i) => note(hz(n), 0.12, 'square', 0.035, i * 0.05, { lp: 3000 })); },
     got: () => { note(hz(84), 0.15, 'triangle', 0.06); note(hz(91), 0.2, 'triangle', 0.05, 0.08); },
     boost: () => { noise(0.7, 0.08, 0, { type: 'bandpass', f: 600, q: 0.6, atk: 0.2 }); note(220, 0.7, 'sawtooth', 0.04, 0, { to: 700, lp: 2200 }); },
