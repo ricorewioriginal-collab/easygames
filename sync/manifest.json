@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1deab89c986a",
- "generated": "2026-11-15T01:01:58+00:00",
- "commit": "7ceb242567efea0a402f27479c0703428ba3e12b",
+ "version": "a20b81d64a3c",
+ "generated": "2026-11-15T02:04:24+01:00",
+ "commit": "cc0f9a90dd2332b4d482fcdaa906fd6cca8c597a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9653,8 +9653,8 @@
   },
   {
    "p": "games.js",
-   "s": 56065,
-   "h": "7617b57081d70c394e3b45a9352cc2213acdbbf09845e911ddb75135fd598d97"
+   "s": 56214,
+   "h": "3d2a8bfb53a48e96fc0b71cdaa9c2bf2daf7592b07b02fced4f57f1c39bcfb6e"
   },
   {
    "p": "gay-life/card.jpg",
@@ -9958,8 +9958,8 @@
   },
   {
    "p": "guides.js",
-   "s": 175256,
-   "h": "c15d451764653f91019aa55eef4edef979a9b19f3f0c8cb5720556592d09a2f4"
+   "s": 175770,
+   "h": "c3beaa958c415d7842c9c0196cf24838aebf33cb85da906afa2c358a753cd046"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10448,8 +10448,8 @@
   },
   {
    "p": "guides/zotik.json",
-   "s": 74186,
-   "h": "71625be13a6a2c986f4eebd1db46ad1c8a43796bee5adb31ca3e0014b0f819ff"
+   "s": 93103,
+   "h": "598e5b15a0e778b8539e30ee8d76c1b7dadbfac959684f32c50e3ef35ff65f06"
   },
   {
    "p": "heute.html",
@@ -13513,8 +13513,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 252822,
-   "h": "6d4b78ee24a5e435cb31a03c8ac6a4e64d1af49905d0dd36f4b01aa243a1bd73"
+   "s": 253487,
+   "h": "79d0aece3c7de0abd164f733d04856434cec2229974aa302903f0004b07ec05d"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

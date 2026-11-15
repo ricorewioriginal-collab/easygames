@@ -21,7 +21,7 @@ const GAMES = [
   { id: 'taschi', title: 'TASCHI – Die 16 Lichter', icon: '✨', img: 'taschi/card.svg', bg: 'linear-gradient(145deg,#18345b,#8b5cf6 58%,#f7ba55)', glow: 'rgba(167,139,250,.48)',
     path: 'taschi/', desc: 'Eigenständiges 3D-Taschi-Abenteuer: entdecke die Welt der 16 Lichter, sammle deine Taschis und erlebe die Reise direkt im Browser auf PC und Smartphone.' },
   { id: 'zotik', title: 'ZOTIK – Die Splitter der Welten', icon: '💠', img: 'zotik/card.png', bg: 'linear-gradient(145deg,#7a3cff,#19f0ff)', glow: 'rgba(25,240,255,.45)',
-    path: 'zotik/', desc: 'Neues 3D-Action-Rollenspiel im Browser: Fuchs Zotik reist durch 10 Welten, Kämpfe, Quests, Bosskämpfe, eigener Zotik, 3 Speicherplätze. Touch mit Stick oder Tastatur und Maus.' },
+    path: 'zotik/', desc: '3D-Action-Rollenspiel im Browser: Fuchs Zotik reist durch 10 Kapitelwelten und viele Märchenwelten bis Gullivers Inseln. Kampfsystem wählbar (Echtzeit oder RPG-Rundenkampf), Gefährten, Beschwörungen, Arena mit Superbossen, Fotomodus, Nautilux-Flug mit Werkstatt, 3 Speicherplätze. Touch, Tastatur und Maus oder Controller.' },
   { id: 'riftzone', title: 'RIFTZONE', icon: '🌀', img: 'riftzone/card.png', bg: 'linear-gradient(145deg,#0b0f24,#b64bff 55%,#3ff2ff)', glow: 'rgba(182,75,255,.55)',
     path: 'riftzone/', desc: '3D-Battle-Royale auf der Insel Aurelia: Absprung aus der Riftfähre, Gleiter, 14 Orte, Waffen, Bauen oder ohne Bauen, Rift-Buggys, schrumpfender Sturm. Solo, Duo, Squad – offline gegen bis zu 99 Bots oder online mit eigenem Server. Tastatur/Maus, Touch und Gamepad.' },
   { id: 'aeru', title: 'AERU – Die Sterneninseln', icon: '🐉', img: 'aeru/card.png', bg: 'linear-gradient(145deg,#15374f,#65bcae 55%,#efcb93)', glow: 'rgba(101,188,174,.5)',
