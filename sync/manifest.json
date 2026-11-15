@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c343d9dd8c0b",
- "generated": "2026-11-15T20:47:05+01:00",
- "commit": "43c5ea711cae3ec908b1d50e4d267a0e96cdcd19",
+ "version": "054e7a04430a",
+ "generated": "2026-11-15T20:53:30+01:00",
+ "commit": "c9328804a662649a8e1465aee06ddc2d529cb94c",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2333,8 +2333,8 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/index.html",
-   "s": 9742,
-   "h": "dc77ff4d2f1b2839162f7519ca3caf92af752b038af7d6c19bd4c70b3a851241"
+   "s": 9755,
+   "h": "0953e3723b4d634cbba5f4bf1ade3660dff157ec2de3c60a09af504d41a9ebef"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/audio.js",
@@ -2343,13 +2343,13 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/js/data.js",
-   "s": 20319,
-   "h": "bd663d75b0a823a52e58c4354d9cb912e5b977958a8e3029f4e4b5991417ff1f"
+   "s": 22786,
+   "h": "9f5e5f8bc96b9265362339df35c29e7e1798b437eeaf1cf715a36a00bbe4626e"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/game.js",
-   "s": 73726,
-   "h": "7378f5f271ce855d8e43197a7b9e6534f12bb32f38ddbc9a7be53a2cb44af4a1"
+   "s": 73812,
+   "h": "79ed7721ede17ccc6b0c86c02cc2f279275762e9a2e61a869a899aefb7af1138"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/input.js",
@@ -2358,8 +2358,8 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/js/models.js",
-   "s": 9112,
-   "h": "f2b83c313f0c3b5efa114aa1bc71aa4b032d0f1b6219523aa0970224ba04c84c"
+   "s": 10366,
+   "h": "cc9a3fb45fb7f656950ad80d7f38749f6fb76ce35c3cace88ba057d81ba8d08e"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/physics.js",
@@ -2368,13 +2368,13 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/js/scenery.js",
-   "s": 37836,
-   "h": "d8bd5133c8c34b99042f710f8bdc3703dee704c63ad2001bf82d579be1e49361"
+   "s": 41883,
+   "h": "4bb2544ac64061bd8a4e0b1f538646cb6fd526a660d913db7f5936f148452108"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/track.js",
-   "s": 12044,
-   "h": "de3ad587390b8d63b974716e68f15266ab31319ba51a2720b3a8904c377e737d"
+   "s": 12268,
+   "h": "54741e64b81fd240fe760287b2b68d09cef4921ee0dcdced1476fafecb90677d"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/util.js",
@@ -10563,8 +10563,8 @@
   },
   {
    "p": "guides/anmacha-kart.json",
-   "s": 48218,
-   "h": "bd336c7f6bf67bd2e2b48c5c1449ae9ed4f6468206c682f6786e16ce3db2eac1"
+   "s": 48869,
+   "h": "be656bb9a4278a352bed13f79ff3ff5489aaeae756d19db5098e2f6153280425"
   },
   {
    "p": "guides/anmacha-kartensammlung.json",
@@ -14129,7 +14129,7 @@
   {
    "p": "sync/catalog.json",
    "s": 245426,
-   "h": "0b071023a5ed9d458d990f738eea0060d204ca1d88cc9e6ae73cd99b2e6de960"
+   "h": "b7ac3ce42e27e14b0e5291c88de8bfb3a36de92d829ddc83fd4ce11d2dbf1415"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
