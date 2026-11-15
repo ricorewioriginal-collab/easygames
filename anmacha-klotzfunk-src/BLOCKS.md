@@ -152,6 +152,33 @@ Jeder Block hat eine feste Id. Ids stehen in Spielständen und werden nie umnumm
 | 144 | Holztür | Formen | ja | – | – | – | 1 | axt |
 | 145 | Holztür (offen) | – | – | – | – | – | 1 | axt |
 | 146 | Leiter | Formen | – | – | – | – | 0.4 | axt |
+| 147 | Stuhl | Deko | – | – | – | – | 0.5 | – |
+| 148 | Sessel | Deko | – | – | – | – | 0.5 | – |
+| 149 | Hocker | Deko | – | – | – | – | 0.5 | – |
+| 150 | Sofa | Deko | – | – | – | – | 0.5 | – |
+| 151 | Tisch | Deko | ja | – | – | – | 0.5 | – |
+| 152 | Langer Tisch | Deko | ja | – | – | – | 0.5 | – |
+| 153 | Bett | Deko | – | – | – | – | 0.5 | – |
+| 154 | Kommode | Deko | ja | – | – | – | 0.5 | – |
+| 155 | Regal | Deko | ja | – | – | – | 0.5 | – |
+| 156 | Stehlampe | Deko | – | – | – | ja | 0.5 | – |
+| 157 | Tischlampe | Deko | – | – | – | ja | 0.5 | – |
+| 158 | Bücherstapel | Deko | – | – | – | – | 0.5 | – |
+| 159 | Bilderrahmen | Deko | – | – | – | – | 0.5 | – |
+| 160 | Teppich | Deko | – | – | – | – | 0.5 | – |
+| 161 | Parkbank | Deko | – | – | – | – | 0.5 | – |
+| 162 | Straßenlaterne | Deko | – | – | – | ja | 0.5 | – |
+| 163 | Ampel | Deko | – | – | – | ja | 0.5 | – |
+| 164 | Hydrant | Deko | – | – | – | – | 0.5 | – |
+| 165 | Müllcontainer | Deko | ja | – | – | – | 0.5 | – |
+| 166 | Busch | Deko | – | – | – | – | 0.5 | – |
+| 167 | Fass | Deko | ja | – | – | – | 0.5 | – |
+| 168 | Truhe | Deko | ja | – | – | – | 0.5 | – |
+| 169 | Bierfass | Deko | ja | – | – | – | 0.5 | – |
+| 170 | Kerzen | Deko | – | – | – | ja | 0.5 | – |
+| 171 | Wandfackel | Deko | – | – | – | ja | 0.5 | – |
+| 172 | Banner | Deko | – | – | – | – | 0.5 | – |
+| 173 | Kistenstapel | Deko | ja | – | – | – | 0.5 | – |
 
 **Spalten:** fest = man kann nicht hindurchlaufen · verdeckt = Nachbarflächen werden nicht gezeichnet · Härte × 0,9 = Abbauzeit mit der Hand in Sekunden (nur Überleben); das passende Werkzeug teilt sie durch sein Tempo · Stufe n+ = braucht mindestens eine Spitzhacke dieser Stufe (1 Holz, 2 Stein, 3 Kupfer, 4 Eisen), sonst lässt sich der Block nicht abbauen.
 

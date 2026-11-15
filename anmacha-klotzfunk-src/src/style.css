@@ -282,3 +282,6 @@ body.touch .mm-foot .hints{visibility:hidden}
 /* Controller: deutlicher Fokusrahmen in allen Menüs */
 body.pad :focus{outline:3px solid #ffd84a!important;outline-offset:2px;box-shadow:0 0 0 6px rgba(255,216,74,.25)}
 body.pad .cell:focus,body.pad .rec button:focus{transform:scale(1.04)}
+/* KayKit-Deko: Symbol statt Atlas-Kachel */
+.ic.em{background:none;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:24px;line-height:1}
+.cell .ic.em{font-size:30px}

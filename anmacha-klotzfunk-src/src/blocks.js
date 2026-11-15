@@ -17,7 +17,7 @@ export const LOGO_NAMES = ['RicoReWi', 'YourTime-FM', 'RapRadio 24', 'SchlagerPo
 
 export const CATS = [
   { id: 'natur', name: 'Natur' }, { id: 'erz', name: 'Erze & Steine' }, { id: 'bau', name: 'Bauen' },
-  { id: 'form', name: 'Formen' }, { id: 'licht', name: 'Licht' }, { id: 'spezial', name: 'Spezial' }, { id: 'technik', name: 'Funktechnik' }, { id: 'funk', name: 'Funk-Logos' }
+  { id: 'form', name: 'Formen' }, { id: 'deko', name: 'Deko' }, { id: 'licht', name: 'Licht' }, { id: 'spezial', name: 'Spezial' }, { id: 'technik', name: 'Funktechnik' }, { id: 'funk', name: 'Funk-Logos' }
 ];
 
 const DEF = [
@@ -133,6 +133,24 @@ DEF.push(
   [145, 'DOOR_OPEN', 'Holztür (offen)', '', [8, 98, 8], { shape: 'door', opaque: 0, solid: 0, hard: 1.0, tool: 'axt', color: 0x9a6a3c, map: [154, 106, 60], inv: 0, drop: 144 }],
   [146, 'LADDER', 'Leiter', 'form', [99, 99, 99], { shape: 'ladder', opaque: 0, solid: 0, hard: 0.4, tool: 'axt', color: 0x8a6034, map: [138, 96, 52], icon: 99 }]
 );
+// ab 147: KayKit-Deko (Kay Lousberg, CC0) – 3D-Modelle statt Würfel, Reihenfolge = tools/make-deco.py
+// [Modell, Name, Symbol, fest (Höhe der Kollision, 0 = begehbar), Wand (an die Wand gehängt), leuchtet, Oberfläche (darauf Gestelltes sitzt dort), Kachel für Bruchstücke]
+export const DECO_DEF = [
+  ['chair', 'Stuhl', '🪑', 0, 0, 0, 0, 8], ['armchair', 'Sessel', '🛋️', 0, 0, 0, 0, 55], ['stool', 'Hocker', '🪑', 0, 0, 0, 0, 8],
+  ['couch', 'Sofa', '🛋️', 0, 0, 0, 0, 55], ['table', 'Tisch', '🍽️', 0.8, 0, 0, 0.8, 8], ['tablelong', 'Langer Tisch', '🍽️', 0.63, 0, 0, 0.63, 8],
+  ['bed', 'Bett', '🛏️', 0, 0, 0, 0, 55], ['cabinet', 'Kommode', '🗄️', 0.9, 0, 0, 0.9, 8], ['shelf', 'Regal', '📚', 0.78, 0, 0, 0.78, 8],
+  ['lamp', 'Stehlampe', '💡', 0, 0, 1, 0, 10], ['tablelamp', 'Tischlampe', '💡', 0, 0, 1, 0, 10], ['books', 'Bücherstapel', '📚', 0, 0, 0, 0, 81],
+  ['picture', 'Bilderrahmen', '🖼️', 0, 1, 0, 0, 8], ['rug', 'Teppich', '🟥', 0, 0, 0, 0, 55],
+  ['bench', 'Parkbank', '🪑', 0, 0, 0, 0, 8], ['streetlight', 'Straßenlaterne', '🏮', 0, 0, 1, 0, 84], ['trafficlight', 'Ampel', '🚦', 0, 0, 1, 0, 84],
+  ['hydrant', 'Hydrant', '🧯', 0, 0, 0, 0, 87 + 2], ['trash', 'Müllcontainer', '🗑️', 0.56, 0, 0, 0.56, 84], ['bush', 'Busch', '🌳', 0, 0, 0, 0, 7],
+  ['barrel', 'Fass', '🛢️', 1, 0, 0, 1, 5], ['chest', 'Truhe', '🧰', 0.73, 0, 0, 0.73, 8], ['keg', 'Bierfass', '🍺', 0.97, 0, 0, 0.97, 5],
+  ['candles', 'Kerzen', '🕯️', 0, 0, 1, 0, 10], ['torch', 'Wandfackel', '🔥', 0, 1, 1, 0, 10], ['banner', 'Banner', '🚩', 0, 1, 0, 0, 55],
+  ['crates', 'Kistenstapel', '📦', 0.95, 0, 0, 0.95, 8]
+];
+export const DECO0 = 147;
+DECO_DEF.forEach(([key, name, emoji, solid, wall, emit, top, tile], k) => {
+  DEF.push([DECO0 + k, 'DECO_' + key.toUpperCase(), name, 'deko', [tile, tile, tile], { shape: 'deco', opaque: 0, solid: solid ? 1 : 0, emit: emit ? 1 : 0, hard: 0.5, emoji, icon: tile, color: 0x9a7a5a, map: [150, 120, 90] }]);
+});
 for (let i = 0; i < LOGO_COUNT; i++) DEF.push([LOGO0 + i, 'LOGO' + (i + 1), LOGO_NAMES[i], 'funk', null, { logo: 1, hard: 0.5, color: 0x1a2040, map: [60, 70, 110] }]);
 DEF.sort((a, b) => a[0] - b[0]);
 
@@ -148,7 +166,7 @@ export const TRANS = new Uint8Array(MAX_ID);
 export const SELF = new Uint8Array(MAX_ID);
 export const CROSS = new Uint8Array(MAX_ID); // Pflanzen: zwei gekreuzte Flächen statt Würfel
 export const FLAT = new Uint8Array(MAX_ID);  // flache Platte am Boden (Schiene)
-export const SHAPE_KINDS = ['', 'slab', 'stair', 'fence', 'wall', 'pane', 'door', 'ladder'];
+export const SHAPE_KINDS = ['', 'slab', 'stair', 'fence', 'wall', 'pane', 'door', 'ladder', 'deco'];
 export const SHAPE = new Uint8Array(MAX_ID); // Formblock-Art (Index in SHAPE_KINDS), 0 = Würfel/Pflanze/Platte
 export const TILES = {};
 
@@ -171,4 +189,7 @@ export function stairFor(base, yaw) {
   const fx = -Math.sin(yaw), fz = -Math.cos(yaw), d = Math.abs(fx) > Math.abs(fz) ? (fx > 0 ? 1 : 3) : (fz > 0 ? 2 : 0);
   return base + d;
 }
+// Block-Id → Index in DECO_DEF (undefined = kein Deko-Stück); als Objekt der Namen für die Laufzeit
+export const DECO = [];
+DECO_DEF.forEach((d, k) => { DECO[DECO0 + k] = k; d.solid = d[3]; d.wall = d[4]; d.emit = d[5]; d.top = d[6]; });
 export const CROPS = [B.WHEAT0, B.WHEAT1, B.WHEAT2, B.WHEAT3]; // Wachstumsstufen
