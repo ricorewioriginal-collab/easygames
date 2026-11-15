@@ -8,19 +8,31 @@ function canvas(w: number, h: number): HTMLCanvasElement | null {
   try { const c = document.createElement('canvas'); c.width = w; c.height = h; return c.getContext('2d') ? c : null; } catch { return null; }
 }
 
-/** Schotterbett mit Schwellen: u quer (0..1 = 3 m), v längs (1 = 0,6 m) */
+/** Schotterbett mit Schwellen: u quer (0..1 = 3 m), v längs (1 = 0,6 m). Eigene prozedurale Textur (keine Fremd-Assets). */
 function bedTexture(): THREE.Texture | null {
-  const c = canvas(64, 32); if (!c) return null;
+  const W = 128, H = 64;
+  const c = canvas(W, H); if (!c) return null;
   const g = c.getContext('2d')!;
-  // Schotter (hell, Vertexfarbe färbt)
-  g.fillStyle = '#d8d4cc'; g.fillRect(0, 0, 64, 32);
-  for (let i = 0; i < 260; i++) { const v = 150 + Math.floor(Math.random() * 90); g.fillStyle = `rgb(${v},${v - 4},${v - 10})`; g.fillRect(Math.random() * 64, Math.random() * 32, 2, 2); }
-  // Schwelle (Beton) über 2,6 m Breite, 0,26 m tief
-  g.fillStyle = '#8f8a82'; g.fillRect(3, 9, 58, 14);
-  g.fillStyle = '#a19c94'; g.fillRect(3, 9, 58, 3);
+  // Schotter: viele kleine, schattierte Steine (hell, die Vertexfarbe färbt)
+  g.fillStyle = '#9d988f'; g.fillRect(0, 0, W, H);
+  for (let i = 0; i < 900; i++) {
+    const x = Math.random() * W, y = Math.random() * H, r = 0.8 + Math.random() * 1.8, v = 140 + Math.floor(Math.random() * 100);
+    g.fillStyle = `rgb(${v},${v - 3},${v - 9})`;
+    g.beginPath(); g.ellipse(x, y, r * 1.2, r, Math.random() * 3, 0, Math.PI * 2); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.18)'; g.fillRect(x - r * 0.5, y - r * 0.6, r * 0.7, r * 0.4);
+  }
+  // Schwelle (Beton) über 2,6 m Breite, 0,26 m tief, mit Kanten, Schatten und Befestigungen
+  const sx = 6, sw = W - 12, sy = 19, sh = 28;
+  g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(sx, sy + sh, sw, 3);
+  g.fillStyle = '#8c877e'; g.fillRect(sx, sy, sw, sh);
+  for (let i = 0; i < 160; i++) { const v = 120 + Math.floor(Math.random() * 40); g.fillStyle = `rgba(${v},${v - 2},${v - 6},.5)`; g.fillRect(sx + Math.random() * sw, sy + Math.random() * sh, 1, 1); }
+  g.fillStyle = '#a7a299'; g.fillRect(sx, sy, sw, 4);
+  g.fillStyle = '#6f6a62'; g.fillRect(sx, sy + sh - 3, sw, 3);
+  // Rippenplatten/Klemmen unter den Schienen (Spurweite ≈ 1,435 m von 3 m)
+  for (const u of [0.26, 0.74]) { const x = u * W; g.fillStyle = '#3b3632'; g.fillRect(x - 6, sy + 6, 12, sh - 12); g.fillStyle = '#55504a'; g.fillRect(x - 6, sy + 6, 12, 2); }
   const t = new THREE.CanvasTexture(c);
   t.wrapS = THREE.ClampToEdgeWrapping; t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace;
-  t.anisotropy = 4;
+  t.anisotropy = 8;
   return t;
 }
 
@@ -38,6 +50,24 @@ export function signTexture(name: string, maxSize: number): THREE.Texture | null
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
   return t;
 }
+
+/** Prozedurale Bodenkörnung (Wertrauschen, mehrere Oktaven) – ersetzt einfarbige Flächen ohne Texturspeicher */
+const DETAIL_GLSL = `
+float egH(vec2 p){ p = mod(p, 512.0); return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float egN(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(egH(i), egH(i + vec2(1.0, 0.0)), f.x), mix(egH(i + vec2(0.0, 1.0)), egH(i + vec2(1.0)), f.x), f.y); }
+vec3 groundDetail(vec3 wp, float up, float dist){
+  float fl = smoothstep(0.55, 0.9, up);
+  vec2 p = wp.xz;
+  float macro = egN(p * 0.011) * 0.6 + egN(p * 0.043) * 0.4;
+  float mid = egN(p * 0.27);
+  float near = 1.0 - smoothstep(40.0, 480.0, dist);
+  float fine = egN(p * 1.7) * 0.55 + egN(p * 5.3) * 0.45;
+  float k = mix(1.0, 0.74 + 0.5 * macro, fl) * mix(1.0, 0.84 + 0.32 * mid, fl) * mix(1.0, 0.72 + 0.56 * fine, fl * near);
+  float m = (macro - 0.5) * fl;
+  return k * vec3(1.0 + 0.16 * m, 1.0 + 0.04 * m, 1.0 - 0.2 * m);
+}
+`;
 
 export class Materials {
   readonly stat = new THREE.MeshLambertMaterial({ vertexColors: true });
@@ -66,12 +96,15 @@ export class Materials {
       sh.uniforms.uGlow = this.glowU;
       sh.vertexShader = sh.vertexShader
         .replace('#include <common>', '#include <common>\nattribute float glow;\nvarying float vGlow;')
-        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvGlow = glow;');
+        .replace('#include <common>\nattribute float glow;', '#include <common>\nattribute float glow;\nvarying vec3 vWPos;\nvarying float vUp;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvGlow = glow;\nvWPos = (modelMatrix * vec4(transformed, 1.0)).xyz;\nvUp = normalize(mat3(modelMatrix) * objectNormal).y;');
       sh.fragmentShader = sh.fragmentShader
-        .replace('#include <common>', '#include <common>\nvarying float vGlow;\nuniform float uGlow;')
+        .replace('#include <common>', '#include <common>\nvarying float vGlow;\nuniform float uGlow;\nvarying vec3 vWPos;\nvarying float vUp;\n' + DETAIL_GLSL)
+        // Bodendetail: Gras-/Erd-/Kieskörnung auf flachen Flächen, Großflächen-Variation, nah stark, fern ausgeblendet
+        .replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb *= groundDetail(vWPos, vUp, length(vWPos - cameraPosition)) * (1.0 - vGlow) + vGlow;')
         .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += diffuseColor.rgb * vGlow * uGlow;\ndiffuseColor.rgb *= 1.0 - 0.75 * vGlow;');
     };
-    this.stat.customProgramCacheKey = () => 'world-static-glow';
+    this.stat.customProgramCacheKey = () => 'world-static-glow-detail';
     this.stat.name = 'world-static'; this.bed.name = 'world-bed'; this.lamp.name = 'signal-lamp'; this.barrier.name = 'barrier';
     // Schranke: rot-weiß gestreift, Drehpunkt bei x = 0
     const b = new THREE.BoxGeometry(6.5, 0.12, 0.1, 10, 1, 1); b.translate(3.25, 0, 0);
