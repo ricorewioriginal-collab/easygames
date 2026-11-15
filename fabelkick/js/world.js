@@ -36,7 +36,7 @@
       this.canvas = canvas;
       this.renderer = new T.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', alpha: false });
       this.renderer.outputEncoding = T.sRGBEncoding;
-      this.renderer.toneMapping = T.ACESFilmicToneMapping; this.renderer.toneMappingExposure = 1.05;
+      this.renderer.toneMapping = T.ACESFilmicToneMapping; this.renderer.toneMappingExposure = 0.98;
       this.renderer.shadowMap.type = T.PCFSoftShadowMap;
       this.scene = new T.Scene();
       this.camera = new T.PerspectiveCamera(40, 1, 0.5, 900);
@@ -65,7 +65,7 @@
         this.scene.traverse(o => { if (o.material) { (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => { m.needsUpdate = true; }); } });
       }
       if (this.sun) this.sun.castShadow = sh;
-      this.crowd.forEach((m, i) => { m.visible = q !== 'niedrig' || i % 2 === 0; });
+      this.crowd.forEach((m, i) => { m.visible = q !== 'niedrig' || (!m.userData.head && (i >> 1) % 2 === 0); });
       this.resize();
     }
     resize() {
@@ -77,14 +77,14 @@
     buildFixed() {
       const f = this.fixed;
       // Spielfeld mit Mähstreifen
-      this.pitchMat = new T.MeshStandardMaterial({ roughness: 0.95 });
+      this.pitchMat = new T.MeshStandardMaterial({ roughness: 0.92 });
       const pitch = new T.Mesh(new T.PlaneGeometry(P.L + 16, P.W + 14), this.pitchMat);
       pitch.rotation.x = -Math.PI / 2; pitch.receiveShadow = true; f.add(pitch);
       this.outerMat = new T.MeshStandardMaterial({ roughness: 1 });
       const outer = new T.Mesh(new T.PlaneGeometry(900, 900), this.outerMat);
       outer.rotation.x = -Math.PI / 2; outer.position.y = -0.05; f.add(outer);
       // Linien
-      const lm = new T.MeshBasicMaterial({ color: col('#f4f7f2'), polygonOffset: true, polygonOffsetFactor: -2 });
+      const lm = new T.MeshBasicMaterial({ color: col('#e6ece2'), polygonOffset: true, polygonOffsetFactor: -2 });
       const lw = 0.13, y = 0.015;
       const line = (x, z, w, d) => { const m = new T.Mesh(new T.PlaneGeometry(w, d), lm); m.rotation.x = -Math.PI / 2; m.position.set(x, y, z); f.add(m); };
       const L2 = P.L / 2, W2 = P.W / 2;
@@ -116,7 +116,7 @@
       // Licht
       this.hemi = new T.HemisphereLight(0xffffff, 0x334422, 0.7); this.scene.add(this.hemi);
       this.sun = new T.DirectionalLight(0xffffff, 2); this.sun.position.set(-35, 80, 40);
-      const sc = this.sun.shadow.camera; sc.left = -70; sc.right = 70; sc.top = 50; sc.bottom = -50; sc.near = 10; sc.far = 220;
+      const sc = this.sun.shadow.camera; sc.left = -42; sc.right = 42; sc.top = 32; sc.bottom = -32; sc.near = 10; sc.far = 220;
       this.sun.shadow.mapSize.set(2048, 2048); this.sun.shadow.bias = -0.0004; this.sun.shadow.normalBias = 0.03;
       this.scene.add(this.sun); this.scene.add(this.sun.target);
       this.amb = new T.AmbientLight(0xffffff, 0.12); this.scene.add(this.amb);
@@ -157,6 +157,7 @@
       this.roofMat = new T.MeshStandardMaterial({ color: col('#1a1e26'), roughness: 0.6, metalness: 0.3 });
       const fanGeo = new T.CylinderGeometry(0.2, 0.26, 0.85, 6); fanGeo.translate(0, 0.42, 0);
       const fanMat = new T.MeshLambertMaterial({ color: 0xffffff });
+      const headGeo = new T.IcosahedronGeometry(0.2, 0), SKIN = ['#c98d5b', '#8a5a3a', '#7cbf5a', '#b9a07a', '#e3c19b', '#6b8f4a', '#d8d2c8', '#5a3b2a'];
       const rows = 9, step = 0.85, rise = 0.62, gap = 9;
       const sides = [
         { len: P.L + 30, off: P.W / 2 + gap, rot: 0 }, { len: P.L + 30, off: P.W / 2 + gap, rot: Math.PI },
@@ -172,6 +173,7 @@
         }
         const back = new T.Mesh(G.box, this.standMat); back.scale.set(sd.len, rows * rise + 4, 1); back.position.set(0, (rows * rise + 4) / 2, sd.off + rows * step + 0.5); g.add(back);
         const roof = new T.Mesh(G.box, this.roofMat); roof.scale.set(sd.len, 0.4, rows * step + 3); roof.position.set(0, rows * rise + 5, sd.off + rows * step / 2 - 0.5); roof.rotation.x = -0.08; g.add(roof);
+        const strip = new T.Mesh(G.box, this.stripMat || (this.stripMat = new T.MeshBasicMaterial({ color: col('#fff6dc') }))); strip.scale.set(sd.len, 0.12, 0.3); strip.position.set(0, rows * rise + 4.6, sd.off - 1.9); g.add(strip);
         // Werbebanden
         const boardMat = this.boardMat || (this.boardMat = new T.MeshBasicMaterial({ map: this.boardTex() }));
         const bd = new T.Mesh(new T.PlaneGeometry(sd.len - 20, 0.9), boardMat); bd.position.set(0, 0.45, sd.off - gap + 4.5); bd.rotation.y = Math.PI; g.add(bd);
@@ -187,6 +189,10 @@
           pos.forEach((v, i) => { p.set(v[0], v[1], v[2]); q.setFromAxisAngle(yAx, (Math.random() - 0.5) * 0.6); sc.set(1, 0.85 + Math.random() * 0.3, 1); m4.compose(p, q, sc); im.setMatrixAt(i, m4); im.setColorAt(i, col('#888888')); });
           im.instanceMatrix.needsUpdate = true; im.userData = { phase: si * 1.7 + k * 0.9, base: 0 };
           g.add(im); this.crowd.push(im);
+          // Köpfe (Fabelwesen-Hauttöne), springen mit
+          const hm = new T.InstancedMesh(headGeo, fanMat, pos.length);
+          pos.forEach((v, i) => { p.set(v[0], v[1] + 0.98, v[2]); q.identity(); sc.set(1, 1, 1); m4.compose(p, q, sc); hm.setMatrixAt(i, m4); hm.setColorAt(i, col(SKIN[i % SKIN.length])); });
+          hm.instanceMatrix.needsUpdate = true; hm.userData = { phase: im.userData.phase, head: true }; g.add(hm); this.crowd.push(hm);
         }
       });
       // Flutlichtmasten
@@ -197,6 +203,8 @@
         const pm = new T.MeshBasicMaterial({ color: col('#fffbe8') });
         const panel = new T.Mesh(G.box, pm); panel.scale.set(5, 3, 0.4); panel.position.y = 31; panel.lookAt(-sx * 60, 0, -sz * 60); g.add(panel);
         this.lightPanels.push(pm);
+        const glow = new T.Sprite(this.glowMat || (this.glowMat = new T.SpriteMaterial({ map: canvasTex(64, 64, (c, w) => { const r = c.createRadialGradient(w / 2, w / 2, 0, w / 2, w / 2, w / 2); r.addColorStop(0, 'rgba(255,255,240,1)'); r.addColorStop(0.25, 'rgba(255,250,220,0.55)'); r.addColorStop(1, 'rgba(255,250,220,0)'); c.fillStyle = r; c.fillRect(0, 0, w, w); }), blending: T.AdditiveBlending, depthWrite: false, transparent: true, fog: false })));
+        glow.scale.set(16, 16, 1); glow.position.y = 31; g.add(glow);
       });
     }
 
@@ -224,15 +232,29 @@
       this.scene.fog = new T.Fog(col(a.fog), 160, 520);
       this.sun.color = col(a.sun); this.sun.intensity = a.sunI;
       this.hemi.color = col(a.hemi[0]); this.hemi.groundColor = col(a.hemi[1]); this.hemi.intensity = a.hemiI;
-      this.sun.position.set(a.night ? 0 : -35, 80, a.night ? 25 : 40);
+      this.sunOff = new T.Vector3(a.night ? 0 : -35, 80, a.night ? 25 : 40); this.sun.position.copy(this.sunOff);
       this.pitchMat.map && this.pitchMat.map.dispose();
-      this.pitchMat.map = canvasTex(1024, 256, (g, w, h) => {
-        const n = 20; for (let i = 0; i < n; i++) { g.fillStyle = a.grass[i % 2]; g.fillRect(i * w / n, 0, w / n + 1, h); }
-        for (let i = 0; i < 9000; i++) { g.fillStyle = `rgba(${Math.random() < 0.5 ? '0,0,0' : '255,255,255'},0.035)`; g.fillRect(Math.random() * w, Math.random() * h, 2, 2); }
+      const hi = this.quality === 'hoch', TW = hi ? 2048 : 1024, TH = hi ? 1024 : 512;
+      this.pitchMat.map = canvasTex(TW, TH, (g, w, h) => {
+        const n = 20, sw = w / n;
+        for (let i = 0; i < n; i++) { g.fillStyle = a.grass[i % 2]; g.fillRect(i * sw, 0, sw + 1, h); }
+        // Quer-Mähstreifen ganz leicht (Karomuster wie im Profistadion)
+        for (let j = 0; j < 12; j++) if (j % 2) { g.fillStyle = 'rgba(255,255,255,0.035)'; g.fillRect(0, j * h / 12, w, h / 12); }
+        // Halme: viele kurze, feine Striche in Hell und Dunkel
+        const blades = hi ? 60000 : 22000;
+        for (let i = 0; i < blades; i++) {
+          const x = Math.random() * w, y = Math.random() * h, l = 2 + Math.random() * 4;
+          g.fillStyle = Math.random() < 0.5 ? 'rgba(0,30,0,0.10)' : 'rgba(220,255,180,0.07)'; g.fillRect(x, y, 1, l);
+        }
+        // Abnutzung vor den Toren und am Mittelkreis
+        const wear = (cx, cy, r, al) => { const gr = g.createRadialGradient(cx, cy, 0, cx, cy, r); gr.addColorStop(0, `rgba(150,130,70,${al})`); gr.addColorStop(1, 'rgba(150,130,70,0)'); g.fillStyle = gr; g.fillRect(cx - r, cy - r, r * 2, r * 2); };
+        const fx = x => (x + (P.L + 16) / 2) / (P.L + 16) * w, fz = z => (z + (P.W + 14) / 2) / (P.W + 14) * h;
+        wear(fx(-P.L / 2 + 3), fz(0), w * 0.035, 0.22); wear(fx(P.L / 2 - 3), fz(0), w * 0.035, 0.22); wear(fx(0), fz(0), w * 0.03, 0.1);
         // Rand außerhalb der Linien etwas dunkler
-        g.fillStyle = 'rgba(0,0,0,0.12)'; const mx = 8 / (P.L + 16) * w, mz = 7 / (P.W + 14) * h;
+        g.fillStyle = 'rgba(0,0,0,0.16)'; const mx = 8 / (P.L + 16) * w, mz = 7 / (P.W + 14) * h;
         g.fillRect(0, 0, mx, h); g.fillRect(w - mx, 0, mx, h); g.fillRect(0, 0, w, mz); g.fillRect(0, h - mz, w, mz);
       });
+      this.pitchMat.map.anisotropy = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
       this.pitchMat.needsUpdate = true;
       this.outerMat.color = col(a.outer); this.standMat.color = col(a.stand);
       this.lightPanels.forEach(m => m.color = col(a.night ? '#ffffff' : '#c9c9c0'));
@@ -277,6 +299,7 @@
       const cs = [col(c1), col(c2), col('#e8e8e8'), col('#333a48'), col('#d04848'), col('#3f7fd8')];
       const tmp = new T.Color();
       this.crowd.forEach((im, k) => {
+        if (im.userData.head) return;
         for (let i = 0; i < im.count; i++) {
           const r = Math.random(); const base = r < 0.38 ? cs[0] : r < 0.7 ? cs[1] : cs[2 + Math.floor(Math.random() * 4)];
           tmp.copy(base).multiplyScalar(0.75 + Math.random() * 0.35); im.setColorAt(i, tmp);
@@ -298,6 +321,12 @@
       this.particles.update(dt);
     }
     render() { this.renderer.render(this.scene, this.camera); }
+    // Sonne (und damit der scharfe Schattenbereich) wandert mit dem Bildausschnitt
+    followShadow(x, z) {
+      if (!this.sun || !this.sunOff) return;
+      const sx = Math.round(x / 2) * 2, sz = Math.round(z / 2) * 2; // in Stufen, damit Schatten nicht flimmern
+      this.sun.target.position.set(sx, 0, sz); this.sun.position.set(sx + this.sunOff.x, this.sunOff.y, sz + this.sunOff.z);
+    }
 
     // ---------- Figuren ----------
     makeChar(team, opts) { return new Char(this, team, opts || {}); }

@@ -2544,19 +2544,19 @@
    "guide": {
     "anleitung": "FABELKICK 3D ist Fußball wie bei den großen Konsolenspielen, nur mit Fabelwesen. Acht Teams treten 11 gegen 11 an: Urwald-Affen, Silberrücken, Ork-Brecher, Elfenhain, Zwergenhammer, Trollbrücke, Drachenbrut und Frostpranken. Jedes Team hat eigene Werte für Tempo, Schuss, Pass, Abwehr und Torwart und eine Spezialkraft (z. B. Lianen-Sprint, Donnerschuss, Zauberschuss, Steinwall, Eiszeit). Der Kraftbalken füllt sich mit der Zeit, bei Balleroberungen, gewonnenen Zweikämpfen und Schüssen; ist er voll, löst du die Kraft aus. Es gibt Einwürfe, Ecken, Abstöße, Freistöße mit Mauer, Fouls und Elfmeter, Kopfbälle und Paraden. Modi: Anstoß (schnelles Spiel, auch zu zweit gegeneinander oder zusammen), Fabel-Pokal mit Viertelfinale, Halbfinale und Finale, Elfmeterschießen und Training gegen den Torwart. Drei Arenen, vier Schwierigkeitsstufen, Halbzeitlänge 2 bis 6 Minuten. Siege, Tore und Pokale werden lokal gespeichert, optional mit Google auf allen Geräten.",
     "steuerung": [
-     "Controller: linker Stick laufen, RT sprinten, A Pass, Y Steilpass, X Flanke, B Schuss (halten = mehr Kraft). Abwehr: A Tackling (halten = Pressing), B Grätsche, LB Spieler wechseln. RB Fabel-Kraft, Start Pause.",
-     "PC: WASD oder Pfeile laufen, Shift sprinten, Leertaste oder K Pass, L Steilpass, I Flanke, J Schuss. Abwehr: K Tackling, I Pressing, J Grätsche, Q oder L wechseln. E Fabel-Kraft, Esc oder P Pause.",
-     "Smartphone und Tablet: Daumen-Stick auf der linken Hälfte (ganz an den Rand = Sprint), rechts vier Tasten: A Pass, B Schuss, X Flanke, Y Steil; in der Abwehr A Tackling, B Grätsche, X Druck, Y Wechsel. ★ erscheint, wenn die Fabel-Kraft voll ist. Am besten quer halten.",
+     "Controller (Xbox, PlayStation 2 bis 5, Switch, Symbole passen sich an): linker Stick laufen, RT sprinten, LT abschirmen. A Pass, Y Steilpass, X Flanke (halten = stärker), B Schuss (halten = Kraft), LT + B Schlenzer, L3 Haken. Abwehr: A Tackling, B Grätsche, X Druck, LB oder Y wechseln. RB Fabel-Kraft, rechter Stick Kamera drehen/zoomen, R3 Kamera zurück, Steuerkreuz links/rechts Ansicht, hoch/runter Taktik, Select Radar, Start Pause.",
+     "PC: WASD oder Pfeile laufen, Shift sprinten, F abschirmen, Leertaste oder K Pass, L Steilpass, I Flanke, J Schuss, F + J Schlenzer, G Haken. Abwehr: K Tackling, I Pressing, J Grätsche, Q oder L wechseln. E Fabel-Kraft, Z/C Kamera drehen, Mausrad Zoom, V Ansicht, T Taktik, M Radar, Esc oder P Pause.",
+     "Smartphone und Tablet (hoch und quer): Daumen-Stick links (ganz an den Rand = Sprint), rechts vier Tasten: A Pass, B Schuss, X Flanke, Y Steil (halten = stärker); in der Abwehr A Tackling, B Grätsche, X Druck, Y Wechsel. ★ Fabel-Kraft, 🎥 Kamera. Im Hochformat schaut die Kamera längs übers Feld.",
      "Zu zweit: In der Teamauswahl jedes Gerät (Tastatur/Touch, Controller 1, 2 …) auf HEIM oder GAST stellen. Beide auf einer Seite = zusammen gegen den Computer."
     ],
     "tipps": [
-     "Kurz drücken für flache Schüsse, länger halten für mehr Wucht. Zu lange gehalten fliegt der Ball über die Latte.",
+     "Kurz drücken für flache Schüsse, länger halten für mehr Wucht. Zu lange gehalten fliegt der Ball über die Latte. Mit LT wird daraus ein genauer Schlenzer.",
      "Steilpässe in den Lauf sind gegen langsame Teams wie Zwerge und Trolle besonders stark.",
      "Grätsche nie von hinten: Das gibt Freistoß und im Strafraum Elfmeter.",
      "Beim Elfmeter als Torwart den Stick erst kurz vor dem Schuss in eine Ecke drücken."
     ]
    },
-   "size": 247468,
+   "size": 263753,
    "files": 12,
    "offline": true,
    "cloud": {

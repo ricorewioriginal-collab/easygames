@@ -21,7 +21,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <title>FABELKICK 3D – Fantasy-Fußball</title>
 <meta name="description" content="FABELKICK 3D – Fantasy-Fußball in 3D: Affen, Gorillas, Orks, Elfen, Zwerge, Trolle, Drachenbrut und Yetis spielen 11 gegen 11. Pokal, Elfmeterschießen, Training, Spezialkräfte. Touch, Tastatur und Gamecontroller, auch zu zweit.">
 <meta name="theme-color" content="#070b18">
-<link rel="stylesheet" href="./style.css?v=1">
+<link rel="stylesheet" href="./style.css?v=2">
 </head>
 <body data-screen="boot">
 <canvas id="gl" aria-hidden="true"></canvas>
@@ -116,24 +116,27 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <header class="screen-head"><button class="back nav" data-act="back" aria-label="Zurück">‹</button><h2>STEUERUNG</h2></header>
   <div class="ctrl-grid">
     <div class="ctrl"><h3>🎮 Controller</h3>
-      <p><b>Linker Stick</b> laufen · <b>RT</b> sprinten</p>
-      <p><b>A</b> Pass · <b>Y</b> Steilpass · <b>X</b> Flanke/Lupfer</p>
-      <p><b>B</b> Schuss (halten = mehr Kraft)</p>
-      <p>Abwehr: <b>A</b> Tackling (halten = Pressing) · <b>B</b> Grätsche · <b>LB</b> Spieler wechseln</p>
-      <p><b>RB</b> Fabel-Kraft · <b>Start</b> Pause</p></div>
+      <p class="sub">Xbox · PlayStation 2–5 (✕ ○ □ △) · Switch (B A Y X) · alle USB- und Bluetooth-Pads</p>
+      <p><b>Linker Stick</b> laufen · <b>RT/R2/ZR</b> sprinten · <b>LT/L2/ZL</b> Ball abschirmen</p>
+      <p><b>A/✕</b> Pass · <b>Y/△</b> Steilpass · <b>X/□</b> Flanke/Lupfer (halten = stärker)</p>
+      <p><b>B/○</b> Schuss (halten = Kraft) · mit <b>LT</b> = Schlenzer · <b>L3</b> Haken</p>
+      <p>Abwehr: <b>A/✕</b> Tackling (halten = Pressing) · <b>B/○</b> Grätsche · <b>X/□</b> Druck · <b>Y/△</b>, <b>LB/L1</b> wechseln</p>
+      <p><b>RB/R1</b> Fabel-Kraft · <b>Rechter Stick</b> Kamera drehen/zoomen · <b>R3</b> Kamera zurück</p>
+      <p><b>✚ ←/→</b> Kamera-Ansicht · <b>✚ ↑/↓</b> Taktik · <b>Select</b> Radar · <b>Start</b> Pause</p></div>
     <div class="ctrl"><h3>⌨️ Tastatur</h3>
-      <p><b>WASD</b> oder <b>Pfeile</b> laufen · <b>Shift</b> sprinten</p>
-      <p><b>Leertaste/K</b> Pass · <b>L</b> Steilpass · <b>I</b> Flanke</p>
-      <p><b>J</b> Schuss (halten = mehr Kraft)</p>
+      <p><b>WASD</b> oder <b>Pfeile</b> laufen · <b>Shift</b> sprinten · <b>F</b> abschirmen</p>
+      <p><b>Leertaste/K</b> Pass · <b>L</b> Steilpass · <b>I</b> Flanke (halten = stärker)</p>
+      <p><b>J</b> Schuss (halten = Kraft) · <b>F + J</b> Schlenzer · <b>G</b> Haken</p>
       <p>Abwehr: <b>K</b> Tackling · <b>J</b> Grätsche · <b>Q</b> wechseln</p>
-      <p><b>E</b> Fabel-Kraft · <b>Esc/P</b> Pause</p></div>
-    <div class="ctrl"><h3>📱 Touch</h3>
-      <p><b>Linke Hälfte</b>: Daumen-Stick erscheint, wo du tippst</p>
+      <p><b>E</b> Fabel-Kraft · <b>Z/C</b> Kamera drehen · <b>Mausrad</b> Zoom · <b>R</b> Kamera zurück</p>
+      <p><b>V</b> Kamera-Ansicht · <b>T</b> Taktik · <b>M</b> Radar · <b>Esc/P</b> Pause</p></div>
+    <div class="ctrl"><h3>📱 Touch (hoch und quer)</h3>
+      <p><b>Linke Seite</b>: Daumen-Stick erscheint, wo du tippst</p>
       <p><b>Stick ganz an den Rand</b> = Sprint</p>
-      <p>Rechts 4 Tasten: <b>A</b> Pass · <b>B</b> Schuss · <b>X</b> Flanke · <b>Y</b> Steil</p>
+      <p>Rechts 4 Tasten: <b>A</b> Pass · <b>B</b> Schuss · <b>X</b> Flanke · <b>Y</b> Steil (halten = stärker)</p>
       <p>Abwehr: <b>A</b> Tackling · <b>B</b> Grätsche · <b>X</b> Druck · <b>Y</b> Wechsel</p>
-      <p><b>★</b> erscheint, sobald die Fabel-Kraft voll ist</p>
-      <p>Handy quer halten für die beste Sicht</p></div>
+      <p><b>★</b> erscheint, sobald die Fabel-Kraft voll ist · <b>🎥</b> Kamera wechseln</p>
+      <p>Hochformat: Kamera schaut automatisch längs übers Feld</p></div>
     <div class="ctrl"><h3>✨ Fabel-Kräfte</h3>
       <p>Jedes Team hat eine eigene Spezialkraft. Der Balken füllt sich mit der Zeit, mit Pässen, Zweikämpfen und Schüssen.</p>
       <p>Elfmeter: Stick zielt, Schuss halten bestimmt die Kraft. Als Torwart: Stick in die Ecke, in die du springen willst.</p></div>
@@ -155,6 +158,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   </div>
   <div id="pensRow" class="pens-row"></div>
   <button id="pauseBtn" class="icon pause-btn" aria-label="Pause">❚❚</button>
+  <button id="camTBtn" class="icon cam-btn" aria-label="Kamera wechseln">🎥</button>
   <div id="playerCards" class="player-cards"></div>
   <div id="shotBar" class="shot-bar"><i></i></div>
   <canvas id="radar" width="200" height="128"></canvas>
@@ -171,7 +175,6 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     </div>
     <button data-btn="rb" class="tb star" id="tbRB">★</button>
   </div>
-  <div id="rotate" class="rotate">📱↻ Handy quer halten für mehr Überblick</div>
 </section>
 
 <!-- Pause -->
@@ -199,14 +202,14 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 </section>
 
 <script src="../vendor/three-r128.min.js"></script>
-<script src="js/data.js?v=1"></script>
-<script src="js/audio.js?v=1"></script>
-<script src="js/input.js?v=1"></script>
-<script src="js/world.js?v=1"></script>
-<script src="js/match.js?v=1"></script>
-<script src="js/ui.js?v=1"></script>
+<script src="js/data.js?v=2"></script>
+<script src="js/audio.js?v=2"></script>
+<script src="js/input.js?v=2"></script>
+<script src="js/world.js?v=2"></script>
+<script src="js/match.js?v=2"></script>
+<script src="js/ui.js?v=2"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="fabelkick" data-prefix="easygames.fabelkick.v1" data-mount="#cloudMount" data-hint="Mit Google anmelden und Siege, Tore und Pokale auf allen Geräten speichern." defer></script>
-<script src="../gamepad.js" data-pad="info" data-pad-labels="ls=Laufen; dpad=Laufen; rt=Sprinten; y=Steilpass; x=Flanke/Lupfer; b=Schuss (halten = mehr Kraft; lb=Spieler wechseln; rb=Fabel-Kraft; start=Pause" defer></script>
+<script src="../gamepad.js" data-pad="info dlg=off hud=off" data-pad-labels="ls=Laufen; rs=Kamera drehen und zoomen; dpad=←/→ Kamera-Ansicht, ↑/↓ Taktik; a=Pass (halten = stärker) / Tackling; b=Schuss (halten = Kraft) / Grätsche; x=Flanke / Druck; y=Steilpass / Spieler wechseln; lb=Spieler wechseln; rb=Fabel-Kraft; lt=Ball abschirmen, mit Schuss = Schlenzer; rt=Sprinten; l3=Haken; r3=Kamera zurücksetzen; select=Radar an/aus; start=Pause" defer></script>
 <script src="../egstat.js" defer></script>
 </body>
 </html>

@@ -16,7 +16,7 @@
         "ELFMETER (Nervensache): Elfmeterschießen – schießen und halten.",
         "TRAINING (Üben): dein Team gegen den Torwart, ohne Zeitlimit.",
         "TEAMS (Kader): alle 8 Fabel-Teams mit Werten, Motto und Spezialkraft.",
-        "EINSTELLUNGEN: Halbzeit (2, 3, 4 oder 6 Minuten), Schwierigkeit (Amateur, Profi, Weltklasse, Legende), Kamera (TV, Nah, Weit), Grafik (Automatisch, Hoch, Mittel, Niedrig/Akku), Ton, Menümusik, Vibration, Radar.",
+        "EINSTELLUNGEN: Halbzeit (2, 3, 4 oder 6 Minuten), Schwierigkeit (Amateur, Profi, Weltklasse, Legende), Kamera (TV, Nah, Weit, Hinter dem Team), Grafik (Automatisch, Hoch, Mittel, Niedrig/Akku), Ton, Menümusik, Vibration, Radar.",
         "STEUERUNG: alle Tasten für Touch, PC und Controller.",
         "Oben im Menü stehen deine Spiele, Siege/Unentschieden/Niederlagen, Tore und gewonnenen Pokale. ⛶ schaltet Vollbild."
       ]
@@ -62,9 +62,12 @@
     {
       "t": "Bedienung",
       "list": [
-        "Controller: linker Stick oder Steuerkreuz laufen, RT sprinten. Mit Ball: A Pass, Y Steilpass, X Flanke/Lupfer, B Schuss (halten = mehr Kraft). Ohne Ball: A Tackling (halten im Stand = Pressing), X Pressing, B Grätsche, LB oder Y Spieler wechseln. RB Fabel-Kraft, Start Pause.",
-        "PC: WASD oder Pfeile laufen, Shift sprinten. Mit Ball: Leertaste oder K Pass, L Steilpass, I Flanke, J Schuss (halten = mehr Kraft). Ohne Ball: K Tackling, I Pressing, J Grätsche, Q oder L Spieler wechseln. E Fabel-Kraft, Esc oder P Pause.",
-        "Touch: Auf der linken Bildschirmhälfte erscheint der Daumen-Stick dort, wo du tippst; Stick ganz an den Rand = Sprint. Rechts vier Tasten: A Pass, B Schuss, X Flanke, Y Steil. In der Abwehr: A Tackling, B Grätsche, X Druck (Pressing), Y Wechsel. ★ erscheint, sobald die Fabel-Kraft voll ist. Handy am besten quer halten.",
+        "Controller (Xbox, PlayStation 2 bis 5, Nintendo Switch und andere USB- oder Bluetooth-Pads; die Knopf-Symbole passen sich an: ✕ ○ □ △ bei PlayStation, B A Y X bei Switch): linker Stick laufen, RT/R2/ZR sprinten, LT/L2/ZL Ball abschirmen. Mit Ball: A/✕ Pass, Y/△ Steilpass, X/□ Flanke/Lupfer (antippen = automatische Stärke, halten = stärker und weiter), B/○ Schuss (halten = mehr Kraft), LT + Schuss = Schlenzer, L3 Haken. Ohne Ball: A/✕ Tackling (halten im Stand = Pressing), X/□ Druck, B/○ Grätsche, LB/L1 oder Y/△ Spieler wechseln. RB/R1 Fabel-Kraft.",
+        "Controller-Kamera und Taktik: rechter Stick dreht die Kamera und zoomt, R3 setzt sie zurück. Steuerkreuz links/rechts wechselt die Ansicht (TV, Nah, Weit, Hinter dem Team), Steuerkreuz hoch/runter die Taktik (Defensiv, Ausgewogen, Offensiv). Select schaltet das Radar, Start pausiert. Select + Start öffnet die Controller-Belegung zum Umbelegen.",
+        "PC: WASD oder Pfeile laufen, Shift sprinten, F abschirmen. Mit Ball: Leertaste oder K Pass, L Steilpass, I Flanke (halten = stärker), J Schuss (halten = mehr Kraft), F + J Schlenzer, G Haken. Ohne Ball: K Tackling, I Pressing, J Grätsche, Q oder L Spieler wechseln. E Fabel-Kraft, Z/C Kamera drehen, Mausrad oder +/− Zoom, R Kamera zurück, V Ansicht, T Taktik, M Radar, Esc oder P Pause.",
+        "Touch (hoch und quer): Auf der linken Seite erscheint der Daumen-Stick dort, wo du tippst; Stick ganz an den Rand = Sprint. Rechts vier Tasten: A Pass, B Schuss, X Flanke, Y Steil (halten = stärker). In der Abwehr: A Tackling, B Grätsche, X Druck (Pressing), Y Wechsel. ★ erscheint, sobald die Fabel-Kraft voll ist, 🎥 wechselt die Kamera. Im Hochformat schaut die Kamera automatisch längs übers Feld und das Radar steht senkrecht.",
+        "Die Stick-Richtung gilt immer so, wie du das Feld siehst: Stick nach oben läuft vom Bildschirm weg, auch wenn du die Kamera drehst.",
+        "Nach einem Tor oder in der Halbzeitpause überspringt A oder B die Szene.",
         "Menüs: Pfeile/WASD oder Steuerkreuz wählen, Enter/Leertaste oder A bestätigen, Esc/Rücktaste oder B zurück, links/rechts ändert Werte.",
         "Pause: Weiterspielen, Kamera umschalten, Steuerung ansehen, Neu starten, Zum Hauptmenü."
       ]
@@ -102,7 +105,8 @@
         "Kurz drücken für flache Schüsse, länger halten für mehr Wucht. Wer zu lange hält, schießt über die Latte.",
         "Spiel einfache Pässe (A/Leertaste) statt alleine durchzulaufen – Pässe öffnen Räume.",
         "Sprinten kostet Ausdauer. Der grüne Balken zeigt, wie viel noch übrig ist; sprinte gezielt.",
-        "Der Radar zeigt dir alle Spieler auf einen Blick – er lässt sich in den Einstellungen ein- und ausschalten."
+        "Der Radar zeigt dir alle Spieler auf einen Blick – er lässt sich in den Einstellungen ein- und ausschalten.",
+        "Pässe kurz antippen für den sicheren Pass zum Nächsten, halten für weite Pässe – der blaue Balken zeigt die Stärke."
       ]
     },
     {
@@ -112,7 +116,10 @@
         "Flanken (X/I) aus dem Halbfeld finden den Kopf deiner Stürmer – gut gegen starke Abwehrreihen.",
         "In der Abwehr lieber Tackling (A/K) und Pressing als Grätsche. Grätsche nie von hinten: Das gibt Freistoß, im Strafraum Elfmeter.",
         "Wechsle früh den Spieler (LB/Q), damit der Verteidiger zwischen Ball und Tor steht.",
-        "Nutze die Stärken deines Teams: Orks und Drachen schießen am härtesten, Elfen passen am besten, Affen sind am schnellsten, Zwerge haben den besten Torwart."
+        "Nutze die Stärken deines Teams: Orks und Drachen schießen am härtesten, Elfen passen am besten, Affen sind am schnellsten, Zwerge haben den besten Torwart.",
+        "Schlenzer (LT/L2/ZL bzw. F mit Schuss) aus 16 bis 20 Metern drehen sich um den Torwart herum ins Eck und sind genauer, aber langsamer.",
+        "Liegst du hinten, stell die Taktik auf Offensiv (Steuerkreuz hoch oder T): Dein Team rückt auf und presst früher. Der Computer macht das auch, wenn er zurückliegt.",
+        "Achte auf Stürmer, die in die Tiefe starten – ein Steilpass genau dann ist die beste Torchance."
       ]
     },
     {

@@ -69,14 +69,14 @@ FK.SPECIES = {
 
 FK.ARENAS = [
   { id: 'dschungel', name: 'Dschungel-Arena', desc: 'Sonnige Arena zwischen Riesenbäumen', night: false,
-    sky: ['#5fb8ff', '#cfe9ff', '#ffe9c4'], sun: '#fff1d6', sunI: 2.2, hemi: ['#d9efff', '#3a5a2a'], hemiI: 0.75,
-    grass: ['#3f9a3a', '#378a33'], outer: '#2d6d2a', fog: '#cfe9ff', decor: 'trees', stand: '#2c3440', glow: '#ffe28a' },
+    sky: ['#5fb8ff', '#cfe9ff', '#ffe9c4'], sun: '#fff1d6', sunI: 1.85, hemi: ['#d9efff', '#3a5a2a'], hemiI: 0.62,
+    grass: ['#2a7f2b', '#236f25'], outer: '#2d6d2a', fog: '#cfe9ff', decor: 'trees', stand: '#2c3440', glow: '#ffe28a' },
   { id: 'kristall', name: 'Mondkristall-Stadion', desc: 'Flutlicht, zwei Monde und leuchtende Kristalle', night: true,
     sky: ['#05061a', '#151a46', '#2b2f6e'], sun: '#a9c4ff', sunI: 1.6, hemi: ['#5468c4', '#101830'], hemiI: 0.55,
-    grass: ['#2f8a49', '#287a40'], outer: '#163a2a', fog: '#151a46', decor: 'crystals', stand: '#1c2036', glow: '#7ef9ff' },
+    grass: ['#267a45', '#206b3c'], outer: '#163a2a', fog: '#151a46', decor: 'crystals', stand: '#1c2036', glow: '#7ef9ff' },
   { id: 'vulkan', name: 'Vulkan-Kessel', desc: 'Abendrot, Lavaflüsse und schwebende Felsen', night: false,
-    sky: ['#2a0f2e', '#a8364a', '#ff9a4a'], sun: '#ffb27a', sunI: 1.9, hemi: ['#ffb08a', '#3a1a12'], hemiI: 0.6,
-    grass: ['#4a9338', '#41842f'], outer: '#3b2a1c', fog: '#a8364a', decor: 'volcano', stand: '#2a1d22', glow: '#ff6a2a' }
+    sky: ['#2a0f2e', '#a8364a', '#ff9a4a'], sun: '#ffb27a', sunI: 1.9, hemi: ['#ffb08a', '#3a1a12'], hemiI: 0.55,
+    grass: ['#3b862c', '#337826'], outer: '#3b2a1c', fog: '#a8364a', decor: 'volcano', stand: '#2a1d22', glow: '#ff6a2a' }
 ];
 
 FK.DIFFS = [

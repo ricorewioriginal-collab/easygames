@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b59bba301265",
- "generated": "2026-11-15T22:27:09+01:00",
- "commit": "e2ce61260d89c4ace3388853fa520ae2337f99c7",
+ "version": "cb193ca61d62",
+ "generated": "2026-11-15T21:36:29+00:00",
+ "commit": "cc53802107ceda7670dcf75e2e9bcbcb359ffdae",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9788,8 +9788,8 @@
   },
   {
    "p": "fabelkick/index.html",
-   "s": 14449,
-   "h": "e9494c537463ac402667b165f5f3a38abb23998bc1e8c96447a73df1493a18c2"
+   "s": 15465,
+   "h": "3e4b628b0143369a3fb566368e013fd30ad0d82acbeaa3f5386310addee3628e"
   },
   {
    "p": "fabelkick/js/audio.js",
@@ -9798,28 +9798,28 @@
   },
   {
    "p": "fabelkick/js/data.js",
-   "s": 8630,
-   "h": "cb35fc9595da9ca7d5b794934e4ef92dab283a20492eda0ffec5536ed037a565"
+   "s": 8632,
+   "h": "0fd02f1c58d640a4c0940e103f9ac6994c449a818f784e846849ad8fbcf89b82"
   },
   {
    "p": "fabelkick/js/input.js",
-   "s": 8492,
-   "h": "29b8a5270d83e9a68734ffc1a9daa3c3f919fbf32e27d105592bac9ddd54f857"
+   "s": 9907,
+   "h": "845a4ba68593c8e41ba82d535cec80a8f05697af6c0563ff6e60404959ad57b6"
   },
   {
    "p": "fabelkick/js/match.js",
-   "s": 70626,
-   "h": "21151442647f351d5e0fb57ee34f52218582668b3e022d359bcc6c52d2ea7e5c"
+   "s": 78916,
+   "h": "dd531cfccbcfb5835cbe9622f9382758453a6e81425a17fd18c6da0411b8cd00"
   },
   {
    "p": "fabelkick/js/ui.js",
-   "s": 32068,
-   "h": "5f1c8fd9ae155df2ce6ee9dcab4b53b6dc1b9b537e662d245ceb1d764aededa7"
+   "s": 33978,
+   "h": "2dafd707304c3283125545df9f07f6baac5b251259aa786f8658b5562baeaf2e"
   },
   {
    "p": "fabelkick/js/world.js",
-   "s": 37482,
-   "h": "62c9da63287129412442e11e1258899b856233cf0f73f344fbfc1d24c3c490f8"
+   "s": 40505,
+   "h": "8803a63127fa067fc49a3f34cd5ae874317c8c709cb47c9f479b64fa66cf210b"
   },
   {
    "p": "fabelkick/logo.svg",
@@ -9833,8 +9833,8 @@
   },
   {
    "p": "fabelkick/style.css",
-   "s": 22163,
-   "h": "a2ffeb4d4e076d092d94ef92f118bcb68478415782ca0b07a0e5bae6cbdb07d0"
+   "s": 22792,
+   "h": "f339dc1977a51816ef9e63783dd6896429da992467baaa378537f320e2174893"
   },
   {
    "p": "fabelkick/sw.js",
@@ -10553,8 +10553,8 @@
   },
   {
    "p": "guides.js",
-   "s": 170025,
-   "h": "9ace400a263fc73dc0d89fab8184cdd3c9b90b42fe5acb945dcfdea8e7e6f7e7"
+   "s": 170431,
+   "h": "09d2934c9e8364a6ef7925896e85cf1f8a7b5782c7eff256d96db82e01e6c26f"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10743,8 +10743,8 @@
   },
   {
    "p": "guides/fabelkick.json",
-   "s": 15309,
-   "h": "b7480b767f682c742780e25c949c1da8e1ffad3d305ff170fcaf2fadfb4bd730"
+   "s": 17054,
+   "h": "74741491ab044e47ded7df76492b95ad8a764ad63e0f376ee4318ca44b4fdd25"
   },
   {
    "p": "guides/fall-akte.json",
@@ -14173,8 +14173,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 246301,
-   "h": "266d8a51aa9d92362457b6292152cf960ee8964f0f0869f710a0a4f45dff762a"
+   "s": 246707,
+   "h": "60c8b7fbb74ea2c8d9a19be77c31268b1adc86f65e3bb27311832be40b49a9a4"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

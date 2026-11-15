@@ -130,7 +130,7 @@
   const SETS = [
     { k: 'half', label: 'Halbzeit', vals: [2, 3, 4, 6], fmt: v => v + ' Minuten' },
     { k: 'diff', label: 'Schwierigkeit', vals: [0, 1, 2, 3], fmt: v => FK.DIFFS[v].name },
-    { k: 'cam', label: 'Kamera', vals: ['tv', 'nah', 'weit'], fmt: v => ({ tv: 'TV', nah: 'Nah', weit: 'Weit' })[v] },
+    { k: 'cam', label: 'Kamera', vals: ['tv', 'nah', 'weit', 'pro'], fmt: v => ({ tv: 'TV', nah: 'Nah', weit: 'Weit', pro: 'Hinter dem Team' })[v] || 'TV' },
     { k: 'gfx', label: 'Grafik', vals: ['auto', 'hoch', 'mittel', 'niedrig'], fmt: v => ({ auto: 'Automatisch', hoch: 'Hoch', mittel: 'Mittel', niedrig: 'Niedrig (Akku)' })[v] },
     { k: 'sound', label: 'Ton', vals: [true, false], fmt: v => v ? 'An' : 'Aus' },
     { k: 'music', label: 'Menümusik', vals: [true, false], fmt: v => v ? 'An' : 'Aus' },
@@ -262,7 +262,7 @@
     world.setArena(FK.arenaById(cfg.arena || S.arena));
     A.music(false); A.crowd(0.06);
     match = new FK.Match(world, { mode: cfg.mode, home: cfg.home, away: cfg.away, humans: cfg.humans, diff: S.diff, half: S.half, decide: cfg.decide,
-      on: { banner, fade, end: onEnd } });
+      on: { banner, fade, end: onEnd, radar: () => { S.radar = !S.radar; FK.persist(); banner('RADAR', S.radar ? 'An' : 'Aus', 'info'); } } });
     match.camSnap = true;
     $('#crest0').style.background = crestBg(cfg.home); $('#crest1').style.background = crestBg(cfg.away);
     $('#sbName0').textContent = cfg.home.short; $('#sbName1').textContent = cfg.away.short;
@@ -271,7 +271,7 @@
     fade();
   }
   function endMatch() {
-    if (match) { match.dispose(); match = null; }
+    if (match) { match.dispose(); match = null; world.followShadow(0, 0); }
     $('#banner').classList.remove('on');
   }
   function resume() { if (!match) return; match.paused = false; show('hud', true); IN.clearMenu(); }
@@ -284,6 +284,7 @@
   }
   $('#fsBtn').addEventListener('click', e => { e.stopPropagation(); toggleFs(); });
   $('#pauseBtn').addEventListener('click', e => { e.stopPropagation(); pause(); });
+  $('#camTBtn').addEventListener('click', e => { e.stopPropagation(); if (match) match.cycleCam(1); });
   document.addEventListener('visibilitychange', () => { if (document.hidden && match && screen === 'hud') pause(); });
 
   let bannerT = 0;
@@ -438,18 +439,18 @@
     const cards = m.humans.filter(h => h.player).map(h => `<div class="pc" style="--hc:${h.color}"><span class="num">${h.player.num}</span><div><div class="nm">${h.player.name}</div><div class="stam"><i style="width:${Math.round(h.player.stamina * 100)}%"></i></div></div></div>`).join('');
     if (hudCache.cards !== cards) { hudCache.cards = cards; $('#playerCards').innerHTML = cards; }
     // Schusskraft
-    let ch = -1;
-    m.humans.forEach(h => { if (h.charge >= 0) ch = Math.max(ch, h.charge); });
+    let ch = -1, pass = false;
+    m.humans.forEach(h => { if (h.charge >= 0) ch = Math.max(ch, h.charge); else if (h.pass && h.pass.t > 0.14) { ch = Math.max(ch, h.pass.t * 0.9 / 0.8); pass = true; } });
     if (m.so && m.so.charge >= 0 && m.so.step === 'aim') ch = m.so.charge;
-    const sb = $('#shotBar'); sb.classList.toggle('on', ch >= 0); if (ch >= 0) sb.firstElementChild.style.width = Math.min(100, ch / 0.9 * 100) + '%';
+    const sb = $('#shotBar'); sb.classList.toggle('on', ch >= 0); sb.classList.toggle('pass', pass); if (ch >= 0) sb.firstElementChild.style.width = Math.min(100, ch / 0.9 * 100) + '%';
     // Hinweise
     let hint = '';
     if (m.so && m.so.step === 'aim') {
       const pad = IN.lastType === 'pad', tch = IN.lastType === 'touch';
-      if (m.so.hShoot) hint = tch ? 'Stick zielt · SCHUSS halten und loslassen' : pad ? 'Stick zielt · B halten und loslassen' : 'Pfeile zielen · J halten und loslassen';
+      if (m.so.hShoot) hint = tch ? 'Stick zielt · SCHUSS halten und loslassen' : pad ? 'Stick zielt · ' + IN.glyph('b') + ' halten und loslassen' : 'Pfeile zielen · J halten und loslassen';
       else if (m.so.hKeep) hint = 'Du hältst! Stick nach links/rechts = Sprung in die Ecke';
     } else if (m.phase === 'setpiece' && m.setPiece && m.setPiece.taker.human) {
-      hint = IN.lastType === 'pad' ? 'A Pass · X Flanke · B Schuss' : IN.lastType === 'touch' ? 'PASS, FLANKE oder SCHUSS' : 'K Pass · I Flanke · J Schuss';
+      hint = IN.lastType === 'pad' ? IN.glyph('a') + ' Pass · ' + IN.glyph('x') + ' Flanke · ' + IN.glyph('b') + ' Schuss' : IN.lastType === 'touch' ? 'PASS, FLANKE oder SCHUSS' : 'K Pass · I Flanke · J Schuss';
     }
     const he = $('#hint'); if (hudCache.hint !== hint) { hudCache.hint = hint; he.textContent = hint; he.classList.toggle('on', !!hint); }
     // Touch-Tasten je nach Lage
@@ -469,6 +470,9 @@
     if (S.radar && !m.so && radarT <= 0) { radarT = 0.07; drawRadar(rc, m); }
   }
   function drawRadar(c, m) {
+    const vert = world.camera.aspect < 0.9;
+    if (vert !== (c.width < c.height)) { c.width = vert ? 128 : 200; c.height = vert ? 200 : 128; c.classList.toggle('vert', vert); }
+    if (vert) return drawRadarV(c, m);
     const g = c.getContext('2d'), w = c.width, h = c.height, P = FK.P;
     g.clearRect(0, 0, w, h);
     g.fillStyle = 'rgba(8,30,18,.72)'; g.fillRect(0, 0, w, h);
@@ -482,6 +486,22 @@
       if (p.human) { g.strokeStyle = p.human.color; g.lineWidth = 2; g.stroke(); }
     });
     g.fillStyle = '#fff'; g.beginPath(); g.arc(X(m.ball.pos.x), Z(m.ball.pos.z), 2.5, 0, Math.PI * 2); g.fill();
+  }
+
+  function drawRadarV(c, m) {
+    const g = c.getContext('2d'), w = c.width, h = c.height, P = FK.P;
+    const ht = m.humans.length ? m.teams[m.humans[0].team] : m.teams[0], s = ht.dir; // eigenes Team spielt nach oben
+    const sx = (w - 8) / P.W, sy = (h - 8) / P.L, X = z => 4 + (z * s + P.W / 2) * sx, Y = x => 4 + (-x * s + P.L / 2) * sy;
+    g.clearRect(0, 0, w, h); g.fillStyle = 'rgba(8,30,18,.72)'; g.fillRect(0, 0, w, h);
+    g.strokeStyle = 'rgba(255,255,255,.4)'; g.lineWidth = 1;
+    g.strokeRect(4, 4, w - 8, h - 8); g.beginPath(); g.moveTo(4, h / 2); g.lineTo(w - 4, h / 2); g.stroke();
+    g.beginPath(); g.arc(w / 2, h / 2, 9.15 * sx, 0, Math.PI * 2); g.stroke();
+    g.strokeRect(X(-P.BOX_W / 2 * s), 4, P.BOX_W * sx, P.BOX_D * sy); g.strokeRect(X(-P.BOX_W / 2 * s), h - 4 - P.BOX_D * sy, P.BOX_W * sx, P.BOX_D * sy);
+    m.players.forEach(p => {
+      g.fillStyle = p.team.def.kit.shirt; g.beginPath(); g.arc(X(p.pos.z), Y(p.pos.x), p.human ? 4 : 3, 0, Math.PI * 2); g.fill();
+      if (p.human) { g.strokeStyle = p.human.color; g.lineWidth = 2; g.stroke(); }
+    });
+    g.fillStyle = '#fff'; g.beginPath(); g.arc(X(m.ball.pos.z), Y(m.ball.pos.x), 2.5, 0, Math.PI * 2); g.fill();
   }
 
   // ---------- Hauptschleife ----------

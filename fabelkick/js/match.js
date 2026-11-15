@@ -33,6 +33,7 @@
       this.humans = (o.humans || []).map((h, i) => ({ dev: h.dev, team: h.team, color: HUMAN_COL[i % 4], player: null, charge: -1, queue: null, idle: 0, marker: world.marker(HUMAN_COL[i % 4]) }));
       this.humans.forEach(h => { this.teams[h.team].human = true; });
       this.cam = { pos: new T.Vector3(0, 30, 50), look: new T.Vector3(), fov: 38 };
+      this.camUser = { yaw: 0, zoom: 1 }; this.camYaw = 0; this.lastOwner = null;
       this.tmp = new T.Vector3(); this.tmp2 = new T.Vector3();
       world.setCrowdColors(o.home.kit.shirt, o.away.kit.shirt);
       this.poss = [0, 0];
@@ -42,7 +43,7 @@
 
     makeTeam(def, idx, dir) {
       const gkCol = /^#(3|2|1|0)/.test(def.kit.shirt) || def.id === 'affen' ? '#ff4fa3' : '#36e27b';
-      const t = { def, idx, dir, players: [], score: 0, pens: 0, power: 20, boostT: 0, slowT: 0, freezeT: 0, stoneT: 0, wallT: 0, nextShot: null, nextShotT: 0, human: false,
+      const t = { def, idx, dir, players: [], score: 0, pens: 0, power: 20, tactic: 0, boostT: 0, slowT: 0, freezeT: 0, stoneT: 0, wallT: 0, nextShot: null, nextShotT: 0, human: false,
         st: { shots: 0, onT: 0, passes: 0, passOk: 0, tackles: 0, fouls: 0 } };
       const n = (this.mode === 'training' && idx === 1) ? 1 : 11;
       for (let i = 0; i < n; i++) {
@@ -88,7 +89,8 @@
       if (t.boostT > 0) s *= 1.35;
       if (t.slowT > 0) s *= 0.6;
       if (t.freezeT > 0) s *= 0.22;
-      if (this.ball.owner === p) s *= 0.9;
+      if (this.ball.owner === p) s *= p.shield ? 0.62 : 0.9;
+      if (p.burstT > 0) s *= 1.25;
       return s;
     }
     aiSkill(t) { return t.human && this.humans.length ? Math.max(this.diff.ai, 0.9) : this.diff.ai; }
@@ -185,6 +187,9 @@
         if (ph === 'play') t.power = Math.min(100, t.power + dt * 2.2);
       });
       if (ph === 'dead') { this.deadT -= dt; if (this.deadT <= 0) this.arrange(); }
+      if ((ph === 'goal' && this.goalT < 2.9) || (ph === 'half' && this.halfT < 2)) { // Szene überspringen
+        if (this.humans.some(h => IN().pressed(h.dev, 'a') || IN().pressed(h.dev, 'b'))) { if (ph === 'goal') this.goalT = 0; else this.halfT = 0; this.humans.forEach(h => { h.lock = true; }); }
+      }
       if (ph === 'goal') { this.goalT -= dt; if (this.goalT <= 0) { if (this.mode === 'training') this.kickoff(0); else this.kickoff(this.goalTeam === 0 ? 1 : 0); } }
       if (ph === 'half') { this.halfT -= dt; if (this.halfT <= 0) this.secondHalf(); }
       if (ph === 'play' || ph === 'setpiece') { this.humanStep(dt); this.aiStep(dt); }
@@ -196,17 +201,26 @@
     }
 
     // ---------- Menschliche Spieler ----------
+    // Stick (Bildschirm) -> Richtung auf dem Feld, passend zur Kamera
+    toWorld(mx, my) { const c = Math.cos(this.camYaw), sn = Math.sin(this.camYaw); return [mx * c + my * sn, -mx * sn + my * c]; }
     humanStep(dt) {
-      const I = IN();
+      const I = IN(), b = this.ball;
+      const newOwner = b.owner !== this.lastOwner; this.lastOwner = b.owner;
       for (const h of this.humans) {
+        // Taktik (Steuerkreuz hoch/runter, Taste T)
+        const t = this.teams[h.team];
+        if (I.pressed(h.dev, 'up')) this.setTactic(t, t.tactic >= 1 ? -1 : t.tactic + 1);
+        if (I.pressed(h.dev, 'down')) this.setTactic(t, t.tactic <= -1 ? 1 : t.tactic - 1);
         const p = h.player; if (!p) continue;
-        const d = I.get(h.dev), b = this.ball, own = b.owner === p;
-        const mx = d.mx, mz = d.my, moving = Math.hypot(mx, mz) > 0.15;
+        const d = I.get(h.dev), own = b.owner === p;
+        const wv = this.toWorld(d.mx, d.my), mx = wv[0], mz = wv[1], moving = Math.hypot(mx, mz) > 0.15;
         const sp = this.setPiece && this.phase === 'setpiece' ? this.setPiece : null;
         const isTaker = sp && sp.taker === p;
         const defending = b.owner && b.owner.ti !== p.ti;
         h.idle = moving ? 0 : h.idle + dt;
         p.sprint = I.down(h.dev, 'rt') && moving;
+        p.shield = own && I.down(h.dev, 'lt') && !p.sprint; // LT: Ball abschirmen, enges Dribbling
+        if (p.burstT > 0) p.burstT -= dt;
         if (I.pressed(h.dev, 'rb')) this.activateSpecial(p.team);
         // Bewegung
         if (p.expect) { p.expect.t -= dt; if (p.expect.t <= 0 || b.owner) p.expect = null; }
@@ -226,19 +240,35 @@
             p.hasTarget = false; p.wantX = mx; p.wantZ = mz;
           }
         }
-        // Wechseln
+        // L3: Haken (Ball mit der Sohle zurückziehen und in die andere Richtung antreten)
+        if (own && !isTaker && p.state === 'run' && I.pressed(h.dev, 'l3')) {
+          p.face += Math.PI; p.vel.multiplyScalar(-0.25); p.burstT = 0.45; A().move && A().move();
+        }
+        // Wechseln: LB (oder Y in der Abwehr); automatisch, wenn der Gegner den Ball bekommt und die Figur weit weg ist
         if ((I.pressed(h.dev, 'lb') && !own) || (defending && I.pressed(h.dev, 'y'))) this.switchPlayer(h);
-        else if (defending && h.idle > 1.2 && this.dist(p.pos, b.pos) > 22) { this.switchPlayer(h); }
-        // Aktionen
+        else if (defending && newOwner && h.idle > 0.25 && this.dist(p.pos, b.pos) > 11) this.switchPlayer(h);
+        else if (defending && h.idle > 1.2 && this.dist(p.pos, b.pos) > 22) this.switchPlayer(h);
+        // Aktionen (nach dem Überspringen erst, wenn die Knöpfe losgelassen sind)
+        if (h.lock) { if (!['a', 'b', 'x', 'y'].some(k => I.down(h.dev, k))) h.lock = false; else continue; }
         const dirx = moving ? mx : Math.sin(p.face), dirz = moving ? mz : Math.cos(p.face);
         if (own) {
-          if (I.pressed(h.dev, 'a')) this.passDir(p, dirx, dirz, 'ground');
-          else if (I.pressed(h.dev, 'y')) this.passDir(p, dirx, dirz, 'through');
-          else if (I.pressed(h.dev, 'x')) this.passDir(p, dirx, dirz, 'lob');
-          if (I.down(h.dev, 'b')) { if (h.charge < 0) h.charge = 0; h.charge += dt; if (h.charge > 1.1) { this.shootHuman(p, h, moving ? mz : null); } }
-          else if (h.charge >= 0) this.shootHuman(p, h, moving ? mz : null);
+          // Pässe: antippen = automatische Stärke, halten = stärker/weiter (Balken)
+          if (!h.pass) {
+            const k = I.pressed(h.dev, 'a') ? 'ground' : I.pressed(h.dev, 'y') ? 'through' : I.pressed(h.dev, 'x') ? 'lob' : null;
+            if (k) h.pass = { k, btn: k === 'ground' ? 'a' : k === 'through' ? 'y' : 'x', t: 0 };
+          }
+          if (h.pass) {
+            h.pass.t += dt;
+            if (!I.down(h.dev, h.pass.btn) || h.pass.t > 0.9) {
+              const pw = h.pass.t < 0.14 ? null : Math.min(1, h.pass.t / 0.8), k = h.pass.k; h.pass = null;
+              this.passDir(p, dirx, dirz, k, pw); continue;
+            }
+          }
+          if (I.down(h.dev, 'b')) { if (h.charge < 0) h.charge = 0; h.charge += dt; if (h.charge > 1.1) { this.shootHuman(p, h, moving ? mz : null, I.down(h.dev, 'lt')); } }
+          else if (h.charge >= 0) this.shootHuman(p, h, moving ? mz : null, I.down(h.dev, 'lt'));
         } else {
-          if (h.charge >= 0 && !I.down(h.dev, 'b')) { h.queue = { k: 'shot', ttl: 0.45, pw: Math.min(1, h.charge / 0.9) }; h.charge = -1; }
+          h.pass = null;
+          if (h.charge >= 0 && !I.down(h.dev, 'b')) { h.queue = { k: 'shot', ttl: 0.45, pw: Math.min(1, h.charge / 0.9), fin: I.down(h.dev, 'lt') }; h.charge = -1; }
           if (defending) {
             h.charge = -1;
             if (I.pressed(h.dev, 'a')) this.standTackle(p);
@@ -253,16 +283,21 @@
         if (h.queue) { h.queue.ttl -= dt; if (h.queue.ttl <= 0) h.queue = null; }
       }
     }
-    shootHuman(p, h, mz) {
+    setTactic(t, v) {
+      t.tactic = v;
+      this.banner('TAKTIK', ({ '-1': 'Defensiv – tief stehen', 0: 'Ausgewogen', 1: 'Offensiv – hoch pressen' })[v], 'info');
+    }
+    shootHuman(p, h, mz, fin) {
       const pw = Math.min(1, Math.max(0.15, h.charge / 0.9)); h.charge = -1;
-      this.shoot(p, pw, mz != null ? clamp(mz, -1, 1) : null);
+      this.shoot(p, pw, mz != null ? clamp(mz, -1, 1) : null, fin);
     }
     switchPlayer(h) {
       const t = this.teams[h.team], b = this.ball;
       let best = null, bd = 1e9;
       t.players.forEach(q => {
         if (q.gk || q === h.player || (q.human && q.human !== h)) return;
-        const d = Math.hypot(q.pos.x - (b.pos.x + b.vel.x * 0.4), q.pos.z - (b.pos.z + b.vel.z * 0.4));
+        let d = Math.hypot(q.pos.x - (b.pos.x + b.vel.x * 0.4), q.pos.z - (b.pos.z + b.vel.z * 0.4));
+        if (b.owner && b.owner.ti !== t.idx && (q.pos.x - b.pos.x) * t.dir < 0) d -= 3; // zwischen Ball und eigenem Tor
         if (d < bd) { bd = d; best = q; }
       });
       if (best) { this.give(h, best); h.idle = 0; }
@@ -271,6 +306,11 @@
     // ---------- KI ----------
     aiStep(dt) {
       const b = this.ball, sp = this.phase === 'setpiece' ? this.setPiece : null;
+      if (this.half === 2 && this.halfLen !== Infinity) for (const t of this.teams) { // KI: hinten -> offensiv, knapp vorne -> sichern
+        if (t.human) continue;
+        const diff = t.score - this.opp(t).score, late = this.clock > this.halfLen * 0.5;
+        t.tactic = diff < 0 && late ? 1 : diff === 1 && this.clock > this.halfLen * 0.7 ? -1 : 0;
+      }
       if (sp) { sp.t += dt; this.setPieceAI(sp); }
       if (this.phase === 'play' && b.owner) for (const t of this.teams) {
         const id = t.def.special.id;
@@ -300,7 +340,7 @@
     }
     formationTarget(p, attacking) {
       const t = p.team, b = this.ball, bax = this.toAx(t, b.pos.x);
-      let ax = PLAY[p.role] + (bax - 0.5) * SHIFT[p.role] + (attacking ? 0.1 : -0.06);
+      let ax = PLAY[p.role] + (bax - 0.5) * SHIFT[p.role] + (attacking ? 0.1 : -0.06) + t.tactic * (p.role === 'GK' ? 0 : 0.055);
       if (p.role === 'DF') ax = clamp(ax, 0.07, 0.62);
       if (p.role === 'MF') ax = clamp(ax, 0.15, 0.8);
       if (p.role === 'FW') ax = clamp(attacking ? Math.max(ax, bax + 0.06) : ax, 0.36, 0.88);
@@ -321,6 +361,15 @@
       }
       if (own && own.ti === t.idx) { // Angriff: freilaufen
         const f = this.formationTarget(p, true);
+        // Stürmer starten Läufe hinter die letzte Abwehrreihe, wenn der Ballführer Zeit hat
+        if ((p.role === 'FW' || (p.role === 'MF' && t.tactic > 0)) && !own.gk && this.toAx(t, own.pos.x) > 0.3) {
+          if (!p.runT || p.runT < this.time - 6) { if (Math.random() < 0.18) p.runT = this.time; }
+          if (p.runT && this.time - p.runT < 2.6) {
+            let line = 0; for (const e of this.opp(t).players) if (!e.gk) line = Math.max(line, this.toAx(t, e.pos.x));
+            f.x = this.toX(t, clamp(line + 0.04, this.toAx(t, p.pos.x), 0.93)); p.sprint = true;
+            p.target.set(clamp(f.x, -L2 + 1, L2 - 1), 0, clamp(f.z * 0.8, -W2 + 2, W2 - 2)); p.hasTarget = true; return;
+          }
+        }
         const d = this.dist(p.pos, own.pos);
         if (d < 7) { f.x += (p.pos.x - own.pos.x) * 0.6; f.z += (p.pos.z - own.pos.z) * 0.6; }
         // Raum suchen: weg vom nächsten Gegner
@@ -343,7 +392,7 @@
           const off = i === 0 ? 0.9 : 3.2;
           p.target.set(own.pos.x + (gx - own.pos.x) / gd * off + own.vel.x * 0.25, 0, own.pos.z - own.pos.z / gd * off + own.vel.z * 0.25);
           p.hasTarget = true; p.sprint = this.dist(p.pos, own.pos) > 3.5;
-          const dd = this.dist(p.pos, own.pos), pr = this.diff.press * (t.human ? 0.9 : 1);
+          const dd = this.dist(p.pos, own.pos), pr = this.diff.press * (t.human ? 0.9 : 1) * (1 + t.tactic * 0.25);
           if (dd < 1.7 && Math.random() < 0.32 * pr) this.standTackle(p);
           else if (dd > 1.6 && dd < 3.0 && Math.random() < 0.05 * pr) { // Grätsche, wenn der Gegner nicht frontal kommt
             this.tmp.set(own.pos.x - p.pos.x, 0, own.pos.z - p.pos.z).normalize();
@@ -378,7 +427,7 @@
           lane = Math.min(lane, Math.hypot(px, pz));
         }
         const prog = this.toAx(t, q.pos.x) - this.toAx(t, p.pos.x);
-        let s = prog * 2.4 + open / 10 + lane / 4 * 1.3 - d * 0.012 + (q.gk ? -1.5 : 0);
+        let s = prog * 2.4 + open / 10 + lane / 4 * 1.3 - d * 0.012 + (q.gk ? -1.5 : 0) + (q.runT && this.time - q.runT < 2.6 ? 0.5 : 0);
         if (lane < 1.2) s -= 1.6;
         out.push({ q, s, d, open });
       }
@@ -400,7 +449,16 @@
       }
       const angleOk = Math.abs(p.pos.z) < 16;
       let sp = 0;
-      if (dg < 12) sp = 0.75; else if (dg < 19 && angleOk) sp = 0.4; else if (dg < 27 && angleOk && p.stats.schuss > 80) sp = 0.08;
+      if (dg < 11) sp = 0.7; else if (dg < 18 && angleOk) sp = 0.3; else if (dg < 26 && angleOk && p.stats.schuss > 80) sp = 0.05;
+      if (sp > 0) { // Gegner in der Schussbahn?
+        let block = 0;
+        for (const e of o.players) {
+          if (e.gk) continue;
+          const ex = e.pos.x - p.pos.x, ez = e.pos.z - p.pos.z, lx = gx - p.pos.x, lz = -p.pos.z, k = (ex * lx + ez * lz) / (dg * dg);
+          if (k > 0 && k < 1 && Math.hypot(lx * k - ex, lz * k - ez) < 1.3) block++;
+        }
+        sp *= block ? (dg < 9 ? 0.6 : 0.3) : 1;
+      }
       if (t.nextShot && dg < 30) sp = Math.max(sp, 0.6);
       if (Math.random() < sp) { this.shoot(p, clamp(0.45 + dg / 45 + rnd(-0.1, 0.1), 0.35, 0.95), null); return; }
       // Flanke
@@ -413,7 +471,12 @@
       const pp = press < 2.6 ? 0.55 : held < 0.8 ? 0 : press < 5 ? 0.2 : 0.07;
       if (best && Math.random() < pp && best.s > (press < 2.8 ? -0.6 : 0.25)) {
         const ahead = this.toAx(t, best.q.pos.x) - ax;
-        const type = ahead > 0.08 && best.open > 4 && Math.random() < 0.45 ? 'through' : best.d > 28 ? 'lob' : 'ground';
+        const runs = best.q.runT && this.time - best.q.runT < 2.6;
+        // Steilpass nur, wenn der Mitspieler den Zielpunkt vor dem nächsten Gegner erreicht
+        const tx = best.q.pos.x + t.dir * 7, tz = best.q.pos.z * 0.85; let opp = 99;
+        for (const e of o.players) opp = Math.min(opp, Math.hypot(e.pos.x - tx, e.pos.z - tz));
+        const free = opp > Math.hypot(best.q.pos.x - tx, best.q.pos.z - tz) * 0.9;
+        const type = (ahead > 0.08 || runs) && free && Math.random() < (runs ? 0.8 : 0.45) ? 'through' : best.d > 28 ? 'lob' : 'ground';
         this.passTo(p, best.q, type); return;
       }
       if (ax < 0.22 && press < 2.2) { // befreien
@@ -716,9 +779,9 @@
       }
       if (p.human && p.human.queue) {
         const q = p.human.queue; p.human.queue = null;
-        const d = IN().get(p.human.dev), mv = Math.hypot(d.mx, d.my) > 0.15;
-        const dx = mv ? d.mx : Math.sin(p.face), dz = mv ? d.my : Math.cos(p.face);
-        if (q.k === 'shot') this.shoot(p, q.pw, mv ? clamp(d.my, -1, 1) : null);
+        const d = IN().get(p.human.dev), w = this.toWorld(d.mx, d.my), mv = Math.hypot(w[0], w[1]) > 0.15;
+        const dx = mv ? w[0] : Math.sin(p.face), dz = mv ? w[1] : Math.cos(p.face);
+        if (q.k === 'shot') this.shoot(p, q.pw, mv ? clamp(w[1], -1, 1) : null, q.fin);
         else this.passDir(p, dx, dz, q.k);
       }
       void prev;
@@ -730,6 +793,7 @@
       if (!o || o.ti === p.ti || o.gk || o.state === 'hold') return;
       const d = this.dist(p.pos, o.pos); if (d > 1.9) return;
       let ch = 0.42 + (p.stats.abwehr - (o.stats.tempo + o.stats.pass) / 2) / 120 + (p.human ? 0.1 : (this.aiSkill(p.team) - 0.85) * 0.5);
+      if (o.shield) ch *= 0.6;
       if (o.team.stoneT > 0) ch = 0;
       p.team.st.tackles++;
       if (Math.random() < ch) {
@@ -793,15 +857,24 @@
       this.kickBall(p, dx / d * spd, (ay - b.pos.y) / tt + 0.5 * GRAV * tt, dz / d * spd, 'shot', 0.6);
       p.kick = 0; this.banner('KOPFBALL!', p.name, 'info');
     }
-    passDir(p, dx, dz, type) {
-      const t = p.team; let l = Math.hypot(dx, dz) || 1; dx /= l; dz /= l;
+    // Pass in Stick-Richtung: bester Mitspieler im Kegel (frei, Passweg offen, Entfernung passend zur Stärke)
+    passDir(p, dx, dz, type, power) {
+      const t = p.team, o = this.opp(t); let l = Math.hypot(dx, dz) || 1; dx /= l; dz /= l;
+      const want = power == null ? null : 6 + power * 38;
       let best = null, bs = -1e9;
       for (const q of t.players) {
         if (q === p) continue;
         const ex = q.pos.x - p.pos.x, ez = q.pos.z - p.pos.z, d = Math.hypot(ex, ez); if (d < 2.5) continue;
-        const cos = (ex * dx + ez * dz) / d; if (cos < 0.3) continue;
-        let open = 10; for (const e of this.opp(t).players) open = Math.min(open, this.dist(e.pos, q.pos));
-        const s = cos * 3 - d / 30 + open / 20 - (q.gk ? 2 : 0);
+        const cos = (ex * dx + ez * dz) / d; if (cos < 0.42) continue;
+        let open = 10, lane = 4;
+        for (const e of o.players) {
+          open = Math.min(open, this.dist(e.pos, q.pos));
+          const qx = e.pos.x - p.pos.x, qz = e.pos.z - p.pos.z, k = clamp((qx * ex + qz * ez) / (d * d), 0, 1);
+          lane = Math.min(lane, Math.hypot(ex * k - qx, ez * k - qz));
+        }
+        let s = cos * 3.4 - d / 30 + open / 20 + Math.min(lane, 3) * 0.25 - (q.gk ? 2 : 0);
+        if (type !== 'lob' && lane < 1.1) s -= 0.9;
+        if (want != null) s -= Math.abs(d - want) / 14;
         if (s > bs) { bs = s; best = q; }
       }
       if (!best) { // niemand in Blickrichtung: nächsten freien Mitspieler nehmen
@@ -812,22 +885,23 @@
           if (s > bs) { bs = s; best = q; }
         }
       }
-      if (best) this.passTo(p, best, type);
+      if (best) this.passTo(p, best, type, power);
       else { // in den Raum
-        const sp = type === 'lob' ? 18 : 14;
+        const sp = (type === 'lob' ? 18 : 14) * (power == null ? 1 : 0.75 + power * 0.55);
         if (type === 'lob') this.kickBall(p, dx * sp, 8, dz * sp, 'pass', 0.6); else this.kickBall(p, dx * sp, 0.6, dz * sp, 'pass', 0.4);
         p.team.st.passes++; this.ball.passFrom = p;
       }
     }
-    passTo(p, q, type) {
+    passTo(p, q, type, power) {
       const t = p.team, acc = p.human ? 0.92 : this.diff.acc;
       const err = (1.12 - p.stats.pass / 100) * (1.15 - acc) * 0.5;
       let tx = q.pos.x, tz = q.pos.z;
       let d = Math.hypot(tx - p.pos.x, tz - p.pos.z);
       const lead = type === 'lob' ? 1.0 : d / 17;
       tx += q.vel.x * lead * 0.8; tz += q.vel.z * lead * 0.8;
-      if (type === 'through') {
-        tx += t.dir * 7; tz += (0 - tz) * 0.15;
+      if (type === 'through') { // in den Lauf, Richtung Tor
+        const ql = Math.hypot(q.vel.x, q.vel.z), run = ql > 2 ? (q.vel.x * t.dir) / ql : 0;
+        tx += t.dir * (power == null ? 7 : 4 + power * 8) * (0.8 + Math.max(0, run) * 0.4); tz += (0 - tz) * 0.15;
         tx = clamp(tx, -L2 + 2, L2 - 2);
       }
       tz = clamp(tz, -W2 + 1, W2 - 1);
@@ -838,7 +912,7 @@
         const T2 = clamp(d / 17, 0.85, 1.9), vh = d / T2 * 0.97;
         this.kickBall(p, cx * vh, GRAV * T2 / 2, cz * vh, 'pass', 0.6);
       } else {
-        const v = clamp(6 + d * 0.52, 9.5, 23) * (type === 'through' ? 1.05 : 1);
+        const v = clamp(6 + d * 0.52, 9.5, 23) * (type === 'through' ? 1.05 : 1) * (power == null ? 1 : 0.9 + power * 0.25);
         this.kickBall(p, cx * v, 0.4, cz * v, 'pass', 0.35);
       }
       t.st.passes++; this.ball.passFrom = p; this.ball.passTo = q;
@@ -846,26 +920,30 @@
       if (p.human && q !== p && !q.gk) { const h = p.human; this.give(h, q); }
       else if (t.human && p.gk && !q.gk) { const h = this.humans.find(x => x.team === t.idx); if (h) this.give(h, q); }
     }
-    shoot(p, power, aim) {
+    shoot(p, power, aim, finesse) {
       const t = p.team, b = this.ball, gx = this.oppGoalX(t), gw = P.GW / 2 - 0.4;
       const k = this.opp(t).players[0];
       let az;
       if (aim != null) az = clamp(aim, -1, 1) * gw;
       else { const kz = k ? k.pos.z : 0; az = (kz > 0 ? -1 : 1) * gw * rnd(0.45, 0.95); }
-      let ay = 0.3 + power * 1.75;
+      let ay = finesse ? 0.5 + power * 1.1 : 0.3 + power * 1.75;
       const special = t.nextShot; t.nextShot = null;
       const dist = Math.hypot(gx - b.pos.x, az - b.pos.z);
       const acc = p.human ? 1 : this.diff.acc;
       let err = (1.18 - p.stats.schuss / 100) * (0.55 + power * 0.8) * (0.45 + dist / 28) * (1.25 - acc * 0.35);
+      let press = 99; for (const e of this.opp(t).players) if (!e.gk) press = Math.min(press, this.dist(e.pos, p.pos));
+      err *= 1 + Math.max(0, 2.2 - press) * 0.3; // bedrängt = ungenauer
+      if (finesse) err *= 0.55;
       if (special === 'thunder') err *= 0.25; if (special === 'magic') err = 0;
       az += gauss() * err * 1.3; ay += gauss() * err * 0.6;
-      if (power > 0.92) ay += (power - 0.92) * 14 * Math.random();
+      if (power > 0.92 && !finesse) ay += (power - 0.92) * 14 * Math.random();
       ay = Math.max(R, ay);
-      let spd = (15 + power * 17) * (0.84 + p.stats.schuss / 100 * 0.26);
+      let spd = (15 + power * 17) * (0.84 + p.stats.schuss / 100 * 0.26) * (finesse ? 0.8 : 1);
       if (special === 'thunder') spd *= 1.45; if (special === 'fire') spd *= 1.25;
       const dx = gx - b.pos.x, dz = az - b.pos.z, dh = Math.hypot(dx, dz) || 1, tt = dh / spd;
       let curve = 0, zAim = az;
       if (special === 'magic') { curve = -Math.sign(az - (k ? k.pos.z : 0)) * 16; }
+      else if (finesse) curve = -Math.sign(az || 1) * (7 + p.stats.schuss / 25); // Schlenzer: dreht sich zum Pfosten
       else curve = gauss() * 2.5;
       zAim = az - 0.5 * curve * tt * tt; // so zielen, dass die Kurve ins Ziel trägt
       const ex = gx - b.pos.x, ez = zAim - b.pos.z, eh = Math.hypot(ex, ez) || 1;
@@ -1188,27 +1266,59 @@
       }
       this.camera(dt);
     }
+    // ---------- Kamera: Ansichten (Steuerkreuz ←/→, V), rechter Stick dreht/zoomt (Z/C, Mausrad), R3/R setzt zurück ----------
+    camInput(dt) {
+      const I = IN(), u = this.camUser, devs = this.humans.length ? this.humans.map(h => h.dev) : ['kb'];
+      for (const dv of devs) {
+        const d = I.get(dv);
+        if (d.rx) u.yaw -= d.rx * dt * 2.2;
+        if (d.ry) u.zoom = clamp(u.zoom * Math.exp(d.ry * dt * 1.4), 0.55, 1.9);
+        if (I.pressed(dv, 'r3')) { u.yaw = 0; u.zoom = 1; this.banner('KAMERA', 'zurückgesetzt', 'info'); }
+        if (I.pressed(dv, 'left') || I.pressed(dv, 'right')) this.cycleCam(I.pressed(dv, 'left') ? -1 : 1);
+        if (I.pressed(dv, 'select') && this.on.radar) this.on.radar();
+      }
+      if (u.yaw > Math.PI) u.yaw -= 2 * Math.PI; if (u.yaw < -Math.PI) u.yaw += 2 * Math.PI;
+    }
+    cycleCam(d) {
+      const v = Match.CAMS, i = Math.max(0, v.indexOf(FK.settings.cam));
+      FK.settings.cam = v[(i + d + v.length) % v.length]; if (FK.persist) FK.persist();
+      this.banner('KAMERA', Match.CAM_NAMES[FK.settings.cam], 'info');
+    }
     camera(dt) {
-      const c = this.cam, b = this.ball, cam = this.w.camera, mode = FK.settings.cam;
-      const portrait = cam.aspect < 1;
-      let pos = this.tmp, look = this.tmp2, fov = 38;
+      const c = this.cam, b = this.ball, cam = this.w.camera, mode = FK.settings.cam, u = this.camUser;
+      const portrait = cam.aspect < 0.9;
+      if (!this.paused) this.camInput(dt);
+      let pos = this.tmp, look = this.tmp2, fov = 38, user = true;
       if (this.phase === 'shootout' || this.phase === 'shootend') {
-        pos.set(L2 - P.SPOT - 9, 3.6, 0); look.set(L2, 1.1, 0); fov = portrait ? 62 : 42;
-      } else if ((this.phase === 'goal' || this.phase === 'end') && this.goalScorer && this.phase === 'goal') {
+        pos.set(L2 - P.SPOT - 9, 3.6, 0); look.set(L2, 1.1, 0); fov = portrait ? 62 : 42; user = false;
+      } else if (this.phase === 'goal' && this.goalScorer) {
         const s = this.goalScorer, a = this.time * 0.35;
-        pos.set(s.pos.x + Math.sin(a) * 11, 4.5, s.pos.z + Math.cos(a) * 11); look.set(s.pos.x, 1.2, s.pos.z); fov = 40;
+        pos.set(s.pos.x + Math.sin(a) * 11, 4.5, s.pos.z + Math.cos(a) * 11); look.set(s.pos.x, 1.2, s.pos.z); fov = 40; user = false;
       } else {
-        const m = mode === 'nah' ? { h: 13, d: 23, f: 42 } : mode === 'weit' ? { h: 32, d: 52, f: 36 } : { h: 21, d: 36, f: 38 };
-        const k = portrait ? 1.5 : 1;
-        const fx = b.owner ? b.owner.pos.x + b.owner.vel.x * 0.4 : b.pos.x + b.vel.x * 0.25;
-        const lx = clamp(fx, -L2 + 14, L2 - 14), lz = clamp(b.pos.z, -W2, W2) * 0.5;
-        pos.set(lx * 0.9, m.h * k, lz + m.d * k); look.set(lx, 0, lz - 3); fov = m.f + (portrait ? 14 : 0);
+        // Hochformat: Blick längs übers Feld (vom eigenen Tor), Querformat: TV-Seitenansicht; „pro“ immer hinter dem eigenen Team
+        const ht = this.humans.length ? this.teams[this.humans[0].team] : this.teams[0];
+        const behind = mode === 'pro' || portrait;
+        const V = portrait
+          ? ({ nah: { h: 11, d: 12, f: 62 }, weit: { h: 30, d: 27, f: 60 }, pro: { h: 7, d: 10, f: 66 } })[mode] || { h: 17, d: 16, f: 60 }
+          : ({ nah: { h: 11, d: 20, f: 44 }, weit: { h: 30, d: 50, f: 36 }, pro: { h: 7.5, d: 14, f: 56 } })[mode] || { h: 16, d: 29, f: 40 };
+        const fx = b.owner ? b.owner.pos.x + b.owner.vel.x * 0.4 : b.pos.x + b.vel.x * 0.25, fz = b.owner ? b.owner.pos.z + b.owner.vel.z * 0.3 : b.pos.z;
+        let lx, lz, yaw;
+        if (behind) { yaw = -ht.dir * Math.PI / 2; lx = clamp(fx + ht.dir * V.d * 0.18, -L2 - 2, L2 + 2); lz = clamp(fz, -W2, W2) * 0.85; }
+        else { yaw = 0; lx = clamp(fx, -L2 + 14, L2 - 14); lz = clamp(fz, -W2, W2) * 0.5 - 3; }
+        yaw += u.yaw; const z = u.zoom;
+        look.set(lx, 0, lz);
+        pos.set(lx + Math.sin(yaw) * V.d * z, V.h * z, lz + Math.cos(yaw) * V.d * z); fov = V.f;
       }
       const k = this.camSnap ? 1 : 1 - Math.exp(-3.2 * dt); this.camSnap = false;
       c.pos.lerp(pos, k); c.look.lerp(look, k); c.fov += (fov - c.fov) * k;
       cam.position.copy(c.pos); cam.lookAt(c.look);
       if (Math.abs(cam.fov - c.fov) > 0.05) { cam.fov = c.fov; cam.updateProjectionMatrix(); }
+      this.w.followShadow(c.look.x, c.look.z);
+      // Richtung der Kamera für die Steuerung (Stick hoch = vom Bildschirm weg)
+      if (user || this.phase === 'setpiece') this.camYaw = Math.atan2(c.pos.x - c.look.x, c.pos.z - c.look.z);
     }
   }
+  Match.CAMS = ['tv', 'nah', 'weit', 'pro'];
+  Match.CAM_NAMES = { tv: 'TV', nah: 'Nah', weit: 'Weit', pro: 'Hinter dem Team' };
   FK.Match = Match;
 })();
