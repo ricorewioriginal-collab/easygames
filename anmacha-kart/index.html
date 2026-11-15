@@ -402,6 +402,40 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 @media (max-width:560px) and (orientation:portrait){#menu.title #mBox{height:auto;min-height:100%}#mTitle{height:auto;min-height:100%}.hm-hero{flex:1 0 auto;padding:18px 0 6px}
   .hm-tiles{display:grid;grid-template-columns:1fr 1fr;overflow:visible;padding:6px 2px;gap:10px}.tile{width:auto;aspect-ratio:16/10.5;padding:10px}.tile i{font-size:32px;top:8px}.tile:not([disabled]):hover,.tile.pf{transform:scale(1.04)}}
 @media (prefers-reduced-motion:reduce){.hm-logo{animation:none}.tile{transition:none}}
+/* ===== Einheitliche Konsolen-Optik: alle Menüs wie die Kacheln des Hauptmenüs ===== */
+.ctile{--tc:#00e5ff;--tc2:#7a5cff;position:relative;overflow:hidden;color:#fff!important;text-align:left!important;border:2px solid rgba(255,255,255,.14)!important;border-radius:18px!important;background:linear-gradient(160deg,color-mix(in srgb,var(--tc) 62%,transparent),color-mix(in srgb,var(--tc2) 74%,#05060f) 78%)!important;box-shadow:0 8px 22px rgba(0,0,0,.42);transition:transform .18s cubic-bezier(.2,.9,.3,1.3),box-shadow .2s,border-color .2s}
+@supports not (background:color-mix(in srgb,red,blue)){.ctile{background:linear-gradient(160deg,var(--tc),var(--tc2))!important}}
+.ctile::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.2),transparent 42%,rgba(0,0,0,.4));pointer-events:none}
+.ctile>*{position:relative}
+.ctile.t-gp{--tc:#ffd24a;--tc2:#ff6a00}.ctile.t-race{--tc:#ff2d95;--tc2:#7a1fff}.ctile.t-tt{--tc:#00e5ff;--tc2:#0050c8}.ctile.t-free{--tc:#7cff6a;--tc2:#008a5a}
+.ctile>i{position:absolute;top:8px;right:10px;font-style:normal;font-size:clamp(28px,3.4vw,44px);filter:drop-shadow(0 5px 7px rgba(0,0,0,.45));transition:transform .25s}
+.ctile small{color:rgba(255,255,255,.86)!important;font-weight:600}
+.ctile.on,.ctile:hover{transform:translateY(-4px) scale(1.03);border-color:#fff!important;box-shadow:0 0 0 3px var(--tc),0 14px 32px rgba(0,0,0,.5),0 0 26px var(--tc)!important}
+.ctile.on>i,.ctile:hover>i{transform:scale(1.14) rotate(-6deg)}
+#mSetup .console-choices .ctile,#mSetup .console-track-grid .ctile{display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:3px;padding:14px 16px}
+#mSetup .console-choices .ctile b,#mSetup .console-track-grid .ctile b{font:700 clamp(17px,2.2vw,24px)/1.08 Fredoka,'Trebuchet MS',sans-serif;padding-right:46px}
+#mSetup .console-choices .ctile b{font-size:clamp(20px,3vw,30px)}
+#mSetup .console-track-grid .ctile{min-height:118px}
+#mSetup .console-track-grid .ctile small{margin-top:2px;font-size:12px}
+#mSetup .chars .ctile{text-align:center!important}#mSetup .chars .ctile b{font-family:inherit}
+#mSetup .kcards .ctile .bar{background:rgba(0,0,0,.35)}#mSetup .kcards .ctile .st{color:rgba(255,255,255,.85)}
+/* Glas-Karten mit Neon-Kante für Optionen, Mehrspieler, Einstellungen, Bühne */
+.opt,#mMulti .card,#mSetup .console-options,#mSetup .showcase,#mSetup .console-footer,#ctlBox,.ov:not(.title) .box:not(.wide):not(#mBox){background:linear-gradient(160deg,rgba(122,92,255,.2),rgba(255,45,149,.06) 45%,rgba(8,10,30,.86))!important;border:1px solid rgba(170,160,255,.28)!important;border-radius:20px!important;box-shadow:0 14px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12)!important}
+.ov:not(.title) .box:not(.wide):not(#mBox){padding:22px 18px;max-width:600px}
+.opt h4,#mMulti .card h3,#mSetup .console-options h3,#mSetup .console-options h4,#mSetup .console-heading{font-family:Fredoka,'Trebuchet MS',sans-serif;letter-spacing:.12em;background:linear-gradient(90deg,#ffd24a,#ff6ab0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ov h2,#mSetup #setTitle{font-family:Fredoka,'Trebuchet MS',sans-serif;font-weight:700;letter-spacing:.01em;color:#fff;text-shadow:0 3px 0 rgba(120,20,90,.8),0 0 22px rgba(255,45,149,.75)}
+.ov:not(.title){background:radial-gradient(ellipse at 50% 0,rgba(122,92,255,.32),transparent 55%),radial-gradient(ellipse at 50% 100%,rgba(255,45,149,.18),transparent 50%),rgba(5,6,18,.9);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+/* Auswahl-Chips: Pillen mit Verlauf wie die Kachel-Akzente */
+.chip:not(.ctile){border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);transition:transform .12s,box-shadow .2s,background .2s}
+.chip:not(.ctile):hover{background:rgba(255,255,255,.13)}
+.chip.on:not(.ctile){background:linear-gradient(100deg,#ff2d95,#7a5cff);border-color:#fff;color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.25),0 0 18px rgba(255,45,149,.6)}
+.chip.on:not(.ctile) small{color:rgba(255,255,255,.85)}
+#mSetup .console-stepper button{border-radius:999px}
+#mSetup .console-stepper button.on{background:linear-gradient(100deg,#ff2d95,#7a5cff);border-color:#fff;box-shadow:0 0 18px rgba(255,45,149,.55)}
+.ghost{transition:background .15s,border-color .15s}.ghost:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.45)}
+#resList>*,#topList>*{border-radius:12px}
+@media (max-width:620px){#mSetup .console-track-grid{grid-template-columns:1fr 1fr;gap:10px}#mSetup .console-track-grid .ctile{min-height:96px;padding:10px 12px}#mSetup .console-track-grid .ctile b{font-size:15px;padding-right:30px}#mSetup .console-track-grid .ctile>i{font-size:24px}}
+
 </style>
 </head>
 <body>
@@ -527,7 +561,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="sim.js?v=20261115-wt12"></script>
 <script src="nav.js?v=20261115-wt1"></script>
 <script src="radio.js?v=20261115-wt1"></script>
-<script src="game.js?v=20261115-wt14"></script>
+<script src="game.js?v=20261115-wt15"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="kart" data-prefix="akChar,akKart,akLogo,akMute,akName,akSave,akTts" defer></script>
 <script src="../gamepad.js" data-pad="info" data-pad-labels="a=Gas · Bestätigen; b=Bremsen · Zurück; rt=Gas; dpad=Lenken · Menü; ls=Lenken; lt=Bremsen; rb=Driften; x=Driften; y=Item; lb=Item · Seite; start=Pause · Los" defer></script>
 <script src="../egstat.js" defer></script>
