@@ -105,6 +105,10 @@ if (JOIN) {
   $('bResume').onclick = () => { SFX.click(); pause(false); };
   $('bRestart').onclick = () => { SFX.click(); pause(false); start('train'); };
   $('bPSnd').onclick = () => toggleSnd();
+  // Ansicht: seitlich (klassisch) oder von hinten (wie ein Kandidat auf der Strecke); gleiche Steuerung und Physik
+  let view = store.get('fpView', 'side'); const viewUI = () => { $('bPView').textContent = view === 'back' ? '🎥 Ansicht: von hinten' : '🎥 Ansicht: seitlich'; $('sgView').querySelectorAll('button').forEach(b => b.classList.toggle('on', (+b.dataset.v === 1) === (view === 'back'))); };
+  const setView = v => { view = v; store.set('fpView', v); arena.setView(v); viewUI(); };
+  $('bPView').onclick = () => { SFX.click(); setView(view === 'back' ? 'side' : 'back'); };
   $('bPVoice').onclick = () => { SFX.click(); commentator.setOn(!commentator.on); voiceUI(); };
   $('bQuit').onclick = () => { SFX.click(); abort(); show('menu'); ui.menu.show('show'); };
 
@@ -138,7 +142,7 @@ if (JOIN) {
     $('sgPl').querySelectorAll('button').forEach(x => x.classList.toggle('on', +x.dataset.v === S.n)); fillNames(); show('setup'); loadScene(S.tc);
   }
   const seg = (id, fn) => $(id).addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (!b) return; SFX.click(); $(id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); fn(+b.dataset.v); });
-  seg('sgPl', v => { S.n = v; fillNames(); push(); }); seg('sgCourse', v => { S.tc = v; loadScene(v); });
+  seg('sgPl', v => { S.n = v; fillNames(); push(); }); seg('sgView', v => setView(v ? 'back' : 'side')); seg('sgCourse', v => { S.tc = v; loadScene(v); });
   function loadScene(ci) { const c = typeof ci === 'number' ? COURSES[ci] : ci; if (curCourse !== c) { curCourse = c; arena.setCourse(c); } }
   function look(i) { return arena.setLook(COLORS[i], LOGO[i], S.chars[i]); }
   // Figur wählen: eigene Läufer und alle Figuren aus anderen easygames (nach Spiel gruppiert); Vorschau läuft im Studio mit
@@ -265,7 +269,7 @@ if (JOIN) {
     if (id === 'sound') return `<h3>Ton</h3><p>Musik und Effekte sind gerade <b>${snd ? 'an' : 'aus'}</b>.</p>${go('sound', snd ? 'Ton aus' : 'Ton an')}`;
     return `<h3>Alle Spiele</h3><p>Zurück zur Spielesammlung.</p>${go('home', 'Zur Sammlung')}`;
   }
-  loadScene(0); show('menu');
+  loadScene(0); arena.setView(view); viewUI(); show('menu');
   $('bPairSetup').onclick = () => { SFX.click(); pair.open(); };
   $('bSetBack').onclick = () => { SFX.click(); show('menu'); };
   $('bStart').onclick = () => { Audio_.unlock(); SFX.click(); start(S.mode); };
