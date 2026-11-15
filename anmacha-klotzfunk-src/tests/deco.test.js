@@ -56,7 +56,24 @@ test('Mesher: Deko erzeugt keine Würfel, sondern eine Liste für die Modelle', 
   nb[4][3 + (4 << 4) + (2 << 8)] = B.DECO_TABLE; nb[4][3 + (4 << 4) + (3 << 8)] = B.DECO_TABLELAMP;
   const r = meshFrom(nb, hms, 4);
   assert.equal(r.opaque, null);
-  assert.equal(r.deco.length, 14);
+  assert.equal(r.deco.length, 16);
   assert.deepEqual(r.deco.slice(0, 4), [3, 2, 4, B.DECO_TABLE]);
-  assert.ok(Math.abs(r.deco[13] + 0.2) < 1e-9, 'Lampe sitzt auf dem Tisch');
+  assert.ok(Math.abs(r.deco[14] + 0.2) < 1e-9, 'Lampe sitzt auf dem Tisch');
+});
+
+test('Selbst gedrehte Deko: Mesher nimmt die Drehung, Spielstand behält sie, neue Belegung setzt sie zurück', async () => {
+  const { decoFacing } = await import('../src/blocks.js');
+  const { encodeRot, decodeRot } = await import('../src/storage.js');
+  const { World } = await import('../src/world.js');
+  assert.deepEqual([decoFacing(0, 1), decoFacing(1, 0), decoFacing(0, -1), decoFacing(-1, 0)], [0, 1, 2, 3]);
+  const nb = Array.from({ length: 9 }, () => new Uint8Array(CS * CS * H)), hms = Array.from({ length: 9 }, () => new Uint8Array(CS * CS));
+  const i = 3 + (4 << 4) + (2 << 8); nb[4][i] = B.DECO_CHAIR;
+  assert.equal(meshFrom(nb, hms, 4).deco[4], 0);
+  assert.equal(meshFrom(nb, hms, 4, new Map([[i, 3]])).deco[4], 3);
+  const w = new World(1, null, 2); w.ensure(0, 0);
+  w.setBlock(3, 70, 4, B.DECO_CHAIR); assert.ok(w.setRot(3, 70, 4, 2)); assert.equal(w.getRot(3, 70, 4), 2);
+  const back = decodeRot(JSON.parse(JSON.stringify(encodeRot(w.rot))));
+  assert.equal([...back.values()][0].get(3 + 4 * CS + 70 * CS * CS), 2);
+  assert.equal(decodeRot({ x: 'kaputt', 5: [1, 'a'] }).size, 0);
+  w.setBlock(3, 70, 4, B.AIR); assert.equal(w.getRot(3, 70, 4), undefined);
 });

@@ -62,8 +62,9 @@
       "t": "Deko: Möbel und Requisiten",
       "list": [
         "Reiter „Deko“: 27 Möbel und Requisiten im KayKit-Stil, z. B. Stuhl, Sofa, Tisch, Bett, Kommode, Regal, Lampen, Bilderrahmen, Teppich, Parkbank, Straßenlaterne, Ampel, Fass, Truhe, Kerzen, Wandfackel, Banner und Kisten. Im Überlebensmodus stellst du sie an der Werkbank her.",
-        "Stücke stellen sich mit dem Rücken zur Wand, Stühle neben einem Tisch drehen sich zum Tisch. Bilder, Fackeln und Banner hängen an der Wand, eine Tischlampe steht auf der Tischplatte.",
-        "Lampen, Laternen, Kerzen und Fackeln leuchten. Tisch, Kommode, Regal, Fass, Truhe und Kisten sind fest."
+        "Beim Setzen schaut ein Stück zu dir; Bilder, Fackeln und Banner an einer Wand hängen flach daran, eine Tischlampe steht auf der Tischplatte.",
+        "Drehen wie du willst: auf das Stück schauen und R drücken (Umschalt+R dreht zurück), oder Schleichen halten und Setzen drücken (Controller: B/○ + LT/L2), am Handy die Taste ⟳ oben.",
+        "Lampen, Laternen, Kerzen und Fackeln leuchten und erhellen nachts die Umgebung. Tisch, Kommode, Regal, Fass, Truhe und Kisten sind fest."
       ]
     },
     {
@@ -131,7 +132,7 @@
         "Die Eisenspitzhacke gibt es beim Schmied auch für 2 Funkkristalle und 8 Weizen.",
         "Für die Verbindung über 40 Blöcke: Sender, dann alle höchstens 24 Blöcke ein Relais, am Ende der Empfänger.",
         "Stelle „Vorrat behalten“ ein, wenn du ohne Risiko spielen willst; mit „Vorrat bleibt liegen“ musst du ihn am Unglücksort abholen.",
-        "Bei ruckelndem Bild die Grafik auf Eco oder Mobil stellen; Automatisch senkt zuerst die Auflösung, dann die Sichtweite."
+        "Bei ruckelndem Bild die Grafik auf Eco oder Mobil stellen; Automatisch senkt zuerst die Auflösung, dann die Sichtweite. Standard und Hoch zeigen weiche Sonnenschatten, 3D-Wolken und Leuchten, Mobil spart Wolken und Leuchten, Eco schaltet alle Effekte ab."
       ]
     },
     {

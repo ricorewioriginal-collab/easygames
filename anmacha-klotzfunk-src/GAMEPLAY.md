@@ -59,8 +59,14 @@ Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und d
 
 ## Deko (ab 1.12)
 - Reiter **Deko**: 27 Möbel und Requisiten im KayKit-Stil (Stuhl, Sessel, Sofa, Tisch, Bett, Kommode, Regal, Lampen, Bilderrahmen, Teppich, Parkbank, Straßenlaterne, Ampel, Hydrant, Fass, Truhe, Kerzen, Wandfackel, Banner, Kisten …). Im Überlebensmodus an der Werkbank herstellen.
-- Stücke stellen sich mit dem Rücken zur Wand; Stühle neben einem Tisch drehen sich zum Tisch. Bilder, Fackeln und Banner hängen an der Wand. Eine Tischlampe auf einem Tisch steht auf der Tischplatte.
-- Lampen, Laternen, Kerzen und Fackeln leuchten. Tisch, Kommode, Regal, Fass, Truhe und Kisten sind fest, auf Stühle, Sofa und Bett kann man treten.
+- Beim Setzen schaut ein Stück zu dir; Bilder, Fackeln und Banner an einer Wand hängen daran. Eine Tischlampe auf einem Tisch steht auf der Tischplatte. Alte, nie gedrehte Stücke richten sich wie bisher aus (Rücken zur Wand, Stühle zum Tisch).
+- **Drehen (ab 1.13):** auf das Stück schauen und **R** (Umschalt+R = zurück), **Schleichen + Setzen** (Controller: Schleichen-Taste halten + LT) oder Touch-Taste **⟳** oben. Die Drehung wird gespeichert. Im Mehrspieler sehen Gäste noch die automatische Ausrichtung.
+- Lampen, Laternen, Kerzen und Fackeln leuchten und erhellen ihre Umgebung (wie alle Leuchtblöcke ab 1.13). Tisch, Kommode, Regal, Fass, Truhe und Kisten sind fest, auf Stühle, Sofa und Bett kann man treten.
+
+## Grafik (ab 1.13)
+- **Standard/Hoch:** weiche Sonnenschatten, 3D-Wolken aus Blöcken, Leuchten um helle Lichter (Bloom), Dunst mit Sonnenschein, wiegende Blätter und Pflanzen.
+- **Mobil:** Schatten (kleiner, seltener erneuert) und wiegende Blätter, flache Wolken, kein Leuchten. **Eco:** keine Effekte.
+- Lampen, Laternen, Neon, Kristalle, Magma und leuchtende Deko erhellen ihre Umgebung (bis 14 Blöcke, Wände halten das Licht auf).
 
 ## Weltkarte
 - 🗺, **M** oder Antippen der Minikarte öffnet die Karte. Zu sehen ist nur, was du schon entdeckt hast (Umkreis von etwa 5 Chunks um deine Wege).

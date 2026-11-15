@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "6c71d3d033a3",
- "generated": "2026-11-15T03:31:24+01:00",
- "commit": "7b262e3fb723d96a9a2f45314f17bf190b6298cd",
+ "version": "9283b3e20de7",
+ "generated": "2026-11-15T02:31:42+00:00",
+ "commit": "36de27e9f129086a39dac01b7db084dec12b6545",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2142,9 +2142,9 @@
    "h": "438e0971b06a94827ca4650affff4e10a13a9eae258903a3271226724b204e4c"
   },
   {
-   "p": "anmacha-klotzfunk/assets/index-0afcs7nk.js",
-   "s": 724879,
-   "h": "4fe1600230e0d346dd557350deb5d8f834f03e6b06e27822fd8f4c0c537664da"
+   "p": "anmacha-klotzfunk/assets/index-B1SsNFvH.js",
+   "s": 755271,
+   "h": "5e0b734662e8d2e81411eb1a1592846538f2061fb71660e2a466036e489b0a6a"
   },
   {
    "p": "anmacha-klotzfunk/assets/index-iGvFtR0e.css",
@@ -2152,9 +2152,9 @@
    "h": "90230adcf0cae269f3a12378cb60bb86047e80394e783df7d8014393df6bb74a"
   },
   {
-   "p": "anmacha-klotzfunk/assets/meshworker-C7TbDh3D.js",
-   "s": 18554,
-   "h": "529c8ad0a0188a5980b090e9052512aee7126550a4f0058c91132dc954635171"
+   "p": "anmacha-klotzfunk/assets/meshworker-BL9OcKGN.js",
+   "s": 20162,
+   "h": "484771f4dd56b97b96a3aa07e3cc84defd03fc18d7616e62c7fa9a801a146540"
   },
   {
    "p": "anmacha-klotzfunk/card.jpg",
@@ -2163,8 +2163,8 @@
   },
   {
    "p": "anmacha-klotzfunk/index.html",
-   "s": 23926,
-   "h": "3fbf637e73062e49c1e5fd79a668148d778cb32df9f7580b4d046693361a1679"
+   "s": 24125,
+   "h": "9c30aef0427937310b24e58b1c4ef41b8ac060a3ab40821650ea0dc111607a55"
   },
   {
    "p": "anmacha-klotzfunk/kaykit/deco.bin",
@@ -10098,8 +10098,8 @@
   },
   {
    "p": "guides/anmacha-klotzfunk.json",
-   "s": 21695,
-   "h": "a46e229f72c6407be52a86acc1cc3f2ed444d91dd3589be9742960918008eb0e"
+   "s": 22019,
+   "h": "de12b9906d7c3f8ec2c052acd758d647fa8d671d61b677f71ae61b642801d1ec"
   },
   {
    "p": "guides/anmacha-koffer-dealer.json",
@@ -13589,7 +13589,7 @@
   {
    "p": "sync/catalog.json",
    "s": 253668,
-   "h": "b03ac73990ed553b13d6c1bbb77f940d6891585202e4822eeed041cc48ebb7a6"
+   "h": "7c8e910455a2512b218d191e548f3f4851f987ffecab69dea5ab00d8a5165216"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

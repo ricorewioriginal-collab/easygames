@@ -110,3 +110,16 @@ test('Rezepte für alle neuen Bauelemente', () => {
   for (const t of INV_BLOCKS) if (t >= 80) assert.ok(made.has(t), 'kein Rezept: ' + BLOCKS[t].name);
   assert.ok(RECIPES.every(r => r.need.every(([t, n]) => t != null && n > 0)));
 });
+
+test('Blocklicht: Lampe erhellt die Nachbarschaft, Wände halten es auf, ohne Lampen kein Aufwand', async () => {
+  const { blockLight, LR } = await import('../src/mesher.js');
+  const cells = new Map(), get = (x, y, z) => cells.get(`${x},${y},${z}`) || 0;
+  assert.equal(blockLight(get, 10), null);
+  cells.set('5,5,5', B.LAMP);
+  const bl = blockLight(get, 10);
+  assert.equal(bl(5, 5, 5), 1); assert.ok(Math.abs(bl(6, 5, 5) - (LR - 1) / LR) < 1e-9); assert.equal(bl(5 + LR, 5, 5), 0);
+  const open = bl(8, 5, 5); // Puffer wird beim nächsten Aufruf wiederverwendet
+  for (let y = 0; y < 12; y++) for (let z = 0; z < 12; z++) cells.set(`7,${y},${z}`, B.STONE);
+  const bw = blockLight(get, 10);
+  assert.ok(bw(8, 5, 5) < open, 'hinter der Wand dunkler');
+});
