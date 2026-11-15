@@ -6,7 +6,7 @@ import type { AudioEngine, AudioState } from '../audio/audio';
 import { WorldView, type WorldQuality } from '../engine/world';
 import { TrainsView, poseOf, type TrainPose } from '../engine/trains3d';
 import { CameraRig, CAM_NAMES, type CamMode } from '../engine/cameras';
-import { Input, type Action } from '../input/input';
+import { Input, ACTION_LABELS, PAD_HELP, type Action } from '../input/input';
 import { Hud } from '../ui/hud';
 import { Map2D } from '../ui/map2d';
 import { h, btn, toast, dialog, hhmm } from '../ui/dom';
@@ -163,6 +163,11 @@ export class Game {
     this.fpsAcc += dt; this.frames++;
     if (this.fpsAcc > 1) { this.fps = Math.round(this.frames / this.fpsAcc); this.fpsAcc = 0; this.frames = 0; if (!this.paused) this.adaptRes(cap); }
     this.input.pollGamepad();
+    if (this.input.firstUse) {
+      this.input.firstUse = false;
+      if (this.o.mode === 'drive') toast('🎮 Controller erkannt: RT fahren · LT bremsen · Ⓐ Sifa · Ⓑ Türen · RB Befehlsmenü · Start Pause', 'info', 7000);
+    }
+    { const pt = this.s.player; const warn = !!pt && (pt.sifaWarn || !!pt.forcedBrake); if (warn && !this.warnPrev) this.input.rumble(pt!.forcedBrake ? 500 : 220, pt!.forcedBrake ? 1 : 0.5); this.warnPrev = warn; }
     const s = this.s, w = s.world;
     if (!this.paused && !this.replay) {
       this.drive(dt);
@@ -297,14 +302,26 @@ export class Game {
     const t = this.s.player; if (!t || t.ai) return;
     const c = t.ctl, held = this.input.held;
     const expert = this.s.world.assist === 'expert';
+    void expert;
     const rate = 0.6 * dt;
-    if (held.has('throttleUp')) this.lever = Math.min(1, this.lever + rate);
-    if (held.has('throttleDown')) this.lever = Math.max(expert && this.ctx.settings.controls !== 'simple' ? 0 : -1, this.lever - rate);
+    // Fahr-/Bremshebel: Tasten/Steuerkreuz rasten in Stufen (⅛), halten = weitere Stufen; RT/LT/Stick stellen stufenlos,
+    // je fester gedrückt, desto schneller. Bei 0 bleibt der Hebel kurz stehen (Raste), damit man nicht versehentlich umschaltet.
+    const dir = held.has('throttleUp') ? 1 : held.has('throttleDown') ? -1 : 0;
+    if (dir !== this.stepDir) { this.stepDir = dir; this.stepT = 0; if (dir) this.stepLever(dir); }
+    else if (dir) { this.stepT += dt; if (this.stepT > 0.35) { this.stepT -= 0.2; this.stepLever(dir); } }
+    if (this.detentT > 0) this.detentT -= dt;
+    const r = this.input.axis.active ? this.input.axis.lever : 0;
+    // Experte (getrennte Bremse): LT bei Hebel 0 legt die Führerbremse an, RT löst sie zuerst
+    const minL = this.s.world.assist === 'expert' && this.ctx.settings.controls !== 'simple' ? 0 : -1;
+    if (minL === 0 && Math.abs(r) > 0.06 && (r < 0 ? this.lever <= 0 : this.manBrake > 0)) {
+      this.manBrake = Math.max(0, Math.min(1, this.manBrake - r * Math.abs(r) * 1.1 * dt));
+    } else if (Math.abs(r) > 0.06 && this.detentT <= 0) {
+      const old = this.lever; let nv = old + r * Math.abs(r) * 1.1 * dt;
+      if ((old > 0 && nv < 0) || (old < 0 && nv > 0)) { nv = 0; this.detentT = 0.45; this.input.rumble(60, 0.25); }
+      this.setLever(nv);
+    }
     if (held.has('brakeUp')) this.manBrake = Math.min(1, this.manBrake + rate);
     if (held.has('brakeDown')) this.manBrake = Math.max(0, this.manBrake - rate);
-    if (this.input.axis.active && Math.abs(this.input.axis.lever) > 0.02) this.lever = this.input.axis.lever;
-    // Schnappen auf 0 nahe Mitte
-    if (!held.has('throttleUp') && !held.has('throttleDown') && Math.abs(this.lever) < 0.04) this.lever = 0;
     const hold = this.ctx.settings.controls === 'simple' ? this.simpleAssist(t, dt) : false;
     const L = hold ? Math.min(0, this.lever) : this.lever;
     let thr = Math.max(0, L);
@@ -363,6 +380,16 @@ export class Game {
     return hold;
   }
 
+  private stepDir = 0; private stepT = 0; private detentT = 0;
+  private stepLever(d: number) {
+    const n = 1 / 8, old = this.lever;
+    let nv = (Math.round(old / n) + d) * n;
+    if (Math.abs(nv) < 1e-6) nv = 0;
+    this.setLever(nv);
+    if (this.lever !== old) { this.ctx.audio.play('ui_click'); if (this.lever === 0) this.input.rumble(50, 0.2); }
+  }
+  /** Stufenanzeige des Hebels: F1–F8, B1–B8, 0 */
+  leverLabel() { const k = Math.round(this.lever * 8); return k > 0 ? `F${k}` : k < 0 ? `B${-k}` : '0'; }
   setLever(v: number) { this.lever = Math.max(this.s.world.assist === 'expert' && this.ctx.settings.controls !== 'simple' ? 0 : -1, Math.min(1, v)); }
   getLever() { return this.lever; }
   setBrake(v: number) { this.manBrake = Math.max(0, Math.min(1, v)); }
@@ -377,7 +404,8 @@ export class Game {
     if (!down) return;
     const say = (m: string, sev: 'info' | 'warn' | 'error' = 'info') => { if (m) toast(m, sev); };
     switch (a) {
-      case 'pause': this.setPaused(!this.paused); return;
+      case 'pause': if (this.cmdEl) { this.toggleCommandMenu(); return; } this.setPaused(!this.paused); return;
+      case 'menu': this.toggleCommandMenu(); return;
       case 'help': this.showHelp(); return;
       case 'map': this.openMap(!this.map); return;
       case 'hud': this.hudVisible = !this.hudVisible; this.hud.setVisible(this.hudVisible); return;
@@ -394,6 +422,7 @@ export class Game {
     const c = t.ctl;
     switch (a) {
       case 'emergency':
+        this.input.rumble(450, 1);
         if (!c.emergency) { c.emergency = true; this.lever = -1; au.play('emergency'); say('Schnellbremsung!', 'warn'); }
         else if (Math.abs(t.v) < 0.1) { c.emergency = false; if (t.forcedBrake && !t.forcedBrake.includes('SPAD')) t.forcedBrake = null; au.play('brake_release'); say('Schnellbremsung gelöst'); }
         else say('Schnellbremsung lässt sich erst im Stillstand lösen.', 'warn');
@@ -414,6 +443,7 @@ export class Game {
         au.play('door_open'); say(`Türen ${side === 'L' ? 'links' : 'rechts'} freigegeben`);
         break;
       }
+      case 'doorsToggle': this.onAction(c.openL || c.openR || c.releaseL || c.releaseR ? 'doorsClose' : 'doors', true); break;
       case 'doorsClose': c.openL = c.openR = false; c.releaseL = c.releaseR = false; au.play('door_beep'); say('Türen schließen'); break;
       case 'panto': c.panto = !c.panto; au.play('panto_up'); say(c.panto ? 'Stromabnehmer heben' : 'Stromabnehmer senken'); break;
       case 'mainSwitch':
@@ -442,6 +472,38 @@ export class Game {
       case 'shunt': { const pl = w.plans.get(t.id); if (pl) { pl.shunt = !pl.shunt; say(pl.shunt ? 'Rangierfahrt: höchstens 25 km/h, Rangiersignale gelten' : 'Zugfahrt'); } break; }
     }
   };
+
+  // ------------------------------------------------------------ Befehlsmenü: alle Funktionen per Controller, Touch und Maus
+  private cmdEl: HTMLElement | null = null;
+  private warnPrev = false;
+  toggleCommandMenu() {
+    if (this.cmdEl) { this.cmdEl.remove(); this.cmdEl = null; return; }
+    const t = this.s.player, tr = t?.traction;
+    const drive = !!t && !t.ai;
+    const L = (a: Action) => ACTION_LABELS[a] ?? a;
+    const groups: [string, (Action | false)[]][] = [
+      ['🚆 Fahrzeug', drive ? ['reverser', 'reverserBack', tr === 'electric' && 'panto', 'mainSwitch', 'lights', 'cabLight', 'wipers', 'parking', 'sand', 'cabChange', 'emergency', tr === 'steam' && 'injector', tr === 'steam' && 'firing'] : []],
+      ['🚉 Betrieb', drive ? ['doorsToggle', 'pzb', 'isolate', 'zs1', 'shunt', 'couple', 'uncouple', 'load', 'unload', this.canConduct() && 'conductor', this.condOn && 'ticket'] : []],
+      ['🎥 Ansicht', ['camera', 'cam1', 'cam2', 'cam3', 'cam4', 'cam5', 'cam6', 'map', 'timewarp', 'hud', 'replay', 'screenshot', 'help']],
+    ];
+    const CAMN: Partial<Record<Action, string>> = { cam1: 'Führerstand', cam2: 'Verfolger', cam3: 'Front', cam4: 'Heck', cam5: 'Fahrgast', cam6: 'Streckenrand' };
+    const run = (a: Action) => {
+      this.toggleCommandMenu();
+      this.onAction(a, true);
+      setTimeout(() => this.onAction(a, false), a === 'horn' || a === 'sand' ? 700 : 30);
+    };
+    const el = h('div', { class: 'overlay cmdmenu' }, h('div', { class: 'panel', style: 'max-width:min(760px,94vw)' },
+      h('h2', null, '☰ Befehlsmenü'),
+      h('p', { class: 'small muted' }, 'Alle Funktionen des Zuges. Controller: Steuerkreuz wählt, Ⓐ führt aus, Ⓑ oder RB schließt.'),
+      ...groups.filter(([, l]) => l.some(Boolean)).map(([title, list]) => h('div', null,
+        h('h3', null, title),
+        h('div', { class: 'cmdgrid' }, ...(list.filter(Boolean) as Action[]).map((a) => btn(CAMN[a] ? `Kamera: ${CAMN[a]}` : L(a), () => run(a), 'btn small'))))),
+      h('div', { class: 'row end', style: 'margin-top:10px' }, btn('Schließen', () => this.toggleCommandMenu(), 'btn', { 'data-back': '' }))));
+    this.root.appendChild(el);
+    this.cmdEl = el;
+  }
+  /** Controller-Belegung für die Hilfe */
+  static padHelp() { return PAD_HELP; }
 
   private platformSide(t: Train): 'L' | 'R' | null {
     const w = this.s.world;
