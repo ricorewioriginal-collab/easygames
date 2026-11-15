@@ -75,6 +75,10 @@ export function createActors(quality: QualitySettings, count: number): ActorsVie
     return a;
   }
 
+  const prevSonic: boolean[] = [];
+  const prevAir: boolean[] = [];
+  const prevVy: number[] = [];
+
   function handle(e: SimEvent, state: SimState): void {
     const cars = state.cars;
     switch (e.t) {
@@ -133,6 +137,19 @@ export function createActors(quality: QualitySettings, count: number): ActorsVie
         ball.pulse(0.6);
         break;
       }
+      case 'ring': {
+        const c = cars[e.car];
+        if (!c || !finite3(c.pos)) return;
+        fx.ring(c.pos[0], c.pos[1], c.pos[2]);
+        break;
+      }
+      case 'charge': {
+        if (!finite3(state.ball.pos)) return;
+        const b = state.ball.pos;
+        fx.charge(b[0], b[1], b[2], e.team === 1 ? 1 : 0, e.level >= 100);
+        ball.pulse(e.level >= 100 ? 1 : 0.7);
+        break;
+      }
       case 'wall': {
         if (!finite3(state.ball.pos)) return;
         fx.wall(state.ball.pos[0], state.ball.pos[1], state.ball.pos[2], isNum(e.speed) ? e.speed : 10);
@@ -166,6 +183,23 @@ export function createActors(quality: QualitySettings, count: number): ActorsVie
         if (c) ensure(i, c.team === 1 ? 1 : 0, c.demolished);
       }
       for (const e of events) handle(e, state);
+      // Übergänge je Auto: Hyperspeed erreicht, harte Landung
+      for (let i = 0; i < cars.length; i++) {
+        const c = cars[i];
+        if (!c || !finite3(c.pos) || c.demolished > 0) {
+          prevSonic[i] = false;
+          prevVy[i] = 0;
+          prevAir[i] = false;
+          continue;
+        }
+        if (c.supersonic && !prevSonic[i] && d > 0) fx.sonic(c.pos[0], c.pos[1], c.pos[2], c.team);
+        const air = (c.wheelsOnSurface ?? 0) === 0;
+        if (!air && prevAir[i] && (prevVy[i] ?? 0) < -7 && d > 0)
+          fx.land(c.pos[0], c.pos[1], c.pos[2], -(prevVy[i] ?? 0));
+        prevSonic[i] = c.supersonic;
+        prevAir[i] = air;
+        prevVy[i] = c.vel[1];
+      }
 
       for (let i = 0; i < cars.length; i++) {
         const c = cars[i];

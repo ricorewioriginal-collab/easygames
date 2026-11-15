@@ -127,15 +127,13 @@
     });
     return out.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   }
+  // iTunes-Verzeichnis als Daten (fetch, CORS erlaubt) statt als nachgeladenes Skript (JSONP) – so lädt das Spiel in den Apps keine fremden Skripte
   function fromItunes() {
-    return new Promise((res, rej) => {
-      const cb = '__amcItunes' + Date.now(), s = document.createElement('script'), to = setTimeout(() => { cleanup(); rej(new Error('timeout')); }, 8000);
-      const cleanup = () => { clearTimeout(to); delete root[cb]; s.remove(); };
-      root[cb] = j => { cleanup(); res((j.results || []).filter(r => r.kind === 'podcast-episode' && r.episodeUrl).map(r => ({ nr: nrOf(r.trackName), title: cleanTitle(r.trackName), url: r.episodeUrl.replace(/^http:/, 'https:'), date: (r.releaseDate || '').slice(0, 10), dur: Math.round((r.trackTimeMillis || 0) / 1000), desc: String(r.description || '').replace(/\s+/g, ' ').slice(0, 180) })).sort((a, b) => b.date.localeCompare(a.date))); };
-      s.onerror = () => { cleanup(); rej(new Error('jsonp')); };
-      s.src = 'https://itunes.apple.com/lookup?id=' + D.PODCAST.itunes + '&entity=podcastEpisode&limit=200&callback=' + cb;
-      document.head.appendChild(s);
-    });
+    const ac = typeof AbortController === 'function' ? new AbortController() : null, to = setTimeout(() => ac && ac.abort(), 8000);
+    return fetch('https://itunes.apple.com/lookup?id=' + D.PODCAST.itunes + '&entity=podcastEpisode&limit=200', ac ? { signal: ac.signal } : undefined)
+      .then(r => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then(j => { clearTimeout(to); return (j.results || []).filter(r => r.kind === 'podcast-episode' && r.episodeUrl).map(r => ({ nr: nrOf(r.trackName), title: cleanTitle(r.trackName), url: r.episodeUrl.replace(/^http:/, 'https:'), date: (r.releaseDate || '').slice(0, 10), dur: Math.round((r.trackTimeMillis || 0) / 1000), desc: String(r.description || '').replace(/\s+/g, ' ').slice(0, 180) })).sort((a, b) => b.date.localeCompare(a.date)); })
+      .catch(e => { clearTimeout(to); throw e; });
   }
   M.refresh = function () {
     if (M._refreshing || typeof fetch !== 'function' || (root.navigator && root.navigator.onLine === false)) return;

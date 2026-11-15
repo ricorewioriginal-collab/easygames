@@ -23,7 +23,7 @@ export class RingsView {
     const gDisc = new THREE.CircleGeometry(r * 0.76, 40);
     this.geos.push(gOuter, gInner, gDisc);
     for (const ring of state.rings) {
-      const mOuter = new THREE.MeshBasicMaterial({ color: 0xffc23d, toneMapped: false });
+      const mOuter = new THREE.MeshBasicMaterial({ color: 0xffc23d, toneMapped: false, transparent: true });
       const mInner = new THREE.MeshBasicMaterial({ color: 0xfff1b0, toneMapped: false, transparent: true, opacity: 0.85 });
       const mDisc = new THREE.MeshBasicMaterial({
         color: 0xffc23d,
@@ -63,8 +63,11 @@ export class RingsView {
       it.root.position.y = ring.pos[1] + Math.sin(t * 1.6 + i) * 0.25;
       const s = on ? 1 + it.pop * 0.5 + Math.sin(t * 4 + i) * 0.03 : 0.55;
       it.root.scale.setScalar(s);
-      (it.outer.material as THREE.MeshBasicMaterial).color.setHex(on ? 0xffc23d : 0x3a3550);
-      (it.inner.material as THREE.MeshBasicMaterial).opacity = on ? 0.85 : 0.2;
+      const mo = it.outer.material as THREE.MeshBasicMaterial;
+      mo.color.setHex(on ? 0xffc23d : 0x8a7cc0);
+      mo.opacity = on ? 1 : 0.16;
+      mo.depthWrite = on;
+      (it.inner.material as THREE.MeshBasicMaterial).opacity = on ? 0.85 : 0.08;
       (it.disc.material as THREE.MeshBasicMaterial).opacity = on ? 0.1 + Math.sin(t * 3 + i) * 0.05 + it.pop * 0.4 : 0;
     });
   }

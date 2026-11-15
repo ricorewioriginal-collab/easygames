@@ -82,8 +82,9 @@
   /** Figur neu bauen (Outfit gewechselt); bleibt an derselben Stelle der Szene */
   /** Echtes Senderlogo als Textur (zwischengespeichert) */
   const logoCache = {};
-  W.logoTex = slug => { if (!logoCache[slug]) { const t = new THREE.TextureLoader().load(AMC.UI.senderLogo(slug)); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; logoCache[slug] = t; } return logoCache[slug]; };
-  W.logoPlane = (slug, size) => new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshBasicMaterial({ map: W.logoTex(slug), toneMapped: false }));
+  // Senderlogo als Textur (eigener Name: W.logoTex oben zeichnet das AnMaCha-Schild aus Optionen – der gleiche Name überschrieb es)
+  W.senderTex = slug => { if (!logoCache[slug]) { const t = new THREE.TextureLoader().load(AMC.UI.senderLogo(slug)); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; logoCache[slug] = t; } return logoCache[slug]; };
+  W.logoPlane = (slug, size) => new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshBasicMaterial({ map: W.senderTex(slug), toneMapped: false }));
   W.rebuildHost = async function (id) {
     if (!W.kit) return;
     const old = W.hosts[id], parent = old && old.root.parent, pos = old && old.root.position.clone(), rot = old ? old.root.rotation.y : 0;
