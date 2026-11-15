@@ -162,14 +162,14 @@
     {
       "t": "Winzflitzer: Ziel des Spiels",
       "p": [
-        "Winzflitzer 3D ist ein Micro-Rennspiel: „Winzige Flitzer. Riesige Tische. Ein Ziel.“ Du rast mit winzigen Fahrzeugen über acht riesige Alltagswelten mit je 3 Strecken – insgesamt 24 Strecken. Wer von der Tischkante fällt oder die Strecke verlässt, wird zurückgesetzt und verliert Zeit.",
-        "Ziel ist es, Rennen zu gewinnen, die Meisterschaft über alle 24 Strecken zu holen, im Kopf-an-Kopf-Turnier alle 11 Gegner zu schlagen und im Zeitfahren Bestzeiten aufzustellen."
+        "Winzflitzer 3D ist ein Micro-Rennspiel: „Winzige Flitzer. Riesige Tische. Ein Ziel.“ Du rast mit winzigen Fahrzeugen über neun riesige Alltagswelten mit je 3 Strecken – insgesamt 27 Strecken. Wer von der Tischkante fällt oder die Strecke verlässt, wird zurückgesetzt und verliert Zeit.",
+        "Ziel ist es, Rennen zu gewinnen, die Meisterschaft über alle 27 Strecken zu holen, im Kopf-an-Kopf-Turnier alle 11 Gegner zu schlagen und im Zeitfahren Bestzeiten aufzustellen."
       ]
     },
     {
       "t": "Winzflitzer: Hauptmenü und Modi",
       "list": [
-        "🏆 Meisterschaft: 24 Rennen gegen je 3 Computer-Gegner, mit Leben und Bonusrunden.",
+        "🏆 Meisterschaft: 27 Rennen gegen je 3 Computer-Gegner, mit Leben und Bonusrunden.",
         "⚔️ Kopf-an-Kopf: Du gegen einen Gegner auf einem Bildschirm – 11 Duelle der Reihe nach.",
         "👥 Mehrspieler (1 Gerät): 2 bis 4 Spieler an einem Gerät (Tastatur zu zweit, Controller, Touch), auf Wunsch mit Computer-Fahrern.",
         "🏁 Einzelrennen: ein Rennen auf einer frei gewählten Strecke gegen 3 zufällige Gegner.",
@@ -194,7 +194,8 @@
         "🏖️ Sandkasten – 🚙 Geländewagen: schwer und robust, steckt Hügel gut weg.",
         "🎱 Billardtisch – 🛞 Kugelflitzer: sehr wendig mit starker Beschleunigung.",
         "🔧 Werkbank – 🛡️ Panzer: langsam, schwer, klebt am Boden und kann schießen. Ein Treffer wirbelt den Gegner kurz herum.",
-        "🧸 Kinderzimmer – 🛻 Monstertruck: schwer, mit großen Rädern für Rampen."
+        "🧸 Kinderzimmer – 🛻 Monstertruck: schwer, mit großen Rädern für Rampen.",
+        "🎲 Spieleabend – 🛺 Winz-Kart: flink und wendig, mit kräftigem Antritt."
       ]
     },
     {
@@ -218,7 +219,7 @@
         "Die Gegner werden im Lauf der Meisterschaft stärker – am Anfang fahren eher die schwächeren Fahrer mit, zum Schluss die stärksten.",
         "Nach jedem dritten geschafften Rennen gibt es eine ⭐ Bonusrunde: Schaffe 2 Runden allein in der vorgegebenen Zeit, dann bekommst du ein Extraleben (höchstens 5 Leben).",
         "Aufgeben im Pausenmenü kostet ebenfalls ein Leben.",
-        "Ohne Leben ist die Meisterschaft vorbei. Nach allen 24 Strecken heißt es „🏆 MEISTER! 🏆“. Eine laufende Meisterschaft wird gespeichert und beim nächsten Start fortgesetzt."
+        "Ohne Leben ist die Meisterschaft vorbei. Nach allen 27 Strecken heißt es „🏆 MEISTER! 🏆“. Eine laufende Meisterschaft wird gespeichert und beim nächsten Start fortgesetzt."
       ]
     },
     {
@@ -343,7 +344,8 @@
         "Sandkasten: Auf Hügeln nicht lenken, sondern gerade drüber – der Geländewagen ist schwer und stabil.",
         "Billardtisch: Der Kugelflitzer ist sehr wendig, aber leicht – Rempler werfen ihn schnell aus der Bahn.",
         "Werkbank: Der Panzer ist langsam, aber schießt. Ziele auf Gegner direkt vor dir, ein Treffer wirbelt sie kurz herum.",
-        "Kinderzimmer: Rampen mit Vollgas und gerade anfahren, damit der Monstertruck sauber landet."
+        "Kinderzimmer: Rampen mit Vollgas und gerade anfahren, damit der Monstertruck sauber landet.",
+        "Spieleabend: Der Winz-Kart lenkt sehr direkt – kleine Lenkbewegungen reichen. Würfel, Dominosteine und Spieleschachteln sind feste Hindernisse."
       ]
     },
     {
@@ -461,7 +463,7 @@
       ]
     },
     {
-      "t": "Winzflitzer: Alle 24 Strecken",
+      "t": "Winzflitzer: Alle 27 Strecken",
       "list": [
         "🥣 Müsli-Runde (3 Runden): 2 Turbo-Streifen, eine rutschige und eine bremsende Fläche.",
         "🥣 Toast-Tour (3 Runden): Rampe gleich nach dem Start, 2 Turbos, 2 rutschige und eine bremsende Fläche.",
@@ -486,7 +488,10 @@
         "🔧 Werkzeugkasten-Arena (3 Runden): Auffahrt auf einen erhöhten Abschnitt, 2 Turbos.",
         "🧸 Bauklotz-Boulevard (3 Runden): große Rampe am Start, ein Turbo.",
         "🧸 Teppich-Schanze (3 Runden): 2 große Rampen, ein Turbo.",
-        "🧸 Spielzeugkisten-Chaos (3 Runden): erhöhter Abschnitt mit Rampe und Lücke, ein Turbo."
+        "🧸 Spielzeugkisten-Chaos (3 Runden): erhöhter Abschnitt mit Rampe und Lücke, ein Turbo.",
+        "🎲 Würfel-Runde (3 Runden): kleine Rampe am Start, 2 Turbos, eine rutschige Stelle.",
+        "🎲 Kartenhaus-Sprung (3 Runden): erhöhter Abschnitt mit Rampe und Lücke – nur mit Schwung, 2 Turbos, eine klebrige Stelle.",
+        "🎲 Domino-Brücke (3 Runden): Acht mit Brücke über die Kreuzung, 2 Turbos."
       ]
     },
     {
@@ -499,7 +504,8 @@
         "Bande an Bande, Schlauch-Schleife, Hobelbank-Gefecht – Bonusrunde",
         "Teppich-Schanze, Marmeladen-Acht, Lineal-Brücke – Bonusrunde",
         "Strudel am Abfluss, Eimer-Express, Tascheneck – Bonusrunde",
-        "Gartenzwerg-Tal, Werkzeugkasten-Arena, Spielzeugkisten-Chaos – geschafft: MEISTER!"
+        "Gartenzwerg-Tal, Werkzeugkasten-Arena, Spielzeugkisten-Chaos – Bonusrunde",
+        "Würfel-Runde, Kartenhaus-Sprung, Domino-Brücke – geschafft: MEISTER!"
       ]
     },
     {
@@ -542,7 +548,7 @@
     {
       "t": "Winzflitzer: Titel und Erfolge",
       "list": [
-        "🏆 MEISTER!: alle 24 Rennen der Meisterschaft geschafft – zählt als Meistertitel in der Statistik.",
+        "🏆 MEISTER!: alle 27 Rennen der Meisterschaft geschafft – zählt als Meistertitel in der Statistik.",
         "🏆 Duell-Champion!: alle 11 Kopf-an-Kopf-Gegner besiegt – zählt ebenfalls als Titel.",
         "⭐ Extraleben gewonnen!: Bonusrunde in der Zielzeit geschafft.",
         "Die Titelstatistik zeigt Rennen, Siege, Meistertitel und Bestzeiten."

@@ -180,7 +180,7 @@
 
   Race.prototype.handleEvents = function () {
     var ev = this.sim.events, fx = this.fx, self = this, th = this.T.def.theme;
-    var dust = { breakfast: '#e8d5b0', desk: '#e6e6e6', bath: '#ffffff', garden: '#9ccf8f', sandbox: '#e3c98a', pool: '#d6f5e3', workbench: '#ead7ae', kids: '#d6d0ff' }[th];
+    var dust = { breakfast: '#e8d5b0', desk: '#e6e6e6', bath: '#ffffff', garden: '#9ccf8f', sandbox: '#e3c98a', pool: '#d6f5e3', workbench: '#ead7ae', kids: '#d6d0ff', games: '#f3d9b1' }[th];
     for (var i = 0; i < ev.length; i++) {
       var e = ev[i], c = e.a, hum = c && c.human, att = this.kind === 'attract', near = c && c.x != null && Math.hypot(c.x - this.cam.x, c.z - this.cam.z) < 30;
       switch (e.t) {
@@ -327,7 +327,7 @@
       // Partikel
       if (c.boost > 0 && Math.random() < 0.7) fx.spawn(c.x - Math.sin(c.a) * 0.8, c.y + 0.35 + bob, c.z - Math.cos(c.a) * 0.8, -c.vx * 0.1, 0.5, -c.vz * 0.1, 0.32, 0.3, Math.random() < 0.5 ? '#ffd23f' : '#ff7a1a', 0);
       if (c.grounded && c.fallT <= 0 && !fly && (c.slip > 3.5 || (boat && sp > 6) || (th === 'sandbox' && sp > 7)) && Math.random() < (boat ? 0.5 : 0.35))
-        fx.spawn(c.x - Math.sin(c.a) * 0.6, c.y + 0.15, c.z - Math.cos(c.a) * 0.6, (Math.random() - 0.5) * 2, 1 + Math.random(), (Math.random() - 0.5) * 2, boat ? 0.35 : 0.28, 0.45, boat ? '#ffffff' : ({ breakfast: '#eadbc0', desk: '#dddddd', garden: '#9ccf8f', sandbox: '#e3c98a', pool: '#c9f0d8', workbench: '#ead7ae', kids: '#cfc8ff' }[th]), 4);
+        fx.spawn(c.x - Math.sin(c.a) * 0.6, c.y + 0.15, c.z - Math.cos(c.a) * 0.6, (Math.random() - 0.5) * 2, 1 + Math.random(), (Math.random() - 0.5) * 2, boat ? 0.35 : 0.28, 0.45, boat ? '#ffffff' : ({ breakfast: '#eadbc0', desk: '#dddddd', garden: '#9ccf8f', sandbox: '#e3c98a', pool: '#c9f0d8', workbench: '#ead7ae', kids: '#cfc8ff', games: '#f3d9b1' }[th]), 4);
       if (fly && sp > 2 && Math.random() < 0.15) fx.spawn(c.x, c.y + 0.1, c.z, (Math.random() - 0.5) * 3, 0.3, (Math.random() - 0.5) * 3, 0.25, 0.4, '#b7e3a8', 0);
       if (c.stun > 0 && Math.random() < 0.5) fx.spawn(c.x, c.y + 0.8, c.z, 0, 1.5, 0, 0.3, 0.6, '#666666', -1);
       // Drift: Funken (weiß → blau → orange = Mini-Turbo bereit) und Bremsspuren
@@ -745,7 +745,7 @@
     var c = SAVE.champ, me = drvById(c.drv), id = WF.CHAMP[c.race], tdef = WF.trackById(id), th = WF.THEMES[tdef.theme], v = WF.VEHICLES[th.veh];
     var opp = c.opp && c.oppRace === c.race ? c.opp.map(drvById) : champOpponents(c);
     c.opp = opp.map(function (d) { return d.id; }); c.oppRace = c.race; save();
-    $('ladTitle').textContent = c.bonus ? '⭐ Bonusrunde' : '🏆 Meisterschaft · Rennen ' + (c.race + 1) + '/24';
+    $('ladTitle').textContent = c.bonus ? '⭐ Bonusrunde' : '🏆 Meisterschaft · Rennen ' + (c.race + 1) + '/' + WF.CHAMP.length;
     $('ladLives').textContent = '❤️'.repeat(c.lives) + '🤍'.repeat(Math.max(0, 3 - c.lives));
     var nx = $('ladNext'); nx.innerHTML = '';
     nx.appendChild(preview(id, 200, 120));
@@ -772,7 +772,7 @@
       var btn;
       if (place <= 2) {
         c.race++; c.opp = null;
-        if (c.race >= 24) { c.over = true; SAVE.stats.champs++; save(); results(r, '🏆 MEISTER! 🏆', [['🏠 Menü', home]]); toast('Du bist Winzflitzer-Meister! Alle 24 Strecken geschafft!', 5000); return; }
+        if (c.race >= WF.CHAMP.length) { c.over = true; SAVE.stats.champs++; save(); results(r, '🏆 MEISTER! 🏆', [['🏠 Menü', home]]); toast('Du bist Winzflitzer-Meister! Alle ' + WF.CHAMP.length + ' Strecken geschafft!', 5000); return; }
         if (c.race % 3 === 0) c.bonus = true;
         note = (place === 1 ? 'Sieg! ' : 'Qualifiziert! ') + note;
         btn = [['Weiter →', champLadder], ['🏠 Menü', home]];

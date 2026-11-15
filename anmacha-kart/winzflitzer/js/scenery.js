@@ -70,7 +70,12 @@ var WF = window.WF = window.WF || {};
     tape: function (g, s) { g.fillStyle = '#ddc79a'; g.fillRect(0, 0, s, s); WF.noise(g, s, 14, 4); g.fillStyle = '#f2b705'; g.fillRect(0, 0, 10, s); g.fillRect(s - 10, 0, 10, s);
       g.fillStyle = '#222'; for (var y = 0; y < s; y += 32) { g.fillRect(0, y, 10, 16); g.fillRect(s - 10, y + 16, 10, 16); } },
     road: function (g, s) { g.fillStyle = '#55586a'; g.fillRect(0, 0, s, s); WF.noise(g, s, 18, 5); g.fillStyle = '#fff'; g.fillRect(5, 0, 5, s); g.fillRect(s - 10, 0, 5, s);
-      g.fillStyle = '#ffd23f'; g.fillRect(s / 2 - 3, 0, 6, s / 2); }
+      g.fillStyle = '#ffd23f'; g.fillRect(s / 2 - 3, 0, 6, s / 2); },
+    board: function (g, s) { var cols = ['#fff4dc', '#e63946', '#fff4dc', '#2a9d8f'], q = s / 4;
+      g.fillStyle = '#3a2416'; g.fillRect(0, 0, s, s);
+      for (var i = 0; i < 4; i++) { g.fillStyle = cols[i]; g.fillRect(9, i * q + 2, s - 18, q - 4); }
+      g.fillStyle = 'rgba(0,0,0,0.12)'; for (i = 0; i < 4; i++) g.fillRect(9, i * q + q - 6, s - 18, 2);
+      g.fillStyle = '#ffd23f'; g.fillRect(0, 0, 5, s); g.fillRect(s - 5, 0, 5, s); }
   };
 
   // ---------- Deko-Bausteine (Maßstab wie die Kollision in track.js)
@@ -159,7 +164,27 @@ var WF = window.WF = window.WF || {};
       c.add(G.cyl(10), col, 0, 0.5, 0, 1, 8, 1, 0, 0, Math.PI / 2); c.add(G.cone(10), col, -4.8, 0.5, 0, 1, 1.6, 1, 0, 0, Math.PI / 2); c.add(G.cyl(10), '#ffffff', 1.5, 0.5, 0, 1.02, 3, 1.02, 0, 0, Math.PI / 2); },
     train: function (c) { var cols = ['#e63946', '#2a9d8f', '#f4a261'];
       for (var i = 0; i < 3; i++) { c.add(G.box(), cols[i], -3.6 + i * 3.6, 1.4, 0, 3.2, 2, 2.6); for (var k = 0; k < 2; k++) { c.add(G.cyl(10), '#222', -4.6 + i * 3.6 + k * 2, 0.5, 1.35, 0.9, 0.2, 0.9, Math.PI / 2, 0, 0); c.add(G.cyl(10), '#222', -4.6 + i * 3.6 + k * 2, 0.5, -1.35, 0.9, 0.2, 0.9, Math.PI / 2, 0, 0); } }
-      c.add(G.cyl(10), '#333', -4.2, 2.9, 0, 0.8, 1.2, 0.8); }
+      c.add(G.cyl(10), '#333', -4.2, 2.9, 0, 0.8, 1.2, 0.8); },
+    die: function (c) { c.add(G.rbox(0.5), '#fdfdf8', 0, 2, 0, 4, 4, 4);
+      [[0, 0], [-1.1, -1.1], [1.1, 1.1]].forEach(function (p) { c.add(G.cyl(10), '#d62828', p[0], 4.01, p[1], 0.75, 0.06, 0.75); });
+      [[-1, 1], [1, -1], [-1, -1], [1, 1]].forEach(function (p) { c.add(G.cyl(10), '#222', p[0] * 1.1, 2 + p[1] * 1.1, 2.01, 0.7, 0.06, 0.7, Math.PI / 2, 0, 0); });
+      [[-1.1, 1.1], [0, 0], [1.1, -1.1]].forEach(function (p) { c.add(G.cyl(10), '#222', 2.01, 2 + p[1], p[0], 0.7, 0.06, 0.7, 0, 0, Math.PI / 2); }); },
+    cards: function (c) { for (var i = 0; i < 6; i++) c.add(G.rbox(0.3), i % 2 ? '#f6f6f2' : '#ffffff', (i % 3 - 1) * 0.12, 0.1 + i * 0.2, 0, 6, 0.18, 8, 0, i * 0.04, 0);
+      c.add(G.rbox(0.3), '#1d4e89', 0, 1.25, 0, 5.8, 0.06, 7.8); c.add(G.box(), '#f4d35e', 0, 1.29, 0, 3.6, 0.02, 5.6); c.add(G.box(), '#1d4e89', 0, 1.31, 0, 2.6, 0.02, 4.6); },
+    hourglass: function (c) { c.add(G.cyl(14), '#7a4a26', 0, 0.3, 0, 5.2, 0.6, 5.2); c.add(G.cyl(14), '#7a4a26', 0, 6.7, 0, 5.2, 0.6, 5.2);
+      for (var i = 0; i < 3; i++) { var a = i * 2.09; c.add(G.cyl(6), '#5b3418', Math.cos(a) * 2.2, 3.5, Math.sin(a) * 2.2, 0.4, 6, 0.4); }
+      c.add(G.cone(14), '#d6f1ff', 0, 1.9, 0, 3.6, 2.6, 3.6, Math.PI, 0, 0); c.add(G.cone(14), '#d6f1ff', 0, 5.1, 0, 3.6, 2.6, 3.6);
+      c.add(G.cone(12), '#f2c14e', 0, 1.15, 0, 2.6, 1.1, 2.6); c.add(G.cone(12), '#f2c14e', 0, 5.3, 0, 1.6, 0.9, 1.6, Math.PI, 0, 0); },
+    pawn: function (c) { var col = ['#e63946', '#ffd23f', '#2a9d8f', '#457b9d'][(Math.abs(c.m.elements[12] * 3) | 0) % 4];
+      c.add(G.cyl(14), col, 0, 0.3, 0, 2.6, 0.6, 2.6); c.add(G.cone(14), col, 0, 1.9, 0, 2.0, 2.8, 2.0); c.add(G.sph(12), col, 0, 3.2, 0, 1.3); },
+    chips: function (c) { var cols = ['#e63946', '#2a9d8f', '#ffd23f', '#1d3557', '#f1faee'];
+      for (var i = 0; i < 8; i++) { c.add(G.cyl(16), cols[i % 5], (i % 2) * 0.08, 0.08 + i * 0.16, 0, 2.6, 0.15, 2.6); c.add(G.cyl(16), '#ffffff', (i % 2) * 0.08, 0.08 + i * 0.16, 0, 2.62, 0.05, 2.62); } },
+    domino: function (c) { for (var i = 0; i < 9; i++) { var x = -6.4 + i * 1.6; c.add(G.box(), '#1b1b1b', x, 1.1, 0, 0.5, 2.2, 0.9);
+      c.add(G.box(), '#f4f4f4', x + 0.26, 1.1, 0, 0.02, 0.05, 0.7); c.add(G.sph(6), '#f4f4f4', x + 0.26, 0.6 + (i % 3) * 0.3, 0, 0.12); c.add(G.sph(6), '#f4f4f4', x + 0.26, 1.6 - (i % 2) * 0.3, 0, 0.12); } },
+    scorepad: function (c) { c.add(G.box(), '#ffffff', 0, 0.04, 0, 5, 0.08, 7); for (var i = 0; i < 6; i++) c.add(G.box(), '#90a4ae', 0, 0.09, -2.6 + i * 1, 4.2, 0.02, 0.08);
+      c.add(G.box(), '#90a4ae', -1, 0.09, 0, 0.08, 0.02, 6); c.add(G.hex(), '#e63946', 3.6, 0.3, 1, 0.5, 5, 0.5, 0, 0.5, Math.PI / 2); },
+    gamebox: function (c) { c.add(G.box(), '#f4a261', 0, 1, 0, 8, 2, 8.5); c.add(G.box(), '#e76f51', 0, 2.05, 0, 8.1, 0.12, 8.6);
+      c.add(G.box(), '#264653', 0, 2.12, 0, 5.2, 0.04, 5.2, 0, 0.785, 0); c.add(G.box(), '#e9c46a', 0, 2.15, 0, 3, 0.04, 3, 0, 0.785, 0); c.add(G.sph(10), '#ffffff', 0, 2.3, 0, 0.9, 0.3, 0.9); }
   };
   function flower(c, x, z, col, h) {
     c.add(G.cyl(5), '#2d8a34', x, h / 2, z, 0.25, h, 0.25);
@@ -176,12 +201,13 @@ var WF = window.WF = window.WF || {};
     sandbox: { geo: function () { return new THREE.CylinderGeometry(0.22, 0.22, 1.6, 6); }, cols: ['#ff595e', '#ffffff'], every: 6, y: 0.8, off: 0.7 },
     workbench: { geo: function () { return new THREE.CylinderGeometry(0.5, 0.5, 0.35, 6); }, cols: ['#9aa5b1', '#b8c2cc'], every: 4, y: 0.18, off: 0.5 },
     kids: { geo: function () { return new THREE.ConeGeometry(0.55, 1.4, 8); }, cols: ['#ff7b00', '#ffffff'], every: 8, y: 0.7, off: 0.8 },
+    games: { geo: function () { return new THREE.CylinderGeometry(0.45, 0.45, 0.22, 14); }, cols: ['#e63946', '#ffd23f', '#2a9d8f', '#457b9d', '#f1faee'], every: 3, y: 0.11, off: 0.45 },
     pool: null
   };
-  var SUPPORT = { breakfast: ['#d9a35b', '#c8893f'], desk: ['#c0392b', '#2471a3', '#1e8449', '#7d3c98', '#d68910'], bath: ['#ffffff'], garden: ['#8d6e63'], sandbox: ['#d9b871'], pool: ['#5d4037'], workbench: ['#8d6e63', '#a1887f'], kids: ['#ffb703', '#219ebc', '#e63946', '#8ac926'] };
+  var SUPPORT = { breakfast: ['#d9a35b', '#c8893f'], desk: ['#c0392b', '#2471a3', '#1e8449', '#7d3c98', '#d68910'], bath: ['#ffffff'], garden: ['#8d6e63'], sandbox: ['#d9b871'], pool: ['#5d4037'], workbench: ['#8d6e63', '#a1887f'], kids: ['#ffb703', '#219ebc', '#e63946', '#8ac926'], games: ['#e76f51', '#2a9d8f', '#e9c46a', '#264653'] };
   var ZCOL = {
-    slip: { breakfast: '#ffffff', desk: '#5b3a1e', bath: '#ffffff', garden: '#7cc6fe', sandbox: '#7cc6fe', pool: '#cfe8ff', workbench: '#1b1b1b', kids: '#7cc6fe' },
-    slow: { breakfast: '#e8a33c', desk: '#1f3b73', bath: '#ffffff', garden: '#6b4f2a', sandbox: '#b08850', pool: '#ffffff', workbench: '#e6c79c', kids: '#ff8fab' }
+    slip: { breakfast: '#ffffff', desk: '#5b3a1e', bath: '#ffffff', garden: '#7cc6fe', sandbox: '#7cc6fe', pool: '#cfe8ff', workbench: '#1b1b1b', kids: '#7cc6fe', games: '#a8dadc' },
+    slow: { breakfast: '#e8a33c', desk: '#1f3b73', bath: '#ffffff', garden: '#6b4f2a', sandbox: '#b08850', pool: '#ffffff', workbench: '#e6c79c', kids: '#ff8fab', games: '#6b2f1a' }
   };
 
   WF.buildWorld = function (scene, T) {
@@ -192,16 +218,16 @@ var WF = window.WF = window.WF || {};
 
     // Boden tief unten
     var floorTex = { breakfast: tWood('floorB', '#9c6b43', '#5a3a22'), desk: tFlat('floorD', '#7b7f8c', 20), bath: WF.tex('tiles', 128, function (c, s) { c.fillStyle = '#eef3f6'; c.fillRect(0, 0, s, s); c.strokeStyle = '#b8c7d1'; c.lineWidth = 3; c.strokeRect(0, 0, s, s); }),
-      garden: tGrass(), sandbox: tGrass(), pool: tWood('floorP', '#4a3326', '#2a1a12'), workbench: tFlat('floorW', '#6e6e6e', 26), kids: tWood('floorK', '#c79a66', '#8a6036') }[key];
+      garden: tGrass(), sandbox: tGrass(), pool: tWood('floorP', '#4a3326', '#2a1a12'), workbench: tFlat('floorW', '#6e6e6e', 26), kids: tWood('floorK', '#c79a66', '#8a6036'), games: tFlat('floorE', '#4b3f72', 22) }[key];
     var ft = floorTex.clone(); ft.needsUpdate = true; ft.repeat.set(30, 30);
     var floor = new THREE.Mesh(new THREE.PlaneGeometry(900, 900), new THREE.MeshLambertMaterial({ map: ft }));
     floor.rotation.x = -Math.PI / 2; floor.position.y = th.floorY; root.add(floor);
 
     // Spielfläche
     var gtex = { breakfast: tGingham(), desk: tWood('desk', '#b98a5a', '#6e4a2a'), bath: tWater(), garden: tGrass(), sandbox: tFlat('sand', '#e8cf8f', 30, 'rgba(150,120,70,0.5)'),
-      pool: tFlat('felt', '#1f8a4c', 14), workbench: tWood('bench', '#d4b07a', '#8a6a3a'), kids: tCarpet() }[key];
+      pool: tFlat('felt', '#1f8a4c', 14), workbench: tWood('bench', '#d4b07a', '#8a6a3a'), kids: tCarpet(), games: tWood('gtable', '#8c5236', '#4a2412') }[key];
     var gt = gtex.clone(); gt.needsUpdate = true;
-    var tile = { breakfast: 8, desk: 30, bath: 22, garden: 10, sandbox: 10, pool: 8, workbench: 26, kids: 14 }[key];
+    var tile = { breakfast: 8, desk: 30, bath: 22, garden: 10, sandbox: 10, pool: 8, workbench: 26, kids: 14, games: 28 }[key];
     gt.repeat.set(g.w / tile, g.d / tile);
     var gmat = new THREE.MeshLambertMaterial({ map: gt });
     var gm;
@@ -221,7 +247,7 @@ var WF = window.WF = window.WF || {};
     if (th.water) anim.push(function (t) { gt.offset.set(t * 0.012, t * 0.02); });
 
     // Tischplatte (Dicke) und Ränder
-    var edgeCol = { breakfast: '#e9e2d4', desk: '#8a5a32', workbench: '#a07a48' }[key];
+    var edgeCol = { breakfast: '#e9e2d4', desk: '#8a5a32', workbench: '#a07a48', games: '#6b3519' }[key];
     if (edgeCol) {
       b.add(G.box(), edgeCol, 0, -1.5, 0, 0, 0, 0, g.w, 3, g.d);
       if (key === 'breakfast') { // überhängende Tischdecke
@@ -422,7 +448,7 @@ var WF = window.WF = window.WF || {};
   }
 
   function scatter(b, T, key) {
-    var g = T.theme.ground, r = WF.rng(T.def.id.charCodeAt(1) * 97 + 13), n = { breakfast: 70, desk: 26, garden: 260, sandbox: 60, workbench: 60, kids: 30, pool: 0, bath: 0 }[key];
+    var g = T.theme.ground, r = WF.rng(T.def.id.charCodeAt(1) * 97 + 13), n = { breakfast: 70, desk: 26, garden: 260, sandbox: 60, workbench: 60, kids: 30, games: 36, pool: 0, bath: 0 }[key];
     for (var k = 0; k < n; k++) {
       var x = g.x + (r() - 0.5) * (g.w - 4), z = g.z + (r() - 0.5) * (g.d - 4), ok = true;
       T.near(x, z, T.W + 2, function (i) { if (Math.hypot(x - T.x[i], z - T.z[i]) < T.W + 1.2) ok = false; });
@@ -436,6 +462,7 @@ var WF = window.WF = window.WF || {};
         case 'sandbox': b.add(new THREE.IcosahedronGeometry(1, 0), '#b9a27a', x, y + 0.1, z, r(), rot, 0, 0.3 + r() * 0.3); break;
         case 'workbench': if (r() < 0.5) b.add(G.box(), '#f0d9a8', x, 0.03, z, 0, rot, 0, 1.4, 0.05, 0.5); else b.add(G.cyl(6), '#9aa5b1', x, 0.15, z, 0, rot, Math.PI / 2, 0.2, 2.2, 0.2); break;
         case 'kids': var cc = ['#e63946', '#ffb703', '#219ebc', '#8ac926'][k % 4]; b.add(G.box(), cc, x, 0.4, z, 0, rot, 0, 1.6, 0.8, 0.8); b.add(G.cyl(6), cc, x, 0.9, z, 0, rot, 0, 0.45, 0.3, 0.45); break;
+        case 'games': if (r() < 0.4) b.add(G.box(), '#fdfdf8', x, 0.35, z, 0, rot, 0, 0.7, 0.7, 0.7); else b.add(G.cyl(12), ['#e63946', '#2a9d8f', '#ffd23f', '#1d3557'][k % 4], x, 0.06, z, 0, rot, 0, 1.2, 0.12, 1.2); break;
       }
     }
   }
