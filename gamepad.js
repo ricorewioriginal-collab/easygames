@@ -223,8 +223,9 @@
     var k = t.slice(0, i).trim().toLowerCase(), v = t.slice(i + 1).trim(); if (k && v) LABEL[k] = v;
   });
   // plain (Windows-App: window.EASYGAMES_PAD = 'plain'): nur die Knopf-Belegung des Spiels (Tasten/Bildschirm-Knöpfe) und die Belegung der App –
-  // kein Leuchtrahmen, keine Belegungs-Übersicht, keine Fenster-/Menü-Führung, keine Knopf-Symbole, kein Zeiger, kein Fenster mit Select + Start.
-  if (/(^|\s)plain(\s|$)/.test(root.EASYGAMES_PAD || '')) { opt.plain = true; opt.nav = false; opt.dlg = false; opt.menu = ''; opt.hud = 'off'; if (opt.rs === 'cursor') opt.rs = 'scroll'; }
+  // kein Leuchtrahmen, keine Belegungs-Übersicht, keine allgemeine Fenster-Hilfe, keine Knopf-Symbole, kein Zeiger, kein Fenster mit Select + Start.
+  // Menüs, die ein Spiel ausdrücklich gamepad.js überlässt (data-pad menu=…, z. B. NEXORB), bleiben samt Auswahl bedienbar – das ist seine eigene Steuerung.
+  if (/(^|\s)plain(\s|$)/.test(root.EASYGAMES_PAD || '')) { opt.plain = true; opt.nav = false; opt.dlg = false; opt.hud = 'off'; if (opt.rs === 'cursor') opt.rs = 'scroll'; }
   // data-pad="info": keine Tasten-/Knopf-Nachahmung (das Spiel steuert selbst), nur Controller-Modus, Belegung und Knopf-Symbole
   if (/(^|\s)info(\s|$)/.test((me && me.getAttribute('data-pad')) || '')) opt.info = true;
 
@@ -390,7 +391,7 @@
     root.setTimeout(function () { if (!b.isConnected || dlg || osk || menu) return; var c = usable(b); if (!c && !below(b)) return; clearRing(); if (c) click(b, c.x, c.y); else b.click(); }, 160);
   }
   function drawRing() {
-    if (!focusEl || opt.plain) return;
+    if (!focusEl || (opt.plain && !opt.menu)) return;   // plain: nur in Menüs, die das Spiel selbst gamepad.js überlässt (menu=)
     var c = usable(focusEl); if (!c) { clearRing(); return; }
     if (!ring) ring = el('border:3px solid #ffd400;border-radius:10px;box-shadow:0 0 0 2px #000,0 0 18px rgba(255,212,0,.85);box-sizing:border-box;');
     ring.style.transform = 'translate(' + (c.r.left - 5) + 'px,' + (c.r.top - 5) + 'px)'; ring.style.width = (c.r.width + 10) + 'px'; ring.style.height = (c.r.height + 10) + 'px'; show(ring, true);
@@ -458,7 +459,7 @@
   // Hauptknopf eines Fensters in der Bildmitte („Los geht's“, „OK“, „Weiter“ …), sonst der erste Knopf außer Schließen/Zurück
   var OK_RX = /^\W*(los|ok|weiter|start|starten|spielen|fertig|bestätigen|übernehmen|ja|annehmen|auswählen|eröffnen|verstanden|alles klar)/i;
   function firstInWin() {
-    if (opt.plain) return false;
+    if (opt.plain && !opt.menu) return false;
     var wb = winBox(); if (!wb) return false;
     var keep = scopeEl; scopeEl = wb; var l = candidates(), c = null, i; scopeEl = keep;
     for (i = 0; i < l.length && !c; i++) if (OK_RX.test((l[i].e.textContent || '').trim())) c = l[i];
