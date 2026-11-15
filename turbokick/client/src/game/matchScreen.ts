@@ -77,6 +77,9 @@ export class MatchScreen implements Screen {
     this.hud.layout(n > 1);
     this.input = new LocalInput(this.el, defaultBindings(n as 1 | 2, app.touch), {
       touchLayout: s.touchControls,
+      padPreset: s.padPreset,
+      invertY: s.padInvertY,
+      rumble: s.padRumble,
     });
     this.el.classList.toggle('is-touch', app.touch);
     this.el.append(this.hud.el, this.overlay);
@@ -271,6 +274,12 @@ export class MatchScreen implements Screen {
     return this.teamOf(this.session.localCars[0] ?? 0);
   }
 
+  /** Vibration für den lokalen Spieler, der dieses Auto steuert */
+  private rumbleCar(car: number, strong: number, weak: number, ms: number): void {
+    const p = this.session.localCars.indexOf(car);
+    if (p === 0 || p === 1) this.input.rumble(p, strong, weak, ms);
+  }
+
   private handleEvents(events: ReadonlyArray<SimEvent>): void {
     const { audio, engine } = this.app;
     void engine;
@@ -290,6 +299,7 @@ export class MatchScreen implements Screen {
           const hard = e.ballSpeed > 22;
           audio.sfx(hard ? 'hitHard' : 'hit', { volume: Math.min(1, 0.3 + e.ballSpeed / 40) });
           if (hard && me.has(e.car)) this.chase.forEach((c) => c.shake(Math.min(0.5, e.ballSpeed / 80)));
+          if (me.has(e.car)) this.rumbleCar(e.car, hard ? 0.55 : 0.15, hard ? 0.8 : 0.4, hard ? 160 : 70);
           break;
         }
         case 'jump':
@@ -297,6 +307,7 @@ export class MatchScreen implements Screen {
           break;
         case 'pad':
           if (me.has(e.car)) audio.sfx(e.big ? 'padBig' : 'pad');
+          if (me.has(e.car) && e.big) this.rumbleCar(e.car, 0, 0.5, 120);
           break;
         case 'wall':
           if (e.speed > 12) audio.sfx('wall', { volume: Math.min(1, e.speed / 40) });
@@ -307,6 +318,8 @@ export class MatchScreen implements Screen {
           if (a && e.attacker !== e.victim) a.demos++;
           this.hud.note(`${this.nameOf(e.attacker)} ✕ ${this.nameOf(e.victim)}`, this.teamOf(e.attacker));
           if (me.has(e.victim)) this.chase.forEach((c) => c.shake(0.5, 0.5));
+          if (me.has(e.victim)) this.rumbleCar(e.victim, 1, 1, 420);
+          if (me.has(e.attacker)) this.rumbleCar(e.attacker, 0.6, 0.9, 200);
           break;
         }
         case 'respawn':
@@ -316,6 +329,9 @@ export class MatchScreen implements Screen {
           this.arena.celebrate(e.team);
           const mine = e.team === this.myTeam;
           audio.sfx(mine ? 'goal' : 'goalConceded');
+          this.session.localCars.forEach((c) =>
+            this.rumbleCar(c, mine ? 0.8 : 0.4, mine ? 1 : 0.3, mine ? 650 : 300),
+          );
           audio.crowdCheer(1);
           const sc = this.stats[e.scorer];
           if (sc && e.scorer >= 0) sc.goals++;

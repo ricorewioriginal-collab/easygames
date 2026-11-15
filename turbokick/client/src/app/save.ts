@@ -28,6 +28,10 @@ export interface Settings {
   ballCam: boolean;
   /** Einfache Touch-Steuerung: Der Stick zeigt die Richtung auf dem Bildschirm, das Auto lenkt selbst dorthin */
   touchAssist: boolean;
+  /** Controller: Belegung, Luft-Pitch umkehren, Vibration */
+  padPreset: 'nexorb' | 'klassik' | 'schulter';
+  padInvertY: boolean;
+  padRumble: boolean;
   /** Öffentlichen STUN-Dienst für Verbindungen ohne Server nutzen */
   useStun: boolean;
   language: string;
@@ -66,7 +70,7 @@ export interface SaveData {
 export function defaultSave(): SaveData {
   return {
     version: SAVE_VERSION,
-    settings: { master: 0.8, music: 0.5, sfx: 0.9, muted: false, quality: 'auto', reducedMotion: false, highContrast: false, largeText: false, colorMode: 'standard', cameraShake: true, touchControls: 'auto', fov: 100, camDistance: 1, ballCam: true, touchAssist: true, useStun: true, language: 'de' },
+    settings: { master: 0.8, music: 0.5, sfx: 0.9, muted: false, quality: 'auto', reducedMotion: false, highContrast: false, largeText: false, colorMode: 'standard', cameraShake: true, touchControls: 'auto', fov: 100, camDistance: 1, ballCam: true, touchAssist: true, padPreset: 'nexorb', padInvertY: false, padRumble: true, useStun: true, language: 'de' },
     profile: { name: 'Fahrer' },
     garage: { body: 'flitzer', decal: 'keins', accent: '' },
     achievements: {},
@@ -103,6 +107,9 @@ export function sanitize(raw: unknown): SaveData {
     camDistance: num(s.camDistance, 1, 0.7, 1.4),
     ballCam: bool(s.ballCam, true),
     touchAssist: bool(s.touchAssist, true),
+    padPreset: oneOf(s.padPreset, ['nexorb', 'klassik', 'schulter'], 'nexorb'),
+    padInvertY: bool(s.padInvertY, false),
+    padRumble: bool(s.padRumble, true),
     useStun: bool(s.useStun, true),
     language: str(s.language, 'de', 8),
   };

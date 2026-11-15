@@ -2,6 +2,7 @@ import type { App, RouteParams, ScreenView } from '../app/app';
 import type { ColorMode, QualityChoice } from '../app/save';
 import { t } from '../i18n';
 import { btn, h, select, slider, toast, toggle } from './dom';
+import { padStyle } from '../input/gamepad';
 
 /** Optionen: Ton, Grafik, Kamera, Barrierefreiheit, Verbindungshilfe, Daten */
 export function create(app: App, params?: RouteParams): ScreenView {
@@ -88,6 +89,33 @@ export function create(app: App, params?: RouteParams): ScreenView {
         ],
         (v) => set('colorMode', v),
       ),
+      h('h3', null, t('opt.pad')),
+      select<'nexorb' | 'klassik' | 'schulter'>(
+        t('opt.padPreset'),
+        d.padPreset,
+        [
+          ['nexorb', t('opt.padNexorb')],
+          ['klassik', t('opt.padKlassik')],
+          ['schulter', t('opt.padSchulter')],
+        ],
+        (v) => set('padPreset', v),
+      ),
+      select<string>(
+        t('opt.padStyle'),
+        padStyle(),
+        [
+          ['auto', t('opt.auto')],
+          ['xbox', 'Xbox'],
+          ['ps', 'PlayStation'],
+          ['switch', 'Nintendo Switch'],
+        ],
+        (v) => void padStyle(v),
+      ),
+      h('p', { class: 'mut' }, t('opt.padStyleHint')),
+      toggle(t('opt.padInvert'), d.padInvertY, (v) => set('padInvertY', v)),
+      toggle(t('opt.padRumble'), d.padRumble, (v) => set('padRumble', v)),
+      btn(t('opt.padTest'), () => void app.go('help', { back: 'options' }), 'ghost'),
+      h('h3', null, 'Touch'),
       toggle(t('opt.touchAssist'), d.touchAssist, (v) => set('touchAssist', v), t('opt.touchAssistHint')),
       select<'auto' | 'on' | 'off'>(
         t('opt.touch'),

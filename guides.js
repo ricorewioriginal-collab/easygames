@@ -343,7 +343,7 @@ window.EASYGAMES_GUIDES = {
   "steuerung": [
    "PC Spieler 1: W/S Gas und Rückwärts, A/D Lenken, Leertaste Sprung (zweimal = Doppelsprung/Flip), Shift Schub (halten), Q Handbremse/Drift, linke Strg oder E Air-Roll, C Orb-Kamera, F Rückblick, R Training zurücksetzen, Esc oder P Pause.",
    "PC Spieler 2 (Splitscreen): Pfeile fahren und lenken, Enter Sprung, rechte Shift Schub, Num 3 Handbremse, rechte Strg Air-Roll, Num 5 Orb-Kamera, Num 6 Rückblick, Num 4 Training zurücksetzen.",
-   "Gamepad: RT/LT Gas/Rückwärts, linker Stick Lenken, A Sprung, X Schub, B Handbremse, RB Air-Roll, Y Orb-Kamera, LB oder R3 Rückblick, Back Training zurücksetzen, Start Pause.",
+   "Controller (Xbox / PlayStation / Switch, Belegung NEXORB): RT·R2·ZR Gas, LT·L2·ZL Rückwärts, linker Stick Lenken und Luftsteuerung, A·✕·B Sprung, B·○·A Schub, X·□·Y Drift (lädt Energie), Y·△·X Orb-Kamera, LB/RB·L1/R1·L/R Air-Roll links/rechts, R3 oder rechter Stick runter Rückblick, View·Create·− Training zurücksetzen, Menu·Options·+ Pause. Weitere Belegungen (Klassisch, Schultertasten), Vibration und Umkehrung unter Optionen → Controller.",
    "Touch: Stick (hoch/runter Gas, seitlich Lenken), Knöpfe SPRUNG, BOOST, DRIFT, BALL, II für Pause."
   ],
   "tipps": [
