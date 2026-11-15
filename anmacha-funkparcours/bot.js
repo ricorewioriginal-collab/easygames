@@ -14,7 +14,10 @@ export const tapGrab = s => (s.reachable() && !s.prevGr ? 1 : 0);
 // Fortsetzung: rennen, am Plattformrand springen, in Griffweite greifen
 export const policy = s => Object.assign(policy0(s), { g: tapGrab(s) });
 const policy0 = s => {
-  if (s.ladder) return { j: !s.prevJ && s.ladder.cool <= LADDER_HOP - LADDER_EARLY - 0.04 ? 1 : 0 };   // Lachsleiter: im Takt drücken
+  if (s.ladder) return { j: !s.prevJ && s.ladder.cool <= (s.c.o[s.ladder.i].kind ? 0 : LADDER_HOP - LADDER_EARLY - 0.04) ? 1 : 0 };   // Lachsleiter: im Takt drücken (Stange/Seil: sobald es geht)
+  if (s.chim) return { j: s.prevJ ? 0 : 1 };   // Kamin: schnell hintereinander stemmen
+  if (s.glide) return { r: 1, j: s.glide.x >= s.c.o[s.glide.i].x2 - 0.01 && !s.prevJ ? 1 : 0 };   // Gleiter: am Ende abspringen
+  if (s.wall) return { r: 1, j: 0 };   // Steilwand: durchrennen, oben greifen (tapGrab), dann hochziehen
   if (s.hang) { const o = s.c.o[s.hang.bar]; return { r: 1, j: o.ledge ? (s.x >= o.x2 - 0.1 ? 1 : 0) : (s.x >= o.x2 + 0.05 ? 1 : 0) }; }   // Griffleiste: am Ende hechten; Stangen: am Ende abspringen
   if (s.rope) return { r: 1, j: s.rope.a > 0.2 && s.rope.da > 0 ? 1 : 0 };   // am Seil: loslassen, wenn es nach vorn schwingt
   if (s.onGround && s.ground && s.ground.x1 - s.x >= 0.6 && duckAhead(s)) return { r: 1, d: 1 };
@@ -27,15 +30,17 @@ const policy0 = s => {
   if (nx) { const t = (s.vy + Math.sqrt(s.vy * s.vy + 2 * G * Math.max(0, s.y - nx.top))) / G; if (s.x + s.vx * t > nx.x1 - 0.35) return { r: 1, j: 0 }; }
   return { r: 1, j: 1 };
 };
-function score(sim, c0, H) {
+export function score(sim, c0, H) {
   const s = sim.clone(); const n0 = Math.round((c0.hold || 0.12) / DT); let steps = 0;
   for (; steps < n0 && !s.dead && !s.finished; steps++) { const inp = c0.pol ? policy(s) : { l: c0.l, r: c0.r, j: c0.j && steps * DT < (c0.hold || 0), d: c0.d }; inp.g = tapGrab(s); s.step(inp); }
   const HN = Math.round(H / DT); for (let k = 0; k < HN && !s.dead && !s.finished; k++, steps++) { const p = policy(s); s.step(p); }
   if (s.finished) return 100000 - s.t; if (s.dead) return -1000 + steps * 0.5 + s.dist * 0.01;
+  // Kamin: Fortschritt nach oben zählt (die Mitte des Kamins liegt hinter dem Anlauf, sonst lohnt Warten mehr als Klettern)
+  for (const o of s.c.o) if (o.k === 'chim' && s.x >= o.x && s.x <= o.x + o.w + 2.8 && s.y > o.y0 + 0.25) return o.x + o.w + 1.0 + (s.y - o.y0) * 0.25 + (s.x - o.x) * 0.1 - s.hits * 3;
   return s.x + (s.onGround || s.hang ? 0.5 : 0) + s.y * 0.05 - s.hits * 3;
 }
 export function plan(sim, opts = {}) {
-  if (sim.ladder) return CANDS[CANDS.length - 1];   // an der Lachsleiter zählt nur der Takt
+  if (sim.ladder || sim.chim || sim.glide || (sim.wall && sim.wall.m !== 'run')) return CANDS[CANDS.length - 1];   // Takt- und Halte-Abschnitte: nur die Fortsetzung
   const H = opts.horizon || 2.0; let best = -Infinity, pick = CANDS[0];
   CANDS.forEach((c, i) => { const v = score(sim, c, H) - i * 0.002; if (v > best + 1e-9) { best = v; pick = c; } }); return pick;
 }

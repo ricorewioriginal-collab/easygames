@@ -1,6 +1,6 @@
 {
- "_info": "Titanparcours Live-Kommentator. Stimme wie im Trailer: Edge TTS de-CH-JanNeural, dunkel/episch nachbearbeitet (make.py). 'Titan-Parkur' so geschrieben, damit die Aussprache stimmt.",
- "intro_0": ["Willkommen zur Vorrunde im Titan-Parkur! Acht Hindernisse, und am Ende wartet die Steilwand.", "Die Vorrunde läuft! Die Halle ist voll, die Uhr ist scharf."],
+ "_info": "Titanparcours Live-Kommentator. Stimme wie im Trailer: Edge TTS de-CH-JanNeural, dunkel/episch nachbearbeitet (make.py). 'Titan-Parkur' so geschrieben, damit die Aussprache stimmt. Moderator RicoReWi spricht mit derselben Stimme (host_*), Co-Kommentator Yukoo (yuk_*, im Text 'Jukoo' für die Aussprache) mit eigener Stimme.",
+ "intro_0": ["Willkommen zur Vorrunde im Titan-Parkur! Heute neu gemischt, und am Ende wartet die Steilwand.", "Die Vorrunde läuft! Die Halle ist voll, die Uhr ist scharf."],
  "intro_1": ["Halbfinale im Titan-Parkur! Jetzt wird es richtig hart.", "Willkommen im Halbfinale. Nur die Stärksten kommen hier durch."],
  "intro_2": ["Das große Finale! Alles oder nichts im Titan-Parkur!", "Finale! Der härteste Parkur des Abends wartet."],
  "name_1": ["Läufer eins ist am Start!"],
@@ -9,7 +9,6 @@
  "name_4": ["Läufer vier ist am Start!"],
  "name_x": ["Der nächste Läufer ist am Start!", "Neuer Lauf, neues Glück!", "Konzentration am Start. Gleich geht es los!"],
  "go": ["Und los!", "Los geht's!", "Die Uhr läuft!"],
-
  "sec_Stufensprung": ["Die Stufensprünge! Gut abspringen, bloß nicht ins Wasser!", "Erste Prüfung: die schrägen Stufen. Sauber treffen!"],
  "sec_Fahrstuhl": ["Der Fahrstuhl! Jetzt muss das Timing stimmen!", "Die Plattform fährt hoch und runter. Abwarten und dann rüber!"],
  "sec_Schiebebrücke": ["Die Schiebebrücke! Der Sprung muss sitzen!", "Die Brücke wandert hin und her. Den richtigen Moment erwischen!"],
@@ -24,8 +23,7 @@
  "sec_Seilschwung": ["Seilschwung! Seil packen und im richtigen Moment loslassen!", "Ans Seil! Schwung nehmen und rüber!"],
  "sec_Trampolin": ["Das Trampolin! Draufspringen und hoch an die Stangen!", "Trampolin! Ab in die Luft!"],
  "sec_Hangelstangen": ["Jetzt an die Hangelstangen! Nicht loslassen!", "Hangeln! Die Arme brennen, aber weiter!"],
- "sec_Steilwand": ["Da ist sie, die Steilwand! Drei Versuche. Volle Kraft voraus!", "Nur noch die Steilwand! Anlauf nehmen und hoch da!"],
-
+ "sec_Steilwand": ["Da ist sie, die Steilwand! Drei Versuche. Jetzt heißt es rennen, rennen, rennen!", "Nur noch die Steilwand! Volles Tempo auf der Anlaufbahn, sonst wird das nichts!"],
  "clear": ["Geschafft!", "Sauber!", "Stark gemacht!", "Weiter, weiter!", "Das sah gut aus!", "Souverän!"],
  "half": ["Die Hälfte ist geschafft! Weiter so!", "Halbzeit im Parkur! Jetzt nicht nachlassen!"],
  "hit": ["Autsch, voll erwischt!", "Treffer! Aber es geht weiter!", "Das hat gesessen! Nicht aufgeben!"],
@@ -42,13 +40,11 @@
  "wall_run": ["Volle Kraft, hoch die Wand!", "Und hoch!"],
  "wall_try2": ["Nicht geschafft! Zweiter Versuch.", "Abgerutscht! Noch mal Anlauf nehmen!"],
  "wall_try3": ["Letzter Versuch an der Wand!", "Jetzt oder nie! Der letzte Versuch!"],
-
  "fin": ["Oben! Buzzer gedrückt! Im Ziel!", "Geschafft! Was für ein Lauf!", "Die Steilwand ist bezwungen! Buzzer!"],
  "fin_best": ["Neue Bestzeit! Unglaublich!", "Bestzeit! Die Halle steht Kopf!"],
  "water": ["Oh nein! Ab ins Wasser. Der Lauf ist vorbei.", "Platsch! Das war's leider.", "Baden gegangen! So knapp!"],
  "time": ["Die Zeit ist abgelaufen. Das war ein spannender Lauf!", "Zeit vorbei! Da fehlte am Ende das Tempo."],
  "wallfail": ["Drei Versuche, kein Glück! Die Wand war heute zu hoch.", "Die Steilwand bleibt unbezwungen. Bitter!"],
-
  "board": ["Hier ist die Wertung!", "Schauen wir auf die Zwischenwertung."],
  "win_1": ["Läufer eins gewinnt die Titan-Parkur Show!"],
  "win_2": ["Läufer zwei gewinnt die Titan-Parkur Show!"],
@@ -56,5 +52,21 @@
  "win_4": ["Läufer vier gewinnt die Titan-Parkur Show!"],
  "win_x": ["Die Entscheidung ist gefallen! Wir haben einen Sieger! Was für eine Show!"],
  "win_solo": ["Geschafft! Du hast die Titan-Parkur Show gemeistert!"],
- "voice_on": ["Die Live-Moderation ist eingeschaltet."]
+ "voice_on": ["Die Live-Moderation ist eingeschaltet."],
+ "sec_Pendelkugeln": ["Die Pendelkugeln! Von Kugel zu Kugel, und bloß nicht abrutschen!", "Riesige Kugeln, die schwingen! Jetzt zählt jeder Sprung."],
+ "sec_Schrägstange": ["Die Schrägstange! Festhalten und runter hangeln!", "Schräg nach unten, nur mit den Händen. Und am Ende abspringen!"],
+ "sec_Kurvengleiter": ["Der Kurvengleiter! Griff packen und ab durch die Kurven!", "Achterbahn für die Arme! Gut festhalten und am Ende loslassen!"],
+ "sec_Kletterstange": ["Die Kletterstange! Griff für Griff nach oben!", "Hoch an der Stange! Jetzt brennen die Arme."],
+ "sec_Kletterseil": ["Ans Kletterseil! Hand über Hand nach oben!", "Das Seil hoch! Kraft und Ausdauer sind gefragt."],
+ "sec_Spinnenkamin": ["Der Spinnenkamin! Zwischen den Wänden nach oben stemmen!", "Hände und Füße an die Wände, und Stück für Stück hoch!"],
+ "wall_sprint": ["Er nimmt Anlauf! Schneller, schneller!", "Volles Tempo auf die Wand zu!", "Jetzt rennt er! Das ist der richtige Speed!"],
+ "wall_grab": ["Er hat die Kante!", "Erwischt! Festhalten!", "Die Finger sind oben!"],
+ "wall_pull": ["Und hochziehen! Ja!", "Hoch da, hoch da!"],
+ "wall_slow": ["Zu langsam! Mehr Anlauf!", "Das reicht nicht! Mit mehr Tempo kommst du höher!"],
+ "out_all": ["Ausgeschieden! Nur wer ins Ziel kommt, ist in der nächsten Runde.", "Das war es leider. Diese Runde war zu stark."],
+ "out_final": ["Knapp vorbei am großen Titel! Das Finale war gnadenlos."],
+ "host_fin": ["Wahnsinn! Was für ein Lauf über die Steilwand!", "Oben! Die Steilwand ist bezwungen! Hast du das gesehen, Jukoo?", "Das ist ein Titan! Mit voller Wucht die Wand hoch!", "Ich sag es dir, Jukoo, so einen Lauf sieht man nicht alle Tage!"],
+ "host_final": ["Titan! Das Finale ist geschafft! Die Halle bebt!", "Unglaublich! Der härteste Parkur des Abends ist bezwungen!"],
+ "yuk_fin": ["Ja Rico, das war richtig stark! Der Sprint war perfekt.", "Absolut! Genau so musst du die Wand angehen.", "Ich hab Gänsehaut! Das war richtig sauber.", "Starke Leistung! Ab in die nächste Runde!"],
+ "yuk_final": ["Rico, das ist ein echter Titan! Ich bin sprachlos!", "Ganz große Show! Das wird man noch lange feiern!"]
 }

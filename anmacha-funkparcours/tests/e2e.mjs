@@ -28,20 +28,28 @@ const phase = (p, ph, ms = 60000) => p.waitForFunction(x => window.__fp.G && win
   await p.click('#bPlay'); await p.click('#sgPl [data-v="2"]'); await p.fill('#names input[data-i="0"]', 'Anna'); await p.fill('#names input[data-i="1"]', 'Ben'); await p.click('#bStart');
   let shots = 0;
   for (let ci = 0; ci < 3; ci++) {
-    for (let pi = 0; pi < 2; pi++) {
+    for (let pi = 0; pi < (ci === 0 ? 2 : 1); pi++) {   // Ben stürzt in der Vorrunde ab → ausgeschieden, danach läuft nur noch Anna
       await p.waitForSelector('#bReady', { timeout: 30000 }); if (ci === 0 && pi === 1) { log((await p.textContent('#cardBox')).includes('Anna'), 'Bereit-Karte zeigt die bisherigen Zeiten'); }
       await p.evaluate(([c, i]) => { window.__fpStupid = c === 0 && i === 1; }, [ci, pi]); await p.keyboard.press('Space');
       await phase(p, 'run'); if (ci === 1 && pi === 0) { await p.waitForTimeout(2500); await p.screenshot({ path: `${SHOT}/fp-run${shots++}.png` }); }
       await phase(p, 'done', 240000);
+      if (ci === 0 && pi === 0) { await p.waitForSelector('#host:not([hidden])', { timeout: 15000 }); log(/RicoReWi/.test(await p.textContent('#host')) && /Yukoo/.test(await p.textContent('#host')), 'Nach der Steilwand: Moderatoren-Szene mit RicoReWi und Yukoo'); await p.screenshot({ path: `${SHOT}/fp-host.png` }); }
     }
     await p.waitForSelector('#bNext', { timeout: 30000 });
-    const t = await p.textContent('#cardBox'); log(/Wertung/.test(t) && t.includes('Anna') && t.includes('Ben'), `Parcours ${ci + 1}: Wertung zeigt beide Läufer`);
-    if (ci === 0) { const pts = await p.evaluate(() => window.__fp.G.players.map(x => x.pts)); log(pts[0] === 2 && pts[1] === 1, 'Platzierungspunkte: Finisher 2, Absturz 1 (' + pts + ')'); await p.screenshot({ path: `${SHOT}/fp-board.png` }); }
+    const t = await p.textContent('#cardBox'); log(/Wertung/.test(t) && t.includes('Anna') && (ci > 0 || t.includes('Ben')), `Parcours ${ci + 1}: Wertung zeigt die Läufer der Runde`);
+    if (ci === 0) { const pts = await p.evaluate(() => window.__fp.G.players.map(x => x.pts)); log(pts[0] === 2 && pts[1] === 0, 'Platzierungspunkte: Finisher 2, Absturz 0 (' + pts + ')'); log(/Ausgeschieden: Ben/.test(t), 'Ben ist in der Vorrunde ausgeschieden'); await p.screenshot({ path: `${SHOT}/fp-board.png` }); }
     await p.click('#bNext');
   }
   await p.waitForSelector('#bAgain', { timeout: 10000 }); const end = await p.textContent('#cardBox'); log(end.includes('Anna') && end.includes('gewinnt'), 'Endstand nennt den Sieger'); log(await p.isVisible('#cardBox .prize img'), 'Radioportal-Logo am Ende'); await p.screenshot({ path: `${SHOT}/fp-end.png` });
-  const b = await p.evaluate(() => JSON.parse(localStorage.getItem('fpBest3') || '{}')); log(!!b[0] && !!b[1] && !!b[2] && b[0].g.length > 20, 'Bestzeiten + Geist gespeichert');
+  const seeds = await p.evaluate(() => window.__fp.G.seed); log(seeds > 0, 'Show nutzt einen Zufalls-Parcours (Startwert ' + seeds + ')');
   await p.click('#bToMenu'); await p.waitForSelector('#menu:not([hidden])'); log(true, 'Zurück im Menü');
+  await p.close();
+}
+{ // ---- Einzelspieler scheitert in der Vorrunde → ausgeschieden, keine weiteren Runden
+  const p = await mk({ viewport: { width: 1000, height: 600 } }); await bot(p); await p.evaluate(() => { window.__fpFast = 6; window.__fpStupid = true; });
+  await p.click('#bPlay'); await p.click('#sgPl [data-v="1"]'); await p.click('#bStart'); await p.waitForSelector('#bReady', { timeout: 30000 }); await p.keyboard.press('Space');
+  await phase(p, 'done', 240000); await p.waitForSelector('#bAgain', { timeout: 30000 }); const t = await p.textContent('#cardBox');
+  log(/Ausgeschieden/.test(t) && !/Halbfinale/.test(t), 'Solo: Absturz in der Vorrunde = ausgeschieden, kein Halbfinale'); await p.screenshot({ path: `${SHOT}/fp-out.png` });
   await p.close();
 }
 { // ---- Figuren: realistische Läufer, Auswahl mit Figuren aus anderen easygames

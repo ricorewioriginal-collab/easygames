@@ -3,7 +3,7 @@
    steile Tribüne mit Publikum, LED-Wand, Startturm und Buzzer-Turm mit Flammen und Zeit-Anzeige.
    Echtes Licht: sRGB-Ausgabe, filmische Tonwerte, Spiegelungen aus einer Studio-HDRI (Poly Haven, CC0), PBR-Texturen (Poly Haven, CC0).
    Flüssig: Läufer und bewegte Teile werden zwischen zwei Physikschritten weich überblendet. Qualität passt sich langsamen Geräten an. */
-import { movePos, swingBall, ropeAt, rungY, fmtTime, PH, PH_DUCK, LOG_HW, LOG_HH, LADDER_HOP, DT } from './engine.js';
+import { movePos, swingBall, ropeAt, rungY, railY, fmtTime, PH, PH_DUCK, LOG_HW, LOG_HH, LADDER_HOP, DT } from './engine.js';
 import { charLook } from './chars.js';
 const T = window.THREE;
 /** Farben (sRGB): Stahl, Polster, Akzente */
@@ -64,7 +64,7 @@ export class Arena {
     this.r.shadowMap.enabled = true; this.r.shadowMap.type = coarse ? T.PCFShadowMap : T.PCFSoftShadowMap; ANISO = Math.min(8, this.r.capabilities.getMaxAnisotropy());
     this.s = new T.Scene(); this.s.fog = new T.Fog(lin(0x05060c), 24, 90);
     this.s.background = cvs(8, 256, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#010103'); gr.addColorStop(0.55, '#050814'); gr.addColorStop(1, '#0b1630'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
-    this.cam = new T.PerspectiveCamera(42, 1, 0.1, 220); this.cx = 3; this.cy = 2.4; this.cvx = 0; this.cvy = 0; this.shake = 0; this.baseFov = 42; this.dist = 12.5;
+    this.cam = new T.PerspectiveCamera(42, 1, 0.1, 220); this.cx = 3; this.cy = 2.4; this.cvx = 0; this.cvy = 0; this.shake = 0; this.baseFov = 42; this.dist = 12.5; this.view = 'side'; this.signs = [];
     this.loadTextures();
     this.hemi = new T.HemisphereLight(lin(0x9bb8ff), lin(0x0a0d18), 0.55); this.s.add(this.hemi);
     const sun = new T.DirectionalLight(lin(0xfff1e0), 1.35); sun.position.set(9, 15, 12); sun.target.position.set(3, 0, 0); this.s.add(sun, sun.target); this.sun = sun;
@@ -245,7 +245,7 @@ export class Arena {
   }
   setCourse(c) {
     this.course = c; const keep = new Set(Object.values(cache)); while (this.root.children.length) { const ch = this.root.children[0]; this.root.remove(ch); ch.traverse(o => { if (o.geometry && !keep.has(o.geometry)) o.geometry.dispose(); const ms = o.material ? [].concat(o.material) : []; ms.forEach(m => { if (!keep.has(m) && !m.userData.shared) { if (m.map && !Object.values(this.tx).includes(m.map) && m.map !== cache.puff) m.map.dispose(); m.dispose(); } }); }); }
-    this.dyn = []; this.heads = []; this.pots = []; this.buzzer = null; this.clock = null; this.ladders = [];
+    this.dyn = []; this.heads = []; this.pots = []; this.buzzer = null; this.clock = null; this.ladders = []; this.signs = [];
     const bs = new Beams(), post = C('postG', () => new T.CylinderGeometry(0.16, 0.22, 1, 12));
     const addPost = (grp, h, x = 0, z = 0) => { const p = new T.Mesh(post, this.M('steel')); p.scale.y = h; p.position.set(x, -0.64 - h / 2, z); grp.add(p); };
     c.o.forEach((o, i) => {
@@ -255,6 +255,8 @@ export class Arena {
         if (o.k === 'sink') for (let k = -1; k <= 1; k++) { const cr = new T.Mesh(C('crackG', () => new T.BoxGeometry(0.04, 0.012, 3.2)), glow(0xff4a10)); cr.position.set(k * w * 0.27, 0.006, 0); cr.rotation.y = k * 0.12; g.add(cr); }
         if (o.k === 'move') { [-1, 1].forEach(sd => { const st = new T.Mesh(C('railG' + w.toFixed(2), () => new T.BoxGeometry(w, 0.05, 0.08)), glow(PAL.amber)); st.position.set(0, 0.01, sd * 1.82); g.add(st); }); }
         if (o.k === 'plat') addPost(g, Math.max(0.3, o.y + 1.4)), this.ripple(o.x + w / 2);
+        if (o.look === 'high') { const tw = new T.Mesh(new T.BoxGeometry(w - 0.1, o.y + 1.2, 3.4), this.M('plate')); tw.position.y = -(o.y + 1.2) / 2 - 0.3; tw.castShadow = tw.receiveShadow = true; g.add(tw);
+          const st = new T.Mesh(new T.BoxGeometry(0.06, o.y + 0.6, 0.06), glow(PAL.pad)); st.position.set(-w / 2 + 0.02, -(o.y + 0.6) / 2 - 0.3, 1.72); g.add(st); }
         g.position.set(o.x + w / 2, o.y, 0); this.root.add(g); this.dyn.push({ o, m: g, i });
       } else if (o.k === 'swing') {
         const grp = new T.Group(); bs.add(o.px, o.py, -2.4, o.px, o.py, 2.4, 0.3); bs.add(o.px, o.py, -2.4, o.px, 10.5, -5.6, 0.12);
@@ -304,6 +306,47 @@ export class Arena {
           for (let k = 0; k < 3; k++) { const kn = new T.Mesh(C('knotG', () => new T.SphereGeometry(0.085, 12, 10)), this.M('rope')); kn.position.y = -o.len + 0.1 + k * 0.55; grp.add(kn); }
         }
         grp.position.set(o.px, o.py, 0); this.root.add(grp); this.dyn.push({ o, m: grp, i });
+      } else if (o.k === 'orb') {
+        // Pendelkugel: große, griffige Kugel am Stahlseil (schwingt leicht), oben eine flache Trittfläche
+        bs.truss([o.px, o.py, -2.3], [o.px, o.py, 2.3], 0.4); bs.add(o.px, o.py, -2.3, o.px, 10.5, -5.6, 0.12);
+        const grp = new T.Group(), cab = new T.Mesh(C('chainG', () => new T.CylinderGeometry(0.03, 0.03, 1, 6)), this.M('chrome')); cab.scale.y = o.len - o.r; cab.position.y = -(o.len - o.r) / 2; grp.add(cab);
+        const ball = new T.Mesh(C('orbG' + o.r, () => new T.SphereGeometry(o.r, 40, 28)), C('orbM', () => std(0xffffff, { map: cvs(512, 256, (x, w, h) => { const gr = x.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#ff4f7a'); gr.addColorStop(1, '#8a1240'); x.fillStyle = gr; x.fillRect(0, 0, w, h); x.fillStyle = 'rgba(255,255,255,.85)'; x.fillRect(0, h * 0.47, w, h * 0.06); for (let i = 0; i < 900; i++) { x.fillStyle = `rgba(0,0,0,${Math.random() * 0.18})`; x.fillRect(Math.random() * w, Math.random() * h, 2, 2); } }), roughness: 0.7, metalness: 0.05 })));
+        ball.position.y = -o.len; ball.castShadow = true; ball.receiveShadow = true; grp.add(ball);
+        const cap = new T.Mesh(C('orbCap', () => new T.CylinderGeometry(0.2, 0.26, 0.08, 20)), this.M('chrome')); cap.position.y = -o.len + o.r * 0.99; grp.add(cap);
+        grp.position.set(o.px, o.py, 0); this.root.add(grp); this.dyn.push({ o, m: grp, i });
+      } else if (o.k === 'bars' && o.slant) {
+        // Schrägstange: rot-weißer Schrägbalken mit Chrom-Griffstange darunter, Fußplatte am unteren Ende
+        const dx = o.x2 - o.x1, dy = o.y2 - o.y, len = Math.hypot(dx, dy), ang = Math.atan2(dy, dx), g = new T.Group();
+        const bar = new T.Mesh(new T.CylinderGeometry(0.06, 0.06, len, 16), this.M('chrome')); bar.rotation.z = Math.PI / 2; bar.castShadow = true; g.add(bar);
+        const beam = new T.Mesh(roundBox(len + 0.2, 0.3, 0.34, 0.06), this.M('pad')); beam.position.y = 0.28; beam.castShadow = true; g.add(beam);
+        const stripe = new T.Mesh(roundBox(len + 0.22, 0.08, 0.36, 0.03), this.M('white')); stripe.position.y = 0.28; g.add(stripe);
+        const foot = new T.Mesh(roundBox(0.5, 0.12, 0.6, 0.04), this.M('pad')); foot.position.set(len / 2 + 0.1, -0.45, 0); foot.rotation.z = -ang; g.add(foot);
+        g.rotation.z = ang; g.position.set((o.x1 + o.x2) / 2, (o.y + o.y2) / 2, 0); this.root.add(g);
+        bs.truss([o.x1, -0.2, -2.2], [o.x1, o.y + 3.2, -2.2], 0.4); bs.truss([o.x2, -0.2, -2.2], [o.x2, o.y + 3.2, -2.2], 0.4); bs.truss([o.x1 - 0.2, o.y + 3.2, -2.2], [o.x2 + 0.2, o.y + 3.2, -2.2], 0.4);
+        bs.add(o.x1, o.y + 0.3, 0, o.x1, o.y + 3.0, -2.2, 0.04); bs.add(o.x2, o.y2 + 0.3, 0, o.x2, o.y + 3.0, -2.2, 0.04);
+      } else if (o.k === 'glide') {
+        // Kurvengleiter: geschwungene Doppelschiene (rot) mit Querstreben, Griff läuft darunter
+        const pts = [], N = 40; for (let k = 0; k <= N; k++) { const x = o.x1 + (o.x2 - o.x1) * k / N; pts.push([x, railY(o, x)]); }
+        [-0.22, 0.22].forEach(z => { const tube = new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts.map(p => new T.Vector3(p[0], p[1] + 0.05, z))), 80, 0.07, 8, false), this.M('pad')); tube.castShadow = true; this.root.add(tube); });
+        const top = [], bot = []; pts.forEach(p => top.push(new T.Vector3(p[0], p[1] + 0.55, 0)));
+        const upper = new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(top), 80, 0.06, 8, false), this.M('pad')); this.root.add(upper);
+        for (let k = 0; k <= N; k += 4) { const [x, y] = pts[k]; const st = new T.Mesh(C('glStrut', () => new T.CylinderGeometry(0.03, 0.03, 0.55, 6)), this.M('pad')); st.position.set(x, y + 0.32, 0); this.root.add(st); }
+        const end = new T.Mesh(C('glStop', () => roundBox(0.16, 0.3, 0.6, 0.04)), this.M('dark')); end.position.set(o.x2 + 0.12, railY(o, o.x2), 0); this.root.add(end);
+        [o.x1, o.x2].forEach(x => { bs.truss([x, -0.2, -2.2], [x, railY(o, x) + 2.4, -2.2], 0.4); bs.add(x, railY(o, x) + 0.6, 0, x, railY(o, x) + 2.3, -2.2, 0.05); });
+        const hd = new T.Group(), trolley = new T.Mesh(C('glTrol', () => roundBox(0.36, 0.16, 0.6, 0.05)), this.M('chrome')); hd.add(trolley);
+        const arm = new T.Mesh(C('glArm', () => new T.CylinderGeometry(0.025, 0.025, 0.5, 6)), this.M('chrome')); arm.position.y = -0.3; hd.add(arm);
+        const grip = new T.Mesh(C('glGrip', () => new T.CylinderGeometry(0.05, 0.05, 0.62, 12)), this.M('grip')); grip.rotation.x = Math.PI / 2; grip.position.y = -0.55; hd.add(grip);
+        hd.position.set(o.x1, railY(o, o.x1), 0); this.root.add(hd); this.dyn.push({ o, m: hd, i });
+      } else if (o.k === 'chim') {
+        // Spinnenkamin: hohe Rückwand mit Pfeilmuster und Höhenmarken, seitliche Wangen aus Stahl
+        const hgt = o.top - o.y0, g = new T.Group();
+        const tex = cvs(256, 1024, (x, w, h) => { x.fillStyle = '#0f1a5c'; x.fillRect(0, 0, w, h); const n = Math.round(hgt * 1.2);
+          for (let k = 0; k < n; k++) { const y = h - (k + 0.5) * h / n; x.beginPath(); x.moveTo(0, y + 50); x.lineTo(w / 2, y - 20); x.lineTo(w, y + 50); x.lineTo(w, y + 95); x.lineTo(w / 2, y + 25); x.lineTo(0, y + 95); x.closePath(); x.fillStyle = k % 2 ? '#ff6a1a' : '#e02a3a'; x.fill(); x.strokeStyle = '#ffffff'; x.lineWidth = 6; x.stroke(); }
+          x.font = `italic 800 64px ${FONT}`; x.textAlign = 'center'; x.fillStyle = '#ffffff'; for (let m = 1; m <= Math.floor(hgt); m++) x.fillText(m + ' m', w / 2, h - m / hgt * h + 22); });
+        const back = new T.Mesh(new T.BoxGeometry(o.w + 0.4, hgt, 0.16), new T.MeshStandardMaterial({ map: tex, roughness: 0.6 })); back.position.set(o.w / 2, hgt / 2, -0.7); back.receiveShadow = true; g.add(back);
+        [0, o.w].forEach(x => { const side = new T.Mesh(new T.BoxGeometry(0.14, hgt, 1.4), this.M('plate')); side.position.set(x, hgt / 2, -0.05); side.castShadow = true; g.add(side);
+          const led = new T.Mesh(new T.BoxGeometry(0.03, hgt, 0.03), glow(PAL.cyan)); led.position.set(x, hgt / 2, 0.68); g.add(led); });
+        g.position.set(o.x, o.y0, 0); this.root.add(g); bs.truss([o.x - 0.3, -0.2, -1.2], [o.x - 0.3, o.top + 0.4, -1.2], 0.4); bs.truss([o.x + o.w + 0.3, -0.2, -1.2], [o.x + o.w + 0.3, o.top + 0.4, -1.2], 0.4);
       } else if (o.k === 'bars' && o.ledge) {
         // Klippenhänger: Griffleiste aus Holz an einer Stahlwand
         const len = o.x2 - o.x1, g = new T.Group(), board = new T.Mesh(roundBox(len, 0.12, 0.34, 0.03), this.M('wood')); board.position.set(0, 0.0, 0.08); board.castShadow = true; g.add(board);
@@ -314,6 +357,14 @@ export class Arena {
         const len = o.x2 - o.x1, bar = new T.Mesh(new T.CylinderGeometry(0.06, 0.06, len, 16), this.M('chrome')); bar.rotation.z = Math.PI / 2; bar.position.set((o.x1 + o.x2) / 2, o.y, 0); bar.castShadow = true; this.root.add(bar);
         for (let k = 0; k <= len; k += 1.5) { const rg = new T.Mesh(C('gripG', () => new T.CylinderGeometry(0.068, 0.068, 0.3, 14)), this.M('grip')); rg.rotation.z = Math.PI / 2; rg.position.set(o.x1 + k, o.y, 0); this.root.add(rg); }
         [o.x1, o.x2].forEach(x => bs.truss([x, -0.2, -2.2], [x, o.y + 3.6, -2.2], 0.4)); bs.truss([o.x1 - 0.2, o.y + 3.6, -2.2], [o.x2 + 0.2, o.y + 3.6, -2.2], 0.4); for (let x = o.x1; x <= o.x2 + 0.01; x += 1.5) bs.add(x, o.y, 0, x, o.y + 3.4, -2.2, 0.035);
+      } else if (o.k === 'ladder' && o.kind) {
+        // Kletterstange (rot-weiß) bzw. dickes Kletterseil, oben am Querträger
+        const top = rungY(o, o.n - 1) + 1.0, g = new T.Group();
+        if (o.kind === 'pole') { const pole = new T.Mesh(new T.CylinderGeometry(0.07, 0.07, top, 16), this.M('chrome')); pole.position.y = top / 2; pole.castShadow = true; g.add(pole);
+          for (let k = 0; k < top; k += 0.9) { const band = new T.Mesh(C('poleBand', () => new T.CylinderGeometry(0.075, 0.075, 0.45, 16)), this.M('pad')); band.position.y = k + 0.22; g.add(band); } }
+        else { const rope = new T.Mesh(new T.CylinderGeometry(0.075, 0.085, top - o.y0 + 1.6, 12), this.M('pad')); rope.position.y = (top + o.y0 - 1.6) / 2; rope.castShadow = true; g.add(rope); }
+        g.position.set(o.x + 0.12, 0, 0.12); this.root.add(g); bs.truss([o.x - 0.6, top, -1.6], [o.x + 1.2, top, -1.6], 0.4); bs.add(o.x + 0.12, top, 0.12, o.x + 0.12, top, -1.6, 0.06);
+        this.ladders.push({ o, bar: new T.Object3D(), i, y: rungY(o, 0) });
       } else if (o.k === 'ladder') {
         // Lachsleiter: zwei Holzholme mit Sprossen-Kerben, Stange wandert mit dem Läufer nach oben
         const g = new T.Group(), top = rungY(o, o.n - 1) + 0.5, base = 0.0;
@@ -327,17 +378,20 @@ export class Arena {
     });
     // Startturm und Hindernis-Portale mit LED-Schildern
     const s0 = c.o[0]; this.gantry(bs, 0.6, 'Start'); [-1.8, 1.8].forEach(z => this.pot(0.35, s0.y, z));
-    let last = 0.6; for (const s of c.secs || []) { if (s.x - last < 7) continue; last = s.x; this.gantry(bs, s.x, s.n); }
+    let last = 0.6; for (const s of c.secs || []) { if (s.x - last < 7) continue; last = s.x; this.gantry(bs, s.x, s.n); } this.applyView();
     // Beckenende
     const capM = C('capM', () => std(0x07080c, { roughness: 0.4, metalness: 0.4 }));
     [[-12 - 40, 80], [c.length + 14 + 40, 80]].forEach(([x, w]) => { const cp = new T.Mesh(new T.BoxGeometry(w, 0.76, 9.9), capM); cp.position.set(x, -0.05, -0.3); this.root.add(cp); });
     this.root.add(bs.mesh(this.M('steel')));
   }
+  /** Ansicht: 'side' (seitlich wie bisher) oder 'back' (Kamera hinter dem Läufer, Schilder drehen sich zur Kamera) */
+  setView(v) { this.view = v === 'back' ? 'back' : 'side'; this.applyView(); }
+  applyView() { const b = this.view === 'back'; for (const s of this.signs) { if (s.userData.z0 == null) s.userData.z0 = s.position.z; s.rotation.y = b ? -Math.PI / 2 : 0; s.position.z = b ? 0 : s.userData.z0; } }
   /** Lichtring auf dem Wasser unter einer Plattform */
   ripple(x) { const rg = new T.Mesh(C('ripG', () => new T.RingGeometry(0.42, 0.62, 32)), glow(0xbfe6ff, { transparent: true, opacity: 0.35, side: T.DoubleSide, depthWrite: false })); rg.rotation.x = -Math.PI / 2; rg.position.set(x, 0.02, 0); this.root.add(rg); this.heads.push({ ring: rg, ph: x }); }
   gantry(bs, x, name) {
     bs.truss([x, 0.3, -5.6], [x, 10.5, -5.6]); bs.truss([x, 10.5, -5.6], [x, 10.5, 4.4]);
-    const tex = sign(name), sg = new T.Mesh(C('gantrySignG', () => new T.PlaneGeometry(5.4, 1.01)), new T.MeshBasicMaterial({ map: tex, fog: false, toneMapped: false })); sg.position.set(x, 6.5, -1.2); this.root.add(sg);
+    const tex = sign(name), sg = new T.Mesh(C('gantrySignG', () => new T.PlaneGeometry(5.4, 1.01)), new T.MeshBasicMaterial({ map: tex, fog: false, toneMapped: false })); sg.position.set(x, 6.5, -1.2); this.root.add(sg); this.signs.push(sg);
     [-2.4, 2.4].forEach(dx => bs.add(x + dx, 7.0, -1.2, x + dx, 10.2, -1.2, 0.03));
     [-2.6].forEach(z => { const lamp = new T.Mesh(C('headG', () => new T.CylinderGeometry(0.22, 0.3, 0.45, 14)), this.M('dark')); lamp.position.set(x, 10.0, z); this.root.add(lamp);
       const col = z < 0 ? PAL.amber : 0xffffff, cone = new T.Mesh(C('beamG', () => { const g = new T.ConeGeometry(1.3, 10, 18, 1, true); g.translate(0, -5, 0); return g; }), glow(col, { transparent: true, opacity: 0.045, side: T.DoubleSide, depthWrite: false, blending: T.AdditiveBlending })); cone.position.set(x, 9.8, z); cone.visible = !this.lowFx; this.root.add(cone); this.heads.push({ cone, ph: x * 0.37 + z }); });
@@ -351,9 +405,9 @@ export class Arena {
     const b = new T.Mesh(new T.SphereGeometry(0.42, 28, 12, 0, Math.PI * 2, 0, Math.PI / 2), std(0xff2020, { emissive: 0x7a0000, roughness: 0.25, envMapIntensity: 1.2 })); b.position.set(o.x + 0.9, o.y + 1.15, -0.6); b.scale.y = 0.55; b.castShadow = true; this.root.add(b); this.buzzer = b;
     const halo = new T.Sprite(new T.SpriteMaterial({ map: puff(), color: lin(0xff4040), transparent: true, opacity: 0.8, blending: T.AdditiveBlending, depthWrite: false, toneMapped: false })); halo.scale.setScalar(2.4); halo.position.set(o.x + 0.9, o.y + 1.4, -0.4); this.root.add(halo);
     bs.truss([o.x + 2.2, o.y, -1.8], [o.x + 2.2, o.y + 6.2, -1.8], 0.45); bs.truss([o.x - 2.4, o.y + 6.2, -1.8], [o.x + 2.6, o.y + 6.2, -1.8], 0.45);
-    const zs = new T.Mesh(new T.PlaneGeometry(3.4, 0.64), new T.MeshBasicMaterial({ map: sign('Ziel', 1024, 192, '#ffc93a', '#ff2b2b'), fog: false, toneMapped: false })); zs.position.set(o.x, o.y + 6.95, -1.5); this.root.add(zs);
+    const zs = new T.Mesh(new T.PlaneGeometry(3.4, 0.64), new T.MeshBasicMaterial({ map: sign('Ziel', 1024, 192, '#ffc93a', '#ff2b2b'), fog: false, toneMapped: false })); zs.position.set(o.x, o.y + 6.95, -1.5); this.root.add(zs); this.signs.push(zs);
     this.clockTex = cvs(512, 160, () => {}); this.clockCtx = this.clockTex.image.getContext('2d'); this.drawClock(0);
-    const ck = new T.Mesh(new T.PlaneGeometry(3.4, 1.06), new T.MeshBasicMaterial({ map: this.clockTex, fog: false, toneMapped: false })); ck.position.set(o.x, o.y + 5.4, -1.5); this.root.add(ck); this.clock = ck;
+    const ck = new T.Mesh(new T.PlaneGeometry(3.4, 1.06), new T.MeshBasicMaterial({ map: this.clockTex, fog: false, toneMapped: false })); ck.position.set(o.x, o.y + 5.4, -1.5); this.root.add(ck); this.clock = ck; this.signs.push(ck);
     [-1.4, 2.0].forEach(dx => [-1.8, 1.8].forEach(z => this.pot(o.x + dx, o.y, z)));
   }
   drawClock(t) { const g = this.clockCtx, W = 512, H = 160; g.fillStyle = '#05060a'; g.fillRect(0, 0, W, H); g.strokeStyle = '#ff6a1a'; g.lineWidth = 8; g.strokeRect(4, 4, W - 8, H - 8); g.fillStyle = '#ffc93a'; g.font = `italic 800 112px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(fmtTime(t), W / 2, H / 2 + 6); this.clockTex.needsUpdate = true; }
@@ -390,16 +444,17 @@ export class Arena {
     const vx = sim ? sim.vx : (x - r.prevX) / dt, vy = sim ? sim.vy : (y - r.prevY) / dt; r.prevX = x; r.prevY = y;
     const face = sim ? sim.face : Math.abs(vx) > 0.2 ? Math.sign(vx) : r.face; r.face = face;
     let st = 'run';
-    if (sim) { if (sim.dead) st = 'fall'; else if (sim.finished) st = 'win'; else if (sim.ladder) st = 'ladder'; else if (sim.hang) st = sim.c.o[sim.hang.bar].ledge ? 'ledge' : 'hang'; else if (sim.rope) st = 'hang'; else if (sim.wall) st = 'wall'; else if (!sim.onGround) st = 'air'; else if (sim.duck) st = sim.slide ? 'slide' : 'duck'; else if (Math.abs(vx) < 0.3) st = 'idle'; }
+    if (sim) { if (sim.dead) st = 'fall'; else if (sim.finished) st = 'win'; else if (sim.ladder || sim.chim) st = 'ladder'; else if (sim.glide) st = 'hang'; else if (sim.wall && sim.wall.m === 'hang') st = 'ledge'; else if (sim.wall && sim.wall.m === 'pull') st = 'pull'; else if (sim.hang) st = sim.c.o[sim.hang.bar].ledge ? 'ledge' : 'hang'; else if (sim.rope) st = 'hang'; else if (sim.wall) st = 'wall'; else if (!sim.onGround) st = 'air'; else if (sim.duck) st = sim.slide ? 'slide' : 'duck'; else if (Math.abs(vx) < 0.3) st = 'idle'; }
     else st = Math.abs(vy) > 1.2 ? 'air' : Math.abs(vx) < 0.3 ? 'idle' : 'run';
     if (sim && sim.stun > 0 && st !== 'fall') st = 'stun';
-    const yaw = st === 'win' ? 0.25 : st === 'ladder' || st === 'ledge' ? 0 : face > 0 ? 1.2 : -1.2; r.yaw = r.yaw == null ? yaw : r.yaw + (yaw - r.yaw) * Math.min(1, dt * 14);   // weich umdrehen
+    const back = this.view === 'back', yaw = st === 'win' ? (back ? -1.4 : 0.25) : st === 'ladder' || st === 'ledge' ? (back ? 0.6 : 0) : face > 0 ? (back ? 1.5 : 1.2) : back ? -1.5 : -1.2; r.yaw = r.yaw == null ? yaw : r.yaw + (yaw - r.yaw) * Math.min(1, dt * 14);   // weich umdrehen
     r.body.rotation.set(0, r.yaw, 0);
     const spd = Math.abs(vx), f = r.fig;
     if (f) {
       let clip = 'idle', sp = 1, once = false, reach = 0, oy = 0;
       if (st === 'run') { if (spd > 3.4) { clip = 'sprint'; sp = Math.min(1.45, Math.max(0.75, spd / 5.2)); } else { clip = 'jog'; sp = Math.min(1.3, Math.max(0.6, spd / 2.8)); } }
-      else if (st === 'wall') { clip = sim.wall.p > 0.72 ? 'climb' : 'sprint'; sp = clip === 'climb' ? 1.3 : 1.5; once = clip === 'climb'; }
+      else if (st === 'wall') { const v = sim.wall.v || 0; if (v > 0.6) { clip = 'sprint'; sp = Math.min(1.7, Math.max(0.8, v / 5)); } else if (v < -0.6) { clip = 'slide'; sp = 1; } else { clip = 'jump'; reach = 1; } }
+      else if (st === 'pull') { clip = 'climb'; sp = 1.25; once = true; oy = -0.25 * (1 - Math.min(1, (sim.wall.p || 0) * 1.6)); }
       else if (st === 'air') clip = sim && sim.vy < -2 ? 'ninja' : 'jump';
       else if (st === 'slide') { clip = 'slide'; sp = 1; }
       else if (st === 'duck') { clip = 'crouch'; sp = 0.6 + spd * 0.4; oy = Math.abs(Math.sin(t * 9)) * 0.03 * Math.min(1, spd); }
@@ -410,13 +465,14 @@ export class Arena {
       if (st !== r.st || clip !== r.clip) { f.play(clip, { once, fade: st === 'air' || r.st === 'air' ? 0.12 : 0.18 }); r.clip = clip; }
       f.speed(sp); f.reach(reach); g.position.y += oy; f.update(dt);
     } else if (r.toon) {
-      const M = window.ECModel, F = r.F; F.state = { run: 'walk', wall: 'dash', air: 'air', hang: 'finale', ledge: 'finale', ladder: 'finale', win: 'win', fall: 'thrown', stun: 'hit', duck: 'block', slide: 'block' }[st] || 'idle';
+      const M = window.ECModel, F = r.F; F.state = { run: 'walk', wall: 'dash', pull: 'finale', air: 'air', hang: 'finale', ledge: 'finale', ladder: 'finale', win: 'win', fall: 'thrown', stun: 'hit', duck: 'block', slide: 'block' }[st] || 'idle';
       r.tt = (r.tt || 0) + dt * (st === 'run' ? Math.max(0.6, spd / 3.2) : 1); M.apply(r.toon, F, dt, r.tt);
       if (st === 'hang' || st === 'ledge' || st === 'ladder') g.position.y += PH - 2.05;
       r.toon.scale.y = 1.12 * (st === 'duck' || st === 'slide' ? PH_DUCK / PH + 0.08 : 1);
     }
     // Am Seil: Figur um die Hände drehen (gleicher Winkel wie das Seil)
     const a = sim && sim.rope ? sim.rope.a || 0 : 0; g.rotation.z = a;
+    if (sim && sim.wall && sim.wall.m === 'run') g.rotation.z = -(sim.wall.tilt || 0) * 0.42;   // Steilwand: in die Rundung lehnen (Drehpunkt an den Füßen)
     if (a) { const hy = y + PH, v = g.position.y - hy; g.position.x = x - v * Math.sin(a); g.position.y = hy + v * Math.cos(a); }
     r.st = st; return st;
   }
@@ -434,6 +490,8 @@ export class Arena {
       else if (o.k === 'swing') d.m.rotation.z = swingBall(o, t).a;
       else if (o.k === 'log') { const a = swingBall(o, t).a; d.m.rotation.z = a; d.beam.rotation.z = -a; }
       else if (o.k === 'rope') d.m.rotation.z = ropeAt(o, t).a;
+      else if (o.k === 'orb') d.m.rotation.z = swingBall(o, t).a;
+      else if (o.k === 'glide') { const hx = sim && sim.gx[d.i] != null ? sim.gx[d.i] : o.x1; d.m.position.set(hx, railY(o, hx), 0); }
       else if (o.k === 'roll') d.m.rotation.y = t * -o.v / o.r;
       else if (o.k === 'tramp') { const on = sim && sim.ground && sim.ground.i === d.i; d.m.position.y = -0.02 - (on ? 0.12 : 0); }
     }
@@ -457,7 +515,10 @@ export class Arena {
     const spring = (p, v, target, w) => { const f = 1 + 2 * dt * w + 1.48 * w * w * dt * dt, dtw = dt * w * w * (target - p); const nv = (v + dtw) / f; return [p + nv * dt, nv]; };
     [this.cx, this.cvx] = spring(this.cx, this.cvx, tx, 5.5); [this.cy, this.cvy] = spring(this.cy, this.cvy, ty, 4.2);
     this.shake = Math.max(0, this.shake - dt * 1.4); const sk = this.shake, sx = Math.sin(this.time * 37) * sk * 0.5, sy = Math.sin(this.time * 29 + 1.3) * sk * 0.5;
-    this.cam.position.set(this.cx - 1.4 + sx, this.cy + 2.9 + sy, this.dist); this.cam.lookAt(this.cx, this.cy - 0.1, 0); const fov = this.baseFov + Math.min(5, Math.abs(vx) * 0.6); if (Math.abs(fov - this.cam.fov) > 0.05) { this.cam.fov += (fov - this.cam.fov) * Math.min(1, dt * 3); this.cam.updateProjectionMatrix(); }
+    const back = this.view === 'back', port = this.cam.aspect < 1;
+    if (back) { this.cam.position.set(this.cx - (port ? 7.2 : 5.6) - 3.0 + sx, this.cy + (port ? 2.6 : 1.9) + sy, 1.1); this.cam.lookAt(this.cx + 6.5 - 3.0, this.cy - 0.3, -0.2); }   // von hinten: Kamera folgt dem Läufer, Blick in den Parcours
+    else { this.cam.position.set(this.cx - 1.4 + sx, this.cy + 2.9 + sy, this.dist); this.cam.lookAt(this.cx, this.cy - 0.1, 0); }
+    const fov = this.baseFov + (back ? 10 : 0) + Math.min(5, Math.abs(vx) * 0.6); if (Math.abs(fov - this.cam.fov) > 0.05) { this.cam.fov += (fov - this.cam.fov) * Math.min(1, dt * 3); this.cam.updateProjectionMatrix(); }
     this.sun.position.set(this.cx + 8, 15, 11); this.sun.target.position.set(this.cx, 0, 0); this.rim.position.set(this.cx - 6, 8, -10); this.rim.target.position.set(this.cx, 0, 0); this.rim.target.updateMatrixWorld(); this.under.position.set(this.cx + 1, -0.3, 0.5);
     this.wu.cx.value = this.cx; this.water.position.x = this.cx + 20; if (this.led) this.led.offset.x += dt * 0.05; if (this.ad) this.ad.offset.x += dt * 0.03;
     if (this.buzzer) this.buzzer.material.emissiveIntensity = 0.8 + Math.sin(this.time * 6) * 0.4;

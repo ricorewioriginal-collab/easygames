@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b24af21600a0",
- "generated": "2026-11-15T14:22:32+00:00",
- "commit": "a46e8becc1c2097f4ee436286124a85a1da1762c",
+ "version": "646eddc1fafc",
+ "generated": "2026-11-15T14:44:50+00:00",
+ "commit": "c2705a97d29094319994de92cc2a06bda718ee06",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1007,6 +1007,36 @@
    "h": "ef7b87fd5c6687d682ae77010a4f2222bda422cdde0456d9d5c37a2627b01f26"
   },
   {
+   "p": "anmacha-funkparcours/assets/vo/host_fin_0.mp3",
+   "s": 24912,
+   "h": "d6abbcd1a587a036881fef19ac4881a90e7497c66a939f0dec0072506cf6f10d"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/host_fin_1.mp3",
+   "s": 39541,
+   "h": "6464d0416169cc546ab0f20a453492b86669b3147063ec042c2fdf25f8c22119"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/host_fin_2.mp3",
+   "s": 24494,
+   "h": "4a52f1c617596996086f4ee31773db059a47349a35d4956c4fdfe9ad1339bc65"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/host_fin_3.mp3",
+   "s": 26166,
+   "h": "40138cdf704b8a7dcb083b060478ba3c23b1ffd98dabfd850e97406f7617ba61"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/host_final_0.mp3",
+   "s": 32017,
+   "h": "865b633bd9a9ca9ba0539f1016290b01c9412b02001bacc2f831c8c6f167c27f"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/host_final_1.mp3",
+   "s": 30137,
+   "h": "76663fd41702c54fc6c21563ad5adf06bd55a5aedde634fb6f953e69681869a8"
+  },
+  {
    "p": "anmacha-funkparcours/assets/vo/idle_0.mp3",
    "s": 15717,
    "h": "e5f11073ca9d1ecd05ed3d917630715403dbea23718fa480f9d1851341a46239"
@@ -1023,8 +1053,8 @@
   },
   {
    "p": "anmacha-funkparcours/assets/vo/intro_0_0.mp3",
-   "s": 45183,
-   "h": "dc8af391c6bec3cc274fd2c0feee3449a055f0cfc88201001f6dbeb15419d31b"
+   "s": 46228,
+   "h": "486ec5ef76fd23dfe995a2e525aff1c50f39bb6c5ba3a87d04a6a263c0a970fe"
   },
   {
    "p": "anmacha-funkparcours/assets/vo/intro_0_1.mp3",
@@ -1087,6 +1117,21 @@
    "h": "dece87c57a0ead1b662dc16cc9192abd91e8bf9684ffee22bd8cfbbc63c31678"
   },
   {
+   "p": "anmacha-funkparcours/assets/vo/out_all_0.mp3",
+   "s": 31599,
+   "h": "b4382ca5aa3eba593c8afebedde83efdaf2b1d72ae31927b11c8a7672b2cb263"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/out_all_1.mp3",
+   "s": 24285,
+   "h": "e3f0b43af82453ac4bf838644803c704c289923c3d8737ea926071fb5a8bfaf6"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/out_final_0.mp3",
+   "s": 30973,
+   "h": "f1ad121213df4b0507fa2326710a2154859db44c277e1de6a4bc8a5b68eb5413"
+  },
+  {
    "p": "anmacha-funkparcours/assets/vo/sec_Bruchplatten_0.mp3",
    "s": 27211,
    "h": "08148c453a85156c85aec8bb30d78c2f1aeae6f457470f3d6436d5f1f50cd2bf"
@@ -1127,6 +1172,26 @@
    "h": "63e122d2334833779e9e208d207ab6e1f06a614c890430aaaa3e58e5b3bf0db1"
   },
   {
+   "p": "anmacha-funkparcours/assets/vo/sec_Kletterseil_0.mp3",
+   "s": 23449,
+   "h": "6015063cc4d608c8132d547fdedface77bdf7b1358d41aa3645e9eecd6c08e62"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/sec_Kletterseil_1.mp3",
+   "s": 27838,
+   "h": "d810b0b895f846bf56ce91304b7d8d42743c23a19311b78dd5deb6daae691ff5"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/sec_Kletterstange_0.mp3",
+   "s": 22822,
+   "h": "2c0234d4abfc7be92818a273eacaea4d074daefc1c9a23609377dab9e9a8eb3d"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/sec_Kletterstange_1.mp3",
+   "s": 22822,
+   "h": "e8499a5a8371fe06a512a1fb94d4d64018c7d78e4c03bda26424a4669fd74ec0"
+  },
+  {
    "p": "anmacha-funkparcours/assets/vo/sec_Klippenhaenger_0.mp3",
    "s": 22822,
    "h": "ff339ec2ab636ef3e44cd51ed7e6532e4c5b7a75989cc32525327db30513e289"
@@ -1135,6 +1200,16 @@
    "p": "anmacha-funkparcours/assets/vo/sec_Klippenhaenger_1.mp3",
    "s": 28883,
    "h": "95ba83459584bdcf88f571267c198a7ecdddcb9b63e917d067dd4139e78812d0"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/sec_Kurvengleiter_0.mp3",
+   "s": 27002,
+   "h": "12695fb64af99cad70b58611dd3df1c6c3667267f40ac28282207ebded6d6474"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/sec_Kurvengleiter_1.mp3",
+   "s": 32226,
+   "h": "4cff3342c92fd50a24336118a0aed4f8ee099bf22d3fe20e9cb91c56e031bbaf"
   },
   {
    "p": "anmacha-funkparcours/assets/vo/sec_Lachsleiter_0.mp3",
@@ -1155,6 +1230,16 @@
    "p": "anmacha-funkparcours/assets/vo/sec_Pendelbalken_1.mp3",
    "s": 23867,
    "h": "d367f0a6a93969b7237c1706b613a729675d80670e7759813ba4ef83692daf80"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/sec_Pendelkugeln_0.mp3",
+   "s": 32017,
+   "h": "838bc07ae87b0f1619170321f1d3a580209162560b0e8a1007f00f656e63a54a"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/sec_Pendelkugeln_1.mp3",
+   "s": 30973,
+   "h": "2daa553f85246f33bc05ba03336ab3564046fb5b9e97193bbb6f3b73fe67df97"
   },
   {
    "p": "anmacha-funkparcours/assets/vo/sec_Ringschwung_0.mp3",
@@ -1197,6 +1282,16 @@
    "h": "c14ac76fc0c4865c7ccca9383a05e8262ebce91d6e65ba590a566ae23b3891ad"
   },
   {
+   "p": "anmacha-funkparcours/assets/vo/sec_Schraegstange_0.mp3",
+   "s": 24912,
+   "h": "48f5ec7b95c725dfe54016a3893f66eb20d15fc3241ecbcf85262ae2ab99781f"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/sec_Schraegstange_1.mp3",
+   "s": 31181,
+   "h": "d1b8d8b27ff089879e7cb377f6ff39eeab3ab58b0733c7fc2f06b26f89a1d2af"
+  },
+  {
    "p": "anmacha-funkparcours/assets/vo/sec_Seilschwung_0.mp3",
    "s": 29092,
    "h": "ff30d7a2563450d069e16d4b65495601b9e7139db81726e380f15975196bff0b"
@@ -1207,14 +1302,24 @@
    "h": "8252ec5a6362a36d83538ebb7b9b6406edc0a60257c1ba11906b89a633f4836b"
   },
   {
+   "p": "anmacha-funkparcours/assets/vo/sec_Spinnenkamin_0.mp3",
+   "s": 27002,
+   "h": "178546185c906c9ad8fd410382890f4ee0bd8646bb2786bb000e260f92e978b8"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/sec_Spinnenkamin_1.mp3",
+   "s": 21568,
+   "h": "10ccdabd27ba3caee239392d90c330e6f88ff51f40171234b9df67b1a8cb4f9d"
+  },
+  {
    "p": "anmacha-funkparcours/assets/vo/sec_Steilwand_0.mp3",
-   "s": 40377,
-   "h": "5a5e032119a98caba42eb61fea752b6488948462e7e3b6707f520e29f7aa1485"
+   "s": 46437,
+   "h": "3a72d40139acfb5f52bf214d1f62d3c37915c6d43ec79ff9c697ef000038382f"
   },
   {
    "p": "anmacha-funkparcours/assets/vo/sec_Steilwand_1.mp3",
-   "s": 27420,
-   "h": "e0e6de3eef12e98bca97c34e7fd3e2016de16cffac834c03abf8e40e32e42676"
+   "s": 38496,
+   "h": "9da2f95b914a4112e14b5308dcaa107b5582b01d123b239fecab4a7fcefb743d"
   },
   {
    "p": "anmacha-funkparcours/assets/vo/sec_Stufensprung_0.mp3",
@@ -1273,13 +1378,38 @@
   },
   {
    "p": "anmacha-funkparcours/assets/vo/vo.js",
-   "s": 3318,
-   "h": "33625f49ec4df9ed5f695b3667d154b553d38c3181720352f9ef38d94b24bb16"
+   "s": 5310,
+   "h": "ca4ce5cbb775cf5a5e6a225f317fd187990bfbc711756b636cc5e339e84e2632"
   },
   {
    "p": "anmacha-funkparcours/assets/vo/voice_on_0.mp3",
    "s": 16344,
    "h": "f11843ec36c9f06280fadd1f6971909b840e228cfb44e8355771a04339fe022e"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/wall_grab_0.mp3",
+   "s": 7776,
+   "h": "6c7e8a520246b7ec95f3d0fd07d8a04b24e927f4a8dc1debca81e4f0d784492b"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/wall_grab_1.mp3",
+   "s": 16971,
+   "h": "75e27cf8dd8f8cdeb87ca78e422a9aa86e7db18641d4fca8f576602e0b41d9d1"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/wall_grab_2.mp3",
+   "s": 8612,
+   "h": "f6f4a135ac0cd690d739be61ec9861d3224c4ee75f208e7962dd1dcd5682ef59"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/wall_pull_0.mp3",
+   "s": 15926,
+   "h": "a1462c8c19427d17d7f325e5f8c906d6547b3620ff52dd77144723be8bc22d24"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/wall_pull_1.mp3",
+   "s": 10701,
+   "h": "7a8878b3a16ccf2880bb725cdc58d6ed9e7e89795f969a9d4dd5c445c0a9b4f8"
   },
   {
    "p": "anmacha-funkparcours/assets/vo/wall_run_0.mp3",
@@ -1290,6 +1420,31 @@
    "p": "anmacha-funkparcours/assets/vo/wall_run_1.mp3",
    "s": 5477,
    "h": "6f0aeb2ad5c5869b532d4ea1da3cdba132b7a15a3079148385db1e939a57c499"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/wall_slow_0.mp3",
+   "s": 19061,
+   "h": "b753cf6c84e65b499b2c9af3ea5b6de21cada3db23d65a389b03ef87bc70135c"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/wall_slow_1.mp3",
+   "s": 24494,
+   "h": "8e06b9bcd35f988bc509561afbbdef56fdd317bb24b182a4c6c9c22fa4933344"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/wall_sprint_0.mp3",
+   "s": 23449,
+   "h": "599b82d71a1c807f3c591bcea35cd6e32cb562a5a5dd808c168418dcd47b577f"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/wall_sprint_1.mp3",
+   "s": 13209,
+   "h": "02d42b07426a28f9f2712da3e12ba728f6dd259de8dae10cb92b1d3fbc6cfd4b"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/wall_sprint_2.mp3",
+   "s": 22822,
+   "h": "10baba02b5c05f624887ae652d1c3b9622760bd20b87a2d364f428ea5bf48384"
   },
   {
    "p": "anmacha-funkparcours/assets/vo/wall_try2_0.mp3",
@@ -1367,14 +1522,44 @@
    "h": "72b7e4766440db08fbb8de7777368d110be765a6afb151b4484ca2495d33252a"
   },
   {
+   "p": "anmacha-funkparcours/assets/vo/yuk_fin_0.mp3",
+   "s": 31808,
+   "h": "961fdc21ac2b21b339bdcf1a6740f6ba6befc947128a0f4a2fca502421654f41"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/yuk_fin_1.mp3",
+   "s": 26584,
+   "h": "ed4e923df7203f6e871fd5025756430b6e1f0ced6cebf14711b1b01737254514"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/yuk_fin_2.mp3",
+   "s": 24285,
+   "h": "1b30384c1996b540e396f993a933b76d25160dc3bc7c0d7e622220e4cf2869ea"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/yuk_fin_3.mp3",
+   "s": 24703,
+   "h": "565e24d6a8065ebaf634a539f64216a5971cfcec9c758832f0c77896ad4c1472"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/yuk_final_0.mp3",
+   "s": 30555,
+   "h": "61edd2cf128567510935b2085c4ca495c1436861085d90270417d380a59346cf"
+  },
+  {
+   "p": "anmacha-funkparcours/assets/vo/yuk_final_1.mp3",
+   "s": 25748,
+   "h": "7e2d147314467bc3e47db725b674cf6bc127bc7af1a6a4b26c4a29c2fe903e9e"
+  },
+  {
    "p": "anmacha-funkparcours/audio.js",
    "s": 4820,
    "h": "548cba7c19c7aea5c6f7e09b46161c0214d5545dddadeb2b833072f1b32db1f1"
   },
   {
    "p": "anmacha-funkparcours/bot.js",
-   "s": 5192,
-   "h": "d46b38005eaed35bcb41cc0aec9df9a3aab8efdbc56b8c13dc2030ce96bc5f36"
+   "s": 5966,
+   "h": "2245010317bce143f728061033e195711d6a0c0c4f219bf3c73609dd1b6dec0b"
   },
   {
    "p": "anmacha-funkparcours/card.png",
@@ -1388,8 +1573,8 @@
   },
   {
    "p": "anmacha-funkparcours/commentary.js",
-   "s": 3896,
-   "h": "e4e615ac38acd620e63e8a9527119c61d257c3a2210cee56e74944cf1dc5b60c"
+   "s": 3923,
+   "h": "a1dc56c0c1c28cd5fe85dba0f6b3d6e4acbb9b5bea1a9b39480878a456fb68fa"
   },
   {
    "p": "anmacha-funkparcours/controller.js",
@@ -1398,13 +1583,18 @@
   },
   {
    "p": "anmacha-funkparcours/engine.js",
-   "s": 27167,
-   "h": "60a5fa12a95dc8f2d4712b707ce20d4bc5ed11c290280d8adb62b77a945a510b"
+   "s": 40889,
+   "h": "19b51daa38e868345ac801b0ded7afec5445df37d10d1f2c4dfe9fefcc39309d"
+  },
+  {
+   "p": "anmacha-funkparcours/host.js",
+   "s": 15949,
+   "h": "99d32612426fa36f10edce15c39768a3b2ff71019410114ea9551d84abe8936a"
   },
   {
    "p": "anmacha-funkparcours/index.html",
-   "s": 13710,
-   "h": "1f70bc21fd1ecfd6ab8211cf112436a87f8ebc5c5925e867b2301541f9a129a2"
+   "s": 13956,
+   "h": "944a881fe8983d6c966859ef900a787cd7a1d77a9e5859e2a287243e999a6649"
   },
   {
    "p": "anmacha-funkparcours/logo.png",
@@ -1493,8 +1683,8 @@
   },
   {
    "p": "anmacha-funkparcours/main.js",
-   "s": 31268,
-   "h": "949fe194e00b593eb9295434c37f2d585d46cca0937b41931197b359528e3262"
+   "s": 34486,
+   "h": "9734705160bae771f7fb4d5e955e7ba723d8f5c6540310c64e244f179c5c65ae"
   },
   {
    "p": "anmacha-funkparcours/manifest.webmanifest",
@@ -1513,8 +1703,8 @@
   },
   {
    "p": "anmacha-funkparcours/scene.js",
-   "s": 62859,
-   "h": "78f81ebf2a04e48b438dc188052ceefe7c7d22275a501795dbc611ec504c4e72"
+   "s": 72203,
+   "h": "48360da6d964719141b5eeb7a908b9ea18e2c0e645e4d4845693cf9d01c4b8e4"
   },
   {
    "p": "anmacha-funkparcours/stick.js",
@@ -10148,8 +10338,8 @@
   },
   {
    "p": "guides/anmacha-funkparcours.json",
-   "s": 19190,
-   "h": "3778bafb4d13580aced5e9b4ca26b3df4786700c2306fb46b929e4eeb9f298d3"
+   "s": 21107,
+   "h": "09f5a7c06cf3470f1dd96d9bd309acd0357337528f64b86b02c5cbe8de660f38"
   },
   {
    "p": "guides/anmacha-gesucht.json",
@@ -13614,7 +13804,7 @@
   {
    "p": "sync/catalog.json",
    "s": 250403,
-   "h": "ada83b1855983c7b2c0600f79071573f820844ade0ccce4e2b1373e6b8425aa6"
+   "h": "6cdca1b516dcf053f91ac3da4a437df9074c936afbcf3bc78ab129f2399452c8"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

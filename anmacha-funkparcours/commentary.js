@@ -53,5 +53,5 @@ export function makeCommentator() {
     return v[1];
   }
   function setOn(v) { on = !!v; try { localStorage.setItem(KEY, on ? '1' : '0'); } catch (e) {} if (!on) stop(); else unlock(); return on; }
-  return { say, stop, setOn, get on() { return on; }, get busy() { return busy || queue.length > 0; }, supported, log, has: k => !!VO[k], len: k => (VO[k] ? Math.max(...VO[k].map(v => v[1])) : 0) };
+  return { say, idx: k => lastPick[k] | 0, stop, setOn, get on() { return on; }, get busy() { return busy || queue.length > 0; }, supported, log, has: k => !!VO[k], len: k => (VO[k] ? Math.max(...VO[k].map(v => v[1])) : 0) };
 }

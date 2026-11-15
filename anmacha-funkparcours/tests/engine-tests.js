@@ -1,5 +1,5 @@
 /* Titanparcours – Tests für Physik, Hindernisse, Parcours (machbar? – ein Planer-Bot läuft alle Strecken) und Wertung (node tests/engine-tests.js) */
-import { Sim, COURSES, JUMP_V, G, RUN, PW, PH, PH_DUCK, CRAWL, DT, movePos, swingBall, ropeAt, rungY, rank, pointsFor, fmtTime, WALLRUN_MIN, LADDER_HOP } from '../engine.js';
+import { Sim, COURSES, JUMP_V, G, RUN, PW, PH, PH_DUCK, CRAWL, DT, movePos, swingBall, ropeAt, rungY, rank, pointsFor, fmtTime, LADDER_HOP, SPRINT, wallU, makeCourse, MODULES, ROUNDS } from '../engine.js';
 import { runBot } from '../bot.js';
 let fails = 0; const ok = (c, m) => { console.log((c ? '✓ ' : '✗ ') + m); if (!c) fails++; };
 const mk = (o, startX = 2) => { const c = { name: 't', o, finish: o.find(x => x.k === 'finish'), length: 99 }; const s = new Sim(c); s.x = startX; return s; };
@@ -36,7 +36,16 @@ const P = (x, w, y = 1) => ({ k: 'plat', x, y, w });
 { const O = [P(0, 4), { k: 'bars', x1: 5, x2: 11, y: 3.3 }, P(12, 4)]; const s = mk(O, 3.5); let hung = false; runG(s, p => { hung = hung || !!p.hang; return { r: hung ? 0 : 1, l: hung ? 1 : 0, j: p.onGround && p.x > 3.7 && p.x < 4 ? 1 : 0 }; }, 4); ok(hung && s.dead === 'water', 'Zurückhangeln über den Anfang hinaus lässt los → Sturz'); }
 { const s = mk([P(0, 6), P(9.6, 4, 1.5)]); run(s, st => ({ r: st.x < 11 ? 1 : 0, j: st.x > 5.75 && st.x < 9 ? 1 : 0 }), 2.5); ok(!s.dead && s.onGround && s.x > 9.3, 'Kantenhilfe: knapp zu kurzer Sprung auf eine höhere Plattform wird noch hochgezogen'); }
 // Wand
-{ const O = [P(0, 20), { k: 'wall', x: 14, y: 1, h: 4.2, w: 0.6 }, { k: 'plat', x: 14, y: 5.2, w: 4 }, { k: 'finish', x: 15.6, y: 5.2 }]; const fast = mk(O, 2); run(fast, p => ({ r: 1, j: p.x > 11.8 && p.onGround && p.vx >= WALLRUN_MIN ? 1 : 0 }), 6); ok(fast.finished, 'Wand: mit Tempo anlaufen + springen → Wandlauf bis ins Ziel'); const early = mk(O, 2); run(early, p => ({ r: p.x < 12.9 ? 1 : 0, j: p.x > 8 && p.x < 8.4 && p.onGround ? 1 : 0 }), 3); ok(!early.finished && !early.dead && early.y < 3, 'Wand: zu früh abgesprungen → normaler Sprung, kein Wandlauf'); const stand = mk(O, 12.6); run(stand, p => ({ j: 1 }), 2); ok(!stand.finished && stand.y < 3, 'Wand: aus dem Stand hochkommen geht nicht'); }
+// Steilwand mit Anlaufbahn: nur wer auf der Bahn richtig rennt, kommt hoch genug; oben greifen, hängen, hochziehen
+const WALLC = (h = 4.25) => [{ k: 'plat', x: 0, y: 1, w: 14, look: 'runway' }, { k: 'wall', x: 14, y: 1, h, w: 0.6 }, { k: 'plat', x: 14, y: 1 + h, w: 4 }, { k: 'finish', x: 15.6, y: 1 + h }];
+{ const fast = mk(WALLC(), 1); let vmax = 0, seen = ''; runG(fast, p => { vmax = Math.max(vmax, p.vx); if (p.wall && !seen.endsWith(p.wall.m)) seen += (seen ? '>' : '') + p.wall.m; return { r: 1 }; }, 6);
+  ok(fast.finished && vmax > SPRINT - 0.05 && seen === 'run>hang>pull', `Steilwand: Sprint auf der Anlaufbahn (${vmax.toFixed(1)} m/s) → Wand hoch, Kante greifen, hochziehen (${seen})`);
+  const wo = WALLC(); delete wo[0].look; const walk = mk(wo, 4); let top = 0; runG(walk, p => { if (p.wall) top = Math.max(top, p.y - 1); return { r: 1 }; }, 2.5); ok(!walk.finished && top < 2.0, `Steilwand: mit normalem Lauftempo zu niedrig (${top.toFixed(2)} m)`);
+  const noGrab = mk(WALLC(), 1); run(noGrab, { r: 1 }, 2.5); ok(!noGrab.finished && noGrab.wallTries >= 1, 'Steilwand: ohne Greifen rutscht man wieder herunter (Versuch zählt)');
+  const hs = []; for (const v of [6, 7.5, 9]) { const s = mk(WALLC(5.0), 12.5); s.vx = v; let top = 0; run(s, p => { if (p.wall) top = Math.max(top, p.y - 1); return { r: 1 }; }, 1.5); hs.push(top); } ok(hs[0] < hs[1] && hs[1] < hs[2], `Steilwand: Höhe hängt vom Tempo ab (${hs.map(h => h.toFixed(2)).join(' < ')} m)`);
+  // nie in der Wand: Füße immer auf/vor der Rundung, Körper links von der Oberkante
+  const o = WALLC()[1]; let bad = 0; const sv = mk(WALLC(), 1); runG(sv, p => { if (p.wall && p.wall.m === 'run') { const u = wallU(o, p.x + 0.3), ys = o.y + o.h * u; if (p.y > ys + 0.05 || p.x > o.x) bad++; } return { r: 1 }; }, 6); ok(bad === 0, 'Steilwand: Läufer bleibt sichtbar auf der Rundung (steckt nie in der Wand)');
+  const stand = mk(WALLC(), 12.6); run(stand, p => ({ j: 1 }), 2); ok(!stand.finished && stand.y < 3, 'Wand: aus dem Stand hochkommen geht nicht'); }
 // Drehwalze, Trampolin, Seilschwung, Sandsack, drei Versuche an der Steilwand
 { const s = mk([{ k: 'roll', x: 0, w: 6, y: 1, r: 0.8, v: -1.5 }], 4); run(s, {}, 1); ok(s.onGround && Math.abs(s.x - 2.5) < 0.1, `Drehwalze schiebt den stehenden Läufer zurück (${(4 - s.x).toFixed(2)} m in 1 s)`); }
 // Drehwalzen in allen Runden: normal weiterlaufen klappt immer (Sprung vor der ersten und von der letzten Walze, beliebig lang gedrückt)
@@ -53,9 +62,9 @@ for (const c of COURSES) { const sec = c.secs.find(q => q.n === 'Drehwalzen'), r
   const s2 = mk(O, 3); runG(s2, p => ({ r: 1, j: p.onGround && p.x > 5.4 ? 1 : !p.onGround && !p.rope && p.vy > 0.5 ? 1 : 0 }), 5); ok(!!s2.rope && !s2.dead, 'Ohne Sprung bleibt der Läufer am Seil hängen');
   const q = Object.assign({}, rp, { phase: 0 }), r0 = ropeAt(q, 0), r1 = ropeAt(q, 0.65); ok(Math.abs(r0.a) < 1e-9 && Math.abs(r1.a - 0.6) < 0.01, 'Seil schwingt mit fester Weite und Dauer'); }
 { const sw = { k: 'swing', px: 10, py: 6.2, len: 3.6, amp: 0.95, period: 3, phase: 0, r: 0.42, h: 1.1 }; const s = mk([P(0, 40), sw], 10); s.step({}); ok(s.hits === 1 && s.stun > 0, 'Sandsack trifft einen Läufer darunter'); }
-{ const O = [P(0, 20), { k: 'wall', x: 14, y: 1, h: 4.25, w: 0.6 }, { k: 'plat', x: 14, y: 5.25, w: 4 }, { k: 'finish', x: 15.6, y: 5.25 }]; const s = mk(O, 13.2); let tries = [];
-  run(s, p => { if (tries[tries.length - 1] !== p.wallTries) tries.push(p.wallTries); return { r: 1, j: p.onGround && p.vx < 3 ? 1 : 0 }; }, 8);
-  ok(s.dead === 'wall' && s.wallTries === 3 && tries.join() === '0,1,2,3', `Steilwand: nach drei Fehlversuchen ist der Lauf vorbei (${tries.join(' → ')})`); }
+{ const s = mk(WALLC(), 7); let tries = [], back = false;   // mit halbem Tempo anlaufen, abrutschen, zurückgehen, wieder anlaufen
+  run(s, p => { if (tries[tries.length - 1] !== p.wallTries) tries.push(p.wallTries); if (!p.wall && p.vx < -0.5) back = true; if (back && p.x < 7) back = false; return back ? { l: 1 } : { r: 1 }; }, 20);
+  ok(s.dead === 'wall' && s.wallTries === 3 && tries.join() === '0,1,2', `Steilwand: nach drei Fehlversuchen ist der Lauf vorbei (${tries.concat(s.wallTries).join(' → ')})`); }
 
 // ---------------------------------------------------------------- Ducken, Rutschen, neue Hindernisse
 { const s = mk([P(0, 40)]); run(s, { r: 1 }, 1); run(s, { r: 1, d: 1 }, 0.05); ok(s.duck && s.slide && s.h === PH_DUCK, 'Ducken aus dem Lauf = Rutschen (Körper nur ' + PH_DUCK + ' m hoch)'); run(s, { r: 1, d: 1 }, 1.5); ok(s.duck && !s.slide && Math.abs(s.vx - CRAWL) < 0.01, 'Nach der Rutsche geduckt weiter mit ' + CRAWL + ' m/s'); run(s, { r: 1 }, 0.1); ok(!s.duck && s.h === PH, 'Loslassen: Läufer richtet sich auf'); }
@@ -103,4 +112,12 @@ for (const c of COURSES) {
   const r2 = runBot(c, { maxT: 150 }); ok(r2.finished && Math.abs(r2.time - r.time) < 1e-9, `„${c.name}": Simulation ist deterministisch`);
 }
 ok(COURSES.length === 3 && COURSES[0].length < COURSES[1].length && COURSES[1].length < COURSES[2].length, 'Drei Parcours mit steigender Länge');
+// Neue Hindernisse einzeln (jede Schwierigkeit) und Zufalls-Parcours: Bot schafft alles, gleicher Startwert = gleicher Parcours
+{ const bad = []; for (const k of Object.keys(MODULES)) for (const d of [0, 1, 2]) { const c = makeCourse(d, 11 + d, [k]), r = runBot(c, { maxT: 60 }); if (!r.finished) bad.push(k + '/' + d); }
+  ok(!bad.length, `Alle ${Object.keys(MODULES).length} Hindernis-Bausteine in allen Runden schaffbar${bad.length ? ': ' + bad.join(', ') : ''}`); }
+{ const a = makeCourse(1, 4242), b = makeCourse(1, 4242), c = makeCourse(1, 4243); ok(JSON.stringify(a.o) === JSON.stringify(b.o) && JSON.stringify(a.mods) !== JSON.stringify(c.mods), 'Zufalls-Parcours: gleicher Startwert = gleicher Parcours, anderer Startwert = andere Hindernisse');
+  const seen = new Set(); for (let sd = 1; sd <= 40; sd++) makeCourse(0, sd).mods.forEach(m => seen.add(m)); ok(seen.size === Object.keys(MODULES).length, `Vorrunden zeigen über viele Shows alle ${seen.size} Hindernisse`);
+  ok(ROUNDS.every((r, i) => makeCourse(i, 5).mods.length === r.n && new Set(makeCourse(i, 5).mods).size === r.n), 'Jede Runde: feste Anzahl verschiedener Hindernisse (6 / 8 / 10)'); }
+{ let bad = []; for (let sd = 1; sd <= 6; sd++) for (const r of [0, 1, 2]) { const c = makeCourse(r, sd * 7919 + r), res = runBot(c, { maxT: 200 }); if (!res.finished) bad.push(`${sd}/${r}`); }
+  ok(!bad.length, `Zufalls-Parcours: Planer-Bot schafft 18 gemischte Runden${bad.length ? ' – nicht geschafft: ' + bad.join(', ') : ''}`); }
 console.log(fails ? `\n${fails} Fehler` : '\nAlle Parcours-Tests bestanden'); process.exit(fails ? 1 : 0);
