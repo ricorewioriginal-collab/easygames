@@ -1263,3 +1263,81 @@ textarea.field {
     gap: 10px;
   }
 }
+
+/* ------------------------------------------------------------------ Bildschirm-Effekte im Spiel */
+.screenfx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none !important;
+  overflow: hidden;
+}
+.screenfx > div {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+.screenfx .speedlines {
+  background: repeating-conic-gradient(
+    from 0deg at 50% 55%,
+    rgba(255, 255, 255, 0.22) 0deg 0.6deg,
+    transparent 0.6deg 7deg
+  );
+  -webkit-mask-image: radial-gradient(ellipse 60% 55% at 50% 55%, transparent 55%, #000 100%);
+  mask-image: radial-gradient(ellipse 60% 55% at 50% 55%, transparent 55%, #000 100%);
+  transition: opacity 0.35s;
+}
+.screenfx.speed .speedlines {
+  opacity: 1;
+  animation: speedspin 0.5s steps(4) infinite;
+}
+@keyframes speedspin {
+  to {
+    transform: rotate(7deg);
+  }
+}
+.screenfx .edge {
+  --c: var(--lime);
+  box-shadow: inset 0 0 60px 6px var(--c);
+  transition: opacity 0.4s;
+}
+.screenfx.e0 .edge {
+  --c: color-mix(in srgb, var(--fire) 70%, transparent);
+  opacity: 1;
+  animation: edgepulse 0.9s ease-in-out infinite;
+}
+.screenfx.e1 .edge {
+  --c: color-mix(in srgb, var(--ice) 75%, transparent);
+  opacity: 1;
+  animation: edgepulse 0.9s ease-in-out infinite;
+}
+@keyframes edgepulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+.screenfx .flash {
+  background: radial-gradient(circle at 50% 45%, #fff 0%, var(--c, #fff) 45%, transparent 85%);
+}
+.screenfx .flash.t0 {
+  --c: var(--fire);
+}
+.screenfx .flash.t1 {
+  --c: var(--ice);
+}
+.screenfx .flash.go {
+  animation: goalflash 0.7s ease-out;
+}
+.screenfx .flash.big.go {
+  animation: goalflash 0.9s ease-out;
+}
+@keyframes goalflash {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.calm .screenfx {
+  display: none;
+}
