@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c0f18b0cd638",
- "generated": "2026-11-15T19:06:02+00:00",
- "commit": "e0c584789c4a429d52013d8df680347cf4768999",
+ "version": "e0430f206fa7",
+ "generated": "2026-11-15T19:10:18+00:00",
+ "commit": "297ff95a3675210be1242289d1d14eb8035b7c60",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10063,8 +10063,8 @@
   },
   {
    "p": "games.js",
-   "s": 55785,
-   "h": "742d513c89568c5d44e6493e2b037679c12710ef7312b26896dbfcc7c4758eb2"
+   "s": 55675,
+   "h": "68759790c66b7a19040da0378632779d7126d9a258f2d70a114a04cbf62c3f64"
   },
   {
    "p": "gay-life/card.jpg",
@@ -10643,8 +10643,8 @@
   },
   {
    "p": "guides/kraterkommando.json",
-   "s": 19384,
-   "h": "fcab82a5b18d8be7abf3dc72dfaec65d1e2b4bce9ed913e75f46756813570e09"
+   "s": 19809,
+   "h": "bb3c51b8389b44f86e3bd8eeffa1e517ab7711e6fe807646b1d7612bfb51bc98"
   },
   {
    "p": "guides/krawallvoegel.json",
@@ -10723,8 +10723,8 @@
   },
   {
    "p": "guides/ricorail.json",
-   "s": 39416,
-   "h": "218066106bf7626ef23cc31f7076f96568c1e3d7f993dd72272bc42faafad526"
+   "s": 39727,
+   "h": "7f783c3b9af86f886086932de1c834936afdb106d09c0bf18fd670eedaf6ab2e"
   },
   {
    "p": "guides/ricoville.json",
@@ -10793,8 +10793,8 @@
   },
   {
    "p": "guides/winzflitzer.json",
-   "s": 18883,
-   "h": "d7cf838020d518e8cd095bac784d33eceb421e7c99252235fd1c5683961fa311"
+   "s": 18056,
+   "h": "2f83b1988a26db6c86e350560981f9f9f93a5ff17a7b9fb087e13cd68febc415"
   },
   {
    "p": "guides/wobbel.json",
@@ -11223,8 +11223,8 @@
   },
   {
    "p": "kraterkommando/card.svg",
-   "s": 3253,
-   "h": "714d0d8fae0378c3d125a0295244231ab7de44c984499c645a7ec91f77b408c3"
+   "s": 7128,
+   "h": "7aca651cbade7b6554b11377b5191a2196c93c806a081226daf2b5da57bbee86"
   },
   {
    "p": "kraterkommando/console.css",
@@ -11238,18 +11238,33 @@
   },
   {
    "p": "kraterkommando/game.js",
-   "s": 138578,
-   "h": "de152aee733cd200b0510d16d327257cb63e67d9c6e9012861f961daee9cbb50"
+   "s": 141875,
+   "h": "34b485d9bf1092bbfe9303dddc50203e153e69d9bdbfa7cf9f6d8c00ebd9fea3"
+  },
+  {
+   "p": "kraterkommando/icon.svg",
+   "s": 1838,
+   "h": "e22315af87a762fccbee74f6a49f0cbb3ac48ea0805a593a15abe8ceb924473c"
   },
   {
    "p": "kraterkommando/index.html",
-   "s": 10824,
-   "h": "8c6aa2860e59db4355b5310b6abf3f137c3f77a4051e1384ef471d910ae260fb"
+   "s": 11361,
+   "h": "507d067740eda613f06d90350c303999dcbb5793de58f0257c0045fc868f2050"
+  },
+  {
+   "p": "kraterkommando/konsole.css",
+   "s": 10065,
+   "h": "c3170044b890838aabb3d2152f5b63d8e063947fc93a754d9f3a5def71a637fd"
+  },
+  {
+   "p": "kraterkommando/logo.svg",
+   "s": 2880,
+   "h": "1bb63a8b7dc378414b62012834e7f35e570b8ac53cf5235e5a3ff3920ec46d20"
   },
   {
    "p": "kraterkommando/manifest.webmanifest",
-   "s": 397,
-   "h": "7d7016187d5a68a755b0995c8b3a07aa0a89b305d76cf7b53bf525fec32be94f"
+   "s": 539,
+   "h": "c470e3c7756a70576a53047064578d739852ca8a6b766bbfcccb5193c74f8137"
   },
   {
    "p": "kraterkommando/models/alien.glb",
@@ -11303,8 +11318,8 @@
   },
   {
    "p": "kraterkommando/sw.js",
-   "s": 1318,
-   "h": "2ebda7f2dbf7e3e7edc391a0269734ac2c18c6a04d9cb5a25791ea6e13fe5aa1"
+   "s": 1364,
+   "h": "68cf2e118a2703327dc081c433d28e5934a68176f18e5a21635260d33befdbb6"
   },
   {
    "p": "krawallvoegel/audio.js",
@@ -12787,9 +12802,9 @@
    "h": "2f64db140f523985f29714c6b4e5844b15a0c789b2d486963d7eba3f9b1ac194"
   },
   {
-   "p": "ricorail/assets/ricorail-b44ee15e72.js",
-   "s": 1165896,
-   "h": "b44ee15e72ea8ce7ff1049c543b5fbcc9b9aa82b10c943843c953571e1227339"
+   "p": "ricorail/assets/ricorail-09ce9c2648.js",
+   "s": 1169927,
+   "h": "09ce9c2648498f0942d814d647c2ea2316c9c1a6c7ac386503f58095f80ac3ae"
   },
   {
    "p": "ricorail/card.svg",
@@ -12829,7 +12844,7 @@
   {
    "p": "ricorail/index.html",
    "s": 3256,
-   "h": "6464a1d3d129462b63c4498d0fcec4a66e066a5e7218825a40953916c66282b9"
+   "h": "f6a2cbcc239604c4da95aa4e953bede1bf361cb8af23d702a6bd391142e7e821"
   },
   {
    "p": "ricorail/manifest.webmanifest",
@@ -12839,12 +12854,12 @@
   {
    "p": "ricorail/sw.js",
    "s": 1812,
-   "h": "fd1a4daa366fee807d23cf4921d2b2afceae2f79f2de199c015fd9528cf6c607"
+   "h": "45fa00234cdcb71a854f27c33a7f524ba4047e4bb01e38934219fd58e2f8ead7"
   },
   {
    "p": "ricorail/version.json",
    "s": 74,
-   "h": "19a2acea95de8ef9fa895970e9515170a2790bdd402322a7b12bfa140f8a2021"
+   "h": "926bf773b541bdd26f2c95b619dd54426db9fa7dea3e5885f4984fbd7b98dfcc"
   },
   {
    "p": "ricoville/assets/index-Ba31iYgM.js",
@@ -13983,8 +13998,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 251244,
-   "h": "e107f5b277e79d16b91ea5279b4b32395a75d57eaf57c526de983d8aabb1bece"
+   "s": 251134,
+   "h": "ca872c34b5a9d8de77f21aa102c58616defb6d0257fd15909d933ec31df00989"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -15129,7 +15144,7 @@
   {
    "p": "thumbs/thumbs.js",
    "s": 2188,
-   "h": "f6ac25dbe720f533b6232fc3fcff1123b7eb9d5b83e24e207906738fecb400df"
+   "h": "6a702e5ea8e30f6441549fc1c7dd4a9713c63d1e9a2434a5d4bc22caf9791827"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
@@ -15148,8 +15163,8 @@
   },
   {
    "p": "thumbs/winzflitzer.webp",
-   "s": 19588,
-   "h": "8874533ac0d429864f8006718477c6e7c73f4f5c9b4cd991e857c1108d763bd6"
+   "s": 16944,
+   "h": "72ea1311e3f0c07c5e04169f3d814296eee0d9aaa90d4fd0f4751b710408fa61"
   },
   {
    "p": "thumbs/wolkenhopser.webp",
@@ -15538,18 +15553,18 @@
   },
   {
    "p": "winzflitzer/card.jpg",
-   "s": 44862,
-   "h": "8e40e5835a6caeaccadf57d054271e583d690ba402e577f759de7a48b932a341"
+   "s": 48755,
+   "h": "b5b74a23f83c0535a3c6c099f2e656dbbe3d582de2507b40b307165178576ff9"
   },
   {
    "p": "winzflitzer/index.html",
-   "s": 13532,
-   "h": "f84d0d938cb49c0873ed34fd367aa5718469ada339e07ce291d7b291e722af5a"
+   "s": 11816,
+   "h": "d2f1034c2cf52435f4b18eeb11c4801974c5841806398c802cab13a40ed200b9"
   },
   {
    "p": "winzflitzer/js/audio.js",
-   "s": 7948,
-   "h": "3222e4c1c075d5f454d47d2c1e3917fa610e2d13dbc387b73a16f7bf32381adb"
+   "s": 7886,
+   "h": "e91feeac8037c557d9ff170ab91d6a5cfc565eb868e05bf518f4f7ce24e931f5"
   },
   {
    "p": "winzflitzer/js/data.js",
@@ -15558,13 +15573,13 @@
   },
   {
    "p": "winzflitzer/js/game.js",
-   "s": 72091,
-   "h": "df6bbc61031c0016635fb4aaa1e47d389828fb1722e058146f8d8e15ccd9f7aa"
+   "s": 54702,
+   "h": "efcde34ae75aeaf98d6ce6b13a0f6d771ed8cb46a4d20abdbf3e517a5a996bbf"
   },
   {
    "p": "winzflitzer/js/input.js",
-   "s": 12530,
-   "h": "a0c66271990f31d44f6f801e6d1ac05ccd5459414f6576c233b4f33561cc39d0"
+   "s": 7746,
+   "h": "dada8c51a68f94b87ce3235aba7da3e462e3690083a1f20c4de5147b5446fdcc"
   },
   {
    "p": "winzflitzer/js/models.js",
@@ -15573,8 +15588,8 @@
   },
   {
    "p": "winzflitzer/js/physics.js",
-   "s": 16167,
-   "h": "436fff1230faf64f3b9f6de0dbd4f5dbe4a371f0937bb01937fccb29549db0d9"
+   "s": 15855,
+   "h": "b407c1dd5df38fff97af528787c930e4f2ff642403c38940b45653aa2490d9b7"
   },
   {
    "p": "winzflitzer/js/scenery.js",
@@ -15593,8 +15608,8 @@
   },
   {
    "p": "winzflitzer/logo.svg",
-   "s": 14293,
-   "h": "516faf10bcfb321a9ae082a2138002a82a34043995f11d9dd7ab85dfaa34649a"
+   "s": 3411,
+   "h": "9f3d0fcf0b895bf669b69d86025e742657c9b450799fc33e69e9d0a77043cdc5"
   },
   {
    "p": "winzflitzer/manifest.webmanifest",
@@ -15603,8 +15618,8 @@
   },
   {
    "p": "winzflitzer/style.css",
-   "s": 29147,
-   "h": "74faf7bffb62fca17e75942061454caa84e4104e3e3b96d923740f7d6b27a247"
+   "s": 12641,
+   "h": "29adf8d6bdfb95e0239fdbed490e714a5c75d319a7c816ff04faa6d1e2908d42"
   },
   {
    "p": "winzflitzer/sw.js",
