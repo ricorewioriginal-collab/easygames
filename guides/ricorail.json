@@ -201,6 +201,16 @@
     "Im Zuschauen-Modus folgt die Kamera einem fahrenden Zug. Mit R, RB am Gamepad oder ⏭ wechselst du zum nächsten Zug, mit C, Y oder 🎥 die Kamera. Im Kinomodus wechseln Kameras und Züge automatisch.",
     "Im Führerstand spürst du den Zug: leichtes Nicken beim Anfahren und Bremsen, Neigen in Kurven und Laufunruhe bei Tempo. Wer Bewegung im Betriebssystem reduziert hat, bekommt eine ruhige Kamera."
    ]
+  },
+  {
+   "t": "Kinderbahn (Modus für Kinder)",
+   "p": [
+    "Im Hauptmenü unter 🧸 Kinderbahn suchen sich Kinder einen von fünf Spielzeugzügen aus: Dampfzug, Schnellzug, Straßenbahn, Güterzug oder Personenzug.",
+    "Bedienung ganz einfach: ▶ fährt los, ⏸ hält an, 📯 hupt, 🎥 wechselt die Kamera. Kurz vor einem Bahnhof sagt das Spiel Bescheid. Wer dann ⏸ drückt, rollt automatisch genau bis zum Bahnsteig.",
+    "Am Bahnhof steigen die Tiere ein. Ihr Ring zeigt die Farbe ihres Zielbahnhofs (orange Bärenhausen, gelb Fuchsdorf, blau Hasenwiese). Kommt ein Tier an, gibt es einen Stern.",
+    "Tastatur: Leertaste fahren/halten, H hupen, C Kamera, Esc Pause. Gamepad: A fahren/halten, RT los, LT halten, X hupen, Y Kamera, B Pause.",
+    "Die Spielzeug-Modelle stammen von Kenney (www.kenney.nl) und stehen unter der Lizenz CC0."
+   ]
   }
  ],
  "ratgeber": [
@@ -242,6 +252,14 @@
     "Ersatzsignal ohne Störung anfordern: Zs 1 gibt es nur bei gestörtem Signal; danach höchstens 40 km/h.",
     "Beim Rangieren zu schnell an die Wagen: Kupplung vorher mit K vorbereiten und mit Schrittgeschwindigkeit heranfahren.",
     "Wagen abstellen ohne Feststellbremse (X)."
+   ]
+  },
+  {
+   "t": "Kinderbahn: mehr Sterne",
+   "list": [
+    "Halte an jedem Bahnhof, auch wenn niemand aussteigt: Dort warten neue Fahrgäste.",
+    "Bis zu sechs Tiere passen in den Zug. Bring zuerst die Tiere weg, deren Bahnhof als nächster kommt.",
+    "Leere Bahnhöfe füllen sich nach ein paar Sekunden wieder."
    ]
   }
  ],
@@ -371,6 +389,14 @@
     "Pünktlich bleiben: Jede Minute Verspätung über 1 Minute je Halt kostet 25 Punkte.",
     "Komfort über 80 % bringt Plus: sanft anfahren, früh und gleichmäßig bremsen, Kurven nicht zu schnell.",
     "Schaffner-Modus: Erwischte Schwarzfahrer bringen 25 Punkte, falsche Verdächtigungen kosten 20 – lies die Fahrkarte genau (Datum, Klasse, Zielbahnhof)."
+   ]
+  },
+  {
+   "t": "Kinderbahn: viele Sterne in einer Runde",
+   "steps": [
+    "Fahre mit ▶ los und halte in Bärenhausen: Alle Tiere steigen ein.",
+    "Halte in Fuchsdorf: Gelbe Tiere steigen aus, neue steigen ein.",
+    "Halte in Hasenwiese: Blaue Tiere steigen aus. So bekommst du in jeder Runde mehrere Sterne."
    ]
   }
  ],

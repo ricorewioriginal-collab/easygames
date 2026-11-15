@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9e7a927ad983",
- "generated": "2026-11-15T18:15:15+00:00",
- "commit": "678c17d24f6cea65b13db83c1ecfb9344d6c7e72",
+ "version": "3026cdc38477",
+ "generated": "2026-11-15T18:29:55+00:00",
+ "commit": "af00e389dd4fe12869a93c54d35d7446fe43e1c1",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10723,8 +10723,8 @@
   },
   {
    "p": "guides/ricorail.json",
-   "s": 37323,
-   "h": "229c9e26f7d3602c5cdb1aece83ec9ca64f9057aaa2302d37821d8a4bcba6624"
+   "s": 38833,
+   "h": "c35c72166467f20ab9fb3106af511faa3464b8cf22c87a7eedcdfd8f0e19c088"
   },
   {
    "p": "guides/ricoville.json",
@@ -12672,9 +12672,124 @@
    "h": "b1a597ac448c28ef7efd2d49a802d593755bdf72d6babe32d25fe795cc920985"
   },
   {
-   "p": "ricorail/assets/ricorail-32d0fd5c95.js",
-   "s": 1069063,
-   "h": "32d0fd5c95e96017cf09f041b97f2e3710d7b9c5c5448149bcb96c1f7eb4231a"
+   "p": "ricorail/assets/kids/city/Textures/colormap.png",
+   "s": 11784,
+   "h": "9b5de86078c25ef02351a80d35ff3c978693a1044565b73eedd9ae9b5b80665d"
+  },
+  {
+   "p": "ricorail/assets/kids/city/building-type-a.glb",
+   "s": 98604,
+   "h": "49f32e20b9dcd24b1c8f6d6488807b8c8cb684cbb595bfb0bb36ad903e470faa"
+  },
+  {
+   "p": "ricorail/assets/kids/city/building-type-c.glb",
+   "s": 99592,
+   "h": "86a69f30f1a09461283e158514945ae5cc9d56357b0ddc83a9a3f0eecd113591"
+  },
+  {
+   "p": "ricorail/assets/kids/city/building-type-f.glb",
+   "s": 138536,
+   "h": "6f778f50d7f03c86f9a018e428cf8ffdd9e918df09954c0651d1c9559584a22b"
+  },
+  {
+   "p": "ricorail/assets/kids/nature/flower_redA.glb",
+   "s": 7104,
+   "h": "171930b7789ddbf735af3745576b5393750beb9133b9ff4a444bb6bb2986c020"
+  },
+  {
+   "p": "ricorail/assets/kids/nature/plant_bush.glb",
+   "s": 4396,
+   "h": "ae7b1beb39e242b13f5f29e3ec23ef21034b814f82297b8aa00a9bf4e1b09590"
+  },
+  {
+   "p": "ricorail/assets/kids/nature/rock_largeA.glb",
+   "s": 7552,
+   "h": "6dd15390fd96501dcd1454765a17ba61dbbd8d47705dfe5149c8dd92b353ce25"
+  },
+  {
+   "p": "ricorail/assets/kids/nature/tree_default.glb",
+   "s": 9428,
+   "h": "562d29638c902de3c7bee465d3a53bb77117efbc392ae04ed894faf6b5dc691d"
+  },
+  {
+   "p": "ricorail/assets/kids/nature/tree_oak.glb",
+   "s": 14644,
+   "h": "d7fd8773674928c50c11b66d12c636d49bdcc15a8b1c7fbb98e6f63a3439a3f3"
+  },
+  {
+   "p": "ricorail/assets/kids/nature/tree_pineDefaultA.glb",
+   "s": 17220,
+   "h": "60d8f352fa3659ed275e06cbddfecf8f92c8effe2977c2f2d7b29b6c9b582e46"
+  },
+  {
+   "p": "ricorail/assets/kids/train/Textures/colormap.png",
+   "s": 12684,
+   "h": "e264660f3fc9ecbd642bdb7fb7b7dc10755a061560a66651baf48274c729af09"
+  },
+  {
+   "p": "ricorail/assets/kids/train/track.glb",
+   "s": 8464,
+   "h": "a288815a2d74cea1e06c66e8cd9d7006fbe14c62d991cd25096306ec7681ed2b"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-carriage-box.glb",
+   "s": 98768,
+   "h": "6b594f3f7ef779879043219e2ee79eb37523427e2100855296a0c9662b36689c"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-carriage-coal.glb",
+   "s": 110244,
+   "h": "95c6282a6b13317640ac48bd75d7aeec10faa9bfc035ba21977bb0296df7199a"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-carriage-container-red.glb",
+   "s": 116192,
+   "h": "c210aff0fc5d4ee92446b1fdc24ad502df4eabda639c29cc88dd6e64b5abe111"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-carriage-tank.glb",
+   "s": 106752,
+   "h": "0de1d92587c0b4d79e6dd1dad7d4d2e8ef849330af07e2f1701b98b9e0cf4e6a"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-carriage-wood.glb",
+   "s": 105368,
+   "h": "14dc6c4bb62143d1213d60f503a005165c3cdf864cbe2a14e41e9f41b43facf7"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-diesel-a.glb",
+   "s": 156432,
+   "h": "20c6c7c23c005e8cda1c1e922473c0fc9c93fc7c1d1bc5a637d640424f811cc3"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-electric-bullet-a.glb",
+   "s": 114608,
+   "h": "523bba3b09d7e6c30d4040316f3f8ecaf8441943cbca82855769438c40c3b2c0"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-electric-bullet-b.glb",
+   "s": 125828,
+   "h": "471759f93fe13e2abe27dba78e23adadea3d73a83bc7641b27154baf6a5eb4bf"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-locomotive-a.glb",
+   "s": 154620,
+   "h": "8dfe9d20667c1534652286149fb0e1639ff48975a4187d3ad2fd956add0bba2a"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-locomotive-passenger-a.glb",
+   "s": 119852,
+   "h": "fc4eddc8056dd838747fa5cc4a2aae7f94379c00d202d2048461573887e371f3"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-tram-classic.glb",
+   "s": 143536,
+   "h": "2f64db140f523985f29714c6b4e5844b15a0c789b2d486963d7eba3f9b1ac194"
+  },
+  {
+   "p": "ricorail/assets/ricorail-d4f8e1e377.js",
+   "s": 1157852,
+   "h": "d4f8e1e3771e25ef933c6739e2c4ad6a0f8eb5dd263e2a642c4e9f0b4a39f152"
   },
   {
    "p": "ricorail/card.svg",
@@ -12683,8 +12798,8 @@
   },
   {
    "p": "ricorail/data/licences.json",
-   "s": 897,
-   "h": "4d4f9bebcbff1a7e70ed5a8161689e2e46911a2c1900b514f615447a8b08ac48"
+   "s": 1321,
+   "h": "6313da4da49c129067741db252bff2b1ddd977d00708a586b81f1595e0dc0105"
   },
   {
    "p": "ricorail/favicon.svg",
@@ -12714,7 +12829,7 @@
   {
    "p": "ricorail/index.html",
    "s": 3256,
-   "h": "67cbabe9fe8bf20341dbbdc76fb96c311bd319f1c6c3de63efe30613c10cf01e"
+   "h": "eb4bc6ab9f67c1afc85bf6e6fc14a4d32e6eadbd265ae5849a7fd326744377b5"
   },
   {
    "p": "ricorail/manifest.webmanifest",
@@ -12724,12 +12839,12 @@
   {
    "p": "ricorail/sw.js",
    "s": 1812,
-   "h": "6dcdb75c116d1dba7555597be411a2f82a38eafde5a18ccb630d06a7439f693c"
+   "h": "e15f9e48a28decec3011e005447d86ab48f2faccf49da66e7f756e2d72c3de54"
   },
   {
    "p": "ricorail/version.json",
    "s": 74,
-   "h": "10581d487f32dabf4b8daebe0fda0e6128bece783395da3af8da52efd9e38ae2"
+   "h": "8ad2cf74db829cf737f6911ff8525efbaf6ab62bd1b7ba7f58eb250a4a21f690"
   },
   {
    "p": "ricoville/assets/index-Ba31iYgM.js",
@@ -13869,7 +13984,7 @@
   {
    "p": "sync/catalog.json",
    "s": 251134,
-   "h": "c145a19a39bb8371555040b15b1cd06c6d8dfe7ff089f53a3dbbd65ed833c90d"
+   "h": "bc48ad45660e68d3067e0cc3eef618dc5c51e699cbe4c672051ccdb70037e22b"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
