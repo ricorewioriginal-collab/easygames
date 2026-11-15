@@ -156,7 +156,7 @@ function initHost() {
     save.track = okI(save.track, TR.length, 0); if (TR[save.track].arena) save.track = 0;
     const a0 = TR.findIndex(t => t.arena); save.arena = okI(save.arena, TR.length, a0); if (!TR[save.arena] || !TR[save.arena].arena) save.arena = a0;
     save.co = save.co == null ? null : okI(save.co, CHARS.length, null); save.skill = okI(save.skill, 3, 1); save.cc = save.cc == null ? null : okI(save.cc, 4, null);
-    if (![2, 3, 5].includes(save.laps)) save.laps = 3; if (!['race', 'gp', 'tt', 'free', 'battle'].includes(save.rmode)) save.rmode = 'race'; if (!['ball', 'cap', 'bomb'].includes(save.bmode)) save.bmode = 'ball'; save.bteam = save.bteam === true;
+    if (![2, 3, 5].includes(save.laps)) save.laps = 3; if (!['race', 'gp', 'tt', 'free', 'battle'].includes(save.rmode)) save.rmode = 'race'; if (!['ball', 'cap', 'bomb'].includes(save.bmode)) save.bmode = 'ball'; save.bteam = save.bteam === true; save.duo = save.duo === true;
     if (typeof save.name !== 'string') save.name = ''; if (!save.best || typeof save.best !== 'object') save.best = {}; save.cam = okI(save.cam, 4, 0);
   }
   fixSave();
@@ -194,22 +194,23 @@ function initHost() {
     $('pcard').querySelector('img').onclick = e => { save.logo = nextLogo(save.logo); e.target.src = logoSrc(save.logo); persist(); };
     $('pcard').querySelector('input').oninput = e => { save.name = e.target.value; persist(); };
     // Tandem: Fahrer und Beifahrer wählen (Beifahrer steht hinten und hält das zweite Item)
-    const coI = coOf(save.char), tm = save.tandem !== false, pick = tm && chPick === 'co' ? coI : save.char;
-    $('chmode').innerHTML = `<button class="chip ${tm ? '' : 'on'}" data-tm="0">👤 Solo</button><button class="chip ${tm ? 'on' : ''}" data-tm="1">👥 Tandem</button>` + (tm ? `<span class="sep"></span><button class="chip ${chPick !== 'co' ? 'on' : ''}" data-cp="drv">Fahrer: ${CHARS[save.char].emoji} ${esc(CHARS[save.char].name)}</button><button class="chip ${chPick === 'co' ? 'on' : ''}" data-cp="co">Beifahrer: ${CHARS[coI].emoji} ${esc(CHARS[coI].name)}</button><small class="info">Spezialitem: ${SP_ICON[spOf(save.char)]} ${SP_NAME[spOf(save.char)]} / ${SP_ICON[spOf(coI)]} ${SP_NAME[spOf(coI)]}</small>` : '');
-    $('chmode').querySelectorAll('[data-tm]').forEach(b => b.onclick = () => { save.tandem = b.dataset.tm === '1'; persist(); renderMenu(); });
+    const coI = coOf(save.char), tm = save.duo, pick = tm && chPick === 'co' ? coI : save.char;
+    $('chmode').innerHTML = (tm ? `<span class="chip on" style="pointer-events:none">👥 Tandem</span><span class="sep"></span><button class="chip ${chPick !== 'co' ? 'on' : ''}" data-cp="drv">Fahrer: ${CHARS[save.char].emoji} ${esc(CHARS[save.char].name)}</button><button class="chip ${chPick === 'co' ? 'on' : ''}" data-cp="co">Beifahrer: ${CHARS[coI].emoji} ${esc(CHARS[coI].name)}</button><small class="info">Spezialitem: ${SP_ICON[spOf(save.char)]} ${SP_NAME[spOf(save.char)]} / ${SP_ICON[spOf(coI)]} ${SP_NAME[spOf(coI)]}</small>` : '');
+    
     $('chmode').querySelectorAll('[data-cp]').forEach(b => b.onclick = () => { chPick = b.dataset.cp; renderMenu(); });
     $('chars').innerHTML = CHARS.map((c, i) => `<button class="ctile ${pick === i ? 'on' : ''}" data-ch="${i}" ${tileVars(c.acc || '#7a5cff', c.body || '#20284b')}><b>${c.emoji}</b>${c.name}<small>${c.kind}</small></button>`).join('');
     $('chars').querySelectorAll('[data-ch]').forEach(b => b.onclick = () => { const v = +b.dataset.ch; if (tm && chPick === 'co') { if (v !== save.char) save.co = v; } else { save.char = v; if (save.co === v) save.co = null; } persist(); renderMenu(); });
     const rng = [['mv', 0.9, 1.1], ['ma', 0.85, 1.25], ['mt', 0.8, 1.2], ['mw', 0.75, 1.45]], lbl = ['Tempo', 'Beschl.', 'Lenken', 'Gewicht'];
     $('kcards').innerHTML = KARTS.map((k, i) => `<button class="ctile ${save.kart === i ? 'on' : ''}" data-kt="${i}" ${tileVars(['#ff2d95', '#00e5ff', '#ffd24a', '#7cff6a', '#c08aff', '#ff8a3a'][i % 6], '#1a1f45')}><b>${k.emoji}</b>${k.name}${rng.map((r, j) => `<div class="bar"><i style="width:${Math.round(Math.max(8, Math.min(100, (k[r[0]] - r[1]) / (r[2] - r[1]) * 100)))}%"></i></div>`).join('')}<div class="st">${esc(k.desc)}</div></button>`).join('');
     $('kcards').querySelectorAll('[data-kt]').forEach(b => b.onclick = () => { save.kart = +b.dataset.kt; persist(); renderMenu(); });
+    $('duo').innerHTML = [['0', '👤 Einer'], ['1', '👥 Tandem']].map(([v, t]) => `<button class="chip ${(save.duo ? '1' : '0') === v ? 'on' : ''}" data-duo="${v}">${t}</button>`).join(''); $('duo').querySelectorAll('[data-duo]').forEach(b => b.onclick = () => { save.duo = b.dataset.duo === '1'; persist(); renderMenu(); });
     $('assist').innerHTML = ['Aus', 'Leicht', 'Stark'].map((s, i) => `<button class="chip ${assistLvl() === i ? 'on' : ''}" data-a="${i}">${s}</button>`).join(''); $('assist').querySelectorAll('[data-a]').forEach(b => b.onclick = () => { save.assist = +b.dataset.a; persist(); renderMenu(); });
     const pads = Pads.list(); $('padInfo').hidden = !pads.length; if (pads.length) $('padInfo').textContent = '🎮 ' + (self.Nav ? Nav.GLYPH[Pads.style(pads[0])].name : 'Controller') + (pads.length > 1 ? ' ×' + pads.length : '');
     document.querySelectorAll('#hmTiles .tile').forEach(t => { if (t.id !== 'bTop' && t.id !== 'bTv' && t.id !== 'bWinz') t.disabled = !ready; }); $('bGoSetup').disabled = !ready;
     renderOpts();
     const ch = CHARS[save.char % CHARS.length], kt = KARTS[save.kart % KARTS.length], where = save.rmode === 'gp' ? Track.CUPS[save.cup].name : bt ? '🎈 ' + BNAME[save.bmode || 'ball'] + ' · ' + TR[save.arena].name : TR[save.track].name, mode = { race: 'Einzelrennen', gp: 'Cup', tt: 'Zeitfahren', free: 'Freies Fahren' }[save.rmode] || '';
     $('selSum').innerHTML = `<b>${ch.emoji}</b><span>${esc((save.name || '').trim() || ch.name)}<small>${kt.emoji} ${esc(kt.name)} · ${esc(where)}</small></span><i>✎</i>`; void mode;
-    $('bGoSetup').textContent = setupFor === 'multi' ? 'HANDYS KOPPELN ▶' : 'LOS! ▶'; $('setTitle').textContent = setupFor === 'multi' ? 'MEHRSPIELER EINRICHTEN' : 'RENNEN EINRICHTEN';
+    $('bGoSetup').textContent = setupFor === 'multi' ? 'HANDYS KOPPELN ▶' : 'LOS! ▶'; $('setTitle').textContent = setupFor === 'multi' ? 'MEHRSPIELER EINRICHTEN' : save.duo ? 'TANDEM-RENNEN EINRICHTEN' : 'RENNEN EINRICHTEN';
     if (ready && View.previewKart) {
       View.previewKart($(setupStep === 3 ? 'kartStageSlot' : 'kartStage'), save.char, save.kart, save.logo);
       $('kartStageName').textContent = CHARS[save.char].name + ' · ' + KARTS[save.kart].name;
@@ -244,7 +245,7 @@ function initHost() {
   $('bOpts').onclick = () => { renderOpts(); $('opts').hidden = false; }; $('bOptsClose').onclick = () => { $('opts').hidden = true; };
   Pads.pref = save.padStyle || 'auto'; Pads.custom = save.padMap || {}; if (Pads.pref !== 'auto') Nav.style = Pads.pref; TILT.sens = save.tiltSens == null ? 1 : save.tiltSens;
   // Kacheln im Hauptmenü: Modus wählen und direkt zur Streckenwahl
-  document.querySelectorAll('#hmTiles [data-go]').forEach(t => t.onclick = () => { if (!ready) return; save.rmode = t.dataset.go; persist(); openSetup('solo', 1); });
+  document.querySelectorAll('#hmTiles [data-go]').forEach(t => t.onclick = () => { if (!ready) return; save.rmode = t.dataset.go; save.duo = t.dataset.duo === '1'; persist(); openSetup('solo', 1); });
   $('bGarage').onclick = () => openSetup('solo', 2);
   const coopGo = () => { if (!ready) return; save.coop = true; persist(); setupFor = 'multi'; renderMenu(); openLobby(); }; $('bCoop').onclick = coopGo; $('bWinz').onclick = () => { AUD.sfx.select(); location.href = 'winzflitzer/' + location.search; }; $('multiCoop').onclick = coopGo;
   const hmDesc = el => { const d = el && el.dataset && el.dataset.d; if (d) $('hmDesc').textContent = d; };
@@ -424,13 +425,13 @@ function initHost() {
   function beginSeries() {
     // Koop: Spieler 1+2 (und 3+4) teilen sich ein Kart – der erste fährt, der zweite wirft Items und tauscht die Fahrer
     const coop = !!save.coop && players.length >= 2, drivers = coop ? players.filter((_, i) => i % 2 === 0) : players.slice(), gun = coop ? players.map((p, i) => i % 2 ? { p, ki: i >> 1 } : null).filter(Boolean) : [];
-    const multi = players.length > 1 || players.some(p => p.conn), bt = save.rmode === 'battle', free = save.rmode === 'free' && players.length === 1 && !bt, tt = (save.rmode === 'tt' || free) && players.length === 1;
-    const total = tt ? 1 : 8, specs = drivers.map((p, i) => ({ name: p.name, logo: p.logo, char: p.char == null ? save.char : p.char, kart: p.kart == null ? save.kart : p.kart, human: true, assist: p.conn ? Math.max(1, assistLvl()) : assistLvl() })), used = new Set(players.map(p => p.logo)), usedC = new Set(specs.map(s => s.char)), cpool = CHARS.map((_, i) => i).filter(i => !usedC.has(i)).sort(() => Math.random() - 0.5);
+    const multi = players.length > 1 || players.some(p => p.conn), bt = save.rmode === 'battle', free = save.rmode === 'free' && !bt, tt = (save.rmode === 'tt' || free) && !bt;
+    const total = tt ? Math.max(1, drivers.length) : 8, specs = drivers.map((p, i) => ({ name: p.name, logo: p.logo, char: p.char == null ? save.char : p.char, kart: p.kart == null ? save.kart : p.kart, human: true, assist: p.conn ? Math.max(1, assistLvl()) : assistLvl() })), used = new Set(players.map(p => p.logo)), usedC = new Set(specs.map(s => s.char)), cpool = CHARS.map((_, i) => i).filter(i => !usedC.has(i)).sort(() => Math.random() - 0.5);
     const pool = Array.from({ length: 13 }, (_, i) => i).filter(i => !used.has(i)).sort(() => Math.random() - 0.5);
     const omaRun = !bt && (save.rmode === 'gp' ? Track.CUPS[save.cup].tracks : [save.track]).every(t => TR[t] && TR[t].world === 'oma'), rollK = KARTS.findIndex(k => k.id === 'rollator');
     if (omaRun) cpool.sort((a, b) => (OMA.is(CHARS[a]) ? 1 : 0) - (OMA.is(CHARS[b]) ? 1 : 0));
     for (let b = 0; specs.length < total; b++) { const lg = pool[b % pool.length]; const ch = cpool.length ? cpool.pop() : Math.floor(Math.random() * CHARS.length); specs.push({ name: CHARS[ch].name, logo: lg, char: ch, kart: omaRun && OMA.is(CHARS[ch]) && rollK >= 0 ? rollK : Math.floor(Math.random() * KARTS.length), human: false, skill: save.skill }); }
-    if (save.tandem !== false || coop) specs.forEach((sp, i) => { const gn = gun.find(g => g.ki === i); sp.co = gn && gn.p.char != null && gn.p.char !== sp.char ? gn.p.char : sp.human ? (i === 0 && !(players[0] && players[0].conn) ? coOf(sp.char) : (sp.char + 7) % CHARS.length) : (cpool.length ? cpool.pop() : (sp.char + 11) % CHARS.length); sp.sp = spOf(sp.char); sp.sp2 = spOf(sp.co); });
+    if (save.duo || coop) specs.forEach((sp, i) => { const gn = gun.find(g => g.ki === i); sp.co = gn && gn.p.char != null && gn.p.char !== sp.char ? gn.p.char : sp.human ? (i === 0 && !(players[0] && players[0].conn) ? coOf(sp.char) : (sp.char + 7) % CHARS.length) : (cpool.length ? cpool.pop() : (sp.char + 11) % CHARS.length); sp.sp = spOf(sp.char); sp.sp2 = spOf(sp.co); });
     GP = { specs, tt, free, cc: tt || free ? 2 : (save.cc == null ? 2 : save.cc), race: 0, pts: specs.map(() => 0), gp: save.rmode === 'gp' && !tt, order: bt ? [TR[save.arena] && TR[save.arena].arena ? save.arena : TR.findIndex(t => t.arena)] : save.rmode === 'gp' && !tt ? Track.CUPS[save.cup].tracks.slice() : [save.track], multi, battle: bt ? (save.bmode || 'ball') : null, teams: bt && save.bteam, drivers, gun };
     startRace();
   }
