@@ -70,6 +70,28 @@
       ]
     },
     {
+      "t": "Controller, Kamera und Radio",
+      "list": [
+        "PlayStation (PS4/PS5): ✕ oder R2 Gas, □ oder L2 Bremse, R1 Driften, L1 oder ○ Item, △ oder R3 Zurückschauen, L3 Hupe, Share/Create oder D-Pad ↓ Kamera, D-Pad → / ← nächster bzw. voriger Radiosender, D-Pad ↑ Radio an/aus, Options Pause.",
+        "Nintendo Switch: A Gas, B Bremse, R oder ZR Driften, L oder ZL Item, X oder R-Stick-Klick Zurückschauen, Y oder L-Stick-Klick Hupe, − oder D-Pad ↓ Kamera, Steuerkreuz wie bei PlayStation für das Radio, + Pause.",
+        "Item werfen: Stick nach vorn beim Item-Knopf wirft Banane, Mine oder Felsbrocken nach vorn, Stick nach hinten (oder Zurückschauen halten) wirft nach hinten.",
+        "Tastatur: W/↑ Gas, S/↓ Bremse, A/D lenken, Shift/Z Driften, Leertaste/Enter/X Item, Q Zurückschauen, H Hupe, C Kamera, . und , Radiosender, R Radio an/aus, M Ton, Esc Pause.",
+        "Alles frei belegbar: ⚙️ Optionen → Tastenbelegung ändern. Aktion antippen und die neue Taste am Controller oder auf der Tastatur drücken; „Standard“ setzt alles zurück.",
+        "Handy: oben 👀 (halten) zum Zurückschauen, 🎥 für die Kamera und 📻 für den nächsten Sender (lange drücken schaltet das Radio aus).",
+        "Kamera: Standard, Nah, Weit und Motorhaube. Die Kamera neigt sich im Drift, zieht bei Turbo das Sichtfeld auf und blickt bei hohem Tempo weiter voraus. Die Wahl wird gespeichert.",
+        "Radio: 13 Sender mit eigenem Namen im Spiel – Rush FM, Zielgerade 101, Drift Beats, Kurvenschlager, Podium Hits, Nitro Club, Weltentour Radio, Flohzirkus Funk, Vollgas Rock, Schneeketten-Radio, Oldtimer-Welle, Pixel-Piste FM und Joker-Kanal. Die Anzeige oben zeigt Logo, Originalnamen des Senders sowie aktuellen Titel und Interpret. Das Radio ersetzt die Rennmusik und braucht Internet."
+      ]
+    },
+    {
+      "t": "Klassen, Spiegel und Raketenstart",
+      "list": [
+        "Klasse in den Renneinstellungen: 50 ccm (ruhig, für Einsteiger), 100 ccm (flotter) und 150 ccm (volles Tempo). Spiegel fährt mit 150 ccm auf links-rechts gespiegelten Strecken.",
+        "Zeitfahren und Freies Fahren laufen immer mit 150 ccm.",
+        "Raketenstart: Gas während des Countdowns im richtigen Moment drücken – kurz nach der „2“. Perfekt getroffen gibt es einen starken Turbo (🚀 RAKETENSTART!), etwas zu spät einen kleinen (🔥 GUTER START!).",
+        "Wer schon bei der „3“ Gas gibt, würgt den Motor ab und dreht sich kurz auf der Stelle."
+      ]
+    },
+    {
       "t": "Mehrspieler, Online und TV",
       "list": [
         "👥 Mehrspieler – Rennen eröffnen: Ein Handy, Tablet oder PC eröffnet den Raum. Freunde scannen den QR-Code oder geben den Raumcode ein und fahren auf ihrem eigenen Bildschirm.",
@@ -107,7 +129,8 @@
         "Der Allrounder ist für den Einstieg das beste Kart.",
         "Fahr durch die gelben Boost-Felder – sie liegen meist an Kurvenausgängen und auf Geraden.",
         "Nimm jede Item-Box mit. Selbst eine Banane hinter dir schützt vor Verfolgern.",
-        "Im Freien Fahren lernst du jede Strecke in Ruhe kennen."
+        "Im Freien Fahren lernst du jede Strecke in Ruhe kennen.",
+        "Starte mit 50 ccm, bis du die Kurven kennst, und steig dann auf 100 und 150 ccm um. Den Raketenstart übst du am besten im Einzelrennen: Gas erst kurz nach der „2“ drücken."
       ]
     },
     {
@@ -272,6 +295,14 @@
     {
       "q": "Welche Controller funktionieren?",
       "a": "Jeder Gamepad, den der Browser erkennt: PlayStation (DualShock, DualSense), Nintendo Switch Pro Controller und Joy-Con, Xbox und die meisten anderen USB-/Bluetooth-Pads. Die Tastensymbole passen sich automatisch an; in ⚙️ Optionen kannst du die Art auch fest einstellen. Für den Splitscreen fügst du in der Lobby weitere Gamepad-Spieler hinzu."
+    },
+    {
+      "q": "Das Radio spielt nicht.",
+      "a": "Das Radio braucht Internet und startet erst nach einem Tipp oder Tastendruck (Sperre für automatisches Abspielen im Browser). Prüfe außerdem, ob der Ton an ist (🔊). In ⚙️ Optionen → Radio wählst du einen Sender oder schaltest es aus."
+    },
+    {
+      "q": "Wie ändere ich die Tastenbelegung am Controller?",
+      "a": "⚙️ Optionen → Tastenbelegung ändern: Aktion antippen, dann die gewünschte Taste am Controller drücken. Daneben lässt sich die Tastatur genauso belegen. „Standard“ stellt die Original-Belegung wieder her."
     }
   ]
 }

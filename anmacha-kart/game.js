@@ -73,21 +73,33 @@ function buildTouch(root, st) {
   if (!touchReset) { const f = () => touchReset && touchReset(); addEventListener('blur', f); addEventListener('orientationchange', f); document.addEventListener('visibilitychange', () => { if (document.hidden) f(); }); }
   touchReset = () => { ptr.clear(); apply(); if (sid !== null) stickEnd(); };
 }
-// Gamepad (Standard-Belegung): Stick/Steuerkreuz lenken, A/RT Gas, RB/X driften, Y/LB Item, B/LT bremsen
+// Gamepad: Belegung wie im Original je Controller-Art, frei änderbar (Optionen → Tastenbelegung).
+// Standard-Layout der Browser-API: 0 unten, 1 rechts, 2 links, 3 oben, 4 L1/LB/L, 5 R1/RB/R, 6 L2/LT/ZL, 7 R2/RT/ZR, 8 Select/−/Share, 9 Start/+/Options, 10 L3, 11 R3, 12–15 Steuerkreuz ↑↓←→
+const ACTS = [['g', 'Gas'], ['b', 'Bremse / rückwärts'], ['d', 'Driften / Hüpfer'], ['i', 'Item benutzen'], ['lb', 'Zurückschauen'], ['hn', 'Hupe'], ['cam', 'Kamera wechseln'], ['rn', 'Radio: nächster Sender'], ['rp', 'Radio: voriger Sender'], ['ro', 'Radio an / aus']];
+const PADDEF = {
+  // PlayStation (wie bei Fun-Racern auf PS4/PS5): ✕ Gas, □ Bremse, R1 Hüpfer/Drift, L1/○ Item, △ Rückblick, R2/L2 Gas/Bremse
+  ps: { g: [0, 7], b: [2, 6], d: [5], i: [4, 1], lb: [3, 11], hn: [10], cam: [8, 13], rn: [15], rp: [14], ro: [12] },
+  // Nintendo Switch (wie Mario-Kart-Belegung): A Gas, B Bremse, R/ZR Hüpfer/Drift, L/ZL Item, X Rückblick, Y Hupe, − Kamera
+  nin: { g: [1], b: [0], d: [5, 7], i: [4, 6], lb: [3, 11], hn: [2, 10], cam: [8, 13], rn: [15], rp: [14], ro: [12] },
+  xbox: { g: [0, 7], b: [2, 6], d: [5], i: [4, 1], lb: [3, 11], hn: [10], cam: [8, 13], rn: [15], rp: [14], ro: [12] }
+};
+const BTNKEY = ['a', 'b', 'x', 'y', 'l', 'r', 'lt', 'rt', 'se', 'st', 'l3', 'r3', 'du', 'dd', 'dl', 'dr'];
 const Pads = {
+  custom: {},
   list() { try { return Array.from(navigator.getGamepads ? navigator.getGamepads() : []).filter(Boolean); } catch (e) { return []; } },
+  map(st) { const d = PADDEF[st] || PADDEF.xbox, c = Pads.custom[st] || {}; const m = {}; ACTS.forEach(([k]) => { m[k] = c[k] || d[k]; }); return m; },
   read(pad) {
     if (!pad) return { s: 0, g: 0, b: 0, d: 0, i: 0 }; const a = pad.axes || [], bt = pad.buttons || [], pr = i => bt[i] && (bt[i].pressed || bt[i].value > 0.5); let s = a[0] || 0;
-    s = Math.abs(s) < 0.14 ? 0 : Math.sign(s) * Math.pow((Math.abs(s) - 0.14) / 0.86, 1.35);   // weiche Kurve: feine Korrekturen um die Mitte, voller Einschlag außen if (pr(14)) s = -1; else if (pr(15)) s = 1;
-    // Belegung wie an der Konsole: PlayStation/Xbox ✕/A Gas, ○/B Bremse, □/X Drift · Nintendo A (rechts) Gas, B (unten) Bremse, Y Drift; R/RB Drift, L/LB + △/Y/X Item, Trigger Gas/Bremse
-    const nin = Pads.style(pad) === 'nin';
-    return { s, g: pr(nin ? 1 : 0) || pr(7) || pr(12) ? 1 : 0, b: pr(nin ? 0 : 1) || pr(6) || pr(13) ? 1 : 0, d: pr(5) || pr(2) ? 1 : 0, i: pr(4) || pr(3) ? 1 : 0 };
+    s = Math.abs(s) < 0.14 ? 0 : Math.sign(s) * Math.pow((Math.abs(s) - 0.14) / 0.86, 1.35);   // weiche Kurve: feine Korrekturen um die Mitte, voller Einschlag außen
+    const m = Pads.map(Pads.style(pad)), on = k => m[k].some(pr) ? 1 : 0, y = a[1] || 0, r = { s, aim: y < -0.55 ? 1 : y > 0.55 ? -1 : 0 };
+    ACTS.forEach(([k]) => { r[k] = on(k); }); if (r.lb && !r.aim) r.aim = -1; return r;
   },
   pref: 'auto',
   style(pad) { return Pads.pref !== 'auto' ? Pads.pref : pad && self.Nav ? Nav.styleOf(pad.id) : 'xbox'; },
-  // [Glyphe, Text] für Hilfe und Hinweise (Glyphen-Schlüssel wie in Nav.GLYPH: a/b/x/y = unten/rechts/links/oben bei Xbox-Namen)
-  legend(st) { const nin = st === 'nin'; return [[nin ? 'b' : 'a', 'Gas'], [nin ? 'a' : 'b', 'Bremse / rückwärts'], ['r', 'Driften (halten)'], ['x', 'Driften'], ['l', 'Item benutzen'], ['y', 'Item'], ['rt', 'Gas'], ['lt', 'Bremse'], ['st', 'Pause']]; },
-  any() { const m = { s: 0, g: 0, b: 0, d: 0, i: 0 }; Pads.list().forEach(p => { const r = Pads.read(p); if (Math.abs(r.s) > Math.abs(m.s)) m.s = r.s; m.g |= r.g; m.b |= r.b; m.d |= r.d; m.i |= r.i; }); return m; }
+  glyph(st, idx) { const G = (self.Nav && Nav.GLYPH[st]) || {}, k = BTNKEY[idx]; if (idx >= 12) return ['↑', '↓', '←', '→'][idx - 12]; if (k === 'l3') return st === 'ps' ? 'L3' : st === 'nin' ? 'L-Stick' : 'LS'; if (k === 'r3') return st === 'ps' ? 'R3' : st === 'nin' ? 'R-Stick' : 'RS'; return G[k] || '?'; },
+  // [Glyphe, Text] für Hilfe und Hinweise
+  legend(st) { const m = Pads.map(st); return ACTS.map(([k, t]) => [m[k].map(i => Pads.glyph(st, i)), t]).concat([[[Pads.glyph(st, 9)], 'Pause']]); },
+  any() { const m = { s: 0, g: 0, b: 0, d: 0, i: 0, aim: 0 }; Pads.list().forEach(p => { const r = Pads.read(p); if (Math.abs(r.s) > Math.abs(m.s)) m.s = r.s; ACTS.forEach(([k]) => { m[k] |= r[k]; }); if (r.aim) m.aim = r.aim; }); return m; }
 };
 
 // Ladebildschirm: echter Fortschritt (Logos, Three.js, Strecke, Shader) + weich animierter Balken
@@ -114,7 +126,7 @@ const LD = (() => {
 // Ein Bild Zeit lassen, damit der Ladebalken zwischen schweren Schritten gezeichnet wird
 const nextPaint = () => new Promise(r => { let ok = false; const f = () => { if (!ok) { ok = true; r(); } }; requestAnimationFrame(() => setTimeout(f, 0)); setTimeout(f, 120); });
 
-if (JOIN) { LD.stop(); document.body.classList.add('ctrl'); loadScript('controller.js?v=20261115-wt10').then(() => window.startController && window.startController()).catch(e => { $('err').hidden = false; $('errTxt').textContent = e.message; }); }
+if (JOIN) { LD.stop(); document.body.classList.add('ctrl'); loadScript('controller.js?v=20261115-wt11').then(() => window.startController && window.startController()).catch(e => { $('err').hidden = false; $('errTxt').textContent = e.message; }); }
 else initHost();
 
 function initHost() {
@@ -123,9 +135,14 @@ function initHost() {
   let save = { rmode: 'race', track: 0, laps: 3, skill: 1, name: '', logo: 6, char: 1, kart: 0, cup: 0, assist: null, best: {}, kbOn: null };
   try { const s = JSON.parse(localStorage.getItem('akSave') || 'null'); if (s && typeof s === 'object') save = Object.assign(save, s); } catch (e) {}
   const persist = () => { try { localStorage.setItem('akSave', JSON.stringify(save)); } catch (e) {} };
-  const TR = Track.DEFS; let trCache = {}; const getTrack = i => trCache[i] || (trCache[i] = Track.build(TR[i]));
+  const CCS = ['50 ccm', '100 ccm', '150 ccm', '🪞 Spiegel'];
+  const TR = Track.DEFS; let trCache = {}; const getTrack = (i, mi) => mi ? (trCache['m' + i] || (trCache['m' + i] = Track.build(Track.mirror(TR[i])))) : trCache[i] || (trCache[i] = Track.build(TR[i]));
   let logos = [], ready = false, menuView = 'title', setupFor = 'solo', R = null, lobbyOpen = false, peer = null, room = '', players = [], loopOn = false, lastT = 0, paused = false, curTrackIdx = -1, GP = null, nVp = 1;
-  const kb = { l: 0, r: 0, g: 0, b: 0, d: 0, i: 0 }, tc = { s: 0, g: 0, b: 0, d: 0, i: 0 };
+  const kb = { l: 0, r: 0, g: 0, b: 0, d: 0, i: 0, lb: 0, hn: 0, cam: 0, rn: 0, rp: 0, ro: 0 }, tc = { s: 0, g: 0, b: 0, d: 0, i: 0, lb: 0, hn: 0, cam: 0 };
+  // Tastatur: frei belegbar (Optionen → Tastenbelegung); Schlüssel = e.key in Kleinbuchstaben
+  const KEYDEF = { g: ['arrowup', 'w'], b: ['arrowdown', 's'], l: ['arrowleft', 'a'], r: ['arrowright', 'd'], d: ['shift', 'z'], i: [' ', 'enter', 'x'], lb: ['q'], hn: ['h'], cam: ['c'], rn: ['.'], rp: [','], ro: ['r'] };
+  let KEYS = {}; const keyMap = () => Object.assign({}, KEYDEF, save.keyMap || {}), buildKeys = () => { KEYS = {}; const m = keyMap(); Object.keys(m).forEach(a => m[a].forEach(k => { KEYS[k] = a; })); }; buildKeys();
+  let keyGrab = null;
   const assistLvl = () => save.assist == null ? (coarse ? 1 : 0) : save.assist, ASSIST = [0, 0.4, 0.75];
 
   // ------------------------------------------------------------------ Logos / Marke
@@ -143,6 +160,7 @@ function initHost() {
     $('tracks').querySelectorAll('[data-cup]').forEach(b => b.onclick = () => { save.cup = +b.dataset.cup; persist(); renderMenu(); });
     $('tracks').querySelectorAll('[data-t]').forEach(b => b.onclick = () => { save.track = +b.dataset.t; persist(); renderMenu(); if (ready) { View.setTrack(getTrack(save.track)); curTrackIdx = save.track; } });
     $('laps').innerHTML = [2, 3, 5].map(n => `<button class="chip ${save.laps === n ? 'on' : ''}" data-l="${n}">${n}</button>`).join(''); $('laps').querySelectorAll('[data-l]').forEach(b => b.onclick = () => { save.laps = +b.dataset.l; persist(); renderMenu(); });
+    $('ccls').innerHTML = CCS.map((c, i) => `<button class="chip ${(save.cc == null ? 2 : save.cc) === i ? 'on' : ''}" data-cc="${i}">${c}</button>`).join(''); $('ccls').querySelectorAll('[data-cc]').forEach(b => b.onclick = () => { save.cc = +b.dataset.cc; persist(); renderMenu(); });
     $('skill').innerHTML = SKILLS.map((s, i) => `<button class="chip ${save.skill === i ? 'on' : ''}" data-k="${i}">${s}</button>`).join(''); $('skill').querySelectorAll('[data-k]').forEach(b => b.onclick = () => { save.skill = +b.dataset.k; persist(); renderMenu(); });
     $('skill').hidden = $('skill').previousElementSibling.hidden = save.rmode === 'tt';
     $('pcard').innerHTML = `<img alt="" src="${logoSrc(save.logo)}" title="${esc(NAMES[save.logo] || '')}"><input maxlength="14" value="${esc(save.name)}" placeholder="Dein Name"><span class="info">Logo antippen</span>`;
@@ -174,14 +192,25 @@ function initHost() {
     chipRow($('oPad'), [['auto', 'Automatisch'], ['ps', 'PlayStation'], ['nin', 'Nintendo'], ['xbox', 'Xbox']], save.padStyle || 'auto', v => { save.padStyle = v; Pads.pref = v; if (v !== 'auto') Nav.style = v; persist(); Nav.hints(); });
     chipRow($('oRumble'), [['1', 'An'], ['0', 'Aus']], save.rumble === false ? '0' : '1', v => { save.rumble = v === '1'; persist(); if (save.rumble) Nav.rumble(0.6, 0.6, 180); });
     chipRow($('oTiltSens'), [['0', 'Sanft'], ['1', 'Normal'], ['2', 'Direkt']], String(TILT.sens), v => { TILT.sens = +v; save.tiltSens = TILT.sens; persist(); });
+    if (typeof View !== 'undefined' && View.CAMS) chipRow($('oCam'), View.CAMS.map((c, i) => [String(i), c.n]), String(View.camMode), v => { View.camMode = +v; save.cam = +v; persist(); });
+    chipRow($('oRadio'), [['off', 'Aus']].concat(RADIO.list.map((r, i) => [String(i), r.game])), RADIO.on ? String(RADIO.idx) : 'off', v => { if (v === 'off') RADIO.toggle(false); else RADIO.set(+v); });
     $('tiltBtn').textContent = TILT.on ? '✓ An' : 'Aus'; $('tiltBtn').classList.toggle('on', TILT.on); $('tiltInv').classList.toggle('on', TILT.inv); $('tiltCal').disabled = !TILT.on;
     const st = Pads.pref !== 'auto' ? Pads.pref : Nav.style, G = k => Nav.GLYPH[st] && `<kbd class="gl gl-${st} gk-${k}">${Nav.GLYPH[st][k]}</kbd>`, K = t => `<kbd class="gl gl-key">${t}</kbd>`;
-    $('oHelp').innerHTML = `<h5>🎮 CONTROLLER (${Nav.GLYPH[st].name})</h5><div><kbd class="gl gl-key">🕹️</kbd> Stick / Steuerkreuz lenken</div>` + Pads.legend(st).map(([k, t]) => `<div>${G(k)} ${t}</div>`).join('') +
-      `<h5>⌨️ TASTATUR</h5><div>${K('W')}${K('↑')} Gas</div><div>${K('A')}${K('D')} Lenken</div><div>${K('S')}${K('↓')} Bremse</div><div>${K('Shift')} Driften</div><div>${K('Space')} Item</div><div>${K('Esc')} Pause</div>` +
-      `<h5>📱 HANDY</h5><div>Links Joystick lenken</div><div>Rechts GAS · BREMSE · DRIFT · ITEM</div><div>Optional: Handy kippen zum Lenken</div>`;
+    const pg = g => g.map(t => `<kbd class="gl gl-${st}">${esc(t)}</kbd>`).join(''), kn = k => k === ' ' ? 'Leertaste' : k.length === 1 ? k.toUpperCase() : k.replace('arrow', '').replace(/^\w/, c => c.toUpperCase()).replace('Up', '↑').replace('Down', '↓').replace('Left', '←').replace('Right', '→');
+    $('oHelp').innerHTML = `<h5>🎮 CONTROLLER (${Nav.GLYPH[st].name})</h5><div><kbd class="gl gl-key">🕹️</kbd> Linker Stick lenken · Stick ↑/↓ beim Item: nach vorn / hinten werfen</div>` + Pads.legend(st).map(([g, t]) => `<div>${pg(g)} ${t}</div>`).join('') +
+      `<h5>⌨️ TASTATUR</h5>` + [['l', 'Links'], ['r', 'Rechts']].concat(ACTS).map(([k, t]) => `<div>${(keyMap()[k] || []).map(x => K(kn(x))).join('')} ${t}</div>`).join('') + `<div>${K('Esc')} Pause</div>` +
+      `<h5>📱 HANDY</h5><div>Links Joystick lenken, rechts GAS · BREMSE · DRIFT · ITEM</div><div>Oben: 👀 Zurückschauen (halten), 🎥 Kamera, 📻 Radio</div><div>Optional: Handy kippen zum Lenken</div>`;
+    // Tastenbelegung ändern: Aktion antippen, dann Controller-Taste bzw. Taste drücken
+    const pm = Pads.map(st), km = keyMap();
+    $('oMap').innerHTML = `<div class="maprow head"><span>Aktion</span><span>🎮 ${Nav.GLYPH[st].name}</span><span>⌨️ Tastatur</span></div>` + [['l', 'Links'], ['r', 'Rechts']].concat(ACTS).map(([k, t]) => `<div class="maprow"><span>${t}</span>${pm[k] ? `<button class="chip" data-mp="${k}">${pg(pm[k].map(i => Pads.glyph(st, i)))}</button>` : '<span>Stick</span>'}<button class="chip" data-mk="${k}">${(km[k] || []).map(x => K(kn(x))).join('') || '–'}</button></div>`).join('') + `<div class="row"><button class="chip" id="mapReset">↺ Standard-Belegung</button></div>`;
+    $('oMap').querySelectorAll('[data-mp]').forEach(b => b.onclick = () => { const a = b.dataset.mp; b.textContent = 'Taste am Controller drücken …'; padGrab(idx => { if (idx != null) { const c = Pads.custom[st] || (Pads.custom[st] = {}); c[a] = [idx]; save.padMap = Pads.custom; persist(); } renderOpts(); }); });
+    $('oMap').querySelectorAll('[data-mk]').forEach(b => b.onclick = () => { const a = b.dataset.mk; b.textContent = 'Taste drücken … (Esc = Abbruch)'; keyGrab = k => { if (k) { const m = save.keyMap || (save.keyMap = {}); Object.keys(keyMap()).forEach(o => { if (o !== a && (keyMap()[o] || []).includes(k)) m[o] = keyMap()[o].filter(x => x !== k); }); m[a] = [k]; persist(); buildKeys(); } renderOpts(); }; });
+    $('mapReset').onclick = () => { Pads.custom = {}; save.padMap = {}; save.keyMap = {}; persist(); buildKeys(); renderOpts(); };
   }
+  // Wartet auf eine neu gedrückte Controller-Taste (max. 6 s)
+  function padGrab(cb) { const t0 = performance.now(), base = {}; Pads.list().forEach(p => (p.buttons || []).forEach((b, i) => { if (b.pressed) base[p.index + ':' + i] = 1; })); const tick = () => { for (const p of Pads.list()) for (let i = 0; i < 16; i++) { const b = p.buttons[i]; const id = p.index + ':' + i; if (b && b.pressed && !base[id] && i !== 9) return cb(i); if (b && !b.pressed) delete base[id]; } if (performance.now() - t0 > 6000) return cb(null); requestAnimationFrame(tick); }; requestAnimationFrame(tick); }
   $('bOpts').onclick = () => { renderOpts(); $('opts').hidden = false; }; $('bOptsClose').onclick = () => { $('opts').hidden = true; };
-  Pads.pref = save.padStyle || 'auto'; if (Pads.pref !== 'auto') Nav.style = Pads.pref; TILT.sens = save.tiltSens == null ? 1 : save.tiltSens;
+  Pads.pref = save.padStyle || 'auto'; Pads.custom = save.padMap || {}; if (Pads.pref !== 'auto') Nav.style = Pads.pref; TILT.sens = save.tiltSens == null ? 1 : save.tiltSens;
   // Kacheln im Hauptmenü: Modus wählen und direkt zur Streckenwahl
   document.querySelectorAll('#hmTiles [data-go]').forEach(t => t.onclick = () => { if (!ready) return; save.rmode = t.dataset.go; persist(); openSetup('solo', 1); });
   $('bGarage').onclick = () => openSetup('solo', 2);
@@ -189,7 +218,7 @@ function initHost() {
   document.querySelectorAll('#hmTiles .tile').forEach(t => { t.addEventListener('focus', () => hmDesc(t)); t.addEventListener('pointerenter', () => hmDesc(t)); });
   new MutationObserver(() => { const f = document.querySelector('#hmTiles .tile.pf'); if (f) hmDesc(f); }).observe($('hmTiles'), { attributes: true, subtree: true, attributeFilter: ['class'] });
   const clock = () => { const d = new Date(); $('hmClock').textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }; clock(); setInterval(clock, 15000);
-  const syncSnd = () => { $('bSnd').textContent = AUD.muted ? '🔇' : '🔊'; $('bMenuSnd').textContent = AUD.muted ? '🔇' : '🔊'; };
+  const syncSnd = () => { if (window.RADIO) RADIO.mute(AUD.muted); $('bSnd').textContent = AUD.muted ? '🔇' : '🔊'; $('bMenuSnd').textContent = AUD.muted ? '🔇' : '🔊'; };
   function togSnd() { AUD.setMute(!AUD.muted); syncSnd(); if (!R && !AUD.muted) AUD.bed('menu'); }
   $('bSnd').onclick = $('bMenuSnd').onclick = togSnd; syncSnd();
   // Handy: Code vom Fernseher eintippen → Seite wird zum Lenkrad (gleiche Logik wie ?join=CODE per QR)
@@ -265,8 +294,8 @@ function initHost() {
 
   // ------------------------------------------------------------------ Start: Solo / Mehrspieler
   LD.start(); LD.creep(0.4);
-  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt12'); }).then(() => LD.add(0.05))]).then(async () => {
-    View.init($('cv'), logos); LD.add(0.05, 'Rennstrecke wird gebaut …'); await nextPaint();
+  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt13'); }).then(() => LD.add(0.05))]).then(async () => {
+    View.init($('cv'), logos); View.camMode = save.cam || 0; LD.add(0.05, 'Rennstrecke wird gebaut …'); await nextPaint();
     curTrackIdx = save.track; View.setTrack(getTrack(save.track)); View.resize(innerWidth, innerHeight, 1); LD.add(0.1, 'Shader werden vorgewärmt …'); await nextPaint();
     View.warmup(); ready = true; $('loadInfo').textContent = `${TR.length} Strecken · ${KARTS.length} Karts · ${CHARS.length} Figuren · ${logos.length} Sender-Logos`; renderMenu();
     lastT = performance.now(); loopOn = true; requestAnimationFrame(frame);
@@ -364,13 +393,13 @@ function initHost() {
     const omaRun = (save.rmode === 'gp' ? Track.CUPS[save.cup].tracks : [save.track]).every(t => TR[t] && TR[t].world === 'oma'), rollK = KARTS.findIndex(k => k.id === 'rollator');
     if (omaRun) cpool.sort((a, b) => (OMA.is(CHARS[a]) ? 1 : 0) - (OMA.is(CHARS[b]) ? 1 : 0));
     for (let b = 0; specs.length < total; b++) { const lg = pool[b % pool.length]; const ch = cpool.length ? cpool.pop() : Math.floor(Math.random() * CHARS.length); specs.push({ name: CHARS[ch].name, logo: lg, char: ch, kart: omaRun && OMA.is(CHARS[ch]) && rollK >= 0 ? rollK : Math.floor(Math.random() * KARTS.length), human: false, skill: save.skill }); }
-    GP = { specs, tt, free, race: 0, pts: specs.map(() => 0), gp: save.rmode === 'gp' && !tt, order: save.rmode === 'gp' && !tt ? Track.CUPS[save.cup].tracks.slice() : [save.track], multi };
+    GP = { specs, tt, free, cc: tt || free ? 2 : (save.cc == null ? 2 : save.cc), race: 0, pts: specs.map(() => 0), gp: save.rmode === 'gp' && !tt, order: save.rmode === 'gp' && !tt ? Track.CUPS[save.cup].tracks.slice() : [save.track], multi };
     startRace();
   }
   function startRace() {
-    const tIdx = GP.order[GP.race], tr = getTrack(tIdx); if (curTrackIdx !== tIdx) { View.setTrack(tr); curTrackIdx = tIdx; }
+    const tIdx = GP.order[GP.race], mi = GP.cc === 3, tr = getTrack(tIdx, mi), tKey = mi ? 'm' + tIdx : tIdx; if (curTrackIdx !== tKey) { View.setTrack(tr); curTrackIdx = tKey; }
     const racers = GP.specs.map((s, i) => ({ name: s.name, logo: s.logo, char: s.char, kart: s.kart, assist: s.assist, human: s.human, skill: s.skill, color: View.KCOL[i % 8] }));
-    const S = Sim.create({ track: tr, laps: GP.free ? 999999 : save.laps, racers, items: !GP.tt, free: GP.free, shuffle: true }), humans = players.slice();
+    const S = Sim.create({ track: tr, cc: GP.cc, laps: GP.free ? 999999 : save.laps, racers, items: !GP.tt, free: GP.free, shuffle: true }), humans = players.slice();
     humans.forEach(p => { p.gone = p.gone && !p.conn ? false : p.gone; });
     View.perfReset(); acc = 0; R = { S, tr, tIdx, humans, count: 4, lastCount: 99, huds: [], miniAt: 0, pushAt: 0, firstFin: false, ended: false, trackMap: null };
     humans.forEach((p, i) => { if (p.gone) S.karts[i].auto = true; p.inAt = performance.now(); p.input.s = p.input.g = p.input.b = p.input.d = p.input.i = 0; p.itemPending = 0; });
@@ -378,7 +407,7 @@ function initHost() {
     R.vis = humans.map((_, i) => i).filter(i => !(humans[i].conn && humans[i].view)); if (!R.vis.length) R.vis = [0]; R.rid = ++raceNo; R.snapAt = 0; R.fxq = [];
     nVp = Math.min(4, R.vis.length); $('tbar').classList.toggle('mid', nVp > 1); View.resize(innerWidth, innerHeight, nVp); View.setupRace(S, R.vis.slice(0, 4)); buildHud(); buildMap();
     humans.forEach(p => { if (p.conn && p.view) sendRace(p); });
-    document.body.classList.add('racing'); themeCol(R && R.tr && R.tr.def.sky ? R.tr.def.sky[0] : null); $('menu').hidden = true; $('res').hidden = true; $('hud').hidden = false; $('tbar').hidden = false; AUD.bed('race');
+    document.body.classList.add('racing'); themeCol(R && R.tr && R.tr.def.sky ? R.tr.def.sky[0] : null); $('menu').hidden = true; $('res').hidden = true; $('hud').hidden = false; $('tbar').hidden = false; AUD.bed('race'); RADIO.resume();
     const raceLoad = $('raceLoad'); raceLoad.hidden = false; raceLoad.querySelector('.race-load-title').textContent = TR[tIdx].name; raceLoad.querySelector('.race-load-sub').textContent = GP.free ? 'FREIES FAHREN' : GP.gp ? Track.CUPS[save.cup].name : 'ARCADE-RENNEN'; raceLoad.querySelector('.race-load-tip').textContent = ['Drifte durch Kurven und löse einen Mini-Turbo aus.','Nutze Boostfelder und Windschatten zum Überholen.','Meide Hindernisse – wähle deine Ideallinie.'][tIdx % 3]; R.introLoading = true; const t0 = performance.now(); View.prepare(racers.map(r => r.char), 6000).then(() => { if (!R || R.S !== S) return; R.introTimer = setTimeout(() => { if (R && R.S === S) { R.introLoading = false; raceLoad.hidden = true; push('grid'); } }, Math.max(0, 1350 - (performance.now() - t0))); }); paused = false;
   }
   function banner(t, sub, ms, cls) { const b = $('banner'); b.innerHTML = esc(t) + (sub ? '<small>' + esc(sub) + '</small>' : ''); b.className = 'pop'; b.style.color = cls || '#fff'; b.hidden = false; void b.offsetWidth; clearTimeout(banner.k); if (ms) banner.k = setTimeout(() => { b.hidden = true; }, ms); }
@@ -413,7 +442,7 @@ function initHost() {
   const chOf = ki => { const k = R && R.S && R.S.karts[ki]; return k && k.char != null ? CHARS[k.char % CHARS.length] : null; };
   // Eigenes Rennbild am Handy: einmal Strecke/Karts, dann ~20× pro Sekunde der Zustand (das Handy zeichnet und glättet selbst)
   let raceNo = 0; const r2 = v => Math.round(v * 100) / 100, FXE = { trick: 1, coin: 1, boom: 1, splat: 1, smash: 1, rockBounce: 1, hit: 1, pad: 1, flash: 1, use: 1, fog: 1 };
-  function sendRace(p) { const S = R.S; send(p.conn, { t: 'race', r: R.rid, tr: R.tIdx, items: S.items, me: R.humans.indexOf(p), karts: S.karts.map(k => [k.logo, k.char, k.kart]), boxes: S.boxes.map(b => [r2(b.x), r2(b.z)]), coins: S.coins.map(c => [r2(c.x), r2(c.z), r2(c.f)]), pads: S.pads.map(q => [r2(q.x), r2(q.z), r2(q.th)]) }); }
+  function sendRace(p) { const S = R.S; send(p.conn, { t: 'race', r: R.rid, tr: R.tIdx, mi: GP.cc === 3 ? 1 : 0, items: S.items, me: R.humans.indexOf(p), karts: S.karts.map(k => [k.logo, k.char, k.kart]), boxes: S.boxes.map(b => [r2(b.x), r2(b.z)]), coins: S.coins.map(c => [r2(c.x), r2(c.z), r2(c.f)]), pads: S.pads.map(q => [r2(q.x), r2(q.z), r2(q.th)]) }); }
   function sendSnap() {
     const S = R.S, vw = R.humans.filter(p => p.conn && p.view && !p.gone); if (!vw.length) { R.fxq.length = 0; return; }
     const k = []; for (const q of S.karts) k.push(r2(q.x), r2(q.z), Math.round(q.th * 1000) / 1000, r2(q.vf), r2(q.steer), r2(q.drift || 0), r2(q.spinT), q.boostT > 0 ? 1 : 0, Math.round(q.shieldT * 10) / 10, q.rough ? 1 : 0, q.dTier || 0, q.item || 0, q.itemN || 0);
@@ -431,6 +460,8 @@ function initHost() {
     const S = R.S;
     switch (e.t) {
       case 'go': banner('LOS!', '', 800, '#7cff9a'); AUD.sfx.beep(true); break;
+      case 'rocket': if (isHuman(e.k)) { AUD.sfx.boost(); hmsg(e.k, e.tier > 1 ? '🚀 RAKETENSTART!' : '🔥 GUTER START!', 1.4); } { const k = S.karts[e.k]; if (k) View.burst(k.x - Math.sin(k.th) * 2.4, 0.8, k.z - Math.cos(k.th) * 2.4, e.tier > 1 ? 0xff9a1f : 0x66ccff, 14 + e.tier * 6, 5, 3); } break;
+      case 'stall': if (isHuman(e.k)) { AUD.sfx.wall(); hmsg(e.k, '💨 Motor abgewürgt – zu früh Gas!', 1.6); } break;
       case 'box': if (isHuman(e.k)) AUD.sfx.box(); break;
       case 'coin': if (isHuman(e.k)) AUD.sfx.coin(); break;
       case 'jump': if (isHuman(e.k)) AUD.sfx.pad(); break;
@@ -458,11 +489,13 @@ function initHost() {
     const pads = Pads.list(), now = performance.now();
     return R.humans.map((p, i) => {
       if (p.conn) { const k = R.S.karts[i]; const stale = now - (p.inAt || 0) > 5000; if (!k.finished) k.auto = !!p.gone || stale; const use = (p.itemPending || 0) > 0 && !!k.item && k.itemT <= 0; if (use) p.itemPending--; return { ...p.input, g: stale ? 0 : p.input.g, b: stale ? 0 : p.input.b, s: stale ? 0 : p.input.s, i: use ? 1 : 0, itemPress: use }; }
-      if (p.pad != null) return Pads.read(pads.find(x => x.index === p.pad));
-      const pa = Pads.any(); let s = (kb.r - kb.l) + tc.s + (p.local ? pa.s : 0); if (TILT.on && !s) s = TILT.v;
-      return { s: clampN(s, -1, 1), g: kb.g || tc.g || (p.local && pa.g) ? 1 : 0, b: kb.b || tc.b || (p.local && pa.b) ? 1 : 0, d: kb.d || tc.d || (p.local && pa.d) ? 1 : 0, i: kb.i || tc.i || (p.local && pa.i) ? 1 : 0 };
+      let r; if (p.pad != null) r = Pads.read(pads.find(x => x.index === p.pad));
+      else { const pa = Pads.any(); let s = (kb.r - kb.l) + tc.s + (p.local ? pa.s : 0); if (TILT.on && !s) s = TILT.v; r = { s: clampN(s, -1, 1), aim: (p.local && pa.aim) || (kb.b || kb.lb || tc.lb ? -1 : 0) }; ['g', 'b', 'd', 'i', 'lb', 'hn', 'cam', 'rn', 'rp', 'ro'].forEach(k => { r[k] = kb[k] || tc[k] || (p.local && pa[k]) ? 1 : 0; }); }
+      extraActs(p, i, r); return r;
     });
   }
+  // Zusatzaktionen (nur Flanken): Kamera, Rückblick, Hupe, Radio
+  function extraActs(p, ki, r) { const pv = p._pv || (p._pv = {}), up = k => r[k] && !pv[k]; if (up('cam')) { const m = View.camNext(ki); save.cam = View.camMode; persist(); hmsg(ki, '🎥 ' + m, 1.1); } View.setBack(ki, !!r.lb); if (up('hn')) { AUD.sfx.horn ? AUD.sfx.horn() : AUD.sfx.box(); View.honk(ki); } if (up('rn')) RADIO.step(1); if (up('rp')) RADIO.step(-1); if (up('ro')) RADIO.toggle(); ['cam', 'lb', 'hn', 'rn', 'rp', 'ro'].forEach(k => { pv[k] = r[k]; }); }
   function finishRace() {
     if (R.ended) return; R.ended = true; AUD.engine(false); AUD.bed('off'); document.body.classList.remove('racing'); themeCol(null); $('hud').hidden = true; $('tbar').hidden = true; $('banner').hidden = true;
     const res = Sim.results(R.S); GP.race++; const finalGp = GP.gp && GP.race >= GP.order.length;
@@ -482,6 +515,9 @@ function initHost() {
   // Statusleiste am Handy in Himmelsfarbe statt schwarzem Balken über dem Rennbild
   function themeCol(c) { const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = c || '#05060f'; }
   function toMenu() { themeCol(null); if (R && R.introTimer) clearTimeout(R.introTimer); $('raceLoad').hidden = true; R = null; $('res').hidden = true; $('pause').hidden = true; $('hud').hidden = true; $('tbar').hidden = true; $('banner').hidden = true; document.body.classList.remove('racing'); AUD.engine(false); AUD.bed('menu'); showView('title'); nVp = 1; View.resize(innerWidth, innerHeight, 1); players.forEach(p => { if (p.conn) send(p.conn, { t: 'st', ph: 'lobby' }); }); players = players.filter(p => p.conn && !p.gone); if (TV) openLobby(); }
+  { const lb = $('bLook'), on = v => e => { e.preventDefault(); tc.lb = v; }; ['pointerdown'].forEach(t => lb.addEventListener(t, on(1))); ['pointerup', 'pointercancel', 'pointerleave'].forEach(t => lb.addEventListener(t, on(0)));
+    $('bCam').onclick = () => { if (!R) return; const m = View.camNext(R.vis[0] || 0); save.cam = View.camMode; persist(); hmsg(R.vis[0] || 0, '🎥 ' + m, 1.1); };
+    $('bRadio').onclick = () => RADIO.step(1); let rt = 0; $('bRadio').addEventListener('contextmenu', e => { e.preventDefault(); RADIO.toggle(false); }); }
   $('bPause').onclick = () => { if (R && !R.ended) { paused = true; R.dirty = true; $('pause').hidden = false; } }; $('bResume').onclick = () => { paused = false; $('pause').hidden = true; }; $('bQuit').onclick = toMenu;
   // Controller: im Rennen liest das Spiel den Pad selbst (Gas, Lenken …) – die Menü-Steuerung von gamepad.js ruht dann; Start = Pause
   let padStart = false; setInterval(() => { const racing = !!(R && !R.ended && !paused); const typing = !racing && document.activeElement && document.activeElement.tagName === 'INPUT'; if (window.EasyGamesPad && EasyGamesPad.enabled() !== typing) EasyGamesPad.enabled(typing); const st = Pads.list().some(p => p.buttons && p.buttons[9] && p.buttons[9].pressed); if (st && !padStart && racing) $('bPause').click(); padStart = st; }, 80);
@@ -510,9 +546,8 @@ function initHost() {
     View.renderRace(R.S, dtAcc, tAll, nVp, live ? Math.min(1, acc * 60) : 1); dtAcc = 0; if (R.S.events.length) R.S.events = []; if (live) View.perf(raw);
   }
   // Tastatur
-  const KEYS = { ArrowUp: 'g', w: 'g', W: 'g', ArrowLeft: 'l', a: 'l', A: 'l', ArrowRight: 'r', d: 'r', D: 'r', ArrowDown: 'b', s: 'b', S: 'b', Shift: 'd', z: 'd', Z: 'd', ' ': 'i', Enter: 'i', x: 'i', X: 'i' };
-  addEventListener('keydown', e => { if (e.target && e.target.tagName === 'INPUT') return; const k = KEYS[e.key]; if (k) { kb[k] = 1; if (R) e.preventDefault(); } if (e.key === 'm' || e.key === 'M') togSnd(); if (e.key === 'Escape' && R && !R.ended) $('bPause').click(); });
-  addEventListener('keyup', e => { const k = KEYS[e.key]; if (k) kb[k] = 0; });
+  addEventListener('keydown', e => { if (keyGrab) { e.preventDefault(); const f = keyGrab; keyGrab = null; f(e.key === 'Escape' ? null : e.key.toLowerCase()); return; } if (e.target && e.target.tagName === 'INPUT') return; const k = KEYS[e.key.toLowerCase()]; if (k && (R || 'lrgbdi'.includes(k) && k.length === 1)) { kb[k] = 1; if (R) e.preventDefault(); } if (e.key === 'm' || e.key === 'M') togSnd(); if (e.key === 'Escape' && R && !R.ended) $('bPause').click(); });
+  addEventListener('keyup', e => { const k = KEYS[(e.key || '').toLowerCase()]; if (k) kb[k] = 0; });
   addEventListener('blur', () => { Object.keys(kb).forEach(k => kb[k] = 0); });
   Nav.init({ racing: () => !!(R && !R.ended && !paused && $('pause').hidden) });
   window.__ak = { get R() { return R; }, kb, tc, save, beginSeries, get players() { return players; }, set players(v) { players = v; } };

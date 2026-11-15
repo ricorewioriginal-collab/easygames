@@ -10,6 +10,11 @@ import { hash, fbm } from './noise.js';
 export { CS, H, SEA };
 export const GEN_LATEST = 4; // Generator für neue Welten (4 = wie 3, plus große eingerichtete Dörfer, Höhlenhallen, hohes Gras)
 export const normGen = g => (g === 2 || g === 3 || g === 4 ? g : 1); // fehlt/unbekannt = Originalwelt
+// Geländeart neuer Welten (optional im Spielstand, fehlt = Abenteuer mit Dörfern und Minen):
+// 'nature' = Landschaft mit Biomen, Hügeln und Höhlen, aber ohne Bauwerke; 'flat' = flaches Grasland zum Bauen
+export const TERRAINS = ['nature', 'flat'];
+export const normTerrain = t => (TERRAINS.includes(t) ? t : null);
+export const FLAT_Y = SEA + 2; // Grasoberfläche der flachen Welt
 const H1_MAX = 52;           // Höhengrenze der Originalwelt (Generator 1), nie ändern
 
 export function terrainHeight(seed, wx, wz) {
@@ -22,10 +27,12 @@ export function terrainHeight(seed, wx, wz) {
 export function chunkKey(cx, cz) { return (cx + 32768) * 65536 + (cz + 32768); }
 
 export class World {
-  constructor(seed, edits, gen = 1, preset = null) {
+  constructor(seed, edits, gen = 1, preset = null, terrain = null) {
     this.seed = seed | 0;
     this.gen = normGen(gen);
     this.preset = this.gen >= 4 && FANWORLDS[preset] ? preset : null; // fertige Fanwelt rund um den Ursprung
+    this.terrain = this.gen >= 2 && !this.preset ? normTerrain(terrain) : null;
+    this.structs = this.gen >= 3 && !this.terrain; // zufällige Dörfer, Minen, Höhlenhallen
     this.chunks = new Map();
     this.edits = edits || new Map(); // key -> Map(index -> type)
     this.dirty = new Set();
@@ -64,11 +71,18 @@ export class World {
 
   generate(cx, cz, key) {
     const data = new Uint8Array(CS * CS * H);
+    if (this.terrain === 'flat') return this.finish(cx, cz, key, data, this.generateFlat(data));
     let maxY = this.gen >= 2 ? decorateChunk(this.seed, cx, cz, data) : this.generate1(cx, cz, data);
     const radio = (x, y, z) => this.radios.set(`${x},${y},${z}`, [x, y, z]);
-    if (this.gen >= 3) maxY = placeStructures(this.seed, cx, cz, data, maxY, radio, this.gen, this.preset ? fanSkip : null);
+    if (this.structs) maxY = placeStructures(this.seed, cx, cz, data, maxY, radio, this.gen, this.preset ? fanSkip : null);
     if (this.preset) { const p = fanPlan(this.preset, this.seed); if (p.touches(cx, cz)) maxY = p.apply(cx, cz, data, (x, z) => biomeColumn(this.seed, x, z, this.colTmp || (this.colTmp = {})).h, maxY, radio); }
     return this.finish(cx, cz, key, data, maxY);
+  }
+
+  // flache Welt: Stein, drei Lagen Erde, Gras
+  generateFlat(data) {
+    for (let y = 0; y <= FLAT_Y; y++) data.fill(y === FLAT_Y ? B.GRASS : y >= FLAT_Y - 3 ? B.DIRT : B.STONE, y * CS * CS, (y + 1) * CS * CS);
+    return FLAT_Y;
   }
 
   // Generator 1: unverändert aus Version 1.0, damit alte Spielstände exakt dieselbe Welt bekommen
@@ -203,7 +217,8 @@ export class World {
   // village = false: nicht im Dorf starten (Story: das Dorf ist ein Auftrag)
   findSpawn(village = true) {
     if (this.preset) { const sp = fanSpawn(this.preset, this.seed); this.ensure(Math.floor(sp.x) >> 4, Math.floor(sp.z) >> 4); return sp; }
-    if (this.gen >= 3 && village) { // am Dorfplatz des nächsten Dorfes, sonst wie Generator 2
+    if (this.terrain === 'flat') { this.ensure(0, 0); return { x: 0.5, y: FLAT_Y + 1.01, z: 0.5 }; }
+    if (this.structs && village) { // am Dorfplatz des nächsten Dorfes, sonst wie Generator 2
       const v = nearestVillage(this.seed, 0, 0, 2, this.gen);
       if (v) { this.ensure(v.x >> 4, (v.z + 3) >> 4); return { x: v.x + 0.5, y: v.y + 1.01, z: v.z + 3.5 }; }
     }
@@ -252,11 +267,12 @@ export class World {
   // Biom an einer Weltposition (Generator 1 kennt keine Biome)
   biomeAt(x, z) {
     if (this.gen < 2) return -1;
+    if (this.terrain === 'flat') return BIOME.PLAINS;
     return biomeColumn(this.seed, Math.floor(x), Math.floor(z), {}).biome;
   }
   // Dorf, in dessen Bereich (x, z) liegt (nur Generator 3), sonst null
   villageAt(x, z) {
-    if (this.gen < 3) return null;
+    if (!this.structs) return null;
     const v = villageIn(this.seed, regionOf(Math.floor(x)), regionOf(Math.floor(z)), this.gen);
     return v && Math.hypot(v.x + 0.5 - x, v.z + 0.5 - z) <= VR + 4 ? v : null;
   }

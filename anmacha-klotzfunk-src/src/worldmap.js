@@ -82,7 +82,8 @@ export class WorldMap {
         if (b !== B.WATER) k2 = Math.max(0.6, Math.min(1.3, 0.85 + (y - SEA) * 0.012));
       } else {
         const wx = cx * CS + lx, wz = cz * CS + lz;
-        if (world.gen >= 2) { biomeColumn(world.seed, wx, wz, col); rgb = col.h < SEA ? BIOME_COLORS[0] : BIOME_COLORS[col.biome]; if (col.h >= SEA) k2 = Math.max(0.6, Math.min(1.3, 0.85 + (col.h - SEA) * 0.012)); }
+        if (world.terrain === 'flat') rgb = BIOME_COLORS[2];
+        else if (world.gen >= 2) { biomeColumn(world.seed, wx, wz, col); rgb = col.h < SEA ? BIOME_COLORS[0] : BIOME_COLORS[col.biome]; if (col.h >= SEA) k2 = Math.max(0.6, Math.min(1.3, 0.85 + (col.h - SEA) * 0.012)); }
         else { const h = terrainHeight(world.seed, wx, wz); rgb = h < SEA ? BIOME_COLORS[0] : h <= SEA + 1 ? BIOME_COLORS[1] : h > 40 ? BIOME_COLORS[5] : BIOME_COLORS[2]; }
       }
       px[o] = rgb[0] * k2; px[o + 1] = rgb[1] * k2; px[o + 2] = rgb[2] * k2; px[o + 3] = 255;

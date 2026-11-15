@@ -1,0 +1,57 @@
+# Open Conflicts / Questions
+
+Format: ID – description – status / interim handling. Interim handling is the least destructive option and can be changed by the project owner.
+
+- C-01 – Exact canonical heights remain intentionally unfrozen; use relative scale until in-engine camera/collision testing. – OPEN
+- C-02 – Legacy `BUILD_01.md` and the new focused vertical slice differ in encounter order and breadth. New Phase-1 order wins; legacy systems/content are preserved for later integration. – RESOLVED (by spec)
+- C-03 – The exact implementation status of Timeline/Break and other starter systems must be determined by M00, not assumed from documentation. – RESOLVED by M00: prototypes only, with defects (see `PHASE_1_AUDIT.md` §2.3).
+- C-04 – Engine version: `CLAUDE.md`/`mcp/project_manifest.json` target Godot 4.7; legacy `README.md`, `PROJECT_MANIFEST.json` and `ARCHITECTURE.md` say "Godot 4.x"; starter declares 4.3. – Interim: Godot 4.7 (highest precedence document).
+- C-05 – Art direction: `11_ASSETS/ASSET_POLICY.md` asks for low-poly, small textures, optional 4:3, 1990s retro feel; `docs/09_ART_STYLE_BIBLE.md` asks for stylized PBR, scalable Windows/Android/Web. – Interim: `docs/09` wins (spec precedence). Low texture budgets from the asset policy are kept as performance guidance. Owner decision requested.
+- C-06 – Renderer: starter uses `gl_compatibility`; stylized PBR target would favour Forward+ on Windows, Compatibility is required for Web. – Interim: keep `gl_compatibility` for Phase 1 (runs on all target platforms and headless CI); revisit with real assets.
+- C-07 – Legacy input: README says dodge = F/F12, project binds F/Right-arrow; block additionally bound to Shift. – Interim: new project uses F + gamepad for dodge; Right-arrow binding dropped.
+- C-08 – Legacy item IDs (`healing_potion`, `moon_pendant`, `moonblade`, `rift_shard`) are outside the canonical namespaces of `docs/03_CONTENT_DATA_SPEC.md`. – Interim: migrate to `ITEM_HEALING_POTION_001`, `ITEM_MOON_PENDANT_001`, `WEAPON_MOONBLADE_001`, `ITEM_RIFT_SHARD_001`; legacy file left unchanged.
+- C-09 – Location of the Phase-1 project is not specified. – Interim: new project `zotik-old/`; `game/legacy_starter/` stays read-only.
+- C-10 – Story-critical final dialogue is a separate artifact that must not be invented (`10_CLAUDE/CLAUDE_MASTER_PROMPT.md`), but Phase 1 needs playable dialogue. – Interim: dialogue lines are stored as data with `placeholder: true` and paraphrase only facts from `docs/04_LUNARIS_CONTENT_BIBLE.md`; final text to be delivered by the owner.
+- C-11 – Unique reward: legacy Build 01 grants "Mondklinge" in the dungeon; Phase 1 grants `WEAPON_WORLD_BLADE_001` (Weltenklinge) after Orun. – Interim: Weltenklinge is the Phase-1 unique reward; Mondklinge kept as a regular shop/chest weapon.
+- C-12 – `docs/03` lists the namespaces QUEST_ … FLAG_. Phase-1 content also needs areas, shops, savepoints and characters. `docs/07` already uses SAVEPOINT_ and CHAR_. – Interim: additional namespaces `AREA_`, `SHOP_`, `SAVEPOINT_`, `CHAR_`; the registry validates them like the others.
+- C-13 – Toren, Boro, Elwen, Finn and Sari have no `NPC_` IDs in `docs/07`. – Interim: `NPC_<NAME>_001`.
+- C-14 – Puzzle solutions (Moon Gate phases full/new/waning, Resonance Bridge order) are not specified. – Interim: defined in `data/puzzles.json` and hinted by Elwen's lore line; owner may change the data without code changes.
+- C-15 – No Phase-2 specification exists. – Interim: Phase 2 = chapter 2 Elaris plus the party and Break systems (`docs/PHASE_2_PLAN.md`). Owner review requested.
+- C-16 – `20_RIDDLES` demo dialogue in the Elaris tower features Nia and Rovan, but no document says when they join. – Interim: Nia (young archer) joins in Elaris town and Rovan (former guardian) joins in the living forest. Both are placeholders until the story owner confirms.
+- C-17 – Combat doc lists MP, magic, elements and timeline. – Interim for Phase 2: Break and party AI only; elements, MP and timeline stay deferred.
+- C-18 – The legacy village attack (BUILD_01) remains deferred; not part of chapter 2.
+- C-19 – Elaris NPC roles are not specified. – Interim: Mara (research quarter), Elio (craftsman/shop) and Sela (townsperson) reuse names from the legacy NPC list. All dialogue is placeholder.
+- C-20 – `04_WORLDS` lists a casino in Valdoria. The addendum forbids real-money casinos, and the Phase-1 master design deferred the casino. – Interim: the casino is deferred, and Valdoria shows a closed casino building.
+- C-21 – Valdoria NPC roles are not specified. – Interim: names come from the legacy NPC list where possible (Veyr, Elio is already used) plus clearly marked placeholder roles. All dialogue is placeholder.
+- C-22 – `06_SYSTEMS` lists armour and headgear slots, but `docs/03` has no armour namespace. – Interim: added `ARMOR_` (slot `armor`) for Valdoria's smithy. Headgear is still deferred.
+
+## From owner concept uploads 2026-10-02 (`reference/concept_2026-10-02/`)
+- C-20 – **RESOLVED by owner material:** the casino is wanted, but only with virtual Lun ("Nur virtuelles Geld"), and families must be able to switch it off ("Familienoption: Casino deaktivieren"). It is implemented in Valdoria with a settings toggle.
+- C-23 – Scale: several boards consistently show Zotik ≈ 110–120 cm, humans 162–180 cm, Rissling 70 cm, Mondwolf 140 cm, Orun 300 cm. – Interim: placeholders use these ratios (Zotik ≈ 1.2 m). They are still not final (C-01).
+- C-24 – Two demo images (Turm der Erinnerung, Lunaris key scene) show a **human** protagonist. This contradicts the canon (Zotik is not human) and is rejected.
+- C-25 – `14_kampf_elemente_konzept` shows round-based command combat with MP, elements and status effects. The implemented and specified combat is real-time (`05_GAMEPLAY`). – Interim: real-time stays; elements and MP remain deferred (C-17).
+- C-26 – `15_asset_bible` uses different world names (Eldoria, Vulcanis, Aquael, Umbra, Sylvaris, Crythos, Zerath). – Interim: the world names from `01_MASTER` / `04_WORLDS` are used.
+- C-27 – Several images show a green creature companion ("Felli" / "Moosling – der Waldgeist"), but the legacy docs list the Moosling as an enemy. – Owner decision needed; not implemented.
+- C-28 – Lyra is pink-haired on two boards and blue-haired and "aus Lunaris" on others. Nia appears both as an archer and as a "Heilerin/naturverbunden". – Interim: keep the written specs (Lyra = researcher/mage/healer, Nia = archer). Placeholder colours are unchanged.
+- C-29 – Interim character models (G02): CC0 KayKit rigs with chibi proportions stand in for companions/NPCs, and Zotik is a fox head/tail/scarf assembly on the same rig. The art bible asks for stylised but not childish proportions, and the owner wants a Kingdom Hearts / Final Fantasy direction. – Interim: accepted as placeholders so animation and readability improve now; the production models (from the master sheets, via an artist or an image-to-3D pipeline that the environment currently blocks) replace them through `ZotikVisual` / `CharacterRig` without gameplay changes. Owner decision on the model source requested.
+- C-30 – UI portraits and the title background are cut from the owner's concept party poster. The poster shows Lyra with blue hair (see C-28) and Rovan as "Schwertkämpfer", while the game data has Rovan with an axe and shield. – Interim: the owner's own art is used because they asked for the original assets. It is marked as concept art (not final), and C-28 stays open.
+- C-31 – Companion HP (owner request 2026-10-02). There is no spec for a party K.O. rule. – Interim:
+  - A companion at 0 HP is knocked out and gets up with 30 % HP after 5 quiet seconds without nearby fighting.
+  - Every full heal (savepoint, respawn, arena) restores the whole party.
+  - The healer heals the weakest member.
+  - Enemies attack the nearest member who is still standing.
+- C-32 – C01 character models. The free Quaternius packs contain only peasant and ranger outfits, with no mage robe. – Interim: Lyra wears a blue-tinted peasant outfit with long blue hair and a staff (see C-28). Zotik is the ranger outfit with fur-coloured arms and a fox head, ears, scarf and tail on the shared skeleton. Both are placeholders until production models exist; the paid pack versions or custom models can replace them through `CharacterRig.create_human`.
+- C-34 – Phase 4 (Solmera) assumptions, owner request 2026-10-03. The master documents only name the world, its settings and the boss Kharos. – Interim: all NPC names, dialogue, the oasis/bazaar layout and the Nuri guide arc are placeholder content in the style of chapters 2–3. Solmera unlocks with `FLAG_VAL_CHAPTER_COMPLETE`. The KayKit houses are red-roofed (no desert variant in the free pack), so they are placeholders for sandstone architecture. Sand floor: Poly Haven `aerial_sand`, CC0.
+- C-35 – Phase 5 (Aqualis) assumptions, owner request 2026-10-09. The master documents only name the world, its settings, the dungeon "Das Weltenarchiv" and the boss Neryx; the Nautilux gets its underwater ability in Solmera according to `WORLDS_MASTER.md`, but no Solmera content uses it. – Interim: Aqualis is a walkable dome city (no swimming mode) and the Nautilux is not used yet. Mirael is the guide NPC; all other names, dialogue and layouts are placeholders in the style of chapters 2–4. Aqualis unlocks with `FLAG_SOL_CHAPTER_COMPLETE`.
+
+
+## C-W17 – Story coherence audit (2026-10-10, owner: "vieles ergibt noch keinen Sinn")
+Decisions taken without the owner (reversible text/data): the shard canon (seven shards in chapters 3-9; echoes in chapters 1-2), "Veyra scattered, Elyon collects", Mira's partial reveal, Elyon staying with Veyra. Open for the owner:
+1. Names that are easy to confuse: Veyr/Veyra, Kael/Kaelen, Mira/Mirael (IDs stay; only `name` fields could change).
+2. Superboss and dungeon pairing follows list order, not theme (e.g. Sandkönig opens the volcano dungeon). ENDGAME.md lists both separately; re-pairing needs a decision.
+3. Companion arcs (Rovan's guilt, Lyra's family, Nia), Professorium's erased memory and the Nautilux (C-35) have only single lines.
+4. Six keepsake items (Kael, Eryn, Toren, Sela, Mirael, Professorium) have no use; ITEM_LAST_SHARD_001 is a collectible with no effect.
+5. The NG+ lore books hold the best backstory but are only found in New Game+.
+6. No multiple endings / Erinnerungsbruch scene (STORY_MASTER mentions several end states).
+
+- C-W17 update (owner answers 2026-10-10): 1) rename side roles only: done (Harlan, Falk, Nerea); 2) superboss/dungeon pairing by theme: done; 3) keepsakes readable: done; 4) several endings and the Erinnerungsbruch scene: in progress (W20).

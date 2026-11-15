@@ -76,6 +76,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   .vp .lap .cn i{width:1.05em;height:1.05em;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff6b0,#ffc928 45%,#d88a00);box-shadow:inset 0 0 0 2px #b06a00}
   .vp .lap .cn.max{color:#ffd24a}
   body.racing>button[aria-label="Mit Google speichern"]{display:none!important}
+  .keymap{display:grid;gap:4px;width:100%}.maprow{display:grid;grid-template-columns:minmax(110px,1.2fr) 1fr 1fr;gap:6px;align-items:center;text-align:left;font-size:13px}.maprow.head{font-weight:800;opacity:.75}.maprow .chip{min-height:34px;justify-content:flex-start}.maprow kbd{margin-right:3px}
   .vp .nm{position:absolute;left:10px;top:calc(10px + clamp(50px,9vw,78px) + 6px);max-width:clamp(50px,9vw,78px);padding:1px 7px;border-radius:999px;background:rgba(10,14,40,.78);border:1px solid var(--sc);font-weight:800;font-size:11px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .vp .item{position:absolute;left:10px;top:10px;width:clamp(50px,9vw,78px);aspect-ratio:1;border-radius:50%;border:4px solid #fff;background:radial-gradient(circle at 50% 35%,#3a3f58,#12141f 70%);box-shadow:0 0 0 3px rgba(20,22,34,.85),0 0 16px var(--sc);display:grid;place-items:center;font-size:clamp(26px,5.4vw,44px)}
   .vp .item.empty{border-color:rgba(223,232,255,.6);background:rgba(10,14,40,.6);box-shadow:none}
@@ -92,6 +93,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   @keyframes pop{from{transform:translate(-50%,-50%) scale(1.8);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
   #tbar{position:fixed;z-index:6;left:50%;transform:translateX(-50%);top:calc(6px + env(safe-area-inset-top));display:flex;gap:8px}
   #tbar.mid{top:50%;transform:translate(-50%,-50%)}
+  @media (orientation:portrait){body.touch #tbar:not(.mid){left:auto;right:calc(8px + env(safe-area-inset-right,0px));transform:none;top:calc(18px + env(safe-area-inset-top,0px) + clamp(76px,16vw,130px));flex-direction:column;gap:7px}}
   /* Touch-Steuerung (Solo am Handy) und Controller */
   .tc{position:fixed;inset:0;z-index:4;display:none;touch-action:none;-webkit-touch-callout:none;--s:clamp(54px,15.5vmin,92px);--j:clamp(104px,28vmin,156px);--e:calc(16px + env(safe-area-inset-bottom))}
   body.touch.racing .tc.solo{display:block}
@@ -402,7 +404,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div id="hud" hidden></div>
 <div id="banner" hidden></div>
 <div id="fxFlash"></div>
-<div id="tbar" hidden><button class="ib" id="bPause" aria-label="Pause">⏸</button><button class="ib" id="bSnd" aria-label="Ton">🔊</button></div>
+<div id="tbar" hidden><button class="ib" id="bPause" aria-label="Pause">⏸</button><button class="ib" id="bSnd" aria-label="Ton">🔊</button><button class="ib" id="bLook" aria-label="Zurückschauen (halten)">👀</button><button class="ib" id="bCam" aria-label="Kamera wechseln">🎥</button><button class="ib" id="bRadio" aria-label="Radio: nächster Sender (lange drücken = aus)">📻</button></div>
 <div class="tc solo" id="tcSolo"></div>
 
 <div id="raceLoad" hidden aria-live="polite"><div class="race-load-body"><div class="race-load-kicker">KART RUSH · WELTENTOUR</div><div class="race-load-title">STRECKE</div><div class="race-load-sub">ARCADE-RENNEN</div><div class="race-load-line"><i></i></div><div class="race-load-tip">Mach dich bereit!</div></div></div>
@@ -448,7 +450,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     </div></header>
     <div class="console-pane" data-pane="0">
       <h3 class="console-heading">WIE MÖCHTEST DU FAHREN?</h3><div class="console-choices" id="rmode"></div>
-      <div class="console-options"><h3>RENNEINSTELLUNGEN</h3><div class="console-options-grid"><div><h4>RUNDEN</h4><div class="row" id="laps"></div></div><div><h4>GEGNER</h4><div class="row" id="skill"></div></div><div><h4>LENKHILFE</h4><div class="row" id="assist"></div></div></div></div>
+      <div class="console-options"><h3>RENNEINSTELLUNGEN</h3><div class="console-options-grid"><div><h4>RUNDEN</h4><div class="row" id="laps"></div></div><div><h4>KLASSE</h4><div class="row" id="ccls"></div></div><div><h4>GEGNER</h4><div class="row" id="skill"></div></div><div><h4>LENKHILFE</h4><div class="row" id="assist"></div></div></div></div>
     </div>
     <div class="console-pane" data-pane="1" hidden>
       <h3 class="console-heading" id="trackHeading">DEINE RENNWELT</h3><div class="console-track-grid" id="tracks"></div>
@@ -495,6 +497,9 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <div class="opt"><h4>🎮 Controller-Tasten</h4><div class="row" id="oPad"></div></div>
     <div class="opt"><h4>📳 Vibration</h4><div class="row" id="oRumble"></div></div>
     <div class="opt" id="tiltRow" hidden><h4>📱 Handy kippen zum Lenken</h4><div class="row"><button class="chip" id="tiltBtn">Aus</button><button class="chip" id="tiltCal">◎ Mitte setzen</button><button class="chip" id="tiltInv">⇄ Richtung</button></div><div class="row" id="oTiltSens"></div></div>
+    <div class="opt wide"><h4>🎛️ Tastenbelegung ändern</h4><div class="keymap" id="oMap"></div></div>
+    <div class="opt"><h4>🎥 Kamera</h4><div class="row" id="oCam"></div></div>
+    <div class="opt"><h4>📻 Radio</h4><div class="row" id="oRadio"></div></div>
     <div class="opt wide"><h4>Steuerung</h4><div class="ctlhelp" id="oHelp"></div></div>
   </div>
   <button class="ghost nav-back" id="bOptsClose">Schließen</button>
@@ -510,13 +515,14 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div id="ctl"></div>
 <div id="err" hidden><div><h2>Oh nein</h2><p class="sub" id="errTxt"></p></div></div>
 
-<script src="audio.js?v=20261115-wt9"></script>
+<script src="audio.js?v=20261115-wt10"></script>
 <script src="chars.js?v=20261115-wt9"></script>
-<script src="track.js?v=20261115-wt11"></script>
+<script src="track.js?v=20261115-wt12"></script>
 <script src="oma.js?v=20261115-wt1"></script>
-<script src="sim.js?v=20261115-wt10"></script>
+<script src="sim.js?v=20261115-wt11"></script>
 <script src="nav.js?v=20261115-wt1"></script>
-<script src="game.js?v=20261115-wt12"></script>
+<script src="radio.js?v=20261115-wt1"></script>
+<script src="game.js?v=20261115-wt13"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="kart" data-prefix="akChar,akKart,akLogo,akMute,akName,akSave,akTts" defer></script>
 <script src="../gamepad.js" data-pad="info" data-pad-labels="a=Gas · Bestätigen; b=Bremsen · Zurück; rt=Gas; dpad=Lenken · Menü; ls=Lenken; lt=Bremsen; rb=Driften; x=Driften; y=Item; lb=Item · Seite; start=Pause · Los" defer></script>
 <script src="../egstat.js" defer></script>
