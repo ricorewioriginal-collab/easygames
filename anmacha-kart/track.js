@@ -64,13 +64,71 @@ const Track = (() => {
     {"id":"huepf","name":"Hüpfstraßen-Klötzchenstadt","world":"huepf","desc":"Klötzchen-Look wie in der Hüpfstraße: Autos, Laster, Fluss mit Baumstämmen und Bahnübergang.","w":20,"theme":"wiese","sky":["#4aa0e8","#a0e0ff","#f0fff0"],"ground":"#6ad04a","road":"#3a3e48","wall":["#ffffff","#ff4a4a"],"curb":["#ffffff","#222222"],"fog":"#d8f4ff","fogR":[220,800],"light":[0.85,0.8,"#ffffff","#5a9a4a"],"props":["#ff4a4a","#4a8aff","#ffd24a","#7a4a2a","#4ad04a"],"profile":[[0,0],[0.45,0],[0.52,5],[0.6,5],[0.67,0],[1,0]],"pts":[[96,-266],[241,-291],[278,-200],[204,-66],[255,16],[254,121],[177,195],[121,325],[19,328],[-64,200],[-156,212],[-255,160],[-266,83],[-348,-14],[-245,-135],[-126,-144],[-89,-239],[-8,-291]]}
   ];
   tour.forEach(t => DEFS.push(t));
+  // Eigene Streckenform je Strecke: Polygon mit Eckradien [x, z, r] (Fahrtrichtung = Reihenfolge, Start in der Mitte der ersten Kante).
+  // Büroklammer, Wellen-Strand, Kartbahn, Grand Prix, H-Block, Alpha-Schleife und Acht mit Brücke, Serpentinen, Herz, Stern, Kleeblatt …
+  const LAYOUT = {
+    wiese: { w: 20, p: [[-380,-110,95],[380,-110,95],[380,110,95],[60,110,30],[0,60,30],[-60,110,30],[-380,110,95]] },
+    strand: { w: 21, p: [[-399,-161,67],[399,-161,76],[399,162,57],[285,86,43],[171,181,43],[57,86,43],[-57,181,43],[-171,86,43],[-285,181,43],[-399,162,67]] },
+    gruft: { w: 17, p: [[-200,-170,32],[200,-170,32],[200,-40,32],[60,-40,28],[60,50,28],[200,50,32],[200,170,32],[-80,170,30],[-80,60,28],[-200,60,32]] },
+    fantasia: { w: 24, p: [[-476,-221,81],[357,-221,99],[476,-51,81],[323,34,63],[408,187,81],[170,272,72],[51,136,50],[-68,255,63],[-289,255,81],[-357,68,54],[-476,34,72]] },
+    neon: { w: 18, p: [[-295,-213,27],[-107,-213,23],[-107,-98,23],[107,-98,23],[107,-213,23],[295,-213,27],[295,213,27],[107,213,23],[107,98,23],[-107,98,23],[-107,213,23],[-295,213,27]] },
+    vulkan: { w: 20, cross: 1, p: [[-420,300,60],[420,300,60],[-180,-130,90],[0,-400,120],[180,-130,90]] },
+    eis: { w: 20, cross: 1, p: [[-380,-200,120],[-380,200,120],[380,-200,120],[380,200,120]] },
+    dschungel: { w: 19, p: [[-344,-189,63],[164,-189,63],[246,-74,54],[-131,-74,36],[-131,8,36],[246,8,54],[344,123,63],[246,213,54],[-246,213,54],[-344,115,54]] },
+    kosmos: { w: 24, p: [[-480,-150,140],[480,-150,140],[480,150,140],[60,150,25],[20,110,25],[-20,110,25],[-60,150,25],[-480,150,140]] },
+    wueste: { w: 23, p: [[-520,240,190],[0,320,600],[520,240,190],[0,-420,190]] },
+    regenbogen: { w: 20, p: [[-502,125,60],[-398,-74,220],[-220,-211,220],[0,-260,220],[220,-211,220],[398,-74,220],[502,125,60],[299,121,60],[208,4,160],[74,-62,160],[-74,-62,160],[-208,4,160],[-299,121,60]] },
+    herzportal: { w: 20, p: [[0,360,50],[-300,80,120],[-380,-180,120],[-180,-320,100],[0,-200,40],[180,-320,100],[380,-180,120],[300,80,120]] },
+    kristallsturm: { w: 18, p: [[-256,-224,63],[141,-224,45],[141,-144,45],[-160,-144,45],[-160,-64,45],[141,-64,45],[141,16,45],[-160,16,45],[-160,96,45],[141,96,54],[141,176,54],[-256,176,63]] },
+    monsterfreunde: { w: 21, p: [[-300,-260,140],[300,-260,150],[420,40,140],[200,260,120],[60,120,70],[-80,260,110],[-380,140,140],[-400,-120,120]] },
+    ahnenruinen: { w: 20, p: [[0,-400,80],[180,-220,30],[220,-230,30],[400,0,80],[220,180,30],[180,230,30],[0,400,80],[-180,220,30],[-220,230,30],[-400,0,80],[-220,-180,30],[-180,-230,30]] },
+    drachenflug: { w: 20, p: [[-176,-40,54],[176,-40,54],[352,-229,108],[528,0,126],[352,229,108],[176,40,54],[-176,40,54],[-352,229,108],[-528,0,126],[-352,-229,108]] },
+    splitterwelten: { w: 20, p: [[0,-430,45],[129,-178,80],[409,-133,45],[209,68,80],[253,348,45],[0,220,80],[-253,348,45],[-209,68,80],[-409,-133,45],[-129,-178,80]] },
+    farbeninsel: { w: 22, p: [[-203,-297,120],[0,-360,120],[203,-297,120],[130,-75,60],[359,-27,120],[312,180,120],[156,325,120],[0,150,60],[-156,325,120],[-312,180,120],[-359,-27,120],[-130,-75,60]] },
+    zotik: { w: 20, p: [[-303,246,99],[303,246,99],[303,-230,81],[123,-230,63],[123,82,63],[-123,82,63],[-123,-230,63],[-303,-230,81]] },
+    taschi: { w: 20, p: [[-320,-320,110],[320,-320,110],[90,0,60],[320,320,110],[-320,320,110],[-90,0,60]] },
+    aeru: { w: 20, p: [[-422,-264,81],[53,-264,63],[-53,-70,41],[422,-70,81],[422,264,63],[-53,264,63],[53,70,41],[-422,70,81]] },
+    bunte: { w: 20, p: [[40,480,40],[40,250,30],[125,217,140],[231,96,140],[241,-65,140],[152,-198,140],[0,-250,140],[-152,-198,140],[-241,-65,140],[-231,96,140],[-125,217,140],[-40,250,30],[-40,480,40]] },
+    leuchtfeuer: { w: 21, p: [[-382,272,81],[383,272,63],[383,136,63],[-153,136,54],[-153,-323,41],[-382,-323,81]] },
+    sonnenhof: { w: 20, p: [[-378,-288,81],[-153,-288,36],[-153,-153,36],[27,-153,36],[27,-18,36],[207,-18,36],[207,117,36],[378,117,54],[378,288,72],[-378,288,81]] },
+    ricopoly: { w: 20, p: [[-297,-297,63],[-45,-297,23],[0,-252,23],[45,-297,23],[297,-297,63],[297,-45,23],[252,0,23],[297,45,23],[297,297,63],[45,297,23],[0,252,23],[-45,297,23],[-297,297,63],[-297,45,23],[-252,0,23],[-297,-45,23]] },
+    wolken: { w: 20, p: [[-99,-342,54],[99,-342,54],[99,-99,36],[342,-99,54],[342,99,54],[99,99,36],[99,342,54],[-99,342,54],[-99,99,36],[-342,99,54],[-342,-99,54],[-99,-99,36]] },
+    huepf: { w: 19, p: [[-328,156,54],[328,156,54],[328,-156,36],[211,-156,36],[211,62,36],[94,62,36],[94,-156,36],[-23,-156,36],[-23,62,36],[-140,62,36],[-140,-156,36],[-328,-156,54]] }
+  };
+  DEFS.forEach(d => { const l = LAYOUT[d.id]; if (l) { d.poly = l.p; d.w = l.w; d.cross = !!l.cross; } });
   const CUPS = [{ name: 'Sonnen-Cup', tracks: [0, 1, 3] }, { name: 'Spuk-Cup', tracks: [2, 4, 3] },
     { name: 'Elemente-Cup', tracks: [5, 6, 9] }, { name: 'Abenteuer-Cup', tracks: [7, 10, 8] }, { name: 'Portal-Cup', tracks: [11, 12, 14] }, { name: 'Fantasy-Cup', tracks: [13, 15, 16] }, { name: 'RicoReWi-Cup', tracks: [17, 16, 11] },
     { name: 'Märchen-Cup', tracks: [18, 19, 20] }, { name: 'Insel-Cup', tracks: [21, 22, 23] }, { name: 'Stadt-Cup', tracks: [24, 25, 26] }];
   const SP = 3;                                       // Abstand der Abtastpunkte in Metern
   function cr(p0, p1, p2, p3, t) { const t2 = t * t, t3 = t2 * t; return [0, 1].map(k => 0.5 * ((2 * p1[k]) + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3)); }
+  // Polygon mit Eckradien -> dichte Kontrollpunkte (Geraden bleiben gerade, Ecken werden Kreisbögen)
+  function polyPts(v) {
+  const n = v.length, out = [], seg = [];
+  for (let i = 0; i < n; i++) {
+    const A = v[(i + n - 1) % n], B = v[i], Cc = v[(i + 1) % n];
+    let ux = A[0] - B[0], uz = A[1] - B[1], wx = Cc[0] - B[0], wz = Cc[1] - B[1]; const lu = Math.hypot(ux, uz), lw = Math.hypot(wx, wz); ux /= lu; uz /= lu; wx /= lw; wz /= lw;
+    const th = Math.acos(Math.max(-1, Math.min(1, ux * wx + uz * wz)));
+    let r = B[2] || 0, t = r / Math.tan(th / 2); const tm = Math.min(lu, lw) * 0.49; if (t > tm) { t = tm; r = t * Math.tan(th / 2); }
+    if (r < 1 || th > 3.1) { seg.push([[B[0], B[1]]]); continue; }
+    const p1 = [B[0] + ux * t, B[1] + uz * t], p2 = [B[0] + wx * t, B[1] + wz * t];
+    let bx = ux + wx, bz = uz + wz; const lb = Math.hypot(bx, bz); bx /= lb; bz /= lb; const d = r / Math.sin(th / 2), cx = B[0] + bx * d, cz = B[1] + bz * d;
+    let a1 = Math.atan2(p1[1] - cz, p1[0] - cx), a2 = Math.atan2(p2[1] - cz, p2[0] - cx), da = a2 - a1; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI;
+    const k = Math.max(2, Math.ceil(Math.abs(da) * r / 14)), arc = []; for (let j = 0; j <= k; j++) { const a = a1 + da * j / k; arc.push([cx + Math.cos(a) * r, cz + Math.sin(a) * r]); }
+    seg.push(arc);
+  }
+  // Kanten zwischen den Bögen fein unterteilen (Catmull-Rom bleibt dann gerade)
+  for (let i = 0; i < n; i++) {
+    const s = seg[(i + 1) % n], e = seg[i][seg[i].length - 1], b = s[0], L = Math.hypot(b[0] - e[0], b[1] - e[1]), m = Math.max(1, Math.round(L / 30));
+    const edge = []; for (let j = 1; j < m; j++) edge.push([e[0] + (b[0] - e[0]) * j / m, e[1] + (b[1] - e[1]) * j / m]);
+    if (i === 0) { const h = edge.length >> 1; out.push(...edge.slice(h)); seg.tail = edge.slice(0, h); } else out.push(...edge);
+    out.push(...s);
+  }
+  // Start in der Kantenmitte: Schluss mit dem Anfang der ersten Kante
+  const res = out.concat(seg.tail || []);
+  return res.filter((p, i) => i === 0 || Math.hypot(p[0] - res[i - 1][0], p[1] - res[i - 1][1]) > 2).map(p => [Math.round(p[0] * 10) / 10, Math.round(p[1] * 10) / 10]);
+}
   function build(def) {
-    const q = def.pts, n = q.length, dense = [];
+    const q = def.poly ? (def._pts || (def._pts = polyPts(def.poly))) : def.pts, n = q.length, dense = [];
     for (let i = 0; i < n; i++) for (let s = 0; s < 40; s++) dense.push(cr(q[(i + n - 1) % n], q[i], q[(i + 1) % n], q[(i + 2) % n], s / 40));
     let len = 0; const cum = [0]; for (let i = 1; i <= dense.length; i++) { const a = dense[i - 1], b = dense[i % dense.length]; len += Math.hypot(b[0] - a[0], b[1] - a[1]); cum.push(len); }
     const N = Math.round(len / SP), P = new Float32Array(N * 2); let j = 0;
@@ -81,7 +139,7 @@ const Track = (() => {
     const tr = { def, N, len, P, T, Nm, K, W: def.w, half: def.w / 2, wallD: def.w / 2 + 4, roughD: def.w / 2 + 1.2 };
     // Höhenprofil ist Teil der Streckendaten und damit für Host, Clients und Renderer identisch.
     // Weiche Rampen statt harter Sprünge; Brücken sind echte Abschnitte der Fahrbahn.
-    const profile = {
+    let profile = {
       portal: [[0,0],[.12,0],[.18,7],[.31,7],[.38,0],[.57,0],[.67,9],[.78,9],[.86,0],[1,0]],
       crystal: [[0,0],[.10,0],[.22,11],[.34,11],[.44,2],[.56,0],[.68,15],[.81,15],[.91,0],[1,0]],
       safari: [[0,0],[.16,0],[.29,5],[.42,5],[.53,0],[.69,0],[.80,6],[.9,6],[1,0]],
@@ -90,6 +148,12 @@ const Track = (() => {
       shards: [[0,0],[.13,0],[.25,12],[.37,12],[.49,0],[.61,0],[.72,16],[.84,16],[.95,0],[1,0]],
       island: [[0,0],[.12,0],[.21,5],[.32,5],[.42,0],[.62,0],[.73,7],[.84,7],[.93,0],[1,0]]
     }[def.mechanic] || def.profile || [[0,0],[1,0]];
+    // Kreuzende Strecken (Acht, Alpha-Schleife): der zweite Durchgang führt als Brücke über die Kreuzung.
+    if (def.cross) {
+      const cp = []; for (let a = 0; a < N; a += 2) for (let b = a + 30; b < N; b += 2) if (Math.min(b - a, N - b + a) * SP > 90 && Math.hypot(P[a * 2] - P[b * 2], P[a * 2 + 1] - P[b * 2 + 1]) < 8) cp.push([a, b]);
+      if (cp.length) { const c = cp[cp.length >> 1], u = c[1] / N; tr.crossPt = { x: P[c[0] * 2], z: P[c[0] * 2 + 1], lo: c[0], hi: c[1] };
+        profile = [[0, 0], [u - 0.11, 0], [u - 0.04, 9], [u + 0.04, 9], [u + 0.11, 0], [1, 0]]; }
+    }
     tr.hilly = profile.some(p => p[1] > 0);
     tr.height = f => {
       const u = ((f % N) + N) % N / N;

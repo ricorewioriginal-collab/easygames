@@ -135,19 +135,24 @@
     {
       "t": "Alle Strecken",
       "list": [
-        "Funkturm-Wiese – grüner Einsteigerkurs.",
-        "Sonnen-Strand – Sand und Meer.",
-        "Geistergruft – dunkel und neblig, die Sichtweite ist kurz.",
-        "Fantasia-Land – bunte Märchenwelt.",
-        "Neon-City – nächtliche Stadt mit engem Kurs.",
-        "Lavasturm-Ring, Eiskristall-Piste, Dschungel-Express, Sternen-Highway, Wüsten-Rallye, Regenbogen-Boulevard – eigene Farbwelten mit neuen Kurvenprofilen.",
-        "Herzportal-Boulevard – mit Portalen und Portal-Boost-Feldern.",
-        "Kristallsturm-Pass – Kristall-Boost-Felder geben zusätzlich 2 Sekunden Schild.",
+        "Funkturm-Wiese – Büroklammer-Form mit zwei langen Geraden; Wiese mit Funkturm, Bäumen und Blumen.",
+        "Sonnen-Strand – Wellen-Kurs entlang der Brandung mit Palmen, Sonnenschirmen und Booten.",
+        "Geistergruft – enger Kartbahn-Kurs zwischen Grabsteinen und toten Bäumen, dunkel und neblig.",
+        "Fantasia-Land – Grand-Prix-Kurs mit Haarnadel, schnellen Bögen und Märchenschlössern.",
+        "Neon-City – H-förmiger Stadtkurs mit 90-Grad-Ecken zwischen Neon-Hochhäusern.",
+        "Lavasturm-Ring – Alpha-Schleife: die Strecke kreuzt sich selbst auf einer Brücke über dem Lavafeld.",
+        "Eiskristall-Piste – Acht mit Brücke durch Eiskristalle und verschneite Tannen.",
+        "Dschungel-Express – S-Band durch dichten Dschungel mit Ruinen.",
+        "Sternen-Highway – Oval mit Schikane im All zwischen Planeten.",
+        "Wüsten-Rallye – Tri-Oval mit Kakteen, Tafelbergen und Dünen.",
+        "Regenbogen-Boulevard – Halbmond-Form mit Regenbögen und Wolken.",
+        "Herzportal-Boulevard – herzförmig, mit Portalen und Portal-Boost-Feldern.",
+        "Kristallsturm-Pass – Serpentinen; Kristall-Boost-Felder geben zusätzlich 2 Sekunden Schild.",
         "Monsterfreunde-Safari – Fantasiewesen kreuzen die Fahrbahn.",
         "Ahnenruinen-Ring – besonders viele Hindernisse; die Boost-Felder machen kurz unverwundbar.",
         "Drachenflug-Tal – die längsten Boosts im Spiel (über 2 Sekunden) und Fantasiewesen auf der Strecke.",
-        "Splitterwelten-Kurs – fünf zusätzliche Boost-Felder, Portale und drei zusätzliche Hindernisse.",
-        "Farbeninsel-Rundkurs – Boost-Felder heben Nebel und Bremsen sofort auf; Fantasiewesen unterwegs.",
+        "Splitterwelten-Kurs – sternförmig; fünf zusätzliche Boost-Felder, Portale und drei zusätzliche Hindernisse.",
+        "Farbeninsel-Rundkurs – Kleeblatt-Form; Boost-Felder heben Nebel und Bremsen sofort auf; Fantasiewesen unterwegs.",
         "Zotiks Märchenwald (Weltentour) – Wald aus ZOTIK mit Riesenpilzen, Burgtürmen und zwei Hügeln.",
         "Taschi-Lichtertal (Weltentour) – Abendrot, 16 leuchtende Lichter-Türme und hüpfende Taschis; eine lange Brücke.",
         "AERU-Sterneninseln (Weltentour) – schwebende Inseln, Sternenbögen über der Fahrbahn, zwei hohe Brücken.",
@@ -166,6 +171,14 @@
         "Fantasiewesen (Monsterfreunde-Safari, Drachenflug-Tal, Farbeninsel-Rundkurs): Vier Wesen drehen an festen Stellen kleine Kreise am Fahrbahnrand. Ein Zusammenstoß dreht dich nur kurz weg, kostet aber Tempo – weit außen vorbeifahren.",
         "Safari-Boost-Felder laden zusätzlich deinen Windschatten-Turbo auf.",
         "Portal-Boost-Felder bringen dich sofort fast auf Höchstgeschwindigkeit."
+      ]
+    },
+    {
+      "t": "Fahrer",
+      "list": [
+        "Alle 28 Fahrer sind KayKit-Figuren mit eigenem Design: Farben, Ohren, Hörner, Brillen oder Heiligenschein passend zur Figur.",
+        "Zotik ist der echte Fuchs aus ZOTIK – mit demselben Modell wie im Abenteuer.",
+        "Die Fahrer unterscheiden sich nur im Aussehen; Fahrwerte hängen am Kart."
       ]
     },
     {
