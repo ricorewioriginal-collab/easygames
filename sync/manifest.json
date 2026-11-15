@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "d2951569963a",
- "generated": "2026-11-15T15:04:35+01:00",
- "commit": "6ea87c3c902b2dcdb0dd6794c535d553da7771f3",
+ "version": "9c6da1b4d2fd",
+ "generated": "2026-11-15T14:04:17+00:00",
+ "commit": "07d60e4031e1480289850b2dc9a43e28cd303c11",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2658,13 +2658,13 @@
   },
   {
    "p": "anmacha-markthalle/game.js",
-   "s": 108564,
-   "h": "02eb50c9393bda8db413ee604b7a90f474c10af4f4a14a69e6cbf4ebfe54c57f"
+   "s": 109413,
+   "h": "09faa62eed800d2cd1de551eb2e8cb61780027a21d2cbcbe07a92cf247e7f228"
   },
   {
    "p": "anmacha-markthalle/index.html",
-   "s": 40305,
-   "h": "bea907a5c38c7688c78894a03b92c423921341faaca3544dd7b00b9f64ae7363"
+   "s": 40373,
+   "h": "2664482c9274b38240da2ca515f5f839199f4b52b792bc38a06fe81f7de37e8c"
   },
   {
    "p": "anmacha-markthalle/logo.svg",
@@ -2698,8 +2698,8 @@
   },
   {
    "p": "anmacha-markthalle/view3d.js",
-   "s": 78768,
-   "h": "fc6f834f06429bef2569c143d79469146d57ba4411d5ddb3f20aab061fb6b570"
+   "s": 82914,
+   "h": "b7e86918a434c386b3b65227d2ab00ffedfcf793178180d7da2a7fe9f781667d"
   },
   {
    "p": "anmacha-memory/card.jpg",
@@ -10178,8 +10178,8 @@
   },
   {
    "p": "guides/anmacha-markthalle.json",
-   "s": 27114,
-   "h": "f7ab1cd5fcabd9b96713e47548fd402fc5b99a2b9bb99b83ca4e9f3cdcbc7f1d"
+   "s": 27317,
+   "h": "e26753f9bf74cd38ed9be9bee27c9bcb981032d53211c546a75f3af84cbfc730"
   },
   {
    "p": "guides/anmacha-memory.json",
@@ -13659,7 +13659,7 @@
   {
    "p": "sync/catalog.json",
    "s": 253683,
-   "h": "617ef43b8e10683c68bc4e1242f28a6e21841b195b56ef5af4e779836e90a075"
+   "h": "03af8d465edd3eb22f4cfa918f0843112c244964fcc7982c0f19bc0c82e631c2"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
