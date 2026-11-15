@@ -224,6 +224,23 @@ Bekannt: Drehung wird im Mehrspieler noch nicht übertragen; Tiere und Figuren b
 
 ---
 
+## 2n. Etappe 12: Fanwelten und voll ausgestattete Survival-Welt (1.14.0) ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Bauhelfer | Pläne (`Plan`) mit Zellen je Chunk und Bauplätzen, die das Gelände ebnen; Helfer für Räume, Fenster, Türen, Satteldächer aus Treppen, Türme, Kegel, Hallen, Gänge, Treppenstollen, Höhlen, Schrift (3×5), Bäume, Figuren; deterministisch beim Erzeugen jedes Chunks | `src/blueprint.js` |
+| Große Häuser | `bigHouse`: zwei Stockwerke, 11×11 innen, Leiter ins Obergeschoss, Satteldach; Einrichtung je Rolle (Wohnen, Bauer, Schmied, Funker, Hirte, Wirt, Laden, Heiler, Labor) mit KayKit-Möbeln | `src/blueprint.js` |
+| Survival-Welt (Generator 4) | Dörfer mit großen, eingerichteten Häusern (Abstand 13), Feld, Brunnen, Laternen; begehbare Höhlenhallen mit Treppenstollen zur Oberfläche; hohes Gras auf Wiesen. Alte Welten behalten ihren Generator | `src/structures.js`, `src/world.js` |
+| Fanwelten | Im Menü „Neue Welt“ wählbar: **Taschi-Land** (Heilzentrum, Labor, Arena, Statuen, Glimmstein-Höhle), **Zotik: Lunaris** (Mondblick-Dorf, Kirche mit Turm, Schmiede, Wirtshaus, Weltentor, Risshöhle, Abendlicht), **AnMaCha – der Podcast** (Funkhaus mit Studios, Sendemast mit Leiter, Bühne „LIVE“, Café, Plattenladen, Straßen), **Märchenwald** (Dornröschen-Schloss, Rapunzel-Turm, Hexenhaus aus Lebkuchen, Großmutters Haus, Zwergenmine). Rundherum normale, zufällige Welt zum Weiterbauen | `src/fanworlds.js`, `src/main.js` |
+| Neue Blöcke | Mondstein, Mondlaub, Lebkuchen, Zuckerguss, Rosenhecke, Schaumstoff, On-Air-Leuchte, Goldblock, Kapselhülle, hohes Gras (Ids 174–183), mit Rezepten | `src/blocks.js`, `src/textures.js`, `src/crafting.js` |
+| Mehrspieler | Fanwelt wird an Gäste übertragen (`preset`, Protokoll 2) | `src/mp.js`, `src/net.js` |
+
+Spielstände: neues optionales Feld `preset`; Generator 1–3 unverändert. Tests: `tests/fanworlds.test.js` (Häuser begehbar, Leiter, Dorf, Höhle, alle Fanwelten).
+Bekannt: Deko-Drehung wird im Mehrspieler noch nicht übertragen.
+
+
+---
+
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)
 
 Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähigkeit → Fehler → Handy → Desktop → Kernmechaniken → Story → Erweiterungen → Grafik.

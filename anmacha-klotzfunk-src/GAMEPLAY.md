@@ -3,7 +3,7 @@
 ## Startmenü und Laden
 Das Startmenü ist wie bei einer Konsole aufgebaut: links die Hauptliste, rechts die gewählte Seite, unten die Tastenhinweise.
 - **▶ Weiterspielen** (sobald es einen Spielstand gibt) lädt die zuletzt gespielte Welt.
-- **🌍 Welten**: drei Speicherplätze; neue Welt mit Modus und Startwert erzeugen, laden, als Datei sichern (⤓), Sicherung zurückholen (↺), löschen.
+- **🌍 Welten**: drei Speicherplätze; neue Welt mit Modus, Startwert und **Welt** (Zufallswelt oder Fanwelt) erzeugen, laden, als Datei sichern (⤓), Sicherung zurückholen (↺), löschen.
 - **👥 Mitspielen**, **⚙ Einstellungen**, **❔ Anleitung** (Steuerung und Tipps), **☁ Speicherdaten** (Import, Google-Sicherung).
 - Bedienung: Maus/Finger, **Pfeiltasten + Enter, Esc zurück** oder **Controller** (Steuerkreuz/Stick, Bestätigen wählt, Zurück schließt). Am Handy hat jede Seite eine Zurück-Taste ‹.
 - Der **Ladebildschirm** zeigt Welt und Modus, einen echten Fortschritt (erst das Erzeugen, dann den Aufbau der Umgebung um dich herum) und wechselnde Tipps. Das Spiel startet, sobald die Umgebung steht.
@@ -68,6 +68,14 @@ Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und d
 - **Mobil:** Schatten (kleiner, seltener erneuert) und wiegende Blätter, flache Wolken, kein Leuchten. **Eco:** keine Effekte.
 - Lampen, Laternen, Neon, Kristalle, Magma und leuchtende Deko erhellen ihre Umgebung (bis 14 Blöcke, Wände halten das Licht auf).
 
+## Fanwelten (ab 1.14)
+Beim Anlegen einer Welt (Überleben oder Kreativ) unter **Welt** wählbar. Jede Fanwelt ist fertig gebaut, alle Häuser und Höhlen sind groß und begehbar, rundherum geht die normale Welt weiter, damit du sie ausbauen kannst.
+- **🐉 Taschi-Land:** Heilzentrum, Labor, Arena mit Rängen, Taschi-Statuen, Glimmstein-Höhle, Wiesen mit hohem Gras.
+- **🦊 Zotik: Lunaris:** Dorf am Mondblick mit Kirche und Turm, Schmiede, Wirtshaus, Weltentor und Risshöhle im Mondwald; startet am Abend.
+- **🎙️ AnMaCha – der Podcast:** Funkhaus mit Studios, Sendemast (Leiter bis zur Plattform), Bühne „LIVE“, Café, Plattenladen, Straßen mit Laternen.
+- **🏰 Märchenwald:** Dornröschen-Schloss, Rapunzel-Turm, Hexenhaus aus Lebkuchen, Großmutters Haus, Zwergenmine.
+- Neue Blöcke dafür (auch frei baubar): Mondstein, Mondlaub, Lebkuchen, Zuckerguss, Rosenhecke, Schaumstoff, On-Air-Leuchte, Goldblock, Kapselhülle, hohes Gras.
+
 ## Weltkarte
 - 🗺, **M** oder Antippen der Minikarte öffnet die Karte. Zu sehen ist nur, was du schon entdeckt hast (Umkreis von etwa 5 Chunks um deine Wege).
 - Ziehen verschiebt, ＋/－ oder das Mausrad zoomen, „◎ Zu mir“ springt zurück. Der Pfeil zeigt deine Blickrichtung.
@@ -108,7 +116,7 @@ Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und d
 - **Rüstung** (Werkbank: Helm aus 5, Harnisch aus 8 Kupfer- oder Eisenbarren) wählen und Setzen drücken = anlegen. Jeder Schild über den Herzen mindert Gegner-Schaden um 5 % (Eisen komplett: 40 %). Rüstung nutzt sich je Treffer ab.
 
 ## Dörfer
-- Neue Welten haben Dörfer: Brunnen, Wege, Häuser, ein Weizenfeld und einen Funkmast. Neue Überlebens- und Kreativwelten beginnen am Dorfplatz.
+- Neue Welten haben Dörfer: Brunnen, Wege, Häuser, ein Weizenfeld und einen Funkmast. Ab 1.14 sind die Häuser groß (zwei Stockwerke, Leiter nach oben) und voll eingerichtet, und begehbare Höhlenhallen mit Treppe zur Oberfläche liegen in der Landschaft. Neue Überlebens- und Kreativwelten beginnen am Dorfplatz.
 - In jedem Haus wohnt jemand: **Bäuerin Frieda**, **Schmied Kalle**, **Funkerin Lotte**, **Hirte Mats**. Morgens gehen sie zur Arbeit, mittags auf den Dorfplatz, abends nach Hause.
 - **Handeln:** Setzen-Taste auf einen Bewohner. Jeder hat eigene Angebote, z. B. Äpfel oder Kupferbarren für Weizen, Werkzeug für Kohle und Kristalle, Radio-Blöcke für Kupfer.
 - Dorfbewohner lassen sich nicht angreifen, und im Dorf erscheinen keine Gegner.
