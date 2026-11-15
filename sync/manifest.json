@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "4b9b420a9e6a",
- "generated": "2026-11-15T03:01:50+01:00",
- "commit": "4541b15f468b6bbde324cd0ae56542de1ade2e20",
+ "version": "b943bb2416b6",
+ "generated": "2026-11-15T03:13:18+01:00",
+ "commit": "8197bf585355ee4cb7f4dfb3d129c82e00e0c6b4",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1933,8 +1933,8 @@
   },
   {
    "p": "anmacha-kart/audio.js",
-   "s": 10033,
-   "h": "c61d157327a419c3e186943a03e814087d880a1c0be05b6649e1ef209ff623b4"
+   "s": 10186,
+   "h": "7ffc0b52a98985d9bcef422ae79a52232cbc1febdfc1579cf16ca0f30e8464ff"
   },
   {
    "p": "anmacha-kart/card.png",
@@ -1948,18 +1948,18 @@
   },
   {
    "p": "anmacha-kart/controller.js",
-   "s": 15402,
-   "h": "d161b411f2e72833a9f7390577961578c2a4a5066b22ddfb4ca1b258a31695cf"
+   "s": 15406,
+   "h": "b94e46c7e732bbb2d9d059c5ae8abb447d4069fd2437c6588653ac7b58ae1242"
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 58708,
-   "h": "475e3bbcb132483963c3207c68b499937e4438e7f4a402b05af463892bc07970"
+   "s": 63752,
+   "h": "abbcb12c1a813be3a66240f70282111fcfb78a5030f1339137f7756440caa921"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 48109,
-   "h": "77afaa3ca735484dc33f523e7967af402e9a5c093bf45cd1211806280034bb17"
+   "s": 58907,
+   "h": "62ccb1ff09ed40ba1e6dce5c367d5b79de4843153c0694baaa6b849c257beea7"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -2033,8 +2033,13 @@
   },
   {
    "p": "anmacha-kart/manifest.webmanifest",
-   "s": 766,
-   "h": "b0a0a8cc43df49af520d681b49f0747a66f808a593dc1ba7b3d81442592c866b"
+   "s": 770,
+   "h": "20c26511a6592d7ef86a5508c62393cbf1517b7490727e9e0f80f4bcefc735c1"
+  },
+  {
+   "p": "anmacha-kart/nav.js",
+   "s": 11660,
+   "h": "59504406a522a51cda5a1528f6f2d1b3565aa53409f78ebf33ec0388e781d53b"
   },
   {
    "p": "anmacha-kart/sim.js",
@@ -2043,8 +2048,8 @@
   },
   {
    "p": "anmacha-kart/sw.js",
-   "s": 1987,
-   "h": "821dc2e7599ca3e37cefda5b491be736a7ea8db60cb8b4d298dc22f0eb2d28d1"
+   "s": 1991,
+   "h": "6ddc21a06a6d12637d09e63c0a82c74e035ce822d083cc87ae679767e1c1476d"
   },
   {
    "p": "anmacha-kart/track.js",
@@ -2053,8 +2058,8 @@
   },
   {
    "p": "anmacha-kart/view.js",
-   "s": 82630,
-   "h": "800e11cea9fa4100e3034f836a73390b04dca5c7cb384c84deda8e380599f548"
+   "s": 82636,
+   "h": "9f14257a5c992335b77a8a823e258cd77c6b1648b51099ae7bee450607d6581e"
   },
   {
    "p": "anmacha-kartenrausch/card.jpg",
@@ -8023,8 +8028,8 @@
   },
   {
    "p": "brainrot-parkour/js/touch.js",
-   "s": 4905,
-   "h": "3d88f6463c22339263dfde8d781193373b3e4ca3f12d4337eac437e2c90d0780"
+   "s": 4909,
+   "h": "093b14eaa8bd7d8b85b4538d47472b712c6772d752fe7889cd8986ffa37a830b"
   },
   {
    "p": "brainrot-parkour/js/view.js",
@@ -8258,8 +8263,8 @@
   },
   {
    "p": "bunte-insel/js/gaeste.js",
-   "s": 18088,
-   "h": "179e25e5163ff73730674470d927426874ded42dcf45f282c6de04cb41d68ba1"
+   "s": 18100,
+   "h": "0035975cfe68ff5d3d7c3d191ba913e67575f6f840e2531db847964927b4876b"
   },
   {
    "p": "bunte-insel/js/gamepad.js",
@@ -8828,8 +8833,8 @@
   },
   {
    "p": "challenge-show/js/touch.js",
-   "s": 4926,
-   "h": "6b7e70c0914c91c778b67dcc45110e7a08f86e61b4ec324e5035c870c1a77275"
+   "s": 4930,
+   "h": "39ba11ee43663ca1971ce932a2f35c7cd1112fc35f6d786d0ba744e854d1e868"
   },
   {
    "p": "challenge-show/js/view.js",
@@ -9173,8 +9178,8 @@
   },
   {
    "p": "easyclash/js/roster.js",
-   "s": 20016,
-   "h": "56c6af4d790d56973e149b6dba70359d6d083971a057d6a3a7703551d8de0229"
+   "s": 20024,
+   "h": "7435ee9d605435550ac085e1b608c4a66474a5434961cc32e0c82f7e7b48d165"
   },
   {
    "p": "easyclash/js/scene.js",
@@ -9683,8 +9688,8 @@
   },
   {
    "p": "games.js",
-   "s": 56214,
-   "h": "3d2a8bfb53a48e96fc0b71cdaa9c2bf2daf7592b07b02fced4f57f1c39bcfb6e"
+   "s": 56218,
+   "h": "4a49a5b865e6e770e04569bf1d7f5291c8353fe5664f4d7cda5e62f7618fc01f"
   },
   {
    "p": "gay-life/card.jpg",
@@ -9988,8 +9993,8 @@
   },
   {
    "p": "guides.js",
-   "s": 175770,
-   "h": "c3beaa958c415d7842c9c0196cf24838aebf33cb85da906afa2c358a753cd046"
+   "s": 175786,
+   "h": "c8f68b8f04e2e3c8751a06f1b07c3e928b6732b33ad36c0f20683cf439a788e8"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10043,8 +10048,8 @@
   },
   {
    "p": "guides/anmacha-kart.json",
-   "s": 15357,
-   "h": "0ff5db35a25c7680f283a53c51719e151d49d88b31b48b89c70e0a389a5709c0"
+   "s": 16285,
+   "h": "abf9db2827832a65d715c699c0ed917338833673d0d8cbe18353005a1799027f"
   },
   {
    "p": "guides/anmacha-kartenrausch.json",
@@ -10178,8 +10183,8 @@
   },
   {
    "p": "guides/easyclash.json",
-   "s": 18393,
-   "h": "0dc6f06f8c59ec48e2df94938e5e0e3993ffe39e575d519d8ebb4dbf4a0d61e7"
+   "s": 18397,
+   "h": "390b97464a0f8994626a518a3805282f29b197c7cf338bc04872400d80e36fdb"
   },
   {
    "p": "guides/fabelkick.json",
@@ -10298,8 +10303,8 @@
   },
   {
    "p": "guides/oma-rennen.json",
-   "s": 16404,
-   "h": "c6ee8e2d1526cc0d4f13e116faa4ccfe9c75e6c9abf93e1f6989e0c1cf101e52"
+   "s": 16408,
+   "h": "560720c7cae61aba8a068c815b42ea57dbacc81064421107fcb86c636f761ba7"
   },
   {
    "p": "guides/partyverse.json",
@@ -10788,8 +10793,8 @@
   },
   {
    "p": "konfetti-party/index.html",
-   "s": 13192,
-   "h": "cb6eda096810aa27f793e1638a2a77724995c6b69d4319d8f6edd07836b7ce90"
+   "s": 13196,
+   "h": "3f8f20bba6dbf4134b0c1a315dcf9411dde3a617fac42c64c560a21786654e7a"
   },
   {
    "p": "konfetti-party/js/app.js",
@@ -10813,8 +10818,8 @@
   },
   {
    "p": "konfetti-party/js/touch.js",
-   "s": 4506,
-   "h": "27f72a8297e5741226e461f343a34cf4cc1ae56c780c676ce2ac62cd09dbc05b"
+   "s": 4510,
+   "h": "ccfef2718207f3b14d72290b78efb01ca71fa12167a29a42667492331bd43d45"
   },
   {
    "p": "konfetti-party/js/view.js",
@@ -10993,8 +10998,8 @@
   },
   {
    "p": "kuechen-chaos/index.html",
-   "s": 13533,
-   "h": "eb277f4063255d82b947a34f979426caea02e4a8ff36add5f83abbb46a46ecc4"
+   "s": 13537,
+   "h": "72a1298f9c4fc971c4543c251d5938fe19d455ccf2be9f3daf623886216e82bd"
   },
   {
    "p": "kuechen-chaos/js/app.js",
@@ -11018,8 +11023,8 @@
   },
   {
    "p": "kuechen-chaos/js/touch.js",
-   "s": 4505,
-   "h": "5cbc6f2da34cd5d4aabed2358ee81ad7c5b6b76395c43ddcb43dfba283058289"
+   "s": 4509,
+   "h": "254c34e9bd8831411778ddda172f37c124ece5efe8793613554069cd4a400c6e"
   },
   {
    "p": "kuechen-chaos/js/view.js",
@@ -11443,8 +11448,8 @@
   },
   {
    "p": "oma-rennen/index.html",
-   "s": 15724,
-   "h": "8c0858d77ac9782c981dd2a0467bb0dbbbec7c65910eff6daa270cd341dbdf6c"
+   "s": 15728,
+   "h": "8154e69fe8d37cba6e9e325ce109f5f8d1e95fb72dccb95baf675f339c184568"
   },
   {
    "p": "oma-rennen/js/app.js",
@@ -11463,8 +11468,8 @@
   },
   {
    "p": "oma-rennen/js/touch.js",
-   "s": 4662,
-   "h": "eefab568c43e6f949d435ce92c456d3b3951b4b4f13f1672fa0bfe1086f93fcc"
+   "s": 4666,
+   "h": "380bc4dface81c8497840035b457ebcf7a097bdf0f1e02e7cb0cfb37e17dbb31"
   },
   {
    "p": "oma-rennen/js/view.js",
@@ -11478,8 +11483,8 @@
   },
   {
    "p": "oma-rennen/style.css",
-   "s": 21965,
-   "h": "085766219591c303282e19a3a45192ebd5fe6b1c5f00fde24d300a0b39b0b159"
+   "s": 21969,
+   "h": "26bec8b952bd4a9e011348c329a4924a08fbe1f0022b6cfdbd2dcff211b15996"
   },
   {
    "p": "oma-rennen/sw.js",
@@ -13543,8 +13548,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 253487,
-   "h": "2a63c576d24de4a4ab50f8a0f738fdbe9bf78f3e200a274f8fff9536fa18c66e"
+   "s": 253507,
+   "h": "c7e9bd17a96da4c235632df8f894dc4f2a30deec9fec6c89482a9c118daba1c6"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
