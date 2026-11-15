@@ -1,4 +1,4 @@
-/* Touch-Oberfläche von TURBOKICK: schwebender Stick links, Knöpfe rechts, kleine Schalter oben */
+/* Touch-Oberfläche von NEXORB: schwebender Stick links, Knöpfe rechts, kleine Schalter oben */
 .tk-touch {
   --tk-safe-l: env(safe-area-inset-left, 0px);
   --tk-safe-r: env(safe-area-inset-right, 0px);

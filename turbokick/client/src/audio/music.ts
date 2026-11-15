@@ -1,4 +1,4 @@
-// Reine, testbare Notenerzeugung für die Hintergrundmusik von TURBOKICK (Synthwave/Electro). Kein Web Audio, kein DOM – nur Daten.
+// Reine, testbare Notenerzeugung für die Hintergrundmusik von NEXORB (Synthwave/Electro). Kein Web Audio, kein DOM – nur Daten.
 // Pro Thema und Taktnummer entsteht deterministisch eine Liste von Notenereignissen.
 import { Rng, hashString } from '@shared/rng';
 

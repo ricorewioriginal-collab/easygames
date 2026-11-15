@@ -71,9 +71,9 @@ export function startActorsLab(params: URLSearchParams): void {
   const key = new THREE.DirectionalLight(0xffffff, 1.6);
   key.position.set(4, 10, 6);
   scene.add(key);
-  const rimA = new THREE.PointLight(0xff7a1a, 12, 14);
+  const rimA = new THREE.PointLight(0xb4ff2e, 12, 14);
   rimA.position.set(-6, 2.5, -4);
-  const rimB = new THREE.PointLight(0x19c8ff, 12, 14);
+  const rimB = new THREE.PointLight(0xa24dff, 12, 14);
   rimB.position.set(6, 2.5, -4);
   scene.add(rimA, rimB);
   const ground = new THREE.Mesh(
