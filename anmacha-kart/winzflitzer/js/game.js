@@ -604,6 +604,7 @@
   function home() { stack = []; show('sTitle', true); titleStat(); }
   document.addEventListener('click', function (e) {
     WF.Audio.init();
+    var bl = e.target.closest('#backLink'); if (bl) { e.preventDefault(); toKart(); return; }
     var b = e.target.closest('[data-back]'); if (b) { menuBack(); return; }
     var g = e.target.closest('[data-go]'); if (g) { WF.Audio.play('click'); go(g.getAttribute('data-go')); return; }
     var a = e.target.closest('[data-act]'); if (a) { var k = a.getAttribute('data-act'); if (k === 'ok') activate(); else if (k === 'back') menuBack(); else if (k === 'tabs') tabsStep(1); return; }
@@ -1014,10 +1015,13 @@
     var f = focusEl; f.click();
     if (f.matches('.card-it[data-d]') && current === 'sDriver') $('drvOk').click(); // Fahrer gewählt = weiter wie an der Konsole
   }
+  // Eingebettet in Kart Rush: zurück in dessen Hauptmenü (eigene Ebene im selben Fenster), sonst Seitenwechsel
+  var EMBED = /[?&]embed=1/.test(location.search) && window.parent !== window;
+  function toKart() { WF.Audio.play('click'); if (EMBED) { window.parent.postMessage({ eg: 'winz-back' }, location.origin); } else location.href = '../' + location.search.replace(/[?&]embed=1/, ''); }
   function menuBack() {
     if (!$('ovPause').hidden) { pause(false); return; }
-    if (current === 'sPress' || !current) return;
-    if (current === 'sTitle') { WF.Audio.play('click'); stack = []; show('sPress', true); return; }
+    if (!current) return;
+    if (current === 'sPress' || current === 'sTitle') { toKart(); return; }
     if (current === 'sLadder' || current === 'sResult') { WF.Audio.play('click'); home(); return; }
     back();
   }
@@ -1056,7 +1060,7 @@
   requestAnimationFrame(function () { setTimeout(function () {
     $('bootTxt').textContent = 'Lade Strecke …';
     attract(); bootBar.style.width = '100%';
-    show('sPress', true);
+    if (EMBED) { document.documentElement.classList.add('embed'); home(); } else show('sPress', true);
     setTimeout(function () { $('boot').classList.add('out'); setTimeout(function () { $('boot').hidden = true; }, 400); }, 520);
   }, 120); });
   // für automatische Tests: WF.game.timeScale = 4 lässt die Zeit schneller laufen
