@@ -53,6 +53,7 @@ var WF = window.WF = window.WF || {};
       case 'clack': tone('sine', 2400, 1800, 0.05, 0.25 * v); break;
       case 'splash': noise(0.35, 0.25, 2500, 0.7, 'highpass'); break;
       case 'click': tone('square', 700, 0, 0.05, 0.08); break;
+      case 'tick': tone('sine', 1250, 0, 0.035, 0.05); break;
       case 'point': tone('triangle', 660, 990, 0.25, 0.22); break;
       case 'out': tone('sawtooth', 300, 120, 0.4, 0.14); break;
     }

@@ -76,7 +76,7 @@
     {
       "t": "Mehrspieler an einem Gerät",
       "steps": [
-        "👥 Mehrspieler wählen. Zum Mitmachen Gas geben: Pfeiltaste ↑ (Spieler mit Pfeilen), W (Spieler mit WASD), A am Controller oder auf einen freien Platz tippen. Bis zu 4 Spieler.",
+        "👥 Mehrspieler wählen. Zum Mitmachen Gas geben: Pfeiltaste ↑ (Spieler mit Pfeilen), W (Spieler mit WASD), ✕ bzw. A am Controller oder auf einen freien Platz tippen. Bis zu 4 Spieler.",
         "Tippe auf einen belegten Platz, um den Fahrer zu wechseln; „✕ Raus“ entfernt einen Spieler.",
         "Wähle das Ziel (3, 5 oder 8 Punkte) und ob Computer-Fahrer auffüllen sollen (keine, +1, +2, +3). Es müssen mindestens 2 Fahrer sein.",
         "Strecke wählen und losfahren. Wie im Kopf-an-Kopf gewinnt die Runde, wer vorne bleibt und die anderen aus dem Bild fährt. Zu zweit wird mit 8 Lichtern gespielt, ab 3 Fahrern mit Punkten bis zum Ziel.",
@@ -86,11 +86,12 @@
     {
       "t": "Bedienung",
       "list": [
-        "Tastatur: ↑ Gas, ↓ Bremse/Rückwärts, ← → lenken (aus Sicht des Fahrers), Leertaste oder Enter schießen (Panzer), Esc Pause. Allein kannst du auch W A S D benutzen.",
-        "Zwei Spieler an einer Tastatur: Spieler 1 fährt mit den Pfeiltasten und schießt mit Enter, Shift rechts, Strg rechts oder Punkt; Spieler 2 fährt mit W A S D und schießt mit Leertaste, Shift links, Q oder E.",
-        "Gamecontroller: linker Stick oder Steuerkreuz lenkt, A oder RT Gas, B oder LT Bremse, X, Y oder RB schießen, Start Pause. Mit „Controller-Lenkung: Stick-Richtung“ fährt der Flitzer dorthin, wohin du den Stick drückst.",
-        "Touch: Links den Stick in die gewünschte Richtung ziehen – der Flitzer fährt los und lenkt selbst; rechts Bremse und 💥 (Panzer). Mit „Touch-Steuerung: Tasten“ bekommst du klassische Knöpfe ◀ ▶, GAS und BREMSE.",
-        "Pausenmenü (⏸): ▶ Weiter, ↻ Neu starten, 🔊 Ton, 🎵 Musik, 🏠 Aufgeben."
+        "Du fährst immer selbst: Gas, Bremse und Lenkung kommen nur von dir. Gelenkt wird aus Sicht des Fahrers – rechts heißt im Uhrzeigersinn.",
+        "Tastatur: ↑ oder W Gas, ↓ oder S Bremse/Rückwärts, ← → oder A D lenken, Leertaste oder Shift Drift, Enter, Q oder E schießen (Panzer), C Kamera-Zoom, Esc oder P Pause. Zu zweit: Spieler 1 fährt mit den Pfeilen, Shift rechts (Drift) und Enter (Schießen), Spieler 2 mit W A S D, Leertaste (Drift) und Q/E (Schießen).",
+        "PlayStation-Controller (DualSense, DualShock): linker Stick oder Steuerkreuz lenkt, ✕ oder R2 Gas, ○ oder L2 Bremse/Rückwärts, □ oder L1 Drift, △ oder R1 schießen, Options Pause, Create Kamera-Zoom. Nintendo Switch (Pro Controller, Joy-Con): A oder ZR Gas, B oder ZL Bremse, Y oder L Drift, X oder R schießen, + Pause, − Kamera. Xbox: A oder RT Gas, B oder LT Bremse, X oder LB Drift, Y oder RB schießen, Menu Pause, View Kamera. Die Knopf-Symbole im Spiel passen sich deinem Controller an; R2/L2 und ZR/ZL geben stufenlos Gas.",
+        "Touch: links ◀ ▶ lenken (oder in den Optionen der stufenlose Lenk-Schieber), rechts GAS, BREMSE, DRIFT und 💥 (Panzer). Du kannst mit dem Finger zwischen GAS und BREMSE gleiten.",
+        "Drift: Halte Drift in der Kurve, dann rutscht der Flitzer quer herum. Wer lange driftet, bekommt beim Loslassen einen Mini-Turbo (blaue Funken), noch länger einen Super-Turbo (orange Funken).",
+        "Pausenmenü (Start/Options/+, Esc oder ❚❚): Weiter, Neu starten, Ton, Musik, Aufgeben. Select + Start öffnet die Controller-Belegung zum Umbelegen."
       ]
     },
     {
@@ -99,7 +100,7 @@
         "Ton und Musik: an oder aus.",
         "Grafik: Sparsam, Normal oder Schön (auf Handys ist Normal voreingestellt).",
         "Kamera: Nah, Normal oder Weit.",
-        "Touch-Steuerung: Stick-Richtung oder Tasten. Controller-Lenkung: Klassisch oder Stick-Richtung.",
+        "Lenkung: Sanft, Normal oder Direkt. Controller-Symbole: Automatisch, PlayStation, Switch oder Xbox. Vibration: an oder aus. Touch-Lenkung: Lenktasten oder Lenk-Schieber.",
         "Gegner: Leicht, Normal oder Schwer.",
         "Gespeichert werden im Browser: Einstellungen, Statistik, Rundenbestzeit und Gesamtbestzeit je Strecke (in der Streckenauswahl mit ⏱ angezeigt), der Geist deiner schnellsten Zeitfahr-Runde je Strecke sowie laufende Meisterschaft und Kopf-an-Kopf-Turnier.",
         "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück. Die Geister der Zeitfahr-Runden bleiben immer nur auf diesem Gerät."
@@ -111,7 +112,7 @@
       "t": "Tipps für Einsteiger",
       "list": [
         "Vor engen Kurven kurz vom Gas – wer zu schnell ist, rutscht über die Tischkante.",
-        "Auf dem Handy ist die Stick-Richtung am einfachsten: Zeig einfach dorthin, wohin du willst.",
+        "Lenk in kurzen Tipps statt lange zu halten – die Lenkung fährt weich hoch, so bleibst du auf der Linie. Wer es feiner mag, stellt in den Optionen den Lenk-Schieber ein.",
         "Fahr dich im Zeitfahren auf einer Strecke ein, bevor du die Meisterschaft startest.",
         "Stell die Gegner zu Beginn auf Leicht. Du kannst die Stufe für jede neue Meisterschaft neu wählen."
       ]
@@ -254,7 +255,7 @@
     },
     {
       "q": "Mein Controller reagiert nicht.",
-      "a": "Drück einmal eine Taste am Controller, damit der Browser ihn erkennt. Im Mehrspieler-Menü trittst du mit A bei."
+      "a": "Drück einmal eine Taste am Controller, damit der Browser ihn erkennt. Im Mehrspieler-Menü trittst du mit ✕ (PlayStation), A (Switch/Xbox) bei."
     },
     {
       "q": "Warum kann ich nicht schießen?",

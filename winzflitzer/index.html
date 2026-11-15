@@ -26,6 +26,26 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <body>
 <div id="view"></div>
 
+<!-- Startbildschirm beim Laden -->
+<div class="boot" id="boot">
+  <img class="bootLogo" src="logo.svg" alt="Winzflitzer 3D">
+  <div class="bar"><i id="bootBar"></i></div>
+  <p class="bootTxt" id="bootTxt">Lade Welten …</p>
+</div>
+
+<!-- Ladebildschirm vor jedem Rennen -->
+<div class="load" id="load" hidden>
+  <div class="loadArt" id="loadArt"></div>
+  <div class="loadInfo">
+    <p class="loadKick" id="loadKick"></p>
+    <h2 id="loadName"></h2>
+    <p class="loadSub" id="loadSub"></p>
+    <div class="loadCtl" id="loadCtl"></div>
+    <div class="bar"><i id="loadBar"></i></div>
+    <p class="loadTip" id="loadTip"></p>
+  </div>
+</div>
+
 <div id="hud" hidden>
   <div class="hl">
     <div class="pos" id="hPos"></div>
@@ -36,28 +56,49 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <div class="lights" id="hLights"></div>
   </div>
   <div class="hr">
-    <button class="icon" id="bPause" aria-label="Pause">⏸</button>
+    <button class="icon" id="bPause" aria-label="Pause">❚❚</button>
   </div>
   <canvas id="mini" width="180" height="120" aria-hidden="true"></canvas>
   <div class="msg" id="hMsg"></div>
   <div class="sub" id="hSub"></div>
+  <div class="ctlHint" id="hCtl"></div>
 </div>
 
-<!-- Titel -->
-<section class="scr on" id="sTitle">
-  <div class="box title">
-    <h1 class="logo"><span>Winz</span><span>flitzer</span><small>3D</small></h1>
-    <p class="tag">Winzige Flitzer. Riesige Tische. Ein Ziel.</p>
-    <div class="menu">
-      <button class="btn big pri" data-go="champ">🏆 Meisterschaft</button>
-      <button class="btn" data-go="h2h">⚔️ Kopf-an-Kopf</button>
-      <button class="btn" data-go="multi">👥 Mehrspieler (1 Gerät)</button>
-      <button class="btn" data-go="single">🏁 Einzelrennen</button>
-      <button class="btn" data-go="time">⏱️ Zeitfahren</button>
-      <div class="row2"><button class="btn" data-go="settings">⚙️ Einstellungen</button><button class="btn" data-go="help">📖 So geht's</button></div>
-      <p class="stat" id="titleStat"></p>
-      <a class="back" href="../" id="backLink">← Alle Spiele</a>
+<!-- Kopfleiste und Knopf-Hinweise wie an der Konsole -->
+<header class="topbar" id="topbar">
+  <button class="tbBack" data-back aria-label="Zurück">‹</button>
+  <img class="tbLogo" src="logo.svg" alt="Winzflitzer 3D">
+  <span class="tbTitle" id="tbTitle"></span>
+  <span class="tbRight"><span class="tbDev" id="tbDev"></span><span class="tbClock" id="tbClock"></span></span>
+</header>
+<footer class="pbar" id="pbar"></footer>
+
+<!-- Drücke Start -->
+<section class="scr on" id="sPress">
+  <div class="press">
+    <img class="pressLogo" src="logo.svg" alt="Winzflitzer 3D">
+    <p class="pressTag">Winzige Flitzer. Riesige Tische. Ein Ziel.</p>
+    <button class="pressGo" id="pressGo"><span id="pressTxt">Tippen zum Starten</span></button>
+  </div>
+</section>
+
+<!-- Hauptmenü -->
+<section class="scr" id="sTitle">
+  <div class="home">
+    <div class="tiles" id="tiles">
+      <button class="tile t1 pri" data-go="champ" data-desc="24 Rennen durch 8 Welten. Platz 1 oder 2 bringt dich weiter, sonst kostet es ein Leben. Der letzte Computer-Fahrer scheidet aus."><span class="ti">🏆</span><b>Meisterschaft</b><small>24 Rennen · 3 Leben</small></button>
+      <button class="tile t2" data-go="h2h" data-desc="Du gegen einen Gegner auf einem Bildschirm: Wer den anderen aus dem Bild fährt, holt sich ein Licht. Besiege alle 11 Fahrer der Reihe nach."><span class="ti">⚔️</span><b>Kopf-an-Kopf</b><small>11 Duelle</small></button>
+      <button class="tile t3" data-go="multi" data-desc="2 bis 4 Spieler an einem Gerät: Tastatur zu zweit, bis zu 4 Controller oder Touch. Wer die anderen aus dem Bild drängt, punktet."><span class="ti">👥</span><b>Mehrspieler</b><small>2–4 an einem Gerät</small></button>
+      <button class="tile t4" data-go="single" data-desc="Ein schnelles Rennen gegen 3 Computer-Fahrer auf einer Strecke deiner Wahl."><span class="ti">🏁</span><b>Einzelrennen</b><small>Freie Strecke</small></button>
+      <button class="tile t5" data-go="time" data-desc="Allein gegen die Uhr – und gegen den Geist deiner besten Runde."><span class="ti">⏱️</span><b>Zeitfahren</b><small>mit Geist</small></button>
     </div>
+    <p class="desc" id="tileDesc"></p>
+    <div class="dock">
+      <button class="dk" data-go="settings" data-desc="Ton, Musik, Grafik, Kamera, Lenkung, Controller-Symbole, Vibration und Touch-Steuerung."><span>⚙️</span><small>Optionen</small></button>
+      <button class="dk" data-go="help" data-desc="Spielmodi, Strecken und die komplette Tastenbelegung für Controller, Tastatur und Touch."><span>🎮</span><small>Steuerung</small></button>
+      <a class="dk" href="../" id="backLink" data-desc="Zurück zur Spieleliste von easygames."><span>🏠</span><small>Alle Spiele</small></a>
+    </div>
+    <p class="stat" id="titleStat"></p>
   </div>
 </section>
 
@@ -67,7 +108,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <h2 id="drvTitle">Wähle deinen Fahrer</h2>
     <div class="grid drivers" id="drvGrid"></div>
     <div class="opts" id="drvOpts"></div>
-    <div class="row2"><button class="btn" data-back>← Zurück</button><button class="btn pri" id="drvOk">Weiter →</button></div>
+    <div class="row2"><button class="btn pri" id="drvOk">Weiter</button></div>
   </div>
 </section>
 
@@ -75,8 +116,9 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <section class="scr" id="sTrack">
   <div class="box wide">
     <h2 id="trkTitle">Strecke wählen</h2>
-    <div class="tracks" id="trkGrid"></div>
-    <div class="row2"><button class="btn" data-back>← Zurück</button></div>
+    <div class="tabs" id="trkTabs"></div>
+    <p class="tabInfo" id="trkInfo"></p>
+    <div class="trow" id="trkGrid"></div>
   </div>
 </section>
 
@@ -87,21 +129,21 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <div class="lives" id="ladLives"></div>
     <div class="next" id="ladNext"></div>
     <div class="roster" id="ladRoster"></div>
-    <div class="row2"><button class="btn" id="ladQuit">🏠 Menü</button><button class="btn big pri" id="ladGo">Los geht's! 🏁</button></div>
+    <div class="row2"><button class="btn" id="ladQuit">Hauptmenü</button><button class="btn big pri" id="ladGo">Los geht's!</button></div>
   </div>
 </section>
 
 <!-- Mehrspieler-Lobby -->
 <section class="scr" id="sLobby">
   <div class="box wide">
-    <h2>👥 Mehrspieler an einem Gerät</h2>
-    <p class="hint">Zum Mitmachen <b>Gas geben</b>: Pfeiltaste ↑ (Spieler mit Pfeilen), <b>W</b> (Spieler mit WASD), <b>A</b> am Controller oder hier tippen. Bis zu 4 Spieler. Im Duell gewinnt, wer die anderen aus dem Bild fährt.</p>
+    <h2>Mehrspieler an einem Gerät</h2>
+    <p class="hint" id="lobHint"></p>
     <div class="slots" id="lobSlots"></div>
     <div class="opts">
       <div class="opt"><span>Ziel</span><div class="chips" id="lobGoal"></div></div>
       <div class="opt"><span>Computer auffüllen</span><div class="chips" id="lobCpu"></div></div>
     </div>
-    <div class="row2"><button class="btn" data-back>← Zurück</button><button class="btn pri" id="lobGo">Strecke wählen →</button></div>
+    <div class="row2"><button class="btn pri" id="lobGo">Strecke wählen</button></div>
   </div>
 </section>
 
@@ -118,43 +160,39 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <!-- Einstellungen -->
 <section class="scr" id="sSettings">
   <div class="box">
-    <h2>⚙️ Einstellungen</h2>
+    <h2>Optionen</h2>
     <div class="opts col" id="setList"></div>
-    <button class="btn pri" data-back>Fertig</button>
   </div>
 </section>
 
-<!-- Anleitung -->
+<!-- Anleitung und Steuerung -->
 <section class="scr" id="sHelp">
   <div class="box wide help">
-    <h2>📖 So geht's</h2>
-    <p>Winzige Flitzer, riesige Welten: Ihr rast über den Frühstückstisch, den Schreibtisch, durch die Badewanne, über den Garten, den Sandkasten, den Billardtisch, die Werkbank und das Kinderzimmer. Wer von der Tischkante fällt, verliert Zeit!</p>
+    <h2>Steuerung &amp; Spiel</h2>
+    <div class="padTabs chips" id="helpKinds"></div>
+    <table class="ctl" id="helpCtl"></table>
+    <p class="hint">Du fährst immer selbst: Gas, Bremse und Lenkung kommen nur von dir. Lenken geht aus Sicht des Fahrers – rechts heißt im Uhrzeigersinn. Mit Drift kommst du quer durch enge Kurven; wer lange driftet, bekommt beim Loslassen einen Mini-Turbo.</p>
+    <h3>Spielmodi</h3>
     <ul>
       <li><b>🏆 Meisterschaft:</b> 24 Rennen gegen je 3 Gegner. Platz 1 oder 2 bringt dich weiter, sonst kostet es ein Leben und du fährst das Rennen noch einmal. Wer als letzter Computer-Fahrer ankommt, scheidet aus. Nach jedem dritten Rennen gibt es eine Bonusrunde um ein Extraleben.</li>
       <li><b>⚔️ Kopf-an-Kopf:</b> Du gegen einen Gegner, ein Bildschirm. Wer den anderen aus dem Bild fährt, holt sich ein Licht. Alle 8 Lichter gewinnen das Duell. Schlag alle 11 Gegner der Reihe nach!</li>
       <li><b>👥 Mehrspieler:</b> 2–4 Spieler an einem Gerät (Tastatur zu zweit, Controller, Touch). Wer vorne bleibt und die anderen aus dem Bild drängt, punktet.</li>
       <li><b>🏁 Einzelrennen</b> und <b>⏱️ Zeitfahren</b> (mit Geist deiner besten Runde) auf allen 24 Strecken.</li>
       <li><b>Fahrzeuge:</b> Sportflitzer, Formel-Winzlinge, Speedboote, Hubschrauber, Geländewagen, Kugelflitzer, Panzer (schießen!) und Monstertrucks – jedes fährt sich anders.</li>
-      <li><b>Strecke:</b> Pinke Pfeil-Streifen geben Turbo. Milch, Öl und Seife sind rutschig, Honig und Sägespäne bremsen, der Abfluss-Strudel zieht dich mit. Rampen lassen dich springen – über Lücken nur mit Schwung!</li>
+      <li><b>Strecke:</b> Pinke Pfeil-Streifen geben Turbo. Milch, Öl und Seife sind rutschig, Honig und Sägespäne bremsen, der Abfluss-Strudel zieht dich mit. Rampen lassen dich springen – über Lücken nur mit Schwung! Wer von der Tischkante fällt, verliert Zeit.</li>
     </ul>
-    <h3>Steuerung</h3>
-    <ul>
-      <li><b>Tastatur:</b> ↑ Gas, ↓ Bremse/Rückwärts, ← → lenken (aus Sicht des Fahrers), Leertaste/Enter schießen (Panzer), Esc Pause. Zweiter Spieler: W A S D, Shift links oder Q schießt.</li>
-      <li><b>Gamecontroller:</b> Linker Stick oder Steuerkreuz lenkt, A oder RT Gas, B oder LT Bremse, X/RB schießen, Start Pause. In den Einstellungen: „Stick-Richtung“ – der Flitzer fährt dorthin, wohin du den Stick drückst.</li>
-      <li><b>Touch:</b> Links den Stick in die gewünschte Richtung ziehen – der Flitzer fährt los und lenkt selbst; rechts Bremse und 💥. Oder in den Einstellungen klassische Tasten (◀ ▶ Gas Bremse) wählen.</li>
-    </ul>
-    <button class="btn pri" data-back>Los geht's</button>
   </div>
 </section>
 
 <!-- Pause -->
 <div class="ov" id="ovPause" hidden><div class="card">
-  <h2>⏸ Pause</h2>
-  <button class="btn pri" id="pCont">▶ Weiter</button>
-  <button class="btn" id="pRestart">↻ Neu starten</button>
-  <button class="btn" id="pSound">🔊 Ton: an</button>
-  <button class="btn" id="pMusic">🎵 Musik: an</button>
-  <button class="btn" id="pQuit">🏠 Aufgeben</button>
+  <h2>Pause</h2>
+  <button class="btn pri" id="pCont">Weiter</button>
+  <button class="btn" id="pRestart">Neu starten</button>
+  <button class="btn" id="pSound">Ton: an</button>
+  <button class="btn" id="pMusic">Musik: an</button>
+  <button class="btn" id="pQuit">Aufgeben</button>
+  <div class="pCtl" id="pCtl"></div>
 </div></div>
 
 <div class="toast" id="toast" hidden></div>
@@ -170,7 +208,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="js/audio.js"></script>
 <script src="js/game.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="winzflitzer" data-prefix="winzflitzer-" defer></script>
-<script src="../gamepad.js" data-pad="info" data-pad-labels="ls=Lenkt; dpad=Lenkt; a=Gas; rt=Gas; b=Bremse; lt=Bremse; y=Schießen; rb=Schießen; start=Pause" defer></script>
+<script src="../gamepad.js" data-pad="info" data-pad-labels="ls=Lenken; dpad=Lenken; a=Gas; rt=Gas; b=Bremse/Rückwärts; lt=Bremse/Rückwärts; x=Drift; lb=Drift; y=Schießen; rb=Schießen; start=Pause; select=Kamera" defer></script>
 <script src="../egstat.js" defer></script>
 </body>
 </html>

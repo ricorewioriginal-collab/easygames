@@ -12,7 +12,8 @@ var WF = window.WF = window.WF || {};
     this.x = 0; this.z = 0; this.y = 0; this.vy = 0; this.a = 0; this.vx = 0; this.vz = 0;
     this.grounded = true; this.airT = 0; this.fallT = 0; this.lostT = 0; this.stun = 0; this.ghost = 0; this.boost = 0; this.cool = 0;
     this.idx = 0; this.lap = 0; this.half = 0; this.done = false; this.time = 0; this.lapStart = 0; this.best = 0; this.lapTimes = [];
-    this.inp = { thr: 0, steer: 0, fire: false, dir: null, brake: false };
+    this.inp = { thr: 0, steer: 0, fire: false, hb: false };
+    this.drift = false; this.driftT = 0;
     this.lane = (Math.random() - 0.5) * 1.2; this.noise = 0; this.wob = Math.random() * 10;
     this.slipFx = 0; this.speed = 0; this.surf = null; this.out = false; this.alive = true;
   };
@@ -54,12 +55,6 @@ var WF = window.WF = window.WF || {};
     }
     var inp = c.inp, thr = this.started ? inp.thr : 0, steer = inp.steer;
     if (c.stun > 0) { c.stun -= dt; thr = 0; steer = 0; c.a += dt * 9; }
-    if (inp.dir && this.started && c.stun <= 0) {
-      var want = Math.atan2(inp.dir[0], inp.dir[1]), diff = WF.angDiff(c.a, want);
-      steer = WF.clamp(-diff * 2.6, -1, 1);
-      var mag = Math.min(1, Math.hypot(inp.dir[0], inp.dir[1]));
-      thr = inp.brake ? -1 : (Math.abs(diff) > 2.4 && c.speed < 3 ? -0.6 : mag);
-    }
     var sa = Math.sin(c.a), ca = Math.cos(c.a);
     var vf = c.vx * sa + c.vz * ca, vl = c.vx * -ca + c.vz * sa; // vorwärts / rechts
     var z = T.zoneAt(c.x, c.z); c.surf = z ? z.t : null;
@@ -70,7 +65,13 @@ var WF = window.WF = window.WF || {};
     }
     if (z && z.t === 'pull') { var dx = z.x - c.x, dz = z.z - c.z, d = Math.hypot(dx, dz) || 1, f = 9 * (1 - d / z.r); c.vx += (dx / d * f + dz / d * f * 0.8) * dt; c.vz += (dz / d * f - dx / d * f * 0.8) * dt; }
     if (c.boost > 0) { top *= 1.45; acc *= 1.8; }
+    // Drift (nur Spieler, Drift-Knopf): weniger Seitenhaft, schärfer einlenken; lange Drifts geben beim Loslassen einen Mini-Turbo
+    var vf0 = c.vx * sa + c.vz * ca, drifting = inp.hb && c.grounded && !V.fly && c.stun <= 0 && vf0 > 5 && this.started;
+    if (drifting) { grip *= V.grip > 9 ? 0.4 : 0.28; turn *= 1.25; c.driftT += dt * Math.min(1, Math.abs(steer) * 1.6); }
+    else if (c.drift) { if (c.driftT > 0.85 && vf0 > 5) { c.boost = Math.max(c.boost, c.driftT > 1.7 ? 0.75 : 0.45); this.emit('mini', c, c.driftT); } c.driftT = 0; }
+    c.drift = drifting;
     if (c.grounded || V.fly) {
+      if (drifting) vf -= (2.2 + 1.6 * (thr <= 0 ? 1 : 0)) * dt;
       if (thr > 0) vf += (thr * acc - Math.max(0, vf) * acc / top) * dt;
       else if (thr < 0) { if (vf > 0.5) vf -= 34 * -thr * dt; else vf = Math.max(-top * 0.4, vf - acc * 0.6 * -thr * dt); }
       if (thr <= 0 || vf > top) {
@@ -222,7 +223,7 @@ var WF = window.WF = window.WF || {};
   // ---------------- KI
   WF.Sim.prototype.ai = function (c, dt) {
     var T = this.T, N = T.N, inp = c.inp, sp = c.speed, ds = T.ds;
-    inp.dir = null; inp.brake = false;
+    inp.hb = false;
     if (c.fallT > 0) return;
     var look = Math.round((3.5 + sp * 0.38) / ds), ti = (c.idx + look) % N;
     // Spur: leicht versetzt, anderen ausweichen, bei Rempel-Typen auf Gegner zuhalten
