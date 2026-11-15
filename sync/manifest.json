@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "bee9172f068a",
- "generated": "2026-11-15T21:33:20+01:00",
- "commit": "6e44ab3cbe9b5367e34b67f14a3e93a354cde30f",
+ "version": "9857f08d5bbc",
+ "generated": "2026-11-15T21:35:44+01:00",
+ "commit": "e1e393f3728725254868eec0d5aa92e911e90c49",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10248,8 +10248,8 @@
   },
   {
    "p": "games.js",
-   "s": 54801,
-   "h": "0f665991462232fc654dbf89a3367080c2365c22f4873c63d0b55d21a2420243"
+   "s": 54796,
+   "h": "e2437b4cd65a8660acbf9325244630f2c48162d96536c50a9db7112d86ec1478"
   },
   {
    "p": "gay-life/card.jpg",
@@ -10553,8 +10553,8 @@
   },
   {
    "p": "guides.js",
-   "s": 169494,
-   "h": "1cf2570c301e2075bc5d99b35f6ab2d4b02021acc7d7d5840c1686ebc02664d9"
+   "s": 169490,
+   "h": "4810785bb9ef430234da215b62c30595c71d7b36c65a992ea80e99a5d7804b2f"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10963,8 +10963,8 @@
   },
   {
    "p": "guides/turbokick.json",
-   "s": 13610,
-   "h": "b2427fd5c67516ea097ea79b73d77ea8f39b7ee83ac13553498150ddf59ea83f"
+   "s": 13587,
+   "h": "3fc7bdb0c544227c65d0a7de85d2bc721fa700ae25ab3b4386a69bbcac6a2368"
   },
   {
    "p": "guides/werwolf-nacht.json",
@@ -14173,8 +14173,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 245700,
-   "h": "d727aefe1a6476c1b6faa3d89afd31d29553aaf622ac066faa9d1d8e0c44ce9b"
+   "s": 245691,
+   "h": "fcd7b19980f7c2a80af6ce2c13c285646d3bdb14a8d5d685813b1d113067bff8"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -15319,7 +15319,7 @@
   {
    "p": "thumbs/thumbs.js",
    "s": 2158,
-   "h": "b1302fd381518777a4de30457308cdaf0fc10fd41bcc9905a128ab877a88ee2d"
+   "h": "efb0808e8b818df2c5b067a93dd0b0e4a1bcdfce6952fff20f976c12b4f9142a"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
@@ -15328,8 +15328,8 @@
   },
   {
    "p": "thumbs/turbokick.webp",
-   "s": 13234,
-   "h": "17a2d8a442ce068f505d6272d440b64e3b1a3888697381ffc2f02559506d6713"
+   "s": 10804,
+   "h": "919ca2a6555d8b293d1aebbf9af498c9ada4a883ff7e818d38feebd375dc392b"
   },
   {
    "p": "thumbs/werwolf-nacht.webp",
@@ -15397,19 +15397,19 @@
    "h": "60954a6f54ae18ab7ee795db0f0a99e3bcc2b036fc7d41f5afc56894e7f3d0a3"
   },
   {
-   "p": "turbokick/app/assets/actorslab-LE03rGj_.js",
-   "s": 4844,
-   "h": "19390d10f6846444742dc9cf635747de18706b0126243d48f26007700aeed770"
+   "p": "turbokick/app/assets/actorslab-CAB3RZRu.js",
+   "s": 4845,
+   "h": "62771b0e921990bf4c845912634af1734eaa8e05eb819857387fc973e3f68df7"
   },
   {
-   "p": "turbokick/app/assets/app-BWzuDmLP.js",
-   "s": 41513,
-   "h": "cfaecd4268d7c464dfaa083c10e703ffa46ca2d3f3115ec6af3b9680d8f307b4"
+   "p": "turbokick/app/assets/app-POzYXnf6.js",
+   "s": 41555,
+   "h": "ed504a2cf8ebd31c7331442f04a7d3aaa1f0f9e5753c3a062c2b9c822d5055a8"
   },
   {
-   "p": "turbokick/app/assets/arenalab-BlMUEUs_.js",
+   "p": "turbokick/app/assets/arenalab-B4snVp_o.js",
    "s": 3010,
-   "h": "4c743f2c44545c587eba4a6583073521798785417ffea108c0655bff70edf7ec"
+   "h": "4b5a298be73464125d9f6d713ad384328f38624655dacf0e96f4b5d49d26bb43"
   },
   {
    "p": "turbokick/app/assets/common-BrUHktys.js",
@@ -15422,69 +15422,69 @@
    "h": "2e3f71087c90c4dae7ca455acf37e8679e2d5b03f46bce3ad1f5089fecca0806"
   },
   {
-   "p": "turbokick/app/assets/controller-DoLiQnBo.js",
-   "s": 12970,
-   "h": "ff57e4b4414e2be55949f5a97723078ceece5480830b36c4f676c040054aba24"
+   "p": "turbokick/app/assets/controller-BI23xNiI.js",
+   "s": 12968,
+   "h": "1c15b7dc526c1cf2fc56331bb1dde8db7777310e7ae84d53e4c68eb5357ac419"
   },
   {
-   "p": "turbokick/app/assets/credits-BuEjQDXr.js",
+   "p": "turbokick/app/assets/credits-Dx43HoCa.js",
    "s": 934,
-   "h": "6745f7c0cfd91ac8cedf7b032ec6e7bb4aaec1b4f955f7a2c09e7768dd807fdc"
+   "h": "02957646b7f80028cca3ea402dd6449cc4f4eac8c66a4033a07add0414a5bb69"
   },
   {
-   "p": "turbokick/app/assets/engine-BUX5TC5o.js",
-   "s": 523498,
-   "h": "253d09dfc5d52aed2deb3f6dfd26454d292d2ad5aa9dbe07b6387097b92470d2"
+   "p": "turbokick/app/assets/engine-DNPzi9_E.js",
+   "s": 523784,
+   "h": "6533001004a8f420458188962d8b406ff7f4cf8354fd1daa484b595c38069dec"
   },
   {
-   "p": "turbokick/app/assets/garage-DkXsEsH-.js",
+   "p": "turbokick/app/assets/garage-DCBtSUI2.js",
    "s": 1731,
-   "h": "63b7753ed16b5dda41274bac23cd83d0d94b5d7e8005927c934c37a688e249a6"
+   "h": "78a94fcc0cb5b083293e3dde45fd2f2e1c53f0109080539e955272baee6ad2a6"
   },
   {
-   "p": "turbokick/app/assets/help-DaUiH0w9.js",
+   "p": "turbokick/app/assets/help-CxqhjARH.js",
    "s": 1016,
-   "h": "a169506907825b3588b3d8c5dccd57dfd81ce319974a6d08635f1fb757288032"
+   "h": "3627982dd7a6523fbbdeecf11c2ee64e7f3d24ee7d05fe61402e66134e4a8fb8"
   },
   {
-   "p": "turbokick/app/assets/index-BJN_Dd16.js",
-   "s": 3062,
-   "h": "6be520721013f66ebbe6c69096c22b672b0ec14e36b4daccea91efa7782e5b66"
+   "p": "turbokick/app/assets/index-C-gJ84Iz.js",
+   "s": 38545,
+   "h": "85660058fbb884873126e24b02450033d8e38b924702a97512bc8c9b3370f775"
   },
   {
-   "p": "turbokick/app/assets/index-BfBUqHXu.css",
-   "s": 11265,
-   "h": "f042b2c5b4cba72575b90cdee2cdc97343c6c4f0e16ed48de6d2777b84be014c"
+   "p": "turbokick/app/assets/index-CJknlVXX.css",
+   "s": 12540,
+   "h": "5734456b5994d8e1bfdbaee089078b2da7d6e6527fc08700a672622ed0977b52"
   },
   {
-   "p": "turbokick/app/assets/index-CjkLaGiw.js",
-   "s": 56591,
-   "h": "d719294fa4f057e4ef59ee3b1fff11f815ab50965f39555ba315fa7b70441d0b"
+   "p": "turbokick/app/assets/index-D7SukhWU.js",
+   "s": 56450,
+   "h": "fdf7d7791bcfee8006938dc86c11463266692261b10534e075b98b4da2769fd9"
   },
   {
-   "p": "turbokick/app/assets/index-Daz4bIJM.js",
-   "s": 38475,
-   "h": "dce89e9037e3ff50cbcd56ae20737541e9be974965f0526512fbc71887ec2f14"
+   "p": "turbokick/app/assets/index-YmNg6cLM.js",
+   "s": 3056,
+   "h": "f08580dae051dfd54f186b4b6c3ab02190a2ed821b4d792f4c1fa7ed22f61a62"
   },
   {
-   "p": "turbokick/app/assets/mainMenu-CD533oMc.js",
-   "s": 2889,
-   "h": "1128e65977010152bcb6a7cec58d5a34ad10e3e9395c8abe7c71a6d5415ff959"
+   "p": "turbokick/app/assets/mainMenu-DO5J4Ct4.js",
+   "s": 2932,
+   "h": "b2cab8cde9da217e8120a6188236a9427f8b21eda68ad92b8e86386448f432bd"
   },
   {
-   "p": "turbokick/app/assets/matchScreen-B4mX07w3.js",
-   "s": 17790,
-   "h": "5521c266ce494fc2cc7234107b8d0fa1589c90227cbc6d083ea0de8ed731edbf"
+   "p": "turbokick/app/assets/matchScreen-BO6moH4V.js",
+   "s": 18355,
+   "h": "e1dcdc883c3d28be78ce60209a124054c723fb5e829590cd42ee271290943bc2"
   },
   {
-   "p": "turbokick/app/assets/options-CmVAw5g6.js",
-   "s": 2649,
-   "h": "2b3d5b05ff5408131f8c7110a6523ad3ade0490aeb92f253dc7ca24cb3b23b49"
+   "p": "turbokick/app/assets/options-Dc3ya0Sz.js",
+   "s": 2646,
+   "h": "b158b902550b1bd6a3da8495161c780f64cd5fdb7eeb8880d94d9dd9122c8c22"
   },
   {
-   "p": "turbokick/app/assets/p2p-Cxst7Bja.js",
-   "s": 174619,
-   "h": "b9b513de96850dc887ecba36cee39cf5c6aca845824915a5a703981c22383dd7"
+   "p": "turbokick/app/assets/p2p-CTBIe9bI.js",
+   "s": 174618,
+   "h": "d4723d464cb1a468f290a6ab63e07052747a3725c140c329cc42f6f44d905d24"
   },
   {
    "p": "turbokick/app/assets/p2p-ZvRawAIL.js",
@@ -15492,29 +15492,29 @@
    "h": "c2a6a51a2b8df7f53a834626afc23d06de915c1d547366d0efdb5b525e60a943"
   },
   {
-   "p": "turbokick/app/assets/plan-CpyhmBgv.js",
-   "s": 1262,
-   "h": "052e963f0a6ad0670c76ad735c97dbc26cf772d1922d7b2dfa3cb83409b917f8"
+   "p": "turbokick/app/assets/plan-C0JA06rH.js",
+   "s": 1260,
+   "h": "b6531e9970b1c8018a4f822bb4ee48020274fd681efde3842b74b46d4e3f2eaa"
   },
   {
-   "p": "turbokick/app/assets/play-BlJwae3A.js",
+   "p": "turbokick/app/assets/play-CBMvLJav.js",
    "s": 2156,
-   "h": "12768e84a0af734aadc93f78207b9f91fe887d2c29f4abecbde32e1d8fb4dae3"
+   "h": "2cc6448469f0774318e261cdd4be3bce8ce3d4ccebd606470d07329aed86472a"
   },
   {
-   "p": "turbokick/app/assets/session-OpoCbuRc.js",
+   "p": "turbokick/app/assets/session--4ptwgMB.js",
    "s": 28910,
-   "h": "c57bfe94b34e4c72fea1bac6e4bccecf613059344c28f02f60bcfdd4115c6c87"
+   "h": "3b77eb958d2da663ac06f049bf63b133af448945b2d5524c533d6d50ae09f3db"
   },
   {
-   "p": "turbokick/app/assets/sim-Dsj4uYHN.js",
+   "p": "turbokick/app/assets/sim-BPVP-RcD.js",
    "s": 24605,
-   "h": "6d9888ba4612a055e84ab990fb37d8191d21637e70efa556821e78c23e0a8899"
+   "h": "37b9327067649417a7351b57e59e0244cb0ad69927d0bf7ba9ba77736896f1c4"
   },
   {
-   "p": "turbokick/app/assets/stats-D982iLc1.js",
+   "p": "turbokick/app/assets/stats-CTVIJ1sq.js",
    "s": 933,
-   "h": "044d7379609d5b15f0e0b4b5f5a1eb969803a24801c2c1d5374ce1e02c7a8866"
+   "h": "4a63295b39332e7ce24974197135cd5483e6f5c50b671166d46df6ab5d9d8baf"
   },
   {
    "p": "turbokick/app/assets/types-BwFz-Uy_.js",
@@ -15528,48 +15528,48 @@
   },
   {
    "p": "turbokick/app/index.html",
-   "s": 1008,
-   "h": "64557757a019afc1160672a5a88632f1b4d86d97db2e24e316eec5d56a18b172"
+   "s": 1026,
+   "h": "b0a97dd9eaf0ccb2fd53dabcd14adb8c501ac211adfa3ced61be37e4363be931"
   },
   {
    "p": "turbokick/card.png",
-   "s": 100957,
-   "h": "8b45a131071942458f8b0e661a75416c1d225b8993409c5dd162ed0b1501b1da"
+   "s": 107099,
+   "h": "76f56db0be472bebba3734ad5c110d55aaa607dbb3e485913fe37d218c545a48"
   },
   {
    "p": "turbokick/client/index.html",
-   "s": 911,
-   "h": "ad065e28dbf9acb81876550eee325a0b6dda32d38648fb7021c4bfc0a0b7c69b"
+   "s": 929,
+   "h": "5436aca643c81ba3e89c3dac0be37b3a4f3b1818f7f3acfb0c1b6ab7faccbd6e"
   },
   {
    "p": "turbokick/client/src/input/touch.css",
-   "s": 3503,
-   "h": "43368f505bc02b21a0c00c74a0560ee18c41b3997c32ec801847fa6ca2a8be2e"
+   "s": 3500,
+   "h": "4d98d9f62ac5cfdcab9ea9a404ecb00318e824bce8e7572580ea4257d12e716e"
   },
   {
    "p": "turbokick/client/src/style.css",
-   "s": 14256,
-   "h": "d64261353c5960280e2f6666e1b6fba756b15a2c4f1f041113e496eef3cbeaeb"
+   "s": 15884,
+   "h": "cc82e5449dd728a3e5000d0ad1521b41c8d2f7406d5d7bb58595d8cefecbb3df"
   },
   {
    "p": "turbokick/index.html",
-   "s": 4375,
-   "h": "28150df10b3b4887956ae6e67c25583dbf7a9da2ba0e5bcc39e3d39ebdb3cab3"
+   "s": 4366,
+   "h": "ef7385759fb97eabf36d597d136332ee315a64f86f71af767bd5c441e069afee"
   },
   {
    "p": "turbokick/logo.png",
-   "s": 185541,
-   "h": "6bb1095433a6c0a070670760f1ecb06f8750111cc4da3e68906a356ac48d79bd"
+   "s": 388892,
+   "h": "736f11327d83d2f27fb2c14bc6967d4b15d1781250bcb426adeb54bb2211178d"
   },
   {
    "p": "turbokick/manifest.webmanifest",
-   "s": 749,
-   "h": "47ac1b66fa38b40916829e531d26675867296d496193a949fb0cc383d1ae5b60"
+   "s": 743,
+   "h": "47ff8e2e16c9b272ebfd98dfde9f42a504b242f8d984f877ea52c4e7aefcd99c"
   },
   {
    "p": "turbokick/sw.js",
-   "s": 1973,
-   "h": "e79be3f1829f2a05e0c365f6fe8ee88af56ce9c64e3a473e335fd35ad01e0ca0"
+   "s": 1974,
+   "h": "0614b2a80bed8353f5144cc19c0622b59c8f540ad5533295b23d1880c710df58"
   },
   {
    "p": "vendor/fonts/fredoka-latin-wght-normal.woff2",
