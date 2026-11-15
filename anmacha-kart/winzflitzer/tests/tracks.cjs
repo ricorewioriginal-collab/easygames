@@ -1,7 +1,7 @@
 // Prüft alle Strecken: Überschneidungen, Hindernisse auf der Fahrbahn, Abstand zur Tischkante.
 // Aufruf: node winzflitzer/tests/tracks.cjs [--svg ordner]
 const path = require('path'), fs = require('fs');
-global.window = global; global.THREE = require(path.join(__dirname, '../../vendor/three-r128.min.js'));
+global.window = global; global.THREE = require(path.join(__dirname, '../../../vendor/three-r128.min.js'));
 for (const f of ['util', 'data', 'track']) require(path.join(__dirname, '../js/' + f + '.js'));
 const WF = global.WF; let bad = 0;
 const svgDir = process.argv.includes('--svg') ? process.argv[process.argv.indexOf('--svg') + 1] : null;

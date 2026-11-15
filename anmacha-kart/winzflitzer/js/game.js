@@ -1012,7 +1012,7 @@
   }
 
   // ----- Start: Boot-Bildschirm, dann „Drücke Start“ über der Demo-Fahrt
-  if (window.self !== window.top) { try { $('backLink').target = '_top'; } catch (e) {} }
+  // Teil von Kart Rush: der Zurück-Knopf führt im selben Fenster zurück ins Kart-Rush-Menü
   if (SET.padstyle && SET.padstyle !== 'auto') WF.Input.forceKind = SET.padstyle;
   titleStat();
   var bootBar = $('bootBar'); bootBar.style.width = '35%';
