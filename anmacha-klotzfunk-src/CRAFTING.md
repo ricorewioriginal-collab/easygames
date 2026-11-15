@@ -86,3 +86,45 @@ Im Überlebens- und Story-Modus öffnest du das Inventar (E oder 🎒). Unter �
 | 1× Braten | 1× Rohes Fleisch + 1× Bretter | Schmelzofen | Werkzeuge & Essen |
 | 4× Braten | 4× Rohes Fleisch + 1× Kohleerz | Schmelzofen | Werkzeuge & Essen |
 | 3× Glas | 3× Sand + 1× Kohleerz | Schmelzofen | Bauen |
+| 4× Steinziegel | 4× Stein | – | Bauen |
+| 2× Glattstein | 2× Stein + 1× Kohleerz | Schmelzofen | Bauen |
+| 4× Dunkle Bretter | 1× Fichtenholz + 1× Kohleerz | – | Bauen |
+| 4× Birkenbretter | 1× Holz + 1× Sand | – | Bauen |
+| 4× Dachziegel | 2× Ziegel + 1× Ton | – | Bauen |
+| 1× Bücherregal | 4× Bretter + 1× Wolle | – | Bauen |
+| 2× Laterne | 1× Eisenbarren + 1× Leuchtblock | Werkbank | Licht |
+| 1× Kupferblock | 4× Kupferbarren | Werkbank | Bauen |
+| 1× Eisenblock | 4× Eisenbarren | Werkbank | Bauen |
+| 1× Strohballen | 6× Weizen | – | Natur |
+| 4× Beton weiß | 2× Sand + 2× Kies + 1× Schnee | – | Bauen |
+| 4× Beton schwarz | 2× Sand + 2× Kies + 1× Kohleerz | – | Bauen |
+| 4× Beton rot | 2× Sand + 2× Kies + 1× Magma | – | Bauen |
+| 4× Beton orange | 2× Sand + 2× Kies + 1× Kupfererz | – | Bauen |
+| 4× Beton gelb | 2× Sand + 2× Kies + 1× Sandstein | – | Bauen |
+| 4× Beton grün | 2× Sand + 2× Kies + 1× Blätter | – | Bauen |
+| 4× Beton blau | 2× Sand + 2× Kies + 1× Ton | – | Bauen |
+| 4× Beton lila | 2× Sand + 2× Kies + 1× Funkkristall | – | Bauen |
+| 2× Buntglas rot | 2× Glas + 1× Magma | – | Bauen |
+| 2× Buntglas blau | 2× Glas + 1× Ton | – | Bauen |
+| 2× Buntglas grün | 2× Glas + 1× Blätter | – | Bauen |
+| 6× Bretter-Stufe | 3× Bretter | – | Formen |
+| 4× Bretter-Treppe | 6× Bretter | – | Formen |
+| 6× Bruchstein-Stufe | 3× Bruchstein | – | Formen |
+| 4× Bruchstein-Treppe | 6× Bruchstein | – | Formen |
+| 6× Ziegel-Stufe | 3× Ziegel | – | Formen |
+| 4× Ziegel-Treppe | 6× Ziegel | – | Formen |
+| 6× Steinziegel-Stufe | 3× Steinziegel | – | Formen |
+| 4× Steinziegel-Treppe | 6× Steinziegel | – | Formen |
+| 6× Sandstein-Stufe | 3× Sandstein | – | Formen |
+| 4× Sandstein-Treppe | 6× Sandstein | – | Formen |
+| 6× Marmor-Stufe | 3× Marmor | – | Formen |
+| 4× Marmor-Treppe | 6× Marmor | – | Formen |
+| 6× Dunkle Bretter-Stufe | 3× Dunkle Bretter | – | Formen |
+| 4× Dunkle Bretter-Treppe | 6× Dunkle Bretter | – | Formen |
+| 6× Glattstein-Stufe | 3× Glattstein | – | Formen |
+| 4× Glattstein-Treppe | 6× Glattstein | – | Formen |
+| 3× Holzzaun | 4× Bretter + 2× Stock | – | Formen |
+| 6× Steinmauer | 6× Bruchstein | – | Formen |
+| 16× Glasscheibe | 6× Glas | – | Formen |
+| 2× Holztür | 6× Bretter | – | Formen |
+| 3× Leiter | 7× Stock | – | Formen |

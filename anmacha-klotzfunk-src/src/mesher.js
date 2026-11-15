@@ -1,7 +1,8 @@
 // Chunk-Mesher: Flächen-Culling, weiche Ecken-Beleuchtung (Ambient Occlusion + Himmelslicht),
 // je Chunk bis zu drei Meshes (opak / transparent / Funk-Logos).
 import { CS, H, ATLAS_COLS, ATLAS_ROWS } from './consts.js';
-import { B, OPAQUE, LOGO0, EMIT, TRANS, SELF, CROSS, FLAT, TILES, isLogo as isLogoId } from './blocks.js';
+import { B, OPAQUE, LOGO0, EMIT, TRANS, SELF, CROSS, FLAT, SHAPE, TILES, isLogo as isLogoId } from './blocks.js';
+import { shapeBoxes } from './shapes.js';
 export { TILES };
 
 // n = Normale, o = Ursprungsecke, a/b = Kantenvektoren (a × b = n, also gegen den Uhrzeigersinn von außen)
@@ -96,6 +97,7 @@ export function meshFrom(nb, hms, maxY) {
           flat(O, x, y, z, TILES[t][0], sky(x, y, z), (r(1, 0) || r(-1, 0)) && !r(0, 1) && !r(0, -1));
           continue;
         }
+        if (SHAPE[t]) { boxes(TRANS[t] ? T : O, x, y, z, shapeBoxes(t, get, x, y, z), TILES[t], get, sky); continue; }
         const isLogo = isLogoId(t);
         const part = isLogo ? L : TRANS[t] ? T : O;
         const lamp = EMIT[t];
@@ -131,6 +133,31 @@ export function meshFrom(nb, hms, maxY) {
     }
   }
   return { opaque: O.finish(), trans: T.finish(), logo: L.finish() };
+}
+
+// Formblock: je Quader sechs Flächen; Flächen auf der Blockgrenze entfallen, wenn dort ein voller Block anliegt.
+// Textur: passender Ausschnitt der Kachel (eine Stufe zeigt die untere Hälfte), Helligkeit: Himmelslicht der Zelle und leichte Fugen-Schattierung
+function boxes(P, x, y, z, list, tiles, get, sky) {
+  const s0 = sky(x, y, z);
+  for (const bx of list) {
+    for (let fi = 0; fi < 6; fi++) {
+      const f = FACES[fi], ax = f.n[0] ? 0 : f.n[1] ? 1 : 2, pos = f.n[ax] > 0;
+      const edge = pos ? bx[ax + 3] >= 1 : bx[ax] <= 0;
+      if (edge && OPAQUE[get(x + f.n[0], y + f.n[1], z + f.n[2])]) continue;
+      const s = edge ? (sky(x + f.n[0], y + f.n[1], z + f.n[2]) + s0) / 2 : s0;
+      const [u0, v0, du, dv] = tileUv(tiles[f.k], false);
+      const ao = edge ? 1 : 0.84;
+      for (let k = 0; k < 4; k++) {
+        const c = f.c[k], p = [0, 1, 2].map(i => c.p[i] ? bx[i + 3] : bx[i]);
+        const ia = f.a[0] ? 0 : f.a[1] ? 1 : 2, ib = f.b[0] ? 0 : f.b[1] ? 1 : 2;
+        const tu = (f.a[ia] > 0 ? p[ia] : 1 - p[ia]), tv = (f.b[ib] > 0 ? p[ib] : 1 - p[ib]);
+        P.pos.push(x + p[0], y + p[1], z + p[2]);
+        P.uv.push(u0 + tu * du, v0 + tv * dv);
+        P.col.push(ao, s, 0, fi);
+      }
+      const b = P.n * 4; P.idx.push(b, b + 1, b + 2, b, b + 2, b + 3); P.n++;
+    }
+  }
 }
 
 // Pflanze: zwei diagonale Flächen, beidseitig (opakes Mesh, Alpha-Ausschnitt)

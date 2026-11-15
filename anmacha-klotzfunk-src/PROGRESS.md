@@ -179,6 +179,20 @@ Grenzen stehen in MULTIPLAYER.md (Vorrat der Gäste nur für den Besuch, Tiere n
 
 Nicht prüfbar: echte Controller (nur simuliert, siehe TESTING.md). Native `confirm()`-Abfragen (Welt löschen) bedient der Browser selbst, dort hilft die gemeinsame easygames-`gamepad.js` nicht.
 
+
+## 2k. Modernisierung, Etappe 9: Formblöcke und neue Bauelemente (1.11.0) ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Formblöcke | Stufen und Treppen aus 8 Baustoffen (Bretter, Bruchstein, Ziegel, Steinziegel, Sandstein, Marmor, dunkle Bretter, Glattstein), Holzzaun, Steinmauer, Glasscheibe (verbinden sich mit Nachbarn), Holztür (zweiteilig, öffnet als Säule), Leiter (klettern) | `src/blocks.js`, `src/shapes.js` |
+| Darstellung | Quader je Formblock im Chunk-Mesher (auch im Worker), Textur-Ausschnitt passend zur Größe, Flächen an vollen Nachbarn entfallen; Scheiben im durchsichtigen Mesh | `src/mesher.js` |
+| Physik | Kollision mit den Quadern statt mit dem Würfel; an Stufen und Treppen steigt man bis 0,5 ohne Springen hoch (volle Blöcke bleiben Hürden); Leiter: Springen/Vorwärts klettert, Schleichen hält, sonst langsames Rutschen | `src/physics.js` |
+| Bauen | Treppe steigt in Blickrichtung (4 Ids je Material, abgebaut gibt es die Grundform); Stufe auf Stufe = voller Block; Tür antippen öffnet/schließt die ganze Säule, mit Tür in der Hand oben drauf setzt man die zweite Hälfte | `src/game.js` |
+| Neue Baustoffe | Steinziegel, Glattstein, dunkle Bretter, Birkenbretter, Dachziegel, Bücherregal, Laterne (leuchtet), Kupfer- und Eisenblock, Strohballen, Beton in 8 Farben, Buntglas rot/blau/grün; neuer Inventar-Reiter „Formen“ | `src/blocks.js`, `src/textures.js` |
+| Rezepte | für jedes neue Bauelement (Prüfung im Test) | `src/crafting.js` |
+
+Ids 80–146 hinten angehängt, alte Ids unverändert, alte Spielstände laden unverändert (Format speichert nur Ids). Netzwerk: Tür und Treppe gehen über die normalen Blockänderungen.
+
 ---
 
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)
@@ -189,7 +203,7 @@ Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähig
 |---|---|---|---|---|
 | 4 | Voxel-Engine | ✅ | 1 / 5 | Meshing im Web Worker ✅; Formblöcke (Treppen, Halbblöcke) wären der nächste Schritt |
 | 4/5 | Weltgenerierung, Biome, Höhlen | ✅ | 1 | Biom-Tiere (Etappe 2), verlassene Minen/geheime Räume als Strukturen (Etappe 3) |
-| 6 | Blocksystem | 🟡 | 1 ✅ / 3 | Formblöcke (Treppen, Halbblöcke, Zäune, Türen, Fenster) brauchen Nicht-Würfel-Meshing; Schilder, Möbel |
+| 6 | Blocksystem | ✅ | 1 / 3 / 9 | Formblöcke (Stufen, Treppen, Zäune, Mauern, Scheiben, Türen, Leitern) ✅; später Schilder, Möbel als KayKit-Deko (Etappe 10) |
 | 7 | Bauen | ✅ | 3b | Vorschau, Formen, Kopieren/Einfügen ✅; später Drehen beim Einfügen, Bauvorlagen |
 | 8 | Crafting, Werkzeuge, Stationen | ✅ | 2 | später: Kochstelle, Schmelzen mit Zeitablauf, Werkzeug-Haltbarkeit je Stück statt je Stapel |
 | 9 | Survival | ✅ | 2 | Betten/eigener Startpunkt, Rüstung (mit Gegnern, Etappe 3) |
@@ -289,7 +303,7 @@ Damit sind alle geplanten Etappen umgesetzt. Offen bleibt vor allem, was sich hi
 - Tiere haben keine Bein-Animation (nur Wippen beim Laufen) und vermehren sich nicht; ein Chunk wird nur einmal besiedelt.
 - In alten Generator-1-Welten gibt es keine Erze, dort reichen die Werkzeuge bis Stein.
 - Ein Gegenstand in der Hand ist im schmalen Hochformat am Handy kaum zu sehen (liegt am Bildrand); die Hotbar zeigt ihn.
-- Es gibt kein Wetter und keine Türen, darum auch keine Wetter- oder Türgeräusche. Die Klänge wurden nur auf fehlerfreien Ablauf geprüft, nicht angehört.
+- Es gibt kein Wetter, darum keine Wettergeräusche; Türen klicken nur. Formblöcke haben flache Schattierung ohne Ecken-Verdunklung. Die Klänge wurden nur auf fehlerfreien Ablauf geprüft, nicht angehört.
 - Der Controller wurde nur simuliert (Gamepad-API im Browser-Test), nicht mit einem echten Gerät. Safari am iPhone kennt keine Vibration am Controller.
 - Ziehen & Ablegen im Inventar geht mit der Maus; am Handy legt Antippen in den gewählten Platz.
 - Die Weltkarte zeigt ein Farbfeld je 4×4 Blöcke; Bauwerke sind darauf nicht einzeln zu erkennen.

@@ -48,6 +48,15 @@ Mit **Linkshändermodus** (Einstellungen) liegen am Handy die Tasten links und d
 
 **Menüs mit dem Controller:** Startmenü, Pause, Inventar, Handel, Karte, Einstellungen, Mehrspieler und Umkipp-Fenster: Steuerkreuz oder linker Stick wählt (räumlich, auch in Rastern), Bestätigen-Taste drückt, Zurück-Taste schließt. Bestätigen ist A (Xbox), ✕ (PlayStation) und – wie bei Nintendo üblich – A rechts (Switch). Schieberegler und Auswahllisten ändert man mit ← →, der rechte Stick scrollt. Im Inventar wechseln LB/RB die Reiter, LT/RT den Hotbar-Platz, X legt den gewählten Block in einen freien Platz. Auf der Karte zoomen LB/RB, der rechte Stick verschiebt. Textfelder (Startwert, Name, Codes) öffnen die Bildschirm-Tastatur von easygames.
 
+## Formblöcke und Bauelemente (ab 1.11)
+- Reiter **Formen** im Inventar: Stufen und Treppen aus 8 Baustoffen, Holzzaun, Steinmauer, Glasscheibe, Holztür, Leiter.
+- **Treppen** steigen in Blickrichtung. Auf Stufen und Treppen läuft man ohne Springen hinauf; auf volle Blöcke muss man weiter springen.
+- **Stufe auf Stufe** (oben draufsetzen) wird zum vollen Block.
+- **Zäune, Mauern, Scheiben** verbinden sich mit gleichen Nachbarn und mit vollen Blöcken.
+- **Tür:** zwei Türblöcke übereinander setzen (mit der Tür in der Hand auf die untere Hälfte), antippen bzw. Setzen-Taste öffnet und schließt beide. Die Tür richtet sich nach den Wänden links und rechts.
+- **Leiter** an eine Wand setzen: Springen oder vorwärts klettert, Schleichen hält dich fest, sonst rutschst du langsam.
+- Neue Baustoffe: Steinziegel, Glattstein, dunkle Bretter, Birkenbretter, Dachziegel, Bücherregal, Laterne, Kupfer- und Eisenblock, Strohballen, Beton in 8 Farben, Buntglas (rot, blau, grün). Rezepte: CRAFTING.md.
+
 ## Weltkarte
 - 🗺, **M** oder Antippen der Minikarte öffnet die Karte. Zu sehen ist nur, was du schon entdeckt hast (Umkreis von etwa 5 Chunks um deine Wege).
 - Ziehen verschiebt, ＋/－ oder das Mausrad zoomen, „◎ Zu mir“ springt zurück. Der Pfeil zeigt deine Blickrichtung.

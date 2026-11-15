@@ -1,5 +1,7 @@
 // Spieler-Physik (AABB, achsenweise Bewegung) und Voxel-Raycast.
 import { B } from './world.js';
+import { SHAPE } from './blocks.js';
+import { shapeHits } from './shapes.js';
 
 export const HALF = 0.3, HEIGHT = 1.8, EYE = 1.62;
 const GAP = 1e-3;
@@ -17,8 +19,13 @@ export class Player {
     const x0 = Math.floor(x - HALF), x1 = Math.floor(x + HALF - 1e-7);
     const z0 = Math.floor(z - HALF), z1 = Math.floor(z + HALF - 1e-7);
     const y0 = Math.floor(y), y1 = Math.floor(y + HEIGHT - 1e-7);
+    this.shaped = false;
     for (let by = y0; by <= y1; by++) for (let bz = z0; bz <= z1; bz++) for (let bx = x0; bx <= x1; bx++) {
-      if (world.isSolid(bx, by, bz)) return true;
+      if (!world.isSolid(bx, by, bz)) continue;
+      const t = world.getBlock(bx, by, bz);
+      if (!SHAPE[t]) return true;
+      // Formblock (Stufe, Treppe, Zaun …): nur seine Quader zählen
+      if (shapeHits(t, (a, b, c) => world.getBlock(a, b, c), bx, by, bz, x - HALF, y, z - HALF, x + HALF, y + HEIGHT, z + HALF)) { this.shaped = true; return true; }
     }
     return false;
   }
@@ -29,6 +36,7 @@ export class Player {
       d -= s;
       this[axis] += s;
       if (this.collides(world, this.x, this.y, this.z)) {
+        if (this.shaped) { this.moveShaped(world, axis, s); return; }
         if (axis === 'y') this.y = s > 0 ? Math.floor(this.y + HEIGHT) - HEIGHT - GAP : Math.floor(this.y) + 1 + GAP;
         else this[axis] = s > 0 ? Math.floor(this[axis] + HALF) - HALF - GAP : Math.floor(this[axis] - HALF) + 1 + HALF + GAP;
         this['v' + axis] = 0;
@@ -36,6 +44,32 @@ export class Player {
         return;
       }
     }
+  }
+
+  // Anstoßen an einem Formblock: auf Stufenhöhe hochsteigen (≤ 0,5, nur am Boden) oder bis kurz vor die Form herantasten
+  moveShaped(world, axis, s) {
+    if (axis !== 'y' && this.onGround) {
+      const y0 = this.y;
+      for (const up of [0.25, 0.5 + 1e-3]) {
+        if (!this.collides(world, this.x, y0 + up, this.z)) {
+          // Fuß auf die Oberkante absenken
+          let lo = y0, hi = y0 + up;
+          for (let i = 0; i < 10; i++) { const m = (lo + hi) / 2; if (this.collides(world, this.x, m, this.z)) lo = m; else hi = m; }
+          this.y = hi + GAP; return;
+        }
+      }
+    }
+    this[axis] -= s;
+    let lo = 0, hi = 1;
+    for (let i = 0; i < 10; i++) { const m = (lo + hi) / 2; this[axis] += s * m; const c = this.collides(world, this.x, this.y, this.z); this[axis] -= s * m; if (c) hi = m; else lo = m; }
+    this[axis] += s * lo;
+    this['v' + axis] = 0;
+    if (axis === 'y' && s < 0) this.onGround = true;
+  }
+
+  onLadder(world) {
+    const fx = Math.floor(this.x), fz = Math.floor(this.z);
+    return world.getBlock(fx, Math.floor(this.y + 0.1), fz) === B.LADDER || world.getBlock(fx, Math.floor(this.y + 1), fz) === B.LADDER;
   }
 
   // inp: { f, r, jump, down, sprint } – f/r analog in [-1, 1]
@@ -101,6 +135,9 @@ export class Player {
         }
         this.vy -= this.vy * Math.min(1, 3 * dt);
         this.vy = Math.max(-4, Math.min(this.vy, 4));
+      } else if (this.onLadder(world)) { // Leiter: Springen oder Vorwärts klettert, Schleichen hält, sonst langsam rutschen
+        this.vy = inp.jump || inp.f > 0.3 ? 3.4 : inp.sprint && !inp.f ? 0 : Math.max(this.vy - 28 * dt, -2.2);
+        this.fallT = 0;
       } else {
         this.vy = Math.max(-55, this.vy - 28 * dt);
         if (this.gliding) this.vy = Math.max(this.vy, -2.2);

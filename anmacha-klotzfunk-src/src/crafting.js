@@ -1,5 +1,5 @@
 // Zentrale Rezeptverwaltung: Prüfen und Herstellen als reine Funktionen (ohne Oberfläche, dadurch testbar).
-import { B, LOGO0, LOGO_COUNT, BLOCKS } from './blocks.js';
+import { B, LOGO0, LOGO_COUNT, BLOCKS, FORM_MATS } from './blocks.js';
 import { I, ITEMS, TIERS, KINDS, nameOf } from './items.js';
 
 export const MAX_STACK = 999; // Höchstzahl je Blocktyp im Vorrat
@@ -75,6 +75,30 @@ RECIPES.push(
   { id: 'cook', give: [I.MEAT_COOKED, 1], need: [[I.MEAT_RAW, 1], [B.PLANKS, 1]], st: 'ofen' },
   { id: 'cookCoal', give: [I.MEAT_COOKED, 4], need: [[I.MEAT_RAW, 4], [B.COAL, 1]], st: 'ofen' },
   { id: 'glassOven', give: [B.GLASS, 3], need: [[B.SAND, 3], [B.COAL, 1]], st: 'ofen' }
+);
+// ab 1.11: neue Baustoffe und Formblöcke (Etappe 9)
+RECIPES.push(
+  { id: 'stonebrick', give: [B.STONEBRICK, 4], need: [[B.STONE, 4]] },
+  { id: 'smooth', give: [B.SMOOTH, 2], need: [[B.STONE, 2], [B.COAL, 1]], st: 'ofen' },
+  { id: 'darkplanks', give: [B.DARKPLANKS, 4], need: [[B.SPRUCE, 1], [B.COAL, 1]] },
+  { id: 'birch', give: [B.BIRCH, 4], need: [[B.WOOD, 1], [B.SAND, 1]] },
+  { id: 'roof', give: [B.ROOF, 4], need: [[B.BRICK, 2], [B.CLAY, 1]] },
+  { id: 'books', give: [B.BOOKS, 1], need: [[B.PLANKS, 4], [B.WOOL, 1]] },
+  { id: 'lantern', give: [B.LANTERN, 2], need: [[I.IRON_INGOT, 1], [B.LAMP, 1]], st: 'werkbank' },
+  { id: 'copperblock', give: [B.COPPERBLOCK, 1], need: [[I.COPPER_INGOT, 4]], st: 'werkbank' },
+  { id: 'ironblock', give: [B.IRONBLOCK, 1], need: [[I.IRON_INGOT, 4]], st: 'werkbank' },
+  { id: 'hay', give: [B.HAY, 1], need: [[I.WHEAT, 6]] },
+  ...[B.SNOW, B.COAL, B.MAGMA, B.COPPER, B.SANDSTONE, B.LEAVES, B.CLAY, B.CRYSTAL].map((dye, k) => ({ id: 'concrete' + k, give: [B['CONCRETE' + k], 4], need: [[B.SAND, 2], [B.GRAVEL, 2], [dye, 1]] })),
+  ...[[B.MAGMA, 1], [B.CLAY, 1], [B.LEAVES, 1]].map((d, k) => ({ id: 'stained' + k, give: [B['STAINED' + k], 2], need: [[B.GLASS, 2], d] })),
+  ...FORM_MATS.flatMap(([k, , full], i) => [
+    { id: 'slab' + k, give: [101 + i, 6], need: [[full, 3]] },
+    { id: 'stairs' + k, give: [109 + i * 4, 4], need: [[full, 6]] }
+  ]),
+  { id: 'fence', give: [B.FENCE, 3], need: [[B.PLANKS, 4], [I.STICK, 2]] },
+  { id: 'wall', give: [B.WALL, 6], need: [[B.COBBLE, 6]] },
+  { id: 'pane', give: [B.PANE, 16], need: [[B.GLASS, 6]] },
+  { id: 'door', give: [B.DOOR, 2], need: [[B.PLANKS, 6]] },
+  { id: 'ladder', give: [B.LADDER, 3], need: [[I.STICK, 7]] }
 );
 for (const r of RECIPES) r.cat = (ITEMS[r.give[0]] || BLOCKS[r.give[0]]).cat;
 export const STATION_NAMES = { werkbank: 'Werkbank', ofen: 'Schmelzofen' };

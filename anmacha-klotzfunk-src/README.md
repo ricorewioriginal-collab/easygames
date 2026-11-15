@@ -60,6 +60,7 @@ Stand und Plan der Weiterentwicklung: [PROGRESS.md](PROGRESS.md). Tests: [TESTIN
 | `src/settings.js` | Einstellungen und Grafikstufen |
 | `src/worldmap.js`, `src/mapui.js` | Weltkarte: entdeckte Gebiete, Markierungen, Funkstationen; Kartenfenster |
 | `src/controls.js` | Tastenbelegung (Tastatur) |
+| `src/shapes.js` | Formblöcke: Quader für Mesher, Kollision (Stufen, Treppen, Zäune, Mauern, Scheiben, Türen, Leitern) |
 | `src/gamepad.js` | Controller: Erkennung Xbox/PlayStation/Switch, Tastensymbole, Belegung, Menü-Navigation, Vibration |
 | `src/audio.js` | ein AudioContext: Effekte, Schritte, Tiere, Technik, Radio-Musik (alles erzeugt) |
 | `src/quests.js` | Story-Aufträge |
