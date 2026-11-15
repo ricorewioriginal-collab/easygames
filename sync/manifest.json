@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "870e65eeb043",
- "generated": "2026-11-15T18:58:28+01:00",
- "commit": "86f649b75e707bccc08acd2fdb59253791bd960c",
+ "version": "43192332029d",
+ "generated": "2026-11-15T18:04:05Z",
+ "commit": "ecba98e77bfc43e018652898ca411ff3bf3070f3",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1568,8 +1568,8 @@
   },
   {
    "p": "anmacha-funkparcours/chars.js",
-   "s": 3646,
-   "h": "95f9ddf5cd9ce0878c15c372956dc7b19d1f856075a5d8ce3cd88f2d39d9f3d4"
+   "s": 10719,
+   "h": "cf378db19f47e42c40ca75ae7cab97bd12bbe5c94c2ab2c5c35a3fdaeb047eef"
   },
   {
    "p": "anmacha-funkparcours/commentary.js",
@@ -1593,8 +1593,8 @@
   },
   {
    "p": "anmacha-funkparcours/index.html",
-   "s": 14204,
-   "h": "b11a2798a86db6e69c78ca65769bf53b523a6e36bcc26cf2e5a695e1b6e125d0"
+   "s": 16002,
+   "h": "3b7d82a5094781aa13fc53be2b1e063a224087202e33362a446b0fd25b532f00"
   },
   {
    "p": "anmacha-funkparcours/logo.png",
@@ -1683,8 +1683,8 @@
   },
   {
    "p": "anmacha-funkparcours/main.js",
-   "s": 37407,
-   "h": "7a1c6b23fa1bcbb8cffc9089a14f36a00d497706ac86a39ceff6d6307c3a2eae"
+   "s": 42932,
+   "h": "18c0bc80d18c17805c3a4df939f030a49435e8904b2f50f0ddd4e59ca038072c"
   },
   {
    "p": "anmacha-funkparcours/manifest.webmanifest",
@@ -1693,8 +1693,8 @@
   },
   {
    "p": "anmacha-funkparcours/menu.js",
-   "s": 9506,
-   "h": "b56228fcea2a088b04ecc6bafd5ad9cd1479489511d627264ec0b6812a2a4290"
+   "s": 12255,
+   "h": "1dfc83a825d325464294e219cb155e6591bca9a1a2c8bbc7b73c1561c25b15a2"
   },
   {
    "p": "anmacha-funkparcours/pair.js",
@@ -1702,9 +1702,14 @@
    "h": "0947d8fa314cc82af68a2d18e7565f841ca91d90f2d493a96754d1b7ff7e781f"
   },
   {
+   "p": "anmacha-funkparcours/pickview.js",
+   "s": 10675,
+   "h": "19a11510ec85d5631ae408c37e800b9174feee2b1293b1b617e561924a3c143d"
+  },
+  {
    "p": "anmacha-funkparcours/scene.js",
-   "s": 76195,
-   "h": "78a0536c55d811bc8db9775ca1233788d2e375ba28147b7880a5ade3937909ba"
+   "s": 78234,
+   "h": "ad1c5591c04ab9af1bef7cb9c235eab1e599d7dbbc1218c99e6c5e3426a6b6ca"
   },
   {
    "p": "anmacha-funkparcours/stick.js",
@@ -1713,8 +1718,8 @@
   },
   {
    "p": "anmacha-funkparcours/style.css",
-   "s": 25355,
-   "h": "279229ab934dadcf1f094c17e1f9e8aeab09759ab812abb7d01e0e0d3727ec59"
+   "s": 33906,
+   "h": "ae37d1e8738efed2954e7bdf2d3f52460a5e8c259a6f0feb5220ecfafd7dc7b9"
   },
   {
    "p": "anmacha-funkparcours/sw.js",
@@ -1725,6 +1730,11 @@
    "p": "anmacha-funkparcours/tips.js",
    "s": 3858,
    "h": "74cb9ad7aaa842123d87e3597c464d5097444cde53a5e17a3a9c5ffcdc793e07"
+  },
+  {
+   "p": "anmacha-funkparcours/zotikfig.js",
+   "s": 17114,
+   "h": "6615cdc3eb0db4bb7ee15e8b625f4d8b0143f28e5e5e1c8776edd5f8bac8a429"
   },
   {
    "p": "anmacha-gesucht/audio.js",
@@ -13859,7 +13869,7 @@
   {
    "p": "sync/catalog.json",
    "s": 251134,
-   "h": "4c20c6514e0aaede2063b4dbfb3acfd19fa1c3a02ee8e1c2eed586a3ec167548"
+   "h": "90fda3e6e6ee8a55fdab776c2541a5b00a45eebdac2e2178e10cc17fb842c1b7"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
