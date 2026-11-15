@@ -253,6 +253,16 @@ Dateien: `js/util.js` (Geometrie-Bündelung, Figuren, Pappnase, Blitz, Partikel)
 
 
 
+### 🧒 Kinderleichter Einstieg, roter Faden & schnellerer Start (November 2026)
+- **Hauptmenü aufgeräumt:** Speichern/Google, Konto, Fernseher, Handy-Controller, Handbuch und Fehler melden liegen hinter „⚙️ Speichern, Fernseher & mehr“ (für Eltern); „Fehler melden“ steht nur noch einmal da. Der DE/EN-Schalter verdeckt das Logo nicht mehr.
+- **Start ohne Gedränge:** Rosis Begrüßung ist kurz, das Tagesgeschenk kommt erst danach, die Kamera zeigt Held und Haus schräg von der Seite. Ein gelber ⬇️-Pfeil schwebt über der nächsten Person, bis man mit jemandem gesprochen hat (`js/einstieg.js`).
+- **Knöpfe nach und nach:** Ganz neue Spieler sehen den 🎉-Spaß-Knopf erst nach Kapitel 1 – dann mit „Neu!“-Glitzer.
+- **Roter Faden zwischen den Welten:** Nach der Inselreise und nach jeder Inselgeschichte zählt Rosi die 🌟 Weltenlichter und schickt einen mit „👣 Weg“ zur nächsten offenen Welt (`istory.bridge()`). Beim **Fest der Welten** gibt es Feuerwerk und einen **Abspann** mit allen Welten und ihren Helden (`istory.credits()`).
+- **🗓️ Wochen-Ereignis:** Jede Woche ein Thema (Piraten, Schnee, Tiere, Party, Regenbogen, Angeln) mit Tipp, passendem Wetter und Wochen-Ziel: 25 ⭐ sammeln → Wochen-Pokal +10 ⭐ und Sticker „Wochen-Held“. Steht im Aufgaben-Log 📋.
+- **Mitspielen:** Die Mitspieler-Liste zeigt die Sticker-Zahl jedes Spielers und die gemeinsamen Aufgaben (Party, Wohnung besuchen, Herz schenken).
+- **Schneller:** Kleine Objekte weit weg im Nebel werden nicht gezeichnet (am Handy früher, `?far=0` zum Vergleichen); das englische Wörterbuch (~290 KB) lädt nur, wenn Englisch gewählt ist – das Bündel ist rund 340 KB kleiner.
+- Test: `tests/einstieg.mjs`.
+
 ### 🌀 Spiel-Portale, Welten-Shows und Freundschaft (November 2026)
 - Portale zu anderen easygames-Spielen (`js/portale.js`): Regenbogenwelt → Gay Life!, Drachenwelt → AERU, Radiowelt → AnMaCha – Der Podcast, Stadt → Marktrausch, Taschi-Land → Taschi.
   Gemeinsame Rückfrage im Konsolen-Stil (`BI.portalAsk`, sichtbar obenauf, A/B/Escape), Reise-Übergang (`BI.portalGo`) und Portal-Modell (`BI.makePortal`). Links bleiben lokal (`../<spiel>/?from=bunteinsel`).

@@ -1,0 +1,35 @@
+/* Einstieg für Kinder (js/einstieg.js), Story-Brücke und Abspann (js/inselstory.js), aufgeräumtes Hauptmenü.
+   Aufruf: LANG=de_DE.UTF-8 node bunte-insel/tests/einstieg.mjs (statischer Server auf :8080 vom Repo-Ordner) */
+import { chromium } from 'playwright';
+const BASE = process.env.BASE || 'http://localhost:8080';
+const browser = await chromium.launch({ args: ['--no-sandbox', '--use-gl=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const p = await browser.newPage({ viewport: { width: 390, height: 844 }, locale: 'de-DE' }); const errs = []; let fails = 0;
+p.on('pageerror', e => errs.push(e.message)); await p.route('**/cloud/**', r => r.abort());
+const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
+await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 90000 }); await p.waitForTimeout(800);
+ok(await p.$eval('#menuMore', e => e.hidden), 'Eltern-Bereich (Speichern, Fernseher, Fehler melden) ist zugeklappt');
+await p.click('#bMenuMore'); ok(await p.$eval('#menuMore', e => !e.hidden), '⚙️ klappt den Eltern-Bereich auf');
+ok(await p.$eval('#bBugM', e => e.hidden), 'Fehler melden steht nicht doppelt im Menü');
+ok(await p.evaluate(() => { const a = document.getElementById('biLanguage').getBoundingClientRect(), t = document.getElementById('ttl').getBoundingClientRect(); return a.bottom <= t.top + 2; }), 'Sprach-Schalter verdeckt das Logo nicht');
+ok(await p.evaluate(() => !document.querySelector('script[src*="i18n-en.js"]')), 'Englisch-Wörterbuch wird auf Deutsch nicht geladen');
+await p.click('#bStart');
+ok(await p.evaluate(() => document.body.classList.contains('biNew') && getComputedStyle(document.getElementById('bFun')).display === 'none'), 'Neue Spieler: Spaß-Knopf erst nach Kapitel 1');
+await p.waitForFunction(() => __bi.dlg() && __bi.dlg().open, null, { timeout: 90000 });
+ok(await p.evaluate(() => !(__bi.save.daily && __bi.save.daily.d)), 'Tagesgeschenk wartet, bis Rosis Begrüßung vorbei ist');
+await p.evaluate(() => __bi.dlg().close());
+await p.waitForFunction(() => __bi.einstieg.arrowOn(), null, { timeout: 60000 }).catch(() => { });
+ok(await p.evaluate(() => __bi.einstieg.arrowOn()), 'Pfeil zeigt auf die erste Person');
+await p.waitForFunction(() => __bi.save.daily && __bi.save.daily.d, null, { timeout: 90000 }).catch(() => { });
+ok(await p.evaluate(() => !!(__bi.save.daily && __bi.save.daily.d)), 'Tagesgeschenk kommt danach');
+await p.evaluate(() => { __bi.save.story.c = 1; }); await p.waitForTimeout(1500);
+ok(await p.evaluate(() => !document.body.classList.contains('biNew') && document.getElementById('bFun').classList.contains('biGlow')), 'Nach Kapitel 1: Spaß-Knopf mit „Neu!“-Glitzer');
+const w = await p.evaluate(() => { const a = __bi.save.stars; __bi.einstieg.dbg.W().n = 0; for (let i = 0; i < 25; i++) __bi.einstieg.stars(1); return { done: __bi.einstieg.dbg.W().done, line: __bi.einstieg.weekLine(false) }; });
+ok(w.done === 1 && /🏆/.test(w.line), 'Wochen-Ereignis: 25 ⭐ → Wochen-Pokal (' + w.line + ')');
+await p.waitForTimeout(2500); ok(await p.evaluate(() => (__bi.save.stk || []).includes('woche')), 'Sticker „Wochen-Held“');
+ok(await p.evaluate(() => { __bi.dlg().close(); return __bi.istory.bridge(); }), 'Rosi schickt einen zur nächsten Welt (Story-Brücke)');
+await p.waitForTimeout(1200); ok(await p.evaluate(() => /Weltenlicht|Feuerwerk/.test(document.body.innerText)), 'Brücke spricht von Weltenlichtern');
+await p.evaluate(() => { __bi.dlg().close(); __bi.istory.credits(); }); await p.waitForTimeout(800);
+ok(await p.evaluate(() => { const c = document.getElementById('biCredits'); return !!c && /Fest der Welten/.test(c.innerText) && /Hüpf|Sonnenstern/.test(c.innerText); }), 'Abspann zeigt Fest der Welten und alle Welten');
+await p.click('#biCredits .cbtn'); ok(await p.evaluate(() => !document.getElementById('biCredits')), '„Weiter spielen“ schließt den Abspann');
+ok(!errs.length, 'keine Skriptfehler' + (errs.length ? ': ' + errs.slice(0, 3).join(' | ') : ''));
+await browser.close(); console.log(fails ? '\n' + fails + ' FEHLER' : '\nAlles gut ✅'); process.exit(fails ? 1 : 0);

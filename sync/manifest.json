@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "293e3b82a8dc",
- "generated": "2026-11-15T00:14:34+00:00",
- "commit": "6220cc071ff59a54facc8f4eca0e1e8cb58dc3ea",
+ "version": "7f6096df4c9d",
+ "generated": "2026-11-15T01:15:02+01:00",
+ "commit": "1487bae45e5f6fead77d056ca357b77deb4da99a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7558,8 +7558,8 @@
   },
   {
    "p": "bunte-insel/index.html",
-   "s": 110139,
-   "h": "fba9a941393c95a6430d9bb53ed4734ace98c1e467209403ff93d9eeb0c852a4"
+   "s": 111132,
+   "h": "806df4277c2e41018eb34083ea9a9268fc3bfb845f693635d7cdc130f5b32dcc"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -7618,8 +7618,8 @@
   },
   {
    "p": "bunte-insel/js/bunte-insel.min.js",
-   "s": 2185137,
-   "h": "1dedae31ae41036c11db935aa916d470ca5b4b2b23329cdc3b9d9ccc9af22c64"
+   "s": 1906999,
+   "h": "7a201564d7c383789df9d1fb338828568972ca5709aa9f0ab10d6eccbe51edc0"
   },
   {
    "p": "bunte-insel/js/camp.js",
@@ -7675,6 +7675,11 @@
    "p": "bunte-insel/js/einsatz.js",
    "s": 16207,
    "h": "834404ad37d2457be2e06af3104d36e06037bd3bd4d029f8f08eb58acaf0cd0d"
+  },
+  {
+   "p": "bunte-insel/js/einstieg.js",
+   "s": 7305,
+   "h": "f3e77da0deaea9b44512a93602b9e4b8da3a97d8d7beccdd43a6767e0114b853"
   },
   {
    "p": "bunte-insel/js/express.js",
@@ -7743,8 +7748,8 @@
   },
   {
    "p": "bunte-insel/js/i18n.js",
-   "s": 156141,
-   "h": "79cc0b6bd9c4df6976721a6ea1a6fb670b4bd378673ef80b6511eb28d08d9217"
+   "s": 157337,
+   "h": "79643036790d9449e1597209157949b73a29d6496f64bcc08d3528f91c553c3d"
   },
   {
    "p": "bunte-insel/js/innen.js",
@@ -7753,8 +7758,8 @@
   },
   {
    "p": "bunte-insel/js/inselstory.js",
-   "s": 27025,
-   "h": "23a03ebf206c25e981b086bfe86f87fcbd9a744edd7e38b459e72bb5e1c04717"
+   "s": 32366,
+   "h": "fd22b992c818c48d1ca3a36d7fd67a1148d121627e40e8fe4e8832f992ff0075"
   },
   {
    "p": "bunte-insel/js/jump.js",
@@ -7768,8 +7773,8 @@
   },
   {
    "p": "bunte-insel/js/kids.js",
-   "s": 30122,
-   "h": "0dc37aaf6f2696ff8b736d28354ab113479a3e322386b8de4fb9f34a46b9e19c"
+   "s": 30200,
+   "h": "7c066fa85f72801fb834eecd7a47d7e2107fb302070e293d25c65297394c8ed6"
   },
   {
    "p": "bunte-insel/js/kitchen.js",
@@ -7798,8 +7803,8 @@
   },
   {
    "p": "bunte-insel/js/main.js",
-   "s": 324512,
-   "h": "9adde41d27185298fd6f2db22bae0967aa8880c8c0f9bdfaa2ddc7d588cdfb9b"
+   "s": 328746,
+   "h": "6e4f2626d071f0e786a9d3aca7933acd86a8a7402219cb049eb04b5cd9e6330f"
   },
   {
    "p": "bunte-insel/js/meta.js",
@@ -7923,8 +7928,8 @@
   },
   {
    "p": "bunte-insel/js/story.js",
-   "s": 13032,
-   "h": "29de24401fef6e3e6cff0f0561115e4b149047a75bee14c29e8113dd030262a1"
+   "s": 13366,
+   "h": "9c4b21eea10aeef15be14579a15e7d43990cb577382cd8a61e6f0afa92631977"
   },
   {
    "p": "bunte-insel/js/storymode.js",
@@ -7953,8 +7958,8 @@
   },
   {
    "p": "bunte-insel/js/tasklog.js",
-   "s": 11038,
-   "h": "2249b5ec7190092057889b2f758fe404aab4b51a18b42735f238647e4cdfcfc9"
+   "s": 11297,
+   "h": "ba5f6b44a4cfdfd79dd70373d0b86f576773ec729e36f14b94e4d6e28edb255d"
   },
   {
    "p": "bunte-insel/js/themen.js",
@@ -12989,7 +12994,7 @@
   {
    "p": "sync/catalog.json",
    "s": 252821,
-   "h": "1aa901baf9f00a5f23e6914316d0b16624440d4fe944297250fb8f510c764f0d"
+   "h": "44930bfcc96af8ecca8a7b286032ff73d947eb4b106c1f928ac99d2382b870b9"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
