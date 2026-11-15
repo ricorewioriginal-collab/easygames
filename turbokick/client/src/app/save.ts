@@ -27,6 +27,15 @@ export interface Settings {
   camDistance: number;
   /** Ball-Kamera beim Start an */
   ballCam: boolean;
+  /** Kamerahöhe 0.6 … 1.6 */
+  camHeight: number;
+  /** Freies Umschauen (rechter Stick, Maus ziehen, Wischen) */
+  camFreeLook: boolean;
+  camLookSens: number;
+  camInvertX: boolean;
+  camInvertY: boolean;
+  /** Nach dem Umschauen automatisch zurück */
+  camRecenter: boolean;
   /** Einfache Touch-Steuerung: Der Stick zeigt die Richtung auf dem Bildschirm, das Auto lenkt selbst dorthin */
   touchAssist: boolean;
   /** Controller: Belegung, Luft-Pitch umkehren, Vibration */
@@ -71,7 +80,7 @@ export interface SaveData {
 export function defaultSave(): SaveData {
   return {
     version: SAVE_VERSION,
-    settings: { master: 0.8, music: 0.5, sfx: 0.9, muted: false, quality: 'auto', reducedMotion: false, highContrast: false, largeText: false, colorMode: 'standard', cameraShake: true, touchControls: 'auto', fov: 100, camDistance: 1, ballCam: true, touchAssist: true, padPreset: 'nexorb', padInvertY: false, padRumble: true, useStun: true, language: 'de' },
+    settings: { master: 0.8, music: 0.5, sfx: 0.9, muted: false, quality: 'auto', reducedMotion: false, highContrast: false, largeText: false, colorMode: 'standard', cameraShake: true, touchControls: 'auto', fov: 100, camDistance: 1, ballCam: true, camHeight: 1, camFreeLook: true, camLookSens: 1, camInvertX: false, camInvertY: false, camRecenter: true, touchAssist: true, padPreset: 'nexorb', padInvertY: false, padRumble: true, useStun: true, language: 'de' },
     profile: { name: 'Fahrer' },
     garage: { body: 'flitzer', decal: 'keins', accent: '' },
     achievements: {},
@@ -107,6 +116,12 @@ export function sanitize(raw: unknown): SaveData {
     fov: (typeof raw.version === 'number' && raw.version < 2) || s.fov === undefined ? 100 : num(s.fov, 100, 70, 120),
     camDistance: num(s.camDistance, 1, 0.7, 1.4),
     ballCam: bool(s.ballCam, true),
+    camHeight: num(s.camHeight, 1, 0.6, 1.6),
+    camFreeLook: bool(s.camFreeLook, true),
+    camLookSens: num(s.camLookSens, 1, 0.4, 2),
+    camInvertX: bool(s.camInvertX, false),
+    camInvertY: bool(s.camInvertY, false),
+    camRecenter: bool(s.camRecenter, true),
     touchAssist: bool(s.touchAssist, true),
     padPreset: oneOf(s.padPreset, ['nexorb', 'klassik', 'schulter'], 'nexorb'),
     padInvertY: bool(s.padInvertY, false),
