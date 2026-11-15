@@ -64,6 +64,22 @@ const Track = (() => {
     {"id":"huepf","name":"Hüpfstraßen-Klötzchenstadt","world":"huepf","desc":"Klötzchen-Look wie in der Hüpfstraße: Autos, Laster, Fluss mit Baumstämmen und Bahnübergang.","w":20,"theme":"wiese","sky":["#4aa0e8","#a0e0ff","#f0fff0"],"ground":"#6ad04a","road":"#3a3e48","wall":["#ffffff","#ff4a4a"],"curb":["#ffffff","#222222"],"fog":"#d8f4ff","fogR":[220,800],"light":[0.85,0.8,"#ffffff","#5a9a4a"],"props":["#ff4a4a","#4a8aff","#ffd24a","#7a4a2a","#4ad04a"],"profile":[[0,0],[0.45,0],[0.52,5],[0.6,5],[0.67,0],[1,0]],"pts":[[96,-266],[241,-291],[278,-200],[204,-66],[255,16],[254,121],[177,195],[121,325],[19,328],[-64,200],[-156,212],[-255,160],[-266,83],[-348,-14],[-245,-135],[-126,-144],[-89,-239],[-8,-291]]}
   ];
   tour.forEach(t => DEFS.push(t));
+  // Oma-Welt (aus „Oma-Rennen“ übernommen): sechs Stadt-Strecken mit Omas auf Raketen-Rollatoren. Indizes 27–32, Kulissen in oma.js.
+  const oma = [
+    { id: 'omamarkt', scene: 'markt', name: 'Marktplatz-Meile', theme: 'gruft', sky: ['#3a8ae8', '#9fd2ff', '#fff4dc'], ground: '#b8a890', road: '#8a7f74', wall: ['#c03a5a', '#ffffff'], curb: ['#e84a5a', '#ffffff'], fog: '#dbe8f5', fogR: [200, 720], light: [0.68, 0.85, '#fff4dc', '#7a6a5a'], desc: 'Kopfsteinpflaster, Marktstände und Kirchturm.',
+      pts: [[0, -200], [150, -210], [250, -150], [260, -40], [180, 30], [220, 140], [150, 240], [20, 220], [-40, 130], [-150, 190], [-260, 130], [-250, 0], [-180, -90], [-200, -180], [-100, -230]] },
+    { id: 'omapark', scene: 'park', name: 'Kurpark-Kurven', theme: 'wiese', mechanic: 'safari', sky: ['#2f7ee0', '#a8e0ff', '#fffbe0'], ground: '#5cb84a', road: '#c8b48a', wall: ['#2f7a2a', '#ffffff'], curb: ['#2f7a2a', '#f4f0d8'], fog: '#d8f0d8', fogR: [200, 740], light: [0.7, 0.85, '#fffbe0', '#3a6a2a'], desc: 'Springbrunnen, Musikpavillon – und freche Tauben auf der Strecke.',
+      pts: [[0, -230], [170, -220], [280, -120], [230, -10], [300, 90], [250, 220], [110, 250], [30, 170], [-70, 250], [-220, 230], [-300, 110], [-210, 20], [-290, -90], [-200, -200]] },
+    { id: 'omamall', scene: 'mall', name: 'Einkaufszentrum', theme: 'fantasia', mechanic: 'portal', sky: ['#5a3a8a', '#d080ff', '#ffe0f8'], ground: '#e8e0f0', road: '#bfb6cc', wall: ['#ff2d95', '#00e5ff'], curb: ['#ff2d95', '#ffffff'], fog: '#f0e0ff', fogR: [180, 680], light: [0.75, 0.75, '#ffe0f8', '#8a6aaa'], desc: 'Rolltreppen-Abkürzungen und Schaufensterbummel.',
+      pts: [[0, -180], [140, -200], [240, -110], [200, -10], [110, 10], [130, 120], [240, 170], [200, 270], [60, 280], [-60, 200], [-170, 250], [-280, 170], [-250, 40], [-150, -10], [-230, -110], [-140, -200]] },
+    { id: 'omastrand', scene: 'strand', name: 'Strandpromenade', theme: 'strand', mechanic: 'island', sky: ['#ff8a5a', '#ffc08a', '#fff0c0'], ground: '#f0d898', road: '#a89a88', wall: ['#2a6ad0', '#ffffff'], curb: ['#2a6ad0', '#ffffff'], fog: '#ffe0c0', fogR: [220, 800], light: [0.66, 0.8, '#ffc890', '#8a6a4a'], land: '#f0d898', desc: 'Sonnenuntergang, Strandkörbe und Möwen.',
+      pts: [[0, -260], [200, -250], [320, -150], [300, -20], [340, 120], [250, 240], [80, 250], [-50, 180], [-180, 250], [-320, 200], [-340, 40], [-260, -80], [-300, -190], [-160, -250]] },
+    { id: 'omaxmas', scene: 'xmas', name: 'Weihnachtsmarkt', theme: 'gruft', mechanic: 'ruins', sky: ['#060a24', '#1a2a5a', '#4a3a7a'], ground: '#eef4ff', road: '#7a8094', wall: ['#d0202a', '#ffffff'], curb: ['#d0202a', '#ffffff'], fog: '#2a3050', fogR: [120, 560], light: [0.6, 0.55, '#ffd8a0', '#4a5a8a'], desc: 'Lichterketten, Schnee und Lebkuchenstände.',
+      pts: [[0, -200], [120, -210], [210, -140], [160, -40], [230, 40], [250, 160], [150, 250], [20, 230], [-30, 120], [-140, 90], [-240, 170], [-310, 60], [-240, -60], [-260, -170], [-130, -220]] },
+    { id: 'omagrusel', scene: 'grusel', name: 'Geisterstunde im Altenheim', theme: 'gruft', mechanic: 'dragon', sky: ['#05030f', '#22104a', '#5a2a7a'], ground: '#2a2440', road: '#4a4458', wall: ['#ff7a1a', '#3a3a4a'], curb: ['#ff7a1a', '#2a2a30'], fog: '#1a1030', fogR: [80, 420], light: [0.5, 0.5, '#b0a0ff', '#2a1a4a'], desc: 'Mitternacht, Kürbisse – und Gespenster auf dem Flur.',
+      pts: [[0, -220], [160, -240], [270, -160], [250, -50], [150, -10], [200, 110], [300, 170], [230, 280], [60, 270], [-40, 180], [-150, 260], [-290, 220], [-320, 80], [-220, -20], [-280, -140], [-170, -230]] }
+  ];
+  oma.forEach(t => DEFS.push({ ...t, world: 'oma', w: 20, pts: t.pts.map(([x, z]) => [Math.round(x * 1.15), Math.round(z * 1.15)]), props: [t.wall[0], t.wall[1], t.ground, t.road] }));
   // Eigene Streckenform je Strecke: Polygon mit Eckradien [x, z, r] (Fahrtrichtung = Reihenfolge, Start in der Mitte der ersten Kante).
   // Büroklammer, Wellen-Strand, Kartbahn, Grand Prix, H-Block, Alpha-Schleife und Acht mit Brücke, Serpentinen, Herz, Stern, Kleeblatt …
   const LAYOUT = {
@@ -98,7 +114,8 @@ const Track = (() => {
   DEFS.forEach(d => { const l = LAYOUT[d.id]; if (l) { d.poly = l.p; d.w = l.w; d.cross = !!l.cross; } });
   const CUPS = [{ name: 'Sonnen-Cup', tracks: [0, 1, 3] }, { name: 'Spuk-Cup', tracks: [2, 4, 3] },
     { name: 'Elemente-Cup', tracks: [5, 6, 9] }, { name: 'Abenteuer-Cup', tracks: [7, 10, 8] }, { name: 'Portal-Cup', tracks: [11, 12, 14] }, { name: 'Fantasy-Cup', tracks: [13, 15, 16] }, { name: 'RicoReWi-Cup', tracks: [17, 16, 11] },
-    { name: 'Märchen-Cup', tracks: [18, 19, 20] }, { name: 'Insel-Cup', tracks: [21, 22, 23] }, { name: 'Stadt-Cup', tracks: [24, 25, 26] }];
+    { name: 'Märchen-Cup', tracks: [18, 19, 20] }, { name: 'Insel-Cup', tracks: [21, 22, 23] }, { name: 'Stadt-Cup', tracks: [24, 25, 26] },
+    { name: 'Kaffee-Cup', icon: '☕', tracks: [27, 28, 29] }, { name: 'Kuchen-Cup', icon: '🍰', tracks: [30, 31, 32] }, { name: 'Großer Rentenpokal', icon: '🏆', tracks: [29, 32, 28, 30] }];
   const SP = 3;                                       // Abstand der Abtastpunkte in Metern
   function cr(p0, p1, p2, p3, t) { const t2 = t * t, t3 = t2 * t; return [0, 1].map(k => 0.5 * ((2 * p1[k]) + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3)); }
   // Polygon mit Eckradien -> dichte Kontrollpunkte (Geraden bleiben gerade, Ecken werden Kreisbögen)

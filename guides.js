@@ -234,7 +234,8 @@ window.EASYGAMES_GUIDES = {
    "Gamepad: Stick oder Steuerkreuz lenken, A oder RT Gas, RB oder X driften, Y oder LB Item, B oder LT bremsen"
   ],
   "tipps": [
-   "Mit der Lenkhilfe (Aus, Leicht, Stark) wird das Fahren am Handy einfacher."
+   "Mit der Lenkhilfe (Aus, Leicht, Stark) wird das Fahren am Handy einfacher.",
+   "Die Oma-Bande aus dem früheren Oma-Rennen fährt jetzt hier mit: sieben Omas und Opa Kalle, der Raketen-Rollator und sechs Stadt-Strecken im Kaffee-Cup, Kuchen-Cup und Großen Rentenpokal."
   ]
  },
  "wobbel": {
@@ -776,19 +777,6 @@ window.EASYGAMES_GUIDES = {
    "Teilt euch auf: einer schneidet, einer kocht und serviert.",
    "Leg schon einen Teller bereit, bevor die Pfanne fertig ist – der Balken wird rot, kurz bevor es brennt.",
    "Den Feuerlöscher nach dem Löschen nah am Herd ablegen."
-  ]
- },
- "oma-rennen": {
-  "anleitung": "Oma-Rennen ist ein 3D-Funracer: Sieben Omas und Opa Kalle rasen auf Raketen-Rollatoren durch die Stadt. Wer nach allen Runden zuerst über die Ziellinie fährt, gewinnt. Aus den bunten Geschenkboxen gibt es Oma-Gegenstände: 🚀 Rheuma-Rakete (Schub), 🦷 Gebiss (hinter dir fallen lassen – wer drüberfährt, schleudert), 👜 Handtasche (nach vorne schleudern, prallt von Wänden ab), 🧶 Wollknäuel (verheddert Verfolger), 🍫 Pralinen-Lenkrakete (sucht die Oma vor dir), ☂️ Regenschirm (wehrt einen Treffer ab), 📢 Hörgeräte-Pfiff (alle vor dir drehen sich) und 💨 Puderwolke (nimmt allen vor dir die Sicht). In Kurven driften lädt einen Turbo, im Windschatten gibt es Extra-Schub, gelbe Pfeile am Boden beschleunigen. Jede Strecke hat ihre Tücken: Tauben im Kurpark, Rolltreppen-Abkürzungen im Einkaufszentrum, Möwen an der Promenade, Brücken auf dem Weihnachtsmarkt und Gespenster im Altenheim. Modi: 🏆 Grand Prix (3 Cups mit Punkten und Siegerehrung – Cups schalten neue Omas frei), 🏁 Einzelrennen, ⏱️ Zeitfahren (ohne Gegenstände, Bestzeiten), 👵👵 Zu zweit am geteilten Bildschirm und 🌐 Online & Handys – der Fernseher zeigt das Rennen, bis zu 4 Mitspielerinnen lenken per Handy (Beitritt per Code, Link oder QR-Code von überall), freie Plätze fahren Computer-Omas. Die Omas rufen Sprüche – im Browser mit einer Frauenstimme, in der RicoReWi-App mit der Android-Stimme.",
-  "steuerung": [
-   "Touch (wie bei Kart Rush: Weltentour): links der Joystick lenkt, rechts die Tasten-Raute – unten GAS, links BREMSE, rechts DRIFT (halten), oben ITEM. Daumen zwischen GAS und DRIFT drückt beides. Am Handy als Lenkrad zusätzlich „📱 Kippen“ zum Lenken und ⇄ zum Umdrehen der Richtung.",
-   "Tastatur: Pfeile oder WASD fahren, Leertaste/Enter/X Gegenstand, Shift/Z halten = Driften, Esc Pause. Zu zweit: Spielerin 1 WASD + Q + E, Spielerin 2 Pfeile + Shift rechts/M + Enter.",
-   "Gamecontroller (wie bei Kart Rush: Weltentour): Stick/Steuerkreuz lenkt, A/RT Gas, B/LT Bremse, RB/X Drift, LB/Y Gegenstand, Start Pause."
-  ],
-  "tipps": [
-   "Drift so lange halten, bis die Funken pink werden – dann gibt es den längsten Raketenschub.",
-   "Hebe dir den Regenschirm auf, wenn du vorne fährst: Pralinen-Raketen suchen sich die Erste.",
-   "Oma Hilde ist schwer – im Gedränge schiebt sie die anderen einfach zur Seite."
   ]
  },
  "fall-akte": {
