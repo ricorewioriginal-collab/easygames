@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5709e067d031",
- "generated": "2026-11-15T20:30:05+00:00",
- "commit": "49df44d9da9cc8c631886e81858a386c0c53423a",
+ "version": "bee9172f068a",
+ "generated": "2026-11-15T21:33:20+01:00",
+ "commit": "6e44ab3cbe9b5367e34b67f14a3e93a354cde30f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2158,13 +2158,13 @@
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 90188,
-   "h": "0db431f18b4410f432d69a6ec3395732827e19b188cea1d46408fe672f26df9b"
+   "s": 91333,
+   "h": "008708b8928eb584aae937b0e99c0be19d36d5def4288da2930fa4e7f7b03352"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 72160,
-   "h": "df714d3f6bb15e7eb7e86e9d4acb64471fbf709169ae3dce0cd5d56afda10771"
+   "s": 72344,
+   "h": "47b917afd276d5af706f2bfe0e060040f2ffc14248aebac03cf38b22db52d98a"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -2333,8 +2333,8 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/index.html",
-   "s": 10170,
-   "h": "286a1046c74c39c450eda125a3a0be65a7df8047502c1b6308c1f6c1413adce6"
+   "s": 10242,
+   "h": "8ab9c370a201c9695bbeb5cd42dc30a84419eec4da35c863de90798f5b285c68"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/audio.js",
@@ -2348,8 +2348,8 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/js/game.js",
-   "s": 76198,
-   "h": "f63c2ee99a77452929826eb1c8f4b195311b111f5c3f75e121ed54ad73531cf6"
+   "s": 76715,
+   "h": "e68a3576e56331d43f6318bcbb7a2b03b720b0bf5f87056d647751058de17276"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/input.js",
@@ -2388,8 +2388,8 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/style.css",
-   "s": 29549,
-   "h": "bd8e41be85bffad7215b100b66e73b22f2635dd2ff532454d54e2a2044a61c4d"
+   "s": 32098,
+   "h": "0b99ad39cefb87b2d78aae83501ef7a585d314020c22bb44403a84f36891110c"
   },
   {
    "p": "anmacha-kart/zotik-fox.js",
@@ -14174,7 +14174,7 @@
   {
    "p": "sync/catalog.json",
    "s": 245700,
-   "h": "46b6ae6d20f08737c3307df4d0d61571296e88c1c5e68ae18b3063f3d681b2d1"
+   "h": "d727aefe1a6476c1b6faa3d89afd31d29553aaf622ac066faa9d1d8e0c44ce9b"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
