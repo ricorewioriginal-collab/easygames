@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "7bf3024d11de",
- "generated": "2026-11-14T23:59:12+00:00",
- "commit": "7d2949dbdfc0e1ce1cd361f55dd6f96d5301ac9d",
+ "version": "67c8ee3e059f",
+ "generated": "2026-11-15T00:59:43+01:00",
+ "commit": "66f1aaf78b0d1d257f8aa5c2cbf35feb2f5baa86",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -848,13 +848,13 @@
   },
   {
    "p": "anmacha-funkparcours/audio.js",
-   "s": 4379,
-   "h": "4799de9210e31041acc6e51836c2cd84ccc7442cfc3aaa459d5b4ad7ef0b078c"
+   "s": 4820,
+   "h": "548cba7c19c7aea5c6f7e09b46161c0214d5545dddadeb2b833072f1b32db1f1"
   },
   {
    "p": "anmacha-funkparcours/bot.js",
-   "s": 4889,
-   "h": "311de6fd49fa62cf3b9ba642694047c4292613c18af60fca274c4bf645705884"
+   "s": 5192,
+   "h": "d46b38005eaed35bcb41cc0aec9df9a3aab8efdbc56b8c13dc2030ce96bc5f36"
   },
   {
    "p": "anmacha-funkparcours/card.png",
@@ -863,8 +863,8 @@
   },
   {
    "p": "anmacha-funkparcours/chars.js",
-   "s": 3320,
-   "h": "b1dbb8b2f5a59be1fa3dcddd14c5b40834ece259fcb499356e2e479622d1cf60"
+   "s": 3646,
+   "h": "95f9ddf5cd9ce0878c15c372956dc7b19d1f856075a5d8ce3cd88f2d39d9f3d4"
   },
   {
    "p": "anmacha-funkparcours/commentary.js",
@@ -873,18 +873,18 @@
   },
   {
    "p": "anmacha-funkparcours/controller.js",
-   "s": 4887,
-   "h": "0f8da1b52e13cd8f2cfdcabb636e1cffd8d0e38cd9b404c80325a7df643bedd6"
+   "s": 5045,
+   "h": "4eef76ece0c214c14c2ef862e6dda3bcc6ee4e3065a9e5f7a26ea00ba5245886"
   },
   {
    "p": "anmacha-funkparcours/engine.js",
-   "s": 25997,
-   "h": "c58498360c447bc6953ad878e05ccda5b24a8a7139cfd22af0c7feee89e8c5bd"
+   "s": 27088,
+   "h": "d4bdf5398359eab765ac2de1532a8b4e85cb34df98f3149bd210ea435d8924ab"
   },
   {
    "p": "anmacha-funkparcours/index.html",
-   "s": 13334,
-   "h": "8c7b83bea69bb09bcac185b248016d092f22807bf031cc4579dec8ebc8bc41a4"
+   "s": 13710,
+   "h": "1f70bc21fd1ecfd6ab8211cf112436a87f8ebc5c5925e867b2301541f9a129a2"
   },
   {
    "p": "anmacha-funkparcours/logo.png",
@@ -973,8 +973,8 @@
   },
   {
    "p": "anmacha-funkparcours/main.js",
-   "s": 29706,
-   "h": "5b4a947b7d9b24a23b7e3c5e2795422470f3a55a3663607d34e63d12227c3ece"
+   "s": 30746,
+   "h": "713deb429061dd029150cc78ca9bd85a9bc7288f4ea942d9d1b9d61e2093f50d"
   },
   {
    "p": "anmacha-funkparcours/manifest.webmanifest",
@@ -983,8 +983,8 @@
   },
   {
    "p": "anmacha-funkparcours/menu.js",
-   "s": 9231,
-   "h": "1271224408a340a5c13784cd5d3692a0d7a3db06704f6fe8f99d323dabcd9ca1"
+   "s": 9285,
+   "h": "fc5915a561abb1141b8a27633aaed0e038af9569f72bb817d65dd646d02ce1cb"
   },
   {
    "p": "anmacha-funkparcours/pair.js",
@@ -993,18 +993,18 @@
   },
   {
    "p": "anmacha-funkparcours/scene.js",
-   "s": 58157,
-   "h": "4aa3398623b06fee2528b156917bc0de0b717b9c43ecce167b3d66e0bdbe4836"
+   "s": 62170,
+   "h": "682b047efe3846e82c31f7ae9222f6a27b47afe6a6fb1786598707da991c12af"
   },
   {
    "p": "anmacha-funkparcours/stick.js",
-   "s": 2484,
-   "h": "c3b959806281c32ddd85748217c497ca20ed2af26ee660438201113637dcc151"
+   "s": 2638,
+   "h": "5fd0433e208e33eef832f3fe2037a337903333f7771917c2f6ab45811f2a89ee"
   },
   {
    "p": "anmacha-funkparcours/style.css",
-   "s": 23333,
-   "h": "48adf94b82b5f01414f437190a71bb7ed750c80ce7885f92ae4fc67ed4b34943"
+   "s": 24441,
+   "h": "ebe5c70642218441c00add59d6b24fd0405a0c8ee30407b52948710e5930de55"
   },
   {
    "p": "anmacha-funkparcours/sw.js",
@@ -9468,8 +9468,8 @@
   },
   {
    "p": "guides/anmacha-funkparcours.json",
-   "s": 18755,
-   "h": "de2ca9c60e3806e5e06f090a151e5d820240bc92d3fa7fbb054113b475c8bbdf"
+   "s": 18951,
+   "h": "e42f521a142f8d6cc16b157ec1d885bac15478f42828a063f65559e790c4ff76"
   },
   {
    "p": "guides/anmacha-gesucht.json",
@@ -12989,7 +12989,7 @@
   {
    "p": "sync/catalog.json",
    "s": 252821,
-   "h": "1458c0827711b4f09fd58b574dfd7ab080085b82f43198d325c7b60516c13fa1"
+   "h": "9bd8ec163001aba17a4257ff9a51f0c2d435cf9313780b95fd77f791028d6b54"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

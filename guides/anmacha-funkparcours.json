@@ -51,14 +51,14 @@
     "Sandsäcke: pendeln über einer langen Plattform. Ein Treffer stößt dich zurück und lähmt dich kurz.",
     "Bruchplatten: geben kurz nach dem Betreten nach und stürzen ins Wasser (Vorrunde nach 0,7 Sekunden, Halbfinale nach 0,55, Finale nach 0,45).",
     "Rutschtunnel: niedrige Tore über dem Weg. Nur geduckt kommst du durch; mit Anlauf ducken = durchrutschen. Unter einem Tor kannst du nicht aufstehen oder springen.",
-    "Seilschwung: In der Luft greift dein Läufer das Seil von selbst. Springen = loslassen, mit dem Schwung des Seils.",
-    "Ringschwung: Ringe an Seilen hintereinander. Dein Läufer greift jeden Ring von selbst; Springen = loslassen und zum nächsten Ring fliegen, am besten wenn der Ring nach vorn schwingt.",
-    "Klippenhänger: schmale Griffleisten an einer Wand. Dein Läufer hält sich an der Kante fest und hangelt mit rechts; mit Sprung hechtet er über die Lücke zur nächsten Leiste.",
+    "Seilschwung: Spring ab und drück in der Luft die Greifen-Taste (E/F/X, Gamepad X oder RB, am Handy ✊), sobald das Seil in Griffweite ist – der Knopf leuchtet dann grün. Springen = loslassen, mit dem Schwung des Seils.",
+    "Ringschwung: Ringe an Seilen hintereinander. Jeden Ring musst du selbst mit der Greifen-Taste packen; Springen = loslassen, dann im Flug wieder Greifen für den nächsten Ring – am besten loslassen, wenn der Ring nach vorn schwingt.",
+    "Klippenhänger: schmale Griffleisten an einer Wand. Spring hoch und drück Greifen, dann hält sich dein Läufer an der Kante fest und hangelt mit rechts; mit Sprung hechtet er über die Lücke – dort wieder Greifen drücken.",
     "Lachsleiter: eine Stange, die du an einem Brett Sprosse für Sprosse nach oben springst. Drück Springen im Takt, wenn die Stange gerade eingerastet ist. Wer zu früh drückt, rutscht eine Sprosse ab. Oben springt dein Läufer auf die Plattform.",
     "Schiebebrücke: Plattform, die waagerecht hin und her fährt.",
     "Fahrstuhl: Plattform, die auf und ab fährt.",
     "Trampolin: Springst du darauf, federt es dich hoch an Hangelstangen, die man sonst nicht erreicht.",
-    "Hangelstangen: Dein Läufer greift in der Luft automatisch zu. Mit links/rechts hangelst du, am Ende schwingt er selbst ab; mit Sprung springst du früher ab.",
+    "Hangelstangen: Im Sprung die Greifen-Taste drücken, dann mit links/rechts hangeln. Am Ende hält sich dein Läufer fest – mit Sprung springst du selbst ab.",
     "Steilwand: das Ziel. Mit vollem Tempo anlaufen und kurz vor der Wand springen. Du hast wie im Fernsehen drei Versuche („Versuch 2 von 3“, „Letzter Versuch an der Wand!“).",
     "Kantenhilfe: Knapp verfehlte Kanten erwischt dein Läufer noch."
    ]
@@ -78,7 +78,7 @@
     "Gamecontroller wie auf der Konsole: linker Stick oder Steuerkreuz = laufen, A (oder Y) = springen, B (oder X) oder Stick nach unten = ducken, Start = Pausemenü. Im Menü Steuerkreuz/Stick zum Wählen, A oder Start = OK, B oder Select = zurück. Bei Treffern, Platschern und im Ziel vibriert der Controller (wo der Browser es kann). Benutzt du den Controller, zeigen die Hinweise seine Knöpfe statt der Tasten.",
     "Touch: Stick links ziehen = laufen, nach unten ziehen = ducken. Rechts die Knöpfe ⤒ Springen (länger halten = höher) und ⤓ Ducken, dazu ❚❚ Pause und 🔊 Ton.",
     "Pausemenü: Weiter, Lauf neu starten (im Training), Ton und Kommentator an/aus, Zum Hauptmenü. Die Uhr steht, solange das Menü offen ist. Wechselst du während des Laufs in ein anderes Fenster, pausiert das Spiel von selbst.",
-    "Gekoppeltes Handy: Stick zum Laufen (runter = ducken), Knöpfe zum Springen und Ducken, gegriffen wird automatisch. Vor dem eigenen Lauf erscheint auf dem Handy der große Knopf „Bereit!“.",
+    "Gekoppeltes Handy: Stick zum Laufen (runter = ducken), Knöpfe zum Springen, Greifen und Ducken. Vor dem eigenen Lauf erscheint auf dem Handy der große Knopf „Bereit!“.",
     "🎙️ oben schaltet den Live-Kommentator (Sprachausgabe) ein und aus, 🔊 den Ton."
    ]
   },
@@ -125,7 +125,7 @@
     "Seilschwung: Lass das Seil los, wenn es nach vorn schwingt – dann fliegst du am weitesten.",
     "Sandsäcke: Beobachte den Takt und lauf direkt hinter einem Sack durch, wenn er gerade wegschwingt. Ein Treffer kostet viel Zeit, weil du zurückfliegst und kurz nicht steuern kannst.",
     "Schiebebrücke und Fahrstuhl: Spring ab, wenn die Plattform auf dich zukommt bzw. oben ist. Auf der Plattform fährst du mit.",
-    "Hangelstangen: Halte die Richtung nach rechts gedrückt. Mit einem Sprung kurz vor dem Ende geht es schneller weiter als mit dem automatischen Abschwingen.",
+    "Hangelstangen: Halte die Richtung nach rechts gedrückt. Mit einem Sprung kurz vor dem Ende geht es schneller weiter.",
     "Trampolin: Springe aus dem Lauf darauf – nur wer von oben aufkommt, wird hoch an die Stangen katapultiert.",
     "Pendelbalken: Bleib geduckt, bis du am letzten Balken vorbei bist – wer zwischendurch aufsteht, wird oft vom nächsten erwischt.",
     "Ringschwung: Lass jeden Ring los, wenn er nach vorn schwingt; der nächste Ring kommt dir dann entgegen.",
@@ -171,9 +171,9 @@
     "Drehwalzen (3): ohne Pause drüberlaufen, am Ende auf die Plattform springen.",
     "Pendelbalken (2): mit Anlauf ducken und unter beiden Stämmen durchrutschen, erst danach aufstehen.",
     "Bruchplatten (4): jede Platte trägt dich 0,7 Sekunden – im Lauf von Platte zu Platte springen.",
-    "Seilschwung: von der Kante abspringen, das Seil greift automatisch; loslassen, wenn es nach vorn schwingt.",
+    "Seilschwung: von der Kante abspringen, in Griffweite Greifen drücken; loslassen, wenn es nach vorn schwingt.",
     "Rutschtunnel (2 Tore): mit Tempo ducken und durchrutschen, zwischen den Toren geduckt bleiben.",
-    "Klippenhänger (2 Leisten): an die erste Leiste springen, nach rechts hangeln, am Ende mit Sprung zur zweiten und weiter zur Plattform.",
+    "Klippenhänger (2 Leisten): an die erste Leiste springen und Greifen drücken, nach rechts hangeln, am Ende mit Sprung zur zweiten und weiter zur Plattform.",
     "Steilwand (4,25 m): voll anlaufen, kurz vorher springen – Ziel!"
    ]
   },
@@ -187,7 +187,7 @@
     "Ringschwung (3): an den ersten Ring springen, bei jedem Vorschwung loslassen, vom letzten Ring auf die Plattform.",
     "Pendelbalken (3): durchgehend geduckt, mit Anlauf rutschen.",
     "Bruchplatten (5): nur 0,55 Sekunden Halt pro Platte.",
-    "Lachsleiter (5 Sprossen): unten an die Stange springen, dann im Takt Sprosse für Sprosse hoch; oben springt dein Läufer auf die Plattform.",
+    "Lachsleiter (5 Sprossen): unten an die Stange springen und Greifen drücken, dann im Takt Sprosse für Sprosse hoch; oben springt dein Läufer auf die Plattform.",
     "Trampolin: aus dem Sprung drauf, hoch an die Stangen, hangeln und zur nächsten Plattform.",
     "Schiebebrücke: Timing abwarten.",
     "Steilwand (4,5 m): voll anlaufen und springen."

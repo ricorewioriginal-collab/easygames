@@ -88,12 +88,14 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
       <button class="act" id="aMenu" aria-label="Pause"><span class="ai">❚❚</span><span>Pause</span></button>
       <button class="act" id="aSnd" aria-label="Ton"><span class="ai">🔊</span><span>Ton</span></button>
       <button class="act duck" data-k="d" aria-label="Ducken"><span class="ai">⤓</span><span>Ducken</span></button>
+      <button class="act grab" data-k="g" aria-label="Greifen"><span class="ai">✊</span><span>Greifen</span></button>
       <button class="act main" data-k="j" aria-label="Springen"><span class="ai">⤒</span><span>Springen</span></button>
     </div>
   </div>
 </section>
 
 <div id="big" hidden></div>
+<div id="redfx" aria-hidden="true"></div>
 
 <div id="pick" class="dialog" hidden><div class="panel glass wide" id="pickBox"><h2 id="pickTitle">Figur wählen</h2><div class="sub" id="pickWho"></div><div id="pickList"></div><button class="btn green" id="bPickOk">Fertig</button></div></div>
 
@@ -102,7 +104,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div id="pair" class="dialog" hidden><div class="panel glass">
   <h2>🌐 Online & Handys koppeln</h2>
   <p class="info">🌐 Klappt auch online: Link oder Code an Mitspieler schicken – sie treten von überall bei, im Browser, in der App oder an einem anderen Gerät.</p>
-  <p class="how2">QR-Code scannen oder die Seite öffnen und den Code eingeben. Jedes Handy wird das Steuer-Pad <b>eines Läufers</b> (bis zu 4): Stick zum Laufen, Knöpfe zum Springen und Ducken.</p>
+  <p class="how2">QR-Code scannen oder die Seite öffnen und den Code eingeben. Jedes Handy wird das Steuer-Pad <b>eines Läufers</b> (bis zu 4): Stick zum Laufen, Knöpfe zum Springen, Greifen und Ducken.</p>
   <div id="qr"></div><div id="code">….</div><div class="info" id="pairUrl"></div><div class="info" id="pairList">Noch kein Handy verbunden.</div>
   <button class="btn green" id="bPairOk">Fertig</button>
 </div></div>
@@ -112,8 +114,8 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <h2>So wird gespielt</h2>
   <ul class="how">
     <li><b>Einzellauf:</b> Jeder Läufer ist allein auf dem Parcours. Es zählt die Zeit – wer ins Wasser fällt, ist raus (gewertet wird dann die Strecke).</li>
-    <li><b>Steuerung:</b> <span class="k-key">← → / A D laufen · Leertaste / ↑ / W springen (länger halten = höher) · ↓ / S / Shift ducken, mit Anlauf rutschen · Esc = Pause.</span><span class="k-pad">Stick oder Steuerkreuz laufen · <kbd class="gp a">A</kbd> springen (länger halten = höher) · <kbd class="gp b">B</kbd> oder Stick runter ducken, mit Anlauf rutschen · <kbd class="gp">☰</kbd> Start = Pause.</span> Auf dem Handy: Stick links (runterziehen = ducken), rechts „Springen“ und „Ducken“.</li>
-    <li><b>Greifen geht von selbst:</b> An Hangelstangen, Seil, Ringen und Griffleisten hält sich dein Läufer selbst fest. Springen = loslassen bzw. weiterhechten. Knapp verfehlte Kanten erwischt er noch.</li>
+    <li><b>Steuerung:</b> <span class="k-key">← → / A D laufen · Leertaste / ↑ / W springen (länger halten = höher) · E / F / X greifen · ↓ / S / Shift ducken, mit Anlauf rutschen · Esc = Pause.</span><span class="k-pad">Stick oder Steuerkreuz laufen · <kbd class="gp a">A</kbd> springen (länger halten = höher) · <kbd class="gp b">B</kbd> oder Stick runter ducken, mit Anlauf rutschen · <kbd class="gp x">X</kbd> oder <kbd class="gp">RB</kbd> greifen · <kbd class="gp">☰</kbd> Start = Pause.</span> Auf dem Handy: Stick links (runterziehen = ducken), rechts „Springen“, „Greifen“ und „Ducken“.</li>
+    <li><b>Selbst zupacken:</b> An Hangelstangen, Seil, Ringen, Griffleisten und Lachsleiter musst du im Sprung die <b>Greifen-Taste</b> drücken, sobald du in Griffweite bist (der Knopf leuchtet dann). Zu früh oder zu spät = Wasser. Springen = loslassen bzw. weiterhechten, auch am Ende der Hangelstangen.</li>
     <li><b>Hindernisse:</b> Trittsteine, Stufensprung, Drehwalzen (weiterlaufen, sie schieben zurück), Rollstämme (ducken!), Sandsäcke, Bruchplatten, Seilschwung, Tunnel mit niedrigen Toren (ducken oder durchrutschen), Ringschwung, Klippenhänger (Griffleisten, mit Sprung zur nächsten), Lachsleiter (im Takt springen, zu früh rutscht die Stange ab), Schiebebrücke, Fahrstuhl, Trampolin, Hangelstangen und die Steilwand mit <b>drei Versuchen</b>.</li>
     <li><b>Figuren:</b> Bei „Neue Show" oder „Training" wählst du für jeden Läufer eine Figur (🧍-Knopf neben dem Namen).</li>
     <li><b>Show:</b> Vorrunde, Halbfinale, Finale. Platz 1 bekommt die meisten Punkte. Ein Geist zeigt den bisher Schnellsten.</li>

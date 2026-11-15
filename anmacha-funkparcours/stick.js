@@ -1,7 +1,8 @@
 /* Titanparcours – Touch-Steuerung: Analog-Stick links (waagerecht laufen, nach unten ziehen = ducken) und runde Aktionsknöpfe rechts.
-   Wird im Spiel (Touch-Geräte) und auf dem Handy-Pad genutzt. Bits wie Tastatur: 1 links, 2 rechts, 4 Sprung, 8 Ducken. */
+   Wird im Spiel (Touch-Geräte) und auf dem Handy-Pad genutzt. Bits wie Tastatur: 1 links, 2 rechts, 4 Sprung, 8 Ducken, 16 Greifen. */
 export const STICK_HTML = '<div class="stick" aria-label="Laufen: Stick nach links oder rechts ziehen, nach unten ducken"><i></i><b></b></div>';
 export const JUMP_HTML = '<button class="act main" data-k="j" aria-label="Springen"><span class="ai">⤒</span><span>Springen</span></button>';
+export const GRAB_HTML = '<button class="act grab" data-k="g" aria-label="Greifen"><span class="ai">✊</span><span>Greifen</span></button>';
 export const DUCK_HTML = '<button class="act duck" data-k="d" aria-label="Ducken"><span class="ai">⤓</span><span>Ducken</span></button>';
 const DEAD = 0.28, DOWN = 0.55;
 
