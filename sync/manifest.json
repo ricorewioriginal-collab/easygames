@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f6ba2528b5fe",
- "generated": "2026-11-15T14:18:18+00:00",
- "commit": "f5d436b20c8622db271318082abfc6c747a9ecfa",
+ "version": "63b6ca819229",
+ "generated": "2026-11-15T14:19:54+00:00",
+ "commit": "6497adef875b80a1480397a419a4d92702f1b0e6",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8214,7 +8214,7 @@
   {
    "p": "bunte-insel/index.html",
    "s": 111159,
-   "h": "894eba4fd5c45d9a2041f0da5ef8dfeac5d46169117c873466f34ed70e9b9700"
+   "h": "28fc835588c24e772bb6da4d1f76eb853a726bca8855e3d9f69bf10e283e7d63"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -8273,8 +8273,8 @@
   },
   {
    "p": "bunte-insel/js/bunte-insel.min.js",
-   "s": 1921609,
-   "h": "a971070b1adffb50f67cd5d0e4865bb83cb6270485ad9b7c673dba7b8ef7805f"
+   "s": 1921621,
+   "h": "0c39fb937e91f5bfaf9f5e50efeaaab6fa8dfb9a84ee9edd49ab551005da8049"
   },
   {
    "p": "bunte-insel/js/camp.js",
@@ -13664,7 +13664,7 @@
   {
    "p": "sync/catalog.json",
    "s": 253684,
-   "h": "d65be636b903d9943c7cd06b29f83b1284554f4fef7fa4b37edf49687957c85b"
+   "h": "a0d80220b3d9b77e0767df1988243d7d6fd513852a580af3f38cdf23ef41f7cb"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
