@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1ba0eefda56e",
- "generated": "2026-11-15T21:41:51+01:00",
- "commit": "cfb9777882e417dcc15ff8f40126aabd99dfb72d",
+ "version": "2faadd4d8fb7",
+ "generated": "2026-11-15T21:46:34+01:00",
+ "commit": "8a025b0a24754404d2ce518293b8cacce3e92c3e",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10553,8 +10553,8 @@
   },
   {
    "p": "guides.js",
-   "s": 169490,
-   "h": "4810785bb9ef430234da215b62c30595c71d7b36c65a992ea80e99a5d7804b2f"
+   "s": 169791,
+   "h": "b067c284bf8ab799b0442710ea70a3ae4eb9e6c911cd02a2a4d3d21577cf8012"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10963,8 +10963,8 @@
   },
   {
    "p": "guides/turbokick.json",
-   "s": 13587,
-   "h": "3fc7bdb0c544227c65d0a7de85d2bc721fa700ae25ab3b4386a69bbcac6a2368"
+   "s": 14148,
+   "h": "c9fb7f2d62d168ae3c8f0e5eab5cb57d45d141044111089ac7c9a8473f7a7d9e"
   },
   {
    "p": "guides/werwolf-nacht.json",
@@ -14173,8 +14173,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 245691,
-   "h": "95a4d307b750b60c4f216468e5098d11eff0d0d3857215060bd2d81ec2e98085"
+   "s": 245992,
+   "h": "f7a6c54e9eb4ecc3c945f977b3c5965de50ebc9aa2fc490c3b49eba13d2a7e81"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -15402,9 +15402,9 @@
    "h": "62771b0e921990bf4c845912634af1734eaa8e05eb819857387fc973e3f68df7"
   },
   {
-   "p": "turbokick/app/assets/app-rCpcoaVo.js",
-   "s": 41734,
-   "h": "1e17b8d49cb37e11e57c236b7e9694d0aebd102d92b9b59d55f2fb70e1368e63"
+   "p": "turbokick/app/assets/app-DbeO6H3j.js",
+   "s": 42700,
+   "h": "052a587a0d41dfc39b1570afc0f4a7bb90d97413c6d7d4f936020ee3cd5a67f9"
   },
   {
    "p": "turbokick/app/assets/arenalab-CZXZ9zmK.js",
@@ -15422,14 +15422,14 @@
    "h": "2e3f71087c90c4dae7ca455acf37e8679e2d5b03f46bce3ad1f5089fecca0806"
   },
   {
-   "p": "turbokick/app/assets/controller-BI23xNiI.js",
-   "s": 12968,
-   "h": "1c15b7dc526c1cf2fc56331bb1dde8db7777310e7ae84d53e4c68eb5357ac419"
+   "p": "turbokick/app/assets/controller-CbqRYNfn.js",
+   "s": 13314,
+   "h": "3f6c4df535455df5bd7e4fc58bdd96bca89d568263db77a10c879377ee62773b"
   },
   {
-   "p": "turbokick/app/assets/credits-DimEqK9V.js",
+   "p": "turbokick/app/assets/credits-gWykOOkm.js",
    "s": 934,
-   "h": "0fbded33872ab666ac6789bc3ec67b06d1211df4b4d14e5b22914a98b8062c23"
+   "h": "95eaa1c1ecb6e8d0880e6c91f016f6e64b0fa1cbd95eff09c60ed0d22d3031bf"
   },
   {
    "p": "turbokick/app/assets/engine-DNPzi9_E.js",
@@ -15437,19 +15437,19 @@
    "h": "6533001004a8f420458188962d8b406ff7f4cf8354fd1daa484b595c38069dec"
   },
   {
-   "p": "turbokick/app/assets/garage-8jKUlaeU.js",
+   "p": "turbokick/app/assets/gamepad-lHw5RuKy.js",
+   "s": 3001,
+   "h": "7d9215213d57efb33814fac61a72cf1411ab3f3d347f62498c6dbdcf1af7b3d1"
+  },
+  {
+   "p": "turbokick/app/assets/garage-B9_Cerv8.js",
    "s": 1731,
-   "h": "33b93e9b6fe875e3e0d67478909f03b2aead43ed7dbda4b58ac585face5f3b4e"
+   "h": "2be6fd57b442bd386a2cbf5f971682d419cc98fa2aa2678c264cbdbd662c9375"
   },
   {
-   "p": "turbokick/app/assets/help-Bg94Ieu8.js",
-   "s": 1016,
-   "h": "57194e2dd90bae3cf3dfb4ef800de6d2cd9c686ab58dba60f5c6de42a7352e02"
-  },
-  {
-   "p": "turbokick/app/assets/index-BXL3NBeE.js",
-   "s": 3056,
-   "h": "fe5ab83ea1c4b8e22270407ed44f749268de3361a4722209da1adb697abbd362"
+   "p": "turbokick/app/assets/help-0UVG2Jx4.js",
+   "s": 1577,
+   "h": "a256d3b709e2d7edf944aaa6443d755e008e7ec3d31d980ec05c002845486e5d"
   },
   {
    "p": "turbokick/app/assets/index-C-gJ84Iz.js",
@@ -15457,29 +15457,39 @@
    "h": "85660058fbb884873126e24b02450033d8e38b924702a97512bc8c9b3370f775"
   },
   {
-   "p": "turbokick/app/assets/index-CJknlVXX.css",
-   "s": 12540,
-   "h": "5734456b5994d8e1bfdbaee089078b2da7d6e6527fc08700a672622ed0977b52"
-  },
-  {
    "p": "turbokick/app/assets/index-CvmxBn8T.js",
    "s": 56450,
    "h": "d9c7885066c2a48b9e3533f8af85e62cdc8fdeb06960ce2093bfb649d8d252b5"
   },
   {
-   "p": "turbokick/app/assets/mainMenu-Cg7AuyrJ.js",
+   "p": "turbokick/app/assets/index-D4BOvsG4.css",
+   "s": 12632,
+   "h": "4f473a0f661b0a9d0b29caf4192785da0b06810d6445d6d090f0ebd42d87326f"
+  },
+  {
+   "p": "turbokick/app/assets/index-DgqyuC4o.js",
+   "s": 3056,
+   "h": "30afd3360dc943e83480844defef542e9255aba5395bf4a52a089c523ee1fe74"
+  },
+  {
+   "p": "turbokick/app/assets/mainMenu-nh4Poaei.js",
    "s": 2932,
-   "h": "5b665573dc91dadb579314a6e34a7bdddd1b89dd08d1dd809aa8bb027c77cc4c"
+   "h": "35914d963eac0d1f9a63862cec1b54719534e857176be2506f4e46610543f494"
   },
   {
-   "p": "turbokick/app/assets/matchScreen-B-9yleCm.js",
-   "s": 18355,
-   "h": "8fcd8fa4faa2d60c577dbfe454a8f06666443e9753c9c6c466fe0e2a7f5fd083"
+   "p": "turbokick/app/assets/matchScreen-C9pLWvUp.js",
+   "s": 18855,
+   "h": "8e6544511c55d96eb5c2ad741c8552bbae75ad8c0891be406ddc1ebf678b2b60"
   },
   {
-   "p": "turbokick/app/assets/options-EExDj4x5.js",
-   "s": 2646,
-   "h": "bfaf46056c9af435bed2c0849f890673166e17abc48eaa0f2087f9e83d3d9e6e"
+   "p": "turbokick/app/assets/options-DP1M0l0i.js",
+   "s": 3264,
+   "h": "108fcc6f7fc8c86c676f9ed4e4609a10cd35f8ca0c8c17e4cbf11006ae4392bf"
+  },
+  {
+   "p": "turbokick/app/assets/p2p-Ddoo_KFd.js",
+   "s": 174618,
+   "h": "3d972ec8ca1b5b7a16a754227a75d3441c1d05c0d95da38b1d40750a9bd8eef3"
   },
   {
    "p": "turbokick/app/assets/p2p-ZvRawAIL.js",
@@ -15487,19 +15497,14 @@
    "h": "c2a6a51a2b8df7f53a834626afc23d06de915c1d547366d0efdb5b525e60a943"
   },
   {
-   "p": "turbokick/app/assets/p2p-kD8X9WSz.js",
-   "s": 174618,
-   "h": "c38af839310916bb3c78231e732ed9a6b2ca815f8f3c0a619e07ee902d644cb7"
-  },
-  {
    "p": "turbokick/app/assets/plan-C0JA06rH.js",
    "s": 1260,
    "h": "b6531e9970b1c8018a4f822bb4ee48020274fd681efde3842b74b46d4e3f2eaa"
   },
   {
-   "p": "turbokick/app/assets/play-Ba68Znw4.js",
+   "p": "turbokick/app/assets/play-BS_gN9JY.js",
    "s": 2156,
-   "h": "e96242cbcabc833344c3381c0866bc81e1d426ea8ebee97c53afb50816b9aff7"
+   "h": "f8138e219c6deb27a3ab4f922d362a049e6463fdbd7818c524f0ba330dddce97"
   },
   {
    "p": "turbokick/app/assets/session-CYziFLEF.js",
@@ -15512,9 +15517,9 @@
    "h": "643966f8f77e0f16bf4d2181b7eb69c05bdadcc665ba5fce6226ceafa9a4628c"
   },
   {
-   "p": "turbokick/app/assets/stats-BPNSmJ3k.js",
+   "p": "turbokick/app/assets/stats-DuZMSg1Y.js",
    "s": 933,
-   "h": "7c4bc0952675e9d61fc20872cf2935d5f672e12c9cddc13d9f54abb544c53d1f"
+   "h": "fe3479283acf6dcc5ae6575f6337a229e5a87ac026077bd84c2e79707ac69a86"
   },
   {
    "p": "turbokick/app/assets/types-BwFz-Uy_.js",
@@ -15528,8 +15533,8 @@
   },
   {
    "p": "turbokick/app/index.html",
-   "s": 1026,
-   "h": "05144800cf853fcf79de7c8b296ae26d0ab5d106747fd449c0e5e6fc908c94ef"
+   "s": 1098,
+   "h": "9e01d0c45961311b39545bf08991b73975b101246f787cd93a3cfe3df5f120f8"
   },
   {
    "p": "turbokick/card.png",
@@ -15538,8 +15543,8 @@
   },
   {
    "p": "turbokick/client/index.html",
-   "s": 929,
-   "h": "5436aca643c81ba3e89c3dac0be37b3a4f3b1818f7f3acfb0c1b6ab7faccbd6e"
+   "s": 1001,
+   "h": "59816613fc3f2fb496d1caa2d44f4b2cad24b1769c0b8bb8b56b71df478da645"
   },
   {
    "p": "turbokick/client/src/input/touch.css",
@@ -15548,8 +15553,8 @@
   },
   {
    "p": "turbokick/client/src/style.css",
-   "s": 15884,
-   "h": "cc82e5449dd728a3e5000d0ad1521b41c8d2f7406d5d7bb58595d8cefecbb3df"
+   "s": 16005,
+   "h": "ab874b36ddf3e3f50b5c98e182af19b543865f9bf7d2c786559a60083ea4a80a"
   },
   {
    "p": "turbokick/index.html",
