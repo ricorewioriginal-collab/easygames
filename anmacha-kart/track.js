@@ -153,7 +153,9 @@ const Track = (() => {
     const T = new Float32Array(N * 2), Nm = new Float32Array(N * 2), K = new Float32Array(N);
     for (let i = 0; i < N; i++) { const a = (i + N - 1) % N, b = (i + 1) % N, dx = P[b * 2] - P[a * 2], dz = P[b * 2 + 1] - P[a * 2 + 1], l = Math.hypot(dx, dz) || 1; T[i * 2] = dx / l; T[i * 2 + 1] = dz / l; Nm[i * 2] = dz / l; Nm[i * 2 + 1] = -dx / l; }
     for (let i = 0; i < N; i++) { const a = (i + N - 2) % N, b = (i + 2) % N; let da = Math.atan2(T[b * 2], T[b * 2 + 1]) - Math.atan2(T[a * 2], T[a * 2 + 1]); while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI; K[i] = Math.abs(da) / (4 * len / N); }
-    const tr = { def, N, len, P, T, Nm, K, W: def.w, half: def.w / 2, wallD: def.w / 2 + 4, roughD: def.w / 2 + 1.2 };
+    // Breitere Fahrbahn (mehr Platz zum Überholen und Driften), begrenzt durch die engste Kurve
+    let mk = 0; for (let i = 0; i < N; i++) mk = Math.max(mk, K[i]); const W = Math.round(Math.max(def.w, Math.min(def.w * 1.45, 2 / Math.max(mk, 1e-4) - 16)) * 2) / 2;
+    const tr = { def, N, len, P, T, Nm, K, W, half: W / 2, wallD: W / 2 + 4, roughD: W / 2 + 1.2 };
     // Höhenprofil ist Teil der Streckendaten und damit für Host, Clients und Renderer identisch.
     // Weiche Rampen statt harter Sprünge; Brücken sind echte Abschnitte der Fahrbahn.
     let profile = {
@@ -190,8 +192,8 @@ const Track = (() => {
     tr.cuts = []; if (!def.cross) {
       const flat = i => tr.height(i) < 0.4, cand = [];
       for (let a = 12; a < N - 30; a += 2) { if (!flat(a)) continue; for (let b = a + Math.ceil(70 / SP); b < Math.min(N - 4, a + N / 2); b += 2) { if (!flat(b)) continue; const ax = P[a * 2], az = P[a * 2 + 1], bx = P[b * 2], bz = P[b * 2 + 1], D = Math.hypot(bx - ax, bz - az), L = (b - a) * SP; if (D < 26 || D > 200 || L < 1.3 * D || L - D < 35 || L - D > 300) continue;
-        let ok = true; const m0 = def.w / 2 + 3, steps = Math.floor((D - 2 * m0) / 3);
-        for (let q = 0; q <= steps && ok; q++) { const t = (m0 + q * 3) / D, x = ax + (bx - ax) * t, z = az + (bz - az) * t; for (let i = 0; i < N; i += 1) { const dd = Math.hypot(x - P[i * 2], z - P[i * 2 + 1]); if (dd < def.w / 2 + 7 && !((i >= a - 6 && i <= a + 6 && t < 0.5) || (i >= b - 6 && i <= b + 6 && t > 0.5))) { ok = false; break; } if (!tr.hills && !flat(i) && dd < def.w / 2 + 12) { ok = false; break; } } }
+        let ok = true; const m0 = W / 2 + 3, steps = Math.floor((D - 2 * m0) / 3);
+        for (let q = 0; q <= steps && ok; q++) { const t = (m0 + q * 3) / D, x = ax + (bx - ax) * t, z = az + (bz - az) * t; for (let i = 0; i < N; i += 1) { const dd = Math.hypot(x - P[i * 2], z - P[i * 2 + 1]); if (dd < W / 2 + 7 && !((i >= a - 6 && i <= a + 6 && t < 0.5) || (i >= b - 6 && i <= b + 6 && t > 0.5))) { ok = false; break; } if (!tr.hills && !flat(i) && dd < W / 2 + 12) { ok = false; break; } } }
         if (ok) cand.push({ a, b, gain: L - D }); } }
       cand.sort((p, q) => Math.abs(p.gain - 120) - Math.abs(q.gain - 120));
       for (const c of cand) { if (tr.cuts.length >= 2) break; if (tr.cuts.some(o => c.a < o.b + 20 && c.b > o.a - 20)) continue; const ax = P[c.a * 2], az = P[c.a * 2 + 1], bx = P[c.b * 2], bz = P[c.b * 2 + 1], D = Math.hypot(bx - ax, bz - az); tr.cuts.push({ a: c.a, b: c.b, ax, az, bx, bz, len: D, ux: (bx - ax) / D, uz: (bz - az) / D, w: 8 }); }
@@ -222,6 +224,9 @@ const Track = (() => {
     for (let i = 0; i < N; i++) maxK = Math.max(maxK, tr.K[i]);
     return { len: Math.round(tr.len), minGap: Math.round(minGap), minRadius: Math.round(1 / maxK) };
   }
-  return { DEFS, CUPS, build, check, SP };
+  // Spiegel-Klasse: Strecke links-rechts gespiegelt (Fahrtrichtung dreht sich mit)
+  const flip = a => a && a.map(q => [-q[0]].concat(q.slice(1)));
+  const mirror = d => Object.assign({}, d, { mirror: true, _pts: undefined, poly: flip(d.poly), pts: flip(d.pts) });
+  return { DEFS, CUPS, build, check, mirror, SP };
 })();
 if (typeof module !== 'undefined') module.exports = Track;
