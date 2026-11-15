@@ -48,19 +48,35 @@ if (JOIN) {
   function fire(id) { if (pending && pending.ids.includes(id)) { const p = pending; pending = null; $('card').hidden = true; p.res(id); } }
   $('cardBox').addEventListener('click', e => { const b = e.target.closest('button[id]'); if (b) { SFX.click(); fire(b.id); } });
   const commentator=makeCommentator();
-  let lastSection=-1;
-  function announceSection(sim){
-    if(!G||G.phase!=='run'||!sim||!G.course)return;
-    const sections=G.course.secs||[];
-    let section=-1;
-    for(let i=0;i<sections.length;i++)if(sim.x>=sections[i].x-1.5)section=i;
-    if(section===lastSection||section<0)return;
-    lastSection=section;
-    const name=sections[section].n;
-    const tips={Stufensprung:'Stufensprünge! Gut abspringen, bloß nicht ins Wasser!',Fahrstuhl:'Der Fahrstuhl! Jetzt muss das Timing stimmen!',Schiebebrücke:'Die Brücke bewegt sich! Der Sprung muss sitzen!','Bruchplatten':'Bruchplatten! Schnell weiter, bevor sie fallen!','Sandsäcke':'Vorsicht, die Sandsäcke schwingen!',Drehwalzen:'Die Drehwalzen! Weiterlaufen, die schieben zurück! Springen ist schneller, aber riskant!',Pendelbalken:'Die Pendelbalken! Ducken oder den richtigen Moment abpassen!',Rutschtunnel:'Rutschtunnel! Runter mit dem Kopf und durchrutschen!',Klippenhänger:'Klippenhänger! An der Leiste festhalten und rüberhechten!',Ringschwung:'Ringschwung! Von Ring zu Ring, im richtigen Moment loslassen!',Lachsleiter:'Die Lachsleiter! Jetzt zählt der Takt, Sprosse für Sprosse nach oben!',Seilschwung:'Seilschwung! Seil packen und im richtigen Moment loslassen!',Trampolin:'Das Trampolin! Draufspringen und hoch an die Stangen!',Hangelstangen:'Jetzt an die Hangelstangen! Nicht loslassen!',Steilwand:'Die Steilwand! Drei Versuche. Anlauf nehmen und hoch da!'};
-    commentator.speak(tips[name]||('Jetzt folgt: '+name+'.'));
+  // Live-Regie: verfolgt den Läufer und moderiert genau dort, wo er gerade ist (Hindernis, Griff, Treffer, Zeit, Bestzeit).
+  let D=null;
+  const nameKey=(n,pre)=>{const m=/^Läufer ([1-4])$/.exec(String(n||'').trim());return m?pre+m[1]:pre+'x';};
+  function director(sim){
+    if(!G||G.phase!=='run'||!sim||!G.course||!D)return;
+    const c=G.course,secs=c.secs||[],t=sim.t;
+    let section=-1;for(let i=0;i<secs.length;i++)if(sim.x>=secs[i].x-1.5)section=i;
+    if(section>D.sec){
+      const name=secs[section].n,prev=D.sec;D.sec=section;
+      if(prev>=0&&!D.hitSince)commentator.say('clear',{chance:0.6});
+      D.hitSince=false;
+      commentator.say('sec_'+name,{priority:name==='Steilwand'});
+      if(section>=2&&section%2===0){ // Tempo-Vergleich mit dem Geist (Bestzeit) bzw. Lob für hohes Tempo
+        const g=G.ghost,k=g?Math.min(g.length-2,Math.floor(t/DT/3)*2):-1;
+        if(g&&k>=0){const d=sim.x-g[k];if(d>2.5)commentator.say('ahead',{cooldown:20});else if(d<-4)commentator.say('behind',{cooldown:20});}
+        else if(!g&&!D.fast&&t>5&&sim.x/t>4.0){D.fast=true;commentator.say('fast');}
+      }
+    }
+    if(!D.half&&c.length&&sim.x>c.length*0.5){D.half=true;commentator.say('half',{ifIdle:true});}
+    const holding=!!(sim.hang||sim.rope||sim.ladder);
+    if(holding&&!D.hold)commentator.say('grab',{ifIdle:true,chance:0.5,cooldown:7});D.hold=holding;
+    if(sim.slide&&!D.slide&&/Rutschtunnel|Pendelbalken/.test(secs[D.sec]?secs[D.sec].n:''))commentator.say('slide',{ifIdle:true,chance:0.6,cooldown:10});D.slide=sim.slide;
+    if((sim.bounces||0)>D.bounce){D.bounce=sim.bounces;commentator.say('bounce',{ifIdle:true,cooldown:8});}
+    if(sim.wall&&!D.wall&&sim.wallTries===0)commentator.say('wall_run',{ifIdle:true,chance:0.8});D.wall=!!sim.wall;
+    const still=sim.onGround&&!holding&&Math.abs(sim.vx)<0.3&&t>3;D.still=still?D.still+DT:0;
+    if(D.still>3.5){D.still=-6;commentator.say('idle',{ifIdle:true,cooldown:12});}
+    for(const [T,k] of [[MAXT-60,'t60'],[MAXT-30,'t30'],[MAXT-10,'t10']])if(t>=T&&!D[k]){D[k]=true;commentator.say(k,{priority:k==='t10'});}
   }
-  function abort() { pause(false); commentator.stop();lastSection=-1;token++; const p = pending; pending = null; $('card').hidden = true; $('big').hidden = true; G = null; padOn(false); arena.setGhost(null); if (p) p.res('abort'); push(); }
+  function abort() { pause(false); commentator.stop();D=null;token++; const p = pending; pending = null; $('card').hidden = true; $('big').hidden = true; G = null; padOn(false); arena.setGhost(null); if (p) p.res('abort'); push(); }
   const rows = (runs, pl, upto) => { const ord = rank(runs.map(r => r || { finished: false, dist: -1 })); return ord.filter(i => runs[i]).map((i, k) => { const r = runs[i]; return `<div class="tr ${r.finished ? '' : 'dnf'}" style="--pc:${CSS[i]}"><em>${k + 1}.</em><b>${esc(pl[i].name)}</b><span>${r.finished ? fmtTime(r.time) : r.why}</span>${upto != null ? `<em>+${r.pts || 0}</em>` : ''}</div>`; }).join(''); };
 
   // ------------------------------------------------------------ Eingabe
@@ -140,29 +156,29 @@ if (JOIN) {
 
   async function turn(tok, ci, pi, runs, leader) {
     const A = async p => { const v = await p; if (tok !== token) throw ABORT; return v; };
-    const course = COURSES[ci]; commentator.stop(); lastSection=-1; G.course = course; G.cur = pi; G.phase = 'ready'; G.say = ''; phoneM[pi] = 0; updateTop(); show('game'); padOn(false); $('clock').textContent = fmtTime(0);
+    const course = COURSES[ci]; commentator.stop(); D=null; G.course = course; G.cur = pi; G.phase = 'ready'; G.say = ''; phoneM[pi] = 0; updateTop(); show('game'); padOn(false); $('clock').textContent = fmtTime(0);
     loadScene(ci); look(pi); G.sim = null; let ghost = null; if (G.mode === 'train') { const b = bests()[ci]; ghost = b ? b.g : null; } else if (leader && leader.g) ghost = leader.g; G.ghost = ghost; arena.setGhost(ghost);
     push();
     const ph = hasPhone(pi);
     await A(ask(`<div class="card"><h2 style="color:${CSS[pi]}">${esc(G.players[pi].name)}</h2><div class="sub">${esc(course.name)}${G.mode === 'train' ? ' · Training' : ` · Lauf ${pi + 1} von ${G.players.length}`}</div>${runs.some(Boolean) ? `<div class="tbl">${rows(runs, G.players)}</div>` : ''}${ghost ? '<div class="hint">👻 Der Geist zeigt die Bestzeit.</div>' : ''}<div class="hint ${ph ? 'ph' : ''}">${ph ? '📱 Tippe am Handy auf „Bereit"' : 'Bereit? Leertaste oder Button'}</div><button class="btn green" id="bReady">Bereit!</button></div>`, ['bReady']));
     // Die Vorstellung vor dem visuellen Countdown sprechen, nicht die Zahlen verzögert nachholen.
-    commentator.speak(G.players[pi].name+' ist am Start. '+course.name+'. Auf die Plätze!',true);
-    await A(sleep(1950));
-    commentator.stop();
+    let talk=commentator.say(nameKey(G.players[pi].name,'name_'),{priority:true});
+    if(pi===0)talk+=commentator.say('intro_'+ci)+0.12;
+    await A(sleep(Math.max(1950,talk*1000+250)));
     G.phase = 'count'; push(); keys = touchM = 0;
     for (const n of [3, 2, 1]) { big(String(n), '', 700); SFX.count(); await A(sleep(800)); }
-    big('LOS!', '', 800); SFX.go(); arena.fire(1); G.phase = 'run'; push();
-    const sim = new Sim(course); G.sim = sim; padOn(true); const rec = []; let acc = 0, n = 0, prevG = true, wt = 0, hits = 0, grabs = 0, reach = '';
+    big('LOS!', '', 800); SFX.go(); commentator.say('go',{priority:true}); arena.fire(1); G.phase = 'run'; push();
+    const sim = new Sim(course); G.sim = sim; D={sec:-1,half:false,hold:false,slide:false,bounce:0,wall:false,still:0,hitSince:false}; padOn(true); const rec = []; let acc = 0, n = 0, prevG = true, wt = 0, hits = 0, grabs = 0, reach = '';
     const res = await A(new Promise(done => {
       G.tick = dt => {
         acc += dt;
         while (acc >= DT && !sim.dead && !sim.finished) {
-          acc -= DT; const o = window.__fpInput; sim.step(o ? o(sim) : readInput()); announceSection(sim); if (n++ % 3 === 0) rec.push(Math.round(sim.x * 100) / 100, Math.round(sim.y * 100) / 100);
+          acc -= DT; const o = window.__fpInput; sim.step(o ? o(sim) : readInput()); director(sim); if (n++ % 3 === 0) rec.push(Math.round(sim.x * 100) / 100, Math.round(sim.y * 100) / 100);
           if (prevG && !sim.onGround && sim.vy > 0) SFX.jump(); else if (!prevG && sim.onGround) { SFX.land(); ui.rumble(0.15, 0.35, 70); } prevG = sim.onGround;
-          if (sim.hits !== hits) { hits = sim.hits; ui.rumble(0.8, 1, 220); SFX.hit(); arena.impact(sim.x, sim.y + 1.1); }
+          if (sim.hits !== hits) { hits = sim.hits; ui.rumble(0.8, 1, 220); SFX.hit(); arena.impact(sim.x, sim.y + 1.1); if (D) D.hitSince = true; commentator.say('hit', { cooldown: 4 }); }
           if (sim.grabs !== grabs) { grabs = sim.grabs; SFX.grab(); ui.rumble(0.3, 0.6, 90); arena.grab(sim.x, sim.y + PH); }
           if (sim.t >= MAXT && !sim.finished) sim.dead = 'time';
-          if (sim.wallTries !== wt) { wt = sim.wallTries; ui.rumble(0.5, 0.6, 160); if (wt < 3) { big(`Versuch ${wt + 1} von 3`, 'sm', 1100); commentator.speak(wt === 1 ? 'Nicht geschafft! Zweiter Versuch.' : 'Letzter Versuch an der Wand!', true); } }
+          if (sim.wallTries !== wt) { wt = sim.wallTries; ui.rumble(0.5, 0.6, 160); if (wt < 3) { big(`Versuch ${wt + 1} von 3`, 'sm', 1100); commentator.say(wt === 1 ? 'wall_try2' : 'wall_try3', { priority: true }); } }
         }
         const rc = sim.reachable(); if (rc !== reach) { reach = rc; grabBtn.classList.toggle('ready', !!rc); }
         G.alpha = acc / DT; $('clock').textContent = fmtTime(sim.t);
@@ -170,8 +186,8 @@ if (JOIN) {
       };
     }));
     G.phase = 'done'; G.alpha = 1; padOn(false); phoneM[pi] = 0;
-    if (res.finished) { commentator.speak('Im Ziel! '+G.players[pi].name+' mit '+res.time.toFixed(1).replace('.',',')+' Sekunden! Stark!',true); res.why = ''; SFX.top(); ui.rumble(0.4, 0.8, 300); arena.confetti(sim.x, sim.y); SFX.clap(1.4); big('ZIEL! ' + fmtTime(res.time), 'sm', 1600); }
-    else { const d = res.dead; commentator.speak(d === 'time' ? 'Die Zeit ist abgelaufen. Das war ein spannender Lauf!' : d === 'wall' ? 'Drei Versuche, kein Glück! Die Wand war heute zu hoch.' : 'Oh nein! Ein Sturz ins Wasser. Der Lauf ist vorbei.', true); res.why = d === 'time' ? 'Zeit ab' : d === 'wall' ? `Wand · ${Math.round(res.dist)} m` : `Baden · ${Math.round(res.dist)} m`; if (d === 'water') { arena.splash(sim.x); arena.alarm(); SFX.splash(); SFX.fail(); redFlash(); ui.rumble(1, 1, 420); } else { SFX.buzz(); if (d === 'wall') SFX.sad(); } big(d === 'time' ? 'ZEIT ABGELAUFEN' : d === 'wall' ? 'WAND NICHT GESCHAFFT' : 'PLATSCH!', 'bad sm', 1500); }
+    if (res.finished) { const ob = bests()[ci]; commentator.say(!ob || res.time < ob.t ? 'fin_best' : 'fin', { priority: true }); res.why = ''; SFX.top(); ui.rumble(0.4, 0.8, 300); arena.confetti(sim.x, sim.y); SFX.clap(1.4); big('ZIEL! ' + fmtTime(res.time), 'sm', 1600); }
+    else { const d = res.dead; commentator.say(d === 'time' ? 'time' : d === 'wall' ? 'wallfail' : 'water', { priority: true }); res.why = d === 'time' ? 'Zeit ab' : d === 'wall' ? `Wand · ${Math.round(res.dist)} m` : `Baden · ${Math.round(res.dist)} m`; if (d === 'water') { arena.splash(sim.x); arena.alarm(); SFX.splash(); SFX.fail(); redFlash(); ui.rumble(1, 1, 420); } else { SFX.buzz(); if (d === 'wall') SFX.sad(); } big(d === 'time' ? 'ZEIT ABGELAUFEN' : d === 'wall' ? 'WAND NICHT GESCHAFFT' : 'PLATSCH!', 'bad sm', 1500); }
     res.g = rec; G.say = res.finished ? fmtTime(res.time) : res.why; push();
     await A(sleep(1700)); return res;
   }
@@ -192,11 +208,11 @@ if (JOIN) {
       const runs = new Array(np).fill(null); let leader = null;
       for (let pi = 0; pi < np; pi++) { const r = await turn(tok, ci, pi, runs, leader); runs[pi] = r; bestUpdate(ci, r, G.players[pi].name); if (r.finished && (!leader || r.time < leader.t)) leader = { t: r.time, g: r.g }; }
       const ord = rank(runs); ord.forEach((i, k) => { runs[i].pts = pointsFor(k, np); G.players[i].pts += runs[i].pts; G.players[i].secs += runs[i].finished ? runs[i].time : MAXT + 30; });
-      G.phase = 'board'; commentator.speak('Das ist die Wertung für '+COURSES[ci].name+'.',true); G.say = 'Wertung ' + COURSES[ci].name; push();
+      G.phase = 'board'; commentator.say('board', { priority: true }); G.say = 'Wertung ' + COURSES[ci].name; push();
       const last = ci === COURSES.length - 1;
       await A(ask(`<div class="card"><h2>Wertung · ${esc(COURSES[ci].name)}</h2><div class="tbl">${rows(runs, G.players, 1)}</div>${np > 1 ? `<div class="sub">Gesamt: ${standings(G.players).map(i => esc(G.players[i].name) + ' ' + G.players[i].pts).join(' · ')}</div>` : ''}<button class="btn green" id="bNext">${last ? 'Endstand ▶' : 'Weiter: ' + esc(COURSES[ci + 1].name) + ' ▶'}</button></div>`, ['bNext']));
     }
-    const ord = standings(G.players), w = G.players[ord[0]]; commentator.speak(np>1?'Die Entscheidung ist gefallen! '+w.name+' gewinnt die Titanparcours Show!':'Geschafft! Du hast die Titanparcours Show gemeistert!',true); G.over = true; G.say = np > 1 ? w.name + ' gewinnt!' : 'Geschafft!'; push(); SFX.fanfare(); arena.confetti(arena.cx, 2); look(ord[0]);
+    const ord = standings(G.players), w = G.players[ord[0]]; commentator.say(np > 1 ? nameKey(w.name, 'win_') : 'win_solo', { priority: true }); G.over = true; G.say = np > 1 ? w.name + ' gewinnt!' : 'Geschafft!'; push(); SFX.fanfare(); arena.confetti(arena.cx, 2); look(ord[0]);
     const pick = await A(ask(`<div class="card"><h2>${np > 1 ? '🏆 ' + esc(w.name) + ' gewinnt!' : 'Show geschafft!'}</h2><div class="tbl">${ord.map((i, k) => `<div class="tr" style="--pc:${CSS[i]}"><em>${k + 1}.</em><b>${esc(G.players[i].name)}</b><span>${G.players[i].pts} Pkt</span><em>${G.players[i].secs.toFixed(1)} s</em></div>`).join('')}</div><div class="prize"><img src="logos/16.png" alt="RicoReWi Radioportal" width="56" height="56"><div><b>Hauptgewinn: Ruhm &amp; Ehre</b><small>gestiftet vom RicoReWi Radioportal 😉</small></div></div><div class="row"><button class="btn green" id="bAgain">Nochmal</button><button class="btn ghost" id="bToMenu">Menü</button></div></div>`, ['bAgain', 'bToMenu']));
     if (pick === 'bAgain') start('show'); else { abort(); show('menu'); }
   }
@@ -242,12 +258,12 @@ if (JOIN) {
   const voiceButton=document.createElement('button');voiceButton.type='button';voiceButton.id='fpVoice';voiceButton.className='ib';voiceButton.setAttribute('aria-label','Live-Kommentator umschalten');
   const top=$('bSnd').parentElement;top.insertBefore(voiceButton,$('bSnd'));
   function voiceUI(){$('bPVoice').textContent=commentator.on?'🎙️ Kommentator: an':'🔕 Kommentator: aus';$('bPVoice').disabled=!commentator.supported;voiceButton.textContent=commentator.on?'🎙️':'🔕';voiceButton.title=commentator.on?'Kommentator ausschalten':'Kommentator einschalten';voiceButton.setAttribute('aria-pressed',String(commentator.on));}
-  voiceButton.onclick=()=>{commentator.setOn(!commentator.on);voiceUI();if(commentator.on)commentator.speak('Die Live-Moderation ist eingeschaltet.')};
+  voiceButton.onclick=()=>{commentator.setOn(!commentator.on);voiceUI();if(commentator.on)commentator.say('voice_on',{priority:true})};
   voiceButton.disabled=!commentator.supported;voiceUI();
   document.addEventListener('visibilitychange',()=>{if(document.hidden)commentator.stop()});
   $('bSnd').onclick = toggleSnd; $('aSnd').onclick = toggleSnd; $('aMenu').onclick = () => pause(true);
   addEventListener('keydown', e => { if ((e.code === 'Escape' || e.code === 'KeyP') && !$('game').hidden && !pending && !paused) { e.preventDefault(); pause(true); } });
   document.addEventListener('visibilitychange', () => { if (document.hidden && G && G.phase === 'run') pause(true); });
-  window.__fp = { get G() { return G; }, S, arena, COURSES, ui }; requestAnimationFrame(loop);
+  window.__fp = { get G() { return G; }, S, arena, COURSES, ui, vo: commentator }; requestAnimationFrame(loop);
   await texDone; booting = false; ui.boot.ready(() => { show('menu'); ui.menu.show('show'); });
 }

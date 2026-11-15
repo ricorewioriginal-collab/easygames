@@ -74,12 +74,12 @@
   {
    "t": "Bedienung",
    "list": [
-    "PC: A/D oder Pfeil links/rechts = laufen. Leertaste, Pfeil hoch oder W = springen; länger halten = höher. Pfeil runter, S, Shift oder C = ducken, mit Anlauf rutschen. Esc oder P = Pause. In Menüs: Pfeiltasten, Enter/Leertaste, Esc.",
-    "Gamecontroller wie auf der Konsole: linker Stick oder Steuerkreuz = laufen, A (oder Y) = springen, B (oder X) oder Stick nach unten = ducken, Start = Pausemenü. Im Menü Steuerkreuz/Stick zum Wählen, A oder Start = OK, B oder Select = zurück. Bei Treffern, Platschern und im Ziel vibriert der Controller (wo der Browser es kann). Benutzt du den Controller, zeigen die Hinweise seine Knöpfe statt der Tasten.",
-    "Touch: Stick links ziehen = laufen, nach unten ziehen = ducken. Rechts die Knöpfe ⤒ Springen (länger halten = höher) und ⤓ Ducken, dazu ❚❚ Pause und 🔊 Ton.",
+    "PC: A/D oder Pfeil links/rechts = laufen. Leertaste, Pfeil hoch oder W = springen; länger halten = höher. Pfeil runter, S, Shift oder C = ducken, mit Anlauf rutschen. E, F oder X = greifen. Esc oder P = Pause. In Menüs: Pfeiltasten, Enter/Leertaste, Esc.",
+    "Gamecontroller wie auf der Konsole: linker Stick oder Steuerkreuz = laufen, A (oder Y) = springen, B oder Stick nach unten = ducken, X (oder RB/RT) = greifen, Start = Pausemenü. Im Menü Steuerkreuz/Stick zum Wählen, A oder Start = OK, B oder Select = zurück. Bei Treffern, Platschern und im Ziel vibriert der Controller (wo der Browser es kann). Benutzt du den Controller, zeigen die Hinweise seine Knöpfe statt der Tasten.",
+    "Touch: Stick links ziehen = laufen, nach unten ziehen = ducken. Rechts die Knöpfe ⤒ Springen (länger halten = höher), ✊ Greifen (leuchtet in Griffweite) und ⤓ Ducken, dazu ❚❚ Pause und 🔊 Ton.",
     "Pausemenü: Weiter, Lauf neu starten (im Training), Ton und Kommentator an/aus, Zum Hauptmenü. Die Uhr steht, solange das Menü offen ist. Wechselst du während des Laufs in ein anderes Fenster, pausiert das Spiel von selbst.",
     "Gekoppeltes Handy: Stick zum Laufen (runter = ducken), Knöpfe zum Springen, Greifen und Ducken. Vor dem eigenen Lauf erscheint auf dem Handy der große Knopf „Bereit!“.",
-    "🎙️ oben schaltet den Live-Kommentator (Sprachausgabe) ein und aus, 🔊 den Ton."
+    "🎙️ oben schaltet den Live-Kommentator (die Stimme aus dem Trailer) ein und aus, 🔊 den Ton."
    ]
   },
   {
@@ -226,7 +226,7 @@
    "t": "Kleine Geheimnisse",
    "list": [
     "Der Hauptgewinn der Show ist „Ruhm & Ehre“, gestiftet vom RicoReWi Radioportal.",
-    "Der Kommentator hat für jedes Hindernis einen eigenen Spruch, zum Beispiel „Die Drehwalzen! Nicht stehen bleiben, sonst geht es rückwärts!“.",
+    "Der Kommentator moderiert live wie in der TV-Show: Er sagt jedes Hindernis an, lobt saubere Abschnitte, kommentiert Griffe, Treffer, Tempo gegenüber der Bestzeit und die letzten Sekunden auf der Uhr.",
     "Neben den 8 eigenen Läufern kannst du Figuren aus anderen easygames wählen – Tiere und Wesen erscheinen im Look ihres Spiels."
    ]
   }
@@ -246,7 +246,7 @@
   },
   {
    "q": "Der Kommentator spricht nicht.",
-   "a": "Schalte ihn oben mit 🎙️ ein. Ist der Knopf grau, unterstützt dein Browser keine Sprachausgabe."
+   "a": "Schalte ihn oben mit 🎙️ ein und tippe einmal ins Spiel oder drücke eine Taste – Browser geben Ton erst nach einer Eingabe frei. Die Ansagen werden beim ersten Spielen geladen (rund 2 MB)."
   },
   {
    "q": "Wie breche ich eine Show ab?",

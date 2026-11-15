@@ -358,20 +358,25 @@ export class Arena {
   }
   drawClock(t) { const g = this.clockCtx, W = 512, H = 160; g.fillStyle = '#05060a'; g.fillRect(0, 0, W, H); g.strokeStyle = '#ff6a1a'; g.lineWidth = 8; g.strokeRect(4, 4, W - 8, H - 8); g.fillStyle = '#ffc93a'; g.font = `italic 800 112px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(fmtTime(t), W / 2, H / 2 + 6); this.clockTex.needsUpdate = true; }
   buildWall(o, bs) {
-    const N = 32, W = 4, pts = []; for (let k = 0; k <= N; k++) { const u = k / N; pts.push([o.x - 2.6 * Math.pow(1 - u, 2), o.y + o.h * u]); }
-    const sh = new T.Shape(); sh.moveTo(o.x - 2.6, -1.8); pts.forEach(p => sh.lineTo(p[0] - 0.02, p[1] - 0.02)); sh.lineTo(o.x + o.w, o.y + o.h); sh.lineTo(o.x + o.w, -1.8); sh.lineTo(o.x - 2.6, -1.8);
-    const body = new T.Mesh(new T.ExtrudeGeometry(sh, { depth: W, bevelEnabled: false }), this.M('steel')); body.position.z = -W / 2; body.castShadow = true; this.root.add(body);
-    // Lauffläche: gebogene Holzplatte (Sperrholz-Textur), dunkel lasiert, mit orangen Fugen
+    // Massiver Wandturm: Rundung vorne, hinten bis unter die Zielplattform geschlossen (kein Durchblick aufs Wasser).
+    // Die vordere Seitenwange liegt knapp vor der Laufspur (z = 0), damit sie den Läufer beim Hochrennen nicht verdeckt.
+    const N = 32, Z0 = -3.4, Z1 = 0.55, W = Z1 - Z0, BACK = 3.5, top = o.y + o.h, pts = [];
+    for (let k = 0; k <= N; k++) { const u = k / N; pts.push([o.x - 2.6 * Math.pow(1 - u, 2), o.y + o.h * u]); }
+    const sh = new T.Shape(); sh.moveTo(o.x - 2.6, -1.8); pts.forEach(p => sh.lineTo(p[0] - 0.02, p[1] - 0.02)); sh.lineTo(o.x + o.w, top); sh.lineTo(o.x + o.w, top - 0.62); sh.lineTo(o.x + BACK, top - 0.62); sh.lineTo(o.x + BACK, -1.8); sh.lineTo(o.x - 2.6, -1.8);
+    const body = new T.Mesh(new T.ExtrudeGeometry(sh, { depth: W, bevelEnabled: false }), this.M('steel')); body.position.z = Z0; body.castShadow = body.receiveShadow = true; this.root.add(body);
+    // Lauffläche: gebogene Holzplatte, Dreiecke nach außen gerichtet (sonst wird sie weggeschnitten und die Wand wirkt durchsichtig)
     const surf = new T.BufferGeometry(), P = [], U = [], I = [];
-    for (let k = 0; k <= N; k++) { const [x, y] = pts[k]; P.push(x - 0.015, y, -W / 2 + 0.05, x - 0.015, y, W / 2 - 0.05); const v = k / N * o.h; U.push(0, v * 0.5, W * 0.5, v * 0.5); if (k) { const a = (k - 1) * 2; I.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); } }
+    for (let k = 0; k <= N; k++) { const [x, y] = pts[k]; P.push(x - 0.015, y, Z0 + 0.05, x - 0.015, y, Z1 - 0.02); const v = k / N * o.h; U.push(0, v * 0.5, W * 0.5, v * 0.5); if (k) { const a = (k - 1) * 2; I.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); } }
     surf.setAttribute('position', new T.Float32BufferAttribute(P, 3)); surf.setAttribute('uv', new T.Float32BufferAttribute(U, 2)); surf.setIndex(I); surf.computeVertexNormals();
     const face = new T.Mesh(surf, this.M('woodDark')); face.receiveShadow = true; this.root.add(face);
-    for (let k = 4; k < N; k += 5) { const p = pts[k]; const h = new T.Mesh(C('wallSeam', () => new T.BoxGeometry(0.04, 0.035, W - 0.1)), glow(PAL.pad)); h.position.set(p[0] - 0.02, p[1], 0); this.root.add(h); }
+    for (let k = 4; k < N; k += 5) { const p = pts[k]; const h = new T.Mesh(C('wallSeam2', () => new T.BoxGeometry(0.04, 0.035, W - 0.1)), glow(PAL.pad)); h.position.set(p[0] - 0.02, p[1], (Z0 + Z1) / 2); this.root.add(h); }
     const sideTex = C('wallSide', () => cvs(512, 512, (g, w, h) => { g.fillStyle = '#0c0d12'; g.fillRect(0, 0, w, h); g.save(); g.translate(w / 2, h / 2); g.rotate(-Math.PI / 2); g.font = `italic 800 120px ${FONT}`; g.fillStyle = '#ff6a1a'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('TITAN', 0, -60); g.fillStyle = '#ffffff'; g.fillText('WAND', 0, 70); g.restore(); }));
-    const side = new T.Mesh(new T.ShapeGeometry(sh), new T.MeshStandardMaterial({ map: sideTex, roughness: 0.5, metalness: 0.3 })); side.position.z = W / 2 + 0.01; this.root.add(side);
-    const uvs = side.geometry.attributes.uv, ps = side.geometry.attributes.position; for (let i = 0; i < ps.count; i++) uvs.setXY(i, (ps.getX(i) - (o.x - 2.6)) / (2.6 + o.w), (ps.getY(i) + 1.8) / (o.y + o.h + 1.8));
-    const edge = new T.Mesh(new T.BoxGeometry(o.w + 0.1, 0.1, W + 0.1), glow(PAL.amber)); edge.position.set(o.x + o.w / 2, o.y + o.h + 0.03, 0); this.root.add(edge);
-    bs.truss([o.x + 3.8, -0.2, -2.2], [o.x + 3.8, o.y + o.h, -2.2], 0.45);
+    const side = new T.Mesh(new T.ShapeGeometry(sh), new T.MeshStandardMaterial({ map: sideTex, roughness: 0.5, metalness: 0.3 })); side.position.z = Z1 + 0.01; this.root.add(side);
+    const uvs = side.geometry.attributes.uv, ps = side.geometry.attributes.position; for (let i = 0; i < ps.count; i++) uvs.setXY(i, (ps.getX(i) - (o.x - 2.6)) / (2.6 + BACK), (ps.getY(i) + 1.8) / (top + 1.8));
+    // orange Kante an der vorderen Rundung, wie die Leuchtstreifen im Studio
+    const rim = new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts.map(p => new T.Vector3(p[0] - 0.01, p[1], Z1 + 0.02))), 48, 0.045, 6, false), glow(PAL.pad)); this.root.add(rim);
+    const edge = new T.Mesh(new T.BoxGeometry(o.w + 0.1, 0.1, W + 0.1), glow(PAL.amber)); edge.position.set(o.x + o.w / 2, top + 0.03, (Z0 + Z1) / 2); this.root.add(edge);
+    bs.truss([o.x + 3.8, -0.2, -2.2], [o.x + 3.8, top, -2.2], 0.45);
   }
   // ---------------------------------------------------------------- Bild
   setGhost(frames) {
