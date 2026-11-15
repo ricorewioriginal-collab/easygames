@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "63b6ca819229",
- "generated": "2026-11-15T14:19:54+00:00",
- "commit": "6497adef875b80a1480397a419a4d92702f1b0e6",
+ "version": "b24af21600a0",
+ "generated": "2026-11-15T14:22:32+00:00",
+ "commit": "a46e8becc1c2097f4ee436286124a85a1da1762c",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1943,8 +1943,8 @@
   },
   {
    "p": "anmacha-kart/chars.js",
-   "s": 6386,
-   "h": "5d1d87d97ea49c8011b6f04733bedad9e8c785fd569f3a41a8b27aa63592fe62"
+   "s": 8709,
+   "h": "9ca03c58453476dc5639388cf6464785b1475799fa76d558a209a7a8ef37465b"
   },
   {
    "p": "anmacha-kart/controller.js",
@@ -1953,13 +1953,13 @@
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 65045,
-   "h": "eb4ed9a44c233997518a39c46791edf04cb0f38ac2031ba3d34372e14beabad2"
+   "s": 65833,
+   "h": "7f7aa70949a2ef15d715a9ecf23995a155443d782fd198ea75bb7533ef490553"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 60057,
-   "h": "1b1b48bf21c13d2439cfdb077ed6c55a787db4af9421f13ecc129078adbae7b7"
+   "s": 60103,
+   "h": "d9bec92d18bfa36338f2cc230a8cecc772eaf6cd3bd030c5e1dc36fd9d170531"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -2092,6 +2092,11 @@
    "h": "59504406a522a51cda5a1528f6f2d1b3565aa53409f78ebf33ec0388e781d53b"
   },
   {
+   "p": "anmacha-kart/oma.js",
+   "s": 12110,
+   "h": "098306ef99c3eb582f52abf738dcc929ab091654355c4982d88a71336199092f"
+  },
+  {
    "p": "anmacha-kart/sim.js",
    "s": 26290,
    "h": "e20df5039ee111a8a0d849984ae8c0b2317b81c693fcbe2cee07e1ef62adbda5"
@@ -2103,13 +2108,13 @@
   },
   {
    "p": "anmacha-kart/track.js",
-   "s": 31450,
-   "h": "64dee27d1c3c9992af51040a7983a786018c78ca4601f583231f2783e1116bf3"
+   "s": 35431,
+   "h": "2f42c66f4d9a9c9d198ae48fdee8a514d11f71f06b3a9fefbcc4f0e3906cf9a2"
   },
   {
    "p": "anmacha-kart/view.js",
-   "s": 158255,
-   "h": "c253fc4c8e8b94b8868985f642c64b8a152c97b23227f257abac72f026a518de"
+   "s": 162628,
+   "h": "cf9379f73eb1fe6cd324a693c4e588f28d30ecce8ee3b1cf739af275408a85c7"
   },
   {
    "p": "anmacha-kart/zotik-fox.js",
@@ -8913,8 +8918,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3304,
-   "h": "6362344960efe3ccde929bc1b16ebd6f062a86bd90f362561d951b39226a1563"
+   "s": 3280,
+   "h": "3e62767ebac56c4b0ffb3bc9a9430954649025402deb6113ed25f569065d9039"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -8988,8 +8993,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 25293,
-   "h": "2a1a0269a23f14280c99fa452f9ed1cbc65586aa80ab048b0bde177e91352f7b"
+   "s": 25279,
+   "h": "9f28453a63d6f18f037ba04135f4fa2fea86d52549bc30aa34986b7f06ece435"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -9803,8 +9808,8 @@
   },
   {
    "p": "games.js",
-   "s": 56394,
-   "h": "c34ae4d07e7c8366039f72111bd34970ad43cfc9076723e42eb704870bf83026"
+   "s": 55668,
+   "h": "59af31f638f257b5ac0cbd17c280df0d49739405dc1081d14704888324a74597"
   },
   {
    "p": "gay-life/card.jpg",
@@ -10108,8 +10113,8 @@
   },
   {
    "p": "guides.js",
-   "s": 175786,
-   "h": "c8f68b8f04e2e3c8751a06f1b07c3e928b6732b33ad36c0f20683cf439a788e8"
+   "s": 173557,
+   "h": "b2f7dfaeafb0ea1e7a912d5f62580d871cbc14c6429678869e001476b12db2a8"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10163,8 +10168,8 @@
   },
   {
    "p": "guides/anmacha-kart.json",
-   "s": 19735,
-   "h": "e0678588b5c36f083cfc948162adc5ce5cb0cd5e60b5bf02fed90fc34a7df600"
+   "s": 21044,
+   "h": "baa6098f9a474d0e0577846b25d5002d9a7a888c3ce523d37ebc004b8a3630aa"
   },
   {
    "p": "guides/anmacha-kartenrausch.json",
@@ -10415,11 +10420,6 @@
    "p": "guides/mimori.json",
    "s": 15866,
    "h": "cbce010221a31cc20f664f21edb53361d286a135e781a30b3aa31d2882884a0b"
-  },
-  {
-   "p": "guides/oma-rennen.json",
-   "s": 16408,
-   "h": "560720c7cae61aba8a068c815b42ea57dbacc81064421107fcb86c636f761ba7"
   },
   {
    "p": "guides/partyverse.json",
@@ -11553,58 +11553,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3676,
-   "h": "7b2b102c980d46241491992c6fa5003bdbaa80a03d48dda45d71c3e4905b3163"
-  },
-  {
-   "p": "oma-rennen/card.jpg",
-   "s": 36271,
-   "h": "0c2ddcb5d2a218d8c325afe54426d0c3477aa2df1b4839bb248324bf0e08da9e"
-  },
-  {
-   "p": "oma-rennen/index.html",
-   "s": 15728,
-   "h": "8154e69fe8d37cba6e9e325ce109f5f8d1e95fb72dccb95baf675f339c184568"
-  },
-  {
-   "p": "oma-rennen/js/app.js",
-   "s": 56177,
-   "h": "5fb1b1f1ea1b53b0d5367b0e21ebdb10874e4b6f2148ed382a0ac4792a3677ac"
-  },
-  {
-   "p": "oma-rennen/js/data.js",
-   "s": 7605,
-   "h": "f144e76e34d4ccba6ae453ed33d87151feac31c530909a50c617f52bdbef9689"
-  },
-  {
-   "p": "oma-rennen/js/sound.js",
-   "s": 6302,
-   "h": "e86e0644d42b1b2fd41dd3126b9955f4c27b7fbd54065dc794639114376862e8"
-  },
-  {
-   "p": "oma-rennen/js/touch.js",
-   "s": 4666,
-   "h": "380bc4dface81c8497840035b457ebcf7a097bdf0f1e02e7cb0cfb37e17dbb31"
-  },
-  {
-   "p": "oma-rennen/js/view.js",
-   "s": 32411,
-   "h": "aaba706ba2e92bf63f8e8cc87dfcab7cbb9a830307b9cfc24aba361e7a6a462e"
-  },
-  {
-   "p": "oma-rennen/manifest.webmanifest",
-   "s": 777,
-   "h": "4287f0c7ea02285c4f3af7eb7b8d9c7f4ea195085ab1f639cecb3c473f4c02c4"
-  },
-  {
-   "p": "oma-rennen/style.css",
-   "s": 21969,
-   "h": "26bec8b952bd4a9e011348c329a4924a08fbe1f0022b6cfdbd2dcff211b15996"
-  },
-  {
-   "p": "oma-rennen/sw.js",
-   "s": 2003,
-   "h": "e55361625f5e2fadb4c24cdc2d86d465904e627a27e71bc63b8d913eadb79efa"
+   "s": 3603,
+   "h": "fb08e3f0ee6cbb1619dd574f10035bc3261ee1d14519adb083fe93c2b78a978a"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-DMBVqCOs.js",
@@ -13663,8 +13613,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 253684,
-   "h": "a0d80220b3d9b77e0767df1988243d7d6fd513852a580af3f38cdf23ef41f7cb"
+   "s": 250403,
+   "h": "ada83b1855983c7b2c0600f79071573f820844ade0ccce4e2b1373e6b8425aa6"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -14747,11 +14697,6 @@
    "h": "07e1526e45a86c49b5d7f5ae70ea1a5dcb57b8dfbf4c1c3f282895170891cae9"
   },
   {
-   "p": "thumbs/oma-rennen.webp",
-   "s": 18326,
-   "h": "0ead94e464bc6553f2b3a27b52ac4e2af8c486298a1f1989e5bad0a30c3acad0"
-  },
-  {
    "p": "thumbs/partyverse.webp",
    "s": 14740,
    "h": "4731f6903a27ec543670c8bc74fe93afc3aea15c2ff7bce30f12bb365f416249"
@@ -14813,8 +14758,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2214,
-   "h": "d274c8cf3f35d8946c4776c999f2d6f249309c9898e1fa810e77e47d16970d36"
+   "s": 2188,
+   "h": "69a531eca275380a53b83e24a33827c018f6d147cdfb6d1255dbcc13621f6218"
   },
   {
    "p": "thumbs/tortenschlacht.webp",

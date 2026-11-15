@@ -265,7 +265,7 @@ function initHost() {
 
   // ------------------------------------------------------------------ Start: Solo / Mehrspieler
   LD.start(); LD.creep(0.4);
-  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt10'); }).then(() => LD.add(0.05))]).then(async () => {
+  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt11'); }).then(() => LD.add(0.05))]).then(async () => {
     View.init($('cv'), logos); LD.add(0.05, 'Rennstrecke wird gebaut …'); await nextPaint();
     curTrackIdx = save.track; View.setTrack(getTrack(save.track)); View.resize(innerWidth, innerHeight, 1); LD.add(0.1, 'Shader werden vorgewärmt …'); await nextPaint();
     View.warmup(); ready = true; $('loadInfo').textContent = `${TR.length} Strecken · ${KARTS.length} Karts · ${CHARS.length} Figuren · ${logos.length} Sender-Logos`; renderMenu();
@@ -361,7 +361,9 @@ function initHost() {
     const multi = players.length > 1 || players.some(p => p.conn), free = save.rmode === 'free' && players.length === 1, tt = (save.rmode === 'tt' || free) && players.length === 1;
     const total = tt ? 1 : 8, specs = players.map((p, i) => ({ name: p.name, logo: p.logo, char: p.char == null ? save.char : p.char, kart: p.kart == null ? save.kart : p.kart, human: true, assist: p.conn ? Math.max(1, assistLvl()) : assistLvl() })), used = new Set(players.map(p => p.logo)), usedC = new Set(specs.map(s => s.char)), cpool = CHARS.map((_, i) => i).filter(i => !usedC.has(i)).sort(() => Math.random() - 0.5);
     const pool = Array.from({ length: 13 }, (_, i) => i).filter(i => !used.has(i)).sort(() => Math.random() - 0.5);
-    for (let b = 0; specs.length < total; b++) { const lg = pool[b % pool.length]; const ch = cpool.length ? cpool.pop() : Math.floor(Math.random() * CHARS.length); specs.push({ name: CHARS[ch].name, logo: lg, char: ch, kart: Math.floor(Math.random() * KARTS.length), human: false, skill: save.skill }); }
+    const omaRun = (save.rmode === 'gp' ? Track.CUPS[save.cup].tracks : [save.track]).every(t => TR[t] && TR[t].world === 'oma'), rollK = KARTS.findIndex(k => k.id === 'rollator');
+    if (omaRun) cpool.sort((a, b) => (OMA.is(CHARS[a]) ? 1 : 0) - (OMA.is(CHARS[b]) ? 1 : 0));
+    for (let b = 0; specs.length < total; b++) { const lg = pool[b % pool.length]; const ch = cpool.length ? cpool.pop() : Math.floor(Math.random() * CHARS.length); specs.push({ name: CHARS[ch].name, logo: lg, char: ch, kart: omaRun && OMA.is(CHARS[ch]) && rollK >= 0 ? rollK : Math.floor(Math.random() * KARTS.length), human: false, skill: save.skill }); }
     GP = { specs, tt, free, race: 0, pts: specs.map(() => 0), gp: save.rmode === 'gp' && !tt, order: save.rmode === 'gp' && !tt ? Track.CUPS[save.cup].tracks.slice() : [save.track], multi };
     startRace();
   }
@@ -408,6 +410,7 @@ function initHost() {
   const hudOf = ki => R.huds.find(h => h.ki === ki), hmsg = (ki, t, sec) => { const h = hudOf(ki); if (h) { h.msg.textContent = t; h.msgT = sec || 1.6; } };
   function push(ph) { R && R.humans.forEach((p, i) => { if (!p.conn) return; const k = R.S.karts[i]; send(p.conn, { t: 'st', ph, pos: k.rank, n: R.S.karts.length, lap: Math.max(1, Math.min(R.S.laps, k.lap)), laps: R.S.laps, item: k.item ? ITEM_ICON[k.item] + (k.itemN > 1 ? '×' + k.itemN : '') : '', roll: k.itemT > 0, spd: Math.round(Math.max(0, k.vf) * 3.24), fin: k.finished }); }); }
   const isHuman = ki => ki < R.humans.length;
+  const chOf = ki => { const k = R && R.S && R.S.karts[ki]; return k && k.char != null ? CHARS[k.char % CHARS.length] : null; };
   // Eigenes Rennbild am Handy: einmal Strecke/Karts, dann ~20× pro Sekunde der Zustand (das Handy zeichnet und glättet selbst)
   let raceNo = 0; const r2 = v => Math.round(v * 100) / 100, FXE = { trick: 1, coin: 1, boom: 1, splat: 1, smash: 1, rockBounce: 1, hit: 1, pad: 1, flash: 1, use: 1, fog: 1 };
   function sendRace(p) { const S = R.S; send(p.conn, { t: 'race', r: R.rid, tr: R.tIdx, items: S.items, me: R.humans.indexOf(p), karts: S.karts.map(k => [k.logo, k.char, k.kart]), boxes: S.boxes.map(b => [r2(b.x), r2(b.z)]), coins: S.coins.map(c => [r2(c.x), r2(c.z), r2(c.f)]), pads: S.pads.map(q => [r2(q.x), r2(q.z), r2(q.th)]) }); }
@@ -432,9 +435,9 @@ function initHost() {
       case 'coin': if (isHuman(e.k)) AUD.sfx.coin(); break;
       case 'jump': if (isHuman(e.k)) AUD.sfx.pad(); break;
       case 'trick': if (isHuman(e.k)) { AUD.sfx.coin(); hmsg(e.k, 'TRICK!', 0.9); } break;
-      case 'got': if (isHuman(e.k)) { AUD.sfx.got(); hmsg(e.k, ITEM_NAME[e.item], 1.2); } break;
-      case 'use': if (isHuman(e.k)) { ({ boost: AUD.sfx.boost, shield: AUD.sfx.shield, rocket: AUD.sfx.rocket, mine: AUD.sfx.drop, banana: AUD.sfx.drop, rock: AUD.sfx.throw, flash: () => {}, fog: AUD.sfx.fogs })[e.item](); } break;
-      case 'hit': if (isHuman(e.k)) { if (e.kind === 'banana') AUD.sfx.slip(); else if (e.kind !== 'flash') AUD.sfx.hit(); hmsg(e.k, { banana: 'AUSGERUTSCHT!', rock: 'FELSBROCKEN!', flash: 'FUNK-BLITZ!', rocket: 'GETROFFEN!', mine: 'STÖRSIGNAL!' }[e.kind] || 'GETROFFEN!', 1.3); const p = R.humans[e.k]; if (p.conn) send(p.conn, { t: 'ev', e: 'hit' }); } break;
+      case 'got': if (isHuman(e.k)) { AUD.sfx.got(); hmsg(e.k, OMA.item(chOf(e.k), e.item, ITEM_NAME[e.item]), 1.2); } break;
+      case 'use': if (isHuman(e.k)) { const os = OMA.say(chOf(e.k), e.item === 'boost' ? 'boost' : 'use'); if (os && Math.random() < 0.5) hmsg(e.k, '💬 ' + os, 1.4); ({ boost: AUD.sfx.boost, shield: AUD.sfx.shield, rocket: AUD.sfx.rocket, mine: AUD.sfx.drop, banana: AUD.sfx.drop, rock: AUD.sfx.throw, flash: () => {}, fog: AUD.sfx.fogs })[e.item](); } break;
+      case 'hit': if (isHuman(e.k)) { if (e.kind === 'banana') AUD.sfx.slip(); else if (e.kind !== 'flash') AUD.sfx.hit(); const os = OMA.say(chOf(e.k), 'hit'); hmsg(e.k, os ? '💬 ' + os : { banana: 'AUSGERUTSCHT!', rock: 'FELSBROCKEN!', flash: 'FUNK-BLITZ!', rocket: 'GETROFFEN!', mine: 'STÖRSIGNAL!' }[e.kind] || 'GETROFFEN!', 1.3); const p = R.humans[e.k]; if (p.conn) send(p.conn, { t: 'ev', e: 'hit' }); } break;
       case 'flash': AUD.sfx.thunder(); { const f = $('fxFlash'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); } if (isHuman(e.k)) hmsg(e.k, 'FUNK-BLITZ!', 1.2); break;
       case 'fog': AUD.sfx.fogs(); (e.ids || []).forEach(id => { if (isHuman(id)) { const h = hudOf(id); if (h) { h.fog.classList.add('on'); h.fogT = 3.8; } hmsg(id, 'NEBELBOMBE!', 1.4); } }); break;
       case 'splat': AUD.sfx.splat(); break;
@@ -446,7 +449,7 @@ function initHost() {
       case 'miniturbo': if (isHuman(e.k)) { AUD.sfx.mini(e.tier); hmsg(e.k, ['', 'MINI-TURBO', 'SUPER-TURBO', 'ULTRA-TURBO'][e.tier], 1); } break;
       case 'boom': AUD.sfx.boom(); break;
       case 'lap': if (isHuman(e.k)) { AUD.sfx.lap(); const left = S.laps - e.lap; hmsg(e.k, left === 1 ? 'LETZTE RUNDE!' : left > 1 ? 'RUNDE ' + (e.lap + 1) : '', 1.8); if (GP.tt || true) noteLap(e.k, e.time); } break;
-      case 'finish': if (isHuman(e.k)) { const k = S.karts[e.k]; if (!R.firstFin) { R.firstFin = true; AUD.sfx.finish(); } hmsg(e.k, k.rank === 1 ? '🏆 SIEG!' : 'ZIEL! Platz ' + k.rank, 4); if (e.k === 0 && !GP.multi) banner(k.rank === 1 ? 'SIEG!' : 'ZIEL!', 'Platz ' + k.rank, 2200, '#ffd24a'); const p = R.humans[e.k]; if (p.conn) send(p.conn, { t: 'ev', e: 'fin', pos: k.rank }); } break;
+      case 'finish': if (isHuman(e.k)) { const k = S.karts[e.k]; if (!R.firstFin) { R.firstFin = true; AUD.sfx.finish(); } hmsg(e.k, k.rank === 1 ? '🏆 SIEG!' : 'ZIEL! Platz ' + k.rank, 4); if (e.k === 0 && !GP.multi) { const os = OMA.say(chOf(e.k), k.rank <= 3 ? 'win' : 'lose'); banner(k.rank === 1 ? 'SIEG!' : 'ZIEL!', 'Platz ' + k.rank + (os ? ' · „' + os + '“' : ''), os ? 3200 : 2200, '#ffd24a'); } const p = R.humans[e.k]; if (p.conn) send(p.conn, { t: 'ev', e: 'fin', pos: k.rank }); } break;
     }
   }
   function noteLap(ki, time) { if (GP.multi || ki !== 0) return; const id = R.tr.def.id, b = save.best[id] || (save.best[id] = {}); if (!b.lap || time < b.lap) { b.lap = time; persist(); R.newBest = time; } }

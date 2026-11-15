@@ -28,7 +28,16 @@ const CHARS = [
   { id:'raven', kk:'ad_rh', name:'Raven', emoji:'🦅', kind:'Kapuzen-Abenteurer', cup:'Stadt-Cup', acc:'#6a7a8a', skin:'#f0c090', body:'#3a4a3a' },
   { id:'klapper', kk:'sk_w', name:'Klapper', emoji:'💀', kind:'Geistergruft', cup:'Spuk-Cup', acc:'#bfe8ff', skin:'#e8e8e0', body:'#5a5a6a' },
   { id:'moira', kk:'sk_m', name:'Moira', emoji:'🔮', kind:'Geistergruft', cup:'Spuk-Cup', acc:'#b07aff', skin:'#e8e8e0', body:'#3a2a5a' },
-  { id:'zotik', fox:true, name:'Zotik', emoji:'🦊', kind:'ZOTIK-Held', cup:'Märchen-Cup', acc:'#7a4aff', skin:'#f08a3a', body:'#2a2a5a' }
+  { id:'zotik', fox:true, name:'Zotik', emoji:'🦊', kind:'ZOTIK-Held', cup:'Märchen-Cup', acc:'#7a4aff', skin:'#f08a3a', body:'#2a2a5a' },
+  // Oma-Bande (aus „Oma-Rennen“): KayKit-Figuren mit Dauerwelle/Dutt, Brille und Handtasche am Kart; says = Spruch im Rennen
+  { id:'erna', walker:'#c0c6cc', kk:'ad_ma~o', ac:'oma', hair:'#e8e6e0', glasses:true, bun:1, name:'Oma Erna', emoji:'👵', kind:'Allround-Oma', cup:'Kaffee-Cup', acc:'#c03a5a', skin:'#f2c8a8', body:'#f2d7a8', says:'Ich fahr seit 1958 unfallfrei!' },
+  { id:'gertrud', walker:'#ff4a6a', kk:'ad_ra~o', ac:'oma', hair:'#b9a7d8', bun:2, name:'Oma Gertrud', emoji:'👵', kind:'Rentnerrakete', cup:'Kaffee-Cup', acc:'#3a5ac0', skin:'#f2c8a8', body:'#d8e2ff', says:'Platz da, ich hab Termin beim Friseur!' },
+  { id:'hilde', walker:'#4a4f58', kk:'ad_ba~o', ac:'oma', hair:'#f2f2ee', glasses:true, bun:0, name:'Oma Hilde', emoji:'👵', kind:'Schwergewichts-Oma', cup:'Kaffee-Cup', acc:'#2f7a4a', skin:'#f2c8a8', body:'#9cc28a', says:'Ich hab noch nie Platz gemacht!' },
+  { id:'lotti', walker:'#7cff6a', kk:'ad_ra~o', ac:'oma', hair:'#ff9ec8', bun:1, name:'Oma Lotti', emoji:'👵', kind:'Drift-Queen', cup:'Kuchen-Cup', acc:'#ff7a2a', skin:'#f2c8a8', body:'#ffe08a', says:'Huiii, Kurve!' },
+  { id:'kalle', walker:'#e8b030', kk:'ad_kn~o', ac:'oma', hair:'#d0d0d0', glasses:true, bun:-1, name:'Opa Kalle', emoji:'👴', kind:'Startblitz-Opa', cup:'Kuchen-Cup', acc:'#8a6a3a', skin:'#f2c8a8', body:'#5a4a3a', says:'Früher war mehr Lametta!' },
+  { id:'frieda', walker:'#00c4d8', kk:'ad_kn~o', ac:'oma', hair:'#9a8a7a', glasses:true, bun:2, name:'Oma Frieda', emoji:'👵', kind:'Querfeldein-Oma', cup:'Kuchen-Cup', acc:'#7a2a8a', skin:'#f2c8a8', body:'#e8c0f0', says:'Abkürzung durchs Blumenbeet!' },
+  { id:'trude', walker:'#d8c070', kk:'ad_ma~o', ac:'oma', hair:'#ffffff', glasses:true, bun:1, name:'Uroma Trude', emoji:'👵', kind:'103 Jahre schnell', cup:'Großer Rentenpokal', acc:'#2a2a4a', skin:'#f2c8a8', body:'#8a8aaa', says:'Ihr Jungspunde!' },
+  { id:'rosi', walker:'#ff9ad0', kk:'ad_ma~o', ac:'oma', hair:'#e8a060', bun:0, name:'Oma Rosi', emoji:'👵', kind:'Disco-Oma', cup:'Großer Rentenpokal', acc:'#ff4a8a', skin:'#f2c8a8', body:'#ffffff', says:'Tanzen und Rasen, das hält jung!' }
 ];
 
 /* Kart-Typen (Werte als Faktoren): mv Tempo, ma Beschleunigung, mt Lenken, mr Gelände (Tempo neben der Strecke), md Drift-Aufladung, mw Gewicht */
@@ -42,6 +51,7 @@ const KARTS = [
   { id: 'monster', name: 'Monster-Truck', emoji: '🛻', mv: 0.97, ma: 0.95, mt: 0.95, mr: 0.9, md: 0.95, mw: 1.35, desc: 'Riesenräder: Gelände egal, schwer und robust' },
   { id: 'retro', name: 'Oldtimer', emoji: '🚗', mv: 1.02, ma: 0.97, mt: 1.05, mr: 0.55, md: 1.12, mw: 1.1, desc: 'Klassiker mit gutem Drift und solidem Tempo' },
   { id: 'gleiter', name: 'Sternengleiter', emoji: '🛸', mv: 1.05, ma: 1.0, mt: 0.96, mr: 0.65, md: 1.15, mw: 0.85, desc: 'Schwebt flink, starke Mini-Turbos, leicht' },
-  { id: 'funkbus', name: 'Funk-Bus', emoji: '🚌', mv: 0.98, ma: 0.9, mt: 0.92, mr: 0.6, md: 0.92, mw: 1.5, desc: 'Der Schwerste im Feld – schiebt alle beiseite' }
+  { id: 'funkbus', name: 'Funk-Bus', emoji: '🚌', mv: 0.98, ma: 0.9, mt: 0.92, mr: 0.6, md: 0.92, mw: 1.5, desc: 'Der Schwerste im Feld – schiebt alle beiseite' },
+  { id: 'rollator', name: 'Raketen-Rollator', emoji: '🦼', mv: 1.0, ma: 1.06, mt: 1.06, mr: 0.62, md: 1.08, mw: 0.95, desc: 'Der Oma-Flitzer: Gehwagen mit Raketenantrieb und Einkaufskorb' }
 ];
 if (typeof module !== 'undefined') module.exports = { CHARS, KARTS };

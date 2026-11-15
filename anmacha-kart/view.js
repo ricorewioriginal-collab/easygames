@@ -61,7 +61,7 @@ const View = (() => {
 
 
   // ------------------------------------------------------------------ Fahrbahn-Look je Welt: Untergrund, Markierungen, Curbs, Banden, Neon-Glow
-  const SURF = { wiese: 'asphalt', strand: 'asphalt', gruft: 'cobble', fantasia: 'carpet', neon: 'neon', vulkan: 'basalt', eis: 'ice', dschungel: 'dirt', kosmos: 'neon', wueste: 'asphalt', regenbogen: 'neon', herzportal: 'neon', kristallsturm: 'ice', monsterfreunde: 'dirt', ahnenruinen: 'slab', drachenflug: 'slab', splitterwelten: 'neon', farbeninsel: 'tiles', zotik: 'dirt', taschi: 'cobble', aeru: 'neon', bunte: 'wood', leuchtfeuer: 'asphalt', sonnenhof: 'dirt', ricopoly: 'asphalt', wolken: 'cloud', huepf: 'asphalt' };
+  const SURF = { wiese: 'asphalt', strand: 'asphalt', gruft: 'cobble', fantasia: 'carpet', neon: 'neon', vulkan: 'basalt', eis: 'ice', dschungel: 'dirt', kosmos: 'neon', wueste: 'asphalt', regenbogen: 'neon', herzportal: 'neon', kristallsturm: 'ice', monsterfreunde: 'dirt', ahnenruinen: 'slab', drachenflug: 'slab', splitterwelten: 'neon', farbeninsel: 'tiles', zotik: 'dirt', taschi: 'cobble', aeru: 'neon', bunte: 'wood', leuchtfeuer: 'asphalt', sonnenhof: 'dirt', ricopoly: 'asphalt', wolken: 'cloud', huepf: 'asphalt', omamarkt: 'cobble', omapark: 'dirt', omamall: 'tiles', omastrand: 'asphalt', omaxmas: 'cobble', omagrusel: 'cobble' };
   const WALLS = { asphalt: 'rail', neon: 'neon', basalt: 'neon', ice: 'neon', cloud: 'neon', dirt: 'wood', cobble: 'stone', slab: 'stone', carpet: 'soft', tiles: 'soft', wood: 'rail' };
   const isNight = d => { const c = new T.Color(d.sky[1]), h = {}; c.getHSL(h); return h.l < 0.3; };
   const noiseFill = (g, w, h, base, amt, sat) => { const im = g.createImageData(w, h), b = new T.Color(base), D = im.data; for (let i = 0; i < w * h; i++) { const n = (Math.random() - 0.5) * amt + (Math.random() < 0.04 ? (Math.random() - 0.5) * amt * 2.2 : 0); D[i * 4] = clamp(b.r * 255 + n * (sat || 1), 0, 255); D[i * 4 + 1] = clamp(b.g * 255 + n, 0, 255); D[i * 4 + 2] = clamp(b.b * 255 + n, 0, 255); D[i * 4 + 3] = 255; } g.putImageData(im, 0, 0); };
@@ -126,7 +126,7 @@ const View = (() => {
       m.position.set(a.x, tr.height(r - L) + 0.02, a.z); m.rotation.y = Math.atan2(b.x - a.x, b.z - a.z); m.userData.keep = true; world.add(m); });
   }
   // Hintergrund-Silhouetten: zwei Ringe (nah/fern) mit Dunst – Tiefe ohne Zusatzgeometrie (2 Draw-Calls)
-  const BACK = { wiese: 'hills', strand: 'sea', gruft: 'spooky', fantasia: 'castle', neon: 'city', vulkan: 'volcano', eis: 'peaks', dschungel: 'forest', kosmos: null, wueste: 'mesa', regenbogen: 'hills', herzportal: 'castle', kristallsturm: 'peaks', monsterfreunde: 'forest', ahnenruinen: 'spooky', drachenflug: 'peaks', splitterwelten: 'city', farbeninsel: 'sea', zotik: 'forest', taschi: 'hills', aeru: null, bunte: 'sea', leuchtfeuer: 'sea', sonnenhof: 'hills', ricopoly: 'city', wolken: null, huepf: 'city' };
+  const BACK = { wiese: 'hills', strand: 'sea', gruft: 'spooky', fantasia: 'castle', neon: 'city', vulkan: 'volcano', eis: 'peaks', dschungel: 'forest', kosmos: null, wueste: 'mesa', regenbogen: 'hills', herzportal: 'castle', kristallsturm: 'peaks', monsterfreunde: 'forest', ahnenruinen: 'spooky', drachenflug: 'peaks', splitterwelten: 'city', farbeninsel: 'sea', zotik: 'forest', taschi: 'hills', aeru: null, bunte: 'sea', leuchtfeuer: 'sea', sonnenhof: 'hills', ricopoly: 'city', wolken: null, huepf: 'city', omamarkt: 'city', omapark: 'forest', omamall: 'city', omastrand: 'sea', omaxmas: 'city', omagrusel: 'spooky' };
   function backdrop(d) {
     const kind = BACK[d.id]; if (kind === undefined ? false : !kind) return; const k = kind || 'hills', night = isNight(d), fogC = new T.Color(d.fog), base = new T.Color(d.ground).offsetHSL(0, -0.1, night ? -0.05 : -0.12);
     [[760, 150, 0.68, 1], [640, 90, 0.38, 0]].forEach(([r, h, mix, far]) => {
@@ -261,8 +261,9 @@ const View = (() => {
     const sun = (col, el, size) => { const m = new T.Mesh(shared.sphere, bas(col, { fog: false })); const a = 0.7; m.position.set(CX + Math.cos(a) * 820, el, CZ + Math.sin(a) * 820); m.scale.setScalar(size); skyGroup.add(m); return m; };
     const grp = (x, y, z) => { const g = new T.Group(); g.position.set(x, y, z); world.add(g); return g; };
     const mesh = (parent, geo, col, x, y, z, sx, sy, sz, glow) => { const m = new T.Mesh(G[geo], glow ? bas(col) : lam(col)); m.position.set(x, y, z); m.scale.set(sx, sy == null ? sx : sy, sz == null ? sx : sz); parent.add(m); return m; };
-    const W = d.world || d.id, P = d.props;
-    if (W === 'zotik') {
+    const W = d.world || d.id, P = d.props, ext = window.KartWorlds && window.KartWorlds[W];
+    if (ext) ext({ T, d, tr, world, skyGroup, anim, CX, CZ, R0, PI2, G, R, ra, pick, put, along, free, face, tree, lamp, points, land, sun, grp, mesh, clouds, lam, bas });
+    else if (W === 'zotik') {
       free(110, 8, 0, R0 + 360, (x, z) => tree(x, z, ra(9, 20), pick(['#2e7d32', '#1b5e20', '#388e3c', '#43a047']), null, R() < 0.3)); along(110, 6, 46, (x, z) => tree(x, z, ra(8, 18), pick(['#2e7d32', '#1b5e20', '#388e3c', '#43a047']), null, R() < 0.35));
       along(26, 6, 30, (x, z) => { const h = ra(3, 7); put('cyl', '#f4ecd8', x, h / 2, z, h * 0.16, h); put('sph', pick(['#e53935', '#d84315', '#8e24aa']), x, h, z, h * 0.55, h * 0.28); for (let q = 0; q < 3; q++) put('sph', '#ffffff', x + ra(-h, h) * 0.3, h * 1.18, z + ra(-h, h) * 0.3, h * 0.07); });
       along(30, 1.5, 3, (x, z) => lamp(x, z, 4.5, '#ffcc66'));
@@ -549,7 +550,8 @@ const View = (() => {
     monster: { seatY: 2.05, seatZ: -0.45, plateZ: -2.3, plateY: 2.0 },
     retro: { seatY: 0.95, seatZ: -0.7, plateZ: -2.35, plateY: 0.95 },
     gleiter: { seatY: 1.15, seatZ: -0.35, plateZ: -2.0, plateY: 1.2 },
-    funkbus: { seatY: 1.15, seatZ: 0.25, plateZ: -2.05, plateY: 1.4 }
+    funkbus: { seatY: 1.15, seatZ: 0.25, plateZ: -2.05, plateY: 1.4 },
+    rollator: { seatY: 0.95, seatZ: -0.35, plateZ: -1.95, plateY: 1.0 }
   };
   const bananaMesh = () => { const g = new T.Group(), y = lam('#ffe14a', { emissive: 0x5a4a00 }), br = lam('#6a4a1a'); for (let i = 0; i < 7; i++) { const a = -1.0 + i * (2.0 / 6), r = 0.3 - Math.abs(a) * 0.05; S_(g, y, Math.sin(a) * 1.15, (1 - Math.cos(a)) * 1.1 + 0.15, 0, r + 0.12, r + 0.12, r + 0.12); } S_(g, br, Math.sin(-1.08) * 1.15, (1 - Math.cos(1.08)) * 1.1 + 0.15, 0, 0.14); S_(g, br, Math.sin(1.08) * 1.15, (1 - Math.cos(1.08)) * 1.1 + 0.15, 0, 0.14); g.scale.setScalar(1.3); return g; };
   const rockMesh = (sc) => { const m = new T.Mesh(geo('rock', () => new T.IcosahedronGeometry(1, 0)), lam('#8a8f9a')); m.scale.set(0.9 * (sc || 1), 0.8 * (sc || 1), 1.0 * (sc || 1)); return m; };
@@ -559,11 +561,12 @@ const View = (() => {
   const KK = { cache: {}, wait: {}, pend: [], mats: {} };
   const loadGL = () => KK.gl || (KK.gl = window.THREE.GLTFLoader ? Promise.resolve() : new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = '../vendor/three-r128-gltfloader.js'; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); }));
   function kkLoad(id) {
-    if (!KK.wait[id]) KK.wait[id] = loadGL().then(() => new Promise((res, rej) => new T.GLTFLoader().load('models/kk/' + id + '.glb', g => { try { KK.cache[id] = kkBake(g.scene); } catch (e) { rej(e); return; } KK.pend = KK.pend.filter(p => { if (p.id !== id) return true; kkAttach(p.slot, id, p.C); return false; }); res(KK.cache[id]); }, undefined, rej)));
+    if (!KK.wait[id]) KK.wait[id] = loadGL().then(() => new Promise((res, rej) => new T.GLTFLoader().load('models/kk/' + id.split('~')[0] + '.glb', g => { try { KK.cache[id] = kkBake(g.scene, id.includes('~')); } catch (e) { rej(e); return; } KK.pend = KK.pend.filter(p => { if (p.id !== id) return true; kkAttach(p.slot, id, p.C); return false; }); res(KK.cache[id]); }, undefined, rej)));
     KK.wait[id].catch(() => { delete KK.wait[id]; });
     return KK.wait[id];
   }
-  function kkBake(root) {
+  function kkBake(root, bare) {
+    if (bare) { const rm = []; root.traverse(o => { if (o.isMesh && /Hat|Helmet|Visor|Mask/.test(o.name + '|' + (o.parent ? o.parent.name : ''))) rm.push(o); }); rm.forEach(o => o.parent.remove(o)); }
     root.updateMatrixWorld(true);
     // GLTFLoader entfernt Punkte aus Knotennamen (upperarm.l → upperarml): beide Schreibweisen ablegen
     const bones = {}; root.traverse(o => { if (o.isBone) bones[o.name] = bones[o.name.replace(/\./g, '')] = o; }); const bn_ = n => bones[n] || bones[n.replace(/\./g, '')];
@@ -577,7 +580,7 @@ const View = (() => {
     if (bones.spine) { bones.spine.rotateX(0.12); }
     root.updateMatrixWorld(true);
     const hip = bones.hips ? wp(bones.hips) : new T.Vector3(0, hipY, 0), sc = 0.66 / Math.max(0.05, hipY);
-    const pos = [], uv = [], idx = []; let map = null; const hb = { min: [1e9, 1e9, 1e9], max: [-1e9, -1e9, -1e9] };
+    const pos = [], uv = [], idx = [], hv = []; let map = null; const hb = { min: [1e9, 1e9, 1e9], max: [-1e9, -1e9, -1e9] };
     const fac = at => { const ar = at.array; return !at.normalized ? 1 : ar instanceof Int16Array ? 1 / 32767 : ar instanceof Uint16Array ? 1 / 65535 : ar instanceof Int8Array ? 1 / 127 : ar instanceof Uint8Array ? 1 / 255 : 1; };
     const v = new T.Vector3(), t = new T.Vector3(), acc = new T.Vector3(), M = new T.Matrix4();
     root.traverse(o => {
@@ -590,7 +593,7 @@ const View = (() => {
         if (Wm) { acc.set(0, 0, 0); let ws = 0; for (let k = 0; k < 4; k++) { const w = SW.getComponent ? SW.getComponent(i, k) * fw : [SW.getX(i), SW.getY(i), SW.getZ(i), SW.getW(i)][k] * fw; if (w <= 0) continue; const bi = [SI.getX(i), SI.getY(i), SI.getZ(i), SI.getW(i)][k]; t.copy(v).applyMatrix4(Wm[bi]); acc.addScaledVector(t, w); ws += w; } if (ws > 0) v.copy(acc.multiplyScalar(1 / ws)); else v.applyMatrix4(o.matrixWorld); }
         else v.applyMatrix4(M.copy(o.matrixWorld));
         pos.push((v.x - hip.x) * sc, (v.y - hip.y) * sc, (v.z - hip.z) * sc);
-        if (HB && HB(i)) { const n = pos.length - 3; for (let k = 0; k < 3; k++) { hb.min[k] = Math.min(hb.min[k], pos[n + k]); hb.max[k] = Math.max(hb.max[k], pos[n + k]); } }
+        if (HB && HB(i)) { const n = pos.length - 3; hv.push(n / 3); for (let k = 0; k < 3; k++) { hb.min[k] = Math.min(hb.min[k], pos[n + k]); hb.max[k] = Math.max(hb.max[k], pos[n + k]); } }
         if (U) uv.push(U.getX(i) * fu, U.getY(i) * fu); else uv.push(0, 0);
       }
       if (gm.index) for (let i = 0; i < gm.index.count; i++) idx.push(base + gm.index.getX(i)); else for (let i = 0; i < P.count; i++) idx.push(base + i);
@@ -598,7 +601,7 @@ const View = (() => {
     const g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new T.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals(); g.computeBoundingSphere();
     if (map) { map.encoding = T.sRGBEncoding; map.anisotropy = 4; map.needsUpdate = true; }
     if (hb.min[0] > hb.max[0]) { hb.min = [-0.35, 0.55, -0.3]; hb.max = [0.35, 1.25, 0.35]; }
-    return { geo: g, map, hb };
+    return { geo: g, map, hb, hv };
   }
   // Eigene Kart-Rush-Figuren auf KayKit-Basis: Kleidung je Fahrer umgefärbt (Haut, Grau/Metall bleiben), dazu Erkennungsmerkmale am Kopf
   const hsl = (r, g, b) => { const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2; if (mx === mn) return [0, 0, l]; const d = mx - mn, s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn); let h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; return [h / 6, s, l]; };
@@ -611,8 +614,18 @@ const View = (() => {
     for (let i = 0; i < uv.length; i += 6) { const x = Math.min(w - 1, Math.max(0, uv[i] * w | 0)), y = Math.min(h - 1, Math.max(0, uv[i + 1] * h | 0)), k = (y * w + x) * 4, [hh, ss, ll] = hsl(px[k] / 255, px[k + 1] / 255, px[k + 2] / 255); if (ss > 0.22 && !skinPx(hh, ss, ll)) bins[(hh * 24 | 0) % 24] += ss; }
     let dom = 0; for (let b = 1; b < 24; b++) if (bins[b] > bins[dom]) dom = b;
     const ta = hsl(...new T.Color(C.acc).toArray()), tb = hsl(...new T.Color(C.body).toArray()), rot = ta[0] - (dom + 0.5) / 24, all = !!C.tintAll;
+    let hair = null;
+    if (C.hair && c.hv && c.hv.length) {
+      const P = c.geo.attributes.position.array, [x0, y0, z0] = c.hb.min, [x1, y1, z1] = c.hb.max, cx = (x0 + x1) / 2, hw = (x1 - x0) / 2, pk = v => (Math.min(h - 1, Math.max(0, uv[v * 2 + 1] * h | 0)) * w + Math.min(w - 1, Math.max(0, uv[v * 2] * w | 0))) * 4;
+      const hs = new Set(), fs = new Set();
+      c.hv.forEach(v => { const x = P[v * 3], y = (P[v * 3 + 1] - y0) / (y1 - y0), z = (P[v * 3 + 2] - z0) / (z1 - z0), k = pk(v), [hh, ss, ll] = hsl(px[k] / 255, px[k + 1] / 255, px[k + 2] / 255), face = z > 0.7 && Math.abs(x - cx) < hw * 0.6 && y < 0.7; if (face && Math.abs(x - cx) < hw * 0.45 && y > 0.15 && y < 0.6) fs.add(k); else if ((z < 0.45 && y > 0.4) || (!face && !skinPx(hh, ss, ll))) hs.add(k); });
+      hair = new Set(); hs.forEach(k => { if (fs.has(k)) return; const r = px[k], gg = px[k + 1], b = px[k + 2], x = (k / 4) % w, y = (k / 4 / w) | 0; for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) { const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue; const q = (yy * w + xx) * 4; if (Math.abs(px[q] - r) + Math.abs(px[q + 1] - gg) + Math.abs(px[q + 2] - b) < 40) hair.add(q); } });
+      fs.forEach(k => hair.delete(k));
+    }
+    const hc = C.hair ? new T.Color(C.hair) : null;
     for (let k = 0; k < px.length; k += 4) {
       let [hh, ss, ll] = hsl(px[k] / 255, px[k + 1] / 255, px[k + 2] / 255);
+      if (hair && hair.has(k)) { const f = 0.7 + Math.min(0.3, ll); px[k] = hc.r * 255 * f; px[k + 1] = hc.g * 255 * f; px[k + 2] = hc.b * 255 * f; continue; }
       if (skinPx(hh, ss, ll) && !all) continue;
       if (ss < 0.18) { if (!all || ll < 0.12) continue; hh = tb[0]; ss = Math.max(0.35, tb[1] * 0.8); ll = ll * 0.55 + tb[2] * 0.45; }
       else { hh = (hh + rot + 1) % 1; ss = Math.min(1, ss * 0.6 + ta[1] * 0.45); }
@@ -645,6 +658,11 @@ const View = (() => {
       case 'flames': for (let q = 0; q < 5; q++) m(cone, q % 2 ? '#ffd24a' : '#ff7a1a', cx + (q - 2) * hw * 0.28, top + 0.08, cz - 0.04, 0.07, 0.24 + (2 - Math.abs(q - 2)) * 0.08, 0.07, -0.3, (q - 2) * 0.2, true); break;
       case 'shards': for (let q = 0; q < 4; q++) m(geo('ko', () => new T.OctahedronGeometry(1, 0)), q % 2 ? acc : '#a971fc', cx + (q - 1.5) * hw * 0.4, top + 0.12 + (q % 2) * 0.05, cz, 0.05, 0.14, 0.05, 0, (q - 1.5) * 0.3, true); break;
       case 'flower': for (let q = 0; q < 5; q++) { const a = q / 5 * Math.PI * 2; m(sph, '#ff93ce', cx + hw * 0.55 + Math.cos(a) * 0.06, top - 0.02 + Math.sin(a) * 0.06, cz + 0.08, 0.05, 0.05, 0.02); } m(sph, '#ffd24a', cx + hw * 0.55, top - 0.02, cz + 0.1, 0.035); break;
+      case 'oma': { const hr = C.hair || '#e8e6e0', ey = y0 + (top - y0) * 0.5;
+        for (let q = 0; q < 9; q++) { const a = q / 9 * Math.PI * 2; m(sph, hr, cx + Math.cos(a) * hw * 0.66, top - 0.1, cz - 0.03 + Math.sin(a) * hw * 0.6, 0.1, 0.08, 0.1); }
+        if (C.bun >= 0) m(sph, hr, cx, top + (C.bun === 1 ? 0.02 : -0.12), cz - hw * (C.bun === 1 ? 0.3 : 0.75), 0.14); if (C.bun === 2) two(s => m(sph, hr, cx + s * hw * 0.78, top - 0.16, cz - hw * 0.2, 0.1));
+        if (C.glasses) { two(s => m(tor, '#c8a040', cx + s * hw * 0.36, ey, front + 0.02, 0.085, 0.085, 0.35)); m(cyl, '#c8a040', cx, ey, front + 0.02, 0.012, 0.1, 0.012, 0, Math.PI / 2); }
+        break; }
       case 'goggles': two(s => { m(tor, '#2a2d3a', cx + s * hw * 0.38, top - 0.06, front - 0.04, 0.09, 0.09, 0.4); m(sph, '#8ae8ff', cx + s * hw * 0.38, top - 0.06, front - 0.02, 0.075, 0.075, 0.02, 0, 0, true); }); break;
     }
   }
@@ -668,7 +686,7 @@ const View = (() => {
   const kTrim = C => { const a = new T.Color(C.acc), b = new T.Color(C.body), ha = {}, hb = {}; a.getHSL(ha); b.getHSL(hb); return Math.abs(ha.l - hb.l) + Math.abs(ha.h - hb.h) * 0.5 > 0.18 ? C.body : (ha.l > 0.6 ? '#1c1f2e' : '#ffffff'); };
   const EM = {};
   const emblemMat = C => EM[C.id] || (EM[C.id] = new T.MeshBasicMaterial({ transparent: true, map: canvasTex(128, 128, (g, w) => { g.beginPath(); g.arc(64, 64, 60, 0, PI2); g.fillStyle = C.acc; g.fill(); g.beginPath(); g.arc(64, 64, 48, 0, PI2); g.fillStyle = kTrim(C); g.fill(); g.lineWidth = 6; g.strokeStyle = '#ffffff'; g.stroke(); g.fillStyle = C.acc; g.font = '900 64px Fredoka, Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(C.name[0], 64, 68); }) }));
-  const DECO = { fox: 'ears', cat: 'ears', bear: 'round', panda: 'round', bunny: 'long', frog: 'eyes', dragon: 'spikes', unicorn: 'horn', penguin: 'fins', robot: 'antenna', alien: 'antenna', halo: 'star', crystals: 'gems', sprout: 'leaf', stone: 'rocks', flames: 'spikes', shards: 'gems', flower: 'leaf', goggles: 'stripe' };
+  const DECO = { fox: 'ears', cat: 'ears', bear: 'round', panda: 'round', bunny: 'long', frog: 'eyes', dragon: 'spikes', unicorn: 'horn', penguin: 'fins', robot: 'antenna', alien: 'antenna', halo: 'star', crystals: 'gems', sprout: 'leaf', stone: 'rocks', flames: 'spikes', shards: 'gems', flower: 'leaf', goggles: 'stripe', oma: 'bag' };
   const DECO_ID = { rovan: 'shield', lyra: 'star', nia: 'leaf', brakk: 'shield', kira: 'stripe', raven: 'fins', klapper: 'bones', moira: 'gems', zotik: 'ears' };
   function kartDeco(body, C, id) {
     const kind = DECO[C.ac] || DECO_ID[C.id]; if (!kind) return;
@@ -690,6 +708,7 @@ const View = (() => {
       case 'rocks': two(s => { const m = new T.Mesh(geo('rock', () => new T.IcosahedronGeometry(1, 0)), lam('#a4957e')); m.scale.setScalar(0.32); m.position.set(s * (hw - 0.1), fy + 0.3, fz - 0.2); body.add(m); }); break;
       case 'stripe': B_(body, B, 0, ty - 0.02, (fz + rz) / 2, 0.32, 0.04, fz - rz); break;
       case 'shield': { const m = part(body, geo('y16', () => new T.CylinderGeometry(1, 1, 1, 16)), B, 0, fy + 0.15, fz + 0.12, 0.42, 0.06, 0.42, Math.PI / 2, 0, 0); void m; S_(body, A, 0, fy + 0.15, fz + 0.17, 0.16, 0.16, 0.05); break; }
+      case 'bag': { const s = 1, col = lam(C.body); B_(body, A, s * (hw + 0.2), fy + 0.1, (fz + rz) / 2 - 0.3, 0.32, 0.55, 0.7); B_(body, col, s * (hw + 0.37), fy + 0.15, (fz + rz) / 2 - 0.3, 0.04, 0.14, 0.4); part(body, geo('tor', () => new T.TorusGeometry(1, 0.2, 6, 14)), lam('#2a2a30'), s * (hw + 0.2), fy + 0.42, (fz + rz) / 2 - 0.3, 0.24, 0.24, 0.24, 0, Math.PI / 2, 0); break; }
       case 'bones': two(s => Y_(body, lam('#e8e8e0'), s * (hw + 0.05), fy + 0.2, (fz + rz) / 2, 0.07, 1.6, [Math.PI / 2, 0, 0], 6)); break;
     }
   }
@@ -747,6 +766,13 @@ const View = (() => {
       B_(body, hull, 0, 1.0, 0, 2.1, 1.0, 4.0); B_(body, white, 0, 1.55, 0, 2.15, 0.12, 4.05); B_(body, hull, 0, 1.75, -1.2, 2.1, 0.45, 1.6); B_(body, dark, 0, 0.45, 0, 1.9, 0.2, 3.9);
       [-1, 1].forEach(s => { [-1.1, 0, -0.1].forEach(() => {}); for (let q = 0; q < 3; q++) B_(body, lam('#bfe8ff'), s * 1.06, 1.15, 1.1 - q * 1.05, 0.04, 0.45, 0.8); S_(body, bas(0xfff2a0), s * 0.7, 0.95, 2.02, 0.17); });
       B_(body, lam('#bfe8ff'), 0, 1.85, 1.75, 1.7, 0.55, 0.05, [-0.35, 0, 0]); B_(body, slot, 0, 2.05, -1.2, 1.9, 0.18, 1.0); Y_(body, chrome, 0.7, 2.6, -1.6, 0.04, 1.2, null, 6); S_(body, bas(0xff2d95), 0.7, 3.22, -1.6, 0.1);
+    } else if (id === 'rollator') {
+      wf = [0.42, 0.3, 1.0, 1.45]; wr = [0.5, 0.32, 1.0, -1.1];
+      const tube = C.walker ? lam(C.walker) : chrome; B_(body, hull, 0, 0.62, 0.15, 1.5, 0.22, 2.6); B_(body, dark, 0, 0.42, 0, 1.3, 0.12, 2.9);
+      [-1, 1].forEach(s => { Y_(body, tube, s * 0.95, 1.2, 1.25, 0.07, 1.4, [-0.25, 0, 0], 8); Y_(body, tube, s * 0.95, 1.25, -1.0, 0.07, 1.6, [0.35, 0, 0], 8); Y_(body, tube, s * 0.95, 0.55, 0.15, 0.06, 2.6, [Math.PI / 2, 0, 0], 8); Y_(body, dark, s * 0.95, 2.02, -1.3, 0.11, 0.5, [Math.PI / 2, 0, 0], 8); });
+      Y_(body, tube, 0, 2.02, -1.3, 0.06, 1.9, [0, 0, Math.PI / 2], 8);
+      B_(body, lam('#c8a070'), 0, 1.25, 1.65, 1.25, 0.6, 0.75); B_(body, lam('#a8804a'), 0, 1.56, 1.65, 1.3, 0.06, 0.8); [-0.3, 0.05, 0.35].forEach((x, q) => S_(body, lam(['#ff4a4a', '#ffd040', '#7ac040'][q]), x, 1.62, 1.65, 0.16));
+      [-1, 1].forEach(s => { C_(body, chrome, s * 0.5, 0.75, -1.75, 0.26, 0.8, [-Math.PI / 2, 0, 0], 10); S_(body, bas(0xffa040), s * 0.5, 0.75, -2.2, 0.2, 0.2, 0.32); });
     } else {   // wolke
       wf = [0.5, 0.42, 1.0, 1.3]; wr = [0.58, 0.5, 1.05, -1.05];
       const cl = lam('#ffffff'); S_(body, cl, 0, 0.78, 0, 1.0, 0.5, 1.5); [[-0.8, 0.5], [0.8, 0.5], [-0.75, -0.7], [0.75, -0.7]].forEach(p => S_(body, cl, p[0], 0.7, p[1], 0.55, 0.45, 0.65)); S_(body, cl, 0, 0.68, 1.4, 0.65, 0.42, 0.7); S_(body, cl, 0, 0.7, -1.3, 0.7, 0.45, 0.6);

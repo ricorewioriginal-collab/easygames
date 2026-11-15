@@ -89,6 +89,14 @@
         "Fährst du eine neue Bestrunde, steht im Ergebnis „🏆 Neue Bestrunde“.",
         "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
       ]
+    },
+    {
+      "t": "Oma-Welt (früher „Oma-Rennen“)",
+      "p": [
+        "Das frühere Spiel Oma-Rennen ist jetzt Teil von Kart Rush. In der Garage stehen sieben Omas und Opa Kalle (Erna, Gertrud, Hilde, Lotti, Kalle, Frieda, Trude, Rosi) mit Dauerwelle, Dutt, Brille und Handtasche am Kart, dazu der Raketen-Rollator als eigenes Kart.",
+        "Sechs Stadt-Strecken: Marktplatz-Meile, Kurpark-Kurven (Tauben auf der Strecke), Einkaufszentrum (Rolltreppen-Portale), Strandpromenade, Weihnachtsmarkt und Geisterstunde im Altenheim. Sie stecken im ☕ Kaffee-Cup, 🍰 Kuchen-Cup und im 🏆 Großen Rentenpokal.",
+        "Fährst du eine Oma, heißen die Items wie früher (Rheuma-Rakete, Gebiss, Handtasche, Wollknäuel, Pralinen-Lenkrakete, Regenschirm, Hörgeräte-Pfiff, Puderwolke) und deine Oma kommentiert Treffer und Siege. Auf den Oma-Strecken fährt die Oma-Bande als Gegner mit."
+      ]
     }
   ],
   "ratgeber": [
@@ -131,6 +139,14 @@
         "Den Drift zu kurz halten: Unter knapp einer Sekunde gibt es gar keinen Mini-Turbo.",
         "Durch feste Bananen und Störsignale am Rand fahren – sie bleiben das ganze Rennen liegen.",
         "Raketen blind abfeuern, wenn kein Gegner vor dir in Reichweite ist."
+      ]
+    },
+    {
+      "t": "Oma-Strecken",
+      "list": [
+        "Im Kurpark laufen Tauben über die Strecke – außen herum fahren, sonst drehst du dich.",
+        "Im Einkaufszentrum bringen dich die leuchtenden Portale (Rolltreppen) ein Stück nach vorne.",
+        "Der Raketen-Rollator beschleunigt gut und lenkt flink, ist aber etwas leichter – im Gedränge lieber Abstand halten."
       ]
     }
   ],

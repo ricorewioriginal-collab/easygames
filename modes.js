@@ -40,7 +40,6 @@ window.EASYGAMES_MODES = {
   'bowling-bahn': { pad: true, multi: true },
   'fall-akte': { pad: true },
   'werwolf-nacht': { pad: true, online: true, multi: true, tvParam: true },
-  'oma-rennen': { pad: true, online: true, multi: true, tvParam: true },
   'kuechen-chaos': { pad: true, online: true, multi: true, tvParam: true },
   'konfetti-party': { pad: true, online: true, multi: true, tvParam: true },
   'stadt-land-plus': { pad: true, online: true, multi: true, tvParam: true },
