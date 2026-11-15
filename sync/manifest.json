@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3b8626ac448d",
- "generated": "2026-11-15T18:57:08+00:00",
- "commit": "3dcd88eaac69a9ed27e5ce6556494ae04ea5d73a",
+ "version": "5776bd339f13",
+ "generated": "2026-11-15T19:57:32+01:00",
+ "commit": "b9782923caae228b2d68297a61584a26709d0382",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2332,44 +2332,169 @@
    "h": "ceaf7943a53e0cdb38894890e47f2a13c832bb3fe2284ae891eb1b646942590c"
   },
   {
-   "p": "anmacha-kartenrausch/card.jpg",
-   "s": 48287,
-   "h": "641ca4ce9d46027a6d9b1d4dc85496411589f49f8878a4fbcdb593b4c348efa4"
+   "p": "anmacha-kartensammlung/card.jpg",
+   "s": 47953,
+   "h": "cb5916870cf53ff7877f25518e743d864b1868512f8f6816a2ec3b356eef445a"
   },
   {
-   "p": "anmacha-kartenrausch/index.html",
-   "s": 20557,
-   "h": "a32ea53fb81795d745365f03d9c235d0e093b679c200b98e9425441aadaa342f"
+   "p": "anmacha-kartensammlung/img/fig0.webp",
+   "s": 5536,
+   "h": "3d11636b5d9d4e05811734db0f27ecd46b535dfdcaf93b33587818e445133ee6"
   },
   {
-   "p": "anmacha-kartenrausch/js/app.js",
-   "s": 85129,
-   "h": "e0b33c99cdf24e7425edf4b7d7c209cc01d358d7d87b999ac242be582fc87e66"
+   "p": "anmacha-kartensammlung/img/fig1.webp",
+   "s": 6002,
+   "h": "e03536d9004571ab191c8de68fb32c7a80ad4f6a73b22891808b74bbc883c6fe"
   },
   {
-   "p": "anmacha-kartenrausch/js/figures.js",
-   "s": 6348,
-   "h": "ef3905fb6a96042d1bab05b2c0ec259ab4a80e63ab0c90a9527eff5ce701da7f"
+   "p": "anmacha-kartensammlung/img/fig2.webp",
+   "s": 6512,
+   "h": "8866cbde0f322c76abe74968df0aa540e29df1e86db0a987ffad0ef3007019c2"
   },
   {
-   "p": "anmacha-kartenrausch/js/logic.js",
-   "s": 34361,
-   "h": "4f0fdf80e12279ca980fc7205b5c0faf96f9976e9a0899416c18655b0a8bd645"
+   "p": "anmacha-kartensammlung/img/fig3.webp",
+   "s": 5372,
+   "h": "743f6c9866fc7065cdb65637564a2209f94d2e0e7440098948bdf46e3cbd5892"
   },
   {
-   "p": "anmacha-kartenrausch/logo.svg",
-   "s": 2143,
-   "h": "8b0395dbc19d14c419581983f855d85e3e0f50515e9ebdb110887b76fe33bcc8"
+   "p": "anmacha-kartensammlung/img/fig4.webp",
+   "s": 5170,
+   "h": "8c8bbc255fd94de925133c824dc65d7bcfa73867ce1224278f93aa3be40b6a1a"
   },
   {
-   "p": "anmacha-kartenrausch/manifest.webmanifest",
-   "s": 802,
-   "h": "c2411516b877be3bf31792e37b5909b7baedc5c4b5e76bcf4eddfee5817e0a56"
+   "p": "anmacha-kartensammlung/img/fig5.webp",
+   "s": 4764,
+   "h": "7ab9f12e1d52ac65535c4922c38135d6b178b7b37838779822627edd5ce7b8ec"
   },
   {
-   "p": "anmacha-kartenrausch/sw.js",
-   "s": 2013,
-   "h": "438e0971b06a94827ca4650affff4e10a13a9eae258903a3271226724b204e4c"
+   "p": "anmacha-kartensammlung/img/fig6.webp",
+   "s": 6636,
+   "h": "b61cc3c22c359b44299331b86f32f2b809811127427aa88c247dc5802156ec73"
+  },
+  {
+   "p": "anmacha-kartensammlung/img/fig7.webp",
+   "s": 6118,
+   "h": "1f0b21a411bcef355cad894ef061509047fd31ad66eff67598791b59b11cf8be"
+  },
+  {
+   "p": "anmacha-kartensammlung/index.html",
+   "s": 31978,
+   "h": "042d58fc048ecc544a51c9b011896ee5cf7d7dc4318cf5bac54dc026e8afb32f"
+  },
+  {
+   "p": "anmacha-kartensammlung/js/app.js",
+   "s": 124095,
+   "h": "9438af3e8caf902afeef0af6168dad6426de236bfe9235e1200a18b601d134c6"
+  },
+  {
+   "p": "anmacha-kartensammlung/js/figures.js",
+   "s": 8150,
+   "h": "08ff19cb6e2cdeda1b281349b1a16643758cf6a5a197e998dc6c2861119838b8"
+  },
+  {
+   "p": "anmacha-kartensammlung/js/logic.js",
+   "s": 44313,
+   "h": "844fd6f4a32924f98eafd260c36d135d311ed18323e29d4cdc717e1d93c74f2d"
+  },
+  {
+   "p": "anmacha-kartensammlung/logo.svg",
+   "s": 2145,
+   "h": "f021c4cca1a2319c1876e5cbd2fec21d1555fa44e3d6df24027e3f3ff097da6b"
+  },
+  {
+   "p": "anmacha-kartensammlung/manifest.webmanifest",
+   "s": 811,
+   "h": "5308f18a87e9a56686a34448d517beae83429a127cff521d482acf54e2aa4431"
+  },
+  {
+   "p": "anmacha-kartensammlung/models/ad_ba.glb",
+   "s": 243888,
+   "h": "e9d20bc74b2c3d12ac223b8f52b47dfac51c4fb0634bc498ec23f87bcb21ec12"
+  },
+  {
+   "p": "anmacha-kartensammlung/models/ad_kn.glb",
+   "s": 220180,
+   "h": "a1cd6909b4280cb77b1e32a4d26e1cc5fa253243b6ba2cf1febeb486b9b056c0"
+  },
+  {
+   "p": "anmacha-kartensammlung/models/ad_ma.glb",
+   "s": 227140,
+   "h": "19e538480ebe79ecf8d63b0851882d34f919e6e7372f2b28e5efaf20f3619f8d"
+  },
+  {
+   "p": "anmacha-kartensammlung/models/ad_ra.glb",
+   "s": 302508,
+   "h": "7dc3a159004a9f089b85fe68c759a8ed02fd83cf244153946da19284ffe42b16"
+  },
+  {
+   "p": "anmacha-kartensammlung/models/ad_rh.glb",
+   "s": 243028,
+   "h": "3a237456e0bc41007919b28ae5722bec63054f55d18b10095b15ebb443dfe959"
+  },
+  {
+   "p": "anmacha-kartensammlung/models/ad_ro.glb",
+   "s": 256984,
+   "h": "bf0e8e360211d8cf2c292516c11806d7aeb46aeea9bb7167d3db0edf6d18c1e0"
+  },
+  {
+   "p": "anmacha-kartensammlung/models/anim.glb",
+   "s": 500388,
+   "h": "bfb31b875564085b63845f82cad7be1c3bcc3dc4b948cbfbe05235c75259def7"
+  },
+  {
+   "p": "anmacha-kartensammlung/models/room.glb",
+   "s": 348444,
+   "h": "3a35ef630977d2e8726a08e46bdfea0a98a507a5e28556ebe3111da57d2b262e"
+  },
+  {
+   "p": "anmacha-kartensammlung/models/sk_m.glb",
+   "s": 179036,
+   "h": "4bdfc6f779b3b0630b64e74b337c1648f36022b3b1d56ffb5528e6b1260ef296"
+  },
+  {
+   "p": "anmacha-kartensammlung/models/sk_w.glb",
+   "s": 241272,
+   "h": "36ab3c8eff438e44d354ed85ffa6c8d0762e874b68ccd68e3ddbcaac02b7bc39"
+  },
+  {
+   "p": "anmacha-kartensammlung/solitaer/data/loesbar.json",
+   "s": 3591,
+   "h": "2a9c8ad234902a70f460c5024da18fe9f9ec916813c1ffed1baf76c59c30020f"
+  },
+  {
+   "p": "anmacha-kartensammlung/solitaer/img/anmacha-logo.png",
+   "s": 28394,
+   "h": "466a7c3ba4b450d56054e6442c84ae428911174d276a05e53b1f3ae2583217b3"
+  },
+  {
+   "p": "anmacha-kartensammlung/solitaer/img/radioportal-icon.png",
+   "s": 20776,
+   "h": "06358bdf93261f3ffb84505a41512bfd7e0cd4b5773611d46bf38d9c2a66b43a"
+  },
+  {
+   "p": "anmacha-kartensammlung/solitaer/index.html",
+   "s": 7467,
+   "h": "0291b337f0fb5d54a3d65cd46861ec7bcde266373616eabee8034601eeb5c579"
+  },
+  {
+   "p": "anmacha-kartensammlung/solitaer/js/app.js",
+   "s": 35225,
+   "h": "9582b830327f2ec951b191b1ce0901ae641fcc5853895d72beafc6cbb7344024"
+  },
+  {
+   "p": "anmacha-kartensammlung/solitaer/js/rules.js",
+   "s": 13021,
+   "h": "287457557522274faf28b96c9304d26a6e4e1ab1d2b93e10e4fac5cd7290edf4"
+  },
+  {
+   "p": "anmacha-kartensammlung/solitaer/style.css",
+   "s": 11250,
+   "h": "3a1ae2be3e2d3f61536544520ae5577b6429b39d745daf4318cfeb4397ebbb4c"
+  },
+  {
+   "p": "anmacha-kartensammlung/sw.js",
+   "s": 2019,
+   "h": "489ab13cc0ecf266e2f6eea31a20eb931cd69c0eb82aaf88bea365420ad59914"
   },
   {
    "p": "anmacha-klotzfunk/assets/index-B55ezXFP.js",
@@ -7682,56 +7807,6 @@
    "h": "5d5424f4814ce47d8a5d1067392ea392c5e7a0fb9951d5b5c6c832ea624da677"
   },
   {
-   "p": "anmacha-solitaire/card.jpg",
-   "s": 32723,
-   "h": "6318c801bff73408b2c196a2f3a5af9d9030f0b587c7d47799bcd31f7a2e6699"
-  },
-  {
-   "p": "anmacha-solitaire/data/loesbar.json",
-   "s": 3591,
-   "h": "2a9c8ad234902a70f460c5024da18fe9f9ec916813c1ffed1baf76c59c30020f"
-  },
-  {
-   "p": "anmacha-solitaire/img/anmacha-logo.png",
-   "s": 28394,
-   "h": "466a7c3ba4b450d56054e6442c84ae428911174d276a05e53b1f3ae2583217b3"
-  },
-  {
-   "p": "anmacha-solitaire/img/radioportal-icon.png",
-   "s": 20776,
-   "h": "06358bdf93261f3ffb84505a41512bfd7e0cd4b5773611d46bf38d9c2a66b43a"
-  },
-  {
-   "p": "anmacha-solitaire/index.html",
-   "s": 11249,
-   "h": "54812c10535157c76c6a42f76570a1da60cad4dd98a7bec649491c416999dcc3"
-  },
-  {
-   "p": "anmacha-solitaire/js/app.js",
-   "s": 34965,
-   "h": "b94302ca1aee64dd8d1157c79d38059d1fba5471cc6df3bafd3cf371fa4c8bf6"
-  },
-  {
-   "p": "anmacha-solitaire/js/rules.js",
-   "s": 13021,
-   "h": "287457557522274faf28b96c9304d26a6e4e1ab1d2b93e10e4fac5cd7290edf4"
-  },
-  {
-   "p": "anmacha-solitaire/manifest.webmanifest",
-   "s": 781,
-   "h": "50853fbb50078e4b559fc803653b5cc24f47cae33ef92f3dd9f0c5b1fd448b5a"
-  },
-  {
-   "p": "anmacha-solitaire/style.css",
-   "s": 11250,
-   "h": "3a1ae2be3e2d3f61536544520ae5577b6429b39d745daf4318cfeb4397ebbb4c"
-  },
-  {
-   "p": "anmacha-solitaire/sw.js",
-   "s": 2001,
-   "h": "411b7db8def836d2829d8203900f40320e24102ef7aa8ad766193e27850fc970"
-  },
-  {
    "p": "anmacha-spielesammlung/card.jpg",
    "s": 41282,
    "h": "25cfcdf88a64f960d16ce9d370ebfb0399f96fcf27aef4db81d0ed1306bffeeb"
@@ -9173,8 +9248,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3280,
-   "h": "3e62767ebac56c4b0ffb3bc9a9430954649025402deb6113ed25f569065d9039"
+   "s": 3252,
+   "h": "6e0e7a5f0db246d53eda9d55afee810df31e98d5c4072ba9caf613979b583244"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -9248,8 +9323,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 25279,
-   "h": "9f28453a63d6f18f037ba04135f4fa2fea86d52549bc30aa34986b7f06ece435"
+   "s": 25258,
+   "h": "bdc3e707e2649e98a4ffeed501463801628df5370c70dda81e98b1af0901cfad"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -10063,8 +10138,8 @@
   },
   {
    "p": "games.js",
-   "s": 55675,
-   "h": "68759790c66b7a19040da0378632779d7126d9a258f2d70a114a04cbf62c3f64"
+   "s": 55367,
+   "h": "e7d350ce5a04c6281db794904a7fe39491d7a67ef3db0787a1a0fa297ae1fce8"
   },
   {
    "p": "gay-life/card.jpg",
@@ -10368,8 +10443,8 @@
   },
   {
    "p": "guides.js",
-   "s": 173564,
-   "h": "247615f754461c93c3d516d881f6b9e0bf12c7147fe415699b7bdc7189e9565d"
+   "s": 171683,
+   "h": "4992bcc86e1c1299f82dadf434602cb5c9daffebaa5ee947ec8811fcb7e01aea"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10427,9 +10502,9 @@
    "h": "7bd0d0c79b235b2027a4f08380b7bd4243e63832c69205ef21e9a8b6278c1a06"
   },
   {
-   "p": "guides/anmacha-kartenrausch.json",
-   "s": 16227,
-   "h": "3cdc567b38f23fbe46dee708ef7f79ad9d8ce9ec4574cc167080c21f95f03d39"
+   "p": "guides/anmacha-kartensammlung.json",
+   "s": 25742,
+   "h": "5d5510d764c0ae6bd30bd9397485694bafc531704cdb74789ab0e380238472d3"
   },
   {
    "p": "guides/anmacha-klotzfunk.json",
@@ -10490,11 +10565,6 @@
    "p": "guides/anmacha-snake.json",
    "s": 13550,
    "h": "b3522ccf88de3174966ff5ac2b7a23ad95c226c4ba22ccb364b6f3abb7caecf1"
-  },
-  {
-   "p": "guides/anmacha-solitaire.json",
-   "s": 14347,
-   "h": "7f79fd8fb81f82e89b520b571f1c8323829d7fbfa8bab36a48b92160dbeda6d0"
   },
   {
    "p": "guides/anmacha-spielesammlung.json",
@@ -11808,8 +11878,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3603,
-   "h": "fb08e3f0ee6cbb1619dd574f10035bc3261ee1d14519adb083fe93c2b78a978a"
+   "s": 3605,
+   "h": "bb8e0e1fdab9e34a3fb0a6ca720df08eeaf8e9b2864b16e07f5ae81b16a1d648"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-DMBVqCOs.js",
@@ -13038,8 +13108,8 @@
   },
   {
    "p": "saftblitz/js/game.js",
-   "s": 50730,
-   "h": "0dddb6fe8e607168012e9301c5c00f84877c82cf77bd64d26e054fe9349318b1"
+   "s": 50744,
+   "h": "e34ea46b1f5af4be9d480ccec68b2ee6f4e5f81cc05ec6711aa88a9904a2d016"
   },
   {
    "p": "saftblitz/manifest.webmanifest",
@@ -13983,8 +14053,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 251134,
-   "h": "3389ced831327fe0b419a1a6bf69e2bb3316c9389c4648e2b94f92d3809c48fb"
+   "s": 248726,
+   "h": "5088747655cc5a51915a489590f54d9b7dc2fc0c2fb865bd03c8b1492a0b711d"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -14857,9 +14927,9 @@
    "h": "761dd76889613419d7f81c5d885f69fe9d15e264e7e537475381bf1ddc19a005"
   },
   {
-   "p": "thumbs/anmacha-kartenrausch.webp",
-   "s": 16864,
-   "h": "8f0883a4a7e6fec0e71c336f5f511b85d74b6cf3c17b4db19b53583eac392774"
+   "p": "thumbs/anmacha-kartensammlung.webp",
+   "s": 17098,
+   "h": "56d678282ae00031a92770194dd57bf2db5b2c783072ec34e7b87b458a7d8f74"
   },
   {
    "p": "thumbs/anmacha-klotzfunk.webp",
@@ -14910,11 +14980,6 @@
    "p": "thumbs/anmacha-snake.webp",
    "s": 13836,
    "h": "e4abd8b24015cd07057654ad8991d8422acdc9f347d03698b39e2b9fa30a741f"
-  },
-  {
-   "p": "thumbs/anmacha-solitaire.webp",
-   "s": 15442,
-   "h": "b62c7b7d631154ec56102a042364cd85a6f4b809be236da180fa434203428165"
   },
   {
    "p": "thumbs/anmacha-spielesammlung.webp",
@@ -15128,8 +15193,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2188,
-   "h": "6a702e5ea8e30f6441549fc1c7dd4a9713c63d1e9a2434a5d4bc22caf9791827"
+   "s": 2157,
+   "h": "0bd3f356e242e584cb383fc9cf2c56c398c6db92aa24c1c7fbb2a8bc23924a60"
   },
   {
    "p": "thumbs/tortenschlacht.webp",

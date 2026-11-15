@@ -25,7 +25,7 @@ window.EASYGAMES_MODES = {
   'riftzone': { online: true },
   'taschi': { online: true },
   'ricolife': { online: true },
-  'anmacha-kartenrausch': { pad: true, online: true, multi: true },
+  'anmacha-kartensammlung': { pad: true, online: true, multi: true },
   'wortfunk': { pad: true, online: true, multi: true, tvParam: true },
   'wortgitter': { pad: true, online: true, tvParam: true },
   'saftblitz': { multi: true },
