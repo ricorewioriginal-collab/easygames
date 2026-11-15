@@ -2,8 +2,9 @@
 import { Sim, COURSES, DT, PH, fmtTime, rank, pointsFor, standings, makeCourse } from './engine.js';
 import { SFX, Audio_ } from './audio.js';
 import { initPair, JOIN, loadScript } from './pair.js';
-import { CHARS, validChar, charName, charGame, charGroups } from './chars.js';
-import { createUI } from './menu.js';
+import { CHARS, validChar, charName, charGame, charGroups, charInfo, STATS } from './chars.js';
+import { createUI, ICON } from './menu.js';
+import { makePickView, makeThumbs } from './pickview.js';
 import { stick, hold } from './stick.js';
 import { makeCommentator } from './commentary.js';
 import { makeHost } from './host.js';
@@ -19,13 +20,13 @@ if (JOIN) {
   document.body.classList.add('ctrl'); (await import('./controller.js')).startController();
 } else {
   const touch = matchMedia('(pointer:coarse)').matches; if (touch) document.body.classList.add('touch');
-  const ui = createUI({ SFX, Audio_, touch, onMenu: id => onMenu(id), panel: id => panel(id), onPause: () => pause(true) }), frame = () => new Promise(r => requestAnimationFrame(() => r()));
+  const ui = createUI({ SFX, Audio_, touch, onMenu: id => onMenu(id), panel: id => panel(id), onPause: () => pause(true), custom: { pick: k => pickNav(k) } }), frame = () => new Promise(r => requestAnimationFrame(() => r()));
   // ------------------------------------------------------------ Laden mit echtem Fortschritt: 3D-Bibliothek → Studio → Logos
   ui.boot.progress(6, 'Lade 3D-Grafik …');
   const fontsP = document.fonts ? Promise.all(['italic 800 40px "Titan Display"', '600 20px "Titan Cond"', '500 16px "Titan Text"'].map(f => document.fonts.load(f))).catch(() => {}) : Promise.resolve();
   try { await loadScript(THREE_URL); } catch (e) { $('errTxt').textContent = 'Die 3D-Bibliothek konnte nicht geladen werden (Internet?).'; $('err').hidden = false; throw e; }
   // Figuren: Lader + gemeinsame easygames-Figuren + Figuren-Liste aller Spiele (fehlt etwas, läuft das Spiel trotzdem)
-  await Promise.all(['../vendor/three-r128-gltfloader.js', '../figuren/figuren.js', '../easyclash/js/roster.js'].map(u => loadScript(u).catch(e => console.warn(e))));
+  await Promise.all(['../vendor/three-r128-gltfloader.js', '../figuren/figuren.js', '../easyclash/js/roster.js', '../anmacha-podcast-tycoon/src/people.js'].map(u => loadScript(u).catch(e => console.warn(e))));
   ui.boot.progress(38, 'Baue das Studio …'); await Promise.race([fontsP, new Promise(r => setTimeout(r, 4000))]); await frame();
   const { Arena } = await import('./scene.js');
   let booting = true; const texDone = new Promise(res => { const M = window.THREE.DefaultLoadingManager; M.onProgress = (u, n, total) => { if (booting) ui.boot.progress(60 + 38 * n / total, `Lade Läufer und Logos (${n}/${total}) …`); }; M.onLoad = () => res(); setTimeout(res, 8000); });
@@ -41,7 +42,7 @@ if (JOIN) {
   const FAST = () => window.__fpFast || 1, sleep = ms => new Promise(r => setTimeout(r, ms / FAST()));
   const bests = () => store.get('fpBest3', {});
   const show = id => { for (const s of ['menu', 'setup', 'game']) $(s).hidden = s !== id; if (id === 'menu') ui.menu.refresh(); };
-  const setSnd = () => { const b = $('bSound'); b.querySelector('.ic').textContent = snd ? '🔊' : '🔇'; b.querySelector('.lb').textContent = snd ? 'Ton: an' : 'Ton: aus'; $('bSnd').textContent = snd ? '🔊' : '🔇'; $('aSnd').querySelector('.ai').textContent = snd ? '🔊' : '🔇'; $('bPSnd').textContent = snd ? '🔊 Ton: an' : '🔇 Ton: aus'; };
+  const setSnd = () => { const b = $('bSound'); b.querySelector('.ic').innerHTML = snd ? ICON.sound : ICON.mute; b.querySelector('.lb').textContent = snd ? 'Ton: an' : 'Ton: aus'; $('bSnd').textContent = snd ? '🔊' : '🔇'; $('aSnd').querySelector('.ai').textContent = snd ? '🔊' : '🔇'; $('bPSnd').textContent = snd ? '🔊 Ton: an' : '🔇 Ton: aus'; };
   const toggleSnd = () => { snd = !snd; Audio_.setOn(snd); store.set('fpSnd', snd); setSnd(); SFX.click(); };
   setSnd();
 
@@ -150,8 +151,8 @@ if (JOIN) {
 
   // ------------------------------------------------------------ Menü / Einrichtung
   function fillNames() {
-    const n = S.mode === 'train' ? 1 : S.n; $('names').innerHTML = Array.from({ length: n }, (_, i) => `<div class="nm" style="--pc:${CSS[i]}"><input data-i="${i}" maxlength="14" value="${esc(S.names[i])}" aria-label="Name Läufer ${i + 1}" autocomplete="off"><button class="chb" data-c="${i}" aria-label="Figur wählen">🧍 ${esc(charName(S.chars[i]))} ▸</button></div>`).join('');
-    $('names').querySelectorAll('.chb').forEach(b => b.onclick = () => { SFX.click(); pickChar(+b.dataset.c); });
+    const n = S.mode === 'train' ? 1 : S.n; $('names').innerHTML = Array.from({ length: n }, (_, i) => `<div class="nm" style="--pc:${CSS[i]}"><input data-i="${i}" maxlength="14" value="${esc(S.names[i])}" aria-label="Name Läufer ${i + 1}" autocomplete="off"><button class="chb" data-c="${i}" aria-label="Figur wählen"><span class="chb-ic">${ICON.chars}</span>${esc(charName(S.chars[i]))}<span class="chb-go">ändern ▸</span></button></div>`).join('');
+    $('names').querySelectorAll('.chb').forEach(b => b.onclick = () => { SFX.click(); pickChar(+b.dataset.c, 'setup'); });
     $('names').querySelectorAll('input').forEach(inp => inp.oninput = () => { S.names[+inp.dataset.i] = inp.value.trim().slice(0, 14) || 'Läufer ' + (+inp.dataset.i + 1); store.set('fpNames', S.names); });
   }
   function setupView(mode) {
@@ -164,17 +165,69 @@ if (JOIN) {
   seg('sgPl', v => { S.n = v; fillNames(); push(); }); seg('sgView', v => setView(v ? 'back' : 'side')); seg('sgCourse', v => { S.tc = v; loadScene(v); });
   function loadScene(ci) { const c = typeof ci === 'number' ? COURSES[ci] : ci; if (curCourse !== c) { curCourse = c; arena.setCourse(c); } }
   function look(i) { return arena.setLook(COLORS[i], LOGO[i], S.chars[i]); }
-  // Figur wählen: eigene Läufer und alle Figuren aus anderen easygames (nach Spiel gruppiert); Vorschau läuft im Studio mit
-  function pickChar(i) {
-    const cur = S.chars[i];
-    $('pickTitle').textContent = 'Figur für ' + S.names[i]; $('pickBox').style.setProperty('--pc', CSS[i]);
-    $('pickList').innerHTML = charGroups().map(g => `<h3>${esc(g.n)}</h3><div class="pk-g">${g.list.map(c => `<button class="pk${c.k === cur ? ' on' : ''}" data-k="${esc(c.k)}" style="--cc:${esc(c.c)}"><i></i>${esc(c.n)}</button>`).join('')}</div>`).join('');
-    $('pick').hidden = false; look(i);
-    const on = $('pickList').querySelector('.pk.on') || $('pickList').querySelector('.pk'); if (on) { on.focus({ preventScroll: true }); on.scrollIntoView({ block: 'center' }); }
-    $('pickList').onclick = e => { const b = e.target.closest('.pk'); if (!b) return; SFX.click(); const k = /^\d+$/.test(b.dataset.k) ? +b.dataset.k : b.dataset.k; S.chars[i] = k; store.set('fpChars', S.chars); $('pickList').querySelectorAll('.pk').forEach(x => x.classList.toggle('on', x === b)); look(i); $('pickWho').textContent = charGame(k) ? 'aus ' + charGame(k) : ''; };
-    $('pickWho').textContent = charGame(cur) ? 'aus ' + charGame(cur) : '';
+  // ------------------------------------------------------------ Figurenwahl im Konsolen-Stil
+  // 3D-Drehteller (eigene Bühne), Steckbrief mit Stil-Profil, Karussell aller Figuren (nach Spiel, Reiter springen), Läufer-Umschalter.
+  // Pfeile ←/→ = Figur (wird sofort übernommen), ↑/↓ oder LB/RB bzw. Q/E = Spiel, Enter/A = Fertig, Esc/B = Fertig.
+  const PK = { i: 0, view: null, thumbs: null, t: 0, from: 'setup' };
+  const keyOf = v => /^\d+$/.test(v) ? +v : v;
+  const cards = () => [...$('pickList').querySelectorAll('.pk')];
+  function pickInfo(k) {
+    const c = charInfo(k); $('pickWho').textContent = typeof c.k === 'number' ? 'Titanparcours-Original' : 'aus ' + c.game; $('pickName').textContent = c.n;
+    $('pickRole').innerHTML = `<b>${esc(c.role)}</b>${c.from && c.from !== c.game ? ' · ' + esc(c.from) : ''}`; $('pickMotto').textContent = '„' + c.motto + '“';
+    $('pickStats').innerHTML = STATS.map((n, j) => `<div class="pk-st"><span>${n}</span><i>${[1, 2, 3, 4, 5].map(v => `<b${v <= c.st[j] ? ' class="f"' : ''}></b>`).join('')}</i></div>`).join('');
+    const inf = $('pickInfo'); inf.classList.remove('in'); void inf.offsetWidth; inf.classList.add('in');
   }
-  $('bPickOk').onclick = () => { SFX.click(); $('pick').hidden = true; fillNames(); };
+  function pickTab() {   // Reiter des Spiels markieren, in dem die gewählte Karte liegt
+    const on = $('pickList').querySelector('.pk.on'), g = on ? on.dataset.g : '0';
+    $('pickTabs').querySelectorAll('.pk-tab').forEach(t => { const a = t.dataset.g === g; t.classList.toggle('on', a); if (a) t.scrollIntoView({ block: 'nearest', inline: 'nearest' }); });
+  }
+  function pickSel(b, o = {}) {
+    if (!b) return; const k = keyOf(b.dataset.k), i = PK.i; S.chars[i] = k; store.set('fpChars', S.chars);
+    cards().forEach(x => x.classList.toggle('on', x === b)); b.scrollIntoView({ block: 'nearest', inline: 'center', behavior: o.jump ? 'auto' : 'smooth' });
+    if (o.focus !== false) b.focus({ preventScroll: true }); pickInfo(k); pickTab(); if (!o.quiet) SFX.click();
+    if (PK.thumbs) PK.thumbs.want(cards().filter(x => x.dataset.g === b.dataset.g).map(x => keyOf(x.dataset.k)));   // Porträts der aktuellen Gruppe zuerst
+    clearTimeout(PK.t); PK.t = setTimeout(() => { if (PK.view) PK.view.show(k, COLORS[i], !o.quiet); look(i); }, o.now ? 0 : 140);   // beim schnellen Blättern erst bauen, wenn man stehen bleibt
+    menuCharName();
+  }
+  function pickNav(k) {
+    const cs = cards(), cur = cs.findIndex(x => x.classList.contains('on'));
+    if (k === 'left' || k === 'right') { pickSel(cs[(cur + (k === 'left' ? -1 : 1) + cs.length) % cs.length]); return true; }
+    if (k === 'up' || k === 'down' || k === 'lb' || k === 'rb') {
+      const gs = [...$('pickTabs').querySelectorAll('.pk-tab')], g = cur >= 0 ? +cs[cur].dataset.g : 0, ng = (g + (k === 'up' || k === 'lb' ? -1 : 1) + gs.length) % gs.length;
+      pickSel(cs.find(x => +x.dataset.g === ng)); return true;
+    }
+    if (k === 'ok') { $('bPickOk').click(); return true; }
+    return false;
+  }
+  function pickPlayer(i) {
+    PK.i = i; const n = PK.from !== 'menu' && S.mode === 'train' ? 1 : S.n;
+    $('pickTitle').textContent = 'Figur für ' + S.names[i]; $('pickBox').style.setProperty('--pc', CSS[i]);
+    $('pickPls').innerHTML = n > 1 ? Array.from({ length: n }, (_, j) => `<button class="pk-pl${j === i ? ' on' : ''}" data-p="${j}" style="--pc:${CSS[j]}"><i></i>${esc(S.names[j])}</button>`).join('') : '';
+    const cur = S.chars[i], b = cards().find(x => keyOf(x.dataset.k) === cur) || cards()[0]; pickSel(b, { quiet: true, jump: true, now: true });
+  }
+  function pickChar(i, from) {
+    PK.from = from || 'setup'; const gs = charGroups();
+    $('pickTabs').innerHTML = gs.map((g, j) => `<button class="pk-tab" data-g="${j}" tabindex="-1">${esc(g.n)}<small>${g.list.length}</small></button>`).join('');
+    $('pickList').innerHTML = gs.map((g, j) => `<h3 data-g="${j}">${esc(g.n)}</h3>` + g.list.map(c => `<button class="pk" data-k="${esc(c.k)}" data-g="${j}" style="--cc:${esc(c.c)}"><span class="pk-im"><i>${esc(c.n.slice(0, 1))}</i></span><span class="pk-n">${esc(c.n)}</span></button>`).join('')).join('');
+    $('pick').hidden = false;
+    if (!PK.view) PK.view = makePickView($('pickCv'), arena.kit);
+    if (!PK.thumbs) PK.thumbs = makeThumbs(arena.kit, (k, url) => $('pickList').querySelectorAll(`.pk[data-k="${CSS_ESC(k)}"]`).forEach(b => { b.querySelector('.pk-im').style.backgroundImage = `url(${url})`; b.classList.add('img'); }));
+    pickPlayer(i);
+    // Porträts: zuerst die eigenen Läufer und die Gruppe der aktuellen Figur, dann der Rest
+    if (PK.thumbs) { const on = $('pickList').querySelector('.pk.on'), g = on ? on.dataset.g : '0', all = cards(); PK.thumbs.want(all.filter(x => x.dataset.g === g || x.dataset.g === '0').map(x => keyOf(x.dataset.k)).concat(all.map(x => keyOf(x.dataset.k)))); }
+  }
+  const CSS_ESC = v => (window.CSS && window.CSS.escape ? window.CSS.escape(String(v)) : String(v));
+  $('pickList').addEventListener('click', e => { const b = e.target.closest('.pk'); if (b) pickSel(b); });
+  $('pickTabs').addEventListener('click', e => { const t = e.target.closest('.pk-tab'); if (t) pickSel(cards().find(x => x.dataset.g === t.dataset.g)); });
+  $('pickPls').addEventListener('click', e => { const t = e.target.closest('.pk-pl'); if (t) { SFX.click(); pickPlayer(+t.dataset.p); } });
+  $('bPickRand').onclick = () => { const cs = cards(); pickSel(cs[(Math.random() * cs.length) | 0]); };
+  $('bPickOk').onclick = () => {
+    SFX.click(); clearTimeout(PK.t); look(PK.i); $('pick').hidden = true; fillNames(); menuCharName();
+    if (PK.view) { PK.view.dispose(); PK.view = null; } if (PK.thumbs) { PK.thumbs.dispose(); PK.thumbs = null; }   // WebGL der Vorschau freigeben (Handys)
+    if (PK.from === 'menu') { show('menu'); ui.menu.show('chars'); } else { const b = $('names').querySelector(`.chb[data-c="${PK.i}"]`); if (b) b.focus({ preventScroll: true }); }
+  };
+  function menuCharName() { const el = $('cmCharName'); if (el) el.textContent = charName(S.chars[0]); }
+  menuCharName();
 
   // ------------------------------------------------------------ Lauf
   const ghostAt = (g, t) => { if (!g || g.length < 4) return null; const f = t * 20, i = Math.min(Math.floor(f), g.length / 2 - 2); if (i < 0) return [g[0], g[1]]; const u = Math.min(1, f - i); return [g[2 * i] + (g[2 * i + 2] - g[2 * i]) * u, g[2 * i + 1] + (g[2 * i + 3] - g[2 * i + 1]) * u]; };
@@ -274,6 +327,7 @@ if (JOIN) {
   // ------------------------------------------------------------ Hauptmenü: Aktionen und Info-Feld
   function onMenu(id) {
     if (id === 'show' || id === 'train') { Audio_.unlock(); setupView(id); $('bStart').focus({ preventScroll: true }); }
+    else if (id === 'chars') { Audio_.unlock(); loadScene(S.tc); pickChar(0, 'menu'); }
     else if (id === 'pair') pair.open();
     else if (id === 'rules') { $('rules').hidden = false; $('rulesOk').focus({ preventScroll: true }); }
     else if (id === 'sound') { toggleSnd(); ui.menu.refresh(); }
@@ -284,6 +338,7 @@ if (JOIN) {
     const b = bests(), done = COURSES.filter((c, i) => b[i]).length;
     if (id === 'show') return `<h3>Show starten</h3><p>Die große Hindernis-Show: Vorrunde, Halbfinale und Finale – jedes Mal mit neu gemischten Hindernissen. Nur wer ins Ziel kommt, ist eine Runde weiter; am Ende gewinnt, wer die meisten Punkte hat.</p><div class="cm-stats"><div><b>1–4</b><small>Läufer</small></div><div><b>3</b><small>Parcours</small></div><div><b>${charGroups().reduce((a, g) => a + g.list.length, 0)}</b><small>Figuren</small></div></div>${go('show', 'Show einrichten')}`;
     if (id === 'train') return `<h3>Training</h3><p>Ein Parcours, so oft du willst. Deine Bestzeit wird gespeichert und läuft als Geist mit.</p><div class="cm-stats">${COURSES.map((c, i) => `<div><b>${b[i] ? fmtTime(b[i].t) : '–'}</b><small>${esc(c.name)}</small></div>`).join('')}</div><p class="h">${done ? `${done} von ${COURSES.length} Parcours geschafft.` : 'Noch keine Bestzeit – ab ins Ziel!'}</p>${go('train', 'Training wählen')}`;
+    if (id === 'chars') { const c = charInfo(S.chars[0]); return `<h3>Läufer</h3><p>Wähle deine Figur: ${CHARS.length} Titanparcours-Läufer und Gaststars aus allen easygames – mit 3D-Vorschau zum Drehen.</p><div class="cm-stats"><div><b>${esc(c.n)}</b><small>${esc(c.role)}</small></div><div><b>${charGroups().reduce((a, g) => a + g.list.length, 0)}</b><small>Figuren</small></div><div><b>${charGroups().length}</b><small>Spiele</small></div></div>${go('chars', 'Figur wählen')}`; }
     if (id === 'pair') return `<h3>Online & Handys</h3><p>QR-Code scannen oder Code eingeben, auch übers Internet: Jedes Handy wird das Steuer-Pad eines Läufers (bis zu 4) und meldet „Bereit".</p><p class="h">Ohne Handy spielt ihr abwechselnd an diesem Gerät.</p>${go('pair', 'Koppeln')}`;
     if (id === 'rules') return `<h3>So wird gespielt</h3><div class="cm-keys2">${touch ? '<span>🕹️ Stick</span><span>laufen</span><span>⤒ Springen</span><span>springen (länger halten = höher)</span><span>✊ Greifen</span><span>in der Luft festhalten</span>' : '<span><kbd>←</kbd><kbd>→</kbd> <kbd>A</kbd><kbd>D</kbd></span><span>laufen</span><span><kbd>Leertaste</kbd> <kbd>W</kbd></span><span>springen (länger halten = höher)</span><span><kbd>↓</kbd> <kbd>S</kbd> <kbd>Shift</kbd></span><span>ducken, mit Anlauf rutschen</span><span><kbd>E</kbd> <kbd>F</kbd> <kbd>X</kbd></span><span>greifen (Seil, Ringe, Stangen, Leisten)</span><span><kbd>Esc</kbd></span><span>Pause</span>'}<span>🎮 <kbd class="gp">L</kbd></span><span>laufen, nach unten ducken</span><span><kbd class="gp a">A</kbd> <kbd class="gp b">B</kbd> <kbd class="gp x">X</kbd></span><span>springen · ducken · greifen</span><span><kbd class="gp">☰</kbd></span><span>Start = Pause</span></div><p class="h">An Stangen, Seil, Ringen und Griffleisten musst du selbst zupacken: im Sprung in Griffweite die Greifen-Taste drücken. Verpasst = Wasser! Wer ins Wasser fällt, ist raus – dann zählt die Strecke.</p>${go('rules', 'Alle Regeln')}`;
     if (id === 'sound') return `<h3>Ton</h3><p>Musik und Effekte sind gerade <b>${snd ? 'an' : 'aus'}</b>.</p>${go('sound', snd ? 'Ton aus' : 'Ton an')}`;
