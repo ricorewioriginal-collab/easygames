@@ -8,7 +8,7 @@ export const ACTIONS = [
   ['atk', 'Angriff · Befehl ausführen', 'KeyJ'], ['jump', 'Springen', 'Space'], ['dodge', 'Ausweichen', 'ShiftLeft'], ['block', 'Block halten', 'KeyB'],
   ['use', 'Aktion · Sprechen · Öffnen', 'KeyE'], ['lock', 'Ziel erfassen', 'KeyQ'], ['react', 'Reaktion ▲', 'KeyF'], ['call', 'Rufen', 'KeyT'],
   ['sk1', 'Fähigkeit 1', 'Digit1'], ['sk2', 'Fähigkeit 2 · Lichtstoß', 'Digit2'], ['potion', 'Heiltrank', 'KeyR'], ['form', 'Rissform', 'KeyG'],
-  ['tool', 'Werkzeug benutzen', 'KeyC'], ['toolnext', 'Werkzeug wechseln', 'KeyX'], ['naut', 'Nautilux', 'KeyV'], ['menu', 'Menü', 'Escape']
+  ['tool', 'Werkzeug benutzen', 'KeyC'], ['toolnext', 'Werkzeug wechseln', 'KeyX'], ['naut', 'Nautilux', 'KeyV'], ['map', 'Karte', 'KeyM'], ['photo', 'Fotomodus', 'KeyP'], ['menu', 'Menü', 'Escape']
 ];
 const TOUCHICON = { atk: '⚔️', jump: '⤴', dodge: '💨', block: '💨', use: '✋', lock: '🎯', react: '✋', call: '📋', sk1: '✨', sk2: '✨', potion: '🧪', form: '🌀', tool: '⟡', toolnext: '⟡', naut: '✋', menu: '☰' };
 const KEY = 'zotik_keys';
@@ -42,12 +42,14 @@ export function createInput({ touchDev, toast }) {
   const padOn = () => document.documentElement.classList.contains('eg-pad') && !!window.EasyGamesPad;
   const mode = () => padOn() ? 'pad' : last;
   // Controller-Knopf, auf dem die Standardtaste der Aktion liegt (aus der data-pad-Belegung von gamepad.js)
-  const PADALT = { naut: 'call', toolnext: 'call', tool: 'call', form: 'form', potion: 'potion' };   // ohne eigenen Knopf: über „Rufen“ (Kommandomenü)
+  const PADALT = { form: 'form', potion: 'potion' };   // ohne eigenen Knopf: über „Rufen“ (Kommandomenü)
   const padBtn = (id, alt) => { const P = window.EasyGamesPad, d = def(id); if (!P || !P.map) return null;
     for (const k in P.map) if (String(P.map[k] || '').split('/').includes(d)) return k;
     if (P.dpad) { const i = P.dpad.indexOf(d); if (i >= 0) return ['up', 'down', 'left', 'right'][i]; } return !alt && PADALT[id] && PADALT[id] !== id ? padBtn(PADALT[id], 1) : null; };
   // Hinweis-Text für eine Aktion: Controller-Symbol, Tastenname oder (Touch) Bildschirm-Symbol
+  const LAYER = { sk1: 'a', tool: 'up', toolnext: 'right', naut: 'down', call: 'left', photo: 'r3' };   // Controller: LT halten + Knopf (siehe main.js padLayer)
   function hint(id) { const m = mode();
+    if (m === 'pad' && LAYER[id] && window.EasyGamesPad && EasyGamesPad.glyph) return EasyGamesPad.glyph('lt') + '+' + EasyGamesPad.glyph(LAYER[id]);
     if (m === 'pad') { const b = padBtn(id); return b ? (window.EasyGamesPad.glyph ? EasyGamesPad.glyph(b) : b.toUpperCase()) : ''; }
     if (m === 'touch') return TOUCHICON[id] || '';
     return keyName(code(id)); }
