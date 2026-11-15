@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "dfc32eb56975",
- "generated": "2026-11-15T02:28:43+01:00",
- "commit": "83fb55a118d3d37262b07a06dbb4fce12b5d86ce",
+ "version": "14c1dc3e8e22",
+ "generated": "2026-11-15T01:35:26+00:00",
+ "commit": "6a989553d29f70eca4660e89ed32259c2f1c61e0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2097,14 +2097,14 @@
    "h": "438e0971b06a94827ca4650affff4e10a13a9eae258903a3271226724b204e4c"
   },
   {
-   "p": "anmacha-klotzfunk/assets/index-BzgDj7WR.css",
-   "s": 25457,
-   "h": "f6b7b65dda1efea976f4dd980f8dce510574feddeb4ab0276dbb150a5a7615e0"
+   "p": "anmacha-klotzfunk/assets/index-BJ24_1Pt.css",
+   "s": 25629,
+   "h": "2765c54b525b5473aef7c81034c6f39b724b2be74a45545f85d85a6a45ed01cf"
   },
   {
-   "p": "anmacha-klotzfunk/assets/index-DFrJAyVc.js",
-   "s": 692179,
-   "h": "bcf5100180bf48651075cef661836b9caec194562cb348d4a125ac7a868296a5"
+   "p": "anmacha-klotzfunk/assets/index-uyrfgsdi.js",
+   "s": 700077,
+   "h": "60b549e4c77e20054c82e4fb0a9f5e1aade35ce3a0517cd52b5409fa92afab63"
   },
   {
    "p": "anmacha-klotzfunk/assets/meshworker-D6QDB5xl.js",
@@ -2118,8 +2118,8 @@
   },
   {
    "p": "anmacha-klotzfunk/index.html",
-   "s": 23017,
-   "h": "bc72e39de409d7b9f4efa570634755d26f69ce09e1dd6adec70dde8e17c6248f"
+   "s": 23926,
+   "h": "c770e9c95f039bc3fc4be76df9b6d398cc5ab23febc01f3bfccda2a334620583"
   },
   {
    "p": "anmacha-klotzfunk/logo.svg",
@@ -2213,8 +2213,8 @@
   },
   {
    "p": "anmacha-klotzfunk/sw.js",
-   "s": 1992,
-   "h": "1e3b1fb70cf41e8e2242b7303fa3b43d274e7bb0e423fe97b063cead2e82a23e"
+   "s": 1996,
+   "h": "2da0cea41886148b78bf55c6b0f29de39ef436bf74dbf29a6592e4682061882a"
   },
   {
    "p": "anmacha-koffer-dealer/audio.js",
@@ -13514,7 +13514,7 @@
   {
    "p": "sync/catalog.json",
    "s": 253487,
-   "h": "bcd01e9b60c0668b403c3dfbb30cdfa7a4cad49a786c29140b54ec6c80dd341c"
+   "h": "cc787e189461117298a84f9fdff3eaa5e58e8225ff0965db805e5cbe65ef6e4c"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

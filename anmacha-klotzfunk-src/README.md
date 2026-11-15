@@ -59,7 +59,8 @@ Stand und Plan der Weiterentwicklung: [PROGRESS.md](PROGRESS.md). Tests: [TESTIN
 | `src/storage.js` | Speichern, Format-Versionen, Sicherung, Export/Import |
 | `src/settings.js` | Einstellungen und Grafikstufen |
 | `src/worldmap.js`, `src/mapui.js` | Weltkarte: entdeckte Gebiete, Markierungen, Funkstationen; Kartenfenster |
-| `src/controls.js` | Tastenbelegung und Gamepad |
+| `src/controls.js` | Tastenbelegung (Tastatur) |
+| `src/gamepad.js` | Controller: Erkennung Xbox/PlayStation/Switch, Tastensymbole, Belegung, Menü-Navigation, Vibration |
 | `src/audio.js` | ein AudioContext: Effekte, Schritte, Tiere, Technik, Radio-Musik (alles erzeugt) |
 | `src/quests.js` | Story-Aufträge |
 | `src/audio.js` | Geräusche und Radio-Beat (ein AudioContext, Lautstärke je Kategorie) |

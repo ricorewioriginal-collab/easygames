@@ -16,15 +16,14 @@ b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAt
 b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
 b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
 d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
-
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0b1020">
 <meta name="description" content="KLOTZFUNK 3D – Voxel-Sandbox im Browser: bauen, abbauen, entdecken. Für PC und Smartphone.">
 <title>KLOTZFUNK 3D</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 fill=%27%234c9a3a%27/%3E%3Crect y=%275%27 width=%2716%27 height=%2711%27 fill=%27%23865f43%27/%3E%3C/svg%3E">
-  <script type="module" crossorigin src="./assets/index-DFrJAyVc.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-BzgDj7WR.css">
+  <script type="module" crossorigin src="./assets/index-uyrfgsdi.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BJ24_1Pt.css">
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -233,8 +232,17 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <p class="sub">„Automatisch“ senkt bei ruckelndem Bild zuerst die Auflösung und dann die Sichtweite und hebt sie wieder an, wenn genug Reserve da ist. Alles wird nur auf diesem Gerät gespeichert.</p>
     <h3>Tastatur <small>(Feld antippen, dann neue Taste drücken; Esc bricht ab)</small></h3>
     <div id="sKeys" class="keys"></div>
-    <h3>Gamepad</h3>
-    <p class="sub">Linker Stick laufen · rechter Stick umsehen · A springen · B runter/zurück · X Seilhaken · Y Inventar · LB/RB Hotbar · RT abbauen · LT setzen · L3 rennen · Select Karte · Start Pause. <span id="sPad">Kein Gamepad erkannt – eine Taste am Gamepad drücken.</span></p>
+    <h3>Controller <small>(Xbox, PlayStation, Switch und andere; Feld wählen, dann neue Taste drücken)</small></h3>
+    <p class="sub"><span id="sPad">Kein Controller erkannt – eine Taste am Controller drücken.</span> Linker Stick läuft, rechter Stick schaut. In allen Menüs: Steuerkreuz oder Stick wählt, Bestätigen-Taste drückt, Zurück-Taste schließt; im Inventar wechseln die Schultertasten die Reiter.</p>
+    <div class="setgrid">
+      <label class="rng">Kamera mit dem Stick: <b id="sPadSensV"></b><input id="sPadSens" type="range" min="0.3" max="2.5" step="0.1"></label>
+      <label class="rng">Vibration: <b id="sPadRumV"></b><input id="sPadRum" type="range" min="0" max="1" step="0.1"></label>
+      <label class="rng">Totzone der Sticks: <b id="sPadDeadV"></b><input id="sPadDead" type="range" min="0.08" max="0.35" step="0.01"></label>
+      <label class="chk"><input type="checkbox" id="sPadInv"> Rechter Stick: oben/unten umkehren</label>
+    </div>
+    <div id="sPadKeys" class="keys"></div>
+    <button id="sPadTest">📳 Vibration testen</button>
+    <button id="sPadReset">↺ Controller-Belegung zurücksetzen</button>
     <button id="sLayout">✥ Touch-Tasten verschieben</button>
     <button id="sReset">↺ Standard wiederherstellen</button>
   </div>
@@ -259,7 +267,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   </div>
 </section>
 <script src="../cloud/anmacha-cloud.js" data-save-btn="#pSave" data-game="klotzfunk" data-prefix="klotzfunk." data-mount="#cloudbox" data-hint="Optional: Spielstände mit Google sichern und auf anderen Geräten weiterspielen. Ohne Anmeldung bleibt alles nur auf diesem Gerät." defer></script>
-<script src="../gamepad.js" data-pad="info" data-pad-labels="ls=Laufen; rs=Umsehen; a=Springen; b=Runter und zurück; x=Seilhaken; y=Inventar; lb=Hotbar; rb=Hotbar; rt=Abbauen; lt=Setzen; l3=Rennen; select=Karte; start=Pause" defer></script>
+<script src="../gamepad.js" data-pad="info" data-pad-labels="ls=Laufen; rs=Umsehen; a=Springen; b=Schleichen und zurück; x=Seilhaken; y=Inventar; lb=Hotbar; rb=Hotbar; rt=Abbauen; lt=Setzen; l3=Rennen; r3=Rückgängig; up=Fliegen; down=Wegpunkt; left=Bauform; right=Aufträge; select=Karte; start=Pause" defer></script>
 <script src="../egstat.js" defer></script>
 </body>
 </html>
