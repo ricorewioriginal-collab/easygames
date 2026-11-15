@@ -19,8 +19,20 @@ export interface PlanOptions {
   seed: number;
 }
 
-const BODIES = ['pfeil', 'brocken', 'libelle', 'kaefer', 'flitzer'];
-const DECALS = ['streifen', 'blitz', 'punkte', 'keins'];
+const BODIES = [
+  'volta',
+  'pfeil',
+  'kodiak',
+  'brocken',
+  'prisma',
+  'libelle',
+  'sprint',
+  'kaefer',
+  'nimbus',
+  'flitzer',
+  'sandfloh',
+];
+const DECALS = ['streifen', 'blitz', 'punkte', 'keins', 'waben', 'split', 'nummer', 'pfeile'];
 const BOT_NAMES = ['Blitz', 'Drift', 'Kolben', 'Puls', 'Rotor', 'Funke', 'Kern', 'Ritzel'];
 
 /** Baut aus den Menü-Einstellungen die Fahrzeugliste einer lokalen Partie (Team 0 zuerst) */
