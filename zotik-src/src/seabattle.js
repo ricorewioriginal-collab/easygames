@@ -100,6 +100,31 @@ body.rbat #dNext,body.rbat #dSkip{display:none}
 .rb-ci{flex:1;min-width:0}.rb-ci b{display:flex;justify-content:space-between;font-size:13px}.rb-ci .rr2{display:flex;align-items:center;gap:5px;font-size:10px;opacity:.95}.rb-ci .rr2 span{width:14px;color:#9ab8ff}.rb-ci .rr2 .rb-bar{flex:1}.rb-ci .rr2 em{font-style:normal;width:34px;text-align:right}
 @media (max-height:520px){body.rbat #dlg{top:auto;bottom:86px;max-height:62vh}body.rbat #dOpts{max-height:36vh}}`;
   document.head.appendChild(st2);
+  /* Darstellung Handy: Hochformat = Gegner oben, Zugleiste darunter, Karten 2×2 unten, Menü darüber; Querformat = Menü als rechte Spalte */
+  const st3 = document.createElement('style'); st3.textContent = `
+body.rbat #dName{color:#fff!important;text-shadow:0 1px 6px #000}body.rbat #dOpts button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}body.rbat #dName{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:clamp(15px,4.4vw,20px)}
+@media (orientation:portrait) and (max-width:700px){
+#rbh .rb-f{left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));width:auto;flex-direction:row;flex-wrap:wrap;gap:4px;top:max(8px,env(safe-area-inset-top))}
+#rbh .rb-f .rb-c{flex:1 1 30%;min-width:0;padding:4px 8px}#rbh .rb-f .rb-c b{font-size:12px}#rbh .rb-f .rb-c.on{transform:none}
+#rbh .rb-ord{top:calc(max(8px,env(safe-area-inset-top)) + 56px);max-width:94vw;overflow:hidden}
+#rbh .rb-tl{top:calc(max(8px,env(safe-area-inset-top)) + 100px);width:92vw}
+#rbh .rb-ti{top:calc(max(8px,env(safe-area-inset-top)) + 166px);min-width:0;max-width:60vw}
+#rbh .rb-p{left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));transform:none;max-width:none;width:auto;flex-wrap:wrap;gap:6px;bottom:max(8px,env(safe-area-inset-bottom))}
+#rbh .rb-p .rb-c{width:auto;flex:1 1 calc(50% - 3px);min-width:0;padding:5px 7px}#rbh .rb-p .rb-c.on{transform:translateY(-4px)}
+.rb-pt{flex:0 0 38px;height:38px}.rb-ci b{font-size:12px}.rb-ci .rr2{font-size:10px}.rb-ci .rr2 em{width:30px}
+body.rbat #dlg{top:auto;bottom:calc(max(8px,env(safe-area-inset-bottom)) + 140px);right:max(8px,env(safe-area-inset-right));width:min(310px,78vw);max-height:none}
+body.rbat #dOpts{max-height:34vh}}
+@media (orientation:landscape) and (max-height:520px){
+#rbh .rb-f{width:200px;top:max(8px,env(safe-area-inset-top))}
+#rbh .rb-ord,#rbh .rb-tl,#rbh .rb-ti{left:calc(max(8px,env(safe-area-inset-left)) + 212px);right:calc(max(8px,env(safe-area-inset-right)) + 262px);transform:none;width:auto;margin:0 auto;max-width:max-content}
+#rbh .rb-tl{max-width:none;width:auto;left:calc(max(8px,env(safe-area-inset-left)) + 212px);margin:0}#rbh .rb-ti{min-width:0}
+#rbh .rb-ord{top:max(8px,env(safe-area-inset-top));overflow:hidden}#rbh .rb-tl{top:calc(max(8px,env(safe-area-inset-top)) + 46px)}#rbh .rb-ti{top:calc(max(8px,env(safe-area-inset-top)) + 100px)}
+#rbh .rb-p{left:max(8px,env(safe-area-inset-left));right:calc(max(8px,env(safe-area-inset-right)) + 262px);transform:none;max-width:none;width:auto;gap:6px}
+#rbh .rb-p .rb-c{flex:1 1 0;width:auto;min-width:0;padding:5px 6px}.rb-pt{flex:0 0 36px;height:36px}.rb-ci b{font-size:12px}.rb-ci .rr2 em{width:30px}
+body.rbat #dlg{top:max(8px,env(safe-area-inset-top));bottom:max(8px,env(safe-area-inset-bottom));right:max(8px,env(safe-area-inset-right));width:250px;max-height:none;display:grid;grid-template-rows:auto minmax(0,1fr) auto}
+body.rbat #dOpts{max-height:none}body.rbat #dOpts button{padding:7px 10px 7px 24px;font-size:14px}
+body.rbat #dName{font-size:17px}}`;
+  document.head.appendChild(st3);
   H.insertAdjacentHTML('beforeend', '<div class="rb-ord"></div><div class="rb-tl"><div class="rb-tr"><span class="w">WAIT</span><span class="c">COM</span><span class="a">ACT</span></div><div class="rb-mf"></div><div class="rb-mp"></div></div><div class="rb-ti" hidden></div>');
   const faceOf = m => m.id === 'zotik' ? '🦊' : ((C.PARTY && C.PARTY[m.id]) || {}).em || '⭐';
   const posCt = ct => (Math.max(0, Math.min(100, ct)) * .92 + 4).toFixed(1) + '%';
