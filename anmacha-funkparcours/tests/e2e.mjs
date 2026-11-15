@@ -23,6 +23,20 @@ const phase = (p, ph, ms = 60000) => p.waitForFunction(x => window.__fp.G && win
   await p.keyboard.press('Escape'); await p.waitForSelector('#menu:not([hidden])'); log(await p.evaluate(() => document.querySelector('.cm-it.on').id === 'bPlay'), 'Esc führt zurück ins Menü, Fokus bleibt');
   await p.close();
 }
+{ // ---- Konsolen-Kacheln (Pfeile links/rechts) + Figurenwahl über die Kachel „Läufer" (Karussell, Spiele-Reiter, 3D-Vorschau)
+  const p = await mk({ viewport: { width: 1280, height: 720 } });
+  await p.keyboard.press('ArrowRight'); await p.keyboard.press('ArrowRight'); log(await p.evaluate(() => document.querySelector('.cm-it.on').id === 'bChars') && /Läufer/.test(await p.textContent('#cmPanel h3')), 'Pfeil rechts wandert über die Kacheln bis „Läufer"');
+  await p.keyboard.press('Enter'); await p.waitForSelector('#pick:not([hidden]) .pk.on'); const k0 = await p.evaluate(() => document.querySelector('#pick .pk.on').dataset.k);
+  await p.keyboard.press('ArrowRight'); await p.waitForTimeout(400); const k1 = await p.evaluate(() => ({ k: document.querySelector('#pick .pk.on').dataset.k, n: document.getElementById('pickName').textContent, st: document.querySelectorAll('#pickStats .pk-st').length, c: window.__fp.S.chars[0] }));
+  log(k1.k !== k0 && k1.n && k1.st === 4 && String(k1.c) === k1.k, 'Pfeil rechts wählt die nächste Figur: Steckbrief mit Stil-Profil, sofort übernommen (' + k1.n + ')');
+  await p.keyboard.press('ArrowDown'); await p.waitForTimeout(300); log(await p.evaluate(() => document.querySelector('#pick .pk.on').dataset.g === '2' && document.querySelector('.pk-tab.on').dataset.g === '2'), 'Pfeil runter springt zum nächsten Spiel (Reiter folgt)');
+  await p.keyboard.press('KeyQ'); await p.waitForTimeout(300); log(await p.evaluate(() => document.querySelector('#pick .pk.on').dataset.g === '1'), 'Q (wie LB) springt ein Spiel zurück');
+  { const st = await p.evaluate(() => [...document.querySelectorAll('#pick .pk[data-g="0"] .pk-n')].map(x => x.textContent).join(',')); log(['RicoReWi', 'Rico', 'Andrew', 'Marco', 'Zotik'].every(n => st.split(',').includes(n)), 'Stars & Originale: ' + st); }
+  const v = await p.waitForFunction(() => document.querySelectorAll('#pick .pk.img').length >= 2, null, { timeout: 60000 }).then(() => true, () => false); log(v, 'Karten bekommen gerenderte Porträts');
+  await p.waitForTimeout(1500); await p.screenshot({ path: `${SHOT}/fp-figurwahl-konsole.png` });
+  await p.keyboard.press('Enter'); await p.waitForTimeout(300); log(await p.isHidden('#pick') && await p.evaluate(() => document.querySelector('.cm-it.on').id === 'bChars'), 'Enter schließt die Figurenwahl, zurück auf der Kachel');
+  await p.evaluate(() => { localStorage.removeItem('fpChars'); }); await p.close();
+}
 { // ---- Show, 2 Läufer
   const p = await mk({ viewport: { width: 1000, height: 600 } }); await bot(p); await p.evaluate(() => { window.__fpFast = 6; });
   await p.click('#bPlay'); await p.click('#sgPl [data-v="2"]'); await p.fill('#names input[data-i="0"]', 'Anna'); await p.fill('#names input[data-i="1"]', 'Ben'); await p.click('#bStart');
@@ -62,6 +76,12 @@ const phase = (p, ph, ms = 60000) => p.waitForFunction(x => window.__fp.G && win
   log(await p.evaluate(() => window.__fp.arena.runner.ci === 'rico' && !!window.__fp.arena.runner.fig) && /2048 Deluxe/.test(await p.textContent('#pickWho')), 'Mensch aus anderem Spiel (Rico) wird als realistische Figur gezeigt');
   await p.click('.pk[data-k="hopsi-hopsi"]'); await p.waitForFunction(() => { const r = window.__fp.arena.runner; return r.ci === 'hopsi-hopsi' && r.toon; }, null, { timeout: 20000 }).catch(() => {});
   log(await p.evaluate(() => !!window.__fp.arena.runner.toon), 'Wesen aus anderem Spiel (Hopsi) erscheint im Look seines Spiels'); await p.screenshot({ path: `${SHOT}/fp-figurwahl.png` });
+  { // jede wählbare Figur baut im Studio fehlerfrei und hat Läufergröße (Riesen-Wesen werden verkleinert)
+    const r = await p.evaluate(async () => { const { charGroups } = await import('./chars.js'), A = window.__fp.arena, T = THREE, bad = [], seen = new Set(); let n = 0;
+      for (const g of charGroups()) for (const c of g.list) { if (seen.has(c.k)) continue; seen.add(c.k); n++; await A.setLook(0xff6fb0, 5, c.k); const r = A.runner, o = r.fig ? r.fig.root : r.toon; if (!o) { bad.push(c.k + ':leer'); continue; } o.updateMatrixWorld(true); const h = new T.Box3().setFromObject(r.fig ? r.fig.body || o : o).getSize(new T.Vector3()).y; if (!(h > 0.4 && h < 2.15)) bad.push(c.k + ':' + h.toFixed(2)); }
+      return { n, bad }; });
+    log(!r.bad.length, `Alle ${r.n} Figuren bauen fehlerfrei in Läufergröße` + (r.bad.length ? ' – Problem: ' + r.bad.join(', ') : ''));
+  }
   await p.keyboard.press('Escape'); await p.waitForTimeout(200); log(await p.isHidden('#pick') && /Hopsi/.test(await p.textContent('.chb')), 'Fertig/Esc schließt die Auswahl, Knopf zeigt die Figur');
   await p.click('#bStart'); await p.waitForSelector('#bReady'); await p.click('#bReady'); await phase(p, 'run'); await p.keyboard.down('ArrowRight'); await p.waitForTimeout(600); await p.keyboard.up('ArrowRight');
   log(await p.evaluate(() => window.__fp.arena.runner.st === 'run' || window.__fp.arena.runner.st === 'air' || window.__fp.arena.runner.st === 'idle'), 'Lauf mit Toon-Figur ohne Fehler');
