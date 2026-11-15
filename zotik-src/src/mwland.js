@@ -1,5 +1,6 @@
 // Wahrzeichen der Märchenwelten – gebaut aus einfachen Formen, nach den Beschreibungen der Vorlagen.
 // Jeder Bau bekommt Kollision nur dort, wo er sichtbar steht (Kreisketten entlang der Wände, siehe solidBox in maerchen.js).
+import { makeGulliverLand } from './mwland-gulliver.js';
 export function makeLand({ T, G, M, mk, glow }) {
   // Kleine Bausteine, die mehrere Welten nutzen
 const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11) < 90;
@@ -582,5 +583,6 @@ const dark = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11
       b.box(72, 0, -88, 1.6, 1, .9, 0xd8d0c0); b.cyl(72, 1, -88, .25, .5, 0xffd860, { mat: { m: .9, r: .2, e: 0xffb020, ei: 1.6 } }); b.glow(0xfff0b0, 3, 72, 2, -88, .7);
     }
   };
+  LAND.gulliver = makeGulliverLand(kit);
   return { LAND, kit };
 }

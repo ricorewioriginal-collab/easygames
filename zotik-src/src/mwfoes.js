@@ -1,4 +1,5 @@
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { createGulliverFoes } from './mwfoes-gulliver.js';
 let _rb = null; const RBOX = () => _rb || (_rb = new RoundedBoxGeometry(1, 1, 1, 3, .16));
 // Gegner der Märchenwelten – eigene Körperformen nach den Vorlagen (Grimm, Kipling, Hugo, Mythen, Andersen, Mulan-Ballade, Artussage).
 // Gleiche Bauweise wie creatures.js: Schwebende {root, body, sh}, Läufer {root, body, head, legs[4+], tail}
@@ -10,7 +11,8 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
   const dim = (h, k) => { const c = new T.Color(h); c.multiplyScalar(k); return c.getHex(); };
   const eyes = (g, y, z, sx, col, s) => { for (const k of [-1, 1]) g.add(mk(G.sph0, E(col || 0xffffff, 2.2), k * sx, y, z, .06 * (s || 1), .07 * (s || 1), .04, false)); };
   const fin = r => { mergeStatic(r.body, new Set([r.head, ...(r.legs || []), r.tail, ...(r.sh || [])].filter(Boolean))); return r; };
-  const HOVER = new Set(['dschinn', 'scherbe', 'fledermaus', 'steinfratze', 'stymphal', 'hai', 'falke', 'rabe']);
+  const HOVER = new Set(['wespe', 'magnet', 'dschinn', 'scherbe', 'fledermaus', 'steinfratze', 'stymphal', 'hai', 'falke', 'rabe']);
+  const GF = createGulliverFoes({ T, mk, G, glow, C, E, M, dim, eyes, fin });
 
   function hover(kind, col) {
     const root = new T.Group(), b = new T.Group(); root.add(b); const sh = [];
@@ -48,7 +50,7 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
         { const fe = C(col, { r: .4, m: .2 }); b.add(mk(G.sph, fe, 0, 0, 0, .28, .3, .52)); b.add(mk(G.sph, fe, 0, .2, .42, .2, .2, .22));
           const bk = mk(G.cone0, C(0x2a2a30), 0, .17, .7, .06, .28, .06); bk.rotation.x = Math.PI / 2; b.add(bk); eyes(b, .27, .55, .09, 0xc070ff); wings(1.9, fe, .05, .05);
           b.add(glow(0x9a4aff, 1.8, 0, 0, 0, .3)); } break;
-      default: return null;
+      default: return GF.hover(kind, col);
     }
     return Object.assign(fin({ root, body: b, sh }), { flap: kind !== 'scherbe' && kind !== 'dschinn' });
   }
@@ -239,12 +241,12 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
       case 'steppenwolf': {
         quad(.95, C(col, { r: .9 })); head.add(mk(G.sph, C(dim(col, .8)), 0, -.06, .26, .14, .12, .22)); for (const s of [-1, 1]) head.add(mk(G.cone0, C(col), s * .14, .24, -.05, .06, .18, .04)); eyes(head, .06, .24, .1, 0xc8e0ff);
         tail.addm(mk(G.cone0, C(col), 0, -.3, 0, .13, .7, .13)).rotation.x = Math.PI; b.add(mk(G.sph0, C(0xf0f0f4), 0, .7, .5, .22, .16, .3, false)); break; }
-      default: return null;
+      default: if (!GF.walk(kind, { root, b, head, tail, legs, leg, quad, boss, col })) return null;
     }
     if (boss) root.add(glow(0xfff0a0, 1.2, 0, .2, 0, .25));
     return fin({ root, body: b, head, legs, tail });
   }
 
   const make = (kind, col, boss) => HOVER.has(kind) ? hover(kind, col) : walker(kind, col, boss);
-  return { make, has: k => HOVER.has(k) || ['zauberer', 'marionette', 'karte', 'hase', 'herzkoenigin', 'pirat', 'hook', 'krokodil', 'giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'baer', 'mungo', 'wache', 'schattenritter', 'spartoi', 'riese', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf'].includes(k), HOVER };
+  return { make, has: k => HOVER.has(k) || ['zauberer', 'marionette', 'karte', 'hase', 'herzkoenigin', 'pirat', 'hook', 'krokodil', 'giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'baer', 'mungo', 'wache', 'schattenritter', 'spartoi', 'riese', 'nadler', 'katze', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf'].includes(k), HOVER };
 }
