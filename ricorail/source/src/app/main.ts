@@ -1,4 +1,4 @@
-// Schienenhorizont (ehemals RicoRail) – App-Hülle: Start, Profile, Hauptmenü, Auswahlbildschirme, Laden, Ergebnis, Einstellungen.
+// Easygames Train Simulator 3D (ehemals RicoRail) – App-Hülle: Start, Profile, Hauptmenü, Auswahlbildschirme, Laden, Ergebnis, Einstellungen.
 import { CSS, h, btn, clear, toast, dialog, hhmm } from '../ui/dom';
 import { SaveStore, type Settings, type Profile } from '../save/store';
 import { AudioEngine } from '../audio/audio';
