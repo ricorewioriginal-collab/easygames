@@ -14,5 +14,5 @@
 <rect x="372" y="290" width="56" height="26" rx="4" fill="#0d1726"/>
 <path d="M340 150 L370 96 L430 96 L460 150" stroke="#222" stroke-width="5" fill="none"/><path d="M360 96 L440 96" stroke="#222" stroke-width="6"/>
 <path d="M0 92 L800 80" stroke="#0a0f18" stroke-width="2"/>
-<text x="400" y="470" text-anchor="middle" font-family="system-ui,sans-serif" font-size="58" font-weight="900" fill="#fff" stroke="#0d1726" stroke-width="10" paint-order="stroke">RicoRail <tspan fill="#f2a900">3D</tspan></text>
+<text x="400" y="470" text-anchor="middle" font-family="system-ui,sans-serif" font-size="54" font-weight="900" fill="#fff" stroke="#0d1726" stroke-width="10" paint-order="stroke">Schienenhorizont<tspan fill="#f2a900"> 3D</tspan></text>
 </svg>

@@ -7,7 +7,7 @@ import { endDir, makePts, polyLen, splitPts, type P2 } from './geom';
 export const MODEL_TEXT = {
   newNet: 'Neues Netz',
   badJson: 'Datei ist kein gültiges JSON.',
-  noSchema: 'Keine RicoRail-Netzdatei (Feld „schema“ fehlt).',
+  noSchema: 'Keine Schienenhorizont-Netzdatei (Feld „schema“ fehlt).',
   badSchema: (v: unknown) => `Netzformat ${String(v)} wird nicht unterstützt (erwartet ${NETWORK_SCHEMA}).`,
   noArrays: 'Netzdatei unvollständig: Knoten oder Gleise fehlen.',
   unknown: (what: string, id: string) => `${what} ${id} nicht gefunden`,

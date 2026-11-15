@@ -1,4 +1,4 @@
-// RicoRail Simulator 3D – App-Hülle: Start, Profile, Hauptmenü, Auswahlbildschirme, Laden, Ergebnis, Einstellungen.
+// Schienenhorizont (ehemals RicoRail) – App-Hülle: Start, Profile, Hauptmenü, Auswahlbildschirme, Laden, Ergebnis, Einstellungen.
 import { CSS, h, btn, clear, toast, dialog, hhmm } from '../ui/dom';
 import { SaveStore, type Settings, type Profile } from '../save/store';
 import { AudioEngine } from '../audio/audio';
@@ -14,6 +14,8 @@ import { Game } from './game';
 import { TrackEditor } from '../editor/editor';
 import { t, setLang } from '../i18n/strings';
 import * as Ty from '../modes/tycoon';
+import { startPadNav } from '../ui/padnav';
+import { BRAND, BRAND_SUB, BRAND_FULL, SLOGAN } from './brand';
 
 type Mode = 'drive' | 'box' | 'world';
 interface RunCfg {
@@ -46,9 +48,9 @@ async function boot() {
   const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
   canvas = document.getElementById('scene') as HTMLCanvasElement ?? document.body.appendChild(h('canvas', { id: 'scene' }));
   ui = document.getElementById('ui') ?? document.body.appendChild(h('div', { id: 'ui' }));
-  const load = h('div', { class: 'loading' }, h('div', { class: 'logo', style: 'font-size:1.6em' }, 'RicoRail ', h('b', null, 'Simulator 3D')), h('div', { class: 'muted' }, 'Lade …'));
+  const load = h('div', { class: 'loading' }, h('div', { class: 'logo', style: 'font-size:1.6em' }, BRAND, ' ', h('b', null, BRAND_SUB)), h('div', { class: 'muted' }, 'Lade …'));
   document.body.appendChild(load);
-  if (!hasWebGL()) { load.remove(); showFatal('Dieses Gerät oder dieser Browser unterstützt kein WebGL. RicoRail braucht 3D-Grafik (WebGL).'); return; }
+  if (!hasWebGL()) { load.remove(); showFatal(`Dieses Gerät oder dieser Browser unterstützt kein WebGL. ${BRAND} braucht 3D-Grafik (WebGL).`); return; }
   store = await SaveStore.open();
   audio = new AudioEngine();
   applySettings();
@@ -57,13 +59,14 @@ async function boot() {
   load.remove();
   if (store.notice) toast(store.notice, 'warn', 6000);
   if (store.lastError) toast(store.lastError, 'warn', 6000);
+  startPadNav();
   menu();
 }
 
 function hasWebGL() { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch { return false; } }
 
 function showFatal(msg: string) {
-  screen(h('h1', { class: 'logo' }, 'RicoRail ', h('b', null, 'Simulator 3D')), h('p', null, msg), btn(t('back'), backToEasygames, 'btn primary'));
+  screen(h('h1', { class: 'logo' }, BRAND, ' ', h('b', null, BRAND_SUB)), h('p', null, msg), btn(t('back'), backToEasygames, 'btn primary'));
 }
 
 function applySettings() {
@@ -113,9 +116,9 @@ function menu() {
   const quick = quickPick();
   screen(
     h('div', { class: 'hero' },
-      h('div', { class: 'row' }, h('h1', { class: 'logo' }, 'RicoRail ', h('b', null, 'Simulator 3D')), h('span', { class: 'spacer' }),
+      h('div', { class: 'row' }, h('h1', { class: 'logo' }, BRAND, ' ', h('b', null, BRAND_SUB)), h('span', { class: 'spacer' }),
         btn(`👤 ${p.name}`, profiles, 'btn small', { title: t('profile') })),
-      h('p', { class: 'sub' }, 'Deine Eisenbahn. Deine Strecken. Deine Welt.'),
+      h('p', { class: 'sub' }, SLOGAN),
       h('p', { class: 'small muted' }, `${rank} · ${p.career.xp} Erfahrung`)),
     h('div', { class: 'menu2' },
       quick ? btn([h('span', { class: 'ti' }, '▶'), h('span', null, h('b', null, 'Jetzt fahren'), h('small', null, `Sofort los: ${quick.title}`))] as unknown as HTMLElement, () => quickStart(quick), 'btn tile primary big') : null,
@@ -539,7 +542,7 @@ function manual() {
 function credits() {
   screen(header(t('credits')),
     h('div', { class: 'panel', style: 'max-width:none' },
-      h('p', null, h('b', null, 'RicoRail Simulator 3D'), ` ${VERSION} – ein Easygames-Spiel.`),
+      h('p', null, h('b', null, BRAND_FULL), ` ${VERSION} – ein Easygames-Spiel.`),
       h('p', null, 'Alle Fahrzeuge, Führerstände, Landschaften, Geräusche und Ansagen sind eigene, prozedural erzeugte Inhalte. Es wurden keine Modelle, Logos, Ansagen, Geräusche oder Karten kommerzieller Simulatoren oder Bahnunternehmen übernommen.'),
       h('p', null, 'Die realen Strecken sind vereinfacht nachgebildet: Bahnhofsnamen und ungefähre Lage sind öffentlich bekannte geografische Fakten; Gleispläne, Signale, Höhen und Fahrpläne sind frei gestaltet.'),
       h('p', null, 'Verwendete Software: three.js (MIT-Lizenz, © three.js authors). Gebaut mit TypeScript und esbuild.'),

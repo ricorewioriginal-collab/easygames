@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "6ae6577b30fb",
- "generated": "2026-11-15T18:56:07+01:00",
- "commit": "a80e475687e95ce93bf1e7a79b30d0418104046a",
+ "version": "12eeccd07589",
+ "generated": "2026-11-15T17:57:35+00:00",
+ "commit": "f53338b7100fb881ba28edfea9db9136deafc8a0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10053,8 +10053,8 @@
   },
   {
    "p": "games.js",
-   "s": 55668,
-   "h": "59af31f638f257b5ac0cbd17c280df0d49739405dc1081d14704888324a74597"
+   "s": 55685,
+   "h": "5c23c8e9312a4a24db5cfe9df2e3a0b2307a840d221b2c69c4db1d82c94b9ba8"
   },
   {
    "p": "gay-life/card.jpg",
@@ -10358,8 +10358,8 @@
   },
   {
    "p": "guides.js",
-   "s": 173557,
-   "h": "b2f7dfaeafb0ea1e7a912d5f62580d871cbc14c6429678869e001476b12db2a8"
+   "s": 173574,
+   "h": "0e2b30cf9626b70c10f42d10bc5183f27452f9baace67bc896b2872276ff1917"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10713,8 +10713,8 @@
   },
   {
    "p": "guides/ricorail.json",
-   "s": 36339,
-   "h": "c89d52b250c4f5e28e3063b99c200826d79fa0e73d4c5cfe8fd4dfb742223cc9"
+   "s": 36388,
+   "h": "bedf2c7ce9f127f30df6a3c542f94e1b9879179e6120d493f1494b4569dbd148"
   },
   {
    "p": "guides/ricoville.json",
@@ -12662,14 +12662,14 @@
    "h": "b1a597ac448c28ef7efd2d49a802d593755bdf72d6babe32d25fe795cc920985"
   },
   {
-   "p": "ricorail/assets/ricorail-c8e7dadfbc.js",
-   "s": 1056573,
-   "h": "c8e7dadfbcdbadb1b4d6b430b7331fb8f609d3c15b9812021ae50cc565908f76"
+   "p": "ricorail/assets/ricorail-66a0c536c8.js",
+   "s": 1062836,
+   "h": "66a0c536c84973a6eb6d60245ac6fa22c3ccc25790d2ec65469802da7ece3aff"
   },
   {
    "p": "ricorail/card.svg",
-   "s": 2430,
-   "h": "b1e69c7c1475396e60f194cae02e8c5e90317aa57a302e6e7950431a5bdab4e8"
+   "s": 2438,
+   "h": "6f23a123a70ff4ec574b2ecb64c4cee4a3184b8645feafddcdb4dd4ec2ed3aa4"
   },
   {
    "p": "ricorail/data/licences.json",
@@ -12703,23 +12703,23 @@
   },
   {
    "p": "ricorail/index.html",
-   "s": 3509,
-   "h": "d23147d465d8b6d19080eed99f3d0823a3e0f5b1aacc67adb738485f653e32f4"
+   "s": 3290,
+   "h": "bcd6cb113855789bca4a14ab238f89b8e8c235e0d996d27c81cf3e1e5e136958"
   },
   {
    "p": "ricorail/manifest.webmanifest",
-   "s": 805,
-   "h": "fde706e81eb9c4a4f8b552226b6b41e9e6775bf62554601ee25c68953745f06a"
+   "s": 830,
+   "h": "93111bad6063d75dccf933e14fbbd8ea005a35ba7cedb7fc60b694ef8cfafd2c"
   },
   {
    "p": "ricorail/sw.js",
    "s": 1812,
-   "h": "aed926f0d62cdd9507050042d0658a8219c7d7dc0258dea368082e456f506617"
+   "h": "1e55026560a56bf822dadf69265ea2b3793c0353cd7b31d2a999e2adf80174aa"
   },
   {
    "p": "ricorail/version.json",
    "s": 74,
-   "h": "e28a134abc40c0fa11febbd31aa67e58e8e5062a5f4cb6461f75064ce4ba150a"
+   "h": "60b492574c4b5d24a45a59b3d395dc0d0c46b2a46eb6b5292934acd0ff53ceff"
   },
   {
    "p": "ricoville/assets/index-Ba31iYgM.js",
@@ -13858,8 +13858,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 251120,
-   "h": "ecaebc910c0e13c009072e6f509e87e017bfafd8215b0ec611b7187cd427c11b"
+   "s": 251154,
+   "h": "b652ba0d3f355e70b528c8d297bfe430504138d2678399c414fac2741108e0d7"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
