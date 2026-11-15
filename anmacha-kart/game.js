@@ -148,6 +148,17 @@ function initHost() {
   const spOf = ch => (CHARS[ch] && CHARS[ch].sp) || Sim.SPECIALS[ch % Sim.SPECIALS.length];
   const coOf = ch => save.co != null && save.co !== ch && CHARS[save.co] ? save.co : (ch + 7) % CHARS.length;
   const TR = Track.DEFS; let trCache = {}; const getTrack = (i, mi) => mi ? (trCache['m' + i] || (trCache['m' + i] = Track.build(Track.mirror(TR[i])))) : trCache[i] || (trCache[i] = Track.build(TR[i]));
+  // Gespeicherte Auswahl absichern: unbekannte/veraltete Werte (ältere Versionen, andere Apps) fallen auf gültige Standardwerte zurück
+  const okI = (v, n, d) => { v = Number(v); return Number.isInteger(v) && v >= 0 && v < n ? v : d; };
+  function fixSave() {
+    save.char = okI(save.char, CHARS.length, 1); save.kart = okI(save.kart, KARTS.length, 0); save.logo = okI(save.logo, 13, 6); save.cup = okI(save.cup, Track.CUPS.length, 0);
+    save.track = okI(save.track, TR.length, 0); if (TR[save.track].arena) save.track = 0;
+    const a0 = TR.findIndex(t => t.arena); save.arena = okI(save.arena, TR.length, a0); if (!TR[save.arena] || !TR[save.arena].arena) save.arena = a0;
+    save.co = save.co == null ? null : okI(save.co, CHARS.length, null); save.skill = okI(save.skill, 3, 1); save.cc = save.cc == null ? null : okI(save.cc, 4, null);
+    if (![2, 3, 5].includes(save.laps)) save.laps = 3; if (!['race', 'gp', 'tt', 'free', 'battle'].includes(save.rmode)) save.rmode = 'race'; if (!['ball', 'cap', 'bomb'].includes(save.bmode)) save.bmode = 'ball';
+    if (typeof save.name !== 'string') save.name = ''; if (!save.best || typeof save.best !== 'object') save.best = {}; save.cam = okI(save.cam, 4, 0);
+  }
+  fixSave();
   let logos = [], ready = false, menuView = 'title', setupFor = 'solo', R = null, lobbyOpen = false, peer = null, room = '', players = [], loopOn = false, lastT = 0, paused = false, curTrackIdx = -1, GP = null, nVp = 1;
   const kb = { l: 0, r: 0, g: 0, b: 0, d: 0, i: 0, sw: 0, lb: 0, hn: 0, cam: 0, rn: 0, rp: 0, ro: 0 }, tc = { s: 0, g: 0, b: 0, d: 0, i: 0, sw: 0, lb: 0, hn: 0, cam: 0 };
   // Tastatur: frei belegbar (Optionen → Tastenbelegung); Schlüssel = e.key in Kleinbuchstaben
@@ -320,7 +331,7 @@ function initHost() {
     View.warmup(); ready = true; $('loadInfo').textContent = `${TR.length} Strecken · ${KARTS.length} Karts · ${CHARS.length} Figuren · ${logos.length} Sender-Logos`; renderMenu();
     lastT = performance.now(); loopOn = true; requestAnimationFrame(frame);
     LD.finish(() => { LD.hide(); if (TV) { setupFor = 'multi'; renderMenu(); openLobby(); } else showView('title'); });
-  }).catch(e => { LD.stop(); $('err').hidden = false; $('errTxt').textContent = 'Das Spiel konnte nicht geladen werden (' + e.message + '). Bitte Internetverbindung prüfen.'; });
+  }).catch(e => { if (!sessionStorage.getItem('akReset') && !/fetch|network|load|script/i.test(e.message || '')) { try { sessionStorage.setItem('akReset', '1'); const b = save.best; localStorage.setItem('akSave', JSON.stringify({ best: b, name: save.name })); } catch (x) {} location.reload(); return; } LD.stop(); $('err').hidden = false; $('errTxt').textContent = 'Das Spiel konnte nicht geladen werden (' + e.message + '). Bitte Internetverbindung prüfen.'; });
   renderMenu(); document.addEventListener('pointerdown', () => AUD.unlock(), { once: true }); document.addEventListener('pointerdown', () => { if (!R && ready && !AUD.muted) AUD.bed('menu'); }, { once: true });
   addEventListener('resize', () => { if (ready) { View.resize(innerWidth, innerHeight, nVp); layoutHud(); if (R) R.dirty = true; } });
   if (coarse) $('kbToggle').textContent = '👆 Spieler an diesem Gerät';
