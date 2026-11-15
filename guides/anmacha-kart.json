@@ -140,7 +140,8 @@
     {
       "t": "Battle-Modus",
       "p": [
-        "Im Hauptmenü öffnet die Kachel „🎈 Battle“ den Kampfmodus. Gefahren wird in drei eigenen Arenen (Funkturm-Arena, Neon-Kessel, Sandburg-Ring): breite Rundkurse mit Mittelinsel, vielen Item-Boxen und Boost-Feldern, gegen 7 Gegner.",
+        "Im Hauptmenü öffnet die Kachel „🎈 Battle“ den Kampfmodus. Gefahren wird in fünf eigenen Arenen (Funkturm-Arena, Neon-Kessel, Sandburg-Ring, Eiskristall-Kuppel, Lava-Krater): breite Rundkurse mit Mittelinsel, vielen Item-Boxen und Boost-Feldern, gegen 7 Gegner.",
+        "Teams Rot gegen Blau: Über dem Modus wählst du „Jeder gegen jeden“ oder „Teams: Rot gegen Blau“. Im Team-Battle fahren 4 rote gegen 4 blaue Karts. Eigene Teamkollegen kannst du weder treffen noch beklauen. Bei der Ballonjagd gewinnt das Team, das als letztes noch Fahrer hat. Beim Funkpokal zählt die Haltezeit des ganzen Teams (25 s), beim Bomben-Duell die Treffer des ganzen Teams (10).",
         "Ballonjagd: Jeder startet mit 3 Ballons. Jeder Treffer lässt einen platzen; wer keinen mehr hat, scheidet aus. Rammst du jemanden mit Turbo, klaust du ihm einen Ballon (höchstens 5). Gewinner ist, wer zuletzt übrig bleibt oder nach 3 Minuten die meisten Ballons hat.",
         "Funkpokal erobern: Schnapp dir den goldenen Funkpokal und halte ihn 25 Sekunden. Wirst du getroffen, fällt er herunter; Turbo-Rammen klaut ihn direkt. Nach 3 Minuten gewinnt die längste Haltezeit.",
         "Bomben-Duell: Aus den Boxen kommen nur Bomben. Sie rollen aus und explodieren nach gut 2 Sekunden oder sobald jemand drüberfährt; die Druckwelle trifft alle in der Nähe. 5 Treffer gewinnen, sonst zählen nach 2,5 Minuten die Punkte."
