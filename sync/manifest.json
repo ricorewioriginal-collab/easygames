@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "054e7a04430a",
- "generated": "2026-11-15T20:53:30+01:00",
- "commit": "c9328804a662649a8e1465aee06ddc2d529cb94c",
+ "version": "49afe11c5058",
+ "generated": "2026-11-15T20:57:37+01:00",
+ "commit": "0016e54b29b2862f8b2fd97a4662fb7cc8b0f01d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2163,8 +2163,8 @@
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 68779,
-   "h": "d02e52bde31e07f23b772283f262c2da88f3b90944ce25b8cd3a73c1d48c0e74"
+   "s": 71779,
+   "h": "78c533902651524cf8875265c8d0b67fa7b687cfc16df16b8034a7e745cc47cc"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -14129,7 +14129,7 @@
   {
    "p": "sync/catalog.json",
    "s": 245426,
-   "h": "b7ac3ce42e27e14b0e5291c88de8bfb3a36de92d829ddc83fd4ce11d2dbf1415"
+   "h": "860aef6b8d3286fa23e2a271edf910695b01e08de1c5209e2fb9f1cd215bb1b0"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
