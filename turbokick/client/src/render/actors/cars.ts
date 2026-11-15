@@ -176,6 +176,62 @@ function decalTexture(decal: CarDecal, main: number, accent: number): THREE.Canv
         g.fill();
       }
     }
+  } else if (decal === 'waben') {
+    const r = 9;
+    const dx = r * Math.sqrt(3);
+    for (let row = 0; row * r * 1.5 < H + r; row++) {
+      for (let col = -1; col * dx < W + dx; col++) {
+        const cx = col * dx + (row % 2) * (dx / 2);
+        const cy = row * r * 1.5;
+        g.beginPath();
+        for (let k = 0; k < 6; k++) {
+          const a = (k * Math.PI) / 3 + Math.PI / 6;
+          const xx = cx + Math.cos(a) * (r - 2.2);
+          const yy = cy + Math.sin(a) * (r - 2.2);
+          if (k === 0) g.moveTo(xx, yy);
+          else g.lineTo(xx, yy);
+        }
+        g.closePath();
+        if ((row + col) % 3 === 0) g.fill();
+        else {
+          g.lineWidth = 1.4;
+          g.strokeStyle = css(accent);
+          g.stroke();
+        }
+      }
+    }
+  } else if (decal === 'split') {
+    g.beginPath();
+    g.moveTo(0, pz(0.1));
+    g.lineTo(W, pz(-0.25));
+    g.lineTo(W, H);
+    g.lineTo(0, H);
+    g.closePath();
+    g.fill();
+  } else if (decal === 'nummer') {
+    g.beginPath();
+    g.arc(px(0), pz(-0.1), 26, 0, TAU);
+    g.fill();
+    g.fillStyle = css(main);
+    g.font = '900 34px Arial, sans-serif';
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillText(String(7 + ((main >> 4) % 80)), px(0), pz(-0.1) + 1);
+    g.fillStyle = css(accent);
+    g.fillRect(px(-0.03), 0, px(0.03) - px(-0.03), pz(0.15));
+  } else if (decal === 'pfeile') {
+    for (let k = 0; k < 4; k++) {
+      const z = 0.55 - k * 0.22;
+      g.beginPath();
+      g.moveTo(px(-0.3), pz(z - 0.1));
+      g.lineTo(px(0), pz(z));
+      g.lineTo(px(0.3), pz(z - 0.1));
+      g.lineTo(px(0.3), pz(z - 0.17));
+      g.lineTo(px(0), pz(z - 0.07));
+      g.lineTo(px(-0.3), pz(z - 0.17));
+      g.closePath();
+      g.fill();
+    }
   }
   t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
@@ -223,6 +279,9 @@ export class CarRig {
     readonly team: TeamId,
     seed = 0,
   ) {
+    // unbekannte Karosserie/Aufkleber (z. B. von einer anderen Spielversion online) → Standard
+    if (!BODY_SPECS[look.body]) look = { ...look, body: 'flitzer' };
+    this.look = look;
     this.spec = BODY_SPECS[look.body];
     const tc = teamColors(team);
     this.main = tc.main;
