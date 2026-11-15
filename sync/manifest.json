@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e2f6398f305c",
- "generated": "2026-11-15T18:52:31+01:00",
- "commit": "11f9cad7fc746bb498f0a60fca9a61e6b69c247e",
+ "version": "6ae6577b30fb",
+ "generated": "2026-11-15T18:56:07+01:00",
+ "commit": "a80e475687e95ce93bf1e7a79b30d0418104046a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2148,13 +2148,13 @@
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 78940,
-   "h": "5d6806720ba98e9f5b841af24deca746a40636153ad55cfbcaefab6ceb9462c1"
+   "s": 80155,
+   "h": "5bc88d94e1ca40f2e49491cc22d284bf5477a736e103bea37d8b0b606d6c1ad8"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 62793,
-   "h": "94046162a68f7096f4a84a83b24f8e97a2088326a5bcc0b958489cd42f639e8d"
+   "s": 67513,
+   "h": "498a81be4ea572426c9d3e3137427d15747941992b4bdecaa2572a4016dac3e0"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -13859,7 +13859,7 @@
   {
    "p": "sync/catalog.json",
    "s": 251120,
-   "h": "225676e16497893a580198f039d0590b907a768201a09a96380c79d510443198"
+   "h": "ecaebc910c0e13c009072e6f509e87e017bfafd8215b0ec611b7187cd427c11b"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
