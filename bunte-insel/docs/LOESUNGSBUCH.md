@@ -30,7 +30,7 @@
 
 ### Kapitel 1: 🏝️ Ankommen
 
-Willkommen auf der Bunten Insel! Ich bin Bürgermeisterin Rosi. Bald feiern wir das große Insel-Fest – und du sollst mir bei den Vorbereitungen helfen! Sag erst mal Hallo, pack deinen Rucksack aus und lass dir den Weg zeigen.
+Willkommen auf der Bunten Insel! Ich bin Rosi, die Bürgermeisterin. Hilf mir beim großen Insel-Fest! Sag erst mal Hallo – der Pfeil ⬇️ zeigt dir, zu wem.
 
 - 💬 Sprich mit jemandem (tippe auf eine Person)
 - 🎒 Öffne deinen Rucksack (🎒 oben links)
@@ -594,8 +594,8 @@ Eine bunte Hüpf-Insel über die Brücke im Westen (🧭 → „Hüpfland“). P
 - 🐟 Fische im Sammelbuch: 0 von 14 (am See & Strand angeln)
 - 🐞 Käfer im Sammelbuch: 0 von 14 (Kescher im Gras)
 - 🐚 Funde im Sammelbuch: 0 von 14 (glitzernde Stellen am Strand)
-- 🏖️ Heute: Buddel-Fest – Heute glitzert der Strand an mehr Stellen – seltene Funde sind häufiger, die ersten 5 geben extra ⭐!
-- 🌟 Tagesglück: heute 🐝 Brummi fangen (+2 ⭐)
+- 🌈 Heute: Regenbogen-Tag – Heute zeigt sich immer wieder ein Regenbogen mit bunten Sternen!
+- 🌟 Tagesglück: heute 🐜 Krabbel fangen (+2 ⭐)
 
 ### 🎬 Dampfer-Hafen
 
@@ -785,6 +785,7 @@ So bekommst du jeden Sticker:
 | 🍳 Hobbykoch | Koche etwas in der Hofküche |
 | 🎯 Fotoreporter | Löse 5 Foto-Aufgaben |
 | 📅 Stammgast | Komm 3 Tage hintereinander |
+| 🗓️ Wochen-Held | Sammle in einer Ereignis-Woche 25 ⭐ |
 | 🛋️ Einrichter | Richte dein Zimmer ein |
 | 📖 Märchenonkel | Hör am Lagerfeuer eine Geschichte |
 | 🎂 Partykind | Feiere mit Freunden eine Party |

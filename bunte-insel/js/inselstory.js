@@ -143,8 +143,8 @@ BI.createInselStory = function (G) {
      und wenn alle Welten geholfen sind, feiern alle zusammen das Fest der Welten (Sticker „weltenfest“). */
   const lights = () => ST.filter(q => { const a = S()[q.key]; return a != null && a >= q.acts.length; }).length;
   K.lights = () => ({ n: lights(), of: ST.length });
-  function finish(d, quiet) { const id = 'geschichte_' + d.key.toLowerCase(), n = lights(), all = n >= ST.length; if (!quiet) { G.addStars(10); setTimeout(() => say('🏆 ' + d.icon + ' „' + d.title + '“ geschafft! ' + d.end + ' +10 ⭐ · 🌟 Weltenlicht ' + n + '/' + ST.length + ' – ' + d.npc + ' kommt zum Fest der Welten!', 7000), 1200); if (G.speak) G.speak(d.end); } if (G.earn) G.earn(id);
-    if (all && !got('weltenfest')) { if (G.earn) G.earn('weltenfest'); if (!quiet) { G.addStars(30); setTimeout(() => { say('🎆 Alle ' + ST.length + ' Weltenlichter leuchten! Bürgermeisterin Rosi, Zotik, Mira und die Helden aller Welten feiern mit dir das große Fest der Welten auf der Bunten Insel! +30 ⭐', 9000); G.fanfare && G.fanfare(); if (G.fx) for (let i = 0; i < 6; i++) setTimeout(() => G.fx.burst(P.x + (Math.random() - .5) * 10, 6 + Math.random() * 5, P.z + (Math.random() - .5) * 10, 60, [BI.C.gold, BI.C.pink, BI.C.blue, BI.C.green, BI.C.orange], 12, 1.8, 26, 6), i * 450); if (G.speak) G.speak('Alle Weltenlichter leuchten! Jetzt feiern alle Welten zusammen das große Fest der Welten – und du bist der Held aller Welten!'); }, 8600); } } }
+  function finish(d, quiet) { const id = 'geschichte_' + d.key.toLowerCase(), n = lights(), all = n >= ST.length; if (!quiet) { G.addStars(10); setTimeout(() => say('🏆 ' + d.icon + ' „' + d.title + '“ geschafft! ' + d.end + ' +10 ⭐ · 🌟 Weltenlicht ' + n + '/' + ST.length + ' – ' + d.npc + ' kommt zum Fest der Welten!', 7000), 1200); if (G.speak) G.speak(d.end); } if (G.earn) G.earn(id); if (!quiet && !all) setTimeout(() => K.bridge(), 9500);
+    if (all && !got('weltenfest')) { if (G.earn) G.earn('weltenfest'); if (!quiet) { G.addStars(30); setTimeout(() => { say('🎆 Alle ' + ST.length + ' Weltenlichter leuchten! Bürgermeisterin Rosi, Zotik, Mira und die Helden aller Welten feiern mit dir das große Fest der Welten auf der Bunten Insel! +30 ⭐', 9000); G.fanfare && G.fanfare(); if (G.fx) for (let i = 0; i < 6; i++) setTimeout(() => G.fx.burst(P.x + (Math.random() - .5) * 10, 6 + Math.random() * 5, P.z + (Math.random() - .5) * 10, 60, [BI.C.gold, BI.C.pink, BI.C.blue, BI.C.green, BI.C.orange], 12, 1.8, 26, 6), i * 450); if (G.speak) G.speak('Alle Weltenlichter leuchten! Jetzt feiern alle Welten zusammen das große Fest der Welten – und du bist der Held aller Welten!'); setTimeout(() => K.credits(), 9500); }, 8600); } } }
   function announce(d) { const i = S()[d.key], a = d.acts[i]; if (!a) return; const t = a.text + (i === 0 ? ' Hilf uns – dann bringst du ein 🌟 Weltenlicht zum Fest der Welten!' : ''); say(d.icon + ' ' + d.npc + ': „' + t + '“', 8800); if (G.speak) G.speak(t); }
   function start(d) { const s = S(); if (s[d.key] != null) return; s[d.key] = 0; persist(); if (!advance(d, true)) announce(d); else { const a = d.acts[s[d.key]]; if (a) announce(d); else say(d.icon + ' „' + d.title + '“ hast du schon geschafft! 🏆', 3600); } }
   let tmr = 0;
@@ -164,6 +164,37 @@ BI.createInselStory = function (G) {
     for (const d of ST) { const a = S()[d.key], done = a != null && a >= d.acts.length; if (done) n++; rows.push({ ok: done, icon: d.icon, text: d.title + (a == null ? ' – noch nicht begonnen (geh auf die Insel)' : done ? ' – geschafft! 🏆' : ' – Akt ' + (a + 1) + '/' + d.acts.length + ': ' + d.acts[a].hint), dest: null });
       if (a != null && !done) for (let i = 0; i < d.acts.length; i++) rows.push({ ok: i < a, icon: '  ' + (i < a ? '✔' : '▫'), text: d.acts[i].hint, dest: null }); }
     return { title: '📜 Inselgeschichten · 🌟 Fest der Welten', count: n + ' von ' + ST.length + ' Weltenlichtern', rows };
+  };
+  /* Roter Faden zwischen den Welten: Rosi zählt die Weltenlichter und schickt einen zur nächsten offenen Welt (mit „👣 Weg“) */
+  K.next = () => ST.find(d => { const a = S()[d.key]; return !(a != null && a >= d.acts.length) && BI[d.key] && !K.locked(d); }) || null;
+  K.bridge = function () {
+    const d = K.next(), n = lights(); if (!d) return false; const en = window.BunteInselI18n && BunteInselI18n.language === 'en', tr = x => (en && BunteInselI18n.t ? BunteInselI18n.t(x) : x);
+    const t = en ? (n ? '🌟 ' + n + ' of ' + ST.length + ' world lights are already shining! ' : 'All worlds saw our fireworks! ') + 'Next, ' + d.icon + ' ' + tr(d.title) + ' needs your help – ' + d.npc + ' is waiting for you there. I will show you the way!' : (n ? '🌟 Schon ' + n + ' von ' + ST.length + ' Weltenlichtern leuchten! ' : 'Alle Welten haben unser Feuerwerk gesehen! ') + 'Als Nächstes braucht ' + d.icon + ' ' + d.title + ' deine Hilfe – ' + d.npc + ' wartet dort auf dich. Ich zeige dir den Weg!';
+    if (G.talk) G.talk(en ? 'Mayor Rosi' : 'Bürgermeisterin Rosi', '👩‍💼', [t]); else { say('👩‍💼 ' + t, 7000); if (G.speak) G.speak(t); }
+    if (G.guide) setTimeout(() => G.guide(d.key), 600); return true;
+  };
+  /* Großes Finale: Abspann wie im Kino – alle Welten, ihre Helden und der Spieler. Später nochmal über das Aufgaben-Buch (📋) ansehen. */
+  K.credits = function () {
+    if (document.getElementById('biCredits')) return;
+    if (!document.getElementById('biCreditsCss')) { const st = document.createElement('style'); st.id = 'biCreditsCss';
+      st.textContent = '#biCredits{position:fixed;inset:0;z-index:9500;background:radial-gradient(circle at 50% 30%,#2b2366,#0c0b25 70%);color:#fff;overflow:hidden;display:flex;flex-direction:column;align-items:center;font-family:inherit}'
+        + '#biCredits .roll{position:absolute;left:0;right:0;top:100%;text-align:center;animation:biRoll var(--d,40s) linear forwards;padding:0 16px}#biCredits h1{font-size:clamp(30px,8vw,54px);margin:0 0 8px}#biCredits h2{font-size:22px;margin:34px 0 8px;color:#ffd75e}'
+        + '#biCredits p{margin:6px 0;font-size:19px;font-weight:700}#biCredits .big{font-size:56px;margin:20px 0}#biCredits .cbtn{position:absolute;bottom:max(18px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:2;font-size:20px;padding:12px 26px;border-radius:999px;border:0;background:#ffcf3a;color:#3a2600;font-weight:800;box-shadow:0 4px 0 #b48500}'
+        + '@keyframes biRoll{to{transform:translateY(calc(-100% - 100vh))}}@media (prefers-reduced-motion:reduce){#biCredits .roll{animation:none;top:0;overflow:auto;height:85%}}';
+      document.head.appendChild(st); }
+    const o = document.createElement('div'); o.id = 'biCredits'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-label', 'Abspann');
+    const en = window.BunteInselI18n && BunteInselI18n.language === 'en', L = (de, e) => en ? e : de; o.dataset.biI18nSkip = '1';
+    const roll = document.createElement('div'); roll.className = 'roll'; const add = (tag, txt, cls) => { const e = document.createElement(tag); e.textContent = en && BunteInselI18n.t ? BunteInselI18n.t(txt) : txt; if (cls) e.className = cls; roll.appendChild(e); };
+    add('div', '🎆🌟🎆', 'big'); add('h1', L('🌟 Das Fest der Welten', '🌟 The Festival of Worlds')); add('p', L('Alle Weltenlichter leuchten über der Bunten Insel!', 'All world lights are shining over Colorful Island!'));
+    add('h2', L('🦸 Held aller Welten', '🦸 Hero of all worlds')); add('p', (G.hero && G.hero()) || L('Du', 'You'));
+    add('h2', L('🏝️ Auf der Bunten Insel', '🏝️ On Colorful Island')); (en ? ['👩‍💼 Mayor Rosi', '👨‍🌾 Farmer Heinz', '🐶 Blitz and all pets', '🧑‍🤝‍🧑 all islanders'] : ['👩‍💼 Bürgermeisterin Rosi', '👨‍🌾 Bauer Heinz', '🐶 Blitz und alle Haustiere', '🧑‍🤝‍🧑 alle Inselbewohner']).forEach(t => add('p', t));
+    add('h2', L('🌍 Die Welten und ihre Helden', '🌍 The worlds and their heroes')); ST.forEach(d => add('p', d.icon + ' ' + d.title + ' – ' + d.npc));
+    add('h2', L('🎉 Danke fürs Spielen!', '🎉 Thanks for playing!')); add('p', L('Die Insel bleibt offen: Es gibt noch viel zu entdecken.', 'The island stays open: there is still lots to discover.')); add('div', '🏝️❤️', 'big');
+    roll.style.setProperty('--d', Math.max(30, 14 + ST.length * 2.2) + 's'); o.appendChild(roll);
+    const b = document.createElement('button'); b.className = 'cbtn'; b.textContent = L('🏝️ Weiter spielen', '🏝️ Keep playing'); const close = () => { o.remove(); clearInterval(fw); }; b.onclick = close; roll.addEventListener('animationend', () => setTimeout(close, 1500)); o.appendChild(b);
+    document.body.appendChild(o); try { b.focus(); } catch (e) { }
+    const fw = setInterval(() => { if (G.fx) G.fx.burst(P.x + (Math.random() - .5) * 14, 7 + Math.random() * 5, P.z + (Math.random() - .5) * 14, 40, [BI.C.gold, BI.C.pink, BI.C.blue, BI.C.green], 10, 1.6, 26, 6); }, 1400);
+    if (G.speak) G.speak(L('Das Fest der Welten! Danke fürs Spielen, du bist der Held aller Welten!', 'The Festival of Worlds! Thanks for playing, you are the hero of all worlds!'));
   };
   K.dbg = { S, advance, start, stage, ST, goalDone, residents };
   return K;

@@ -134,7 +134,7 @@
   const originalText=new WeakMap(),originalAttrs=new WeakMap();
   const attrs=['aria-label','title','placeholder'];
   const skipped=new Set(['SCRIPT','STYLE','NOSCRIPT','TEXTAREA','CODE','PRE','OPTION']);
-  let lang='de',busy=false;
+  let lang='de',busy=false,en2=!!window.BI_EN_EXTRA; /* en2: Wörterbuch Teil 2 (i18n-en.js) geladen? Wird nur bei Englisch geladen (index.html) */
   try{lang=localStorage.getItem(KEY)||((navigator.language||'de').toLowerCase().startsWith('de')?'de':'en')}catch(_){}
   if(!['de','en'].includes(lang))lang='de';
   function translate(s){if(lang==='de')return s;const match=/^(\s*)([\s\S]*?)(\s*)$/.exec(s);if(!match)return s;const t=match[2];if(en[t]!==undefined)return match[1]+en[t]+match[3];if(cache[t])return match[1]+cache[t]+match[3];if(t.endsWith('“ hast du schon geschafft! 🏆'))return match[1]+t.slice(0,-'“ hast du schon geschafft! 🏆'.length)+'” is already complete! 🏆'+match[3];enqueue(t);if(/^Kapitel \d+\/\d+ · /.test(t))return match[1]+t.replace(/^Kapitel /,'Chapter ').replace(/ · ([^(]+) /,(_,n)=>' · '+(en[n]||n)+' ')+match[3];const counter=t.match(/^(.*?)\s+(\d+\/\d+)$/);if(counter&&en[counter[1]])return match[1]+en[counter[1]]+' '+counter[2]+match[3];const suffixed=t.match(/^(.*?)(\s*[·•]\s*\d+)$/);if(suffixed&&en[suffixed[1]])return match[1]+en[suffixed[1]]+suffixed[2]+match[3];const qualified=t.match(/^(.*?)\s*(\(.*\))$/);if(qualified&&en[qualified[1]])return match[1]+en[qualified[1]]+' '+(en[qualified[2]]||qualified[2])+match[3];const emojiCounter=t.match(/^(\S+\s+)(.*?)\s+(\d+\/\d+)$/);if(emojiCounter&&en[emojiCounter[2]])return match[1]+emojiCounter[1]+en[emojiCounter[2]]+' '+emojiCounter[3]+match[3];const fr=fragment(t);if(fr)return match[1]+fr+match[3];return s}
@@ -295,6 +295,7 @@
   });
   function setLanguage(value){
     if(!['de','en'].includes(value))return;
+    if(value==='en'&&!en2&&!window.__biEnLoading){window.__biEnLoading=1;const sc=document.createElement('script');sc.src='js/i18n-en.js?v=gast1';sc.onload=sc.onerror=()=>{en2=true;if(lang==='en')setLanguage('en')};document.head.appendChild(sc)}
     lang=value;document.documentElement.lang=value;
     try{localStorage.setItem(KEY,value)}catch(_){}
     walk(document.body);
@@ -315,6 +316,7 @@
     observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:attrs});
     setLanguage(lang);
   }
+  Object.assign(en,{'Willkommen auf der Bunten Insel! Ich bin Rosi, die Bürgermeisterin. Hilf mir beim großen Insel-Fest! Sag erst mal Hallo – der Pfeil ⬇️ zeigt dir, zu wem.':"Welcome to Colorful Island! I'm Rosi, the mayor. Help me with the big Island Festival! First say hello – the arrow ⬇️ shows you who to talk to.",'⚙️ Speichern, Fernseher & mehr':'⚙️ Saving, TV & more','für Eltern':'for parents','Wochen-Held':'Weekly hero','Sammle in einer Ereignis-Woche 25 ⭐':'Collect 25 ⭐ in an event week','Abspann':'Credits','🗓️ Wochen-Ereignis':'🗓️ Weekly event','Jede Woche ein neues Thema. Sammle 25 ⭐ in dieser Woche für den Wochen-Pokal (+10 ⭐).':'A new theme every week. Collect 25 ⭐ this week for the weekly trophy (+10 ⭐).'}); /* Einstieg, Wochen-Ereignis, Abspann (2026-11) */
   window.BunteInselI18n={get language(){return lang},setLanguage,t:key=>translate(key),dictionary:en,addDictionary,looksGerman,get liveTranslationAvailable(){return !!(window.Translator||endpoint)},get configuredEndpoint(){return !!endpoint}};
   if(window.BI_EN_EXTRA){addDictionary(window.BI_EN_EXTRA);window.BI_EN_EXTRA=null}
   /* 3D-Schilder werden beim Laden gemalt: im Hauptmenü kurz neu laden, im Spiel einen Hinweis zeigen. */
