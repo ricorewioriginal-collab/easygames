@@ -1569,7 +1569,7 @@ function updateCamera(dt){
     else{const k=Math.min(1,o.t/o.d),e=k*k*(3-2*k),cp=Math.cos(camPitch),dist=camDist;_co.set(pl.x+Math.sin(camYaw)*cp*dist,pl.y+1.55+Math.sin(camPitch)*dist,pl.z+Math.cos(camYaw)*cp*dist);_cl.set(pl.x,pl.y+1.55,pl.z);
       camPos.set(...o.from.p).lerp(_co,e);camTarget.set(...o.from.l).lerp(_cl,e);camera.position.copy(camPos);camera.lookAt(camTarget);return}}
   const ty=pl.y+1.55;camTarget.lerp(_ct.set(pl.x,ty,pl.z),1-Math.exp(-14*dt));
-  const cpt=X.dun&&WLD&&WLD.hall?Math.max(camPitch,.74):camPitch,cp=Math.cos(cpt),dist=camDist+pl.mv*.5+(boss&&boss.awake&&!boss.dead?2.5:0)+(naut.on&&nAir()?9:0);   /* Luftschiff: Kamera weiter weg, sonst verdeckt der Ballon die Sicht */
+  const cpt=X.dun&&WLD&&WLD.hall?Math.max(camPitch,.74):camPitch,cp=Math.cos(cpt),dist=camDist+(WLD&&WLD.mw&&WLD.mw.camAdd?WLD.mw.camAdd(pl.x,pl.z):0)+pl.mv*.5+(boss&&boss.awake&&!boss.dead?2.5:0)+(naut.on&&nAir()?9:0);   /* Luftschiff: Kamera weiter weg, sonst verdeckt der Ballon die Sicht */
   _cp.set(camTarget.x+Math.sin(camYaw)*cp*dist,camTarget.y+Math.sin(cpt)*dist,camTarget.z+Math.cos(camYaw)*cp*dist);
   let kFree=X.dun?.22:1;for(let k=1;k>=.22;k-=.13){const px=lerp(camTarget.x,_cp.x,k),pz=lerp(camTarget.z,_cp.z,k),py=lerp(camTarget.y,_cp.y,k);let hit=false;if(py<hgt(px,pz)+6.5){for(let i=0;i<COL.length;i++){const c=COL[i],dx=px-c.x,dz=pz-c.z,m=c.r+.7;if(dx*dx+dz*dz<m*m){hit=true;break}}if(!hit&&!inH)for(let i=0;i<CAMCOL.length;i++){const c=CAMCOL[i],dx=px-c.x,dz=pz-c.z,m=c.r+.7;if(dx*dx+dz*dz<m*m){hit=true;break}}}if(!hit&&X.dun)for(const q of CAMQ)if(WLD.blocked(px+q[0],pz+q[1])){hit=true;break}if(!hit){kFree=k;break}}
   camK+=(kFree-camK)*(kFree<camK?1-Math.exp(-18*dt):1-Math.exp(-2.5*dt));
