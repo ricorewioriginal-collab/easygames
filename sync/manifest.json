@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3850d3672a55",
- "generated": "2026-11-15T20:41:14+01:00",
- "commit": "7b322a5ffab7dc92e348df420b557a2c2d4de071",
+ "version": "c343d9dd8c0b",
+ "generated": "2026-11-15T20:47:05+01:00",
+ "commit": "43c5ea711cae3ec908b1d50e4d267a0e96cdcd19",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2348,8 +2348,8 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/js/game.js",
-   "s": 72097,
-   "h": "59c285dbf234b1c89f20011283952e75076aaec3293a06e96cb95aace1c83f44"
+   "s": 73726,
+   "h": "7378f5f271ce855d8e43197a7b9e6534f12bb32f38ddbc9a7be53a2cb44af4a1"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/input.js",
@@ -2388,8 +2388,8 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/style.css",
-   "s": 29147,
-   "h": "74faf7bffb62fca17e75942061454caa84e4104e3e3b96d923740f7d6b27a247"
+   "s": 29409,
+   "h": "f084b8567b968cd51240613809f32bf633abc2dbb561ccd0c5dce49ec8ecfc1d"
   },
   {
    "p": "anmacha-kart/zotik-fox.js",
@@ -14129,7 +14129,7 @@
   {
    "p": "sync/catalog.json",
    "s": 245426,
-   "h": "fb9f95199abd675080ce4fcf03ba63bdac2706828386b0bf0f10d5c0d80ebbea"
+   "h": "0b071023a5ed9d458d990f738eea0060d204ca1d88cc9e6ae73cd99b2e6de960"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
