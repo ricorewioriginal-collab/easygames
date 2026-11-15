@@ -23,6 +23,13 @@
    ]
   },
   {
+   "t": "Ansicht von hinten",
+   "p": [
+    "In der Einrichtung unter „Ansicht“ oder im Pausemenü über „🎥 Ansicht“ schaltest du zwischen seitlich und von hinten um. Von hinten läuft die Kamera hinter dem Läufer mit wie in einem modernen Jump’n’Run, Ablauf und Wertung bleiben gleich.",
+    "Steuerung von hinten: Pfeil hoch, W, Stick oder Steuerkreuz nach oben = vorwärts, nach unten = zurück. Springen mit Leertaste oder A, Ducken mit Shift, C, B oder dem Ducken-Knopf, Greifen wie gewohnt."
+   ]
+  },
+  {
    "t": "Show oder Training einrichten",
    "list": [
     "Bei „Neue Show“ wählst du die Zahl der Läufer (1 bis 4). Beim Training wählst du einen der drei Parcours; darunter steht deine Bestzeit.",

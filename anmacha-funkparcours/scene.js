@@ -245,7 +245,7 @@ export class Arena {
   }
   setCourse(c) {
     this.course = c; const keep = new Set(Object.values(cache)); while (this.root.children.length) { const ch = this.root.children[0]; this.root.remove(ch); ch.traverse(o => { if (o.geometry && !keep.has(o.geometry)) o.geometry.dispose(); const ms = o.material ? [].concat(o.material) : []; ms.forEach(m => { if (!keep.has(m) && !m.userData.shared) { if (m.map && !Object.values(this.tx).includes(m.map) && m.map !== cache.puff) m.map.dispose(); m.dispose(); } }); }); }
-    this.dyn = []; this.heads = []; this.pots = []; this.buzzer = null; this.clock = null; this.ladders = []; this.signs = [];
+    this.dyn = []; this.heads = []; this.pots = []; this.buzzer = null; this.clock = null; this.ladders = []; this.signs = []; this.vv = [];
     const bs = new Beams(), post = C('postG', () => new T.CylinderGeometry(0.16, 0.22, 1, 12));
     const addPost = (grp, h, x = 0, z = 0) => { const p = new T.Mesh(post, this.M('steel')); p.scale.y = h; p.position.set(x, -0.64 - h / 2, z); grp.add(p); };
     c.o.forEach((o, i) => {
@@ -275,9 +275,10 @@ export class Arena {
         beam.position.y = -o.len; grp.position.set(o.px, o.py, 0); this.root.add(grp); this.dyn.push({ o, m: grp, beam, i });
       } else if (o.k === 'gate') {
         // Rutschtunnel: gepolstertes Tor, unten weich, nur geduckt passierbar
-        const g = new T.Group(), hgt = o.h - o.gap, blk = new T.Mesh(roundBox(o.w, hgt, 3.6, 0.18), this.M('padBlue')); blk.position.y = o.gap + hgt / 2; blk.castShadow = true; g.add(blk);
+        const g = new T.Group(), hgt = o.h - o.gap, blk = new T.Mesh(roundBox(o.w, hgt, 3.6, 0.18), this.M('padBlue').clone()); blk.position.y = o.gap + hgt / 2; blk.castShadow = true; g.add(blk);
         const lip = new T.Mesh(roundBox(o.w + 0.08, 0.3, 3.7, 0.14), this.M('pad')); lip.position.y = o.gap + 0.15; g.add(lip);
         const sg = new T.Mesh(C('tunnelSignG', () => new T.PlaneGeometry(o.w * 0.9, o.w * 0.17)), new T.MeshBasicMaterial({ map: C('tunnelSign', () => sign('Ducken!', 1024, 192, '#ffffff', '#45d4ff')), toneMapped: false })); sg.position.set(0, o.gap + hgt * 0.62, 1.82); g.add(sg);
+        this.vv.push(b => { blk.material.transparent = b; blk.material.opacity = b ? 0.42 : 1; blk.material.depthWrite = !b; blk.material.needsUpdate = true; sg.position.set(b ? -o.w / 2 - 0.03 : 0, o.gap + hgt * 0.62, b ? 0 : 1.82); sg.rotation.y = b ? -Math.PI / 2 : 0; });   // von hinten: Tor halb durchsichtig, Schild auf der Anlaufseite
         [-1.9, 1.9].forEach(z => { const p = new T.Mesh(C('gatePost', () => new T.BoxGeometry(0.22, 1, 0.22)), this.M('steel')); p.scale.y = o.gap; p.position.set(0, o.gap / 2, z); g.add(p); });
         g.position.set(o.x + o.w / 2, o.y, 0); this.root.add(g);
       } else if (o.k === 'roll') {
@@ -346,16 +347,24 @@ export class Arena {
         const back = new T.Mesh(new T.BoxGeometry(o.w + 0.4, hgt, 0.16), new T.MeshStandardMaterial({ map: tex, roughness: 0.6 })); back.position.set(o.w / 2, hgt / 2, -0.7); back.receiveShadow = true; g.add(back);
         [0, o.w].forEach(x => { const side = new T.Mesh(new T.BoxGeometry(0.14, hgt, 1.4), this.M('plate')); side.position.set(x, hgt / 2, -0.05); side.castShadow = true; g.add(side);
           const led = new T.Mesh(new T.BoxGeometry(0.03, hgt, 0.03), glow(PAL.cyan)); led.position.set(x, hgt / 2, 0.68); g.add(led); });
+        const sideV = g.children.slice(), bk = new T.Group(); [-0.78, 0.78].forEach(z => { const wl = new T.Mesh(new T.BoxGeometry(o.w + 0.4, hgt, 0.16), new T.MeshStandardMaterial({ map: tex, roughness: 0.6 })); wl.position.set(o.w / 2, hgt / 2, z); wl.receiveShadow = true; bk.add(wl);
+          const led = new T.Mesh(new T.BoxGeometry(o.w + 0.4, 0.03, 0.03), glow(PAL.cyan)); led.position.set(o.w / 2, hgt, z * 0.92); bk.add(led); }); g.add(bk);
+        this.vv.push(b => { sideV.forEach(m => m.visible = !b); bk.visible = b; });   // von hinten: Wände links und rechts vom Läufer wie im Original
         g.position.set(o.x, o.y0, 0); this.root.add(g); bs.truss([o.x - 0.3, -0.2, -1.2], [o.x - 0.3, o.top + 0.4, -1.2], 0.4); bs.truss([o.x + o.w + 0.3, -0.2, -1.2], [o.x + o.w + 0.3, o.top + 0.4, -1.2], 0.4);
       } else if (o.k === 'bars' && o.ledge) {
         // Klippenhänger: Griffleiste aus Holz an einer Stahlwand
         const len = o.x2 - o.x1, g = new T.Group(), board = new T.Mesh(roundBox(len, 0.12, 0.34, 0.03), this.M('wood')); board.position.set(0, 0.0, 0.08); board.castShadow = true; g.add(board);
         const back = new T.Mesh(C('ledgeBack' + len.toFixed(2), () => new T.BoxGeometry(len + 0.3, 2.4, 0.12)), this.M('plate')); back.position.set(0, 0.6, -0.22); back.receiveShadow = true; g.add(back);
         const edge = new T.Mesh(C('ledgeEdge' + len.toFixed(2), () => new T.BoxGeometry(len, 0.03, 0.03)), glow(PAL.amber)); edge.position.set(0, 0.07, 0.26); g.add(edge);
+        const sideV = [board, back, edge], bk = new T.Group(); [-0.3, 0.3].forEach(z => { const bd = new T.Mesh(roundBox(len, 0.12, 0.3, 0.03), this.M('wood')); bd.position.set(0, 0, z); bd.castShadow = true; bk.add(bd); const ed = new T.Mesh(new T.BoxGeometry(len, 0.03, 0.03), glow(PAL.amber)); ed.position.set(0, 0.07, z - Math.sign(z) * 0.16); bk.add(ed); }); g.add(bk);
+        this.vv.push(b => { sideV.forEach(m => m.visible = !b); bk.visible = b; });   // von hinten: zwei Griffleisten links und rechts
         g.position.set((o.x1 + o.x2) / 2, o.y - 0.05, 0); this.root.add(g); bs.truss([(o.x1 + o.x2) / 2, -0.2, -0.6], [(o.x1 + o.x2) / 2, o.y + 1.8, -0.6], 0.4);
       } else if (o.k === 'bars') {
         const len = o.x2 - o.x1, bar = new T.Mesh(new T.CylinderGeometry(0.06, 0.06, len, 16), this.M('chrome')); bar.rotation.z = Math.PI / 2; bar.position.set((o.x1 + o.x2) / 2, o.y, 0); bar.castShadow = true; this.root.add(bar);
-        for (let k = 0; k <= len; k += 1.5) { const rg = new T.Mesh(C('gripG', () => new T.CylinderGeometry(0.068, 0.068, 0.3, 14)), this.M('grip')); rg.rotation.z = Math.PI / 2; rg.position.set(o.x1 + k, o.y, 0); this.root.add(rg); }
+        const sideV = [bar], bk = new T.Group(); for (let k = 0; k <= len; k += 1.5) { const rg = new T.Mesh(C('gripG', () => new T.CylinderGeometry(0.068, 0.068, 0.3, 14)), this.M('grip')); rg.rotation.z = Math.PI / 2; rg.position.set(o.x1 + k, o.y, 0); this.root.add(rg); sideV.push(rg); }
+        [-0.62, 0.62].forEach(z => { const rl = new T.Mesh(new T.CylinderGeometry(0.06, 0.06, len, 12), this.M('chrome')); rl.rotation.z = Math.PI / 2; rl.position.set((o.x1 + o.x2) / 2, o.y + 0.04, z); bk.add(rl); });
+        for (let x = o.x1; x <= o.x2 + 0.01; x += 0.5) { const rg = new T.Mesh(C('mbRung', () => new T.CylinderGeometry(0.05, 0.05, 1.24, 12)), this.M(Math.round((x - o.x1) / 0.5) % 3 ? 'chrome' : 'grip')); rg.rotation.x = Math.PI / 2; rg.position.set(x, o.y, 0); rg.castShadow = true; bk.add(rg); }
+        this.root.add(bk); this.vv.push(b => { sideV.forEach(m => m.visible = !b); bk.visible = b; });   // von hinten: Hangelleiter mit Quersprossen
         [o.x1, o.x2].forEach(x => bs.truss([x, -0.2, -2.2], [x, o.y + 3.6, -2.2], 0.4)); bs.truss([o.x1 - 0.2, o.y + 3.6, -2.2], [o.x2 + 0.2, o.y + 3.6, -2.2], 0.4); for (let x = o.x1; x <= o.x2 + 0.01; x += 1.5) bs.add(x, o.y, 0, x, o.y + 3.4, -2.2, 0.035);
       } else if (o.k === 'ladder' && o.kind) {
         // Kletterstange (rot-weiß) bzw. dickes Kletterseil, oben am Querträger
@@ -371,7 +380,7 @@ export class Arena {
         [-0.9, 0.9].forEach(z => { const rail = new T.Mesh(C('ladRail' + top.toFixed(2), () => new T.BoxGeometry(0.34, top - base, 0.16)), this.M('wood')); rail.position.set(0, (top + base) / 2, z); rail.castShadow = true; g.add(rail);
           for (let k = 0; k < o.n; k++) { const hook = new T.Mesh(C('ladHook', () => new T.BoxGeometry(0.36, 0.06, 0.2)), this.M('steel')); hook.position.set(0.02, rungY(o, k) - 0.06, z); g.add(hook); } });
         const bar = new T.Mesh(C('ladBar', () => new T.CylinderGeometry(0.045, 0.045, 2.1, 14)), this.M('chrome')); bar.rotation.x = Math.PI / 2; bar.position.set(0, rungY(o, 0), 0); g.add(bar);
-        const sg = new T.Mesh(C('ladSignG', () => new T.PlaneGeometry(1.6, 0.3)), new T.MeshBasicMaterial({ map: C('ladSign', () => sign('Im Takt!', 1024, 192, '#ffffff', '#ffc93a')), toneMapped: false })); sg.position.set(0, top + 0.35, 0.9); g.add(sg);
+        const sg = new T.Mesh(C('ladSignG', () => new T.PlaneGeometry(1.6, 0.3)), new T.MeshBasicMaterial({ map: C('ladSign', () => sign('Im Takt!', 1024, 192, '#ffffff', '#ffc93a')), toneMapped: false })); sg.position.set(0, top + 0.35, 0.9); g.add(sg); this.vv.push(b => { sg.position.set(b ? -0.2 : 0, top + 0.35, b ? 0 : 0.9); sg.rotation.y = b ? -Math.PI / 2 : 0; });
         g.position.set(o.x, 0, -0.0); this.root.add(g); this.ladders.push({ o, bar, i, y: rungY(o, 0) });
       } else if (o.k === 'wall') this.buildWall(o, bs);
       else if (o.k === 'finish') this.buildFinish(o, bs);
@@ -386,7 +395,8 @@ export class Arena {
   }
   /** Ansicht: 'side' (seitlich wie bisher) oder 'back' (Kamera hinter dem Läufer, Schilder drehen sich zur Kamera) */
   setView(v) { this.view = v === 'back' ? 'back' : 'side'; this.applyView(); }
-  applyView() { const b = this.view === 'back'; for (const s of this.signs) { if (s.userData.z0 == null) s.userData.z0 = s.position.z; s.rotation.y = b ? -Math.PI / 2 : 0; s.position.z = b ? 0 : s.userData.z0; } }
+  applyView() { const b = this.view === 'back'; this.s.fog.near = b ? 16 : 24; this.s.fog.far = b ? 44 : 90; this.cam.far = b ? 46 : 220; this.cam.updateProjectionMatrix();   // von hinten: Sichtweite begrenzen (spart Zeichenaufrufe, läuft flüssig)
+    for (const s of this.signs) { if (s.userData.z0 == null) s.userData.z0 = s.position.z; s.rotation.y = b ? -Math.PI / 2 : 0; s.position.z = b ? 0 : s.userData.z0; } for (const f of this.vv || []) f(b); }
   /** Lichtring auf dem Wasser unter einer Plattform */
   ripple(x) { const rg = new T.Mesh(C('ripG', () => new T.RingGeometry(0.42, 0.62, 32)), glow(0xbfe6ff, { transparent: true, opacity: 0.35, side: T.DoubleSide, depthWrite: false })); rg.rotation.x = -Math.PI / 2; rg.position.set(x, 0.02, 0); this.root.add(rg); this.heads.push({ ring: rg, ph: x }); }
   gantry(bs, x, name) {
@@ -447,7 +457,7 @@ export class Arena {
     if (sim) { if (sim.dead) st = 'fall'; else if (sim.finished) st = 'win'; else if (sim.ladder || sim.chim) st = 'ladder'; else if (sim.glide) st = 'hang'; else if (sim.wall && sim.wall.m === 'hang') st = 'ledge'; else if (sim.wall && sim.wall.m === 'pull') st = 'pull'; else if (sim.hang) st = sim.c.o[sim.hang.bar].ledge ? 'ledge' : 'hang'; else if (sim.rope) st = 'hang'; else if (sim.wall) st = 'wall'; else if (!sim.onGround) st = 'air'; else if (sim.duck) st = sim.slide ? 'slide' : 'duck'; else if (Math.abs(vx) < 0.3) st = 'idle'; }
     else st = Math.abs(vy) > 1.2 ? 'air' : Math.abs(vx) < 0.3 ? 'idle' : 'run';
     if (sim && sim.stun > 0 && st !== 'fall') st = 'stun';
-    const back = this.view === 'back', yaw = st === 'win' ? (back ? -1.4 : 0.25) : st === 'ladder' || st === 'ledge' ? (back ? 0.6 : 0) : face > 0 ? (back ? 1.5 : 1.2) : back ? -1.5 : -1.2; r.yaw = r.yaw == null ? yaw : r.yaw + (yaw - r.yaw) * Math.min(1, dt * 14);   // weich umdrehen
+    const back = this.view === 'back', yaw = st === 'win' ? (back ? -1.4 : 0.25) : st === 'ladder' || st === 'ledge' ? (back ? Math.PI / 2 : 0) : face > 0 ? (back ? 1.5 : 1.2) : back ? -1.5 : -1.2; r.yaw = r.yaw == null ? yaw : r.yaw + (yaw - r.yaw) * Math.min(1, dt * 14);   // weich umdrehen
     r.body.rotation.set(0, r.yaw, 0);
     const spd = Math.abs(vx), f = r.fig;
     if (f) {
@@ -518,6 +528,8 @@ export class Arena {
     const back = this.view === 'back', port = this.cam.aspect < 1;
     if (back) { this.cam.position.set(this.cx - (port ? 7.2 : 5.6) - 3.0 + sx, this.cy + (port ? 2.6 : 1.9) + sy, 1.1); this.cam.lookAt(this.cx + 6.5 - 3.0, this.cy - 0.3, -0.2); }   // von hinten: Kamera folgt dem Läufer, Blick in den Parcours
     else { this.cam.position.set(this.cx - 1.4 + sx, this.cy + 2.9 + sy, this.dist); this.cam.lookAt(this.cx, this.cy - 0.1, 0); }
+    if (back) for (const g of this.signs) g.visible = g.position.x - this.cam.position.x > 4.5 || g.position.y < this.cam.position.y - 3;   // Schilder kurz vor der Kamera ausblenden statt durchzufahren
+    else if (this.signs.length && !this.signs[0].visible) this.signs.forEach(g => g.visible = true);
     const fov = this.baseFov + (back ? 10 : 0) + Math.min(5, Math.abs(vx) * 0.6); if (Math.abs(fov - this.cam.fov) > 0.05) { this.cam.fov += (fov - this.cam.fov) * Math.min(1, dt * 3); this.cam.updateProjectionMatrix(); }
     this.sun.position.set(this.cx + 8, 15, 11); this.sun.target.position.set(this.cx, 0, 0); this.rim.position.set(this.cx - 6, 8, -10); this.rim.target.position.set(this.cx, 0, 0); this.rim.target.updateMatrixWorld(); this.under.position.set(this.cx + 1, -0.3, 0.5);
     this.wu.cx.value = this.cx; this.water.position.x = this.cx + 20; if (this.led) this.led.offset.x += dt * 0.05; if (this.ad) this.ad.offset.x += dt * 0.03;

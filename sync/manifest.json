@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "646eddc1fafc",
- "generated": "2026-11-15T14:44:50+00:00",
- "commit": "c2705a97d29094319994de92cc2a06bda718ee06",
+ "version": "59f56cbf40ad",
+ "generated": "2026-11-15T14:45:18+00:00",
+ "commit": "f3476aad85afac9808907b9b122f0243781dfd6e",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1593,8 +1593,8 @@
   },
   {
    "p": "anmacha-funkparcours/index.html",
-   "s": 13956,
-   "h": "944a881fe8983d6c966859ef900a787cd7a1d77a9e5859e2a287243e999a6649"
+   "s": 13980,
+   "h": "c6d44a821b6e515226f031b044796263a5867a7b0537efd2cd3af62c82ae7ba7"
   },
   {
    "p": "anmacha-funkparcours/logo.png",
@@ -1683,8 +1683,8 @@
   },
   {
    "p": "anmacha-funkparcours/main.js",
-   "s": 34486,
-   "h": "9734705160bae771f7fb4d5e955e7ba723d8f5c6540310c64e244f179c5c65ae"
+   "s": 34830,
+   "h": "5d43b87af9f324732c37f68556b433d430cee73685ed017456bc652264e18c33"
   },
   {
    "p": "anmacha-funkparcours/manifest.webmanifest",
@@ -1693,8 +1693,8 @@
   },
   {
    "p": "anmacha-funkparcours/menu.js",
-   "s": 9285,
-   "h": "fc5915a561abb1141b8a27633aaed0e038af9569f72bb817d65dd646d02ce1cb"
+   "s": 9506,
+   "h": "b56228fcea2a088b04ecc6bafd5ad9cd1479489511d627264ec0b6812a2a4290"
   },
   {
    "p": "anmacha-funkparcours/pair.js",
@@ -1703,13 +1703,13 @@
   },
   {
    "p": "anmacha-funkparcours/scene.js",
-   "s": 72203,
-   "h": "48360da6d964719141b5eeb7a908b9ea18e2c0e645e4d4845693cf9d01c4b8e4"
+   "s": 75082,
+   "h": "ef0a081270941b71287e5f0df7f23ee14ead66ee12cadbb85ece5abea82e8591"
   },
   {
    "p": "anmacha-funkparcours/stick.js",
-   "s": 2638,
-   "h": "5fd0433e208e33eef832f3fe2037a337903333f7771917c2f6ab45811f2a89ee"
+   "s": 2825,
+   "h": "0b5924bdf999bab7b2177209577628d1987025a2729280fdb8aa51c9bc9877e6"
   },
   {
    "p": "anmacha-funkparcours/style.css",
@@ -10338,8 +10338,8 @@
   },
   {
    "p": "guides/anmacha-funkparcours.json",
-   "s": 21107,
-   "h": "09f5a7c06cf3470f1dd96d9bd309acd0357337528f64b86b02c5cbe8de660f38"
+   "s": 21636,
+   "h": "73b90d7219c5583879a8ac5e1fb444aa18a356645dde1e00cb6fbb82d80aec96"
   },
   {
    "p": "guides/anmacha-gesucht.json",
@@ -13804,7 +13804,7 @@
   {
    "p": "sync/catalog.json",
    "s": 250403,
-   "h": "6cdca1b516dcf053f91ac3da4a437df9074c936afbcf3bc78ab129f2399452c8"
+   "h": "ecf93835202be304200fa34db0599d2db9e17b09d18d9235488107e1377e416c"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

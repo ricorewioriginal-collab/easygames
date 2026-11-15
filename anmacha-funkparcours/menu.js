@@ -74,7 +74,8 @@ export function createUI({ SFX, Audio_, touch, onMenu, panel, onPause }) {
     for (const gp of ps) {
       const bt = i => !!(gp.buttons[i] && gp.buttons[i].pressed), ax = gp.axes[0] || 0, ay = gp.axes[1] || 0;
       st.up |= bt(12) || ay < -0.6; st.down |= bt(13) || ay > 0.6; st.left |= bt(14) || ax < -0.5; st.right |= bt(15) || ax > 0.5; st.ok |= bt(0); st.back |= bt(1) || bt(8); st.start |= bt(9); st.any |= gp.buttons.some(b => b.pressed);
-      if (bt(14) || ax < -0.3) m |= 1; if (bt(15) || ax > 0.3) m |= 2; if (bt(0) || bt(3)) m |= 4; if (bt(1) || bt(13) || ay > 0.55) m |= 8; if (bt(2) || bt(5) || bt(7)) m |= 16;   // X, RB, RT = Greifen
+      const back = document.documentElement.classList.contains('fp-back'), f = back ? ax - ay : ax;   // von hinten: Stick/Steuerkreuz hoch = vorwärts, runter = zurück
+      if (bt(14) || f < -0.3 || (back && bt(13))) m |= 1; if (bt(15) || f > 0.3 || (back && bt(12))) m |= 2; if (bt(0) || bt(3)) m |= 4; if (bt(1) || (!back && (bt(13) || ay > 0.55))) m |= 8; if (bt(2) || bt(5) || bt(7)) m |= 16;   // X, RB, RT = Greifen
     }
     if (st.any && !prev.any) document.documentElement.classList.add('fp-pad');
     if (!started) { if (st.any && !prev.any && onStartCb) start(); prev = st; return 0; }
