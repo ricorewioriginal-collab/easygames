@@ -184,7 +184,7 @@ body.rbat #dNext,body.rbat #dSkip{display:none}
       const S = C.S(), L = live(), again = () => ask(m).then(res), o = [];
       const tgt = fn => L.length === 1 ? fn(L[0]) : say([[m.n, 'Welches Ziel?']], null, [...L.map(f => ({ t: tagF(f), fn: () => fn(f), h: () => showTI(f) })), { t: '↩ Zurück', fn: again }]);
       o.push({ t: '⚔️ Angriff', fn: () => tgt(f => res({ k: 'atk', f })) });
-      if (m.mag) o.push({ t: '✨ Magie', fn: () => say([['Zotik', 'Welcher Zauber? (MP ' + Math.floor(S.mp) + ')']], null, [...SPELLS.map(sp => ({ t: sp.t + ' · ' + sp.mp + ' MP', fn: () => S.mp < sp.mp ? (toast('Nicht genug MP'), again()) : sp.all || sp.heal ? res({ k: 'spell', sp }) : tgt(f => res({ k: 'spell', sp, f })) })), { t: '↩ Zurück', fn: again }]) });
+      if (m.mag) o.push({ t: '✨ Magie', fn: () => say([['Zotik', 'Welcher Zauber? (MP ' + Math.floor(S.mp) + ')']], null, [...SPELLS.map(sp => ({ t: sp.t + ' · ' + sp.mp + ' MP', d: sp.heal ? 'Heilt die ganze Gruppe.' : (sp.all ? 'Trifft alle Gegner. ' : '') + (EL[sp.id] ? 'Wirkt stark gegen Gegner mit Schwäche ' + EL[sp.id][0] + ' ' + EL[sp.id][2] + '.' : ''), fn: () => S.mp < sp.mp ? (toast('Nicht genug MP'), again()) : sp.all || sp.heal ? res({ k: 'spell', sp }) : tgt(f => res({ k: 'spell', sp, f })) })), { t: '↩ Zurück', fn: again }]) });
       const [an] = art(m.id); o.push({ t: an + (m.ip >= 40 ? ' ⭐' : ' · IP ' + m.ip + '/40'), fn: () => m.ip >= 40 ? res({ k: 'art' }) : (toast('IP füllen sich durch Treffer und Abwehr'), again()) });
       const sw = up().filter(p => p !== m && p.ct >= 50); if (sw.length) o.splice(1, 0, { t: '🔁 Wechsel · ' + sw.map(p => p.n).join(', '), d: 'Ein anderer Gefährte in der COM-Zone übernimmt den Zug.', fn: () => sw.length === 1 ? res({ k: 'swap', to: sw[0] }) : say([[m.n, 'Wer übernimmt?']], null, [...sw.map(p => ({ t: p.n + ' · Lv ' + (C.clv ? C.clv(p.id) : ''), fn: () => res({ k: 'swap', to: p }) })), { t: '↩ Zurück', fn: again }]) });
       const co = up().length > 1, ob = (k, ok, why, fn) => o.push({ t: BEI[k].em + ' ' + BEI[k].n + (ok ? why : ' · ' + bLock(k)), fn: ok ? fn : () => (toast('Wird mit dem Kernsplitter ' + BEI[k].rb + ' der Geschichte freigeschaltet'), again()) });
@@ -197,7 +197,13 @@ body.rbat #dNext,body.rbat #dSkip{display:none}
       o.push({ t: '🛡️ Abwehr', fn: () => res({ k: 'guard' }) }, { t: '⏩ Auto', fn: () => { B.auto = 1; toast('⏩ Auto-Kampf bis zum Ende'); res(autoCmd(m)); } });
       if (!B.boss) o.push({ t: B.sea ? '🏃 Davonsegeln' : '🏃 Flucht', fn: () => res({ k: 'flee' }) });
       o.forEach(x => { if (!x.d) { const r = DES.find(z => z[0].test(x.t)); if (r) x.d = r[1]; } }); showTI(null);
-      say([[m.n, m.n + ' ist am Zug.']], null, o);
+      /* Hauptliste: Angriff, Magie ▸, Fähigkeiten ▸, Wechsel, Taktik, Items, Abwehr, Auto, Flucht */
+      if (C.cycleCombat) o.push({ t: '⚙️ Kampfsystem wechseln', d: 'Schnellaktion: stellt das Kampfsystem um (Auto, Echtzeit, Rundenbasiert). Gilt ab dem nächsten Kampf.', fn: () => { C.cycleCombat(); again(); } });
+      const by = re => o.find(x => re.test(x.t)), main = ['^⚔️', '✨ Magie', null, '🔁', 'Taktik', '🧪', '🛡️', '⏩', '🏃', '⚙️ Kampfsystem'].map(r => r === null ? 'F' : by(new RegExp(r))).filter(Boolean);
+      const abil = o.filter(x => !main.includes(x));
+      if (abil.length) { const e = { t: '🌠 Fähigkeiten ▸', d: 'Kunst, Teamangriff, Zielfeuer, Beschwörung und Attraktion.', fn: () => say([[m.n, 'Fähigkeiten']], null, [...abil, { t: '↩ Zurück', fn: again }]) }; main.splice(main.indexOf('F'), 1, e); } else main.splice(main.indexOf('F'), 1);
+      const mg = main.find(x => /Magie/.test(x.t)); if (mg) mg.t = '✨ Magie ▸';
+      say([[m.n, m.n + ' ist am Zug.']], null, main);
     });
   }
   function pickFocus(m, L, again, res, got) {
