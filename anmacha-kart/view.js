@@ -676,7 +676,7 @@ const View = (() => {
   function zotikSlot(slot) {
     const put = () => { try { slot.add(ZotikFox.driver()); } catch (e) {} };
     if (window.ZotikFox) return put();
-    ZF.pend.push(put); if (!ZF.wait) ZF.wait = new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'zotik-fox.js?v=20261115-wt8'; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); }).then(() => { ZF.pend.splice(0).forEach(f => f()); }, () => { ZF.wait = null; });
+    ZF.pend.push(put); if (!ZF.wait) ZF.wait = new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'zotik-fox.js?v=20261115-wt9'; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); }).then(() => { ZF.pend.splice(0).forEach(f => f()); }, () => { ZF.wait = null; });
     return ZF.wait;
   }
   function kkSlot(slot, id, C) { if (KK.cache[id]) kkAttach(slot, id, C); else { KK.pend.push({ slot, id, C }); kkLoad(id).catch(() => {}); } }
@@ -830,7 +830,7 @@ const View = (() => {
     const sp = new T.Points(new T.BufferGeometry().setAttribute('position', new T.BufferAttribute(new Float32Array(30), 3)), new T.PointsMaterial({ size: 0.75, color: 0xffd24a, map: shared.dot, transparent: true, depthWrite: false, blending: T.AdditiveBlending })); sp.frustumCulled = false; sp.visible = false; g.add(sp);
     const blob = new T.Mesh(new T.CircleGeometry(1.7, 14), bas(0x000000, { transparent: true, opacity: 0.35 })); blob.rotation.x = -Math.PI / 2; blob.position.y = 0.05; g.add(blob);
     const stars = new T.Group(); for (let i = 0; i < 3; i++) { const s = new T.Mesh(shared.sphere, bas(0xffe14a)); s.scale.setScalar(0.2); stars.add(s); } stars.visible = false; g.add(stars);
-    const trailB = new T.Group(), trailR = new T.Group(); for (let i = 0; i < 3; i++) { const b = bananaMesh(); b.visible = false; trailB.add(b); const r = rockMesh(0.7); r.visible = false; trailR.add(r); } g.add(trailB); g.add(trailR);
+    const trailB = new T.Group(), trailR = new T.Group(); for (let i = 0; i < 3; i++) { const b = bananaMesh(); b.scale.setScalar(0.4); b.visible = false; trailB.add(b); const r = rockMesh(0.7); r.visible = false; trailR.add(r); } g.add(trailB); g.add(trailR);
     g.scale.setScalar(1.1); scene.add(g); return { g, body, wheels, flame, shield, sp, stars, trailB, trailR, k, head, pit: 0, lvf: 0 };
   }
   // Nur für Tests/Vorschau: alle Figuren/Karts nebeneinander
@@ -897,7 +897,7 @@ const View = (() => {
       m.stars.visible = k.spinT > 0; if (m.stars.visible) m.stars.children.forEach((s, j) => { const a = time * 7 + j * 2.09; s.position.set(Math.cos(a) * 1.3, 3.9 + Math.sin(time * 9 + j) * 0.2, Math.sin(a) * 1.3); });
       // mitgeführte Items: Bananen hinten, Steine kreisen
       const nB = k.item && k.item.startsWith('banana') ? Math.max(1, k.itemN) : 0, nR = k.item && k.item.startsWith('rock') ? Math.max(1, k.itemN) : 0;
-      m.trailB.children.forEach((b, j) => { b.visible = j < nB; b.position.set(0, 0.5 + Math.sin(time * 5 + j) * 0.08, -3.5 - j * 1.1); b.rotation.y = time * 2 + j; }); m.trailR.children.forEach((r, j) => { r.visible = j < nR; const a = time * 4 + j * (PI2 / Math.max(1, nR)); r.position.set(Math.cos(a) * 2.5, 1.5, Math.sin(a) * 2.5 - 0.3); r.rotation.set(time * 3, time * 2, 0); });
+      m.trailB.children.forEach((b, j) => { b.visible = j < nB; b.position.set(0, 0.25 + Math.sin(time * 5 + j) * 0.05, -3.1 - j * 0.85); b.rotation.y = time * 2 + j; }); m.trailR.children.forEach((r, j) => { r.visible = j < nR; const a = time * 4 + j * (PI2 / Math.max(1, nR)); r.position.set(Math.cos(a) * 2.5, 1.5, Math.sin(a) * 2.5 - 0.3); r.rotation.set(time * 3, time * 2, 0); });
       if (k.boostT > 0 && dt > 0) { const sn = Math.sin(k.th), cs = Math.cos(k.th), side = Math.random() < 0.5 ? -0.55 : 0.55; burst(k.x - sn * 2.6 + cs * side, 0.75, k.z - cs * 2.6 - sn * side, BCOL[(Math.random() * 3) | 0], 1, 2.2, 0.8); }
     });
     if (coinM) { S.coins.forEach((c, i) => { const on = c.cd <= 0; cQ.setFromAxisAngle(cY, time * 3 + i * 0.4); cM4.compose(cV.set(c.x, 1.25 + Math.sin(time * 3 + i) * 0.12 + (tr.hilly ? tr.height(c.f) : 0), c.z), cQ, cS.setScalar(on ? 1 : 0)); coinM.setMatrixAt(i, cM4); }); coinM.instanceMatrix.needsUpdate = true; }
@@ -930,7 +930,7 @@ const View = (() => {
   }
   function updateCam(c, S, dt) {
     const k = c.k, p = ip[c.ki] || k, tgt = p.th + (k.drift ? -k.drift * 0.28 : 0); c.ang += wrap(tgt - c.ang) * Math.min(1, dt * (k.spinT > 0 ? 1.5 : 5.2));
-    const af = clamp(1 / Math.sqrt(c.cam.aspect || 1.7), 1, 1.55), dist = (12.4 + clamp(k.vf / 36, 0, 1.4) * 1.8) * af, wx = p.x - Math.sin(c.ang) * dist, wz = p.z - Math.cos(c.ang) * dist, kk = 1 - Math.exp(-dt * 10);
+    const af = clamp(1 / Math.sqrt(c.cam.aspect || 1.7), 1, 1.22), dist = (12.4 + clamp(k.vf / 36, 0, 1.4) * 1.8) * af, wx = p.x - Math.sin(c.ang) * dist, wz = p.z - Math.cos(c.ang) * dist, kk = 1 - Math.exp(-dt * 10);
     c.pos.x += (wx - c.pos.x) * kk; c.pos.z += (wz - c.pos.z) * kk; c.pos.y += ((5.0 * (0.9 + 0.1 * af) + S.tr.height(k.f) + kLift(k) * 0.6) - c.pos.y) * kk; c.cam.position.copy(c.pos);
     if (k.spinT > c.ls + 0.05) c.shake = 0.5; c.ls = k.spinT; if (c.shake > 0 && dt > 0) { c.shake = Math.max(0, c.shake - dt * 1.4); c.cam.position.x += (Math.random() - 0.5) * c.shake; c.cam.position.y += (Math.random() - 0.5) * c.shake * 0.6; }
     if (c.kick > 0) { c.fov += c.kick; c.kick = 0; } const tf = 64 + clamp(k.vf / 36, 0, 1.5) * 8 + (k.boostT > 0 ? 9 : 0); c.fov += (tf - c.fov) * Math.min(1, dt * 4); c.cam.fov = c.fov;

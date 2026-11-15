@@ -265,7 +265,7 @@ function initHost() {
 
   // ------------------------------------------------------------------ Start: Solo / Mehrspieler
   LD.start(); LD.creep(0.4);
-  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt11'); }).then(() => LD.add(0.05))]).then(async () => {
+  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt12'); }).then(() => LD.add(0.05))]).then(async () => {
     View.init($('cv'), logos); LD.add(0.05, 'Rennstrecke wird gebaut …'); await nextPaint();
     curTrackIdx = save.track; View.setTrack(getTrack(save.track)); View.resize(innerWidth, innerHeight, 1); LD.add(0.1, 'Shader werden vorgewärmt …'); await nextPaint();
     View.warmup(); ready = true; $('loadInfo').textContent = `${TR.length} Strecken · ${KARTS.length} Karts · ${CHARS.length} Figuren · ${logos.length} Sender-Logos`; renderMenu();
@@ -378,7 +378,7 @@ function initHost() {
     R.vis = humans.map((_, i) => i).filter(i => !(humans[i].conn && humans[i].view)); if (!R.vis.length) R.vis = [0]; R.rid = ++raceNo; R.snapAt = 0; R.fxq = [];
     nVp = Math.min(4, R.vis.length); $('tbar').classList.toggle('mid', nVp > 1); View.resize(innerWidth, innerHeight, nVp); View.setupRace(S, R.vis.slice(0, 4)); buildHud(); buildMap();
     humans.forEach(p => { if (p.conn && p.view) sendRace(p); });
-    document.body.classList.add('racing'); $('menu').hidden = true; $('res').hidden = true; $('hud').hidden = false; $('tbar').hidden = false; AUD.bed('race');
+    document.body.classList.add('racing'); themeCol(R && R.tr && R.tr.def.sky ? R.tr.def.sky[0] : null); $('menu').hidden = true; $('res').hidden = true; $('hud').hidden = false; $('tbar').hidden = false; AUD.bed('race');
     const raceLoad = $('raceLoad'); raceLoad.hidden = false; raceLoad.querySelector('.race-load-title').textContent = TR[tIdx].name; raceLoad.querySelector('.race-load-sub').textContent = GP.free ? 'FREIES FAHREN' : GP.gp ? Track.CUPS[save.cup].name : 'ARCADE-RENNEN'; raceLoad.querySelector('.race-load-tip').textContent = ['Drifte durch Kurven und löse einen Mini-Turbo aus.','Nutze Boostfelder und Windschatten zum Überholen.','Meide Hindernisse – wähle deine Ideallinie.'][tIdx % 3]; R.introLoading = true; const t0 = performance.now(); View.prepare(racers.map(r => r.char), 6000).then(() => { if (!R || R.S !== S) return; R.introTimer = setTimeout(() => { if (R && R.S === S) { R.introLoading = false; raceLoad.hidden = true; push('grid'); } }, Math.max(0, 1350 - (performance.now() - t0))); }); paused = false;
   }
   function banner(t, sub, ms, cls) { const b = $('banner'); b.innerHTML = esc(t) + (sub ? '<small>' + esc(sub) + '</small>' : ''); b.className = 'pop'; b.style.color = cls || '#fff'; b.hidden = false; void b.offsetWidth; clearTimeout(banner.k); if (ms) banner.k = setTimeout(() => { b.hidden = true; }, ms); }
@@ -464,7 +464,7 @@ function initHost() {
     });
   }
   function finishRace() {
-    if (R.ended) return; R.ended = true; AUD.engine(false); AUD.bed('off'); document.body.classList.remove('racing'); $('hud').hidden = true; $('tbar').hidden = true; $('banner').hidden = true;
+    if (R.ended) return; R.ended = true; AUD.engine(false); AUD.bed('off'); document.body.classList.remove('racing'); themeCol(null); $('hud').hidden = true; $('tbar').hidden = true; $('banner').hidden = true;
     const res = Sim.results(R.S); GP.race++; const finalGp = GP.gp && GP.race >= GP.order.length;
     res.forEach(r => { GP.pts[r.k.k] += GP_PTS[r.pos - 1] || 0; });
     const humanBest = R.humans.length === 1 ? res.find(r => r.k.k === 0) : null;
@@ -479,7 +479,9 @@ function initHost() {
   }
   $('bNext').onclick = () => { $('res').hidden = true; const wasGp = GP.gp, fin = R.finalGp; if (wasGp && !fin) startRace(); else { players = players.filter(p => !p.gone); if (R.humans.length === 1 && !R.humans[0].conn && !R.humans[0].kbp) { players[0] = R.humans[0]; } beginSeries(); } };
   $('bMenu').onclick = toMenu;
-  function toMenu() { if (R && R.introTimer) clearTimeout(R.introTimer); $('raceLoad').hidden = true; R = null; $('res').hidden = true; $('pause').hidden = true; $('hud').hidden = true; $('tbar').hidden = true; $('banner').hidden = true; document.body.classList.remove('racing'); AUD.engine(false); AUD.bed('menu'); showView('title'); nVp = 1; View.resize(innerWidth, innerHeight, 1); players.forEach(p => { if (p.conn) send(p.conn, { t: 'st', ph: 'lobby' }); }); players = players.filter(p => p.conn && !p.gone); if (TV) openLobby(); }
+  // Statusleiste am Handy in Himmelsfarbe statt schwarzem Balken über dem Rennbild
+  function themeCol(c) { const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = c || '#05060f'; }
+  function toMenu() { themeCol(null); if (R && R.introTimer) clearTimeout(R.introTimer); $('raceLoad').hidden = true; R = null; $('res').hidden = true; $('pause').hidden = true; $('hud').hidden = true; $('tbar').hidden = true; $('banner').hidden = true; document.body.classList.remove('racing'); AUD.engine(false); AUD.bed('menu'); showView('title'); nVp = 1; View.resize(innerWidth, innerHeight, 1); players.forEach(p => { if (p.conn) send(p.conn, { t: 'st', ph: 'lobby' }); }); players = players.filter(p => p.conn && !p.gone); if (TV) openLobby(); }
   $('bPause').onclick = () => { if (R && !R.ended) { paused = true; R.dirty = true; $('pause').hidden = false; } }; $('bResume').onclick = () => { paused = false; $('pause').hidden = true; }; $('bQuit').onclick = toMenu;
   // Controller: im Rennen liest das Spiel den Pad selbst (Gas, Lenken …) – die Menü-Steuerung von gamepad.js ruht dann; Start = Pause
   let padStart = false; setInterval(() => { const racing = !!(R && !R.ended && !paused); const typing = !racing && document.activeElement && document.activeElement.tagName === 'INPUT'; if (window.EasyGamesPad && EasyGamesPad.enabled() !== typing) EasyGamesPad.enabled(typing); const st = Pads.list().some(p => p.buttons && p.buttons[9] && p.buttons[9].pressed); if (st && !padStart && racing) $('bPause').click(); padStart = st; }, 80);
