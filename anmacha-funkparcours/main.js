@@ -87,8 +87,9 @@ if (JOIN) {
 
   // ------------------------------------------------------------ Eingabe
   const KEYMAP = { ArrowLeft: 1, KeyA: 1, ArrowRight: 2, KeyD: 2, Space: 4, ArrowUp: 4, KeyW: 4, ArrowDown: 8, KeyS: 8, ShiftLeft: 8, ShiftRight: 8, ControlLeft: 8, KeyC: 8, KeyE: 16, KeyF: 16, KeyX: 16, KeyK: 16, Numpad0: 16 };   // 1 links, 2 rechts, 4 Sprung, 8 Ducken/Rutschen, 16 Greifen
-  addEventListener('keydown', e => { if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return; const b = KEYMAP[e.code]; if (b) { keys |= b; if (G && G.phase !== 'ready') e.preventDefault(); } if ((e.code === 'Space' || e.code === 'Enter') && pending && pending.ids.includes('bReady')) { e.preventDefault(); fire('bReady'); } });
-  addEventListener('keyup', e => { const b = KEYMAP[e.code]; if (b) keys &= ~b; });
+  const BACKMAP = { ArrowUp: 2, KeyW: 2, ArrowDown: 1, KeyS: 1 }, keyBit = c => (view === 'back' && BACKMAP[c]) || KEYMAP[c];   // von hinten: hoch = vorwärts, runter = zurück
+  addEventListener('keydown', e => { if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return; const b = keyBit(e.code); if (b) { keys |= b; if (G && G.phase !== 'ready') e.preventDefault(); } if ((e.code === 'Space' || e.code === 'Enter') && pending && pending.ids.includes('bReady')) { e.preventDefault(); fire('bReady'); } });
+  addEventListener('keyup', e => { const b = keyBit(e.code) | KEYMAP[e.code]; if (b) keys &= ~b; });
   addEventListener('blur', () => { keys = 0; touchM = 0; });
   // Touch: Stick links (Bits 1/2, nach unten 8), rechts Springen (Bit 4) und Ducken (Bit 8), dazu Pause und Ton
   const stk = stick($('stick'), m => { stickM = m; }), jumpUp = hold(document.querySelector('#pad [data-k="j"]'), () => { touchM |= 4; }, () => { touchM &= ~4; }), duckUp = hold(document.querySelector('#pad [data-k="d"]'), () => { touchM |= 8; }, () => { touchM &= ~8; }), grabBtn = document.querySelector('#pad [data-k="g"]'), grabUp = hold(grabBtn, () => { touchM |= 16; }, () => { touchM &= ~16; });
@@ -107,7 +108,7 @@ if (JOIN) {
   $('bPSnd').onclick = () => toggleSnd();
   // Ansicht: seitlich (klassisch) oder von hinten (wie ein Kandidat auf der Strecke); gleiche Steuerung und Physik
   let view = store.get('fpView', 'side'); const viewUI = () => { $('bPView').textContent = view === 'back' ? '🎥 Ansicht: von hinten' : '🎥 Ansicht: seitlich'; $('sgView').querySelectorAll('button').forEach(b => b.classList.toggle('on', (+b.dataset.v === 1) === (view === 'back'))); };
-  const setView = v => { view = v; store.set('fpView', v); arena.setView(v); viewUI(); };
+  const setView = v => { view = v; store.set('fpView', v); arena.setView(v); viewUI(); document.documentElement.classList.toggle('fp-back', v === 'back'); keys = 0; };
   $('bPView').onclick = () => { SFX.click(); setView(view === 'back' ? 'side' : 'back'); };
   $('bPVoice').onclick = () => { SFX.click(); commentator.setOn(!commentator.on); voiceUI(); };
   $('bQuit').onclick = () => { SFX.click(); abort(); show('menu'); ui.menu.show('show'); };
@@ -269,7 +270,7 @@ if (JOIN) {
     if (id === 'sound') return `<h3>Ton</h3><p>Musik und Effekte sind gerade <b>${snd ? 'an' : 'aus'}</b>.</p>${go('sound', snd ? 'Ton aus' : 'Ton an')}`;
     return `<h3>Alle Spiele</h3><p>Zurück zur Spielesammlung.</p>${go('home', 'Zur Sammlung')}`;
   }
-  loadScene(0); arena.setView(view); viewUI(); show('menu');
+  loadScene(0); arena.setView(view); viewUI(); document.documentElement.classList.toggle('fp-back', view === 'back'); show('menu');
   $('bPairSetup').onclick = () => { SFX.click(); pair.open(); };
   $('bSetBack').onclick = () => { SFX.click(); show('menu'); };
   $('bStart').onclick = () => { Audio_.unlock(); SFX.click(); start(S.mode); };
@@ -284,6 +285,6 @@ if (JOIN) {
   $('bSnd').onclick = toggleSnd; $('aSnd').onclick = toggleSnd; $('aMenu').onclick = () => pause(true);
   addEventListener('keydown', e => { if ((e.code === 'Escape' || e.code === 'KeyP') && !$('game').hidden && !pending && !paused) { e.preventDefault(); pause(true); } });
   document.addEventListener('visibilitychange', () => { if (document.hidden && G && G.phase === 'run') pause(true); });
-  window.__fp = { get G() { return G; }, S, arena, COURSES, ui, vo: commentator, host, makeCourse, start, loadScene }; requestAnimationFrame(loop);
+  window.__fp = { get G() { return G; }, input: () => readInput(), S, arena, COURSES, ui, vo: commentator, host, makeCourse, start, loadScene }; requestAnimationFrame(loop);
   await texDone; booting = false; ui.boot.ready(() => { show('menu'); ui.menu.show('show'); });
 }

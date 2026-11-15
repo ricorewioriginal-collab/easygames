@@ -12,7 +12,7 @@ export function stick(el, onMask) {
   const set = (dx, dy) => {
     const d = Math.hypot(dx, dy), k = d > R ? R / d : 1; dx *= k; dy *= k;
     knob.style.transform = `translate(${dx}px,${dy}px)`;
-    const v = dx / R, nm = (v < -DEAD ? 1 : v > DEAD ? 2 : 0) | (dy / R > DOWN ? 8 : 0); if (nm !== m) { m = nm; onMask(m); }
+    const back = document.documentElement.classList.contains('fp-back'), v = back ? Math.max(-1, Math.min(1, (dx - dy) / R)) : dx / R, nm = (v < -DEAD ? 1 : v > DEAD ? 2 : 0) | (!back && dy / R > DOWN ? 8 : 0); if (nm !== m) { m = nm; onMask(m); }   // von hinten: hoch/rechts = vorwärts, runter/links = zurück
   };
   const end = e => { if (e.pointerId !== id) return; id = null; el.classList.remove('on'); set(0, 0); };
   el.addEventListener('pointerdown', e => {
