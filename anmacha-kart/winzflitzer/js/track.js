@@ -15,7 +15,9 @@ WF.PROP_COL = {
   chalk: { b: [1.4, 1.4], top: 1.4 },
   screw: { c: 0.8, top: 2.6 }, nut: { c: 1.4, top: 0.8 }, hammer: { b: [10.5, 1.6], top: 1.3 }, box: { b: [12, 7], top: 5.5 }, vice: { b: [6, 5], top: 5 },
   driver: { b: [9.5, 1.1], top: 1.1 },
-  blocks: { c: 4.2, top: 4 }, ballbig: { c: 3.1, top: 6 }, teddy: { c: 4.2, top: 8 }, crayon: { b: [9.5, 1], top: 1 }, train: { b: [11, 2.8], top: 3 }
+  blocks: { c: 4.2, top: 4 }, ballbig: { c: 3.1, top: 6 }, teddy: { c: 4.2, top: 8 }, crayon: { b: [9.5, 1], top: 1 }, train: { b: [11, 2.8], top: 3 },
+  die: { b: [4, 4], top: 4 }, cards: { b: [6, 8], top: 1.2 }, hourglass: { c: 2.6, top: 7 }, pawn: { c: 1.3, top: 3.8 }, chips: { c: 1.4, top: 1.3 },
+  domino: { b: [14, 0.9], top: 2.2 }, gamebox: { b: [8, 8.5], top: 2.2 }
 };
 
 WF.Track = function (def) {
