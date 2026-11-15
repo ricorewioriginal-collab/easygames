@@ -1,0 +1,12 @@
+Kinderbahn – Spielzeug-3D-Modelle
+
+Quelle: Kenney (www.kenney.nl)
+- Train Kit: train/*.glb, train/Textures/colormap.png
+- City Kit (Suburban): city/*.glb, city/Textures/colormap.png
+- Nature Kit: nature/*.glb
+
+Lizenz: Creative Commons Zero (CC0 1.0 Universal)
+http://creativecommons.org/publicdomain/zero/1.0/
+Frei nutzbar für private, schulische und kommerzielle Zwecke. Namensnennung ist nicht nötig,
+wir nennen Kenney trotzdem gern. Unterstützen: www.kenney.nl/donate
+Bezogen über den CC0-Spiegel github.com/shorepine/kenney (Dateien unverändert).

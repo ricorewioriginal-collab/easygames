@@ -15,6 +15,8 @@ import { TrackEditor } from '../editor/editor';
 import { t, setLang } from '../i18n/strings';
 import * as Ty from '../modes/tycoon';
 import { startPadNav } from '../ui/padnav';
+import { startInputHints, HINT_CSS } from '../ui/inputhint';
+import { KidsGame, KIDS_TRAINS, KIDS_CSS, type KidsTrain } from '../modes/kids';
 import { BRAND, BRAND_SUB, BRAND_FULL, SLOGAN } from './brand';
 
 type Mode = 'drive' | 'box' | 'world';
@@ -47,7 +49,7 @@ const S = (): Settings => store.active.settings;
 
 // ------------------------------------------------------------------ Start
 async function boot() {
-  const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
+  const st = document.createElement('style'); st.textContent = CSS + KIDS_CSS + HINT_CSS; document.head.appendChild(st);
   canvas = document.getElementById('scene') as HTMLCanvasElement ?? document.body.appendChild(h('canvas', { id: 'scene' }));
   ui = document.getElementById('ui') ?? document.body.appendChild(h('div', { id: 'ui' }));
   const load = h('div', { class: 'loading' }, h('div', { class: 'logo', style: 'font-size:1.6em' }, BRAND, ' ', h('b', null, BRAND_SUB)), h('div', { class: 'muted' }, 'Lade …'));
@@ -61,7 +63,7 @@ async function boot() {
   load.remove();
   if (store.notice) toast(store.notice, 'warn', 6000);
   if (store.lastError) toast(store.lastError, 'warn', 6000);
-  startPadNav();
+  startPadNav(); startInputHints();
   menu();
 }
 
@@ -133,6 +135,7 @@ function menu() {
         tile('🚦', bare(t('box')), t('boxSub'), boxMenu),
         tile('🏢', bare(t('tycoon')), t('tycoonSub'), tycoon),
         tile('🌍', 'Zuschauen', 'Züge beobachten, Kameras, Zeitraffer', worldMenu),
+        tile('🧸', 'Kinderbahn', 'Spielzeugzüge für Kinder: Tiere zum Bahnhof fahren', kidsMenu),
         tile('✏️', 'Editor', t('editorSub'), editor),
         tile('🌐', 'Online', 'in Entwicklung', () => toast('Online-Modus ist in Entwicklung und noch nicht verfügbar.'), 'dis')),
       h('div', { class: 'row foot' }, btn(t('settings'), () => settingsScreen(menu), 'btn small'), btn(t('manual'), manual, 'btn small'), btn(t('credits'), credits, 'btn small'), btn(t('back'), backToEasygames, 'btn small ghost'))),
@@ -149,6 +152,31 @@ function driveMenu() {
       tile('📦', bare(t('freight')), t('freightSub'), () => scenarioList(['freight', 'shunt'], t('freight'))),
       tile('🎲', 'Zufallsdienst', 'Überraschungsfahrt: Strecke, Linie, Uhrzeit und Wetter', () => dutyStart(dutyPick(Math.random), driveMenu)),
       tile('📅', 'Tagesdienst', dailyLabel(), () => dutyStart(dutyPick(seeded(dayKey())), driveMenu))));
+}
+
+// ------------------------------------------------------------------ Kinderbahn (eigener Kinder-Spielmodus)
+function kidsMenu() {
+  screen(header('🧸 Kinderbahn'),
+    h('p', { class: 'muted' }, 'Such dir einen Zug aus! Fahre die Tiere zu ihrem Bahnhof und sammle Sterne. Ganz einfach: ▶ losfahren, ⏸ anhalten.'),
+    h('div', { class: 'ktiles' }, ...KIDS_TRAINS.map((k) => btn([h('span', null, k.icon), k.name] as unknown as HTMLElement, () => void kidsRun(k), 'btn'))),
+    h('p', { class: 'notice' }, 'Spielzeug-3D-Modelle: Train Kit, City Kit (Suburban) und Nature Kit von Kenney (www.kenney.nl), Lizenz CC0 1.0.'));
+}
+
+async function kidsRun(k: KidsTrain) {
+  clear(ui); canvas.style.visibility = 'visible';
+  const bar = h('i');
+  const load = h('div', { class: 'loading', role: 'progressbar', 'aria-label': 'Ladefortschritt' }, h('div', { class: 'logo', style: 'font-size:1.6em' }, `${k.icon} ${k.name}`), h('div', { class: 'bar' }, bar), h('div', { class: 'muted' }, 'Die Spielzeugbahn wird aufgebaut …'));
+  ui.appendChild(load);
+  const g = new KidsGame(canvas, ui, audio, k, kidsMenu);
+  try {
+    await g.load((f) => { bar.style.width = `${Math.round(f * 100)}%`; });
+    load.remove();
+    g.start();
+  } catch (e) {
+    console.error(e); load.remove(); g.dispose();
+    await dialog('Kinderbahn konnte nicht starten', 'Die Spielzeug-Modelle wurden nicht geladen. Bitte Internetverbindung prüfen und nochmal versuchen.', ['Zurück']);
+    kidsMenu();
+  }
 }
 
 // ------------------------------------------------------------------ Dienste: Zufall und Tagesdienst
@@ -584,6 +612,7 @@ function credits() {
       h('p', null, h('b', null, BRAND_FULL), ` ${VERSION} – ein Easygames-Spiel.`),
       h('p', null, 'Alle Fahrzeuge, Führerstände, Landschaften, Geräusche und Ansagen sind eigene, prozedural erzeugte Inhalte. Es wurden keine Modelle, Logos, Ansagen, Geräusche oder Karten kommerzieller Simulatoren oder Bahnunternehmen übernommen.'),
       h('p', null, 'Die realen Strecken sind vereinfacht nachgebildet: Bahnhofsnamen und ungefähre Lage sind öffentlich bekannte geografische Fakten; Gleispläne, Signale, Höhen und Fahrpläne sind frei gestaltet.'),
+      h('p', null, 'Kinderbahn: Spielzeug-3D-Modelle (Train Kit, City Kit Suburban, Nature Kit) von Kenney – www.kenney.nl – Lizenz CC0 1.0. Nur im Kinder-Modus verwendet.'),
       h('p', null, 'Verwendete Software: three.js (MIT-Lizenz, © three.js authors). Gebaut mit TypeScript und esbuild.'),
       h('p', { class: 'notice' }, 'Simulation, kein offizielles Produkt der Deutschen Bahn oder anderer Eisenbahnunternehmen. Fahrzeugnamen sind Fantasienamen.')));
 }

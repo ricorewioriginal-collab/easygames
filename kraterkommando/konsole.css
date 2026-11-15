@@ -1,0 +1,105 @@
+/* Konsolen-Look (Ladescreen, Hauptmenü, Fenster): dunkles Glas, Statusleiste, großer Fokus wie auf PlayStation/Switch.
+   Nur Optik – die Touch-Steuerung im Spiel (game-dock) bleibt unverändert. */
+:root{--k-bg:#0a1726;--k-panel:#0f2133e6;--k-panel2:#16304ae6;--k-line:#ffffff1f;--k-text:#eaf4f8;--k-dim:#9fb8c6;--k-accent:#9df1d8;--k-hot:#ff7a6b;--k-focus:#ffffff}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- Ladescreen: Boot wie an der Konsole ---------- */
+#loading{background:radial-gradient(120% 90% at 50% 40%,#173a55 0,#0c1f33 55%,#060f1a 100%)!important;color:var(--k-text)}
+#loading.active{display:grid;place-items:center}
+#loading::before{content:"";position:absolute;inset:-20%;background:conic-gradient(from 0deg at 50% 45%,transparent,#9df1d814,transparent 30%,#ff7a6b10,transparent 60%);animation:bootSpin 14s linear infinite;pointer-events:none}
+.boot{position:relative;display:grid;justify-items:center;gap:14px;padding:0 24px;text-align:center}
+.boot-logo{width:min(560px,86vw);height:auto;filter:drop-shadow(0 18px 40px #000a);animation:bootLogo 1.1s cubic-bezier(.2,1.1,.3,1) both}
+#loading .load-track{width:min(340px,70vw);height:4px;margin:10px 0 0;background:#ffffff1c;border-radius:4px}
+#loading .load-track i{background:linear-gradient(90deg,var(--k-accent),#fff);box-shadow:0 0 12px var(--k-accent)}
+#loading small{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--k-dim)}
+#loading .load-tip{position:absolute;left:50%;bottom:calc(64px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(560px,88vw);margin:0;text-align:center;font-size:13px;color:#cfe3ea;opacity:.8}
+.boot-foot{position:absolute;left:calc(28px + env(safe-area-inset-left));right:calc(28px + env(safe-area-inset-right));bottom:calc(22px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:900;letter-spacing:.22em;color:#ffffff66}
+.boot-spin{width:26px;height:26px;border-radius:50%;border:3px solid #ffffff22;border-top-color:var(--k-accent);animation:bootSpin .9s linear infinite}
+@keyframes bootSpin{to{transform:rotate(360deg)}}
+@keyframes bootLogo{from{opacity:0;transform:scale(.86);filter:blur(8px) drop-shadow(0 18px 40px #000a)}}
+
+/* ---------- Statusleiste ---------- */
+.sysbar{position:absolute;z-index:3;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:calc(12px + env(safe-area-inset-top)) calc(30px + env(safe-area-inset-right)) 0 calc(30px + env(safe-area-inset-left));font-size:12px;font-weight:900;color:var(--k-dim);letter-spacing:.06em;pointer-events:none}
+.sys-brand{display:flex;align-items:center;gap:8px;letter-spacing:.24em;font-size:10px}.sys-brand img{width:22px;height:22px}
+.sys-right{display:flex;align-items:center;gap:16px}.sys-right b{font-size:15px;color:var(--k-text);letter-spacing:.02em}
+#sysPad{padding:4px 10px;border-radius:99px;background:#ffffff12;border:1px solid var(--k-line)}
+
+/* ---------- Hauptmenü ---------- */
+#menu{background:linear-gradient(90deg,#060f1af5 0,#0a1726dd 30%,#0a172666 58%,transparent 78%),linear-gradient(transparent 70%,#060f1acc)}
+.menu-shell{padding-top:calc(52px + env(safe-area-inset-top));grid-template-columns:minmax(300px,430px) 1fr}
+.menu-logo .logo-img{display:block;width:min(400px,100%);height:auto;margin:2px 0 6px -4px;filter:drop-shadow(0 10px 24px #0009)}
+.menu-logo .lead{color:var(--k-dim);font-size:13px}
+.menu-list{gap:6px}
+.menu-sec{margin:8px 2px 0;font-size:10px;font-weight:1000;letter-spacing:.24em;color:#ffffff66}
+.menu-sec:first-child{margin-top:0}
+#menu .tile{background:var(--k-panel);border:1px solid var(--k-line);border-radius:14px;box-shadow:none;backdrop-filter:blur(12px);transition:transform .16s cubic-bezier(.2,.9,.3,1),background .16s,box-shadow .16s,color .16s}
+#menu .tile.primary{background:linear-gradient(135deg,#ff8e75,#ff5f4a);color:#fff;border-color:#ffb3a3;box-shadow:0 10px 28px #ff5f4a44}
+#menu .tile.primary small{color:#ffe5de}#menu .tile.primary .tile-icon{background:#ffffff33}
+#menu .tile.cycler .opt-value i{background:#ffffff12;color:var(--k-accent)}
+#menu .tile-row{margin-top:8px;gap:10px}
+#menu .tile.small{border-radius:18px;min-height:70px;background:#ffffff0d}
+/* Fokus: weiße Karte mit leuchtendem Rand (wie Konsolen-Startbildschirm) */
+:is(.input-pad,.input-kbd) #menu .tile.nav-focus{transform:scale(1.04);background:#f4fbff!important;color:#0a1726!important;border-color:#fff!important;box-shadow:0 0 0 3px var(--k-accent),0 0 32px #9df1d888,0 14px 30px #000a!important}
+:is(.input-pad,.input-kbd) #menu .tile.nav-focus small,:is(.input-pad,.input-kbd) #menu .tile.nav-focus .opt-label{color:#45606f}
+:is(.input-pad,.input-kbd) #menu .tile.nav-focus .opt-value b{color:#0a1726}
+:is(.input-pad,.input-kbd) #menu .tile.primary.nav-focus{background:linear-gradient(135deg,#ffa38d,#ff6a54)!important;color:#fff!important}
+:is(.input-pad,.input-kbd) #menu .tile.primary.nav-focus small{color:#fff3ee}
+:is(.input-pad,.input-kbd) #menu .cycler.nav-focus .opt-value i{background:#0a1726;color:#fff}
+:is(.input-pad,.input-kbd) .nav-focus{animation:focusPulse 1.6s ease-in-out infinite}
+@keyframes focusPulse{50%{box-shadow:0 0 0 3px #9df1d8,0 0 44px #9df1d8aa,0 14px 30px #000a}}
+.menu-info{background:var(--k-panel);border:1px solid var(--k-line);border-radius:22px}
+.menu-info .eyebrow{color:var(--k-accent)}
+
+/* ---------- Fenster: dunkles Glas ---------- */
+.overlay{background:#060f1acc;backdrop-filter:blur(14px) saturate(1.2)}
+.dialog{background:linear-gradient(180deg,#14304a,#0d2033);color:var(--k-text);border:1px solid var(--k-line);border-radius:24px;box-shadow:0 30px 80px #000c}
+.dialog .eyebrow{color:var(--k-accent)}.dialog h2{color:#fff}.dialog p{color:var(--k-dim)}
+.dialog button{display:flex;align-items:center;gap:10px;text-align:left;background:#ffffff0f;color:var(--k-text);border:1px solid var(--k-line);border-radius:14px;padding:14px 16px}
+.dialog button.primary{background:linear-gradient(135deg,#ff8e75,#ff5f4a);color:#fff;border-color:#ffb3a3}
+.dialog .close{justify-content:center;width:40px;height:40px;padding:0;border-radius:50%}
+:is(.input-pad,.input-kbd) .dialog button.nav-focus{background:#f4fbff!important;color:#0a1726!important;border-color:#fff!important;transform:scale(1.03);box-shadow:0 0 0 3px var(--k-accent),0 0 28px #9df1d877!important}
+:is(.input-pad,.input-kbd) .dialog button.primary.nav-focus{background:linear-gradient(135deg,#ffa38d,#ff6a54)!important;color:#fff!important}
+/* Pause: Seitenleiste wie im Konsolen-Schnellmenü */
+.overlay.side{place-items:stretch start;padding:0;background:linear-gradient(90deg,#060f1af2,#060f1a99 45%,#060f1a33)}
+.overlay.side .dialog{width:min(380px,92vw);height:100%;border-radius:0 26px 26px 0;align-content:center;padding:calc(30px + env(safe-area-inset-top)) 28px calc(70px + env(safe-area-inset-bottom)) calc(28px + env(safe-area-inset-left));border-width:0 1px 0 0}
+.overlay.side:not([hidden]) .dialog{animation:sideIn .3s cubic-bezier(.2,.9,.3,1) both}
+@keyframes sideIn{from{transform:translateX(-100%)}}
+.overlay.result{background:linear-gradient(transparent 30%,#060f1ae6)}
+/* Steuerung: Reiter mit L1/R1-Hinweis */
+.help-tabs{display:flex;align-items:center;gap:6px}.help-tabs button{flex:1;justify-content:center;background:#ffffff0a}
+.help-tabs button.on{background:#f4fbff;color:#0a1726;border-color:#fff}
+.tab-hint{display:none}body.input-pad .tab-hint{display:block}
+.help-body{color:var(--k-text)}.help-body div{border-bottom:1px solid var(--k-line)}
+#cloud .dialog #cloudMount{background:#fff9e9;border-radius:16px;padding:12px;color:#183a4d}
+/* Waffenliste */
+.sheet{background:#060f1ab3;backdrop-filter:blur(8px)}
+.sheet-card{background:linear-gradient(180deg,#14304a,#0d2033);color:var(--k-text);border:1px solid var(--k-line)}
+.sheet-head h2{color:#fff}.sheet-head button{background:#ffffff14;color:#fff}
+.weapon-grid button{background:#ffffff0d;color:var(--k-text);border:1px solid var(--k-line)}
+.weapon-grid button small{color:var(--k-dim)}.weapon-grid kbd{color:#ffffff88;border-color:#ffffff33}
+.weapon-grid button.chosen{background:#ff7a6b26;border-color:var(--k-hot)}
+:is(.input-pad,.input-kbd) .weapon-grid button.nav-focus{background:#f4fbff!important;color:#0a1726!important;border-color:#fff!important;box-shadow:0 0 0 3px var(--k-accent),0 0 26px #9df1d877!important}
+:is(.input-pad,.input-kbd) .weapon-grid button.nav-focus small{color:#45606f}
+/* Hinweisleiste unten */
+.prompt-bar{background:linear-gradient(transparent,#060f1af0);font-size:13px;gap:22px}
+
+/* ---------- Tasten-Symbole je Controller ---------- */
+kbd.g.ps[data-g=a],kbd.g.ps[data-g=b],kbd.g.ps[data-g=x],kbd.g.ps[data-g=y]{background:#1f2a35;font-size:14px}
+kbd.g.ps[data-g=a]{color:#7aa7ff}kbd.g.ps[data-g=b]{color:#ff6b6b}kbd.g.ps[data-g=x]{color:#ff8ad8}kbd.g.ps[data-g=y]{color:#5fe0a0}
+kbd.g.nin[data-g=a],kbd.g.nin[data-g=b],kbd.g.nin[data-g=x],kbd.g.nin[data-g=y]{background:#2b3138;color:#fff}
+kbd.g.ps[data-g=select],kbd.g.ps[data-g=start]{font-size:9px;letter-spacing:.02em;border-radius:7px}
+
+@media(orientation:portrait),(max-width:760px){
+  .sysbar{padding:calc(10px + env(safe-area-inset-top)) 16px 0}
+  .menu-shell{padding-top:calc(44px + env(safe-area-inset-top))}
+  .menu-logo .logo-img{width:min(340px,92%)}
+  #menu{background:linear-gradient(180deg,#060f1a99 0,#0a1726cc 36%,#060f1af2 66%)}
+  .overlay.side{place-items:center;padding:18px}
+  .overlay.side .dialog{height:auto;border-radius:24px;border-width:1px;padding:26px 22px}
+  .overlay.side:not([hidden]) .dialog{animation:pop .28s cubic-bezier(.2,1.3,.4,1) both}
+}
+@media(max-height:560px) and (orientation:landscape){
+  .sysbar{padding-top:6px}.menu-shell{padding-top:34px}.menu-logo .logo-img{width:250px}.menu-sec{display:none}
+}
+.sys-right{padding:5px 6px 5px 6px;border-radius:99px;background:#060f1a99;backdrop-filter:blur(10px)}.sys-right b{padding-right:8px}#sysPad{color:var(--k-text)}
+body.prompts .menu-info{margin-bottom:34px}

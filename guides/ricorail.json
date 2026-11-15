@@ -80,7 +80,10 @@
    "t": "Touch und Gamepad",
    "list": [
     "Smartphone und Tablet: Hebel am Bildschirmrand nach oben ziehen = fahren, nach unten = bremsen. Knöpfe für Horn, Schnellbremsung, Wachsam und Türen; mit einem Finger umsehen, mit zwei Fingern zoomen, Doppeltippen setzt den Blick zurück. Bedienelemente im Führerstand lassen sich antippen.",
-    "Gamepad: rechter Trigger fahren, linker Trigger bremsen (ohne Trigger: linker Stick hoch/runter), A Türen, B Schnellbremsung, X Horn, Y Kamera, LB Wachsam, RB Richtungswender, Back Karte, Start Pause, rechter Stick umsehen, Steuerkreuz hoch/runter Leistung, links Bremse lösen, rechts mehr bremsen."
+    "Gamepad (Xbox, PlayStation oder ähnlich, auch am PC): RT schiebt den Fahrschalter Richtung Fahren, LT Richtung Bremsen – loslassen hält die Stufe. Steuerkreuz hoch/runter und links/rechts schaltet den Hebel in Stufen F1–F8 bzw. B1–B8, bei 0 rastet er spürbar ein. Ⓐ Sifa/Wachsam, Ⓑ Türen auf/zu, Ⓧ Horn, Ⓨ Kamera, LB Richtungswender, RB Befehlsmenü, L3 Sanden, R3 Schnellbremsung, rechter Stick umsehen, Select Karte, Start Pause.",
+    "Befehlsmenü (RB, F3 oder ☰ im Bildschirm): Hier liegen alle Funktionen des Fahrzeugs – Licht, Stromabnehmer, Türen, Sanden, Feuerung bei Dampfloks, Kameras, Karte und mehr. Mit dem Steuerkreuz wählen, Ⓐ auslösen, Ⓑ schließen. So geht alles auch ohne Tastatur.",
+    "An den Knöpfen und am Fahrhebel steht immer die passende Taste für dein Gerät: am Controller die Knopfnamen (Xbox-Stil oder bei PlayStation-Controllern ✕ ○ □ △, L1/R1, L2/R2), an der Tastatur die Taste, auf dem Handy nichts. Die Anzeige wechselt automatisch mit der zuletzt benutzten Eingabe.",
+    "Der Controller rüttelt bei Sifa-Warnung, Zwangsbremsung und Schnellbremsung. Beim ersten Tastendruck zeigt das Spiel kurz die wichtigsten Tasten."
    ]
   },
   {
@@ -201,6 +204,16 @@
     "Im Zuschauen-Modus folgt die Kamera einem fahrenden Zug. Mit R, RB am Gamepad oder ⏭ wechselst du zum nächsten Zug, mit C, Y oder 🎥 die Kamera. Im Kinomodus wechseln Kameras und Züge automatisch.",
     "Im Führerstand spürst du den Zug: leichtes Nicken beim Anfahren und Bremsen, Neigen in Kurven und Laufunruhe bei Tempo. Wer Bewegung im Betriebssystem reduziert hat, bekommt eine ruhige Kamera."
    ]
+  },
+  {
+   "t": "Kinderbahn (Modus für Kinder)",
+   "p": [
+    "Im Hauptmenü unter 🧸 Kinderbahn suchen sich Kinder einen von fünf Spielzeugzügen aus: Dampfzug, Schnellzug, Straßenbahn, Güterzug oder Personenzug.",
+    "Bedienung ganz einfach: ▶ fährt los, ⏸ hält an, 📯 hupt, 🎥 wechselt die Kamera. Kurz vor einem Bahnhof sagt das Spiel Bescheid. Wer dann ⏸ drückt, rollt automatisch genau bis zum Bahnsteig.",
+    "Am Bahnhof steigen die Tiere ein. Ihr Ring zeigt die Farbe ihres Zielbahnhofs (orange Bärenhausen, gelb Fuchsdorf, blau Hasenwiese). Kommt ein Tier an, gibt es einen Stern.",
+    "Tastatur: Leertaste fahren/halten, H hupen, C Kamera, Esc Pause. Gamepad: A fahren/halten, RT los, LT halten, X hupen, Y Kamera, B Pause.",
+    "Die Spielzeug-Modelle stammen von Kenney (www.kenney.nl) und stehen unter der Lizenz CC0."
+   ]
   }
  ],
  "ratgeber": [
@@ -242,6 +255,14 @@
     "Ersatzsignal ohne Störung anfordern: Zs 1 gibt es nur bei gestörtem Signal; danach höchstens 40 km/h.",
     "Beim Rangieren zu schnell an die Wagen: Kupplung vorher mit K vorbereiten und mit Schrittgeschwindigkeit heranfahren.",
     "Wagen abstellen ohne Feststellbremse (X)."
+   ]
+  },
+  {
+   "t": "Kinderbahn: mehr Sterne",
+   "list": [
+    "Halte an jedem Bahnhof, auch wenn niemand aussteigt: Dort warten neue Fahrgäste.",
+    "Bis zu sechs Tiere passen in den Zug. Bring zuerst die Tiere weg, deren Bahnhof als nächster kommt.",
+    "Leere Bahnhöfe füllen sich nach ein paar Sekunden wieder."
    ]
   }
  ],
@@ -371,6 +392,14 @@
     "Pünktlich bleiben: Jede Minute Verspätung über 1 Minute je Halt kostet 25 Punkte.",
     "Komfort über 80 % bringt Plus: sanft anfahren, früh und gleichmäßig bremsen, Kurven nicht zu schnell.",
     "Schaffner-Modus: Erwischte Schwarzfahrer bringen 25 Punkte, falsche Verdächtigungen kosten 20 – lies die Fahrkarte genau (Datum, Klasse, Zielbahnhof)."
+   ]
+  },
+  {
+   "t": "Kinderbahn: viele Sterne in einer Runde",
+   "steps": [
+    "Fahre mit ▶ los und halte in Bärenhausen: Alle Tiere steigen ein.",
+    "Halte in Fuchsdorf: Gelbe Tiere steigen aus, neue steigen ein.",
+    "Halte in Hasenwiese: Blaue Tiere steigen aus. So bekommst du in jeder Runde mehrere Sterne."
    ]
   }
  ],

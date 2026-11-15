@@ -355,7 +355,9 @@ function wheelParts(q: Quality, r: number, style: 'std' | 'drv', col: number, ac
   const steel = paint(q, col, 0.45, 0.65), dark = paint(q, 0x1d1e20, 0.7, 0.3);
   for (const s of [1, -1]) {
     if (style === 'std') {
-      b.cyl(steel, 'z', 0, 0, s * GAUGE_Z, r, 0.13, seg);
+      b.cyl(q === 'low' ? steel : paint(q, 0xa3a8ad, 0.25, 0.9), 'z', 0, 0, s * GAUGE_Z, r, 0.13, seg);
+      // Radscheibe mit Bremsstaub, blanke Lauffläche bleibt als Ring sichtbar
+      if (q === 'high') b.cyl(paint(q, 0x5b4a3d, 0.8, 0.35), 'z', 0, 0, s * GAUGE_Z, r * 0.9, 0.136, seg);
       if (q !== 'low') {
         b.cyl(steel, 'z', 0, 0, s * (GAUGE_Z - 0.075), r + 0.028, 0.03, seg);
         b.boxc(dark, r * 0.55, 0, s * (GAUGE_Z + 0.07), 0.12, 0.12, 0.02);
@@ -472,8 +474,40 @@ class Ctx {
   get rubber() { return this.P(0x1a1a1a, 0.95, 0); }
   shell(fn: (p: Pt) => void, key = 'side', fallback = this.t.color): THREE.Material {
     const W = TEXW[this.q], H = W / 8, uv = this.uv, k = `${key}|${this.t.id}|${this.q}`;
-    const tex = canvasTex(k, W, H, (g) => fn(new Pt(g, W, H, uv.x0, uv.x1, uv.y0, uv.y1)));
+    const tex = canvasTex(k, W, H, (g) => { const p = new Pt(g, W, H, uv.x0, uv.x1, uv.y0, uv.y1); fn(p); if (key === 'side') this.weather(p); });
     return mat(this.q, 'tx|' + k, { color: tex ? 0xffffff : fallback, map: tex, rough: 0.4, metal: 0.2 });
+  }
+  /** Gebrauchsspuren: Blechstöße, Glanzlinie, Bremsstaub unten, Ruß am Dach, Fahrzeugnummer */
+  weather(p: Pt) {
+    const g = p.g, L = this.L;
+    g.save();
+    if (this.q !== 'low') {
+      g.globalAlpha = 0.1;
+      for (let x = -L + 2.4; x < L - 1.5; x += 2.4) p.vl(x, 1.0, 4.4, 0.025, '#000');
+      g.globalAlpha = 1;
+      const sh = g.createLinearGradient(0, p.Y(3.6), 0, p.Y(3.0));
+      sh.addColorStop(0, 'rgba(255,255,255,0)'); sh.addColorStop(0.5, 'rgba(255,255,255,0.07)'); sh.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = sh; g.fillRect(0, p.Y(3.6), p.W, p.Y(3.0) - p.Y(3.6));
+    }
+    const dirt = g.createLinearGradient(0, p.Y(1.9), 0, p.H);
+    dirt.addColorStop(0, 'rgba(70,52,36,0)'); dirt.addColorStop(1, 'rgba(70,52,36,0.38)');
+    g.fillStyle = dirt; g.fillRect(0, p.Y(1.9), p.W, p.H - p.Y(1.9));
+    const soot = g.createLinearGradient(0, 0, 0, p.Y(4.0));
+    soot.addColorStop(0, 'rgba(30,30,32,0.3)'); soot.addColorStop(1, 'rgba(30,30,32,0)');
+    g.fillStyle = soot; g.fillRect(0, 0, p.W, p.Y(4.0));
+    if (this.q === 'high') {
+      let h = 7; for (const c of this.t.id) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+      const bd = this.t.body as string;
+      const uic = /loco|shunter|steam|tender|rack/.test(bd) ? '91' : /^(coach|dining|sleeper)/.test(bd) ? '50' : bd.startsWith('w_') ? '31' : '94';
+      const no = `${uic} 80 ${String(1000 + h % 9000)} ${String(100 + (h >> 8) % 900)}-${h % 10}`;
+      const kx = p.k, ky = p.H / (p.y1 - p.y0), x = p.X(L - 3.2), y = p.Y(1.34);
+      const px = g.getImageData(Math.min(p.W - 1, Math.max(0, x | 0)), Math.max(0, y | 0), 1, 1).data;
+      g.fillStyle = px[0] * 0.3 + px[1] * 0.59 + px[2] * 0.11 > 120 ? 'rgba(20,22,24,0.85)' : 'rgba(240,240,236,0.85)';
+      g.setTransform(kx / ky, 0, 0, 1, x, y);
+      g.font = `bold ${Math.max(6, Math.round(ky * 0.13))}px sans-serif`; g.textAlign = 'right';
+      g.fillText(no, 0, 0);
+    }
+    g.restore();
   }
   front(fn: (p: Pt) => void, key = 'front', fallback = this.t.color): THREE.Material {
     const W = FTW[this.q], uv = this.uv, k = `${key}|${this.t.id}|${this.q}`;
@@ -502,6 +536,14 @@ class Ctx {
     }
     b.boxc(this.black, xb + dir * len * 0.5, y - 0.02, 0, len, 0.1, 0.12);
     b.boxc(this.black, xb + dir * 0.06, y - 0.05, 0, 0.12, 0.3, 0.25);
+    if (this.q === 'low') return;
+    // Bremsschläuche (Hauptluft/Hauptbehälter) und Rangierertritte mit Griffstange
+    for (const s of [1, -1]) {
+      b.boxc(this.rubber, xb + dir * 0.14, y - 0.3, s * 0.36, 0.07, 0.42, 0.07, dir * 0.45);
+      b.boxc(this.P(s > 0 ? 0xb3362b : 0xd9a21e, 0.5, 0.3), xb + dir * 0.24, y - 0.5, s * 0.36, 0.09, 0.07, 0.1);
+      b.boxc(this.metal, xb + dir * 0.1, y - 0.5, s * 1.12, 0.26, 0.035, 0.36);
+      b.boxc(this.metal, xb + dir * 0.03, y + 0.55, s * 1.3, 0.035, 0.5, 0.035);
+    }
   }
   coupler(xb: number, dir: 1 | -1, y = 1.0) {
     const xe = dir * this.L, len = Math.abs(xe - xb);
@@ -516,6 +558,10 @@ class Ctx {
     const z = zAt(S(0, P), y0 + h / 2);
     const zs = isNaN(z) ? P.w : z;
     for (const x of xs) for (const side of [1, -1] as const) {
+      if (this.q !== 'low') {
+        const half = (leaves === 2 ? wl : wl / 2) + 0.1;
+        for (const e of [-1, 1]) this.b.boxc(this.metal, x + e * half, y0 + h * 0.5, side * (zs + 0.07), 0.032, h * 0.55, 0.032);
+      }
       if (leaves === 2) {
         this.doors.push({ x: x - wl / 2, y: y0 + h / 2, z: side * (zs + 0.03), w: wl, h, side, slide: -wl * 0.95, out: 0, mat: m });
         this.doors.push({ x: x + wl / 2, y: y0 + h / 2, z: side * (zs + 0.03), w: wl, h, side, slide: wl * 0.95, out: 0, mat: m });
@@ -571,7 +617,9 @@ class Ctx {
       const a = x0 + i * step + 0.15, w = step - 0.3, k = (i * 7) % 3;
       const zz = k === 0 ? 1.15 : k === 1 ? 0.95 : 1.05;
       this.b.box(m, a, a + w, y0 + (k === 2 ? 0.15 : 0), y1, -zz, zz);
+      if (this.q === 'high') for (let r = a + 0.4; r < a + w - 0.2; r += 0.5) this.b.box(this.black, r, r + 0.05, y0 + 0.1, y1 - 0.05, -zz - 0.02, zz + 0.02);
     }
+    if (this.q !== 'low') for (const z of [0.55, -0.7]) this.b.boxc(this.black, (x0 + x1) / 2, y1 - 0.06, z, x1 - x0 + 0.6, 0.06, 0.06);
   }
   /** einfacher Güterwagen-Rahmen */
   wagonFrame(xb: number, deck: THREE.Material | null, yTop = 1.28, beam: THREE.Material = this.dark) {
@@ -1328,6 +1376,10 @@ function buildTpl(type: VehicleType, q: Quality): Tpl {
     case 'sleeper': defCoach(C, 'sleeper'); break;
     default: palette = defWagon(C); break;
   }
+  if (q === 'high') C.lam.forEach((pts, i) => {
+    const dir = i < 2 ? 1 : -1, r = (i % 2 === 0 ? 0.2 : 0.14) / 2 + 0.035;
+    for (const [x, y, z] of pts) C.b.cyl(C.black, 'x', x + dir * 0.01, y, z, r, 0.05, C.segS);
+  });
   const lamps = C.lam.map((pts, i) => {
     if (!pts.length) return null;
     const dir = i < 2 ? 1 : -1, list: THREE.BufferGeometry[] = [], big = i % 2 === 0;

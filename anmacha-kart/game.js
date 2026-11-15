@@ -12,8 +12,10 @@ const peerCfg = () => { if (!PH) return {}; const [h, p] = PH.split(':'); return
 const esc = s => String(s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
 const fmtT = t => { if (t == null || !isFinite(t)) return '–'; const m = Math.floor(t / 60), s = t - m * 60; return m + ':' + (s < 10 ? '0' : '') + s.toFixed(2); };
 const SLOTC = ['#00E5FF', '#FF2D95', '#FFD24A', '#7CFF6A'], SKILLS = ['Anfänger', 'Normal', 'Profi'];
-const ITEM_ICON = { boost: '🚀', boost3: '🚀', banana: '🍌', banana3: '🍌', rock: '🪨', rock3: '🪨', mine: '📢', rocket: '🎯', shield: '🛡️', flash: '⚡', fog: '🌫️' };
-const ITEM_NAME = { boost: 'Bass-Boost', boost3: 'Turbo-Trio', banana: 'Bananenschale', banana3: 'Bananen-Trio', rock: 'Felsbrocken', rock3: 'Stein-Trio', mine: 'Störsignal', rocket: 'Jingle-Rakete', shield: 'Frequenz-Schild', flash: 'Funk-Blitz', fog: 'Nebelbombe' };
+const ITEM_ICON = { boost: '🚀', boost3: '🚀', banana: '🍌', banana3: '🍌', rock: '🪨', rock3: '🪨', mine: '📢', rocket: '🎯', shield: '🛡️', flash: '⚡', fog: '🌫️', bomb: '💣', bomb3: '💣' };
+const ITEM_NAME = { boost: 'Bass-Boost', boost3: 'Turbo-Trio', banana: 'Bananenschale', banana3: 'Bananen-Trio', rock: 'Felsbrocken', rock3: 'Stein-Trio', mine: 'Störsignal', rocket: 'Jingle-Rakete', shield: 'Frequenz-Schild', flash: 'Funk-Blitz', fog: 'Nebelbombe', bomb: 'Funk-Bombe', bomb3: 'Bomben-Trio' };
+const BMODES = [['ball', 'Ballonjagd', '3 Ballons – wer zuletzt noch einen hat, gewinnt', '🎈'], ['cap', 'Funkpokal erobern', 'Halte den Pokal 25 Sekunden', '📻'], ['bomb', 'Bomben-Duell', 'Nur Bomben – 5 Treffer gewinnen', '💣']];
+const BNAME = { ball: 'Ballonjagd', cap: 'Funkpokal erobern', bomb: 'Bomben-Duell' };
 // Tandem-Spezialitems (eigene Erfindungen): Riesenfels, Funk-Komet, Herzschild, Feuerspur
 const SP_ICON = { giga: '🗿', comet: '☄️', heart: '💖', fire: '🔥' }, SP_NAME = { giga: 'Riesenfels', comet: 'Funk-Komet', heart: 'Herzschild', fire: 'Feuerspur' };
 Object.assign(ITEM_ICON, SP_ICON); Object.assign(ITEM_NAME, SP_NAME);
@@ -129,7 +131,7 @@ const LD = (() => {
 // Ein Bild Zeit lassen, damit der Ladebalken zwischen schweren Schritten gezeichnet wird
 const nextPaint = () => new Promise(r => { let ok = false; const f = () => { if (!ok) { ok = true; r(); } }; requestAnimationFrame(() => setTimeout(f, 0)); setTimeout(f, 120); });
 
-if (JOIN) { LD.stop(); document.body.classList.add('ctrl'); loadScript('controller.js?v=20261115-wt12').then(() => window.startController && window.startController()).catch(e => { $('err').hidden = false; $('errTxt').textContent = e.message; }); }
+if (JOIN) { LD.stop(); document.body.classList.add('ctrl'); loadScript('controller.js?v=20261115-wt13').then(() => window.startController && window.startController()).catch(e => { $('err').hidden = false; $('errTxt').textContent = e.message; }); }
 else initHost();
 
 function initHost() {
@@ -139,13 +141,24 @@ function initHost() {
   try { const s = JSON.parse(localStorage.getItem('akSave') || 'null'); if (s && typeof s === 'object') save = Object.assign(save, s); } catch (e) {}
   const persist = () => { try { localStorage.setItem('akSave', JSON.stringify(save)); } catch (e) {} };
   const CCS = ['50 ccm', '100 ccm', '150 ccm', '🪞 Spiegel'];
-  const TICON = { wiese: '📡', strand: '🏖️', gruft: '👻', fantasia: '🏰', neon: '🌃', vulkan: '🌋', eis: '❄️', dschungel: '🌴', kosmos: '🪐', wueste: '🏜️', regenbogen: '🌈', herzportal: '💖', kristallsturm: '💎', monsterfreunde: '🐾', ahnenruinen: '🗿', drachenflug: '🐉', splitterwelten: '✨', farbeninsel: '🎨', zotik: '🦊', taschi: '🏮', aeru: '⭐', bunte: '⚓', leuchtfeuer: '🗼', sonnenhof: '🌻', ricopoly: '🏙️', wolken: '☁️', huepf: '🧱', omamarkt: '🧺', omapark: '🌳', omamall: '🛍️', omastrand: '⛱️', omaxmas: '🎄', omagrusel: '🕯️' };
+  const TICON = { 'arena-funk': '📡', 'arena-neon': '🌃', 'arena-sand': '🏖️', wiese: '📡', strand: '🏖️', gruft: '👻', fantasia: '🏰', neon: '🌃', vulkan: '🌋', eis: '❄️', dschungel: '🌴', kosmos: '🪐', wueste: '🏜️', regenbogen: '🌈', herzportal: '💖', kristallsturm: '💎', monsterfreunde: '🐾', ahnenruinen: '🗿', drachenflug: '🐉', splitterwelten: '✨', farbeninsel: '🎨', zotik: '🦊', taschi: '🏮', aeru: '⭐', bunte: '⚓', leuchtfeuer: '🗼', sonnenhof: '🌻', ricopoly: '🏙️', wolken: '☁️', huepf: '🧱', omamarkt: '🧺', omapark: '🌳', omamall: '🛍️', omastrand: '⛱️', omaxmas: '🎄', omagrusel: '🕯️' };
   const tileVars = (a, b) => `style="--tc:${a};--tc2:${b}"`;
   // Tandem: Beifahrer (gespeichert oder automatisch passend) und Spezialitem je Figur
   let chPick = 'drv';
   const spOf = ch => (CHARS[ch] && CHARS[ch].sp) || Sim.SPECIALS[ch % Sim.SPECIALS.length];
   const coOf = ch => save.co != null && save.co !== ch && CHARS[save.co] ? save.co : (ch + 7) % CHARS.length;
   const TR = Track.DEFS; let trCache = {}; const getTrack = (i, mi) => mi ? (trCache['m' + i] || (trCache['m' + i] = Track.build(Track.mirror(TR[i])))) : trCache[i] || (trCache[i] = Track.build(TR[i]));
+  // Gespeicherte Auswahl absichern: unbekannte/veraltete Werte (ältere Versionen, andere Apps) fallen auf gültige Standardwerte zurück
+  const okI = (v, n, d) => { v = Number(v); return Number.isInteger(v) && v >= 0 && v < n ? v : d; };
+  function fixSave() {
+    save.char = okI(save.char, CHARS.length, 1); save.kart = okI(save.kart, KARTS.length, 0); save.logo = okI(save.logo, 13, 6); save.cup = okI(save.cup, Track.CUPS.length, 0);
+    save.track = okI(save.track, TR.length, 0); if (TR[save.track].arena) save.track = 0;
+    const a0 = TR.findIndex(t => t.arena); save.arena = okI(save.arena, TR.length, a0); if (!TR[save.arena] || !TR[save.arena].arena) save.arena = a0;
+    save.co = save.co == null ? null : okI(save.co, CHARS.length, null); save.skill = okI(save.skill, 3, 1); save.cc = save.cc == null ? null : okI(save.cc, 4, null);
+    if (![2, 3, 5].includes(save.laps)) save.laps = 3; if (!['race', 'gp', 'tt', 'free', 'battle'].includes(save.rmode)) save.rmode = 'race'; if (!['ball', 'cap', 'bomb'].includes(save.bmode)) save.bmode = 'ball';
+    if (typeof save.name !== 'string') save.name = ''; if (!save.best || typeof save.best !== 'object') save.best = {}; save.cam = okI(save.cam, 4, 0);
+  }
+  fixSave();
   let logos = [], ready = false, menuView = 'title', setupFor = 'solo', R = null, lobbyOpen = false, peer = null, room = '', players = [], loopOn = false, lastT = 0, paused = false, curTrackIdx = -1, GP = null, nVp = 1;
   const kb = { l: 0, r: 0, g: 0, b: 0, d: 0, i: 0, sw: 0, lb: 0, hn: 0, cam: 0, rn: 0, rp: 0, ro: 0 }, tc = { s: 0, g: 0, b: 0, d: 0, i: 0, sw: 0, lb: 0, hn: 0, cam: 0 };
   // Tastatur: frei belegbar (Optionen → Tastenbelegung); Schlüssel = e.key in Kleinbuchstaben
@@ -162,16 +175,19 @@ function initHost() {
 
   // ------------------------------------------------------------------ Menü
   function renderMenu() {
-    $('rmode').innerHTML = [['race', 'Einzelrennen', 'gegen 7 Fahrer', '🏁', 't-race'], ['gp', 'Cup', '3 Strecken · Punkte', '🏆', 't-gp'], ['tt', 'Zeitfahren', 'allein, mit Geist', '⏱️', 't-tt'], ['free', 'Freies Fahren', 'ohne Zeitlimit und Gegner', '🛞', 't-free']].map(m => `<button class="chip ctile ${m[4]} ${save.rmode === m[0] ? 'on' : ''}" data-m="${m[0]}"><i>${m[3]}</i><b>${m[1]}</b><small>${m[2]}</small></button>`).join('');
+    $('rmode').innerHTML = [['race', 'Einzelrennen', 'gegen 7 Fahrer', '🏁', 't-race'], ['gp', 'Cup', '3 Strecken · Punkte', '🏆', 't-gp'], ['tt', 'Zeitfahren', 'allein, mit Geist', '⏱️', 't-tt'], ['free', 'Freies Fahren', 'ohne Zeitlimit und Gegner', '🛞', 't-free'], ['battle', 'Battle', 'Ballons · Pokal · Bomben', '🎈', 't-battle']].map(m => `<button class="chip ctile ${m[4]} ${save.rmode === m[0] ? 'on' : ''}" data-m="${m[0]}"><i>${m[3]}</i><b>${m[1]}</b><small>${m[2]}</small></button>`).join('');
     $('rmode').querySelectorAll('[data-m]').forEach(b => b.onclick = () => { save.rmode = b.dataset.m; persist(); renderMenu(); });
-    $('trackHeading').textContent = save.rmode === 'gp' ? 'WÄHLE DEINEN CUP' : 'WÄHLE DEINE STRECKE';
-    $('tracks').innerHTML = save.rmode === 'gp' ? Track.CUPS.map((c, i) => `<button class="chip ctile ${save.cup === i ? 'on' : ''}" data-cup="${i}" ${tileVars(TR[c.tracks[0]].sky[0], TR[c.tracks[c.tracks.length - 1]].ground || '#203060')}><i>${c.icon || '🏆'}</i><b>${esc(c.name)}</b><small>${c.all ? c.tracks.length + ' Strecken nacheinander – die ganze Weltentour' : c.tracks.map(t => esc(TR[t].name)).join(' · ')}</small></button>`).join('') : TR.map((t, i) => `<button class="chip ctile ${save.track === i ? 'on' : ''}" data-t="${i}" ${tileVars(t.sky[0], t.ground || '#203060')}><i>${TICON[t.id] || '🏁'}</i><b>${esc(t.name)}</b><small>${t.world === 'oma' ? '☕ Oma-Welt' : t.world ? '★ Weltentour' : 'Klassik'}</small></button>`).join('');
+    const bt = save.rmode === 'battle'; if (bt && !(TR[save.arena] && TR[save.arena].arena)) save.arena = TR.findIndex(t => t.arena); if (!bt && TR[save.track] && TR[save.track].arena) save.track = 0;
+    $('trackHeading').textContent = save.rmode === 'gp' ? 'WÄHLE DEINEN CUP' : bt ? 'WÄHLE MODUS UND ARENA' : 'WÄHLE DEINE STRECKE';
+    $('tracks').innerHTML = bt ? BMODES.map(m => `<button class="chip ctile t-battle ${(save.bmode || 'ball') === m[0] ? 'on' : ''}" data-bm="${m[0]}"><i>${m[3]}</i><b>${m[1]}</b><small>${m[2]}</small></button>`).join('') + TR.map((t, i) => t.arena ? `<button class="chip ctile ${save.arena === i ? 'on' : ''}" data-ar="${i}" ${tileVars(t.sky[0], t.ground || '#203060')}><i>${TICON[t.id] || '🏟️'}</i><b>${esc(t.name)}</b><small>🏟️ Battle-Arena</small></button>` : '').join('') : save.rmode === 'gp' ? Track.CUPS.map((c, i) => `<button class="chip ctile ${save.cup === i ? 'on' : ''}" data-cup="${i}" ${tileVars(TR[c.tracks[0]].sky[0], TR[c.tracks[c.tracks.length - 1]].ground || '#203060')}><i>${c.icon || '🏆'}</i><b>${esc(c.name)}</b><small>${c.all ? c.tracks.length + ' Strecken nacheinander – die ganze Weltentour' : c.tracks.map(t => esc(TR[t].name)).join(' · ')}</small></button>`).join('') : TR.map((t, i) => t.arena ? '' : `<button class="chip ctile ${save.track === i ? 'on' : ''}" data-t="${i}" ${tileVars(t.sky[0], t.ground || '#203060')}><i>${TICON[t.id] || '🏁'}</i><b>${esc(t.name)}</b><small>${t.world === 'oma' ? '☕ Oma-Welt' : t.world ? '★ Weltentour' : 'Klassik'}</small></button>`).join('');
+    $('tracks').querySelectorAll('[data-bm]').forEach(b => b.onclick = () => { save.bmode = b.dataset.bm; persist(); renderMenu(); });
+    $('tracks').querySelectorAll('[data-ar]').forEach(b => b.onclick = () => { save.arena = +b.dataset.ar; persist(); renderMenu(); if (ready) { View.setTrack(getTrack(save.arena)); curTrackIdx = save.arena; } });
     $('tracks').querySelectorAll('[data-cup]').forEach(b => b.onclick = () => { save.cup = +b.dataset.cup; persist(); renderMenu(); });
     $('tracks').querySelectorAll('[data-t]').forEach(b => b.onclick = () => { save.track = +b.dataset.t; persist(); renderMenu(); if (ready) { View.setTrack(getTrack(save.track)); curTrackIdx = save.track; } });
     $('laps').innerHTML = [2, 3, 5].map(n => `<button class="chip ${save.laps === n ? 'on' : ''}" data-l="${n}">${n}</button>`).join(''); $('laps').querySelectorAll('[data-l]').forEach(b => b.onclick = () => { save.laps = +b.dataset.l; persist(); renderMenu(); });
     $('ccls').innerHTML = CCS.map((c, i) => `<button class="chip ${(save.cc == null ? 2 : save.cc) === i ? 'on' : ''}" data-cc="${i}">${c}</button>`).join(''); $('ccls').querySelectorAll('[data-cc]').forEach(b => b.onclick = () => { save.cc = +b.dataset.cc; persist(); renderMenu(); });
     $('skill').innerHTML = SKILLS.map((s, i) => `<button class="chip ${save.skill === i ? 'on' : ''}" data-k="${i}">${s}</button>`).join(''); $('skill').querySelectorAll('[data-k]').forEach(b => b.onclick = () => { save.skill = +b.dataset.k; persist(); renderMenu(); });
-    $('skill').hidden = $('skill').previousElementSibling.hidden = save.rmode === 'tt';
+    $('skill').hidden = $('skill').previousElementSibling.hidden = save.rmode === 'tt'; $('laps').parentElement.hidden = bt;
     $('pcard').innerHTML = `<img alt="" src="${logoSrc(save.logo)}" title="${esc(NAMES[save.logo] || '')}"><input maxlength="14" value="${esc(save.name)}" placeholder="Dein Name"><span class="info">Logo antippen</span>`;
     $('pcard').querySelector('img').onclick = e => { save.logo = nextLogo(save.logo); e.target.src = logoSrc(save.logo); persist(); };
     $('pcard').querySelector('input').oninput = e => { save.name = e.target.value; persist(); };
@@ -189,7 +205,7 @@ function initHost() {
     const pads = Pads.list(); $('padInfo').hidden = !pads.length; if (pads.length) $('padInfo').textContent = '🎮 ' + (self.Nav ? Nav.GLYPH[Pads.style(pads[0])].name : 'Controller') + (pads.length > 1 ? ' ×' + pads.length : '');
     document.querySelectorAll('#hmTiles .tile').forEach(t => { if (t.id !== 'bTop' && t.id !== 'bTv') t.disabled = !ready; }); $('bGoSetup').disabled = !ready;
     renderOpts();
-    const ch = CHARS[save.char % CHARS.length], kt = KARTS[save.kart % KARTS.length], where = save.rmode === 'gp' ? Track.CUPS[save.cup].name : TR[save.track].name, mode = { race: 'Einzelrennen', gp: 'Cup', tt: 'Zeitfahren', free: 'Freies Fahren' }[save.rmode] || '';
+    const ch = CHARS[save.char % CHARS.length], kt = KARTS[save.kart % KARTS.length], where = save.rmode === 'gp' ? Track.CUPS[save.cup].name : bt ? '🎈 ' + BNAME[save.bmode || 'ball'] + ' · ' + TR[save.arena].name : TR[save.track].name, mode = { race: 'Einzelrennen', gp: 'Cup', tt: 'Zeitfahren', free: 'Freies Fahren' }[save.rmode] || '';
     $('selSum').innerHTML = `<b>${ch.emoji}</b><span>${esc((save.name || '').trim() || ch.name)}<small>${kt.emoji} ${esc(kt.name)} · ${esc(where)}</small></span><i>✎</i>`; void mode;
     $('bGoSetup').textContent = setupFor === 'multi' ? 'HANDYS KOPPELN ▶' : 'LOS! ▶'; $('setTitle').textContent = setupFor === 'multi' ? 'MEHRSPIELER EINRICHTEN' : 'RENNEN EINRICHTEN';
     if (ready && View.previewKart) {
@@ -228,6 +244,7 @@ function initHost() {
   // Kacheln im Hauptmenü: Modus wählen und direkt zur Streckenwahl
   document.querySelectorAll('#hmTiles [data-go]').forEach(t => t.onclick = () => { if (!ready) return; save.rmode = t.dataset.go; persist(); openSetup('solo', 1); });
   $('bGarage').onclick = () => openSetup('solo', 2);
+  const coopGo = () => { if (!ready) return; save.coop = true; persist(); setupFor = 'multi'; renderMenu(); openLobby(); }; $('bCoop').onclick = coopGo; $('multiCoop').onclick = coopGo;
   const hmDesc = el => { const d = el && el.dataset && el.dataset.d; if (d) $('hmDesc').textContent = d; };
   document.querySelectorAll('#hmTiles .tile').forEach(t => { t.addEventListener('focus', () => hmDesc(t)); t.addEventListener('pointerenter', () => hmDesc(t)); });
   new MutationObserver(() => { const f = document.querySelector('#hmTiles .tile.pf'); if (f) hmDesc(f); }).observe($('hmTiles'), { attributes: true, subtree: true, attributeFilter: ['class'] });
@@ -308,13 +325,13 @@ function initHost() {
 
   // ------------------------------------------------------------------ Start: Solo / Mehrspieler
   LD.start(); LD.creep(0.4);
-  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt14'); }).then(() => LD.add(0.05))]).then(async () => {
+  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt15b'); }).then(() => LD.add(0.05))]).then(async () => {
     View.init($('cv'), logos); View.camMode = save.cam || 0; LD.add(0.05, 'Rennstrecke wird gebaut …'); await nextPaint();
     curTrackIdx = save.track; View.setTrack(getTrack(save.track)); View.resize(innerWidth, innerHeight, 1); LD.add(0.1, 'Shader werden vorgewärmt …'); await nextPaint();
     View.warmup(); ready = true; $('loadInfo').textContent = `${TR.length} Strecken · ${KARTS.length} Karts · ${CHARS.length} Figuren · ${logos.length} Sender-Logos`; renderMenu();
     lastT = performance.now(); loopOn = true; requestAnimationFrame(frame);
     LD.finish(() => { LD.hide(); if (TV) { setupFor = 'multi'; renderMenu(); openLobby(); } else showView('title'); });
-  }).catch(e => { LD.stop(); $('err').hidden = false; $('errTxt').textContent = 'Das Spiel konnte nicht geladen werden (' + e.message + '). Bitte Internetverbindung prüfen.'; });
+  }).catch(e => { if (!sessionStorage.getItem('akReset') && !/fetch|network|load|script/i.test(e.message || '')) { try { sessionStorage.setItem('akReset', '1'); const b = save.best; localStorage.setItem('akSave', JSON.stringify({ best: b, name: save.name })); } catch (x) {} location.reload(); return; } LD.stop(); $('err').hidden = false; $('errTxt').textContent = 'Das Spiel konnte nicht geladen werden (' + e.message + '). Bitte Internetverbindung prüfen.'; });
   renderMenu(); document.addEventListener('pointerdown', () => AUD.unlock(), { once: true }); document.addEventListener('pointerdown', () => { if (!R && ready && !AUD.muted) AUD.bed('menu'); }, { once: true });
   addEventListener('resize', () => { if (ready) { View.resize(innerWidth, innerHeight, nVp); layoutHud(); if (R) R.dirty = true; } });
   if (coarse) $('kbToggle').textContent = '👆 Spieler an diesem Gerät';
@@ -384,51 +401,55 @@ function initHost() {
       const v = String(m.sel || ''), n = +v.slice(1); if (v[0] === 't' && TR[n]) { save.rmode = 'race'; save.track = n; } else if (v[0] === 'c' && Track.CUPS[n]) { save.rmode = 'gp'; save.cup = n; }
       if ([2, 3, 5].includes(m.laps)) save.laps = m.laps; persist(); renderMenu(); const cm = cfgMsg(); remotes().forEach(p => send(p.conn, { t: 'cfg', cfg: cm }));
     }
-    else if (m.t === 'need') { const p = players.find(x => x.conn === c); if (p && p.view && R && !R.ended && R.humans.includes(p)) sendRace(p); }
+    else if (m.t === 'need') { const p = players.find(x => x.conn === c); if (p && p.view && R && !R.ended) { const g = R.gun.find(x => x.p === p); if (g) sendRace(p, g.ki); else if (R.humans.includes(p)) sendRace(p); } }
     else if (m.t === 'go' && players.some(p => p.conn === c)) { if (lobbyOpen && !$('bGo').disabled) $('bGo').click(); else if (R && R.ended && !$('res').hidden) $('bNext').click(); }
   }
-  const cfgMsg = () => ({ opts: TR.map((t, i) => ['t' + i, t.name]).concat(Track.CUPS.map((c, i) => ['c' + i, '🏆 ' + c.name])), sel: save.rmode === 'gp' ? 'c' + save.cup : 't' + save.track, laps: save.laps });
+  const cfgMsg = () => ({ opts: TR.map((t, i) => t.arena ? null : ['t' + i, t.name]).filter(Boolean).concat(Track.CUPS.map((c, i) => ['c' + i, '🏆 ' + c.name])), sel: save.rmode === 'gp' ? 'c' + save.cup : 't' + save.track, laps: save.laps });
   function onGone(c) { const i = players.findIndex(p => p.conn === c); if (i < 0) return; const p = players[i]; p.gone = true; if (R && R.S.state !== 'done') { const k = R.S.karts[R.humans.indexOf(p)]; if (k) k.auto = true; } else { players.splice(i, 1); } updateLobby(); }
   function updateLobby() {
     $('lobList').innerHTML = players.map((p, i) => `<div class="pc glass" style="--c:${SLOTC[i]}"><img alt="" src="${logoSrc(p.logo)}" style="border-color:${SLOTC[i]}"><b style="flex:1;text-align:left">${CHARS[p.char % CHARS.length].emoji}${KARTS[(p.kart || 0) % KARTS.length].emoji} ${esc(p.name)}</b><span class="info">${p.conn ? (p.view ? '📱 eigenes Bild' : '📱 gekoppelt') : p.pad != null ? '🎮 Gamepad' : coarse ? '👆 dieses Gerät' : '⌨️ Tastatur'}</span></div>`).join('') || '<p class="info">Noch niemand verbunden.</p>';
-    $('bGo').disabled = !players.length; $('kbToggle').classList.toggle('on', players.some(p => p.kbp));
+    $('bGo').disabled = !players.length; $('kbToggle').classList.toggle('on', players.some(p => p.kbp)); $('coopToggle').classList.toggle('on', !!save.coop);
+    $('coopInfo').textContent = save.coop ? (players.length >= 2 ? '🤝 Koop: ' + players.map((p, i) => i % 2 ? '' : esc(p.name) + ' fährt' + (players[i + 1] ? ', ' + esc(players[i + 1].name) + ' wirft Items und tauscht' : '')).filter(Boolean).join(' · ') : '🤝 Koop: Noch ein Spieler nötig – der zweite wirft Items und tauscht die Fahrer.') : '';
   }
   $('padAdd').onclick = () => { const used = new Set(players.filter(p => p.pad != null).map(p => p.pad)), pad = Pads.list().find(p => !used.has(p.index)); if (!pad) { $('padAdd').textContent = '🎮 Kein Gamepad – Taste am Gamepad drücken'; setTimeout(() => { $('padAdd').textContent = '🎮 Gamepad-Spieler hinzufügen'; }, 2500); return; } if (players.length < 4) players.push({ name: 'Gamepad ' + (used.size + 1), logo: save.logo, char: save.char, kart: save.kart, conn: null, input: { s: 0, g: 0, b: 0, d: 0, i: 0 }, pad: pad.index }); updateLobby(); };
   addEventListener('gamepadconnected', () => { renderMenu(); });
   $('kbToggle').onclick = () => { if (players.some(p => p.kbp)) players = players.filter(p => !p.kbp); else if (players.length < 4) addKbPlayer(); save.kbOn = players.some(p => p.kbp); persist(); updateLobby(); };
+  $('coopToggle').onclick = () => { save.coop = !save.coop; persist(); updateLobby(); };
   $('bLobBack').onclick = () => { $('lobby').hidden = true; lobbyOpen = false; showView('setup'); };
   $('bGo').onclick = () => { $('lobby').hidden = true; lobbyOpen = false; beginSeries(); };
 
   // ------------------------------------------------------------------ Serie / Rennen
   function beginSeries() {
-    const multi = players.length > 1 || players.some(p => p.conn), free = save.rmode === 'free' && players.length === 1, tt = (save.rmode === 'tt' || free) && players.length === 1;
-    const total = tt ? 1 : 8, specs = players.map((p, i) => ({ name: p.name, logo: p.logo, char: p.char == null ? save.char : p.char, kart: p.kart == null ? save.kart : p.kart, human: true, assist: p.conn ? Math.max(1, assistLvl()) : assistLvl() })), used = new Set(players.map(p => p.logo)), usedC = new Set(specs.map(s => s.char)), cpool = CHARS.map((_, i) => i).filter(i => !usedC.has(i)).sort(() => Math.random() - 0.5);
+    // Koop: Spieler 1+2 (und 3+4) teilen sich ein Kart – der erste fährt, der zweite wirft Items und tauscht die Fahrer
+    const coop = !!save.coop && players.length >= 2, drivers = coop ? players.filter((_, i) => i % 2 === 0) : players.slice(), gun = coop ? players.map((p, i) => i % 2 ? { p, ki: i >> 1 } : null).filter(Boolean) : [];
+    const multi = players.length > 1 || players.some(p => p.conn), bt = save.rmode === 'battle', free = save.rmode === 'free' && players.length === 1 && !bt, tt = (save.rmode === 'tt' || free) && players.length === 1;
+    const total = tt ? 1 : 8, specs = drivers.map((p, i) => ({ name: p.name, logo: p.logo, char: p.char == null ? save.char : p.char, kart: p.kart == null ? save.kart : p.kart, human: true, assist: p.conn ? Math.max(1, assistLvl()) : assistLvl() })), used = new Set(players.map(p => p.logo)), usedC = new Set(specs.map(s => s.char)), cpool = CHARS.map((_, i) => i).filter(i => !usedC.has(i)).sort(() => Math.random() - 0.5);
     const pool = Array.from({ length: 13 }, (_, i) => i).filter(i => !used.has(i)).sort(() => Math.random() - 0.5);
-    const omaRun = (save.rmode === 'gp' ? Track.CUPS[save.cup].tracks : [save.track]).every(t => TR[t] && TR[t].world === 'oma'), rollK = KARTS.findIndex(k => k.id === 'rollator');
+    const omaRun = !bt && (save.rmode === 'gp' ? Track.CUPS[save.cup].tracks : [save.track]).every(t => TR[t] && TR[t].world === 'oma'), rollK = KARTS.findIndex(k => k.id === 'rollator');
     if (omaRun) cpool.sort((a, b) => (OMA.is(CHARS[a]) ? 1 : 0) - (OMA.is(CHARS[b]) ? 1 : 0));
     for (let b = 0; specs.length < total; b++) { const lg = pool[b % pool.length]; const ch = cpool.length ? cpool.pop() : Math.floor(Math.random() * CHARS.length); specs.push({ name: CHARS[ch].name, logo: lg, char: ch, kart: omaRun && OMA.is(CHARS[ch]) && rollK >= 0 ? rollK : Math.floor(Math.random() * KARTS.length), human: false, skill: save.skill }); }
-    if (save.tandem !== false) specs.forEach((sp, i) => { sp.co = sp.human ? (i === 0 && !(players[0] && players[0].conn) ? coOf(sp.char) : (sp.char + 7) % CHARS.length) : (cpool.length ? cpool.pop() : (sp.char + 11) % CHARS.length); sp.sp = spOf(sp.char); sp.sp2 = spOf(sp.co); });
-    GP = { specs, tt, free, cc: tt || free ? 2 : (save.cc == null ? 2 : save.cc), race: 0, pts: specs.map(() => 0), gp: save.rmode === 'gp' && !tt, order: save.rmode === 'gp' && !tt ? Track.CUPS[save.cup].tracks.slice() : [save.track], multi };
+    if (save.tandem !== false || coop) specs.forEach((sp, i) => { const gn = gun.find(g => g.ki === i); sp.co = gn && gn.p.char != null && gn.p.char !== sp.char ? gn.p.char : sp.human ? (i === 0 && !(players[0] && players[0].conn) ? coOf(sp.char) : (sp.char + 7) % CHARS.length) : (cpool.length ? cpool.pop() : (sp.char + 11) % CHARS.length); sp.sp = spOf(sp.char); sp.sp2 = spOf(sp.co); });
+    GP = { specs, tt, free, cc: tt || free ? 2 : (save.cc == null ? 2 : save.cc), race: 0, pts: specs.map(() => 0), gp: save.rmode === 'gp' && !tt, order: bt ? [TR[save.arena] && TR[save.arena].arena ? save.arena : TR.findIndex(t => t.arena)] : save.rmode === 'gp' && !tt ? Track.CUPS[save.cup].tracks.slice() : [save.track], multi, battle: bt ? (save.bmode || 'ball') : null, drivers, gun };
     startRace();
   }
   function startRace() {
     const tIdx = GP.order[GP.race], mi = GP.cc === 3, tr = getTrack(tIdx, mi), tKey = mi ? 'm' + tIdx : tIdx; if (curTrackIdx !== tKey) { View.setTrack(tr); curTrackIdx = tKey; }
     const racers = GP.specs.map((s, i) => ({ name: s.name, logo: s.logo, char: s.char, co: s.co, sp: s.sp, sp2: s.sp2, kart: s.kart, assist: s.assist, human: s.human, skill: s.skill, color: View.KCOL[i % 8] }));
-    const S = Sim.create({ track: tr, cc: GP.cc, laps: GP.free ? 999999 : save.laps, racers, items: !GP.tt, free: GP.free, shuffle: true }), humans = players.slice();
+    const S = Sim.create({ track: tr, cc: GP.cc, laps: GP.free ? 999999 : save.laps, racers, items: !GP.tt, free: GP.free, shuffle: true, battle: GP.battle }), humans = (GP.drivers || players).slice();
     humans.forEach(p => { p.gone = p.gone && !p.conn ? false : p.gone; });
-    View.perfReset(); acc = 0; R = { S, tr, tIdx, humans, count: 4, lastCount: 99, huds: [], miniAt: 0, pushAt: 0, firstFin: false, ended: false, trackMap: null };
+    View.perfReset(); acc = 0; R = { S, tr, tIdx, humans, gun: GP.gun || [], count: 4, lastCount: 99, huds: [], miniAt: 0, pushAt: 0, firstFin: false, ended: false, trackMap: null };
     humans.forEach((p, i) => { if (p.gone) S.karts[i].auto = true; p.inAt = performance.now(); p.input.s = p.input.g = p.input.b = p.input.d = p.input.i = 0; p.itemPending = 0; });
     // Handys mit eigenem Rennbild brauchen kein Feld im Splitscreen; zeigt keiner ein eigenes Bild hier, bleiben alle sichtbar (Fernseher als Zuschauerbild)
     R.vis = humans.map((_, i) => i).filter(i => !(humans[i].conn && humans[i].view)); if (!R.vis.length) R.vis = [0]; R.rid = ++raceNo; R.snapAt = 0; R.fxq = [];
     nVp = Math.min(4, R.vis.length); $('tbar').classList.toggle('mid', nVp > 1); View.resize(innerWidth, innerHeight, nVp); View.setupRace(S, R.vis.slice(0, 4)); ghostLoad(); buildHud(); buildMap();
-    humans.forEach(p => { if (p.conn && p.view) sendRace(p); });
+    humans.forEach(p => { if (p.conn && p.view) sendRace(p); }); R.gun.forEach(g => { g.p.input = { s: 0, g: 0, b: 0, d: 0, i: 0 }; g.p.itemPending = 0; if (g.p.conn && g.p.view) sendRace(g.p, g.ki); });
     document.body.classList.add('racing'); themeCol(R && R.tr && R.tr.def.sky ? R.tr.def.sky[0] : null); $('menu').hidden = true; $('res').hidden = true; $('hud').hidden = false; $('tbar').hidden = false; AUD.bed('race'); RADIO.resume();
-    const raceLoad = $('raceLoad'); raceLoad.hidden = false; raceLoad.querySelector('.race-load-title').textContent = TR[tIdx].name; raceLoad.querySelector('.race-load-sub').textContent = GP.free ? 'FREIES FAHREN' : GP.gp ? Track.CUPS[save.cup].name : 'ARCADE-RENNEN'; raceLoad.querySelector('.race-load-tip').textContent = ['Drifte durch Kurven und löse einen Mini-Turbo aus.','Nutze Boostfelder und Windschatten zum Überholen.','Meide Hindernisse – wähle deine Ideallinie.'][tIdx % 3]; R.introLoading = true; const t0 = performance.now(); View.prepare(racers.map(r => r.char).concat(racers.filter(r => r.co != null).map(r => r.co)), 6000).then(() => { if (!R || R.S !== S) return; R.introTimer = setTimeout(() => { if (R && R.S === S) { R.introLoading = false; raceLoad.hidden = true; push('grid'); } }, Math.max(0, 1350 - (performance.now() - t0))); }); paused = false;
+    const raceLoad = $('raceLoad'); raceLoad.hidden = false; raceLoad.querySelector('.race-load-title').textContent = TR[tIdx].name; raceLoad.querySelector('.race-load-sub').textContent = GP.battle ? 'BATTLE · ' + BNAME[GP.battle].toUpperCase() : GP.free ? 'FREIES FAHREN' : GP.gp ? Track.CUPS[save.cup].name : 'ARCADE-RENNEN'; raceLoad.querySelector('.race-load-tip').textContent = GP.battle ? { ball: 'Jeder Treffer kostet einen Ballon. Mit Turbo rammen klaut einen!', cap: 'Schnapp dir den Funkpokal und halte ihn – Treffer lassen ihn fallen.', bomb: 'Bomben rollen aus und explodieren – die Druckwelle trifft alle in der Nähe.' }[GP.battle] : ['Drifte durch Kurven und löse einen Mini-Turbo aus.','Nutze Boostfelder und Windschatten zum Überholen.','Meide Hindernisse – wähle deine Ideallinie.'][tIdx % 3]; R.introLoading = true; const t0 = performance.now(); View.prepare(racers.map(r => r.char).concat(racers.filter(r => r.co != null).map(r => r.co)), 6000).then(() => { if (!R || R.S !== S) return; R.introTimer = setTimeout(() => { if (R && R.S === S) { R.introLoading = false; raceLoad.hidden = true; push('grid'); } }, Math.max(0, 1350 - (performance.now() - t0))); }); paused = false;
   }
   function banner(t, sub, ms, cls) { const b = $('banner'); b.innerHTML = esc(t) + (sub ? '<small>' + esc(sub) + '</small>' : ''); b.className = 'pop'; b.style.color = cls || '#fff'; b.hidden = false; void b.offsetWidth; clearTimeout(banner.k); if (ms) banner.k = setTimeout(() => { b.hidden = true; }, ms); }
   // HUD je Fahrer
   function buildHud() {
-    const hud = $('hud'); hud.innerHTML = ''; R.huds = R.vis.slice(0, 4).map(i => { const p = R.humans[i], d = document.createElement('div'); d.className = 'vp'; d.style.setProperty('--sc', SLOTC[i]); d.innerHTML = `<div class="spl"></div><div class="nm">${esc(p.name)}</div><div class="item"></div><div class="item2" hidden title="Beifahrer-Item (Tauschen)"></div><div class="fog"></div><canvas width="160" height="160"></canvas><div class="pos"></div><div class="lap"></div><div class="spd"></div><div class="msg"></div>`; hud.appendChild(d); return { ki: i, d, c: {}, spl: d.querySelector('.spl'), item: d.querySelector('.item'), item2: d.querySelector('.item2'), last2: undefined, fog: d.querySelector('.fog'), fogT: 0, cv: d.querySelector('canvas'), pos: d.querySelector('.pos'), lap: d.querySelector('.lap'), spd: d.querySelector('.spd'), msg: d.querySelector('.msg'), lastItem: null, msgT: 0 }; }); layoutHud();
+    const hud = $('hud'); hud.innerHTML = ''; R.huds = R.vis.slice(0, 4).map(i => { const p = R.humans[i], d = document.createElement('div'); d.className = 'vp'; d.style.setProperty('--sc', SLOTC[i]); const gn = R.gun.find(g => g.ki === i); d.innerHTML = `<div class="spl"></div><div class="nm">${esc(p.name)}${gn ? ' 🤝 ' + esc(gn.p.name) : ''}</div><div class="item"></div><div class="item2" hidden title="Beifahrer-Item (Tauschen)"></div><div class="fog"></div><canvas width="160" height="160"></canvas><div class="pos"></div><div class="lap"></div><div class="spd"></div><div class="msg"></div>`; hud.appendChild(d); return { ki: i, d, c: {}, spl: d.querySelector('.spl'), item: d.querySelector('.item'), item2: d.querySelector('.item2'), last2: undefined, fog: d.querySelector('.fog'), fogT: 0, cv: d.querySelector('canvas'), pos: d.querySelector('.pos'), lap: d.querySelector('.lap'), spd: d.querySelector('.spd'), msg: d.querySelector('.msg'), lastItem: null, msgT: 0 }; }); layoutHud();
   }
   function layoutHud() { if (!R) return; const rs = View.rects(Math.max(1, R.huds.length), innerWidth, innerHeight); R.huds.forEach((h, i) => { const r = rs[i]; Object.assign(h.d.style, { left: r[0] + 'px', top: (innerHeight - r[1] - r[3]) + 'px', width: r[2] + 'px', height: r[3] + 'px' }); }); }
   function buildMap() {
@@ -439,13 +460,13 @@ function initHost() {
   }
   function drawMini(h, hi) {
     const g = h.cv.getContext('2d'), m = R.trackMap; g.clearRect(0, 0, 160, 160); g.drawImage(m.c, 0, 0); const S = R.S;
-    S.karts.forEach((k, i) => { if (i === hi) return; g.fillStyle = k.human ? SLOTC[i % 4] : '#ff9a1f'; g.beginPath(); g.arc(m.X(k.x), m.Z(k.z), 5, 0, 7); g.fill(); }); const k = S.karts[hi]; g.fillStyle = '#fff'; g.beginPath(); g.arc(m.X(k.x), m.Z(k.z), 9, 0, 7); g.fill(); g.fillStyle = SLOTC[hi % 4]; g.beginPath(); g.arc(m.X(k.x), m.Z(k.z), 6.5, 0, 7); g.fill();
+    S.karts.forEach((k, i) => { if (i === hi) return; g.fillStyle = k.human ? SLOTC[i % 4] : '#ff9a1f'; g.beginPath(); g.arc(m.X(k.x), m.Z(k.z), 5, 0, 7); g.fill(); }); if (S.obj && S.obj.holder < 0) { g.fillStyle = '#ffd24a'; g.strokeStyle = '#000'; g.lineWidth = 2; g.beginPath(); g.arc(m.X(S.obj.x), m.Z(S.obj.z), 7, 0, 7); g.fill(); g.stroke(); } const k = S.karts[hi]; g.fillStyle = '#fff'; g.beginPath(); g.arc(m.X(k.x), m.Z(k.z), 9, 0, 7); g.fill(); g.fillStyle = SLOTC[hi % 4]; g.beginPath(); g.arc(m.X(k.x), m.Z(k.z), 6.5, 0, 7); g.fill();
   }
   function updateHud(dt) {
     const S = R.S; R.huds.forEach(h => {
       const i = h.ki, k = S.karts[i], n = S.karts.length, lap = Math.max(1, Math.min(S.laps, k.lap));
       const c = h.c, pos = k.rank * 100 + n, lp = k.finished ? S.laps : lap, sp = Math.round(Math.max(0, k.vf) * 3.6 * 0.9), roll = k.itemT > 0 && !(k.item && k.co != null), roll2 = k.itemT > 0 && !!k.item && k.co != null, fast = k.boostT > 0;
-      if (c.pos !== pos) { c.pos = pos; h.pos.innerHTML = `${k.rank}<small>.</small>`; h.pos.dataset.p = k.rank <= 3 ? k.rank : 'n'; } const cn = k.coins || 0; if (c.lap !== lp || c.cn !== cn) { c.lap = lp; c.cn = cn; h.lap.innerHTML = `<span class="cn${cn >= 10 ? ' max' : ''}"><i></i>${String(cn).padStart(2, '0')}</span><span class="lp"><b>🏁</b>${lp}<small>/${S.laps}</small></span>`; } if (c.sp !== sp) { c.sp = sp; h.spd.innerHTML = `${sp}<small>km/h</small>`; }
+      if (c.pos !== pos) { c.pos = pos; h.pos.innerHTML = `${k.rank}<small>.</small>`; h.pos.dataset.p = k.rank <= 3 ? k.rank : 'n'; } const cn = k.coins || 0; if (S.battle) { const sc = S.battle === 'ball' ? (k.out ? '💥 RAUS' : '🎈'.repeat(Math.max(0, k.bal))) : S.battle === 'cap' ? '📻 ' + Math.floor(k.hold) + '<small>/' + S.goal + ' s</small>' : '💣 ' + k.pts + '<small>/' + S.goal + '</small>', tl = Math.max(0, Math.ceil(S.lim - (S.state === 'race' ? S.t : 0))), bk = sc + tl; if (c.lap !== bk) { c.lap = bk; h.lap.innerHTML = `<span class="cn bsc">${sc}</span><span class="lp"><b>⏱</b>${Math.floor(tl / 60)}:${String(tl % 60).padStart(2, '0')}</span>`; } } else if (c.lap !== lp || c.cn !== cn) { c.lap = lp; c.cn = cn; h.lap.innerHTML = `<span class="cn${cn >= 10 ? ' max' : ''}"><i></i>${String(cn).padStart(2, '0')}</span><span class="lp"><b>🏁</b>${lp}<small>/${S.laps}</small></span>`; } if (c.sp !== sp) { c.sp = sp; h.spd.innerHTML = `${sp}<small>km/h</small>`; }
       if (h.item2) { const i2 = k.co == null ? null : roll2 ? '❓' : itemHtml(k.item2, k.item2N) || ''; if (i2 !== h.last2) { h.last2 = i2; h.item2.hidden = i2 == null; h.item2.innerHTML = i2 || ''; h.item2.classList.toggle('empty', !i2); h.item2.classList.toggle('roll', roll2); } }
       const it = roll ? '❓' : itemHtml(k.item, k.itemN); if (it !== h.lastItem) { h.item.innerHTML = it; h.lastItem = it; h.item.classList.toggle('empty', !it); } if (c.roll !== roll) { c.roll = roll; h.item.classList.toggle('roll', roll); } if (c.fast !== fast) { c.fast = fast; h.spl.classList.toggle('on', fast); }
       if (h.msgT > 0) { h.msgT -= dt; if (h.msgT <= 0) h.msg.textContent = ''; } if (h.fogT > 0) { h.fogT -= dt; if (h.fogT <= 0) h.fog.classList.remove('on'); }
@@ -453,16 +474,16 @@ function initHost() {
     }); if (R.miniAt <= 0) R.miniAt = 0.12; else R.miniAt -= dt;
   }
   const hudOf = ki => R.huds.find(h => h.ki === ki), hmsg = (ki, t, sec) => { const h = hudOf(ki); if (h) { h.msg.textContent = t; h.msgT = sec || 1.6; } };
-  function push(ph) { R && R.humans.forEach((p, i) => { if (!p.conn) return; const k = R.S.karts[i]; send(p.conn, { t: 'st', ph, pos: k.rank, n: R.S.karts.length, lap: Math.max(1, Math.min(R.S.laps, k.lap)), laps: R.S.laps, item: k.item ? ITEM_ICON[k.item] + (k.itemN > 1 ? '×' + k.itemN : '') : '', roll: k.itemT > 0, spd: Math.round(Math.max(0, k.vf) * 3.24), fin: k.finished }); }); }
+  function push(ph) { R && R.humans.map((p, i) => [p, i]).concat(R.gun.map(g => [g.p, g.ki])).forEach(([p, i]) => { if (!p.conn) return; const k = R.S.karts[i]; send(p.conn, { t: 'st', ph, pos: k.rank, n: R.S.karts.length, lap: Math.max(1, Math.min(R.S.laps, k.lap)), laps: R.S.laps, item: k.item ? ITEM_ICON[k.item] + (k.itemN > 1 ? '×' + k.itemN : '') : '', roll: k.itemT > 0, spd: Math.round(Math.max(0, k.vf) * 3.24), fin: k.finished }); }); }
   const isHuman = ki => ki < R.humans.length;
   const chOf = ki => { const k = R && R.S && R.S.karts[ki]; return k && k.char != null ? CHARS[k.char % CHARS.length] : null; };
   // Eigenes Rennbild am Handy: einmal Strecke/Karts, dann ~20× pro Sekunde der Zustand (das Handy zeichnet und glättet selbst)
   let raceNo = 0; const r2 = v => Math.round(v * 100) / 100, FXE = { trick: 1, coin: 1, boom: 1, splat: 1, smash: 1, rockBounce: 1, hit: 1, pad: 1, flash: 1, use: 1, fog: 1 };
-  function sendRace(p) { const S = R.S; send(p.conn, { t: 'race', r: R.rid, tr: R.tIdx, mi: GP.cc === 3 ? 1 : 0, items: S.items, me: R.humans.indexOf(p), karts: S.karts.map(k => [k.logo, k.char, k.kart]), boxes: S.boxes.map(b => [r2(b.x), r2(b.z)]), coins: S.coins.map(c => [r2(c.x), r2(c.z), r2(c.f)]), pads: S.pads.map(q => [r2(q.x), r2(q.z), r2(q.th)]) }); }
+  function sendRace(p, me) { const S = R.S; send(p.conn, { t: 'race', r: R.rid, tr: R.tIdx, mi: GP.cc === 3 ? 1 : 0, items: S.items, bt: S.battle, me: me == null ? R.humans.indexOf(p) : me, karts: S.karts.map(k => [k.logo, k.char, k.kart]), boxes: S.boxes.map(b => [r2(b.x), r2(b.z)]), coins: S.coins.map(c => [r2(c.x), r2(c.z), r2(c.f)]), pads: S.pads.map(q => [r2(q.x), r2(q.z), r2(q.th)]) }); }
   function sendSnap() {
-    const S = R.S, vw = R.humans.filter(p => p.conn && p.view && !p.gone); if (!vw.length) { R.fxq.length = 0; return; }
+    const S = R.S, vw = R.humans.concat(R.gun.map(g => g.p)).filter(p => p.conn && p.view && !p.gone); if (!vw.length) { R.fxq.length = 0; return; }
     const k = []; for (const q of S.karts) k.push(r2(q.x), r2(q.z), Math.round(q.th * 1000) / 1000, r2(q.vf), r2(q.steer), r2(q.drift || 0), r2(q.spinT), q.boostT > 0 ? 1 : 0, Math.round(q.shieldT * 10) / 10, q.rough ? 1 : 0, q.dTier || 0, q.item || 0, q.itemN || 0);
-    const m = { t: 's', r: R.rid, k, b: S.boxes.map(b => b.cd > 0 ? 1 : 0).join(''), c: S.coins.map(c => c.cd > 0 ? 1 : 0).join(''), cn: S.karts.map(q => q.coins || 0), ai: S.karts.map(q => q.airT > 0 ? Math.round(q.airT * 100) / 100 + ':' + Math.round(q.airMax * 100) / 100 : 0), h: S.hazards.map(h => [h.kind, r2(h.x), r2(h.z)]), p: S.proj.map(q => [q.kind, r2(q.x), r2(q.z), r2(q.th)]), e: R.fxq.splice(0) };
+    const m = { t: 's', r: R.rid, k, b: S.boxes.map(b => b.cd > 0 ? 1 : 0).join(''), c: S.coins.map(c => c.cd > 0 ? 1 : 0).join(''), cn: S.karts.map(q => q.coins || 0), ai: S.karts.map(q => q.airT > 0 ? Math.round(q.airT * 100) / 100 + ':' + Math.round(q.airMax * 100) / 100 : 0), h: S.hazards.map(h => [h.kind, r2(h.x), r2(h.z)]), p: S.proj.map(q => [q.kind, r2(q.x), r2(q.z), r2(q.th)]), e: R.fxq.splice(0) }; if (S.battle) { m.bb = S.karts.map(q => q.out ? -1 : q.bal); if (S.obj) m.ob = [r2(S.obj.x), r2(S.obj.z), S.obj.holder]; }
     vw.forEach(p => send(p.conn, m));
   }
   // Vibration je Ereignis (Gamepad des Spielers bzw. Handy): [stark, schwach, ms]
@@ -483,10 +504,16 @@ function initHost() {
       case 'jump': if (isHuman(e.k)) AUD.sfx.pad(); break;
       case 'trick': if (isHuman(e.k)) { AUD.sfx.coin(); hmsg(e.k, 'TRICK!', 0.9); } break;
       case 'got': if (isHuman(e.k)) { AUD.sfx.got(); hmsg(e.k, OMA.item(chOf(e.k), e.item, ITEM_NAME[e.item]), 1.2); } break;
-      case 'use': if (isHuman(e.k)) { const os = OMA.say(chOf(e.k), e.item === 'boost' ? 'boost' : 'use'); if (os && Math.random() < 0.5) hmsg(e.k, '💬 ' + os, 1.4); (({ boost: AUD.sfx.boost, shield: AUD.sfx.shield, rocket: AUD.sfx.rocket, mine: AUD.sfx.drop, banana: AUD.sfx.drop, rock: AUD.sfx.throw, flash: () => {}, fog: AUD.sfx.fogs, giga: AUD.sfx.throw, comet: AUD.sfx.thunder, heart: AUD.sfx.shield, fire: AUD.sfx.boost })[e.item] || (() => {}))(); if (SP_NAME[e.item]) hmsg(e.k, ITEM_ICON[e.item] + ' ' + SP_NAME[e.item].toUpperCase() + '!', 1.3); } break;
+      case 'use': if (isHuman(e.k)) { const os = OMA.say(chOf(e.k), e.item === 'boost' ? 'boost' : 'use'); if (os && Math.random() < 0.5) hmsg(e.k, '💬 ' + os, 1.4); (({ boost: AUD.sfx.boost, shield: AUD.sfx.shield, rocket: AUD.sfx.rocket, mine: AUD.sfx.drop, banana: AUD.sfx.drop, rock: AUD.sfx.throw, bomb: AUD.sfx.throw, flash: () => {}, fog: AUD.sfx.fogs, giga: AUD.sfx.throw, comet: AUD.sfx.thunder, heart: AUD.sfx.shield, fire: AUD.sfx.boost })[e.item] || (() => {}))(); if (SP_NAME[e.item]) hmsg(e.k, ITEM_ICON[e.item] + ' ' + SP_NAME[e.item].toUpperCase() + '!', 1.3); } break;
       case 'swap': if (isHuman(e.k)) { AUD.sfx.got(); const k = S.karts[e.k]; hmsg(e.k, '⇄ ' + (CHARS[k.sw ? k.co : k.char] || {}).name + ' fährt!', 1.1); } break;
       case 'comet': AUD.sfx.thunder(); (e.ids || []).forEach(id => { if (isHuman(id)) hmsg(id, '☄️ FUNK-KOMET!', 1.3); }); break;
       case 'burn': AUD.sfx.hit(); break;
+      case 'pop': if (isHuman(e.k)) hmsg(e.k, e.n > 0 ? '🎈 BALLON GEPLATZT! Noch ' + e.n : '💥 LETZTER BALLON!', 1.4); if (isHuman(e.by) && e.by !== e.k) hmsg(e.by, '🎯 TREFFER! ' + esc(S.karts[e.k].name), 1.2); break;
+      case 'out': AUD.sfx.boom(); if (isHuman(e.k)) { hmsg(e.k, '💥 AUSGESCHIEDEN – Platz ' + S.karts.filter(q => !q.out).length + 1, 3); if (!GP.multi) banner('AUSGESCHIEDEN', 'Alle Ballons geplatzt', 2200, '#ff6a6a'); } break;
+      case 'steal': AUD.sfx.got(); if (isHuman(e.k)) hmsg(e.k, S.battle === 'cap' ? '📻 POKAL GEKLAUT!' : '🎈 BALLON GEKLAUT!', 1.3); if (isHuman(e.o)) hmsg(e.o, S.battle === 'cap' ? '😱 POKAL WEG!' : '😱 BALLON GEKLAUT!', 1.3); break;
+      case 'grab': AUD.sfx.got(); if (isHuman(e.k)) hmsg(e.k, '📻 DU HAST DEN POKAL! Halte ihn!', 1.6); break;
+      case 'drop': if (isHuman(e.k)) hmsg(e.k, '📻 POKAL VERLOREN!', 1.3); break;
+      case 'score': if (isHuman(e.k)) { AUD.sfx.coin(); hmsg(e.k, '💣 TREFFER! ' + e.n + '/' + S.goal, 1.2); } break;
       case 'hit': if (isHuman(e.k)) { if (e.kind === 'banana') AUD.sfx.slip(); else if (e.kind !== 'flash') AUD.sfx.hit(); const os = OMA.say(chOf(e.k), 'hit'); hmsg(e.k, os ? '💬 ' + os : { banana: 'AUSGERUTSCHT!', rock: 'FELSBROCKEN!', flash: 'FUNK-BLITZ!', rocket: 'GETROFFEN!', mine: 'STÖRSIGNAL!' }[e.kind] || 'GETROFFEN!', 1.3); const p = R.humans[e.k]; if (p.conn) send(p.conn, { t: 'ev', e: 'hit' }); } break;
       case 'flash': AUD.sfx.thunder(); { const f = $('fxFlash'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); } if (isHuman(e.k)) hmsg(e.k, 'FUNK-BLITZ!', 1.2); break;
       case 'fog': AUD.sfx.fogs(); (e.ids || []).forEach(id => { if (isHuman(id)) { const h = hudOf(id); if (h) { h.fog.classList.add('on'); h.fogT = 3.8; } hmsg(id, 'NEBELBOMBE!', 1.4); } }); break;
@@ -506,12 +533,19 @@ function initHost() {
   // Eingabe der Menschen
   function readInputs() {
     const pads = Pads.list(), now = performance.now();
-    return R.humans.map((p, i) => {
+    const out = R.humans.map((p, i) => {
       if (p.conn) { const k = R.S.karts[i]; const stale = now - (p.inAt || 0) > 5000; if (!k.finished) k.auto = !!p.gone || stale; const use = (p.itemPending || 0) > 0 && !!k.item && k.itemT <= 0; if (use) p.itemPending--; return { ...p.input, g: stale ? 0 : p.input.g, b: stale ? 0 : p.input.b, s: stale ? 0 : p.input.s, i: use ? 1 : 0, itemPress: use }; }
       let r; if (p.pad != null) r = Pads.read(pads.find(x => x.index === p.pad));
       else { const pa = Pads.any(); let s = (kb.r - kb.l) + tc.s + (p.local ? pa.s : 0); if (TILT.on && !s) s = TILT.v; r = { s: clampN(s, -1, 1), aim: (p.local && pa.aim) || (kb.b || kb.lb || tc.lb ? -1 : 0) }; ['g', 'b', 'd', 'i', 'sw', 'lb', 'hn', 'cam', 'rn', 'rp', 'ro'].forEach(k => { r[k] = kb[k] || tc[k] || (p.local && pa[k]) ? 1 : 0; }); }
       extraActs(p, i, r); return r;
     });
+    // Koop-Beifahrer: wirft Items (auch nach hinten) und tauscht die Fahrer im Kart seines Partners
+    R.gun.forEach(({ p, ki }) => { const r = out[ki], k = R.S.karts[ki]; if (!r || !k) return; let g;
+      if (p.conn) { const use = (p.itemPending || 0) > 0 && !!k.item && k.itemT <= 0; if (use) p.itemPending--; g = { i: use ? 1 : 0, itemPress: use, sw: p.input.sw ? 1 : 0, aim: p.input.aim || 0 }; }
+      else if (p.pad != null) { const q = Pads.read(pads.find(x => x.index === p.pad)); g = { i: q.i || q.g ? 1 : 0, sw: q.sw || q.d ? 1 : 0, aim: q.aim || (q.b ? -1 : 0) }; }
+      else g = { i: kb.i || tc.i ? 1 : 0, sw: kb.sw || tc.sw ? 1 : 0, aim: kb.b || kb.lb ? -1 : kb.g ? 1 : 0 };
+      if (p.kbp || p.pad != null) { r.i = g.i; r.sw = g.sw; if (g.aim) r.aim = g.aim; } else { r.i = r.i || g.i; r.itemPress = r.itemPress || g.itemPress; r.sw = r.sw || g.sw; if (g.aim) r.aim = g.aim; } });
+    return out;
   }
   // Zusatzaktionen (nur Flanken): Kamera, Rückblick, Hupe, Radio
   function extraActs(p, ki, r) { const pv = p._pv || (p._pv = {}), up = k => r[k] && !pv[k]; if (up('cam')) { const m = View.camNext(ki); save.cam = View.camMode; persist(); hmsg(ki, '🎥 ' + m, 1.1); } View.setBack(ki, !!r.lb); if (up('hn')) { AUD.sfx.horn ? AUD.sfx.horn() : AUD.sfx.box(); View.honk(ki); } if (up('rn')) RADIO.step(1); if (up('rp')) RADIO.step(-1); if (up('ro')) RADIO.toggle(); ['cam', 'lb', 'hn', 'rn', 'rp', 'ro'].forEach(k => { pv[k] = r[k]; }); }
@@ -520,13 +554,13 @@ function initHost() {
     const res = Sim.results(R.S); GP.race++; const finalGp = GP.gp && GP.race >= GP.order.length;
     res.forEach(r => { GP.pts[r.k.k] += GP_PTS[r.pos - 1] || 0; });
     const humanBest = R.humans.length === 1 ? res.find(r => r.k.k === 0) : null;
-    if (humanBest && humanBest.finished && !GP.multi) { const id = R.tr.def.id, b = save.best[id] || (save.best[id] = {}); const key = 'race' + save.laps; if (!b[key] || humanBest.time < b[key]) { b[key] = humanBest.time; persist(); } }
+    if (humanBest && humanBest.finished && !GP.multi && !GP.battle) { const id = R.tr.def.id, b = save.best[id] || (save.best[id] = {}); const key = 'race' + save.laps; if (!b[key] || humanBest.time < b[key]) { b[key] = humanBest.time; persist(); } }
     const rows = GP.gp ? res.slice().sort((a, b) => GP.pts[b.k.k] - GP.pts[a.k.k] || a.pos - b.pos) : res;
-    $('resTitle').textContent = finalGp ? '🏆 Cup-Wertung' : GP.gp ? `Ergebnis ${GP.race}/${GP.order.length} – ${R.tr.def.name}` : GP.tt ? 'Zeitfahren' : R.tr.def.name;
-    $('resSub').textContent = R.newBest && !GP.multi ? '🏆 Neue Bestrunde: ' + fmtT(R.newBest) : GP.gp ? 'Punkte: 15 · 12 · 10 · 8 · 6 · 4 · 2 · 1' : '';
-    $('resList').innerHTML = rows.map((r, i) => { const hi = r.k.human, ci = hi ? r.k.k % 4 : -1; return `<div class="brow" style="--sc:${hi ? SLOTC[ci] : '#9fb4d6'}"><span>${GP.gp ? i + 1 : r.pos}. ${CHARS[r.k.char % CHARS.length].emoji} ${esc(r.k.name)}${r.finished ? '' : ' (nicht im Ziel)'} <small style="color:var(--mut)">${r.best ? '⏱ ' + fmtT(r.best) : ''}</small></span><b>${GP.gp ? GP.pts[r.k.k] + ' P.' : fmtT(r.time)}</b></div>`; }).join('');
+    $('resTitle').textContent = GP.battle ? '🎈 Battle · ' + BNAME[GP.battle] : finalGp ? '🏆 Cup-Wertung' : GP.gp ? `Ergebnis ${GP.race}/${GP.order.length} – ${R.tr.def.name}` : GP.tt ? 'Zeitfahren' : R.tr.def.name;
+    $('resSub').textContent = GP.battle ? R.tr.def.name + ' · ' + (R.S.t >= R.S.lim ? 'Zeit abgelaufen' : 'Entschieden') : R.newBest && !GP.multi ? '🏆 Neue Bestrunde: ' + fmtT(R.newBest) : GP.gp ? 'Punkte: 15 · 12 · 10 · 8 · 6 · 4 · 2 · 1' : '';
+    $('resList').innerHTML = rows.map((r, i) => { const hi = r.k.human, ci = hi ? r.k.k % 4 : -1; return `<div class="brow" style="--sc:${hi ? SLOTC[ci] : '#9fb4d6'}"><span>${GP.gp ? i + 1 : r.pos}. ${CHARS[r.k.char % CHARS.length].emoji} ${esc(r.k.name)}${GP.battle ? '' : r.finished ? '' : ' (nicht im Ziel)'} <small style="color:var(--mut)">${r.best ? '⏱ ' + fmtT(r.best) : ''}</small></span><b>${GP.battle ? (GP.battle === 'ball' ? (r.finished ? '🎈 ' + r.score : '💥 raus') : GP.battle === 'cap' ? '📻 ' + r.score.toFixed(1) + ' s' : '💣 ' + r.score + ' P.') : GP.gp ? GP.pts[r.k.k] + ' P.' : fmtT(r.time)}</b></div>`; }).join('');
     $('bNext').textContent = GP.gp && !finalGp ? 'NÄCHSTE STRECKE' : 'NOCH EINMAL'; $('res').hidden = false; push('res');
-    R.humans.forEach((p, i) => { if (p.conn) send(p.conn, { t: 'ev', e: 'res', pos: res.find(r => r.k.k === i).pos }); });
+    R.humans.map((p, i) => [p, i]).concat(R.gun.map(g => [g.p, g.ki])).forEach(([p, i]) => { if (p.conn) send(p.conn, { t: 'ev', e: 'res', pos: res.find(r => r.k.k === i).pos }); });
     R.finalGp = finalGp;
   }
   $('bNext').onclick = () => { $('res').hidden = true; const wasGp = GP.gp, fin = R.finalGp; if (wasGp && !fin) startRace(); else { players = players.filter(p => !p.gone); if (R.humans.length === 1 && !R.humans[0].conn && !R.humans[0].kbp) { players[0] = R.humans[0]; } beginSeries(); } };

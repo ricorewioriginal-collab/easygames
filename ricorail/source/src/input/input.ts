@@ -3,7 +3,8 @@ export type Action =
   | 'throttleUp' | 'throttleDown' | 'brakeUp' | 'brakeDown' | 'emergency' | 'reverser' | 'reverserBack' | 'horn' | 'doors' | 'doorsClose'
   | 'panto' | 'mainSwitch' | 'lights' | 'sand' | 'pzb' | 'zs1' | 'isolate' | 'couple' | 'uncouple' | 'load' | 'unload' | 'cabChange'
   | 'camera' | 'cam1' | 'cam2' | 'cam3' | 'cam4' | 'cam5' | 'cam6' | 'cam7' | 'map' | 'pause' | 'help' | 'timewarp' | 'screenshot' | 'replay'
-  | 'cutoffUp' | 'cutoffDown' | 'injector' | 'firing' | 'wipers' | 'cabLight' | 'parking' | 'shunt' | 'hud' | 'conductor' | 'ticket';
+  | 'cutoffUp' | 'cutoffDown' | 'injector' | 'firing' | 'wipers' | 'cabLight' | 'parking' | 'shunt' | 'hud' | 'conductor' | 'ticket'
+  | 'menu' | 'doorsToggle';
 
 export interface KeyDef { key: string; label: string; act: Action; shift?: boolean; hold?: boolean }
 
@@ -24,7 +25,7 @@ export const KEYS: KeyDef[] = [
   { key: 'Comma', label: ', / .', act: 'cutoffDown', hold: true }, { key: 'Period', label: '', act: 'cutoffUp', hold: true }, { key: 'KeyI', label: '⇧I', act: 'injector', shift: true },
   { key: 'KeyB', label: 'B', act: 'firing' }, { key: 'KeyO', label: 'O', act: 'wipers' }, { key: 'KeyL', label: '⇧L', act: 'cabLight', shift: true }, { key: 'KeyX', label: 'X', act: 'parking' },
   { key: 'KeyA', label: 'A', act: 'shunt' }, { key: 'F2', label: 'F2', act: 'hud' },
-  { key: 'F4', label: 'F4', act: 'conductor' }, { key: 'Enter', label: 'Enter', act: 'ticket' },
+  { key: 'F4', label: 'F4', act: 'conductor' }, { key: 'Enter', label: 'Enter', act: 'ticket' }, { key: 'F3', label: 'F3', act: 'menu' },
 ];
 
 export const ACTION_LABELS: Partial<Record<Action, string>> = {
@@ -34,7 +35,7 @@ export const ACTION_LABELS: Partial<Record<Action, string>> = {
   zs1: 'Ersatzsignal anfordern', isolate: 'Gestörte Tür absperren', couple: 'Kuppeln vorbereiten', uncouple: 'Entkuppeln', load: 'Beladen', unload: 'Entladen', cabChange: 'Führerstand wechseln',
   camera: 'Kamera wechseln', map: 'Gleisplan / Karte', pause: 'Pause', help: 'Hilfe', timewarp: 'Zeitraffer', screenshot: 'Bildschirmfoto', replay: 'Wiederholung',
   cutoffDown: 'Dampf: Steuerung', injector: 'Dampf: Injektor', firing: 'Dampf: Feuern', wipers: 'Scheibenwischer', cabLight: 'Führerstandslicht', parking: 'Feststellbremse', shunt: 'Rangierfahrt an/aus', hud: 'Anzeige ein/aus',
-  conductor: 'Schaffner-Modus an/aus (Zug fährt selbst, W/S = gehen)', ticket: 'Schaffner: Fahrkarte prüfen',
+  conductor: 'Schaffner-Modus an/aus (Zug fährt selbst, W/S = gehen)', ticket: 'Schaffner: Fahrkarte prüfen', menu: 'Befehlsmenü (alle Funktionen)', doorsToggle: 'Türen freigeben/schließen',
 };
 
 /** Tastatur- und Gamepad-Zustand */
@@ -43,7 +44,7 @@ export class Input {
   private listeners: ((a: Action, down: boolean) => void)[] = [];
   private gpPrev: boolean[] = [];
   enabled = true;
-  /** Gamepad-Achsen (−1..1) */
+  /** Gamepad: lever = Stellgeschwindigkeit des Fahr-/Bremshebels (−1..1, RT/LT bzw. linker Stick), Umsehen rechter Stick */
   axis = { lever: 0, lookX: 0, lookY: 0, active: false };
 
   constructor() {
@@ -73,25 +74,47 @@ export class Input {
   };
   private blur = () => { for (const a of [...this.held]) this.emit(a, false); };
 
-  /** Gamepad abfragen (Standard-Layout) */
+  /** Gamepad abfragen (Standard-Layout, z. B. Xbox/PlayStation-Controller am PC) */
   pollGamepad() {
     const pads = navigator.getGamepads?.() ?? [];
     const gp = [...pads].find((p) => p && p.connected);
-    if (!gp) { this.axis.active = false; return; }
-    this.axis.active = true;
+    if (!gp) { this.axis.active = false; this.pad = null; return; }
+    this.pad = gp;
     const dz = (v: number) => (Math.abs(v) < 0.15 ? 0 : v);
-    // Rechter Trigger = Fahren, linker Trigger = Bremsen
+    // RT = Fahrschalter auf, LT = ab/bremsen (analog: je fester, desto schneller); sonst linker Stick hoch/runter
     const rt = gp.buttons[7]?.value ?? 0, lt = gp.buttons[6]?.value ?? 0;
-    this.axis.lever = rt > 0.05 || lt > 0.05 ? rt - lt : -dz(gp.axes[1] ?? 0);
-    this.axis.lookX = dz(gp.axes[2] ?? 0); this.axis.lookY = dz(gp.axes[3] ?? 0);
-    const map: [number, Action][] = [[0, 'doors'], [1, 'emergency'], [2, 'horn'], [3, 'camera'], [4, 'pzb'], [5, 'reverser'], [8, 'map'], [9, 'pause'], [12, 'throttleUp'], [13, 'throttleDown'], [14, 'brakeDown'], [15, 'brakeUp']];
-    // Offenes Fenster (Pause, Dialog, Ergebnis): Knöpfe gehören der Menüsteuerung (ui/padnav.ts), nur Start bleibt Pause
+    const lever = rt > 0.05 || lt > 0.05 ? rt - lt : -dz(gp.axes[1] ?? 0);
+    const look = [dz(gp.axes[2] ?? 0), dz(gp.axes[3] ?? 0)];
+    if (!this.axis.active && (Math.abs(lever) > 0.2 || gp.buttons.some((b) => b?.pressed))) this.firstUse = true;
+    this.axis.active = true;
+    // Offenes Fenster (Pause, Dialog, Befehlsmenü): Knöpfe gehören der Menüsteuerung (ui/padnav.ts); Start/RB schließen
     const menu = !!document.querySelector('.overlay');
-    if (menu) { this.axis.lever = 0; this.axis.lookX = 0; this.axis.lookY = 0; }
-    for (const [i, a] of map) {
+    this.axis.lever = menu ? 0 : lever; this.axis.lookX = menu ? 0 : look[0]; this.axis.lookY = menu ? 0 : look[1];
+    for (const [i, a] of PAD) {
       const p = !!gp.buttons[i]?.pressed;
-      if (p !== !!this.gpPrev[i] && (!menu || a === 'pause' || !p)) this.emit(a, p);
+      if (p !== !!this.gpPrev[i] && (!menu || a === 'pause' || a === 'menu' || !p)) this.emit(a, p);
       this.gpPrev[i] = p;
     }
   }
+  private pad: Gamepad | null = null;
+  /** true, sobald der Controller zum ersten Mal benutzt wurde (für den Hinweis mit der Belegung) */
+  firstUse = false;
+  /** Rütteln (falls der Controller es kann) */
+  rumble(ms: number, strong = 0.6) {
+    const act = (this.pad as unknown as { vibrationActuator?: { playEffect?: (t: string, o: object) => Promise<unknown> } } | null)?.vibrationActuator;
+    try { void act?.playEffect?.('dual-rumble', { duration: ms, strongMagnitude: strong, weakMagnitude: Math.min(1, strong + 0.2) }); } catch { /* egal */ }
+  }
 }
+
+/** Controller-Belegung (Standard-Layout): eine Liste für Spiel, Hilfe und Hinweise */
+export const PAD: [number, Action][] = [
+  [0, 'pzb'], [1, 'doorsToggle'], [2, 'horn'], [3, 'camera'], [4, 'reverser'], [5, 'menu'],
+  [8, 'map'], [9, 'pause'], [10, 'sand'], [11, 'emergency'],
+  [12, 'throttleUp'], [13, 'throttleDown'], [14, 'brakeDown'], [15, 'brakeUp'],
+];
+export const PAD_HELP: [string, string][] = [
+  ['RT / LT', 'Fahrschalter auf / ab (je fester, desto schneller; rastet bei 0 ein)'], ['Linker Stick ↑↓', 'Fahrschalter wie RT/LT'], ['Steuerkreuz ↑↓', 'eine Fahr-/Bremsstufe'],
+  ['Steuerkreuz ←→', 'Führerbremse lösen / anlegen'], ['Ⓐ', 'Sifa / Wachsam quittieren'], ['Ⓑ', 'Türen freigeben / schließen'], ['Ⓧ (halten)', 'Signalhorn'],
+  ['Ⓨ', 'Kamera'], ['LB', 'Richtungswender vor'], ['RB', 'Befehlsmenü: alle weiteren Funktionen'], ['L3 (halten)', 'Sanden'], ['R3', 'Schnellbremsung'],
+  ['Rechter Stick', 'umsehen'], ['Ansicht/Select', 'Karte'], ['Start', 'Pause'],
+];

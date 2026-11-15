@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "dde9bcc6f541",
- "generated": "2026-11-15T19:16:00+01:00",
- "commit": "9edef3830152d047beb8d6f4f9c573137c5894a0",
+ "version": "5bf3e239cb9f",
+ "generated": "2026-11-15T20:18:11+01:00",
+ "commit": "db04a825dfee4fba27b633c5d0bb700d27d2ec74",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2142,9 +2142,9 @@
    "h": "93db6ea3263b100519b3bb7d98c011f5477b8944a69d83e12b4b6613e66892b6"
   },
   {
-   "p": "anmacha-kart/card.png",
-   "s": 8289,
-   "h": "b32c5e2050a1d402e7e5de3bb0c1e065a973afac3148a4c3d867208a4aa63b95"
+   "p": "anmacha-kart/card.jpg",
+   "s": 56299,
+   "h": "be9e9ae6265ef265fa18306578e2d88e5cc0c46c33312bb6cbadf7490b49ef53"
   },
   {
    "p": "anmacha-kart/chars.js",
@@ -2153,18 +2153,18 @@
   },
   {
    "p": "anmacha-kart/controller.js",
-   "s": 15900,
-   "h": "998b22ed2dd444c0ca86fbf3c49f0e446a7b0dbb57f363c804734579a9c74bc9"
+   "s": 16200,
+   "h": "d1358f1ed1d3198a97d2464e420b5d85723cc43c8674da345f8532e6417018e4"
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 80155,
-   "h": "5bc88d94e1ca40f2e49491cc22d284bf5477a736e103bea37d8b0b606d6c1ad8"
+   "s": 88742,
+   "h": "63e621f4e4d725dc8ebc45054eb14c2dd4fa5286632c73d27c31b24c6d0a71dc"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 67513,
-   "h": "498a81be4ea572426c9d3e3137427d15747941992b4bdecaa2572a4016dac3e0"
+   "s": 68480,
+   "h": "dc020df64f2a2fb5439a814770f495892627d735d6d2a4289bc9e017e364c998"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -2308,8 +2308,8 @@
   },
   {
    "p": "anmacha-kart/sim.js",
-   "s": 29888,
-   "h": "10e3dc3d541dbfc206b3cedb1aaa6230e978cea646319e23d5afa9e513535355"
+   "s": 37489,
+   "h": "cefe0d5075c99b98f9201ad36bc6cd13cd78f6ddf3b7523029e5ff75dad9a23a"
   },
   {
    "p": "anmacha-kart/sw.js",
@@ -2318,13 +2318,13 @@
   },
   {
    "p": "anmacha-kart/track.js",
-   "s": 36127,
-   "h": "c85341570e67160fc80574e608598079628f518db34ad7a22afbe339cc6d647b"
+   "s": 36870,
+   "h": "5aef49d68136e94ed81beda1552fe25ddada2ad1fbaeb2ac072146a76257d3aa"
   },
   {
    "p": "anmacha-kart/view.js",
-   "s": 167110,
-   "h": "6054cae5a567d79453832fd86f7cd384aff61538f583a5db66b65f777b33b7f6"
+   "s": 170875,
+   "h": "f28399374895750d4ac30da7ec1e2e808e91fa136fd2856c09cb5a9c5086e585"
   },
   {
    "p": "anmacha-kart/zotik-fox.js",
@@ -10063,8 +10063,8 @@
   },
   {
    "p": "games.js",
-   "s": 55675,
-   "h": "68759790c66b7a19040da0378632779d7126d9a258f2d70a114a04cbf62c3f64"
+   "s": 55740,
+   "h": "f3bc955ad9f32ad25b5caf8bd6960161c93971cbb252a99050c5dc18d72c7be8"
   },
   {
    "p": "gay-life/card.jpg",
@@ -10423,8 +10423,8 @@
   },
   {
    "p": "guides/anmacha-kart.json",
-   "s": 26327,
-   "h": "dd0d8090ebb42de37deeb810df0718f8169765a33d93b7c3a732fac60a82df25"
+   "s": 28758,
+   "h": "7bd0d0c79b235b2027a4f08380b7bd4243e63832c69205ef21e9a8b6278c1a06"
   },
   {
    "p": "guides/anmacha-kartenrausch.json",
@@ -10643,8 +10643,8 @@
   },
   {
    "p": "guides/kraterkommando.json",
-   "s": 19384,
-   "h": "fcab82a5b18d8be7abf3dc72dfaec65d1e2b4bce9ed913e75f46756813570e09"
+   "s": 19809,
+   "h": "bb3c51b8389b44f86e3bd8eeffa1e517ab7711e6fe807646b1d7612bfb51bc98"
   },
   {
    "p": "guides/krawallvoegel.json",
@@ -10723,8 +10723,8 @@
   },
   {
    "p": "guides/ricorail.json",
-   "s": 37323,
-   "h": "229c9e26f7d3602c5cdb1aece83ec9ca64f9057aaa2302d37821d8a4bcba6624"
+   "s": 39727,
+   "h": "7f783c3b9af86f886086932de1c834936afdb106d09c0bf18fd670eedaf6ab2e"
   },
   {
    "p": "guides/ricoville.json",
@@ -11223,8 +11223,8 @@
   },
   {
    "p": "kraterkommando/card.svg",
-   "s": 3253,
-   "h": "714d0d8fae0378c3d125a0295244231ab7de44c984499c645a7ec91f77b408c3"
+   "s": 7128,
+   "h": "7aca651cbade7b6554b11377b5191a2196c93c806a081226daf2b5da57bbee86"
   },
   {
    "p": "kraterkommando/console.css",
@@ -11238,18 +11238,33 @@
   },
   {
    "p": "kraterkommando/game.js",
-   "s": 138578,
-   "h": "de152aee733cd200b0510d16d327257cb63e67d9c6e9012861f961daee9cbb50"
+   "s": 141875,
+   "h": "34b485d9bf1092bbfe9303dddc50203e153e69d9bdbfa7cf9f6d8c00ebd9fea3"
+  },
+  {
+   "p": "kraterkommando/icon.svg",
+   "s": 1838,
+   "h": "e22315af87a762fccbee74f6a49f0cbb3ac48ea0805a593a15abe8ceb924473c"
   },
   {
    "p": "kraterkommando/index.html",
-   "s": 10824,
-   "h": "8c6aa2860e59db4355b5310b6abf3f137c3f77a4051e1384ef471d910ae260fb"
+   "s": 11361,
+   "h": "507d067740eda613f06d90350c303999dcbb5793de58f0257c0045fc868f2050"
+  },
+  {
+   "p": "kraterkommando/konsole.css",
+   "s": 10065,
+   "h": "c3170044b890838aabb3d2152f5b63d8e063947fc93a754d9f3a5def71a637fd"
+  },
+  {
+   "p": "kraterkommando/logo.svg",
+   "s": 2880,
+   "h": "1bb63a8b7dc378414b62012834e7f35e570b8ac53cf5235e5a3ff3920ec46d20"
   },
   {
    "p": "kraterkommando/manifest.webmanifest",
-   "s": 397,
-   "h": "7d7016187d5a68a755b0995c8b3a07aa0a89b305d76cf7b53bf525fec32be94f"
+   "s": 539,
+   "h": "c470e3c7756a70576a53047064578d739852ca8a6b766bbfcccb5193c74f8137"
   },
   {
    "p": "kraterkommando/models/alien.glb",
@@ -11303,8 +11318,8 @@
   },
   {
    "p": "kraterkommando/sw.js",
-   "s": 1318,
-   "h": "2ebda7f2dbf7e3e7edc391a0269734ac2c18c6a04d9cb5a25791ea6e13fe5aa1"
+   "s": 1364,
+   "h": "68cf2e118a2703327dc081c433d28e5934a68176f18e5a21635260d33befdbb6"
   },
   {
    "p": "krawallvoegel/audio.js",
@@ -12672,9 +12687,124 @@
    "h": "b1a597ac448c28ef7efd2d49a802d593755bdf72d6babe32d25fe795cc920985"
   },
   {
-   "p": "ricorail/assets/ricorail-32d0fd5c95.js",
-   "s": 1069063,
-   "h": "32d0fd5c95e96017cf09f041b97f2e3710d7b9c5c5448149bcb96c1f7eb4231a"
+   "p": "ricorail/assets/kids/city/Textures/colormap.png",
+   "s": 11784,
+   "h": "9b5de86078c25ef02351a80d35ff3c978693a1044565b73eedd9ae9b5b80665d"
+  },
+  {
+   "p": "ricorail/assets/kids/city/building-type-a.glb",
+   "s": 98604,
+   "h": "49f32e20b9dcd24b1c8f6d6488807b8c8cb684cbb595bfb0bb36ad903e470faa"
+  },
+  {
+   "p": "ricorail/assets/kids/city/building-type-c.glb",
+   "s": 99592,
+   "h": "86a69f30f1a09461283e158514945ae5cc9d56357b0ddc83a9a3f0eecd113591"
+  },
+  {
+   "p": "ricorail/assets/kids/city/building-type-f.glb",
+   "s": 138536,
+   "h": "6f778f50d7f03c86f9a018e428cf8ffdd9e918df09954c0651d1c9559584a22b"
+  },
+  {
+   "p": "ricorail/assets/kids/nature/flower_redA.glb",
+   "s": 7104,
+   "h": "171930b7789ddbf735af3745576b5393750beb9133b9ff4a444bb6bb2986c020"
+  },
+  {
+   "p": "ricorail/assets/kids/nature/plant_bush.glb",
+   "s": 4396,
+   "h": "ae7b1beb39e242b13f5f29e3ec23ef21034b814f82297b8aa00a9bf4e1b09590"
+  },
+  {
+   "p": "ricorail/assets/kids/nature/rock_largeA.glb",
+   "s": 7552,
+   "h": "6dd15390fd96501dcd1454765a17ba61dbbd8d47705dfe5149c8dd92b353ce25"
+  },
+  {
+   "p": "ricorail/assets/kids/nature/tree_default.glb",
+   "s": 9428,
+   "h": "562d29638c902de3c7bee465d3a53bb77117efbc392ae04ed894faf6b5dc691d"
+  },
+  {
+   "p": "ricorail/assets/kids/nature/tree_oak.glb",
+   "s": 14644,
+   "h": "d7fd8773674928c50c11b66d12c636d49bdcc15a8b1c7fbb98e6f63a3439a3f3"
+  },
+  {
+   "p": "ricorail/assets/kids/nature/tree_pineDefaultA.glb",
+   "s": 17220,
+   "h": "60d8f352fa3659ed275e06cbddfecf8f92c8effe2977c2f2d7b29b6c9b582e46"
+  },
+  {
+   "p": "ricorail/assets/kids/train/Textures/colormap.png",
+   "s": 12684,
+   "h": "e264660f3fc9ecbd642bdb7fb7b7dc10755a061560a66651baf48274c729af09"
+  },
+  {
+   "p": "ricorail/assets/kids/train/track.glb",
+   "s": 8464,
+   "h": "a288815a2d74cea1e06c66e8cd9d7006fbe14c62d991cd25096306ec7681ed2b"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-carriage-box.glb",
+   "s": 98768,
+   "h": "6b594f3f7ef779879043219e2ee79eb37523427e2100855296a0c9662b36689c"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-carriage-coal.glb",
+   "s": 110244,
+   "h": "95c6282a6b13317640ac48bd75d7aeec10faa9bfc035ba21977bb0296df7199a"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-carriage-container-red.glb",
+   "s": 116192,
+   "h": "c210aff0fc5d4ee92446b1fdc24ad502df4eabda639c29cc88dd6e64b5abe111"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-carriage-tank.glb",
+   "s": 106752,
+   "h": "0de1d92587c0b4d79e6dd1dad7d4d2e8ef849330af07e2f1701b98b9e0cf4e6a"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-carriage-wood.glb",
+   "s": 105368,
+   "h": "14dc6c4bb62143d1213d60f503a005165c3cdf864cbe2a14e41e9f41b43facf7"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-diesel-a.glb",
+   "s": 156432,
+   "h": "20c6c7c23c005e8cda1c1e922473c0fc9c93fc7c1d1bc5a637d640424f811cc3"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-electric-bullet-a.glb",
+   "s": 114608,
+   "h": "523bba3b09d7e6c30d4040316f3f8ecaf8441943cbca82855769438c40c3b2c0"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-electric-bullet-b.glb",
+   "s": 125828,
+   "h": "471759f93fe13e2abe27dba78e23adadea3d73a83bc7641b27154baf6a5eb4bf"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-locomotive-a.glb",
+   "s": 154620,
+   "h": "8dfe9d20667c1534652286149fb0e1639ff48975a4187d3ad2fd956add0bba2a"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-locomotive-passenger-a.glb",
+   "s": 119852,
+   "h": "fc4eddc8056dd838747fa5cc4a2aae7f94379c00d202d2048461573887e371f3"
+  },
+  {
+   "p": "ricorail/assets/kids/train/train-tram-classic.glb",
+   "s": 143536,
+   "h": "2f64db140f523985f29714c6b4e5844b15a0c789b2d486963d7eba3f9b1ac194"
+  },
+  {
+   "p": "ricorail/assets/ricorail-09ce9c2648.js",
+   "s": 1169927,
+   "h": "09ce9c2648498f0942d814d647c2ea2316c9c1a6c7ac386503f58095f80ac3ae"
   },
   {
    "p": "ricorail/card.svg",
@@ -12683,8 +12813,8 @@
   },
   {
    "p": "ricorail/data/licences.json",
-   "s": 897,
-   "h": "4d4f9bebcbff1a7e70ed5a8161689e2e46911a2c1900b514f615447a8b08ac48"
+   "s": 1321,
+   "h": "6313da4da49c129067741db252bff2b1ddd977d00708a586b81f1595e0dc0105"
   },
   {
    "p": "ricorail/favicon.svg",
@@ -12714,7 +12844,7 @@
   {
    "p": "ricorail/index.html",
    "s": 3256,
-   "h": "67cbabe9fe8bf20341dbbdc76fb96c311bd319f1c6c3de63efe30613c10cf01e"
+   "h": "f6a2cbcc239604c4da95aa4e953bede1bf361cb8af23d702a6bd391142e7e821"
   },
   {
    "p": "ricorail/manifest.webmanifest",
@@ -12724,12 +12854,12 @@
   {
    "p": "ricorail/sw.js",
    "s": 1812,
-   "h": "6dcdb75c116d1dba7555597be411a2f82a38eafde5a18ccb630d06a7439f693c"
+   "h": "45fa00234cdcb71a854f27c33a7f524ba4047e4bb01e38934219fd58e2f8ead7"
   },
   {
    "p": "ricorail/version.json",
    "s": 74,
-   "h": "10581d487f32dabf4b8daebe0fda0e6128bece783395da3af8da52efd9e38ae2"
+   "h": "926bf773b541bdd26f2c95b619dd54426db9fa7dea3e5885f4984fbd7b98dfcc"
   },
   {
    "p": "ricoville/assets/index-Ba31iYgM.js",
@@ -13868,8 +13998,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 251134,
-   "h": "84286724d54b32d2ec4c2062e9e8e47d8618d01a657f8e54fcde4f0b5fe407b4"
+   "s": 251199,
+   "h": "b55b9efc409ee1450f8d8fc3747aa5e01fdb889b310aa87385ce4eb84b3e70c2"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -14742,6 +14872,11 @@
    "h": "761dd76889613419d7f81c5d885f69fe9d15e264e7e537475381bf1ddc19a005"
   },
   {
+   "p": "thumbs/anmacha-kart.webp",
+   "s": 29546,
+   "h": "4a94af0588e7014761e3c089be700ef1ec7766abd9e6323c1131fdb85be6ce7f"
+  },
+  {
    "p": "thumbs/anmacha-kartenrausch.webp",
    "s": 16864,
    "h": "8f0883a4a7e6fec0e71c336f5f511b85d74b6cf3c17b4db19b53583eac392774"
@@ -15013,8 +15148,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2188,
-   "h": "6a702e5ea8e30f6441549fc1c7dd4a9713c63d1e9a2434a5d4bc22caf9791827"
+   "s": 2216,
+   "h": "d465a583394390e56cde5f735be1ec80b5859cd443e8aef1414e1b23ed594716"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
@@ -69452,9 +69587,9 @@
    "h": "9e629369f7a54ab0b5ef047ea685f1a41154903e478869c95eca8a5590cc4681"
   },
   {
-   "p": "zotik/assets/index-BvmRgEPr.js",
-   "s": 2124466,
-   "h": "3cbe7d1a950209f5a8ce0a55362eed4dff29f1f4eccb3d2e8b1990263e4e5856"
+   "p": "zotik/assets/index-i_T5_7Z0.js",
+   "s": 2124591,
+   "h": "f7b2147a09a1818c8e4a5140c2f33382e2643fbf372dbe08b18027c2d8516f7a"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -69474,7 +69609,7 @@
   {
    "p": "zotik/index.html",
    "s": 78293,
-   "h": "d0d62d2cae7f93757e865ee796be0ea8f4080b201f6a1fb2dd9ed0168641fc86"
+   "h": "83faab11ee181337374f797976aea92c7a6f4c82b52d73bb3f8fe0c07714f40c"
   },
   {
    "p": "zotik/manifest.webmanifest",

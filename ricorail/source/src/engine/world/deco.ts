@@ -15,7 +15,8 @@ const NEON = [rgb(0x19f0ff), rgb(0xff3df2), rgb(0xffe23d), rgb(0x7cff4f)];
 const WIN = rgb(0xffd890), WIN_CITY = rgb(0xbfe0ff);
 const T = {
   trunk: rgb(0x5a4030), con: rgb(0x2f5a35), conW: rgb(0x3f6048), dec: { spring: [rgb(0x7cbf4a), rgb(0x8fcf5a)], summer: [rgb(0x3f7a2e), rgb(0x4d8a34)], autumn: [rgb(0xc8742a), rgb(0xd8a02c), rgb(0x9a3a1e), rgb(0x6f8a2e)], winter: [rgb(0x6d6259)] },
-  skin: [rgb(0xe8c4a0), rgb(0xb07a50), rgb(0x6a4630)], cloth: [rgb(0x2a4a8a), rgb(0x8a2a2a), rgb(0x2a6a3a), rgb(0x444444), rgb(0xc8a030), rgb(0x6a3a8a), rgb(0xdddddd)],
+  skin: [rgb(0xe8c4a0), rgb(0xb07a50), rgb(0x6a4630)], hair: [rgb(0x2a1e16), rgb(0x5a3a22), rgb(0xc8a060), rgb(0x8a8a8a), rgb(0x111111)],
+  pants: [rgb(0x222428), rgb(0x34507a), rgb(0x4a3a2c), rgb(0x55585e)], bag: [rgb(0x1e2a3a), rgb(0x6a1e22), rgb(0x2a2a2a), rgb(0x3a5a3a)], cloth: [rgb(0x2a4a8a), rgb(0x8a2a2a), rgb(0x2a6a3a), rgb(0x444444), rgb(0xc8a030), rgb(0x6a3a8a), rgb(0xdddddd)],
   steel: rgb(0xb8bcc0), cont: [rgb(0xc0392b), rgb(0x2e6fa8), rgb(0x2e8a4a), rgb(0xd88a1a), rgb(0x7a7a7a)], wood: rgb(0x8a6040), stone: rgb(0x9a9690), crane: rgb(0xe0b020),
 };
 const pick = <X>(a: X[], r: () => number) => a[Math.floor(r() * a.length) % a.length];
@@ -38,11 +39,16 @@ export function* decorate(b: CB): Generator<void, void, void> {
 // ------------------------------------------------------------------ Gebäude
 function style(b: CB): Style { return (b.ctx.net.def.theme.buildings ?? 'town') as Style; }
 
-/** Fensterband auf einer Fassade (selbstleuchtend) */
+/** Einzelfenster auf einer Fassade (selbstleuchtend), je Geschoss eine Reihe */
 function windows(b: CB, x: number, z: number, dx: number, dz: number, fx: number, fz: number, half: number, off: number, y0: number, H: number, floorH: number, col: RGB) {
   const cx = x + fx * (off + 0.05), cz = z + fz * (off + 0.05);
-  for (let y = y0 + floorH * 0.35; y + floorH * 0.35 < y0 + H; y += floorH) {
-    b.glow.quad([cx - dx * half, y, cz - dz * half], [cx + dx * half, y, cz + dz * half], [cx + dx * half, y + floorH * 0.35, cz + dz * half], [cx - dx * half, y + floorH * 0.35, cz - dz * half], col, fx, 0, fz);
+  const n = Math.max(1, Math.round((half * 2) / 2.6)), step = (half * 2) / n, w = Math.min(1.3, step * 0.55), wh = floorH * 0.42;
+  for (let y = y0 + floorH * 0.32; y + wh < y0 + H - 0.3; y += floorH) {
+    for (let i = 0; i < n; i++) {
+      const u = -half + step * (i + 0.5);
+      const a = u - w / 2, e = u + w / 2;
+      b.glow.quad([cx + dx * a, y, cz + dz * a], [cx + dx * e, y, cz + dz * e], [cx + dx * e, y + wh, cz + dz * e], [cx + dx * a, y + wh, cz + dz * a], col, fx, 0, fz);
+    }
   }
 }
 
@@ -67,11 +73,27 @@ export function house(b: CB, x: number, z: number, dx: number, dz: number, st: S
   const gy = Math.min(b.H(x - dx * L / 2, z - dz * L / 2), b.H(x + dx * L / 2, z + dz * L / 2), b.H(x, z)) - 1.5;
   const top = b.H(x, z) + H;
   b.st.box(x, gy, z, dx, dz, L, W, top - gy, wall, flat ? roof : wall);
+  const nx = -dz, nz = dx;
+  // Sockel (dunkler) und Haustür zur Längsseite
+  const base = b.H(x, z);
+  if (st !== 'neon') b.st.box(x, gy, z, dx, dz, L + 0.16, W + 0.16, base + 0.6 - gy, mix(wall, C.dark, 0.38));
+  if (st === 'village' || st === 'alpine' || st === 'town') {
+    const dcx = x + nx * (W / 2 + 0.06) + dx * L * 0.2, dcz = z + nz * (W / 2 + 0.06) + dz * L * 0.2;
+    const door = rgb(pick([0x5a3a24, 0x7a2a22, 0x2f4a6a, 0x3a3a3a], r));
+    b.st.quad([dcx - dx * 0.55, base, dcz - dz * 0.55], [dcx + dx * 0.55, base, dcz + dz * 0.55], [dcx + dx * 0.55, base + 2.2, dcz + dz * 0.55], [dcx - dx * 0.55, base + 2.2, dcz - dz * 0.55], door, nx, 0, nz);
+  }
   if (!flat) {
     const ov = st === 'alpine' ? 1.2 : 0.4;
     b.st.roof(x, top, z, dx, dz, L + ov * 2, W + ov * 2, rh, roof, wall);
+    // Schornstein
+    if (st !== 'harbour' && r() < 0.8) {
+      const kx = x + dx * L * 0.22 + nx * W * 0.18, kz = z + dz * L * 0.22 + nz * W * 0.18;
+      b.st.box(kx, top, kz, dx, dz, 0.8, 0.8, rh * 0.75 + 1.1, rgb(0x8a4a3a), rgb(0x3a3a3a));
+    }
+  } else if (st === 'city') {
+    // Dachaufbau (Technik) und Attika
+    b.st.box(x + dx * L * 0.15, top, z + dz * L * 0.15, dx, dz, Math.min(6, L * 0.3), Math.min(5, W * 0.3), 2.4, mix(wall, C.dark, 0.25));
   }
-  const nx = -dz, nz = dx;
   if (st === 'neon') {
     // Leuchtbänder auf allen vier Seiten
     const c = pick(NEON, r), step = 6 + Math.floor(r() * 3) * 3;
@@ -115,10 +137,23 @@ function isRight(bl: { dx: number; dz: number; fx: number; fz: number }) {
 }
 
 export function person(b: CB, x: number, y: number, z: number, dx: number, dz: number, r: () => number) {
-  const cl = pick(T.cloth, r), sk = pick(T.skin, r), s = 0.9 + r() * 0.2;
-  b.st.box(x, y, z, dx, dz, 0.25, 0.38, 0.85 * s, C.dark);
-  b.st.box(x, y + 0.85 * s, z, dx, dz, 0.28, 0.48, 0.62 * s, cl);
-  b.st.box(x, y + 1.47 * s, z, dx, dz, 0.22, 0.2, 0.24 * s, sk);
+  const cl = pick(T.cloth, r), sk = pick(T.skin, r), hair = pick(T.hair, r), legs = pick(T.pants, r), s = 0.9 + r() * 0.2;
+  const nx = -dz, nz = dx;
+  // Beine, Oberkörper, Arme mit Händen, Kopf mit Haaren
+  for (const k of [-1, 1]) b.st.box(x + nx * 0.1 * k, y, z + nz * 0.1 * k, dx, dz, 0.2, 0.15, 0.86 * s, legs);
+  b.st.box(x, y + 0.84 * s, z, dx, dz, 0.26, 0.44, 0.6 * s, cl);
+  for (const k of [-1, 1]) {
+    const ax = x + nx * 0.28 * k, az = z + nz * 0.28 * k;
+    b.st.box(ax, y + 0.9 * s, az, dx, dz, 0.13, 0.11, 0.52 * s, cl);
+    b.st.box(ax, y + 0.8 * s, az, dx, dz, 0.1, 0.09, 0.11 * s, sk);
+  }
+  b.st.box(x, y + 1.44 * s, z, dx, dz, 0.1, 0.1, 0.06 * s, sk);
+  b.st.prism(x, y + 1.49 * s, z, 0.11 * s, 0.11 * s, 0.2 * s, 7, sk, null);
+  b.st.prism(x, y + 1.67 * s, z, 0.12 * s, 0.05 * s, 0.07 * s, 7, hair, hair);
+  // manche mit Koffer oder Rucksack
+  const g = r();
+  if (g < 0.18) b.st.box(x + nx * 0.48, y, z + nz * 0.48, dx, dz, 0.22, 0.42, 0.55, pick(T.bag, r));
+  else if (g < 0.3) b.st.box(x - dx * 0.2, y + 0.95 * s, z - dz * 0.2, dx, dz, 0.16, 0.32, 0.42 * s, pick(T.bag, r));
 }
 
 // ------------------------------------------------------------------ Ladestellen
@@ -231,15 +266,19 @@ function tree(b: CB, x: number, z: number, r: () => number, conifer?: boolean) {
   if (sea !== null && y < sea + 1.2) return;
   const con = conifer ?? (theme.buildings === 'alpine' || theme.terrain === 'mountain' || r() < 0.3);
   const s = 0.7 + r() * 0.7;
-  b.st.prism(x, y - 0.3, z, 0.28 * s, 0.2 * s, 2.2 * s, 4, T.trunk, null);
+  b.st.prism(x, y - 0.3, z, 0.28 * s, 0.2 * s, 2.2 * s, 5, T.trunk, null);
   if (con) {
+    // Nadelbaum: drei Etagen, nach oben heller
     const c = season === 'winter' ? T.conW : T.con;
-    b.st.prism(x, y + 1.4 * s, z, 2.3 * s, 0, 5.5 * s, 6, c, null, r());
-    b.st.prism(x, y + 4.2 * s, z, 1.5 * s, 0, 3.6 * s, 6, season === 'winter' ? C.snow : c, null, r());
+    b.st.prism(x, y + 1.2 * s, z, 2.5 * s, 0, 4.6 * s, 7, mix(c, C.dark, 0.18), null, r());
+    b.st.prism(x, y + 3.2 * s, z, 1.9 * s, 0, 3.8 * s, 7, c, null, r());
+    b.st.prism(x, y + 5.0 * s, z, 1.2 * s, 0, 2.8 * s, 7, season === 'winter' ? C.snow : mix(c, rgb(0x9ad07a), 0.12), null, r());
   } else {
-    const c = pick(T.dec[season], r), k = season === 'winter' ? 0.55 : 1;
-    b.st.prism(x, y + 2.0 * s, z, 1.4 * s * k, 2.6 * s * k, 1.6 * s, 6, c, null, r());
-    b.st.prism(x, y + 3.6 * s, z, 2.6 * s * k, 0, 3.2 * s, 6, c, null);
+    // Laubbaum: runde Krone aus drei Ringen, Schattenseite unten dunkler
+    const c = pick(T.dec[season], r), k = season === 'winter' ? 0.55 : 1, rot = r();
+    b.st.prism(x, y + 1.8 * s, z, 1.0 * s * k, 2.5 * s * k, 1.3 * s, 8, mix(c, C.dark, 0.22), null, rot);
+    b.st.prism(x, y + 3.1 * s, z, 2.5 * s * k, 2.2 * s * k, 1.1 * s, 8, c, null, rot);
+    b.st.prism(x, y + 4.2 * s, z, 2.2 * s * k, 0, 1.9 * s, 8, mix(c, rgb(0xd8f0a0), 0.1), null, rot);
   }
 }
 

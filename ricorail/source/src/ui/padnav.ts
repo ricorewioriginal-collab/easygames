@@ -156,7 +156,7 @@ export function startPadNav() {
   started = true;
   hint = document.createElement('div');
   hint.className = 'padhint'; hint.setAttribute('aria-hidden', 'true');
-  hint.innerHTML = '<span><i>✚</i> Auswählen</span><span><i class="a">A</i> Bestätigen</span><span><i class="b">B</i> Zurück</span>';
+  hint.innerHTML = '<span><i>✚</i> Auswählen</span><span><i class="a"><span class="px">A</span><span class="pp">✕</span></i> Bestätigen</span><span><i class="b"><span class="px">B</span><span class="pp">○</span></i> Zurück</span>';
   document.body.appendChild(hint);
   window.addEventListener('keydown', onKey, true);
   window.addEventListener('pointerdown', () => setPadMode(false), true);

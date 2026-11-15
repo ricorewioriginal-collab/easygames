@@ -1,7 +1,7 @@
 // Hilfe im Spiel: Tasten, Touch, Führerstandshinweise, Signale.
 import type { CabLayout } from '../trains/stock';
 import { CAB_LAYOUTS } from '../trains/stock';
-import { KEYS, ACTION_LABELS } from '../input/input';
+import { PAD_HELP, KEYS, ACTION_LABELS } from '../input/input';
 import { h } from './dom';
 
 const CAB_TIPS: Record<CabLayout, string> = {
@@ -25,7 +25,8 @@ export function helpContent(layout: CabLayout | null, mode: 'drive' | 'box' | 'w
     mode === 'box' ? h('p', null, 'Stellwerk: Startsignal antippen, dann Zielsignal – die Fahrstraße wird eingestellt, wenn alle Weichen frei sind. Eingestellte Fahrstraße am Startsignal antippen = zurücknehmen. Weiche antippen = umstellen.') : null,
     mode === 'world' ? h('p', null, 'Freie Welt: Züge fahren nach Fahrplan. Kamera wechseln (C), Zeitraffer (Tab), Karte (M). Freie Kamera mit W/A/S/D, Q/E für hoch/runter.') : null,
     h('p', null, h('b', null, 'Touch: '), 'Hebel rechts unten ziehen: oben fahren, unten bremsen. Mit einem Finger umsehen, mit zwei Fingern zoomen, Doppeltippen setzt den Blick zurück. Bedienelemente im Führerstand lassen sich antippen.'),
-    h('p', null, h('b', null, 'Gamepad: '), 'Rechter Trigger fahren, linker Trigger bremsen, A Türen, B Schnellbremsung, X Horn, Y Kamera, LB Wachsam, RB Richtungswender, Start Pause. In Menüs: Steuerkreuz/linker Stick wählt, A bestätigt, B zurück (Pfeiltasten und Enter gehen ebenso).'),
+    h('p', null, h('b', null, 'Controller (Gamepad am PC, Konsole, Handy): '), 'Alles ist per Controller bedienbar. Funktionen ohne eigene Taste liegen im Befehlsmenü (RB, Taste F3 oder ☰). In Menüs: Steuerkreuz/linker Stick wählt, Ⓐ bestätigt, Ⓑ zurück (Pfeiltasten und Enter gehen ebenso). PlayStation-Controller: ✕ = Ⓐ, ○ = Ⓑ, □ = Ⓧ, △ = Ⓨ, L1/R1 = LB/RB, L2/R2 = LT/RT, Share/Options = Select/Start. An den Knöpfen im Bild steht immer die passende Taste für dein Gerät.'),
+    h('table', { class: 't' }, PAD_HELP.map(([k, v]) => h('tr', null, h('td', null, h('span', { class: 'kbd' }, k)), h('td', null, v)))),
     h('p', null, h('b', null, 'Signale (vereinfacht): '), 'Rot = Halt, Gelb = Halt erwarten / Langsamfahrt, Grün = Fahrt. Ersatzsignal (Z) nur bei gestörtem Signal und nach Freigabe; danach höchstens 40 km/h.'),
     h('table', { class: 't' }, rows),
     h('p', { class: 'notice' }, 'Simulation, kein offizielles Produkt der Deutschen Bahn. PZB, Sifa und Stellwerk sind vereinfachte Spielmodelle, nicht zertifiziert und nicht sicherheitsrelevant.'));
