@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b943bb2416b6",
- "generated": "2026-11-15T03:13:18+01:00",
- "commit": "8197bf585355ee4cb7f4dfb3d129c82e00e0c6b4",
+ "version": "bfb4f09bb166",
+ "generated": "2026-11-15T03:16:43+01:00",
+ "commit": "70d1822e755b765217060723ccc0930a7a8baec0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1953,13 +1953,13 @@
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 63752,
-   "h": "abbcb12c1a813be3a66240f70282111fcfb78a5030f1339137f7756440caa921"
+   "s": 63796,
+   "h": "be6abc02f2fd40be9ceb20750baffd547c199afc3b18f8fde19f408a1a58a3c4"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 58907,
-   "h": "62ccb1ff09ed40ba1e6dce5c367d5b79de4843153c0694baaa6b849c257beea7"
+   "s": 58902,
+   "h": "08af4e24b80e9c1421c784bc8f4f6474cf49f624c9b473b78352ac5c7db3b1f1"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -2053,13 +2053,13 @@
   },
   {
    "p": "anmacha-kart/track.js",
-   "s": 13473,
-   "h": "6e02865924a013cee69aa20ff7e77360d837f1e86bedb3b6ca6d3609195d5a0c"
+   "s": 20353,
+   "h": "677cf381a4f897676fdb96f1270d105429e74eb420b9873127ab618c92b74abd"
   },
   {
    "p": "anmacha-kart/view.js",
-   "s": 82636,
-   "h": "9f14257a5c992335b77a8a823e258cd77c6b1648b51099ae7bee450607d6581e"
+   "s": 106519,
+   "h": "c8ec818ec8d8b429caaecb9b4c78eebb8d36a4d3357039bd0f16294c78d0ab46"
   },
   {
    "p": "anmacha-kartenrausch/card.jpg",
@@ -9688,8 +9688,8 @@
   },
   {
    "p": "games.js",
-   "s": 56218,
-   "h": "4a49a5b865e6e770e04569bf1d7f5291c8353fe5664f4d7cda5e62f7618fc01f"
+   "s": 56355,
+   "h": "00fbcee9129e4159ddcc973c55bfe2d4bd90f0996d40d4bede7f5e1c5b8c159b"
   },
   {
    "p": "gay-life/card.jpg",
@@ -10048,8 +10048,8 @@
   },
   {
    "p": "guides/anmacha-kart.json",
-   "s": 16285,
-   "h": "abf9db2827832a65d715c699c0ed917338833673d0d8cbe18353005a1799027f"
+   "s": 17654,
+   "h": "cca5e96a4074e2679bc007c637f715ef553e0b0e710fdf7f93bcb4c75d3c5d76"
   },
   {
    "p": "guides/anmacha-kartenrausch.json",
@@ -13548,8 +13548,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 253507,
-   "h": "c7e9bd17a96da4c235632df8f894dc4f2a30deec9fec6c89482a9c118daba1c6"
+   "s": 253644,
+   "h": "a20588851db8916d5d57fad3ec23d4528d63cc49e6ca2bbd9ed9e8202058b874"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
