@@ -16,65 +16,75 @@ b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAt
 b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
 b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
 d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
-
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#06130c">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Urwaldlager – Die große Wildnis-Show</title>
-<meta name="description" content="Urwaldlager von AnMaCha: Lebe im begehbaren 3D-Dschungelcamp, sammle Holz, hol Wasser, koche, schließe Freundschaften und bestehe zwölf spielbare Dschungelprüfungen – bis zur Siegerverkündung. Für PC und Smartphone.">
+<title>Urwaldlager – Die Promi-Show im Dschungel</title>
+<meta name="description" content="Urwaldlager: Zieh als Promi ins 3D-Dschungelcamp – oder ins TV-Studio. Die Zuschauer wählen dich in Prüfungen, Sterne bringen Essen, Moderatoren führen durch die Show, bis eine Person die Krone bekommt. Für Handy (hoch und quer), PC mit Tastatur und Controller.">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<canvas id="gl" tabindex="0"></canvas>
+<canvas id="gl" tabindex="0" aria-label="Spielansicht"></canvas>
 <div id="ui">
   <div id="labels"></div>
   <div id="hud" hidden></div>
-  <div id="hudTask"></div>
+  <div id="meter" hidden></div>
+  <div id="cmd" hidden></div>
+  <div id="hint" hidden></div>
+  <div id="cap" hidden></div>
+  <div id="banner" hidden></div>
   <div id="toasts"></div>
-  <div id="prompt" hidden></div>
-  <div id="marker" hidden>!</div>
-  <canvas id="minimap" width="160" height="160" hidden></canvas>
-  <div id="tjoyHint">Hier ziehen zum Gehen</div>
-  <div id="dlg" hidden></div>
-  <div id="mini" hidden></div>
-  <div id="menu" class="ovl" hidden></div>
+  <div id="touchPad">
+    <div id="tStick"><i></i></div>
+    <button class="tb tb-ok" data-b="ok" hidden><span>Aktion</span></button>
+    <button class="tb tb-alt" data-b="alt" hidden><span>2</span></button>
+    <button class="tb tb-menu" data-b="menu" hidden><span>Menü</span></button>
+    <button class="tb tb-back" data-b="back" hidden><span>Zurück</span></button>
+    <button class="tb tb-l1" data-b="l1" hidden><span>L</span></button>
+    <button class="tb tb-r1" data-b="r1" hidden><span>R</span></button>
+    <button class="tb tb-start" data-b="start" aria-label="Pause"><span>❚❚</span></button>
+  </div>
+  <div id="panels"></div>
+  <div id="fade"></div>
+  <div id="loading">
+    <div class="ld-in">
+      <img class="ld-logo" src="logo.svg" alt="Urwaldlager">
+      <div class="ld-bar"><i id="ldBar"></i></div>
+      <div id="ldMsg">Lade Dschungel …</div>
+    </div>
+    <div class="ld-tip" id="ldTip"></div>
+  </div>
   <div id="cloudHold" hidden><div id="cloudBox"></div></div>
-  <div id="loading" class="loading"><div class="ld-bg"><i></i><i></i><i></i><i></i><i></i></div>
-    <div class="ld-center"><div class="logo">URWALD<span>LAGER</span></div><div class="ld-sub">Die große Wildnis-Show</div><div id="ldStart" class="ld-start" hidden></div></div>
-    <div class="ld-foot"><div class="ld-tip"><b>Tipp</b><span id="ldTip"></span></div><div class="ld-prog"><small id="loadMsg">Lade Spieldaten …</small><span id="ldPct">10 %</span><div class="ld-bar"><i id="ldBar" style="width:10%"></i></div></div></div>
-    <div class="ld-brand">AnMaCha</div></div>
 </div>
-<noscript><p style="padding:20px">Urwaldlager braucht JavaScript.</p></noscript>
+<noscript><p style="padding:20px;color:#fff">Urwaldlager braucht JavaScript.</p></noscript>
 <script src="vendor/three.min.js"></script>
-<script src="data.js"></script>
-<script src="avatar.js"></script>
-<script src="audio.js"></script>
-<script src="engine.js"></script>
-<script src="input.js"></script>
-<script src="trials/core.js"></script>
-<script src="trials.js"></script>
-<script src="trials/bruecke.js"></script>
-<script src="trials/tunnel.js"></script>
-<script src="trials/dunkel.js"></script>
-<script src="trials/hoehe.js"></script>
-<script src="trials/tauchen.js"></script>
-<script src="trials/parcours.js"></script>
-<script src="trials/schatz.js"></script>
-<script src="trials/labyrinth.js"></script>
-<script src="trials/dinner.js"></script>
-<script src="trials/liane.js"></script>
-<script src="trials/totem.js"></script>
-<script src="trials/staffel.js"></script>
-<script src="world.js"></script>
-<script src="camp.js"></script>
-<script src="season.js"></script>
-<script src="events.js"></script>
-<script src="ui.js"></script>
-<script src="main.js"></script>
+<script src="vendor/GLTFLoader.js"></script>
+<script src="js/core.js"></script>
+<script src="js/data.js"></script>
+<script src="js/input.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/assets.js"></script>
+<script src="js/render.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/stage.js"></script>
+<script src="js/trials/kit.js"></script>
+<script src="js/trials/kisten.js"></script>
+<script src="js/trials/dinner.js"></script>
+<script src="js/trials/tauchen.js"></script>
+<script src="js/trials/steg.js"></script>
+<script src="js/trials/tunnel.js"></script>
+<script src="js/trials/dusche.js"></script>
+<script src="js/trials/quiz.js"></script>
+<script src="js/trials/parcours.js"></script>
+<script src="js/trials/seilbahn.js"></script>
+<script src="js/camp.js"></script>
+<script src="js/show.js"></script>
+<script src="js/menus.js"></script>
+<script src="js/main.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="urwaldlager" data-prefix="ul_" data-mount="#cloudBox" data-hint="Sichere deine Staffel mit Google und spiel auf jedem Gerät weiter." defer></script>
-<script src="../gamepad.js" data-pad-labels="ls=Laufen; a=Aktion (E; x=Frucht essen (Q; y=Übersicht (Tab; lt=Rennen; b=Esc; start=Pause" data-pad="nonav ls=wasd a=KeyE x=KeyQ y=Tab lb=- rb=- lt=ShiftLeft" defer></script>
+<script src="../gamepad.js" data-pad="info dlg=off hud=off" data-pad-labels="ls=Laufen / Hand bewegen; rs=Kamera; a=Aktion / Bestätigen (✕ bzw. Nintendo A); b=Zurück / Abbrechen (○ bzw. Nintendo B); x=Zweite Aktion: Springen, Ducken, Schlucken (□ bzw. Nintendo Y); y=Buschtrommel / Übersicht (△ bzw. Nintendo X); lb=Kamera links / Reiter; rb=Kamera rechts / Reiter; lt=Kamera weg; rt=Kamera nah; dpad=Kommandomenü wählen; l3=Rennen an/aus; r3=Kamera zurücksetzen; select=Halten: „Ich bin raus!“ (Prüfung abbrechen); start=Pause" defer></script>
 <script src="../egstat.js" defer></script>
 </body>
 </html>
