@@ -128,3 +128,24 @@ test('Physik-Abfrage: nicht geladene Bereiche gelten als fest (kein Durchfallen)
   assert.equal(w.isSolid(1000, 30, 1000), true);
   assert.equal(w.isSolid(0, H, 0), false);
 });
+
+test('Geländearten: flache Welt und Landschaft ohne Bauwerke', () => {
+  const flat = new World(5, null, 4, null, 'flat');
+  const c = flat.ensure(3, -2);
+  for (const [x, z] of [[0, 0], [7, 9], [15, 15]]) {
+    assert.equal(c.data[x + z * CS + (SEA + 2) * CS * CS], B.GRASS);
+    assert.equal(c.data[x + z * CS + (SEA + 3) * CS * CS], B.AIR);
+    assert.equal(c.data[x + z * CS], B.STONE);
+  }
+  const sp = flat.findSpawn();
+  assert.ok(Math.abs(sp.y - (SEA + 3.01)) < 1e-9);
+  assert.equal(flat.villageAt(0, 0), null);
+  const nat = new World(777, null, 4, null, 'nature'), adv = new World(777, null, 4);
+  assert.equal(nat.structs, false); assert.equal(adv.structs, true);
+  // Landschaft = dasselbe Gelände wie Abenteuer, nur ohne Dörfer: Spawn liegt nicht im Dorf
+  assert.ok(adv.villageAt(adv.findSpawn().x, adv.findSpawn().z));
+  assert.equal(nat.villageAt(nat.findSpawn().x, nat.findSpawn().z), null);
+  // unbekannte Angabe und Fanwelt: kein Sondergelände
+  assert.equal(new World(1, null, 4, null, 'mars').terrain, null);
+  assert.equal(new World(1, null, 4, 'taschi', 'flat').terrain, null);
+});

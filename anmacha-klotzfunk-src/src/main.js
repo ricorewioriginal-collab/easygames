@@ -3,7 +3,7 @@ import './style.css';
 import { Game } from './game.js';
 import { B, LOGO0, H, isLogo, GEN_LATEST } from './world.js';
 import { BLOCKS, CATS, INV_BLOCKS } from './blocks.js';
-import { SLOTS, readMeta, readWorld, writeWorld, deleteWorld, readBackup, hasBackup, restoreBackup, exportText, importText, freeSlot } from './storage.js';
+import { listWorlds, metaFor, readWorld, writeWorld, deleteWorld, readBackup, hasBackup, restoreBackup, exportText, importText, freeSlot, renameWorld, copyWorld } from './storage.js';
 import { RECIPES, checkRecipe, craft, craftable, recipeMatches, MAX_STACK, STATION_NAMES } from './crafting.js';
 import { ITEMS, ITEM_LIST, isItem, nameOf, toolOf } from './items.js';
 import { MAX_HP, MAX_FOOD, MAX_AIR } from './survival.js';
@@ -376,47 +376,107 @@ function parseSeed(str) {
   return h | 0;
 }
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// Geländearten und Vorlagen für neue Welten (Bild: public/worlds/<id>.webp)
+const BASES = [
+  { k: 'nature', e: '🌄', n: 'Landschaft', d: 'Hügel, Wälder, Seen und Höhlen – leer, ohne Bauwerke' },
+  { k: 'flat', e: '⬜', n: 'Flach', d: 'Ebenes Grasland, ideal zum freien Bauen' },
+  { k: 'adventure', e: '🏘', n: 'Abenteuer', d: 'Landschaft mit Dörfern, Minen und Höhlenhallen' }
+];
+const TPLS = [{ k: 'story', e: '📜', n: 'Story-Welt', d: 'Dorf und Gegend aus „Das große Rauschen“' }, ...FAN_IDS.map(k => ({ k: 'fan:' + k, img: k, e: FANWORLDS[k].emoji, n: FANWORLDS[k].name, d: FANWORLDS[k].desc }))];
+const KIND_INFO = {};
+for (const t of [...BASES, ...TPLS]) KIND_INFO[t.k] = t;
+const thumbOf = k => new URL(`worlds/${(KIND_INFO[k] && KIND_INFO[k].img) || k}.webp`, document.baseURI).href; // absolut, sonst löst CSS den Pfad relativ zur Stylesheet-Datei auf
+// Art einer gespeicherten Welt (für Vorschaubild und Beschreibung)
+function kindOf(m) {
+  if (m.preset && FANWORLDS[m.preset]) return 'fan:' + m.preset;
+  if (m.mode === 'story' || m.seed === 777 && (m.gen || 1) >= 3 && !m.terrain) return m.mode === 'story' ? 'story' : 'adventure';
+  if (m.terrain === 'flat' || m.terrain === 'nature') return m.terrain;
+  return (m.gen || 1) >= 3 ? 'adventure' : 'nature';
+}
+const fmtDate = t => new Date(t).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' });
+const MODE_NAME = { story: 'Story', creative: 'Kreativ', survival: 'Überleben' };
+function worldList() { return listWorlds().map(i => ({ i, m: metaFor(i) })).filter(w => w.m).sort((a, b) => (b.m.savedAt || 0) - (a.m.savedAt || 0)); }
 function renderSlots() {
-  let h = '';
-  for (let i = 0; i < SLOTS; i++) {
-    const meta = readMeta(i);
-    if (meta) {
-      const d = new Date(meta.savedAt).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' }), cr = meta.mode === 'creative', st = meta.mode === 'story';
-      const ql = meta.qc === 'rauschen' ? RAUSCHEN : QUESTS, qn = meta.q ?? 0;
-      const pill = st ? `<span class="pill st">📜 Story · ${meta.q === -1 ? 'abgeschlossen' : (ql[qn] && ql[qn].c ? 'Kapitel ' + ql[qn].c + ' · ' : '') + 'Auftrag ' + (qn + 1) + '/' + ql.length}</span>` : `<span class="pill ${cr ? 'cr' : ''}">${cr ? 'Kreativ' : 'Überleben'}</span>`;
-      h += `<div class="card"><div class="top"><div class="ico">${st ? '📜' : cr ? '🕊' : '⛏'}</div><div class="ttl"><b>${esc(meta.name)}</b>${pill}</div></div>
-        <small>${meta.preset && FANWORLDS[meta.preset] ? FANWORLDS[meta.preset].emoji + ' ' + esc(FANWORLDS[meta.preset].name) + ' · ' : ''}${st ? 'Feste Story-Welt' : 'Startwert ' + esc(meta.seed)}${(meta.gen || 1) < GEN_LATEST ? ' · klassische Welt' : ''} · zuletzt ${d}</small>
-        <div class="row"><button class="go" data-act="load" data-i="${i}">▶ Weiterspielen</button><button data-act="exp" data-i="${i}" aria-label="Welt exportieren" title="Welt als Datei sichern">⤓</button>${hasBackup(i) ? `<button data-act="bak" data-i="${i}" aria-label="Sicherung laden" title="Ältere Sicherung wiederherstellen">↺</button>` : ''}<button data-act="del" data-i="${i}" aria-label="Welt löschen" title="Welt löschen">🗑</button></div></div>`;
-    } else {
-      h += `<div class="card new"><div class="top"><div class="ico">✨</div><div class="ttl"><b>Neue Welt ${i + 1}</b><span class="pill">frei</span></div></div>
-        <div class="seed"><input id="seed${i}" placeholder="Startwert (leer = Zufall)" maxlength="24" autocomplete="off"><button data-act="dice" data-i="${i}" aria-label="Zufälliger Startwert" title="Zufälliger Startwert">🎲</button></div>
-        <label class="wsel"><span>Welt</span><select id="world${i}" aria-label="Welt wählen"><option value="">🌍 Zufallswelt – Dörfer, Höhlen, Biome</option>${FAN_IDS.map(k => `<option value="${k}">${FANWORLDS[k].emoji} ${FANWORLDS[k].name}</option>`).join('')}</select></label>
-        <div class="seg three" id="mode${i}"><button class="on" data-mode="survival">⛏ Überleben<small>Rohstoffe, Hunger</small></button><button data-mode="creative">🕊 Kreativ<small>alles, fliegen</small></button><button data-mode="story">📜 Story<small>6 Kapitel</small></button></div>
-        <button class="go" data-act="new" data-i="${i}">Welt erzeugen</button></div>`;
-    }
+  const list = worldList();
+  let h = `<button class="card add" data-act="add"><span class="plus-ico">✚</span><b>Neue Welt</b><small>Kreativ, Überleben oder Story – mit Gelände oder Vorlage</small></button>`;
+  for (const { i, m } of list) {
+    const cr = m.mode === 'creative', st = m.mode === 'story', k = kindOf(m), ki = KIND_INFO[k];
+    const ql = m.qc === 'rauschen' ? RAUSCHEN : QUESTS, qn = m.q ?? 0;
+    const pill = st ? `<span class="pill st">📜 ${m.q === -1 ? 'Story abgeschlossen' : (ql[qn] && ql[qn].c ? 'Kapitel ' + ql[qn].c + ' · ' : '') + 'Auftrag ' + (qn + 1) + '/' + ql.length}</span>` : `<span class="pill ${cr ? 'cr' : ''}">${cr ? '🕊 Kreativ' : '⛏ Überleben'}</span>`;
+    const where = (ki ? ki.e + ' ' + ki.n : '') + (st || m.terrain === 'flat' ? '' : ' · Startwert ' + esc(m.seed)) + ((m.gen || 1) < GEN_LATEST ? ' · klassisch' : '');
+    h += `<div class="card" data-i="${i}"><div class="th" style="--img:url(${thumbOf(k)})">${pill}</div>
+      <div class="ttl"><b>${esc(m.name)}</b><small>${where}</small><small>zuletzt ${fmtDate(m.savedAt)}</small></div>
+      <div class="row"><button class="go" data-act="load" data-i="${i}">▶ Spielen</button><button data-act="ren" data-i="${i}" aria-label="Umbenennen" title="Umbenennen">✎</button><button data-act="copy" data-i="${i}" aria-label="Kopieren" title="Kopie anlegen">⧉</button><button data-act="exp" data-i="${i}" aria-label="Welt exportieren" title="Welt als Datei sichern">⤓</button>${hasBackup(i) ? `<button data-act="bak" data-i="${i}" aria-label="Sicherung laden" title="Ältere Sicherung wiederherstellen">↺</button>` : ''}<button data-act="del" data-i="${i}" aria-label="Welt löschen" title="Welt löschen">🗑</button></div></div>`;
   }
   $('slots').innerHTML = h;
-  updateContinue();
+  $('worldCount').textContent = list.length === 1 ? '1 Welt' : list.length + ' Welten';
+  $('mWorldsSub').textContent = list.length ? (list.length === 1 ? '1 Welt gespeichert' : list.length + ' Welten gespeichert') : 'Noch keine Welt';
+  updateContinue(list);
 }
+// ---------- Neue Welt ----------
+const nw = { mode: 'creative', kind: 'nature', named: false };
+const tileHtml = t => `<button class="wtile" data-k="${t.k}"><i class="th" style="--img:url(${thumbOf(t.k)})"><em>${t.e}</em></i><b>${esc(t.n)}</b><small>${esc(t.d)}</small></button>`;
+$('nwBase').innerHTML = BASES.map(tileHtml).join('');
+$('nwTpl').innerHTML = TPLS.map(tileHtml).join('');
+function uniqueName(base) {
+  const names = new Set(worldList().map(w => w.m.name));
+  if (!names.has(base)) return base;
+  for (let n = 2; ; n++) if (!names.has(base + ' ' + n)) return base + ' ' + n;
+}
+function nwDefaultName() {
+  if (nw.mode === 'story') return 'Story';
+  const ki = KIND_INFO[nw.kind];
+  if (nw.kind.startsWith('fan:') || nw.kind === 'story') return ki.n;
+  if (nw.kind === 'flat') return 'Flachwelt';
+  return nw.mode === 'creative' ? 'Kreativwelt' : 'Überlebenswelt';
+}
+function renderNew() {
+  const story = nw.mode === 'story';
+  if (story) nw.kind = 'story';
+  for (const b of $('nwMode').children) b.classList.toggle('on', b.dataset.mode === nw.mode);
+  for (const b of document.querySelectorAll('#pgNew .wtile')) { b.classList.toggle('on', b.dataset.k === nw.kind); b.disabled = story && b.dataset.k !== 'story'; }
+  const fixed = nw.kind === 'story' || nw.kind === 'flat';
+  $('nwSeedF').hidden = fixed;
+  if (!nw.named) $('nwName').value = uniqueName(nwDefaultName());
+  const ki = KIND_INFO[nw.kind];
+  $('nwInfo').textContent = story ? 'Die Story spielt immer in der festen Story-Welt mit Dorf. Es gelten die Überlebensregeln.'
+    : `${ki.e} ${ki.n}: ${ki.d}.` + (nw.kind.startsWith('fan:') || nw.kind === 'story' ? ' Fertige Orte rund um den Start – alles begehbar und frei umbaubar.' : '');
+}
+function openNew() { nw.named = false; nw.kind = nw.mode === 'creative' ? 'nature' : nw.mode === 'story' ? 'story' : nw.kind === 'story' ? 'adventure' : nw.kind; $('nwSeed').value = ''; renderNew(); }
+$('nwMode').addEventListener('click', e => {
+  const b = e.target.closest('[data-mode]'); if (!b) return;
+  const was = nw.mode; nw.mode = b.dataset.mode;
+  if (was === 'story' && nw.mode !== 'story') nw.kind = nw.mode === 'creative' ? 'nature' : 'adventure';
+  renderNew();
+});
+$('pgNew').addEventListener('click', e => { const b = e.target.closest('.wtile'); if (b && !b.disabled) { nw.kind = b.dataset.k; renderNew(); } });
+$('nwName').addEventListener('input', () => { nw.named = !!$('nwName').value.trim(); });
+$('nwDice').onclick = () => { $('nwSeed').value = String(Math.floor(Math.random() * 900000) + 100000); };
+$('nwGo').onclick = () => {
+  const i = freeSlot();
+  if (i < 0) { toast('Zu viele Welten – lösche zuerst eine'); return; }
+  const story = nw.mode === 'story', k = nw.kind, fan = k.startsWith('fan:') ? k.slice(4) : null;
+  const name = ($('nwName').value.trim() || uniqueName(nwDefaultName())).slice(0, 40);
+  // Story und Story-Vorlage: feste Welt mit Dorf (Startwert 777); Fanwelten: fertige Orte rund um den Start
+  launch(i, { name, mode: nw.mode, seed: story || k === 'story' ? 777 : k === 'flat' ? 1 : parseSeed($('nwSeed').value), gen: GEN_LATEST,
+    preset: fan || undefined, terrain: k === 'flat' || k === 'nature' ? k : undefined, time: fan && FANWORLDS[fan].time != null ? FANWORLDS[fan].time : undefined });
+};
 // ---------- Startmenü: Seiten, Weiterspielen, Bedienung mit Tasten und Gamepad ----------
 let menuPg = null, lastSlot = -1;
-const PAGES = { worlds: 'pgWorlds', help: 'pgHelp', data: 'pgData' };
-function updateContinue() {
-  let best = null;
-  for (let i = 0; i < SLOTS; i++) { const m = readMeta(i); if (m && (!best || m.savedAt > best.m.savedAt)) best = { i, m }; }
+const PAGES = { worlds: 'pgWorlds', new: 'pgNew', help: 'pgHelp', data: 'pgData' };
+function updateContinue(list = worldList()) {
+  const best = list[0];
   lastSlot = best ? best.i : -1;
   $('mContinue').hidden = !best;
-  if (best) {
-    const m = best.m, mode = m.mode === 'story' ? 'Story' : m.mode === 'creative' ? 'Kreativ' : 'Überleben';
-    $('mContinueSub').textContent = `${m.name} · ${mode} · ${new Date(m.savedAt).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' })}`;
-  }
+  if (best) $('mContinueSub').textContent = `${best.m.name} · ${MODE_NAME[best.m.mode] || ''} · ${fmtDate(best.m.savedAt)}`;
 }
 function menuPage(name) {
   menuPg = name || null;
+  if (menuPg === 'new') openNew();
   for (const [k, id] of Object.entries(PAGES)) show(id, k === menuPg);
   $('menu').classList.toggle('paged', !!menuPg);
   for (const b of document.querySelectorAll('#mmNav [data-page]')) b.classList.toggle('cur', b.dataset.page === menuPg);
-  const root = menuPg ? $(PAGES[menuPg]) : $('mmNav'), main = menuPg && root.querySelector('.go');
+  const root = menuPg ? $(PAGES[menuPg]) : $('mmNav'), main = menuPg && root.querySelector(menuPg === 'new' ? '.wtile.on' : '.go');
   if (main && !touchMode) main.focus(); else menuFocus(root);
 }
 // sichtbare, bedienbare Elemente eines Bereichs (für Pfeiltasten und Gamepad)
@@ -443,36 +503,26 @@ function renderHints(kind) {
 }
 renderHints('keys');
 $('slots').addEventListener('click', e => {
-  const sg = e.target.closest('.seg [data-mode]');
-  if (sg) {
-    for (const x of sg.parentNode.children) x.classList.toggle('on', x === sg);
-    const card = sg.closest('.card'), story = sg.dataset.mode === 'story', inp = card.querySelector('input');
-    inp.disabled = story; inp.placeholder = story ? 'feste Story-Welt' : 'Startwert (leer = Zufall)'; card.querySelector('[data-act=dice]').disabled = story;
-    const ws = card.querySelector('select'); if (ws) { ws.disabled = story; if (story) ws.value = ''; }
-    return;
-  }
   const b = e.target.closest('[data-act]'); if (!b) return;
-  const i = Number(b.dataset.i);
-  if (b.dataset.act === 'dice') {
-    $('seed' + i).value = String(Math.floor(Math.random() * 900000) + 100000);
-  } else if (b.dataset.act === 'del') {
-    if (confirm('Diese Welt wirklich löschen?')) { deleteWorld(i); renderSlots(); }
-  } else if (b.dataset.act === 'load') {
-    loadSlot(i);
-  } else if (b.dataset.act === 'exp') {
+  const i = Number(b.dataset.i), act = b.dataset.act;
+  if (act === 'add') menuPage('new');
+  else if (act === 'del') {
+    const m = metaFor(i);
+    if (confirm(`„${m ? m.name : 'Welt'}“ wirklich löschen?`)) { deleteWorld(i); renderSlots(); menuFocus($('pgWorlds')); }
+  } else if (act === 'load') loadSlot(i);
+  else if (act === 'ren') {
+    const m = metaFor(i), n = prompt('Neuer Name der Welt:', m ? m.name : '');
+    if (n && n.trim()) { toast(renameWorld(i, n) ? 'Umbenannt' : 'Umbenennen fehlgeschlagen'); renderSlots(); }
+  } else if (act === 'copy') {
+    const j = copyWorld(i); toast(j >= 0 ? 'Kopie angelegt' : 'Kopieren fehlgeschlagen (Speicher voll?)'); renderSlots();
+  } else if (act === 'exp') {
     const s = readWorld(i);
     if (!s) { toast('Speicherstand nicht lesbar'); return; }
     downloadText(`klotzfunk-${s.name.replace(/[^\w-]+/g, '_')}.json`, exportText(s));
-  } else if (b.dataset.act === 'bak') {
+  } else if (act === 'bak') {
     const bk = readBackup(i);
     if (!bk) { toast('Keine lesbare Sicherung'); renderSlots(); return; }
-    const when = new Date(bk.savedAt).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' });
-    if (confirm(`Sicherung vom ${when} wiederherstellen? Der aktuelle Stand wird dafür zur Sicherung.`)) { toast(restoreBackup(i) ? 'Sicherung wiederhergestellt' : 'Wiederherstellen fehlgeschlagen'); renderSlots(); }
-  } else {
-    const mode = $('mode' + i).querySelector('.on').dataset.mode, fan = mode !== 'story' && FANWORLDS[$('world' + i).value] ? $('world' + i).value : null;
-    launch(i, { name: mode === 'story' ? 'Story ' + (i + 1) : fan ? FANWORLDS[fan].name : 'Welt ' + (i + 1), seed: mode === 'story' ? 777 : parseSeed($('seed' + i).value), mode,
-      // neue Story-Welten: „Das große Rauschen“ mit Dorf (Startwert 777); Fanwelten: fertige Orte rund um den Start
-      gen: GEN_LATEST, preset: fan || undefined, time: fan && FANWORLDS[fan].time != null ? FANWORLDS[fan].time : undefined });
+    if (confirm(`Sicherung vom ${fmtDate(bk.savedAt)} wiederherstellen? Der aktuelle Stand wird dafür zur Sicherung.`)) { toast(restoreBackup(i) ? 'Sicherung wiederhergestellt' : 'Wiederherstellen fehlgeschlagen'); renderSlots(); }
   }
 });
 
@@ -494,7 +544,7 @@ function downloadText(name, text) {
   } catch (e) { toast('Export nicht möglich'); }
 }
 $('mImport').onclick = () => {
-  if (freeSlot() < 0) { toast('Kein freier Platz – lösche zuerst eine Welt'); return; }
+  if (freeSlot() < 0) { toast('Zu viele Welten – lösche zuerst eine'); return; }
   $('importFile').value = ''; $('importFile').click();
 };
 $('importFile').addEventListener('change', e => {
@@ -504,7 +554,7 @@ $('importFile').addEventListener('change', e => {
     const s = importText(text), i = freeSlot();
     if (!s) { toast('Keine gültige KLOTZFUNK-Welt'); return; }
     if (i < 0) { toast('Kein freier Platz'); return; }
-    toast(writeWorld(i, s) ? `„${s.name}“ importiert (Platz ${i + 1})` : 'Import fehlgeschlagen (Speicher voll?)');
+    toast(writeWorld(i, s) ? `„${s.name}“ importiert` : 'Import fehlgeschlagen (Speicher voll?)');
     renderSlots();
   }).catch(() => toast('Datei nicht lesbar'));
 });
@@ -526,7 +576,7 @@ const TIPS = [
 ];
 let tipTimer = 0, ldTimer = 0, lockGrace = 0;
 function loadingScreen(save) {
-  const mode = { story: '📜 Story', creative: '🕊 Kreativ' }[save.mode] || '⛏ Überleben';
+  const mode = ({ story: '📜 Story', creative: '🕊 Kreativ' }[save.mode] || '⛏ Überleben') + (KIND_INFO[kindOf(save)] ? ' · ' + KIND_INFO[kindOf(save)].n : '');
   $('ldName').textContent = save.name || 'Welt'; $('ldMode').textContent = mode;
   let k = Math.floor(Math.random() * TIPS.length);
   const tip = () => { $('ldTip').textContent = TIPS[k++ % TIPS.length]; };
@@ -628,8 +678,8 @@ window.addEventListener('keydown', e => {
     return;
   }
   if (state === 'menu') {
-    if (e.code === 'ArrowDown' || e.code === 'ArrowRight') { e.preventDefault(); menuMove(1); }
-    else if (e.code === 'ArrowUp' || e.code === 'ArrowLeft') { e.preventDefault(); menuMove(-1); }
+    const dir = { ArrowDown: 'down', ArrowUp: 'up', ArrowLeft: 'left', ArrowRight: 'right' }[e.code];
+    if (dir) { e.preventDefault(); if (document.activeElement && padRoot() && padRoot().contains(document.activeElement)) padNav(dir); else menuMove(1); } // Kacheln: räumlich wie mit dem Steuerkreuz
     else if (e.code === 'Escape' || e.code === 'Backspace') { e.preventDefault(); menuBack(); }
     renderHints('keys');
     return;

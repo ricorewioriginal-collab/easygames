@@ -1,9 +1,11 @@
-// Lokales Speichern (localStorage) – 3 Weltplätze, mit Versionsnummer, Sicherungskopie, Export und Import.
+// Lokales Speichern (localStorage) – beliebig viele Welten, mit Versionsnummer, Sicherungskopie, Export und Import.
+// Bis 1.14 gab es 3 feste Plätze (0–2); sie bleiben unter denselben Schlüsseln einfach weitere Welten.
 //
 // Schlüssel: klotzfunk.world.N (Spielstand), klotzfunk.meta.N (Kurzinfo fürs Menü),
 // klotzfunk-bak.world.N (ältere Sicherung, bewusst außerhalb des Cloud-Präfixes „klotzfunk.“ – bleibt nur lokal).
 // Format 1: Änderungen als Zahlenpaare [index, typ, …] je Chunk. Format 2: dieselben Paare kompakt als Base64 (3 Byte je Änderung).
-export const SLOTS = 3;
+export const SLOTS = 3; // nur noch für alte Aufrufer: die drei früheren festen Plätze
+export const MAX_WORLDS = 200;
 export const SAVE_VERSION = 2;
 export const MODES = ['survival', 'creative', 'story'];
 const W = i => 'klotzfunk.world.' + i, M = i => 'klotzfunk.meta.' + i, BK = i => 'klotzfunk-bak.world.' + i, BKT = i => 'klotzfunk-bak.time.' + i;
@@ -76,7 +78,7 @@ export function readWorld(i) { const s = parse(get(W(i))); return validSave(s) ?
 export function readBackup(i) { const s = parse(get(BK(i))); return validSave(s) ? s : null; }
 export function hasBackup(i) { return get(BK(i)) !== null; }
 
-const metaOf = save => ({ name: save.name, mode: save.mode, seed: save.seed, gen: save.gen || 1, preset: save.preset || undefined, savedAt: save.savedAt, q: save.story ? (save.story.done ? -1 : save.story.i) : undefined, qc: save.story ? save.story.c : undefined });
+const metaOf = save => ({ name: save.name, mode: save.mode, seed: save.seed, gen: save.gen || 1, preset: save.preset || undefined, terrain: save.terrain || undefined, savedAt: save.savedAt, q: save.story ? (save.story.done ? -1 : save.story.i) : undefined, qc: save.story ? save.story.c : undefined });
 
 // gibt true bei Erfolg zurück. Ein misslungener Schreibversuch lässt den alten Stand unverändert.
 export function writeWorld(i, save) {
@@ -91,7 +93,7 @@ export function writeWorld(i, save) {
   }
   try { st.setItem(W(i), str); } catch (e) {
     // Speicher voll: Sicherungen opfern, Hauptstand hat Vorrang
-    try { for (let k = 0; k < SLOTS; k++) { st.removeItem(BK(k)); st.removeItem(BKT(k)); } st.setItem(W(i), str); } catch (e2) { return false; }
+    try { for (let k = 0; k < MAX_WORLDS; k++) if (get(BK(k)) !== null || get(BKT(k)) !== null) { st.removeItem(BK(k)); st.removeItem(BKT(k)); } st.setItem(W(i), str); } catch (e2) { return false; }
   }
   try { st.setItem(M(i), JSON.stringify(metaOf(save))); } catch (e) { /* Menüinfo ist zweitrangig */ }
   return true;
@@ -127,7 +129,52 @@ export function importText(text) {
   s.name = s.name.slice(0, 40);
   return s;
 }
+// Nummern aller gespeicherten Welten (aufsteigend). Liest die Schlüssel „klotzfunk.world.N“ und „klotzfunk.meta.N“.
+export function listWorlds() {
+  const st = ls(), ids = new Set();
+  if (!st) return [];
+  let n = 0;
+  try { n = typeof st.key === 'function' ? st.length : 0; } catch (e) { n = 0; }
+  if (n) {
+    for (let k = 0; k < n; k++) {
+      let key = null; try { key = st.key(k); } catch (e) { /* ignorieren */ }
+      const m = key && /^klotzfunk\.(?:world|meta)\.(\d{1,4})$/.exec(key);
+      if (m) ids.add(Number(m[1]));
+    }
+  } else { // Speicher ohne Schlüsselliste: Nummern durchprobieren
+    for (let i = 0; i < MAX_WORLDS; i++) if (get(W(i)) !== null || get(M(i)) !== null) ids.add(i);
+  }
+  return [...ids].filter(i => i < MAX_WORLDS && get(W(i)) !== null).sort((a, b) => a - b);
+}
+// nächste freie Nummer für eine neue Welt (-1 = Höchstzahl erreicht)
 export function freeSlot() {
-  for (let i = 0; i < SLOTS; i++) if (get(W(i)) === null) return i;
+  const used = new Set(listWorlds());
+  for (let i = 0; i < MAX_WORLDS; i++) if (!used.has(i) && get(W(i)) === null) return i;
   return -1;
+}
+// Kurzinfo lesen; fehlt sie (z. B. nach Import aus der Cloud), aus dem Spielstand nachbauen
+export function metaFor(i) {
+  const m = readMeta(i);
+  if (m && typeof m.name === 'string') return m;
+  const s = readWorld(i);
+  if (!s) return null;
+  const nm = metaOf(s);
+  try { ls().setItem(M(i), JSON.stringify(nm)); } catch (e) { /* ignorieren */ }
+  return nm;
+}
+// Welt umbenennen (Spielstand und Menüinfo)
+export function renameWorld(i, name) {
+  const s = readWorld(i), st = ls();
+  name = String(name || '').trim().slice(0, 40);
+  if (!s || !st || !name) return false;
+  s.name = name;
+  try { st.setItem(W(i), JSON.stringify(s)); st.setItem(M(i), JSON.stringify(metaOf(s))); } catch (e) { return false; }
+  return true;
+}
+// Kopie einer Welt in einem neuen Platz; liefert die neue Nummer oder -1
+export function copyWorld(i) {
+  const s = readWorld(i), j = freeSlot();
+  if (!s || j < 0) return -1;
+  s.name = (s.name + ' (Kopie)').slice(0, 40); s.savedAt = Date.now();
+  return writeWorld(j, s) ? j : -1;
 }
