@@ -533,6 +533,7 @@ export function createMaerchen(C) {
   function tick(dt) {
     if (!cur) return; const s = st(cur.w.id), m = mis(), pl = C.pl;
     if (!cur.guest && !C.dlgOn() && s.seen) addGuest();
+    if (cur.guest && cur.w.gs) cur.guest.P.root.scale.setScalar(cur.w.gs(cur.guest.x, cur.guest.z));
     if (cur.npcP) for (const id in cur.npcP) { const P = cur.npcP[id]; P.hid = !!(m && m.hide === id); if (P.hid) P.root.visible = false; }   // Figur ist gerade woanders (z. B. am Pranger)
     for (let i = cur.items.length - 1; i >= 0; i--) { const it = cur.items[i]; it.o.rotation.y += dt * 1.6; it.o.position.y = cur.h(it.x, it.z) + Math.sin(C.time() * 2.6 + i) * .12;
       if (m && m.t === 'collect' && s.st === 1 && Math.hypot(pl.x - it.x, pl.z - it.z) < 1.8 && !pl.dead) { s.got[it.i] = 1; C.scene.remove(it.o); cur.items.splice(i, 1); C.sfx('pick'); C.emit(it.x, cur.h(it.x, it.z) + .6, it.z, 0xffe08a, 18, 3, .7, .5, -2);

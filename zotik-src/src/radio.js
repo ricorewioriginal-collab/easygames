@@ -136,5 +136,7 @@ export function createRadio({ ducking, muteMusic, getVolOk }) {
 
   if (cfg.on) { draw(); muteMusic(true); load(); poll(); clearInterval(tm); tm = setInterval(poll, 15000); }
   else draw();
-  return { open, close, set, pick, get on() { return cfg.on; } };
+  function name() { return st()[1]; }
+  function next() { const i = ST.findIndex(x => x[0] === cfg.st); const n = ST[(i + 1) % ST.length]; pick(n[0]); return n[1]; }
+  return { open, close, set, pick, next, name, get on() { return cfg.on; } };
 }

@@ -53,4 +53,5 @@ BI.renderTaskLog = function (box, D) {
   for (const x of D.extras || []) sec(x.title, x.count, false, d => x.rows.forEach(r => d.appendChild(row(r.ok, r.icon, r.text, r.dest))));
   /* ===== 🎁 Tagesgeschenk ===== */
   if (D.daily) sec('🎁 Tagesgeschenk', '', false, d => d.appendChild(el('div', 'lgDay', (D.daily.today ? '✅ Heute schon abgeholt' : '⬜ Heute noch nicht abgeholt') + ' · ' + D.daily.streak + (D.daily.streak === 1 ? ' Tag' : ' Tage') + ' in Folge')));
+  if (D.daily && D.daily.week) sec('🗓️ Wochen-Ereignis', '', false, d => { d.appendChild(el('div', 'lgDay', D.daily.week)); d.appendChild(el('p', 'help', 'Jede Woche ein neues Thema. Sammle 25 ⭐ in dieser Woche für den Wochen-Pokal (+10 ⭐).')); });
 };

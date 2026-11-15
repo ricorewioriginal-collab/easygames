@@ -10,7 +10,7 @@ const tags = [...html.matchAll(/<script[^>]*src="([^"]+)"[^>]*onload="__ld\(\)"/
 const biM = /window\.BI_FILES=\[([^\]]*)\]/.exec(html), bi = biM ? [...biM[1].matchAll(/'([^']+)'/g)].map(m => m[1].split('?')[0]) : [], withLd = tags.concat(bi);
 ok(bi.length > 50, 'Spieldateien-Liste BI_FILES gefunden (' + bi.length + ')');
 ok(withLd.length === all, 'Ladebalken: ' + withLd.length + ' Skripte (three + BI_FILES), Zähler all=' + all);
-const files = readdirSync(join(dir, 'js')).filter(f => f.endsWith('.js') && f !== 'dbg.js' && f !== 'bunte-insel.min.js').map(f => 'js/' + f), loaded = new Set(withLd), missing = files.filter(f => !loaded.has(f));
+const files = readdirSync(join(dir, 'js')).filter(f => f.endsWith('.js') && f !== 'dbg.js' && f !== 'i18n-en.js' && f !== 'bunte-insel.min.js').map(f => 'js/' + f), loaded = new Set(withLd), missing = files.filter(f => !loaded.has(f));
 ok(!missing.length, 'Alle js-Dateien sind eingebunden' + (missing.length ? ' – fehlt: ' + missing.join(', ') : ''));
 ok(new Set(withLd).size === withLd.length, 'Keine Skript-Datei doppelt eingebunden');
 ok(/bunte-insel\.min\.js\?v='\+V\+'" onload="__ldAll\(\)" onerror="__biFallback\(\)"/.test(html) && html.includes('window.__ldAll='), 'Bündel zählt den Ladebalken voll, bei Fehler kommen die einzelnen Dateien');

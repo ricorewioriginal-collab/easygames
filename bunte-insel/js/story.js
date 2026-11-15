@@ -3,7 +3,7 @@
    Nichts wird gesperrt – die Welt bleibt frei. Die Ziele hängen an Stickern (kids.earn) bzw. an Ereignissen (z. B. „mit jemandem reden“),
    bereits Geschafftes wird automatisch abgehakt. Sehr sparsam: nur eine kleine Anzeige + ein Fenster, keine 3D-Objekte. */
 BI.STORY = [
-  { icon: '🏝️', name: 'Ankommen', intro: 'Willkommen auf der Bunten Insel! Ich bin Bürgermeisterin Rosi. Bald feiern wir das große Insel-Fest – und du sollst mir bei den Vorbereitungen helfen! Sag erst mal Hallo, pack deinen Rucksack aus und lass dir den Weg zeigen.',
+  { icon: '🏝️', name: 'Ankommen', intro: 'Willkommen auf der Bunten Insel! Ich bin Rosi, die Bürgermeisterin. Hilf mir beim großen Insel-Fest! Sag erst mal Hallo – der Pfeil ⬇️ zeigt dir, zu wem.', /* kurz: Kinder sollen gleich loslegen */
     tasks: [['ev', 'talk', '💬', 'Sprich mit jemandem (tippe auf eine Person)'], ['stk', 'pack', '🎒', 'Öffne deinen Rucksack (🎒 oben links)'], ['stk', 'guide', '🧭', 'Lass dir den Weg zeigen (🧭 oben links)']] },
   { icon: '🚗', name: 'Unterwegs', intro: 'Die Einladungen zum Fest müssen verteilt werden! Steig in ein Fahrzeug, erledige einen Auftrag für die Leute – und hol mit dem Zug die Festmusiker vom Bahnhof ab.',
     tasks: [['stk', 'ride', '🚗', 'Steig in ein Fahrzeug'], ['ev', 'mission', '📦', 'Erledige einen Auftrag (im Fahrzeug „Ja“ sagen)'], ['stk', 'train', '🚂', 'Fahr mit dem Zug', 'station']] },
@@ -68,6 +68,7 @@ BI.createStory = function (G) {
     if (!quiet && !again) { G.addStars(20); A.fanfare && A.fanfare(); for (let i = 0; i < 4; i++) setTimeout(() => fx.burst(P.x + (Math.random() - .5) * 8, 6 + Math.random() * 4, P.z + (Math.random() - .5) * 8, 60, [BI.C.gold, BI.C.pink, BI.C.blue, BI.C.green, BI.C.orange], 12, 1.8, 26, 6), i * 450); }
     if (G.earn) G.earn('hero');
     say('🏆 Die Inselreise ist geschafft! Großes Insel-Fest – du bist jetzt Inselheld! ' + (quiet || again ? '' : '+20 ⭐ ') + '· Das Feuerwerk hat man in allen Welten gesehen: Hilf jeder Welt bei ihrer Geschichte, dann feiern alle das 🌟 Fest der Welten!', 7000);
+    if (!quiet && !again && G.bridge) setTimeout(() => G.bridge(), 11000); /* roter Faden: Rosi schickt einen gleich zur ersten Welt */
     if (!quiet && !again && A.speak) A.speak('Hurra! Das große Insel-Fest beginnt, und du bist unser Inselheld! Unser Feuerwerk hat man in allen Welten gesehen – jetzt möchten alle mitfeiern. Hilf jeder Welt bei ihrer Geschichte, dann feiern wir zusammen das Fest der Welten!');
   }
   /* Ereignisse von außen */
@@ -86,11 +87,12 @@ BI.createStory = function (G) {
   $('questClose').addEventListener('click', K.close); chip.addEventListener('click', () => K.show());
   $('questRead').addEventListener('click', () => { const c = K.chapter(); if (c && A.speak) A.speak(c.intro); });
   /* Start: bereits Geschafftes nachholen; beim allerersten Mal das erste Kapitel ansagen (kein Fenster, damit nichts im Weg ist) */
-  let introT = S().seen ? -1 : 2.5, fgT = 0;
+  let introT = S().seen ? -1 : (save.intro ? 2.5 : 5.5), fgT = 0; /* beim allerersten Start erst den Steuerungs-Hinweis lesen lassen */
+  K.introPending = () => introT > 0;
   K.start = function () { check(true); renderChip(); };
   K.update = function (dt, playing, free) {
     fgT -= dt; if (fgT <= 0) { fgT = .5; renderChip(); } chip.hidden = !playing || (K.finished() && !(G.farmGoal && G.farmGoal()) && !(G.islandGoal && G.islandGoal()) && !worldGoal()) || !free.hud; /* nach der Inselreise: Inselgeschichte bzw. nächste Welt */
-    if (introT > 0 && playing && free.idle) { introT -= dt; if (introT <= 0) { introT = -1; S().seen = true; const c = K.chapter(); if (c) announce(c, '👩‍💼 Bürgermeisterin Rosi: '); } }
+    if (introT > 0 && playing && free.idle && !document.body.classList.contains('fighting')) { /* nicht mitten in einen Kampf hineinreden */ introT -= dt; if (introT <= 0) { introT = -1; S().seen = true; const c = K.chapter(); if (c) announce(c, '👩‍💼 Bürgermeisterin Rosi: '); } }
   };
   return K;
 };
