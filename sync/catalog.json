@@ -1444,7 +1444,7 @@
   {
    "id": "winzflitzer",
    "title": "Winzflitzer 3D – Rennen auf dem Küchentisch",
-   "desc": "Winzige Flitzer auf riesigen Tischen: 24 Strecken über Frühstückstisch, Schreibtisch, Badewanne, Garten, Sandkasten, Billardtisch, Werkbank und Kinderzimmer – mit Sportflitzern, Formel-Winzlingen, Speedbooten, Hubschraubern, Geländewagen, Kugelflitzern, Panzern und Monstertrucks. Meisterschaft mit Leben und Ausscheiden, Kopf-an-Kopf-Duelle (wer zurückfällt, fliegt aus dem Bild), Mehrspieler für 2–4 an einem Gerät, Einzelrennen und Zeitfahren mit Geist. Touch, Tastatur und Gamecontroller.",
+   "desc": "Winzige Flitzer auf riesigen Tischen: 24 Strecken über Frühstückstisch, Schreibtisch, Badewanne, Garten, Sandkasten, Billardtisch, Werkbank und Kinderzimmer – mit Sportflitzern, Formel-Winzlingen, Speedbooten, Hubschraubern, Geländewagen, Kugelflitzern, Panzern und Monstertrucks. Meisterschaft mit Leben und Ausscheiden, Kopf-an-Kopf-Duelle (wer zurückfällt, fliegt aus dem Bild), Mehrspieler für 2–4 an einem Gerät, Einzelrennen und Zeitfahren mit Geist. Voll manuell gefahren, mit Drift und Mini-Turbo – per Touch, Tastatur oder Controller (PlayStation, Switch, Xbox) mit passenden Tastensymbolen.",
    "icon": "🏎️",
    "img": "winzflitzer/card.jpg",
    "bg": "linear-gradient(145deg,#14123a,#ff2d95 55%,#ffd23f)",
@@ -1467,7 +1467,7 @@
      "Im Duell vorne bleiben: Die Kamera folgt dem Führenden – wer hinten aus dem Bild fällt, verliert das Licht."
     ]
    },
-   "size": 250766,
+   "size": 298524,
    "files": 15,
    "offline": true,
    "cloud": {
