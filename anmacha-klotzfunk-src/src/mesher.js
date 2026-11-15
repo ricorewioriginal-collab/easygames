@@ -2,7 +2,7 @@
 // je Chunk bis zu drei Meshes (opak / transparent / Funk-Logos).
 import { CS, H, ATLAS_COLS, ATLAS_ROWS } from './consts.js';
 import { B, OPAQUE, LOGO0, EMIT, TRANS, SELF, CROSS, FLAT, SHAPE, TILES, isLogo as isLogoId } from './blocks.js';
-import { shapeBoxes } from './shapes.js';
+import { shapeBoxes, decoRot, decoLift } from './shapes.js';
 export { TILES };
 
 // n = Normale, o = Ursprungsecke, a/b = Kantenvektoren (a × b = n, also gegen den Uhrzeigersinn von außen)
@@ -84,7 +84,7 @@ export function meshFrom(nb, hms, maxY) {
     const top = hms[idxOf(x, z)][(x & 15) + ((z & 15) << 4)];
     return y >= top ? 1 : SKY_D[Math.min(3, top - y)];
   };
-  const O = new Part(), T = new Part(), L = new Part(), br = [0, 0, 0, 0];
+  const O = new Part(), T = new Part(), L = new Part(), br = [0, 0, 0, 0], deco = [];
   const top = Math.min(H - 1, maxY + 1);
   for (let y = 0; y <= top; y++) {
     for (let z = 0; z < CS; z++) {
@@ -97,6 +97,7 @@ export function meshFrom(nb, hms, maxY) {
           flat(O, x, y, z, TILES[t][0], sky(x, y, z), (r(1, 0) || r(-1, 0)) && !r(0, 1) && !r(0, -1));
           continue;
         }
+        if (SHAPE[t] === 8) { deco.push(x, y, z, t, decoRot(get, x, y, z), sky(x, y, z), decoLift(get, x, y, z)); continue; } // KayKit-Modell (deco.js)
         if (SHAPE[t]) { boxes(TRANS[t] ? T : O, x, y, z, shapeBoxes(t, get, x, y, z), TILES[t], get, sky); continue; }
         const isLogo = isLogoId(t);
         const part = isLogo ? L : TRANS[t] ? T : O;
@@ -122,7 +123,7 @@ export function meshFrom(nb, hms, maxY) {
             br[k] = AO[a] * (0.5 + 0.5 * s);
             part.pos.push(x + c.p[0], y + c.p[1] - (lower && c.p[1] === 1 ? 0.12 : 0), z + c.p[2]);
             part.uv.push(u0 + c.i * du, v0 + c.j * dv);
-            part.col.push(AO[a], s, lamp, fi);
+            part.col.push(AO[a], s, t === B.WATER ? 3 : lamp, fi); // 3 = Wasser (Wellen im Shader)
           }
           const b = part.n * 4;
           if (br[0] + br[2] < br[1] + br[3]) part.idx.push(b + 1, b + 2, b + 3, b + 1, b + 3, b);
@@ -132,7 +133,7 @@ export function meshFrom(nb, hms, maxY) {
       }
     }
   }
-  return { opaque: O.finish(), trans: T.finish(), logo: L.finish() };
+  return { opaque: O.finish(), trans: T.finish(), logo: L.finish(), deco };
 }
 
 // Formblock: je Quader sechs Flächen; Flächen auf der Blockgrenze entfallen, wenn dort ein voller Block anliegt.

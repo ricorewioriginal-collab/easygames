@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { World, B, CS, H, NAMES, LOGO0, SPECIAL0, SPECIAL_COUNT, isLogo, normGen } from './world.js';
 import { BLOCKS, SHAPE, stairFor } from './blocks.js';
+import { DecoLayer } from './deco.js';
 import { BIOME_NAMES } from './worldgen.js';
 import { encodeEdits, decodeEdits, SAVE_VERSION } from './storage.js';
 import { QUALITY } from './settings.js';
@@ -29,34 +30,47 @@ const REACH = 6;
 
 // Block-Shader: Beleuchtung pro Vertex aus Flächenrichtung, Sonne/Mond, Himmelslicht und Ambient Occlusion
 const VERT = `
-attribute vec4 aCol; varying vec2 vUv; varying vec3 vLight; varying float vDist; varying float vRb;
+attribute vec4 aCol; varying vec2 vUv; varying vec3 vLight; varying float vDist; varying float vRb; varying float vWater; varying vec3 vWp;
 uniform vec3 uAmb; uniform vec3 uSunCol; uniform vec3 uSunDir;
 void main(){
+  float lb = aCol.b; vWater = lb > 2.5 ? 1.0 : 0.0; if (lb > 2.5) lb = 0.0;
   float f = aCol.a;
   vec3 n = f < 0.5 ? vec3(1.,0.,0.) : f < 1.5 ? vec3(-1.,0.,0.) : f < 2.5 ? vec3(0.,0.,1.) : f < 3.5 ? vec3(0.,0.,-1.) : f < 4.5 ? vec3(0.,1.,0.) : vec3(0.,-1.,0.);
   float sky = aCol.g;
   vec3 amb = uAmb * (0.62 + 0.38 * (n.y * 0.5 + 0.5)) * (0.5 + 0.5 * sky);
   vec3 dir = uSunCol * max(dot(n, uSunDir), 0.0) * sky;
-  vLight = max((amb + dir) * aCol.r, vec3(min(aCol.b, 1.0)));
-  vRb = aCol.b > 1.5 ? 1.0 : 0.0;
+  vLight = max((amb + dir) * aCol.r, vec3(min(lb, 1.0)));
+  vRb = lb > 1.5 ? 1.0 : 0.0;
+  vWp = (modelMatrix * vec4(position, 1.0)).xyz;
   vUv = uv;
   vec4 mv = modelViewMatrix * vec4(position, 1.0);
   vDist = length(mv.xyz);
   gl_Position = projectionMatrix * mv;
 }`;
 const FRAG = `
-uniform sampler2D uMap; uniform vec3 uFog; uniform vec2 uFogRange; uniform float uCut; uniform float uTime;
-varying vec2 vUv; varying vec3 vLight; varying float vDist; varying float vRb;
+uniform sampler2D uMap; uniform vec3 uFog; uniform vec2 uFogRange; uniform float uCut; uniform float uTime; uniform vec3 uSunCol; uniform vec3 uSunDir;
+varying vec2 vUv; varying vec3 vLight; varying float vDist; varying float vRb; varying float vWater; varying vec3 vWp;
 void main(){
   vec4 t = texture2D(uMap, vUv);
   if (t.a < uCut) discard;
   vec3 c = t.rgb * vLight;
+  float alpha = t.a;
+  if (vWater > 0.5) { // Wasser: wandernde Wellen, Sonnenglitzern, am flachen Blickwinkel spiegelt der Himmel
+    float w = sin(vWp.x * 1.7 + uTime * 1.3) * sin(vWp.z * 1.3 - uTime * 1.1) + 0.5 * sin((vWp.x + vWp.z) * 3.1 + uTime * 2.3);
+    vec3 V = normalize(cameraPosition - vWp);
+    float fres = pow(1.0 - abs(V.y), 3.0);
+    c *= 0.9 + 0.1 * w;
+    c += uSunCol * pow(max(0.0, w * 0.4 + 0.45), 10.0) * 0.6 * smoothstep(0.0, 0.2, uSunDir.y);
+    c = mix(c, uFog, fres * 0.5);
+    alpha = mix(alpha, 0.92, fres * 0.6);
+  }
   if (vRb > 0.5) { // Regenbogen-Block: wandernde Farben
     float hue = fract((vUv.x + vUv.y) * 14.0 + uTime * 0.25 + t.r * 0.35);
     vec3 rb = clamp(abs(fract(hue + vec3(0.0, 0.6667, 0.3333)) * 6.0 - 3.0) - 1.0, 0.0, 1.0);
     c = rb * (0.55 + 0.6 * t.r);
   }
-  gl_FragColor = vec4(mix(c, uFog, smoothstep(uFogRange.x, uFogRange.y, vDist)), t.a);
+  c = mix(vec3(dot(c, vec3(0.299, 0.587, 0.114))), c, 1.1); c = c * 1.15 / (1.0 + 0.15 * c); // etwas kräftigere Farben, weiche Lichter
+  gl_FragColor = vec4(mix(c, uFog, smoothstep(uFogRange.x, uFogRange.y, vDist)), alpha);
 }`;
 const DOME_VERT = `varying vec3 vDir; void main(){ vDir = normalize(position); vec4 p = projectionMatrix * modelViewMatrix * vec4(position, 1.0); gl_Position = p.xyww; }`;
 const DOME_FRAG = `
@@ -128,6 +142,8 @@ export class Game {
     this.matO = mk(this.atlasTex, 0.5, false, this.uni);
     this.matT = mk(this.atlasTex, 0.02, true, this.uni);
     this.matL = mk(this.logoTex, 0.5, false, this.uni);
+    this.deco = new DecoLayer(this.group, this.uni); // KayKit-Möbel und -Requisiten (lädt erst, wenn eins in Sicht kommt)
+    this.deco.onReady = () => { if (!this.running && this.world) this.render(); };
 
     // Himmelskuppel mit Farbverlauf, Sonnenschein-Glühen, Sonne/Mond (blockig), Sterne, Wolken
     this.sky = new THREE.Group();
@@ -413,6 +429,7 @@ export class Game {
   }
 
   clearWorld() {
+    this.deco.clear(); // Deko teilt Geometrien – nur die Instanzen entfernen
     for (const c of this.group.children.slice()) { c.geometry.dispose(); this.group.remove(c); }
     if (this.mobs) { this.mobs.clear(); this.mobs = null; }
     this.mobView.clear();
@@ -1234,6 +1251,7 @@ export class Game {
   }
 
   dropMesh(c) {
+    this.deco.drop(c);
     for (const k of ['opaque', 'trans', 'logo']) {
       if (c[k]) { this.group.remove(c[k]); c[k].geometry.dispose(); c[k] = null; }
     }
@@ -1258,6 +1276,7 @@ export class Game {
     this.setPart(c, 'opaque', r.opaque, this.matO);
     this.setPart(c, 'trans', r.trans, this.matT);
     this.setPart(c, 'logo', r.logo, this.matL);
+    this.deco.setChunk(c, r.deco);
     c.meshed = true; this.scanDirty = true;
     if (!this.running && this.world) this.render();
   }
@@ -1269,6 +1288,7 @@ export class Game {
     this.setPart(c, 'opaque', res.opaque, this.matO);
     this.setPart(c, 'trans', res.trans, this.matT);
     this.setPart(c, 'logo', res.logo, this.matL);
+    this.deco.setChunk(c, res.deco);
     c.meshed = true;
     return true;
   }

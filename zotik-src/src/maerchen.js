@@ -9,7 +9,7 @@ import { makeLand } from './mwland.js';
 import { createMwFoes } from './mwfoes.js';
 export const MW_FIRST = 21, MW_LAST = 36, MW = WORLDS;
 const CX = 0; let CZ = -36, R = 58; const PATHX = z => Math.sin(z * .08) * 5;
-const GTEX = { spiegel: 'forest', dschungel: 'forest', notredame: 'cobble', theben: 'sand', meer: 'sand', mauer: 'grass', camelot: 'grass', nimmerland: 'grass', wunderland: 'grass', pinocchio: 'grass', aladdin: 'sand', kurbelhafen: 'grass', ricorewi: 'grass', gulliver: 'grass', robinhood: 'forest' };
+const GTEX = { spiegel: 'forest', dschungel: 'forest', notredame: 'cobble', theben: 'sand', meer: 'sand', mauer: 'grass', camelot: 'grass', nimmerland: 'grass', wunderland: 'grass', pinocchio: 'grass', aladdin: 'sand', kurbelhafen: 'grass', ricorewi: 'grass', gulliver: 'grass', robinhood: 'forest', sleepyhollow: 'grass' };
 const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 const hex = n => '#' + n.toString(16).padStart(6, '0');
 
@@ -137,10 +137,17 @@ export function createMaerchen(C) {
     lamp: { parts: [[() => G.cyl0, 0x2a2a2e, 1.4, .08, 2.8, .08], [() => G.sph0, 0xffd890, 2.9, .2, .26, .2, { e: 0xffc060, ei: 2 }]], col: .2 },
     barrel: { parts: [[() => G.cyl, 0x6a4a2a, .5, .4, 1, .4]], col: .45 },
     bamboo: { parts: [[() => G.cyl0, 0x7aa04a, 2.2, .1, 4.4, .1], [() => G.cyl0, 0x8ab05a, 2, .1, 4, .1], [() => PG.canopy, 0x5a8a3a, 4.2, .8, .5, .8]], col: .2 },
+    maple: { parts: [[() => PG.trunk, 0x3a2a1e, 1.3, .5, 2.6, .5], [() => PG.canopy, 0xd0661a, 3.6, 2.3, 1.9, 2.3]], col: .42 },   // Sleepy Hollow: Herbstlaub
+    maple2: { parts: [[() => PG.trunk, 0x3a2a1e, 1.3, .5, 2.6, .5], [() => PG.canopy, 0xe0a82a, 3.6, 2.3, 1.9, 2.3]], col: .42 },
+    maple3: { parts: [[() => PG.trunk, 0x3a2a1e, 1.3, .5, 2.6, .5], [() => PG.canopy, 0xa02a1a, 3.6, 2.3, 1.9, 2.3]], col: .42 },
+    deadtree: { parts: [[() => PG.trunk, 0x2a2018, 2.4, .4, 4.8, .4], [() => G.cone0, 0x2a2018, 5.1, .16, 1.8, .16]], col: .32 },
+    corn: { parts: [[() => G.cyl0, 0xb89a48, 1, .08, 2, .08], [() => G.cone0, 0xc8a850, 1.7, .26, 1.1, .26]], col: 0 },
+    pumpkin: { parts: [[() => G.sph0, 0xe0701a, .3, .42, .34, .42, { e: 0x6a2a05, ei: .5 }], [() => G.cyl0, 0x4a5a2a, .62, .05, .2, .05]], col: 0 },
+    haystack: { parts: [[() => G.cone0, 0xd8b050, .85, 1.1, 1.7, 1.1]], col: .7 },
     house: { parts: [[() => G.box, 0xd8c8a8, 4.5, 4.2, 9, 4.2], [() => G.cone, 0x4a4a5a, 9.8, 3.4, 2.4, 3.4]], col: 0 }
   };
   // Begehbare Oberseiten (Baumkronen, Felsen, Säulen): [Kollisions-Oberkante, [['d', Mitte, Radius, Höhe] Kuppel | ['s', Höhe, Radius] Scheibe]]
-  const TOPS = { oak: [2.6, [['d', 3.6, 2.3, 1.9]]], olive: [1.8, [['d', 2.6, 1.9, 1.3]]], jungle: [3.8, [['d', 5, 3, 1.5]]], palm: [4, [['s', 4.8, 1.9]]], pine: [2.3, [['s', 2.8, .9], ['s', 4.1, .55], ['s', 5.2, .28]]],
+  const TOPS = { oak: [2.6, [['d', 3.6, 2.3, 1.9]]], maple: [2.6, [['d', 3.6, 2.3, 1.9]]], maple2: [2.6, [['d', 3.6, 2.3, 1.9]]], maple3: [2.6, [['d', 3.6, 2.3, 1.9]]], olive: [1.8, [['d', 2.6, 1.9, 1.3]]], jungle: [3.8, [['d', 5, 3, 1.5]]], palm: [4, [['s', 4.8, 1.9]]], pine: [2.3, [['s', 2.8, .9], ['s', 4.1, .55], ['s', 5.2, .28]]],
     rock: [.6, [['d', .45, 1.1, .85]]], rockbig: [2.6, [['d', 1.6, 4, 4.3]]], bush: [.5, [['d', .6, 1.1, .8]]], column: [2.6, [['s', 3.05, 1.25]]], barrel: [.6, [['s', 1, .4]]] };
   const offs = { jungle: [[0, 0], [1.2, .6]], bamboo: [[0, 0], [.5, .3], [-.3, .5]], coral: [[0, 0], [.3, 0], [-.5, .3]] };
   function scatter(g, list, keep, snow, wall) {
@@ -189,6 +196,8 @@ export function createMaerchen(C) {
       case 'gem': { const c = [0xd81a3a, 0x2ac86a, 0x3a6ad8, 0xf4f0f8, 0xd8a020, 0x9a3ad8][i % 6]; g.add(mk(G.oct, M(c, { e: c, ei: 1.6, m: .3, r: .15 }), 0, .4, 0, .22, .3, .22)); g.add(mk(G.cyl0, M(0x4a3a20), 0, .72, 0, .03, .12, .03, false)); g.add(glow(c, 2.2, 0, .4, 0, .8)); break; }
       case 'bowl': g.add(mk(G.cyl, M(0xd8b040, { m: .9, r: .3 }), 0, .18, 0, .4, .16, .4)); for (let k = 0; k < 5; k++) g.add(mk(G.oct, M([0xd81a3a, 0x2ac86a, 0x3a6ad8, 0xf4f0f8, 0x9a3ad8][k], { e: 0x6a4a2a, ei: 1.4 }), Math.cos(k * 1.26) * .18, .34, Math.sin(k * 1.26) * .18, .08, .1, .08, false)); g.add(glow(0xffe0a0, 2.2, 0, .45, 0, .7)); break;
       case 'reel': for (const z of [-.08, .08]) { const r = mk(G.cyl, M(0x2a2a2a, { m: .7, r: .35 }), 0, .45, z, .32, .03, .32); r.rotation.x = 1.5708; g.add(r); } { const c = mk(G.cyl, M(0x6a6a6a, { r: .6 }), 0, .45, 0, .26, .14, .26); c.rotation.x = 1.5708; g.add(c); } g.add(mk(G.box, M(0x3a3a3a), .2, .12, 0, .5, .02, .14, false)); g.add(glow(0xffffff, 2, 0, .45, 0, .7)); break;
+      case 'hoof': { const t = mk(G.tor, M(0x1a1a22, { m: .8, r: .35, e: 0xff5a1a, ei: .7 }), 0, .3, 0, .26, .26, .07, false); t.rotation.x = 1.2; g.add(t); g.add(mk(G.sph0, M(0xff6a20, { e: 0xff4010, ei: 2.4 }), 0, .32, .02, .06, .06, .06, false)); g.add(glow(0xff6a20, 1.8, 0, .4, 0, .7)); break; }
+      case 'tomb': g.add(mk(G.box, M(0x8a8a90, { r: .9 }), 0, .32, 0, .42, .6, .12)); g.add(mk(G.sph0, M(0x8a8a90, { r: .9 }), 0, .62, 0, .22, .12, .06)); g.add(mk(G.box, M(0x30303a), 0, .36, .07, .24, .03, .02, false)); g.add(glow(0xa0c8ff, 2, 0, .5, 0, .7)); break;
       case 'ember': g.add(mk(G.sph, M(0xff6a20, { e: 0xff4010, ei: 2.6 }), 0, .3, 0, .22, .2, .22)); g.add(glow(0xff8a30, 2.4, 0, .4, 0, .9)); break;
       case 'mask': g.add(mk(G.sph, M([0xf0e8d8, 0xd8b040, 0xc8402a, 0x4a6ac8, 0xe8e8f0][i % 5], { r: .4 }), 0, .55, 0, .3, .36, .1)); g.add(mk(G.box, M(0x1a1410), 0, .62, .06, .25, .06, .04, false)); g.add(glow(0xffe08a, 2, 0, .55, 0, .7)); break;
       case 'market': { if (i % 4 === 0) { const P = FOE.make('reiter', 0x8a5a3a, false); P.root.scale.setScalar(.75); P.body.children.forEach((c, k) => { if (k > 10) c.visible = false; }); g.add(P.root); }
@@ -216,6 +225,8 @@ export function createMaerchen(C) {
         fire.add(mk(G.cone, M(0xff8a2a, { e: 0xff6a10, ei: 2.4 }), 0, 2.1, 0, .6, 1.4, .6, false)); fire.add(glow(0xffa040, 5, 0, 2.2, 0, .8)); break;
       case 'ore': b.ico(0, .5, 0, 1, .9, .9, 0x5a5560); for (let i = 0; i < 4; i++) b.oct(Math.cos(i * 1.6) * .5, .7 + (i % 2) * .3, Math.sin(i * 1.6) * .5, .15, .3, .15, 0xc8a0ff, { mat: { e: 0x8a5ad8, ei: lit ? 2.4 : .5 } });
         fire.add(glow(0xc8a0ff, 3, 0, 1, 0, .7)); break;
+      case 'lantern': b.cyl(0, 0, 0, .1, 2.4, 0x4a3220, { lo: 1 }); b.box(.5, 2.3, 0, 1, .1, .1, 0x4a3220); b.box(.9, 1.55, 0, .45, .6, .45, 0x2a2a2e, { mat: { m: .6, r: .5 } }); b.cone(.9, 2.15, 0, .34, .24, 0x2a2a2e, { lo: 1 });
+        fire.add(mk(G.sph0, M(0xffb040, { e: 0xff8a10, ei: 2.8 }), .9, 1.55, 0, .16, .2, .16, false)); fire.add(glow(0xffa040, 5, .9, 1.55, 0, .8)); break;
       case 'conch': b.cone(0, .2, 0, .5, 1.2, 0xf0d8c8, { mat: { r: .3, m: .2 } }).rotation.z = 1.2; b.sph(.3, .5, 0, .45, .4, .4, 0xf8e8d8, { mat: { r: .3 } }); fire.add(glow(0xa0f0ff, 3, 0, .8, 0, .6)); break;
       default: b.ico(0, 1, 0, .9, 1.5, .7, 0x7a7a82); ring = b.tor(0, 1.3, .62, .35, 0x8ad0ff, { mat: { e: 0x4aa0ff, ei: .2 }, rx: 0, d: .05 });
     }
@@ -236,6 +247,7 @@ export function createMaerchen(C) {
     else if (look === 'kaa') { const P = C.CR().makeKind('schlange', 0xb0a040, false); P.root.scale.setScalar(2.2); g.add(P.root); }
     else if (look === 'crone') { const P = C.folk('Alte', { g: 'f', cloth: 0x3a2a3a, cloth2: 0x2a2a2a, cape: 0x2a1a2a, hair: 0xd0d0d0, sc: .9 }, { pal: 1 }); g.add(P.root); g.add(mk(G.cyl, M(0x8a6a3a), .45, .75, .2, .3, .25, .3)); for (let i = 0; i < 4; i++) g.add(mk(G.sph, M(0xc8202a, { r: .3 }), .35 + (i % 2) * .2, .95, .1 + (i > 1 ? .2 : 0), .1, .1, .1)); }
     else if (look === 'wicht') { const P = C.folk('Schatzmeister', { g: 'm', cloth: 0x3a6aa8, cloth2: 0xe8e0d0, hair: 0x2a2a2a, skin: 0xf0d4b8, hat: 1, sc: .34 }, { pal: 1 }); g.add(P.root); }
+    else if (look === 'ichabod') { const P = C.folk('Ichabod Crane', { g: 'm', cloth: 0x2a2a30, cloth2: 0x3a3a22, hair: 0x2a2018, skin: 0xe8c8a8, wide: .75, sc: 1.12, hat: 1 }, { pal: 1 }); g.add(P.root); g.add(mk(G.cyl, M(0xd8b050, { r: 1 }), .7, .5, .1, .45, 1, .45)); }
     else if (look === 'lady') { const P = C.folk('Dame', { g: 'f', cloth: 0xd8e8f8, cloth2: 0x8ab0d8, hair: 0x8a5a2a, sc: 1 }, { pal: 1 }); g.add(P.root); g.add(glow(0xd8f0ff, 4, 0, 1.2, 0, .6)); }
     else { const P = C.folk('Kind', { g: 'm', cloth: 0x3a5a8a, cloth2: 0xe8e0d0, hair: 0x6a4a2a, sc: .7 }, { pal: 1 }); g.add(P.root); }
     g.add(glow(0xffe08a, 2.4, 0, 1.6, 0, .45)); return g;

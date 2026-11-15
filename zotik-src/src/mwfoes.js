@@ -11,7 +11,7 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
   const dim = (h, k) => { const c = new T.Color(h); c.multiplyScalar(k); return c.getHex(); };
   const eyes = (g, y, z, sx, col, s) => { for (const k of [-1, 1]) g.add(mk(G.sph0, E(col || 0xffffff, 2.2), k * sx, y, z, .06 * (s || 1), .07 * (s || 1), .04, false)); };
   const fin = r => { mergeStatic(r.body, new Set([r.head, ...(r.legs || []), r.tail, ...(r.sh || [])].filter(Boolean))); return r; };
-  const HOVER = new Set(['wespe', 'magnet', 'dschinn', 'scherbe', 'fledermaus', 'steinfratze', 'stymphal', 'hai', 'falke', 'rabe']);
+  const HOVER = new Set(['wespe', 'magnet', 'dschinn', 'scherbe', 'fledermaus', 'steinfratze', 'stymphal', 'hai', 'falke', 'rabe', 'irrlicht', 'nachteule']);
   const GF = createGulliverFoes({ T, mk, G, glow, C, E, M, dim, eyes, fin });
 
   function hover(kind, col) {
@@ -50,6 +50,20 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
         { const fe = C(col, { r: .4, m: .2 }); b.add(mk(G.sph, fe, 0, 0, 0, .28, .3, .52)); b.add(mk(G.sph, fe, 0, .2, .42, .2, .2, .22));
           const bk = mk(G.cone0, C(0x2a2a30), 0, .17, .7, .06, .28, .06); bk.rotation.x = Math.PI / 2; b.add(bk); eyes(b, .27, .55, .09, 0xc070ff); wings(1.9, fe, .05, .05);
           b.add(glow(0x9a4aff, 1.8, 0, 0, 0, .3)); } break;
+      case 'irrlicht':   // Irrlicht (Sleepy Hollow): schwebende Flamme in verbogenem Laternenkäfig, Funkenschweif, ruft Wanderer ins Moor
+        { const fl = E(col, 2.6); b.add(mk(G.sph0, fl, 0, 0, 0, .26, .34, .26)); b.add(mk(G.sph0, E(0xffffff, 3.2), 0, .02, .08, .12, .17, .1, false));
+          const tl = mk(G.cone0, E(col, 1.5), 0, -.5, 0, .2, .7, .2); tl.rotation.x = Math.PI; b.add(tl); sh.push(tl);
+          for (let i = 0; i < 4; i++) { const r = mk(G.tor, C(0x2a2a30, { m: .7, r: .4 }), 0, 0, 0, .36, .36, .05, false); r.rotation.set(i * .8, i * 1.2, i * .4); b.add(r); }
+          b.add(mk(G.cyl0, C(0x2a2a30, { m: .7 }), 0, .5, 0, .03, .22, .03)); b.add(mk(G.tor, C(0x2a2a30, { m: .7 }), 0, .66, 0, .07, .07, .02, false));
+          eyes(b, .1, .24, .09, 0x0a3a28, 1.3);
+          for (let i = 0; i < 5; i++) { const sp = mk(G.sph0, E(col, 2.2), Math.cos(i * 1.3) * .4, -.4 - i * .12, Math.sin(i * 1.3) * .4, .05, .05, .05, false); b.add(sp); sh.push(sp); }
+          b.add(glow(col, 3.4, 0, 0, 0, .55)); } break;
+      case 'nachteule':   // Nachteule vom Kirchturm: runder Schleierkopf, Federohren, riesige gelbe Augen
+        { const fe = C(col, { r: .9 }); b.add(mk(G.sph, fe, 0, 0, 0, .34, .4, .34)); b.add(mk(G.sph, C(0xe8e0d0, { r: .9 }), 0, -.05, .22, .26, .3, .1, false));
+          b.add(mk(G.sph, fe, 0, .38, .12, .3, .28, .28)); const disc = mk(G.cyl0, C(0xf0e8d8), 0, .38, .3, .2, .02, .2, false); disc.rotation.x = Math.PI / 2; b.add(disc);
+          for (const s of [-1, 1]) { const ear = mk(G.cone0, fe, s * .2, .64, .08, .06, .2, .05); ear.rotation.z = -s * .3; b.add(ear); b.add(mk(G.sph0, E(0xffd030, 2.6), s * .11, .4, .32, .1, .1, .05, false)); b.add(mk(G.sph0, C(0x0a0808), s * .11, .4, .36, .04, .04, .03, false)); }
+          const bk = mk(G.cone0, C(0x5a4a2a), 0, .33, .42, .04, .12, .04, false); bk.rotation.x = Math.PI / 2; b.add(bk);
+          wings(1.7, C(dim(col, .75), { r: 1 }), .05, .09); const tl = mk(G.box, fe, 0, -.38, -.28, .22, .06, .4, false); tl.rotation.x = .4; b.add(tl); } break;
       default: return GF.hover(kind, col);
     }
     return Object.assign(fin({ root, body: b, sh }), { flap: kind !== 'scherbe' && kind !== 'dschinn' });
@@ -258,6 +272,35 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
         leg(-.2 * s, .8 * s, 0, .8 * s, .15 * s, dk, true); leg(.2 * s, .8 * s, 0, .8 * s, .15 * s, dk, true); const al = arm(-1, 1.65 * s, .75 * s, .12 * s, ar, .5 * s), ax = arm(1, 1.65 * s, .75 * s, .12 * s, ar, .5 * s);
         ax.add(mk(G.cyl0, C(0x4a3020), 0, -.9, .3, .05, 1.4, .05)); ax.add(mk(G.sph, C(0x5a5a68, { m: .8, r: .3 }), 0, -1.6, .35, .3, .3, .3)); for (let i = 0; i < 6; i++) { const t = mk(G.cone0, C(0x8a8a98, { m: .9 }), Math.cos(i * 1.05) * .28, -1.6, .35 + Math.sin(i * 1.05) * .28, .05, .16, .05, false); t.rotation.set(Math.sin(i * 1.05) * 1.5, 0, -Math.cos(i * 1.05) * 1.5); ax.add(t); }
         al.add(mk(G.sph, C(0xd8a020, { m: .8, r: .3, e: 0x6a4a10, ei: .6 }), -.12, -.7, .1, .2, .22, .2)); break; }
+      case 'kuerbis': {   // Kürbisspuk (Sleepy Hollow): rippiger Kürbis mit glühender Schnitzfratze, Stielschopf, Rankenarmen und Wurzelfüßen
+        const sk = M(col, { r: .5, e: dim(col, .45), ei: .8 }), rib = M(dim(col, .8), { r: .6, e: dim(col, .3), ei: .6 }), fire = E(0xffc040, 2.6);
+        b.add(mk(G.sph, sk, 0, .95, 0, .6, .52, .6)); for (let i = 0; i < 6; i++) { const a = i * 1.047; b.add(mk(G.sph0, rib, Math.cos(a) * .42, .95, Math.sin(a) * .42, .24, .5, .24, false)); }
+        b.add(mk(G.cyl0, C(0x4a3a1a), 0, 1.5, 0, .08, .28, .08)); { const l = mk(G.sph0, C(0x3a7a2a), .14, 1.5, 0, .2, .04, .1); l.rotation.z = -.5; b.add(l); }
+        head.position.set(0, .95, .5);
+        for (const sx of [-1, 1]) { const e = mk(G.cone0, fire, sx * .22, .16, .02, .1, .16, .04, false); e.rotation.z = sx * .5; head.add(e); }
+        head.add(mk(G.box, fire, 0, -.04, .02, .08, .08, .04, false)); for (let i = 0; i < 5; i++) head.add(mk(G.box, fire, -.24 + i * .12, -.2 - (i % 2) * .05, .0, .09, .07, .04, false));
+        head.add(glow(0xffa030, 1.8, 0, .1, .1, .6));
+        leg(-.2, .4, 0, .4, .06, C(0x4a3a1a), true); leg(.2, .4, 0, .4, .06, C(0x4a3a1a), true); arm(-1, .95, .55, .05, C(0x3a7a2a), .56); arm(1, .95, .55, .05, C(0x3a7a2a), .56); break; }
+      case 'scheuche': {   // Strohwächter (Sleepy Hollow): lebendige Vogelscheuche – Flickenhemd, Sackgesicht, grüne Glutaugen, Spitzhut, Strohhände
+        const st = C(col, { r: 1 }), sack = C(0xb89a68, { r: 1 }), dk = C(0x3a2a1a, { r: .9 }), sh = C(0x6a3a2a, { r: .9 });
+        b.add(mk(G.box, sh, 0, 1.3, 0, .6, .85, .34)); b.add(mk(G.box, C(0x3a5a6a, { r: .9 }), .12, 1.4, .18, .22, .26, .03, false)); b.add(mk(G.sph0, st, 0, .85, 0, .34, .2, .26)); b.add(mk(G.cyl0, dk, 0, 1.0, 0, .035, 1.6, .035));
+        for (let i = 0; i < 6; i++) b.add(mk(G.cone0, st, -.28 + i * .11, .82, .05, .04, .3, .04, false));
+        head.position.set(0, 2.0, 0); head.add(mk(G.sph, sack, 0, 0, 0, .27, .29, .26)); eyes(head, .05, .22, .1, 0x70ff40, 1.3);
+        for (let i = 0; i < 4; i++) head.add(mk(G.box, dk, -.1 + i * .066, -.1, .24, .02, .07, .02, false)); head.add(mk(G.box, dk, 0, -.1, .25, .24, .02, .02, false));
+        head.add(mk(G.cyl, dk, 0, .22, 0, .44, .04, .44)); { const h = mk(G.cone0, dk, 0, .5, 0, .24, .5, .24); h.rotation.z = .2; head.add(h); }
+        leg(-.15, .85, 0, .85, .07, dk, true); leg(.15, .85, 0, .85, .07, dk, true);
+        const a0 = arm(-1, 1.65, .95, .07, sh, .38), a1 = arm(1, 1.65, .95, .07, sh, .38); for (const a of [a0, a1]) { a.add(mk(G.sph0, st, 0, -1, 0, .2, .14, .2)); for (let i = 0; i < 3; i++) a.add(mk(G.cone0, st, (i - 1) * .1, -1.12, 0, .03, .22, .03, false)); }
+        a1.add(mk(G.cyl0, C(0x5a3a22), 0, -.95, .3, .03, 1.1, .03)); for (let i = 0; i < 4; i++) a1.add(mk(G.box, C(0x8a8a92, { m: .8 }), (i - 1.5) * .07, -1.55, .3, .03, .24, .03, false)); break; }
+      case 'kopflos': {   // Der Kopflose Reiter (Sleepy Hollow): schwarzes Ross mit Glutmähne, Reiter im Umhang ohne Kopf – ein Kürbis glüht an seinem Sattel
+        const hc = M(dim(0xc8c8d8, .18), { r: .55, m: .3 }), cl = M(0x1a1426, { r: .8 }), fire = E(0xff7a1a, 2.4);
+        b.add(mk(G.sph, hc, 0, 1.15, 0, .42, .45, .95)); const nk = mk(G.cyl, hc, 0, 1.6, .75, .17, .7, .2); nk.rotation.x = .6; b.add(nk);
+        for (let i = 0; i < 6; i++) { const m = mk(G.cone0, fire, 0, 1.55 + i * .1, .7 + i * .1 - .2, .07, .34, .05, false); m.rotation.x = -.6; b.add(m); }
+        head.position.set(0, 1.95, 1.05); head.add(mk(G.box, hc, 0, 0, .15, .22, .26, .55)); eyes(head, .08, .2, .11, 0xff4020, 1.4); head.add(mk(G.box, C(0x1a1410), 0, .2, -.15, .06, .25, .45, false));
+        for (const [x, z] of [[-.22, .65], [.22, .65], [-.22, -.6], [.22, -.6]]) { const l = leg(x, .95, z, .95, .08, hc, true); l.add(glow(0xff6a1a, .8, 0, -.95, .06, .6)); }
+        b.add(mk(G.box, cl, 0, 2.05, -.05, .52, .72, .34)); b.add(mk(G.cone0, cl, 0, 1.75, -.35, .8, 1.2, .5)); b.add(mk(G.cyl, E(0xff5a1a, 1.6), 0, 2.45, -.02, .1, .1, .1, false));   // Hals-Stumpf glimmt
+        const sw = mk(G.box, C(0xc8c8d4, { m: .9, r: .2 }), .42, 2.45, .35, .05, 1.2, .05); sw.rotation.x = .5; b.add(sw);
+        b.add(mk(G.sph, C(0xe07a1a, { r: .5, e: 0xa04008, ei: 1.1 }), -.5, 1.75, .3, .2, .18, .2)); b.add(mk(G.box, fire, -.5, 1.78, .5, .1, .06, .02, false)); b.add(glow(0xff8a2a, 1.6, -.5, 1.78, .4, .7));
+        tail.position.set(0, 1.3, -.95); tail.addm(mk(G.cone0, fire, 0, -.3, 0, .1, .8, .1)).rotation.x = Math.PI; break; }
       case 'steppenwolf': {
         quad(.95, C(col, { r: .9 })); head.add(mk(G.sph, C(dim(col, .8)), 0, -.06, .26, .14, .12, .22)); for (const s of [-1, 1]) head.add(mk(G.cone0, C(col), s * .14, .24, -.05, .06, .18, .04)); eyes(head, .06, .24, .1, 0xc8e0ff);
         tail.addm(mk(G.cone0, C(col), 0, -.3, 0, .13, .7, .13)).rotation.x = Math.PI; b.add(mk(G.sph0, C(0xf0f0f4), 0, .7, .5, .22, .16, .3, false)); break; }
@@ -268,5 +311,5 @@ export function createMwFoes({ T, mk, G, M, glow, mergeStatic, SK }) {
   }
 
   const make = (kind, col, boss) => HOVER.has(kind) ? hover(kind, col) : walker(kind, col, boss);
-  return { make, has: k => HOVER.has(k) || ['zauberer', 'marionette', 'karte', 'hase', 'herzkoenigin', 'pirat', 'hook', 'krokodil', 'giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'baer', 'mungo', 'wache', 'schattenritter', 'spartoi', 'riese', 'dornling', 'fahlhirsch', 'kroete', 'sheriff_s', 'nadler', 'katze', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf'].includes(k), HOVER };
+  return { make, has: k => HOVER.has(k) || ['zauberer', 'marionette', 'karte', 'hase', 'herzkoenigin', 'pirat', 'hook', 'krokodil', 'giftapfel', 'jaeger', 'koenigin_s', 'affe', 'rothund', 'tiger', 'ratte', 'baer', 'mungo', 'wache', 'schattenritter', 'spartoi', 'riese', 'dornling', 'fahlhirsch', 'kroete', 'sheriff_s', 'nadler', 'katze', 'wasserspeier', 'eber', 'elefant', 'loewe', 'hydra', 'polyp', 'meerhexe', 'reiter', 'steppenwolf', 'kuerbis', 'scheuche', 'kopflos'].includes(k), HOVER };
 }

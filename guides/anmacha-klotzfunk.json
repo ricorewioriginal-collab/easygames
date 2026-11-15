@@ -59,6 +59,14 @@
       ]
     },
     {
+      "t": "Deko: Möbel und Requisiten",
+      "list": [
+        "Reiter „Deko“: 27 Möbel und Requisiten im KayKit-Stil, z. B. Stuhl, Sofa, Tisch, Bett, Kommode, Regal, Lampen, Bilderrahmen, Teppich, Parkbank, Straßenlaterne, Ampel, Fass, Truhe, Kerzen, Wandfackel, Banner und Kisten. Im Überlebensmodus stellst du sie an der Werkbank her.",
+        "Stücke stellen sich mit dem Rücken zur Wand, Stühle neben einem Tisch drehen sich zum Tisch. Bilder, Fackeln und Banner hängen an der Wand, eine Tischlampe steht auf der Tischplatte.",
+        "Lampen, Laternen, Kerzen und Fackeln leuchten. Tisch, Kommode, Regal, Fass, Truhe und Kisten sind fest."
+      ]
+    },
+    {
       "t": "Das Funknetz",
       "list": [
         "Ein Schalter (Setzen = umlegen) speist Signalleitungen und einen Funksender daneben.",
