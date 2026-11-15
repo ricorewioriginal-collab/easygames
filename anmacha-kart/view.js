@@ -33,12 +33,12 @@ const View = (() => {
 
   // ------------------------------------------------------------------ Strecke bauen
   let skyGroup = null, dustCol = 0xcccccc; const anim = [], blinkers = [];
-  function strip(a, b, y, vs, mat, wall, h) {
+  function strip(a, b, y, vs, mat, wall, h, skip) {
     const N = tr.N, pos = [], uv = [], idx = [];
     for (let i = 0; i <= N; i++) {
       const j = i % N, nx = tr.Nm[j * 2], nz = tr.Nm[j * 2 + 1], px = tr.P[j * 2], pz = tr.P[j * 2 + 1], v = i * 3 / vs;
       if (wall) { pos.push(px + nx * a, tr.height(j), pz + nz * a, px + nx * a, tr.height(j) + h, pz + nz * a); uv.push(0, v, 1, v); } else { pos.push(px + nx * a, tr.height(j) + y, pz + nz * a, px + nx * b, tr.height(j) + y, pz + nz * b); uv.push(0, v, 1, v); }
-      if (i < N) { const k = i * 2; idx.push(k, k + 2, k + 1, k + 1, k + 2, k + 3); }
+      if (i < N && !(skip && skip(i))) { const k = i * 2; idx.push(k, k + 2, k + 1, k + 1, k + 2, k + 3); }
     }
     const g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new T.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals();
     const m = new T.Mesh(g, mat); m.frustumCulled = false; return m;
@@ -99,15 +99,31 @@ const View = (() => {
     else if (ws === 'neon') wm = new T.MeshLambertMaterial({ side: T.DoubleSide, color: new T.Color(d.wall[1]).lerp(new T.Color('#151828'), 0.75) });
     else if (ws === 'soft') wm = new T.MeshLambertMaterial({ side: T.DoubleSide, map: canvasTex(128, 32, (g, w, h) => { g.fillStyle = d.wall[0]; g.fillRect(0, 0, w, h); g.fillStyle = d.wall[1]; for (let x = 0; x < w; x += 32) g.fillRect(x, 0, 16, h); const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, 'rgba(255,255,255,.35)'); gr.addColorStop(0.4, 'rgba(255,255,255,0)'); gr.addColorStop(1, 'rgba(0,0,0,.3)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); }, true) });
     else wm = new T.MeshBasicMaterial({ map: wallTex(th === 'gruft' || ws === 'stone' ? 'gruft' : th, d), side: T.DoubleSide });
-    [-1, 1].forEach(s => world.add(strip(s * tr.wallD, 0, 0, ws === 'rail' || ws === 'wood' ? 8 : 16, wm, true, H)));
+    const gap = s => j => nearCut(tr.P[j * 2] + tr.Nm[j * 2] * s * tr.wallD, tr.P[j * 2 + 1] + tr.Nm[j * 2 + 1] * s * tr.wallD, 1.5) || nearCut(tr.P[((j + 1) % tr.N) * 2] + tr.Nm[j * 2] * s * tr.wallD, tr.P[((j + 1) % tr.N) * 2 + 1] + tr.Nm[j * 2 + 1] * s * tr.wallD, 1.5); tr._gap = gap;
+    [-1, 1].forEach(s => world.add(strip(s * tr.wallD, 0, 0, ws === 'rail' || ws === 'wood' ? 8 : 16, wm, true, H, gap(s))));
     // Neon: leuchtende Röhre oben auf der Bande + weicher Lichtschein, dazu Leuchtlinien an der Fahrbahnkante
     if (ws === 'neon' || night) {
       const nc = new T.Color(ws === 'neon' ? d.wall[0] : d.wall[0]), nc2 = new T.Color(d.wall[1]);
       const tube = bas(nc.clone().offsetHSL(0, 0, 0.12), { fog: false }), glow = new T.MeshBasicMaterial({ map: glowTex(), color: nc, transparent: true, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide, fog: false, opacity: 0.85 });
-      [-1, 1].forEach(s => { const t1 = strip(s * tr.wallD, 0, 0, 16, tube, true, 0.22); t1.position.y = H; world.add(t1); const gl = strip(s * tr.wallD, 0, 0, 16, glow, true, 2.6); gl.position.y = H - 1.5; gl.renderOrder = 2; world.add(gl);
+      [-1, 1].forEach(s => { const t1 = strip(s * tr.wallD, 0, 0, 16, tube, true, 0.22, gap(s)); t1.position.y = H; world.add(t1); const gl = strip(s * tr.wallD, 0, 0, 16, glow, true, 2.6, gap(s)); gl.position.y = H - 1.5; gl.renderOrder = 2; world.add(gl);
         const el = strip(s > 0 ? tr.half - 0.15 : -tr.half - 0.15, s > 0 ? tr.half + 0.15 : -tr.half + 0.15, 0.09, 6, bas(nc2.clone().lerp(new T.Color('#ffffff'), 0.4), { fog: false })); world.add(el); });
     }
-    if (ws === 'rail' || ws === 'wood') [-1, 1].forEach(s => world.add(strip(s * tr.wallD, 0, 0, 16, lam(ws === 'wood' ? '#5a3a1a' : '#3a404c', { side: T.DoubleSide }), true, 0.12)));
+    if (ws === 'rail' || ws === 'wood') [-1, 1].forEach(s => world.add(strip(s * tr.wallD, 0, 0, 16, lam(ws === 'wood' ? '#5a3a1a' : '#3a404c', { side: T.DoubleSide }), true, 0.12, gap(s))));
+    // Dämme unter Hügeln: Böschung von der Bande schräg bis zum Boden
+    if (tr.hills) { const em = lam(new T.Color(d.ground).offsetHSL(0, 0, -0.06).getStyle()); [-1, 1].forEach(s => { const N = tr.N, pos = [], idx = []; for (let i = 0; i <= N; i++) { const j = i % N, h = tr.height(j), nx = tr.Nm[j * 2], nz = tr.Nm[j * 2 + 1], px = tr.P[j * 2], pz = tr.P[j * 2 + 1], o2 = tr.wallD + h * 1.7; pos.push(px + nx * s * tr.wallD, h, pz + nz * s * tr.wallD, px + nx * s * o2, -0.08, pz + nz * s * o2); if (i < N && (h > 0.05 || tr.height(j + 1) > 0.05)) { const k = i * 2; if (s > 0) idx.push(k, k + 2, k + 1, k + 1, k + 2, k + 3); else idx.push(k, k + 1, k + 2, k + 1, k + 3, k + 2); } } const g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals(); const m = new T.Mesh(g, em); m.frustumCulled = false; m.material.side = T.DoubleSide; world.add(m); }); }
+    // Abkürzungen: schmaler Weg mit eigener Bande, Leuchtkanten und Hinweisschild
+    tr.cuts.forEach(c => { const hw = c.w / 2, nx = c.uz, nz = -c.ux, len = c.len, g = new T.BufferGeometry(), y = 0.035;
+      g.setAttribute('position', new T.Float32BufferAttribute([c.ax + nx * hw, y, c.az + nz * hw, c.ax - nx * hw, y, c.az - nz * hw, c.bx + nx * hw, y, c.bz + nz * hw, c.bx - nx * hw, y, c.bz - nz * hw], 3)); g.setAttribute('uv', new T.Float32BufferAttribute([0, 0, 1, 0, 0, len / 10, 1, len / 10], 2)); g.setIndex([0, 2, 1, 1, 2, 3]); g.computeVertexNormals();
+      const cm2 = rm.clone(); cm2.map = rm.map.clone(); cm2.map.needsUpdate = true; cm2.map.repeat.set(1, 1); cm2.side = T.DoubleSide; const path = new T.Mesh(g, cm2); path.userData.keep = true; world.add(path);
+      const glowC = new T.Color(d.wall[0]); [-1, 1].forEach(s => { for (let q = 0.12; q < 0.88; q += 0.76 / 8) { const x = c.ax + c.ux * len * q + nx * s * (hw + 0.4), z = c.az + c.uz * len * q + nz * s * (hw + 0.4); const b = new T.Mesh(geo('b', () => new T.BoxGeometry(1, 1, 1)), lam(d.wall[1])); b.scale.set(0.5, 1, len * 0.76 / 8 * 0.92); b.position.set(x + c.ux * len * 0.76 / 16, 0.5, z + c.uz * len * 0.76 / 16); b.rotation.y = Math.atan2(c.ux, c.uz); b.userData.keep = true; world.add(b); const l = new T.Mesh(geo('cutlite', () => new T.BoxGeometry(0.56, 0.12, 1)), bas(glowC, { fog: false })); l.scale.z = len * 0.76 / 8 * 0.92; l.position.set(b.position.x, 1.05, b.position.z); l.rotation.y = b.rotation.y; l.userData.keep = true; world.add(l); } });
+      const sign = new T.Group(); sign.userData.keep = true; const sx = c.ax + c.ux * len * 0.1 + nx * (hw + 2.5), sz = c.az + c.uz * len * 0.1 + nz * (hw + 2.5); sign.position.set(sx, 0, sz); sign.rotation.y = Math.atan2(-c.ux, -c.uz);
+      const pole = new T.Mesh(geo('b', () => new T.BoxGeometry(1, 1, 1)), lam('#2a2d3a')); pole.scale.set(0.3, 4, 0.3); pole.position.y = 2; sign.add(pole);
+      const bd = new T.Mesh(new T.PlaneGeometry(4.2, 1.6), new T.MeshBasicMaterial({ side: T.DoubleSide, map: canvasTex(256, 96, (g2, w2, h2) => { g2.fillStyle = '#ffd24a'; g2.fillRect(0, 0, w2, h2); g2.fillStyle = '#1c1f2e'; g2.fillRect(6, 6, w2 - 12, h2 - 12); g2.fillStyle = '#ffd24a'; g2.font = '900 34px Fredoka, Arial'; g2.textAlign = 'center'; g2.textBaseline = 'middle'; g2.fillText('ABKÜRZUNG ➜', w2 / 2, h2 / 2 + 2); }) })); bd.position.y = 4.4; sign.add(bd); world.add(sign); });
+    // Rampen quer über die Fahrbahn
+    tr.ramps.forEach(r => { const L = 7 / 3, a = {}, b = {}; tr.at(r - L, 0, a); tr.at(r, 0, b); const len = Math.hypot(b.x - a.x, b.z - a.z), g = new T.BufferGeometry(), hw = tr.half - 0.3, hy = 1.2;
+      g.setAttribute('position', new T.Float32BufferAttribute([-hw, 0, 0, hw, 0, 0, -hw, hy, len, hw, hy, len, -hw, 0, len, hw, 0, len], 3)); g.setAttribute('uv', new T.Float32BufferAttribute([0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1], 2)); g.setIndex([0, 2, 1, 1, 2, 3, 2, 4, 3, 3, 4, 5]); g.computeVertexNormals();
+      const m = new T.Mesh(g, shared.rampMat || (shared.rampMat = new T.MeshLambertMaterial({ side: T.DoubleSide, emissive: 0x332200, map: canvasTex(256, 128, (g2, w2, h2) => { g2.fillStyle = '#1c1f2e'; g2.fillRect(0, 0, w2, h2); g2.strokeStyle = '#ffd24a'; g2.lineWidth = 16; g2.lineJoin = 'round'; for (let k = 0; k < 4; k++) { g2.beginPath(); g2.moveTo(20 + k * 60, 10); g2.lineTo(50 + k * 60, h2 / 2); g2.lineTo(20 + k * 60, h2 - 10); g2.stroke(); } g2.fillStyle = '#ff2d95'; g2.fillRect(0, 0, w2, 8); g2.fillRect(0, h2 - 8, w2, 8); }) })));
+      m.position.set(a.x, tr.height(r - L) + 0.02, a.z); m.rotation.y = Math.atan2(b.x - a.x, b.z - a.z); m.userData.keep = true; world.add(m); });
   }
   // Hintergrund-Silhouetten: zwei Ringe (nah/fern) mit Dunst – Tiefe ohne Zusatzgeometrie (2 Draw-Calls)
   const BACK = { wiese: 'hills', strand: 'sea', gruft: 'spooky', fantasia: 'castle', neon: 'city', vulkan: 'volcano', eis: 'peaks', dschungel: 'forest', kosmos: null, wueste: 'mesa', regenbogen: 'hills', herzportal: 'castle', kristallsturm: 'peaks', monsterfreunde: 'forest', ahnenruinen: 'spooky', drachenflug: 'peaks', splitterwelten: 'city', farbeninsel: 'sea', zotik: 'forest', taschi: 'hills', aeru: null, bunte: 'sea', leuchtfeuer: 'sea', sonnenhof: 'hills', ricopoly: 'city', wolken: null, huepf: 'city' };
@@ -152,7 +168,7 @@ const View = (() => {
     // Sichtbare Brückenkonstruktionen unter erhöhten Fahrbahnen.
     // Brückenkante unter erhöhter Fahrbahn (wirkt wie ein echtes Deck statt einer dünnen Folie)
     if (tr.hilly) [-1, 1].forEach(s => world.add(strip(s * tr.wallD, 0, 0, 16, lam(d.wall[0], { side: T.DoubleSide }), true, -1.8)));
-    if (d.mechanic || (tr.hilly && d.world !== 'wolken' && d.world !== 'aeru')) {
+    if (d.mechanic || (tr.hilly && !tr.hills && d.world !== 'wolken' && d.world !== 'aeru')) {
       const pillarGeo=new T.CylinderGeometry(1.25,1.6,1,8), supportMat=lam(d.wall[0]);
       for(let j=0;j<tr.N;j+=22){
         const h=tr.height(j);
@@ -214,8 +230,9 @@ const View = (() => {
   // Alles instanziert (wenige Draw-Calls, handytauglich), feste Zufallsfolge je Strecke, Animationen über anim[].
   // Enge Layouts (Kamm, Serpentinen, Acht): Deko, die auf einer anderen Fahrbahn landen würde, entfällt.
   const ro_ = { i: 0, f: 0, d: 0 };
-  const offRoad = (geo, x, y, z, sx, sz) => { if (geo === 'arc' || y > 14) return true; tr.nearest(x, z, -1, ro_); return Math.abs(ro_.d) > tr.wallD + 0.5 + Math.min(8, Math.max(sx || 0, sz || 0) * 0.5); };
-  function clearRoads() { const rm = []; world.children.forEach(o => { if (o.userData.keep || (o.position.x === 0 && o.position.z === 0) || o.position.y > 14) return; tr.nearest(o.position.x, o.position.z, -1, ro_); if (Math.abs(ro_.d) < tr.wallD + 2) rm.push(o); }); rm.forEach(o => world.remove(o)); }
+  const nearCut = (x, z, pad) => tr.cuts.some(c => { const rx = x - c.ax, rz = z - c.az, t = (rx * c.ux + rz * c.uz) / c.len, e = rx * c.uz - rz * c.ux; return t > -0.05 && t < 1.05 && Math.abs(e) < c.w / 2 + pad; });
+  const offRoad = (geo, x, y, z, sx, sz) => { if (geo === 'arc' || y > 14) return true; const r = Math.min(8, Math.max(sx || 0, sz || 0) * 0.5); if (nearCut(x, z, 2 + r)) return false; tr.nearest(x, z, -1, ro_); return Math.abs(ro_.d) > tr.wallD + 0.5 + r; };
+  function clearRoads() { const rm = []; world.children.forEach(o => { if (o.userData.keep || (o.position.x === 0 && o.position.z === 0) || o.position.y > 14) return; if (nearCut(o.position.x, o.position.z, 3)) { rm.push(o); return; } tr.nearest(o.position.x, o.position.z, -1, ro_); if (Math.abs(ro_.d) < tr.wallD + 2) rm.push(o); }); rm.forEach(o => world.remove(o)); }
   function tourLandscape(d) {
     let sd = 0; for (const ch of d.id) sd = (sd * 31 + ch.charCodeAt(0)) >>> 0;
     const R = () => { sd = (sd + 0x6D2B79F5) >>> 0; let t = sd; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
@@ -837,14 +854,16 @@ const View = (() => {
   // Höhe unter Items/Geschossen auf Strecken mit Brücken (Suche merkt sich den letzten Abschnitt je Objekt)
   const hp_ = { i: 0, f: 0, d: 0 };
   const hAt = o => { if (!tr.hilly) return 0; tr.nearest(o.x, o.z, o._hi == null ? -1 : o._hi, hp_); o._hi = hp_.i; return tr.height(hp_.f); };
+  // Höhe über der Fahrbahn: Auffahrt auf die Rampe, dann Sprungbogen bis zur Landung
+  const kLift = k => { if (k.airT > 0) { const q = 1 - k.airT / (k.airMax || 1); return 1.2 * (1 - q) + 3.4 * Math.sin(Math.PI * q) * (k.airMax || 1); } if (Math.abs(k.d || 0) < tr.half) for (const r of tr.ramps) { let u = k.f - (r - 7 / 3); if (u > tr.N / 2) u -= tr.N; if (u > 0 && u < 7 / 3) return 1.2 * u / (7 / 3); } return 0; };
   function updateKarts(S, dt, time) {
     S.karts.forEach((k, i) => {
-      const m = kmesh[i]; if (!m) return; const p = ip[i]; m.g.position.set(p.x, S.tr.height(k.f), p.z); m.g.rotation.y = p.th;
+      const m = kmesh[i]; if (!m) return; const p = ip[i], up = kLift(k); m.g.position.set(p.x, S.tr.height(k.f) + up, p.z); m.g.rotation.y = p.th;
       if (dt > 0) { const ac = (k.vf - m.lvf) / dt; m.lvf = k.vf; m.pit += (clamp(-ac * 0.0035, -0.07, 0.07) - m.pit) * Math.min(1, dt * 6); m.body.rotation.x = m.pit;
         skidKart(i, k); const sn = Math.sin(k.th), cs = Math.cos(k.th);
         if (k.rough && k.vf > 7 && Math.random() < 0.4) burst(k.x - sn * 1.6 + (Math.random() - 0.5) * 2, 0.4, k.z - cs * 1.6, dustCol, 1, 1.4, 1.6);
         else if (k.drift && k.vf > 10 && Math.random() < 0.25) burst(k.x - sn * 1.6 + (Math.random() - 0.5) * 2.4, 0.3, k.z - cs * 1.6, 0xd8dce8, 1, 1, 1.2); }
-      const roll = -k.steer * 0.12 * clamp(k.vf / 30, 0, 1) + (k.drift ? k.drift * 0.1 : 0); m.body.rotation.z = roll; m.body.rotation.y = k.drift ? k.drift * 0.35 : 0; m.body.position.y = k.spinT > 0 ? Math.abs(Math.sin(time * 14)) * 0.6 : 0;
+      const roll = -k.steer * 0.12 * clamp(k.vf / 30, 0, 1) + (k.drift ? k.drift * 0.1 : 0); m.body.rotation.z = roll; m.body.rotation.y = k.airT > 0 ? (() => { const q = 1 - k.airT / (k.airMax || 1); return q < 0.7 ? q / 0.7 * PI2 : 0; })() : k.drift ? k.drift * 0.35 : 0; m.body.position.y = k.spinT > 0 ? Math.abs(Math.sin(time * 14)) * 0.6 : 0;
       m.wheels.forEach(w => { w.w.rotation.x += k.vf * dt / 0.5; if (w.front) w.wg.rotation.y = -k.steer * 0.45; });
       m.flame.visible = k.boostT > 0; if (m.flame.visible) { const f = 1.2 + Math.random() * 0.25; m.flame.scale.set(f, 0.9 + Math.random() * 1.1, f); }
       m.shield.visible = k.shieldT > 0 && (k.shieldT > 1.5 || ((time * 8) | 0) % 2 === 0);
@@ -864,7 +883,7 @@ const View = (() => {
     S.events.forEach(e => {
       if (e.t === 'boom') { const m = poolGet(boomM, () => new T.Mesh(shared.sphere, bas(0xffaa33, { transparent: true, opacity: 0.8, blending: T.AdditiveBlending }))); m.position.set(e.x, 1.3, e.z); m.userData.t = 0; burst(e.x, 1.5, e.z, 0xff9a33, 22, 9, 6); }
       else if (e.t === 'splat') burst(e.x, 0.8, e.z, 0xffe14a, 16, 5, 4); else if (e.t === 'smash') burst(e.x, 1.0, e.z, 0x9aa0b0, 18, 7, 5); else if (e.t === 'rockBounce') burst(e.x, 0.8, e.z, 0xcfc8a8, 5, 3, 2);
-      else if (e.t === 'hit') { const k = S.karts[e.k]; burst(k.x, 2.2, k.z, 0xffe14a, 14, 4, 6); } else if (e.t === 'pad') { const k = S.karts[e.k]; burst(k.x, 0.6, k.z, 0xffd24a, 6, 3, 2); } else if (e.t === 'coin') burst(e.x, 1.3, e.z, 0xffd24a, 7, 3, 3);
+      else if (e.t === 'hit') { const k = S.karts[e.k]; burst(k.x, 2.2, k.z, 0xffe14a, 14, 4, 6); } else if (e.t === 'pad') { const k = S.karts[e.k]; burst(k.x, 0.6, k.z, 0xffd24a, 6, 3, 2); } else if (e.t === 'coin') burst(e.x, 1.3, e.z, 0xffd24a, 7, 3, 3); else if (e.t === 'trick') { const k = S.karts[e.k]; if (k) burst(k.x, 1.2, k.z, 0x66e0ff, 12, 5, 3); }
       else if (e.t === 'flash') (e.ids || []).forEach(id => { const k = S.karts[id]; bolt(k.x, k.z); burst(k.x, 2, k.z, 0xffffff, 18, 8, 8); });
       else if (e.t === 'use' && e.item === 'shield') { const k = S.karts[e.k]; burst(k.x, 1.5, k.z, 0x66e0ff, 14, 5, 3); } else if (e.t === 'use' && (e.item === 'banana' || e.item === 'mine')) { const k = S.karts[e.k]; burst(k.x - Math.sin(k.th) * 3, 0.8, k.z - Math.cos(k.th) * 3, 0xffe14a, 6, 3, 2); } else if (e.t === 'use' && e.item === 'rock') { const k = S.karts[e.k]; burst(k.x + Math.sin(k.th) * 3, 0.8, k.z + Math.cos(k.th) * 3, 0xcfc8a8, 8, 4, 3); }
       else if (e.t === 'fog') (e.ids || []).forEach(id => { const k = S.karts[id]; burst(k.x, 2, k.z, 0xeaf6ff, 22, 5, 3); });
@@ -886,7 +905,7 @@ const View = (() => {
   function updateCam(c, S, dt) {
     const k = c.k, p = ip[c.ki] || k, tgt = p.th + (k.drift ? -k.drift * 0.28 : 0); c.ang += wrap(tgt - c.ang) * Math.min(1, dt * (k.spinT > 0 ? 1.5 : 5.2));
     const af = clamp(1 / Math.sqrt(c.cam.aspect || 1.7), 1, 1.55), dist = (12.4 + clamp(k.vf / 36, 0, 1.4) * 1.8) * af, wx = p.x - Math.sin(c.ang) * dist, wz = p.z - Math.cos(c.ang) * dist, kk = 1 - Math.exp(-dt * 10);
-    c.pos.x += (wx - c.pos.x) * kk; c.pos.z += (wz - c.pos.z) * kk; c.pos.y += ((5.0 * (0.9 + 0.1 * af) + S.tr.height(k.f)) - c.pos.y) * kk; c.cam.position.copy(c.pos);
+    c.pos.x += (wx - c.pos.x) * kk; c.pos.z += (wz - c.pos.z) * kk; c.pos.y += ((5.0 * (0.9 + 0.1 * af) + S.tr.height(k.f) + kLift(k) * 0.6) - c.pos.y) * kk; c.cam.position.copy(c.pos);
     if (k.spinT > c.ls + 0.05) c.shake = 0.5; c.ls = k.spinT; if (c.shake > 0 && dt > 0) { c.shake = Math.max(0, c.shake - dt * 1.4); c.cam.position.x += (Math.random() - 0.5) * c.shake; c.cam.position.y += (Math.random() - 0.5) * c.shake * 0.6; }
     if (c.kick > 0) { c.fov += c.kick; c.kick = 0; } const tf = 64 + clamp(k.vf / 36, 0, 1.5) * 8 + (k.boostT > 0 ? 9 : 0); c.fov += (tf - c.fov) * Math.min(1, dt * 4); c.cam.fov = c.fov;
     c.sl += ((k.boostT > 0 ? 0.55 : 0) + clamp((k.vf - 26) / 14, 0, 1) * 0.22 - c.sl) * Math.min(1, dt * 5);   // Stärke der Geschwindigkeitslinien

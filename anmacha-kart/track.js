@@ -147,7 +147,9 @@ const Track = (() => {
       dragon: [[0,0],[.10,0],[.27,18],[.40,18],[.58,0],[.70,0],[.82,12],[.90,12],[1,0]],
       shards: [[0,0],[.13,0],[.25,12],[.37,12],[.49,0],[.61,0],[.72,16],[.84,16],[.95,0],[1,0]],
       island: [[0,0],[.12,0],[.21,5],[.32,5],[.42,0],[.62,0],[.73,7],[.84,7],[.93,0],[1,0]]
-    }[def.mechanic] || def.profile || [[0,0],[1,0]];
+    }[def.mechanic] || def.profile || null;
+    // Flache Klassik-Strecken bekommen Hügel (Dämme statt Pfeiler): echte Höhenunterschiede, Physik bleibt gleich
+    if (!profile) { profile = [[0, 0], [1, 0]]; tr.hills = true; }
     // Kreuzende Strecken (Acht, Alpha-Schleife): der zweite Durchgang führt als Brücke über die Kreuzung.
     if (def.cross) {
       const cp = []; for (let a = 0; a < N; a += 2) for (let b = a + 30; b < N; b += 2) if (Math.min(b - a, N - b + a) * SP > 90 && Math.hypot(P[a * 2] - P[b * 2], P[a * 2 + 1] - P[b * 2 + 1]) < 8) cp.push([a, b]);
@@ -167,6 +169,24 @@ const Track = (() => {
       return 0;
     };
     tr.bridge = f => tr.height(f)>3;
+    // Abkürzungen: schmale Wege quer durch das Innenfeld enger Kehren (Wegstrecke deutlich länger als Luftlinie, kreuzt keine andere Fahrbahn)
+    tr.cuts = []; if (!def.cross) {
+      const flat = i => tr.height(i) < 0.4, cand = [];
+      for (let a = 12; a < N - 30; a += 2) { if (!flat(a)) continue; for (let b = a + Math.ceil(70 / SP); b < Math.min(N - 4, a + N / 2); b += 2) { if (!flat(b)) continue; const ax = P[a * 2], az = P[a * 2 + 1], bx = P[b * 2], bz = P[b * 2 + 1], D = Math.hypot(bx - ax, bz - az), L = (b - a) * SP; if (D < 26 || D > 200 || L < 1.3 * D || L - D < 35 || L - D > 300) continue;
+        let ok = true; const m0 = def.w / 2 + 3, steps = Math.floor((D - 2 * m0) / 3);
+        for (let q = 0; q <= steps && ok; q++) { const t = (m0 + q * 3) / D, x = ax + (bx - ax) * t, z = az + (bz - az) * t; for (let i = 0; i < N; i += 1) { const dd = Math.hypot(x - P[i * 2], z - P[i * 2 + 1]); if (dd < def.w / 2 + 7 && !((i >= a - 6 && i <= a + 6 && t < 0.5) || (i >= b - 6 && i <= b + 6 && t > 0.5))) { ok = false; break; } if (!tr.hills && !flat(i) && dd < def.w / 2 + 12) { ok = false; break; } } }
+        if (ok) cand.push({ a, b, gain: L - D }); } }
+      cand.sort((p, q) => Math.abs(p.gain - 120) - Math.abs(q.gain - 120));
+      for (const c of cand) { if (tr.cuts.length >= 2) break; if (tr.cuts.some(o => c.a < o.b + 20 && c.b > o.a - 20)) continue; const ax = P[c.a * 2], az = P[c.a * 2 + 1], bx = P[c.b * 2], bz = P[c.b * 2 + 1], D = Math.hypot(bx - ax, bz - az); tr.cuts.push({ a: c.a, b: c.b, ax, az, bx, bz, len: D, ux: (bx - ax) / D, uz: (bz - az) / D, w: 8 }); }
+    }
+    // Hügel erst nach den Abkürzungen setzen: deren Enden bleiben eben
+    if (tr.hills) { let hs = 0; for (const ch of def.id) hs = (hs * 31 + ch.charCodeAt(0)) % 997; const free = u => !tr.cuts.some(c => u > c.a / N - 0.13 && u < c.b / N + 0.13) && u > 0.14 && u < 0.86, hl = [];
+      for (let k = 0; k < 40 && hl.length < 2; k++) { const u = (0.18 + ((hs + k * 37) % 64) / 100); if (free(u) && hl.every(v => Math.abs(v - u) > 0.3)) hl.push(u); }
+      hl.sort((p, q) => p - q); profile = [[0, 0]]; hl.forEach((u, k) => { const h = k ? 5 + (hs >> 2) % 5 : 4 + hs % 4; profile.push([u - 0.11, 0], [u - 0.04, h], [u + 0.04, h], [u + 0.11, 0]); }); profile.push([1, 0]); tr.hilly = hl.length > 0; }
+    // Rampen: auf den zwei ruhigsten flachen Geraden (abseits Start, Abkürzungen und Item-Reihen)
+    tr.ramps = []; { const sc = []; for (let i = 40; i < N - 20; i += 2) { let k = 0; for (let j = -10; j <= 14; j++) k = Math.max(k, K[(i + j + N) % N]); const u = i / N; if (Math.abs(tr.height(i) - tr.height(i + 6)) > 0.3 || tr.cuts.some(c => i > c.a - 12 && i < c.b + 12) || Math.abs((u * 6 + 0.5) % 1 - 0.5) < 0.12) continue; sc.push([k, i]); } sc.sort((p, q) => p[0] - q[0]); for (const [, i] of sc) { if (tr.ramps.length >= 2) break; if (tr.ramps.every(r => Math.min(Math.abs(r - i), N - Math.abs(r - i)) > N / 4)) tr.ramps.push(i); } }
+    // Position auf einer Abkürzung: Fortschritt t (0..1) und seitlicher Abstand e
+    tr.onCut = (x, z, out) => { for (let ci = 0; ci < tr.cuts.length; ci++) { const c = tr.cuts[ci], rx = x - c.ax, rz = z - c.az, t = (rx * c.ux + rz * c.uz) / c.len, e = rx * c.uz - rz * c.ux; if (t >= -0.02 && t <= 1.02 && Math.abs(e) < c.w / 2 + 1.5) { out.c = ci; out.t = t; out.e = e; return out; } } out.c = -1; return out; };
     // nächster Punkt: lokale Suche um hint (hint < 0 = alles absuchen); out = {i,f,d}
     tr.nearest = (x, z, hint, out) => {
       let bi = 0, bd = 1e18; const lo = hint < 0 ? 0 : -14, hi = hint < 0 ? N - 1 : 14;

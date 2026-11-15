@@ -6,7 +6,7 @@ const Sim = (() => {
   const ITEMS = ['boost', 'boost3', 'banana', 'banana3', 'rock', 'rock3', 'mine', 'rocket', 'shield', 'flash', 'fog'];
   const wrap = a => { while (a > Math.PI) a -= PI2; while (a < -Math.PI) a += PI2; return a; };
   const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
-  const tmp = { i: 0, f: 0, d: 0 }, tp = { x: 0, z: 0, tx: 0, tz: 0 };
+  const oc = { c: -1, t: 0, e: 0 }, tmp = { i: 0, f: 0, d: 0 }, tp = { x: 0, z: 0, tx: 0, tz: 0 };
   // Kreuzende Strecken: Objekte auf der Brücke und darunter berühren sich nicht.
   const lv_ = { i: 0, f: 0, d: 0 };
   const lvl = (S, o) => { if (o.f != null && o.k != null) return S.tr.height(o.f); if (o.f != null && o._si == null) return S.tr.height(o.f); S.tr.nearest(o.x, o.z, o._si == null ? -1 : o._si, lv_); o._si = lv_.i; return S.tr.height(lv_.f); };
@@ -132,7 +132,7 @@ const Sim = (() => {
     k.inv = Math.max(0, k.inv - dt); k.shieldT = Math.max(0, k.shieldT - dt); k.boostT = Math.max(0, k.boostT - dt);
     if (S.state === 'grid') inp = { s: 0, b: 0, d: false, i: false, gas: 0, g: 0 };
     if (k.spinT > 0) { k.spinT -= dt; inp = { s: 0, b: 0, d: false, i: false, gas: 0 }; k.th += dt * 11; }
-    const boost = k.boostT > 0, capBase = (k.human || k.finished ? VMAX * k.mv : VMAX * k.mv * (inp.cap || 1)), cap = capBase * (1 + 0.005 * (k.coins || 0)) * (boost ? 1.42 : 1) * (k.rough ? k.mr : 1);
+    const boost = k.boostT > 0, capBase = (k.human || k.finished ? VMAX * k.mv : VMAX * k.mv * (inp.cap || 1)), cap = capBase * (1 + 0.005 * (k.coins || 0)) * (boost ? 1.42 : 1) * (k.onCut && !boost ? 0.84 : 1) * (k.rough ? k.mr : 1);
     // Windschatten: dicht hinter einem schnell fahrenden Rivalen liegt eine echte Überholchance.
     let drafting = false;
     if (!k.finished && S.state === 'race' && !k.rough && k.spinT <= 0 && k.vf > VMAX * 0.38) {
@@ -167,8 +167,17 @@ const Sim = (() => {
     const nfx = Math.sin(k.th), nfz = Math.cos(k.th), nrx = -Math.cos(k.th), nrz = Math.sin(k.th);
     k.vx = nfx * vf + nrx * vl; k.vz = nfz * vf + nrz * vl; k.vf = vf;
     k.x += k.vx * dt; k.z += k.vz * dt;
-    tr.nearest(k.x, k.z, k.lapInit ? k.i : -1, tmp); k.lapInit = true; k.i = tmp.i; k.f = tmp.f; k.d = tmp.d;
-    const ad = Math.abs(tmp.d); k.rough = ad > tr.roughD; k.wall = false;
+    tr.nearest(k.x, k.z, k.lapInit && k.cut == null ? k.i : -1, tmp); k.lapInit = true;
+    // Abkürzung: Fortschritt entlang des Wegs, eigene Ränder, Lücke in der Bande
+    let onC = false; if (tr.cuts.length) { tr.onCut(k.x, k.z, oc); if (oc.c >= 0 && (k.cut === oc.c || Math.abs(tmp.d) > tr.half + 0.5) && oc.t > 0.01 && oc.t < 0.99) {
+      const c = tr.cuts[oc.c]; onC = true; k.cut = oc.c; tmp.f = c.a + (c.b - c.a) * oc.t; tmp.i = Math.floor(tmp.f) % N; tmp.d = 0;
+      const lim = c.w / 2; if (Math.abs(oc.e) > lim && oc.t > 0.12 && oc.t < 0.88) { const sg = oc.e > 0 ? 1 : -1, nx = c.uz, nz = -c.ux, over = Math.abs(oc.e) - lim; k.x -= nx * sg * over; k.z -= nz * sg * over; const vn = (k.vx * nx + k.vz * nz) * sg; if (vn > 0) { k.vx -= nx * sg * vn * 1.35; k.vz -= nz * sg * vn * 1.35; k.vf *= 0.93; if (vn > 5 && k.hitT <= 0) { emit(S, { t: 'wall', k: k.k, v: vn }); k.hitT = 0.4; } } } } }
+    if (!onC && k.cut != null) { k.cut = null; tr.nearest(k.x, k.z, -1, tmp); }
+    k.i = tmp.i; k.f = tmp.f; k.d = tmp.d; k.onCut = onC;
+    const ad = onC ? 0 : Math.abs(tmp.d); k.rough = ad > tr.roughD; k.wall = false;
+    // Rampen: Sprung mit Trick-Turbo bei der Landung
+    if (k.airT > 0) { k.airT -= dt; if (k.airT <= 0) { k.airT = 0; k.boostT = Math.max(k.boostT, 0.75); emit(S, { t: 'trick', k: k.k }); } }
+    else if (!onC && k.vf > 12 && Math.abs(k.d) < tr.half && tr.ramps.some(r => { let a = k.prevF - r, b = k.f - r; if (a > N / 2) a -= N; else if (a < -N / 2) a += N; if (b > N / 2) b -= N; else if (b < -N / 2) b += N; return a < 0 && b >= 0; })) { k.airT = k.airMax = clamp(0.5 + k.vf / 60, 0.6, 1.1); emit(S, { t: 'jump', k: k.k }); }
     if (ad > tr.wallD) {
       const sg = tmp.d > 0 ? 1 : -1, nx = tr.Nm[tmp.i * 2], nz = tr.Nm[tmp.i * 2 + 1], over = ad - tr.wallD; k.x -= nx * sg * over; k.z -= nz * sg * over;
       const vn = (k.vx * nx + k.vz * nz) * sg; if (vn > 0) { k.vx -= nx * sg * vn * 1.35; k.vz -= nz * sg * vn * 1.35; if (vn > 5 && k.hitT <= 0) { emit(S, { t: 'wall', k: k.k, v: vn }); k.hitT = 0.4; } k.vf *= 0.93; }
