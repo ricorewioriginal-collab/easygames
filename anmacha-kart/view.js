@@ -71,10 +71,11 @@ const View = (() => {
     scene.background = new T.Color(d.sky[0]); scene.fog = new T.Fog(d.fog, d.fogR[0], d.fogR[1]); const L = d.light; hemi.intensity = L[0]; sun.intensity = L[1]; sun.color.set(L[2]); hemi.groundColor.set(L[3]); hemi.color.set(th === 'gruft' ? '#8aa0ff' : th === 'fantasia' ? '#fff0ff' : '#cfd8ff');
     const cA = new T.Color(d.sky[0]), cB = new T.Color(d.sky[1]), cC = new T.Color(d.sky[2]), pa = sky.geometry.attributes.position, ca = sky.geometry.attributes.color, c = new T.Color();
     for (let i = 0; i < pa.count; i++) { const y = pa.getY(i) / 900; if (y > 0.25) c.copy(cB).lerp(cA, clamp((y - 0.25) / 0.6, 0, 1)); else c.copy(cC).lerp(cB, clamp((y + 0.1) / 0.35, 0, 1)); ca.setXYZ(i, c.r, c.g, c.b); } ca.needsUpdate = true;
-    const ground = new T.Mesh(new T.PlaneGeometry(3000, 3000), lam(d.ground)); ground.rotation.x = -Math.PI / 2; ground.position.y = -0.1; world.add(ground);
+    const gtex = canvasTex(128, 128, (g, w, h) => { g.fillStyle = '#ffffff'; g.fillRect(0, 0, w, h); for (let i = 0; i < 900; i++) { const v = 200 + Math.random() * 55 | 0; g.fillStyle = `rgba(${v},${v},${v},.5)`; g.fillRect(Math.random() * w, Math.random() * h, 2 + Math.random() * 5, 2 + Math.random() * 5); } }, true); gtex.repeat.set(90, 90);
+    const ground = new T.Mesh(new T.PlaneGeometry(3000, 3000), new T.MeshLambertMaterial({ color: d.ground, map: gtex })); ground.rotation.x = -Math.PI / 2; ground.position.y = -0.1; world.add(ground);
     const road = canvasTex(128, 256, (g, w, h) => { g.fillStyle = d.road; g.fillRect(0, 0, w, h); for (let i = 0; i < 400; i++) { g.fillStyle = `rgba(255,255,255,${Math.random() * 0.04})`; g.fillRect(Math.random() * w, Math.random() * h, 3, 3); } if (th === 'fantasia') for (let i = 0; i < 40; i++) { g.fillStyle = 'rgba(255,255,255,.55)'; g.fillRect(Math.random() * w, Math.random() * h, 3, 3); } g.fillStyle = th === 'gruft' ? '#9aa0b8' : '#e8ecff'; g.fillRect(5, 0, 5, h); g.fillRect(w - 10, 0, 5, h); g.fillStyle = th === 'fantasia' ? '#ffd0ff' : '#ffd24a'; for (let k = 0; k < 2; k++) g.fillRect(w / 2 - 3, k * 128 + 10, 6, 70); }, true);
     world.add(strip(-tr.half, tr.half, 0.02, 24, new T.MeshLambertMaterial({ map: road })));
-    const curbC = th === 'gruft' ? ['#8a8fa0', '#4a4f60'] : th === 'fantasia' ? ['#ff6ac8', '#ffffff'] : th === 'strand' ? ['#1a9ae0', '#ffffff'] : ['#e8412a', '#ffffff'];
+    const curbC = d.curb || (th === 'gruft' ? ['#8a8fa0', '#4a4f60'] : th === 'fantasia' ? ['#ff6ac8', '#ffffff'] : th === 'strand' ? ['#1a9ae0', '#ffffff'] : ['#e8412a', '#ffffff']);
     const curb = canvasTex(32, 64, (g, w, h) => { g.fillStyle = curbC[0]; g.fillRect(0, 0, w, h / 2); g.fillStyle = curbC[1]; g.fillRect(0, h / 2, w, h / 2); }, true);
     const rough = new T.Color(d.ground).offsetHSL(0, 0, 0.05).getStyle();
     [-1, 1].forEach(s => { world.add(strip(s > 0 ? tr.half : -tr.half - 1.3, s > 0 ? tr.half + 1.3 : -tr.half, 0.04, 6, new T.MeshLambertMaterial({ map: curb }))); world.add(strip(s > 0 ? tr.half + 1.3 : -tr.wallD, s > 0 ? tr.wallD : -tr.half - 1.3, 0.01, 10, lam(rough))); });
@@ -88,7 +89,9 @@ const View = (() => {
     const beam = new T.Mesh(new T.BoxGeometry(tr.wallD * 2, 2.6, 0.8), lam('#10143a')); beam.position.y = 9; gantry.add(beam);
     const bn = new T.Mesh(new T.PlaneGeometry(tr.wallD * 2 - 1, 2.2), new T.MeshBasicMaterial({ map: canvasTex(512, 64, (g, w, h) => { g.fillStyle = '#10143a'; g.fillRect(0, 0, w, h); g.fillStyle = '#ffd24a'; g.font = '900 40px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('KART RUSH · WELTENTOUR · START / ZIEL', w / 2, h / 2 + 2); }) })); bn.position.set(0, 9, 0.45); gantry.add(bn); const bn2 = bn.clone(); bn2.rotation.y = Math.PI; bn2.position.z = -0.45; gantry.add(bn2); world.add(gantry);
     // Sichtbare Brückenkonstruktionen unter erhöhten Fahrbahnen.
-    if (d.mechanic) {
+    // Brückenkante unter erhöhter Fahrbahn (wirkt wie ein echtes Deck statt einer dünnen Folie)
+    if (tr.hilly) [-1, 1].forEach(s => world.add(strip(s * tr.wallD, 0, 0, 16, lam(d.wall[0], { side: T.DoubleSide }), true, -1.8)));
+    if (d.mechanic || (tr.hilly && d.world !== 'wolken' && d.world !== 'aeru')) {
       const pillarGeo=new T.CylinderGeometry(1.25,1.6,1,8), supportMat=lam(d.wall[0]);
       for(let j=0;j<tr.N;j+=22){
         const h=tr.height(j);
@@ -106,7 +109,7 @@ const View = (() => {
     // Reklametafeln mit Sender-Logos
     const nb = 16; for (let k = 0; k < nb; k++) { const i = Math.floor(tr.N * (k + 0.3) / nb), s = k % 2 ? 1 : -1, nx = tr.Nm[i * 2], nz = tr.Nm[i * 2 + 1], lid = logos.length ? logos[k % logos.length].idx : 0, g = new T.Group(); g.position.set(tr.P[i * 2] + nx * s * (tr.wallD + 5), 0, tr.P[i * 2 + 1] + nz * s * (tr.wallD + 5)); g.rotation.y = Math.atan2(-nx * s, -nz * s);
       [-2.6, 2.6].forEach(x => { const p = new T.Mesh(new T.BoxGeometry(0.5, 7, 0.5), lam('#1a1d33')); p.position.set(x, 3.5, 0); g.add(p); }); const bd = new T.Mesh(new T.BoxGeometry(6.4, 4.2, 0.4), lam('#0a0f2a')); bd.position.y = 6; g.add(bd); const lg = new T.Mesh(new T.PlaneGeometry(4, 4), logoMat(lid)); lg.position.set(0, 6, 0.22); g.add(lg); world.add(g); }
-    if (d.mechanic) themedLandscape(d); else (SC[th] || SC.wiese)(d);
+    if (d.world) tourLandscape(d); else if (d.mechanic) themedLandscape(d); else (SC[th] || SC.wiese)(d);
     // Sieben zusätzliche Themen: eigenständige, ressourcenschonende 3D-Silhouetten am Streckenrand.
     if (d.mechanic) {
       const palette = {
@@ -257,6 +260,138 @@ const View = (() => {
       const orb=new T.Mesh(sphere,mat(type==='shards'?'#f181e5':'#ffd5fa',0.25));
       orb.position.set(CX+R0*0.55,130,CZ-R0*0.32);orb.scale.set(48,48,48);world.add(orb);
     }
+  }
+  // ------------------------------------------------------------------ Weltentour-Kulissen (Welten der easygames)
+  // Alles instanziert (wenige Draw-Calls, handytauglich), feste Zufallsfolge je Strecke, Animationen über anim[].
+  function tourLandscape(d) {
+    let sd = 0; for (const ch of d.id) sd = (sd * 31 + ch.charCodeAt(0)) >>> 0;
+    const R = () => { sd = (sd + 0x6D2B79F5) >>> 0; let t = sd; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    const ra = (a, b) => a + R() * (b - a), pick = a => a[Math.floor(R() * a.length)];
+    const G = {
+      box: geoC('b', () => new T.BoxGeometry(1, 1, 1)), cyl: geoC('cyl8', () => new T.CylinderGeometry(1, 1, 1, 8)), cone: geoC('cone7', () => new T.ConeGeometry(1, 1, 7)),
+      pyr: geoC('pyr4', () => { const g = new T.ConeGeometry(1, 1, 4); g.rotateY(Math.PI / 4); return g; }), sph: geoC('ico1', () => new T.IcosahedronGeometry(1, 1)),
+      tor: geoC('tor', () => new T.TorusGeometry(1, 0.12, 6, 24)), arc: geoC('arc', () => new T.TorusGeometry(1, 0.06, 5, 28, Math.PI)), prism: geoC('prism', () => { const g = new T.CylinderGeometry(1, 1, 1, 3); g.rotateZ(Math.PI / 2); return g; })
+    };
+    const lists = {}, L = (geo, glow) => { const k = geo + (glow ? '*' : ''); return lists[k] || (lists[k] = []); };
+    const put = (geo, c, x, y, z, sx, sy, sz, ry, glow, rx, rz) => L(geo, glow).push({ x, y, z, sx, sy: sy == null ? sx : sy, sz: sz == null ? sx : sz, ry: ry || 0, rx: rx || 0, rz: rz || 0, c });
+    // Positionen: entlang der Strecke (Abstand zur Mauer) oder frei verteilt
+    const pr = { i: 0, f: 0, d: 0 };
+    const along = (n, o0, o1, fn) => { for (let j = 0; j < n; j++) { const i = Math.floor((j + R()) * tr.N / n) % tr.N, s = R() < 0.5 ? -1 : 1, off = tr.wallD + ra(o0, o1); fn(tr.P[i * 2] + tr.Nm[i * 2] * s * off, tr.P[i * 2 + 1] + tr.Nm[i * 2 + 1] * s * off, i, s, j); } };
+    const free = (n, margin, r0, r1, fn) => { for (let j = 0, t = 0; j < n && t < n * 30; t++) { const a = R() * PI2, r = ra(r0, r1), x = CX + Math.cos(a) * r, z = CZ + Math.sin(a) * r; tr.nearest(x, z, -1, pr); if (Math.abs(pr.d) > tr.wallD + margin) { fn(x, z, j, a, r); j++; } } };
+    const face = i => Math.atan2(tr.T[i * 2], tr.T[i * 2 + 1]);
+    const tree = (x, z, h, leaf, trunk, round) => { put('cyl', trunk || '#7a5230', x, h * 0.25, z, h * 0.07, h * 0.5); if (round) put('sph', leaf, x, h * 0.72, z, h * 0.34, h * 0.3); else { put('cone', leaf, x, h * 0.62, z, h * 0.3, h * 0.7); put('cone', leaf, x, h * 0.95, z, h * 0.2, h * 0.45); } };
+    const lamp = (x, z, h, col) => { put('cyl', '#2a2d3a', x, h / 2, z, 0.18, h); put('sph', col, x, h + 0.4, z, 0.65, 0.65, 0.65, 0, true); };
+    const points = (n, col, size, spread, y0, y1, drift) => {
+      const pos = new Float32Array(n * 3); for (let k = 0; k < n; k++) { const a = R() * PI2, r = Math.sqrt(R()) * spread; pos[k * 3] = CX + Math.cos(a) * r; pos[k * 3 + 1] = ra(y0, y1); pos[k * 3 + 2] = CZ + Math.sin(a) * r; }
+      const g = new T.BufferGeometry(); g.setAttribute('position', new T.BufferAttribute(pos, 3));
+      const p = new T.Points(g, new T.PointsMaterial({ color: col, size, map: shared.dot, transparent: true, depthWrite: false, blending: T.AdditiveBlending, fog: false, sizeAttenuation: true }));
+      p.frustumCulled = false; world.add(p); if (drift) anim.push(t => { p.position.y = Math.sin(t * 0.6) * drift; p.rotation.y = t * 0.01; }); return p;
+    };
+    const land = (col, extra) => world.add(strip(-tr.wallD - extra, tr.wallD + extra, -0.06, 30, lam(col)));
+    const sun = (col, el, size) => { const m = new T.Mesh(shared.sphere, bas(col, { fog: false })); const a = 0.7; m.position.set(CX + Math.cos(a) * 820, el, CZ + Math.sin(a) * 820); m.scale.setScalar(size); skyGroup.add(m); return m; };
+    const grp = (x, y, z) => { const g = new T.Group(); g.position.set(x, y, z); world.add(g); return g; };
+    const mesh = (parent, geo, col, x, y, z, sx, sy, sz, glow) => { const m = new T.Mesh(G[geo], glow ? bas(col) : lam(col)); m.position.set(x, y, z); m.scale.set(sx, sy == null ? sx : sy, sz == null ? sx : sz); parent.add(m); return m; };
+    const W = d.world, P = d.props;
+    if (W === 'zotik') {
+      free(110, 8, 0, R0 + 360, (x, z) => tree(x, z, ra(9, 20), pick(['#2e7d32', '#1b5e20', '#388e3c', '#43a047']), null, R() < 0.3)); along(110, 6, 46, (x, z) => tree(x, z, ra(8, 18), pick(['#2e7d32', '#1b5e20', '#388e3c', '#43a047']), null, R() < 0.35));
+      along(26, 6, 30, (x, z) => { const h = ra(3, 7); put('cyl', '#f4ecd8', x, h / 2, z, h * 0.16, h); put('sph', pick(['#e53935', '#d84315', '#8e24aa']), x, h, z, h * 0.55, h * 0.28); for (let q = 0; q < 3; q++) put('sph', '#ffffff', x + ra(-h, h) * 0.3, h * 1.18, z + ra(-h, h) * 0.3, h * 0.07); });
+      along(30, 1.5, 3, (x, z) => lamp(x, z, 4.5, '#ffcc66'));
+      for (let k = 0; k < 7; k++) { const a = k / 7 * PI2 + 0.3, r = R0 + ra(90, 180), x = CX + Math.cos(a) * r, z = CZ + Math.sin(a) * r, h = ra(30, 55); put('cyl', '#9e9e9e', x, h / 2, z, 7, h); put('cone', pick(['#1e88e5', '#c62828', '#6a1b9a']), x, h + 7, z, 9, 14); put('box', pick(['#ffd54f', '#e53935']), x + 2, h + 18, z, 4, 2.4, 0.2); if (k % 2) { put('box', '#8d8d8d', x + 14, h * 0.3, z, 18, h * 0.6, 6); } }
+      along(8, 4, 12, (x, z, i) => { const g = grp(x, 2.6, z); g.rotation.y = face(i) + Math.PI / 2; [['#ffffff', 2.2], ['#e53935', 1.7], ['#ffffff', 1.1], ['#ffd54f', 0.55]].forEach(([c, r], q) => { const m = mesh(g, 'cyl', c, 0, 0, q * 0.06, r, 0.1, r); m.rotation.x = Math.PI / 2; }); mesh(g, 'cyl', '#6d4c41', 0, -1.6, -0.3, 0.15, 2.4, 0.15); });
+      points(160, 0xfff2a8, 1.4, R0 + 120, 1, 10, 0.8);
+    } else if (W === 'taschi') {
+      const L16 = ['#ff5252', '#ff9800', '#ffeb3b', '#8bc34a', '#00e676', '#1de9b6', '#00e5ff', '#448aff', '#7c4dff', '#e040fb', '#ff4081', '#ffffff', '#ffd180', '#b2ff59', '#84ffff', '#ea80fc'];
+      const orbs = [];
+      for (let k = 0; k < 16; k++) { const i = Math.floor((k + 0.5) * tr.N / 16), s = k % 2 ? 1 : -1, x = tr.P[i * 2] + tr.Nm[i * 2] * s * (tr.wallD + 7), z = tr.P[i * 2 + 1] + tr.Nm[i * 2 + 1] * s * (tr.wallD + 7); put('cyl', '#3a2f6a', x, 6, z, 0.5, 12); put('tor', '#ffd54a', x, 13, z, 2.2, 2.2, 2.2, face(i)); const o = new T.Mesh(shared.sphere, bas(L16[k], { transparent: true, opacity: 0.9 })); o.position.set(x, 13, z); o.scale.setScalar(1.6); world.add(o); orbs.push(o); }
+      anim.push(t => orbs.forEach((o, k) => { o.scale.setScalar(1.45 + Math.sin(t * 2.2 + k) * 0.25); }));
+      free(46, 40, R0 * 0.2, R0 + 320, (x, z) => { const s = ra(18, 40); put('sph', pick(['#5a8f4a', '#4f7f45', '#6a9a50']), x, -s * 0.55, z, s, s * 0.7, s); });
+      free(70, 6, 0, R0 + 260, (x, z) => tree(x, z, ra(7, 14), pick(['#3e7a46', '#5a3a8a', '#2e6a5a']), '#4a3424', true)); along(90, 6, 40, (x, z) => tree(x, z, ra(6, 12), pick(['#3e7a46', '#6a4a9a', '#2e6a5a', '#8a5aa8']), '#4a3424', true));
+      along(40, 4, 24, (x, z) => { put('cyl', '#3a8a3a', x, 0.6, z, 0.06, 1.2); put('sph', pick(['#ffd54a', '#ff8a65', '#4dd0e1', '#e040fb']), x, 1.3, z, 0.35, 0.35, 0.35, 0, true); });
+      along(24, 2, 3.5, (x, z) => lamp(x, z, 3.5, pick(L16)));
+      const tas = [];
+      along(12, 3, 9, (x, z, i, s, j) => { const c = pick(['#ffb74d', '#81d4fa', '#f48fb1', '#aed581', '#ce93d8', '#fff176']), g = grp(x, 0, z); g.rotation.y = face(i) + (s > 0 ? -1.2 : 1.2); mesh(g, 'sph', c, 0, 1.3, 0, 1.3, 1.15, 1.2); [-1, 1].forEach(e => { mesh(g, 'cone', c, e * 0.7, 2.6, 0, 0.35, 0.9, 0.35).rotation.z = -e * 0.4; mesh(g, 'sph', '#1a1a2a', e * 0.45, 1.6, 1.05, 0.16); mesh(g, 'sph', '#ffffff', e * 0.4, 1.68, 1.15, 0.06); }); mesh(g, 'sph', '#ff8a80', 0, 1.1, 1.18, 0.12); tas.push([g, j]); });
+      anim.push(t => tas.forEach(([g, j]) => { g.position.y = Math.abs(Math.sin(t * 3 + j)) * 0.9; }));
+      points(260, 0xffe9a0, 1.6, R0 + 160, 1, 14, 1.2); points(400, 0xffffff, 3, 900, 220, 420);
+    } else if (W === 'aeru') {
+      world.add(strip(-tr.wallD - 3, tr.wallD + 3, -1.6, 20, lam('#8a7a9a')));
+      const isles = [];
+      free(34, 30, R0 * 0.1, R0 + 420, (x, z, j) => { const s = ra(10, 32), y = ra(-6, 70), g = grp(x, y, z); mesh(g, 'cone', '#7a6a8a', 0, -s * 0.8, 0, s, s * 1.6, s).rotation.x = Math.PI; mesh(g, 'cyl', pick(['#8ae0a0', '#a0e8b0', '#7ad090']), 0, 0.2, 0, s, 1.4, s); for (let q = 0; q < 3; q++) { const tx = ra(-s, s) * 0.6, tz = ra(-s, s) * 0.6; mesh(g, 'cyl', '#7a5230', tx, 2.5, tz, 0.4, 4); mesh(g, 'sph', pick(['#ffd08a', '#c0a0ff', '#8ae0a0']), tx, 5.5, tz, 2.6, 2.2); } isles.push([g, y, j]); });
+      anim.push(t => isles.forEach(([g, y, j]) => { g.position.y = y + Math.sin(t * 0.5 + j) * 2.2; }));
+      for (let k = 0; k < 6; k++) { const a = k / 6 * PI2, r = R0 + ra(160, 260), x = CX + Math.cos(a) * r, z = CZ + Math.sin(a) * r, h = ra(90, 160); put('cone', '#5a4a6a', x, h / 2 - 20, z, ra(30, 50), h); put('sph', '#ffd08a', x, h - 14, z, 6, 6, 6, 0, true); }
+      along(10, -tr.wallD, -tr.wallD, (x, z, i) => put('arc', pick(['#ffe08a', '#c0a0ff', '#8ae0ff']), tr.P[i * 2], tr.height(i), tr.P[i * 2 + 1], tr.wallD + 4, tr.wallD + 4, tr.wallD + 4, face(i), true));
+      points(600, 0xffffff, 2.4, 950, 120, 500); points(140, 0xffd0f0, 1.8, R0 + 200, 4, 40, 3);
+    } else if (W === 'bunte') {
+      land(d.land, 70); world.add(strip(tr.wallD + 70, tr.wallD + 86, -0.05, 30, lam('#f2dc9a'))); world.add(strip(-tr.wallD - 86, -tr.wallD - 70, -0.05, 30, lam('#f2dc9a')));
+      const cols = ['#ff5a8a', '#ffd24a', '#4ac8ff', '#7cff9a', '#b07aff', '#ff8a3a'];
+      along(30, 14, 50, (x, z, i) => { const w = ra(7, 12), h = ra(6, 11), ry = face(i); put('box', pick(cols), x, h / 2, z, w, h, w * 0.8, ry); put('pyr', pick(['#e53935', '#3949ab', '#fb8c00']), x, h + w * 0.35, z, w * 0.78, w * 0.7, w * 0.62, ry); put('box', '#5a3a2a', x, 1.4, z, 1.6, 2.8, w * 0.82, ry); });
+      along(46, 4, 66, (x, z) => { const h = ra(8, 13), lean = ra(-0.25, 0.25); put('cyl', '#a67a44', x, h / 2, z, 0.45, h, 0.45, 0, false, 0, lean); for (let q = 0; q < 5; q++) { const a = q / 5 * PI2; put('sph', pick(['#2fa84f', '#3fbf5a']), x + Math.cos(a) * 2.2 - lean * h * 0.5, h + 0.2, z + Math.sin(a) * 2.2, 2.4, 0.5, 1.1, -a); } });
+      free(12, 120, R0 + 100, R0 + 360, (x, z) => { const g = grp(x, 0, z); g.rotation.y = R() * PI2; mesh(g, 'box', pick(['#ffffff', '#ff5a8a', '#ffd24a']), 0, 0.8, 0, 3, 1.6, 8); mesh(g, 'cyl', '#8a6a4a', 0, 4.5, 0, 0.15, 7); mesh(g, 'cone', '#ffffff', 0, 4.5, 1.2, 2, 6, 0.1); anim.push(t => { g.position.y = Math.sin(t * 1.3 + x) * 0.3; }); });
+      { const i = Math.floor(tr.N * 0.72), x = tr.P[i * 2] + tr.Nm[i * 2] * (tr.wallD + 40), z = tr.P[i * 2 + 1] + tr.Nm[i * 2 + 1] * (tr.wallD + 40); for (let q = 0; q < 5; q++) put('cyl', q % 2 ? '#ffffff' : '#e53935', x, q * 5 + 2.5, z, 3 - q * 0.25, 5); put('sph', '#fff59d', x, 27, z, 2.4, 2.4, 2.4, 0, true); }
+      { const i = Math.floor(tr.N * 0.3), x = tr.P[i * 2] + tr.Nm[i * 2] * -(tr.wallD + 26), z = tr.P[i * 2 + 1] + tr.Nm[i * 2 + 1] * -(tr.wallD + 26), g = grp(x, 0, z); g.rotation.y = face(i); mesh(g, 'box', '#ffe0f0', 0, 6, 0, 16, 12, 12); mesh(g, 'pyr', '#ff5a8a', 0, 15, 0, 12, 6, 9); mesh(g, 'sph', '#a0703a', 0, 18.5, 0, 3); mesh(g, 'sph', '#a0703a', -2.2, 20.6, 0, 1); mesh(g, 'sph', '#a0703a', 2.2, 20.6, 0, 1); }
+      const bub = []; for (let k = 0; k < 26; k++) { const m = new T.Mesh(shared.sphere, new T.MeshBasicMaterial({ color: pick(['#bfefff', '#ffd0f0', '#fff6b0']), transparent: true, opacity: 0.35, depthWrite: false })); const a = R() * PI2, r = R0 * ra(0.2, 1.1); m.userData = { x: CX + Math.cos(a) * r, z: CZ + Math.sin(a) * r, o: R() * 30, s: ra(0.8, 2.2) }; m.scale.setScalar(m.userData.s); world.add(m); bub.push(m); }
+      anim.push(t => bub.forEach(m => { const u = m.userData, y = (t * 2.2 + u.o) % 36; m.position.set(u.x + Math.sin(t + u.o) * 2, y, u.z); }));
+    } else if (W === 'leuchtfeuer') {
+      land(d.land, 60);
+      free(150, 5, 0, R0 + 120, (x, z) => { tr.nearest(x, z, -1, pr); if (Math.abs(pr.d) < tr.wallD + 58) put('cone', pick(['#8a9a5a', '#7a8a4a', '#a0a86a']), x, 0.9, z, 0.7, 1.8); });
+      along(26, 4, 30, (x, z, i) => { const ry = face(i) + Math.PI * (R() < 0.5 ? 0 : 1); put('box', '#ffffff', x, 1.4, z, 2.4, 2.8, 1.8, ry); put('box', pick(['#d0302a', '#2a6ad0', '#2aa060']), x, 2.9, z, 2.5, 0.5, 1.9, ry); });
+      along(12, 26, 54, (x, z, i) => { const ry = face(i), w = ra(7, 10); put('box', '#a8443a', x, 3, z, w, 6, w * 0.8, ry); put('prism', '#4a3a3a', x, 6 + w * 0.2, z, w * 0.62, w * 1.02, w * 0.62, ry + Math.PI / 2); });
+      { const i = Math.floor(tr.N * 0.1), off = tr.wallD + 34, x = tr.P[i * 2] + tr.Nm[i * 2] * off, z = tr.P[i * 2 + 1] + tr.Nm[i * 2 + 1] * off;
+        for (let q = 0; q < 7; q++) put('cyl', q % 2 ? '#ffffff' : '#d0302a', x, q * 6 + 3, z, 5 - q * 0.35, 6); put('cyl', '#2a2a3a', x, 44, z, 3, 3); put('cone', '#d0302a', x, 48, z, 3.6, 4);
+        put('sph', '#fff3b0', x, 44, z, 2.2, 2.2, 2.2, 0, true);
+        const beam = new T.Mesh(geoC('beam', () => { const g = new T.ConeGeometry(14, 160, 16, 1, true); g.translate(0, -80, 0); g.rotateZ(Math.PI / 2); return g; }), new T.MeshBasicMaterial({ color: 0xfff3b0, transparent: true, opacity: 0.16, depthWrite: false, blending: T.AdditiveBlending, side: T.DoubleSide }));
+        beam.position.set(x, 44, z); world.add(beam); anim.push(t => { beam.rotation.y = t * 0.9; }); }
+      free(20, 70, R0 + 70, R0 + 200, (x, z) => { for (let q = 0; q < 6; q++) put('cyl', '#6a4a2a', x + q * 3, 1, z, 0.35, 3); });
+      sun('#ffb060', 40, 70);
+      points(200, 0xffd8a0, 2, 900, 200, 400);
+    } else if (W === 'sonnenhof') {
+      free(46, 45, R0 * 0.1, R0 + 300, (x, z) => { const w = ra(25, 45), l = ra(25, 45), ry = R() * PI2, c = pick(['#e8c84a', '#d8b03a', '#6aa83a', '#8a5a3a', '#9ad04a']); put('box', c, x, -0.04, z, w, 0.08, l, ry); if (c === '#8a5a3a' || c === '#6aa83a') for (let q = -2; q <= 2; q++) put('box', '#5a8a2a', x + Math.cos(ry) * q * w * 0.18, 0.5, z - Math.sin(ry) * q * w * 0.18, 1.2, 0.8, l * 0.9, ry); });
+      along(60, 8, 40, (x, z) => { const h = ra(2.6, 3.6); put('cyl', '#3a8a2a', x, h / 2, z, 0.12, h); put('cyl', '#f4c430', x, h, z, 0.75, 0.25, 0.75, 0, false, Math.PI / 2.4); put('sph', '#6a3a1a', x, h, z + 0.12, 0.35); });
+      along(40, 5, 30, (x, z) => put('cyl', '#e8c060', x, 1.2, z, 1.2, 2.2, 1.2, R() * PI2, false, Math.PI / 2));
+      along(7, 24, 50, (x, z, i) => { const ry = face(i), w = ra(12, 18); put('box', '#b0302a', x, 5, z, w, 10, w * 0.75, ry); put('prism', '#5a2a2a', x, 10 + w * 0.22, z, w * 0.5, w * 1.05, w * 0.5, ry + Math.PI / 2); put('box', '#ffffff', x, 3.5, z, w * 0.3, 7, w * 0.77, ry); });
+      for (let k = 0; k < 2; k++) { const i = Math.floor(tr.N * (0.2 + k * 0.5)), s = k ? 1 : -1, off = tr.wallD + 30, x = tr.P[i * 2] + tr.Nm[i * 2] * s * off, z = tr.P[i * 2 + 1] + tr.Nm[i * 2 + 1] * s * off, g = grp(x, 0, z);
+        g.rotation.y = face(i); mesh(g, 'cyl', '#f0e0c0', 0, 9, 0, 4, 18, 4); mesh(g, 'cone', '#8a3a2a', 0, 20, 0, 5, 6); const rot = new T.Group(); rot.position.set(0, 16, 4.5); g.add(rot); for (let q = 0; q < 4; q++) { const b = mesh(rot, 'box', '#f8f0e0', 0, 0, 0, 1.6, 15, 0.3); b.geometry = geoC('blade', () => { const gg = new T.BoxGeometry(1, 1, 1); gg.translate(0, 0.5, 0); return gg; }); b.rotation.z = q * Math.PI / 2; }
+        anim.push(t => { rot.rotation.z = t * 0.8; }); }
+      free(60, 10, 0, R0 + 260, (x, z) => tree(x, z, ra(8, 14), pick(['#4a9a3a', '#5aaa4a', '#3a8a2a']), null, true));
+      along(140, 0.6, 0.6, (x, z) => put('box', '#8a6a4a', x, 0.7, z, 0.3, 1.4, 0.3));
+      along(10, 10, 30, (x, z) => { const ry = R() * PI2; put('box', '#ffffff', x, 1.4, z, 1.6, 1.4, 2.6, ry); put('box', '#ffffff', x + Math.sin(ry) * 1.6, 1.9, z + Math.cos(ry) * 1.6, 1, 1, 1.1, ry); put('box', '#2a2a2a', x, 1.6, z, 1.62, 0.6, 0.8, ry); for (const [a, b] of [[-0.5, -0.9], [0.5, -0.9], [-0.5, 0.9], [0.5, 0.9]]) put('box', '#ffffff', x + Math.cos(ry) * a + Math.sin(ry) * b, 0.4, z - Math.sin(ry) * a + Math.cos(ry) * b, 0.3, 0.8, 0.3); });
+      sun('#fff2b0', 260, 40); clouds(12);
+    } else if (W === 'ricopoly') {
+      const fac = h => geoC('fac' + h, () => { const g = new T.BoxGeometry(1, 1, 1), uv = g.attributes.uv; for (let k = 0; k < uv.count; k++) uv.setXY(k, uv.getX(k) * 3, uv.getY(k) * h / 6); return g; });
+      const win = canvasTex(64, 64, (g, w, h) => { g.fillStyle = '#1a1c28'; g.fillRect(0, 0, w, h); for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) { g.fillStyle = Math.random() < 0.55 ? (Math.random() < 0.7 ? '#ffe9a8' : '#a8d8ff') : '#2a2e40'; g.fillRect(x * 16 + 3, y * 16 + 3, 10, 9); } }, true);
+      const facMat = new T.MeshLambertMaterial({ color: 0xffffff, map: win, emissive: 0xffffff, emissiveMap: win, emissiveIntensity: 0.9 });
+      const towers = { 24: [], 48: [], 84: [] };
+      along(120, 10, 120, (x, z, i) => { const hk = pick([24, 24, 48, 48, 84]), w = ra(9, 16), h = hk * ra(0.85, 1.15); towers[hk].push({ x, y: h / 2, z, sx: w, sy: h, sz: w * ra(0.7, 1.2), ry: face(i), c: pick(['#ffffff', '#d8e0ff', '#ffe0c8', '#c8ffe8']) }); });
+      Object.keys(towers).forEach(hk => inst(fac(+hk), facMat, towers[hk]));
+      along(36, 3, 9, (x, z, i) => { const c = pick(P), ry = face(i); if (R() < 0.35) { put('box', '#d02a2a', x, 3, z, 6, 6, 4, ry); } else { put('box', '#2aa04a', x, 1.8, z, 3.4, 3.6, 3.4, ry); put('pyr', '#1a7a3a', x, 4.4, z, 2.6, 1.8, 2.6, ry); } put('box', c, x, 0.2, z, 7, 0.4, 5, ry); });
+      along(40, 1.2, 1.6, (x, z) => lamp(x, z, 7, '#ffd890'));
+      along(14, 4, 8, (x, z, i) => { const ry = face(i) + Math.PI / 2; put('cyl', '#3a3d4a', x, 4, z, 0.3, 8); put('box', pick(['#ff2d95', '#00e5ff', '#ffd24a', '#7cff6a']), x, 9, z, 7, 3, 0.4, ry, true); });
+      { const g = grp(CX, 18, CZ); const dice = mesh(g, 'box', '#ffffff', 0, 0, 0, 14, 14, 14); for (const [a, b, c] of [[0, 0, 7.1], [0, 7.1, 0], [7.1, 0, 0], [-4, 4, 7.1], [4, -4, 7.1]]) mesh(g, 'sph', '#d02a2a', a, b, c, 1.4); anim.push(t => { g.rotation.set(t * 0.3, t * 0.45, 0); g.position.y = 18 + Math.sin(t) * 2; }); void dice; }
+      points(500, 0xffffff, 2, 950, 220, 480);
+    } else if (W === 'wolken') {
+      free(130, 12, 0, R0 + 420, (x, z) => { const s = ra(10, 26), n = 3 + Math.floor(R() * 3); for (let q = 0; q < n; q++) put('sph', pick(['#ffffff', '#f4f8ff', '#eaf2ff']), x + ra(-s, s), ra(-4, 3), z + ra(-s, s) * 0.6, s * ra(0.5, 0.9), s * ra(0.3, 0.5), s * ra(0.5, 0.8)); });
+      for (let j = 0; j < tr.N; j += 26) { const h = tr.height(j); if (h < 3) continue; put('sph', '#ffffff', tr.P[j * 2], h - 2.5, tr.P[j * 2 + 1], tr.half + 6, 3.4, tr.half + 4); }
+      const plats = [];
+      free(36, 14, 0, R0 + 260, (x, z, j) => { const y = ra(4, 40), g = grp(x, y, z), c = pick(['#7cd36a', '#a0703a', '#7ac8ff', '#ff9ad0']); mesh(g, 'box', c, 0, 0, 0, ra(8, 14), 1.4, ra(4, 7)); if (j % 3 === 0) { mesh(g, 'cyl', '#c0c8d8', 0, 1.2, 0, 0.6, 1.4); mesh(g, 'cyl', '#ff4a4a', 0, 2, 0, 1, 0.3); } if (j % 4 === 1) mesh(g, 'cyl', '#3a8aff', 0, 1.1, 0, 2.2, 0.4); plats.push([g, y, j, j % 5 === 0]); });
+      anim.push(t => plats.forEach(([g, y, j, mv]) => { g.position.y = y + Math.sin(t * 0.8 + j) * 1.5; if (mv) g.position.x += Math.sin(t * 0.7 + j) * 0.05; }));
+      const balloons = []; for (let k = 0; k < 16; k++) { const a = R() * PI2, r = R0 * ra(0.3, 1.2), g = grp(CX + Math.cos(a) * r, 0, CZ + Math.sin(a) * r); mesh(g, 'sph', pick(['#ff4a4a', '#ffd24a', '#4ac8ff', '#7cff6a', '#ff9ad0']), 0, 0, 0, 2, 2.5, 2); mesh(g, 'cyl', '#ffffff', 0, -4, 0, 0.04, 6); balloons.push([g, R() * 60]); }
+      anim.push(t => balloons.forEach(([g, o]) => { g.position.y = ((t * 3 + o) % 90) - 5; }));
+      for (let k = 0; k < 2; k++) { const a = k * Math.PI + 0.6, r = R0 + 120, x = CX + Math.cos(a) * r, z = CZ + Math.sin(a) * r; ['#ff4a4a', '#ff9a1f', '#ffe14a', '#4ad04a', '#3a8aff', '#8a4aff'].forEach((c, q) => put('arc', c, x, -5, z, 90 - q * 3.4, 90 - q * 3.4, 40, a + Math.PI / 2, true)); }
+      sun('#fff8d0', 300, 46);
+    } else if (W === 'huepf') {
+      free(130, 8, 0, R0 + 320, (x, z) => { const h = ra(5, 10); put('box', '#7a4a2a', x, h * 0.3, z, 1.2, h * 0.6, 1.2); put('box', pick(['#3aa83a', '#4ac84a', '#2a8a2a']), x, h * 0.75, z, h * 0.45, h * 0.45, h * 0.45); });
+      along(26, 16, 60, (x, z, i) => { const w = ra(8, 14), h = ra(6, 14), ry = face(i), c = pick(['#ffffff', '#ffd24a', '#ff8a8a', '#8ac8ff']); put('box', c, x, h / 2, z, w, h, w, ry); put('box', pick(['#d03a3a', '#3a5ad0', '#4a4a4a']), x, h + 1, z, w + 1, 2, w + 1, ry); });
+      along(30, 3, 10, (x, z, i) => { const ry = face(i), c = pick(['#ff4a4a', '#4a8aff', '#ffd24a', '#ffffff', '#4ad04a']), big = R() < 0.25; if (big) { put('box', '#e0e0e0', x, 2.4, z, 3, 3.8, 8, ry); put('box', c, x + Math.sin(ry) * 4.6, 1.8, z + Math.cos(ry) * 4.6, 3, 2.6, 2.4, ry); } else { put('box', c, x, 1, z, 2.4, 1.2, 4.2, ry); put('box', '#bfe8ff', x, 2, z, 2.1, 1, 2.2, ry); } });
+      { const i = Math.floor(tr.N * 0.56), ry = face(i), x = tr.P[i * 2], z = tr.P[i * 2 + 1], g = grp(x, 0, z); g.rotation.y = ry; mesh(g, 'box', '#3a9ae8', 0, 0.05, 0, 170, 0.3, 34);
+        const logs = []; for (let q = 0; q < 10; q++) { const lg = mesh(g, 'box', '#8a5a2a', 0, 0.6, ra(-12, 12), ra(6, 10), 1, 1.6); logs.push([lg, q * 17 - 85, q % 2 ? 1 : -1]); }
+        for (let q = 0; q < 16; q++) mesh(g, 'cyl', '#4ac84a', ra(-80, 80) + (q % 2 ? 0 : 0), 0.3, ra(-14, 14), 1.4, 0.2, 1.4);
+        anim.push(t => logs.forEach(([lg, o, dir]) => { lg.position.x = ((o + t * 9 * dir) % 170 + 255) % 170 - 85; })); }
+      { const a = 1.1, r = R0 + 90, x = CX + Math.cos(a) * r, z = CZ + Math.sin(a) * r, g = grp(x, 0, z); g.rotation.y = -a; mesh(g, 'box', '#5a4a3a', 0, 0.15, 0, 4, 0.3, 1600); const train = new T.Group(); g.add(train); ['#d03a3a', '#ffd24a', '#3a8aff', '#4ad04a'].forEach((c, q) => { mesh(train, 'box', c, 0, 2.4, q * 13, 4, 4, 12); mesh(train, 'box', '#2a2a2a', 0, 0.6, q * 13, 3.6, 1, 10); }); anim.push(t => { train.position.z = ((t * 40) % 1800) - 900; }); }
+      clouds(10);
+    }
+    // Bodendetails nah an der Strecke (Grasbüschel, Steine, Blumen) – lassen die Fläche lebendig wirken
+    if (W !== 'wolken' && W !== 'aeru' && W !== 'ricopoly') { const base = new T.Color(d.land || d.ground), dk = base.clone().offsetHSL(0, 0.05, -0.12).getStyle(), lt = base.clone().offsetHSL(0, 0, 0.08).getStyle();
+      along(260, 1, 34, (x, z) => { const r = R(); if (r < 0.6) put('cone', R() < 0.5 ? dk : lt, x, 0.45, z, ra(0.4, 0.8), ra(0.8, 1.4)); else if (r < 0.8) put('sph', '#9a9aa0', x, 0.2, z, ra(0.4, 1.1), ra(0.3, 0.6)); else put('sph', pick(['#ffffff', '#ffe14a', '#ff7ab8', '#b07aff']), x, 0.35, z, 0.3); }); }
+    Object.keys(lists).forEach(k => { const glow = k.endsWith('*'), geo = G[glow ? k.slice(0, -1) : k]; inst(geo, glow ? instBas() : instLam, lists[k]); });
   }
   const SC = {
     wiese(d) {
@@ -502,6 +637,9 @@ const View = (() => {
   const poolGet = (arr, mk) => { let m = arr.find(x => !x.visible); if (!m) { m = mk(); arr.push(m); scene.add(m); } m.visible = true; return m; };
   const ip = [];
   function interp(S, a) { S.karts.forEach((k, i) => { const p = ip[i] || (ip[i] = { x: 0, z: 0, th: 0 }); if (k.px == null || a >= 1) { p.x = k.x; p.z = k.z; p.th = k.th; } else { p.x = k.px + (k.x - k.px) * a; p.z = k.pz + (k.z - k.pz) * a; p.th = k.pth + wrap(k.th - k.pth) * a; } }); }
+  // Höhe unter Items/Geschossen auf Strecken mit Brücken (Suche merkt sich den letzten Abschnitt je Objekt)
+  const hp_ = { i: 0, f: 0, d: 0 };
+  const hAt = o => { if (!tr.hilly) return 0; tr.nearest(o.x, o.z, o._hi == null ? -1 : o._hi, hp_); o._hi = hp_.i; return tr.height(hp_.f); };
   function updateKarts(S, dt, time) {
     S.karts.forEach((k, i) => {
       const m = kmesh[i]; if (!m) return; const p = ip[i]; m.g.position.set(p.x, S.tr.height(k.f), p.z); m.g.rotation.y = p.th;
@@ -520,11 +658,11 @@ const View = (() => {
       m.trailB.children.forEach((b, j) => { b.visible = j < nB; b.position.set(0, 0.5 + Math.sin(time * 5 + j) * 0.08, -3.5 - j * 1.1); b.rotation.y = time * 2 + j; }); m.trailR.children.forEach((r, j) => { r.visible = j < nR; const a = time * 4 + j * (PI2 / Math.max(1, nR)); r.position.set(Math.cos(a) * 2.5, 1.5, Math.sin(a) * 2.5 - 0.3); r.rotation.set(time * 3, time * 2, 0); });
       if (k.boostT > 0 && Math.random() < 0.5) burst(k.x - Math.sin(k.th) * 3, 0.8, k.z - Math.cos(k.th) * 3, 0x66ccff, 1, 2, 1);
     });
-    boxes.forEach((m, i) => { m.visible = S.boxes[i].cd <= 0; m.rotation.y = time * 1.8; m.rotation.x = time * 1.1; m.position.y = 1.9 + Math.sin(time * 2.4 + i) * 0.25; });
+    boxes.forEach((m, i) => { m.visible = S.boxes[i].cd <= 0; m.rotation.y = time * 1.8; m.rotation.x = time * 1.1; m.position.y = 1.9 + Math.sin(time * 2.4 + i) * 0.25 + (tr.hilly ? tr.height(S.boxes[i].f) : 0); });
     ['mine', 'banana'].forEach(kd => hazM[kd].forEach(m => { m.visible = false; }));
-    S.hazards.forEach(h => { const m = poolGet(hazM[h.kind], () => h.kind === 'banana' ? bananaMesh() : new T.Mesh(mineGeo, lam('#a020f0', { emissive: 0x4a0a6a }))); m.position.set(h.x, h.kind === 'banana' ? 0.35 : 1.1, h.z); m.rotation.y = h.kind === 'banana' ? h.x : time * 2; if (h.kind === 'mine') m.scale.setScalar(1 + Math.sin(time * 8) * 0.08); });
+    S.hazards.forEach(h => { const m = poolGet(hazM[h.kind], () => h.kind === 'banana' ? bananaMesh() : new T.Mesh(mineGeo, lam('#a020f0', { emissive: 0x4a0a6a }))); m.position.set(h.x, (h.kind === 'banana' ? 0.35 : 1.1) + hAt(h), h.z); m.rotation.y = h.kind === 'banana' ? h.x : time * 2; if (h.kind === 'mine') m.scale.setScalar(1 + Math.sin(time * 8) * 0.08); });
     ['rocket', 'rock'].forEach(kd => rocM[kd].forEach(m => { m.visible = false; }));
-    S.proj.forEach(r => { const m = poolGet(rocM[r.kind], () => r.kind === 'rock' ? rockMesh(1.15) : new T.Mesh(rocketGeo, bas(0xff4a2a))); m.position.set(r.x, r.kind === 'rock' ? 1.0 + Math.abs(Math.sin(time * 9)) * 0.5 : 1.2, r.z); if (r.kind === 'rock') m.rotation.set(time * 8, 0, time * 5); else { m.rotation.set(0, r.th, 0); burst(r.x - Math.sin(r.th) * 1.5, 1.2, r.z - Math.cos(r.th) * 1.5, Math.random() < 0.5 ? 0xffaa55 : 0xcccccc, 1, 1, 0.5); } });
+    S.proj.forEach(r => { const m = poolGet(rocM[r.kind], () => r.kind === 'rock' ? rockMesh(1.15) : new T.Mesh(rocketGeo, bas(0xff4a2a))); m.position.set(r.x, (r.kind === 'rock' ? 1.0 + Math.abs(Math.sin(time * 9)) * 0.5 : 1.2) + hAt(r), r.z); if (r.kind === 'rock') m.rotation.set(time * 8, 0, time * 5); else { m.rotation.set(0, r.th, 0); burst(r.x - Math.sin(r.th) * 1.5, 1.2, r.z - Math.cos(r.th) * 1.5, Math.random() < 0.5 ? 0xffaa55 : 0xcccccc, 1, 1, 0.5); } });
     S.events.forEach(e => {
       if (e.t === 'boom') { const m = poolGet(boomM, () => new T.Mesh(shared.sphere, bas(0xffaa33, { transparent: true, opacity: 0.8, blending: T.AdditiveBlending }))); m.position.set(e.x, 1.3, e.z); m.userData.t = 0; burst(e.x, 1.5, e.z, 0xff9a33, 22, 9, 6); }
       else if (e.t === 'splat') burst(e.x, 0.8, e.z, 0xffe14a, 16, 5, 4); else if (e.t === 'smash') burst(e.x, 1.0, e.z, 0x9aa0b0, 18, 7, 5); else if (e.t === 'rockBounce') burst(e.x, 0.8, e.z, 0xcfc8a8, 5, 3, 2);

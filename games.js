@@ -55,7 +55,7 @@ const GAMES = [
   { id: 'anmacha-gesucht', title: 'AnMaCha Gesucht & Gefunden', icon: '🔎', img: 'anmacha-gesucht/card.png', bg: 'linear-gradient(145deg,#c4143f,#7a3dff 55%,#00e5ff)', glow: 'rgba(196,20,63,.5)',
     path: 'anmacha-gesucht/', desc: 'Das Ratestudio: Hinweis-Raten, Fragen-Raten, Gesichter-Radar und Stirnband-Party – allein oder mit bis zu 4 Spielern.' },
   { id: 'anmacha-kart', title: 'Kart Rush: Weltentour', icon: '🏎️', img: 'anmacha-kart/card.png', bg: 'linear-gradient(145deg,#2a78e8,#00e5ff 50%,#ff2d95)', glow: 'rgba(42,120,232,.55)',
-    path: 'anmacha-kart/', desc: 'Arcade-Kartrennen in 3D: 5 Welten (Strand, Geistergruft, Fantasia …), 6 Karts, 12 Figuren, Bananen, Steine & Blitze – solo am Handy oder mit bis zu 4 Handys als Lenkrad.' },
+    path: 'anmacha-kart/', desc: 'Arcade-Kartrennen in 3D wie auf der Konsole: 27 Strecken, davon 9 in den Welten der easygames (Zotik, Taschi, Bunte Insel, Wolkenhopser …), 10 Cups, Bananen, Steine & Blitze. Volle Controller-Steuerung (PlayStation, Nintendo, Xbox), Touch, Kippen zum Lenken – solo, im Splitscreen oder mit bis zu 4 Handys.' },
   { id: 'wobbel', title: 'Wobbel', icon: '🟣', img: 'wobbel/card.png', bg: 'linear-gradient(145deg,#4ab8ff,#ff6fb0 60%,#ffb347)', glow: 'rgba(74,184,255,.55)',
     path: 'wobbel/', desc: 'Das Schiebe-Puzzle in 3D von RicoReWi: Kisten auf Ziele schieben – mit Wasser, Farben, Eis und Schlüsseln in 5 Welten.' },
   { id: 'anmacha-hoererwahl', title: 'AnMaCha Hörerwahl', icon: '🎙️', img: 'anmacha-hoererwahl/card.png', bg: 'linear-gradient(145deg,#00e5ff,#8b5cf6 50%,#ff2d95)', glow: 'rgba(139,92,246,.55)',
