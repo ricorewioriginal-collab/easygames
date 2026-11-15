@@ -38,7 +38,19 @@ export function startActorsLab(params: URLSearchParams): void {
   const decalP = params.get('decal');
   const ids = CAR_BODIES.map((b) => b.id);
   const all = bodyP === 'all';
-  const decals: CarDecal[] = ['streifen', 'blitz', 'punkte', 'keins', 'streifen'];
+  const decals: CarDecal[] = [
+    'streifen',
+    'blitz',
+    'punkte',
+    'keins',
+    'waben',
+    'split',
+    'nummer',
+    'pfeile',
+    'streifen',
+    'waben',
+    'keins',
+  ];
   const teams: TeamId[] = teamP === 'both' ? [0, 1] : [teamP === '1' ? 1 : 0];
 
   // Autos: eine Reihe je Team

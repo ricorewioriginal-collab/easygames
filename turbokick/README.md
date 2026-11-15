@@ -4,7 +4,7 @@
 
 - **Modi:** schnelles Spiel gegen Bots (1v1, 2v2, 3v3, 4 Stufen), **Splitscreen zu zweit** (gegeneinander oder zusammen gegen Bots), Training (freies Spiel), **Online mit Freunden ohne Server per QR-Code oder Text-Code** (WebRTC, läuft von GitHub Pages, bis zu 6 Spieler mit Bots)
 - **Spielgefühl:** Gas/Lenken/Handbremse, Schub am Boden und in der Luft, Sprung, Doppelsprung, Ausweichmanöver (Flip), Luftsteuerung und Air-Roll, Wand- und Rundungsfahren, Hyperspeed-Rammen (Knockout), Anstoß, Verlängerung (Golden Goal)
-- **3 Arenen:** Neon-Metropole, Eis-Dom, Sonnen-Canyon (gleiche Spielgeometrie, andere Gestaltung); 5 Karosserien, 4 Aufkleber, Akzentfarben in der Garage
+- **3 Arenen:** Neon-Metropole, Eis-Dom, Sonnen-Canyon (gleiche Spielgeometrie, andere Gestaltung); 11 Karosserien, 8 Lackmuster, Akzentfarben in der Garage
 - Orb-Kamera und Auto-Kamera, Sichtfeld und Abstand einstellbar
 - Eingabe: Tastatur (WASD und Pfeile für zwei Spieler), Gamepad, Touch (Handy/Tablet, Quer- und Hochformat)
 - Deutsche Oberfläche (vorbereitet für weitere Sprachen), Barrierefreiheit (Farbmodi für Teamfarben, weniger Bewegung, Kontrast, große Schrift), adaptive Grafikqualität, lokaler versionierter Speicher

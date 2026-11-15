@@ -125,7 +125,7 @@ const GAMES = [
   { id: 'fabelkick', title: 'FABELKICK 3D – Fantasy-Fußball', icon: '⚽', img: 'fabelkick/card.jpg', bg: 'linear-gradient(145deg,#1b0f3d,#7c3aed 55%,#ffb21c)', glow: 'rgba(255,190,40,.5)',
     path: 'fabelkick/', desc: 'Fußball wie bei den großen Konsolenspielen, aber mit Fabelwesen: Affen, Gorillas, Orks, Elfen, Zwerge, Trolle, Drachenbrut und Yetis spielen 11 gegen 11. Pässe, Steilpässe, Flanken, Kopfbälle, Grätschen, Freistöße, Ecken und Elfmeter, dazu eine Spezialkraft pro Team. Fabel-Pokal, Elfmeterschießen, Training, drei Arenen. Touch, Tastatur und Gamecontroller, auch zu zweit an einem Gerät.' },
   { id: 'turbokick', title: 'NEXORB', icon: '🚗', img: 'turbokick/card.png', bg: 'linear-gradient(145deg,#07070f,#a24dff 50%,#ffc23d)', glow: 'rgba(162,77,255,.55)',
-    path: 'turbokick/', desc: '3D-Arena-Derby mit Schub: Bots, Splitscreen zu zweit oder online per QR-Code/Text-Code (ohne Server). 3 Arenen, 5 Karosserien, Tastatur, Gamepad und Touch.' },
+    path: 'turbokick/', desc: '3D-Arena-Derby mit Schub: Bots, Splitscreen zu zweit oder online per QR-Code/Text-Code (ohne Server). 3 Arenen, 11 Fahrzeuge, Tastatur, Controller (Xbox, PlayStation, Switch) und Touch.' },
   { id: 'partyverse', title: 'PARTYVERSE', icon: '🎲', img: 'partyverse/card.jpg', bg: 'linear-gradient(145deg,#2a1a8a,#ff3e9d 55%,#2de2e6)', glow: 'rgba(255,62,157,.55)',
     path: 'partyverse/', desc: '3D-Brett-Partyspiel: 5 Welten, 50 Bretter, 22 Minispiele, 8 Figuren. Gegen Bots, lokal zu viert oder online mit Freunden per Raumcode. Handy und PC.' },
   { id: 'anmacha-gold-reels', title: 'AnMaCha Casino', icon: '🎰', img: 'anmacha-gold-reels/card.png', bg: 'linear-gradient(145deg,#ffb11f,#ff2d95 55%,#8b5cf6)', glow: 'rgba(255,177,31,.55)',

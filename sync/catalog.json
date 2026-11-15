@@ -2568,7 +2568,7 @@
   {
    "id": "turbokick",
    "title": "NEXORB",
-   "desc": "3D-Arena-Derby mit Schub: Bots, Splitscreen zu zweit oder online per QR-Code/Text-Code (ohne Server). 3 Arenen, 5 Karosserien, Tastatur, Gamepad und Touch.",
+   "desc": "3D-Arena-Derby mit Schub: Bots, Splitscreen zu zweit oder online per QR-Code/Text-Code (ohne Server). 3 Arenen, 11 Fahrzeuge, Tastatur, Controller (Xbox, PlayStation, Switch) und Touch.",
    "icon": "🚗",
    "img": "turbokick/card.png",
    "bg": "linear-gradient(145deg,#07070f,#a24dff 50%,#ffc23d)",
@@ -2592,7 +2592,7 @@
      "Die vollständige Tastentabelle steht im Spiel unter Anleitung."
     ]
    },
-   "size": 1495678,
+   "size": 1503030,
    "files": 36,
    "offline": true,
    "cloud": {
