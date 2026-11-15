@@ -500,10 +500,62 @@ const View = (() => {
     buggy: { seatY: 1.2, seatZ: -0.45, plateZ: -2.45, plateY: 1.0 },
     cruiser: { seatY: 1.08, seatZ: -0.45, plateZ: -2.2, plateY: 1.2 },
     dragster: { seatY: 0.95, seatZ: -0.85, plateZ: -2.75, plateY: 1.15 },
-    wolke: { seatY: 1.05, seatZ: -0.4, plateZ: -2.05, plateY: 1.15 }
+    wolke: { seatY: 1.05, seatZ: -0.4, plateZ: -2.05, plateY: 1.15 },
+    monster: { seatY: 2.05, seatZ: -0.45, plateZ: -2.3, plateY: 2.0 },
+    retro: { seatY: 0.95, seatZ: -0.7, plateZ: -2.35, plateY: 0.95 },
+    gleiter: { seatY: 1.15, seatZ: -0.35, plateZ: -2.0, plateY: 1.2 },
+    funkbus: { seatY: 1.15, seatZ: 0.25, plateZ: -2.05, plateY: 1.4 }
   };
   const bananaMesh = () => { const g = new T.Group(), y = lam('#ffe14a', { emissive: 0x5a4a00 }), br = lam('#6a4a1a'); for (let i = 0; i < 7; i++) { const a = -1.0 + i * (2.0 / 6), r = 0.3 - Math.abs(a) * 0.05; S_(g, y, Math.sin(a) * 1.15, (1 - Math.cos(a)) * 1.1 + 0.15, 0, r + 0.12, r + 0.12, r + 0.12); } S_(g, br, Math.sin(-1.08) * 1.15, (1 - Math.cos(1.08)) * 1.1 + 0.15, 0, 0.14); S_(g, br, Math.sin(1.08) * 1.15, (1 - Math.cos(1.08)) * 1.1 + 0.15, 0, 0.14); g.scale.setScalar(1.3); return g; };
   const rockMesh = (sc) => { const m = new T.Mesh(geo('rock', () => new T.IcosahedronGeometry(1, 0)), lam('#8a8f9a')); m.scale.set(0.9 * (sc || 1), 0.8 * (sc || 1), 1.0 * (sc || 1)); return m; };
+
+  // ------------------------------------------------------------------ KayKit-Fahrer (CC0): laden, in Sitzhaltung bringen, zu einem statischen Netz backen
+  // Ein Draw-Call je Fahrer, keine Skelett-Animation im Rennen (handyfreundlich). Bis das Modell da ist, bleibt der Sitz leer.
+  const KK = { cache: {}, wait: {}, pend: [], mats: {} };
+  const loadGL = () => KK.gl || (KK.gl = window.THREE.GLTFLoader ? Promise.resolve() : new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = '../vendor/three-r128-gltfloader.js'; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); }));
+  function kkLoad(id) {
+    if (!KK.wait[id]) KK.wait[id] = loadGL().then(() => new Promise((res, rej) => new T.GLTFLoader().load('models/kk/' + id + '.glb', g => { try { KK.cache[id] = kkBake(g.scene); } catch (e) { rej(e); return; } KK.pend = KK.pend.filter(p => { if (p.id !== id) return true; kkAttach(p.slot, id); return false; }); res(KK.cache[id]); }, undefined, rej)));
+    KK.wait[id].catch(() => { delete KK.wait[id]; });
+    return KK.wait[id];
+  }
+  function kkBake(root) {
+    root.updateMatrixWorld(true);
+    const bones = {}; root.traverse(o => { if (o.isBone) bones[o.name] = o; });
+    const wp = (o, v) => o.getWorldPosition(v || new T.Vector3()), q = new T.Quaternion(), pq = new T.Quaternion(), a = new T.Vector3(), b = new T.Vector3();
+    // Knochen so drehen, dass er (in Weltkoordinaten) in Richtung dir zeigt
+    const aim = (bn, ch, dir) => { const B = bones[bn], C = bones[ch]; if (!B || !C) return; root.updateMatrixWorld(true); const cur = wp(C, b).sub(wp(B, a)).normalize(); q.setFromUnitVectors(cur, dir.clone().normalize()); B.parent.getWorldQuaternion(pq); B.quaternion.premultiply(pq.clone().invert().multiply(q).multiply(pq)); };
+    const hipY = bones.hips ? wp(bones.hips).y : 0.4;
+    [1, -1].forEach(s => { const sd = s > 0 ? 'l' : 'r';
+      aim('upperleg.' + sd, 'lowerleg.' + sd, new T.Vector3(s * 0.18, 0.12, 1)); aim('lowerleg.' + sd, 'foot.' + sd, new T.Vector3(s * 0.05, -1, 0.35));
+      aim('upperarm.' + sd, 'lowerarm.' + sd, new T.Vector3(s * 0.32, -0.55, 1)); aim('lowerarm.' + sd, 'wrist.' + sd, new T.Vector3(-s * 0.32, 0.05, 1)); });
+    if (bones.spine) { bones.spine.rotateX(0.12); }
+    root.updateMatrixWorld(true);
+    const hip = bones.hips ? wp(bones.hips) : new T.Vector3(0, hipY, 0), sc = 0.74 / Math.max(0.05, hipY);
+    const pos = [], uv = [], idx = []; let map = null;
+    const fac = at => { const ar = at.array; return !at.normalized ? 1 : ar instanceof Int16Array ? 1 / 32767 : ar instanceof Uint16Array ? 1 / 65535 : ar instanceof Int8Array ? 1 / 127 : ar instanceof Uint8Array ? 1 / 255 : 1; };
+    const v = new T.Vector3(), t = new T.Vector3(), acc = new T.Vector3(), M = new T.Matrix4();
+    root.traverse(o => {
+      if (!o.isMesh) return; const gm = o.geometry, P = gm.attributes.position, U = gm.attributes.uv, base = pos.length / 3, fp = fac(P), fu = U ? fac(U) : 1;
+      if (!map && o.material && o.material.map) map = o.material.map;
+      let Wm = null, SI = null, SW = null, fw = 1;
+      if (o.isSkinnedMesh) { const sk = o.skeleton; Wm = sk.bones.map((bn, i) => new T.Matrix4().multiplyMatrices(o.matrixWorld, o.bindMatrixInverse).multiply(bn.matrixWorld).multiply(sk.boneInverses[i]).multiply(o.bindMatrix)); SI = gm.attributes.skinIndex; SW = gm.attributes.skinWeight; fw = fac(SW); }
+      for (let i = 0; i < P.count; i++) {
+        v.set(Math.max(-1, P.getX(i) * fp), Math.max(-1, P.getY(i) * fp), Math.max(-1, P.getZ(i) * fp));
+        if (Wm) { acc.set(0, 0, 0); let ws = 0; for (let k = 0; k < 4; k++) { const w = SW.getComponent ? SW.getComponent(i, k) * fw : [SW.getX(i), SW.getY(i), SW.getZ(i), SW.getW(i)][k] * fw; if (w <= 0) continue; const bi = [SI.getX(i), SI.getY(i), SI.getZ(i), SI.getW(i)][k]; t.copy(v).applyMatrix4(Wm[bi]); acc.addScaledVector(t, w); ws += w; } if (ws > 0) v.copy(acc.multiplyScalar(1 / ws)); else v.applyMatrix4(o.matrixWorld); }
+        else v.applyMatrix4(M.copy(o.matrixWorld));
+        pos.push((v.x - hip.x) * sc, (v.y - hip.y) * sc, (v.z - hip.z) * sc);
+        if (U) uv.push(U.getX(i) * fu, U.getY(i) * fu); else uv.push(0, 0);
+      }
+      if (gm.index) for (let i = 0; i < gm.index.count; i++) idx.push(base + gm.index.getX(i)); else for (let i = 0; i < P.count; i++) idx.push(base + i);
+    });
+    const g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new T.Float32BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals(); g.computeBoundingSphere();
+    if (map) { map.encoding = T.sRGBEncoding; map.anisotropy = 4; map.needsUpdate = true; }
+    return { geo: g, map };
+  }
+  function kkAttach(slot, id) { const c = KK.cache[id]; if (!c) return; const mat = KK.mats[id] || (KK.mats[id] = new T.MeshLambertMaterial({ map: c.map, color: c.map ? 0xffffff : 0xcccccc })); const m = new T.Mesh(c.geo, mat); m.userData.keep = true; slot.add(m); }
+  function kkSlot(slot, id) { if (KK.cache[id]) kkAttach(slot, id); else { KK.pend.push({ slot, id }); kkLoad(id).catch(() => {}); } }
+  // Vor dem Rennen: alle benötigten KayKit-Fahrer laden (höchstens ms warten)
+  function prepare(chars, ms) { const ids = [...new Set(chars.map(i => CHARS[i % CHARS.length].kk).filter(Boolean))]; if (!ids.length) return Promise.resolve(); return Promise.race([Promise.all(ids.map(id => kkLoad(id).catch(() => {}))), new Promise(r => setTimeout(r, ms || 6000))]); }
   function makeKart(k) {
     const C = CHARS[(k.char == null ? k.k : k.char) % CHARS.length], KD = KARTS[(k.kart || 0) % KARTS.length], P = KPAR[KD.id], fn = CH[C.model || C.id], g = new T.Group(), body = new T.Group(); g.add(body);
     const hull = lam(C.acc), dark = lam('#1c1f2e'), white = lam('#f4f6fb'), chrome = lam('#d0d8e8'), slot = lam(KCOL[k.k % 8]), skinM = lam(C.skin), bodyM = lam(C.body), tire = lam('#16161e'), rim = lam('#d8dff0');
@@ -537,6 +589,27 @@ const View = (() => {
       B_(body, chrome, 0, 1.05, -1.65, 0.95, 0.5, 0.85); [-1, 1].forEach(s => C_(body, chrome, s * 0.28, 1.5, -1.65, 0.12, 0.5, null, 8)); Y_(body, chrome, 0, 1.45, -1.3, 0.3, 0.4, null, 12);
       [-1, 1].forEach(s => { B_(body, dark, s * 0.9, 1.4, -2.3, 0.1, 0.9, 0.1); B_(body, white, s * 0.9, 0.65, -0.8, 0.1, 0.12, 2.0); }); B_(body, slot, 0, 1.95, -2.4, 3.0, 0.12, 0.7); [-1, 1].forEach(s => B_(body, slot, s * 1.5, 1.7, -2.4, 0.07, 0.6, 0.8));
       Y_(body, dark, 0, 1.0, -2.6, 0.28, 0.5, [Math.PI / 2, 0, 0], 10); B_(body, slot, 0, 0.45, 3.4, 1.7, 0.06, 0.45);
+    } else if (id === 'monster') {
+      wf = [1.0, 0.85, 1.35, 1.35]; wr = [1.0, 0.85, 1.35, -1.25];
+      B_(body, dark, 0, 1.05, 0, 1.6, 0.3, 3.0); [-1, 1].forEach(s => { Y_(body, chrome, s * 0.55, 1.35, 1.3, 0.1, 0.6, null, 6); Y_(body, chrome, s * 0.55, 1.35, -1.2, 0.1, 0.6, null, 6); });
+      B_(body, hull, 0, 1.75, 0.05, 2.2, 0.55, 3.3); B_(body, hull, 0, 1.6, 1.55, 2.1, 0.45, 0.6); B_(body, chrome, 0, 1.5, 1.95, 2.2, 0.25, 0.3);
+      [-1, 1].forEach(s => { S_(body, bas(0xfff2a0), s * 0.7, 1.75, 1.88, 0.18); B_(body, slot, s * 1.12, 1.95, 0, 0.06, 0.25, 3.0); B_(body, dark, s * 0.6, 2.35, 0.9, 0.12, 0.5, 0.12); });
+      B_(body, dark, 0, 2.6, 0.9, 1.4, 0.12, 0.3); [-1, 0, 1].forEach(x => S_(body, bas(0xffe14a), x * 0.45, 2.75, 0.95, 0.12));
+    } else if (id === 'retro') {
+      wf = [0.5, 0.35, 1.05, 1.55]; wr = [0.62, 0.4, 1.05, -1.25];
+      S_(body, hull, 0, 0.7, 0.9, 0.75, 0.45, 1.5); Y_(body, chrome, 0, 0.75, 2.25, 0.42, 0.2, [Math.PI / 2, 0, 0], 16); S_(body, hull, 0, 0.62, -0.9, 0.95, 0.45, 1.3); B_(body, dark, 0, 0.38, 0, 1.3, 0.12, 3.6);
+      [-1, 1].forEach(s => { Y_(body, hull, s * 1.05, 0.55, 1.5, 0.35, 0.9, [Math.PI / 2, 0, 0], 10); Y_(body, hull, s * 1.05, 0.62, -1.25, 0.4, 0.9, [Math.PI / 2, 0, 0], 10); B_(body, chrome, s * 0.85, 0.4, 0.15, 0.25, 0.08, 1.6); S_(body, bas(0xfff2a0), s * 0.45, 0.95, 2.05, 0.16); Y_(body, chrome, s * 0.45, 0.95, 1.98, 0.2, 0.08, [Math.PI / 2, 0, 0], 12); });
+      Y_(body, chrome, 0, 1.0, 1.6, 0.05, 0.6, [0.4, 0, 0], 6); B_(body, white, 0, 0.98, 0.35, 1.1, 0.04, 0.5, [0.5, 0, 0]);
+    } else if (id === 'gleiter') {
+      wf = [0.32, 0.25, 0.85, 1.3]; wr = [0.36, 0.25, 0.85, -1.2];
+      S_(body, hull, 0, 0.95, 0, 1.25, 0.32, 2.0); S_(body, white, 0, 0.82, 0, 1.6, 0.12, 1.6); S_(body, slot, 0, 0.78, 0, 1.68, 0.06, 1.68); C_(body, hull, 0, 0.95, 2.0, 0.42, 1.2, [Math.PI / 2, 0, 0], 10);
+      const ring = part(body, geo('tor', () => new T.TorusGeometry(1, 0.2, 6, 14)), bas(0x66e0ff), 0, 0.45, 0, 1.25, 1.25, 1.25, Math.PI / 2, 0, 0); void ring;
+      [-1, 1].forEach(s => { B_(body, hull, s * 1.55, 1.05, -0.6, 1.1, 0.08, 0.7, [0, s * 0.25, s * -0.2]); S_(body, bas(0x66e0ff), s * 2.05, 1.18, -0.75, 0.16); }); B_(body, slot, 0, 1.45, -1.55, 0.08, 0.7, 0.6);
+    } else if (id === 'funkbus') {
+      wf = [0.58, 0.5, 1.1, 1.45]; wr = [0.6, 0.5, 1.1, -1.35];
+      B_(body, hull, 0, 1.0, 0, 2.1, 1.0, 4.0); B_(body, white, 0, 1.55, 0, 2.15, 0.12, 4.05); B_(body, hull, 0, 1.75, -1.2, 2.1, 0.45, 1.6); B_(body, dark, 0, 0.45, 0, 1.9, 0.2, 3.9);
+      [-1, 1].forEach(s => { [-1.1, 0, -0.1].forEach(() => {}); for (let q = 0; q < 3; q++) B_(body, lam('#bfe8ff'), s * 1.06, 1.15, 1.1 - q * 1.05, 0.04, 0.45, 0.8); S_(body, bas(0xfff2a0), s * 0.7, 0.95, 2.02, 0.17); });
+      B_(body, lam('#bfe8ff'), 0, 1.85, 1.75, 1.7, 0.55, 0.05, [-0.35, 0, 0]); B_(body, slot, 0, 2.05, -1.2, 1.9, 0.18, 1.0); Y_(body, chrome, 0.7, 2.6, -1.6, 0.04, 1.2, null, 6); S_(body, bas(0xff2d95), 0.7, 3.22, -1.6, 0.1);
     } else {   // wolke
       wf = [0.5, 0.42, 1.0, 1.3]; wr = [0.58, 0.5, 1.05, -1.05];
       const cl = lam('#ffffff'); S_(body, cl, 0, 0.78, 0, 1.0, 0.5, 1.5); [[-0.8, 0.5], [0.8, 0.5], [-0.75, -0.7], [0.75, -0.7]].forEach(p => S_(body, cl, p[0], 0.7, p[1], 0.55, 0.45, 0.65)); S_(body, cl, 0, 0.68, 1.4, 0.65, 0.42, 0.7); S_(body, cl, 0, 0.7, -1.3, 0.7, 0.45, 0.6);
@@ -546,13 +619,14 @@ const View = (() => {
     }
     // Heckplatte mit Logo (Sender-Logo bleibt auf jedem Kart sichtbar)
     const plate = B_(body, white, 0, P.plateY, P.plateZ, 1.05, 1.05, 0.06); const lg = new T.Mesh(new T.PlaneGeometry(0.95, 0.95), logoMat(k.logo)); lg.position.set(0, P.plateY, P.plateZ - 0.04); lg.rotation.y = Math.PI; body.add(lg);
-    [-1, 1].forEach(s => { const st = new T.Mesh(new T.PlaneGeometry(0.85, 0.85), logoMat(k.logo)); st.position.set(s * (id === 'cruiser' ? 1.28 : id === 'wolke' ? 1.12 : 1.12), 0.62, 0.2); st.rotation.y = s * Math.PI / 2; body.add(st); if (id === 'allrounder') st.position.x = s * 1.31; });
+    [-1, 1].forEach(s => { const st = new T.Mesh(new T.PlaneGeometry(0.85, 0.85), logoMat(k.logo)); st.position.set(s * (id === 'cruiser' ? 1.28 : id === 'monster' ? 1.12 : id === 'funkbus' ? 1.07 : id === 'gleiter' ? 1.3 : 1.12), id === 'monster' ? 1.72 : id === 'funkbus' ? 0.95 : id === 'gleiter' ? 0.95 : 0.62, id === 'funkbus' ? -1.6 : 0.2); st.rotation.y = s * Math.PI / 2; body.add(st); if (id === 'allrounder') st.position.x = s * 1.31; });
     // Sitz, Lenkrad
     B_(body, dark, 0, P.seatY, P.seatZ, 0.95, 0.4, 0.8); B_(body, dark, 0, P.seatY + 0.4, P.seatZ - 0.42, 0.95, 0.75, 0.22); Y_(body, dark, 0, P.seatY + 0.12, P.seatZ + 0.95, 0.05, 0.7, [-0.9, 0, 0], 6); part(body, geo('tor', () => new T.TorusGeometry(1, 0.2, 6, 14)), slot, 0, P.seatY + 0.4, P.seatZ + 0.68, 0.24, 0.24, 0.24, -0.9, 0, 0);
     // Fahrer
-    const torso = new T.Group(); torso.position.set(0, P.seatY + 0.52, P.seatZ - 0.05); torso.scale.setScalar(1.28); body.add(torso); S_(torso, bodyM, 0, 0, 0, 0.5, 0.52, 0.38);
+    if (C.kk) { const slot = new T.Group(); slot.position.set(0, P.seatY + 0.22, P.seatZ - 0.08); body.add(slot); kkSlot(slot, C.kk); }
+    const torso = new T.Group(); torso.position.set(0, P.seatY + 0.52, P.seatZ - 0.05); torso.scale.setScalar(1.28); if (!C.kk) body.add(torso); S_(torso, bodyM, 0, 0, 0, 0.5, 0.52, 0.38);
     [-1, 1].forEach(s => { const arm = new T.Group(); arm.position.set(s * 0.46, 0.2, 0.0); arm.rotation.set(-1.15, 0, s * 0.12); torso.add(arm); Y_(arm, bodyM, 0, -0.38, 0, 0.1, 0.78, null, 8); S_(arm, skinM, 0, -0.8, 0, 0.12); });
-    const head = new T.Group(); head.position.set(0, 0.88, 0.02); torso.add(head); fn(head, torso, body, C);
+    const head = new T.Group(); head.position.set(0, 0.88, 0.02); torso.add(head); if (fn) fn(head, torso, body, C);
     // Eigenständige Cup-Silhouetten – nur originale Geometrie, kein fremdes Figurenasset.
     if (C.model) {
       const accent = lam(C.acc), secondary = lam(C.body);
@@ -775,5 +849,5 @@ const View = (() => {
     kmesh.forEach(m => scene.remove(m.g)); kmesh = []; boxes.forEach(b => scene.remove(b)); boxes = []; anim.forEach(f => f(time));
     renderer.setViewport(0, 0, W, H); renderer.setScissor(0, 0, W, H); renderer.render(scene, c);
   }
-  return { gallery, peek, burst, init, previewKart, warmup, perf, perfReset, setTrack, setupRace, renderRace, renderMenu, resize, rects, KCOL, get cams() { return cams; }, get ready() { return !!renderer; } };
+  return { prepare, gallery, peek, burst, init, previewKart, warmup, perf, perfReset, setTrack, setupRace, renderRace, renderMenu, resize, rects, KCOL, get cams() { return cams; }, get ready() { return !!renderer; } };
 })();
