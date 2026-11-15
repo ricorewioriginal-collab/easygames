@@ -25,4 +25,4 @@ Alle Zeitsprung-Ausgaben (Wissen, Movie, Radio, Castingshow, Kinderserien, Eurov
 - Figuren: KayKit Adventurers und Skeletons von Kay Lousberg (CC0).
 - Three.js (MIT, `lib/three-LICENSE.txt`).
 - Schriften: Unbounded und Inter (SIL OFL, `fonts/`), Helvetiker (Three.js-Beispiele, Lizenz in `fonts/`).
-- Stimme: Microsoft Edge TTS (de-DE-FlorianMultilingualNeural).
+- Stimme: Microsoft Edge TTS (en-US-BrianMultilingualNeural, spricht Deutsch), mit Moderator-Klangbearbeitung.
