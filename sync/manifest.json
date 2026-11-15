@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3b8626ac448d",
- "generated": "2026-11-15T18:57:08+00:00",
- "commit": "3dcd88eaac69a9ed27e5ce6556494ae04ea5d73a",
+ "version": "0ca8bc6dd31e",
+ "generated": "2026-11-15T18:57:14+00:00",
+ "commit": "6c644957db191b263811ab545c41863cfb314419",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10723,8 +10723,8 @@
   },
   {
    "p": "guides/ricorail.json",
-   "s": 39416,
-   "h": "218066106bf7626ef23cc31f7076f96568c1e3d7f993dd72272bc42faafad526"
+   "s": 39727,
+   "h": "7f783c3b9af86f886086932de1c834936afdb106d09c0bf18fd670eedaf6ab2e"
   },
   {
    "p": "guides/ricoville.json",
@@ -12787,9 +12787,9 @@
    "h": "2f64db140f523985f29714c6b4e5844b15a0c789b2d486963d7eba3f9b1ac194"
   },
   {
-   "p": "ricorail/assets/ricorail-b44ee15e72.js",
-   "s": 1165896,
-   "h": "b44ee15e72ea8ce7ff1049c543b5fbcc9b9aa82b10c943843c953571e1227339"
+   "p": "ricorail/assets/ricorail-09ce9c2648.js",
+   "s": 1169927,
+   "h": "09ce9c2648498f0942d814d647c2ea2316c9c1a6c7ac386503f58095f80ac3ae"
   },
   {
    "p": "ricorail/card.svg",
@@ -12829,7 +12829,7 @@
   {
    "p": "ricorail/index.html",
    "s": 3256,
-   "h": "6464a1d3d129462b63c4498d0fcec4a66e066a5e7218825a40953916c66282b9"
+   "h": "f6a2cbcc239604c4da95aa4e953bede1bf361cb8af23d702a6bd391142e7e821"
   },
   {
    "p": "ricorail/manifest.webmanifest",
@@ -12839,12 +12839,12 @@
   {
    "p": "ricorail/sw.js",
    "s": 1812,
-   "h": "fd1a4daa366fee807d23cf4921d2b2afceae2f79f2de199c015fd9528cf6c607"
+   "h": "45fa00234cdcb71a854f27c33a7f524ba4047e4bb01e38934219fd58e2f8ead7"
   },
   {
    "p": "ricorail/version.json",
    "s": 74,
-   "h": "19a2acea95de8ef9fa895970e9515170a2790bdd402322a7b12bfa140f8a2021"
+   "h": "926bf773b541bdd26f2c95b619dd54426db9fa7dea3e5885f4984fbd7b98dfcc"
   },
   {
    "p": "ricoville/assets/index-Ba31iYgM.js",
@@ -13984,7 +13984,7 @@
   {
    "p": "sync/catalog.json",
    "s": 251134,
-   "h": "3389ced831327fe0b419a1a6bf69e2bb3316c9389c4648e2b94f92d3809c48fb"
+   "h": "3b723a874f1cc2dd21784a589c5bad1d230ae53c4cfb33f5fd597950d51f7f51"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

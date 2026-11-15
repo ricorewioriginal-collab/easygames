@@ -10,6 +10,7 @@ import { Input, ACTION_LABELS, PAD_HELP, type Action } from '../input/input';
 import { Hud } from '../ui/hud';
 import { Map2D } from '../ui/map2d';
 import { h, btn, toast, dialog, hhmm } from '../ui/dom';
+import { hint, padName } from '../ui/inputhint';
 import { lookahead } from '../operations/lookahead';
 import type { Train } from '../trains/train';
 import { buildCab, type CabModel, type CabState } from '../engine/models/cab';
@@ -165,7 +166,7 @@ export class Game {
     this.input.pollGamepad();
     if (this.input.firstUse) {
       this.input.firstUse = false;
-      if (this.o.mode === 'drive') toast('🎮 Controller erkannt: RT fahren · LT bremsen · Ⓐ Sifa · Ⓑ Türen · RB Befehlsmenü · Start Pause', 'info', 7000);
+      if (this.o.mode === 'drive') toast(`🎮 Controller erkannt: ${padName(7)} fahren · ${padName(6)} bremsen · ${padName(0)} Sifa · ${padName(1)} Türen · ${padName(5)} Befehlsmenü · ${padName(9)} Pause`, 'info', 7000);
     }
     { const pt = this.s.player; const warn = !!pt && (pt.sifaWarn || !!pt.forcedBrake); if (warn && !this.warnPrev) this.input.rumble(pt!.forcedBrake ? 500 : 220, pt!.forcedBrake ? 1 : 0.5); this.warnPrev = warn; }
     const s = this.s, w = s.world;
@@ -494,10 +495,10 @@ export class Game {
     };
     const el = h('div', { class: 'overlay cmdmenu' }, h('div', { class: 'panel', style: 'max-width:min(760px,94vw)' },
       h('h2', null, '☰ Befehlsmenü'),
-      h('p', { class: 'small muted' }, 'Alle Funktionen des Zuges. Controller: Steuerkreuz wählt, Ⓐ führt aus, Ⓑ oder RB schließt.'),
+      h('p', { class: 'small muted' }, `Alle Funktionen des Zuges. Controller: Steuerkreuz wählt, ${padName(0)} führt aus, ${padName(1)} oder ${padName(5)} schließt.`),
       ...groups.filter(([, l]) => l.some(Boolean)).map(([title, list]) => h('div', null,
         h('h3', null, title),
-        h('div', { class: 'cmdgrid' }, ...(list.filter(Boolean) as Action[]).map((a) => btn(CAMN[a] ? `Kamera: ${CAMN[a]}` : L(a), () => run(a), 'btn small'))))),
+        h('div', { class: 'cmdgrid' }, ...(list.filter(Boolean) as Action[]).map((a) => btn([CAMN[a] ? `Kamera: ${CAMN[a]}` : L(a), hint(a)], () => run(a), 'btn small'))))),
       h('div', { class: 'row end', style: 'margin-top:10px' }, btn('Schließen', () => this.toggleCommandMenu(), 'btn', { 'data-back': '' }))));
     this.root.appendChild(el);
     this.cmdEl = el;
