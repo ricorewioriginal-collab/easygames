@@ -3,6 +3,7 @@ import { GULLIVER } from './mwgulliver.js';
 // Koordinaten: Spielfläche ist ein Kreis um (0, -36) mit Radius 58; Ankunft bei (0, 12), die Nautilux parkt bei (-7, 15).
 // link = nach welchem Kapitel die Welt als Abstecher auf dem Weg liegt (Lunaris = 1 … Ignara = 7).
 // Aufträge: collect (Teile einsammeln), ring (Stellen auslösen), find (jemanden finden), defeat (Gegner, optional Wellen), boss (mit Reaktionsbefehl).
+import { ROBIN } from './mwrobin.js';
 const L = (name, text) => [name, text];
 const FREQ = [['ricorewi', 'Ricorewi'], ['yourtime-fm', 'YourTime-FM'], ['rapradio24', 'Rapradio 24'], ['schlagerpop24', 'Schlagerpop 24'], ['chartradio24', 'Chartradio 24'], ['clubradio24', 'Clubradio 24'], ['anmacha24', 'Anmacha 24'],
   ['radiofloh', 'Radiofloh'], ['rockradio24', 'Rockradio 24'], ['christmasradio24', 'Christmasradio 24'], ['kultradio24', 'Kultradio 24'], ['zockerfm', 'Zocker FM'], ['special-radio', 'Special-Radio']]
@@ -848,3 +849,4 @@ export const WORLDS = [
     outro: [L('RiCARDO', 'Dann los, Team. Das Sendegebiet läuft, die Sender spielen, und ich komme mit. Im Camp findest du mich, wenn du mich brauchst.'), L('Regie-Robo Cast', 'Sendeplan aktualisiert: RiCARDO ist auf Tour. Ich halte die Stellung.')] },
   GULLIVER,
 ];
+WORLDS.push(ROBIN);
