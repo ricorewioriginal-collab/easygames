@@ -4,6 +4,8 @@ const Sim = (() => {
   const VMAX = 36, ACC = 24, BRAKE = 50, GRIP = 9, DGRIP = 1.7, R = 1.15, PI2 = Math.PI * 2;
   // Items: boost3/banana3/rock3 = Dreierpack (je Tastendruck eins)
   const ITEMS = ['boost', 'boost3', 'banana', 'banana3', 'rock', 'rock3', 'mine', 'rocket', 'shield', 'flash', 'fog'];
+  // Tandem-Spezialitems: jedes Fahrerduo hat eins (nur aus Itemboxen, je nach vorderem Fahrer)
+  const SPECIALS = ['giga', 'comet', 'heart', 'fire'];
   const wrap = a => { while (a > Math.PI) a -= PI2; while (a < -Math.PI) a += PI2; return a; };
   const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
   const oc = { c: -1, t: 0, e: 0 }, tmp = { i: 0, f: 0, d: 0 }, tp = { x: 0, z: 0, tx: 0, tz: 0 };
@@ -19,7 +21,7 @@ const Sim = (() => {
     opt.racers.forEach((r, k) => {
       const sl = slot[k], row = sl >> 1, side = sl % 2 ? 1 : -1, f0 = N - (row * 2 + 2); tr.at(f0, side * 4.5 * sw, tp); const kd = kartDef(r.kart || 0);
       const kt = { k, name: r.name, logo: r.logo, char: r.char, kart: r.kart || 0, assist: r.assist || 0, human: !!r.human, skill: r.skill == null ? 1 : r.skill, color: r.color, mv: kd.mv * ccV, ma: kd.ma * ccA, mt: kd.mt, mr: kd.mr, md: kd.md, mw: kd.mw,
-        x: tp.x, z: tp.z, th: Math.atan2(tp.tx, tp.tz), vx: 0, vz: 0, vf: 0, steer: 0, drift: 0, driftT: 0, boostT: 0, spinT: 0, spinDur: 0, inv: 0, shieldT: 0, blindT: 0, slowT: 0, item: null, itemN: 0, itemT: 0, rp: -(row * 2 + 2), prevF: f0, f: f0, d: side * 4.5, i: f0 | 0, lap: 0, lapStart: 0, lapTimes: [], finished: false, finT: 0, rank: sl + 1, auto: !r.human, off: (Math.random() - 0.5) * 8, rough: false, hitT: 0, pulse: 0, draftT: 0, draftCharge: 0, itemPrev: false, speedVar: 0.96 + Math.random() * 0.06, dTier: 0 };
+        x: tp.x, z: tp.z, th: Math.atan2(tp.tx, tp.tz), vx: 0, vz: 0, vf: 0, steer: 0, drift: 0, driftT: 0, boostT: 0, spinT: 0, spinDur: 0, inv: 0, shieldT: 0, blindT: 0, slowT: 0, item: null, itemN: 0, itemT: 0, co: r.co, sp: r.sp || null, sp2: r.sp2 || null, sw: false, swT: 0, swPrev: false, item2: null, item2N: 0, fireT: 0, fireAt: 0, rp: -(row * 2 + 2), prevF: f0, f: f0, d: side * 4.5, i: f0 | 0, lap: 0, lapStart: 0, lapTimes: [], finished: false, finT: 0, rank: sl + 1, auto: !r.human, off: (Math.random() - 0.5) * 8, rough: false, hitT: 0, pulse: 0, draftT: 0, draftCharge: 0, itemPrev: false, speedVar: 0.96 + Math.random() * 0.06, dTier: 0 };
       if (kt.human) S.humans++; S.karts.push(kt);
     });
     // Münzen: 8 Reihen à 3 auf wechselnden Spuren. Jede Münze gibt einen kleinen Schub und +0,5 % Spitze (max. 10).
@@ -85,6 +87,7 @@ const Sim = (() => {
   function rollItem(S, k) {
     const n = S.karts.length, r = n > 1 ? (k.rank - 1) / (n - 1) : 0.5, last = k.rank >= n - 1 && n > 3;
     const w = { boost: 2 + 1.5 * r, boost3: 0.2 + 1.6 * r, banana: 3 - 2 * r, banana3: 1.4 - 0.9 * r, rock: 2, rock3: 0.4 + 0.9 * r, mine: 1.5 - r, rocket: 0.4 + 2.4 * r, shield: 1.2, flash: last ? 1.6 : 0, fog: 0.2 + 1.3 * r };
+    const sp = k.sw ? k.sp2 : k.sp; if (sp && Math.random() < 0.08 + 0.12 * r) return sp;
     let tot = 0; ITEMS.forEach(i => { tot += w[i]; }); let x = Math.random() * tot;
     for (const i of ITEMS) { x -= w[i]; if (x <= 0) return i; } return 'boost';
   }
@@ -106,6 +109,10 @@ const Sim = (() => {
       let tg = -1, best = 1e9; S.karts.forEach(o => { if (o === k) return; const dr = o.rp - k.rp; if (dr > 0 && dr < 90 && dr < best) { best = dr; tg = o.k; } });
       S.proj.push({ kind: 'rocket', x: k.x + fx * 2.5, z: k.z + fz * 2.5, th: k.th, owner: k.k, _si: k.i, target: tg, t: 7, spd: 62, arm: 0.25 });
     } else if (base === 'flash') { const hitIds = []; S.karts.forEach(o => { if (o !== k && o.rp > k.rp && !o.finished && hit(S, o, k.k, 'flash', 1.7, 0.1)) hitIds.push(o.k); }); emit(S, { t: 'flash', k: k.k, ids: hitIds }); }
+    else if (base === 'giga') S.proj.push({ kind: 'giga', x: k.x + fx * 3.5, z: k.z + fz * 3.5, th: k.th, owner: k.k, _si: k.i, t: 6.5, spd: 46 + Math.max(0, k.vf) * 0.5, arm: 0.3, bounces: 0 });
+    else if (base === 'comet') { const ids = []; S.karts.filter(o => o !== k && !o.finished && o.rp > k.rp && o.rp - k.rp < 160).sort((a, b) => a.rp - b.rp).slice(0, 3).forEach(o => { if (hit(S, o, k.k, 'comet', 1.3, 0.3)) ids.push(o.k); }); emit(S, { t: 'comet', k: k.k, ids }); }
+    else if (base === 'heart') { k.shieldT = 7; k.boostT = Math.max(k.boostT, 2.2); k.coins = Math.min(10, (k.coins || 0) + 3); }
+    else if (base === 'fire') { k.boostT = Math.max(k.boostT, 3.5); k.fireT = 3.5; k.fireAt = 0; }
     else if (base === 'fog') { const ids = []; S.karts.forEach(o => { if (o !== k && o.rp > k.rp && !o.finished) { o.blindT = 4; ids.push(o.k); } }); emit(S, { t: 'fog', k: k.k, ids }); }
   }
 
@@ -119,8 +126,10 @@ const Sim = (() => {
     if (k.item && k.itemT <= 0 && Math.random() < dtP(S, 0.9)) {
       const b = k.item.replace('3', ''), ahead = d => S.karts.some(o => o !== k && o.rp - k.rp > 0 && o.rp - k.rp < d), behind = d => S.karts.some(o => o !== k && k.rp - o.rp > 0 && k.rp - o.rp < d);
       if (b === 'boost') inp.i = kmax < 0.012; else if (b === 'shield' || b === 'flash' || b === 'fog') inp.i = true;
+      else if (b === 'heart' || b === 'fire') inp.i = true; else if (b === 'giga') inp.i = ahead(50); else if (b === 'comet') inp.i = ahead(120);
       else if (b === 'rocket') inp.i = ahead(45); else if (b === 'rock') inp.i = ahead(38); else if (b === 'mine' || b === 'banana') inp.i = behind(26);
     }
+    if (!k.item && k.item2 && Math.random() < dtP(S, 1.5)) inp.sw = 1;
     return inp;
   }
   const dtP = (S, rate) => rate * (S.dt || 0.016);
@@ -129,8 +138,11 @@ const Sim = (() => {
     const tr = S.tr, N = tr.N;
     k.pulse = Math.max(0, k.pulse - dt); k.hitT = Math.max(0, k.hitT - dt); k.blindT = Math.max(0, k.blindT - dt); k.slowT = Math.max(0, k.slowT - dt);
     if (k.itemT > 0) k.itemT -= dt;
+    // Tandem: Fahrer und Beifahrer tauschen – das Item des Beifahrers kommt nach vorn
+    k.swT = Math.max(0, k.swT - dt); if (k.co != null && inp.sw && !k.swPrev && k.swT <= 0 && k.spinT <= 0 && !k.finished) { const a = k.item, an = k.itemN; k.item = k.item2; k.itemN = k.item2N; k.item2 = a; k.item2N = an; k.sw = !k.sw; k.swT = 0.5; emit(S, { t: 'swap', k: k.k }); } k.swPrev = !!inp.sw;
+    if (k.fireT > 0) { k.fireT -= dt; k.fireAt -= dt; if (k.fireAt <= 0) { k.fireAt = 0.22; S.hazards.push({ kind: 'fire', x: k.x - Math.sin(k.th) * 3, z: k.z - Math.cos(k.th) * 3, t: 4, owner: k.k, _si: k.i, arm: 0.6 }); } }
     k.inv = Math.max(0, k.inv - dt); k.shieldT = Math.max(0, k.shieldT - dt); k.boostT = Math.max(0, k.boostT - dt);
-    if (S.state === 'grid') { if (k.human) { if (inp.g && k.gs == null) k.gs = S.count; else if (!inp.g) k.gs = null; } inp = { s: 0, b: 0, d: false, i: false, gas: 0, g: 0 }; }
+    if (S.state === 'grid') { if (k.human) { if (inp.g && k.gs == null) k.gs = S.count; else if (!inp.g) k.gs = null; k.gd = !!inp.d; } inp = { s: 0, b: 0, d: false, i: false, gas: 0, g: 0 }; }
     if (k.spinT > 0) { k.spinT -= dt; inp = { s: 0, b: 0, d: false, i: false, gas: 0 }; k.th += dt * 11; }
     const boost = k.boostT > 0, capBase = (k.human || k.finished ? VMAX * k.mv : VMAX * k.mv * (inp.cap || 1)), cap = capBase * (1 + 0.005 * (k.coins || 0)) * (boost ? 1.42 : 1) * (k.onCut && !boost ? 0.84 : 1) * (k.rough ? k.mr : 1);
     // Windschatten: dicht hinter einem schnell fahrenden Rivalen liegt eine echte Überholchance.
@@ -188,7 +200,7 @@ const Sim = (() => {
     if (lapNow > k.lap && k.rp >= 0) { if (k.lap >= 1) { const lt = S.t - k.lapStart; k.lapTimes.push(lt); emit(S, { t: 'lap', k: k.k, lap: k.lap, time: lt }); } k.lap = lapNow; k.lapStart = S.t; }
     if (!k.finished && k.rp >= S.laps * N) { k.finished = true; k.finT = S.t; k.auto = true; if (k.human) S.finishedHumans++; emit(S, { t: 'finish', k: k.k, time: S.t }); }
     if (S.state === 'race') {
-      if (S.items) S.boxes.forEach(b => { if (b.cd > 0) return; if ((b.x - k.x) ** 2 + (b.z - k.z) ** 2 < 12 && same(S, b, k) && !k.item && k.itemT <= 0 && !k.finished) { b.cd = 3.5; k.itemT = 0.9; k.itemPending = true; emit(S, { t: 'box', k: k.k }); } });
+      if (S.items) S.boxes.forEach(b => { if (b.cd > 0) return; if ((b.x - k.x) ** 2 + (b.z - k.z) ** 2 < 12 && same(S, b, k) && (!k.item || (k.co != null && !k.item2)) && !k.itemPending && k.itemT <= 0 && !k.finished) { b.cd = 3.5; k.itemT = 0.9; k.itemPending = true; emit(S, { t: 'box', k: k.k }); } });
       S.coins.forEach(c => { if (c.cd > 0 || k.finished) return; if ((c.x - k.x) ** 2 + (c.z - k.z) ** 2 < 6.5 && same(S, c, k)) { c.cd = 9; k.coins = Math.min(10, (k.coins || 0) + 1); k.boostT = Math.max(k.boostT, 0.22); emit(S, { t: 'coin', k: k.k, x: c.x, z: c.z }); } });
       S.pads.forEach(p => {
         if ((p.x - k.x) ** 2 + (p.z - k.z) ** 2 >= 20 || k.boostT >= 1.1) return;
@@ -204,14 +216,14 @@ const Sim = (() => {
         if (mechanic === 'portal') k.vf = Math.max(k.vf, VMAX * 0.9);
         emit(S, { t: 'pad', k: k.k, mechanic });
       });
-      if (k.itemPending && k.itemT <= 0) { k.itemPending = false; k.item = rollItem(S, k); k.itemN = k.item.endsWith('3') ? 3 : 1; emit(S, { t: 'got', k: k.k, item: k.item }); }
+      if (k.itemPending && k.itemT <= 0) { k.itemPending = false; const it = rollItem(S, k), n = it.endsWith('3') ? 3 : 1; if (!k.item) { k.item = it; k.itemN = n; } else { k.item2 = it; k.item2N = n; } emit(S, { t: 'got', k: k.k, item: it, back: k.item !== it }); }
     }
     if ((inp.itemPress || (inp.i && !k.itemPrev)) && S.state === 'race' && !k.finished) { k.aim = inp.aim || 0; useItem(S, k); } k.itemPrev = !!inp.i;
   }
 
   function step(S, dt, inputs) {
     S.dt = dt; S.t += dt; S.events.length = 0;
-    if (S.state === 'grid') { S.count -= dt; if (S.count <= 0) { S.state = 'race'; S.t = 0; S.karts.forEach(k => { k.lapStart = 0; const gs = k.human ? k.gs : (Math.random() < [0.2, 0.4, 0.65][k.skill || 0] ? 1.5 : null); if (gs == null) return; if (gs >= 1.2 && gs <= 2.05) { k.boostT = 1.4; k.vf = VMAX * 0.5; emit(S, { t: 'rocket', k: k.k, tier: 2 }); } else if (gs >= 0.25 && gs < 1.2) { k.boostT = 0.6; emit(S, { t: 'rocket', k: k.k, tier: 1 }); } else if (gs > 2.4 && k.human) { k.spinT = 0.8; k.spinDur = 0.8; emit(S, { t: 'stall', k: k.k }); } }); emit(S, { t: 'go' }); } }
+    if (S.state === 'grid') { S.count -= dt; if (S.count <= 0) { S.state = 'race'; S.t = 0; S.karts.forEach(k => { k.lapStart = 0; const gs = k.human ? k.gs : (Math.random() < [0.2, 0.4, 0.65][k.skill || 0] ? 1.5 : null); if (gs == null) return; const dd = k.human ? k.gd : Math.random() < 0.3; if (gs >= 1.2 && gs <= 2.05 && dd && k.co != null) { k.boostT = 2.2; k.vf = VMAX * 0.62; emit(S, { t: 'rocket', k: k.k, tier: 3 }); } else if (gs >= 1.2 && gs <= 2.05) { k.boostT = 1.4; k.vf = VMAX * 0.5; emit(S, { t: 'rocket', k: k.k, tier: 2 }); } else if (gs >= 0.25 && gs < 1.2) { k.boostT = 0.6; emit(S, { t: 'rocket', k: k.k, tier: 1 }); } else if (gs > 2.4 && k.human) { k.spinT = 0.8; k.spinDur = 0.8; emit(S, { t: 'stall', k: k.k }); } }); emit(S, { t: 'go' }); } }
     const order = S.karts.slice().sort((a, b) => (a.finished && b.finished) ? a.finT - b.finT : a.finished ? -1 : b.finished ? 1 : b.rp - a.rp); order.forEach((k, i) => k.rank = i + 1); S.order = order;
     S.karts.forEach((k, i) => {
       let inp = k.auto ? botInput(S, k) : (inputs && inputs[i]) || { s: 0, g: 0, b: 0, d: false, i: false };
@@ -251,8 +263,8 @@ const Sim = (() => {
     }
     // Fallen: Störsignal / Bananenschale
     for (let i = S.hazards.length - 1; i >= 0; i--) {
-      const h = S.hazards[i]; h.t -= dt; h.arm -= dt; let used = h.t <= 0; const rr = h.kind === 'banana' ? 3.2 : 5;
-      if (!used) S.karts.forEach(k => { if (used || k.spinT > 0) return; if ((h.x - k.x) ** 2 + (h.z - k.z) ** 2 < rr && same(S, h, k) && (h.owner !== k.k || h.arm < 0)) { const ok = h.kind === 'banana' ? hit(S, k, h.owner, 'banana', 1.0, 0.55) : hit(S, k, h.owner, 'mine', 1.3, 0.25); if (ok) { used = !h.fixed; emit(S, { t: h.kind === 'banana' ? 'splat' : 'boom', x: h.x, z: h.z }); } } });
+      const h = S.hazards[i]; h.t -= dt; h.arm -= dt; let used = h.t <= 0; const rr = h.kind === 'banana' ? 3.2 : h.kind === 'fire' ? 4.2 : 5;
+      if (!used) S.karts.forEach(k => { if (used || k.spinT > 0) return; if ((h.x - k.x) ** 2 + (h.z - k.z) ** 2 < rr && same(S, h, k) && (h.owner !== k.k || h.arm < 0)) { const ok = h.kind === 'banana' ? hit(S, k, h.owner, 'banana', 1.0, 0.55) : h.kind === 'fire' ? hit(S, k, h.owner, 'fire', 0.9, 0.5) : hit(S, k, h.owner, 'mine', 1.3, 0.25); if (ok) { used = !h.fixed; emit(S, { t: h.kind === 'banana' ? 'splat' : h.kind === 'fire' ? 'burn' : 'boom', x: h.x, z: h.z }); } } });
       if (used) S.hazards.splice(i, 1);
     }
     // Geschosse: Raketen (zielsuchend) und Steine (prallen von Wänden ab)
@@ -263,8 +275,9 @@ const Sim = (() => {
         if (tg && !tg.finished) { const want = Math.atan2(tg.x - r.x, tg.z - r.z), df = wrap(want - r.th); r.th += clamp(df, -4.5 * dt, 4.5 * dt); } else { S.tr.nearest(r.x, r.z, -1, tmp); S.tr.at(tmp.f + 6, 0, tp); const df = wrap(Math.atan2(tp.x - r.x, tp.z - r.z) - r.th); r.th += clamp(df, -3 * dt, 3 * dt); }
       }
       r.x += Math.sin(r.th) * r.spd * dt; r.z += Math.cos(r.th) * r.spd * dt;
-      if (r.kind === 'rock') { S.tr.nearest(r.x, r.z, -1, tmp); if (Math.abs(tmp.d) > S.tr.wallD - 1.2) { const ta = Math.atan2(S.tr.T[tmp.i * 2], S.tr.T[tmp.i * 2 + 1]); r.th = 2 * ta - r.th; r.bounces++; S.tr.at(tmp.f, Math.sign(tmp.d) * (S.tr.wallD - 3), tp); r.x = tp.x; r.z = tp.z; emit(S, { t: 'rockBounce', x: r.x, z: r.z }); if (r.bounces > 3) dead = true; } }
-      S.karts.forEach(k => { if (dead || k.spinT > 0 || !same(S, r, k) || (k.k === r.owner && r.arm > 0)) return; const vx = r.x - oldX, vz = r.z - oldZ, len2 = vx * vx + vz * vz, along = len2 > 0 ? clamp(((k.x - oldX) * vx + (k.z - oldZ) * vz) / len2, 0, 1) : 0, hx = oldX + vx * along, hz = oldZ + vz * along; if ((hx - k.x) ** 2 + (hz - k.z) ** 2 < (r.kind === 'rock' ? 4.8 : 5.5)) { hit(S, k, r.owner, r.kind, r.kind === 'rock' ? 1.15 : 1.3, r.kind === 'rock' ? 0.3 : 0.25); dead = true; emit(S, { t: r.kind === 'rock' ? 'smash' : 'boom', x: r.x, z: r.z }); } });
+      if (r.kind === 'giga') { for (let j = S.hazards.length - 1; j >= 0; j--) { const h = S.hazards[j]; if ((h.x - r.x) ** 2 + (h.z - r.z) ** 2 < 16) { S.hazards.splice(j, 1); emit(S, { t: 'smash', x: h.x, z: h.z }); } } }
+      if (r.kind === 'rock' || r.kind === 'giga') { S.tr.nearest(r.x, r.z, -1, tmp); if (Math.abs(tmp.d) > S.tr.wallD - 1.2) { const ta = Math.atan2(S.tr.T[tmp.i * 2], S.tr.T[tmp.i * 2 + 1]); r.th = 2 * ta - r.th; r.bounces++; S.tr.at(tmp.f, Math.sign(tmp.d) * (S.tr.wallD - 3), tp); r.x = tp.x; r.z = tp.z; emit(S, { t: 'rockBounce', x: r.x, z: r.z }); if (r.bounces > 3) dead = true; } }
+      S.karts.forEach(k => { if (dead || k.spinT > 0 || !same(S, r, k) || (k.k === r.owner && r.arm > 0)) return; const vx = r.x - oldX, vz = r.z - oldZ, len2 = vx * vx + vz * vz, along = len2 > 0 ? clamp(((k.x - oldX) * vx + (k.z - oldZ) * vz) / len2, 0, 1) : 0, hx = oldX + vx * along, hz = oldZ + vz * along; if ((hx - k.x) ** 2 + (hz - k.z) ** 2 < (r.kind === 'giga' ? 14 : r.kind === 'rock' ? 4.8 : 5.5)) { hit(S, k, r.owner, r.kind, r.kind === 'rock' || r.kind === 'giga' ? 1.15 : 1.3, r.kind === 'rock' || r.kind === 'giga' ? 0.3 : 0.25); dead = r.kind !== 'giga'; emit(S, { t: r.kind === 'rock' ? 'smash' : 'boom', x: r.x, z: r.z }); } });
       if (dead) S.proj.splice(i, 1);
     }
     // Portale überspringen einen Streckenabschnitt und erhalten Rundenzählung/Rankings.
@@ -309,6 +322,6 @@ const Sim = (() => {
   function results(S) {
     const N = S.tr.N; return S.karts.map(k => ({ k, t: k.finished ? k.finT : S.t + (S.laps * N - k.rp) / Math.max(8, Math.abs(k.vf)) + 5 })).sort((a, b) => a.t - b.t).map((r, i) => ({ k: r.k, pos: i + 1, time: r.t, finished: r.k.finished, best: r.k.lapTimes.length ? Math.min(...r.k.lapTimes) : null }));
   }
-  return { create, step, results, ITEMS, VMAX };
+  return { create, step, results, ITEMS, SPECIALS, VMAX };
 })();
 if (typeof module !== 'undefined') module.exports = Sim;
