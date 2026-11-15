@@ -2,7 +2,12 @@
    Koordinaten: x nach rechts, y nach oben (Meter). Wasser bei y = 0. Spielerposition = Mitte der Füße.
    Eingabe pro Schritt: { l, r, j, d, g } = links, rechts, Sprung, Ducken (d: im Lauf rutschen, im Stand ducken/kriechen), Greifen (g: Aktionstaste).
    Greifen passiert nur auf Tastendruck: in der Luft in Griffweite von Stange, Leiste, Seil, Ring oder Lachsleiter drücken (kurzer Puffer GRAB_BUF). */
-export const G = 26, RUN = 5.6, ACC = 40, AIR_ACC = 22, FRICTION = 34, JUMP_V = 8.6, COYOTE = 0.09, BUFFER = 0.12, PW = 0.5, PH = 1.7, HANG_SPEED = 3.2, WALLRUN_MIN = 5.0, WALLRUN_T = 0.62;
+export const G = 26, RUN = 5.6, ACC = 40, AIR_ACC = 22, FRICTION = 34, JUMP_V = 8.6, COYOTE = 0.09, BUFFER = 0.12, PW = 0.5, PH = 1.7, HANG_SPEED = 3.2;
+/** Steilwand: auf der Anlaufbahn wird aus Laufen Rennen (SPRINT), die Wand bremst je nach Steilheit (WALL_PUSH = Beinarbeit beim Hochrennen).
+    Wie hoch man kommt, hängt vom Tempo ab. Oben mit der Aktionstaste an die Kante greifen, dann hochziehen. */
+export const SPRINT = 9.5, SPRINT_ACC = 4.5, WALL_PUSH = 16, WALL_KICK = 1.5, WALL_REACH = 0.55, WALL_HANG_MIN = 0.3, WALL_PULL_T = 0.8;
+/** Kamin: Hochdrücken pro Sprung, Abrutschen pro Sekunde; Kurvengleiter: Mindesttempo */
+export const CHIM_UP = 0.62, CHIM_SLIP = 0.55, GLIDE_MIN = 1.4;
 /** Ducken: Körperhöhe, Kriechtempo, ab welchem Tempo man rutscht und wie stark die Rutsche bremst */
 export const PH_DUCK = 1.0, CRAWL = 2.4, SLIDE_MIN = 3.2, SLIDE_DECEL = 4.5;
 /** Pendelbalken: Balken (Halbbreite in x, Halbhöhe in y) */
@@ -58,13 +63,34 @@ class Builder {
     this.x += span; return this;
   }
   /** Lachsleiter: an einer Stange hängend mit Sprung Sprosse für Sprosse nach oben – im Takt drücken, zu früh = abrutschen */
-  ladder(n, { gap = 0.55, g = 1.5, w = 3.2, base = 2.8, drop = 0.3 } = {}) {
-    this.sec('Lachsleiter'); const yb = this.y, lx = this.x + g, y0 = this.y + base; this.o.push({ k: 'ladder', x: lx, y0, n, gap });
+  ladder(n, { gap = 0.55, g = 1.5, w = 3.2, base = 2.8, drop = 0.3, kind = '' } = {}) {
+    this.sec(kind === 'pole' ? 'Kletterstange' : kind === 'rope' ? 'Kletterseil' : 'Lachsleiter'); const yb = this.y, lx = this.x + g, y0 = this.y + base; const lo = { k: 'ladder', x: lx, y0, n, gap }; if (kind) lo.kind = kind; this.o.push(lo);
     const top = y0 + (n - 1) * gap; this.y = top - 0.9; this.plat(lx + 0.75, w, this.y); this.x = lx + 0.75 + w; this.y = yb + drop; return this;   // danach geht es wieder hinunter
+  }
+  /** Pendelkugeln: große Kugeln an Seilen schwingen leicht – von Kugel zu Kugel springen (oben stehen und mitschwingen) */
+  orbs(n, { step = 2.7, len = 3.2, amp = 0.22, period = 3.2, r = 0.78, g0 = 1.9, g1 = 1.9, w = 3 } = {}) {
+    this.sec('Pendelkugeln'); const x0 = this.x + g0 + r * 0.6;
+    for (let i = 0; i < n; i++) this.o.push({ k: 'orb', px: x0 + i * step, py: this.y - 0.45 + len, len, amp, period, phase: i * 1.9, r });
+    this.x = x0 + (n - 1) * step + r * 0.6 + g1; this.plat(this.x, w, this.y); this.x += w; return this;
+  }
+  /** Schrägstange: schräg nach unten laufende Griffstange – hängend hinunterhangeln, am Ende abspringen */
+  slant(len, { h = 2.9, drop = 1.3, g0 = 1.0, w = 3, land = 1.2 } = {}) {
+    this.sec('Schrägstange'); const x1 = this.x + g0, x2 = x1 + len; this.o.push({ k: 'bars', slant: true, x1, x2, y: this.y + h, y2: this.y + h - drop });
+    this.x = x2 + land; this.plat(this.x, w, this.y); this.x += w; return this;
+  }
+  /** Kurvengleiter: Griff an einer geschwungenen Schiene – packen, mitgleiten (bergab schneller), am Ende abspringen */
+  glider(len, { up = 1.0, drop = 0.8, amp = 0.45, waves = 1.5, g0 = 0.9, land = 1.0, w = 3 } = {}) {
+    this.sec('Kurvengleiter'); const x1 = this.x + g0; this.o.push({ k: 'glide', x1, x2: x1 + len, y: this.y + PH + up + 0.35, drop, amp, waves });
+    this.x = x1 + len + land; this.plat(this.x, w, this.y); this.x += w; return this;
+  }
+  /** Spinnenkamin: zwischen zwei Wänden mit Sprüngen nach oben stemmen (rutscht langsam ab), oben auf die Plattform und wieder hinunter */
+  chimney(hgt = 4.6, { g = 1.6, cw = 1.5, w = 2.6 } = {}) {
+    this.sec('Spinnenkamin'); const y0 = this.y, cx = this.x + g; this.plat(this.x, g + cw, y0); this.o.push({ k: 'chim', x: cx, w: cw, y0, top: y0 + hgt });
+    const ty = y0 + hgt - PH; this.plat(cx + cw + 0.1, w, ty, 'high'); this.x = cx + cw + 0.1 + w; return this;
   }
   /** Steilwand wie im TV: lange, durchgehende Anlaufbahn (run Meter vor dem Fuß der Rundung), dann die gebogene Wand */
   wall(g = 1.5, h = 4.2, run = 9) { this.sec('Steilwand'); const wx = this.x + g + run + 2.6; this.plat(this.x - 0.15, g + run + 2.75, this.y, 'runway'); this.o.push({ k: 'wall', x: wx, y: this.y, h, w: 0.6 }); this.o.push({ k: 'plat', x: wx, y: this.y + h, w: 3.6 }); this.o.push({ k: 'finish', x: wx + 1.6, y: this.y + h }); this.end = wx + 3.6; this.wallX = wx; return this; }
-  build() { return { name: this.name, o: this.o, secs: this.secs, finish: this.o.find(o => o.k === 'finish'), length: this.end, wallX: this.wallX }; }
+  build() { return { name: this.name, seed: this.seed, o: this.o, secs: this.secs, finish: this.o.find(o => o.k === 'finish'), length: this.end, wallX: this.wallX }; }
 }
 export const COURSES = [
   // Vorrunde wie im TV: 8 Hindernisse, am Ende die Steilwand (4,25 m)
@@ -83,11 +109,59 @@ export const COURSES = [
     .bars(12.5, 2.5, 2.6, 0.4).wall(1.2, 5.0).build()
 ];
 
+// ---------------------------------------------------------------- Zufalls-Parcours (jede Show neu gemischt, aber mit Startwert reproduzierbar)
+/** kleiner Zufallsgenerator mit Startwert (gleicher Startwert = gleicher Parcours, z. B. für alle Läufer einer Runde) */
+export const rng = seed => { let a = seed >>> 0 || 1; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; };
+/** Hindernis-Bausteine: jeder beginnt am Ende einer Plattform und endet auf einer Plattform. d = Schwierigkeit 0 (Vorrunde) … 2 (Finale), R = Zufall 0…1 */
+export const MODULES = {
+  stones: (b, d, R) => { const n = 4 + d + (R() < 0.5 ? 1 : 0), l = []; for (let i = 0; i < n; i++) l.push({ g: 2.0 + 0.3 * d + R() * 0.35, w: 2.0 - 0.2 * d - R() * 0.2, dy: i === 0 ? 0 : (i % 2 ? 0.3 : -0.3) * (R() < 0.7 ? 1 : 0) }); b.stones(l).rest(3, 0, 2.0); },
+  rolls: (b, d, R) => { b.rolls(3 + d, { g0: 1.3, r: 0.8 - 0.05 * d, v: -(1.6 + 0.6 * d + R() * 0.3) }).rest(3, 0, 1.6); },
+  logs: (b, d, R) => { b.logs(10 + d, 2 + (d > 0 ? 1 : 0), { period: 3.0 - 0.2 * d - R() * 0.2 }); },
+  sinkers: (b, d) => { b.sinkers(4 + d, 2.0 + 0.2 * d, 2.0 - 0.25 * d, 0.7 - 0.12 * d).rest(3, 0, 2.0); },
+  rope: (b, d) => { b.rope(5.0 + 0.2 * d, { amp: 0.6 + 0.02 * d, period: 2.6 - 0.1 * d }).rest(3.2, 0, 0); },
+  tunnel: (b, d) => { b.tunnel(9 + d, 2 + (d > 0 ? 1 : 0)).rest(1.5, 0, 0); },
+  ledges: (b, d) => { b.ledges([[[2.6, 0], [2.4, 1.0]], [[2.4, 0], [2.0, 1.0], [2.0, 1.1]], [[2.2, 0], [1.8, 1.1], [1.8, 1.2]]][d], { h: 2.4 + 0.05 * d }); },
+  rings: (b, d) => { b.rings(3 + d, { period: 2.2 - 0.1 * d }); },
+  tramp: (b, d) => { b.trampBars(7.5 + 1.5 * d); },
+  bars: (b, d) => { b.bars(10 + 1.2 * d, 2.4, 2.6, 0); },
+  ladder: (b, d) => { b.ladder(4 + d).rest(2.4, 0, 2.2); },
+  swings: (b, d) => { b.swings(12 + 2 * d, 2 + (d > 0 ? 1 : 0), { period: 2.8 - 0.1 * d }); },
+  slider: (b, d) => { b.mover({ g: 2.2, w: 2.4 - 0.2 * d, ax: 3, period: 4.2 - 0.3 * d }).rest(2.6, 0, 2.0); },
+  lift: (b, d) => { b.mover({ g: 2.2, w: 2.2, ax: 0, ay: 0.9 + 0.15 * d, period: 3.6 - 0.3 * d, dy: 0.2 }).rest(3, 0, 2.0); },
+  orbs: (b, d, R) => { b.orbs(3 + d, { amp: 0.18 + 0.04 * d, period: 3.2 - 0.2 * d - R() * 0.2, step: 2.6 + 0.15 * d }); },
+  slant: (b, d) => { b.slant(5 + d, { drop: 1.2 + 0.2 * d }); },
+  glider: (b, d, R) => { b.glider(7 + 1.5 * d, { amp: 0.4 + 0.05 * d, waves: 1 + 0.5 * Math.floor(R() * 2 + d * 0.5) }); },
+  climb: (b, d, R) => { b.ladder(5 + d, { kind: R() < 0.5 ? 'pole' : 'rope', gap: 0.6 }).rest(2.4, 0, 2.2); },
+  chimney: (b, d) => { b.chimney(4.2 + 0.4 * d).rest(3, 0, 0); }
+};
+export const ROUNDS = [{ name: 'Vorrunde', n: 6, wall: 4.25 }, { name: 'Halbfinale', n: 8, wall: 4.5 }, { name: 'Finale', n: 10, wall: 5.0 }];
+const OPENERS = ['stones', 'orbs', 'rolls', 'sinkers'];
+/** Parcours für Runde r (0 Vorrunde, 1 Halbfinale, 2 Finale) aus dem Startwert seed: Eröffnung + zufällige, verschiedene Hindernisse + Steilwand */
+export function makeCourse(r, seed, only = null) {
+  const R = rng(seed), rd = ROUNDS[Math.max(0, Math.min(2, r))], d = Math.max(0, Math.min(2, r)), b = new Builder(rd.name); b.seed = seed; b.start(6);
+  let list = only ? only.slice() : null;
+  if (!list) {
+    const pool = Object.keys(MODULES).filter(k => !OPENERS.includes(k) || k === 'orbs'), first = OPENERS[Math.floor(R() * OPENERS.length)];
+    for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    list = [first].concat(pool.filter(k => k !== first)).slice(0, rd.n);
+  }
+  list.forEach((k, i) => { MODULES[k](b, d, R); if (i < list.length - 1 && !/^(logs|swings|tunnel)$/.test(k)) b.rest(1.4, 0, 0); });
+  b.wall(1.5, rd.wall); const c = b.build(); c.mods = list; c.round = d; return c;
+}
+
 // ---------------------------------------------------------------- Bewegte Hindernisse (reine Funktionen der Zeit)
 export const movePos = (o, t) => { const a = (2 * Math.PI * t) / o.period + (o.phase || 0); return { x: o.x + o.ax * Math.sin(a), y: o.y + o.ay * Math.sin(a) }; };
 export const swingBall = (o, t) => { const a = o.amp * Math.sin((2 * Math.PI * t) / o.period + o.phase); return { x: o.px + o.len * Math.sin(a), y: o.py - o.len * Math.cos(a), a }; };
 /** Seilwinkel a und Winkelgeschwindigkeit da zur Zeit t */
 export const ropeAt = (o, t) => { const w = (2 * Math.PI) / o.period, u = w * t + o.phase; return { a: o.amp * Math.sin(u), da: o.amp * w * Math.cos(u) }; };
+/** Steilwand-Rundung (gleiche Kurve wie scene.js buildWall): u 0…1 → Punkt auf der Lauffläche, Bogenlänge-Faktor L und Steigung */
+export const WALL_R = 2.6;
+export const wallPt = (o, u) => { const dx = 2 * WALL_R * (1 - u), L = Math.hypot(dx, o.h); return { x: o.x - WALL_R * (1 - u) * (1 - u), y: o.y + o.h * u, L, sin: o.h / L, cos: dx / L }; };
+export const wallU = (o, x) => 1 - Math.sqrt(Math.max(0, Math.min(1, (o.x - x) / WALL_R)));
+/** Höhe einer (evtl. schrägen) Stange bei x */
+export const barY = (o, x) => (o.y2 == null ? o.y : o.y + (o.y2 - o.y) * Math.max(0, Math.min(1, (x - o.x1) / (o.x2 - o.x1))));
+/** Kurvengleiter: Höhe der Schiene bei x (Griff hängt 0,35 m darunter) */
+export const railY = (o, x) => { const f = Math.max(0, Math.min(1, (x - o.x1) / (o.x2 - o.x1))); return o.y - o.drop * f + o.amp * Math.sin(f * Math.PI * 2 * o.waves); };
 /** Lachsleiter: Höhe der Sprosse k */
 export const rungY = (o, k) => o.y0 + k * o.gap;
 
@@ -95,13 +169,13 @@ export const rungY = (o, k) => o.y0 + k * o.gap;
 export class Sim {
   constructor(course) {
     this.c = course; this.t = 0; this.x = 2; this.y = course.o[0].y; this.px = this.x; this.py = this.y; this.vx = 0; this.vy = 0; this.ground = null; this.onGround = true; this.coyote = COYOTE; this.buf = 0; this.prevJ = false; this.prevGr = false; this.gbuf = 0; this.grabs = 0;
-    this.hang = null; this.rope = null; this.ladder = null; this.duck = false; this.slide = false; this.boost = false; this.wallTries = 0; this.wallHit = false; this.stun = 0; this.wall = null; this.dead = null; this.finished = false; this.face = 1; this.hits = 0; this.dist = 0; this.grabCool = 0;
+    this.hang = null; this.rope = null; this.ladder = null; this.glide = null; this.chim = null; this.gx = {}; this.sprint = false; this.wi = course.o.findIndex(o => o.k === "wall"); this.duck = false; this.slide = false; this.boost = false; this.wallTries = 0; this.wallHit = false; this.stun = 0; this.wall = null; this.dead = null; this.finished = false; this.face = 1; this.hits = 0; this.dist = 0; this.grabCool = 0;
     this.sinks = course.o.map(o => (o.k === 'sink' ? { touch: -1, y: 0, vy: 0, gone: false } : null)); this.solids = [];
     this.collect();
   }
   clone() {
     const s = Object.create(Sim.prototype); Object.assign(s, this); s.sinks = this.sinks.map(k => (k ? { touch: k.touch, y: k.y, vy: k.vy, gone: k.gone } : null));
-    s.hang = this.hang ? { bar: this.hang.bar } : null; s.rope = this.rope ? Object.assign({}, this.rope) : null; s.wall = this.wall ? Object.assign({}, this.wall) : null; s.ladder = this.ladder ? Object.assign({}, this.ladder) : null;
+    s.hang = this.hang ? { bar: this.hang.bar } : null; s.rope = this.rope ? Object.assign({}, this.rope) : null; s.wall = this.wall ? Object.assign({}, this.wall) : null; s.ladder = this.ladder ? Object.assign({}, this.ladder) : null; s.glide = this.glide ? Object.assign({}, this.glide) : null; s.chim = this.chim ? Object.assign({}, this.chim) : null; s.gx = Object.assign({}, this.gx);
     s.solids = []; s.collect(); s.ground = this.ground ? s.solids.find(q => q.i === this.ground.i) || null : null; return s;
   }
   /** aktuelle Körperhöhe (geduckt kleiner) */
@@ -110,10 +184,11 @@ export class Sim {
   collect() {
     const out = [], t = this.t;
     this.c.o.forEach((o, i) => {
-      if (o.k === 'plat') out.push({ i, x0: o.x, x1: o.x + o.w, top: o.y, bot: o.y - 0.5, vx: 0, vy: 0 });
+      if (o.k === 'plat') out.push({ i, x0: o.x, x1: o.x + o.w, top: o.y, bot: o.look === 'high' ? -5 : o.y - 0.5, vx: 0, vy: 0, tower: o.look === 'high' });
       else if (o.k === 'move') { const p = movePos(o, t), q = movePos(o, t - DT); out.push({ i, x0: p.x, x1: p.x + o.w, top: p.y, bot: p.y - 0.5, vx: (p.x - q.x) / DT, vy: (p.y - q.y) / DT }); }
       else if (o.k === 'sink') { const k = this.sinks[i]; if (!k.gone) out.push({ i, x0: o.x, x1: o.x + o.w, top: o.y + k.y, bot: o.y + k.y - 0.5, vx: 0, vy: k.vy }); }
       else if (o.k === 'roll') out.push({ i, x0: o.x, x1: o.x + o.w, top: o.y, bot: o.y - 2 * o.r + 0.2, vx: o.v, vy: 0 });
+      else if (o.k === 'orb') { const b = swingBall(o, t), q = swingBall(o, t - DT); out.push({ i, x0: b.x - o.r * 0.62, x1: b.x + o.r * 0.62, top: b.y + o.r * 0.8, bot: b.y - o.r * 0.6, vx: (b.x - q.x) / DT, vy: (b.y - q.y) / DT, orb: true }); }
       else if (o.k === 'tramp') out.push({ i, x0: o.x, x1: o.x + o.w, top: o.y, bot: o.y - 0.5, vx: 0, vy: 0 });
       else if (o.k === 'wall') out.push({ i, x0: o.x, x1: o.x + o.w, top: o.y + o.h, bot: -5, vx: 0, vy: 0, wall: true });
       else if (o.k === 'gate') out.push({ i, x0: o.x, x1: o.x + o.w, top: o.y + o.h, bot: o.y + o.gap, vx: 0, vy: 0, gate: true });
@@ -125,7 +200,7 @@ export class Sim {
   nearBar() {
     for (let i = 0; i < this.c.o.length; i++) {
       const o = this.c.o[i]; if (o.k !== 'bars') continue; const m = o.ledge ? 0.1 : 0.3;
-      if (this.x >= o.x1 - m && this.x <= o.x2 + m) { const head = this.y + PH; if (head >= o.y - 0.55 && head <= o.y + 0.35) return { i, o }; }
+      if (this.x >= o.x1 - m && this.x <= o.x2 + m) { const head = this.y + PH, by = barY(o, this.x); if (head >= by - 0.55 && head <= by + 0.35) return { i, o }; }
     }
     return null;
   }
@@ -141,12 +216,24 @@ export class Sim {
   }
   /** Was ließe sich jetzt greifen? 'bar' | 'ledge' | 'rope' | 'ring' | 'ladder' oder '' (nur in der Luft und wenn nicht schon festgehalten) */
   reachable() {
-    if (this.onGround || this.hang || this.rope || this.ladder || this.wall || this.dead || this.finished || this.grabCool > 0 || this.stun > 0) return '';
-    const b = this.nearBar(); if (b) return b.o.ledge ? 'ledge' : 'bar'; const rp = this.nearRope(); if (rp) return this.c.o[rp.i].ring ? 'ring' : 'rope'; return this.nearLadder() >= 0 ? 'ladder' : '';
+    if (this.wall) { const o = this.c.o[this.wi]; return this.wall.m === 'run' && this.y + PH + WALL_REACH >= o.y + o.h ? 'wall' : ''; }
+    if (this.onGround || this.hang || this.rope || this.ladder || this.glide || this.chim || this.dead || this.finished || this.grabCool > 0 || this.stun > 0) return '';
+    const b = this.nearBar(); if (b) return b.o.ledge ? 'ledge' : 'bar'; const rp = this.nearRope(); if (rp) return this.c.o[rp.i].ring ? 'ring' : 'rope';
+    if (this.nearGlide() >= 0) return 'glide'; if (this.nearChim() >= 0) return 'chim'; return this.nearLadder() >= 0 ? 'ladder' : '';
   }
   /** Lachsleiter in Griffweite? (unterste Sprosse über dem Kopf) */
   nearLadder() {
     for (let i = 0; i < this.c.o.length; i++) { const o = this.c.o[i]; if (o.k !== 'ladder') continue; const head = this.y + PH; if (Math.abs(this.x - o.x) < 0.8 && head >= o.y0 - 0.6 && head <= o.y0 + 0.45) return i; }
+    return -1;
+  }
+  /** Griff des Kurvengleiters in Reichweite? (wartet dort, wo man ihn losgelassen hat) */
+  nearGlide() {
+    for (let i = 0; i < this.c.o.length; i++) { const o = this.c.o[i]; if (o.k !== 'glide') continue; const hx = this.gx[i] != null ? this.gx[i] : o.x1, hy = railY(o, hx) - 0.35, head = this.y + PH; if (Math.abs(this.x - hx) < 0.55 && head >= hy - 0.6 && head <= hy + 0.35) return i; }
+    return -1;
+  }
+  /** im Spinnenkamin (in der Luft zwischen den Wänden)? */
+  nearChim() {
+    for (let i = 0; i < this.c.o.length; i++) { const o = this.c.o[i]; if (o.k === 'chim' && this.x > o.x + 0.2 && this.x < o.x + o.w - 0.2 && this.y > o.y0 + 0.2 && this.y + PH < o.top + 0.3) return i; }
     return -1;
   }
   /** Rechteck des Spielers trifft Kreis (Sandsack = drei Kreise entlang des Seils) */
@@ -157,7 +244,7 @@ export class Sim {
   }
   /** Pendelbalken: Balken am Pendel bleibt waagerecht; Treffer = Rechtecke überlappen */
   logHit(o) { const b = swingBall(o, this.t); return Math.abs(b.x - this.x) < LOG_HW + PW / 2 && b.y + LOG_HH > this.y && b.y - LOG_HH < this.y + this.h; }
-  knock(dir, vx, vy, stun) { this.stun = stun; this.hits++; this.boost = false; this.vx = dir * vx; this.vy = vy; this.onGround = false; this.ground = null; this.hang = null; this.rope = null; this.ladder = null; this.grabCool = 0.3; }
+  knock(dir, vx, vy, stun) { this.stun = stun; this.hits++; this.boost = false; this.vx = dir * vx; this.vy = vy; this.onGround = false; this.ground = null; this.hang = null; this.rope = null; this.ladder = null; this.glide = null; this.chim = null; this.grabCool = 0.3; }
   step(inp, dt = DT) {
     if (this.dead || this.finished) return; this.px = this.x; this.py = this.y; this.t += dt; const L = inp.l ? 1 : 0, R = inp.r ? 1 : 0, J = !!inp.j, D = !!inp.d, Gr = !!inp.g;
     if (Gr && !this.prevGr) this.gbuf = GRAB_BUF; else this.gbuf -= dt; this.prevGr = Gr;
@@ -165,8 +252,24 @@ export class Sim {
     this.sinks.forEach((k, i) => { if (!k || k.gone) return; if (k.touch >= 0 && this.t - k.touch >= this.c.o[i].delay) { k.vy -= 20 * dt; k.y += k.vy * dt; if (k.y < -4) k.gone = true; } });
     this.collect();
     if (this.stun > 0) this.stun -= dt;
-    // Wandlauf (Skript)
-    if (this.wall) { const w = this.wall; w.p += dt / (WALLRUN_T * (w.h || 4.2) / 4.2); const e = Math.min(1, w.p), ease = 1 - Math.pow(1 - e, 2); this.x = w.x0 + (w.x1 - w.x0) * ease; this.y = w.y0 + (w.y1 - w.y0) * ease; if (w.p >= 1) { this.wall = null; this.onGround = true; this.vx = 0; this.vy = 0; this.coyote = COYOTE; this.collect(); } this.check(); return; }
+    // Steilwand: Hochrennen mit echter Physik, oben greifen und hochziehen
+    if (this.wall) { this.wallStep(R, L, J, dt); this.prevJ = J; if (!this.wall) this.prevJ = true; this.dist = Math.max(this.dist, this.x); this.check(); return; }
+    // Kurvengleiter: Griff gleitet die Schiene entlang (bergab schneller), Sprung = abspringen
+    if (this.glide) {
+      const o = this.c.o[this.glide.i], g = this.glide; this.duck = false; this.face = 1;
+      const sl = (railY(o, g.x + 0.05) - railY(o, g.x - 0.05)) / 0.1; g.v += (-G * sl * 0.5 - 0.15 * g.v) * dt; g.v = Math.max(GLIDE_MIN, g.v); g.x = Math.min(o.x2, g.x + g.v * dt); if (g.x >= o.x2) g.v = 0;
+      this.gx[g.i] = g.x; this.x = g.x; this.y = railY(o, g.x) - 0.35 - PH; this.vx = g.v; this.vy = 0;
+      if (J && !this.prevJ) { this.glide = null; this.grabCool = 0.4; this.vx = 4.6 + g.v * 0.25; this.vy = 5.6; this.boost = true; this.prevJ = J; }
+      else { this.prevJ = J; this.dist = Math.max(this.dist, this.x); this.hazards(); this.check(); return; }
+    }
+    // Spinnenkamin: jeder Sprung stemmt höher, sonst rutscht man langsam ab; oben raus auf die Plattform
+    if (this.chim) {
+      const o = this.c.o[this.chim.i], c = this.chim; c.cool -= dt; this.duck = false; this.face = 1; this.vx = 0; this.vy = -CHIM_SLIP; this.x = o.x + o.w / 2;
+      if (J && !this.prevJ && c.cool <= 0) { this.y += CHIM_UP; c.cool = 0.14; c.ups = (c.ups || 0) + 1; } this.y -= CHIM_SLIP * dt; this.prevJ = J;
+      if (this.y + PH >= o.top - 0.1) { this.chim = null; this.grabCool = 0.4; this.vx = 3.8; this.vy = 6.5; this.boost = true; }
+      else if (this.y <= o.y0 + 0.02) { this.chim = null; this.grabCool = 0.4; this.y = o.y0; }
+      else { this.dist = Math.max(this.dist, this.x); this.check(); return; }
+    }
     // Am Seil/Ring: Hände folgen dem Seil, Sprung = loslassen (mit dem Schwung des Seils)
     if (this.rope) {
       const o = this.c.o[this.rope.i], { a, da } = ropeAt(o, this.t), d = this.rope.d; this.rope.a = a; this.rope.da = da; this.face = 1; this.duck = false;
@@ -178,7 +281,8 @@ export class Sim {
     if (this.ladder) {
       const o = this.c.o[this.ladder.i], L2 = this.ladder; L2.cool -= dt; this.duck = false; this.vx = 0; this.vy = 0; this.face = 1;
       if (J && !this.prevJ) {
-        if (L2.cool > LADDER_HOP - LADDER_EARLY) { L2.k--; L2.cool = LADDER_HOP; L2.slips = (L2.slips || 0) + 1; }
+        if (o.kind) { if (L2.cool <= 0) { L2.k++; L2.cool = LADDER_HOP * 0.6; } }   // Kletterstange/-seil: Griff für Griff, kein Abrutschen
+        else if (L2.cool > LADDER_HOP - LADDER_EARLY) { L2.k--; L2.cool = LADDER_HOP; L2.slips = (L2.slips || 0) + 1; }
         else { L2.k++; L2.cool = LADDER_HOP; }
       }
       this.prevJ = J;
@@ -188,7 +292,7 @@ export class Sim {
     }
     // Hängen an Stangen bzw. Griffleiste
     if (this.hang) {
-      const o = this.c.o[this.hang.bar]; this.duck = false; this.vy = 0; this.vx = (R - L) * HANG_SPEED * (o.ledge ? 0.8 : 1) * (this.stun > 0 ? 0 : 1); this.x += this.vx * dt; if (R - L) this.face = R - L; this.y = o.y - PH;
+      const o = this.c.o[this.hang.bar]; this.duck = false; this.vy = 0; this.vx = (R - L) * HANG_SPEED * (o.ledge ? 0.8 : o.slant && R ? 1.5 : 1) * (this.stun > 0 ? 0 : 1); this.x += this.vx * dt; if (R - L) this.face = R - L; this.y = barY(o, this.x) - PH;
       if (o.ledge) {
         // Griffleiste: an den Enden festhalten; Sprung = Hechtsprung nach vorn zur nächsten Leiste (oder auf die Plattform)
         this.x = Math.max(o.x1 + 0.05, Math.min(o.x2 - 0.05, this.x));
@@ -196,7 +300,7 @@ export class Sim {
         else { this.prevJ = J; this.dist = Math.max(this.dist, this.x); this.hazards(); this.check(); return; }
       }
       // Am Ende der Stangen festhalten (kein automatisches Abschwingen); Sprung = Absprung nach vorn
-      else { if (this.x > o.x2 + 0.1) this.x = o.x2 + 0.1;
+      else { if (this.x > o.x2 + 0.1) this.x = o.x2 + 0.1; this.y = barY(o, this.x) - PH;
         if (this.x < o.x1 - 0.35) { this.hang = null; this.grabCool = 0.35; } else if (J && !this.prevJ) { this.hang = null; this.grabCool = 0.35; this.vy = 7.2; this.vx = this.face * 5.5; } else { this.prevJ = J; this.dist = Math.max(this.dist, this.x); this.hazards(); this.check(); return; } }
       this.prevJ = J;
     }
@@ -206,23 +310,24 @@ export class Sim {
     else if (this.duck && (!this.onGround || !D || !ctl) && this.roomToStand()) { this.duck = false; this.slide = false; }
     if (this.duck && this.slide) { const f = SLIDE_DECEL * dt; this.vx = Math.abs(this.vx) <= f ? 0 : this.vx - Math.sign(this.vx) * f; if (Math.abs(this.vx) < CRAWL) this.slide = false; }
     else {
-      const top = this.duck ? CRAWL : RUN, accel = this.onGround ? ACC : AIR_ACC;
+      // Anlaufbahn der Steilwand: wer durchläuft, wird immer schneller (Rennen statt Laufen)
+      this.sprint = !this.duck && this.onGround && !!this.ground && dir > 0 && this.c.o[this.ground.i].look === 'runway' && this.vx >= RUN - 0.05;
+      const top = this.duck ? CRAWL : this.sprint ? SPRINT : RUN, accel = this.sprint ? SPRINT_ACC : this.onGround ? ACC : AIR_ACC;
       if (dir) { const target = dir * top, dv = accel * dt; this.vx = Math.abs(target - this.vx) <= dv ? target : this.vx + Math.sign(target - this.vx) * dv; this.face = dir; }
       else if (this.onGround) { const f = FRICTION * dt; this.vx = Math.abs(this.vx) <= f ? 0 : this.vx - Math.sign(this.vx) * f; }
     }
     if (this.onGround && this.ground) this.coyote = COYOTE; else this.coyote -= dt;
     if (J && !this.prevJ && ctl) this.buf = BUFFER; else this.buf -= dt; this.prevJ = J;
     if (this.buf > 0 && this.coyote > 0 && (!this.duck || this.roomToStand())) {
-      // Wandlauf an der letzten Wand starten?
-      const wo = this.c.o.find(o => o.k === 'wall');
-      if (wo && this.onGround && Math.abs(this.vx) >= WALLRUN_MIN && this.x >= wo.x - 2.6 && this.x <= wo.x - 0.15) { this.wall = { p: 0, h: wo.h, x0: this.x, y0: this.y, x1: wo.x + 0.9, y1: wo.y + wo.h }; this.buf = 0; this.coyote = 0; this.onGround = false; this.ground = null; this.duck = false; this.slide = false; return; }
       this.vy = JUMP_V; this.onGround = false; this.ground = null; this.coyote = 0; this.buf = 0; this.duck = false; this.slide = false;
     }
     if (this.boost && this.vy <= 0) this.boost = false; if (!J && this.vy > 3.5 && !this.boost) this.vy -= 55 * dt;   // kurzer Tipp = kleiner Sprung
     // Greifen: nur mit der Aktionstaste – in der Luft in Griffweite drücken (Stangen, Leisten, Seil, Ringe, Lachsleiter)
     this.grabCool -= dt;
     if (!this.onGround && ctl && this.grabCool <= 0 && this.gbuf > 0) {
-      const b = this.nearBar(); if (b) { this.gbuf = 0; this.grabs++; this.hang = { bar: b.i }; this.vx = 0; this.vy = 0; this.y = b.o.y - PH; this.duck = false; this.hazards(); return; }
+      const b = this.nearBar(); if (b) { this.gbuf = 0; this.grabs++; this.hang = { bar: b.i }; this.vx = 0; this.vy = 0; this.y = barY(b.o, this.x) - PH; this.duck = false; this.hazards(); return; }
+      const gi = this.nearGlide(); if (gi >= 0) { this.gbuf = 0; this.grabs++; const o = this.c.o[gi], hx = this.gx[gi] != null ? this.gx[gi] : o.x1; this.glide = { i: gi, x: hx, v: Math.max(2.4, this.vx * 0.6) }; this.x = hx; this.y = railY(o, hx) - 0.35 - PH; this.vx = this.vy = 0; this.duck = false; return; }
+      const ci = this.nearChim(); if (ci >= 0) { this.gbuf = 0; this.grabs++; this.chim = { i: ci, cool: 0.1 }; this.vx = this.vy = 0; this.duck = false; this.boost = false; return; }
       const rp = this.nearRope(); if (rp) { this.gbuf = 0; this.grabs++; this.rope = rp; this.boost = false; this.duck = false; return; }
       const li = this.nearLadder(); if (li >= 0) { this.gbuf = 0; this.grabs++; this.ladder = { i: li, k: 0, cool: 0.15 }; this.vx = 0; this.vy = 0; this.duck = false; this.x = this.c.o[li].x; this.y = rungY(this.c.o[li], 0) - PH; return; }
     }
@@ -233,10 +338,43 @@ export class Sim {
     if (this.onGround && this.ground) {
       const o = this.c.o[this.ground.i]; if (o.k === 'sink') { const k = this.sinks[this.ground.i]; if (k.touch < 0) k.touch = this.t; }
       if (o.k === 'tramp' && vIn < -1.5) { this.vy = o.bounce; this.onGround = false; this.ground = null; this.boost = true; this.bounces = (this.bounces || 0) + 1; }
-      else { this.boost = false; if (this.wallHit) { this.wallHit = false; if (this.wallTries >= 3) { this.dead = 'wall'; return; } } }
+      else this.boost = false;
+    }
+    // in die Rundung der Steilwand geraten (laufend oder von oben) → Wandlauf mit dem Tempo entlang der Fläche
+    if (this.wi >= 0 && !this.wall) {
+      const o = this.c.o[this.wi];
+      if (this.x > o.x - WALL_R && this.x < o.x + 0.02) { const u = wallU(o, this.x), ys = o.y + o.h * u;
+        if (this.y <= ys + 0.02 && this.y > o.y - 0.6 && ys < o.y + o.h - PH) { const p = wallPt(o, u); this.wall = { m: 'run', u, v: this.onGround ? this.vx : this.vx * p.cos + this.vy * p.sin, peak: ys - o.y, kick: false }; this.onGround = false; this.ground = null; this.duck = false; this.slide = false; this.sprint = false; this.y = ys; this.x = p.x - 0.3 * p.sin; return; } }
     }
     this.hazards();
     this.dist = Math.max(this.dist, this.x); this.check();
+  }
+  /** Steilwand: m = 'run' (auf der Rundung, Tempo v entlang der Fläche), 'hang' (an der Kante), 'pull' (hochziehen) */
+  wallStep(R, L, J, dt) {
+    const w = this.wall, o = this.c.o[this.wi], top = o.y + o.h, hx = o.x - 0.32, hy = top - PH - 0.42; this.duck = false; this.slide = false; this.face = 1; this.sprint = false;
+    if (w.m === 'run') {
+      let p = wallPt(o, w.u);
+      if (J && !this.prevJ && !w.kick && w.v > 0 && p.sin > 0.7) { w.kick = true; w.v += WALL_KICK; }   // letzter Abdruck nach oben
+      w.v += (-G * p.sin + (R && w.v > 0 ? WALL_PUSH * p.cos : 0)) * dt; w.u += (w.v * dt) / p.L;
+      const umax = (o.h - PH + 0.1) / o.h; if (w.u >= umax) { w.u = umax; if (w.v > 0) w.v = 0; }
+      p = wallPt(o, Math.max(0, w.u)); this.x = p.x - 0.3 * p.sin; this.y = p.y; this.vx = w.v * p.cos; this.vy = w.v * p.sin; w.tilt = Math.asin(p.sin); w.peak = Math.max(w.peak, this.y - o.y);
+      if (this.gbuf > 0 && this.y + PH + WALL_REACH >= top) { this.gbuf = 0; this.grabs++; this.wall = { m: 'hang', p: 0, peak: w.peak }; this.x = hx; this.y = hy; this.vx = this.vy = 0; return; }
+      if (w.u <= 0) {   // abgerutscht: unten wieder raus, Versuch verbraucht (wenn man wirklich oben war)
+        this.wall = null; this.x = o.x - WALL_R - 0.03; this.y = o.y; this.vx = Math.max(-4, Math.min(-1.5, w.v)); this.vy = 0; this.collect();
+        if (w.peak > 0.6) { this.wallTries++; if (this.wallTries >= 3) this.dead = 'wall'; }
+      }
+      return;
+    }
+    if (w.m === 'hang') {
+      w.p += dt; this.x = hx; this.y = hy; this.vx = this.vy = 0;
+      if (L && !R) { const u = (hy - o.y) / o.h; this.wall = { m: 'run', u, v: -0.5, peak: w.peak, kick: true }; return; }
+      if (w.p >= WALL_HANG_MIN && (R || (J && !this.prevJ))) this.wall = { m: 'pull', p: 0, peak: w.peak };
+      return;
+    }
+    w.p += dt / WALL_PULL_T; const e = Math.min(1, w.p), sm = k => k * k * (3 - 2 * k);
+    if (e < 0.6) { const k = sm(e / 0.6); this.x = hx + 0.14 * k; this.y = hy + (top - 0.55 - hy) * k; } else { const k = sm((e - 0.6) / 0.4); this.x = hx + 0.14 + 0.88 * k; this.y = top - 0.55 + 0.55 * k; }
+    this.vx = this.vy = 0;
+    if (w.p >= 1) { this.wall = null; this.x = o.x + 0.7; this.y = top; this.onGround = true; this.coyote = COYOTE; this.collect(); this.ground = this.solids.find(q => !q.wall && q.top === top && q.x0 <= this.x && q.x1 >= this.x) || null; }
   }
   /** waagerecht bewegen und seitlich an festen Flächen anhalten */
   moveX(dx) {
@@ -247,7 +385,7 @@ export class Sim {
       if (!s.wall && !s.gate && this.y >= s.top - 0.45 && this.vy <= 3 && !(this.ground && this.ground.i === s.i)) { this.y = s.top; if (this.vy < 0) this.vy = 0; continue; }
       if (!s.gate && this.y >= s.top - 0.2) { if (!(this.ground && this.ground.i === s.i)) { this.y = s.top; if (this.vy < 0) this.vy = 0; } continue; }   // fast oben: auf die Kante stellen statt darin zu stecken
       const penL = this.x + PW / 2 - s.x0, penR = s.x1 - (this.x - PW / 2);
-      if (penL < penR) { if (s.wall && !this.onGround && !this.wallHit && this.vx > 0) { this.wallHit = true; this.wallTries++; } this.x = s.x0 - PW / 2; if (this.vx > 0) this.vx = 0; }
+      if (penL < penR) { this.x = s.x0 - PW / 2; if (this.vx > 0) this.vx = 0; }
       else { this.x = s.x1 + PW / 2; if (this.vx < 0) this.vx = 0; }
       if (s.gate) this.slide = false;
     }

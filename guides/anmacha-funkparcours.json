@@ -60,7 +60,13 @@
     "Trampolin: Springst du darauf, federt es dich hoch an Hangelstangen, die man sonst nicht erreicht.",
     "Hangelstangen: Im Sprung die Greifen-Taste drücken, dann mit links/rechts hangeln. Am Ende hält sich dein Läufer fest – mit Sprung springst du selbst ab.",
     "Steilwand: das Ziel. Mit vollem Tempo anlaufen und kurz vor der Wand springen. Du hast wie im Fernsehen drei Versuche („Versuch 2 von 3“, „Letzter Versuch an der Wand!“).",
-    "Kantenhilfe: Knapp verfehlte Kanten erwischt dein Läufer noch."
+    "Kantenhilfe: Knapp verfehlte Kanten erwischt dein Läufer noch.",
+    "Pendelkugeln: große Kugeln an Seilen, die leicht schwingen – von Kugel zu Kugel springen und oben mitschwingen.",
+    "Schrägstange: eine schräg nach unten laufende Griffstange. Greifen, hinunterhangeln, am Ende abspringen.",
+    "Kurvengleiter: ein Griff an einer geschwungenen Schiene. Greifen, mitgleiten (bergab wird er schneller) und am Ende abspringen.",
+    "Kletterstange und Kletterseil: greifen und mit der Sprungtaste Griff für Griff nach oben, oben auf die Plattform springen.",
+    "Spinnenkamin: in den Kamin springen und greifen, dann mit schnellen Sprüngen nach oben stemmen – wer nicht drückt, rutscht langsam ab.",
+    "Steilwand: auf der Anlaufbahn wird aus Laufen Rennen (bis 9,5 m/s). Je schneller du in die Rundung kommst, desto höher läufst du. Oben mit der Greif-Taste die Kante packen, dann nach vorn drücken zum Hochziehen."
    ]
   },
   {
@@ -69,6 +75,10 @@
     "Vorrunde (8 Hindernisse): Trittsteine (5), Drehwalzen (3), Pendelbalken (2), Bruchplatten (4), Seilschwung, Rutschtunnel (2 Tore), Klippenhänger (2 Leisten), Steilwand mit 4,25 m.",
     "Halbfinale (11 Hindernisse): Trittsteine (6), Drehwalzen (4, schneller), Sandsäcke (3), Fahrstuhl, Ringschwung (3 Ringe), Pendelbalken (3), Bruchplatten (5), Lachsleiter (5 Sprossen), Trampolin mit Hangelstangen, Schiebebrücke, Steilwand mit 4,5 m.",
     "Finale (16 Hindernisse): Trittsteine (7 kleine), Drehwalzen (5, am schnellsten), Rutschtunnel (3 Tore), Schiebebrücke, Bruchplatten (6), Sandsäcke, Seilschwung, Klippenhänger (3 Leisten), Ringschwung (4 Ringe), Pendelbalken (3), Lachsleiter (6 Sprossen), Fahrstuhl, Trampolin mit langen Hangelstangen, noch einmal Bruchplatten (4), lange Hangelstangen, Steilwand mit 5 m."
+   ],
+   "p": [
+    "In der Show wird jede Runde neu gemischt: Die Vorrunde hat 6, das Halbfinale 8 und das Finale 10 verschiedene Hindernisse, zufällig aus 19 Bausteinen gewählt und immer mit der Steilwand am Ende (4,25 m, 4,5 m, 5 m). Alle Läufer einer Runde bekommen denselben Parcours. Jede Mischung ist geprüft schaffbar.",
+    "Im Training gibt es die drei festen Parcours Vorrunde, Halbfinale und Finale, damit Bestzeiten vergleichbar bleiben."
    ]
   },
   {
@@ -85,6 +95,7 @@
   {
    "t": "Wertung und Punkte",
    "list": [
+    "Nur wer ins Ziel kommt, ist in der nächsten Runde. Wer abstürzt, scheidet aus und bekommt für die Runde 0 Punkte – spielst du allein und scheiterst in der Vorrunde, ist die Show vorbei (Neue Show startet neu gemischt).",
     "Platzierung je Parcours: Wer im Ziel ist, steht vor allen, die ausgeschieden sind. Im Ziel entscheidet die kürzere Zeit, bei Ausgeschiedenen die längere Strecke.",
     "Punkte je Parcours: Platz 1 bekommt so viele Punkte, wie Läufer mitspielen, jeder weitere Platz einen weniger. Bei 4 Läufern also 4, 3, 2, 1 Punkte.",
     "Gesamtwertung nach dem Finale: die meisten Punkte gewinnen. Bei Gleichstand gewinnt die kleinere Gesamtzeit; ein nicht beendeter Lauf zählt dabei als 180 Sekunden.",
@@ -136,10 +147,12 @@
   {
    "t": "Die Steilwand meistern",
    "list": [
-    "Du brauchst fast volles Lauftempo. Beschleunige auf der Anlaufplattform durchgehend.",
+    "Nicht springen! Einfach auf der Anlaufbahn durchrennen – nur so wirst du richtig schnell. Ein Sprung bremst dich ab.",
+    "Kurz vor der Kante oben einmal Springen drücken gibt einen letzten Abdruck nach oben.",
+    "Sobald der ✊-Knopf leuchtet, Greifen drücken. Danach nach vorn drücken, dann zieht sich dein Läufer hoch.",
+    "Zu langsam? Du rutschst ab und hast einen Versuch verbraucht. Geh ein paar Meter zurück und nimm mehr Anlauf.",
     "Spring erst kurz vor der Wand (innerhalb von etwa zweieinhalb Metern). Zu früh gesprungen prallst du an die Wand – das kostet einen Versuch.",
-    "Nach einem Fehlversuch etwas zurücklaufen, wieder voll beschleunigen und neu springen.",
-    "Nach dem dritten Fehlversuch ist der Lauf vorbei („Drei Versuche, kein Glück!“). Im Finale ist die Wand 5 m hoch, das Prinzip bleibt gleich."
+    "Nach einem Fehlversuch etwas zurücklaufen, wieder voll beschleunigen und neu springen."
    ]
   },
   {
@@ -227,7 +240,8 @@
    "list": [
     "Der Hauptgewinn der Show ist „Ruhm & Ehre“, gestiftet vom RicoReWi Radioportal.",
     "Der Kommentator moderiert live wie in der TV-Show: Er sagt jedes Hindernis an, lobt saubere Abschnitte, kommentiert Griffe, Treffer, Tempo gegenüber der Bestzeit und die letzten Sekunden auf der Uhr.",
-    "Neben den 8 eigenen Läufern kannst du Figuren aus anderen easygames wählen – Tiere und Wesen erscheinen im Look ihres Spiels."
+    "Neben den 8 eigenen Läufern kannst du Figuren aus anderen easygames wählen – Tiere und Wesen erscheinen im Look ihres Spiels.",
+    "Nach jeder geschafften Steilwand melden sich Moderator RicoReWi und Co-Kommentator Yukoo vom Kommentatorenpult. Tippen überspringt die Szene."
    ]
   }
  ],
