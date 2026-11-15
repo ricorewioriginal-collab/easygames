@@ -19,6 +19,33 @@ export class CameraRig {
   move = { f: 0, r: 0, u: 0 };
   /** Schaffner: Wagen (Index im Zug) und Standort im Wagen (lokales x), Augenhöhe */
   walk = { car: 0, x: 0, eye: 2.9 };
+  /** Fahrzeugbewegung im Führerstand/Fahrgastraum: Nicken beim Anfahren/Bremsen, Neigen in Kurven, Laufunruhe */
+  private body = { acc: 0, roll: 0, t: 0, yawPrev: NaN };
+  motion = typeof matchMedia === 'function' ? !matchMedia('(prefers-reduced-motion: reduce)').matches : true;
+  private applyBody(dt: number, t: Train, fwd: THREE.Vector3) {
+    const b = this.body, c = this.cam, v = Math.abs(t.v);
+    const k = Math.min(1, dt * 3);
+    b.acc += ((Number.isFinite(t.acc) ? t.acc : 0) - b.acc) * k;
+    const yaw = Math.atan2(fwd.z, fwd.x);
+    let rate = 0;
+    // nur im ersten Aufruf je Bild (dt > 0) auswerten; der zweite (dt = 0) setzt nur die Kamera neu
+    if (dt > 0) {
+      if (Number.isFinite(b.yawPrev)) { let d = yaw - b.yawPrev; d = Math.atan2(Math.sin(d), Math.cos(d)); rate = d / dt; }
+      b.yawPrev = yaw;
+    }
+    // Querbeschleunigung v·ω → leichtes Hineinlehnen, gedämpft
+    const lat = Math.max(-1.5, Math.min(1.5, v * rate));
+    b.roll += (lat * 0.012 - b.roll) * Math.min(1, dt * 2);
+    b.t += dt * (0.6 + v * 0.09);
+    if (!this.motion) return;
+    const amp = Math.min(1, v / 30);
+    const shakeY = (Math.sin(b.t * 7.3) * 0.6 + Math.sin(b.t * 13.1) * 0.4) * 0.006 * amp;
+    const shakeX = Math.sin(b.t * 2.1) * 0.004 * amp;
+    c.translateY(shakeY); c.translateX(shakeX);
+    c.rotateX(Math.max(-0.02, Math.min(0.02, b.acc * 0.012)));
+    c.rotateZ(b.roll + Math.sin(b.t * 1.7) * 0.0015 * amp);
+  }
+
   /** Kamera ruckelfrei nachziehen */
   private smooth = new THREE.Vector3(); private hasSmooth = false;
 
@@ -81,6 +108,7 @@ export class CameraRig {
         // Modell: +x vorn → Kamera blickt entlang −z: um −90° drehen
         c.rotateY(-Math.PI / 2);
         c.rotateY(this.yaw); c.rotateX(this.pitch);
+        this.applyBody(dt, t, fwd);
         break;
       }
       case 'passenger': {
@@ -91,6 +119,7 @@ export class CameraRig {
         c.quaternion.setFromRotationMatrix(g.matrixWorld);
         c.rotateY(-Math.PI); // Blick zur rechten Fensterseite (+z)
         c.rotateY(this.yaw); c.rotateX(this.pitch);
+        this.applyBody(dt, t, fwd);
         break;
       }
       case 'walk': {
