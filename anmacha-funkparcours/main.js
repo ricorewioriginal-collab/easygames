@@ -7,6 +7,7 @@ import { createUI } from './menu.js';
 import { stick, hold } from './stick.js';
 import { makeCommentator } from './commentary.js';
 import { makeHost } from './host.js';
+import { makeTips } from './tips.js';
 const $ = id => document.getElementById(id), esc = s => String(s == null ? '' : s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
 const THREE_URL = '../vendor/three-r128.min.js';   // lokal: lädt schnell und läuft auch offline
 const COLORS = [0xff6fb0, 0x00b8d9, 0xffd24a, 0x8b5cf6], CSS = ['#ff6fb0', '#00b8d9', '#ffd24a', '#8b5cf6'], LOGO = [5, 1, 8, 12], MAXT = 150, ABORT = { abort: 1 };
@@ -59,6 +60,7 @@ if (JOIN) {
     if(!G||G.phase!=='run'||!sim||!G.course||!D)return;
     const c=G.course,secs=c.secs||[],t=sim.t;
     let section=-1;for(let i=0;i<secs.length;i++)if(sim.x>=secs[i].x-1.5)section=i;
+    if(tipsOn){let ti=-1;for(let i=0;i<secs.length;i++)if(sim.x>=secs[i].x-6)ti=i;if(ti>D.tip){D.tip=ti;D.tipT=t+6;tips.show(secs[ti].n,view==='back',0);}else if(D.tipT&&t>D.tipT){D.tipT=0;tips.hide();}}   // Bedien-Hinweis schon beim Anlauf
     if(section>D.sec){
       const name=secs[section].n,prev=D.sec;D.sec=section;
       if(prev>=0&&!D.hitSince)commentator.say('clear',{chance:0.6});
@@ -93,7 +95,20 @@ if (JOIN) {
   addEventListener('blur', () => { keys = 0; touchM = 0; });
   // Touch: Stick links (Bits 1/2, nach unten 8), rechts Springen (Bit 4) und Ducken (Bit 8), dazu Pause und Ton
   const stk = stick($('stick'), m => { stickM = m; }), jumpUp = hold(document.querySelector('#pad [data-k="j"]'), () => { touchM |= 4; }, () => { touchM &= ~4; }), duckUp = hold(document.querySelector('#pad [data-k="d"]'), () => { touchM |= 8; }, () => { touchM &= ~8; }), grabBtn = document.querySelector('#pad [data-k="g"]'), grabUp = hold(grabBtn, () => { touchM |= 16; }, () => { touchM &= ~16; });
-  const padOn = v => { $('pad').hidden = !v; $('game').classList.toggle('pl', v); if (!v) { stk.reset(); jumpUp(); duckUp(); grabUp(); grabBtn.classList.remove('ready'); touchM = stickM = 0; } };
+  const tips = makeTips($('tip'));
+  // ------------------------------------------------------------ Kamera selbst steuern: Maus/Finger ziehen = drehen, Mausrad/zwei Finger = zoomen, Doppelklick/-tipp = zurück; Gamepad rechter Stick, R3 = zurück
+  { const cv = $('cv'), pts = new Map(); let pinch = 0, lastTap = 0;
+    const on = () => !!G && !paused && $('pause').hidden;
+    cv.addEventListener('pointerdown', e => { if (!on()) return; pts.set(e.pointerId, [e.clientX, e.clientY]); try { cv.setPointerCapture(e.pointerId); } catch (x) {} if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch = Math.hypot(a[0] - b[0], a[1] - b[1]); }
+      const n = performance.now(); if (n - lastTap < 320) arena.resetCam(); lastTap = n; });
+    cv.addEventListener('pointermove', e => { const p = pts.get(e.pointerId); if (!p || !on()) return; const dx = e.clientX - p[0], dy = e.clientY - p[1]; p[0] = e.clientX; p[1] = e.clientY;
+      if (pts.size === 1) arena.camMove(-dx * 0.006, dy * 0.005); else if (pts.size === 2) { const [a, b] = [...pts.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]); if (pinch > 0) arena.camMove(0, 0, pinch / Math.max(20, d)); pinch = d; } });
+    ['pointerup', 'pointercancel'].forEach(ev => cv.addEventListener(ev, e => { pts.delete(e.pointerId); pinch = 0; }));
+    cv.addEventListener('wheel', e => { if (!on()) return; e.preventDefault(); arena.camMove(0, 0, Math.exp(e.deltaY * 0.0012)); }, { passive: false });
+  }
+  let r3 = false; const camPad = dt => { for (const gp of (navigator.getGamepads ? navigator.getGamepads() : [])) { if (!gp) continue; const ax = gp.axes[2] || 0, ay = gp.axes[3] || 0, b = !!(gp.buttons[11] && gp.buttons[11].pressed);
+    if (Math.abs(ax) > 0.2 || Math.abs(ay) > 0.2) arena.camMove(-ax * dt * 2.4, ay * dt * 1.6); if (b && !r3) arena.resetCam(); r3 = b; } };
+  const padOn = v => { if (!v) tips.hide(); $('pad').hidden = !v; $('game').classList.toggle('pl', v); if (!v) { stk.reset(); jumpUp(); duckUp(); grabUp(); grabBtn.classList.remove('ready'); touchM = stickM = 0; } };
   let padM = 0; const readInput = () => { const m = keys | touchM | stickM | padM | (G ? phoneM[G.cur] : 0); return { l: m & 1, r: m & 2, j: m & 4, d: m & 8, g: m & 16 }; };
 
   // ------------------------------------------------------------ Pausemenü (Esc, ☰, Start am Gamepad): hält den Lauf an
@@ -108,8 +123,11 @@ if (JOIN) {
   $('bPSnd').onclick = () => toggleSnd();
   // Ansicht: seitlich (klassisch) oder von hinten (wie ein Kandidat auf der Strecke); gleiche Steuerung und Physik
   let view = store.get('fpView', 'side'); const viewUI = () => { $('bPView').textContent = view === 'back' ? '🎥 Ansicht: von hinten' : '🎥 Ansicht: seitlich'; $('sgView').querySelectorAll('button').forEach(b => b.classList.toggle('on', (+b.dataset.v === 1) === (view === 'back'))); };
-  const setView = v => { view = v; store.set('fpView', v); arena.setView(v); viewUI(); document.documentElement.classList.toggle('fp-back', v === 'back'); keys = 0; };
+  const setView = v => { view = v; arena.resetCam(); store.set('fpView', v); arena.setView(v); viewUI(); document.documentElement.classList.toggle('fp-back', v === 'back'); keys = 0; };
   $('bPView').onclick = () => { SFX.click(); setView(view === 'back' ? 'side' : 'back'); };
+  $('bPCam').onclick = () => { SFX.click(); arena.resetCam(); };
+  let tipsOn = store.get('fpTips', true); const tipsUI = () => { $('bPTips').textContent = tipsOn ? '💡 Hinweise: an' : '💡 Hinweise: aus'; }; tipsUI();
+  $('bPTips').onclick = () => { SFX.click(); tipsOn = !tipsOn; store.set('fpTips', tipsOn); tipsUI(); if (!tipsOn) tips.hide(); };
   $('bPVoice').onclick = () => { SFX.click(); commentator.setOn(!commentator.on); voiceUI(); };
   $('bQuit').onclick = () => { SFX.click(); abort(); show('menu'); ui.menu.show('show'); };
 
@@ -179,7 +197,7 @@ if (JOIN) {
     G.phase = 'count'; push(); keys = touchM = 0;
     for (const n of [3, 2, 1]) { big(String(n), '', 700); SFX.count(); await A(sleep(800)); }
     big('LOS!', '', 800); SFX.go(); commentator.say('go',{priority:true}); arena.fire(1); G.phase = 'run'; push();
-    const sim = new Sim(course); G.sim = sim; D={sec:-1,half:false,hold:false,slide:false,bounce:0,wall:false,still:0,hitSince:false,sprint:false,wm:""}; padOn(true); const rec = []; let acc = 0, n = 0, prevG = true, wt = 0, hits = 0, grabs = 0, reach = '';
+    const sim = new Sim(course); G.sim = sim; D={sec:-1,tip:-1,half:false,hold:false,slide:false,bounce:0,wall:false,still:0,hitSince:false,sprint:false,wm:""}; padOn(true); const rec = []; let acc = 0, n = 0, prevG = true, wt = 0, hits = 0, grabs = 0, reach = '';
     const res = await A(new Promise(done => {
       G.tick = dt => {
         acc += dt;
@@ -244,6 +262,7 @@ if (JOIN) {
   function loop(now) {
     const raw = Math.min(0.05, (now - last) / 1000), dt = raw * FAST(); last = now;
     padM = ui.gamepad(raw, !!G && !paused && !pending && (G.phase === 'run' || G.phase === 'count'));
+    if (G && !paused) camPad(raw);
     arena.attract = !G && !$('menu').hidden && curCourse ? curCourse.length * (0.5 - 0.5 * Math.cos(arena.time * 0.045)) : null;
     if (G && G.tick && !paused) G.tick(dt);
     const sim = G && G.sim, run = sim && (G.phase === 'run' || G.phase === 'done' || G.phase === 'board');
@@ -285,6 +304,6 @@ if (JOIN) {
   $('bSnd').onclick = toggleSnd; $('aSnd').onclick = toggleSnd; $('aMenu').onclick = () => pause(true);
   addEventListener('keydown', e => { if ((e.code === 'Escape' || e.code === 'KeyP') && !$('game').hidden && !pending && !paused) { e.preventDefault(); pause(true); } });
   document.addEventListener('visibilitychange', () => { if (document.hidden && G && G.phase === 'run') pause(true); });
-  window.__fp = { get G() { return G; }, input: () => readInput(), S, arena, COURSES, ui, vo: commentator, host, makeCourse, start, loadScene }; requestAnimationFrame(loop);
+  window.__fp = { get G() { return G; }, tips, input: () => readInput(), S, arena, COURSES, ui, vo: commentator, host, makeCourse, start, loadScene }; requestAnimationFrame(loop);
   await texDone; booting = false; ui.boot.ready(() => { show('menu'); ui.menu.show('show'); });
 }

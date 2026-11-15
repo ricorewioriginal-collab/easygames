@@ -26,7 +26,14 @@
    "t": "Ansicht von hinten",
    "p": [
     "In der Einrichtung unter „Ansicht“ oder im Pausemenü über „🎥 Ansicht“ schaltest du zwischen seitlich und von hinten um. Von hinten läuft die Kamera hinter dem Läufer mit wie in einem modernen Jump’n’Run, Ablauf und Wertung bleiben gleich.",
-    "Steuerung von hinten: Pfeil hoch, W, Stick oder Steuerkreuz nach oben = vorwärts, nach unten = zurück. Springen mit Leertaste oder A, Ducken mit Shift, C, B oder dem Ducken-Knopf, Greifen wie gewohnt."
+    "Steuerung von hinten: Pfeil hoch, W, Stick oder Steuerkreuz nach oben = vorwärts, nach unten = zurück. Springen mit Leertaste oder A, Ducken mit Shift, C, B oder dem Ducken-Knopf, Greifen wie gewohnt.",
+    "Kamera selbst steuern (beide Ansichten): mit Maus oder Finger auf dem Spielfeld ziehen dreht die Kamera, Mausrad oder zwei Finger zoomen, am Gamepad der rechte Stick. Doppelklick, Doppeltipp, R3 oder „🔄 Kamera zurücksetzen“ im Pausemenü stellt sie zurück."
+   ]
+  },
+  {
+   "t": "Bedien-Hinweise",
+   "p": [
+    "Kurz vor jedem Hindernis blendet das Spiel oben ein, wie man es schafft, mit den passenden Tasten für Tastatur, Touch oder Gamepad. Im Pausemenü schaltest du die Hinweise mit „💡 Hinweise“ aus und wieder an."
    ]
   },
   {

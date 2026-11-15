@@ -64,7 +64,7 @@ export class Arena {
     this.r.shadowMap.enabled = true; this.r.shadowMap.type = coarse ? T.PCFShadowMap : T.PCFSoftShadowMap; ANISO = Math.min(8, this.r.capabilities.getMaxAnisotropy());
     this.s = new T.Scene(); this.s.fog = new T.Fog(lin(0x05060c), 24, 90);
     this.s.background = cvs(8, 256, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#010103'); gr.addColorStop(0.55, '#050814'); gr.addColorStop(1, '#0b1630'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
-    this.cam = new T.PerspectiveCamera(42, 1, 0.1, 220); this.cx = 3; this.cy = 2.4; this.cvx = 0; this.cvy = 0; this.shake = 0; this.baseFov = 42; this.dist = 12.5; this.view = 'side'; this.signs = [];
+    this.cam = new T.PerspectiveCamera(42, 1, 0.1, 220); this.cx = 3; this.cy = 2.4; this.cvx = 0; this.cvy = 0; this.shake = 0; this.baseFov = 42; this.dist = 12.5; this.view = 'side'; this.signs = []; this.camYaw = 0; this.camPitch = 0; this.camZoom = 1;
     this.loadTextures();
     this.hemi = new T.HemisphereLight(lin(0x9bb8ff), lin(0x0a0d18), 0.55); this.s.add(this.hemi);
     const sun = new T.DirectionalLight(lin(0xfff1e0), 1.35); sun.position.set(9, 15, 12); sun.target.position.set(3, 0, 0); this.s.add(sun, sun.target); this.sun = sun;
@@ -395,6 +395,9 @@ export class Arena {
   }
   /** Ansicht: 'side' (seitlich wie bisher) oder 'back' (Kamera hinter dem Läufer, Schilder drehen sich zur Kamera) */
   setView(v) { this.view = v === 'back' ? 'back' : 'side'; this.applyView(); }
+  /** Spieler-Kamera: dy = Drehen, dp = Neigen, z = Zoomfaktor; resetCam() zurück zur Standardkamera */
+  camMove(dy, dp, z = 1) { this.camYaw = Math.max(-2.6, Math.min(2.6, this.camYaw + dy)); this.camPitch = Math.max(-0.6, Math.min(0.9, this.camPitch + dp)); this.camZoom = Math.max(0.45, Math.min(1.9, this.camZoom * z)); }
+  resetCam() { this.camYaw = this.camPitch = 0; this.camZoom = 1; }
   applyView() { const b = this.view === 'back'; this.s.fog.near = b ? 16 : 24; this.s.fog.far = b ? 44 : 90; this.cam.far = b ? 46 : 220; this.cam.updateProjectionMatrix();   // von hinten: Sichtweite begrenzen (spart Zeichenaufrufe, läuft flüssig)
     for (const s of this.signs) { if (s.userData.z0 == null) s.userData.z0 = s.position.z; s.rotation.y = b ? -Math.PI / 2 : 0; s.position.z = b ? 0 : s.userData.z0; } for (const f of this.vv || []) f(b); }
   /** Lichtring auf dem Wasser unter einer Plattform */
@@ -526,8 +529,14 @@ export class Arena {
     [this.cx, this.cvx] = spring(this.cx, this.cvx, tx, 5.5); [this.cy, this.cvy] = spring(this.cy, this.cvy, ty, 4.2);
     this.shake = Math.max(0, this.shake - dt * 1.4); const sk = this.shake, sx = Math.sin(this.time * 37) * sk * 0.5, sy = Math.sin(this.time * 29 + 1.3) * sk * 0.5;
     const back = this.view === 'back', port = this.cam.aspect < 1;
-    if (back) { this.cam.position.set(this.cx - (port ? 7.2 : 5.6) - 3.0 + sx, this.cy + (port ? 2.6 : 1.9) + sy, 1.1); this.cam.lookAt(this.cx + 6.5 - 3.0, this.cy - 0.3, -0.2); }   // von hinten: Kamera folgt dem Läufer, Blick in den Parcours
-    else { this.cam.position.set(this.cx - 1.4 + sx, this.cy + 2.9 + sy, this.dist); this.cam.lookAt(this.cx, this.cy - 0.1, 0); }
+    const tgt = this._tgt || (this._tgt = new T.Vector3()), off = this._off || (this._off = new T.Vector3());
+    if (back) { this.cam.position.set(this.cx - (port ? 7.2 : 5.6) - 3.0 + sx, this.cy + (port ? 2.6 : 1.9) + sy, 1.1); tgt.set(this.cx + 6.5 - 3.0, this.cy - 0.3, -0.2); }   // von hinten: Kamera folgt dem Läufer, Blick in den Parcours
+    else { this.cam.position.set(this.cx - 1.4 + sx, this.cy + 2.9 + sy, this.dist); tgt.set(this.cx, this.cy - 0.1, 0); }
+    if (this.camYaw || this.camPitch || this.camZoom !== 1) {   // Spieler-Kamera: um den Blickpunkt drehen, neigen, zoomen
+      if (back) tgt.lerp(this.cam.position, 0.55); off.subVectors(this.cam.position, tgt); const r = off.length() * this.camZoom, th = Math.atan2(off.x, off.z) + this.camYaw, ph = Math.max(0.12, Math.min(1.45, Math.acos(off.y / off.length()) - this.camPitch));
+      this.cam.position.set(tgt.x + r * Math.sin(ph) * Math.sin(th), Math.max(0.6, tgt.y + r * Math.cos(ph)), tgt.z + r * Math.sin(ph) * Math.cos(th));
+    }
+    this.cam.lookAt(tgt);
     if (back) for (const g of this.signs) g.visible = g.position.x - this.cam.position.x > 4.5 || g.position.y < this.cam.position.y - 3;   // Schilder kurz vor der Kamera ausblenden statt durchzufahren
     else if (this.signs.length && !this.signs[0].visible) this.signs.forEach(g => g.visible = true);
     const fov = this.baseFov + (back ? 10 : 0) + Math.min(5, Math.abs(vx) * 0.6); if (Math.abs(fov - this.cam.fov) > 0.05) { this.cam.fov += (fov - this.cam.fov) * Math.min(1, dt * 3); this.cam.updateProjectionMatrix(); }
