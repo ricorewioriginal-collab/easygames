@@ -128,3 +128,30 @@ Im Überlebens- und Story-Modus öffnest du das Inventar (E oder 🎒). Unter �
 | 16× Glasscheibe | 6× Glas | – | Formen |
 | 2× Holztür | 6× Bretter | – | Formen |
 | 3× Leiter | 7× Stock | – | Formen |
+| 1× Stuhl | 3× Bretter | Werkbank | Deko |
+| 1× Sessel | 2× Bretter + 3× Wolle | Werkbank | Deko |
+| 1× Hocker | 2× Bretter | Werkbank | Deko |
+| 1× Sofa | 3× Bretter + 5× Wolle | Werkbank | Deko |
+| 1× Tisch | 4× Bretter | Werkbank | Deko |
+| 1× Langer Tisch | 6× Bretter | Werkbank | Deko |
+| 1× Bett | 3× Bretter + 3× Wolle | Werkbank | Deko |
+| 1× Kommode | 6× Bretter | Werkbank | Deko |
+| 1× Regal | 6× Bretter + 1× Bücherregal | Werkbank | Deko |
+| 1× Stehlampe | 1× Eisenbarren + 1× Leuchtblock | Werkbank | Deko |
+| 1× Tischlampe | 1× Kupferbarren + 1× Leuchtblock | Werkbank | Deko |
+| 1× Bücherstapel | 1× Bücherregal | Werkbank | Deko |
+| 1× Bilderrahmen | 2× Bretter + 1× Blütenwiese | Werkbank | Deko |
+| 1× Teppich | 3× Wolle | Werkbank | Deko |
+| 1× Parkbank | 4× Bretter + 1× Eisenbarren | Werkbank | Deko |
+| 1× Straßenlaterne | 3× Eisenbarren + 1× Leuchtblock | Werkbank | Deko |
+| 1× Ampel | 3× Eisenbarren + 1× Neonrot + 1× Neongrün | Werkbank | Deko |
+| 1× Hydrant | 2× Eisenbarren | Werkbank | Deko |
+| 1× Müllcontainer | 4× Eisenbarren | Werkbank | Deko |
+| 1× Busch | 4× Blätter | Werkbank | Deko |
+| 1× Fass | 5× Bretter + 1× Eisenbarren | Werkbank | Deko |
+| 1× Truhe | 6× Bretter + 1× Kupferbarren | Werkbank | Deko |
+| 1× Bierfass | 4× Bretter + 1× Kupferbarren | Werkbank | Deko |
+| 4× Kerzen | 1× Wolle + 1× Kohleerz | Werkbank | Deko |
+| 4× Wandfackel | 1× Stock + 1× Kohleerz | Werkbank | Deko |
+| 1× Banner | 4× Wolle + 1× Stock | Werkbank | Deko |
+| 1× Kistenstapel | 6× Bretter | Werkbank | Deko |

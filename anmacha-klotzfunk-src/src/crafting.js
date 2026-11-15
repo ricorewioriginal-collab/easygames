@@ -100,6 +100,18 @@ RECIPES.push(
   { id: 'door', give: [B.DOOR, 2], need: [[B.PLANKS, 6]] },
   { id: 'ladder', give: [B.LADDER, 3], need: [[I.STICK, 7]] }
 );
+// KayKit-Deko (Etappe 10): Möbel an der Werkbank
+const DK = k => B['DECO_' + k.toUpperCase()];
+RECIPES.push(
+  ...[['chair', [[B.PLANKS, 3]]], ['armchair', [[B.PLANKS, 2], [B.WOOL, 3]]], ['stool', [[B.PLANKS, 2]]], ['couch', [[B.PLANKS, 3], [B.WOOL, 5]]],
+    ['table', [[B.PLANKS, 4]]], ['tablelong', [[B.PLANKS, 6]]], ['bed', [[B.PLANKS, 3], [B.WOOL, 3]]], ['cabinet', [[B.PLANKS, 6]]],
+    ['shelf', [[B.PLANKS, 6], [B.BOOKS, 1]]], ['lamp', [[I.IRON_INGOT, 1], [B.LAMP, 1]]], ['tablelamp', [[I.COPPER_INGOT, 1], [B.LAMP, 1]]], ['books', [[B.BOOKS, 1]]],
+    ['picture', [[B.PLANKS, 2], [B.FLOWERS, 1]]], ['rug', [[B.WOOL, 3]]], ['bench', [[B.PLANKS, 4], [I.IRON_INGOT, 1]]], ['streetlight', [[I.IRON_INGOT, 3], [B.LAMP, 1]]],
+    ['trafficlight', [[I.IRON_INGOT, 3], [B.NEON_R, 1], [B.NEON_G, 1]]], ['hydrant', [[I.IRON_INGOT, 2]]], ['trash', [[I.IRON_INGOT, 4]]], ['bush', [[B.LEAVES, 4]]],
+    ['barrel', [[B.PLANKS, 5], [I.IRON_INGOT, 1]]], ['chest', [[B.PLANKS, 6], [I.COPPER_INGOT, 1]]], ['keg', [[B.PLANKS, 4], [I.COPPER_INGOT, 1]]],
+    ['candles', [[B.WOOL, 1], [B.COAL, 1]]], ['torch', [[I.STICK, 1], [B.COAL, 1]]], ['banner', [[B.WOOL, 4], [I.STICK, 1]]], ['crates', [[B.PLANKS, 6]]]
+  ].map(([k, need]) => ({ id: 'deco_' + k, give: [DK(k), k === 'torch' || k === 'candles' ? 4 : 1], need, st: 'werkbank' }))
+);
 for (const r of RECIPES) r.cat = (ITEMS[r.give[0]] || BLOCKS[r.give[0]]).cat;
 export const STATION_NAMES = { werkbank: 'Werkbank', ofen: 'Schmelzofen' };
 const STATION_ACC = { werkbank: 'eine Werkbank', ofen: 'einen Schmelzofen' };

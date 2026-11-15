@@ -1,7 +1,7 @@
 // Formblöcke: Quader je Block (Stufe, Treppe, Zaun, Mauer, Scheibe, Tür, Leiter) für Mesher, Kollision und Vorschau.
 // get(x, y, z) liefert Block-Ids der Nachbarn (Zäune, Mauern und Scheiben verbinden sich, Leiter und Tür richten sich an Wänden aus).
 // coll = true: Kollisionsform (Zäune ohne Lücken zwischen den Latten); Quader [x0, y0, z0, x1, y1, z1] im Block (0..1).
-import { SHAPE, OPAQUE, BLOCKS, B } from './blocks.js';
+import { SHAPE, OPAQUE, BLOCKS, B, DECO, DECO_DEF } from './blocks.js';
 
 const STAIR = [[0, 0.5, 0, 1, 1, 0.5], [0.5, 0.5, 0, 1, 1, 1], [0, 0.5, 0.5, 1, 1, 1], [0, 0.5, 0, 0.5, 1, 1]];
 const SIDES = [[0, -1], [1, 0], [0, 1], [-1, 0]]; // −z, +x, +z, −x
@@ -52,8 +52,20 @@ export function shapeBoxes(t, get, x, y, z, coll = false) {
     }
     return [[0, 0, 0, 1, 1, d]];
   }
+  if (k === 8) { const d = DECO_DEF[DECO[t]]; return [[0, 0, 0, 1, d && d.solid ? d.solid : 1, 1]]; } // Deko: fest bis zur Oberkante des Modells
   return null;
 }
+
+// Deko-Stück ausrichten: Rückseite an eine Wand; frei stehend zu einem Tisch o. ä. daneben drehen, sonst nach Süden (+z).
+// Rückgabe 0..3 = Vorderseite +z, +x, −z, −x (wie decoMatrix)
+const FRONT_AWAY = { '0,-1': 0, '1,0': 3, '0,1': 2, '-1,0': 1 }, FRONT_TO = { '0,-1': 2, '1,0': 1, '0,1': 0, '-1,0': 3 };
+export function decoRot(get, x, y, z) {
+  for (const [dx, dz] of SIDES) if (OPAQUE[get(x + dx, y, z + dz)]) return FRONT_AWAY[dx + ',' + dz];
+  for (const [dx, dz] of SIDES) { const n = get(x + dx, y, z + dz), d = DECO_DEF[DECO[n]]; if (d && d.top) return FRONT_TO[dx + ',' + dz]; }
+  return 0;
+}
+// Auf einem Tisch/Schrank Gestelltes sitzt auf dessen Oberfläche statt eine Blockhöhe darüber
+export function decoLift(get, x, y, z) { const d = DECO_DEF[DECO[get(x, y - 1, z)]]; return d && d.top ? d.top - 1 : 0; }
 
 // Überschneidet eine Box (Welt-Koordinaten) die Form des Blocks bei (bx, by, bz)?
 export function shapeHits(t, get, bx, by, bz, x0, y0, z0, x1, y1, z1) {

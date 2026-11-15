@@ -193,6 +193,20 @@ Nicht prüfbar: echte Controller (nur simuliert, siehe TESTING.md). Native `conf
 
 Ids 80–146 hinten angehängt, alte Ids unverändert, alte Spielstände laden unverändert (Format speichert nur Ids). Netzwerk: Tür und Treppe gehen über die normalen Blockänderungen.
 
+
+## 2l. Modernisierung, Etappe 10: KayKit-Deko und modernere Optik (1.12.0) ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| KayKit-Deko | 27 Modelle von Kay Lousberg (CC0) aus den Paketen im Repo (Furniture Bits, City Builder Bits, Dungeon): Stuhl, Sessel, Hocker, Sofa, Tisch, langer Tisch, Bett, Kommode, Regal, Steh- und Tischlampe, Bücher, Bilderrahmen, Teppich, Parkbank, Straßenlaterne, Ampel, Hydrant, Müllcontainer, Busch, Fass, Truhe, Bierfass, Kerzen, Wandfackel, Banner, Kistenstapel; neuer Reiter „Deko“, Rezepte an der Werkbank | `src/blocks.js`, `src/crafting.js` |
+| Aufbereitung | `tools/make-deco.py` skaliert auf Blockmaß, quantisiert (16/8 Bit) und packt alles in `public/kaykit/deco.bin` (223 KB) + Atlas `deco.png` (9 KB) + Lizenzen; keine GLTF-Bibliothek im Spiel | `tools/make-deco.py`, `public/kaykit/` |
+| Darstellung | je Chunk und Modell ein InstancedMesh, lädt erst, wenn das erste Stück in Sicht ist; Licht wie die Blöcke (Sonne, Himmelslicht der Zelle), Lampen, Laternen, Kerzen und Fackeln leuchten | `src/deco.js`, `src/mesher.js`, `src/game.js` |
+| Ausrichtung | Rücken zur Wand; frei stehend dreht sich ein Stück zum Tisch daneben (Stühle um den Tisch); Bilder, Fackeln, Banner hängen an der Wand; auf Tisch, Kommode, Truhe usw. Gestelltes sitzt auf deren Oberfläche | `src/shapes.js` |
+| Kollision | Möbel zum Hinsetzen sind begehbar, Tisch, Kommode, Regal, Fass, Truhe, Kisten und Container sind fest bis zur Höhe des Modells | `src/shapes.js` |
+| Optik | Wasser mit wandernden Wellen, Sonnenglitzern und Himmelsspiegelung bei flachem Blick; etwas kräftigere Farben mit weichen Lichtern für Blöcke und Deko | `src/game.js`, `src/deco.js` |
+
+Ids 147–173 hinten angehängt; alte Spielstände unverändert. Die Deko ist offline in der App enthalten (liegt im Build-Ordner).
+
 ---
 
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)

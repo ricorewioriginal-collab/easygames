@@ -61,6 +61,7 @@ Stand und Plan der Weiterentwicklung: [PROGRESS.md](PROGRESS.md). Tests: [TESTIN
 | `src/worldmap.js`, `src/mapui.js` | Weltkarte: entdeckte Gebiete, Markierungen, Funkstationen; Kartenfenster |
 | `src/controls.js` | Tastenbelegung (Tastatur) |
 | `src/shapes.js` | Formblöcke: Quader für Mesher, Kollision (Stufen, Treppen, Zäune, Mauern, Scheiben, Türen, Leitern) |
+| `src/deco.js` | KayKit-Deko: Modelle aus `public/kaykit/deco.bin` laden, je Chunk instanziert zeichnen |
 | `src/gamepad.js` | Controller: Erkennung Xbox/PlayStation/Switch, Tastensymbole, Belegung, Menü-Navigation, Vibration |
 | `src/audio.js` | ein AudioContext: Effekte, Schritte, Tiere, Technik, Radio-Musik (alles erzeugt) |
 | `src/quests.js` | Story-Aufträge |
@@ -68,3 +69,7 @@ Stand und Plan der Weiterentwicklung: [PROGRESS.md](PROGRESS.md). Tests: [TESTIN
 | `src/main.js` | Menüs, HUD, Inventar, Einstellungen, Tastatur/Maus/Touch |
 
 Multiplayer gibt es noch nicht; Planung in [PROGRESS.md](PROGRESS.md).
+
+## Fremde Inhalte
+
+Deko-Modelle: KayKit Furniture Bits, City Builder Bits und Dungeon von Kay Lousberg ([kaylousberg.com](https://www.kaylousberg.com)), Lizenz CC0. Aufbereitet mit `tools/make-deco.py`, Lizenztexte in `public/kaykit/`.

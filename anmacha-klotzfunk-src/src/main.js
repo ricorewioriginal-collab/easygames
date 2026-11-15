@@ -40,6 +40,7 @@ const icon = t => {
   if (isItem(t)) { const k = ITEMS[t] ? ITEMS[t].icon : 0; return `<i class="ic it" style="background-position:${(k % 8) * 100 / 7}% ${itemRows > 1 ? Math.floor(k / 8) * 100 / (itemRows - 1) : 0}%"></i>`; }
   if (isLogo(t)) { const k = t - LOGO0; return `<i class="ic lg" style="background-position:${(k % 4) * 100 / 3}% ${Math.floor(k / 4) * 100 / 3}%"></i>`; }
   if (t === B.RAINBOW) return '<i class="ic rb"></i>';
+  if (BLOCKS[t] && BLOCKS[t].emoji) return `<i class="ic em">${BLOCKS[t].emoji}</i>`; // KayKit-Deko
   const k = BLOCKS[t] ? BLOCKS[t].icon : 0;
   return `<i class="ic" style="background-position:${(k % 8) * 100 / 7}% ${Math.floor(k / 8) * 100 / 15}%"></i>`;
 };
