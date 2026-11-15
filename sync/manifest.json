@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "2c62fbc9ae92",
- "generated": "2026-11-15T02:35:37+01:00",
- "commit": "f3c6fcc99e328cc4652ec2ea60869e2f204cd789",
+ "version": "f11554770247",
+ "generated": "2026-11-15T01:43:35+00:00",
+ "commit": "211bce74e0510ced2a330d6dd722fb865a4e6c16",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10023,8 +10023,8 @@
   },
   {
    "p": "guides/anmacha-klotzfunk.json",
-   "s": 19910,
-   "h": "4f2a1ee357f90ad5b540161619db0e269bb38cdeeb36f9cdc965829e2be05270"
+   "s": 21012,
+   "h": "d3f13626e55fb7c6dd7ad0264bbd3a5dad6b4424f2f5b2a37fa7d47b56599159"
   },
   {
    "p": "guides/anmacha-koffer-dealer.json",
