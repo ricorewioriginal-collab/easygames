@@ -1261,7 +1261,7 @@
   {
    "id": "anmacha-kart",
    "title": "Kart Rush: Weltentour",
-   "desc": "Arcade-Kartrennen in 3D wie auf der Konsole: 27 Strecken, davon 9 in den Welten der easygames (Zotik, Taschi, Bunte Insel, Wolkenhopser …), 10 Cups, Bananen, Steine & Blitze. Volle Controller-Steuerung (PlayStation, Nintendo, Xbox), Touch, Kippen zum Lenken – solo, im Splitscreen oder mit bis zu 4 Handys.",
+   "desc": "Arcade-Kartrennen in 3D wie auf der Konsole: 27 Strecken, davon 9 in den Welten der easygames (Zotik, Taschi, Bunte Insel, Wolkenhopser …), 10 Cups, 28 Fahrer und 10 Karts, Bananen, Steine & Blitze. Volle Controller-Steuerung (PlayStation, Nintendo, Xbox), Touch, Kippen zum Lenken – solo, im Splitscreen oder mit bis zu 4 Handys.",
    "icon": "🏎️",
    "img": "anmacha-kart/card.png",
    "bg": "linear-gradient(145deg,#2a78e8,#00e5ff 50%,#ff2d95)",
@@ -1285,8 +1285,8 @@
      "Mit der Lenkhilfe (Aus, Leicht, Stark) wird das Fahren am Handy einfacher."
     ]
    },
-   "size": 1569488,
-   "files": 26,
+   "size": 3494856,
+   "files": 34,
    "offline": true,
    "cloud": {
     "game": "kart",
