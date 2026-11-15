@@ -155,3 +155,13 @@ Im Überlebens- und Story-Modus öffnest du das Inventar (E oder 🎒). Unter �
 | 4× Wandfackel | 1× Stock + 1× Kohleerz | Werkbank | Deko |
 | 1× Banner | 4× Wolle + 1× Stock | Werkbank | Deko |
 | 1× Kistenstapel | 6× Bretter | Werkbank | Deko |
+| 4× Mondstein | 4× Stein + 1× Funkkristall | Werkbank | Bauen |
+| 4× Mondblätter | 4× Blätter + 1× Funkkristall | Werkbank | Natur |
+| 4× Lebkuchen | 3× Weizen + 1× Ton | Werkbank | Bauen |
+| 4× Zuckerguss | 2× Schnee + 1× Blütenwiese | Werkbank | Bauen |
+| 4× Rosenhecke | 4× Blätter + 1× Blütenwiese | Werkbank | Natur |
+| 4× Akustikschaum | 2× Wolle + 1× Kohleerz | Werkbank | Bauen |
+| 1× On-Air-Schild | 1× Neonrot + 1× Glas | Werkbank | Licht |
+| 1× Goldblock | 1× Kupferblock + 2× Funkkristall | Werkbank | Bauen |
+| 2× Kapselblock | 1× Beton rot + 1× Beton weiß | Werkbank | Bauen |
+| 4× Hohes Gras | 1× Gras | – | Natur |

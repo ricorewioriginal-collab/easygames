@@ -553,6 +553,68 @@ const PAINT = [
       const c = PAINT[8](u, v, x, y); return [c[0] * 0.85, c[1] * 0.8, c[2] * 0.75, 255];
     }
     return [0, 0, 0, 0];
+  },
+  // 100 Mondstein: blauvioletter Stein mit hellen Adern
+  (u, v, x, y) => {
+    const n = fbm(u, v, 4, 3, 200), vein = Math.abs(fbm(u, v, 3, 3, 201) - 0.5);
+    let c = mix([62, 70, 140], [104, 116, 196], n);
+    if (vein < 0.03) c = mix(c, [200, 220, 255], 0.7);
+    return [...add(c, grain(x, y, 100, 8)), 255];
+  },
+  // 101 Mondblätter: Blätter in Mondblau
+  (u, v, x, y) => { const c = PAINT[7](u, v, x, y); return [c[0] * 0.8 + 18, c[1] * 0.8 + 30, Math.min(255, c[1] * 1.3 + 40), c[3]]; },
+  // 102 Lebkuchen: brauner Teig mit Mandeln
+  (u, v, x, y) => {
+    let c = mix([150, 84, 34], [190, 116, 54], fbm(u, v, 5, 3, 202));
+    const k = Math.hypot(((u * 3) % 1) - 0.5, ((v * 3) % 1) - 0.5);
+    if (k < 0.12) c = [238, 220, 184];
+    return [...add(c, grain(x, y, 102, 10)), 255];
+  },
+  // 103 Zuckerguss: weiß mit bunten Streuseln
+  (u, v, x, y) => {
+    let c = mix([236, 226, 234], [252, 246, 250], fbm(u, v, 4, 2, 203));
+    const h = hash(Math.floor(u * 10), Math.floor(v * 10), 204);
+    if (h < 0.16) c = [[230, 80, 120], [90, 170, 230], [250, 200, 60], [120, 200, 110]][Math.floor(h * 25) % 4];
+    return [...add(c, grain(x, y, 103, 5)), 255];
+  },
+  // 104 Rosenhecke: Blätter mit roten Rosen
+  (u, v, x, y) => {
+    const c = PAINT[7](u, v, x, y), r = Math.hypot(((u * 4) % 1) - 0.5, ((v * 4) % 1) - 0.5), k = hash(Math.floor(u * 4), Math.floor(v * 4), 205);
+    if (k < 0.45 && r < 0.2) return [...add([200 - r * 300, 30, 50], grain(x, y, 104, 12)), 255];
+    return [c[0] * 0.85, c[1] * 0.9, c[2] * 0.8, c[3]];
+  },
+  // 105 Akustikschaum: dunkle Noppen
+  (u, v, x, y) => {
+    const fu = (u * 4) % 1, fv = (v * 4) % 1, d = Math.hypot(fu - 0.5, fv - 0.5);
+    return [...add([40 + (0.5 - d) * 40, 42 + (0.5 - d) * 40, 52 + (0.5 - d) * 40], grain(x, y, 105, 6)), 255];
+  },
+  // 106 On-Air-Schild: rot leuchtend mit weißem Balken
+  (u, v, x, y) => {
+    const e = Math.min(u, v, 1 - u, 1 - v);
+    if (e < 0.08) return [60, 20, 24, 255];
+    if (Math.abs(v - 0.5) < 0.12 && u > 0.18 && u < 0.82 && ((u * 10) % 1) < 0.7) return [255, 240, 236, 255];
+    return [...mix([255, 60, 70], [200, 20, 40], Math.hypot(u - 0.5, v - 0.5) * 1.4), 255];
+  },
+  // 107 Goldblock: glänzende Platten
+  (u, v, x, y) => {
+    const e = Math.min(u, v, 1 - u, 1 - v);
+    let c = mix([210, 160, 40], [255, 226, 110], fbm(u, v, 3, 2, 206) * 0.5 + (1 - v) * 0.5);
+    if (e < 0.05) c = add(c, -50); else if (e < 0.09) c = add(c, 30);
+    return [...add(c, grain(x, y, 107, 5)), 255];
+  },
+  // 108 Kapselblock: oben rot, unten weiß, schwarzer Gürtel mit Knopf
+  (u, v, x, y) => {
+    const d = Math.hypot(u - 0.5, v - 0.5);
+    if (d < 0.1) return [240, 240, 240, 255];
+    if (d < 0.15 || Math.abs(v - 0.5) < 0.05) return [30, 30, 36, 255];
+    return [...add(v < 0.5 ? [214, 50, 50] : [236, 236, 240], grain(x, y, 108, 8)), 255];
+  },
+  // 109 Hohes Gras: viele Halme, Rest durchsichtig
+  (u, v, x, y) => {
+    const k = Math.floor(u * 12), h = 0.35 + hash(k, 7, 207) * 0.6, lean = (hash(k, 8, 208) - 0.5) * 0.08 * (1 - v);
+    const cu = (k + 0.5) / 12 + lean;
+    if (1 - v < h && Math.abs(u - cu) < 0.035 * (0.4 + v)) return [...add(mix([60, 120, 40], [130, 190, 80], 1 - v), grain(x, y, 109, 12)), 255];
+    return [70, 130, 50, 0];
   }
 ];
 export const TILE_COUNT = PAINT.length;

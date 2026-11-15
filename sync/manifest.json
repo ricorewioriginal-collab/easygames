@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "2da5747d8afc",
- "generated": "2026-11-15T14:19:13+01:00",
- "commit": "bf53a9e82bb94cd8d883e7541816d21890852d90",
+ "version": "b15994d6fca9",
+ "generated": "2026-11-15T13:19:34+00:00",
+ "commit": "1506dde0d5eb4de5ccdc5115f685e54fe7728362",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2157,19 +2157,19 @@
    "h": "438e0971b06a94827ca4650affff4e10a13a9eae258903a3271226724b204e4c"
   },
   {
-   "p": "anmacha-klotzfunk/assets/index-B1SsNFvH.js",
-   "s": 755271,
-   "h": "5e0b734662e8d2e81411eb1a1592846538f2061fb71660e2a466036e489b0a6a"
+   "p": "anmacha-klotzfunk/assets/index-B-pO-r_b.css",
+   "s": 26049,
+   "h": "107ea61adfe2309189403b4d677d08a250e9d9c15058c25d905786ac6d4f693c"
   },
   {
-   "p": "anmacha-klotzfunk/assets/index-iGvFtR0e.css",
-   "s": 25782,
-   "h": "90230adcf0cae269f3a12378cb60bb86047e80394e783df7d8014393df6bb74a"
+   "p": "anmacha-klotzfunk/assets/index-DRsPKPFh.js",
+   "s": 789696,
+   "h": "97098d74e6c60d9678c1d3dd783f8d6a0e62427e6de3b1c05e8febe24257a68a"
   },
   {
-   "p": "anmacha-klotzfunk/assets/meshworker-BL9OcKGN.js",
-   "s": 20162,
-   "h": "484771f4dd56b97b96a3aa07e3cc84defd03fc18d7616e62c7fa9a801a146540"
+   "p": "anmacha-klotzfunk/assets/meshworker-CtxK2ADg.js",
+   "s": 21299,
+   "h": "7d0b61516182f43c7cbcd088ad4b12542fbfd911ce8180a98e77a322e657cb4c"
   },
   {
    "p": "anmacha-klotzfunk/card.jpg",
@@ -2179,7 +2179,7 @@
   {
    "p": "anmacha-klotzfunk/index.html",
    "s": 24125,
-   "h": "9c30aef0427937310b24e58b1c4ef41b8ac060a3ab40821650ea0dc111607a55"
+   "h": "f1211ce57985e73aac2930786da9e68787371c65ee13a5de4a0b994b58c2383b"
   },
   {
    "p": "anmacha-klotzfunk/kaykit/deco.bin",
@@ -10113,8 +10113,8 @@
   },
   {
    "p": "guides/anmacha-klotzfunk.json",
-   "s": 22019,
-   "h": "de12b9906d7c3f8ec2c052acd758d647fa8d671d61b677f71ae61b642801d1ec"
+   "s": 23314,
+   "h": "57e4525c45007eb709eb223e66eef9b19b9a8e54ae999a1c8cc586a65473f25f"
   },
   {
    "p": "guides/anmacha-koffer-dealer.json",
@@ -13604,7 +13604,7 @@
   {
    "p": "sync/catalog.json",
    "s": 253683,
-   "h": "3740ad6f81e7e586b10ce36e7eccf4d51cf92bca0320bbaf7931234dcf57de6f"
+   "h": "c1a81307e9465aa9d45d37237dd7f068fa23aa8d20325d0cb08f8c98447acb6c"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

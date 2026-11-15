@@ -26,6 +26,7 @@ import { playBreak, playPlace, playDeny, setRadio, playStep, playSplash, playCal
 import { campaignOf, questProgress } from './quests.js';
 import { solve, ON_ID, OFF_ID } from './signal.js';
 import { nearestVillage } from './structures.js';
+import { fanSkip } from './fanworlds.js';
 
 export const DAY_LENGTH = 480; // Sekunden pro Tag
 const REACH = 6;
@@ -338,7 +339,8 @@ export class Game {
     this.leaveMenu();
     // Generator: alte Spielstände (ohne Angabe) behalten exakt ihre Originalwelt
     this.gen = normGen(save.gen);
-    this.world = new World(save.seed, decodeEdits(save.edits), this.gen);
+    this.world = new World(save.seed, decodeEdits(save.edits), this.gen, save.preset);
+    this.preset = this.world.preset;
     this.world.rot = decodeRot(save.rot);
     this.name = save.name; this.seed = save.seed; this.mode = save.mode;
     this.time = save.time ?? 0.08;
@@ -346,7 +348,7 @@ export class Game {
     this.sel = save.sel ?? 0;
     this.inv = save.inv ? { ...save.inv } : { [B.DIRT]: 20, [B.PLANKS]: 10, [B.GLASS]: 4 };
     // neue Story-Welten (Generator 3) spielen „Das große Rauschen“, alte die 15 Aufträge
-    this.story = save.mode === 'story' ? (save.story ? { ...save.story } : { i: 0, p: 0, max: 0, done: false, c: this.gen === 3 ? 'rauschen' : undefined }) : null;
+    this.story = save.mode === 'story' ? (save.story ? { ...save.story } : { i: 0, p: 0, max: 0, done: false, c: this.gen >= 3 ? 'rauschen' : undefined }) : null;
     if (this.story && !this.story.c) delete this.story.c;
     this.sigStats = { receivers: 0, machines: 0, reach: 0, senders: 0 }; this.sigRetry = false;
     if (!save.inv && save.mode === 'survival') {
@@ -357,7 +359,7 @@ export class Game {
     this.handType = -1;
     // Überleben (nur im Überlebensmodus): Gesundheit/Hunger, Werkzeug-Abnutzung, Grab mit verlorenen Sachen
     // Story ab Generator 3 („Das große Rauschen“) spielt mit den Überlebensregeln; alte Story-Welten bleiben wie gehabt
-    this.survival = save.mode === 'survival' || (save.mode === 'story' && this.gen === 3);
+    this.survival = save.mode === 'survival' || (save.mode === 'story' && this.gen >= 3);
     this.vitals = this.survival ? new Vitals(save.vit || {}) : null;
     this.dead = false; this.mine = null; this.player.impact = 0;
     this.dur = {};
@@ -371,10 +373,10 @@ export class Game {
     const g = save.grave;
     this.grave = g && [g.x, g.y, g.z].every(Number.isFinite) && g.inv && typeof g.inv === 'object' ? g : null;
     // Tiere: in Überleben und Kreativ (Story bleibt unverändert)
-    this.mobs = new Mobs(this.world, save.seed, save.mobs, save.mode !== 'story' || this.gen === 3);
-    if (this.gen === 3) this.mobs.findVillages = (px, pz) => { // Dörfer der Region und der Nachbarregionen
+    this.mobs = new Mobs(this.world, save.seed, save.mobs, save.mode !== 'story' || this.gen >= 3);
+    if (this.gen >= 3) this.mobs.findVillages = (px, pz) => { // Dörfer der Region und der Nachbarregionen
       const out = [], rx = regionOf(px), rz = regionOf(pz);
-      for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) { const v = villageIn(this.seed, rx + dx, rz + dz); if (v) out.push(v); }
+      for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) { const v = villageIn(this.seed, rx + dx, rz + dz, this.gen); if (v && !(this.world.preset && fanSkip(rx + dx, rz + dz))) out.push(v); }
       return out;
     };
     this.mobs.onAdd = m => this.mobView.add(m); this.mobs.onRemove = m => this.mobView.remove(m);
@@ -485,7 +487,8 @@ export class Game {
       arm: this.armor.kopf || this.armor.brust ? [this.armor.kopf, this.armor.brust, this.armWear.kopf, this.armWear.brust] : undefined,
       veh: this.vehicles && this.vehicles.list.length ? this.vehicles.serialize() : undefined,
       map: this.map ? this.map.serialize() : undefined,
-      rot: this.world.rot.size ? encodeRot(this.world.rot) : undefined
+      rot: this.world.rot.size ? encodeRot(this.world.rot) : undefined,
+      preset: this.preset || undefined
     };
   }
 
@@ -914,7 +917,7 @@ export class Game {
       s.i++; s.p = 0; s.max = 0;
       if (s.i >= list.length) s.done = true;
       else if (list[s.i].k === 'visit') { // Wegpunkt zum nächsten Dorf
-        const v = nearestVillage(this.seed, this.player.x, this.player.z);
+        const v = nearestVillage(this.seed, this.player.x, this.player.z, 2, this.gen);
         if (v) this.wp = { x: v.x, y: v.y + 1, z: v.z };
       }
       this.unsaved = true; playJingle();

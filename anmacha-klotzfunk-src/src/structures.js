@@ -6,6 +6,7 @@ import { B } from './blocks.js';
 import { CS, H, SEA } from './consts.js';
 import { hash } from './noise.js';
 import { biomeColumn, BIOME } from './worldgen.js';
+import { Plan, bigHouse, cavern, stairTunnel, deco } from './blueprint.js';
 
 export const REGION = 160;
 export const VR = 20;            // Radius des ebenen Dorfplatzes
@@ -30,8 +31,9 @@ function cached(key, f) {
 export const regionOf = v => Math.floor(v / REGION);
 
 // Dorf der Region (rx, rz) oder null
-export function villageIn(seed, rx, rz) {
-  return cached(`v${seed},${rx},${rz}`, () => {
+// gen ≥ 4: große, zweistöckige Häuser (Abstand 13 statt 11), Feld in der Nordost-Ecke
+export function villageIn(seed, rx, rz, gen = 3) {
+  return cached(`v${seed},${rx},${rz},${gen >= 4 ? 4 : 3}`, () => {
     if (hash(rx, rz, seed + 500) > 0.75) return null;
     const x = rx * REGION + 40 + Math.floor(hash(rx, rz, seed + 501) * 80), z = rz * REGION + 40 + Math.floor(hash(rx, rz, seed + 502) * 80);
     const col = {};
@@ -49,14 +51,15 @@ export function villageIn(seed, rx, rz) {
     if (hi - lo > 9) return null;
     const n = 3 + (hash(rx, rz, seed + 503) < 0.5 ? 1 : 0);
     const houses = [];
+    const big = gen >= 4, D = big ? 13 : 11, hd = big ? 6 : 3;
     for (let i = 0; i < n; i++) {
-      const [dx, dz] = DIRS[i], hx = x + dx * 11, hz = z + dz * 11;
-      houses.push({ x: hx, z: hz, dx, dz, door: { x: hx - dx * 3, z: hz - dz * 3 }, front: { x: hx - dx * 5, z: hz - dz * 5 }, role: ROLES[i] });
+      const [dx, dz] = DIRS[i], hx = x + dx * D, hz = z + dz * D;
+      houses.push({ x: hx, z: hz, dx, dz, door: { x: hx - dx * hd, z: hz - dz * hd }, front: { x: hx - dx * (hd + 2), z: hz - dz * (hd + 2) }, role: ROLES[i] });
     }
     const dry = biome === BIOME.DESERT, cold = biome === BIOME.SNOW || biome === BIOME.TAIGA;
     return {
-      id: rx + ',' + rz, x, z, y, biome, houses,
-      field: { x0: x + 6, z0: z - 12, x1: x + 12, z1: z - 6 },
+      id: rx + ',' + rz, x, z, y, biome, houses, big,
+      field: big ? { x0: x + 8, z0: z - 14, x1: x + 14, z1: z - 8 } : { x0: x + 6, z0: z - 12, x1: x + 12, z1: z - 6 },
       mast: { x: x - 9, z: z + 9 },
       top: dry ? B.SAND : biome === BIOME.SNOW ? B.SNOW : B.GRASS,
       wall: dry ? B.SANDSTONE : cold ? B.SPRUCE : B.PLANKS,
@@ -88,11 +91,11 @@ export function mineIn(seed, rx, rz) {
 }
 
 // Nächstes Dorf zum Ursprung (für den Startpunkt), Suche über 5×5 Regionen
-export function nearestVillage(seed, px = 0, pz = 0, r = 2) {
+export function nearestVillage(seed, px = 0, pz = 0, r = 2, gen = 3) {
   const rx0 = regionOf(px), rz0 = regionOf(pz);
   let best = null, bd = Infinity;
   for (let rz = rz0 - r; rz <= rz0 + r; rz++) for (let rx = rx0 - r; rx <= rx0 + r; rx++) {
-    const v = villageIn(seed, rx, rz);
+    const v = villageIn(seed, rx, rz, gen);
     if (!v) continue;
     const d = Math.hypot(v.x - px, v.z - pz);
     if (d < bd) { bd = d; best = v; }
@@ -102,7 +105,8 @@ export function nearestVillage(seed, px = 0, pz = 0, r = 2) {
 
 // Strukturen in einen frisch erzeugten Chunk bauen. onBlock(x, y, z, t) meldet besondere Blöcke (Radio).
 // Rückgabe: höchste belegte y (mindestens maxY)
-export function placeStructures(seed, cx, cz, data, maxY, onBlock) {
+// gen ≥ 4: große Dörfer und Höhlenhallen über Baupläne (blueprint.js), hohes Gras; skip(rx, rz) = Region freihalten (Fanwelt)
+export function placeStructures(seed, cx, cz, data, maxY, onBlock, gen = 3, skip = null) {
   const X0 = cx * CS, Z0 = cz * CS, rx = regionOf(X0), rz = regionOf(Z0);
   let top = maxY;
   const at = (x, y, z) => (x - X0) + (z - Z0) * CS + y * CS * CS;
@@ -115,13 +119,118 @@ export function placeStructures(seed, cx, cz, data, maxY, onBlock) {
   };
   const get = (x, y, z) => (inside(x, z) && y >= 0 && y < H ? data[at(x, y, z)] : B.AIR);
   const hits = (x0, z0, x1, z1) => x1 >= X0 && x0 < X0 + CS && z1 >= Z0 && z0 < Z0 + CS;
+  const free = !(skip && skip(rx, rz));
 
-  const m = mineIn(seed, rx, rz);
+  if (gen >= 4) grass(seed, X0, Z0, data, gen);
+  const m = free ? mineIn(seed, rx, rz) : null;
   if (m && hits(m.x - m.L - 2, m.z - m.L - 2, m.x + m.L + 2, m.z + m.L + 2)) buildMine(seed, m, X0, Z0, set, get);
+  if (!free) return top;
+  if (gen >= 4) {
+    const p = regionPlan(seed, rx, rz);
+    if (p.touches(cx, cz)) top = p.apply(cx, cz, data, (x, z) => biomeColumn(seed, x, z, colTmp).h, top, onBlock);
+    return top;
+  }
   const v = villageIn(seed, rx, rz);
   const R = VR + EDGE;
   if (v && hits(v.x - R, v.z - R, v.x + R, v.z + R)) buildVillage(seed, v, X0, Z0, set, get);
   return top;
+}
+const colTmp = {};
+
+// hohes Gras auf freien Grasflächen (Generator 4)
+function grass(seed, X0, Z0, data) {
+  for (let z = 0; z < CS; z++) for (let x = 0; x < CS; x++) {
+    const r = hash(X0 + x, Z0 + z, seed + 700);
+    if (r > 0.16) continue;
+    for (let y = H - 2; y > SEA; y--) {
+      const t = data[x + z * CS + y * CS * CS];
+      if (t === B.AIR) continue;
+      if (t === B.GRASS && data[x + z * CS + (y + 1) * CS * CS] === B.AIR) data[x + z * CS + (y + 1) * CS * CS] = B.TALLGRASS;
+      break;
+    }
+  }
+}
+
+// Höhlenhalle der Region (Generator 4) oder null: große, begehbare Halle mit Kristallen und einem Treppengang nach oben
+export function caveIn(seed, rx, rz) {
+  return cached(`c${seed},${rx},${rz}`, () => {
+    if (hash(rx, rz, seed + 800) > 0.8) return null;
+    const x = rx * REGION + 50 + Math.floor(hash(rx, rz, seed + 801) * 60), z = rz * REGION + 50 + Math.floor(hash(rx, rz, seed + 802) * 60);
+    const h = biomeColumn(seed, x, z, {}).h, ry = 6 + Math.floor(hash(rx, rz, seed + 803) * 3), r = 12 + Math.floor(hash(rx, rz, seed + 804) * 5);
+    const y = Math.max(10, Math.min(h - ry - 7, 30));
+    if (y + ry + 5 > h || h <= SEA + 1) return null;
+    return { x, y, z, r, ry };
+  });
+}
+
+// Bauplan einer Region (Generator 4): großes Dorf und Höhlenhalle
+export function regionPlan(seed, rx, rz) {
+  return cached(`p${seed},${rx},${rz}`, () => {
+    const p = new Plan(), col = {}, ground = (x, z) => biomeColumn(seed, x, z, col).h;
+    const v = villageIn(seed, rx, rz, 4);
+    if (v) buildBigVillage(seed, v, p);
+    const c = caveIn(seed, rx, rz);
+    if (c) buildCavern(seed, c, p, ground, rx, rz);
+    return p;
+  });
+}
+
+function buildBigVillage(seed, v, p) {
+  const y = v.y;
+  p.pad(v.x - VR, v.z - VR, v.x + VR, v.z + VR, y, v.top, EDGE + 2, true);
+  const style = { wall: v.wall, post: v.post, floor: B.PLANKS, roof: v.wall === B.SANDSTONE ? 'SANDSTONE' : v.wall === B.SPRUCE ? 'DARKPLANKS' : 'BRICK', roofWall: v.wall };
+  // Wege: Platz, Kreuz zu den Häusern
+  p.fill(v.x - 3, y, v.z - 3, v.x + 3, y, v.z + 3, B.PATH);
+  for (const h of v.houses) p.fill(Math.min(v.x, h.front.x), y, Math.min(v.z, h.front.z), Math.max(v.x, h.front.x), y, Math.max(v.z, h.front.z), B.PATH);
+  for (let k = -1; k <= 1; k++) for (const h of v.houses) p.set(h.front.x + h.dz * k, y, h.front.z + h.dx * k, B.PATH);
+  // Brunnen mit Dach
+  p.fill(v.x - 2, y, v.z - 2, v.x + 2, y + 1, v.z + 2, B.COBBLE);
+  p.fill(v.x - 1, y - 2, v.z - 1, v.x + 1, y + 1, v.z + 1, B.WATER);
+  for (const [dx, dz] of [[-2, -2], [2, -2], [2, 2], [-2, 2]]) p.fill(v.x + dx, y + 2, v.z + dz, v.x + dx, y + 4, v.z + dz, B.FENCE);
+  p.fill(v.x - 2, y + 5, v.z - 2, v.x + 2, y + 5, v.z + 2, v.wall === B.SANDSTONE ? B.SANDSTONE : B.DARKPLANKS);
+  p.set(v.x, y + 4, v.z, B.LANTERN);
+  // Laternen und Bänke am Platz
+  for (const [dx, dz] of [[-5, -5], [5, -5], [5, 5], [-5, 5]]) { p.set(v.x + dx, y + 1, v.z + dz, deco('streetlight')); p.set(v.x + dx + Math.sign(dx), y + 1, v.z + dz, deco('bench')); }
+  p.set(v.x - 6, y + 1, v.z + 1, deco('barrel')); p.set(v.x + 6, y + 1, v.z - 1, deco('crates'));
+  // Häuser (zwei Etagen, voll eingerichtet)
+  for (const h of v.houses) bigHouse(p, h.x, y, h.z, -h.dx, -h.dz, style, h.role.key);
+  // Feld mit Wasserrinne und Zaun
+  const f = v.field, wz = (f.z0 + f.z1) >> 1;
+  for (let z = f.z0 - 1; z <= f.z1 + 1; z++) for (let x = f.x0 - 1; x <= f.x1 + 1; x++) {
+    const edge = z < f.z0 || z > f.z1 || x < f.x0 || x > f.x1;
+    if (edge) { if (!(x === f.x0 - 1 && z === wz)) p.set(x, y + 1, z, B.FENCE); continue; }
+    if (z === wz) { p.set(x, y, z, B.WATER); continue; }
+    p.set(x, y, z, B.FARMLAND); p.set(x, y + 1, z, hash(x, z, seed + 510) < 0.7 ? B.WHEAT3 : B.WHEAT2);
+  }
+  // Funkmast
+  p.fill(v.mast.x, y + 1, v.mast.z, v.mast.x, y + 9, v.mast.z, v.post);
+  p.set(v.mast.x, y + 10, v.mast.z, B.LANTERN);
+  p.set(v.mast.x + 1, y + 1, v.mast.z, B.RADIO);
+  // Schafweide des Hirten
+  for (let k = -3; k <= 3; k++) { p.set(v.x - 11 + k, y + 1, v.z - 11 - 3, B.FENCE); p.set(v.x - 11 + k, y + 1, v.z - 11 + 3, B.FENCE); p.set(v.x - 11 - 3, y + 1, v.z - 11 + k, B.FENCE); if (k !== 0) p.set(v.x - 11 + 3, y + 1, v.z - 11 + k, B.FENCE); }
+  p.set(v.x - 11, y + 1, v.z - 11, B.HAY);
+}
+
+function buildCavern(seed, c, p, ground, rx, rz) {
+  const hh = (a, b) => hash(a, b, seed + 810);
+  cavern(p, c.x, c.y, c.z, c.r, c.ry, c.r, hh);
+  // Boden finden, Kristalle, Laternenpfosten, Erz an den Wänden
+  for (let z = c.z - c.r; z <= c.z + c.r; z++) for (let x = c.x - c.r; x <= c.x + c.r; x++) {
+    let fy = -1;
+    for (let y = c.y - c.ry; y <= c.y + c.ry; y++) if (p.get(x, y, z) === B.AIR) { fy = y; break; }
+    if (fy < 0) continue;
+    const r = hash(x, z, seed + 811);
+    if (r < 0.03) p.set(x, fy, z, B.CRYSTAL);
+    else if (r < 0.036) { p.set(x, fy, z, B.FENCE); p.set(x, fy + 1, z, B.FENCE); p.set(x, fy + 2, z, B.LANTERN); }
+    else if (r < 0.05) p.set(x, fy - 1, z, r < 0.042 ? B.IRON : B.COPPER);
+    let ty = -1; for (let y = c.y + c.ry; y >= c.y; y--) if (p.get(x, y, z) === B.AIR) { ty = y; break; }
+    if (ty > 0 && hash(x, z, seed + 812) < 0.02) p.set(x, ty + 1, z, B.CRYSTAL);
+  }
+  // Treppengang zur Oberfläche, weg vom näheren Regionsrand
+  const X0 = rx * REGION, dir = c.x - X0 < REGION / 2 ? 1 : -1, fy = c.y - Math.round(c.ry / 1.5) + 1;
+  const sx = c.x + dir * (c.r - 3);
+  for (let k = 0; k <= Math.abs(c.r - 3); k++) for (let s = -1; s <= 1; s++) for (let yy = fy; yy <= fy + 3; yy++) p.set(c.x + dir * k, yy, c.z + s, B.AIR);
+  stairTunnel(p, sx, fy, c.z, dir, 0, 60, (x, y, z) => y >= ground(x, z));
 }
 
 function buildMine(seed, m, X0, Z0, set, get) {
