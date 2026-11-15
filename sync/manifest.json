@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "8989852df78d",
- "generated": "2026-11-15T22:18:49+01:00",
- "commit": "4ceb6c1c62221fe421eb2a8aa4533618cea4f586",
+ "version": "b59bba301265",
+ "generated": "2026-11-15T22:27:09+01:00",
+ "commit": "e2ce61260d89c4ace3388853fa520ae2337f99c7",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -13142,11 +13142,6 @@
    "h": "7bf62f1ac23c2afbc4d56aa557bfac921785323e3fae1b640810e0c08fd4391c"
   },
   {
-   "p": "riftzone/client/public/heightmap.bin",
-   "s": 1182722,
-   "h": "121bcf27e4e7d5dda62e7ed7e061d76a1f8e4dec907c9978a3a32900d5ef6d97"
-  },
-  {
    "p": "riftzone/client/src/ui/styles.css",
    "s": 30181,
    "h": "28c5e1ddb893c40dd6896ecc6a3d7d5ee09244423276d839b5aecb7a32579129"
@@ -14179,7 +14174,7 @@
   {
    "p": "sync/catalog.json",
    "s": 246301,
-   "h": "d9db287ba25e3a426eda81221d4aca5967a7f3f4a5bbe3051d97dd20409c726d"
+   "h": "266d8a51aa9d92362457b6292152cf960ee8964f0f0869f710a0a4f45dff762a"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
