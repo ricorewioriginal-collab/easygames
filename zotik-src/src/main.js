@@ -2655,7 +2655,7 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
   /* Valdoria laut Skript: Hafen (Schiffe zu allen offenen Welten) und eine eigene Wohnung */
   if(n===3){
     {const hx=30*mir,hz=30,hy=h(hx,hz),g=new T.Group();g.position.set(hx,hy,hz);
-      g.add(mk(G.cyl,new T.MeshStandardMaterial({color:0x2a8ac8,transparent:true,opacity:.75,roughness:.15}),0,.06,4,14,.1,10,false));
+      /* kein Wasserbecken: das Pflaster reicht überall bis zum Kai, eine flache Wasserscheibe schwebte dort über dem Boden und verschluckte Figuren */
       const wd=M(0x8a6440,{r:.9});g.add(mk(G.box,wd,0,.35,-.5,2.4,.3,9));for(let i=0;i<4;i++)g.add(mk(G.cyl0,wd,(i%2?1:-1)*1.1,.2,-4+i*2.6,.15,1.2,.15));
       const boat=new T.Group();boat.add(mk(G.box,M(0xc8a060,{r:.8}),0,.5,0,2.2,.8,5));boat.add(mk(G.cyl0,wd,0,2.6,0,.12,4,.12));boat.add(mk(G.box,M(0xf0e8d8,{r:.9}),.1,3,0,.05,2.4,1.8));boat.position.set(3,0,5);g.add(boat);
       animObjs.push({fn(t){boat.position.y=Math.sin(t*1.3)*.08;boat.rotation.z=Math.sin(t*.9)*.04}});scene.add(g);addCol(hx+3,hz+5,1.4);

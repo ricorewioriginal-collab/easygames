@@ -1,0 +1,4 @@
+3D-Modelle in diesem Ordner (Figuren ad_*.glb, sk_*.glb, anim.glb, room.glb):
+KayKit Adventurers, KayKit Skeletons und KayKit Dungeon Remastered von Kay Lousberg (https://kaylousberg.com)
+Lizenz: CC0 1.0 Universal (gemeinfrei) – https://creativecommons.org/publicdomain/zero/1.0/
+room.glb ist ein verkleinerter Auszug, erzeugt mit tools/make-kartensammlung-kaykit.mjs.

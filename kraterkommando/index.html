@@ -3,26 +3,34 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#0f2233">
+<meta name="theme-color" content="#0a1726">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Kraterkommando">
 <title>Kraterkommando 3D · easygames</title>
-<link rel="icon" type="image/svg+xml" href="card.svg">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="stylesheet" href="style.css?v=31">
-<link rel="stylesheet" href="controls.css?v=31">
-<link rel="stylesheet" href="console.css?v=31">
+<link rel="stylesheet" href="style.css?v=32">
+<link rel="stylesheet" href="controls.css?v=32">
+<link rel="stylesheet" href="console.css?v=32">
+<link rel="stylesheet" href="konsole.css?v=32">
 </head>
 <body class="input-touch">
 <div id="viewport"></div>
-<div id="loading" class="screen active" role="status"><div class="load-copy"><div class="eyebrow">EASYGAMES ORIGINAL</div><h1>KRATER<br><span>KOMMANDO</span></h1><div class="load-track"><i id="progress"></i></div><small id="loadStatus">Initialisiere 3D-Welt</small><p class="load-tip" id="loadTip">Tipp: Wasser ist tödlich – nach dem Schuss bleiben dir 4 Sekunden zum Weglaufen.</p></div></div>
+<div id="loading" class="screen active" role="status">
+  <div class="boot"><img class="boot-logo" src="logo.svg?v=32" alt="Kraterkommando 3D"><div class="load-track"><i id="progress"></i></div><small id="loadStatus">Initialisiere 3D-Welt</small></div>
+  <p class="load-tip" id="loadTip">Tipp: Wasser ist tödlich – nach dem Schuss bleiben dir 4 Sekunden zum Weglaufen.</p>
+  <div class="boot-foot"><span>EASYGAMES ORIGINAL</span><i class="boot-spin" aria-hidden="true"></i></div>
+</div>
 <div id="menu" class="screen">
+  <header class="sysbar"><span class="sys-brand"><img src="icon.svg?v=32" alt="">EASYGAMES</span><span class="sys-right"><span id="sysPad">👆 Touch</span><b id="sysClock">--:--</b></span></header>
   <main class="menu-shell">
-    <header class="menu-logo"><span class="badge">EASYGAMES ORIGINAL</span><h1>KRATER<br><span>KOMMANDO</span></h1><p class="lead">Dein Trupp gegen den Rest der Insel. Bazookas, Schafe, Krater.</p></header>
+    <header class="menu-logo"><h1 class="sr">Kraterkommando 3D</h1><img class="logo-img" src="logo.svg?v=32" alt=""><p class="lead">Dein Trupp gegen den Rest der Insel. Bazookas, Schafe, Krater.</p></header>
     <nav class="menu-list" id="menuList" aria-label="Hauptmenü">
+      <div class="menu-sec">SPIELEN</div>
       <button id="continueGame" class="tile primary" hidden><b class="tile-icon">⏵</b><span>Gefecht fortsetzen<small>Weiter beim gespeicherten Zug</small></span></button>
       <button id="newGame" class="tile primary" data-autofocus><b class="tile-icon">💥</b><span>Gefecht starten<small id="startInfo">Feldzug · Level 1</small></span></button>
+      <div class="menu-sec">GEFECHT EINSTELLEN</div>
       <button class="tile cycler" data-opt="mode" aria-label="Spielmodus"><span class="opt-label">Spielmodus</span><span class="opt-value"><i>◀</i><b id="modeVal">Feldzug</b><i>▶</i></span></button>
       <button class="tile cycler" data-opt="level" id="levelRow" aria-label="Level"><span class="opt-label">Level</span><span class="opt-value"><i>◀</i><b id="levelVal">1</b><i>▶</i></span></button>
       <button class="tile cycler" data-opt="world" id="worldRow" aria-label="Karte"><span class="opt-label">Karte</span><span class="opt-value"><i>◀</i><b id="worldVal">Smaragdinsel</b><i>▶</i></span></button>
@@ -64,10 +72,10 @@
   <div id="botBanner" class="bot-banner" aria-live="polite"><div class="bot-avatar">🤖</div><div><strong>Computer ist am Zug</strong><span id="botAction">Gegner überlegt …</span></div><i aria-hidden="true">•••</i></div>
   <div id="weaponPanel" class="sheet" hidden><div class="sheet-card"><div class="sheet-head"><h2>Waffe wählen</h2><button id="closeWeapon" aria-label="Schließen" data-back>✕</button></div><div id="weaponGrid" class="weapon-grid"></div></div></div>
 </div>
-<div id="pause" class="overlay" hidden><div class="dialog"><span class="eyebrow">PAUSE</span><h2>Kurze Atempause?</h2><button id="resumeBtn" class="primary" data-autofocus data-back>Weiter spielen</button><button id="pauseHelpBtn">🎮 Steuerung</button><button id="pauseSoundBtn">🔊 Spielsound an</button><button id="saveQuitBtn">Hauptmenü (Zugbeginn ist gespeichert)</button><button id="restartBtn">Gefecht neu starten</button></div></div>
+<div id="pause" class="overlay side" hidden><div class="dialog"><span class="eyebrow">⏸ PAUSE</span><h2>Kurze Atempause?</h2><button id="resumeBtn" class="primary" data-autofocus data-back>Weiter spielen</button><button id="pauseHelpBtn">🎮 Steuerung</button><button id="pauseSoundBtn">🔊 Spielsound an</button><button id="saveQuitBtn">Hauptmenü (Zugbeginn ist gespeichert)</button><button id="restartBtn">Gefecht neu starten</button></div></div>
 <div id="result" class="overlay result" hidden><div class="dialog"><span class="eyebrow">GEFECHT BEENDET</span><h2 id="resultTitle">Sieg!</h2><p id="resultText"></p><button id="nextLevelBtn" class="primary" hidden data-autofocus>Nächstes Level ▶</button><button id="againBtn" class="primary">Noch ein Gefecht</button><button id="resultMenuBtn" data-back>Hauptmenü</button></div></div>
 <div id="help" class="overlay" hidden><div class="dialog wide"><div class="dialog-head"><span class="eyebrow">STEUERUNG</span><button class="close" data-back aria-label="Schließen" id="helpClose">✕</button></div>
-  <div class="help-tabs" role="tablist"><button data-help="pad" class="on" data-autofocus>🎮 Controller</button><button data-help="kbd">⌨️ Tastatur</button><button data-help="touch">📱 Touch</button></div>
+  <div class="help-tabs" role="tablist"><span class="tab-hint" id="tabL"></span><button data-help="pad" class="on" data-autofocus>🎮 Controller</button><button data-help="kbd">⌨️ Tastatur</button><button data-help="touch">📱 Touch</button><span class="tab-hint" id="tabR"></span></div>
   <div class="help-body" id="helpBody"></div>
   <p class="help-note">Wasser ist tödlich. Nach dem Schuss bleiben dir 4 Sekunden zum Weglaufen. Controller-Belegung ändern: Select + Start.</p>
 </div></div>
@@ -78,9 +86,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>if(!window.THREE){document.write('<script src="../vendor/three-r128.min.js"><\/script>')}</script>
 <script src="../vendor/three-r128-gltfloader.js"></script>
-<script src="game.js?v=31" defer></script>
+<script src="game.js?v=32" defer></script>
 <script>if('serviceWorker' in navigator && location.protocol==='https:' && location.hostname!=='appassets.local')addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
-<script src="../gamepad.js" data-pad="info dlg=off hud=off" data-pad-labels="ls=Laufen &amp; drehen; rs=Zielen (Richtung &amp; Winkel); rt=Feuer (halten = Kraft); a=Sprung / Bestätigen; b=Salto / Zurück; x=Waffenliste; y=Übersicht; lb=Waffe zurück; rb=Waffe vor; lt=Ziel setzen (halten); dpad=Feinzielen / Menü; select=Zug beenden (halten); start=Pause; r3=Zoom" defer></script>
+<script src="../gamepad.js" data-pad="info dlg=off hud=off" data-pad-labels="ls=Laufen &amp; drehen; rs=Zielen (Richtung &amp; Winkel); rt=Feuer (halten = Kraft); a=Sprung / Bestätigen; b=Salto / Zurück; x=Waffenliste; y=Übersicht; lb=Waffe zurück; rb=Waffe vor; lt=Zielhilfe / Ziel setzen; dpad=Feinzielen / Menü; select=Zug beenden (halten); start=Pause; l3=Kamera; r3=Zoom" defer></script>
 <script src="../egstat.js" defer></script>
 </body>
 </html>

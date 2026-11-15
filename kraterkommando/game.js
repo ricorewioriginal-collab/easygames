@@ -1733,14 +1733,24 @@
   }
 
   // ---------- Eingabe: Controller, Fokus-Navigation, Tasten-Hinweise ----------
-  const PAD = { prev: [], ready: false, dir: null, dirNext: 0, selectAt: 0, ltHeld: false, ltOverview: false, zoom: 1, idx: -1, legendKey: '' };
+  const PAD = { lock: -1, prev: [], ready: false, dir: null, dirNext: 0, selectAt: 0, ltHeld: false, ltOverview: false, zoom: 1, idx: -1, legendKey: '' };
   let padX = 0, padY = 0;
   const GLYPH = {
     xbox: { a: 'A', b: 'B', x: 'X', y: 'Y', lb: 'LB', rb: 'RB', lt: 'LT', rt: 'RT', select: '⧉', start: '☰', ls: 'L', rs: 'R', r3: 'R3', l3: 'L3', dpad: '✚' },
-    ps: { a: '✕', b: '○', x: '□', y: '△', lb: 'L1', rb: 'R1', lt: 'L2', rt: 'R2', select: '⧉', start: '☰', ls: 'L', rs: 'R', r3: 'R3', l3: 'L3', dpad: '✚' },
-    nin: { a: 'B', b: 'A', x: 'Y', y: 'X', lb: 'L', rb: 'R', lt: 'ZL', rt: 'ZR', select: '−', start: '+', ls: 'L', rs: 'R', r3: 'R3', l3: 'L3', dpad: '✚' }
+    ps: { a: '✕', b: '○', x: '□', y: '△', lb: 'L1', rb: 'R1', lt: 'L2', rt: 'R2', select: 'Create', start: 'Options', ls: 'L', rs: 'R', r3: 'R3', l3: 'L3', dpad: '✚' },
+    nin: { a: 'A', b: 'B', x: 'Y', y: 'X', lb: 'L', rb: 'R', lt: 'ZL', rt: 'ZR', select: '−', start: '+', ls: 'L', rs: 'R', r3: 'R3', l3: 'L3', dpad: '✚' }
   };
-  const g = n => `<kbd class="g${padKind === 'ps' ? ' ps' : ''}" data-g="${n}">${GLYPH[padKind][n] || n}</kbd>`;
+  // Nintendo: Bestätigen rechts (A), Zurück unten (B) – gamepad.js tauscht die Knöpfe 0/1 dafür; ohne Tausch liegt B unten auf Knopf 0
+  function padStyle(gp) {
+    const N = window.EasyGamesPadNormal;
+    let kind = N && N.kind ? N.kind() : null;
+    if (!kind) { const id = (gp && gp.id || '').toLowerCase(); kind = /054c|playstation|dualshock|dualsense|sony|wireless controller/.test(id) ? 'ps' : /057e|nintendo|switch|joy-con|pro controller/.test(id) ? 'switch' : 'xbox'; }
+    const swapped = kind === 'switch' && (N && N.swapped ? N.swapped() : true);
+    Object.assign(GLYPH.nin, swapped ? { a: 'A', b: 'B' } : { a: 'B', b: 'A' });
+    return kind === 'switch' ? 'nin' + (swapped ? '' : '0') : kind;
+  }
+  let padStyleKey = 'xbox';
+  const g = n => `<kbd class="g ${padKind}" data-g="${n}">${GLYPH[padKind][n] || n}</kbd>`;
   const k = t => `<kbd class="g k">${t}</kbd>`;
   function setInputMode(mode) {
     if (mode === inputMode) return false;
@@ -1749,7 +1759,7 @@
     document.body.classList.add('input-' + mode);
     if (mode === 'touch' || mode === 'mouse') for (const el of document.querySelectorAll('.nav-focus')) el.classList.remove('nav-focus');
     else { const sc = navScope(); if (sc) ensureFocus(sc); }
-    promptsDirty = true; hudDirty = true;
+    promptsDirty = true; hudDirty = true; padInfo();
     return true;
   }
   let promptsDirty = true, promptScope = null;
@@ -1769,15 +1779,15 @@
     const gp = firstPad();
     if (!gp) { PAD.prev = []; PAD.ready = false; padX = padY = 0; return; }
     const now = gp.buttons.map(b => !!b && (b.pressed || b.value > .5));
+    for (const i of [6, 7]) { const b = gp.buttons[i], v = b ? (b.value > 0 ? b.value : b.pressed ? 1 : 0) : 0; now[i] = v > (PAD.prev[i] ? .12 : .35); }
     const ax = gp.axes.map(v => dz(v || 0));
     if (!PAD.ready) { PAD.prev = []; PAD.ready = true; }
     const hit = i => now[i] && !PAD.prev[i], rel = i => !now[i] && PAD.prev[i];
     const dir = now[12] || ax[1] < -.6 ? 'up' : now[13] || ax[1] > .6 ? 'down' : now[14] || ax[0] < -.6 ? 'left' : now[15] || ax[0] > .6 ? 'right' : null;
     const any = now.some((b, i) => b && !PAD.prev[i]) || ax.some(v => Math.abs(v) > .5);
     if (any) {
-      const id = (gp.id || '').toLowerCase();
-      const kind = /054c|playstation|dualshock|dualsense|sony/.test(id) ? 'ps' : /057e|nintendo|switch|joy-con/.test(id) ? 'nin' : 'xbox';
-      if (kind !== padKind) { padKind = kind; promptsDirty = true; PAD.legendKey = ''; }
+      const style = padStyle(gp), kind = style.slice(0, 3) === 'nin' ? 'nin' : style;
+      if (style !== padStyleKey) { padStyleKey = style; padKind = kind; promptsDirty = true; PAD.legendKey = ''; padInfo(gp); if (helpOpen()) renderHelp(); }
       // Wechsel zum Controller: erster Druck zeigt nur den Fokusrahmen
       if (setInputMode('pad') && navScope()) { PAD.prev = now; PAD.dir = dir; return; }
     }
@@ -1801,7 +1811,7 @@
     if (hit(9) && $('game').classList.contains('active') && active) { togglePause(true); PAD.prev = now; return; }
     if (!playing) { padX = padY = 0; PAD.prev = now; return; }
     const mine = !isBotTurn();
-    padX = mine ? ax[0] : 0; padY = mine ? ax[1] : 0;
+    padX = mine && !charging ? ax[0] : 0; padY = mine && !charging ? ax[1] : 0;   // beim Kraft-Laden steht der Wurm still (wie in klassischen Artillerie-Spielen)
     if (mine) {
       const targeting = NEEDS_TARGET.has(S.weapon) && S.phase === 'aim' && (now[6] || S.weapon !== 'homing');
       // LT halten: Übersicht zum Zielen
@@ -1814,14 +1824,16 @@
       } else if (overview) overviewAz -= rx * dt * 1.8;
       else if (canAct()) {
         const u = activeUnit();
-        if (rx) { S.yaw += rx * Math.abs(rx) * 140 * dt; u.face = S.yaw; }
-        if (ry) S.angle = clamp(S.angle - ry * Math.abs(ry) * 70 * dt, -80, 85);
+        // Kurve: kleiner Ausschlag = feines Zielen, voller Ausschlag = schnelles Drehen
+        if (rx) { S.yaw += rx * Math.abs(rx) * (charging ? 45 : 110) * dt; u.face = S.yaw; PAD.lock = -1; }
+        if (ry) S.angle = clamp(S.angle - ry * Math.abs(ry) * (charging ? 30 : 60) * dt, -80, 85);
       }
       if (canAct()) {
         const u = activeUnit();
         if (now[12] || now[13]) S.angle = clamp(S.angle + (now[12] ? 1 : -1) * 22 * dt, -80, 85);
         if (now[14] || now[15]) { S.yaw += (now[15] ? 1 : -1) * 30 * dt; u.face = S.yaw; }
       }
+      if (hit(6) && !NEEDS_TARGET.has(S.weapon) && canAct()) lockNext();
       if (hit(0)) jump(false);
       if (hit(1)) jump(true);
       if (hit(2) && canAct() && shotsLeft === 0) openWeapons();
@@ -1829,6 +1841,7 @@
       if (hit(4)) cycleWeapon(-1);
       if (hit(5)) cycleWeapon(1);
       if (hit(7)) pressFire();
+      if (charging) padX = padY = 0;
       if (rel(7)) releaseFire();
       if (hit(11)) { PAD.zoom = (PAD.zoom + 1) % 3; camDistance = [9, innerWidth < innerHeight ? 15 : 12.5, 20][PAD.zoom]; }
       if (hit(10)) { overview = false; $('viewBtn').classList.remove('selected'); cameraAz = S.yaw; }
@@ -1843,6 +1856,18 @@
     PAD.prev = now;
   }
   const rs = v => Math.abs(v || 0) > .3;
+  // Zielhilfe: dreht zum nächsten Gegner, jeder weitere Druck zum nächsten (nach Entfernung sortiert)
+  function lockNext() {
+    const u = activeUnit(); if (!u) return;
+    const foes = S.units.filter(v => alive(v) && v.team !== u.team).sort((a, b) => Math.hypot(a.x - u.x, a.z - u.z) - Math.hypot(b.x - u.x, b.z - u.z));
+    if (!foes.length) return;
+    PAD.lock = (PAD.lock + 1) % foes.length;
+    const v = foes[PAD.lock], d = Math.hypot(v.x - u.x, v.z - u.z);
+    S.yaw = Math.atan2(v.x - u.x, -(v.z - u.z)) * 180 / Math.PI; u.face = S.yaw;
+    if (overview) { overview = false; $('viewBtn').classList.remove('selected'); }
+    announce('🎯 ' + v.name + ' · ' + Math.round(d) + ' m · ' + GLYPH[padKind].rs + '-Stick = Winkel', 1500);
+    sound(760, .05, 'triangle', .02); rumble(.05, .2, 40);
+  }
   function defaultTarget() {
     const u = activeUnit(); if (!u) return;
     let t;
@@ -1890,8 +1915,7 @@
     const tgt = S && NEEDS_TARGET.has(S.weapon);
     const key = padKind + (tgt ? 't' : '') + (S && S.weapon);
     if (key === PAD.legendKey) return; PAD.legendKey = key;
-    const items = [[g('rt'), 'Feuer (halten)'], [g('rs'), tgt && S.weapon !== 'homing' ? 'Ziel bewegen' : 'Zielen'], [g('a'), 'Sprung'], [g('b'), 'Salto'], [g('x'), 'Waffen'], [g('y'), 'Übersicht']];
-    if (tgt) items.push([g('lt'), 'Ziel setzen']);
+    const items = [[g('rt'), 'Feuer (halten)'], [g('rs'), tgt && S.weapon !== 'homing' ? 'Ziel bewegen' : 'Zielen'], [g('lt'), tgt ? 'Ziel setzen' : 'Zielhilfe'], [g('a'), 'Sprung'], [g('b'), 'Salto'], [g('x'), 'Waffen'], [g('y'), 'Übersicht']];
     $('padLegend').innerHTML = items.map(([a, b]) => `<span>${a}${b}</span>`).join('') + `<span class="hold">${g('select')}Zug beenden <i><b></b></i></span><span>${g('start')}Pause</span>`;
   }
   // Fokus-Navigation (Controller, Tastatur, TV-Fernbedienung)
@@ -2003,15 +2027,27 @@
   function helpTab(d) { const order = ['pad', 'kbd', 'touch']; helpMode = order[(order.indexOf(helpMode) + d + 3) % 3]; renderHelp(); }
   function renderHelp() {
     for (const b of document.querySelectorAll('[data-help]')) b.classList.toggle('on', b.dataset.help === helpMode);
+    $('tabL').innerHTML = g('lb'); $('tabR').innerHTML = g('rb');
     const rows = {
-      pad: [[g('ls'), 'Laufen & drehen'], [g('rs'), 'Zielen: Richtung & Winkel'], [g('rt'), 'Feuer – halten für mehr Kraft'], [g('a'), 'Sprung nach vorn'], [g('b'), 'Salto rückwärts'], [g('x'), 'Waffenliste'],
-        [g('lb') + g('rb'), 'Waffe wechseln'], [g('y'), 'Übersicht der Karte'], [g('lt'), 'Ziel setzen (Luftangriff, Teleporter, Zielsuchrakete)'], [g('dpad'), 'Feinzielen'], [g('r3'), 'Zoom'], [g('select'), 'Halten: Zug beenden'], [g('start'), 'Pause'], [g('a') + g('b'), 'Im Menü: Bestätigen / Zurück']],
+      pad: [[g('ls'), 'Laufen & drehen'], [g('rs'), 'Zielen: Richtung & Winkel (fein bei wenig Ausschlag)'], [g('rt'), 'Feuer – halten = Kraft, loslassen = Schuss'], [g('lt'), 'Zielhilfe: zum nächsten Gegner drehen · bei Luftangriff & Co. Ziel setzen'],
+        [g('a'), 'Sprung nach vorn'], [g('b'), 'Salto rückwärts'], [g('x'), 'Waffenliste'], [g('y'), 'Übersicht der Karte'], [g('lb') + g('rb'), 'Waffe wechseln'], [g('dpad'), 'Feinzielen (Winkel ↕, Richtung ↔)'],
+        [g('l3'), 'Kamera hinter den Wurm'], [g('r3'), 'Zoom'], [g('select'), 'Halten: Zug beenden'], [g('start'), 'Pause'], [g('a') + g('b'), 'Menü: Bestätigen / Zurück'], [g('lb') + g('rb'), 'Menü: Reiter wechseln']],
       kbd: [[k('W') + k('S'), 'Laufen'], [k('A') + k('D'), 'Drehen'], [k('↑') + k('↓'), 'Winkel'], [k('Leertaste'), 'Feuer – halten für mehr Kraft'], [k('Enter'), 'Sprung'], [k('⌫'), 'Salto'], [k('Tab'), 'Waffenliste'],
         [k('1') + '–' + k('0'), 'Waffe direkt'], [k('V'), 'Übersicht'], [k('Esc'), 'Pause'], ['🖱️', 'Ziehen = zielen, Klick = Ziel, Rad = Zoom'], [k('↑↓') + k('Enter'), 'Menüs & TV-Fernbedienung']],
       touch: [['🕹️', 'Stick: laufen & drehen'], ['👆', 'Bildschirm ziehen: drehen & Winkel'], ['🎯', 'Gegner/Boden antippen: hindrehen oder Ziel setzen'], ['🔴', 'FEUER halten = Kraft'], ['↗ ⤺', 'Sprung / Salto'], ['»', 'Zug beenden'], ['🤏', 'Zwei Finger: Zoom'], ['👁', 'Übersicht']]
     }[helpMode];
     $('helpBody').innerHTML = rows.map(([a, b]) => `<div><span>${a}</span><span>${b}</span></div>`).join('');
   }
+  function helpOpen() { return !$('help').hidden; }
+  // Statusleiste wie an der Konsole: Eingabegerät und Uhrzeit
+  const PAD_NAMES = { xbox: 'Xbox-Controller', ps: 'PlayStation-Controller', nin: 'Switch-Controller' };
+  function padInfo() {
+    const el = $('sysPad'); if (!el) return;
+    const t = { pad: '🎮 ' + PAD_NAMES[padKind], kbd: '⌨️ Tastatur', mouse: '🖱️ Maus', touch: '👆 Touch' }[inputMode] || '';
+    if (el.textContent !== t) el.textContent = t;
+    document.body.dataset.pad = padKind;
+  }
+  function clockTick() { const d = new Date(), el = $('sysClock'); if (el) el.textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
   function openHelp() { helpMode = inputMode === 'pad' ? 'pad' : inputMode === 'touch' ? 'touch' : 'kbd'; renderHelp(); $('help').hidden = false; afterOverlay(); }
 
   // ---------- Menü & Start ----------
@@ -2195,7 +2231,9 @@
     document.addEventListener('visibilitychange', () => { if (document.hidden && active && !paused) togglePause(true); });
     addEventListener('gamepadconnected', () => { PAD.ready = false; });
     $('continueGame').hidden = !read();
-    refreshMenu();
+    refreshMenu(); padInfo(); clockTick(); setInterval(clockTick, 15000);
+    // Eigene Hilfe statt der allgemeinen Belegungs-Einblendung von gamepad.js
+    addEventListener('easygames:pad', e => { if (e.detail && e.detail.on) setTimeout(() => { try { window.EasyGamesPad && EasyGamesPad.showLegend(0); } catch (_) {} }, 0); });
     if (/[?&]test\b/.test(location.search)) window.KK = { get S() { return S; }, startGame, useWeapon, selectWeapon, endTurn, explode, height, get phase() { return S && S.phase; }, set yaw(v) { S.yaw = v; }, setTime: v => { S.seconds = v; }, set autoplay(v) { autoplay = v; },
       tick(n, dt = 1 / 30) { for (let i = 0; i < n && active; i++) { update(dt); updateParticles(dt); if (hudDirty) updateHud(); } return S.phase; },
       stats: () => ({ projectiles: projectiles.length, particles: particles.length, events: events.length, scene: scene.children.length, bot: bot && bot.stage }),

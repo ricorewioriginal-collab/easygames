@@ -77,7 +77,7 @@
     { id: 'kart-hoppel', n: 'Hoppel', sp: 'dive', d: 'Hoppelt, hüpft, haut.', stats: { walk: 2.8, weight: .85 }, look: { kind: 'beast', skin: '#fff0f6', top: '#ffd0e4', bottom: '#fff0f6', shoes: '#ffa0c8', ears: 'bunny', snout: '#ffffff', fx: '#ffa0c8' } }
   ]);
   // Winzflitzer 3D
-  add('winzflitzer', 'Winzflitzer 3D', [
+  add('winzflitzer', 'Kart Rush · Winzflitzer', [
     { id: 'wf-rosa', n: 'Rosa', sp: 'rush', d: 'Amtierende Küchentisch-Meisterin.', stats: { speed: 1.08 }, look: { skin: '#f2c6a4', top: '#e74c3c', bottom: '#2c2c3a', shoes: '#ffffff', hair: { style: 'pony', color: '#7a2a1a' }, hat: { type: 'cap', color: '#e74c3c' }, fx: '#e74c3c' } },
     { id: 'wf-jaro', n: 'Jaro', sp: 'rush', d: 'Kennt keine Bremse. Wirklich keine.', stats: { walk: 2.9 }, look: { skin: '#d9a47a', top: '#2f8bff', bottom: '#1b2a4a', shoes: '#ffffff', hair: { style: 'curly', color: '#1b1b1b' }, fx: '#2f8bff' } },
     { id: 'wf-lotte', n: 'Lotte', sp: 'shot', d: 'Fährt immer die Ideallinie.', stats: {}, look: { skin: '#f5d0b5', top: '#ff3b6b', bottom: '#2c3554', shoes: '#ff3b6b', hair: { style: 'bob', color: '#e8c25a' }, glasses: '#333333', fx: '#ff3b6b' } }

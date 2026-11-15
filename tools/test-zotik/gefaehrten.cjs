@@ -16,7 +16,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); 
   ok(!!(await p.evaluate(() => __zotik.CUT.ENDING_SACRIFICE && __zotik.CUT.LUN_FUTURE)), 'Opfer-Ende „Allein hinübergehen“ und Prolog sind als Szenen da');
 
   // Gefährten aufnehmen, Kapitel 1–3 fertig
-  await p.evaluate(() => { const Z = __zotik, S = Z.S(); S.stage = 8; S.lvl = 30; S.party = ['lyra', 'nia', 'rovan']; for (let k = 2; k <= 3; k++) S.cd[k] = { st: 7, fin: 1, bd: 1, arr: 1, e1: 1, e2: 1, k: 0, b: [0, 0, 0], ord: 0 }; });
+  await p.evaluate(() => { const Z = __zotik, S = Z.S(); S.stage = 8; S.lvl = 30; S.party = ['lyra', 'nia', 'rovan']; for (let k = 2; k <= 6; k++) S.cd[k] = { st: 7, fin: 1, bd: 1, arr: 1, e1: 1, e2: 1, k: 0, b: [0, 0, 0], ord: 0 }; });
   // Bindung wächst durch Kämpfe
   const b0 = await p.evaluate(() => __zotik.LF().bond('nia'));
   await p.evaluate(() => { const L = __zotik.LF(); for (let i = 0; i < 4; i++) L.kill({ d: { boss: true } }); });

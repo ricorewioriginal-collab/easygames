@@ -430,18 +430,7 @@ window.EASYGAMES_GUIDES = {
    "Dame: Bei Mehrfachsprüngen direkt das letzte Zielfeld antippen."
   ]
  },
- "anmacha-kartenrausch": {
-  "anleitung": "Sammlung von sechs Kartenspielen in 3D. Vor dem Start wählst du das Spiel und deine 3D-Figur. Stapelrausch: Zahlentürme von 1 bis 12 bauen und als Erste:r den Zielstapel (15 oder 30 Karten) leeren; Sterne sind Joker. Farbflash: Karte gleicher Farbe oder gleichen Zeichens ablegen, Aktionskarten (Aussetzen, Richtungswechsel, +2, Farbwahl, +4) nutzen – wer zuerst keine Karte mehr hat, gewinnt. Phasenjagd: 10 Phasen aus gleichen Zahlen, Folgen und Farben nacheinander erfüllen (oder kurz 5). Mau-Mau: Farbe oder Wert bedienen; 7 = zwei ziehen, 8 = aussetzen, Bube = Wunschfarbe. Schwimmen: mit der Mitte tauschen und 31 Punkte in einer Farbe sammeln; wer am wenigsten hat, verliert ein Leben. Kartendomino: von den Siebenern aus Reihen je Farbe nach oben und unten anlegen. Du spielst gegen 1 bis 3 Computer-Gegner, zu 2 bis 4 an einem Gerät, 🌐 online mit Code, Link oder QR (bis 4 Spieler) oder mit 📺 TV + Handys: Fernseher oder PC zeigt den Tisch, jedes Handy nur die eigenen Karten. Jedes Spiel erklärt sich beim ersten Start; die Anleitung ist jederzeit unter ? zu finden.",
-  "steuerung": [
-   "PC: Karte anklicken, dann das Ziel anklicken (Turm, Ablage oder Auslage). Knöpfe unter dem Tisch zum Ziehen, Auslegen oder Behalten.",
-   "Touch: Karte antippen, dann Ziel antippen. Passende Karten leuchten. Beim Spielen an einem Gerät erscheint nach jedem Zug ein Übergabe-Bildschirm; ? zeigt die Anleitung, ☰ das Menü.",
-   "Controller: Der rechte Stick bewegt einen Zeiger, A klickt auf Karten und Ziele; in Menüs springt das Steuerkreuz zwischen den Knöpfen."
-  ],
-  "tipps": [
-   "Stapelrausch: Ein Zug endet, wenn du eine Handkarte auf eine deiner 4 Ablagen legst.",
-   "Phasenjagd: Nach dem Auslegen darfst du Karten an alle Auslagen anlegen – so wirst du deine Hand schneller los."
-  ]
- },
+ "anmacha-kartensammlung": {"anleitung": "Sammlung von zwölf Kartenspielen in 3D: Am Tavernentisch sitzen echte KayKit-Figuren (Ritter, Barbar, Magierin, Jäger, Schurkin, Schatten, Knochenritter, Knochenhexe), die beim Ziehen, Ablegen und Gewinnen reagieren. Stapelrausch: Zahlentürme von 1 bis 12 bauen und den Zielstapel leeren, Sterne sind Joker. Farbflash: gleiche Farbe oder gleiches Zeichen ablegen, Aktionskarten nutzen. Phasenjagd: 10 Phasen aus Zwillingen, Folgen und Farben. Mau-Mau: 7 = zwei ziehen, 8 = aussetzen, Bube = Wunschfarbe. Schwimmen: 31 Punkte in einer Farbe sammeln. Kartendomino: von den Siebenern aus Reihen anlegen. Siebzehn und Vier: so nah wie möglich an 21, ohne drüber, gegen die Bank. Schwarzer Peter: Paare ablegen, beim Nachbarn ziehen, am Ende nicht den Peter halten. Paare: Memo mit 32 Karten. Dazu Solitär mit Patience, Spider und FreeCell. Modi: gegen 1–3 Computer, an einem Gerät, 🌐 online per Code, Link oder QR, 📺 TV + Handys, ⚡ Schnellstart und 🏆 Turnier über mehrere Spiele.", "steuerung": ["Controller (PlayStation/Switch/Xbox): Steuerkreuz oder linker Stick bewegt den Rahmen, ✕/B/A wählt und legt, ○/A/B zurück, □/Y/X, △/X/Y und R2/ZR für Spielaktionen, L1/R1 bzw. L/R wechseln Spiel oder Hand, Options/+ Pause, Share/− Anleitung. Die Tastenbilder passen sich dem angeschlossenen Controller an.", "Tastatur: Pfeile bewegen, Enter/Leertaste bestätigen, Esc/Rücktaste zurück, X, Y, R oder 1, 2, 3 für Spielaktionen, Q/E wechseln, P Pause, H Anleitung.", "Touch & Maus: Karte antippen, dann Ziel antippen; Knöpfe unten für Ziehen, Auslegen, Behalten."], "tipps": ["Im Menü Einstellungen kannst du die Tastenbilder (PlayStation, Switch, Xbox) festlegen und die Bestätigen-Taste wie bei Nintendo tauschen.", "„Sparsam“ in den Einstellungen bewegt die Figuren nur bei Aktionen – schont Akku und alte Geräte.", "Turnier: Ein Sieg bringt 3 Punkte, wer nach allen Runden vorne liegt, gewinnt."]},
  "gay-life": {
   "anleitung": "GayLife ist eine 3D-Lebenssimulation in der Stadt Rainbow City (Regenbogenkiez und weitere Viertel) für Erwachsene. Du achtest auf Essen, Schlaf, Dusche und Menschen, verdienst Geld mit Jobs, lernst Bewohner kennen, gehst auf Dates, richtest deine Wohnung ein und spielst Minispiele und eine Hauptgeschichte. Alle Figuren sind frei erfunden; bis zu 4 Spieler können sich per PIN oder QR-Code besuchen.",
   "steuerung": [
@@ -505,19 +494,6 @@ window.EASYGAMES_GUIDES = {
    "Achte auf Endungen wie -EN, -ER, -ES und -TE: Aus einem gefundenen Wort werden oft mehrere.",
    "Lange Wörter lohnen sich: ein Wort mit 8 Buchstaben bringt so viel wie zwölf Wörter mit 3.",
    "Online mit „doppelt zählt nicht“: Suche lieber die ungewöhnlichen Wörter, die die anderen übersehen."
-  ]
- },
- "anmacha-solitaire": {
-  "anleitung": "AnMaCha Solitaire vereint drei Kartenspiele für eine Person mit AnMaCha-Karten. Patience: In 7 Spalten absteigend in wechselnden Farben bauen (rot auf schwarz), leere Spalten nehmen nur Könige; Ziel sind die 4 Ablagen von Ass bis König. Vom Stapel deckst du 1 oder 3 Karten auf; mit „nur lösbare“ ist jede Partie garantiert lösbar. Spider: Zwei Kartenspiele in 10 Spalten, Karten auf eine um eins höhere legen, verschieben lassen sich aber nur Reihen derselben Farbe; komplette Reihen König bis Ass werden abgelegt; mit 1, 2 oder 4 Farben. FreeCell: alle Karten offen, 4 freie Zellen, absteigend in wechselnden Farben. Unbegrenzt rückgängig, Tipps, sichere Karten werden automatisch abgelegt und am Ende legt ⚡ alles von selbst ab. Täglich gibt es ein Tagesspiel (lösbare Patience). Siege, Bestzeiten und der Spielstand werden gespeichert, mit Google-Konto auf allen Geräten.",
-  "steuerung": [
-   "Touch & Maus: Karten ziehen oder einfach antippen – sie springen an die beste Stelle. Stapel antippen zieht neue Karten. ↶ rückgängig, 💡 Tipp, ⚡ automatisch fertig.",
-   "Tastatur: Pfeile bewegen den Rahmen, Leertaste/Enter nimmt Karten auf und legt sie ab, F legt automatisch, D zieht vom Stapel, Z rückgängig, H Tipp, A automatisch fertig, Rücktaste abbrechen (ohne aufgenommene Karte: Zug zurück), Esc Menü.",
-   "Gamecontroller: Steuerkreuz bewegt den Rahmen, A aufnehmen/ablegen, X automatisch legen, Y Stapel ziehen, B abbrechen (ohne aufgenommene Karte: Zug zurück), LB rückgängig, RB Tipp, Select automatisch fertig, Start Menü."
-  ],
-  "tipps": [
-   "Patience: Decke zuerst verdeckte Karten in den langen Spalten auf und leere Spalten nur, wenn du einen König dafür hast.",
-   "Spider: Baue möglichst Reihen derselben Farbe – nur die lassen sich später gemeinsam verschieben.",
-   "FreeCell: Halte freie Zellen und leere Spalten frei; jede verdoppelt, wie viele Karten du auf einmal bewegen kannst."
   ]
  },
  "saftblitz": {
@@ -885,19 +861,6 @@ window.EASYGAMES_GUIDES = {
    "Mit 🎥 bzw. C/Y siehst du die ganze Bahn von oben – ideal, um Bandenschläge zu planen.",
    "Bei beweglichen Hindernissen den richtigen Moment abwarten: lieber einmal mehr hinsehen als im Wasser landen.",
    "Zu schnell springt der Ball über das Loch – kurz vor dem Loch sanft einlochen."
-  ]
- },
- "winzflitzer": {
-  "anleitung": "Winzflitzer 3D ist ein Micro-Rennspiel: Winzige Fahrzeuge rasen über riesige Alltagswelten – Frühstückstisch, Schreibtisch, Badewanne, Garten, Sandkasten, Billardtisch, Werkbank und Kinderzimmer, je 3 Strecken. Jede Welt hat ihr Fahrzeug: Sportflitzer, Formel-Winzlinge, Speedboote, Hubschrauber, Geländewagen, Kugelflitzer, Panzer (können schießen) und Monstertrucks. Wer von der Tischkante fällt oder die Strecke verlässt, wird zurückgesetzt und verliert Zeit. Pinke Pfeil-Streifen geben Turbo, Milch, Öl und Seife sind rutschig, Honig und Sägespäne bremsen, der Abfluss-Strudel zieht dich mit; über Lücken kommst du nur mit Schwung. Meisterschaft: 24 Rennen gegen je 3 Gegner, Platz 1 oder 2 bringt dich weiter, sonst kostet es ein Leben; der letzte Computer-Fahrer scheidet aus, nach jedem dritten Rennen gibt es eine Bonusrunde um ein Extraleben. Kopf-an-Kopf: Du gegen einen Gegner auf einem Bildschirm – wer zurückfällt und aus dem Bild gerät, verliert ein Licht; mit allen 8 Lichtern gewinnst du das Duell, 11 Gegner warten der Reihe nach. Mehrspieler: 2–4 Spieler an einem Gerät (Tastatur zu zweit, Controller, Touch), optional mit Computer-Fahrern, Ziel 3, 5 oder 8 Punkte. Dazu Einzelrennen und Zeitfahren mit dem Geist deiner besten Runde.",
-  "steuerung": [
-   "Tastatur: ↑ Gas, ↓ Bremse/Rückwärts, ← → lenken (aus Sicht des Fahrers), Leertaste oder Enter schießen (Panzer), Esc Pause. Zu zweit schießt der Pfeiltasten-Spieler mit Enter, Shift rechts, Strg rechts oder Punkt, der WASD-Spieler mit Leertaste, Shift links, Q oder E.",
-   "Gamecontroller: linker Stick oder Steuerkreuz lenkt, A oder RT Gas, B oder LT Bremse, X, Y oder RB schießen, Start Pause. In den Einstellungen „Stick-Richtung“: der Flitzer fährt dorthin, wohin der Stick zeigt.",
-   "Touch: links den Stick in die gewünschte Fahrtrichtung ziehen – der Flitzer gibt selbst Gas und lenkt; rechts Bremse und 💥 (Panzer). In den Einstellungen gibt es auch klassische Tasten (◀ ▶, Gas, Bremse)."
-  ],
-  "tipps": [
-   "Vor engen Kurven kurz vom Gas – wer zu schnell ist, rutscht über die Tischkante.",
-   "Turbo-Streifen vor Rampen nutzen: Über die Lücken auf dem Schreibtisch und im Kinderzimmer kommst du nur mit vollem Tempo.",
-   "Im Duell vorne bleiben: Die Kamera folgt dem Führenden – wer hinten aus dem Bild fällt, verliert das Licht."
   ]
  },
  "funkmaler": {

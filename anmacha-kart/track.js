@@ -121,7 +121,9 @@ const Track = (() => {
   // Battle-Arenen: kurze, sehr breite Rundkurse mit Mittelinsel (eigene Layouts), nur für den Battle-Modus
   [{ id: 'arena-funk', name: 'Funkturm-Arena', base: 0, w: 40, poly: [[-120, -120, 72], [120, -120, 72], [120, 120, 72], [-120, 120, 72]] },
    { id: 'arena-neon', name: 'Neon-Kessel', base: 4, w: 40, poly: [[0, -150, 60], [130, -75, 60], [130, 75, 60], [0, 150, 60], [-130, 75, 60], [-130, -75, 60]] },
-   { id: 'arena-sand', name: 'Sandburg-Ring', base: 1, w: 38, poly: [[-170, -95, 70], [170, -95, 70], [170, 95, 70], [-170, 95, 70]] }
+   { id: 'arena-sand', name: 'Sandburg-Ring', base: 1, w: 38, poly: [[-170, -95, 70], [170, -95, 70], [170, 95, 70], [-170, 95, 70]] },
+   { id: 'arena-eis', name: 'Eiskristall-Kuppel', base: 6, w: 40, poly: [[0, -160, 64], [113, -113, 64], [160, 0, 64], [113, 113, 64], [0, 160, 64], [-113, 113, 64], [-160, 0, 64], [-113, -113, 64]] },
+   { id: 'arena-lava', name: 'Lava-Krater', base: 5, w: 38, poly: [[0, -165, 70], [150, 90, 70], [-150, 90, 70]] }
   ].forEach(a => DEFS.push(Object.assign({}, DEFS[a.base], a, { arena: true, profile: [[0, 0], [1, 0]], mechanic: undefined, world: undefined, _pts: undefined, pts: undefined })));
   const SP = 3;                                       // Abstand der Abtastpunkte in Metern
   function cr(p0, p1, p2, p3, t) { const t2 = t * t, t3 = t2 * t; return [0, 1].map(k => 0.5 * ((2 * p1[k]) + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3)); }
