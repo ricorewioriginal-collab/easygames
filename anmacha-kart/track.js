@@ -118,6 +118,11 @@ const Track = (() => {
     { name: 'Kaffee-Cup', icon: '☕', tracks: [27, 28, 29] }, { name: 'Kuchen-Cup', icon: '🍰', tracks: [30, 31, 32] }, { name: 'Großer Rentenpokal', icon: '🏆', tracks: [29, 32, 28, 30] }];
   // Alle-Strecken-Cup: jede Strecke einmal, Punkte über die ganze Tour
   CUPS.push({ name: 'Weltentour-Cup (alle Strecken)', icon: '🌍', all: true, tracks: DEFS.map((_, i) => i) });
+  // Battle-Arenen: kurze, sehr breite Rundkurse mit Mittelinsel (eigene Layouts), nur für den Battle-Modus
+  [{ id: 'arena-funk', name: 'Funkturm-Arena', base: 0, w: 40, poly: [[-120, -120, 72], [120, -120, 72], [120, 120, 72], [-120, 120, 72]] },
+   { id: 'arena-neon', name: 'Neon-Kessel', base: 4, w: 40, poly: [[0, -150, 60], [130, -75, 60], [130, 75, 60], [0, 150, 60], [-130, 75, 60], [-130, -75, 60]] },
+   { id: 'arena-sand', name: 'Sandburg-Ring', base: 1, w: 38, poly: [[-170, -95, 70], [170, -95, 70], [170, 95, 70], [-170, 95, 70]] }
+  ].forEach(a => DEFS.push(Object.assign({}, DEFS[a.base], a, { arena: true, profile: [[0, 0], [1, 0]], mechanic: undefined, world: undefined, _pts: undefined, pts: undefined })));
   const SP = 3;                                       // Abstand der Abtastpunkte in Metern
   function cr(p0, p1, p2, p3, t) { const t2 = t * t, t3 = t2 * t; return [0, 1].map(k => 0.5 * ((2 * p1[k]) + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3)); }
   // Polygon mit Eckradien -> dichte Kontrollpunkte (Geraden bleiben gerade, Ecken werden Kreisbögen)
@@ -191,7 +196,7 @@ const Track = (() => {
     };
     tr.bridge = f => tr.height(f)>3;
     // Abkürzungen: schmale Wege quer durch das Innenfeld enger Kehren (Wegstrecke deutlich länger als Luftlinie, kreuzt keine andere Fahrbahn)
-    tr.cuts = []; if (!def.cross) {
+    tr.cuts = []; if (!def.cross && !def.arena) {
       const flat = i => tr.height(i) < 0.4, cand = [];
       for (let a = 12; a < N - 30; a += 2) { if (!flat(a)) continue; for (let b = a + Math.ceil(70 / SP); b < Math.min(N - 4, a + N / 2); b += 2) { if (!flat(b)) continue; const ax = P[a * 2], az = P[a * 2 + 1], bx = P[b * 2], bz = P[b * 2 + 1], D = Math.hypot(bx - ax, bz - az), L = (b - a) * SP; if (D < 26 || D > 200 || L < 1.3 * D || L - D < 35 || L - D > 300) continue;
         let ok = true; const m0 = W / 2 + 3, steps = Math.floor((D - 2 * m0) / 3);
