@@ -787,8 +787,8 @@ const View = (() => {
     // Sitz, Lenkrad
     B_(body, dark, 0, P.seatY, P.seatZ, 0.95, 0.4, 0.8); B_(body, dark, 0, P.seatY + 0.4, P.seatZ - 0.42, 0.95, 0.75, 0.22); Y_(body, dark, 0, P.seatY + 0.12, P.seatZ + 0.95, 0.05, 0.7, [-0.9, 0, 0], 6); part(body, geo('tor', () => new T.TorusGeometry(1, 0.2, 6, 14)), slot, 0, P.seatY + 0.4, P.seatZ + 0.68, 0.24, 0.24, 0.24, -0.9, 0, 0);
     // Fahrer
-    if (C.kk || C.fox) { const slot = new T.Group(); slot.position.set(0, P.seatY + 0.22, P.seatZ - 0.08); body.add(slot); if (C.fox) zotikSlot(slot); else kkSlot(slot, C.kk, C); }
-    const torso = new T.Group(); torso.position.set(0, P.seatY + 0.52, P.seatZ - 0.05); torso.scale.setScalar(1.28); if (!C.kk && !C.fox) body.add(torso); S_(torso, bodyM, 0, 0, 0, 0.5, 0.52, 0.38);
+    if (C.kk || C.fox) { const slot = new T.Group(); slot.userData.drv = 1; slot.position.set(0, P.seatY + 0.22, P.seatZ - 0.08); body.add(slot); if (C.fox) zotikSlot(slot); else kkSlot(slot, C.kk, C); }
+    const torso = new T.Group(); torso.userData.drv = 1; torso.position.set(0, P.seatY + 0.52, P.seatZ - 0.05); torso.scale.setScalar(1.28); if (!C.kk && !C.fox) body.add(torso); S_(torso, bodyM, 0, 0, 0, 0.5, 0.52, 0.38);
     [-1, 1].forEach(s => { const arm = new T.Group(); arm.position.set(s * 0.46, 0.2, 0.0); arm.rotation.set(-1.15, 0, s * 0.12); torso.add(arm); Y_(arm, bodyM, 0, -0.38, 0, 0.1, 0.78, null, 8); S_(arm, skinM, 0, -0.8, 0, 0.12); });
     const head = new T.Group(); head.position.set(0, 0.88, 0.02); torso.add(head); const own = C.kk || C.fox; if (fn && !own) fn(head, torso, body, C);
     // Eigenständige Cup-Silhouetten – nur originale Geometrie, kein fremdes Figurenasset.
@@ -867,11 +867,22 @@ const View = (() => {
   // ------------------------------------------------------------------ Rennen: Aufbau und Einzelbild
   let coinM = null; const cM4 = new T.Matrix4(), cQ = new T.Quaternion(), cV = new T.Vector3(), cS = new T.Vector3(), cE = new T.Euler(), cY = new T.Vector3(0, 1, 0);
   let boxes = [], padsM = [], hazM = { mine: [], banana: [] }, rocM = { rocket: [], rock: [] }, boomM = [];
+  // Tandem: Beifahrer steht hinten auf dem Kart; beim Tausch springen beide die Plätze (gleicher Fahrer-Bau wie vorne)
+  const CO_BACK = new T.Vector3(0, 0.5, -1.2);
+  function addCo(m, k) {
+    const t = makeKart({ k: k.k, logo: k.logo, char: k.co, kart: k.kart }); scene.remove(t.g); const grp = new T.Group();
+    t.body.children.slice().forEach(ch => { if (ch.userData.drv) grp.add(ch); }); grp.position.copy(CO_BACK); grp.scale.setScalar(0.88); m.body.add(grp);
+    m.drv = m.body.children.filter(ch => ch.userData.drv); m.drv.forEach(ch => { ch.userData.p0 = ch.position.clone(); }); m.co = grp; m.swU = 0;
+  }
+  // Geist im Zeitfahren: gleiches Kart, durchscheinend, ohne Schatten/Effekte
+  let ghostM = null; const gO = {};
+  function ghost(spec) { if (ghostM) { scene.remove(ghostM); ghostM = null; } if (!spec) return; const t = makeKart({ k: 0, logo: spec.logo, char: spec.char || 0, kart: spec.kart || 0 }); ghostM = t.g; const mats = new Map(); ghostM.traverse(o => { if (!o.isMesh || !o.material) return; let m = mats.get(o.material); if (!m) { m = o.material.clone(); m.transparent = true; m.opacity = 0.38; m.depthWrite = false; if (m.color) m.color.lerp(new T.Color(0x9adfff), 0.45); mats.set(o.material, m); } o.material = m; o.castShadow = false; }); [t.flame, t.shield, t.sp, t.stars, t.trailB, t.trailR].forEach(x => { if (x) x.visible = false; }); ghostM.visible = false; }
+  function ghostAt(x, z, th, on) { if (!ghostM) return; ghostM.visible = !!on; if (!on) return; let y = 0; if (tr && tr.hilly) { tr.nearest(x, z, -1, gO); y = tr.height(gO.f); } ghostM.position.set(x, y, z); ghostM.rotation.y = th; }
   function setupRace(S, humanIdx) {
-    initSkid(); skidClear(); if (sl) sl.visible = false; fxLife.fill(0); fxPos.fill(-100); fxAny = true; kmesh.forEach(m => scene.remove(m.g)); kmesh = S.karts.map(makeKart); ip.length = 0; boxes.forEach(b => scene.remove(b)); boxes = S.boxes.map(b => { const m = new T.Mesh(shared.boxGeo, boxMat); m.position.set(b.x, 1.8 + tr.height(b.f), b.z); scene.add(m); return m; });
+    initSkid(); skidClear(); if (sl) sl.visible = false; fxLife.fill(0); fxPos.fill(-100); fxAny = true; kmesh.forEach(m => scene.remove(m.g)); kmesh = S.karts.map(k => { const m = makeKart(k); if (k.co != null) addCo(m, k); return m; }); ip.length = 0; boxes.forEach(b => scene.remove(b)); boxes = S.boxes.map(b => { const m = new T.Mesh(shared.boxGeo, boxMat); m.position.set(b.x, 1.8 + tr.height(b.f), b.z); scene.add(m); return m; });
     if (coinM) { scene.remove(coinM); coinM = null; } const cn = (S.coins || []).length; if (cn) { const cg = geo('coin', () => { const g = new T.CylinderGeometry(0.75, 0.75, 0.16, 18); g.rotateX(Math.PI / 2); return g; }); coinM = new T.InstancedMesh(cg, new T.MeshLambertMaterial({ color: 0xffc928, emissive: 0x7a4a00 }), cn); coinM.frustumCulled = false; scene.add(coinM); }
     padsM.forEach(p => scene.remove(p)); padsM = S.pads.map(p => { const m = new T.Mesh(new T.PlaneGeometry(8, 12), padMat); m.rotation.order = 'YXZ'; m.rotation.x = -Math.PI / 2; m.rotation.y = p.th + Math.PI; m.position.set(p.x, 0.08 + tr.height(p.f), p.z); scene.add(m); return m; });
-    [].concat(hazM.mine, hazM.banana, rocM.rocket, rocM.rock, boomM).forEach(m => scene.remove(m)); hazM = { mine: [], banana: [] }; rocM = { rocket: [], rock: [] }; boomM = [];
+    [].concat(hazM.mine, hazM.banana, hazM.fire || [], rocM.rocket, rocM.rock, rocM.giga || [], boomM).forEach(m => scene.remove(m)); hazM = { mine: [], banana: [], fire: [] }; rocM = { rocket: [], rock: [], giga: [] }; boomM = [];
     cams.length = 0; humanIdx.forEach(i => { const k = S.karts[i]; cams.push({ k, ki: i, mode: camDef, back: false, roll: 0, snap: 1, shake: 0, ls: 0, ang: k.th, pos: new T.Vector3(k.x, 4, k.z), cam: new T.PerspectiveCamera(66, 1, 0.5, 1400), fov: 66, kick: 0, sl: 0 }); });
   }
   const poolGet = (arr, mk) => { let m = arr.find(x => !x.visible); if (!m) { m = mk(); arr.push(m); scene.add(m); } m.visible = true; return m; };
@@ -885,6 +896,7 @@ const View = (() => {
   function updateKarts(S, dt, time) {
     S.karts.forEach((k, i) => {
       const m = kmesh[i]; if (!m) return; const p = ip[i], up = kLift(k); m.g.position.set(p.x, S.tr.height(k.f) + up, p.z); m.g.rotation.y = p.th;
+      if (m.co) { const u0 = m.swU; m.swU += ((k.sw ? 1 : 0) - m.swU) * Math.min(1, dt * 9); const u = m.swU, hop = Math.sin(u * Math.PI) * 0.9; if (u !== u0 || dt === 0) { m.drv.forEach(ch => { ch.position.copy(ch.userData.p0).addScaledVector(CO_BACK, u); ch.position.y += hop; ch.scale.setScalar(1 - 0.12 * u); }); m.co.position.copy(CO_BACK).multiplyScalar(1 - u); m.co.position.y += hop; m.co.scale.setScalar(0.88 + 0.12 * u); } }
       if (dt > 0) { const ac = (k.vf - m.lvf) / dt; m.lvf = k.vf; m.pit += (clamp(-ac * 0.0035, -0.07, 0.07) - m.pit) * Math.min(1, dt * 6); m.body.rotation.x = m.pit;
         skidKart(i, k); const sn = Math.sin(k.th), cs = Math.cos(k.th);
         if (k.rough && k.vf > 7 && Math.random() < 0.4) burst(k.x - sn * 1.6 + (Math.random() - 0.5) * 2, 0.4, k.z - cs * 1.6, dustCol, 1, 1.4, 1.6);
@@ -902,16 +914,18 @@ const View = (() => {
     });
     if (coinM) { S.coins.forEach((c, i) => { const on = c.cd <= 0; cQ.setFromAxisAngle(cY, time * 3 + i * 0.4); cM4.compose(cV.set(c.x, 1.25 + Math.sin(time * 3 + i) * 0.12 + (tr.hilly ? tr.height(c.f) : 0), c.z), cQ, cS.setScalar(on ? 1 : 0)); coinM.setMatrixAt(i, cM4); }); coinM.instanceMatrix.needsUpdate = true; }
     boxes.forEach((m, i) => { m.visible = S.boxes[i].cd <= 0; m.rotation.y = time * 1.8; m.rotation.x = time * 1.1; m.position.y = 1.9 + Math.sin(time * 2.4 + i) * 0.25 + (tr.hilly ? tr.height(S.boxes[i].f) : 0); });
-    ['mine', 'banana'].forEach(kd => hazM[kd].forEach(m => { m.visible = false; }));
-    S.hazards.forEach(h => { const m = poolGet(hazM[h.kind], () => h.kind === 'banana' ? bananaMesh() : new T.Mesh(mineGeo, lam('#a020f0', { emissive: 0x4a0a6a }))); m.position.set(h.x, (h.kind === 'banana' ? 0.35 : 1.1) + hAt(h), h.z); m.rotation.y = h.kind === 'banana' ? h.x : time * 2; if (h.kind === 'mine') m.scale.setScalar(1 + Math.sin(time * 8) * 0.08); });
-    ['rocket', 'rock'].forEach(kd => rocM[kd].forEach(m => { m.visible = false; }));
-    S.proj.forEach(r => { const m = poolGet(rocM[r.kind], () => r.kind === 'rock' ? rockMesh(1.15) : new T.Mesh(rocketGeo, bas(0xff4a2a))); m.position.set(r.x, (r.kind === 'rock' ? 1.0 + Math.abs(Math.sin(time * 9)) * 0.5 : 1.2) + hAt(r), r.z); if (r.kind === 'rock') m.rotation.set(time * 8, 0, time * 5); else { m.rotation.set(0, r.th, 0); burst(r.x - Math.sin(r.th) * 1.5, 1.2, r.z - Math.cos(r.th) * 1.5, Math.random() < 0.5 ? 0xffaa55 : 0xcccccc, 1, 1, 0.5); } });
+    ['mine', 'banana', 'fire'].forEach(kd => hazM[kd].forEach(m => { m.visible = false; }));
+    S.hazards.forEach(h => { const m = poolGet(hazM[h.kind], () => h.kind === 'banana' ? bananaMesh() : h.kind === 'fire' ? new T.Mesh(geo('fireC', () => new T.ConeGeometry(0.9, 2.2, 7)), bas(0xff7a1a, { transparent: true, opacity: 0.85, blending: T.AdditiveBlending, depthWrite: false })) : new T.Mesh(mineGeo, lam('#a020f0', { emissive: 0x4a0a6a }))); if (h.kind === 'fire') { m.position.set(h.x, 1.0 + hAt(h), h.z); m.scale.set(1, 0.7 + Math.sin(time * 14 + h.x) * 0.3, 1); m.material.opacity = Math.min(0.85, h.t * 0.5); m.rotation.y = time * 3; return; } m.position.set(h.x, (h.kind === 'banana' ? 0.35 : 1.1) + hAt(h), h.z); m.rotation.y = h.kind === 'banana' ? h.x : time * 2; if (h.kind === 'mine') m.scale.setScalar(1 + Math.sin(time * 8) * 0.08); });
+    ['rocket', 'rock', 'giga'].forEach(kd => rocM[kd].forEach(m => { m.visible = false; }));
+    S.proj.forEach(r => { const m = poolGet(rocM[r.kind], () => r.kind === 'rock' ? rockMesh(1.15) : r.kind === 'giga' ? rockMesh(2.6) : new T.Mesh(rocketGeo, bas(0xff4a2a))); if (r.kind === 'giga') { m.position.set(r.x, 2.4 + hAt(r), r.z); m.rotation.set(time * 6, r.th, 0); return; } m.position.set(r.x, (r.kind === 'rock' ? 1.0 + Math.abs(Math.sin(time * 9)) * 0.5 : 1.2) + hAt(r), r.z); if (r.kind === 'rock') m.rotation.set(time * 8, 0, time * 5); else { m.rotation.set(0, r.th, 0); burst(r.x - Math.sin(r.th) * 1.5, 1.2, r.z - Math.cos(r.th) * 1.5, Math.random() < 0.5 ? 0xffaa55 : 0xcccccc, 1, 1, 0.5); } });
     S.events.forEach(e => {
       if (e.t === 'boom') { const m = poolGet(boomM, () => new T.Mesh(shared.sphere, bas(0xffaa33, { transparent: true, opacity: 0.8, blending: T.AdditiveBlending }))); m.position.set(e.x, 1.3, e.z); m.userData.t = 0; burst(e.x, 1.5, e.z, 0xff9a33, 22, 9, 6); }
       else if (e.t === 'splat') burst(e.x, 0.8, e.z, 0xffe14a, 16, 5, 4); else if (e.t === 'smash') burst(e.x, 1.0, e.z, 0x9aa0b0, 18, 7, 5); else if (e.t === 'rockBounce') burst(e.x, 0.8, e.z, 0xcfc8a8, 5, 3, 2);
       else if (e.t === 'hit') { const k = S.karts[e.k]; burst(k.x, 2.2, k.z, 0xffe14a, 14, 4, 6); } else if (e.t === 'pad') { const k = S.karts[e.k]; burst(k.x, 0.6, k.z, 0xffd24a, 6, 3, 2); } else if (e.t === 'coin') burst(e.x, 1.3, e.z, 0xffd24a, 7, 3, 3); else if (e.t === 'trick') { const k = S.karts[e.k]; if (k) burst(k.x, 1.2, k.z, 0x66e0ff, 12, 5, 3); }
       else if (e.t === 'flash') (e.ids || []).forEach(id => { const k = S.karts[id]; bolt(k.x, k.z); burst(k.x, 2, k.z, 0xffffff, 18, 8, 8); });
       else if (e.t === 'use' && e.item === 'shield') { const k = S.karts[e.k]; burst(k.x, 1.5, k.z, 0x66e0ff, 14, 5, 3); } else if (e.t === 'use' && (e.item === 'banana' || e.item === 'mine')) { const k = S.karts[e.k]; burst(k.x - Math.sin(k.th) * 3, 0.8, k.z - Math.cos(k.th) * 3, 0xffe14a, 6, 3, 2); } else if (e.t === 'use' && e.item === 'rock') { const k = S.karts[e.k]; burst(k.x + Math.sin(k.th) * 3, 0.8, k.z + Math.cos(k.th) * 3, 0xcfc8a8, 8, 4, 3); }
+      else if (e.t === 'comet') (e.ids || []).forEach(id => { const k = S.karts[id]; bolt(k.x, k.z); burst(k.x, 3, k.z, 0xff66cc, 22, 9, 7); });
+      else if (e.t === 'swap') { const k = S.karts[e.k]; burst(k.x, 2.4, k.z, 0x5ad1ff, 10, 3, 4); } else if (e.t === 'burn') burst(e.x, 1, e.z, 0xff7a1a, 12, 4, 5);
       else if (e.t === 'fog') (e.ids || []).forEach(id => { const k = S.karts[id]; burst(k.x, 2, k.z, 0xeaf6ff, 22, 5, 3); });
       else if (e.t === 'miniturbo') { const k = S.karts[e.k], sn = Math.sin(k.th), cs = Math.cos(k.th), col = TCOL[e.tier] || TCOL[1]; burst(k.x - sn * 2.2, 0.7, k.z - cs * 2.2, col, 6 + e.tier * 5, 3 + e.tier, 2.5); }
       // Kamera-Rückmeldung nur für die eigene Kamera: Wackeln bei Treffern/Explosionen, kurzer Sichtfeld-Schub beim Turbo
@@ -1049,5 +1063,5 @@ const View = (() => {
     kmesh.forEach(m => scene.remove(m.g)); kmesh = []; boxes.forEach(b => scene.remove(b)); boxes = []; if (coinM) { scene.remove(coinM); coinM = null; } anim.forEach(f => f(time));
     renderer.setViewport(0, 0, W, H); renderer.setScissor(0, 0, W, H); renderer.render(scene, c);
   }
-  return { camNext, setBack, honk, CAMS, get camMode() { return camDef; }, set camMode(m) { camDef = (m | 0) % CAMS.length; }, prepare, gallery, peek, burst, init, previewKart, warmup, perf, perfReset, setTrack, setupRace, renderRace, renderMenu, resize, rects, KCOL, get cams() { return cams; }, get ready() { return !!renderer; } };
+  return { ghost, ghostAt, camNext, setBack, honk, CAMS, get camMode() { return camDef; }, set camMode(m) { camDef = (m | 0) % CAMS.length; }, prepare, gallery, peek, burst, init, previewKart, warmup, perf, perfReset, setTrack, setupRace, renderRace, renderMenu, resize, rects, KCOL, get cams() { return cams; }, get ready() { return !!renderer; } };
 })();

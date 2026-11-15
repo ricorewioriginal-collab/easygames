@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "07099511f8a8",
- "generated": "2026-11-15T17:30:39+00:00",
- "commit": "495c915dc7ebfb62fa0eda2fa6c88e5918d90b84",
+ "version": "12eeccd07589",
+ "generated": "2026-11-15T17:57:35+00:00",
+ "commit": "f53338b7100fb881ba28edfea9db9136deafc8a0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2143,18 +2143,18 @@
   },
   {
    "p": "anmacha-kart/controller.js",
-   "s": 15862,
-   "h": "ac206c76b06475941da388471f2ac7bf493e1393a4b800f7a578d9a329c2c6d9"
+   "s": 15900,
+   "h": "998b22ed2dd444c0ca86fbf3c49f0e446a7b0dbb57f363c804734579a9c74bc9"
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 73319,
-   "h": "c1ad00d3f32eac65e6b445b4470a54b532caabc861989b8e2be8870aba19a761"
+   "s": 80155,
+   "h": "5bc88d94e1ca40f2e49491cc22d284bf5477a736e103bea37d8b0b606d6c1ad8"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 61711,
-   "h": "ec45d24a2ab6b143f829996eecaa731902871278a4af0654986a3aa440a4600f"
+   "s": 67513,
+   "h": "498a81be4ea572426c9d3e3137427d15747941992b4bdecaa2572a4016dac3e0"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -2298,8 +2298,8 @@
   },
   {
    "p": "anmacha-kart/sim.js",
-   "s": 27184,
-   "h": "f555b9810292ea200c558e28c82c9e810735784b47268b1d299446f00b81c3ec"
+   "s": 29888,
+   "h": "10e3dc3d541dbfc206b3cedb1aaa6230e978cea646319e23d5afa9e513535355"
   },
   {
    "p": "anmacha-kart/sw.js",
@@ -2308,13 +2308,13 @@
   },
   {
    "p": "anmacha-kart/track.js",
-   "s": 35941,
-   "h": "1015d1a1888a47c402336ba9c30d0755d72be04dd72e683c9791a7aaffa4cd22"
+   "s": 36127,
+   "h": "c85341570e67160fc80574e608598079628f518db34ad7a22afbe339cc6d647b"
   },
   {
    "p": "anmacha-kart/view.js",
-   "s": 163995,
-   "h": "d6f1719a522cf37b2abb247674a9d7a9eb45ce7d1bce0fa06cb2d218c720dd44"
+   "s": 167110,
+   "h": "6054cae5a567d79453832fd86f7cd384aff61538f583a5db66b65f777b33b7f6"
   },
   {
    "p": "anmacha-kart/zotik-fox.js",
@@ -10413,8 +10413,8 @@
   },
   {
    "p": "guides/anmacha-kart.json",
-   "s": 24391,
-   "h": "55f3a44bb1e64491f2dff989a69c9ae35ee994ec442a79b7006437195feaa734"
+   "s": 26327,
+   "h": "dd0d8090ebb42de37deeb810df0718f8169765a33d93b7c3a732fac60a82df25"
   },
   {
    "p": "guides/anmacha-kartenrausch.json",
@@ -13859,7 +13859,7 @@
   {
    "p": "sync/catalog.json",
    "s": 251154,
-   "h": "124a468462c3f3785dacb668c6720a7fff83766d7c7cffe227d6a4b6f411dc51"
+   "h": "b652ba0d3f355e70b528c8d297bfe430504138d2678399c414fac2741108e0d7"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -69442,9 +69442,9 @@
    "h": "9e629369f7a54ab0b5ef047ea685f1a41154903e478869c95eca8a5590cc4681"
   },
   {
-   "p": "zotik/assets/index-GSEeb_TO.js",
-   "s": 2118870,
-   "h": "fa75f34f5e6457af31e701fa16587c262856f7fcbf0fa5ba353ef729835f6831"
+   "p": "zotik/assets/index-sqmrJ03p.js",
+   "s": 2122181,
+   "h": "e4b40ef2f6a865ab0988b1702b6b6587641df024c5c0b26bdb0eb8584a7cb621"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -69463,8 +69463,8 @@
   },
   {
    "p": "zotik/index.html",
-   "s": 76448,
-   "h": "68469259f554a8dc30a24463442d19e6bcd7c3bafbc5399962d6c3212510a179"
+   "s": 78293,
+   "h": "cb51f813fe3ecb91230708e54e9d7fc9f47558bc601c5333c455bdb1d91d36d8"
   },
   {
    "p": "zotik/manifest.webmanifest",

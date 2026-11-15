@@ -14,6 +14,9 @@ const fmtT = t => { if (t == null || !isFinite(t)) return '–'; const m = Math.
 const SLOTC = ['#00E5FF', '#FF2D95', '#FFD24A', '#7CFF6A'], SKILLS = ['Anfänger', 'Normal', 'Profi'];
 const ITEM_ICON = { boost: '🚀', boost3: '🚀', banana: '🍌', banana3: '🍌', rock: '🪨', rock3: '🪨', mine: '📢', rocket: '🎯', shield: '🛡️', flash: '⚡', fog: '🌫️' };
 const ITEM_NAME = { boost: 'Bass-Boost', boost3: 'Turbo-Trio', banana: 'Bananenschale', banana3: 'Bananen-Trio', rock: 'Felsbrocken', rock3: 'Stein-Trio', mine: 'Störsignal', rocket: 'Jingle-Rakete', shield: 'Frequenz-Schild', flash: 'Funk-Blitz', fog: 'Nebelbombe' };
+// Tandem-Spezialitems (eigene Erfindungen): Riesenfels, Funk-Komet, Herzschild, Feuerspur
+const SP_ICON = { giga: '🗿', comet: '☄️', heart: '💖', fire: '🔥' }, SP_NAME = { giga: 'Riesenfels', comet: 'Funk-Komet', heart: 'Herzschild', fire: 'Feuerspur' };
+Object.assign(ITEM_ICON, SP_ICON); Object.assign(ITEM_NAME, SP_NAME);
 const itemHtml = (it, n) => it ? ITEM_ICON[it] + (it.endsWith('3') && n > 1 ? '<small class="cnt">×' + n + '</small>' : '') : '';
 const GP_PTS = [15, 12, 10, 8, 6, 4, 2, 1];
 const ordinal = n => n + '.';
@@ -33,7 +36,7 @@ const clampN = (v, a, b) => v < a ? a : v > b ? b : v;
 // Touch-Steuerung wie am Konsolen-Controller: links virtueller Joystick (lenken), rechts 4 Tasten im Raute-Layout
 // (unten GAS, links BREMSE, rechts DRIFT, oben ITEM). Ein Daumen zwischen zwei Nachbartasten drückt beide (z. B. Gas + Drift),
 // Wischen von Taste zu Taste wechselt sofort. Alles läuft über Pointer-Events auf einer Ebene; das DOM wird nur bei Änderungen angefasst.
-const TBTN = [['g', 'GAS', 0, 1, '▲'], ['b', 'BREMSE', -1, 0, '▼'], ['d', 'DRIFT', 1, 0, '↯'], ['i', 'ITEM', 0, -1, '★']], TBIT = { g: 1, b: 2, d: 4, i: 8 };
+const TBTN = [['g', 'GAS', 0, 1, '▲'], ['b', 'BREMSE', -1, 0, '▼'], ['d', 'DRIFT', 1, 0, '↯'], ['i', 'ITEM', 0, -1, '★'], ['sw', 'TAUSCH', -1.1, -1.1, '⇄']], TBIT = { g: 1, b: 2, d: 4, i: 8, sw: 16 };
 let touchReset = null;
 function buildTouch(root, st) {
   root.innerHTML = '<div class="joy"><div class="jb"><div class="jk"></div></div></div><div class="pad">' + TBTN.map(([k, t, , , ic]) => `<div class="tbtn tb-${k}" data-k="${k}"><i>${ic}</i>${t}</div>`).join('') + '</div>';
@@ -75,13 +78,13 @@ function buildTouch(root, st) {
 }
 // Gamepad: Belegung wie im Original je Controller-Art, frei änderbar (Optionen → Tastenbelegung).
 // Standard-Layout der Browser-API: 0 unten, 1 rechts, 2 links, 3 oben, 4 L1/LB/L, 5 R1/RB/R, 6 L2/LT/ZL, 7 R2/RT/ZR, 8 Select/−/Share, 9 Start/+/Options, 10 L3, 11 R3, 12–15 Steuerkreuz ↑↓←→
-const ACTS = [['g', 'Gas'], ['b', 'Bremse / rückwärts'], ['d', 'Driften / Hüpfer'], ['i', 'Item benutzen'], ['lb', 'Zurückschauen'], ['hn', 'Hupe'], ['cam', 'Kamera wechseln'], ['rn', 'Radio: nächster Sender'], ['rp', 'Radio: voriger Sender'], ['ro', 'Radio an / aus']];
+const ACTS = [['g', 'Gas'], ['b', 'Bremse / rückwärts'], ['d', 'Driften / Hüpfer'], ['i', 'Item benutzen'], ['sw', 'Fahrer tauschen (Tandem)'], ['lb', 'Zurückschauen'], ['hn', 'Hupe'], ['cam', 'Kamera wechseln'], ['rn', 'Radio: nächster Sender'], ['rp', 'Radio: voriger Sender'], ['ro', 'Radio an / aus']];
 const PADDEF = {
-  // PlayStation (wie bei Fun-Racern auf PS4/PS5): ✕ Gas, □ Bremse, R1 Hüpfer/Drift, L1/○ Item, △ Rückblick, R2/L2 Gas/Bremse
-  ps: { g: [0, 7], b: [2, 6], d: [5], i: [4, 1], lb: [3, 11], hn: [10], cam: [8, 13], rn: [15], rp: [14], ro: [12] },
-  // Nintendo Switch (wie Mario-Kart-Belegung): A Gas, B Bremse, R/ZR Hüpfer/Drift, L/ZL Item, X Rückblick, Y Hupe, − Kamera
-  nin: { g: [1], b: [0], d: [5, 7], i: [4, 6], lb: [3, 11], hn: [2, 10], cam: [8, 13], rn: [15], rp: [14], ro: [12] },
-  xbox: { g: [0, 7], b: [2, 6], d: [5], i: [4, 1], lb: [3, 11], hn: [10], cam: [8, 13], rn: [15], rp: [14], ro: [12] }
+  // PlayStation (wie bei Fun-Racern auf PS4/PS5): ✕ Gas, □ Bremse, R1 Hüpfer/Drift, L1 Item, ○ Fahrer tauschen, △ Rückblick, R2/L2 Gas/Bremse
+  ps: { g: [0, 7], b: [2, 6], d: [5], i: [4], sw: [1], lb: [3, 11], hn: [10], cam: [8, 13], rn: [15], rp: [14], ro: [12] },
+  // Nintendo Switch (übliche Fun-Racer-Belegung): A Gas, B Bremse, R/ZR Hüpfer/Drift, L/ZL Item, X Fahrer tauschen, R-Stick Rückblick, Y Hupe, − Kamera
+  nin: { g: [1], b: [0], d: [5, 7], i: [4, 6], sw: [3], lb: [11], hn: [2, 10], cam: [8, 13], rn: [15], rp: [14], ro: [12] },
+  xbox: { g: [0, 7], b: [2, 6], d: [5], i: [4], sw: [1], lb: [3, 11], hn: [10], cam: [8, 13], rn: [15], rp: [14], ro: [12] }
 };
 const BTNKEY = ['a', 'b', 'x', 'y', 'l', 'r', 'lt', 'rt', 'se', 'st', 'l3', 'r3', 'du', 'dd', 'dl', 'dr'];
 const Pads = {
@@ -126,7 +129,7 @@ const LD = (() => {
 // Ein Bild Zeit lassen, damit der Ladebalken zwischen schweren Schritten gezeichnet wird
 const nextPaint = () => new Promise(r => { let ok = false; const f = () => { if (!ok) { ok = true; r(); } }; requestAnimationFrame(() => setTimeout(f, 0)); setTimeout(f, 120); });
 
-if (JOIN) { LD.stop(); document.body.classList.add('ctrl'); loadScript('controller.js?v=20261115-wt11').then(() => window.startController && window.startController()).catch(e => { $('err').hidden = false; $('errTxt').textContent = e.message; }); }
+if (JOIN) { LD.stop(); document.body.classList.add('ctrl'); loadScript('controller.js?v=20261115-wt12').then(() => window.startController && window.startController()).catch(e => { $('err').hidden = false; $('errTxt').textContent = e.message; }); }
 else initHost();
 
 function initHost() {
@@ -136,11 +139,17 @@ function initHost() {
   try { const s = JSON.parse(localStorage.getItem('akSave') || 'null'); if (s && typeof s === 'object') save = Object.assign(save, s); } catch (e) {}
   const persist = () => { try { localStorage.setItem('akSave', JSON.stringify(save)); } catch (e) {} };
   const CCS = ['50 ccm', '100 ccm', '150 ccm', '🪞 Spiegel'];
+  const TICON = { wiese: '📡', strand: '🏖️', gruft: '👻', fantasia: '🏰', neon: '🌃', vulkan: '🌋', eis: '❄️', dschungel: '🌴', kosmos: '🪐', wueste: '🏜️', regenbogen: '🌈', herzportal: '💖', kristallsturm: '💎', monsterfreunde: '🐾', ahnenruinen: '🗿', drachenflug: '🐉', splitterwelten: '✨', farbeninsel: '🎨', zotik: '🦊', taschi: '🏮', aeru: '⭐', bunte: '⚓', leuchtfeuer: '🗼', sonnenhof: '🌻', ricopoly: '🏙️', wolken: '☁️', huepf: '🧱', omamarkt: '🧺', omapark: '🌳', omamall: '🛍️', omastrand: '⛱️', omaxmas: '🎄', omagrusel: '🕯️' };
+  const tileVars = (a, b) => `style="--tc:${a};--tc2:${b}"`;
+  // Tandem: Beifahrer (gespeichert oder automatisch passend) und Spezialitem je Figur
+  let chPick = 'drv';
+  const spOf = ch => (CHARS[ch] && CHARS[ch].sp) || Sim.SPECIALS[ch % Sim.SPECIALS.length];
+  const coOf = ch => save.co != null && save.co !== ch && CHARS[save.co] ? save.co : (ch + 7) % CHARS.length;
   const TR = Track.DEFS; let trCache = {}; const getTrack = (i, mi) => mi ? (trCache['m' + i] || (trCache['m' + i] = Track.build(Track.mirror(TR[i])))) : trCache[i] || (trCache[i] = Track.build(TR[i]));
   let logos = [], ready = false, menuView = 'title', setupFor = 'solo', R = null, lobbyOpen = false, peer = null, room = '', players = [], loopOn = false, lastT = 0, paused = false, curTrackIdx = -1, GP = null, nVp = 1;
-  const kb = { l: 0, r: 0, g: 0, b: 0, d: 0, i: 0, lb: 0, hn: 0, cam: 0, rn: 0, rp: 0, ro: 0 }, tc = { s: 0, g: 0, b: 0, d: 0, i: 0, lb: 0, hn: 0, cam: 0 };
+  const kb = { l: 0, r: 0, g: 0, b: 0, d: 0, i: 0, sw: 0, lb: 0, hn: 0, cam: 0, rn: 0, rp: 0, ro: 0 }, tc = { s: 0, g: 0, b: 0, d: 0, i: 0, sw: 0, lb: 0, hn: 0, cam: 0 };
   // Tastatur: frei belegbar (Optionen → Tastenbelegung); Schlüssel = e.key in Kleinbuchstaben
-  const KEYDEF = { g: ['arrowup', 'w'], b: ['arrowdown', 's'], l: ['arrowleft', 'a'], r: ['arrowright', 'd'], d: ['shift', 'z'], i: [' ', 'enter', 'x'], lb: ['q'], hn: ['h'], cam: ['c'], rn: ['.'], rp: [','], ro: ['r'] };
+  const KEYDEF = { g: ['arrowup', 'w'], b: ['arrowdown', 's'], l: ['arrowleft', 'a'], r: ['arrowright', 'd'], d: ['shift', 'z'], i: [' ', 'enter', 'x'], sw: ['e', 'v'], lb: ['q'], hn: ['h'], cam: ['c'], rn: ['.'], rp: [','], ro: ['r'] };
   let KEYS = {}; const keyMap = () => Object.assign({}, KEYDEF, save.keyMap || {}), buildKeys = () => { KEYS = {}; const m = keyMap(); Object.keys(m).forEach(a => m[a].forEach(k => { KEYS[k] = a; })); }; buildKeys();
   let keyGrab = null;
   const assistLvl = () => save.assist == null ? (coarse ? 1 : 0) : save.assist, ASSIST = [0, 0.4, 0.75];
@@ -153,10 +162,10 @@ function initHost() {
 
   // ------------------------------------------------------------------ Menü
   function renderMenu() {
-    $('rmode').innerHTML = [['race', 'Einzelrennen'], ['gp', 'Cup', '3 Strecken'], ['tt', 'Zeitfahren', 'allein, ohne Items'], ['free', 'Freies Fahren', 'ohne Zeitlimit, Gegner und Rundenzwang']].map(m => `<button class="chip ${save.rmode === m[0] ? 'on' : ''}" data-m="${m[0]}">${m[1]}${m[2] ? `<small>${m[2]}</small>` : ''}</button>`).join('');
+    $('rmode').innerHTML = [['race', 'Einzelrennen', 'gegen 7 Fahrer', '🏁', 't-race'], ['gp', 'Cup', '3 Strecken · Punkte', '🏆', 't-gp'], ['tt', 'Zeitfahren', 'allein, mit Geist', '⏱️', 't-tt'], ['free', 'Freies Fahren', 'ohne Zeitlimit und Gegner', '🛞', 't-free']].map(m => `<button class="chip ctile ${m[4]} ${save.rmode === m[0] ? 'on' : ''}" data-m="${m[0]}"><i>${m[3]}</i><b>${m[1]}</b><small>${m[2]}</small></button>`).join('');
     $('rmode').querySelectorAll('[data-m]').forEach(b => b.onclick = () => { save.rmode = b.dataset.m; persist(); renderMenu(); });
     $('trackHeading').textContent = save.rmode === 'gp' ? 'WÄHLE DEINEN CUP' : 'WÄHLE DEINE STRECKE';
-    $('tracks').innerHTML = save.rmode === 'gp' ? Track.CUPS.map((c, i) => `<button class="chip ${save.cup === i ? 'on' : ''}" data-cup="${i}">${esc(c.name)}<small>${c.tracks.map(t => esc(TR[t].name)).join(' · ')}</small></button>`).join('') : TR.map((t, i) => `<button class="chip ${save.track === i ? 'on' : ''}" data-t="${i}">${esc(t.name)}${t.world ? '<small>★ Weltentour</small>' : ''}</button>`).join('');
+    $('tracks').innerHTML = save.rmode === 'gp' ? Track.CUPS.map((c, i) => `<button class="chip ctile ${save.cup === i ? 'on' : ''}" data-cup="${i}" ${tileVars(TR[c.tracks[0]].sky[0], TR[c.tracks[c.tracks.length - 1]].ground || '#203060')}><i>${c.icon || '🏆'}</i><b>${esc(c.name)}</b><small>${c.all ? c.tracks.length + ' Strecken nacheinander – die ganze Weltentour' : c.tracks.map(t => esc(TR[t].name)).join(' · ')}</small></button>`).join('') : TR.map((t, i) => `<button class="chip ctile ${save.track === i ? 'on' : ''}" data-t="${i}" ${tileVars(t.sky[0], t.ground || '#203060')}><i>${TICON[t.id] || '🏁'}</i><b>${esc(t.name)}</b><small>${t.world === 'oma' ? '☕ Oma-Welt' : t.world ? '★ Weltentour' : 'Klassik'}</small></button>`).join('');
     $('tracks').querySelectorAll('[data-cup]').forEach(b => b.onclick = () => { save.cup = +b.dataset.cup; persist(); renderMenu(); });
     $('tracks').querySelectorAll('[data-t]').forEach(b => b.onclick = () => { save.track = +b.dataset.t; persist(); renderMenu(); if (ready) { View.setTrack(getTrack(save.track)); curTrackIdx = save.track; } });
     $('laps').innerHTML = [2, 3, 5].map(n => `<button class="chip ${save.laps === n ? 'on' : ''}" data-l="${n}">${n}</button>`).join(''); $('laps').querySelectorAll('[data-l]').forEach(b => b.onclick = () => { save.laps = +b.dataset.l; persist(); renderMenu(); });
@@ -166,10 +175,15 @@ function initHost() {
     $('pcard').innerHTML = `<img alt="" src="${logoSrc(save.logo)}" title="${esc(NAMES[save.logo] || '')}"><input maxlength="14" value="${esc(save.name)}" placeholder="Dein Name"><span class="info">Logo antippen</span>`;
     $('pcard').querySelector('img').onclick = e => { save.logo = nextLogo(save.logo); e.target.src = logoSrc(save.logo); persist(); };
     $('pcard').querySelector('input').oninput = e => { save.name = e.target.value; persist(); };
-    $('chars').innerHTML = CHARS.map((c, i) => `<button class="${save.char === i ? 'on' : ''}" data-ch="${i}"><b>${c.emoji}</b>${c.name}<small>${c.kind}</small></button>`).join('');
-    $('chars').querySelectorAll('[data-ch]').forEach(b => b.onclick = () => { save.char = +b.dataset.ch; persist(); renderMenu(); });
+    // Tandem: Fahrer und Beifahrer wählen (Beifahrer steht hinten und hält das zweite Item)
+    const coI = coOf(save.char), tm = save.tandem !== false, pick = tm && chPick === 'co' ? coI : save.char;
+    $('chmode').innerHTML = `<button class="chip ${tm ? '' : 'on'}" data-tm="0">👤 Solo</button><button class="chip ${tm ? 'on' : ''}" data-tm="1">👥 Tandem</button>` + (tm ? `<span class="sep"></span><button class="chip ${chPick !== 'co' ? 'on' : ''}" data-cp="drv">Fahrer: ${CHARS[save.char].emoji} ${esc(CHARS[save.char].name)}</button><button class="chip ${chPick === 'co' ? 'on' : ''}" data-cp="co">Beifahrer: ${CHARS[coI].emoji} ${esc(CHARS[coI].name)}</button><small class="info">Spezialitem: ${SP_ICON[spOf(save.char)]} ${SP_NAME[spOf(save.char)]} / ${SP_ICON[spOf(coI)]} ${SP_NAME[spOf(coI)]}</small>` : '');
+    $('chmode').querySelectorAll('[data-tm]').forEach(b => b.onclick = () => { save.tandem = b.dataset.tm === '1'; persist(); renderMenu(); });
+    $('chmode').querySelectorAll('[data-cp]').forEach(b => b.onclick = () => { chPick = b.dataset.cp; renderMenu(); });
+    $('chars').innerHTML = CHARS.map((c, i) => `<button class="ctile ${pick === i ? 'on' : ''}" data-ch="${i}" ${tileVars(c.acc || '#7a5cff', c.body || '#20284b')}><b>${c.emoji}</b>${c.name}<small>${c.kind}</small></button>`).join('');
+    $('chars').querySelectorAll('[data-ch]').forEach(b => b.onclick = () => { const v = +b.dataset.ch; if (tm && chPick === 'co') { if (v !== save.char) save.co = v; } else { save.char = v; if (save.co === v) save.co = null; } persist(); renderMenu(); });
     const rng = [['mv', 0.9, 1.1], ['ma', 0.85, 1.25], ['mt', 0.8, 1.2], ['mw', 0.75, 1.45]], lbl = ['Tempo', 'Beschl.', 'Lenken', 'Gewicht'];
-    $('kcards').innerHTML = KARTS.map((k, i) => `<button class="${save.kart === i ? 'on' : ''}" data-kt="${i}"><b>${k.emoji}</b>${k.name}${rng.map((r, j) => `<div class="bar"><i style="width:${Math.round(Math.max(8, Math.min(100, (k[r[0]] - r[1]) / (r[2] - r[1]) * 100)))}%"></i></div>`).join('')}<div class="st">${esc(k.desc)}</div></button>`).join('');
+    $('kcards').innerHTML = KARTS.map((k, i) => `<button class="ctile ${save.kart === i ? 'on' : ''}" data-kt="${i}" ${tileVars(['#ff2d95', '#00e5ff', '#ffd24a', '#7cff6a', '#c08aff', '#ff8a3a'][i % 6], '#1a1f45')}><b>${k.emoji}</b>${k.name}${rng.map((r, j) => `<div class="bar"><i style="width:${Math.round(Math.max(8, Math.min(100, (k[r[0]] - r[1]) / (r[2] - r[1]) * 100)))}%"></i></div>`).join('')}<div class="st">${esc(k.desc)}</div></button>`).join('');
     $('kcards').querySelectorAll('[data-kt]').forEach(b => b.onclick = () => { save.kart = +b.dataset.kt; persist(); renderMenu(); });
     $('assist').innerHTML = ['Aus', 'Leicht', 'Stark'].map((s, i) => `<button class="chip ${assistLvl() === i ? 'on' : ''}" data-a="${i}">${s}</button>`).join(''); $('assist').querySelectorAll('[data-a]').forEach(b => b.onclick = () => { save.assist = +b.dataset.a; persist(); renderMenu(); });
     const pads = Pads.list(); $('padInfo').hidden = !pads.length; if (pads.length) $('padInfo').textContent = '🎮 ' + (self.Nav ? Nav.GLYPH[Pads.style(pads[0])].name : 'Controller') + (pads.length > 1 ? ' ×' + pads.length : '');
@@ -294,7 +308,7 @@ function initHost() {
 
   // ------------------------------------------------------------------ Start: Solo / Mehrspieler
   LD.start(); LD.creep(0.4);
-  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt13'); }).then(() => LD.add(0.05))]).then(async () => {
+  Promise.all([loadLogos(), loadScript(CDN.three).then(() => { LD.creep(0); LD.add(0.45, 'Grafik wird geladen …'); return loadScript('view.js?v=20261115-wt14'); }).then(() => LD.add(0.05))]).then(async () => {
     View.init($('cv'), logos); View.camMode = save.cam || 0; LD.add(0.05, 'Rennstrecke wird gebaut …'); await nextPaint();
     curTrackIdx = save.track; View.setTrack(getTrack(save.track)); View.resize(innerWidth, innerHeight, 1); LD.add(0.1, 'Shader werden vorgewärmt …'); await nextPaint();
     View.warmup(); ready = true; $('loadInfo').textContent = `${TR.length} Strecken · ${KARTS.length} Karts · ${CHARS.length} Figuren · ${logos.length} Sender-Logos`; renderMenu();
@@ -363,7 +377,7 @@ function initHost() {
       if (!coarse) players = players.filter(p => !p.kbAuto);
       if (players.length >= 4) return send(c, { t: 'full', msg: 'Alle 4 Plätze sind belegt.' });
       players.splice(players.filter(p => p.conn).length, 0, { name: nm, logo: lg, char: ch, kart: kt, cid, view: !!m.view, conn: c, input: { s: 0, g: 0, b: 0, d: 0, i: 0 } }); send(c, { t: 'wel', slot: players.findIndex(p => p.conn === c), cfg: cfgMsg() }); updateLobby();
-    } else if (m.t === 'in') { const p = players.find(x => x.conn === c); if (p) { p.input.s = Math.max(-1, Math.min(1, +m.s || 0)); p.input.g = m.g ? 1 : 0; p.input.b = m.b ? 1 : 0; p.input.d = m.d ? 1 : 0; p.input.i = m.i ? 1 : 0; if (Number.isSafeInteger(m.n) && m.n >= 0) { if (p.itemSeq == null) p.itemSeq = m.n - (m.i ? 1 : 0); if (m.n > p.itemSeq) { p.itemPending = Math.min(3, (p.itemPending || 0) + m.n - p.itemSeq); p.itemSeq = m.n; } } p.inAt = performance.now(); } }
+    } else if (m.t === 'in') { const p = players.find(x => x.conn === c); if (p) { p.input.s = Math.max(-1, Math.min(1, +m.s || 0)); p.input.g = m.g ? 1 : 0; p.input.b = m.b ? 1 : 0; p.input.d = m.d ? 1 : 0; p.input.i = m.i ? 1 : 0; p.input.sw = m.sw ? 1 : 0; if (Number.isSafeInteger(m.n) && m.n >= 0) { if (p.itemSeq == null) p.itemSeq = m.n - (m.i ? 1 : 0); if (m.n > p.itemSeq) { p.itemPending = Math.min(3, (p.itemPending || 0) + m.n - p.itemSeq); p.itemSeq = m.n; } } p.inAt = performance.now(); } }
     // Start-Knopf am Handy: Lobby starten bzw. nach dem Rennen weiter
     // Strecke/Cup und Runden vom Handy aus (Lobby oder Ergebnis-Bildschirm); alle Handys bekommen die neue Auswahl
     else if (m.t === 'cfg' && players.some(p => p.conn === c) && (lobbyOpen || (R && R.ended))) {
@@ -393,27 +407,28 @@ function initHost() {
     const omaRun = (save.rmode === 'gp' ? Track.CUPS[save.cup].tracks : [save.track]).every(t => TR[t] && TR[t].world === 'oma'), rollK = KARTS.findIndex(k => k.id === 'rollator');
     if (omaRun) cpool.sort((a, b) => (OMA.is(CHARS[a]) ? 1 : 0) - (OMA.is(CHARS[b]) ? 1 : 0));
     for (let b = 0; specs.length < total; b++) { const lg = pool[b % pool.length]; const ch = cpool.length ? cpool.pop() : Math.floor(Math.random() * CHARS.length); specs.push({ name: CHARS[ch].name, logo: lg, char: ch, kart: omaRun && OMA.is(CHARS[ch]) && rollK >= 0 ? rollK : Math.floor(Math.random() * KARTS.length), human: false, skill: save.skill }); }
+    if (save.tandem !== false) specs.forEach((sp, i) => { sp.co = sp.human ? (i === 0 && !(players[0] && players[0].conn) ? coOf(sp.char) : (sp.char + 7) % CHARS.length) : (cpool.length ? cpool.pop() : (sp.char + 11) % CHARS.length); sp.sp = spOf(sp.char); sp.sp2 = spOf(sp.co); });
     GP = { specs, tt, free, cc: tt || free ? 2 : (save.cc == null ? 2 : save.cc), race: 0, pts: specs.map(() => 0), gp: save.rmode === 'gp' && !tt, order: save.rmode === 'gp' && !tt ? Track.CUPS[save.cup].tracks.slice() : [save.track], multi };
     startRace();
   }
   function startRace() {
     const tIdx = GP.order[GP.race], mi = GP.cc === 3, tr = getTrack(tIdx, mi), tKey = mi ? 'm' + tIdx : tIdx; if (curTrackIdx !== tKey) { View.setTrack(tr); curTrackIdx = tKey; }
-    const racers = GP.specs.map((s, i) => ({ name: s.name, logo: s.logo, char: s.char, kart: s.kart, assist: s.assist, human: s.human, skill: s.skill, color: View.KCOL[i % 8] }));
+    const racers = GP.specs.map((s, i) => ({ name: s.name, logo: s.logo, char: s.char, co: s.co, sp: s.sp, sp2: s.sp2, kart: s.kart, assist: s.assist, human: s.human, skill: s.skill, color: View.KCOL[i % 8] }));
     const S = Sim.create({ track: tr, cc: GP.cc, laps: GP.free ? 999999 : save.laps, racers, items: !GP.tt, free: GP.free, shuffle: true }), humans = players.slice();
     humans.forEach(p => { p.gone = p.gone && !p.conn ? false : p.gone; });
     View.perfReset(); acc = 0; R = { S, tr, tIdx, humans, count: 4, lastCount: 99, huds: [], miniAt: 0, pushAt: 0, firstFin: false, ended: false, trackMap: null };
     humans.forEach((p, i) => { if (p.gone) S.karts[i].auto = true; p.inAt = performance.now(); p.input.s = p.input.g = p.input.b = p.input.d = p.input.i = 0; p.itemPending = 0; });
     // Handys mit eigenem Rennbild brauchen kein Feld im Splitscreen; zeigt keiner ein eigenes Bild hier, bleiben alle sichtbar (Fernseher als Zuschauerbild)
     R.vis = humans.map((_, i) => i).filter(i => !(humans[i].conn && humans[i].view)); if (!R.vis.length) R.vis = [0]; R.rid = ++raceNo; R.snapAt = 0; R.fxq = [];
-    nVp = Math.min(4, R.vis.length); $('tbar').classList.toggle('mid', nVp > 1); View.resize(innerWidth, innerHeight, nVp); View.setupRace(S, R.vis.slice(0, 4)); buildHud(); buildMap();
+    nVp = Math.min(4, R.vis.length); $('tbar').classList.toggle('mid', nVp > 1); View.resize(innerWidth, innerHeight, nVp); View.setupRace(S, R.vis.slice(0, 4)); ghostLoad(); buildHud(); buildMap();
     humans.forEach(p => { if (p.conn && p.view) sendRace(p); });
     document.body.classList.add('racing'); themeCol(R && R.tr && R.tr.def.sky ? R.tr.def.sky[0] : null); $('menu').hidden = true; $('res').hidden = true; $('hud').hidden = false; $('tbar').hidden = false; AUD.bed('race'); RADIO.resume();
-    const raceLoad = $('raceLoad'); raceLoad.hidden = false; raceLoad.querySelector('.race-load-title').textContent = TR[tIdx].name; raceLoad.querySelector('.race-load-sub').textContent = GP.free ? 'FREIES FAHREN' : GP.gp ? Track.CUPS[save.cup].name : 'ARCADE-RENNEN'; raceLoad.querySelector('.race-load-tip').textContent = ['Drifte durch Kurven und löse einen Mini-Turbo aus.','Nutze Boostfelder und Windschatten zum Überholen.','Meide Hindernisse – wähle deine Ideallinie.'][tIdx % 3]; R.introLoading = true; const t0 = performance.now(); View.prepare(racers.map(r => r.char), 6000).then(() => { if (!R || R.S !== S) return; R.introTimer = setTimeout(() => { if (R && R.S === S) { R.introLoading = false; raceLoad.hidden = true; push('grid'); } }, Math.max(0, 1350 - (performance.now() - t0))); }); paused = false;
+    const raceLoad = $('raceLoad'); raceLoad.hidden = false; raceLoad.querySelector('.race-load-title').textContent = TR[tIdx].name; raceLoad.querySelector('.race-load-sub').textContent = GP.free ? 'FREIES FAHREN' : GP.gp ? Track.CUPS[save.cup].name : 'ARCADE-RENNEN'; raceLoad.querySelector('.race-load-tip').textContent = ['Drifte durch Kurven und löse einen Mini-Turbo aus.','Nutze Boostfelder und Windschatten zum Überholen.','Meide Hindernisse – wähle deine Ideallinie.'][tIdx % 3]; R.introLoading = true; const t0 = performance.now(); View.prepare(racers.map(r => r.char).concat(racers.filter(r => r.co != null).map(r => r.co)), 6000).then(() => { if (!R || R.S !== S) return; R.introTimer = setTimeout(() => { if (R && R.S === S) { R.introLoading = false; raceLoad.hidden = true; push('grid'); } }, Math.max(0, 1350 - (performance.now() - t0))); }); paused = false;
   }
   function banner(t, sub, ms, cls) { const b = $('banner'); b.innerHTML = esc(t) + (sub ? '<small>' + esc(sub) + '</small>' : ''); b.className = 'pop'; b.style.color = cls || '#fff'; b.hidden = false; void b.offsetWidth; clearTimeout(banner.k); if (ms) banner.k = setTimeout(() => { b.hidden = true; }, ms); }
   // HUD je Fahrer
   function buildHud() {
-    const hud = $('hud'); hud.innerHTML = ''; R.huds = R.vis.slice(0, 4).map(i => { const p = R.humans[i], d = document.createElement('div'); d.className = 'vp'; d.style.setProperty('--sc', SLOTC[i]); d.innerHTML = `<div class="spl"></div><div class="nm">${esc(p.name)}</div><div class="item"></div><div class="fog"></div><canvas width="160" height="160"></canvas><div class="pos"></div><div class="lap"></div><div class="spd"></div><div class="msg"></div>`; hud.appendChild(d); return { ki: i, d, c: {}, spl: d.querySelector('.spl'), item: d.querySelector('.item'), fog: d.querySelector('.fog'), fogT: 0, cv: d.querySelector('canvas'), pos: d.querySelector('.pos'), lap: d.querySelector('.lap'), spd: d.querySelector('.spd'), msg: d.querySelector('.msg'), lastItem: null, msgT: 0 }; }); layoutHud();
+    const hud = $('hud'); hud.innerHTML = ''; R.huds = R.vis.slice(0, 4).map(i => { const p = R.humans[i], d = document.createElement('div'); d.className = 'vp'; d.style.setProperty('--sc', SLOTC[i]); d.innerHTML = `<div class="spl"></div><div class="nm">${esc(p.name)}</div><div class="item"></div><div class="item2" hidden title="Beifahrer-Item (Tauschen)"></div><div class="fog"></div><canvas width="160" height="160"></canvas><div class="pos"></div><div class="lap"></div><div class="spd"></div><div class="msg"></div>`; hud.appendChild(d); return { ki: i, d, c: {}, spl: d.querySelector('.spl'), item: d.querySelector('.item'), item2: d.querySelector('.item2'), last2: undefined, fog: d.querySelector('.fog'), fogT: 0, cv: d.querySelector('canvas'), pos: d.querySelector('.pos'), lap: d.querySelector('.lap'), spd: d.querySelector('.spd'), msg: d.querySelector('.msg'), lastItem: null, msgT: 0 }; }); layoutHud();
   }
   function layoutHud() { if (!R) return; const rs = View.rects(Math.max(1, R.huds.length), innerWidth, innerHeight); R.huds.forEach((h, i) => { const r = rs[i]; Object.assign(h.d.style, { left: r[0] + 'px', top: (innerHeight - r[1] - r[3]) + 'px', width: r[2] + 'px', height: r[3] + 'px' }); }); }
   function buildMap() {
@@ -429,8 +444,9 @@ function initHost() {
   function updateHud(dt) {
     const S = R.S; R.huds.forEach(h => {
       const i = h.ki, k = S.karts[i], n = S.karts.length, lap = Math.max(1, Math.min(S.laps, k.lap));
-      const c = h.c, pos = k.rank * 100 + n, lp = k.finished ? S.laps : lap, sp = Math.round(Math.max(0, k.vf) * 3.6 * 0.9), roll = k.itemT > 0, fast = k.boostT > 0;
+      const c = h.c, pos = k.rank * 100 + n, lp = k.finished ? S.laps : lap, sp = Math.round(Math.max(0, k.vf) * 3.6 * 0.9), roll = k.itemT > 0 && !(k.item && k.co != null), roll2 = k.itemT > 0 && !!k.item && k.co != null, fast = k.boostT > 0;
       if (c.pos !== pos) { c.pos = pos; h.pos.innerHTML = `${k.rank}<small>.</small>`; h.pos.dataset.p = k.rank <= 3 ? k.rank : 'n'; } const cn = k.coins || 0; if (c.lap !== lp || c.cn !== cn) { c.lap = lp; c.cn = cn; h.lap.innerHTML = `<span class="cn${cn >= 10 ? ' max' : ''}"><i></i>${String(cn).padStart(2, '0')}</span><span class="lp"><b>🏁</b>${lp}<small>/${S.laps}</small></span>`; } if (c.sp !== sp) { c.sp = sp; h.spd.innerHTML = `${sp}<small>km/h</small>`; }
+      if (h.item2) { const i2 = k.co == null ? null : roll2 ? '❓' : itemHtml(k.item2, k.item2N) || ''; if (i2 !== h.last2) { h.last2 = i2; h.item2.hidden = i2 == null; h.item2.innerHTML = i2 || ''; h.item2.classList.toggle('empty', !i2); h.item2.classList.toggle('roll', roll2); } }
       const it = roll ? '❓' : itemHtml(k.item, k.itemN); if (it !== h.lastItem) { h.item.innerHTML = it; h.lastItem = it; h.item.classList.toggle('empty', !it); } if (c.roll !== roll) { c.roll = roll; h.item.classList.toggle('roll', roll); } if (c.fast !== fast) { c.fast = fast; h.spl.classList.toggle('on', fast); }
       if (h.msgT > 0) { h.msgT -= dt; if (h.msgT <= 0) h.msg.textContent = ''; } if (h.fogT > 0) { h.fogT -= dt; if (h.fogT <= 0) h.fog.classList.remove('on'); }
       if (R.miniAt <= 0) drawMini(h, i);
@@ -460,14 +476,17 @@ function initHost() {
     const S = R.S;
     switch (e.t) {
       case 'go': banner('LOS!', '', 800, '#7cff9a'); AUD.sfx.beep(true); break;
-      case 'rocket': if (isHuman(e.k)) { AUD.sfx.boost(); hmsg(e.k, e.tier > 1 ? '🚀 RAKETENSTART!' : '🔥 GUTER START!', 1.4); } { const k = S.karts[e.k]; if (k) View.burst(k.x - Math.sin(k.th) * 2.4, 0.8, k.z - Math.cos(k.th) * 2.4, e.tier > 1 ? 0xff9a1f : 0x66ccff, 14 + e.tier * 6, 5, 3); } break;
+      case 'rocket': if (isHuman(e.k)) { AUD.sfx.boost(); hmsg(e.k, e.tier > 2 ? '🚀🚀 DOPPELTURBO-START!' : e.tier > 1 ? '🚀 RAKETENSTART!' : '🔥 GUTER START!', 1.5); } { const k = S.karts[e.k]; if (k) View.burst(k.x - Math.sin(k.th) * 2.4, 0.8, k.z - Math.cos(k.th) * 2.4, e.tier > 1 ? 0xff9a1f : 0x66ccff, 14 + e.tier * 6, 5, 3); } break;
       case 'stall': if (isHuman(e.k)) { AUD.sfx.wall(); hmsg(e.k, '💨 Motor abgewürgt – zu früh Gas!', 1.6); } break;
       case 'box': if (isHuman(e.k)) AUD.sfx.box(); break;
       case 'coin': if (isHuman(e.k)) AUD.sfx.coin(); break;
       case 'jump': if (isHuman(e.k)) AUD.sfx.pad(); break;
       case 'trick': if (isHuman(e.k)) { AUD.sfx.coin(); hmsg(e.k, 'TRICK!', 0.9); } break;
       case 'got': if (isHuman(e.k)) { AUD.sfx.got(); hmsg(e.k, OMA.item(chOf(e.k), e.item, ITEM_NAME[e.item]), 1.2); } break;
-      case 'use': if (isHuman(e.k)) { const os = OMA.say(chOf(e.k), e.item === 'boost' ? 'boost' : 'use'); if (os && Math.random() < 0.5) hmsg(e.k, '💬 ' + os, 1.4); ({ boost: AUD.sfx.boost, shield: AUD.sfx.shield, rocket: AUD.sfx.rocket, mine: AUD.sfx.drop, banana: AUD.sfx.drop, rock: AUD.sfx.throw, flash: () => {}, fog: AUD.sfx.fogs })[e.item](); } break;
+      case 'use': if (isHuman(e.k)) { const os = OMA.say(chOf(e.k), e.item === 'boost' ? 'boost' : 'use'); if (os && Math.random() < 0.5) hmsg(e.k, '💬 ' + os, 1.4); (({ boost: AUD.sfx.boost, shield: AUD.sfx.shield, rocket: AUD.sfx.rocket, mine: AUD.sfx.drop, banana: AUD.sfx.drop, rock: AUD.sfx.throw, flash: () => {}, fog: AUD.sfx.fogs, giga: AUD.sfx.throw, comet: AUD.sfx.thunder, heart: AUD.sfx.shield, fire: AUD.sfx.boost })[e.item] || (() => {}))(); if (SP_NAME[e.item]) hmsg(e.k, ITEM_ICON[e.item] + ' ' + SP_NAME[e.item].toUpperCase() + '!', 1.3); } break;
+      case 'swap': if (isHuman(e.k)) { AUD.sfx.got(); const k = S.karts[e.k]; hmsg(e.k, '⇄ ' + (CHARS[k.sw ? k.co : k.char] || {}).name + ' fährt!', 1.1); } break;
+      case 'comet': AUD.sfx.thunder(); (e.ids || []).forEach(id => { if (isHuman(id)) hmsg(id, '☄️ FUNK-KOMET!', 1.3); }); break;
+      case 'burn': AUD.sfx.hit(); break;
       case 'hit': if (isHuman(e.k)) { if (e.kind === 'banana') AUD.sfx.slip(); else if (e.kind !== 'flash') AUD.sfx.hit(); const os = OMA.say(chOf(e.k), 'hit'); hmsg(e.k, os ? '💬 ' + os : { banana: 'AUSGERUTSCHT!', rock: 'FELSBROCKEN!', flash: 'FUNK-BLITZ!', rocket: 'GETROFFEN!', mine: 'STÖRSIGNAL!' }[e.kind] || 'GETROFFEN!', 1.3); const p = R.humans[e.k]; if (p.conn) send(p.conn, { t: 'ev', e: 'hit' }); } break;
       case 'flash': AUD.sfx.thunder(); { const f = $('fxFlash'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); } if (isHuman(e.k)) hmsg(e.k, 'FUNK-BLITZ!', 1.2); break;
       case 'fog': AUD.sfx.fogs(); (e.ids || []).forEach(id => { if (isHuman(id)) { const h = hudOf(id); if (h) { h.fog.classList.add('on'); h.fogT = 3.8; } hmsg(id, 'NEBELBOMBE!', 1.4); } }); break;
@@ -479,7 +498,7 @@ function initHost() {
       case 'pad': if (isHuman(e.k)) AUD.sfx.pad(); break;
       case 'miniturbo': if (isHuman(e.k)) { AUD.sfx.mini(e.tier); hmsg(e.k, ['', 'MINI-TURBO', 'SUPER-TURBO', 'ULTRA-TURBO'][e.tier], 1); } break;
       case 'boom': AUD.sfx.boom(); break;
-      case 'lap': if (isHuman(e.k)) { AUD.sfx.lap(); const left = S.laps - e.lap; hmsg(e.k, left === 1 ? 'LETZTE RUNDE!' : left > 1 ? 'RUNDE ' + (e.lap + 1) : '', 1.8); if (GP.tt || true) noteLap(e.k, e.time); } break;
+      case 'lap': if (GP.tt && e.k === 0) ghostLap(e.time); if (isHuman(e.k)) { AUD.sfx.lap(); const left = S.laps - e.lap; hmsg(e.k, left === 1 ? 'LETZTE RUNDE!' : left > 1 ? 'RUNDE ' + (e.lap + 1) : '', 1.8); if (GP.tt || true) noteLap(e.k, e.time); } break;
       case 'finish': if (isHuman(e.k)) { const k = S.karts[e.k]; if (!R.firstFin) { R.firstFin = true; AUD.sfx.finish(); } hmsg(e.k, k.rank === 1 ? '🏆 SIEG!' : 'ZIEL! Platz ' + k.rank, 4); if (e.k === 0 && !GP.multi) { const os = OMA.say(chOf(e.k), k.rank <= 3 ? 'win' : 'lose'); banner(k.rank === 1 ? 'SIEG!' : 'ZIEL!', 'Platz ' + k.rank + (os ? ' · „' + os + '“' : ''), os ? 3200 : 2200, '#ffd24a'); } const p = R.humans[e.k]; if (p.conn) send(p.conn, { t: 'ev', e: 'fin', pos: k.rank }); } break;
     }
   }
@@ -490,7 +509,7 @@ function initHost() {
     return R.humans.map((p, i) => {
       if (p.conn) { const k = R.S.karts[i]; const stale = now - (p.inAt || 0) > 5000; if (!k.finished) k.auto = !!p.gone || stale; const use = (p.itemPending || 0) > 0 && !!k.item && k.itemT <= 0; if (use) p.itemPending--; return { ...p.input, g: stale ? 0 : p.input.g, b: stale ? 0 : p.input.b, s: stale ? 0 : p.input.s, i: use ? 1 : 0, itemPress: use }; }
       let r; if (p.pad != null) r = Pads.read(pads.find(x => x.index === p.pad));
-      else { const pa = Pads.any(); let s = (kb.r - kb.l) + tc.s + (p.local ? pa.s : 0); if (TILT.on && !s) s = TILT.v; r = { s: clampN(s, -1, 1), aim: (p.local && pa.aim) || (kb.b || kb.lb || tc.lb ? -1 : 0) }; ['g', 'b', 'd', 'i', 'lb', 'hn', 'cam', 'rn', 'rp', 'ro'].forEach(k => { r[k] = kb[k] || tc[k] || (p.local && pa[k]) ? 1 : 0; }); }
+      else { const pa = Pads.any(); let s = (kb.r - kb.l) + tc.s + (p.local ? pa.s : 0); if (TILT.on && !s) s = TILT.v; r = { s: clampN(s, -1, 1), aim: (p.local && pa.aim) || (kb.b || kb.lb || tc.lb ? -1 : 0) }; ['g', 'b', 'd', 'i', 'sw', 'lb', 'hn', 'cam', 'rn', 'rp', 'ro'].forEach(k => { r[k] = kb[k] || tc[k] || (p.local && pa[k]) ? 1 : 0; }); }
       extraActs(p, i, r); return r;
     });
   }
@@ -525,6 +544,13 @@ function initHost() {
   // ------------------------------------------------------------------ Hauptschleife
   // Feste 60-Hz-Simulation; gezeichnet wird zwischen den letzten beiden Schritten interpoliert (flüssig auch bei 90/120/144 Hz).
   // Verdeckte Ansichten (Einrichten, Lobby, Ergebnis) werden mit weniger Bildern gezeichnet, Pause nur bei Bedarf.
+  // Zeitfahren mit Geist: die beste eigene Runde je Strecke wird aufgezeichnet (alle 0,1 s) und fährt durchscheinend mit
+  const GKEY = id => 'akGhost:' + id;
+  function ghostRec(S) { const k = S.karts[0]; if (S.state !== 'race' || k.finished) return; R.gc = (R.gc || 0) + 1; if (R.gc % 6) return; (R.gRec || (R.gRec = [])).push(Math.round(k.x * 10) / 10, Math.round(k.z * 10) / 10, Math.round(k.th * 100) / 100); }
+  function ghostLap(time) { const f = R.gRec || []; R.gRec = []; R.gc = 0; if (f.length < 30) return; const id = R.tr.def.id + (R.tr.def.mirror ? ':m' : ''); let old = null; try { old = JSON.parse(localStorage.getItem(GKEY(id)) || 'null'); } catch (e) {} if (!old || time < old.t) { const p = R.humans[0] || {}; try { localStorage.setItem(GKEY(id), JSON.stringify({ t: time, f, ch: p.char == null ? save.char : p.char, kt: p.kart == null ? save.kart : p.kart })); } catch (e) {} if (old) hmsg(0, '👻 Neuer Geist gespeichert!', 1.6); } }
+  function ghostLoad() { R.ghost = null; if (!GP.tt) { View.ghost(null); return; } try { R.ghost = JSON.parse(localStorage.getItem(GKEY(R.tr.def.id + (R.tr.def.mirror ? ':m' : ''))) || 'null'); } catch (e) {} View.ghost(R.ghost ? { char: R.ghost.ch, kart: R.ghost.kt, logo: 6 } : null); if (R.ghost) setTimeout(() => R && hmsg(0, '👻 Geist: ' + fmtT(R.ghost.t), 2.2), 3600); }
+  function ghostStep() { const g = R.ghost, S = R.S; if (!g) return; const k = S.karts[0], f = g.f, n = f.length / 3, u = S.state === 'race' ? (S.t - k.lapStart) * 10 : 0, i = Math.min(n - 1, Math.floor(u)), j = Math.min(n - 1, i + 1), a = Math.min(1, u - i); const x = f[i * 3] + (f[j * 3] - f[i * 3]) * a, z = f[i * 3 + 1] + (f[j * 3 + 1] - f[i * 3 + 1]) * a, th = f[i * 3 + 2] + wrapA(f[j * 3 + 2] - f[i * 3 + 2]) * a; View.ghostAt(x, z, th, S.state === 'race' && !k.finished); }
+  const wrapA = a => { while (a > Math.PI) a -= 2 * Math.PI; while (a < -Math.PI) a += 2 * Math.PI; return a; };
   let acc = 0, tAll = 0, skip = 0, dtAcc = 0;
   const snap = S => { for (const k of S.karts) { k.px = k.x; k.pz = k.z; k.pth = k.th; } };
   function frame(now) {
@@ -533,7 +559,7 @@ function initHost() {
     const live = !paused && !R.ended;
     if (live) {
       const ff = window.__ffwd || 1; acc += dt * ff; let n = 0; const S = R.S, fe = [];
-      while (acc >= 1 / 60 && n++ < 5 * ff && !R.introLoading) { acc -= 1 / 60; snap(S); Sim.step(S, 1 / 60, readInputs()); S.events.forEach(onEvent); for (const e of S.events) fe.push(e); for (const e of S.events) if (FXE[e.t] && R.fxq.length < 40) R.fxq.push({ t: e.t, x: e.x == null ? undefined : r2(e.x), z: e.z == null ? undefined : r2(e.z), k: e.k, ids: e.ids, item: e.item }); if (S.state === 'done') break; }
+      while (acc >= 1 / 60 && n++ < 5 * ff && !R.introLoading) { acc -= 1 / 60; snap(S); Sim.step(S, 1 / 60, readInputs()); if (GP.tt) ghostRec(S); S.events.forEach(onEvent); for (const e of S.events) fe.push(e); for (const e of S.events) if (FXE[e.t] && R.fxq.length < 40) R.fxq.push({ t: e.t, x: e.x == null ? undefined : r2(e.x), z: e.z == null ? undefined : r2(e.z), k: e.k, ids: e.ids, item: e.item }); if (S.state === 'done') break; }
       S.events = fe;                      // alle Ereignisse dieses Bildes an die Effekte (auch bei 30 fps keine verschluckten Treffer/Turbos)
       if (acc >= 1 / 60) acc = 0;        // Rückstand nach Hängern verwerfen statt aufzustauen
       if (S.state === 'grid' && !R.introLoading) { const c = Math.ceil(S.count - 0.2); if (c !== R.lastCount && c >= 1 && c <= 3) { R.lastCount = c; banner(String(c), '', 900, c === 1 ? '#ffd24a' : '#fff'); AUD.sfx.beep(false); } }
@@ -543,7 +569,7 @@ function initHost() {
     }
     if (paused) { if (!R.dirty) return; R.dirty = false; View.renderRace(R.S, 0, tAll, nVp, 1); return; }
     dtAcc += dt; if (!live && (skip = (skip + 1) % 2)) return;
-    View.renderRace(R.S, dtAcc, tAll, nVp, live ? Math.min(1, acc * 60) : 1); dtAcc = 0; if (R.S.events.length) R.S.events = []; if (live) View.perf(raw);
+    if (R.ghost) ghostStep(); View.renderRace(R.S, dtAcc, tAll, nVp, live ? Math.min(1, acc * 60) : 1); dtAcc = 0; if (R.S.events.length) R.S.events = []; if (live) View.perf(raw);
   }
   // Tastatur
   addEventListener('keydown', e => { if (keyGrab) { e.preventDefault(); const f = keyGrab; keyGrab = null; f(e.key === 'Escape' ? null : e.key.toLowerCase()); return; } if (e.target && e.target.tagName === 'INPUT') return; const k = KEYS[e.key.toLowerCase()]; if (k && (R || 'lrgbdi'.includes(k) && k.length === 1)) { kb[k] = 1; if (R) e.preventDefault(); } if (e.key === 'm' || e.key === 'M') togSnd(); if (e.key === 'Escape' && R && !R.ended) $('bPause').click(); });

@@ -116,6 +116,8 @@ const Track = (() => {
     { name: 'Elemente-Cup', tracks: [5, 6, 9] }, { name: 'Abenteuer-Cup', tracks: [7, 10, 8] }, { name: 'Portal-Cup', tracks: [11, 12, 14] }, { name: 'Fantasy-Cup', tracks: [13, 15, 16] }, { name: 'RicoReWi-Cup', tracks: [17, 16, 11] },
     { name: 'Märchen-Cup', tracks: [18, 19, 20] }, { name: 'Insel-Cup', tracks: [21, 22, 23] }, { name: 'Stadt-Cup', tracks: [24, 25, 26] },
     { name: 'Kaffee-Cup', icon: '☕', tracks: [27, 28, 29] }, { name: 'Kuchen-Cup', icon: '🍰', tracks: [30, 31, 32] }, { name: 'Großer Rentenpokal', icon: '🏆', tracks: [29, 32, 28, 30] }];
+  // Alle-Strecken-Cup: jede Strecke einmal, Punkte über die ganze Tour
+  CUPS.push({ name: 'Weltentour-Cup (alle Strecken)', icon: '🌍', all: true, tracks: DEFS.map((_, i) => i) });
   const SP = 3;                                       // Abstand der Abtastpunkte in Metern
   function cr(p0, p1, p2, p3, t) { const t2 = t * t, t3 = t2 * t; return [0, 1].map(k => 0.5 * ((2 * p1[k]) + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3)); }
   // Polygon mit Eckradien -> dichte Kontrollpunkte (Geraden bleiben gerade, Ecken werden Kreisbögen)

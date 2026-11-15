@@ -335,8 +335,28 @@ body.touch #mbox{backdrop-filter:none!important;-webkit-backdrop-filter:none!imp
 #menu *{scrollbar-width:none}#menu *::-webkit-scrollbar{display:none}
 #menu .pfoc{transition:box-shadow .14s ease-out,transform .14s ease-out,background .14s}
 #mcont,#tabs,#mchar{scroll-behavior:smooth}
+
+/* ---- Darstellungsfehler-Korrektur (Handy hoch/quer) ---- */
+body.touch .sb{overflow:visible}.sb .cd{border-radius:50%}
+body.touch .sb .bl{max-width:none;overflow:visible;text-overflow:clip;background:rgba(6,8,26,.78);border-radius:8px;padding:0 5px;margin-top:1px;font-size:9.5px;letter-spacing:0;line-height:1.35}
+body.touch #bAtk .bl{font-size:12px;padding:0 6px}
+body.touch #bDodge .bl,body.touch #bUse .bl,body.touch #bJump .bl,body.touch #bSkill .bl{font-size:9.5px;letter-spacing:0}
+#mates .pm::after{bottom:1px;font-size:9px;line-height:1.3}
+#flt .ft{left:12px;right:max(130px,calc(env(safe-area-inset-right) + 120px));transform:none;max-width:none;text-align:left}#flt .ft b{font-size:clamp(15px,4.6vw,20px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#flt .ft small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#radioNow{max-width:min(520px,calc(100% - 24px))}
+body.rbat #radioNow,body.rbat #quest{display:none!important}
+body.wtc #banner,body.wtc #zone{opacity:0!important}
+@media (orientation:portrait) and (max-width:700px){
+ body.touch:has(#radioNow.on) #lcol,body.touch:has(#radioNow.on) #mapbox{top:calc(max(12px,env(safe-area-inset-top)) + 34px)}
+ #radioNow{top:max(6px,env(safe-area-inset-top));padding:3px 12px 3px 8px;font-size:11.5px;max-width:calc(100% - 24px)}
+ #zone{max-width:128px;margin-left:auto;margin-right:-6px;line-height:1.15;font-size:12px}
+ body.touch #quest{top:calc(max(12px,env(safe-area-inset-top)) + 196px)}body.touch:has(#radioNow.on) #quest{top:calc(max(12px,env(safe-area-inset-top)) + 230px)}
+}
+@media (orientation:landscape) and (max-height:520px){
+ #radioNow{left:calc(max(10px,env(safe-area-inset-left)) + 250px);transform:translate(0,-14px);max-width:calc(100vw - 250px - 380px);font-size:11.5px;padding:3px 12px 3px 8px}#radioNow.on{transform:none}
+}
 </style>
-  <script type="module" crossorigin src="./assets/index-GSEeb_TO.js"></script>
+  <script type="module" crossorigin src="./assets/index-sqmrJ03p.js"></script>
 </head>
 <body>
 <canvas id="cv"></canvas><div id="vig"></div><div id="hurt"></div><div id="fx"></div>
