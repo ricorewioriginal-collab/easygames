@@ -4,6 +4,7 @@ import { GULLIVER } from './mwgulliver.js';
 // link = nach welchem Kapitel die Welt als Abstecher auf dem Weg liegt (Lunaris = 1 … Ignara = 7).
 // Aufträge: collect (Teile einsammeln), ring (Stellen auslösen), find (jemanden finden), defeat (Gegner, optional Wellen), boss (mit Reaktionsbefehl).
 import { ROBIN } from './mwrobin.js';
+import { HOLLOW } from './mwhollow.js';
 const L = (name, text) => [name, text];
 const FREQ = [['ricorewi', 'Ricorewi'], ['yourtime-fm', 'YourTime-FM'], ['rapradio24', 'Rapradio 24'], ['schlagerpop24', 'Schlagerpop 24'], ['chartradio24', 'Chartradio 24'], ['clubradio24', 'Clubradio 24'], ['anmacha24', 'Anmacha 24'],
   ['radiofloh', 'Radiofloh'], ['rockradio24', 'Rockradio 24'], ['christmasradio24', 'Christmasradio 24'], ['kultradio24', 'Kultradio 24'], ['zockerfm', 'Zocker FM'], ['special-radio', 'Special-Radio']]
@@ -850,3 +851,4 @@ export const WORLDS = [
   GULLIVER,
 ];
 WORLDS.push(ROBIN);
+WORLDS.push(HOLLOW);   // Welt 36 (Sleepy Hollow) steht in mwhollow.js
