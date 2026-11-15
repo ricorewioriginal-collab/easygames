@@ -88,6 +88,19 @@
         "Erfahrung gibt es für Verkäufe, Ziele, Vorbestellungen, Diebesfänge und den Tagesgewinn. Stufe für Stufe wird mehr freigeschaltet.",
         "Gespeichert wird automatisch alle 45 Sekunden und am Tagesende, auf Wunsch zusätzlich mit Google."
       ]
+    },
+    {
+      "t": "Neue Systeme im Überblick",
+      "p": [
+        "Frische & MHD: Über Regalen mit kurzer Haltbarkeit erscheinen ⏰ (MHD heute/morgen), 🏷️ (reduziert) und 🤢 (abgelaufen). Stell dich davor und drück die Aktion: Der Rabattaufkleber −30 % bringt die Ware noch raus. Abgelaufenes bleibt über Nacht im Regal und muss aussortiert werden, sonst kostet es Ruf. Mit der Rette-mich-App (Ausbau) gehen markierte Waren abends als Tüte statt in die Tonne.",
+        "Personal mit Charakter: Jede Kraft hat Stärken, Laune und einen Schichtplan (Ganztags, Früh- oder Spätschicht). Loben hebt die Laune, eine Prämie (25 €, abends abgerechnet) noch mehr. Schlechte Laune macht langsam, ein Pausenraum hilft.",
+        "Kunden: Fehlt Ware, äußern Kunden Wünsche (Fenster „Kunden & Sterne“). Stammkunden haben Lieblingsprodukte. Die Sterne setzen sich aus Preis, Auswahl, Sauberkeit, Frische und Service zusammen.",
+        "Ereignisse: Hitzewelle, Feiertage, Stromausfall, Ladendiebe, Lebensmittelkontrolle, Busausflüge, Promi-Besuch, Rohrbruch, Streik beim Rivalen und mehr – angekündigt oben neben dem Wetter.",
+        "Draußen: Vor dem Laden kaufst du Wochenmarkt-Stände (ab Stufe 2) für regionale Höfe und ein Café (Kaffeebar, Terrasse, Bistro). Bring Kaffee- und Kuchenkartons an die Theke, Gäste setzen sich an die Tische.",
+        "Rivale Billigo: Das Fenster „Viertel“ zeigt den Marktanteil. Billigo macht Aktionen (Lieferdienst, Flyer, Abwerben, Kopie deiner Angebote). Kontern mit eigenen Flyern (150 €) oder der Preisgarantie (25 €/Tag).",
+        "Tag, Nacht & Wetter: Die Sonne wandert, abends gehen die Laternen an. Regen, Schnee und Gewitter machen den Boden nass und schmutzig, Nebel und Gewitter halten Kunden zu Hause, Hitze bringt Eis- und Getränkekäufer. Mit dem Spätverkauf bist du bis 22 Uhr offen.",
+        "Koop zu zweit: Unter Menü → Optionen „👥 Koop“ einschalten. Der Bildschirm teilt sich. Spieler 2 nimmt einen zweiten Controller (A = Aktion, RB = abstellen, LT = rennen) oder die Tastatur: ↑↓ laufen, ←→ drehen, Enter = Aktion, Strg rechts = abstellen, Shift rechts = rennen. Kasse und Geld sind gemeinsam."
+      ]
     }
   ],
   "ratgeber": [
@@ -133,6 +146,18 @@
         "Nur eine Kasse bei vielen Kunden: Lange Schlangen kosten Zufriedenheit.",
         "Kredit ohne Plan: Jeden Abend kosten 3 Prozent Zinsen.",
         "Pfützen liegen lassen – bei einer Inspektion gibt es Strafe."
+      ]
+    },
+    {
+      "t": "Tipps zu Frische, Team und Rivale",
+      "list": [
+        "Kleb Rabattaufkleber schon am Vortag (MHD morgen) – reduzierte Ware verkauft sich fast immer.",
+        "Sortiere 🤢-Regale vor dem Öffnen aus: Die Lebensmittelkontrolle verhängt sonst ein Bußgeld.",
+        "Teile Früh- und Spätschicht so ein, dass mittags beide da sind – Schichtkräfte kosten nur 60 % Lohn.",
+        "Lob jeden Tag einmal – es kostet nichts und hält die Laune oben.",
+        "Erfülle Kundenwünsche: Jeder erfüllte Wunsch gibt Ruf und Sterne.",
+        "Bei Regen lohnt sich der Schirmständer: weniger Pfützen, weniger Putzen.",
+        "Wenn Billigo einen Lieferdienst startet, hilft ein Flyer-Tag, Marktanteil zurückzuholen."
       ]
     }
   ],
@@ -314,6 +339,16 @@
         "💎 Kleiner Millionär: Habe 10.000 € auf dem Konto. Belohnung 500 €.",
         "📋 Lieferprofi: Liefere 10 Vorbestellungen aus. Belohnung 300 €."
       ]
+    },
+    {
+      "t": "Draußen, Café und Koop freischalten",
+      "steps": [
+        "Stufe 2: ersten Marktstand kaufen (Fenster „Markt & Café“), Hof wählen, Kartons vom Stand ins Regal bringen. Kaffeebar eröffnen und Kaffee/Kuchen bestellen.",
+        "Stufe 3: Rette-mich-App und Pausenraum kaufen.",
+        "Stufe 4: zweiter Stand, Café-Terrasse, Spätverkauf und Treuekarte.",
+        "Stufe 6–7: dritter Stand und Bistro – jetzt trägt das Café spürbar zum Gewinn bei.",
+        "Jederzeit: Koop einschalten, wenn jemand mitspielen will – Spieler 2 kann einräumen, scannen und kassieren."
+      ]
     }
   ],
   "faq": [
@@ -340,6 +375,14 @@
     {
       "q": "Ist das Geld weg, ist das Spiel vorbei?",
       "a": "Nein, das Konto kann ins Minus rutschen. Mit einem Kredit unter „Ausbau & Bank“ überbrückst du Engpässe, zahlst aber jeden Abend 3 Prozent Zinsen."
+    },
+    {
+      "q": "Wie spielen wir zu zweit?",
+      "a": "Menü → Optionen → „👥 Koop“. Spieler 2 nimmt einen zweiten Controller oder die Pfeiltasten mit Enter. Der Bildschirm teilt sich, Geld und Laden sind gemeinsam."
+    },
+    {
+      "q": "Warum liegt Ware mit 🤢 im Regal?",
+      "a": "Sie ist abgelaufen. Stell dich davor und drück die Aktion zum Aussortieren. Bleibt sie eine zweite Nacht liegen, sinkt dein Ruf."
     }
   ]
 }
