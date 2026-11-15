@@ -25,11 +25,12 @@ const T = {
 const KEYS = {
   keys: v => ({ F: v ? '↑ / W' : '→ / D', J: 'Leertaste', G: 'E', D: 'Shift' }),
   touch: v => ({ F: v ? 'Stick ↑' : 'Stick →', J: 'Springen', G: 'Greifen', D: 'Ducken' }),
-  pad: v => ({ F: v ? 'Stick ↑' : 'Stick →', J: 'A', G: 'X', D: 'B' })
+  pad: v => ({ F: v ? 'Linker Stick ↑' : 'Linker Stick →', J: 'Ⓐ', G: 'Ⓧ / RB', D: 'Ⓑ' })   // Controller: Hinweise, sobald einer verbunden ist
 };
 export function makeTips(el) {
   const head = el.querySelector('b'), body = el.querySelector('span'); let hideT = 0, cur = '';
-  const dev = () => document.documentElement.classList.contains('fp-pad') ? 'pad' : document.body.classList.contains('touch') ? 'touch' : 'keys';
+  const padOn = () => { try { return [...(navigator.getGamepads ? navigator.getGamepads() : [])].some(g => g && g.connected); } catch (e) { return false; } };
+  const dev = () => document.documentElement.classList.contains('fp-pad') || padOn() ? 'pad' : document.body.classList.contains('touch') ? 'touch' : 'keys';
   const esc = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
   return {
     text(name, back) { const t = T[name]; if (!t) return ''; const k = KEYS[dev()](!!back); return t.replace(/\{([FJGD])\}/g, (_, x) => `<kbd>${esc(k[x])}</kbd>`); },
