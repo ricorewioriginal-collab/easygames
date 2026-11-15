@@ -23,6 +23,8 @@ interface RunCfg {
   player: PlayerSpec; scenario?: Scenario; mode: Mode; allowFreeCam: boolean; autoDispatch?: boolean;
   /** gleich im Schaffner-Modus starten (Zug fährt selbst) */
   conductor?: boolean;
+  /** Zuschauen: Kinomodus (Kameras und Züge wechseln automatisch) */
+  cinema?: boolean;
   /** Rückkehr nach der Fahrt */
   back: () => void;
 }
@@ -144,7 +146,41 @@ function driveMenu() {
     h('div', { class: 'tiles' },
       tile('🚆', bare(t('free')), t('freeSub'), freeDrive),
       tile('🕒', bare(t('timetable')), t('timetableSub'), timetableRun),
-      tile('📦', bare(t('freight')), t('freightSub'), () => scenarioList(['freight', 'shunt'], t('freight')))));
+      tile('📦', bare(t('freight')), t('freightSub'), () => scenarioList(['freight', 'shunt'], t('freight'))),
+      tile('🎲', 'Zufallsdienst', 'Überraschungsfahrt: Strecke, Linie, Uhrzeit und Wetter', () => dutyStart(dutyPick(Math.random), driveMenu)),
+      tile('📅', 'Tagesdienst', dailyLabel(), () => dutyStart(dutyPick(seeded(dayKey())), driveMenu))));
+}
+
+// ------------------------------------------------------------------ Dienste: Zufall und Tagesdienst
+interface Duty { route: string; line: string; back: boolean; dep: number; title: string; weather: Weather }
+const dayKey = () => { const d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); };
+/** kleiner, deterministischer Zufall (mulberry32) */
+function seeded(seed: number) { let a = seed >>> 0; return () => { a = (a + 0x6d2b79f5) >>> 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+const SEASON_OF_MONTH: Weather['season'][] = ['winter', 'winter', 'spring', 'spring', 'spring', 'summer', 'summer', 'summer', 'autumn', 'autumn', 'autumn', 'winter'];
+function dutyPick(rnd: () => number): Duty | null {
+  try {
+    const pick = <T>(a: T[]) => a[Math.floor(rnd() * a.length) % a.length];
+    const routes = ROUTES.filter((r) => (LINES[r.id] ?? []).some((l) => l.kind !== 'GZ'));
+    const r = pick(routes); if (!r) return null;
+    const L = pick((LINES[r.id] ?? []).filter((l) => l.kind !== 'GZ'));
+    const back = rnd() < 0.5;
+    const hour = 6 + Math.floor(rnd() * 16);
+    const dep = nextDeparture(netOf(r.id), L, back, hour * 3600).stops[0].dep ?? hour * 3600;
+    const season = SEASON_OF_MONTH[new Date().getMonth()];
+    const kinds: WeatherKind[] = season === 'winter' ? ['clear', 'cloudy', 'snow', 'fog'] : ['clear', 'clear', 'cloudy', 'rain', season === 'summer' ? 'storm' : 'fog'];
+    const kind = pick(kinds);
+    const title = `${L.name}${back ? ' (Gegenrichtung)' : ''} ab ${hhmm(dep)}`;
+    return { route: r.id, line: L.id, back, dep, title, weather: { kind, season, wind: kind === 'storm' ? 18 : 3 } };
+  } catch { return null; }
+}
+function dailyLabel() { const d = dutyPick(seeded(dayKey())); return d ? `Heute: ${d.title} · ${WEATHER[d.weather.kind]}` : 'Jeden Tag ein neuer Dienst'; }
+function dutyStart(d: Duty | null, back: () => void) {
+  if (!d) { toast('Kein Dienst verfügbar.', 'warn'); return; }
+  const player: PlayerSpec = { kind: 'service', line: d.line, back: d.back, dep: d.dep };
+  const start = Math.max(0, d.dep - 45);
+  const assist = S().assist;
+  void run({ title: d.title, routeId: d.route, time: start, weather: d.weather, assist, traffic: 1, player, mode: 'drive', allowFreeCam: false, back, scenario: serviceScenario(d.route, d.title) },
+    { title: d.title, kind: 'service', routeId: d.route, time: start, weather: d.weather, assist, traffic: 1, player });
 }
 
 /** Schnellstart: erste Nahverkehrslinie der ersten Strecke, nächste Abfahrt ab 8 Uhr */
@@ -377,6 +413,7 @@ function career() {
       h('p', { class: 'small muted' }, next ? `${c.xp} / ${next.xp} Erfahrung bis „${next.name}“${exam ? ` · Prüfung: ${examDone ? 'bestanden ✔' : examSc?.title ?? exam}` : ''}` : `${c.xp} Erfahrung – höchster Rang erreicht`),
       c.exams.length ? h('p', { class: 'small' }, 'Bestandene Prüfungen: ', c.exams.map((e) => SCENARIO.get(e)?.title ?? e).join(', ')) : null,
       examSc && !examDone && c.xp >= (next?.xp ?? Infinity) * 0.6 ? h('div', { class: 'row' }, btn(`🎓 Prüfung starten: ${examSc.title}`, () => scenarioDetail(examSc, career), 'btn primary')) : examSc && !examDone ? h('p', { class: 'small muted' }, 'Die Prüfung wird freigeschaltet, sobald du 60 % der nötigen Erfahrung hast.') : null),
+    h('div', { class: 'tiles', style: 'margin-top:12px' }, tile('📅', 'Tagesdienst', dailyLabel(), () => dutyStart(dutyPick(seeded(dayKey())), career))),
     h('h3', null, 'Empfohlene Aufträge'), h('div', { class: 'grid' }, ...avail.map((s) => scenarioCard(s, p, career))),
     h('div', { class: 'row', style: 'margin-top:12px' }, btn('Alle Szenarien', () => scenarioList(null, t('scenarios'), career))),
     h('p', { class: 'notice' }, 'Ränge, Prüfungen und Fahrerlaubnisse sind Spielelemente und keine echte Qualifikation.'));
@@ -414,17 +451,19 @@ function boxMenu() {
 }
 
 function worldMenu(preset?: string) {
-  let route = preset ?? 'f1', time = 9 * 3600, kind: WeatherKind = 'clear', season: Weather['season'] = 'summer', traffic = 1.5, assist: Assist = S().assist;
+  let route = preset ?? 'f1', time = 9 * 3600, kind: WeatherKind = 'clear', season: Weather['season'] = 'summer', traffic = 1.5, assist: Assist = S().assist, cinema = true;
   const body = h('div');
   const draw = () => {
     clear(body);
     body.append(routeCards(route, (id) => { route = id; draw(); }),
       h('div', { class: 'grid', style: 'margin-top:12px' }, h('div', null, ...envFields(() => ({ time, kind, season, traffic, assist }), (e) => { ({ time, kind, season, traffic, assist } = e); })),
-        h('p', { class: 'small muted' }, 'Alle Züge fahren nach Fahrplan. Kameras: C oder 1–7, freie Kamera mit W/A/S/D. Zeitraffer mit Tab.')),
+        h('div', null,
+          h('label', { class: 'row small' }, checkbox(cinema, (v) => { cinema = v; }), '🎬 Kinomodus: Kameras und Züge wechseln automatisch'),
+          h('p', { class: 'small muted' }, 'Alle Züge fahren nach Fahrplan. Nächster Zug: R, RB oder ⏭. Kamera: C, Y oder 🎥 (Verfolger, Front, Strecke, Heck, Fahrgast, frei). Zeitraffer mit Tab.'))),
       h('div', { class: 'row end', style: 'margin-top:12px' }, btn('▶ Welt betreten', () => {
         const title = `Eisenbahnwelt: ${ROUTE.get(route)!.name}`;
         const weather = { kind, season, wind: kind === 'storm' ? 18 : 3 };
-        void run({ title, routeId: route, time, weather, assist, traffic, player: { kind: 'none' }, mode: 'world', allowFreeCam: true, back: () => worldMenu(route) },
+        void run({ title, routeId: route, time, weather, assist, traffic, player: { kind: 'none' }, mode: 'world', allowFreeCam: true, cinema, back: () => worldMenu(route) },
           { title, kind: 'world', routeId: route, time, weather, assist, traffic, player: { kind: 'none' } });
       }, 'btn primary')));
   };
@@ -577,7 +616,7 @@ async function run(cfg: RunCfg, stub?: RunStub) {
       settings: S(), audio,
       exit: (res, again) => finish(cfg, s, res, again),
       openSettings: (onClose) => settingsScreen(() => { document.querySelectorAll('.screen.clear').forEach((e) => e.remove()); onClose(); }, true),
-    }, { title: cfg.title, mode: cfg.mode, allowFreeCam: cfg.allowFreeCam });
+    }, { title: cfg.title, mode: cfg.mode, allowFreeCam: cfg.allowFreeCam, cinema: cfg.cinema });
     game = g;
     if (location.search.includes('debug')) (window as unknown as { rrGame?: Game }).rrGame = g; // nur für Tests
     for (let i = 0; i < 60; i++) { const pr = g.warmup(3); prog(0.6 + 0.4 * pr); await frame(); if (pr >= 0.999) break; }

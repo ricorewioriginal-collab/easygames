@@ -4,7 +4,7 @@
   {
    "t": "Ziel des Spiels",
    "p": [
-    "Easygames Train Simulator 3D („Deine Eisenbahn. Deine Strecken. Deine Welt.“) ist ein Eisenbahnsimulator im Browser. Du fährst Züge aus dem Führerstand über vier vereinfacht nachgebildete deutsche Strecken und durch vier Fantasiewelten, rangierst Güterwagen, stellst im Stellwerk Fahrstraßen, steigst in der Karriere vom Lokführer-Anwärter zum Meister-Lokführer auf, führst eine eigene Bahngesellschaft und baust im Editor eigene Strecken.",
+    "Easygames Train Simulator 3D („Echter Bahnbetrieb. Deine Strecken. Deine Welt.“) ist ein Eisenbahnsimulator im Browser. Du fährst Züge aus dem Führerstand über vier vereinfacht nachgebildete deutsche Strecken und durch vier Fantasiewelten, rangierst Güterwagen, stellst im Stellwerk Fahrstraßen, steigst in der Karriere vom Lokführer-Anwärter zum Meister-Lokführer auf, führst eine eigene Bahngesellschaft und baust im Editor eigene Strecken.",
     "Signale, PZB, Sifa und Stellwerk sind vereinfachte Spielmodelle, nicht zertifiziert und nicht sicherheitsrelevant. Easygames Train Simulator ist eine Simulation und kein offizielles Produkt der Deutschen Bahn."
    ]
   },
@@ -191,6 +191,15 @@
     "Grafik: Qualität (Niedrig für schwache Handys bis Hoch), Bildrate begrenzen; Änderungen gelten ab der nächsten Fahrt.",
     "Barrierefreiheit & Sprache: Textgröße, Weniger Bewegung, Farbenblind-Modus (Fahrt-Signal blau), Untertitel für Ansagen, Haltestellenansagen, Umsehen vertikal umkehren, Touch-Hebel links oder rechts, Deutsch oder English (teilweise).",
     "Im privaten Fenster gibt es keinen dauerhaften Speicher – der Fortschritt geht beim Schließen verloren."
+   ]
+  },
+  {
+   "t": "Neu: Konsolen-Bedienung, Dienste und Zuschauen",
+   "p": [
+    "Alle Menüs, Dialoge und die Pause lassen sich mit dem Gamepad bedienen: Steuerkreuz oder linker Stick wählt, A bestätigt, B geht zurück. Pfeiltasten und Enter funktionieren genauso, auf dem Handy tippst du wie gewohnt.",
+    "Unter Fahren gibt es den Zufallsdienst (Strecke, Linie, Uhrzeit und Wetter werden ausgelost) und den Tagesdienst: jeden Tag ein fester Dienst für alle, auch in der Karriere zu finden.",
+    "Im Zuschauen-Modus folgt die Kamera einem fahrenden Zug. Mit R, RB am Gamepad oder ⏭ wechselst du zum nächsten Zug, mit C, Y oder 🎥 die Kamera. Im Kinomodus wechseln Kameras und Züge automatisch.",
+    "Im Führerstand spürst du den Zug: leichtes Nicken beim Anfahren und Bremsen, Neigen in Kurven und Laufunruhe bei Tempo. Wer Bewegung im Betriebssystem reduziert hat, bekommt eine ruhige Kamera."
    ]
   }
  ],

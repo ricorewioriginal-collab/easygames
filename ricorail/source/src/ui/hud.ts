@@ -68,6 +68,7 @@ export class Hud {
         btn('🗺', () => this.act('map'), 'tbtn', { title: 'Karte (M)', 'aria-label': 'Karte' }),
         btn('🎥', () => this.act('camera'), 'tbtn', { title: 'Kamera (C)', 'aria-label': 'Kamera wechseln' }),
         P('warp', btn('×1', () => this.act('timewarp'), 'tbtn', { title: 'Zeitraffer (Tab)', 'aria-label': 'Zeitraffer' })),
+        mode === 'world' && !s.player ? btn('⏭', () => this.g.watchNext(), 'tbtn', { title: 'Nächstem Zug folgen (R / RB)', 'aria-label': 'Nächstem Zug folgen' }) : null,
         drive && game.canConduct() ? P('condBtn', btn('🎫', () => this.act('conductor'), 'tbtn', { title: 'Schaffner-Modus: Zug fährt selbst, du kontrollierst Fahrkarten (F4)', 'aria-label': 'Schaffner-Modus' })) : null));
     if (drive) tr.appendChild(P('stop', h('div', { class: 'box small' }, '')));
     const narrow = innerWidth < 700;

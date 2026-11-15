@@ -32,6 +32,8 @@ export interface GameOpts {
   title: string;
   mode: 'drive' | 'box' | 'world';
   allowFreeCam: boolean;
+  /** Zuschauen: Kameras und beobachteter Zug wechseln automatisch */
+  cinema?: boolean;
 }
 
 const _off = new THREE.Matrix4();
@@ -112,7 +114,7 @@ export class Game {
     this.stopSign = new StopSign(this.scene);
     this.hud = new Hud(root, this, s, ctx.settings, o.mode);
     if (o.mode === 'box') { this.openMap(true); }
-    if (o.mode === 'world' || !s.player) this.rig.set(s.player ? 'chase' : 'free');
+    if (o.mode === 'world' || !s.player) this.rig.set(s.player || o.mode === 'world' ? 'chase' : 'free');
     this.input.on(this.onAction);
     this.bindPointer();
     addEventListener('resize', this.resize);
@@ -172,14 +174,16 @@ export class Game {
     }
     if (this.replay) this.stepReplay(dt);
     const t = s.player;
-    this.updateCamera(dt, t);
+    // Zuschauen: Kamera folgt einem beobachteten Zug (ohne ihn zu steuern)
+    const ct = t ?? this.watched(dt);
+    this.updateCamera(dt, ct);
     const cabOn = this.rig.mode === 'cab' && !!t;
     if (this.replay) this.trains.syncPoses(this.replay.poses[this.replay.i] ?? [], t?.id ?? null);
-    else this.trains.sync(w, this.rig.cam.position, this.qual.world.viewDist, t?.id ?? null, cabOn && !!t?.consist[0]?.type.cab);
+    else this.trains.sync(w, this.rig.cam.position, this.qual.world.viewDist, ct?.id ?? null, cabOn && !!t?.consist[0]?.type.cab);
     this.syncCab(cabOn, t, dt);
     this.syncInterior(t);
     // Innenansichten nach dem Platzieren der Fahrzeuge setzen, sonst hinkt die Kamera einen Takt hinterher (Wackeln)
-    if (t && (this.rig.mode === 'cab' || this.rig.mode === 'passenger' || this.rig.mode === 'walk')) this.placeCam(0, t);
+    if (ct && (this.rig.mode === 'cab' || this.rig.mode === 'passenger' || this.rig.mode === 'walk')) this.placeCam(0, ct);
     const plan = t ? w.plans.get(t.id) : undefined;
     this.stopSign.update(w.net, t && plan?.svc && plan.state === 'run' ? w.stopTarget(t, plan) : null);
     this.view.update(this.rig.cam, this.env(), dt);
@@ -210,6 +214,48 @@ export class Game {
       lightning: w.weather.kind === 'storm' && Math.random() < 0.002,
     };
   }
+
+  // ------------------------------------------------------------ Zuschauen: Zug folgen, Kinomodus
+  private watchId: string | null = null;
+  private cineT = 0;
+  private readonly watchCams: CamMode[] = ['chase', 'front', 'trackside', 'rear', 'passenger'];
+  /** Beobachteter Zug im Zuschauen-Modus (null = freie Kamera) */
+  private watched(dt: number): Train | null {
+    if (this.o.mode !== 'world' || this.rig.mode === 'free' && !this.o.cinema) return null;
+    const w = this.s.world;
+    let tr = this.watchId ? w.trains.get(this.watchId) ?? null : null;
+    if (!tr) { tr = this.pickWatch(0); this.watchId = tr?.id ?? null; }
+    if (this.o.cinema && !this.paused) {
+      this.cineT += dt;
+      if (this.cineT > 14) {
+        this.cineT = 0;
+        const i = this.watchCams.indexOf(this.rig.mode);
+        const next = this.watchCams[(i + 1) % this.watchCams.length];
+        if (next === 'chase') { const n = this.pickWatch(1); if (n) { this.watchId = n.id; tr = n; } }
+        this.rig.set(next);
+      }
+    }
+    return tr;
+  }
+  /** Nächster fahrender Zug in der Liste (step 0 = aktueller/erster) */
+  private pickWatch(step: number): Train | null {
+    const list = [...this.s.world.trains.values()];
+    if (!list.length) return null;
+    const moving = list.filter((x) => Math.abs(x.v) > 1);
+    const pool = moving.length ? moving : list;
+    const i = Math.max(0, pool.findIndex((x) => x.id === this.watchId));
+    return pool[(i + step) % pool.length];
+  }
+  /** Zuschauen: zum nächsten Zug wechseln (R / RB / Knopf) */
+  watchNext() {
+    if (this.o.mode !== 'world') return;
+    const n = this.pickWatch(1); if (!n) { toast('Gerade fährt kein Zug.'); return; }
+    this.watchId = n.id; this.cineT = 0;
+    if (this.rig.mode === 'free') this.rig.set('chase');
+    const name = (n as unknown as { meta?: { name?: string } }).meta?.name;
+    toast(`Folge Zug ${name ?? n.id}`);
+  }
+  get isWorld() { return this.o.mode === 'world'; }
 
   private updateCamera(dt: number, t: Train | null) {
     if (this.input.axis.active && (this.input.axis.lookX || this.input.axis.lookY)) this.rig.look(this.input.axis.lookX * 12, this.input.axis.lookY * 9);
@@ -340,7 +386,8 @@ export class Game {
       case 'timewarp': { const opts = this.o.mode === 'drive' ? [1, 2, 4] : [1, 2, 4, 8, 16]; this.warp = opts[(opts.indexOf(this.warp) + 1) % opts.length]; say(`Zeitraffer ×${this.warp}`); return; }
       case 'conductor': this.setConductor(!this.condOn); return;
       case 'ticket': this.checkTicket(); return;
-      case 'camera': { const list = (this.condOn ? ['walk' as CamMode, ...CAMS] : CAMS).filter((m) => m !== 'free' || this.o.allowFreeCam); this.setCam(list[(list.indexOf(this.rig.mode) + 1) % list.length]); return; }
+      case 'reverser': case 'reverserBack': if (this.o.mode === 'world') { this.watchNext(); return; } break;
+      case 'camera': if (this.o.mode === 'world' && !this.s.player) { const list: CamMode[] = [...this.watchCams, 'free']; this.cineT = 0; this.setCam(list[(list.indexOf(this.rig.mode) + 1) % list.length]); return; } { const list = (this.condOn ? ['walk' as CamMode, ...CAMS] : CAMS).filter((m) => m !== 'free' || this.o.allowFreeCam); this.setCam(list[(list.indexOf(this.rig.mode) + 1) % list.length]); return; }
       case 'cam1': case 'cam2': case 'cam3': case 'cam4': case 'cam5': case 'cam6': case 'cam7': { const m = CAMS[Number(a.slice(3)) - 1]; if (m !== 'free' || this.o.allowFreeCam) this.setCam(m); else say('Freie Kamera nur im Fotomodus/Editor und in der freien Welt.', 'warn'); return; }
     }
     if (this.paused || !t || t.ai) return;
