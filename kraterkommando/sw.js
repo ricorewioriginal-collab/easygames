@@ -1,5 +1,5 @@
-const CACHE = 'kraterkommando-9';
-const SHELL = ['./', './index.html', './style.css', './controls.css', './game.js', './console.css', './card.svg', './models/props.glb', './models/cat.glb', './models/ninja.glb', './models/chicken.glb', './models/pigeon.glb', './models/orc.glb', './models/alien.glb', './models/yeti.glb', './models/wizard.glb', './manifest.webmanifest', '../vendor/three-r128.min.js', '../vendor/three-r128-gltfloader.js', '../cloud/anmacha-cloud.js'];
+const CACHE = 'kraterkommando-10';
+const SHELL = ['./', './index.html', './style.css', './controls.css', './game.js', './console.css', './konsole.css', './card.svg', './icon.svg', './logo.svg', './models/props.glb', './models/cat.glb', './models/ninja.glb', './models/chicken.glb', './models/pigeon.glb', './models/orc.glb', './models/alien.glb', './models/yeti.glb', './models/wizard.glb', './manifest.webmanifest', '../vendor/three-r128.min.js', '../vendor/three-r128-gltfloader.js', '../cloud/anmacha-cloud.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });

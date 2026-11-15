@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "3b8626ac448d",
- "generated": "2026-11-15T18:57:08+00:00",
- "commit": "3dcd88eaac69a9ed27e5ce6556494ae04ea5d73a",
+ "version": "eedbb6953f49",
+ "generated": "2026-11-15T18:56:25+00:00",
+ "commit": "efd843578da2b58a7e797fe69846339b9c824b59",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10643,8 +10643,8 @@
   },
   {
    "p": "guides/kraterkommando.json",
-   "s": 19384,
-   "h": "fcab82a5b18d8be7abf3dc72dfaec65d1e2b4bce9ed913e75f46756813570e09"
+   "s": 19809,
+   "h": "bb3c51b8389b44f86e3bd8eeffa1e517ab7711e6fe807646b1d7612bfb51bc98"
   },
   {
    "p": "guides/krawallvoegel.json",
@@ -11223,8 +11223,8 @@
   },
   {
    "p": "kraterkommando/card.svg",
-   "s": 3253,
-   "h": "714d0d8fae0378c3d125a0295244231ab7de44c984499c645a7ec91f77b408c3"
+   "s": 7128,
+   "h": "7aca651cbade7b6554b11377b5191a2196c93c806a081226daf2b5da57bbee86"
   },
   {
    "p": "kraterkommando/console.css",
@@ -11238,18 +11238,33 @@
   },
   {
    "p": "kraterkommando/game.js",
-   "s": 138578,
-   "h": "de152aee733cd200b0510d16d327257cb63e67d9c6e9012861f961daee9cbb50"
+   "s": 141875,
+   "h": "34b485d9bf1092bbfe9303dddc50203e153e69d9bdbfa7cf9f6d8c00ebd9fea3"
+  },
+  {
+   "p": "kraterkommando/icon.svg",
+   "s": 1838,
+   "h": "e22315af87a762fccbee74f6a49f0cbb3ac48ea0805a593a15abe8ceb924473c"
   },
   {
    "p": "kraterkommando/index.html",
-   "s": 10824,
-   "h": "8c6aa2860e59db4355b5310b6abf3f137c3f77a4051e1384ef471d910ae260fb"
+   "s": 11361,
+   "h": "507d067740eda613f06d90350c303999dcbb5793de58f0257c0045fc868f2050"
+  },
+  {
+   "p": "kraterkommando/konsole.css",
+   "s": 10065,
+   "h": "c3170044b890838aabb3d2152f5b63d8e063947fc93a754d9f3a5def71a637fd"
+  },
+  {
+   "p": "kraterkommando/logo.svg",
+   "s": 2880,
+   "h": "1bb63a8b7dc378414b62012834e7f35e570b8ac53cf5235e5a3ff3920ec46d20"
   },
   {
    "p": "kraterkommando/manifest.webmanifest",
-   "s": 397,
-   "h": "7d7016187d5a68a755b0995c8b3a07aa0a89b305d76cf7b53bf525fec32be94f"
+   "s": 539,
+   "h": "c470e3c7756a70576a53047064578d739852ca8a6b766bbfcccb5193c74f8137"
   },
   {
    "p": "kraterkommando/models/alien.glb",
@@ -11303,8 +11318,8 @@
   },
   {
    "p": "kraterkommando/sw.js",
-   "s": 1318,
-   "h": "2ebda7f2dbf7e3e7edc391a0269734ac2c18c6a04d9cb5a25791ea6e13fe5aa1"
+   "s": 1364,
+   "h": "68cf2e118a2703327dc081c433d28e5934a68176f18e5a21635260d33befdbb6"
   },
   {
    "p": "krawallvoegel/audio.js",
@@ -13984,7 +13999,7 @@
   {
    "p": "sync/catalog.json",
    "s": 251134,
-   "h": "3389ced831327fe0b419a1a6bf69e2bb3316c9389c4648e2b94f92d3809c48fb"
+   "h": "4a8a733657b762283dc6089d278ed6c5086067bc1ef8707732229415c0180519"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
