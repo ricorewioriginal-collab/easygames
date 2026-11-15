@@ -1,0 +1,216 @@
+/* Urwaldlager – Inhalte: Show, Moderation, Camper, Prüfungen, Gespräche, Quiz
+   Alle Namen, Figuren, Sprüche und Inhalte sind frei erfunden. Ähnlichkeiten mit echten Personen sind nicht beabsichtigt. */
+(function () {
+  'use strict';
+  const UL = window.UL;
+  const D = UL.D = {};
+
+  D.SHOW = { title: 'URWALDLAGER', sub: 'Die Promi-Show im Dschungel', exit: 'Ich bin raus aus dem Urwald!', trial: 'Urwaldprüfung', phone: 'Buschtelefon', bridge: 'Hängebrücke' };
+  D.TITLE = { m: 'Urwaldkönig', w: 'Urwaldkönigin', n: 'Urwald-Royal' };
+
+  // Moderatoren-Duo und Lager-Arzt (KayKit-Figuren, umgefärbt)
+  D.HOSTS = [
+    { id: 'lotte', name: 'Lotte Brandt', look: { model: 'rogue', skin: 0, shirt: 0x7a1f3d, pants: 0x22283a, accent: 0xffd36b, hair: 0x6b3a1f, mic: true, micColor: 0x37c46a } },
+    { id: 'mats', name: 'Mats Feldmann', look: { model: 'knight', skin: 1, shirt: 0x1f2a44, pants: 0x1f2a44, accent: 0xf4f4f4, hair: 0x3a2a1a, mic: true, cards: true, micColor: 0x37c46a } }
+  ];
+  D.DOC = { id: 'doc', name: 'Doc Rudi', look: { model: 'mage', skin: 2, shirt: 0xf2f2ee, pants: 0x3a5a7a, accent: 0xffffff, glasses: true, hat: 'cap', hatColor: 0x2a8a4a } };
+  D.VOICE = { lotte: { pitch: 1.12, rate: 1.04 }, mats: { pitch: 0.92, rate: 1.0 }, doc: { pitch: 0.8, rate: 0.95 } };
+
+  // Camper-Kleidung wie im Original: rote Hemden, Khaki-Hosen; Hüte und Tücher als Erkennungszeichen
+  const RED = 0xc8372d, KHAKI = 0xb79a6a;
+  D.CAST = [
+    { id: 'mandy', name: 'Mandy Glitzer', job: 'Reality-Sternchen', form: 'w', model: 'rogue', skin: 0, hat: 'band', hatColor: 0xff4fa0, hair: 0xf2d27a, t: { nett: 0.5, drama: 0.9, mut: 0.3, fleiss: 0.3, humor: 0.6 }, quote: 'Ich bin nicht zickig, ich bin ehrlich – laut!' },
+    { id: 'ronny', name: 'Ronny Bolzen', job: 'Ex-Fußballprofi', form: 'm', model: 'barbarian', skin: 1, hat: 'cap', hatColor: 0x1f6ad8, t: { nett: 0.6, drama: 0.4, mut: 0.8, fleiss: 0.6, humor: 0.5 }, quote: 'Die Prüfung ist wie ein Elfmeter: Kopf aus, rein damit.' },
+    { id: 'gisela', name: 'Gisela von Hohenstein', job: 'Society-Lady', form: 'w', model: 'mage', skin: 0, glasses: true, hat: 'busch', hatColor: 0xe8e0c8, t: { nett: 0.4, drama: 0.7, mut: 0.2, fleiss: 0.2, humor: 0.4 }, quote: 'Reis und Bohnen? Darling, das ist doch kein Menü.' },
+    { id: 'kev', name: 'Kev Kracher', job: 'Influencer', form: 'm', model: 'rogue_hooded', skin: 2, glasses: true, t: { nett: 0.6, drama: 0.6, mut: 0.5, fleiss: 0.3, humor: 0.8 }, quote: 'Leute, ich hab hier null Netz. Absolute Katastrophe.' },
+    { id: 'bodo', name: 'Bodo Brummer', job: 'Schlagersänger', form: 'm', model: 'knight', skin: 0, hat: 'busch', t: { nett: 0.8, drama: 0.3, mut: 0.4, fleiss: 0.5, humor: 0.7 }, quote: 'Ein Lied am Lagerfeuer und alles ist wieder gut!' },
+    { id: 'chantal', name: 'Chantal Funkel', job: 'Model & Unternehmerin', form: 'w', model: 'rogue', skin: 3, hat: 'kopftuch', hatColor: 0xffb000, t: { nett: 0.5, drama: 0.7, mut: 0.6, fleiss: 0.4, humor: 0.5 }, quote: 'Ich hab schon Schlimmeres gegessen. Auf Fashion-Partys.' },
+    { id: 'hanno', name: 'Hanno Würze', job: 'Fernsehkoch', form: 'm', model: 'mage', skin: 1, hat: 'cap', hatColor: 0xffffff, t: { nett: 0.7, drama: 0.4, mut: 0.5, fleiss: 0.9, humor: 0.5 }, quote: 'Gebt mir eine Bohne, und ich mach euch ein Drei-Gänge-Menü.' },
+    { id: 'svenja', name: 'Svenja Sturm', job: 'Wetterfee', form: 'w', model: 'rogue_hooded', skin: 0, t: { nett: 0.8, drama: 0.2, mut: 0.6, fleiss: 0.7, humor: 0.5 }, quote: 'Morgen: 30 Grad, Regen, und ganz viel Drama.' },
+    { id: 'moritz', name: 'Moritz Matsch', job: 'Comedian', form: 'm', model: 'barbarian', skin: 0, keepHat: true, t: { nett: 0.6, drama: 0.5, mut: 0.5, fleiss: 0.3, humor: 1.0 }, quote: 'Ich hab Angst vor Spinnen. Und vor Bohnen. Und vor Spinnen in Bohnen.' },
+    { id: 'tamara', name: 'Tamara Turbo', job: 'Ex-Rennfahrerin', form: 'w', model: 'knight', skin: 2, hat: 'band', hatColor: 0x111111, hair: 0x2a1a10, t: { nett: 0.5, drama: 0.5, mut: 1.0, fleiss: 0.7, humor: 0.4 }, quote: 'Angst? Kenn ich nur vom Hörensagen.' },
+    { id: 'dieter', name: 'Dieter Dosenfeld', job: 'Kult-Wirt', form: 'm', model: 'barbarian', skin: 4, hat: 'busch', hatColor: 0x6a4a2a, mug: true, t: { nett: 0.7, drama: 0.6, mut: 0.3, fleiss: 0.4, humor: 0.8 }, quote: 'Wo ist hier der Tresen? Ich frag für einen Freund.' },
+    { id: 'lia', name: 'Lia Lametta', job: 'Popsängerin', form: 'w', model: 'mage', skin: 3, hat: 'band', hatColor: 0x8a5cff, hair: 0x1a1018, t: { nett: 0.9, drama: 0.3, mut: 0.4, fleiss: 0.6, humor: 0.5 }, quote: 'Ich vermisse meine Katze. Und mein Kopfkissen. Und Pommes.' }
+  ];
+  D.CAST.forEach(c => { c.look = Object.assign({ model: c.model, skin: c.skin, shirt: RED, pants: KHAKI, accent: 0xf2e6c8 }, { hat: c.hat, hatColor: c.hatColor, glasses: c.glasses, hair: c.hair, keepHat: c.keepHat, mug: c.mug }); });
+  D.PLAYER_JOBS = ['Schauspieler:in', 'Sänger:in', 'Influencer:in', 'Sportler:in', 'Comedian', 'TV-Koch/Köchin', 'Model', 'Reality-Star', 'Moderator:in', 'Tänzer:in'];
+  D.HATS = [['none', 'Ohne'], ['busch', 'Buschhut'], ['cap', 'Kappe'], ['band', 'Stirnband'], ['kopftuch', 'Kopftuch']];
+  D.SHIRTS = [[0xc8372d, 'Camp-Rot'], [0xd8622d, 'Orange'], [0x2d6ac8, 'Blau'], [0x2d9a52, 'Grün'], [0x8a3dc8, 'Lila'], [0x333a48, 'Anthrazit']];
+  D.HATCOL = [0xb08850, 0xd8402e, 0x1f6ad8, 0xffb000, 0x2a8a4a, 0xff4fa0, 0x111111, 0xffffff];
+
+  // Längen und Schwierigkeit
+  D.LENGTHS = { kurz: { days: 8, campers: 8, label: 'Kurz · 8 Tage · 8 Camper' }, normal: { days: 12, campers: 10, label: 'Normal · 12 Tage · 10 Camper' }, lang: { days: 16, campers: 12, label: 'Lang · 16 Tage · 12 Camper' } };
+  D.DIFF = { leicht: { k: 0.75, label: 'Entspannt' }, normal: { k: 1, label: 'Normal' }, schwer: { k: 1.3, label: 'Knallhart' } };
+
+  // Prüfungen: Ablauf und Wertung wie im Original – Sterne = Essensportionen fürs Camp
+  D.TRIALS = [
+    { id: 'kisten', name: 'Die fiesen Kisten', icon: '📦', stars: 8, time: 120, desc: 'Greif in acht Kisten voller (virtueller) Krabbeltiere und hol die Sterne heraus. Berühr die Tiere möglichst nicht – sonst steigt dein Ekel.', ctrl: [['move', 'Hand bewegen'], ['ok', 'Zugreifen'], ['alt', 'Nächste Kiste']] },
+    { id: 'dinner', name: 'Das Urwald-Dinner', icon: '🍽️', stars: 6, time: 150, desc: 'Sechs erfundene Ekel-Gänge. Kau im Takt, halt das Würg-Meter in Schach und schluck runter.', ctrl: [['ok', 'Kauen (im Takt)'], ['move', 'Würgen ausgleichen (links/rechts)'], ['alt', 'Schlucken']] },
+    { id: 'tauchen', name: 'Das Schlammbecken', icon: '🤿', stars: 9, time: 120, desc: 'Tauch durchs trübe Becken und sammle die Sterne vom Grund. Achte auf deine Luft – an der Oberfläche holst du neue.', ctrl: [['move', 'Schwimmen'], ['ok', 'Abtauchen'], ['alt', 'Auftauchen']] },
+    { id: 'steg', name: 'Der Wackelsteg', icon: '🌉', stars: 8, time: 110, desc: 'Balancier über den Steg hoch über der Schlucht. Wind und lose Bretter wollen dich runterholen – greif dir die Sterne an den Seilen.', ctrl: [['move', 'Gehen / Balance halten'], ['ok', 'Stern greifen'], ['alt', 'Springen']] },
+    { id: 'tunnel', name: 'Der Krabbeltunnel', icon: '🪲', stars: 8, time: 140, desc: 'Kriech mit der Stirnlampe durch das enge Tunnelsystem. In den Sackgassen warten die Sterne – und jede Menge Gekrabbel.', ctrl: [['move', 'Kriechen'], ['look', 'Umsehen'], ['ok', 'Stern nehmen']] },
+    { id: 'dusche', name: 'Die Ekel-Dusche', icon: '🚿', stars: 10, time: 90, desc: 'Aus den Rohren über dir regnet es Sterne – und Schleim, Fischreste und Krabbeltiere. Fang die Sterne, weich dem Rest aus.', ctrl: [['move', 'Laufen'], ['alt', 'Ducken']] },
+    { id: 'quiz', name: 'Der Wissens-Tank', icon: '❓', stars: 10, time: 0, desc: 'Du liegst im Glastank. Für jede richtige Antwort gibt es einen Stern, für jede falsche kommt eine Ladung Schleim dazu. Drei Fehler, und der Tank ist voll.', ctrl: [['move', 'Antwort wählen'], ['ok', 'Antworten']] },
+    { id: 'parcours', name: 'Der Schlamm-Parcours', icon: '🏃', stars: 10, time: 100, desc: 'Lauf durch den Hindernisparcours: über Baumstämme springen, unter Balken ducken, über Schlamm balancieren. Unterwegs liegen die Sterne.', ctrl: [['move', 'Laufen'], ['ok', 'Springen'], ['alt', 'Ducken / Rutschen']] },
+    { id: 'seilbahn', name: 'Die Lianen-Rutsche', icon: '🐒', stars: 9, time: 0, desc: 'Drei Fahrten an der Seilrutsche durch die Baumkronen. Lenk dich zu den Sternen und weich Ästen und Wespennestern aus.', ctrl: [['move', 'Lenken'], ['ok', 'Bremsen'], ['alt', 'Beine anziehen']] }
+  ];
+  D.TRIAL = Object.fromEntries(D.TRIALS.map(t => [t.id, t]));
+  // Finale: drei kurze Prüfungen für das Finalmenü (Vorspeise, Hauptgang, Nachtisch)
+  D.FINAL = [{ id: 'dinner', course: 'Vorspeise' }, { id: 'kisten', course: 'Hauptgang' }, { id: 'quiz', course: 'Nachtisch' }];
+
+  // Essen: Sterne = Portionen
+  D.MEALS = {
+    none: 'Reis und Bohnen – wie jeden Tag ohne Sterne.',
+    few: 'Ein paar Portionen Fisch, der Rest teilt sich Reis und Bohnen.',
+    full: 'Volles Sterne-Menü: gegrillter Fisch mit Süßkartoffeln und Obst für alle!'
+  };
+
+  // Moderationen (Vorlagen): {n} Name, {s} Sterne, {m} maximal, {t} Prüfung, {d} Tag, {k} Camper im Camp
+  D.MOD = {
+    welcome: [
+      ['lotte', 'Herzlich willkommen im Urwaldlager! {k} Promis, kein Komfort, aber jede Menge Abenteuer.'],
+      ['mats', 'Ab heute heißt es: Bohnen statt Buffet. Und Sterne gibt es nur für Mut.']
+    ],
+    welcomeStudio: [
+      ['lotte', 'Herzlich willkommen im Studio zum Urwaldlager! Unser Dschungel steht diesmal mitten in der Halle.'],
+      ['mats', 'Echte Prüfungen, echtes Publikum, falsche Palmen. Los geht’s!']
+    ],
+    morning: [
+      ['mats', 'Guten Morgen Urwald! Tag {d}. Die Zuschauer haben abgestimmt …'],
+      ['lotte', 'Tag {d} im Lager. Und ihr wisst, was das heißt: Es wird gewählt!'],
+      ['mats', 'Tag {d}. Die Bohnen sind gezählt, die Stimmen auch.']
+    ],
+    pick: [
+      ['lotte', 'In die Urwaldprüfung muss: {n}!'],
+      ['mats', 'Ihr habt entschieden – heute geht {n} in die Prüfung.'],
+      ['lotte', 'Mit den meisten Stimmen: {n}. Viel Glück!']
+    ],
+    pickAgain: [
+      ['mats', 'Und schon wieder trifft es {n}! Das Publikum kann einfach nicht genug bekommen.'],
+      ['lotte', '{n}, die Zuschauer lieben dich. Oder sie wollen dich leiden sehen. Beides geht.']
+    ],
+    intro: [
+      ['lotte', 'Willkommen zu „{t}“! Hier geht es um {m} Sterne – also {m} Mahlzeiten fürs Camp.'],
+      ['mats', '{n}, bist du bereit für „{t}“? Du kannst jederzeit abbrechen. Du musst nur den Satz sagen.']
+    ],
+    rules: [['mats', 'Ich erkläre dir kurz die Regeln.']],
+    ready: [['lotte', 'Bereit? Dann … los!'], ['mats', 'Die Uhr läuft. Los geht’s!']],
+    good: [['lotte', 'Wahnsinn! {s} von {m} Sternen! Das Camp wird heute satt.'], ['mats', '{s} Sterne! Das war eine Heldenleistung, {n}.']],
+    mid: [['mats', '{s} von {m} Sternen. Nicht perfekt, aber das Camp wird sich freuen.'], ['lotte', '{s} Sterne – ordentlich gekämpft!']],
+    bad: [['lotte', 'Oh je. {s} von {m} Sternen. Heute gibt es wohl viele Bohnen.'], ['mats', 'Nur {s} Sterne … das wird ein langer Abend am Lagerfeuer.']],
+    quit: [['mats', '{n} hat den Satz gesagt! Die Prüfung ist beendet – keine Sterne heute.'], ['lotte', 'Abbruch! Das Camp bekommt heute nur Reis und Bohnen.']],
+    evening: [['lotte', 'Es wird Abend im Urwaldlager. Zeit, die Sterne einzulösen.']],
+    exitIntro: [['mats', 'Und jetzt wird es ernst. Die Zuschauer haben gewählt, wer das Lager verlassen muss.'], ['lotte', 'Liebe Camper, das Telefon hat geklingelt. Heute muss jemand gehen.']],
+    safe: [['lotte', 'Sicher ist … {n}.'], ['mats', 'Weiter im Lager bleibt … {n}.']],
+    out: [['mats', '{n}, du musst das Urwaldlager leider verlassen.'], ['lotte', 'Das ist das Ende im Urwald für {n}. Danke für alles!']],
+    finalIntro: [['lotte', 'Das große Finale! Nur noch drei sind übrig.'], ['mats', 'Heute gibt es das Finalmenü – drei Gänge, drei Prüfungen, eine Krone.']],
+    third: [['mats', 'Auf Platz drei: {n}!']],
+    second: [['lotte', 'Und Platz zwei … {n}.']],
+    winner: [['mats', 'Die Krone im Urwaldlager geht an …'], ['lotte', '{n}! Herzlichen Glückwunsch!']]
+  };
+
+  // Gespräche im Camp: Thema → Wirkung (rel = Beziehung, sym = Sympathie, ent = Unterhaltung)
+  D.TALK = [
+    { id: 'small', label: 'Plaudern', icon: '💬', rel: 4, sym: 1, ent: 1, lines: ['Wie hast du geschlafen?', 'Was vermisst du am meisten?', 'Hast du auch so Hunger?'] },
+    { id: 'lob', label: 'Kompliment machen', icon: '🌟', rel: 7, sym: 2, ent: 0, lines: ['Du warst gestern echt stark!', 'Ohne dich wäre das Camp nur halb so schön.'] },
+    { id: 'witz', label: 'Witz erzählen', icon: '😂', rel: 3, sym: 2, ent: 4, lines: ['Was macht eine Bohne im Dschungel? Sie wartet auf ihren Reis.', 'Kennst du den Affen, der Bohnen hasst? Ich auch nicht – hier hassen alle Bohnen!'] },
+    { id: 'troest', label: 'Trösten', icon: '🤗', rel: 8, sym: 3, ent: 1, need: 'sad', lines: ['Hey, du schaffst das. Wir halten zusammen.', 'Nur noch ein paar Tage. Dann gibt’s Pizza.'] },
+    { id: 'laestern', label: 'Lästern über …', icon: '🐍', rel: 3, sym: -3, ent: 5, gossip: true, lines: ['Ehrlich, {x} macht hier gar nichts.', 'Hast du gesehen, wie {x} sich gestern angestellt hat?'] },
+    { id: 'buendnis', label: 'Bündnis schmieden', icon: '🤝', rel: 10, sym: 0, ent: 2, minRel: 55, lines: ['Wir zwei halten zusammen bis zum Finale, okay?'] }
+  ];
+  D.REPLY = {
+    good: ['Ach, das ist lieb von dir!', 'Haha, du bist mir einer!', 'Ja, total!', 'Danke, das tut gut.'],
+    bad: ['Hm. Schon klar.', 'Lass mich mal in Ruhe.', 'Echt jetzt?', 'Das find ich nicht so witzig.'],
+    gossipYes: ['Stimmt! Hab ich auch gedacht!', 'Psst – aber ja, total.'],
+    gossipNo: ['Das finde ich nicht fair.', 'Sag ihr das doch selbst ins Gesicht.']
+  };
+
+  // Buschtelefon (Tagebuch): Frage + drei Antworten
+  D.PHONE = [
+    { q: 'Wer nervt dich im Camp am meisten?', a: [['Niemand – wir sind ein tolles Team.', 3, 0], ['Ganz klar {x}. Faul wie ein Faultier.', -3, 5], ['Die Mücken. Die sind die wahren Stars.', 1, 3]] },
+    { q: 'Wie geht es dir nach der letzten Nacht?', a: [['Ehrlich? Ich hab Heimweh.', 3, 1], ['Super, ich schlaf wie ein Baby. Auf Bohnen.', 1, 3], ['Ich hab {x} schnarchen gehört. Wie ein Wildschwein.', -2, 4]] },
+    { q: 'Was würdest du für eine Pizza tun?', a: [['Fast alles. Außer singen.', 1, 3], ['Ich würde sie mit allen teilen.', 3, 0], ['Ich würd {x} verkaufen. Sofort.', -2, 5]] },
+    { q: 'Wer gewinnt die Krone?', a: [['Ich natürlich. Wer sonst?', -1, 4], ['{x} hätte es verdient.', 3, 1], ['Die Bohnen. Die halten am längsten durch.', 1, 3]] },
+    { q: 'Was hast du hier über dich gelernt?', a: [['Dass ich mehr aushalte, als ich dachte.', 3, 1], ['Dass ich ohne Handy ein ganz neuer Mensch bin.', 2, 2], ['Dass ich Krabbeltiere hasse. Alle. Außer {x}.', 0, 4]] },
+    { q: 'Was sagst du den Zuschauern zu Hause?', a: [['Danke für eure Stimmen! Ich geb alles!', 3, 1], ['Ruft bitte meine Mama an. Und bringt Schokolade.', 2, 3], ['Wählt {x} in die Prüfung! Bitte!', -2, 5]] }
+  ];
+
+  // Camp-Ereignisse (Entscheidungen)
+  D.EVENTS = [
+    { id: 'streit', title: 'Streit am Feuer', text: '{a} und {b} streiten lautstark darüber, wer heute Holz holen sollte.', opts: [['Schlichten: „Ich hol’s einfach!“', { sym: 4, ent: 1, work: 1 }], ['Anheizen: „{a} hat recht!“', { sym: -2, ent: 5, relA: 6, relB: -8 }], ['Popcorn holen und zuschauen', { sym: 0, ent: 2 }]] },
+    { id: 'frosch', title: 'Besuch im Bett', text: 'In deinem Schlafsack sitzt ein (virtueller) Frosch und schaut dich an.', opts: [['Ganz ruhig raustragen', { sym: 3, ent: 1 }], ['Laut kreischen', { sym: 0, ent: 5 }], ['„Du darfst bleiben. Ich heiß übrigens …“', { sym: 2, ent: 4 }]] },
+    { id: 'regen', title: 'Unwetter', text: 'Ein Tropengewitter! Die Plane über den Betten reißt ein.', opts: [['Sofort flicken, egal wie nass', { sym: 4, ent: 1, work: 1 }], ['Unter die Plane kuscheln und singen', { sym: 2, ent: 3 }], ['Sich beschweren: „Ich bin ein Star!“', { sym: -2, ent: 4 }]] },
+    { id: 'heimweh', title: 'Heimweh', text: '{a} sitzt allein am Wasser und weint leise.', opts: [['Dazusetzen und zuhören', { sym: 4, ent: 1, relA: 10 }], ['Mit einem Witz aufmuntern', { sym: 2, ent: 3, relA: 5 }], ['Weggehen – nicht dein Problem', { sym: -3, ent: 1, relA: -6 }]] },
+    { id: 'diebstahl', title: 'Die verschwundenen Kekse', text: 'Aus dem Luxus-Paket fehlen Kekse. Alle schauen auf {a}.', opts: [['{a} verteidigen', { sym: 3, ent: 2, relA: 8 }], ['Mitbeschuldigen', { sym: -2, ent: 5, relA: -10 }], ['Gestehen, dass du einen hattest', { sym: 3, ent: 4 }]] },
+    { id: 'kochen', title: 'Küchen-Krise', text: '{a} will den Reis „mal anders“ kochen – mit Kokosnuss und viel zu viel Salz.', opts: [['Helfen und retten', { sym: 3, ent: 1, relA: 5, work: 1 }], ['Probieren und loben', { sym: 2, ent: 2, relA: 7 }], ['Laut sagen, dass es ungenießbar ist', { sym: -2, ent: 4, relA: -7 }]] },
+    { id: 'brief', title: 'Post von zu Hause', text: 'Die Moderatoren bringen Briefe von den Familien. Deiner ist dabei.', opts: [['Laut vorlesen, Tränen inklusive', { sym: 5, ent: 2 }], ['Still für dich lesen', { sym: 2, ent: 0 }], ['Mit {a} teilen, der keinen bekommen hat', { sym: 4, ent: 1, relA: 9 }]] }
+  ];
+
+  // Schatzsuche: Frage für das Camp
+  D.TREASURE = [
+    { q: 'Ihr habt die Kiste gefunden! Öffnen für das Camp – oder lieber die sichere Flasche Wasser nehmen?', a: ['Kiste öffnen!', 'Wasser nehmen'] }
+  ];
+  D.LOOT = [['Kekse', '🍪'], ['Kaffee', '☕'], ['Schokolade', '🍫'], ['Kartenspiel', '🃏'], ['Kissen', '🛏️'], ['Gewürze', '🧂']];
+
+  // Quiz (Wissens-Tank, Schatzsuche, Finale)
+  D.QUIZ = [
+    ['Wie viele Beine hat eine Spinne?', ['Acht', 'Sechs', 'Zehn', 'Vier']],
+    ['Welches Tier ist das größte an Land?', ['Afrikanischer Elefant', 'Giraffe', 'Nashorn', 'Flusspferd']],
+    ['Wie heißt die Hauptstadt von Australien?', ['Canberra', 'Sydney', 'Melbourne', 'Perth']],
+    ['Wie viele Kontinente gibt es (üblich gezählt)?', ['Sieben', 'Fünf', 'Sechs', 'Neun']],
+    ['Was trinkt ein Koala fast nie?', ['Wasser', 'Milch', 'Saft', 'Tee']],
+    ['Welches Gas brauchen Pflanzen für die Fotosynthese?', ['Kohlendioxid', 'Sauerstoff', 'Helium', 'Stickstoff']],
+    ['Wie viele Minuten hat ein Tag?', ['1440', '1200', '1600', '960']],
+    ['Welche Farbe hat ein reifer Rambutan von außen?', ['Rot', 'Blau', 'Grün', 'Schwarz']],
+    ['Wie nennt man ein Baby-Känguru?', ['Joey', 'Kitz', 'Fohlen', 'Welpe']],
+    ['Welcher Planet ist der Sonne am nächsten?', ['Merkur', 'Venus', 'Mars', 'Erde']],
+    ['Wie viele Saiten hat eine normale Gitarre?', ['Sechs', 'Vier', 'Fünf', 'Acht']],
+    ['Was ist die Mehrzahl von „Kaktus“?', ['Kakteen', 'Kaktusse', 'Kaktis', 'Kaktüsser']],
+    ['Wie viele Zähne hat ein erwachsener Mensch normalerweise?', ['32', '28', '36', '24']],
+    ['Aus welchem Land kommt die Pizza Margherita?', ['Italien', 'Spanien', 'Griechenland', 'Frankreich']],
+    ['Welches Tier schläft bis zu 20 Stunden am Tag?', ['Koala', 'Hund', 'Pferd', 'Kuh']],
+    ['Wie heißt der längste Fluss Deutschlands (ganz in Deutschland)?', ['Weser', 'Elbe', 'Main', 'Donau']],
+    ['Wie viele Ecken hat ein Würfel?', ['Acht', 'Sechs', 'Zwölf', 'Vier']],
+    ['Welches Instrument hat schwarze und weiße Tasten?', ['Klavier', 'Trompete', 'Geige', 'Schlagzeug']],
+    ['Was ist schwerer: ein Kilo Federn oder ein Kilo Steine?', ['Beides gleich', 'Steine', 'Federn', 'Kommt aufs Wetter an']],
+    ['Welcher Ozean ist der größte?', ['Pazifik', 'Atlantik', 'Indischer Ozean', 'Arktischer Ozean']],
+    ['Wie heißt das Fest mit bunten Eiern?', ['Ostern', 'Weihnachten', 'Silvester', 'Fasching']],
+    ['Wie viele Spieler hat eine Fußballmannschaft auf dem Platz?', ['Elf', 'Zehn', 'Zwölf', 'Neun']],
+    ['Was legt ein Huhn?', ['Eier', 'Nüsse', 'Steine', 'Federn']],
+    ['Wie viele Tage hat ein Schaltjahr?', ['366', '365', '364', '360']],
+    ['Welche Farbe entsteht aus Blau und Gelb?', ['Grün', 'Lila', 'Orange', 'Braun']],
+    ['Welches Tier kann seine Farbe wechseln?', ['Chamäleon', 'Elefant', 'Pinguin', 'Igel']],
+    ['Wie heißt der höchste Berg der Welt?', ['Mount Everest', 'Zugspitze', 'Kilimandscharo', 'Mont Blanc']],
+    ['Wie viele Monate haben 31 Tage?', ['Sieben', 'Sechs', 'Fünf', 'Acht']],
+    ['Was misst ein Thermometer?', ['Temperatur', 'Luftdruck', 'Gewicht', 'Länge']],
+    ['Welcher Vogel kann nicht fliegen?', ['Strauß', 'Spatz', 'Adler', 'Taube']],
+    ['Wie viele Herzen hat ein Oktopus?', ['Drei', 'Eins', 'Zwei', 'Acht']],
+    ['Welche Frucht ist außen stachelig und innen gelb?', ['Ananas', 'Banane', 'Kiwi', 'Pflaume']],
+    ['Wie nennt man Wasser im festen Zustand?', ['Eis', 'Dampf', 'Nebel', 'Tau']],
+    ['Wie viele Sekunden hat eine Stunde?', ['3600', '6000', '360', '1000']],
+    ['Was ist ein Faultier?', ['Ein Säugetier', 'Ein Vogel', 'Ein Reptil', 'Ein Insekt']],
+    ['Wie heißt die größte Insel der Welt?', ['Grönland', 'Madagaskar', 'Australien', 'Island']],
+    ['Wofür steht „km/h“?', ['Kilometer pro Stunde', 'Kilo pro Halbtag', 'Kilometer hoch', 'Kraft mal Höhe']],
+    ['Welche Tiere leben in einem Bienenstock?', ['Bienen', 'Wespen', 'Ameisen', 'Hummeln']],
+    ['Welches Organ pumpt das Blut?', ['Herz', 'Lunge', 'Leber', 'Magen']],
+    ['Wie viele Beine hat ein Insekt?', ['Sechs', 'Acht', 'Vier', 'Zehn']]
+  ];
+
+  // Ekel-Gänge (erfunden)
+  D.DISHES = [
+    ['Mehlwurm-Müsli', '🪱', 1], ['Kakerlaken-Krokant', '🪳', 1], ['Fischaugen-Bowle', '👁️', 2],
+    ['Grillen-Gulasch', '🦗', 2], ['Schleim-Pudding', '🟢', 3], ['Stinkfrucht-Smoothie', '🍈', 3],
+    ['Schneckensuppe', '🐌', 2], ['Spinnenbein-Salat', '🕷️', 3]
+  ];
+
+  D.TIPS = [
+    'Sterne aus Prüfungen sind Essensportionen. Mehr Sterne = glücklicheres Camp.',
+    'Die Zuschauer wählen, wer in die Prüfung muss. Wer auffällt, muss öfter ran.',
+    'Im Buschtelefon kannst du ehrlich, lustig oder fies sein – das Publikum merkt sich alles.',
+    'Wer im Camp hilft (Holz, Wasser, Kochen), gewinnt Sympathie.',
+    'Lästern bringt Unterhaltung, kostet aber Sympathie und Freundschaften.',
+    'Der Satz „Ich bin raus aus dem Urwald!“ beendet eine Prüfung sofort – ohne Sterne.',
+    'In der Buschtrommel siehst du jederzeit, wie die (simulierte) Zuschauerstimmung steht.',
+    'Am Controller öffnest du das Kommandomenü mit dem Steuerkreuz – wie in einem Rollenspiel.'
+  ];
+})();
