@@ -28,7 +28,8 @@
         "Du startest mit 2.000 € und einem Kiosk (18×12 Felder) mit Rampe, Altpapier-Container, Bestell-PC, zwei Obst- und Brotkörben, zwei Regalen, einem Kühlregal, einer Kasse und dem Marktradio. Frei sind die Warengruppen Obst & Gemüse, Backwaren, Getränke sowie Frische & Kühlung."
       ],
       "steps": [
-        "Kartons holen: Lauf zur Warenannahme (Rampe), ein Karton wird automatisch genommen. Der gelbe Wegweiser oben zeigt immer den nächsten Schritt.",
+        "Kartons holen: Geh durchs gelb-schwarze Tor hinten links (an der Rampe) in den Hof. Dort stehen die gelieferten Kartons in der Warenannahme neben dem Lieferwagen. Ziel mit dem Fadenkreuz auf einen Karton (oder tipp ihn an) und drück E / A – genau dieser Karton wird genommen. Der gelbe Wegweiser oben zeigt immer den nächsten Schritt.",
+        "Kartons abstellen: Mit R (Tastatur), RB (Controller) oder dem blauen Knopf ⬇️ Abstellen (Touch) stellst du den getragenen Karton dort ab, wo du hinschaust – auf den Boden (bis zu 4 übereinander), zurück in die Warenannahme oder in ein Regal der Lagerhalle.",
         "Regale einräumen: Geh zum markierten Regal, die Ware räumt sich Stück für Stück ein. Leere Kartons kommen in den ♻️ Altpapier-Container.",
         "Preise prüfen: unter „Preise“ oder per Tippen aufs Regal. Marktpreis plus 8 Prozent gilt als fair. Bleib kurz am Regal stehen, dann steckst du das Preisschild auf.",
         "Laden öffnen: oben auf „LADEN ÖFFNEN“. Geöffnet ist von 8 bis 20 Uhr – bei Tempo 1× sind das rund 10 Minuten, mit 2× oder 4× schneller. Danach heißt es „Feierabend!“ und die letzten Kunden werden noch bedient.",
@@ -115,7 +116,8 @@
       "t": "Profi-Tricks",
       "list": [
         "Diebe: Rennt jemand mit 🚨 los, hinlaufen, E zum Schubsen, nochmal E zum Festhalten – das bringt eine Fangprämie. Kameras markieren Diebe, Wachmänner schrecken ab.",
-        "Lager-Regale schaffen je 10 Plätze mehr an der Rampe – sonst warten Kartons draußen, wenn die Rampe voll ist.",
+        "Die Lagerhalle neben dem Hof (durchs Tor, dann links) ist dein Vorratslager: Kartons in ihre Regale stellen macht die Warenannahme frei, wartende Lieferungen rücken nach. Unter „Mein Laden“ vergrößerst du die Halle (Lagerraum → Lagerhalle → Große Halle → Logistikzentrum) und kaufst Lager-Regale mit je 12 Plätzen.",
+        "Lager-Regale im Laden (Bauen) schaffen zusätzlich je 10 Plätze in der Warenannahme.",
         "Die Wettervorhersage steht im Spiel: Bei Hitzewelle Eis, Getränke, Sonnencreme und Grillkohle, bei Regen Schirme, bei Kälte Tee, Kaffee und Eiskratzer bestellen.",
         "Feiertagswochen (Ostern, Grillfest, Halloween, Weihnachten) rechtzeitig vorbereiten – das Spiel kündigt sie am Vortag an.",
         "Nachbestell-Regeln (ab Stufe 8) bestellen jeden Morgen automatisch nach, wenn der Bestand unter deine Grenze fällt.",
@@ -329,7 +331,7 @@
     },
     {
       "q": "Die Kartons stapeln sich draußen.",
-      "a": "Die Rampe fasst 18 Kartons, jedes Lager-Regal 10 mehr. Räum zügig ein oder stell Lager-Regale auf."
+      "a": "Die Warenannahme im Hof fasst 18 Kartons, jedes Lager-Regal im Laden 10 mehr. Räum zügig ein, trag Kartons in die Lagerhalle neben dem Hof oder stell sie frei ab – dann rücken wartende Lieferungen nach."
     },
     {
       "q": "Kann ich bei der Kasse rechnen lassen?",

@@ -68,6 +68,9 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   #knob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#7ac8ff 60%,#2a6ae8)}
   #act{position:absolute;right:14px;bottom:14px;min-width:104px;max-width:150px;height:104px;border-radius:52px;border:4px solid #fff;background:radial-gradient(circle at 35% 30%,#ffe58a,var(--o));color:#2a1700;font:900 14px Inter,system-ui,sans-serif;padding:8px;z-index:4;cursor:pointer;display:none;text-align:center;line-height:1.15;overflow:hidden}
   #act.idle{filter:grayscale(.85) brightness(.75)}
+#drop{position:absolute;right:26px;bottom:96px;width:66px;height:66px;border-radius:33px;border:3px solid #fff;background:radial-gradient(circle at 35% 30%,#a5e3ff,#1c7ed6);color:#fff;font:900 11px Inter,system-ui,sans-serif;line-height:1.1;z-index:4;cursor:pointer;display:none;padding:0}
+body.v3.fps #drop.on{display:block}
+html.eg-pad #drop,body.tv #drop,body.mm #drop{display:none!important}
   body.touch.fps #stick,body.touch.fps #act,body.kb.fps #act{display:block}
   body.kb:not(.touch) #act{height:64px;min-width:120px;border-radius:32px;font-size:13px}
   body.touch.fps #toast{bottom:150px}
@@ -314,7 +317,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <button class="btn glass" id="sCyc" title="Tempo">1×</button>
     <button class="btn go" id="bOpen" title="Laden öffnen / Feierabend (O)">LADEN ÖFFNEN</button>
   </div>
-  <div id="stage"><canvas id="cv"></canvas><canvas id="cv3"></canvas><div id="cross"></div><div id="tops"><div id="goal" class="glass" hidden title="Antippen zum Verkleinern"></div><div id="carry" class="glass" hidden></div></div><div id="tip" class="glass" hidden></div><div id="zoom"><button class="btn glass" id="zIn" title="Näher (Mausrad)">＋</button><button class="btn glass" id="zOut" title="Weiter weg">－</button><button class="btn glass" id="zFit" title="Ganzer Laden">⤢</button></div><div id="stick"><div id="knob"></div></div><button id="act" class="idle">E</button><div id="toast" class="glass" hidden></div><div id="card" class="glass" hidden></div></div>
+  <div id="stage"><canvas id="cv"></canvas><canvas id="cv3"></canvas><div id="cross"></div><div id="tops"><div id="goal" class="glass" hidden title="Antippen zum Verkleinern"></div><div id="carry" class="glass" hidden></div></div><div id="tip" class="glass" hidden></div><div id="zoom"><button class="btn glass" id="zIn" title="Näher (Mausrad)">＋</button><button class="btn glass" id="zOut" title="Weiter weg">－</button><button class="btn glass" id="zFit" title="Ganzer Laden">⤢</button></div><div id="stick"><div id="knob"></div></div><button id="act" class="idle">E</button><button id="drop" title="Karton abstellen (R / RB)">⬇️<br>Abstellen</button><div id="toast" class="glass" hidden></div><div id="card" class="glass" hidden></div></div>
   <div id="dock">
     <button class="btn glass pri" id="bView" title="Ansicht wechseln (V)"><i>👁️</i><span>Draufsicht</span><kbd>V</kbd></button><button class="btn glass pri" data-p="markt" title="Bestell-PC (1)"><i>💻</i><span>Bestell-PC</span><kbd>1</kbd></button><button class="btn glass" data-p="laden" title="Mein Laden (2)"><i>🏪</i><span>Laden</span><kbd>2</kbd></button><button class="btn glass pri" data-p="bauen" title="Bauen (3)"><i>🔧</i><span>Bauen</span><kbd>3</kbd></button><button class="btn glass pri" data-p="preise" title="Preise (4)"><i>🏷️</i><span>Preise</span><kbd>4</kbd></button><button class="btn glass" data-p="staff" title="Personal (5)"><i>👥</i><span>Personal</span><kbd>5</kbd></button><button class="btn glass" data-p="radio" title="Radio (6)"><i>📻</i><span>Radio</span><kbd>6</kbd></button><button class="btn glass" data-p="up" title="Ausbau (7)"><i>⭐</i><span>Ausbau</span><kbd>7</kbd></button><button class="btn glass" data-p="stat" title="Zahlen (8)"><i>📊</i><span>Zahlen</span><kbd>8</kbd></button><button class="btn glass" data-p="ziele" title="Ziele & Vorbestellungen (9)"><i>🎯</i><span>Ziele</span><kbd>9</kbd></button><button class="btn glass pri" id="bMenu" title="Befehlsmenü (Tab)"><i>☰</i><span>Menü</span><kbd>Tab</kbd></button>
   </div>
@@ -328,6 +331,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div id="cardov" hidden><div class="in glass" id="co"></div></div>
 <script src="../device.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../vendor/three-r128-gltfloader.js"></script>
 <script>mmStep(.55, 'Sortiment wird eingeräumt …')</script>
 <script src="data.js"></script>
 <script src="sim.js"></script>
@@ -338,7 +342,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="menu.js"></script>
 <script src="nav.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-save-btn="[data-a=&quot;save&quot;]" data-game="markthalle" data-prefix="amh_" data-mount="#cloudbox" data-hint="Sichere deinen Supermarkt mit Google und spiel auf jedem Gerät weiter." defer></script>
-<script src="../gamepad.js" data-pad-labels="ls=Laufen; rs=Umsehen; dpad=Laufen · in Fenstern wählen; a=Aktion · Bestätigen (halten = schnell einräumen/scannen); b=Zurück · Fenster schließen; x=Befehlsmenü (alle Fenster); y=Regal ansehen · Preise; lb=Draufsicht/Ego · Reiter links; rb=Drehen (Bauen) · Reiter rechts; lt=Rennen; select=Laden öffnen · Feierabend; start=Pausemenü; l3=Knöpfe auf dem Bildschirm (halten)" data-pad="ls=none rs=none x=KeyC y=KeyF lb=KeyV rb=KeyR lt=ShiftLeft select=KeyO start=Escape" defer></script>
+<script src="../gamepad.js" data-pad-labels="ls=Laufen; rs=Umsehen; dpad=Laufen · in Fenstern wählen; a=Aktion · Bestätigen (halten = schnell einräumen/scannen); b=Zurück · Fenster schließen; x=Befehlsmenü (alle Fenster); y=Regal ansehen · Preise; lb=Draufsicht/Ego · Reiter links; rb=Karton abstellen · Drehen (Bauen) · Reiter rechts; lt=Rennen; select=Laden öffnen · Feierabend; start=Pausemenü; l3=Knöpfe auf dem Bildschirm (halten)" data-pad="ls=none rs=none x=KeyC y=KeyF lb=KeyV rb=KeyR lt=ShiftLeft select=KeyO start=Escape" defer></script>
 <script src="../egstat.js" defer></script>
 <script src="../bunte-insel/rueckweg.js" defer></script>
 </body>

@@ -115,6 +115,8 @@ const Data = (() => {
     { id: 'app', name: 'Bestell-App', e: '📱', price: 80000, lvl: 3, desc: 'Du bestellst von überall im Laden, ohne zum Bestell-PC zu gehen.' }, { id: 'tuer', name: 'Automatik-Schiebetür', e: '🚪', price: 250000, lvl: 5, desc: 'Die Tür öffnet von selbst. +3 % Kundschaft.' },
     { id: 'idscan', name: 'Alterscheck-Scanner', e: '🪪', price: 120000, lvl: 5, desc: 'Prüft Ausweise automatisch: erkennt Fälschungen, Jugendschutz ohne Kopfrechnen.' }, { id: 'kassensys', name: 'Kassensystem', e: '🧾', price: 180000, lvl: 4, desc: 'Berechnet Wechselgeld und Kartenbetrag automatisch – kein Kopfrechnen und Tippen an der Kasse.' }, { id: 'park', name: 'Parkplatz', e: '🅿️', price: 500000, lvl: 7, desc: 'Parkplätze vor dem Laden. +6 % Kundschaft.' }
   ];
+  // Lagerhalle neben dem Hof (Ausbaustufen) und Lager-Regale darin; Maße in Feldern (1 Feld ≈ 1,6 m)
+  const WAREHOUSE = [{ n: 'Lagerraum', w: 6, d: 7, price: 0 }, { n: 'Lagerhalle', w: 8, d: 8, price: 120000, lvl: 2 }, { n: 'Große Halle', w: 10, d: 11, price: 350000, lvl: 5 }, { n: 'Logistikzentrum', w: 13, d: 14, price: 900000, lvl: 9 }], RACK_PRICE = 25000;
   const EXPAND = [{ n: 'Kiosk', W: 18, H: 12, price: 0 }, { n: 'Laden', W: 22, H: 14, price: 150000, lvl: 3 }, { n: 'Markt', W: 26, H: 16, price: 400000, lvl: 6 }, { n: 'Supermarkt', W: 30, H: 18, price: 900000, lvl: 10 }, { n: 'Großmarkt', W: 36, H: 20, price: 2000000, lvl: 14 }, { n: 'Hypermarkt', W: 42, H: 22, price: 4500000, lvl: 18 }];
   const SIGNCOLS = [['#0f2b5a', 'Marine'], ['#7a1f1f', 'Rot'], ['#1f5a2f', 'Grün'], ['#5a2f8a', 'Violett'], ['#8a4a0f', 'Orange'], ['#222831', 'Schwarz']];
   const FLOORS = { fliese: { n: 'Fliesen', price: 0, lvl: 1, appeal: 0 }, parkett: { n: 'Parkett', price: 180000, lvl: 4, appeal: .03 }, marmor: { n: 'Marmor', price: 600000, lvl: 9, appeal: .06 } };
@@ -142,6 +144,6 @@ const Data = (() => {
     { n: 'Winter', e: '❄️', w: { sonne: .15, wolke: .3, regen: .1, heiss: 0, kalt: .45 }, prod: { tee: 1.6, kaffee: 1.4, kratzer: 1.6, kerze: 1.4 }, hol: { from: 18, to: 24, n: 'Weihnachtszeit', e: '🎄', prod: { nuesse: 2.3, kekse: 2.4, schoko: 2, honig: 2, kaffee: 1.6, kerze: 2.4, mehl: 1.6, butter: 1.6, eier: 1.5, haehnchen: 1.8 } } }
   ];
   const fmt = c => (c < 0 ? '−' : '') + (Math.abs(c) / 100).toFixed(2).replace('.', ',') + ' €';
-  return { SIGNCOLS, FLOORS, WALLS, SEASONS, ACH, CATS, PRODUCTS, OBJ, TYPES, GENRES, RECIPES, STAFF, TRAITS, FIRST, LAST, UPGRADES, EXPAND, WEATHER, QUESTS, fmt };
+  return { SIGNCOLS, FLOORS, WALLS, SEASONS, ACH, CATS, PRODUCTS, OBJ, TYPES, GENRES, RECIPES, STAFF, TRAITS, FIRST, LAST, UPGRADES, EXPAND, WAREHOUSE, RACK_PRICE, WEATHER, QUESTS, fmt };
 })();
 if (typeof module !== 'undefined') module.exports = Data;
