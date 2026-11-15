@@ -252,6 +252,8 @@ game.onBuildMode = m => {
   toast('Bauform: ' + m.name);
 };
 $('bBuild').onclick = () => game.cycleBuild(1);
+$('bRot').onclick = () => game.rotateDeco(1);
+game.onDecoTarget = on => { $('bRot').hidden = !on; };
 
 // ---------- Story: Auftragsanzeige, Banner, Liste ----------
 let questMin = false, bannerTimer = 0;
@@ -598,6 +600,7 @@ function syncKeys() {
   const fly = game.player.flying;
   inp.sprint = k('sprint') || (!fly && k('sneak'));
   inp.down = fly && k('sneak') || touchActive.down;
+  inp.sneak = k('sneak');
   inp.jump = k('jump') || touchActive.jump;
 }
 const touchActive = { joy: false, jump: false, down: false };
@@ -642,6 +645,7 @@ window.addEventListener('keydown', e => {
   if (act === 'inv') { e.preventDefault(); openInventory(); return; }
   if (act === 'fly') { toggleFly(); return; }
   if (act === 'build') { game.cycleBuild(e.shiftKey ? -1 : 1); return; }
+  if (act === 'rotate') { if (!game.rotateDeco(e.shiftKey ? -1 : 1)) toast('Schau auf ein Deko-Stück zum Drehen'); return; }
   if (act === 'hook') { game.fireHook(); return; }
   if (act === 'wp') { game.toggleWaypoint(); return; }
   if (act === 'map') { openMap(); return; }
@@ -827,6 +831,7 @@ function padLoop(now) {
   if (r.lx || r.ly) look(curve(r.lx) * 900 * dt, curve(r.ly) * 600 * dt * (settings.padInvertY ? -1 : 1), SENS * settings.padSens);
   inp.jump = h.jump || keys.has(binds.jump) || touchActive.jump;
   inp.down = (h.sneak && fly) || touchActive.down || (fly && keys.has(binds.sneak));
+  inp.sneak = h.sneak || keys.has(binds.sneak);
   if (!moving && h.sneak !== !!pad.sneak) { if (h.sneak) inp.sprint = !fly; else syncKeys(); } // im Stand: schleichen, aus Fahrzeugen aussteigen
   pad.sneak = h.sneak;
   if (h.break !== pad.rt) { pad.rt = h.break; game.breakHeld = pad.rt; }

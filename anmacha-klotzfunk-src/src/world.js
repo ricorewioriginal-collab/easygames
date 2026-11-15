@@ -31,6 +31,24 @@ export class World {
     this.sig = new Map();    // Funk-/Signalblöcke: 'x,y,z' -> [x, y, z, typ] (nur gesetzte, nie erzeugte)
     this.sigDirty = false;   // Signalnetz neu berechnen
     this.onSet = null;       // (x, y, z, typ) nach jeder Änderung (Mehrspieler-Gastgeber)
+    this.rot = new Map();    // selbst gedrehte Deko: Chunk-Key -> Map(Index -> Drehung 0..3); fehlt = automatische Ausrichtung
+  }
+
+  // Drehung eines Deko-Stücks setzen (r = null: wieder automatisch)
+  setRot(x, y, z, r) {
+    if (y < 0 || y >= H) return false;
+    const c = this.chunks.get(chunkKey(x >> 4, z >> 4));
+    if (!c) return false;
+    const i = (x & 15) + (z & 15) * CS + y * CS * CS;
+    let m = this.rot.get(c.key);
+    if (r == null) { if (!m || !m.delete(i)) return false; }
+    else { if (!m) { m = new Map(); this.rot.set(c.key, m); } m.set(i, r & 3); }
+    this.dirty.add(c);
+    return true;
+  }
+  getRot(x, y, z) {
+    const m = this.rot.get(chunkKey(x >> 4, z >> 4));
+    return m ? m.get((x & 15) + (z & 15) * CS + y * CS * CS) : undefined;
   }
 
   getChunk(cx, cz) { return this.chunks.get(chunkKey(cx, cz)); }
@@ -135,6 +153,7 @@ export class World {
     const old = c.data[i];
     if (old === t) return false;
     c.data[i] = t;
+    const rm = this.rot.get(c.key); if (rm) rm.delete(i); // neue Belegung: eigene Drehung verfällt
     if (old === B.RADIO) this.radios.delete(`${x},${y},${z}`);
     if (t === B.RADIO) this.radios.set(`${x},${y},${z}`, [x, y, z]);
     if (SIG_BLOCKS.has(t)) { this.sig.set(`${x},${y},${z}`, [x, y, z, t]); this.sigDirty = true; }

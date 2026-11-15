@@ -3,28 +3,36 @@
 // Je Chunk und Modell ein InstancedMesh (wenige Zeichenaufrufe), Licht wie die Blöcke (Sonne, Himmelslicht der Zelle, Eigenleuchten).
 import * as THREE from 'three';
 import { DECO, DECO_DEF } from './blocks.js';
+import { FX_GLSL, SHADOW_LAYER } from './fx.js';
 
 const VERT = `
 uniform vec3 uAmb; uniform vec3 uSunCol; uniform vec3 uSunDir;
-varying vec2 vUv; varying vec3 vLight; varying float vDist;
+varying vec2 vUv; varying vec3 vAmb; varying vec3 vSun; varying float vEm; varying float vDist; varying vec3 vWp; varying vec3 vN; varying float vBl;
 void main(){
+  vBl = instanceColor.b;
   vec3 n = normalize(mat3(instanceMatrix) * normal);
   float sky = instanceColor.r, em = instanceColor.g;
-  vec3 amb = uAmb * (0.62 + 0.38 * (n.y * 0.5 + 0.5)) * (0.5 + 0.5 * sky);
-  vec3 dir = uSunCol * max(dot(n, uSunDir), 0.0) * sky;
-  vLight = max(amb + dir, vec3(em));
+  vN = n;
+  vAmb = uAmb * (0.62 + 0.38 * (n.y * 0.5 + 0.5)) * (0.5 + 0.5 * sky);
+  vSun = uSunCol * max(dot(n, uSunDir), 0.0) * sky;
+  vEm = em;
   vUv = uv;
-  vec4 mv = modelViewMatrix * instanceMatrix * vec4(position, 1.0);
+  vec4 wp = modelMatrix * instanceMatrix * vec4(position, 1.0);
+  vWp = wp.xyz;
+  vec4 mv = viewMatrix * wp;
   vDist = length(mv.xyz);
   gl_Position = projectionMatrix * mv;
 }`;
 const FRAG = `
-uniform sampler2D uMap; uniform vec3 uFog; uniform vec2 uFogRange;
-varying vec2 vUv; varying vec3 vLight; varying float vDist;
+uniform sampler2D uMap; uniform vec3 uFog; uniform vec2 uFogRange; uniform vec3 uSunDir;
+varying vec2 vUv; varying vec3 vAmb; varying vec3 vSun; varying float vEm; varying float vDist; varying vec3 vWp; varying vec3 vN; varying float vBl;
+${FX_GLSL}
 void main(){
-  vec3 c = texture2D(uMap, vUv).rgb * vLight;
+  float sh = dot(vSun, vSun) > 0.0 ? shadowAt(vWp, vN) : 1.0;
+  vec3 c = texture2D(uMap, vUv).rgb * max(vAmb + vSun * sh + blockGlow(vBl), vec3(vEm));
   c = mix(vec3(dot(c, vec3(0.299, 0.587, 0.114))), c, 1.1); c = c * 1.15 / (1.0 + 0.15 * c);
-  gl_FragColor = vec4(mix(c, uFog, smoothstep(uFogRange.x, uFogRange.y, vDist)), 1.0);
+  gl_FragColor = vec4(toLinear(applyFog(c, vWp, vDist, uFog, uFogRange, uSunDir)), 1.0);
+  #include <colorspace_fragment>
 }`;
 
 // Modelle aus deco.bin lesen (Position/UV 16 Bit, Normale 8 Bit, Indizes 16 Bit)
@@ -66,7 +74,7 @@ export class DecoLayer {
     Promise.all([fetch(this.base + 'deco.json').then(r => r.json()), fetch(this.base + 'deco.bin').then(r => r.arrayBuffer()), tex]).then(([man, buf, t]) => {
       const models = parseDeco(man, buf);
       if (t) { t.flipY = false; t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearFilter; t.generateMipmaps = false; } // Farbraum wie der Block-Atlas (roh)
-      this.mat = new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: FRAG, uniforms: { uAmb: this.uni.uAmb, uSunCol: this.uni.uSunCol, uSunDir: this.uni.uSunDir, uFog: this.uni.uFog, uFogRange: this.uni.uFogRange, uMap: { value: t } } });
+      this.mat = new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: FRAG, uniforms: { uAmb: this.uni.uAmb, uSunCol: this.uni.uSunCol, uSunDir: this.uni.uSunDir, uFog: this.uni.uFog, uFogRange: this.uni.uFogRange, uShadowMap: this.uni.uShadowMap, uShadowMat: this.uni.uShadowMat, uShadowOn: this.uni.uShadowOn, uShadowTexel: this.uni.uShadowTexel, uFogSun: this.uni.uFogSun, uMap: { value: t } } });
       this.meta = models;
       this.geos = models.map(m => {
         const g = new THREE.BufferGeometry();
@@ -80,22 +88,23 @@ export class DecoLayer {
       if (this.onReady) this.onReady();
     }).catch(() => { this.state = 3; this.waiting.clear(); });
   }
-  // list: [x, y, z, Block-Id, Drehung, Himmelslicht, y-Versatz] je Stück (aus dem Mesher)
+  // list: [x, y, z, Block-Id, Drehung, Himmelslicht, y-Versatz, Blocklicht] je Stück (aus dem Mesher)
   setChunk(c, list) {
     this.drop(c);
     if (!list || !list.length) return;
     if (this.state !== 2) { if (this.state !== 3) { this.waiting.set(c, list); this.load(); } return; }
     const by = new Map();
-    for (let i = 0; i < list.length; i += 7) { const k = DECO[list[i + 3]]; if (k == null) continue; if (!by.has(k)) by.set(k, []); by.get(k).push(i); }
+    for (let i = 0; i < list.length; i += 8) { const k = DECO[list[i + 3]]; if (k == null) continue; if (!by.has(k)) by.set(k, []); by.get(k).push(i); }
     const meshes = [];
     for (const [k, items] of by) {
       const d = DECO_DEF[k], m = this.meta[k], im = new THREE.InstancedMesh(this.geos[k], this.mat, items.length);
       items.forEach((i, n) => {
         decoMatrix(this.m4, c.cx * 16 + list[i], list[i + 1], c.cz * 16 + list[i + 2], list[i + 4], d.wall, m.hi[2] - m.lo[2], list[i + 6]);
         im.setMatrixAt(n, this.m4);
-        im.setColorAt(n, this.col.setRGB(list[i + 5], d.emit ? 1 : 0, 0));
+        im.setColorAt(n, this.col.setRGB(list[i + 5], d.emit ? 1 : 0, list[i + 7] || 0));
       });
       im.frustumCulled = false; // Chunk-weise klein; Kugel-Prüfung lohnt nicht
+      im.layers.enable(SHADOW_LAYER); // wirft Sonnenschatten
       this.group.add(im); meshes.push(im);
     }
     this.chunks.set(c, meshes);

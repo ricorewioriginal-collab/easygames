@@ -3,7 +3,8 @@ export const ACTIONS = [
   ['fwd', 'Vorwärts', 'KeyW'], ['back', 'Rückwärts', 'KeyS'], ['left', 'Links', 'KeyA'], ['right', 'Rechts', 'KeyD'],
   ['jump', 'Springen / Hoch', 'Space'], ['sneak', 'Schleichen / Runter', 'ShiftLeft'], ['sprint', 'Rennen', 'ControlLeft'],
   ['inv', 'Inventar', 'KeyE'], ['map', 'Weltkarte', 'KeyM'], ['hook', 'Seilhaken', 'KeyQ'], ['wp', 'Wegpunkt', 'KeyB'],
-  ['fly', 'Fliegen (Kreativ)', 'KeyF'], ['build', 'Bauform', 'KeyG'], ['quests', 'Aufträge ein/aus', 'KeyJ']
+  ['fly', 'Fliegen (Kreativ)', 'KeyF'], ['build', 'Bauform', 'KeyG'], ['quests', 'Aufträge ein/aus', 'KeyJ'],
+  ['rotate', 'Deko drehen', 'KeyR']
 ];
 const RESERVED = new Set(['Escape', 'Tab', 'MetaLeft', 'MetaRight', ...Array.from({ length: 9 }, (_, i) => 'Digit' + (i + 1))]);
 export const DEFAULT_KEYS = Object.fromEntries(ACTIONS.map(a => [a[0], a[2]]));

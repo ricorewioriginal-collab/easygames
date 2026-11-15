@@ -189,6 +189,8 @@ export function stairFor(base, yaw) {
   const fx = -Math.sin(yaw), fz = -Math.cos(yaw), d = Math.abs(fx) > Math.abs(fz) ? (fx > 0 ? 1 : 3) : (fz > 0 ? 2 : 0);
   return base + d;
 }
+// Drehung (0..3 = Vorderseite +z, +x, −z, −x) für eine Blickrichtung der Vorderseite (dx, dz), auf die nächste Achse gerundet
+export function decoFacing(dx, dz) { return Math.abs(dx) > Math.abs(dz) ? (dx > 0 ? 1 : 3) : (dz > 0 ? 0 : 2); }
 // Block-Id → Index in DECO_DEF (undefined = kein Deko-Stück); als Objekt der Namen für die Laufzeit
 export const DECO = [];
 DECO_DEF.forEach((d, k) => { DECO[DECO0 + k] = k; d.solid = d[3]; d.wall = d[4]; d.emit = d[5]; d.top = d[6]; });
