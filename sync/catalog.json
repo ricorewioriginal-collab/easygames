@@ -1293,7 +1293,12 @@
     "game": "kart",
     "prefix": "akChar,akKart,akLogo,akMute,akName,akSave,akTts"
    },
-   "trailer": null
+   "trailer": {
+    "v16": "promo/anmacha-kart-trailer-16x9.mp4",
+    "v9": "promo/anmacha-kart-trailer-9x16.mp4",
+    "p16": "promo/anmacha-kart-trailer-16x9.jpg",
+    "p9": "promo/anmacha-kart-trailer-9x16.jpg"
+   }
   },
   {
    "id": "wobbel",
@@ -2473,7 +2478,21 @@
     "v9": "promo/anmacha-funkparcours-trailer-9x16.mp4",
     "p16": "promo/anmacha-funkparcours-trailer-16x9.jpg",
     "p9": "promo/anmacha-funkparcours-trailer-9x16.jpg"
-   }
+   },
+   "trailers": [
+    {
+     "v16": "promo/anmacha-funkparcours-trailer-16x9.mp4",
+     "v9": "promo/anmacha-funkparcours-trailer-9x16.mp4",
+     "p16": "promo/anmacha-funkparcours-trailer-16x9.jpg",
+     "p9": "promo/anmacha-funkparcours-trailer-9x16.jpg"
+    },
+    {
+     "v16": "promo/anmacha-funkparcours-trailer2-16x9.mp4",
+     "v9": "promo/anmacha-funkparcours-trailer2-9x16.mp4",
+     "p16": "promo/anmacha-funkparcours-trailer2-16x9.jpg",
+     "p9": "promo/anmacha-funkparcours-trailer2-9x16.jpg"
+    }
+   ]
   },
   {
    "id": "FunkhausReality",
