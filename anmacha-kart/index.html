@@ -103,7 +103,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   .tc .jk{position:absolute;left:29%;top:29%;width:42%;height:42%;border-radius:50%;background:radial-gradient(circle at 38% 32%,#fff,#d4d9e4 70%,#aab2c2);box-shadow:0 0 0 4px var(--acc,#ff2d95),0 8px 18px rgba(0,0,0,.5);will-change:transform}
   .tc .jb:not(.act) .jk{transition:transform .12s ease-out}
   .tc .pad{position:absolute;right:calc(14px + env(safe-area-inset-right));bottom:var(--e);width:calc(var(--s) * 2.55);height:calc(var(--s) * 2.55);pointer-events:none}
-  .tc .tbtn{position:absolute;left:50%;top:50%;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center;font:800 clamp(11px,calc(var(--s) * .16),19px) Inter,system-ui,'Segoe UI',Roboto,sans-serif;letter-spacing:.04em;color:var(--bc);background:rgba(16,18,24,.78);border:3px solid var(--bc);box-shadow:0 8px 20px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);transition:background .06s,color .06s,scale .06s;user-select:none}
+  .tc .tbtn{position:absolute;left:50%;top:50%;width:var(--s);height:var(--s);margin:calc(var(--s) / -2) 0 0 calc(var(--s) / -2);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center;font:800 clamp(10px,calc(var(--s) * .135),16px) Inter,system-ui,'Segoe UI',Roboto,sans-serif;letter-spacing:0;white-space:nowrap;overflow:hidden;color:var(--bc);background:rgba(16,18,24,.78);border:3px solid var(--bc);box-shadow:0 8px 20px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08);transition:background .06s,color .06s,scale .06s;user-select:none}
   .tc .tbtn i{font-style:normal;font-size:1.5em;line-height:1}
   .tc .tbtn.on{background:var(--bc);color:#0c0e13;scale:.93;box-shadow:0 0 22px var(--bc)}
   .tc .tb-g{--bc:#2ee58a;transform:translateY(calc(var(--s) * .775))}
@@ -112,9 +112,12 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   .tc .tb-i{--bc:#ff4fd8;transform:translateY(calc(var(--s) * -.775))}
   /* Solo am Touch-Gerät: Platzierung, Runde und Tempo nach oben, damit nichts unter Joystick oder Tasten liegt */
   body.touch.racing .vp:only-child .nm{display:none}
-  body.touch.racing .vp:only-child .pos{right:auto;bottom:auto;left:calc(20px + clamp(50px,9vw,78px));top:6px;font-size:clamp(36px,10vmin,58px)}
-  body.touch.racing .vp:only-child .lap{left:calc(20px + clamp(50px,9vw,78px));bottom:auto;top:calc(12px + clamp(36px,10vmin,58px))}
-  body.touch.racing .vp:only-child .spd{bottom:auto;top:56px}
+  body.touch.racing .vp:only-child{--st:env(safe-area-inset-top,0px);--hl:calc(24px + clamp(50px,9vw,78px) + env(safe-area-inset-left,0px))}
+  body.touch.racing .vp:only-child .item{top:calc(10px + var(--st));left:calc(10px + env(safe-area-inset-left,0px))}
+  body.touch.racing .vp:only-child canvas{top:calc(6px + var(--st))}
+  body.touch.racing .vp:only-child .pos{right:auto;bottom:auto;left:var(--hl);top:calc(8px + var(--st));padding:0 .12em 0 .06em;font-size:clamp(36px,10vmin,58px)}
+  body.touch.racing .vp:only-child .lap{left:var(--hl);bottom:auto;top:calc(16px + var(--st) + clamp(36px,10vmin,58px))}
+  body.touch.racing .vp:only-child .spd{left:var(--hl);transform:none;bottom:auto;top:calc(56px + var(--st) + clamp(36px,10vmin,58px))}
   .kcards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:560px}
   .kcards button{padding:8px 6px;border-radius:12px;border:2px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);text-align:left;font-weight:800;font-size:13px}
   .kcards button b{font-size:22px;margin-right:4px}
@@ -513,7 +516,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="oma.js?v=20261115-wt1"></script>
 <script src="sim.js?v=20261115-wt10"></script>
 <script src="nav.js?v=20261115-wt1"></script>
-<script src="game.js?v=20261115-wt11"></script>
+<script src="game.js?v=20261115-wt12"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="kart" data-prefix="akChar,akKart,akLogo,akMute,akName,akSave,akTts" defer></script>
 <script src="../gamepad.js" data-pad="info" data-pad-labels="a=Gas · Bestätigen; b=Bremsen · Zurück; rt=Gas; dpad=Lenken · Menü; ls=Lenken; lt=Bremsen; rb=Driften; x=Driften; y=Item; lb=Item · Seite; start=Pause · Los" defer></script>
 <script src="../egstat.js" defer></script>
