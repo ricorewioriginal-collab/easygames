@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "619442f36479",
- "generated": "2026-11-15T03:22:58+01:00",
- "commit": "082875b503029b532e6a6ee3a016dabfe06ec66e",
+ "version": "6c71d3d033a3",
+ "generated": "2026-11-15T03:31:24+01:00",
+ "commit": "7b262e3fb723d96a9a2f45314f17bf190b6298cd",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1933,8 +1933,8 @@
   },
   {
    "p": "anmacha-kart/audio.js",
-   "s": 10186,
-   "h": "7ffc0b52a98985d9bcef422ae79a52232cbc1febdfc1579cf16ca0f30e8464ff"
+   "s": 10860,
+   "h": "db77fe10ac6ef777f608831ef84cc68c09cf424a3e3d118e5234bc42d6db993c"
   },
   {
    "p": "anmacha-kart/card.png",
@@ -1953,13 +1953,13 @@
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 63956,
-   "h": "5a40e29bc346f4602972fb44f85118a10afd472f4cc2fa49fe156a73b4f281df"
+   "s": 64327,
+   "h": "0658bc89b52f5bad3619fd1c472e70cbaac32d4e7ebbfed48ec7bb415201ef94"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 58899,
-   "h": "bc84f29604951eda68ad3b154deeb6ea46de161ac754f2414a34eaf7aebb1726"
+   "s": 58914,
+   "h": "17c3d2a961799010f7722c4c019461ee875a71894273a08faca9e2f98c0f37dd"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -2089,7 +2089,7 @@
   {
    "p": "anmacha-kart/sw.js",
    "s": 1991,
-   "h": "6ddc21a06a6d12637d09e63c0a82c74e035ce822d083cc87ae679767e1c1476d"
+   "h": "771ebcd3ec11468a91b49442d7862ac82a11cd686401b8bd1086bc8690222d61"
   },
   {
    "p": "anmacha-kart/track.js",
@@ -2098,8 +2098,8 @@
   },
   {
    "p": "anmacha-kart/view.js",
-   "s": 115587,
-   "h": "e152e53a6dafaa710ea304b43d5f3d1d0cce958255b7181a0609b1414cdd1b71"
+   "s": 118775,
+   "h": "fb811767bb33900f0396e32c64a47a5a5c98ae3d3f41aa337954b963c7221c49"
   },
   {
    "p": "anmacha-kartenrausch/card.jpg",
@@ -13589,7 +13589,7 @@
   {
    "p": "sync/catalog.json",
    "s": 253668,
-   "h": "3ad476dd86b0bf6a6c9b89f49d0697ab73fb74d6a9b4806002166927c1592370"
+   "h": "b03ac73990ed553b13d6c1bbb77f940d6891585202e4822eeed041cc48ebb7a6"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
