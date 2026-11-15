@@ -59,7 +59,8 @@ class Builder {
     this.sec('Lachsleiter'); const yb = this.y, lx = this.x + g, y0 = this.y + base; this.o.push({ k: 'ladder', x: lx, y0, n, gap });
     const top = y0 + (n - 1) * gap; this.y = top - 0.9; this.plat(lx + 0.75, w, this.y); this.x = lx + 0.75 + w; this.y = yb + drop; return this;   // danach geht es wieder hinunter
   }
-  wall(g = 1.5, h = 4.2) { /* Durchgängiger Anlauf ab der letzten Plattform bis direkt zur Wand. */ this.sec('Steilwand'); const wx = this.x + g + 2.6; this.plat(this.x - 0.15, g + 2.75, this.y); this.o.push({ k: 'wall', x: wx, y: this.y, h, w: 0.6 }); this.o.push({ k: 'plat', x: wx, y: this.y + h, w: 3.6 }); this.o.push({ k: 'finish', x: wx + 1.6, y: this.y + h }); this.end = wx + 3.6; this.wallX = wx; return this; }
+  /** Steilwand wie im TV: lange, durchgehende Anlaufbahn (run Meter vor dem Fuß der Rundung), dann die gebogene Wand */
+  wall(g = 1.5, h = 4.2, run = 9) { this.sec('Steilwand'); const wx = this.x + g + run + 2.6; this.plat(this.x - 0.15, g + run + 2.75, this.y, 'runway'); this.o.push({ k: 'wall', x: wx, y: this.y, h, w: 0.6 }); this.o.push({ k: 'plat', x: wx, y: this.y + h, w: 3.6 }); this.o.push({ k: 'finish', x: wx + 1.6, y: this.y + h }); this.end = wx + 3.6; this.wallX = wx; return this; }
   build() { return { name: this.name, o: this.o, secs: this.secs, finish: this.o.find(o => o.k === 'finish'), length: this.end, wallX: this.wallX }; }
 }
 export const COURSES = [
