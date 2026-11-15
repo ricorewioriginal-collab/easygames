@@ -147,7 +147,16 @@
         "Ahnenruinen-Ring – besonders viele Hindernisse; die Boost-Felder machen kurz unverwundbar.",
         "Drachenflug-Tal – die längsten Boosts im Spiel (über 2 Sekunden) und Fantasiewesen auf der Strecke.",
         "Splitterwelten-Kurs – fünf zusätzliche Boost-Felder, Portale und drei zusätzliche Hindernisse.",
-        "Farbeninsel-Rundkurs – Boost-Felder heben Nebel und Bremsen sofort auf; Fantasiewesen unterwegs."
+        "Farbeninsel-Rundkurs – Boost-Felder heben Nebel und Bremsen sofort auf; Fantasiewesen unterwegs.",
+        "Zotiks Märchenwald (Weltentour) – Wald aus ZOTIK mit Riesenpilzen, Burgtürmen und zwei Hügeln.",
+        "Taschi-Lichtertal (Weltentour) – Abendrot, 16 leuchtende Lichter-Türme und hüpfende Taschis; eine lange Brücke.",
+        "AERU-Sterneninseln (Weltentour) – schwebende Inseln, Sternenbögen über der Fahrbahn, zwei hohe Brücken.",
+        "Bunte-Insel-Hafen (Weltentour) – bunte Häuser, Palmen, Spielzeugladen, Boote und Seifenblasen.",
+        "Leuchtfeuer-Nordstrand (Weltentour) – Dünen, Strandkörbe und der Leuchtturm mit drehendem Lichtkegel.",
+        "Sonnenhof-Felder (Weltentour) – Felder, Windmühlen, Scheunen, Heuballen und Sonnenblumen.",
+        "RicoPoly-Metropolis (Weltentour) – Nachtrennen zwischen leuchtenden Hochhäusern, mit Hochstraße.",
+        "Wolkenhopser-Himmel (Weltentour) – Fahrbahn über dem Wolkenmeer, schwebende Plattformen, Ballons und Regenbögen; die höchsten Brücken.",
+        "Hüpfstraßen-Klötzchenstadt (Weltentour) – Klötzchen-Look mit Autos, Fluss samt Baumstämmen unter einer Brücke und einem Zug."
       ]
     },
     {
@@ -169,7 +178,10 @@
         "Portal-Cup: Herzportal-Boulevard · Kristallsturm-Pass · Ahnenruinen-Ring",
         "Fantasy-Cup: Monsterfreunde-Safari · Drachenflug-Tal · Splitterwelten-Kurs",
         "RicoReWi-Cup: Farbeninsel-Rundkurs · Splitterwelten-Kurs · Herzportal-Boulevard",
-        "Cup-Strategie: Drei zweite Plätze (36 Punkte) schlagen einen Sieg mit zwei schlechten Rennen. Fahr sicher, statt alles zu riskieren."
+        "Cup-Strategie: Drei zweite Plätze (36 Punkte) schlagen einen Sieg mit zwei schlechten Rennen. Fahr sicher, statt alles zu riskieren.",
+        "Märchen-Cup: Zotiks Märchenwald · Taschi-Lichtertal · AERU-Sterneninseln",
+        "Insel-Cup: Bunte-Insel-Hafen · Leuchtfeuer-Nordstrand · Sonnenhof-Felder",
+        "Stadt-Cup: RicoPoly-Metropolis · Wolkenhopser-Himmel · Hüpfstraßen-Klötzchenstadt"
       ]
     },
     {
