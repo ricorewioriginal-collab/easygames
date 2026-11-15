@@ -25,6 +25,35 @@ const car = (over: Partial<CarState> = {}): CarState => ({
 const ball: BallState = { pos: [0, 1, 0], vel: [0, 0, 0], angVel: [0, 0, 0] };
 
 describe('Kamera', () => {
+  it('Freie Kamera: Stick schaut zur Seite und federt zurück, Rückblick dreht um, Maus kehrt nach Pause zurück', () => {
+    const cam = new ChaseCamera({ fov: 100, distance: 1, shake: false });
+    const cfg = { sens: 1, invertX: false, invertY: false, recenter: true };
+    const none = { stickX: 0, stickY: 0, dragX: 0, dragY: 0, holding: false, rear: false };
+    const step = (n: number, li: typeof none): void => {
+      for (let i = 0; i < n; i++) {
+        cam.freeLook(1 / 60, li, cfg);
+        cam.update(1 / 60, car(), ball, false, 10);
+      }
+    };
+    step(60, none);
+    step(60, { ...none, stickX: 1 });
+    expect(cam.lookYaw).toBeGreaterThan(2.5);
+    step(60, none);
+    expect(Math.abs(cam.lookYaw)).toBeLessThan(0.05);
+    // Rückblick: Kamera steht vor dem Auto (größeres z) und schaut zurück
+    step(60, { ...none, rear: true });
+    expect(cam.position.z).toBeGreaterThan(-20);
+    expect(cam.target.z).toBeLessThan(-20);
+    step(60, none);
+    // Maus: relativ, bleibt kurz stehen, dann zurück
+    step(1, { ...none, dragX: 200, holding: true });
+    const yaw = cam.lookYaw;
+    expect(yaw).toBeGreaterThan(1);
+    step(30, none);
+    expect(cam.lookYaw).toBeCloseTo(yaw, 3);
+    step(120, none);
+    expect(Math.abs(cam.lookYaw)).toBeLessThan(0.1);
+  });
   it('Auto-Kamera steht hinter dem Auto und schaut nach vorn', () => {
     const cam = new ChaseCamera({ fov: 100, distance: 1, shake: false });
     for (let i = 0; i < 120; i++) cam.update(1 / 60, car(), ball, false, 10);

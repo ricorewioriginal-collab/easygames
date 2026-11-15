@@ -721,6 +721,38 @@ export class Fx {
     this.sparks(x, y, z, 18, 4, [c.accent, 0xffffff], 0.14, 0.6, 3);
   }
 
+  /** Turboring durchfahren: goldener Blitz mit Ringwelle und Funken */
+  ring(x: number, y: number, z: number): void {
+    this.spheres.spawn(x, y, z, 0xffc23d, 0.6, 3.4, 0.35, 0.7);
+    this.ringsVert.spawn(x, y, z, 0xffe08a, 1.2, 7, 0.5, 0.9);
+    this.sparks(x, y, z, 46, 12, [0xffc23d, 0xffffff, 0xffe08a], 0.22, 0.8, 4, 0.1);
+  }
+
+  /** Hyperspeed erreicht: weiße Schockwelle */
+  sonic(x: number, y: number, z: number, team: number): void {
+    const c = teamColors(team);
+    this.ringsVert.spawn(x, y + 0.3, z, 0xffffff, 0.8, 6.5, 0.38, 0.75);
+    this.ringsFlat.spawn(x, y + 0.05, z, c.accent, 0.8, 7, 0.45, 0.6);
+    this.sparks(x, y + 0.3, z, 18, 8, [0xffffff, c.accent], 0.16, 0.45, 2, 0.1);
+  }
+
+  /** Orb lädt auf (full = überladen): Lichtkugel in Teamfarbe */
+  charge(x: number, y: number, z: number, team: number, full: boolean): void {
+    const c = teamColors(team);
+    this.spheres.spawn(x, y, z, c.main, BALL_RADIUS * 1.1, full ? 9 : 3.6, full ? 0.6 : 0.3, full ? 0.85 : 0.5);
+    if (full) {
+      this.ringsVert.spawn(x, y, z, c.accent, 1, 10, 0.7, 0.85);
+      this.sparks(x, y, z, 70, 14, [c.main, c.accent, 0xffffff], 0.26, 1.1, 3, 0.2);
+    }
+  }
+
+  /** Harte Landung: Staubring am Boden */
+  land(x: number, y: number, z: number, impact: number): void {
+    const k = Math.min(1, impact / 16);
+    this.ringsFlat.spawn(x, Math.max(0.06, y - 0.3), z, 0xcfd6ff, 0.6, 3 + k * 3, 0.35, 0.35 + k * 0.3);
+    this.sparks(x, Math.max(0.1, y - 0.3), z, Math.round(10 + k * 16), 4 + k * 4, [0x9aa3c7, 0xffffff], 0.14, 0.5, 6, 0.05);
+  }
+
   pad(x: number, y: number, z: number, team: number, big: boolean): void {
     const c = teamColors(team);
     this.ringsFlat.spawn(

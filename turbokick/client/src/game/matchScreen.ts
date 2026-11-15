@@ -10,6 +10,7 @@ import type { Screen } from '../render/engine';
 import { t } from '../i18n';
 import { btn, clear, h, slider, toast, toggle } from '../ui/dom';
 import { ChaseCamera } from './camera';
+import { FreeLook } from '../input/freelook';
 import { Hud } from './hud';
 import { buildLocalPlan, type PlanOptions } from './plan';
 import { LocalMatch, type MatchSession } from './session';
@@ -37,6 +38,10 @@ export class MatchScreen implements Screen {
   private paused = false;
   private ended = false;
   private disposed = false;
+  private freeLook: FreeLook | null = null;
+  private wasSonic = false;
+  private wasAir = false;
+  private prevVy = 0;
   private lastPhase = '';
   private pendingEvents: SimEvent[] = [];
   private goalPos = new THREE.Vector3();
@@ -55,7 +60,12 @@ export class MatchScreen implements Screen {
     this.cams = Array.from({ length: n }, () => new THREE.PerspectiveCamera(s.fov, 16 / 9, 0.1, 900));
     this.chase = this.cams.map(
       () =>
-        new ChaseCamera({ fov: s.fov, distance: s.camDistance, shake: s.cameraShake && !s.reducedMotion }),
+        new ChaseCamera({
+          fov: s.fov,
+          distance: s.camDistance,
+          height: s.camHeight,
+          shake: s.cameraShake && !s.reducedMotion,
+        }),
     );
     this.ballCam = this.cams.map(() => s.ballCam);
     this.arena = createArena(session.arena as ArenaTheme, app.engine.quality);
@@ -82,6 +92,15 @@ export class MatchScreen implements Screen {
       rumble: s.padRumble,
     });
     this.el.classList.toggle('is-touch', app.touch);
+    if (s.camFreeLook)
+      this.freeLook = new FreeLook(
+        (tg) =>
+          !this.paused &&
+          !this.ended &&
+          tg instanceof Element &&
+          (tg.tagName === 'CANVAS' || this.el.contains(tg)) &&
+          !tg.closest('button, input, select, a, .panel, .tk-stick-zone, .tk-btns, .tk-top'),
+      );
     this.el.append(this.hud.el, this.overlay);
     if (new URLSearchParams(location.search).has('debug')) this.setupDebug();
     void this.tmpState;
@@ -212,6 +231,21 @@ export class MatchScreen implements Screen {
           this.ballCam[i] as boolean,
           Math.hypot(car.vel[0], car.vel[1], car.vel[2]),
         );
+      const s = this.app.store.data.settings;
+      if (s.camFreeLook) {
+        const st2 = this.input.look(i as 0 | 1);
+        const drag = i === 0 && this.freeLook ? this.freeLook.take() : { dx: 0, dy: 0, holding: false };
+        chase.freeLook(
+          dt,
+          { stickX: st2.x, stickY: st2.y, dragX: drag.dx, dragY: drag.dy, holding: drag.holding, rear: st2.rear },
+          { sens: s.camLookSens, invertX: s.camInvertX, invertY: s.camInvertY, recenter: s.camRecenter },
+        );
+      } else
+        chase.freeLook(
+          dt,
+          { stickX: 0, stickY: 0, dragX: 0, dragY: 0, holding: false, rear: this.input.look(i as 0 | 1).rear },
+          { sens: 1, invertX: false, invertY: false, recenter: true },
+        );
       chase.apply(cam);
     });
     this.camera.position.copy((this.cams[0] as THREE.PerspectiveCamera).position);
@@ -222,6 +256,23 @@ export class MatchScreen implements Screen {
     this.hud.setScore(st.score[0], st.score[1]);
     this.hud.setClock(st.clock, st.overtime, this.session.training);
     this.hud.setCharge(modeRules(st.mode).overcharge, st.charge, st.chargeTeam);
+    // Bildschirm-Effekte: Tempo-Linien bei Hyperspeed, Randleuchten bei überladenem Orb
+    const meCar = st.cars[this.session.localCars[0] ?? -1];
+    const sonicNow = !!meCar && meCar.supersonic && meCar.demolished <= 0 && st.phase === 'playing';
+    const calm = this.app.store.data.settings.reducedMotion;
+    this.hud.setSpeedFx(sonicNow && !calm && this.session.localCars.length === 1);
+    this.hud.setEdge(modeRules(st.mode).overcharge && st.charge >= 100 ? st.chargeTeam : -1);
+    if (meCar) {
+      const air = meCar.wheelsOnSurface === 0;
+      if (sonicNow && !this.wasSonic) this.app.audio.sfx('sonic', { volume: 0.7 });
+      if (!air && this.wasAir && this.prevVy < -7) {
+        this.app.audio.sfx('land', { volume: Math.min(1, -this.prevVy / 16) });
+        this.rumbleCar(this.session.localCars[0] as number, 0.3, 0.2, 90);
+      }
+      this.wasSonic = sonicNow;
+      this.wasAir = air;
+      this.prevVy = meCar.vel[1];
+    }
     if (st.phase === 'countdown') this.hud.setCountdown(Math.max(1, Math.ceil(st.phaseTimer)));
     else this.hud.setCountdown(null);
     this.session.localCars.forEach((c, i) => {
@@ -330,6 +381,8 @@ export class MatchScreen implements Screen {
           this.arena.celebrate(e.team);
           const mine = e.team === this.myTeam;
           audio.sfx(mine ? 'goal' : 'goalConceded');
+          if ((e.points ?? 1) > 1) audio.sfx('superGoal');
+          this.hud.flash(e.team === 1 ? 1 : 0, (e.points ?? 1) > 1);
           this.session.localCars.forEach((c) =>
             this.rumbleCar(c, mine ? 0.8 : 0.4, mine ? 1 : 0.3, mine ? 650 : 300),
           );
@@ -352,15 +405,16 @@ export class MatchScreen implements Screen {
         }
         case 'ring':
           if (me.has(e.car)) {
-            audio.sfx('padBig', { pitch: 1.35 });
+            audio.sfx('ring');
             this.rumbleCar(e.car, 0.3, 0.7, 180);
             this.hud.note(`◎ ${t('hud.ring')} +30`, this.teamOf(e.car));
             this.chase.forEach((c) => c.shake(0.15, 0.3));
           }
           break;
         case 'charge':
+          audio.sfx('charge', { pitch: 0.8 + e.level / 160, volume: 0.6 });
           if (e.level >= 100) {
-            audio.sfx('padBig', { pitch: 0.7, volume: 0.8 });
+            audio.sfx('chargeFull');
             this.hud.note(`⚡ ${t('hud.charged')} · ${TEAM_NAMES[e.team as 0 | 1]}`, e.team as 0 | 1);
           }
           break;
@@ -593,6 +647,7 @@ export class MatchScreen implements Screen {
   }
 
   dispose(): void {
+    this.freeLook?.dispose();
     this.disposed = true;
     this.offs.forEach((o) => o());
     this.input.dispose();

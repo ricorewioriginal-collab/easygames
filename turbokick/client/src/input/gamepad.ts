@@ -53,7 +53,7 @@ export const PAD_PRESET_IDS: readonly PadPreset[] = ['nexorb', 'klassik', 'schul
 const B = PAD_BUTTON;
 /**
  * Belegungen. Gas immer auf dem rechten Trigger, Rückwärts/Bremse auf dem linken, Lenken/Luftsteuerung auf dem linken Stick.
- * Rechter Stick nach unten gezogen = Rückblick (in allen Belegungen).
+ * Rechter Stick = freie Kamera (in allen Belegungen).
  */
 export const PAD_PRESETS: Readonly<Record<PadPreset, Readonly<Record<PadAction, readonly number[]>>>> = {
   /** NEXORB: Schub auf dem rechten Gesichtsknopf, Air-Roll links/rechts auf den Schultern */
@@ -170,16 +170,20 @@ export interface PadButtons {
   rearView: boolean;
 }
 
-/** Aktueller Zustand der Ereignis-Knöpfe je Belegung; rechter Stick nach unten = Rückblick */
+/** Aktueller Zustand der Ereignis-Knöpfe je Belegung (der rechte Stick steuert die Kamera) */
 export function gamepadButtons(pad: PadLike, preset: PadPreset = 'nexorb'): PadButtons {
   const map = PAD_PRESETS[preset];
-  const ry = pad.axes[3];
   return {
     ballCam: anyPressed(pad, map.ballCam),
     reset: anyPressed(pad, map.reset),
     pause: anyPressed(pad, map.pause),
-    rearView: anyPressed(pad, map.rearView) || (typeof ry === 'number' && ry > 0.75),
+    rearView: anyPressed(pad, map.rearView),
   };
+}
+
+/** Rechter Stick als Kamera-Blick (x rechts, y unten, je −1…1, mit Totzone) */
+export function gamepadLook(pad: PadLike): { x: number; y: number } {
+  return { x: shapeAxis(pad.axes[2] ?? 0, 0.18, 0.2), y: shapeAxis(pad.axes[3] ?? 0, 0.18, 0.2) };
 }
 
 /** Controller-Art für Symbole */

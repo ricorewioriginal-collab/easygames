@@ -84,6 +84,9 @@ export class Hud {
   private chargeLbl = h('span');
   private charge = h('div', { class: 'charge' }, h('div', { class: 'bar' }, this.chargeFill), this.chargeLbl);
   private lastCharge = '-';
+  private fxEl = h('div', { class: 'screenfx', 'aria-hidden': 'true' }, h('div', { class: 'speedlines' }), h('div', { class: 'edge' }), h('div', { class: 'flash' }));
+  private lastEdge = -2;
+  private lastSpeed = false;
   readonly gauges: BoostGauge[] = [];
   readonly menuBtn: HTMLButtonElement;
   private bannerTimer: ReturnType<typeof setTimeout> | null = null;
@@ -103,6 +106,7 @@ export class Hud {
         this.clock,
         h('div', { class: 'team t1' }, this.s1, h('span', { class: 'tag' }, TEAM_NAMES[1] + ' ' + TEAM_SYMBOL[1])),
       ),
+      this.fxEl,
       this.charge,
       this.feed,
       this.banner,
@@ -144,6 +148,27 @@ export class Hud {
     this.clock.textContent = txt;
     this.clock.classList.toggle('ot', overtime);
     this.clock.classList.toggle('low', !overtime && !training && sec <= 10);
+  }
+  /** Tempo-Linien am Bildrand (Hyperspeed) */
+  setSpeedFx(on: boolean): void {
+    if (on === this.lastSpeed) return;
+    this.lastSpeed = on;
+    this.fxEl.classList.toggle('speed', on);
+  }
+  /** Leuchtender Bildrand in Teamfarbe (−1 = aus) */
+  setEdge(team: number): void {
+    if (team === this.lastEdge) return;
+    this.lastEdge = team;
+    this.fxEl.classList.remove('e0', 'e1');
+    if (team === 0 || team === 1) this.fxEl.classList.add('e' + team);
+  }
+  /** Kurzer Lichtblitz beim Treffer (stark beim Supertreffer) */
+  flash(team: 0 | 1, big: boolean): void {
+    const f = this.fxEl.querySelector('.flash');
+    if (!f) return;
+    f.className = 'flash t' + team + (big ? ' big' : '');
+    void (f as HTMLElement).offsetWidth;
+    f.classList.add('go');
   }
   /** Überladung: Ladestand des Orbs in der Teamfarbe, ab 100 % pulsierend */
   setCharge(on: boolean, level: number, team: number): void {

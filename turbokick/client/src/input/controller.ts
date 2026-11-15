@@ -3,6 +3,7 @@ import {
   PAD_BUTTON,
   PAD_PRESETS,
   gamepadButtons,
+  gamepadLook,
   gamepadToInput,
   padGlyph,
   type GamepadSchemeId,
@@ -33,7 +34,7 @@ export const CONTROL_SCHEMES: readonly ControlScheme[] = [
 ];
 
 /** Belegungstabelle für die Anleitung (Spalten = Schemata); `pad` = Aktion der Controller-Belegung oder feste Achse */
-export type HelpPad = PadAction | 'throttle' | 'steer' | 'pitch' | 'yaw';
+export type HelpPad = PadAction | 'throttle' | 'steer' | 'pitch' | 'yaw' | 'look';
 export const CONTROL_HELP: ReadonlyArray<{
   action: string;
   wasd: string;
@@ -112,7 +113,8 @@ export const CONTROL_HELP: ReadonlyArray<{
     touch: 'DRIFT',
   },
   { action: 'Orb-Kamera umschalten', wasd: 'C', pfeile: 'Num 5 oder Komma', pad: 'ballCam', touch: 'ORB' },
-  { action: 'Rückblick', wasd: 'F', pfeile: 'Num 6', pad: 'rearView', touch: '–' },
+  { action: 'Rückblick (halten)', wasd: 'F', pfeile: 'Num 6', pad: 'rearView', touch: '–' },
+  { action: 'Kamera frei umschauen', wasd: 'Maus ziehen', pfeile: 'Maus ziehen', pad: 'look', touch: 'Wischen auf freier Fläche' },
   { action: 'Zurücksetzen (Training)', wasd: 'R', pfeile: 'Num 4', pad: 'reset', touch: '–' },
   { action: 'Pause', wasd: 'Esc oder P', pfeile: 'Num 9 (Esc geht auch)', pad: 'pause', touch: 'II' },
 ];
@@ -128,10 +130,11 @@ export function padHelpText(what: HelpPad, preset: PadPreset, kind: PadKind, liv
       return 'Linker Stick ← →';
     case 'pitch':
       return 'Linker Stick ↑ ↓';
+    case 'look':
+      return 'Rechter Stick';
     default: {
       const list = PAD_PRESETS[preset][what];
-      const extra = what === 'rearView' ? ['Rechter Stick ↓'] : [];
-      const parts = [...list.map(g), ...extra];
+      const parts = list.map(g);
       return parts.length ? parts.join(' oder ') : '–';
     }
   }
@@ -375,6 +378,28 @@ export class LocalInput {
       }
     }
     return clampInput(out);
+  }
+
+  /** Kamera-Blick für Spieler 0/1: rechter Stick (x, y) und gehaltener Rückblick */
+  look(player: 0 | 1): { x: number; y: number; rear: boolean } {
+    let x = 0;
+    let y = 0;
+    let rear = false;
+    for (const slot of this.slots) {
+      if (slot.binding.player !== player) continue;
+      const { scheme } = slot.binding;
+      if (isKeyScheme(scheme)) {
+        if (KEY_SCHEMES[scheme].rearView.some((c) => this.keys.has(c))) rear = true;
+      } else if (isPadScheme(scheme)) {
+        const pad = this.padOf(scheme);
+        if (!pad) continue;
+        const l = gamepadLook(pad);
+        if (Math.abs(l.x) > Math.abs(x)) x = l.x;
+        if (Math.abs(l.y) > Math.abs(y)) y = l.y;
+        if (gamepadButtons(pad, this.padOpts.preset).rearView) rear = true;
+      }
+    }
+    return { x, y, rear };
   }
 
   /** Einmal-Ereignisse seit dem letzten Aufruf (true nur einmal) */

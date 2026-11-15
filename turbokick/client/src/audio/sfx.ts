@@ -22,7 +22,14 @@ export type SfxName =
   | 'respawn'
   | 'win'
   | 'lose'
-  | 'overtime';
+  | 'overtime'
+  | 'ring'
+  | 'charge'
+  | 'chargeFull'
+  | 'superGoal'
+  | 'sonic'
+  | 'land'
+  | 'tick';
 
 export const SFX_NAMES: readonly SfxName[] = [
   'click',
@@ -45,6 +52,13 @@ export const SFX_NAMES: readonly SfxName[] = [
   'win',
   'lose',
   'overtime',
+  'ring',
+  'charge',
+  'chargeFull',
+  'superGoal',
+  'sonic',
+  'land',
+  'tick',
 ];
 
 export type LayerWave = 'sine' | 'square' | 'sawtooth' | 'triangle' | 'noise';
@@ -210,6 +224,43 @@ export const SFX_RECIPES: Record<SfxName, SfxLayer[]> = {
     ]),
     tone('sawtooth', 110, 0, 0.95, 0.16, { ...SUS, filter: { type: 'lowpass', f0: 500 } }),
   ],
+  // Turboring: Luftzug + aufsteigender Glanz
+  ring: [
+    noise(0, 0.45, 0.4, { type: 'bandpass', f0: 300, f1: 5200, q: 1.1 }, { attack: 0.04 }),
+    tone('sine', 330, 0, 0.35, 0.35, { f1: 1320 }),
+    ...melody('triangle', [84, 88, 91, 96], 0.06, 0.04, 0.22, 0.12),
+  ],
+  // Orb lädt: kurzer elektrischer Anstieg (Tonhöhe per pitch je Stufe)
+  charge: [
+    tone('sawtooth', 440, 0, 0.16, 0.12, { f1: 880, filter: { type: 'lowpass', f0: 2600 } }),
+    tone('sine', 880, 0.02, 0.12, 0.14, { f1: 1320 }),
+  ],
+  // Orb überladen: Akkord mit Brummen und Funkeln
+  chargeFull: [
+    tone('sawtooth', 110, 0, 0.9, 0.2, { ...SUS, f1: 220, filter: { type: 'lowpass', f0: 400, f1: 2400, q: 4 } }),
+    ...[64, 71, 76].map((n, i) => tone('square', mtof(n), 0.05 * i, 0.7, 0.07, { ...SUS, filter: { type: 'lowpass', f0: 2800 } })),
+    noise(0, 0.7, 0.12, { type: 'highpass', f0: 5000 }, { attack: 0.2 }),
+  ],
+  // Supertreffer: tiefer Einschlag + Fanfare
+  superGoal: [
+    tone('sine', 70, 0, 1.2, 0.9, { f1: 30 }),
+    noise(0, 1.1, 0.5, { type: 'lowpass', f0: 4200, f1: 120 }),
+    ...melody('sawtooth', [60, 67, 72, 76, 79, 84], 0.15, 0.07, 0.6, 0.11, {
+      ...SUS,
+      filter: { type: 'lowpass', f0: 3200, q: 1 },
+    }),
+    ...melody('triangle', [84, 88, 91, 96], 0.6, 0.08, 0.4, 0.16),
+  ],
+  // Hyperspeed: Überschallknall
+  sonic: [
+    noise(0, 0.5, 0.55, { type: 'lowpass', f0: 1800, f1: 90 }),
+    tone('sine', 95, 0, 0.45, 0.6, { f1: 38 }),
+    noise(0.03, 0.6, 0.18, { type: 'bandpass', f0: 2400, f1: 500, q: 0.8 }, { attack: 0.08 }),
+  ],
+  // Landung nach hohem Sprung
+  land: [tone('sine', 140, 0, 0.16, 0.5, { f1: 55 }), noise(0, 0.12, 0.25, { type: 'lowpass', f0: 1200, f1: 200 })],
+  // Menü-Fokus (leiser Tick)
+  tick: [tone('sine', 1500, 0, 0.03, 0.08, { f1: 1700 }), tone('triangle', 3000, 0, 0.02, 0.03)],
 };
 
 /** Gesamtdauer eines Rezepts in Sekunden. */
