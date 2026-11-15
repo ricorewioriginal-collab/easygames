@@ -1,7 +1,7 @@
 // Fährt jede Strecke mit 4 Computer-Fahrern ohne Grafik ab und prüft: alle kommen ins Ziel, wenige Abstürze, keiner hängt fest.
 // Aufruf: node winzflitzer/tests/sim.cjs [id,id…]
 const path = require('path');
-global.window = global; global.THREE = require(path.join(__dirname, '../../vendor/three-r128.min.js'));
+global.window = global; global.THREE = require(path.join(__dirname, '../../../vendor/three-r128.min.js'));
 for (const f of ['util', 'data', 'track', 'physics']) require(path.join(__dirname, '../js/' + f + '.js'));
 const WF = global.WF, only = process.argv[2] ? process.argv[2].split(',') : null;
 let bad = 0;

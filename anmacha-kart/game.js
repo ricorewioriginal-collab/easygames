@@ -203,7 +203,7 @@ function initHost() {
     $('kcards').querySelectorAll('[data-kt]').forEach(b => b.onclick = () => { save.kart = +b.dataset.kt; persist(); renderMenu(); });
     $('assist').innerHTML = ['Aus', 'Leicht', 'Stark'].map((s, i) => `<button class="chip ${assistLvl() === i ? 'on' : ''}" data-a="${i}">${s}</button>`).join(''); $('assist').querySelectorAll('[data-a]').forEach(b => b.onclick = () => { save.assist = +b.dataset.a; persist(); renderMenu(); });
     const pads = Pads.list(); $('padInfo').hidden = !pads.length; if (pads.length) $('padInfo').textContent = '🎮 ' + (self.Nav ? Nav.GLYPH[Pads.style(pads[0])].name : 'Controller') + (pads.length > 1 ? ' ×' + pads.length : '');
-    document.querySelectorAll('#hmTiles .tile').forEach(t => { if (t.id !== 'bTop' && t.id !== 'bTv') t.disabled = !ready; }); $('bGoSetup').disabled = !ready;
+    document.querySelectorAll('#hmTiles .tile').forEach(t => { if (t.id !== 'bTop' && t.id !== 'bTv' && t.id !== 'bWinz') t.disabled = !ready; }); $('bGoSetup').disabled = !ready;
     renderOpts();
     const ch = CHARS[save.char % CHARS.length], kt = KARTS[save.kart % KARTS.length], where = save.rmode === 'gp' ? Track.CUPS[save.cup].name : bt ? '🎈 ' + BNAME[save.bmode || 'ball'] + ' · ' + TR[save.arena].name : TR[save.track].name, mode = { race: 'Einzelrennen', gp: 'Cup', tt: 'Zeitfahren', free: 'Freies Fahren' }[save.rmode] || '';
     $('selSum').innerHTML = `<b>${ch.emoji}</b><span>${esc((save.name || '').trim() || ch.name)}<small>${kt.emoji} ${esc(kt.name)} · ${esc(where)}</small></span><i>✎</i>`; void mode;
@@ -244,7 +244,7 @@ function initHost() {
   // Kacheln im Hauptmenü: Modus wählen und direkt zur Streckenwahl
   document.querySelectorAll('#hmTiles [data-go]').forEach(t => t.onclick = () => { if (!ready) return; save.rmode = t.dataset.go; persist(); openSetup('solo', 1); });
   $('bGarage').onclick = () => openSetup('solo', 2);
-  const coopGo = () => { if (!ready) return; save.coop = true; persist(); setupFor = 'multi'; renderMenu(); openLobby(); }; $('bCoop').onclick = coopGo; $('multiCoop').onclick = coopGo;
+  const coopGo = () => { if (!ready) return; save.coop = true; persist(); setupFor = 'multi'; renderMenu(); openLobby(); }; $('bCoop').onclick = coopGo; $('bWinz').onclick = () => { AUD.sfx.select(); location.href = 'winzflitzer/' + location.search; }; $('multiCoop').onclick = coopGo;
   const hmDesc = el => { const d = el && el.dataset && el.dataset.d; if (d) $('hmDesc').textContent = d; };
   document.querySelectorAll('#hmTiles .tile').forEach(t => { t.addEventListener('focus', () => hmDesc(t)); t.addEventListener('pointerenter', () => hmDesc(t)); });
   new MutationObserver(() => { const f = document.querySelector('#hmTiles .tile.pf'); if (f) hmDesc(f); }).observe($('hmTiles'), { attributes: true, subtree: true, attributeFilter: ['class'] });

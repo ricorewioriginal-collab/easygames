@@ -371,7 +371,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 .tile:not([disabled]):hover,.tile.pf{transform:translateY(-8px) scale(1.07);border-color:#fff;box-shadow:0 0 0 3px var(--tc),0 16px 40px rgba(0,0,0,.5),0 0 34px var(--tc)}
 .tile:not([disabled]):hover i,.tile.pf i{transform:scale(1.15) rotate(-6deg)}
 .tile:active{transform:scale(.97)}
-.t-gp{--tc:#ffd24a;--tc2:#ff6a00}.t-race{--tc:#ff2d95;--tc2:#7a1fff}.t-tt{--tc:#00e5ff;--tc2:#0050c8}.t-free{--tc:#7cff6a;--tc2:#008a5a}.t-battle{--tc:#ff6a3a;--tc2:#c0002a}.t-coop{--tc:#b06aff;--tc2:#3a1aa0}
+.t-gp{--tc:#ffd24a;--tc2:#ff6a00}.t-race{--tc:#ff2d95;--tc2:#7a1fff}.t-tt{--tc:#00e5ff;--tc2:#0050c8}.t-free{--tc:#7cff6a;--tc2:#008a5a}.t-battle{--tc:#ff6a3a;--tc2:#c0002a}.t-coop{--tc:#b06aff;--tc2:#3a1aa0}.t-winz{--tc:#ffd23f;--tc2:#ff2d95}
 .t-multi{--tc:#00ffd0;--tc2:#0a6aff}.t-garage{--tc:#ff9a1f;--tc2:#b0122a}.t-top{--tc:#c79bff;--tc2:#4a1fa8}.t-tv{--tc:#9fb4d6;--tc2:#2a3350}
 .hm-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;font-size:12px;color:var(--mut)}
 .hm-foot .back{margin:0}
@@ -468,6 +468,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
       <button class="tile t-free" data-go="free" data-d="Ohne Gegner, Zeitlimit und Rundenzwang – perfekt zum Driften üben."><i>🛞</i><b>Freies Fahren</b><small>Üben &amp; erkunden</small></button>
       <button class="tile t-battle" data-go="battle" data-d="Ballonjagd, Funkpokal erobern oder Bomben-Duell – in drei eigenen Arenen gegen 7 Gegner."><i>🎈</i><b>Battle</b><small>Arenen · 3 Modi</small></button>
       <button class="tile t-coop" id="bCoop" data-d="Zu zweit in einem Kart: einer fährt, der andere wirft Items und tauscht die Fahrer – mit Gamepad, Tastatur oder Handy."><i>🤝</i><b>Koop-Kart</b><small>Zu zweit in einem Kart</small></button>
+      <button class="tile t-winz" id="bWinz" data-d="Winzflitzer: winzige Flitzer auf riesigen Tischen – Frühstückstisch, Badewanne, Sandkasten und mehr, mit Meisterschaft und Duellen."><i>🚗</i><b>Winzflitzer</b><small>Rennen auf dem Tisch</small></button>
       <button class="tile t-multi" id="bMulti" disabled data-d="Freunde treten per Link, QR-Code oder Code von überall bei – jedes Handy mit eigenem Rennbild, dazu Splitscreen mit Gamepads."><i>🌐</i><b>Online &amp; Handys</b><small>Bis zu 4 Fahrer</small></button>
       <button class="tile t-garage" id="bGarage" data-d="Fahrer, Kart und Name auswählen – mit 3D-Vorschau."><i>🧰</i><b>Garage</b><small>Fahrer &amp; Kart</small></button>
       <button class="tile t-top" id="bTop" data-d="Deine besten Runden auf jeder Strecke."><i>📊</i><b>Bestzeiten</b><small>Rekorde</small></button>
@@ -564,7 +565,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="sim.js?v=20261115-wt13"></script>
 <script src="nav.js?v=20261115-wt1"></script>
 <script src="radio.js?v=20261115-wt1"></script>
-<script src="game.js?v=20261115-wt17"></script>
+<script src="game.js?v=20261115-wt18"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="kart" data-prefix="akChar,akKart,akLogo,akMute,akName,akSave,akTts" defer></script>
 <script src="../gamepad.js" data-pad="info" data-pad-labels="a=Gas · Bestätigen; b=Bremsen · Zurück; rt=Gas; dpad=Lenken · Menü; ls=Lenken; lt=Bremsen; rb=Driften; x=Driften; y=Item; lb=Item · Seite; start=Pause · Los" defer></script>
 <script src="../egstat.js" defer></script>
