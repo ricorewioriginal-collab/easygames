@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type { CarInput, SimEvent, SimState, TeamId } from '@shared/sim/types';
+import { modeRules, type CarInput, type SimEvent, type SimState, type TeamId } from '@shared/sim/types';
 import { Rng } from '@shared/rng';
 import type { App } from '../app/app';
 import { TEAM_NAMES, teamColorHex } from '../app/theme';
@@ -221,6 +221,7 @@ export class MatchScreen implements Screen {
   private updateHud(st: SimState): void {
     this.hud.setScore(st.score[0], st.score[1]);
     this.hud.setClock(st.clock, st.overtime, this.session.training);
+    this.hud.setCharge(modeRules(st.mode).overcharge, st.charge, st.chargeTeam);
     if (st.phase === 'countdown') this.hud.setCountdown(Math.max(1, Math.ceil(st.phaseTimer)));
     else this.hud.setCountdown(null);
     this.session.localCars.forEach((c, i) => {
@@ -340,7 +341,7 @@ export class MatchScreen implements Screen {
           const who = e.scorer >= 0 ? this.nameOf(e.scorer) : t('hud.ownGoal');
           const own = e.scorer >= 0 && this.teamOf(e.scorer) !== e.team;
           this.hud.show(
-            t('hud.goal'),
+            (e.points ?? 1) > 1 ? t('hud.super') : t('hud.goal'),
             own
               ? `${t('hud.ownGoal')} · ${who}`
               : `${who}${e.assist >= 0 ? ' · ' + t('hud.assist') + ' ' + this.nameOf(e.assist) : ''} · ${Math.round(e.speed * 3.6)} km/h`,
@@ -349,6 +350,20 @@ export class MatchScreen implements Screen {
           this.chase.forEach((c) => c.shake(0.6, 0.8));
           break;
         }
+        case 'ring':
+          if (me.has(e.car)) {
+            audio.sfx('padBig', { pitch: 1.35 });
+            this.rumbleCar(e.car, 0.3, 0.7, 180);
+            this.hud.note(`◎ ${t('hud.ring')} +30`, this.teamOf(e.car));
+            this.chase.forEach((c) => c.shake(0.15, 0.3));
+          }
+          break;
+        case 'charge':
+          if (e.level >= 100) {
+            audio.sfx('padBig', { pitch: 0.7, volume: 0.8 });
+            this.hud.note(`⚡ ${t('hud.charged')} · ${TEAM_NAMES[e.team as 0 | 1]}`, e.team as 0 | 1);
+          }
+          break;
         case 'overtime':
           audio.sfx('overtime');
           audio.music('overtime');
@@ -462,6 +477,7 @@ export class MatchScreen implements Screen {
       minutes: ls.minutes,
       arena: this.session.arena,
       nitro: ls.nitro,
+      gameMode: ls.gameMode,
       splitVersus: true,
       name: this.app.store.data.profile.name,
       garage: this.app.store.data.garage,

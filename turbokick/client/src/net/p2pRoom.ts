@@ -13,7 +13,7 @@ import {
   type StartPlayer,
   type ToGuest,
 } from '@shared/net/p2p';
-import type { TeamId } from '@shared/sim/types';
+import type { GameMode, TeamId } from '@shared/sim/types';
 import type { Link } from './p2pLink';
 
 export const P2P_TIMING = { pingEvery: 4000, deadAfter: 20_000 };
@@ -33,6 +33,7 @@ export interface HostPlan {
   matchSeconds: number;
   arena: string;
   nitro: boolean;
+  mode: GameMode;
   players: StartPlayer[];
   /** Fahrzeug-ID des Gastgebers */
   hostCar: number;
@@ -48,6 +49,7 @@ export class P2PHostRoom {
   minutes = 3;
   arena = 'neon';
   nitro = true;
+  mode: GameMode = 'klassik';
   private lobbyCbs: Array<(v: LobbyView) => void> = [];
   private msgCbs: Array<(k: 'error' | 'notice', t: string) => void> = [];
   private dog: ReturnType<typeof setInterval>;
@@ -98,6 +100,7 @@ export class P2PHostRoom {
       teamSize: this.teamSize,
       minutes: this.minutes,
       arena: this.arena,
+      mode: this.mode,
       slots: this.seats.map((s) => ({ ...s.slot })),
     };
   }
@@ -202,12 +205,13 @@ export class P2PHostRoom {
     if (p.look) me.slot.look = cleanLook(p.look);
     this.changed();
   }
-  setConfig(c: { teamSize?: 1 | 2 | 3; minutes?: number; arena?: string; nitro?: boolean }): void {
+  setConfig(c: { teamSize?: 1 | 2 | 3; minutes?: number; arena?: string; nitro?: boolean; mode?: GameMode }): void {
     if (c.teamSize) this.teamSize = c.teamSize;
     if (c.minutes !== undefined && Number.isInteger(c.minutes) && c.minutes >= 1 && c.minutes <= 10)
       this.minutes = c.minutes;
     if (c.arena && /^[a-z]{2,10}$/.test(c.arena)) this.arena = c.arena;
     if (c.nitro !== undefined) this.nitro = c.nitro;
+    if (c.mode) this.mode = c.mode;
     this.changed();
   }
   setTeam(id: string, team: TeamId): void {
@@ -278,6 +282,7 @@ export class P2PHostRoom {
       matchSeconds: this.minutes * 60,
       arena: this.arena,
       nitro: this.nitro,
+      mode: this.mode,
       players,
       hostCar: ordered.findIndex((s) => s.slot.host),
       guests,

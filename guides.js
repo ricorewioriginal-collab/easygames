@@ -339,7 +339,7 @@ window.EASYGAMES_GUIDES = {
   ]
  },
  "turbokick": {
-  "anleitung": "3D-Arena-Derby: Fahre mit deinem Boliden, nutze Schub und Sprünge und schieße die großen Energie-Orb ins gegnerische Tor. Modi: schnelles Spiel gegen Bots (1v1, 2v2, 3v3, 4 Stufen), Splitscreen zu zweit, Training und Online mit Freunden per QR-Code oder Text-Code. Bei Gleichstand gibt es eine Verlängerung (Golden Goal).",
+  "anleitung": "3D-Arena-Derby: Fahre mit deinem Boliden, nutze Schub und Sprünge und schieße die großen Energie-Orb ins gegnerische Tor. Modi: schnelles Spiel gegen Bots (1v1, 2v2, 3v3, 4 Stufen), Splitscreen zu zweit, Training und Online mit Freunden per QR-Code oder Text-Code. Regeln: Klassisch, Überladung (Orb lädt sich durch Berührungen auf, bei 100 % zählt der Treffer doppelt, goldene Turboringe geben Schub), Mondball (halbe Schwerkraft) und Chaos (alles zusammen). Bei Gleichstand gibt es eine Verlängerung (Golden Goal).",
   "steuerung": [
    "PC Spieler 1: W/S Gas und Rückwärts, A/D Lenken, Leertaste Sprung (zweimal = Doppelsprung/Flip), Shift Schub (halten), Q Handbremse/Drift, linke Strg oder E Air-Roll, C Orb-Kamera, F Rückblick, R Training zurücksetzen, Esc oder P Pause.",
    "PC Spieler 2 (Splitscreen): Pfeile fahren und lenken, Enter Sprung, rechte Shift Schub, Num 3 Handbremse, rechte Strg Air-Roll, Num 5 Orb-Kamera, Num 6 Rückblick, Num 4 Training zurücksetzen.",

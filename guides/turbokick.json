@@ -34,6 +34,17 @@
       ]
     },
     {
+      "t": "Regel-Modi",
+      "list": [
+        "Klassisch: Orb ins gegnerische Tor, jeder Treffer zählt einen Punkt.",
+        "Überladung: Jede Berührung lädt den Orb um 25 % für dein Team (die Leiste unter dem Spielstand zeigt den Stand in Teamfarbe). Berührt der Gegner, übernimmt er die Ladung. Bei 100 % ist der Orb überladen – der nächste Treffer dieses Teams zählt als SUPERTREFFER doppelt.",
+        "Turboringe (Überladung und Chaos): Fünf goldene Ringe schweben über dem Feld. Fährst oder fliegst du hindurch, bekommst du +30 Schub und einen Tempostoß; danach lädt der Ring 8 Sekunden nach.",
+        "Mondball: halbe Schwerkraft – höhere Sprünge, langsam fallende Flugbälle, viele Luftduelle.",
+        "Chaos: Überladung, Turboringe und geringe Schwerkraft gleichzeitig.",
+        "Den Modus wählst du unter Spielen → Regeln oder als Gastgeber in der Online-Lobby; Training ist immer klassisch."
+      ]
+    },
+    {
       "t": "Regeln und Spielablauf",
       "list": [
         "Vor jedem Anstoß läuft ein Countdown von 3 Sekunden („Mach dich bereit“).",
@@ -133,7 +144,8 @@
         "Große Energiekristalle (+100) in den Ecken und an den Seiten gezielt mitnehmen, wenn du ohnehin zurückfährst.",
         "Flip zum Schuss: Kurz vor dem Orb springen und mit Richtung erneut drücken – der Salto-Stoß gibt dem Orb viel Kraft.",
         "Wände nutzen: Mit Tempo die Wand hochfahren und den Orb von oben in die Mitte spielen.",
-        "Hyperspeed-Rammstöße schalten einen Verteidiger für 3 Sekunden aus – ideal kurz vor einem Torschuss."
+        "Hyperspeed-Rammstöße schalten einen Verteidiger für 3 Sekunden aus – ideal kurz vor einem Torschuss.",
+        "Überladung: Wenn der Orb fast voll in deiner Farbe ist, nicht hektisch wegschlagen – eine kontrollierte Berührung mehr macht ihn überladen. Gegnerische Ladung brichst du mit jeder eigenen Berührung."
       ]
     },
     {
@@ -143,7 +155,8 @@
         "Air-Roll (Strg/E/RB) hilft, das Auto in der Luft auszurichten und auf allen vier Rädern zu landen – so fährst du sofort weiter.",
         "Handbremse in der Ecke: Drift um 180 Grad, um nach einem verpassten Orb schnell zurückzukommen.",
         "Spar Schub für die Verlängerung: Das nächste Tor entscheidet, und der erste am Orb hat die beste Chance.",
-        "Rückblick (F, LB/R3) zeigt dir, ob ein Gegner dich gleich rammt."
+        "Rückblick (F, LB/R3) zeigt dir, ob ein Gegner dich gleich rammt.",
+        "Turboringe liegen auf festen Wegen: seitlich über den Mittelkreis-Flanken, vor beiden Strafräumen und hoch über der Mitte – fahr gezielt hindurch, um mit vollem Schub anzukommen."
       ]
     },
     {
@@ -174,7 +187,8 @@
         "3 vs 3: Dreieck bilden – einer am Orb, einer in Lauerstellung, einer hinten.",
         "Splitscreen zusammen: Teilt euch Angriff und Abwehr fest auf.",
         "Kurze Spiele (1 Minute): Gleich zum Anstoß voll auf den Orb, jeder Fehler zählt.",
-        "Nur Start-Schub: Die 33 Start-Schub sind alles, was du hast – für den entscheidenden Schuss aufheben."
+        "Nur Start-Schub: Die 33 Start-Schub sind alles, was du hast – für den entscheidenden Schuss aufheben.",
+        "Mondball und Chaos: Bleib eher am Boden und warte, bis der Orb herunterkommt – wer zu früh springt, hängt lange in der Luft."
       ]
     },
     {
@@ -195,11 +209,29 @@
     }
   ],
   "faq": [
-    { "q": "Mein Freund kann sich online nicht verbinden.", "a": "Lass „Verbindungshilfe nutzen (STUN)“ an, wenn ihr in verschiedenen Netzen seid. Sehr strenge Netze (Firma, Schule, manche Mobilfunk-Anbieter) blockieren Direktverbindungen – dann hilft ein anderes Netz oder der Wechsel von WLAN auf Mobilfunk." },
-    { "q": "Die Kamera zum Scannen geht nicht.", "a": "Erlaube den Kamerazugriff im Browser. Ohne Kamera kannst du den Text-Code kopieren und einfügen – zum Beispiel über einen Messenger." },
-    { "q": "Wie viele Spieler gehen online?", "a": "Bis zu 6 (3 vs 3): der Gastgeber und bis zu fünf eingeladene Mitspieler. Leere Plätze füllen Bots." },
-    { "q": "Wie sichere ich meinen Spielstand?", "a": "In den Optionen unter „Daten“ mit „Spielstand sichern“ als Datei speichern und mit „Spielstand laden“ wiederherstellen." },
-    { "q": "Auf dem Handy ist die Steuerung schwer.", "a": "Schalte in den Optionen die „Einfache Touch-Steuerung“ ein: Das Auto fährt selbst in die Richtung, in die du den Stick ziehst." },
-    { "q": "Das Spiel ruckelt.", "a": "Stelle in den Optionen die Grafikqualität auf „Niedrig“ oder „Mittel“ und schalte „Weniger Bewegung und Effekte“ ein." }
+    {
+      "q": "Mein Freund kann sich online nicht verbinden.",
+      "a": "Lass „Verbindungshilfe nutzen (STUN)“ an, wenn ihr in verschiedenen Netzen seid. Sehr strenge Netze (Firma, Schule, manche Mobilfunk-Anbieter) blockieren Direktverbindungen – dann hilft ein anderes Netz oder der Wechsel von WLAN auf Mobilfunk."
+    },
+    {
+      "q": "Die Kamera zum Scannen geht nicht.",
+      "a": "Erlaube den Kamerazugriff im Browser. Ohne Kamera kannst du den Text-Code kopieren und einfügen – zum Beispiel über einen Messenger."
+    },
+    {
+      "q": "Wie viele Spieler gehen online?",
+      "a": "Bis zu 6 (3 vs 3): der Gastgeber und bis zu fünf eingeladene Mitspieler. Leere Plätze füllen Bots."
+    },
+    {
+      "q": "Wie sichere ich meinen Spielstand?",
+      "a": "In den Optionen unter „Daten“ mit „Spielstand sichern“ als Datei speichern und mit „Spielstand laden“ wiederherstellen."
+    },
+    {
+      "q": "Auf dem Handy ist die Steuerung schwer.",
+      "a": "Schalte in den Optionen die „Einfache Touch-Steuerung“ ein: Das Auto fährt selbst in die Richtung, in die du den Stick ziehst."
+    },
+    {
+      "q": "Das Spiel ruckelt.",
+      "a": "Stelle in den Optionen die Grafikqualität auf „Niedrig“ oder „Mittel“ und schalte „Weniger Bewegung und Effekte“ ein."
+    }
   ]
 }

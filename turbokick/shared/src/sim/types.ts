@@ -112,6 +112,38 @@ export interface PadState {
 
 export type Phase = 'countdown' | 'playing' | 'goal' | 'ended';
 
+/** NEXORB-Spielmodi: Klassisch, Überladung (Orb aufladen → Doppeltreffer, Turbo-Ringe), Mondball (halbe Schwerkraft), Chaos (alles) */
+export type GameMode = 'klassik' | 'ueberladung' | 'mondball' | 'chaos';
+export const GAME_MODES: readonly GameMode[] = ['klassik', 'ueberladung', 'mondball', 'chaos'];
+
+/** Feste Eigenschaften eines Modus */
+export function modeRules(mode: GameMode | undefined): { gravityScale: number; overcharge: boolean; rings: boolean } {
+  switch (mode) {
+    case 'ueberladung':
+      return { gravityScale: 1, overcharge: true, rings: true };
+    case 'mondball':
+      return { gravityScale: 0.5, overcharge: false, rings: false };
+    case 'chaos':
+      return { gravityScale: 0.65, overcharge: true, rings: true };
+    default:
+      return { gravityScale: 1, overcharge: false, rings: false };
+  }
+}
+
+/** Turbo-Ring: schwebender Ring; Durchfahren gibt Energie und Schub. */
+export interface RingState {
+  pos: Vec3;
+  /** Sekunden bis zur Rückkehr (0 = aktiv) */
+  timer: number;
+}
+export const RING_RADIUS = 2.6;
+export const RING_RESPAWN = 8;
+export const RING_BOOST = 30;
+export const RING_SPEED = 6;
+/** Überladung: Ladung je Berührung, Sperrzeit zwischen zwei Ladungen */
+export const CHARGE_PER_TOUCH = 25;
+export const CHARGE_COOLDOWN = 0.35;
+
 export interface SimState {
   tick: number;
   phase: Phase;
@@ -133,6 +165,17 @@ export interface SimState {
   winner: -1 | 0 | 1;
   /** ERGÄNZUNG (Sim): Zustand des Zufallsgenerators (mulberry32), damit der gesamte dynamische Zustand im SimState liegt. */
   rngState: number;
+  /** Modus (fest für das Spiel) */
+  mode: GameMode;
+  /** Schwerkraftfaktor des Modus (fest) */
+  gravityScale: number;
+  /** Überladung: Ladung des Orbs 0–100 und Team, dem sie gehört (−1 = keins) */
+  charge: number;
+  chargeTeam: -1 | 0 | 1;
+  /** Sperrzeit bis zur nächsten Ladung */
+  chargeCd: number;
+  /** Turbo-Ringe (leer, wenn der Modus keine hat) */
+  rings: RingState[];
 }
 
 export type SimEvent =
@@ -142,7 +185,9 @@ export type SimEvent =
   | { t: 'jump'; car: number; kind: 'jump' | 'dodge' }
   | { t: 'pad'; car: number; pad: number; big: boolean }
   | { t: 'wall'; speed: number }
-  | { t: 'goal'; team: TeamId; scorer: number; assist: number; speed: number }
+  | { t: 'goal'; team: TeamId; scorer: number; assist: number; speed: number; points: number }
+  | { t: 'ring'; car: number; ring: number }
+  | { t: 'charge'; team: TeamId; level: number }
   | { t: 'demo'; victim: number; attacker: number }
   | { t: 'respawn'; car: number }
   | { t: 'overtime' }
@@ -159,6 +204,8 @@ export interface SimConfig {
   pads?: boolean;
   /** Freies Training: keine Uhr, kein Spielende, Tore zählen nur */
   training?: boolean;
+  /** Spielmodus (Standard: klassik) */
+  mode?: GameMode;
 }
 
 /** Einfaches Standardfeld für Boost-Felder: 6 große („Nitro-Kanister“, +100) und 28 kleine (+12), symmetrisch. Die Arena liefert die echten Positionen. */

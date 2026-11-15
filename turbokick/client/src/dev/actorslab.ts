@@ -153,6 +153,12 @@ export function startActorsLab(params: URLSearchParams): void {
     prevTouch: -1,
     winner: -1,
     rngState: 1,
+    mode: 'klassik',
+    gravityScale: 1,
+    charge: 0,
+    chargeTeam: -1,
+    chargeCd: 0,
+    rings: [],
   };
 
   const qa = new THREE.Quaternion();
@@ -239,7 +245,7 @@ export function startActorsLab(params: URLSearchParams): void {
     }
     if (modeGoal && every(t0, t, 5, 1)) {
       b.pos = [0, 1.4, -1];
-      events.push({ t: 'goal', team: (Math.floor(t / 5) % 2) as TeamId, scorer: 0, assist: -1, speed: 40 });
+      events.push({ t: 'goal', team: (Math.floor(t / 5) % 2) as TeamId, scorer: 0, assist: -1, speed: 40, points: 1 });
     }
     // Pads
     if (every(t0, t, 2.2, 0.4)) events.push({ t: 'pad', car: 0, pad: 0, big: true });

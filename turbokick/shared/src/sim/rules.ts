@@ -1,7 +1,7 @@
 import type { Rng } from '../rng';
 import { goalAt, kickoffSlot } from './arena';
 import { placeCar } from './car';
-import { BALL_RADIUS, type SimEvent, type SimState, type TeamId } from './types';
+import { BALL_RADIUS, modeRules, type SimEvent, type SimState, type TeamId } from './types';
 
 /** Spielregeln: Phasen, Anstoß, Tore, Uhr */
 export const COUNTDOWN_SECONDS = 3;
@@ -29,6 +29,10 @@ export function placeKickoff(state: SimState, rng: Rng): void {
   }
   state.lastTouch = -1;
   state.prevTouch = -1;
+  state.charge = 0;
+  state.chargeTeam = -1;
+  state.chargeCd = 0;
+  for (const r of state.rings) r.timer = 0;
   state.phase = 'countdown';
   state.phaseTimer = COUNTDOWN_SECONDS;
   state.rngState = rng.state;
@@ -85,8 +89,12 @@ export function scoreGoal(state: SimState, team: TeamId, training: boolean, even
     const prev = state.prevTouch >= 0 ? state.cars[state.prevTouch] : undefined;
     if (prev && prev.team === team && prev.id !== scorer) assist = prev.id;
   }
-  state.score[team]++;
-  events.push({ t: 'goal', team, scorer, assist, speed });
+  // Überladung: voll geladener Orb des eigenen Teams zählt doppelt
+  const points = modeRules(state.mode).overcharge && state.charge >= 100 && state.chargeTeam === team ? 2 : 1;
+  state.score[team] += points;
+  events.push({ t: 'goal', team, scorer, assist, speed, points });
+  state.charge = 0;
+  state.chargeTeam = -1;
   if (training) {
     resetBall(state);
     state.lastTouch = -1;

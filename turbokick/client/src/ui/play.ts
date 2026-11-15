@@ -1,4 +1,5 @@
 import type { Difficulty } from '@shared/net/p2p';
+import { GAME_MODES, type GameMode } from '@shared/sim/types';
 import { Rng } from '@shared/rng';
 import type { App, RouteParams, ScreenView } from '../app/app';
 import type { ArenaChoice } from '../app/save';
@@ -16,6 +17,7 @@ export function create(app: App, params?: RouteParams): ScreenView {
   let minutes = save.lastSetup.minutes;
   let arena: ArenaChoice = save.lastSetup.arena;
   let nitro = save.lastSetup.nitro;
+  let gameMode: GameMode = save.lastSetup.gameMode;
   let splitVersus = true;
   const body = h('div');
 
@@ -56,6 +58,14 @@ export function create(app: App, params?: RouteParams): ScreenView {
       h('p', null, t('play.modeHelp.' + mode)),
       ...(mode !== 'training'
         ? [
+            h('h3', null, t('play.rules')),
+            chips<GameMode>(
+              GAME_MODES.map((g) => [g, t('rules.' + g)] as [GameMode, string]),
+              gameMode,
+              (v) => (gameMode = v),
+              'rule',
+            ),
+            h('p', { class: 'rule-help' }, t('rules.help.' + gameMode)),
             h('h3', null, t('play.teamSize')),
             chips<1 | 2 | 3>(
               [
@@ -134,7 +144,7 @@ export function create(app: App, params?: RouteParams): ScreenView {
   const start = (): void => {
     const rng = new Rng((Math.random() * 2 ** 32) >>> 0);
     app.store.update((d) => {
-      d.lastSetup = { teamSize, difficulty, minutes, arena, nitro };
+      d.lastSetup = { teamSize, difficulty, minutes, arena, nitro, gameMode };
     });
     const plan = buildLocalPlan({
       mode,
@@ -143,6 +153,7 @@ export function create(app: App, params?: RouteParams): ScreenView {
       minutes,
       arena: pickArena(arena, rng),
       nitro,
+      gameMode: mode === 'training' ? 'klassik' : gameMode,
       splitVersus,
       name: save.profile.name,
       garage: save.garage,

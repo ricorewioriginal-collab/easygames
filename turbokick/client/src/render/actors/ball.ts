@@ -162,7 +162,8 @@ export class BallActor {
   }
 
   /** teamColor: 0xRRGGBB oder −1 für neutral */
-  update(dt: number, ball: BallState, teamColor: number): void {
+  /** charge: Ladestand 0…1 (Überladung) – größerer, pulsierender Schein, bei 1 voll überladen */
+  update(dt: number, ball: BallState, teamColor: number, charge = 0): void {
     this.t += dt;
     if (finite3(ball.pos)) {
       this.root.position.set(ball.pos[0], ball.pos[1], ball.pos[2]);
@@ -186,7 +187,10 @@ export class BallActor {
     this.tgt.set(teamColor >= 0 ? teamColor : NEUTRAL_GLOW);
     this.cur.lerp(this.tgt, Math.min(1, dt * 7));
     this.flash = Math.max(0, this.flash - dt * 5);
-    const pulse = 1 + 0.05 * Math.sin(this.t * 6.5) + this.flash * 0.25;
+    const ch = isNum(charge) ? Math.max(0, Math.min(1, charge)) : 0;
+    const full = ch >= 1 ? 1 : 0;
+    const pulse =
+      1 + (0.05 + full * 0.12) * Math.sin(this.t * (6.5 + full * 6)) + this.flash * 0.25 + ch * 0.25;
     this.tmpC.copy(this.cur).lerp(this.white, 0.35 + this.flash * 0.5);
     this.coreMat.color.copy(this.tmpC);
     this.plateMat.emissive
@@ -194,7 +198,7 @@ export class BallActor {
       .multiplyScalar(0.09 + 0.05 * Math.sin(this.t * 4) + this.flash * 0.25);
     this.core.scale.setScalar(pulse);
     this.ringMat.color.copy(this.tmpC);
-    const spin = this.t * (1.2 + Math.min(3, this.speed * 0.05));
+    const spin = this.t * (1.2 + Math.min(3, this.speed * 0.05) + ch * 3);
     const r0 = this.rings[0];
     const r1 = this.rings[1];
     if (r0) r0.rotation.z = spin;
@@ -206,7 +210,7 @@ export class BallActor {
     this.halo2.material.color.copy(this.tmpC);
     this.halo.scale.setScalar(R * 5.4 * pulse);
     this.halo2.scale.setScalar(R * 2.9 * pulse);
-    this.halo.material.opacity = 0.62 + this.flash * 0.3;
+    this.halo.material.opacity = Math.min(1, 0.62 + this.flash * 0.3 + ch * 0.3);
     if (!isNum(this.speed)) this.speed = 0;
   }
 

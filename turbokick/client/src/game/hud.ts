@@ -80,6 +80,10 @@ export class Hud {
   private banner = h('div', { class: 'banner' });
   private count = h('div', { class: 'count', 'aria-live': 'assertive' });
   private feed = h('div', { class: 'feed', 'aria-live': 'polite' });
+  private chargeFill = h('i');
+  private chargeLbl = h('span');
+  private charge = h('div', { class: 'charge' }, h('div', { class: 'bar' }, this.chargeFill), this.chargeLbl);
+  private lastCharge = '-';
   readonly gauges: BoostGauge[] = [];
   readonly menuBtn: HTMLButtonElement;
   private bannerTimer: ReturnType<typeof setTimeout> | null = null;
@@ -99,6 +103,7 @@ export class Hud {
         this.clock,
         h('div', { class: 'team t1' }, this.s1, h('span', { class: 'tag' }, TEAM_NAMES[1] + ' ' + TEAM_SYMBOL[1])),
       ),
+      this.charge,
       this.feed,
       this.banner,
       this.count,
@@ -139,6 +144,18 @@ export class Hud {
     this.clock.textContent = txt;
     this.clock.classList.toggle('ot', overtime);
     this.clock.classList.toggle('low', !overtime && !training && sec <= 10);
+  }
+  /** Überladung: Ladestand des Orbs in der Teamfarbe, ab 100 % pulsierend */
+  setCharge(on: boolean, level: number, team: number): void {
+    const key = on ? `${team}:${Math.round(level)}` : '';
+    if (key === this.lastCharge) return;
+    this.lastCharge = key;
+    this.charge.hidden = !on;
+    if (!on) return;
+    const full = level >= 100;
+    this.charge.className = 'charge' + (team === 0 || team === 1 ? ' t' + team : '') + (full ? ' full' : '');
+    this.chargeFill.style.width = `${Math.max(0, Math.min(100, level))}%`;
+    this.chargeLbl.textContent = full ? t('hud.charged') : `⚡ ${Math.round(level)} %`;
   }
   setCountdown(n: number | null): void {
     if (n === null) {

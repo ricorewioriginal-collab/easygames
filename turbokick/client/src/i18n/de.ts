@@ -36,6 +36,19 @@ export const de: Record<string, string> = {
   'play.nitroOn': 'Ladezellen an',
   'play.nitroOff': 'Nur Start-Energie',
   'play.start': 'Anstoß!',
+  'play.rules': 'Regeln',
+  'rules.klassik': 'Klassisch',
+  'rules.ueberladung': '⚡ Überladung',
+  'rules.mondball': '🌙 Mondball',
+  'rules.chaos': '🌀 Chaos',
+  'rules.help.klassik': 'Pur: Orb ins Tor, jeder Treffer zählt einen Punkt.',
+  'rules.help.ueberladung':
+    'Jede Berührung lädt den Orb für dein Team auf. Bei 100 % zählt der nächste Treffer doppelt. Schwebende Turboringe füllen Energie und geben einen Schubstoß.',
+  'rules.help.mondball': 'Halbe Schwerkraft: hohe Flugbälle, lange Sprünge, Luftduelle.',
+  'rules.help.chaos': 'Überladung, Turboringe und geringe Schwerkraft zusammen – alles fliegt.',
+  'hud.super': 'SUPERTREFFER ×2',
+  'hud.charged': 'ORB ÜBERLADEN',
+  'hud.ring': 'Turboring',
   'hud.getReady': 'Mach dich bereit',
   'hud.training': 'Training',
   'hud.goal': 'TREFFER!',
@@ -63,6 +76,9 @@ export const de: Record<string, string> = {
   'help.goal': 'Ziel',
   'help.goalText':
     'Zwei Teams, ein Energie-Orb: Bringe ihn mit deinem Wagen durch das gegnerische Portal. Wer nach der Spielzeit mehr Treffer hat, gewinnt. Bei Gleichstand gibt es eine Verlängerung – der nächste Treffer entscheidet.',
+  'help.modes': 'Regel-Modi',
+  'help.modesText':
+    'Überladung: Berührungen laden den Orb für dein Team – bei 100 % zählt der nächste Treffer doppelt, goldene Turboringe geben +30 Schub. Mondball: halbe Schwerkraft. Chaos: alles zusammen.',
   'help.nitro': 'Schub & Energie',
   'help.nitroText':
     'Fahre über leuchtende Ladezellen (kleine Waben +12, große Energiekristalle +100), um Energie zu laden. Auch ein Drift mit der Handbremse lädt Energie nach. Halte die Schub-Taste für kräftigen Vortrieb – am Boden und in der Luft. Bei Höchsttempo (Hyperspeed) schaltest du Gegner per Rammstoß aus (Knockout); sie kehren nach kurzer Zeit zurück.',

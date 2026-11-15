@@ -1,5 +1,5 @@
 import type { Difficulty, StartPlayer } from '@shared/net/p2p';
-import type { TeamId } from '@shared/sim/types';
+import type { GameMode, TeamId } from '@shared/sim/types';
 import { Rng } from '@shared/rng';
 import type { Garage } from '../app/save';
 import type { LocalPlan } from './session';
@@ -12,6 +12,7 @@ export interface PlanOptions {
   minutes: number;
   arena: string;
   nitro: boolean;
+  gameMode: GameMode;
   /** Splitscreen: zweiter Mensch im anderen Team (true) oder im eigenen Team (false) */
   splitVersus: boolean;
   name: string;
@@ -88,6 +89,7 @@ export function buildLocalPlan(o: PlanOptions): LocalPlan {
     matchSeconds: o.mode === 'training' ? 3600 : o.minutes * 60,
     arena: o.arena,
     nitro: o.nitro,
+    mode: o.gameMode,
     training: o.mode === 'training',
     localCars,
   };

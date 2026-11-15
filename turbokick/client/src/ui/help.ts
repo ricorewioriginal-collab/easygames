@@ -66,6 +66,8 @@ export function create(app: App, params?: RouteParams): ScreenView {
       h('p', null, t('help.goalText')),
       h('h3', null, t('help.nitro')),
       h('p', null, t('help.nitroText')),
+      h('h3', null, t('help.modes')),
+      h('p', null, t('help.modesText')),
       h('h3', null, t('help.moves')),
       h('p', null, t('help.movesText')),
       h('h3', null, t('help.rules')),

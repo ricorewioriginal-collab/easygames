@@ -9,6 +9,7 @@ import { Fireworks, Weather } from './effects';
 import { axisCoords, buildShell } from './geometry';
 import { GoalsView } from './goals';
 import { PadsView } from './pads';
+import { RingsView } from './rings';
 import { SceneryView } from './scenery';
 import { createUniforms, floorMaterial, hullMaterial } from './shaders';
 import type { ArenaUniforms } from './shaders';
@@ -46,6 +47,7 @@ class ArenaImpl implements ArenaView {
   private readonly geos: THREE.BufferGeometry[] = [];
   private readonly mats: THREE.Material[] = [];
   private readonly pads: PadsView;
+  private readonly rings: RingsView;
   private readonly goals: GoalsView;
   private readonly stands: StandsView;
   private readonly scenery: SceneryView;
@@ -126,6 +128,7 @@ class ArenaImpl implements ArenaView {
     this.group.add(floor);
 
     this.pads = new PadsView(pal);
+    this.rings = new RingsView();
     this.goals = new GoalsView(u);
     this.stands = new StandsView(u, pal, quality.particles, rng.fork(1));
     this.scenery = new SceneryView(theme, u, pal, rng.fork(2));
@@ -133,6 +136,7 @@ class ArenaImpl implements ArenaView {
     this.fireworks = new Fireworks(u, quality.particles, rng.fork(4));
     this.group.add(
       this.pads.group,
+      this.rings.group,
       this.goals.group,
       this.stands.group,
       this.scenery.group,
@@ -164,6 +168,7 @@ class ArenaImpl implements ArenaView {
     u.uCheer.value = Math.min(1, ck * 2.2) * (ck > 0 ? 1 : 0);
 
     this.pads.update(dt, state);
+    this.rings.update(dt, state);
     this.goals.update(state);
     this.weather.update(dt);
     this.fireworks.update(dt);
@@ -186,6 +191,7 @@ class ArenaImpl implements ArenaView {
     if (this.scene && this.scene.fog === this.fog) this.scene.fog = null;
     this.sun.shadow.map?.dispose();
     this.pads.dispose();
+    this.rings.dispose();
     this.goals.dispose();
     this.stands.dispose();
     this.scenery.dispose();
