@@ -64,7 +64,7 @@ export class Multiplayer {
     if (this.host) return;
     this.host = new NetHost({
       world: g.world, now: () => performance.now(),
-      info: () => ({ seed: g.seed, gen: g.gen, preset: g.preset || undefined, mode: g.mode, time: g.time, edits: encodeEdits(g.world.edits), pos: { x: g.player.x, y: g.player.y, z: g.player.z }, name: this.myName || 'Gastgeber' }),
+      info: () => ({ seed: g.seed, gen: g.gen, preset: g.preset || undefined, terrain: g.terrain || undefined, mode: g.mode, time: g.time, edits: encodeEdits(g.world.edits), pos: { x: g.player.x, y: g.player.y, z: g.player.z }, name: this.myName || 'Gastgeber' }),
       onPlant: (x, y, z) => g.farm.plant(x, y, z, g.age),
       onHit: (peer, id, dmg) => this.hostHit(peer, id, dmg),
       onJoin: p => { this.ui.toast(`${p.name} ist in deiner Welt`); this.avatars.set(p.id, { ...p.pos, name: p.name }); this.listPlayers(); },
@@ -136,7 +136,7 @@ export class Multiplayer {
   }
   welcome(info) {
     const g = this.game;
-    g.start({ name: `Bei ${info.host}`, seed: info.seed, gen: info.gen, preset: info.preset, mode: info.mode, time: info.time, edits: info.edits, px: info.pos.x + 1.5, py: info.pos.y, pz: info.pos.z, yaw: 0, pitch: 0 });
+    g.start({ name: `Bei ${info.host}`, seed: info.seed, gen: info.gen, preset: info.preset, terrain: info.terrain, mode: info.mode, time: info.time, edits: info.edits, px: info.pos.x + 1.5, py: info.pos.y, pz: info.pos.z, yaw: 0, pitch: 0 });
     g.mp = this; g.net = this.guest;
     g.mobs.clear(); g.mobs = new RemoteMobs(g.mobView); // Tiere kommen vom Gastgeber
     this.ui.joined(info);

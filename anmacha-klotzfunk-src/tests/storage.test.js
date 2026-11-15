@@ -100,3 +100,33 @@ test('Export und Import', () => {
   assert.equal(S.freeSlot(), 0);
   S.writeWorld(0, s); assert.equal(S.freeSlot(), 1);
 });
+
+class KeyStorage extends MemStorage {
+  get length() { return this.m.size; }
+  key(i) { return [...this.m.keys()][i] ?? null; }
+}
+test('Freie Speicherstände: beliebig viele Welten, alte Plätze 0–2 bleiben erhalten', () => {
+  for (const St of [MemStorage, KeyStorage]) {
+    const st = new St(); globalThis.localStorage = st;
+    const s = v1Save();
+    // Stand wie bis 1.14: drei feste Plätze
+    for (let i = 0; i < 3; i++) S.writeWorld(i, { ...s, name: 'Alt ' + i });
+    assert.deepEqual(S.listWorlds(), [0, 1, 2], 'alte Welten werden gefunden');
+    for (let n = 0; n < 5; n++) { const i = S.freeSlot(); assert.ok(i >= 3); assert.ok(S.writeWorld(i, { ...s, name: 'Neu ' + n })); }
+    assert.equal(S.listWorlds().length, 8, 'mehr als drei Welten');
+    S.deleteWorld(1);
+    assert.equal(S.freeSlot(), 1, 'gelöschte Nummer wird wieder frei');
+    assert.ok(S.renameWorld(0, '  Burg  '));
+    assert.equal(S.readWorld(0).name, 'Burg'); assert.equal(S.metaFor(0).name, 'Burg');
+    const j = S.copyWorld(0);
+    assert.ok(j >= 0 && j !== 0); assert.equal(S.readWorld(j).name, 'Burg (Kopie)');
+    // Menüinfo fehlt (z. B. aus der Cloud geholt): wird aus dem Spielstand nachgebaut
+    st.removeItem('klotzfunk.meta.2');
+    assert.equal(S.metaFor(2).name, 'Alt 2');
+  }
+});
+test('Neue Felder: Geländeart landet in der Menüinfo', () => {
+  globalThis.localStorage = new MemStorage();
+  S.writeWorld(4, { ...v1Save(), terrain: 'flat' });
+  assert.equal(S.metaFor(4).terrain, 'flat');
+});

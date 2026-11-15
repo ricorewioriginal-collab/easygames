@@ -241,6 +241,20 @@ Bekannt: Deko-Drehung wird im Mehrspieler noch nicht übertragen.
 
 ---
 
+## 2o. Welten frei verwalten, neue Menüs und neues Logo (1.15.0) ✅
+
+| Bereich | Umsetzung | Dateien |
+|---|---|---|
+| Freie Speicherstände | Beliebig viele Welten (bis 200) statt 3 fester Plätze; `listWorlds`, `freeSlot`, `renameWorld`, `copyWorld`, `metaFor` (baut fehlende Menüinfo nach). Die alten Plätze 0–2 behalten ihre Schlüssel und erscheinen einfach als Welten – keine Umwandlung nötig, nichts geht verloren | `src/storage.js` |
+| Neue Welt | Eigene Seite: Name, Modus (Kreativ ist vorgewählt), Gelände **Landschaft** (Biome, Hügel, Höhlen, ohne Bauwerke – Standard in Kreativ), **Flach**, **Abenteuer** (mit Dörfern – Standard in Überleben) oder **Vorlage** (Story-Welt, 4 Fanwelten) als Bildkacheln; Startwert leer = Zufall | `index.html`, `src/main.js`, `public/worlds/*.webp` |
+| Geländearten | Optionales Feld `terrain` (`'flat'`, `'nature'`); `World.structs` schaltet Dörfer/Minen ab. Fehlt das Feld, bleibt alles wie bisher. Mehrspieler überträgt es (Protokoll 3) | `src/world.js`, `src/game.js`, `src/mp.js`, `src/net.js`, `src/mapui.js`, `src/worldmap.js` |
+| Meine Welten | Kacheln mit Vorschaubild, neueste zuerst; Spielen, ✎ umbenennen, ⧉ kopieren, ⤓ exportieren, ↺ Sicherung, 🗑 löschen | `src/main.js`, `src/style.css` |
+| Startmenü | Konsolen-Kacheln (wie Switch/PlayStation): große farbige Kacheln, Fokus mit Rahmen und Sprung, Pfeiltasten und Steuerkreuz räumlich; Handy hochkant als 2er-Raster, quer als Kachelreihe; Unterseiten als Vollbild-Blatt mit Zurück-Taste | `index.html`, `src/style.css` |
+| Logo, Cover, Ladebildschirm | Neues Pixelblock-Logo als SVG (skaliert immer ganz, wird nie abgeschnitten), neues App-Symbol (Grasblock mit Funkwellen) und Cover; Ladebildschirm mit hüpfendem Block, Blockfortschritt und Landschaftskulisse | `public/klotzfunk-logo.svg`, `../anmacha-klotzfunk/logo.svg`, `../anmacha-klotzfunk/card.jpg` |
+| Handy-HUD | Minikarte, Herzen/Hunger und Auftrag stehen links untereinander in einer Spalte (`#hudL`) – keine Überlappung mehr, hoch und quer | `index.html`, `src/style.css` |
+
+Tests: `tests/storage.test.js` (mehr als 3 Welten, alte Plätze, Umbenennen, Kopie, Menüinfo), `tests/world.test.js` (flach, Landschaft ohne Dörfer).
+
 ## 3. Gesamtplan (Abschnitte des Masterprompts → Etappen)
 
 Reihenfolge nach den Prioritäten aus Abschnitt 33: Spielstände → Spielfähigkeit → Fehler → Handy → Desktop → Kernmechaniken → Story → Erweiterungen → Grafik.

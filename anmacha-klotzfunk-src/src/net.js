@@ -6,7 +6,7 @@
 import { B, BLOCKS } from './blocks.js';
 import { H } from './consts.js';
 
-export const PROTO = 2; // 2: Generator 4 und Fanwelten (andere Welt als bei Version 1)
+export const PROTO = 3; // 2: Generator 4 und Fanwelten; 3: Geländearten flach/Landschaft (terrain)
 export const MAX_GUESTS = 4;
 export const REACH_MAX = 9;      // Blöcke vom Auge des Gastes (Spielreichweite 6 plus Spielraum für Verzögerung)
 export const PART = 16000;       // Zeichen je Teilnachricht (DataChannel-Grenzen sicher unterschreiten)
@@ -68,7 +68,7 @@ export class NetHost {
     const info = this.env.info(), data = JSON.stringify(info.edits || {}), parts = splitText(data);
     peer.pos = { x: info.pos.x, y: info.pos.y, z: info.pos.z, yaw: 0, pitch: 0 }; peer.posT = this.env.now();
     peer.bucket = RATE[info.mode === 'creative' ? 'creative' : 'survival'][0]; peer.bucketT = this.env.now();
-    this.sendTo(peer, { k: 'welcome', id: peer.id, tk: peer.token, seed: info.seed, gen: info.gen, preset: info.preset, mode: info.mode, time: info.time, pos: info.pos, host: info.name, parts: parts.length });
+    this.sendTo(peer, { k: 'welcome', id: peer.id, tk: peer.token, seed: info.seed, gen: info.gen, preset: info.preset, terrain: info.terrain, mode: info.mode, time: info.time, pos: info.pos, host: info.name, parts: parts.length });
     parts.forEach((s, i) => this.sendTo(peer, { k: 'part', i, s }));
     // wer schon da ist
     this.sendTo(peer, { k: 'pp', id: 0, name: info.name, ...info.pos });
@@ -170,7 +170,7 @@ export class NetGuest {
         let edits = {};
         try { edits = JSON.parse(this.parts.join('')); } catch { this.env.onBye('Weltdaten beschädigt'); return; }
         const w = this.welcome; this.parts = null;
-        this.env.onWelcome({ seed: w.seed, gen: w.gen, preset: typeof w.preset === 'string' ? w.preset : undefined, mode: w.mode, time: w.time, pos: w.pos, host: w.host, edits, id: w.id });
+        this.env.onWelcome({ seed: w.seed, gen: w.gen, preset: typeof w.preset === 'string' ? w.preset : undefined, terrain: typeof w.terrain === 'string' ? w.terrain : undefined, mode: w.mode, time: w.time, pos: w.pos, host: w.host, edits, id: w.id });
         return;
       }
       case 'bs': if (Array.isArray(m.list)) this.env.onBlocks(m.list.filter(c => Array.isArray(c) && c.length === 4 && c.every(int))); return;

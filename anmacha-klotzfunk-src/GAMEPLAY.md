@@ -3,7 +3,8 @@
 ## Startmenü und Laden
 Das Startmenü ist wie bei einer Konsole aufgebaut: links die Hauptliste, rechts die gewählte Seite, unten die Tastenhinweise.
 - **▶ Weiterspielen** (sobald es einen Spielstand gibt) lädt die zuletzt gespielte Welt.
-- **🌍 Welten**: drei Speicherplätze; neue Welt mit Modus, Startwert und **Welt** (Zufallswelt oder Fanwelt) erzeugen, laden, als Datei sichern (⤓), Sicherung zurückholen (↺), löschen.
+- **✚ Neue Welt**: Name, Modus (Kreativ, Überleben, Story) und Gelände wählen: **Landschaft** (Hügel, Wälder, Höhlen, leer – Standard für Kreativ), **Flach** (ebenes Grasland), **Abenteuer** (mit Dörfern und Minen – Standard für Überleben) oder eine **Vorlage** zum Weiterbauen (Story-Welt, Taschi-Land, Zotik: Lunaris, AnMaCha, Märchenwald). Startwert leer = Zufall.
+- **🌍 Meine Welten**: beliebig viele Welten, neueste zuerst; spielen, umbenennen (✎), kopieren (⧉), als Datei sichern (⤓), Sicherung zurückholen (↺), löschen.
 - **👥 Mitspielen**, **⚙ Einstellungen**, **❔ Anleitung** (Steuerung und Tipps), **☁ Speicherdaten** (Import, Google-Sicherung).
 - Bedienung: Maus/Finger, **Pfeiltasten + Enter, Esc zurück** oder **Controller** (Steuerkreuz/Stick, Bestätigen wählt, Zurück schließt). Am Handy hat jede Seite eine Zurück-Taste ‹.
 - Der **Ladebildschirm** zeigt Welt und Modus, einen echten Fortschritt (erst das Erzeugen, dann den Aufbau der Umgebung um dich herum) und wechselnde Tipps. Das Spiel startet, sobald die Umgebung steht.

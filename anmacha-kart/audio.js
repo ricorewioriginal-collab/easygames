@@ -1,6 +1,6 @@
 /* Ton & Musik – alles wird im Browser per WebAudio erzeugt (keine Audiodateien, keine Urheberrechtsfragen). */
 const AUD = (() => {
-  let ac = null, master = null, noiseBuf = null, muted = false, bedTimer = null, bedMode = null, step = 0, nextT = 0, tension = 0, ttsOn = false, voice = null;
+  let radioOn = false, ac = null, master = null, noiseBuf = null, muted = false, bedTimer = null, bedMode = null, step = 0, nextT = 0, tension = 0, ttsOn = false, voice = null;
   try { muted = localStorage.getItem('akMute') === '1'; ttsOn = localStorage.getItem('akTts') === '1'; } catch (e) {}
   function ctx() {
     if (!ac) {
@@ -36,6 +36,7 @@ const AUD = (() => {
     tick: () => note(hz(84), 0.05, 'sine', 0.035),
     back: () => { note(hz(76), 0.08, 'triangle', 0.05); note(hz(69), 0.1, 'triangle', 0.04, 0.04); },
     beep: hi => note(hi ? 1320 : 660, hi ? 0.5 : 0.18, 'square', hi ? 0.07 : 0.06),
+    horn: () => { note(hz(67), 0.32, 'square', 0.045, 0, { lp: 1800 }); note(hz(71), 0.32, 'square', 0.035, 0, { lp: 1800 }); note(hz(67), 0.22, 'square', 0.04, 0.36, { lp: 1800 }); note(hz(71), 0.22, 'square', 0.03, 0.36, { lp: 1800 }); },
     coin: () => { note(hz(88), 0.07, 'square', 0.03, 0, { lp: 5000 }); note(hz(95), 0.16, 'square', 0.03, 0.06, { lp: 5000 }); },
     box: () => { [76, 80, 83, 88].forEach((n, i) => note(hz(n), 0.12, 'square', 0.035, i * 0.05, { lp: 3000 })); },
     got: () => { note(hz(84), 0.15, 'triangle', 0.06); note(hz(91), 0.2, 'triangle', 0.05, 0.08); },
@@ -75,7 +76,7 @@ const AUD = (() => {
   // Hintergrundmusik: 'menu' (locker) | 'race' (schneller Arcade-Groove) | 'off'
   const MENU_BASS = [45, 45, 48, 43, 45, 45, 50, 48], MENU_ARP = [57, 60, 64, 60, 57, 62, 65, 62], RACE_BASS = [40, 40, 43, 40, 38, 38, 41, 43], RACE_LEAD = [64, 67, 71, 67, 64, 69, 72, 69];
   function sched() {
-    if (!ac || muted || !bedMode) return; const c = ac;
+    if (!ac || muted || !bedMode) return; const c = ac; if (radioOn) { nextT = c.currentTime + 0.05; return; }
     while (nextT < c.currentTime + 0.3) {
       const t = nextT - c.currentTime;
       if (bedMode === 'menu') {
@@ -113,5 +114,5 @@ const AUD = (() => {
     try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'de-DE'; if (voice) u.voice = voice; u.rate = 1.02; u.pitch = 0.95; u.onend = end; u.onerror = end; speechSynthesis.speak(u); setTimeout(end, 9000); } catch (e) { end(); }
   }
   function setTts(v) { ttsOn = v; try { localStorage.setItem('akTts', v ? '1' : '0'); } catch (e) {} if (!v) try { speechSynthesis.cancel(); } catch (e) {} }
-  return { sfx: SFX, bed, engine, say, setMute, setTts, get muted() { return muted; }, get tts() { return ttsOn; }, hasTts: 'speechSynthesis' in window, unlock: () => { try { ctx(); } catch (e) {} } };
+  return { sfx: SFX, bed, engine, say, setMute, setTts, get muted() { return muted; }, get tts() { return ttsOn; }, hasTts: 'speechSynthesis' in window, unlock: () => { try { ctx(); } catch (e) {} }, radio(on) { radioOn = !!on; } };
 })();

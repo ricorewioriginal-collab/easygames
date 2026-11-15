@@ -18,11 +18,11 @@ werden im Browser erzeugt; es gibt keine Downloads außer den 16 Logos. Kein Kon
 Mehr zu Steuerung und Spielablauf: [GAMEPLAY.md](GAMEPLAY.md). Welt und Biome: [WORLD.md](WORLD.md). Alle Blöcke: [BLOCKS.md](BLOCKS.md).
 
 ## Speichern
-Drei Weltplätze im Browser (`localStorage`). Gespeichert wird automatisch alle 30 Sekunden, beim Pausieren und beim Verlassen der Seite;
+Beliebig viele Welten im Browser (`localStorage`, frühere Plätze 1–3 bleiben erhalten). Gespeichert wird automatisch alle 30 Sekunden, beim Pausieren und beim Verlassen der Seite;
 abgelegt werden nur Startwert, Generator-Version und die tatsächlichen Änderungen. Zusätzlich:
 - **Sicherung:** höchstens alle 10 Minuten wird der vorige Stand als Sicherung behalten (↺ auf der Welt-Kachel unter „Welten“ stellt ihn wieder her).
   Ist ein Spielstand beschädigt, bietet das Spiel beim Laden die Sicherung an.
-- **Export/Import:** ⤓ auf der Welt-Kachel lädt die Welt als `.json`-Datei herunter, „⤒ Welt importieren“ unter „Speicherdaten“ liest sie in einen freien Platz.
+- **Export/Import:** ⤓ auf der Welt-Kachel lädt die Welt als `.json`-Datei herunter, „⤒ Welt importieren“ unter „Speicherdaten“ liest sie als neue Welt ein.
 - **Optional:** Spielstände mit Google sichern (Hauptmenü, aufklappbar). Ohne Anmeldung bleibt alles auf dem Gerät.
 - Welten aus Version 1.0 laden unverändert mit ihrer Originallandschaft.
 
