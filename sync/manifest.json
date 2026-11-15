@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b8215ed3cb56",
- "generated": "2026-11-15T19:38:17+00:00",
- "commit": "23173f8e7e10d9d2026a123846e50232157f1616",
+ "version": "3850d3672a55",
+ "generated": "2026-11-15T20:41:14+01:00",
+ "commit": "7b322a5ffab7dc92e348df420b557a2c2d4de071",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2158,13 +2158,13 @@
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 88742,
-   "h": "63e621f4e4d725dc8ebc45054eb14c2dd4fa5286632c73d27c31b24c6d0a71dc"
+   "s": 88862,
+   "h": "3c61fb10c588c70e4d6a3b4abcc7bdfe722b8a71c7d7e3c5b7244917b03b3a93"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 68480,
-   "h": "dc020df64f2a2fb5439a814770f495892627d735d6d2a4289bc9e017e364c998"
+   "s": 68779,
+   "h": "d02e52bde31e07f23b772283f262c2da88f3b90944ce25b8cd3a73c1d48c0e74"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -2325,6 +2325,71 @@
    "p": "anmacha-kart/view.js",
    "s": 170875,
    "h": "f28399374895750d4ac30da7ec1e2e808e91fa136fd2856c09cb5a9c5086e585"
+  },
+  {
+   "p": "anmacha-kart/winzflitzer/card.jpg",
+   "s": 44862,
+   "h": "8e40e5835a6caeaccadf57d054271e583d690ba402e577f759de7a48b932a341"
+  },
+  {
+   "p": "anmacha-kart/winzflitzer/index.html",
+   "s": 9742,
+   "h": "dc77ff4d2f1b2839162f7519ca3caf92af752b038af7d6c19bd4c70b3a851241"
+  },
+  {
+   "p": "anmacha-kart/winzflitzer/js/audio.js",
+   "s": 7948,
+   "h": "3222e4c1c075d5f454d47d2c1e3917fa610e2d13dbc387b73a16f7bf32381adb"
+  },
+  {
+   "p": "anmacha-kart/winzflitzer/js/data.js",
+   "s": 20319,
+   "h": "bd663d75b0a823a52e58c4354d9cb912e5b977958a8e3029f4e4b5991417ff1f"
+  },
+  {
+   "p": "anmacha-kart/winzflitzer/js/game.js",
+   "s": 72097,
+   "h": "59c285dbf234b1c89f20011283952e75076aaec3293a06e96cb95aace1c83f44"
+  },
+  {
+   "p": "anmacha-kart/winzflitzer/js/input.js",
+   "s": 12530,
+   "h": "a0c66271990f31d44f6f801e6d1ac05ccd5459414f6576c233b4f33561cc39d0"
+  },
+  {
+   "p": "anmacha-kart/winzflitzer/js/models.js",
+   "s": 9112,
+   "h": "f2b83c313f0c3b5efa114aa1bc71aa4b032d0f1b6219523aa0970224ba04c84c"
+  },
+  {
+   "p": "anmacha-kart/winzflitzer/js/physics.js",
+   "s": 16167,
+   "h": "436fff1230faf64f3b9f6de0dbd4f5dbe4a371f0937bb01937fccb29549db0d9"
+  },
+  {
+   "p": "anmacha-kart/winzflitzer/js/scenery.js",
+   "s": 37836,
+   "h": "d8bd5133c8c34b99042f710f8bdc3703dee704c63ad2001bf82d579be1e49361"
+  },
+  {
+   "p": "anmacha-kart/winzflitzer/js/track.js",
+   "s": 12044,
+   "h": "de3ad587390b8d63b974716e68f15266ab31319ba51a2720b3a8904c377e737d"
+  },
+  {
+   "p": "anmacha-kart/winzflitzer/js/util.js",
+   "s": 5828,
+   "h": "bb73c5849b4f503978f1447f197ebcf1ed92eb843554f317591d8e5206304b83"
+  },
+  {
+   "p": "anmacha-kart/winzflitzer/logo.svg",
+   "s": 14293,
+   "h": "516faf10bcfb321a9ae082a2138002a82a34043995f11d9dd7ab85dfaa34649a"
+  },
+  {
+   "p": "anmacha-kart/winzflitzer/style.css",
+   "s": 29147,
+   "h": "74faf7bffb62fca17e75942061454caa84e4104e3e3b96d923740f7d6b27a247"
   },
   {
    "p": "anmacha-kart/zotik-fox.js",
@@ -9248,8 +9313,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3252,
-   "h": "6e0e7a5f0db246d53eda9d55afee810df31e98d5c4072ba9caf613979b583244"
+   "s": 3227,
+   "h": "1c56f483dc2260af4660a3740da6539e28245cd635c1362a75575f35673bb111"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -9323,8 +9388,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 25258,
-   "h": "bdc3e707e2649e98a4ffeed501463801628df5370c70dda81e98b1af0901cfad"
+   "s": 25243,
+   "h": "e2d5aa9f444e0c4e519851f49a493e25b65d68bebae48da3b70be92e320a70cd"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -9628,8 +9693,8 @@
   },
   {
    "p": "easyclash/js/roster.js",
-   "s": 20024,
-   "h": "7435ee9d605435550ac085e1b608c4a66474a5434961cc32e0c82f7e7b48d165"
+   "s": 20034,
+   "h": "9e4739b5a19e7da5769ccc6d66b69c140264ad9c253474a0960edbba7f985a32"
   },
   {
    "p": "easyclash/js/scene.js",
@@ -10138,8 +10203,8 @@
   },
   {
    "p": "games.js",
-   "s": 55542,
-   "h": "802101e3c53afc5b99b7e419bbf5bfa02e07bfbfbcd84059ebeb45b67ebc5067"
+   "s": 54761,
+   "h": "66eabc0d08b5e1d834768d0b0f43bb533231407054606e3a322e8f39b8611e66"
   },
   {
    "p": "gay-life/card.jpg",
@@ -10443,8 +10508,8 @@
   },
   {
    "p": "guides.js",
-   "s": 171683,
-   "h": "4992bcc86e1c1299f82dadf434602cb5c9daffebaa5ee947ec8811fcb7e01aea"
+   "s": 169260,
+   "h": "1814814358638cf18f390f80ca3f0feb3b71fe2fc8ff5becf57885c95d906833"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10498,8 +10563,8 @@
   },
   {
    "p": "guides/anmacha-kart.json",
-   "s": 28758,
-   "h": "7bd0d0c79b235b2027a4f08380b7bd4243e63832c69205ef21e9a8b6278c1a06"
+   "s": 48218,
+   "h": "bd336c7f6bf67bd2e2b48c5c1449ae9ed4f6468206c682f6786e16ce3db2eac1"
   },
   {
    "p": "guides/anmacha-kartensammlung.json",
@@ -10860,11 +10925,6 @@
    "p": "guides/werwolf-nacht.json",
    "s": 15831,
    "h": "af34784c39a760eba03b5886f575870fb6aa940fb2d680e4b169fdd63e4eac9f"
-  },
-  {
-   "p": "guides/winzflitzer.json",
-   "s": 18883,
-   "h": "d7cf838020d518e8cd095bac784d33eceb421e7c99252235fd1c5683961fa311"
   },
   {
    "p": "guides/wobbel.json",
@@ -11893,8 +11953,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3605,
-   "h": "bb8e0e1fdab9e34a3fb0a6ca720df08eeaf8e9b2864b16e07f5ae81b16a1d648"
+   "s": 3571,
+   "h": "560143a7de5e1e96bad3d1e488cbf7f5419909615375c11a3e82ad0dd81ac9a2"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-DMBVqCOs.js",
@@ -14068,8 +14128,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 248901,
-   "h": "3b0162b9a39a47006796a8be5b5fc1682551ee91162b42d09ff2bd65dc821bb7"
+   "s": 245426,
+   "h": "fb9f95199abd675080ce4fcf03ba63bdac2706828386b0bf0f10d5c0d80ebbea"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -15213,8 +15273,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2185,
-   "h": "33ed224cde35305bd99cc32a2402db5d9515a3c193279fd2a4e391f02e7c8560"
+   "s": 2158,
+   "h": "f7df8ee54229a7705ac015116fec64f37621e853e396c925d6e15cf761f45d53"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
@@ -15230,11 +15290,6 @@
    "p": "thumbs/werwolf-nacht.webp",
    "s": 14858,
    "h": "c073e553fed107fc697a6b14f7440dc3af435344e0993c358924247e8f890b76"
-  },
-  {
-   "p": "thumbs/winzflitzer.webp",
-   "s": 19588,
-   "h": "8874533ac0d429864f8006718477c6e7c73f4f5c9b4cd991e857c1108d763bd6"
   },
   {
    "p": "thumbs/wolkenhopser.webp",
@@ -15620,81 +15675,6 @@
    "p": "werwolf-nacht/sw.js",
    "s": 2014,
    "h": "b1617229f3f843a74b6bc3392a927708700090d191f5f869176e762bd4782c6a"
-  },
-  {
-   "p": "winzflitzer/card.jpg",
-   "s": 44862,
-   "h": "8e40e5835a6caeaccadf57d054271e583d690ba402e577f759de7a48b932a341"
-  },
-  {
-   "p": "winzflitzer/index.html",
-   "s": 13532,
-   "h": "f84d0d938cb49c0873ed34fd367aa5718469ada339e07ce291d7b291e722af5a"
-  },
-  {
-   "p": "winzflitzer/js/audio.js",
-   "s": 7948,
-   "h": "3222e4c1c075d5f454d47d2c1e3917fa610e2d13dbc387b73a16f7bf32381adb"
-  },
-  {
-   "p": "winzflitzer/js/data.js",
-   "s": 20319,
-   "h": "bd663d75b0a823a52e58c4354d9cb912e5b977958a8e3029f4e4b5991417ff1f"
-  },
-  {
-   "p": "winzflitzer/js/game.js",
-   "s": 72091,
-   "h": "df6bbc61031c0016635fb4aaa1e47d389828fb1722e058146f8d8e15ccd9f7aa"
-  },
-  {
-   "p": "winzflitzer/js/input.js",
-   "s": 12530,
-   "h": "a0c66271990f31d44f6f801e6d1ac05ccd5459414f6576c233b4f33561cc39d0"
-  },
-  {
-   "p": "winzflitzer/js/models.js",
-   "s": 9112,
-   "h": "f2b83c313f0c3b5efa114aa1bc71aa4b032d0f1b6219523aa0970224ba04c84c"
-  },
-  {
-   "p": "winzflitzer/js/physics.js",
-   "s": 16167,
-   "h": "436fff1230faf64f3b9f6de0dbd4f5dbe4a371f0937bb01937fccb29549db0d9"
-  },
-  {
-   "p": "winzflitzer/js/scenery.js",
-   "s": 37836,
-   "h": "d8bd5133c8c34b99042f710f8bdc3703dee704c63ad2001bf82d579be1e49361"
-  },
-  {
-   "p": "winzflitzer/js/track.js",
-   "s": 12044,
-   "h": "de3ad587390b8d63b974716e68f15266ab31319ba51a2720b3a8904c377e737d"
-  },
-  {
-   "p": "winzflitzer/js/util.js",
-   "s": 5828,
-   "h": "bb73c5849b4f503978f1447f197ebcf1ed92eb843554f317591d8e5206304b83"
-  },
-  {
-   "p": "winzflitzer/logo.svg",
-   "s": 14293,
-   "h": "516faf10bcfb321a9ae082a2138002a82a34043995f11d9dd7ab85dfaa34649a"
-  },
-  {
-   "p": "winzflitzer/manifest.webmanifest",
-   "s": 797,
-   "h": "f205847411ab36d6f48e0f4130d55bf62acfb8ed7834721e5bfaf5ecdebc9361"
-  },
-  {
-   "p": "winzflitzer/style.css",
-   "s": 29147,
-   "h": "74faf7bffb62fca17e75942061454caa84e4104e3e3b96d923740f7d6b27a247"
-  },
-  {
-   "p": "winzflitzer/sw.js",
-   "s": 2018,
-   "h": "31e1b20d246dd85ff0547c2601a279c28038236e4806fe3c0219fc488710db2b"
   },
   {
    "p": "wobbel/card.png",

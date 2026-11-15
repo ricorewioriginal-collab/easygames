@@ -1261,7 +1261,7 @@
   {
    "id": "anmacha-kart",
    "title": "Kart Rush: Weltentour",
-   "desc": "Arcade-Kartrennen in 3D wie auf der Konsole: 33 Strecken mit eigener Form und Welt, 14 Cups, 50/100/150 cc und Spiegel, Tandem mit zwei Fahrern pro Kart, Spezialitems, Geister-Zeitfahren, Battle in 3 Arenen (Ballonjagd, Funkpokal, Bomben-Duell) und Koop-Kart zu zweit. 36 Fahrer inkl. Zotik und der Oma-Bande, 11 Karts, 13 Radiosender. Volle Controller-Steuerung (PlayStation, Nintendo, Xbox), Touch, Kippen zum Lenken – solo, im Splitscreen oder mit bis zu 4 Handys.",
+   "desc": "Arcade-Kartrennen in 3D wie auf der Konsole: 33 Strecken mit eigener Form und Welt, 14 Cups, 50/100/150 cc und Spiegel, Tandem mit zwei Fahrern pro Kart, Spezialitems, Geister-Zeitfahren, Battle in 3 Arenen (Ballonjagd, Funkpokal, Bomben-Duell) und Koop-Kart zu zweit, dazu der Modus Winzflitzer (Micro-Rennen auf Küchentisch, Badewanne und Sandkasten). 36 Fahrer inkl. Zotik und der Oma-Bande, 11 Karts, 13 Radiosender. Volle Controller-Steuerung (PlayStation, Nintendo, Xbox), Touch, Kippen zum Lenken – solo, im Splitscreen oder mit bis zu 4 Handys.",
    "icon": "🏎️",
    "img": "anmacha-kart/card.jpg",
    "bg": "linear-gradient(145deg,#2a78e8,#00e5ff 50%,#ff2d95)",
@@ -1286,8 +1286,8 @@
      "Die Oma-Bande aus dem früheren Oma-Rennen fährt jetzt hier mit: sieben Omas und Opa Kalle, der Raketen-Rollator und sechs Stadt-Strecken im Kaffee-Cup, Kuchen-Cup und Großen Rentenpokal."
     ]
    },
-   "size": 4324615,
-   "files": 39,
+   "size": 4616959,
+   "files": 52,
    "offline": true,
    "cloud": {
     "game": "kart",
@@ -1438,41 +1438,6 @@
    "cloud": {
     "game": "funkmaler",
     "prefix": "funkmaler-"
-   },
-   "trailer": null
-  },
-  {
-   "id": "winzflitzer",
-   "title": "Winzflitzer 3D – Rennen auf dem Küchentisch",
-   "desc": "Winzige Flitzer auf riesigen Tischen: 24 Strecken über Frühstückstisch, Schreibtisch, Badewanne, Garten, Sandkasten, Billardtisch, Werkbank und Kinderzimmer – mit Sportflitzern, Formel-Winzlingen, Speedbooten, Hubschraubern, Geländewagen, Kugelflitzern, Panzern und Monstertrucks. Meisterschaft mit Leben und Ausscheiden, Kopf-an-Kopf-Duelle (wer zurückfällt, fliegt aus dem Bild), Mehrspieler für 2–4 an einem Gerät, Einzelrennen und Zeitfahren mit Geist. Voll manuell gefahren, mit Drift und Mini-Turbo – per Touch, Tastatur oder Controller (PlayStation, Switch, Xbox) mit passenden Tastensymbolen.",
-   "icon": "🏎️",
-   "img": "winzflitzer/card.jpg",
-   "bg": "linear-gradient(145deg,#14123a,#ff2d95 55%,#ffd23f)",
-   "glow": "rgba(255,45,149,.55)",
-   "path": "winzflitzer/",
-   "modes": {
-    "multi": true
-   },
-   "multiplayer": true,
-   "guide": {
-    "anleitung": "Winzflitzer 3D ist ein Micro-Rennspiel: Winzige Fahrzeuge rasen über riesige Alltagswelten – Frühstückstisch, Schreibtisch, Badewanne, Garten, Sandkasten, Billardtisch, Werkbank und Kinderzimmer, je 3 Strecken. Jede Welt hat ihr Fahrzeug: Sportflitzer, Formel-Winzlinge, Speedboote, Hubschrauber, Geländewagen, Kugelflitzer, Panzer (können schießen) und Monstertrucks. Wer von der Tischkante fällt oder die Strecke verlässt, wird zurückgesetzt und verliert Zeit. Pinke Pfeil-Streifen geben Turbo, Milch, Öl und Seife sind rutschig, Honig und Sägespäne bremsen, der Abfluss-Strudel zieht dich mit; über Lücken kommst du nur mit Schwung. Meisterschaft: 24 Rennen gegen je 3 Gegner, Platz 1 oder 2 bringt dich weiter, sonst kostet es ein Leben; der letzte Computer-Fahrer scheidet aus, nach jedem dritten Rennen gibt es eine Bonusrunde um ein Extraleben. Kopf-an-Kopf: Du gegen einen Gegner auf einem Bildschirm – wer zurückfällt und aus dem Bild gerät, verliert ein Licht; mit allen 8 Lichtern gewinnst du das Duell, 11 Gegner warten der Reihe nach. Mehrspieler: 2–4 Spieler an einem Gerät (Tastatur zu zweit, Controller, Touch), optional mit Computer-Fahrern, Ziel 3, 5 oder 8 Punkte. Dazu Einzelrennen und Zeitfahren mit dem Geist deiner besten Runde.",
-    "steuerung": [
-     "Tastatur: ↑ Gas, ↓ Bremse/Rückwärts, ← → lenken (aus Sicht des Fahrers), Leertaste oder Enter schießen (Panzer), Esc Pause. Zu zweit schießt der Pfeiltasten-Spieler mit Enter, Shift rechts, Strg rechts oder Punkt, der WASD-Spieler mit Leertaste, Shift links, Q oder E.",
-     "Gamecontroller: linker Stick oder Steuerkreuz lenkt, A oder RT Gas, B oder LT Bremse, X, Y oder RB schießen, Start Pause. In den Einstellungen „Stick-Richtung“: der Flitzer fährt dorthin, wohin der Stick zeigt.",
-     "Touch: links den Stick in die gewünschte Fahrtrichtung ziehen – der Flitzer gibt selbst Gas und lenkt; rechts Bremse und 💥 (Panzer). In den Einstellungen gibt es auch klassische Tasten (◀ ▶, Gas, Bremse)."
-    ],
-    "tipps": [
-     "Vor engen Kurven kurz vom Gas – wer zu schnell ist, rutscht über die Tischkante.",
-     "Turbo-Streifen vor Rampen nutzen: Über die Lücken auf dem Schreibtisch und im Kinderzimmer kommst du nur mit vollem Tempo.",
-     "Im Duell vorne bleiben: Die Kamera folgt dem Führenden – wer hinten aus dem Bild fällt, verliert das Licht."
-    ]
-   },
-   "size": 298524,
-   "files": 15,
-   "offline": true,
-   "cloud": {
-    "game": "winzflitzer",
-    "prefix": "winzflitzer-"
    },
    "trailer": null
   },
@@ -1794,7 +1759,7 @@
      "Spar dir das Finale für den Moment auf, in dem der Gegner einen Fehler macht."
     ]
    },
-   "size": 213193,
+   "size": 213203,
    "files": 11,
    "offline": true,
    "cloud": {
