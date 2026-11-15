@@ -139,7 +139,7 @@
     "🦊 Zotik & Lunaris: Mond-Welt mit Luftschiff, Quest und Elementar-Kampf.",
     "📻 Radio-Insel Funkwelle: 13 Radiosender, Visual Radio, Noten sammeln.",
     "🔱 Atlantis: versunkene Stadt mit Hologramm-Archiv, Harfe und Aqua-Gleitern.",
-    "🌀 Taschi-Land: das Taschi-Portal in der Arena führt ins eigene easygames-Spiel Taschi (fangen, kämpfen, Orden).",
+    "🌀 Taschi-Land: echte Taschis laufen frei herum und lassen sich streicheln; das Taschi-Portal in der Arena führt ins eigene easygames-Spiel Taschi (fangen, kämpfen, Orden).",
     "🍄 Hüpfland: Dino Tupfi, Röhren, Sternblöcke, Kart-Rennen und Brockos Burg.",
     "🌀 Prisma-Archipel: Ki-Garten, Runen-Arena, Datenhain, Sternkugeln und goldene Flugwolke."
    ]
@@ -352,6 +352,8 @@
    "t": "Taschi-Land (Portal)",
    "list": [
     "🔬 Professor Ulme steht vor der Arena und erklärt, wohin die Taschis gezogen sind.",
+    "🐾 Echte Taschis laufen frei herum – hingehen und streicheln (Aktion-Knopf). 5 verschiedene = Taschi-Freund, ⭐ +5.",
+    "🎒 Vier Taschi-Trainer spazieren mit ihrem Partner-Taschi über die Insel und erzählen vom Taschi-Spiel.",
     "🗿 Die große Statue auf dem Platz ansehen (Aktion-Knopf).",
     "🌀 Das Portal mitten in der Arena: hineingehen → „Los geht’s!“ – die Insel speichert, dann öffnet sich das Taschi-Spiel.",
     "🎈 Der Heißluftballon im Lager ist ein Fahrzeug."

@@ -29,9 +29,11 @@ BI.Deko = (function () {
       .catch(() => { K.loading = false; K.failed = true; });
   };
   /* Zweites Paket welt.bin (KayKit Medieval Builder + Wizp, dieselben CC0-Modelle wie im Zotik-Spiel): erst laden, wenn eine Welt es braucht */
-  const wcb = []; let wst = 0;
-  K.welt = function (f) { if (wst === 2) return f(); if (wst === 3) return; wcb.push(f); if (wst) return; wst = 1; if (typeof location !== 'undefined' && /[?&]deko=0/.test(location.search)) { wst = 3; return; }
-    fetch('models/welt.bin').then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(b => { parse(b); wst = 2; for (const g of wcb.splice(0)) try { g(); } catch (e) { console.warn(e); } }).catch(() => { wst = 3; }); };
+  /* weitere Pakete (welt.bin, taschis.bin = echte Taschis aus dem Taschi-Spiel) erst laden, wenn eine Welt sie braucht; Zustand 1 lädt, 2 fertig, 3 fehlgeschlagen */
+  const packs = {};
+  K.pack = function (file, f) { const P = packs[file] || (packs[file] = { st: 0, cb: [] }); if (P.st === 2) return f(); if (P.st === 3) return; P.cb.push(f); if (P.st) return; P.st = 1; if (typeof location !== 'undefined' && /[?&]deko=0/.test(location.search)) { P.st = 3; return; }
+    fetch('models/' + file).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }).then(b => { parse(b); P.st = 2; for (const g of P.cb.splice(0)) try { g(); } catch (e) { console.warn(e); } }).catch(() => { P.st = 3; P.cb.length = 0; }); };
+  K.welt = f => K.pack('welt.bin', f);
   /* Platzieren (vor oder nach dem Laden): name, x, y, z, Größe s (Faktor), Drehung ry, Kollisionsradius cr (0 = keiner) */
   K.add = (name, x, y, z, s, ry, cr) => { K.list.push({ name, x, y, z, s, ry: ry || 0, cr: cr || 0 }); };
   const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _e = new THREE.Euler(), _b = new THREE.Box3();

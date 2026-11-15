@@ -95,7 +95,7 @@ BI.INSELSTORY = [
   ], end: 'Okeana flüstert: Atlantis hat einen neuen Hüter!' },
   { key: 'TASCHI', icon: '🌀', npc: 'Professor Ulme', title: 'Das Portal der Taschis', acts: [
     { text: 'Willkommen in Taschi-Land! Die Taschis sind umgezogen – in eine eigene, viel größere Welt. Komm zu mir an die Arena, ich erkläre dir alles!', hint: 'Sprich mit Professor Ulme an der Arena', goal: [{ log: 'taschi', row: 0 }], done: 'Jetzt weißt du, wohin die Taschis gezogen sind!' },
-    { text: 'Meine Statue auf dem Platz hält den allerersten Taschiball. Schau sie dir an – und dann such das Portal in der Arena!', hint: 'Sieh dir die Statue an und finde das Portal in der Arena', goal: [{ log: 'taschi', row: 1 }, { log: 'taschi', row: 2 }], done: 'Das Portal leuchtet für dich!' },
+    { text: 'Meine Statue auf dem Platz hält die allererste Taschi-Kapsel. Schau sie dir an – und dann such das Portal in der Arena!', hint: 'Sieh dir die Statue an und finde das Portal in der Arena', goal: [{ log: 'taschi', row: 1 }, { log: 'taschi', row: 2 }], done: 'Das Portal leuchtet für dich!' },
     { text: 'Trau dich: Geh durchs Portal! Dein Inselspiel wird gespeichert, und mit „Zurück“ kommst du jederzeit wieder.', hint: 'Reise durchs Portal ins Taschi-Spiel', goal: [{ log: 'taschi', row: 3 }], done: 'Willkommen zurück, Portal-Reisender!' }
   ], end: 'Professor Ulme lacht: Die Taschis freuen sich auf jeden Besuch von dir!' },
   { key: 'PRISMA', icon: '🌀', npc: 'Nuri', title: 'Die drei Lichtsignale', acts: [

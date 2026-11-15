@@ -158,7 +158,9 @@ const files = fs.readdirSync(SRC).filter((f) => /\.(glb|gltf)$/.test(f)).sort();
 // Auswahl einzelner Modelle aus Sammel-Dateien (z. B. dieselben CC0-Pakete wie im Zotik-Spiel): models-src/picks.json = { "name": ["pfad/zur.glb", "Knotenname"] }
 const PICKS = fs.existsSync(path.join(SRC, 'picks.json')) ? JSON.parse(fs.readFileSync(path.join(SRC, 'picks.json'), 'utf8')) : {};
 // deko.bin = Einzeldateien (überall gebraucht, früh geladen); welt.bin = Auswahl aus picks.json (erst in der Nähe der Welt geladen)
-const SETS = [[OUT, files.map((f) => [f.replace(/\.(glb|gltf)$/, ''), path.join(SRC, f), null])], [path.join(path.dirname(OUT), 'welt.bin'), Object.entries(PICKS).map(([k, [f, n]]) => [k, path.join(SRC, f), n])]];
+const SETS = [[OUT, files.map((f) => [f.replace(/\.(glb|gltf)$/, ''), path.join(SRC, f), null])], [path.join(path.dirname(OUT), 'welt.bin'), Object.entries(PICKS).map(([k, [f, n]]) => [k, path.join(SRC, f), n])],
+  ...['taschis', 'figuren'].map((k) => [path.join(path.dirname(OUT), k + '.bin'), Object.entries(JSON.parse(fs.readFileSync(path.join(SRC, k + '.json'), 'utf8'))).map(([n, [f, nd]]) => [n, path.join(SRC, f), nd])])];
+// taschis.bin = echte Taschis aus dem Taschi-Spiel (Quaternius Ultimate Monsters, CC0); figuren.bin = KayKit-Adventurers-Teile (CC0) für BI.makeChar (js/figuren.js)
 for (const [OUTF, jobs] of SETS) {
 const meta = { v: 1, models: {} };
 const chunks = [];
