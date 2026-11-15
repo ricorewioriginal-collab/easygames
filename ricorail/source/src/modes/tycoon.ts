@@ -18,7 +18,7 @@ const ELECTRIC_ROUTES = new Set(['d1', 'd2', 'd3', 'd4', 'f2', 'f3']);
 // f1: Hauptbahn elektrifiziert, Museumsbahn nicht → Diesel/Dampf überall, E-Fahrzeuge nur auf Linien der Hauptbahn
 const F1_NONELEC = new Set(['f1-mb']);
 
-export function newCompany(name = 'RicoRail AG'): Company {
+export function newCompany(name = 'Schienenhorizont AG'): Company {
   return { v: 1, name, money: START_MONEY, day: 1, rep: 50, routes: ['f1'], trains: [], log: [], nextId: 1 };
 }
 
@@ -27,7 +27,7 @@ export function loadCompany(raw: unknown): Company | null {
   if (!raw || typeof raw !== 'object') return null;
   const c = raw as Partial<Company>;
   if (c.v !== 1 || typeof c.money !== 'number' || !Array.isArray(c.trains) || !Array.isArray(c.routes)) return null;
-  return { v: 1, name: String(c.name ?? 'RicoRail AG'), money: c.money, day: Math.max(1, Number(c.day) || 1), rep: clamp(Number(c.rep) || 50, 0, 100),
+  return { v: 1, name: String(c.name ?? 'Schienenhorizont AG'), money: c.money, day: Math.max(1, Number(c.day) || 1), rep: clamp(Number(c.rep) || 50, 0, 100),
     routes: c.routes.filter((r) => r in ROUTE_PRICE), trains: c.trains.filter((t) => t && FORM.has(t.form)).map((t) => ({ id: String(t.id), form: t.form, age: Number(t.age) || 0, line: t.line ?? null, km: Number(t.km) || 0 })),
     log: Array.isArray(c.log) ? c.log.slice(-60) : [], nextId: Number(c.nextId) || 1 };
 }

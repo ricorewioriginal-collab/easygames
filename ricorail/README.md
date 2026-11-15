@@ -1,4 +1,4 @@
-# RicoRail Simulator 3D
+# Schienenhorizont – Bahn-Simulator 3D
 
 *Deine Eisenbahn. Deine Strecken. Deine Welt.*
 

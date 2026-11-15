@@ -4,8 +4,8 @@
   {
    "t": "Ziel des Spiels",
    "p": [
-    "RicoRail Simulator 3D („Deine Eisenbahn. Deine Strecken. Deine Welt.“) ist ein Eisenbahnsimulator im Browser. Du fährst Züge aus dem Führerstand über vier vereinfacht nachgebildete deutsche Strecken und durch vier Fantasiewelten, rangierst Güterwagen, stellst im Stellwerk Fahrstraßen, steigst in der Karriere vom Lokführer-Anwärter zum Meister-Lokführer auf, führst eine eigene Bahngesellschaft und baust im Editor eigene Strecken.",
-    "Signale, PZB, Sifa und Stellwerk sind vereinfachte Spielmodelle, nicht zertifiziert und nicht sicherheitsrelevant. RicoRail ist eine Simulation und kein offizielles Produkt der Deutschen Bahn."
+    "Schienenhorizont – Bahn-Simulator 3D („Deine Eisenbahn. Deine Strecken. Deine Welt.“) ist ein Eisenbahnsimulator im Browser. Du fährst Züge aus dem Führerstand über vier vereinfacht nachgebildete deutsche Strecken und durch vier Fantasiewelten, rangierst Güterwagen, stellst im Stellwerk Fahrstraßen, steigst in der Karriere vom Lokführer-Anwärter zum Meister-Lokführer auf, führst eine eigene Bahngesellschaft und baust im Editor eigene Strecken.",
+    "Signale, PZB, Sifa und Stellwerk sind vereinfachte Spielmodelle, nicht zertifiziert und nicht sicherheitsrelevant. Schienenhorizont ist eine Simulation und kein offizielles Produkt der Deutschen Bahn."
    ]
   },
   {
@@ -166,7 +166,7 @@
   {
    "t": "Bahngesellschaft",
    "list": [
-    "Du startest als „RicoRail AG“ mit 600.000 RicoTalern (fiktive Währung, keine Käufe mit Echtgeld) und der Strecke Sonnenland-Express.",
+    "Du startest als „Schienenhorizont AG“ mit 600.000 RicoTalern (fiktive Währung, keine Käufe mit Echtgeld) und der Strecke Sonnenland-Express.",
     "Weitere Strecken kaufst du dazu: Inselbahn & Küstenlinie 150.000, Nebelgebirge 200.000, NeonCity Rail 220.000, München – Garmisch 300.000, Köln – Koblenz 350.000, Hannover – Bremen 380.000, Hannover – Hamburg 450.000 RT.",
     "Fahrzeuge kaufen (Preis z. B. Heideflitzer Solo 24.000, Rangierlok 18.000, S-Bahn 90.000, Museumszug 90.000, Regionalexpress Doppelstock 143.000, Containerzug 151.000, Intercity 156.000, RR Aero 300 390.000 RT), einer Linie zuweisen und mit „▶ 1 Tag“ Betriebstage simulieren. Verkaufen bringt 70 % des Preises, mit dem Alter weniger (mindestens 25 %).",
     "Passt nicht jeder Zug auf jede Linie: E-Fahrzeuge brauchen Fahrdraht (Museumsbahn und Küstenlinie sind nicht elektrifiziert), Güterlinien brauchen Güterwagen, Personenlinien Sitzplätze, die Zahnradbahn ein Zahnradfahrzeug und die Stadtbahnlinie Stadtbahnwagen.",
@@ -372,11 +372,11 @@
   },
   {
    "q": "Mein Spielstand ist weg.",
-   "a": "RicoRail speichert im Browser, in drei Profilen. Im privaten Fenster gibt es keinen dauerhaften Speicher. Sichere deinen Stand mit „Spielstand exportieren (JSON)“."
+   "a": "Schienenhorizont speichert im Browser, in drei Profilen. Im privaten Fenster gibt es keinen dauerhaften Speicher. Sichere deinen Stand mit „Spielstand exportieren (JSON)“."
   },
   {
    "q": "Die Grafik ruckelt.",
-   "a": "Stelle in den Einstellungen die Qualität auf Niedrig (schwache Handys) oder begrenze die Bildrate. Änderungen gelten ab der nächsten Fahrt. RicoRail braucht WebGL."
+   "a": "Stelle in den Einstellungen die Qualität auf Niedrig (schwache Handys) oder begrenze die Bildrate. Änderungen gelten ab der nächsten Fahrt. Schienenhorizont braucht WebGL."
   },
   {
    "q": "Warum ist eine Aufgabe gesperrt (🔒)?",

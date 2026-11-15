@@ -158,7 +158,7 @@ export class Game {
     this.frameMin = now;
     const dt = Math.min(0.1, (now - this.last) / 1000); this.last = now;
     this.fpsAcc += dt; this.frames++;
-    if (this.fpsAcc > 1) { this.fps = Math.round(this.frames / this.fpsAcc); this.fpsAcc = 0; this.frames = 0; }
+    if (this.fpsAcc > 1) { this.fps = Math.round(this.frames / this.fpsAcc); this.fpsAcc = 0; this.frames = 0; if (!this.paused) this.adaptRes(cap); }
     this.input.pollGamepad();
     const s = this.s, w = s.world;
     if (!this.paused && !this.replay) {
@@ -187,6 +187,17 @@ export class Game {
     if (this.map) this.map.draw();
     this.audio(dt, t);
   };
+
+  /** Dynamische Auflösung: bei Ruckeln Pixeldichte senken, bei Reserve langsam zurück (gegen Ruckeln auf Handys) */
+  private resScale = 1; private resGood = 0;
+  private adaptRes(cap: number) {
+    const target = Math.min(cap || 60, 60);
+    const base = Math.min(window.devicePixelRatio || 1, this.qual.pixel);
+    let k = this.resScale;
+    if (this.fps < target * 0.8) { k = Math.max(0.55, k - 0.12); this.resGood = 0; }
+    else if (this.fps >= target * 0.95 && k < 1 && ++this.resGood >= 4) { k = Math.min(1, k + 0.08); this.resGood = 0; }
+    if (k !== this.resScale) { this.resScale = k; this.renderer.setPixelRatio(Math.max(0.5, base * k)); this.resize(); }
+  }
 
   private env() {
     const w = this.s.world;

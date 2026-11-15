@@ -25,7 +25,7 @@ export function helpContent(layout: CabLayout | null, mode: 'drive' | 'box' | 'w
     mode === 'box' ? h('p', null, 'Stellwerk: Startsignal antippen, dann Zielsignal – die Fahrstraße wird eingestellt, wenn alle Weichen frei sind. Eingestellte Fahrstraße am Startsignal antippen = zurücknehmen. Weiche antippen = umstellen.') : null,
     mode === 'world' ? h('p', null, 'Freie Welt: Züge fahren nach Fahrplan. Kamera wechseln (C), Zeitraffer (Tab), Karte (M). Freie Kamera mit W/A/S/D, Q/E für hoch/runter.') : null,
     h('p', null, h('b', null, 'Touch: '), 'Hebel rechts unten ziehen: oben fahren, unten bremsen. Mit einem Finger umsehen, mit zwei Fingern zoomen, Doppeltippen setzt den Blick zurück. Bedienelemente im Führerstand lassen sich antippen.'),
-    h('p', null, h('b', null, 'Gamepad: '), 'Rechter Trigger fahren, linker Trigger bremsen, A Türen, B Schnellbremsung, X Horn, Y Kamera, LB Wachsam, RB Richtungswender, Start Pause.'),
+    h('p', null, h('b', null, 'Gamepad: '), 'Rechter Trigger fahren, linker Trigger bremsen, A Türen, B Schnellbremsung, X Horn, Y Kamera, LB Wachsam, RB Richtungswender, Start Pause. In Menüs: Steuerkreuz/linker Stick wählt, A bestätigt, B zurück (Pfeiltasten und Enter gehen ebenso).'),
     h('p', null, h('b', null, 'Signale (vereinfacht): '), 'Rot = Halt, Gelb = Halt erwarten / Langsamfahrt, Grün = Fahrt. Ersatzsignal (Z) nur bei gestörtem Signal und nach Freigabe; danach höchstens 40 km/h.'),
     h('table', { class: 't' }, rows),
     h('p', { class: 'notice' }, 'Simulation, kein offizielles Produkt der Deutschen Bahn. PZB, Sifa und Stellwerk sind vereinfachte Spielmodelle, nicht zertifiziert und nicht sicherheitsrelevant.'));
