@@ -6,8 +6,36 @@ export interface CameraConfig {
   fov: number;
   /** Abstandsfaktor 0.7 … 1.4 */
   distance: number;
+  /** Höhenfaktor 0.6 … 1.6 (Standard 1) */
+  height?: number;
   shake: boolean;
 }
+
+/** Einstellungen für das freie Umschauen */
+export interface LookConfig {
+  /** Empfindlichkeit 0.4 … 2 */
+  sens: number;
+  invertX: boolean;
+  invertY: boolean;
+  /** Nach dem Loslassen weich zur normalen Kamera zurück */
+  recenter: boolean;
+}
+
+/** Eingaben für das Umschauen in einem Bild */
+export interface LookInput {
+  /** Rechter Stick (−1…1, y unten) */
+  stickX: number;
+  stickY: number;
+  /** Maus-/Wisch-Bewegung in Pixeln seit dem letzten Bild */
+  dragX: number;
+  dragY: number;
+  /** Zeiger liegt noch (Maus gedrückt / Finger auf dem Glas) */
+  holding: boolean;
+  /** Rückblick gehalten */
+  rear: boolean;
+}
+
+const MAX_PITCH = 0.55;
 
 const UP = new THREE.Vector3(0, 1, 0);
 const tmpA = new THREE.Vector3();
@@ -63,6 +91,51 @@ export class ChaseCamera {
   private aspect = 16 / 9;
   private readonly want = new THREE.Vector3();
   private readonly look = new THREE.Vector3();
+  /** Freies Umschauen: Versatz zum normalen Blick (Gier rechts +, Neigung hoch +) */
+  lookYaw = 0;
+  lookPitch = 0;
+  private rearBlend = 0;
+  private dragIdle = 99;
+  private fromStick = false;
+
+  /**
+   * Umschauen anwenden: Stick dreht absolut (loslassen = zurück), Maus/Wischen relativ und kehrt nach kurzer Pause
+   * zurück (wenn `recenter`). Rückblick (gehalten) dreht weich um 180°.
+   */
+  freeLook(dt: number, i: LookInput, c: LookConfig): void {
+    const sx = (c.invertX ? -1 : 1) * i.stickX;
+    const sy = (c.invertY ? -1 : 1) * i.stickY;
+    const stick = Math.hypot(sx, sy) > 0.05;
+    const dragging = i.holding || i.dragX !== 0 || i.dragY !== 0;
+    const k = (r: number): number => 1 - Math.exp(-dt * r);
+    if (stick) {
+      const ty = sx * Math.PI * 0.92;
+      const tp = -sy * MAX_PITCH;
+      this.lookYaw += (ty - this.lookYaw) * k(10 * c.sens);
+      this.lookPitch += (tp - this.lookPitch) * k(10 * c.sens);
+      this.dragIdle = 0;
+      this.fromStick = true;
+    } else if (dragging) {
+      this.lookYaw += i.dragX * 0.0065 * c.sens * (c.invertX ? -1 : 1);
+      this.lookPitch -= i.dragY * 0.0045 * c.sens * (c.invertY ? -1 : 1);
+      this.dragIdle = 0;
+      this.fromStick = false;
+    } else this.dragIdle += dt;
+    // Stick: sofort zurück, Maus/Wischen: nach 0,9 s Ruhe (wenn eingeschaltet)
+    const back = stick || dragging ? 0 : this.fromStick ? 9 : c.recenter && this.dragIdle > 0.9 ? 3.5 : 0;
+    if (back) {
+      this.lookYaw += (0 - this.lookYaw) * k(back);
+      this.lookPitch += (0 - this.lookPitch) * k(back);
+    }
+    this.lookYaw = Math.max(-Math.PI, Math.min(Math.PI, this.lookYaw));
+    this.lookPitch = Math.max(-MAX_PITCH, Math.min(MAX_PITCH, this.lookPitch));
+    this.rearBlend += ((i.rear ? 1 : 0) - this.rearBlend) * k(14);
+  }
+
+  /** Stärke des freien Blicks 0…1 (0 = normale Verfolgerkamera) */
+  private get freeAmount(): number {
+    return Math.min(1, Math.abs(this.lookYaw) / 0.35 + Math.abs(this.lookPitch) / 0.25 + this.rearBlend);
+  }
 
   constructor(public cfg: CameraConfig) {}
 
@@ -74,6 +147,9 @@ export class ChaseCamera {
 
   snap(): void {
     this.init = false;
+    this.lookYaw = 0;
+    this.lookPitch = 0;
+    this.rearBlend = 0;
   }
 
   /** Hochformat: Abstand und Höhe wachsen, damit Ball und Auto trotz schmalem Bild sichtbar bleiben */
@@ -85,7 +161,7 @@ export class ChaseCamera {
     this.time += dt;
     const p = this.portrait;
     const dist = (3.9 + p * 1.6) * this.cfg.distance;
-    const height = (1.45 + p * 0.7) * this.cfg.distance;
+    const height = (1.45 + p * 0.7) * this.cfg.distance * (this.cfg.height ?? 1);
     const carPos = tmpA.set(car.pos[0], car.pos[1], car.pos[2]);
     const ballPos = tmpB.set(ball.pos[0], ball.pos[1], ball.pos[2]);
     const dead = car.demolished > 0;
@@ -116,12 +192,13 @@ export class ChaseCamera {
       const maxStep = 6 * dt;
       this.yaw += Math.max(-maxStep, Math.min(maxStep, step));
     }
-    const dx = Math.sin(this.yaw);
-    const dz = Math.cos(this.yaw);
+    const fy = this.yaw + this.lookYaw + this.rearBlend * Math.PI;
+    const dx = Math.sin(fy);
+    const dz = Math.cos(fy);
     const base = dead ? ballPos : carPos;
     const want = this.want.set(
       base.x - dx * dist,
-      Math.max(base.y, 0.2) + height + (dead ? 5 : 0),
+      Math.max(base.y, 0.2) + height * (1 - this.lookPitch * 0.9) + (dead ? 5 : 0),
       base.z - dz * dist,
     );
     clampInsideArena(want);
@@ -134,6 +211,14 @@ export class ChaseCamera {
       // Nahe am Auto etwas tiefer blicken, damit das eigene Auto sichtbar bleibt
       look.lerp(base, ballDist < 6 ? 0.35 : 0.12);
     } else look.set(base.x + dx * 6, base.y + 0.9, base.z + dz * 6);
+    // Freier Blick: Ziel in Blickrichtung (mit Neigung) statt Ball/Fahrtrichtung
+    const fa = this.freeAmount;
+    if (fa > 0) {
+      const fx = base.x + dx * 8;
+      const fz = base.z + dz * 8;
+      const fyy = base.y + 0.9 + Math.tan(this.lookPitch) * 8;
+      look.set(look.x + (fx - look.x) * fa, look.y + (fyy - look.y) * fa, look.z + (fz - look.z) * fa);
+    }
     if (!this.position.lengthSq() || !this.initPos) {
       this.position.copy(want);
       this.target.copy(look);

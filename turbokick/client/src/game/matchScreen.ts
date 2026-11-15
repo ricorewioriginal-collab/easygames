@@ -10,6 +10,7 @@ import type { Screen } from '../render/engine';
 import { t } from '../i18n';
 import { btn, clear, h, slider, toast, toggle } from '../ui/dom';
 import { ChaseCamera } from './camera';
+import { FreeLook } from '../input/freelook';
 import { Hud } from './hud';
 import { buildLocalPlan, type PlanOptions } from './plan';
 import { LocalMatch, type MatchSession } from './session';
@@ -37,6 +38,7 @@ export class MatchScreen implements Screen {
   private paused = false;
   private ended = false;
   private disposed = false;
+  private freeLook: FreeLook | null = null;
   private lastPhase = '';
   private pendingEvents: SimEvent[] = [];
   private goalPos = new THREE.Vector3();
@@ -55,7 +57,12 @@ export class MatchScreen implements Screen {
     this.cams = Array.from({ length: n }, () => new THREE.PerspectiveCamera(s.fov, 16 / 9, 0.1, 900));
     this.chase = this.cams.map(
       () =>
-        new ChaseCamera({ fov: s.fov, distance: s.camDistance, shake: s.cameraShake && !s.reducedMotion }),
+        new ChaseCamera({
+          fov: s.fov,
+          distance: s.camDistance,
+          height: s.camHeight,
+          shake: s.cameraShake && !s.reducedMotion,
+        }),
     );
     this.ballCam = this.cams.map(() => s.ballCam);
     this.arena = createArena(session.arena as ArenaTheme, app.engine.quality);
@@ -82,6 +89,15 @@ export class MatchScreen implements Screen {
       rumble: s.padRumble,
     });
     this.el.classList.toggle('is-touch', app.touch);
+    if (s.camFreeLook)
+      this.freeLook = new FreeLook(
+        (tg) =>
+          !this.paused &&
+          !this.ended &&
+          tg instanceof Element &&
+          (tg.tagName === 'CANVAS' || this.el.contains(tg)) &&
+          !tg.closest('button, input, select, a, .panel, .tk-stick-zone, .tk-btns, .tk-top'),
+      );
     this.el.append(this.hud.el, this.overlay);
     if (new URLSearchParams(location.search).has('debug')) this.setupDebug();
     void this.tmpState;
@@ -211,6 +227,21 @@ export class MatchScreen implements Screen {
           ball,
           this.ballCam[i] as boolean,
           Math.hypot(car.vel[0], car.vel[1], car.vel[2]),
+        );
+      const s = this.app.store.data.settings;
+      if (s.camFreeLook) {
+        const st2 = this.input.look(i as 0 | 1);
+        const drag = i === 0 && this.freeLook ? this.freeLook.take() : { dx: 0, dy: 0, holding: false };
+        chase.freeLook(
+          dt,
+          { stickX: st2.x, stickY: st2.y, dragX: drag.dx, dragY: drag.dy, holding: drag.holding, rear: st2.rear },
+          { sens: s.camLookSens, invertX: s.camInvertX, invertY: s.camInvertY, recenter: s.camRecenter },
+        );
+      } else
+        chase.freeLook(
+          dt,
+          { stickX: 0, stickY: 0, dragX: 0, dragY: 0, holding: false, rear: this.input.look(i as 0 | 1).rear },
+          { sens: 1, invertX: false, invertY: false, recenter: true },
         );
       chase.apply(cam);
     });
@@ -593,6 +624,7 @@ export class MatchScreen implements Screen {
   }
 
   dispose(): void {
+    this.freeLook?.dispose();
     this.disposed = true;
     this.offs.forEach((o) => o());
     this.input.dispose();
