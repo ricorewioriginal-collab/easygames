@@ -156,7 +156,7 @@ const ZotikFox = (() => {
     T = window.THREE;
     const P = buildFox({ T, M, glow: null, makeSword, mergeChar, mergeStatic, TOUCH: true }), s = 1.75, g = new T.Group();
     P.legs.forEach(l => { l.rotation.x = -1.42; l.position.z += 0.06; }); P.arms.forEach((a, i) => { a.rotation.x = -1.05; a.rotation.z = (i ? -1 : 1) * 0.12; });
-    P.tail[0].parent.rotation.x = 1.25; P.body.position.y = -0.6; g.add(P.root); g.scale.setScalar(s);
+    P.tail[0].parent.rotation.x = 0.2; P.tail[0].parent.scale.setScalar(0.8); P.body.position.y = -0.6; g.add(P.root); g.scale.setScalar(s);
     // Gleiche Beleuchtung wie die übrigen Fahrer: Lambert statt PBR (kein Überstrahlen, günstiger am Handy)
     const LM = new Map(); g.traverse(o => { if (!o.isMesh) return; o.userData.keep = true; const m0 = o.material; if (!m0 || m0.isMeshBasicMaterial) return; let m = LM.get(m0); if (!m) { m = new T.MeshLambertMaterial({ color: m0.color, side: m0.side }); if (m0.emissive && m0.emissiveIntensity > 1.2) m.emissive = m0.emissive.clone(); LM.set(m0, m); } o.material = m; });
     return g;
