@@ -12,7 +12,8 @@ WF.VEHICLES = {
   offroad: { name: 'Geländewagen', icon: '🚙', top: 15.5, acc: 20, grip: 6, turn: 3.0, mass: 1.3, step: 0.5 },
   mini:    { name: 'Kugelflitzer', icon: '🛞', top: 16, acc: 24, grip: 6.5, turn: 3.7, mass: 0.8, step: 0.36 },
   tank:    { name: 'Panzer', icon: '🛡️', top: 12.5, acc: 14, grip: 12, turn: 2.4, mass: 2.0, step: 0.5, gun: true },
-  monster: { name: 'Monstertruck', icon: '🛻', top: 15.5, acc: 18, grip: 5.5, turn: 2.8, mass: 1.6, step: 0.7 }
+  monster: { name: 'Monstertruck', icon: '🛻', top: 15.5, acc: 18, grip: 5.5, turn: 2.8, mass: 1.6, step: 0.7 },
+  kart:    { name: 'Winz-Kart', icon: '🛺', top: 17.5, acc: 23, grip: 7, turn: 3.5, mass: 1.0, step: 0.36 }
 };
 
 // Fahrer (alle frei erfunden). skill: 0.85 … 1.0, style: Fahrweise der KI
@@ -48,7 +49,9 @@ WF.THEMES = {
   workbench: { name: 'Werkbank', icon: '🔧', veh: 'tank', sky: '#e9e2d6', floorCol: '#555', floorY: -26,
     ground: { t: 'rect', x: 0, z: 0, w: 104, d: 64, h: 0 }, groundCol: '#c9a46b', track: 'tape', music: 6 },
   kids: { name: 'Kinderzimmer', icon: '🧸', veh: 'monster', sky: '#f3e9ff', floorCol: '#7e6bd6', floorY: -2,
-    ground: { t: 'rect', x: 0, z: 0, w: 124, d: 86, h: 0 }, groundCol: '#7f8fe0', track: 'road', music: 7, rim: 5 }
+    ground: { t: 'rect', x: 0, z: 0, w: 124, d: 86, h: 0 }, groundCol: '#7f8fe0', track: 'road', music: 7, rim: 5 },
+  games: { name: 'Spieleabend', icon: '🎲', veh: 'kart', sky: '#ffe2b8', floorCol: '#4b3f72', floorY: -26,
+    ground: { t: 'rect', x: 0, z: 0, w: 104, d: 72, h: 0 }, groundCol: '#9a5634', track: 'board', music: 8 }
 };
 
 // Strecken: pts = Kontrollpunkte [x, z, Höhe], Eigenschaften im Abschnitt u (Index des Kontrollpunkts + Anteil):
@@ -202,9 +205,29 @@ WF.TRACKS = [
     pts: [[-48, -28, 0], [-24, -30, 0], [-4, -27, 1.8], [16, -27, 1.8], [36, -30, 0], [52, -12, 0], [44, 10, 0], [24, 4, 0], [10, 22, 0], [-14, 30, 0], [-40, 26, 0], [-30, 6, 0], [-52, -8, 0]],
     feat: [{ t: 'ramp', u: [2.35, 2.55], h: 0.6 }, { t: 'gap', u: [2.55, 2.72] }, { t: 'pad', u: [9.4, 9.6] }],
     zones: [{ t: 'slow', x: 50, z: -2, r: 3.4 }],
-    props: [['teddy', 4, -6, 0.2, 1.1], ['ballbig', -14, 12, 0, 1], ['blocks', 36, 18, 0.4, 1], ['crayon', 22, -14, 0.8, 1], ['train', -50, 36, 0, 1], ['blocks', 56, -34, 0, 0.8]] }
+    props: [['teddy', 4, -6, 0.2, 1.1], ['ballbig', -14, 12, 0, 1], ['blocks', 36, 18, 0.4, 1], ['crayon', 22, -14, 0.8, 1], ['train', -50, 36, 0, 1], ['blocks', 56, -34, 0, 0.8]] },
+
+  // ---------------- Spieleabend (Winz-Kart)
+  { id: 'e1', theme: 'games', name: 'Würfel-Runde', laps: 3,
+    pts: [[40, -24], [10, -28], [-20, -26], [-42, -20], [-45, 0], [-40, 22], [-16, 26], [-4, 12], [8, 26], [36, 26], [45, 6], [45, -12]],
+    feat: [{ t: 'ramp', u: [0.2, 0.5], h: 0.9 }, { t: 'pad', u: [4.2, 4.4] }, { t: 'pad', u: [9.3, 9.5] }],
+    zones: [{ t: 'slip', x: -27, z: 25, r: 3.6 }],
+    props: [['cards', 18, 0, -0.1, 1], ['die', -22, 2, 0.4, 1], ['die', 0, -6, 0.2, 1], ['hourglass', -46, -31, 0, 1], ['pawn', -32, -33, 0, 1], ['chips', 28, 13, 0, 1],
+      ['domino', 6, -16, -0.1, 1], ['domino', -20, 14, -1.3, 1], ['scorepad', 34, -2, -0.2, 1], ['gamebox', -4, 32, 0, 1]] },
+  { id: 'e2', theme: 'games', name: 'Kartenhaus-Sprung', laps: 3,
+    pts: [[-40, 26, 0], [-16, 26, 0], [2, 26, 1.4], [20, 26, 1.4], [36, 20, 1.4], [42, 2, 1.4], [34, -14, 0], [14, -22, 0], [-4, -10, 0], [-22, -24, 0], [-42, -18, 0], [-45, 6, 0]],
+    feat: [{ t: 'ramp', u: [2.55, 2.8], h: 0.55 }, { t: 'gap', u: [2.8, 3.02] }, { t: 'pad', u: [7.3, 7.5] }, { t: 'pad', u: [0.3, 0.5] }],
+    zones: [{ t: 'slow', x: -32, z: -23, r: 3.6 }],
+    props: [['die', 18, -4, 0.3, 1.1], ['hourglass', -46, 32, 0, 1], ['domino', -8, 8, 0.4, 1], ['domino', 4, -30, -0.1, 1], ['pawn', 28, -30, 0, 1], ['chips', -30, -4, 0, 1],
+      ['scorepad', 0, 6, -0.1, 1], ['gamebox', 46, -28, -0.3, 1], ['cards', -22, -8, -0.2, 0.9]] },
+  { id: 'e3', theme: 'games', name: 'Domino-Brücke', laps: 3,
+    pts: [[34, 16, 0], [18, 10, 0.9], [0, 0, 1.8], [-18, -10, 0.9], [-34, -24, 0], [-46, -8, 0], [-42, 14, 0], [-26, 22, 0], [-14, 10, 0], [0, 0, 0], [14, -10, 0], [28, -24, 0], [46, -10, 0], [44, 10, 0]],
+    feat: [{ t: 'bridge', u: [1.62, 2.38] }, { t: 'pad', u: [4.3, 4.5] }, { t: 'pad', u: [11.3, 11.5] }],
+    zones: [{ t: 'slip', x: -44, z: 3, r: 3.5 }],
+    props: [['die', -30, -6, 0.5, 1], ['cards', 30, -4, -0.2, 1], ['hourglass', -47, 30, 0, 1], ['domino', 0, -24, -0.05, 1.2], ['domino', 0, 22, 0.05, 1.2], ['pawn', 40, 26, 0, 1],
+      ['chips', -12, -30, 0, 1], ['scorepad', -26, 6, 0.3, 1], ['gamebox', 46, -28, 0, 1]] }
 ];
 WF.trackById = function (id) { for (var i = 0; i < WF.TRACKS.length; i++) if (WF.TRACKS[i].id === id) return WF.TRACKS[i]; return WF.TRACKS[0]; };
 
 // Meisterschaft: Reihenfolge der Rennen, nach jedem dritten Rennen eine Bonusrunde (Zeitfahren um ein Extraleben)
-WF.CHAMP = ['b1', 'd1', 's1', 'w1', 'p1', 'g1', 'k1', 'm1', 'b2', 'd2', 'w2', 's2', 'p2', 'g2', 'k2', 'm2', 'b3', 'd3', 'w3', 's3', 'p3', 'g3', 'k3', 'm3'];
+WF.CHAMP = ['b1', 'd1', 's1', 'w1', 'p1', 'g1', 'k1', 'm1', 'b2', 'd2', 'w2', 's2', 'p2', 'g2', 'k2', 'm2', 'b3', 'd3', 'w3', 's3', 'p3', 'g3', 'k3', 'm3', 'e1', 'e2', 'e3'];

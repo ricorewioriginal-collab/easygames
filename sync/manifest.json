@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "22b48b519f2f",
- "generated": "2026-11-15T19:47:47+00:00",
- "commit": "688b7527c008ee7f37f056f0508da2594a287b2d",
+ "version": "5709e067d031",
+ "generated": "2026-11-15T20:30:05+00:00",
+ "commit": "49df44d9da9cc8c631886e81858a386c0c53423a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2158,13 +2158,13 @@
   },
   {
    "p": "anmacha-kart/game.js",
-   "s": 88862,
-   "h": "3c61fb10c588c70e4d6a3b4abcc7bdfe722b8a71c7d7e3c5b7244917b03b3a93"
+   "s": 90188,
+   "h": "0db431f18b4410f432d69a6ec3395732827e19b188cea1d46408fe672f26df9b"
   },
   {
    "p": "anmacha-kart/index.html",
-   "s": 68779,
-   "h": "d02e52bde31e07f23b772283f262c2da88f3b90944ce25b8cd3a73c1d48c0e74"
+   "s": 72160,
+   "h": "df714d3f6bb15e7eb7e86e9d4acb64471fbf709169ae3dce0cd5d56afda10771"
   },
   {
    "p": "anmacha-kart/logo.png",
@@ -2308,8 +2308,8 @@
   },
   {
    "p": "anmacha-kart/sim.js",
-   "s": 37489,
-   "h": "cefe0d5075c99b98f9201ad36bc6cd13cd78f6ddf3b7523029e5ff75dad9a23a"
+   "s": 38760,
+   "h": "78eba1a59ab9821ee0f26a329aca17d9ba1f93480e800aba7b77db08e5776973"
   },
   {
    "p": "anmacha-kart/sw.js",
@@ -2318,8 +2318,8 @@
   },
   {
    "p": "anmacha-kart/track.js",
-   "s": 36870,
-   "h": "5aef49d68136e94ed81beda1552fe25ddada2ad1fbaeb2ac072146a76257d3aa"
+   "s": 37188,
+   "h": "bd8b73c5fec03e80ec0fbb8bf14ff50b63816a500f933328d99d144e82359023"
   },
   {
    "p": "anmacha-kart/view.js",
@@ -2333,8 +2333,8 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/index.html",
-   "s": 9742,
-   "h": "dc77ff4d2f1b2839162f7519ca3caf92af752b038af7d6c19bd4c70b3a851241"
+   "s": 10170,
+   "h": "286a1046c74c39c450eda125a3a0be65a7df8047502c1b6308c1f6c1413adce6"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/audio.js",
@@ -2343,13 +2343,13 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/js/data.js",
-   "s": 20319,
-   "h": "bd663d75b0a823a52e58c4354d9cb912e5b977958a8e3029f4e4b5991417ff1f"
+   "s": 22786,
+   "h": "9f5e5f8bc96b9265362339df35c29e7e1798b437eeaf1cf715a36a00bbe4626e"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/game.js",
-   "s": 73726,
-   "h": "7378f5f271ce855d8e43197a7b9e6534f12bb32f38ddbc9a7be53a2cb44af4a1"
+   "s": 76198,
+   "h": "f63c2ee99a77452929826eb1c8f4b195311b111f5c3f75e121ed54ad73531cf6"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/input.js",
@@ -2358,8 +2358,8 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/js/models.js",
-   "s": 9112,
-   "h": "f2b83c313f0c3b5efa114aa1bc71aa4b032d0f1b6219523aa0970224ba04c84c"
+   "s": 10366,
+   "h": "cc9a3fb45fb7f656950ad80d7f38749f6fb76ce35c3cace88ba057d81ba8d08e"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/physics.js",
@@ -2368,13 +2368,13 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/js/scenery.js",
-   "s": 37836,
-   "h": "d8bd5133c8c34b99042f710f8bdc3703dee704c63ad2001bf82d579be1e49361"
+   "s": 41883,
+   "h": "4bb2544ac64061bd8a4e0b1f538646cb6fd526a660d913db7f5936f148452108"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/track.js",
-   "s": 12044,
-   "h": "de3ad587390b8d63b974716e68f15266ab31319ba51a2720b3a8904c377e737d"
+   "s": 12268,
+   "h": "54741e64b81fd240fe760287b2b68d09cef4921ee0dcdced1476fafecb90677d"
   },
   {
    "p": "anmacha-kart/winzflitzer/js/util.js",
@@ -2388,8 +2388,8 @@
   },
   {
    "p": "anmacha-kart/winzflitzer/style.css",
-   "s": 29409,
-   "h": "f084b8567b968cd51240613809f32bf633abc2dbb561ccd0c5dce49ec8ecfc1d"
+   "s": 29549,
+   "h": "bd8e41be85bffad7215b100b66e73b22f2635dd2ff532454d54e2a2044a61c4d"
   },
   {
    "p": "anmacha-kart/zotik-fox.js",
@@ -8247,59 +8247,129 @@
    "h": "623602da0420541133607c08d24cd3baaaeb223e0c6d240cf24a54c13017ca02"
   },
   {
-   "p": "anmacha-urwaldlager/audio.js",
-   "s": 6324,
-   "h": "7bc48157f77eb59ccf9310e92abeb9e2313eaf63822ed41393bf82be68b846e4"
-  },
-  {
-   "p": "anmacha-urwaldlager/avatar.js",
-   "s": 6633,
-   "h": "0c7f120ba749c7092acf058a95b3d230a1fff7669a7f0421a98545e276d33d21"
-  },
-  {
-   "p": "anmacha-urwaldlager/camp.js",
-   "s": 53134,
-   "h": "b1f40c9ad29833aeef040230cdda2262998a43d3b17ad205ecf6695173abf64b"
-  },
-  {
    "p": "anmacha-urwaldlager/card.jpg",
-   "s": 42405,
-   "h": "1f8b2d4aff3f9b045982ceea8ef33289340135aaa1f5477597cda39632bb618f"
-  },
-  {
-   "p": "anmacha-urwaldlager/data.js",
-   "s": 26112,
-   "h": "513c5857fbe989df7d821806c8b4d3e1f7c91636a8edd4e35f2be8502219fc74"
-  },
-  {
-   "p": "anmacha-urwaldlager/engine.js",
-   "s": 21205,
-   "h": "0fad83cc53bc3ae627ad6dbe30cc98d0a1aa5a9e3ac92658ae10a1da7ed5c8a6"
-  },
-  {
-   "p": "anmacha-urwaldlager/events.js",
-   "s": 21133,
-   "h": "f57a3fc0a4c9d6ce674e8996e9795dc5e950f4248ad91d6d96e5a8e99f554e8a"
+   "s": 59077,
+   "h": "432b3fc300761c54beef4010498f168ed8b5925add0fcd9198f68613ed91a110"
   },
   {
    "p": "anmacha-urwaldlager/index.html",
-   "s": 7114,
-   "h": "f5ffd62c09ee778965008b5da71a6bf6391e1f289d12839a61d66ba451333c61"
+   "s": 7718,
+   "h": "cae28d48cefd9a15c8f9820a642dd3ee27e759b3a520f0b58e133c3d0cc5c308"
   },
   {
-   "p": "anmacha-urwaldlager/input.js",
-   "s": 8507,
-   "h": "d40d7f464ce4679ad162571e2671972bf879c9fa0768700bb0a41d1214f77294"
+   "p": "anmacha-urwaldlager/js/assets.js",
+   "s": 22202,
+   "h": "7c1233ea9053878471b4e80fea5b6cd114cf5baf0eabd19d49aeaa66ff7a322a"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/audio.js",
+   "s": 10040,
+   "h": "39bd8cbbcdf041a8aa9971313272c012c8cee7024b0bcf91f87cd50c9ba34a45"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/camp.js",
+   "s": 33726,
+   "h": "fc668d76b2d5d58955c28bf2cb6daf7c08519098b1ac911ee7fc89b9687f1e46"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/core.js",
+   "s": 3579,
+   "h": "fdc29b03107858d56e909a11555afe7e47b9f0c48c7df98152afff65cc3db30a"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/data.js",
+   "s": 22685,
+   "h": "30bbd957687843e2a87eb30b78a5a2738d6d41e4fa388be6b863ac34100fb644"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/input.js",
+   "s": 13404,
+   "h": "5c6b931f04f18d07c65679bc68372c948c8e8e89adec180e839a75efe5bfa888"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/main.js",
+   "s": 2605,
+   "h": "569b9764e6d71553516fb19e021c26fcc8e132a403fda011db3580b88667d5c8"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/menus.js",
+   "s": 20310,
+   "h": "a992146ff2dab18587dad551444a30f39ec15501632a1125415e062460f32671"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/render.js",
+   "s": 25534,
+   "h": "4b83a991928fb87e675be2970f3f693eb104cd15b6148bb530b69b99de0d0b88"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/show.js",
+   "s": 18488,
+   "h": "ccb68cae1e175f84cb794a59c05578f3e96a812b5eeab38d25023002b40e30bc"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/stage.js",
+   "s": 9322,
+   "h": "698c848e52bc368bea18f8452f7cf064c142942c6534e05fb2b7c116bb948eeb"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/dinner.js",
+   "s": 10488,
+   "h": "994329ddd741e915542fc9096e1eebf4eb9218028fbe1737104b8d83c43243ac"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/dusche.js",
+   "s": 9470,
+   "h": "05a561a63c520e8006dcf428b08bddfa356d9bb2a4f3e6315d083fbc0f148da7"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/kisten.js",
+   "s": 11418,
+   "h": "696b9ab21b21788d33a6a9fd25af329102dfbb85a42b2d7252f657b7b67255e2"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/kit.js",
+   "s": 13537,
+   "h": "3983d6d7c9ca18df417d65b961339d85ac6e17d734248841a72966f7eb8e818a"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/parcours.js",
+   "s": 13005,
+   "h": "5dc1c8a96a0a45a49d8a6f6fd1bb94b178a3fdc3d074f5bd781fed83e5caa9d6"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/quiz.js",
+   "s": 7385,
+   "h": "790525d8d7d2d8893ec71791e501fad4a9d158d1496d869c95b0789957dda5b2"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/seilbahn.js",
+   "s": 10996,
+   "h": "91728c5444a6149fb18583b92838655a943e324de6cab69afaea00301e719007"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/steg.js",
+   "s": 9123,
+   "h": "56bb412c31d479c056a1e4eb8ae5a56aea9ae456d0f0a221c24fdbae652ca23f"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/tauchen.js",
+   "s": 8603,
+   "h": "5b6a41933084bf8b3541e1f417937a714edd49ab2bdd3d3eb414a52b72544443"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/tunnel.js",
+   "s": 10813,
+   "h": "1896e9259324a3dd39107ddc79748ab902d21ffd65c5cacb982c87a1364a6edf"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/ui.js",
+   "s": 12344,
+   "h": "a59c706cf5dba124fe3ceeb9094567ea206d399bccc4b9502f9e6d56c0c426fb"
   },
   {
    "p": "anmacha-urwaldlager/logo.svg",
-   "s": 1931,
-   "h": "fd38b0e17d2a96908b67a72f3cbf65f902647ae782b761e285adc562bc4d5031"
-  },
-  {
-   "p": "anmacha-urwaldlager/main.js",
-   "s": 10203,
-   "h": "7d11f51515393e59f2d5f67698ce31731f84d0b87652c7850e917a100fd827d5"
+   "s": 3124,
+   "h": "819e2be72de39d1121a42c17341cd96400b947fc984870dfac18a2d77cac0dc3"
   },
   {
    "p": "anmacha-urwaldlager/manifest.webmanifest",
@@ -8307,104 +8377,79 @@
    "h": "69c54735e8ead921640a351c45e1e474da0ddc9b3d737e0e0dd7f6f87b2481dd"
   },
   {
-   "p": "anmacha-urwaldlager/season.js",
-   "s": 34999,
-   "h": "f96533e2b8238bbd44d5648a63a1fefc348526f6fefd03de3f25f95047a0e6df"
+   "p": "anmacha-urwaldlager/models/figuren/anim.glb",
+   "s": 495076,
+   "h": "57b74ee1613b04cc9b6ba3d742a8a98fc36b3ee8db0674ecc81ce1a224c545fa"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/figuren/barbarian.glb",
+   "s": 180204,
+   "h": "a0d3d1b6606382a835741fb203edd0d499751b51e1ba898cf1513c55b7da688c"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/figuren/knight.glb",
+   "s": 178000,
+   "h": "9c1640a0e9800cc90d0a41634128c0dff39c9791a1bd59344e0cea432465ceb9"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/figuren/mage.glb",
+   "s": 175860,
+   "h": "7a924eb1c0c5a2efea230806c579b45f6fddf317e2c20ada2c11c986733205f8"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/figuren/rogue.glb",
+   "s": 159668,
+   "h": "1da79f27e2a32445b8335451d71d8abf818ebbf55758c31e2d91bdb78cf05a7e"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/figuren/rogue_hooded.glb",
+   "s": 148804,
+   "h": "fc1c4bc779205a5587ca52820e68ce12f3b45fce5c2e3e0a399618919ee89f93"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/set.glb",
+   "s": 1475372,
+   "h": "b4f24c4293180beaeab22871783270ba4830bb9c817f4de7189606807304f534"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/tiere/bat.glb",
+   "s": 130056,
+   "h": "f3ea88c2aef596164549d1efadf460cc6d291505e010b01536182eafd92e12a8"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/tiere/bee.glb",
+   "s": 97724,
+   "h": "f6cf453440bcb44c94a3cb3426e06f9b51632f185a0010f026e8f04986c411b7"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/tiere/crab.glb",
+   "s": 112872,
+   "h": "f601e62de79fe4f1b22c2669799621a9efc7407c8783c905f03b6d968884dfac"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/tiere/frog.glb",
+   "s": 325336,
+   "h": "080037b1919269893476dfc822118ba38322a3c5684db719d0abc59470b0065e"
   },
   {
    "p": "anmacha-urwaldlager/style.css",
-   "s": 28270,
-   "h": "3d9e8db86d2006fb7738d79071dfd96731d90c98a29233559c1a84367ccfb895"
+   "s": 21893,
+   "h": "8d9b960569b6c9c629b7a86744237f120ed4838486bb1664c52491fd003158ba"
   },
   {
    "p": "anmacha-urwaldlager/sw.js",
-   "s": 1995,
-   "h": "0a15aa77c011d0eb0b1576904697fe40ef8db5660fd3c75bd8bb3b20ca5d5a79"
+   "s": 1999,
+   "h": "5840e53f03e5144cdee8e86c2f3efb94fccc879080ad7f06966ef10f4b93c658"
   },
   {
-   "p": "anmacha-urwaldlager/trials.js",
-   "s": 35972,
-   "h": "1c01af3c9eea466652c3b60a12f229968c67549ef3dbaf321360b8e14ca53a7c"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/bruecke.js",
-   "s": 10195,
-   "h": "03e1724c918bced1cbf4700160eb5bbac6d9afa550b2ba9d31a1c04064bf56e7"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/core.js",
-   "s": 16988,
-   "h": "9e3e35ca660954da0f911975c997dd48e9b3e6c4673d4c3c28c3300394adcf90"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/dinner.js",
-   "s": 52041,
-   "h": "0e8372adf02daf79bafb3c147342c9448b111f1911969fa6705e3174707fc1f2"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/dunkel.js",
-   "s": 34487,
-   "h": "9138d8b91678f40aa11a7e331afff828e1284a0f91161ff497264ce793eb72c1"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/hoehe.js",
-   "s": 27651,
-   "h": "66abe6c22f75cc72e10f6f96245ebb4263d5312cfe0716722381f3d3cf8d2699"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/labyrinth.js",
-   "s": 41551,
-   "h": "3c2f7687d5ab62667267eb471bb9ebc6553765ffae50f9fe7b2e4063c1915c51"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/liane.js",
-   "s": 30344,
-   "h": "f2bcc1e3838618ae680772632d9bbc87694128b7ea14ea037b8ea6bc47906332"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/parcours.js",
-   "s": 23986,
-   "h": "470b3122926f233bc448bd9bfbb7d06c5f5a6bccc0c505bd738987fb4ac9b2aa"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/schatz.js",
-   "s": 37391,
-   "h": "d7992c32240e38bea120a2b8cfad5fadbf9f4483777b90f317e27012beaff548"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/staffel.js",
-   "s": 5087,
-   "h": "b01b274dd79a4901753aa329ea548f492bf903ee9ec567f36464c975e3da70fb"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/tauchen.js",
-   "s": 30792,
-   "h": "4389d5c3dbb16e1f2d42cc2e01a75ea991d37f964f025a5bbb11ed7c16eb3bff"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/totem.js",
-   "s": 25258,
-   "h": "0067f2399b8d22105c20160a3bfbbe4ac8471e74cbe0ba7540c713d584c9dafd"
-  },
-  {
-   "p": "anmacha-urwaldlager/trials/tunnel.js",
-   "s": 35040,
-   "h": "2ab34cacc756549e81d2ef8bee668871bf3c7f15b64781cb44bc3a0337c60079"
-  },
-  {
-   "p": "anmacha-urwaldlager/ui.js",
-   "s": 53045,
-   "h": "88d6b05903e787506700daa73736f6b3e4590832b4d4d0a88fe95f30d9478e14"
+   "p": "anmacha-urwaldlager/vendor/GLTFLoader.js",
+   "s": 96550,
+   "h": "5c15967ba830918a9caea6338712c994c354bccd4edc4569bde411c3ec06a3e6"
   },
   {
    "p": "anmacha-urwaldlager/vendor/three.min.js",
    "s": 603445,
    "h": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
-  },
-  {
-   "p": "anmacha-urwaldlager/world.js",
-   "s": 43923,
-   "h": "7263f09ae3d0d49870b730b0aaf77f27d347f481544a68d870c038ec44630bfb"
   },
   {
    "p": "beat-studio/card.jpg",
@@ -10203,8 +10248,8 @@
   },
   {
    "p": "games.js",
-   "s": 54761,
-   "h": "66eabc0d08b5e1d834768d0b0f43bb533231407054606e3a322e8f39b8611e66"
+   "s": 54801,
+   "h": "0f665991462232fc654dbf89a3367080c2365c22f4873c63d0b55d21a2420243"
   },
   {
    "p": "gay-life/card.jpg",
@@ -10508,8 +10553,8 @@
   },
   {
    "p": "guides.js",
-   "s": 169260,
-   "h": "1814814358638cf18f390f80ca3f0feb3b71fe2fc8ff5becf57885c95d906833"
+   "s": 169494,
+   "h": "1cf2570c301e2075bc5d99b35f6ab2d4b02021acc7d7d5840c1686ebc02664d9"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10563,8 +10608,8 @@
   },
   {
    "p": "guides/anmacha-kart.json",
-   "s": 48218,
-   "h": "bd336c7f6bf67bd2e2b48c5c1449ae9ed4f6468206c682f6786e16ce3db2eac1"
+   "s": 49730,
+   "h": "ad25edb7140e4c14eab5fa29ee6adaf212e7d45c9fd82e4a524dafb16374b679"
   },
   {
    "p": "guides/anmacha-kartensammlung.json",
@@ -10648,8 +10693,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 19470,
-   "h": "b27c726cd87e55bb3f79c1be42dd114d6d08f8880d867f06ed7a412246abec07"
+   "s": 10696,
+   "h": "e215ffb1b216c424816e227f8fc46e2c4eedb624ba655098874bc1377005c31c"
   },
   {
    "p": "guides/beat-studio.json",
@@ -14128,8 +14173,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 245426,
-   "h": "85e5c025a814ef14230ff2c7dd6f9bf659f879b006c6287b2ce0b2c8bcdcf789"
+   "s": 245700,
+   "h": "46b6ae6d20f08737c3307df4d0d61571296e88c1c5e68ae18b3063f3d681b2d1"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -15078,8 +15123,8 @@
   },
   {
    "p": "thumbs/anmacha-urwaldlager.webp",
-   "s": 14884,
-   "h": "7ac6b18805592af736dc6dda855cc461acf52caecbca5ee3c29ed5cf7b832b38"
+   "s": 31610,
+   "h": "352e3dd603461b1f48ff5371d2a0ffc2d85c38bc78c26a279f86780fec780ff5"
   },
   {
    "p": "thumbs/beat-studio.webp",
@@ -15274,7 +15319,7 @@
   {
    "p": "thumbs/thumbs.js",
    "s": 2158,
-   "h": "f7df8ee54229a7705ac015116fec64f37621e853e396c925d6e15cf761f45d53"
+   "h": "b1302fd381518777a4de30457308cdaf0fc10fd41bcc9905a128ab877a88ee2d"
   },
   {
    "p": "thumbs/tortenschlacht.webp",

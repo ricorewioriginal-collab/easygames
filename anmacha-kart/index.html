@@ -372,7 +372,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 .tile:not([disabled]):hover i,.tile.pf i{transform:scale(1.15) rotate(-6deg)}
 .tile:active{transform:scale(.97)}
 .t-gp{--tc:#ffd24a;--tc2:#ff6a00}.t-race{--tc:#ff2d95;--tc2:#7a1fff}.t-tt{--tc:#00e5ff;--tc2:#0050c8}.t-free{--tc:#7cff6a;--tc2:#008a5a}.t-battle{--tc:#ff6a3a;--tc2:#c0002a}.t-coop{--tc:#b06aff;--tc2:#3a1aa0}.t-winz{--tc:#ffd23f;--tc2:#ff2d95}
-.t-multi{--tc:#00ffd0;--tc2:#0a6aff}.t-garage{--tc:#ff9a1f;--tc2:#b0122a}.t-top{--tc:#c79bff;--tc2:#4a1fa8}.t-tv{--tc:#9fb4d6;--tc2:#2a3350}
+.t-duo{--tc:#ffb84a;--tc2:#d1206a}.t-multi{--tc:#00ffd0;--tc2:#0a6aff}.t-garage{--tc:#ff9a1f;--tc2:#b0122a}.t-top{--tc:#c79bff;--tc2:#4a1fa8}.t-tv{--tc:#9fb4d6;--tc2:#2a3350}
 .hm-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;font-size:12px;color:var(--mut)}
 .hm-foot .back{margin:0}
 /* Leuchtrahmen für Controller/Tastatur (alle Knöpfe) */
@@ -436,6 +436,35 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 #resList>*,#topList>*{border-radius:12px}
 @media (max-width:620px){#mSetup .console-track-grid{grid-template-columns:1fr 1fr;gap:10px}#mSetup .console-track-grid .ctile{min-height:96px;padding:10px 12px}#mSetup .console-track-grid .ctile b{font-size:15px;padding-right:30px}#mSetup .console-track-grid .ctile>i{font-size:24px}}
 
+/* ===== Konsolen-Ansicht für alle Menüs: Kopfzeile, Fußleiste, Garage mit Bühne links ===== */
+.ov:not(.title) .box>h2,#mMulti h2{margin:0}
+.ov:not(.title) .box>h2::before,#mMulti .console-overline{content:'KART RUSH · WELTENTOUR';display:block;margin-bottom:6px;font:900 11px/1 Inter,system-ui,sans-serif;letter-spacing:.3em;color:#84dfff;text-shadow:none;font-style:normal}
+#mMulti .console-head{text-align:center;margin-bottom:4px}
+#mMulti h2{font-size:clamp(26px,4.5vw,44px);font-style:italic}
+#mMulti{width:min(1000px,100%);margin:auto}
+.cfoot{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;margin-top:6px;padding:10px 12px;border-radius:18px;background:linear-gradient(160deg,rgba(122,92,255,.18),rgba(8,10,30,.86));border:1px solid rgba(255,255,255,.14);box-shadow:0 10px 28px rgba(0,0,0,.35)}
+.cfoot:has(> :only-child){justify-content:center}
+.cfoot .big{flex:1;max-width:300px;margin:0}.cfoot .ghost{margin:0;flex:0 1 auto}
+.cpause{display:grid;gap:12px;width:min(100%,360px)}.cpause .big,.cpause .ghost{width:100%;margin:0}
+#pause .box{max-width:440px}
+#top .box{max-width:760px}#topList,#resList{max-width:none!important}
+@media (min-width:760px){#topList{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}}
+#lobby .box,#joinBox .box{max-width:680px}
+@media (min-width:980px) and (min-aspect-ratio:4/3){
+  #mSetup .console-showroom:not([hidden]){display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);grid-auto-rows:auto;column-gap:22px;align-items:start;text-align:left}
+  #mSetup .console-showroom>.showcase{grid-column:1;grid-row:1/span 6;display:flex!important;flex-direction:column;align-items:stretch;margin:0!important;gap:10px}
+  #mSetup .console-showroom>.showcase .showcase-stage{width:100%;height:min(50vh,440px)}
+  #mSetup .console-showroom>.showcase .showcase-info{padding:2px 8px 8px}
+  #mSetup .console-showroom>:not(.showcase){grid-column:2}
+  #mSetup .console-showroom .console-player{margin:0 0 4px;max-width:none}
+  #mSetup .console-showroom .console-heading{margin:8px 0 10px;text-align:left}
+  #mSetup .console-showroom .chmode{justify-content:flex-start}
+  #mSetup .console-showroom .chars{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:10px;overflow-x:hidden;overflow-y:auto;max-height:min(44vh,400px);padding:6px 6px 10px}
+  #mSetup .console-showroom .chars button{min-height:104px}
+  #mSetup .console-showroom .kcards{display:grid;grid-template-columns:1fr 1fr;gap:12px;overflow-x:hidden;overflow-y:auto;max-height:min(58vh,520px);padding:6px 6px 10px}
+  #mSetup .console-showroom .kcards button{min-height:168px}
+}
+@media (max-width:520px){.cfoot{padding:8px}.cfoot .big{font-size:16px}}
 </style>
 </head>
 <body>
@@ -467,6 +496,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
       <button class="tile t-tt" data-go="tt" data-d="Allein gegen die Uhr, ohne Items – jage deine Bestzeit."><i>⏱️</i><b>Zeitfahren</b><small>Bestzeit jagen</small></button>
       <button class="tile t-free" data-go="free" data-d="Ohne Gegner, Zeitlimit und Rundenzwang – perfekt zum Driften üben."><i>🛞</i><b>Freies Fahren</b><small>Üben &amp; erkunden</small></button>
       <button class="tile t-battle" data-go="battle" data-d="Ballonjagd, Funkpokal erobern oder Bomben-Duell – in drei eigenen Arenen gegen 7 Gegner."><i>🎈</i><b>Battle</b><small>Arenen · 3 Modi</small></button>
+      <button class="tile t-duo" data-go="race" data-duo="1" data-d="Zwei Fahrer in einem Kart: Der Beifahrer hält ein zweites Item, ihr tauscht die Plätze, und jede Figur hat ein Spezial-Item."><i>👥</i><b>Tandem-Rennen</b><small>Zwei Fahrer · Doppel-Items</small></button>
       <button class="tile t-coop" id="bCoop" data-d="Zu zweit in einem Kart: einer fährt, der andere wirft Items und tauscht die Fahrer – mit Gamepad, Tastatur oder Handy."><i>🤝</i><b>Koop-Kart</b><small>Zu zweit in einem Kart</small></button>
       <button class="tile t-winz" id="bWinz" data-d="Winzflitzer: winzige Flitzer auf riesigen Tischen – Frühstückstisch, Badewanne, Sandkasten und mehr, mit Meisterschaft und Duellen."><i>🚗</i><b>Winzflitzer</b><small>Rennen auf dem Tisch</small></button>
       <button class="tile t-multi" id="bMulti" disabled data-d="Freunde treten per Link, QR-Code oder Code von überall bei – jedes Handy mit eigenem Rennbild, dazu Splitscreen mit Gamepads."><i>🌐</i><b>Online &amp; Handys</b><small>Bis zu 4 Fahrer</small></button>
@@ -477,7 +507,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <div class="hm-foot"><span id="loadInfo"></span><a class="back" id="backLink" href="../">← Alle Spiele</a></div>
   </section>
   <section class="mview" id="mMulti" hidden>
-    <h2>👥 MEHRSPIELER</h2>
+    <header class="console-head"><span class="console-overline">KART RUSH · WELTENTOUR</span><h2>👥 MEHRSPIELER</h2></header>
     <p class="sub">Gemeinsam fahren – auch ohne Fernseher. Wähle, was du machen möchtest.</p>
     <div class="cards">
       <div class="card"><h3>RENNEN ERÖFFNEN</h3><p class="sub">Dieses Handy, Tablet oder der PC eröffnet den Raum. Freunde verbinden sich und fahren auf ihrem eigenen Bildschirm.</p><button class="big" id="multiHost">🏁 Rennen erstellen</button></div>
@@ -485,7 +515,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
       <div class="card"><h3>GEMEINSAM AN EINEM BILDSCHIRM</h3><p class="sub">Lokaler Splitscreen mit Tastatur und/oder verbundenen Gamepads. Keine QR-Kopplung erforderlich.</p><button class="ghost" id="multiLocal">🎮 Lokalen Splitscreen öffnen</button></div>
       <div class="card"><h3>KOOP: ZU ZWEIT IN EINEM KART</h3><p class="sub">Einer lenkt, der andere wirft Items (auch nach hinten) und tauscht die Fahrer. Mit Gamepad, Tastatur oder Handy.</p><button class="ghost" id="multiCoop">🤝 Koop-Kart starten</button></div>
     </div>
-    <button class="ghost nav-back" id="multiBack">← Hauptmenü</button>
+    <div class="cfoot"><button class="ghost nav-back" id="multiBack">← Hauptmenü</button></div>
   </section>
   <section class="mview" id="mSetup" hidden>
     <header class="console-head"><span class="console-overline">KART RUSH · WELTENTOUR</span><h2 id="setTitle">RENNEN EINRICHTEN</h2><div class="console-stepper" id="stepNav" data-tabs aria-label="Rennvorbereitung">
@@ -493,7 +523,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     </div></header>
     <div class="console-pane" data-pane="0">
       <h3 class="console-heading">WIE MÖCHTEST DU FAHREN?</h3><div class="console-choices" id="rmode"></div>
-      <div class="console-options"><h3>RENNEINSTELLUNGEN</h3><div class="console-options-grid"><div><h4>RUNDEN</h4><div class="row" id="laps"></div></div><div><h4>KLASSE</h4><div class="row" id="ccls"></div></div><div><h4>GEGNER</h4><div class="row" id="skill"></div></div><div><h4>LENKHILFE</h4><div class="row" id="assist"></div></div></div></div>
+      <div class="console-options"><h3>RENNEINSTELLUNGEN</h3><div class="console-options-grid"><div><h4>RUNDEN</h4><div class="row" id="laps"></div></div><div><h4>KLASSE</h4><div class="row" id="ccls"></div></div><div><h4>GEGNER</h4><div class="row" id="skill"></div></div><div><h4>LENKHILFE</h4><div class="row" id="assist"></div></div><div><h4>FAHRER PRO KART</h4><div class="row" id="duo"></div></div></div></div>
     </div>
     <div class="console-pane" data-pane="1" hidden>
       <h3 class="console-heading" id="trackHeading">DEINE RENNWELT</h3><div class="console-track-grid" id="tracks"></div>
@@ -519,7 +549,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <div class="info" id="joinMsg"></div>
   <div class="row"><button class="chip" id="joinScan">📷 QR-Code scannen</button></div>
   <div id="scanPanel" hidden style="width:min(90vw,430px)"><video id="scanVideo" playsinline muted autoplay style="display:block;width:100%;max-height:45vh;object-fit:cover;border:2px solid var(--c);border-radius:16px"></video><p class="info" id="scanStatus" aria-live="polite"></p><button class="ghost" id="scanStop">Kamera schließen</button></div>
-  <div class="row"><button class="big" id="joinGo">VERBINDEN ▶</button><button class="ghost nav-back" id="joinBack">Zurück</button></div>
+  <div class="cfoot"><button class="ghost nav-back" id="joinBack">← Zurück</button><button class="big" id="joinGo">VERBINDEN ▶</button></div>
 </div></div>
 
 <div id="lobby" class="ov" hidden><div class="box">
@@ -528,8 +558,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <div id="qr"></div><div class="code" id="code">….</div><div class="info" id="pairUrl"></div><div class="info" id="tvHint" hidden style="color:var(--y);font-weight:800">📺 OK auf der Fernbedienung drücken = Vollbild · Strecke und Start wählt ihr am Handy</div>
   <div id="lobList" style="width:100%;max-width:420px"></div>
   <div class="row"><button class="chip" id="kbToggle">⌨️ Tastatur-Spieler an diesem Gerät</button><button class="chip" id="padAdd">🎮 Gamepad-Spieler hinzufügen</button><button class="chip" id="coopToggle">🤝 Koop: zu zweit in einem Kart</button></div><div class="info" id="coopInfo"></div>
-  <button class="big" id="bGo" data-nav-start disabled>RENNEN STARTEN</button>
-  <button class="ghost nav-back" id="bLobBack">Zurück</button>
+  <div class="cfoot"><button class="ghost nav-back" id="bLobBack">← Zurück</button><button class="big" id="bGo" data-nav-start disabled>RENNEN STARTEN</button></div>
 </div></div>
 
 <div id="opts" class="ov" hidden><div class="box">
@@ -545,14 +574,14 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
     <div class="opt"><h4>📻 Radio</h4><div class="row" id="oRadio"></div></div>
     <div class="opt wide"><h4>Steuerung</h4><div class="ctlhelp" id="oHelp"></div></div>
   </div>
-  <button class="ghost nav-back" id="bOptsClose">Schließen</button>
+  <div class="cfoot"><button class="ghost nav-back" id="bOptsClose">← Schließen</button></div>
 </div></div>
 
-<div id="top" class="ov" hidden><div class="box"><h2>🏆 BESTZEITEN</h2><div id="topList" style="width:100%;max-width:460px;text-align:left"></div><button class="ghost nav-back" id="bTopClose">Schließen</button></div></div>
+<div id="top" class="ov" hidden><div class="box"><h2>🏆 BESTZEITEN</h2><div id="topList" style="width:100%;max-width:460px;text-align:left"></div><div class="cfoot"><button class="ghost nav-back" id="bTopClose">← Schließen</button></div></div></div>
 
-<div id="res" class="ov" hidden><div class="box"><h2 id="resTitle">Ergebnis</h2><p class="sub" id="resSub"></p><div id="resList" style="width:100%;max-width:460px;text-align:left"></div><button class="big" id="bNext" data-nav-start>WEITER</button><button class="ghost" id="bMenu">Hauptmenü</button></div></div>
+<div id="res" class="ov" hidden><div class="box"><h2 id="resTitle">Ergebnis</h2><p class="sub" id="resSub"></p><div id="resList" style="width:100%;max-width:460px;text-align:left"></div><div class="cfoot"><button class="ghost" id="bMenu">🏠 Hauptmenü</button><button class="big" id="bNext" data-nav-start>WEITER →</button></div></div></div>
 
-<div id="pause" class="ov" hidden><div class="box"><h2>PAUSE</h2><button class="big nav-back" id="bResume" data-nav-first>WEITER</button><button class="ghost" id="bQuit">Rennen beenden</button></div></div>
+<div id="pause" class="ov" hidden><div class="box"><h2>PAUSE</h2><div class="cpause"><button class="big nav-back" id="bResume" data-nav-first>▶ WEITERFAHREN</button><button class="ghost" id="bQuit">🏁 Rennen beenden</button></div></div></div>
 
 <div id="navHints" hidden></div>
 <div id="ctl"></div>
@@ -560,12 +589,12 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 
 <script src="audio.js?v=20261115-wt10"></script>
 <script src="chars.js?v=20261115-wt9"></script>
-<script src="track.js?v=20261115-wt14"></script>
+<script src="track.js?v=20261115-wt15"></script>
 <script src="oma.js?v=20261115-wt1"></script>
-<script src="sim.js?v=20261115-wt13"></script>
+<script src="sim.js?v=20261115-wt14"></script>
 <script src="nav.js?v=20261115-wt1"></script>
 <script src="radio.js?v=20261115-wt1"></script>
-<script src="game.js?v=20261115-wt18"></script>
+<script src="game.js?v=20261115-wt21"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="kart" data-prefix="akChar,akKart,akLogo,akMute,akName,akSave,akTts" defer></script>
 <script src="../gamepad.js" data-pad="info" data-pad-labels="a=Gas · Bestätigen; b=Bremsen · Zurück; rt=Gas; dpad=Lenken · Menü; ls=Lenken; lt=Bremsen; rb=Driften; x=Driften; y=Item; lb=Item · Seite; start=Pause · Los" defer></script>
 <script src="../egstat.js" defer></script>
