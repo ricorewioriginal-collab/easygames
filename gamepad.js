@@ -480,7 +480,7 @@
 
   // ---------- Abfrage-Schleife (läuft nur, solange ein Controller da ist) ----------
   var gameNavT = -1e9, enabled = true, running = false, last = 0, prev = {}, aMode = '', navRep = {}, lsDirs = DIRS[opt.ls] || null, rsDirs = DIRS[opt.rs] || null;
-  function pads() { var a = [], l; try { l = nav.getGamepads() || []; } catch (e) { l = []; } for (var i = 0; i < l.length; i++) if (l[i] && l[i].connected !== false) a.push(l[i]); return a; }
+  function pads() { var a = [], l; try { l = nav.getGamepads() || []; } catch (e) { l = []; } for (var i = 0; i < l.length; i++) if (l[i] && l[i].connected !== false && !(root.EASYGAMES_PAD_SKIP && root.EASYGAMES_PAD_SKIP(l[i]))) a.push(l[i]); return a; }
   function state(list) {
     var s = { b: [], ls: [0, 0, 0, 0], rs: [0, 0], d: [0, 0, 0, 0] };
     list.forEach(function (gp) {

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "98f60bbbaaab",
- "generated": "2026-11-15T15:25:25+01:00",
- "commit": "c87d6723f8adcb90ddfbcf7b91b23a4f036db9bf",
+ "version": "b24af21600a0",
+ "generated": "2026-11-15T14:22:32+00:00",
+ "commit": "a46e8becc1c2097f4ee436286124a85a1da1762c",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2658,18 +2658,23 @@
   },
   {
    "p": "anmacha-markthalle/data.js",
-   "s": 25281,
-   "h": "06189399a1a39412d799b906291a622cac75dd0cc34ceca54546a1559e49cc36"
+   "s": 31926,
+   "h": "56825b129ef4094a5ebcf646bb2f181c84fb009adba061f884fd2a3bb30b97c9"
+  },
+  {
+   "p": "anmacha-markthalle/extras.js",
+   "s": 18476,
+   "h": "3ff638da41ef0028b7d7b18ae73b520c8341e9018d56841ae47bd0b7c4716c9f"
   },
   {
    "p": "anmacha-markthalle/game.js",
-   "s": 109413,
-   "h": "09faa62eed800d2cd1de551eb2e8cb61780027a21d2cbcbe07a92cf247e7f228"
+   "s": 118050,
+   "h": "73a22cb76070f2dafc7cc43b754d024fce8464885dbeeeedfa2427f2ad4dbb17"
   },
   {
    "p": "anmacha-markthalle/index.html",
-   "s": 40373,
-   "h": "2664482c9274b38240da2ca515f5f839199f4b52b792bc38a06fe81f7de37e8c"
+   "s": 41512,
+   "h": "0ace32fed7458601226f8c3fad1aaeca30f3907fd34d95b6befd7d0e7f7a14e7"
   },
   {
    "p": "anmacha-markthalle/logo.svg",
@@ -2693,8 +2698,8 @@
   },
   {
    "p": "anmacha-markthalle/sim.js",
-   "s": 75856,
-   "h": "f29904389d89b3dda75f01b5d5bd46b5c2ff20ba7289c660954b996f64c89d44"
+   "s": 103693,
+   "h": "d8d82114b6297851d43e8f109532a52bbc89e0d35b6e8b4cc42617c540a64faa"
   },
   {
    "p": "anmacha-markthalle/sw.js",
@@ -2703,8 +2708,8 @@
   },
   {
    "p": "anmacha-markthalle/view3d.js",
-   "s": 82914,
-   "h": "b7e86918a434c386b3b65227d2ab00ffedfcf793178180d7da2a7fe9f781667d"
+   "s": 94219,
+   "h": "746ae820381ae907576f229514ca456fac7b75805af244acfc9382eebd4c218d"
   },
   {
    "p": "anmacha-memory/card.jpg",
@@ -8214,7 +8219,7 @@
   {
    "p": "bunte-insel/index.html",
    "s": 111159,
-   "h": "894eba4fd5c45d9a2041f0da5ef8dfeac5d46169117c873466f34ed70e9b9700"
+   "h": "28fc835588c24e772bb6da4d1f76eb853a726bca8855e3d9f69bf10e283e7d63"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -8273,8 +8278,8 @@
   },
   {
    "p": "bunte-insel/js/bunte-insel.min.js",
-   "s": 1921609,
-   "h": "a971070b1adffb50f67cd5d0e4865bb83cb6270485ad9b7c673dba7b8ef7805f"
+   "s": 1921621,
+   "h": "0c39fb937e91f5bfaf9f5e50efeaaab6fa8dfb9a84ee9edd49ab551005da8049"
   },
   {
    "p": "bunte-insel/js/camp.js",
@@ -9798,8 +9803,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 81970,
-   "h": "5196cb5f83094c54f7405025ba9c556db379eca4bc29d52b4cc3b362882e5275"
+   "s": 82033,
+   "h": "b95c332c8e855a2ccc7a94bd9e3563ea854c80df464bfffde25ff16f973fd10e"
   },
   {
    "p": "games.js",
@@ -10183,8 +10188,8 @@
   },
   {
    "p": "guides/anmacha-markthalle.json",
-   "s": 27317,
-   "h": "e26753f9bf74cd38ed9be9bee27c9bcb981032d53211c546a75f3af84cbfc730"
+   "s": 31370,
+   "h": "ee6722c27979e62821395e852dba27f6cbc9e9c355282733656429c563440679"
   },
   {
    "p": "guides/anmacha-memory.json",
@@ -13608,8 +13613,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 250402,
-   "h": "b3860e456ba12de8e8e2a7262026623282e982826b5233c2f4efa13a721c84ff"
+   "s": 250403,
+   "h": "ada83b1855983c7b2c0600f79071573f820844ade0ccce4e2b1373e6b8425aa6"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

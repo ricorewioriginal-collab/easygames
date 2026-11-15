@@ -54,6 +54,11 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   #cross{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px;z-index:3;pointer-events:none;display:none}
   #cross::before,#cross::after{content:'';position:absolute;background:rgba(255,255,255,.9);box-shadow:0 0 3px #000}#cross::before{left:8px;top:0;width:2px;height:18px}#cross::after{top:8px;left:0;height:2px;width:18px}
   body.v3.fps #cross{display:block}
+  /* Koop: geteilter Bildschirm – Fadenkreuz je Hälfte, Leiste für Spieler 2 */
+  body.coop.v3.fps #cross{left:25%}#cross2{position:absolute;left:75%;top:50%;width:18px;height:18px;margin:-9px;z-index:3;pointer-events:none;display:none}#cross2::before,#cross2::after{content:'';position:absolute;background:rgba(255,200,120,.95);box-shadow:0 0 3px #000}#cross2::before{left:8px;top:0;width:2px;height:18px}#cross2::after{top:8px;left:0;height:2px;width:18px}body.coop.v3.fps #cross2{display:block}
+  body.coop.v3.fps #stage::after{content:'';position:absolute;left:50%;top:0;bottom:0;width:3px;margin-left:-1px;background:rgba(10,14,30,.85);z-index:2;pointer-events:none}
+  #p2hud{position:absolute;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));padding:6px 12px;font-weight:800;font-size:13px;z-index:3;pointer-events:none;max-width:46%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-color:rgba(255,146,43,.7)!important}
+  body.coop #act{right:auto;left:calc(50% - 160px)}body.coop.v3.fps #tip{left:25%}
   #tops{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:5px;width:min(600px,94%);pointer-events:none}
   #goal{padding:7px 14px;font-weight:800;font-size:14px;text-align:center;max-width:100%;background:rgba(255,210,74,.93);color:#2a1700;border-color:#fff;pointer-events:auto;cursor:pointer;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3}
   #goal.min{display:block;white-space:nowrap;text-overflow:ellipsis;font-size:12px;padding:4px 10px;opacity:.85}
@@ -317,7 +322,7 @@ html.eg-pad #drop,body.tv #drop,body.mm #drop{display:none!important}
     <button class="btn glass" id="sCyc" title="Tempo">1×</button>
     <button class="btn go" id="bOpen" title="Laden öffnen / Feierabend (O)">LADEN ÖFFNEN</button>
   </div>
-  <div id="stage"><canvas id="cv"></canvas><canvas id="cv3"></canvas><div id="cross"></div><div id="tops"><div id="goal" class="glass" hidden title="Antippen zum Verkleinern"></div><div id="carry" class="glass" hidden></div></div><div id="tip" class="glass" hidden></div><div id="zoom"><button class="btn glass" id="zIn" title="Näher (Mausrad)">＋</button><button class="btn glass" id="zOut" title="Weiter weg">－</button><button class="btn glass" id="zFit" title="Ganzer Laden">⤢</button></div><div id="stick"><div id="knob"></div></div><button id="act" class="idle">E</button><button id="drop" title="Karton abstellen (R / RB)">⬇️<br>Abstellen</button><div id="toast" class="glass" hidden></div><div id="card" class="glass" hidden></div></div>
+  <div id="stage"><canvas id="cv"></canvas><canvas id="cv3"></canvas><div id="cross"></div><div id="cross2"></div><div id="p2hud" class="glass" hidden></div><div id="tops"><div id="goal" class="glass" hidden title="Antippen zum Verkleinern"></div><div id="carry" class="glass" hidden></div></div><div id="tip" class="glass" hidden></div><div id="zoom"><button class="btn glass" id="zIn" title="Näher (Mausrad)">＋</button><button class="btn glass" id="zOut" title="Weiter weg">－</button><button class="btn glass" id="zFit" title="Ganzer Laden">⤢</button></div><div id="stick"><div id="knob"></div></div><button id="act" class="idle">E</button><button id="drop" title="Karton abstellen (R / RB)">⬇️<br>Abstellen</button><div id="toast" class="glass" hidden></div><div id="card" class="glass" hidden></div></div>
   <div id="dock">
     <button class="btn glass pri" id="bView" title="Ansicht wechseln (V)"><i>👁️</i><span>Draufsicht</span><kbd>V</kbd></button><button class="btn glass pri" data-p="markt" title="Bestell-PC (1)"><i>💻</i><span>Bestell-PC</span><kbd>1</kbd></button><button class="btn glass" data-p="laden" title="Mein Laden (2)"><i>🏪</i><span>Laden</span><kbd>2</kbd></button><button class="btn glass pri" data-p="bauen" title="Bauen (3)"><i>🔧</i><span>Bauen</span><kbd>3</kbd></button><button class="btn glass pri" data-p="preise" title="Preise (4)"><i>🏷️</i><span>Preise</span><kbd>4</kbd></button><button class="btn glass" data-p="staff" title="Personal (5)"><i>👥</i><span>Personal</span><kbd>5</kbd></button><button class="btn glass" data-p="radio" title="Radio (6)"><i>📻</i><span>Radio</span><kbd>6</kbd></button><button class="btn glass" data-p="up" title="Ausbau (7)"><i>⭐</i><span>Ausbau</span><kbd>7</kbd></button><button class="btn glass" data-p="stat" title="Zahlen (8)"><i>📊</i><span>Zahlen</span><kbd>8</kbd></button><button class="btn glass" data-p="ziele" title="Ziele & Vorbestellungen (9)"><i>🎯</i><span>Ziele</span><kbd>9</kbd></button><button class="btn glass pri" id="bMenu" title="Befehlsmenü (Tab)"><i>☰</i><span>Menü</span><kbd>Tab</kbd></button>
   </div>
@@ -338,6 +343,7 @@ html.eg-pad #drop,body.tv #drop,body.mm #drop{display:none!important}
 <script src="sim.js"></script>
 <script>mmStep(.7, 'Halle wird aufgebaut …')</script>
 <script src="view3d.js"></script>
+<script src="extras.js"></script>
 <script src="game.js"></script>
 <script>mmStep(.88, 'Kassen werden hochgefahren …')</script>
 <script src="menu.js"></script>
