@@ -49,10 +49,12 @@ export function createSeaBattle(C) {
   const q = s => H.querySelector(s), pct = (a, b) => Math.max(0, Math.min(100, a / b * 100)).toFixed(1) + '%', hx = c => '#' + (c >>> 0).toString(16).padStart(6, '0');
   function hud() {
     if (!B) return; const S = C.S();
-    q('.rb-p').innerHTML = B.party.map((m, i) => { const fc = C.face ? C.face(m.id) : ''; return `<div data-i="${i}" class="rb-c${m === B.cur ? ' on' : ''}${B.pick && m.hp > 0 && m.ct >= 100 ? ' rdy' : ''}${m.hp <= 0 ? ' ko' : ''}" style="--c:${hx(m.col)}"><div class="rb-pt" style="${fc ? 'background-image:url(' + fc + ')' : ''}">${fc ? '' : faceOf(m)}</div><div class="rb-ci"><b>${m.n} <small>Lv ${C.clv ? C.clv(m.id) : ''}</small></b><div class="rr2"><span>LP</span><div class="rb-bar"><i style="width:${pct(m.hp, m.max)}"></i></div><em>${Math.max(0, Math.ceil(m.hp))}</em></div>${m.id === 'zotik' ? `<div class="rr2"><span>MP</span><div class="rb-bar mp"><i style="width:${pct(S.mp, C.maxMp())}"></i></div><em>${Math.floor(S.mp)}</em></div>` : ''}<div class="rr2"><span>ZT</span><div class="rb-bar atb"><i style="width:${pct(m.ct || 0, 100)}"></i></div><em></em></div><div class="rb-bar ip${m.ip >= 40 ? ' full' : ''}"><i style="width:${pct(m.ip, 100)}"></i></div></div></div>`; }).join('');
+    q('.rb-p').innerHTML = B.party.map((m, i) => { const fc = C.face ? C.face(m.id) : ''; return `<div data-i="${i}" class="rb-c${m === B.cur ? ' on' : ''}${B.phase === 'p' && m.hp > 0 && B.pend.includes(m) && m !== B.cur ? ' pnd' : ''}${B.done.has(m) && m.hp > 0 ? ' dn' : ''}${m.hp <= 0 ? ' ko' : ''}" style="--c:${hx(m.col)}"><div class="rb-pt" style="${fc ? 'background-image:url(' + fc + ')' : ''}">${fc ? '' : faceOf(m)}</div><div class="rb-ci"><b>${m.n} <small>Lv ${C.clv ? C.clv(m.id) : ''}</small></b><div class="rr2"><span>LP</span><div class="rb-bar"><i style="width:${pct(m.hp, m.max)}"></i></div><em>${Math.max(0, Math.ceil(m.hp))}</em></div>${m.id === 'zotik' ? `<div class="rr2"><span>MP</span><div class="rb-bar mp"><i style="width:${pct(S.mp, C.maxMp())}"></i></div><em>${Math.floor(S.mp)}</em></div>` : ''}<div class="rb-bar ip${m.ip >= 40 ? ' full' : ''}"><i style="width:${pct(m.ip, 100)}"></i></div></div></div>`; }).join('');
     q('.rb-f').innerHTML = B.foes.map(f => `<div class="rb-c${f === B.curF ? ' on' : ''}${f.dead ? ' ko' : ''}" style="--c:${hx(f.d.col || 0xff7a7a)}"><b>${f.name}<small>${EL[f.d.weak][0]} ${f.broken ? '<span class="rb-brk x">BRUCH</span>' : `<span class="rb-brk">${'◆'.repeat(Math.max(0, f.brk))}</span>`}</small></b><div class="rb-bar"><i style="width:${pct(f.hp, f.max)}"></i></div></div>`).join('');
   }
   const flashScr = () => { const w = q('.rb-w'); w.classList.remove('on'); void w.offsetWidth; w.classList.add('on'); };
+  const swirl = () => { const w = q('.rb-sw2'); w.classList.remove('on'); void w.offsetWidth; w.classList.add('on'); };
+  async function leave() { FD.style.opacity = 1; await wait(430); end(); await wait(60); FD.style.opacity = 0; }
   /* Kampfmusik: treibender Bass mit Arpeggio (Moll), Boss schneller und dunkler */
   let mus = null;
   function music(boss) {
@@ -125,29 +127,30 @@ body.rbat #dlg{top:max(8px,env(safe-area-inset-top));bottom:max(8px,env(safe-are
 body.rbat #dOpts{max-height:none}body.rbat #dOpts button{padding:7px 10px 7px 24px;font-size:14px}
 body.rbat #dName{font-size:17px}}`;
   document.head.appendChild(st3);
-  const st4 = document.createElement('style'); st4.textContent = `#rbh .rb-p .rb-c.rdy{pointer-events:auto;cursor:pointer;border-color:#ffd45a;animation:rbrdy .8s infinite alternate}#rbh .rb-p .rb-c.rdy.on{box-shadow:0 0 0 2px #ffd45a,0 0 24px rgba(255,212,90,.7)}
+  const st4 = document.createElement('style'); st4.textContent = `#rbh .rb-tl{display:none!important}#rbh .rb-p .rb-c.dn{opacity:.55}#rbh .rb-p .rb-c.dn::after{content:'✓';position:absolute;right:6px;top:2px;color:#7aff9a;font-weight:800}#rbh .rb-p .rb-c{position:relative}#rbh .rb-ord small{font:800 11px system-ui;letter-spacing:.08em;color:#ffd45a;margin-right:4px}#rbh .rb-ord b.dn{opacity:.35}
+#rbh .rb-p .rb-c.pnd{border-color:rgba(255,212,90,.7)}#rbh .rb-p .rb-c.on{box-shadow:0 0 0 2px #ffd45a,0 0 24px rgba(255,212,90,.7)}
 @keyframes rbrdy{to{filter:brightness(1.35)}}
 #rbh .rb-hint{position:absolute;left:50%;bottom:calc(max(8px,env(safe-area-inset-bottom)) + 150px);transform:translateX(-50%);max-width:92vw;padding:8px 16px;border-radius:20px;background:rgba(10,14,34,.88);border:1px solid rgba(255,212,90,.6);font-size:14px;font-weight:700;color:#ffe9a0;text-align:center;opacity:0;transition:opacity .25s;pointer-events:none}#rbh .rb-hint.on{opacity:1}
 @media (orientation:landscape) and (max-height:520px){#rbh .rb-hint{bottom:calc(max(8px,env(safe-area-inset-bottom)) + 96px)}}`;
   document.head.appendChild(st4);
+  const st5 = document.createElement('style'); st5.textContent = `#rbh .rb-sw2{position:absolute;inset:-60%;opacity:0;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.96) 0 9deg,rgba(70,130,255,.9) 9deg 18deg);clip-path:circle(0% at 50% 50%)}
+#rbh .rb-sw2.on{animation:rbsw2 1.05s ease-in-out forwards}@keyframes rbsw2{0%{opacity:1;clip-path:circle(0% at 50% 50%);transform:rotate(0)}42%{opacity:1;clip-path:circle(75% at 50% 50%);transform:rotate(260deg)}100%{opacity:0;clip-path:circle(75% at 50% 50%);transform:rotate(540deg)}}
+#rbh .rb-p,#rbh .rb-f,#rbh .rb-ord,#rbh .rb-ti{z-index:2}#rbh .rb-bars i{position:absolute;z-index:1;left:0;right:0;height:5vh;background:#000;transition:transform .5s .5s}#rbh .rb-bars i:first-child{top:0;transform:translateY(-100%)}#rbh .rb-bars i:last-child{bottom:0;transform:translateY(100%)}
+body.rbat #rbh .rb-bars i{transform:none}@media (orientation:portrait){#rbh .rb-bars{display:none}}
+#rbh .rb-r.res h2.vh{text-align:center;margin:0 0 8px;font-size:34px}#rbfd{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:7;transition:opacity .4s}`; document.head.appendChild(st5);
+  const FD = document.createElement('div'); FD.id = 'rbfd'; document.body.appendChild(FD);
 
-  H.insertAdjacentHTML('beforeend', '<div class="rb-ord"></div><div class="rb-tl"><div class="rb-tr"><span class="w">WAIT</span><span class="c">COM</span><span class="a">ACT</span></div><div class="rb-mf"></div><div class="rb-mp"></div></div><div class="rb-ti" hidden></div>');
+  H.insertAdjacentHTML('beforeend', '<div class="rb-sw2"></div><div class="rb-bars"><i></i><i></i></div><div class="rb-ord"></div><div class="rb-tl"><div class="rb-tr"><span class="w">WAIT</span><span class="c">COM</span><span class="a">ACT</span></div><div class="rb-mf"></div><div class="rb-mp"></div></div><div class="rb-ti" hidden></div>');
   const faceOf = m => m.id === 'zotik' ? '🦊' : ((C.PARTY && C.PARTY[m.id]) || {}).em || '⭐';
-  const posCt = ct => (Math.max(0, Math.min(100, ct)) * .92 + 4).toFixed(1) + '%';
-  const COST = { atk: 0, spell: -8, art: -25, team: -35, attr: -35, summon: -15, focus: -10, pot: 8, guard: 28, flee: 0 };
-  const PN = { M: 'Manuell', A: 'Angriff', S: 'Schutz', H: 'Heilung' };
-  const DES = [[/Teamangriff/, 'Gemeinsamer Angriff aller Gefährten. Braucht die volle Teamleiste.'], [/Angriff/, 'Greift mit der Waffe an. Treffer verzögern die Zeitleiste des Gegners.'], [/Magie/, 'Zauber nutzen Schwächen: wiederholte Treffer brechen den Gegner und unterbrechen seinen Zug.'],
+    const PN = { M: 'Manuell', A: 'Angriff', S: 'Schutz', H: 'Heilung' };
+  const DES = [[/Teamangriff/, 'Gemeinsamer Angriff aller Gefährten. Braucht die volle Teamleiste.'], [/Angriff/, 'Greift mit der Waffe an. Wählbares Ziel. Treffer auf Schwächen lassen Gegner später handeln.'], [/Magie/, 'Zauber nutzen Schwächen: wiederholte Treffer brechen den Gegner, er setzt dann Züge aus.'],
     [/Zielfeuer/, 'Bis zu drei Ziele markieren und mit einer Salve belegen.'], [/Nebelfenn/, 'Ruft einen Verbündeten, der drei Runden mitkämpft und die Gruppe heilt.'], [/Sternenbund/, 'Große Gruppen-Attraktion. Verbraucht IP der ganzen Gruppe.'], [/Taktik/, 'Rolle der Gefährten wählen: sie handeln dann selbstständig, Zotik behält die Befehle.'],
-    [/Trank/, 'Heilt das Gruppenmitglied mit den wenigsten LP.'], [/Abwehr/, 'Halbiert den Schaden bis zum nächsten Zug und lädt die Zeitleiste schneller.'], [/Auto/, 'Der Kampf läuft selbstständig bis zum Ende.'], [/Flucht|Davonsegeln/, 'Versucht zu entkommen. Bei Bossen nicht möglich.'], [/IP|Rissblitz|Heilwelle|Mondlicht|Kühlnebel|Provokation|Pfeilhagel|Schattenklinge|Runensiegel|Teslafeld|Sternsturz|Volltreffer/, 'Fähigkeit: braucht volle IP, die durch Treffer und Abwehr entstehen.']];
-  function pickNext() { const L = [...up(), ...live()]; let b = null, bt = 1e9; for (const a of L) { const t = Math.max(0, (100 - a.ct) / a.sp); if (t < bt - .001 || (Math.abs(t - bt) <= .001 && a.party)) { bt = t; b = a; } } return { a: b, t: bt, L }; }
-  function simulate(n) { const L = [...up(), ...live()].map(a => ({ a, ct: a.ct, sp: a.sp })), out = [];
-    for (let i = 0; i < n && L.length; i++) { let b = null, bt = 1e9; for (const o of L) { const t = Math.max(0, (100 - o.ct) / o.sp); if (t < bt - .001 || (Math.abs(t - bt) <= .001 && o.a.party)) { bt = t; b = o; } } for (const o of L) o.ct += o.sp * bt; out.push(b.a); b.ct = 0; } return out; }
+    [/Trank/, 'Heilt ein wählbares Gruppenmitglied.'], [/Abwehr/, 'Halbiert den Schaden bis zum nächsten Zug und lädt IP auf.'], [/Auto/, 'Der Kampf läuft selbstständig bis zum Ende.'], [/Flucht|Davonsegeln/, 'Versucht zu entkommen. Bei Bossen nicht möglich.'], [/IP|Rissblitz|Heilwelle|Mondlicht|Kühlnebel|Provokation|Pfeilhagel|Schattenklinge|Runensiegel|Teslafeld|Sternsturz|Volltreffer/, 'Fähigkeit: braucht volle IP, die durch Treffer und Abwehr entstehen.']];
   function atbUI() {
-    if (!B) return; const mk = (box, list, cls) => { for (const a of list) { if (!a.el) { a.el = document.createElement('i'); a.el.className = 'rb-mk ' + cls; a.el.textContent = a.ico; box.appendChild(a.el); } a.el.style.left = posCt(a.ct); a.el.classList.toggle('dead', !!a.dead || a.hp <= 0); a.el.classList.toggle('now', a === B.cur || a === B.curF); } };
-    mk(q('.rb-mf'), B.foes, 'f'); mk(q('.rb-mp'), B.party, 'p');
-    q('.rb-ord').innerHTML = simulate(8).map((a, i) => `<b class="${a.party ? 'p' : 'f'}${i === 0 ? ' n' : ''}" style="--c:${hx(a.party ? a.col || 0x8ad0ff : a.d.col || 0xff7a7a)}">${a.ico}</b>`).join('');
+    if (!B) return; const cur = B.cur || B.curF, items = B.phase === 'f' ? B.fq.filter(f => !f.dead) : [...B.pend.filter(m => m.hp > 0), ...live()];
+    q('.rb-ord').innerHTML = `<small>RUNDE ${B.round || 1}</small>` + items.map(a => `<b class="${a.party ? 'p' : 'f'}${a === cur ? ' n' : ''}" style="--c:${hx(a.party ? a.col || 0x8ad0ff : a.d.col || 0xff7a7a)}">${a.ico}</b>`).join('');
   }
-  function showTI(f) { const t = q('.rb-ti'); B && (B.tgt = f); if (!f) { t.hidden = true; return; } B.curF = f; hud(); t.hidden = false; t.innerHTML = `<small>ZIELINFO</small><b>Lv. ${f.lv} · ${f.name}</b><div class="rb-bar"><i style="width:${pct(f.hp, f.max)}"></i></div><span>${Math.max(0, Math.ceil(f.hp))}/${f.max} LP · Schwäche ${EL[f.d.weak][0]} ${EL[f.d.weak][2]}${f.broken ? ' · BRUCH' : ''}</span>`; }
+  function showTI(f) { const t = q('.rb-ti'); if (B && B.shot && B.shot.d === 999) B.shot = null; B && (B.tgt = f); if (!f) { t.hidden = true; return; } B.curF = f; hud(); if (B.cur) { const a = partyA(B.cur); if (a) { shotOver(a, f); B.shot.d = 999; } } t.hidden = false; t.innerHTML = `<small>ZIELINFO</small><b>Lv. ${f.lv} · ${f.name}</b><div class="rb-bar"><i style="width:${pct(f.hp, f.max)}"></i></div><span>${Math.max(0, Math.ceil(f.hp))}/${f.max} LP · Schwäche ${EL[f.d.weak][0]} ${EL[f.d.weak][2]}${f.broken ? ' · BRUCH' : ''}</span>`; }
 
   /* ---------- Figuren auf der Bühne ---------- */
   let B = null, coolT = 0;   /* coolT: Zeitpunkt (ms), bis zu dem nach einem Kampf kein neuer beginnt */
@@ -167,8 +170,8 @@ body.rbat #dName{font-size:17px}}`;
   function mkFoe(d, i, cnt, k, boss) {
     const P = d.mk(), v = (i - (cnt - 1) / 2) * (B.sea ? 4.4 : 3.6), u = (B.sea ? 10 : 8) + (cnt === 3 && i === 1 ? .9 : 0), p = at(u, v), sc = d.sc * (boss ? 1.55 : 1);
     P.root.scale.setScalar(sc); const y = gy(p.x, p.z) + (d.hov ? (B.sea ? .6 : .9) : 0) + (d.fly ? 1.6 : 0); P.root.position.set(p.x, y - (B.sea ? 2.5 : 0), p.z); scene.add(P.root);
-    const lv = C.WLV[reg(k)] + (Math.random() * 3 | 0) + (boss ? 3 : 0), hp = Math.round(C.eHp(lv) * 1.25 * (boss ? 3.4 : 1));
-    return actor(P.root, { x: p.x, y, z: p.z }, 0, { d, P, kk: P.kk || null, v, h: 1.4 * sc, sc, hp, max: hp, atk: C.eDm(lv) * 1.3 * (boss ? 1.35 : 1), lv, boss, brk: boss ? 4 : 2, brk0: boss ? 4 : 2, broken: 0, dead: 0, rise: B.sea ? 1 : 0,
+    const fs = d.st || C.foeStat(boss ? 'X' : 'A', C.WLV[reg(k)] + (boss ? 4 : Math.random() * 3 | 0)), lv = fs.lv, hp = fs.hp;
+    return actor(P.root, { x: p.x, y, z: p.z }, 0, { d, P, kk: P.kk || null, v, h: 1.4 * sc, sc, hp, max: hp, atk: fs.dmg, xp: fs.xp, lv, boss, brk: boss ? 4 : 2, brk0: boss ? 4 : 2, broken: 0, dead: 0, rise: B.sea ? 1 : 0,
       name: (boss ? '★ ' : '') + d.n + (cnt > 1 ? ' ' + 'ABC'[i] : '') });
   }
 
@@ -178,7 +181,7 @@ body.rbat #dName{font-size:17px}}`;
     let fc = pl.face; if (ref && ref.x !== undefined) fc = Math.atan2(ref.x - pl.x, ref.z - pl.z);
     if (sea) for (let t = 0; t < 12; t++) { const a = fc + t * .52; if (C.water(pl.x + Math.sin(a) * 10, pl.z + Math.cos(a) * 10)) { fc = a; break; } }
     pl.face = fc; const fx = Math.sin(fc), fz = Math.cos(fc);
-    B = { k, ref, mode, sea, ox: pl.x, oz: pl.z, fx, fz, sx: fz, sz: -fx, foes: [], party: [], turn: 0, guard: {}, taunt: null, auto: 0, shk: 0, shot: null, t: 0, vic: 0 };
+    B = { pend: [], done: new Set(), fq: [], round: 0, phase: '', k, ref, mode, sea, ox: pl.x, oz: pl.z, fx, fz, sx: fz, sz: -fx, foes: [], party: [], turn: 0, guard: {}, taunt: null, auto: 0, shk: 0, shot: null, t: 0, vic: 0 };
     const P0 = pool(mode, k), rare = Math.random() < (sea ? .1 : .06), cnt = rare ? 1 : 1 + (Math.random() * (k <= 2 ? 2 : 3) | 0);
     const first = ref && ref.def ? ref.def : pick(P0);
     for (let i = 0; i < cnt; i++) B.foes.push(mkFoe(rare && sea ? seaDef(pick(SEABOSS)) : i === 0 ? first : pick(P0), i, cnt, k, rare));
@@ -190,22 +193,22 @@ body.rbat #dName{font-size:17px}}`;
     const z0 = { id: 'zotik', n: 'Zotik', col: 0x8ad0ff, ip: 20, mag: 1, melee: 1, get hp() { return S.hp; }, set hp(v) { S.hp = v; }, get max() { return C.maxHp(); }, atk: () => C.atkV() };
     if (!sea) { z0.act = mkAct(lead ? lead.P.root : C.fox.root, 0); z0.act.fox = !lead; z0.act.P = lead ? lead.P : null; z0.act.kk = lead && lead.P.kk || null; }
     B.party.push(z0);
-    C.CMP().filter(a => !a.ko && !a.guest && a.id !== S.lead).slice(0, 3).forEach((a, i) => { const p = C.PARTY[a.id], m = { id: a.id, n: p.n, col: p.col, ip: 20, a, melee: !!p.melee, get hp() { return a.hp; }, set hp(v) { a.hp = v; }, get max() { return C.cmax(a.id); }, atk: () => C.cAtk(a.id) * 1.4, crit: () => C.cg(a.id, 'crit'), def: () => C.cg(a.id, 'def') };
+    C.CMP().filter(a => !a.ko && !a.guest && a.id !== S.lead).slice(0, 3).forEach((a, i) => { const p = C.PARTY[a.id], m = { id: a.id, n: p.n, col: p.col, ip: 20, a, melee: !!p.melee, get hp() { return a.hp; }, set hp(v) { a.hp = v; }, get max() { return C.cmax(a.id); }, atk: () => C.cAtk(a.id), crit: () => C.cg(a.id, 'crit'), def: () => C.cg(a.id, 'def') };
       if (!sea) { m.act = mkAct(a.P.root, i + 1); m.act.P = a.P; m.act.kk = a.P.kk || null; } B.party.push(m); });
-    C.setOn(true); document.body.classList.add('rbat'); if (ref && ref.hide) ref.hide(); if (ref && ref.P && ref.P.root) ref.P.root.visible = false; C.$('hud').hidden = true; H.hidden = false; q('.rb-r').classList.remove('on'); flashScr(); sfx('roar'); music(rare); hud();
+    C.setOn(true); document.body.classList.add('rbat'); if (ref && ref.hide) ref.hide(); if (ref && ref.P && ref.P.root) ref.P.root.visible = false; C.$('hud').hidden = true; H.hidden = false; q('.rb-r').classList.remove('on'); swirl(); sfx('roar'); music(rare); hud();
     banner(rare ? '⚠️ ' + B.foes[0].d.n : sea ? '🌊 Seekampf' : '⚔️ Kampf', rare ? 'Eine gewaltige Bestie!' : B.foes.map(f => f.d.n).join(' · '));
     const c = center(B.foes), o = { x: B.ox, y: gy(B.ox, B.oz), z: B.oz }; camera.position.set(o.x + B.sx * 9 + B.fx * 3, o.y + 2.2, o.z + B.sz * 9 + B.fz * 3);
     shot({ x: c.x + B.sx * 5 - B.fx * 4, y: c.y + 2.4, z: c.z + B.sz * 5 - B.fz * 4 }, { x: c.x, y: c.y + 1.2, z: c.z }, 1.4);
     for (const f of B.foes) if (C.MFX) C.MFX().circle(f.base.x, gy(f.base.x, f.base.z), f.base.z, f.d.col || 0xff6a6a, 2.2 * f.sc, 1.2);
-    B.party.forEach((m, i) => { m.party = 1; m.ico = faceOf(m); m.sp = m.id === 'zotik' ? 11 : 9.4 + (i % 3) * .7; m.ct = rnd(35, 75); });
-    B.foes.forEach(f => { f.ico = (f.name.replace('★ ', '')[0] || '?'); f.sp = Math.min(13, 6.5 + f.lv * .12 + (f.d.hov ? 1.5 : 0) + (f.boss ? 2 : 0)); f.ct = rnd(10, 55); });
-    q('.rb-mf').innerHTML = q('.rb-mp').innerHTML = ''; showTI(null); atbUI(); { const f0 = pickNext().a; if (f0.party) setTimeout(() => B && toast('⚡ Initiative! Die Gruppe ist zuerst dran'), 900); }
+    B.party.forEach((m, i) => { m.party = 1; m.ico = faceOf(m); m.sp = m.id === 'zotik' ? 11 : 9.4 + (i % 3) * .7; });
+    B.foes.forEach(f => { f.ico = (f.name.replace('★ ', '')[0] || '?'); f.sp = Math.min(13, 6.5 + f.lv * .12 + (f.d.hov ? 1.5 : 0) + (f.boss ? 2 : 0)); });
+    q('.rb-mf').innerHTML = q('.rb-mp').innerHTML = ''; showTI(null); B.foeFirst = ref && ref.pre === 'p' ? false : Math.random() < (ref && ref.pre === 'f' ? .3 : .15); if (ref && ref.pre === 'p') B.party.forEach(m => m.ip = Math.min(100, m.ip + 15)); atbUI(); setTimeout(() => B && toast(B.foeFirst ? '⚠️ Hinterhalt! Die Gegner sind zuerst dran' : ref && ref.pre === 'p' ? '⚡ Erstschlag! Die Gruppe ist zuerst dran' : '⚔️ Die Gruppe beginnt'), 900);
     setTimeout(() => B && loop(), 1700);
   }
   const live = () => B.foes.filter(f => !f.dead), up = () => B.party.filter(m => m.hp > 0);
 
   /* ---------- Befehle ---------- */
-  const SPELLS = [{ id: 'fire', t: '🔥 Feuer', mp: 6, k: 1.35 }, { id: 'ice', t: '❄️ Eis', mp: 6, k: 1.35 }, { id: 'storm', t: '⚡ Blitz (alle)', mp: 12, k: .95, all: 1 }, { id: 'light', t: '✨ Licht', mp: 9, k: 1.6 }, { id: 'heal', t: '💚 Heilung (Gruppe)', mp: 10, heal: 1 }];
+  const SPELLS = [{ id: 'fire', t: '🔥 Feuer', mp: 6, k: 1.35 }, { id: 'ice', t: '❄️ Eis', mp: 6, k: 1.35 }, { id: 'storm', t: '⚡ Blitz (alle)', mp: 12, k: .95, all: 1 }, { id: 'light', t: '✨ Licht', mp: 9, k: 1.6 }, { id: 'heal', t: '💚 Heilung (Gruppe)', mp: 10, heal: 1 }, { id: 'heal1', t: '💚 Heilung (einzeln)', mp: 5, heal: 1, one: 1 }];
   const ART = { zotik: ['🌠 Rissblitz', 'all', 'light'], lyra: ['💚 Heilwelle', 'heal'], mira: ['🌙 Mondlicht', 'heal'], mirael: ['💧 Kühlnebel', 'heal'], rovan: ['📣 Provokation', 'taunt'], toren: ['🔥 Glutschlag', 'big', 'fire'],
     nia: ['🏹 Pfeilhagel', 'all', 'storm'], kael: ['🗡️ Schattenklinge', 'multi'], eryn: ['📜 Runensiegel', 'all', 'light'], prof: ['⚡ Teslafeld', 'all', 'storm'], aera: ['🌟 Sternsturz', 'big', 'light'] };
   const art = id => ART[id] || ['🎯 Volltreffer', 'big'];
@@ -213,18 +216,19 @@ body.rbat #dName{font-size:17px}}`;
   function ask(m) {
     return new Promise(res => {
       const S = C.S(), L = live(), again = () => ask(m).then(res), o = [];
+      const allyTgt = fn => up().length === 1 ? fn(up()[0]) : say([[m.n, 'Wen heilen?']], null, [...up().map(p => ({ t: p.n + ' · ' + Math.ceil(p.hp) + '/' + p.max + ' LP', fn: () => fn(p), h: () => { const a = partyA(p); if (a) { shotFace(a); B.shot.d = 999; } } })), { t: '↩ Zurück', fn: again }]);
       const tgt = fn => L.length === 1 ? fn(L[0]) : say([[m.n, 'Welches Ziel?']], null, [...L.map(f => ({ t: tagF(f), fn: () => fn(f), h: () => showTI(f) })), { t: '↩ Zurück', fn: again }]);
       o.push({ t: '⚔️ Angriff', fn: () => tgt(f => res({ k: 'atk', f })) });
-      if (m.mag) o.push({ t: '✨ Magie', fn: () => say([['Zotik', 'Welcher Zauber? (MP ' + Math.floor(S.mp) + ')']], null, [...SPELLS.map(sp => ({ t: sp.t + ' · ' + sp.mp + ' MP', d: sp.heal ? 'Heilt die ganze Gruppe.' : (sp.all ? 'Trifft alle Gegner. ' : '') + (EL[sp.id] ? 'Wirkt stark gegen Gegner mit Schwäche ' + EL[sp.id][0] + ' ' + EL[sp.id][2] + '.' : ''), fn: () => S.mp < sp.mp ? (toast('Nicht genug MP'), again()) : sp.all || sp.heal ? res({ k: 'spell', sp }) : tgt(f => res({ k: 'spell', sp, f })) })), { t: '↩ Zurück', fn: again }]) });
+      if (m.mag) o.push({ t: '✨ Magie', fn: () => say([['Zotik', 'Welcher Zauber? (MP ' + Math.floor(S.mp) + ')']], null, [...SPELLS.map(sp => ({ t: sp.t + ' · ' + sp.mp + ' MP', d: sp.heal ? 'Heilt die ganze Gruppe.' : (sp.all ? 'Trifft alle Gegner. ' : '') + (EL[sp.id] ? 'Wirkt stark gegen Gegner mit Schwäche ' + EL[sp.id][0] + ' ' + EL[sp.id][2] + '.' : ''), fn: () => S.mp < sp.mp ? (toast('Nicht genug MP'), again()) : sp.one ? allyTgt(p => res({ k: 'spell', sp, ally: p })) : sp.all || sp.heal ? res({ k: 'spell', sp }) : tgt(f => res({ k: 'spell', sp, f })) })), { t: '↩ Zurück', fn: again }]) });
       const [an] = art(m.id); o.push({ t: an + (m.ip >= 40 ? ' ⭐' : ' · IP ' + m.ip + '/40'), fn: () => m.ip >= 40 ? res({ k: 'art' }) : (toast('IP füllen sich durch Treffer und Abwehr'), again()) });
-      const sw = up().filter(p => p !== m && p.ct >= 50); if (sw.length) o.splice(1, 0, { t: '🔁 Wechsel · ' + sw.map(p => p.n).join(', '), d: 'Ein anderer Gefährte in der COM-Zone übernimmt den Zug.', fn: () => sw.length === 1 ? res({ k: 'swap', to: sw[0] }) : say([[m.n, 'Wer übernimmt?']], null, [...sw.map(p => ({ t: p.n + ' · Lv ' + (C.clv ? C.clv(p.id) : ''), fn: () => res({ k: 'swap', to: p }) })), { t: '↩ Zurück', fn: again }]) });
+      const sw = B.pend.filter(p => p !== m && p.hp > 0); if (sw.length) o.splice(1, 0, { t: '🔁 Reihenfolge · ' + sw.map(p => p.n).join(', '), d: 'Eine andere Figur, die in dieser Runde noch nicht dran war, handelt zuerst.', fn: () => sw.length === 1 ? res({ k: 'swap', to: sw[0] }) : say([[m.n, 'Wer handelt zuerst?']], null, [...sw.map(p => ({ t: p.n + ' · Lv ' + (C.clv ? C.clv(p.id) : ''), fn: () => res({ k: 'swap', to: p }) })), { t: '↩ Zurück', fn: again }]) });
       const co = up().length > 1, ob = (k, ok, why, fn) => o.push({ t: BEI[k].em + ' ' + BEI[k].n + (ok ? why : ' · ' + bLock(k)), fn: ok ? fn : () => (toast('Wird mit dem Kernsplitter ' + BEI[k].rb + ' der Geschichte freigeschaltet'), again()) });
       if (S.party && S.party.length) o.push({ t: '🤝 Teamangriff · ' + Math.floor(S.tg || 0) + '%', fn: () => (S.tg || 0) >= 100 ? res({ k: 'team' }) : (toast('🤝 Teamleiste füllt sich durch Treffer'), again()) });
       ob('focus', bOn(S, 'focus'), ' · ' + BEI.focus.mp + ' MP', () => S.mp < BEI.focus.mp ? (toast('Zu wenig MP'), again()) : pickFocus(m, L, again, res));
       if (up().length) ob('summon', bOn(S, 'summon'), B.sum ? ' · schon da' : ' · ' + BEI.summon.mp + ' MP', () => B.sum || S.mp < BEI.summon.mp ? (toast(B.sum ? 'Der Nebelfenn ist schon da' : 'Zu wenig MP'), again()) : res({ k: 'summon' }));
       if (co) ob('attr', bOn(S, 'attr'), ' · IP ' + up().reduce((a, p) => a + Math.floor(p.ip), 0) + '/' + 40 * Math.min(3, up().length), () => up().reduce((a, p) => a + p.ip, 0) >= 40 * Math.min(3, up().length) ? res({ k: 'attr' }) : (toast('Alle brauchen genug IP'), again()));
       if (m === B.party[0] && co) ob('tact', bOn(S, 'tact'), ' · ' + PN[B.para || 'M'], () => say([[m.n, 'Taktik der Gefährten?']], null, [...Object.entries(PN).map(([k, n]) => ({ t: (B.para || 'M') === k ? '▶ ' + n : n, fn: () => { B.para = k; toast('🎭 Taktik: ' + n); again(); } })), { t: '↩ Zurück', fn: again }]));
-      if (S.potions > 0) o.push({ t: '🧪 Trank (' + S.potions + ')', fn: () => res({ k: 'pot' }) });
+      if (S.potions > 0) o.push({ t: '🧪 Trank (' + S.potions + ')', fn: () => allyTgt(p => res({ k: 'pot', ally: p })) });
       o.push({ t: '🛡️ Abwehr', fn: () => res({ k: 'guard' }) }, { t: '⏩ Auto', fn: () => { B.auto = 1; toast('⏩ Auto-Kampf bis zum Ende'); res(autoCmd(m)); } });
       if (!B.boss) o.push({ t: B.sea ? '🏃 Davonsegeln' : '🏃 Flucht', fn: () => res({ k: 'flee' }) });
       o.forEach(x => { if (!x.d) { const r = DES.find(z => z[0].test(x.t)); if (r) x.d = r[1]; } }); showTI(null);
@@ -234,7 +238,7 @@ body.rbat #dName{font-size:17px}}`;
       const abil = o.filter(x => !main.includes(x));
       if (abil.length) { const e = { t: '🌠 Fähigkeiten ▸', d: 'Kunst, Teamangriff, Zielfeuer, Beschwörung und Attraktion.', fn: () => say([[m.n, 'Fähigkeiten']], null, [...abil, { t: '↩ Zurück', fn: again }]) }; main.splice(main.indexOf('F'), 1, e); } else main.splice(main.indexOf('F'), 1);
       const mg = main.find(x => /Magie/.test(x.t)); if (mg) mg.t = '✨ Magie ▸';
-      say([[m.n, m.n + ' ist am Zug.']], null, main);
+      say([[m.n, 'Runde ' + B.round + ' · Zug ' + (B.done.size + 1) + '/' + (B.done.size + B.pend.filter(p => p.hp > 0).length)]], null, main);
     });
   }
   function pickFocus(m, L, again, res, got) {
@@ -251,19 +255,6 @@ body.rbat #dName{font-size:17px}}`;
     return { k: 'atk', f: L.slice().sort((a, b) => a.hp - b.hp)[0] };
   }
 
-  /* JRPG-Ablauf: Sind Figuren bereit (Zeitleiste voll), leuchten ihre Karten – erst nach Antippen/Bestätigen öffnet sich das Befehlsmenü dieser Figur */
-  function pickChar(b) {
-    if (!B || B.auto || up().length < 2 || (B.para && B.para !== 'M' && b !== B.party[0])) return b;
-    const R = B.party.filter(p => p.hp > 0 && p.ct >= 100); if (!R.includes(b)) R.unshift(b);
-    return new Promise(res => {
-      let i = R.indexOf(b); const hint = q('.rb-hint') || H.appendChild(Object.assign(document.createElement('div'), { className: 'rb-hint' }));
-      const set = () => { B.cur = R[i]; hud(); atbUI(); hint.textContent = '👆 ' + R[i].n + ' ist bereit – Figur antippen, dann Befehl wählen'; hint.classList.add('on'); };
-      const done = m => { removeEventListener('keydown', key, true); q('.rb-p').removeEventListener('click', click); hint.classList.remove('on'); if (B) B.pick = 0; res(m); };
-      const click = e => { const c = e.target.closest('.rb-c.rdy'); if (c) { const m = B.party[+c.dataset.i]; if (m) { e.stopPropagation(); done(m); } } };
-      const key = e => { const k = e.code; if (/^(Enter|Space|KeyJ|KeyK|NumpadEnter)$/.test(k)) { e.preventDefault(); e.stopImmediatePropagation(); if (!e.repeat) done(R[i]); } else if (/^Arrow(Left|Up)$/.test(k) || (/^Arrow(Right|Down)$/.test(k))) { e.preventDefault(); e.stopImmediatePropagation(); i = (i + (/Left|Up/.test(k) ? R.length - 1 : 1)) % R.length; set(); } };
-      B.pick = 1; B.pickDone = () => done(R[i]); q('.rb-p').addEventListener('click', click); addEventListener('keydown', key, true); set();
-    });
-  }
   /* ---------- Ablauf einer Runde ---------- */
   function paraCmd(m) {
     const S = C.S(), low = up().filter(p => p.hp < p.max * .5), [, ty] = art(m.id), P = B.para;
@@ -276,35 +267,49 @@ body.rbat #dName{font-size:17px}}`;
     C.MFX().bolt(B.sumM.position.x, B.sumM.position.y, B.sumM.position.z, f.base.x, f.base.y + f.h * .5, f.base.z, 0xbfe8ff, .3); hit(f, z.atk() * .7, null, 'storm', false); await wait(450); if (!B) return;
     B.curF = null; if (!B.sum && B.sumM) { scene.remove(B.sumM); B.sumM = null; }
   }
-  /* Zeitleiste: wer zuerst 100 erreicht, ist dran; Treffer schieben die Leiste des Gegners zurück (verzögern) oder setzen sie bei Bruch weit zurück (unterbrechen) */
+  /* Klassische Runden: erst wählt und handelt jede lebende Figur der Gruppe einmal (Reihenfolge wählbar), dann jeder lebende Gegner einmal */
   async function loop() {
     while (B && !B.over) {
-      if (!live().length) return win(); if (!up().length) return lose();
-      const { a: b, t: bt, L } = pickNext(); for (const a of L) a.ct = Math.min(100, a.ct + a.sp * bt); b.ct = 100; atbUI(); await wait(Math.min(650, 120 + bt * 80)); if (!B || B.over) return;
-      if (b.party) {
-        let m = await pickChar(b); if (!B || B.over) return; B.cur = m; B.guard[m.id] = 0; if (B.taunt === m) B.taunt = null; hud(); atbUI();
-        const a = partyA(m); if (a) { const bs = a.base; B.shot = null; B.idle = { x: bs.x, y: bs.y, z: bs.z }; }
-        let c = B.auto ? autoCmd(m) : (B.para && B.para !== 'M' && m !== B.party[0]) ? paraCmd(m) : await ask(m); if (!B) return;
-        while (c && c.k === 'swap') { m = c.to; B.cur = m; B.guard[m.id] = 0; hud(); atbUI(); { const a2 = partyA(m); if (a2) { const bs = a2.base; B.shot = null; B.idle = { x: bs.x, y: bs.y, z: bs.z }; } } c = await ask(m); if (!B) return; }
-        showTI(null);
-        if (c.k === 'flee') { if (await flee()) return; m.ct = 0; B.cur = null; continue; }
-        await doCmd(m, c); if (!B) return; m.ct = COST[c.k] || 0; B.cur = null; B.idle = null; if (B.sum > 0 && live().length) await sumStrike(); if (!B) return; hud(); atbUI(); await wait(260);
-      } else {
-        if (b.dead) continue; B.curF = b; atbUI(); await foeAct(b); if (!B) return; b.ct = 0; B.turn++; atbUI(); await wait(240);
+      B.round++; B.pend = up(); B.done = new Set(); B.fq = [];
+      for (const ph of B.round === 1 && B.foeFirst ? ['f', 'p'] : ['p', 'f']) {
+        B.phase = ph;
+        if (ph === 'p') {
+          while (B.pend.length) {
+            if (!live().length) return win(); if (!up().length) return lose();
+            B.pend = B.pend.filter(p => p.hp > 0); if (!B.pend.length) break;
+            let m = B.pend[0]; B.cur = m; B.guard[m.id] = 0; if (B.taunt === m) B.taunt = null; hud(); atbUI();
+            const setIdle = x => { const a = partyA(x); if (a) { const bs = a.base; B.shot = null; B.idle = { x: bs.x, y: bs.y, z: bs.z }; } }; setIdle(m);
+            let c = B.auto ? autoCmd(m) : (B.para && B.para !== 'M' && m !== B.party[0]) ? paraCmd(m) : await ask(m); if (!B) return;
+            while (c && c.k === 'swap') { m = c.to; B.cur = m; B.guard[m.id] = 0; hud(); atbUI(); setIdle(m); c = await ask(m); if (!B) return; }
+            showTI(null); B.shot = null;
+            B.pend = B.pend.filter(p => p !== m); B.done.add(m);
+            if (c.k === 'attr') for (const p of up().slice(0, 3)) { B.pend = B.pend.filter(x => x !== p); B.done.add(p); }
+            if (c.k === 'flee') { if (await flee()) return; B.cur = null; hud(); continue; }
+            await doCmd(m, c); if (!B) return; B.cur = null; B.idle = null; hud(); atbUI(); await wait(260);
+          }
+          if (B.sum > 0 && live().length) { await sumStrike(); if (!B) return; }
+        } else {
+          B.fq = live().sort((a, b) => (a.late || 0) - (b.late || 0) || b.sp - a.sp); B.cur = null; atbUI();
+          while (B.fq.length) {
+            if (!live().length) return win(); if (!up().length) return lose();
+            const f = B.fq.shift(); if (f.dead) continue; f.late = 0; B.curF = f; atbUI(); await foeAct(f); if (!B) return; B.turn++; B.curF = null; atbUI(); await wait(240);
+          }
+        }
+        if (!live().length) return win(); if (!up().length) return lose();
       }
     }
   }
   async function doCmd(m, c) {
     const S = C.S(), a = partyA(m), FX = C.FXH(), MF = C.MFX();
     if (c.k === 'atk') { const f = c.f && !c.f.dead ? c.f : live()[0]; if (!f) return; B.curF = f; hud(); shotOver(a, f); await wait(380);
-      const crit = Math.random() < .12 + (m.crit ? m.crit() : 0), dmg = m.atk() * (crit ? 1.7 : 1);
+      const crit = Math.random() < .14 + (m.crit ? m.crit() : 0), dmg = m.atk() * rnd(.9, 1.1) * (crit ? 1.8 : 1);
       if (B.sea) { lunge(a, f.base.x, f.base.z, 2.2, .55); sfx('slash'); await wait(220); MF.bolt(a.base.x, a.base.y + 1.2, a.base.z, f.base.x, f.base.y + f.h * .5, f.base.z, m.col || 0x8ad0ff, .25); await wait(160); }
       else if (m.melee) { lunge(a, f.base.x, f.base.z, 99, .85, 1); a.atk = 0; sfx('dodge'); await wait(300); sfx(crit ? 'crit' : 'slash'); if (a.kk) C.KK.once(a.kk, 'Throw'); }
       else { if (a.kk) C.KK.once(a.kk, 'Throw'); lunge(a, f.base.x, f.base.z, .7, .4); await wait(200); MF.flare(a.base.x, a.base.y + 1.3, a.base.z, m.col || 0xffffff, 1.4, .3); MF.bolt(a.base.x, a.base.y + 1.3, a.base.z, f.base.x, f.base.y + f.h * .5, f.base.z, m.col || 0xffffff, .22); await wait(180); }
       hit(f, dmg, m, null, crit); if (crit) dnum(top(f).x, top(f).y + .5, top(f).z, 'KRITISCH!', 'w'); await wait(520); B.curF = null; return; }
     if (c.k === 'spell') { const sp = c.sp; S.mp = Math.max(0, S.mp - sp.mp); shotFace(a); if (a.kk) C.KK.once(a.kk, 'Interact'); sfx('skill1');
       const col = sp.heal ? 0x7dffb2 : EL[sp.id][1]; MF.circle(a.base.x, a.base.y, a.base.z, col, 2.2, 1); MF.swirl(a.base.x, a.base.y, a.base.z, col, 1.2, 2.4, .9); hud(); await wait(750);
-      if (sp.heal) { shot(P3(a.base, 4.5, 3, 2.6), { x: a.base.x, y: a.base.y + 1, z: a.base.z }, 1); for (const p of up()) { const h = Math.round(p.max * .35); p.hp = Math.min(p.max, p.hp + h); const pa = partyA(p); MF.heal(pa.base.x, pa.base.y, pa.base.z); dnum(pa.base.x, pa.base.y + 2.2, pa.base.z, '+' + h, 'h'); } sfx('heal'); hud(); await wait(700); return; }
+      if (sp.heal) { shot(P3(a.base, 4.5, 3, 2.6), { x: a.base.x, y: a.base.y + 1, z: a.base.z }, 1); for (const p of (sp.one ? [c.ally && c.ally.hp > 0 ? c.ally : up().sort((x, y) => x.hp / x.max - y.hp / y.max)[0]] : up())) { const h = Math.round(p.max * (sp.one ? .6 : .35)); p.hp = Math.min(p.max, p.hp + h); const pa = partyA(p); MF.heal(pa.base.x, pa.base.y, pa.base.z); dnum(pa.base.x, pa.base.y + 2.2, pa.base.z, '+' + h, 'h'); } sfx('heal'); hud(); await wait(700); return; }
       const T0 = sp.all ? live() : [c.f && !c.f.dead ? c.f : live()[0]].filter(Boolean), cc = center(T0); shot(P3(a.base, -4, 3.5, 3.4), { x: cc.x, y: cc.y + 1, z: cc.z }, 1.2); await wait(300);
       for (const f of T0) { const p = top(f);
         if (sp.id === 'fire') { MF.flare(p.x, p.y - .3, p.z, 0xff7a3a, 3.4, .5); MF.ring(f.base.x, f.base.y + .2, f.base.z, 0xff9a40, 2.2, .6, 1.5); emit(p.x, p.y - .4, p.z, 0xff8a3a, 24, 5, .7, .4, 2); }
@@ -321,7 +326,7 @@ body.rbat #dName{font-size:17px}}`;
       else { const f = live().sort((x, y) => x.hp - y.hp)[0]; if (f) { shotSide(f, a); if (!B.sea && m.melee) { lunge(a, f.base.x, f.base.z, 99, 1, 1); await wait(380); } const p = top(f);
         for (let i = 0; i < (ty === 'multi' ? 3 : 1); i++) { MF.flare(p.x, p.y - .3, p.z, el ? EL[el][1] : 0xffffff, 3.6, .45); FX.pillar(f.base.x, f.base.y, f.base.z, el ? EL[el][1] : 0xc8d8ff, 1.2, 6, .7); if (!f.dead) hit(f, m.atk() * (ty === 'multi' ? 1.1 : 2.4), null, el, true); C.hitStop(.08); B.shk = .45; await wait(260); } } }
       await wait(800); return; }
-    if (c.k === 'pot') { S.potions--; const p = up().sort((x, y) => x.hp / x.max - y.hp / y.max)[0], pa = partyA(p), h = Math.round(p.max * .5); if (a.kk) C.KK.once(a.kk, 'Use_Item'); p.hp = Math.min(p.max, p.hp + h); sfx('heal'); MF.heal(pa.base.x, pa.base.y, pa.base.z); dnum(pa.base.x, pa.base.y + 2.2, pa.base.z, '+' + h, 'h'); hud(); await wait(700); return; }
+    if (c.k === 'pot') { S.potions--; const p = c.ally && c.ally.hp > 0 ? c.ally : up().sort((x, y) => x.hp / x.max - y.hp / y.max)[0], pa = partyA(p), h = Math.round(p.max * .5); if (a.kk) C.KK.once(a.kk, 'Use_Item'); p.hp = Math.min(p.max, p.hp + h); sfx('heal'); MF.heal(pa.base.x, pa.base.y, pa.base.z); dnum(pa.base.x, pa.base.y + 2.2, pa.base.z, '+' + h, 'h'); hud(); await wait(700); return; }
     if (c.k === 'focus') { S.mp = Math.max(0, S.mp - BEI.focus.mp); const T0 = (c.fs || []).filter(f => !f.dead); if (!T0.length) return; banner('🎯 Zielfeuer', T0.length + ' Ziele'); sfx('skill1'); shotOver(a, T0[0]); hud(); await wait(500);
       for (const f of T0) { MF.circle(f.base.x, f.base.y, f.base.z, 0xff6a6a, 1.4, .8); await wait(160); }
       for (let r = 0; r < 2; r++) for (const f of T0) { if (f.dead) continue; MF.bolt(a.base.x, a.base.y + 1.3, a.base.z, f.base.x, f.base.y + f.h * .5, f.base.z, 0xffd070, .2); sfx('slash'); hit(f, m.atk() * .85, m, null, false); await wait(150); }
@@ -350,7 +355,7 @@ body.rbat #dName{font-size:17px}}`;
     if (tag === 'break') { dnum(p.x, p.y + 1, p.z, 'BRUCH!', 'b'); sfx('crit'); C.hitStop(.14); flashScr(); }
     C.FXH().impact(p.x, p.y - .5, p.z, el ? EL[el][1] : 0xfff0c0, big || !!tag); emit(p.x, p.y - .5, p.z, el ? EL[el][1] : 0xffffff, 10, 3, .4, .3, 0);
     if (f.kk) C.KK.once(f.kk, 'Hit_A'); sfx('hit'); B.shk = Math.max(B.shk, big ? .3 : .16);
-    { const near = f.ct >= 60; f.ct = tag === 'break' ? -35 : Math.max(-25, f.ct - (tag === 'weak' ? 30 : near ? 22 : 10)); if (near || tag) dnum(p.x, p.y + 1.3, p.z, tag === 'break' ? 'UNTERBROCHEN!' : '⏳ verzögert', tag === 'break' ? 'b' : 'x'); atbUI(); }
+    if (tag) { f.late = 1; dnum(p.x, p.y + 1.3, p.z, tag === 'break' ? 'UNTERBROCHEN!' : '⏳ später', tag === 'break' ? 'b' : 'x'); atbUI(); }
     if (m) { m.ip = Math.min(100, m.ip + (tag ? 14 : 8)); if (C.gAdd) C.gAdd('tg', tag ? 9 : 5); }
     if (f.hp <= 0) { f.dead = 1; f.dt = 0; sfx('kill'); C.FXH().soul(p.x, p.y - .4, p.z, f.d.col || 0xc8f4ff); C.MFX().burstShards(p.x, p.y - .4, p.z, f.d.col || 0xc8f4ff, 1); if (f.kk) C.KK.ko(f.kk, true); }
     hud();
@@ -365,7 +370,7 @@ body.rbat #dName{font-size:17px}}`;
     await wait(560); B && (B.curF = null);
   }
   function hurt(m, raw) {
-    if (!B || m.hp <= 0) return; const g = B.guard[m.id], a = partyA(m), d = Math.round(raw * (g ? .45 : 1) * (1 - (m.def ? m.def() : 0)) * rnd(.85, 1.15)); m.hp = Math.max(0, m.hp - d); m.ip = Math.min(100, m.ip + 12);
+    if (!B || m.hp <= 0) return; const g = B.guard[m.id], a = partyA(m), d = m.id === 'zotik' ? Math.max(1, Math.round(C.dmgIn(raw) * (g ? .5 : 1))) : Math.round(raw * (g ? .5 : 1) * (1 - (m.def ? m.def() : 0))); m.hp = Math.max(0, m.hp - d); m.ip = Math.min(100, m.ip + 12);
     sfx('hurt'); dnum(a.base.x, a.base.y + 2.1, a.base.z, (B.sea ? m.n + ' ' : '') + '−' + d, 'p'); C.FXH().impact(a.base.x, a.base.y + 1, a.base.z, 0xff6a5a, false); B.shk = Math.max(B.shk, .28);
     if (g) C.MFX().ring(a.base.x, a.base.y + .8, a.base.z, 0x8ad0ff, 1.4, .4, 0); if (a.kk) C.KK.once(a.kk, 'Hit_A'); if (!a.ship) lunge(a, a.base.x - B.fx * 3, a.base.z - B.fz * 3, .5, .3);
     if (m.hp <= 0) { toast('💫 ' + m.n + ' ist K.O.'); if (m.a) { m.a.ko = true; m.a.kot = 0; } if (a.kk) C.KK.ko(a.kk, true); a.down = 1; }
@@ -375,20 +380,20 @@ body.rbat #dName{font-size:17px}}`;
   /* ---------- Ende ---------- */
   async function win() {
     if (!B || B.over) return; B.over = 1; B.cur = B.curF = null; stopMusic(); fanfare(); const S = C.S();
-    const xp = B.foes.reduce((s, f) => s + Math.round((6 + 4 * f.lv) * (f.boss ? 4 : 1.3)), 0), sh = B.foes.reduce((s, f) => s + Math.round(2 + f.lv * .5) * (f.boss ? 4 : 1), 0); S.shards += sh;
+    const xp = B.foes.reduce((s, f) => s + f.xp, 0), sh = B.foes.reduce((s, f) => s + Math.round(2 + f.lv * .5) * (f.boss ? 4 : 1), 0); S.shards += sh;
     const potion = Math.random() < .25 ? (S.potions = (S.potions || 0) + 1, 1) : 0, gear = Math.random() < (B.boss ? 1 : .15) ? C.cgDrop(reg(B.k) + (B.boss ? 2 : 0)) : '';
     for (const m of up()) { const a = partyA(m); if (a) { a.hop = 1.8; if (a.kk) C.KK.once(a.kk, 'Interact'); } }
     B.vic = 1; showTI(null); hud(); const snap = () => B.party.map(m => Object.assign({ m }, C.cinfo ? C.cinfo(m.id) : { lv: 0, xp: 0, need: 1 })), b0 = snap(); C.gainXp(xp); const b1 = snap(), r = q('.rb-r');
     r.className = 'rb-r res'; r.innerHTML = `<div class="rs"><h3>Beute</h3><div class="rr"><span>Erfahrung</span><b>${xp} <em>EP</em></b></div><div class="rr"><span>Splitter</span><b>${sh} <em>💎</em></b></div>${potion ? '<div class="rr"><span>Fund</span><b>🧪 Trank</b></div>' : ''}${gear ? '<div class="rr"><span>Ausrüstung</span><b>🎁 ' + gear + '</b></div>' : ''}</div>
       <div class="rs"><h3>Danach</h3><div class="rc">${b1.map((x, i) => `<div class="rm" style="--c:${hx(x.m.col || 0x8ad0ff)}"><div class="pt">${faceOf(x.m)}</div><div class="nm">${x.m.n}</div><div class="lv">Stufe <b>${x.lv}</b></div>${x.lv > b0[i].lv ? '<div class="up">STUFE AUF!</div>' : ''}<div class="ln"><span>EP</span><b>${x.xp}</b></div><div class="ln"><span>Nächste Stufe</span><b>${Math.max(0, x.need - x.xp)}</b></div></div>`).join('')}</div></div><small>Tippen oder Taste zum Fortfahren</small>`;
-    r.classList.add('on'); await new Promise(res => { let d = 0; const done = () => { if (d) return; d = 1; removeEventListener('keydown', done); r.removeEventListener('pointerdown', done); res(); }; setTimeout(done, 8000); setTimeout(() => { addEventListener('keydown', done); r.addEventListener('pointerdown', done); }, 900); });
-    const fin = B && B.ref; end(); if (fin) fin.gone = 1;
+    r.insertAdjacentHTML('afterbegin', '<h2 class="vh">SIEG!</h2>'); r.classList.add('on'); await new Promise(res => { let d = 0; const done = () => { if (d) return; d = 1; removeEventListener('keydown', done); r.removeEventListener('pointerdown', done); res(); }; setTimeout(done, 8000); setTimeout(() => { addEventListener('keydown', done); r.addEventListener('pointerdown', done); }, 900); });
+    const fin = B && B.ref; await leave(); if (fin) fin.gone = 1;
   }
   async function flee() {
-    if (Math.random() < .75) { toast(B.sea ? '🚤 Entkommen!' : '🏃 Entkommen!'); for (const m of up()) { const a = partyA(m); if (a && !a.ship) lunge(a, a.base.x - B.fx * 9, a.base.z - B.fz * 9, 5, .9); } sfx('dodge'); await wait(650); if (B && B.ref && B.ref.x !== undefined) { B.ref.x -= B.fx * -6; B.ref.z -= B.fz * -6; } end(); return true; }
+    if (Math.random() < .75) { toast(B.sea ? '🚤 Entkommen!' : '🏃 Entkommen!'); for (const m of up()) { const a = partyA(m); if (a && !a.ship) lunge(a, a.base.x - B.fx * 9, a.base.z - B.fz * 9, 5, .9); } sfx('dodge'); await wait(650); if (B && B.ref && B.ref.x !== undefined) { B.ref.x += B.fx * 6; B.ref.z += B.fz * 6; } if (B.ref && B.ref.fled) B.ref.fled(); await leave(); return true; }
     toast('Der Weg ist abgeschnitten!'); await wait(600); return false;
   }
-  function lose() { if (!B || B.over) return; B.over = 1; stopMusic(); banner(B.sea ? 'Die Nautilux treibt ab' : 'Die Gruppe zieht sich zurück', 'Zurück in Sicherheit'); const S = C.S(); S.hp = Math.round(C.maxHp() * .3); for (const m of B.party) if (m.a) { m.a.ko = false; m.a.hp = Math.round(m.max * .3); if (m.a.P.kk) C.KK.ko(m.a.P.kk, false); } end(); C.lose(); }
+  function lose() { if (!B || B.over) return; B.over = 1; B.cur = B.curF = null; stopMusic(); banner(B.sea ? 'Die Nautilux treibt ab' : 'Die Gruppe zieht sich zurück', 'Zurück in Sicherheit'); const S = C.S(); S.hp = Math.round(C.maxHp() * .3); for (const m of B.party) if (m.a) { m.a.ko = false; m.a.hp = Math.round(m.max * .3); if (m.a.P.kk) C.KK.ko(m.a.P.kk, false); } leave().then(() => C.lose()); }
   function end() {
     if (!B) return; document.body.classList.remove('rbat'); if (B.ref && !B.ref.gone) { if (B.ref.show) B.ref.show(); if (B.ref.P && B.ref.P.root) B.ref.P.root.visible = true; } stopMusic(); if (B.sumM) scene.remove(B.sumM); if (B.tl) scene.remove(B.tl); q('.rb-mf').innerHTML = q('.rb-mp').innerHTML = ''; q('.rb-ti').hidden = true; q('.rb-r').className = 'rb-r'; for (const f of B.foes) scene.remove(f.root);
     for (const m of B.party) { const a = m.act; if (!a) continue; a.root.position.set(a.base.x, a.base.y, a.base.z); a.root.rotation.set(0, a.face, 0); if (m.a) { m.a.x = a.base.x; m.a.z = a.base.z; m.a.face = a.face; } if (a.kk && !(m.a && m.a.ko)) C.KK.ko(a.kk, false); }
@@ -411,7 +416,18 @@ body.rbat #dName{font-size:17px}}`;
     const o = { x: B.ox, y: gy(B.ox, B.oz), z: B.oz }; let p, l;
     if (B.vic) { const a = t * .5; p = P3(o, 4.8 + Math.cos(a) * .8, Math.sin(a) * 4, 1.9); l = { x: o.x, y: o.y + 1.1, z: o.z }; }
     else if (B.shot) { B.shot.t += dt; p = B.shot.p; l = B.shot.l; if (B.shot.t > B.shot.d + .4) B.shot = null; }
-    else { const fc = center(live().length ? live() : B.foes), s = Math.sin(t * .25) * .8; p = P3(o, B.sea ? -8 : -7.6, 3.4 + s, B.sea ? 5.6 : 5.8); l = { x: (o.x + fc.x) / 2, y: o.y - (B.sea ? .6 : 1.4), z: (o.z + fc.z) / 2 }; }
+    else {
+      /* klassische JRPG-Kampfkamera: Seitenansicht schräg über der Schulter der Gruppe, Abstand passt sich Seitenverhältnis und Gruppengröße an */
+      const FL = live().length ? live() : B.foes, acts = [...B.party.map(partyA).filter((x, i, ar) => x && ar.indexOf(x) === i), ...FL], c = center(acts); let rad = 3.2;
+      for (const a of acts) rad = Math.max(rad, Math.hypot(a.base.x - c.x, a.base.z - c.z) + 2.4);
+      const vf = camera.fov * Math.PI / 180, hf = 2 * Math.atan(Math.tan(vf / 2) * camera.aspect), dist = Math.max(8.5, Math.min(36, rad / Math.tan(Math.min(vf, hf) / 2) * .8));
+      const sw = Math.sin(t * .22) * .22 + .15, ca = Math.cos(sw), sa = Math.sin(sw);
+      let dx = B.sx * .86 - B.fx * .5, dz = B.sz * .86 - B.fz * .5; const dl = Math.hypot(dx, dz) || 1; dx /= dl; dz /= dl; const rx = dx * ca - dz * sa, rz = dx * sa + dz * ca;
+      const cb = B.cur && partyA(B.cur) ? partyA(B.cur).base : null, bx = cb ? (cb.x - c.x) * .22 : 0, bz = cb ? (cb.z - c.z) * .22 : 0, cy = c.y;
+      p = { x: c.x + bx + rx * dist, y: cy + dist * .5 + 2, z: c.z + bz + rz * dist };
+      const port = camera.aspect < 1, ex = port ? 0 : dist * .09, fwx = -rx, fwz = -rz;   /* Querformat: Szene etwas nach links (Menü rechts); Hochformat: nach oben (Karten unten) */
+      l = { x: c.x + bx - fwz * ex, y: cy + 1.1 - (port ? dist * .24 : 0), z: c.z + bz + fwx * ex };
+    }
     const k = 1 - Math.exp(-(B.shot ? 5.5 : 3) * dt); camera.position.x += (p.x - camera.position.x) * k; camera.position.y += (p.y - camera.position.y) * k; camera.position.z += (p.z - camera.position.z) * k;
     B.cl = B.cl || { x: l.x, y: l.y, z: l.z }; B.cl.x += (l.x - B.cl.x) * k; B.cl.y += (l.y - B.cl.y) * k; B.cl.z += (l.z - B.cl.z) * k;
     if (B.shk > 0) { B.shk -= dt; camera.position.x += rnd(-.18, .18); camera.position.y += rnd(-.12, .12); }
