@@ -9,10 +9,13 @@ const duckAhead = s => {
   for (const o of s.c.o) if (o.k === 'log' && Math.abs(o.py - o.len - s.y - 1.36) < 0.6 && Math.abs(o.px - s.x) < o.len * Math.sin(o.amp) + LOG_HW + 0.8) return true;
   return false;
 };
-// Fortsetzung: rennen, am Plattformrand springen (an den Stangen greift der Läufer von selbst)
-export const policy = s => {
+/** Greifen wie ein Mensch: kurz auf die Aktionstaste tippen, sobald etwas in Griffweite ist */
+export const tapGrab = s => (s.reachable() && !s.prevGr ? 1 : 0);
+// Fortsetzung: rennen, am Plattformrand springen, in Griffweite greifen
+export const policy = s => Object.assign(policy0(s), { g: tapGrab(s) });
+const policy0 = s => {
   if (s.ladder) return { j: !s.prevJ && s.ladder.cool <= LADDER_HOP - LADDER_EARLY - 0.04 ? 1 : 0 };   // Lachsleiter: im Takt drücken
-  if (s.hang) { const o = s.c.o[s.hang.bar]; return { r: 1, j: o.ledge && s.x >= o.x2 - 0.1 ? 1 : 0 }; }   // Griffleiste: am Ende hechten
+  if (s.hang) { const o = s.c.o[s.hang.bar]; return { r: 1, j: o.ledge ? (s.x >= o.x2 - 0.1 ? 1 : 0) : (s.x >= o.x2 + 0.05 ? 1 : 0) }; }   // Griffleiste: am Ende hechten; Stangen: am Ende abspringen
   if (s.rope) return { r: 1, j: s.rope.a > 0.2 && s.rope.da > 0 ? 1 : 0 };   // am Seil: loslassen, wenn es nach vorn schwingt
   if (s.onGround && s.ground && s.ground.x1 - s.x >= 0.6 && duckAhead(s)) return { r: 1, d: 1 };
   if (s.onGround && s.ground) { const g = s.ground; if (g.x1 - s.x >= 0.45 || g.wall) return { r: 1, j: 0 };
@@ -26,7 +29,7 @@ export const policy = s => {
 };
 function score(sim, c0, H) {
   const s = sim.clone(); const n0 = Math.round((c0.hold || 0.12) / DT); let steps = 0;
-  for (; steps < n0 && !s.dead && !s.finished; steps++) { const inp = c0.pol ? policy(s) : { l: c0.l, r: c0.r, j: c0.j && steps * DT < (c0.hold || 0), d: c0.d }; s.step(inp); }
+  for (; steps < n0 && !s.dead && !s.finished; steps++) { const inp = c0.pol ? policy(s) : { l: c0.l, r: c0.r, j: c0.j && steps * DT < (c0.hold || 0), d: c0.d }; inp.g = tapGrab(s); s.step(inp); }
   const HN = Math.round(H / DT); for (let k = 0; k < HN && !s.dead && !s.finished; k++, steps++) { const p = policy(s); s.step(p); }
   if (s.finished) return 100000 - s.t; if (s.dead) return -1000 + steps * 0.5 + s.dist * 0.01;
   return s.x + (s.onGround || s.hang ? 0.5 : 0) + s.y * 0.05 - s.hits * 3;
@@ -43,7 +46,7 @@ export function runBot(course, { maxT = 150, latency = 0, horizon = 2.0, record 
   while (!sim.dead && !sim.finished && sim.t < maxT && !(sim.x >= untilX && sim.onGround)) {
     if (sim.t >= decideAt) { const c = plan(sim, { horizon }); cur = c; holdUntil = sim.t + (c.hold || 0.1); decideAt = sim.t + 0.05; queue.push({ at: sim.t + latency, c: Object.assign({}, c, { until: sim.t + (c.hold || 0.1) + latency }) }); }
     let inp = {}; for (let i = queue.length - 1; i >= 0; i--) if (queue[i].at <= sim.t) { inp = queue[i].c; while (queue.length > 12) queue.shift(); break; }
-    sim.step(inp.pol ? policy(sim) : { l: inp.l, r: inp.r, j: inp.j && sim.t < (inp.until || 0), d: inp.d });
+    sim.step(inp.pol ? policy(sim) : { l: inp.l, r: inp.r, j: inp.j && sim.t < (inp.until || 0), d: inp.d, g: tapGrab(sim) });
     if (record && frames.length < 20000) frames.push(Math.round(sim.x * 100) / 100, Math.round(sim.y * 100) / 100);
   }
   return { finished: sim.finished, time: sim.t, dist: sim.dist, dead: sim.dead, hits: sim.hits, frames, x: sim.x, passed: sim.finished || sim.x >= untilX };

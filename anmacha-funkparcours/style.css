@@ -150,3 +150,14 @@ kbd.gp{min-width:24px;height:24px;padding:0 6px;border-radius:12px;line-height:2
 .panel h2,.card h2,.cm-panel h3,#big,.clock,.cm-it,.btn{font-family:"Titan Cond","Titan Text",Inter,system-ui,sans-serif;letter-spacing:.01em}
 #big{font-family:"Titan Display",Inter,system-ui,sans-serif;font-style:italic;color:#fff;text-shadow:0 0 30px rgba(255,122,31,.9),0 6px 0 #a33d06}
 .cm-tag{color:var(--c)}.top .rinfo small{color:var(--c)}
+/* Greifen (Aktionstaste): leuchtet, sobald etwas in Griffweite ist */
+.acts{grid-template-columns:auto auto auto;grid-template-areas:"m s ." "d g j"}.act.grab{grid-area:g;background:linear-gradient(135deg,#25c26b,#11804a);border-color:rgba(170,255,205,.8);color:#fff}
+.act.grab.ready{animation:fpGrab .45s ease-in-out infinite alternate;box-shadow:0 0 0 4px rgba(120,255,180,.55),0 0 26px rgba(60,255,150,.85)}
+@keyframes fpGrab{from{transform:scale(1)}to{transform:scale(1.1)}}
+.ccol{display:flex;flex-direction:column;align-items:center;gap:10px}.cpad .act.grab{--s:min(28vw,28vh,124px)}
+kbd.gp.x{background:#2a6bd8;border-color:#1b4a99}
+/* Rotes Alarmlicht beim Sturz ins Wasser */
+#redfx{position:fixed;inset:0;pointer-events:none;z-index:30;opacity:0;background:radial-gradient(ellipse at center,rgba(255,20,20,.16) 0%,rgba(255,0,0,.42) 58%,rgba(170,0,0,.78) 100%)}
+#redfx.on{animation:fpRed 2.2s ease-out}
+@keyframes fpRed{0%,20%,40%,60%{opacity:1}10%,30%,50%{opacity:.35}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){#redfx.on{animation:fpRed 2.2s steps(1)}.act.grab.ready{animation:none}}

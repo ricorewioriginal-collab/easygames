@@ -3,14 +3,14 @@
    (easyclash/js/roster.js, window.EC_ROSTER): Menschen als realistische Figur, Tiere/Wesen im Look ihres Spiels.
    Schlüssel einer Figur: Zahl = eigener Läufer (Index in CHARS), Text = id aus dem Roster. */
 export const CHARS = [
-  { n: 'Kira', body: 'w', skin: '#f1c7a1', hair: { style: 'pony', color: '#2a1a12' }, topStyle: 'tank', build: 0.97 },
-  { n: 'Tobi', body: 'm', skin: '#e8b88a', hair: { style: 'short', color: '#6b3e1e' }, topStyle: 'tee', build: 1.0 },
-  { n: 'Mo', body: 'm', skin: '#8d5a3b', hair: { style: 'buzz', color: '#141010' }, topStyle: 'tank', build: 1.04, beard: '#141010' },
-  { n: 'Lena', body: 'w', skin: '#ffd9b0', hair: { style: 'bun', color: '#d9a441' }, topStyle: 'tank', build: 0.96 },
-  { n: 'Jonas', body: 'm', skin: '#ffdcc0', hair: { style: 'short', color: '#3a2a1a' }, topStyle: 'tee', build: 1.0, hat: 'cap' },
-  { n: 'Aylin', body: 'w', skin: '#c68a5e', hair: { style: 'long', color: '#1a0f0a' }, topStyle: 'tee', build: 0.96 },
-  { n: 'Ole', body: 'm', skin: '#f3c9a0', hair: { style: 'mohawk', color: '#ff2d95' }, topStyle: 'tank', build: 1.0 },
-  { n: 'Bruno', body: 'm', skin: '#b07850', hair: { style: 'bald' }, topStyle: 'tank', build: 1.1, beard: '#2a1a12' }
+  { n: 'Kira', body: 'w', skin: '#f1c7a1', hair: { style: 'pony', color: '#2a1a12' }, topStyle: 'tank', build: 0.97, band: 1, bottom: '#14161f', bottomStyle: 'pants' },
+  { n: 'Tobi', body: 'm', skin: '#e8b88a', hair: { style: 'short', color: '#6b3e1e' }, topStyle: 'long', build: 1.0, bottom: '#1b2a4a' },
+  { n: 'Mo', body: 'm', skin: '#8d5a3b', hair: { style: 'buzz', color: '#141010' }, topStyle: 'tank', build: 1.06, beard: '#141010', band: 1, bottom: '#0f1014' },
+  { n: 'Lena', body: 'w', skin: '#ffd9b0', hair: { style: 'bun', color: '#d9a441' }, topStyle: 'tank', build: 0.96, bottom: '#2a1f3d', bottomStyle: 'pants' },
+  { n: 'Jonas', body: 'm', skin: '#ffdcc0', hair: { style: 'short', color: '#3a2a1a' }, topStyle: 'tee', build: 1.0, hat: 'cap', bottom: '#20242e' },
+  { n: 'Aylin', body: 'w', skin: '#c68a5e', hair: { style: 'long', color: '#1a0f0a' }, topStyle: 'long', build: 0.96, band: 1, bottom: '#101828', bottomStyle: 'pants' },
+  { n: 'Ole', body: 'm', skin: '#f3c9a0', hair: { style: 'mohawk', color: '#ff2d95' }, topStyle: 'tank', build: 1.0, bottom: '#111111' },
+  { n: 'Bruno', body: 'm', skin: '#b07850', hair: { style: 'bald' }, topStyle: 'tank', build: 1.12, beard: '#2a1a12', band: 1, bottom: '#232323' }
 ];
 const roster = () => (typeof window !== 'undefined' && window.EC_ROSTER) || [];
 const own = k => typeof k === 'number' || /^\d+$/.test(String(k));
@@ -24,7 +24,7 @@ export function charLook(k, color, fromRoster) {
   const hex = c => '#' + ('00000' + (c >>> 0).toString(16)).slice(-6), col = typeof color === 'number' ? hex(color) : color;
   if (own(k)) {
     const c = CHARS[+k] || CHARS[0];
-    return { look: { body: c.body, skin: c.skin, hair: c.hair, top: col, topStyle: c.topStyle, bottom: '#161d3a', bottomStyle: 'shorts', shoes: '#f5f5ff', beard: c.beard, bulk: c.build, hat: c.hat ? { type: c.hat, color: col } : null } };
+    return { look: { body: c.body, skin: c.skin, hair: c.hair, top: col, topStyle: c.topStyle, bottom: c.bottom || '#161d3a', bottomStyle: c.bottomStyle || 'shorts', shoes: '#f5f5ff', beard: c.beard, bulk: c.build, hat: c.hat ? { type: c.hat, color: col } : c.band ? { type: 'band', color: col } : null } };
   }
   const e = roster().find(c => c.id === k); if (!e) return charLook(0, color, fromRoster);
   const look = fromRoster && fromRoster(e.look); return look ? { look, name: e.n } : { toon: e, name: e.n };

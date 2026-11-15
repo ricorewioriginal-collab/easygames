@@ -1,6 +1,7 @@
 /* Titanparcours – Physik und Parcours als reine Logik (ohne DOM, ohne Zufall): läuft im Spiel UND im Test (Bot).
    Koordinaten: x nach rechts, y nach oben (Meter). Wasser bei y = 0. Spielerposition = Mitte der Füße.
-   Eingabe pro Schritt: { l, r, j, d } = links, rechts, Sprung, Ducken (d: im Lauf rutschen, im Stand ducken/kriechen). */
+   Eingabe pro Schritt: { l, r, j, d, g } = links, rechts, Sprung, Ducken (d: im Lauf rutschen, im Stand ducken/kriechen), Greifen (g: Aktionstaste).
+   Greifen passiert nur auf Tastendruck: in der Luft in Griffweite von Stange, Leiste, Seil, Ring oder Lachsleiter drücken (kurzer Puffer GRAB_BUF). */
 export const G = 26, RUN = 5.6, ACC = 40, AIR_ACC = 22, FRICTION = 34, JUMP_V = 8.6, COYOTE = 0.09, BUFFER = 0.12, PW = 0.5, PH = 1.7, HANG_SPEED = 3.2, WALLRUN_MIN = 5.0, WALLRUN_T = 0.62;
 /** Ducken: Körperhöhe, Kriechtempo, ab welchem Tempo man rutscht und wie stark die Rutsche bremst */
 export const PH_DUCK = 1.0, CRAWL = 2.4, SLIDE_MIN = 3.2, SLIDE_DECEL = 4.5;
@@ -9,6 +10,8 @@ export const LOG_HW = 0.45, LOG_HH = 0.26;
 /** Lachsleiter: zu früh gedrückt (Sprossenwechsel noch nicht fertig) = eine Sprosse abrutschen */
 export const LADDER_HOP = 0.36, LADDER_EARLY = 0.2;
 export const DT = 1 / 60;
+/** Greifen: so lange zählt ein Druck auf die Aktionstaste noch (Sekunden), wenn der Griff erst kurz danach in Reichweite kommt */
+export const GRAB_BUF = 0.2;
 
 // ---------------------------------------------------------------- Parcours bauen
 class Builder {
@@ -91,7 +94,7 @@ export const rungY = (o, k) => o.y0 + k * o.gap;
 // ---------------------------------------------------------------- Simulation
 export class Sim {
   constructor(course) {
-    this.c = course; this.t = 0; this.x = 2; this.y = course.o[0].y; this.px = this.x; this.py = this.y; this.vx = 0; this.vy = 0; this.ground = null; this.onGround = true; this.coyote = COYOTE; this.buf = 0; this.prevJ = false; this.prevG = false;
+    this.c = course; this.t = 0; this.x = 2; this.y = course.o[0].y; this.px = this.x; this.py = this.y; this.vx = 0; this.vy = 0; this.ground = null; this.onGround = true; this.coyote = COYOTE; this.buf = 0; this.prevJ = false; this.prevGr = false; this.gbuf = 0; this.grabs = 0;
     this.hang = null; this.rope = null; this.ladder = null; this.duck = false; this.slide = false; this.boost = false; this.wallTries = 0; this.wallHit = false; this.stun = 0; this.wall = null; this.dead = null; this.finished = false; this.face = 1; this.hits = 0; this.dist = 0; this.grabCool = 0;
     this.sinks = course.o.map(o => (o.k === 'sink' ? { touch: -1, y: 0, vy: 0, gone: false } : null)); this.solids = [];
     this.collect();
@@ -136,6 +139,11 @@ export class Sim {
     }
     return null;
   }
+  /** Was ließe sich jetzt greifen? 'bar' | 'ledge' | 'rope' | 'ring' | 'ladder' oder '' (nur in der Luft und wenn nicht schon festgehalten) */
+  reachable() {
+    if (this.onGround || this.hang || this.rope || this.ladder || this.wall || this.dead || this.finished || this.grabCool > 0 || this.stun > 0) return '';
+    const b = this.nearBar(); if (b) return b.o.ledge ? 'ledge' : 'bar'; const rp = this.nearRope(); if (rp) return this.c.o[rp.i].ring ? 'ring' : 'rope'; return this.nearLadder() >= 0 ? 'ladder' : '';
+  }
   /** Lachsleiter in Griffweite? (unterste Sprosse über dem Kopf) */
   nearLadder() {
     for (let i = 0; i < this.c.o.length; i++) { const o = this.c.o[i]; if (o.k !== 'ladder') continue; const head = this.y + PH; if (Math.abs(this.x - o.x) < 0.8 && head >= o.y0 - 0.6 && head <= o.y0 + 0.45) return i; }
@@ -151,7 +159,8 @@ export class Sim {
   logHit(o) { const b = swingBall(o, this.t); return Math.abs(b.x - this.x) < LOG_HW + PW / 2 && b.y + LOG_HH > this.y && b.y - LOG_HH < this.y + this.h; }
   knock(dir, vx, vy, stun) { this.stun = stun; this.hits++; this.boost = false; this.vx = dir * vx; this.vy = vy; this.onGround = false; this.ground = null; this.hang = null; this.rope = null; this.ladder = null; this.grabCool = 0.3; }
   step(inp, dt = DT) {
-    if (this.dead || this.finished) return; this.px = this.x; this.py = this.y; this.t += dt; const L = inp.l ? 1 : 0, R = inp.r ? 1 : 0, J = !!inp.j, D = !!(inp.d || inp.g);
+    if (this.dead || this.finished) return; this.px = this.x; this.py = this.y; this.t += dt; const L = inp.l ? 1 : 0, R = inp.r ? 1 : 0, J = !!inp.j, D = !!inp.d, Gr = !!inp.g;
+    if (Gr && !this.prevGr) this.gbuf = GRAB_BUF; else this.gbuf -= dt; this.prevGr = Gr;
     // Absinkende Plattformen
     this.sinks.forEach((k, i) => { if (!k || k.gone) return; if (k.touch >= 0 && this.t - k.touch >= this.c.o[i].delay) { k.vy -= 20 * dt; k.y += k.vy * dt; if (k.y < -4) k.gone = true; } });
     this.collect();
@@ -186,8 +195,9 @@ export class Sim {
         if (J && !this.prevJ) { this.hang = null; this.grabCool = 0.16; this.vy = 4.2; this.vx = 4.6 * (this.face < 0 ? -1 : 1); this.boost = true; }
         else { this.prevJ = J; this.dist = Math.max(this.dist, this.x); this.hazards(); this.check(); return; }
       }
-      // Am Ende der Stangen automatisch abschwingen; Sprung = Absprung nach vorn
-      else if (this.x > o.x2 + 0.1) { this.hang = null; this.grabCool = 0.35; this.vy = 6; this.vx = 5; this.face = 1; } else if (this.x < o.x1 - 0.35) { this.hang = null; this.grabCool = 0.35; } else if (J && !this.prevJ) { this.hang = null; this.grabCool = 0.35; this.vy = 7.2; this.vx = this.face * 5.5; } else { this.prevJ = J; this.dist = Math.max(this.dist, this.x); this.hazards(); this.check(); return; }
+      // Am Ende der Stangen festhalten (kein automatisches Abschwingen); Sprung = Absprung nach vorn
+      else { if (this.x > o.x2 + 0.1) this.x = o.x2 + 0.1;
+        if (this.x < o.x1 - 0.35) { this.hang = null; this.grabCool = 0.35; } else if (J && !this.prevJ) { this.hang = null; this.grabCool = 0.35; this.vy = 7.2; this.vx = this.face * 5.5; } else { this.prevJ = J; this.dist = Math.max(this.dist, this.x); this.hazards(); this.check(); return; } }
       this.prevJ = J;
     }
     const ctl = this.stun > 0 ? 0 : 1, dir = (R - L) * ctl;
@@ -209,12 +219,12 @@ export class Sim {
       this.vy = JUMP_V; this.onGround = false; this.ground = null; this.coyote = 0; this.buf = 0; this.duck = false; this.slide = false;
     }
     if (this.boost && this.vy <= 0) this.boost = false; if (!J && this.vy > 3.5 && !this.boost) this.vy -= 55 * dt;   // kurzer Tipp = kleiner Sprung
-    // Greifen: in der Luft an Stangen, Leisten, Seil, Ringen und Lachsleiter automatisch
+    // Greifen: nur mit der Aktionstaste – in der Luft in Griffweite drücken (Stangen, Leisten, Seil, Ringe, Lachsleiter)
     this.grabCool -= dt;
-    if (!this.onGround && ctl && this.grabCool <= 0) {
-      const b = this.nearBar(); if (b) { this.hang = { bar: b.i }; this.vx = 0; this.vy = 0; this.y = b.o.y - PH; this.duck = false; this.hazards(); return; }
-      const rp = this.nearRope(); if (rp) { this.rope = rp; this.boost = false; this.duck = false; return; }
-      const li = this.nearLadder(); if (li >= 0) { this.ladder = { i: li, k: 0, cool: 0.15 }; this.vx = 0; this.vy = 0; this.duck = false; this.x = this.c.o[li].x; this.y = rungY(this.c.o[li], 0) - PH; return; }
+    if (!this.onGround && ctl && this.grabCool <= 0 && this.gbuf > 0) {
+      const b = this.nearBar(); if (b) { this.gbuf = 0; this.grabs++; this.hang = { bar: b.i }; this.vx = 0; this.vy = 0; this.y = b.o.y - PH; this.duck = false; this.hazards(); return; }
+      const rp = this.nearRope(); if (rp) { this.gbuf = 0; this.grabs++; this.rope = rp; this.boost = false; this.duck = false; return; }
+      const li = this.nearLadder(); if (li >= 0) { this.gbuf = 0; this.grabs++; this.ladder = { i: li, k: 0, cool: 0.15 }; this.vx = 0; this.vy = 0; this.duck = false; this.x = this.c.o[li].x; this.y = rungY(this.c.o[li], 0) - PH; return; }
     }
     this.vy -= G * dt; const vIn = this.vy;   // Fallgeschwindigkeit vor dem Aufsetzen (für das Trampolin)
     let carryX = 0, carryY = 0; if (this.onGround && this.ground) { carryX = this.ground.vx * dt; carryY = this.ground.vy * dt; }

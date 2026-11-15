@@ -1,6 +1,6 @@
 /* Titanparcours – Handy-Pad: beitreten, „Bereit" sagen, dann Stick laufen (runter = ducken), Knöpfe springen und ducken (gegriffen wird automatisch). */
 import { JOIN, CDN, peerCfg, loadScript } from './pair.js';
-import { STICK_HTML, JUMP_HTML, DUCK_HTML, stick, hold } from './stick.js';
+import { STICK_HTML, JUMP_HTML, DUCK_HTML, GRAB_HTML, stick, hold } from './stick.js';
 const $ = id => document.getElementById(id), esc = s => String(s == null ? '' : s).replace(/[<>&"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
 const CSS = ['#ff6fb0', '#00b8d9', '#ffd24a', '#8b5cf6'];
 export function startController() {
@@ -35,10 +35,11 @@ export function startController() {
     if (s.phase === 'ready') { put(`${head(s)}<div class="info">Du bist dran: <b>${esc(s.cname)}</b></div><button class="btn green" id="cr" style="min-height:120px;font-size:30px">Bereit!</button>`); $('cr').onclick = () => { tx({ t: 'ready' }); $('cr').disabled = true; }; return; }
     if (s.phase === 'count') { put(`${head(s)}<div class="bigt">3 · 2 · 1</div><div class="info">Halte dich bereit …</div>`); return; }
     if (s.phase === 'run') {
-      put(`<div class="cpad">${STICK_HTML}<div class="cacts">${DUCK_HTML}${JUMP_HTML}</div></div>`); let sm = 0, jm = 0, dm = 0; const upd = () => setMask(sm | jm | dm);
+      put(`<div class="cpad">${STICK_HTML}<div class="cacts">${DUCK_HTML}<div class="ccol">${GRAB_HTML}${JUMP_HTML}</div></div></div>`); let sm = 0, jm = 0, dm = 0, gm = 0; const upd = () => setMask(sm | jm | dm | gm);
       stick(root.querySelector('.stick'), m => { sm = m; upd(); });
       hold(root.querySelector('.act.main'), () => { jm = 4; upd(); }, () => { jm = 0; upd(); });
-      hold(root.querySelector('.act.duck'), () => { dm = 8; upd(); }, () => { dm = 0; upd(); }); return;
+      hold(root.querySelector('.act.duck'), () => { dm = 8; upd(); }, () => { dm = 0; upd(); });
+      hold(root.querySelector('.act.grab'), () => { gm = 16; upd(); }, () => { gm = 0; upd(); }); return;
     }
     put(`${head(s)}<div class="bigt">${esc(s.say || '')}</div><div class="tbl">${board(s)}</div>`);
   }
