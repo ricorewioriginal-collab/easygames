@@ -25,6 +25,10 @@ export const SFX = {
   count: g(() => note(660, 0.18, 'square', 0.06)),
   go: g(() => { note(990, 0.5, 'square', 0.07); note(1320, 0.5, 'triangle', 0.05); }),
   buzzer: g(() => { note(180, 0.9, 'sawtooth', 0.09); note(184, 0.9, 'square', 0.05); noise(0.5, 0.05, 0, 1500); }),
+  /** Studio-Buzzer beim Sturz ins Wasser: tief, rau, zweimal */
+  fail: g(() => { [0, 0.55].forEach(t => { note(138, 0.48, 'sawtooth', 0.12, t); note(142, 0.48, 'square', 0.07, t); note(69, 0.48, 'sawtooth', 0.06, t); }); }),
+  grab: g(() => { noise(0.07, 0.07, 0, 700, 'lowpass'); note(260, 0.08, 'triangle', 0.05, 0, { to: 180 }); }),
+  hit: g(() => { noise(0.18, 0.12, 0, 380, 'lowpass'); note(120, 0.2, 'sine', 0.1, 0, { to: 55 }); }),
   jingle: g(() => { [72, 74, 76, 79, 76, 79, 84].forEach((n, i) => note(hz(n), 0.28, 'triangle', 0.07, i * 0.13)); })
 };
 export const Audio_ = { unlock() { try { ctx(); } catch (e) {} }, setOn(v) { on = v; }, get on() { return on; } };

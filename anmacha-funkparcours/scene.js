@@ -72,6 +72,10 @@ export class Arena {
     const rim = new T.DirectionalLight(lin(0x4a8cff), 0.8); rim.position.set(-6, 8, -10); this.s.add(rim); this.rim = rim;
     this.under = new T.PointLight(lin(0x2a9bff), 1.1, 14, 1.6); this.under.position.set(0, -0.3, 0); this.s.add(this.under);   // Licht aus dem Wasser
     this.boom = new T.PointLight(lin(0xff8a2a), 0, 26); this.boom.position.set(0, 6, 3); this.s.add(this.boom);
+    // Alarm (Sturz ins Wasser): rotes Drehlicht über dem Becken; Hero-Spot: weiches Führungslicht auf dem Läufer (hebt die Figur vom Studio ab)
+    this.red = new T.PointLight(lin(0xff1010), 0, 34, 1.2); this.red.position.set(0, 5, 4); this.s.add(this.red); this.alarmT = 0;
+    this.hero = new T.SpotLight(lin(0xfff4e6), 0.9, 22, 0.36, 0.7, 1.2); this.hero.position.set(0, 9, 7); this.s.add(this.hero, this.hero.target);
+    this.mark = new T.Sprite(new T.SpriteMaterial({ map: puff(), color: lin(0x5dff9e), transparent: true, opacity: 0, depthWrite: false, depthTest: false, blending: T.AdditiveBlending, toneMapped: false })); this.mark.renderOrder = 5; this.s.add(this.mark); this.markA = 0; this.streakT = 0;
     this.attract = null; this.root = new T.Group(); this.s.add(this.root); this.dyn = []; this.heads = []; this.pots = []; this.time = 0; this.energy = 0.3; this.ghost = null; this.prevG = true; this.lastVy = 0; this.dustT = 0; this.clockT = 0;
     this.pool = []; this.live = []; this.initPool(); this.buildWater(); this.buildSet();
     this.kit = window.EasyFiguren ? window.EasyFiguren.create({ THREE: T, base: '../figuren/', srgb: true }) : null;
@@ -123,6 +127,19 @@ export class Arena {
   }
   confetti(x, y) { for (let i = 0; i < 70; i++) this.emit(x + (Math.random() - 0.5) * 2, y + 2 + Math.random(), (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 6, 3 + Math.random() * 6, (Math.random() - 0.5) * 3, { c: [PAL.gold, PAL.pad, 0xffffff, PAL.cyan][i % 4], s: 0.2, life: 1.8 + Math.random() * 0.6, g: 9, a: 1, spin: 1 }); this.energy = 1; this.shake = Math.max(this.shake, 0.12); this.fire(x); }
   cheer(v) { this.energy = Math.max(this.energy, v); }
+  /** Sturz ins Wasser: Studio taucht für zwei Sekunden in rotes Alarmlicht (Drehlicht, Lichtkegel rot) */
+  alarm() { this.alarmT = 2.4; this.energy = Math.max(this.energy, 0.8); }
+  /** Zupacken: Magnesia-Wolke an den Händen + kleine Funken */
+  grab(x, y) {
+    for (let i = 0; i < 12; i++) this.emit(x + (Math.random() - 0.5) * 0.2, y + (Math.random() - 0.3) * 0.2, (Math.random() - 0.5) * 0.4, (Math.random() - 0.5) * 1.6, (Math.random() - 0.2) * 1.4, (Math.random() - 0.5) * 0.6, { c: 0xf4f7ff, s: 0.14 + Math.random() * 0.14, life: 0.5 + Math.random() * 0.3, grow: 0.8, a: 0.6, g: -0.5 });
+    for (let i = 0; i < 8; i++) { const a = Math.random() * Math.PI * 2, v = 2 + Math.random() * 2; this.emit(x, y, 0.2, Math.cos(a) * v, Math.sin(a) * v, 0, { c: [PAL.gold, 0x9dffc4][i % 2], s: 0.08, life: 0.3, a: 1, add: true, g: 6 }); }
+    this.shake = Math.max(this.shake, 0.05);
+  }
+  /** Treffer durch Sandsack oder Pendelbalken: Aufprallblitz */
+  impact(x, y) {
+    for (let i = 0; i < 16; i++) { const a = Math.random() * Math.PI * 2, v = 3 + Math.random() * 3; this.emit(x, y, 0.3, Math.cos(a) * v, Math.sin(a) * v, (Math.random() - 0.5) * 2, { c: [0xffffff, PAL.amber, PAL.pad][i % 3], s: 0.1 + Math.random() * 0.08, life: 0.35, a: 1, add: true, g: 4 }); }
+    this.emit(x, y, 0.3, 0, 0, 0, { c: 0xffffff, s: 0.5, life: 0.18, grow: 9, a: 0.9, add: true }); this.shake = Math.max(this.shake, 0.22);
+  }
   // ---------------------------------------------------------------- Wasserbecken (Shader: Wellen, Lichtspiegelungen, Unterwasserlampen, Kaustik)
   buildWater() {
     this.wu = { t: { value: 0 }, cx: { value: 0 } };
@@ -445,6 +462,20 @@ export class Arena {
     this.wu.cx.value = this.cx; this.water.position.x = this.cx + 20; if (this.led) this.led.offset.x += dt * 0.05; if (this.ad) this.ad.offset.x += dt * 0.03;
     if (this.buzzer) this.buzzer.material.emissiveIntensity = 0.8 + Math.sin(this.time * 6) * 0.4;
     if (this.boom.intensity > 0) this.boom.intensity = Math.max(0, this.boom.intensity - dt * 4);
+    // Rotes Alarmlicht: pulsierend, Lichtkegel färben sich rot, danach zurück
+    if (this.alarmT > 0 || this.alarmOn) {
+      this.alarmT = Math.max(0, this.alarmT - dt); const on = this.alarmT > 0, f = on ? Math.min(1, this.alarmT / 0.6) : 0, pulse = 0.5 + 0.5 * Math.sin(this.time * 14);
+      this.red.intensity = f * (2.2 + 2.8 * pulse); this.red.position.set(this.cx + Math.sin(this.time * 6) * 4, 5, 4 + Math.cos(this.time * 6) * 2);
+      if (!this.coneCol) this.coneCol = this.cones.map(c => ({ c: c.cone.material.color.clone(), o: c.cone.material.opacity }));
+      const RED = lin(0xff1a1a); this.cones.forEach((c, i) => { c.cone.material.color.copy(this.coneCol[i].c).lerp(RED, f); c.cone.material.opacity = this.coneCol[i].o + f * 0.12 * pulse; });
+      this.sun.intensity = 1.35 * (1 - 0.45 * f); this.alarmOn = on;
+    }
+    // Hero-Spot folgt dem Läufer; Greif-Hinweis an den Händen, solange etwas in Griffweite ist
+    this.hero.position.set(ix + 1.5, iy + 8, 6.5); this.hero.target.position.set(ix, iy + 0.9, 0); this.hero.target.updateMatrixWorld();
+    const reach = sim && sim.reachable ? sim.reachable() : ''; this.markA += ((reach ? 1 : 0) - this.markA) * Math.min(1, dt * 18);
+    this.mark.material.opacity = this.markA * (0.55 + 0.35 * Math.sin(this.time * 20)); this.mark.visible = this.markA > 0.02; if (this.mark.visible) { this.mark.position.set(this.runner.g.position.x, iy + PH + 0.1, 0.25); this.mark.scale.setScalar(0.55 + 0.15 * Math.sin(this.time * 20)); }
+    // Tempo-Streifen beim Sprinten
+    if (sim && !sim.dead && Math.abs(sim.vx) > 5.2 && !this.lowFx && (this.streakT -= dt) <= 0) { this.streakT = 0.035; this.emit(ix - sim.face * 0.3, iy + 0.3 + Math.random() * 1.3, 0.1 + (Math.random() - 0.5) * 0.4, -sim.vx * 0.25, 0, 0, { c: [PAL.cyan, 0xffffff, PAL.pad][(Math.random() * 3) | 0], s: 0.07, life: 0.22, a: 0.55, add: true }); }
     // Scheinwerfer + Blitzlichter
     this.rig.position.x = Math.round(this.cx / 15) * 15; this.cones.forEach(c => { const ph = (c.x + this.rig.position.x) * 0.06; c.cone.rotation.z = Math.sin(this.time * 0.8 + ph) * 0.35; c.cone.rotation.x = 0.35 + Math.cos(this.time * 0.6 + ph) * 0.15; });
     this.heads.forEach(h => { if (h.cone) { h.cone.rotation.z = Math.sin(this.time * 0.9 + h.ph) * 0.45; h.cone.rotation.x = Math.cos(this.time * 0.7 + h.ph) * 0.25; } });

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "7abf3cd87753",
- "generated": "2026-11-15T01:08:43+00:00",
- "commit": "eb152799bab58edb68bd96210e4e8cc06205883e",
+ "version": "de8115112973",
+ "generated": "2026-11-15T01:04:57+00:00",
+ "commit": "a144ce3d5f8354699f6c6e78e464546adfa97f1b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1368,13 +1368,13 @@
   },
   {
    "p": "anmacha-funkparcours/audio.js",
-   "s": 4379,
-   "h": "4799de9210e31041acc6e51836c2cd84ccc7442cfc3aaa459d5b4ad7ef0b078c"
+   "s": 4820,
+   "h": "548cba7c19c7aea5c6f7e09b46161c0214d5545dddadeb2b833072f1b32db1f1"
   },
   {
    "p": "anmacha-funkparcours/bot.js",
-   "s": 4889,
-   "h": "311de6fd49fa62cf3b9ba642694047c4292613c18af60fca274c4bf645705884"
+   "s": 5192,
+   "h": "d46b38005eaed35bcb41cc0aec9df9a3aab8efdbc56b8c13dc2030ce96bc5f36"
   },
   {
    "p": "anmacha-funkparcours/card.png",
@@ -1383,8 +1383,8 @@
   },
   {
    "p": "anmacha-funkparcours/chars.js",
-   "s": 3320,
-   "h": "b1dbb8b2f5a59be1fa3dcddd14c5b40834ece259fcb499356e2e479622d1cf60"
+   "s": 3646,
+   "h": "95f9ddf5cd9ce0878c15c372956dc7b19d1f856075a5d8ce3cd88f2d39d9f3d4"
   },
   {
    "p": "anmacha-funkparcours/commentary.js",
@@ -1393,18 +1393,18 @@
   },
   {
    "p": "anmacha-funkparcours/controller.js",
-   "s": 4887,
-   "h": "0f8da1b52e13cd8f2cfdcabb636e1cffd8d0e38cd9b404c80325a7df643bedd6"
+   "s": 5045,
+   "h": "4eef76ece0c214c14c2ef862e6dda3bcc6ee4e3065a9e5f7a26ea00ba5245886"
   },
   {
    "p": "anmacha-funkparcours/engine.js",
-   "s": 26076,
-   "h": "15c000df075bc906467447179e0ced3f7f0c62e6d19ab469155012cfd424ab91"
+   "s": 27167,
+   "h": "60a5fa12a95dc8f2d4712b707ce20d4bc5ed11c290280d8adb62b77a945a510b"
   },
   {
    "p": "anmacha-funkparcours/index.html",
-   "s": 13334,
-   "h": "8c7b83bea69bb09bcac185b248016d092f22807bf031cc4579dec8ebc8bc41a4"
+   "s": 13710,
+   "h": "1f70bc21fd1ecfd6ab8211cf112436a87f8ebc5c5925e867b2301541f9a129a2"
   },
   {
    "p": "anmacha-funkparcours/logo.png",
@@ -1493,8 +1493,8 @@
   },
   {
    "p": "anmacha-funkparcours/main.js",
-   "s": 30228,
-   "h": "38121fc357d4ecb1dea381cded75dd8873c8ebe7254ffec4e0865b6020a40d32"
+   "s": 31268,
+   "h": "949fe194e00b593eb9295434c37f2d585d46cca0937b41931197b359528e3262"
   },
   {
    "p": "anmacha-funkparcours/manifest.webmanifest",
@@ -1503,8 +1503,8 @@
   },
   {
    "p": "anmacha-funkparcours/menu.js",
-   "s": 9231,
-   "h": "1271224408a340a5c13784cd5d3692a0d7a3db06704f6fe8f99d323dabcd9ca1"
+   "s": 9285,
+   "h": "fc5915a561abb1141b8a27633aaed0e038af9569f72bb817d65dd646d02ce1cb"
   },
   {
    "p": "anmacha-funkparcours/pair.js",
@@ -1513,18 +1513,18 @@
   },
   {
    "p": "anmacha-funkparcours/scene.js",
-   "s": 58846,
-   "h": "f2186147b5a70ff1f01ece0f076fedd109e1421eca2934fcea5f37ffa5725a6c"
+   "s": 62859,
+   "h": "78f81ebf2a04e48b438dc188052ceefe7c7d22275a501795dbc611ec504c4e72"
   },
   {
    "p": "anmacha-funkparcours/stick.js",
-   "s": 2484,
-   "h": "c3b959806281c32ddd85748217c497ca20ed2af26ee660438201113637dcc151"
+   "s": 2638,
+   "h": "5fd0433e208e33eef832f3fe2037a337903333f7771917c2f6ab45811f2a89ee"
   },
   {
    "p": "anmacha-funkparcours/style.css",
-   "s": 23333,
-   "h": "48adf94b82b5f01414f437190a71bb7ed750c80ce7885f92ae4fc67ed4b34943"
+   "s": 24441,
+   "h": "ebe5c70642218441c00add59d6b24fd0405a0c8ee30407b52948710e5930de55"
   },
   {
    "p": "anmacha-funkparcours/sw.js",
@@ -9993,8 +9993,8 @@
   },
   {
    "p": "guides/anmacha-funkparcours.json",
-   "s": 18916,
-   "h": "7120060ae6610a0ec8e54be73109532dba2564aa35c7ea67b8e8bb0c45ebf129"
+   "s": 19190,
+   "h": "3778bafb4d13580aced5e9b4ca26b3df4786700c2306fb46b929e4eeb9f298d3"
   },
   {
    "p": "guides/anmacha-gesucht.json",
@@ -13514,7 +13514,7 @@
   {
    "p": "sync/catalog.json",
    "s": 252822,
-   "h": "3e16fb9806759f7225ef84c8cf668cd36e59e74590aa10d654d1dda82dd5bf50"
+   "h": "c9fb235b5909c00a1e3685e46436735fe0f791e5528dfdd19740a1bcb9d3dc88"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -55663,8 +55663,8 @@
   },
   {
    "p": "zeitsprung/vo/index.json",
-   "s": 101352,
-   "h": "8dda8105487c3855063da780b1e0f839b4674df966b738b2a5fe2e14afa12593"
+   "s": 101362,
+   "h": "8dd6a19026e177d4bf20c7809483c335dc7d0de6517fc8d8228ff740cd2fe511"
   },
   {
    "p": "zeitsprung/vo/inw5r0.mp3",
