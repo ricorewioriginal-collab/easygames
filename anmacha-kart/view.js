@@ -703,10 +703,10 @@ const View = (() => {
   // ------------------------------------------------------------------ Rennen: Aufbau und Einzelbild
   let boxes = [], padsM = [], hazM = { mine: [], banana: [] }, rocM = { rocket: [], rock: [] }, boomM = [];
   function setupRace(S, humanIdx) {
-    initSkid(); skidClear(); fxLife.fill(0); fxPos.fill(-100); fxAny = true; kmesh.forEach(m => scene.remove(m.g)); kmesh = S.karts.map(makeKart); ip.length = 0; boxes.forEach(b => scene.remove(b)); boxes = S.boxes.map(b => { const m = new T.Mesh(shared.boxGeo, boxMat); m.position.set(b.x, 1.8 + tr.height(b.f), b.z); scene.add(m); return m; });
+    initSkid(); skidClear(); if (sl) sl.visible = false; fxLife.fill(0); fxPos.fill(-100); fxAny = true; kmesh.forEach(m => scene.remove(m.g)); kmesh = S.karts.map(makeKart); ip.length = 0; boxes.forEach(b => scene.remove(b)); boxes = S.boxes.map(b => { const m = new T.Mesh(shared.boxGeo, boxMat); m.position.set(b.x, 1.8 + tr.height(b.f), b.z); scene.add(m); return m; });
     padsM.forEach(p => scene.remove(p)); padsM = S.pads.map(p => { const m = new T.Mesh(new T.PlaneGeometry(8, 12), padMat); m.rotation.order = 'YXZ'; m.rotation.x = -Math.PI / 2; m.rotation.y = p.th + Math.PI; m.position.set(p.x, 0.08 + tr.height(p.f), p.z); scene.add(m); return m; });
     [].concat(hazM.mine, hazM.banana, rocM.rocket, rocM.rock, boomM).forEach(m => scene.remove(m)); hazM = { mine: [], banana: [] }; rocM = { rocket: [], rock: [] }; boomM = [];
-    cams.length = 0; humanIdx.forEach(i => { const k = S.karts[i]; cams.push({ k, ki: i, shake: 0, ls: 0, ang: k.th, pos: new T.Vector3(k.x, 4, k.z), cam: new T.PerspectiveCamera(66, 1, 0.5, 1400), fov: 66 }); });
+    cams.length = 0; humanIdx.forEach(i => { const k = S.karts[i]; cams.push({ k, ki: i, shake: 0, ls: 0, ang: k.th, pos: new T.Vector3(k.x, 4, k.z), cam: new T.PerspectiveCamera(66, 1, 0.5, 1400), fov: 66, kick: 0, sl: 0 }); });
   }
   const poolGet = (arr, mk) => { let m = arr.find(x => !x.visible); if (!m) { m = mk(); arr.push(m); scene.add(m); } m.visible = true; return m; };
   const ip = [];
@@ -730,7 +730,7 @@ const View = (() => {
       // mitgeführte Items: Bananen hinten, Steine kreisen
       const nB = k.item && k.item.startsWith('banana') ? Math.max(1, k.itemN) : 0, nR = k.item && k.item.startsWith('rock') ? Math.max(1, k.itemN) : 0;
       m.trailB.children.forEach((b, j) => { b.visible = j < nB; b.position.set(0, 0.5 + Math.sin(time * 5 + j) * 0.08, -3.5 - j * 1.1); b.rotation.y = time * 2 + j; }); m.trailR.children.forEach((r, j) => { r.visible = j < nR; const a = time * 4 + j * (PI2 / Math.max(1, nR)); r.position.set(Math.cos(a) * 2.5, 1.5, Math.sin(a) * 2.5 - 0.3); r.rotation.set(time * 3, time * 2, 0); });
-      if (k.boostT > 0 && Math.random() < 0.5) burst(k.x - Math.sin(k.th) * 3, 0.8, k.z - Math.cos(k.th) * 3, 0x66ccff, 1, 2, 1);
+      if (k.boostT > 0 && dt > 0) { const sn = Math.sin(k.th), cs = Math.cos(k.th), side = Math.random() < 0.5 ? -0.55 : 0.55; burst(k.x - sn * 2.6 + cs * side, 0.75, k.z - cs * 2.6 - sn * side, BCOL[(Math.random() * 3) | 0], 1, 2.2, 0.8); }
     });
     boxes.forEach((m, i) => { m.visible = S.boxes[i].cd <= 0; m.rotation.y = time * 1.8; m.rotation.x = time * 1.1; m.position.y = 1.9 + Math.sin(time * 2.4 + i) * 0.25 + (tr.hilly ? tr.height(S.boxes[i].f) : 0); });
     ['mine', 'banana'].forEach(kd => hazM[kd].forEach(m => { m.visible = false; }));
@@ -744,6 +744,16 @@ const View = (() => {
       else if (e.t === 'flash') (e.ids || []).forEach(id => { const k = S.karts[id]; bolt(k.x, k.z); burst(k.x, 2, k.z, 0xffffff, 18, 8, 8); });
       else if (e.t === 'use' && e.item === 'shield') { const k = S.karts[e.k]; burst(k.x, 1.5, k.z, 0x66e0ff, 14, 5, 3); } else if (e.t === 'use' && (e.item === 'banana' || e.item === 'mine')) { const k = S.karts[e.k]; burst(k.x - Math.sin(k.th) * 3, 0.8, k.z - Math.cos(k.th) * 3, 0xffe14a, 6, 3, 2); } else if (e.t === 'use' && e.item === 'rock') { const k = S.karts[e.k]; burst(k.x + Math.sin(k.th) * 3, 0.8, k.z + Math.cos(k.th) * 3, 0xcfc8a8, 8, 4, 3); }
       else if (e.t === 'fog') (e.ids || []).forEach(id => { const k = S.karts[id]; burst(k.x, 2, k.z, 0xeaf6ff, 22, 5, 3); });
+      else if (e.t === 'miniturbo') { const k = S.karts[e.k], sn = Math.sin(k.th), cs = Math.cos(k.th), col = TCOL[e.tier] || TCOL[1]; burst(k.x - sn * 2.2, 0.7, k.z - cs * 2.2, col, 6 + e.tier * 5, 3 + e.tier, 2.5); }
+      // Kamera-Rückmeldung nur für die eigene Kamera: Wackeln bei Treffern/Explosionen, kurzer Sichtfeld-Schub beim Turbo
+      cams.forEach(c => {
+        if ((e.t === 'hit' && e.kind !== 'flash') && e.k === c.ki) c.shake = Math.max(c.shake, 0.55);
+        else if (e.t === 'wall' && e.k === c.ki) c.shake = Math.max(c.shake, clamp((e.v || 8) / 40, 0.08, 0.3));
+        else if (e.t === 'bump' && (e.k === c.ki || e.o === c.ki)) c.shake = Math.max(c.shake, 0.14);
+        else if (e.t === 'boom') { const d = Math.hypot(e.x - c.k.x, e.z - c.k.z); if (d < 30) c.shake = Math.max(c.shake, 0.6 * (1 - d / 30)); }
+        else if (e.t === 'miniturbo' && e.k === c.ki) c.kick = 2 + e.tier * 2.5;
+        else if ((e.t === 'pad' || (e.t === 'use' && e.item === 'boost')) && e.k === c.ki) c.kick = 6;
+      });
     });
     boomM.forEach(m => { if (!m.visible) return; m.userData.t += dt; const u = m.userData.t / 0.5; m.scale.setScalar(1 + u * 5); m.material.opacity = Math.max(0, 0.8 - u); if (u >= 1) m.visible = false; });
     bolts.forEach(b => { if (b.t > 0) { b.t -= dt; b.g.visible = b.t > 0 && ((time * 30) | 0) % 2 === 0; if (b.t <= 0) b.g.visible = false; } });
@@ -754,7 +764,8 @@ const View = (() => {
     const af = clamp(1 / Math.sqrt(c.cam.aspect || 1.7), 1, 1.55), dist = (12.4 + clamp(k.vf / 36, 0, 1.4) * 1.8) * af, wx = p.x - Math.sin(c.ang) * dist, wz = p.z - Math.cos(c.ang) * dist, kk = 1 - Math.exp(-dt * 10);
     c.pos.x += (wx - c.pos.x) * kk; c.pos.z += (wz - c.pos.z) * kk; c.pos.y += ((5.0 * (0.9 + 0.1 * af) + S.tr.height(k.f)) - c.pos.y) * kk; c.cam.position.copy(c.pos);
     if (k.spinT > c.ls + 0.05) c.shake = 0.5; c.ls = k.spinT; if (c.shake > 0 && dt > 0) { c.shake = Math.max(0, c.shake - dt * 1.4); c.cam.position.x += (Math.random() - 0.5) * c.shake; c.cam.position.y += (Math.random() - 0.5) * c.shake * 0.6; }
-    const tf = 64 + clamp(k.vf / 36, 0, 1.5) * 8 + (k.boostT > 0 ? 9 : 0); c.fov += (tf - c.fov) * Math.min(1, dt * 4); c.cam.fov = c.fov;
+    if (c.kick > 0) { c.fov += c.kick; c.kick = 0; } const tf = 64 + clamp(k.vf / 36, 0, 1.5) * 8 + (k.boostT > 0 ? 9 : 0); c.fov += (tf - c.fov) * Math.min(1, dt * 4); c.cam.fov = c.fov;
+    c.sl += ((k.boostT > 0 ? 0.55 : 0) + clamp((k.vf - 26) / 14, 0, 1) * 0.22 - c.sl) * Math.min(1, dt * 5);   // Stärke der Geschwindigkeitslinien
     // Cinematic fly-in on the starting grid, then settle into the chase camera before GO.
     if (S.state === 'grid') {
       const progress = Math.max(0, Math.min(1, (3.2 - S.count) / 2.25));
@@ -785,9 +796,21 @@ const View = (() => {
     else pSlow = pFast = 0;
   }
   const perfReset = () => { pEma = 16.7; pDev = 0; pSlow = pFast = 0; pCool = 1.5; };
+  // Geschwindigkeitslinien: kurze Streifen im Kameraraum, die am Bildrand vorbeiziehen (eine Geometrie für alle Kameras, Stärke je Kamera)
+  const TCOL = [0xffffff, 0x66ccff, 0xff9a1f, 0xff2d95], BCOL = [0x66ccff, 0xffffff, 0xffb347];
+  const SLN = 44; let sl = null, slZ = null;
+  function speedLines(dt, v) {
+    if (!sl) { const g = new T.BufferGeometry(); g.setAttribute('position', new T.BufferAttribute(new Float32Array(SLN * 6), 3)); sl = new T.LineSegments(g, new T.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, blending: T.AdditiveBlending, depthTest: false, depthWrite: false })); sl.frustumCulled = false; sl.renderOrder = 9; sl.userData.a = []; slZ = new Float32Array(SLN); for (let i = 0; i < SLN; i++) { sl.userData.a.push([Math.random() * PI2, 1.15 + Math.random() * 0.7]); slZ[i] = -4 - Math.random() * 40; } scene.add(sl); }
+    const P = sl.geometry.attributes.position.array, mv = dt * (40 + v * 1.6);
+    for (let i = 0; i < SLN; i++) { let z = slZ[i] + mv; if (z > -3) { z -= 40; const a = sl.userData.a[i]; a[0] = Math.random() * PI2; a[1] = 1.15 + Math.random() * 0.7; } slZ[i] = z; const a = sl.userData.a[i], z2 = z - 3.5 - v * 0.08;
+      const r1 = a[1] * (-z * 0.62 + 1.6), r2 = a[1] * (-z2 * 0.62 + 1.6), cx = Math.cos(a[0]), cy = Math.sin(a[0]) * 0.62, j = i * 6;
+      P[j] = cx * r1; P[j + 1] = cy * r1; P[j + 2] = z; P[j + 3] = cx * r2; P[j + 4] = cy * r2; P[j + 5] = z2; }
+    sl.geometry.attributes.position.needsUpdate = true;
+  }
   function renderRace(S, dt, time, n, alpha) {
     interp(S, alpha == null ? 1 : alpha); updateKarts(S, dt, time); const rs = rects(Math.max(1, cams.length), W, H);
-    cams.forEach((c, i) => { updateCam(c, S, dt); const r = rs[i]; renderer.setViewport(r[0], r[1], r[2], r[3]); renderer.setScissor(r[0], r[1], r[2], r[3]); c.cam.aspect = r[2] / r[3]; c.cam.updateProjectionMatrix(); sky.position.copy(c.cam.position); if (skyGroup) skyGroup.position.copy(c.cam.position); renderer.render(scene, c.cam); });
+    const slOn = cams.some(c => c.sl > 0.02); if (slOn) speedLines(dt, Math.max(...cams.map(c => c.k.vf))); else if (sl) sl.visible = false;
+    cams.forEach((c, i) => { updateCam(c, S, dt); const r = rs[i]; if (sl && slOn) { sl.visible = c.sl > 0.02; sl.position.copy(c.cam.position); sl.quaternion.copy(c.cam.quaternion); sl.material.opacity = c.sl; } renderer.setViewport(r[0], r[1], r[2], r[3]); renderer.setScissor(r[0], r[1], r[2], r[3]); c.cam.aspect = r[2] / r[3]; c.cam.updateProjectionMatrix(); sky.position.copy(c.cam.position); if (skyGroup) skyGroup.position.copy(c.cam.position); renderer.render(scene, c.cam); });
     return rs;
   }
   // Eine echte separate 3D-Auswahlbühne: verwendet dieselben Figuren- und Kartmodelle wie das Rennen.
@@ -843,7 +866,7 @@ const View = (() => {
     scene.add(g); try { const c = mcam(); c.aspect = W / H; c.updateProjectionMatrix(); renderer.compile(scene, c); } catch (e) {} scene.remove(g);
   }
   const mcam = () => menuCam.cam || (menuCam.cam = new T.PerspectiveCamera(60, 1, 0.5, 1400));
-  function renderMenu(dt, time) {
+  function renderMenu(dt, time) { if (sl) sl.visible = false;
     if (!tr) return; previewFrame(dt); menuCam.f = (menuCam.f + dt * 9 / 3) % tr.N; const o = {}; tr.at(menuCam.f, 0, o); const c = mcam(), o2 = {}; tr.at(menuCam.f + 14, 0, o2);
     c.position.set(o.x - o.tx * 20 + o.tz * Math.sin(time * 0.23) * 5, 21 + Math.sin(time * 0.31) * 3, o.z - o.tz * 20 - o.tx * Math.sin(time * 0.23) * 5); c.lookAt(o2.x, 2, o2.z); c.aspect = W / H; c.updateProjectionMatrix(); sky.position.copy(c.position); if (skyGroup) skyGroup.position.copy(c.position);
     kmesh.forEach(m => scene.remove(m.g)); kmesh = []; boxes.forEach(b => scene.remove(b)); boxes = []; anim.forEach(f => f(time));

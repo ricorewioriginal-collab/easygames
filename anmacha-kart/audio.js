@@ -61,11 +61,14 @@ const AUD = (() => {
     intro: () => { noise(0.5, 0.06, 0, { type: 'bandpass', f: 900, q: 0.5, atk: 0.25 }); [55, 62, 67, 71, 74].forEach((n, i) => note(hz(n), 0.8, 'sawtooth', 0.04, 0.1 + i * 0.14, { lp: 2400 })); }
   };
   // Motorgeräusch (ein durchgehender Oszillator, Tonhöhe folgt dem Tempo)
-  function engine(on, sp, boost) {
-    if (muted || !on) { if (eng) { try { eng.g.gain.setTargetAtTime(0.0001, ac.currentTime, 0.1); } catch (e) {} } return; }
+  function engine(on, sp, boost, drift) {
+    if (muted || !on) { if (eng) { try { eng.g.gain.setTargetAtTime(0.0001, ac.currentTime, 0.1); if (eng.sg) eng.sg.gain.setTargetAtTime(0.0001, ac.currentTime, 0.05); } catch (e) {} } return; }
     try {
       const c = ctx(); if (!eng) { const o = c.createOscillator(), o2 = c.createOscillator(), g = c.createGain(), fl = c.createBiquadFilter(); o.type = 'sawtooth'; o2.type = 'square'; fl.type = 'lowpass'; fl.frequency.value = 700; g.gain.value = 0.0001; o.connect(fl); o2.connect(fl); fl.connect(g); g.connect(master); o.start(); o2.start(); eng = { o, o2, g, fl }; }
       const t = c.currentTime; eng.o.frequency.setTargetAtTime(48 + sp * 120 + (boost ? 25 : 0), t, 0.06); eng.o2.frequency.setTargetAtTime(24 + sp * 60, t, 0.06); eng.fl.frequency.setTargetAtTime(500 + sp * 1500, t, 0.08); eng.g.gain.setTargetAtTime(0.028 + sp * 0.02, t, 0.1);
+      // Reifenquietschen beim Driften (Rauschschleife, Tonhöhe steigt mit der Turbo-Stufe)
+      if (!eng.sg) { const n = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(); n.buffer = noiseBuf; n.loop = true; f.type = 'bandpass'; f.Q.value = 6; f.frequency.value = 1800; g.gain.value = 0.0001; n.connect(f); f.connect(g); g.connect(master); n.start(); eng.sg = g; eng.sf = f; }
+      eng.sg.gain.setTargetAtTime(drift ? 0.012 + drift * 0.004 : 0.0001, t, drift ? 0.05 : 0.08); if (drift) eng.sf.frequency.setTargetAtTime(1500 + drift * 320 + Math.random() * 120, t, 0.05);
     } catch (e) {}
   }
   // Hintergrundmusik: 'menu' (locker) | 'race' (schneller Arcade-Groove) | 'off'
