@@ -21,7 +21,7 @@ export interface PlanOptions {
 
 const BODIES = ['pfeil', 'brocken', 'libelle', 'kaefer', 'flitzer'];
 const DECALS = ['streifen', 'blitz', 'punkte', 'keins'];
-const BOT_NAMES = ['Blitz', 'Drift', 'Kolben', 'Nitro', 'Rotor', 'Funke', 'Turbo', 'Ritzel'];
+const BOT_NAMES = ['Blitz', 'Drift', 'Kolben', 'Puls', 'Rotor', 'Funke', 'Kern', 'Ritzel'];
 
 /** Baut aus den Menü-Einstellungen die Fahrzeugliste einer lokalen Partie (Team 0 zuerst) */
 export function buildLocalPlan(o: PlanOptions): LocalPlan {

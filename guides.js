@@ -339,15 +339,15 @@ window.EASYGAMES_GUIDES = {
   ]
  },
  "turbokick": {
-  "anleitung": "3D-Auto-Fußball: Fahre mit deinem Boliden, nutze Nitro und Sprünge und schieße die große Plasmakugel ins gegnerische Tor. Modi: schnelles Spiel gegen Bots (1v1, 2v2, 3v3, 4 Stufen), Splitscreen zu zweit, Training und Online mit Freunden per QR-Code oder Text-Code. Bei Gleichstand gibt es eine Verlängerung (Golden Goal).",
+  "anleitung": "3D-Arena-Derby: Fahre mit deinem Boliden, nutze Schub und Sprünge und schieße die großen Energie-Orb ins gegnerische Tor. Modi: schnelles Spiel gegen Bots (1v1, 2v2, 3v3, 4 Stufen), Splitscreen zu zweit, Training und Online mit Freunden per QR-Code oder Text-Code. Bei Gleichstand gibt es eine Verlängerung (Golden Goal).",
   "steuerung": [
-   "PC Spieler 1: W/S Gas und Rückwärts, A/D Lenken, Leertaste Sprung (zweimal = Doppelsprung/Flip), Shift Nitro (halten), Q Handbremse/Drift, linke Strg oder E Air-Roll, C Ball-Kamera, F Rückblick, R Training zurücksetzen, Esc oder P Pause.",
-   "PC Spieler 2 (Splitscreen): Pfeile fahren und lenken, Enter Sprung, rechte Shift Nitro, Num 3 Handbremse, rechte Strg Air-Roll, Num 5 Ball-Kamera, Num 6 Rückblick, Num 4 Training zurücksetzen.",
-   "Gamepad: RT/LT Gas/Rückwärts, linker Stick Lenken, A Sprung, X Nitro, B Handbremse, RB Air-Roll, Y Ball-Kamera, LB oder R3 Rückblick, Back Training zurücksetzen, Start Pause.",
+   "PC Spieler 1: W/S Gas und Rückwärts, A/D Lenken, Leertaste Sprung (zweimal = Doppelsprung/Flip), Shift Schub (halten), Q Handbremse/Drift, linke Strg oder E Air-Roll, C Orb-Kamera, F Rückblick, R Training zurücksetzen, Esc oder P Pause.",
+   "PC Spieler 2 (Splitscreen): Pfeile fahren und lenken, Enter Sprung, rechte Shift Schub, Num 3 Handbremse, rechte Strg Air-Roll, Num 5 Orb-Kamera, Num 6 Rückblick, Num 4 Training zurücksetzen.",
+   "Gamepad: RT/LT Gas/Rückwärts, linker Stick Lenken, A Sprung, X Schub, B Handbremse, RB Air-Roll, Y Orb-Kamera, LB oder R3 Rückblick, Back Training zurücksetzen, Start Pause.",
    "Touch: Stick (hoch/runter Gas, seitlich Lenken), Knöpfe SPRUNG, BOOST, DRIFT, BALL, II für Pause."
   ],
   "tipps": [
-   "Nitro gibt es am Boden und in der Luft.",
+   "Schub gibt es am Boden und in der Luft.",
    "Die vollständige Tastentabelle steht im Spiel unter Anleitung."
   ]
  },

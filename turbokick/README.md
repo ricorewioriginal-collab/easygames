@@ -1,11 +1,11 @@
-# TURBOKICK
+# NEXORB
 
-3D-Auto-Fußball im Browser: Spiele mit deinem Boliden und Nitro eine große Plasmakugel ins gegnerische Tor. **Eigene Fahrzeuge, Arenen, Namen, Musik und Klänge** (nichts davon stammt aus einem bestehenden Spiel; alles wird im Browser erzeugt, es gibt keine Bild- oder Audiodateien).
+3D-Arena-Derby im Browser: Spiele mit deinem Boliden und Schub eine großen Energie-Orb ins gegnerische Tor. **Eigene Fahrzeuge, Arenen, Namen, Musik und Klänge** (nichts davon stammt aus einem bestehenden Spiel; alles wird im Browser erzeugt, es gibt keine Bild- oder Audiodateien).
 
 - **Modi:** schnelles Spiel gegen Bots (1v1, 2v2, 3v3, 4 Stufen), **Splitscreen zu zweit** (gegeneinander oder zusammen gegen Bots), Training (freies Spiel), **Online mit Freunden ohne Server per QR-Code oder Text-Code** (WebRTC, läuft von GitHub Pages, bis zu 6 Spieler mit Bots)
-- **Spielgefühl:** Gas/Lenken/Handbremse, Nitro am Boden und in der Luft, Sprung, Doppelsprung, Ausweichmanöver (Flip), Luftsteuerung und Air-Roll, Wand- und Rundungsfahren, Supersonic-Rammen (Zerstörung), Anstoß, Verlängerung (Golden Goal)
+- **Spielgefühl:** Gas/Lenken/Handbremse, Schub am Boden und in der Luft, Sprung, Doppelsprung, Ausweichmanöver (Flip), Luftsteuerung und Air-Roll, Wand- und Rundungsfahren, Hyperspeed-Rammen (Knockout), Anstoß, Verlängerung (Golden Goal)
 - **3 Arenen:** Neon-Metropole, Eis-Dom, Sonnen-Canyon (gleiche Spielgeometrie, andere Gestaltung); 5 Karosserien, 4 Aufkleber, Akzentfarben in der Garage
-- Ball-Kamera und Auto-Kamera, Sichtfeld und Abstand einstellbar
+- Orb-Kamera und Auto-Kamera, Sichtfeld und Abstand einstellbar
 - Eingabe: Tastatur (WASD und Pfeile für zwei Spieler), Gamepad, Touch (Handy/Tablet, Quer- und Hochformat)
 - Deutsche Oberfläche (vorbereitet für weitere Sprachen), Barrierefreiheit (Farbmodi für Teamfarben, weniger Bewegung, Kontrast, große Schrift), adaptive Grafikqualität, lokaler versionierter Speicher
 
@@ -34,10 +34,10 @@ Konfiguration (optional): `VITE_BASE` (Basis-URL beim Bauen). Entwickler-Labore:
 | Gas / Rückwärts                      | W / S            | ↑ / ↓              | RT / LT      | Stick hoch / runter |
 | Lenken, Gieren                       | A / D            | ← / →              | linker Stick | Stick               |
 | Sprung (zweimal = Doppelsprung/Flip) | Leertaste        | Enter              | A            | SPRUNG              |
-| Nitro (halten)                       | Shift            | rechte Shift       | X            | BOOST               |
+| Schub (halten)                       | Shift            | rechte Shift       | X            | BOOST               |
 | Handbremse / Drift                   | Q                | Num 3              | B            | DRIFT               |
 | Air-Roll                             | Strg / E         | rechte Strg        | RB           | –                   |
-| Ball-Kamera                          | C                | Num 5              | Y            | BALL                |
+| Orb-Kamera                          | C                | Num 5              | Y            | BALL                |
 | Pause                                | Esc / P          | –                  | Start        | II                  |
 
 Die vollständige Tabelle steht im Spiel unter **Anleitung**.
@@ -54,7 +54,7 @@ turbokick/
     app/             #   App-Wurzel, Speicher (versioniert), Theme
     game/            #   Sitzungen (Lokal, Gastgeber, Gast mit Vorhersage), Spielschirm, Kamera, HUD
     net/             #   WebRTC-Verbindung (zwei Kanäle), Verbindungs-Codes, Lobby
-    render/          #   Engine (adaptive Qualität), Arena-Darstellung (3 Themen), Autos/Ball/Effekte
+    render/          #   Engine (adaptive Qualität), Arena-Darstellung (3 Themen), Autos/Orb/Effekte
     input/           #   Tastatur, Gamepad, Touch
     audio/           #   prozedurale Musik, Motor- und Effektklänge
     ui/              #   Menü, Spiel einrichten, Garage, Online, Optionen, Anleitung, Statistik

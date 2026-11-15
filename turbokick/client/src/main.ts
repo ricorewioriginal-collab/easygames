@@ -15,7 +15,7 @@ async function boot(): Promise<void> {
   }
   const host = document.getElementById('app');
   if (!host) return;
-  host.textContent = 'TURBOKICK lädt …';
+  host.textContent = 'NEXORB lädt …';
   try {
     const { App } = await import('./app/app');
     const app = new App(host);
@@ -24,7 +24,7 @@ async function boot(): Promise<void> {
   } catch (e) {
     console.error(e);
     host.textContent =
-      'TURBOKICK konnte nicht gestartet werden. Dein Browser unterstützt WebGL möglicherweise nicht – bitte aktualisiere ihn oder versuche einen anderen.';
+      'NEXORB konnte nicht gestartet werden. Dein Browser unterstützt WebGL möglicherweise nicht – bitte aktualisiere ihn oder versuche einen anderen.';
   }
 }
 void boot();

@@ -79,12 +79,12 @@ export class TouchControls {
     root.innerHTML =
       '<div class="tk-stick-zone"><div class="tk-stick-base"><div class="tk-stick-knob"></div></div></div>' +
       '<div class="tk-top">' +
-      '<button type="button" class="tk-mini" data-act="ballcam" aria-label="Ballkamera">BALL</button>' +
+      '<button type="button" class="tk-mini" data-act="ballcam" aria-label="Ballkamera">ORB</button>' +
       '<button type="button" class="tk-mini" data-act="pause" aria-label="Pause">II</button>' +
       '</div>' +
       '<div class="tk-btns">' +
       '<button type="button" class="tk-btn tk-drift" data-hold="handbrake">DRIFT</button>' +
-      '<button type="button" class="tk-btn tk-boost" data-hold="boost">BOOST</button>' +
+      '<button type="button" class="tk-btn tk-boost" data-hold="boost">SCHUB</button>' +
       '<button type="button" class="tk-btn tk-jump" data-hold="jump">SPRUNG</button>' +
       '</div>';
     area.appendChild(root);

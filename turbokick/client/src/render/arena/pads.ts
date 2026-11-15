@@ -28,7 +28,7 @@ function flatten(g: THREE.BufferGeometry): THREE.BufferGeometry {
 }
 
 /**
- * Die Boost-Felder: kleine = flache leuchtende Scheiben mit Blitz, große = Sechseck-Plattform mit schwebendem Nitro-Kanister.
+ * Die Boost-Felder: kleine = flache leuchtende Waben mit Raute, große = Sechseck-Plattform mit schwebendem Energiekristall.
  * Alles instanziert (4 Zeichenaufrufe). Wird beim ersten update() anhand von state.pads aufgebaut.
  */
 export class PadsView {
@@ -70,20 +70,18 @@ export class PadsView {
     }
     this.pop = new Float32Array(pads.length);
 
-    // kleine Scheibe: dunkler Sockel, leuchtende Fläche, Ring, Blitz
+    // kleine Ladezelle: Waben-Sockel, leuchtende Wabe, Ring, Rauten-Kern
     const sb = new Batch();
-    sb.place(new THREE.CylinderGeometry(1.08, 1.2, 0.12, 28), 0, 0.06, 0, 0, 0, 0, 1, g(0.05));
-    sb.place(flatten(new THREE.CircleGeometry(0.8, 28)), 0, 0.126, 0, 0, 0, 0, 1, g(0.7));
-    sb.place(flatten(new THREE.RingGeometry(0.88, 1.0, 40)), 0, 0.13, 0, 0, 0, 0, 1, g(1.4));
-    const bolt = new THREE.Shape();
-    bolt.moveTo(0.12, 0.5);
-    bolt.lineTo(-0.3, -0.05);
-    bolt.lineTo(-0.02, -0.05);
-    bolt.lineTo(-0.12, -0.5);
-    bolt.lineTo(0.3, 0.05);
-    bolt.lineTo(0.02, 0.05);
-    bolt.closePath();
-    sb.place(flatten(new THREE.ShapeGeometry(bolt)), 0, 0.134, 0, 0, 0, 0, 1, g(0.12));
+    sb.place(new THREE.CylinderGeometry(1.1, 1.24, 0.12, 6), 0, 0.06, 0, 0, Math.PI / 6, 0, 1, g(0.05));
+    sb.place(flatten(new THREE.CircleGeometry(0.82, 6)), 0, 0.126, 0, 0, 0, Math.PI / 6, 1, g(0.6));
+    sb.place(flatten(new THREE.RingGeometry(0.9, 1.02, 6)), 0, 0.13, 0, 0, 0, Math.PI / 6, 1, g(1.4));
+    const gem = new THREE.Shape();
+    gem.moveTo(0, 0.46);
+    gem.lineTo(0.26, 0);
+    gem.lineTo(0, -0.46);
+    gem.lineTo(-0.26, 0);
+    gem.closePath();
+    sb.place(flatten(new THREE.ShapeGeometry(gem)), 0, 0.134, 0, 0, 0, 0, 1, g(1.8));
     const smallGeo = sb.build();
     this.geos.push(smallGeo);
     const smallMat = new THREE.MeshBasicMaterial({ vertexColors: true });
@@ -98,15 +96,14 @@ export class PadsView {
     const bigGeo = bb.build();
     this.geos.push(bigGeo);
 
-    // Kanister
+    // Energiekristall: Doppelpyramide mit zwei Ringen
     const cb = new Batch();
-    cb.place(new THREE.CylinderGeometry(0.55, 0.55, 1.4, 18), 0, 0, 0, 0, 0, 0, 1, g(0.5));
-    cb.place(new THREE.CylinderGeometry(0.585, 0.585, 0.14, 18), 0, 0.45, 0, 0, 0, 0, 1, g(1.5));
-    cb.place(new THREE.CylinderGeometry(0.585, 0.585, 0.14, 18), 0, -0.45, 0, 0, 0, 0, 1, g(1.5));
-    cb.place(new THREE.CylinderGeometry(0.22, 0.5, 0.3, 18), 0, 0.85, 0, 0, 0, 0, 1, g(0.9));
-    cb.place(new THREE.CylinderGeometry(0.5, 0.4, 0.14, 18), 0, -0.77, 0, 0, 0, 0, 1, g(0.3));
-    cb.place(new THREE.BoxGeometry(0.2, 0.55, 0.06), 0, 0, 0.545, 0, 0, 0, 1, g(2.2));
-    cb.place(new THREE.BoxGeometry(0.2, 0.55, 0.06), 0, 0, -0.545, 0, 0, 0, 1, g(2.2));
+    const cry = new THREE.OctahedronGeometry(0.72, 0);
+    cry.scale(1, 1.45, 1);
+    cb.place(cry, 0, 0, 0, 0, 0, 0, 1, g(0.95));
+    cb.place(new THREE.TorusGeometry(1.0, 0.06, 6, 36), 0, 0, 0, Math.PI / 2, 0, 0, 1, g(1.8));
+    cb.place(new THREE.TorusGeometry(1.18, 0.045, 6, 36), 0, 0, 0, Math.PI / 2 - 0.5, 0, 0.35, 1, g(1.2));
+    cb.place(new THREE.OctahedronGeometry(0.16, 0), 0, 1.38, 0, 0, 0, 0, 1, g(2.2));
     const canGeo = cb.build();
     this.geos.push(canGeo);
     const canMat = new THREE.MeshBasicMaterial({ vertexColors: true });
