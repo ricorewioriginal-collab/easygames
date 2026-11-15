@@ -1,4 +1,4 @@
-/* AnMaCha Kart Rush – Service Worker (erzeugt von tools/make-pwa.py, nicht von Hand ändern).
+/* Kart Rush: Weltentour – Service Worker (erzeugt von tools/make-pwa.py, nicht von Hand ändern).
    Netz zuerst: jeder Start holt den aktuellen Stand (der Browser prüft per ETag, große Dateien kommen bei „unverändert“ nicht neu).
    Fällt das Netz aus oder antwortet es länger als 4 s, kommt die zuletzt geladene Fassung aus dem Cache – so läuft das Spiel auch offline,
    sobald es einmal gespielt wurde (auch Bibliotheken von CDNs). Neue Fassung = sofort aktiv (skipWaiting/claim), alte Zwischenspeicher werden gelöscht. */

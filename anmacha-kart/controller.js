@@ -11,7 +11,7 @@ window.startController = function () {
   const full = () => { const d = document.documentElement; if (document.fullscreenElement || document.webkitFullscreenElement) return; try { const r = (d.requestFullscreen || d.webkitRequestFullscreen).call(d, { navigationUI: 'hide' }); if (r && r.then) r.then(() => { try { screen.orientation.lock('landscape').catch(() => {}); } catch (e) {} }, () => {}); } catch (e) {} };
   function screenJoin(msg) {
     stopPlay(); joined = false; clearTimeout(reT); clearInterval(joinT);
-    put(`<h2>AnMaCha Kart Rush<br><small style="font-size:14px;color:var(--y)">Handy-Lenkrad · Raum ${esc(JOIN)}</small></h2>
+    put(`<h2>Kart Rush: Weltentour<br><small style="font-size:14px;color:var(--y)">Handy-Lenkrad · Raum ${esc(JOIN)}</small></h2>
       <div class="info">${msg ? esc(msg) : 'Gib deinen Namen ein und wähle dein Sender-Logo für das Kart.'}</div>
       <input id="cn" maxlength="14" placeholder="Dein Name" value="${esc(name)}" autocomplete="off">
       <div class="chars" id="cch" style="align-self:center">${CHARS.map((c, i) => `<button class="${ch === i ? 'on' : ''}" data-ch="${i}"><b>${c.emoji}</b>${c.name}</button>`).join('')}</div>

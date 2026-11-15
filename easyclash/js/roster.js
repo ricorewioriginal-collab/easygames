@@ -66,8 +66,8 @@
     { id: 'ta-sturmkron', n: 'Sturmkron', sp: 'dive', d: 'Herrscher des Sturms.', stats: { speed: 1.1, walk: 2.8 }, look: { kind: 'bird', skin: '#f4d974', top: '#f4d974', wing: '#e0b83a', belly: '#fff6c8', legs: '#6d5a1a', beak: '#5a4a1a', hat: { type: 'crown' }, fx: '#ffee58' } },
     { id: 'ta-mondhueter', n: 'Mondhüter', sp: 'upper', d: 'Stiller Beschützer des Mondlichts.', stats: {}, look: { kind: 'blob', skin: '#9a8bd6', top: '#9a8bd6', bottom: '#6a5aa6', shoes: '#6a5aa6', belly: '#e0d8ff', ears: 'bunny', earColor: '#9a8bd6', fx: '#b39ddb' } }
   ]);
-  // AnMaCha Kart Rush
-  add('anmacha-kart', 'AnMaCha Kart Rush', [
+  // Kart Rush: Weltentour
+  add('anmacha-kart', 'Kart Rush: Weltentour', [
     { id: 'kart-mia', n: 'Mia', sp: 'rush', d: 'Rennfahrerin mit Bleifuß.', stats: { walk: 2.7, speed: 1.06 }, look: { skin: '#f0c090', top: '#f4f6fb', bottom: '#ff2d95', shoes: '#ff2d95', hair: { style: 'pony', color: '#3b2314' }, hat: { type: 'helmet', color: '#ff2d95' }, fx: '#ff2d95' } },
     { id: 'kart-brumm', n: 'Brumm', sp: 'stomp', d: 'Der Bär am Steuer.', stats: { power: 1.12, weight: 1.3, walk: 2.0 }, look: { kind: 'beast', skin: '#8a5a2a', top: '#e8d8b8', bottom: '#8a5a2a', shoes: '#5a3a1a', ears: 'bear', snout: '#c49a6a', bulk: 1.25, fx: '#c4453a' } },
     { id: 'kart-luna', n: 'Luna', sp: 'spin', d: 'Die Katze mit den schnellen Krallen.', stats: { speed: 1.1, walk: 2.8 }, look: { kind: 'beast', skin: '#9aa3b8', top: '#e8ecf8', bottom: '#9aa3b8', shoes: '#6a7388', ears: 'cat', snout: '#e8ecf8', tail: '#9aa3b8', eyes: '#3f9a3a', fx: '#8b5cf6' } },

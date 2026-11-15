@@ -1,4 +1,4 @@
-/* Oma-Rennen – Touch-Steuerung wie in AnMaCha Kart Rush (aus anmacha-kart/game.js übernommen): links virtueller Joystick (lenken),
+/* Oma-Rennen – Touch-Steuerung wie in Kart Rush: Weltentour (aus anmacha-kart/game.js übernommen): links virtueller Joystick (lenken),
  * rechts 4 Tasten im Raute-Layout (unten GAS, links BREMSE, rechts DRIFT, oben ITEM). Ein Daumen zwischen zwei Nachbartasten
  * drückt beide (z. B. Gas + Drift), Wischen von Taste zu Taste wechselt sofort. st bekommt s (-1..1), g, b, d, i. */
 (function () {

@@ -38,7 +38,7 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | AnMaCha Tower Defense – Cinematic-3D-Tower-Defense mit Sender-Logo-Türmen: Nachtstadt, Bloom, Schatten, Kamerafahrt, 8 modellierte Turm-Arten, 25 Wellen, 3 Karten (Three.js + Vite; Quelltext in [`anmacha-tower-defense-src/`](anmacha-tower-defense-src/), gebautes Ergebnis eingecheckt; Sounds & Musik im Browser erzeugt) | [`anmacha-tower-defense/`](anmacha-tower-defense/) |
 | Machst du mich an? – Das Quiz! – TV-Quizshow im 3D-Studio (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-quiz/`](anmacha-quiz/) |
 | AnMaCha Koffer DEALER – Dealer-Show mit 13 Flightcases (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-koffer-dealer/`](anmacha-koffer-dealer/) |
-| AnMaCha Kart Rush – 3D-Arcade-Kartrennen, Splitscreen mit Handys als Lenkrad (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-kart/`](anmacha-kart/) |
+| Kart Rush: Weltentour – 3D-Arcade-Kartrennen, Splitscreen mit Handys als Lenkrad (Three.js, Sounds werden im Browser erzeugt) | [`anmacha-kart/`](anmacha-kart/) |
 | AnMaCha Casino – 3D-Casino mit Spielgeld (€/$): 18 Spielautomaten (u. a. Gold Reels mit Sender-Logos, Expanding Wild im Tempel des Anubis, Walking Wilds in Star Fruits, Nugget-Feature mit bis zu 3 Feldern, Freispiele mit Upgrade, klebenden Wilds und Multiplikator, Bonusspiele mit Schatzwahl und Bonusrad, Buch-Freispiele, 243 Wege, Hold & Win mit Jackpots, Wild-Respin), wechselnde Glücks-Features mit Goldhammer, Nachdreh, Mystery-Jackpot, Kartenrisiko mit Farbe oder Symbol, Sonderspiel-Leiter, Roulette, Blackjack, Video-Poker, Glücksrad; Touch, Tastatur, Gamecontroller (Three.js, Sounds im Browser erzeugt; Tests: `node anmacha-gold-reels/tests/logic-tests.js`) | [`anmacha-gold-reels/`](anmacha-gold-reels/) (Ordnername bleibt) |
 | Marktrausch – Supermarkt-Simulator (3D, Handy, PC, Controller & TV), Preise, Personal, eigener Radiosender | [`anmacha-markthalle/`](anmacha-markthalle/) |
 | Urwaldlager – die große Wildnis-Show in 3D: begehbares Dschungelcamp (Holz, Wasser, Feuer, Kochen, Schlafen), Mitcamper mit eigenem Tagesablauf und Beziehungen, 12 spielbare 3D-/2D-Prüfungen plus dreiteiliges Finale, transparent simuliertes Publikum, ganze Staffel mit Ausscheidungen, Speichern & Weiterspielen (Three.js lokal eingebunden, Sounds im Browser erzeugt, PC & Handy) | [`anmacha-urwaldlager/`](anmacha-urwaldlager/) |
@@ -411,7 +411,7 @@ Eigenständiges Rollenspiel mit eigenen Helden, Welten und Monstern – modernes
 - **Stirnband-Party:** Gerät an die Stirn, die Gruppe erklärt das Wort – 60 s, ✅ Richtig / ⏭ Weiter, Runden pro Spieler/Team.
 - **Daten:** 174 Begriffe in 6 Themen (Tiere, Berufe, Länder, Persönlichkeiten, Gegenstände, Radio & Musik) in `anmacha-gesucht/data.js`. Sender-Logos: `anmacha-gesucht/logos/01..13`, Titel-Logo `logo.png`. Bestenliste (Top 10 je Spielart) lokal im Browser. Tasten: `M` Ton, `←/→` im Stirnband-Modus.
 
-## AnMaCha Kart Rush
+## Kart Rush: Weltentour
 
 - **Spiel:** Eigenes Arcade-Kartrennen (keine fremden Figuren/Strecken/Namen): 8 Karts, 2/3/5 Runden. Modi: Einzelrennen, Cup (3 Strecken, Punkte 15–1; Sonnen-Cup und Spuk-Cup), Zeitfahren (allein, Bestrunde wird lokal gespeichert).
 - **5 Strecken, 5 Welten:** Funkturm-Wiese (Bäume, gestreifte Türme), Sonnen-Strand (Meer, Palmen, Strandhütten, Segelboote), Geistergruft (Grabsteine, tote Bäume, Krypten, Geister, Fledermäuse, Nebel, Vollmond), Fantasia-Land (Riesenpilze, Regenbogen-Tore, schwebende Inseln, Lollis, Kristalle, Schloss), Neon-City (Nacht, Neonschilder).

@@ -20,10 +20,8 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#05060f">
-<title>AnMaCha Kart Rush</title>
-<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" as="script">
-<link rel="preload" href="logo.png" as="image">
+<title>Kart Rush: Weltentour</title>
+<link rel="preload" href="../vendor/three-r128.min.js" as="script">
 <style>
   :root{--c:#00E5FF;--ma:#FF2D95;--v:#8B5CF6;--o:#FF9A1F;--g:#00FF88;--y:#FFD24A;--bg:#05060f;--tx:#EAF2FF;--mut:#8FA3BD}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -317,6 +315,74 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
  #mSetup .console-progress{font-size:12px;letter-spacing:0}
  #mSetup .console-stepper{width:100%}
 }
+
+/* ===================== Weltentour: Konsolen-Oberfläche ===================== */
+@font-face{font-family:'Fredoka';font-style:normal;font-weight:300 700;font-display:swap;src:url(../vendor/fonts/fredoka-latin-wght-normal.woff2) format('woff2')}
+:root{--hm1:#00e5ff;--hm2:#ff2d95;--glass:rgba(14,18,44,.62);--edge:rgba(255,255,255,.14)}
+#menu.title{padding:0;background:linear-gradient(180deg,rgba(5,6,15,.55) 0,rgba(5,6,15,0) 22%,rgba(5,6,15,0) 48%,rgba(5,6,15,.88) 100%)}
+#menu.title #mBox{max-width:none;height:100%;margin:0;justify-content:space-between;gap:0;padding:max(14px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left))}
+#mTitle{display:flex;flex-direction:column;width:100%;height:100%;min-height:0;gap:10px}
+.hm-top{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%}
+.hm-brand{display:flex;flex-direction:column;align-items:flex-start;line-height:1;font-family:Fredoka,'Trebuchet MS',sans-serif}
+.hm-brand b{font-size:20px;font-weight:700;letter-spacing:.06em;background:linear-gradient(90deg,#fff,#bfefff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hm-brand span{font-size:11px;font-weight:600;letter-spacing:.42em;color:var(--y)}
+.hm-status{display:flex;align-items:center;gap:8px;min-width:0}
+.hm-clock{font:600 15px Fredoka,system-ui,sans-serif;color:#dfe8ff;opacity:.85}
+.hm-pad{font:600 12px system-ui,sans-serif;padding:6px 10px;border-radius:999px;background:var(--glass);border:1px solid var(--edge);white-space:nowrap;max-width:28vw;overflow:hidden;text-overflow:ellipsis}
+.hm-icon{width:42px;height:42px;border-radius:50%;border:1px solid var(--edge);background:var(--glass);font-size:18px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.hm-prof{display:flex;align-items:center;gap:8px;max-width:min(44vw,320px);height:44px;padding:0 14px 0 4px;border-radius:999px;border:1px solid var(--edge);background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);text-align:left;font-size:13px;font-weight:700;overflow:hidden}
+.hm-prof b{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;border-radius:50%;font-size:22px;background:linear-gradient(135deg,var(--hm1),var(--hm2))}
+.hm-prof span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.15}.hm-prof small{display:block;font-weight:500;color:var(--mut);font-size:11px;overflow:hidden;text-overflow:ellipsis}
+.hm-prof i{display:none}
+.hm-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;pointer-events:none}
+.hm-logo{margin:0;display:flex;flex-direction:column;align-items:center;font-family:Fredoka,'Trebuchet MS',sans-serif;line-height:.9;filter:drop-shadow(0 6px 0 rgba(0,0,0,.35)) drop-shadow(0 0 26px rgba(255,45,149,.45));animation:float 4.2s ease-in-out infinite}
+.hm-logo span{font-size:clamp(44px,9vw,104px);font-weight:700;font-style:italic;letter-spacing:.02em;background:linear-gradient(180deg,#fff 0,#fff 42%,#ffd24a 43%,#ff9a1f 70%,#ff2d95);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:2px rgba(20,10,60,.55)}
+.hm-logo small{margin-top:6px;padding:4px 18px;border-radius:999px;font-size:clamp(13px,2.2vw,20px);font-weight:700;letter-spacing:.5em;text-indent:.5em;color:#fff;background:linear-gradient(90deg,#00b8d9,#7a5cff,#ff2d95);box-shadow:0 0 24px rgba(122,92,255,.55)}
+.hm-desc{margin:14px 0 0;max-width:620px;min-height:2.6em;padding:0 12px;font-size:clamp(13px,1.8vw,16px);line-height:1.35;color:#e6eeff;text-shadow:0 2px 6px #000;transition:opacity .2s}
+.hm-tiles{display:flex;gap:clamp(8px,1.4vw,16px);width:100%;padding:14px 4px 10px;overflow-x:auto;overflow-y:visible;scroll-snap-type:x proximity;scrollbar-width:none;touch-action:pan-x;justify-content:safe center}
+.hm-tiles::-webkit-scrollbar{display:none}
+.tile{--tc:#00e5ff;--tc2:#7a5cff;position:relative;flex:0 0 auto;scroll-snap-align:center;width:clamp(118px,13vw,168px);aspect-ratio:3/3.6;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;gap:2px;padding:12px;border-radius:20px;border:2px solid rgba(255,255,255,.12);text-align:left;color:#fff;overflow:hidden;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--tc) 55%,transparent),color-mix(in srgb,var(--tc2) 70%,#05060f) 70%);box-shadow:0 10px 26px rgba(0,0,0,.45);transition:transform .18s cubic-bezier(.2,.9,.3,1.3),box-shadow .2s,border-color .2s}
+@supports not (background:color-mix(in srgb,red,blue)){.tile{background:linear-gradient(160deg,var(--tc),var(--tc2))}}
+.tile::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 40%,rgba(0,0,0,.35));pointer-events:none}
+.tile i{position:absolute;top:10px;right:8px;font-style:normal;font-size:clamp(38px,4.6vw,58px);filter:drop-shadow(0 6px 8px rgba(0,0,0,.4));transition:transform .25s}
+.tile b{position:relative;font:700 clamp(15px,1.6vw,19px)/1.05 Fredoka,'Trebuchet MS',sans-serif}
+.tile small{position:relative;font-size:11px;font-weight:600;opacity:.85}
+.tile[disabled]{opacity:.45}
+.tile:not([disabled]):hover,.tile.pf{transform:translateY(-8px) scale(1.07);border-color:#fff;box-shadow:0 0 0 3px var(--tc),0 16px 40px rgba(0,0,0,.5),0 0 34px var(--tc)}
+.tile:not([disabled]):hover i,.tile.pf i{transform:scale(1.15) rotate(-6deg)}
+.tile:active{transform:scale(.97)}
+.t-gp{--tc:#ffd24a;--tc2:#ff6a00}.t-race{--tc:#ff2d95;--tc2:#7a1fff}.t-tt{--tc:#00e5ff;--tc2:#0050c8}.t-free{--tc:#7cff6a;--tc2:#008a5a}
+.t-multi{--tc:#00ffd0;--tc2:#0a6aff}.t-garage{--tc:#ff9a1f;--tc2:#b0122a}.t-top{--tc:#c79bff;--tc2:#4a1fa8}.t-tv{--tc:#9fb4d6;--tc2:#2a3350}
+.hm-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;font-size:12px;color:var(--mut)}
+.hm-foot .back{margin:0}
+/* Leuchtrahmen für Controller/Tastatur (alle Knöpfe) */
+.nav-pad .pf:not(.tile),.nav-key .pf:not(.tile){outline:3px solid #fff!important;outline-offset:3px;box-shadow:0 0 0 6px rgba(0,229,255,.55),0 0 24px rgba(0,229,255,.7)!important;position:relative;z-index:2}
+.nav-pad .tc,.nav-pad #tbar{display:none!important}
+#navHints{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;justify-content:center;flex-wrap:wrap;gap:6px 18px;padding:8px 16px calc(8px + env(safe-area-inset-bottom,0px));background:linear-gradient(0deg,rgba(5,6,15,.92),rgba(5,6,15,0));font:600 13px system-ui,sans-serif;color:#dfe8ff;pointer-events:none}
+#navHints span{display:flex;align-items:center;gap:6px}
+.gl{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 6px;border-radius:12px;font:800 12px/1 system-ui,sans-serif;color:#fff;background:#3a4258;border:1px solid rgba(255,255,255,.35);box-shadow:0 2px 0 rgba(0,0,0,.4)}
+.gl+.gl{margin-left:-2px}
+.gl-xbox.gk-a{background:#2fa84f}.gl-xbox.gk-b{background:#d0342c}.gl-xbox.gk-x{background:#1e6fd9}.gl-xbox.gk-y{background:#e3a700}
+.gl-ps.gk-a{background:#26304a;color:#7fb2ff}.gl-ps.gk-b{background:#26304a;color:#ff6b6b}.gl-ps.gk-x{background:#26304a;color:#ff8fd6}.gl-ps.gk-y{background:#26304a;color:#4fe0b5}
+.gl-nin.gk-a,.gl-nin.gk-b,.gl-nin.gk-x,.gl-nin.gk-y{background:#2a2d36}
+.gl-key{border-radius:6px;background:#2a3044}
+.nav-pad #menu.title #mBox,.nav-key #menu.title #mBox{padding-bottom:44px}
+/* Optionen */
+.opt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;width:100%}
+.opt{padding:12px;border-radius:16px;background:var(--glass);border:1px solid var(--edge);text-align:left}.opt.wide{grid-column:1/-1}
+.opt h4{margin:0 0 8px;font-size:13px;letter-spacing:.06em;color:var(--y)}.opt .row{justify-content:flex-start;margin:4px 0}
+#opts .box{max-width:760px}
+.ctlhelp{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px 16px;font-size:13px;color:#dfe8ff}
+.ctlhelp div{display:flex;align-items:center;gap:8px}.ctlhelp h5{grid-column:1/-1;margin:8px 0 2px;color:var(--mut);font-size:11px;letter-spacing:.12em}
+.ldword{display:flex;flex-direction:column;align-items:center;font-family:Fredoka,'Trebuchet MS',sans-serif;line-height:.9}
+.ldword span{font-size:clamp(40px,10vw,88px);font-weight:700;font-style:italic;background:linear-gradient(180deg,#fff 0,#fff 42%,#ffd24a 43%,#ff2d95);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ldword small{margin-top:6px;font-size:clamp(12px,2vw,18px);font-weight:700;letter-spacing:.5em;color:#fff}
+@media (max-height:460px){.hm-logo span{font-size:clamp(34px,7vw,64px)}.hm-desc{margin-top:6px;min-height:0}.tile{width:clamp(100px,15vw,140px);aspect-ratio:1/1;padding:9px}.tile i{font-size:34px}.hm-tiles{padding-top:10px}}
+@media (max-width:560px){.hm-prof span{display:none}.hm-prof{padding:0 4px}.hm-clock{display:none}.tile{width:38vw;aspect-ratio:1/1}.hm-tiles{justify-content:flex-start}}
+@media (max-width:560px) and (orientation:portrait){#menu.title #mBox{height:auto;min-height:100%}#mTitle{height:auto;min-height:100%}.hm-hero{flex:1 0 auto;padding:18px 0 6px}
+  .hm-tiles{display:grid;grid-template-columns:1fr 1fr;overflow:visible;padding:6px 2px;gap:10px}.tile{width:auto;aspect-ratio:16/10.5;padding:10px}.tile i{font-size:32px;top:8px}.tile:not([disabled]):hover,.tile.pf{transform:scale(1.04)}}
+@media (prefers-reduced-motion:reduce){.hm-logo{animation:none}.tile{transition:none}}
 </style>
 </head>
 <body>
@@ -327,9 +393,9 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <div id="tbar" hidden><button class="ib" id="bPause" aria-label="Pause">⏸</button><button class="ib" id="bSnd" aria-label="Ton">🔊</button></div>
 <div class="tc solo" id="tcSolo"></div>
 
-<div id="raceLoad" hidden aria-live="polite"><div class="race-load-body"><div class="race-load-kicker">ANMACHA KART RUSH · NEXT RACE</div><div class="race-load-title">STRECKE</div><div class="race-load-sub">ARCADE-RENNEN</div><div class="race-load-line"><i></i></div><div class="race-load-tip">Mach dich bereit!</div></div></div>
+<div id="raceLoad" hidden aria-live="polite"><div class="race-load-body"><div class="race-load-kicker">KART RUSH · WELTENTOUR</div><div class="race-load-title">STRECKE</div><div class="race-load-sub">ARCADE-RENNEN</div><div class="race-load-line"><i></i></div><div class="race-load-tip">Mach dich bereit!</div></div></div>
 <div id="loader"><div class="ldstreaks"></div><div class="ldbox">
-  <img class="ldlogo" src="logo.png" alt="AnMaCha Kart Rush" onerror="this.hidden=true">
+  <div class="ldlogo ldword"><span>KART RUSH</span><small>WELTENTOUR</small></div>
   <div class="ldbar"><div class="ldclip"><div class="ldfill"></div></div><div class="ldflag"></div><div class="ldrider"><span>🏎️</span></div></div>
   <div class="ldrow"><span id="ldTxt">Motoren werden gestartet …</span><b id="ldPct">0 %</b></div>
   <p class="ldtip" id="ldTip"></p>
@@ -337,17 +403,22 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 
 <div id="menu" class="ov title" hidden><div class="box" id="mBox">
   <section class="mview" id="mTitle">
-    <h1><span id="brandText">AnMaCha</span><img id="brandImg" class="brand" alt="AnMaCha Kart Rush" hidden><small id="brandSub">KART RUSH</small></h1>
-    <p class="sub">Arcade-Rennen mit Sender-Logos: Driften, Mini-Turbos, Boost-Felder und Radio-Items. Solo direkt am Handy, mit Freunden auf mehreren Handys (jeder mit eigenem Rennbild) oder am TV/PC mit Handys als Controller.</p>
-    <div class="mbtns"><button class="big" id="bSolo" disabled>LADEN …</button><button class="big alt" id="bMulti" disabled>🌐 ONLINE SPIELEN</button></div>
-    <button class="sumc" id="selSum" type="button"></button>
-    <div class="row"><button class="ghost" id="bTop">🏆 Bestzeiten</button><button class="ghost" id="bMenuSnd">🔊 Ton</button></div><div class="row"><button class="big alt" id="bTv">📺 TV-MODUS</button></div>
-    <div class="info" style="font-size:13px">👥 Mehrspieler: Auf einem Handy/PC das Rennen eröffnen, auf den anderen per Code beitreten. Jeder kann sein eigenes Rennbild sehen. 📺 TV-Modus ist optional.</div>
-    <div class="row" id="tiltRow" hidden><button class="chip" id="tiltBtn">📱 Kippen zum Lenken</button><button class="chip" id="tiltInv">⇄ Richtung tauschen</button></div>
-    <div class="info" id="padInfo" hidden></div>
-    <details class="help"><summary>🎮 Steuerung &amp; Mehrspieler</summary><div class="info">PC: ↑/W Gas, ←/→ lenken, ↓ bremsen, Shift driften, Leertaste Item, Esc Pause. Handy: links Joystick = lenken, rechts 4 Tasten wie am Controller (unten GAS, links Bremse, rechts Drift, oben Item; Daumen zwischen GAS und DRIFT drückt beide). 🎮 Gamepad: Stick/Steuerkreuz, A/RT Gas, RB/X driften, Y/LB Item, B/LT bremsen.<br>Mehrspieler: Auf TV/PC können mehrere Kameras im Splitscreen angezeigt werden; auf Handys ist auch ein eigenes Rennbild möglich.</div></details>
-    <div class="info" id="loadInfo"></div>
-    <a class="back" id="backLink" href="../">← Alle Spiele</a>
+    <header class="hm-top">
+      <div class="hm-brand"><b>KART RUSH</b><span>WELTENTOUR</span></div>
+      <div class="hm-status"><span class="hm-pad" id="padInfo" hidden></span><span class="hm-clock" id="hmClock"></span><button class="hm-icon" id="bMenuSnd" aria-label="Ton">🔊</button><button class="hm-icon" id="bOpts" aria-label="Optionen">⚙️</button><button class="hm-prof" id="selSum" type="button"></button></div>
+    </header>
+    <div class="hm-hero"><h1 class="hm-logo"><span>KART RUSH</span><small>WELTENTOUR</small></h1><p class="hm-desc" id="hmDesc">Rase durch die Welten der easygames.</p></div>
+    <div class="hm-tiles" id="hmTiles">
+      <button class="tile t-gp" data-go="gp" data-nav-first data-d="Drei Strecken am Stück, Punkte nach jedem Rennen – wer holt den Pokal?"><i>🏆</i><b>Grand Prix</b><small>Cups · Punkte</small></button>
+      <button class="tile t-race" id="bSolo" data-go="race" disabled data-d="Ein Rennen auf einer Strecke deiner Wahl gegen 7 Gegner."><i>🏁</i><b>Einzelrennen</b><small>Strecke frei wählen</small></button>
+      <button class="tile t-tt" data-go="tt" data-d="Allein gegen die Uhr, ohne Items – jage deine Bestzeit."><i>⏱️</i><b>Zeitfahren</b><small>Bestzeit jagen</small></button>
+      <button class="tile t-free" data-go="free" data-d="Ohne Gegner, Zeitlimit und Rundenzwang – perfekt zum Driften üben."><i>🛞</i><b>Freies Fahren</b><small>Üben &amp; erkunden</small></button>
+      <button class="tile t-multi" id="bMulti" disabled data-d="Freunde treten per Link, QR-Code oder Code von überall bei – jedes Handy mit eigenem Rennbild, dazu Splitscreen mit Gamepads."><i>🌐</i><b>Online &amp; Handys</b><small>Bis zu 4 Fahrer</small></button>
+      <button class="tile t-garage" id="bGarage" data-d="Fahrer, Kart und Name auswählen – mit 3D-Vorschau."><i>🧰</i><b>Garage</b><small>Fahrer &amp; Kart</small></button>
+      <button class="tile t-top" id="bTop" data-d="Deine besten Runden auf jeder Strecke."><i>📊</i><b>Bestzeiten</b><small>Rekorde</small></button>
+      <button class="tile t-tv" id="bTv" data-d="Großes Bild auf dem Fernseher, Handys oder Gamepads als Controller."><i>📺</i><b>TV-Modus</b><small>Fernseher</small></button>
+    </div>
+    <div class="hm-foot"><span id="loadInfo"></span><a class="back" id="backLink" href="../">← Alle Spiele</a></div>
   </section>
   <section class="mview" id="mMulti" hidden>
     <h2>👥 MEHRSPIELER</h2>
@@ -357,10 +428,10 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
       <div class="card"><h3>BEI FREUNDEN MITFAHREN</h3><p class="sub">Scanne den QR-Code eines Freundes oder gib den vierstelligen Raumcode ein.</p><div class="row"><button class="big alt" id="bScan">📷 QR-CODE SCANNEN</button><button class="ghost" id="bJoin">🔑 Code eingeben</button></div></div>
       <div class="card"><h3>GEMEINSAM AN EINEM BILDSCHIRM</h3><p class="sub">Lokaler Splitscreen mit Tastatur und/oder verbundenen Gamepads. Keine QR-Kopplung erforderlich.</p><button class="ghost" id="multiLocal">🎮 Lokalen Splitscreen öffnen</button></div>
     </div>
-    <button class="ghost" id="multiBack">← Hauptmenü</button>
+    <button class="ghost nav-back" id="multiBack">← Hauptmenü</button>
   </section>
   <section class="mview" id="mSetup" hidden>
-    <header class="console-head"><span class="console-overline">ANMACHA KART RUSH</span><h2 id="setTitle">RENNEN EINRICHTEN</h2><div class="console-stepper" id="stepNav" aria-label="Rennvorbereitung">
+    <header class="console-head"><span class="console-overline">KART RUSH · WELTENTOUR</span><h2 id="setTitle">RENNEN EINRICHTEN</h2><div class="console-stepper" id="stepNav" data-tabs aria-label="Rennvorbereitung">
       <button type="button" data-step="0">1 · Modus</button><button type="button" data-step="1">2 · Strecke</button><button type="button" data-step="2">3 · Fahrer</button><button type="button" data-step="3">4 · Kart</button>
     </div></header>
     <div class="console-pane" data-pane="0">
@@ -379,7 +450,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
       <div class="showcase" id="kartStageMount"><div class="showcase-stage" id="kartStageSlot"></div><div class="showcase-info"><span class="showcase-kicker">DEINE 3D-RENNBÜHNE</span><strong id="kartStageNameKart">Kart wählen</strong><span id="kartStageWorldKart">Tempo · Beschleunigung · Handling · Gewicht</span><small>Das Fahrzeug auf der Bühne drehen</small></div></div>
       <h3 class="console-heading">FAHRZEUG AUSWÄHLEN</h3><div class="kcards" id="kcards"></div>
     </div>
-    <footer class="console-footer"><button class="ghost" id="bSetBack">← ZURÜCK</button><span class="console-progress" id="setupProgress">1 / 4</span><button class="big" id="bGoSetup" disabled>WEITER →</button></footer>
+    <footer class="console-footer"><button class="ghost nav-back" id="bSetBack">← ZURÜCK</button><span class="console-progress" id="setupProgress">1 / 4</span><button class="big" id="bGoSetup" data-nav-start disabled>WEITER →</button></footer>
     <details class="console-help"><summary>🎮 Steuerung, Tutorial &amp; Tipps</summary><div class="info">Gas: W/↑ oder GAS · Lenken: A/D oder Joystick · DRIFT in der Kurve halten und am Ausgang loslassen. Boostfelder und Windschatten helfen beim Überholen. Im Freien Fahren kannst du in Ruhe trainieren.</div></details>
   </section>
 </div></div>
@@ -391,7 +462,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <div class="info" id="joinMsg"></div>
   <div class="row"><button class="chip" id="joinScan">📷 QR-Code scannen</button></div>
   <div id="scanPanel" hidden style="width:min(90vw,430px)"><video id="scanVideo" playsinline muted autoplay style="display:block;width:100%;max-height:45vh;object-fit:cover;border:2px solid var(--c);border-radius:16px"></video><p class="info" id="scanStatus" aria-live="polite"></p><button class="ghost" id="scanStop">Kamera schließen</button></div>
-  <div class="row"><button class="big" id="joinGo">VERBINDEN ▶</button><button class="ghost" id="joinBack">Zurück</button></div>
+  <div class="row"><button class="big" id="joinGo">VERBINDEN ▶</button><button class="ghost nav-back" id="joinBack">Zurück</button></div>
 </div></div>
 
 <div id="lobby" class="ov" hidden><div class="box">
@@ -400,16 +471,30 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
   <div id="qr"></div><div class="code" id="code">….</div><div class="info" id="pairUrl"></div><div class="info" id="tvHint" hidden style="color:var(--y);font-weight:800">📺 OK auf der Fernbedienung drücken = Vollbild · Strecke und Start wählt ihr am Handy</div>
   <div id="lobList" style="width:100%;max-width:420px"></div>
   <div class="row"><button class="chip" id="kbToggle">⌨️ Tastatur-Spieler an diesem Gerät</button><button class="chip" id="padAdd">🎮 Gamepad-Spieler hinzufügen</button></div>
-  <button class="big" id="bGo" disabled>RENNEN STARTEN</button>
-  <button class="ghost" id="bLobBack">Zurück</button>
+  <button class="big" id="bGo" data-nav-start disabled>RENNEN STARTEN</button>
+  <button class="ghost nav-back" id="bLobBack">Zurück</button>
 </div></div>
 
-<div id="top" class="ov" hidden><div class="box"><h2>🏆 BESTZEITEN</h2><div id="topList" style="width:100%;max-width:460px;text-align:left"></div><button class="ghost" id="bTopClose">Schließen</button></div></div>
+<div id="opts" class="ov" hidden><div class="box">
+  <h2>⚙️ OPTIONEN</h2>
+  <div class="opt-grid">
+    <div class="opt"><h4>Ton</h4><div class="row" id="oSnd"></div></div>
+    <div class="opt"><h4>Lenkhilfe</h4><div class="row" id="oAssist"></div></div>
+    <div class="opt"><h4>🎮 Controller-Tasten</h4><div class="row" id="oPad"></div></div>
+    <div class="opt"><h4>📳 Vibration</h4><div class="row" id="oRumble"></div></div>
+    <div class="opt" id="tiltRow" hidden><h4>📱 Handy kippen zum Lenken</h4><div class="row"><button class="chip" id="tiltBtn">Aus</button><button class="chip" id="tiltCal">◎ Mitte setzen</button><button class="chip" id="tiltInv">⇄ Richtung</button></div><div class="row" id="oTiltSens"></div></div>
+    <div class="opt wide"><h4>Steuerung</h4><div class="ctlhelp" id="oHelp"></div></div>
+  </div>
+  <button class="ghost nav-back" id="bOptsClose">Schließen</button>
+</div></div>
 
-<div id="res" class="ov" hidden><div class="box"><h2 id="resTitle">Ergebnis</h2><p class="sub" id="resSub"></p><div id="resList" style="width:100%;max-width:460px;text-align:left"></div><button class="big" id="bNext">WEITER</button><button class="ghost" id="bMenu">Hauptmenü</button></div></div>
+<div id="top" class="ov" hidden><div class="box"><h2>🏆 BESTZEITEN</h2><div id="topList" style="width:100%;max-width:460px;text-align:left"></div><button class="ghost nav-back" id="bTopClose">Schließen</button></div></div>
 
-<div id="pause" class="ov" hidden><div class="box"><h2>PAUSE</h2><button class="big" id="bResume">WEITER</button><button class="ghost" id="bQuit">Rennen beenden</button></div></div>
+<div id="res" class="ov" hidden><div class="box"><h2 id="resTitle">Ergebnis</h2><p class="sub" id="resSub"></p><div id="resList" style="width:100%;max-width:460px;text-align:left"></div><button class="big" id="bNext" data-nav-start>WEITER</button><button class="ghost" id="bMenu">Hauptmenü</button></div></div>
 
+<div id="pause" class="ov" hidden><div class="box"><h2>PAUSE</h2><button class="big nav-back" id="bResume" data-nav-first>WEITER</button><button class="ghost" id="bQuit">Rennen beenden</button></div></div>
+
+<div id="navHints" hidden></div>
 <div id="ctl"></div>
 <div id="err" hidden><div><h2>Oh nein</h2><p class="sub" id="errTxt"></p></div></div>
 
@@ -417,9 +502,10 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <script src="chars.js?v=20261013-stage2"></script>
 <script src="track.js?v=20261013-bridges1"></script>
 <script src="sim.js?v=20261013-interactive1"></script>
-<script src="game.js?v=20261013-bridges1"></script>
+<script src="nav.js?v=20261115-wt1"></script>
+<script src="game.js?v=20261115-wt1"></script>
 <script src="../cloud/anmacha-cloud.js" data-game="kart" data-prefix="akChar,akKart,akLogo,akMute,akName,akSave,akTts" defer></script>
-<script src="../gamepad.js" data-pad="ls=none" data-pad-labels="a=Gas · Bestätigen; b=Bremsen · Zurück; rt=Gas; dpad=Lenken · Menü; ls=Lenken; lt=Bremsen; rb=Driften; x=Driften; y=Item; lb=Item; start=Pause" defer></script>
+<script src="../gamepad.js" data-pad="info" data-pad-labels="a=Gas · Bestätigen; b=Bremsen · Zurück; rt=Gas; dpad=Lenken · Menü; ls=Lenken; lt=Bremsen; rb=Driften; x=Driften; y=Item; lb=Item · Seite; start=Pause · Los" defer></script>
 <script src="../egstat.js" defer></script>
 </body>
 </html>
