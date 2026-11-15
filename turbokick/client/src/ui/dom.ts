@@ -19,6 +19,8 @@ export interface Attrs {
   'aria-label'?: string;
   'aria-pressed'?: string;
   'aria-live'?: string;
+  'aria-hidden'?: string;
+  'data-pad-first'?: string;
   'data-id'?: string;
   style?: string;
   onclick?: (e: MouseEvent) => void;
