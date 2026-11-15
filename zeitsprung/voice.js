@@ -4,8 +4,8 @@
 //    wenn der Browser sie anbietet (Microsoft Edge, Windows-App/WebView2), sonst die beste männliche deutsche Systemstimme.
 // Alle Ausgaben sprechen über diese Datei (zeitsprung/embed.js leitet speechSynthesis aus dem iframe hierher).
 
-export const VOICE_NAME = 'de-DE-FlorianMultilingualNeural';
-const PREFER = [/Florian.*(Online|Natural|Neural)/i, /Conrad.*(Online|Natural|Neural)/i, /Killian.*(Online|Natural|Neural)/i, /(Online|Natural|Neural).*Deutsch|German.*(Online|Natural)/i];
+export const VOICE_NAME = 'en-US-BrianMultilingualNeural';
+const PREFER = [/Brian.*Multilingual.*(Online|Natural|Neural)/i, /Florian.*(Online|Natural|Neural)/i, /Conrad.*(Online|Natural|Neural)/i, /Killian.*(Online|Natural|Neural)/i, /(Online|Natural|Neural).*Deutsch|German.*(Online|Natural)/i];
 const MALE = /\b(florian|conrad|killian|stefan|markus|yannick|viktor|martin|jonas|ralf|klaus|hans|male|männlich)\b/i;
 const FEMALE = /female|weiblich|seraphina|katja|amala|hedda|petra|anna|helena|vicki|marlene|louisa|elke|tanja|leni/i;
 

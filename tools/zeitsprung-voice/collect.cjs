@@ -77,6 +77,6 @@ const clauses = s => s.split(/(?<=[,:;])\s+/).map(c => c.trim()).filter(Boolean)
   const lines = [...all].filter(s => s.length > 1 && s.length < 400).sort();
   const out = path.join(ROOT, 'zeitsprung', 'vo', 'lines.json');
   fs.mkdirSync(path.dirname(out), { recursive: true });
-  fs.writeFileSync(out, JSON.stringify({ voice: 'de-DE-FlorianMultilingualNeural', lines }, null, 0));
+  fs.writeFileSync(out, JSON.stringify({ voice: 'en-US-BrianMultilingualNeural', lines }, null, 0));
   console.log('Zeilen', lines.length, 'Zeichen', lines.reduce((a, s) => a + s.length, 0));
 })();
