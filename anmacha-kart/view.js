@@ -872,7 +872,7 @@ const View = (() => {
     if (coinM) { scene.remove(coinM); coinM = null; } const cn = (S.coins || []).length; if (cn) { const cg = geo('coin', () => { const g = new T.CylinderGeometry(0.75, 0.75, 0.16, 18); g.rotateX(Math.PI / 2); return g; }); coinM = new T.InstancedMesh(cg, new T.MeshLambertMaterial({ color: 0xffc928, emissive: 0x7a4a00 }), cn); coinM.frustumCulled = false; scene.add(coinM); }
     padsM.forEach(p => scene.remove(p)); padsM = S.pads.map(p => { const m = new T.Mesh(new T.PlaneGeometry(8, 12), padMat); m.rotation.order = 'YXZ'; m.rotation.x = -Math.PI / 2; m.rotation.y = p.th + Math.PI; m.position.set(p.x, 0.08 + tr.height(p.f), p.z); scene.add(m); return m; });
     [].concat(hazM.mine, hazM.banana, rocM.rocket, rocM.rock, boomM).forEach(m => scene.remove(m)); hazM = { mine: [], banana: [] }; rocM = { rocket: [], rock: [] }; boomM = [];
-    cams.length = 0; humanIdx.forEach(i => { const k = S.karts[i]; cams.push({ k, ki: i, shake: 0, ls: 0, ang: k.th, pos: new T.Vector3(k.x, 4, k.z), cam: new T.PerspectiveCamera(66, 1, 0.5, 1400), fov: 66, kick: 0, sl: 0 }); });
+    cams.length = 0; humanIdx.forEach(i => { const k = S.karts[i]; cams.push({ k, ki: i, mode: camDef, back: false, roll: 0, snap: 1, shake: 0, ls: 0, ang: k.th, pos: new T.Vector3(k.x, 4, k.z), cam: new T.PerspectiveCamera(66, 1, 0.5, 1400), fov: 66, kick: 0, sl: 0 }); });
   }
   const poolGet = (arr, mk) => { let m = arr.find(x => !x.visible); if (!m) { m = mk(); arr.push(m); scene.add(m); } m.visible = true; return m; };
   const ip = [];
@@ -928,24 +928,32 @@ const View = (() => {
     bolts.forEach(b => { if (b.t > 0) { b.t -= dt; b.g.visible = b.t > 0 && ((time * 30) | 0) % 2 === 0; if (b.t <= 0) b.g.visible = false; } });
     skidFlush(); stepFx(dt); anim.forEach(f => f(time)); const bl = ((time * 1.5) | 0) % 2 === 0; blinkers.forEach(o => { o.visible = bl; });
   }
+  // Kameras wie auf der Konsole: 4 Modi (Standard, Nah, Weit, Motorhaube), weiche Feder, Vorausblick, Neigung im Drift, Turbo-Sichtfeld, Blick zurück.
+  const CAMS = [{ n: 'Standard', d: 12.4, h: 5.0, l: 10 }, { n: 'Nah', d: 10.2, h: 4.5, l: 12 }, { n: 'Weit', d: 17.5, h: 7.6, l: 9 }, { n: 'Motorhaube', d: -1.4, h: 2.5, l: 18, fp: 1 }];
+  let camDef = 0;
+  function camOf(ki) { return cams.find(c => c.ki === ki); }
+  function camNext(ki) { const c = camOf(ki); const m = ((c ? c.mode : camDef) + 1) % CAMS.length; if (c) { c.mode = m; c.snap = 1; } camDef = m; return CAMS[m].n; }
+  function setBack(ki, on) { const c = camOf(ki); if (c && c.back !== on) { c.back = on; c.snap = 1; } }
+  function honk(ki) { const c = camOf(ki); if (!c) return; const k = c.k; burst(k.x + Math.sin(k.th) * 2.4, 1.8, k.z + Math.cos(k.th) * 2.4, 0xffffff, 8, 4, 1.6); }
   function updateCam(c, S, dt) {
-    const k = c.k, p = ip[c.ki] || k, tgt = p.th + (k.drift ? -k.drift * 0.28 : 0); c.ang += wrap(tgt - c.ang) * Math.min(1, dt * (k.spinT > 0 ? 1.5 : 5.2));
-    const af = clamp(1 / Math.sqrt(c.cam.aspect || 1.7), 1, 1.22), dist = (12.4 + clamp(k.vf / 36, 0, 1.4) * 1.8) * af, wx = p.x - Math.sin(c.ang) * dist, wz = p.z - Math.cos(c.ang) * dist, kk = 1 - Math.exp(-dt * 10);
-    c.pos.x += (wx - c.pos.x) * kk; c.pos.z += (wz - c.pos.z) * kk; c.pos.y += ((5.0 * (0.9 + 0.1 * af) + S.tr.height(k.f) + kLift(k) * 0.6) - c.pos.y) * kk; c.cam.position.copy(c.pos);
+    const k = c.k, p = ip[c.ki] || k, M = CAMS[c.mode || 0], fp = !!M.fp, back = !!c.back, sp = clamp(k.vf / 36, 0, 1.5);
+    const tgt = p.th + (k.drift && !fp ? -k.drift * 0.28 : 0); c.ang += wrap(tgt - c.ang) * Math.min(1, dt * (fp ? 14 : k.spinT > 0 ? 1.5 : 5.2));
+    const af = clamp(1 / Math.sqrt(c.cam.aspect || 1.7), 1, 1.22), dir = c.ang + (back ? Math.PI : 0), hy = S.tr.height(k.f) + kLift(k) * (fp ? 1 : 0.6);
+    const dist = fp ? M.d : (M.d + sp * 1.2 * 1.5) * af, wx = p.x - Math.sin(dir) * dist, wz = p.z - Math.cos(dir) * dist, wy = M.h * (fp ? 1 : 0.9 + 0.1 * af) + hy;
+    const kk = c.snap || fp ? 1 : 1 - Math.exp(-dt * 10); c.snap = 0;
+    c.pos.x += (wx - c.pos.x) * kk; c.pos.z += (wz - c.pos.z) * kk; c.pos.y += (wy - c.pos.y) * (fp ? 1 : kk); c.cam.position.copy(c.pos);
     if (k.spinT > c.ls + 0.05) c.shake = 0.5; c.ls = k.spinT; if (c.shake > 0 && dt > 0) { c.shake = Math.max(0, c.shake - dt * 1.4); c.cam.position.x += (Math.random() - 0.5) * c.shake; c.cam.position.y += (Math.random() - 0.5) * c.shake * 0.6; }
-    if (c.kick > 0) { c.fov += c.kick; c.kick = 0; } const tf = 64 + clamp(k.vf / 36, 0, 1.5) * 8 + (k.boostT > 0 ? 9 : 0); c.fov += (tf - c.fov) * Math.min(1, dt * 4); c.cam.fov = c.fov;
+    if (c.kick > 0) { c.fov += c.kick; c.kick = 0; } const tf = (fp ? 72 : 64) + sp * 8 + (k.boostT > 0 ? 9 : 0); c.fov += (tf - c.fov) * Math.min(1, dt * 4); c.cam.fov = c.fov;
     c.sl += ((k.boostT > 0 ? 0.55 : 0) + clamp((k.vf - 26) / 14, 0, 1) * 0.22 - c.sl) * Math.min(1, dt * 5);   // Stärke der Geschwindigkeitslinien
-    // Cinematic fly-in on the starting grid, then settle into the chase camera before GO.
-    if (S.state === 'grid') {
-      const progress = Math.max(0, Math.min(1, (3.2 - S.count) / 2.25));
-      const ease = progress * progress * (3 - 2 * progress);
-      const theta = c.ang + (1 - ease) * 0.7;
-      const startDistance = 35, startHeight = 17;
-      c.cam.position.x = p.x - Math.sin(theta) * (startDistance * (1 - ease)) + (c.pos.x - p.x) * ease;
-      c.cam.position.z = p.z - Math.cos(theta) * (startDistance * (1 - ease)) + (c.pos.z - p.z) * ease;
-      c.cam.position.y = startHeight * (1 - ease) + c.pos.y * ease;
+    // Start: Kamera fliegt aus der Luft ein und landet vor dem LOS hinter dem Kart.
+    if (S.state === 'grid' && !fp) {
+      const e0 = clamp((3.2 - S.count) / 2.25, 0, 1), ease = e0 * e0 * (3 - 2 * e0), theta = c.ang + (1 - ease) * 0.7;
+      c.cam.position.x = p.x - Math.sin(theta) * (35 * (1 - ease)) + (c.pos.x - p.x) * ease;
+      c.cam.position.z = p.z - Math.cos(theta) * (35 * (1 - ease)) + (c.pos.z - p.z) * ease;
+      c.cam.position.y = 17 * (1 - ease) + c.pos.y * ease;
     }
-    c.cam.lookAt(p.x + Math.sin(c.ang) * 10, 1.35 + S.tr.height(k.f + 5), p.z + Math.cos(c.ang) * 10);
+    const la = M.l + sp * 3; c.cam.lookAt(p.x + Math.sin(dir) * la, (fp ? hy + 1.9 : 1.35 + S.tr.height(k.f + (back ? -5 : 5))), p.z + Math.cos(dir) * la);
+    c.roll = (c.roll || 0) + (((k.drift || 0) * (fp ? 0.07 : 0.045) + (k.steer || 0) * 0.012) * (back ? -1 : 1) - (c.roll || 0)) * Math.min(1, dt * 4); if (c.roll) c.cam.rotateZ(c.roll);
   }
   function rects(n, w, h) {
     if (n <= 1) return [[0, 0, w, h]]; const hw = (w / 2) | 0, hh = (h / 2) | 0;
@@ -1041,5 +1049,5 @@ const View = (() => {
     kmesh.forEach(m => scene.remove(m.g)); kmesh = []; boxes.forEach(b => scene.remove(b)); boxes = []; if (coinM) { scene.remove(coinM); coinM = null; } anim.forEach(f => f(time));
     renderer.setViewport(0, 0, W, H); renderer.setScissor(0, 0, W, H); renderer.render(scene, c);
   }
-  return { prepare, gallery, peek, burst, init, previewKart, warmup, perf, perfReset, setTrack, setupRace, renderRace, renderMenu, resize, rects, KCOL, get cams() { return cams; }, get ready() { return !!renderer; } };
+  return { camNext, setBack, honk, CAMS, get camMode() { return camDef; }, set camMode(m) { camDef = (m | 0) % CAMS.length; }, prepare, gallery, peek, burst, init, previewKart, warmup, perf, perfReset, setTrack, setupRace, renderRace, renderMenu, resize, rects, KCOL, get cams() { return cams; }, get ready() { return !!renderer; } };
 })();
