@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Titanparcours Presse-Kit</title>
+<meta name="robots" content="noindex">
+<style>
+@font-face{font-family:"Titan Display";src:url(../../anmacha-funkparcours/assets/fonts/titan-display.woff2) format("woff2");font-weight:800;font-style:italic;font-display:swap}
+@font-face{font-family:"Titan Cond";src:url(../../anmacha-funkparcours/assets/fonts/titan-cond.woff2) format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Titan Text";src:url(../../anmacha-funkparcours/assets/fonts/titan-text-bold.woff2) format("woff2");font-weight:700;font-display:swap}
+/* Studio-Look des Spiels: Schwarz, Arena-Blau, Orange */
+:root{--bg:#07080d;--panel:#11141f;--line:#232a40;--fg:#eef1fa;--mute:#9aa4c2;--orange:#ff7319;--gold:#ffc93a;--blue:#2d7bff;
+  --disp:"Titan Display","Arial Black",Impact,sans-serif;--cond:"Titan Cond","Arial Narrow",sans-serif;--txt:"Titan Text",system-ui,sans-serif;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 var(--txt)}
+.wrap{max-width:1120px;margin:0 auto;padding:32px max(16px,env(safe-area-inset-left)) 64px max(16px,env(safe-area-inset-right))}
+header{display:grid;gap:12px;justify-items:center;text-align:center;padding:12px 0 28px;border-bottom:1px solid var(--line);
+  background:radial-gradient(60% 80% at 50% 0%,rgba(45,123,255,.22),transparent 70%)}
+header img{width:min(420px,80vw)}
+header p{margin:0;color:var(--mute);max-width:60ch}
+h2{font:italic 800 clamp(26px,4vw,36px)/1.1 var(--disp);margin:40px 0 16px;text-transform:uppercase;letter-spacing:.01em}
+h2 span{color:var(--orange)}
+.grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));align-items:start}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:12px;align-content:start;min-width:0}
+.card h3{margin:0;font:600 20px/1.2 var(--cond);letter-spacing:.04em;text-transform:uppercase}
+.card small{color:var(--mute)}
+video,.thumb{width:100%;border-radius:10px;background:#000;display:block}
+.v916 video,.v916 .thumb{max-height:560px;object-fit:contain}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 14px;border-radius:10px;font:600 15px var(--cond);letter-spacing:.05em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:0}
+.btn.main{background:var(--orange);color:#0b0b10}
+.btn.alt{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn:hover{filter:brightness(1.12)}.btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.txt{position:relative}
+.txt pre{white-space:pre-wrap;word-break:break-word;margin:0;background:#0a0c14;border:1px solid var(--line);border-radius:10px;padding:14px;font:15px/1.5 var(--txt);color:var(--fg)}
+.txt .lbl{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.txt .lbl b{font:600 15px var(--cond);letter-spacing:.06em;text-transform:uppercase;color:var(--gold)}
+.copy.ok{background:#1fbf6a;color:#06120b}
+.cols{display:grid;gap:20px;align-items:start;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+footer{margin-top:48px;color:var(--mute);font-size:14px;text-align:center}
+footer a{color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <img src="../../anmacha-funkparcours/logo.png" alt="Titanparcours">
+  <p>Offizieller Trailer, Thumbnails und fertige Texte für TikTok, YouTube und Instagram. Alles zum Herunterladen und Kopieren. Spiel-Link: <b>ricorewi.de</b></p>
+</header>
+
+<h2>Trailer <span>· 60 Sekunden</span></h2>
+<div class="grid">
+  <div class="card">
+    <h3>YouTube · 16:9</h3>
+    <video src="titanparcours-trailer-16x9-1080p.mp4" poster="titanparcours-thumbnail-youtube-1280x720.jpg" controls preload="metadata" playsinline></video>
+    <div class="btns">
+      <a class="btn main" href="titanparcours-trailer-16x9-1080p.mp4" download>⬇ 1080p (27 MB)</a>
+      <a class="btn alt" href="../anmacha-funkparcours-trailer-16x9.mp4" download>⬇ 720p (14 MB)</a>
+    </div>
+  </div>
+  <div class="card v916">
+    <h3>TikTok · Shorts · Reels · 9:16</h3>
+    <video src="titanparcours-trailer-9x16-1080p.mp4" poster="titanparcours-thumbnail-tiktok-1080x1920.jpg" controls preload="metadata" playsinline></video>
+    <div class="btns">
+      <a class="btn main" href="titanparcours-trailer-9x16-1080p.mp4" download>⬇ 1080p (26 MB)</a>
+      <a class="btn alt" href="../anmacha-funkparcours-trailer-9x16.mp4" download>⬇ 720p (14 MB)</a>
+    </div>
+  </div>
+</div>
+
+<h2>Thumbnails</h2>
+<div class="grid">
+  <div class="card">
+    <h3>YouTube · 1280×720</h3>
+    <img class="thumb" src="titanparcours-thumbnail-youtube-1280x720.jpg" alt="Thumbnail 16:9: Schaffst du die Steilwand?">
+    <div class="btns"><a class="btn main" href="titanparcours-thumbnail-youtube-1280x720.jpg" download>⬇ Thumbnail laden</a></div>
+  </div>
+  <div class="card v916">
+    <h3>TikTok-Cover · 1080×1920</h3>
+    <img class="thumb" src="titanparcours-thumbnail-tiktok-1080x1920.jpg" alt="Thumbnail 9:16: Schaffst du die Steilwand?">
+    <div class="btns"><a class="btn main" href="titanparcours-thumbnail-tiktok-1080x1920.jpg" download>⬇ Cover laden</a></div>
+  </div>
+</div>
+
+<h2>Texte <span>· zum Kopieren</span></h2>
+<div class="cols">
+  <div class="card">
+    <h3>YouTube</h3>
+    <div class="txt"><div class="lbl"><b>Titel</b><button class="btn alt copy" type="button">Kopieren</button></div><pre>TITANPARCOURS – Offizieller Trailer | Die Hindernis-Show zum Selberspielen (kostenlos)</pre></div>
+    <div class="txt"><div class="lbl"><b>Beschreibung</b><button class="btn alt copy" type="button">Kopieren</button></div><pre>Eine Arena. Tausend Scheinwerfer. Und nur ein Ziel: ganz nach oben.
+
+Im TITANPARCOURS stürzt du dich durch die große Hindernis-Show: Stufensprung, Drehwalzen, Seilschwung, Pendelbalken, Klippenhänger, Ringschwung, Lachsleiter, Trampolin, Hangelstangen – und am Ende wartet die gefürchtete Steilwand. Ein Fehler, und du gehst baden!
+
+🏁 3 Parcours: Vorrunde, Halbfinale, Finale
+🧗 15 Hindernisse
+👥 Bis zu 4 Spieler gegeneinander auf Zeit
+📱 Dein Handy wird zum Controller (QR-Code scannen und los)
+🎮 Gamepad, Tastatur und Touch
+👻 Training mit Geist deiner Bestzeit
+
+▶ Jetzt kostenlos spielen: https://ricorewi.de
+Läuft im Browser, auf dem Handy, als Windows-App und Android-App.
+
+#Titanparcours #Hindernisparcours #BrowserGame #Gaming #Indiegame #Parkour #KostenlosSpielen #RicoReWi #easygames</pre></div>
+    <div class="txt"><div class="lbl"><b>Tags</b><button class="btn alt copy" type="button">Kopieren</button></div><pre>Titanparcours, Hindernisparcours Spiel, Hindernis Show Spiel, Parkour Game, Browserspiel kostenlos, Handy Spiel kostenlos, Partyspiel 4 Spieler, Steilwand, Seilschwung, RicoReWi, easygames, Indie Game Deutsch</pre></div>
+  </div>
+  <div class="card">
+    <h3>TikTok</h3>
+    <div class="txt"><div class="lbl"><b>Caption 1</b><button class="btn alt copy" type="button">Kopieren</button></div><pre>Ein Fehler und du gehst baden 💦 Schaffst du die Steilwand? 🧗‍♂️ Titanparcours jetzt kostenlos spielen auf ricorewi.de (Link in Bio) #titanparcours #gaming #parkour #hindernisparcours #browsergame #fyp #foryou #zocken #indiegame</pre></div>
+    <div class="txt"><div class="lbl"><b>Caption 2</b><button class="btn alt copy" type="button">Kopieren</button></div><pre>Bis zu 4 Freunde, ein Parcours, dein Handy als Controller 📱🔥 Wer ist der wahre Titan? 👑 Kostenlos auf ricorewi.de #titanparcours #partygame #gamingtiktok #fyp #spieleabend #parkour</pre></div>
+    <div class="txt"><div class="lbl"><b>Angepinnter Kommentar</b><button class="btn alt copy" type="button">Kopieren</button></div><pre>Gratis spielen, ohne Download: ricorewi.de 👉 Welches Hindernis ist am fiesesten? 👇</pre></div>
+  </div>
+  <div class="card">
+    <h3>YouTube Shorts &amp; Instagram</h3>
+    <div class="txt"><div class="lbl"><b>Shorts-Titel</b><button class="btn alt copy" type="button">Kopieren</button></div><pre>Schaffst du die STEILWAND? 🧗‍♂️ #Titanparcours #shorts</pre></div>
+    <div class="txt"><div class="lbl"><b>Shorts-Beschreibung</b><button class="btn alt copy" type="button">Kopieren</button></div><pre>15 Hindernisse, 3 Parcours, 1 Ziel: ganz nach oben. Kostenlos spielen auf https://ricorewi.de 🔥
+#Titanparcours #gaming #shorts #browsergame #parkour</pre></div>
+    <div class="txt"><div class="lbl"><b>Reels-Caption</b><button class="btn alt copy" type="button">Kopieren</button></div><pre>Eine Arena. Tausend Scheinwerfer. Und nur ein Ziel 🔥 Titanparcours – die Hindernis-Show zum Selberspielen. Kostenlos auf ricorewi.de 🔗 Link in Bio
+#titanparcours #gaming #reels #parkour #indiegame #browsergame</pre></div>
+  </div>
+</div>
+
+<footer>Titanparcours ist ein eigenständiges Spiel von RicoReWi · <a href="https://ricorewi.de" target="_blank" rel="noopener">ricorewi.de</a></footer>
+</div>
+<script>
+document.querySelectorAll('.copy').forEach(b => b.addEventListener('click', async () => {
+  const pre = b.closest('.txt').querySelector('pre'), t = pre.textContent;
+  const done = () => { b.textContent = '✓ Kopiert'; b.classList.add('ok'); setTimeout(() => { b.textContent = 'Kopieren'; b.classList.remove('ok'); }, 1600); };
+  try { await navigator.clipboard.writeText(t); done(); }
+  catch (e) { const r = document.createRange(); r.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(r); try { document.execCommand('copy'); done(); } catch (_) { b.textContent = 'Markiert – Strg+C'; } }
+}));
+</script>
+</body>
+</html>
