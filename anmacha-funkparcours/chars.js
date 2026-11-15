@@ -68,5 +68,5 @@ export function charInfo(k) {
   const e = roster().find(c => c.id === k); if (!e) return charInfo(0);
   let h = 0; for (const ch of String(k)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;   // feste Werte je Figur
   const st = STATS.map((_, i) => 2 + ((h >>> (i * 3)) % 4)), human = !(e.look && e.look.kind && e.look.kind !== 'human');
-  return { k, n: e.n, game: e.gameN || '', role: human ? 'Gaststar' : 'Maskottchen', from: e.gameN || '', motto: e.d || 'Zu Gast im Titanparcours.', st, c: (e.look && (e.look.top || e.look.skin)) || '#888' };
+  return { k, n: e.n, game: e.gameN || '', role: k === 'zo-zotik' ? 'Held von Lunaris' : human ? 'Gaststar' : 'Maskottchen', from: e.gameN || '', motto: e.d || 'Zu Gast im Titanparcours.', st, c: (e.look && (e.look.top || e.look.skin)) || '#888' };
 }

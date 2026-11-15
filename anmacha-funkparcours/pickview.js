@@ -2,6 +2,7 @@
    Drehteller mit Leuchtring in der Läuferfarbe, Spot + Konturlicht, Figur dreht sich langsam (ziehen = drehen) und jubelt bei der Wahl.
    Dazu Porträtbilder für die Karten, nacheinander im Leerlauf gerendert und für die Sitzung gemerkt. */
 import { charLook } from './chars.js';
+import { makeZotik, animZotik } from './zotikfig.js';
 
 let toonP = null;
 const toonReady = () => toonP || (toonP = new Promise((res, rej) => { if (window.ECModel) return res(); const s = document.createElement('script'); s.src = '../easyclash/js/model.js'; s.onload = res; s.onerror = () => { toonP = null; rej(new Error('Figur nicht ladbar')); }; document.head.appendChild(s); })
@@ -14,6 +15,10 @@ export function fitToon(m) { const T = window.THREE; m.updateMatrixWorld(true); 
 async function build(kit, k, color) {
   const T = window.THREE, L = charLook(k, color, kit && kit.fromRoster);
   if (L.look && kit) { const P = window.AMC && window.AMC.People, f = await (P ? P.make(kit, L.look) : kit.make(L.look)); f.root.traverse(o => { o.castShadow = !!o.isMesh; }); return { obj: f.root, fig: f, dispose: () => f.dispose() }; }
+  if (L.toon && L.toon.id === 'zo-zotik') {   // Original-Zotik aus dem Spiel ZOTIK
+    const z = makeZotik(T, matchMedia('(pointer:coarse)').matches), m = z.root; m.updateMatrixWorld(true); const h = new T.Box3().setFromObject(m).getSize(new T.Vector3()).y; m.userData.fit = Math.min(1, 1.85 / h); m.scale.setScalar(m.userData.fit);
+    return { obj: m, toon: m, zotik: z.P, tt: 0, dispose: () => m.traverse(o => { if (o.geometry) o.geometry.dispose(); }) };
+  }
   if (L.toon) {
     const M = await toonReady(), m = M.build(L.toon); m.scale.setScalar(1.12); M.apply(m, { state: 'idle' }, 1, 0); fitToon(m);
     m.traverse(o => { if (!o.isMesh) return; [].concat(o.material).forEach(mt => { if (mt.color && !mt.userData.lin) { mt.color.convertSRGBToLinear(); if (mt.emissive) mt.emissive.convertSRGBToLinear(); mt.userData.lin = true; } }); });
@@ -57,7 +62,8 @@ export function makePickView(canvas, kit) {
     if (cur) {
       if (cur.appear < 1) { cur.appear = Math.min(1, cur.appear + dt * 3.2); const e = 1 - Math.pow(1 - cur.appear, 3); cur.obj.scale.setScalar((cur.toon ? cur.toon.userData.fit || 1.12 : 1) * (0.86 + 0.14 * e)); cur.obj.position.y = (1 - e) * 0.25; }
       if (cur.fig) { cur.fig.update(dt); if (cheerT > 0 && (cheerT -= dt) <= 0) cur.fig.play('idle', { fade: 0.4 }); }
-      if (cur.toon) { cur.tt += dt; cur.F.state = cheerT > 0 ? 'win' : 'idle'; if (cheerT > 0) cheerT -= dt; window.ECModel.apply(cur.toon, cur.F, dt, cur.tt); }
+      if (cur.zotik) { cur.tt += dt; animZotik(cur.zotik, cheerT > 0 ? 'win' : 'idle', cur.tt, 0); if (cheerT > 0) cheerT -= dt; }
+      else if (cur.toon) { cur.tt += dt; cur.F.state = cheerT > 0 ? 'win' : 'idle'; if (cheerT > 0) cheerT -= dt; window.ECModel.apply(cur.toon, cur.F, dt, cur.tt); }
     }
     r.render(s, cam);
   }
@@ -98,7 +104,7 @@ export function makeThumbs(kit, cb) {
     try {
       const f = await build(kit, k, 0xff7a1f); if (!alive) { f.dispose(); return; }
       const holder = new T.Group(); holder.rotation.y = 0.38; holder.add(f.obj); s.add(holder);
-      if (f.fig) f.fig.update(0.6); if (f.toon) window.ECModel.apply(f.toon, { state: 'idle' }, 1, 0);
+      if (f.fig) f.fig.update(0.6); if (f.zotik) animZotik(f.zotik, 'idle', 0, 0); else if (f.toon) window.ECModel.apply(f.toon, { state: 'idle' }, 1, 0);
       holder.updateMatrixWorld(true); const t = Math.tan(cam.fov * Math.PI / 360);
       if (f.fig) { const top = 1.62 * (f.fig.look && f.fig.look.size || 1); cam.position.set(0, top - 0.08, 0.6 / t); cam.lookAt(0, top - 0.22, 0); }   // Brustbild
       else { const box = new T.Box3().setFromObject(f.obj), hgt = Math.max(0.4, box.max.y - box.min.y), ty = box.min.y + hgt * 0.68; cam.position.set(0, ty + hgt * 0.05, hgt * 0.4 / t); cam.lookAt(0, ty, 0); }
