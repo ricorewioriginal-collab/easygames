@@ -183,10 +183,10 @@ export class GoalsView {
     g.font = '800 18px "Segoe UI", Arial, sans-serif';
     g.shadowColor = c0;
     g.fillStyle = c0;
-    g.fillText('FUNKEN', 92, 20);
+    g.fillText('NOVA', 92, 20);
     g.shadowColor = c1;
     g.fillStyle = c1;
-    g.fillText('FROST', w - 92, 20);
+    g.fillText('FLUX', w - 92, 20);
     g.font = '900 78px "Arial Black", Impact, "Segoe UI", sans-serif';
     g.shadowColor = c0;
     g.fillStyle = '#ffffff';
@@ -222,7 +222,7 @@ export class GoalsView {
       center = String(cd);
       sub = 'ANSTOSS';
     } else if (ph === 2) {
-      center = 'TOR!';
+      center = 'TREFFER';
     } else if (ph === 3) {
       center = 'ENDE';
     } else if (state.overtime) {

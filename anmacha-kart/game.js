@@ -247,12 +247,25 @@ function initHost() {
   // Kacheln im Hauptmenü: Modus wählen und direkt zur Streckenwahl
   document.querySelectorAll('#hmTiles [data-go]').forEach(t => t.onclick = () => { if (!ready) return; save.rmode = t.dataset.go; save.duo = t.dataset.duo === '1'; persist(); openSetup('solo', 1); });
   $('bGarage').onclick = () => openSetup('solo', 2);
-  const coopGo = () => { if (!ready) return; save.coop = true; persist(); setupFor = 'multi'; renderMenu(); openLobby(); }; $('bCoop').onclick = coopGo; $('bWinz').onclick = () => { AUD.sfx.select(); location.href = 'winzflitzer/' + location.search; }; $('multiCoop').onclick = coopGo;
+  const coopGo = () => { if (!ready) return; save.coop = true; persist(); setupFor = 'multi'; renderMenu(); openLobby(); }; $('bCoop').onclick = coopGo; $('bWinz').onclick = () => { AUD.sfx.select(); openWinz(); }; $('multiCoop').onclick = coopGo;
   const hmDesc = el => { const d = el && el.dataset && el.dataset.d; if (d) $('hmDesc').textContent = d; };
   document.querySelectorAll('#hmTiles .tile').forEach(t => { t.addEventListener('focus', () => hmDesc(t)); t.addEventListener('pointerenter', () => hmDesc(t)); });
   new MutationObserver(() => { const f = document.querySelector('#hmTiles .tile.pf'); if (f) hmDesc(f); }).observe($('hmTiles'), { attributes: true, subtree: true, attributeFilter: ['class'] });
   const clock = () => { const d = new Date(); $('hmClock').textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }; clock(); setInterval(clock, 15000);
   const syncSnd = () => { if (window.RADIO) RADIO.mute(AUD.muted); $('bSnd').textContent = AUD.muted ? '🔇' : '🔊'; $('bMenuSnd').textContent = AUD.muted ? '🔇' : '🔊'; };
+  // Winzflitzer läuft eingebettet in der Kart-Rush-Oberfläche (eigene Ebene, kein Seitenwechsel); Kart Rush ruht solange
+  let winzOpen = false;
+  function openWinz() {
+    if (winzOpen) return; winzOpen = true; AUD.bed('off');
+    const f = document.createElement('iframe'); f.id = 'winzFrame'; f.title = 'Winzflitzer'; f.allow = 'autoplay; fullscreen; gamepad; vibrate';
+    const q = new URLSearchParams(location.search); q.set('embed', '1'); f.src = 'winzflitzer/?' + q.toString();
+    document.body.appendChild(f); document.body.classList.add('winz'); f.addEventListener('load', () => { try { f.focus(); f.contentWindow.focus(); } catch (e) {} });
+  }
+  function closeWinz() {
+    if (!winzOpen) return; winzOpen = false; const f = $('winzFrame'); if (f) f.remove(); document.body.classList.remove('winz');
+    lastT = performance.now(); showView('title'); if (!AUD.muted) AUD.bed('menu'); setTimeout(() => { const t = $('bWinz'); if (t) try { t.focus(); } catch (e) {} Nav.refresh(); }, 60);
+  }
+  addEventListener('message', e => { if (e.origin === location.origin && e.data && e.data.eg === 'winz-back') closeWinz(); });
   function togSnd() { AUD.setMute(!AUD.muted); syncSnd(); if (!R && !AUD.muted) AUD.bed('menu'); }
   $('bSnd').onclick = $('bMenuSnd').onclick = togSnd; syncSnd();
   // Handy: Code vom Fernseher eintippen → Seite wird zum Lenkrad (gleiche Logik wie ?join=CODE per QR)
@@ -591,7 +604,7 @@ function initHost() {
   let acc = 0, tAll = 0, skip = 0, dtAcc = 0;
   const snap = S => { for (const k of S.karts) { k.px = k.x; k.pz = k.z; k.pth = k.th; } };
   function frame(now) {
-    requestAnimationFrame(frame); const raw = now - lastT; let dt = Math.min(0.1, raw / 1000); lastT = now; tAll += dt;
+    requestAnimationFrame(frame); if (winzOpen) { lastT = now; return; } const raw = now - lastT; let dt = Math.min(0.1, raw / 1000); lastT = now; tAll += dt;
     if (!R) { dtAcc += dt; if ((menuView !== 'title' || $('menu').hidden || !$('top').hidden) && (skip = (skip + 1) % 3)) return; View.renderMenu(dtAcc, tAll); dtAcc = 0; return; }
     const live = !paused && !R.ended;
     if (live) {
@@ -612,6 +625,6 @@ function initHost() {
   addEventListener('keydown', e => { if (keyGrab) { e.preventDefault(); const f = keyGrab; keyGrab = null; f(e.key === 'Escape' ? null : e.key.toLowerCase()); return; } if (e.target && e.target.tagName === 'INPUT') return; const k = KEYS[e.key.toLowerCase()]; if (k && (R || 'lrgbdi'.includes(k) && k.length === 1)) { kb[k] = 1; if (R) e.preventDefault(); } if (e.key === 'm' || e.key === 'M') togSnd(); if (e.key === 'Escape' && R && !R.ended) $('bPause').click(); });
   addEventListener('keyup', e => { const k = KEYS[(e.key || '').toLowerCase()]; if (k) kb[k] = 0; });
   addEventListener('blur', () => { Object.keys(kb).forEach(k => kb[k] = 0); });
-  Nav.init({ racing: () => !!(R && !R.ended && !paused && $('pause').hidden) });
+  Nav.init({ racing: () => winzOpen || !!(R && !R.ended && !paused && $('pause').hidden) });
   window.__ak = { get R() { return R; }, kb, tc, save, beginSeries, get players() { return players; }, set players(v) { players = v; } };
 }

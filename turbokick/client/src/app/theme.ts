@@ -1,14 +1,14 @@
 import type { ColorMode, Settings } from './save';
 import type { TeamId } from '@shared/sim/types';
 
-/** Teamfarben („Funken“ orange, „Frost“ blau). Für Farbsehschwächen kräftigerer Helligkeitsunterschied; zusätzlich tragen die Teams unterschiedliche Symbole. */
+/** Teamfarben („Nova“ lime, „Flux“ violett). Für Farbsehschwächen kräftigerer Helligkeitsunterschied; zusätzlich tragen die Teams unterschiedliche Symbole. */
 const TEAM: Record<ColorMode, [string, string]> = {
-  standard: ['#ff7a1a', '#19c8ff'],
-  protanopia: ['#ffb000', '#3d8bff'],
-  deuteranopia: ['#ffb000', '#3d8bff'],
-  tritanopia: ['#ff5a3c', '#00d2b4'],
+  standard: ['#b4ff2e', '#a24dff'],
+  protanopia: ['#f5e663', '#5a5cff'],
+  deuteranopia: ['#f5e663', '#5a5cff'],
+  tritanopia: ['#ff4f8a', '#2ee6c8'],
 };
-export const TEAM_NAMES = ['Funken', 'Frost'] as const;
+export const TEAM_NAMES = ['Nova', 'Flux'] as const;
 export const TEAM_SYMBOL = ['▲', '◆'] as const;
 let mode: ColorMode = 'standard';
 export const teamColor = (t: TeamId): string => TEAM[mode][t];

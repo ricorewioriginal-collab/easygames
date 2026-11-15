@@ -17,7 +17,7 @@ import type { TeamId } from '@shared/sim/types';
 import type { Link } from './p2pLink';
 
 export const P2P_TIMING = { pingEvery: 4000, deadAfter: 20_000 };
-const BOT_NAMES = ['Blitz', 'Drift', 'Kolben', 'Nitro', 'Rotor', 'Funke'];
+const BOT_NAMES = ['Blitz', 'Drift', 'Kolben', 'Puls', 'Rotor', 'Funke'];
 
 export type LobbyView = P2PLobby & { meId: string };
 

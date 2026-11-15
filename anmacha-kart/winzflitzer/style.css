@@ -319,3 +319,26 @@ body.press .topbar { display: none !important; }
 
 /* Kart Rush: weiche Vignette über dem Rennbild (Tiefe, moderner Look) */
 #view{position:fixed;inset:0}#view::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(10,6,30,.28) 100%)}
+
+/* ===== Kart-Rush-Look: Winzflitzer ist ein Modus von Kart Rush (gleiche Schrift, Kopfzeile, Kacheln, Knöpfe) ===== */
+@font-face { font-family: 'Fredoka'; font-style: normal; font-weight: 300 700; font-display: swap; src: url(../../vendor/fonts/fredoka-latin-wght-normal.woff2) format('woff2'); }
+:root { --bg: #05060f; --glow: 0 0 0 3px #fff, 0 0 0 6px rgba(0, 229, 255, 0.55), 0 0 24px rgba(0, 229, 255, 0.7); }
+.topbar { background: linear-gradient(180deg, rgba(5, 6, 15, 0.75), rgba(5, 6, 15, 0)); border: 0; }
+.tbBrand { display: flex; flex-direction: column; align-items: flex-start; line-height: 1; font-family: Fredoka, 'Trebuchet MS', sans-serif; }
+.tbBrand b { font-size: 20px; font-weight: 700; letter-spacing: 0.06em; background: linear-gradient(90deg, #fff, #bfefff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tbBrand span { font-size: 11px; font-weight: 600; letter-spacing: 0.42em; color: #ffd24a; }
+.tbLogo { display: none; }
+.tbTitle { font-family: Fredoka, 'Trebuchet MS', sans-serif; font-weight: 600; color: #dfe8ff; }
+h2 { font-family: Fredoka, 'Trebuchet MS', sans-serif; font-weight: 700; color: #fff; text-shadow: 0 3px 0 rgba(120, 20, 90, 0.8), 0 0 22px rgba(255, 45, 149, 0.75); }
+h2::before { background: linear-gradient(#00e5ff, #ff2d95); }
+.tile { border: 2px solid rgba(255, 255, 255, 0.14); border-radius: 20px; box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45); }
+.tile b { font-family: Fredoka, 'Trebuchet MS', sans-serif; font-weight: 700; }
+.tile.focus, .tile:hover { border-color: #fff; box-shadow: 0 0 0 3px var(--yellow), 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 34px rgba(255, 210, 63, 0.6); }
+.tile.focus { transform: translateY(-8px) scale(1.05); }
+.btn { border-radius: 999px; }
+.btn.pri { background: linear-gradient(90deg, #ffd24a, #ff9a1f 55%, #ff2d95); color: #111; font-family: 'Trebuchet MS', sans-serif; font-weight: 900; letter-spacing: 0.06em; box-shadow: 0 0 26px rgba(255, 154, 31, 0.5); }
+.chip.on { background: linear-gradient(100deg, #ff2d95, #7a5cff); color: #fff; border-color: #fff; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25), 0 0 18px rgba(255, 45, 149, 0.6); }
+.pbar { background: linear-gradient(0deg, rgba(5, 6, 15, 0.92), rgba(5, 6, 15, 0)); border: 0; }
+.dk span { background: rgba(14, 18, 44, 0.62); }
+.boot, .load { background: radial-gradient(ellipse at 50% 20%, rgba(122, 92, 255, 0.35), transparent 55%), radial-gradient(ellipse at 50% 100%, rgba(255, 45, 149, 0.2), transparent 50%), #05060f; }
+html.embed .bootLogo { width: min(420px, 70vw); }
