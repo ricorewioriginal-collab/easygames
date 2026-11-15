@@ -1,9 +1,9 @@
 /* Spielt ein Schnellspiel im Browser (Playwright, Software-GL) mit Tastatureingaben und macht Fotos.
-   Aufruf: node tools/app-play.mjs <prefix> [arena=neon] [viewport=1000x600] [mode=quick|split|training] [port=5181] */
+   Aufruf: node tools/app-play.mjs <prefix> [arena=neon] [viewport=1000x600] [mode=quick|split|training] [port=5181] [regeln=klassik|ueberladung|mondball|chaos] */
 import { createRequire } from 'node:module';
 const require = createRequire('/tmp/claude-0/t/');
 const { chromium } = require('playwright');
-const [prefix = '/tmp/tk', arena = 'neon', vp = '1000x600', mode = 'quick', port = '5181'] =
+const [prefix = '/tmp/tk', arena = 'neon', vp = '1000x600', mode = 'quick', port = '5181', rules = 'klassik'] =
   process.argv.slice(2);
 const [W, H] = vp.split('x').map(Number);
 const b = await chromium.launch({
@@ -32,15 +32,16 @@ await p.goto(`http://localhost:${port}/`);
 await p.waitForSelector('.menu', { timeout: 60000 });
 await p.screenshot({ path: `${prefix}-menu.png` });
 await p.evaluate(
-  ([a, m]) =>
+  ([a, m, r]) =>
     window.__app.store.update((d) => {
       d.lastSetup.arena = a;
+      d.lastSetup.gameMode = r;
       d.lastSetup.teamSize = 1;
       d.lastSetup.minutes = 1;
       d.lastSetup.difficulty = 'normal';
       d.settings.quality = 'low';
     }),
-  [arena, mode],
+  [arena, mode, rules],
 );
 await p.evaluate(() => window.__app.go('play'));
 await p.waitForSelector('.chip');

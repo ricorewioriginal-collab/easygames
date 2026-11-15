@@ -323,6 +323,52 @@ describe('Regeln', () => {
     }
   });
 
+  it('Überladung: voll geladener Orb zählt doppelt, danach wieder leer', () => {
+    const sim = makeSim([0, 1], { training: false, mode: 'ueberladung' });
+    const s = sim.state;
+    s.lastTouch = 0;
+    s.charge = 100;
+    s.chargeTeam = 0;
+    sim.setBall([0, 2, 44], [0, 0, 30]);
+    let g: Extract<SimEvent, { t: 'goal' }> | undefined;
+    for (let i = 0; i < 40 && !g; i++) g = sim.step([]).find((e) => e.t === 'goal') as typeof g;
+    expect(g?.points).toBe(2);
+    expect(s.score[0]).toBe(2);
+    expect(s.charge).toBe(0);
+    // Klassisch: gleiche Lage zählt nur einfach
+    const k = makeSim([0, 1], { training: false });
+    k.state.lastTouch = 0;
+    k.state.charge = 100;
+    k.state.chargeTeam = 0;
+    k.setBall([0, 2, 44], [0, 0, 30]);
+    for (let i = 0; i < 40; i++) k.step([]);
+    expect(k.state.score[0]).toBe(1);
+  });
+
+  it('Turboring gibt Energie und Tempo, dann Pause; Mondball halbiert die Schwerkraft', () => {
+    const sim = makeSim([0], { training: false, mode: 'chaos' });
+    const s = sim.state;
+    const ring = s.rings[0]!;
+    const car = s.cars[0]!;
+    car.boost = 0;
+    car.pos = [ring.pos[0], ring.pos[1], ring.pos[2]];
+    car.vel = [0, 0, 10];
+    const ev = sim.step([]);
+    expect(ev.some((e) => e.t === 'ring')).toBe(true);
+    expect(car.boost).toBeGreaterThanOrEqual(30);
+    expect(speed(car.vel)).toBeGreaterThan(14);
+    expect(ring.timer).toBeGreaterThan(7);
+    expect(makeSim([0]).state.rings.length).toBe(0);
+    // Mondball: Ball fällt aus 10 m deutlich langsamer
+    const drop = (mode: 'klassik' | 'mondball'): number => {
+      const m = makeSim([0], { mode });
+      m.setBall([20, 10, 20], [0, 0, 0]);
+      for (let i = 0; i < 40; i++) m.step([]);
+      return m.state.ball.pos[1];
+    };
+    expect(drop('mondball')).toBeGreaterThan(drop('klassik') + 0.5);
+  });
+
   it('Eigentor zählt für den Gegner; Torschütze und Vorlage', () => {
     const sim = makeSim([0, 0, 1], { training: false });
     const s = sim.state;

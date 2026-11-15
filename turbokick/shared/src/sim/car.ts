@@ -282,6 +282,7 @@ export function stepCar(
   raw: Partial<CarInput> | undefined,
   dt: number,
   events: SimEvent[],
+  gravity: number = T.gravity,
 ): void {
   const prevJump = car.input.jump;
   sanitizeInto(car.input, raw);
@@ -409,7 +410,7 @@ export function stepCar(
   }
 
   // Schwerkraft immer
-  vel[1] -= T.gravity * dt;
+  vel[1] -= gravity * dt;
 
   // --- Sprung gehalten
   if (car.jumpUsed && car.jumpTimer < T.jumpHoldTime) {

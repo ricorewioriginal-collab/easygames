@@ -1,4 +1,5 @@
 /** Lokale Speicherung: versioniert, validiert, beschädigungssicher. Es gibt KEINE Konten und keine Cloud – alles bleibt im Browser. */
+import { GAME_MODES, type GameMode } from '@shared/sim/types';
 export const SAVE_VERSION = 2;
 const KEY = 'turbokick.save';
 const BACKUP = 'turbokick.save.backup';
@@ -64,7 +65,7 @@ export interface SaveData {
   garage: Garage;
   achievements: Record<string, number>;
   stats: Stats;
-  lastSetup: { teamSize: 1 | 2 | 3; difficulty: Difficulty; minutes: number; arena: ArenaChoice; nitro: boolean };
+  lastSetup: { teamSize: 1 | 2 | 3; difficulty: Difficulty; minutes: number; arena: ArenaChoice; nitro: boolean; gameMode: GameMode };
 }
 
 export function defaultSave(): SaveData {
@@ -75,7 +76,7 @@ export function defaultSave(): SaveData {
     garage: { body: 'flitzer', decal: 'keins', accent: '' },
     achievements: {},
     stats: { matches: 0, wins: 0, goals: 0, assists: 0, demos: 0, saves: 0, playSeconds: 0, onlineMatches: 0, bestStreak: 0, streak: 0 },
-    lastSetup: { teamSize: 2, difficulty: 'normal', minutes: 3, arena: 'zufall', nitro: true },
+    lastSetup: { teamSize: 2, difficulty: 'normal', minutes: 3, arena: 'zufall', nitro: true, gameMode: 'klassik' },
   };
 }
 
@@ -130,6 +131,7 @@ export function sanitize(raw: unknown): SaveData {
     minutes: Math.round(num(ls.minutes, 3, 1, 10)),
     arena: oneOf(ls.arena, ['neon', 'eis', 'canyon', 'zufall'], 'zufall'),
     nitro: bool(ls.nitro, true),
+    gameMode: oneOf(ls.gameMode, GAME_MODES, 'klassik'),
   };
   return { version: SAVE_VERSION, settings, profile: { name: name || d.profile.name }, garage, achievements, stats, lastSetup };
 }

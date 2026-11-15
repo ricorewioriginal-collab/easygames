@@ -489,6 +489,61 @@ textarea.field {
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(8px);
 }
+.hud .charge {
+  position: absolute;
+  left: 50%;
+  top: calc(64px + var(--safe-t));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 10px 3px 4px;
+  border-radius: 999px;
+  background: rgba(6, 5, 18, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.7em;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  --c: var(--lime);
+}
+.hud .charge[hidden] {
+  display: none;
+}
+.hud .charge.t0 {
+  --c: var(--fire);
+}
+.hud .charge.t1 {
+  --c: var(--ice);
+}
+.hud .charge .bar {
+  width: 120px;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}
+.hud .charge .bar i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, transparent, var(--c));
+  box-shadow: 0 0 10px var(--c);
+  transition: width 0.25s ease-out;
+}
+.hud .charge span {
+  color: var(--c);
+  min-width: 7em;
+}
+.hud .charge.full {
+  animation: chargepulse 0.8s ease-in-out infinite;
+  border-color: var(--c);
+}
+@keyframes chargepulse {
+  50% {
+    box-shadow: 0 0 22px var(--c);
+  }
+}
 .scorebar .team {
   display: flex;
   align-items: center;

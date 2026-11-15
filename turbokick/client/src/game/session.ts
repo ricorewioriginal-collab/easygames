@@ -4,6 +4,7 @@ import {
   NEUTRAL_CAR_INPUT,
   TICK_DT,
   type CarInput,
+  type GameMode,
   type SimEvent,
   type SimState,
   type TeamId,
@@ -57,6 +58,7 @@ export interface LocalPlan {
   matchSeconds: number;
   arena: string;
   nitro: boolean;
+  mode?: GameMode;
   training?: boolean;
   /** Welche Fahrzeuge von Menschen an diesem Gerät gesteuert werden */
   localCars: number[];
@@ -69,6 +71,7 @@ function simFrom(plan: {
   seed: number;
   matchSeconds: number;
   nitro: boolean;
+  mode?: GameMode;
   training?: boolean;
 }): Sim {
   return new Sim({
@@ -76,6 +79,7 @@ function simFrom(plan: {
     matchSeconds: plan.matchSeconds,
     seed: plan.seed,
     pads: plan.nitro,
+    mode: plan.mode,
     training: plan.training === true,
   });
 }
@@ -227,6 +231,7 @@ export class HostMatch extends LocalMatch {
       matchSeconds: plan.matchSeconds,
       arena: plan.arena,
       nitro: plan.nitro,
+      mode: plan.mode,
       localCars: [plan.hostCar],
     });
     this.shared = true;
@@ -240,6 +245,7 @@ export class HostMatch extends LocalMatch {
         matchSeconds: plan.matchSeconds,
         arena: plan.arena,
         nitro: plan.nitro,
+        mode: plan.mode ?? 'klassik',
         you: carId,
         players: plan.players,
       };
@@ -367,6 +373,7 @@ export class GuestMatch implements MatchSession {
       seed: start.seed,
       matchSeconds: start.matchSeconds,
       nitro: start.nitro,
+      mode: start.mode,
     });
     this.sim.resetKickoff();
     this.tmp = createSimState({
@@ -374,6 +381,7 @@ export class GuestMatch implements MatchSession {
       seed: start.seed,
       matchSeconds: start.matchSeconds,
       pads: start.nitro,
+      mode: start.mode,
     });
     link.onFast((d) => this.onSnapshot(d));
     link.onMessage((raw) => this.fromHost(raw));

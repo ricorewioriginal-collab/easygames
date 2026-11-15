@@ -244,6 +244,7 @@ export function stepBall(
   goalNet: -1 | 0 | 1,
   onTouch: (carId: number) => void,
   info: BallStepInfo,
+  gravity: number = T.gravity,
 ): void {
   const n = cars.length;
   if (bases.length < n * 9) bases = new Float64Array(n * 9);
@@ -258,7 +259,7 @@ export function stepBall(
   const w = ball.angVel;
   let wall = 0;
   for (let s = 0; s < sub; s++) {
-    v[1] -= T.gravity * h;
+    v[1] -= gravity * h;
     const drag = 1 - T.airDrag * h;
     v[0] *= drag;
     v[1] *= drag;

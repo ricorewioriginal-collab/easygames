@@ -142,6 +142,15 @@ function buildPads(): Array<{ pos: Vec3; big: boolean }> {
 
 export const BOOST_PADS: ReadonlyArray<{ pos: Vec3; big: boolean }> = buildPads();
 
+/** Turbo-Ringe (Modi Überladung/Chaos): zwei über den Seitenflügeln, zwei hoch über den Strafräumen, einer über dem Mittelpunkt */
+export const RING_POSITIONS: ReadonlyArray<Vec3> = [
+  [-26, 4.5, 0],
+  [26, 4.5, 0],
+  [0, 7.5, -24],
+  [0, 7.5, 24],
+  [0, 11, 0],
+];
+
 export interface KickoffSlot {
   pos: Vec3;
   /** Blickrichtung: +1 = +z (Team 0), −1 = −z */

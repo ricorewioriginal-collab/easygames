@@ -1,5 +1,5 @@
 import type { Difficulty } from '@shared/net/p2p';
-import type { TeamId } from '@shared/sim/types';
+import { GAME_MODES, type GameMode, type TeamId } from '@shared/sim/types';
 import type { LobbyView } from '../net/p2pRoom';
 import { TEAM_NAMES, TEAM_SYMBOL } from '../app/theme';
 import { t } from '../i18n';
@@ -8,7 +8,7 @@ import { btn, clear, h, toast } from './dom';
 export interface LobbyApi {
   setTeam(id: string, team: TeamId): void;
   ready(r: boolean): void;
-  config(c: { teamSize?: 1 | 2 | 3; minutes?: number; arena?: string }): void;
+  config(c: { teamSize?: 1 | 2 | 3; minutes?: number; arena?: string; mode?: GameMode }): void;
   addBot(team: TeamId, d: Difficulty): void;
   remove(id: string): void;
   start(): void;
@@ -132,12 +132,32 @@ export class LobbyPanel {
               ),
             ),
           ),
+          h('h3', null, t('play.rules')),
+          h(
+            'div',
+            { class: 'chips' },
+            ...GAME_MODES.map((g) =>
+              h(
+                'button',
+                {
+                  type: 'button',
+                  class: 'chip rule' + ((v.mode ?? 'klassik') === g ? ' on' : ''),
+                  onclick: () => api.config({ mode: g }),
+                },
+                t('rules.' + g),
+              ),
+            ),
+          ),
+          h('p', { class: 'rule-help' }, t('rules.help.' + (v.mode ?? 'klassik'))),
           h('p', null, t('lobby.fillBots')),
         )
       : h(
           'p',
           null,
-          t('lobby.hostConfig', { size: v.teamSize, minutes: v.minutes, arena: t('arena.' + v.arena) }),
+          t('lobby.hostConfig', { size: v.teamSize, minutes: v.minutes, arena: t('arena.' + v.arena) }) +
+            ' ' +
+            t('rules.' + (v.mode ?? 'klassik')).replace(/^\S+ /, '') +
+            '.',
         );
     const everyoneReady = v.slots.every((s) => s.ready || s.host || s.kind === 'bot');
     this.el.append(

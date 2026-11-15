@@ -621,6 +621,7 @@ export class Bot {
     const bz = this.bpz;
     const pred = this.pred;
     const steps = Math.min(PRED_MAX, Math.max(3, Math.round(L.horizon / PRED_STEP)));
+    pred.gravity = BALL_TUNING.gravity * (state.gravityScale || 1);
     pred.predict(bx, this.bpy, bz, this.bvx, this.bvy, this.bvz, steps);
 
     const b = this.b;
