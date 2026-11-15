@@ -1293,11 +1293,11 @@ btn('bAtk',()=>actPrimary());{const b=$('bAtk'),off=()=>{X.upHold=false};b.addEv
 let luI='',luL='',lsI='';
 function useShort(o){const t=(o.pr||'Sprechen');return /Truhe/.test(t)?'Öffnen':/Rätsel/.test(t)?'Rätsel':/Weltentor|Bunte Insel/.test(t)?'Reisen':/Siegel/.test(t)?'Siegel':/Prüfung/.test(t)?'Antreten':/Kristallslots|Casino/.test(t)?'Spielen':t.split(' ')[0].slice(0,9)}
 function updTouchBtns(){if(!TOUCH)return;let i='✋',l='Aktion',idle=false;
-  if(X.rx&&!dlg.on&&!pl.dead){i='▲';l=X.rx.n}else if(nearI&&!dlg.on&&!pl.dead){i=/Truhe/.test(nearI.pr||'')?'📦':'💬';l=useShort(nearI)}
+  if(X.rx&&!dlg.on&&!pl.dead){i='▲';l=X.rx.n}else if(nearI&&!dlg.on&&!pl.dead){i=/Truhe/.test(nearI.pr||'')?'📦':/Schiff|Steg|Boot|Nautilux/.test(nearI.pr||'')?'🚤':'💬';l=useShort(nearI)}
   else if(S.fl.naut){if(naut.on){i=NF[naut.f].em;l='Aussteigen'}else{i='🚤';l='Einsteigen'}}else idle=true;
   if(i!==luI){luI=i;$('bUseI').textContent=i}if(l!==luL){luL=l;$('bUseL').textContent=l;$('bUse').classList.toggle('idle',idle)}
   const k=SKS[selSk()],t=k.em+'|'+(k.cd?S.potions:'');if(t!==lsI){lsI=t;$('bSkI').textContent=k.em;$('bSkL').textContent=k.s;const n=$('bSkN');n.hidden=selSk()!==2;n.textContent=S.potions}
-  {const it=deckItems()[X.deck.sel],al=naut.on&&(nAir()||nSub())?'Steigen':X.deck.sub?(it?it.t.replace(/^\S+\s/,'').slice(0,12):'OK'):(it?it.t:'Angriff'),ab=$('bAtk').querySelector('.bl');if(ab&&ab.textContent!==al)ab.textContent=al}   // Aktionstaste zeigt den markierten Befehl (wie bei Kingdom Hearts)
+  {const it=X.deck.nav?deckItems()[X.deck.sel]:null,al=naut.on&&(nAir()||nSub())?'Steigen':X.deck.sub?(it?it.t.replace(/^\S+\s/,'').slice(0,12):'OK'):(it?it.t:'Angriff'),ab=$('bAtk').querySelector('.bl');if(ab&&ab.textContent!==al)ab.textContent=al}   // Aktionstaste zeigt den markierten Befehl (wie bei Kingdom Hearts)
   const dl=naut.on?(nAir()||nSub()?'Sinken':'Turbo'):'Ausweichen';if($('bDodge').lastChild.textContent!==dl)$('bDodge').lastChild.textContent=dl;
   const c=SKS[selSk()],v=pl.cd[c.cd]>0?Math.round(pl.cd[c.cd]/c.cdt*50)/50:0;if(v!==lsCd){lsCd=v;$('bSkill').querySelector('.cd').style.transform=`scaleY(${v})`}const op=(c.mp&&S.mp<c.mp)?.55:1;if(op!==lsOp){lsOp=op;$('bSkill').style.opacity=op}}
 let lsCd=-1,lsOp=-1;
@@ -3938,7 +3938,7 @@ function deckRender(){const it=deckItems();X.deck.sel=clamp(X.deck.sel,0,it.leng
   deckEl.querySelector('.dh').addEventListener('pointerdown',e=>{e.stopPropagation();if(fold&&!X.deck.sub){e.preventDefault();X.deck.open=!X.deck.open;sfx('ui');X.deck.dirty=true}else deckBack()});X.deck.dirty=false}
 addEventListener('pointerdown',e=>{if(TOUCH&&X.deck.open&&!(e.target.closest&&e.target.closest('#deck'))){X.deck.open=false;X.deck.sub=null;X.deck.sel=0;X.deck.dirty=true}},true);   /* Tippen ins Spiel klappt das Menü wieder zu */
 function deckMove(d){const n=deckItems().length;X.deck.sel=(X.deck.sel+d+n)%n;sfx('ui');X.deck.dirty=true}
-function actPrimary(){if(mode!=='play'||menuOpen||dlg.on)return;if(naut.on&&(nAir()||nSub()))return;const it=deckItems()[X.deck.sel];if(!X.deck.sub&&(!it||it.t==='Angriff')){if(nearI&&!X.rx)return interact();startAttack()}else deckExec()}
+function actPrimary(){if(mode!=='play'||menuOpen||dlg.on)return;if(naut.on&&(nAir()||nSub()))return;const it=X.deck.nav?deckItems()[X.deck.sel]:null;if(!X.deck.sub&&(!it||it.t==='Angriff')){if(nearI&&!X.rx)return interact();startAttack()}else deckExec()}
 function deckExec(){const o=deckItems()[X.deck.sel];if(!o)return;if(o.s){X.deck.sub=o.s;X.deck.sel=0;sfx('ui')}else if(o.f){if(o.off){sfx('hit');return}o.f();if(X.deck.sub&&X.deck.sub!=='tool'){X.deck.sub=null;X.deck.sel=0}if(TOUCH)X.deck.open=false}X.deck.dirty=true}
 function deckBack(){if(X.deck.sub){X.deck.sub=null;X.deck.sel=0;sfx('ui');X.deck.dirty=true}}
 function deckOpen(s){X.deck.sub=s;X.deck.sel=0;X.deck.dirty=true;if(TOUCH)specPop()}
