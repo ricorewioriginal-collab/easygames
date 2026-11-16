@@ -28,6 +28,21 @@ export interface SaveData {
   goals: string[];
   best: Record<string, number>;
   pos: { x: number; z: number; yaw: number };
+  /** Bedürfnisse 0..100 (hoch = gut) */
+  needs: { energy: number; hunger: number; hygiene: number; social: number; fun: number };
+  /** Lebensmittel zum Kochen */
+  food: number;
+  jobs: Record<string, { xp: number; shifts: number; earned: number }>;
+  /** Schichten heute: Tag und Anzahl */
+  jobDay: { d: number; n: number };
+  /** Kontakte: Freundschaft 0..100, letzter Gesprächstag */
+  rel: Record<string, { f: number; last: number }>;
+  /** Tagesziele: Tag, erledigte Ziel-IDs, Zähler */
+  daily: { d: number; done: string[]; c: Record<string, number> };
+  /** Ziel auf der Karte markiert (POI-ID) */
+  pin: string;
+  /** zuletzt drinnen (Wohnung) gespeichert */
+  inside: boolean;
   imported: boolean;
   playMs: number;
   settings: Settings;
@@ -38,6 +53,8 @@ export function defaults(): SaveData {
     v: VERSION, started: false, name: 'Alex', pronouns: 'they', body: 'Rogue', palette: 'rainbow', skin: 1,
     money: 150, rep: 0, glitter: 0, day: 1, time: .1, chapter: 1, step: 0, flags: {}, goals: [], best: {},
     pos: { x: 0, z: 18, yaw: Math.PI }, imported: false, playMs: 0,
+    needs: { energy: 85, hunger: 75, hygiene: 80, social: 60, fun: 65 }, food: 2, jobs: {}, jobDay: { d: 0, n: 0 }, rel: {},
+    daily: { d: 0, done: [], c: {} }, pin: '', inside: false,
     settings: { music: .55, sfx: .8, quality: -1, touch: -1, invertY: false, camSpeed: 1 },
   };
 }
@@ -49,7 +66,7 @@ function merge<T>(d: T, s: unknown): T {
   for (const [k, v] of Object.entries(s as Obj)) {
     if (!(k in o)) continue;
     const cur = o[k];
-    if (cur && typeof cur === 'object' && !Array.isArray(cur) && v && typeof v === 'object' && !Array.isArray(v) && k !== 'flags' && k !== 'best') o[k] = merge(cur, v);
+    if (cur && typeof cur === 'object' && !Array.isArray(cur) && v && typeof v === 'object' && !Array.isArray(v) && k !== 'flags' && k !== 'best' && k !== 'jobs' && k !== 'rel' && k !== 'c') o[k] = merge(cur, v);
     else if (v !== null && v !== undefined && typeof v === typeof cur) o[k] = v;
   }
   return d;

@@ -26,6 +26,8 @@ async function page(browser, opts = {}, pre) {
 }
 const ev = (p, fn, arg) => p.evaluate(fn, arg);
 async function dlg(p) {
+  // Auf langsamen Software-Grafiken kann der Dialog etwas später aufgehen
+  for (let i = 0; i < 25 && !(await ev(p, () => window.__pc.dialog.open)); i++) await sleep(120);
   for (let i = 0; i < 40; i++) {
     const open = await ev(p, () => {
       const d = window.__pc.dialog; if (!d.open) return false;
@@ -46,9 +48,10 @@ async function act(p) { await p.keyboard.press('Enter'); await sleep(700); }
 const S = (p) => ev(p, () => window.__pc.save.data);
 
 const browser = await chromium.launch({ args: ARGS });
+let cur = null;
 try {
   console.log('Titel und Neues Spiel');
-  const p = await page(browser);
+  const p = await page(browser); cur = p;
   check(await p.locator('.logo .l2').innerText() === 'CITY', 'Titel-Logo sichtbar');
   check(await p.locator('.mi').count() >= 5, 'Konsolen-Menü mit Einträgen');
   await p.keyboard.press('ArrowDown'); await sleep(300);
@@ -58,9 +61,10 @@ try {
   check(true, 'Charakter-Editor öffnet');
   await p.fill('#cName', 'Testi');
   await ev(p, () => document.activeElement.blur());
-  await p.keyboard.press('ArrowDown'); await sleep(200); await p.keyboard.press('ArrowRight'); await sleep(400);
+  await p.keyboard.press('ArrowDown'); await sleep(500); await p.keyboard.press('ArrowRight'); await sleep(1500);
   check((await S(p)).palette === 'progress', 'Farbwelt mit ←/→ geändert');
-  await p.keyboard.press('ArrowUp'); await sleep(200); await p.keyboard.press('ArrowUp'); await sleep(200); await p.keyboard.press('Enter');
+  for (let i = 0; i < 12 && !(await p.locator('.mi.sel b').innerText()).startsWith('Los'); i++) { await p.keyboard.press('ArrowUp'); await sleep(500); }
+  await p.keyboard.press('Enter');
   await p.waitForFunction(() => window.__pc.city.mode === 'play', null, { timeout: 60000 });
   await sleep(4500);
   check((await S(p)).name === 'Testi', 'Name übernommen');
@@ -70,7 +74,7 @@ try {
 
   console.log('Laufen und Kamera');
   const a = await ev(p, () => window.__pc.city.player.root.position.z);
-  await p.keyboard.down('KeyW'); await sleep(1800); await p.keyboard.up('KeyW');
+  await p.keyboard.down('KeyW'); await sleep(2500); await p.keyboard.up('KeyW');
   const b = await ev(p, () => window.__pc.city.player.root.position.z);
   check(b < a - .5, `W läuft vorwärts (${a.toFixed(1)} → ${b.toFixed(1)})`);
   await goTo(p, 3, 20);
@@ -81,8 +85,12 @@ try {
   await goNpc(p, 'mo'); await act(p); await dlg(p);
   let s = await S(p);
   check(s.step === 2 && !!s.flags.feel, 'Mo: Entscheidung gespeichert, Ziel Wohnung');
-  await goTo(p, 4.6, 40); await act(p); await sleep(600); await dlg(p);
-  check((await S(p)).step === 3, 'Wohnung bezogen');
+  await goTo(p, 4.6, 40); await act(p);
+  await p.waitForFunction(() => window.__pc.where === 'home' && window.__pc.dialog.open, null, { timeout: 30000 });
+  await dlg(p);
+  check((await S(p)).step === 3, 'Wohnung bezogen (begehbar)');
+  await ev(p, () => window.__pc.leaveHome());
+  await p.waitForFunction(() => window.__pc.engine.scene === window.__pc.city, null, { timeout: 20000 }); await sleep(800);
   await goNpc(p, 'jules'); await act(p); await dlg(p);
   s = await S(p);
   check(s.step === 4 && s.flags.style === 'loud', 'Jules: Weg gewählt, Unterschriften sammeln');
@@ -91,8 +99,10 @@ try {
   check(s.step === 5, 'Drei Unterschriften gesammelt');
   await goNpc(p, 'jules'); await act(p); await dlg(p);
   check((await S(p)).step === 6, 'Liste abgegeben, Ziel Club Prisma');
-  await goNpc(p, 'nova'); await act(p); await dlg(p); await sleep(900);
-  check(await ev(p, () => window.__pc.city.hour()) >= 21 || await ev(p, () => window.__pc.city.hour()) < 6, 'Vor der Tür bis 21 Uhr gewartet');
+  const h0 = await ev(p, () => window.__pc.city.hour());
+  await goNpc(p, 'nova'); await act(p); await dlg(p); await sleep(1500);
+  const h1 = await ev(p, () => window.__pc.city.hour());
+  check(h1 >= 21 || h1 < 6, `Vor der Tür bis 21 Uhr gewartet (${h0.toFixed(1)} → ${h1.toFixed(1)})`);
   await goNpc(p, 'nova'); await act(p); await dlg(p);
   await p.waitForSelector('#mg .score', { timeout: 60000 });
   check(true, 'Tanz-Battle startet');
@@ -106,13 +116,37 @@ try {
   check(s.chapter === 2 && s.money === money + 120, 'Battle gewonnen, Kapitel 1 abgeschlossen (+120 €)');
   check(s.best.dance === 99999, 'Tanz-Rekord gespeichert');
 
+  console.log('Alltag: Schicht, Handy, Wohnung');
+  await ev(p, () => { const s = window.__pc.save.data; s.time = (12 - 6) / 24; s.needs.energy = 90; });
+  await goTo(p, 34, 10); await act(p);
+  check((await p.locator('.screen .panel h3').innerText()) === 'Boutique Fabelhaft', 'Boutique öffnet mit Job');
+  const m0 = (await S(p)).money;
+  await p.keyboard.press('Enter'); await sleep(600);
+  for (let i = 0; i < 3; i++) { await ev(p, () => { const d = window.__pc.dialog; d.shown = d.full.length; if (d.menu) { d.menu.el.style.display = ''; d.menu.activate(); } else d.advance(); }); await sleep(250); }
+  await dlg(p); await sleep(1500);
+  s = await S(p);
+  check(s.money > m0 && s.jobs.shop?.shifts === 1, `Schicht gearbeitet (+${s.money - m0} €)`);
+  await p.keyboard.press('KeyP'); await sleep(600);
+  check(await p.locator('.phoneBox').count() === 1, 'Handy öffnet mit P');
+  await p.keyboard.press('Escape'); await sleep(500);
+  check(await p.locator('.screen').count() === 0, 'Handy schließt');
+  await goTo(p, 4.6, 40); await act(p); await sleep(1500);
+  if (!(await ev(p, () => window.__pc.where === 'home'))) { await ev(p, () => window.__pc.closeMenu()); await goTo(p, 4.6, 40); await act(p); }
+  await p.waitForFunction(() => window.__pc.where === 'home', null, { timeout: 30000 }); await sleep(1500);
+  await ev(p, () => { window.__pc.save.data.needs.hygiene = 10; window.__pc.homeAction('shower'); }); await sleep(1500);
+  check((await S(p)).needs.hygiene > 90, 'Duschen in der Wohnung');
+  await ev(p, () => window.__pc.leaveHome());
+  await p.waitForFunction(() => window.__pc.engine.scene === window.__pc.city, null, { timeout: 20000 }); await sleep(800);
+
   console.log('Sammeln, Orte, Pause');
   await goTo(p, -15, 24); await sleep(800);
   check((await S(p)).goals.includes('sticker0'), 'Pride-Sticker eingesammelt');
   await goTo(p, 4.6, 10); await act(p);
   check(await p.locator('.screen .panel h3').innerText() === 'Café Kaffeeklatsch', 'Café-Menü öffnet');
-  await p.keyboard.press('Enter'); await sleep(400);
-  check((await S(p)).money === s.money - 3, 'Cappuccino gekauft');
+  const cm = (await S(p)).money;
+  await p.keyboard.press('Enter'); await sleep(600);
+  const cs = await S(p);
+  check(cs.money === cm - 3, `Cappuccino gekauft (${cm} → ${cs.money})`);
   await p.keyboard.press('Escape'); await sleep(600);
   check((await p.locator('.screen .logo .l1').innerText()).toLowerCase() === 'pause', 'Esc öffnet Pausenmenü');
   await p.keyboard.press('Escape'); await sleep(400);
@@ -155,6 +189,7 @@ try {
   await o.context().close();
 } catch (e) {
   bad++; console.log('  ✗ Abbruch:', e.message);
+  if (process.env.SHOT && cur) { await cur.screenshot({ path: process.env.SHOT }).catch(() => {}); console.log(await cur.evaluate(() => JSON.stringify({ where: window.__pc.where, menu: window.__pc.menuOpen, dlg: window.__pc.dialog.open, prompt: document.querySelector('#hud .prompt')?.innerText, pos: window.__pc.city.player.root.position })).catch(() => '')); }
 } finally {
   await browser.close();
   console.log(`\n${ok} bestanden, ${bad} fehlgeschlagen`);
