@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { migrate, fromGayLife, defaults } from '../src/engine/Save';
-import { goal, talk, poi, danceResult, storyTick, hidden, marks, type StoryCtx } from '../src/game/story';
+import { goal, talk, poi, danceResult, storyTick, hidden, marks, lichtPart, lichtLight, type StoryCtx } from '../src/game/story';
+import { LICHT_CHAPTERS, lichtMax } from '../src/game/licht';
 import type { Line } from '../src/ui/ui';
 import { PALETTES, BODIES } from '../src/game/palettes';
 
@@ -50,6 +51,7 @@ describe('Story', () => {
       reward: (m, r) => { s.money += m; s.rep += r; }, step: (n) => { s.step = n; },
       dance: () => danceResult(c, true), barShift: (d) => d?.(),
       chapterDone: () => { s.chapter++; s.step = 0; },
+      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>,
     };
     // Kapitel 2
     talk(c, 'mo'); expect(s.step).toBe(1);
@@ -81,5 +83,25 @@ describe('Story', () => {
     expect(PALETTES.length).toBeGreaterThanOrEqual(12);
     expect(new Set(PALETTES.map((p) => p.id)).size).toBe(PALETTES.length);
     expect(BODIES.length).toBe(6);
+  });
+  it('erzählt „Ich bin das Licht“ als Rückblenden bis zum Ende', async () => {
+    const s = defaults(); s.chapter = 2;
+    let danced = 0;
+    const c: StoryCtx = {
+      s, toast: () => {}, hour: () => 12, skipToHour: () => {}, enterHome: (a) => a?.(), credits: () => {},
+      say: (lines: Line[], done) => { for (const l of lines) { l.choices?.[l.choices.length > 1 && l.choices[0].label.startsWith('Später') ? 1 : 0]?.fn?.(); if (typeof l.text === 'function') l.text(); } done?.(); },
+      reward: (m, r) => { s.money += m; s.rep += r; }, step: () => {}, chapterDone: () => {}, barShift: (d) => d?.(),
+      dance: () => { danced++; danceResult(c, true); },
+      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>,
+    };
+    expect(hidden(defaults(), 'leon')).toBe(true);
+    talk(c, 'leon'); await new Promise((r) => setTimeout(r, 100));
+    expect(s.flags.lichtIntro).toBe(true);
+    for (let k = 0; k < 30 && lichtPart(s) < LICHT_CHAPTERS.length; k++) { talk(c, 'leon'); await new Promise((r) => setTimeout(r, 80)); }
+    expect(lichtPart(s)).toBe(LICHT_CHAPTERS.length);
+    expect(danced).toBe(1);
+    expect(s.flags.luma_dress).toBeTruthy();
+    expect(['licht', 'glanz', 'funke']).toContain(s.flags.lichtEnd);
+    expect(lichtLight(s)).toBeLessThanOrEqual(lichtMax());
   });
 });

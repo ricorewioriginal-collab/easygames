@@ -11,7 +11,8 @@ import { CreatorScene } from './CreatorScene';
 import { DanceScene } from './minigames/DanceScene';
 import { World } from './World';
 import { BODIES } from './palettes';
-import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST } from './story';
+import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST, lichtPart, lichtLight } from './story';
+import { LICHT_CHAPTERS, lichtEnding } from './licht';
 import { HomeScene } from './HomeScene';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage, level } from './jobs';
 import { photo } from './Photo';
@@ -270,6 +271,7 @@ export class Game {
         { icon: '📣', label: 'Feed', sub: 'Was in der Szene los ist', fn: () => this.phone('feed') },
         { icon: '🩺', label: 'Gesundheit', sub: testDue(s) ? '⚠️ Test fällig!' : s.health.prep ? 'PrEP aktiv' : 'Tests, PrEP, U=U', fn: () => this.phone('health') },
         { icon: '📚', label: 'Glossar', sub: 'Begriffe aus der Szene', fn: () => this.phone('glossary') },
+        { icon: '📖', label: 'Ich bin das Licht', sub: 'Der Roman von RicoReWi – komplett lesen', fn: () => this.book() },
         { icon: '←', label: 'Handy weglegen', fn: close },
       ], close, 'phone');
     } else if (app === 'status') {
@@ -547,6 +549,7 @@ export class Game {
       <div class="side panel"><h3>${chapterLabel(s)}</h3><p><b style="color:#fff">${gl.title}</b><br>${gl.sub || ''}</p>
       <p>🌈 Pride-Sticker: ${stickers}/${STICKERS.length} · 🪩 Tanz-Rekord: ${s.best.dance || 0}<br>✨ Glitzer: ${s.glitter} · 💶 ${s.money} € · Ruf ${s.rep}</p></div>`, [
       { icon: '▶', label: 'Weiterspielen', fn: back },
+      ...(this.where === 'home' ? [{ icon: '🚪', label: 'Wohnung verlassen', sub: 'Zurück auf die Straße', fn: () => { this.closeMenu(); this.leaveHome(); } }] : []),
       { icon: '📱', label: 'Handy', sub: 'Status, Ziele, Karte, Jobs, Kontakte', fn: () => this.phone() },
       { icon: '📖', label: 'Story', sub: 'Kapitel und Entscheidungen', fn: () => this.storyMenu(() => { this.closeMenu(); this.pauseMenu(); }) },
       { icon: '👗', label: 'Kleiderschrank', sub: 'Look, Farbwelt, Pronomen', fn: () => this.fade(() => this.creator(true)) },
@@ -570,6 +573,7 @@ export class Game {
       f.bar ? 'Eigener Club: Leuchtturm am Hafen' : '',
       pick(f.proof, { press: 'Presse', city: 'Bezirksamt', face: 'direkte Konfrontation' }, 'Beweise gegen Glanz'),
       pick(f.role, { speech: 'Rede', float: 'Club-Wagen', dance: 'Vortanzen' }, 'Rolle bei der Pride'),
+      f.lichtIntro ? `Ich bin das Licht: ${Math.min(lichtPart(s), LICHT_CHAPTERS.length)}/${LICHT_CHAPTERS.length} Rückblenden · Licht ${lichtLight(s)}${f.lichtEnd ? ' · Ende „' + lichtEnding(lichtLight(s)).title + '“' : ''}` : '',
     ].filter(Boolean);
     this.openMenu(`<div class="col"><div class="logo" style="font-size:clamp(30px,5vw,52px)"><span class="l1">Story</span><small>Ein Leben in allen Farben</small></div><div class="slot"></div></div>
       <div class="side panel"><h3>Deine Entscheidungen</h3><p>${choices.length ? choices.join('<br>') : 'Noch keine – die Stadt merkt sich alles.'}</p></div>`,
@@ -683,6 +687,11 @@ export class Game {
       fire: { t: 'Feuerwache Regenbogen', d: 'Löschzug, Drehleiter und eine Kaffeemaschine, die nie ausgeht.', items: [
         { icon: '🚒', label: 'Tag der offenen Tür', sub: '1 Stunde · +12 Spaß · +2 Ruf (einmal am Tag)', fn: () => { if (s.flags.fireDay === s.day) { toast('Heute warst du schon da.'); return; } close(); this.fade(() => { s.flags.fireDay = s.day; this.pass(60); change(s, { fun: 12, social: 8 }); s.rep += 2; this.save.write(); toast('Einmal Drehleiter fahren – check! 🚒'); }); } },
         { icon: '🔥', label: 'Tipps zum Brandschutz', fn: () => { close(); this.dialog.say([{ who: 'Feuerwehr', color: '#ff4b3b', text: 'Rauchmelder in jedes Schlafzimmer, einmal im Monat testen. Kerzen nie unbeaufsichtigt – auch nicht beim Date. 😉' }, { who: 'Feuerwehr', color: '#ff4b3b', text: 'Notruf 112: Wo ist es? Was ist passiert? Wie viele Verletzte? Warten auf Rückfragen.' }]); } }] },
+      onelove: { t: 'One Love Bar', d: 'Ein Herz über der Tür, das nicht ausgeht. Hier tritt Lady Luma auf – und hier erzählt Leon seine Geschichte.', items: [
+        { icon: '✨', label: 'Leons Geschichte', sub: s.chapter < 2 ? 'ab Kapitel 2' : lichtPart(s) >= LICHT_CHAPTERS.length ? `erlebt · Ende „${lichtEnding(lichtLight(s)).title}“` : `Rückblende ${lichtPart(s) + 1}/${LICHT_CHAPTERS.length} · Licht ${lichtLight(s)}`, disabled: s.chapter < 2, fn: () => { close(); this.city.talkTo('leon'); } },
+        { icon: '🎤', label: 'Lady Luma Show ansehen', sub: s.flags.lichtEnd ? '1 Stunde · +20 Spaß · +10 Kontakte' : 'nach Leons Geschichte', disabled: !s.flags.lichtEnd, fn: () => { close(); this.fade(() => { this.pass(60); change(s, { fun: 20, social: 10 }); this.save.write(); toast('Lady Luma: „Ich bin das Licht!“ ✨'); }); } },
+        { icon: '🍸', label: 'Drink an der Bar', sub: '5 € · +8 Spaß · +6 Kontakte', fn: buy(5, 'Velvet schiebt dir das Glas rüber. 🍸', eat({ fun: 8, social: 6 })) },
+        { icon: '📖', label: 'Den Roman lesen', sub: '„Ich bin das Licht“ von RicoReWi', fn: () => { close(); this.book(); } }] },
       tramhafen: { t: 'Tram Hafen', d: 'Endstation am Regenbogenkai. Zurück in die Innenstadt in zehn Minuten.', items: [
         { icon: '🗺️', label: 'Fahrplan', sub: 'Ziel wählen', fn: () => this.phone('map') }] },
       beach: { t: 'Strandbar Sandbank', d: 'Liegestühle, Sand zwischen den Zehen und der beste Sonnenuntergang der Stadt.', items: [
@@ -762,6 +771,36 @@ export class Game {
       this.save.write(); this.city.refreshHud();
       this.dialog.say([{ who: 'Club Leuchtturm', color: '#ffd23b', text: `${guests} Gäste, Bass bis zum Morgengrauen${s.flags.rex === 'dj' ? ' und Rex an den Reglern' : ''}. Eintritt: +${pay} €, +3 Ruf.` }]);
     });
+  }
+
+  /* ---------- Roman „Ich bin das Licht“ im Handy ---------- */
+  private bookData: { title: string; sections: Array<{ label: string; title: string; p: string[] }> } | null = null;
+  async book(i = -1) {
+    const s = this.save.data;
+    this.touch.show(false);
+    const close = () => { this.closeMenu(); this.touch.show(true); };
+    const frame = (title: string, body: string) => `<div class="phoneBox book"><div class="ph"><span>${clock(s)}</span><b>${esc(title)}</b><span>📖</span></div>${body}<div class="slot"></div></div>`;
+    if (!this.bookData) {
+      this.openMenu(frame('Ich bin das Licht', '<div class="pbody"><p>Das Buch wird geladen …</p></div>'), [{ icon: '←', label: 'Zurück', fn: close }], close, 'phone');
+      try { this.bookData = await (await fetch('book/ich-bin-das-licht.json')).json(); } catch { this.openMenu(frame('Ich bin das Licht', '<div class="pbody"><p>Das Buch konnte nicht geladen werden. Bitte später nochmal versuchen.</p></div>'), [{ icon: '←', label: 'Zurück', fn: close }], close, 'phone'); return; }
+    }
+    const b = this.bookData!, n = b.sections.length;
+    if (i < 0) {
+      const last = Number(s.flags.bookS || 0);
+      this.openMenu(frame('Ich bin das Licht', '<div class="pbody"><img class="cover" src="book/cover.jpg" alt=""><p>Der Roman von RicoReWi: Leon Sommer, Lady Luma und die One Love Bar. In Pride City erzählt Leon seine Geschichte auch selbst – an der One Love Bar.</p></div>'), [
+        ...(last ? [{ icon: '🔖', label: 'Weiterlesen', sub: `${b.sections[last].label} · ${b.sections[last].title}`, fn: () => this.book(last) }] : []),
+        ...b.sections.map((x, k) => ({ icon: k === last ? '🔖' : '📄', label: x.title, sub: x.label, fn: () => this.book(k) })),
+        { icon: '←', label: 'Handy weglegen', fn: close }], close, 'phone');
+      return;
+    }
+    const x = b.sections[i]; s.flags.bookS = i; this.save.write();
+    const body = `<div class="pbody read"><p class="lab">${esc(x.label)}</p><h3>${esc(x.title)}</h3>${x.p.map((t) => (t === '∗ ∗ ∗' ? '<p class="sep">∗ ∗ ∗</p>' : `<p>${esc(t)}</p>`)).join('')}</div>`;
+    this.openMenu(frame(x.label, body), [
+      ...(i < n - 1 ? [{ icon: '▶', label: 'Nächstes Kapitel', sub: b.sections[i + 1].title, fn: () => this.book(i + 1) }] : []),
+      ...(i > 0 ? [{ icon: '◀', label: 'Vorheriges Kapitel', sub: b.sections[i - 1].title, fn: () => this.book(i - 1) }] : []),
+      { icon: '☰', label: 'Inhalt', fn: () => this.book() },
+      { icon: '←', label: 'Handy weglegen', fn: close }], close, 'phone');
+    this.overlay?.querySelector('.read')?.scrollTo(0, 0);
   }
 
   /** Abspann nach der Parade (auch aus dem Story-Menü) */

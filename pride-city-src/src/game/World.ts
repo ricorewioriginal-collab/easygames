@@ -85,7 +85,7 @@ export class World {
       const door = this.pois.find((q) => q.sign && Math.round(q.x / TILE) === ix && Math.round(q.z / TILE) === iz);
       if (door) rot = door.x > 0 ? -Math.PI / 2 : Math.PI / 2;
       let kind = BUILD[Math.floor(rnd() * BUILD.length)];
-      if (door) kind = door.id === 'club' ? 'building_H' : door.id === 'center' ? 'building_G' : door.id === 'home' ? 'building_E' : door.id === 'cafe' ? 'building_B' : door.id === 'boutique' ? 'building_F' : door.id === 'gym' ? 'building_D' : door.id === 'studio' ? 'building_A' : door.id === 'checkpoint' ? 'building_E' : door.id === 'police' ? 'building_A' : door.id === 'fire' ? 'building_G' : 'building_C';
+      if (door) kind = door.id === 'club' ? 'building_H' : door.id === 'center' ? 'building_G' : door.id === 'home' ? 'building_E' : door.id === 'cafe' ? 'building_B' : door.id === 'boutique' ? 'building_F' : door.id === 'gym' ? 'building_D' : door.id === 'studio' ? 'building_A' : door.id === 'checkpoint' ? 'building_E' : door.id === 'onelove' ? 'building_H' : door.id === 'police' ? 'building_A' : door.id === 'fire' ? 'building_G' : 'building_C';
       tasks.push(this.place(C(kind), x, .1, z, rot));
       this.colliders.push({ x, z, hx: TILE * .4, hz: TILE * .4 });
     }
@@ -111,6 +111,7 @@ export class World {
     P('checkpoint', 'Checkpoint Regenbogen', '🩺', -35.6, -10, 'CHECKPOINT', '#3ee69a');
     P('kopfkino', 'Videothek Kopfkino', '📼', 5.6, -40, 'KOPFKINO', '#ff3b6b');
     P('rosa', 'Haus Rosa', '🏮', -5.6, -40, 'HAUS ROSA', '#ff6ad5');
+    P('onelove', 'One Love Bar', '💗', 35.6, 20, 'ONE LOVE', '#ff3fb0');
     P('police', 'Polizeiwache Mitte', '🚓', 5.6, -20, 'POLIZEI', '#5b86d6');
     P('fire', 'Feuerwache Regenbogen', '🚒', -5.6, -20, 'FEUERWACHE', '#ff4b3b');
     P('park', 'Regenbogenpark', '🌳', 45, 45, undefined, undefined, 8);

@@ -27,13 +27,13 @@ export class HomeScene implements GameScene {
   private player!: Actor;
   private boxes: Box[] = [];
   readonly spots: Spot[] = [
-    { id: 'bed', label: '😴 Schlafen', x: -3.6, z: -2.2, r: 2 },
-    { id: 'shower', label: '🚿 Duschen', x: 4.6, z: -2.8, r: 1.6 },
-    { id: 'stove', label: '🍳 Kochen', x: 1.2, z: -3.1, r: 1.5 },
-    { id: 'fridge', label: '🧊 Kühlschrank', x: 2.8, z: -3.1, r: 1.4 },
-    { id: 'tv', label: '📺 Fernsehen', x: -.2, z: 1.6, r: 1.6 },
-    { id: 'wardrobe', label: '👗 Kleiderschrank', x: -5, z: 1.2, r: 1.6 },
-    { id: 'door', label: '🚪 Rausgehen', x: 0, z: 4, r: 1.4 },
+    { id: 'bed', label: '😴 Schlafen', x: -3.6, z: -2.2, r: 2.6 },
+    { id: 'shower', label: '🚿 Duschen', x: 4.8, z: -2.8, r: 1.8 },
+    { id: 'stove', label: '🍳 Kochen', x: 1.2, z: -3.1, r: 2.2 },
+    { id: 'fridge', label: '🧊 Kühlschrank', x: 2.9, z: -3.1, r: 2.2 },
+    { id: 'tv', label: '📺 Fernsehen', x: -.2, z: 1.6, r: 2.4 },
+    { id: 'wardrobe', label: '👗 Kleiderschrank', x: -5, z: 1.2, r: 2.9 },
+    { id: 'door', label: '🚪 Rausgehen', x: W / 2 - .8, z: 1.4, r: 1.5 },
   ];
   private window!: THREE.MeshBasicMaterial;
   private steam: THREE.Mesh | null = null;
@@ -44,6 +44,7 @@ export class HomeScene implements GameScene {
   static load() { return preload(HOME_FILES); }
 
   private hudT = 0;
+  private exitPos = new THREE.Vector3(W / 2 - .2, 3.4, 1.4);
   constructor(private g: Game) {}
 
   async build() {
@@ -75,23 +76,28 @@ export class HomeScene implements GameScene {
     for (let i = 0; i < 24; i++) { const u = i / 23; m4.setPosition(-W / 2 + .4 + u * (W - .8), 3.7 - Math.sin(u * Math.PI * 4) * .12, -D / 2 + .25); bulbs.setMatrixAt(i, m4); bulbs.setColorAt(i, col.set(PALETTES[0].colors[i % 6]).multiplyScalar(2)); }
     r.add(bulbs);
 
+    // Kollision: Box aus den echten Maßen des Möbelstücks (etwas kleiner, damit man nah herankommt)
     const put = async (n: string, x: number, z: number, rot = 0, s = K, box?: [number, number]) => {
       const o = await instance(n + '.gltf'); o.position.set(x, 0, z); o.rotation.y = rot; o.scale.setScalar(s); r.add(o);
-      if (box) this.boxes.push({ x, z, hx: box[0], hz: box[1] });
+      if (box) {
+        o.updateMatrixWorld(true);
+        const b = new THREE.Box3().setFromObject(o), c = b.getCenter(new THREE.Vector3());
+        this.boxes.push({ x: c.x, z: c.z, hx: Math.max(.2, (b.max.x - b.min.x) / 2 - .08), hz: Math.max(.2, (b.max.z - b.min.z) / 2 - .08) });
+      }
       return o;
     };
     await Promise.all([
       put('home/bed_double_A', -3.8, -2.9, 0, K, [1.6, 1.6]),
-      put('home/cabinet_small', -5.4, -3.7, 0, K),
+      put('home/cabinet_small', -5.4, -3.7, 0, K, [0, 0]),
       put('home/lamp_table', -5.4, -3.7, 0, K * .9).then((o) => (o.position.y = .95)),
       put('home/rug_rectangle_stripes_A', -.6, 2, Math.PI / 2, K * 1.2),
       put('home/couch_pillows', -.4, 3.4, Math.PI, K, [1.6, .6]),
       put('home/table_low', -.4, 2.1, 0, K, [.8, .5]),
-      put('home/lamp_standing', -5.3, .2, 0, K),
+      put('home/lamp_standing', -5.3, .2, 0, K, [0, 0]),
       put('home/armchair_pillows', -3.6, 1.9, Math.PI / 2, K, [.6, .6]),
       put('home/shelf_A_big', -5.6, 1.2, Math.PI / 2, K, [.4, 1]),
       put('home/book_set', -5.6, 1.2, Math.PI / 2, K * .8).then((o) => (o.position.y = 1.5)),
-      put('home/cactus_medium_A', 5.3, 3.6, 0, K),
+      put('home/cactus_medium_A', 5.3, 3.6, 0, K, [0, 0]),
       put('home/cactus_small_A', -1, -4.1, 0, K * .8).then((o) => (o.position.y = 1.55)),
       put('home/pictureframe_large_A', 2.6, -4.35, 0, K).then((o) => (o.position.y = 1.9)),
       put('kitchen/kitchencounter_sink', -.3, -3.9, 0, K, [.6, .5]),
@@ -113,8 +119,18 @@ export class HomeScene implements GameScene {
     const tray = new THREE.Mesh(new THREE.BoxGeometry(2, .12, 1.8), new THREE.MeshStandardMaterial({ color: 0xffffff })); tray.position.set(4.9, .06, -3.5); r.add(tray);
     const glass = new THREE.Mesh(new THREE.BoxGeometry(.06, 2.4, 1.8), new THREE.MeshStandardMaterial({ color: 0xbfe8ff, transparent: true, opacity: .3, roughness: .05 })); glass.position.set(3.9, 1.2, -3.5); r.add(glass);
     const head = new THREE.Mesh(new THREE.CylinderGeometry(.18, .18, .05, 16), new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: .8, roughness: .2 })); head.position.set(5.4, 2.6, -3.9); r.add(head);
-    // Tür
-    const door = new THREE.Mesh(new THREE.PlaneGeometry(1.4, .05), new THREE.MeshBasicMaterial({ color: 0xff4fa3, toneMapped: false })); door.rotation.x = -Math.PI / 2; door.position.set(0, .02, D / 2 - .1); r.add(door);
+    // Wohnungstür an der rechten Wand mit Leuchtschild „AUSGANG“ und Fußmatte
+    const dx = W / 2 - .12, dz = 1.4, wood = new THREE.MeshStandardMaterial({ color: 0x7a3fb0, roughness: .6 });
+    const door = new THREE.Mesh(new THREE.BoxGeometry(.06, 2.5, 1.3), wood); door.position.set(dx, 1.25, dz); r.add(door);
+    const trim = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .5 });
+    for (const z of [dz - .72, dz + .72]) { const post = new THREE.Mesh(new THREE.BoxGeometry(.1, 2.65, .12), trim); post.position.set(dx - .02, 1.32, z); r.add(post); }
+    const lintel = new THREE.Mesh(new THREE.BoxGeometry(.1, .12, 1.56), trim); lintel.position.set(dx - .02, 2.62, dz); r.add(lintel);
+    const knob = new THREE.Mesh(new THREE.SphereGeometry(.06, 10, 8), new THREE.MeshStandardMaterial({ color: 0xffd23b, metalness: .8, roughness: .3 })); knob.position.set(dx - .08, 1.1, dz - .45); r.add(knob);
+    const c = document.createElement('canvas'); c.width = 256; c.height = 64;
+    const g2 = c.getContext('2d')!; g2.fillStyle = '#0d3b1e'; g2.fillRect(0, 0, 256, 64); g2.font = '900 40px system-ui, sans-serif'; g2.textAlign = 'center'; g2.textBaseline = 'middle'; g2.fillStyle = '#5dff9b'; g2.fillText('🚪 AUSGANG', 128, 34);
+    const st = new THREE.CanvasTexture(c); st.colorSpace = THREE.SRGBColorSpace;
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(1.2, .3), new THREE.MeshBasicMaterial({ map: st, toneMapped: false })); sign.position.set(dx - .08, 3, dz); sign.rotation.y = -Math.PI / 2; r.add(sign);
+    const mat = new THREE.Mesh(new THREE.PlaneGeometry(1, 1.3), new THREE.MeshStandardMaterial({ color: 0xff4fa3, roughness: 1 })); mat.rotation.x = -Math.PI / 2; mat.position.set(dx - .6, .015, dz); r.add(mat);
 
     this.buildMess();
     const s = this.g.save.data;
@@ -156,12 +172,13 @@ export class HomeScene implements GameScene {
 
   enter() {
     this.showMess();
-    this.player.root.position.set(1.9, 0, 3.6);
-    this.player.root.rotation.y = Math.PI;
+    this.player.root.position.set(W / 2 - 1.2, 0, 1.4);
+    this.player.root.rotation.y = -Math.PI / 2;
     const s = this.g.save.data;
     this.player.setLook(playerLook(s));
     this.g.hud.show(true); this.g.touch.show(true);
     this.g.city.refreshHud();
+    this.g.hud.markers([], this.camera);
     hints([['move', 'Laufen'], ['a', 'Benutzen'], ['x', 'Handy'], ['y', 'Menü']]);
     music('city');
   }
@@ -207,7 +224,8 @@ export class HomeScene implements GameScene {
       else if (inp.pressed('phone')) { inp.consume('phone'); g.phone(); }
       else if (inp.pressed('map')) { inp.consume('map'); g.phone('map'); }
       else if (inp.pressed('menu') || inp.pressed('back')) { inp.consume('menu'); inp.consume('back'); g.pauseMenu(); }
-    } else g.hud.prompt(null);
+      g.hud.markers(best?.id === 'door' ? [] : [{ id: 'exit', icon: '🚪', label: 'Ausgang', pos: this.exitPos }], this.camera);
+    } else { g.hud.prompt(null); g.hud.markers([], this.camera); }
     // Kamera: von vorne schräg in den Raum, folgt leicht
     const k = Math.max(1, 1.25 / this.camera.aspect); // Hochformat: weiter weg, damit der Raum passt
     this.camera.position.set(p.x * .45 / k, 7.6 * (1 + (k - 1) * .6), 9.4 * k + p.z * .2);
