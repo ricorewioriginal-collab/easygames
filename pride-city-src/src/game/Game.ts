@@ -3,7 +3,7 @@ import { Engine } from '../engine/Engine';
 import { Save } from '../engine/Save';
 import { trackProgress, preload } from '../engine/Assets';
 import { unlock, music, vol, applyVolume, sfx } from '../engine/Audio';
-import { Loading, Dialog, Menu, el, $, hints, toast, chapterCard, bindInputMode, type Item } from '../ui/ui';
+import { Loading, Dialog, Menu, el, $, esc, hints, toast, chapterCard, bindInputMode, type Item } from '../ui/ui';
 import { Hud } from '../ui/Hud';
 import { Touch } from '../ui/Touch';
 import { CityScene, STICKERS } from './CityScene';
@@ -14,6 +14,7 @@ import { BODIES } from './palettes';
 import { CHAPTERS, goal, danceResult, NPCS } from './story';
 import { HomeScene } from './HomeScene';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage, level } from './jobs';
+import { PROFILES, profile, dateRec, dateQuestions, finishDate, canStay, DATE_STAGE, testDue, HEALTH_INFO, GLOSSARY, feed, post, bond, TEST_EVERY } from './social';
 import { NEEDS, mood, moodIcon, moodName, change, advance, minutesUntil, track, dailyState, clock, weekday, type Daily } from './life';
 
 export class Game {
@@ -218,6 +219,7 @@ export class Game {
       this.touch.show(false);
       this.openMenu(`<div class="col"><div class="panel"><h3>Bett</h3><p>Es ist ${clock(s)} Uhr. Schlafen speichert das Spiel.</p><div class="slot"></div></div></div>`, [
         { icon: '🌙', label: 'Schlafen bis 7 Uhr', sub: 'Energie voll, neuer Tag', fn: () => { back(); this.fade(() => { this.pass(minutesUntil(s, 7), true); change(s, { energy: 100 }); this.save.write(); toast(`Guten Morgen! ${weekday(s)}, Tag ${s.day}.`); }); } },
+        ...(s.flags.wild === s.day && s.settings.adult ? [{ icon: '🧺', label: 'Aufräumen', sub: 'Was für eine Nacht …', fn: () => { back(); s.flags.wild = 0; this.pass(15); h.showMess(); toast('Bett frisch bezogen, Verpackungen im Müll. 🧺'); } }] : []),
         { icon: '💤', label: 'Nickerchen (2 Stunden)', sub: '+25 Energie', fn: () => { back(); this.fade(() => { this.pass(120, true); this.save.write(); toast('Ausgeruht.'); }); } },
         { icon: '←', label: 'Zurück', fn: back },
       ], back, '');
@@ -261,6 +263,10 @@ export class Game {
         { icon: '🗺️', label: 'Karte & Tram', sub: 'Orte, Ziel markieren, hinfahren', fn: () => this.phone('map') },
         { icon: '💼', label: 'Jobs', sub: `${JOBS.length} Jobs in der Stadt`, fn: () => this.phone('jobs') },
         { icon: '👥', label: 'Kontakte', sub: `${Object.keys(s.rel).length} Leute kennengelernt`, fn: () => this.phone('contacts') },
+        { icon: '💘', label: 'Rainbow Match', sub: `Dating · ${PROFILES.filter((p) => s.dates[p.id]).length} Matches`, fn: () => this.phone('dating') },
+        { icon: '📣', label: 'Feed', sub: 'Was in der Szene los ist', fn: () => this.phone('feed') },
+        { icon: '🩺', label: 'Gesundheit', sub: testDue(s) ? '⚠️ Test fällig!' : s.health.prep ? 'PrEP aktiv' : 'Tests, PrEP, U=U', fn: () => this.phone('health') },
+        { icon: '📚', label: 'Glossar', sub: 'Begriffe aus der Szene', fn: () => this.phone('glossary') },
         { icon: '←', label: 'Handy weglegen', fn: close },
       ], close, 'phone');
     } else if (app === 'status') {
@@ -277,8 +283,27 @@ export class Game {
           { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'contacts') {
       const met = NPCS.filter((n) => s.rel[n.id]);
-      this.openMenu(frame('Kontakte', `<div class="pbody">${met.length ? met.map((n) => { const f = Number(s.rel[n.id].f) || 0; return `<p><b style="color:${n.color}">●</b> <b>${n.name}</b> <small>(${n.pron})</small><br>${'❤️'.repeat(Math.min(5, Math.ceil(f / 20)))}${'🤍'.repeat(5 - Math.min(5, Math.ceil(f / 20)))} ${f >= 80 ? 'eng befreundet' : f >= 50 ? 'befreundet' : f >= 20 ? 'bekannt' : 'neu'}</p>`; }).join('') : '<p>Noch niemand. Sprich Leute in der Stadt an!</p>'}</div>`),
+      this.openMenu(frame('Kontakte', `<div class="pbody">${met.length ? met.map((n) => { const f = Number(s.rel[n.id].f) || 0; return `<p><b style="color:${n.color}">●</b> <b>${n.name}</b> <small>(${n.pron})</small><br>${'❤️'.repeat(Math.min(5, Math.ceil(f / 20)))}${'🤍'.repeat(5 - Math.min(5, Math.ceil(f / 20)))} ${bond(f)}</p>`; }).join('') : '<p>Noch niemand. Sprich Leute in der Stadt an!</p>'}</div>`),
         [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'feed') {
+      this.openMenu(frame('Feed', `<div class="pbody">${feed(s).map((p) => `<p class="post"><b>@${esc(p.who)}</b> <small>Tag ${p.d}</small><br>${esc(p.t)}</p>`).join('')}</div>`),
+        [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'health') {
+      const due = testDue(s);
+      this.openMenu(frame('Gesundheit', `<div class="pbody"><p>${due ? '⚠️ <b>Dein Test ist fällig.</b> Geh im Checkpoint vorbei.' : '💚 Alles im grünen Bereich.'}</p><p>🧪 Letzter Test: ${s.health.test ? 'Tag ' + s.health.test : 'noch keiner'}<br>💊 PrEP: ${s.health.prep ? `aktiv, Test alle ${TEST_EVERY} Tage` : 'nicht aktiv'}<br>🎈 Kondome: ${s.inv.condom || 0} · 💧 Gleitgel: ${s.inv.lube || 0}</p>${HEALTH_INFO.map(([t, x]) => `<h4>${t}</h4><p>${x}</p>`).join('')}</div>`),
+        [{ icon: '📍', label: 'Checkpoint markieren', fn: () => { s.pin = 'checkpoint'; toast('Checkpoint auf der Karte markiert.'); close(); } }, { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'glossary') {
+      const g = GLOSSARY.filter(([, , a]) => !a || s.settings.adult);
+      this.openMenu(frame('Glossar', `<div class="pbody">${g.map(([t, x]) => `<p><b>${t}</b><br>${x}</p>`).join('')}${s.settings.adult ? '' : '<p><small>Weitere Begriffe mit „Inhalte ab 18“ in den Optionen.</small></p>'}</div>`),
+        [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'dating') {
+      this.dating();
+      return;
+    } else if (app === 'matches') {
+      const ms = PROFILES.filter((p) => s.dates[p.id]);
+      this.openMenu(frame('Matches', `<div class="pbody">${ms.length ? '<p>Wähle ein Match, um ein Date zu planen.</p>' : '<p>Noch keine Matches. Wisch los!</p>'}</div>`),
+        [...ms.map((p) => { const r = dateRec(s, p.id); return { icon: '💘', label: `${p.name}, ${p.age}`, sub: `${DATE_STAGE[r.st]}${r.plan === s.day ? ' · Date heute: ' + (r.at === 'club' ? 'Club Prisma' : 'Café') : ''}`, fn: () => this.planDate(p.id) }; }),
+          { icon: '←', label: 'Zurück', fn: () => this.phone('dating') }], () => this.phone('dating'), 'phone');
     } else if (app === 'map') {
       const pois = this.city.world.pois.filter((p) => p.id !== 'tram');
       this.openMenu(frame('Karte', `<div class="pbody"><canvas id="pmap" width="300" height="300"></canvas><p>Tram: 2 €, 10 Minuten. Oder Ziel markieren und hinlaufen.</p></div>`),
@@ -290,6 +315,97 @@ export class Game {
     }
     hints([['dpad', 'Wählen'], ['a', 'Bestätigen'], ['b', 'Zurück']]);
   }
+  /* ---------- Dating-App „Rainbow Match“: wischen wie bei Tinder ---------- */
+  private dating() {
+    const s = this.save.data;
+    const seen = (id: string) => { const v = s.flags['sw_' + id]; return v === 'y' || v === s.day; };
+    const next = PROFILES.find((p) => !seen(p.id));
+    const head = `<div class="ph"><span>${clock(s)}</span><b>💘 Rainbow Match</b><span>${PROFILES.filter((p) => s.dates[p.id]).length} ❤️</span></div>`;
+    const card = next ? `<div class="swipe" style="--c:${next.color}"><div class="pic"><span>${next.name[0]}</span><i>${next.age}</i></div>
+      <h3>${next.name}, ${next.age} <small>${next.pron}</small></h3><p>${esc(next.bio)}</p><p class="tags">${next.likes.split(', ').map((x) => `<em>${esc(x)}</em>`).join('')}</p>
+      ${s.settings.adult ? `<p class="adult">🔞 <b>${next.role}</b> · ${esc(next.into)}</p>` : ''}<div class="stamp no">NOPE</div><div class="stamp yes">LIKE</div></div>`
+      : '<div class="pbody"><p>Keine neuen Profile in deiner Nähe. Schau morgen wieder rein! 🌈</p></div>';
+    const swipe = (yes: boolean) => {
+      if (!next) return;
+      const c = this.overlay?.querySelector('.swipe') as HTMLElement | null;
+      if (c) { c.classList.add(yes ? 'goR' : 'goL'); }
+      s.flags['sw_' + next.id] = yes ? 'y' : s.day;
+      sfx(yes ? 'ok' : 'back');
+      setTimeout(() => {
+        // Match, wenn es passt: dein Ruf, deine Stimmung und ein bisschen Glück
+        if (yes && (s.rep + mood(s) / 20 + ((s.day + next.age) % 4)) >= 4) { dateRec(s, next.id); post(s, 'Rainbow Match', `Neues Match mit ${next.name}! 💘`); toast(`💘 It's a Match! ${next.name} mag dich auch.`); sfx('win'); this.save.write(); }
+        else if (yes) toast(`${next.name} hat (noch) nicht zurückgewischt.`);
+        this.dating();
+      }, 380);
+    };
+    this.openMenu(`<div class="phoneBox">${head}${card}<div class="slot"></div></div>`, [
+      ...(next ? [{ icon: '💞', label: 'Wischen', value: () => '← Nein · Ja →', left: () => swipe(false), right: () => swipe(true), fn: () => swipe(true) }] : []),
+      { icon: '💬', label: 'Matches & Dates', sub: 'Date planen', fn: () => this.phone('matches') },
+      { icon: '←', label: 'Zurück', fn: () => this.phone() },
+    ], () => this.phone(), 'phone');
+    hints([['lr', 'Wischen'], ['a', 'Bestätigen'], ['b', 'Zurück']]);
+    // Wischen mit Finger oder Maus
+    const c = this.overlay?.querySelector('.swipe') as HTMLElement | null;
+    if (c) {
+      let x0 = 0, dx = 0, on = false;
+      c.addEventListener('pointerdown', (e) => { on = true; x0 = e.clientX; dx = 0; c.setPointerCapture(e.pointerId); c.style.transition = 'none'; });
+      c.addEventListener('pointermove', (e) => { if (!on) return; dx = e.clientX - x0; c.style.transform = `translateX(${dx}px) rotate(${dx / 14}deg)`; c.classList.toggle('lYes', dx > 40); c.classList.toggle('lNo', dx < -40); });
+      const up = () => { if (!on) return; on = false; c.style.transition = ''; if (Math.abs(dx) > 90) swipe(dx > 0); else { c.style.transform = ''; c.classList.remove('lYes', 'lNo'); } };
+      c.addEventListener('pointerup', up); c.addEventListener('pointercancel', up);
+    }
+  }
+  private planDate(id: string) {
+    const s = this.save.data, p = profile(id)!, r = dateRec(s, id), close = () => { this.closeMenu(); this.touch.show(true); };
+    if (r.last === s.day) { toast(`Ihr hattet heute schon ein Date. ${p.name} schreibt: „Bis morgen? 😘“`); return; }
+    const set = (at: string, msg: string) => { r.plan = s.day; r.at = at; s.pin = at; this.save.write(); toast(msg); close(); };
+    this.openMenu(`<div class="phoneBox"><div class="ph"><span>${clock(s)}</span><b>💬 ${p.name}</b><span>${DATE_STAGE[r.st]}</span></div><div class="pbody">
+      <p class="bubble">Hey! ${r.st ? 'Ich hab an dich gedacht. 🥰' : 'Schön, dass wir gematcht haben. 😊'} Wollen wir uns treffen?</p></div><div class="slot"></div></div>`, [
+      { icon: '☕', label: 'Café Kaffeeklatsch', sub: 'heute, wann du willst', fn: () => set('cafe', `Date mit ${p.name} im Café – auf der Karte markiert.`) },
+      { icon: '🪩', label: 'Club Prisma', sub: 'heute Abend', fn: () => set('club', `Date mit ${p.name} im Club Prisma – auf der Karte markiert.`) },
+      { icon: '←', label: 'Zurück', fn: () => this.phone('matches') },
+    ], () => this.phone('matches'), 'phone');
+  }
+  /** Das Date selbst: drei Situationen, danach – nur mit Zustimmung beider – vielleicht mehr */
+  runDate(id: string) {
+    const s = this.save.data, p = profile(id)!, r = dateRec(s, id);
+    let pts = 0;
+    const W = (text: string, choices?: Array<{ label: string; fn: () => void }>) => ({ who: p.name, color: p.color, text, choices });
+    this.dialog.say([W(r.st ? 'Da bist du ja! Ich hab mich den ganzen Tag gefreut.' : 'Hi! Du siehst noch besser aus als auf dem Profil. 😊'),
+      ...dateQuestions(s, id).map(([q, opts]) => W(q, opts.map(([label, v]) => ({ label, fn: () => { pts += v; sfx(v === 2 ? 'coin' : v ? 'move' : 'miss'); } }))))], () => {
+      this.pass(90);
+      change(s, { social: 20, fun: 15 });
+      const res = finishDate(s, id, pts);
+      if (res.up) post(s, p.name, ['Bestes Date seit Langem. 💕', 'Hab Schmetterlinge im Bauch …', 'Ich glaube, ich bin verliebt. 🌈'][Math.min(2, r.st - 1)] || 'Schöner Abend!');
+      const after = () => { this.save.write(); this.city.refreshHud(); };
+      if (!res.up) { this.dialog.say([W(pts >= 2 ? 'Das war nett. Lass uns das wiederholen – vielleicht.' : 'Hm, ich glaube, es hat heute nicht so gefunkt. Trotzdem danke!')], after); return; }
+      toast(`💕 ${p.name}: ${res.stage}`); sfx('win');
+      const why = canStay(s, id);
+      if (why === 'off' || why === 'early') { this.dialog.say([W(r.st >= 2 ? 'Gute Nacht. *küsst dich zum Abschied*' : 'Das war schön. Schreibst du mir? 😊')], after); return; }
+      this.dialog.say([W('Willst du noch mit zu mir … oder ich zu dir? Nur wenn du auch magst.', [
+        { label: 'Ja, total gern – wenn du auch willst.', fn: () => {
+          if (why === 'condom') { setTimeout(() => this.dialog.say([W('Ich auch … aber nur mit Gummi, und ich hab keins dabei. Nächstes Mal? Im Späti und im Checkpoint gibt es welche. 😉')], after), 50); return; }
+          setTimeout(() => this.wildNight(id), 50);
+        } },
+        { label: 'Heute lieber nicht, lass es langsam angehen.', fn: () => { setTimeout(() => this.dialog.say([W('Klar, total okay! Ich mag dich trotzdem. 💜')], after), 50); } },
+      ])]);
+    });
+  }
+  /** Angedeutete Nacht: Zustimmung beider, Kondom, Abblende – am Morgen sieht man die Spuren */
+  private wildNight(id: string) {
+    const s = this.save.data, p = profile(id)!;
+    const lube = (s.inv.lube || 0) > 0;
+    s.inv.condom--; if (lube) s.inv.lube--;
+    const b = el(`<div class="night"><p>💜 ${p.name} und du …</p><small>Zustimmung: ✔︎ · Kondom: ✔︎${lube ? ' · Gleitgel: ✔︎' : ''}${s.health.prep ? ' · PrEP: ✔︎' : ''}</small></div>`);
+    document.body.appendChild(b);
+    setTimeout(() => {
+      this.pass(minutesUntil(s, 8), true);
+      change(s, { energy: 100, social: 40, fun: 40, hygiene: -30 });
+      s.flags.wild = s.day; post(s, 'Du', 'Was für eine Nacht. 🔥');
+      const morning = ['Okay … wo ist meine zweite Socke? 😅', 'Das Bett sieht aus wie nach einem Erdbeben. Hat sich gelohnt.', `${p.name} hat Kaffee dagelassen und ein Herz auf den Zettel gemalt. 💌`];
+      this.enterHome(() => { b.remove(); this.home!.showMess(); this.dialog.say([{ who: 'Du', color: '#ff4fa3', text: morning[s.day % 3] }, { who: 'Du', color: '#ff4fa3', text: 'Erst mal duschen. Und aufräumen.' }]); this.save.write(); });
+    }, 2600);
+  }
+
   private drawMap() {
     const c = document.getElementById('pmap') as HTMLCanvasElement | null; if (!c) return;
     const x = c.getContext('2d')!, k = 300 / 130, P = (v: number) => (v + 65) * k;
@@ -356,12 +472,23 @@ export class Game {
       { icon: '🔊', label: 'Effekte', value: () => pct(st.sfx), left: () => { st.sfx = step(st.sfx, -.1); set(); }, right: () => { st.sfx = step(st.sfx, .1); set(); } },
       { icon: '🎥', label: 'Kamera-Tempo', value: () => st.camSpeed.toFixed(1) + '×', left: () => { st.camSpeed = Math.max(.4, +(st.camSpeed - .2).toFixed(1)); set(); }, right: () => { st.camSpeed = Math.min(2.4, +(st.camSpeed + .2).toFixed(1)); set(); } },
       { icon: '↕️', label: 'Kamera umkehren', value: () => (st.invertY ? 'An' : 'Aus'), left: () => { st.invertY = !st.invertY; set(); }, right: () => { st.invertY = !st.invertY; set(); } },
+      { icon: '🔞', label: 'Inhalte ab 18', sub: 'Flirts, Vorlieben, angedeutete Nächte – Gesundheitsinfos sind immer an', value: () => (st.adult ? 'An' : 'Aus'), left: () => this.toggleAdult(back), right: () => this.toggleAdult(back), fn: () => this.toggleAdult(back) },
       { icon: '⛶', label: 'Vollbild', sub: 'Ein- oder ausschalten', fn: () => { if (document.fullscreenElement) document.exitFullscreen?.(); else document.documentElement.requestFullscreen?.().catch(() => {}); } },
       { icon: '←', label: 'Zurück', fn: back },
     ], back);
     const slot = this.overlay?.querySelector('#cloudSlot'), cm = document.getElementById('cloudMount');
     if (slot && cm) { cm.classList.remove('hidden'); slot.appendChild(cm); }
     hints([['dpad', 'Wählen'], ['lr', 'Ändern'], ['b', 'Zurück']]);
+  }
+
+  /** 18+ einschalten nur mit Bestätigung, ausschalten jederzeit */
+  private toggleAdult(back: () => void) {
+    const st = this.save.data.settings;
+    if (st.adult) { st.adult = false; this.save.write(); toast('Inhalte ab 18 ausgeschaltet.'); this.options(back); return; }
+    this.openMenu('<div class="col"><div class="panel"><h3>🔞 Inhalte ab 18</h3><p>Pride City zeigt dann Flirts, Szene-Begriffe und Vorlieben als Text und deutet intime Szenen an (Abblende, keine Nacktheit). Alle Figuren sind erwachsen, Zustimmung ist immer Pflicht, Safer Sex gehört dazu.</p><p>Bist du mindestens 18 Jahre alt?</p><div class="slot"></div></div></div>', [
+      { icon: '✅', label: 'Ja, ich bin 18 oder älter', fn: () => { st.adult = true; this.save.write(); toast('Inhalte ab 18 eingeschaltet.'); this.options(back); } },
+      { icon: '←', label: 'Nein, zurück', fn: () => this.options(back) },
+    ], () => this.options(back));
   }
 
   minigames(back: () => void) {
@@ -397,6 +524,8 @@ export class Game {
       spaeti: { t: 'Späti Lecker', d: 'Bruno hat alles, was man nachts braucht.', items: [
         { icon: '🥨', label: 'Brezel', sub: '2 € · +15 Hunger', fn: buy(2, 'Frisch und warm.', eat({ hunger: 15 }, 'eat')) },
         { icon: '🧃', label: 'Mate', sub: '3 € · +15 Energie', fn: buy(3, 'Energie für die Nacht!', eat({ energy: 15 })) },
+        { icon: '🎈', label: 'Kondome (3 Stück)', sub: `3 € · du hast ${s.inv.condom || 0}`, fn: buy(3, 'Safer Sex ist sexy. 🎈', () => { s.inv.condom = (s.inv.condom || 0) + 3; }) },
+        { icon: '💧', label: 'Gleitgel', sub: `4 € · du hast ${s.inv.lube || 0}`, fn: buy(4, 'Gleitgel eingepackt. 💧', () => { s.inv.lube = (s.inv.lube || 0) + 1; }) },
         { icon: '🥕', label: 'Lebensmittel', sub: `6 € · 3 Portionen zum Kochen (du hast ${s.food})`, fn: buy(6, 'Ab in den Kühlschrank damit.', () => { s.food += 3; }) }] },
       club: { t: 'Club Prisma', d: 'Neon, Bass und die beste Tanzfläche der Stadt.', items: [
         { icon: '🪩', label: 'Tanz-Battle', sub: `Rekord ${s.best.dance || 0}`, fn: () => this.goDance(false) },
@@ -404,14 +533,24 @@ export class Game {
       center: { t: 'Regenbogenhaus', d: 'Beratung, Jugendgruppe, Kaffee und Kummer – seit dreißig Jahren.', items: [
         { icon: '💜', label: 'Spenden', sub: '10 € · +2 Ruf', fn: buy(10, 'Danke! Jedes bisschen hilft.', () => { s.rep += 2; }) }] },
       boutique: { t: 'Boutique Fabelhaft', d: 'Glitzer, Leder, Regenbogen – hier findest du deinen Look.', items: [
-        { icon: '👗', label: 'Neuer Look', sub: 'Zum Kleiderschrank', fn: () => this.fade(() => this.creator(true)) }] },
+        { icon: '👗', label: 'Neuer Look', sub: 'Zum Kleiderschrank', fn: () => this.fade(() => this.creator(true)) },
+        ...(s.settings.adult ? [{ icon: '🍆', label: 'Toy aus der Hinterzimmer-Ecke', sub: `25 € · diskret verpackt · du hast ${s.inv.toy || 0}`, fn: buy(25, 'Diskret verpackt. Viel Spaß! 😏', () => { s.inv.toy = (s.inv.toy || 0) + 1; change(s, { fun: 10 }); }) }] : [])] },
       gym: { t: 'Muckibude Muskelkater', d: 'Bären, Twinks und alle dazwischen – hier schwitzt die ganze Szene.', items: [
         { icon: '🏋️', label: 'Training', sub: '4 € · 1 Stunde · +15 Spaß, −20 Energie, −20 Hygiene', fn: () => { if (s.needs.energy < 20) { toast('Zu erschöpft fürs Training.'); sfx('miss'); return; } buy(4, 'Gepumpt! 💪', () => { this.pass(60); change(s, { fun: 15, energy: -20, hygiene: -20, hunger: -10 }); })(); } },
         { icon: '🚿', label: 'Duschen', sub: '1 € · Hygiene voll', fn: buy(1, 'Frisch!', () => { this.pass(15); change(s, { hygiene: 100 }); this.done(track(s, 'shower')); }) }] },
+      checkpoint: { t: 'Checkpoint Regenbogen', d: 'Beratung, Tests und PrEP – anonym, ohne Urteil, mit Gummibärchen.', items: [
+        { icon: '🧪', label: 'HIV- und STI-Test', sub: `kostenlos · 30 Minuten · ${s.health.test ? 'letzter Test: Tag ' + s.health.test : 'noch nie getestet'}`, fn: () => { close(); this.fade(() => { this.pass(30); s.health.test = s.day; change(s, { fun: 3 }); this.save.write(); this.dialog.say([{ who: 'Checkpoint', color: '#3ee69a', text: 'Alles negativ. Danke, dass du auf dich und andere achtest! 💚' }, { who: 'Checkpoint', color: '#3ee69a', text: s.health.prep ? `Mit PrEP sehen wir uns in ${TEST_EVERY} Tagen wieder – das Handy erinnert dich.` : 'Wenn du öfter wechselnde Partner*innen hast: Frag uns nach PrEP.' }]); }); } },
+        { icon: '💊', label: s.health.prep ? 'PrEP beenden' : 'PrEP beginnen', sub: 'Tablette, die vor HIV schützt · Beratung gratis', fn: () => { s.health.prep = !s.health.prep; if (s.health.prep && s.health.test !== s.day) toast('Vor dem Start gehört ein HIV-Test dazu – mach ihn gleich mit!'); else toast(s.health.prep ? 'PrEP läuft. Regelmäßig testen nicht vergessen! 💊' : 'PrEP beendet.'); this.save.write(); close(); } },
+        { icon: '🎈', label: 'Gratis Kondome', sub: '3 Stück, einmal am Tag', fn: () => { if (s.flags.freeCondoms === s.day) { toast('Für heute hast du schon welche.'); return; } s.flags.freeCondoms = s.day; s.inv.condom = (s.inv.condom || 0) + 3; toast('Drei Kondome eingesteckt. 🎈'); sfx('coin'); close(); } },
+        { icon: 'ℹ️', label: 'Infos: U=U, PrEP, PEP, Safer Sex', fn: () => { close(); this.dialog.say(HEALTH_INFO.map(([t, x]) => ({ who: t, color: '#3ee69a', text: x }))); } }] },
       studio: { t: 'Studio Klappe Auf', d: 'Fotostudio für Pässe, Paare und Pride-Plakate.', items: [] },
       tram: { t: 'Tram Rainbow City', d: 'Für 2 € in zehn Minuten an jeden Ort. Weitere Viertel folgen.', items: [
         { icon: '🗺️', label: 'Fahrplan', sub: 'Ziel wählen', fn: () => this.phone('map') }] },
     };
+    for (const pr of PROFILES) {
+      const r = s.dates[pr.id];
+      if (P[id] && r && r.plan === s.day && r.at === id) P[id].items.unshift({ icon: '💘', label: `Date mit ${pr.name}`, sub: `${pr.age} · ${pr.pron} · ${DATE_STAGE[r.st]}`, fn: () => { close(); this.runDate(pr.id); } });
+    }
     if (P[id]) for (const j of jobsAt(id)) {
       const why = blocked(s, j);
       P[id].items.unshift({ icon: '💼', label: `Schicht als ${j.name}`, sub: why || `${jobTitle(s, j)} · ${wage(s, j)} €/h · 4 Stunden`, disabled: !!why && !why.startsWith('Du bist'), fn: () => this.runShift(j.id) });

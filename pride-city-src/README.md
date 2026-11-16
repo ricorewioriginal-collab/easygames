@@ -28,6 +28,7 @@ E2E-Test (Browser, SwiftShader): Server im Repo starten (`python3 -m http.server
 | `src/game/story.ts` | Figuren, Kapitel, Ziele, Gespräche, Entscheidungen (`save.flags`) |
 | `src/game/life.ts` | Bedürfnisse, Stimmung, Uhrzeit und Tageswechsel, Tagesziele (aus Gay Life! übernommen) |
 | `src/game/jobs.ts` | Fünf Jobs mit Situationen, Lohn, Stufen und Beförderung |
+| `src/game/social.ts` | Dating-Profile, Dates, Gesundheit (Checkpoint, PrEP, Tests), Feed, Gerüchte, Glossar, 18+-Regeln |
 | `src/game/HomeScene.ts` | Begehbare Wohnung (KayKit Furniture und Restaurant Bits): Bett, Dusche, Herd, TV, Kleiderschrank |
 | `src/game/CreatorScene.ts` | Charakter-Editor |
 | `src/game/minigames/DanceScene.ts` | Tanz-Battle in 3D |

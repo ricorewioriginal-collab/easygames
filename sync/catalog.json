@@ -2932,7 +2932,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Pride City ist der Relaunch von Gay Life!: eine queere 3D-Lebenssimulation in Rainbow City. Du gestaltest deine Figur in einer von 13 Pride-Farbwelten, ziehst in die Stadt, triffst Mo, Jules, Nova und viele andere und hilfst in Kapitel 1, das Regenbogenhaus zu retten – bis zum Tanz-Battle im Club Prisma. Dazu der Alltag aus Gay Life!: Bedürfnisse, fünf Jobs mit Beförderung, eine begehbare Wohnung zum Schlafen, Duschen und Kochen, ein Handy mit Karte, Zielen und Kontakten, Tagesziele, Sticker und Tag und Nacht. Alle Figuren sind erwachsen und frei erfunden.",
+    "anleitung": "Pride City ist der Relaunch von Gay Life!: eine queere 3D-Lebenssimulation in Rainbow City. Du gestaltest deine Figur in einer von 13 Pride-Farbwelten, ziehst in die Stadt, triffst Mo, Jules, Nova und viele andere und hilfst in Kapitel 1, das Regenbogenhaus zu retten – bis zum Tanz-Battle im Club Prisma. Dazu der Alltag aus Gay Life!: Bedürfnisse, fünf Jobs mit Beförderung, eine begehbare Wohnung zum Schlafen, Duschen und Kochen, ein Handy mit Karte, Zielen, Kontakten, Feed und der Dating-App Rainbow Match (wischen wie bei Tinder), Dates, Wahlfamilie, ein Checkpoint mit Tests, PrEP und U=U-Infos, optional Inhalte ab 18 (nur angedeutet), Tagesziele, Sticker und Tag und Nacht. Alle Figuren sind erwachsen und frei erfunden.",
     "steuerung": [
      "PC: W A S D oder Pfeiltasten laufen, Shift sprinten, Maus ziehen dreht die Kamera, Mausrad zoomt, Q/R drehen die Kamera. E, Enter oder Leertaste = Aktion, Esc = Menü/Zurück, P = Handy, M = Karte. In Menüs Pfeiltasten, ←/→ ändern Werte.",
      "Touch (hoch und quer): Stick links laufen, A = Aktion, B = Zurück, » = Turbo an/aus, ☰ oben rechts = Menü, 📱 = Handy. Kamera durch Wischen auf dem Bild. Im Tanz-Battle vier Pfeil-Tasten unten.",
@@ -2944,8 +2944,8 @@
      "Acht Pride-Sticker sind in der Stadt versteckt, auch im Park und an den Rändern."
     ]
    },
-   "size": 20657074,
-   "files": 128,
+   "size": 20898415,
+   "files": 130,
    "offline": true,
    "cloud": {
     "game": "pride-city",

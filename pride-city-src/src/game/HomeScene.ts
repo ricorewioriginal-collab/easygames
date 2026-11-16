@@ -116,10 +116,34 @@ export class HomeScene implements GameScene {
     // Tür
     const door = new THREE.Mesh(new THREE.PlaneGeometry(1.4, .05), new THREE.MeshBasicMaterial({ color: 0xff4fa3, toneMapped: false })); door.rotation.x = -Math.PI / 2; door.position.set(0, .02, D / 2 - .1); r.add(door);
 
+    this.buildMess();
     const s = this.g.save.data;
     this.player = await Actor.create({ body: s.body, palette: s.palette, skin: s.skin, cape: !!s.flags.cape, hat: !!s.flags.hat });
     r.add(this.player.root);
   }
+
+  /** Spuren einer wilden Nacht (nur 18+): zerwühlte Decke, Kleidung, Gleitgel, Kondomverpackungen – klein und stilisiert */
+  private mess = new THREE.Group();
+  private buildMess() {
+    const m = this.mess, M = (c: number, o = 1) => new THREE.MeshStandardMaterial({ color: c, roughness: .8, transparent: o < 1, opacity: o });
+    const add = (g: THREE.BufferGeometry, mat: THREE.Material, x: number, y: number, z: number, ry = 0, rx = 0) => { const o = new THREE.Mesh(g, mat); o.position.set(x, y, z); o.rotation.set(rx, ry, 0); o.castShadow = true; m.add(o); return o; };
+    // zerwühlte Decke über dem Bett
+    add(new THREE.BoxGeometry(2.2, .18, 1.6), M(0xff6ad5), -3.6, 1.05, -2.3, .35, .12);
+    add(new THREE.BoxGeometry(1.2, .22, .9), M(0x7b5cff), -4.4, 1.12, -1.7, -.6, -.2);
+    // Kleidung auf dem Boden
+    add(new THREE.BoxGeometry(.9, .05, .7), M(0x1aa7ff), -2.2, .03, -1.2, .7);
+    add(new THREE.BoxGeometry(.5, .05, 1.1), M(0x2b2b38), -1.6, .03, -.4, -.4);
+    add(new THREE.BoxGeometry(.5, .05, .35), M(0xff2f7a), -2.8, .03, -.6, 1.2);
+    add(new THREE.BoxGeometry(.18, .06, .4), M(0xffffff), -1.1, .03, -1.6, .3);
+    // Gleitgel (leer, umgekippt) und Verpackungen auf dem Nachttisch und Boden
+    add(new THREE.CylinderGeometry(.09, .09, .34, 12), M(0x5ce1ff, .75), -5.1, 1.12, -3.4, 0, Math.PI / 2);
+    for (const [x, z, r] of [[-5.5, -3.2, .4], [-2.5, -1.9, 1.1], [-2.1, -2.2, 2.3]]) add(new THREE.BoxGeometry(.2, .01, .2), new THREE.MeshStandardMaterial({ color: 0xd8d8e8, metalness: .9, roughness: .25 }), x, x < -5 ? 1.0 : .015, z, r);
+    // gebrauchte Kondome: kleine, stilisierte Ringe
+    for (const [x, z] of [[-2.7, -1.6], [-1.9, -2.5]]) add(new THREE.TorusGeometry(.07, .025, 6, 14), M(0xf3e6c8, .8), x, .03, z, 0, Math.PI / 2);
+    m.visible = false; this.root.add(m);
+  }
+  /** Zeigt die Spuren am Morgen danach */
+  showMess() { const s = this.g.save.data; this.mess.visible = s.settings.adult && s.flags.wild === s.day; }
 
   /** Neue Figur, wenn im Editor der Körper gewechselt wurde */
   async syncPlayer() {
@@ -131,7 +155,8 @@ export class HomeScene implements GameScene {
   }
 
   enter() {
-    this.player.root.position.set(0, 0, 3);
+    this.showMess();
+    this.player.root.position.set(1.9, 0, 3.6);
     this.player.root.rotation.y = Math.PI;
     const s = this.g.save.data;
     this.player.setLook({ palette: s.palette, skin: s.skin, cape: !!s.flags.cape, hat: !!s.flags.hat });
