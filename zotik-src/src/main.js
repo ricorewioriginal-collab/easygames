@@ -99,11 +99,11 @@ const colFree=(x,z,r)=>!COL.some(c=>Math.hypot(c.x-x,c.z-z)<c.r+r)&&!HOUSES.some
 const CAMCOL=[],HOUSES=[];let inH=null;
 /* Springen und Plattformen: PLAT = schwebende Platten {x,z,hx,hz,top,th}; man landet von oben darauf, von der Seite sind sie eine Wand, hohe Platten unterläuft man */
 const PLAT=[],GRAV=26,JUMPV=10;
-function platTop(x,z,y){let t=-1e9,P=null;for(const p of PLAT)if(Math.abs(x-p.x)<p.hx&&Math.abs(z-p.z)<p.hz&&y>=p.top-.4&&p.top>t){t=p.top;P=p}return P}
+function platTop(x,z,y,st){st=st||.4;let t=-1e9,P=null;for(const p of PLAT)if(Math.abs(x-p.x)<p.hx&&Math.abs(z-p.z)<p.hz&&y>=p.top-st&&p.top>t){t=p.top;P=p}return P}
 /* Klettern: CLB = besteigbare Bauten {x,z,c,s,hx,hz,y(Traufe),f(lx,lz)=Dachhöhe darüber,rd(rund)}; Zotik greift die Kante, zieht sich hoch und läuft oben weiter */
 const CLB=[];
-function clbY(x,z,y){let b=-1e9;for(const B of CLB){const dx=x-B.x,dz=z-B.z;if(Math.abs(dx)>B.R||Math.abs(dz)>B.R)continue;let lx,lz;if(B.rd){if(dx*dx+dz*dz>B.hx*B.hx)continue;lx=dx;lz=dz}else{lx=dx*B.c-dz*B.s;lz=dx*B.s+dz*B.c;if(Math.abs(lx)>B.hx||Math.abs(lz)>B.hz)continue}
-  const v=B.y+(B.f?B.f(lx,lz):0);if(v<=y+.45&&v>b)b=v}return b}
+function clbY(x,z,y,tol){tol=tol||.45;let b=-1e9;for(const B of CLB){const dx=x-B.x,dz=z-B.z;if(Math.abs(dx)>B.R||Math.abs(dz)>B.R)continue;let lx,lz;if(B.rd){if(dx*dx+dz*dz>B.hx*B.hx)continue;lx=dx;lz=dz}else{lx=dx*B.c-dz*B.s;lz=dx*B.s+dz*B.c;if(Math.abs(lx)>B.hx||Math.abs(lz)>B.hz)continue}
+  const v=B.y+(B.f?B.f(lx,lz):0);if(v<=y+tol&&v>b)b=v}return b}
 /* Haus samt Platz vor der Tür (dort keine Requisiten) */
 function inHouseR(x,z,r){return HOUSES.some(H=>{const dx=x-H.x,dz=z-H.z,lx=dx*H.c-dz*H.s,lz=dx*H.s+dz*H.c;return (Math.abs(lx)<H.w/2+r&&Math.abs(lz)<H.d/2+r)||(Math.abs(lx)<1.6+r&&lz>0&&lz<H.d/2+3+r)})}
 function clbAdd(o){o.c=o.c??1;o.s=o.s??0;o.R=Math.hypot(o.hx,o.hz)+.5;CLB.push(o);return o}
@@ -117,7 +117,7 @@ function clbStep(dt){const c=pl.clb;c.t+=dt;const p=Math.min(1,c.t/c.T),k=c.hang
   if(p<k){const q=sm(0,1,p/k);pl.x=lerp(c.x0,c.xw,q);pl.z=lerp(c.z0,c.zw,q);pl.y=lerp(c.y0,c.hang?yh:c.y0,q)}
   else{const q=(p-k)/(1-k),e=q*q*(3-2*q);if(!c.s2){c.s2=1;sfx('jump');emit(c.x1,c.y1+.1,c.z1,0xd8d0c0,8,2,.4,.5,0)}pl.x=lerp(c.xw,c.x1,sm(.35,1,q));pl.z=lerp(c.zw,c.z1,sm(.35,1,q));pl.y=lerp(c.hang?yh:c.y0,c.y1,Math.min(1,e*1.3))}
   if(p>=1){pl.clb=null;pl.y=c.y1;pl.clbC=.35;if(!S.fl.clb1){S.fl.clb1=1;toast('🧗 Kante gepackt: Lauf gegen eine Kante und spring – Zotik zieht sich hoch')}}}
-function platWall(x,z,y){for(const p of PLAT)if(Math.abs(x-p.x)<p.hx+.3&&Math.abs(z-p.z)<p.hz+.3&&y<p.top-.4&&y+1.5>p.top-p.th)return true;return false}
+function platWall(x,z,y,gr){const st=gr?1.25:.4;for(const p of PLAT)if(Math.abs(x-p.x)<p.hx+.3&&Math.abs(z-p.z)<p.hz+.3&&y<p.top-st&&y+1.5>p.top-p.th)return true;return false}
 function pushOut(o,r){for(let ps=0;ps<2;ps++){const x0=o.x,z0=o.z;pushOut1(o,r);if(o.x===x0&&o.z===z0)break}}
 function pushOut1(o,r){
   for(let k=0;k<HOUSES.length;k++){const H=HOUSES[k],ex0=o.x-H.x,ez0=o.z-H.z,lim=H.R+r+1;if(ex0*ex0+ez0*ez0>lim*lim||(o.y!=null&&H.top!=null&&o.y>H.top-.5))continue;
@@ -382,7 +382,7 @@ function jumpPath(n,o){o=o||{};const col=o.col??(n===1?0x7ab0ff:CHP[n].glowc[0])
   for(let pass=0;pass<2&&!q;pass++)for(let k=o.k0||20;k<(o.k1||70)&&!q;k++){const c=nqSpot(k);if(!c||(WLD&&WLD._jp||[]).some(p=>Math.hypot(p[0]-c[0],p[1]-c[1])<30)||(WLD&&WLD.mw&&WLD.mw.key&&Math.hypot(WLD.mw.key[0]-c[0],WLD.mw.key[1]-c[1])<12))continue;   /* nicht ans Schlüsselloch */for(const d of CWJ?[Math.PI,0,Math.PI/2,-Math.PI/2,Math.PI*.75,-Math.PI*.75,Math.PI*.25,-Math.PI*.25]:[Math.PI,0,Math.PI/2,-Math.PI/2]){let ok=true;const y0=hgt(c[0],c[1]);for(let i=1;i<=(NS+4)*4/3&&ok;i++){const x=c[0]+Math.sin(d)*3*i,z=c[1]+Math.cos(d)*3*i,dh=hgt(x,z)-y0;if(dh>(pass?.5:.25)*i+(pass?.2:.3)||dh<(pass?-4:-2)||pBlocked(x,z)||!colFree(x,z,2))ok=false}if(ok){q=c;dir=d;break}}}
   if(!q)return null;const y0=hgt(q[0],q[1]),sx=Math.sin(dir),sz=Math.cos(dir),g=new T.Group();scene.add(g);
   const slab=(x,z,top,r,mov)=>{const m=new T.Group();m.position.set(x,top,z);m.add(mk(G.cyl,M(0x8d93b0,{r:.5,m:.2}),0,-.15,0,r,.3,r));m.add(mk(G.cyl,M(col,{e:col,ei:1.4,r:.2}),0,-.31,0,r*.82,.05,r*.82,false));m.add(mk(G.cyl,M(col,{e:col,ei:1.2}),0,.01,0,r*.5,.02,r*.5,false));m.add(glow(col,r*2.6,0,-.5,0,.35));g.add(m);
-    const p={x,z,hx:r*.86,hz:r*.86,top,th:.34};PLAT.push(p);
+    const p={x,z,hx:mov?r*.86:Math.max(r*.86,Math.min(2.2,r*1.3)),hz:mov?r*.86:Math.max(r*.86,Math.min(2.2,r*1.3)),top,th:.34};PLAT.push(p);
     if(mov){const bx=x,bz=z;animObjs.push({fn(t){const o=Math.sin(t*.9)*1.2,nx=bx-sz*o,nz=bz+sx*o;if(pl.on===p){pl.x+=nx-p.x;pl.z+=nz-p.z}p.x=nx;p.z=nz;m.position.x=nx;m.position.z=nz}})}return p};
   for(let i=0;i<NS;i++)slab(q[0]+sx*4*(i+1),q[1]+sz*4*(i+1),y0+1.15*(i+1),1.6,(o.mov?i%3===2:i===2&&n>=4));   /* Abstand 4 m: ein Sprung aus vollem Lauf trägt genau zur nächsten Platte */
   const L=4*NS+4.4,gx=q[0]+sx*L,gz=q[1]+sz*L,gt=y0+1.15*NS+1;slab(gx,gz,gt,2.8);if(WLD)(WLD._jp=WLD._jp||[]).push(q,[gx,gz]);
@@ -1499,14 +1499,14 @@ function updatePlayer(dt){
   pl.mv=clamp(Math.hypot(pl.vx,pl.vz)/6.4,0,1.3);
   if((ix||iy)&&pl.atk<0&&pl.dash<=0){const want=Math.atan2(pl.vx,pl.vz);pl.face+=ang(pl.face,want)*Math.min(1,dt*14)}
   let mvx=(pl.vx+pl.kx)*dt*(pl.wat?.62:1),mvz=(pl.vz+pl.kz)*dt*(pl.wat?.62:1),ns=Math.min(10,Math.max(1,Math.ceil(Math.hypot(mvx,mvz)/.3)));pl.kx*=Math.exp(-9*dt);pl.kz*=Math.exp(-9*dt);
-  {const pb=(x,z)=>(pBlocked(x,z)&&!(PLAT.length&&platTop(x,z,pl.y))&&!(pl.y>hgt(x,z)+.9&&clbY(x,z,pl.y)>hgt(x,z)+.9))||(PLAT.length&&platWall(x,z,pl.y));   /* Brücken und Platten tragen auch über Schluchten */if(pl.air&&pl.jfw>0){pl.jfw-=dt;mvx+=Math.sin(pl.face)*6*dt;mvz+=Math.cos(pl.face)*6*dt}if(pl.fvx||pl.fvz){if(pl.air){mvx+=pl.fvx*dt;mvz+=pl.fvz*dt;const d=Math.exp(-1.5*dt);pl.fvx*=d;pl.fvz*=d}else pl.fvx=pl.fvz=0}   /* Schwung aus dem Rissfluss */   /* Fernbedienung: der Sprung trägt nach vorn */
+  {const pb=(x,z)=>(pBlocked(x,z)&&!(PLAT.length&&platTop(x,z,pl.y,pl.air?0:1.25))&&!(pl.y>hgt(x,z)+.9&&clbY(x,z,pl.y)>hgt(x,z)+.9))||(PLAT.length&&platWall(x,z,pl.y,!pl.air));   /* Brücken und Platten tragen auch über Schluchten */if(pl.air&&pl.jfw>0){pl.jfw-=dt;mvx+=Math.sin(pl.face)*6*dt;mvz+=Math.cos(pl.face)*6*dt}if(pl.fvx||pl.fvz){if(pl.air){mvx+=pl.fvx*dt;mvz+=pl.fvz*dt;const d=Math.exp(-1.5*dt);pl.fvx*=d;pl.fvz*=d}else pl.fvx=pl.fvz=0}   /* Schwung aus dem Rissfluss */   /* Fernbedienung: der Sprung trägt nach vorn */
   for(let q=0;q<ns;q++){const nx=pl.x+mvx/ns,nz=pl.z+mvz/ns;if(!pb(nx,nz)){pl.x=nx;pl.z=nz}else if(!pb(nx,pl.z))pl.x=nx;else if(!pb(pl.x,nz))pl.z=nz;pushOut(pl,.5)}}
   if(!naut.on&&(ix||iy)&&pBlocked(pl.x,pl.z)&&!pl.on&&pl.y<hgt(pl.x,pl.z)+.9){pl.stk=(pl.stk||0)+dt;if(pl.stk>.6){pl.stk=0;landSafe()}}else pl.stk=0;   /* steckt Zotik in gesperrtem Gelände fest, kommt er an der nächsten freien Stelle heraus */
   let ty=hgt(pl.x,pl.z)+naut.lift;{const gh=hgt(pl.x,pl.z),LK=naut.on&&!nAir()?NZ().lakeAt(pl.x,pl.z)||owLake(pl.x,pl.z):null;
     if(nAir()||(nSub()&&curCh===5)){naut.alt=Math.max(gh+(nAir()?3:.6),Math.min(80,(naut.alt??gh+6)+(nUp()?11:nDn()?-11:0)*dt));ty=naut.alt}
     else if(LK){if(nSub()&&LK.kind==='water'){naut.dep=Math.max(gh+1,Math.min(LK.wl+.1,(naut.dep??LK.wl-2.5)+(nUp()?5:nDn()?-5:0)*dt));ty=naut.dep}else ty=LK.wl+.1}
     else naut.dep=null;nMedHint()}
-  let SWY=null;if(!naut.on&&(SWY=swimTick(dt))!==null){ty=pl.y=SWY;pl.air=false;pl.on=null}else if(!naut.on){const P=PLAT.length?platTop(pl.x,pl.z,pl.y):null,sup=Math.max(P?Math.max(ty,P.top):ty,CLB.length?clbY(pl.x,pl.z,pl.y):-1e9);pl.on=P&&P.top>=ty?P:null;
+  let SWY=null;if(!naut.on&&(SWY=swimTick(dt))!==null){ty=pl.y=SWY;pl.air=false;pl.on=null}else if(!naut.on){const P=PLAT.length?platTop(pl.x,pl.z,pl.y,pl.air?0:1.25):null,sup=Math.max(P?Math.max(ty,P.top):ty,CLB.length?clbY(pl.x,pl.z,pl.y,pl.air&&pl.vy<=0?1.1:0):-1e9);pl.on=P&&P.top>=ty?P:null;
     if(pl.air){pl.vy-=GRAV*wrG()*(WLD&&WLD.grav||1)*dt;if(SWIM()){pl.swc=(pl.swc||0)-dt;pl.vy=Math.max(pl.vy,-2.6);if((pl.bub=(pl.bub||0)+dt)>.18){pl.bub=0;emit(pl.x,pl.y+.9,pl.z,0xd8f8ff,1,.4,1.2,.22,-3)}}pl.y+=pl.vy*dt;if(pl.gl=(pl.vy<0&&!pl.slam&&keys.Space&&artOn('glide')))pl.vy=Math.max(pl.vy,-1.6);   /* Gleiten: Sprungtaste halten */
       if(pl.vy<=0&&pl.y<=sup){pl.y=ty=sup;pl.air=false;if(pl.vy<-9)sfx('land');pl.vy=0;if(pl.slam)artSlamLand();emit(pl.x,pl.y+.1,pl.z,0xcfe0ff,8,2,.4,.5,0)}}
     else if(pl.y>sup+.7){pl.air=true;pl.vy=0}   /* über die Kante gelaufen: fallen */
