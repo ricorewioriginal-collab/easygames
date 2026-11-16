@@ -220,6 +220,8 @@
       Möbel und Requisiten: <b>KayKit Furniture Bits</b> und <b>Dungeon Pack</b> (Kay Lousberg).<br>
       Pflanzen, Felsen, Feuerstelle, Essen: <b>Kenney Nature Kit / Food Kit</b> (kenney.nl).<br>
       Tiere: <b>Quaternius</b> (quaternius.com). Palmen, Kokospalmen, Seerosen: <b>Wizp</b> Lowpoly Stylized Fantasy Environment.</p>
+      <h3>Poly Haven (frei, CC0)</h3>
+      <p>Himmel, Boden-, Holz- und Rindentexturen sowie Farne, Tropenpflanzen, Felsen, Eimer und Kiste von <b>Poly Haven</b> (polyhaven.com) – u. a. Greg Zaal, Jarod Guest, Rob Tuytel, Rico Cilliers, Dario Barresi, Dimitrios Savva, Jenelle van Heerden, James Ray Cock, Jurita Burger. Details: textures/LIZENZ.md.</p>
       <h3>Technik</h3><p>three.js (MIT). Musik und Geräusche werden im Browser erzeugt. Details: models/LIZENZ.md.</p>
       <div class="row"><button class="btn" data-ok><b>Zurück</b></button></div></div>`, { onBack: () => UI.close(p) });
     p.el.querySelector('[data-ok]').onclick = () => UI.close(p);

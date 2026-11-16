@@ -1,6 +1,6 @@
 /* Urwaldlager – freie 3D-Modelle laden und aufbereiten
    Figuren: KayKit Adventurers 1.0 (Kay Lousberg, CC0), umgefärbt zu Campern, Moderatoren und Doc.
-   Kulisse: Kenney Nature/Food Kit, Quaternius-Tiere, Wizp-Pflanzen, KayKit Dungeon/Furniture (alle CC0). Siehe models/LIZENZ.md. */
+   Kulisse: Kenney Nature/Food Kit, Quaternius-Tiere, Wizp-Pflanzen, KayKit Dungeon/Furniture, Poly-Haven-Pflanzen (ph_*), alle CC0. Siehe models/LIZENZ.md. */
 (function () {
   'use strict';
   const UL = window.UL, T = THREE;
@@ -20,7 +20,7 @@
     const key = m.uuid + (skinning ? 's' : '');
     if (matCache.has(key)) return matCache.get(key);
     const fix = FIXCOL[m.name];
-    const n = new T.MeshLambertMaterial({ color: fix ? new T.Color(fix).convertSRGBToLinear() : m.color ? m.color.clone() : 0xffffff, map: m.map || null, skinning: !!skinning, transparent: !!m.transparent, opacity: m.opacity == null ? 1 : m.opacity, side: m.side, vertexColors: !!m.vertexColors });
+    const n = new T.MeshLambertMaterial({ color: fix ? new T.Color(fix).convertSRGBToLinear() : m.color ? m.color.clone() : 0xffffff, map: m.map || null, skinning: !!skinning, transparent: !!m.transparent, opacity: m.opacity == null ? 1 : m.opacity, alphaTest: m.alphaTest || 0, side: m.side, vertexColors: !!m.vertexColors });
     if (m.emissive && m.emissive.getHex()) n.emissive = m.emissive.clone();
     matCache.set(key, n);
     return n;
@@ -326,7 +326,7 @@
   // ---------- Laden ----------
   A.loadAll = async (onProgress) => {
     const base = (UL.base || '') + 'models/';
-    const list = [['set', base + 'set.glb'], ['anim', base + 'figuren/anim.glb']]
+    const list = [['set', base + 'set.glb'], ['set', base + 'ph.glb'], ['anim', base + 'figuren/anim.glb']]
       .concat(FIG.map(f => ['fig:' + f, base + 'figuren/' + f + '.glb']))
       .concat(['crab', 'frog', 'bat', 'bee'].map(t => ['tier:' + t, base + 'tiere/' + t + '.glb']));
     let done = 0;

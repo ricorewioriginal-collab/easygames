@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e342da6e5dde",
- "generated": "2026-11-16T18:24:24+00:00",
- "commit": "24e4bc8c551ae90760b86cc00d7c472d90923e5c",
+ "version": "f16163717ba9",
+ "generated": "2026-11-16T18:26:04+00:00",
+ "commit": "e07c70fb7b959c53665b23d4e3d6a519c52c35d6",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8263,8 +8263,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/assets.js",
-   "s": 22202,
-   "h": "7c1233ea9053878471b4e80fea5b6cd114cf5baf0eabd19d49aeaa66ff7a322a"
+   "s": 22284,
+   "h": "cb6a9a8b2be2cb816280a3e90a795a2f36078851051d947fc6e4654ae4838d38"
   },
   {
    "p": "anmacha-urwaldlager/js/audio.js",
@@ -8273,8 +8273,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/camp.js",
-   "s": 51344,
-   "h": "11c2c4ddfaa9119418dc0fedd04a340224ea80c8fcf4dd33496571268380f814"
+   "s": 51516,
+   "h": "ec7726a0eb2ef799db4722d86f8f2d83e828e916ef005255c18daed676ae19d7"
   },
   {
    "p": "anmacha-urwaldlager/js/core.js",
@@ -8298,8 +8298,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/menus.js",
-   "s": 20405,
-   "h": "96948e331f31384caf7a27a0651d6355b39d722ad3f4423a0d9d08c9266a0b93"
+   "s": 20762,
+   "h": "2b12df92dd0290e5b85f6707e870477176ecba8b30db21640604978d3c2be131"
   },
   {
    "p": "anmacha-urwaldlager/js/phone.js",
@@ -8308,8 +8308,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/render.js",
-   "s": 28503,
-   "h": "fc86116508bbfe57862f556484ef7e1e352f1997ec125c87cebbdd9c55515975"
+   "s": 29139,
+   "h": "91e4b07502f9ea06426df012e616eac5ac1e53e2f84e5e91a8d3d4a2404cce5d"
   },
   {
    "p": "anmacha-urwaldlager/js/show.js",
@@ -8435,6 +8435,11 @@
    "p": "anmacha-urwaldlager/models/figuren/rogue_hooded.glb",
    "s": 148804,
    "h": "fc1c4bc779205a5587ca52820e68ce12f3b45fce5c2e3e0a399618919ee89f93"
+  },
+  {
+   "p": "anmacha-urwaldlager/models/ph.glb",
+   "s": 471864,
+   "h": "0a1e2c4d6ced3d7791a1724302f959746f04a163654a15ef8f2818051d2ba3cc"
   },
   {
    "p": "anmacha-urwaldlager/models/set.glb",
@@ -15434,7 +15439,7 @@
   {
    "p": "sync/catalog.json",
    "s": 241388,
-   "h": "2ff78b0b2fddce362a211261725073313388ae53ae25e11027771fd3862d44e9"
+   "h": "e926c3078b46fe7d8147fddb96033eb0d528bd50e8a20cccc5435f48027e2a16"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

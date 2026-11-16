@@ -10,6 +10,7 @@ Die Dateien wurden mit `tools/make-urwaldlager-assets.mjs` (gltf-transform) zusa
 | `set.glb` – `palm2`, `coconut*`, `ancient_tree_1`, `garden_*`, `grass_green_group`, `root_2`, `waterlily_pink_group`, `rock_big_*`, `rock_medium_*`, `birch1` | Dschungelpflanzen und Felsen | Wizp – Lowpoly Stylized Fantasy Environment | CC0 |
 | `set.glb` – `kd_*` | Fässer, Kisten, Truhen, Fackeln, Tisch, Hocker, Bett | KayKit Dungeon Remastered – Kay Lousberg | CC0 |
 | `set.glb` – `kf_*`, `kk_*` | Sofa, Sessel, Lampe, Tische, Bank, Laterne | KayKit Furniture Bits, City Builder Bits – Kay Lousberg | CC0 |
+| `ph.glb` – `ph_fern`, `ph_anthurium`, `ph_calathea`, `ph_sorrel`, `ph_weed`, `ph_shrub`, `ph_rock`, `ph_bucket`, `ph_crate` | Tropenpflanzen, Fels, Eimer, Kiste (verkleinert, nur Grundfarbe, WebP) | Poly Haven (polyhaven.com): Fern 02, Anthurium Botany 01, Calathea Orbifolia 01, Shrub Sorrel 01, Weed Plant 02, Shrub 03, Rock 09, Wooden Bucket 01, Wooden Crate 02 – Rob Tuytel, Rico Cilliers, Jenelle van Heerden, James Ray Cock, Jurita Burger; erzeugt mit `tools/make-urwaldlager-polyhaven.mjs` | CC0 |
 | `tiere/crab.glb`, `frog.glb`, `bat.glb`, `bee.glb` | Tiere für Prüfungen | Quaternius (quaternius.com), über das npm-Paket `@netforge/asset-library-files` 0.2.0 | CC0 |
 
 Texturen (Himmel, Böden, Holz): Poly Haven, CC0 – siehe [`../textures/LIZENZ.md`](../textures/LIZENZ.md).

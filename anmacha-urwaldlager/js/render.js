@@ -299,6 +299,15 @@
     put('flower_red', 30, 4, radius + 2, 0.3, 0.5);
     put('rock_big_1', 8, radius - 4, radius + 20, 1.5, 3.5);
     put('mushroom_red', 14, 6, radius + 4, 0.25, 0.4);
+    // Poly Haven (CC0): echte Tropenpflanzen und Felsen, fürs Handy reduziert (models/ph.glb); auf „niedrig“ weniger
+    const ph = { low: 0.4, mid: 0.65, high: 1 }[R.quality()] || 1;
+    put('ph_fern', 26 * ph, radius - 5, radius + 8, 0.9, 1.4);
+    put('ph_anthurium', 10 * ph, 5, radius + 4, 0.6, 0.9);
+    put('ph_calathea', 16 * ph, radius - 4, radius + 8, 0.8, 1.2);
+    put('ph_sorrel', 18 * ph, 4, radius + 4, 0.3, 0.5);
+    put('ph_shrub', 14 * ph, radius - 2, radius + 12, 1.2, 1.8);
+    put('ph_weed', 16 * ph, 6, radius + 6, 0.5, 0.8);
+    put('ph_rock', 10 * ph, radius - 3, radius + 16, 0.8, 2.2, { shadow: true });
     // Berge in der Ferne
     const mm = R.mat(0x2f5a3a), mg = new T.Group();
     for (let i = 0; i < 14; i++) { const a = i / 14 * Math.PI * 2 + rng.next() * 0.3, r = 120 + rng.next() * 30, h = 25 + rng.next() * 35; const m = new T.Mesh(new T.ConeGeometry(h * 0.9, h, 6), mm); m.position.set(Math.cos(a) * r, h / 2 - 4, Math.sin(a) * r); mg.add(m); }
