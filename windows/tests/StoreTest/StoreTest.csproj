@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Prüft den Spiel-Store der easygames-App unter Linux/Windows gegen den echten Server: dotnet run im Ordner windows-easygames/tests/StoreTest -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Store.cs" Link="Store.cs" />
+  </ItemGroup>
+</Project>
