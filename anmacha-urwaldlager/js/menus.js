@@ -107,7 +107,7 @@
         <h3>Camp-Hemd</h3><div class="row">${sw(UL.D.SHIRTS, 'shirt', L.shirt)}</div>
         <h3>Kopf</h3><div class="row">${UL.D.HATS.map(([k, n]) => `<button class="pill ${(L.hat || 'none') === k ? 'on' : ''}" data-k="hat" data-v="${k}">${n}</button>`).join('')}<button class="pill ${L.glasses ? 'on' : ''}" data-k="glasses" data-v="1">😎 Brille</button></div>
         <div class="row" style="margin-top:8px">${sw(UL.D.HATCOL.map(c => [c, '']), 'hatColor', L.hatColor)}</div>
-        <div class="row" style="margin-top:16px"><button class="btn" data-go><b>✅ Ab in den ${theme === 'studio' ? 'Studio-Dschungel' : 'Dschungel'}!</b></button></div>
+        <div class="row gobar"><button class="btn" data-go><b>✅ Ab in den ${theme === 'studio' ? 'Studio-Dschungel' : 'Dschungel'}!</b></button></div>
         <div class="foot">${In.glyph('back')} Zurück</div>`;
       p.el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => {
         const k = b.dataset.k, v = b.dataset.v;

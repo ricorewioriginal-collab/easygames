@@ -29,7 +29,7 @@ kbd.g-switch { background: #2b2b30; color: #fff; border-color: #777; }
 .chip.warn { background: rgba(120, 20, 30, .9); }
 .chip .bar { width: 70px; height: 8px; border-radius: 8px; background: #fff2; overflow: hidden; }
 .chip .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--green), var(--gold)); }
-#meter { position: absolute; left: 50%; top: calc(58px + var(--safeT)); transform: translateX(-50%); display: flex; gap: 10px; pointer-events: none; }
+#meter { position: absolute; left: 50%; top: calc(58px + var(--safeT)); max-width: calc(100vw - 24px); flex-wrap: wrap; justify-content: center; transform: translateX(-50%); display: flex; gap: 10px; pointer-events: none; }
 .meter { min-width: 150px; padding: 6px 10px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); font: 700 12px system-ui; }
 .meter .bar { height: 10px; border-radius: 6px; background: #fff2; overflow: hidden; margin-top: 4px; }
 .meter .bar i { display: block; height: 100%; transition: width .15s; background: var(--green); }
@@ -95,7 +95,9 @@ kbd.g-switch { background: #2b2b30; color: #fff; border-color: #777; }
 .foot { margin-top: 12px; font: 600 13px system-ui; color: var(--muted); text-align: right; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .row > * { flex: 1; }
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.grid2 .opt { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 380px) { .grid2 { grid-template-columns: minmax(0, 1fr); } }
 .set { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 14px; align-items: center; font: 600 15px system-ui; }
 .set input[type=range] { width: 160px; accent-color: var(--gold); }
 .set select, .set input[type=text], .field { padding: 9px 12px; border-radius: 10px; background: #0d2a1c; color: var(--txt); border: 2px solid var(--line); font: 600 15px system-ui; }
@@ -168,7 +170,7 @@ kbd.g-switch { background: #2b2b30; color: #fff; border-color: #777; }
 #tStick { position: absolute; display: none; width: 120px; height: 120px; margin: -60px 0 0 -60px; border-radius: 50%; border: 3px solid #fff5; background: #0003; pointer-events: none; }
 #tStick i { position: absolute; left: 30px; top: 30px; width: 60px; height: 60px; border-radius: 50%; background: #fffc; box-shadow: 0 4px 10px #0006; }
 .tb { position: absolute; pointer-events: auto; border-radius: 50%; border: 3px solid #fff8; background: rgba(10, 30, 20, .55); display: grid; place-items: center; font: 800 13px system-ui; color: #fff; touch-action: none; backdrop-filter: blur(4px); }
-.tb span { max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; line-height: 1.1; }
+.tb span { max-width: 88%; overflow: hidden; text-align: center; line-height: 1.05; font-size: 12px; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
 .tb.on { transform: scale(.92); background: rgba(255, 207, 58, .6); }
 .tb-ok { width: 92px; height: 92px; right: calc(22px + var(--safeR)); bottom: calc(30px + var(--safeB)); background: rgba(63, 208, 107, .55); font-size: 15px; }
 .tb-alt { width: 68px; height: 68px; right: calc(126px + var(--safeR)); bottom: calc(24px + var(--safeB)); }
@@ -241,3 +243,7 @@ kbd.g-switch { background: #2b2b30; color: #fff; border-color: #777; }
   .title .menu { margin-top: 0; width: auto; max-height: calc(100dvh - 24px - var(--safeT) - var(--safeB)); overflow: auto; padding: 4px; }
   .title .btn { padding: 9px 14px; }
 }
+.box { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.gobar { position: sticky; bottom: -22px; margin: 16px -22px -22px; padding: 12px 22px 16px; background: linear-gradient(180deg, rgba(5, 20, 12, 0), rgba(5, 20, 12, .97) 30%); }
+@media (max-width: 560px) { .gobar { bottom: -16px; margin: 12px -16px -16px; padding: 10px 16px 14px; } }
+@media (max-height: 460px) { .gobar { bottom: -14px; margin: 10px -14px -14px; padding: 8px 14px 12px; } }
