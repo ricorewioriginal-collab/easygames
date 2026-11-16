@@ -44,7 +44,7 @@
       <div class="menu">
         ${save ? `<button class="btn" data-a="cont"><b>▶ Weiterspielen</b><small>Tag ${save.day} von ${save.days} · ${save.theme === 'studio' ? 'TV-Studio' : 'Dschungel'} · ${esc(save.name)}</small></button>` : ''}
         <button class="btn" data-a="new"><b>🌴 Neue Staffel</b><small>Ab ins Camp – die Zuschauer entscheiden</small></button>
-        <button class="btn" data-a="practice"><b>⭐ Prüfungen spielen</b><small>Alle 9 Urwaldprüfungen einzeln, Dschungel oder Studio</small></button>
+        <button class="btn" data-a="practice"><b>⭐ Prüfungen spielen</b><small>Alle 13 Urwaldprüfungen einzeln, Dschungel oder Studio</small></button>
         <button class="btn" data-a="settings"><b>⚙️ Einstellungen</b></button>
         <button class="btn" data-a="controls"><b>🎮 Steuerung</b><small>Handy · Tastatur · PlayStation · Switch</small></button>
         <button class="btn" data-a="cloud"><b>☁️ Speichern mit Google</b></button>

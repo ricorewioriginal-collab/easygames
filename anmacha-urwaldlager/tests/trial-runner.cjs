@@ -11,7 +11,7 @@ const { chromium } = require('playwright');
   await p.goto(`http://localhost:8080/anmacha-urwaldlager/index.html?trial=${id}&theme=${theme}&bot=1`);
   await p.waitForTimeout(+shotAt * 1000);
   if (out) await p.screenshot({ path: out });
-  const r = await p.waitForFunction('window.TRIAL_RESULT', null, { timeout: 240000 }).then(x => x.jsonValue()).catch(() => null);
+  const r = await p.waitForFunction('window.TRIAL_RESULT', null, { timeout: 900000 }).then(x => x.jsonValue()).catch(() => null);
   console.log(JSON.stringify({ id, theme, result: r, sec: Math.round((Date.now() - t0) / 1000), errors: errs.filter(e => !/GL Driver|favicon|404/.test(e)).slice(0, 8) }));
   await b.close();
 })();

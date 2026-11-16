@@ -5,7 +5,7 @@
    "t": "Worum geht es?",
    "p": [
     "Urwaldlager ist eine erfundene Promi-Show in 3D. Du spielst einen Promi, ziehst mit anderen Campern ins Lager und willst am Ende zum Urwaldkönig, zur Urwaldkönigin oder zum Urwald-Royal gekrönt werden.",
-    "Die Show findet wahlweise im Dschungel oder im TV-Studio statt. Beide Kulissen haben dieselben Regeln und dieselben neun Prüfungen."
+    "Die Show findet wahlweise im Dschungel oder im TV-Studio statt. Beide Kulissen haben dieselben Regeln und dieselben dreizehn Prüfungen."
    ]
   },
   {
@@ -13,7 +13,7 @@
    "list": [
     "Weiterspielen: setzt die gespeicherte Staffel am Morgen des aktuellen Tages fort.",
     "Neue Staffel: Kulisse (Dschungel oder TV-Studio), Länge, Schwierigkeit und deinen Promi wählen.",
-    "Prüfungen spielen: alle neun Prüfungen einzeln üben, im Dschungel oder im Studio, mit Bestwerten.",
+    "Prüfungen spielen: alle dreizehn Prüfungen einzeln üben, im Dschungel oder im Studio, mit Bestwerten.",
     "Einstellungen: Grafik, Lautstärke, Sprachausgabe der Moderatoren, Kamera, Tastenhinweise, Controller-Stil.",
     "Steuerung: Übersicht für Tastatur, PlayStation, Switch und Handy.",
     "Speichern mit Google und Mitwirkende & Lizenzen."
@@ -192,6 +192,15 @@
     "Eine saubere Landung auf jeder Fahrt der Lianen-Rutsche bringt drei Bonus-Sterne.",
     "Die besten Ergebnisse jeder Prüfung stehen unter Prüfungen spielen."
    ]
+  },
+  {
+   "t": "Sternen-Bach, Blindfahrt, Ekel-Box und Madengrab",
+   "list": [
+    "Sternen-Bach: Immer nur einen Stern tragen und am Rand zurück zum Netz waten. Rollt ein Ball auf dich zu, mit der Aktionstaste zur Seite hechten – wer getroffen wird, verliert seinen Stern.",
+    "Blindfahrt: Fahr langsam und hör auf den Beifahrer. Bei „Achtung, Fass!“ sofort lenken, bei „Stopp!“ die Aktionstaste halten, bis der Stern gegriffen ist. Verhaspelt er sich, korrigiert er sich gleich.",
+    "Ekel-Box: Kopf drehen, bis das Fadenkreuz gelb leuchtet, dann die Aktionstaste halten. Rotes Fadenkreuz heißt Spinnennest – nicht zubeißen. Steigt die Panik über drei Viertel, die zweite Taste halten und ruhig atmen.",
+    "Madengrab: Den Stick gleichmäßig im Kreis drehen (oder die Aktionstaste schnell tippen), bis die markierte Schraube heraus ist. Bei hoher Panik kurz ruhig atmen – eine Panikattacke dreht die Schraube ein Stück zurück."
+   ]
   }
  ],
  "faq": [
@@ -222,6 +231,10 @@
   {
    "q": "Gibt es einen Mehrspieler-Modus?",
    "a": "Nein, Urwaldlager ist ein Einzelspieler-Spiel."
+  },
+  {
+   "q": "Mich ekeln die krabbelnden Tiere über dem Bild zu sehr – kann ich sie abschalten?",
+   "a": "Die Krabbeltiere gehören zur Show und erscheinen nur bei Ekel-Momenten in den Prüfungen. Sie sind gezeichnet und verschwinden nach wenigen Sekunden von selbst."
   }
  ]
 }

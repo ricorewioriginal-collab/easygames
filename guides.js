@@ -414,7 +414,7 @@ window.EASYGAMES_GUIDES = {
    "Handy: Stick links laufen, rechts wischen = Kamera, grüne Taste = Aktion, zweite Taste = Ducken/Springen, Kommandos antippen; hoch und quer spielbar."
   ],
   "tipps": [
-   "Jede Prüfung erklärt vorher ihre Steuerung – üben kannst du alle neun unter „Prüfungen spielen“.",
+   "Jede Prüfung erklärt vorher ihre Steuerung – üben kannst du alle dreizehn unter „Prüfungen spielen“.",
    "Wer im Camp hilft, gewinnt Sympathie; Lästern bringt Unterhaltung, kostet aber Freunde."
   ]
  },

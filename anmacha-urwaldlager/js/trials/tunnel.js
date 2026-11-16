@@ -27,7 +27,19 @@
       const W = ctx.short ? 5 : 7, Hh = ctx.short ? 4 : 5;
       ctx.W = W; ctx.H = Hh; ctx.cells = maze(W, Hh, ctx.rng);
       const ox = -W * CS / 2, oz = -Hh * CS / 2; ctx.ox = ox; ctx.oz = oz;
-      const wallM = R.mat(studio ? 0x3a3a46 : 0x5a4630), floorM = R.mat(studio ? 0x26262e : 0x4a3a24);
+      // Erd-/Bretter-Textur mit Wurzeln, Steinen und Schleimspuren
+      const tex = (base, dark, lite, slime) => {
+        const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d');
+        g.fillStyle = base; g.fillRect(0, 0, 128, 128);
+        for (let i = 0; i < 900; i++) { g.fillStyle = Math.random() < 0.5 ? dark : lite; g.globalAlpha = Math.random() * 0.35; g.fillRect(Math.random() * 128, Math.random() * 128, 1 + Math.random() * 3, 1 + Math.random() * 2); }
+        g.globalAlpha = 0.5; g.strokeStyle = dark; g.lineWidth = 2;
+        for (let i = 0; i < 6; i++) { g.beginPath(); let x = Math.random() * 128, y = 0; g.moveTo(x, y); while (y < 128) { x += (Math.random() - 0.5) * 14; y += 10; g.lineTo(x, y); } g.stroke(); }
+        g.globalAlpha = 0.55; g.fillStyle = slime; for (let i = 0; i < 5; i++) { const x = Math.random() * 128, h = 20 + Math.random() * 60; g.fillRect(x, 0, 3 + Math.random() * 4, h); g.beginPath(); g.arc(x + 3, h, 4, 0, 7); g.fill(); }
+        g.globalAlpha = 1; const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; t.wrapS = t.wrapT = T.RepeatWrapping; return t;
+      };
+      const wallT = studio ? tex('#4a4652', '#24222a', '#6a6672', '#6fdc3a') : tex('#6a5236', '#3a2a18', '#8a6a44', '#7aa23a');
+      const floorT = studio ? tex('#2e2c36', '#18171e', '#45424e', '#5aa02a') : tex('#4e3c26', '#2a1e10', '#6a5232', '#5a7a2a'); floorT.repeat.set(6, 5);
+      const wallM = new T.MeshLambertMaterial({ map: wallT }), floorM = new T.MeshLambertMaterial({ map: floorT });
       const floor = new T.Mesh(new T.PlaneGeometry(W * CS + 1, Hh * CS + 1), floorM); floor.rotation.x = -Math.PI / 2; floor.position.set(0, 0, 0); floor.receiveShadow = true; sc.add(floor);
       const ceil = new T.Mesh(new T.PlaneGeometry(W * CS + 1, Hh * CS + 1), R.mat(studio ? 0x1a1a22 : 0x3a2a18)); ceil.rotation.x = Math.PI / 2; ceil.position.y = HT; sc.add(ceil);
       // Wände sammeln (Kollision + Instanzen)
@@ -45,6 +57,15 @@
       im.receiveShadow = true; sc.add(im);
       // Wurzeln/Stützbalken für Atmosphäre
       for (let i = 0; i < W * Hh / 2; i++) { const b = new T.Mesh(new T.CylinderGeometry(0.05, 0.07, HT, 5), R.mat(studio ? 0x8a8f99 : 0x6b4426)); b.position.set(ox + ctx.rng.int(0, W) * CS, HT / 2, oz + ctx.rng.int(0, Hh) * CS); sc.add(b); }
+      // Hängende Wurzeln, Spinnweben, Schleimtropfen an der Decke
+      const rootM = R.mat(studio ? 0x6a6a72 : 0x5a3a1e), webM = new T.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.22, wireframe: true, side: T.DoubleSide });
+      const slimeM = new T.MeshLambertMaterial({ color: R.lin(0x7adc3a), emissive: R.lin(0x1a4a0a) });
+      for (let y = 0; y < Hh; y++) for (let x = 0; x < W; x++) {
+        const cx = ox + x * CS + CS / 2, cz = oz + y * CS + CS / 2;
+        for (let k = 0; k < 3; k++) { const l = ctx.rng.range(0.15, 0.5), r = new T.Mesh(new T.CylinderGeometry(0.012, 0.025, l, 4), rootM); r.position.set(cx + ctx.rng.range(-0.8, 0.8), HT - l / 2, cz + ctx.rng.range(-0.8, 0.8)); r.rotation.z = ctx.rng.range(-0.4, 0.4); sc.add(r); }
+        if (ctx.rng.next() < 0.5) { const w = new T.Mesh(new T.CircleGeometry(0.4, 8, 0, Math.PI / 2), webM); w.position.set(cx + (ctx.rng.next() < 0.5 ? -1 : 1) * (CS / 2 - 0.16), HT - 0.05, cz + (ctx.rng.next() < 0.5 ? -1 : 1) * (CS / 2 - 0.16)); w.rotation.set(Math.PI / 2, 0, ctx.rng.int(0, 3) * Math.PI / 2); sc.add(w); }
+        if (ctx.rng.next() < 0.6) { const d = new T.Mesh(new T.SphereGeometry(0.04, 6, 4), slimeM); d.scale.y = 1.8; d.position.set(cx + ctx.rng.range(-0.7, 0.7), HT - 0.04, cz + ctx.rng.range(-0.7, 0.7)); sc.add(d); }
+      }
       // Sackgassen → Sterne
       const dead = [];
       for (let y = 0; y < Hh; y++) for (let x = 0; x < W; x++) { const c = ctx.cells[y * W + x]; const open = ['n', 's', 'e', 'w'].filter(d => !c[d]).length; if (open === 1 && (x + y) > 1) dead.push([x, y]); }
@@ -52,7 +73,7 @@
       while (spots.length < ctx.max) spots.push([ctx.rng.int(1, W - 1), ctx.rng.int(1, Hh - 1)]);
       ctx.starObjs = spots.slice(0, ctx.max).map(([x, y]) => { const s = R.star(0.32); s.material = new T.MeshBasicMaterial({ color: R.lin(0xffd23a) }); s.position.set(ox + x * CS + CS / 2, 0.45, oz + y * CS + CS / 2); s.userData.cell = [x, y]; sc.add(s); return s; });
       // Gekrabbel: Käfer am Boden und an den Wänden, Fledermäuse, Krabben
-      const nb = Math.round(70 * ctx.k);
+      const nb = Math.round(110 * ctx.k);
       ctx.bugs = UL.Trials.bugs(sc, nb, 0x2a1a0a);
       ctx.bugs.list.forEach(b => { b.x = ox + ctx.rng.range(0.3, W * CS - 0.3); b.z = oz + ctx.rng.range(0.3, Hh * CS - 0.3); b.y = 0.03; b.s = 0.07; b.r = ctx.rng.next() * 6; b.sp = ctx.rng.range(0.2, 0.5); });
       ctx.bugs.sync();
@@ -109,6 +130,7 @@
         if (c.a.root.position.distanceTo(p) < 0.6) touch += 4;
       }
       ctx.ekel = UL.clamp(ctx.ekel + touch * dt * 0.12 * ctx.k - dt * 0.06, 0, 1);
+      if (touch && Math.random() < dt * (1 + touch * 0.5)) { UL.Trials.crawl(1, ['roach', 'spider', 'beetle'], 1.4); if (Math.random() < 0.3) UL.Audio.sfx('yuck'); }
       if (ctx.ekel >= 1 && ctx.panic <= 0) { ctx.panic = 2.5; ctx.ekel = 0.5; ctx.bad('Panik! Kurz durchatmen …', 'scream'); }
       // Sterne
       for (const s of ctx.starObjs) { if (!s.visible) continue; s.rotation.y += dt * 2; s.position.y = 0.45 + Math.sin(ctx.t * 3 + s.position.x) * 0.05; const d = s.position.distanceTo(p); if (d < 0.75 && (I.ok || d < 0.5)) { s.visible = false; ctx.addStar(s.position); } }

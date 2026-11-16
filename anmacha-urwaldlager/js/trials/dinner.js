@@ -59,7 +59,7 @@
       if (ctx.plate) ctx.scene.remove(ctx.plate);
       ctx.plate = dish(icon, ctx.rng); ctx.plate.position.set(0, 0.92, 0.2); ctx.scene.add(ctx.plate); ctx.plate.visible = false;
       ctx.phase = 'serve'; ctx.pt = 0; ctx.chews = 0; ctx.need = Math.round((2 + lvl) * (ctx.short ? 0.8 : 1)); ctx.bal = 0; ctx.balV = 0; ctx.swallow = 0; ctx.lvl = lvl;
-      ctx.zone = UL.clamp(0.32 - lvl * 0.04 - (ctx.k - 1) * 0.08, 0.14, 0.34); ctx.zoneX = 0.5;
+      ctx.zone = UL.clamp(0.36 - lvl * 0.035 - (ctx.k - 1) * 0.08, 0.2, 0.38); ctx.zoneX = 0.5;
       ctx.extraHud = `<span class="chip">🍽️ Gang ${ctx.course + 1}/${ctx.menu.length}: ${UL.esc(name)} ${icon}</span>`;
       ctx.cloche.position.y = 0.92; ctx.cloche.visible = true;
       UL.after(0.2, () => UL.UI.toast(['Lotte', 'Mats'][ctx.course % 2] + ': „Guten Appetit – ' + name + '!“', icon, 1800));
@@ -76,17 +76,17 @@
         if (ctx.pt > 1.0) { ctx.cloche.visible = false; ctx.phase = 'chew'; ctx.pt = 0; }
       } else if (ctx.phase === 'chew' || ctx.phase === 'swallow') {
         // Takt-Marker pendelt; Zone springt nach jedem Bissen
-        const sp = (0.9 + ctx.lvl * 0.25) * ctx.k;
+        const sp = (0.75 + ctx.lvl * 0.18) * ctx.k;
         ctx.mk += ctx.mkDir * sp * dt; if (ctx.mk > 1) { ctx.mk = 1; ctx.mkDir = -1; } if (ctx.mk < 0) { ctx.mk = 0; ctx.mkDir = 1; }
         // Würgen: Zufallskräfte, ausgleichen mit dem Stick
-        ctx.balV += (Math.random() - 0.5) * 3.2 * ctx.k * (0.6 + ctx.lvl * 0.3) * dt + Math.sign(ctx.bal) * 0.5 * ctx.k * dt;
-        ctx.balV += I.mx * 2.6 * dt; ctx.balV *= Math.pow(0.35, dt);
+        ctx.balV += (Math.random() - 0.5) * 2.4 * ctx.k * (0.6 + ctx.lvl * 0.25) * dt + Math.sign(ctx.bal) * 0.32 * ctx.k * dt;
+        ctx.balV += I.mx * 3.2 * dt; ctx.balV *= Math.pow(0.35, dt);
         ctx.bal = UL.clamp(ctx.bal + ctx.balV * dt * 1.6, -1, 1);
         ctx.gag = UL.clamp(Math.abs(ctx.bal) * 1.1 - 0.2, 0, 1);
         if (Math.abs(ctx.bal) >= 1) { this.fail(ctx); return; }
         if (ctx.phase === 'chew' && I.ok) {
           if (Math.abs(ctx.mk - ctx.zoneX) < ctx.zone / 2) { ctx.chews++; UL.Audio.sfx('eat'); ctx.zoneX = 0.15 + Math.random() * 0.7; if (ctx.chews >= ctx.need) { ctx.phase = 'swallow'; ctx.pt = 0; } }
-          else { ctx.balV += (Math.random() < 0.5 ? -1 : 1) * 1.4; UL.Audio.sfx('bad'); R.shake = 0.3; }
+          else { ctx.balV += (Math.random() < 0.5 ? -1 : 1) * 0.8; UL.Audio.sfx('bad'); R.shake = 0.3; }
         }
         if (ctx.phase === 'swallow') {
           if (I.altD) { ctx.swallow += dt / 1.1; if (ctx.swallow >= 1) { UL.Audio.sfx('gulp'); ctx.addStar(new T.Vector3(0, 1.1, 0.2)); ctx.plate.visible = false; ctx.phase = 'pause'; ctx.pt = 0; } }
@@ -110,7 +110,7 @@
     finish(ctx) { if (ctx.tint) ctx.tint.remove(); ctx.player.root.visible = true; ctx.player.root.rotation.y = 0; ctx.player.root.position.set(0.9, 0, 1.6); ctx.player.play(ctx.stars >= ctx.max / 2 ? 'cheer' : 'hit'); },
     bot(dt, ctx, I) {
       I.mx = UL.clamp(-ctx.bal * 3 - ctx.balV * 0.8, -1, 1);
-      if (ctx.phase === 'chew') { const nx = ctx.mk + ctx.mkDir * (0.9 + ctx.lvl * 0.25) * ctx.k * dt; if (Math.abs(nx - ctx.zoneX) < ctx.zone / 2 * 0.5) I.ok = true; }
+      if (ctx.phase === 'chew') { const nx = ctx.mk + ctx.mkDir * (0.75 + ctx.lvl * 0.18) * ctx.k * dt; if (Math.abs(nx - ctx.zoneX) < ctx.zone / 2 * 0.5) I.ok = true; }
       if (ctx.phase === 'swallow') I.altD = true;
     }
   });
