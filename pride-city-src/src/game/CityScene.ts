@@ -142,6 +142,7 @@ export class CityScene implements GameScene {
   refreshHud() {
     if (this.mode !== 'play' && this.g.where !== 'home') return;
     const s = this.g.save.data, gl = goal(s);
+    this.world.traces.visible = s.settings.adult;
     if (this.g.where === 'home') this.g.hud.goal('Zuhause', 'Deine Wohnung', s.chapter === 1 && s.step === 2 ? 'Schau dich um.' : `Ziel: ${gl.title}`);
     else this.g.hud.goal(s.chapter === 1 ? 'Kapitel 1 · Ankommen' : 'Rainbow City', gl.title, gl.sub);
     const days = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];

@@ -1,225 +1,236 @@
 {
- "id": "pride-city",
- "handbuch": [
-  {
-   "t": "Worum geht es?",
-   "p": [
-    "Pride City ist eine queere 3D-Lebenssimulation. Du ziehst nach Rainbow City, findest Freund*innen und hilfst der Szene, das Regenbogenhaus vor dem Verkauf an einen Investor zu retten. Die Geschichte ist in Kapitel aufgeteilt; Kapitel 1 „Ankommen“ ist komplett spielbar, die nächsten Kapitel folgen mit Updates.",
-    "Alle Figuren sind erwachsen und frei erfunden. Zustimmung zählt, ein Nein wird respektiert."
-   ]
-  },
-  {
-   "t": "Start und Menü",
-   "list": [
-    "Fortsetzen: lädt deinen Spielstand.",
-    "Neues Spiel: startet mit dem Charakter-Editor. Findet das Spiel einen alten Gay-Life!-Spielstand, kannst du Name, Erspartes und Glitzer übernehmen.",
-    "Story: zeigt die Kapitel und deine bisherigen Entscheidungen.",
-    "Minispiele: Tanz-Battle direkt spielen; weitere Minispiele folgen.",
-    "Optionen: Grafik (automatisch, niedrig, mittel, hoch), Musik, Effekte, Kamera-Tempo, Kamera umkehren, Vollbild und Google-Spielstand.",
-    "Mitwirkende: Herkunft und Lizenzen der Grafiken."
-   ]
-  },
-  {
-   "t": "Deine Figur",
-   "p": [
-    "Im Editor wählst du eine von sechs Figuren (vier realistische Menschen, eine schlichte Figur und eine im Comic-Look), eine Farbwelt (Regenbogen, Progress, Trans, Bi, Lesbisch, Pan, Nichtbinär, Ace, Aro, Gay, Bear, Leder, Neon-Nacht), einen von sechs Hauttönen, eine Haarfarbe, deinen Namen und deine Pronomen. Über das Pausenmenü (Kleiderschrank) oder den Kleiderschrank in deiner Wohnung änderst du alles jederzeit. Dazu kommt das Outfit: angezogen, oberkörperfrei, Unterwäsche oder Badehose/Bikini; mit „Inhalte ab 18“ auch Harness. Figuren mit den Pronomen sie oder they tragen bei Unterwäsche und Bademode immer ein Oberteil."
-   ]
-  },
-  {
-   "t": "In der Stadt",
-   "list": [
-    "Oben links steht dein aktuelles Ziel, ein Stern über Figuren oder Orten zeigt, wohin es geht.",
-    "Oben rechts: Wochentag und Uhrzeit, Geld, Stimmung und fünf kleine Balken für deine Bedürfnisse (rot = dringend).",
-    "Gehst du nah an eine Figur oder Tür, erscheint ein Hinweis; mit der Aktionstaste sprichst du oder gehst hinein.",
-    "Ein Spieltag dauert etwa 16 Minuten. Nachts leuchten Neon-Schilder und Laternen, auf dem Platz wird getanzt.",
-    "Autos halten an, wenn du vor ihnen stehst."
-   ]
-  },
-  {
-   "t": "Orte",
-   "list": [
-    "Café Kaffeeklatsch: Cappuccino (+Energie) und Regenbogenkuchen bei Mo, mit Gästen plaudern.",
-    "Deine Wohnung: begehbar, mit Bett, Dusche, Herd, Kühlschrank, Fernseher und Kleiderschrank.",
-    "Regenbogenhaus: Treffpunkt der Szene, Spenden und Job als Eventmanager*in.",
-    "Club Prisma: Tanz-Battle, Drinks an der Bar, ab 20 Uhr Job als DJ.",
-    "Späti Lecker: Brezel, Mate und Lebensmittel zum Kochen.",
-    "Boutique Fabelhaft: Job im Verkauf und neuer Look.",
-    "Muckibude Muskelkater: Training, Duschen und Job als Fitnesstrainer*in.",
-    "Studio Klappe Auf: Job als Fotograf*in.",
-    "Checkpoint Regenbogen: kostenlose HIV- und STI-Tests, PrEP-Beratung, gratis Kondome, Infos zu U=U, PrEP, PEP und Safer Sex.",
-    "Tram: für 2 € in zehn Minuten an jeden Ort.",
-    "Pride Plaza mit Brunnen, Flaggen aller Communitys und Bühne, dazu der Regenbogenpark."
-   ]
-  },
-  {
-   "t": "Alltag und Bedürfnisse",
-   "p": [
-    "Wie in Gay Life! hast du fünf Bedürfnisse: Energie, Satt, Frisch, Kontakte und Spaß. Sie sinken mit der Zeit, im Schlaf erholt sich die Energie. Aus allen fünf ergibt sich deine Stimmung; gute Stimmung bringt bis zu 15 % mehr Lohn, schlechte bis zu 20 % weniger.",
-    "Bei niedrigen Werten gibt das Spiel einen Tipp. Energie unter 10 heißt: kein Sprinten mehr."
-   ]
-  },
-  {
-   "t": "Wohnung",
-   "list": [
-    "Bett: Schlafen bis 7 Uhr (Energie voll, speichert) oder Nickerchen.",
-    "Dusche: Frisch auf 100.",
-    "Herd: kochen, braucht Lebensmittel aus dem Späti (+50 Satt).",
-    "Fernseher: +25 Spaß.",
-    "Kleiderschrank: Look ändern.",
-    "Tür: zurück in die Stadt."
-   ]
-  },
-  {
-   "t": "Jobs",
-   "p": [
-    "Fünf Jobs aus Gay Life!: Verkäufer*in (Boutique, 10–20 Uhr), Fitnesstrainer*in (Muckibude, 8–21 Uhr), Fotograf*in (Studio, 10–20 Uhr), DJ (Club Prisma, 20–2 Uhr) und Eventmanager*in (Regenbogenhaus, 10–18 Uhr).",
-    "Eine Schicht dauert vier Stunden und besteht aus drei Situationen mit je drei Antworten. Die beste Antwort bringt 2 Punkte. Lohn = 4 × Stundenlohn + Punkte-Bonus, mal Stimmung. Mit Erfahrung wirst du befördert (vier Stufen, je +25 % Lohn). Höchstens zwei Schichten am Tag."
-   ]
-  },
-  {
-   "t": "Handy",
-   "list": [
-    "Öffnen mit P, dem 📱-Knopf am Touchscreen oder X am Controller (M bzw. Select öffnet direkt die Karte).",
-    "Status: Bedürfnisse, Stimmung, Geld, Ruf, Glitzer.",
-    "Ziele: Kapitelziel, drei Tagesziele mit Glitzer-Belohnung, Sammelstand.",
-    "Karte & Tram: alle Orte, mit der Tram hinfahren.",
-    "Jobs: alle Jobs mit Stufe, Lohn und Öffnungszeit, Ort markieren.",
-    "Kontakte: Leute, mit denen du gesprochen hast, und eure Freundschaft.",
-    "Rainbow Match: Dating-App mit Profilfotos der Figuren (tippe aufs Bild oder nutze „Fotos“ mit ←/→; mit 18+ zusätzlich sexy Pose und Unterwäsche) – Profile nach rechts (Ja) oder links (Nein) wischen, am Controller und an der Tastatur mit ←/→. Bei einem Match planst du ein Date im Café oder Club.",
-    "Feed: Neuigkeiten aus der Szene, Gerüchte und deine eigenen Momente.",
-    "Gesundheit: letzter Test, PrEP-Status und Erinnerung, Infos.",
-    "Glossar: Begriffe aus der Szene."
-   ]
-  },
-  {
-   "t": "Freundschaft und Dates",
-   "p": [
-    "Sprich jeden Tag mit Leuten: Das füllt Kontakte und Freundschaft. Ab 80 Freundschaft gehört jemand zu deiner Wahlfamilie.",
-    "Ein Date besteht aus drei Situationen. Mit mindestens 4 von 6 Punkten steigt eure Beziehung: Match → Erstes Date → Verliebt → Zusammen. Zustimmung ist immer Pflicht, ein Nein wird respektiert."
-   ]
-  },
-  {
-   "t": "Inhalte ab 18",
-   "p": [
-    "In den Optionen lässt sich „Inhalte ab 18“ einschalten (nach Altersabfrage, standardmäßig aus). Dann zeigen Profile Vorlieben, das Glossar weitere Begriffe, die Boutique Toys, und ab „Verliebt“ kann ein Date – wenn beide wollen und ein Kondom da ist – über Nacht gehen. Die Szene wird nur angedeutet und blendet ab; am Morgen danach sieht man die Spuren in der Wohnung.",
-    "Gesundheitsinfos (Checkpoint, PrEP, Tests, U=U) sind immer sichtbar."
-   ]
-  },
-  {
-   "t": "Tanz-Battle",
-   "p": [
-    "Pfeile fliegen auf vier Leuchtspuren heran. Drücke die passende Richtung, wenn ein Pfeil den Ring erreicht: Perfekt bringt 100, Super 70, Gut 40 Punkte plus Combo-Bonus. Drei Runden werden immer dichter. Wer am Ende mehr Punkte hat als Rex, gewinnt."
-   ]
-  },
-  {
-   "t": "Fortschritt und Speichern",
-   "p": [
-    "Das Spiel speichert automatisch bei wichtigen Schritten, beim Schlafen und beim Verlassen. Im Pausenmenü kannst du jederzeit speichern. In den Optionen sicherst du den Spielstand mit deinem Google-Konto und spielst auf anderen Geräten weiter."
-   ]
-  }
- ],
- "ratgeber": [
-  {
-   "t": "Einsteiger",
-   "list": [
-    "Folge dem Stern: Er zeigt immer das nächste Story-Ziel.",
-    "Halte Sprinten gedrückt (Shift, RT oder Turbo), um schneller voranzukommen.",
-    "Dreh die Kamera mit dem rechten Stick, der Maus oder durch Wischen, wenn ein Gebäude die Sicht verdeckt."
-   ]
-  },
-  {
-   "t": "Unterschriften",
-   "list": [
-    "Frag freundlich und erkläre, worum es geht – dann unterschreiben die meisten.",
-    "Drängeln führt zu einem Nein. Das ist okay: Es gibt genug andere Leute in der Stadt.",
-    "Wer gerade keinen Kopf dafür hat und dabei respektiert wird, bringt dir trotzdem Ruf."
-   ]
-  },
-  {
-   "t": "Tanz-Battle meistern",
-   "list": [
-    "Schau auf den Ring, nicht auf die Pfeile weit hinten.",
-    "Combos bringen bis zu 50 Bonuspunkte pro Pfeil – eine lange Serie ist mehr wert als einzelne perfekte Treffer.",
-    "In Runde 3 kommen Doppel-Pfeile auf halben Schlägen: Rhythmus mitzählen hilft."
-   ]
-  },
-  {
-   "t": "Häufige Fehler",
-   "list": [
-    "Nova öffnet den Club erst um 21 Uhr – vor der Tür kannst du einfach warten.",
-    "Wer im Battle auf Zurück drückt, gibt auf; du kannst Rex danach jederzeit erneut herausfordern."
-   ]
-  },
-  {
-   "t": "Alltag meistern",
-   "list": [
-    "Morgens duschen und Kaffee bei Mo, dann eine Schicht: so startet die Stimmung hoch.",
-    "Lebensmittel im Späti sind günstiger als Essen im Café: 6 € für drei Portionen.",
-    "Rede jeden Tag mit Leuten – das füllt Kontakte und Freundschaft, beides nur einmal pro Person und Tag.",
-    "Die Tagesziele wechseln jeden Tag und bringen Glitzer.",
-    "Schlaf vor Mitternacht, sonst bist du am nächsten Tag zu müde für zwei Schichten."
-   ]
-  },
-  {
-   "t": "Dating und Gesundheit",
-   "list": [
-    "Gute Date-Antworten: zuhören, nachfragen, Humor, und fragen statt bestimmen.",
-    "Ruf und gute Stimmung erhöhen die Chance auf ein Match.",
-    "Gratis-Kondome gibt es einmal am Tag im Checkpoint, Kondome und Gleitgel auch im Späti.",
-    "Mit PrEP erinnert dich das Handy alle 14 Spieltage an den nächsten Test."
-   ]
-  }
- ],
- "loesung": [
-  {
-   "t": "Kapitel 1: Ankommen",
-   "steps": [
-    "Geh die Hauptstraße hinunter zum Café Kaffeeklatsch und sprich mit Mo. Deine Antwort, wie du dich fühlst, merkt sich das Spiel.",
-    "Geh nach Süden zu deiner Wohnung (Tür an der Hauptstraße) und bring den Koffer hinein.",
-    "Sprich im Norden hinter der großen Kreuzung vor dem Regenbogenhaus mit Jules und wähle deinen Weg: laut, kreativ oder diplomatisch.",
-    "Sammle drei Unterschriften bei Figuren mit ✍️: Lena (Pride Plaza), Hilde (Bank am Platz), Kim (Nordwesten), Sam (Süden an der Hauptstraße) oder Tariq (Regenbogenpark im Südosten). Antworte freundlich und erkläre, worum es geht.",
-    "Bring die Liste zu Jules.",
-    "Geh zum Club Prisma und sprich mit Nova. Vor 21 Uhr wählst du „Bis 21 Uhr warten“.",
-    "Gewinne das Tanz-Battle gegen Rex. Bei einer Niederlage sprichst du Nova einfach erneut an.",
-    "Kapitel 1 ist geschafft: 120 € und 15 Ruf."
-   ]
-  },
-  {
-   "t": "Pride-Sticker (8)",
-   "list": [
-    "Pride Plaza, Südseite.",
-    "Regenbogenpark, Südteil.",
-    "Nordwestliche Stadtecke.",
-    "Östlicher Stadtrand, nördlich der Mitte.",
-    "Südwestlicher Stadtrand.",
-    "Nördlicher Stadtrand, östlich der Hauptstraße.",
-    "Nordwesten, nahe dem Regenbogenhaus.",
-    "Südöstlich der Hauptkreuzung.",
-    "Jeder Sticker bringt 10 Glitzer, alle zusammen 10 Ruf."
-   ]
-  },
-  {
-   "t": "Nach Kapitel 1",
-   "list": [
-    "Im freien Spiel kannst du Rex im Club Prisma beliebig oft herausfordern; ein Sieg bringt 25 € und 2 Ruf.",
-    "Täglicher Cappuccino bei Mo bringt beim ersten Mal am Tag 1 Ruf.",
-    "Spenden im Regenbogenhaus: 10 € für 2 Ruf.",
-    "Kapitel 2 „Wurzeln schlagen“ folgt im nächsten Update; deine Entscheidungen aus Kapitel 1 bleiben gespeichert."
-   ]
-  }
- ],
- "faq": [
-  {
-   "q": "Was ist mit meinem Gay-Life!-Spielstand?",
-   "a": "Beim ersten neuen Spiel bietet Pride City an, Name, Erspartes und Glitzer zu übernehmen. Gay Life! bleibt bis zum Abschluss des Relaunchs weiter spielbar."
-  },
-  {
-   "q": "Gibt es Mehrspieler?",
-   "a": "Noch nicht in Pride City. Der Mehrspieler aus Gay Life! wird in einem späteren Update übernommen."
-  },
-  {
-   "q": "Läuft das Spiel auf dem Handy?",
-   "a": "Ja, im Hoch- und Querformat mit Touch-Steuerung. Die Grafikstufe passt sich automatisch an."
-  }
- ]
+  "id": "pride-city",
+  "handbuch": [
+    {
+      "t": "Worum geht es?",
+      "p": [
+        "Pride City ist eine queere 3D-Lebenssimulation. Du ziehst nach Rainbow City, findest Freund*innen und hilfst der Szene, das Regenbogenhaus vor dem Verkauf an einen Investor zu retten. Die Geschichte ist in Kapitel aufgeteilt; Kapitel 1 „Ankommen“ ist komplett spielbar, die nächsten Kapitel folgen mit Updates.",
+        "Alle Figuren sind erwachsen und frei erfunden. Zustimmung zählt, ein Nein wird respektiert."
+      ]
+    },
+    {
+      "t": "Start und Menü",
+      "list": [
+        "Fortsetzen: lädt deinen Spielstand.",
+        "Neues Spiel: startet mit dem Charakter-Editor. Findet das Spiel einen alten Gay-Life!-Spielstand, kannst du Name, Erspartes und Glitzer übernehmen.",
+        "Story: zeigt die Kapitel und deine bisherigen Entscheidungen.",
+        "Minispiele: Tanz-Battle direkt spielen; weitere Minispiele folgen.",
+        "Optionen: Grafik (automatisch, niedrig, mittel, hoch), Musik, Effekte, Kamera-Tempo, Kamera umkehren, Vollbild und Google-Spielstand.",
+        "Mitwirkende: Herkunft und Lizenzen der Grafiken."
+      ]
+    },
+    {
+      "t": "Deine Figur",
+      "p": [
+        "Im Editor wählst du eine von sechs Figuren (vier realistische Menschen, eine schlichte Figur und eine im Comic-Look), eine Farbwelt (Regenbogen, Progress, Trans, Bi, Lesbisch, Pan, Nichtbinär, Ace, Aro, Gay, Bear, Leder, Neon-Nacht), einen von sechs Hauttönen, eine Haarfarbe, deinen Namen und deine Pronomen. Über das Pausenmenü (Kleiderschrank) oder den Kleiderschrank in deiner Wohnung änderst du alles jederzeit. Dazu kommt das Outfit: angezogen, oberkörperfrei, Unterwäsche oder Badehose/Bikini; mit „Inhalte ab 18“ auch Harness. Figuren mit den Pronomen sie oder they tragen bei Unterwäsche und Bademode immer ein Oberteil."
+      ]
+    },
+    {
+      "t": "In der Stadt",
+      "list": [
+        "Oben links steht dein aktuelles Ziel, ein Stern über Figuren oder Orten zeigt, wohin es geht.",
+        "Oben rechts: Wochentag und Uhrzeit, Geld, Stimmung und fünf kleine Balken für deine Bedürfnisse (rot = dringend).",
+        "Gehst du nah an eine Figur oder Tür, erscheint ein Hinweis; mit der Aktionstaste sprichst du oder gehst hinein.",
+        "Ein Spieltag dauert etwa 16 Minuten. Nachts leuchten Neon-Schilder und Laternen, auf dem Platz wird getanzt.",
+        "Autos halten an, wenn du vor ihnen stehst."
+      ]
+    },
+    {
+      "t": "Orte",
+      "list": [
+        "Café Kaffeeklatsch: Cappuccino (+Energie) und Regenbogenkuchen bei Mo, mit Gästen plaudern.",
+        "Deine Wohnung: begehbar, mit Bett, Dusche, Herd, Kühlschrank, Fernseher und Kleiderschrank.",
+        "Regenbogenhaus: Treffpunkt der Szene, Spenden und Job als Eventmanager*in.",
+        "Club Prisma: Tanz-Battle, Drinks an der Bar, ab 20 Uhr Job als DJ.",
+        "Späti Lecker: Brezel, Mate und Lebensmittel zum Kochen.",
+        "Boutique Fabelhaft: Job im Verkauf und neuer Look.",
+        "Muckibude Muskelkater: Training, Duschen und Job als Fitnesstrainer*in.",
+        "Studio Klappe Auf: Job als Fotograf*in.",
+        "Checkpoint Regenbogen: kostenlose HIV- und STI-Tests, PrEP-Beratung, gratis Kondome, Infos zu U=U, PrEP, PEP und Safer Sex.",
+        "Tram: für 2 € in zehn Minuten an jeden Ort.",
+        "Pride Plaza mit Brunnen, Flaggen aller Communitys und Bühne, dazu der Regenbogenpark."
+      ]
+    },
+    {
+      "t": "Alltag und Bedürfnisse",
+      "p": [
+        "Wie in Gay Life! hast du fünf Bedürfnisse: Energie, Satt, Frisch, Kontakte und Spaß. Sie sinken mit der Zeit, im Schlaf erholt sich die Energie. Aus allen fünf ergibt sich deine Stimmung; gute Stimmung bringt bis zu 15 % mehr Lohn, schlechte bis zu 20 % weniger.",
+        "Bei niedrigen Werten gibt das Spiel einen Tipp. Energie unter 10 heißt: kein Sprinten mehr."
+      ]
+    },
+    {
+      "t": "Wohnung",
+      "list": [
+        "Bett: Schlafen bis 7 Uhr (Energie voll, speichert) oder Nickerchen.",
+        "Dusche: Frisch auf 100.",
+        "Herd: kochen, braucht Lebensmittel aus dem Späti (+50 Satt).",
+        "Fernseher: +25 Spaß.",
+        "Kleiderschrank: Look ändern.",
+        "Tür: zurück in die Stadt."
+      ]
+    },
+    {
+      "t": "Jobs",
+      "p": [
+        "Fünf Jobs aus Gay Life!: Verkäufer*in (Boutique, 10–20 Uhr), Fitnesstrainer*in (Muckibude, 8–21 Uhr), Fotograf*in (Studio, 10–20 Uhr), DJ (Club Prisma, 20–2 Uhr) und Eventmanager*in (Regenbogenhaus, 10–18 Uhr).",
+        "Eine Schicht dauert vier Stunden und besteht aus drei Situationen mit je drei Antworten. Die beste Antwort bringt 2 Punkte. Lohn = 4 × Stundenlohn + Punkte-Bonus, mal Stimmung. Mit Erfahrung wirst du befördert (vier Stufen, je +25 % Lohn). Höchstens zwei Schichten am Tag."
+      ]
+    },
+    {
+      "t": "Handy",
+      "list": [
+        "Öffnen mit P, dem 📱-Knopf am Touchscreen oder X am Controller (M bzw. Select öffnet direkt die Karte).",
+        "Status: Bedürfnisse, Stimmung, Geld, Ruf, Glitzer.",
+        "Ziele: Kapitelziel, drei Tagesziele mit Glitzer-Belohnung, Sammelstand.",
+        "Karte & Tram: alle Orte, mit der Tram hinfahren.",
+        "Jobs: alle Jobs mit Stufe, Lohn und Öffnungszeit, Ort markieren.",
+        "Kontakte: Leute, mit denen du gesprochen hast, und eure Freundschaft.",
+        "Rainbow Match: Dating-App mit Profilfotos der Figuren (tippe aufs Bild oder nutze „Fotos“ mit ←/→; mit 18+ zusätzlich sexy Pose und Unterwäsche) – Profile nach rechts (Ja) oder links (Nein) wischen, am Controller und an der Tastatur mit ←/→. Bei einem Match planst du ein Date im Café oder Club.",
+        "Feed: Neuigkeiten aus der Szene, Gerüchte und deine eigenen Momente.",
+        "Gesundheit: letzter Test, PrEP-Status und Erinnerung, Infos.",
+        "Glossar: Begriffe aus der Szene."
+      ]
+    },
+    {
+      "t": "Freundschaft und Dates",
+      "p": [
+        "Sprich jeden Tag mit Leuten: Das füllt Kontakte und Freundschaft. Ab 80 Freundschaft gehört jemand zu deiner Wahlfamilie.",
+        "Ein Date besteht aus drei Situationen. Mit mindestens 4 von 6 Punkten steigt eure Beziehung: Match → Erstes Date → Verliebt → Zusammen. Zustimmung ist immer Pflicht, ein Nein wird respektiert."
+      ]
+    },
+    {
+      "t": "Inhalte ab 18",
+      "p": [
+        "In den Optionen lässt sich „Inhalte ab 18“ einschalten (nach Altersabfrage, standardmäßig aus). Dann zeigen Profile Vorlieben, das Glossar weitere Begriffe, die Boutique Toys, und ab „Verliebt“ kann ein Date – wenn beide wollen und ein Kondom da ist – über Nacht gehen. Die Szene wird nur angedeutet und blendet ab; am Morgen danach sieht man die Spuren in der Wohnung.",
+        "Gesundheitsinfos (Checkpoint, PrEP, Tests, U=U) sind immer sichtbar."
+      ]
+    },
+    {
+      "t": "Tanz-Battle",
+      "p": [
+        "Pfeile fliegen auf vier Leuchtspuren heran. Drücke die passende Richtung, wenn ein Pfeil den Ring erreicht: Perfekt bringt 100, Super 70, Gut 40 Punkte plus Combo-Bonus. Drei Runden werden immer dichter. Wer am Ende mehr Punkte hat als Rex, gewinnt."
+      ]
+    },
+    {
+      "t": "Nachtleben (nur mit „Inhalte ab 18“)",
+      "p": [
+        "Mit eingeschaltetem 18+-Schalter öffnen sich drei Orte für Erwachsene. Alles wird nur angedeutet: Das Bild blendet ab, gezeigt werden nur Absprache, Zustimmung und Safer Sex.",
+        "Videothek Kopfkino (unten an der Hauptstraße): Filme mit frechen Parodie-Titeln, von denen du nur Titel und Cover-Beschreibung siehst, ein Kondomautomat und die Kabinen. Dort gilt zweimal Klopfen als Frage – du wartest die Antwort ab, ein Schweigen ist ein Nein.",
+        "Haus Rosa: Hier mieten selbstbestimmte erwachsene Sexarbeiter*innen eigene Zimmer. Jede Person nennt vorher ihre Regeln und den Preis; das Haus stellt Kondome. Du kannst auch nur reden und Tee trinken.",
+        "Regenbogenpark: Ab 22 Uhr gibt es Cruising. Ein Nicken ist die Frage, ein Kopfschütteln wird respektiert, ohne Kondom läuft nichts. Mit 18+ siehst du im Park auch die Spuren anderer Nächte.",
+        "Nach jeder Begegnung erinnert dich das Spiel an den nächsten Test im Checkpoint, wenn er länger als zwei Wochen her ist."
+      ]
+    },
+    {
+      "t": "Fortschritt und Speichern",
+      "p": [
+        "Das Spiel speichert automatisch bei wichtigen Schritten, beim Schlafen und beim Verlassen. Im Pausenmenü kannst du jederzeit speichern. In den Optionen sicherst du den Spielstand mit deinem Google-Konto und spielst auf anderen Geräten weiter."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Einsteiger",
+      "list": [
+        "Folge dem Stern: Er zeigt immer das nächste Story-Ziel.",
+        "Halte Sprinten gedrückt (Shift, RT oder Turbo), um schneller voranzukommen.",
+        "Dreh die Kamera mit dem rechten Stick, der Maus oder durch Wischen, wenn ein Gebäude die Sicht verdeckt."
+      ]
+    },
+    {
+      "t": "Unterschriften",
+      "list": [
+        "Frag freundlich und erkläre, worum es geht – dann unterschreiben die meisten.",
+        "Drängeln führt zu einem Nein. Das ist okay: Es gibt genug andere Leute in der Stadt.",
+        "Wer gerade keinen Kopf dafür hat und dabei respektiert wird, bringt dir trotzdem Ruf."
+      ]
+    },
+    {
+      "t": "Tanz-Battle meistern",
+      "list": [
+        "Schau auf den Ring, nicht auf die Pfeile weit hinten.",
+        "Combos bringen bis zu 50 Bonuspunkte pro Pfeil – eine lange Serie ist mehr wert als einzelne perfekte Treffer.",
+        "In Runde 3 kommen Doppel-Pfeile auf halben Schlägen: Rhythmus mitzählen hilft."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Nova öffnet den Club erst um 21 Uhr – vor der Tür kannst du einfach warten.",
+        "Wer im Battle auf Zurück drückt, gibt auf; du kannst Rex danach jederzeit erneut herausfordern."
+      ]
+    },
+    {
+      "t": "Alltag meistern",
+      "list": [
+        "Morgens duschen und Kaffee bei Mo, dann eine Schicht: so startet die Stimmung hoch.",
+        "Lebensmittel im Späti sind günstiger als Essen im Café: 6 € für drei Portionen.",
+        "Rede jeden Tag mit Leuten – das füllt Kontakte und Freundschaft, beides nur einmal pro Person und Tag.",
+        "Die Tagesziele wechseln jeden Tag und bringen Glitzer.",
+        "Schlaf vor Mitternacht, sonst bist du am nächsten Tag zu müde für zwei Schichten."
+      ]
+    },
+    {
+      "t": "Dating und Gesundheit",
+      "list": [
+        "Gute Date-Antworten: zuhören, nachfragen, Humor, und fragen statt bestimmen.",
+        "Ruf und gute Stimmung erhöhen die Chance auf ein Match.",
+        "Gratis-Kondome gibt es einmal am Tag im Checkpoint, Kondome und Gleitgel auch im Späti.",
+        "Mit PrEP erinnert dich das Handy alle 14 Spieltage an den nächsten Test.",
+        "Im Nachtleben immer ein Kondom dabeihaben: Späti (3 Stück für 3 €), Automat in der Videothek (1 €) oder gratis im Checkpoint."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Kapitel 1: Ankommen",
+      "steps": [
+        "Geh die Hauptstraße hinunter zum Café Kaffeeklatsch und sprich mit Mo. Deine Antwort, wie du dich fühlst, merkt sich das Spiel.",
+        "Geh nach Süden zu deiner Wohnung (Tür an der Hauptstraße) und bring den Koffer hinein.",
+        "Sprich im Norden hinter der großen Kreuzung vor dem Regenbogenhaus mit Jules und wähle deinen Weg: laut, kreativ oder diplomatisch.",
+        "Sammle drei Unterschriften bei Figuren mit ✍️: Lena (Pride Plaza), Hilde (Bank am Platz), Kim (Nordwesten), Sam (Süden an der Hauptstraße) oder Tariq (Regenbogenpark im Südosten). Antworte freundlich und erkläre, worum es geht.",
+        "Bring die Liste zu Jules.",
+        "Geh zum Club Prisma und sprich mit Nova. Vor 21 Uhr wählst du „Bis 21 Uhr warten“.",
+        "Gewinne das Tanz-Battle gegen Rex. Bei einer Niederlage sprichst du Nova einfach erneut an.",
+        "Kapitel 1 ist geschafft: 120 € und 15 Ruf."
+      ]
+    },
+    {
+      "t": "Pride-Sticker (8)",
+      "list": [
+        "Pride Plaza, Südseite.",
+        "Regenbogenpark, Südteil.",
+        "Nordwestliche Stadtecke.",
+        "Östlicher Stadtrand, nördlich der Mitte.",
+        "Südwestlicher Stadtrand.",
+        "Nördlicher Stadtrand, östlich der Hauptstraße.",
+        "Nordwesten, nahe dem Regenbogenhaus.",
+        "Südöstlich der Hauptkreuzung.",
+        "Jeder Sticker bringt 10 Glitzer, alle zusammen 10 Ruf."
+      ]
+    },
+    {
+      "t": "Nach Kapitel 1",
+      "list": [
+        "Im freien Spiel kannst du Rex im Club Prisma beliebig oft herausfordern; ein Sieg bringt 25 € und 2 Ruf.",
+        "Täglicher Cappuccino bei Mo bringt beim ersten Mal am Tag 1 Ruf.",
+        "Spenden im Regenbogenhaus: 10 € für 2 Ruf.",
+        "Kapitel 2 „Wurzeln schlagen“ folgt im nächsten Update; deine Entscheidungen aus Kapitel 1 bleiben gespeichert."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Was ist mit meinem Gay-Life!-Spielstand?",
+      "a": "Beim ersten neuen Spiel bietet Pride City an, Name, Erspartes und Glitzer zu übernehmen. Gay Life! bleibt bis zum Abschluss des Relaunchs weiter spielbar."
+    },
+    {
+      "q": "Gibt es Mehrspieler?",
+      "a": "Noch nicht in Pride City. Der Mehrspieler aus Gay Life! wird in einem späteren Update übernommen."
+    },
+    {
+      "q": "Läuft das Spiel auf dem Handy?",
+      "a": "Ja, im Hoch- und Querformat mit Touch-Steuerung. Die Grafikstufe passt sich automatisch an."
+    }
+  ]
 }

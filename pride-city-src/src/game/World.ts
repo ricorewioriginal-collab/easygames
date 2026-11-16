@@ -34,6 +34,7 @@ export class World {
   private cars: Array<{ o: THREE.Object3D; path: THREE.Vector3[]; seg: number; u: number; v: number }> = [];
   private lampLights: THREE.PointLight[] = [];
   night = 0;
+  /** Spuren im Park, nur mit 18+ */ readonly traces = new THREE.Group();
 
   static load() { return preload(CITY_FILES); }
 
@@ -99,6 +100,8 @@ export class World {
     P('gym', 'Muckibude Muskelkater', '🏋️', 35.6, -20, 'MUCKIBUDE', '#ffd23b');
     P('studio', 'Studio Klappe Auf', '📸', -35.6, 20, 'STUDIO', '#5ce1ff');
     P('checkpoint', 'Checkpoint Regenbogen', '🩺', -35.6, -10, 'CHECKPOINT', '#3ee69a');
+    P('kopfkino', 'Videothek Kopfkino', '📼', 5.6, -40, 'KOPFKINO', '#ff3b6b');
+    P('rosa', 'Haus Rosa', '🏮', -5.6, -40, 'HAUS ROSA', '#ff6ad5');
     P('park', 'Regenbogenpark', '🌳', 45, 45, undefined, undefined, 8);
     P('tram', 'Tram Rainbow City', '🚋', 0, 52, undefined, undefined, 4);
   }
@@ -219,6 +222,14 @@ export class World {
     for (let i = 0; i < 16; i++) this.tree(cx + (rnd() - .5) * 18, cz + (rnd() - .5) * 18, .9 + rnd() * .6);
     for (let i = 0; i < 10; i++) this.place(C('bush'), cx + (rnd() - .5) * 18, .1, cz + (rnd() - .5) * 18, rnd() * 6, S * 1.4);
     this.place(C('watertower'), cx + 6, .1, cz - 6, 0);
+    // Spuren wilder Nächte (nur mit 18+ sichtbar): stilisierte Verpackungen und Kondomringe hinter den Büschen
+    const wrap = new THREE.MeshStandardMaterial({ color: 0xc0c6d4, metalness: .6, roughness: .35 }), ring = new THREE.MeshStandardMaterial({ color: 0xf2d2e0, roughness: .5 });
+    for (let i = 0; i < 9; i++) {
+      const x = cx - 7 + rnd() * 10, z = cz - 2 + rnd() * 9;
+      const w = new THREE.Mesh(new THREE.BoxGeometry(.16, .01, .16), wrap); w.position.set(x, .03, z); w.rotation.y = rnd() * 6; this.traces.add(w);
+      if (i % 3 === 0) { const r = new THREE.Mesh(new THREE.TorusGeometry(.05, .014, 6, 14), ring); r.rotation.x = Math.PI / 2; r.position.set(x + .3, .03, z + .2); this.traces.add(r); }
+    }
+    this.traces.visible = false; this.root.add(this.traces);
     this.colliders.push({ x: cx + 6, z: cz - 6, hx: 1.4, hz: 1.4 });
   }
 

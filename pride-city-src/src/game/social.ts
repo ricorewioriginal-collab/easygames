@@ -136,3 +136,41 @@ export function rollEvent(s: SaveData, r: number): Event | null {
 }
 /** Freundschaftsstufe */
 export const bond = (f: number) => (f >= 80 ? 'Wahlfamilie' : f >= 50 ? 'befreundet' : f >= 20 ? 'bekannt' : 'neu');
+
+/* ---------- Nachtleben 18+ (Durchgang 3b) ----------
+   Nur mit settings.adult. Alles ist angedeutet: Abblende statt Darstellung, Zustimmung und Kondom sind Pflicht.
+   Sexarbeiter*innen sind selbstbestimmte Erwachsene mit eigenen Regeln und Preisen. */
+/** Videothek: Titel und Cover nur als Text (Parodien, frei erfunden) */
+export const FILMS: Array<[string, string]> = [
+  ['Bärenhunger 3: Die Rückkehr der Holzfäller', 'Zwei Bären in Karohemden vor einer Blockhütte, Titel in Neonpink'],
+  ['Fifty Shades of Gay', 'Eine Krawatte, ein Augenzwinkern und sehr viel Grau'],
+  ['Der Herr der Riemen', 'Ein Lederharness auf Samtkissen, darunter in Goldschrift: „Ein Riemen, sie zu knechten“'],
+  ['Harte Schicht im Hafen', 'Muskulöse Matrosen im Gegenlicht, Rettungsringe im Vordergrund'],
+  ['Stoßverkehr in Rainbow City', 'Ein Tramfahrer zwinkert aus dem Führerstand, Untertitel: „Bitte alle einsteigen!“'],
+  ['Der Lack-Detektiv', 'Ein Mann in glänzendem Trenchcoat mit Lupe, Schatten an der Wand'],
+  ['Feuerwehrmänner löschen nicht nur Brände', 'Helme, Hosenträger, ein Schlauch – mehr verrät das Cover nicht'],
+  ['Sauna-Geflüster', 'Dampf, Holzbänke und zwei Handtücher, die sehr knapp sitzen'],
+];
+export interface Worker { id: string; name: string; age: number; pron: string; color: string; offer: string; price: number; rules: string }
+/** Laufhaus „Haus Rosa“: selbstbestimmte erwachsene Sexarbeiter*innen mieten hier eigene Zimmer */
+export const WORKERS: Worker[] = [
+  { id: 'jasper', name: 'Jasper', age: 31, pron: 'er', color: '#ff9a56', offer: 'Massage und Kuscheln', price: 80, rules: 'Ich bestimme, was in meinem Zimmer passiert. Kondom ist Pflicht, Küssen nur, wenn ich es anbiete.' },
+  { id: 'viktor', name: 'Viktor', age: 38, pron: 'er', color: '#c0102a', offer: 'Leder und Rollenspiel', price: 120, rules: 'Wir sprechen vorher ab, was du magst und was nicht. Ein Safeword gilt für uns beide: „Regenbogen“.' },
+  { id: 'dani', name: 'Dani', age: 29, pron: 'they', color: '#9c59d1', offer: 'Gespräch und Zärtlichkeit', price: 70, rules: 'Viele kommen eigentlich zum Reden. Alles andere nur mit Kondom und wenn wir beide Ja sagen.' },
+  { id: 'sina', name: 'Sina', age: 34, pron: 'sie', color: '#ff6ad5', offer: 'Begleitung und Verwöhnen', price: 90, rules: 'Bezahlt wird vorher, gefragt wird immer. Ein Nein ist ein Nein – auch mittendrin.' },
+];
+export const isLateNight = (h: number) => h >= 22 || h < 4;
+/** Begegnung im Nachtleben: braucht 18+, Zustimmung und (außer beim Reden) ein Kondom. Gibt einen Grund zurück, falls es nicht geht. */
+export function canMeet(s: SaveData, needsCondom = true): 'off' | 'condom' | null {
+  if (!s.settings.adult) return 'off';
+  if (needsCondom && (s.inv.condom || 0) < 1) return 'condom';
+  return null;
+}
+/** Folgen einer Begegnung (angedeutet): Kondom verbraucht, Bedürfnisse, Test-Erinnerung */
+export function encounter(s: SaveData, kind: 'cabin' | 'cruising' | 'room' | 'talk') {
+  if (kind !== 'talk') s.inv.condom = Math.max(0, (s.inv.condom || 0) - 1);
+  const fx = { cabin: { fun: 22, social: 4, hygiene: -15 }, cruising: { fun: 25, social: 8, hygiene: -20, energy: -8 }, room: { fun: 32, social: 12, hygiene: -20, energy: -15 }, talk: { social: 25, fun: 10 } }[kind];
+  for (const [k, v] of Object.entries(fx)) (s.needs as Record<string, number>)[k] = Math.max(0, Math.min(100, (s.needs as Record<string, number>)[k] + v));
+  s.flags.lastNight = s.day;
+  return { remindTest: s.day - (s.health.test || 0) >= TEST_EVERY || !s.health.test };
+}
