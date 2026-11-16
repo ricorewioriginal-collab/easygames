@@ -1,8 +1,8 @@
-/* Original synthesized chiptune; no samples or external assets. */
+/* Lumo – Wolkenpfad (Pufi-Minispiel): eigene Chiptune-Klänge, ohne Samples oder fremde Dateien. */
 'use strict';
 window.LumoAudio=(()=>{
 let context=null,master=null,muted=false,next=0,beat=0;
-try{muted=localStorage.getItem('easygames.lumo.v1.sound')==='off';}catch(e){}
+try{muted=localStorage.getItem('easygames.pufi-farbwind.wolkenpfad.sound')==='off';}catch(e){}
 function unlock(){try{if(!context){const C=window.AudioContext||window.webkitAudioContext;if(!C)return;context=new C();master=context.createGain();master.gain.value=muted?0:.22;master.connect(context.destination);}if(context.state==='suspended')context.resume().catch(()=>{});}catch(e){}}
 function tone(freq,duration=.1,type='square',delay=0,end=freq,volume=.16){
 if(!context||muted||context.state!=='running')return;
@@ -33,6 +33,6 @@ tone(f,.12,'square',Math.max(0,next-context.currentTime),f,.055);
 if(beat%2===0)tone(base/2,.18,'triangle',Math.max(0,next-context.currentTime),base/2,.12);
 beat++;next+=.19;
 }}
-function toggle(){unlock();muted=!muted;if(master)master.gain.setTargetAtTime(muted?0:.22,context.currentTime,.02);try{localStorage.setItem('easygames.lumo.v1.sound',muted?'off':'on');}catch(e){}return muted;}
+function toggle(){unlock();muted=!muted;if(master)master.gain.setTargetAtTime(muted?0:.22,context.currentTime,.02);try{localStorage.setItem('easygames.pufi-farbwind.wolkenpfad.sound',muted?'off':'on');}catch(e){}return muted;}
 return {unlock,play,tick,toggle,isMuted:()=>muted};
 })();

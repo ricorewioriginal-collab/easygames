@@ -553,7 +553,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Neuauflage in echtem 3D: Pufi trägt den Wolkentapir Tamo frei laufend über sechs schwebende Inseln mit je vier Leveln – 24 unterschiedliche Level mit den Bossen Brummnebel und Sturmnebel. Wirst du getroffen, schwebt Tamo in einer Blase davon und die Sterne zählen herunter – hol ihn zurück, bevor sie 0 erreichen. Fang Muffel mit der Zunge, leg Eier (bis zu sechs folgen dir) und wirf sie auf Gegner, ?-Wolken und den Boss. Farbwind-Säulen tragen dich nach oben, Farbschalter lassen Blöcke erscheinen, und hinter Pixeltoren warten Retro-Zonen in Seitenansicht. Farbringe sind Rücksetzpunkte (+10 Sterne). Am Farbtor zählen Sterne, 8 rote Münzen und 5 Farbblüten zu bis zu 100 Punkten. Das 2D-Original mit 24 Leveln steckt im Hauptmenü unter Klassik 2D.",
+    "anleitung": "Neuauflage in echtem 3D: Pufi trägt den Wolkentapir Tamo frei laufend über sechs schwebende Inseln mit je vier Leveln – 24 unterschiedliche Level mit den Bossen Brummnebel und Sturmnebel. Wirst du getroffen, schwebt Tamo in einer Blase davon und die Sterne zählen herunter – hol ihn zurück, bevor sie 0 erreichen. Fang Muffel mit der Zunge, leg Eier (bis zu sechs folgen dir) und wirf sie auf Gegner, ?-Wolken und den Boss. Farbwind-Säulen tragen dich nach oben, Farbschalter lassen Blöcke erscheinen, und hinter Pixeltoren warten Retro-Zonen in Seitenansicht. Farbringe sind Rücksetzpunkte (+10 Sterne). Am Farbtor zählen Sterne, 8 rote Münzen und 5 Farbblüten zu bis zu 100 Punkten. Das 2D-Original mit 24 Leveln steckt im Hauptmenü unter Klassik 2D. Dazu im Hauptmenü und auf der Inselkarte: das Minispiel „Lumo – Wolkenpfad“, ein Jump-and-Run mit 20 Leveln in vier Welten.",
     "steuerung": [
      "PC: W A S D/Pfeile laufen, Leertaste springen (halten = flattern), X/J Zunge, C/K Ei zielen und werfen, V/L/Shift stampfen bzw. Ei legen, Maus ziehen oder Q/E Kamera, R Kamera hinter Pufi, Esc Pause, M Musik, F Vollbild.",
      "Controller: linker Stick laufen, rechter Stick Kamera, A springen/flattern, X Zunge, B/RB/RT Ei zielen (halten) und werfen, Y/LB stampfen bzw. Ei legen, LT/L3 Kamera hinter Pufi, Start Pause. Menüs mit Steuerkreuz und A/B.",
@@ -570,45 +570,12 @@
      "Wirbelkreisel von oben anspringen – sie katapultieren dich hoch."
     ]
    },
-   "size": 457390,
-   "files": 26,
+   "size": 517047,
+   "files": 29,
    "offline": true,
    "cloud": {
     "game": "pufi-farbwind",
     "prefix": "easygames.pufi-farbwind"
-   },
-   "trailer": null
-  },
-  {
-   "id": "lumo",
-   "title": "Lumo – Wolkenpfad",
-   "desc": "Retro-Jump-and-Run im 16-Bit-Stil: Titelbildschirm, 20 Level in vier Welten mit Münzgärten als Bonusrunden, Gegner, Stacheln, bewegliche Plattformen, Sterne, Herzen, Leben, Game-Over-Anzeige, Chiptune-Musik, Touch-Steuerung und Google-Speicherung.",
-   "icon": "🌤️",
-   "img": "lumo/card.svg",
-   "bg": "linear-gradient(145deg,#287c83,#83d4e1)",
-   "glow": null,
-   "path": "lumo/",
-   "modes": {},
-   "multiplayer": false,
-   "guide": {
-    "anleitung": "Lumo – Wolkenpfad ist ein Retro-Jump-and-Run im 16-Bit-Stil: Lauf mit Lumo durch 20 Level in vier Welten (Wolkenwiese, Bernsteinhöhlen, Frostgipfel, Sternenschloss) bis zur Fahnenstange. Springe Krabblern, Hüpfern und Fledermäusen auf den Kopf – nur den Stachelkäfer darfst du nicht treten. ?-Blöcke geben Münzen, der +-Block einen Schutzpilz (macht dich groß und schützt einmal), der ★-Block einen Stern (kurz unbesiegbar). Herzen und je 100 Münzen bringen ein Extraleben. Nach jeder Welt folgt ein Münzgarten als 20-Sekunden-Bonusrunde. Übrige Zeit gibt 50 Punkte pro Sekunde. Fortschritt und Hi-Score werden gespeichert, mit Google auch geräteübergreifend.",
-    "steuerung": [
-     "Touch: ◀ ▶ unten links laufen, roter A-Knopf springen.",
-     "PC: Pfeil links/rechts oder A/D laufen, Leertaste, Z, Pfeil hoch oder W springen, P oder Esc Pause; im Titel Pfeil runter wählen, Enter starten.",
-     "Controller: Steuerkreuz/Stick laufen, A springen, X oder Start bestätigen, B oder Select Pause."
-    ],
-    "tipps": [
-     "Sprungtaste länger halten = höher springen; beim Treten halten = höher abfedern.",
-     "Der Zeitbonus bringt die meisten Punkte – zügig zur Fahne laufen.",
-     "Groß sein schützt nicht vor Gruben."
-    ]
-   },
-   "size": 44086,
-   "files": 4,
-   "offline": true,
-   "cloud": {
-    "game": "lumo",
-    "prefix": "easygames.lumo.v1"
    },
    "trailer": null
   },

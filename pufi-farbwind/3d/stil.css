@@ -109,7 +109,9 @@ html.eg-pad #touch{display:none!important}
 .map{display:grid;gap:12px;text-align:left}
 .world h3{margin:0 0 6px;font-size:14px;letter-spacing:1px}
 .lvls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.lvl{padding:10px 12px;text-align:left}
+.lvl,.mini{padding:10px 12px;text-align:left}
+.mini{grid-column:1/-1;background:linear-gradient(160deg,rgba(143,220,255,.3),rgba(255,156,199,.2))}
+.mini b{display:block;font-size:15px}.mini .st{display:block;font-size:11px;opacity:.85;margin-top:3px;font-weight:700}
 .lvl b{display:block;font-size:15px;overflow-wrap:anywhere}
 .lvl .st{display:block;font-size:11px;opacity:.85;margin-top:3px;font-weight:700}
 .lvl.done{border-color:#ffe27a}
@@ -132,3 +134,6 @@ html.eg-pad #touch{display:none!important}
 @media(max-width:560px){.lvls{grid-template-columns:repeat(2,minmax(0,1fr))}.lvl{padding:8px 9px}.lvl b{font-size:13px}.btns.two{grid-template-columns:1fr}.panel{padding:16px}.title .menu{margin:0 auto}.screen.title{place-items:end center;background:linear-gradient(0deg,rgba(18,12,52,.88),rgba(18,12,52,.4) 60%,transparent)}}
 @media(max-height:480px){.title .btn{padding:7px 14px 7px 44px;font-size:14px}.title .mlogo b{font-size:36px}.title .mlogo{margin-bottom:6px}.btns{gap:6px}.title .info{display:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* Hauptmenü mit Minispiel: auf flachen Bildschirmen kompakter, damit alle Einträge passen */
+@media(max-height:620px){.title .btns{gap:6px}.title .btn{padding:8px 16px 8px 48px;font-size:15px}.title .btn .sub{font-size:10px;margin-top:0}.title .mlogo{margin-bottom:6px}.title .info{margin-top:6px}}
+@media(max-height:460px){.title .btn .sub{display:none}}

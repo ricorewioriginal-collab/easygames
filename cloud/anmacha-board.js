@@ -79,9 +79,6 @@
     'pufi-farbwind': [
       { id: 'main', title: 'Gesamtpunkte (alle Level)', key: 'easygames.pufi-farbwind.v2', path: 'best.*', agg: 'sum', order: 'desc', unit: 'Punkte' }
     ],
-    'lumo': [
-      { id: 'main', title: 'Highscore', key: 'easygames.lumo.v1', path: 'hiscore', order: 'desc', unit: 'Punkte' }
-    ],
     'riftzone': [
       { id: 'main', title: 'Siege gesamt', key: 'riftzone.profile', path: 'totals.wins', order: 'desc', unit: 'Siege' }
     ],
