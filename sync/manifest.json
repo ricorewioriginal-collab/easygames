@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5cf5850ade27",
- "generated": "2026-11-16T15:49:07+00:00",
- "commit": "382d8b6c95c629ed3e6ee5a25db6c6cbfadc5d24",
+ "version": "0e3005414861",
+ "generated": "2026-11-16T17:25:05+00:00",
+ "commit": "31d8ce75244a25079c14723fceb8baf18233be0d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8258,8 +8258,8 @@
   },
   {
    "p": "anmacha-urwaldlager/index.html",
-   "s": 7718,
-   "h": "cae28d48cefd9a15c8f9820a642dd3ee27e759b3a520f0b58e133c3d0cc5c308"
+   "s": 7886,
+   "h": "ca536e0e8327a01defc23b13bba076a784cae9a4e19921303ff71a821cc31f79"
   },
   {
    "p": "anmacha-urwaldlager/js/assets.js",
@@ -8283,8 +8283,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/data.js",
-   "s": 22685,
-   "h": "30bbd957687843e2a87eb30b78a5a2738d6d41e4fa388be6b863ac34100fb644"
+   "s": 24015,
+   "h": "303f1b9688c637fe11bcc5e9c656e098111b03eb6e37b41e790e50ff3e767fa1"
   },
   {
    "p": "anmacha-urwaldlager/js/input.js",
@@ -8298,8 +8298,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/menus.js",
-   "s": 20404,
-   "h": "698fa887c83beabd818c366e85a9a0970b8dea8c49d92a676ccb82c5e6de250f"
+   "s": 20405,
+   "h": "96948e331f31384caf7a27a0651d6355b39d722ad3f4423a0d9d08c9266a0b93"
   },
   {
    "p": "anmacha-urwaldlager/js/render.js",
@@ -8317,14 +8317,34 @@
    "h": "698c848e52bc368bea18f8452f7cf064c142942c6534e05fb2b7c116bb948eeb"
   },
   {
+   "p": "anmacha-urwaldlager/js/trials/bach.js",
+   "s": 10365,
+   "h": "17d95e18d4df359a73b66afd407555aec8313ac0d9321a7380936367ea90265f"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/blind.js",
+   "s": 12926,
+   "h": "8e6b9361d783ecab53b717244842e067307b31f74e63a32d9400e9265e82e243"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/box.js",
+   "s": 11476,
+   "h": "3c82def1f7fda219197c470e00a0926d2fdf75094942dff67ab25b3fc33eb343"
+  },
+  {
    "p": "anmacha-urwaldlager/js/trials/dinner.js",
-   "s": 10488,
-   "h": "994329ddd741e915542fc9096e1eebf4eb9218028fbe1737104b8d83c43243ac"
+   "s": 10492,
+   "h": "aedf71e9aae9e3632696dbe610b1b4a1d604fba2eca91b50255ec6b81556f218"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/dusche.js",
    "s": 9470,
    "h": "05a561a63c520e8006dcf428b08bddfa356d9bb2a4f3e6315d083fbc0f148da7"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/grab.js",
+   "s": 10337,
+   "h": "0278f1132db4cf17ba9a3b20a2b794690bca0dac0bc58abb8489486c34fe3a11"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kisten.js",
@@ -8333,8 +8353,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kit.js",
-   "s": 13652,
-   "h": "374aa1b96cd6410de6248fb8770fd2a1f156ed6607e4026e51cbd2ea06f13a32"
+   "s": 18951,
+   "h": "01f0f5e1add872f5665858f7d5f33616b70f359183618451a4c1d508a0568c1f"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/parcours.js",
@@ -8363,8 +8383,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/tunnel.js",
-   "s": 10813,
-   "h": "1896e9259324a3dd39107ddc79748ab902d21ffd65c5cacb982c87a1364a6edf"
+   "s": 13759,
+   "h": "79f66c0ab631e42cd1e485278305f914393c1a31e9a4042ede04348ce58220ac"
   },
   {
    "p": "anmacha-urwaldlager/js/ui.js",
@@ -8438,8 +8458,8 @@
   },
   {
    "p": "anmacha-urwaldlager/style.css",
-   "s": 23668,
-   "h": "dab2cfaef0701628d17632dec0a7e915c4b8d95dfba87788ad7e073c268a3866"
+   "s": 25141,
+   "h": "7eb91254096ab2656c9c3577bedf2b2499b8f735ed75f5b9ebb22917652813a1"
   },
   {
    "p": "anmacha-urwaldlager/sw.js",
@@ -10258,8 +10278,8 @@
   },
   {
    "p": "games.js",
-   "s": 53431,
-   "h": "b8a37647342387ff2638d7e7c55a3751230bb4d36c8790e14c4d76c77affb813"
+   "s": 53435,
+   "h": "3307184ff0e2239654c49d20e7a2bc5b89e41492f885d67b7a916e822fee14bf"
   },
   {
    "p": "groove-arena/card.jpg",
@@ -10338,8 +10358,8 @@
   },
   {
    "p": "guides.js",
-   "s": 167379,
-   "h": "d7f583707d6dd2713fbafe0a006c143f11416fd86c040e504f2f4d337a2885ea"
+   "s": 167383,
+   "h": "7b582488d623ef66b2d00901734664e8cb54c8ddf70733f04abba154f18f7a9d"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10478,8 +10498,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 10696,
-   "h": "e215ffb1b216c424816e227f8fc46e2c4eedb624ba655098874bc1377005c31c"
+   "s": 11945,
+   "h": "34e549c92a358c71ed03d4d79d630b5b52026eeea009f01938fc9bfa6ba55ab0"
   },
   {
    "p": "guides/beat-studio.json",
@@ -15368,8 +15388,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 241380,
-   "h": "fdc410f289e5baceae73639dccbb577241492f22c2239bf20ed3b0dde8008d48"
+   "s": 241388,
+   "h": "d5f07de8ba2fd7ddd557f02aaf878804c5dcbf05afeb31b4aafeaa81382f0021"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
