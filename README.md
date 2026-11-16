@@ -193,7 +193,7 @@ Native App (Kotlin, Jetpack Compose) wie ein kleiner Spiele-Client, Quellen in `
 
 ## Windows-App (Spiele-Client wie Steam)
 
-Eigener Client mit Bibliothek: jedes Spiel einzeln installieren, Updates und neue Spiele kommen automatisch, installierte Spiele laufen offline, Online/Mehrspieler über `cloud/fire-peer.js` wie überall. Quellen im RicoReWi-Radio-Repo (`windows-easygames/`), gebaut auf dem Server; Download: [Installer](https://www.ricorewi-radio.de/cms/api.php?action=app_download&file=easygames-Setup-x64.exe) · [Portable](https://www.ricorewi-radio.de/cms/api.php?action=app_download&file=easygames-Portable-x64.exe). Neue Spiele erreichen die App über den Spiele-Sync von RicoReWi Radio (`php scripts/sync-easygames.php`).
+Eigener Client mit Bibliothek: jedes Spiel einzeln installieren, Updates und neue Spiele kommen automatisch, installierte Spiele laufen offline, Online/Mehrspieler über `cloud/fire-peer.js` wie überall. **Komplett über GitHub, ohne eigenen Server:** Spiele kommen wie bei der Android-App aus `sync/manifest.json` + `sync/catalog.json` (CDN-Bibliotheken aus `vendor/`), die App selbst baut der Workflow `.github/workflows/windows.yml` und legt sie ins Release `windows` (dort holt sie sich auch ihre Updates). Quellen: `windows/`, Tests: `windows/tests/` (`StoreTest`, `games-offline.cjs`). Download: [Installer](https://github.com/ricorewioriginal-collab/easygames/releases/download/windows/easygames-Setup-x64.exe) · [Portable](https://github.com/ricorewioriginal-collab/easygames/releases/download/windows/easygames-Portable-x64.exe).
 
 ## TikTok LIVE steuert das Spiel
 

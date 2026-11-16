@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>easygames</title>
+<style>
+:root{
+  --bg:#080b12;--panel:#0d121d;--panel2:#121a29;--line:#1d2638;--line2:#2a3650;--text:#eef2fb;--muted:#8b97b2;--dim:#5d6984;
+  --cyan:#22d3ee;--violet:#8b5cf6;--pink:#ec4899;--orange:#fb923c;--green:#34d399;
+  --grad:linear-gradient(110deg,#06c8f0 0%,#7c5cf6 52%,#ec4899 100%);
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font:14px/1.45 "Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;overflow:hidden;user-select:none;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+body.pad :focus{outline:3px solid var(--cyan);outline-offset:2px}body:not(.pad) #ctlHint{display:none}#ctlHint{line-height:1.5}
+.app{display:grid;grid-template-columns:232px minmax(0,1fr) 392px;grid-template-rows:minmax(0,1fr) auto;height:100vh}
+@media (max-width:1240px){.app{grid-template-columns:208px minmax(0,1fr) 336px}}
+
+/* Seitenleiste */
+.side{grid-row:1/3;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.brand{display:flex;align-items:center;gap:11px;padding:20px 18px 14px}
+.brand img{width:38px;height:38px;border-radius:10px}
+.brand b{font:800 21px/1 "Segoe UI Variable Display","Segoe UI",sans-serif;letter-spacing:-.4px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand small{display:block;color:var(--dim);font-size:11px;font-weight:600;margin-top:3px;letter-spacing:.3px}
+.nav{flex:1;overflow:auto;padding:4px 10px 10px}
+.nav h4{margin:16px 10px 6px;font-size:10.5px;letter-spacing:1.1px;text-transform:uppercase;color:var(--dim)}
+.nav button{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border-radius:9px;color:#c5cde0;text-align:left}
+.nav button:hover{background:var(--panel2);color:var(--text)}
+.nav button.on{background:linear-gradient(90deg,rgba(124,92,246,.28),rgba(124,92,246,.06));color:#fff;box-shadow:inset 3px 0 0 var(--violet)}
+.nav i{font-style:normal;width:20px;text-align:center}
+.nav span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav em{font-style:normal;font-size:11.5px;color:var(--dim);font-variant-numeric:tabular-nums}
+.nav em.hot{color:#160b1f;background:var(--orange);padding:0 7px;border-radius:9px;font-weight:700}
+.nav em.new{color:#fff;background:var(--pink);padding:0 7px;border-radius:9px;font-weight:700}
+.prefs{border-top:1px solid var(--line);padding:12px 16px 14px;font-size:12.5px;color:var(--muted)}
+.tog{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:5px 0;text-align:left;color:#c5cde0}
+.tog s{flex:none;width:34px;height:19px;border-radius:10px;background:var(--line2);position:relative;transition:.15s;text-decoration:none}
+.tog s::after{content:"";position:absolute;top:3px;left:3px;width:13px;height:13px;border-radius:50%;background:#fff;transition:.15s}
+.tog.on s{background:var(--violet)}.tog.on s::after{left:18px}
+.meta{display:flex;justify-content:space-between;margin-top:9px;color:var(--dim);font-size:11.5px}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px;vertical-align:1px}
+.dot.off{background:var(--orange)}
+
+/* Hauptbereich */
+.main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.top{display:flex;align-items:center;gap:12px;padding:16px 22px 10px}
+.top h1{margin:0;font:700 22px/1.2 "Segoe UI Variable Display","Segoe UI",sans-serif;letter-spacing:-.3px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top h1 small{font-size:14px;color:var(--dim);font-weight:600;margin-left:8px}
+.search{position:relative;width:min(300px,34vw)}
+.search input{width:100%;height:36px;border-radius:10px;border:1px solid var(--line2);background:var(--panel);color:var(--text);padding:0 12px 0 34px;font:inherit;outline:0}
+.search input:focus{border-color:var(--violet)}
+.search::before{content:"⌕";position:absolute;left:12px;top:6px;color:var(--dim);font-size:17px}
+.icon{width:36px;height:36px;border-radius:10px;border:1px solid var(--line2);background:var(--panel);display:grid;place-items:center;font-size:16px}
+.icon:hover{border-color:var(--violet)}
+.icon.spin{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.banners{padding:0 22px}
+.banner{display:flex;align-items:center;gap:12px;padding:10px 14px;margin-bottom:10px;border-radius:12px;border:1px solid var(--line2);background:var(--panel);font-size:13px}
+.banner b{color:#fff}
+.banner .grow{flex:1}
+.banner.upd{border-color:rgba(124,92,246,.6);background:linear-gradient(90deg,rgba(124,92,246,.22),rgba(236,72,153,.1))}
+.banner.warn{border-color:rgba(251,146,60,.5)}
+.scroll{flex:1;overflow:auto;padding:4px 22px 26px;min-height:0}
+.row h3{margin:6px 0 10px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.recent{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-bottom:18px}
+.rc{display:flex;align-items:center;gap:11px;padding:8px;border-radius:12px;background:var(--panel);border:1px solid var(--line);text-align:left}
+.rc:hover,.rc.sel{border-color:var(--violet)}
+.rc>span{min-width:0}
+.rc img{flex:none;width:46px;height:46px;border-radius:9px;object-fit:cover;background:var(--panel2)}
+.rc b{display:block;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rc small{color:var(--dim);font-size:11.5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+.card{position:relative;display:block;width:100%;text-align:left;border-radius:var(--r);padding:0;background:none}
+.card .pic{display:block;position:relative;aspect-ratio:1;border-radius:var(--r);overflow:hidden;background:var(--panel2);box-shadow:0 0 0 1px var(--line);transition:transform .14s,box-shadow .14s}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.card.off .pic img{filter:saturate(.55) brightness(.62)}
+.card:hover .pic{transform:translateY(-3px);box-shadow:0 0 0 1px var(--line2),0 12px 26px rgba(0,0,0,.45)}
+.card.sel .pic{box-shadow:0 0 0 2px var(--violet),0 12px 30px rgba(124,92,246,.3)}
+.card .t{display:block;margin-top:8px;font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .s{display:block;font-size:11.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tags{position:absolute;left:8px;top:8px;display:flex;gap:5px;flex-wrap:wrap}
+.tag{font-size:10.5px;font-weight:800;letter-spacing:.4px;padding:2px 7px;border-radius:7px;background:rgba(8,11,18,.82);color:#fff;backdrop-filter:blur(4px)}
+.tag.new{background:var(--pink)}.tag.upd{background:var(--orange);color:#1b0d02}.tag.run{background:var(--green);color:#03150d}.tag.web{background:rgba(34,211,238,.9);color:#021317}
+.dl{position:absolute;right:8px;bottom:8px;width:30px;height:30px;border-radius:50%;background:rgba(8,11,18,.82);display:grid;place-items:center;font-size:14px}
+.prog{position:absolute;left:0;right:0;bottom:0;height:5px;background:rgba(0,0,0,.55)}
+.prog i{display:block;height:100%;background:var(--grad);transition:width .25s}
+.empty{padding:60px 20px;text-align:center;color:var(--muted)}
+.empty b{display:block;font-size:17px;color:var(--text);margin-bottom:6px}
+.skel .pic{animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.45}}
+
+/* Detail */
+.det{grid-row:1/3;grid-column:3;background:var(--panel);border-left:1px solid var(--line);overflow:auto;min-height:0;position:relative}
+.hero{position:relative;aspect-ratio:1.25;overflow:hidden}
+.hero .bg{position:absolute;inset:-30px;background-size:cover;background-position:center;filter:blur(26px) saturate(1.3) brightness(.55);transform:scale(1.1)}
+.hero img{position:absolute;left:50%;top:22px;transform:translateX(-50%);height:calc(100% - 44px);aspect-ratio:1;border-radius:18px;object-fit:cover;box-shadow:0 18px 44px rgba(0,0,0,.55)}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:70px;background:linear-gradient(transparent,var(--panel))}
+.dbody{padding:4px 22px 24px}
+.dbody h2{margin:0 0 4px;font:700 21px/1.25 "Segoe UI Variable Display","Segoe UI",sans-serif;letter-spacing:-.3px}
+.dbody .sub{color:var(--muted);font-size:12.5px;margin-bottom:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.chip{font-size:11.5px;padding:3px 9px;border-radius:20px;background:var(--panel2);border:1px solid var(--line2);color:#c9d2e6}
+.acts{display:flex;gap:8px;margin-bottom:10px}
+.btn{height:44px;padding:0 18px;border-radius:11px;font-weight:700;font-size:14.5px;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--panel2);border:1px solid var(--line2)}
+.btn:hover{border-color:var(--violet)}
+.btn.pri{flex:1;background:var(--grad);border:0;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.25);box-shadow:0 8px 22px rgba(124,92,246,.35)}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn.play{background:linear-gradient(110deg,#10b981,#22c55e);box-shadow:0 8px 22px rgba(16,185,129,.3)}
+.btn.sm{height:34px;font-size:13px;padding:0 12px;font-weight:600}
+.bar{height:8px;border-radius:5px;background:var(--line);overflow:hidden;margin:4px 0 6px}
+.bar i{display:block;height:100%;background:var(--grad);transition:width .25s}
+.hint{font-size:12px;color:var(--dim);margin-bottom:14px}
+.desc{color:#c3cbdd;font-size:13.5px;line-height:1.6;margin:14px 0 18px;user-select:text}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.stat{padding:10px 12px;border-radius:11px;background:var(--panel2);border:1px solid var(--line)}
+.stat small{display:block;color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.6px}
+.stat b{font-size:14px}
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.danger:hover{border-color:#f87171;color:#fecaca}
+
+/* Downloadleiste */
+.dlbar{grid-column:2;display:flex;align-items:center;gap:14px;padding:10px 22px;border-top:1px solid var(--line);background:var(--panel);font-size:12.5px;color:var(--muted)}
+.dlbar[hidden]{display:none}
+.dlbar b{color:var(--text)}
+.dlbar .bar{flex:1;max-width:420px;margin:0}
+.toast{position:fixed;right:420px;bottom:64px;max-width:420px;padding:12px 16px;border-radius:12px;background:#1a2236;border:1px solid var(--line2);box-shadow:0 14px 34px rgba(0,0,0,.5);font-size:13px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}
+.toast.on{opacity:1;transform:none}
+@media (max-width:1240px){.toast{right:356px}}
+/* Controller einrichten */
+.padbtn{display:flex;align-items:center;gap:8px;width:100%;margin:2px 0 6px;padding:7px 10px;border-radius:10px;border:1px solid var(--line2);background:var(--panel2);color:#c5cde0;font:inherit;font-size:12.5px;text-align:left}
+.padbtn:hover{border-color:var(--violet);color:#fff}
+.dlg{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:rgba(4,6,12,.72);backdrop-filter:blur(4px)}
+.dlg[hidden]{display:none}
+.dlg .box{width:min(720px,94vw);max-height:90vh;overflow:auto;background:var(--panel);border:1px solid var(--line2);border-radius:18px;padding:20px 22px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.dlg h2{margin:0 0 4px;font-size:20px}
+.dlg .sub{color:var(--muted);font-size:13px;margin:0 0 14px}
+.pad{border:1px solid var(--line2);border-radius:14px;padding:14px;margin-bottom:12px;background:var(--panel2)}
+.pad .nm{font-weight:700;font-size:14px;word-break:break-word}
+.pad .ty{font-size:12px;color:var(--muted);margin:2px 0 10px}
+.pad .ty b{color:var(--green)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chips span{min-width:34px;padding:4px 8px;border-radius:8px;border:1px solid var(--line2);font-size:12px;text-align:center;color:var(--muted);transition:.08s}
+.chips span.on{background:var(--violet);border-color:var(--violet);color:#fff}
+.sticks{display:flex;gap:14px;margin-bottom:12px}
+.stick{width:64px;height:64px;border-radius:50%;border:1px solid var(--line2);position:relative}
+.stick i{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--cyan)}
+.stick small{position:absolute;top:100%;left:-24px;right:-24px;white-space:nowrap;text-align:center;font-size:11px;color:var(--dim);margin-top:2px}
+.pad .row{display:flex;flex-wrap:wrap;gap:8px}
+.wiz{text-align:center;padding:18px 6px 8px}
+.wiz .q{font-size:26px;font-weight:800;margin:6px 0 4px}
+.wiz .n{color:var(--muted);font-size:13px}
+.wiz .bar{height:6px;border-radius:3px;background:var(--line2);margin:16px auto;max-width:420px;overflow:hidden}.wiz .bar i{display:block;height:100%;background:var(--violet)}
+.dlg .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;color:var(--dim);font-size:12px}
+::-webkit-scrollbar{width:11px;height:11px}::-webkit-scrollbar-thumb{background:#273148;border-radius:8px;border:3px solid transparent;background-clip:padding-box}::-webkit-scrollbar-thumb:hover{background-color:#36446a}
+.pagerow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.pagerow .padbtn{flex-direction:column;gap:2px;padding:8px 4px;justify-content:center;font-size:12px}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><img src="/_launcher/icon.svg" alt=""><div><b>easygames</b><small>SPIELE-CLIENT FÜR WINDOWS</small></div></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="prefs">
+      <button class="tog" id="tAuto"><span>Updates automatisch</span><s></s></button>
+      <button class="tog" id="tFull"><span>Spiele im Vollbild starten</span><s></s></button>
+      <button class="tog" id="tClip" title="Im Spiel: F9 speichert die letzten 30 Sekunden, F10 startet/stoppt eine Aufnahme (Videos\easygames)"><span>Clips im Spiel (F9)</span><s></s></button>
+      <div class="pagerow"><button class="padbtn" data-page="konto.html">👤 <span>Konto</span></button><button class="padbtn" data-page="erfolge.html">🏅 <span>Erfolge</span></button><button class="padbtn" data-page="ranglisten.html">🏆 <span>Ranglisten</span></button></div>
+      <button class="padbtn" id="bPad">🎮 <span>Controller einrichten</span></button>
+      <button class="padbtn" id="bTT">🎁 <span>TikTok LIVE</span><span id="ttDot" style="margin-left:auto"></span></button>
+      <div class="meta"><span id="net"><span class="dot"></span>Online</span><span id="disk"></span></div>
+      <div class="meta"><span>F11 = Vollbild im Spiel</span><span id="ver"></span></div>
+      <div class="meta" id="ctlHint">🎮 Ⓐ Start · Ⓑ Zurück · Ⓨ Optionen · Ⓧ Installieren · LB/RB Ansicht · ☰ TikTok · ⧉ Controller · im Spiel ☰ halten = zurück hierher</div>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="top">
+      <h1 id="title">Alle Spiele</h1>
+      <label class="search"><input id="q" type="search" placeholder="Spiele suchen …" spellcheck="false" autocomplete="off"></label>
+      <button class="icon" id="bRefresh" title="Nach neuen Spielen und Updates suchen">⟳</button>
+    </div>
+    <div class="banners" id="banners"></div>
+    <div class="scroll" id="scroll"><div id="list"></div></div>
+  </main>
+  <aside class="det" id="det"></aside>
+  <div class="dlbar" id="dlbar" hidden></div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="dlg" id="ttDlg" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="ttTitle">
+  <h2 id="ttTitle">🎁 TikTok LIVE steuert die Spiele</h2>
+  <p class="sub">Deine Zuschauer steuern das Spiel mit Kommentaren, Geschenken und Likes – z. B. „links“, „rechts“, 🌹 Rose = A, 🌌 Galaxy = Neustart. Frei einstellbar, für alle Spiele oder je Spiel. Im Spielfenster erscheinen dazu die Geschenke-Legende und die Ereignisse. Streamen: Spielfenster in TikTok LIVE Studio oder OBS als Fenster aufnehmen.</p>
+  <div id="ttBody"></div>
+  <div class="foot"><span>Nutzt TikTok-Live-Connector (inoffiziell, ohne Anmeldung) und Node.js</span><button class="btn" id="ttClose">Fertig</button></div>
+</div></div>
+<div class="dlg" id="padDlg" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="padTitle">
+  <h2 id="padTitle">🎮 Controller einrichten</h2>
+  <p class="sub">Xbox-, PlayStation-, Switch-, 8BitDo- und andere Controller. Die meisten passen ohne Einrichtung. Stimmt eine Taste nicht, belegst du sie hier neu – das gilt dann in allen Spielen.</p>
+  <div id="padBody"></div>
+  <div class="foot"><span id="padHint">Esc schließt</span><button class="btn" id="padClose">Fertig</button></div>
+</div></div>
+<script>
+'use strict';
+const host = window.chrome && window.chrome.webview;
+const send = o => { try { host && host.postMessage(o); } catch (e) {} };
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const EASY = 'https://ricorewioriginal-collab.github.io/easygames/';
+
+// Kategorien wie auf easygames (dieselben 7 Gruppen wie Portal und Android-App); Zuordnung aus categories.js der easygames-Seite,
+// zwischengespeichert für offline, sonst über das Genre der Spieleliste
+const CATS = [
+  { id: 'abenteuer', label: 'Abenteuer & Rollenspiel', icon: '🧭' }, { id: 'action', label: 'Action & Geschick', icon: '⚡' },
+  { id: 'denken', label: 'Denken & Puzzle', icon: '🧩' }, { id: 'quiz', label: 'Quiz & Shows', icon: '❓' },
+  { id: 'sim', label: 'Simulation & Kreativ', icon: '🏗️' }, { id: 'tisch', label: 'Tisch, Karten & Glück', icon: '🎲' },
+  { id: 'musik', label: 'Musik & Rhythmus', icon: '🎵' }, { id: 'mehr', label: 'Weitere Spiele', icon: '✨' }
+];
+const GENRE = { adventure: 'abenteuer', arcade: 'action', runner: 'action', racing: 'action', sport: 'action', puzzle: 'denken', memory: 'denken', 'match-3': 'denken',
+  word: 'denken', strategy: 'denken', trivia: 'quiz', simulation: 'sim', kids: 'sim', board: 'tisch', card: 'tisch', casino: 'tisch', casual: 'tisch', music: 'musik' };
+let catMap = {};
+try { catMap = JSON.parse(localStorage.getItem('eg-cats') || '{}') || {}; } catch (e) {}
+const slug = g => (g.url || '').replace(/\/+$/, '').split('/').pop() || g.id;
+const catOf = g => catMap[slug(g)] || catMap[g.id] || GENRE[g.genre] || 'mehr';
+// Kategorien: zuerst aus der geladenen Basis (categories.js liegt mit den Spielen lokal, auch offline), sonst von der easygames-Seite
+function loadCats(online) {
+  const s = document.createElement('script');
+  s.src = online ? EASY + 'categories.js?t=' + Math.floor(Date.now() / 36e5) : '/categories.js?t=' + Math.floor(Date.now() / 6e4);
+  s.onload = () => {
+    const c = window.EASYGAMES_CATS;
+    if (c && c.of) { catMap = c.of; try { localStorage.setItem('eg-cats', JSON.stringify(c.of)); } catch (e) {} render(); }
+    else if (!online) loadCats(true);
+    s.remove();
+  };
+  s.onerror = () => { s.remove(); if (!online) loadCats(true); };
+  document.head.appendChild(s);
+}
+
+// Trailer: automatisch aus dem easygames-Katalog (promo/<id>-trailer-*.mp4), zwischengespeichert für offline; Abspielen im Browser
+let trMap = {};
+try { trMap = JSON.parse(localStorage.getItem('eg-trailers') || '{}') || {}; } catch (e) {}
+const trailerOf = g => trMap[g.id] || trMap[slug(g)] || '';
+function loadTrailers() {
+  fetch(EASY + 'sync/catalog.json?t=' + Math.floor(Date.now() / 36e5)).then(r => r.ok ? r.json() : null).then(c => {
+    if (!c || !Array.isArray(c.games)) return;
+    const m = {};
+    c.games.forEach(x => { const v = x && x.trailer && (x.trailer.v16 || x.trailer.v9); if (v && /^promo\/[\w.-]+\.mp4$/.test(v)) { m[x.id] = v; m[String(x.path || '').replace(/\/+$/, '')] = v; } });
+    trMap = m; try { localStorage.setItem('eg-trailers', JSON.stringify(m)); } catch (e) {}
+    render();
+  }).catch(() => {});
+}
+
+let S = { games: [], online: true, refreshing: true, baseReady: false, queue: [] };
+let view = 'all', sel = null, query = '', lastErr = '';
+try { view = localStorage.getItem('eg-view') || 'all'; sel = localStorage.getItem('eg-sel'); } catch (e) {}
+
+const MB = b => b >= 1e9 ? (b / 1e9).toFixed(1).replace('.', ',') + ' GB' : (b / 1e6 >= 10 ? Math.round(b / 1e6) : (b / 1e6).toFixed(1).replace('.', ',')) + ' MB';
+function playTime(s) {
+  if (!s) return 'noch nicht gespielt';
+  const h = Math.floor(s / 3600), m = Math.round((s % 3600) / 60);
+  return h ? h + ' Std. ' + (m ? m + ' Min.' : '') : Math.max(1, m) + ' Min.';
+}
+function ago(iso) {
+  if (!iso) return '–';
+  const d = (Date.now() - new Date(iso)) / 864e5;
+  if (d < 1) return 'heute'; if (d < 2) return 'gestern';
+  return d < 30 ? 'vor ' + Math.floor(d) + ' Tagen' : new Date(iso).toLocaleDateString('de-DE');
+}
+const MODES = { online: '🌐 Online & Handys', multi: '👥 Mehrspieler', pad: '🎮 Controller', tvParam: '📺 TV-Modus' };
+const busyOf = g => S.busy === g.id ? 'busy' : (S.queue || []).includes(g.id) ? 'queued' : '';
+const pct = () => S.total > 0 ? Math.min(100, Math.round(S.done * 100 / S.total)) : 0;
+
+function filtered() {
+  let L = S.games.slice();
+  if (view === 'installed') L = L.filter(g => g.installed);
+  else if (view === 'updates') L = L.filter(g => g.update);
+  else if (view === 'new') L = L.filter(g => g.new);
+  else if (view.startsWith('cat:')) L = L.filter(g => catOf(g) === view.slice(4));
+  if (query) { const q = query.toLowerCase(); L = L.filter(g => (g.title + ' ' + g.short + ' ' + g.meta + ' ' + g.desc).toLowerCase().includes(q)); }
+  const rank = g => (g.running ? 0 : g.installed ? 1 : 2);
+  return L.sort((a, b) => view === 'all' && !query ? (b.new - a.new) || (rank(a) - rank(b)) || a.short.localeCompare(b.short, 'de') : a.short.localeCompare(b.short, 'de'));
+}
+
+function renderNav() {
+  const n = f => S.games.filter(f).length;
+  const item = (id, icon, label, count, cls) => `<button data-view="${id}" class="${view === id ? 'on' : ''}"><i>${icon}</i><span>${esc(label)}</span>${count !== '' ? `<em class="${cls || ''}">${count}</em>` : ''}</button>`;
+  const upd = n(g => g.update), neu = n(g => g.new);
+  let h = '<h4>Bibliothek</h4>' + item('all', '🏠', 'Alle Spiele', S.games.length) + item('installed', '💾', 'Installiert', n(g => g.installed));
+  if (upd) h += item('updates', '⟳', 'Updates', upd, 'hot');
+  if (neu) h += item('new', '✨', 'Neu', neu, 'new');
+  h += '<h4>Kategorien</h4>';
+  for (const c of CATS) { const k = n(g => catOf(g) === c.id); if (k) h += item('cat:' + c.id, c.icon, c.label, k); }
+  $('nav').innerHTML = h;
+}
+
+function card(g) {
+  const b = busyOf(g), tags = [];
+  if (g.running) tags.push('<span class="tag run">▶ LÄUFT</span>');
+  else if (g.update) tags.push('<span class="tag upd">UPDATE</span>');
+  if (g.new) tags.push('<span class="tag new">NEU</span>');
+  if (g.kind !== 'bundled') tags.push('<span class="tag web">ONLINE</span>');
+  const off = g.kind === 'bundled' && !g.installed;
+  let foot = '';
+  if (b === 'busy') foot = `<span class="prog"><i style="width:${pct()}%"></i></span>`;
+  else if (b === 'queued') foot = '<span class="dl" title="In der Warteschlange">⏳</span>';
+  else if (off) foot = '<span class="dl" title="Nicht installiert">⬇</span>';
+  const sub = b === 'busy' ? 'Wird geladen … ' + pct() + ' %' : b === 'queued' ? 'Wartet auf Download' : off ? MB(g.size) : g.installed ? (g.play ? playTime(g.play) : 'Installiert') : 'Läuft online';
+  return `<button class="card${off ? ' off' : ''}${sel === g.id ? ' sel' : ''}" data-id="${esc(g.id)}"><span class="pic"><img loading="lazy" src="/${esc(g.cover)}" alt="" onerror="this.style.opacity=0"><span class="tags">${tags.join('')}</span>${foot}</span><span class="t">${esc(g.short)}</span><span class="s">${esc(sub)}</span></button>`;
+}
+
+function renderList() {
+  const t = view === 'all' ? 'Alle Spiele' : view === 'installed' ? 'Installiert' : view === 'updates' ? 'Updates' : view === 'new' ? 'Neue Spiele' : (CATS.find(c => 'cat:' + c.id === view) || {}).label || '';
+  const L = filtered();
+  $('title').innerHTML = esc(query ? 'Suche: „' + query + '“' : t) + `<small>${L.length}</small>`;
+  if (!S.games.length) {
+    $('list').innerHTML = S.online === false
+      ? '<div class="empty"><b>Keine Verbindung</b>Beim ersten Start lädt easygames einmal die Spieleliste. Bitte mit dem Internet verbinden und ⟳ drücken.</div>'
+      : '<div class="grid skel">' + '<div class="card"><span class="pic"></span></div>'.repeat(12) + '</div>';
+    return;
+  }
+  let h = '';
+  if (view === 'all' && !query) {
+    const recent = S.games.filter(g => g.last).sort((a, b) => b.last.localeCompare(a.last)).slice(0, 4);
+    if (recent.length) h += '<div class="row"><h3>Zuletzt gespielt</h3><div class="recent">' + recent.map(g => `<button class="rc${sel === g.id ? ' sel' : ''}" data-id="${esc(g.id)}"><img src="/${esc(g.cover)}" alt=""><span><b>${esc(g.short)}</b><small>${esc(ago(g.last))} · ${esc(playTime(g.play))}</small></span></button>`).join('') + '</div></div><div class="row"><h3>Alle Spiele</h3></div>';
+  }
+  h += L.length ? '<div class="grid">' + L.map(card).join('') + '</div>'
+    : `<div class="empty"><b>${view === 'installed' ? 'Noch nichts installiert' : 'Keine Treffer'}</b>${view === 'installed' ? 'Wähle unter „Alle Spiele“ ein Spiel und klicke auf Installieren.' : 'Versuch einen anderen Suchbegriff.'}</div>`;
+  $('list').innerHTML = h;
+}
+
+function renderDetail() {
+  const g = S.games.find(x => x.id === sel) || filtered()[0];
+  if (!g) { $('det').innerHTML = ''; return; }
+  sel = g.id;
+  const b = busyOf(g), cat = CATS.find(c => c.id === catOf(g));
+  const chips = [cat ? cat.icon + ' ' + cat.label : ''].concat((g.modes || []).map(m => MODES[m]).filter(Boolean)).filter(Boolean);
+  let acts = '', hint = '';
+  if (g.kind !== 'bundled') {
+    acts = `<button class="btn pri" data-act="play">🌐 Online spielen</button>`;
+    hint = 'Dieses Spiel läuft über das Internet und wird nicht installiert.';
+  } else if (b === 'busy') {
+    acts = `<button class="btn pri" disabled>⬇ ${pct()} %</button><button class="btn" data-act="cancel">Abbrechen</button>`;
+    hint = `<div class="bar"><i style="width:${pct()}%"></i></div>${MB(S.done || 0)} von ${MB(S.total || g.size)}`;
+  } else if (b === 'queued') {
+    acts = `<button class="btn pri" disabled>⏳ In der Warteschlange</button><button class="btn" data-act="cancel">Entfernen</button>`;
+  } else if (!g.installed) {
+    acts = `<button class="btn pri" data-act="install">⬇ Installieren</button>`;
+    hint = `${MB(g.size)} · danach auch ohne Internet spielbar`;
+  } else {
+    acts = `<button class="btn pri play" data-act="play">▶ ${g.running ? 'Zum Spiel' : 'Spielen'}</button>` + (g.update ? `<button class="btn" data-act="install" title="Update laden">⟳ Update</button>` : '');
+    hint = g.update ? 'Update verfügbar – wird ' + (S.auto ? 'automatisch geladen.' : 'mit „⟳ Update“ geladen.') : 'Aktuell · offline spielbar';
+  }
+  const online = (g.modes || []).includes('online')
+    ? '<div class="hint">🌐 Online-Mehrspieler läuft über easygames: Mitspieler treten per Link, Code oder QR von überall bei – Browser, Handy, Android-App und TV.</div>' : '';
+  $('det').innerHTML = `
+    <div class="hero"><div class="bg" style="background-image:url('/${esc(g.cover)}')"></div><img src="/${esc(g.cover)}" alt="" onerror="this.style.opacity=0"></div>
+    <div class="dbody">
+      <h2>${esc(g.title)}</h2>
+      <div class="sub">${esc(g.meta)}</div>
+      <div class="chips">${chips.map(c => `<span class="chip">${esc(c)}</span>`).join('')}</div>
+      <div class="acts">${acts}</div>
+      <div class="hint">${hint}</div>
+      ${online}
+      <div class="stats">
+        <div class="stat"><small>Spielzeit</small><b>${esc(playTime(g.play))}</b></div>
+        <div class="stat"><small>Zuletzt</small><b>${esc(ago(g.last))}</b></div>
+        <div class="stat"><small>Größe</small><b>${g.kind === 'bundled' ? MB(g.size) : 'online'}</b></div>
+        <div class="stat"><small>Status</small><b>${g.kind !== 'bundled' ? 'Online-Spiel' : g.installed ? (g.update ? 'Update offen' : 'Installiert') : 'Nicht installiert'}</b></div>
+      </div>
+      <div class="desc">${esc(g.desc)}</div>
+      <div class="links">
+        ${trailerOf(g) ? '<button class="btn sm" data-act="trailer">🎬 Trailer</button>' : ''}
+        <button class="btn sm" data-act="guide">📖 Anleitung</button>
+        <button class="btn sm" data-act="web">↗ Im Browser</button>
+        ${g.installed ? '<button class="btn sm danger" data-act="uninstall">🗑 Deinstallieren</button>' : ''}
+      </div>
+      ${g.needs && g.needs.length ? `<div class="hint" style="margin-top:12px">Nutzt Dateien von: ${esc(g.needs.join(', '))} (automatisch mitinstalliert)</div>` : ''}
+    </div>`;
+}
+
+function renderChrome() {
+  const banners = [];
+  if (S.appUpdate) banners.push(`<div class="banner upd"><span>🚀</span><span class="grow" title="Version ${esc(S.appUpdate)}"><b>Ein neues Update ist verfügbar.</b></span>` +
+    (S.appUpdatePct >= 0 ? `<span>Wird geladen … ${S.appUpdatePct} %</span>` : '<button class="btn sm" data-act="appUpdate">Jetzt aktualisieren</button>') + '</div>');
+  if (S.online === false) banners.push('<div class="banner warn"><span>📴</span><span class="grow"><b>Offline.</b> Installierte Spiele laufen weiter, Online-Mehrspieler und neue Spiele brauchen Internet.</span><button class="btn sm" data-act="refresh">Erneut versuchen</button></div>');
+  else if (!S.baseReady && S.refreshing) banners.push('<div class="banner"><span>⏳</span><span class="grow">Spieleliste und gemeinsame Dateien werden geladen …</span></div>');
+  $('banners').innerHTML = banners.join('');
+  $('bRefresh').classList.toggle('spin', !!S.refreshing);
+  $('tAuto').classList.toggle('on', !!S.auto);
+  $('tFull').classList.toggle('on', !!S.fullscreen);
+  $('tClip').classList.toggle('on', S.clips !== false);
+  $('net').innerHTML = `<span class="dot${S.online === false ? ' off' : ''}"></span>${S.online === false ? 'Offline' : 'Online'}`;
+  $('disk').textContent = S.disk ? MB(S.disk) + ' belegt' : '';
+  $('ver').textContent = S.version ? 'Version ' + S.version : '';
+  const g = S.busy && S.games.find(x => x.id === S.busy), q = (S.queue || []).length;
+  const bar = $('dlbar');
+  bar.hidden = !g;
+  if (g) bar.innerHTML = `<span>⬇ <b>${esc(g.short)}</b></span><div class="bar"><i style="width:${pct()}%"></i></div><span>${pct()} % · ${MB(S.done || 0)} / ${MB(S.total || g.size)}</span>${q ? `<span>+ ${q} in der Warteschlange</span>` : ''}`;
+}
+
+function render() {
+  const st = $('scroll').scrollTop;
+  renderNav(); renderList(); renderDetail(); renderChrome();
+  $('scroll').scrollTop = st;
+}
+
+let toastT = 0;
+function toast(text) {
+  const t = $('toast'); t.textContent = text; t.classList.add('on');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 4500);
+}
+
+// Nachrichten der App
+if (host) host.addEventListener('message', e => {
+  const m = e.data;
+  if (!m || m.type !== 'state') return;
+  const games = m.games || S.games, key = (m.busy || '') + '|' + (m.queue || []).join(',');
+  const full = !!m.games || key !== busyKey;
+  busyKey = key;
+  S = Object.assign({}, m, { games });
+  if (m.toast) toast(m.toast);
+  if (m.error && m.error !== lastErr) toast('⚠ ' + m.error);
+  lastErr = m.error || '';
+  if (full) render(); else light();
+  if (!ttEditing || !m.tiktok || !$('ttName')) ttDraw(); else { const d = $('ttDot'); if (d) d.textContent = m.tiktok.running ? '● an' : ''; }
+});
+let busyKey = '';
+// nur Fortschritt geändert: Karte, Detail und Leisten anpassen statt alles neu aufzubauen (Downloads melden bis zu 4× pro Sekunde)
+function light() {
+  const c = S.busy && document.querySelector(`.grid [data-id="${CSS.escape(S.busy)}"]`);
+  if (c) { const i = c.querySelector('.prog i'), s = c.querySelector('.s'); if (i) i.style.width = pct() + '%'; if (s) s.textContent = 'Wird geladen … ' + pct() + ' %'; }
+  renderDetail(); renderChrome();
+}
+
+function act(a) {
+  const g = S.games.find(x => x.id === sel);
+  if (a === 'refresh') return send({ cmd: 'refresh' });
+  if (a === 'appUpdate') return send({ cmd: 'appUpdate' });
+  if (!g) return;
+  if (a === 'trailer') return trailerOf(g) && send({ cmd: 'open', url: EASY + trailerOf(g) });
+  if (a === 'guide') return send({ cmd: 'open', url: EASY + 'anleitung.html?game=' + encodeURIComponent(slug(g)) });
+  if (a === 'web') return send({ cmd: 'open', url: g.url || EASY + slug(g) + '/' });
+  if (a === 'uninstall' && !confirmUninstall(g)) return;
+  send({ cmd: a, id: g.id });
+}
+let confirmFor = '';
+function confirmUninstall(g) {
+  if (confirmFor === g.id) { confirmFor = ''; return true; }
+  confirmFor = g.id; toast('Nochmal auf „Deinstallieren“ klicken, um ' + g.short + ' zu entfernen. Spielstände bleiben erhalten.');
+  setTimeout(() => { if (confirmFor === g.id) confirmFor = ''; }, 5000);
+  return false;
+}
+function primary(g) {
+  if (!g) return;
+  if (busyOf(g)) return;
+  send({ cmd: g.kind === 'bundled' && !g.installed ? 'install' : 'play', id: g.id });
+}
+function select(id, scroll) {
+  sel = id; try { localStorage.setItem('eg-sel', id); } catch (e) {}
+  document.querySelectorAll('[data-id]').forEach(el => el.classList.toggle('sel', el.dataset.id === id));
+  renderDetail();
+  if (scroll) { const el = document.querySelector(`.grid [data-id="${CSS.escape(id)}"]`); el && el.scrollIntoView({ block: 'nearest' }); el && el.focus({ preventScroll: true }); }
+}
+
+document.addEventListener('click', e => {
+  const v = e.target.closest('[data-view]');
+  if (v) { view = v.dataset.view; try { localStorage.setItem('eg-view', view); } catch (x) {} $('scroll').scrollTop = 0; render(); return; }
+  const a = e.target.closest('[data-act]');
+  if (a) return act(a.dataset.act);
+  const c = e.target.closest('[data-id]');
+  if (c) select(c.dataset.id);
+});
+document.addEventListener('dblclick', e => { const c = e.target.closest('[data-id]'); if (c) primary(S.games.find(g => g.id === c.dataset.id)); });
+$('q').addEventListener('input', e => { query = e.target.value.trim(); renderList(); });
+$('bRefresh').onclick = () => send({ cmd: 'refresh' });
+$('tAuto').onclick = () => { S.auto = !S.auto; send({ cmd: 'auto', on: S.auto }); renderChrome(); };
+$('tFull').onclick = () => { S.fullscreen = !S.fullscreen; send({ cmd: 'fullscreen', on: S.fullscreen }); renderChrome(); };
+$('tClip').onclick = () => { S.clips = S.clips === false; send({ cmd: 'clips', on: S.clips }); renderChrome(); };
+document.querySelectorAll('[data-page]').forEach(b => b.onclick = () => send({ cmd: 'page', page: b.dataset.page }));
+document.addEventListener('contextmenu', e => { if (!e.target.closest('input,.desc')) e.preventDefault(); });
+
+// Tastatur und Controller: Pfeile/Steuerkreuz wählen, Enter/A startet bzw. installiert, Strg+F sucht
+function move(dx, dy) {
+  const cards = [...document.querySelectorAll('.grid .card[data-id]')];
+  if (!cards.length) return;
+  let i = cards.findIndex(c => c.dataset.id === sel);
+  if (i < 0) return select(cards[0].dataset.id, true);
+  const cols = Math.max(1, Math.round($('list').querySelector('.grid').clientWidth / (cards[0].offsetWidth + 16)));
+  i = Math.max(0, Math.min(cards.length - 1, i + dx + dy * cols));
+  select(cards[i].dataset.id, true);
+}
+document.addEventListener('keydown', e => {
+  if (!$('ttDlg').hidden) { if (e.key === 'Escape') $('ttDlg').hidden = true; return; }
+  if (!$('padDlg').hidden) { if (e.key === 'Escape') { e.preventDefault(); if (PW.wiz) padWizEnd(false); else padClose(); } return; }
+  if (e.ctrlKey && e.key.toLowerCase() === 'f') { e.preventDefault(); $('q').focus(); $('q').select(); return; }
+  if (e.target === $('q')) { if (e.key === 'Escape') { $('q').value = ''; query = ''; renderList(); $('q').blur(); } if (e.key !== 'ArrowDown' && e.key !== 'Enter') return; }
+  const k = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+  if (k) { e.preventDefault(); move(k[0], k[1]); }
+  else if (e.key === 'Enter' && !e.target.closest('[data-act],[data-view],.tog,#bRefresh')) { e.preventDefault(); primary(S.games.find(g => g.id === sel)); }
+  else if (e.key === 'F5') { e.preventDefault(); send({ cmd: 'refresh' }); }
+});
+// Controller wie an der Konsole: Steuerkreuz/Stick wählt (am Rand des Rasters links in die Seitenleiste, rechts in die Details), A bestätigt,
+// B zurück, LB/RB wechselt die Ansicht, Y springt zu den Optionen des Spiels, X installiert/aktualisiert, Start = TikTok LIVE,
+// Select = Controller einrichten, rechter Stick scrollt. In Fenstern (Controller, TikTok) wählt das Steuerkreuz die Knöpfe.
+let padRaf = 0, padPrev = {}, padNext = 0, zone = 'grid';
+const dlgOpen = () => !$('ttDlg').hidden || !$('padDlg').hidden;
+function zoneRoot() { if (!$('ttDlg').hidden) return $('ttDlg'); if (!$('padDlg').hidden) return $('padDlg'); return zone === 'side' ? document.querySelector('.side') : zone === 'det' ? $('det') : null; }
+function focusables(root) { return root ? [...root.querySelectorAll('button,input,select,a[href]')].filter(el => !el.disabled && el.offsetParent !== null) : []; }
+function spatial(root, dx, dy) {   // nächster Knopf in Richtung dx/dy
+  const els = focusables(root); if (!els.length) return false;
+  const cur = root.contains(document.activeElement) && document.activeElement !== root ? document.activeElement : null;
+  if (!cur) { els[0].focus(); return true; }
+  const c = cur.getBoundingClientRect(), cx = c.left + c.width / 2, cy = c.top + c.height / 2;
+  let best = null, bd = Infinity;
+  for (const el of els) {
+    if (el === cur) continue;
+    const r = el.getBoundingClientRect(), x = r.left + r.width / 2 - cx, y = r.top + r.height / 2 - cy, along = dx ? x * dx : y * dy;
+    if (along <= 2) continue;
+    if (dx && (r.bottom <= c.top || r.top >= c.bottom)) continue;   // links/rechts nur in derselben Zeile (sonst springt es z. B. aus der Seitenleiste in die Knopfreihe darüber)
+    const d = along + (dx ? Math.abs(y) : Math.abs(x)) * 2.5; if (d < bd) { bd = d; best = el; }
+  }
+  if (best) { best.focus(); best.scrollIntoView({ block: 'nearest' }); }
+  return !!best;
+}
+function gridEdge(dx) {
+  const cards = [...document.querySelectorAll('.grid .card[data-id]')], i = cards.findIndex(c => c.dataset.id === sel);
+  if (!cards.length) return dx < 0 ? 'side' : 'det';
+  if (i < 0) return false;
+  const cols = Math.max(1, Math.round($('list').querySelector('.grid').clientWidth / (cards[0].offsetWidth + 16)));
+  if (dx < 0 && i % cols === 0) return 'side';
+  if (dx > 0 && (i % cols === cols - 1 || i === cards.length - 1)) return 'det';
+  return false;
+}
+function setZone(z) {
+  zone = z;
+  if (z === 'grid') { if (sel) select(sel, true); else move(0, 0); return; }
+  const r = zoneRoot(), f = r && (r.querySelector(z === 'side' ? '#nav .on' : '.btn.pri:not([disabled])') || focusables(r)[0]);
+  if (f) { f.focus(); f.scrollIntoView({ block: 'nearest' }); }
+}
+function padBack() {
+  if (dlgOpen()) { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); setZone('side'); return; }
+  if (zone !== 'grid') { setZone('grid'); return; }
+  if (query) { $('q').value = ''; query = ''; renderList(); }
+}
+function cycleView(d) {
+  const v = [...document.querySelectorAll('#nav [data-view]')], i = v.findIndex(x => x.classList.contains('on')), n = v[(i + d + v.length) % v.length];
+  if (n) { n.click(); zone = 'grid'; }
+}
+function padLoop(t) {
+  const pads = navigator.getGamepads ? [...navigator.getGamepads()].filter(Boolean) : [];
+  if (!pads.length) { padRaf = 0; document.body.classList.remove('pad'); return; }
+  document.body.classList.add('pad');
+  // Alle Controller zu einem zusammenfassen: doppelt gemeldete Pads (z. B. Bluetooth-Controller über Treiber-Tools als zweites Gerät) lösen nichts doppelt aus
+  const one = { index: 0, buttons: [], axes: [] };
+  for (const q of pads) {
+    (q.buttons || []).forEach((x, i) => { if (x && x.pressed) one.buttons[i] = x; });
+    (q.axes || []).forEach((v, i) => { if (Math.abs(v || 0) > Math.abs(one.axes[i] || 0)) one.axes[i] = v; });
+  }
+  for (let i = 0; i < 17; i++) one.buttons[i] = one.buttons[i] || { pressed: false, value: 0 };
+  if (document.hasFocus() && !PW.wiz) for (const p of [one]) {
+    const b = i => !!(p.buttons[i] && p.buttons[i].pressed), prev = padPrev[p.index] || [], hit = i => b(i) && !prev[i];
+    const ax = p.axes[0] || 0, ay = p.axes[1] || 0, dlg = dlgOpen();
+    const dx = b(14) || ax < -0.6 ? -1 : b(15) || ax > 0.6 ? 1 : 0, dy = b(12) || ay < -0.6 ? -1 : b(13) || ay > 0.6 ? 1 : 0;
+    if (!dlg && zone === 'dlg') zone = 'side';   // Fenster wurde geschlossen
+    if ((dx || dy) && t > padNext) {
+      padNext = t + 190;
+      if (dlg) spatial(zoneRoot(), dx, dy);
+      else if (zone !== 'grid') { if (!spatial(zoneRoot(), dx, dy) && ((zone === 'side' && dx > 0) || (zone === 'det' && dx < 0))) setZone('grid'); }
+      else { const e = dx && !dy && gridEdge(dx); if (e) setZone(e); else move(dx, dy); }
+    }
+    if (!dx && !dy) padNext = 0;
+    if (hit(0)) { if (dlg || zone !== 'grid') { const a = document.activeElement; if (a && a !== document.body) a.click(); } else primary(S.games.find(g => g.id === sel)); }
+    if (hit(1)) padBack();
+    if (!dlg) {
+      if (hit(4) || hit(5)) cycleView(hit(5) ? 1 : -1);
+      if (hit(3)) setZone(zone === 'det' ? 'grid' : 'det');
+      if (hit(2)) { const x = $('det').querySelector('[data-act="install"]'); if (x) x.click(); }
+      if (hit(9)) { $('bTT').click(); setTimeout(() => setZone('dlg'), 50); }
+      if (hit(8)) $('bPad').click();
+      if (hit(16)) send({ cmd: 'home' });   // Home-Taste: zurück ins offene Spiel
+    }
+    const ry = p.axes[3] || 0;
+    if (Math.abs(ry) > 0.3) { const r = dlg ? (zoneRoot().querySelector('.box') || zoneRoot()) : zone === 'det' ? $('det') : $('scroll'); r.scrollTop += ry * 14; }
+    padPrev[p.index] = p.buttons.map(x => !!(x && x.pressed));
+  }
+  padRaf = requestAnimationFrame(padLoop);
+}
+// Start ohne Ereignis absichern: Controller, die schon vor dem Laden verbunden waren (oder deren Ereignis verpasst wurde), werden jede Sekunde gesucht
+const padAny = () => { try { return [...(navigator.getGamepads ? navigator.getGamepads() : [])].some(Boolean); } catch (e) { return false; } };
+const padKick = () => { if (!padRaf && padAny()) padRaf = requestAnimationFrame(padLoop); };
+addEventListener('gamepadconnected', e => {
+  padKick(); const p = e.gamepad; if (!p) return;
+  const fit = p.mapping === 'standard' || !!padMaps()[p.id];
+  toast('🎮 ' + padShort(p.id) + ' verbunden' + (fit ? '' : ' – passt eine Taste nicht: Select drückt „Controller einrichten“'));
+});
+addEventListener('gamepaddisconnected', e => { if (e.gamepad) toast('🎮 ' + padShort(e.gamepad.id) + ' getrennt'); });
+addEventListener('focus', padKick); setInterval(padKick, 1000); padKick();
+
+// ---------- Controller einrichten: Test-Anzeige und Belegungs-Assistent (Belegung je Controller, gilt in allen Spielen) ----------
+// Format wie gamepad.js (EasyGamesPadNormal): { b: [17 Quellen], a: [4 Quellen] }, Quelle {b:i} | {a:i,s:±1} | {h:i,d:0-3} bzw. {a:i,inv:true}
+const PAD_BTN = ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'Select', 'Start', 'L3', 'R3', '↑', '↓', '←', '→'];
+const PAD_STEPS = [
+  ['b', 0, 'Drücke A', 'unterste Taste rechts (PlayStation: ✕, Switch: B)'], ['b', 1, 'Drücke B', 'rechte Taste (PlayStation: ○, Switch: A)'],
+  ['b', 2, 'Drücke X', 'linke Taste (PlayStation: □, Switch: Y)'], ['b', 3, 'Drücke Y', 'obere Taste (PlayStation: △, Switch: X)'],
+  ['b', 4, 'Drücke LB', 'linke Schultertaste (L1 / L)'], ['b', 5, 'Drücke RB', 'rechte Schultertaste (R1 / R)'],
+  ['b', 6, 'Drücke LT', 'linker Trigger (L2 / ZL)'], ['b', 7, 'Drücke RT', 'rechter Trigger (R2 / ZR)'],
+  ['b', 8, 'Drücke Select', 'Ansicht / Share / Minus'], ['b', 9, 'Drücke Start', 'Menü / Options / Plus'],
+  ['b', 10, 'Linken Stick drücken', 'L3'], ['b', 11, 'Rechten Stick drücken', 'R3'],
+  ['b', 12, 'Steuerkreuz ↑', 'nach oben'], ['b', 13, 'Steuerkreuz ↓', 'nach unten'], ['b', 14, 'Steuerkreuz ←', 'nach links'], ['b', 15, 'Steuerkreuz →', 'nach rechts'],
+  ['a', 0, 'Linken Stick nach rechts', 'ganz nach rechts drücken'], ['a', 1, 'Linken Stick nach unten', 'ganz nach unten drücken'],
+  ['a', 2, 'Rechten Stick nach rechts', 'ganz nach rechts drücken'], ['a', 3, 'Rechten Stick nach unten', 'ganz nach unten drücken']
+];
+const PW = { raf: 0, wiz: null };
+const padN = () => window.EasyGamesPadNormal || null;
+const padRaw = () => { const N = padN(); try { return [...(N ? N.raw() : navigator.getGamepads())].filter(Boolean); } catch (e) { return []; } };
+const padMaps = () => S.padMaps || {};
+const padShort = id => (id || 'Controller').replace(/\(.*?\)|Vendor:.*|Product:.*/g, '').trim() || 'Controller';
+function padOpen() { $('padDlg').hidden = false; padDraw(); if (!PW.raf) PW.raf = requestAnimationFrame(padTick); $('padClose').focus(); }
+function padClose() { $('padDlg').hidden = true; if (PW.wiz) PW.wiz = null; cancelAnimationFrame(PW.raf); PW.raf = 0; }
+function padDraw() {
+  const b = $('padBody'), pads = padRaw();
+  if (PW.wiz) {
+    const w = PW.wiz, st = PAD_STEPS[w.step];
+    b.innerHTML = `<div class="wiz"><div class="n">${esc(padShort(w.id))} · Schritt ${w.step + 1} von ${PAD_STEPS.length}</div><div class="q">${esc(st[2])}</div><div class="n">${esc(st[3])}${w.wait ? ' – jetzt loslassen' : ''}</div>
+      <div class="bar"><i style="width:${Math.round(w.step / PAD_STEPS.length * 100)}%"></i></div>
+      <div class="row" style="justify-content:center"><button class="btn" id="pwSkip">Überspringen</button><button class="btn" id="pwBack"${w.step ? '' : ' disabled'}>Zurück</button><button class="btn" id="pwStop">Abbrechen</button></div></div>`;
+    $('pwSkip').onclick = () => padWizNext(null); $('pwStop').onclick = () => padWizEnd(false);
+    $('pwBack').onclick = () => { if (w.step) { w.step--; w.wait = true; padDraw(); } };
+    $('padHint').textContent = 'Überspringen = Taste so lassen, wie der Controller sie liefert';
+    return;
+  }
+  $('padHint').textContent = 'Esc schließt';
+  if (!pads.length) { b.innerHTML = '<div class="pad"><div class="nm">Kein Controller gefunden</div><div class="ty">Controller anschließen (Kabel oder Bluetooth) und eine Taste drücken.</div></div>'; return; }
+  b.innerHTML = pads.map(p => {
+    const own = !!padMaps()[p.id], std = p.mapping === 'standard';
+    const ty = own ? '<b>Eigene Belegung aktiv</b>' : std ? '<b>Passt</b> – Standard-Controller, keine Einrichtung nötig' : 'Wird automatisch angepasst (Steuerkreuz, Trigger, Sticks). Passt eine Taste nicht: neu belegen.';
+    return `<div class="pad" data-pad="${p.index}"><div class="nm">${esc(padShort(p.id))}</div><div class="ty">${ty}</div>
+      <div class="chips">${PAD_BTN.map((n, i) => `<span data-b="${i}">${n}</span>`).join('')}</div>
+      <div class="sticks"><div class="stick" data-s="0"><i></i><small>linker Stick</small></div><div class="stick" data-s="1"><i></i><small>rechter Stick</small></div></div>
+      <div class="row" style="margin-top:22px"><button class="btn pri" data-pw="map">Tasten neu belegen</button>${own ? '<button class="btn" data-pw="reset">Zurücksetzen</button>' : ''}</div></div>`;
+  }).join('');
+  b.querySelectorAll('[data-pw]').forEach(x => x.onclick = () => {
+    const p = pads.find(q => q.index === +x.closest('[data-pad]').dataset.pad); if (!p) return;
+    if (x.dataset.pw === 'map') padWizStart(p); else padSave(p.id, null);
+  });
+  PW.count = pads.length;
+}
+function padSave(id, map) {
+  const maps = Object.assign({}, padMaps());
+  if (map) maps[id] = map; else delete maps[id];
+  S.padMaps = maps; window.EASYGAMES_PADMAPS = maps;
+  const N = padN(); if (N) N.setMap(id, map);   // Bibliothek und Spiele (gleiche Adresse) sofort, Spielfenster über die App
+  send({ cmd: 'padmaps', maps });
+  padDraw();
+}
+// Ruhelage merken, dann je Schritt die erste deutliche Änderung als Quelle nehmen
+function padWizStart(p) { PW.wiz = { index: p.index, id: p.id, step: 0, rest: p.axes.slice(), wait: true, b: [], a: [] }; padDraw(); }
+function padWizNext(src) {
+  const w = PW.wiz, st = PAD_STEPS[w.step];
+  (st[0] === 'b' ? w.b : w.a)[st[1]] = src || null;
+  w.step++; w.wait = true;
+  if (w.step >= PAD_STEPS.length) return padWizEnd(true);
+  padDraw();
+}
+function padWizEnd(save) {
+  const w = PW.wiz; PW.wiz = null;
+  if (save && w) {
+    const map = { b: [], a: [] };
+    for (let i = 0; i < 17; i++) map.b[i] = w.b[i] || null;
+    for (let i = 0; i < 4; i++) map.a[i] = w.a[i] || null;
+    padSave(w.id, map); toast('🎮 ' + padShort(w.id) + ': Belegung gespeichert.');
+  } else padDraw();
+}
+const hatDir = v => { if (Math.abs(v) > 1.05) return -1; const k = Math.round((v + 1) * 3.5); return k === 7 || k <= 1 ? 0 : k >= 3 && k <= 5 ? 1 : k >= 5 ? 2 : 3; };
+function padWizRead(p) {
+  const w = PW.wiz, st = PAD_STEPS[w.step], R = w.rest;
+  let idle = true, src = null;
+  p.buttons.forEach((b, i) => { if (b && (b.pressed || b.value > .5)) { idle = false; if (!src && st[0] === 'b') src = { b: i }; } });
+  p.axes.forEach((v, i) => {
+    const r = R[i] || 0;
+    if (Math.abs(r) > 1.05) { const d = hatDir(v); if (d >= 0) { idle = false; if (!src && st[0] === 'b') src = { h: i, d }; } return; }
+    const dv = v - r;
+    if (Math.abs(dv) > .35) idle = false;
+    if (Math.abs(dv) > .6 && !src) src = st[0] === 'b' ? { a: i, s: Math.abs(r) > .9 ? .5 * Math.sign(dv) : Math.sign(dv) } : (Math.abs(r) > .9 ? null : (dv < 0 ? { a: i, inv: true } : { a: i }));
+  });
+  if (w.wait) { if (idle) { w.wait = false; padDraw(); } return; }
+  if (src) padWizNext(src);
+}
+function padTick() {
+  PW.raf = 0;
+  if ($('padDlg').hidden) return;
+  const raw = padRaw(), N = padN();
+  if (PW.wiz) { const p = raw.find(q => q.index === PW.wiz.index); if (p) padWizRead(p); }
+  else {
+    if (raw.length !== (PW.count || 0)) padDraw();
+    for (const p of raw) {
+      const box = document.querySelector(`[data-pad="${p.index}"]`); if (!box) continue;
+      const g = N ? N.std(p) : p;
+      box.querySelectorAll('[data-b]').forEach(c => { const b = g.buttons[+c.dataset.b]; c.classList.toggle('on', !!b && (b.pressed || b.value > .5)); });
+      box.querySelectorAll('[data-s]').forEach(c => { const k = +c.dataset.s * 2, x = g.axes[k] || 0, y = g.axes[k + 1] || 0; c.firstChild.style.transform = `translate(${x * 25}px,${y * 25}px)`; });
+    }
+  }
+  PW.raf = requestAnimationFrame(padTick);
+}
+$('bPad').onclick = padOpen;
+
+// ---------- TikTok LIVE: Brücke starten/stoppen, Belegung je Spiel, Link für OBS ----------
+let ttEditing = false;
+function ttDraw() {
+  const t = S.tiktok || {}, g = S.games.find(x => x.id === sel), dot = $('ttDot');
+  if (dot) dot.textContent = t.running ? '● an' : '';
+  if ($('ttDlg').hidden) return;
+  const nameVal = ttEditing ? $('ttName').value : (t.name || '');
+  const obs = g ? EASY + 'stream.html?game=' + encodeURIComponent(slug(g)) + '&tiktok=1' : '';
+  $('ttBody').innerHTML = `<div class="pad">
+      ${t.node === false ? '<div class="ty" style="color:#fca5a5">Node.js fehlt (wird einmalig gebraucht). <button class="btn sm" data-tt="node">Node.js installieren</button> – danach easygames neu starten.</div>' : ''}
+      <div class="row" style="align-items:center"><label style="flex:1;display:flex;gap:8px;align-items:center">TikTok-Name <input id="ttName" placeholder="ohne @" value="${esc(nameVal)}" style="flex:1;height:34px;border-radius:9px;border:1px solid var(--line2);background:var(--panel);color:var(--text);padding:0 10px;font:inherit"></label>
+        ${t.running ? '<button class="btn" data-tt="stop">■ Stoppen</button>' : `<button class="btn pri" data-tt="start"${t.busy ? ' disabled' : ''}>${t.busy ? '⏳ Wird vorbereitet …' : '▶ Verbinden'}</button>`}</div>
+      <div class="ty" style="margin-top:8px">Status: <b>${esc(t.status || 'Aus')}</b>${t.running ? ' – startet automatisch, sobald du live bist.' : ''}</div>
+      <button class="tog${t.inGames ? ' on' : ''}" data-tt="inGames" style="margin:4px 0 8px"><span>Spiele in der App per TikTok steuern</span><s></s></button>
+      <div class="row">
+        <button class="btn" data-tt="setup"${g ? '' : ' disabled'}>⚙ Belegung bearbeiten${g ? ' (' + esc(g.short) + ')' : ''}</button>
+        <button class="btn" data-tt="copy"${g ? '' : ' disabled'}>🔗 Overlay-Link für OBS kopieren</button>
+      </div>
+      <div class="ty" style="margin-top:8px">Belegung bearbeiten öffnet das gewählte Spiel mit den Einstellungen (Brücke muss laufen). Ohne App: <code>TikTok-Start.bat</code> und die Anleitung auf easygames.</div>
+      <pre style="margin:10px 0 0;max-height:150px;overflow:auto;font-size:11.5px;color:var(--muted);white-space:pre-wrap">${esc((t.log || []).join('\n'))}</pre>
+    </div>`;
+  $('ttName').oninput = () => { ttEditing = true; };
+  $('ttBody').querySelectorAll('[data-tt]').forEach(b => b.onclick = () => {
+    const a = b.dataset.tt;
+    if (a === 'start') { ttEditing = false; send({ cmd: 'tiktok', act: 'start', name: $('ttName').value }); }
+    else if (a === 'inGames') send({ cmd: 'tiktok', act: 'inGames', on: !(S.tiktok && S.tiktok.inGames) });
+    else if (a === 'setup' && g) send({ cmd: 'tiktok', act: 'setup', id: g.id });
+    else if (a === 'copy') send({ cmd: 'tiktok', act: 'copy', text: obs });
+    else send({ cmd: 'tiktok', act: a });
+  });
+}
+$('bTT').onclick = () => { $('ttDlg').hidden = false; ttEditing = false; ttDraw(); };
+$('ttClose').onclick = () => { $('ttDlg').hidden = true; };
+$('ttDlg').addEventListener('click', e => { if (e.target === $('ttDlg')) $('ttDlg').hidden = true; });
+$('padClose').onclick = padClose;
+$('padDlg').addEventListener('click', e => { if (e.target === $('padDlg') && !PW.wiz) padClose(); });
+
+render();
+loadCats();
+loadTrailers();
+send({ cmd: 'ready' });
+</script>
+</body>
+</html>
