@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import type { GameScene } from '../../engine/Engine';
 import type { Action } from '../../engine/Input';
-import { Actor } from '../Actor';
+import { Actor, playerLook } from '../Actor';
 import type { Game } from '../Game';
 import { el, $, hints } from '../../ui/ui';
 import { music, sfx, SONGS } from '../../engine/Audio';
@@ -66,12 +66,12 @@ export class DanceScene implements GameScene {
     });
     // Figuren
     const s = this.g.save.data;
-    this.me = await Actor.create({ body: s.body, palette: s.palette, skin: s.skin, cape: !!s.flags.cape, hat: !!s.flags.hat });
+    this.me = await Actor.create(playerLook(s));
     this.me.root.position.set(-2.6, 0, -6); r.add(this.me.root);
     const rx = NPCS.find((n) => n.id === 'rex')!;
     this.rex = await Actor.create(rx.look); this.rex.root.position.set(2.6, 0, -6); r.add(this.rex.root);
     const looks = ['rainbow', 'trans', 'bi', 'pan', 'gay', 'lesbian', 'bear', 'nonbinary'];
-    const bodies = ['Rogue', 'Barbarian', 'Rogue_Hooded', 'Mage', 'Knight'];
+    const bodies = ['Man2', 'Man', 'Woman', 'Woman2', 'Hero'];
     for (let i = 0; i < 8; i++) {
       const a = await Actor.create({ body: bodies[i % 5], palette: looks[i], skin: (i * 2) % 6 });
       const side = i < 4 ? -1 : 1;

@@ -42,6 +42,6 @@ describe('Story', () => {
   it('hat genug Farbwelten und Figuren', () => {
     expect(PALETTES.length).toBeGreaterThanOrEqual(12);
     expect(new Set(PALETTES.map((p) => p.id)).size).toBe(PALETTES.length);
-    expect(BODIES.length).toBe(5);
+    expect(BODIES.length).toBe(6);
   });
 });

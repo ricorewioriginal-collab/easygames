@@ -1,6 +1,7 @@
 /* Spielstand: ein localStorage-Schlüssel (von ../cloud/anmacha-cloud.js mit dem Google-Konto abgeglichen).
    Übernimmt beim ersten Start einen alten Gay-Life!-Spielstand (Name, Geld, Tag, Glitzer). */
 
+import { LEGACY_BODY } from '../game/palettes';
 export const KEY = 'prideCity.save';
 const OLD = 'anmachaGayLife';
 export const VERSION = 1;
@@ -58,7 +59,7 @@ export interface SaveData {
 
 export function defaults(): SaveData {
   return {
-    v: VERSION, started: false, name: 'Alex', pronouns: 'they', body: 'Rogue', palette: 'rainbow', skin: 1,
+    v: VERSION, started: false, name: 'Alex', pronouns: 'they', body: 'Man2', palette: 'rainbow', skin: 1,
     money: 150, rep: 0, glitter: 0, day: 1, time: .1, chapter: 1, step: 0, flags: {}, goals: [], best: {},
     pos: { x: 0, z: 18, yaw: Math.PI }, imported: false, playMs: 0,
     needs: { energy: 85, hunger: 75, hygiene: 80, social: 60, fun: 65 }, food: 2, jobs: {}, jobDay: { d: 0, n: 0 }, rel: {},
@@ -83,7 +84,9 @@ function merge<T>(d: T, s: unknown): T {
 
 /** Reine Funktion (getestet): roher Stand → gültiger Stand */
 export function migrate(raw: unknown): SaveData {
-  return merge(defaults(), raw);
+  const d = merge(defaults(), raw);
+  if (LEGACY_BODY[d.body]) d.body = LEGACY_BODY[d.body];
+  return d;
 }
 
 /** Reine Funktion (getestet): alter Gay-Life!-Stand → Startwerte */

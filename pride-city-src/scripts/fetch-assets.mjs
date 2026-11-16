@@ -1,9 +1,8 @@
-/* Lädt die KayKit-Modelle (CC0) nach public/assets, falls sie fehlen. Sie liegen nicht doppelt im Repo: Der fertige Build in ../pride-city enthält sie.
+/* Lädt die KayKit-Modelle (CC0) für Stadt und Wohnung nach public/assets, falls sie fehlen. Die Figuren (Quaternius, CC0) liegen in public/assets/people im Repo.
    Bei .gltf werden die verknüpften .bin- und Textur-Dateien mitgeladen. */
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 const R = 'https://raw.githubusercontent.com/KayKit-Game-Assets/';
 const SRC = {
-  chars: [R + 'KayKit-Character-Pack-Adventures-1.0/main/addons/kaykit_character_pack_adventures/Characters/gltf/', ['Knight', 'Barbarian', 'Mage', 'Rogue', 'Rogue_Hooded'], '.glb'],
   city: [R + 'KayKit-City-Builder-Bits-1.0/main/addons/kaykit_city_builder_bits/Assets/gltf/', ['base', 'bench', 'box_A', 'box_B', 'building_A', 'building_B', 'building_C', 'building_D', 'building_E', 'building_F', 'building_G', 'building_H', 'bush',
     'car_hatchback', 'car_police', 'car_sedan', 'car_stationwagon', 'car_taxi', 'dumpster', 'firehydrant', 'road_corner', 'road_corner_curved', 'road_junction', 'road_straight',
     'road_straight_crossing', 'road_tsplit', 'streetlight', 'trafficlight_A', 'trafficlight_B', 'trafficlight_C', 'trash_A', 'trash_B', 'watertower'], '.gltf'],

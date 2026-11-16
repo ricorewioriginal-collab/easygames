@@ -1,8 +1,8 @@
 /* Charakter-Editor im Fotostudio: Figur, Farbwelt, Hautton, Extras, Name, Pronomen. Vorschau dreht sich auf einer Bühne. */
 import * as THREE from 'three';
 import type { GameScene } from '../engine/Engine';
-import { Actor } from './Actor';
-import { BODIES, PALETTES, PRONOUNS, SKINS } from './palettes';
+import { Actor, playerLook, OUTFITS } from './Actor';
+import { BODIES, PALETTES, PRONOUNS, SKINS, HAIRS } from './palettes';
 import type { Game } from './Game';
 import { Menu, el, hints, $ } from '../ui/ui';
 import { music, sfx } from '../engine/Audio';
@@ -10,7 +10,7 @@ import { music, sfx } from '../engine/Audio';
 export class CreatorScene implements GameScene {
   root = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(38, 1, .1, 100);
-  bloom = .7;
+  bloom = .18;
   private actor: Actor | null = null;
   private actors = new Map<string, Actor>();
   private menu!: Menu;
@@ -55,13 +55,16 @@ export class CreatorScene implements GameScene {
     const bi = () => Math.max(0, BODIES.findIndex((b) => b.id === s.body));
     const pi = () => Math.max(0, PALETTES.findIndex((p) => p.id === s.palette));
     const ni = () => Math.max(0, PRONOUNS.findIndex((p) => p.id === s.pronouns));
+    const hairStep = (d: number) => { const h = typeof s.flags.hair === 'number' ? s.flags.hair as number : -1; const n = h + d; return n < 0 || n >= HAIRS.length ? (n < -1 ? HAIRS.length - 1 : -1) : n; };
+    const outfits = () => OUTFITS.filter((o) => !o.adult || s.settings.adult);
+    const oi = () => Math.max(0, outfits().findIndex((o) => o.id === (s.flags.outfit || 'clothed')));
     this.menu = new Menu([
       { icon: '🧍', label: 'Figur', value: () => BODIES[bi()].desc, left: () => this.setBody(BODIES[cyc(BODIES, bi(), -1)].id), right: () => this.setBody(BODIES[cyc(BODIES, bi(), 1)].id) },
       { icon: '🏳️‍🌈', label: 'Farbwelt', value: () => PALETTES[pi()].name, left: () => { s.palette = PALETTES[cyc(PALETTES, pi(), -1)].id; this.apply(); }, right: () => { s.palette = PALETTES[cyc(PALETTES, pi(), 1)].id; this.apply(); } },
       { icon: '✋', label: 'Hautton', value: () => `${s.skin + 1} / ${SKINS.length}`, left: () => { s.skin = cyc(SKINS, s.skin, -1); this.apply(); }, right: () => { s.skin = cyc(SKINS, s.skin, 1); this.apply(); } },
-      { icon: '🧥', label: 'Umhang', value: () => (s.flags.cape ? 'An' : 'Aus'), left: () => { s.flags.cape = !s.flags.cape; this.apply(); }, right: () => { s.flags.cape = !s.flags.cape; this.apply(); } },
-      { icon: '🎩', label: 'Hut', value: () => (s.flags.hat ? 'An' : 'Aus'), left: () => { s.flags.hat = !s.flags.hat; this.apply(); }, right: () => { s.flags.hat = !s.flags.hat; this.apply(); } },
-      { icon: '💬', label: 'Pronomen', value: () => PRONOUNS[ni()].label, left: () => { s.pronouns = PRONOUNS[cyc(PRONOUNS, ni(), -1)].id; }, right: () => { s.pronouns = PRONOUNS[cyc(PRONOUNS, ni(), 1)].id; } },
+      { icon: '💇', label: 'Haare', value: () => (typeof s.flags.hair === 'number' && (s.flags.hair as number) >= 0 ? `${(s.flags.hair as number) + 1} / ${HAIRS.length}` : 'Natur'), left: () => { s.flags.hair = hairStep(-1); this.apply(); }, right: () => { s.flags.hair = hairStep(1); this.apply(); } },
+      { icon: '💬', label: 'Pronomen', value: () => PRONOUNS[ni()].label, left: () => { s.pronouns = PRONOUNS[cyc(PRONOUNS, ni(), -1)].id; this.apply(); }, right: () => { s.pronouns = PRONOUNS[cyc(PRONOUNS, ni(), 1)].id; this.apply(); } },
+      { icon: '👙', label: 'Outfit', value: () => outfits()[oi()].name, left: () => { s.flags.outfit = outfits()[cyc(outfits(), oi(), -1)].id; this.apply(); }, right: () => { s.flags.outfit = outfits()[cyc(outfits(), oi(), 1)].id; this.apply(); } },
       { icon: '✨', label: 'Los geht’s!', sub: 'Ab nach Rainbow City', big: true, fn: () => { if (!s.name.trim()) s.name = 'Alex'; this.done(); } },
     ]);
     this.menu.onBack = () => this.cancel();
@@ -76,7 +79,7 @@ export class CreatorScene implements GameScene {
     const s = this.g.save.data; s.body = id;
     if (this.busy) return; this.busy = true;
     let a = this.actors.get(id);
-    if (!a) { a = await Actor.create({ body: id, palette: s.palette, skin: s.skin }); a.root.position.y = .3; this.actors.set(id, a); }
+    if (!a) { a = await Actor.create(playerLook({ ...s, body: id })); a.root.position.y = .3; this.actors.set(id, a); }
     this.busy = false;
     if (this.actor) this.root.remove(this.actor.root);
     this.actor = a; this.root.add(a.root);
@@ -85,7 +88,7 @@ export class CreatorScene implements GameScene {
   }
   private apply() {
     const s = this.g.save.data;
-    this.actor?.setLook({ palette: s.palette, skin: s.skin, cape: !!s.flags.cape, hat: !!s.flags.hat });
+    this.actor?.setLook(playerLook(s));
     this.menu?.render(); sfx('move');
   }
 
