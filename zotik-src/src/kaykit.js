@@ -4,6 +4,7 @@
    Bis die Dateien geladen sind, bleibt die Gruppe leer – nichts hängt davon ab. Gezeichnet mit Cel-Shading wie die übrigen Figuren. */
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { SkeletonUtils } from 'three/examples/jsm/utils/SkeletonUtils.js';
+import { qualify, QCLIP } from './quat.js';
 const skClone = o => SkeletonUtils.clone(o);
 
 export function createKayKit({ T, G, TOUCH }) {
@@ -46,6 +47,7 @@ export function createKayKit({ T, G, TOUCH }) {
   }
   /** Figur: o.h Zielhöhe (m), o.r / o.l Requisit in der rechten/linken Hand, o.tint Farbton (0..1 Mischung o.tk), o.hide RegExp: Teile ausblenden (Helm, Hut, Umhang …), o.pal Farben je Rolle (siehe recolor), o.deco(P, modell) hängt Zubehör an die Knochen */
   function char(id, o = {}) {
+    if (/^ad_/.test(id) && !o.kay) return qchar(id, o);   // alle Menschen-Figuren: Quaternius-Rig mit Rollen-Look (Zotik selbst ist ein Fuchs und bleibt eigen)
     const root = new T.Group(), P = { root, id, ready: false, mixer: null, act: {}, cur: '', want: 'Idle_A', once: null, swing: 0, bones: {}, speed: 1 };
     Promise.all([load(id), anims(), (o.r || o.l) ? load('props') : null]).then(([g, cl]) => {
       const c = skClone(g.scene); dress(c, true);
@@ -63,6 +65,69 @@ export function createKayKit({ T, G, TOUCH }) {
       P.mixer.addEventListener('finished', () => { P.once = null; play(P, P.want, .15); });
       P.ready = true; play(P, P.want, 0);
     }).catch(() => { });
+    LIVE.add(P); return P;
+  }
+  /* ===== Quaternius-Figuren: ein geteiltes Basismodell, je Rolle andere Farben und Zubehör (quat.js) ===== */
+  const QS = qualify(T, G, TOUCH); let qfile = null, qH = 0;
+  const qrload = () => qfile || (qfile = new Promise((res, rej) => new GLTFLoader().load('models/qr/qr.glb', res, null, rej)));
+  const SKIN = [0xf1c9a5, 0xe8b898, 0xd9a07a, 0xc08a62, 0x9a6a46], HAIR = [0x2a1c16, 0x5a3a22, 0x8a5a2a, 0xc89a4a, 0xa8481e, 0x3a3a48], ACCENT = [0xe8c040, 0xc8ccd6, 0xd8804a];
+  const lum = c => ((c >> 16 & 255) * .3 + (c >> 8 & 255) * .59 + (c & 255) * .11);
+  const shade = (c, k) => { const r = Math.min(255, (c >> 16 & 255) * k) | 0, g = Math.min(255, (c >> 8 & 255) * k) | 0, b = Math.min(255, (c & 255) * k) | 0; return r << 16 | g << 8 | b; };
+  /* KayKit-Requisitname → Zubehör (Quaternius-Look, eigene Formen) */
+  const WEAP = [[/staff/, 'stab'], [/sword|dagger|axe|hammer/, 'schwert'], [/shield/, 'schild'], [/bow/, 'bogen'], [/spellbook|book/, 'buch']];
+  /* Märchenfiguren nach der gemeinfreien Buchvorlage: Name → Zubehör [Platz, Teil, Farbe, Farbe2, Größe] */
+  const NAMED = [[/Haken|Hook|Kapitän/, [['head', 'dreispitz', 0x2a2a38, 0xe8c040, 1.55], ['head', 'bart', 0x1a1410, 0, 1.55], ['handR', 'saebel', 0xdde4ee, 0, 1]]],
+    [/Peter Pan|Slightly|Nibs|Tootles|^John$|Michael/, [['head', 'muetze', 0x4a9a3a, 0, 1.55], ['head', 'feder', 0xe84a3a, 0, 1.55]]],
+    [/Pinocchio/, [['head', 'muetze', 0xf4f0e8, 0, 1.55], ['head', 'nase', 0xd9a060, 0, 1.55]]], [/Geppetto|Brummelbart|Erzbart/, [['head', 'bart', 0xeeeeee, 0, 1.55], ['head', 'muetze', 0x8a6a4a, 0, 1.55]]],
+    [/Quasimodo|Clopin|Gringoire/, [['head', 'kapuze', 0x6a5232, 0, 1.55]]], [/Little John|Robin|Jäger/, [['head', 'kapuze', 0x3a6a2a, 0, 1.55], ['head', 'feder', 0xe8d040, 0, 1.55], ['handL', 'bogen', 0x7a4a20, 0, 1]]],
+    [/Artus|König|Sultan|Herzkönig|Meerkönig|Herzogin|Weiße Königin|Prinzessin|Eurystheus|Augias/, [['head', 'krone', 0xffd34d, 0, 1.55], ['back', 'cape', 0x8a2a2a, 0xffd34d, 1]]],
+    [/Merlin/, [['head', 'spitzhut', 0x3a4aa0, 0xffd34d, 1.55], ['head', 'bart', 0xeeeeee, 0, 1.55], ['handR', 'stab', 0x7a5a30, 0x60e0ff, 1]]],
+    [/Sir |Phoebus|Lancelot|Mulan|Feldherr|Kampfgefährte/, [['head', 'helm', 0xb8c0d0, 0xc03030, 1.55], ['torso', 'ruestung', 0xb8c0d0, 0xffd34d, 1], ['handR', 'schwert', 0xdde4ee, 0x8a6a30, 1]]],
+    [/Großwesir|Sultan|Idris|Aladdin/, [['head', 'turban', 0xf0e8d8, 0xe84a8a, 1.55]]], [/Hutmacher/, [['head', 'zylinder', 0x3a2a4a, 0xe8c040, 1.55]]],
+    [/Märzhase|Kaninchen/, [['head', 'langohr', 0xf4f0e8, 0, 1.55]]], [/Grinsekatze|Kater/, [['head', 'katzenohr', 0x9a6ac8, 0, 1.55]]], [/Alice/, [['head', 'schleife', 0x4a8ae8, 0, 1.55], ['torso', 'schuerze', 0xffffff, 0, 1]]],
+    [/Fee/, [['back', 'fluegel', 0xa0f8ff, 0, 1], ['head', 'spitzohren', 0xf6dcc8, 0, 1.55]]], [/Wendy|Tigerlilie/, [['head', 'schleife', 0xe84a8a, 0, 1.55]]], [/Mowgli|Hathi|Baloo|Bagheera|Akela/, [['hips', 'guertel', 0x7a4a20, 0xe8c040, 1]]]];
+  function qchar(id, o = {}) {
+    const root = new T.Group(), P = { root, id, q: true, ready: false, mixer: null, act: {}, cur: '', want: 'Idle_A', once: null, swing: 0, bones: {}, speed: 1 };
+    qrload().then(g => {
+      const c = skClone(g.scene), tint = o.tint, pl = o.pal || {};
+      if (!qH) { g.scene.updateMatrixWorld(true); const b = new T.Box3().setFromObject(g.scene); qH = Math.max(.5, b.max.y - b.min.y); }
+      const s = (o.h || 1.7) / qH; c.scale.multiplyScalar(s);
+      const hs = [...id + (pl.top || tint || 0) + (o.h || 0)].reduce((a, ch) => a * 31 + ch.charCodeAt(0) | 0, 7) >>> 0;
+      const top = pl.top ?? tint ?? 0x8a7a6a, top2 = pl.top2 ?? shade(top, .6), pants = pl.pants ?? shade(top2, .7), acc = ACCENT[hs % 3];
+      const hair = pl.hair ?? HAIR[hs % 6], skin = pl.skin ?? SKIN[(hs >> 3) % 5];
+      const female = /ad_(ma|ro|rh)/.test(id);
+      QS.paint(c, { hair, skin, under: lum(top) > 150 ? shade(top, .7) : 0xf0ecdc, top, pants, detail: acc, boots: shade(pants, .5), cloth: top2 });
+      const bones = {}; c.traverse(b => { if (b.isBone) bones[b.name] = b; }); P.bones = bones;
+      const hid = o.hide || /^$/, hide = n => hid.test(n);
+      const root3 = new T.Group(); root3.add(c); const tmp = new T.Group(); root.add(root3); root.updateMatrixWorld(true);
+      /* Zubehör im Figurenraum (Meter) platzieren, dann an den Knochen hängen (attach behält die Weltlage) */
+      const wear = (slot, obj, sc, rx) => { const b = bones[QS.BONE[slot]]; if (!b || !obj) return null; const wp = new T.Vector3(); b.getWorldPosition(wp); root.add(obj); obj.position.copy(root.worldToLocal(wp)); const off = QS.POS[slot] || [0, 0, 0]; obj.position.x += off[0]; obj.position.y += off[1] * (o.h || 1.7) / 1.8; obj.position.z += off[2];
+        if (sc) obj.scale.setScalar(sc * (o.h || 1.7) / 1.8); if (rx) obj.rotation.x = rx; root.updateMatrixWorld(true); b.attach(obj); return obj; };
+      const A = QS.ACC;
+      if (id === 'ad_ma' && !hide('Hat')) wear('head', A.spitzhut(top2, acc), 1.55);
+      if (id === 'ad_ma') { wear('back', A.cape(top2, acc)); wear('hips', A.rock(top2)); }
+      if (id === 'ad_ro') { wear('hips', A.rock(shade(top2, 1.1))); wear('head', A.schleife(acc), 1.55); wear('torso', A.schuerze(shade(top, 1.2))); }
+      if (id === 'ad_rh') { if (!hide('Mask')) wear('head', A.kapuze(top2), 1.55); if (!hide('Cape')) wear('back', A.cape(top2, acc)); wear('hips', A.rock(shade(top2, .9))); }
+      if (id === 'ad_kn') { if (!hide('Helmet')) wear('head', A.helm(0xb8c0d0, 0xc03030), 1.55); wear('torso', A.ruestung(0xb8c0d0, acc)); if (!hide('Cape')) wear('back', A.cape(top, acc)); }
+      if (id === 'ad_ba') { wear('head', A.bart(shade(hair, .8)), 1.55); wear('hips', A.guertel(0x5a3a22, acc)); if (!hide('BearHat')) wear('head', A.muetze(shade(top2, .8)), 1.55); }
+      if (id === 'ad_ra') { if (!hide('Cape')) { wear('head', A.kapuze(shade(top, .8)), 1.55); wear('back', A.cape(shade(top, .7), acc)); } wear('hips', A.guertel(0x5a3a22, acc)); if (lum(hair) > 200 && (o.h || 1.7) > 1.7) wear('head', A.bart(hair), 1.55); }
+      if (o.name) for (const [re, L] of NAMED) if (re.test(o.name)) { for (const [sl, kk, c1, c2, sc] of L) wear(sl, A[kk](c1, c2 || undefined), sc); break; }
+      const v = o.v || {};   // Hinweise aus folkNpc: hood, hat, beard, apron – Männer bekommen je Figur eine eigene Kopfbedeckung/Bart
+      if (v.hood && id !== 'ad_rh') wear('head', A.kapuze(shade(v.cloth ?? top, .8)), 1.55);
+      if (v.hat && id !== 'ad_ma') wear('head', A.muetze(shade(v.cloth2 ?? top2, 1.0)), 1.55);
+      if (v.beard && id !== 'ad_ba') wear('head', A.bart(shade(hair, .85)), 1.55);
+      if (v.apron != null) wear('torso', A.schuerze(v.apron), 1);
+      if (!o.name || !NAMED.some(n => n[0].test(o.name))) if (!female && !v.hood && !v.hat && !v.beard && id !== 'ad_kn' && id !== 'ad_ba') { const k = (hs >> 6) % 5; if (k === 0) wear('head', A.muetze(shade(top2, 1.1)), 1.55); else if (k === 1) wear('head', A.bart(shade(hair, .85)), 1.55); else if (k === 2) wear('head', A.dreispitz(shade(top2, .6), acc), 1.55); else if (k === 3) wear('torso', A.kragen(shade(top, 1.3)), 1); }
+      for (const sl of ['r', 'l']) { const nm = o[sl]; if (!nm) continue; const m = WEAP.find(w => w[0].test(nm)); if (!m) continue; wear(sl === 'r' ? 'handR' : 'handL', A[m[1]](m[1] === 'stab' ? 0x7a5a30 : m[1] === 'schild' ? top : m[1] === 'bogen' ? 0x7a4a20 : 0xdde4ee, m[1] === 'schild' ? acc : m[1] === 'stab' ? 0x60e0ff : 0x8a6a30), 1, m[1] === 'schwert' || m[1] === 'schild' ? .9 : 0); }
+      if (o.deco) { const a = new T.Group(); wear('head', a, .55); a.position.y += 0; P.bones.head = a; o.deco(P, c); }
+      root.remove(root3); root.add(c);
+      P.mixer = new T.AnimationMixer(c);
+      const cl = Object.fromEntries(g.animations.filter(a => !a.name.includes('|')).map(a => [a.name, a])), used = new Set();
+      for (const n in QCLIP) { let a = cl[QCLIP[n]]; if (!a) continue; if (used.has(a.name)) a = a.clone(); used.add(a.name); P.act[n] = P.mixer.clipAction(a); }
+      for (const n of ['Death_A', 'Hit_A', 'Spawn_Ground', 'Throw', 'Use_Item', 'Interact']) if (P.act[n]) { P.act[n].setLoop(T.LoopOnce, 1); P.act[n].clampWhenFinished = true; }
+      P.mixer.addEventListener('finished', () => { P.once = null; play(P, P.want, .15); });
+      P.ready = true; play(P, P.want, 0);
+    }).catch(e => console.warn('Quaternius-Figur', id, e && e.message));
     LIVE.add(P); return P;
   }
   /** Bestie (Quaternius „Bestiary“, im Spiel frei nutzbar): Imp, Puglin – ohne mitgelieferte Bewegungen, daher prozedural über die Knochen.
