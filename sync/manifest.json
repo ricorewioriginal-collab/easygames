@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c233b58af1d5",
- "generated": "2026-11-16T19:10:44+01:00",
- "commit": "8023789e67a5523d83a862bbfe16da9c4f832fe5",
+ "version": "4a95a8b9d7b3",
+ "generated": "2026-11-16T18:11:10+00:00",
+ "commit": "0d4c74d76ac035cf0fd8735a80fed0df9061d7aa",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8308,8 +8308,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/render.js",
-   "s": 25534,
-   "h": "4b83a991928fb87e675be2970f3f693eb104cd15b6148bb530b69b99de0d0b88"
+   "s": 28503,
+   "h": "fc86116508bbfe57862f556484ef7e1e352f1997ec125c87cebbdd9c55515975"
   },
   {
    "p": "anmacha-urwaldlager/js/show.js",
@@ -8470,6 +8470,46 @@
    "p": "anmacha-urwaldlager/sw.js",
    "s": 1999,
    "h": "5840e53f03e5144cdee8e86c2f3efb94fccc879080ad7f06966ef10f4b93c658"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/bark.jpg",
+   "s": 69663,
+   "h": "bd003bd65be18ae0750f2b26f216f0b7015c2c758ed76e3a6507be9bdef90ce1"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/ground-dirt.jpg",
+   "s": 66202,
+   "h": "ac49852bf8a4e4e4e2da79a6d8f068aded4eb4e0f6da3ca396d077338af4d65a"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/ground-grass.jpg",
+   "s": 76192,
+   "h": "798393c82c4b5d640ab1b524b863277a666d476990720ce0fb991fb40ddd8174"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/sky-day.jpg",
+   "s": 80538,
+   "h": "3733dad817802ed57763dad8d050a7ff06db25fe1c398b80c9840c1710e5cece"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/sky-evening.jpg",
+   "s": 21634,
+   "h": "429eb23321d5617cac4e96cf1a184d2033d64f6ca45bc94590929c8ee8cd4d79"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/sky-night.jpg",
+   "s": 106684,
+   "h": "9c38a9ee0a67183038d626fe2416115ca4d6b9a2fb12c08ad02c08ee6d2482cb"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/studio-floor.jpg",
+   "s": 63154,
+   "h": "2e96f3170286cfa231028d472188572b8b81b19298ed212756b23570aa96a3f1"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/wood.jpg",
+   "s": 30902,
+   "h": "a7d31f39db23cc3689c0bd07e6ac071558fa3b214dbe17099979aeb0c1d9b994"
   },
   {
    "p": "anmacha-urwaldlager/vendor/GLTFLoader.js",
@@ -15394,7 +15434,7 @@
   {
    "p": "sync/catalog.json",
    "s": 241388,
-   "h": "89dea3a2f96b9868ed929d3cf4a6f96bcb710135778214816052673759feb9f8"
+   "h": "0960fce23efe818fccccbd760ae5ed41c87d246c4302a181de608b8f8bbd8e52"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

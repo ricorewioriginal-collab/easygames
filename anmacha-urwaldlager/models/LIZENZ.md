@@ -12,5 +12,7 @@ Die Dateien wurden mit `tools/make-urwaldlager-assets.mjs` (gltf-transform) zusa
 | `set.glb` – `kf_*`, `kk_*` | Sofa, Sessel, Lampe, Tische, Bank, Laterne | KayKit Furniture Bits, City Builder Bits – Kay Lousberg | CC0 |
 | `tiere/crab.glb`, `frog.glb`, `bat.glb`, `bee.glb` | Tiere für Prüfungen | Quaternius (quaternius.com), über das npm-Paket `@netforge/asset-library-files` 0.2.0 | CC0 |
 
+Texturen (Himmel, Böden, Holz): Poly Haven, CC0 – siehe [`../textures/LIZENZ.md`](../textures/LIZENZ.md).
+
 Alles andere (Studio, Prüfungsaufbauten, Wasser, Feuer, Schilder, Logo) ist im Code erzeugt bzw. eigens für dieses Spiel gezeichnet.
 three.js r128 (`vendor/`) steht unter MIT-Lizenz.
