@@ -10,7 +10,8 @@ html, body { margin: 0; width: 100vw; height: 100dvh; overflow: hidden; backgrou
 #gl { position: fixed; inset: 0; width: 100vw; height: 100dvh; display: block; outline: none; }
 #ui { position: fixed; inset: 0; pointer-events: none; }
 #ui > * { pointer-events: auto; }
-#ui > .tui, #ui > .tint, #ui > .shout, #ui > .flash { pointer-events: none; }   /* Prüfungs-Einblendungen dürfen Stick und Knöpfe nie blockieren */
+#ui > .tui, #ui > .tint, #ui > .shout, #ui > .flash, #ui > .crawl { pointer-events: none; }
+.crawl { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 27; }   /* Prüfungs-Einblendungen dürfen Stick und Knöpfe nie blockieren */
 button { font: inherit; color: inherit; }
 [hidden] { display: none !important; }
 
@@ -247,3 +248,16 @@ kbd.g-switch { background: #2b2b30; color: #fff; border-color: #777; }
 .gobar { position: sticky; bottom: -22px; margin: 16px -22px -22px; padding: 12px 22px 16px; background: linear-gradient(180deg, rgba(5, 20, 12, 0), rgba(5, 20, 12, .97) 30%); }
 @media (max-width: 560px) { .gobar { bottom: -16px; margin: 12px -16px -16px; padding: 10px 16px 14px; } }
 @media (max-height: 460px) { .gobar { bottom: -14px; margin: 10px -14px -14px; padding: 8px 14px 12px; } }
+/* Neue Prüfungen: Fadenkreuz (Ekel-Box), Ansagen und Augenbinde (Blindfahrt) */
+.tui .reticle { position: fixed; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border: 3px solid #fff8; border-radius: 50%; box-shadow: 0 0 0 2px #0006; }
+.tui .reticle.on { border-color: var(--gold); transform: scale(1.15); }
+.tui .reticle.bad { border-color: #ff4a4a; }
+.tui .bar { display: inline-block; vertical-align: middle; width: 90px; height: 8px; border-radius: 8px; background: #fff3; overflow: hidden; }
+.tui .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--green), var(--gold)); }
+.callout { display: inline-block; padding: 12px 22px; border-radius: 18px; background: rgba(10, 30, 20, .92); border: 3px solid var(--gold); font: 900 clamp(22px, 6vw, 40px)/1.1 system-ui; color: #fff; text-shadow: 0 3px 0 #0008; margin-bottom: 8px; }
+.callout.go { background: rgba(40, 140, 60, .95); }
+.callout.warn { background: rgba(170, 30, 30, .95); animation: shake .25s infinite; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
+.blindfold { opacity: 0; transition: opacity .6s; }
+.blindfold.on { background: radial-gradient(ellipse at 50% 55%, rgba(0, 0, 0, .8) 0, #000 34%); }
+.blindfold.on.mud { background: radial-gradient(ellipse at 50% 50%, rgba(70, 40, 10, .9) 0, #2a1606 50%); }

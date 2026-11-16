@@ -2677,7 +2677,7 @@
   {
    "id": "anmacha-urwaldlager",
    "title": "Urwaldlager",
-   "desc": "Die Promi-Show in 3D – im Dschungel oder im TV-Studio: Die Zuschauer schicken dich in neun Urwaldprüfungen, du sammelst Sterne fürs Essen, hältst das Camp am Laufen, überstehst die Auszüge und kämpfst im Finale um die Krone. Für Handy, PC, TV und Controller.",
+   "desc": "Die Promi-Show in 3D – im Dschungel oder im TV-Studio: Die Zuschauer schicken dich in dreizehn Urwaldprüfungen, du sammelst Sterne fürs Essen, hältst das Camp am Laufen, überstehst die Auszüge und kämpfst im Finale um die Krone. Für Handy, PC, TV und Controller.",
    "icon": "🌴",
    "img": "anmacha-urwaldlager/card.jpg",
    "bg": "linear-gradient(145deg,#0f3a2a,#2ea84d 50%,#ffcf4a)",
@@ -2693,12 +2693,12 @@
      "Handy: Stick links laufen, rechts wischen = Kamera, grüne Taste = Aktion, zweite Taste = Ducken/Springen, Kommandos antippen; hoch und quer spielbar."
     ],
     "tipps": [
-     "Jede Prüfung erklärt vorher ihre Steuerung – üben kannst du alle neun unter „Prüfungen spielen“.",
+     "Jede Prüfung erklärt vorher ihre Steuerung – üben kannst du alle dreizehn unter „Prüfungen spielen“.",
      "Wer im Camp hilft, gewinnt Sympathie; Lästern bringt Unterhaltung, kostet aber Freunde."
     ]
    },
-   "size": 4576231,
-   "files": 41,
+   "size": 4632556,
+   "files": 45,
    "offline": true,
    "cloud": {
     "game": "urwaldlager",

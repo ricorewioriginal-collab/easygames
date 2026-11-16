@@ -59,6 +59,7 @@
         const now = ctx.t; if (now - (ctx._dr || -9) < 0.9) return; ctx._dr = now;
         const k = kind || UL.pick(['scream', 'yuck', 'ugh']);
         UL.Audio.sfx(k); Tr.shout(UL.pick(SHOUT[k] || SHOUT.scream), k === 'yuck' ? 'green' : 'red');
+        if (k !== 'ugh' && !impl.noCrawl) Tr.crawl(2 + Math.floor(Math.random() * 3));
         if (stage.env && stage.env.cheer !== undefined && Math.random() < 0.6) { UL.Audio.sfx('ooh'); }
         if (ctx.hosts && Math.random() < 0.35) { const h = UL.pick(ctx.hosts); h.play(Math.random() < 0.5 ? 'cheer' : 'interact'); if (Math.random() < 0.5) UL.Audio.sfx('laugh'); }
       },
@@ -126,7 +127,7 @@
     UL.Trials.current = ctx;
 
     async function finish() {
-      UL.Trials.current = null;
+      UL.Trials.current = null; Tr.crawlClear();
       UI.hint({}); document.getElementById('meter').hidden = true;
       if (impl.finish) try { impl.finish(ctx); } catch (e) { console.error(e); }
       if (ctx.ui) { ctx.ui.remove(); ctx.ui = null; }
@@ -155,6 +156,69 @@
     const f = document.createElement('div'); f.className = 'flash ' + tone; ui.appendChild(f); setTimeout(() => f.remove(), 450);
     const s = document.createElement('div'); s.className = 'shout ' + tone; s.textContent = text; s.style.left = (30 + Math.random() * 40) + '%'; ui.appendChild(s); setTimeout(() => s.remove(), 1300);
   };
+
+  // ---------- Ekel-Gekrabbel über den Bildschirm (Kakerlaken, Spinnen, Maden) ----------
+  // Tr.crawl(n, Arten) lässt Tiere übers Bild krabbeln; günstig: eine 2D-Leinwand, läuft nur solange Tiere da sind
+  let cv = null, cx = null, bugs2 = [], raf = 0, lastT = 0;
+  const KINDS = ['roach', 'spider', 'maggot', 'roach', 'beetle'];
+  function drawBug(g, b, t) {
+    const s = b.s, w = Math.sin(t * b.ws + b.ph);
+    g.save(); g.translate(b.x, b.y); g.rotate(b.a);
+    g.lineCap = 'round';
+    if (b.k === 'maggot') {
+      g.fillStyle = '#efe0b8'; g.strokeStyle = '#b89c6a'; g.lineWidth = s * 0.06;
+      for (let i = 5; i >= 0; i--) { const x = -i * s * 0.22, y = Math.sin(t * 9 + i * 0.9 + b.ph) * s * 0.09; g.beginPath(); g.ellipse(x, y, s * 0.17, s * 0.13, 0, 0, 7); g.fill(); g.stroke(); }
+      g.fillStyle = '#3a2a1a'; g.beginPath(); g.arc(s * 0.12, 0, s * 0.04, 0, 7); g.fill();
+    } else if (b.k === 'spider') {
+      g.strokeStyle = '#140c08'; g.lineWidth = s * 0.06;
+      for (let i = 0; i < 4; i++) for (const sd of [-1, 1]) { const a = (i - 1.5) * 0.45 + w * 0.25 * (i % 2 ? 1 : -1); g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(Math.cos(a) * s * 0.45, sd * s * 0.55, Math.cos(a) * s * 0.8, sd * s * (0.55 + Math.abs(Math.sin(a)) * 0.2)); g.stroke(); }
+      g.fillStyle = '#1e140e'; g.beginPath(); g.ellipse(-s * 0.18, 0, s * 0.3, s * 0.24, 0, 0, 7); g.fill();
+      g.beginPath(); g.ellipse(s * 0.16, 0, s * 0.15, s * 0.13, 0, 0, 7); g.fill();
+      g.fillStyle = '#c0302a'; g.beginPath(); g.arc(s * 0.27, -s * 0.05, s * 0.03, 0, 7); g.arc(s * 0.27, s * 0.05, s * 0.03, 0, 7); g.fill();
+    } else {
+      const col = b.k === 'beetle' ? '#1d3a1a' : '#5a2e12', hi = b.k === 'beetle' ? '#4a8a3a' : '#9a5a2a';
+      g.strokeStyle = '#2a1408'; g.lineWidth = s * 0.045;
+      for (let i = 0; i < 3; i++) for (const sd of [-1, 1]) { const ph = w * (i % 2 ? 1 : -1) * sd * 0.35, x0 = (i - 1) * s * 0.18; g.beginPath(); g.moveTo(x0, 0); g.lineTo(x0 + s * 0.12 + ph * s * 0.3, sd * s * 0.3); g.lineTo(x0 - s * 0.05 + ph * s * 0.4, sd * s * 0.46); g.stroke(); }
+      g.beginPath(); g.moveTo(s * 0.35, -s * 0.05); g.quadraticCurveTo(s * 0.7, -s * 0.3 + w * s * 0.05, s * 0.9, -s * 0.25); g.moveTo(s * 0.35, s * 0.05); g.quadraticCurveTo(s * 0.7, s * 0.3 - w * s * 0.05, s * 0.9, s * 0.25); g.stroke();
+      const gr = g.createLinearGradient(0, -s * 0.2, 0, s * 0.2); gr.addColorStop(0, hi); gr.addColorStop(1, col);
+      g.fillStyle = gr; g.beginPath(); g.ellipse(-s * 0.05, 0, s * 0.36, s * 0.2, 0, 0, 7); g.fill();
+      g.fillStyle = col; g.beginPath(); g.ellipse(s * 0.32, 0, s * 0.1, s * 0.12, 0, 0, 7); g.fill();
+      g.strokeStyle = 'rgba(0,0,0,.35)'; g.beginPath(); g.moveTo(-s * 0.38, 0); g.lineTo(s * 0.22, 0); g.stroke();
+    }
+    g.restore();
+  }
+  function crawlLoop(now) {
+    const dt = Math.min(0.05, (now - lastT) / 1000 || 0.016); lastT = now;
+    const W = cv.width, H = cv.height, t = now / 1000;
+    cx.clearRect(0, 0, W, H);
+    for (let i = bugs2.length - 1; i >= 0; i--) {
+      const b = bugs2[i]; b.life -= dt;
+      b.turn += (Math.random() - 0.5) * 6 * dt; b.turn *= 0.96; b.a += b.turn * dt;
+      if (b.stop > 0) b.stop -= dt; else { b.x += Math.cos(b.a) * b.v * dt; b.y += Math.sin(b.a) * b.v * dt; if (Math.random() < dt * 0.4) b.stop = Math.random() * 0.5; }
+      const out = b.x < -b.s * 2 || b.y < -b.s * 2 || b.x > W + b.s * 2 || b.y > H + b.s * 2;
+      if (out && b.life < 0) { bugs2.splice(i, 1); continue; }
+      if (b.life > 0 && out) { b.a = Math.atan2(H / 2 - b.y, W / 2 - b.x) + (Math.random() - 0.5); }
+      drawBug(cx, b, t);
+    }
+    if (bugs2.length) raf = requestAnimationFrame(crawlLoop); else { raf = 0; cv.hidden = true; }
+  }
+  Tr.crawl = (n = 4, kinds = KINDS, life = 2.5) => {
+    if (UL.settings && UL.settings.noCrawl) return;
+    const ui = document.getElementById('ui'); if (!ui) return;
+    if (!cv) { cv = document.createElement('canvas'); cv.className = 'crawl'; cx = cv.getContext('2d'); }
+    if (cv.parentNode !== ui) ui.appendChild(cv);
+    const k = Math.min(2, devicePixelRatio || 1), W = Math.round(innerWidth * k), H = Math.round(innerHeight * k);
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+    cv.hidden = false;
+    const base = Math.min(W, H) * 0.075;
+    for (let i = 0; i < n && bugs2.length < 40; i++) {
+      const side = Math.floor(Math.random() * 4), x = side === 0 ? -base : side === 1 ? W + base : Math.random() * W, y = side === 2 ? -base : side === 3 ? H + base : Math.random() * H;
+      const k2 = UL.pick(kinds);
+      bugs2.push({ k: k2, x, y, a: Math.atan2(H * (0.3 + Math.random() * 0.4) - y, W * (0.2 + Math.random() * 0.6) - x), turn: 0, v: base * (k2 === 'maggot' ? 0.8 : k2 === 'spider' ? 4 : 3) * (0.7 + Math.random() * 0.6), s: base * (k2 === 'spider' ? 1.3 : k2 === 'maggot' ? 0.9 : 1) * (0.7 + Math.random() * 0.6), ws: k2 === 'spider' ? 22 : 30, ph: Math.random() * 6, stop: 0, life: life * (0.6 + Math.random() * 0.8) });
+    }
+    if (!raf) { lastT = performance.now(); raf = requestAnimationFrame(crawlLoop); }
+  };
+  Tr.crawlClear = () => { bugs2.length = 0; if (cv) { cx.clearRect(0, 0, cv.width, cv.height); cv.hidden = true; } };
 
   // ---------- Bausteine für mehrere Prüfungen ----------
   // Verfolgerkamera hinter einer Figur
