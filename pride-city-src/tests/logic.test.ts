@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { migrate, fromGayLife, defaults } from '../src/engine/Save';
-import { goal, talk, poi, danceResult, storyTick, hidden, marks, lichtPart, lichtLight, type StoryCtx } from '../src/game/story';
+import { goal, talk, poi, danceResult, storyTick, hidden, marks, lichtPart, lfPart, lfGlow, lichtLight, type StoryCtx } from '../src/game/story';
 import { LICHT_CHAPTERS, lichtMax } from '../src/game/licht';
+import { LF_CHAPTERS, lfMax } from '../src/game/leuchtfeuer';
 import type { Line } from '../src/ui/ui';
 import { PALETTES, BODIES } from '../src/game/palettes';
 
@@ -95,6 +96,9 @@ describe('Story', () => {
       card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>,
     };
     expect(hidden(defaults(), 'leon')).toBe(true);
+    for (let k = 0; k < 8; k++) { talk(c, 'leon'); await new Promise((r) => setTimeout(r, 80)); }
+    expect(lichtPart(s)).toBe(3); // Kapitel 2 gibt nur die ersten Rückblenden frei
+    s.chapter = 6;
     talk(c, 'leon'); await new Promise((r) => setTimeout(r, 100));
     expect(s.flags.lichtIntro).toBe(true);
     for (let k = 0; k < 30 && lichtPart(s) < LICHT_CHAPTERS.length; k++) { talk(c, 'leon'); await new Promise((r) => setTimeout(r, 80)); }
@@ -103,5 +107,26 @@ describe('Story', () => {
     expect(s.flags.luma_dress).toBeTruthy();
     expect(['licht', 'glanz', 'funke']).toContain(s.flags.lichtEnd);
     expect(lichtLight(s)).toBeLessThanOrEqual(lichtMax());
+  });
+
+  it('erzählt „Leuchtfeuer“ als Rückblenden bis zum Ende', async () => {
+    const s = defaults(); s.chapter = 2;
+    const c: StoryCtx = {
+      s, toast: () => {}, hour: () => 12, skipToHour: () => {}, enterHome: (a) => a?.(), credits: () => {},
+      say: (lines: Line[], done) => { for (const l of lines) { l.choices?.[0]?.fn?.(); if (typeof l.text === 'function') l.text(); } done?.(); },
+      reward: (m, r) => { s.money += m; s.rep += r; }, step: () => {}, chapterDone: () => {}, barShift: (d) => d?.(), dance: () => {},
+      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>,
+    };
+    expect(hidden(defaults(), 'finn')).toBe(true);
+    for (let k = 0; k < 8; k++) { talk(c, 'finn'); await new Promise((r) => setTimeout(r, 70)); }
+    expect(lfPart(s)).toBe(4);
+    s.chapter = 4;
+    for (let k = 0; k < 12; k++) { talk(c, 'finn'); await new Promise((r) => setTimeout(r, 70)); }
+    expect(lfPart(s)).toBe(12);
+    s.chapter = 6;
+    for (let k = 0; k < 40 && lfPart(s) < LF_CHAPTERS.length; k++) { talk(c, 'finn'); await new Promise((r) => setTimeout(r, 70)); }
+    expect(lfPart(s)).toBe(LF_CHAPTERS.length);
+    expect(['feuer', 'fenster', 'strahl']).toContain(s.flags.lfEnd);
+    expect(lfGlow(s)).toBeLessThanOrEqual(lfMax());
   });
 });

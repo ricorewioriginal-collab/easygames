@@ -523,19 +523,7 @@ window.EASYGAMES_GUIDES = {
    "Im Radio-Rhythmus ist der höchste Punkt einer Frucht genau auf dem Schlag – dort schneiden!"
   ]
  },
- "leuchtfeuer": {
-  "anleitung": "Das offizielle Spiel zum Roman „Leuchtfeuer“: Du erlebst Finns Schuljahr in Warnholm in 16 Kapiteln in 3D. Lies die Szenen weiter, lauf selbst zu den Zielen (goldener Ring) und triff Entscheidungen – mutige Antworten bringen Leuchtkraft und entscheiden über eines von drei Enden. Dazu fünf Spiele aus dem Buch, auch einzeln im Menü: Leuchtturm (Strahl drehen, Flaschenpost fangen, Kutter leiten), Sturmnacht-Plakat (Teile tauschen und drehen), Zwei mit Zwiebeln (Fischbrötchen nach Bestellung), Gegenwind (drei Spuren über den Deich) und Pia ermittelt (Beweise sammeln, Fall lösen). Außerdem: der ganze Roman mit Illustrationen zum Lesen.",
-  "steuerung": [
-   "Tastatur: W A S D/Pfeile laufen, Shift rennen, Q/E Kamera, Enter weiter/ansehen, Esc/P Pause; Leuchtturm ← → und Leertaste, Plakat Pfeile/Enter/Leertaste, Bude Q F E, Leertaste, Enter, Deich ← → ↑ ↓.",
-   "Touch: Joystick und Aktionsknopf beim Laufen; Leuchtturm übers Bild wischen, Plakat antippen, Bude Knöpfe unten, Deich wischen.",
-   "Gamecontroller: linker Stick laufen, rechter Stick Kamera, A bestätigen/springen, X Aktion, Y/LB/RB Fischsorten, Start Pause."
-  ],
-  "tipps": [
-   "Für das Ende „Leuchtfeuer“ brauchst du 78 % Leuchtkraft – mutige Antworten und Sterne in den Spielen helfen.",
-   "Im Leuchtturm den Lichtblitz für Nebel und weit entfernte Flaschen aufheben.",
-   "Bei Fall 14 alle sechs Beweise suchen, bevor du den Fall löst."
-  ]
- },
+
 
  "wolkenhopser": {
   "anleitung": "Wolkenhopser ist ein Endlos-Springspiel: Hopsi springt von allein, sobald er von oben auf einer Plattform landet – du steuerst nur links und rechts. Wer am Rand rausläuft, kommt auf der anderen Seite wieder rein; wer unten aus dem Bild fällt, verliert. Plattformen: grün normal, blau beweglich, gestrichelt verschwindet nach einem Sprung, braun mit Riss bricht weg. Federn und Trampoline schießen dich hoch, 🧢 Propellermütze und 🚀 Raketenrucksack lassen dich fliegen, 🫧 Schutzblase rettet einmal. Monster besiegst du durch Draufspringen oder Abschießen; schwarze Löcher ziehen dich an. Mit Münzen schaltest du 8 Hopsis frei. Gebiete: Blumenwiese, Wolkenmeer, Abendhimmel, Sternennacht, Weltall. Modi: Spielen, 📅 Tagesrekord (eine Welt pro Tag für alle) und 🌐 Online-Rennen (alle springen gleichzeitig durch dieselbe Welt, jeder auf seinem Gerät; per QR-Code oder Link von überall).",

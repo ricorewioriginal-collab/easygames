@@ -11,13 +11,20 @@ import { CreatorScene } from './CreatorScene';
 import { DanceScene } from './minigames/DanceScene';
 import { World } from './World';
 import { BODIES } from './palettes';
-import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST, lichtPart, lichtLight } from './story';
+import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST, lichtPart, lichtLight, lfPart, lfGlow } from './story';
+import { LF_CHAPTERS, lfEnding, lfPct } from './leuchtfeuer';
 import { LICHT_CHAPTERS, lichtEnding } from './licht';
 import { HomeScene } from './HomeScene';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage, level } from './jobs';
 import { photo } from './Photo';
 import { PROFILES, profileShots, profile, dateRec, dateQuestions, finishDate, canStay, DATE_STAGE, testDue, HEALTH_INFO, GLOSSARY, feed, post, bond, TEST_EVERY, FILMS, WORKERS, isLateNight, canMeet, encounter } from './social';
 import { NEEDS, mood, moodIcon, moodName, change, advance, minutesUntil, track, dailyState, clock, weekday, hour, type Daily } from './life';
+
+type BookId = 'licht' | 'leuchtfeuer';
+const BOOKS: Record<BookId, { title: string; file: string; cover: string; blurb: string }> = {
+  licht: { title: 'Ich bin das Licht', file: 'book/ich-bin-das-licht.json', cover: 'book/cover.jpg', blurb: 'Der Roman von RicoReWi: Leon Sommer, Lady Luma und die One Love Bar. In Pride City erzählt Leon seine Geschichte auch selbst – an der One Love Bar.' },
+  leuchtfeuer: { title: 'Leuchtfeuer', file: 'book/leuchtfeuer.json', cover: 'book/leuchtfeuer.jpg', blurb: 'Der Jugendroman von RicoReWi: Finn und Ben, ein Schuljahr in Warnholm und der Leuchtturm Rotenhorn. In Pride City erzählt Finn die Geschichte selbst – am Leuchtturm auf dem Steg.' },
+};
 
 export class Game {
   engine: Engine;
@@ -272,6 +279,7 @@ export class Game {
         { icon: '🩺', label: 'Gesundheit', sub: testDue(s) ? '⚠️ Test fällig!' : s.health.prep ? 'PrEP aktiv' : 'Tests, PrEP, U=U', fn: () => this.phone('health') },
         { icon: '📚', label: 'Glossar', sub: 'Begriffe aus der Szene', fn: () => this.phone('glossary') },
         { icon: '📖', label: 'Ich bin das Licht', sub: 'Der Roman von RicoReWi – komplett lesen', fn: () => this.book() },
+        { icon: '🗼', label: 'Leuchtfeuer', sub: 'Der Jugendroman von RicoReWi – komplett lesen', fn: () => this.book(-1, 'leuchtfeuer') },
         { icon: '←', label: 'Handy weglegen', fn: close },
       ], close, 'phone');
     } else if (app === 'status') {
@@ -573,6 +581,7 @@ export class Game {
       f.bar ? 'Eigener Club: Leuchtturm am Hafen' : '',
       pick(f.proof, { press: 'Presse', city: 'Bezirksamt', face: 'direkte Konfrontation' }, 'Beweise gegen Glanz'),
       pick(f.role, { speech: 'Rede', float: 'Club-Wagen', dance: 'Vortanzen' }, 'Rolle bei der Pride'),
+      f.lfIntro ? `Leuchtfeuer: ${Math.min(lfPart(s), LF_CHAPTERS.length)}/${LF_CHAPTERS.length} Rückblenden · Leuchtkraft ${lfPct(lfGlow(s))} %${f.lfEnd ? ' · Ende „' + lfEnding(lfGlow(s)).title + '“' : ''}` : '',
       f.lichtIntro ? `Ich bin das Licht: ${Math.min(lichtPart(s), LICHT_CHAPTERS.length)}/${LICHT_CHAPTERS.length} Rückblenden · Licht ${lichtLight(s)}${f.lichtEnd ? ' · Ende „' + lichtEnding(lichtLight(s)).title + '“' : ''}` : '',
     ].filter(Boolean);
     this.openMenu(`<div class="col"><div class="logo" style="font-size:clamp(30px,5vw,52px)"><span class="l1">Story</span><small>Ein Leben in allen Farben</small></div><div class="slot"></div></div>
@@ -773,32 +782,33 @@ export class Game {
     });
   }
 
-  /* ---------- Roman „Ich bin das Licht“ im Handy ---------- */
-  private bookData: { title: string; sections: Array<{ label: string; title: string; p: string[] }> } | null = null;
-  async book(i = -1) {
+  /* ---------- Romane von RicoReWi im Handy („Ich bin das Licht“, „Leuchtfeuer“) ---------- */
+  private bookData: Record<string, { title: string; sections: Array<{ label: string; title: string; p: string[] }> }> = {};
+  async book(i = -1, id: BookId = 'licht') {
+    const B = BOOKS[id], T = B.title, mark = 'book_' + id;
     const s = this.save.data;
     this.touch.show(false);
     const close = () => { this.closeMenu(); this.touch.show(true); };
     const frame = (title: string, body: string) => `<div class="phoneBox book"><div class="ph"><span>${clock(s)}</span><b>${esc(title)}</b><span>📖</span></div>${body}<div class="slot"></div></div>`;
-    if (!this.bookData) {
-      this.openMenu(frame('Ich bin das Licht', '<div class="pbody"><p>Das Buch wird geladen …</p></div>'), [{ icon: '←', label: 'Zurück', fn: close }], close, 'phone');
-      try { this.bookData = await (await fetch('book/ich-bin-das-licht.json')).json(); } catch { this.openMenu(frame('Ich bin das Licht', '<div class="pbody"><p>Das Buch konnte nicht geladen werden. Bitte später nochmal versuchen.</p></div>'), [{ icon: '←', label: 'Zurück', fn: close }], close, 'phone'); return; }
+    if (!this.bookData[id]) {
+      this.openMenu(frame(T, '<div class="pbody"><p>Das Buch wird geladen …</p></div>'), [{ icon: '←', label: 'Zurück', fn: close }], close, 'phone');
+      try { this.bookData[id] = await (await fetch(B.file)).json(); } catch { this.openMenu(frame(T, '<div class="pbody"><p>Das Buch konnte nicht geladen werden. Bitte später nochmal versuchen.</p></div>'), [{ icon: '←', label: 'Zurück', fn: close }], close, 'phone'); return; }
     }
-    const b = this.bookData!, n = b.sections.length;
+    const b = this.bookData[id], n = b.sections.length;
     if (i < 0) {
-      const last = Number(s.flags.bookS || 0);
-      this.openMenu(frame('Ich bin das Licht', '<div class="pbody"><img class="cover" src="book/cover.jpg" alt=""><p>Der Roman von RicoReWi: Leon Sommer, Lady Luma und die One Love Bar. In Pride City erzählt Leon seine Geschichte auch selbst – an der One Love Bar.</p></div>'), [
-        ...(last ? [{ icon: '🔖', label: 'Weiterlesen', sub: `${b.sections[last].label} · ${b.sections[last].title}`, fn: () => this.book(last) }] : []),
-        ...b.sections.map((x, k) => ({ icon: k === last ? '🔖' : '📄', label: x.title, sub: x.label, fn: () => this.book(k) })),
+      const last = Number(s.flags[mark] ?? (id === 'licht' ? s.flags.bookS : 0) ?? 0);
+      this.openMenu(frame(T, '<div class="pbody"><img class="cover" src="${B.cover}" alt=""><p>${B.blurb}</p></div>'), [
+        ...(last ? [{ icon: '🔖', label: 'Weiterlesen', sub: `${b.sections[last].label} · ${b.sections[last].title}`, fn: () => this.book(last, id) }] : []),
+        ...b.sections.map((x, k) => ({ icon: k === last ? '🔖' : '📄', label: x.title, sub: x.label, fn: () => this.book(k, id) })),
         { icon: '←', label: 'Handy weglegen', fn: close }], close, 'phone');
       return;
     }
-    const x = b.sections[i]; s.flags.bookS = i; this.save.write();
+    const x = b.sections[i]; s.flags[mark] = i; this.save.write();
     const body = `<div class="pbody read"><p class="lab">${esc(x.label)}</p><h3>${esc(x.title)}</h3>${x.p.map((t) => (t === '∗ ∗ ∗' ? '<p class="sep">∗ ∗ ∗</p>' : `<p>${esc(t)}</p>`)).join('')}</div>`;
     this.openMenu(frame(x.label, body), [
-      ...(i < n - 1 ? [{ icon: '▶', label: 'Nächstes Kapitel', sub: b.sections[i + 1].title, fn: () => this.book(i + 1) }] : []),
-      ...(i > 0 ? [{ icon: '◀', label: 'Vorheriges Kapitel', sub: b.sections[i - 1].title, fn: () => this.book(i - 1) }] : []),
-      { icon: '☰', label: 'Inhalt', fn: () => this.book() },
+      ...(i < n - 1 ? [{ icon: '▶', label: 'Nächstes Kapitel', sub: b.sections[i + 1].title, fn: () => this.book(i + 1, id) }] : []),
+      ...(i > 0 ? [{ icon: '◀', label: 'Vorheriges Kapitel', sub: b.sections[i - 1].title, fn: () => this.book(i - 1, id) }] : []),
+      { icon: '☰', label: 'Inhalt', fn: () => this.book(-1, id) },
       { icon: '←', label: 'Handy weglegen', fn: close }], close, 'phone');
     this.overlay?.querySelector('.read')?.scrollTo(0, 0);
   }
