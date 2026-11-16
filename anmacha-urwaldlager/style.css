@@ -10,6 +10,7 @@ html, body { margin: 0; width: 100vw; height: 100dvh; overflow: hidden; backgrou
 #gl { position: fixed; inset: 0; width: 100vw; height: 100dvh; display: block; outline: none; }
 #ui { position: fixed; inset: 0; pointer-events: none; }
 #ui > * { pointer-events: auto; }
+#ui > .tui, #ui > .tint, #ui > .shout, #ui > .flash { pointer-events: none; }   /* Prüfungs-Einblendungen dürfen Stick und Knöpfe nie blockieren */
 button { font: inherit; color: inherit; }
 [hidden] { display: none !important; }
 
@@ -76,7 +77,7 @@ kbd.g-switch { background: #2b2b30; color: #fff; border-color: #777; }
 
 /* Fenster */
 #panels { position: absolute; inset: 0; pointer-events: none; }
-.panel { position: absolute; inset: 0; display: grid; place-items: center; padding: calc(14px + var(--safeT)) calc(14px + var(--safeR)) calc(14px + var(--safeB)) calc(14px + var(--safeL)); background: rgba(2, 10, 6, .55); pointer-events: auto; animation: fadeIn .18s; overflow: auto; }
+.panel { position: absolute; inset: 0; display: grid; place-items: center; align-content: safe center; padding: calc(14px + var(--safeT)) calc(14px + var(--safeR)) calc(14px + var(--safeB)) calc(14px + var(--safeL)); background: rgba(2, 10, 6, .55); pointer-events: auto; animation: fadeIn .18s; overflow: auto; }
 .panel.out { opacity: 0; transition: opacity .18s; }
 .panel.clear { background: transparent; }
 @keyframes fadeIn { from { opacity: 0; } }
@@ -95,7 +96,7 @@ kbd.g-switch { background: #2b2b30; color: #fff; border-color: #777; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .row > * { flex: 1; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.set { display: grid; grid-template-columns: 1fr auto; gap: 8px 14px; align-items: center; font: 600 15px system-ui; }
+.set { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 14px; align-items: center; font: 600 15px system-ui; }
 .set input[type=range] { width: 160px; accent-color: var(--gold); }
 .set select, .set input[type=text], .field { padding: 9px 12px; border-radius: 10px; background: #0d2a1c; color: var(--txt); border: 2px solid var(--line); font: 600 15px system-ui; }
 .set .sel, .field.sel { border-color: var(--gold); }
@@ -127,7 +128,7 @@ kbd.g-switch { background: #2b2b30; color: #fff; border-color: #777; }
 .creator { justify-items: end; background: linear-gradient(90deg, transparent 35%, rgba(2, 10, 6, .7)); }
 .creator .box { width: min(500px, 100%); }
 .portrait .creator { justify-items: center; align-content: end; background: linear-gradient(180deg, transparent 32%, rgba(2, 10, 6, .8)); }
-.portrait .creator .box { max-height: 62dvh; }
+.portrait .creator .box { max-height: 58dvh; }
 .swatch { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #fff3; cursor: pointer; flex: 0 0 auto !important; }
 .swatch.on { border-color: #fff; box-shadow: 0 0 0 3px var(--gold); }
 .swatch.sel { outline: 3px solid var(--gold); outline-offset: 2px; }
@@ -226,3 +227,17 @@ kbd.g-switch { background: #2b2b30; color: #fff; border-color: #777; }
 .flash { position: absolute; inset: 0; pointer-events: none; z-index: 29; animation: flash .45s ease-out forwards; }
 .flash.red { background: radial-gradient(ellipse at center, transparent 35%, rgba(255, 40, 40, .55)); } .flash.green { background: radial-gradient(ellipse at center, rgba(120, 255, 60, .15) 20%, rgba(90, 200, 40, .6)); } .flash.gold { background: radial-gradient(ellipse at center, rgba(255, 210, 60, .25), transparent 60%); }
 @keyframes flash { from { opacity: 1; } to { opacity: 0; } }
+
+/* Handy: Fenster nie übereinander, nichts läuft aus dem Bild */
+.panel.under { visibility: hidden; }
+.panel, .box, .title .menu { touch-action: pan-y; }
+.creator .set { grid-template-columns: auto minmax(0, 1fr); }
+.creator .set .field { width: 100%; min-width: 0; box-sizing: border-box; }
+.tb-start span { max-width: none; overflow: visible; }
+.title { align-content: safe center; }
+@media (orientation: landscape) and (max-height: 540px) {
+  .title { grid-template-columns: minmax(0, auto) minmax(0, 380px); column-gap: 4vw; align-items: center; justify-content: start; }
+  .title .logo { width: min(300px, 36vw); max-height: 70dvh; }
+  .title .menu { margin-top: 0; width: auto; max-height: calc(100dvh - 24px - var(--safeT) - var(--safeB)); overflow: auto; padding: 4px; }
+  .title .btn { padding: 9px 14px; }
+}

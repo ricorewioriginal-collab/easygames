@@ -44,7 +44,7 @@
     if (['Tab', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Backspace'].includes(e.code) && In.enabled) e.preventDefault();
   });
   addEventListener('keyup', e => kd.delete(e.code));
-  addEventListener('blur', () => { kd.clear(); touchBtn.clear(); });
+  addEventListener('blur', () => { kd.clear(); touchBtn.clear(); tapQ.clear(); });
   const canvas = () => document.getElementById('gl');
   let dragging = false;
   addEventListener('mousedown', e => {
@@ -60,11 +60,14 @@
   In.unlock = () => { if (document.pointerLockElement) try { document.exitPointerLock(); } catch (e) { } };
 
   // ---------- Touch ----------
-  const touchBtn = new Set();
+  const touchBtn = new Set(), tapQ = new Set();   // tapQ: kurze Tipper zwischen zwei Bildern gehen nicht verloren
   const stick = { id: null, ox: 0, oy: 0, x: 0, y: 0 }, lookT = { id: null, x: 0, y: 0 };
   let tdx = 0, tdy = 0;
+  // Berührungen auf bedienbaren Flächen (Knöpfe, Fenster, Menü, Antworten) gehören der Oberfläche, alles andere ist Spielfläche
+  const UIHIT = 'button, a, input, select, textarea, label, .panel, #cmd, #cap, .qa, #loading:not(.done), #cloudHold';
   function onTouchStart(e) {
-    if (e.target !== canvas() && !e.target.closest('#touchPad')) return;
+    const tg = e.target && e.target.closest ? e.target : null;
+    if (tg && tg !== canvas() && !tg.closest('#touchPad') && tg.closest(UIHIT)) return;
     setDevice('touch');
     for (const t of e.changedTouches) {
       const left = t.clientX < innerWidth * (UL.portrait() ? 0.5 : 0.45);
@@ -104,7 +107,7 @@
     document.querySelectorAll('[data-b]').forEach(el => {
       if (el._b) return; el._b = 1;
       const b = el.dataset.b;
-      const on = e => { e.preventDefault(); e.stopPropagation(); setDevice('touch'); touchBtn.add(b); el.classList.add('on'); };
+      const on = e => { e.preventDefault(); e.stopPropagation(); setDevice('touch'); touchBtn.add(b); tapQ.add(b); el.classList.add('on'); };
       const off = e => { touchBtn.delete(b); el.classList.remove('on'); };
       el.addEventListener('touchstart', on, { passive: false }); el.addEventListener('touchend', off); el.addEventListener('touchcancel', off);
       el.addEventListener('mousedown', e => { if (e.button === 0) { touchBtn.add(b); el.classList.add('on'); } });
@@ -172,10 +175,11 @@
       const s = st[b];
       const k = KEYS[b].some(c => kd.has(c));
       const p = !!pb[PADI[b]];
-      const t = touchBtn.has(b);
+      const t = touchBtn.has(b) || tapQ.has(b);
       const d = In.enabled && (k || p || t);
       s.p = d && !s.d; s.r = !d && s.d; s.d = d; s.t = d ? s.t + dt : 0;
     }
+    tapQ.clear();
     // Bewegung
     let mx = 0, my = 0;
     if (kd.has('KeyW') || kd.has('ArrowUp')) my -= 1;

@@ -50,14 +50,16 @@
     start(ctx) { ctx.player.set('walk'); },
     update(dt, ctx) {
       const I = ctx.inp, p = ctx.pos, v = ctx.vel, sc = ctx.scene;
-      ctx.yaw -= I.lx * 1.2;
+      // Touch: Stick links/rechts dreht (wie im Tunnel) – der rechte Daumen bleibt frei für Tauchen/Auftauchen
+      const tank = !UL.bot && UL.In.device === 'touch';
+      ctx.yaw -= I.lx * 1.2 + (tank ? I.mx * 1.9 * dt : 0);
       const under = p.y < WY - 0.35;
       // Bewegung relativ zur Kamera
       if (ctx.stun > 0) ctx.stun -= dt;
       else {
         const f = new T.Vector3(Math.sin(ctx.yaw), 0, Math.cos(ctx.yaw)), r = new T.Vector3(f.z, 0, -f.x);
         const acc = 5.5;
-        v.addScaledVector(f, -I.my * acc * dt).addScaledVector(r, -I.mx * acc * dt);
+        v.addScaledVector(f, -I.my * acc * dt).addScaledVector(r, (tank ? 0 : -I.mx) * acc * dt);
         if (I.okD) v.y -= 6 * dt;
         if (I.altD) v.y += 7 * dt;
       }
