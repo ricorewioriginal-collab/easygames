@@ -248,7 +248,7 @@ class Bootstrap(Base):
 
 class SyncBatocera(Base):
     """Modus sync auf Batocera: eigene Offline-Kopie über sync/manifest.json, eigenes System, Updates und neue Spiele."""
-    PICK = ['deluxe-2048', 'mahjong', 'wortgitter']
+    PICK = ['deluxe-2048', 'mahjong', 'saftblitz']
 
     def publish(self, ids):
         """Kleiner „Server“ mit Manifest und Katalog für die gewählten Spiele (echte Dateien aus dem Repository)."""
@@ -334,7 +334,7 @@ class SyncBatocera(Base):
         code, out, err = subprocess_run([sys.executable, os.path.join(cfg_dir, 'emulationstation.py'), 'update'], self.ud)
         self.assertEqual(code, 0, err)
         self.assertIn('Neu bei easygames', out)
-        self.assertTrue(os.path.isfile(os.path.join(content, 'wortgitter', 'index.html')))
+        self.assertTrue(os.path.isfile(os.path.join(content, 'saftblitz', 'index.html')))
         gl = ET.parse(os.path.join(rom, 'gamelist.xml')).getroot().findall('game')
         self.assertEqual(len(gl), 4)
         self.assertEqual(sum(1 for g in gl if g.findtext('favorite') == 'true'), 1)

@@ -1,0 +1,803 @@
+{
+ "id": "wortspiele",
+ "handbuch": [
+  {
+   "t": "Die Wortspiele im Überblick",
+   "p": [
+    "Wortspiele bündelt vier Wortspiele in einem Spiel. Im Startmenü wählst du aus, welches du spielen möchtest. Jedes Spiel behält seine eigenen Regeln, Einstellungen, Bestwerte und Spielstände; mit „← Wortspiele“ kehrst du jederzeit ins Startmenü zurück."
+   ],
+   "list": [
+    "Wortfunk",
+    "Wortgitter",
+    "Stadt Land Plus",
+    "Funkgalgen"
+   ]
+  },
+  {
+   "t": "Wortfunk – Ziel des Spiels",
+   "p": [
+    "Wortfunk ist ein Wortlegespiel für 2 bis 4 Spieler auf einem 15×15-Brett. Jeder hat 7 Buchstabensteine in seiner Bank und legt daraus Wörter waagerecht oder senkrecht aufs Brett, wie im Kreuzworträtsel. Für jedes neue Wort gibt es Punkte. Wer am Ende die meisten Punkte hat, gewinnt.",
+    "Das Wörterbuch kennt fast 400.000 deutsche Wortformen (german-pos-dict von LanguageTool). Erlaubt sind alle Formen: Mehrzahl, Fälle, gebeugte Verben. Namen und Abkürzungen sind nicht erlaubt, ß wird als SS gelegt."
+   ]
+  },
+  {
+   "t": "Wortfunk – Start und Menü",
+   "list": [
+    "▶ Weiterspielen: setzt eine gespeicherte Partie an einem Gerät fort.",
+    "🎮 Neues Spiel: 2 bis 4 Plätze einrichten. Jeder Platz ist ein Mensch oder ein Computer (leicht, mittel, schwer), frei gemischt. Mit ＋ Spieler kommt ein Platz dazu. Mehrere Menschen spielen abwechselnd an diesem Gerät. Die Computer heißen Rita Radio, DJ Bit, Funky Fred und Lexi Loop.",
+    "🌐 Online & Handys: Raum eröffnen oder beitreten (siehe unten).",
+    "📖 Anleitung und ⚙️ Einstellungen: Ton, „Punkte schon beim Legen anzeigen“ und „💡 Tipps erlauben (3 pro Partie)“.",
+    "Unter dem Menü stehen deine Statistik: Bestwert, Siege, Partien und dein bestes Wort mit Punkten.",
+    "Solange das Wörterbuch lädt („Wörterbuch wird geladen …“), kann noch nicht gelegt werden."
+   ]
+  },
+  {
+   "t": "Wortfunk – Regeln im Detail",
+   "list": [
+    "Zu Beginn zieht jeder 7 Steine aus dem Beutel. Nach jedem Zug wird die Bank wieder auf 7 aufgefüllt, solange der Beutel reicht (oben zeigt 👜 die Zahl der Steine im Beutel).",
+    "Alle Steine eines Zuges müssen in einer Reihe oder Spalte liegen, ohne Lücke dazwischen (bereits liegende Steine dürfen die Lücke füllen).",
+    "Das erste Wort muss über den Stern ★ in der Mitte gehen und mindestens zwei Buchstaben haben. Der Stern verdoppelt das erste Wort.",
+    "Jedes weitere Wort muss an vorhandene Steine anschließen – durch Kreuzen, Verlängern oder Anlegen.",
+    "Alle neu entstandenen Wörter (das Hauptwort und alle Querwörter) müssen im Wörterbuch stehen. Sonst meldet das Spiel „Nicht im Wörterbuch: …“ und der Zug wird nicht gelegt – er kostet aber nichts.",
+    "Alle neuen Wörter zählen Punkte, auch die Querwörter.",
+    "Tauschen: Statt zu legen gibst du beliebig viele Steine in den Beutel zurück und ziehst neue. Das geht nur, solange noch mindestens 7 Steine im Beutel sind, und du setzt diese Runde aus.",
+    "Passen: Du lässt den Zug aus."
+   ]
+  },
+  {
+   "t": "Wortfunk – Punkte und Bonusfelder",
+   "list": [
+    "Jeder Buchstabe hat einen Wert, der auf dem Stein steht. Ein Wort zählt die Summe seiner Buchstaben.",
+    "2×B / 3×B: verdoppelt bzw. verdreifacht den Buchstaben auf diesem Feld (24 Felder 2×B, 12 Felder 3×B).",
+    "2×W / 3×W: verdoppelt bzw. verdreifacht das ganze Wort (12 Felder 2×W plus der Stern, 8 Felder 3×W).",
+    "Bonusfelder wirken nur in dem Zug, in dem du sie belegst. Ein Stein auf einem Bonusfeld zählt für alle Wörter, die durch ihn entstehen.",
+    "Alle 7 Steine in einem Zug: +50 Extrapunkte (🎉 im Verlauf).",
+    "Der Joker (leerer Stein, 2 Stück im Spiel) steht für jeden Buchstaben, zählt aber 0 Punkte. Beim Legen fragt das Spiel „Joker – welcher Buchstabe?“."
+   ]
+  },
+  {
+   "t": "Wortfunk – Die Buchstaben",
+   "p": [
+    "Im Beutel liegen 104 Steine mit einer eigenen Verteilung nach Häufigkeit im Deutschen. Werte und Anzahl:"
+   ],
+   "list": [
+    "1 Punkt: A (6), D (4), E (15), I (6), N (9), R (6), S (7), T (6), U (6)",
+    "2 Punkte: G (3), H (4), L (3), M (4), O (3)",
+    "3 Punkte: B (2), W (2)",
+    "4 Punkte: C (2), F (2), K (2)",
+    "5 Punkte: P (1), Z (1)",
+    "6 Punkte: J (1), V (1), Ä (1), Ü (1)",
+    "7 Punkte: Ö (1)",
+    "8 Punkte: X (1)",
+    "10 Punkte: Q (1), Y (1)",
+    "0 Punkte: Joker (2)"
+   ]
+  },
+  {
+   "t": "Wortfunk – Spielende",
+   "list": [
+    "Die Partie endet, wenn ein Spieler alle seine Steine gelegt hat und der Beutel leer ist. Er bekommt die Restpunkte aller anderen dazu, die anderen verlieren ihre Restpunkte.",
+    "Sie endet auch, wenn hintereinander nur gepasst oder getauscht wird: bei 2 Spielern nach 4 Zügen ohne Punkte, bei 3 nach 6, bei 4 nach 8 – also wenn alle zweimal hintereinander nichts gelegt haben. Dann verliert jeder seine Restpunkte.",
+    "Es gewinnt, wer die meisten Punkte hat. Bei Gleichstand heißt es „Unentschieden!“. Danach geht es mit „Nochmal ▶“ in eine neue Partie mit denselben Plätzen oder zurück ins Menü."
+   ]
+  },
+  {
+   "t": "Wortfunk – Bedienung",
+   "list": [
+    "Touch und Maus: Stein in der Bank antippen, dann ein Feld antippen – oder den Stein aufs Feld ziehen. Einen gelegten (noch nicht abgeschickten) Stein antippen nimmt ihn zurück. Steine in der Bank lassen sich durch Ziehen umsortieren. ✓ Legen schickt den Zug ab. Auf kleinen Bildschirmen vergrößert 🔍 das Brett.",
+    "Knöpfe: ↺ alle Steine zurück, ⇄ Bank mischen, 💡 Tipp, Tauschen, Passen, ☰ Menü (Pause mit Weiter, Anleitung, Ton, Partie beenden).",
+    "Tastatur: Pfeile bewegen den Rahmen auf dem Brett, Buchstaben tippen legt sie nacheinander (Tab wechselt die Richtung → oder ↓), Enter legt den Zug, Rücktaste nimmt den letzten Stein zurück, Entf alle. 1–7 bzw. − / + wählt einen Stein, Leertaste legt ihn ins Feld unter dem Rahmen. 8 = Tauschen, 9 = Mischen, 0 = Tipp, Esc = Menü.",
+    "Gamecontroller: Steuerkreuz bewegt den Rahmen, LB/RB wählt den Stein, A legt bzw. nimmt zurück, X legt den Zug, B nimmt den letzten Stein zurück, LT alle zurück, Y mischt, RT tauscht, Select = Tipp, Start = Menü.",
+    "Ist „Punkte schon beim Legen anzeigen“ an, zeigt eine Vorschau die entstehenden Wörter und Punkte, bevor du ✓ drückst."
+   ]
+  },
+  {
+   "t": "Wortfunk – Mehrere Spieler an einem Gerät",
+   "p": [
+    "Spielen mehrere Menschen an einem Gerät, verdeckt das Spiel vor jedem Zug die Steine: Ein Fenster zeigt „… ist dran“ und den letzten Zug, zum Beispiel „Rita Radio hat … für … Punkte gelegt.“ Reiche das Gerät weiter und tippe auf „Meine Steine zeigen“.",
+    "Partien an einem Gerät werden automatisch im Browser gespeichert und lassen sich über „Weiterspielen“ fortsetzen.",
+    "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+   ]
+  },
+  {
+   "t": "Wortfunk – Online & Handys",
+   "steps": [
+    "Ein Gerät eröffnet den Raum mit „📺 Raum eröffnen“ – am besten der Fernseher oder PC. Er zeigt das Brett für alle.",
+    "Mitspieler treten per Link, QR-Code oder vierstelligem Code von überall bei („Beitreten“). Auf jedem Handy siehst du nur deine eigenen Steine und legst von dort aus.",
+    "Der Gastgeber kann mit „Dieses Gerät spielt mit“ selbst mitspielen und mit „＋ Computer“ Computergegner hinzufügen. Es gibt höchstens 4 Plätze.",
+    "„Spiel starten ▶“ beginnt die Partie. Mit „🔗 Link kopieren“ lässt sich die Einladung verschicken.",
+    "Verliert ein Mitspieler die Verbindung, spielt der Computer für ihn weiter, bis er wieder da ist."
+   ]
+  },
+  {
+   "t": "Wortgitter – Ziel des Spiels",
+   "p": [
+    "Wortgitter ist ein Wischspiel mit Buchstaben. Im quadratischen Gitter liegen zufällige Buchstaben. Du verbindest benachbarte Felder – waagerecht, senkrecht oder schräg – zu deutschen Wörtern. Jedes Feld darf in einem Wort nur einmal vorkommen.",
+    "Ziel ist es, vor Ablauf der Zeit so viele und vor allem so lange Wörter wie möglich zu finden. Längere Wörter bringen deutlich mehr Punkte."
+   ]
+  },
+  {
+   "t": "Wortgitter – Start und Hauptmenü",
+   "p": [
+    "Beim Start lädt das Spiel zuerst das Wörterbuch („Wörterbuch wird geladen …“). Solange das läuft, sind die Stufen, das Tagesgitter und der Online-Knopf noch gesperrt."
+   ],
+   "list": [
+    "4×4 Leicht: Wörter ab 3 Buchstaben, 3 Minuten Zeit.",
+    "5×5 Mittel: Wörter ab 4 Buchstaben, 3½ Minuten Zeit.",
+    "6×6 Schwer: Wörter ab 4 Buchstaben, 4 Minuten Zeit.",
+    "📅 Tagesgitter: jeden Tag ein neues 5×5-Gitter (Stufe Mittel), das für alle Spieler gleich ist.",
+    "🌐 Online & Handys: Raum eröffnen oder per Code beitreten.",
+    "📖 Anleitung: die Kurzanleitung im Spiel.",
+    "⚙️ Einstellungen: Ton an/aus und „Ohne Zeitlimit (Zen) – nicht beim Tagesgitter“.",
+    "Unter den Stufen-Knöpfen steht dein Rekord (🏆) je Stufe, darunter die Gesamtzahl der gefundenen Wörter und gespielten Runden."
+   ]
+  },
+  {
+   "t": "Wortgitter – Regeln und Spielablauf",
+   "list": [
+    "Ein Wort besteht aus benachbarten Feldern; auch die acht schrägen Nachbarn zählen.",
+    "Jedes Feld nur einmal pro Wort, aber in verschiedenen Wörtern beliebig oft.",
+    "Erlaubt sind alle Formen deutscher Wörter aus dem Wortfunk-Wörterbuch: Mehrzahl, Fälle, gebeugte Verben. Keine Namen und keine Abkürzungen.",
+    "ß gibt es als SS. Die Umlaute Ä, Ö und Ü kommen als eigene Buchstaben vor; Q, X und Y gibt es im Gitter nicht.",
+    "Jedes Wort zählt nur einmal. Doppelte Eingaben meldet das Spiel mit „hast du schon“.",
+    "Zu kurze Wörter („mindestens … Buchstaben“) und unbekannte Wörter („kenne ich nicht“) bringen nichts, kosten aber auch nichts.",
+    "Oben läuft die Zeitleiste; in den letzten 15 Sekunden wird sie rot, in den letzten 10 Sekunden tickt es.",
+    "Ist die Zeit um, siehst du die Auswertung: gefundene Wörter, Zahl der möglichen Wörter und Punkte und eine Liste der Wörter, die du verpasst hast (bekannte und lange zuerst)."
+   ]
+  },
+  {
+   "t": "Wortgitter – Punkte",
+   "list": [
+    "3 Buchstaben: 1 Punkt",
+    "4 Buchstaben: 2 Punkte",
+    "5 Buchstaben: 3 Punkte",
+    "6 Buchstaben: 5 Punkte",
+    "7 Buchstaben: 8 Punkte",
+    "8 Buchstaben: 12 Punkte",
+    "jeder weitere Buchstabe: +4 Punkte (9 Buchstaben 16, 10 Buchstaben 20 …)"
+   ],
+   "p": [
+    "Ab 5 Punkten pro Wort gibt es einen besonderen Erfolgston. In der Auswertung werden Wörter mit 7 und mehr Buchstaben hervorgehoben."
+   ]
+  },
+  {
+   "t": "Wortgitter – Bedienung",
+   "list": [
+    "Wischen (Finger oder Maus): über die Buchstaben ziehen, loslassen prüft das Wort. Zurückwischen auf das vorletzte Feld nimmt den letzten Buchstaben weg.",
+    "Tippen: Buchstaben nacheinander antippen. Den letzten Buchstaben nochmal antippen oder ✓ prüft das Wort. Ein früherer Buchstabe im Weg kürzt den Weg bis dorthin. Ein nicht benachbartes Feld beginnt einen neuen Weg.",
+    "✕ (Weg löschen): verwirft den ganzen aktuellen Weg.",
+    "Tastatur: Wort einfach tippen – das Spiel sucht den Weg im Gitter selbst. Enter prüft, Rücktaste löscht einen Buchstaben, Esc öffnet das Menü. Passt ein getippter Buchstabe nicht, erscheint „liegt so nicht im Gitter“.",
+    "Tastatur alternativ: Pfeiltasten bewegen den Rahmen, Leertaste nimmt den Buchstaben dazu; Leertaste auf dem letzten Buchstaben prüft.",
+    "Gamecontroller: Steuerkreuz bewegt den Rahmen, A nimmt den Buchstaben dazu (auf dem letzten nochmal: prüfen), X prüft, B löscht einen Buchstaben, Start öffnet das Menü.",
+    "Im Spielmenü (☰ oben): Weiter, Hilfe, Ton an/aus und „Runde beenden“ (beendet die Runde sofort mit Auswertung)."
+   ]
+  },
+  {
+   "t": "Wortgitter – Zen-Modus",
+   "p": [
+    "In den Einstellungen kannst du „Ohne Zeitlimit (Zen)“ einschalten. Dann läuft keine Uhr (Anzeige „∞ Zen“), und du beendest die Runde selbst mit dem Knopf „Fertig“. Zen gilt nicht für das Tagesgitter und nicht für Online-Runden."
+   ]
+  },
+  {
+   "t": "Wortgitter – Fortschritt und Speichern",
+   "p": [
+    "Das Spiel speichert auf deinem Gerät: Rekord je Stufe, Zahl der Runden und Wörter, dein heutiges Tagesgitter-Ergebnis (der Knopf zeigt dann „📅 Tagesgitter · heute … Punkte“; spielst du es nochmal, zählt das bessere Ergebnis), die Einstellungen und deinen Online-Namen. Ein neuer Rekord wird in der Auswertung mit „neuer Rekord! 🏆“ angezeigt.",
+    "Nach einer Runde startet „Nochmal ▶“ ein neues Gitter derselben Stufe; nach dem Tagesgitter heißt der Knopf „Neues Gitter ▶“ und startet ein zufälliges 5×5-Gitter.",
+    "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+   ]
+  },
+  {
+   "t": "Wortgitter – 🌐 Online & Handys",
+   "steps": [
+    "Ein Gerät (gern der Fernseher) tippt auf „📺 Raum eröffnen“. Es erscheinen ein vierstelliger Code, ein QR-Code und ein Link zum Kopieren.",
+    "Mitspieler treten per Link, QR-Code oder Code von überall bei: Namen eingeben, Code eintippen, „Beitreten“.",
+    "Der Gastgeber wählt die Stufe, ob „Wörter, die mehrere finden, zählen nicht“ gelten soll und ob „Dieses Gerät spielt mit“. Ist das abgeschaltet, zeigt das Gerät nur Gitter, Zeit und Wortzahlen aller Spieler (Fernseher-Modus).",
+    "Mit „＋ Computer“ kommen Computer-Mitspieler dazu (Rita Radio, DJ Bit, Funky Fred, Lexi Loop; abwechselnd Mittel, Leicht, Schwer). Insgesamt gibt es 6 Plätze, mindestens ein Mensch muss mitspielen.",
+    "Start: Alle wischen gleichzeitig im selben Gitter, oben siehst du, wie viele Wörter jeder hat.",
+    "Am Ende zeigt die Rangliste Punkte der Runde und die Gesamtsumme über alle Runden; „Nächste Runde ▶“ startet das nächste Gitter."
+   ],
+   "p": [
+    "Wer während einer laufenden Runde die Verbindung verliert und mit demselben Namen wieder beitritt, spielt die restliche Zeit weiter („Runde läuft schon – leg los!“)."
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – Ziel des Spiels",
+   "p": [
+    "Stadt Land Plus ist das moderne Stadt-Land-Fluss. Eine 3D-Buchstaben-Trommel lost einen Buchstaben aus. Dann schreibt jeder zu jeder Spalte ein Wort mit diesem Anfangsbuchstaben. Stadt und Land sind immer dabei, das dritte Thema wählst du frei.",
+    "Nach der eingestellten Zahl an Runden gewinnt, wer die meisten Punkte gesammelt hat. Seltene Antworten bringen mehr Punkte als Antworten, die auch andere haben."
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – Hauptmenü",
+   "list": [
+    "🧠 Solo spielen: allein oder gegen bis zu 5 Computer-Mitspieler.",
+    "🌐 Online & Handys: Der Fernseher oder PC wird zur Spielleitung, alle schreiben auf dem eigenen Handy.",
+    "📱 Mitspielen: mit dem Code eines Fernsehers einem Online-Spiel beitreten.",
+    "📚 Nachschlagen: Städte, Länder und Flüsse mit Infos und 3D-Globus nachschlagen – auch außerhalb des Spiels.",
+    "⚙️ Einstellungen: Geräusche, Musik, Vibration und „Bildschirmtastatur immer zeigen“.",
+    "❓ Anleitung: die Regeln im Spiel.",
+    "Oben im Menü stehen deine Siege, dein Rekord (beste Gesamtpunktzahl) und die Zahl deiner Wörter.",
+    "Siege, Rekord, Wörter und Einstellungen werden im Browser gespeichert. Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – Spiel einrichten",
+   "list": [
+    "Kategorien: 🏙️ Stadt und 🌍 Land sind fest. Als drittes Thema wählst du Fluss, Tier, Beruf, Vorname, Pflanze, Essen & Trinken, Sportart, Musikinstrument, Gegenstand, Farbe, Marke, Automarke, Berg & Gebirge, Körperteil oder eine eigene Kategorie mit eigenem Namen (z. B. Promi oder Film).",
+    "Weitere Spalten (optional): bis zu drei zusätzliche Themen – höchstens 6 Spalten insgesamt.",
+    "Runden: 3, 5, 8 oder 10.",
+    "Zeit pro Runde: 45 s, 1 min, 1,5 min, 2 min oder 3 min.",
+    "Computer-Mitspieler: keine bis 5 (Atlas-Anton, Lexi, Globus-Gabi, Quiz-Quentin, Wortwitz-Wanda), Stärke Leicht, Mittel oder Profi.",
+    "Prüfung: 🤖 Automatisch, 👍 Abstimmung oder 🧑‍⚖️ Moderator.",
+    "Ohne diese Buchstaben: Tippe Buchstaben an, die nicht ausgelost werden sollen. Von Anfang an sind Q, X und Y ausgeschlossen (bis zu 20 Buchstaben möglich).",
+    "STOPP-Taste: Wer fertig ist, beendet die Runde – dann bleiben noch 10 Sekunden.",
+    "Tippfehler verzeihen, Zusammengesetzte Wörter zählen (Zwergmaus, Apfelbaum …) und Unbekannte Wörter zählen (bei automatischer Prüfung) schaltest du einzeln an oder aus."
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – Ablauf einer Runde",
+   "steps": [
+    "Die Trommel dreht sich und lost einen Buchstaben aus. Jeder Buchstabe kommt pro Spiel nur einmal, bis alle erlaubten verbraucht sind.",
+    "Schreib zu jeder Spalte ein Wort mit diesem Anfangsbuchstaben. Ä zählt als A, Ö als O, Ü als U. Fängt ein Wort mit dem falschen Buchstaben an, wird das Feld rot markiert.",
+    "Die Uhr läuft ab, in den letzten 10 Sekunden wird sie hektisch. Mit STOPP beendest du die Runde früher; alle anderen haben dann noch 10 Sekunden.",
+    "Auswertung: Jede Antwort wird geprüft und bekommt Punkte. Tippe eine Antwort an, um Infos dazu zu sehen.",
+    "Mit „▶ Nächste Runde“ geht es weiter, nach der letzten Runde kommt „🏆 Zur Siegerehrung“."
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – Punkte",
+   "list": [
+    "20 Punkte: Nur du hast in dieser Spalte etwas Gültiges.",
+    "10 Punkte: Deine Antwort ist gültig und sonst hat niemand dieselbe.",
+    "5 Punkte: Jemand anderes hat dasselbe geschrieben.",
+    "0 Punkte: falsch, falscher Anfangsbuchstabe oder leer.",
+    "Gleich ist gleich, auch wenn es anders geschrieben ist: „München“ und „muenchen“ zählen als dieselbe Antwort.",
+    "In der Siegerehrung siehst du das Podest, das längste gültige Wort, wie oft jemand allein etwas wusste (20 Punkte) und alle Buchstaben des Spiels."
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – So prüft die Wissensdatenbank",
+   "list": [
+    "Sie kennt alle 250 Länder und Gebiete, über 33.000 Städte (jede deutsche Gemeinde und die Städte der Welt, auch mit deutschem Namen wie Mailand oder Kopenhagen), viele Flüsse und große Wortlisten.",
+    "Egal sind: Groß- und Kleinschreibung, Umlaute (ue = ü), Akzente, Artikel (der, die, das), weibliche Formen (Ärztin) und die Mehrzahl.",
+    "Kleine Tippfehler erkennt sie („Hambrug“ wird zu Hamburg), ein vertauschter Buchstabe zählt als ein Fehler. Bei langen Wörtern ab 9 Buchstaben sind zwei Fehler erlaubt.",
+    "Zusammengesetzte Wörter wie Zwergmaus gelten als „wahrscheinlich richtig – eine Art Maus“.",
+    "Bundesländer (z. B. Bayern) sind beim Land unsicher: „Bundesland – kein eigener Staat“. Historische Länder ebenfalls.",
+    "Eigene Kategorien kann die Datenbank nicht prüfen – da entscheidet die Runde.",
+    "🤖 Automatisch: Die Datenbank entscheidet. 👍 Abstimmung: Bei unsicheren Wörtern stimmen die anderen mit 👍/👎 ab. 🧑‍⚖️ Moderator: Eine Person gibt jede Antwort frei oder streicht sie und kann auf Wunsch selbst mitspielen oder nur leiten."
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – Bedienung",
+   "list": [
+    "Touch/Handy: in die Felder tippen, „Weiter“ auf der Handytastatur springt zur nächsten Spalte, unten der STOPP-Knopf. In der Auswertung Antworten antippen für Infos, 👍/👎 zum Abstimmen.",
+    "Tastatur: einfach tippen, Enter oder Tab springt zur nächsten Spalte. In den Menüs Pfeiltasten und Enter, Esc zurück bzw. Pause.",
+    "Gamecontroller: Mit dem Steuerkreuz bedienst du die Bildschirmtastatur. A tippt, B löscht, X setzt ein Leerzeichen, Y oder RB springt zur nächsten Spalte, Start ruft STOPP. In der Auswertung bringt Start dich weiter.",
+    "Pausenmenü: ▶ Weiter, ⚙️ Einstellungen, ✕ Spiel beenden."
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – Online & Handys",
+   "steps": [
+    "Am Fernseher oder PC „🌐 Online & Handys“ wählen. Es erscheinen Code, QR-Code und „🔗 Link kopieren“.",
+    "Mitspieler scannen den QR-Code, öffnen den Link oder tippen auf ihrem Handy „📱 Mitspielen“ und geben den Code ein – das geht von überall.",
+    "Wer am großen Bildschirm selbst mitschreiben will, setzt „Ich spiele hier am Bildschirm mit (Tastatur/Gamepad)“.",
+    "Bei Prüfung „Moderator“ legst du fest, wer moderiert (der Fernseher oder ein Handy) und ob der Moderator mitspielt.",
+    "Über „⚙️ Kategorien & Regeln“ stellst du das Spiel ein, dann „▶ Spiel starten“. Es braucht mindestens 2 Teilnehmer (Computer-Mitspieler zählen mit).",
+    "Der Fernseher zeigt Buchstabe, Uhr und die große Auswertung, die Handys das Schreibblatt, die Abstimmung und die eigenen Punkte."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Ziel des Spiels",
+   "p": [
+    "Funkgalgen ist Galgenmännchen in freundlich und in 3D: Der Moderator steht auf einem Turm aus 8 Lautsprecher-Kisten über einer Riesen-Torte. Du rätst ein verdecktes Wort Buchstabe für Buchstabe.",
+    "Jeder richtige Buchstabe erscheint an allen Stellen, an denen er im Wort vorkommt. Jeder falsche Buchstabe schießt eine Kiste aus dem Turm. Ist die letzte Kiste weg, plumpst der Moderator in die Torte und die Runde ist verloren. Deckst du alle Buchstaben auf, ist er gerettet."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Start und Hauptmenü",
+   "list": [
+    "🎯 Solo-Serie: Kategorie und Schwierigkeit wählen, dann Wort für Wort weiterspielen, bis es einmal schiefgeht.",
+    "📅 Tageswort: ein Wort pro Tag, für alle Spieler gleich.",
+    "👥 Duell: zu zweit an einem Gerät, abwechselnd Wort ausdenken und raten.",
+    "🌐 Online & Handys: Der Fernseher oder PC zeigt Turm und Wort, die Mitspieler raten auf ihren Handys. Sie treten per QR-Code, Link oder 4-stelligem Code von überall bei.",
+    "📖 So geht's: die Kurzanleitung im Spiel.",
+    "⚙️ Einstellungen: Ton, Vibration und Sparmodus (weniger 3D-Details für schwächere Geräte).",
+    "📻 Radio: 13 Live-Sender von laut.fm (zum Beispiel RicoReWi Radio, Schlagerpop 24, Rockradio 24) oder aus. Der Sender läuft während des ganzen Spiels und lässt sich auch im Spiel über 📻 oder im Pausenmenü wechseln.",
+    "Unten im Menü steht deine Bilanz: Rekord-Punkte, gerettete Wörter, beste Serie und ob das Tageswort heute schon gespielt ist."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Regeln einer Runde",
+   "list": [
+    "Das Wort besteht nur aus Buchstaben A bis Z sowie Ä, Ö und Ü. Ein ß wird als SS geschrieben.",
+    "Über dem Wort steht die Kategorie und die Zahl der Buchstaben, darunter die Liste deiner falschen Buchstaben.",
+    "Einen Buchstaben, den du schon probiert hast, kannst du nicht noch einmal raten (Hinweis „… hattest du schon“); auf der Bildschirmtastatur ist er grün oder rot markiert und gesperrt.",
+    "💡 Joker: deckt einen zufälligen noch verdeckten Buchstaben auf. Er kostet 25 Punkte bei der Wertung und geht nicht mehr, wenn nur noch ein Buchstabe fehlt („Nur noch ein Buchstabe – den schaffst du!“). Im Duell gibt es keinen Joker.",
+    "✍️ Lösen: Du tippst das ganze Wort ein. Richtig heißt sofort geschafft, falsch kostet 2 Kisten auf einmal."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Solo-Serie",
+   "p": [
+    "Wähle eine Kategorie: 🎲 Alle, 🐾 Tiere, 🍕 Essen & Trinken, 📻 Musik & Radio, 🧑‍🍳 Berufe, ⚽ Sport, 🏠 Zuhause, 🌦️ Natur & Wetter, 🚂 Unterwegs, 🎲 Spiel & Spaß oder 📖 Wörterbuch. Das Wörterbuch zieht bekannte Wörter aus dem Wortfunk-Wörterbuch, auch gebeugte Formen, und filtert derbe oder gruselige Wörter heraus.",
+    "Die Schwierigkeit bestimmt die Wortlänge: Leicht 3 bis 7 Buchstaben, Mittel 6 bis 10, Schwer 9 bis 20. Im Wörterbuch-Modus sind es mindestens 5 und höchstens 14 Buchstaben. Kategorie und Schwierigkeit merkt sich das Spiel.",
+    "Nach jedem geretteten Wort geht es mit „Nächstes Wort ▶“ weiter. Die zuletzt gespielten 60 Wörter kommen so schnell nicht wieder. Landet der Moderator in der Torte, endet die Serie, und du siehst Wörterzahl, Punkte und deinen Rekord."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Tageswort",
+   "p": [
+    "Jeden Tag gibt es ein Wort mit mindestens 5 Buchstaben aus allen Kategorien, das aus dem Datum berechnet wird und deshalb für alle gleich ist. Du hast einen Versuch. Danach zeigt das Spiel beim erneuten Öffnen nur noch dein Ergebnis („Heute schon geschafft!“ oder „Heute schon gespielt“).",
+    "Mit 📤 Teilen kopierst du dein Ergebnis als Text mit Datum, Fehlerzahl und Kisten-Emojis (📦 für übrige, ▫️ für verlorene Kisten) samt Link zum Spiel – am Handy über das Teilen-Menü, am PC in die Zwischenablage."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Duell zu zweit",
+   "steps": [
+    "Namen der beiden Spieler eintragen und die Runden pro Spieler wählen: 2, 3 oder 5.",
+    "Der erste Spieler tippt verdeckt sein geheimes Wort ein, der andere schaut weg. Mit 👁 kannst du die Eingabe kurz sichtbar machen, 🎲 Zufallswort wählt ein Wort für dich.",
+    "Das Wort muss 3 bis 20 Buchstaben haben, im Wortfunk-Wörterbuch stehen und freundlich sein; sonst kommt eine Fehlermeldung.",
+    "Der andere rät. Schafft er es, bekommt er so viele Punkte, wie noch Kisten im Turm stehen. Landet der Moderator in der Torte, gibt es 0 Punkte.",
+    "Dann werden die Rollen getauscht. Nach allen Runden gewinnt, wer mehr Punkte hat; bei Gleichstand ist es unentschieden. „Revanche ▶“ startet sofort neu."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Online & Handys",
+   "steps": [
+    "Am Fernseher oder PC auf 🌐 Online & Handys tippen. Ein Raum mit QR-Code, Link und 4-stelligem Code wird eröffnet.",
+    "Die Mitspieler scannen den QR-Code oder öffnen den Link, geben ihren Namen ein und tippen auf „Mitmachen“. Bis zu 8 Spieler passen in einen Raum, mindestens 2 Handys sind zum Start nötig.",
+    "Reihum denkt sich jedes Handy einmal ein Wort aus (auch hier Wörterbuch-Prüfung, 🎲 Zufall möglich). Alle anderen raten gleichzeitig auf ihren Handys um die Wette.",
+    "Der Fernseher zeigt Turm, Wort, falsche Buchstaben, eine Punkteliste und die letzten Aktionen. Nach jeder Runde wird das Wort 4 Sekunden lang aufgedeckt, dann ist der Nächste dran.",
+    "Wenn jeder einmal ein Wort gestellt hat, kommt die Endwertung mit Platzierung. „Zur Lobby ▶“ setzt die Punkte zurück für eine neue Partie."
+   ],
+   "list": [
+    "Richtiger Buchstabe: +5 Punkte je Stelle, an der er vorkommt; wer den letzten Buchstaben findet, bekommt 10 Extrapunkte.",
+    "Falscher Buchstabe: −2 Punkte (nie unter 0) und eine Kiste weniger.",
+    "Ganzes Wort lösen: +20 Punkte plus 3 je noch verdecktem Buchstaben. Falsch gelöst: −5 Punkte und 2 Kisten.",
+    "Fällt der Moderator in die Torte, bekommt der Wortgeber +25 Punkte.",
+    "Wer erst während des Spiels kommt, wartet bis zur nächsten Partie; wer kurz die Verbindung verliert, wird automatisch wieder mit seinem Punktestand verbunden."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Bedienung",
+   "list": [
+    "Tastatur: Buchstaben einfach tippen (auch Ä, Ö, Ü), Enter öffnet „Wort lösen“, Esc öffnet die Pause oder schließt Fenster.",
+    "Touch und Maus: Bildschirmtastatur (QWERTZ mit Ü, Ö, Ä) antippen; 💡 Joker und ✍️ Lösen stehen rechts in der unteren Tastenreihe. ☰ oben rechts ist die Pause.",
+    "Gamecontroller: Steuerkreuz wählt die Taste auf der Bildschirmtastatur, A drückt sie, B geht zurück, Start öffnet die Pause.",
+    "Online: Jedes Handy hat seine eigene Tastatur mit ✍️ Lösen; der Fernseher braucht keine Eingabe."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Punkte, Rekord und Speichern",
+   "p": [
+    "In der Solo-Serie bringt jedes gerettete Wort: 10 Punkte Grundwert, plus 5 für jeden verschiedenen Buchstaben im Wort, plus 10 für jede übrige Kiste, minus 25 für jeden Joker. Dazu kommt ein Serien-Bonus von 10 Prozent für jedes Wort, das du vorher in dieser Serie schon gerettet hast, höchstens das Doppelte. Mindestens gibt es 5 Punkte pro Wort.",
+    "Rekord, gerettete Wörter, beste Serie, Tageswort-Ergebnisse, Duell-Namen und Einstellungen speichert das Spiel im Browser des Geräts.",
+    "Ohne Anmeldung wird nur lokal auf diesem Gerät gespeichert. Mit „Mit Google speichern“ (runder Google-Knopf unten links) sicherst du den Spielstand zusätzlich in deinem Google-Konto, kannst auf anderen Geräten weiterspielen und holst ihn mit „Spielstand mit Google wiederherstellen“ zurück."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Wortfunk – Tipps für Einsteiger",
+   "list": [
+    "Fang gegen den Computer auf leicht an. Er legt eher kurze Wörter und lässt dir Raum.",
+    "Lass „Punkte schon beim Legen anzeigen“ an. So probierst du verschiedene Stellen aus, bevor du dich festlegst.",
+    "Kurze Wörter sind nicht schlecht: Zwei Buchstaben wie JA, JE, OH, ZU, AB, AN, DU, ER, ES, IN, OB, UM passen fast überall hin.",
+    "Nutze die 3 Tipps pro Partie, wenn du feststeckst. Ein Tipp zeigt einen guten Zug und wie viele Punkte er bringt."
+   ]
+  },
+  {
+   "t": "Wortfunk – Strategien für Fortgeschrittene",
+   "list": [
+    "Teure Buchstaben auf Bonusfelder: Ein X (8) auf 3×B bringt allein 24 Punkte – und wenn es in zwei Richtungen zählt, sogar doppelt.",
+    "Parallel legen: Ein Wort direkt neben ein liegendes Wort bildet mehrere kurze Querwörter, die alle mitzählen.",
+    "Wortbonus kombinieren: Ein Wort über zwei 2×W-Felder zählt vierfach, über zwei 3×W-Felder neunfach.",
+    "Halte deine Bank ausgewogen: etwa gleich viele Vokale und Konsonanten. Gut zu behalten sind E, N, R und S – mit ihnen bildest du viele Endungen (-EN, -ER, -ES, -NS).",
+    "Doppelte Buchstaben und viele schwere Steine (J, V, Ä, Ö, Ü, X, Y) blockieren. Lieber früh loswerden oder tauschen.",
+    "Tauschen lohnt sich, wenn deine Bank nur aus Konsonanten oder lauter Vokalen besteht – aber nur, solange noch 7 Steine im Beutel sind."
+   ]
+  },
+  {
+   "t": "Wortfunk – Profi-Tricks",
+   "list": [
+    "Hebe den Joker für einen Zug mit allen 7 Steinen auf. 50 Extrapunkte schlagen fast jedes Bonusfeld.",
+    "Deutsche Wortformen sind dein Vorteil: Viele Wörter lassen sich mit -E, -EN, -ER, -ES, -S verlängern. So erreichst du 3×W-Felder am Rand.",
+    "Öffne dem Gegner keine 3×W-Felder: Lege nicht so, dass ein Buchstabe nahe einer 3×W-Reihe frei liegt.",
+    "Gegen Ende: Zähle mit, welche Steine noch fehlen. Wer zuerst alle Steine los ist, bekommt die Restpunkte der anderen – ein schneller Abschluss kann die Partie drehen.",
+    "Behalte Q nicht zu lange: Es braucht fast immer ein U (QUARK, QUIZ)."
+   ]
+  },
+  {
+   "t": "Wortfunk – Häufige Fehler",
+   "list": [
+    "Steine nicht in einer Reihe oder mit Lücke legen („Alle Steine müssen in einer Reihe liegen“, „Zwischen deinen Steinen darf keine Lücke sein“).",
+    "Beim ersten Zug den Stern vergessen („Das erste Wort muss über den Stern ★ in der Mitte gehen“).",
+    "Ein Querwort übersehen, das nicht im Wörterbuch steht – dann wird der ganze Zug abgelehnt.",
+    "ß tippen: Es gibt kein ß, das Wort wird mit SS gelegt.",
+    "Am Ende mit vielen teuren Steinen dastehen – die Restpunkte werden abgezogen."
+   ]
+  },
+  {
+   "t": "Wortgitter – Tipps für Einsteiger",
+   "list": [
+    "Beginne mit 4×4 Leicht: Dort zählen schon Wörter mit 3 Buchstaben, und die Zeit reicht gut zum Ausprobieren.",
+    "Suche zuerst die Vokale. Fast jedes Wort braucht einen, und das Gitter hat immer 35 bis 50 Prozent Vokale.",
+    "Häufige Buchstabenpaare wie EN, ER, EI, IE, CH, ST und SCH sind gute Startpunkte.",
+    "Falsche Wörter kosten keine Punkte – probier ruhig aus.",
+    "Am PC ist Tippen oft am schnellsten: Das Spiel findet den Weg selbst."
+   ]
+  },
+  {
+   "t": "Wortgitter – Strategien für Fortgeschrittene",
+   "list": [
+    "Wortfamilien abarbeiten: Aus einem gefundenen Wort werden mit Endungen wie -E, -EN, -ER, -ES, -TE oft mehrere (z. B. ROT, ROTE, ROTEN, ROTER). Jede Form zählt einzeln.",
+    "Verben beugen: Stamm plus -EN, -ET, -TE, -TEN. Das Wörterbuch kennt gebeugte Formen.",
+    "Lange Wörter sind Gold: Ein Wort mit 8 Buchstaben bringt 12 Punkte – so viel wie zwölf Wörter mit 3 Buchstaben.",
+    "Bei 5×5 und 6×6 zählen erst Wörter ab 4 Buchstaben. Verschwende dort keine Zeit mit Dreiern.",
+    "Arbeite das Gitter systematisch ab, etwa Feld für Feld von oben links, statt wild zu suchen."
+   ]
+  },
+  {
+   "t": "Wortgitter – Profi-Tricks",
+   "list": [
+    "Nach jeder Runde die Liste „Nicht gefunden“ lesen: Dort lernst du wiederkehrende Muster und Wörter, die du übersiehst.",
+    "Zusammengesetzte Wörter suchen: Hast du zwei kurze Wörter nebeneinander, prüfe, ob sie zusammen ein langes Wort bilden.",
+    "Mit dem Tagesgitter kannst du dich mit Freunden vergleichen: Alle spielen am selben Tag dasselbe Gitter.",
+    "Online mit „doppelt zählt nicht“: Suche gezielt ungewöhnliche und lange Wörter. Häufige kurze Wörter finden die anderen auch – dann zählen sie für niemanden.",
+    "Der Zen-Modus ist ideal zum Üben: Ohne Uhr findest du in Ruhe, wie viele Wörter ein Gitter hergibt."
+   ]
+  },
+  {
+   "t": "Wortgitter – Häufige Fehler",
+   "list": [
+    "Namen und Abkürzungen eingeben – die kennt das Wörterbuch absichtlich nicht.",
+    "ß benutzen: Im Gitter steht dafür SS.",
+    "Beim schrägen Wischen das Nachbarfeld streifen: Fahr möglichst durch die Mitte der Felder, nur der innere Kreis zählt beim Wischen.",
+    "Zu lange an einem Wort festhalten. Wenn es nicht passt, lieber weiterziehen und später zurückkommen."
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – Tipps für Einsteiger",
+   "list": [
+    "Schreib zuerst die leichten Spalten, dann die schweren. Ein leeres Feld bringt nie Punkte.",
+    "Bei Stadt helfen kleinere deutsche Orte – jede deutsche Gemeinde zählt.",
+    "Länder mit deutschem Namen schreiben (Österreich, Elfenbeinküste); auch Kurzformen wie Holland, England oder USA werden erkannt.",
+    "Keine Angst vor Rechtschreibung: Umlaute, Groß/klein und kleine Tippfehler sind egal.",
+    "Übe vorher im 📚 Nachschlagen: Welche Städte mit Q gibt es?"
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – Strategien für Fortgeschrittene",
+   "list": [
+    "Seltene Antworten lohnen sich: Eine Stadt, die sonst keiner hat, gibt 10 statt 5 Punkte.",
+    "Ist eine Spalte für alle schwer, lohnt sich jedes Wort – allein gewusst sind es 20 Punkte.",
+    "Gegen Computer-Mitspieler: Sie wählen bekannte, große Städte. Nimm lieber eine kleine Stadt.",
+    "Profi-Computer rufen gern STOPP, sobald sie fertig sind. Füll die Spalten deshalb zügig und nicht in Schönschrift.",
+    "Bei der Abstimmung gilt eine Antwort ohne Stimmen nach der Datenbank; bei Gleichstand der Stimmen zählt sie als richtig."
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – Profi-Tricks",
+   "list": [
+    "Zusammengesetzte Wörter retten schwere Buchstaben: Kennt die Datenbank das Wort nicht, aber das Ende (wie bei „Zwergmaus“ die Maus), gilt es als wahrscheinlich richtig – solange „Zusammengesetzte Wörter zählen“ an ist. Viele Wörter wie Zitronenbaum oder Kinderarzt stehen sogar direkt in den Listen.",
+    "Beim Beruf ist die weibliche Form genauso gültig (Ärztin, Lehrerin).",
+    "Für Land gibt es mit Q, X und Y keinen Staat – deshalb sind diese Buchstaben am Anfang ausgeschlossen. Schaltest du sie ein, ist die Land-Spalte für alle leer.",
+    "Mit „Ohne diese Buchstaben“ machst du das Spiel leichter (C, J, V weg) oder schwerer (nur seltene Buchstaben übrig lassen).",
+    "Eine eigene Kategorie wird nicht geprüft – macht vorher aus, was gilt."
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – Häufige Fehler",
+   "list": [
+    "Bundesland als Land eintragen (Bayern, Sachsen) – das ist unsicher und gilt bei automatischer Prüfung nicht.",
+    "Den Artikel weglassen ist kein Problem, aber das Wort muss nach dem Artikel mit dem richtigen Buchstaben anfangen.",
+    "Zu spät tippen: Nach einem STOPP bleiben nur 10 Sekunden.",
+    "Unbekannte Wörter verlassen sich auf die Einstellung „Unbekannte Wörter zählen“ – ist sie aus, bringen sie bei automatischer Prüfung nichts."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Tipps für Einsteiger",
+   "list": [
+    "Fang mit häufigen Buchstaben an: E, N, R, I, S, T, A.",
+    "Kläre zuerst die Vokale, dann die Mitlaute – so zeigt sich das Muster des Wortes schnell.",
+    "Achte auf die Kategorie und die Buchstabenzahl über dem Wort: Bei „Tiere · 5 Buchstaben“ bleiben nur wenige Kandidaten.",
+    "Starte auf Leicht, dort sind die Wörter höchstens 7 Buchstaben lang."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Strategien für Fortgeschrittene",
+   "list": [
+    "Typische deutsche Wortteile mitdenken: SCH, CH, EI, IE, ER am Ende, EN bei Mehrzahl (zum Beispiel NUDELN).",
+    "Lösen statt raten: Wenn du dir sicher bist, löse das Wort früh. Jede übrige Kiste ist in der Solo-Serie 10 Punkte wert.",
+    "Lösen nur bei echter Sicherheit: Ein Fehlversuch kostet 2 Kisten, also so viel wie zwei falsche Buchstaben.",
+    "Wörter mit vielen verschiedenen Buchstaben bringen mehr Punkte (5 je verschiedenem Buchstaben) – lange Wörter auf Schwer lohnen sich doppelt."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Profi-Tricks",
+   "list": [
+    "Der Joker kostet 25 Punkte, eine verlorene Kiste nur 10. Setze ihn deshalb nur ein, wenn du sonst mehr als zwei Fehlversuche befürchtest oder kurz vor der Torte stehst – die Serie zu retten ist mehr wert als jeder Einzelpunkt.",
+    "Der Serien-Bonus wächst mit jedem Wort um 10 Prozent bis zum Doppelten nach 10 geretteten Wörtern. Eine lange Serie schlägt also wenige perfekte Wörter.",
+    "Im Online-Modus zählt Tempo: Wer zuerst den richtigen Buchstaben tippt, bekommt die Punkte. Häufige Buchstaben schnell tippen, seltene lieber den anderen überlassen.",
+    "Als Wortgeber online ein Wort wählen, das zwar im Wörterbuch steht, aber ungewöhnliche Buchstaben hat (zum Beispiel mit Y, X oder Q): Landet der Moderator in der Torte, bekommst du 25 Punkte."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Häufige Fehler",
+   "list": [
+    "Zu früh lösen: Ein falsches Wort kostet 2 Kisten auf einmal.",
+    "Den Joker beim letzten fehlenden Buchstaben suchen – dann geht er nicht mehr.",
+    "Im Duell einen Namen oder ein Fantasiewort eingeben: Das Wort muss im Wörterbuch stehen.",
+    "Online den Fernseher als Eingabe nutzen wollen: Geraten wird nur auf den Handys."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Wortfunk – Gibt es eine Lösung?",
+   "p": [
+    "Wortfunk hat keine festen Level: Die Steine werden zufällig gezogen, jede Partie ist anders. Die beste Strategie hängt vom Gegner und der Spielphase ab. Hier findest du, wie du in jeder Phase die meisten Punkte holst."
+   ]
+  },
+  {
+   "t": "Wortfunk – Beste Strategie je Phase",
+   "steps": [
+    "Eröffnung: Das erste Wort verdoppelt der Stern. Lege ein möglichst langes Wort, aber achte darauf, dass kein Buchstabe direkt neben einem 2×W-Feld landet, das dem Gegner einen großen Zug schenkt.",
+    "Mittelspiel: Suche jeden Zug zuerst nach 3×W- und 2×W-Feldern, die du erreichst, dann nach 3×B-Feldern für deinen teuersten Buchstaben. Parallele Züge mit Querwörtern bringen oft mehr als ein langes Wort.",
+    "Bank pflegen: Behalte nach dem Zug lieber S, E, N, R und den Joker als schwere Einzelbuchstaben. Hast du keine gute Möglichkeit, tausche 4 bis 6 Steine.",
+    "Endspiel (weniger als 7 Steine im Beutel): Tauschen geht nicht mehr. Plane so, dass du deine letzten Steine in zwei Zügen loswirst – dann bekommst du die Restpunkte der anderen."
+   ]
+  },
+  {
+   "t": "Wortfunk – So spielen die Computergegner",
+   "list": [
+    "Leicht: legt meist kurze Wörter (höchstens 4 Steine) aus dem mittleren Punktebereich, benutzt den Joker ungern und nur bekannte Alltagswörter. Hier gewinnst du mit Bonusfeldern sicher.",
+    "Mittel: wählt einen Zug aus den besten 12 Prozent, ebenfalls nur bekannte Wörter. Schließe 3×W-Felder ab, die er sonst nutzt.",
+    "Schwer: nimmt immer den Zug mit den meisten Punkten plus dem besten Rest in der Bank und kennt alle Wörter des Wörterbuchs, auch seltene. Gegen ihn hilft nur defensives Spiel (Bonusfelder zumachen) und ein sauberer 7-Steine-Zug.",
+    "Findet ein Computer kein Wort, tauscht er (wenn möglich) oder passt."
+   ]
+  },
+  {
+   "t": "Wortfunk – Punktebeispiele",
+   "list": [
+    "XI auf ein 3×B-Feld mit dem X: 8 × 3 + 1 = 25 Punkte.",
+    "QUIZ (10 + 1 + 1 + 5 = 17) auf einem 3×W-Feld: 51 Punkte.",
+    "TAXI (1 + 1 + 8 + 1 = 11) mit dem X auf 2×B und über ein 2×W-Feld: (1 + 1 + 16 + 1) × 2 = 38 Punkte.",
+    "Ein 7-Buchstaben-Wort über 2×W zählt doppelt und bekommt +50 – schnell über 70 Punkte.",
+    "Wortbeispiele mit teuren Buchstaben, die das Wörterbuch kennt: JA, JE, JO, JUX, ÖL, ÄXTE, HEXE, YETI, TAXI, TAXIS, BOXT, QUARK, QUIZ, FJORD, KUH, ZOO, ZOOS, XYLOPHON."
+   ]
+  },
+  {
+   "t": "Wortfunk – Statistik und Bestleistungen",
+   "list": [
+    "Gespeichert werden Bestwert (höchste Punktzahl), Siege, Partien und dein bestes einzelnes Wort mit Punkten.",
+    "Ein Sieg zählt, wenn genau ein Mensch an deinem Gerät mitgespielt und allein gewonnen hat.",
+    "Im Endbildschirm siehst du außerdem das beste Wort der Partie."
+   ]
+  },
+  {
+   "t": "Wortgitter – Gibt es eine feste Lösung?",
+   "p": [
+    "Nein. Jedes Gitter wird zufällig erzeugt; das Spiel sucht dabei unter bis zu 24 Versuchen ein Gitter mit vielen Wörtern aus (Ziel: etwa 45 Wörter bei 4×4, 110 bei 5×5 und 220 bei 6×6). Die vollständige Lösung eines Gitters siehst du nach jeder Runde: Das Spiel zeigt, wie viele Wörter und Punkte möglich waren, und listet bis zu 80 verpasste Wörter auf."
+   ]
+  },
+  {
+   "t": "Wortgitter – Beste Strategie je Stufe",
+   "list": [
+    "4×4 Leicht (3 Minuten, ab 3 Buchstaben): Erst schnell alle kurzen Wörter einsammeln, dann gezielt Vierer und Fünfer aus ihnen verlängern.",
+    "5×5 Mittel (3½ Minuten, ab 4 Buchstaben): Auf Wortfamilien setzen – jede Endung (-EN, -ER, -ES) ist ein weiteres Wort mit mindestens 2 Punkten.",
+    "6×6 Schwer (4 Minuten, ab 4 Buchstaben): Hier stecken die meisten langen Wörter. Nimm dir in der ersten Minute Zeit, nach 6 bis 8 Buchstaben langen Wörtern zu suchen, denn sie bringen 5 bis 12 Punkte.",
+    "Tagesgitter (5×5): Du kannst es beliebig oft spielen, gespeichert wird dein bestes Ergebnis des Tages. Nutze den ersten Versuch zum Kennenlernen und lies die verpassten Wörter."
+   ]
+  },
+  {
+   "t": "Wortgitter – Wertungstabelle und Höchstpunkte",
+   "list": [
+    "3 Buchstaben = 1, 4 = 2, 5 = 3, 6 = 5, 7 = 8, 8 = 12, 9 = 16, 10 = 20 Punkte.",
+    "Vergleich: Fünf Wörter mit 4 Buchstaben (10 Punkte) sind weniger wert als ein Wort mit 8 Buchstaben (12 Punkte).",
+    "Ab 6 Buchstaben steigen die Punkte überproportional – das ist der Schlüssel zu Rekorden."
+   ]
+  },
+  {
+   "t": "Wortgitter – Online gegen Computer",
+   "p": [
+    "Computer-Mitspieler finden über die Rundenzeit verteilt einen Teil der gängigen Wörter des Gitters: auf Leicht etwa 12 Prozent, auf Mittel etwa 22 Prozent und auf Schwer etwa 35 Prozent. Sie suchen nur bekannte Alltagswörter – seltene und lange Wörter sind deshalb deine beste Chance, sie zu schlagen, besonders mit der Regel „Wörter, die mehrere finden, zählen nicht“."
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – Lösungshilfe für schwere Buchstaben",
+   "p": [
+    "Diese Beispiele kennt die Datenbank sicher. Für Land gibt es mit Q, X und Y keine Antwort."
+   ],
+   "list": [
+    "C – Land: Chile, China, Costa Rica · Stadt: Cottbus, Chemnitz, Chennai · Fluss: Colorado, Columbia · Tier: Chamäleon, Chinchilla",
+    "E – Land: Ecuador, Estland, Eritrea · Stadt: Essen, Edmonton · Fluss: Elbe, Euphrat · Tier: Echse, Eichelhäher",
+    "I – Land: Indien, Indonesien, Irland · Stadt: Istanbul, Incheon · Fluss: Indus, Irtysch · Tier: Igel, Iltis, Ibis",
+    "J – Land: Japan, Jamaika, Jordanien · Stadt: Jakarta, Johannesburg, Jaipur · Fluss: Jangtse, Jenissei · Tier: Jaguar, Jak",
+    "O – Land: Österreich, Oman, Osttimor · Stadt: Osaka, Omsk · Fluss: Ob, Oranje, Orinoko · Tier: Ochse, Ohrwurm",
+    "Q – Stadt: Quedlinburg, Quito, Qingdao · Fluss: Queich · Tier: Qualle, Quastenflosser, Quokka",
+    "U – Land: Ungarn, Ukraine, Uganda, Uruguay, Usbekistan · Stadt: Ulm, Ufa, Ulan Bator · Fluss: Ural, Uruguay · Tier: Uhu, Unke",
+    "V – Land: Vereinigte Staaten, Vereinigtes Königreich, Vereinigte Arabische Emirate · Stadt: Valencia, Varanasi · Fluss: Volta, Vardar · Tier: Varan, Vielfraß, Vogelspinne",
+    "X – Stadt: Xanten, Xi’an, Xiamen · Fluss: Xingu · Tier: Xerus",
+    "Y – Stadt: Yokohama, Yaoundé, Ypsilanti · Fluss: Yukon, Yamuna · Tier: Yak, Yorkshire Terrier",
+    "Z – Land: Zypern, Zentralafrikanische Republik · Stadt: Zapopan, Zhengzhou · Fluss: Ziller, Zschopau · Tier: Zander, Zebra, Zaunkönig"
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – Wertungstabelle und Höchstpunktzahl",
+   "list": [
+    "Pro Spalte und Runde sind höchstens 20 Punkte möglich (nur du hast etwas Gültiges).",
+    "Höchstwert pro Runde = 20 × Zahl der Spalten: bei 3 Spalten 60 Punkte, bei 6 Spalten 120 Punkte.",
+    "Höchstwert pro Spiel bei 10 Runden und 6 Spalten: 1200 Punkte.",
+    "Spielst du ganz allein ohne Computer-Mitspieler, ist jede gültige Antwort automatisch allein gewusst – also 20 Punkte.",
+    "Realistisch gegen Computer: Jede einzigartige Antwort 10 Punkte, jede Spalte, in der die Computer nichts haben, 20 Punkte."
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – Beste Strategie je Prüfmodus",
+   "list": [
+    "🤖 Automatisch: Schreib nur, was die Datenbank sicher kennt – echte Städte, Staaten, Flüsse. Unsichere Wörter zählen nur mit „Unbekannte Wörter zählen“ (zusammengesetzte Wörter mit der eigenen Einstellung).",
+    "👍 Abstimmung: Kreative, aber nachvollziehbare Antworten haben gute Chancen – die anderen stimmen ab, bei Gleichstand zählt die Antwort.",
+    "🧑‍⚖️ Moderator: Der Moderator hat das letzte Wort. Kläre vorher, ob z. B. Stadtteile oder Fantasie-Namen gelten."
+   ]
+  },
+  {
+   "t": "Stadt Land Plus – Computer-Gegner",
+   "list": [
+    "Leicht: schreibt nur in etwa der Hälfte der Spalten etwas, fast immer sehr bekannte Wörter.",
+    "Mittel: füllt die meisten Spalten, eher bekannte Wörter.",
+    "Profi: füllt fast alle Spalten, wählt auch seltene Wörter und ruft STOPP, wenn er fertig ist.",
+    "Computer schreiben nie etwas in eigene Kategorien."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Beste Reihenfolge der Buchstaben",
+   "p": [
+    "Es gibt kein festes Lösungswort – die Wörter kommen zufällig aus 9 Kategorien mit zusammen über 400 Wörtern oder aus dem Wörterbuch. Am sichersten ist diese Reihenfolge:"
+   ],
+   "steps": [
+    "E und N – sie stecken in den meisten deutschen Wörtern.",
+    "Dann R, I, S, T, A.",
+    "Danach je nach Muster: H und C (für SCH und CH), U, L, O, D, G.",
+    "Erst am Ende Umlaute und seltene Buchstaben (Ä, Ö, Ü, Z, P, F, W, K, B, M).",
+    "Steht das Muster fest, das Wort mit ✍️ Lösen abschließen."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Wortlisten und Beispiele je Kategorie",
+   "list": [
+    "🐾 Tiere (52 Wörter): zum Beispiel HUND, PINGUIN, SCHMETTERLING, EICHHÖRNCHEN, KÄNGURU.",
+    "🍕 Essen & Trinken (54): zum Beispiel PIZZA, GUMMIBÄRCHEN, PFANNKUCHEN, MILCHSHAKE.",
+    "📻 Musik & Radio (48): zum Beispiel MODERATOR, LAUTSPRECHER, HITPARADE, FUNKTURM.",
+    "🧑‍🍳 Berufe (49): zum Beispiel BÄCKER, FEUERWEHRMANN, ASTRONAUT.",
+    "⚽ Sport (44), 🏠 Zuhause (42), 🌦️ Natur & Wetter (50), 🚂 Unterwegs (41), 🎲 Spiel & Spaß (36).",
+    "Alle Kategorie-Wörter stehen im Wortfunk-Wörterbuch, ß ist als SS geschrieben."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Punktetabelle Solo-Serie",
+   "list": [
+    "Grundwert: 10 Punkte.",
+    "Je verschiedenem Buchstaben im Wort: +5.",
+    "Je übriger Kiste: +10 (alle 8 Kisten = +80).",
+    "Je Joker: −25.",
+    "Serien-Bonus: +10 Prozent je vorher gerettetem Wort, höchstens ×2.",
+    "Beispiel: ein Wort mit 7 verschiedenen Buchstaben, ohne Fehler und Joker, als erstes Wort: 10 + 35 + 80 = 125 Punkte. Dasselbe als elftes Wort der Serie: 250 Punkte."
+   ],
+   "p": [
+    "Höchstpunkte holst du mit langen Wörtern auf Schwer, ohne Fehler, ohne Joker und in einer möglichst langen Serie."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Strategie je Modus",
+   "list": [
+    "Solo-Serie: Sicherheit vor Tempo. Ein einziges verlorenes Wort beendet die Serie und damit den Bonus.",
+    "Tageswort: Du hast nur einen Versuch. Erst die häufigen Buchstaben, Lösen nur bei vollem Muster. Das Ergebnis zeigt die Fehler an – null Fehler sind das Ziel.",
+    "Duell: Punkte gibt es nur für übrige Kisten. Wähle als Wortgeber lange Wörter mit seltenen Buchstaben, als Rater vorsichtig vorgehen.",
+    "Online: Schnell sein bei häufigen Buchstaben, den letzten Buchstaben (10 Extrapunkte) oder das ganze Wort (20 plus 3 je verdecktem Buchstaben) abstauben."
+   ]
+  },
+  {
+   "t": "Funkgalgen – Geheimnisse",
+   "list": [
+    "Das Tageswort hängt nur vom Datum ab – alle Spieler bekommen am gleichen Tag dasselbe Wort, ideal für einen Vergleich über den geteilten Ergebnistext.",
+    "Im Duell und online füllt 🎲 Zufallswort das Feld mit einem Wort mittlerer Länge aus den Kategorien – praktisch, wenn dir nichts einfällt."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Wortfunk: Warum wird mein Wort nicht angenommen?",
+   "a": "Entweder steht ein entstandenes Wort nicht im Wörterbuch (auch Querwörter zählen), oder die Steine liegen nicht in einer Reihe, haben eine Lücke oder schließen nicht an. Namen und Abkürzungen sind nicht erlaubt, ß wird als SS gelegt."
+  },
+  {
+   "q": "Wortfunk: Meine Partie ist weg.",
+   "a": "Gespeichert wird nur die Partie an einem Gerät, im Browser. Online-Partien werden nicht gespeichert. Ohne Google-Anmeldung ist der Stand nach dem Löschen der Browserdaten weg. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+  },
+  {
+   "q": "Wortfunk: Warum kann ich nicht mehr tauschen?",
+   "a": "Tauschen geht nur, solange noch mindestens 7 Steine im Beutel sind."
+  },
+  {
+   "q": "Wortfunk: Der Tipp-Knopf fehlt oder ist grau.",
+   "a": "Tipps lassen sich in den Einstellungen ein- und ausschalten. Pro Partie gibt es 3 Tipps; danach ist der Knopf gesperrt."
+  },
+  {
+   "q": "Wortfunk: Online klappt nicht.",
+   "a": "Alle Geräte brauchen Internet. Prüfe den Code (4 Zeichen). Meldet das Spiel „Der Raum ist voll (4 Spieler)“, sind alle Plätze belegt. Lass den Gastgeber den Raum offen, bis alle drin sind."
+  },
+  {
+   "q": "Wortfunk: Ein Mitspieler ist rausgeflogen.",
+   "a": "Dann spielt der Computer für ihn weiter. Tritt er mit demselben Code und Namen wieder bei, übernimmt er seinen Platz wieder („… ist wieder da“)."
+  },
+  {
+   "q": "Wortgitter: Warum kann ich nicht starten?",
+   "a": "Das Wörterbuch wird beim Start geladen. Erst danach sind Stufen, Tagesgitter und Online freigeschaltet. Warte, bis der Hinweis „Wörterbuch wird geladen …“ verschwindet."
+  },
+  {
+   "q": "Wortgitter: Warum wird mein Wort nicht anerkannt?",
+   "a": "Entweder ist es zu kurz (bei 5×5 und 6×6 mindestens 4 Buchstaben), ein Name oder eine Abkürzung, oder es steht nicht im Wortfunk-Wörterbuch. Denk auch daran, dass ß als SS geschrieben wird."
+  },
+  {
+   "q": "Wortgitter: Wo sind meine Rekorde gespeichert?",
+   "a": "Im Browser bzw. in der App auf deinem Gerät. Ohne Google-Anmeldung sind Rekorde und Statistik weg, wenn du die Browserdaten löschst oder privat surfst. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+  },
+  {
+   "q": "Wortgitter: Kann ich ohne Zeitdruck spielen?",
+   "a": "Ja, in den Einstellungen „Ohne Zeitlimit (Zen)“ einschalten. Das gilt nicht für das Tagesgitter und Online-Runden."
+  },
+  {
+   "q": "Wortgitter: Online klappt nicht – was tun?",
+   "a": "Prüfe, ob alle Geräte Internet haben und der vierstellige Code stimmt. Meldet das Spiel „Der Raum ist voll.“, sind alle 6 Plätze belegt. Am einfachsten tritt man per QR-Code oder Link bei."
+  },
+  {
+   "q": "Wortgitter: Wie schalte ich den Ton aus?",
+   "a": "In den Einstellungen oder im Spielmenü (☰) über „🔊 Ton an“ bzw. „🔇 Ton aus“."
+  },
+  {
+   "q": "Stadt Land Plus: Warum gilt mein Wort nicht?",
+   "a": "Prüfe den Anfangsbuchstaben und tippe die Antwort in der Auswertung an – dort steht, was die Datenbank erkannt hat. Unbekannte Wörter zählen bei automatischer Prüfung nur, wenn „Unbekannte Wörter zählen“ an ist."
+  },
+  {
+   "q": "Stadt Land Plus: Das Handy verbindet sich nicht.",
+   "a": "Alle Geräte brauchen Internet. Prüfe den Code vom Fernseher oder scanne den QR-Code erneut. Die Lobby am Fernseher muss offen bleiben."
+  },
+  {
+   "q": "Stadt Land Plus: Wie spiele ich mit dem Controller?",
+   "a": "Schließ den Controller an – es erscheint „🎮 Controller verbunden – Bildschirmtastatur bereit“. Mit dem Steuerkreuz wählst du Buchstaben, A tippt, B löscht, Y/RB nächste Spalte, Start STOPP."
+  },
+  {
+   "q": "Stadt Land Plus: Meine Statistik ist weg.",
+   "a": "Siege, Rekord und Wörter werden im Browser gespeichert. Ohne Google-Anmeldung sind sie nach dem Löschen der Website-Daten oder auf einem anderen Gerät nicht da. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+  },
+  {
+   "q": "Stadt Land Plus: Kann ich ohne Internet spielen?",
+   "a": "Solo und Nachschlagen funktionieren mit geladener Seite auch ohne Netz. Online & Handys braucht eine Verbindung."
+  },
+  {
+   "q": "Funkgalgen: Warum wird mein Wort im Duell nicht angenommen?",
+   "a": "Es muss 3 bis 20 Buchstaben haben, im Wortfunk-Wörterbuch stehen und freundlich sein. Namen, Fantasiewörter und derbe Wörter werden abgelehnt."
+  },
+  {
+   "q": "Funkgalgen: Kann ich das Tageswort noch einmal spielen?",
+   "a": "Nein, pro Tag gibt es einen Versuch. Danach zeigt das Spiel dein Ergebnis, und am nächsten Tag kommt ein neues Wort."
+  },
+  {
+   "q": "Funkgalgen: Online klappt nicht – was tun?",
+   "a": "Prüfe die Internetverbindung auf Fernseher und Handys und gib den 4-stelligen Code genau wie angezeigt ein. Kommt „Diesen Raum gibt es nicht (mehr)“, öffne am Fernseher den Raum neu. Ein Spiel, das schon läuft, nimmt neue Spieler erst in der nächsten Partie auf."
+  },
+  {
+   "q": "Funkgalgen: Wo werden Rekord und Statistik gespeichert?",
+   "a": "Im Browser des Geräts. Ohne Google-Anmeldung sind sie weg, wenn du die Website-Daten löschst oder im privaten Fenster spielst. Hast du dich vorher mit „Mit Google speichern“ (runder Google-Knopf unten links) angemeldet, ist der Spielstand zusätzlich in deinem Google-Konto gesichert: Melde dich wieder an und hol ihn mit „Spielstand mit Google wiederherstellen“ zurück – auch auf einem anderen Gerät."
+  },
+  {
+   "q": "Funkgalgen: Das Radio spielt nicht.",
+   "a": "Browser starten Ton oft erst nach dem ersten Tippen oder Tastendruck. Kommt „Sender gerade nicht erreichbar“, wähle einen anderen Sender oder versuche es später."
+  },
+  {
+   "q": "Funkgalgen: Das Spiel ruckelt auf meinem Handy.",
+   "a": "Schalte in den Einstellungen den Sparmodus ein, dann zeigt die 3D-Szene weniger Details."
+  }
+ ]
+}

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "1955b44b51e6",
- "generated": "2026-11-16T19:55:50+00:00",
- "commit": "3a34cf72c078af282c1d89617100d648c4d0061f",
+ "version": "96f8b0f54745",
+ "generated": "2026-11-16T20:56:27+01:00",
+ "commit": "44685ce9527dc2516e1be4dd0ac6d7abad113e01",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9433,8 +9433,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3153,
-   "h": "be88fb9f30f13f5ec8bb69ae59f322d649d1d70a89f669667556f1c7eddc5185"
+   "s": 3083,
+   "h": "d4f0494c728655fe03b71b3799e637e9335ce6f85a0f3f7abfdfd5b16853e809"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -10197,51 +10197,6 @@
    "h": "86f83add93f444ee1cf792ff679b9fd6b55538b3d8342a71cfa54f6947b94088"
   },
   {
-   "p": "funkgalgen/card.jpg",
-   "s": 37175,
-   "h": "84f80ba2a348e3ad62adc7930bee42f28ca43a680143921a61c93f3f8551445c"
-  },
-  {
-   "p": "funkgalgen/index.html",
-   "s": 14229,
-   "h": "4a6dc60c0371beaeaef8ad0e8b20ae678e975be7ded57692dd1191a5db010914"
-  },
-  {
-   "p": "funkgalgen/js/app.js",
-   "s": 42142,
-   "h": "435f0e563f407d5c1e41e08eef09ee56da3a8773288e701a6033f5aef6eda2d4"
-  },
-  {
-   "p": "funkgalgen/js/core.js",
-   "s": 6752,
-   "h": "9be03ed81f9aca8bd4af869baf0ed01e84d6dd71c861a6c3ddf5f8b92ce9711f"
-  },
-  {
-   "p": "funkgalgen/js/scene.js",
-   "s": 14458,
-   "h": "2096a6dd75bb0f2b65d6032cba168a716915140ac5ede67c44ba01840cb10e6f"
-  },
-  {
-   "p": "funkgalgen/js/words.js",
-   "s": 5953,
-   "h": "e429f8463a246c125aba0aa4f5a4a6ed1bd13c2291a2338a779e122a1b40e530"
-  },
-  {
-   "p": "funkgalgen/manifest.webmanifest",
-   "s": 779,
-   "h": "cf9d7ee330f72f8c74238af03d72473ad5c618d815e8159136333e5805a35b24"
-  },
-  {
-   "p": "funkgalgen/style.css",
-   "s": 12138,
-   "h": "573302966572470c81c27d61dd1efddbc54276d04820ba5ff3b4f9c34d8c6f95"
-  },
-  {
-   "p": "funkgalgen/sw.js",
-   "s": 2005,
-   "h": "6a151e1c8a9c12b0f33fe04866d0cc36f32edbdd09536c51bcafe793d88f5d92"
-  },
-  {
    "p": "funkgolf/card.jpg",
    "s": 40797,
    "h": "d33391abccdc5ba277d03093bb241168c310101d67a6d24b59491afedd59f252"
@@ -10328,8 +10283,8 @@
   },
   {
    "p": "games.js",
-   "s": 53435,
-   "h": "3307184ff0e2239654c49d20e7a2bc5b89e41492f885d67b7a916e822fee14bf"
+   "s": 51543,
+   "h": "1dcd3c54a4f3bee9edea67bbaec89de7990ad966457aba06f5c2632661b8f0de"
   },
   {
    "p": "groove-arena/card.jpg",
@@ -10408,8 +10363,8 @@
   },
   {
    "p": "guides.js",
-   "s": 167383,
-   "h": "7b582488d623ef66b2d00901734664e8cb54c8ddf70733f04abba154f18f7a9d"
+   "s": 167852,
+   "h": "6d901743d87fd0c6f9754369e17ca6543205a8bed1a7327d4e51421e142d661d"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10627,11 +10582,6 @@
    "h": "9bb5af455248b5c854ffde45533ac2ea1a740683412173367410d1fe4f3e434b"
   },
   {
-   "p": "guides/funkgalgen.json",
-   "s": 15093,
-   "h": "ec5a0affbe23f66fb6ca63a2ae2e2770a19809ce26b87cfb977b687d34e5e023"
-  },
-  {
    "p": "guides/funkgolf.json",
    "s": 14330,
    "h": "79773aa432602de2f41638896d6fb0123e2b1648d50ac2ecbe6421d315bdbfb0"
@@ -10787,11 +10737,6 @@
    "h": "664fbd67fe34a3ce5de76b60cbe87601928695efceb08fd368cd4efb94fefd23"
   },
   {
-   "p": "guides/stadt-land-plus.json",
-   "s": 14717,
-   "h": "609a8cbfb5d1e4b5f330d4cc4f6ece5e6a9549a2c24782ba0d5ec09e66116134"
-  },
-  {
    "p": "guides/taschi.json",
    "s": 46399,
    "h": "34ad6952cbbfe0d8f7b45ddb4b78120131a254aaa89ed0f171f05bf39eefe794"
@@ -10822,14 +10767,9 @@
    "h": "458bcef7500cedfdc96fe366f5a31da9f4bd0b61c714aeaba5d274178fafa947"
   },
   {
-   "p": "guides/wortfunk.json",
-   "s": 15138,
-   "h": "8ffcbc45f794024c703fecb5aae51f346f2436e17abfc1e10f535ac3484445f6"
-  },
-  {
-   "p": "guides/wortgitter.json",
-   "s": 13159,
-   "h": "b1ec075c3dea4363bf56f8daee282f8297aad706afea350807208f384bd28a3c"
+   "p": "guides/wortspiele.json",
+   "s": 57090,
+   "h": "89f3a76116cf2d0cd45d7fa9bde1c0ea6486652daa9af782a88c29afaea66095"
   },
   {
    "p": "guides/zeitsprung-castingshow.json",
@@ -11578,8 +11518,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3539,
-   "h": "8093e3079474f210c71618d4214b3a5734b02a9ad9df890fcd7f6877a3daba8c"
+   "s": 3315,
+   "h": "08b66bc8bfa28fef1d033bb3f8a91e3333385dcf3a2a1e0deeb37626a09b4eec"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-DMBVqCOs.js",
@@ -15337,109 +15277,14 @@
    "h": "8dad0a6dca23aca404d58d1c96b7918c08d881ecdba7e92d79e459a5c72d60f3"
   },
   {
-   "p": "stadt-land-plus/card.jpg",
-   "s": 33830,
-   "h": "368451e257e4ee49e3acf1885f9be2ab96bc2610a80633160c0bb6bec411e677"
-  },
-  {
-   "p": "stadt-land-plus/index.html",
-   "s": 16166,
-   "h": "114ca71dc6a7f1852aeebb9c5aeecaa7e2d41f781eab549831bec6aea5260e94"
-  },
-  {
-   "p": "stadt-land-plus/js/app.js",
-   "s": 57702,
-   "h": "951171d808b06aa060fa4ec575e7b12c27b63b1246672a79571f15f2a92668a8"
-  },
-  {
-   "p": "stadt-land-plus/js/core.js",
-   "s": 12589,
-   "h": "87bf4f9c7271c580869b8572f1774d243c0099add6fb93ba0c6e83182e324f45"
-  },
-  {
-   "p": "stadt-land-plus/js/db/fluesse.js",
-   "s": 11761,
-   "h": "cb92175b8798ef747dea8e36c1222f976a72d9f7b2e48edbc217ae17edccbdf5"
-  },
-  {
-   "p": "stadt-land-plus/js/db/laender.js",
-   "s": 67323,
-   "h": "d803049a6cb247e24f21415aa866d7aa5cb97d02f33708456984d1f44fd9cd5a"
-  },
-  {
-   "p": "stadt-land-plus/js/db/staedte.js",
-   "s": 999340,
-   "h": "f648166f63f34c860ca2da77137a0bb5daaf001840a33343b9785ac21cac0348"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-beruf.js",
-   "s": 4554,
-   "h": "61179243cbfb42e39cfd627d517bc6baaedc30bc4d1d9f015696549c04bdd0c6"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-essen.js",
-   "s": 3105,
-   "h": "e64103f9dc6f6e99d4afb6c541fb7e49419ec67cf50ee3ea9e578b7d1973907c"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-mehr.js",
-   "s": 8032,
-   "h": "65a7da9285c3a2a7767be2545622d4ff7d8e8870201470f9b844a6b9d075df30"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-pflanze.js",
-   "s": 2355,
-   "h": "6a51b6ff81900aca7c224912014b15238e18ab7a1b1d34f87e2ccdf23288002f"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-tier.js",
-   "s": 4251,
-   "h": "9390ec33682ac2bdf4cdf284ae7c63099d6ca454442885a645e12283ead71459"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-vorname.js",
-   "s": 3346,
-   "h": "e54435100a79785e18184d82e2659e2870176ee7e47ab64334b8f6f047659498"
-  },
-  {
-   "p": "stadt-land-plus/js/db/welt.js",
-   "s": 2862,
-   "h": "b9f23d410a7b58377f80b7ed9df40d8f0d0a8bb9461f338859486771661bf5ba"
-  },
-  {
-   "p": "stadt-land-plus/js/sound.js",
-   "s": 3686,
-   "h": "8c45ca6c9ae3235916e2b8f5090e33a399c6722492cae811cab0e67aca21ce20"
-  },
-  {
-   "p": "stadt-land-plus/js/view.js",
-   "s": 8145,
-   "h": "031859905254a47a160e4b74c49c7931f323d1245df5c7cc98b59d993116354e"
-  },
-  {
-   "p": "stadt-land-plus/manifest.webmanifest",
-   "s": 811,
-   "h": "f315f3a34479636d9375570f5604d05aac5a29426019f359e81d9f9882528c1c"
-  },
-  {
-   "p": "stadt-land-plus/style.css",
-   "s": 23557,
-   "h": "ec87d42ad56d08a7731455ac0a7423e31d85aaa76ecf395ed55f28b65a9819a8"
-  },
-  {
-   "p": "stadt-land-plus/sw.js",
-   "s": 2026,
-   "h": "bdb5d460689b4674ea3c23fa2dd6f792bc05e0211ad4ca63509c7aa0bd22bd2f"
-  },
-  {
    "p": "stream.html",
    "s": 9746,
    "h": "d8a1af246de70f8e5567845a5339b6a3d3b5f476acbfd64b5710d8f358852b1c"
   },
   {
    "p": "sync/catalog.json",
-   "s": 241388,
-   "h": "49ee5e0c56bb796c21741e085a17158923e3998e53b8920c0e62c3e5ed896a73"
+   "s": 238958,
+   "h": "f3366e0d516499f719c4d13198d5034fbeb44e626f402cb330ac13204a0bf167"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -16457,11 +16302,6 @@
    "h": "6e9bfdfc558ed307b83186c51efd1d8fb81bb70c032bd7c944ca432f8efa6be0"
   },
   {
-   "p": "thumbs/funkgalgen.webp",
-   "s": 17280,
-   "h": "0e366cb5530837fe05a2b4b656d2e162c05737cdaa42c9f03bae33c05c4d7c59"
-  },
-  {
    "p": "thumbs/funkgolf.webp",
    "s": 18870,
    "h": "627e027e794988b7dbdab36f011b100953c45b1c71d92da0130ab587b5018846"
@@ -16567,14 +16407,9 @@
    "h": "892c6979cd97c4d1c837eb2b059ccf126a791e14771f624b9c30dddbaa1beebb"
   },
   {
-   "p": "thumbs/stadt-land-plus.webp",
-   "s": 15564,
-   "h": "b10120871d5acf7ca3c4c3ab4aaa1f9100a4d14a2107f70c581c6f1d67e67fb0"
-  },
-  {
    "p": "thumbs/thumbs.js",
-   "s": 2100,
-   "h": "8b18fa1a89cc7f2bcf53ed07246a83d9c0494d0c6a6141fd68e834b86dff6ce7"
+   "s": 2019,
+   "h": "2e9d2845442f0b5f2c944bff54020b4461c697cc12ec0923258423ffca125e5a"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
@@ -16597,14 +16432,9 @@
    "h": "00c2b85641e6347f22a6386c8c1a5b64150d4635f5fb29ae86845cef99b15a5f"
   },
   {
-   "p": "thumbs/wortfunk.webp",
-   "s": 16736,
-   "h": "01929bc46ab63b499dc80b3a6343caa46d9a042a83ffecf40e69275a157b991d"
-  },
-  {
-   "p": "thumbs/wortgitter.webp",
-   "s": 14336,
-   "h": "a025fe08a58390c34795dbc0f2312d7857641620650d78fdd5fc9b9e65070fec"
+   "p": "thumbs/wortspiele.webp",
+   "s": 29380,
+   "h": "5e466609eb2a48f031aed5adff96db0b54332d509e8da5f01d9462571f47934c"
   },
   {
    "p": "thumbs/zeitsprung.webp",
@@ -17222,94 +17052,214 @@
    "h": "ffc30668efdf8dce5571e09c868d0529279c6c4d04ca14b10369dc6acfbc2d66"
   },
   {
-   "p": "wortfunk/card.jpg",
+   "p": "wortspiele/card.jpg",
+   "s": 59599,
+   "h": "e58d4a96398099e5c1c18403d78976af329b4f88434a653d09b655f68866d3fa"
+  },
+  {
+   "p": "wortspiele/funkgalgen/card.jpg",
+   "s": 37175,
+   "h": "84f80ba2a348e3ad62adc7930bee42f28ca43a680143921a61c93f3f8551445c"
+  },
+  {
+   "p": "wortspiele/funkgalgen/index.html",
+   "s": 10473,
+   "h": "7341d6de35f47013a80c113a668e4b4d6b43d6d86baa0b5f1e19cc2944d06c74"
+  },
+  {
+   "p": "wortspiele/funkgalgen/js/app.js",
+   "s": 42160,
+   "h": "b84afbb62445e5fc60d4a4eede56d8f4fbcb07e3990e29436052861e74e7293e"
+  },
+  {
+   "p": "wortspiele/funkgalgen/js/core.js",
+   "s": 6752,
+   "h": "9be03ed81f9aca8bd4af869baf0ed01e84d6dd71c861a6c3ddf5f8b92ce9711f"
+  },
+  {
+   "p": "wortspiele/funkgalgen/js/scene.js",
+   "s": 14461,
+   "h": "ee40f9adbc68ac0fcceb54658658fd2e86ed35e0ed47b973cfa45b683f7d434c"
+  },
+  {
+   "p": "wortspiele/funkgalgen/js/words.js",
+   "s": 5953,
+   "h": "e429f8463a246c125aba0aa4f5a4a6ed1bd13c2291a2338a779e122a1b40e530"
+  },
+  {
+   "p": "wortspiele/funkgalgen/style.css",
+   "s": 12138,
+   "h": "573302966572470c81c27d61dd1efddbc54276d04820ba5ff3b4f9c34d8c6f95"
+  },
+  {
+   "p": "wortspiele/index.html",
+   "s": 9883,
+   "h": "eab068d4aeb4045b7fa5d628cafbd2dd4e4fbaad7de3318e2aab6cfd3fa7ef48"
+  },
+  {
+   "p": "wortspiele/manifest.webmanifest",
+   "s": 809,
+   "h": "1886880ce8fc79d935f850c3b2884192c5c22c3bdeb91319702e27ff49dd2820"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/card.jpg",
+   "s": 33830,
+   "h": "368451e257e4ee49e3acf1885f9be2ab96bc2610a80633160c0bb6bec411e677"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/index.html",
+   "s": 12395,
+   "h": "6dbdf7577732a50b2d75765da8f87c1962abf4bfe9030ebbd49fa8e76db1a6f9"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/app.js",
+   "s": 57714,
+   "h": "00b642fc411c6b57e2ff7619294f660e409bfd62795107dc33cd2c83155f29d7"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/core.js",
+   "s": 12589,
+   "h": "87bf4f9c7271c580869b8572f1774d243c0099add6fb93ba0c6e83182e324f45"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/fluesse.js",
+   "s": 11761,
+   "h": "cb92175b8798ef747dea8e36c1222f976a72d9f7b2e48edbc217ae17edccbdf5"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/laender.js",
+   "s": 67323,
+   "h": "d803049a6cb247e24f21415aa866d7aa5cb97d02f33708456984d1f44fd9cd5a"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/staedte.js",
+   "s": 999340,
+   "h": "f648166f63f34c860ca2da77137a0bb5daaf001840a33343b9785ac21cac0348"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-beruf.js",
+   "s": 4554,
+   "h": "61179243cbfb42e39cfd627d517bc6baaedc30bc4d1d9f015696549c04bdd0c6"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-essen.js",
+   "s": 3105,
+   "h": "e64103f9dc6f6e99d4afb6c541fb7e49419ec67cf50ee3ea9e578b7d1973907c"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-mehr.js",
+   "s": 8032,
+   "h": "65a7da9285c3a2a7767be2545622d4ff7d8e8870201470f9b844a6b9d075df30"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-pflanze.js",
+   "s": 2355,
+   "h": "6a51b6ff81900aca7c224912014b15238e18ab7a1b1d34f87e2ccdf23288002f"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-tier.js",
+   "s": 4251,
+   "h": "9390ec33682ac2bdf4cdf284ae7c63099d6ca454442885a645e12283ead71459"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-vorname.js",
+   "s": 3346,
+   "h": "e54435100a79785e18184d82e2659e2870176ee7e47ab64334b8f6f047659498"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/welt.js",
+   "s": 2862,
+   "h": "b9f23d410a7b58377f80b7ed9df40d8f0d0a8bb9461f338859486771661bf5ba"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/sound.js",
+   "s": 3686,
+   "h": "8c45ca6c9ae3235916e2b8f5090e33a399c6722492cae811cab0e67aca21ce20"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/view.js",
+   "s": 8145,
+   "h": "031859905254a47a160e4b74c49c7931f323d1245df5c7cc98b59d993116354e"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/style.css",
+   "s": 23557,
+   "h": "ec87d42ad56d08a7731455ac0a7423e31d85aaa76ecf395ed55f28b65a9819a8"
+  },
+  {
+   "p": "wortspiele/sw.js",
+   "s": 2035,
+   "h": "2a720dd4e14008880d918c64aec4f9ae291f8dda361d070e8e07cc7197f5983d"
+  },
+  {
+   "p": "wortspiele/wortfunk/card.jpg",
    "s": 35670,
    "h": "f91e89e3044d41c9dfce4985a86ffdda87ae0b63cd37570e942d7ebe575f4918"
   },
   {
-   "p": "wortfunk/data/LIZENZ.txt",
+   "p": "wortspiele/wortfunk/data/LIZENZ.txt",
    "s": 1194,
    "h": "c06bf85ed8e45b28e13c181160e1e53840a49a8dba3769c7fc96fc00b83cb39c"
   },
   {
-   "p": "wortfunk/data/bekannt.dawg",
+   "p": "wortspiele/wortfunk/data/bekannt.dawg",
    "s": 123804,
    "h": "3e5e58a43a40e7f9155b0fddd6b6a0316b0a3c8ccd50525d85adf2df0501ecc5"
   },
   {
-   "p": "wortfunk/data/woerter.dawg",
+   "p": "wortspiele/wortfunk/data/woerter.dawg",
    "s": 474064,
    "h": "67141363ee427a01985fb2e65fd062da0dcd297de894993ca0b26f82fbad97cd"
   },
   {
-   "p": "wortfunk/index.html",
-   "s": 14127,
-   "h": "b1608c4c8f1a1dc5ef6f1f9459cf83282390e0765b18765a15755b15c9fe8f4b"
+   "p": "wortspiele/wortfunk/index.html",
+   "s": 10360,
+   "h": "6c821391ee990e1874d37165a4b18c3f65f6c4ca4c37e0a11521fb56b7dce0f5"
   },
   {
-   "p": "wortfunk/js/app.js",
-   "s": 50599,
-   "h": "4a5873b06be354b8681d09bf56aad7378d97cceb26f2ff0e1147c1f96ac8677a"
+   "p": "wortspiele/wortfunk/js/app.js",
+   "s": 50611,
+   "h": "50a03d679e9b19d706604ee92ec00e413d330f3211ac37129a54e7e948593bba"
   },
   {
-   "p": "wortfunk/js/logic.js",
+   "p": "wortspiele/wortfunk/js/logic.js",
    "s": 20477,
    "h": "7678e54707cd339aa46ced5cb657e3ead14fe3aa9cee720e626744c3fc1a041c"
   },
   {
-   "p": "wortfunk/manifest.webmanifest",
-   "s": 766,
-   "h": "bf5ea55083735ba1df6eee3fcdd438d747bc7a344e70c0397e73c106b06a7e11"
-  },
-  {
-   "p": "wortfunk/style.css",
+   "p": "wortspiele/wortfunk/style.css",
    "s": 16377,
    "h": "5f71aeffca53ba75d8776b0afb914930e17941f12dfb65f1aafe275e2e01ab2c"
   },
   {
-   "p": "wortfunk/sw.js",
-   "s": 1996,
-   "h": "bdcf970c73f8441650ea6600d064874a3b8baf8e6ba00ef76a7c5eabb316ce66"
-  },
-  {
-   "p": "wortfunk/worker.js",
+   "p": "wortspiele/wortfunk/worker.js",
    "s": 482,
    "h": "bb23e6703346623691e60cf8dfbc7ba3ec7bf2592719d4b785f6511315be7048"
   },
   {
-   "p": "wortgitter/card.jpg",
+   "p": "wortspiele/wortgitter/card.jpg",
    "s": 34144,
    "h": "22493f93c75b444e74200096552246456947befd32e954c0b5bc28a5e56f461f"
   },
   {
-   "p": "wortgitter/index.html",
-   "s": 12578,
-   "h": "66e3bb95190b26dee0d2f3a8f0393d1c5b8f8dfa829dd55963fc0df1d89bfc54"
+   "p": "wortspiele/wortgitter/index.html",
+   "s": 8807,
+   "h": "8f8283e09d9e3ded869be130695060911310d0fcba2b0490f4b5386029592617"
   },
   {
-   "p": "wortgitter/js/app.js",
-   "s": 38394,
-   "h": "e380f20b33c3e7aaaf74d0bec5cb696262860c9cb21022be783a5dbe4d0b8770"
+   "p": "wortspiele/wortgitter/js/app.js",
+   "s": 38406,
+   "h": "5b29fa9b46e7a67f6372dcfdeb7116e7385de94fb90f58667a3d620c9bd66227"
   },
   {
-   "p": "wortgitter/js/grid.js",
+   "p": "wortspiele/wortgitter/js/grid.js",
    "s": 6492,
    "h": "47b81d2254747b2817a6cba578c20a63cd0a2dd25e8e2c436cc434d3c97d0b37"
   },
   {
-   "p": "wortgitter/manifest.webmanifest",
-   "s": 774,
-   "h": "d591c51f1c371ea5b1bd9b8f333de32a7782d63ed88e9f85905f36f47a8c9e4a"
-  },
-  {
-   "p": "wortgitter/style.css",
+   "p": "wortspiele/wortgitter/style.css",
    "s": 15609,
    "h": "91b7aa669884896f95c3d0817fa832df53b348cf8a5182d1eadaa1763be58914"
-  },
-  {
-   "p": "wortgitter/sw.js",
-   "s": 2000,
-   "h": "920810948ad9169606d0ede35ff11af463a5a85c0e68bca6aed0e555f6a38260"
   },
   {
    "p": "zeitsprung/app.js",
