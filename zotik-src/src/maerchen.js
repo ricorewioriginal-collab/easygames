@@ -181,7 +181,7 @@ export function createMaerchen(C) {
     if (d.kk && C.kkCast) return C.kkCast(d.kk);   // Hauptfigur als KayKit-Figur (z. B. RiCARDO)
     if (d.ani) { const [kind, col, sc] = d.ani, P = FOE.has(kind) ? FOE.make(kind, col, false) : C.CR().makeKind(kind, col, false); P.root.scale.setScalar(sc); P.arms = [new T.Group()]; if (!P.legs || P.legs.length < 2) P.legs = [new T.Group(), new T.Group()]; if (!P.head) P.head = new T.Group(); return P; }
     const W = { bow: { l: 'bow_withString' }, sword: { r: 'sword_1handed' }, staff: { r: 'staff' }, club: { r: 'hammer_B' }, pick: { r: 'hammer_A' } }[d.extra] || {};
-    const P = C.folk(d.name, d.v, { pal: 1, ...W, hideX: d.extra === 'tail' ? 'Leg|Cape' : '' }); if (d.extra && !W.r && !W.l) { if (d.extra === 'tail') P.tailCol = d.v.cloth; extra(P, d.extra, 1); } return P;
+    const P = C.folk(d.name, d.v, { pal: 1, ...W, hideX: d.extra === 'tail' ? 'Leg|Cape' : '' }); if (d.extra && !W.r && !W.l) { if (d.extra === 'tail') P.tailCol = d.v.cloth; else extra(P, d.extra, 1); } return P;
   }
   function piece(look, i) {
     const g = new T.Group();
