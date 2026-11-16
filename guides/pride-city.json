@@ -46,6 +46,7 @@
     "Boutique Fabelhaft: Job im Verkauf und neuer Look.",
     "Muckibude Muskelkater: Training, Duschen und Job als Fitnesstrainer*in.",
     "Studio Klappe Auf: Job als Fotograf*in.",
+    "Checkpoint Regenbogen: kostenlose HIV- und STI-Tests, PrEP-Beratung, gratis Kondome, Infos zu U=U, PrEP, PEP und Safer Sex.",
     "Tram: für 2 € in zehn Minuten an jeden Ort.",
     "Pride Plaza mit Brunnen, Flaggen aller Communitys und Bühne, dazu der Regenbogenpark."
    ]
@@ -83,7 +84,25 @@
     "Ziele: Kapitelziel, drei Tagesziele mit Glitzer-Belohnung, Sammelstand.",
     "Karte & Tram: alle Orte, mit der Tram hinfahren.",
     "Jobs: alle Jobs mit Stufe, Lohn und Öffnungszeit, Ort markieren.",
-    "Kontakte: Leute, mit denen du gesprochen hast, und eure Freundschaft."
+    "Kontakte: Leute, mit denen du gesprochen hast, und eure Freundschaft.",
+    "Rainbow Match: Dating-App – Profile nach rechts (Ja) oder links (Nein) wischen, am Controller und an der Tastatur mit ←/→. Bei einem Match planst du ein Date im Café oder Club.",
+    "Feed: Neuigkeiten aus der Szene, Gerüchte und deine eigenen Momente.",
+    "Gesundheit: letzter Test, PrEP-Status und Erinnerung, Infos.",
+    "Glossar: Begriffe aus der Szene."
+   ]
+  },
+  {
+   "t": "Freundschaft und Dates",
+   "p": [
+    "Sprich jeden Tag mit Leuten: Das füllt Kontakte und Freundschaft. Ab 80 Freundschaft gehört jemand zu deiner Wahlfamilie.",
+    "Ein Date besteht aus drei Situationen. Mit mindestens 4 von 6 Punkten steigt eure Beziehung: Match → Erstes Date → Verliebt → Zusammen. Zustimmung ist immer Pflicht, ein Nein wird respektiert."
+   ]
+  },
+  {
+   "t": "Inhalte ab 18",
+   "p": [
+    "In den Optionen lässt sich „Inhalte ab 18“ einschalten (nach Altersabfrage, standardmäßig aus). Dann zeigen Profile Vorlieben, das Glossar weitere Begriffe, die Boutique Toys, und ab „Verliebt“ kann ein Date – wenn beide wollen und ein Kondom da ist – über Nacht gehen. Die Szene wird nur angedeutet und blendet ab; am Morgen danach sieht man die Spuren in der Wohnung.",
+    "Gesundheitsinfos (Checkpoint, PrEP, Tests, U=U) sind immer sichtbar."
    ]
   },
   {
@@ -139,6 +158,15 @@
     "Rede jeden Tag mit Leuten – das füllt Kontakte und Freundschaft, beides nur einmal pro Person und Tag.",
     "Die Tagesziele wechseln jeden Tag und bringen Glitzer.",
     "Schlaf vor Mitternacht, sonst bist du am nächsten Tag zu müde für zwei Schichten."
+   ]
+  },
+  {
+   "t": "Dating und Gesundheit",
+   "list": [
+    "Gute Date-Antworten: zuhören, nachfragen, Humor, und fragen statt bestimmen.",
+    "Ruf und gute Stimmung erhöhen die Chance auf ein Match.",
+    "Gratis-Kondome gibt es einmal am Tag im Checkpoint, Kondome und Gleitgel auch im Späti.",
+    "Mit PrEP erinnert dich das Handy alle 14 Spieltage an den nächsten Test."
    ]
   }
  ],
