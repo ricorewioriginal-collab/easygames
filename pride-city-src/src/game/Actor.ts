@@ -1,6 +1,7 @@
 /* Animierte Figur auf Basis der Quaternius-Menschen (CC0): Kleidung in Pride-Farben, Hautton und Haarfarbe wählbar,
    Outfits per Shader, weiche Übergänge zwischen Animationen. */
 import * as THREE from 'three';
+import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { skinned } from '../engine/Assets';
 import { palette, SKINS, HAIRS, body, type BodyDef } from './palettes';
 
@@ -97,6 +98,22 @@ function outfitShader(mat: THREE.MeshStandardMaterial, role: number, b: BodyDef,
   mat.customProgramCacheKey = () => 'people';
 }
 
+/* Weiche Schattierung: die Modelle sind facettiert (Low-Poly). Gleiche Punkte werden zusammengelegt und die Normalen
+   neu gemittelt, damit Haut und Kleidung rund wirken. Einmal pro Geometrie, danach aus dem Zwischenspeicher. */
+const smoothCache = new WeakMap<THREE.BufferGeometry, THREE.BufferGeometry>();
+function smooth(g: THREE.BufferGeometry, keepUv: boolean, tol: number) {
+  let s = smoothCache.get(g);
+  if (!s) {
+    const c = g.clone();
+    c.deleteAttribute('normal');
+    if (!keepUv) c.deleteAttribute('uv');
+    s = mergeVertices(c, tol);
+    s.computeVertexNormals();
+    smoothCache.set(g, s);
+  }
+  return s;
+}
+
 export type Anim = 'idle' | 'walk' | 'run' | 'cheer' | 'interact' | 'sit' | 'wave' | 'dance1' | 'dance2' | 'dance3' | 'jump' | 'hit' | 'pose';
 /** Clip-Namen (ohne Armatur- und Man_/Female_-Präfix), der erste vorhandene gewinnt */
 const CLIP: Record<Anim, string[]> = {
@@ -152,6 +169,7 @@ export class Actor {
       if (!m.isMesh) return;
       m.castShadow = true; m.frustumCulled = false;
       const src = m.material as THREE.MeshStandardMaterial;
+      m.geometry = smooth(m.geometry, !!src.map, (hi - lo) * 2e-4);
       const mat = src.clone();
       mat.roughness = .75; mat.metalness = 0;
       outfitShader(mat, b.roles[src.name] ?? 0, b, lo, hi - lo, front);
