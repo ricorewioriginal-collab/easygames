@@ -86,6 +86,9 @@ export function createKayKit({ T, G, TOUCH }) {
     [/Großwesir|Sultan|Idris|Aladdin/, [['head', 'turban', 0xf0e8d8, 0xe84a8a, 1.55]]], [/Hutmacher/, [['head', 'zylinder', 0x3a2a4a, 0xe8c040, 1.55]]],
     [/Märzhase|Kaninchen/, [['head', 'langohr', 0xf4f0e8, 0, 1.55]]], [/Grinsekatze|Kater/, [['head', 'katzenohr', 0x9a6ac8, 0, 1.55]]], [/Alice/, [['head', 'schleife', 0x4a8ae8, 0, 1.55], ['torso', 'schuerze', 0xffffff, 0, 1]]],
     [/Fee/, [['back', 'fluegel', 0xa0f8ff, 0, 1], ['head', 'spitzohren', 0xf6dcc8, 0, 1.55]]], [/Wendy|Tigerlilie/, [['head', 'schleife', 0xe84a8a, 0, 1.55]]], [/Mowgli|Hathi|Baloo|Bagheera|Akela/, [['hips', 'guertel', 0x7a4a20, 0xe8c040, 1]]]];
+  const EYE = [0x2a6ab0, 0x2a8a4a, 0x7a4a20, 0x6a6a7a, 0x3a8ad8, 0x8a5ac8];
+  const HSTY = [[/Pinocchio|Peter Pan|Mowgli|Phoebus/, 'orig'], [/Fee/, 'zoepfe'], [/Alice|Artus|Merlin|Esmeralda|Königin|Prinzessin/, 'long'], [/Wendy/, 'dutt'], [/Tigerlilie|Mulan/, 'zopf'], [/Schneewittchen/, 'bob']];
+  const HF = ['long', 'zopf', 'dutt', 'zoepfe', 'bob', 'orig', 'long'], HM = ['orig', 'orig', 'zopf', 'orig', 'orig', 'long'];
   function qchar(id, o = {}) {
     const root = new T.Group(), P = { root, id, q: true, ready: false, mixer: null, act: {}, cur: '', want: 'Idle_A', once: null, swing: 0, bones: {}, speed: 1 };
     qrload().then(g => {
@@ -94,9 +97,10 @@ export function createKayKit({ T, G, TOUCH }) {
       const s = (o.h || 1.7) / qH; c.scale.multiplyScalar(s);
       const hs = [...id + (pl.top || tint || 0) + (o.h || 0)].reduce((a, ch) => a * 31 + ch.charCodeAt(0) | 0, 7) >>> 0;
       const top = pl.top ?? tint ?? 0x8a7a6a, top2 = pl.top2 ?? shade(top, .6), pants = pl.pants ?? shade(top2, .7), acc = ACCENT[hs % 3];
-      const hair = pl.hair ?? HAIR[hs % 6], skin = pl.skin ?? SKIN[(hs >> 3) % 5];
+      const hair = pl.hair ?? HAIR[hs % 6], skin = pl.skin ?? SKIN[(hs >>> 3) % 5];
       const female = /ad_(ma|ro|rh)/.test(id);
-      QS.paint(c, { hair, skin, under: lum(top) > 150 ? shade(top, .7) : 0xf0ecdc, top, pants, detail: acc, boots: shade(pants, .5), cloth: top2 });
+      const fin = !!(o.hide && /Leg/.test(o.hide.source || o.hide));
+      QS.paint(c, { noeyes: true, hair, skin, under: lum(top) > 150 ? shade(top, .7) : 0xf0ecdc, top, pants, detail: acc, boots: fin ? shade(pants, 1) : shade(pants, .5), cloth: top2 });
       const bones = {}; c.traverse(b => { if (b.isBone) bones[b.name] = b; }); P.bones = bones;
       const hid = o.hide || /^$/, hide = n => hid.test(n);
       const root3 = new T.Group(); root3.add(c); const tmp = new T.Group(); root.add(root3); root.updateMatrixWorld(true);
@@ -104,10 +108,14 @@ export function createKayKit({ T, G, TOUCH }) {
       const wear = (slot, obj, sc, rx) => { const b = bones[QS.BONE[slot]]; if (!b || !obj) return null; const wp = new T.Vector3(); b.getWorldPosition(wp); root.add(obj); obj.position.copy(root.worldToLocal(wp)); const off = QS.POS[slot] || [0, 0, 0]; obj.position.x += off[0]; obj.position.y += off[1] * (o.h || 1.7) / 1.8; obj.position.z += off[2];
         if (sc) obj.scale.setScalar(sc * (o.h || 1.7) / 1.8); if (rx) obj.rotation.x = rx; root.updateMatrixWorld(true); b.attach(obj); return obj; };
       const A = QS.ACC;
+      for (const n of ['FistL', 'FistR']) if (bones[n]) bones[n].scale.setScalar(.62);   // kleine, normale Hände
+      wear('head', QS.face({ eye: pl.eye ?? EYE[(hs >>> 9) % EYE.length], brow: shade(hair, .55), mouth: (hs >>> 14) % 4, female, blush: female || (hs >>> 5) % 3 === 0 }), 1.55);
+      { const hn = o.name && (HSTY.find(n => n[0].test(o.name)) || [])[1]; const hst = hn || (female ? HF : HM)[(hs >>> 4) % (female ? HF.length : HM.length)]; if (hst !== 'orig' && A['h_' + hst]) wear('head', A['h_' + hst](hair), 1.55); }
       if (id === 'ad_ma' && !hide('Hat')) wear('head', A.spitzhut(top2, acc), 1.55);
-      if (id === 'ad_ma') { wear('back', A.cape(top2, acc)); wear('hips', A.rock(top2)); }
-      if (id === 'ad_ro') { wear('hips', A.rock(shade(top2, 1.1))); wear('head', A.schleife(acc), 1.55); wear('torso', A.schuerze(shade(top, 1.2))); }
-      if (id === 'ad_rh') { if (!hide('Mask')) wear('head', A.kapuze(top2), 1.55); if (!hide('Cape')) wear('back', A.cape(top2, acc)); wear('hips', A.rock(shade(top2, .9))); }
+      if (fin) wear('hips', A.flosse(pants));
+      if (id === 'ad_ma') { wear('back', A.cape(top2, acc)); if (!fin) wear('hips', A.rock(top2)); }
+      if (id === 'ad_ro') { if (!fin) wear('hips', A.rock(shade(top2, 1.1))); wear('head', A.schleife(acc), 1.55); wear('torso', A.schuerze(shade(top, 1.2))); }
+      if (id === 'ad_rh') { if (!hide('Mask')) wear('head', A.kapuze(top2), 1.55); if (!hide('Cape')) wear('back', A.cape(top2, acc)); if (!fin) wear('hips', A.rock(shade(top2, .9))); }
       if (id === 'ad_kn') { if (!hide('Helmet')) wear('head', A.helm(0xb8c0d0, 0xc03030), 1.55); wear('torso', A.ruestung(0xb8c0d0, acc)); if (!hide('Cape')) wear('back', A.cape(top, acc)); }
       if (id === 'ad_ba') { wear('head', A.bart(shade(hair, .8)), 1.55); wear('hips', A.guertel(0x5a3a22, acc)); if (!hide('BearHat')) wear('head', A.muetze(shade(top2, .8)), 1.55); }
       if (id === 'ad_ra') { if (!hide('Cape')) { wear('head', A.kapuze(shade(top, .8)), 1.55); wear('back', A.cape(shade(top, .7), acc)); } wear('hips', A.guertel(0x5a3a22, acc)); if (lum(hair) > 200 && (o.h || 1.7) > 1.7) wear('head', A.bart(hair), 1.55); }
@@ -117,7 +125,7 @@ export function createKayKit({ T, G, TOUCH }) {
       if (v.hat && id !== 'ad_ma') wear('head', A.muetze(shade(v.cloth2 ?? top2, 1.0)), 1.55);
       if (v.beard && id !== 'ad_ba') wear('head', A.bart(shade(hair, .85)), 1.55);
       if (v.apron != null) wear('torso', A.schuerze(v.apron), 1);
-      if (!o.name || !NAMED.some(n => n[0].test(o.name))) if (!female && !v.hood && !v.hat && !v.beard && id !== 'ad_kn' && id !== 'ad_ba') { const k = (hs >> 6) % 5; if (k === 0) wear('head', A.muetze(shade(top2, 1.1)), 1.55); else if (k === 1) wear('head', A.bart(shade(hair, .85)), 1.55); else if (k === 2) wear('head', A.dreispitz(shade(top2, .6), acc), 1.55); else if (k === 3) wear('torso', A.kragen(shade(top, 1.3)), 1); }
+      if (!o.name || !NAMED.some(n => n[0].test(o.name))) if (!female && !v.hood && !v.hat && !v.beard && id !== 'ad_kn' && id !== 'ad_ba') { const k = (hs >>> 6) % 5; if (k === 0) wear('head', A.muetze(shade(top2, 1.1)), 1.55); else if (k === 1) wear('head', A.bart(shade(hair, .85)), 1.55); else if (k === 2) wear('head', A.dreispitz(shade(top2, .6), acc), 1.55); else if (k === 3) wear('torso', A.kragen(shade(top, 1.3)), 1); }
       for (const sl of ['r', 'l']) { const nm = o[sl]; if (!nm) continue; const m = WEAP.find(w => w[0].test(nm)); if (!m) continue; wear(sl === 'r' ? 'handR' : 'handL', A[m[1]](m[1] === 'stab' ? 0x7a5a30 : m[1] === 'schild' ? top : m[1] === 'bogen' ? 0x7a4a20 : 0xdde4ee, m[1] === 'schild' ? acc : m[1] === 'stab' ? 0x60e0ff : 0x8a6a30), 1, m[1] === 'schwert' || m[1] === 'schild' ? .9 : 0); }
       if (o.deco) { const a = new T.Group(); wear('head', a, .55); a.position.y += 0; P.bones.head = a; o.deco(P, c); }
       root.remove(root3); root.add(c);
