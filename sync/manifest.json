@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "dca6cb4c2a65",
- "generated": "2026-11-16T01:46:31+00:00",
- "commit": "3c28642916a2102a68c23a62b4b7e9dae0e49702",
+ "version": "764739961e37",
+ "generated": "2026-11-16T01:54:00+00:00",
+ "commit": "cc71824497f040fd8de373a454bbd2f78514856d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -12907,6 +12907,11 @@
    "h": "e33b70b80fc98e4b6a3dd6d3178fd9171466fb96123f3a796badc3252dd3a708"
   },
   {
+   "p": "pride-city/assets/index-CX-amoXg.js",
+   "s": 202667,
+   "h": "8c377a66bf46f457ea4fc4ceb158971965e5d7a8411ba323284bec802f8bc86c"
+  },
+  {
    "p": "pride-city/assets/index-Dn6h-JKU.js",
    "s": 204418,
    "h": "2c63ac50af20ca2bc8dda95a20e8812dcfb154fc91b5ccce2a7544078dcf2543"
@@ -15404,7 +15409,7 @@
   {
    "p": "sync/catalog.json",
    "s": 249421,
-   "h": "a8ea7053359f15559f4960c01a9a8dd4cdbc3c8c2f99233f73ec64d7641c3a03"
+   "h": "be94936b8cf1ad42235cf4add74c03f71d3613d1231ff3d86bda23e4951159ae"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
