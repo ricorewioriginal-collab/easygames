@@ -89,7 +89,9 @@
       fig.root.position.set(UL.portrait() ? 0 : -1.6, 0, 3.2); st.scene.add(fig.root); st.figs.push(fig); fig.play('cheer');
     };
     const oldUpd = st.update.bind(st);
-    st.update = (dt) => { st.tick(dt); if (fig) fig.root.rotation.y += dt * 0.6; const c = st.camera; c.position.set(fig ? fig.root.position.x + (UL.portrait() ? 0 : 1.2) : 0, 1.4, 7.4); c.lookAt(fig ? fig.root.position.x + (UL.portrait() ? 0 : 1.2) : 0, UL.portrait() ? 0.4 : 1.0, 3); };
+    // Figur im freien Bildteil: hochkant oben über dem Fenster, quer links neben dem Fenster
+    st.update = (dt) => { st.tick(dt); if (fig) fig.root.rotation.y += dt * 0.6; const c = st.camera, pt = UL.portrait(), fx = fig ? fig.root.position.x : 0;
+      if (pt) { c.position.set(fx, 1.9, 10.6); c.lookAt(fx, -2.2, 3); } else { c.position.set(fx + 2.3, 1.4, 7.4); c.lookAt(fx + 2.3, 1.0, 3); } };
     const sw = (arr, key, cur) => arr.map(c => `<button class="swatch ${cur === c[0] ? 'on' : ''}" data-k="${key}" data-v="${c[0]}" style="background:#${c[0].toString(16).padStart(6, '0')}" title="${c[1]}"></button>`).join('');
     const SK = ['#f6d5bf', '#e7b896', '#c88f6a', '#9a6a4c', '#6b4636'];
     const draw = () => {

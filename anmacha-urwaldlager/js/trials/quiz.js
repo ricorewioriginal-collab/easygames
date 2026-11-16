@@ -47,8 +47,15 @@
     },
     draw(ctx) {
       const [q, ans] = ctx.qs[ctx.qi];
+      // Gleiche Frage, noch offen: nur Zeit und Auswahl auffrischen – die Knöpfe bleiben stehen, damit kein Tipper verloren geht
+      if (ctx.ui && ctx._drawn === ctx.qi && ctx.answered < 0) {
+        const sm = ctx.ui.querySelector('.q small'); if (sm) sm.textContent = `⏱ ${Math.ceil(ctx.qt)} s · Fehler ${ctx.wrong}/3`;
+        ctx.ui.querySelectorAll('button').forEach(b => b.classList.toggle('sel', +b.dataset.i === ctx.sel));
+        return;
+      }
+      ctx._drawn = ctx.answered < 0 ? ctx.qi : -1;
       const el = ctx.overlay(`<div class="qa"><div class="q">Frage ${ctx.qi + 1}: ${UL.esc(q)}<br><small style="font-weight:600;opacity:.8">⏱ ${Math.ceil(ctx.qt)} s · Fehler ${ctx.wrong}/3</small></div>${ctx.order.map((o, i) => `<button data-i="${i}" class="${i === ctx.sel ? 'sel' : ''} ${ctx.answered >= 0 ? (i === ctx.right ? 'right' : i === ctx.answered ? 'wrong' : '') : ''}">${'ABCD'[i]}: ${UL.esc(ans[o])}</button>`).join('')}</div>`);
-      el.querySelectorAll('button').forEach(b => b.onclick = () => { if (ctx.answered < 0 && ctx.running) { ctx.sel = +b.dataset.i; this.answer(ctx, ctx.sel); } });
+      el.querySelectorAll('button').forEach(b => b.onpointerdown = b.onclick = (e) => { if (e) e.preventDefault(); if (ctx.answered < 0 && ctx.running) { ctx.sel = +b.dataset.i; this.answer(ctx, ctx.sel); } });
     },
     answer(ctx, i) {
       ctx.answered = i; ctx.lock = 1.5;

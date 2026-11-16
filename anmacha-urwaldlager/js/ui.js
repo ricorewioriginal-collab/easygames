@@ -35,6 +35,7 @@
     el.innerHTML = html;
     $('#panels').appendChild(el);
     const p = { el, opts, sel: -1, items: [] };
+    stack.forEach(q => q.el.classList.add('under'));   // darunterliegende Fenster ausblenden – nichts überlappt (wichtig am Handy)
     stack.push(p);
     UI.refresh(p);
     if (opts.focus != null) UI.focus(p, opts.focus); else UI.focus(p, 0);
@@ -52,7 +53,7 @@
     const i = stack.indexOf(p); if (i < 0) return;
     stack.splice(i, 1); p.el.classList.add('out'); setTimeout(() => p.el.remove(), 180);
     if (p.opts.onClose) p.opts.onClose();
-    const t = UI.top(); if (t) { UI.refresh(t); UI.focus(t, Math.max(0, t.sel)); }
+    const t = UI.top(); if (t) { t.el.classList.remove('under'); UI.refresh(t); UI.focus(t, Math.max(0, t.sel)); }
   };
   UI.closeAll = () => { while (stack.length) UI.close(); };
   UI.focus = (p, i, fromMouse) => {
