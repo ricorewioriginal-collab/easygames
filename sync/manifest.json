@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "7410f0d35447",
- "generated": "2026-11-16T03:11:58+00:00",
- "commit": "1bab201407d0be71222bda50ab0981cad6b9712c",
+ "version": "805aaf0502d0",
+ "generated": "2026-11-16T03:12:18+00:00",
+ "commit": "6da320bc6813a4ba77a91e249a2f8f75dbfdc1b9",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -12903,8 +12903,8 @@
   },
   {
    "p": "pride-city/assets/index-DURpZlue.css",
-   "s": 39971,
-   "h": "724d0b12c5f06a41be52a739b348d0225202136c3d7e39c11b7659422df7be47"
+   "s": 20428,
+   "h": "bd50eb757f81e2848857b6856149664f545acdfe2e22e1ab8f658afc679b2c83"
   },
   {
    "p": "pride-city/assets/index-DtuRIUeu.js",
@@ -13008,8 +13008,8 @@
   },
   {
    "p": "pride-city/assets/three-DFC6UmnX.js",
-   "s": 630900,
-   "h": "8cef5398ae0e55be1e190771a01236f60505f2154068a304321a64d573afd0b4"
+   "s": 578950,
+   "h": "f9305db592e81f1ec03c31e870dc7475b29be3f2946b1dc68770124edab0efe2"
   },
   {
    "p": "pride-city/card.jpg",
@@ -15404,7 +15404,7 @@
   {
    "p": "sync/catalog.json",
    "s": 249803,
-   "h": "fd1b5632148e00d3aace6ce0e1ac37caced8f0d40adec88452d82492518b2cf3"
+   "h": "5427f9ec3f103297547a6603f51c4e34914f827748d0f1fb8358c23f282e2cef"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
