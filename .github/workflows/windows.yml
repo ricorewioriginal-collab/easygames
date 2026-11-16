@@ -8,6 +8,7 @@ on:
       - 'windows/**'
       - 'stream-tiktok.js'
       - 'tools/tiktok-bridge.mjs'
+      - 'tools/tiktok-bridge.py'
       - '.github/workflows/windows.yml'
   workflow_dispatch:
 

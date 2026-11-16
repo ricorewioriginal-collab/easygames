@@ -29,7 +29,7 @@ die Belegung der App – kein Leuchtrahmen, keine Belegungs-Übersicht, keine Fe
 rechts in die Details), A bestätigt/startet, B zurück, LB/RB Ansicht, Y Optionen des Spiels, X Installieren/Update,
 Start = TikTok LIVE, Select = Controller einrichten, rechter Stick scrollt; auch in den Fenstern. Hinweise erscheinen links, sobald ein Controller da ist.
 
-**TikTok LIVE** (Bibliothek, „🎁 TikTok LIVE“, `TikTok.cs`): Name eintragen, „Verbinden“ – Brücke (`tools/tiktok-bridge.mjs`) und
+**TikTok LIVE** (Bibliothek, „🎁 TikTok LIVE“, `TikTok.cs`): Name eintragen, „Verbinden“ – Brücke wahlweise Node.js (`tools/tiktok-bridge.mjs`, TikTok-Live-Connector) oder Python (`tools/tiktok-bridge.py`, TikTokLive; App installiert Python per winget und `pip install TikTokLive`) und
 `stream-tiktok.js` stecken in der EXE (`tiktok/`, von `scripts/sync-easygames.php` aus easygames übernommen) und liegen ab dem ersten
 Start unter `%LocalAppData%\easygames\tiktok`; online holt die App beim Verbinden die neueste Fassung von easygames. Sie installiert einmalig
 TikTok-Live-Connector (braucht Node.js; Knopf „Node.js installieren“ über winget) und startet die Brücke unsichtbar im Hintergrund.

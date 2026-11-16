@@ -193,7 +193,7 @@ body.pad :focus{outline:3px solid var(--cyan);outline-offset:2px}body:not(.pad) 
   <h2 id="ttTitle">🎁 TikTok LIVE steuert die Spiele</h2>
   <p class="sub">Deine Zuschauer steuern das Spiel mit Kommentaren, Geschenken und Likes – z. B. „links“, „rechts“, 🌹 Rose = A, 🌌 Galaxy = Neustart. Frei einstellbar, für alle Spiele oder je Spiel. Im Spielfenster erscheinen dazu die Geschenke-Legende und die Ereignisse. Streamen: Spielfenster in TikTok LIVE Studio oder OBS als Fenster aufnehmen.</p>
   <div id="ttBody"></div>
-  <div class="foot"><span>Nutzt TikTok-Live-Connector (inoffiziell, ohne Anmeldung) und Node.js</span><button class="btn" id="ttClose">Fertig</button></div>
+  <div class="foot"><span>Nutzt TikTok-Live-Connector (Node.js) oder TikTokLive (Python) – inoffiziell, ohne Anmeldung</span><button class="btn" id="ttClose">Fertig</button></div>
 </div></div>
 <div class="dlg" id="padDlg" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="padTitle">
   <h2 id="padTitle">🎮 Controller einrichten</h2>
@@ -711,19 +711,27 @@ function ttDraw() {
   const t = S.tiktok || {}, g = S.games.find(x => x.id === sel), dot = $('ttDot');
   if (dot) dot.textContent = t.running ? '● an' : '';
   if ($('ttDlg').hidden) return;
-  const nameVal = ttEditing ? $('ttName').value : (t.name || '');
+  const nameVal = ttEditing ? $('ttName').value : (t.name || ''), py = t.engine === 'python';
   const obs = g ? EASY + 'stream.html?game=' + encodeURIComponent(slug(g)) + '&tiktok=1' : '';
   $('ttBody').innerHTML = `<div class="pad">
-      ${t.node === false ? '<div class="ty" style="color:#fca5a5">Node.js fehlt (wird einmalig gebraucht). <button class="btn sm" data-tt="node">Node.js installieren</button> – danach easygames neu starten.</div>' : ''}
+      <div class="row" style="align-items:center;margin-bottom:8px"><span class="ty" style="margin:0">Verbindung:</span>
+        <button class="btn sm${py ? '' : ' pri'}" data-tt="engine" data-en="node"${t.running || t.busy ? ' disabled' : ''}>Node.js · TikTok-Live-Connector</button>
+        <button class="btn sm${py ? ' pri' : ''}" data-tt="engine" data-en="python"${t.running || t.busy ? ' disabled' : ''}>Python · TikTokLive</button></div>
+      ${!py && t.node === false ? '<div class="ty" style="color:#fca5a5">Node.js fehlt (wird einmalig gebraucht). <button class="btn sm" data-tt="node">Node.js installieren</button> – danach easygames neu starten.</div>' : ''}
+      ${py && t.python === false ? '<div class="ty" style="color:#fca5a5">Python fehlt (wird einmalig gebraucht). <button class="btn sm" data-tt="python">Python installieren</button> – danach easygames neu starten.</div>' : ''}
       <div class="row" style="align-items:center"><label style="flex:1;display:flex;gap:8px;align-items:center">TikTok-Name <input id="ttName" placeholder="ohne @" value="${esc(nameVal)}" style="flex:1;height:34px;border-radius:9px;border:1px solid var(--line2);background:var(--panel);color:var(--text);padding:0 10px;font:inherit"></label>
         ${t.running ? '<button class="btn" data-tt="stop">■ Stoppen</button>' : `<button class="btn pri" data-tt="start"${t.busy ? ' disabled' : ''}>${t.busy ? '⏳ Wird vorbereitet …' : '▶ Verbinden'}</button>`}</div>
       <div class="ty" style="margin-top:8px">Status: <b>${esc(t.status || 'Aus')}</b>${t.running ? ' – startet automatisch, sobald du live bist.' : ''}</div>
       <button class="tog${t.inGames ? ' on' : ''}" data-tt="inGames" style="margin:4px 0 8px"><span>Spiele in der App per TikTok steuern</span><s></s></button>
+      <button class="tog${t.overlay !== false ? ' on' : ''}" data-tt="overlay" style="margin:0 0 8px"><span>Einblendungen im Spielfenster (aus = eigene Quellen in OBS/TikTok LIVE Studio)</span><s></s></button>
       <div class="row">
         <button class="btn" data-tt="setup"${g ? '' : ' disabled'}>⚙ Belegung bearbeiten${g ? ' (' + esc(g.short) + ')' : ''}</button>
         <button class="btn" data-tt="copy"${g ? '' : ' disabled'}>🔗 Overlay-Link für OBS kopieren</button>
       </div>
-      <div class="ty" style="margin-top:8px">Belegung bearbeiten öffnet das gewählte Spiel mit den Einstellungen (Brücke muss laufen). Ohne App: <code>TikTok-Start.bat</code> und die Anleitung auf easygames.</div>
+      ${g ? `<div class="ty" style="margin-top:10px"><b>Einzelne Quellen für Szenen</b> (Browser- bzw. Link-Quelle, durchsichtig – frei verschieben und skalieren; das Spiel nimmst du als Fensteraufnahme dieses Spielfensters):</div>
+      <div class="row" style="flex-wrap:wrap;gap:6px">${[['info', '✨ Alle Einblendungen'], ['legend', '🎁 Geschenke-Legende'], ['feed', '💬 Ereignisse'], ['top', '🏆 Top-Fans'], ['game', '🎮 Spiel im Browser']].map(v =>
+        `<button class="btn sm" data-tt="src" data-url="${esc(obs + '&view=' + v[0] + '&layout=full' + (v[0] === 'game' ? '' : '&bg=clear'))}">${v[1]}</button>`).join('')}</div>` : ''}
+      <div class="ty" style="margin-top:8px">Belegung bearbeiten öffnet das gewählte Spiel mit den Einstellungen (Brücke muss laufen). Beide Verbindungen lesen deinen LIVE ohne Anmeldung – klappt eine gerade nicht, die andere wählen. Ohne App: <code>TikTok-Start.bat</code> und die Anleitung auf easygames.</div>
       <pre style="margin:10px 0 0;max-height:150px;overflow:auto;font-size:11.5px;color:var(--muted);white-space:pre-wrap">${esc((t.log || []).join('\n'))}</pre>
     </div>`;
   $('ttName').oninput = () => { ttEditing = true; };
@@ -733,6 +741,9 @@ function ttDraw() {
     else if (a === 'inGames') send({ cmd: 'tiktok', act: 'inGames', on: !(S.tiktok && S.tiktok.inGames) });
     else if (a === 'setup' && g) send({ cmd: 'tiktok', act: 'setup', id: g.id });
     else if (a === 'copy') send({ cmd: 'tiktok', act: 'copy', text: obs });
+    else if (a === 'engine') send({ cmd: 'tiktok', act: 'engine', engine: b.dataset.en });
+    else if (a === 'overlay') send({ cmd: 'tiktok', act: 'overlay', on: !(S.tiktok && S.tiktok.overlay !== false) });
+    else if (a === 'src') send({ cmd: 'tiktok', act: 'copy', text: b.dataset.url });
     else send({ cmd: 'tiktok', act: a });
   });
 }

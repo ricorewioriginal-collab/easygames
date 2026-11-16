@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "56245bca9ec2",
- "generated": "2026-11-16T02:20:22+01:00",
- "commit": "d7dbacd6bb81715d96e34e74199d5d27c5d7ec8b",
+ "version": "390b63be95fd",
+ "generated": "2026-11-16T02:26:30+01:00",
+ "commit": "80253bacc0e793b8fc5c50d7c4393d9814bb1fd9",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9783,8 +9783,8 @@
   },
   {
    "p": "einbinden.html",
-   "s": 107640,
-   "h": "bdffd93dd15c66777c8406b7797f5d3e2d8a14cd4f13b15af35b9faa75358f9d"
+   "s": 107737,
+   "h": "5528b703d352a424bd99db3df735fa0726a7273f6d06412ab498eaed090d5073"
   },
   {
    "p": "erfolge.html",
@@ -10253,8 +10253,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 83196,
-   "h": "8076ce0ae180006cd2abd4b35207d3d92ee66a96c3cdadc5873522d08eff4243"
+   "s": 83399,
+   "h": "2014526ec998c84b08260f9632e7d305b6d1b8233e5505e69f62ac99ad0fd87b"
   },
   {
    "p": "games.js",
