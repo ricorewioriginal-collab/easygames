@@ -151,6 +151,18 @@ try {
   check((await p.locator('.screen .logo .l1').innerText()).toLowerCase() === 'pause', 'Esc öffnet Pausenmenü');
   await p.keyboard.press('Escape'); await sleep(400);
   check(await p.locator('.screen').count() === 0, 'Esc schließt Pausenmenü');
+  console.log('Nachtleben 18+');
+  await goTo(p, 4.6, -40); await act(p);
+  check(await p.locator('.screen .panel h3').innerText() === 'Videothek Kopfkino', 'Videothek öffnet');
+  check(!(await p.locator('.screen').innerText()).includes('Kabinen'), 'ohne 18+ keine Kabinen');
+  await p.keyboard.press('Escape'); await sleep(500);
+  await ev(p, () => { const g = window.__pc; g.save.data.settings.adult = true; g.save.data.inv.condom = 2; g.closeMenu(); g.placeMenu('kopfkino'); });
+  await sleep(500);
+  check((await p.locator('.screen').innerText()).includes('Kabinen'), 'mit 18+ Kabinen und Filme');
+  await ev(p, () => { window.__pc.closeMenu(); window.__pc.placeMenu('rosa'); }); await sleep(400);
+  check((await p.locator('.screen').innerText()).includes('Eintreten'), 'Haus Rosa mit 18+');
+  await ev(p, () => { const g = window.__pc; g.closeMenu(); g.save.data.settings.adult = false; g.touch.show(true); });
+  await sleep(400);
   await ev(p, () => window.__pc.save.write());
   check(p.errors.length === 0, 'keine Fehler in der Konsole' + (p.errors.length ? ': ' + p.errors.slice(0, 3).join(' | ') : ''));
 

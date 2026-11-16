@@ -26,7 +26,7 @@ export const NPCS: NpcDef[] = [
   { id: 'lena', name: 'Lena', pron: 'sie/ihr', color: '#ff218c', look: { body: 'Woman2', palette: 'pan', skin: 0, hair: 1 }, x: -11, z: 20, walk: [[-11, 20], [-20, 22], [-21, 9], [-10, 9]], petition: true },
   { id: 'tariq', name: 'Tariq', pron: 'er/ihn', color: '#9b4f96', look: { body: 'Man2', palette: 'bi', skin: 3, hair: 0 }, x: 40, z: 40, walk: [[40, 40], [50, 40], [50, 50], [40, 50]], petition: true },
   { id: 'hilde', name: 'Hilde', pron: 'sie/ihr', color: '#a3a3a3', look: { body: 'Woman', palette: 'ace', skin: 0, hair: 6 }, x: -19.2, z: 19.2, anim: 'sit', petition: true },
-  { id: 'sam', name: 'Sam', pron: 'er/ihn', color: '#5bcefa', look: { body: 'Human', palette: 'trans', skin: 2 }, x: 4, z: 30, walk: [[4, 30], [4, 48], [-4, 48], [-4, 30]], petition: true },
+  { id: 'sam', name: 'Sam', pron: 'er/ihn', color: '#5bcefa', look: { body: 'Man2', palette: 'trans', skin: 2, hair: 3 }, x: 4, z: 30, walk: [[4, 30], [4, 48], [-4, 48], [-4, 30]], petition: true },
   { id: 'kim', name: 'Kim', pron: 'they/them', color: '#3da542', look: { body: 'Rogue_Hooded', palette: 'aro', skin: 4 }, x: -26, z: -20, walk: [[-26, -20], [-26, -4], [-14, -4], [-14, -20]], petition: true },
 ];
 
