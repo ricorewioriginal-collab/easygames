@@ -60,8 +60,10 @@ async function run(v) {
 // Zweite Möglichkeit: tools/tiktok-bridge.py mit nachgebautem TikTokLive (Python); übersprungen ohne Python + websockets
 const PY_FAKE = `
 import asyncio
+class _I:
+    def __init__(s, u): s.url_list = [u] if u else []
 class _U:
-    def __init__(s, n): s.nickname = n; s.unique_id = n.lower(); s.display_id = n.lower()
+    def __init__(s, n): s.nickname = n; s.unique_id = n.lower(); s.display_id = n.lower(); s.avatar_thumb = _I('https://p16-sign.tiktokcdn.com/' + n + '.webp')
 class _I:
     def __init__(s, u): s.url_list = [u] if u else []
 class _G:
@@ -106,6 +108,7 @@ async function runPy() {
   if (!evs.length) console.log(out.slice(-600));
   ok(chats.length === 2 && chats[0].text === 'links' && chats[0].user === 'Mia', T + 'Chat-Befehle (' + chats.map(e => e.user + ':' + e.text).join(', ') + ')');
   ok(evs.some(e => e.type === 'like' && e.count === 15), T + 'Likes mit Anzahl');
+  ok(chats[0] && chats[0].pic === 'https://p16-sign.tiktokcdn.com/Mia.webp' && chats[0].handle === 'mia', T + 'Profilbild und @Name');
   ok(gifts.length === 2 && gifts[0].gift === 'Rose' && gifts[0].count === 3 && gifts[0].img === 'https://p16-webcast.tiktokcdn.com/rose.webp', T + 'Serien-Geschenk einmal mit Anzahl und Bild');
   ok(gifts[1] && gifts[1].gift === 'Galaxy' && gifts[1].diamonds === 1000, T + 'Einzel-Geschenk mit Diamanten');
   ok(['follow', 'share', 'join', 'sub'].every(t => evs.some(e => e.type === t)), T + 'Follow, Teilen, Beitritt und Abo');

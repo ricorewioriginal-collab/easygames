@@ -29,6 +29,8 @@ public sealed class TikTok
     public bool InGames { get; private set; } = true;
     /// <summary>"node" (TikTok-Live-Connector) oder "python" (TikTokLive).</summary>
     public string Engine { get; private set; } = "node";
+    /// <summary>Einblendungen (Legende, Ereignisse, Top-Fans) im Spielfenster – aus, wenn der Streamer sie als eigene Quellen in OBS/TikTok LIVE Studio einbindet.</summary>
+    public bool Overlay { get; private set; } = true;
     public string Status { get; private set; } = "Aus";
     public bool Running { get { lock (_gate) return _proc is { HasExited: false }; } }
     public bool Busy => _busy;
@@ -45,6 +47,7 @@ public sealed class TikTok
             if (d.RootElement.TryGetProperty("name", out var n)) Name = n.GetString() ?? "";
             if (d.RootElement.TryGetProperty("inGames", out var g)) InGames = g.GetBoolean();
             if (d.RootElement.TryGetProperty("engine", out var en) && en.GetString() == "python") Engine = "python";
+            if (d.RootElement.TryGetProperty("overlay", out var ov)) Overlay = ov.GetBoolean();
         }
         catch { }
     }
@@ -66,7 +69,7 @@ public sealed class TikTok
         }
     }
 
-    private void Save() { try { File.WriteAllText(SettingsFile, JsonSerializer.Serialize(new { name = Name, inGames = InGames, engine = Engine })); } catch { } }
+    private void Save() { try { File.WriteAllText(SettingsFile, JsonSerializer.Serialize(new { name = Name, inGames = InGames, engine = Engine, overlay = Overlay })); } catch { } }
     private void Note(string line)
     {
         lock (_gate) { _log.AddLast(line); while (_log.Count > 40) _log.RemoveFirst(); }
@@ -75,6 +78,7 @@ public sealed class TikTok
     }
 
     public void SetInGames(bool on) { InGames = on; Save(); Changed?.Invoke(); }
+    public void SetOverlay(bool on) { Overlay = on; Save(); Changed?.Invoke(); }
     public void SetEngine(string e) { if (Running || _busy) return; Engine = e == "python" ? "python" : "node"; Save(); Changed?.Invoke(); }
 
     /// <summary>python.exe (ohne den Microsoft-Store-Platzhalter in WindowsApps) oder der Starter py.exe.</summary>
@@ -222,7 +226,7 @@ public sealed class TikTok
         var f = Path.Combine(Dir, "stream-tiktok.js");
         string text;
         try { text = File.ReadAllText(f); } catch { return ""; }
-        var cfg = JsonSerializer.Serialize(new { ws = "ws://127.0.0.1:" + Port, id = GameKey(g), title = g.Title, setup });
+        var cfg = JsonSerializer.Serialize(new { ws = "ws://127.0.0.1:" + Port, id = GameKey(g), title = g.Title, setup, view = Overlay ? "all" : "game" });
         return "if (window === window.top) { window.EG_TIKTOK_EMBED = " + cfg + ";\n" + text + "\n}";
     }
 }

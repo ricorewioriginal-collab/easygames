@@ -23,7 +23,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   const inject = ev => new Promise((res, rej) => { const w = new WebSocket('ws://127.0.0.1:' + port); w.onopen = () => { w.send(JSON.stringify({ type: 'inject', ev })); setTimeout(() => { w.close(); res(); }, 100); }; w.onerror = rej; });
   const b = await chromium.launch();
   // Geschenkeliste mit Bildern (tiktok-gifts.json) aus dem Checkout statt von der Homepage
-  const newCtx = b.newContext.bind(b); b.newContext = async o => { const c = await newCtx(o); await c.route('**/easygames/tiktok-gifts.json*', r => r.fulfill({ path: path.join(ROOT, 'tiktok-gifts.json'), contentType: 'application/json' })); return c; };
+  const newCtx = b.newContext.bind(b); b.newContext = async o => { const c = await newCtx(o); await c.route('**/easygames/tiktok-gifts.json*', r => r.fulfill({ path: path.join(ROOT, 'tiktok-gifts.json'), contentType: 'application/json' }));
+    await c.route('https://p16-sign.tiktokcdn.com/test-*', r => r.fulfill({ path: path.join(ROOT, 'logo.png'), contentType: 'image/png' })); return c; };
   const base = 'http://127.0.0.1:' + srv.address().port + '/stream.html?game=deluxe-2048&tiktok=ws://127.0.0.1:' + port;
   try {
     // Einstellungen: Geschenk „Galaxy“ = Neustart nur für 2048, dazu Rose = rechts; speichern geht an die Brücke
@@ -43,6 +44,10 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     ok(/stream\.html\?game=deluxe-2048&tiktok=[^&]+&format=16x9$/.test(await s.inputValue('#ttUrl')) && /^https:\/\/ricorewioriginal-collab\.github\.io\/easygames\//.test(await s.inputValue('#ttUrl')), 'Overlay-Adresse 16:9 über die easygames-Homepage');
     await s.click('[data-preset="9x16,info,full,1"]');
     ok(/view=info&layout=full&bg=clear/.test(await s.inputValue('#ttUrl')), 'Vorlage „nur Einblendungen“ (zweite Quelle)');
+    await s.selectOption('#ttTheme', 'glass'); await s.selectOption('#ttSize', 'l');
+    const srcs = await s.$$eval('#ttSrcs input', l => l.map(i => i.value));
+    ok(srcs.length === 6 && /view=game&layout=full/.test(srcs[0]) && srcs.slice(2).every(u => /bg=clear/.test(u) && /theme=glass&size=l/.test(u)) && srcs.every(u => u.startsWith('https://ricorewioriginal-collab.github.io/easygames/stream.html?')),
+      'Einzelne Quellen: Spiel und jede Einblendung mit eigenem Link, Stil und Größe (' + srcs.length + ')');
     if (SHOTS) await s.screenshot({ path: path.join(SHOTS, 'tiktok-overlay-ansichten.png') });
     await s.click('[data-tab="t"]'); if (SHOTS) await s.screenshot({ path: path.join(SHOTS, 'tiktok-streiche.png') });
     await s.click('[data-tab="g"]');
@@ -63,8 +68,9 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     const pad = await p.evaluate(() => { const w = EG_STREAM.frame.contentWindow, g = w.navigator.getGamepads()[3]; return !!(w.EasyGamesPadNormal && g && /virtuell/.test(g.id)); });
     ok(pad, 'virtueller Controller im Spiel angemeldet');
     ok((await board()) !== b0 || !(await p.locator('iframe').first().screenshot()).equals(shot0), 'Chat-Befehle bewegen das Spiel');
-    await inject({ type: 'gift', user: 'Leon', gift: 'Perfume', count: 2 }); await sleep(1500);
-    ok(/Leon: 🌹 Perfume ×2 → nach rechts/.test(await p.textContent('.tt-feed')), 'Geschenk mit Anzahl in der Ereignis-Liste');
+    await inject({ type: 'gift', user: 'Leon', pic: 'https://p16-sign.tiktokcdn.com/test-leon.png', handle: 'leon', gift: 'Perfume', count: 2 }); await sleep(1500);
+    ok(await p.evaluate(() => !!document.querySelector('.tt-feed .ev .av img[src*="test-leon"]')), 'Ereignis mit TikTok-Profilbild');
+    ok(/Leon.*Perfume ×2 → nach rechts/.test(await p.textContent('.tt-feed')), 'Geschenk mit Anzahl in der Ereignis-Liste');
     if (SHOTS) await p.screenshot({ path: path.join(SHOTS, 'tiktok-overlay.png') });
     await inject({ type: 'gift', user: 'Emma', gift: 'Galaxy', count: 1 }); await sleep(2000);
     ok(await p.evaluate(() => EG_STREAM.frame.contentWindow.__mark === undefined), 'Galaxy startet das Spiel neu');
@@ -146,7 +152,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     await e.goto('http://127.0.0.1:' + srv.address().port + '/deluxe-2048/'); await e.waitForSelector('.tt-leg'); await sleep(1500);
     await e.waitForFunction(() => /verbunden/.test(document.querySelector('.tt-state').textContent) && !/nicht/.test(document.querySelector('.tt-state').textContent), null, { timeout: 8000 }).catch(() => { });
     await inject({ type: 'gift', user: 'Noah', gift: 'Perfume', count: 1 });
-    const fe = await e.waitForFunction(() => /Noah: 🌹 Perfume/.test(document.querySelector('.tt-feed').textContent), null, { timeout: 4000 }).then(() => true, () => false);
+    const fe = await e.waitForFunction(() => /Noah.*Perfume/.test(document.querySelector('.tt-feed').textContent), null, { timeout: 4000 }).then(() => true, () => false);
     const pe = await e.waitForFunction(() => !!navigator.getGamepads()[3], null, { timeout: 4000 }).then(() => true, () => false);
     ok(fe && pe, 'Windows-App (eingebettet): Legende, Ereignis' + (fe ? '' : ' [fehlt]') + ' und virtueller Controller' + (pe ? '' : ' [fehlt]') + ' im Spielfenster');
     const eb = () => e.evaluate(() => document.querySelector('#board, .board, main, body').innerText + '|' + JSON.stringify(localStorage));

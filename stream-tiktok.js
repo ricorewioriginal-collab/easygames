@@ -26,7 +26,10 @@
   if (!P.get('tiktok') || !S) return;
   var URLWS = /^wss?:\/\//.test(P.get('tiktok')) ? P.get('tiktok') : 'ws://127.0.0.1:21213', SETUP = P.get('setup') === '1', GID = S.game.id;
   // Ansicht: game = Spiel mit Streichen ohne Infos, info/legend/feed/top = nur Einblendungen (zweite Quelle darüber in OBS)
-  var VIEW = EMB || SETUP ? 'all' : (/^(game|info|legend|feed|top)$/.test(P.get('view')) ? P.get('view') : 'all'), NOGAME = !!S.noGame;
+  var VIEW = SETUP ? 'all' : EMB ? (EMB.view === 'game' ? 'game' : 'all') : (/^(game|info|legend|feed|top)$/.test(P.get('view')) ? P.get('view') : 'all'), NOGAME = !!S.noGame;
+  // Aussehen der Einblendungen (frei wählbar je Quelle): theme=neon|glass|dark, size=s|m|l|xl
+  var THEME = /^(glass|dark)$/.test(P.get('theme') || (EMB && EMB.theme) || '') ? (P.get('theme') || EMB.theme) : 'neon';
+  var SIZE = { s: 0.85, m: 1, l: 1.3, xl: 1.65 }[P.get('size') || (EMB && EMB.size) || 'm'] || 1, SOLO = /^(legend|feed|top)$/.test(VIEW);
   var shows = function (n) { return VIEW === 'all' || VIEW === n || (VIEW === 'info' && n !== 'game'); };
   var BTN = { A: 0, B: 1, X: 2, Y: 3, LB: 4, RB: 5, LT: 6, RT: 7, SELECT: 8, START: 9, L3: 10, R3: 11, UP: 12, DOWN: 13, LEFT: 14, RIGHT: 15 };
   // Alle Aktionen mit Bild, Text und Gruppe (Auswahl in den Einstellungen, Legende, Streiche-Liste)
@@ -88,9 +91,12 @@
   // Empfohlene Belegung, die ein Spiel selbst mitbringt (window.EasyGamesStream.defaults) – gilt, bis eine eigene gespeichert ist
   function gameDefaults() { try { var w = gameWin(), d = w && w.EasyGamesStream && w.EasyGamesStream.defaults; return d && typeof d === 'object' ? d : {}; } catch (e) { return {}; } }
   function actInfo(a) { return ACTS.find(function (x) { return x[0] === a; }); }
+  // Geschenknamen tolerant vergleichen: Groß-/Kleinschreibung, Satzzeichen und Mehrzahl-s („Hand Hearts“ = „Hand Heart“)
+  // (erst genau, dann tolerant – „Rose“ und „Roses“ bleiben verschiedene Geschenke)
+  function gkey(n, loose) { var k = String(n || '').toLowerCase().replace(/[^a-z0-9äöüß]+/g, ''); return loose ? k.replace(/s$/, '') : k; }
+  function gfind(list, name, get) { var n = gkey(name), m = list.find(function (x) { return gkey(get(x)) === n; }); if (m) return m; n = gkey(name, 1); return list.find(function (x) { return gkey(get(x), 1) === n; }); }
   function giftInfo(name) {
-    var n = String(name || '').toLowerCase(), l = liveGifts.find(function (g) { return String(g.name).toLowerCase() === n; }), s = GIFTS.find(function (g) { return g[0].toLowerCase() === n; }),
-      k = catGifts.find(function (g) { return String(g.name).toLowerCase() === n; });
+    var nm = function (g) { return g.name; }, l = gfind(liveGifts, name, nm), s = gfind(GIFTS, name, function (g) { return g[0]; }), k = gfind(catGifts, name, nm);
     return { img: (l && l.img) || (k && k.img) || '', icon: s ? s[1] : '', diamonds: (l && l.diamonds) || (k && k.coins) || (s && s[2]) || 0 };
   }
 
@@ -114,8 +120,25 @@
     '.tt-vote{left:50%;top:40%;transform:translate(-50%,-50%);padding:10px 16px;border-radius:14px;background:rgba(5,7,13,.82);font-size:15px;font-weight:800;text-align:center}' +
     '.tt-state{right:8px;bottom:8px;font-size:10px;opacity:.75;padding:2px 8px;border-radius:999px;background:rgba(0,0,0,.35)}' +
     '.l .tt-tr,.l .tt-tl,.full .tt-tr,.full .tt-tl{top:16px}.l .tt-br,.l .tt-bl,.full .tt-br,.full .tt-bl{bottom:12px}.l .tt-tr,.l .tt-br{right:258px}' +
-    '.l .tt-feed,.full .tt-feed{bottom:12px}.l .tt-feed,.l .tt-like{right:258px}.l .tt-like,.full .tt-like{top:4px}.l .tt-state{right:258px}.l .tt-leg,.l .tt-top{max-width:30%}';
+    '.l .tt-feed,.full .tt-feed{bottom:12px}.l .tt-feed,.l .tt-like{right:258px}.l .tt-like,.full .tt-like{top:4px}.l .tt-state{right:258px}.l .tt-leg,.l .tt-top{max-width:30%}' +
+    // Ereignisse als Karten: Profilbild mit Ring in TikTok-Farben, Name, Text, Geschenkbild
+    '.tt-feed div.ev{display:flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;white-space:nowrap}.tt-feed div.ev .av{flex:none;width:28px;height:28px;border-radius:50%;padding:2px;background:conic-gradient(#25f4ee,#fe2c55,#8b5cf6,#25f4ee);display:grid;place-items:center;font-weight:900;font-size:13px}' +
+    '.tt-feed div.ev .av img,.tt-feed div.ev .av span{width:100%;height:100%;border-radius:50%;object-fit:cover;margin:0;border:0;background:#1c1530;display:grid;place-items:center;vertical-align:0}' +
+    '.tt-feed div.ev .t{overflow:hidden;text-overflow:ellipsis}.tt-feed div.ev .t b{color:#fff;margin-right:5px}.tt-feed div.ev .t b::after{content:""}.tt-feed div.ev .t span{font-weight:700;opacity:.95}' +
+    '.tt-feed div.ev img.g{flex:none;width:26px;height:26px;border:0;border-radius:0;margin:0;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));animation:ttPop .6s cubic-bezier(.2,1.6,.4,1)}@keyframes ttPop{from{transform:scale(.2) rotate(-30deg)}}' +
+    '.tt-top .r{display:inline-flex;align-items:center;gap:5px}.tt-top .r img,.tt-top .r .ini{width:18px;height:18px;border-radius:50%;object-fit:cover;background:#1c1530;display:inline-grid;place-items:center;font-size:10px;font-weight:900;border:1px solid rgba(255,255,255,.5)}' +
+    '.tt-leg img{width:20px;height:20px;object-fit:contain;vertical-align:-5px}.tt-leg .r{grid-template-columns:20px auto minmax(0,1fr)}' +
+    // Größe und Stil (Parameter size/theme)
+    '.tt{zoom:var(--tts,1)}' +
+    '.tt-glass .tt-leg,.tt-glass .tt-top{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-left:1px solid rgba(255,255,255,.35);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4)}' +
+    '.tt-glass .tt-feed div{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}' +
+    '.tt-dark .tt-leg,.tt-dark .tt-top{background:rgba(0,0,0,.82);border:0;border-radius:8px;box-shadow:none}.tt-dark .tt-leg b,.tt-dark .tt-top b{background:none;color:#fe2c55;-webkit-text-fill-color:#fe2c55}' +
+    '.tt-dark .tt-feed div{background:rgba(0,0,0,.82);border:0;border-left:3px solid #fe2c55;border-radius:8px;box-shadow:none}' +
+    // eigene Quelle je Teil (view=legend|feed|top): oben links, volle Breite – in OBS/TikTok LIVE Studio frei verschieben und skalieren
+    '.tt-solo .tt-leg,.tt-solo .tt-top{top:8px!important;left:8px!important;right:auto!important;bottom:auto!important;max-width:calc(100% - 16px)!important}.tt-solo .tt-feed{top:8px!important;bottom:auto!important;right:8px!important;left:8px!important}' +
+    '.tt-solo .tt-like{top:auto!important;bottom:8px!important;left:8px!important;right:8px!important}.tt-solo .tt-state{display:none!important}';
   document.head.appendChild(css);
+  S.stage.style.setProperty('--tts', SIZE); if (THEME !== 'neon') S.stage.classList.add('tt-' + THEME); if (SOLO) S.stage.classList.add('tt-solo');
   function box(cls) { var d = document.createElement('div'); d.className = 'tt ' + cls; S.stage.appendChild(d); return d; }
   var legend = box('tt-leg'), feed = box('tt-feed'), likeBar = box('tt-like'), vote = box('tt-vote'), top = box('tt-top'), state = box('tt-state');
   likeBar.innerHTML = '<i></i>'; vote.style.display = 'none'; top.style.display = 'none';
@@ -146,10 +169,19 @@
   function drawTop() {
     var e = eff(), k = Object.keys(fans).sort(function (a, b) { return fans[b] - fans[a]; }).slice(0, 3);
     if (!e.top || !k.length || !shows('top')) { top.style.display = 'none'; return; }
-    top.style.display = ''; top.innerHTML = '<b>🏆 TOP</b>' + k.map(function (u, i) { return '<div class="r">' + ['🥇', '🥈', '🥉'][i] + ' ' + esc(u) + ' <span class="c">' + fans[u] + '💎</span></div>'; }).join('');
+    top.style.display = ''; top.innerHTML = '<b>🏆 TOP</b>' + k.map(function (u, i) { return '<div class="r">' + ['🥇', '🥈', '🥉'][i] + ' ' + avatar(u, 'ini') + esc(u) + ' <span class="c">' + fans[u] + '💎</span></div>'; }).join('');
   }
-  function toast(text, who) {
-    var d = document.createElement('div'), pic = who && profile(who).pic; d.textContent = text; if (pic) { var im = document.createElement('img'); im.src = pic; im.alt = ''; im.referrerPolicy = 'no-referrer'; im.onerror = function () { im.remove(); }; d.prepend(im); } feed.appendChild(d);
+  // Profilbild (oder Anfangsbuchstabe, falls TikTok keins liefert bzw. es nicht lädt)
+  function avatar(u, cls) {
+    var pic = profile(u).pic, ini = esc(String(u || '?').trim().charAt(0).toUpperCase() || '?');
+    return pic ? '<img src="' + esc(pic) + '" alt="" referrerpolicy="no-referrer" onerror="this.outerHTML=\'<span class=&quot;' + (cls || '') + '&quot;>' + ini.replace(/'/g, '') + '</span>\'">' : '<span class="' + (cls || '') + '">' + ini + '</span>';
+  }
+  function toast(text, who, gimg) {
+    var d = document.createElement('div');
+    if (who && String(text).indexOf(who + ': ') === 0) {   // „Name: Text“ → Karte mit Profilbild, Name und Geschenkbild
+      d.className = 'ev'; d.innerHTML = '<span class="av">' + avatar(who) + '</span><span class="t"><b>' + esc(who) + '</b><span>' + esc(String(text).slice(who.length + 2)) + '</span></span>' + (gimg ? '<img class="g" src="' + esc(gimg) + '" alt="">' : '');
+    } else d.textContent = text;
+    feed.appendChild(d);
     while (feed.children.length > 4) feed.firstChild.remove();
     setTimeout(function () { d.remove(); }, 5000);
   }
@@ -447,10 +479,11 @@
       toast(who + ': ' + hit[0], who); run(hit[1], who); ttCount('cmds');
     } else if (ev.type === 'gift') {
       if (ev.img && ev.gift && !giftInfo(ev.gift).img) catGifts.push({ name: ev.gift, coins: +ev.diamonds || 0, img: ev.img });   // neues Geschenk: Bild aus dem LIVE übernehmen
-      var name = String(ev.gift || '').toLowerCase(), g = (e.gifts || []).find(function (x) { return x.gift && (x.gift.toLowerCase() === name || String(x.gift) === String(ev.giftId)); });
+      var g = (e.gifts || []).find(function (x) { return x.gift && String(x.gift) === String(ev.giftId); }) || gfind((e.gifts || []).filter(function (x) { return x.gift && (gkey(x.gift) === gkey(ev.gift) || !catGifts.some(function (c) { return gkey(c.name) === gkey(x.gift); })); }), ev.gift, function (x) { return x.gift; });   // tolerant nur für Namen, die TikTok so nicht (mehr) kennt
       var dia = (+ev.diamonds || giftInfo(ev.gift).diamonds || 1) * (ev.count || 1); fans[who] = (fans[who] || 0) + dia; drawTop(); ttCount('diam', dia);
       if (!g) return;
-      toast(who + ': ' + (g.icon || '🎁') + ' ' + g.gift + (ev.count > 1 ? ' ×' + ev.count : '') + ' → ' + (g.label || g.action), who); run(g.action, who, ev.count); ttCount('gifts', ev.count || 1);
+      var gimg = ev.img || giftInfo(ev.gift).img;
+      toast(who + ': ' + (gimg ? '' : (g.icon || '🎁') + ' ') + g.gift + (ev.count > 1 ? ' ×' + ev.count : '') + ' → ' + (g.label || g.action), who, gimg); run(g.action, who, ev.count); ttCount('gifts', ev.count || 1);
     } else if (ev.type === 'like' && e.likes && e.likes.every > 0) {
       likeSum += ev.count || 1; ttCount('likes', ev.count || 1);
       while (likeSum >= e.likes.every) { likeSum -= e.likes.every; toast('❤️ ' + e.likes.every + ' Likes → ' + (e.likes.label || e.likes.action)); run(e.likes.action, who); }
@@ -521,6 +554,7 @@
     '#ttSet .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;max-height:430px;overflow:auto;padding:2px}' +
     '#ttSet .grid button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:12px;font-size:12px;line-height:1.2;text-align:center;position:relative}#ttSet .grid button .e{font-size:26px;height:32px;display:flex;align-items:center}#ttSet .grid button img{width:32px;height:32px}' +
     '#ttSet .grid button small{opacity:.65}#ttSet .grid button.on{border-color:#34d399;background:#0f2a24}#ttSet .grid button.on:after{content:"✓";position:absolute;right:6px;top:4px;color:#34d399;font-weight:800}' +
+    '#ttSet .srcs{display:grid;gap:8px;margin-top:8px}#ttSet .src{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}#ttSet .src .url{margin-top:5px}#ttSet .src .url input{font-size:11.5px}' +
     '#ttSet .strip{display:flex;flex-wrap:wrap;gap:5px}#ttSet .strip button{padding:5px 9px;font-size:12.5px;border-radius:999px}' +
     '#ttSet .acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}#ttSet .act{display:flex;gap:8px;align-items:center;padding:8px 10px;border-radius:12px;background:#111a2e;border:1px solid #233150}' +
     '#ttSet .act .e{font-size:22px}#ttSet .act div{flex:1;min-width:0}#ttSet .act code{font-size:11px;color:#9aa7c2}#ttSet .act button{padding:5px 8px;font-size:12px}' +
@@ -544,9 +578,11 @@
     '<section data-sec="t"><div class="card"><div class="s">Alle Streiche und Effekte wirken in jedem Spiel – im Browser-Overlay und in der Windows-App. Zahl = Sekunden. Kombinieren mit + (z. B. <code>bomb:20+fx:party:20</code>), wiederholen mit *5.</div></div><div id="ttActs"></div></section>' +
     (EMB ? '' : '<section data-sec="o"><div class="card"><h3 style="margin-top:0">📺 Overlay-Adresse</h3><div class="s">Als Browserquelle in OBS bzw. „Link“-Quelle in TikTok LIVE Studio einfügen. Format passend zur Ausrichtung des LIVE wählen.</div>' +
       '<div class="row">' + [['ttFmt', 'Format', [['9x16', '📱 9:16 hochkant'], ['16x9', '🖥️ 16:9 quer']]], ['ttView', 'Ansicht', [['all', 'Alles in einer Quelle'], ['game', 'Nur Spiel (mit Streichen)'], ['info', 'Nur Einblendungen'], ['legend', 'Nur Geschenke-Legende'], ['feed', 'Nur Ereignisse'], ['top', 'Nur Top-Fans']]],
-        ['ttLay', 'Rahmen', [['frame', 'Titel + QR-Code'], ['badge', 'Spiel + kleiner QR'], ['full', 'nur Spiel, randlos']]]].map(function (s) { return '<label>' + s[1] + ' ' + sel(s[0], s[2]) + '</label>'; }).join('') +
+        ['ttLay', 'Rahmen', [['frame', 'Titel + QR-Code'], ['badge', 'Spiel + kleiner QR'], ['full', 'nur Spiel, randlos']]], ['ttTheme', 'Stil', [['neon', '🌈 Neon (TikTok-Farben)'], ['glass', '🧊 Glas'], ['dark', '⬛ Dunkel, schlicht']]],
+        ['ttSize', 'Größe', [['m', 'normal'], ['s', 'klein'], ['l', 'groß'], ['xl', 'sehr groß']]]].map(function (s) { return '<label>' + s[1] + ' ' + sel(s[0], s[2]) + '</label>'; }).join('') +
       '<label><input type="checkbox" id="ttClear" style="width:auto"> durchsichtiger Hintergrund</label></div>' +
       '<div class="url"><input id="ttUrl" readonly><button id="ttCopy">📋 Kopieren</button><button id="ttOpen">↗ Öffnen</button></div>' +
+      '<h3>🎬 Einzelne Quellen für Szenen</h3><div class="s">Jede Zeile ist eine eigene Browser- bzw. Link-Quelle – Spiel und Einblendungen getrennt, in jeder Szene frei anordnen, ein- und ausblenden. Format, Stil, Größe und Rahmen von oben gelten für alle. Einblendungen sind durchsichtig und stehen oben links, damit du sie leicht verschieben und skalieren kannst.</div><div id="ttSrcs" class="srcs"></div>' +
       '<h3>Vorlagen</h3><div class="strip">' + [['9x16', 'all', 'frame', 0, '📱 TikTok LIVE Studio hochkant'], ['16x9', 'all', 'frame', 0, '🖥️ TikTok LIVE Studio quer'], ['9x16', 'all', 'full', 0, '📱 OBS hochkant (randlos)'], ['16x9', 'all', 'full', 0, '🖥️ OBS quer (randlos)'],
         ['9x16', 'game', 'full', 0, '🎮 Quelle 1: nur Spiel'], ['9x16', 'info', 'full', 1, '✨ Quelle 2: nur Einblendungen']].map(function (v) { return '<button data-preset="' + v.slice(0, 4).join(',') + '">' + v[4] + '</button>'; }).join('') + '</div>' +
       '<div class="s" style="margin-top:10px"><b>Eine Quelle</b> („Alles“): am einfachsten. <b>Zwei Quellen</b>: „Nur Spiel“ unten (zum Spielen „Interagieren“), „Nur Einblendungen“ durchsichtig darüber – dann kannst du Legende und Ereignisse frei verschieben/skalieren; beide mit gleichem Format und Rahmen. Einzelne Teile (Legende, Ereignisse, Top-Fans) gehen auch als eigene Quellen.</div></div></section>') +
@@ -623,18 +659,28 @@
   function tab(k) { [].forEach.call(P2.querySelectorAll('[data-tab]'), function (b) { b.classList.toggle('on', b.dataset.tab === k); }); [].forEach.call(P2.querySelectorAll('[data-sec]'), function (s) { s.classList.toggle('on', s.dataset.sec === k); }); }
   function test(a) { P2.style.display = 'none'; toast('Test: ' + a); run(a, 'Test'); setTimeout(function () { P2.style.display = ''; }, 3000); }
   // Overlay-Adresse (immer über die easygames-Homepage, damit OBS/TikTok LIVE Studio sie auf jedem Rechner öffnen)
-  function urlDraw() {
-    var u = $('#ttUrl'); if (!u) return;
+  function srcUrl(view, lay, clear) {
     var base = window.EasyGamesDevice && EasyGamesDevice.publicBase ? EasyGamesDevice.publicBase() : new URL('.', location.href).href;
     var q = new URLSearchParams({ game: GID, tiktok: '1' }); if ($('#ttFmt').value !== '9x16') q.set('format', $('#ttFmt').value);
-    if ($('#ttView').value !== 'all') q.set('view', $('#ttView').value); if ($('#ttLay').value !== 'frame') q.set('layout', $('#ttLay').value); if ($('#ttClear').checked) q.set('bg', 'clear');
+    if (view !== 'all') q.set('view', view); if (lay !== 'frame') q.set('layout', lay); if (clear) q.set('bg', 'clear');
+    if ($('#ttTheme').value !== 'neon') q.set('theme', $('#ttTheme').value); if ($('#ttSize').value !== 'm') q.set('size', $('#ttSize').value);
     if (/^wss?:\/\//.test(P.get('tiktok') || '') && P.get('tiktok') !== 'ws://127.0.0.1:21213') q.set('tiktok', P.get('tiktok'));
-    u.value = new URL('stream.html?' + q.toString(), base).href;
+    return new URL('stream.html?' + q.toString(), base).href;
   }
-  P2.addEventListener('input', function (e) { editing = true; if (e.target.id === 'ttGiftQ' || e.target.dataset.k === 'gift') drawGifts(); if (/^tt(Fmt|View|Lay|Clear)$/.test(e.target.id)) urlDraw(); });
+  var SRCS = [['game', '🎮 Spiel', 'nur das Spiel mit Streichen und Effekten – führt die Geschenke aus (genau einmal je Szene einbinden)'], ['all', '📺 Alles in einer Quelle', 'Spiel + alle Einblendungen'],
+    ['info', '✨ Alle Einblendungen', 'Legende, Ereignisse, Like-Leiste, Top-Fans (durchsichtig)'], ['legend', '🎁 Geschenke-Legende', 'was welches Geschenk auslöst'], ['feed', '💬 Ereignisse', 'Geschenke, Befehle, Follows mit Profilbild'], ['top', '🏆 Top-Fans', 'meiste Diamanten mit Profilbild']];
+  function urlDraw() {
+    var u = $('#ttUrl'); if (!u) return;
+    u.value = srcUrl($('#ttView').value, $('#ttLay').value, $('#ttClear').checked);
+    $('#ttSrcs').innerHTML = SRCS.map(function (r) {
+      var url = srcUrl(r[0], r[0] === 'game' || r[0] === 'all' ? $('#ttLay').value : 'full', r[0] !== 'game' && r[0] !== 'all' || $('#ttClear').checked);
+      return '<div class="src"><div><b>' + r[1] + '</b><span class="s"> – ' + r[2] + '</span></div><div class="url"><input readonly value="' + esc(url) + '"><button data-copy="' + esc(url) + '">📋 Kopieren</button><button data-open="' + esc(url) + '">↗</button></div></div>';
+    }).join('');
+  }
+  P2.addEventListener('input', function (e) { editing = true; if (e.target.id === 'ttGiftQ' || e.target.dataset.k === 'gift') drawGifts(); if (/^tt(Fmt|View|Lay|Clear|Theme|Size)$/.test(e.target.id)) urlDraw(); });
   P2.addEventListener('input', function (e) { if (e.target.matches('input[list="ttAct"]')) fillMeans(); });
   P2.addEventListener('change', function (e) {
-    var s = e.target; if (/^tt(Fmt|View|Lay|Clear)$/.test(s.id)) urlDraw();
+    var s = e.target; if (/^tt(Fmt|View|Lay|Clear|Theme|Size)$/.test(s.id)) urlDraw();
     if (!s.matches('[data-pick]') || !s.value) return;
     var r = s.closest('tr'), inp = r.querySelector('[data-k="action"],[data-k="1"]'), lab = r.querySelector('[data-k="label"]'), o = s.options[s.selectedIndex];
     inp.value = s.value; if (lab && (!lab.value || lab.dataset.auto)) { lab.value = o.dataset.l || ''; lab.dataset.auto = 1; }
@@ -665,6 +711,8 @@
     else if (t.id === 'ttRestore') { $('#ttMsg').textContent = restoreSave() ? 'Spielstand wiederhergestellt.' : 'Kein gelöschter Spielstand vorhanden.'; }
     else if (t.id === 'ttCopy') { var u = $('#ttUrl'); u.select(); try { navigator.clipboard.writeText(u.value); } catch (x) { document.execCommand('copy'); } $('#ttMsg').textContent = 'Adresse kopiert.'; }
     else if (t.id === 'ttOpen') window.open($('#ttUrl').value, '_blank', 'noopener');
+    else if (t.dataset.copy) { try { navigator.clipboard.writeText(t.dataset.copy); } catch (x) { } var o = t.textContent; t.textContent = '✅ Kopiert'; setTimeout(function () { t.textContent = o; }, 1500); }
+    else if (t.dataset.open) window.open(t.dataset.open, '_blank', 'noopener');
     else if (t.id === 'ttClose') { P2.style.display = 'none'; toast(EMB ? 'Einstellungen schließen: Fenster schließen' : 'Für OBS: Adresse aus „📺 Overlay & Ansichten“ verwenden'); setTimeout(function () { P2.style.display = ''; }, 6000); }
   });
   $('#ttScope').addEventListener('change', function () { scope = this.value; panelFill(); });

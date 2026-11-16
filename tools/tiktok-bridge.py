@@ -10,7 +10,7 @@
 #
 # ws://127.0.0.1:<port> (nur dieser Rechner). An das Overlay: {type:'event', ev}, {type:'config', config}, {type:'status', msg},
 # {type:'gifts', list}. Vom Overlay: {type:'getConfig'}, {type:'setConfig', config}, {type:'inject', ev} (Test).
-# Ereignis: {type:'chat'|'gift'|'like'|'follow'|'share'|'sub'|'join', user, text, gift, giftId, count, diamonds, img}
+# Ereignis: {type:'chat'|'gift'|'like'|'follow'|'share'|'sub'|'join', user, pic, handle, text, gift, giftId, count, diamonds, img}
 import asyncio, json, os, random, sys, time
 
 try:
@@ -77,6 +77,18 @@ def who(e):
     u = getattr(e, 'user', None)
     return (u and (getattr(u, 'nickname', '') or getattr(u, 'unique_id', '') or getattr(u, 'display_id', ''))) or 'Jemand'
 
+def pu(e):
+    # Name, Profilbild und @Name des Zuschauers (wie pu() in tiktok-bridge.mjs) – für Einblendungen und Spiel-Aktionen
+    u = getattr(e, 'user', None)
+    pic = ''
+    for k in ('avatar_thumb', 'avatar_medium'):
+        pic = img_of_model(getattr(u, k, None)) if u else ''
+        if pic: break
+    return {'user': who(e), 'pic': pic, 'handle': str((u and (getattr(u, 'display_id', '') or getattr(u, 'unique_id', ''))) or '')}
+
+def img_of_model(i):
+    return (list(getattr(i, 'url_list', None) or []) or [''])[0] if i else ''
+
 def img_of(g):
     i = getattr(g, 'image', None)
     return (list(getattr(i, 'url_list', None) or []) or [''])[0] if i else ''
@@ -96,18 +108,18 @@ async def live(name):
 
     async def on_comment(e):
         t = str(getattr(e, 'comment', '') or getattr(e, 'content', '') or '').strip()
-        if t: emit({'type': 'chat', 'user': who(e), 'text': t})
+        if t: emit({'type': 'chat', **pu(e), 'text': t})
     async def on_gift(e):
         g = getattr(e, 'gift', None)
         if g is None: return
         if getattr(g, 'type', 0) == 1 and not getattr(e, 'repeat_end', 0): return   # Serien-Geschenk: erst am Ende einmal mit der Anzahl
-        emit({'type': 'gift', 'user': who(e), 'gift': getattr(g, 'name', ''), 'giftId': getattr(g, 'id', None),
+        emit({'type': 'gift', **pu(e), 'gift': getattr(g, 'name', ''), 'giftId': getattr(g, 'id', None),
               'count': max(1, int(getattr(e, 'repeat_count', 1) or 1)), 'diamonds': int(getattr(g, 'diamond_count', 0) or 0), 'img': img_of(g)})
-    async def on_like(e): emit({'type': 'like', 'user': who(e), 'count': max(1, int(getattr(e, 'count', 1) or 1))})
-    async def on_follow(e): emit({'type': 'follow', 'user': who(e)})
-    async def on_share(e): emit({'type': 'share', 'user': who(e)})
+    async def on_like(e): emit({'type': 'like', **pu(e), 'count': max(1, int(getattr(e, 'count', 1) or 1))})
+    async def on_follow(e): emit({'type': 'follow', **pu(e)})
+    async def on_share(e): emit({'type': 'share', **pu(e)})
     async def on_join(e): emit({'type': 'join', 'user': who(e)})
-    async def on_sub(e): emit({'type': 'sub', 'user': who(e)})
+    async def on_sub(e): emit({'type': 'sub', **pu(e)})
     async def on_connect(e):
         global gifts
         set_status('Verbunden mit dem LIVE von @' + name)
