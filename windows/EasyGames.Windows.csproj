@@ -36,6 +36,7 @@
     <!-- TikTok-Steuerung und Brücke direkt aus easygames (keine Kopie): wirken ab dem ersten Start, auch offline -->
     <EmbeddedResource Include="..\stream-tiktok.js" LogicalName="tiktok/stream-tiktok.js" />
     <EmbeddedResource Include="..\tools\tiktok-bridge.mjs" LogicalName="tiktok/tiktok-bridge.mjs" />
+    <EmbeddedResource Include="..\tools\tiktok-bridge.py" LogicalName="tiktok/tiktok-bridge.py" />
     <!-- Aufnahme im Spiel (F9 Clip, F10 Start/Stopp) -->
     <EmbeddedResource Include="recorder\*" LogicalName="recorder/%(Filename)%(Extension)" />
     <Resource Include="app.ico" />

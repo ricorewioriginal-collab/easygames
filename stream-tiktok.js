@@ -53,6 +53,22 @@
     ['Cap', '🧢', 99], ['Hat and Mustache', '🎩', 99], ['Corgi', '🐕', 299], ['Swan', '🦢', 699], ['Money Gun', '💸', 500], ['Gaming Chair', '🪑', 1200], ['Galaxy', '🌌', 1000],
     ['Fireworks', '🎆', 1088], ['Unicorn Fantasy', '🦄', 5000], ['Lion', '🦁', 29999], ['Universe', '🪐', 34999], ['TikTok Universe', '🌠', 44999]];
   var liveGifts = [];
+  // Alle TikTok-Geschenke mit echten Bildern (tiktok-gifts.json, täglich aktualisiert: tools/tiktok-gifts.mjs) – für Legende und
+  // Einstellungen, auch ohne Brücke; zwischengespeichert, damit es ohne Netz beim letzten Stand bleibt
+  var catGifts = [], catDate = '';
+  (function () {
+    var KEY = 'eg-tiktok-gifts', c = null;
+    try { c = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { }
+    if (c && c.gifts) { catGifts = c.gifts; catDate = c.updated || ''; }
+    if (c && c.at && Date.now() - c.at < 6 * 36e5) return;   // höchstens alle 6 Stunden neu laden
+    fetch('https://ricorewioriginal-collab.github.io/easygames/tiktok-gifts.json?t=' + Math.floor(Date.now() / 36e5)).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (!j || !j.gifts || !j.gifts.length) return;
+      catGifts = j.gifts; catDate = j.updated || '';
+      try { localStorage.setItem(KEY, JSON.stringify({ at: Date.now(), updated: catDate, gifts: catGifts })); } catch (e) { }
+      if (typeof drawLegend === 'function') drawLegend();
+      if (SETUP && typeof P2 !== 'undefined' && P2) drawGifts();
+    }).catch(function () { });
+  })();
   var DEFAULT = {
     mode: 'chaos', voteSec: 3, legend: 'tr', cooldown: 0, top: true, bombWord: 'retten', bombNeed: 5,
     commands: [['links', 'pad:LEFT'], ['rechts', 'pad:RIGHT'], ['hoch', 'pad:UP'], ['runter', 'pad:DOWN'], ['a', 'pad:A'], ['b', 'pad:B'], ['spring', 'pad:A'], ['start', 'pad:START']],
@@ -71,8 +87,9 @@
   function eff() { var g = (cfg.games || {})[GID] || {}, o = {}; for (var k in cfg) if (k !== 'games') o[k] = g[k] !== undefined ? g[k] : cfg[k]; return o; }
   function actInfo(a) { return ACTS.find(function (x) { return x[0] === a; }); }
   function giftInfo(name) {
-    var n = String(name || '').toLowerCase(), l = liveGifts.find(function (g) { return String(g.name).toLowerCase() === n; }), s = GIFTS.find(function (g) { return g[0].toLowerCase() === n; });
-    return { img: l && l.img || '', icon: s ? s[1] : '', diamonds: (l && l.diamonds) || (s && s[2]) || 0 };
+    var n = String(name || '').toLowerCase(), l = liveGifts.find(function (g) { return String(g.name).toLowerCase() === n; }), s = GIFTS.find(function (g) { return g[0].toLowerCase() === n; }),
+      k = catGifts.find(function (g) { return String(g.name).toLowerCase() === n; });
+    return { img: (l && l.img) || (k && k.img) || '', icon: s ? s[1] : '', diamonds: (l && l.diamonds) || (k && k.coins) || (s && s[2]) || 0 };
   }
 
   // ---------- Einblendungen: Geschenke-Legende, Ereignis-Liste, Like-Leiste, Top-Fans ----------
@@ -400,6 +417,7 @@
       if (e.mode === 'vote') { votes[hit[0]] = (votes[hit[0]] || 0) + 1; drawVote(); return; }
       toast(who + ': ' + hit[0]); run(hit[1], who); ttCount('cmds');
     } else if (ev.type === 'gift') {
+      if (ev.img && ev.gift && !giftInfo(ev.gift).img) catGifts.push({ name: ev.gift, coins: +ev.diamonds || 0, img: ev.img });   // neues Geschenk: Bild aus dem LIVE übernehmen
       var name = String(ev.gift || '').toLowerCase(), g = (e.gifts || []).find(function (x) { return x.gift && (x.gift.toLowerCase() === name || String(x.gift) === String(ev.giftId)); });
       var dia = (+ev.diamonds || giftInfo(ev.gift).diamonds || 1) * (ev.count || 1); fans[who] = (fans[who] || 0) + dia; drawTop(); ttCount('diam', dia);
       if (!g) return;
@@ -559,9 +577,10 @@
     var box = $('#ttGiftList'); if (!box) return;
     var q = ($('#ttGiftQ').value || '').trim().toLowerCase(), used = {};
     [].forEach.call(P2.querySelectorAll('#ttGifts [data-k="gift"]'), function (i) { if (i.value) used[i.value.trim().toLowerCase()] = 1; });
-    var list = (liveGifts.length ? liveGifts.map(function (g) { return [g.name, giftInfo(g.name).icon, g.diamonds, g.img]; }) : GIFTS).filter(function (g) { return g[0] && (!q || String(g[0]).toLowerCase().indexOf(q) >= 0); })
+    var list = (liveGifts.length ? liveGifts.map(function (g) { return [g.name, giftInfo(g.name).icon, g.diamonds, g.img || giftInfo(g.name).img]; })
+      : catGifts.length ? catGifts.map(function (g) { return [g.name, giftInfo(g.name).icon, g.coins, g.img]; }) : GIFTS).filter(function (g) { return g[0] && (!q || String(g[0]).toLowerCase().indexOf(q) >= 0); })
       .sort(function (a, b) { return (a[2] || 0) - (b[2] || 0); });
-    $('#ttGiftSrc').textContent = (liveGifts.length ? '✅ Aktuelle Liste von TikTok (' + liveGifts.length + ' Geschenke)' : 'Inoffizielle Liste – mit verbundener Brücke kommen alle aktuellen Geschenke mit Bildern') + ' · ✓ = schon belegt';
+    $('#ttGiftSrc').textContent = (liveGifts.length ? '✅ Aktuelle Liste von TikTok (' + liveGifts.length + ' Geschenke)' : catGifts.length ? '✅ Alle TikTok-Geschenke mit Bildern (' + catGifts.length + (catDate ? ', Stand ' + catDate.split('-').reverse().join('.') : '') + ')' : 'Inoffizielle Liste – mit verbundener Brücke kommen alle aktuellen Geschenke mit Bildern') + ' · ✓ = schon belegt';
     box.innerHTML = list.map(function (g) { return '<button data-gift="' + esc(g[0]) + '" data-icon="' + esc(g[1] || '🎁') + '"' + (used[String(g[0]).toLowerCase()] ? ' class="on"' : '') + '>' + (g[3] ? '<img src="' + esc(g[3]) + '" alt="" loading="lazy">' : '<span class="e">' + esc(g[1] || '🎁') + '</span>') + '<span>' + esc(g[0]) + '</span>' + (g[2] ? '<small>' + g[2] + ' 💎</small>' : '') + '</button>'; }).join('') || '<div class="s">Nichts gefunden.</div>';
   }
   function addGiftRow(gift, icon, action, label) { editing = true; $('#ttGifts').insertAdjacentHTML('beforeend', giftRow({ gift: gift, icon: icon, action: action, label: label })); var r = $('#ttGifts').lastElementChild; r.scrollIntoView({ block: 'nearest' }); (gift ? r.querySelector('[data-k="action"]') : r.querySelector('[data-k="gift"]')).focus(); drawGifts(); }

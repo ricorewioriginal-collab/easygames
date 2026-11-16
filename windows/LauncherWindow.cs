@@ -144,6 +144,8 @@ public sealed class LauncherWindow : Window
                         case "start": _ = App.TikTok.StartAsync(Str("name")); break;
                         case "stop": App.TikTok.Stop(); break;
                         case "node": App.TikTok.InstallNode(); break;
+                        case "python": App.TikTok.InstallPython(); break;
+                        case "engine": App.TikTok.SetEngine(Str("engine")); break;
                         case "inGames": App.TikTok.SetInGames(Bool("on")); break;
                         case "setup": Play(id, true); break;
                         case "copy": try { Clipboard.SetText(Str("text")); _toast = "Link kopiert."; } catch { } break;
@@ -256,7 +258,7 @@ public sealed class LauncherWindow : Window
             fullscreen = S.Fullscreen,
             clips = S.Clips,
             padMaps = S.PadMaps,
-            tiktok = new { name = App.TikTok.Name, running = App.TikTok.Running, busy = App.TikTok.Busy, status = App.TikTok.Status, inGames = App.TikTok.InGames, node = TikTok.FindNode() != null, log = App.TikTok.Log.TakeLast(8) },
+            tiktok = new { name = App.TikTok.Name, running = App.TikTok.Running, busy = App.TikTok.Busy, status = App.TikTok.Status, inGames = App.TikTok.InGames, engine = App.TikTok.Engine, node = TikTok.FindNode() != null, python = TikTok.FindPython() != null, log = App.TikTok.Log.TakeLast(8) },
             disk = S.DiskBytes,
             appUpdate = _appUpdate?.Version,
             appUpdatePct = _appUpdatePct,

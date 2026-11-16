@@ -7,7 +7,8 @@ using System.Text.Json;
 namespace EasyGames.Windows;
 
 /// <summary>
-/// TikTok LIVE in der App: startet die Brücke (easygames tools/tiktok-bridge.mjs mit TikTok-Live-Connector, Node.js) im Hintergrund
+/// TikTok LIVE in der App: startet die Brücke im Hintergrund – wahlweise tools/tiktok-bridge.mjs (TikTok-Live-Connector, Node.js)
+/// oder tools/tiktok-bridge.py (TikTokLive, Python; gleiches Protokoll, gleiche Belegung) –
 /// und spielt die Steuerung (easygames stream-tiktok.js, Eingebettet-Modus) in jedes Spielfenster ein. Kommentare, Geschenke und
 /// Likes steuern dann das Spiel über den virtuellen Controller (gamepad.js) – ohne Umweg über die easygames-Seite.
 /// Dateien liegen unter %LocalAppData%\easygames\tiktok: beim ersten Start aus der EXE (mitgeliefert, tiktok/ – kommt per
@@ -26,6 +27,8 @@ public sealed class TikTok
 
     public string Name { get; private set; } = "";
     public bool InGames { get; private set; } = true;
+    /// <summary>"node" (TikTok-Live-Connector) oder "python" (TikTokLive).</summary>
+    public string Engine { get; private set; } = "node";
     public string Status { get; private set; } = "Aus";
     public bool Running { get { lock (_gate) return _proc is { HasExited: false }; } }
     public bool Busy => _busy;
@@ -41,6 +44,7 @@ public sealed class TikTok
             using var d = JsonDocument.Parse(File.ReadAllText(SettingsFile));
             if (d.RootElement.TryGetProperty("name", out var n)) Name = n.GetString() ?? "";
             if (d.RootElement.TryGetProperty("inGames", out var g)) InGames = g.GetBoolean();
+            if (d.RootElement.TryGetProperty("engine", out var en) && en.GetString() == "python") Engine = "python";
         }
         catch { }
     }
@@ -48,7 +52,7 @@ public sealed class TikTok
     /// <summary>Mitgelieferte Fassung aus der EXE auspacken, wenn noch keine da ist (erster Start, auch ohne Internet).</summary>
     private void Seed()
     {
-        foreach (var name in new[] { "stream-tiktok.js", "tiktok-bridge.mjs" })
+        foreach (var name in new[] { "stream-tiktok.js", "tiktok-bridge.mjs", "tiktok-bridge.py" })
         {
             try
             {
@@ -62,7 +66,7 @@ public sealed class TikTok
         }
     }
 
-    private void Save() { try { File.WriteAllText(SettingsFile, JsonSerializer.Serialize(new { name = Name, inGames = InGames })); } catch { } }
+    private void Save() { try { File.WriteAllText(SettingsFile, JsonSerializer.Serialize(new { name = Name, inGames = InGames, engine = Engine })); } catch { } }
     private void Note(string line)
     {
         lock (_gate) { _log.AddLast(line); while (_log.Count > 40) _log.RemoveFirst(); }
@@ -71,6 +75,34 @@ public sealed class TikTok
     }
 
     public void SetInGames(bool on) { InGames = on; Save(); Changed?.Invoke(); }
+    public void SetEngine(string e) { if (Running || _busy) return; Engine = e == "python" ? "python" : "node"; Save(); Changed?.Invoke(); }
+
+    /// <summary>python.exe (ohne den Microsoft-Store-Platzhalter in WindowsApps) oder der Starter py.exe.</summary>
+    public static string? FindPython()
+    {
+        var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        var dirs = (Environment.GetEnvironmentVariable("PATH") ?? "").Split(Path.PathSeparator).ToList();
+        try { dirs.AddRange(Directory.GetDirectories(Path.Combine(local, "Programs", "Python")).OrderByDescending(d => d)); } catch { }
+        foreach (var exe in new[] { "python.exe", "py.exe" })
+            foreach (var dir in dirs)
+            {
+                try
+                {
+                    var d = dir.Trim('"');
+                    if (d.Contains("WindowsApps", StringComparison.OrdinalIgnoreCase)) continue;
+                    var f = Path.Combine(d, exe); if (File.Exists(f)) return f;
+                }
+                catch { }
+            }
+        return null;
+    }
+
+    /// <summary>Python über winget installieren (sichtbares Fenster, der Nutzer bestätigt dort).</summary>
+    public void InstallPython()
+    {
+        try { Process.Start(new ProcessStartInfo("winget", "install -e --id Python.Python.3.12 --accept-package-agreements --accept-source-agreements") { UseShellExecute = true }); }
+        catch (Exception ex) { Note("winget nicht gefunden – Python bitte von https://www.python.org installieren. (" + ex.Message + ")"); }
+    }
 
     public static string? FindNode()
     {
@@ -94,7 +126,7 @@ public sealed class TikTok
     {
         using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
         http.DefaultRequestHeaders.UserAgent.ParseAdd("easygamesWindows/1.0");
-        foreach (var (url, file) in new[] { ("tools/tiktok-bridge.mjs", "tiktok-bridge.mjs"), ("stream-tiktok.js", "stream-tiktok.js") })
+        foreach (var (url, file) in new[] { ("tools/tiktok-bridge.mjs", "tiktok-bridge.mjs"), ("tools/tiktok-bridge.py", "tiktok-bridge.py"), ("stream-tiktok.js", "stream-tiktok.js") })
         {
             try
             {
@@ -113,23 +145,38 @@ public sealed class TikTok
         _busy = true; Name = name; Save(); Changed?.Invoke();
         try
         {
-            var node = FindNode();
-            if (node == null) { Status = "Node.js fehlt"; Note("Node.js fehlt – „Node.js installieren“ drücken, danach erneut starten."); return; }
+            var py = Engine == "python";
+            var exe = py ? FindPython() : FindNode();
+            if (exe == null)
+            {
+                Status = py ? "Python fehlt" : "Node.js fehlt";
+                Note(py ? "Python fehlt – „Python installieren“ drücken, danach erneut starten." : "Node.js fehlt – „Node.js installieren“ drücken, danach erneut starten."); return;
+            }
             Status = "Wird vorbereitet …"; Note("Aktualisiere die Brücke …");
             await UpdateFilesAsync();
-            if (!File.Exists(Path.Combine(Dir, "tiktok-bridge.mjs"))) { Status = "Brücke fehlt"; return; }
-            if (!Directory.Exists(Path.Combine(Dir, "node_modules", "tiktok-live-connector")))
+            var script = py ? "tiktok-bridge.py" : "tiktok-bridge.mjs";
+            if (!File.Exists(Path.Combine(Dir, script))) { Status = "Brücke fehlt"; return; }
+            if (py)
+            {
+                if (await RunAsync(exe, "-c \"import TikTokLive\"", quiet: true) != 0)
+                {
+                    Note("Installiere TikTokLive (einmalig) …");
+                    if (await RunAsync(exe, "-m pip install --user --disable-pip-version-check TikTokLive") != 0) { Status = "Installation fehlgeschlagen"; return; }
+                }
+            }
+            else if (!Directory.Exists(Path.Combine(Dir, "node_modules", "tiktok-live-connector")))
             {
                 Note("Installiere tiktok-live-connector (einmalig) …");
-                var npm = Path.Combine(Path.GetDirectoryName(node)!, "npm.cmd");
+                var npm = Path.Combine(Path.GetDirectoryName(exe)!, "npm.cmd");
                 var code = await RunAsync(File.Exists(npm) ? npm : "npm", "i tiktok-live-connector --no-audit --no-fund");
                 if (code != 0) { Status = "Installation fehlgeschlagen"; return; }
             }
-            var psi = new ProcessStartInfo(node, $"tiktok-bridge.mjs \"{name}\" --port {Port}")
+            var psi = new ProcessStartInfo(exe, (py ? "-u " : "") + $"{script} \"{name}\" --port {Port}")
             {
                 WorkingDirectory = Dir, UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true,
                 StandardOutputEncoding = Encoding.UTF8, StandardErrorEncoding = Encoding.UTF8,
             };
+            if (py) psi.Environment["PYTHONIOENCODING"] = "utf-8";
             var p = new Process { StartInfo = psi, EnableRaisingEvents = true };
             p.OutputDataReceived += (_, e) => { if (e.Data != null) Note(e.Data); };
             p.ErrorDataReceived += (_, e) => { if (e.Data != null) Note(e.Data); };
@@ -142,12 +189,12 @@ public sealed class TikTok
         finally { _busy = false; Changed?.Invoke(); }
     }
 
-    private async Task<int> RunAsync(string exe, string args)
+    private async Task<int> RunAsync(string exe, string args, bool quiet = false)
     {
         var psi = new ProcessStartInfo(exe, args) { WorkingDirectory = Dir, UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true };
         using var p = new Process { StartInfo = psi };
-        p.OutputDataReceived += (_, e) => { if (!string.IsNullOrWhiteSpace(e.Data)) Note(e.Data); };
-        p.ErrorDataReceived += (_, e) => { if (!string.IsNullOrWhiteSpace(e.Data)) Note(e.Data); };
+        p.OutputDataReceived += (_, e) => { if (!quiet && !string.IsNullOrWhiteSpace(e.Data)) Note(e.Data); };
+        p.ErrorDataReceived += (_, e) => { if (!quiet && !string.IsNullOrWhiteSpace(e.Data)) Note(e.Data); };
         p.Start(); p.BeginOutputReadLine(); p.BeginErrorReadLine();
         await p.WaitForExitAsync();
         return p.ExitCode;

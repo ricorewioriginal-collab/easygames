@@ -8,7 +8,8 @@
 //
 // Stellt ws://127.0.0.1:<port> bereit (nur dieser Rechner). Nachrichten an das Overlay: {type:'event', ev}, {type:'config', config},
 // {type:'status', msg}. Vom Overlay: {type:'getConfig'}, {type:'setConfig', config}, {type:'inject', ev} (Test).
-// Ereignis-Format: {type:'chat'|'gift'|'like'|'follow'|'share'|'sub'|'join', user, text, gift, giftId, count, diamonds}
+// Ereignis-Format: {type:'chat'|'gift'|'like'|'follow'|'share'|'sub'|'join', user, text, gift, giftId, count, diamonds, img}
+// Gleiches Protokoll in Python: tools/tiktok-bridge.py (mit TikTokLive, github.com/isaackogan/TikTokLive)
 // Ohne Zusatzpakete (eigener kleiner WebSocket-Server); nur der Live-Modus braucht tiktok-live-connector.
 import crypto from 'crypto';
 import fs from 'fs';
@@ -83,7 +84,8 @@ const likeCount = d => Math.max(1, Number(d.likeCount ?? d.count ?? 1) || 1);
 function giftOf(d) {
   const g = d.giftDetails || d.gift || {};
   return { name: d.giftName || g.giftName || g.name || '', id: d.giftId || g.id, type: Number(d.giftType ?? g.giftType ?? g.type ?? 0),
-    diamonds: Number(d.diamondCount || g.diamondCount || g.diamond_count || 0), count: Math.max(1, Number(d.repeatCount || d.comboCount || 1) || 1), end: !!Number(d.repeatEnd) || d.repeatEnd === true };
+    diamonds: Number(d.diamondCount || g.diamondCount || g.diamond_count || 0),
+    img: ((g.image && (g.image.urlList || g.image.url_list)) || [])[0] || (g.giftImage && (g.giftImage.giftPictureUrl || (g.giftImage.url || [])[0])) || d.giftPictureUrl || '', count: Math.max(1, Number(d.repeatCount || d.comboCount || 1) || 1), end: !!Number(d.repeatEnd) || d.repeatEnd === true };
 }
 async function live(name) {
   // https://github.com/zerodytrash/TikTok-Live-Connector (ESM): im Ordner dieses Skripts installieren
@@ -97,7 +99,7 @@ async function live(name) {
   c.on('gift', d => {
     const g = giftOf(d);
     if (g.type === 1 && !g.end) return;   // Serien-Geschenk (Combo): erst am Ende einmal mit der Anzahl zählen
-    emit({ type: 'gift', user: who(d), gift: g.name, giftId: g.id, count: g.count, diamonds: g.diamonds });
+    emit({ type: 'gift', user: who(d), gift: g.name, giftId: g.id, count: g.count, diamonds: g.diamonds, img: g.img });
   });
   c.on('like', d => emit({ type: 'like', user: who(d), count: likeCount(d) }));
   c.on('follow', d => emit({ type: 'follow', user: who(d) }));
