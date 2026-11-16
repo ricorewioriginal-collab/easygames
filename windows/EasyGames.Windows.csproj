@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- easygames für Windows: Spiele-Client wie ein kleines Steam (Bibliothek, Spiele einzeln laden, Updates, offline spielbar).
+       Spiele und App-Updates kommen von GitHub (kein eigener Server nötig). Bau: Workflow .github/workflows/windows.yml,
+       unter Linux: dotnet publish -c Release -r win-x64 -p:EnableWindowsTargeting=true -o publish -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>easygames</AssemblyName>
+    <RootNamespace>EasyGames.Windows</RootNamespace>
+    <Product>easygames</Product>
+    <Company>RicoReWi x AnMaCha</Company>
+    <Version>1.1.0</Version>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <StartupObject>EasyGames.Windows.App</StartupObject>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <!-- klein halten: komprimierte EXE, nur deutsche/englische Systemtexte, keine Debug- und Doku-Dateien -->
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <SatelliteResourceLanguages>de;en</SatelliteResourceLanguages>
+    <PublishReferencesDocumentationFiles>false</PublishReferencesDocumentationFiles>
+    <DebugType Condition="'$(Configuration)' == 'Release'">none</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4258.31" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="tests\**" />
+    <None Remove="tests\**" />
+    <!-- Bibliotheks-Oberfläche (HTML) steckt in der EXE und wird unter https://appassets.local/ ausgeliefert -->
+    <EmbeddedResource Include="launcher\**\*" LogicalName="launcher/%(RecursiveDir)%(Filename)%(Extension)" />
+    <!-- TikTok-Steuerung und Brücke direkt aus easygames (keine Kopie): wirken ab dem ersten Start, auch offline -->
+    <EmbeddedResource Include="..\stream-tiktok.js" LogicalName="tiktok/stream-tiktok.js" />
+    <EmbeddedResource Include="..\tools\tiktok-bridge.mjs" LogicalName="tiktok/tiktok-bridge.mjs" />
+    <!-- Aufnahme im Spiel (F9 Clip, F10 Start/Stopp) -->
+    <EmbeddedResource Include="recorder\*" LogicalName="recorder/%(Filename)%(Extension)" />
+    <Resource Include="app.ico" />
+  </ItemGroup>
+  <!-- Build-Nummer (Minuten seit 2024, vom Build gesetzt): Selbst-Update erkennt neuere Builds derselben Version -->
+  <ItemGroup Condition="'$(BuildCode)' != ''">
+    <AssemblyMetadata Include="BuildCode" Value="$(BuildCode)" />
+  </ItemGroup>
+</Project>

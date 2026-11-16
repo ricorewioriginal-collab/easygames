@@ -1,0 +1,72 @@
+name: Windows-App
+# Baut die easygames-Windows-App (windows/) kostenlos auf GitHub und legt Installer, portable EXE und windows-latest-easygames.json
+# in das Release „windows“ (feste Download-Adressen; die App holt sich dort ihre Updates). Kein eigener Server nötig.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'windows/**'
+      - 'stream-tiktok.js'
+      - 'tools/tiktok-bridge.mjs'
+      - '.github/workflows/windows.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-app
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Spiel-Store gegen GitHub prüfen
+        run: dotnet run --project windows/tests/StoreTest -c Release
+      - name: App bauen
+        shell: pwsh
+        run: |
+          $code = [int]((Get-Date).ToUniversalTime() - [datetime]'2024-01-01').TotalMinutes   # Build-Nummer: Selbst-Update erkennt neuere Builds derselben Version
+          "BUILD_CODE=$code" >> $env:GITHUB_ENV
+          dotnet publish windows -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:BuildCode=$code -o windows/publish
+      - name: Installer (Inno Setup)
+        shell: pwsh
+        working-directory: windows
+        run: |
+          $iscc = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
+          if (!(Test-Path $iscc)) { choco install innosetup -y --no-progress | Out-Null }
+          $ver = ([xml](Get-Content EasyGames.Windows.csproj)).Project.PropertyGroup.Version | Where-Object { $_ } | Select-Object -First 1
+          "APP_VERSION=$ver" >> $env:GITHUB_ENV
+          & $iscc "/DAppVersion=$ver" "/DPublishDir=publish" installer.iss
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup fehlgeschlagen" }
+      - name: Dateien und Update-Angaben
+        shell: pwsh
+        working-directory: windows
+        run: |
+          New-Item -ItemType Directory -Force out | Out-Null
+          Copy-Item Output/easygames-Setup-x64.exe out/
+          Copy-Item publish/easygames.exe out/easygames-Portable-x64.exe
+          $s = Get-Item out/easygames-Setup-x64.exe; $p = Get-Item out/easygames-Portable-x64.exe
+          $meta = [ordered]@{
+            version = $env:APP_VERSION; version_code = [int]$env:BUILD_CODE; architecture = 'x64'; runtime = '.NET 8 / WPF'; native_desktop = $true
+            setup_filename = $s.Name; setup_size_bytes = $s.Length; setup_sha256 = (Get-FileHash $s -Algorithm SHA256).Hash.ToLower()
+            portable_filename = $p.Name; portable_size_bytes = $p.Length; portable_sha256 = (Get-FileHash $p -Algorithm SHA256).Hash.ToLower()
+            built_at = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ'); commit = $env:GITHUB_SHA
+          }
+          $meta | ConvertTo-Json | Set-Content -Encoding utf8NoBOM out/windows-latest-easygames.json
+          Get-ChildItem out | Format-Table Name, Length
+      - name: Release „windows“ aktualisieren
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view windows *> $null
+          if ($LASTEXITCODE -ne 0) { gh release create windows --title "easygames für Windows" --notes "Installer und portable Version der easygames-Windows-App. Die App aktualisiert sich selbst." --latest=false }
+          # Programmdateien zuerst, Update-Angaben zuletzt (die App liest die Angaben und lädt dann den Installer)
+          gh release upload windows windows/out/easygames-Setup-x64.exe windows/out/easygames-Portable-x64.exe --clobber
+          gh release upload windows windows/out/windows-latest-easygames.json --clobber
