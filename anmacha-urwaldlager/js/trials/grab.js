@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   const UL = window.UL, T = THREE, R = UL.R, A = UL.A;
-  const LW = 0.85, LL = 2.3, DY = -0.2, TURNS = 2.2;   // halbe Breite/Länge der Kiste, Deckelhöhe, Umdrehungen je Schraube
+  const LW = 0.85, LL = 2.3, DY = 1.0, TURNS = 2.2;   // halbe Breite/Länge der Kiste, Deckelhöhe, Umdrehungen je Schraube
 
   UL.Trials.reg('grab', {
     env: (theme) => theme === 'studio' ? {} : { tod: 'evening', radius: 14, clear: [{ x: 0, z: 0, r: 5 }], seed: 77 },
@@ -13,8 +13,9 @@
       const pit = new T.Mesh(new T.BoxGeometry(LW * 2 + 0.4, 0.05, LL * 2 + 0.4), R.mat(0x1a120a)); pit.position.y = DY - 1.0; sc.add(pit);
       for (const [x, z, w, d] of [[0, -LL - 0.1, LW * 2 + 0.4, 0.2], [0, LL + 0.1, LW * 2 + 0.4, 0.2], [-LW - 0.1, 0, 0.2, LL * 2 + 0.4], [LW + 0.1, 0, 0.2, LL * 2 + 0.4]]) { const s = new T.Mesh(new T.BoxGeometry(w, 1.0, d), wood); s.position.set(x, DY - 0.5, z); sc.add(s); }
       const lid = new T.Mesh(new T.PlaneGeometry(LW * 2, LL * 2), new T.MeshLambertMaterial({ color: 0xcfefff, transparent: true, opacity: 0.1, depthWrite: false })); lid.rotation.x = -Math.PI / 2; lid.position.y = DY + 0.01; sc.add(lid);
-      for (let i = 0; i < 10; i++) { const m = new T.Mesh(new T.SphereGeometry(UL.rand(0.5, 1.1), 8, 6), dirt); m.scale.y = 0.4; const a = i / 10 * Math.PI * 2; m.position.set(Math.cos(a) * 2.4 * (1 + (i % 2) * 0.3), 0, Math.sin(a) * 3.2); sc.add(m); }
-      const ground = new T.Mesh(new T.RingGeometry(1, 5, 24), dirt); ground.rotation.x = -Math.PI / 2; ground.scale.set(1.1, 1.6, 1); ground.position.y = 0.005; sc.add(ground);
+      for (let i = 0; i < 10; i++) { const m = new T.Mesh(new T.SphereGeometry(UL.rand(0.5, 1.1), 8, 6), dirt); m.scale.y = 0.4; const a = i / 10 * Math.PI * 2; m.position.set(Math.cos(a) * 2.4 * (1 + (i % 2) * 0.3), DY, Math.sin(a) * 3.2); sc.add(m); }
+      // Erdwall rundherum: die Kiste wirkt eingegraben
+      for (const [x, z, w, d] of [[0, -LL - 1.0, LW * 2 + 3.6, 1.6], [0, LL + 1.0, LW * 2 + 3.6, 1.6], [-LW - 1.0, 0, 1.6, LL * 2 + 0.4], [LW + 1.0, 0, 1.6, LL * 2 + 0.4]]) { const e = new T.Mesh(new T.BoxGeometry(w, DY + 0.05, d), dirt); e.position.set(x, (DY + 0.05) / 2, z); e.receiveShadow = true; sc.add(e); }
       // Trichter/Rohre, aus denen Tiere kommen
       ctx.chutes = [[-1, -1.3], [1, 0.1], [-1, 1.4]].map(([sd, z]) => { const c = new T.Mesh(new T.CylinderGeometry(0.1, 0.1, 0.9, 8), R.mat(0x3a7a3a)); c.position.set(sd * (LW + 0.35), DY + 0.3, z); c.rotation.z = sd * 0.7; sc.add(c); return { x: sd * (LW - 0.12), z }; });
       const inner = new T.PointLight(R.lin(0xffe6b0), 0.9, 4); inner.position.set(0, DY - 0.3, 0.3); sc.add(inner);
@@ -40,9 +41,9 @@
       ctx.wm = new T.InstancedMesh(wg, new T.MeshLambertMaterial({ color: R.lin(0xe0c080) }), 260); sc.add(ctx.wm);
       ctx.wl = []; for (let i = 0; i < 260; i++) ctx.wl.push({ on: false, x: 0, y: -9, z: 0, r: 0, ph: Math.random() * 6 });
       ctx.cur = 0; ctx.panic = 0.1; ctx.prevA = null; ctx.stun = 0; ctx.loadT = 2.5; ctx.fill = 0;
-      ctx.hostPos.set(-2.4, 0, -2.8); ctx.hostRy = 0.7;
+      ctx.hostPos.set(-3.8, 0, -3.6); ctx.hostRy = 0.8;
       ctx.intro = { pos: new T.Vector3(2.5, 3.5, 3.5), look: new T.Vector3(0, DY - 0.6, 0) };
-      UL.Trials.sign(ctx, 0, -4.2, 0);
+      UL.Trials.sign(ctx, 0, -5.2, 0);
       ctx.cam.position.set(0, 2.6, 2.6); ctx.cam.lookAt(0, DY - 0.6, 0);
     },
     start(ctx) { this.load(ctx); },

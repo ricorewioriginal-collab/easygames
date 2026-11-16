@@ -26,7 +26,7 @@
       // Netz unten (Ziel)
       const net = new T.Mesh(new T.PlaneGeometry(HW * 2, 1.2, 12, 4), new T.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.5 })); net.position.set(0, 0.6, NET + 0.9); sc.add(net);
       const line = new T.Mesh(new T.PlaneGeometry(HW * 2, 0.15), new T.MeshBasicMaterial({ color: R.lin(0xffd23a) })); line.rotation.x = -Math.PI / 2; line.position.set(0, 0.33, NET); sc.add(line);
-      ctx.basket = A.sized('crate', 0.8); ctx.basket.position.set(HW - 0.5, 0, NET + 1.3); sc.add(ctx.basket);
+      ctx.basket = A.sized('crate', 0.8); ctx.basket.position.set(HW + 1.3, 0.7, NET + 0.6); sc.add(ctx.basket);
       // Wassersprenger an den Ufern
       ctx.spr = [-1, 1].flatMap(s => [ZT + 3, ZT + 9, ZT + 14].map(z => ({ x: s * (HW + 0.7), z })));
       ctx.spr.forEach(p => { const m = new T.Mesh(new T.CylinderGeometry(0.08, 0.1, 1.2, 6), R.mat(0x6a6a6a)); m.position.set(p.x, 0.6, p.z); sc.add(m); });
