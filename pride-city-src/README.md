@@ -4,7 +4,7 @@ Relaunch von **Gay Life!** als „Pride City – Ein Leben in allen Farben“. Q
 Technik: Vite, TypeScript, three.js (aktuell), eigene kleine Engine. Ausgabe nach `../pride-city/` (wird mit eingecheckt, die Apps laden diesen Ordner).
 
 ```
-npm install              # KayKit-Modelle lädt `npm run build` selbst (scripts/fetch-assets.mjs)
+npm install              # KayKit-Modelle (Stadt, Wohnung) lädt `npm run build` selbst (scripts/fetch-assets.mjs); Figuren liegen in public/assets/people
 npm run dev               # Entwicklung (http://localhost:5173, Pfade zu ../gamepad.js usw. fehlen dort)
 npm test                  # Unit-Tests (Spielstand, Migration, Story)
 npm run build:easygames   # Typprüfung, Build, Kopie nach ../pride-city (Manifest/Service Worker/card.jpg bleiben)
@@ -22,7 +22,7 @@ E2E-Test (Browser, SwiftShader): Server im Repo starten (`python3 -m http.server
 | `src/engine/Audio.ts` | Musik und Effekte live per WebAudio erzeugt (keine Audiodateien) |
 | `src/engine/Save.ts` | Spielstand `prideCity.save` (Cloud-Präfix `prideCity.`), Migration, Übernahme aus Gay Life! (`anmachaGayLife`) |
 | `src/ui/` | Konsolen-Menü (`Menu`), Ladebildschirm, Dialog mit Antworten, HUD mit Zielmarkern, Touch-Stick und -Tasten, Kapitelkarten |
-| `src/game/Actor.ts` | KayKit-Figur: Waffen weg, Pride-Umfärbung je Palette und Hautton, weiche Animationswechsel, Outfits per Shader (oberkörperfrei, Unterwäsche, Bademode, Harness) |
+| `src/game/Actor.ts` | Menschen-Figuren (Quaternius, CC0, sechs Modelle): Pride-Farben je Palette, Hautton, Haarfarbe, weiche Animationswechsel, Tanz-Federn, Outfits per Shader (oberkörperfrei, Unterwäsche, Bademode, Harness). Rollen und Körperbänder je Modell in `palettes.ts` (`BODIES`) |
 | `src/game/World.ts` | Rainbow City aus City-Builder-Bits plus Pride-Deko, Tag/Nacht, Verkehr, Kollision |
 | `src/game/CityScene.ts` | Laufen, Kamera, Figuren, Interaktion, Sticker, Titel-Kamerafahrt |
 | `src/game/story.ts` | Figuren, Kapitel, Ziele, Gespräche, Entscheidungen (`save.flags`) |

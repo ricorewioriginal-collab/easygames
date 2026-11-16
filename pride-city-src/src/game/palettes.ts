@@ -21,13 +21,32 @@ export const PALETTES: Palette[] = [
 /** Hauttöne (Multiplikator auf die Haut-Farbfelder der Figuren) */
 export const SKINS = ['#ffd9c2', '#f1b88f', '#d08b5b', '#a8653b', '#6e3f22', '#4a2914'];
 
-export const BODIES = [
-  { id: 'Rogue', name: 'Robin', desc: 'Lässig, sportlich' },
-  { id: 'Rogue_Hooded', name: 'Sasha', desc: 'Hoodie, Streetstyle' },
-  { id: 'Barbarian', name: 'Bruno', desc: 'Bär, kräftig, Bart' },
-  { id: 'Knight', name: 'Kai', desc: 'Athletisch, stolz' },
-  { id: 'Mage', name: 'Mika', desc: 'Kreativ, Mantel' },
+/** Figuren (Quaternius, CC0): realistische Low-Poly-Menschen. Rollen ordnen jedem Material einen Kleidungsteil zu,
+    Bänder sind Höhen relativ zur Körpergröße in der Ruhepose (Slip ab brief, BH-Band bra). */
+export interface BodyDef {
+  id: string; name: string; desc: string; height: number; up: 0 | 1 | 2; side: 0 | 1 | 2;
+  roles: Record<string, number>; brief: number; bra: [number, number]; torso: number; hair: string;
+}
+/* Rollen: 0 bleibt, 1 Haut, 2 Oberteil, 3 Jacke, 4 Hose, 5 Schuhe, 6 Socken, 7 Haare, 8 Accessoire, 9 Farbfeld-Textur, 10 bemalt */
+export const BODIES: BodyDef[] = [
+  { id: 'Man2', name: 'Robin', desc: 'Lässig, Langarmshirt', height: 1.84, up: 2, side: 0, brief: .45, bra: [.7, .775], torso: .14, hair: '#6b4a22',
+    roles: { Shirt2: 3, Shirt: 2, Skin: 1, Pants: 4, Shoes: 5, Socks: 6, Hair2: 7, Hair: 7 } },
+  { id: 'Man', name: 'Kai', desc: 'Sportlich, Shorts', height: 1.86, up: 2, side: 0, brief: .45, bra: [.7, .775], torso: .14, hair: '#241912',
+    roles: { Shirt: 2, Skin: 1, Pants: 4, Socks: 6, Hair: 7 } },
+  { id: 'Woman', name: 'Sasha', desc: 'Jacke, Streetstyle', height: 1.74, up: 2, side: 0, brief: .45, bra: [.7, .79], torso: .14, hair: '#5a1838',
+    roles: { Shirt: 2, LightJacket: 3, Jacket: 3, Skin: 1, Pants: 4, Shoes: 5, HairBase: 7, Hair: 7 } },
+  { id: 'Woman2', name: 'Mia', desc: 'Sommerlich, Jeans', height: 1.72, up: 2, side: 1, brief: .45, bra: [.7, .79], torso: .12, hair: '#d8c070',
+    roles: { Material: 9 } },
+  { id: 'Human', name: 'Alex', desc: 'Schlicht, frei gestaltbar', height: 1.82, up: 1, side: 2, brief: .44, bra: [.7, .79], torso: .105, hair: '#2e2018',
+    roles: { Texture: 10 } },
+  { id: 'Hero', name: 'Jo', desc: 'Comic-Look, verspielt', height: 1.6, up: 2, side: 0, brief: .35, bra: [.53, .63], torso: .2, hair: '#8a6430',
+    roles: { Hair: 7, Skin: 1, UnderShirt: 2, Shirt: 3, Pants: 4, Boots: 5, Detail: 8, 'Material.006': 8 } },
 ];
+/** alte KayKit-Figuren (Spielstände bis Durchgang 3a) */
+export const LEGACY_BODY: Record<string, string> = { Rogue: 'Man2', Rogue_Hooded: 'Woman', Barbarian: 'Man', Knight: 'Human', Mage: 'Woman2' };
+export function body(id: string): BodyDef { return BODIES.find((b) => b.id === (LEGACY_BODY[id] || id)) || BODIES[0]; }
+/** Haarfarben (Index in Look.hair; ohne Angabe die Farbe des Modells) */
+export const HAIRS = ['#16100c', '#3b2618', '#6b4a22', '#b08548', '#e2cf96', '#a8432e', '#8c8c8c', '#ff4fb0', '#4fc3ff', '#9b5cff', '#3ee69a'];
 
 export const PRONOUNS = [
   { id: 'he', label: 'er/ihn' },

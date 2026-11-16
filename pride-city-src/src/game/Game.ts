@@ -60,7 +60,7 @@ export class Game {
     this.loading.show('Pride City', 'Rainbow City wird gebaut');
     const stop = trackProgress((d, t) => this.loading.progress(Math.min(.95, d / Math.max(1, t)), 'Modelle und Texturen'));
     const s = this.save.data;
-    await Promise.all([World.load(), preload(BODIES.map((b) => 'chars/' + b.id + '.glb'))]);
+    await Promise.all([World.load(), preload(BODIES.map((b) => 'people/' + b.id + '.glb'))]);
     this.loading.progress(.96, 'Stadt wird aufgebaut');
     this.city = new CityScene(this);
     await this.city.build();

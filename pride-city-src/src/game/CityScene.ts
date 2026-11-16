@@ -52,7 +52,7 @@ export class CityScene implements GameScene {
     }));
     // Tanzende Menge auf dem Platz (Titelbild und Abendstimmung)
     const looks = ['rainbow', 'trans', 'bi', 'pan', 'gay', 'progress'];
-    const bodies = ['Rogue', 'Knight', 'Barbarian', 'Rogue_Hooded', 'Mage', 'Rogue'];
+    const bodies = ['Man2', 'Woman2', 'Man', 'Woman', 'Human', 'Hero'];
     for (let i = 0; i < 6; i++) {
       const a = await Actor.create({ body: bodies[i], palette: looks[i], skin: i % 6 });
       const ang = (i / 6) * Math.PI * 2;

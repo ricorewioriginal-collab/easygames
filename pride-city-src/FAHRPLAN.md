@@ -1,7 +1,7 @@
 # Pride City – Fahrplan des Relaunchs
 
 Auftrag (15.11.2026): Gay Life! komplett neu aufsetzen – saubere Basis (Vite, three.js, eigene Engine), Konsolen-Menüs und Ladebildschirme,
-volle Controller-Steuerung, Touch im Hoch- und Querformat, KayKit-Figuren im Pride-Look, roter Faden, Minispiele in 3D, alle bisherigen
+volle Controller-Steuerung, Touch im Hoch- und Querformat, realistische Low-Poly-Menschen (Quaternius, seit 16.11. statt KayKit-Figuren) im Pride-Look, roter Faden, Minispiele in 3D, alle bisherigen
 Funktionen übernehmen, neuer Name und neues Cover. Dazu die Ideen 1–15 aus dem Projektchat. Gebaut wird in Durchgängen mit je einem PR;
 `gay-life/` bleibt bis zum Abschluss spielbar.
 

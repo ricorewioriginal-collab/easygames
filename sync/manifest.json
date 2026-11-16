@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "6e3f126f0ea0",
- "generated": "2026-11-16T01:17:48+00:00",
- "commit": "5252eb9ad275c3314b4c250172dfb401503799e6",
+ "version": "8aaeaedf71c0",
+ "generated": "2026-11-16T01:20:45+00:00",
+ "commit": "b257992801d4d39e3680b6020f373aa062ee83e2",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -12392,31 +12392,6 @@
    "h": "62759995b42672bed9d17515b2145b873d408dddcedeb55dbe93b6918e99047b"
   },
   {
-   "p": "pride-city/assets/chars/Barbarian.glb",
-   "s": 3613268,
-   "h": "cefc311a0e10c7858b6141f5ada7e33268727564fb8ac1347aab97d000669cc6"
-  },
-  {
-   "p": "pride-city/assets/chars/Knight.glb",
-   "s": 3659532,
-   "h": "60428e3abc09ba83e595d256e3af8c5c976b46cdae599f0802fc82b4a3445168"
-  },
-  {
-   "p": "pride-city/assets/chars/Mage.glb",
-   "s": 3589240,
-   "h": "cf898585da33fab50c724d31605fb931eb2912e6d2280092141e98ca81ad507d"
-  },
-  {
-   "p": "pride-city/assets/chars/Rogue.glb",
-   "s": 3616284,
-   "h": "e825437cd4d2ee9c1960b517a74a69101e33eb409ae7fa8cedc7134a998fbb7d"
-  },
-  {
-   "p": "pride-city/assets/chars/Rogue_Hooded.glb",
-   "s": 3597652,
-   "h": "93e6e25213009952276d9cf34f5d96a243767334c66f280db0433ddfabb91545"
-  },
-  {
    "p": "pride-city/assets/city/base.bin",
    "s": 3432,
    "h": "2b00ed6bb88a18e91fc80ec037cca4a20fba9fdeb21f8f781fc3a7f8be919f8a"
@@ -12932,9 +12907,9 @@
    "h": "e33b70b80fc98e4b6a3dd6d3178fd9171466fb96123f3a796badc3252dd3a708"
   },
   {
-   "p": "pride-city/assets/index-QtI97SLX.js",
-   "s": 200811,
-   "h": "5a7aa56d9aa50df54323b0f1325243956c21bc31be18e7e7cc908b57cb45ea59"
+   "p": "pride-city/assets/index-CX-amoXg.js",
+   "s": 202667,
+   "h": "8c377a66bf46f457ea4fc4ceb158971965e5d7a8411ba323284bec802f8bc86c"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -13002,9 +12977,39 @@
    "h": "cce0730ec2025399a68cb6afaa8acb2f54fcb3d70537a26f62564f6f7754f679"
   },
   {
-   "p": "pride-city/assets/three-wPF5XSmf.js",
+   "p": "pride-city/assets/people/Hero.glb",
+   "s": 660208,
+   "h": "a24a3bc1160b9ee730f0d01d0a6d2c8c74e35fa9a5671843d9a4a61444a95119"
+  },
+  {
+   "p": "pride-city/assets/people/Human.glb",
+   "s": 698560,
+   "h": "ce4d543e82e455d5a1253798c9759f12b9eec74929ddbca464447eeaa3a42c5d"
+  },
+  {
+   "p": "pride-city/assets/people/Man.glb",
+   "s": 493196,
+   "h": "dad8fa3ca2bc7760892f9ff47f544941179e50acb2aa772cf9f035154a37fc58"
+  },
+  {
+   "p": "pride-city/assets/people/Man2.glb",
+   "s": 498160,
+   "h": "40c62848350df6d13cc6eed20f30c3406a7761542236d8a9f6c3a4060d005e97"
+  },
+  {
+   "p": "pride-city/assets/people/Woman.glb",
+   "s": 510392,
+   "h": "bae371b11e0dcd5dbd26442025567ca9f7041781f3410259d6ec379bffcbac27"
+  },
+  {
+   "p": "pride-city/assets/people/Woman2.glb",
+   "s": 1379768,
+   "h": "97a4e8c5e93b5c4f68b25e5240f308aa81ff4ae487b750e62f13e02c338d73e8"
+  },
+  {
+   "p": "pride-city/assets/three-BOUIKzsg.js",
    "s": 578941,
-   "h": "721cae972a6583cf2de0037366e8c71e1a9c6f5b87af8703a5f1a5c1fa346846"
+   "h": "ea98f361c917425c4d478a9c3d4c1bd17440c675a17819a5454ca38db2b32446"
   },
   {
    "p": "pride-city/card.jpg",
@@ -13014,7 +13019,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5731,
-   "h": "005e73d876551e3685c08cfaca8f2b176d76ecb2e5d89db4d26c6037f43755b7"
+   "h": "9742319bd900ccee14f6a07a1a66fe989723e5a9b3bdd9f14e62a74b67e3b362"
   },
   {
    "p": "pride-city/logo.svg",
@@ -15398,8 +15403,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 249422,
-   "h": "eed36dd6a2ac1550acba39bc9e2c9243f480f8e2df9851db7baad09481c78261"
+   "s": 249421,
+   "h": "01b6906476c8ff776d7636310ea881356938e87c3351d21060afe93712319124"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
