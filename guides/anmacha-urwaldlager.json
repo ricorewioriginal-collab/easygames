@@ -112,6 +112,16 @@
    "p": [
     "Die Staffel wird jeden Morgen automatisch gespeichert, auch wenn du die Seite verlässt. Über Pause und Speichern & zum Titel geht es später am Morgen desselben Tages weiter. Mehrspieler gibt es nicht."
    ]
+  },
+  {
+   "t": "Show-Momente wie im Fernsehen",
+   "p": [
+    "Muss ein Mit-Camper in die Prüfung, kannst du live zuschauen: Der Camper spielt die Prüfung selbst, zögert je nach Mut und sagt vielleicht sogar den Ausstiegssatz. Mit „⏩ Überspringen“ (oder Select/H) springst du direkt zum Ergebnis.",
+    "Abends bringt ein Helfer die Kiste mit den erspielten Portionen ins Lager – ein Lebensmittel pro Stern, bei null Sternen nur ein Sack Reis und Bohnen. Danach entscheidest du, wer kocht: selbst kochen, den Buddy kochen lassen oder reinreden (Zoff am Topf).",
+    "Im Buschtelefon sitzt du im Sessel vor der Kamera und beantwortest zwei Fragen aus dem Off. Die Zuschauer reagieren sofort, und du siehst deinen Trend-Platz. Am nächsten Morgen zeigt die Show Ausschnitte – oft reden die anderen dabei über dich.",
+    "Im Camp unterhalten sich die Mit-Camper, lästern oder streiten. Bist du in der Nähe, kannst du einen Streit schlichten, mitmischen oder Lästerer zur Rede stellen. Weitere Aktionen fürs Voting: Lied am Feuer singen, Massage anbieten, heimlich naschen, für die Kamera posen. Oben siehst du deinen Zuschauer-Platz (▲/▼ seit Tagesbeginn).",
+    "Rennen: auf dem Handy den 🏃-Knopf antippen oder den Stick ganz nach außen schieben, am PC Shift halten, am Controller B halten, L3 drücken oder den Stick voll durchdrücken. Die Kamera dreht beim Laufen von selbst hinter die Figur und rückt bei Hütten näher heran."
+   ]
   }
  ],
  "ratgeber": [
@@ -148,6 +158,15 @@
     "Zu früh abbrechen: Auch wenige Sterne sind besser als keine.",
     "Nur arbeiten und nie reden: Die Unterhaltung bleibt dann niedrig.",
     "Über alle lästern: Die Beziehungen kippen, und die Sympathie sinkt."
+   ]
+  },
+  {
+   "t": "Zuschauer-Voting",
+   "list": [
+    "Schlichten bringt viel Sympathie, Mitmischen viel Unterhaltung – aber auch Feinde.",
+    "Heimlich naschen ist riskant: Wer dich erwischt, ist sauer, und die Zuschauer sehen es immer.",
+    "Im Buschtelefon lohnen sich ehrliche, nette Antworten für Sympathie und freche Antworten für Unterhaltung.",
+    "Selbst kochen kommt gut an. Reinreden sorgt für Zoff mit dem Koch."
    ]
   }
  ],
@@ -235,6 +254,14 @@
   {
    "q": "Mich ekeln die krabbelnden Tiere über dem Bild zu sehr – kann ich sie abschalten?",
    "a": "Die Krabbeltiere gehören zur Show und erscheinen nur bei Ekel-Momenten in den Prüfungen. Sie sind gezeichnet und verschwinden nach wenigen Sekunden von selbst."
+  },
+  {
+   "q": "Kann ich die Prüfung eines Mit-Campers ansehen?",
+   "a": "Ja. Wenn die Zuschauer einen anderen Camper wählen, fragt das Spiel, ob du zuschauen willst. Der Camper spielt dann selbst, und mit „⏩ Überspringen“ geht es sofort zum Ergebnis."
+  },
+  {
+   "q": "Wie renne ich?",
+   "a": "Handy: 🏃-Knopf oder Stick ganz nach außen. PC: Shift. Controller: B halten, L3 oder Stick voll durchdrücken."
   }
  ]
 }

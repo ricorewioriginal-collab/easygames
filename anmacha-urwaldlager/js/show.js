@@ -110,7 +110,28 @@
     if (y.length) await st.line('lotte', `Was gestern im Lager los war: ${y.join('. Und: ')}.`);
     const rv = byId(S.rival);
     if (rv && !rv.out && (me().rel[rv.id] ?? 50) < 35 && Math.random() < 0.5) await st.line('mats', `Die Zuschauer fragen sich: Wann knallt es endlich zwischen ${firstName(me())} und ${firstName(rv)}?`);
+    await morningClips(st);
   };
+  // Was gestern im Buschtelefon gesagt wurde – Mit-Camper (oft über dich) und dein eigener Satz
+  async function morningClips(st) {
+    const S = Show.S, m = me(), npcs = alive().filter(c => c.id !== 'me');
+    if (!npcs.length || !UL.Phone) return;
+    const rv = byId(S.rival), pickL = [];
+    const who = UL.rng.shuffle(npcs).slice(0, 2);
+    if (rv && !rv.out && !who.includes(rv) && Math.random() < 0.6) who[0] = rv;
+    for (const c of who.slice(0, npcs.length > 3 ? 2 : 1)) {
+      const r = c.rel.me ?? 50, aboutMe = Math.random() < 0.7, other = UL.pick(npcs.filter(o => o !== c)) || m;
+      const kind = !aboutMe ? 'other' : r < 42 ? 'bad' : r > 62 ? 'good' : 'mid';
+      const text = UL.pick(D.PHONE_NPC[kind]).replace(/\{m\}/g, firstName(m)).replace(/\{x\}/g, firstName(other));
+      pickL.push({ c, text });
+      if (kind === 'bad') { Show.change(m, { ent: 1 }); Show.change(c, { ent: 2 }); Show.log(`${firstName(c)} lästert im ${D.SHOW.phone} über ${firstName(m)}.`, '📞'); }
+      else if (kind === 'good') Show.change(m, { sym: 1 });
+    }
+    const mine = (S.phoneSaid || []).find(p => p.d === S.day - 1);
+    if (mine) pickL.push({ c: m, text: mine.txt });
+    await st.line('lotte', UL.pick(['Und das lief gestern im ' + D.SHOW.phone + ' …', 'Ein Blick ins ' + D.SHOW.phone + ':', 'Was die Camper heimlich erzählen …']));
+    await UL.Phone.clips({ theme: S.theme, list: pickL });
+  }
 
   // Wer muss in die Prüfung?
   function pick() {
@@ -144,7 +165,20 @@
       if (Show.abort) return;
       applyTrial(c, r, def);
     } else {
-      const r = simTrial(c, def);
+      const sim = simTrial(c, def);
+      const how = UL.bot ? 'sim' : await UI.choose(def.icon + ' ' + def.name, `<p><b>${esc(c.name)}</b> muss in die Prüfung „${def.name}“. Willst du zusehen, wie ${firstName(c)} sich schlägt?</p>`, [
+        { label: 'Zuschauen', icon: '📺', sub: 'Live dabei – überspringen geht jederzeit.', value: 'watch' }, { label: 'Nur Ergebnis', icon: '⏩', value: 'sim' }], { cls: 'clear' });
+      if (how === 'watch') {
+        const skill = UL.clamp(c.t.mut * 0.6 + c.t.fleiss * 0.3 + UL.rand(-0.1, 0.2) - (D.DIFF[S.diff].k - 1) * 0.2, 0.1, 0.95);
+        const tm = def.time || 60;
+        const r = await UL.Trials.run(id, { theme: S.theme, diff: S.diff, name: firstName(c), look: c.look, form: c.form, seed: S.seed + S.day * 31, ai: { skill, quitAt: sim.quit ? UL.rand(tm * 0.2, tm * 0.6) : 0 } });
+        if (Show.abort) return;
+        if (r.skip) { r.stars = Math.max(r.stars, sim.stars); r.quit = sim.quit && !r.stars; if (r.quit) r.stars = 0; }
+        applyTrial(c, r, def);
+        if (r.skip) await UI.choose(def.icon + ' ' + def.name, `<p><b>${esc(c.name)}</b> war in der Prüfung.</p><div class="stars">${'⭐'.repeat(r.stars)}<span class="off">${'⭐'.repeat(r.max - r.stars)}</span></div><p>${r.quit ? 'Abgebrochen.' : r.stars + ' Portionen fürs Camp.'}</p>`, [{ label: 'Ab ins Camp', icon: '🔥', value: 1 }]);
+        return;
+      }
+      const r = sim;
       applyTrial(c, r, def);
       await st.line(UL.pick(['lotte', 'mats']), r.quit ? `${firstName(c)} hat bei „${def.name}“ den Satz gesagt: „${D.SHOW.exit}“ – keine Sterne.` : `${firstName(c)} holt bei „${def.name}“ ${r.stars} von ${r.max} Sternen.`);
       await UI.choose(def.icon + ' ' + def.name, `<p><b>${esc(c.name)}</b> war in der Prüfung.</p><div class="stars">${'⭐'.repeat(r.stars)}<span class="off">${'⭐'.repeat(r.max - r.stars)}</span></div><p>${r.quit ? 'Abgebrochen.' : r.stars + ' Portionen fürs Camp.'}</p>`, [{ label: 'Ab ins Camp', icon: '🔥', value: 1 }]);

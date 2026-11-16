@@ -51,7 +51,7 @@
     update(dt, ctx) {
       const I = ctx.inp, p = ctx.pos, v = ctx.vel, sc = ctx.scene;
       // Touch: Stick links/rechts dreht (wie im Tunnel) – der rechte Daumen bleibt frei für Tauchen/Auftauchen
-      const tank = !UL.bot && UL.In.device === 'touch';
+      const tank = !UL.bot && !ctx.ai && UL.In.device === 'touch';
       ctx.yaw -= I.lx * 1.2 + (tank ? I.mx * 1.9 * dt : 0);
       const under = p.y < WY - 0.35;
       // Bewegung relativ zur Kamera

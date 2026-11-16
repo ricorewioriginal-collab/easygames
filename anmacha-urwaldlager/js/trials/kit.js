@@ -37,9 +37,11 @@
     const short = !!opt.short;
     const max = short ? Math.max(3, Math.round(def.stars * 0.5)) : def.stars;
     const stage = new TrialStage(theme, impl.env ? impl.env(theme) : {});
+    // Zuschauen: ein Mit-Camper absolviert die Prüfung (KI steuert, zögert je nach Mut, bricht evtl. ab)
+    const ai = opt.ai || null, auto = UL.bot || !!ai;
     const ctx = {
       id, def, theme, k: dk, short, max, stage, scene: stage.scene, cam: stage.camera, stars: 0, time: def.time ? Math.round(def.time * (short ? 0.55 : 1)) : 0, timeMax: 0,
-      running: false, done: false, quit: false, meters: [], t: 0, name: opt.name || 'Du', look: opt.look || UL.D.CAST[0].look, opt,
+      running: false, done: false, quit: false, skip: false, ai, meters: [], t: 0, name: opt.name || 'Du', look: opt.look || UL.D.CAST[0].look, opt,
       hostPos: new T.Vector3(0, 0, -6), hostRy: 0,
       rng: new UL.RNG((opt.seed || Date.now()) & 0xffffffff),
       inp: { mx: 0, my: 0, ok: false, okD: false, alt: false, altD: false, lx: 0, ly: 0 },
@@ -88,12 +90,19 @@
       for (const [w, t] of [UL.pick(UL.D.MOD.intro)]) await UI.say(w, UI.fmt(t, vars));
       if (ctx.intro) { stage.cine.move(ctx.intro.pos, ctx.intro.look, 2.5); await UI.say(UL.pick(['lotte', 'mats']), def.desc); }
       else await UI.say(UL.pick(['lotte', 'mats']), def.desc);
+    }
+    if (ai && !UL.bot) {
+      await UI.say(UL.pick(['lotte', 'mats']), UL.pick([`Und jetzt schauen wir ${ctx.name} zu. Wird ${ctx.name} sich trauen?`, `${ctx.name} ist dran – das Camp drückt die Daumen!`, `Mal sehen, ob ${ctx.name} heute Sterne holt … oder den Satz sagt.`]));
+      const b = document.createElement('button'); b.className = 'aiskip'; b.textContent = '⏩ Überspringen';
+      b.onclick = () => { if (ctx.running) { ctx.skip = true; ctx.end('skip'); } };
+      document.getElementById('ui').appendChild(b); ctx._skipBtn = b;
+    } else if (!UL.bot) {
       const go = await UI.choose(def.icon + ' ' + def.name, `<b>Ziel:</b> ${max} Sterne${ctx.time ? ` · <b>Zeit:</b> ${UL.fmtTime(ctx.time)}` : ''}<br>${ctlHtml(def.ctrl)}`, [
         { label: 'Los geht’s!', icon: '⭐', value: 'go' }, { label: UL.D.SHOW.exit, icon: '🏳️', sub: 'Prüfung gar nicht erst antreten – das Camp bekommt nichts.', value: 'quit' }], { cls: 'clear' });
       if (go === 'quit') { ctx.quit = true; ctx.end('quit'); return; }
     }
     if (impl.start) impl.start(ctx);
-    UI.hint(Object.fromEntries(def.ctrl.map(([k, t]) => [k, t]).concat([['select', 'Halten: Abbruch']])));
+    UI.hint(ai ? { select: 'Überspringen' } : Object.fromEntries(def.ctrl.map(([k, t]) => [k, t]).concat([['select', 'Halten: Abbruch']])));
     UL.Audio.music('trial'); UL.Audio.voicePitch = opt.form === 'm' ? 0.62 : opt.form === 'w' ? 1.05 : 0.85;
     if (!UL.bot) { for (const n of ['3', '2', '1']) { UL.Audio.sfx('drum'); await UI.banner(n, '', 650); } UL.Audio.sfx('gong'); UI.banner('LOS!', '', 700); }
     ctx.running = true;
@@ -105,20 +114,38 @@
       ctx.t += dt;
       // Eingabe (oder Testpilot)
       const I = ctx.inp;
-      if (UL.bot && impl.bot) { I.mx = I.my = 0; I.ok = I.alt = I.okD = I.altD = false; I.lx = I.ly = 0; impl.bot(dt, ctx, I); }
+      if (auto && impl.bot) {
+        I.mx = I.my = 0; I.ok = I.alt = I.okD = I.altD = false; I.lx = I.ly = 0;
+        if (ai && aiTick(dt)) return;
+        if (!(ai && ai.hes > 0)) impl.bot(dt, ctx, I);
+      }
       else { I.mx = In.move.x; I.my = In.move.y; I.ok = In.pressed('ok'); I.okD = In.down('ok'); I.alt = In.pressed('alt'); I.altD = In.down('alt'); I.lx = In.look.x; I.ly = In.look.y; I.menu = In.pressed('menu'); }
       if (UL.query.get('fast') && ctx.t > 6) { ctx.end('zeit'); return; }   // nur für automatische Tests
       if (ctx.time) { ctx.time -= dt; if (ctx.time <= 0) { ctx.time = 0; ctx.end('zeit'); return; } }
       try { impl.update(dt, ctx); } catch (e) { console.error(e); ctx.end('fehler'); return; }
       // „Ich bin raus!“: Select / H halten
-      if (In.down('select')) { quitHold += dt; if (quitHold > 1.5) { ctx.quit = true; ctx.end('quit'); return; } } else quitHold = 0;
+      if (ai) { if (In.pressed('select') || In.pressed('menu')) { ctx.skip = true; ctx.end('skip'); return; } }
+      else if (In.down('select')) { quitHold += dt; if (quitHold > 1.5) { ctx.quit = true; ctx.end('quit'); return; } } else quitHold = 0;
       hudT -= dt; if (hudT <= 0 || lastStars !== ctx.stars) { hudT = 0.2; lastStars = ctx.stars; hud(false, quitHold); }
     };
+    // KI-Camper: zögert (Eingaben ruhen), ruft vor Angst, sagt vielleicht den Satz
+    function aiTick(dt) {
+      ai.hes = (ai.hes || 0) - dt; ai.next = (ai.next ?? 1.5) - dt;
+      if (ai.quitAt && ctx.t > ai.quitAt) { Tr.shout('„' + UL.D.SHOW.exit + '“', 'red'); ctx.player.play('faint'); ctx.quit = true; ctx.end('quit'); return true; }
+      if (ai.next <= 0) {
+        ai.next = UL.rand(1.2, 3.2);
+        if (Math.random() < (1 - (ai.skill ?? 0.6)) * 0.7) {
+          ai.hes = UL.rand(0.4, 1.4);
+          if (Math.random() < 0.45) Tr.shout(UL.pick(['Ich kann nicht …', 'Oh Gott …', 'Moment!', 'Nee, nee, nee …', 'Muss das sein?']), 'red');
+        }
+      }
+      return false;
+    }
     function hud(pop, qh = 0) {
       const st = `<span class="chip big">⭐ <b>${ctx.stars}</b> / ${max}</span>`;
       const tm = ctx.time ? `<span class="chip big ${ctx.time < 10 ? 'warn' : ''}">⏱ ${UL.fmtTime(ctx.time)}</span>` : '';
       const q = qh > 0 ? `<span class="chip warn">🏳️ „Ich bin raus …“ <span class="bar"><i style="width:${Math.min(100, qh / 1.5 * 100)}%"></i></span></span>` : '';
-      UI.hud(st + tm + (ctx.extraHud || '') + q);
+      UI.hud((ai ? `<span class="chip">📺 ${UL.esc(ctx.name)}</span>` : '') + st + tm + (ctx.extraHud || '') + q);
       const m = document.getElementById('meter');
       if (ctx.meters.length) { const hb = document.getElementById('hud').getBoundingClientRect(); m.style.top = Math.round(hb.bottom + 6) + 'px'; m.hidden = false; m.innerHTML = ctx.meters.map(x => `<div class="meter ${x.danger ? 'danger' : ''}">${x.label}<div class="bar"><i style="width:${Math.round(UL.clamp(x.v, 0, 1) * 100)}%;${x.color ? 'background:' + x.color : ''}"></i></div></div>`).join(''); }
       else m.hidden = true;
@@ -131,6 +158,8 @@
       UI.hint({}); document.getElementById('meter').hidden = true;
       if (impl.finish) try { impl.finish(ctx); } catch (e) { console.error(e); }
       if (ctx.ui) { ctx.ui.remove(); ctx.ui = null; }
+      if (ctx._skipBtn) { ctx._skipBtn.remove(); ctx._skipBtn = null; }
+      if (ctx.skip) { await UI.fade(true, 0.3); UI.hud(''); resolve({ stars: ctx.stars, max, quit: false, skip: true }); return; }
       const stars = ctx.quit ? 0 : ctx.stars;
       Object.assign(vars, { s: stars });
       UL.Audio.music('show');
