@@ -23,6 +23,9 @@ export function playerLook(s: { body: string; palette: string; skin: number; pro
   return { body: body(s.body).id, palette: s.palette, skin: s.skin, hair, outfit, top: s.pronouns !== 'he', hot: s.settings.adult };
 }
 
+/** Auf der Straße: Unterwäsche nur zuhause, draußen ist die Figur angezogen */
+export function streetLook(l: Look): Look { return l.outfit === 'underwear' ? { ...l, outfit: 'clothed' } : l; }
+
 /* Shader: jede Materialrolle bekommt ihre Farbe; Outfits ersetzen Kleidung durch Haut, Slip, BH oder Harness.
    vYN = Höhe in der Ruhepose (0 Fuß, 1 Scheitel), vSN = seitlicher Abstand zur Körpermitte, beides relativ zur Körpergröße. */
 const OUTFIT_ID: Record<Outfit, number> = { clothed: 0, shirtless: 1, underwear: 2, swim: 3, harness: 4 };

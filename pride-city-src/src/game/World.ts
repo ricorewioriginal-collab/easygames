@@ -31,7 +31,7 @@ export class World {
   private flagTime = { value: 0 };
   private lamps: THREE.MeshBasicMaterial;
   private neon: THREE.MeshBasicMaterial[] = [];
-  private cars: Array<{ o: THREE.Object3D; path: THREE.Vector3[]; seg: number; u: number; v: number }> = [];
+  readonly cars: Array<{ o: THREE.Object3D; path: THREE.Vector3[]; seg: number; u: number; v: number }> = [];
   private lampLights: THREE.PointLight[] = [];
   night = 0;
   /** Spuren im Park, nur mit 18+ */ readonly traces = new THREE.Group();
