@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "8aaeaedf71c0",
- "generated": "2026-11-16T01:20:45+00:00",
- "commit": "b257992801d4d39e3680b6020f373aa062ee83e2",
+ "version": "0ca9a54bf425",
+ "generated": "2026-11-16T01:46:17+00:00",
+ "commit": "386ebc4c8d35f8e1c732fc39b45bc6a0030e5aca",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9783,8 +9783,8 @@
   },
   {
    "p": "einbinden.html",
-   "s": 107640,
-   "h": "bdffd93dd15c66777c8406b7797f5d3e2d8a14cd4f13b15af35b9faa75358f9d"
+   "s": 107737,
+   "h": "5528b703d352a424bd99db3df735fa0726a7273f6d06412ab498eaed090d5073"
   },
   {
    "p": "erfolge.html",
@@ -10253,8 +10253,8 @@
   },
   {
    "p": "gamepad.js",
-   "s": 83196,
-   "h": "8076ce0ae180006cd2abd4b35207d3d92ee66a96c3cdadc5873522d08eff4243"
+   "s": 83399,
+   "h": "2014526ec998c84b08260f9632e7d305b6d1b8233e5505e69f62ac99ad0fd87b"
   },
   {
    "p": "games.js",
@@ -10878,8 +10878,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 11540,
-   "h": "5af00604dc8023ba1dbb9d2774b1188833c25a67783105a4c44bb2b855623e71"
+   "s": 11614,
+   "h": "2d138e23091b72057de65ce843f32acedf9c2e6e447dce1c78c368743ed2acd2"
   },
   {
    "p": "guides/prismrush.json",
