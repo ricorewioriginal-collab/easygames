@@ -14,7 +14,10 @@ const sm = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a)));
 const segD = (x, z, ax, az, bx, bz) => { const dx = bx - ax, dz = bz - az, t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1))); return [Math.hypot(x - ax - dx * t, z - az - dz * t), t]; };
 
 /* Maske: Abstand außerhalb der offenen Fläche (0 = begehbar), als Raster vorberechnet und bilinear gelesen */
+/* Rampen flach genug (Hang ≤ ~1,1) (Länge ≥ 3,4 × Höhe): sonst ist die „Treppe“ zu steil und gesperrt – der Fuß rückt dann weiter weg vom Plateau */
+function arealTiers(A) { for (const q of (A.tiers || [])) { const dx = q[4] - q[0], dz = q[5] - q[1], L = Math.hypot(dx, dz), need = q[2] + q[3] * 3.4; if (L > .01 && L < need) { q[4] = q[0] + dx / L * need; q[5] = q[1] + dz / L * need; } } }
 export function arealMask(w, roads, PATHX, CX, CZ, R) {
+  arealTiers(w.areal);
   const A = w.areal, C0 = [], S0 = [];   // Kreise [x, z, r] und Strecken [ax, az, bx, bz, hw]
   for (const q of w.zones) C0.push([q[3], q[4], q[5] + 3]);
   for (const [ax, az, bx, bz] of roads) S0.push([ax, az, bx, bz, 4.5]);
