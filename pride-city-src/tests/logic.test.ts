@@ -130,3 +130,22 @@ describe('Story', () => {
     expect(lfGlow(s)).toBeLessThanOrEqual(lfMax());
   });
 });
+
+import { PLACE_THEMES, HOUSE_THEMES, houseTheme } from '../src/game/interiors';
+describe('Innenräume', () => {
+  const GL = ['dates', 'club', 'rave', 'style', 'gym', 'match', 'run', 'dance', 'pool', 'kara', 'sauna', 'dark', 'cast', 'quiz'];
+  const all = [...Object.values(PLACE_THEMES), ...HOUSE_THEMES];
+  it('jeder Raum hat benutzbare Stellen im Raum und gültige Minispiele', () => {
+    for (const t of all) {
+      expect(t.spots.length).toBeGreaterThan(0);
+      for (const sp of t.spots) {
+        expect(Math.abs(sp.x)).toBeLessThan(6); expect(Math.abs(sp.z)).toBeLessThan(4.5);
+        if (sp.act.k === 'gl') expect(GL).toContain(sp.act.id);
+      }
+    }
+  });
+  it('ohne 18+ nie ein 18+-Haus', () => {
+    for (let i = 0; i < 300; i++) expect(houseTheme(i, false).adult).toBeFalsy();
+    expect(new Set(Array.from({ length: 300 }, (_, i) => houseTheme(i, false).id)).size).toBe(HOUSE_THEMES.filter((t) => !t.adult).length);
+  });
+});

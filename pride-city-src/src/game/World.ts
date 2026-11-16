@@ -33,6 +33,8 @@ export class World {
   readonly root = new THREE.Group();
   readonly colliders: Rect[] = [];
   readonly pois: Poi[] = [];
+  /** Türen aller übrigen Häuser (jedes ist betretbar, Innenraum aus interiors.ts) */
+  readonly houses: Array<{ i: number; x: number; z: number; yaw: number }> = [];
   readonly sun = new THREE.DirectionalLight(0xffffff, 2.2);
   readonly hemi = new THREE.HemisphereLight(0xbfd8ff, 0x4a3a5a, 1.1);
   private sky!: THREE.Mesh<THREE.SphereGeometry, THREE.ShaderMaterial>;
@@ -87,6 +89,7 @@ export class World {
       let kind = BUILD[Math.floor(rnd() * BUILD.length)];
       if (door) kind = door.id === 'club' ? 'building_H' : door.id === 'center' ? 'building_G' : door.id === 'home' ? 'building_E' : door.id === 'cafe' ? 'building_B' : door.id === 'boutique' ? 'building_F' : door.id === 'gym' ? 'building_D' : door.id === 'studio' ? 'building_A' : door.id === 'checkpoint' ? 'building_E' : door.id === 'onelove' ? 'building_H' : door.id === 'police' ? 'building_A' : door.id === 'fire' ? 'building_G' : 'building_C';
       tasks.push(this.place(C(kind), x, .1, z, rot));
+      if (!door) this.houses.push({ i: this.houses.length, x: x + Math.sin(rot) * (TILE * .4 + .5), z: z + Math.cos(rot) * (TILE * .4 + .5), yaw: rot });
       this.colliders.push({ x, z, hx: TILE * .4, hz: TILE * .4 });
     }
     await Promise.all(tasks);
