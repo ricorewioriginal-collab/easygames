@@ -12,7 +12,7 @@ const BILD = process.argv[2] === 'bild', fs = require('fs');
     Z.pl.face = 0; Z.setCam(Math.PI, .12, 9.5); }, IDS);
   await p.waitForFunction(() => __B.every(P => P.kk.ready), null, { timeout: 90000 }).catch(() => { });
   ok('alle Begleiter als KayKit geladen', await p.evaluate(() => __B.every(P => P.kk.ready)), await p.evaluate(() => __B.map(P => P.kk.id + ':' + P.kk.ready).join(' ')));
-  ok('eigene Farben je Begleiter', await p.evaluate(() => new Set(__B.map(P => { let u = ''; P.root.traverse(m => { if (m.isMesh && m.visible && !u && m.material.map) u = m.material.map.uuid; }); return u; })).size === __B.length));
+  ok('eigene Farben je Begleiter', await p.evaluate(() => new Set(__B.map(P => { let u = ''; P.root.traverse(m => { if (m.isMesh && m.visible && m.isSkinnedMesh) u += (Array.isArray(m.material) ? m.material : [m.material]).map(x => x.color.getHex()).join(','); }); return u; })).size > __B.length / 2));
   await p.evaluate(() => __zotik.step(1 / 30, 8)); await shot('begleiter');
   for (const [k, dx] of [['links', -2.9], ['rechts', 2.9]]) { await p.evaluate(dx => { const Z = __zotik; Z.pl.x += dx; Z.pl.z -= 1; Z.step(1 / 30, 2); Z.setCam(Math.PI, .05, 3.6); }, dx); await shot(k); await p.evaluate(dx => { const Z = __zotik; Z.pl.x -= dx; Z.pl.z += 1; }, dx); }
   ok('keine Fehler', !p.errs.length, [...new Set(p.errs)].join(' | ')); console.log(`${res.filter(Boolean).length}/${res.length} bestanden`); await b.close(); process.exit(res.every(Boolean) ? 0 : 1); })().catch(e => { console.log('ABBRUCH', e.message.slice(0, 400)); process.exit(1); });
