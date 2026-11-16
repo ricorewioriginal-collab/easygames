@@ -68,7 +68,9 @@
   function load() { try { return Object.assign(clone(DEFAULT), JSON.parse(localStorage.getItem('eg-tiktok') || 'null') || {}); } catch (e) { return clone(DEFAULT); } }
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   // Belegung für dieses Spiel: eigene Einträge des Spiels ersetzen die allgemeinen
-  function eff() { var g = (cfg.games || {})[GID] || {}, o = {}; for (var k in cfg) if (k !== 'games') o[k] = g[k] !== undefined ? g[k] : cfg[k]; return o; }
+  function eff() { var g = (cfg.games || {})[GID] || gameDefaults(), o = {}; for (var k in cfg) if (k !== 'games') o[k] = g[k] !== undefined ? g[k] : cfg[k]; return o; }
+  // Empfohlene Belegung, die ein Spiel selbst mitbringt (window.EasyGamesStream.defaults) – gilt, bis eine eigene gespeichert ist
+  function gameDefaults() { try { var w = gameWin(), d = w && w.EasyGamesStream && w.EasyGamesStream.defaults; return d && typeof d === 'object' ? d : {}; } catch (e) { return {}; } }
   function actInfo(a) { return ACTS.find(function (x) { return x[0] === a; }); }
   function giftInfo(name) {
     var n = String(name || '').toLowerCase(), l = liveGifts.find(function (g) { return String(g.name).toLowerCase() === n; }), s = GIFTS.find(function (g) { return g[0].toLowerCase() === n; });
@@ -533,7 +535,7 @@
       var o = ACTS.concat(ga.map(function (a) { return ['game:' + a.id, a.icon || '⭐', a.label, 'game']; })).filter(function (a) { return a[3] === gr; });
       return o.length ? '<div class="card"><h3 style="margin-top:0">' + GROUPS[gr] + '</h3><div class="acts">' + o.map(function (a) { return '<div class="act"><span class="e">' + esc(a[1]) + '</span><div>' + esc(a[2]) + (padMean(a[0]) ? ' <span class="mean">🎮 ' + esc(padMean(a[0])) + '</span>' : '') + '<br><code>' + esc(a[0]) + '</code></div><button data-run="' + esc(a[0]) + '" title="Testen">▶</button><button data-assign="' + esc(a[0]) + '" data-label="' + esc(a[2]) + '" title="Einem Geschenk zuweisen">🎁+</button></div>'; }).join('') + '</div></div>' : '';
     }).join('') + (ga.length ? '' : '<div class="s">Dieses Spiel hat keine eigenen Highlights – alle Streiche oben gehen trotzdem.</div>');
-    var own = cfg.games && cfg.games[GID]; $('#ttOwn').innerHTML = scope === 'game' ? (own ? '✅ ' + esc(S.game.title) + ' hat eine eigene Belegung · „Standard“ entfernt sie' : 'Noch keine eigene Belegung – zeigt die allgemeine; Speichern legt eine eigene an.') : (own ? 'ℹ️ ' + esc(S.game.title) + ' nutzt eine eigene Belegung' : 'Gilt für alle Spiele ohne eigene Belegung.');
+    var own = cfg.games && cfg.games[GID]; $('#ttOwn').innerHTML = scope === 'game' ? (own ? '✅ ' + esc(S.game.title) + ' hat eine eigene Belegung · „Standard“ entfernt sie' : (Object.keys(gameDefaults()).length ? 'Zeigt die empfohlene Belegung von ' + esc(S.game.title) + '; Speichern legt eine eigene an.' : 'Noch keine eigene Belegung – zeigt die allgemeine; Speichern legt eine eigene an.')) : (own ? 'ℹ️ ' + esc(S.game.title) + ' nutzt eine eigene Belegung' : 'Gilt für alle Spiele ohne eigene Belegung.');
     drawGifts(); urlDraw(); fillMeans();
   }
   // Unter jeder Aktion: was sie in diesem Spiel bewirkt (z. B. A drücken → Springen)
