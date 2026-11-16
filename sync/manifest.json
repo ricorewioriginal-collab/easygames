@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "bacc2ab5d449",
- "generated": "2026-11-16T04:40:55+00:00",
- "commit": "db980124fcbb308dc9b7c21f42e9faa7c63ff658",
+ "version": "4bd1b0ce97a0",
+ "generated": "2026-11-16T12:52:42+00:00",
+ "commit": "0d16798f96e4127f49c671db5b31a183e0a5c439",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9363,8 +9363,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3171,
-   "h": "8d2db190022119ccf358a99fd05467a0eefab88ff056636dadec8e8ccec1c5e1"
+   "s": 3153,
+   "h": "be88fb9f30f13f5ec8bb69ae59f322d649d1d70a89f669667556f1c7eddc5185"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -9438,13 +9438,13 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 25209,
-   "h": "31ab6990057d9a000080701fd3e8cb658dad95a724eaf2a2a37134b9c76c37c8"
+   "s": 25201,
+   "h": "83519627e7f1378fc7019d025c197e23b29768e0194168f6f3d22a90710506ea"
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 38018,
-   "h": "e935d9dd76e657a4a3163381a3abaf3b634eccd3ccd616bd720d684f890d190a"
+   "s": 37882,
+   "h": "67da42914a1c013ac971688749dc0c87ddead7e6daaf9ac695b18d122df8e48f"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -10258,8 +10258,8 @@
   },
   {
    "p": "games.js",
-   "s": 53824,
-   "h": "814e92a87b85eb7f98699f372bc6f9bfaefb74c0dd4c804c23a48e278ff8b0a7"
+   "s": 53431,
+   "h": "b8a37647342387ff2638d7e7c55a3751230bb4d36c8790e14c4d76c77affb813"
   },
   {
    "p": "groove-arena/card.jpg",
@@ -10338,8 +10338,8 @@
   },
   {
    "p": "guides.js",
-   "s": 168482,
-   "h": "a785ce2ef4336dbdb553049144d1e7ee1d6b472c7469bfe8d60a13cf26a9cfac"
+   "s": 167379,
+   "h": "d7f583707d6dd2713fbafe0a006c143f11416fd86c040e504f2f4d337a2885ea"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10612,11 +10612,6 @@
    "h": "56d265b2a668fef17b7ee37d0f5250c10d8b29ac77880534e31460990366351e"
   },
   {
-   "p": "guides/lumo.json",
-   "s": 13824,
-   "h": "935d96a6f6dd96213c6f550aa6a143e9061056ec165bd666b9c787ebcc371d08"
-  },
-  {
    "p": "guides/mahjong.json",
    "s": 14071,
    "h": "71713fbf60da34dd99b5e6aad3827169f933330df5df9ae171e26679471256a1"
@@ -10648,8 +10643,8 @@
   },
   {
    "p": "guides/pufi-farbwind.json",
-   "s": 43979,
-   "h": "60d260cff3438b895f52ec27e7a06daad04c11c97a04a7a7c0de443527a374b6"
+   "s": 58325,
+   "h": "9f0181b8ab3de0dd521613f4c51ac9388bc76d401e35cb44deb5c5138c053192"
   },
   {
    "p": "guides/radio-bingo.json",
@@ -11330,26 +11325,6 @@
    "p": "logo.png",
    "s": 34732,
    "h": "14c626be404d5188444f9137fa57bef6a22e7938eb3ab4fde71e8af00f2ef162"
-  },
-  {
-   "p": "lumo/audio.js",
-   "s": 2651,
-   "h": "215c0dfc15fe8cabdf7124d0eda087951311bbfddaf195c268adefd826c804f8"
-  },
-  {
-   "p": "lumo/card.svg",
-   "s": 1634,
-   "h": "a9fbff6ce1eb6b3635161c9e634cc3eb0a3c25aa7bc0fcddf58a310d5252cb96"
-  },
-  {
-   "p": "lumo/game.js",
-   "s": 35762,
-   "h": "f54387fdff356b3254a2e527f03785b101d4e5ebe2b7ef1d294b1febd4a12e53"
-  },
-  {
-   "p": "lumo/index.html",
-   "s": 4039,
-   "h": "4bd8665191528fa4db735d3492b84e0b320e8f317bbfc8e4122b85c0e34ecd29"
   },
   {
    "p": "mahjong/card.jpg",
@@ -13088,13 +13063,13 @@
   },
   {
    "p": "pufi-farbwind/3d/spiel.js",
-   "s": 92779,
-   "h": "12183b303b25aacc7cf8a7f9d140e4e2a69d3311c88202e38480b9900d32fb84"
+   "s": 93418,
+   "h": "8c3717b05281dc7839e3b5dd1c1ba7f4376ad00fb1178bbdaaa88e376cca5067"
   },
   {
    "p": "pufi-farbwind/3d/stil.css",
-   "s": 15487,
-   "h": "80e86ebf75a8cdd2cde7b9b8c0a6d05ea74e53ec5835bb9e6986d34cd204a4ff"
+   "s": 16073,
+   "h": "7c7d038032ec8f497c2332311f907c00a0abdd0d93303a8e672d29b908dabdda"
   },
   {
    "p": "pufi-farbwind/3d/welten.js",
@@ -13183,8 +13158,8 @@
   },
   {
    "p": "pufi-farbwind/index.html",
-   "s": 4292,
-   "h": "0ea05ba297006a34b07eaddc48519f451ae0ae67f857db13de541904fca19456"
+   "s": 4323,
+   "h": "8637f4676b9f3b70f6454064b02fc69ed9a6d5db078c4df83b84ebd75ca06247"
   },
   {
    "p": "pufi-farbwind/klassik.html",
@@ -13198,13 +13173,28 @@
   },
   {
    "p": "pufi-farbwind/manifest.webmanifest",
-   "s": 493,
-   "h": "1f3d3bd061a237e1414f112ae5b4f8af898a2d3ca5df674faecfbfcb4f613f6f"
+   "s": 527,
+   "h": "89550daed4562be6b3c992e46f85a6cd2699872951b0f82d341bb2f8daca555e"
   },
   {
    "p": "pufi-farbwind/sw.js",
-   "s": 944,
-   "h": "5b1bf38844f3e2b8afd5d41d80b64e5f2c9408c278096669b37b0f724c53f28d"
+   "s": 1038,
+   "h": "9bcec6fff39b019dfc217e6c04b9285c988882cdd088043e90bbbe1e62db1879"
+  },
+  {
+   "p": "pufi-farbwind/wolkenpfad/audio.js",
+   "s": 2720,
+   "h": "cc5efcd3b9ac851d75ac931773b8d9b7f3be1fc5c5870b7bf568fe3c20cf7780"
+  },
+  {
+   "p": "pufi-farbwind/wolkenpfad/game.js",
+   "s": 50360,
+   "h": "b5991c24a986a4c43fa61b35d217f75c1262bf7670d509e4a517727b268c8820"
+  },
+  {
+   "p": "pufi-farbwind/wolkenpfad/index.html",
+   "s": 5193,
+   "h": "f6103781a7c08699507012f98532b0556ee9bcc01e35d041ab1afd2f9636712c"
   },
   {
    "p": "radio-bingo/assets/fredoka-latin-wght-normal-DM6njrJ3.woff2",
@@ -15378,8 +15368,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 243204,
-   "h": "d9e5087b379a2ede8ee0335be9122d5d7b3d4c00130cbacb05d1d214ce9d9f51"
+   "s": 241380,
+   "h": "5e360b10593812df41f1dfa6a8301fb8a496788307a50d2c3f9d58bf3de5d681"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

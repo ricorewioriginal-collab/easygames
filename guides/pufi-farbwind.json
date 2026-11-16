@@ -5,7 +5,7 @@
       "t": "Ziel des Spiels (3D-Neuauflage)",
       "p": [
         "„Pufi & der Farbwind 3D“ ist die Neuauflage des Insel-Abenteuers in echtem 3D: Du läufst frei über schwebende Inseln, die Kamera folgt dir und lässt sich drehen. Pufi trägt den kleinen Wolkentapir Tamo auf dem Rücken über sechs Inseln mit je vier Leveln – Blütenbucht, Honig & Wolken, Glut & Nebel, Frostgipfel, Pilzdschungel sowie Kristall & Sternennacht. In 3-4 wartet Brummnebel, im letzten Level der Sturmnebel.",
-        "Bring Tamo durchs Farbtor am Ende jedes Levels. Unterwegs sammelst du Sterne, 8 rote Münzen und 5 Farbblüten für einen Bestwert bis 100 Punkte. Das Original mit 24 Leveln in 2D findest du im Hauptmenü unter „Klassik 2D“."
+        "Bring Tamo durchs Farbtor am Ende jedes Levels. Unterwegs sammelst du Sterne, 8 rote Münzen und 5 Farbblüten für einen Bestwert bis 100 Punkte. Das Original mit 24 Leveln in 2D findest du im Hauptmenü unter „Klassik 2D“. Dazu gibt es das Minispiel „Lumo – Wolkenpfad“."
       ]
     },
     {
@@ -16,6 +16,7 @@
       "list": [
         "Abenteuer starten bzw. Weiterspielen: startet das höchste freigeschaltete Level.",
         "Inselkarte: alle 24 Level mit Bestwert, Blüten und roten Münzen. Gesperrte Level zeigen ein Schloss.",
+        "Minispiel: Lumo Wolkenpfad: öffnet das Jump-and-Run mit Pufis Freund Lumo (20 Level in 4 Welten plus Münzgärten).",
         "Klassik 2D: öffnet das Original-Abenteuer mit 24 Leveln.",
         "Optionen: Musik- und Effekt-Lautstärke, Ton an/aus, Grafikstufe (Automatisch, Hoch, Mittel, Niedrig), Kamera-Tempo, Kamera umkehren, automatische Kamera, Vibration, Controller-Belegung.",
         "Steuerung: Übersicht für PC, Controller und Touch, dazu die Mitwirkenden.",
@@ -184,6 +185,94 @@
         "Pause: WEITER, LEVEL NEU STARTEN, OPTIONEN, INSELKARTE.",
         "3D-Tiefe: Die Inseln sind in 2.5D gezeichnet – Kacheln mit Ober- und Seitenflächen, Schatten unter allen Figuren, Dunst zwischen den Hintergrund-Ebenen, Lichtstrahlen und unscharfe Büsche im Vordergrund. Auf langsamen Geräten stellst du unter OPTIONEN → 3D-TIEFE auf SANFT oder AUS."
       ]
+    },
+    {
+      "t": "Minispiel Lumo – Ziel des Spiels",
+      "p": [
+        "Lumo – Wolkenpfad ist das Minispiel von „Pufi & der Farbwind“: ein Jump-and-Run mit Pufis Freund Lumo, einem kleinen Wolkenwesen mit Schal. Du öffnest es im Hauptmenü unter „Minispiel: Lumo Wolkenpfad“ oder ganz unten auf der Inselkarte. Du läufst von links nach rechts, springst über Gruben und Stacheln, besiegst Gegner durch Draufspringen, sammelst Münzen und erreichst am Ende jedes Levels die Fahnenstange.",
+        "Das Minispiel hat 20 Level in vier Welten. Nach jeder Welt folgt ein Münzgarten als Bonusrunde. Hast du das letzte Level geschafft, erscheint der Abspann „Lumo hat den Wolkenpfad gemeistert!“. Die Grafik ist weich gezeichnet und scharf auf jedem Bildschirm, im Querformat siehst du mehr vom Level (Breitbild)."
+      ]
+    },
+    {
+      "t": "Minispiel Lumo – Titelbildschirm und Menü",
+      "list": [
+        "NEUES SPIEL: startet ab Welt 1-1 mit 3 Leben, 0 Punkten und 0 Münzen.",
+        "WEITER (z. B. 2-3): erscheint, sobald du über das erste Level hinausgekommen bist, und setzt beim zuletzt erreichten Level fort – wieder mit 3 Leben und 0 Punkten.",
+        "← ZURÜCK ZU PUFI: führt zurück ins Pufi-Abenteuer. Esc oder Controller-B im Titel tun dasselbe.",
+        "Mit Pfeil hoch/runter (oder W/S) wechselst du den Menüpunkt, mit Enter, Leertaste oder Controller-A bestätigst du. Du kannst die Menüpunkte auch direkt antippen oder anklicken.",
+        "Unter dem Menü steht dein BESTWERT.",
+        "Oben rechts gibt es runde Knöpfe für ♫ Ton an/aus, Ⅱ Pause, ⛶ Vollbild und „← Pufi“ (zurück zu Pufi).",
+        "Oben links öffnest du „☁ Google-Speicher & Spielstand“."
+      ]
+    },
+    {
+      "t": "Minispiel Lumo – Spielablauf und Anzeige",
+      "p": [
+        "Vor jedem Level zeigt eine Tafel kurz den Levelnamen (z. B. WELT 1-1), den Namen der Welt und deine Leben. Danach läuft die Zeit."
+      ],
+      "list": [
+        "Oben links: ♥ = deine Leben, ● = gesammelte Münzen, daneben deine Punkte und während der Sternzeit ★ mit den restlichen Sekunden.",
+        "Oben Mitte: Levelname und Welt, z. B. „1-1 · Wolkenwiese“.",
+        "Unten Mitte: die Zeit (⏱) – sie läuft rückwärts und wird unter 60 rot.",
+        "Läuft die Zeit ab, verlierst du ein Leben („Zeit abgelaufen“). Fällst du in eine Grube, heißt es „Abgestürzt“, bei einem Treffer „Erwischt“.",
+        "Nach einem verlorenen Leben beginnt das Level von vorn. Sind alle Leben weg, kommt Game Over mit Punkten und Bestwert; Enter bringt dich zum Titel (oder nach kurzer Zeit automatisch).",
+        "Erreichst du die Fahnenstange, heißt es „Geschafft!“ und es gibt einen Zeitbonus von 50 Punkten pro übriger Sekunde."
+      ]
+    },
+    {
+      "t": "Minispiel Lumo – Welten und Level",
+      "list": [
+        "Welt 1 – Wolkenwiese: Level 1-1 bis 1-5, danach Bonus 1-B.",
+        "Welt 2 – Bernsteinhöhlen: Level 2-1 bis 2-5, danach Bonus 2-B.",
+        "Welt 3 – Frostgipfel: Level 3-1 bis 3-5, danach Bonus 3-B.",
+        "Welt 4 – Sternenschloss (Nachthimmel mit Sternen): Level 4-1 bis 4-5, danach Bonus 4-B und der Abspann.",
+        "Das erste Level jeder Welt ist von Hand gebaut, die übrigen vier werden nach festen Regeln erzeugt – sie sehen bei jedem Spiel gleich aus.",
+        "Die Zeit pro Level sinkt langsam: 1-1 hat 300 Sekunden, 2-1 und 3-1 je 280, 4-1 und 4-5 nur 260."
+      ]
+    },
+    {
+      "t": "Minispiel Lumo – Blöcke, Gegenstände und Gefahren",
+      "list": [
+        "Gelber ?-Block: von unten anstoßen = 1 Münze (200 Punkte), danach ist er leer (braun).",
+        "Blauer +-Block: gibt einen Schutzpilz, der losläuft. Einsammeln macht Lumo groß (1000 Punkte).",
+        "Lila ★-Block: gibt einen Stern (1000 Punkte) – etwa 8 Sekunden unbesiegbar, jeder berührte Gegner fliegt weg (200 Punkte).",
+        "Ziegel: Als großer Lumo zerschlägst du sie von unten (50 Punkte), klein prallst du nur ab.",
+        "Grüne Säulen sind feste Hindernisse, auf die du springen kannst.",
+        "Bewegliche Wolkenplattformen pendeln hin und her und nehmen dich mit.",
+        "Herz: ein Extraleben (1UP). Auch je 100 Münzen gibt es ein Extraleben.",
+        "Stachelspitzen am Boden: Berührung ist ein Treffer.",
+        "Gruben: hineinfallen kostet sofort ein Leben, auch wenn du groß bist."
+      ]
+    },
+    {
+      "t": "Minispiel Lumo – Gegner",
+      "list": [
+        "Krabbler: läuft hin und her und dreht an Kanten und Wänden um. Draufspringen besiegt ihn (100 Punkte).",
+        "Hüpfer: oranger Pilz mit Beinen, springt von allein in die Luft. Ebenfalls durch Draufspringen besiegbar.",
+        "Fledermaus: fliegt in Wellen hin und her in der Luft. Von oben treffen besiegt sie.",
+        "Stachelkäfer: rot mit grauen Stacheln – kann nicht getreten werden. Nur ausweichen oder mit einem Stern umrennen.",
+        "Seitliche Berührung mit einem Gegner ist ein Treffer: Bist du groß, wirst du klein und bist 2 Sekunden lang unverwundbar (Lumo blinkt), bist du klein, verlierst du ein Leben."
+      ]
+    },
+    {
+      "t": "Minispiel Lumo – Bedienung",
+      "list": [
+        "Touch: unten links ◀ und ▶ laufen, unten rechts der rosa A-Knopf springt. Die Knöpfe erscheinen nur während des Spiels.",
+        "Tastatur: Pfeil links/rechts oder A/D laufen; Leertaste, Z, Pfeil hoch oder W springen; P oder Esc Pause, P oder Enter weiter. Im Titel Pfeil hoch/runter zum Wählen, Enter zum Starten, Esc zurück zu Pufi.",
+        "Gamecontroller: Steuerkreuz oder linker Stick laufen (hoch springt ebenfalls), A springen, X oder Start bestätigen, B oder Select Pause; im Titel bringt B dich zurück zu Pufi.",
+        "Je länger du Springen gedrückt hältst, desto höher springst du. Lässt du früh los, bleibt der Sprung kurz.",
+        "Wechselst du das Fenster oder die App, pausiert das Spiel von selbst."
+      ]
+    },
+    {
+      "t": "Minispiel Lumo – Punkte, Leben und Speichern",
+      "list": [
+        "Münze 200, Gegner treten 100, Gegner mit Stern 200, Ziegel 50, Schutzpilz 1000, Stern 1000, Zeitbonus 50 je Sekunde.",
+        "Start mit 3 Leben; Extraleben durch Herzen und alle 100 Münzen.",
+        "Gespeichert werden automatisch auf dem Gerät: Bestwert, das zuletzt erreichte Level (für WEITER) und deine Bestzeit je Level. Ein Spielstand aus dem früheren Einzelspiel wird beim ersten Start übernommen.",
+        "Mit „☁ Google-Speicher & Spielstand“ meldest du dich bei Google an – der Wolkenpfad nutzt denselben Speicher wie Pufi.",
+        "Die Einstellung Ton an/aus merkt sich das Minispiel ebenfalls."
+      ]
     }
   ],
   "ratgeber": [
@@ -250,6 +339,46 @@
         "Auf Bröckelstegen stehen bleiben.",
         "Den Farbring überspringen: Er ist dein Rücksetzpunkt und bringt +10 Sterne.",
         "Mit 0 Eiern in die Burg laufen. Im Bosskampf fallen zwar Wuschel als Nachschub herein, aber nur, wenn du weniger als zwei Eier hast."
+      ]
+    },
+    {
+      "t": "Minispiel Lumo – Tipps für Einsteiger",
+      "list": [
+        "Nimm dir Zeit: 260 bis 300 Sekunden reichen locker. Lieber einmal stehen bleiben und die Gegnerbewegung beobachten.",
+        "Stoße jeden +-Block an. Als großer Lumo hast du einen Treffer frei.",
+        "Springe Gegnern von oben auf den Kopf – seitlich berühren kostet immer.",
+        "Bei Gruben früh abspringen: Das Spiel verzeiht einen kurzen Moment nach der Kante, und ein knapp vor der Landung gedrückter Sprung wird gemerkt.",
+        "Stachelkäfer erkennst du an den grauen Stacheln. Einfach drüberspringen."
+      ]
+    },
+    {
+      "t": "Minispiel Lumo – Strategien für Fortgeschrittene",
+      "list": [
+        "Halte beim Treten die Sprungtaste gedrückt: Dann federst du deutlich höher vom Gegner ab und erreichst damit hohe Plattformen oder Münzreihen.",
+        "Kurze Sprünge (Taste nur antippen) sind unter niedrigen Decken und zwischen Stacheln sicherer als volle Sprünge.",
+        "Fledermäuse fliegen in Wellen – warte, bis sie oben sind, und laufe dann darunter durch, oder triff sie von oben, wenn sie unten sind.",
+        "Hüpfer lieber angehen, wenn sie gerade gelandet sind; in der Luft treffen sie dich leicht von unten.",
+        "Auf beweglichen Plattformen nicht hektisch laufen – sie tragen dich mit.",
+        "Ab etwa der Mitte des Spiels werden Gruben bis zu drei Felder breit und es gibt mehr Stachelkäfer und Hüpfer. Volle Sprünge mit Anlauf einplanen."
+      ]
+    },
+    {
+      "t": "Minispiel Lumo – Profi-Tricks für den Bestwert",
+      "list": [
+        "Der Zeitbonus ist der größte Punkteblock: 200 übrige Sekunden bringen 10.000 Punkte. Schnelle Durchläufe lohnen sich mehr als jede Münze.",
+        "Münzen sind trotzdem doppelt wertvoll: 200 Punkte und alle 100 Stück ein Leben.",
+        "Mit einem Stern einfach durchrennen – jeder Gegner bringt 200 statt 100 Punkte und die Stacheln stören nicht.",
+        "Als großer Lumo Ziegel zerschlagen bringt kleine Extrapunkte und öffnet manchmal einen Weg nach oben.",
+        "Im Münzgarten zählt jede Sekunde – laufe ohne Pause und sammle zuerst die langen Münzreihen."
+      ]
+    },
+    {
+      "t": "Minispiel Lumo – Häufige Fehler",
+      "list": [
+        "Groß sein schützt nicht vor Gruben – ein Absturz kostet immer ein Leben.",
+        "Stachelkäfer treten wollen: Das ist immer ein Treffer.",
+        "Nach einem Treffer sofort weiterrennen: Die 2 Sekunden Unverwundbarkeit sind kurz, danach trifft dich derselbe Gegner erneut.",
+        "WEITER startet mit 0 Punkten. Für einen hohen Bestwert lohnt sich ein kompletter Lauf mit NEUES SPIEL."
       ]
     }
   ],
@@ -513,6 +642,53 @@
         "Farbrad: Die Walzen halten nacheinander an, die dritte dreht am schnellsten. Drei Herzen bringen den Hauptgewinn +3 Leben.",
         "Vor einem schweren Level im Hauptmenü Bonusspiele spielen: Das Guthaben (bis 9 Leben) kommt in die nächste Runde."
       ]
+    },
+    {
+      "t": "Minispiel Lumo – Komplettlösung Welt 1 – Wolkenwiese",
+      "list": [
+        "1-1 (300 Sekunden, handgebaut): Gleich am Anfang hängen ?-Blöcke mit Münzen in der Luft. Etwa in der Mitte des Levels wartet eine Reihe mit Ziegeln und einem +-Block (Schutzpilz) sowie dahinter ein lila ★-Block. Im ersten Drittel schwebt ein Herz (Extraleben) in der Luft, in der Levelmitte fliegt eine Fledermaus. Am Boden laufen Krabbler und ein Hüpfer, im hinteren Teil wartet ein Stachelkäfer vor der grünen Säule. Eine doppelte Stachelspitze liegt in der Mitte, eine einzelne kurz vor dem Ziel – drüberspringen. Die Gruben sind 2 bis 3 Felder breit. Die Fahne steht am Ende.",
+        "1-2 bis 1-5 (298 bis 292 Sekunden): erzeugte Level mit Gruben von 1 bis 2 Feldern, Plattformen mit Münzen darüber, ?-Reihen (manchmal mit +-Block), Münzreihen knapp über dem Boden, einzelnen Stacheln oder Säulen und einem Stern am Boden etwa in der Levelmitte. Überwiegend Krabbler.",
+        "1-B Münzgarten: 20 Sekunden, keine Gegner, keine Gruben. Sechs Stufen mit je vier Münzen und eine lange Münzreihe oben. Das Level endet mit der Zeit, nicht an einer Fahne."
+      ]
+    },
+    {
+      "t": "Minispiel Lumo – Komplettlösung Welt 2 und 3",
+      "list": [
+        "2-1 Bernsteinhöhlen (280 Sekunden, handgebaut): Am Start ?-Blöcke, darüber in der Mitte ein +-Block zwischen zwei ?-Blöcken. Links davon liegen bewegliche Plattformen. Rechts davon hängt ein ★-Block, gleich dahinter schwebt ein Stern frei in der Luft. Eine Fledermaus kreist früh im Level. Am Boden: Krabbler, ein Hüpfer und ein Stachelkäfer; eine Stachelspitze sitzt neben einer Plattform. Die Gruben sind hier bis zu 4 Felder breit – mit Anlauf springen.",
+        "2-2 bis 2-5 (289 bis 281 Sekunden): mehr Hüpfer und Fledermäuse, ab 2-4 werden Gruben bis zu 3 Felder breit und in ?-Reihen kann ein ★-Block stecken.",
+        "3-1 Frostgipfel (280 Sekunden, handgebaut): Ein +-Block und kurz dahinter ein ★-Block hängen im Mittelteil, rechts davon schwebt ein Herz, weiter hinten fliegt eine Fledermaus. Bewegliche Plattformen kommen erst kurz vor dem Ziel. Am Boden viele Krabbler, ein Hüpfer, ein Stachelkäfer und zwei Stachelspitzen. Die Gruben sind 3 bis 5 Felder breit – die größten des Spiels, also vollen Anlauf nehmen.",
+        "3-2 bis 3-5 (277 bis 271 Sekunden): Stachelkäfer und Hüpfer häufen sich, Stacheln ersetzen immer öfter die Säulen.",
+        "2-B und 3-B: Münzgärten wie 1-B, nur in den Farben der Welt."
+      ]
+    },
+    {
+      "t": "Minispiel Lumo – Komplettlösung Welt 4 – Sternenschloss",
+      "list": [
+        "4-1 (260 Sekunden, handgebaut): Ein Herz hängt weit hinten in der Luft, ein ?-Ziegel-+-Block-Paket liegt im hinteren Drittel. Bewegliche Plattformen und viele kleine Plattformen bilden einen Weg in der Höhe; ein frei schwebender Stern wartet im hinteren Teil. Säulen, ein Stachelkäfer, Krabbler, ein Hüpfer und zwei Stachelspitzen bewachen den Boden; eine Fledermaus fliegt im hinteren Teil.",
+        "4-2 bis 4-5 (266 bis 260 Sekunden): die schwersten Level. Viele Stachelkäfer, Hüpfer und Fledermäuse, Gruben bis 3 Felder. Nimm jeden Schutzpilz mit und nutze den Stern in der Levelmitte zum Durchrennen.",
+        "4-B: letzter Münzgarten. Danach erscheint ENDE mit deinen Punkten; Enter bringt dich zurück zum Titel."
+      ]
+    },
+    {
+      "t": "Minispiel Lumo – Freischaltungen und Geheimnisse",
+      "list": [
+        "Es gibt keine Figuren oder Gegenstände zum Freischalten. Freigeschaltet wird nur der Menüpunkt WEITER mit dem zuletzt erreichten Level.",
+        "Jedes Level hat genau einen Stern am Boden in der Levelmitte; in späteren Leveln kann zusätzlich ein ★-Block in einer ?-Reihe stecken.",
+        "Die erzeugten Level sind fest: Wer sich eine schwere Stelle merkt, findet sie beim nächsten Versuch genau so wieder.",
+        "Der Stern hält ungefähr 8 Sekunden; die Restzeit siehst du oben links neben dem ★."
+      ]
+    },
+    {
+      "t": "Minispiel Lumo – Wertungstabelle",
+      "list": [
+        "Münze (auch aus ?-Blöcken): 200 Punkte",
+        "Gegner treten: 100 Punkte",
+        "Gegner mit Stern umrennen: 200 Punkte",
+        "Ziegel zerschlagen (nur groß): 50 Punkte",
+        "Schutzpilz oder Stern einsammeln: je 1000 Punkte",
+        "Zeitbonus im Ziel: 50 Punkte pro übriger Sekunde",
+        "Herz und je 100 Münzen: 1 Extraleben"
+      ]
     }
   ],
   "faq": [
@@ -559,6 +735,10 @@
     {
       "q": "Kann ich die Tasten am PC ändern?",
       "a": "Ja: OPTIONEN → ⌨️ TASTATUR, Aktion wählen und die neue Taste drücken. STANDARD-TASTEN setzt alles zurück."
+    },
+    {
+      "q": "Wo finde ich das Minispiel Lumo – Wolkenpfad?",
+      "a": "Im Hauptmenü unter „Minispiel: Lumo Wolkenpfad“ oder ganz unten auf der Inselkarte. Mit „← Pufi“ oder Esc im Titel kommst du zurück."
     }
   ]
 }

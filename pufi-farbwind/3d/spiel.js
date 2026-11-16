@@ -876,12 +876,13 @@
     showScreen('title', `<div class="menu"><div class="mlogo"><b>PUFI</b><span>&amp; der Farbwind<em>3D</em></span></div><div class="btns">
       <button class="btn primary" data-a="play" data-pad-first><span class="ic">▶</span>${cont ? 'Weiterspielen' : 'Abenteuer starten'}<span class="sub">${cont ? 'Level ' + W.LEVELS[Math.min(save.unlocked, W.COUNT) - 1].id + ' · ' + W.LEVELS[Math.min(save.unlocked, W.COUNT) - 1].name : 'Insel 1 · Blütenbucht'}</span></button>
       <button class="btn" data-a="map"><span class="ic">🗺️</span>Inselkarte</button>
+      <button class="btn" data-a="lumo"><span class="ic">🌤️</span>Minispiel: Lumo Wolkenpfad<span class="sub">Jump-and-Run · 20 Level in 4 Welten</span></button>
       <button class="btn" data-a="klassik"><span class="ic">🕹️</span>Klassik 2D<span class="sub">das Original-Abenteuer mit 24 Leveln</span></button>
       <button class="btn" data-a="opts"><span class="ic">⚙️</span>Optionen</button>
       <button class="btn" data-a="help"><span class="ic">🎮</span>Steuerung</button>
       <button class="btn" data-a="cloud"><span class="ic">☁️</span>Google-Speicher</button>
       </div><p class="info">Controller, Touch und Tastatur · ${IS_TOUCH ? 'Tippe auf die Knöpfe' : 'Pfeiltasten + Enter oder Maus'}</p></div>`,
-      { play: () => startLevel(Math.min(save.unlocked, W.COUNT) - 1), map: openMap, klassik: () => { location.href = './klassik.html'; }, opts: () => openOptions(toTitle), help: () => openHelp(toTitle), cloud: openCloud });
+      { play: () => startLevel(Math.min(save.unlocked, W.COUNT) - 1), map: openMap, lumo: openLumo, klassik: () => { location.href = './klassik.html'; }, opts: () => openOptions(toTitle), help: () => openHelp(toTitle), cloud: openCloud });
   }
   function openMap() {
     S.mode = S.mode === 'pause' ? 'pause' : 'menu'; const fromPause = S.mode === 'pause';
@@ -890,9 +891,11 @@
       if (l.welt !== wi) return ''; const b = save.best[l.id], lock = i + 1 > save.unlocked, tot = W.totals(l);
       return `<button class="btn lvl${b ? ' done' : ''}${b && b.score >= 100 ? ' perfect' : ''}" data-a="l${i}" ${lock ? 'disabled' : ''}${i === Math.min(save.unlocked, W.COUNT) - 1 ? ' data-pad-first' : ''}><b>${lock ? '🔒 ' : ''}${l.id} ${l.name}${l.boss ? ' 👑' : ''}</b><span class="st">${b ? '★ ' + b.score + '/100 · ✿ ' + b.flowers + '/' + tot.flowers + ' · ◎ ' + b.red + '/' + tot.red : lock ? 'noch verschlossen' : 'neu'}</span></button>`;
     }).join('') + '</div></div>').join('');
-    const acts = { back: fromPause ? openPause : toTitle }; W.LEVELS.forEach((l, i) => acts['l' + i] = () => { S.lives = Math.max(S.lives, 5); startLevel(i); });
-    showScreen('map', `<div class="panel"><h2>Inselkarte</h2><p>Jedes Level hat 5 Farbblüten, 8 rote Münzen und bis zu 30 Sterne – zusammen 100 Punkte.</p><div class="map">${worlds}</div><div class="btns"><button class="btn" data-a="back">← Zurück</button></div></div>`, acts, acts.back);
+    const acts = { back: fromPause ? openPause : toTitle, lumo: openLumo }; W.LEVELS.forEach((l, i) => acts['l' + i] = () => { S.lives = Math.max(S.lives, 5); startLevel(i); });
+    showScreen('map', `<div class="panel"><h2>Inselkarte</h2><p>Jedes Level hat 5 Farbblüten, 8 rote Münzen und bis zu 30 Sterne – zusammen 100 Punkte.</p><div class="map">${worlds}<div class="world"><h3 style="color:#8fdcff">Minispiel · Wolkenpfad</h3><div class="lvls"><button class="btn mini" data-a="lumo"><b>🌤️ Lumo – Wolkenpfad</b><span class="st">Jump-and-Run mit Pufis Freund Lumo · 20 Level</span></button></div></div></div><div class="btns"><button class="btn" data-a="back">← Zurück</button></div></div>`, acts, acts.back);
   }
+  // Minispiel „Lumo – Wolkenpfad“ (eigene Seite, teilt Speicher-Präfix und Google-Speicher mit Pufi)
+  function openLumo() { K.sfx('start'); location.href = './wolkenpfad/'; }
   function openOptions(back) {
     const q = opt.quality, Q = { auto: 'Automatisch', hoch: 'Hoch', mittel: 'Mittel', niedrig: 'Niedrig' };
     const yn = v => v ? 'An' : 'Aus';

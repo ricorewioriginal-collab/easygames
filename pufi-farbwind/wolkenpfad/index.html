@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#2b2f5c">
+<meta name="description" content="Lumo – Wolkenpfad: Minispiel aus Pufi &amp; der Farbwind. Jump-and-Run mit 20 Leveln in vier Welten und Münzgärten, neu in weicher HD-Grafik.">
+<link rel="icon" href="../card.svg" type="image/svg+xml"><title>Lumo – Wolkenpfad · Pufi-Minispiel</title>
+<style>
+:root{--ink:#fff8ee;--glass:rgba(30,26,64,.55);--line:rgba(255,255,255,.3)}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#3a3480,#1b1840);color:var(--ink);font:16px 'Nunito','Baloo 2','Trebuchet MS',system-ui,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+body{height:100dvh}
+main{position:absolute;inset:0;display:grid;place-items:center}
+canvas{display:block;border-radius:0;box-shadow:0 0 60px #0008}
+button,a{font:inherit;color:inherit;-webkit-tap-highlight-color:transparent}
+button{cursor:pointer;touch-action:manipulation}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #ffd77a;outline-offset:3px}
+#bar{position:absolute;top:0;right:0;z-index:3;display:flex;gap:7px;align-items:center;padding:calc(6px + env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) 0 8px}
+#bar button,#bar a{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:14px;font-weight:900;text-decoration:none;padding:0}
+#bar a{width:auto;padding:0 12px;border-radius:999px;font-size:13px}
+#panel{position:absolute;left:0;top:0;z-index:4;display:none;max-width:min(360px,calc(100vw - 190px));padding:calc(6px + env(safe-area-inset-top)) 8px 0 max(8px,env(safe-area-inset-left))}
+#panel.show{display:flex}
+#panel .box{display:grid;gap:6px;text-align:left;background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:16px;padding:4px 10px}
+#message{display:none}
+#panel p{margin:0;font-size:12.5px;line-height:1.5;color:#f4eefc}
+#panel details{text-align:left;font-size:12.5px}
+#panel summary{cursor:pointer;padding:4px;font-weight:800}
+#cloudMount{margin-top:6px}
+.controls{position:absolute;inset:auto 0 0;z-index:2;display:flex;align-items:end;justify-content:space-between;padding:14px max(18px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));pointer-events:none}
+.dpad{display:flex;gap:10px}
+.dpad button,.jump{pointer-events:auto;font-size:24px;font-weight:900;color:#fff;width:70px;height:70px;padding:0;border-radius:50%;touch-action:none;border:1px solid rgba(255,255,255,.55);background:linear-gradient(160deg,rgba(255,255,255,.28),rgba(255,255,255,.08));backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 6px 16px rgba(0,0,0,.3)}
+.jump{width:86px;height:86px;background:linear-gradient(160deg,#ffe29a,#ff9cc7);color:#4a2550;border-color:#fff}
+.controls button:active{transform:scale(.94);filter:brightness(1.15)}
+body.playing .controls{display:flex}
+body:not(.playing) .controls{display:none}
+@media(pointer:fine){body.playing .controls{display:none}}
+@media(max-height:480px){.dpad button,.jump{width:56px;height:56px;font-size:19px}.jump{width:68px;height:68px}}
+</style></head>
+<body>
+<main><canvas id="game" width="512" height="480" aria-label="Lumo Wolkenpfad"></canvas></main>
+<div id="bar">
+  <button id="sound" aria-pressed="true" aria-label="Ton umschalten">♫</button>
+  <button id="pause" aria-label="Pause">Ⅱ</button>
+  <button id="fullscreen" aria-label="Vollbild">⛶</button>
+  <a href="../" aria-label="Zurück zu Pufi">← Pufi</a>
+</div>
+<div id="panel" role="dialog" aria-live="polite"><div class="box">
+  <p id="message"></p>
+  <details id="cloudDetails"><summary>☁ Google-Speicher &amp; Spielstand</summary><p id="saveStatus">Dein Fortschritt wird automatisch lokal gespeichert.</p><div id="cloudMount"></div></details>
+</div></div>
+<div class="controls" aria-label="Spielsteuerung">
+  <div class="dpad" role="group" aria-label="Steuerkreuz"><button data-key="left" aria-label="Links">◀</button><button data-key="right" aria-label="Rechts">▶</button></div>
+  <button class="jump" data-key="jump" aria-label="Springen">A</button>
+</div>
+<script src="audio.js"></script><script src="game.js"></script>
+<script src="../../cloud/anmacha-cloud.js" data-game="pufi-farbwind" data-prefix="easygames.pufi-farbwind" data-mount="#cloudMount" data-hint="Mit Google anmelden: Pufi-Inseln und Wolkenpfad-Fortschritt geräteübergreifend speichern." defer></script>
+<script src="../../gamepad.js" data-pad-labels="ls=Laufen; dpad=Laufen · im Titel wählen; a=Springen · Bestätigen; x=Bestätigen; start=Bestätigen · Pause; b=Pause · im Titel zurück zu Pufi; select=Pause" data-pad="a=Space x=Enter start=Enter b=Escape select=KeyP" defer></script>
+<script src="../../egstat.js" defer></script>
+</body></html>
