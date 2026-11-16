@@ -2,14 +2,15 @@
 import * as THREE from 'three';
 import type { GameScene } from '../engine/Engine';
 import { Actor, streetLook, playerLook } from './Actor';
-import { World } from './World';
-import { NPCS, goal, talk, poi as storyPoi, type NpcDef, type StoryCtx } from './story';
+import { World, walkable } from './World';
+import { NPCS, CHAPTERS, goal, talk, poi as storyPoi, marks, hidden, storyTick, chapterLabel, type NpcDef, type StoryCtx } from './story';
 import type { Game } from './Game';
 import { sfx, music } from '../engine/Audio';
 import { toast, hints } from '../ui/ui';
 import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
 import type { Marker } from '../ui/Hud';
+import { Street, type Parked } from './Street';
 
 interface Npc { def: NpcDef; a: Actor; wp: number; wait: number; talking: boolean }
 
@@ -27,7 +28,10 @@ export class CityScene implements GameScene {
   private cam = { yaw: Math.PI, pitch: .38, dist: 7.5, tYaw: Math.PI };
   private camPos = new THREE.Vector3();
   private stickerMeshes: THREE.Mesh[] = [];
-  private near: { kind: 'npc' | 'poi'; id: string; label: string } | null = null;
+  private near: { kind: 'npc' | 'poi' | 'street' | 'car'; id: string; label: string } | null = null;
+  street!: Street;
+  /** Auto, in dem die Spielfigur gerade sitzt */
+  private drive: Parked | null = null;
   private stepT = 0;
   private warnT = 30;
   private evT = 90;
@@ -61,6 +65,8 @@ export class CityScene implements GameScene {
       a.play(i % 2 ? 'cheer' : 'dance1', 0, .9 + i * .05);
       this.root.add(a.root); this.crowd.push(a);
     }
+    this.street = new Street(this.root, this.world);
+    await this.street.build();
     this.buildStickers();
   }
 
@@ -97,6 +103,7 @@ export class CityScene implements GameScene {
   setPlay() {
     const s = this.g.save.data;
     this.mode = 'play';
+    this.drive = null;
     this.player.root.visible = true;
     this.player.setLook(streetLook(playerLook(s)));
     this.player.root.position.set(s.pos.x, .1, s.pos.z);
@@ -134,8 +141,15 @@ export class CityScene implements GameScene {
       skipToHour: (h) => { g.fade(() => { g.pass(minutesUntil(s, h)); toast(`Es ist jetzt ${this.clock()} Uhr.`); }); },
       hour: () => this.hour(),
       dance: () => g.goDance(true),
-      chapterDone: () => { s.chapter = 2; s.step = 0; g.save.write(); g.chapterCard('Kapitel 1 abgeschlossen', 'Ankommen', 'Das Regenbogenhaus hat neue Hoffnung – und du hast Freund*innen gefunden. Kapitel 2 „Wurzeln schlagen“ folgt.'); this.refreshHud(); },
+      chapterDone: (sum) => {
+        const done = CHAPTERS[s.chapter - 1], next = CHAPTERS[s.chapter];
+        s.chapter++; s.step = 0; g.save.write(); this.refreshHud();
+        if (!done) return;
+        g.chapterCard(`Kapitel ${done.n} abgeschlossen`, done.title, sum).then(() => { if (next) g.chapterCard(`Kapitel ${next.n}`, next.title, next.text); });
+      },
       enterHome: (after) => g.enterHome(after),
+      barShift: (done) => g.barShift(done),
+      credits: () => g.ending(),
     };
   }
 
@@ -144,7 +158,7 @@ export class CityScene implements GameScene {
     const s = this.g.save.data, gl = goal(s);
     this.world.traces.visible = s.settings.adult;
     if (this.g.where === 'home') this.g.hud.goal('Zuhause', 'Deine Wohnung', s.chapter === 1 && s.step === 2 ? 'Schau dich um.' : `Ziel: ${gl.title}`);
-    else this.g.hud.goal(s.chapter === 1 ? 'Kapitel 1 · Ankommen' : 'Rainbow City', gl.title, gl.sub);
+    else this.g.hud.goal(chapterLabel(s), gl.title, gl.sub);
     const days = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
     this.g.hud.stats([`${days[(s.day - 1) % 7]} ${this.clock()}`, `💶 ${s.money} €`, `${moodIcon(mood(s))} ${Math.round(mood(s))}`]);
     this.g.hud.needs(s.needs);
@@ -155,7 +169,7 @@ export class CityScene implements GameScene {
     const v = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
     if (gl.npc) { const n = this.npcs.find((x) => x.def.id === gl.npc); if (n) out.push({ id: 'g', icon: '⭐', label: n.def.name, pos: n.a.root.position.clone().setY(2.6) }); }
     if (gl.poi) { const p = this.world.pois.find((x) => x.id === gl.poi); if (p) out.push({ id: 'g', icon: '⭐', label: p.name, pos: v(p.x, 4, p.z) }); }
-    if (s.chapter === 1 && s.step === 4) for (const n of this.npcs) if (n.def.petition && s.flags['sig_' + n.def.id] === undefined) out.push({ id: 'p' + n.def.id, icon: '✍️', pos: n.a.root.position.clone().setY(2.5) });
+    for (const [id, icon] of marks(s)) { const n = this.npcs.find((x) => x.def.id === id); if (n?.a.root.visible) out.push({ id: 'p' + id, icon, pos: n.a.root.position.clone().setY(2.5) }); }
     return out;
   }
 
@@ -163,19 +177,27 @@ export class CityScene implements GameScene {
   private findNear() {
     const p = this.player.root.position;
     let best: typeof this.near = null, bd = 1e9;
+    if (this.drive) {
+      this.near = { kind: 'car', id: 'exit', label: '🚗 Aussteigen' };
+      this.g.hud.prompt(this.near.label); this.g.touch.label('Raus');
+      return;
+    }
     for (const n of this.npcs) {
       if (!n.a.root.visible) continue;
       const d = n.a.root.position.distanceTo(p);
       if (d < 2.6 && d < bd) { bd = d; best = { kind: 'npc', id: n.def.id, label: 'Sprechen mit ' + n.def.name }; }
     }
+    if (!best) { const st = this.street.near(p); if (st) best = { kind: 'street', id: String(this.street.people.indexOf(st)), label: (st.kind === 'worker' ? '🏮 ' : st.kind === 'police' ? '🚓 ' : st.kind === 'fire' ? '🚒 ' : '💬 ') + st.name }; }
+    if (!best) { const car = this.street.nearCar(p); if (car) best = { kind: 'car', id: String(this.street.parked.indexOf(car)), label: '🚗 Einsteigen: ' + car.name }; }
+    const want = goal(this.g.save.data).poi;
     if (!best) for (const q of this.world.pois) {
-      if (q.id === 'plaza' || q.id === 'park') continue;
+      if ((q.id === 'plaza' || q.id === 'park') && want !== q.id) continue;
       const d = Math.hypot(q.x - p.x, q.z - p.z);
       if (d < q.r && d < bd) { bd = d; best = { kind: 'poi', id: q.id, label: q.icon + ' ' + q.name }; }
     }
     this.near = best;
     this.g.hud.prompt(best ? best.label : null);
-    this.g.touch.label(best ? (best.kind === 'npc' ? 'Reden' : 'Rein') : 'Aktion');
+    this.g.touch.label(best ? (best.kind === 'npc' || best.kind === 'street' ? 'Reden' : best.kind === 'car' ? 'Fahren' : 'Rein') : 'Aktion');
   }
 
   interact() {
@@ -195,9 +217,64 @@ export class CityScene implements GameScene {
       if (r.last !== s.day) { r.last = s.day; r.f = Math.min(100, r.f + 6); change(s, { social: 10, fun: 2 }); this.g.done(track(s, 'talk')); }
       return;
     }
+    if (this.near.kind === 'car') { this.toggleCar(this.near.id); return; }
+    if (this.near.kind === 'street') {
+      const n = this.street.people[+this.near.id], s = this.g.save.data;
+      n.talking = true; n.a.play('idle');
+      n.a.root.rotation.y = Math.atan2(this.player.root.position.x - n.a.root.position.x, this.player.root.position.z - n.a.root.position.z);
+      this.player.root.rotation.y = Math.atan2(n.a.root.position.x - this.player.root.position.x, n.a.root.position.z - this.player.root.position.z);
+      this.player.play('idle');
+      const end = () => { n.talking = false; };
+      if (n.kind === 'worker') { this.g.booking(n.id!); setTimeout(end, 4000); return; }
+      this.g.dialog.say([{ who: n.name, color: n.color, text: this.street.line(n, s.day) }], end);
+      change(s, { social: 3 });
+      return;
+    }
     if (storyPoi(c, this.near.id)) return;
     if (this.near.id === 'home') { this.g.enterHome(); return; }
     this.g.placeMenu(this.near.id);
+  }
+
+  /* ---------- Autofahren: einsteigen, Stick/WASD lenkt, Turbo gibt Gas, A steigt aus ---------- */
+  private toggleCar(id: string) {
+    const p = this.player.root.position;
+    if (this.drive) {
+      const o = this.drive.o, side = new THREE.Vector3(Math.cos(o.rotation.y), 0, -Math.sin(o.rotation.y));
+      for (const k of [2.2, -2.2, 3.4, -3.4]) { const x = o.position.x + side.x * k, z = o.position.z + side.z * k; if (walkable(x, z) && !this.world.colliders.some((c) => Math.abs(x - c.x) < c.hx + .4 && Math.abs(z - c.z) < c.hz + .4)) { p.set(x, .1, z); break; } }
+      this.drive.v = 0; this.drive = null;
+      this.player.root.visible = true; this.player.play('idle');
+      hints([['move', 'Laufen'], ['a', 'Aktion'], ['cam', 'Kamera'], ['y', 'Menü']]);
+      sfx('open');
+      return;
+    }
+    this.drive = this.street.parked[+id];
+    this.player.root.visible = false;
+    this.cam.dist = Math.max(this.cam.dist, 9);
+    this.cam.tYaw = this.drive.o.rotation.y + Math.PI;
+    hints([['move', 'Lenken & Gas'], ['a', 'Aussteigen'], ['cam', 'Kamera'], ['y', 'Menü']]);
+    toast('🚗 Gute Fahrt! Vorsicht vor Fußgänger*innen.');
+    sfx('open');
+  }
+  private moveCar(dt: number) {
+    const c = this.drive!, o = c.o, inp = this.g.engine.input;
+    const thr = Math.abs(inp.move.y) > .08 ? inp.move.y : 0, steer = Math.abs(inp.move.x) > .08 ? inp.move.x : 0;
+    const max = inp.held('sprint') ? 24 : 15;
+    if (thr > 0) c.v = Math.min(max, c.v + thr * (c.v < 0 ? 22 : 9) * dt);
+    else if (thr < 0) c.v = Math.max(-6, c.v + thr * (c.v > 0 ? 22 : 6) * dt);
+    else c.v *= Math.max(0, 1 - dt * 1.2);
+    if (Math.abs(c.v) < .05) c.v = 0;
+    o.rotation.y -= steer * dt * 2 * THREE.MathUtils.clamp(c.v / 5, -1, 1);
+    const before = o.position.clone();
+    o.position.x += Math.sin(o.rotation.y) * c.v * dt; o.position.z += Math.cos(o.rotation.y) * c.v * dt;
+    const want = o.position.clone();
+    this.world.collide(o.position, 1.2);
+    for (const t of this.world.cars) if (t.o.position.distanceTo(o.position) < 3.2) { o.position.copy(before); c.v *= -.25; }
+    if (o.position.distanceTo(want) > .02 && Math.abs(c.v) > 4) { c.v *= .4; sfx('miss'); }
+    o.position.y = .1;
+    o.updateMatrix(); o.traverse((x) => x.matrixAutoUpdate || x.updateMatrix());
+    this.player.root.position.copy(o.position);
+    if (Math.abs(c.v) > 1) this.cam.tYaw += (o.rotation.y + Math.PI * (c.v > 0 ? 1 : 1) - this.cam.tYaw) * Math.min(1, dt * 2.5);
+    const s = this.g.save.data; s.pos.x = o.position.x; s.pos.z = o.position.z; s.pos.yaw = o.rotation.y;
   }
 
   /* ---------- Kamera ---------- */
@@ -242,9 +319,10 @@ export class CityScene implements GameScene {
       const near = n.a.root.position.distanceToSquared(ref) < 70 * 70;
       if (near) n.a.update(dt);
       if (!n.talking && n.def.walk) this.walkNpc(n, dt);
-      if (n.def.night) n.a.root.visible = this.world.night > .4;
+      n.a.root.visible = (!n.def.night || this.world.night > .4) && !hidden(s, n.def.id);
     }
     for (const a of this.crowd) if (a.root.visible) a.update(dt);
+    this.street.update(dt, this.world.night, s.settings.adult, this.mode === 'play' ? this.player.root.position : ref);
     this.stickerMeshes.forEach((m) => { m.rotation.y = t * 2; m.position.y = 1.4 + Math.sin(t * 3 + m.userData.i) * .15; });
 
     if (this.mode === 'title') {
@@ -278,13 +356,13 @@ export class CityScene implements GameScene {
       this.crowd.forEach((a) => (a.root.visible = this.world.night > .5));
     }
     this.player.update(dt);
-    if (!busy) this.movePlayer(dt);
+    if (!busy) { if (this.drive) this.moveCar(dt); else this.movePlayer(dt); }
     this.updateCam(dt);
     this.world.follow(this.player.root.position);
     this.world.update(dt, t, this.player.root.position);
 
     this.hudT -= dt;
-    if (this.hudT <= 0) { this.hudT = .5; this.refreshHud(); if (mood(s) >= 75 && !busy) g.done(track(s, 'mood')); }
+    if (this.hudT <= 0) { this.hudT = .5; if (!busy) storyTick(this.ctx()); this.refreshHud(); if (mood(s) >= 75 && !busy) g.done(track(s, 'mood')); }
     g.hud.markers(busy ? [] : this.markers(), this.camera);
     if (!busy) {
       this.findNear();
@@ -309,6 +387,7 @@ export class CityScene implements GameScene {
       const sp = (run ? 7.8 : 4.4) * Math.min(1, mag);
       p.x += (dx / mag) * sp * dt * Math.min(1, mag); p.z += (dz / mag) * sp * dt * Math.min(1, mag);
       this.world.collide(p, .45);
+      for (const c of this.street.parked) { const dx = p.x - c.o.position.x, dz = p.z - c.o.position.z, d = Math.hypot(dx, dz); if (d < 1.9 && d > 0) { p.x += dx / d * (1.9 - d); p.z += dz / d * (1.9 - d); } }
       const want = Math.atan2(dx, dz);
       let d = want - this.player.root.rotation.y; d = Math.atan2(Math.sin(d), Math.cos(d));
       this.player.root.rotation.y += d * Math.min(1, dt * 14);

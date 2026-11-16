@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e07676cca2f9",
- "generated": "2026-11-16T03:08:38+00:00",
- "commit": "1b0d4b64b0ae176b33c4b1613f62182a99c1400b",
+ "version": "d6e78cae41be",
+ "generated": "2026-11-16T03:12:39+00:00",
+ "commit": "488f7112f38f0007f3dc67e2c88e116c2c23b6d0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10258,8 +10258,8 @@
   },
   {
    "p": "games.js",
-   "s": 55542,
-   "h": "7b85546d0098495866456d50e541c07a1ea6fe6c5f60d9bd801b2950995beaa2"
+   "s": 55595,
+   "h": "2a2aeba1869c93fd106c7f956c0f22cbc7e905f7192e3ec53cf22e873d09dd3b"
   },
   {
    "p": "gay-life/card.jpg",
@@ -10563,8 +10563,8 @@
   },
   {
    "p": "guides.js",
-   "s": 172223,
-   "h": "573b9643348fd34e2e7631a1c24dda36944057d2b54f831bb288b68e4cfe4fe2"
+   "s": 172550,
+   "h": "12eb516830de6bbe7999ef15adf7995846f1b712a96a94843e532733d38673e4"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10878,8 +10878,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 13556,
-   "h": "9274b0031a916144f201b77bc62db2aa1c15b0d5e37289e93997116232cc5ac8"
+   "s": 18997,
+   "h": "92bb1a276c14d90d6db0a9f86a833c07ce3184ac6746c506ff5e8c34966e31a4"
   },
   {
    "p": "guides/prismrush.json",
@@ -12902,14 +12902,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
-   "p": "pride-city/assets/index-D50-7iT2.css",
-   "s": 19425,
-   "h": "fc62d6e4f49141e5b34376ad1b8900daf9571919bf985a7939fe24fdbc61961a"
+   "p": "pride-city/assets/index-DURpZlue.css",
+   "s": 20428,
+   "h": "bd50eb757f81e2848857b6856149664f545acdfe2e22e1ab8f658afc679b2c83"
   },
   {
-   "p": "pride-city/assets/index-okKRF_Mu.js",
-   "s": 217589,
-   "h": "76949c8a8479c282459e161a25d8573372c2ccfc0c5f5177c0d25afece04be1e"
+   "p": "pride-city/assets/index-DtuRIUeu.js",
+   "s": 254344,
+   "h": "20fb732502df8982531cb010cf62788ca28051bc15034d0ffa7f4a34fe0d6656"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -13007,9 +13007,9 @@
    "h": "97a4e8c5e93b5c4f68b25e5240f308aa81ff4ae487b750e62f13e02c338d73e8"
   },
   {
-   "p": "pride-city/assets/three-BLiWhtlZ.js",
+   "p": "pride-city/assets/three-DFC6UmnX.js",
    "s": 578950,
-   "h": "3b5efaafd7c252a21f0a53fa454e18ba2b364dd8453964f0c8cee4e4394355f0"
+   "h": "f9305db592e81f1ec03c31e870dc7475b29be3f2946b1dc68770124edab0efe2"
   },
   {
    "p": "pride-city/card.jpg",
@@ -13019,7 +13019,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5731,
-   "h": "df53268e2bbe45efdb94644e88d2f9e467d580d1a61669e1d1dd6d163199fdfb"
+   "h": "6a00d6df0a6d2ab658d09229ae177ca5da71d7d72ddbe36c4a33bfef20bea2b0"
   },
   {
    "p": "pride-city/logo.svg",
@@ -15403,8 +15403,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 249421,
-   "h": "9cd5f63f32d99f01d26e9c1275c5dce754e6a4b964beffa93a45370f752470a4"
+   "s": 249803,
+   "h": "a6f68708feb3e35c4d8f0252d99f91905b673b67342e0f985a4ead390d85a2e4"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

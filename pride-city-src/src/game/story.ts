@@ -1,6 +1,5 @@
 /* Hauptgeschichte „Ein Leben in allen Farben“ – roter Faden vom Zuzug bis zur großen Pride.
-   Kapitel 1 „Ankommen“ ist voll spielbar; die übrigen Kapitel stehen als Vorschau im Story-Menü.
-   Entscheidungen landen in save.flags und werden später wieder aufgegriffen. */
+   Fünf Kapitel, danach freies Spiel (chapter 6). Entscheidungen landen in save.flags und bestimmen das Ende. */
 import type { SaveData } from '../engine/Save';
 import type { Line } from '../ui/ui';
 import type { Look } from './Actor';
@@ -27,7 +26,7 @@ export const NPCS: NpcDef[] = [
   { id: 'tariq', name: 'Tariq', pron: 'er/ihn', color: '#9b4f96', look: { body: 'Man2', palette: 'bi', skin: 3, hair: 0 }, x: 40, z: 40, walk: [[40, 40], [50, 40], [50, 50], [40, 50]], petition: true },
   { id: 'hilde', name: 'Hilde', pron: 'sie/ihr', color: '#a3a3a3', look: { body: 'Woman', palette: 'ace', skin: 0, hair: 6 }, x: -19.2, z: 19.2, anim: 'sit', petition: true },
   { id: 'sam', name: 'Sam', pron: 'er/ihn', color: '#5bcefa', look: { body: 'Man2', palette: 'trans', skin: 2, hair: 3 }, x: 4, z: 30, walk: [[4, 30], [4, 48], [-4, 48], [-4, 30]], petition: true },
-  { id: 'kim', name: 'Kim', pron: 'they/them', color: '#3da542', look: { body: 'Rogue_Hooded', palette: 'aro', skin: 4 }, x: -26, z: -20, walk: [[-26, -20], [-26, -4], [-14, -4], [-14, -20]], petition: true },
+  { id: 'kim', name: 'Kim', pron: 'they/them', color: '#3da542', look: { body: 'Woman', palette: 'aro', skin: 4, hair: 2 }, x: -26, z: -20, walk: [[-26, -20], [-26, -4], [-14, -4], [-14, -20]], petition: true },
 ];
 
 export const CHAPTERS = [
@@ -47,8 +46,13 @@ export interface StoryCtx {
   skipToHour(h: number): void;
   hour(): number;
   dance(): void;
-  chapterDone(): void;
+  /** Kapitel abschließen: Zusammenfassung, nächstes Kapitel beginnt */
+  chapterDone(sum: string): void;
   enterHome(after?: () => void): void;
+  /** Barkeeper-Schicht im eigenen Club */
+  barShift(done?: () => void): void;
+  /** Abspann nach dem Finale */
+  credits(): void;
 }
 
 const me = (s: SaveData) => s.name;
@@ -61,9 +65,47 @@ const sigs = (s: SaveData) => Object.keys(s.flags).filter((k) => k.startsWith('s
 
 export interface Goal { title: string; sub?: string; npc?: string; poi?: string }
 
+/** Kapitel-Überschrift für HUD und Pause */
+export function chapterLabel(s: SaveData) {
+  const c = CHAPTERS[s.chapter - 1];
+  return c ? `Kapitel ${c.n} · ${c.title}` : 'Rainbow City · Freies Spiel';
+}
+const shifts = (s: SaveData) => Object.values(s.jobs).reduce((a, j) => a + (j.shifts || 0), 0);
+const known = (s: SaveData) => NPCS.filter((n) => (s.rel[n.id]?.f || 0) > 0).length;
+const count = (s: SaveData, pre: string, ids: string[]) => ids.filter((id) => s.flags[pre + id]).length;
+export const CLUES = ['rex', 'bruno', 'kim'];
+export const HELPERS = ['lena', 'bruno', 'tariq'];
+export const BAR_COST = 300;
+
 /** Aktuelles Ziel aus Kapitel und Schritt */
 export function goal(s: SaveData): Goal {
-  if (s.chapter > 1) return { title: 'Freies Spiel', sub: 'Kapitel 2 „Wurzeln schlagen“ folgt im nächsten Update. Sammle Sticker, tanze im Prisma und erkunde die Stadt.' };
+  if (s.chapter === 2) switch (s.step) {
+    case 0: return { title: 'Frag Mo nach Arbeit', sub: 'Mo kennt jeden Laden im Kiez.', npc: 'mo' };
+    case 1: return { title: 'Arbeite deine erste Schicht', sub: 'Handy → Jobs zeigt, wo du anfangen kannst. Am Arbeitsort „Schicht“ wählen.' };
+    case 2: return { title: `Lerne Leute kennen (${Math.min(6, known(s))}/6)`, sub: 'Sprich mit allen, die dir über den Weg laufen.' };
+    case 3: return { title: 'Abendessen bei Hilde auf der Pride Plaza', sub: 'Ab 18 Uhr wartet die Wahlfamilie.', npc: 'hilde' };
+  }
+  if (s.chapter === 3) switch (s.step) {
+    case 0: return { title: 'Nova hat eine Idee', sub: 'Sie steht vor dem Club Prisma.', npc: 'nova' };
+    case 1: return { title: 'Hol dir deinen Drag-Look', sub: 'In der Boutique Fabelhaft im Osten.', poi: 'boutique' };
+    case 2: return { title: 'Drag-Show und Revanche gegen Rex', sub: 'Ab 21 Uhr im Club Prisma – sprich Nova an.', npc: 'nova' };
+    case 3: return { title: 'Rede mit Rex', sub: 'Er wartet vor dem Club.', npc: 'rex' };
+    case 4: return { title: s.money >= BAR_COST ? 'Eröffne deinen Club am Hafen' : `Spare ${BAR_COST} € für deinen eigenen Club (${s.money}/${BAR_COST})`, sub: 'Die alte Lagerhalle im Hafenviertel steht leer. Mit der Tram oder zu Fuß nach Westen.', poi: 'bar' };
+  }
+  if (s.chapter === 4) switch (s.step) {
+    case 0: return { title: 'Jules braucht dich – sofort', sub: 'Im Regenbogenhaus.', npc: 'jules' };
+    case 1: return { title: `Such Hinweise auf Nova (${count(s, 'clue_', CLUES)}/3)`, sub: 'Frag Rex, Bruno und Kim. 🔎 zeigt, wer etwas weiß.' };
+    case 2: return { title: 'Lass die Fotos im Studio vergrößern', sub: 'Studio Klappe Auf im Westen.', poi: 'studio' };
+    case 3: return { title: 'Nachts zum Wasserturm im Park', sub: 'Ab 22 Uhr. Der Park liegt im Südosten.', poi: 'park' };
+    case 4: return { title: 'Zurück zu Jules ins Regenbogenhaus', sub: 'Mit Beweisen gegen Glanz Immobilien.', npc: 'jules' };
+  }
+  if (s.chapter === 5) switch (s.step) {
+    case 0: return { title: 'Plane die Pride mit Jules', npc: 'jules' };
+    case 1: return { title: `Hol Leute ins Pride-Team (${count(s, 'help_', HELPERS)}/3)`, sub: 'Lena, Bruno und Tariq. 🏳️‍🌈 zeigt, wer fehlt.' };
+    case 2: return { title: 'Die Parade beginnt auf der Pride Plaza', sub: 'Ab 12 Uhr. Alle warten auf dich!', poi: 'plaza' };
+  }
+  if (s.chapter > 1 && s.chapter <= 5) return { title: 'Erkunde Rainbow City', sub: 'Sprich mit deinen Freund*innen – die Geschichte geht gleich weiter.' };
+  if (s.chapter > 5) return { title: 'Freies Spiel', sub: 'Die Geschichte ist erzählt. Arbeite, date, feiere – Rainbow City gehört dir.' };
   switch (s.step) {
     case 0: case 1: return { title: 'Triff Mo im Café Kaffeeklatsch', sub: 'Mo wartet vor dem Café an der Hauptstraße.', npc: 'mo' };
     case 2: return { title: 'Bring deinen Koffer in deine Wohnung', sub: 'Deine Wohnung liegt im Süden an der Hauptstraße, hinter der Tram-Haltestelle.', poi: 'home' };
@@ -73,6 +115,25 @@ export function goal(s: SaveData): Goal {
     case 6: return { title: 'Geh abends in den Club Prisma', sub: 'Ab 21 Uhr legt Nova auf. Vor der Tür kannst du warten.', npc: 'nova' };
     default: return { title: 'Kapitel 1 abgeschlossen', sub: 'Freies Spiel' };
   }
+}
+
+/** Figuren, die gerade ein Symbol über dem Kopf brauchen */
+export function marks(s: SaveData): Array<[string, string]> {
+  if (s.chapter === 1 && s.step === 4) return NPCS.filter((n) => n.petition && s.flags['sig_' + n.id] === undefined).map((n) => [n.id, '✍️']);
+  if (s.chapter === 4 && s.step === 1) return CLUES.filter((id) => !s.flags['clue_' + id]).map((id) => [id, '🔎']);
+  if (s.chapter === 5 && s.step === 1) return HELPERS.filter((id) => !s.flags['help_' + id]).map((id) => [id, '🏳️‍🌈']);
+  return [];
+}
+
+/** Nova ist in Kapitel 4 verschwunden */
+export function hidden(s: SaveData, id: string) { return id === 'nova' && s.chapter === 4 && s.step < 4; }
+
+/** Ziele, die sich von selbst erfüllen (Schicht gearbeitet, Leute kennengelernt) – zweimal pro Sekunde */
+export function storyTick(c: StoryCtx) {
+  const s = c.s;
+  if (s.chapter === 2 && s.step === 1 && shifts(s) >= 1) { c.step(2); c.reward(0, 3, 'Erste Schicht geschafft'); }
+  else if (s.chapter === 2 && s.step === 2 && known(s) >= 6) { c.step(3); c.toast('💌 Hilde: „Heute Abend Essen bei mir auf der Plaza. Keine Widerrede!“'); }
+  else if (s.chapter === 3 && s.step === 4 && s.flags.bar) c.chapterDone('Drag-Show, eine ehrliche Aussprache mit Rex und dein eigener Club: Du bist jetzt Teil der Szene.');
 }
 
 /** Gespräch – true, wenn die Geschichte es übernommen hat */
@@ -136,10 +197,148 @@ export function talk(c: StoryCtx, id: string): boolean {
       return true;
     }
   }
+  if (s.chapter === 2) {
+    if (id === 'mo' && s.step === 0) {
+      c.say([
+        L(n, 'Na, Held*in vom Benefiz-Battle? Die halbe Stadt redet von dir.'),
+        L(n, 'Aber Ruhm bezahlt keine Miete. Du brauchst einen Job.'),
+        L(n, 'Ich suche jemanden fürs Café, Bruno braucht Hilfe im Späti, und in der Muckibude fehlt ein Coach. Schau mal auf dein Handy unter Jobs.', [
+          { label: 'Ich fang gleich an!', fn: () => { s.flags.work = 'eager'; } },
+          { label: 'Erst mal umschauen, dann entscheiden.', fn: () => { s.flags.work = 'calm'; } },
+        ]),
+        L(n, 'Und: Lern die Leute hier kennen. Eine Stadt wird erst durch ihre Menschen zu deinem Zuhause.'),
+      ], () => c.step(1));
+      return true;
+    }
+    if (id === 'hilde' && s.step === 3) {
+      if (c.hour() < 18 && c.hour() > 5) {
+        c.say([L(n, 'Kindchen, das Essen gibt es erst um 18 Uhr. Komm später wieder.', [
+          { label: 'Bis 18 Uhr warten', fn: () => c.skipToHour(18) },
+          { label: 'Später', fn: () => {} },
+        ])]);
+        return true;
+      }
+      c.say([
+        L(n, 'Da bist du ja! Setz dich. Mo, Jules, Bruno – alle sind schon da.'),
+        L(n, 'Weißt du, als ich jung war, hat uns die eigene Familie oft nicht gewollt. Also haben wir uns selbst eine gesucht.'),
+        L(n, 'Was bringst du an den Tisch mit?', [
+          { label: 'Meine Lieblingsmusik', sub: 'Die Runde tanzt zwischen Suppe und Nachtisch', fn: () => { s.flags.family = 'music'; } },
+          { label: 'Selbst gebackenen Kuchen', sub: 'Bruno will das Rezept', fn: () => { s.flags.family = 'cake'; } },
+          { label: 'Meine Geschichte', sub: 'Warum ich hergekommen bin', fn: () => { s.flags.family = 'story'; } },
+        ]),
+        L(npc('mo'), () => (s.flags.family === 'story' ? 'Danke, dass du uns das erzählt hast. Du gehörst dazu.' : 'Siehst du? Du gehörst schon dazu.')),
+        L(npc('jules'), 'Auf die Wahlfamilie. Und aufs Regenbogenhaus!'),
+      ], () => { c.reward(0, 10, 'Wahlfamilie gefunden'); c.chapterDone('Job, Freund*innen und eine Wahlfamilie: Rainbow City ist dein Zuhause geworden.'); });
+      return true;
+    }
+  }
+  if (s.chapter === 3) {
+    if (id === 'nova' && s.step === 0) {
+      c.say([
+        L(n, 'Schätzchen! Ich plane die größte Drag-Show, die das Prisma je gesehen hat. Alle Einnahmen fürs Regenbogenhaus.'),
+        L(n, 'Und rate, wer den Abend eröffnet? Du.'),
+        L(n, 'Rex will sich revanchieren, er tanzt nach dir. Aber erst brauchst du einen Look. Ab in die Boutique Fabelhaft!'),
+      ], () => c.step(1));
+      return true;
+    }
+    if (id === 'nova' && s.step === 2) {
+      if (c.hour() < 21 && c.hour() > 5) {
+        c.say([L(n, 'Die Show beginnt um 21 Uhr. Schmink dich nicht zu früh ab!', [
+          { label: 'Bis 21 Uhr warten', fn: () => c.skipToHour(21) },
+          { label: 'Später', fn: () => {} },
+        ])]);
+        return true;
+      }
+      c.say([
+        L(n, `Meine Damen, Herren und alle dazwischen und außerhalb: ${String(s.flags.drag || me(s))}!`),
+        L(npc('rex'), 'Hübsches Kostüm. Mal sehen, ob du darin auch tanzen kannst.'),
+        L(n, 'Bühne frei! Die Menge entscheidet.'),
+      ], () => c.dance());
+      return true;
+    }
+    if (id === 'rex' && s.step === 3) {
+      c.say([
+        L(n, 'Warte kurz. Ich … muss dir was sagen.'),
+        L(n, 'Ich tanze nicht für die Investoren, weil ich sie mag. Glanz Immobilien zahlt meine Miete, seit ich meinen Job verloren habe.'),
+        L(n, 'Ich hab mich geschämt. Deshalb war ich so ein Arsch.', [
+          { label: 'Danke für deine Ehrlichkeit. Freunde?', sub: 'Rex wird dein Verbündeter', fn: () => { s.flags.rex = 'friend'; } },
+          { label: 'Komm zu uns. Wir finden einen Job für dich.', sub: 'Rex legt später in deinem Club auf', fn: () => { s.flags.rex = 'dj'; } },
+          { label: 'Das entschuldigt gar nichts.', sub: 'Rex bleibt dein Rivale', fn: () => { s.flags.rex = 'rival'; } },
+        ]),
+        L(n, () => (s.flags.rex === 'rival' ? 'Verstehe. Dann sehen wir uns auf der Tanzfläche.' : 'Das … bedeutet mir viel. Wirklich.')),
+        L(npc('jules'), `Übrigens: Die alte Lagerhalle am Hafen steht leer. Mit ${BAR_COST} € kannst du sie mieten – Rainbow City braucht einen zweiten Club. Einen, der uns gehört.`),
+      ], () => { c.step(4); c.reward(0, 3, 'Ehrliches Gespräch'); });
+      return true;
+    }
+  }
+  if (s.chapter === 4) {
+    if (id === 'jules' && s.step === 0) {
+      c.say([
+        L(n, 'Gut, dass du da bist. Nova ist weg.'),
+        L(n, 'Seit drei Tagen kein Set, kein Anruf, ihr Handy ist aus. Und gestern lag dieser Brief vor der Tür.'),
+        L('Brief', '„Glanz Immobilien bedankt sich für Ihr Engagement. Das Regenbogenhaus wird zum 1. des Monats geräumt.“'),
+        L(n, 'Ich glaube nicht an Zufälle. Frag herum – Rex, Bruno, Kim. Irgendwer hat etwas gesehen.'),
+      ], () => c.step(1));
+      return true;
+    }
+    if (s.step === 1 && CLUES.includes(id) && !s.flags['clue_' + id]) {
+      const T: Record<string, Line[]> = {
+        rex: [L(n, s.flags.rex === 'rival' ? 'Warum sollte ich dir helfen? … Na gut. Für Nova.' : 'Für dich? Sofort.'), L(n, 'Glanz hat Nova ein Angebot gemacht: Sie soll das Prisma verlassen und in seinem neuen Club auflegen. Sie hat abgelehnt. Laut.')],
+        bruno: [L(n, 'Nova war vorgestern Nacht hier, hat Wasser und Brezeln gekauft. Viel zu viel für eine Person.'), L(n, 'Sie hatte Angst. Und ein Typ im Anzug hat draußen Fotos gemacht. Ich hab ihn auch fotografiert!')],
+        kim: [L(n, 'Ich laufe nachts gern durch den Park. Am Wasserturm brannte die letzten Nächte Licht.'), L(n, 'Da ist sonst nie jemand. Und ich hab Bass gehört. Ganz leise.')],
+      };
+      c.say(T[id], () => {
+        s.flags['clue_' + id] = true; c.reward(0, 2, 'Hinweis gefunden');
+        if (count(s, 'clue_', CLUES) >= 3) { c.toast('🔎 Bruno hat dir seine Fotos geschickt. Lass sie im Studio vergrößern.'); c.step(2); }
+      });
+      return true;
+    }
+    if (id === 'jules' && s.step === 4) {
+      const loud = s.flags.style === 'loud', dipl = s.flags.style === 'diplomatic';
+      c.say([
+        L(n, 'Nova ist zurück! Und die Fotos … Glanz hat Leute eingeschüchtert, damit niemand gegen den Verkauf aussagt.'),
+        L(npc('nova'), 'Ich hab mich versteckt, weil ich dachte, ich bin allein. Ich hab mich geirrt.'),
+        L(n, 'Was machen wir mit den Beweisen?', [
+          { label: loud ? 'Ab damit in die Zeitung – heute noch!' : 'Öffentlich machen.', fn: () => { s.flags.proof = 'press'; } },
+          { label: dipl ? 'Zum Bezirksamt. Mit allen Unterschriften.' : 'Zur Stadt bringen.', fn: () => { s.flags.proof = 'city'; } },
+          { label: 'Glanz direkt konfrontieren.', fn: () => { s.flags.proof = 'face'; } },
+        ]),
+        L(n, () => (s.flags.proof === 'press' ? 'Die Schlagzeile morgen: „Investor bedroht Szene-DJ“. Glanz zieht sein Angebot zurück!' : s.flags.proof === 'city' ? 'Das Bezirksamt stellt das Regenbogenhaus unter Schutz. Glanz kann nichts mehr machen!' : 'Glanz war sprachlos. Ohne Nova kein neuer Club, ohne Ruhe kein Geschäft. Er zieht sich zurück.')),
+        L(n, 'Das Regenbogenhaus bleibt. Und jetzt: Pride. Die größte, die diese Stadt je gesehen hat.'),
+      ], () => { c.reward(150, 15, 'Regenbogenhaus gerettet'); c.chapterDone('Nova ist zurück, Glanz Immobilien hat aufgegeben – das Regenbogenhaus bleibt.'); });
+      return true;
+    }
+  }
+  if (s.chapter === 5) {
+    if (id === 'jules' && s.step === 0) {
+      c.say([
+        L(n, 'Pride! In einer Woche. Und du bist im Orga-Team, keine Widerrede.'),
+        L(n, 'Was ist dein Part?', [
+          { label: 'Ich halte die Rede auf der Bühne', fn: () => { s.flags.role = 'speech'; } },
+          { label: 'Ich baue den Wagen für den Club', fn: () => { s.flags.role = 'float'; } },
+          { label: 'Ich tanze vorne weg', fn: () => { s.flags.role = 'dance'; } },
+        ]),
+        L(n, 'Perfekt. Wir brauchen noch Leute: Lena für die Plakate, Bruno für Essen und Getränke, Tariq als Ordner.'),
+      ], () => c.step(1));
+      return true;
+    }
+    if (s.step === 1 && HELPERS.includes(id) && !s.flags['help_' + id]) {
+      const T: Record<string, string> = {
+        lena: 'Plakate? Ich male dir die ganze Stadt bunt! Schon angefangen, eigentlich.',
+        bruno: 'Essen für tausend Leute? Ich mach Brezeln in Regenbogenfarben. Ja, das geht!',
+        tariq: 'Ordner? Klar. Ich passe auf, dass alle sicher feiern. Wasserstationen nicht vergessen!',
+      };
+      c.say([L(n, T[id])], () => {
+        s.flags['help_' + id] = true; c.reward(0, 2, `${n.name} ist dabei`);
+        if (count(s, 'help_', HELPERS) >= 3) { c.toast('🏳️‍🌈 Das Team steht! Die Parade beginnt auf der Pride Plaza.'); c.step(2); }
+      });
+      return true;
+    }
+  }
   // Allgemeine Gespräche
   const lines: Record<string, string[]> = {
     mo: ['Kaffee geht heute aufs Haus. Morgen nicht mehr!', 'Wenn du was brauchst: Ich bin hier.'],
-    jules: ['Jede Unterschrift zählt.', 'Das Regenbogenhaus gehört allen, die es brauchen.'],
+    jules: ['Das Regenbogenhaus gehört allen, die es brauchen.', 'Kaffee? Wir haben immer Kaffee.'],
     nova: ['Mein Pult, meine Regeln. Und die erste Regel: Spaß haben.', 'Das Prisma öffnet um 21 Uhr.'],
     rex: ['Glaub nicht, dass du nochmal Glück hast.', 'Training ist alles.'],
     bruno: ['Willkommen im Späti Lecker! Die Brezeln sind von heute.', 'Wenn du Hunger hast: Ich hab immer was da.'],
@@ -189,12 +388,109 @@ export function poi(c: StoryCtx, id: string): boolean {
     c.enterHome(() => c.say([L('Du', 'Klein, aber meins. Ein Bett, eine Küche, eine Dusche – und von irgendwo kommt Musik.'), L('Du', 'Hier kann ich schlafen, kochen und mich frisch machen. Mit dem Handy behalte ich alles im Blick.'), L('Du', 'Okay. Raus durch die Tür und auf ins Regenbogenhaus.')], () => { c.step(3); c.reward(0, 2, 'Eingezogen'); }));
     return true;
   }
+  if (s.chapter === 3 && s.step === 1 && id === 'boutique') {
+    c.say([
+      L('Boutique Fabelhaft', 'Eine Drag-Show? Dann brauchst du Glitzer, Absätze und einen Namen, der hängen bleibt.'),
+      L('Boutique Fabelhaft', 'Wie soll deine Bühnenfigur heißen?', [
+        { label: 'Lady Glitzerhafen', fn: () => { s.flags.drag = 'Lady Glitzerhafen'; } },
+        { label: 'Miss Regenbogen', fn: () => { s.flags.drag = 'Miss Regenbogen'; } },
+        { label: 'Divine Dynamite', fn: () => { s.flags.drag = 'Divine Dynamite'; } },
+      ]),
+      L('Boutique Fabelhaft', () => `${String(s.flags.drag)}! Fabelhaft. Der Look geht aufs Haus – für die gute Sache.`),
+    ], () => { c.step(2); c.reward(0, 2, 'Drag-Look'); });
+    return true;
+  }
+  if (s.chapter === 3 && s.step === 4 && id === 'bar' && !s.flags.bar) {
+    if (s.money < BAR_COST) {
+      c.say([L('Vermieterin', `Die Halle kostet ${BAR_COST} € Startmiete. Dir fehlen noch ${BAR_COST - s.money} €. Schichten im Job helfen!`)]);
+      return true;
+    }
+    c.say([
+      L('Vermieterin', `${BAR_COST} € Startmiete, und die Halle gehört dir. Strom, Wasser, Bass – alles da.`),
+      L('Du', 'Abgemacht. Ab heute heißt sie Club Leuchtturm. Ein Licht für alle, die nach Hause finden wollen.'),
+      L(npc('nova'), 'Ich leg zur Eröffnung auf! Und jetzt hinter die Bar mit dir – die ersten Gäste sind schon da.'),
+    ], () => {
+      s.money -= BAR_COST; s.flags.bar = true; c.reward(0, 10, 'Club Leuchtturm eröffnet');
+      c.barShift(() => c.chapterDone('Drag-Show, eine ehrliche Aussprache mit Rex und dein eigener Club: Du bist jetzt Teil der Szene.'));
+    });
+    return true;
+  }
+  if (s.chapter === 4 && s.step === 2 && id === 'studio') {
+    c.say([
+      L('Studio Klappe Auf', 'Brunos Fotos? Lass mal vergrößern …'),
+      L('Studio Klappe Auf', 'Der Mann im Anzug – das ist Gerd Glanz von Glanz Immobilien. Und hier im Hintergrund: der Wasserturm im Park. Mit Licht drin.'),
+      L('Du', 'Nova versteckt sich im Wasserturm. Heute Nacht gehe ich hin.'),
+    ], () => c.step(3));
+    return true;
+  }
+  if (s.chapter === 4 && s.step === 3 && id === 'park') {
+    if (c.hour() < 22 && c.hour() > 4) {
+      c.say([L('Du', 'Tagsüber ist hier zu viel los. Ich komme nachts wieder.', [
+        { label: 'Bis 22 Uhr warten', fn: () => c.skipToHour(22) },
+        { label: 'Später', fn: () => {} },
+      ])]);
+      return true;
+    }
+    const n = npc('nova');
+    c.say([
+      L('Du', 'Nova? Ich bin es. Ich bin allein.'),
+      L(n, '… Wie hast du mich gefunden?'),
+      L(n, 'Glanz hat gedroht, das Prisma dichtzumachen, wenn ich nicht für ihn arbeite. Ich wollte niemanden mit reinziehen.'),
+      L(n, 'Was soll ich jetzt tun?', [
+        { label: 'Komm zurück. Wir stehen hinter dir.', fn: () => { s.flags.nova = 'back'; } },
+        { label: 'Wir haben Beweise. Er kommt damit nicht durch.', fn: () => { s.flags.nova = 'fight'; } },
+      ]),
+      L(n, 'Okay. Für das Regenbogenhaus. Und für dich.'),
+    ], () => { c.step(4); c.reward(0, 5, 'Nova gefunden'); });
+    return true;
+  }
+  if (s.chapter === 5 && s.step === 2 && id === 'plaza') {
+    if (c.hour() < 12 && c.hour() > 4) {
+      c.say([L(npc('jules'), 'Die Parade startet um 12 Uhr! Noch kurz Glitzer nachlegen?', [
+        { label: 'Bis 12 Uhr warten', fn: () => c.skipToHour(12) },
+        { label: 'Später', fn: () => {} },
+      ])]);
+      return true;
+    }
+    const role = s.flags.role;
+    c.say([
+      L(npc('jules'), 'Schau dich um. Tausende Menschen. Und alle sind gekommen, weil wir nicht aufgegeben haben.'),
+      L(role === 'speech' ? 'Du' : npc('mo'), role === 'speech' ? 'Ich weiß noch, wie nervös ich war, als ich hier ankam. Heute weiß ich: Hier darf ich sein, wer ich bin. Und ihr auch!' : role === 'float' ? 'Der Wagen vom Club Leuchtturm! Hast du den wirklich selbst gebaut?' : 'Du tanzt vorne weg? Dann zeig allen, wie man feiert!'),
+      L(npc('nova'), 'Musik ab! Rainbow City, TANZT!'),
+    ], () => c.dance());
+    return true;
+  }
   return false;
+}
+
+/** Ende der Geschichte – Text hängt von den Entscheidungen ab */
+export function ending(s: SaveData): Line[] {
+  const out: Line[] = [];
+  out.push(L(npc('jules'), s.flags.style === 'loud' ? 'Wir waren laut, und die Stadt hat zugehört.' : s.flags.style === 'creative' ? 'Wir haben dagegen angefeiert – und gewonnen.' : 'Wir haben mit allen geredet. Und am Ende standen alle hinter uns.'));
+  if (s.flags.rex === 'rival') out.push(L(npc('rex'), 'Nächstes Jahr schlage ich dich. Versprochen. … Schöne Parade.'));
+  else out.push(L(npc('rex'), s.flags.rex === 'dj' ? 'Ab nächster Woche lege ich jeden Freitag im Leuchtturm auf. Danke, Boss.' : 'Danke, dass du mir eine Chance gegeben hast.'));
+  out.push(L(npc('hilde'), s.flags.family === 'cake' ? 'Und jetzt Kuchen für alle! Das Rezept kennt inzwischen die ganze Plaza.' : 'Seit 1979 war ich auf jeder Pride. Diese war die schönste.'));
+  out.push(L(npc('mo'), s.rep >= 80 ? 'Weißt du, was die Leute über dich sagen? Dass Rainbow City ohne dich nicht dieselbe wäre.' : 'Ich bin stolz auf dich. Und das hier ist erst der Anfang.'));
+  out.push(L('Rainbow City', 'Ende der Geschichte – aber nicht deines Lebens hier. Arbeite, date, feiere, und führe deinen Club weiter.'));
+  return out;
 }
 
 /** Nach dem Tanz-Battle */
 export function danceResult(c: StoryCtx, won: boolean) {
   const s = c.s;
+  if (s.chapter === 3 && s.step === 2) {
+    if (!won) { c.say([L(npc('nova'), 'Rex hatte heute die Menge. Kopf hoch, Schätzchen – sprich mich an, wenn du nochmal willst.')]); return; }
+    c.say([L(npc('nova'), `${String(s.flags.drag || me(s))} reißt das Prisma ab! Die Revanche geht an dich!`), L(npc('rex'), '… Okay. Du bist gut. Komm nach der Show kurz raus.')], () => { c.reward(80, 8, 'Drag-Show'); c.step(3); });
+    return;
+  }
+  if (s.chapter === 5 && s.step === 2) {
+    c.say([L(npc('nova'), won ? 'DIE GANZE STADT TANZT MIT DIR!' : 'Die Menge liebt dich – ob Bestnote oder nicht!'), ...ending(s)], () => {
+      c.reward(won ? 200 : 120, 20, 'Pride-Parade');
+      c.chapterDone('Die größte Pride, die Rainbow City je gesehen hat. Danke fürs Spielen!');
+      c.credits();
+    });
+    return;
+  }
   if (s.chapter !== 1 || s.step !== 6) { if (won) c.reward(25, 2, 'Battle gewonnen'); return; }
   if (!won) {
     c.say([L(npc('nova'), 'Knapp! Rex hatte heute die Menge. Atme durch und fordere ihn nochmal heraus.')]);
@@ -204,5 +500,5 @@ export function danceResult(c: StoryCtx, won: boolean) {
     L(npc('nova'), 'DIE MENGE HAT ENTSCHIEDEN! Der Erlös geht ans Regenbogenhaus!'),
     L(npc('rex'), '… Nicht schlecht. Wirklich nicht schlecht.'),
     L(npc('jules'), s.flags.style === 'creative' ? 'Siehst du? Wir feiern dagegen an – und gewinnen!' : 'Das war der Anfang. Jetzt wissen alle, dass wir da sind.'),
-  ], () => { c.reward(120, 15, 'Benefiz-Battle gewonnen'); c.chapterDone(); });
+  ], () => { c.reward(120, 15, 'Benefiz-Battle gewonnen'); c.chapterDone('Das Regenbogenhaus hat neue Hoffnung – und du hast Freund*innen gefunden.'); });
 }

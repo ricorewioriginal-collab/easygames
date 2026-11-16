@@ -163,6 +163,22 @@ try {
   check((await p.locator('.screen').innerText()).includes('Eintreten'), 'Haus Rosa mit 18+');
   await ev(p, () => { const g = window.__pc; g.closeMenu(); g.save.data.settings.adult = false; g.touch.show(true); });
   await sleep(400);
+  console.log('Hafen, eigener Club, Autofahren');
+  await ev(p, () => window.__pc.travel(-72.6, -12)); await sleep(1800);
+  check(await ev(p, () => window.__pc.city.player.root.position.x < -66), 'Tram fährt ins Hafenviertel');
+  await ev(p, () => window.__pc.placeMenu('bar')); await sleep(300);
+  check((await p.locator('.screen').innerText()).includes('Lagerhalle'), 'Lagerhalle wartet auf Eröffnung');
+  await ev(p, () => { const g = window.__pc; g.closeMenu(); g.barShift(); }); await sleep(300);
+  check(await p.locator('#barBox').isVisible(), 'Barkeeper-Minispiel läuft');
+  await ev(p, () => { window.__pc.closeMenu(); window.__pc.touch.show(true); }); await sleep(1200);
+  const car0 = await ev(p, () => { const c = window.__pc.city; c.toggleCar('3'); return c.street.parked[3].o.position.z; });
+  await p.keyboard.down('KeyW'); await sleep(2500);
+  const [car1, v] = await ev(p, () => { const c = window.__pc.city.street.parked[3]; return [c.o.position.z, c.v]; });
+  await p.keyboard.up('KeyW');
+  check(car1 - car0 > .3 && v > 1, `Auto fährt (${car0.toFixed(1)} → ${car1.toFixed(1)}, ${v.toFixed(1)} m/s)`);
+  await ev(p, () => window.__pc.city.toggleCar('exit')); await sleep(300);
+  check(await ev(p, () => window.__pc.city.player.root.visible), 'Aussteigen klappt');
+  check(await ev(p, () => window.__pc.city.street.people.length >= 20), 'Straßen sind belebt (Passanten, Polizei, Feuerwehr)');
   await ev(p, () => window.__pc.save.write());
   check(p.errors.length === 0, 'keine Fehler in der Konsole' + (p.errors.length ? ': ' + p.errors.slice(0, 3).join(' | ') : ''));
 

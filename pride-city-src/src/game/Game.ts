@@ -11,7 +11,7 @@ import { CreatorScene } from './CreatorScene';
 import { DanceScene } from './minigames/DanceScene';
 import { World } from './World';
 import { BODIES } from './palettes';
-import { CHAPTERS, goal, danceResult, NPCS } from './story';
+import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST } from './story';
 import { HomeScene } from './HomeScene';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage, level } from './jobs';
 import { photo } from './Photo';
@@ -150,7 +150,7 @@ export class Game {
 
   private loadChapter() {
     const s = this.save.data, ch = CHAPTERS[Math.min(4, s.chapter - 1)];
-    this.loading.show(`Kapitel ${ch.n}`, ch.title);
+    this.loading.show(s.chapter > 5 ? 'Rainbow City' : `Kapitel ${ch.n}`, s.chapter > 5 ? 'Freies Spiel' : ch.title);
     let p = 0;
     const iv = setInterval(() => { p = Math.min(1, p + .2); this.loading.progress(p, p < 1 ? 'Rainbow City erwacht' : 'Bereit'); if (p >= 1) { clearInterval(iv); go(); } }, 160);
     const go = () => {
@@ -308,8 +308,8 @@ export class Game {
         [...ms.map((p) => { const r = dateRec(s, p.id); return { icon: '💘', label: `${p.name}, ${p.age}`, sub: `${DATE_STAGE[r.st]}${r.plan === s.day ? ' · Date heute: ' + (r.at === 'club' ? 'Club Prisma' : 'Café') : ''}`, fn: () => this.planDate(p.id) }; }),
           { icon: '←', label: 'Zurück', fn: () => this.phone('dating') }], () => this.phone('dating'), 'phone');
     } else if (app === 'map') {
-      const pois = this.city.world.pois.filter((p) => p.id !== 'tram');
-      this.openMenu(frame('Karte', `<div class="pbody"><canvas id="pmap" width="300" height="300"></canvas><p>Tram: 2 €, 10 Minuten. Oder Ziel markieren und hinlaufen.</p></div>`),
+      const pois = this.city.world.pois.filter((p) => !p.id.startsWith('tram'));
+      this.openMenu(frame('Karte', `<div class="pbody"><canvas id="pmap" width="300" height="300"></canvas><p>Tram: 2 €, 10 Minuten – auch ins Hafenviertel. Oder hinlaufen und ein Auto nehmen.</p></div>`),
         [...pois.map((p) => ({ icon: p.icon, label: p.name, sub: s.pin === p.id ? '⭐ markiert · A: mit der Tram hinfahren' : 'A: mit der Tram hinfahren',
           fn: () => { if (s.money < 2) { toast('Nicht genug Geld für die Tram.'); return; } s.money -= 2; s.pin = ''; close(); this.travel(p.x, p.z); } })),
           { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
@@ -477,7 +477,7 @@ export class Game {
       { icon: '←', label: 'Zurück', fn: () => this.placeMenu('rosa') },
     ], () => this.placeMenu('rosa'), '');
   }
-  private booking(id: string) {
+  booking(id: string) {
     const s = this.save.data, w = WORKERS.find((x) => x.id === id)!;
     const W = (text: string, choices?: Array<{ label: string; fn: () => void }>) => ({ who: w.name, color: w.color, text, choices });
     this.closeMenu(); this.touch.show(true);
@@ -511,18 +511,23 @@ export class Game {
 
   private drawMap() {
     const c = document.getElementById('pmap') as HTMLCanvasElement | null; if (!c) return;
-    const x = c.getContext('2d')!, k = 300 / 130, P = (v: number) => (v + 65) * k;
-    x.fillStyle = '#5c9a52'; x.fillRect(0, 0, 300, 300);
+    // Ausschnitt x −115…65 (mit Hafen), z −90…90
+    const x = c.getContext('2d')!, k = 300 / 180, PX = (v: number) => (v + 115) * k, PZ = (v: number) => (v + 90) * k;
+    x.fillStyle = '#2f8fd0'; x.fillRect(0, 0, 300, 300);
+    x.fillStyle = '#5c9a52'; x.fillRect(PX(-65), PZ(-65), 130 * k, 130 * k);
+    x.fillStyle = '#bdb5a8'; x.fillRect(PX(-92), PZ(-35), 27 * k, 80 * k); x.fillStyle = '#f0d9a0'; x.fillRect(PX(-97), PZ(17), 5 * k, 26 * k);
+    x.fillStyle = '#8a5a35'; x.fillRect(PX(-111), PZ(-3.5), 20 * k, 3 * k);
     x.fillStyle = '#3a3f55';
-    for (let i = -6; i <= 6; i += 3) { x.fillRect(P(i * 10 - 5), 0, 10 * k, 300); x.fillRect(0, P(i * 10 - 5), 300, 10 * k); }
+    for (let i = -6; i <= 6; i += 3) { x.fillRect(PX(i * 10 - 5), PZ(-65), 10 * k, 130 * k); x.fillRect(PX(-65), PZ(i * 10 - 5), 130 * k, 10 * k); }
+    const P = PX;
     const sel = this.menu?.items[this.menu.index]?.label;
     for (const p of this.city.world.pois) {
       x.font = (p.name === sel ? 26 : 18) + 'px system-ui'; x.textAlign = 'center'; x.textBaseline = 'middle';
-      if (p.name === sel) { x.fillStyle = 'rgba(255,79,163,.55)'; x.beginPath(); x.arc(P(p.x), P(p.z), 16, 0, 7); x.fill(); }
-      x.fillText(p.icon, P(p.x), P(p.z));
+      if (p.name === sel) { x.fillStyle = 'rgba(255,79,163,.55)'; x.beginPath(); x.arc(P(p.x), PZ(p.z), 16, 0, 7); x.fill(); }
+      x.fillText(p.icon, P(p.x), PZ(p.z));
     }
     const pl = this.city.player.root.position;
-    x.fillStyle = '#fff'; x.strokeStyle = '#ff4fa3'; x.lineWidth = 3; x.beginPath(); x.arc(P(pl.x), P(pl.z), 6, 0, 7); x.fill(); x.stroke();
+    x.fillStyle = '#fff'; x.strokeStyle = '#ff4fa3'; x.lineWidth = 3; x.beginPath(); x.arc(P(pl.x), PZ(pl.z), 6, 0, 7); x.fill(); x.stroke();
   }
   travel(x: number, z: number) {
     const s = this.save.data;
@@ -539,7 +544,7 @@ export class Game {
     this.touch.show(false);
     const back = () => { this.closeMenu(); this.touch.show(true); hints([['move', 'Laufen'], ['a', 'Aktion'], ['cam', 'Kamera'], ['y', 'Menü']]); };
     this.openMenu(`<div class="col"><div class="logo" style="font-size:clamp(30px,5vw,52px)"><span class="l1">Pause</span></div><div class="slot"></div></div>
-      <div class="side panel"><h3>${s.chapter === 1 ? 'Kapitel 1 · Ankommen' : 'Freies Spiel'}</h3><p><b style="color:#fff">${gl.title}</b><br>${gl.sub || ''}</p>
+      <div class="side panel"><h3>${chapterLabel(s)}</h3><p><b style="color:#fff">${gl.title}</b><br>${gl.sub || ''}</p>
       <p>🌈 Pride-Sticker: ${stickers}/${STICKERS.length} · 🪩 Tanz-Rekord: ${s.best.dance || 0}<br>✨ Glitzer: ${s.glitter} · 💶 ${s.money} € · Ruf ${s.rep}</p></div>`, [
       { icon: '▶', label: 'Weiterspielen', fn: back },
       { icon: '📱', label: 'Handy', sub: 'Status, Ziele, Karte, Jobs, Kontakte', fn: () => this.phone() },
@@ -555,10 +560,21 @@ export class Game {
   storyMenu(back: () => void) {
     const s = this.save.data;
     const style: Record<string, string> = { loud: 'laut', creative: 'kreativ', diplomatic: 'diplomatisch' };
-    const choices = [s.flags.feel ? `Ankunft: ${{ excited: 'aufgeregt', nervous: 'nervös', ready: 'bereit' }[s.flags.feel as string]}` : '', s.flags.style ? `Weg fürs Regenbogenhaus: ${style[s.flags.style as string]}` : ''].filter(Boolean);
+    const f = s.flags, pick = (v: unknown, m: Record<string, string>, t: string) => (v && m[v as string] ? `${t}: ${m[v as string]}` : '');
+    const choices = [
+      pick(f.feel, { excited: 'aufgeregt', nervous: 'nervös', ready: 'bereit' }, 'Ankunft'),
+      pick(f.style, style, 'Weg fürs Regenbogenhaus'),
+      pick(f.family, { music: 'Musik', cake: 'Kuchen', story: 'deine Geschichte' }, 'Mitbringsel für die Wahlfamilie'),
+      f.drag ? `Drag-Name: ${f.drag}` : '',
+      pick(f.rex, { friend: 'Freundschaft', dj: 'DJ im Leuchtturm', rival: 'Rivalität' }, 'Rex'),
+      f.bar ? 'Eigener Club: Leuchtturm am Hafen' : '',
+      pick(f.proof, { press: 'Presse', city: 'Bezirksamt', face: 'direkte Konfrontation' }, 'Beweise gegen Glanz'),
+      pick(f.role, { speech: 'Rede', float: 'Club-Wagen', dance: 'Vortanzen' }, 'Rolle bei der Pride'),
+    ].filter(Boolean);
     this.openMenu(`<div class="col"><div class="logo" style="font-size:clamp(30px,5vw,52px)"><span class="l1">Story</span><small>Ein Leben in allen Farben</small></div><div class="slot"></div></div>
       <div class="side panel"><h3>Deine Entscheidungen</h3><p>${choices.length ? choices.join('<br>') : 'Noch keine – die Stadt merkt sich alles.'}</p></div>`,
-    [...CHAPTERS.map((c) => ({ icon: c.n < s.chapter ? '✅' : c.n === s.chapter ? '⭐' : '🔒', label: `Kapitel ${c.n}: ${c.title}`, sub: c.n <= s.chapter ? c.text : 'Folgt in einem kommenden Update', disabled: c.n > s.chapter })),
+    [...CHAPTERS.map((c) => ({ icon: c.n < s.chapter ? '✅' : c.n === s.chapter ? '⭐' : '🔒', label: `Kapitel ${c.n}: ${c.title}`, sub: c.n <= s.chapter ? c.text : 'Noch nicht freigespielt', disabled: c.n > s.chapter })),
+      ...(s.chapter > 5 ? [{ icon: '🏁', label: 'Abspann ansehen', fn: () => this.ending(back) }] : []),
       { icon: '←', label: 'Zurück', fn: back }], back);
   }
 
@@ -598,9 +614,7 @@ export class Game {
     const b = this.save.data.best;
     this.openMenu(`<div class="col"><div class="logo" style="font-size:clamp(30px,5vw,52px)"><span class="l1">Minispiele</span><small>In 3D, mit Rekorden</small></div><div class="slot"></div></div>`, [
       { icon: '🪩', label: 'Tanz-Battle', sub: `Club Prisma gegen Rex · Rekord ${b.dance || 0}`, fn: () => this.goDance(false, back) },
-      { icon: '🍸', label: 'Barkeeper-Schicht', sub: 'Folgt im nächsten Update', disabled: true },
-      { icon: '🍳', label: 'Küchen-Chaos', sub: 'Folgt im nächsten Update', disabled: true },
-      { icon: '🎤', label: 'Bandprobe', sub: 'Folgt im nächsten Update', disabled: true },
+      { icon: '🍸', label: 'Barkeeper-Schicht', sub: `Club Leuchtturm · 75 Sekunden · Rekord ${b.bar || 0} Drinks`, fn: () => this.barShift(() => this.minigames(back), true) },
       { icon: '←', label: 'Zurück', fn: back },
     ], back);
   }
@@ -608,7 +622,7 @@ export class Game {
   credits() {
     this.openMenu(`<div class="col"><div class="panel" style="max-height:70dvh;overflow:auto"><h3>Mitwirkende</h3>
       <p><b style="color:#fff">Pride City</b> – Relaunch von Gay Life! für easygames.</p>
-      <p>Figuren und Stadt-Bausteine: <b style="color:#fff">KayKit</b> von Kay Lousberg (Character Pack: Adventurers, City Builder Bits, Furniture Bits, Restaurant Bits) – CC0 1.0. In Pride-Farben umgefärbt.</p>
+      <p>Figuren: <b style="color:#fff">Quaternius</b> (über Poly Pizza) – CC0 1.0. Stadt und Wohnung: <b style="color:#fff">KayKit</b> von Kay Lousberg (City Builder Bits, Furniture Bits, Restaurant Bits) – CC0 1.0. In Pride-Farben umgefärbt.</p>
       <p>3D: three.js (MIT). Musik und Klänge werden live im Spiel erzeugt.</p>
       <p>Alle Figuren sind erwachsen und frei erfunden. Zustimmung zählt.</p><div class="slot"></div></div></div>`,
     [{ icon: '←', label: 'Zurück', fn: () => this.title() }], () => this.title());
@@ -659,8 +673,28 @@ export class Game {
       park: { t: 'Regenbogenpark', d: 'Bäume, Wasserturm und Bänke. Nachts hat der Park ein zweites Leben.', items: [
         { icon: '🚶', label: 'Spazieren gehen', sub: '30 Minuten · +8 Spaß, +5 Energie', fn: () => { close(); this.fade(() => { this.pass(30); change(s, { fun: 8, energy: 5 }); this.save.write(); toast('Frische Luft tut gut. 🌳'); }); } },
         ...(s.settings.adult ? [{ icon: '🌙', label: 'Cruising', sub: isLateNight(hour(s)) ? 'Blicke, Nicken, Büsche – nur mit Zustimmung und Kondom' : 'erst ab 22 Uhr', disabled: !isLateNight(hour(s)), fn: () => this.cruising() }] : [])] },
-      tram: { t: 'Tram Rainbow City', d: 'Für 2 € in zehn Minuten an jeden Ort. Weitere Viertel folgen.', items: [
+      tram: { t: 'Tram Rainbow City', d: 'Für 2 € in zehn Minuten an jeden Ort – auch raus ins Hafenviertel.', items: [
         { icon: '🗺️', label: 'Fahrplan', sub: 'Ziel wählen', fn: () => this.phone('map') }] },
+      police: { t: 'Polizeiwache Mitte', d: 'Freund und Helfer – mit eigener Ansprechperson für queere Menschen.', items: [
+        { icon: '🗣️', label: 'Ansprechperson LSBTIQ*', sub: 'Beratung bei Anfeindungen', fn: () => { close(); this.dialog.say([
+          { who: 'Kommissarin Yıldız', color: '#5b86d6', text: 'Ich bin hier die Ansprechperson für LSBTIQ*. Wenn dich jemand beleidigt, bedroht oder angreift: Komm vorbei oder ruf 110 an.' },
+          { who: 'Kommissarin Yıldız', color: '#5b86d6', text: 'Hassgewalt gehört angezeigt – auch wenn es „nur“ Worte waren. Das Regenbogenhaus begleitet dich, wenn du magst.' }]); } },
+        ...(s.chapter === 4 && s.step >= 2 ? [{ icon: '📄', label: 'Anzeige gegen Glanz Immobilien', sub: 'Einschüchterung melden · +3 Ruf', disabled: !!s.flags.anzeige, fn: () => { s.flags.anzeige = true; s.rep += 3; toast('Anzeige aufgenommen. Die Polizei ermittelt. 🚓'); this.save.write(); close(); } }] : [])] },
+      fire: { t: 'Feuerwache Regenbogen', d: 'Löschzug, Drehleiter und eine Kaffeemaschine, die nie ausgeht.', items: [
+        { icon: '🚒', label: 'Tag der offenen Tür', sub: '1 Stunde · +12 Spaß · +2 Ruf (einmal am Tag)', fn: () => { if (s.flags.fireDay === s.day) { toast('Heute warst du schon da.'); return; } close(); this.fade(() => { s.flags.fireDay = s.day; this.pass(60); change(s, { fun: 12, social: 8 }); s.rep += 2; this.save.write(); toast('Einmal Drehleiter fahren – check! 🚒'); }); } },
+        { icon: '🔥', label: 'Tipps zum Brandschutz', fn: () => { close(); this.dialog.say([{ who: 'Feuerwehr', color: '#ff4b3b', text: 'Rauchmelder in jedes Schlafzimmer, einmal im Monat testen. Kerzen nie unbeaufsichtigt – auch nicht beim Date. 😉' }, { who: 'Feuerwehr', color: '#ff4b3b', text: 'Notruf 112: Wo ist es? Was ist passiert? Wie viele Verletzte? Warten auf Rückfragen.' }]); } }] },
+      tramhafen: { t: 'Tram Hafen', d: 'Endstation am Regenbogenkai. Zurück in die Innenstadt in zehn Minuten.', items: [
+        { icon: '🗺️', label: 'Fahrplan', sub: 'Ziel wählen', fn: () => this.phone('map') }] },
+      beach: { t: 'Strandbar Sandbank', d: 'Liegestühle, Sand zwischen den Zehen und der beste Sonnenuntergang der Stadt.', items: [
+        { icon: '🍹', label: 'Cocktail am Strand', sub: '5 € · +12 Spaß · +6 Kontakte', fn: buy(5, 'Sonne, Sand, Strohhalm. 🍹', eat({ fun: 12, social: 6 })) },
+        { icon: '🏊', label: 'Schwimmen gehen', sub: '45 Minuten · +15 Spaß · −10 Energie', fn: () => { close(); this.fade(() => { this.pass(45); change(s, { fun: 15, energy: -10, hygiene: 10 }); this.save.write(); toast('Erfrischend! 🌊'); }); } },
+        { icon: '😎', label: 'In der Sonne liegen', sub: '1 Stunde · +12 Energie · Sonnencreme nicht vergessen', fn: () => { close(); this.fade(() => { this.pass(60); change(s, { energy: 12, fun: 5 }); this.save.write(); toast('Schön braun. ☀️'); }); } },
+        { icon: '🏐', label: 'Beachvolleyball', sub: '30 Minuten · +14 Kontakte · −8 Energie', fn: () => { close(); this.fade(() => { this.pass(30); change(s, { social: 14, fun: 8, energy: -8 }); this.save.write(); toast('Punkt für dein Team! 🏐'); }); } }] },
+      bar: s.flags.bar ? { t: 'Club Leuchtturm', d: `Dein eigener Club am Hafen. ${s.flags.barDeko ? 'Discokugel und Neon funkeln.' : 'Noch etwas kahl – Deko bringt mehr Trinkgeld.'} ${s.flags.rex === 'dj' ? 'Rex legt freitags auf.' : ''}`, items: [
+        { icon: '🍸', label: 'Hinter die Bar', sub: `Barkeeper-Minispiel · 75 Sekunden · Rekord ${s.best.bar || 0} Drinks`, fn: () => { close(); this.barShift(); } },
+        { icon: '🪩', label: 'Party-Nacht veranstalten', sub: isLateNight(hour(s)) || hour(s) >= 21 ? 'einmal pro Nacht · Eintritt und Ruf' : 'ab 21 Uhr', disabled: !(isLateNight(hour(s)) || hour(s) >= 21) || s.flags.party === s.day, fn: () => { close(); this.party(); } },
+        { icon: '✨', label: s.flags.barDeko ? 'Deko schon gekauft' : 'Deko kaufen', sub: '80 € · Discokugel und Neon · mehr Trinkgeld', disabled: !!s.flags.barDeko, fn: buy(80, 'Der Leuchtturm funkelt! ✨', () => { s.flags.barDeko = true; }) }] } : {
+        t: 'Alte Lagerhalle', d: `Ein Schild an der Tür: „Zu vermieten – ${BAR_COST} € Startmiete“. Platz für einen ganzen Club.`, items: [] },
     };
     for (const pr of PROFILES) {
       const r = s.dates[pr.id];
@@ -674,6 +708,73 @@ export class Game {
     this.touch.show(false);
     this.openMenu(`<div class="col"><div class="panel"><h3>${p.t}</h3><p>${p.d}</p><div class="slot"></div></div></div>`, [...p.items, { icon: '←', label: 'Zurück', fn: close }], close, '');
     hints([['dpad', 'Wählen'], ['a', 'Bestätigen'], ['b', 'Zurück']]);
+  }
+
+  /* ---------- Barkeeper-Minispiel: Zutaten wählen, servieren, gegen die Uhr ---------- */
+  barShift(done?: () => void, practice = false) {
+    const s = this.save.data;
+    const ING: Array<[string, string]> = [['🍊', 'Orange'], ['🍋', 'Zitrone'], ['🍓', 'Erdbeere'], ['🫐', 'Blaubeere'], ['🧉', 'Mate'], ['🍺', 'Bier'], ['🧊', 'Eis'], ['🫧', 'Soda'], ['✨', 'Glitzer']];
+    const MENU: Array<[string, string]> = [['Pride-Spritz', '🍊🫧🍓'], ['Glitzer-Mate', '🧉🧊✨'], ['Leuchtturm-Tonic', '🍋🧊🫧'], ['Bärenbier', '🍺'], ['Nova Nights', '🫐🍋✨'], ['Hildes Mocktail', '🍓🍋🫧']];
+    const GUESTS = ['Mo', 'Bruno', 'Lena', 'Tariq', 'Sam', 'Kim', 'Hilde', 'Nova', 'Jules', 'ein Gast in Leder', 'zwei Drag Queens', 'eine Touristin'];
+    const split = (r: string) => [...r.matchAll(/\p{Extended_Pictographic}|✨/gu)].map((m) => m[0]);
+    let left = 75, served = 0, tips = 0, glass: string[] = [], order = 0, guest = '';
+    const next = () => { order = Math.floor(Math.random() * MENU.length); guest = GUESTS[Math.floor(Math.random() * GUESTS.length)]; glass = []; };
+    next();
+    const render = () => {
+      const box = this.overlay?.querySelector('#barBox'); if (!box) return;
+      box.innerHTML = `<p><b style="color:#fff">${esc(guest)}</b> möchte: <b style="color:#ffd23b">${MENU[order][0]}</b></p>
+        <p style="font-size:28px;letter-spacing:4px;min-height:36px">${glass.join('') || '<small>leeres Glas</small>'}</p>
+        <div class="bar"><i style="width:${left / 75 * 100}%"></i></div><p>⏱ ${left} s · 🍸 ${served} · 💶 ${tips} €</p>
+        <p><small>${MENU.map(([n, r]) => `${n}: ${r}`).join(' · ')}</small></p>`;
+    };
+    const serve = () => {
+      const want = split(MENU[order][1]).sort().join(''), got = glass.slice().sort().join('');
+      if (want === got) { served++; const t = 3 + Math.floor(Math.random() * 4) + (s.flags.barDeko ? 2 : 0); tips += t; sfx('coin'); toast(`${guest}: „Perfekt!“ +${t} €`); }
+      else { sfx('miss'); toast(`${guest}: „Das hab ich nicht bestellt …“`); }
+      next(); render();
+    };
+    const end = () => {
+      clearInterval(iv); this.closeMenu();
+      s.best.bar = Math.max(s.best.bar || 0, served);
+      if (!practice) { const pay = tips + served * 4; s.money += pay; change(s, { social: 15, fun: 8, energy: -12 }); this.pass(120); s.rep += Math.floor(served / 3); toast(`Schicht im Leuchtturm: ${served} Drinks, +${pay} €`); this.city.refreshHud(); }
+      else toast(`${served} Drinks in 75 Sekunden!`);
+      this.save.write();
+      this.dialog.say([{ who: 'Club Leuchtturm', color: '#ffd23b', text: served >= 10 ? 'Legendär! Die Gäste wollen dich jeden Abend hinter der Bar.' : served >= 5 ? 'Gute Schicht! Die Leute kommen wieder.' : 'Das wird noch. Merk dir die Karte!' }], () => { if (done) done(); else this.touch.show(true); });
+    };
+    this.touch.show(false);
+    this.openMenu(`<div class="col"><div class="panel barPanel"><h3>🍸 Hinter der Bar</h3><div id="barBox"></div><div class="slot"></div></div></div>`,
+      [...ING.map(([i, n]) => ({ icon: i, label: n, fn: () => { if (glass.length < 4) { glass.push(i); sfx('move'); render(); } } })),
+        { icon: '🛎️', label: 'Servieren', fn: serve },
+        { icon: '🗑️', label: 'Leeren', fn: () => { glass = []; render(); } },
+        { icon: '⏹', label: 'Feierabend', fn: () => { left = 0; } }], null, '');
+    hints([['dpad', 'Zutat'], ['a', 'Rein ins Glas']]);
+    const iv = setInterval(() => { if (!this.overlay?.querySelector('#barBox')) { clearInterval(iv); return; } left = Math.max(0, left - 1); render(); if (left <= 0) end(); }, 1000);
+    render();
+  }
+
+  private party() {
+    const s = this.save.data;
+    this.fade(() => {
+      s.flags.party = s.day; this.pass(180);
+      const guests = 40 + Math.min(160, s.rep * 2) + (s.flags.barDeko ? 40 : 0) + (s.flags.rex === 'dj' ? 30 : 0);
+      const pay = Math.round(guests * 1.5);
+      s.money += pay; s.rep += 3; change(s, { fun: 25, social: 20, energy: -25 });
+      this.save.write(); this.city.refreshHud();
+      this.dialog.say([{ who: 'Club Leuchtturm', color: '#ffd23b', text: `${guests} Gäste, Bass bis zum Morgengrauen${s.flags.rex === 'dj' ? ' und Rex an den Reglern' : ''}. Eintritt: +${pay} €, +3 Ruf.` }]);
+    });
+  }
+
+  /** Abspann nach der Parade (auch aus dem Story-Menü) */
+  ending(back?: () => void) {
+    const s = this.save.data;
+    const fin = back || (() => { this.closeMenu(); this.touch.show(true); });
+    this.touch.show(false);
+    this.openMenu(`<div class="col"><div class="panel" style="max-height:72dvh;overflow:auto;text-align:center"><h3>🏳️‍🌈 Pride City – Ein Leben in allen Farben</h3>
+      <p>${esc(s.name)} kam mit einem Koffer nach Rainbow City. Heute gehören ein Club, eine Wahlfamilie und ein gerettetes Regenbogenhaus dazu.</p>
+      <p>Tag ${s.day} · ${s.money} € · Ruf ${s.rep} · Tanz-Rekord ${s.best.dance || 0}</p>
+      <p><small>Mit Mo, Jules, Nova, Rex, Bruno, Lena, Tariq, Hilde, Sam und Kim.<br>Figuren von Quaternius, Stadt von KayKit (beide CC0), Musik live erzeugt.<br>Alle Figuren sind erwachsen und frei erfunden. Zustimmung zählt.</small></p>
+      <p>Danke fürs Spielen! Die Stadt läuft weiter – freies Spiel.</p><div class="slot"></div></div></div>`,
+    [{ icon: '▶', label: 'Weiterspielen', fn: fin }], fin, '');
   }
 
   /* ---------- Minispiel ---------- */
