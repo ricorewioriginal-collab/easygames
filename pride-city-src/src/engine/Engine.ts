@@ -41,7 +41,7 @@ export class Engine {
 
   constructor(readonly canvas: HTMLCanvasElement) {
     const mobile = matchMedia('(pointer: coarse)').matches;
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobile, powerPreference: 'high-performance', stencil: false });
+    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', stencil: false });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.05;
@@ -87,7 +87,8 @@ export class Engine {
 
   private ensureComposer(s: GameScene) {
     if (this.composer) return;
-    const c = new EffectComposer(this.renderer);
+    // eigenes Ziel mit 4-fach-Multisampling, sonst sind Kanten mit Bloom pixelig
+    const c = new EffectComposer(this.renderer, new THREE.WebGLRenderTarget(innerWidth, innerHeight, { type: THREE.HalfFloatType, samples: 4 }));
     this.renderPass = new RenderPass(s.root, s.camera);
     c.addPass(this.renderPass);
     this.bloomPass = new UnrealBloomPass(new THREE.Vector2(innerWidth / 2, innerHeight / 2), .55, .5, .82);

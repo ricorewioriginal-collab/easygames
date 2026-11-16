@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "58adcbd4f465",
- "generated": "2026-11-16T03:39:56+01:00",
- "commit": "99a1e9d496441da9c6b2b3ba2762438b0e336a8f",
+ "version": "b52c87f34386",
+ "generated": "2026-11-16T02:27:43+00:00",
+ "commit": "cad043771ce5789366bee68f8602337d8f503297",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10878,8 +10878,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 11614,
-   "h": "2d138e23091b72057de65ce843f32acedf9c2e6e447dce1c78c368743ed2acd2"
+   "s": 13556,
+   "h": "9274b0031a916144f201b77bc62db2aa1c15b0d5e37289e93997116232cc5ac8"
   },
   {
    "p": "guides/prismrush.json",
@@ -12902,14 +12902,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
-   "p": "pride-city/assets/index-CPwdCgYS.css",
-   "s": 18610,
-   "h": "e33b70b80fc98e4b6a3dd6d3178fd9171466fb96123f3a796badc3252dd3a708"
+   "p": "pride-city/assets/index-D50-7iT2.css",
+   "s": 19425,
+   "h": "fc62d6e4f49141e5b34376ad1b8900daf9571919bf985a7939fe24fdbc61961a"
   },
   {
-   "p": "pride-city/assets/index-CX-amoXg.js",
-   "s": 202667,
-   "h": "8c377a66bf46f457ea4fc4ceb158971965e5d7a8411ba323284bec802f8bc86c"
+   "p": "pride-city/assets/index-okKRF_Mu.js",
+   "s": 217589,
+   "h": "76949c8a8479c282459e161a25d8573372c2ccfc0c5f5177c0d25afece04be1e"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -13007,9 +13007,9 @@
    "h": "97a4e8c5e93b5c4f68b25e5240f308aa81ff4ae487b750e62f13e02c338d73e8"
   },
   {
-   "p": "pride-city/assets/three-BOUIKzsg.js",
-   "s": 578941,
-   "h": "ea98f361c917425c4d478a9c3d4c1bd17440c675a17819a5454ca38db2b32446"
+   "p": "pride-city/assets/three-BLiWhtlZ.js",
+   "s": 578950,
+   "h": "3b5efaafd7c252a21f0a53fa454e18ba2b364dd8453964f0c8cee4e4394355f0"
   },
   {
    "p": "pride-city/card.jpg",
@@ -13019,7 +13019,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5731,
-   "h": "9742319bd900ccee14f6a07a1a66fe989723e5a9b3bdd9f14e62a74b67e3b362"
+   "h": "df53268e2bbe45efdb94644e88d2f9e467d580d1a61669e1d1dd6d163199fdfb"
   },
   {
    "p": "pride-city/logo.svg",
@@ -15404,7 +15404,7 @@
   {
    "p": "sync/catalog.json",
    "s": 249421,
-   "h": "6541f1aa3bcf10dd1a9c654b29a1d6f37430ef5d76ca13f0cb6c97e8d13d38b5"
+   "h": "c9586bdfbfcb5f0f951666ffad80d747cca37e96236deca4dd2c64e100ce95fe"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

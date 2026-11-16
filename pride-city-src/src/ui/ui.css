@@ -239,3 +239,24 @@ body:has(#ui .screen:not(.phone)) #hud .lcol { visibility: hidden; }
 .phoneBox .swipe .dots { position: absolute; top: 8px; left: 10px; right: 10px; display: flex; gap: 4px; z-index: 1; }
 .phoneBox .swipe .dots u { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.35); }
 .phoneBox .swipe .dots u.on { background: #fff; }
+
+/* ---------- Optik am Handy (Durchgang 3c) ---------- */
+/* Gespräch: über den Touch-Knöpfen; Stick, B und Turbo blenden aus, A schaltet weiter */
+html[data-input=touch] body:has(#dialog) #touch .stick,
+html[data-input=touch] body:has(#dialog) #touch .bB,
+html[data-input=touch] body:has(#dialog) #touch .bS,
+html[data-input=touch] body:has(#dialog) #hud .prompt { display: none; }
+html[data-input=touch] #dialog { bottom: calc(112px + var(--safe-b)); width: min(880px, calc(100vw - 20px)); }
+@media (max-height: 480px) and (orientation: landscape) {
+  html[data-input=touch] #dialog { bottom: calc(8px + var(--safe-b)); width: min(760px, calc(100vw - 230px)); translate: calc(-50% - 50px) 0; }
+  #dialog .box { padding: 16px 16px 12px; }
+  #hud .goal { max-width: min(360px, 40vw); padding: 7px 11px; }
+  #hud .goal small { display: none; }
+}
+/* Kapitelbox hochkant kompakt: nur Titel, kleiner */
+@media (orientation: portrait) {
+  #hud .goal { padding: 7px 11px; border-radius: 12px; }
+  #hud .goal .ch { font-size: .6em; }
+  #hud .goal b { font-size: .86em; line-height: 1.25; }
+  #hud .goal small { display: none; }
+}

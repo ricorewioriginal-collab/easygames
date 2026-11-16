@@ -18,14 +18,14 @@ export async function photo(id: string, s: Shot): Promise<string> {
   const hit = cache.get(k); if (hit) return hit;
   if (!r) {
     r = new THREE.WebGLRenderer({ canvas: document.createElement('canvas'), antialias: true, preserveDrawingBuffer: true });
-    r.setSize(400, 300, false); r.toneMapping = THREE.ACESFilmicToneMapping; r.outputColorSpace = THREE.SRGBColorSpace;
+    r.setPixelRatio(2); r.setSize(400, 300, false); r.toneMapping = THREE.ACESFilmicToneMapping; r.outputColorSpace = THREE.SRGBColorSpace;
   }
   const a = await Actor.create(s.look);
   a.pose(s.clip, s.t ?? .6);
   a.root.rotation.y = s.yaw ?? .35;
   scene.background = new THREE.Color(s.bg).lerp(new THREE.Color(0x1a0f33), .7);
   scene.add(a.root);
-  if (s.close) { const hy = a.head().y; cam.position.set(0, hy - .05, 2.4); cam.lookAt(0, hy - .2, 0); } else { cam.position.set(0, 1.1, 4.3); cam.lookAt(0, .95, 0); }
+  if (s.close) { const hy = a.head().y; cam.position.set(0, hy - .05, 2.4); cam.lookAt(0, hy - .2, 0); } else { cam.position.set(0, .75, 4.3); cam.lookAt(0, .95, 0); } // leicht von unten: wirkt größer und selbstbewusster
   r.render(scene, cam);
   const url = r.domElement.toDataURL('image/jpeg', .86);
   scene.remove(a.root);
