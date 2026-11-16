@@ -7,14 +7,14 @@ let fails = 0; const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!
 const page = async () => { const p = await (await browser.newContext({ viewport: { width: 390, height: 844 }, locale: 'de-DE', hasTouch: true })).newPage(); p.errs = []; p.on('pageerror', e => p.errs.push(e.message));
   await p.route('**/fonts.googleapis.com/**', r => r.abort()); await p.route('**/cloud/**', r => r.abort()); return p; };
 /* 1. Knopf in jedem Portal-Spiel (nur Seite laden, Spiel muss nicht starten) */
-for (const [g, f] of [['gay-life', ''], ['aeru', ''], ['anmacha-podcast-tycoon', ''], ['anmacha-markthalle', ''], ['taschi', 'index.html']]) {
+for (const [g, f] of [['pride-city/classic/gay-life', ''], ['aeru', ''], ['anmacha-podcast-tycoon', ''], ['anmacha-markthalle', ''], ['taschi', 'index.html']]) {
   const p = await page(); await p.route(u => !/rueckweg\.js|\/index\.html$|\/$|\?from=/.test(u.pathname + u.search), r => r.abort());
   await p.goto(BASE + '/' + g + '/' + f + '?from=bunteinsel', { waitUntil: 'domcontentloaded' }); await p.waitForSelector('#egBuntBack', { timeout: 15000 }).catch(() => { });
   const href = await p.evaluate(() => { const a = document.getElementById('egBuntBack'); return a ? a.href : ''; });
   ok(href.endsWith('/bunte-insel/?from=' + g), g + ': Knopf „Zurück zur Bunten Insel“ → ' + href.replace(/^https?:\/\/[^/]+/, ''));
   await p.context().close();
 }
-{ const p = await page(); await p.route(u => !/rueckweg\.js|\/$/.test(u.pathname), r => r.abort()); await p.goto(BASE + '/gay-life/', { waitUntil: 'domcontentloaded' }); await p.waitForTimeout(800);
+{ const p = await page(); await p.route(u => !/rueckweg\.js|\/$/.test(u.pathname), r => r.abort()); await p.goto(BASE + '/pride-city/classic/gay-life/', { waitUntil: 'domcontentloaded' }); await p.waitForTimeout(800);
   ok(!(await p.$('#egBuntBack')), 'ohne ?from=bunteinsel kein Knopf'); await p.context().close(); }
 /* 2. Ankunft auf der Insel vor dem Portal */
 for (const g of ['aeru', 'taschi']) {

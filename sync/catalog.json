@@ -2923,7 +2923,7 @@
   {
    "id": "pride-city",
    "title": "Pride City – Ein Leben in allen Farben",
-   "desc": "Der Relaunch von Gay Life!: queere 3D-Lebenssimulation in Rainbow City mit realistischen Figuren in Pride-Farben. Eigene Figur mit 13 Farbwelten, Hauttönen und Pronomen, Story in fünf Kapiteln bis zur Pride-Parade, dazu der Roman „Ich bin das Licht“ als Leons Geschichte in zwölf Rückblenden (und komplett zum Lesen), der Jugendroman „Leuchtfeuer“ als Finns Geschichte am Leuchtturm in 16 Rückblenden, eigener Club am Hafen mit Barkeeper-Minispiel, Tanz-Battle in 3D, belebte Stadt mit Polizei, Feuerwehr und fahrbaren Autos, Dating, Jobs, Wohnung, Tag und Nacht. Konsolen-Menü, Controller, Touch im Hoch- und Querformat. Speicherstand lokal und per Google.",
+   "desc": "Der Relaunch von Gay Life!: queere 3D-Lebenssimulation in Rainbow City mit realistischen Figuren in Pride-Farben. Eigene Figur mit 13 Farbwelten, Hauttönen und Pronomen, Story in fünf Kapiteln bis zur Pride-Parade, dazu der Roman „Ich bin das Licht“ als Leons Geschichte in zwölf Rückblenden (und komplett zum Lesen), der Jugendroman „Leuchtfeuer“ als Finns Geschichte am Leuchtturm in 16 Rückblenden, beide Original-Romanspiele und das komplette Gay Life! mit allen 14 Minispielen eingebaut, spielbare Drag-Show mit Buch-Hymne und Klavierlicht-Songs, Leon und Lady Luma spielbar, eigener Club am Hafen mit Barkeeper-Minispiel, Tanz-Battle in 3D, belebte Stadt mit Polizei, Feuerwehr und fahrbaren Autos, Dating, Jobs, Wohnung, Tag und Nacht. Konsolen-Menü, Controller, Touch im Hoch- und Querformat. Speicherstand lokal und per Google.",
    "icon": "🏳️‍🌈",
    "img": "pride-city/card.jpg",
    "bg": "linear-gradient(145deg,#ff2f7a,#7b3cff 52%,#1aa7ff)",
@@ -2945,46 +2945,12 @@
      "Am Barkeeper-Tresen zählt Tempo: Bärenbier ist nur Bier, alle anderen Drinks haben drei Zutaten."
     ]
    },
-   "size": 7850254,
-   "files": 133,
+   "size": 11837353,
+   "files": 220,
    "offline": true,
    "cloud": {
     "game": "pride-city",
     "prefix": "prideCity."
-   },
-   "trailer": null
-  },
-  {
-   "id": "gay-life",
-   "title": "Gay Life!",
-   "desc": "Queere Lebenssimulation in 3D: eigene Wohnung, Alltag mit Uhrzeit und Bedürfnissen, Barkeeper-Job, Handy mit Karte, Kontakten, Nachrichten und Dating-App; Dating mit eigenen Figuren, Tagesabläufe. Aufträge, Sterne sammeln, Tag und Nacht, eigene Figur. Vierzehn Minispiele (Sauna, Dunkelkammer, Casting-Tag, Tanzbattle, Karaoke, Quiz, Rave und mehr), Nebenaufträge, Kleiderschrank zum Freischalten und Mehrspieler per Code/QR. Speicherstand lokal und per Google.",
-   "icon": "🏳️‍🌈",
-   "img": "gay-life/card.jpg",
-   "bg": "linear-gradient(145deg,#ff3b6b,#9b5cff 55%,#2ea8ff)",
-   "glow": "rgba(255,59,107,.55)",
-   "path": "gay-life/",
-   "modes": {
-    "online": true
-   },
-   "multiplayer": true,
-   "guide": {
-    "anleitung": "GayLife ist eine 3D-Lebenssimulation in der Stadt Rainbow City (Regenbogenkiez und weitere Viertel) für Erwachsene. Du achtest auf Essen, Schlaf, Dusche und Menschen, verdienst Geld mit Jobs, lernst Bewohner kennen, gehst auf Dates, richtest deine Wohnung ein und spielst Minispiele und eine Hauptgeschichte. Alle Figuren sind frei erfunden; bis zu 4 Spieler können sich per PIN oder QR-Code besuchen.",
-    "steuerung": [
-     "PC: W A S D oder Pfeiltasten laufen; Kamera mit Maus ziehen oder Q/R drehen. E, Enter oder Leertaste = Aktion (sprechen, Orte betreten). P oder Tab = Handy, M = Karte/Orte, F = Vollbild, Esc = Pause. Im Startmenü Pfeiltasten, Enter und Esc.",
-     "Touch: Fester Stick links zum Laufen; vier Tasten rechts: A Aktion, B Orte, X Handy, Y Menü. Kamera durch Wischen auf dem Bild.",
-     "Controller: linker Stick oder Steuerkreuz laufen, A Aktion, B Karte/Orte, X Handy, Y oder Start Menü, LB/RB drehen die Kamera."
-    ],
-    "tipps": [
-     "Dein Spielstand liegt auf dem Gerät; im Pausenmenü kannst du jederzeit speichern.",
-     "Ein Nein von Figuren wird im Spiel respektiert."
-    ]
-   },
-   "size": 638122,
-   "files": 45,
-   "offline": true,
-   "cloud": {
-    "game": "gay-life",
-    "prefix": "anmachaGayLife"
    },
    "trailer": null
   },
@@ -3108,7 +3074,7 @@
      "Gekämpft wird nur in der Kampfarena und auf der Wald-Insel (das Waldtor im alten Verbotenen Wald bringt dich hin)."
     ]
    },
-   "size": 7692041,
+   "size": 7692059,
    "files": 143,
    "offline": true,
    "cloud": {

@@ -76,7 +76,7 @@
 
 /* Die vier Spiel-Portale in den Welten */
 BI.GAME_PORTALS = [
-  { key: 'RAINBOW', game: 'gay-life', name: 'Gay Life!', icon: '🏳️‍🌈', color: '#ff4fa3', text: 'Das Regenbogen-Portal öffnet die bunte Spielesammlung „Gay Life!“ auf easygames.',
+  { key: 'RAINBOW', game: 'pride-city', name: 'Pride City', icon: '🏳️‍🌈', color: '#ff4fa3', text: 'Das Regenbogen-Portal öffnet „Pride City – Ein Leben in allen Farben“ auf easygames.',
     cols: [0xe8453c, 0xff9a2a, 0xffd23f, 0x3ec46d, 0x3a7bff, 0x9a5bff], swirl: ['#ffffff', '#ffd6f4', '#ff4fa3', '#7a3bff'], glow: 0xff7ad0, sign: '#ff4fa3', who: ['Regenbogen-Romy', '🌈'] },
   { key: 'DRACHEN', game: 'aeru', name: 'AERU', icon: '🪽', color: '#ff8a2a', text: 'Durch das Drachen-Portal fliegst du zu „AERU – Die Sterneninseln“, einem Flug-Abenteuer über den Wolken.',
     cols: [0x8a3a2a, 0xd8662a, 0xffb43a], swirl: ['#ffffff', '#ffe6a0', '#ff8a2a', '#6a2aa0'], glow: 0xffa040, sign: '#d8662a', base: 0x9a8a80, base2: 0x6a5a50, who: ['Drachenwächterin Brisa', '🐉'] },
