@@ -3,6 +3,7 @@
 import type { SaveData } from '../engine/Save';
 import type { Line } from '../ui/ui';
 import type { Look } from './Actor';
+import { LICHT_CHAPTERS, LICHT_PEOPLE, LICHT_START, LICHT_SHOW, LUMA, lichtEnding } from './licht';
 
 export interface NpcDef {
   id: string; name: string; pron: string; color: string; look: Look;
@@ -26,6 +27,7 @@ export const NPCS: NpcDef[] = [
   { id: 'tariq', name: 'Tariq', pron: 'er/ihn', color: '#9b4f96', look: { body: 'Man2', palette: 'bi', skin: 3, hair: 0 }, x: 40, z: 40, walk: [[40, 40], [50, 40], [50, 50], [40, 50]], petition: true },
   { id: 'hilde', name: 'Hilde', pron: 'sie/ihr', color: '#a3a3a3', look: { body: 'Woman', palette: 'ace', skin: 0, hair: 6 }, x: -19.2, z: 19.2, anim: 'sit', petition: true },
   { id: 'sam', name: 'Sam', pron: 'er/ihn', color: '#5bcefa', look: { body: 'Man2', palette: 'trans', skin: 2, hair: 3 }, x: 4, z: 30, walk: [[4, 30], [4, 48], [-4, 48], [-4, 30]], petition: true },
+  { id: 'leon', name: 'Leon', pron: 'er/ihn', color: '#ff7ac8', look: { body: 'Man', palette: 'rainbow', skin: 2, hair: 0 }, x: 33.9, z: 22.4, yaw: -Math.PI / 2 },
   { id: 'kim', name: 'Kim', pron: 'they/them', color: '#3da542', look: { body: 'Woman', palette: 'aro', skin: 4, hair: 2 }, x: -26, z: -20, walk: [[-26, -20], [-26, -4], [-14, -4], [-14, -20]], petition: true },
 ];
 
@@ -53,6 +55,8 @@ export interface StoryCtx {
   barShift(done?: () => void): void;
   /** Abspann nach dem Finale */
   credits(): void;
+  /** Kapitelkarte (Rückblende) */
+  card(kick: string, title: string, text: string): Promise<void>;
 }
 
 const me = (s: SaveData) => s.name;
@@ -126,7 +130,7 @@ export function marks(s: SaveData): Array<[string, string]> {
 }
 
 /** Nova ist in Kapitel 4 verschwunden */
-export function hidden(s: SaveData, id: string) { return id === 'nova' && s.chapter === 4 && s.step < 4; }
+export function hidden(s: SaveData, id: string) { return (id === 'nova' && s.chapter === 4 && s.step < 4) || (id === 'leon' && s.chapter < 2); }
 
 /** Ziele, die sich von selbst erfüllen (Schicht gearbeitet, Leute kennengelernt) – zweimal pro Sekunde */
 export function storyTick(c: StoryCtx) {
@@ -335,6 +339,7 @@ export function talk(c: StoryCtx, id: string): boolean {
       return true;
     }
   }
+  if (id === 'leon') { licht(c); return true; }
   // Allgemeine Gespräche
   const lines: Record<string, string[]> = {
     mo: ['Kaffee geht heute aufs Haus. Morgen nicht mehr!', 'Wenn du was brauchst: Ich bin hier.'],
@@ -471,6 +476,7 @@ export function ending(s: SaveData): Line[] {
   else out.push(L(npc('rex'), s.flags.rex === 'dj' ? 'Ab nächster Woche lege ich jeden Freitag im Leuchtturm auf. Danke, Boss.' : 'Danke, dass du mir eine Chance gegeben hast.'));
   out.push(L(npc('hilde'), s.flags.family === 'cake' ? 'Und jetzt Kuchen für alle! Das Rezept kennt inzwischen die ganze Plaza.' : 'Seit 1979 war ich auf jeder Pride. Diese war die schönste.'));
   out.push(L(npc('mo'), s.rep >= 80 ? 'Weißt du, was die Leute über dich sagen? Dass Rainbow City ohne dich nicht dieselbe wäre.' : 'Ich bin stolz auf dich. Und das hier ist erst der Anfang.'));
+  if (s.flags.lichtEnd) out.push(LP('luma', 'Und jetzt alle zusammen, Rainbow City: Ich bin das Licht!'));
   out.push(L('Rainbow City', 'Ende der Geschichte – aber nicht deines Lebens hier. Arbeite, date, feiere, und führe deinen Club weiter.'));
   return out;
 }
@@ -478,6 +484,13 @@ export function ending(s: SaveData): Line[] {
 /** Nach dem Tanz-Battle */
 export function danceResult(c: StoryCtx, won: boolean) {
   const s = c.s;
+  if (s.flags.lichtShow) {
+    s.flags.lichtShow = false;
+    addLight(s, won ? LICHT_SHOW : 10);
+    s.flags.licht = Number(s.flags.licht || 0) + 1;
+    c.say([LP('velvet', won ? 'Hörst du das? Der ganze Saal singt mit. DAS ist Lady Luma.' : 'Ein paar Schritte daneben, aber deine Stimme war echt. Das zählt.'), LP('leon', 'Komm nachher noch mal zu mir. Die Geschichte ist noch nicht ganz zu Ende.')], () => c.reward(won ? 40 : 15, 4, 'Lady Lumas Show'));
+    return;
+  }
   if (s.chapter === 3 && s.step === 2) {
     if (!won) { c.say([L(npc('nova'), 'Rex hatte heute die Menge. Kopf hoch, Schätzchen – sprich mich an, wenn du nochmal willst.')]); return; }
     c.say([L(npc('nova'), `${String(s.flags.drag || me(s))} reißt das Prisma ab! Die Revanche geht an dich!`), L(npc('rex'), '… Okay. Du bist gut. Komm nach der Show kurz raus.')], () => { c.reward(80, 8, 'Drag-Show'); c.step(3); });
@@ -501,4 +514,62 @@ export function danceResult(c: StoryCtx, won: boolean) {
     L(npc('rex'), '… Nicht schlecht. Wirklich nicht schlecht.'),
     L(npc('jules'), s.flags.style === 'creative' ? 'Siehst du? Wir feiern dagegen an – und gewinnen!' : 'Das war der Anfang. Jetzt wissen alle, dass wir da sind.'),
   ], () => { c.reward(120, 15, 'Benefiz-Battle gewonnen'); c.chapterDone('Das Regenbogenhaus hat neue Hoffnung – und du hast Freund*innen gefunden.'); });
+}
+
+/* ---------- „Ich bin das Licht“: Leons Geschichte in Rückblenden (ab Kapitel 2, One Love Bar) ---------- */
+const LP = (id: string, text: Line['text'], choices?: Line['choices']): Line => {
+  const p = LICHT_PEOPLE[id];
+  return p ? { who: p.name, pron: p.pron, color: p.color, text, choices } : { who: 'Erzählung', color: '#9a8fb8', text, choices };
+};
+const addLight = (s: SaveData, n: number) => { s.flags.lichtLight = Math.max(0, Math.min(100, Number(s.flags.lichtLight ?? LICHT_START) + n)); };
+export const lichtLight = (s: SaveData) => Number(s.flags.lichtLight ?? LICHT_START);
+export const lichtPart = (s: SaveData) => Number(s.flags.licht || 0);
+
+export function licht(c: StoryCtx) {
+  const s = c.s, i = lichtPart(s);
+  if (!s.flags.lichtIntro) {
+    c.say([
+      LP('leon', `Hey, du bist ${me(s)}, oder? Ich bin Leon. Und abends, auf der Bühne der One Love Bar, bin ich Lady Luma.`),
+      LP('leon', 'Weißt du, ich war auch mal neu hier. Und davor … ein Junge an einem Esstisch, an dem keiner redet.'),
+      LP('leon', 'Willst du meine Geschichte hören? Sie heißt „Ich bin das Licht“.', [
+        { label: 'Ja, erzähl mir alles.', fn: () => { s.flags.lichtIntro = true; s.flags.lichtLight = LICHT_START; } },
+        { label: 'Später gern.', fn: () => {} },
+      ]),
+    ], () => { if (s.flags.lichtIntro) setTimeout(() => part(c, 0), 60); });
+    return;
+  }
+  if (i >= LICHT_CHAPTERS.length) {
+    const e = lichtEnding(lichtLight(s));
+    c.say([LP('leon', `Danke, dass du mir zugehört hast. Mein Ende heißt „${e.title}“.`), LP('leon', 'Den ganzen Roman kannst du übrigens im Handy lesen, unter 📖 „Ich bin das Licht“.')]);
+    return;
+  }
+  c.say([LP('leon', i === 0 ? 'Wo war ich? Ach ja, ganz am Anfang.' : 'Setz dich. Ich erzähl weiter.', [
+    { label: 'Weiter zuhören', fn: () => setTimeout(() => part(c, i), 60) },
+    { label: 'Ein andermal', fn: () => {} },
+  ])]);
+}
+
+function part(c: StoryCtx, i: number) {
+  const s = c.s, ch = LICHT_CHAPTERS[i];
+  const lines: Line[] = ch.lines.map(([who, t]) => LP(who, t));
+  let reply = '';
+  const next = () => { s.flags.licht = i + 1; c.reward(0, 2, 'Leons Geschichte'); };
+  if (ch.choices) lines.push(LP(ch.cast.includes('luma') ? 'luma' : 'leon', 'Was tust du an Leons Stelle?', ch.choices.map((x) => ({ label: x.t, sub: `+${x.light} Licht`, fn: () => { addLight(s, x.light); reply = x.r; } }))), LP('', () => reply));
+  if (ch.studio) {
+    const pick = (k: keyof typeof LUMA, q: string) => LP('leon', q, LUMA[k].map((v) => ({ label: v, fn: () => { s.flags['luma_' + k] = v; } })));
+    lines.push(pick('wig', 'Welche Perücke trägt Lady Luma?'), pick('dress', 'Und welches Kleid?'), pick('jewel', 'Dazu?'),
+      LP('luma', () => `${String(s.flags.luma_dress)}, ${String(s.flags.luma_wig)}, ${String(s.flags.luma_jewel)}. Hallo, Lady Luma.`));
+  }
+  c.card(`Rückblende · Kapitel ${ch.n}`, ch.title, 'Ich bin das Licht – Leons Geschichte').then(() => {
+    if (ch.show) { c.say([...lines, LP('velvet', 'Bühne frei für Lady Luma! Spiel den Buchsong – jeder Treffer bringt Licht.')], () => { s.flags.lichtShow = true; c.dance(); }); return; }
+    if (ch.end) {
+      const e = () => lichtEnding(lichtLight(s));
+      c.say([...lines, LP('', () => `Ende: „${e().title}“ – ${e().text}`), LP('leon', 'Und jetzt bin ich hier, in Rainbow City. Mit dir.')], () => {
+        next(); s.flags.lichtEnd = e().id; c.reward(0, 10, '„Ich bin das Licht“ zu Ende erlebt');
+        c.card('Ich bin das Licht', e().title, e().text);
+      });
+      return;
+    }
+    c.say(lines, () => { if (ch.studio) addLight(s, 6); next(); });
+  });
 }

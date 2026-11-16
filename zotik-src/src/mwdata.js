@@ -813,7 +813,7 @@ export const WORLDS = [
       [54, -34, 'Automat: RicoLife 3D', 'Spielen', { go: '../ricolife/', t: 'RicoLife 3D', who: 'Spielhallenwart Pixel', txt: 'RicoLife 3D: Dein Leben. Deine Regeln.' }],
       [54, -22, 'Automat: Royal Radio Match 3D', 'Spielen', { go: '../anmacha-radio-match/', t: 'Royal Radio Match 3D', who: 'Spielhallenwart Pixel', txt: 'Royal Radio Match 3D: Drei gleiche Radios in eine Reihe, hundert Level lang.' }],
       [-46, -104, 'Buch: Leuchtfeuer', 'Lesen und spielen', { go: '../leuchtfeuer/', t: 'Leuchtfeuer – Das Spiel zum Roman', who: 'Turmwärterin Lumen', txt: 'Leuchtfeuer, der Jugendroman. Zu diesem Buch gibt es ein eigenes Spiel.' }],
-      [-34, -108, 'Buch: Ich bin das Licht', 'Lesen und spielen', { go: '../ich-bin-das-licht/', t: 'Ich bin das Licht – Das Spiel zum Roman', who: 'Turmwärterin Lumen', txt: 'Ich bin das Licht, die Neuauflage von Glamour in meinen Adern. Auch dazu gibt es ein Spiel.' }]
+      [-34, -108, 'Buch: Ich bin das Licht', 'Lesen und spielen', { go: '../pride-city/', t: 'Pride City – Ich bin das Licht', who: 'Turmwärterin Lumen', txt: 'Ich bin das Licht, die Neuauflage von Glamour in meinen Adern. Leon erzählt seine Geschichte jetzt in Pride City, an der One Love Bar – dort kannst du auch den ganzen Roman lesen.' }]
     ],
     intro: [L('Erzähler', 'Die Nautilux landet auf einer Insel, die summt. Antennen auf jedem Dach, Lautsprecher in den Bäumen, und über allem ragt ein Sendeturm mit dreizehn leuchtenden Ringen.'), L('Erzähler', 'Doch die Ringe flackern. Zwischen den Liedern liegt ein Rauschen, das immer lauter wird – als hätte der Riss hier ein Loch in die Luft gerissen.'), L('Zotik', 'Hier klingt alles. Selbst die Steine. Nur leider durcheinander.')],
     ms: [

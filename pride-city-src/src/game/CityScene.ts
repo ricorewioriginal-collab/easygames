@@ -150,6 +150,7 @@ export class CityScene implements GameScene {
       enterHome: (after) => g.enterHome(after),
       barShift: (done) => g.barShift(done),
       credits: () => g.ending(),
+      card: (k, t, x) => g.chapterCard(k, t, x),
     };
   }
 
@@ -234,6 +235,9 @@ export class CityScene implements GameScene {
     if (this.near.id === 'home') { this.g.enterHome(); return; }
     this.g.placeMenu(this.near.id);
   }
+
+  /** Gespräch mit einer Story-Figur starten (z. B. aus einem Ortsmenü) */
+  talkTo(id: string) { const c = this.ctx(); talk(c, id); }
 
   /* ---------- Autofahren: einsteigen, Stick/WASD lenkt, Turbo gibt Gas, A steigt aus ---------- */
   private toggleCar(id: string) {

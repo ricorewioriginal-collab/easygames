@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "d6e78cae41be",
- "generated": "2026-11-16T03:12:39+00:00",
- "commit": "488f7112f38f0007f3dc67e2c88e116c2c23b6d0",
+ "version": "1fa1df37a1f5",
+ "generated": "2026-11-16T04:39:39+01:00",
+ "commit": "f0cddd924366997e32eb1a1bfd6b6e76254328fb",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9363,8 +9363,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3254,
-   "h": "bfa7bb2284791fe19366f3d76e4c0abd226dc51f6ebd20aaca18cc0114852141"
+   "s": 3224,
+   "h": "0ad729d4767e3bff77bfa469c98ec205e8e0ee8e4a2653966ceb71b88308aeae"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -9438,8 +9438,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 25257,
-   "h": "8b2b540dbf0b42e234426f25dc935121cd14540e938de251c0f4405736c7fd57"
+   "s": 25236,
+   "h": "2b5f7bf28f28494fcd6f93ff3026bf50f302e48b2fb2e2d3946a29d889059cc4"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -10258,8 +10258,8 @@
   },
   {
    "p": "games.js",
-   "s": 55595,
-   "h": "2a2aeba1869c93fd106c7f956c0f22cbc7e905f7192e3ec53cf22e873d09dd3b"
+   "s": 54984,
+   "h": "37d438038fd9fda09ed62e0cdc67bda6db2e64a4a82b808da83a5e65e6f4d7a7"
   },
   {
    "p": "gay-life/card.jpg",
@@ -10563,8 +10563,8 @@
   },
   {
    "p": "guides.js",
-   "s": 172550,
-   "h": "12eb516830de6bbe7999ef15adf7995846f1b712a96a94843e532733d38673e4"
+   "s": 171111,
+   "h": "b2269c0d5c41d42c60885c5c5a29cda86c4ddc903adb45835c2bd8434103bbcc"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10812,11 +10812,6 @@
    "h": "d8671109ce7c587c8b6c2c629196d945980e2044435474190b2302cd206bc55f"
   },
   {
-   "p": "guides/ich-bin-das-licht.json",
-   "s": 7471,
-   "h": "9131e8704bfbba89ad5764daaba1d850db86243b4fa05bd566d7a0645dc84083"
-  },
-  {
    "p": "guides/kiko-sterneninseln.json",
    "s": 13055,
    "h": "3908a24d5979a200d39e371817f768343aa2c5dcb408b00bf5e4bb7112316f64"
@@ -10878,8 +10873,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 18997,
-   "h": "92bb1a276c14d90d6db0a9f86a833c07ce3184ac6746c506ff5e8c34966e31a4"
+   "s": 20836,
+   "h": "181c6a76cd3f870b679413efa6d217d206958eb086fa8611adfe075ceb1fea66"
   },
   {
    "p": "guides/prismrush.json",
@@ -11095,61 +11090,6 @@
    "p": "huepfstrasse/sw.js",
    "s": 2015,
    "h": "95db3d0a9895b13baaeb5fd390c8e29f8451cb7b16be206295aefe9959865115"
-  },
-  {
-   "p": "ich-bin-das-licht/book.json",
-   "s": 260026,
-   "h": "3aec94f4d68aa6d713b5997dc3fb36251b10707463fc6c9d6ea9007a37b43e37"
-  },
-  {
-   "p": "ich-bin-das-licht/card.jpg",
-   "s": 108945,
-   "h": "72a8dcb1059043e088a52378885b351989e167d7231664bcba065ab910d53a84"
-  },
-  {
-   "p": "ich-bin-das-licht/img/cover.jpg",
-   "s": 296655,
-   "h": "655ebe3741a05b46275322c534d1fb98f0d837e820146f5bb92049d4e8e06c7c"
-  },
-  {
-   "p": "ich-bin-das-licht/img/poster.jpg",
-   "s": 428508,
-   "h": "1de5fa00cc6b4ba634e9731ea3c6ee3c0db6429462e917c2d4aa54cace3cd2f9"
-  },
-  {
-   "p": "ich-bin-das-licht/index.html",
-   "s": 15009,
-   "h": "c681102ddb263fe430cb4c1f6cf9d1c0a98e49b59dd5995aa9fee0d5f741a4c2"
-  },
-  {
-   "p": "ich-bin-das-licht/js/app.js",
-   "s": 35295,
-   "h": "4c58a0bcf019d5d9c92df5c6abf03160b6bdb0d0b4dcbb506ba63e12052e09f9"
-  },
-  {
-   "p": "ich-bin-das-licht/js/core.js",
-   "s": 19714,
-   "h": "59b497ad910491cc021e172cc1a4917f9a9494dd1bbf11b414d0d994849e4576"
-  },
-  {
-   "p": "ich-bin-das-licht/js/world.js",
-   "s": 91360,
-   "h": "75cd15621d6c50a0d51f8d0080a1214c0fe5ed7d7d44c86d134aff9e888f3811"
-  },
-  {
-   "p": "ich-bin-das-licht/manifest.webmanifest",
-   "s": 812,
-   "h": "91ae10cd97f0182f145a1c580ef619cdf2c0bb5edd81a988d59e6fb9b017f606"
-  },
-  {
-   "p": "ich-bin-das-licht/style.css",
-   "s": 18376,
-   "h": "c274ba320e2f1c3421d502a6d67eca76ccccbd15df054277ccfcf362c6ad09f0"
-  },
-  {
-   "p": "ich-bin-das-licht/sw.js",
-   "s": 2025,
-   "h": "35bac83864c89c5d0263c8d2e95c0cc9ddc0637c024a72012568cc0a018f00d4"
   },
   {
    "p": "impressum.html",
@@ -12902,14 +12842,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
-   "p": "pride-city/assets/index-DURpZlue.css",
-   "s": 20428,
-   "h": "bd50eb757f81e2848857b6856149664f545acdfe2e22e1ab8f658afc679b2c83"
+   "p": "pride-city/assets/index-CFTtRB04.css",
+   "s": 21641,
+   "h": "eb30b81bb3722bf2fd8fbf4fdee31521ccc4c4ce9915f8161f43cbc70c5a4cd0"
   },
   {
-   "p": "pride-city/assets/index-DtuRIUeu.js",
-   "s": 254344,
-   "h": "20fb732502df8982531cb010cf62788ca28051bc15034d0ffa7f4a34fe0d6656"
+   "p": "pride-city/assets/index-dEFebIHe.js",
+   "s": 270606,
+   "h": "dc35130cb559ad20f6f2b0ea6f84d3c2d75f1ee0534570303135b1fe1736d62a"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -13012,6 +12952,16 @@
    "h": "f9305db592e81f1ec03c31e870dc7475b29be3f2946b1dc68770124edab0efe2"
   },
   {
+   "p": "pride-city/book/cover.jpg",
+   "s": 296655,
+   "h": "655ebe3741a05b46275322c534d1fb98f0d837e820146f5bb92049d4e8e06c7c"
+  },
+  {
+   "p": "pride-city/book/ich-bin-das-licht.json",
+   "s": 260026,
+   "h": "3aec94f4d68aa6d713b5997dc3fb36251b10707463fc6c9d6ea9007a37b43e37"
+  },
+  {
    "p": "pride-city/card.jpg",
    "s": 44060,
    "h": "d499242933be43a14eef116e16d51ec620401681023bb362d8007057c930b313"
@@ -13019,7 +12969,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5731,
-   "h": "6a00d6df0a6d2ab658d09229ae177ca5da71d7d72ddbe36c4a33bfef20bea2b0"
+   "h": "a072a831c0a6ba5e6e7db538591e6227a76e33633da9bffa77a065b7e015de86"
   },
   {
    "p": "pride-city/logo.svg",
@@ -15403,8 +15353,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 249803,
-   "h": "a6f68708feb3e35c4d8f0252d99f91905b673b67342e0f985a4ead390d85a2e4"
+   "s": 247508,
+   "h": "f0867f49bb7f07cae7caf9b572db173c3014e9a5cc63c8d1c27085ea1bcf81b8"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -16452,11 +16402,6 @@
    "h": "72c4990a6e09e1051d54c05aa1d1b08f346bfafc432941b6427537d3599ef391"
   },
   {
-   "p": "thumbs/ich-bin-das-licht.webp",
-   "s": 73692,
-   "h": "d5938791af45f95e7b5967c0d96f75ed9e4bc13b3f6268ad0e80c43a35887d4f"
-  },
-  {
    "p": "thumbs/klavierlicht.webp",
    "s": 9212,
    "h": "c7c79cf8894fb239b4f05b8914a61b4479d4fda6ec8de28bcefca65ffd8689e1"
@@ -16553,8 +16498,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2184,
-   "h": "38161e95ea868ae9ef81f0fca389054420d1e6135c87c1cee5b656dfdf01d6f8"
+   "s": 2151,
+   "h": "9fc4e1889579cadbf5840390da037ddca23bb54265286aa662d19c30191fc387"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
@@ -70913,8 +70858,8 @@
   },
   {
    "p": "zotik/assets/index-EbQVLJn0.js",
-   "s": 2147133,
-   "h": "775c7524abf2a42839c66b65f20635758ec84b2b6a7a5fb58a679fa164b5171f"
+   "s": 2147208,
+   "h": "494dfc012f687daf38c034f60e2db8178f8996ade2185b3ad7151afe513326a6"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",

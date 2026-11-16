@@ -27,7 +27,7 @@ const BILD = process.argv[2] === 'bild', fs = require('fs');
   // Echte Spiele: Rückfrage, dann Wechsel (Navigation wird abgefangen)
   const exits = await p.evaluate(() => __zotik.INT.filter(q => /^(Automat|Buch|Portal):/.test(q.name)).map(q => q.name));
   ok('Portal, 5 Automaten, 2 Lesepulte', exits.length === 8 && exits.includes('Portal: Show Me Your Voice'), exits.join(', '));
-  const tgt = {}; for (const f of ['show-me-your-voice', 'ricopoly', 'rico-flap', 'ricolife', 'anmacha-radio-match', 'leuchtfeuer', 'ich-bin-das-licht']) tgt[f] = fs.existsSync(__dirname + '/../../' + f + '/index.html');
+  const tgt = {}; for (const f of ['show-me-your-voice', 'ricopoly', 'rico-flap', 'ricolife', 'anmacha-radio-match', 'leuchtfeuer', 'pride-city']) tgt[f] = fs.existsSync(__dirname + '/../../' + f + '/index.html');
   ok('alle Zielspiele vorhanden', Object.values(tgt).every(Boolean), JSON.stringify(tgt));
   await p.route('**/show-me-your-voice/**', rt => rt.fulfill({ status: 200, contentType: 'text/html', body: '<title>SMYV</title>ok' }));
   await go(-66, -70, Math.PI); await shot('portal', [0, .12, 7]);

@@ -132,8 +132,9 @@ html[data-input=touch] #touch.on { display: block; }
   #touch .stick { width: 120px; height: 120px; bottom: calc(28px + var(--safe-b)); }
   #hud .prompt { bottom: calc(170px + var(--safe-b)); }
   .screen { flex-direction: column; padding-bottom: calc(24px + var(--safe-b)); }
-  .screen.title { background: linear-gradient(0deg, rgba(9,6,20,.92) 0%, rgba(9,6,20,.6) 55%, rgba(9,6,20,.1) 100%); justify-content: flex-end; }
-  .screen .col { width: 100%; justify-content: flex-end; }
+  .screen.title { background: linear-gradient(0deg, rgba(9,6,20,.92) 0%, rgba(9,6,20,.6) 55%, rgba(9,6,20,.1) 100%); justify-content: safe flex-end; }
+  .screen .col { width: 100%; justify-content: safe flex-end; flex-shrink: 0; }
+  .screen .side { flex-shrink: 0; align-self: stretch; }
   .screen .col .logo { font-size: clamp(38px, 12vw, 64px); }
   .side { width: 100%; margin: 0; }
   .ver { display: none; }
@@ -277,3 +278,22 @@ html[data-input=touch] #dialog { bottom: calc(112px + var(--safe-b)); width: min
 @media (max-width: 560px) { .barPanel .menu { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .barPanel .menu .mi b { font-size: 14px; }
 .barPanel .menu .mi .ic { margin-right: 6px; }
+
+/* Menüs: HUD, Marker und Hinweise ausblenden, lange Menüs scrollen statt überlappen */
+body:has(#ui .screen) #hud :is(.stats, .menuBtn, .markers, .prompt) { visibility: hidden; }
+body:has(#ui .screen) #touch { visibility: hidden; }
+.screen { overflow-y: auto; overscroll-behavior: contain; }
+@media (max-height: 480px) and (orientation: landscape) {
+  .screen { align-items: flex-start; }
+  .screen .col { justify-content: safe center; min-height: 100%; flex-shrink: 0; }
+  .screen .side { align-self: flex-start; max-height: calc(100dvh - 24px); overflow-y: auto; width: min(380px, 44vw); }
+}
+body:has(#hud:not(.hidden)) .screen.title { background: rgba(9,6,20,.8); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); }
+@media (max-height: 480px) and (orientation: landscape) { .screen { padding-bottom: 46px; } }
+@media (orientation: portrait) { .screen { padding-bottom: calc(52px + var(--safe-b)); } }
+/* Roman im Handy */
+.phoneBox.book .pbody.read { max-height: min(52dvh, 520px); overflow-y: auto; line-height: 1.55; font-size: 15px; }
+.phoneBox.book .pbody.read p { margin: 0 0 .7em; }
+.phoneBox.book .pbody.read .lab { color: var(--mu); font-size: 12px; text-transform: uppercase; letter-spacing: .12em; margin: 0; }
+.phoneBox.book .pbody.read .sep { text-align: center; color: var(--mu); }
+.phoneBox.book .cover { width: 120px; float: right; margin: 0 0 8px 10px; border-radius: 8px; }
