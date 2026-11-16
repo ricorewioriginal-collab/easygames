@@ -1,5 +1,5 @@
 // Test der TikTok-Steuerung im Stream-Overlay (stream-tiktok.js + tools/tiktok-bridge.mjs) mit simulierten LIVE-Ereignissen.
-//   NODE_PATH=$(npm root -g) node tools/test-stream-tiktok.cjs [Screenshot-Ordner]
+//   NODE_PATH=$(npm root -g) node tools/test-stream-tiktok.cjs [Screenshot-Ordner]      (TT_BRIDGE=py: mit tools/tiktok-bridge.py)
 const path = require('path'), fs = require('fs'), http = require('http'), os = require('os');
 const { spawn } = require('child_process');
 const { chromium } = require('playwright');
@@ -16,10 +16,14 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   }).listen(0, '127.0.0.1');
   await new Promise(r => srv.once('listening', r));
   const port = 21300 + Math.floor(Math.random() * 500), cfgFile = path.join(os.tmpdir(), 'eg-tiktok-test-' + port + '.json');
-  const bridge = spawn(process.execPath, [path.join(__dirname, 'tiktok-bridge.mjs'), '--test', '--port', String(port), '--config', cfgFile], { stdio: 'ignore' });
-  await sleep(600);
+  // TT_BRIDGE=py: dieselben Prüfungen mit der Python-Brücke (tools/tiktok-bridge.py, TikTokLive)
+  const PY = process.env.TT_BRIDGE === 'py';
+  const bridge = spawn(PY ? 'python3' : process.execPath, [path.join(__dirname, PY ? 'tiktok-bridge.py' : 'tiktok-bridge.mjs'), '--test', '--port', String(port), '--config', cfgFile], { stdio: 'ignore' });
+  await sleep(PY ? 1200 : 600);
   const inject = ev => new Promise((res, rej) => { const w = new WebSocket('ws://127.0.0.1:' + port); w.onopen = () => { w.send(JSON.stringify({ type: 'inject', ev })); setTimeout(() => { w.close(); res(); }, 100); }; w.onerror = rej; });
   const b = await chromium.launch();
+  // Geschenkeliste mit Bildern (tiktok-gifts.json) aus dem Checkout statt von der Homepage
+  const newCtx = b.newContext.bind(b); b.newContext = async o => { const c = await newCtx(o); await c.route('**/easygames/tiktok-gifts.json*', r => r.fulfill({ path: path.join(ROOT, 'tiktok-gifts.json'), contentType: 'application/json' })); return c; };
   const base = 'http://127.0.0.1:' + srv.address().port + '/stream.html?game=deluxe-2048&tiktok=ws://127.0.0.1:' + port;
   try {
     // Einstellungen: Geschenk „Galaxy“ = Neustart nur für 2048, dazu Rose = rechts; speichern geht an die Brücke
@@ -30,6 +34,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     await s.click('[data-add="g"]');
     const last = s.locator('#ttGifts tr').last();
     await last.locator('[data-k="icon"]').fill('🌹'); await last.locator('[data-k="gift"]').fill('Perfume'); await last.locator('[data-k="action"]').fill('pad:RIGHT'); await last.locator('[data-k="label"]').fill('nach rechts');
+    await s.waitForFunction(() => /Alle TikTok-Geschenke mit Bildern/.test(document.querySelector('#ttGiftSrc').textContent));
+    ok(await s.evaluate(() => document.querySelectorAll('[data-gift] img[src*="tiktokcdn.com"]').length >= 100), 'Geschenke-Auswahl mit echten TikTok-Bildern (' + await s.evaluate(() => document.querySelectorAll('[data-gift] img').length) + ')');
     await s.click('[data-gift="Money Gun"]'); await s.click('[data-troll="invert:10"]');
     ok(await s.evaluate(() => { const r = [...document.querySelectorAll('#ttGifts tr')]; return r.some(x => x.querySelector('[data-k="gift"]').value === 'Money Gun' && x.querySelector('[data-k="action"]').value === 'invert:10'); }), 'Geschenk aus der Liste antippen, Streich zuweisen');
     if (SHOTS) { await s.evaluate(() => document.querySelector('#ttTrolls').scrollIntoView()); await s.screenshot({ path: path.join(SHOTS, 'tiktok-einstellungen.png') }); }
