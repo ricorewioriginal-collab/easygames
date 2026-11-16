@@ -83,6 +83,7 @@ und in den Apps.
 - Die App legt um jedes Spiel: Controller-Belegung der App (gilt in allen Spielen), Ton sofort, **Home-Taste** = zurück in die Bibliothek,
   **Aufnahme** (F9 Clip der letzten 30 s, F8/F10 Aufnahme starten/stoppen; Export MP4 16:9, MP4 9:16, GIF), TikTok-LIVE-Steuerung,
   Konto/Erfolge/Ranglisten als eigene Fenster. Das Spiel muss dafür nichts tun.
+- **Eigene TikTok-Aktionen** (optional, z. B. „Geldregen“ per Geschenk mit eigener Animation): `<spiel>/tiktok.js` mit `window.EasyGamesStream` – Anleitung [TIKTOK-SPIELE.md](TIKTOK-SPIELE.md).
 - Änderungen an der App selbst brauchen einen neuen Build auf dem Server (`ricorewi-radio-windows-build`); Spiel-Änderungen nicht.
 
 **RicoReWi Radio App (Android) und Portal** (Quellen: RicoReWi-Radio-Repo, `android/`, `android-app/`)

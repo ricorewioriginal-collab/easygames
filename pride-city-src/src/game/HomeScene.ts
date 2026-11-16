@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import type { GameScene } from '../engine/Engine';
 import { instance, preload } from '../engine/Assets';
-import { Actor } from './Actor';
+import { Actor, playerLook } from './Actor';
 import type { Game } from './Game';
 import { hints, toast } from '../ui/ui';
 import { advance, DAY_SEC } from './life';
@@ -118,7 +118,7 @@ export class HomeScene implements GameScene {
 
     this.buildMess();
     const s = this.g.save.data;
-    this.player = await Actor.create({ body: s.body, palette: s.palette, skin: s.skin, cape: !!s.flags.cape, hat: !!s.flags.hat });
+    this.player = await Actor.create(playerLook(s));
     r.add(this.player.root);
   }
 
@@ -150,7 +150,7 @@ export class HomeScene implements GameScene {
     const s = this.g.save.data;
     if (this.player.look.body === s.body) return;
     this.root.remove(this.player.root);
-    this.player = await Actor.create({ body: s.body, palette: s.palette, skin: s.skin, cape: !!s.flags.cape, hat: !!s.flags.hat });
+    this.player = await Actor.create(playerLook(s));
     this.root.add(this.player.root);
   }
 
@@ -159,7 +159,7 @@ export class HomeScene implements GameScene {
     this.player.root.position.set(1.9, 0, 3.6);
     this.player.root.rotation.y = Math.PI;
     const s = this.g.save.data;
-    this.player.setLook({ palette: s.palette, skin: s.skin, cape: !!s.flags.cape, hat: !!s.flags.hat });
+    this.player.setLook(playerLook(s));
     this.g.hud.show(true); this.g.touch.show(true);
     this.g.city.refreshHud();
     hints([['move', 'Laufen'], ['a', 'Benutzen'], ['x', 'Handy'], ['y', 'Menü']]);

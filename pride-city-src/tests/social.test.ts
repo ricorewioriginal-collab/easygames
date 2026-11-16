@@ -41,3 +41,20 @@ describe('Beziehungen und Gesundheit', () => {
     expect(bond(85)).toBe('Wahlfamilie');
   });
 });
+
+import { playerLook } from '../src/game/Actor';
+import { profileShots } from '../src/game/social';
+describe('Outfits und Profilfotos', () => {
+  it('Harness nur mit 18+, Oberteil außer bei er', () => {
+    const s = defaults(); s.flags.outfit = 'harness';
+    expect(playerLook(s).outfit).toBe('clothed');
+    s.settings.adult = true; expect(playerLook(s).outfit).toBe('harness');
+    s.pronouns = 'he'; expect(playerLook(s).top).toBe(false);
+    s.pronouns = 'she'; expect(playerLook(s).top).toBe(true);
+  });
+  it('Profilfotos: zwei ohne, drei mit 18+', () => {
+    expect(profileShots(PROFILES[0], false)).toHaveLength(2);
+    const a = profileShots(PROFILES[0], true);
+    expect(a.map((x) => x.look.outfit)).toEqual(['clothed', 'shirtless', 'underwear']);
+  });
+});
