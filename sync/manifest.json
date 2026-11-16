@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "a6c5c1ae0816",
- "generated": "2026-11-16T00:41:36+00:00",
- "commit": "a1da82e9060d6d7fb2165ec34fbb2212ee231d41",
+ "version": "df7a324d1192",
+ "generated": "2026-11-16T00:56:10+00:00",
+ "commit": "503e556ca74893f7d871551c8884b9487d87219f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3118,8 +3118,8 @@
   },
   {
    "p": "anmacha-markthalle/index.html",
-   "s": 41512,
-   "h": "0ace32fed7458601226f8c3fad1aaeca30f3907fd34d95b6befd7d0e7f7a14e7"
+   "s": 41546,
+   "h": "fb00845182a416c18c0e0ba090e728037dbe1990a2f145c3ee830c89a7ec3561"
   },
   {
    "p": "anmacha-markthalle/logo.svg",
@@ -3150,6 +3150,11 @@
    "p": "anmacha-markthalle/sw.js",
    "s": 1997,
    "h": "c4b392230dab6df9912db3c664c49d56d530d74ac1fc71d321d93a018ffb3043"
+  },
+  {
+   "p": "anmacha-markthalle/tiktok.js",
+   "s": 9562,
+   "h": "29521aba2ede229fd3a2926a41d8ff2658b795da63edc487f6bde57780ad68b5"
   },
   {
    "p": "anmacha-markthalle/view3d.js",
@@ -10633,8 +10638,8 @@
   },
   {
    "p": "guides/anmacha-markthalle.json",
-   "s": 31370,
-   "h": "ee6722c27979e62821395e852dba27f6cbc9e9c355282733656429c563440679"
+   "s": 32967,
+   "h": "41ab3f247e6b2beaa8e871e34a5512ae8c9d028a96d046301dbb60286f63b451"
   },
   {
    "p": "guides/anmacha-memory.json",
@@ -15394,7 +15399,7 @@
   {
    "p": "sync/catalog.json",
    "s": 249422,
-   "h": "60dfb5b39246f439023372e63eb9d4d3e3e6cf666ddb14c5867c835da078b46b"
+   "h": "d62c5b3be725045d9c1ad962b95a1045d928a310b2c6939d57f9d8e643205ca4"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

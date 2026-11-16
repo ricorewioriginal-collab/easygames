@@ -101,6 +101,15 @@
         "Tag, Nacht & Wetter: Die Sonne wandert, abends gehen die Laternen an. Regen, Schnee und Gewitter machen den Boden nass und schmutzig, Nebel und Gewitter halten Kunden zu Hause, Hitze bringt Eis- und Getränkekäufer. Mit dem Spätverkauf bist du bis 22 Uhr offen.",
         "Koop zu zweit: Unter Menü → Optionen „👥 Koop“ einschalten. Der Bildschirm teilt sich. Spieler 2 nimmt einen zweiten Controller (A = Aktion, RB = abstellen, LT = rennen) oder die Tastatur: ↑↓ laufen, ←→ drehen, Enter = Aktion, Strg rechts = abstellen, Shift rechts = rennen. Kasse und Geld sind gemeinsam."
       ]
+    },
+    {
+      "t": "TikTok LIVE: Zuschauer steuern deinen Laden",
+      "p": [
+        "Streamst du mit der easygames Windows-App und ist TikTok LIVE dort verbunden, greifen deine Zuschauer direkt ins Spiel ein: Geschenke, Likes und Chat-Befehle lösen echte Ereignisse im Laden aus. Jede Aktion erscheint groß oben im Bild mit dem Namen des Zuschauers.",
+        "Empfohlene Belegung: 🌹 Rose = der Zuschauer kommt mit seinem Namen als Kunde, 🫰 Finger Heart = 20 € Trinkgeld, 🍩 Doughnut = Tagesangebot, 🫶 Hand Hearts = Gratis-Lieferung, 🎊 Confetti = Kundenansturm, 🐕 Corgi = Testerin, 💸 Money Gun = Geldregen, 🌌 Galaxy = Diebesbande, 🦁 Lion = Stromausfall, 🪐 Universe = Unwetter mit Ansturm. Alle 150 Likes kommt ein Kunde dazu.",
+        "Chat-Befehle: !kaufen (als Kunde in den Laden), !wetter (zufälliges Wetter), !sonne, !regen, !schnee und !werbung. Jeder Befehl und jede Aktion hat eine Abklingzeit, damit der Laden spielbar bleibt; Kunden-Aktionen wirken nur bei offenem Laden.",
+        "Die Zuordnung änderst du in der Windows-App in den TikTok-Einstellungen (Belegung „nur Marktrausch“) – dort stehen alle Marktrausch-Aktionen unter „⭐ Highlights dieses Spiels“."
+      ]
     }
   ],
   "ratgeber": [
@@ -383,6 +392,10 @@
     {
       "q": "Warum liegt Ware mit 🤢 im Regal?",
       "a": "Sie ist abgelaufen. Stell dich davor und drück die Aktion zum Aussortieren. Bleibt sie eine zweite Nacht liegen, sinkt dein Ruf."
+    },
+    {
+      "q": "Kann mein TikTok-LIVE-Publikum mitspielen?",
+      "a": "Ja. In der easygames Windows-App mit verbundenem TikTok LIVE lösen Geschenke, Likes und Chat-Befehle wie !kaufen oder !wetter Ereignisse im Laden aus – Kundenansturm, Lieferung, Wetter, Angebote, Diebe und mehr. Die Belegung stellst du in den TikTok-Einstellungen der App ein."
     }
   ]
 }
