@@ -183,14 +183,15 @@ export function createKayKit({ T, G, TOUCH }) {
   function play(P, n, fade = .2) {
     if (!P.ready) { P.want = n; return; }
     const a = P.act[n]; if (!a || P.cur === n) return;
-    const prev = P.act[P.cur]; a.reset(); a.enabled = true; a.setEffectiveWeight(1); a.play();
-    if (prev && fade > 0) a.crossFadeFrom(prev, fade, false); else if (prev) prev.stop();
+    // alle anderen aktiven Animationen ausblenden – auch eine liegen gebliebene Einmal-Animation (z. B. Death_A nach K.O.)
+    for (const k in P.act) { const b = P.act[k]; if (b !== a && b.isScheduled()) { if (fade > 0) b.fadeOut(fade); else b.stop(); } }
+    a.reset(); a.enabled = true; a.setEffectiveWeight(1); a.play(); if (fade > 0) a.fadeIn(fade);
     P.cur = n;
   }
   /** Daueranimation (Idle/Gehen/Laufen) – eine laufende Einmal-Animation läuft erst zu Ende */
-  function loop(P, n) { P.want = n; if (!P.once) play(P, n); }
+  function loop(P, n) { if (P.down) return; P.want = n; if (!P.once) play(P, n); }
   /** Einmal-Animation (Treffer, Tod, Wurf …) */
-  function once(P, n, fade = .1) { if (!P.act[n] && P.ready) return; P.once = n; P.cur = ''; play(P, n, fade); }
+  function once(P, n, fade = .1) { if (P.down && n !== 'Death_A') return; if (!P.act[n] && P.ready) return; P.once = n; P.cur = ''; play(P, n, fade); }
 
   /* Gegner steuern: Zustand des Gegners → Bewegung, Ausholen per Arm-Schwung über der Animation */
   function drive(P, e, spd) {
@@ -210,7 +211,7 @@ export function createKayKit({ T, G, TOUCH }) {
   function walk(P, mv) { if (P.proc) { P.spd = mv; return; } loop(P, mv > .7 ? 'Running_A' : mv > .05 ? 'Walking_A' : 'Idle_A'); }
 
   /* K.O.: liegen bleiben (Death_A bleibt stehen), beim Aufstehen Spawn_Ground */
-  function ko(P, on) { if (P.proc) { P.dead = on ? (P.dead || 1e-3) : 0; return; }
+  function ko(P, on) { if (P.proc) { P.dead = on ? (P.dead || 1e-3) : 0; return; } P.down = !!on;
     if (on) { if (P.want !== 'Death_A') { P.want = 'Death_A'; if (P.ready) once(P, 'Death_A', .08); } return; }
     if (P.want === 'Death_A') { P.want = 'Idle_A'; P.once = null; P.cur = ''; if (P.ready && P.act.Spawn_Ground) { play(P, 'Spawn_Ground', 0); P.once = 'Spawn_Ground'; } else play(P, 'Idle_A', .1); } }
   const _v = new T.Vector3();

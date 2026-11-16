@@ -19,7 +19,15 @@ export function trackProgress(fn: Progress) {
 export function gltf(path: string): Promise<GLTF> {
   let p = cache.get(path);
   if (!p) {
-    p = loader.loadAsync(BASE + path);
+    p = loader.loadAsync(BASE + path).then((g) => {
+      // KayKit-Texturen sind auf „Nearest“ gestellt – das wirkt am Handy pixelig. Weich filtern mit Mipmaps.
+      g.scene.traverse((o) => {
+        const m = (o as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
+        const t = m?.map; if (!t || t.userData.smooth) return;
+        t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.generateMipmaps = true; t.anisotropy = 4; t.userData.smooth = true; t.needsUpdate = true;
+      });
+      return g;
+    });
     p.catch(() => cache.delete(path));
     cache.set(path, p);
   }

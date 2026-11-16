@@ -58,3 +58,33 @@ describe('Outfits und Profilfotos', () => {
     expect(a.map((x) => x.look.outfit)).toEqual(['clothed', 'shirtless', 'underwear']);
   });
 });
+
+import { WORKERS, FILMS, canMeet, encounter, isLateNight } from '../src/game/social';
+describe('Nachtleben 18+', () => {
+  it('ohne 18+ geht nichts, ohne Kondom auch nicht', () => {
+    const s = defaults();
+    expect(canMeet(s)).toBe('off');
+    s.settings.adult = true;
+    expect(canMeet(s)).toBe('condom');
+    expect(canMeet(s, false)).toBe(null);
+    s.inv.condom = 1;
+    expect(canMeet(s)).toBe(null);
+  });
+  it('Begegnung verbraucht ein Kondom, Reden nicht, und erinnert an den Test', () => {
+    const s = defaults(); s.settings.adult = true; s.inv.condom = 2; s.day = 20;
+    expect(encounter(s, 'talk').remindTest).toBe(true);
+    expect(s.inv.condom).toBe(2);
+    encounter(s, 'room');
+    expect(s.inv.condom).toBe(1);
+    s.health.test = 19;
+    expect(encounter(s, 'cabin').remindTest).toBe(false);
+    expect(s.needs.fun).toBeLessThanOrEqual(100);
+  });
+  it('alle Sexarbeiter*innen sind erwachsen, Filme nur als Text', () => {
+    for (const w of WORKERS) { expect(w.age).toBeGreaterThanOrEqual(18); expect(w.rules.length).toBeGreaterThan(20); }
+    expect(FILMS.length).toBeGreaterThanOrEqual(6);
+  });
+  it('Cruising nur spät nachts', () => {
+    expect(isLateNight(23)).toBe(true); expect(isLateNight(2)).toBe(true); expect(isLateNight(20)).toBe(false); expect(isLateNight(12)).toBe(false);
+  });
+});

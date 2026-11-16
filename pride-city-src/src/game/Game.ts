@@ -15,8 +15,8 @@ import { CHAPTERS, goal, danceResult, NPCS } from './story';
 import { HomeScene } from './HomeScene';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage, level } from './jobs';
 import { photo } from './Photo';
-import { PROFILES, profileShots, profile, dateRec, dateQuestions, finishDate, canStay, DATE_STAGE, testDue, HEALTH_INFO, GLOSSARY, feed, post, bond, TEST_EVERY } from './social';
-import { NEEDS, mood, moodIcon, moodName, change, advance, minutesUntil, track, dailyState, clock, weekday, type Daily } from './life';
+import { PROFILES, profileShots, profile, dateRec, dateQuestions, finishDate, canStay, DATE_STAGE, testDue, HEALTH_INFO, GLOSSARY, feed, post, bond, TEST_EVERY, FILMS, WORKERS, isLateNight, canMeet, encounter } from './social';
+import { NEEDS, mood, moodIcon, moodName, change, advance, minutesUntil, track, dailyState, clock, weekday, hour, type Daily } from './life';
 
 export class Game {
   engine: Engine;
@@ -423,6 +423,92 @@ export class Game {
     }, 2600);
   }
 
+  /* ---------- Nachtleben 18+ (Durchgang 3b): angedeutet, Abblende, Zustimmung und Kondom ---------- */
+  /** Abblende mit kurzer Zeile, danach Zeit vorspulen und weiter */
+  private fadeNight(title: string, tags: string[], minutes: number, kind: Parameters<typeof encounter>[1], after?: () => void) {
+    const s = this.save.data;
+    const b = el(`<div class="night"><p>${esc(title)}</p><small>${tags.map(esc).join(' · ')}</small></div>`);
+    document.body.appendChild(b);
+    setTimeout(() => {
+      this.pass(minutes);
+      const r = encounter(s, kind);
+      this.save.write(); this.city.refreshHud(); b.remove();
+      if (r.remindTest && kind !== 'talk') toast('🩺 Denk an deinen nächsten Test im Checkpoint – anonym und kostenlos.');
+      after?.();
+    }, 2600);
+  }
+  private adultOnly(name: string) {
+    this.dialog.say([{ who: name, color: '#ff6ad5', text: 'Hier kommst du nur rein, wenn „Inhalte ab 18“ in den Optionen eingeschaltet ist.' }]);
+  }
+  /** Videothek: Film leihen (Titel und Cover nur als Text) */
+  private rentFilm() {
+    const s = this.save.data;
+    this.openMenu('<div class="col"><div class="panel"><h3>📼 Videothek Kopfkino</h3><p>Regal „Hinterzimmer“ – nur Titel und Cover-Beschreibungen. 5 € pro Film.</p><div class="slot"></div></div></div>', [
+      ...FILMS.map(([t, c]) => ({ icon: '📼', label: t, sub: c, fn: () => {
+        if (s.money < 5) { toast('Nicht genug Geld.'); sfx('miss'); return; }
+        s.money -= 5; change(s, { fun: 12 }); post(s, 'Du', `Heute Abend: „${t}“. 🍿😏`); sfx('coin'); toast(`„${t}“ ausgeliehen. Viel Spaß! 🍿`);
+        this.save.write(); this.city.refreshHud(); this.closeMenu(); this.touch.show(true);
+      } })),
+      { icon: '←', label: 'Zurück', fn: () => this.placeMenu('kopfkino') },
+    ], () => this.placeMenu('kopfkino'), '');
+  }
+  /** Kabinen: Klopfzeichen als Zustimmung, Kondom Pflicht */
+  private cabin() {
+    const s = this.save.data, V = (text: string, choices?: Array<{ label: string; fn: () => void }>) => ({ who: 'Kabine 3', color: '#ff3b6b', text, choices });
+    if (s.money < 3) { toast('Nicht genug Geld.'); sfx('miss'); return; }
+    s.money -= 3; this.closeMenu(); this.city.refreshHud();
+    this.dialog.say([V('Gedimmtes Licht, leise Musik. In der Wand ein rundes Loch mit Gummirand. Nebenan bewegt sich jemand.', [
+      { label: 'Zweimal klopfen – das heißt hier „Lust?“', fn: () => setTimeout(() => {
+        if (Math.random() < .3) { this.dialog.say([V('Keine Antwort. Ein Nein ist ein Nein – du lässt es gut sein.')]); return; }
+        if (canMeet(s) === 'condom') { this.dialog.say([V('Zwei Klopfer zurück: Ja! … aber du hast kein Kondom dabei.'), V('Am Automaten neben der Kasse gibt es welche für 1 €.')]); return; }
+        this.dialog.say([V('Zwei Klopfer zurück: Ja! 😏')], () => this.fadeNight('🚪 Kabine 3 …', ['Klopfzeichen: Ja ✔︎', 'Kondom ✔︎', s.health.prep ? 'PrEP ✔︎' : ''].filter(Boolean), 25, 'cabin'));
+      }, 50) },
+      { label: 'Nur gucken und wieder gehen', fn: () => {} },
+    ])]);
+  }
+  /** Laufhaus: selbstbestimmte Sexarbeiter*innen, Absprache vorab, Haus stellt Kondome */
+  private rosa() {
+    this.openMenu('<div class="col"><div class="panel"><h3>🏮 Haus Rosa</h3><p>Hier mieten selbstbestimmte erwachsene Sexarbeiter*innen ihre eigenen Zimmer. An der Tür: Respekt, Kondompflicht, Nein heißt Nein.</p><div class="slot"></div></div></div>', [
+      ...WORKERS.map((w) => ({ icon: '🚪', label: `${w.name}, ${w.age} (${w.pron})`, sub: `${w.offer} · ${w.price} € / Stunde`, fn: () => this.booking(w.id) })),
+      { icon: 'ℹ️', label: 'Sexarbeit ist Arbeit', sub: 'Rechte, Beratung, Respekt', fn: () => { this.closeMenu(); this.touch.show(true); this.dialog.say([
+        { who: 'Haus Rosa', color: '#ff6ad5', text: 'Alle hier sind volljährig, angemeldet und arbeiten auf eigene Rechnung. Sie entscheiden selbst, mit wem und wie.' },
+        { who: 'Haus Rosa', color: '#ff6ad5', text: 'Wer Hilfe braucht oder aussteigen will: Das Regenbogenhaus berät anonym und vermittelt an Fachstellen für Sexarbeit.' },
+        { who: 'Haus Rosa', color: '#ff6ad5', text: 'Kund*innen-Regeln: vorher fragen, Grenzen respektieren, Kondom immer – und Trinkgeld ist willkommen. 💜' }]); } },
+      { icon: '←', label: 'Zurück', fn: () => this.placeMenu('rosa') },
+    ], () => this.placeMenu('rosa'), '');
+  }
+  private booking(id: string) {
+    const s = this.save.data, w = WORKERS.find((x) => x.id === id)!;
+    const W = (text: string, choices?: Array<{ label: string; fn: () => void }>) => ({ who: w.name, color: w.color, text, choices });
+    this.closeMenu(); this.touch.show(true);
+    this.dialog.say([W(`Hi, ich bin ${w.name}. Schön, dass du da bist.`), W(w.rules), W(`Eine Stunde kostet ${w.price} €. Was möchtest du?`, [
+      { label: `Einverstanden – eine Stunde (${w.price} €)`, fn: () => setTimeout(() => {
+        if (s.money < w.price) { this.dialog.say([W('Das reicht leider nicht. Komm gern wieder, wenn es passt. 😊')]); return; }
+        s.money -= w.price; s.inv.condom = (s.inv.condom || 0) + 1; // das Haus stellt Kondome
+        this.fadeNight(`🏮 Bei ${w.name} …`, ['Absprache ✔︎', 'Zustimmung ✔︎', 'Kondom vom Haus ✔︎'], 60, 'room', () => this.dialog.say([W(['Danke dir. Pass auf dich auf! 💜', 'Komm gut nach Hause. Und trink Wasser. 😉', 'War schön mit dir. Bis zum nächsten Mal?'][s.day % 3])]));
+      }, 50) },
+      { label: `Nur reden und Tee trinken (${Math.round(w.price / 2)} €)`, fn: () => setTimeout(() => {
+        const c = Math.round(w.price / 2);
+        if (s.money < c) { this.dialog.say([W('Das reicht leider nicht. Komm gern wieder.')]); return; }
+        s.money -= c; this.fadeNight(`🫖 Tee mit ${w.name}`, ['Zuhören ✔︎', 'Lachen ✔︎'], 45, 'talk', () => this.dialog.say([W('Manchmal ist reden das Schönste. Danke für das Gespräch. 💜')]));
+      }, 50) },
+      { label: 'Doch nicht, danke', fn: () => setTimeout(() => this.dialog.say([W('Kein Problem. Einen schönen Abend dir!')]), 50) },
+    ])]);
+  }
+  /** Cruising im Park: nur spät nachts, Blickkontakt und Nicken als Zustimmung */
+  private cruising() {
+    const s = this.save.data, Q = (text: string, choices?: Array<{ label: string; fn: () => void }>) => ({ who: 'Im Gebüsch', color: '#3ee69a', text, choices });
+    this.closeMenu(); this.touch.show(true);
+    if (Math.random() < .25) { this.dialog.say([Q('Heute ist nichts los. Nur ein Igel raschelt im Laub. 🦔')]); this.pass(20); return; }
+    this.dialog.say([Q('Im Schatten der Bäume steht jemand. Ein Blick, ein Lächeln, ein Nicken in Richtung der Büsche.', [
+      { label: 'Zurücknicken und mitgehen', fn: () => setTimeout(() => {
+        if (canMeet(s) === 'condom') { this.dialog.say([Q('„Hast du ein Gummi?“ – Hast du nicht. „Dann ein andermal.“ Er zwinkert und verschwindet.')]); return; }
+        this.fadeNight('🌙 Zwischen den Büschen …', ['Nicken: Ja ✔︎', 'Kondom ✔︎', s.health.prep ? 'PrEP ✔︎' : ''].filter(Boolean), 30, 'cruising', () => this.dialog.say([{ who: 'Du', color: '#ff4fa3', text: 'Die Verpackung kommt in den Mülleimer. Wir sind ja nicht die anderen. 😅' }]));
+      }, 50) },
+      { label: 'Freundlich den Kopf schütteln und weitergehen', fn: () => setTimeout(() => this.dialog.say([Q('Er nickt verständnisvoll. Kein Ding.')]), 50) },
+    ])]);
+  }
+
   private drawMap() {
     const c = document.getElementById('pmap') as HTMLCanvasElement | null; if (!c) return;
     const x = c.getContext('2d')!, k = 300 / 130, P = (v: number) => (v + 65) * k;
@@ -561,6 +647,18 @@ export class Game {
         { icon: '🎈', label: 'Gratis Kondome', sub: '3 Stück, einmal am Tag', fn: () => { if (s.flags.freeCondoms === s.day) { toast('Für heute hast du schon welche.'); return; } s.flags.freeCondoms = s.day; s.inv.condom = (s.inv.condom || 0) + 3; toast('Drei Kondome eingesteckt. 🎈'); sfx('coin'); close(); } },
         { icon: 'ℹ️', label: 'Infos: U=U, PrEP, PEP, Safer Sex', fn: () => { close(); this.dialog.say(HEALTH_INFO.map(([t, x]) => ({ who: t, color: '#3ee69a', text: x }))); } }] },
       studio: { t: 'Studio Klappe Auf', d: 'Fotostudio für Pässe, Paare und Pride-Plakate.', items: [] },
+      kopfkino: { t: 'Videothek Kopfkino', d: s.settings.adult ? 'Neonlicht, Samtvorhang und ein Regal für Erwachsene. Hinten die Kabinen.' : 'Filme für jeden Geschmack. Der hintere Bereich ist nur ab 18.', items: s.settings.adult ? [
+        { icon: '📼', label: 'Film ausleihen', sub: '5 € · Titel und Cover nur als Text', fn: () => this.rentFilm() },
+        { icon: '🚪', label: 'Kabinen', sub: '3 € · Klopfzeichen gilt als Frage, Antwort abwarten', fn: () => this.cabin() },
+        { icon: '🎈', label: 'Kondomautomat', sub: `1 € · du hast ${s.inv.condom || 0}`, fn: buy(1, 'Klack – ein Kondom. 🎈', () => { s.inv.condom = (s.inv.condom || 0) + 1; }) }] : [
+        { icon: '🎬', label: 'Komödie ausleihen', sub: '3 € · +10 Spaß', fn: buy(3, 'Popcorn-Abend! 🍿', eat({ fun: 10 })) },
+        { icon: '🔞', label: 'Hinterer Bereich', sub: 'nur mit „Inhalte ab 18“', fn: () => { close(); this.adultOnly('Videothek Kopfkino'); } }] },
+      rosa: { t: 'Haus Rosa', d: s.settings.adult ? 'Rotes Licht, freundliche Türsteherin. Sexarbeit ist Arbeit – hier mit Respekt.' : 'Ein Haus mit rotem Licht. Nur für Erwachsene.', items: s.settings.adult ? [
+        { icon: '🏮', label: 'Eintreten', sub: 'Wer arbeitet heute?', fn: () => this.rosa() }] : [
+        { icon: '🔞', label: 'Eintreten', sub: 'nur mit „Inhalte ab 18“', fn: () => { close(); this.adultOnly('Haus Rosa'); } }] },
+      park: { t: 'Regenbogenpark', d: 'Bäume, Wasserturm und Bänke. Nachts hat der Park ein zweites Leben.', items: [
+        { icon: '🚶', label: 'Spazieren gehen', sub: '30 Minuten · +8 Spaß, +5 Energie', fn: () => { close(); this.fade(() => { this.pass(30); change(s, { fun: 8, energy: 5 }); this.save.write(); toast('Frische Luft tut gut. 🌳'); }); } },
+        ...(s.settings.adult ? [{ icon: '🌙', label: 'Cruising', sub: isLateNight(hour(s)) ? 'Blicke, Nicken, Büsche – nur mit Zustimmung und Kondom' : 'erst ab 22 Uhr', disabled: !isLateNight(hour(s)), fn: () => this.cruising() }] : [])] },
       tram: { t: 'Tram Rainbow City', d: 'Für 2 € in zehn Minuten an jeden Ort. Weitere Viertel folgen.', items: [
         { icon: '🗺️', label: 'Fahrplan', sub: 'Ziel wählen', fn: () => this.phone('map') }] },
     };

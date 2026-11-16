@@ -1,7 +1,7 @@
 /* Stadt-Szene: Rainbow City zum Herumlaufen (Spielmodus) und als Kulisse fürs Titelmenü (Kameraflug, tanzende Leute). */
 import * as THREE from 'three';
 import type { GameScene } from '../engine/Engine';
-import { Actor, playerLook } from './Actor';
+import { Actor, streetLook, playerLook } from './Actor';
 import { World } from './World';
 import { NPCS, goal, talk, poi as storyPoi, type NpcDef, type StoryCtx } from './story';
 import type { Game } from './Game';
@@ -40,7 +40,7 @@ export class CityScene implements GameScene {
     this.world = new World(this.root);
     await this.world.build();
     const s = this.g.save.data;
-    this.player = await Actor.create(playerLook(s));
+    this.player = await Actor.create(streetLook(playerLook(s)));
     this.root.add(this.player.root);
     await Promise.all(NPCS.map(async (d) => {
       const a = await Actor.create(d.look);
@@ -98,7 +98,7 @@ export class CityScene implements GameScene {
     const s = this.g.save.data;
     this.mode = 'play';
     this.player.root.visible = true;
-    this.player.setLook(playerLook(s));
+    this.player.setLook(streetLook(playerLook(s)));
     this.player.root.position.set(s.pos.x, .1, s.pos.z);
     this.player.root.rotation.y = s.pos.yaw;
     this.cam.yaw = this.cam.tYaw = s.pos.yaw + Math.PI;
@@ -115,7 +115,7 @@ export class CityScene implements GameScene {
     const s = this.g.save.data;
     if (this.player.look.body === s.body) return;
     this.root.remove(this.player.root);
-    this.player = await Actor.create(playerLook(s));
+    this.player = await Actor.create(streetLook(playerLook(s)));
     this.root.add(this.player.root);
   }
 
@@ -142,6 +142,7 @@ export class CityScene implements GameScene {
   refreshHud() {
     if (this.mode !== 'play' && this.g.where !== 'home') return;
     const s = this.g.save.data, gl = goal(s);
+    this.world.traces.visible = s.settings.adult;
     if (this.g.where === 'home') this.g.hud.goal('Zuhause', 'Deine Wohnung', s.chapter === 1 && s.step === 2 ? 'Schau dich um.' : `Ziel: ${gl.title}`);
     else this.g.hud.goal(s.chapter === 1 ? 'Kapitel 1 · Ankommen' : 'Rainbow City', gl.title, gl.sub);
     const days = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
@@ -217,7 +218,16 @@ export class CityScene implements GameScene {
       tgt.x + Math.sin(this.cam.yaw) * Math.cos(this.cam.pitch) * this.cam.dist,
       tgt.y + Math.sin(this.cam.pitch) * this.cam.dist,
       tgt.z + Math.cos(this.cam.yaw) * Math.cos(this.cam.pitch) * this.cam.dist);
-    if (snap) this.camPos.copy(want); else this.camPos.lerp(want, Math.min(1, dt * 8));
+    // Kamera-Kollision: nicht in Häusern oder Autos stecken, sondern davor heranrücken
+    const dir = want.clone().sub(tgt), cars = this.world.cars;
+    let f = 1;
+    for (let i = 1; i <= 14 && f === 1; i++) {
+      const u = i / 14, x = tgt.x + dir.x * u, y = tgt.y + dir.y * u, z = tgt.z + dir.z * u;
+      if (y < 7 && this.world.colliders.some((c) => Math.abs(x - c.x) < c.hx + .35 && Math.abs(z - c.z) < c.hz + .35)) f = Math.max(.18, (i - 1) / 14);
+      else if (y < 2.2 && cars.some((c) => Math.hypot(x - c.o.position.x, z - c.o.position.z) < 1.7)) f = Math.max(.18, (i - 1) / 14);
+    }
+    if (f < 1) want.copy(tgt).addScaledVector(dir, f);
+    if (snap || f < 1) this.camPos.lerp(want, snap ? 1 : Math.min(1, dt * 20)); else this.camPos.lerp(want, Math.min(1, dt * 8));
     this.camera.position.copy(this.camPos);
     this.camera.lookAt(tgt);
   }

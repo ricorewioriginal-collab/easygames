@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "a34796977c25",
- "generated": "2026-11-16T02:40:20+00:00",
- "commit": "0eb164072959cbfcbd28acd18aea29852ed8c1b0",
+ "version": "e07676cca2f9",
+ "generated": "2026-11-16T03:08:38+00:00",
+ "commit": "1b0d4b64b0ae176b33c4b1613f62182a99c1400b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10878,8 +10878,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 11614,
-   "h": "2d138e23091b72057de65ce843f32acedf9c2e6e447dce1c78c368743ed2acd2"
+   "s": 13556,
+   "h": "9274b0031a916144f201b77bc62db2aa1c15b0d5e37289e93997116232cc5ac8"
   },
   {
    "p": "guides/prismrush.json",
@@ -12902,14 +12902,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
-   "p": "pride-city/assets/index-CPwdCgYS.css",
-   "s": 18610,
-   "h": "e33b70b80fc98e4b6a3dd6d3178fd9171466fb96123f3a796badc3252dd3a708"
+   "p": "pride-city/assets/index-D50-7iT2.css",
+   "s": 19425,
+   "h": "fc62d6e4f49141e5b34376ad1b8900daf9571919bf985a7939fe24fdbc61961a"
   },
   {
-   "p": "pride-city/assets/index-CX-amoXg.js",
-   "s": 202667,
-   "h": "8c377a66bf46f457ea4fc4ceb158971965e5d7a8411ba323284bec802f8bc86c"
+   "p": "pride-city/assets/index-okKRF_Mu.js",
+   "s": 217589,
+   "h": "76949c8a8479c282459e161a25d8573372c2ccfc0c5f5177c0d25afece04be1e"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -13007,9 +13007,9 @@
    "h": "97a4e8c5e93b5c4f68b25e5240f308aa81ff4ae487b750e62f13e02c338d73e8"
   },
   {
-   "p": "pride-city/assets/three-BOUIKzsg.js",
-   "s": 578941,
-   "h": "ea98f361c917425c4d478a9c3d4c1bd17440c675a17819a5454ca38db2b32446"
+   "p": "pride-city/assets/three-BLiWhtlZ.js",
+   "s": 578950,
+   "h": "3b5efaafd7c252a21f0a53fa454e18ba2b364dd8453964f0c8cee4e4394355f0"
   },
   {
    "p": "pride-city/card.jpg",
@@ -13019,7 +13019,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5731,
-   "h": "9742319bd900ccee14f6a07a1a66fe989723e5a9b3bdd9f14e62a74b67e3b362"
+   "h": "df53268e2bbe45efdb94644e88d2f9e467d580d1a61669e1d1dd6d163199fdfb"
   },
   {
    "p": "pride-city/logo.svg",
@@ -15404,7 +15404,7 @@
   {
    "p": "sync/catalog.json",
    "s": 249421,
-   "h": "2a62a83edaaaa74c7f320352c285cb79ceb0eac23fe8cb6f716a917c527b2a19"
+   "h": "9cd5f63f32d99f01d26e9c1275c5dce754e6a4b964beffa93a45370f752470a4"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -70912,9 +70912,9 @@
    "h": "9e629369f7a54ab0b5ef047ea685f1a41154903e478869c95eca8a5590cc4681"
   },
   {
-   "p": "zotik/assets/index-BvewIVKC.js",
-   "s": 2147037,
-   "h": "b0a86a441a3ec4666cc7fba9b8b8fc25be4d94b28f0dc98f8299fa1d53df7e5f"
+   "p": "zotik/assets/index-EbQVLJn0.js",
+   "s": 2147133,
+   "h": "775c7524abf2a42839c66b65f20635758ec84b2b6a7a5fb58a679fa164b5171f"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -70934,7 +70934,7 @@
   {
    "p": "zotik/index.html",
    "s": 78317,
-   "h": "c0963160bab5c4ea7c6fd7b247c2c7a71fe7569e1caff97abcc5cdf857798ce5"
+   "h": "d2dd66fa491d894cca275b1a056516eb5387f3ecb71ce294db153b80e430505f"
   },
   {
    "p": "zotik/manifest.webmanifest",
