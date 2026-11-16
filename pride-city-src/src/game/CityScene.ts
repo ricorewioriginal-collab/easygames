@@ -154,6 +154,7 @@ export class CityScene implements GameScene {
       barShift: (done) => g.barShift(done),
       credits: () => g.ending(),
       card: (k, t, x) => g.chapterCard(k, t, x),
+      roman: (id) => g.roman(id),
     };
   }
 

@@ -620,7 +620,7 @@ export const LF_CHAPTERS: LfChapter[] = [
 
 export const LF_PEOPLE: Record<string, { name: string; color: string; pron?: string }> = {
   finn: { name: 'Finn', color: '#f2b544', pron: 'er/ihn' }, ben: { name: 'Ben', color: '#2f8f5a', pron: 'er/ihn' }, lotte: { name: 'Lotte', color: '#ee7a1f' }, pia: { name: 'Pia', color: '#d54a6e' },
-  joerg: { name: 'Jörg Albrecht', color: '#8fa0aa' }, marek: { name: 'Marek Kowalski', color: '#9a7444' }, mehmet: { name: 'Mehmet', color: '#c98b4a' }, tobi: { name: 'Tobi', color: '#c9a26a' },
+  joerg: { name: 'Jörg Albrecht', color: '#8fa0aa' }, marek: { name: 'Marek Kowalski', color: '#9a7444' }, mehmet: { name: 'Mehmet', color: '#c98b4a' }, tobi: { name: 'Tobi', color: '#c9a26a' }, samira: { name: 'Samira', color: '#1e6fb6' }, anke: { name: 'Anke Albrecht', color: '#9c5066' },
 };
 
 export const LF_START = 8;

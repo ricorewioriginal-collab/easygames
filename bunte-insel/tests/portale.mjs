@@ -11,7 +11,7 @@ const ok = (c, m) => { console.log(c ? 'OK  ' : 'FAIL', m); if (!c) fails++; };
 await p.goto(BASE + '/bunte-insel/index.html'); await p.waitForFunction(() => window.__bi, null, { timeout: 90000 }); await p.click('#bStart'); await p.waitForTimeout(800);
 await p.evaluate(() => { window.__nav = []; BI.portalNav = u => window.__nav.push(u); });
 const games = await p.evaluate(() => __bi.portale.dbg.list.map(q => q.D.game));
-ok(games.join() === 'gay-life,aeru,anmacha-podcast-tycoon,anmacha-markthalle', 'vier Spiel-Portale gebaut: ' + games.join());
+ok(games.join() === 'pride-city,aeru,anmacha-podcast-tycoon,anmacha-markthalle', 'vier Spiel-Portale gebaut: ' + games.join());
 const go = async (game) => {
   const r = await p.evaluate(async g => {
     const b = __bi, P = b.P, sl = ms => new Promise(r => setTimeout(r, ms)); let n;
@@ -23,7 +23,7 @@ const go = async (game) => {
   }, game);
   return r;
 };
-for (const g of ['taschi', 'gay-life', 'aeru', 'anmacha-podcast-tycoon', 'anmacha-markthalle']) {
+for (const g of ['taschi', 'pride-city', 'aeru', 'anmacha-podcast-tycoon', 'anmacha-markthalle']) {
   const r = await go(g); ok(r.near && r.visible, g + ': Portal erkannt, Rückfrage sichtbar obenauf');
   if (!r.visible) continue;
   await p.mouse.click(r.x, r.y); await p.waitForFunction(() => window.__nav.length > 0, null, { timeout: 5000 }).catch(() => { });

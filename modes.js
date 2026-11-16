@@ -51,7 +51,6 @@ window.EASYGAMES_MODES = {
   'klavierlicht': { pad: true, online: true },
   'groove-arena': { pad: true, online: true, multi: true, tvParam: true },
   'darts-arena': { pad: true, multi: true },
-  'gay-life': { online: true },
   'show-me-your-voice': { online: true },
   'bunte-insel': { online: true, pad: true, multi: true, tvParam: true },
   'zeitsprung': { pad: true, online: true },
