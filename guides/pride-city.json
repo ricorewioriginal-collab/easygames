@@ -29,7 +29,7 @@
    "t": "In der Stadt",
    "list": [
     "Oben links steht dein aktuelles Ziel, ein Stern über Figuren oder Orten zeigt, wohin es geht.",
-    "Oben rechts: Wochentag und Uhrzeit, Geld und Ruf.",
+    "Oben rechts: Wochentag und Uhrzeit, Geld, Stimmung und fünf kleine Balken für deine Bedürfnisse (rot = dringend).",
     "Gehst du nah an eine Figur oder Tür, erscheint ein Hinweis; mit der Aktionstaste sprichst du oder gehst hinein.",
     "Ein Spieltag dauert etwa 16 Minuten. Nachts leuchten Neon-Schilder und Laternen, auf dem Platz wird getanzt.",
     "Autos halten an, wenn du vor ihnen stehst."
@@ -38,12 +38,52 @@
   {
    "t": "Orte",
    "list": [
-    "Café Kaffeeklatsch: Cappuccino und Regenbogenkuchen bei Mo.",
-    "Deine Wohnung: Schlafen bis 8 Uhr (speichert) und Kleiderschrank.",
-    "Regenbogenhaus: Treffpunkt der Szene, hier kannst du spenden.",
-    "Club Prisma: Tanz-Battle gegen Rex.",
-    "Späti Lecker: Snacks bei Bruno.",
+    "Café Kaffeeklatsch: Cappuccino (+Energie) und Regenbogenkuchen bei Mo, mit Gästen plaudern.",
+    "Deine Wohnung: begehbar, mit Bett, Dusche, Herd, Kühlschrank, Fernseher und Kleiderschrank.",
+    "Regenbogenhaus: Treffpunkt der Szene, Spenden und Job als Eventmanager*in.",
+    "Club Prisma: Tanz-Battle, Drinks an der Bar, ab 20 Uhr Job als DJ.",
+    "Späti Lecker: Brezel, Mate und Lebensmittel zum Kochen.",
+    "Boutique Fabelhaft: Job im Verkauf und neuer Look.",
+    "Muckibude Muskelkater: Training, Duschen und Job als Fitnesstrainer*in.",
+    "Studio Klappe Auf: Job als Fotograf*in.",
+    "Tram: für 2 € in zehn Minuten an jeden Ort.",
     "Pride Plaza mit Brunnen, Flaggen aller Communitys und Bühne, dazu der Regenbogenpark."
+   ]
+  },
+  {
+   "t": "Alltag und Bedürfnisse",
+   "p": [
+    "Wie in Gay Life! hast du fünf Bedürfnisse: Energie, Satt, Frisch, Kontakte und Spaß. Sie sinken mit der Zeit, im Schlaf erholt sich die Energie. Aus allen fünf ergibt sich deine Stimmung; gute Stimmung bringt bis zu 15 % mehr Lohn, schlechte bis zu 20 % weniger.",
+    "Bei niedrigen Werten gibt das Spiel einen Tipp. Energie unter 10 heißt: kein Sprinten mehr."
+   ]
+  },
+  {
+   "t": "Wohnung",
+   "list": [
+    "Bett: Schlafen bis 7 Uhr (Energie voll, speichert) oder Nickerchen.",
+    "Dusche: Frisch auf 100.",
+    "Herd: kochen, braucht Lebensmittel aus dem Späti (+50 Satt).",
+    "Fernseher: +25 Spaß.",
+    "Kleiderschrank: Look ändern.",
+    "Tür: zurück in die Stadt."
+   ]
+  },
+  {
+   "t": "Jobs",
+   "p": [
+    "Fünf Jobs aus Gay Life!: Verkäufer*in (Boutique, 10–20 Uhr), Fitnesstrainer*in (Muckibude, 8–21 Uhr), Fotograf*in (Studio, 10–20 Uhr), DJ (Club Prisma, 20–2 Uhr) und Eventmanager*in (Regenbogenhaus, 10–18 Uhr).",
+    "Eine Schicht dauert vier Stunden und besteht aus drei Situationen mit je drei Antworten. Die beste Antwort bringt 2 Punkte. Lohn = 4 × Stundenlohn + Punkte-Bonus, mal Stimmung. Mit Erfahrung wirst du befördert (vier Stufen, je +25 % Lohn). Höchstens zwei Schichten am Tag."
+   ]
+  },
+  {
+   "t": "Handy",
+   "list": [
+    "Öffnen mit P, dem 📱-Knopf am Touchscreen oder X am Controller (M bzw. Select öffnet direkt die Karte).",
+    "Status: Bedürfnisse, Stimmung, Geld, Ruf, Glitzer.",
+    "Ziele: Kapitelziel, drei Tagesziele mit Glitzer-Belohnung, Sammelstand.",
+    "Karte & Tram: alle Orte, mit der Tram hinfahren.",
+    "Jobs: alle Jobs mit Stufe, Lohn und Öffnungszeit, Ort markieren.",
+    "Kontakte: Leute, mit denen du gesprochen hast, und eure Freundschaft."
    ]
   },
   {
@@ -89,6 +129,16 @@
    "list": [
     "Nova öffnet den Club erst um 21 Uhr – vor der Tür kannst du einfach warten.",
     "Wer im Battle auf Zurück drückt, gibt auf; du kannst Rex danach jederzeit erneut herausfordern."
+   ]
+  },
+  {
+   "t": "Alltag meistern",
+   "list": [
+    "Morgens duschen und Kaffee bei Mo, dann eine Schicht: so startet die Stimmung hoch.",
+    "Lebensmittel im Späti sind günstiger als Essen im Café: 6 € für drei Portionen.",
+    "Rede jeden Tag mit Leuten – das füllt Kontakte und Freundschaft, beides nur einmal pro Person und Tag.",
+    "Die Tagesziele wechseln jeden Tag und bringen Glitzer.",
+    "Schlaf vor Mitternacht, sonst bist du am nächsten Tag zu müde für zwei Schichten."
    ]
   }
  ],

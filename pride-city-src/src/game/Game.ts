@@ -11,7 +11,10 @@ import { CreatorScene } from './CreatorScene';
 import { DanceScene } from './minigames/DanceScene';
 import { World } from './World';
 import { BODIES } from './palettes';
-import { CHAPTERS, goal, danceResult } from './story';
+import { CHAPTERS, goal, danceResult, NPCS } from './story';
+import { HomeScene } from './HomeScene';
+import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage, level } from './jobs';
+import { NEEDS, mood, moodIcon, moodName, change, advance, minutesUntil, track, dailyState, clock, weekday, type Daily } from './life';
 
 export class Game {
   engine: Engine;
@@ -22,6 +25,8 @@ export class Game {
   touch: Touch;
   city!: CityScene;
   menuOpen = false;
+  home: HomeScene | null = null;
+  where: 'city' | 'home' = 'city';
   private overlay: HTMLElement | null = null;
   private menu: Menu | null = null;
 
@@ -41,7 +46,8 @@ export class Game {
       if (this.dialog.open) this.dialog.update(dt, inp);
       else if (this.menu) this.menu.handle(inp);
     });
-    this.hud.onPrompt = () => this.city?.interact();
+    this.hud.onPrompt = () => (this.where === 'home' ? this.engine.input.tap('confirm') : this.city?.interact());
+    this.hud.onPhone = () => { if (!this.menuOpen) this.phone(); };
     this.hud.onMenu = () => this.pauseMenu();
     addEventListener('visibilitychange', () => { if (document.hidden) this.save.write(); });
   }
@@ -60,7 +66,7 @@ export class Game {
     this.loading.progress(1, 'Bereit');
     setTimeout(() => this.loading.hide(), 250);
     const q = new URLSearchParams(location.search);
-    if (q.has('play') && s.started) { this.city.setPlay(); return; }
+    if (q.has('play') && s.started) { if (s.inside) this.enterHome(); else this.city.setPlay(); return; }
     this.title();
   }
 
@@ -131,10 +137,10 @@ export class Game {
       this.save.data.started = true; this.save.write();
       this.fade(async () => {
         await this.city.rebuildPlayer();
-        if (fromGame) { this.engine.setScene(this.city); this.city.setPlay(); return; }
+        if (fromGame) { this.resume(); return; }
         this.loadChapter();
       });
-    }, () => this.fade(() => (fromGame ? (this.engine.setScene(this.city), this.city.setPlay()) : this.title())));
+    }, () => this.fade(() => (fromGame ? this.resume() : this.title())));
     this.engine.setScene(sc);
   }
 
@@ -160,7 +166,149 @@ export class Game {
 
   play() {
     this.closeMenu();
+    if (this.save.data.inside) { this.enterHome(); return; }
     this.fade(() => { this.engine.setScene(this.city); this.city.setPlay(); });
+  }
+
+  /** Zurück dorthin, wo man war (Stadt oder Wohnung) */
+  resume() {
+    if (this.where === 'home' && this.home) { this.engine.setScene(this.home); return; }
+    this.engine.setScene(this.city); this.city.setPlay();
+  }
+
+  /* ---------- Wohnung ---------- */
+  enterHome(after?: () => void) {
+    const go = async () => {
+      if (!this.home) { this.home = new HomeScene(this); await this.home.build(); }
+      await this.home.syncPlayer();
+      this.where = 'home'; this.save.data.inside = true;
+      this.home.setSky(this.city.world.night);
+      this.engine.setScene(this.home);
+      after?.();
+    };
+    this.closeMenu();
+    this.fade(() => { go(); });
+  }
+  leaveHome() {
+    const s = this.save.data;
+    this.fade(() => { this.where = 'city'; s.inside = false; s.pos = { x: 3.6, z: 40, yaw: Math.PI / 2 }; this.engine.setScene(this.city); this.city.setPlay(); this.save.write(); });
+  }
+  /** Zeit vergeht durch eine Tätigkeit (Wohnung, Job, Tram) */
+  pass(min: number, sleeping = false) {
+    const s = this.save.data, days = advance(s, min, sleeping);
+    this.city.world.setTime(s.time); this.home?.setSky(this.city.world.night);
+    if (days) toast(`${weekday(s)}, Tag ${s.day}.`);
+    this.city.refreshHud();
+  }
+  done(list: Daily[]) { for (const d of list) { toast(`✅ Tagesziel: ${d.text} · +${d.glitter} Glitzer${d.money ? ' · +' + d.money + ' €' : ''}`); sfx('win'); } }
+  homeAction(id: string) {
+    const s = this.save.data, h = this.home!;
+    const busy = (kind: HomeScene['activity'], min: number, fx: () => void, msg: string) => { h.play(kind); setTimeout(() => { this.pass(min); fx(); toast(msg); this.save.write(); this.city.refreshHud(); }, 900); };
+    if (id === 'door') { this.leaveHome(); return; }
+    if (id === 'wardrobe') { this.fade(() => this.creator(true)); return; }
+    if (id === 'shower') { busy('shower', 20, () => { change(s, { hygiene: 100, fun: 3 }); this.done(track(s, 'shower')); }, 'Frisch geduscht! 🚿'); return; }
+    if (id === 'tv') { busy('tv', 60, () => { change(s, { fun: 25, energy: -2 }); }, 'Eine Folge „Drag Race“. Herrlich. 📺'); return; }
+    if (id === 'stove') {
+      if (s.food <= 0) { toast('Keine Lebensmittel. Im Späti Lecker gibt es welche.'); sfx('miss'); return; }
+      busy('stove', 45, () => { s.food--; change(s, { hunger: 50, fun: 5 }); this.done(track(s, 'eat')); }, `Lecker gekocht! Noch ${s.food - 1 < 0 ? 0 : s.food} Portionen übrig.`); return;
+    }
+    if (id === 'fridge') { toast(s.food ? `Im Kühlschrank: ${s.food} Portionen zum Kochen.` : 'Der Kühlschrank ist leer.'); return; }
+    if (id === 'bed') {
+      const back = () => { this.closeMenu(); this.touch.show(true); };
+      this.touch.show(false);
+      this.openMenu(`<div class="col"><div class="panel"><h3>Bett</h3><p>Es ist ${clock(s)} Uhr. Schlafen speichert das Spiel.</p><div class="slot"></div></div></div>`, [
+        { icon: '🌙', label: 'Schlafen bis 7 Uhr', sub: 'Energie voll, neuer Tag', fn: () => { back(); this.fade(() => { this.pass(minutesUntil(s, 7), true); change(s, { energy: 100 }); this.save.write(); toast(`Guten Morgen! ${weekday(s)}, Tag ${s.day}.`); }); } },
+        { icon: '💤', label: 'Nickerchen (2 Stunden)', sub: '+25 Energie', fn: () => { back(); this.fade(() => { this.pass(120, true); this.save.write(); toast('Ausgeruht.'); }); } },
+        { icon: '←', label: 'Zurück', fn: back },
+      ], back, '');
+    }
+  }
+
+  /* ---------- Jobs ---------- */
+  runShift(jobId: string) {
+    const s = this.save.data, j = JOBS.find((x) => x.id === jobId)!;
+    const why = blocked(s, j);
+    this.closeMenu(); this.touch.show(true);
+    if (why) { toast(why); sfx('miss'); return; }
+    let pts = 0;
+    const sc = situations(s, j);
+    this.dialog.say(sc.map(([q, opts], i) => ({ who: `${j.place} · ${i + 1}/3`, color: '#7b5cff', text: q,
+      choices: opts.map(([label, p]) => ({ label, fn: () => { pts += p; sfx(p === 2 ? 'coin' : p === 1 ? 'move' : 'miss'); } })) })), () => {
+      this.fade(() => {
+        this.pass(240);
+        const r = finish(s, j, pts);
+        this.done(track(s, 'work'));
+        toast(`Schicht als ${j.name} beendet: +${r.pay} € (${pts}/6 Punkte)`);
+        if (r.promoted) { toast(`🎉 Befördert: ${r.promoted}!`); sfx('win'); }
+        sfx('coin'); this.save.write(); this.city.refreshHud();
+      });
+    });
+  }
+
+  /* ---------- Handy ---------- */
+  phone(app = '') {
+    if (this.dialog.open) return;
+    const s = this.save.data;
+    this.touch.show(false);
+    const close = () => { this.closeMenu(); this.touch.show(true); };
+    const home = () => this.phone();
+    const frame = (title: string, body: string) => `<div class="phoneBox"><div class="ph"><span>${clock(s)}</span><b>${title}</b><span>${moodIcon(mood(s))} ${s.money} €</span></div>${body}<div class="slot"></div></div>`;
+    if (!app) {
+      const d = dailyState(s), open = d.filter((x) => !x.done).length;
+      this.openMenu(frame('Handy', ''), [
+        { icon: '❤️', label: 'Status', sub: `Stimmung: ${moodName(mood(s))}`, fn: () => this.phone('status') },
+        { icon: '🎯', label: 'Ziele', sub: open ? `${open} Tagesziele offen` : 'Alle Tagesziele erledigt', fn: () => this.phone('goals') },
+        { icon: '🗺️', label: 'Karte & Tram', sub: 'Orte, Ziel markieren, hinfahren', fn: () => this.phone('map') },
+        { icon: '💼', label: 'Jobs', sub: `${JOBS.length} Jobs in der Stadt`, fn: () => this.phone('jobs') },
+        { icon: '👥', label: 'Kontakte', sub: `${Object.keys(s.rel).length} Leute kennengelernt`, fn: () => this.phone('contacts') },
+        { icon: '←', label: 'Handy weglegen', fn: close },
+      ], close, 'phone');
+    } else if (app === 'status') {
+      const bars = NEEDS.map((n) => `<div class="nd"><span>${n.icon} ${n.name}</span><i><b style="width:${Math.round(s.needs[n.k])}%;background:${s.needs[n.k] < 25 ? '#ff5d6c' : s.needs[n.k] < 50 ? '#ffc53d' : '#3ee69a'}"></b></i><small>${n.tip}</small></div>`).join('');
+      this.openMenu(frame('Status', `<div class="pbody"><p><b>${moodIcon(mood(s))} ${moodName(mood(s))}</b> · ${weekday(s)}, Tag ${s.day} · ${clock(s)} Uhr</p>${bars}<p>💶 ${s.money} € · 🌈 ${s.rep} Ruf · ✨ ${s.glitter} Glitzer · 🥕 ${s.food} Portionen</p></div>`),
+        [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'goals') {
+      const g = goal(s), d = dailyState(s), st = s.goals.filter((x) => x.startsWith('sticker')).length;
+      this.openMenu(frame('Ziele', `<div class="pbody"><p><b>⭐ ${g.title}</b><br>${g.sub || ''}</p><h4>Heute</h4>${d.map((x) => `<p>${x.done ? '✅' : '⬜'} ${x.text} (${x.have}/${x.n}) · +${x.glitter} ✨</p>`).join('')}<h4>Sammeln</h4><p>🌈 Pride-Sticker ${st}/8 · 🪩 Tanz-Rekord ${s.best.dance || 0}</p></div>`),
+        [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'jobs') {
+      this.openMenu(frame('Jobs', '<div class="pbody"><p>Wähle einen Job, um ihn auf der Karte zu markieren. Arbeiten kannst du vor Ort.</p></div>'),
+        [...JOBS.map((j) => ({ icon: '💼', label: `${j.name} · ${jobTitle(s, j)}`, sub: `${j.place} · ${j.from}–${j.to} Uhr · ${wage(s, j)} €/h · Stufe ${level(s, j.id) + 1}`, fn: () => { s.pin = j.poi; toast(`${j.place} auf der Karte markiert.`); close(); } })),
+          { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'contacts') {
+      const met = NPCS.filter((n) => s.rel[n.id]);
+      this.openMenu(frame('Kontakte', `<div class="pbody">${met.length ? met.map((n) => { const f = Number(s.rel[n.id].f) || 0; return `<p><b style="color:${n.color}">●</b> <b>${n.name}</b> <small>(${n.pron})</small><br>${'❤️'.repeat(Math.min(5, Math.ceil(f / 20)))}${'🤍'.repeat(5 - Math.min(5, Math.ceil(f / 20)))} ${f >= 80 ? 'eng befreundet' : f >= 50 ? 'befreundet' : f >= 20 ? 'bekannt' : 'neu'}</p>`; }).join('') : '<p>Noch niemand. Sprich Leute in der Stadt an!</p>'}</div>`),
+        [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'map') {
+      const pois = this.city.world.pois.filter((p) => p.id !== 'tram');
+      this.openMenu(frame('Karte', `<div class="pbody"><canvas id="pmap" width="300" height="300"></canvas><p>Tram: 2 €, 10 Minuten. Oder Ziel markieren und hinlaufen.</p></div>`),
+        [...pois.map((p) => ({ icon: p.icon, label: p.name, sub: s.pin === p.id ? '⭐ markiert · A: mit der Tram hinfahren' : 'A: mit der Tram hinfahren',
+          fn: () => { if (s.money < 2) { toast('Nicht genug Geld für die Tram.'); return; } s.money -= 2; s.pin = ''; close(); this.travel(p.x, p.z); } })),
+          { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+      this.drawMap();
+      if (this.menu) this.menu.onMove = () => this.drawMap();
+    }
+    hints([['dpad', 'Wählen'], ['a', 'Bestätigen'], ['b', 'Zurück']]);
+  }
+  private drawMap() {
+    const c = document.getElementById('pmap') as HTMLCanvasElement | null; if (!c) return;
+    const x = c.getContext('2d')!, k = 300 / 130, P = (v: number) => (v + 65) * k;
+    x.fillStyle = '#5c9a52'; x.fillRect(0, 0, 300, 300);
+    x.fillStyle = '#3a3f55';
+    for (let i = -6; i <= 6; i += 3) { x.fillRect(P(i * 10 - 5), 0, 10 * k, 300); x.fillRect(0, P(i * 10 - 5), 300, 10 * k); }
+    const sel = this.menu?.items[this.menu.index]?.label;
+    for (const p of this.city.world.pois) {
+      x.font = (p.name === sel ? 26 : 18) + 'px system-ui'; x.textAlign = 'center'; x.textBaseline = 'middle';
+      if (p.name === sel) { x.fillStyle = 'rgba(255,79,163,.55)'; x.beginPath(); x.arc(P(p.x), P(p.z), 16, 0, 7); x.fill(); }
+      x.fillText(p.icon, P(p.x), P(p.z));
+    }
+    const pl = this.city.player.root.position;
+    x.fillStyle = '#fff'; x.strokeStyle = '#ff4fa3'; x.lineWidth = 3; x.beginPath(); x.arc(P(pl.x), P(pl.z), 6, 0, 7); x.fill(); x.stroke();
+  }
+  travel(x: number, z: number) {
+    const s = this.save.data;
+    const go = () => { this.where = 'city'; s.inside = false; s.pos = { x: x > 0 ? x - 2.2 : x + 2.2, z, yaw: x > 0 ? Math.PI / 2 : -Math.PI / 2 }; this.pass(10); this.done(track(s, 'tram')); this.engine.setScene(this.city); this.city.setPlay(); toast('🚋 Angekommen.'); };
+    this.fade(go);
   }
 
   /* ---------- Pausenmenü ---------- */
@@ -175,11 +323,12 @@ export class Game {
       <div class="side panel"><h3>${s.chapter === 1 ? 'Kapitel 1 · Ankommen' : 'Freies Spiel'}</h3><p><b style="color:#fff">${gl.title}</b><br>${gl.sub || ''}</p>
       <p>🌈 Pride-Sticker: ${stickers}/${STICKERS.length} · 🪩 Tanz-Rekord: ${s.best.dance || 0}<br>✨ Glitzer: ${s.glitter} · 💶 ${s.money} € · Ruf ${s.rep}</p></div>`, [
       { icon: '▶', label: 'Weiterspielen', fn: back },
+      { icon: '📱', label: 'Handy', sub: 'Status, Ziele, Karte, Jobs, Kontakte', fn: () => this.phone() },
       { icon: '📖', label: 'Story', sub: 'Kapitel und Entscheidungen', fn: () => this.storyMenu(() => { this.closeMenu(); this.pauseMenu(); }) },
       { icon: '👗', label: 'Kleiderschrank', sub: 'Look, Farbwelt, Pronomen', fn: () => this.fade(() => this.creator(true)) },
       { icon: '⚙️', label: 'Optionen', fn: () => this.options(() => { this.closeMenu(); this.pauseMenu(); }) },
       { icon: '💾', label: 'Speichern', fn: () => { this.save.write(); toast('Gespeichert.'); } },
-      { icon: '🏠', label: 'Titelbildschirm', sub: 'Speichert automatisch', fn: () => { this.save.write(); this.closeMenu(); this.fade(() => this.title()); } },
+      { icon: '🏠', label: 'Titelbildschirm', sub: 'Speichert automatisch', fn: () => { this.save.write(); this.closeMenu(); this.where = 'city'; this.fade(() => this.title()); } },
     ], back);
     hints([['dpad', 'Wählen'], ['a', 'Bestätigen'], ['b', 'Zurück']]);
   }
@@ -229,7 +378,7 @@ export class Game {
   credits() {
     this.openMenu(`<div class="col"><div class="panel" style="max-height:70dvh;overflow:auto"><h3>Mitwirkende</h3>
       <p><b style="color:#fff">Pride City</b> – Relaunch von Gay Life! für easygames.</p>
-      <p>Figuren und Stadt-Bausteine: <b style="color:#fff">KayKit</b> von Kay Lousberg (Character Pack: Adventurers, City Builder Bits) – CC0 1.0. In Pride-Farben umgefärbt.</p>
+      <p>Figuren und Stadt-Bausteine: <b style="color:#fff">KayKit</b> von Kay Lousberg (Character Pack: Adventurers, City Builder Bits, Furniture Bits, Restaurant Bits) – CC0 1.0. In Pride-Farben umgefärbt.</p>
       <p>3D: three.js (MIT). Musik und Klänge werden live im Spiel erzeugt.</p>
       <p>Alle Figuren sind erwachsen und frei erfunden. Zustimmung zählt.</p><div class="slot"></div></div></div>`,
     [{ icon: '←', label: 'Zurück', fn: () => this.title() }], () => this.title());
@@ -239,22 +388,34 @@ export class Game {
     const s = this.save.data;
     const close = () => { this.closeMenu(); this.touch.show(true); };
     const buy = (cost: number, msg: string, fx: () => void) => () => { if (s.money < cost) { toast('Nicht genug Geld.'); sfx('miss'); return; } s.money -= cost; fx(); toast(msg); sfx('coin'); this.city.refreshHud(); close(); };
+    const eat = (fx: Parameters<typeof change>[1], goal?: string) => () => { change(s, fx); if (goal) this.done(track(s, goal)); };
     const P: Record<string, { t: string; d: string; items: Item[] }> = {
       cafe: { t: 'Café Kaffeeklatsch', d: 'Mo macht den besten Hafer-Cappuccino der Stadt.', items: [
-        { icon: '☕', label: 'Cappuccino', sub: '3 € · +1 Ruf beim ersten Mal am Tag', fn: buy(3, 'Lecker! Mo zwinkert dir zu.', () => { if (s.flags.coffee !== s.day) { s.rep++; s.flags.coffee = s.day; } }) },
-        { icon: '🍰', label: 'Regenbogenkuchen', sub: '5 €', fn: buy(5, 'Sechs Schichten Glück.', () => {}) }] },
+        { icon: '☕', label: 'Cappuccino', sub: '3 € · +12 Energie · +1 Ruf beim ersten Mal am Tag', fn: buy(3, 'Lecker! Mo zwinkert dir zu.', () => { eat({ energy: 12, fun: 2 }, 'coffee')(); if (s.flags.coffee !== s.day) { s.rep++; s.flags.coffee = s.day; } }) },
+        { icon: '🍰', label: 'Regenbogenkuchen', sub: '5 € · +20 Hunger · +6 Spaß', fn: buy(5, 'Sechs Schichten Glück.', eat({ hunger: 20, fun: 6 }, 'eat')) },
+        { icon: '💬', label: 'Mit Gästen plaudern', sub: '30 Minuten · +14 Kontakte', fn: () => { close(); this.fade(() => { this.pass(30); change(s, { social: 14, fun: 4 }); this.save.write(); toast('Nette Leute hier. ☕'); }); } }] },
       spaeti: { t: 'Späti Lecker', d: 'Bruno hat alles, was man nachts braucht.', items: [
-        { icon: '🥨', label: 'Brezel', sub: '2 €', fn: buy(2, 'Frisch und warm.', () => {}) },
-        { icon: '🧃', label: 'Mate', sub: '3 €', fn: buy(3, 'Energie für die Nacht!', () => {}) }] },
-      home: { t: 'Deine Wohnung', d: 'Klein, aber deins.', items: [
-        { icon: '😴', label: 'Schlafen bis 8 Uhr', sub: 'Speichert das Spiel', fn: () => { close(); this.fade(() => { s.day++; s.time = 2 / 24; this.city.world.setTime(s.time); this.save.write(); toast(`Guten Morgen! Tag ${s.day}.`); this.city.refreshHud(); }); } },
-        { icon: '👗', label: 'Kleiderschrank', fn: () => this.fade(() => this.creator(true)) }] },
+        { icon: '🥨', label: 'Brezel', sub: '2 € · +15 Hunger', fn: buy(2, 'Frisch und warm.', eat({ hunger: 15 }, 'eat')) },
+        { icon: '🧃', label: 'Mate', sub: '3 € · +15 Energie', fn: buy(3, 'Energie für die Nacht!', eat({ energy: 15 })) },
+        { icon: '🥕', label: 'Lebensmittel', sub: `6 € · 3 Portionen zum Kochen (du hast ${s.food})`, fn: buy(6, 'Ab in den Kühlschrank damit.', () => { s.food += 3; }) }] },
       club: { t: 'Club Prisma', d: 'Neon, Bass und die beste Tanzfläche der Stadt.', items: [
-        { icon: '🪩', label: 'Tanz-Battle', sub: `Rekord ${s.best.dance || 0}`, fn: () => this.goDance(false) }] },
+        { icon: '🪩', label: 'Tanz-Battle', sub: `Rekord ${s.best.dance || 0}`, fn: () => this.goDance(false) },
+        { icon: '🍹', label: 'Drink an der Bar', sub: '6 € · +10 Spaß · +8 Kontakte', fn: buy(6, 'Prost! 🍹', eat({ fun: 10, social: 8, energy: -3 })) }] },
       center: { t: 'Regenbogenhaus', d: 'Beratung, Jugendgruppe, Kaffee und Kummer – seit dreißig Jahren.', items: [
         { icon: '💜', label: 'Spenden', sub: '10 € · +2 Ruf', fn: buy(10, 'Danke! Jedes bisschen hilft.', () => { s.rep += 2; }) }] },
-      tram: { t: 'Tram Rainbow City', d: 'Weitere Viertel öffnen sich mit deinem Ruf in kommenden Updates.', items: [] },
+      boutique: { t: 'Boutique Fabelhaft', d: 'Glitzer, Leder, Regenbogen – hier findest du deinen Look.', items: [
+        { icon: '👗', label: 'Neuer Look', sub: 'Zum Kleiderschrank', fn: () => this.fade(() => this.creator(true)) }] },
+      gym: { t: 'Muckibude Muskelkater', d: 'Bären, Twinks und alle dazwischen – hier schwitzt die ganze Szene.', items: [
+        { icon: '🏋️', label: 'Training', sub: '4 € · 1 Stunde · +15 Spaß, −20 Energie, −20 Hygiene', fn: () => { if (s.needs.energy < 20) { toast('Zu erschöpft fürs Training.'); sfx('miss'); return; } buy(4, 'Gepumpt! 💪', () => { this.pass(60); change(s, { fun: 15, energy: -20, hygiene: -20, hunger: -10 }); })(); } },
+        { icon: '🚿', label: 'Duschen', sub: '1 € · Hygiene voll', fn: buy(1, 'Frisch!', () => { this.pass(15); change(s, { hygiene: 100 }); this.done(track(s, 'shower')); }) }] },
+      studio: { t: 'Studio Klappe Auf', d: 'Fotostudio für Pässe, Paare und Pride-Plakate.', items: [] },
+      tram: { t: 'Tram Rainbow City', d: 'Für 2 € in zehn Minuten an jeden Ort. Weitere Viertel folgen.', items: [
+        { icon: '🗺️', label: 'Fahrplan', sub: 'Ziel wählen', fn: () => this.phone('map') }] },
     };
+    if (P[id]) for (const j of jobsAt(id)) {
+      const why = blocked(s, j);
+      P[id].items.unshift({ icon: '💼', label: `Schicht als ${j.name}`, sub: why || `${jobTitle(s, j)} · ${wage(s, j)} €/h · 4 Stunden`, disabled: !!why && !why.startsWith('Du bist'), fn: () => this.runShift(j.id) });
+    }
     const p = P[id]; if (!p) return;
     this.touch.show(false);
     this.openMenu(`<div class="col"><div class="panel"><h3>${p.t}</h3><p>${p.d}</p><div class="slot"></div></div></div>`, [...p.items, { icon: '←', label: 'Zurück', fn: close }], close, '');
@@ -267,7 +428,11 @@ export class Game {
     this.loading.show('Club Prisma', 'Tanz-Battle');
     this.loading.progress(.4, 'Lichtshow startet');
     const sc = new DanceScene(this, (won) => {
+      const s = this.save.data;
+      change(s, { fun: 20, social: 10, energy: -10 }); advance(s, 20);
+      const fin = track(s, 'dance');
       this.save.write();
+      setTimeout(() => this.done(fin), 1200);
       this.fade(() => {
         if (back) { this.title(); return; }
         this.engine.setScene(this.city); this.city.setPlay();

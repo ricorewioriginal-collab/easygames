@@ -26,9 +26,12 @@ E2E-Test (Browser, SwiftShader): Server im Repo starten (`python3 -m http.server
 | `src/game/World.ts` | Rainbow City aus City-Builder-Bits plus Pride-Deko, Tag/Nacht, Verkehr, Kollision |
 | `src/game/CityScene.ts` | Laufen, Kamera, Figuren, Interaktion, Sticker, Titel-Kamerafahrt |
 | `src/game/story.ts` | Figuren, Kapitel, Ziele, Gespräche, Entscheidungen (`save.flags`) |
+| `src/game/life.ts` | Bedürfnisse, Stimmung, Uhrzeit und Tageswechsel, Tagesziele (aus Gay Life! übernommen) |
+| `src/game/jobs.ts` | Fünf Jobs mit Situationen, Lohn, Stufen und Beförderung |
+| `src/game/HomeScene.ts` | Begehbare Wohnung (KayKit Furniture und Restaurant Bits): Bett, Dusche, Herd, TV, Kleiderschrank |
 | `src/game/CreatorScene.ts` | Charakter-Editor |
 | `src/game/minigames/DanceScene.ts` | Tanz-Battle in 3D |
-| `src/game/Game.ts` | Ablauf, alle Menüs (Titel, Pause, Optionen, Story, Minispiele, Orte) |
+| `src/game/Game.ts` | Ablauf, alle Menüs (Titel, Pause, Optionen, Story, Minispiele, Orte, Handy mit Apps, Schichten, Wohnungsaktionen) |
 
 Regeln: Ein Bedienkonzept für alle Geräte (Richtungen wählen, A bestätigt, B zurück, Y/Start Menü). Neue Daten in `defaults()` (Save.ts) eintragen.
 Assets nur mit freier Lizenz, jede Quelle in `public/CREDITS.md`.

@@ -48,7 +48,7 @@ export interface StoryCtx {
   hour(): number;
   dance(): void;
   chapterDone(): void;
-  enterHome(): void;
+  enterHome(after?: () => void): void;
 }
 
 const me = (s: SaveData) => s.name;
@@ -186,8 +186,7 @@ function petition(c: StoryCtx, n: NpcDef) {
 export function poi(c: StoryCtx, id: string): boolean {
   const s = c.s;
   if (s.chapter === 1 && id === 'home' && s.step === 2) {
-    c.enterHome();
-    c.say([L('Du', 'Klein, aber meins. Ein Sofa, ein Fenster zum Platz, und von irgendwo kommt Musik.'), L('Du', 'Okay. Auf ins Regenbogenhaus.')], () => { c.step(3); c.reward(0, 2, 'Eingezogen'); });
+    c.enterHome(() => c.say([L('Du', 'Klein, aber meins. Ein Bett, eine Küche, eine Dusche – und von irgendwo kommt Musik.'), L('Du', 'Hier kann ich schlafen, kochen und mich frisch machen. Mit dem Handy behalte ich alles im Blick.'), L('Du', 'Okay. Raus durch die Tür und auf ins Regenbogenhaus.')], () => { c.step(3); c.reward(0, 2, 'Eingezogen'); }));
     return true;
   }
   return false;

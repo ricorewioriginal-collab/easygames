@@ -7,12 +7,12 @@ import { NPCS, goal, talk, poi as storyPoi, type NpcDef, type StoryCtx } from '.
 import type { Game } from './Game';
 import { sfx, music } from '../engine/Audio';
 import { toast, hints } from '../ui/ui';
+import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
 import type { Marker } from '../ui/Hud';
 
 interface Npc { def: NpcDef; a: Actor; wp: number; wait: number; talking: boolean }
 
 export const STICKERS: Array<[number, number]> = [[-15, 24], [45, 52], [-50, -50], [52, -30], [-45, 45], [18, -52], [-28, -32], [28, 28]];
-const DAY_SEC = 16 * 60;
 
 export class CityScene implements GameScene {
   root = new THREE.Scene();
@@ -28,6 +28,7 @@ export class CityScene implements GameScene {
   private stickerMeshes: THREE.Mesh[] = [];
   private near: { kind: 'npc' | 'poi'; id: string; label: string } | null = null;
   private stepT = 0;
+  private warnT = 30;
   private hudT = 0;
   private titleT = 0;
 
@@ -116,8 +117,8 @@ export class CityScene implements GameScene {
     this.root.add(this.player.root);
   }
 
-  hour() { return (6 + this.g.save.data.time * 24) % 24; }
-  clock() { const h = this.hour(); return String(Math.floor(h)).padStart(2, '0') + ':' + String(Math.floor((h % 1) * 60)).padStart(2, '0'); }
+  hour() { return lifeHour(this.g.save.data); }
+  clock() { return lifeClock(this.g.save.data); }
 
   /* ---------- Geschichte ---------- */
   ctx(): StoryCtx {
@@ -128,20 +129,22 @@ export class CityScene implements GameScene {
       toast: (t) => toast(t),
       reward: (m, r, why) => { s.money += m; s.rep += r; if (m || r) { toast(`${why}: ${m ? '+' + m + ' € ' : ''}${r ? '+' + r + ' Ruf' : ''}`); sfx('coin'); } this.refreshHud(); },
       step: (n) => { s.step = n; g.save.write(); this.refreshHud(); },
-      skipToHour: (h) => { g.fade(() => { const cur = this.hour(); let d = h - cur; if (d < 0) d += 24; s.time = (s.time + d / 24) % 1; if (d + cur >= 24) s.day++; this.world.setTime(s.time); this.refreshHud(); toast(`Es ist jetzt ${this.clock()} Uhr.`); }); },
+      skipToHour: (h) => { g.fade(() => { g.pass(minutesUntil(s, h)); toast(`Es ist jetzt ${this.clock()} Uhr.`); }); },
       hour: () => this.hour(),
       dance: () => g.goDance(true),
       chapterDone: () => { s.chapter = 2; s.step = 0; g.save.write(); g.chapterCard('Kapitel 1 abgeschlossen', 'Ankommen', 'Das Regenbogenhaus hat neue Hoffnung – und du hast Freund*innen gefunden. Kapitel 2 „Wurzeln schlagen“ folgt.'); this.refreshHud(); },
-      enterHome: () => g.fade(() => { s.time = (s.time + 1 / 24) % 1; this.world.setTime(s.time); }),
+      enterHome: (after) => g.enterHome(after),
     };
   }
 
   refreshHud() {
-    if (this.mode !== 'play') return;
+    if (this.mode !== 'play' && this.g.where !== 'home') return;
     const s = this.g.save.data, gl = goal(s);
-    this.g.hud.goal(s.chapter === 1 ? 'Kapitel 1 · Ankommen' : 'Rainbow City', gl.title, gl.sub);
+    if (this.g.where === 'home') this.g.hud.goal('Zuhause', 'Deine Wohnung', s.chapter === 1 && s.step === 2 ? 'Schau dich um.' : `Ziel: ${gl.title}`);
+    else this.g.hud.goal(s.chapter === 1 ? 'Kapitel 1 · Ankommen' : 'Rainbow City', gl.title, gl.sub);
     const days = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-    this.g.hud.stats([`${days[(s.day - 1) % 7]} ${this.clock()}`, `💶 ${s.money} €`, `🌈 ${s.rep} Ruf`]);
+    this.g.hud.stats([`${days[(s.day - 1) % 7]} ${this.clock()}`, `💶 ${s.money} €`, `${moodIcon(mood(s))} ${Math.round(mood(s))}`]);
+    this.g.hud.needs(s.needs);
   }
 
   private markers(): Marker[] {
@@ -185,9 +188,12 @@ export class CityScene implements GameScene {
       const prevSay = c.say; c.say = (l, d) => prevSay(l, () => { end(); d?.(); });
       talk(c, n.def.id);
       if (!this.g.dialog.open) end();
+      const s = this.g.save.data, r = (s.rel[n.def.id] ||= { f: 0, last: 0 });
+      if (r.last !== s.day) { r.last = s.day; r.f = Math.min(100, r.f + 6); change(s, { social: 10, fun: 2 }); this.g.done(track(s, 'talk')); }
       return;
     }
     if (storyPoi(c, this.near.id)) return;
+    if (this.near.id === 'home') { this.g.enterHome(); return; }
     this.g.placeMenu(this.near.id);
   }
 
@@ -242,9 +248,15 @@ export class CityScene implements GameScene {
     // Spielzeit läuft nur ohne Dialog und Menü
     const busy = g.dialog.open || g.menuOpen;
     if (!busy) {
-      s.time += dt / DAY_SEC; s.playMs += dt * 1000;
-      if (s.time >= 1) { s.time -= 1; s.day++; toast(`Tag ${s.day} beginnt.`); }
+      s.playMs += dt * 1000;
+      if (advance(s, dt / DAY_SEC * 1440)) toast(`Tag ${s.day} beginnt.`);
       this.world.setTime(s.time);
+      this.warnT -= dt;
+      if (this.warnT <= 0) {
+        this.warnT = 45;
+        const low = NEEDS.find((n) => s.needs[n.k] < 18);
+        if (low) toast(`${low.icon} ${low.name} ist niedrig: ${low.tip}`);
+      }
       this.crowd.forEach((a) => (a.root.visible = this.world.night > .5));
     }
     this.player.update(dt);
@@ -254,12 +266,14 @@ export class CityScene implements GameScene {
     this.world.update(dt, t, this.player.root.position);
 
     this.hudT -= dt;
-    if (this.hudT <= 0) { this.hudT = .5; this.refreshHud(); }
+    if (this.hudT <= 0) { this.hudT = .5; this.refreshHud(); if (mood(s) >= 75 && !busy) g.done(track(s, 'mood')); }
     g.hud.markers(busy ? [] : this.markers(), this.camera);
     if (!busy) {
       this.findNear();
       const inp = g.engine.input;
       if (inp.pressed('confirm')) { inp.consume('confirm'); this.interact(); }
+      else if (inp.pressed('phone')) { inp.consume('phone'); g.phone(); }
+      else if (inp.pressed('map')) { inp.consume('map'); g.phone('map'); }
       else if (inp.pressed('menu') || inp.pressed('back')) { inp.consume('menu'); inp.consume('back'); g.pauseMenu(); }
       this.checkStickers();
     } else g.hud.prompt(null);
@@ -273,7 +287,7 @@ export class CityScene implements GameScene {
       // Bewegung relativ zur Kamera
       const fx = -Math.sin(yaw), fz = -Math.cos(yaw), rx = -fz, rz = fx;
       const dx = fx * my + rx * mx, dz = fz * my + rz * mx;
-      const run = inp.held('sprint');
+      const run = inp.held('sprint') && this.g.save.data.needs.energy >= 10;
       const sp = (run ? 7.8 : 4.4) * Math.min(1, mag);
       p.x += (dx / mag) * sp * dt * Math.min(1, mag); p.z += (dz / mag) * sp * dt * Math.min(1, mag);
       this.world.collide(p, .45);

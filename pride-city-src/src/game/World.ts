@@ -75,7 +75,7 @@ export class World {
       const door = this.pois.find((q) => q.sign && Math.round(q.x / TILE) === ix && Math.round(q.z / TILE) === iz);
       if (door) rot = door.x > 0 ? -Math.PI / 2 : Math.PI / 2;
       let kind = BUILD[Math.floor(rnd() * BUILD.length)];
-      if (door) kind = door.id === 'club' ? 'building_H' : door.id === 'center' ? 'building_G' : door.id === 'home' ? 'building_E' : door.id === 'cafe' ? 'building_B' : 'building_C';
+      if (door) kind = door.id === 'club' ? 'building_H' : door.id === 'center' ? 'building_G' : door.id === 'home' ? 'building_E' : door.id === 'cafe' ? 'building_B' : door.id === 'boutique' ? 'building_F' : door.id === 'gym' ? 'building_D' : door.id === 'studio' ? 'building_A' : 'building_C';
       tasks.push(this.place(C(kind), x, .1, z, rot));
       this.colliders.push({ x, z, hx: TILE * .4, hz: TILE * .4 });
     }
@@ -95,6 +95,9 @@ export class World {
     P('center', 'Regenbogenhaus', '🌈', -5.6, -10, 'REGENBOGENHAUS', '#ff6ad5');
     P('club', 'Club Prisma', '🪩', 5.6, -10, 'PRISMA', '#b56bff');
     P('spaeti', 'Späti Lecker', '🛒', -5.6, 40, 'SPÄTI', '#5ce1ff');
+    P('boutique', 'Boutique Fabelhaft', '👗', 35.6, 10, 'FABELHAFT', '#ff9ad5');
+    P('gym', 'Muckibude Muskelkater', '🏋️', 35.6, -20, 'MUCKIBUDE', '#ffd23b');
+    P('studio', 'Studio Klappe Auf', '📸', -35.6, 20, 'STUDIO', '#5ce1ff');
     P('park', 'Regenbogenpark', '🌳', 45, 45, undefined, undefined, 8);
     P('tram', 'Tram Rainbow City', '🚋', 0, 52, undefined, undefined, 4);
   }

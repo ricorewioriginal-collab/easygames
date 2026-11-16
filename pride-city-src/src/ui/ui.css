@@ -169,3 +169,43 @@ html[data-input=touch] #touch.on { display: block; }
 html[data-input=touch] #mg .lanes { display: flex; }
 #mg .lanes button { width: min(21vw, 92px); height: min(21vw, 92px); border-radius: 20px; border: 2px solid rgba(255,255,255,.4); background: rgba(20,12,40,.6); font-size: 30px; touch-action: none; }
 #mg .lanes button.on { background: rgba(255,255,255,.35); }
+
+/* ---------- Durchgang 2: Bedürfnisse und Handy ---------- */
+#hud .needs { position: absolute; right: clamp(10px, 2vw, 24px); top: calc(48px + var(--safe-t)); display: flex; gap: 6px; }
+#hud .needs span { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 14px; padding: 4px 6px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); }
+#hud .needs i { display: block; width: 26px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.15); overflow: hidden; }
+#hud .needs b { display: block; height: 100%; background: #3ee69a; transition: width .4s; }
+#hud .needs .low b { background: #ff5d6c; }
+#hud .needs .low { animation: pulse 1.2s infinite; }
+@keyframes pulse { 50% { border-color: #ff5d6c; } }
+@media (orientation: landscape) { html[data-input=touch] #hud .menuBtn { top: calc(96px + var(--safe-t)); } }
+#hud .lcol { display: contents; }
+@media (orientation: portrait) {
+  #hud .lcol { display: flex; flex-direction: column; gap: 6px; position: absolute; left: clamp(10px, 2vw, 24px); top: calc(10px + var(--safe-t)); max-width: calc(100vw - 150px); }
+  #hud .lcol .goal, #hud .lcol .needs { position: static; }
+  #hud .needs span { padding: 3px 5px; }
+  #hud .needs i { width: 22px; }
+}
+.screen.phone { justify-content: center; align-items: center; background: rgba(6,4,16,.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.phoneBox { width: min(380px, 94vw); max-height: min(760px, 92dvh); display: flex; flex-direction: column; border-radius: 34px; padding: 14px 14px 18px; background: linear-gradient(160deg, #1b1236, #0d0a1e); border: 3px solid #2d2450; box-shadow: 0 0 0 2px #000, 0 20px 60px rgba(0,0,0,.6), 0 0 40px rgba(255,79,163,.25); overflow: hidden; animation: phoneUp .3s cubic-bezier(.2,.9,.3,1.2) both; }
+@keyframes phoneUp { from { transform: translateY(40px) scale(.96); opacity: 0; } }
+.phoneBox .ph { display: flex; justify-content: space-between; align-items: center; font-size: .82em; padding: 2px 10px 10px; color: var(--mu); font-weight: 800; }
+.phoneBox .ph b { color: #fff; font-size: 1.15em; }
+.phoneBox .pbody { overflow: auto; padding: 0 8px 8px; font-size: .9em; max-height: 40dvh; flex-shrink: 0; }
+.phoneBox .pbody h4 { margin: 10px 0 4px; color: var(--hi); font-size: .75em; letter-spacing: .15em; text-transform: uppercase; }
+.phoneBox .pbody p { margin: 4px 0; }
+.phoneBox .slot { overflow: auto; min-height: 0; flex: 1; }
+.phoneBox .nd { display: grid; grid-template-columns: 1fr 1.2fr; gap: 2px 10px; align-items: center; margin: 7px 0; }
+.phoneBox .nd i { display: block; height: 8px; border-radius: 4px; background: rgba(255,255,255,.12); overflow: hidden; }
+.phoneBox .nd i b { display: block; height: 100%; }
+.phoneBox .nd small { grid-column: 1 / -1; color: var(--mu); font-size: .78em; }
+#pmap { display: block; width: min(220px, 60vw, 28dvh); aspect-ratio: 1; margin: 0 auto 6px; border-radius: 16px; border: 2px solid var(--line); }
+@media (orientation: landscape) and (max-height: 480px) {
+  .phoneBox { flex-direction: row; flex-wrap: wrap; width: min(720px, 96vw); max-height: 94dvh; }
+  .phoneBox .ph { width: 100%; }
+  .phoneBox .pbody { flex: 1; max-height: 70dvh; }
+  #pmap { width: 150px; }
+}
+.phoneBox .menu { gap: 6px; padding: 2px; }
+.phoneBox .mi { min-height: 44px; padding: 8px 14px; }
+.phoneBox .mi.sel { transform: none; }

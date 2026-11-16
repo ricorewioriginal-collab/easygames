@@ -2,6 +2,8 @@
 import * as THREE from 'three';
 import { el, esc, glyph } from './ui';
 
+const NEED_ICONS: Array<[string, string]> = [['energy', '⚡'], ['hunger', '🍝'], ['hygiene', '🚿'], ['social', '💬'], ['fun', '🎉']];
+
 export interface Marker { id: string; icon: string; label?: string; pos: THREE.Vector3 }
 
 export class Hud {
@@ -13,21 +15,33 @@ export class Hud {
   private markerEls = new Map<string, HTMLElement>();
   onPrompt: (() => void) | null = null;
   onMenu: (() => void) | null = null;
+  onPhone: (() => void) | null = null;
+  private needsEl!: HTMLElement;
   constructor() {
-    this.el = el(`<div id="hud" class="hidden"><div class="goal"></div><div class="stats"></div>
-      <div class="menuBtn"><button data-k="menu" aria-label="Menü">☰</button></div>
+    this.el = el(`<div id="hud" class="hidden"><div class="lcol"><div class="goal"></div><div class="needs"></div></div><div class="stats"></div>
+      <div class="menuBtn"><button data-k="phone" aria-label="Handy">📱</button><button data-k="menu" aria-label="Menü">☰</button></div>
       <div class="markers pass"></div><div class="prompt"></div><div class="toast"></div></div>`);
     document.body.appendChild(this.el);
     this.goalEl = this.el.querySelector('.goal')!; this.statsEl = this.el.querySelector('.stats')!;
     this.promptEl = this.el.querySelector('.prompt')!; this.markersEl = this.el.querySelector('.markers')!;
     this.promptEl.addEventListener('click', () => this.onPrompt?.());
     this.el.querySelector<HTMLButtonElement>('[data-k=menu]')!.onclick = () => this.onMenu?.();
+    this.el.querySelector<HTMLButtonElement>('[data-k=phone]')!.onclick = () => this.onPhone?.();
+    this.needsEl = this.el.querySelector('.needs')!;
+    this.needsEl.innerHTML = NEED_ICONS.map(([k, i]) => `<span data-n="${k}" title="${k}">${i}<i><b></b></i></span>`).join('');
   }
   show(on: boolean) { this.el.classList.toggle('hidden', !on); }
   goal(ch: string, title: string, sub = '') {
     this.goalEl.innerHTML = `<div class="ch">${esc(ch)}</div><b>${esc(title)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}`;
   }
   stats(items: string[]) { this.statsEl.innerHTML = items.map((s) => `<span class="chip">${esc(s)}</span>`).join(''); }
+  /** Kleine Balken für die Bedürfnisse (rot unter 25) */
+  needs(n: Record<string, number>) {
+    for (const e of this.needsEl.children as unknown as HTMLElement[]) {
+      const v = Math.round(n[e.dataset.n!] ?? 0), b = e.querySelector('b') as HTMLElement;
+      b.style.width = v + '%'; e.classList.toggle('low', v < 25);
+    }
+  }
   private lastPrompt = '';
   prompt(text: string | null) {
     const k = text || '';

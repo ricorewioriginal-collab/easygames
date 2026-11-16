@@ -2,3 +2,5 @@ node_modules/
 dist/
 public/assets/chars/
 public/assets/city/
+public/assets/home/
+public/assets/kitchen/
