@@ -96,6 +96,9 @@ describe('Story', () => {
       card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>,
     };
     expect(hidden(defaults(), 'leon')).toBe(true);
+    for (let k = 0; k < 8; k++) { talk(c, 'leon'); await new Promise((r) => setTimeout(r, 80)); }
+    expect(lichtPart(s)).toBe(3); // Kapitel 2 gibt nur die ersten Rückblenden frei
+    s.chapter = 6;
     talk(c, 'leon'); await new Promise((r) => setTimeout(r, 100));
     expect(s.flags.lichtIntro).toBe(true);
     for (let k = 0; k < 30 && lichtPart(s) < LICHT_CHAPTERS.length; k++) { talk(c, 'leon'); await new Promise((r) => setTimeout(r, 80)); }
@@ -115,6 +118,12 @@ describe('Story', () => {
       card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>,
     };
     expect(hidden(defaults(), 'finn')).toBe(true);
+    for (let k = 0; k < 8; k++) { talk(c, 'finn'); await new Promise((r) => setTimeout(r, 70)); }
+    expect(lfPart(s)).toBe(4);
+    s.chapter = 4;
+    for (let k = 0; k < 12; k++) { talk(c, 'finn'); await new Promise((r) => setTimeout(r, 70)); }
+    expect(lfPart(s)).toBe(12);
+    s.chapter = 6;
     for (let k = 0; k < 40 && lfPart(s) < LF_CHAPTERS.length; k++) { talk(c, 'finn'); await new Promise((r) => setTimeout(r, 70)); }
     expect(lfPart(s)).toBe(LF_CHAPTERS.length);
     expect(['feuer', 'fenster', 'strahl']).toContain(s.flags.lfEnd);

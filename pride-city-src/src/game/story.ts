@@ -520,6 +520,17 @@ export function danceResult(c: StoryCtx, won: boolean) {
   ], () => { c.reward(120, 15, 'Benefiz-Battle gewonnen'); c.chapterDone('Das Regenbogenhaus hat neue Hoffnung – und du hast Freund*innen gefunden.'); });
 }
 
+/** Nebengeschichten laufen parallel zur Hauptstory: pro Kapitel wird nur ein Teil der Rückblenden frei, der Rest nach der Pride. */
+const SIDE_SHARE: Record<number, number> = { 2: .25, 3: .5, 4: .75, 5: .92 };
+export const sideOpen = (s: SaveData, total: number) => s.chapter >= 6 ? total : Math.max(1, Math.floor(total * (SIDE_SHARE[s.chapter] || 0)));
+const SIDE_WAIT: Record<number, string> = {
+  2: 'Leb dich erst mal ein – such dir Arbeit und Leute. Wenn du in der Szene angekommen bist, erzähl ich weiter.',
+  3: 'Du hast gerade genug mit deinem Drag-Debüt und dem Club zu tun. Wenn der Leuchtturm offen hat, erzähl ich weiter.',
+  4: 'Erst muss Nova wieder auftauchen. Danach hab ich wieder Kopf für alte Geschichten.',
+  5: 'Den Schluss erzähl ich dir nach der Parade. Der passt nur dahin.',
+};
+const sideWait = (s: SaveData) => SIDE_WAIT[s.chapter] || SIDE_WAIT[2];
+
 /* ---------- „Ich bin das Licht“: Leons Geschichte in Rückblenden (ab Kapitel 2, One Love Bar) ---------- */
 const LP = (id: string, text: Line['text'], choices?: Line['choices']): Line => {
   const p = LICHT_PEOPLE[id];
@@ -547,6 +558,7 @@ export function licht(c: StoryCtx) {
     c.say([LP('leon', `Danke, dass du mir zugehört hast. Mein Ende heißt „${e.title}“.`), LP('leon', 'Den ganzen Roman kannst du übrigens im Handy lesen, unter 📖 „Ich bin das Licht“.')]);
     return;
   }
+  if (i >= sideOpen(s, LICHT_CHAPTERS.length)) { c.say([LP('leon', sideWait(s))]); return; }
   c.say([LP('leon', i === 0 ? 'Wo war ich? Ach ja, ganz am Anfang.' : 'Setz dich. Ich erzähl weiter.', [
     { label: 'Weiter zuhören', fn: () => setTimeout(() => part(c, i), 60) },
     { label: 'Ein andermal', fn: () => {} },
@@ -605,6 +617,7 @@ export function leuchtfeuer(c: StoryCtx) {
     c.say([FP('finn', `Danke fürs Zuhören. Unser Ende heißt „${e.title}“.`), FP('finn', 'Das ganze Buch steht übrigens im Handy, unter 🗼 „Leuchtfeuer“.')]);
     return;
   }
+  if (i >= sideOpen(s, LF_CHAPTERS.length)) { c.say([FP('finn', sideWait(s))]); return; }
   c.say([FP('finn', i === 0 ? 'Also, ganz von vorn. Erster Schultag.' : 'Setz dich auf den Steg. Ich erzähl weiter.', [
     { label: 'Weiter zuhören', fn: () => setTimeout(() => lfChapter(c, i), 60) },
     { label: 'Ein andermal', fn: () => {} },
