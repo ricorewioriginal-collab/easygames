@@ -58,6 +58,13 @@ export const PRONOUNS = [
   { id: 'none', label: 'keine/Name' },
 ];
 
+/** Dienstkleidung für Passant*innen (nicht im Editor): Hemd, Jacke, Hose, Akzent */
+export const UNIFORMS: Palette[] = [
+  { id: 'police', name: 'Polizei', colors: ['#5b86d6', '#13234d', '#1a2747', '#f2f2f2'] },
+  { id: 'fire', name: 'Feuerwehr', colors: ['#e0b52a', '#1e2850', '#1e2850', '#c41e1e'] },
+  { id: 'street', name: 'Alltag', colors: ['#e8e2d6', '#4a5a78', '#2f3a52', '#c98a3a'] },
+];
+
 export function palette(id: string): Palette {
-  return PALETTES.find((p) => p.id === id) || PALETTES[0];
+  return PALETTES.find((p) => p.id === id) || UNIFORMS.find((p) => p.id === id) || PALETTES[0];
 }

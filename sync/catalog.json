@@ -2923,7 +2923,7 @@
   {
    "id": "pride-city",
    "title": "Pride City – Ein Leben in allen Farben",
-   "desc": "Der Relaunch von Gay Life!: queere 3D-Lebenssimulation in Rainbow City mit KayKit-Figuren in Pride-Farben. Eigene Figur mit 13 Farbwelten (Regenbogen, Trans, Bi, Pan, Lesbisch, Nichtbinär, Ace, Bear und mehr), Hauttönen und Pronomen, Story mit Kapiteln und Entscheidungen, Tanz-Battle in 3D, Sticker sammeln, Tag und Nacht. Konsolen-Menü, Controller, Touch im Hoch- und Querformat. Speicherstand lokal und per Google.",
+   "desc": "Der Relaunch von Gay Life!: queere 3D-Lebenssimulation in Rainbow City mit realistischen Figuren in Pride-Farben. Eigene Figur mit 13 Farbwelten, Hauttönen und Pronomen, Story in fünf Kapiteln bis zur Pride-Parade, eigener Club am Hafen mit Barkeeper-Minispiel, Tanz-Battle in 3D, belebte Stadt mit Polizei, Feuerwehr und fahrbaren Autos, Dating, Jobs, Wohnung, Tag und Nacht. Konsolen-Menü, Controller, Touch im Hoch- und Querformat. Speicherstand lokal und per Google.",
    "icon": "🏳️‍🌈",
    "img": "pride-city/card.jpg",
    "bg": "linear-gradient(145deg,#ff2f7a,#7b3cff 52%,#1aa7ff)",
@@ -2932,7 +2932,7 @@
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Pride City ist der Relaunch von Gay Life!: eine queere 3D-Lebenssimulation in Rainbow City. Du gestaltest deine Figur in einer von 13 Pride-Farbwelten, ziehst in die Stadt, triffst Mo, Jules, Nova und viele andere und hilfst in Kapitel 1, das Regenbogenhaus zu retten – bis zum Tanz-Battle im Club Prisma. Dazu der Alltag aus Gay Life!: Bedürfnisse, fünf Jobs mit Beförderung, eine begehbare Wohnung zum Schlafen, Duschen und Kochen, ein Handy mit Karte, Zielen, Kontakten, Feed und der Dating-App Rainbow Match (wischen wie bei Tinder), Dates, Wahlfamilie, ein Checkpoint mit Tests, PrEP und U=U-Infos, optional Inhalte ab 18 (nur angedeutet), Tagesziele, Sticker und Tag und Nacht. Alle Figuren sind erwachsen und frei erfunden.",
+    "anleitung": "Pride City ist der Relaunch von Gay Life!: eine queere 3D-Lebenssimulation in Rainbow City. Du gestaltest deine Figur in einer von 13 Pride-Farbwelten, ziehst in die Stadt, triffst Mo, Jules, Nova und viele andere und erlebst fünf Kapitel bis zur großen Pride-Parade: Job und Wahlfamilie, Drag-Show, dein eigener Club Leuchtturm am Hafen, die Suche nach der verschwundenen DJ Nova und ein Ende, das von deinen Entscheidungen abhängt. Die Stadt lebt: Passant*innen, Polizei, Feuerwehr, Verkehr und Autos, die du selbst fährst. Dazu der Alltag aus Gay Life!: Bedürfnisse, fünf Jobs mit Beförderung, eine begehbare Wohnung zum Schlafen, Duschen und Kochen, ein Handy mit Karte, Zielen, Kontakten, Feed und der Dating-App Rainbow Match (wischen wie bei Tinder), Dates, Wahlfamilie, ein Checkpoint mit Tests, PrEP und U=U-Infos, optional Inhalte ab 18 (nur angedeutet), Tagesziele, Sticker und Tag und Nacht. Alle Figuren sind erwachsen und frei erfunden.",
     "steuerung": [
      "PC: W A S D oder Pfeiltasten laufen, Shift sprinten, Maus ziehen dreht die Kamera, Mausrad zoomt, Q/R drehen die Kamera. E, Enter oder Leertaste = Aktion, Esc = Menü/Zurück, P = Handy, M = Karte. In Menüs Pfeiltasten, ←/→ ändern Werte.",
      "Touch (hoch und quer): Stick links laufen, A = Aktion, B = Zurück, » = Turbo an/aus, ☰ oben rechts = Menü, 📱 = Handy. Kamera durch Wischen auf dem Bild. Im Tanz-Battle vier Pfeil-Tasten unten.",
@@ -2941,10 +2941,11 @@
     "tipps": [
      "Ein Nein ist ein Nein: Wer nicht unterschreiben will, wird nicht überredet – frag einfach jemand anderen.",
      "Im Tanz-Battle zählen Combos: Je länger die Serie, desto mehr Punkte pro Pfeil.",
-     "Acht Pride-Sticker sind in der Stadt versteckt, auch im Park und an den Rändern."
+     "Acht Pride-Sticker sind in der Stadt versteckt, auch im Park und an den Rändern.",
+     "Am Barkeeper-Tresen zählt Tempo: Bärenbier ist nur Bier, alle anderen Drinks haben drei Zutaten."
     ]
    },
-   "size": 6866243,
+   "size": 6904001,
    "files": 129,
    "offline": true,
    "cloud": {

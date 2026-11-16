@@ -15,6 +15,15 @@ const CARS = ['car_hatchback', 'car_sedan', 'car_stationwagon', 'car_taxi', 'car
 export const CITY_FILES = [...BUILD, ...CARS, 'base', 'road_straight', 'road_junction', 'road_tsplit', 'road_corner', 'streetlight', 'bench', 'bush', 'firehydrant', 'trash_A', 'dumpster', 'watertower', 'box_A'].map(C);
 
 export interface Poi { id: string; name: string; icon: string; x: number; z: number; r: number; sign?: string; color?: string }
+/** Begehbar: Innenstadt, Kai, Strand und Steg (nicht ins Wasser) */
+export function walkable(x: number, z: number) {
+  const lim = HALF - 1;
+  if (Math.abs(z) > lim || x > lim) return false;
+  if (x >= -lim) return true;
+  if (z > -34 && z < 44 && x >= -91) return true;
+  if (z > 18 && z < 42 && x >= -96) return true;
+  return z > -3.3 && z < -.7 && x >= -110;
+}
 export interface Rect { x: number; z: number; hx: number; hz: number }
 
 const isRoad = (i: number) => i % 3 === 0;
@@ -76,12 +85,12 @@ export class World {
       const door = this.pois.find((q) => q.sign && Math.round(q.x / TILE) === ix && Math.round(q.z / TILE) === iz);
       if (door) rot = door.x > 0 ? -Math.PI / 2 : Math.PI / 2;
       let kind = BUILD[Math.floor(rnd() * BUILD.length)];
-      if (door) kind = door.id === 'club' ? 'building_H' : door.id === 'center' ? 'building_G' : door.id === 'home' ? 'building_E' : door.id === 'cafe' ? 'building_B' : door.id === 'boutique' ? 'building_F' : door.id === 'gym' ? 'building_D' : door.id === 'studio' ? 'building_A' : door.id === 'checkpoint' ? 'building_E' : 'building_C';
+      if (door) kind = door.id === 'club' ? 'building_H' : door.id === 'center' ? 'building_G' : door.id === 'home' ? 'building_E' : door.id === 'cafe' ? 'building_B' : door.id === 'boutique' ? 'building_F' : door.id === 'gym' ? 'building_D' : door.id === 'studio' ? 'building_A' : door.id === 'checkpoint' ? 'building_E' : door.id === 'police' ? 'building_A' : door.id === 'fire' ? 'building_G' : 'building_C';
       tasks.push(this.place(C(kind), x, .1, z, rot));
       this.colliders.push({ x, z, hx: TILE * .4, hz: TILE * .4 });
     }
     await Promise.all(tasks);
-    this.plaza(); this.park(); this.decorate(); this.signs();
+    this.plaza(); this.park(); this.decorate(); this.signs(); await this.harbour();
     await this.spawnCars();
     this.setTime(.3);
   }
@@ -102,7 +111,13 @@ export class World {
     P('checkpoint', 'Checkpoint Regenbogen', '🩺', -35.6, -10, 'CHECKPOINT', '#3ee69a');
     P('kopfkino', 'Videothek Kopfkino', '📼', 5.6, -40, 'KOPFKINO', '#ff3b6b');
     P('rosa', 'Haus Rosa', '🏮', -5.6, -40, 'HAUS ROSA', '#ff6ad5');
+    P('police', 'Polizeiwache Mitte', '🚓', 5.6, -20, 'POLIZEI', '#5b86d6');
+    P('fire', 'Feuerwache Regenbogen', '🚒', -5.6, -20, 'FEUERWACHE', '#ff4b3b');
     P('park', 'Regenbogenpark', '🌳', 45, 45, undefined, undefined, 8);
+    // Hafenviertel westlich der Innenstadt (per Tram oder zu Fuß über die Kaistraße)
+    P('bar', 'Club Leuchtturm', '🗼', -72.6, -12);
+    P('beach', 'Strandbar Sandbank', '🏖️', -80.4, 30);
+    P('tramhafen', 'Tram Hafen', '🚋', -70, 8, undefined, undefined, 3.6);
     P('tram', 'Tram Rainbow City', '🚋', 0, 52, undefined, undefined, 4);
   }
 
@@ -314,25 +329,75 @@ export class World {
   private signs() {
     for (const p of this.pois) {
       if (!p.sign) continue;
-      const c = document.createElement('canvas'); c.width = 512; c.height = 128;
-      const g = c.getContext('2d')!;
-      g.fillStyle = 'rgba(10,6,24,.85)'; g.fillRect(0, 0, 512, 128);
-      g.font = '900 64px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-      g.shadowColor = p.color!; g.shadowBlur = 18; g.fillStyle = p.color!; g.fillText(p.sign, 256, 68);
-      g.shadowBlur = 0; g.fillStyle = '#fff'; g.globalAlpha = .7; g.fillText(p.sign, 256, 68);
-      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
-      const m = new THREE.MeshBasicMaterial({ map: t, toneMapped: false, transparent: true });
-      m.userData.base = new THREE.Color(1, 1, 1);
-      this.neon.push(m);
-      const w = Math.min(8, 2 + p.sign.length * .5);
-      const s = new THREE.Mesh(new THREE.PlaneGeometry(w, w / 4), m);
       const dir = Math.sign(p.x) || 1; // Tür zeigt zur Hauptstraße x = 0
-      s.position.set(p.x + dir * .3, 5.4, p.z); s.rotation.y = dir > 0 ? -Math.PI / 2 : Math.PI / 2;
-      this.root.add(s);
-      // Leuchtender Türrahmen
-      const door = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 3.2), new THREE.MeshBasicMaterial({ color: new THREE.Color(p.color!).multiplyScalar(1.4), toneMapped: false, transparent: true, opacity: .55 }));
-      door.position.set(p.x + dir * .25, 1.7, p.z); door.rotation.y = s.rotation.y; this.root.add(door);
+      this.neonSign(p.sign, p.color!, p.x + dir * .3, 5.4, p.z, dir > 0 ? -Math.PI / 2 : Math.PI / 2, p.x + dir * .25);
     }
+  }
+  /** Leuchtschild mit Türrahmen (door = x-Position der Tür, sonst ohne Tür) */
+  private neonSign(text: string, color: string, x: number, y: number, z: number, rot: number, door?: number, maxW = 8) {
+    const c = document.createElement('canvas'); c.width = 512; c.height = 128;
+    const g = c.getContext('2d')!;
+    g.fillStyle = 'rgba(10,6,24,.85)'; g.fillRect(0, 0, 512, 128);
+    g.font = '900 64px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.shadowColor = color; g.shadowBlur = 18; g.fillStyle = color; g.fillText(text, 256, 68, 490);
+    g.shadowBlur = 0; g.fillStyle = '#fff'; g.globalAlpha = .7; g.fillText(text, 256, 68, 490);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+    const m = new THREE.MeshBasicMaterial({ map: t, toneMapped: false, transparent: true });
+    m.userData.base = new THREE.Color(1, 1, 1);
+    this.neon.push(m);
+    const w = Math.min(maxW, 2 + text.length * .5);
+    const s = new THREE.Mesh(new THREE.PlaneGeometry(w, w / 4), m);
+    s.position.set(x, y, z); s.rotation.y = rot;
+    this.root.add(s);
+    if (door === undefined) return;
+    const d = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 3.2), new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(1.4), toneMapped: false, transparent: true, opacity: .55 }));
+    d.position.set(door, 1.7, z); d.rotation.y = rot; this.root.add(d);
+  }
+
+  /* ---------- Hafenviertel: Kai, Strand, Steg mit Leuchtturm, Lagerhalle (dein Club) ---------- */
+  private async harbour() {
+    const M = (c: THREE.ColorRepresentation, r = .8, extra: THREE.MeshStandardMaterialParameters = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: r, ...extra });
+    const plane = (w: number, l: number, m: THREE.Material, x: number, y: number, z: number) => { const o = new THREE.Mesh(new THREE.PlaneGeometry(w, l), m); o.rotation.x = -Math.PI / 2; o.position.set(x, y, z); o.receiveShadow = true; this.root.add(o); return o; };
+    const box = (w: number, h: number, l: number, m: THREE.Material, x: number, y: number, z: number, col = false) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, l), m); o.position.set(x, y, z); o.castShadow = o.receiveShadow = true; this.root.add(o); if (col) this.colliders.push({ x, z, hx: w / 2, hz: l / 2 }); return o; };
+    plane(27, 80, M(0xbdb5a8), -78.5, .06, 5);                      // Kai-Pflaster
+    plane(400, 600, M(0x2f8fd0, .12, { metalness: .25, emissive: 0x08243a }), -292, .02, 0); // Wasser
+    plane(10, 26, M(0xf0d9a0, 1), -92, .07, 30);                    // Sandstrand
+    box(.5, .5, 80, M(0x8c8579), -91.4, .25, 5);                     // Kaimauer
+    // Steg mit Leuchtturm
+    const wood = M(0x8a5a35, .9);
+    box(20, .3, 3, wood, -101, .2, -2);
+    for (let i = 0; i < 6; i++) for (const z of [-3.3, -.7]) box(.3, 1.2, .3, wood, -93 - i * 3.4, -.3, z);
+    const ring = [0xf4f4f4, 0xd8261e];
+    for (let i = 0; i < 5; i++) { const c = new THREE.Mesh(new THREE.CylinderGeometry(1.25 - i * .08, 1.33 - i * .08, 2, 18), M(ring[i % 2], .6)); c.position.set(-112, 1 + i * 2, -2); c.castShadow = true; this.root.add(c); }
+    const lamp = new THREE.MeshBasicMaterial({ color: 0xfff2a0, toneMapped: false }); lamp.userData.base = new THREE.Color(1.2, 1.1, .6); this.neon.push(lamp);
+    const top = new THREE.Mesh(new THREE.CylinderGeometry(.75, .75, 1.2, 12), lamp); top.position.set(-112, 10.6, -2); this.root.add(top);
+    const cap = new THREE.Mesh(new THREE.ConeGeometry(1.1, 1, 12), M(0xd8261e, .5)); cap.position.set(-112, 11.7, -2); this.root.add(cap);
+    // Lagerhalle = Club Leuchtturm
+    const hall = M(0x5b4a6e, .85);
+    box(14, 7, 12, hall, -80, 3.5, -12, true);
+    const roof = new THREE.Mesh(new THREE.CylinderGeometry(6.3, 6.3, 14.2, 3, 1, false), M(0x2c2338, .7));
+    roof.rotation.set(0, 0, Math.PI / 2); roof.rotation.y = Math.PI / 2; roof.scale.set(1, 1, .45); roof.position.set(-80, 7.9, -12); roof.castShadow = true; this.root.add(roof);
+    this.neonSign('LEUCHTTURM', '#ffd23b', -72.85, 5.2, -12, Math.PI / 2, -72.9);
+    PALETTES[0].colors.forEach((c, i) => box(.06, .5, 11, new THREE.MeshBasicMaterial({ color: c, toneMapped: false }), -72.95, .5 + i * .5, -12));
+    // Strandbar
+    box(5, 3, 4, M(0xe7c79a), -84, 1.5, 30, true);
+    box(.05, 1.1, 3.4, M(0x1d1630, .6), -81.47, 2, 30);               // Ausschank-Fenster
+    box(.8, 1.05, 4.2, M(0x8a5a35, .9), -81.1, .55, 30);              // Theke
+    for (const z of [28.6, 30, 31.4]) box(.45, .7, .45, M(0xff4fa3, .6), -80.2, .35, z); // Hocker
+    PALETTES[0].colors.forEach((c, i) => box(6, .12, .75, M(c, .7), -84, 3.1 + i * .02, 27.8 + i * .75));
+    this.neonSign('SANDBANK', '#ff9ad5', -81.45, 3.6, 30, Math.PI / 2, undefined, 4.2);
+    for (let i = 0; i < 4; i++) { const u = new THREE.Mesh(new THREE.ConeGeometry(1.4, .6, 10), M([0xff4fa3, 0x5ce1ff, 0xffd23b, 0x7bffb0][i], .7)); u.position.set(-90 - (i % 2) * 3, 2.3, 22 + i * 4.5); this.root.add(u); box(.08, 2.2, .08, M(0xffffff), u.position.x, 1.1, u.position.z); }
+    // Container in Pride-Farben
+    PALETTES[0].colors.forEach((c, i) => box(6, 2.6, 2.4, M(c, .6), -82, 1.3 + Math.floor(i / 3) * 2.6, -27 + (i % 3) * 2.5));
+    this.colliders.push({ x: -82, z: -24.5, hx: 3, hz: 3.7 });
+    // Tram-Haltestelle, Laternen, Flaggen und Bänke am Kai
+    box(4, .12, 1.6, M(0xff4fa3, .5), -70, 3, 8); box(.12, 3, .12, M(0x9aa0aa), -71.8, 1.5, 8); box(.12, 3, .12, M(0x9aa0aa), -68.2, 1.5, 8);
+    const tasks: Promise<void>[] = [];
+    for (let z = -30; z <= 40; z += 14) tasks.push(this.place(C('streetlight'), -89.5, .1, z, Math.PI / 2));
+    for (const z of [2, 16, 38]) tasks.push(this.place(C('bench'), -88.5, .1, z, -Math.PI / 2));
+    await Promise.all(tasks);
+    [PALETTES[0], PALETTES[2], PALETTES[3], PALETTES[5]].forEach((p, i) => this.flag(-90.5, -6 + i * 7.5, p.colors, 6, Math.PI / 2));
+    for (const z of [-30, -21, 20, 34]) this.tree(-66.5, z, 1);
   }
 
   /* ---------- Verkehr ---------- */
@@ -344,6 +409,7 @@ export class World {
     ];
     for (let i = 0; i < loops.length; i++) {
       const o = await instance(C(CARS[i % CARS.length]));
+      o.userData.kind = CARS[i % CARS.length];
       o.scale.setScalar(S); this.root.add(o);
       const path = loops[i].map(([x, z]) => new THREE.Vector3(x, .1, z));
       this.cars.push({ o, path, seg: 0, u: rnd(), v: 7 + rnd() * 4 });
@@ -372,13 +438,19 @@ export class World {
   }
 
   /** Kreis gegen Rechtecke, verschiebt p aus Hindernissen heraus */
+  private last = new THREE.Vector3();
   collide(p: THREE.Vector3, r: number) {
     for (const c of this.colliders) {
       const dx = p.x - c.x, dz = p.z - c.z;
       const px = c.hx + r - Math.abs(dx), pz = c.hz + r - Math.abs(dz);
       if (px > 0 && pz > 0) { if (px < pz) p.x += Math.sign(dx) * px; else p.z += Math.sign(dz) * pz; }
     }
-    const lim = HALF - 1;
-    p.x = Math.max(-lim, Math.min(lim, p.x)); p.z = Math.max(-lim, Math.min(lim, p.z));
+    if (!walkable(p.x, p.z)) {
+      if (walkable(p.x, this.last.z)) p.z = this.last.z;
+      else if (walkable(this.last.x, p.z)) p.x = this.last.x;
+      else if (walkable(this.last.x, this.last.z)) p.set(this.last.x, p.y, this.last.z);
+      else { const lim = HALF - 1; p.x = Math.max(-lim, Math.min(lim, p.x)); p.z = Math.max(-lim, Math.min(lim, p.z)); }
+    }
+    this.last.copy(p);
   }
 }
