@@ -4,6 +4,7 @@ import type { SaveData } from '../engine/Save';
 import type { Line } from '../ui/ui';
 import type { Look } from './Actor';
 import { LICHT_CHAPTERS, LICHT_PEOPLE, LICHT_START, LICHT_SHOW, LUMA, lichtEnding } from './licht';
+import { LF_CHAPTERS, LF_PEOPLE, LF_START, lfEnding } from './leuchtfeuer';
 
 export interface NpcDef {
   id: string; name: string; pron: string; color: string; look: Look;
@@ -28,6 +29,7 @@ export const NPCS: NpcDef[] = [
   { id: 'hilde', name: 'Hilde', pron: 'sie/ihr', color: '#a3a3a3', look: { body: 'Woman', palette: 'ace', skin: 0, hair: 6 }, x: -19.2, z: 19.2, anim: 'sit', petition: true },
   { id: 'sam', name: 'Sam', pron: 'er/ihn', color: '#5bcefa', look: { body: 'Man2', palette: 'trans', skin: 2, hair: 3 }, x: 4, z: 30, walk: [[4, 30], [4, 48], [-4, 48], [-4, 30]], petition: true },
   { id: 'leon', name: 'Leon', pron: 'er/ihn', color: '#ff7ac8', look: { body: 'Man', palette: 'rainbow', skin: 2, hair: 0 }, x: 33.9, z: 22.4, yaw: -Math.PI / 2 },
+  { id: 'finn', name: 'Finn', pron: 'er/ihn', color: '#f2b544', look: { body: 'Man2', palette: 'rainbow', skin: 0, hair: 1 }, x: -108.5, z: -2, yaw: Math.PI / 2 },
   { id: 'kim', name: 'Kim', pron: 'they/them', color: '#3da542', look: { body: 'Woman', palette: 'aro', skin: 4, hair: 2 }, x: -26, z: -20, walk: [[-26, -20], [-26, -4], [-14, -4], [-14, -20]], petition: true },
 ];
 
@@ -130,7 +132,7 @@ export function marks(s: SaveData): Array<[string, string]> {
 }
 
 /** Nova ist in Kapitel 4 verschwunden */
-export function hidden(s: SaveData, id: string) { return (id === 'nova' && s.chapter === 4 && s.step < 4) || (id === 'leon' && s.chapter < 2); }
+export function hidden(s: SaveData, id: string) { return (id === 'nova' && s.chapter === 4 && s.step < 4) || (id === 'leon' && s.chapter < 2) || (id === 'finn' && s.chapter < 2); }
 
 /** Ziele, die sich von selbst erfüllen (Schicht gearbeitet, Leute kennengelernt) – zweimal pro Sekunde */
 export function storyTick(c: StoryCtx) {
@@ -340,6 +342,7 @@ export function talk(c: StoryCtx, id: string): boolean {
     }
   }
   if (id === 'leon') { licht(c); return true; }
+  if (id === 'finn') { leuchtfeuer(c); return true; }
   // Allgemeine Gespräche
   const lines: Record<string, string[]> = {
     mo: ['Kaffee geht heute aufs Haus. Morgen nicht mehr!', 'Wenn du was brauchst: Ich bin hier.'],
@@ -476,6 +479,7 @@ export function ending(s: SaveData): Line[] {
   else out.push(L(npc('rex'), s.flags.rex === 'dj' ? 'Ab nächster Woche lege ich jeden Freitag im Leuchtturm auf. Danke, Boss.' : 'Danke, dass du mir eine Chance gegeben hast.'));
   out.push(L(npc('hilde'), s.flags.family === 'cake' ? 'Und jetzt Kuchen für alle! Das Rezept kennt inzwischen die ganze Plaza.' : 'Seit 1979 war ich auf jeder Pride. Diese war die schönste.'));
   out.push(L(npc('mo'), s.rep >= 80 ? 'Weißt du, was die Leute über dich sagen? Dass Rainbow City ohne dich nicht dieselbe wäre.' : 'Ich bin stolz auf dich. Und das hier ist erst der Anfang.'));
+  if (s.flags.lfEnd) out.push(FP('finn', 'Ben und ich laufen ganz vorne mit. Und heute Nacht brennt der Leuchtturm am Steg für alle.'));
   if (s.flags.lichtEnd) out.push(LP('luma', 'Und jetzt alle zusammen, Rainbow City: Ich bin das Licht!'));
   out.push(L('Rainbow City', 'Ende der Geschichte – aber nicht deines Lebens hier. Arbeite, date, feiere, und führe deinen Club weiter.'));
   return out;
@@ -571,5 +575,62 @@ function part(c: StoryCtx, i: number) {
       return;
     }
     c.say(lines, () => { if (ch.studio) addLight(s, 6); next(); });
+  });
+}
+
+/* ---------- „Leuchtfeuer“: Finns Geschichte in Rückblenden (ab Kapitel 2, Leuchtturm auf dem Steg am Hafen) ---------- */
+const FP = (id: string, text: Line['text'], choices?: Line['choices']): Line => {
+  const p = LF_PEOPLE[id];
+  return p ? { who: p.name, pron: p.pron, color: p.color, text, choices } : { who: 'Erzählung', color: '#7fa6c9', text, choices };
+};
+const addGlow = (s: SaveData, n: number) => { s.flags.lfGlow = Math.max(0, Number(s.flags.lfGlow ?? LF_START) + n); };
+export const lfGlow = (s: SaveData) => Number(s.flags.lfGlow ?? LF_START);
+export const lfPart = (s: SaveData) => Number(s.flags.lf || 0);
+
+export function leuchtfeuer(c: StoryCtx) {
+  const s = c.s, i = lfPart(s);
+  if (!s.flags.lfIntro) {
+    c.say([
+      FP('finn', `Hey, ${me(s)}. Ich bin Finn. Ben und ich wohnen seit letztem Sommer in Rainbow City – wegen des Leuchtturms hier am Steg komme ich jeden Abend her.`),
+      FP('finn', 'Er erinnert mich an zu Hause. An Warnholm, an mein letztes Schuljahr, an den Leuchtturm Rotenhorn. Und daran, wie Ben und ich uns gefunden haben.'),
+      FP('finn', 'Willst du die Geschichte hören? Sie heißt „Leuchtfeuer“.', [
+        { label: 'Ja, erzähl.', fn: () => { s.flags.lfIntro = true; s.flags.lfGlow = LF_START; } },
+        { label: 'Später gern.', fn: () => {} },
+      ]),
+    ], () => { if (s.flags.lfIntro) setTimeout(() => lfChapter(c, 0), 60); });
+    return;
+  }
+  if (i >= LF_CHAPTERS.length) {
+    const e = lfEnding(lfGlow(s));
+    c.say([FP('finn', `Danke fürs Zuhören. Unser Ende heißt „${e.title}“.`), FP('finn', 'Das ganze Buch steht übrigens im Handy, unter 🗼 „Leuchtfeuer“.')]);
+    return;
+  }
+  c.say([FP('finn', i === 0 ? 'Also, ganz von vorn. Erster Schultag.' : 'Setz dich auf den Steg. Ich erzähl weiter.', [
+    { label: 'Weiter zuhören', fn: () => setTimeout(() => lfChapter(c, i), 60) },
+    { label: 'Ein andermal', fn: () => {} },
+  ])]);
+}
+
+function lfChapter(c: StoryCtx, i: number) {
+  const s = c.s, ch = LF_CHAPTERS[i];
+  const lines: Line[] = ch.lines.map(([who, t]) => FP(who, t));
+  let reply = '';
+  if (ch.choices) lines.push(FP('finn', 'Was tust du an meiner Stelle?', ch.choices.map((x) => ({ label: x.t, sub: `+${x.g} Leuchtkraft`, fn: () => { addGlow(s, x.g); reply = x.r; } }))), FP('', () => reply));
+  if (ch.game) lines.push(FP('', `${ch.game} Du erlebst es mit Finn. +6 Leuchtkraft`));
+  const next = () => { if (ch.game) addGlow(s, 6); s.flags.lf = i + 1; c.reward(0, 2, 'Finns Geschichte'); };
+  c.card(`Rückblende · ${/^\d/.test(ch.n) ? 'Kapitel ' + ch.n : ch.n}`, ch.title, 'Leuchtfeuer – Finns Geschichte').then(() => {
+    if (ch.end) {
+      c.say(lines, () => {
+        next();
+        const e = lfEnding(lfGlow(s));
+        s.flags.lfEnd = e.id;
+        c.say([FP('', `Ende: „${e.title}“ – ${e.text}`), FP('ben', 'Und jetzt sind wir hier. Rainbow City hat auch einen Leuchtturm.')], () => {
+          c.reward(0, 10, '„Leuchtfeuer“ zu Ende erlebt');
+          c.card('Leuchtfeuer', e.title, e.text);
+        });
+      });
+      return;
+    }
+    c.say(lines, next);
   });
 }

@@ -682,7 +682,7 @@
      "Heiltränke gibt es im Laden gegen Rissplitter."
     ]
    },
-   "size": 33954961,
+   "size": 33955036,
    "files": 858,
    "offline": true,
    "cloud": {
@@ -2923,7 +2923,7 @@
   {
    "id": "pride-city",
    "title": "Pride City – Ein Leben in allen Farben",
-   "desc": "Der Relaunch von Gay Life!: queere 3D-Lebenssimulation in Rainbow City mit realistischen Figuren in Pride-Farben. Eigene Figur mit 13 Farbwelten, Hauttönen und Pronomen, Story in fünf Kapiteln bis zur Pride-Parade, dazu der Roman „Ich bin das Licht“ als Leons Geschichte in zwölf Rückblenden (und komplett zum Lesen), eigener Club am Hafen mit Barkeeper-Minispiel, Tanz-Battle in 3D, belebte Stadt mit Polizei, Feuerwehr und fahrbaren Autos, Dating, Jobs, Wohnung, Tag und Nacht. Konsolen-Menü, Controller, Touch im Hoch- und Querformat. Speicherstand lokal und per Google.",
+   "desc": "Der Relaunch von Gay Life!: queere 3D-Lebenssimulation in Rainbow City mit realistischen Figuren in Pride-Farben. Eigene Figur mit 13 Farbwelten, Hauttönen und Pronomen, Story in fünf Kapiteln bis zur Pride-Parade, dazu der Roman „Ich bin das Licht“ als Leons Geschichte in zwölf Rückblenden (und komplett zum Lesen), der Jugendroman „Leuchtfeuer“ als Finns Geschichte am Leuchtturm in 16 Rückblenden, eigener Club am Hafen mit Barkeeper-Minispiel, Tanz-Battle in 3D, belebte Stadt mit Polizei, Feuerwehr und fahrbaren Autos, Dating, Jobs, Wohnung, Tag und Nacht. Konsolen-Menü, Controller, Touch im Hoch- und Querformat. Speicherstand lokal und per Google.",
    "icon": "🏳️‍🌈",
    "img": "pride-city/card.jpg",
    "bg": "linear-gradient(145deg,#ff2f7a,#7b3cff 52%,#1aa7ff)",
@@ -2945,8 +2945,8 @@
      "Am Barkeeper-Tresen zählt Tempo: Bärenbier ist nur Bier, alle anderen Drinks haben drei Zutaten."
     ]
    },
-   "size": 7478157,
-   "files": 131,
+   "size": 7838427,
+   "files": 133,
    "offline": true,
    "cloud": {
     "game": "pride-city",
@@ -3225,39 +3225,6 @@
    "cloud": {
     "game": "funk-survivor",
     "prefix": "funksurvivor-"
-   },
-   "trailer": null
-  },
-  {
-   "id": "leuchtfeuer",
-   "title": "Leuchtfeuer – Das Spiel zum Roman",
-   "desc": "Das offizielle Spiel zum Roman „Leuchtfeuer“ von RicoReWi: Erlebe Finns und Bens Schuljahr in Warnholm in 16 Kapiteln und echter 3D-Grafik – vom Schwarzen Brett über die Sturmnacht bis zum Feuer am Nordstrand. Fünf Spiele aus dem Buch: Flaschenpost mit dem Leuchtturm fangen, das Sturmnacht-Plakat zusammensetzen, Fischbrötchen „Zwei mit Zwiebeln“, Gegenwind am Deich und Pias Fall 14. Mutige Entscheidungen bringen Leuchtkraft, drei Enden, der ganze Roman zum Lesen. PC, Handy und Gamecontroller.",
-   "icon": "🗼",
-   "img": "leuchtfeuer/card.jpg",
-   "bg": "linear-gradient(145deg,#0b1630,#1d4a63 50%,#c7262c)",
-   "glow": "rgba(255,213,106,.5)",
-   "path": "leuchtfeuer/",
-   "modes": {},
-   "multiplayer": false,
-   "guide": {
-    "anleitung": "Das offizielle Spiel zum Roman „Leuchtfeuer“: Du erlebst Finns Schuljahr in Warnholm in 16 Kapiteln in 3D. Lies die Szenen weiter, lauf selbst zu den Zielen (goldener Ring) und triff Entscheidungen – mutige Antworten bringen Leuchtkraft und entscheiden über eines von drei Enden. Dazu fünf Spiele aus dem Buch, auch einzeln im Menü: Leuchtturm (Strahl drehen, Flaschenpost fangen, Kutter leiten), Sturmnacht-Plakat (Teile tauschen und drehen), Zwei mit Zwiebeln (Fischbrötchen nach Bestellung), Gegenwind (drei Spuren über den Deich) und Pia ermittelt (Beweise sammeln, Fall lösen). Außerdem: der ganze Roman mit Illustrationen zum Lesen.",
-    "steuerung": [
-     "Tastatur: W A S D/Pfeile laufen, Shift rennen, Q/E Kamera, Enter weiter/ansehen, Esc/P Pause; Leuchtturm ← → und Leertaste, Plakat Pfeile/Enter/Leertaste, Bude Q F E, Leertaste, Enter, Deich ← → ↑ ↓.",
-     "Touch: Joystick und Aktionsknopf beim Laufen; Leuchtturm übers Bild wischen, Plakat antippen, Bude Knöpfe unten, Deich wischen.",
-     "Gamecontroller: linker Stick laufen, rechter Stick Kamera, A bestätigen/springen, X Aktion, Y/LB/RB Fischsorten, Start Pause."
-    ],
-    "tipps": [
-     "Für das Ende „Leuchtfeuer“ brauchst du 78 % Leuchtkraft – mutige Antworten und Sterne in den Spielen helfen.",
-     "Im Leuchtturm den Lichtblitz für Nebel und weit entfernte Flaschen aufheben.",
-     "Bei Fall 14 alle sechs Beweise suchen, bevor du den Fall löst."
-    ]
-   },
-   "size": 2084946,
-   "files": 37,
-   "offline": true,
-   "cloud": {
-    "game": "leuchtfeuer",
-    "prefix": "lf-"
    },
    "trailer": null
   }
