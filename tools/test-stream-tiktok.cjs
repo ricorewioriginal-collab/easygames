@@ -55,18 +55,30 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     const errs = []; p.on('pageerror', e => errs.push(e.message));
     await p.goto(base); await p.waitForSelector('.tt-leg'); await sleep(2500);
     ok(/Galaxy/.test(await p.textContent('.tt-leg')) && /Perfume/.test(await p.textContent('.tt-leg')), 'Geschenke-Legende im Overlay (mit Spiel-Belegung)');
-    const board = () => p.evaluate(() => { const d = EG_STREAM.frame.contentWindow.document; return d.body.innerText + '|' + JSON.stringify(EG_STREAM.frame.contentWindow.localStorage); });
+    const board = () => p.evaluate(() => { const d = EG_STREAM.frame.contentWindow.document; return d.body.innerText + '|' + (d.activeElement && d.activeElement.id) + '|' + JSON.stringify(EG_STREAM.frame.contentWindow.localStorage); });
     await p.evaluate(() => { EG_STREAM.frame.contentWindow.__mark = 1; });
-    const b0 = await board();
+    await inject({ type: 'chat', user: 'Mia', text: 'a' }); await sleep(1200);   // Startbild bestätigen (virtueller Controller ist schon angemeldet)
+    const b0 = await board(), shot0 = await p.locator('iframe').first().screenshot();
     for (const w of ['rechts', 'runter', 'links', 'hoch']) { await inject({ type: 'chat', user: 'Mia', text: w + ' bitte' }); await sleep(700); }
     const pad = await p.evaluate(() => { const w = EG_STREAM.frame.contentWindow, g = w.navigator.getGamepads()[3]; return !!(w.EasyGamesPadNormal && g && /virtuell/.test(g.id)); });
     ok(pad, 'virtueller Controller im Spiel angemeldet');
-    ok((await board()) !== b0, 'Chat-Befehle bewegen das Spiel');
+    ok((await board()) !== b0 || !(await p.locator('iframe').first().screenshot()).equals(shot0), 'Chat-Befehle bewegen das Spiel');
     await inject({ type: 'gift', user: 'Leon', gift: 'Perfume', count: 2 }); await sleep(1500);
     ok(/Leon: 🌹 Perfume ×2 → nach rechts/.test(await p.textContent('.tt-feed')), 'Geschenk mit Anzahl in der Ereignis-Liste');
     if (SHOTS) await p.screenshot({ path: path.join(SHOTS, 'tiktok-overlay.png') });
     await inject({ type: 'gift', user: 'Emma', gift: 'Galaxy', count: 1 }); await sleep(2000);
     ok(await p.evaluate(() => EG_STREAM.frame.contentWindow.__mark === undefined), 'Galaxy startet das Spiel neu');
+    // Spiel ohne eigene Controller-Abfrage (nur Tastatur, hier nachgebaut): Geschenke kommen als Tasten an (gamepad.js wird nachgeladen)
+    {
+      const qc = await b.newContext({ viewport: { width: 432, height: 768 } });
+      await qc.route(/\/deluxe-2048\/(index\.html)?(\?.*)?$/, r => r.fulfill({ contentType: 'text/html', body: '<!doctype html><title>Nur Tastatur</title><body><script>window.__keys=[];addEventListener("keydown",e=>__keys.push(e.key))</script>Tastatur-Spiel</body>' }));
+      const q = await qc.newPage(); q.on('pageerror', e => errs.push('tastatur: ' + e.message));
+      await q.goto(base); await q.waitForSelector('.tt-leg', { state: 'attached' }); await sleep(3000);
+      await inject({ type: 'gift', user: 'Mia', gift: 'Rose', count: 1 }); await inject({ type: 'chat', user: 'Ben', text: 'rechts' }); await sleep(1800);
+      const keys = await q.evaluate(() => EG_STREAM.frame.contentWindow.__keys || []);
+      ok(keys.includes('Enter') && keys.includes('ArrowRight'), 'Spiel ohne eigene Controller-Abfrage: Geschenk und Chat kommen als Tasten an (' + keys.join(',') + ')');
+      await qc.close();
+    }
     // Effekte, Spielstand löschen (mit Sicherung) und Wiederherstellen
     await p.evaluate(() => EG_TIKTOK.run('fx:flip:5+fx:shake', 'Test')); await sleep(300);
     ok(await p.evaluate(() => /rotate/.test(EG_STREAM.frame.style.transform) && /ttShake/.test(EG_STREAM.frame.style.animation)), 'Effekte: Bild gedreht und wackelt');

@@ -145,7 +145,9 @@
     function flip(g) { var b = g.buttons.slice(), t; t = b[12]; b[12] = b[13]; b[13] = t; t = b[14]; b[14] = b[15]; b[15] = t;
       return { id: g.id, index: g.index, connected: g.connected, timestamp: g.timestamp, mapping: 'standard', buttons: b, axes: g.axes.map(function (v) { return -v; }), vibrationActuator: g.vibrationActuator }; }
     function fire(type) { try { var ev = new Event(type); Object.defineProperty(ev, 'gamepad', { value: virt }); root.dispatchEvent(ev); } catch (e) { } }
+    var polls = 0;   // wie oft das Spiel (oder die Hilfsschicht) Controller abfragt – TikTok-Steuerung erkennt so Spiele ohne eigene Abfrage
     function list() {
+      polls++;
       var o = stdList(), i;
       var sw = swapAB();
       for (i = 0; i < o.length; i++) if (o[i]) o[i] = remapped(sw ? swapped(o[i]) : o[i]);
@@ -178,6 +180,7 @@
       /** Bestätigen-Knopf: confirm(v) liest/setzt auto|bottom|right; swapped() = A und B getauscht (Nintendo-Art). */
       confirm: function (v) { return pref(CKEY, v); }, swapped: swapAB,
       hold: function (on) { hold = !!on; },
+      polls: function () { return polls; },
       press: function (i, v) { this.virtual(true); virt.buttons[i] = btn(v); virt.timestamp = root.performance ? root.performance.now() : Date.now(); },
       axis: function (i, v) { this.virtual(true); virt.axes[i] = Math.max(-1, Math.min(1, v)); virt.timestamp = root.performance ? root.performance.now() : Date.now(); },
       setMap: function (id, map) {

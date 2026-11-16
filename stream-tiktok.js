@@ -157,15 +157,35 @@
   // ---------- Aktionen ----------
   function gameWin() { try { return S.frame.contentWindow; } catch (e) { return null; } }
   // Normalisierung mit virtuellem Controller in das Spiel einspielen (falls das Spiel gamepad.js nicht selbst lädt)
-  function padApi(cb) {
+  function padSrc() { return EMB ? '/gamepad.js' : new URL('gamepad.js', location.href).href; }
+  function padApi(cb, tries) {
     var w = gameWin(); if (!w || !w.document) return;
-    if (w.EasyGamesPadNormal && w.EasyGamesPadNormal.press) return cb(w.EasyGamesPadNormal);
+    if (w.EasyGamesPadNormal && w.EasyGamesPadNormal.press) { padFull(w); return cb(w.EasyGamesPadNormal); }
+    // erst nach dem Laden des Spiels einspielen – sonst bricht das eigene gamepad.js des Spiels (defer) am Merker NORMAL_ONLY ab
+    if (w.document.readyState !== 'complete' || w.location.href === 'about:blank') { if ((tries || 0) < 60) setTimeout(function () { padApi(cb, (tries || 0) + 1); }, 150); return; }
     if (!w.__egPadLoading) {
       w.__egPadLoading = true; w.EASYGAMES_PAD_NORMAL_ONLY = 1;
-      var s = w.document.createElement('script'); s.src = EMB ? '/gamepad.js' : new URL('gamepad.js', location.href).href; (w.document.head || w.document.documentElement).appendChild(s);
+      var s = w.document.createElement('script'); s.src = padSrc(); (w.document.head || w.document.documentElement).appendChild(s);
     }
-    var n = 0; (function wait() { var w2 = gameWin(); if (w2 && w2.EasyGamesPadNormal && w2.EasyGamesPadNormal.press) cb(w2.EasyGamesPadNormal); else if (++n < 30) setTimeout(wait, 100); })();   // bis gamepad.js geladen ist (max. 3 s)
+    var n = 0; (function wait() { var w2 = gameWin(); if (w2 && w2.EasyGamesPadNormal && w2.EasyGamesPadNormal.press) { padFull(w2); cb(w2.EasyGamesPadNormal); } else if (++n < 30) setTimeout(wait, 100); })();   // bis gamepad.js geladen ist (max. 3 s)
   }
+  // Spiele ohne eigene Controller-Abfrage (nur Tastatur/Maus, z. B. Kartenspiele): Geschenke würden den virtuellen Controller drücken,
+  // ohne dass das Spiel es merkt. Fragt nach dem Verbinden niemand den Controller ab, kommt die volle Hilfsschicht (gamepad.js) dazu –
+  // sie setzt die Knöpfe in Tasten und Klicks um (A = Enter/Bestätigen, Steuerkreuz = Pfeiltasten).
+  function padFull(w) {
+    if (w.EasyGamesPad || w.__egPadFull || !w.EasyGamesPadNormal.polls) return;
+    w.__egPadFull = 1; w.EasyGamesPadNormal.virtual(true);
+    var p0 = w.EasyGamesPadNormal.polls();
+    setTimeout(function () {
+      try {
+        if (w.EasyGamesPad || w.EasyGamesPadNormal.polls() > p0) return;
+        var s = w.document.createElement('script'); s.src = padSrc(); s.onload = hidePadLegend; (w.document.head || w.document.documentElement).appendChild(s);
+      } catch (e) { }
+    }, 900);
+  }
+  // Virtuellen Controller schon beim Laden des Spiels anmelden: manche Spiele starten ihre Abfrage erst beim Verbinden und
+  // verpassten sonst das erste Geschenk
+  function padWarm() { if (!NOGAME && !SETUP && (VIEW === 'all' || VIEW === 'game') && online) padApi(function (N) { N.virtual(true); }); }
   // Was ein Controller-Knopf in diesem Spiel bewirkt (Beschriftungen aus data-pad / data-pad-labels des Spiels, gamepad.js)
   var PADKEY = { A: 'a', B: 'b', X: 'x', Y: 'y', LB: 'lb', RB: 'rb', LT: 'lt', RT: 'rt', START: 'start', SELECT: 'select', L3: 'l3', R3: 'r3', UP: 'up', DOWN: 'down', LEFT: 'left', RIGHT: 'right' };
   function padMean(action) {
@@ -459,7 +479,7 @@
   function setState() { state.textContent = online ? '● TikTok verbunden' : '○ Brücke nicht verbunden'; if (SETUP && P2) panelState(); }
   function connect() {
     try { ws = new WebSocket(URLWS); } catch (e) { setTimeout(connect, 5000); return; }
-    ws.onopen = function () { online = true; setState(); send({ type: 'getConfig' }); };
+    ws.onopen = function () { online = true; setState(); send({ type: 'getConfig' }); padWarm(); };
     ws.onclose = function () { online = false; setState(); setTimeout(connect, 4000); };
     ws.onerror = function () { };
     ws.onmessage = function (m) {
@@ -477,6 +497,8 @@
   streamSave(!!eff().streamSave, function (moved) { started = true; if (S.start) S.start(); else if (EMB && moved) location.reload(); });
   drawLegend(); setState(); connect();
   [1500, 4000].forEach(function (t) { setTimeout(drawLegend, t); });   // Knopf-Bedeutungen kommen erst mit dem Spiel (gamepad.js)
+  // nach Neustart/Neuladen des Spiels: Legende wieder ausblenden lassen und virtuellen Controller neu anmelden
+  if (!EMB && S.frame.addEventListener) S.frame.addEventListener('load', function () { legHid = 0; setTimeout(padWarm, 800); });
   if (!SETUP) return;
 
   // ---------- Einstellungen (setup=1; auch in der Windows-App) ----------
