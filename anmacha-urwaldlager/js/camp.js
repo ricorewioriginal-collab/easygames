@@ -70,6 +70,7 @@
       // Kisten, Fässer, Deko
       at(A.sized('kd_barrel_large', 0.9), 3.4, -3.2); at(A.sized('kd_crates_stacked', 1.0), 4.3, -2.6, 0.4); at(A.sized('kd_table_medium_decorated_A', 0.8), 3.6, -1.6, 0.6);
       this.solid.push({ x: 3.8, z: -2.5, r: 1.0 });
+      if (A.has('ph_bucket')) { at(A.sized('ph_bucket', 0.4), 4.3, -3.3, 0.3); at(A.sized('ph_crate', 0.45), 3.1, -2.9, 0.9); }   // Poly Haven, im Sperrbereich der Kisten
       if (!studio) for (let i = 0; i < 8; i++) { const a = i / 8 * 6.28 + 0.2; at(A.sized('kd_torch_mounted', 1.2), Math.cos(a) * 11.5, Math.sin(a) * 11.5, -a); }
       this.cine = new UL.Cine(this.camera);
       this.cam = { yaw: Math.PI * 0.85, pitch: 0.38, dist: 6.5 };
