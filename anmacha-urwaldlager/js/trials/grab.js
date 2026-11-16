@@ -1,4 +1,4 @@
-/* Prüfung: Das Madengrab – in einer Kiste unter der Erde liegen, Maden und Kakerlaken rieseln herein; Schrauben am Deckel aufdrehen, hinter jeder steckt ein Stern */
+/* Prüfung: Das Madengrab – in einer Kiste unter der Erde liegen, Maden und Kakerlaken rieseln herein; die eigene Hand zu den Schrauben führen, zupacken und herausdrehen – hinter jeder steckt ein Stern */
 (function () {
   'use strict';
   const UL = window.UL, T = THREE, R = UL.R, A = UL.A;
@@ -40,6 +40,13 @@
       const wg = new T.SphereGeometry(0.5, 6, 4); wg.scale(0.3, 0.3, 1.7);
       ctx.wm = new T.InstancedMesh(wg, new T.MeshLambertMaterial({ color: R.lin(0xe0c080) }), 260); sc.add(ctx.wm);
       ctx.wl = []; for (let i = 0; i < 260; i++) ctx.wl.push({ on: false, x: 0, y: -9, z: 0, r: 0, ph: Math.random() * 6 });
+      // eigene Hand unter dem Deckel (wie bei den fiesen Kisten)
+      const hand = ctx.hand = new T.Group(), skin = R.mat(0xf0c8a8);
+      const palm = new T.Mesh(new T.BoxGeometry(0.12, 0.04, 0.13), skin); hand.add(palm);
+      for (let f = 0; f < 4; f++) { const fi = new T.Mesh(new T.CylinderGeometry(0.013, 0.014, 0.08, 6), skin); fi.rotation.x = Math.PI / 2; fi.position.set(-0.042 + f * 0.028, 0, -0.1); hand.add(fi); }
+      const arm = new T.Mesh(new T.CylinderGeometry(0.022, 0.028, 0.5, 8), R.mat(ctx.look.shirt || 0xc8372d)); arm.rotation.x = Math.PI / 2; arm.position.set(0, -0.01, 0.31); hand.add(arm);
+      hand.scale.setScalar(2); hand.traverse(o => { if (o.isMesh) o.castShadow = true; }); sc.add(hand); ctx.hp = new T.Vector2(0, 0.6);
+      ctx.tint = document.createElement('div'); ctx.tint.className = 'tint'; document.getElementById('ui').prepend(ctx.tint);
       ctx.cur = 0; ctx.panic = 0.1; ctx.prevA = null; ctx.stun = 0; ctx.loadT = 2.5; ctx.fill = 0;
       ctx.hostPos.set(-3.8, 0, -3.6); ctx.hostRy = 0.8;
       ctx.intro = { pos: new T.Vector3(2.5, 3.5, 3.5), look: new T.Vector3(0, DY - 0.6, 0) };
@@ -88,32 +95,44 @@
       if (calm) ctx.panic -= 0.32 * dt;
       ctx.panic = UL.clamp(ctx.panic, 0, 1);
       if (Math.random() < dt * (0.2 + ctx.panic * 0.8)) UL.Trials.crawl(1, ['maggot', 'roach'], 1.5);
-      if (ctx.panic >= 1 && ctx.stun <= 0) { ctx.stun = 2; ctx.panic = 0.5; R.shake = 1; ctx.bad('PANIK im Grab!', 'scream'); const b = ctx.bolts[ctx.cur]; if (b) b.turn = Math.max(0, b.turn - 0.6); }
+      if (ctx.panic >= 1 && ctx.stun <= 0) { ctx.stun = 2; ctx.panic = 0.5; R.shake = 1; ctx.bad('PANIK im Grab!', 'scream'); ctx.bolts.forEach(x => { if (!x.done) x.turn = Math.max(0, x.turn - 0.3); }); }
       if (ctx.stun > 0) ctx.stun -= dt;
       ctx.player.root.rotation.z = ctx.stun > 0 ? Math.sin(t * 25) * 0.08 : 0;
-      // Schraube aufdrehen: Stick im Kreis drehen (oder Aktion tippen)
-      const b = ctx.bolts[ctx.cur];
-      if (b && ctx.stun <= 0 && !calm) {
+      // Hand selbst zur Schraube führen, Aktion halten = zupacken, dann Stick im Kreis drehen (oder Aktion tippen)
+      const H = ctx.hand;
+      let b = null, bd = 0.2;
+      for (const x of ctx.bolts) if (!x.done) { const d = Math.hypot(x.g.position.x - ctx.hp.x, x.g.position.z - ctx.hp.y); if (d < bd) { bd = d; b = x; } }
+      const grip = b && I.okD && ctx.stun <= 0 && !calm;
+      if (!grip && ctx.stun <= 0 && !calm) { ctx.hp.x = UL.clamp(ctx.hp.x + I.mx * 0.9 * dt, -LW + 0.12, LW - 0.12); ctx.hp.y = UL.clamp(ctx.hp.y + I.my * 0.9 * dt, -LL + 0.2, LL - 0.2); }
+      if (grip) {
+        ctx.hp.x = UL.damp(ctx.hp.x, b.g.position.x, 10, dt); ctx.hp.y = UL.damp(ctx.hp.y, b.g.position.z, 10, dt);
         const m = Math.hypot(I.mx, I.my);
         if (m > 0.55) { const a = Math.atan2(I.my, I.mx); if (ctx.prevA !== null) { let d = a - ctx.prevA; d = Math.atan2(Math.sin(d), Math.cos(d)); b.turn += Math.abs(d) / (Math.PI * 2) * (ctx.fill > 0.3 ? 0.8 : 1); } ctx.prevA = a; } else ctx.prevA = null;
         if (I.ok) b.turn += 0.07;
-        b.head.rotation.y = b.turn * Math.PI * 2; b.head.position.y = -0.05 - b.turn / TURNS * 0.12;
         if (Math.random() < dt * 4 && m > 0.55) UL.Audio.sfx('tick');
-        if (b.turn >= TURNS) { b.done = true; b.head.visible = false; b.star.visible = false; b.num.visible = false; ctx.addStar(b.g.position.clone()); ctx.player.play('cheer', { speed: 1.4 }); ctx.cur++; ctx.prevA = null; }
+        if (b.turn >= TURNS) { b.done = true; b.head.visible = false; b.star.visible = false; b.num.visible = false; ctx.addStar(b.g.position.clone()); ctx.player.play('cheer', { speed: 1.4 }); ctx.prevA = null; ctx.cur++; }
       } else ctx.prevA = null;
-      ctx.bolts.forEach((x, i) => { if (!x.done) x.num.scale.setScalar(i === ctx.cur ? 1.25 + Math.sin(t * 8) * 0.12 : 0.8); });
+      // Schrauben zeigen den Fortschritt selbst: drehen sich heraus und wackeln kurz vor dem Ende
+      ctx.bolts.forEach(x => { if (x.done) return; const k = x.turn / TURNS; x.head.rotation.y = x.turn * Math.PI * 2; x.head.position.set(k > 0.75 ? Math.sin(t * 40) * 0.006 : 0, -0.05 - k * 0.14, 0); x.num.scale.setScalar(x === b ? 1.25 + Math.sin(t * 8) * 0.12 : 0.8); });
+      H.position.set(ctx.hp.x, DY - (grip ? 0.1 : 0.16) - (ctx.stun > 0 ? 0.1 : 0), ctx.hp.y); H.rotation.set(grip ? -0.3 : 0, Math.atan2(-ctx.hp.x, 0.25 - ctx.hp.y), ctx.stun > 0 ? Math.sin(t * 30) * 0.3 : grip && ctx.prevA !== null ? Math.sin(ctx.prevA) * 0.35 : Math.sin(t * 4) * 0.05);
       if (ctx.cur >= ctx.bolts.length) { ctx.end('alle'); return; }
-      ctx.meters = [{ label: '😱 Panik', v: ctx.panic, danger: ctx.panic > 0.75, color: ctx.panic > 0.75 ? '#ff4a4a' : '#ffb03a' }, { label: '🔩 Schraube ' + (ctx.cur + 1), v: b ? b.turn / TURNS : 0, color: '#ffd23a' }];
-      ctx.extraHud = `<span class="chip">🐛 ${nw} Maden</span>`;
-      ctx.overlay(`<div class="lbl">${ctx.stun > 0 ? '😱 PANIK …' : calm ? '😮‍💨 Augen zu, ruhig atmen …' : '🔄 Stick im Kreis drehen (oder Aktion tippen): Schraube ' + (ctx.cur + 1) + ' aufdrehen'}</div>`);
-      // Kamera: von oben durch den Deckel, leicht schwankend
+      ctx.meters = [];
+      const pf = ctx.panic > 0.75 ? '😱' : ctx.panic > 0.45 ? '😰' : '😬';
+      ctx.extraHud = `<span class="chip">🐛 ${nw} Maden</span><span class="chip ${ctx.panic > 0.75 ? 'warn' : ''}">${pf} Panik ${Math.round(ctx.panic * 100)} %</span>`;
+      ctx.tint.style.boxShadow = `inset 0 0 ${Math.round(60 + ctx.panic * 140)}px rgba(200,0,0,${(Math.max(0, ctx.panic - 0.3) * 0.9).toFixed(2)})`;
+      const G = UL.In.glyph;
+      ctx.overlay(`<div class="lbl">${ctx.stun > 0 ? '😱 PANIK …' : calm ? '😮‍💨 Augen zu, ruhig atmen …' : grip ? '🔄 Festhalten und Stick im Kreis drehen (oder ' + G('ok') + ' tippen)' : b ? '✋ ' + G('ok') + ' halten: Schraube packen' : '✋ Hand zu einer Schraube führen'}</div>`);
+      // Kamera: von oben durch den Deckel, leicht schwankend, folgt der Hand
       const port = UL.portrait();
-      ctx.cam.position.set(Math.sin(t * 0.3) * 0.15, port ? 4.6 : 3.3, port ? 1.2 : 1.6); ctx.cam.lookAt(0, DY - 0.8, b ? b.g.position.z * 0.25 : 0);
+      ctx.cam.position.set(Math.sin(t * 0.3) * 0.15, port ? 4.6 : 3.3, (port ? 1.2 : 1.6) + ctx.hp.y * 0.3); ctx.cam.lookAt(0, DY - 0.8, ctx.hp.y * 0.35);
     },
-    finish(ctx) { ctx.player.root.rotation.set(0, 0, 0); ctx.player.root.position.set(0.9, 0, 1.4); },
+    finish(ctx) { if (ctx.tint) ctx.tint.remove(); ctx.player.root.rotation.set(0, 0, 0); ctx.player.root.position.set(0.9, 0, 1.4); },
     bot(dt, ctx, I) {
       if (ctx.panic > 0.8) { I.altD = true; return; }
-      const a = ctx.t * 7; I.mx = Math.cos(a); I.my = Math.sin(a);
+      const b = ctx.bolts.find(x => !x.done); if (!b) return;
+      const dx = b.g.position.x - ctx.hp.x, dz = b.g.position.z - ctx.hp.y;
+      if (Math.hypot(dx, dz) > 0.08) { I.mx = UL.clamp(dx * 8, -1, 1); I.my = UL.clamp(dz * 8, -1, 1); return; }
+      I.okD = true; const a = ctx.t * 7; I.mx = Math.cos(a); I.my = Math.sin(a);
     }
   });
 })();

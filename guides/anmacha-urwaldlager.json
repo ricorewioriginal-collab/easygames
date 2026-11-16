@@ -49,7 +49,7 @@
    "t": "Die Urwaldprüfungen",
    "list": [
     "Die Ekel-Kisten: in offene Kisten greifen und Sterne zwischen Krabbeltieren finden.",
-    "Das Dschungel-Dinner: im Takt kauen, den Würgereiz ausbalancieren, schlucken.",
+    "Das Dschungel-Dinner: die zappelnden Happen selbst mit der Gabel aufspießen, kauen, Ekel-Drinks leeren und das Würgen ausgleichen.",
     "Das Schlammbecken: tauchen, Luft einteilen, Aalen ausweichen.",
     "Der Wackelsteg: über die Schlucht balancieren, Wind ausgleichen, über Lücken springen.",
     "Der Krabbel-Tunnel: mit Stirnlampe durchs Labyrinth, Ekel-Anzeige im Blick.",
@@ -175,7 +175,7 @@
    "t": "Ekel-Kisten und Dschungel-Dinner",
    "list": [
     "Kisten: zügig greifen, beim vollen Ekel-Balken kurz Pause machen, leere Kisten mit der zweiten Taste überspringen.",
-    "Dinner: genau dann bestätigen, wenn die Markierung im grünen Bereich ist, mit dem Stick den Würgereiz in der Mitte halten und zum Schlucken die zweite Taste gedrückt halten, bis der Balken voll ist."
+    "Dinner: Mit dem Stick die Gabel über den Teller führen und zustechen, sobald ein Happen hell aufleuchtet – daneben stechen lässt die Tiere flüchten. Danach dreimal kauen und dabei mit dem Stick gegen das Kippen des Bildes lenken. Drinks mit der zweiten Taste (oder Aktion) gedrückt leer trinken und bei starkem Würgen kurz absetzen."
    ]
   },
   {
@@ -218,7 +218,7 @@
     "Sternen-Bach: Immer nur einen Stern tragen und am Rand zurück zum Netz waten. Rollt ein Ball auf dich zu, mit der Aktionstaste zur Seite hechten – wer getroffen wird, verliert seinen Stern.",
     "Blindfahrt: Fahr langsam und hör auf den Beifahrer. Bei „Achtung, Fass!“ sofort lenken, bei „Stopp!“ die Aktionstaste halten, bis der Stern gegriffen ist. Verhaspelt er sich, korrigiert er sich gleich.",
     "Ekel-Box: Kopf drehen, bis das Fadenkreuz gelb leuchtet, dann die Aktionstaste halten. Rotes Fadenkreuz heißt Spinnennest – nicht zubeißen. Steigt die Panik über drei Viertel, die zweite Taste halten und ruhig atmen.",
-    "Madengrab: Den Stick gleichmäßig im Kreis drehen (oder die Aktionstaste schnell tippen), bis die markierte Schraube heraus ist. Bei hoher Panik kurz ruhig atmen – eine Panikattacke dreht die Schraube ein Stück zurück."
+    "Madengrab: Die eigene Hand mit dem Stick zu einer Schraube führen, Aktion gedrückt halten zum Zupacken und dabei den Stick im Kreis drehen (oder Aktion schnell tippen), bis die Schraube herausfällt. Die Reihenfolge ist frei. Bei hoher Panik kurz ruhig atmen – eine Panikattacke dreht alle Schrauben ein Stück zurück."
    ]
   }
  ],
