@@ -3,10 +3,11 @@
 import * as THREE from 'three';
 import type { GameScene } from '../../engine/Engine';
 import type { Action } from '../../engine/Input';
-import { Actor, playerLook } from '../Actor';
+import { Actor, playerLook, ROLE_LOOKS } from '../Actor';
 import type { Game } from '../Game';
 import { el, $, hints } from '../../ui/ui';
-import { music, sfx, SONGS } from '../../engine/Audio';
+import { music, sfx, SONGS, playScore } from '../../engine/Audio';
+import { type ShowSong, type PianoParts, type ChartNote, beatChart, HYMN, ytStart } from './showSongs';
 import { NPCS } from '../story';
 
 const LANES: Action[] = ['left', 'down', 'up', 'right'];
@@ -39,7 +40,17 @@ export class DanceScene implements GameScene {
   private round = 0;
   private start = 0;
 
-  constructor(private g: Game, private finish: (won: boolean, score: number) => void) {}
+  private chart: ChartNote[] | null = null;
+  private dur = 0;
+  private stopAudio: (() => void) | null = null;
+  private clock: (() => number | null) | null = null;
+  private show = false;
+  constructor(private g: Game, private finish: (won: boolean, score: number) => void, private opt: { song?: ShowSong; parts?: PianoParts; show?: boolean } = {}) {
+    const so = opt.song;
+    this.show = !!opt.show;
+    if (so?.kind === 'piano' && opt.parts) { this.chart = opt.parts.notes.map((n) => ({ t: n.t, lane: n.lane })); this.dur = opt.parts.dur; }
+    else if (so?.kind === 'yt' || so?.kind === 'beat') { this.chart = beatChart(HYMN.bpm, HYMN.len); this.dur = HYMN.len; this.beat = 60 / HYMN.bpm; }
+  }
 
   async build() {
     const r = this.root;
@@ -66,10 +77,11 @@ export class DanceScene implements GameScene {
     });
     // Figuren
     const s = this.g.save.data;
-    this.me = await Actor.create(playerLook(s));
+    this.me = await Actor.create(this.show ? { ...ROLE_LOOKS.luma } : playerLook(s));
     this.me.root.position.set(-2.6, 0, -6); r.add(this.me.root);
     const rx = NPCS.find((n) => n.id === 'rex')!;
     this.rex = await Actor.create(rx.look); this.rex.root.position.set(2.6, 0, -6); r.add(this.rex.root);
+    if (this.show) { this.rex.root.visible = false; this.me.root.position.x = 0; }
     const looks = ['rainbow', 'trans', 'bi', 'pan', 'gay', 'lesbian', 'bear', 'nonbinary'];
     const bodies = ['Man2', 'Man', 'Woman', 'Woman2', 'Hero'];
     for (let i = 0; i < 8; i++) {
@@ -94,6 +106,7 @@ export class DanceScene implements GameScene {
 
   /* Feste, wiederholbare Choreografie: jede Runde dichter */
   private makeNotes() {
+    if (this.chart) { const g = this.noteGeo(); for (const n of this.chart) this.addNote(n.lane, n.t, g.geo, g.mats, g.rot); return; }
     let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
     const shape = new THREE.Shape(); shape.moveTo(0, .45); shape.lineTo(.42, 0); shape.lineTo(.16, 0); shape.lineTo(.16, -.4); shape.lineTo(-.16, -.4); shape.lineTo(-.16, 0); shape.lineTo(-.42, 0); shape.closePath();
     const geo = new THREE.ExtrudeGeometry(shape, { depth: .12, bevelEnabled: false });
@@ -110,6 +123,11 @@ export class DanceScene implements GameScene {
       }
     }
   }
+  private noteGeo() {
+    const shape = new THREE.Shape(); shape.moveTo(0, .45); shape.lineTo(.42, 0); shape.lineTo(.16, 0); shape.lineTo(.16, -.4); shape.lineTo(-.16, -.4); shape.lineTo(-.16, 0); shape.lineTo(-.42, 0); shape.closePath();
+    return { geo: new THREE.ExtrudeGeometry(shape, { depth: .12, bevelEnabled: false }), mats: COLORS.map((c) => new THREE.MeshBasicMaterial({ color: new THREE.Color(c).multiplyScalar(1.6), toneMapped: false })), rot: [Math.PI / 2, Math.PI, 0, -Math.PI / 2] };
+  }
+  private roundLen() { return this.chart ? Math.max(10, this.dur / ROUNDS) : (BEATS_PER_ROUND + 4) * this.beat; }
   private addNote(lane: number, t: number, geo: THREE.BufferGeometry, mats: THREE.Material[], rot: number[]) {
     const m = new THREE.Mesh(geo, mats[lane]);
     m.rotation.x = -Math.PI / 2; m.rotation.z = rot[lane]; m.scale.setScalar(1.35);
@@ -118,8 +136,8 @@ export class DanceScene implements GameScene {
   }
 
   enter() {
-    this.hud = el(`<div id="mg"><div class="score"><div class="s"><small>Du</small><span id="sMe">0</span></div><div class="s" style="min-width:70px"><small>Runde</small><span id="sR">1/3</span></div><div class="s"><small>Rex</small><span id="sRx">0</span></div></div>
-      <div class="judge"></div><div class="combo"></div><div class="lanes">${ARROW.map((a, i) => `<button data-l="${i}">${a}</button>`).join('')}</div></div>`);
+    this.hud = el(`<div id="mg"><div class="score"><div class="s"><small>Du</small><span id="sMe">0</span></div><div class="s" style="min-width:70px"><small>Runde</small><span id="sR">1/3</span></div><div class="s"><small>${this.show ? 'Ziel' : 'Rex'}</small><span id="sRx">0</span></div></div>
+      <div class="judge"></div>${this.opt.song?.kind === 'yt' ? '<div class="ytBox"></div>' : ''}${this.opt.song?.kind === 'piano' ? `<div class="songTag">🎹 ${this.opt.song.title}${this.opt.song.lic ? ` · <small>${this.opt.song.lic}</small>` : ''}</div>` : ''}<div class="combo"></div><div class="lanes">${ARROW.map((a, i) => `<button data-l="${i}">${a}</button>`).join('')}</div></div>`);
     document.body.appendChild(this.hud);
     this.hud.querySelectorAll<HTMLButtonElement>('.lanes button').forEach((b) => {
       const l = +b.dataset.l!;
@@ -131,9 +149,16 @@ export class DanceScene implements GameScene {
     this.judge('Bereit?');
     music(null);
     this.start = performance.now() / 1000 + 1.2;
-    setTimeout(() => { if (!this.ended) music('club'); }, 1200 + LEAD * 1000);
+    const so = this.opt.song;
+    if (so?.kind === 'piano' && this.opt.parts) this.stopAudio = playScore(this.opt.parts.mel, this.opt.parts.acc, 1.2 + LEAD);
+    else if (so?.kind === 'yt') {
+      this.judge('Video lädt …');
+      ytStart($('.ytBox', this.hud), () => { if (!this.ended) this.end(false); })
+        .then((y) => { if (this.ended) { y.stop(); return; } this.stopAudio = y.stop; this.clock = y.clock; this.judge('Bühne frei!', '#ff8ad8'); })
+        .catch(() => { this.judge('YouTube geht gerade nicht – Beat läuft', '#ffd84a'); $('.ytBox', this.hud)?.remove(); this.start = performance.now() / 1000 + 1.2; setTimeout(() => { if (!this.ended) music('show'); }, 1200 + LEAD * 1000); });
+    } else setTimeout(() => { if (!this.ended) music(so?.kind === 'beat' ? 'show' : 'club'); }, 1200 + LEAD * 1000);
   }
-  exit() { this.hud?.remove(); music('city'); }
+  exit() { this.hud?.remove(); this.stopAudio?.(); music('city'); }
 
   private judge(t: string, color = '#fff') {
     const j = $('.judge', this.hud); j.textContent = t; j.style.color = color;
@@ -162,7 +187,8 @@ export class DanceScene implements GameScene {
 
   update(dt: number, t: number) {
     const inp = this.g.engine.input;
-    this.t = performance.now() / 1000 - this.start - LEAD;
+    if (this.clock) { const ct = this.clock(); this.t = ct == null ? Math.min(this.t, -LEAD - .5) : ct; }
+    else this.t = performance.now() / 1000 - this.start - LEAD;
     // Eingabe
     LANES.forEach((a, i) => { if (inp.pressed(a)) this.hit(i); });
     if (inp.pressed('back') && !this.ended) { inp.consume('back'); inp.consume('menu'); this.end(true); return; }
@@ -177,12 +203,12 @@ export class DanceScene implements GameScene {
       if (this.t - n.t > .2) { n.done = true; n.mesh.visible = false; this.combo = 0; this.judge('Verpasst', '#ff6b6b'); }
     }
     // Rivale punktet nach eigenem Rhythmus (fair: ~80–88 % Treffer)
-    const round = Math.max(0, Math.floor(this.t / ((BEATS_PER_ROUND + 4) * this.beat)));
+    const round = Math.max(0, Math.floor(this.t / this.roundLen()));
     if (round !== this.round && round < ROUNDS) { this.round = round; $('#sR', this.hud).textContent = `${round + 1}/${ROUNDS}`; this.judge(`Runde ${round + 1}`, '#ff8ad8'); this.rex.play('cheer'); }
     for (const n of this.notes) if (!n.mesh.userData.rx && this.t >= n.t) {
       n.mesh.userData.rx = 1;
       const h = Math.sin(n.t * 12.9898 + n.lane * 78.233) * 43758.5453; const frac = h - Math.floor(h);
-      if (frac < .8 + .04 * this.round) { this.rival += 85; if (this.rex.anim === 'idle') this.rex.play('dance1'); }
+      if (frac < (this.show ? .7 : .8 + .04 * this.round)) { this.rival += 85; if (this.rex.anim === 'idle') this.rex.play('dance1'); }
     }
     $('#sMe', this.hud).textContent = String(this.score);
     $('#sRx', this.hud).textContent = String(this.rival);
@@ -203,11 +229,12 @@ export class DanceScene implements GameScene {
 
   private end(quit: boolean) {
     this.ended = true;
-    music(null);
+    music(null); this.stopAudio?.(); this.stopAudio = null;
+    if (this.show) sfx('applause');
     const won = !quit && this.score >= this.rival;
     const s = this.g.save.data;
     s.best.dance = Math.max(s.best.dance || 0, this.score);
-    this.judge(quit ? 'Aufgegeben' : won ? 'GEWONNEN!' : 'Rex gewinnt', won ? '#ffd84a' : '#ff8ad8');
+    this.judge(quit ? 'Aufgegeben' : this.show ? (won ? 'STANDING OVATIONS!' : 'Applaus!') : won ? 'GEWONNEN!' : 'Rex gewinnt', won ? '#ffd84a' : '#ff8ad8');
     if (won) { sfx('win'); sfx('cheer'); this.me.play('cheer'); this.rex.play('hit'); } else { this.rex.play('cheer'); }
     $('.combo', this.hud).textContent = quit ? '' : `Beste Combo: ${this.best} · Rekord: ${s.best.dance}`;
     setTimeout(() => this.finish(won, this.score), quit ? 300 : 2600);

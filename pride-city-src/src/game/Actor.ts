@@ -16,7 +16,14 @@ export const OUTFITS: Array<{ id: Outfit; name: string; adult?: boolean }> = [
 export interface Look { body: string; palette: string; skin: number; hair?: number; cape?: boolean; hat?: boolean; mug?: boolean; outfit?: Outfit; top?: boolean; /** 18+: knappere Wäsche, glänzende Haut */ hot?: boolean }
 
 /** Aussehen der Spielfigur aus dem Spielstand (Harness nur mit 18+) */
+/** Spielbare Romanfigur aus „Ich bin das Licht“: Leon Sommer als Mann oder als Lady Luma in Drag */
+export const ROLE_LOOKS: Record<string, Look> = {
+  leon: { body: 'Man', palette: 'rainbow', skin: 2, hair: 0, outfit: 'clothed' },
+  luma: { body: 'Woman2', palette: 'neon', skin: 2, hair: 1, cape: true, outfit: 'clothed', top: true },
+};
 export function playerLook(s: { body: string; palette: string; skin: number; pronouns: string; flags: Record<string, unknown>; settings: { adult: boolean } }): Look {
+  const role = ROLE_LOOKS[String(s.flags.playAs || '')];
+  if (role) return { ...role };
   let outfit = (s.flags.outfit as Outfit) || 'clothed';
   if (!OUTFITS.some((o) => o.id === outfit) || (OUTFITS.find((o) => o.id === outfit)!.adult && !s.settings.adult)) outfit = 'clothed';
   const hair = typeof s.flags.hair === 'number' && (s.flags.hair as number) >= 0 ? s.flags.hair as number : undefined;

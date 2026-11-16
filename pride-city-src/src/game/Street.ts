@@ -6,6 +6,7 @@ import { Actor, type Anim, type Look } from './Actor';
 import { instance } from '../engine/Assets';
 import { WORKERS } from './social';
 import type { World } from './World';
+import { sfx } from '../engine/Audio';
 
 export type StreetKind = 'walker' | 'police' | 'fire' | 'worker';
 export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean }
@@ -102,7 +103,11 @@ export class Street {
   }
 
   /** dt, Nacht (0–1), 18+ an, Bezugspunkt (Spieler) */
+  private sirenT = 20;
   update(dt: number, night: number, adult: boolean, ref: THREE.Vector3) {
+    // Löschzug mit Martinshorn, wenn er in der Nähe vorbeifährt
+    this.sirenT -= dt;
+    if (this.sirenT < 0) { this.sirenT = 30 + Math.random() * 30; const tr = this.world.cars.at(-1)?.o; if (tr && tr.position.distanceTo(ref) < 40) sfx('siren'); }
     this.t += dt;
     const on = Math.floor(this.t * 4) % 2;
     for (const [a, b] of this.flash) { a.color.copy(a.userData.c).multiplyScalar(on ? 1 : .12); b.color.copy(b.userData.c).multiplyScalar(on ? .12 : 1); }

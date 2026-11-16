@@ -297,3 +297,9 @@ body:has(#hud:not(.hidden)) .screen.title { background: rgba(9,6,20,.8); backdro
 .phoneBox.book .pbody.read .lab { color: var(--mu); font-size: 12px; text-transform: uppercase; letter-spacing: .12em; margin: 0; }
 .phoneBox.book .pbody.read .sep { text-align: center; color: var(--mu); }
 .phoneBox.book .cover { width: 120px; float: right; margin: 0 0 8px 10px; border-radius: 8px; }
+/* Drag-Show: offizielles Video und Liedangabe */
+#mg .ytBox { position: fixed; right: max(12px, env(safe-area-inset-right)); top: 76px; width: min(320px, 42vw); aspect-ratio: 16/9; border-radius: 14px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,.5), 0 0 0 2px #ff3fb0; z-index: 3; background: #000; }
+#mg .ytBox iframe { width: 100%; height: 100%; display: block; }
+#mg .songTag { position: fixed; left: 50%; top: 76px; transform: translateX(-50%); padding: 6px 14px; border-radius: 99px; background: rgba(20,10,40,.75); color: #fff; font-weight: 800; font-size: 14px; max-width: 90vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#mg .songTag small { font-weight: 500; opacity: .75; }
+@media (orientation: portrait) { #mg .ytBox { top: auto; bottom: 150px; right: 50%; transform: translateX(50%); width: min(300px, 80vw); } }
