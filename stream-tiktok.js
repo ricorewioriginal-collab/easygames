@@ -91,6 +91,7 @@
     '.tt-tr{top:58px;right:8px}.tt-tl{top:58px;left:8px}.tt-br{bottom:100px;right:8px}.tt-bl{bottom:100px;left:8px}' +
     '.tt-feed{left:8px;right:8px;bottom:96px;display:flex;flex-direction:column;align-items:flex-start;gap:5px}' +
     '.tt-feed div{padding:5px 11px;border-radius:999px;background:linear-gradient(95deg,rgba(254,44,85,.9),rgba(139,92,246,.88) 75%,rgba(37,244,238,.85));border:1px solid rgba(255,255,255,.22);font-size:12px;font-weight:800;max-width:92%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px rgba(0,0,0,.35);box-shadow:0 4px 12px rgba(0,0,0,.35);animation:ttIn .35s cubic-bezier(.2,1.4,.4,1),ttOut .4s ease-in 4.6s forwards}' +
+    '.tt-feed div img{width:18px;height:18px;border-radius:50%;vertical-align:-4px;margin-right:6px;object-fit:cover;border:1px solid rgba(255,255,255,.6)}' +
     '@keyframes ttIn{from{transform:translateX(-24px) scale(.85);opacity:0}to{transform:none;opacity:1}}@keyframes ttOut{to{opacity:0;transform:translateX(-12px)}}' +
     '.tt-like{left:8px;right:8px;top:52px;height:5px;border-radius:3px;background:rgba(255,255,255,.14);overflow:hidden}.tt-like i{display:block;height:100%;width:0;background:linear-gradient(90deg,#25f4ee,#fe2c55);box-shadow:0 0 12px rgba(254,44,85,.8);transition:width .3s}' +
     '.tt-vote{left:50%;top:40%;transform:translate(-50%,-50%);padding:10px 16px;border-radius:14px;background:rgba(5,7,13,.82);font-size:15px;font-weight:800;text-align:center}' +
@@ -130,8 +131,8 @@
     if (!e.top || !k.length || !shows('top')) { top.style.display = 'none'; return; }
     top.style.display = ''; top.innerHTML = '<b>🏆 TOP</b>' + k.map(function (u, i) { return '<div class="r">' + ['🥇', '🥈', '🥉'][i] + ' ' + esc(u) + ' <span class="c">' + fans[u] + '💎</span></div>'; }).join('');
   }
-  function toast(text) {
-    var d = document.createElement('div'); d.textContent = text; feed.appendChild(d);
+  function toast(text, who) {
+    var d = document.createElement('div'), pic = who && profile(who).pic; d.textContent = text; if (pic) { var im = document.createElement('img'); im.src = pic; im.alt = ''; im.referrerPolicy = 'no-referrer'; im.onerror = function () { im.remove(); }; d.prepend(im); } feed.appendChild(d);
     while (feed.children.length > 4) feed.firstChild.remove();
     setTimeout(function () { d.remove(); }, 5000);
   }
@@ -307,6 +308,7 @@
       var ls = w.localStorage, bak = {}, n = 0;
       for (var k = ls.length - 1; k >= 0; k--) { var key = ls.key(k); if (pre.some(function (p) { return key.indexOf(p) === 0; })) { bak[key] = ls.getItem(key); n++; } }
       try { localStorage.setItem('eg-tiktok-backup:' + GID, JSON.stringify({ t: Date.now(), keys: bak })); } catch (e) { }
+      w.__egNoSave = 1;
       Object.keys(bak).forEach(function (key) { ls.removeItem(key); });
       banner('💥 ' + (user || 'Jemand') + ' hat den Spielstand gelöscht!');
       setTimeout(function () { try { w.location.reload(); } catch (e) { S.restart(); } }, 1500);
@@ -315,6 +317,7 @@
   function restoreSave() {
     var b = null; try { b = JSON.parse(localStorage.getItem('eg-tiktok-backup:' + GID) || 'null'); } catch (e) { }
     var w = gameWin(); if (!b || !w) return false;
+    w.__egNoSave = 1;   // Spiele, die beim Schließen speichern, überschreiben den wiederhergestellten Stand nicht
     Object.keys(b.keys).forEach(function (k) { w.localStorage.setItem(k, b.keys[k]); });
     try { w.location.reload(); } catch (e) { S.restart(); }
     return true;
@@ -362,7 +365,7 @@
     if (kind === 'game') {
       var ga = gameActions().find(function (x) { return x.id === arg; });
       if (!ga) { toast('Dieses Spiel kennt „' + arg + '“ nicht'); return; }
-      for (var g = 0; g < Math.min(times, 5); g++) { try { ga.run(user); } catch (e) { } }
+      for (var g = 0; g < Math.min(times, 5); g++) { try { ga.run(user, profile(user)); } catch (e) { } }
       return;
     }
     for (var n = 0; n < times; n++) queue = queue.then(function () {
@@ -374,7 +377,7 @@
       });
     });
   }
-  window.EG_TIKTOK = { run: run, config: function () { return cfg; }, restore: restoreSave, gameActions: gameActions, actions: ACTS };
+  window.EG_TIKTOK = { run: run, profile: profile, config: function () { return cfg; }, restore: restoreSave, gameActions: gameActions, actions: ACTS };
 
   // ---------- Ereignisse ----------
   // Exklusive TikTok-Erfolge (cloud/anmacha-ach.js, Seite erfolge.html): Zähler je Gerät in anmacha-tiktok – nur echte LIVE-Ereignisse
@@ -391,8 +394,12 @@
       clearTimeout(ttT); ttT = setTimeout(function () { try { localStorage.setItem(TTK, JSON.stringify(ttSt)); } catch (x) { } }, 1500);   // gebündelt schreiben
     } catch (x) { }
   }
+  // Profilbild und @Name je Zuschauer (von der Brücke) – Spiel-Aktionen bekommen sie als zweites Argument: run(user, { pic, handle })
+  var prof = {};
+  function profile(u) { return prof[u] || { pic: '', handle: '' }; }
   function onEvent(ev) {
     var e = eff(), who = ev.user || 'Jemand';
+    if (ev.user && (ev.pic || ev.handle)) { prof[who] = { pic: /^https:\/\//.test(ev.pic || '') ? ev.pic : '', handle: String(ev.handle || '').slice(0, 40) }; var pk = Object.keys(prof); if (pk.length > 400) delete prof[pk[0]]; }
     if (ev.type === 'chat') {
       var word = String(ev.text || '').trim().toLowerCase().split(/\s+/)[0].replace(/^[!\/#]/, '');
       if (bomb && word === bomb.word) { bomb.got[who] = 1; return; }
@@ -400,12 +407,12 @@
       if (!hit) return;
       var cd = (+e.cooldown || 0) * 1000, now = Date.now(); if (cd && now - (lastCmd[who] || 0) < cd) return; lastCmd[who] = now;
       if (e.mode === 'vote') { votes[hit[0]] = (votes[hit[0]] || 0) + 1; drawVote(); return; }
-      toast(who + ': ' + hit[0]); run(hit[1], who); ttCount('cmds');
+      toast(who + ': ' + hit[0], who); run(hit[1], who); ttCount('cmds');
     } else if (ev.type === 'gift') {
       var name = String(ev.gift || '').toLowerCase(), g = (e.gifts || []).find(function (x) { return x.gift && (x.gift.toLowerCase() === name || String(x.gift) === String(ev.giftId)); });
       var dia = (+ev.diamonds || giftInfo(ev.gift).diamonds || 1) * (ev.count || 1); fans[who] = (fans[who] || 0) + dia; drawTop(); ttCount('diam', dia);
       if (!g) return;
-      toast(who + ': ' + (g.icon || '🎁') + ' ' + g.gift + (ev.count > 1 ? ' ×' + ev.count : '') + ' → ' + (g.label || g.action)); run(g.action, who, ev.count); ttCount('gifts', ev.count || 1);
+      toast(who + ': ' + (g.icon || '🎁') + ' ' + g.gift + (ev.count > 1 ? ' ×' + ev.count : '') + ' → ' + (g.label || g.action), who); run(g.action, who, ev.count); ttCount('gifts', ev.count || 1);
     } else if (ev.type === 'like' && e.likes && e.likes.every > 0) {
       likeSum += ev.count || 1; ttCount('likes', ev.count || 1);
       while (likeSum >= e.likes.every) { likeSum -= e.likes.every; toast('❤️ ' + e.likes.every + ' Likes → ' + (e.likes.label || e.likes.action)); run(e.likes.action, who); }

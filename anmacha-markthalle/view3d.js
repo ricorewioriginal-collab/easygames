@@ -394,7 +394,7 @@ const View3D = typeof THREE === 'undefined' ? null : (() => {
   }
   function syncMess(S) {
     const key = S.messes.map(m => m.id).join(','); if (key === messKey && messG) return; messKey = key; if (messG) world.remove(messG); messG = new T3.Group();
-    S.messes.forEach(m => { if (m.k === 'trash') { const sg = new T3.Group(); sg.position.set(m.x + .5, 0, m.y + .5); sg.add(mesh(geo.sph, mat('#d8d4c8'), -.08, .06, .02, .14, .1, .12)); sg.add(mesh(geo.sph, mat('#c9c4b4'), .08, .05, -.06, .1, .08, .1)); sg.add(mesh(geo.cyl, mat('#e03131'), .02, .06, .1, .08, .12, .08)); messG.add(sg); return; } const p = mesh(geo.cyl, new T3.MeshStandardMaterial({ color: '#4aa3df', transparent: true, opacity: .55 }), m.x + .5, .01, m.y + .5, .7, .01, .5); messG.add(p); const sg = new T3.Group(); sg.position.set(m.x + .5, 0, m.y + .5); sg.add(mesh(geo.cone, mat('#ffd24a'), 0, .22, 0, .26, .44, .2)); messG.add(sg); }); world.add(messG);
+    S.messes.forEach(m => { if (m.k === 'trash') { const sg = new T3.Group(); sg.position.set(m.x + .5, 0, m.y + .5); sg.add(mesh(geo.sph, mat('#d8d4c8'), -.08, .06, .02, .14, .1, .12)); sg.add(mesh(geo.sph, mat('#c9c4b4'), .08, .05, -.06, .1, .08, .1)); sg.add(mesh(geo.cyl, mat('#e03131'), .02, .06, .1, .08, .12, .08)); messG.add(sg); return; } const vo = m.k === 'kotze', p = mesh(geo.cyl, new T3.MeshStandardMaterial({ color: vo ? '#9bbf2a' : '#4aa3df', transparent: true, opacity: vo ? .85 : .55 }), m.x + .5, .01, m.y + .5, vo ? .9 : .7, .01, vo ? .7 : .5); messG.add(p); const sg = new T3.Group(); sg.position.set(m.x + .5, 0, m.y + .5); sg.add(mesh(geo.cone, mat('#ffd24a'), 0, .22, 0, .26, .44, .2)); messG.add(sg); }); world.add(messG);
   }
   // ---------- Personen ----------
   function syncPeople(S, dt) {
