@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "a34c532007de",
- "generated": "2026-11-16T01:55:20+01:00",
- "commit": "caab2b40877d6bc0245b8b7239eb70bd46761c54",
+ "version": "2b9cfbfbbf26",
+ "generated": "2026-11-16T00:55:50+00:00",
+ "commit": "6d1c35ca40963af1bc2ddebc0db05250f2c8bea1",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3113,8 +3113,8 @@
   },
   {
    "p": "anmacha-markthalle/game.js",
-   "s": 118050,
-   "h": "73a22cb76070f2dafc7cc43b754d024fce8464885dbeeeedfa2427f2ad4dbb17"
+   "s": 118159,
+   "h": "214580d365510e9c3e8de060f05c1bfd84bea6a85c4be60f315e20290e8bc861"
   },
   {
    "p": "anmacha-markthalle/index.html",
@@ -3143,8 +3143,8 @@
   },
   {
    "p": "anmacha-markthalle/sim.js",
-   "s": 103693,
-   "h": "d8d82114b6297851d43e8f109532a52bbc89e0d35b6e8b4cc42617c540a64faa"
+   "s": 103743,
+   "h": "663359afb64e891cb0e9a16378a4dcfd110ee367cb0aee04372c673f0be05072"
   },
   {
    "p": "anmacha-markthalle/sw.js",
@@ -3153,13 +3153,13 @@
   },
   {
    "p": "anmacha-markthalle/tiktok.js",
-   "s": 9562,
-   "h": "29521aba2ede229fd3a2926a41d8ff2658b795da63edc487f6bde57780ad68b5"
+   "s": 21009,
+   "h": "26512cd199e35f3cd122b33615f5806a1f11a594a6d932de7ecdd866cbd601c1"
   },
   {
    "p": "anmacha-markthalle/view3d.js",
-   "s": 94219,
-   "h": "746ae820381ae907576f229514ca456fac7b75805af244acfc9382eebd4c218d"
+   "s": 94289,
+   "h": "dc7f5b1b4f48046ab3eb58a3b24547a79997a767b2ba12f7477997f299473cc8"
   },
   {
    "p": "anmacha-memory/card.jpg",
@@ -10638,8 +10638,8 @@
   },
   {
    "p": "guides/anmacha-markthalle.json",
-   "s": 32967,
-   "h": "41ab3f247e6b2beaa8e871e34a5512ae8c9d028a96d046301dbb60286f63b451"
+   "s": 33439,
+   "h": "419e4998d48b4fcf4734ee3c1d8ac3d5cdc15ab8a55e4b5ac68328e0617579f7"
   },
   {
    "p": "guides/anmacha-memory.json",
@@ -15399,7 +15399,7 @@
   {
    "p": "sync/catalog.json",
    "s": 249254,
-   "h": "43b12d3db53a916d7371a18a7b00cfa1cd7748a17d2dabc8bdaacb4a6bbf6421"
+   "h": "fb729d0b219795b3ac39efd342b2d549a4a24a9dd0d90a2854611f83a8fe872f"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
