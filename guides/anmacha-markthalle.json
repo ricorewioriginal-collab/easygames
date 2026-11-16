@@ -105,9 +105,9 @@
     {
       "t": "TikTok LIVE: Zuschauer steuern deinen Laden",
       "p": [
-        "Streamst du mit der easygames Windows-App und ist TikTok LIVE dort verbunden, greifen deine Zuschauer direkt ins Spiel ein: Geschenke, Likes und Chat-Befehle lösen echte Ereignisse im Laden aus. Jede Aktion erscheint groß oben im Bild mit dem Namen des Zuschauers.",
-        "Empfohlene Belegung: 🌹 Rose = der Zuschauer kommt mit seinem Namen als Kunde, 🫰 Finger Heart = 20 € Trinkgeld, 🍩 Doughnut = Tagesangebot, 🫶 Hand Hearts = Gratis-Lieferung, 🎊 Confetti = Kundenansturm, 🐕 Corgi = Testerin, 💸 Money Gun = Geldregen, 🌌 Galaxy = Diebesbande, 🦁 Lion = Stromausfall, 🪐 Universe = Unwetter mit Ansturm. Alle 150 Likes kommt ein Kunde dazu.",
-        "Chat-Befehle: !kaufen (als Kunde in den Laden), !wetter (zufälliges Wetter), !sonne, !regen, !schnee und !werbung. Jeder Befehl und jede Aktion hat eine Abklingzeit, damit der Laden spielbar bleibt; Kunden-Aktionen wirken nur bei offenem Laden.",
+        "Streamst du mit der easygames Windows-App und ist TikTok LIVE dort verbunden, greifen deine Zuschauer direkt ins Spiel ein: Geschenke, Likes und Chat-Befehle lösen echte Ereignisse im Laden aus. Jede Aktion erscheint groß oben im Bild mit TikTok-Profilbild und Namen des Zuschauers und hat einen eigenen Bildschirm-Effekt (Geldregen, Blitz, Stempel, Wackeln …).",
+        "Empfohlene Belegung: 🌹 Rose = der Zuschauer kommt mit seinem Namen als Kunde, 🫰 Finger Heart = 20 € Trinkgeld, 🌸 Rosa = +100 €, 🧴 Perfume = −100 €, 🍩 Doughnut = Tagesangebot, 🫶 Hand Hearts = Gratis-Lieferung, 🎊 Confetti = Kundenansturm, 🕊️ Paper Crane = jemand kotzt in den Laden, 👑 Little Crown = Markt umbenennen, 🧢 Cap = Regal plündern, 🐕 Corgi = Testerin, 💸 Money Gun = Geldregen, 🦢 Swan = Bankrott, 🌌 Galaxy = Diebesbande, 🦁 Lion = Stromausfall, 🪐 Universe = Unwetter mit Ansturm, 🌠 TikTok Universe = Spielstand löschen. Alle 150 Likes kommt ein Kunde dazu.",
+        "Chat-Befehle: !kaufen (als Kunde in den Laden), !wetter (zufälliges Wetter), !sonne, !regen, !schnee, !werbung und !kotzen. Jeder Befehl und jede Aktion hat eine Abklingzeit, damit der Laden spielbar bleibt; Kunden-Aktionen wirken nur bei offenem Laden. Ein gelöschter Spielstand wird vorher gesichert und lässt sich in den TikTok-Einstellungen mit „Wiederherstellen“ zurückholen.",
         "Die Zuordnung änderst du in der Windows-App in den TikTok-Einstellungen (Belegung „nur Marktrausch“) – dort stehen alle Marktrausch-Aktionen unter „⭐ Highlights dieses Spiels“."
       ]
     }

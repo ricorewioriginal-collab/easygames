@@ -78,6 +78,10 @@ function setStatus(s) { status = s; log(s); broadcast({ type: 'status', msg: s }
 // tiktok-live-connector: Felder je nach Version – 1.x (comment, likeCount, giftDetails.giftType, uniqueId) und 2.x (Protokoll v3:
 // content, count, gift.type/name/diamondCount, user.nickname/displayId). Beides wird hier auf dasselbe Ereignis gebracht.
 const who = d => { const u = d.user || d; return u.nickname || u.uniqueId || u.displayId || 'Jemand'; };
+// Profilbild und @Name des Zuschauers (1.x: profilePictureUrl/uniqueId, 2.x: user.profilePicture.url[]/displayId) – für Einblendungen in den Spielen
+const picOf = d => { const u = d.user || d, p = u.profilePictureUrl || u.profilePicture || u.avatarThumb; if (typeof p === 'string') return p; const l = p && (p.url || p.urlList || p.url_list); return Array.isArray(l) ? String(l[0] || '') : typeof l === 'string' ? l : ''; };
+const handleOf = d => { const u = d.user || d; return String(u.uniqueId || u.displayId || ''); };
+const pu = d => ({ user: who(d), pic: picOf(d), handle: handleOf(d) });
 const chatText = d => String(d.comment ?? d.content ?? '');
 const likeCount = d => Math.max(1, Number(d.likeCount ?? d.count ?? 1) || 1);
 function giftOf(d) {
@@ -93,17 +97,17 @@ async function live(name) {
   }
   const Conn = lib.TikTokLiveConnection || lib.WebcastPushConnection;
   const c = new Conn(name.replace(/^@/, ''), { processInitialData: false, enableExtendedGiftInfo: false });   // 2.x verlangt das Einstellungsobjekt; alte Nachrichten beim Verbinden nicht als neue Ereignisse zählen
-  c.on('chat', d => { const t = chatText(d).trim(); if (t) emit({ type: 'chat', user: who(d), text: t }); });
+  c.on('chat', d => { const t = chatText(d).trim(); if (t) emit({ type: 'chat', ...pu(d), text: t }); });
   c.on('gift', d => {
     const g = giftOf(d);
     if (g.type === 1 && !g.end) return;   // Serien-Geschenk (Combo): erst am Ende einmal mit der Anzahl zählen
-    emit({ type: 'gift', user: who(d), gift: g.name, giftId: g.id, count: g.count, diamonds: g.diamonds });
+    emit({ type: 'gift', ...pu(d), gift: g.name, giftId: g.id, count: g.count, diamonds: g.diamonds });
   });
-  c.on('like', d => emit({ type: 'like', user: who(d), count: likeCount(d) }));
-  c.on('follow', d => emit({ type: 'follow', user: who(d) }));
-  c.on('share', d => emit({ type: 'share', user: who(d) }));
-  c.on('subscribe', d => emit({ type: 'sub', user: who(d) }));   // 1.x
-  c.on('subNotify', d => emit({ type: 'sub', user: who(d) }));   // 2.x
+  c.on('like', d => emit({ type: 'like', ...pu(d), count: likeCount(d) }));
+  c.on('follow', d => emit({ type: 'follow', ...pu(d) }));
+  c.on('share', d => emit({ type: 'share', ...pu(d) }));
+  c.on('subscribe', d => emit({ type: 'sub', ...pu(d) }));   // 1.x
+  c.on('subNotify', d => emit({ type: 'sub', ...pu(d) }));   // 2.x
   c.on('member', d => emit({ type: 'join', user: who(d) }));
   const loadGifts = () => Promise.resolve((c.fetchAvailableGifts || c.getAvailableGifts || (() => []))).then(f => f.call(c)).then(list => {
     gifts = (Array.isArray(list) ? list : []).map(g => ({ name: g.name || g.giftName, diamonds: g.diamond_count || g.diamondCount || 0, img: ((g.image && (g.image.url_list || g.image.urlList)) || [])[0] || '' }))

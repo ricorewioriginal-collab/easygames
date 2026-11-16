@@ -399,7 +399,7 @@ const Sim = (() => {
     const nb = pl.carry.find(b => !b.empty); if (nb) { const b = nb, sh = near.filter(o => isShelf(o) && !o.exp && ((o.p === b.p && o.qty < cap(S, o)) || (!o.p && fits(o, b.p)) || (o.p && o.qty === 0 && fits(o, b.p) && o.p !== b.p))).sort((a, c) => fd(a) - fd(c))[0]; if (sh) return { a: 'stock', o: sh, label: `${P[b.p].e} einräumen (${b.n} im Karton)` }; }
     const stk = near.filter(o => needsSticker(S, o)).sort((a, c) => fd(a) - fd(c))[0]; if (stk && !pl.carry.length) return { a: 'sticker', o: stk, label: `🏷️ Rabattaufkleber −30 % (${P[stk.p].e} MHD ${fresh(S, stk) === 'mhd' ? 'heute' : 'morgen'})` };
     const tgc = near.filter(o => needsTag(S, o)).sort((a, c) => fd(a) - fd(c))[0]; if (tgc) return { a: 'tag', o: tgc, label: `🏷️ Preisschild aufstecken (${D.fmt(effPrice(S, tgc))})` };
-    const m = S.messes.find(m => Math.hypot(m.x + .5 - pl.x, m.y + .5 - pl.y) < 1.2); if (m) return { a: 'clean', m, label: m.k === 'trash' ? '🧹 Müll aufheben' : '🧽 Pfütze wischen' };
+    const m = S.messes.find(m => Math.hypot(m.x + .5 - pl.x, m.y + .5 - pl.y) < 1.2); if (m) return { a: 'clean', m, label: m.k === 'trash' ? '🧹 Müll aufheben' : m.k === 'kotze' ? '🤢 Erbrochenes wegwischen' : '🧽 Pfütze wischen' };
     if (atRamp(S)) { if (pl.carry.length < carryCap(S) && S.ramp.length) return { a: 'pick', label: '📦 Karton nehmen' }; if (pl.carry.some(b => !b.empty)) return { a: 'back', label: '↩️ Karton zurückstellen' }; }
     const pcn = near.find(o => o.k === 'pc'); if (pcn) return { a: 'pc', o: pcn, label: '💻 Bestell-PC benutzen' };
     const rd = near.find(o => o.k === 'radio'); if (rd) return { a: 'radio', o: rd, label: '📻 Radio an/aus' };

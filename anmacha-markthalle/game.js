@@ -12,7 +12,7 @@
 
   // ---------- Start / Speichern ----------
   function newGame(quiet) { S = Sim.create(); prevMoney = S.money; resize(); if (!quiet) setTimeout(() => { if (typeof showName === 'function') showName(); }, 300); }
-  function save() { try { localStorage.setItem(KEY, Sim.save(S)); } catch (e) {} }
+  function save() { if (window.__egNoSave) return; try { localStorage.setItem(KEY, Sim.save(S)); } catch (e) {} }   // __egNoSave: Spielstand wurde gerade gelöscht/wiederhergestellt (TikTok)
   function load() { try { const j = localStorage.getItem(KEY); if (j) { S = Sim.load(j); prevMoney = S.money; return true; } } catch (e) {} return false; }
   if (!load()) newGame(true); // Ladenname fragt das Hauptmenü (menu.js) beim Spielstart ab
   // Hauptmenü (menu.js): solange es offen ist, ruht das Spiel; API = Schnittstelle dorthin
