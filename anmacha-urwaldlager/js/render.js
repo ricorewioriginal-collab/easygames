@@ -109,9 +109,12 @@
     g.userData.light = light;
     return g;
   };
+  // Rinde (Poly Haven bark_brown_02), geteilt von Scheiten und Stämmen
+  let barkMat = null;
+  R.barkMat = () => barkMat || (barkMat = new T.MeshLambertMaterial({ color: lin(0xc89a70), map: R.tex('bark', 2, 1) }));
   // Holzscheite im Feuer
   R.logs = (n = 5, r = 0.45) => {
-    const g = new T.Group(), m = R.mat(0x6b4426);
+    const g = new T.Group(), m = R.barkMat();
     for (let i = 0; i < n; i++) { const l = new T.Mesh(new T.CylinderGeometry(0.07, 0.08, r * 2, 6), m); const a = i / n * Math.PI * 2; l.position.set(Math.cos(a) * r * 0.35, 0.12, Math.sin(a) * r * 0.35); l.rotation.set(0.9, -a, 0, 'YXZ'); l.castShadow = true; g.add(l); }
     return g;
   };
@@ -119,7 +122,7 @@
   // Baumstamm (liegend, Achse = x): Rinde und helle Schnittflächen
   const logMats = [];
   R.log = (len = 1.4, r = 0.16) => {
-    if (!logMats.length) logMats.push(R.mat(0x6b4426), R.mat(0xd9b07a), R.mat(0xd9b07a));
+    if (!logMats.length) logMats.push(R.barkMat(), R.mat(0xd9b07a), R.mat(0xd9b07a));
     const m = new T.Mesh(new T.CylinderGeometry(r, r * 1.05, len, 10), logMats); m.rotation.z = Math.PI / 2; m.castShadow = true; m.receiveShadow = true;
     const g = new T.Group(); m.position.y = r; g.add(m); return g;
   };
@@ -172,12 +175,28 @@
   };
 
   // ---------- Himmel ----------
-  R.sky = (top, mid, bottom, sunDir) => {
+  // Poly Haven (CC0): Bodentexturen und Himmels-Panoramen, klein und komprimiert in textures/ (siehe textures/LIZENZ.md)
+  const texC = new Map();
+  R.tex = (name, rx = 1, ry = rx, srgb = true) => {
+    const k = name + rx + ',' + ry;
+    if (texC.has(k)) return texC.get(k);
+    const t = new T.TextureLoader().load('textures/' + name + '.jpg');
+    if (srgb) t.encoding = T.sRGBEncoding;
+    if (rx !== 1 || ry !== 1) { t.wrapS = t.wrapT = T.RepeatWrapping; t.repeat.set(rx, ry); }
+    t.anisotropy = R.quality() === 'low' ? 1 : 4;
+    texC.set(k, t); return t;
+  };
+
+  // ---------- Himmel ----------
+  // pano: Name eines Himmels-Panoramas (obere Hälfte, equirektangulär) – blendet zum Horizont in den Farbverlauf über
+  R.sky = (top, mid, bottom, sunDir, pano) => {
+    const pt = pano ? R.tex(pano, 1, 1, false) : null;
+    if (pt) { pt.minFilter = T.LinearFilter; pt.generateMipmaps = false; pt.wrapS = T.RepeatWrapping; }
     const mat = new T.ShaderMaterial({
       side: T.BackSide, depthWrite: false,
-      uniforms: { a: { value: lin(top) }, b: { value: lin(mid) }, c: { value: lin(bottom) }, s: { value: (sunDir || new T.Vector3(0.3, 0.6, -0.7)).clone().normalize() } },
+      uniforms: { a: { value: lin(top) }, b: { value: lin(mid) }, c: { value: lin(bottom) }, s: { value: (sunDir || new T.Vector3(0.3, 0.6, -0.7)).clone().normalize() }, m: { value: pt }, k: { value: pt ? 1 : 0 } },
       vertexShader: 'varying vec3 d; void main(){ d=normalize(position); vec4 p=projectionMatrix*modelViewMatrix*vec4(position,1.0); gl_Position=p.xyww;}',
-      fragmentShader: 'uniform vec3 a,b,c,s; varying vec3 d; void main(){ float h=d.y; vec3 col=h>0.0?mix(b,a,pow(h,.6)):mix(b,c,min(1.0,-h*4.0)); float sun=max(0.0,dot(d,s)); col+=vec3(1.0,.85,.6)*(pow(sun,400.0)*1.5+pow(sun,8.0)*.18); gl_FragColor=vec4(col,1.0);}'
+      fragmentShader: 'uniform vec3 a,b,c,s; uniform sampler2D m; uniform float k; varying vec3 d; void main(){ float h=d.y; vec3 col=h>0.0?mix(b,a,pow(h,.6)):mix(b,c,min(1.0,-h*4.0)); float sun=max(0.0,dot(d,s)); col+=vec3(1.0,.85,.6)*(pow(sun,400.0)*1.5+pow(sun,8.0)*.18)*(1.0-k); if(k>0.0&&h>0.0){ vec3 t=texture2D(m,vec2(atan(d.z,d.x)*.1591549+.5,asin(min(h,1.0))*.6366198)).rgb; col=mix(col,t,k*smoothstep(0.0,.18,h)); } gl_FragColor=vec4(col,1.0);}'
     });
     const m = new T.Mesh(new T.SphereGeometry(300, 24, 12), mat); m.renderOrder = -10; m.frustumCulled = false;
     m.userData.set = (t, mi, bo) => { mat.uniforms.a.value = lin(t); mat.uniforms.b.value = lin(mi); mat.uniforms.c.value = lin(bo); };
@@ -211,26 +230,46 @@
   };
   Env.TOD = TOD;
 
+  // Boden: Poly-Haven-Gras (zweifach skaliert gegen sichtbare Kacheln) und Erde mit Laub auf Lichtungen.
+  // Die Fotos liefern nur Struktur (auf ihren Mittelwert normiert), die Grundfarbe bleibt die der Kulisse.
+  Env.groundMat = (S) => {
+    const m = new T.MeshLambertMaterial({ vertexColors: true, map: R.tex('ground-grass', S / 6) });
+    const dirt = R.tex('ground-dirt', S / 5);
+    m.onBeforeCompile = sh => {
+      sh.uniforms.map2 = { value: dirt };
+      sh.vertexShader = 'attribute float dirt; varying float vDirt;\n' + sh.vertexShader.replace('#include <uv_vertex>', '#include <uv_vertex>\n vDirt = dirt;');
+      sh.fragmentShader = 'uniform sampler2D map2; varying float vDirt;\n' + sh.fragmentShader.replace('#include <map_fragment>',
+        'vec3 g1 = mapTexelToLinear(texture2D(map, vUv)).rgb / vec3(.289,.247,.117);\n' +
+        ' vec3 g2 = mapTexelToLinear(texture2D(map, vUv * .23 + .37)).rgb / vec3(.289,.247,.117);\n' +
+        ' vec3 dd = mapTexelToLinear(texture2D(map2, vUv * 1.2)).rgb / vec3(.137,.095,.038);\n' +
+        ' vec3 gg = mix(vec3(dot(g1 * g2, vec3(.3,.5,.2))), g1 * g2, .35);\n' +
+        ' diffuseColor.rgb *= clamp(mix(gg, mix(vec3(dot(dd, vec3(.3,.5,.2))), dd, .6), vDirt), 0.0, 2.2);');
+    };
+    return m;
+  };
+
   Env.jungle = (scene, { tod = 'day', radius = 24, clear = [], density = 1, water = null, seed = 7, ring = true, y: oy = 0 } = {}) => {
     const P = TOD[tod] || TOD.day;
-    const sky = R.sky(P.top, P.mid, P.bot); scene.add(sky);
+    const sky = R.sky(P.top, P.mid, P.bot, null, 'sky-' + (TOD[tod] ? tod : 'day')); scene.add(sky);
     scene.fog = new T.Fog(lin(P.fog), 30, 120);
     const L = Env.lights(scene, { sun: P.sun, sunI: P.sunI, hemiI: P.hemi, sky: P.sky, ground: P.ground, shadowSize: radius + 4 });
     // Boden mit Farbflecken (Gras, Erde)
     const N = R.quality() === 'low' ? 48 : 80, S = 220;
     const geo = new T.PlaneGeometry(S, S, N, N); geo.rotateX(-Math.PI / 2);
-    const pos = geo.attributes.position, col = new Float32Array(pos.count * 3);
+    const pos = geo.attributes.position, col = new Float32Array(pos.count * 3), dirt = new Float32Array(pos.count);
     const g1 = lin(0x4f9a3a), g2 = lin(0x6fb648), d1 = lin(0x8a6a44), c = new T.Color();
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i), z = pos.getZ(i);
       pos.setY(i, Env.groundH(x, z, radius));
       const n = Env.noise(x * 1.7, z * 1.7) * 0.5 + 0.5;
       c.copy(g1).lerp(g2, n);
-      for (const cl of clear) { const dd = Math.hypot(x - cl.x, z - cl.z); if (dd < cl.r) c.lerp(d1, UL.smooth(UL.clamp((cl.r - dd) / (cl.r * 0.5), 0, 1)) * (cl.k || 0.85)); }
+      let w = 0;
+      for (const cl of clear) { const dd = Math.hypot(x - cl.x, z - cl.z); if (dd < cl.r) { const k = UL.smooth(UL.clamp((cl.r - dd) / (cl.r * 0.5), 0, 1)) * (cl.k || 0.85); c.lerp(d1, k); w = Math.max(w, k); } }
+      dirt[i] = w;
       col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
     }
-    geo.setAttribute('color', new T.BufferAttribute(col, 3)); geo.computeVertexNormals();
-    const ground = new T.Mesh(geo, new T.MeshLambertMaterial({ vertexColors: true }));
+    geo.setAttribute('color', new T.BufferAttribute(col, 3)); geo.setAttribute('dirt', new T.BufferAttribute(dirt, 1)); geo.computeVertexNormals();
+    const ground = new T.Mesh(geo, Env.groundMat(S));
     ground.receiveShadow = true; ground.position.y = oy; scene.add(ground);
     // Pflanzen
     const rng = new UL.RNG(seed);
@@ -276,8 +315,8 @@
     if (R.quality() !== 'low') { key.castShadow = true; const sz = R.quality() === 'high' ? 2048 : 1024; key.shadow.mapSize.set(sz, sz); const c = key.shadow.camera; c.left = c.bottom = -radius - 4; c.right = c.top = radius + 4; c.far = 80; key.shadow.bias = -0.0006; key.shadow.normalBias = 0.02; }
     const g = new T.Group(); scene.add(g);
     // Boden: dunkel glänzend mit Leuchtringen
-    const floor = new T.Mesh(new T.CircleGeometry(60, 48), R.mat(0x15141c)); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; g.add(floor);
-    const stage = new T.Mesh(new T.CylinderGeometry(radius, radius + 0.4, 0.3, 64), R.mat(0x2a2833)); stage.position.y = -0.15; stage.receiveShadow = true; g.add(stage);
+    const floor = new T.Mesh(new T.CircleGeometry(60, 48), new T.MeshLambertMaterial({ color: lin(0x4a4658), map: R.tex('studio-floor', 24) })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; g.add(floor);
+    const stage = new T.Mesh(new T.CylinderGeometry(radius, radius + 0.4, 0.3, 64), [R.mat(0x2a2833), new T.MeshLambertMaterial({ color: lin(0x8a7a78), map: R.tex('wood', 6) }), R.mat(0x2a2833)]); stage.position.y = -0.15; stage.receiveShadow = true; g.add(stage);
     const ringMat = new T.MeshBasicMaterial({ color: lin(0x37ff8a) });
     const ring = new T.Mesh(new T.TorusGeometry(radius + 0.2, 0.06, 6, 96), ringMat); ring.rotation.x = Math.PI / 2; ring.position.y = 0.02; g.add(ring);
     const ring2 = new T.Mesh(new T.TorusGeometry(radius * 0.55, 0.04, 6, 80), new T.MeshBasicMaterial({ color: lin(0xffb43a) })); ring2.rotation.x = Math.PI / 2; ring2.position.y = 0.02; g.add(ring2);
@@ -327,7 +366,7 @@
       }
       g.add(ib, ih);
       // Tribünenstufen
-      const stepM = new T.MeshLambertMaterial({ color: lin(0x1d1c26), side: T.DoubleSide }); for (let row = 0; row < 6; row++) for (const t0 of [0.85, -2.25]) { const st = new T.Mesh(new T.CylinderGeometry(radius + 3.6 + row * 1.1, radius + 3.6 + row * 1.1, 0.3 + row * 0.55, 20, 1, true, t0, 1.4), stepM); st.position.y = (0.3 + row * 0.55) / 2 - 0.1; g.add(st); }   // nur die Stufenkanten (offen), sonst füllt der Kreissektor die Bühne
+      const stepM = new T.MeshLambertMaterial({ color: lin(0x5a5668), map: R.tex('studio-floor', 8, 1), side: T.DoubleSide }); for (let row = 0; row < 6; row++) for (const t0 of [0.85, -2.25]) { const st = new T.Mesh(new T.CylinderGeometry(radius + 3.6 + row * 1.1, radius + 3.6 + row * 1.1, 0.3 + row * 0.55, 20, 1, true, t0, 1.4), stepM); st.position.y = (0.3 + row * 0.55) / 2 - 0.1; g.add(st); }   // nur die Stufenkanten (offen), sonst füllt der Kreissektor die Bühne
       crowd = { ib, ih, seats, n, m };
     }
     // Fernsehkameras auf Stativen

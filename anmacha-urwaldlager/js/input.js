@@ -119,7 +119,7 @@
   In.bindTouchButtons = bindTouchButtons;
   // Beschriftung der Touch-Knöpfe je Situation (null = ausblenden)
   In.labels = (map) => {
-    for (const b of ['ok', 'alt', 'menu', 'back', 'l1', 'r1']) {
+    for (const b of ['ok', 'alt', 'menu', 'back', 'l1', 'r1', 'r3']) {
       const el = document.querySelector('#touchPad [data-b="' + b + '"]'); if (!el) continue;
       const v = map[b];
       el.hidden = v == null; if (v != null) el.querySelector('span').textContent = v;
@@ -196,9 +196,12 @@
     In.move.x = mx; In.move.y = my;
     // Rennen: Shift, L3 umschalten, Stick ganz außen (Touch), Einstellung „immer rennen“
     if (st.l3.p) In.runToggle = !In.runToggle;
-    const stickFar = stick.id !== null && Math.hypot(stick.x, stick.y) > 1.1;
+    // Touch-Knopf 🏃 (bzw. V) schaltet Dauerrennen um; Controller: B halten oder Stick ganz durchdrücken
+    if (st.r3.p) { In.runLatch = !In.runLatch; const rb = document.querySelector('#touchPad [data-b="r3"]'); if (rb) rb.classList.toggle('lit', In.runLatch); }
+    const stickFar = stick.id !== null && Math.hypot(stick.x, stick.y) > 0.95;
+    const padFar = !!g && Math.hypot(ax[0], ax[1]) > 0.97;
     if (!mx && !my) In.runToggle = false;
-    In.run = kd.has('ShiftLeft') || kd.has('ShiftRight') || In.runToggle || stickFar || UL.settings.autoRun;
+    In.run = kd.has('ShiftLeft') || kd.has('ShiftRight') || In.runToggle || In.runLatch || stickFar || padFar || !!pb[1] || UL.settings.autoRun;
     // Kamera
     const [lx, ly] = dz(ax[2], ax[3]);
     const sens = UL.settings.sens || 1, inv = UL.settings.invertY ? -1 : 1;

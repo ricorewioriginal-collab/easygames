@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "52dbf1091bbf",
- "generated": "2026-11-16T18:25:39+01:00",
- "commit": "4b1c9306bbab5f08ef6a8155c15703aa39cb5d1a",
+ "version": "e342da6e5dde",
+ "generated": "2026-11-16T18:24:24+00:00",
+ "commit": "24e4bc8c551ae90760b86cc00d7c472d90923e5c",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8258,8 +8258,8 @@
   },
   {
    "p": "anmacha-urwaldlager/index.html",
-   "s": 7886,
-   "h": "ca536e0e8327a01defc23b13bba076a784cae9a4e19921303ff71a821cc31f79"
+   "s": 8017,
+   "h": "9d5d73c16c7387bc75af2858ac9e11405105cdd6deb3b6e251084590c0693fd1"
   },
   {
    "p": "anmacha-urwaldlager/js/assets.js",
@@ -8273,8 +8273,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/camp.js",
-   "s": 33726,
-   "h": "fc668d76b2d5d58955c28bf2cb6daf7c08519098b1ac911ee7fc89b9687f1e46"
+   "s": 51344,
+   "h": "11c2c4ddfaa9119418dc0fedd04a340224ea80c8fcf4dd33496571268380f814"
   },
   {
    "p": "anmacha-urwaldlager/js/core.js",
@@ -8283,18 +8283,18 @@
   },
   {
    "p": "anmacha-urwaldlager/js/data.js",
-   "s": 24015,
-   "h": "303f1b9688c637fe11bcc5e9c656e098111b03eb6e37b41e790e50ff3e767fa1"
+   "s": 26665,
+   "h": "a462661088314afed7a49d69c93d252480e3e192ad20bb54fa5a42e50e46af3d"
   },
   {
    "p": "anmacha-urwaldlager/js/input.js",
-   "s": 14070,
-   "h": "0f6b643ef3297d94d24cccc180547cbcf960b5dcb5e3a9638e283c95ebff9431"
+   "s": 14441,
+   "h": "d84ff87f3474d08e6442291da1b4e69e279d8832d3cbd982b4d17d04720890cb"
   },
   {
    "p": "anmacha-urwaldlager/js/main.js",
-   "s": 2605,
-   "h": "569b9764e6d71553516fb19e021c26fcc8e132a403fda011db3580b88667d5c8"
+   "s": 2662,
+   "h": "499e7d86aa644f23d5e91d7683eb0083866140a2abf1402f41338addaa43b4a9"
   },
   {
    "p": "anmacha-urwaldlager/js/menus.js",
@@ -8302,19 +8302,24 @@
    "h": "96948e331f31384caf7a27a0651d6355b39d722ad3f4423a0d9d08c9266a0b93"
   },
   {
+   "p": "anmacha-urwaldlager/js/phone.js",
+   "s": 8860,
+   "h": "ea60ada1c46bd59e1fb4014b53f90c05483743a62f8a19eac82b0d8b7858a94c"
+  },
+  {
    "p": "anmacha-urwaldlager/js/render.js",
-   "s": 25534,
-   "h": "4b83a991928fb87e675be2970f3f693eb104cd15b6148bb530b69b99de0d0b88"
+   "s": 28503,
+   "h": "fc86116508bbfe57862f556484ef7e1e352f1997ec125c87cebbdd9c55515975"
   },
   {
    "p": "anmacha-urwaldlager/js/show.js",
-   "s": 18488,
-   "h": "ccb68cae1e175f84cb794a59c05578f3e96a812b5eeab38d25023002b40e30bc"
+   "s": 21318,
+   "h": "4cb75634712826904564ea41100085408e92dad4c44dd1108cb3b843f35618d1"
   },
   {
    "p": "anmacha-urwaldlager/js/stage.js",
-   "s": 9322,
-   "h": "698c848e52bc368bea18f8452f7cf064c142942c6534e05fb2b7c116bb948eeb"
+   "s": 9414,
+   "h": "b0bc177bdab91802d0ccf82f2144a860e63f2a9d0e987653ea0ec8ca21d9e089"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/bach.js",
@@ -8353,8 +8358,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kit.js",
-   "s": 18951,
-   "h": "01f0f5e1add872f5665858f7d5f33616b70f359183618451a4c1d508a0568c1f"
+   "s": 20919,
+   "h": "07b0086703a5bfc6afdc53ed7bc489dec20c3fc0b941686fe8daa73939760a11"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/parcours.js",
@@ -8363,8 +8368,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/quiz.js",
-   "s": 7946,
-   "h": "7bdc2c41d10ae06f7207dc25e4f1f8655fd23e9265d59799fb0e8d635855ba8b"
+   "s": 7993,
+   "h": "dffd4961e365bd8429ebb887b516aad8eb310a3d8f24eef6fbbc4cfd6fb104df"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/seilbahn.js",
@@ -8378,8 +8383,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/tauchen.js",
-   "s": 8818,
-   "h": "48ae253d3eab18e9a80bc92408201deef51f48f0c3cc2926ae949229531d2b04"
+   "s": 8829,
+   "h": "35e43faa6f4adeadeb7267c5faa1358f220bb3e801f7397609cdf82c311cf1b6"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/tunnel.js",
@@ -8388,8 +8393,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/ui.js",
-   "s": 12511,
-   "h": "0cb4abe9d6e882fe3b9818cce05e6ad13d2d2a3173448eb929c1fe54a5680f97"
+   "s": 12914,
+   "h": "2a99c00b48cd69d33121d4dcc35f93efef4c6059a9da1c294845ccf67dbe211a"
   },
   {
    "p": "anmacha-urwaldlager/logo.svg",
@@ -8458,13 +8463,53 @@
   },
   {
    "p": "anmacha-urwaldlager/style.css",
-   "s": 25141,
-   "h": "7eb91254096ab2656c9c3577bedf2b2499b8f735ed75f5b9ebb22917652813a1"
+   "s": 27557,
+   "h": "5e4160865459fbc1cb432669284acd93e90572613c2ae443fb7b584eec286b51"
   },
   {
    "p": "anmacha-urwaldlager/sw.js",
    "s": 1999,
    "h": "5840e53f03e5144cdee8e86c2f3efb94fccc879080ad7f06966ef10f4b93c658"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/bark.jpg",
+   "s": 69663,
+   "h": "bd003bd65be18ae0750f2b26f216f0b7015c2c758ed76e3a6507be9bdef90ce1"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/ground-dirt.jpg",
+   "s": 66202,
+   "h": "ac49852bf8a4e4e4e2da79a6d8f068aded4eb4e0f6da3ca396d077338af4d65a"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/ground-grass.jpg",
+   "s": 76192,
+   "h": "798393c82c4b5d640ab1b524b863277a666d476990720ce0fb991fb40ddd8174"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/sky-day.jpg",
+   "s": 80538,
+   "h": "3733dad817802ed57763dad8d050a7ff06db25fe1c398b80c9840c1710e5cece"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/sky-evening.jpg",
+   "s": 21634,
+   "h": "429eb23321d5617cac4e96cf1a184d2033d64f6ca45bc94590929c8ee8cd4d79"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/sky-night.jpg",
+   "s": 106684,
+   "h": "9c38a9ee0a67183038d626fe2416115ca4d6b9a2fb12c08ad02c08ee6d2482cb"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/studio-floor.jpg",
+   "s": 63154,
+   "h": "2e96f3170286cfa231028d472188572b8b81b19298ed212756b23570aa96a3f1"
+  },
+  {
+   "p": "anmacha-urwaldlager/textures/wood.jpg",
+   "s": 30902,
+   "h": "a7d31f39db23cc3689c0bd07e6ac071558fa3b214dbe17099979aeb0c1d9b994"
   },
   {
    "p": "anmacha-urwaldlager/vendor/GLTFLoader.js",
@@ -10498,8 +10543,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 11945,
-   "h": "34e549c92a358c71ed03d4d79d630b5b52026eeea009f01938fc9bfa6ba55ab0"
+   "s": 14275,
+   "h": "a6b9673b0a2d60e0aa1f3025685713d1fb94ec816590556a40337decd62a9f8d"
   },
   {
    "p": "guides/beat-studio.json",
@@ -15389,7 +15434,7 @@
   {
    "p": "sync/catalog.json",
    "s": 241388,
-   "h": "eaec9c3c65c7be9114be3925bdf06dc68164aa57b190d8b3938fa68e0374cb8f"
+   "h": "2ff78b0b2fddce362a211261725073313388ae53ae25e11027771fd3862d44e9"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

@@ -181,13 +181,14 @@
       else if (k === 'look') parts.push(`<span>${In.device === 'pad' ? '<kbd class="g g-' + In.kind() + ' wide">R</kbd>' : In.device === 'kb' ? '<kbd class="g g-kb wide">Maus</kbd>' : '👆'} ${esc(map[k])}</span>`);
       else if (In.device !== 'touch') parts.push(`<span>${In.glyph(k)} ${esc(map[k])}</span>`);
     }
+    if (map.run && In.device !== 'touch') parts.splice(1, 0, `<span>${In.device === 'pad' ? In.glyph('back') + ' / ' + In.glyph('l3') : '<kbd class="g g-kb wide">Shift</kbd>'} ${esc(map.run)}</span>`);
     el.innerHTML = parts.join('');
     el.hidden = !parts.length || !UL.settings.hints;
-    In.labels({ ok: map.okT || map.ok || null, alt: map.altT || map.alt || null, menu: map.menuT || map.menu || null, back: map.backT || map.back || null, l1: map.l1T || null, r1: map.r1T || null });
+    In.labels({ ok: map.okT || map.ok || null, alt: map.altT || map.alt || null, menu: map.menuT || map.menu || null, back: map.backT || map.back || null, l1: map.l1T || null, r1: map.r1T || null, r3: map.run ? '🏃' : null });
   };
 
   // ---------- HUD ----------
-  UI.hud = (html) => { const el = $('#hud'); el.innerHTML = html; el.hidden = !html; };
+  UI.hud = (html) => { const el = $('#hud'); el.innerHTML = html; el.hidden = !html; const c = $('#cmd'); if (c) c.style.top = html && document.documentElement.classList.contains('dev-touch') ? Math.round(el.getBoundingClientRect().bottom + 8) + 'px' : ''; };
   UI.toast = (text, icon = '✨', ms = 2600) => {
     const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = `<i>${icon}</i>${esc(text)}`;
     $('#toasts').appendChild(t); setTimeout(() => t.classList.add('out'), ms); setTimeout(() => t.remove(), ms + 400);
