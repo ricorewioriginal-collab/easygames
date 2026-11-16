@@ -7,6 +7,7 @@ import { NPCS, goal, talk, poi as storyPoi, type NpcDef, type StoryCtx } from '.
 import type { Game } from './Game';
 import { sfx, music } from '../engine/Audio';
 import { toast, hints } from '../ui/ui';
+import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
 import type { Marker } from '../ui/Hud';
 
@@ -29,6 +30,7 @@ export class CityScene implements GameScene {
   private near: { kind: 'npc' | 'poi'; id: string; label: string } | null = null;
   private stepT = 0;
   private warnT = 30;
+  private evT = 90;
   private hudT = 0;
   private titleT = 0;
 
@@ -251,11 +253,17 @@ export class CityScene implements GameScene {
       s.playMs += dt * 1000;
       if (advance(s, dt / DAY_SEC * 1440)) toast(`Tag ${s.day} beginnt.`);
       this.world.setTime(s.time);
-      this.warnT -= dt;
+      this.warnT -= dt; this.evT -= dt;
+      if (this.evT <= 0) {
+        this.evT = 120;
+        const e = rollEvent(s, Math.random());
+        if (e) { toast((e.kind === 'rumor' ? '🗣️ ' : '✨ ') + e.text); if (e.money) s.money += e.money; if (e.kind === 'friend') change(s, { social: 12 }); if (e.kind === 'rumor') post(s, 'Flurfunk', e.text); }
+      }
       if (this.warnT <= 0) {
         this.warnT = 45;
         const low = NEEDS.find((n) => s.needs[n.k] < 18);
         if (low) toast(`${low.icon} ${low.name} ist niedrig: ${low.tip}`);
+        if (testDue(s) && s.flags.remind !== s.day) { s.flags.remind = s.day; toast('🩺 Erinnerung: Dein HIV/STI-Test ist fällig. Der Checkpoint hat offen.'); }
       }
       this.crowd.forEach((a) => (a.root.visible = this.world.night > .5));
     }

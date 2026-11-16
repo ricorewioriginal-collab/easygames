@@ -209,3 +209,26 @@ html[data-input=touch] #mg .lanes { display: flex; }
 .phoneBox .menu { gap: 6px; padding: 2px; }
 .phoneBox .mi { min-height: 44px; padding: 8px 14px; }
 .phoneBox .mi.sel { transform: none; }
+
+/* ---------- Durchgang 3: Dating-App, Feed, Nacht ---------- */
+.phoneBox .swipe { position: relative; margin: 0 6px 10px; padding: 0 0 12px; border-radius: 22px; background: #1d1438; border: 1px solid var(--line); overflow: hidden; touch-action: none; cursor: grab; transition: transform .35s ease, opacity .35s; flex-shrink: 0; user-select: none; }
+.phoneBox .swipe .pic { height: min(170px, 22dvh); display: grid; place-items: center; background: radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--c) 80%, #fff), var(--c) 55%, #2a1650); position: relative; }
+.phoneBox .swipe .pic span { font-size: 72px; font-weight: 900; color: rgba(255,255,255,.92); text-shadow: 0 6px 24px rgba(0,0,0,.35); }
+.phoneBox .swipe .pic i { position: absolute; right: 12px; bottom: 10px; font-style: normal; font-weight: 900; background: rgba(0,0,0,.4); padding: 3px 9px; border-radius: 999px; }
+.phoneBox .swipe h3 { margin: 10px 14px 2px; font-size: 1.15em; }
+.phoneBox .swipe h3 small { color: var(--mu); font-weight: 700; font-size: .7em; }
+.phoneBox .swipe p { margin: 4px 14px; font-size: .86em; }
+.phoneBox .swipe .tags em { display: inline-block; font-style: normal; font-size: .78em; padding: 2px 8px; margin: 2px 4px 0 0; border-radius: 999px; background: rgba(255,255,255,.08); }
+.phoneBox .swipe .adult { color: #ffb3d9; }
+.phoneBox .swipe .stamp { position: absolute; top: 18px; padding: 4px 12px; border: 3px solid; border-radius: 10px; font-weight: 900; font-size: 22px; opacity: 0; transform: rotate(-14deg); transition: opacity .15s; }
+.phoneBox .swipe .stamp.yes { left: 16px; color: #3ee69a; } .phoneBox .swipe .stamp.no { right: 16px; color: #ff5d6c; transform: rotate(14deg); }
+.phoneBox .swipe.lYes .stamp.yes, .phoneBox .swipe.goR .stamp.yes, .phoneBox .swipe.lNo .stamp.no, .phoneBox .swipe.goL .stamp.no { opacity: 1; }
+.phoneBox .swipe.goR { transform: translateX(130%) rotate(20deg); opacity: 0; }
+.phoneBox .swipe.goL { transform: translateX(-130%) rotate(-20deg); opacity: 0; }
+.phoneBox .post { padding: 8px 10px; border-radius: 12px; background: rgba(255,255,255,.05); margin: 6px 0; }
+.phoneBox .post small { color: var(--mu); }
+.phoneBox .bubble { display: inline-block; padding: 9px 13px; border-radius: 16px 16px 16px 4px; background: rgba(255,79,163,.25); }
+.night { position: fixed; inset: 0; z-index: 46; display: grid; place-content: center; text-align: center; gap: 10px; background: #000; color: #fff; animation: fadein 1.2s both; }
+.night p { font-size: clamp(22px, 4vw, 36px); font-weight: 900; margin: 0; background: var(--pride); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.night small { color: #aaa; }
+body:has(#ui .screen:not(.phone)) #hud .lcol { visibility: hidden; }

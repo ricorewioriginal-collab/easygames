@@ -5,7 +5,7 @@ export const KEY = 'prideCity.save';
 const OLD = 'anmachaGayLife';
 export const VERSION = 1;
 
-export interface Settings { music: number; sfx: number; quality: number; touch: number; invertY: boolean; camSpeed: number }
+export interface Settings { music: number; sfx: number; quality: number; touch: number; invertY: boolean; camSpeed: number; /** Inhalte ab 18 (Flirts, Erotik angedeutet), Standard aus */ adult: boolean }
 
 export interface SaveData {
   v: number;
@@ -41,6 +41,14 @@ export interface SaveData {
   daily: { d: number; done: string[]; c: Record<string, number> };
   /** Ziel auf der Karte markiert (POI-ID) */
   pin: string;
+  /** Gegenstände: Kondome, Gleitgel, Toys … */
+  inv: Record<string, number>;
+  /** Gesundheit: letzter Test (Tag), PrEP an/aus */
+  health: { test: number; prep: boolean };
+  /** Dating: Stufe 0..3 je Profil, letzter Date-Tag, geplantes Date (Tag) und Ort */
+  dates: Record<string, { st: number; last: number; plan: number; at: string }>;
+  /** Social-Feed: eigene Beiträge und Ereignisse */
+  feed: Array<{ d: number; who: string; t: string }>;
   /** zuletzt drinnen (Wohnung) gespeichert */
   inside: boolean;
   imported: boolean;
@@ -55,7 +63,8 @@ export function defaults(): SaveData {
     pos: { x: 0, z: 18, yaw: Math.PI }, imported: false, playMs: 0,
     needs: { energy: 85, hunger: 75, hygiene: 80, social: 60, fun: 65 }, food: 2, jobs: {}, jobDay: { d: 0, n: 0 }, rel: {},
     daily: { d: 0, done: [], c: {} }, pin: '', inside: false,
-    settings: { music: .55, sfx: .8, quality: -1, touch: -1, invertY: false, camSpeed: 1 },
+    inv: { condom: 0, lube: 0, toy: 0 }, health: { test: 0, prep: false }, dates: {}, feed: [],
+    settings: { music: .55, sfx: .8, quality: -1, touch: -1, invertY: false, camSpeed: 1, adult: false },
   };
 }
 
@@ -66,7 +75,7 @@ function merge<T>(d: T, s: unknown): T {
   for (const [k, v] of Object.entries(s as Obj)) {
     if (!(k in o)) continue;
     const cur = o[k];
-    if (cur && typeof cur === 'object' && !Array.isArray(cur) && v && typeof v === 'object' && !Array.isArray(v) && k !== 'flags' && k !== 'best' && k !== 'jobs' && k !== 'rel' && k !== 'c') o[k] = merge(cur, v);
+    if (cur && typeof cur === 'object' && !Array.isArray(cur) && v && typeof v === 'object' && !Array.isArray(v) && k !== 'flags' && k !== 'best' && k !== 'jobs' && k !== 'rel' && k !== 'c' && k !== 'inv' && k !== 'dates') o[k] = merge(cur, v);
     else if (v !== null && v !== undefined && typeof v === typeof cur) o[k] = v;
   }
   return d;
