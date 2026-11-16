@@ -120,9 +120,12 @@ export class CityScene implements GameScene {
   /* Ersetzt die Spielfigur nach dem Editor (andere Körperform = anderes Modell) */
   async rebuildPlayer() {
     const s = this.g.save.data;
-    if (this.player.look.body === s.body) return;
-    this.root.remove(this.player.root);
-    this.player = await Actor.create(streetLook(playerLook(s)));
+    const look = streetLook(playerLook(s));
+    if (this.player.look.body === look.body) { this.player.setLook(look); return; }
+    const old = this.player.root;
+    this.root.remove(old);
+    this.player = await Actor.create(look);
+    this.player.root.position.copy(old.position); this.player.root.rotation.y = old.rotation.y;
     this.root.add(this.player.root);
   }
 
@@ -233,7 +236,7 @@ export class CityScene implements GameScene {
     }
     if (storyPoi(c, this.near.id)) return;
     if (this.near.id === 'home') { this.g.enterHome(); return; }
-    this.g.placeMenu(this.near.id);
+    sfx('door'); this.g.placeMenu(this.near.id);
   }
 
   /** Gespräch mit einer Story-Figur starten (z. B. aus einem Ortsmenü) */
@@ -251,7 +254,7 @@ export class CityScene implements GameScene {
       sfx('open');
       return;
     }
-    this.drive = this.street.parked[+id];
+    this.drive = this.street.parked[+id]; sfx('door'); setTimeout(() => sfx('engine'), 250);
     this.player.root.visible = false;
     this.cam.dist = Math.max(this.cam.dist, 9);
     this.cam.tYaw = this.drive.o.rotation.y + Math.PI;

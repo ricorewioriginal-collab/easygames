@@ -2,7 +2,7 @@
 import { Engine } from '../engine/Engine';
 import { Save } from '../engine/Save';
 import { trackProgress, preload } from '../engine/Assets';
-import { unlock, music, vol, applyVolume, sfx } from '../engine/Audio';
+import { unlock, music, vol, applyVolume, sfx, nightSounds } from '../engine/Audio';
 import { Loading, Dialog, Menu, el, $, esc, hints, toast, chapterCard, bindInputMode, type Item } from '../ui/ui';
 import { Hud } from '../ui/Hud';
 import { Touch } from '../ui/Touch';
@@ -11,6 +11,7 @@ import { CreatorScene } from './CreatorScene';
 import { DanceScene } from './minigames/DanceScene';
 import { World } from './World';
 import { BODIES } from './palettes';
+import { pianoSongs, pianoParts } from './minigames/showSongs';
 import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST, lichtPart, lichtLight, lfPart, lfGlow } from './story';
 import { LF_CHAPTERS, lfEnding, lfPct } from './leuchtfeuer';
 import { LICHT_CHAPTERS, lichtEnding } from './licht';
@@ -190,6 +191,7 @@ export class Game {
 
   /* ---------- Wohnung ---------- */
   enterHome(after?: () => void) {
+    sfx('door');
     const go = async () => {
       if (!this.home) { this.home = new HomeScene(this); await this.home.build(); }
       await this.home.syncPlayer();
@@ -203,6 +205,7 @@ export class Game {
   }
   leaveHome() {
     const s = this.save.data;
+    sfx('door');
     this.fade(() => { this.where = 'city'; s.inside = false; s.pos = { x: 3.6, z: 40, yaw: Math.PI / 2 }; this.engine.setScene(this.city); this.city.setPlay(); this.save.write(); });
   }
   /** Zeit vergeht durch eine Tätigkeit (Wohnung, Job, Tram) */
@@ -215,7 +218,7 @@ export class Game {
   done(list: Daily[]) { for (const d of list) { toast(`✅ Tagesziel: ${d.text} · +${d.glitter} Glitzer${d.money ? ' · +' + d.money + ' €' : ''}`); sfx('win'); } }
   homeAction(id: string) {
     const s = this.save.data, h = this.home!;
-    const busy = (kind: HomeScene['activity'], min: number, fx: () => void, msg: string) => { h.play(kind); setTimeout(() => { this.pass(min); fx(); toast(msg); this.save.write(); this.city.refreshHud(); }, 900); };
+    const busy = (kind: HomeScene['activity'], min: number, fx: () => void, msg: string) => { h.play(kind); if (kind === 'shower') sfx('shower'); else if (kind === 'stove') sfx('cook'); setTimeout(() => { this.pass(min); fx(); toast(msg); this.save.write(); this.city.refreshHud(); }, 900); };
     if (id === 'door') { this.leaveHome(); return; }
     if (id === 'wardrobe') { this.fade(() => this.creator(true)); return; }
     if (id === 'shower') { busy('shower', 20, () => { change(s, { hygiene: 100, fun: 3 }); this.done(track(s, 'shower')); }, 'Frisch geduscht! 🚿'); return; }
@@ -261,6 +264,7 @@ export class Game {
   /* ---------- Handy ---------- */
   phone(app = '') {
     if (this.dialog.open) return;
+    if (!app) sfx('phone');
     const s = this.save.data;
     this.touch.show(false);
     const close = () => { this.closeMenu(); this.touch.show(true); };
@@ -423,7 +427,7 @@ export class Game {
     const lube = (s.inv.lube || 0) > 0;
     s.inv.condom--; if (lube) s.inv.lube--;
     const b = el(`<div class="night"><p>💜 ${p.name} und du …</p><small>Zustimmung: ✔︎ · Kondom: ✔︎${lube ? ' · Gleitgel: ✔︎' : ''}${s.health.prep ? ' · PrEP: ✔︎' : ''}</small></div>`);
-    document.body.appendChild(b);
+    document.body.appendChild(b); nightSounds();
     setTimeout(() => {
       this.pass(minutesUntil(s, 8), true);
       change(s, { energy: 100, social: 40, fun: 40, hygiene: -30 });
@@ -438,7 +442,7 @@ export class Game {
   private fadeNight(title: string, tags: string[], minutes: number, kind: Parameters<typeof encounter>[1], after?: () => void) {
     const s = this.save.data;
     const b = el(`<div class="night"><p>${esc(title)}</p><small>${tags.map(esc).join(' · ')}</small></div>`);
-    document.body.appendChild(b);
+    document.body.appendChild(b); if (kind !== 'talk') nightSounds();
     setTimeout(() => {
       this.pass(minutes);
       const r = encounter(s, kind);
@@ -541,6 +545,7 @@ export class Game {
   }
   travel(x: number, z: number) {
     const s = this.save.data;
+    sfx('tram');
     const go = () => { this.where = 'city'; s.inside = false; s.pos = { x: x > 0 ? x - 2.2 : x + 2.2, z, yaw: x > 0 ? Math.PI / 2 : -Math.PI / 2 }; this.pass(10); this.done(track(s, 'tram')); this.engine.setScene(this.city); this.city.setPlay(); toast('🚋 Angekommen.'); };
     this.fade(go);
   }
@@ -698,7 +703,9 @@ export class Game {
         { icon: '🔥', label: 'Tipps zum Brandschutz', fn: () => { close(); this.dialog.say([{ who: 'Feuerwehr', color: '#ff4b3b', text: 'Rauchmelder in jedes Schlafzimmer, einmal im Monat testen. Kerzen nie unbeaufsichtigt – auch nicht beim Date. 😉' }, { who: 'Feuerwehr', color: '#ff4b3b', text: 'Notruf 112: Wo ist es? Was ist passiert? Wie viele Verletzte? Warten auf Rückfragen.' }]); } }] },
       onelove: { t: 'One Love Bar', d: 'Ein Herz über der Tür, das nicht ausgeht. Hier tritt Lady Luma auf – und hier erzählt Leon seine Geschichte.', items: [
         { icon: '✨', label: 'Leons Geschichte', sub: s.chapter < 2 ? 'ab Kapitel 2' : lichtPart(s) >= LICHT_CHAPTERS.length ? `erlebt · Ende „${lichtEnding(lichtLight(s)).title}“` : `Rückblende ${lichtPart(s) + 1}/${LICHT_CHAPTERS.length} · Licht ${lichtLight(s)}`, disabled: s.chapter < 2, fn: () => { close(); this.city.talkTo('leon'); } },
-        { icon: '🎤', label: 'Lady Luma Show ansehen', sub: s.flags.lichtEnd ? '1 Stunde · +20 Spaß · +10 Kontakte' : 'nach Leons Geschichte', disabled: !s.flags.lichtEnd, fn: () => { close(); this.fade(() => { this.pass(60); change(s, { fun: 20, social: 10 }); this.save.write(); toast('Lady Luma: „Ich bin das Licht!“ ✨'); }); } },
+        { icon: '🎤', label: 'Lady Lumas Drag-Show spielen', sub: (s.flags.lichtEnd || lichtPart(s) >= 5) ? 'Buch-Hymne oder Klaviersongs · +Spaß · +Ruf' : 'ab Leons 5. Rückblende', disabled: !(s.flags.lichtEnd || lichtPart(s) >= 5), fn: () => { close(); this.showMenu((o) => this.goDance(false, undefined, o)); } },
+        { icon: '👨', label: s.flags.playAs === 'leon' ? 'Wieder du selbst sein' : 'Als Leon Sommer spielen', sub: 'Leon als Mann, wie im Roman', disabled: s.chapter < 2, fn: () => { close(); this.playAs(s.flags.playAs === 'leon' ? '' : 'leon'); } },
+        { icon: '👑', label: s.flags.playAs === 'luma' ? 'Abschminken – wieder du selbst' : 'Als Lady Luma spielen', sub: 'Leon in Drag: Glitzer, Perücke, Lichtumhang', disabled: !(s.flags.lichtEnd || lichtPart(s) >= 5), fn: () => { close(); this.playAs(s.flags.playAs === 'luma' ? '' : 'luma'); } },
         { icon: '🍸', label: 'Drink an der Bar', sub: '5 € · +8 Spaß · +6 Kontakte', fn: buy(5, 'Velvet schiebt dir das Glas rüber. 🍸', eat({ fun: 8, social: 6 })) },
         { icon: '📖', label: 'Den Roman lesen', sub: '„Ich bin das Licht“ von RicoReWi', fn: () => { close(); this.book(); } }] },
       tramhafen: { t: 'Tram Hafen', d: 'Endstation am Regenbogenkai. Zurück in die Innenstadt in zehn Minuten.', items: [
@@ -747,6 +754,7 @@ export class Game {
     };
     const serve = () => {
       const want = split(MENU[order][1]).sort().join(''), got = glass.slice().sort().join('');
+      sfx('pour'); setTimeout(() => sfx('glass'), 500);
       if (want === got) { served++; const t = 3 + Math.floor(Math.random() * 4) + (s.flags.barDeko ? 2 : 0); tips += t; sfx('coin'); toast(`${guest}: „Perfekt!“ +${t} €`); }
       else { sfx('miss'); toast(`${guest}: „Das hab ich nicht bestellt …“`); }
       next(); render();
@@ -826,10 +834,54 @@ export class Game {
     [{ icon: '▶', label: 'Weiterspielen', fn: fin }], fin, '');
   }
 
+  /** Rolle wechseln: eigene Figur, Leon Sommer oder Lady Luma */
+  playAs(role: '' | 'leon' | 'luma') {
+    const s = this.save.data;
+    this.fade(async () => {
+      s.flags.playAs = role; this.save.write();
+      await this.city.rebuildPlayer();
+      sfx('open');
+      toast(role === 'leon' ? 'Du spielst jetzt Leon Sommer. 🌈' : role === 'luma' ? 'Hallo, Lady Luma! ✨ Ich bin das Licht.' : `Du bist wieder ${s.name}.`);
+    });
+  }
+
+  /* ---------- Drag-Show: Lied wählen (Buch-Hymne über YouTube, Klavierlicht-Songs, Beat) ---------- */
+  async showMenu(go: (o: ConstructorParameters<typeof DanceScene>[2]) => void, story = false) {
+    const s = this.save.data;
+    this.touch.show(false);
+    const close = () => { this.closeMenu(); this.touch.show(true); if (story) s.flags.lichtShow = false; };
+    const ytOk = () => { s.flags.ytOk = true; this.save.write(); go({ song: { kind: 'yt' }, show: true }); };
+    const panel = (p: string) => `<div class="col"><div class="panel"><h3>🎤 Lady Lumas Show</h3>${p}<div class="slot"></div></div></div>`;
+    const base = [
+      { icon: '✨', label: 'Ich bin das Licht – Buchsong', sub: s.flags.ytOk ? 'Offizielles Video (YouTube)' : 'Offizielles Video – lädt YouTube nach Zustimmung', fn: () => {
+        if (s.flags.ytOk) { ytOk(); return; }
+        this.openMenu(panel('<p>Der Buchsong läuft als offizielles YouTube-Video im Spiel. Erst wenn du zustimmst, wird das Video geladen (youtube-nocookie.com); dabei werden Daten an YouTube/Google übertragen.</p>'), [
+          { icon: '▶', label: 'Mit YouTube spielen', fn: ytOk },
+          { icon: '🥁', label: 'Ohne YouTube: Beat im Takt', fn: () => go({ song: { kind: 'beat' }, show: true }) },
+          { icon: '←', label: 'Zurück', fn: () => this.showMenu(go, story) }], () => this.showMenu(go, story));
+      } },
+      { icon: '🥁', label: 'Ich bin das Licht – Beat', sub: 'ohne Internet, gleicher Takt', fn: () => go({ song: { kind: 'beat' }, show: true }) },
+    ];
+    this.openMenu(panel('<p>Welches Lied singt Lady Luma heute? Die Klaviersongs kommen aus Klavierlicht.</p><p><small>Klaviersongs werden geladen …</small></p>'), [...base, ...(story ? [] : [{ icon: '←', label: 'Zurück', fn: close }])], story ? null : close);
+    let songs: Awaited<ReturnType<typeof pianoSongs>> = [];
+    try { songs = await pianoSongs(); } catch { /* offline: nur Buchsong */ }
+    if (!this.menuOpen) return;
+    this.openMenu(panel(`<p>Welches Lied singt Lady Luma heute? ${songs.length ? `${songs.length} Klaviersongs aus Klavierlicht, alle gemeinfrei.` : 'Klavierlicht ist gerade nicht erreichbar.'}</p>`), [
+      ...base,
+      ...songs.map((x) => ({ icon: '🎹', label: x.title, sub: `${x.artist || ''}${x.dur ? ` · ${Math.round(x.dur)} s` : ''}`, fn: async () => {
+        this.loading.show('Klavierlicht', x.title);
+        try { const parts = await pianoParts(x); this.loading.hide(); go({ song: { kind: 'piano', id: x.id, title: x.title, artist: x.artist, lic: x.lic }, parts, show: true }); }
+        catch { this.loading.hide(); toast('Das Lied konnte nicht geladen werden.'); }
+      } })),
+      ...(story ? [] : [{ icon: '←', label: 'Zurück', fn: close }])], story ? null : close);
+  }
+
   /* ---------- Minispiel ---------- */
-  goDance(_story: boolean, back?: () => void) {
+  goDance(_story: boolean, back?: () => void, opt: ConstructorParameters<typeof DanceScene>[2] = {}) {
+    const s0 = this.save.data;
+    if (!opt.song && s0.flags.lichtShow) { this.showMenu((o) => this.goDance(_story, back, o), true); return; }
     this.closeMenu();
-    this.loading.show('Club Prisma', 'Tanz-Battle');
+    this.loading.show(opt.show ? 'One Love Bar' : 'Club Prisma', opt.show ? 'Lady Lumas Show' : 'Tanz-Battle');
     this.loading.progress(.4, 'Lichtshow startet');
     const sc = new DanceScene(this, (won) => {
       const s = this.save.data;
@@ -840,9 +892,10 @@ export class Game {
       this.fade(() => {
         if (back) { this.title(); return; }
         this.engine.setScene(this.city); this.city.setPlay();
+        if (opt.show && !s.flags.lichtShow) { change(s, { fun: 10 }); s.rep += won ? 2 : 1; toast(won ? 'Lady Luma: „Ich bin das Licht!“ ✨ Standing Ovations!' : 'Applaus für Lady Luma! ✨'); this.save.write(); this.city.refreshHud(); return; }
         danceResult(this.city.ctx(), won);
       });
-    });
+    }, opt);
     sc.build().then(() => { this.loading.progress(1, 'Los!'); this.engine.setScene(sc); this.loading.hide(); });
     music(null);
   }
