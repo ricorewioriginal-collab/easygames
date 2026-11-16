@@ -22,13 +22,14 @@ E2E-Test (Browser, SwiftShader): Server im Repo starten (`python3 -m http.server
 | `src/engine/Audio.ts` | Musik und Effekte live per WebAudio erzeugt (keine Audiodateien) |
 | `src/engine/Save.ts` | Spielstand `prideCity.save` (Cloud-Präfix `prideCity.`), Migration, Übernahme aus Gay Life! (`anmachaGayLife`) |
 | `src/ui/` | Konsolen-Menü (`Menu`), Ladebildschirm, Dialog mit Antworten, HUD mit Zielmarkern, Touch-Stick und -Tasten, Kapitelkarten |
-| `src/game/Actor.ts` | KayKit-Figur: Waffen weg, Pride-Umfärbung je Palette und Hautton, weiche Animationswechsel |
+| `src/game/Actor.ts` | KayKit-Figur: Waffen weg, Pride-Umfärbung je Palette und Hautton, weiche Animationswechsel, Outfits per Shader (oberkörperfrei, Unterwäsche, Bademode, Harness) |
 | `src/game/World.ts` | Rainbow City aus City-Builder-Bits plus Pride-Deko, Tag/Nacht, Verkehr, Kollision |
 | `src/game/CityScene.ts` | Laufen, Kamera, Figuren, Interaktion, Sticker, Titel-Kamerafahrt |
 | `src/game/story.ts` | Figuren, Kapitel, Ziele, Gespräche, Entscheidungen (`save.flags`) |
 | `src/game/life.ts` | Bedürfnisse, Stimmung, Uhrzeit und Tageswechsel, Tagesziele (aus Gay Life! übernommen) |
 | `src/game/jobs.ts` | Fünf Jobs mit Situationen, Lohn, Stufen und Beförderung |
 | `src/game/social.ts` | Dating-Profile, Dates, Gesundheit (Checkpoint, PrEP, Tests), Feed, Gerüchte, Glossar, 18+-Regeln |
+| `src/game/Photo.ts` | Fotostudio: rendert Profilbilder der Figuren (Outfit, Pose) für die Dating-App |
 | `src/game/HomeScene.ts` | Begehbare Wohnung (KayKit Furniture und Restaurant Bits): Bett, Dusche, Herd, TV, Kleiderschrank |
 | `src/game/CreatorScene.ts` | Charakter-Editor |
 | `src/game/minigames/DanceScene.ts` | Tanz-Battle in 3D |

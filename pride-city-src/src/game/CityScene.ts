@@ -1,7 +1,7 @@
 /* Stadt-Szene: Rainbow City zum Herumlaufen (Spielmodus) und als Kulisse fürs Titelmenü (Kameraflug, tanzende Leute). */
 import * as THREE from 'three';
 import type { GameScene } from '../engine/Engine';
-import { Actor } from './Actor';
+import { Actor, playerLook } from './Actor';
 import { World } from './World';
 import { NPCS, goal, talk, poi as storyPoi, type NpcDef, type StoryCtx } from './story';
 import type { Game } from './Game';
@@ -40,7 +40,7 @@ export class CityScene implements GameScene {
     this.world = new World(this.root);
     await this.world.build();
     const s = this.g.save.data;
-    this.player = await Actor.create({ body: s.body, palette: s.palette, skin: s.skin, cape: !!s.flags.cape, hat: !!s.flags.hat });
+    this.player = await Actor.create(playerLook(s));
     this.root.add(this.player.root);
     await Promise.all(NPCS.map(async (d) => {
       const a = await Actor.create(d.look);
@@ -98,7 +98,7 @@ export class CityScene implements GameScene {
     const s = this.g.save.data;
     this.mode = 'play';
     this.player.root.visible = true;
-    this.player.setLook({ body: s.body, palette: s.palette, skin: s.skin, cape: !!s.flags.cape, hat: !!s.flags.hat });
+    this.player.setLook(playerLook(s));
     this.player.root.position.set(s.pos.x, .1, s.pos.z);
     this.player.root.rotation.y = s.pos.yaw;
     this.cam.yaw = this.cam.tYaw = s.pos.yaw + Math.PI;
@@ -115,7 +115,7 @@ export class CityScene implements GameScene {
     const s = this.g.save.data;
     if (this.player.look.body === s.body) return;
     this.root.remove(this.player.root);
-    this.player = await Actor.create({ body: s.body, palette: s.palette, skin: s.skin, cape: !!s.flags.cape, hat: !!s.flags.hat });
+    this.player = await Actor.create(playerLook(s));
     this.root.add(this.player.root);
   }
 

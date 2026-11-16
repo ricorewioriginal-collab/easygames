@@ -4,26 +4,34 @@
 import type { SaveData } from '../engine/Save';
 
 export interface Profile {
-  id: string; name: string; age: number; pron: string; color: string; body: string; palette: string;
+  id: string; name: string; age: number; pron: string; color: string; body: string; palette: string; skin: number;
   bio: string; likes: string; at: 'cafe' | 'club';
   /** nur mit 18+ sichtbar */ role: string; into: string;
 }
 
 export const PROFILES: Profile[] = [
-  { id: 'kai', name: 'Kai', age: 29, pron: 'er', color: '#ff7a59', body: 'Barbarian', palette: 'bear', at: 'club',
+  { id: 'kai', skin: 2, name: 'Kai', age: 29, pron: 'er', color: '#ff7a59', body: 'Barbarian', palette: 'bear', at: 'club',
     bio: 'Bär mit weichem Kern. Koche gern für zu viele Leute.', likes: 'Brunch, Techno, Hunde', role: 'Vers', into: 'Kuscheln, lange Nächte, Massagen' },
-  { id: 'luca', name: 'Luca', age: 24, pron: 'er', color: '#5ce1ff', body: 'Rogue', palette: 'neon', at: 'club',
+  { id: 'luca', skin: 0, name: 'Luca', age: 24, pron: 'er', color: '#5ce1ff', body: 'Rogue', palette: 'neon', at: 'club',
     bio: 'Tänzer, Nachtmensch, Sternzeichen: Glitzer.', likes: 'Voguing, Pop, Späti-Nächte', role: 'Bottom', into: 'Tanzen bis zum Morgen, Flirten mit Blicken' },
-  { id: 'malik', name: 'Malik', age: 34, pron: 'er', color: '#b56bff', body: 'Knight', palette: 'leather', at: 'cafe',
+  { id: 'malik', skin: 4, name: 'Malik', age: 34, pron: 'er', color: '#b56bff', body: 'Knight', palette: 'leather', at: 'cafe',
     bio: 'Krankenpfleger. Leder am Wochenende, Strickjacke unter der Woche.', likes: 'Motorräder, Krimis, guter Kaffee', role: 'Top', into: 'Leder, klare Absprachen, Respekt' },
-  { id: 'robin', name: 'Robin', age: 27, pron: 'they', color: '#ffd23b', body: 'Mage', palette: 'nonbinary', at: 'cafe',
+  { id: 'robin', skin: 1, name: 'Robin', age: 27, pron: 'they', color: '#ffd23b', body: 'Mage', palette: 'nonbinary', at: 'cafe',
     bio: 'Illustrator*in, zeichnet Leute in der Tram.', likes: 'Comics, Pflanzen, Karaoke', role: 'Switch', into: 'Spielerisches, Rollenspiele, viel Lachen' },
-  { id: 'ella', name: 'Ella', age: 31, pron: 'sie', color: '#ff6ad5', body: 'Rogue_Hooded', palette: 'lesbian', at: 'cafe',
+  { id: 'ella', skin: 3, name: 'Ella', age: 31, pron: 'sie', color: '#ff6ad5', body: 'Rogue_Hooded', palette: 'lesbian', at: 'cafe',
     bio: 'Gärtnerin mit Hang zu Drama – auf der Bühne.', likes: 'Theater, Wandern, Katzen', role: 'Femme', into: 'Romantik, Kerzen, langsames Kennenlernen' },
-  { id: 'jonas', name: 'Jonas', age: 42, pron: 'er', color: '#3ee69a', body: 'Knight', palette: 'gay', at: 'cafe',
+  { id: 'jonas', skin: 1, name: 'Jonas', age: 42, pron: 'er', color: '#3ee69a', body: 'Knight', palette: 'gay', at: 'cafe',
     bio: 'Frisch geschieden, frisch geoutet. Lerne gerade alles neu.', likes: 'Joggen, Jazz, Kochkurse', role: 'Side', into: 'Nähe ohne Eile, Händchenhalten, Neues entdecken' },
 ];
 export const profile = (id: string) => PROFILES.find((p) => p.id === id);
+/** Fotos im Profil: angezogen und locker; mit 18+ zusätzlich sexy Pose (oberkörperfrei) und Unterwäsche */
+export function profileShots(p: Profile, adult: boolean) {
+  const look = (outfit: 'clothed' | 'shirtless' | 'underwear') => ({ body: p.body, palette: p.palette, skin: p.skin, outfit, top: p.pron !== 'er' });
+  const out = [{ look: look('clothed'), clip: 'Idle', t: .4, bg: p.color, close: true, label: 'Profilbild' }];
+  if (adult) out.push({ look: look('shirtless'), clip: 'Spellcast_Raise', t: .9, bg: p.color, close: false, label: 'Sexy Pose' }, { look: look('underwear'), clip: 'Unarmed_Pose', t: .5, bg: p.color, close: false, label: 'Unterwäsche' });
+  else out.push({ look: look('clothed'), clip: 'Cheer', t: .7, bg: p.color, close: false, label: 'Gute Laune' });
+  return out;
+}
 
 /* ---------- Dates ---------- */
 export const DATE_STAGE = ['Match', 'Erstes Date', 'Verliebt', 'Zusammen'];

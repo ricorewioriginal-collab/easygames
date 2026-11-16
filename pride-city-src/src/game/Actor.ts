@@ -8,7 +8,46 @@ export const CHAR_HEIGHT = 1.85;
 const KEEP = /(_ArmLeft|_ArmRight|_Body|_Head|_Head_Hooded|_LegLeft|_LegRight)$/;
 const EXTRA: Record<string, RegExp> = { cape: /_Cape$/, hat: /(Mage_Hat|Barbarian_Hat)$/, mug: /^Mug$/ };
 
-export interface Look { body: string; palette: string; skin: number; cape?: boolean; hat?: boolean; mug?: boolean }
+/** Outfits (Durchgang 3a): Niveau Bade- und Unterwäschemode, keine anatomischen Details. top = BH/Bikini-Oberteil */
+export type Outfit = 'clothed' | 'shirtless' | 'underwear' | 'swim' | 'harness';
+export const OUTFITS: Array<{ id: Outfit; name: string; adult?: boolean }> = [
+  { id: 'clothed', name: 'Angezogen' }, { id: 'shirtless', name: 'Oberkörperfrei' }, { id: 'underwear', name: 'Unterwäsche' },
+  { id: 'swim', name: 'Badehose / Bikini' }, { id: 'harness', name: 'Harness', adult: true },
+];
+export interface Look { body: string; palette: string; skin: number; cape?: boolean; hat?: boolean; mug?: boolean; outfit?: Outfit; top?: boolean }
+
+/** Aussehen der Spielfigur aus dem Spielstand (Harness nur mit 18+) */
+export function playerLook(s: { body: string; palette: string; skin: number; pronouns: string; flags: Record<string, unknown>; settings: { adult: boolean } }): Look {
+  let outfit = (s.flags.outfit as Outfit) || 'clothed';
+  if (!OUTFITS.some((o) => o.id === outfit) || (OUTFITS.find((o) => o.id === outfit)!.adult && !s.settings.adult)) outfit = 'clothed';
+  return { body: s.body, palette: s.palette, skin: s.skin, cape: !!s.flags.cape, hat: !!s.flags.hat, outfit, top: s.pronouns !== 'he' };
+}
+
+/* Shader-Ergänzung: färbt je nach Outfit Haut und Wäsche anhand der Ruhepose-Höhe (KayKit: Beine 0–0,53, Körper 0,38–1,3) */
+const OUTFIT_ID: Record<Outfit, number> = { clothed: 0, shirtless: 1, underwear: 2, swim: 3, harness: 4 };
+function outfitShader(mat: THREE.MeshStandardMaterial, part: number) {
+  const u = { uOutfit: { value: 0 }, uPart: { value: part }, uTop: { value: 0 }, uSkin: { value: new THREE.Color() }, uCloth: { value: new THREE.Color() } };
+  mat.userData.outfit = u;
+  mat.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, u);
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vOP;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvOP = position;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vOP;\nuniform float uOutfit, uPart, uTop;\nuniform vec3 uSkin, uCloth;')
+      .replace('#include <map_fragment>', `#include <map_fragment>
+      if (uOutfit > .5 && uPart > .5) {
+        float lum = dot(diffuseColor.rgb, vec3(.299, .587, .114));
+        vec3 skin = uSkin * (.85 + .3 * lum), cloth = uCloth * (.6 + .4 * lum);
+        float y = vOP.y;
+        bool brief = (uPart == 1. && y < .64) || (uPart == 3. && y > .4);
+        bool bra = uTop > .5 && uPart == 1. && y > .93 && y < 1.1;
+        if (uOutfit < 1.5 || uOutfit > 3.5) { // oberkörperfrei / Harness: Hose bleibt
+          bool upper = uPart == 2. || (uPart == 1. && y > .64);
+          if (upper) diffuseColor.rgb = bra ? cloth : skin;
+          if (uOutfit > 3.5 && uPart == 1. && y > .64) { float d = abs(abs(vOP.x) - (1.22 - y) * .55); if (d < .035 || abs(y - .86) < .03) diffuseColor.rgb = vec3(.06); }
+        } else { diffuseColor.rgb = (brief || bra) ? cloth : skin; }
+      }`);
+  };
+  mat.customProgramCacheKey = () => 'outfit';
+}
 
 const texCache = new Map<string, THREE.Texture>();
 
@@ -73,6 +112,7 @@ export class Actor {
   private cur: Anim | null = null;
   private mats: THREE.MeshStandardMaterial[] = [];
   private srcMap: THREE.Texture | null = null;
+  private clips: THREE.AnimationClip[] = [];
   look: Look;
 
   private constructor(look: Look) { this.look = { ...look }; }
@@ -95,10 +135,13 @@ export class Actor {
       const mat = (m.material as THREE.MeshStandardMaterial).clone();
       if (!a.srcMap && mat.map) a.srcMap = mat.map;
       mat.roughness = .7; mat.metalness = 0;
+      const part = /_Body$/.test(m.name) ? 1 : /_Arm(Left|Right)$/.test(m.name) ? 2 : /_Leg(Left|Right)$/.test(m.name) ? 3 : 0;
+      outfitShader(mat, part);
       m.material = mat; a.mats.push(mat);
     });
     a.root.add(scene);
     a.mixer = new THREE.AnimationMixer(scene);
+    a.clips = clips;
     for (const [k, n] of Object.entries(CLIP) as [Anim, string][]) {
       const c = clips.find((x) => x.name === n);
       if (!c) continue;
@@ -127,6 +170,9 @@ export class Actor {
       const t = recolor(this.srcMap, this.look);
       this.mats.forEach((m) => { m.map = t; m.needsUpdate = true; });
     }
+    const o = OUTFIT_ID[this.look.outfit || 'clothed'], cols = palette(this.look.palette).colors;
+    const cloth = new THREE.Color(cols[this.look.outfit === 'swim' ? 2 % cols.length : 0]), skin = new THREE.Color(SKINS[this.look.skin] || SKINS[1]).convertSRGBToLinear().multiplyScalar(.9);
+    for (const m of this.mats) { const u = m.userData.outfit; if (!u) continue; u.uOutfit.value = o; u.uTop.value = this.look.top ? 1 : 0; u.uSkin.value.copy(skin); u.uCloth.value.copy(cloth); }
   }
 
   play(a: Anim, fade = .22, speed = 1) {
@@ -144,6 +190,13 @@ export class Actor {
     }
   }
   get anim() { return this.cur; }
+  /** Standbild aus einem beliebigen KayKit-Clip (für Fotos), t in Sekunden */
+  pose(clip: string, t = .5) {
+    const c = this.clips.find((x) => x.name === clip); if (!c) return;
+    this.mixer.stopAllAction(); this.cur = null;
+    const a = this.mixer.clipAction(c); a.reset(); a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; a.play();
+    this.mixer.setTime(Math.min(t, c.duration - .01));
+  }
 
   update(dt: number) { this.mixer.update(dt); }
 

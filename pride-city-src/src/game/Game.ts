@@ -14,7 +14,8 @@ import { BODIES } from './palettes';
 import { CHAPTERS, goal, danceResult, NPCS } from './story';
 import { HomeScene } from './HomeScene';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage, level } from './jobs';
-import { PROFILES, profile, dateRec, dateQuestions, finishDate, canStay, DATE_STAGE, testDue, HEALTH_INFO, GLOSSARY, feed, post, bond, TEST_EVERY } from './social';
+import { photo } from './Photo';
+import { PROFILES, profileShots, profile, dateRec, dateQuestions, finishDate, canStay, DATE_STAGE, testDue, HEALTH_INFO, GLOSSARY, feed, post, bond, TEST_EVERY } from './social';
 import { NEEDS, mood, moodIcon, moodName, change, advance, minutesUntil, track, dailyState, clock, weekday, type Daily } from './life';
 
 export class Game {
@@ -28,6 +29,8 @@ export class Game {
   menuOpen = false;
   home: HomeScene | null = null;
   where: 'city' | 'home' = 'city';
+  private photoIdx = 0;
+  private photoFor = '';
   private overlay: HTMLElement | null = null;
   private menu: Menu | null = null;
 
@@ -320,8 +323,20 @@ export class Game {
     const s = this.save.data;
     const seen = (id: string) => { const v = s.flags['sw_' + id]; return v === 'y' || v === s.day; };
     const next = PROFILES.find((p) => !seen(p.id));
+    if (next?.id !== this.photoFor) { this.photoFor = next?.id || ''; this.photoIdx = 0; }
+    const shots = next ? profileShots(next, s.settings.adult) : [];
+    // Foto der Figur (wird beim ersten Mal gerendert); Blättern ändert nur Bild, Punkte und Zähler
+    const showPhoto = () => {
+      const pic = this.overlay?.querySelector('.swipe .pic'); if (!next || !pic) return;
+      pic.querySelectorAll('.dots u').forEach((u, i) => u.classList.toggle('on', i === this.photoIdx));
+      (pic.querySelector('i') as HTMLElement).textContent = shots[this.photoIdx].label;
+      const img = pic.querySelector('img') as HTMLImageElement, want = next.id + this.photoIdx;
+      img.classList.remove('on');
+      photo(next.id, shots[this.photoIdx]).then((url) => { if (this.photoFor + this.photoIdx === want) { img.src = url; img.classList.add('on'); } });
+    };
+    const flip = (d: number) => { if (!shots.length) return; this.photoIdx = (this.photoIdx + d + shots.length) % shots.length; showPhoto(); this.menu?.render(); sfx('move'); };
     const head = `<div class="ph"><span>${clock(s)}</span><b>💘 Rainbow Match</b><span>${PROFILES.filter((p) => s.dates[p.id]).length} ❤️</span></div>`;
-    const card = next ? `<div class="swipe" style="--c:${next.color}"><div class="pic"><span>${next.name[0]}</span><i>${next.age}</i></div>
+    const card = next ? `<div class="swipe" style="--c:${next.color}"><div class="pic"><span>${next.name[0]}</span><img alt=""><b class="dots">${shots.map((_, i) => `<u class="${i === this.photoIdx ? 'on' : ''}"></u>`).join('')}</b><i>${shots[this.photoIdx]?.label || ''}</i></div>
       <h3>${next.name}, ${next.age} <small>${next.pron}</small></h3><p>${esc(next.bio)}</p><p class="tags">${next.likes.split(', ').map((x) => `<em>${esc(x)}</em>`).join('')}</p>
       ${s.settings.adult ? `<p class="adult">🔞 <b>${next.role}</b> · ${esc(next.into)}</p>` : ''}<div class="stamp no">NOPE</div><div class="stamp yes">LIKE</div></div>`
       : '<div class="pbody"><p>Keine neuen Profile in deiner Nähe. Schau morgen wieder rein! 🌈</p></div>';
@@ -339,18 +354,20 @@ export class Game {
       }, 380);
     };
     this.openMenu(`<div class="phoneBox">${head}${card}<div class="slot"></div></div>`, [
-      ...(next ? [{ icon: '💞', label: 'Wischen', value: () => '← Nein · Ja →', left: () => swipe(false), right: () => swipe(true), fn: () => swipe(true) }] : []),
+      ...(next ? [{ icon: '💞', label: 'Wischen', value: () => '← Nein · Ja →', left: () => swipe(false), right: () => swipe(true), fn: () => swipe(true) },
+        { icon: '📷', label: 'Fotos', value: () => `${this.photoIdx + 1} / ${shots.length}`, left: () => flip(-1), right: () => flip(1), fn: () => flip(1) }] : []),
       { icon: '💬', label: 'Matches & Dates', sub: 'Date planen', fn: () => this.phone('matches') },
       { icon: '←', label: 'Zurück', fn: () => this.phone() },
     ], () => this.phone(), 'phone');
     hints([['lr', 'Wischen'], ['a', 'Bestätigen'], ['b', 'Zurück']]);
-    // Wischen mit Finger oder Maus
+    showPhoto();
+    // Wischen mit Finger oder Maus, Tippen aufs Bild blättert die Fotos
     const c = this.overlay?.querySelector('.swipe') as HTMLElement | null;
     if (c) {
       let x0 = 0, dx = 0, on = false;
       c.addEventListener('pointerdown', (e) => { on = true; x0 = e.clientX; dx = 0; c.setPointerCapture(e.pointerId); c.style.transition = 'none'; });
       c.addEventListener('pointermove', (e) => { if (!on) return; dx = e.clientX - x0; c.style.transform = `translateX(${dx}px) rotate(${dx / 14}deg)`; c.classList.toggle('lYes', dx > 40); c.classList.toggle('lNo', dx < -40); });
-      const up = () => { if (!on) return; on = false; c.style.transition = ''; if (Math.abs(dx) > 90) swipe(dx > 0); else { c.style.transform = ''; c.classList.remove('lYes', 'lNo'); } };
+      const up = (e: PointerEvent) => { if (!on) return; on = false; c.style.transition = ''; if (Math.abs(dx) > 90) swipe(dx > 0); else { c.style.transform = ''; c.classList.remove('lYes', 'lNo'); if (Math.abs(dx) < 8 && (e.target as HTMLElement).closest('.pic')) flip(e.clientX > c.getBoundingClientRect().left + c.offsetWidth / 2 ? 1 : -1); } };
       c.addEventListener('pointerup', up); c.addEventListener('pointercancel', up);
     }
   }
