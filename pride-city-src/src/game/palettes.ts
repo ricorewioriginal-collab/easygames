@@ -27,20 +27,22 @@ export interface BodyDef {
   id: string; name: string; desc: string; height: number; up: 0 | 1 | 2; side: 0 | 1 | 2;
   roles: Record<string, number>; brief: number; bra: [number, number]; torso: number; hair: string;
   /** Brustwarze (seitlich, Höhe) und Bauchnabel-Höhe */ nip: [number, number]; navel: number;
+  /** Hände verkleinern (Knochen, Faktor) und Haltungskorrektur je Knochen (Euler-Winkel, nach der Animation) */
+  hands?: [string[], number]; fix?: Array<[string, number, number, number]>;
 }
 /* Rollen: 0 bleibt, 1 Haut, 2 Oberteil, 3 Jacke, 4 Hose, 5 Schuhe, 6 Socken, 7 Haare, 8 Accessoire, 9 Farbfeld-Textur, 10 bemalt */
 export const BODIES: BodyDef[] = [
-  { id: 'Man2', nip: [.055, .735], navel: .6, name: 'Robin', desc: 'Lässig, Langarmshirt', height: 1.84, up: 2, side: 0, brief: .45, bra: [.7, .775], torso: .14, hair: '#6b4a22',
+  { id: 'Man2', hands: [['Palm.L', 'Palm.R'], .78], nip: [.055, .735], navel: .6, name: 'Robin', desc: 'Lässig, Langarmshirt', height: 1.84, up: 2, side: 0, brief: .45, bra: [.7, .775], torso: .14, hair: '#6b4a22',
     roles: { Shirt2: 3, Shirt: 2, Skin: 1, Pants: 4, Shoes: 5, Socks: 6, Hair2: 7, Hair: 7 } },
-  { id: 'Man', nip: [.055, .735], navel: .6, name: 'Kai', desc: 'Sportlich, Shorts', height: 1.86, up: 2, side: 0, brief: .45, bra: [.7, .775], torso: .14, hair: '#241912',
+  { id: 'Man', hands: [['Palm.L', 'Palm.R'], .78], nip: [.055, .735], navel: .6, name: 'Kai', desc: 'Sportlich, Shorts', height: 1.86, up: 2, side: 0, brief: .45, bra: [.7, .775], torso: .14, hair: '#241912',
     roles: { Shirt: 2, Skin: 1, Pants: 4, Socks: 6, Hair: 7 } },
-  { id: 'Woman', nip: [.05, .74], navel: .6, name: 'Sasha', desc: 'Jacke, Streetstyle', height: 1.74, up: 2, side: 0, brief: .45, bra: [.7, .79], torso: .14, hair: '#5a1838',
+  { id: 'Woman', hands: [['Palm.L', 'Palm.R'], .8], nip: [.05, .74], navel: .6, name: 'Sasha', desc: 'Jacke, Streetstyle', height: 1.74, up: 2, side: 0, brief: .45, bra: [.7, .79], torso: .14, hair: '#5a1838',
     roles: { Shirt: 2, LightJacket: 3, Jacket: 3, Skin: 1, Pants: 4, Shoes: 5, HairBase: 7, Hair: 7 } },
-  { id: 'Woman2', nip: [.05, .74], navel: .6, name: 'Mia', desc: 'Sommerlich, Jeans', height: 1.72, up: 2, side: 1, brief: .45, bra: [.7, .79], torso: .12, hair: '#d8c070',
+  { id: 'Woman2', hands: [['LeftHand', 'RightHand'], .85], nip: [.05, .74], navel: .6, name: 'Mia', desc: 'Sommerlich, Jeans', height: 1.72, up: 2, side: 1, brief: .45, bra: [.7, .79], torso: .12, hair: '#d8c070',
     roles: { Material: 9 } },
-  { id: 'Human', nip: [.05, .735], navel: .6, name: 'Alex', desc: 'Schlicht, frei gestaltbar', height: 1.82, up: 1, side: 2, brief: .44, bra: [.7, .79], torso: .105, hair: '#2e2018',
+  { id: 'Human', hands: [['LeftHand', 'RightHand'], .8], fix: [['LeftArm', 0, .3, 0], ['RightArm', 0, -.3, 0]], nip: [.05, .735], navel: .6, name: 'Alex', desc: 'Schlicht, frei gestaltbar', height: 1.82, up: 1, side: 2, brief: .44, bra: [.7, .79], torso: .105, hair: '#2e2018',
     roles: { Texture: 10 } },
-  { id: 'Hero', nip: [.07, .575], navel: .46, name: 'Jo', desc: 'Comic-Look, verspielt', height: 1.6, up: 2, side: 0, brief: .35, bra: [.53, .63], torso: .2, hair: '#8a6430',
+  { id: 'Hero', hands: [['Fist.L', 'Fist.R'], .85], nip: [.07, .575], navel: .46, name: 'Jo', desc: 'Comic-Look, verspielt', height: 1.6, up: 2, side: 0, brief: .35, bra: [.53, .63], torso: .2, hair: '#8a6430',
     roles: { Hair: 7, Skin: 1, UnderShirt: 2, Shirt: 3, Pants: 4, Boots: 5, Detail: 8, 'Material.006': 8 } },
 ];
 /** alte KayKit-Figuren (Spielstände bis Durchgang 3a) */

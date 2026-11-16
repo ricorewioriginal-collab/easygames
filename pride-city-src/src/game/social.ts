@@ -14,7 +14,7 @@ export const PROFILES: Profile[] = [
     bio: 'Bär mit weichem Kern. Koche gern für zu viele Leute.', likes: 'Brunch, Techno, Hunde', role: 'Vers', into: 'Kuscheln, lange Nächte, Massagen' },
   { id: 'luca', skin: 0, name: 'Luca', age: 24, pron: 'er', color: '#5ce1ff', body: 'Man2', palette: 'neon', at: 'club',
     bio: 'Tänzer, Nachtmensch, Sternzeichen: Glitzer.', likes: 'Voguing, Pop, Späti-Nächte', role: 'Bottom', into: 'Tanzen bis zum Morgen, Flirten mit Blicken' },
-  { id: 'malik', skin: 4, name: 'Malik', age: 34, pron: 'er', color: '#b56bff', body: 'Human', palette: 'leather', at: 'cafe',
+  { id: 'malik', skin: 4, name: 'Malik', age: 34, pron: 'er', color: '#b56bff', body: 'Man', palette: 'leather', at: 'cafe',
     bio: 'Krankenpfleger. Leder am Wochenende, Strickjacke unter der Woche.', likes: 'Motorräder, Krimis, guter Kaffee', role: 'Top', into: 'Leder, klare Absprachen, Respekt' },
   { id: 'robin', skin: 1, name: 'Robin', age: 27, pron: 'they', color: '#ffd23b', body: 'Hero', palette: 'nonbinary', at: 'cafe',
     bio: 'Illustrator*in, zeichnet Leute in der Tram.', likes: 'Comics, Pflanzen, Karaoke', role: 'Switch', into: 'Spielerisches, Rollenspiele, viel Lachen' },

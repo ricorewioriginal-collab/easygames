@@ -135,6 +135,8 @@ export class Actor {
   private clips: THREE.AnimationClip[] = [];
   private def!: BodyDef;
   private baseY = 0;
+  private hands: THREE.Object3D[] = [];
+  private fixes: Array<[THREE.Object3D, THREE.Quaternion]> = [];
   private t = 0;
   look: Look;
 
@@ -175,6 +177,8 @@ export class Actor {
       outfitShader(mat, b.roles[src.name] ?? 0, b, lo, hi - lo, front);
       m.material = mat; a.mats.push(mat);
     });
+    if (b.hands) for (const n of b.hands[0]) { const o = scene.getObjectByName(n); if (o) a.hands.push(o); }
+    for (const [n, x, y, z] of b.fix || []) { const o = scene.getObjectByName(n); if (o) a.fixes.push([o, new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z))]); }
     a.root.add(scene);
     a.mixer = new THREE.AnimationMixer(scene);
     a.clips = clips;
@@ -205,7 +209,7 @@ export class Actor {
       u.uOutfit.value = o; u.uTop.value = this.look.top ? 1 : 0; u.uHot.value = this.look.hot ? 1 : 0;
       u.uSkin.value.copy(skin); u.uHair.value.copy(hair); u.uCloth.value.copy(cloth);
       u.uC0.value.copy(P(0)); u.uC1.value.copy(P(1)).lerp(dark, .45); u.uC2.value.copy(P(2)).lerp(dark, .2); u.uC3.value.copy(P(3));
-      u.uShoe.value.copy(P(cols.length - 1)).lerp(dark, .7);
+      u.uShoe.value.set('#e9e6f0').lerp(P(cols.length - 1), .25); // helle Sneaker, damit die Füße erkennbar sind
     }
   }
 
@@ -231,16 +235,25 @@ export class Actor {
     this.mixer.stopAllAction(); this.cur = null;
     const a = this.mixer.clipAction(c); a.reset(); a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; a.play();
     this.mixer.setTime(Math.min(t, c.duration - .01));
+    this.shape();
   }
 
   update(dt: number) {
     this.mixer.update(dt);
+    this.shape();
     if (this.cur && DANCE.includes(this.cur)) { // Tanzen: federn und hüftschwingen über der Animation
       this.t += dt;
       const f = this.cur === 'dance3' ? 7 : this.cur === 'dance2' ? 5 : 6;
       this.model.position.y = this.baseY + Math.abs(Math.sin(this.t * f)) * .07;
       this.model.rotation.y = Math.sin(this.t * f * .5) * (this.cur === 'dance2' ? .6 : .3);
     }
+  }
+
+  /** nach jeder Animation: Hände kleiner, Haltung korrigieren */
+  private shape() {
+    const k = this.def.hands?.[1] ?? 1;
+    for (const h of this.hands) h.scale.setScalar(k);
+    if (this.cur === 'idle' || this.cur === null) for (const [o, q] of this.fixes) o.quaternion.multiply(q); // Arme im Stand anlegen
   }
 
   /** Kopf-Position (für Sprechblasen und Kamera) */
