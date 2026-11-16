@@ -77,7 +77,9 @@
     if (e.cancelable) e.preventDefault();
   }
   function onTouchMove(e) {
+    let mine = false;
     for (const t of e.changedTouches) {
+      if (t.identifier === stick.id || t.identifier === lookT.id) mine = true;
       if (t.identifier === stick.id) {
         const R = Math.min(70, innerWidth * 0.13);
         let dx = t.clientX - stick.ox, dy = t.clientY - stick.oy; const l = Math.hypot(dx, dy);
@@ -85,7 +87,7 @@
         stick.x = UL.clamp(dx / R, -1.25, 1.25); stick.y = UL.clamp(dy / R, -1.25, 1.25); showStick(true);
       } else if (t.identifier === lookT.id) { tdx += t.clientX - lookT.x; tdy += t.clientY - lookT.y; lookT.x = t.clientX; lookT.y = t.clientY; }
     }
-    if (e.cancelable) e.preventDefault();
+    if (mine && e.cancelable) e.preventDefault();   // nur Spiel-Berührungen festhalten – Listen und Fenster bleiben wischbar
   }
   function onTouchEnd(e) {
     for (const t of e.changedTouches) {

@@ -119,7 +119,7 @@
       const q = qh > 0 ? `<span class="chip warn">🏳️ „Ich bin raus …“ <span class="bar"><i style="width:${Math.min(100, qh / 1.5 * 100)}%"></i></span></span>` : '';
       UI.hud(st + tm + (ctx.extraHud || '') + q);
       const m = document.getElementById('meter');
-      if (ctx.meters.length) { m.hidden = false; m.innerHTML = ctx.meters.map(x => `<div class="meter ${x.danger ? 'danger' : ''}">${x.label}<div class="bar"><i style="width:${Math.round(UL.clamp(x.v, 0, 1) * 100)}%;${x.color ? 'background:' + x.color : ''}"></i></div></div>`).join(''); }
+      if (ctx.meters.length) { const hb = document.getElementById('hud').getBoundingClientRect(); m.style.top = Math.round(hb.bottom + 6) + 'px'; m.hidden = false; m.innerHTML = ctx.meters.map(x => `<div class="meter ${x.danger ? 'danger' : ''}">${x.label}<div class="bar"><i style="width:${Math.round(UL.clamp(x.v, 0, 1) * 100)}%;${x.color ? 'background:' + x.color : ''}"></i></div></div>`).join(''); }
       else m.hidden = true;
     }
     ctx.hud = hud;
