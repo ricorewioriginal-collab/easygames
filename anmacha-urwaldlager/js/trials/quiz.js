@@ -92,7 +92,7 @@
       // Testpilot kennt die Antwort meistens
       if (ctx.lock > 0 || ctx.answered >= 0) return;
       if (!ctx._bt) ctx._bt = 0.5; ctx._bt -= dt;
-      if (ctx._bt <= 0) { ctx._bt = 0.5; ctx.sel = ctx.rng.chance(ctx.ai ? 0.35 + (ctx.ai.skill ?? 0.6) * 0.5 : 0.9) ? ctx.right : (ctx.right + 1) % 4; I.ok = true; }
+      if (ctx._bt <= 0) { ctx._bt = 0.5; ctx.sel = ctx.rng.chance(ctx.ai ? 0.45 + (ctx.ai.skill ?? 0.6) * 0.45 : 0.9) ? ctx.right : (ctx.right + 1) % 4; I.ok = true; }
     }
   });
 })();
