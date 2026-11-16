@@ -1,0 +1,25 @@
+{
+  "name": "pride-city",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pride City – Ein Leben in allen Farben. Queere 3D-Lebenssimulation (Relaunch von Gay Life!), Vite + TypeScript + Three.js.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/fetch-assets.mjs && tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build:easygames": "npm run build && node scripts/publish.mjs",
+    "assets": "node scripts/fetch-assets.mjs"
+  },
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.180.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12",
+    "vitest": "^3.2.4"
+  }
+}

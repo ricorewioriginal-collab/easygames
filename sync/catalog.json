@@ -2921,6 +2921,39 @@
    "trailer": null
   },
   {
+   "id": "pride-city",
+   "title": "Pride City – Ein Leben in allen Farben",
+   "desc": "Der Relaunch von Gay Life!: queere 3D-Lebenssimulation in Rainbow City mit KayKit-Figuren in Pride-Farben. Eigene Figur mit 13 Farbwelten (Regenbogen, Trans, Bi, Pan, Lesbisch, Nichtbinär, Ace, Bear und mehr), Hauttönen und Pronomen, Story mit Kapiteln und Entscheidungen, Tanz-Battle in 3D, Sticker sammeln, Tag und Nacht. Konsolen-Menü, Controller, Touch im Hoch- und Querformat. Speicherstand lokal und per Google.",
+   "icon": "🏳️‍🌈",
+   "img": "pride-city/card.jpg",
+   "bg": "linear-gradient(145deg,#ff2f7a,#7b3cff 52%,#1aa7ff)",
+   "glow": "rgba(255,47,122,.55)",
+   "path": "pride-city/",
+   "modes": {},
+   "multiplayer": false,
+   "guide": {
+    "anleitung": "Pride City ist der Relaunch von Gay Life!: eine queere 3D-Lebenssimulation in Rainbow City. Du gestaltest deine Figur in einer von 13 Pride-Farbwelten, ziehst in die Stadt, triffst Mo, Jules, Nova und viele andere und hilfst in Kapitel 1, das Regenbogenhaus zu retten – bis zum Tanz-Battle im Club Prisma. Dazu Sticker sammeln, Läden besuchen und Tag und Nacht erleben. Alle Figuren sind erwachsen und frei erfunden.",
+    "steuerung": [
+     "PC: W A S D oder Pfeiltasten laufen, Shift sprinten, Maus ziehen dreht die Kamera, Mausrad zoomt, Q/R drehen die Kamera. E, Enter oder Leertaste = Aktion, Esc = Menü/Zurück. In Menüs Pfeiltasten, ←/→ ändern Werte.",
+     "Touch (hoch und quer): Stick links laufen, A = Aktion, B = Zurück, » = Turbo an/aus, ☰ oben rechts = Menü. Kamera durch Wischen auf dem Bild. Im Tanz-Battle vier Pfeil-Tasten unten.",
+     "Controller: linker Stick oder Steuerkreuz laufen, rechter Stick Kamera, A Aktion, B Zurück, Y oder Start Menü, RT sprinten, LB/RB Kamera drehen, R3 Kamera hinter die Figur. Im Tanz-Battle Steuerkreuz."
+    ],
+    "tipps": [
+     "Ein Nein ist ein Nein: Wer nicht unterschreiben will, wird nicht überredet – frag einfach jemand anderen.",
+     "Im Tanz-Battle zählen Combos: Je länger die Serie, desto mehr Punkte pro Pfeil.",
+     "Acht Pride-Sticker sind in der Stadt versteckt, auch im Park und an den Rändern."
+    ]
+   },
+   "size": 20131849,
+   "files": 80,
+   "offline": true,
+   "cloud": {
+    "game": "pride-city",
+    "prefix": "prideCity."
+   },
+   "trailer": null
+  },
+  {
    "id": "gay-life",
    "title": "Gay Life!",
    "desc": "Queere Lebenssimulation in 3D: eigene Wohnung, Alltag mit Uhrzeit und Bedürfnissen, Barkeeper-Job, Handy mit Karte, Kontakten, Nachrichten und Dating-App; Dating mit eigenen Figuren, Tagesabläufe. Aufträge, Sterne sammeln, Tag und Nacht, eigene Figur. Vierzehn Minispiele (Sauna, Dunkelkammer, Casting-Tag, Tanzbattle, Karaoke, Quiz, Rave und mehr), Nebenaufträge, Kleiderschrank zum Freischalten und Mehrspieler per Code/QR. Speicherstand lokal und per Google.",

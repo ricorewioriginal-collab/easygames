@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "5a21cf074f0c",
- "generated": "2026-11-15T23:43:43+01:00",
- "commit": "014354b272f237d0f5324ae7480d7e9388fa11af",
+ "version": "1ddf745ff0e3",
+ "generated": "2026-11-16T01:01:00+01:00",
+ "commit": "f9a7a160875c42df479e4b2ad42c68539752d578",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9358,8 +9358,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3227,
-   "h": "1c56f483dc2260af4660a3740da6539e28245cd635c1362a75575f35673bb111"
+   "s": 3254,
+   "h": "bfa7bb2284791fe19366f3d76e4c0abd226dc51f6ebd20aaca18cc0114852141"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -9433,8 +9433,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 25243,
-   "h": "e2d5aa9f444e0c4e519851f49a493e25b65d68bebae48da3b70be92e320a70cd"
+   "s": 25257,
+   "h": "8b2b540dbf0b42e234426f25dc935121cd14540e938de251c0f4405736c7fd57"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -10253,8 +10253,8 @@
   },
   {
    "p": "games.js",
-   "s": 54871,
-   "h": "5c7e62ec940a92e486d00cd55d067ee417181b503c19dcaf851d7617451a900f"
+   "s": 55542,
+   "h": "7b85546d0098495866456d50e541c07a1ea6fe6c5f60d9bd801b2950995beaa2"
   },
   {
    "p": "gay-life/card.jpg",
@@ -10558,8 +10558,8 @@
   },
   {
    "p": "guides.js",
-   "s": 170431,
-   "h": "09d2934c9e8364a6ef7925896e85cf1f8a7b5782c7eff256d96db82e01e6c26f"
+   "s": 171848,
+   "h": "72ab0e3e66afc101f972ee96236802b5cd149931eccdc8bdab08587b46fe2e22"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10870,6 +10870,11 @@
    "p": "guides/pestwacht.json",
    "s": 42047,
    "h": "50db96fabdda2da78efcc9fda1a65cec52d930de501fc3d077cd646b81132dba"
+  },
+  {
+   "p": "guides/pride-city.json",
+   "s": 6644,
+   "h": "76c1a356e62ed993c960294d4ccaf3751cd5f1a0195626ef25e9b74c66d95b2d"
   },
   {
    "p": "guides/prismrush.json",
@@ -12380,6 +12385,406 @@
    "p": "pestwacht/sw.js",
    "s": 2001,
    "h": "62759995b42672bed9d17515b2145b873d408dddcedeb55dbe93b6918e99047b"
+  },
+  {
+   "p": "pride-city/assets/chars/Barbarian.glb",
+   "s": 3613268,
+   "h": "cefc311a0e10c7858b6141f5ada7e33268727564fb8ac1347aab97d000669cc6"
+  },
+  {
+   "p": "pride-city/assets/chars/Knight.glb",
+   "s": 3659532,
+   "h": "60428e3abc09ba83e595d256e3af8c5c976b46cdae599f0802fc82b4a3445168"
+  },
+  {
+   "p": "pride-city/assets/chars/Mage.glb",
+   "s": 3589240,
+   "h": "cf898585da33fab50c724d31605fb931eb2912e6d2280092141e98ca81ad507d"
+  },
+  {
+   "p": "pride-city/assets/chars/Rogue.glb",
+   "s": 3616284,
+   "h": "e825437cd4d2ee9c1960b517a74a69101e33eb409ae7fa8cedc7134a998fbb7d"
+  },
+  {
+   "p": "pride-city/assets/chars/Rogue_Hooded.glb",
+   "s": 3597652,
+   "h": "93e6e25213009952276d9cf34f5d96a243767334c66f280db0433ddfabb91545"
+  },
+  {
+   "p": "pride-city/assets/city/base.bin",
+   "s": 3432,
+   "h": "2b00ed6bb88a18e91fc80ec037cca4a20fba9fdeb21f8f781fc3a7f8be919f8a"
+  },
+  {
+   "p": "pride-city/assets/city/base.gltf",
+   "s": 2953,
+   "h": "ac49eb9d300587172c416f73c7fd709403dc34f432f02ab3e3c9590adc63c21c"
+  },
+  {
+   "p": "pride-city/assets/city/bench.bin",
+   "s": 2824,
+   "h": "53ac9734110353b244bc409b32e1d4a41d94a86f3aa26884c40a6692dab0f81e"
+  },
+  {
+   "p": "pride-city/assets/city/bench.gltf",
+   "s": 3024,
+   "h": "f3b731470c30ed21d7e03f15d28f1937b3e4881efcca57a48e4c82ae582e51e1"
+  },
+  {
+   "p": "pride-city/assets/city/box_A.bin",
+   "s": 2240,
+   "h": "7d73d90c735ad860f176cc55607e20ca4939c7c9de059b7db127c980f3b5bcec"
+  },
+  {
+   "p": "pride-city/assets/city/box_A.gltf",
+   "s": 3044,
+   "h": "fe1fa867aa6aa2933bbe3d232c8dcedffc68d484019f71544ce191e2c8ddc16c"
+  },
+  {
+   "p": "pride-city/assets/city/box_B.bin",
+   "s": 1336,
+   "h": "07ea7050e806330c8fb7e7d821fc8c7960e4ff2a375f26a4916185c8889faaf8"
+  },
+  {
+   "p": "pride-city/assets/city/box_B.gltf",
+   "s": 3044,
+   "h": "6ad0554fedbc3ad3079cac62668455912bbe59be3b796de3356f2cc4e726e690"
+  },
+  {
+   "p": "pride-city/assets/city/building_A.bin",
+   "s": 49512,
+   "h": "29feccd24aa7b996e7a5dbeca2e5c724bfbeaa7eebad02e6fb012a92eebb1a33"
+  },
+  {
+   "p": "pride-city/assets/city/building_A.gltf",
+   "s": 2980,
+   "h": "d9d21afb847de1c67a643cc34738f0b71d71f6a8926e8fa7f248bb6a434a22ba"
+  },
+  {
+   "p": "pride-city/assets/city/building_B.bin",
+   "s": 65468,
+   "h": "310c032929c5988dd0ae5d9c15c4ea0d0e69bcbd60d87237cdd56e859639375e"
+  },
+  {
+   "p": "pride-city/assets/city/building_B.gltf",
+   "s": 2980,
+   "h": "d026df95a16e31d1d50827375db7978099af35eefbb255bf6674855d303fb390"
+  },
+  {
+   "p": "pride-city/assets/city/building_C.bin",
+   "s": 61512,
+   "h": "77c6e813fc59631d7866614508220f47800533cda767f55680d393eddd46705d"
+  },
+  {
+   "p": "pride-city/assets/city/building_C.gltf",
+   "s": 2979,
+   "h": "d2477afdb8a68507ab862ede37f47a2a7b74df369290bc57712239214c6ae2c8"
+  },
+  {
+   "p": "pride-city/assets/city/building_D.bin",
+   "s": 69812,
+   "h": "b8d7091ba017d99f25a2eb75cc1eb8c10a58945c22f7cf8416f72c13d11a30c1"
+  },
+  {
+   "p": "pride-city/assets/city/building_D.gltf",
+   "s": 2996,
+   "h": "1484455bd37ce136e1defb1639f68cf82b7b00f977856b1d9483de9c02760ba3"
+  },
+  {
+   "p": "pride-city/assets/city/building_E.bin",
+   "s": 84840,
+   "h": "1280f8b64d68e5602472c08a76489a5b7fe7415795642b1e4fcc15bc003061e7"
+  },
+  {
+   "p": "pride-city/assets/city/building_E.gltf",
+   "s": 3014,
+   "h": "42905f3038030e27126da1454aaf1e1bff1ad66de34d9c94a9599c709ae5e97d"
+  },
+  {
+   "p": "pride-city/assets/city/building_F.bin",
+   "s": 84272,
+   "h": "fc3c72d718b0339b3158f43ed31ece6ecae0ca9592925362a22425e2bc6eaf43"
+  },
+  {
+   "p": "pride-city/assets/city/building_F.gltf",
+   "s": 3014,
+   "h": "cebfc6df11af7caf712a3f3e0d2c033554355ff7bf7a8b332eb21ebdaaba2aa1"
+  },
+  {
+   "p": "pride-city/assets/city/building_G.bin",
+   "s": 103708,
+   "h": "06f0ec0113c748687b757c8c85bd45a8d0c3adf3c2201c8a990e93b3231e91d5"
+  },
+  {
+   "p": "pride-city/assets/city/building_G.gltf",
+   "s": 3016,
+   "h": "314dad28b2ef5fdd370534ded457e0381410fe8051687517552b8f1ac43fac11"
+  },
+  {
+   "p": "pride-city/assets/city/building_H.bin",
+   "s": 118064,
+   "h": "fbee968ad467c244087d0694febfcbb32300f803ac56e434e485f6ce47577e29"
+  },
+  {
+   "p": "pride-city/assets/city/building_H.gltf",
+   "s": 3016,
+   "h": "319d8392ba3b1662ca8506cfda7dbecc694a7d60268e20a136cdeecbe472d6d2"
+  },
+  {
+   "p": "pride-city/assets/city/bush.bin",
+   "s": 3056,
+   "h": "6b00a80ec23cdd55dd1398d648b51f1cf7eb4263cea61d3bf1dc24cc7c171b3e"
+  },
+  {
+   "p": "pride-city/assets/city/bush.gltf",
+   "s": 3022,
+   "h": "b1de478b23e6bcfd08d6c070440582195839f66dfd3afc123118fb6298483183"
+  },
+  {
+   "p": "pride-city/assets/city/car_hatchback.bin",
+   "s": 53564,
+   "h": "e7756d8a44553ef75091bb4baa41388bcb1a1b44388008a3e670d05cb12f4c5f"
+  },
+  {
+   "p": "pride-city/assets/city/car_hatchback.gltf",
+   "s": 10952,
+   "h": "e38be3dbdfbc95b0e794fc5c8164b2ff658b2dc5049b51d38179d16a9432b4f3"
+  },
+  {
+   "p": "pride-city/assets/city/car_police.bin",
+   "s": 62168,
+   "h": "07bf3160554753cb6365e85c1c99dd9bf9ca4e8ffabeab5f15ff03ac18640d87"
+  },
+  {
+   "p": "pride-city/assets/city/car_police.gltf",
+   "s": 10937,
+   "h": "c6f1f85c2a8f56ec0abb76deac13486d42399c6d23868e5e524a090fce652d12"
+  },
+  {
+   "p": "pride-city/assets/city/car_sedan.bin",
+   "s": 55332,
+   "h": "1d69e7f098a5456a8c6891c4fd718ad1c71397045c8931817550a8801f00338d"
+  },
+  {
+   "p": "pride-city/assets/city/car_sedan.gltf",
+   "s": 10928,
+   "h": "96c9d38e682bc2c77470af09d1a7450208559ca652bf2cf6fd2bc20b8646ef59"
+  },
+  {
+   "p": "pride-city/assets/city/car_stationwagon.bin",
+   "s": 56172,
+   "h": "46d28202e738f62ba6aae5caae5d56852334ca53ac0628d88d03a5e5e3042c4b"
+  },
+  {
+   "p": "pride-city/assets/city/car_stationwagon.gltf",
+   "s": 10970,
+   "h": "49f7e2bdb70183214a3e8d8576e420ebb69520b21db81dddfc6a04e1ed8994fd"
+  },
+  {
+   "p": "pride-city/assets/city/car_taxi.bin",
+   "s": 58704,
+   "h": "28abb85c4eb0d38be9b4b0beebe0a55038565b1f9545fea65f59cb56672c1d11"
+  },
+  {
+   "p": "pride-city/assets/city/car_taxi.gltf",
+   "s": 10924,
+   "h": "781b3265473dab6f7e054f06c23abeba9b811516b19b61a7a88b0aa8d33e1323"
+  },
+  {
+   "p": "pride-city/assets/city/citybits_texture.png",
+   "s": 19885,
+   "h": "6d2d9a5a13bce32209cd8c04572ab170504d68f34b1519165c9b0c41871e235b"
+  },
+  {
+   "p": "pride-city/assets/city/dumpster.bin",
+   "s": 8180,
+   "h": "389a04cddf27b9514226597627fb0f217499432be1a26c6b43e6f2bfdb652fd2"
+  },
+  {
+   "p": "pride-city/assets/city/dumpster.gltf",
+   "s": 3033,
+   "h": "56353a02aa70f61ea0f94f5806c66f489b2949b64db0611b5ccf2b500c815cb9"
+  },
+  {
+   "p": "pride-city/assets/city/firehydrant.bin",
+   "s": 8056,
+   "h": "02cab93bf6af8c16da083c6ac92dcc5997bed24dabc1e746ee780e623b07b3de"
+  },
+  {
+   "p": "pride-city/assets/city/firehydrant.gltf",
+   "s": 3067,
+   "h": "0a3f9fb95e8b4805602ad26050ee552408553682b41f3e54981a69dfa92a7f3b"
+  },
+  {
+   "p": "pride-city/assets/city/road_corner.bin",
+   "s": 7408,
+   "h": "357bfda56820b66292a6fa53e3bb506625da604c2ada9667971f045f563cc015"
+  },
+  {
+   "p": "pride-city/assets/city/road_corner.gltf",
+   "s": 2971,
+   "h": "592dadb7a6e81e2c5c2415d5e3872eaccece0c71ff1e34bb3ced06ceed4ce149"
+  },
+  {
+   "p": "pride-city/assets/city/road_corner_curved.bin",
+   "s": 7976,
+   "h": "5a89cc3e2cd8728512f52b0c1d1f643b2f8a5fecaedba6390f2b4f9b9d3ac453"
+  },
+  {
+   "p": "pride-city/assets/city/road_corner_curved.gltf",
+   "s": 2986,
+   "h": "92a3a77292b6f2cc75accd7b0340d98805377925cd0c9593661bcbf541913e88"
+  },
+  {
+   "p": "pride-city/assets/city/road_junction.bin",
+   "s": 9724,
+   "h": "deb16c15a1b4fb49b48a468c93ddee8a7afc64cd0e41616fff29d9ad3d063eac"
+  },
+  {
+   "p": "pride-city/assets/city/road_junction.gltf",
+   "s": 2992,
+   "h": "28ea556cf76cf3efd38b62c3610a338bca46ff8e25c336406821c85cf58b7c6b"
+  },
+  {
+   "p": "pride-city/assets/city/road_straight.bin",
+   "s": 3676,
+   "h": "6509b3509565e250de74a19728b9dd1e1351d40c8a50f4d18a1c6b3edb0bd068"
+  },
+  {
+   "p": "pride-city/assets/city/road_straight.gltf",
+   "s": 2974,
+   "h": "35c74b311a04e5682dfc7fc823867aa53de1cc19b86fa801730496ee69b52e68"
+  },
+  {
+   "p": "pride-city/assets/city/road_straight_crossing.bin",
+   "s": 4096,
+   "h": "2c9ffb1dcab28737a24af1b747a8fb233cb55e460724d517e2dc29cef80ca01b"
+  },
+  {
+   "p": "pride-city/assets/city/road_straight_crossing.gltf",
+   "s": 2992,
+   "h": "7df128514884a9356404fa3b42b10816a6dec8a211bc22233372cdbb7e1e71a9"
+  },
+  {
+   "p": "pride-city/assets/city/road_tsplit.bin",
+   "s": 7548,
+   "h": "4856ecd193740c544b8ff15bc7d0fc320a5cd83a1817eda7c69f35f75cb56f83"
+  },
+  {
+   "p": "pride-city/assets/city/road_tsplit.gltf",
+   "s": 2971,
+   "h": "dcdf1facedbd82419b9d0533f327bcf0b66ad74ced86c63d5151244a9cec812f"
+  },
+  {
+   "p": "pride-city/assets/city/streetlight.bin",
+   "s": 7136,
+   "h": "2e95833194e4cccbf00a413187cc54ede953c047f88b7cc7b1bef1a1d0aea9a1"
+  },
+  {
+   "p": "pride-city/assets/city/streetlight.gltf",
+   "s": 3067,
+   "h": "4399e9023844319e0f74311779a2c0ebecacec16f5dfd8123b6141a3af903c6a"
+  },
+  {
+   "p": "pride-city/assets/city/trafficlight_A.bin",
+   "s": 30664,
+   "h": "8d41a66bbf788f5fd78fce0841ca9741c39314e0d2ad701e5161bb09bd4e8c79"
+  },
+  {
+   "p": "pride-city/assets/city/trafficlight_A.gltf",
+   "s": 3079,
+   "h": "4a22f6fc11fcafd61b2272e675a20437d3c69003ae63002980a903a215941b15"
+  },
+  {
+   "p": "pride-city/assets/city/trafficlight_B.bin",
+   "s": 35592,
+   "h": "e0a20f34caeb0812fa2a6df9e02c1a539e4e514b688029bde28f7d9977165bd4"
+  },
+  {
+   "p": "pride-city/assets/city/trafficlight_B.gltf",
+   "s": 3078,
+   "h": "a7b9369e3cad7b58a0914a885a14d477c402295fc7d89b26280b4f77b742e28b"
+  },
+  {
+   "p": "pride-city/assets/city/trafficlight_C.bin",
+   "s": 24136,
+   "h": "0be9badcc8096be76e7ff892a4ae19806189ed87bb0ea79df75f55a8e3efcb32"
+  },
+  {
+   "p": "pride-city/assets/city/trafficlight_C.gltf",
+   "s": 3074,
+   "h": "1453697f533323bcf661d59842850a3054ac0bee3d3e7cd8e1ea5e2d627de226"
+  },
+  {
+   "p": "pride-city/assets/city/trash_A.bin",
+   "s": 620,
+   "h": "3fbaf543d240f71ea70bc2052461c93e9398ca36372c1d401dcc304b2788935d"
+  },
+  {
+   "p": "pride-city/assets/city/trash_A.gltf",
+   "s": 3029,
+   "h": "dcd3a27821a9d8a781a40a393e167d51c1cdb743edf95edc59236fe32238b464"
+  },
+  {
+   "p": "pride-city/assets/city/trash_B.bin",
+   "s": 620,
+   "h": "2663a8ed7fddb7768457c2fddbe31e201140a756446dec4ad5b705485ac5be7e"
+  },
+  {
+   "p": "pride-city/assets/city/trash_B.gltf",
+   "s": 3033,
+   "h": "6b549af074a24a1d2dd916af53d33d71d251b9e7e004de67294da02d336754e3"
+  },
+  {
+   "p": "pride-city/assets/city/watertower.bin",
+   "s": 8268,
+   "h": "384bc04add6c6fb56202e16688e375e4ad22739d46f37cd427e81087ffc192f6"
+  },
+  {
+   "p": "pride-city/assets/city/watertower.gltf",
+   "s": 3065,
+   "h": "55ae59f2a21ad38c64312a4c00d6808dc486bf4a8e8a8c969bc9e26cdc84d8f3"
+  },
+  {
+   "p": "pride-city/assets/index-CMlHq1wf.js",
+   "s": 149217,
+   "h": "284f211e9801745471754df7cc15d5fbd34d4bab2be0d972efdbd2b3a40ea484"
+  },
+  {
+   "p": "pride-city/assets/index-oRrXKNVj.css",
+   "s": 12919,
+   "h": "b3297d59178cfcb1381ce633344502589c93694e71c980b1736e3dcc8fc6f68b"
+  },
+  {
+   "p": "pride-city/assets/three-wPF5XSmf.js",
+   "s": 578941,
+   "h": "721cae972a6583cf2de0037366e8c71e1a9c6f5b87af8703a5f1a5c1fa346846"
+  },
+  {
+   "p": "pride-city/card.jpg",
+   "s": 44060,
+   "h": "d499242933be43a14eef116e16d51ec620401681023bb362d8007057c930b313"
+  },
+  {
+   "p": "pride-city/index.html",
+   "s": 5732,
+   "h": "317b87856c2df8693a1bd5717be90e2f7b11aaa03c0f30d543f30effb850866c"
+  },
+  {
+   "p": "pride-city/logo.svg",
+   "s": 3405,
+   "h": "65878be65dbac015f7bf13f458bfaa98b1481fedcbe2673de7c51a8ca702baff"
+  },
+  {
+   "p": "pride-city/manifest.webmanifest",
+   "s": 784,
+   "h": "5580a4d4632acdf43876c5c2cb85594d787c8cb15d97f7bdb52114d56081cc14"
+  },
+  {
+   "p": "pride-city/sw.js",
+   "s": 2010,
+   "h": "8d1c86f05ce4746e1ad829b2efb519ddbb5b085b801fc8794364f84a248ac1f6"
   },
   {
    "p": "prismrush/assets/index-B_1msRiD.css",
@@ -14748,8 +15153,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 246708,
-   "h": "e0a23cd47ee929f325447c34c1115f54eb0614a68a334d41ffead69b25950ab7"
+   "s": 249046,
+   "h": "2ad5fa0b3032c365670e3d48b72e9dd130ec98354fb77205435ebb6115e8c763"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -15842,6 +16247,11 @@
    "h": "8c1344207f74b0e966e13e8d8382d67cd00944637b08417a2a4df8e0c378d533"
   },
   {
+   "p": "thumbs/pride-city.webp",
+   "s": 15218,
+   "h": "091b514592b21c722fa3b752d627923755db3fd95480f69d1cfacffb0c34b56a"
+  },
+  {
    "p": "thumbs/prismrush.webp",
    "s": 31738,
    "h": "97e92c480bb6c6ec59806af033b01e42473b8fccb734256110beb0940bd6026a"
@@ -15893,8 +16303,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2158,
-   "h": "efb0808e8b818df2c5b067a93dd0b0e4a1bcdfce6952fff20f976c12b4f9142a"
+   "s": 2184,
+   "h": "38161e95ea868ae9ef81f0fca389054420d1e6135c87c1cee5b656dfdf01d6f8"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
