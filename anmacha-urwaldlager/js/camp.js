@@ -26,11 +26,11 @@
       const at = (o, x, z, ry = 0) => { o.position.set(x, this.h(x, z), z); o.rotation.y = ry; sc.add(o); return o; };
       // Lagerfeuer mit Sitzstämmen
       at(A.sized('campfire', 0.35, 'xz'), 0, 0).scale.multiplyScalar(4.2);
-      sc.add(R.logs(6, 0.5)); this.fire = this.add(R.fire(tod === 'day' ? 0.55 : 0.9)); this.solid.push({ x: 0, z: 0, r: 1.1 });
+      sc.add(R.logs(6, 0.5)); this.fire = this.add(R.fire(tod === 'day' ? 0.55 : 0.9)); this.solid.push({ x: 0, z: 0, r: 1.1, low: 1 });
       this.seats = [];
       for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2 + 0.3; this.seats.push({ x: Math.cos(a) * 2.5, z: Math.sin(a) * 2.5, a }); }
       for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2 + 0.3 + Math.PI / 10; const l = R.log(1.7, 0.17); at(l, Math.cos(a) * 2.6, Math.sin(a) * 2.6, -a + Math.PI / 2); }
-      const pot = new T.Mesh(new T.CylinderGeometry(0.28, 0.22, 0.32, 12), R.mat(0x2a2a2e)); pot.position.set(0.15, 0.55, 0); sc.add(pot);
+      const pot = new T.Mesh(new T.CylinderGeometry(0.28, 0.22, 0.32, 12), R.mat(0x2a2a2e)); pot.position.set(0.15, 0.55, 0); sc.add(pot); this.pot = pot;
       // Schlafplatz unter der Plane
       const P = this.poi = {};
       P.beds = { x: -7.5, z: -3.5 };
@@ -48,7 +48,7 @@
         const fall = R.water(1, 3.2, 0x9adfff, 0.7); fall.position.set(10.0, 1.7, -5.7); fall.rotation.set(0, -0.9, 0); this.add(fall);
         sc.add(A.instanced('waterlily_pink_group', [{ x: 7.2, z: -3.2, y: 0.07 }, { x: 9, z: -4.8, y: 0.07 }], 0.2));
       }
-      this.solid.push({ x: 8, z: -4, r: 2.9 });
+      this.solid.push({ x: 8, z: -4, r: 2.9, low: 1 });
       // Buschtelefon-Hütte
       P.phone = { x: -6.2, z: 5.6 };
       const hut = UL.hut(2.4, 2.2, 2.3, studio ? 0x2a2833 : 0x8a6a42, studio ? 0xff4fa0 : 0xc9a45a, [D.SHOW.phone.toUpperCase()]); at(hut, -6.8, 6.6, Math.atan2(6.8, -6.6));
@@ -135,7 +135,7 @@
     place(st, meO, 0, 4.2, Math.PI);
     R.set(st);
     UL.Audio.music('camp'); UL.Audio.atmo(theme === 'studio' ? 'studio' : 'jungle');
-    UI.hint({ move: 'Laufen', look: 'Kamera', ok: 'Kommando', menu: 'Buschtrommel', start: 'Pause' });
+    UI.hint({ move: 'Laufen', run: 'Rennen', look: 'Kamera', ok: 'Kommando', menu: 'Buschtrommel', start: 'Pause' });
     await UI.fade(false, 0.4);
     const me = meO.c;
     const day = st.day = { energy: ENERGY, carry: null, event: false, eventT: UL.rand(25, 45), chestOpen: false, busy: false, done: false, talked: {} };
@@ -149,7 +149,9 @@
     if (!UL.bot) UI.toast(`Tag ${S.day}: Hilf im Camp, rede mit den anderen – du hast ${ENERGY} Aktionen.`, '🌴', 4200);
 
     const near = (p, r) => Math.hypot(meO.x - p.x, meO.z - p.z) < r;
-    const hud = () => UI.hud(`<span class="chip big">📅 Tag ${S.day}/${S.days}</span><span class="chip">⚡ ${'●'.repeat(day.energy)}${'○'.repeat(ENERGY - day.energy)}</span><span class="chip">❤️ ${Math.round(me.sym)} · 😂 ${Math.round(me.ent)}</span>${day.carry ? `<span class="chip">${day.carry === 'holz' ? '🪵 Holz' : '🪣 Wasser'}</span>` : ''}`);
+    const rank0 = UL.Phone.rank(me).pos;
+    const rankChip = () => { const r = UL.Phone.rank(me), d = rank0 - r.pos; return `<span class="chip ${d > 0 ? 'up' : d < 0 ? 'warn' : ''}">📺 Platz ${r.pos}/${r.n}${d > 0 ? ' ▲' : d < 0 ? ' ▼' : ''}</span>`; };
+    const hud = () => UI.hud(`<span class="chip big">📅 Tag ${S.day}/${S.days}</span><span class="chip">⚡ ${'●'.repeat(day.energy)}${'○'.repeat(ENERGY - day.energy)}</span><span class="chip">❤️ ${Math.round(me.sym)} · 😂 ${Math.round(me.ent)}</span>${rankChip()}${day.carry ? `<span class="chip">${day.carry === 'holz' ? '🪵 Holz' : '🪣 Wasser'}</span>` : ''}`);
     hud();
 
     const spend = () => { day.energy--; hud(); };
@@ -193,18 +195,15 @@
       return true;
     }
     async function phone() {
-      const q = UL.pick(D.PHONE), x = UL.Show.first(UL.pick(Show.alive().filter(c => c.id !== 'me')) || me);
-      // Kamera in die Hütte
-      st.cine.cut(new T.Vector3(st.poi.phone.x + 0.2, 1.6, st.poi.phone.z - 0.6), new T.Vector3(-6.8, 1.0, 6.6));
-      st.camLock = true;
-      UL.Audio.sfx('phone');
-      const i = await UI.choose('📞 ' + D.SHOW.phone, `<i>„${esc(q.q)}“</i>`, q.a.map((a, k) => ({ label: fmtX(a[0], x), value: k + 1 })), { who: 'Stimme aus dem Off', icon: '📞' });
-      st.camLock = false;
-      if (!i) return;
-      const a = q.a[i - 1]; spend();
-      if (a[0].includes('{x}') && a[1] < 0) { const t = Show.alive().find(c => UL.Show.first(c) === x); if (t) Show.rel(me, t, -6); }
-      Show.log(`Buschtelefon: „${fmtX(a[0], x)}“`, '📞');
-      fx({ sym: a[1], ent: a[2] }, 'Das sehen die Zuschauer heute Abend.');
+      // eigenes Interview-Set: zwei Fragen aus dem Off, Zuschauer reagieren sofort
+      UL.Tags.clear();
+      const r = await UL.Phone.interview({ theme: S.theme, me, others: Show.alive().filter(c => c.id !== 'me') });
+      figs.forEach(o => UL.Tags.set('n:' + o.c.id, v => v.copy(o.f.root.position).add(new T.Vector3(0, o.f.height + 0.35, 0)), esc(UL.Show.first(o.c)) + (o.c.id === 'me' ? ' ⭐' : ''), 'tag' + (o.c.id === 'me' ? ' me' : '')));
+      if (!r.said.length) return;
+      spend();
+      Show.log(`Buschtelefon: „${r.said[0]}“`, '📞');
+      (S.phoneSaid = S.phoneSaid || []).push({ d: S.day, txt: r.said[r.said.length - 1] });
+      fx(r.sum, 'Das sehen die Zuschauer heute Abend.');
     }
     async function treasure() {
       const [q, ans] = UL.pick(D.QUIZ), order = UL.rng.shuffle([0, 1, 2, 3]);
@@ -270,13 +269,136 @@
     }
 
     // Kamera hinter dem Spieler (rechter Stick / Maus / Wischen dreht)
+    // ---------- Gespräche, Lästereien und Zoff unter den Mit-Campern ----------
+    const scene = { t: UL.rand(8, 14), cur: null };
+    st.talks = scene; st.meO = meO;   // für Tests
+    const fmtS = (txt, a, b) => txt.replace(/\{a\}/g, Show.first(a.c)).replace(/\{b\}/g, Show.first(b.c)).replace(/\{m\}/g, Show.first(me));
+    function sceneEnd(cur) {
+      for (const o of [cur.a, cur.b]) { o.state = 'idle'; o.t = UL.rand(1, 3); o.f.set('idle'); }
+      scene.cur = null; scene.t = UL.rand(18, 30);
+    }
+    function sceneTick(dt) {
+      const cur = scene.cur;
+      if (cur) {
+        if (!cur.go) {   // b läuft noch zu a
+          cur.wait -= dt;
+          if (cur.b.state === 'do' || cur.wait <= 0) { cur.go = true; cur.b.state = 'busy'; UL.faceTo(cur.a.f, cur.b.x, cur.b.z); UL.faceTo(cur.b.f, cur.a.x, cur.a.z); if (cur.kind === 'fight') { UL.Audio.sfx('tense'); UI.toast(`💥 Zoff zwischen ${Show.first(cur.a.c)} und ${Show.first(cur.b.c)}!`, '🎭', 2600); } }
+          return;
+        }
+        cur.next -= dt;
+        if (cur.next > 0) return;
+        if (cur.i < cur.lines.length) {
+          const who = cur.i % 2 ? cur.b : cur.a, oth = who === cur.a ? cur.b : cur.a;
+          bubble(who, fmtS(cur.lines[cur.i], cur.a, cur.b), 2.8);
+          who.f.play(cur.kind === 'fight' ? (cur.i === 2 ? 'hit' : 'block') : 'interact');
+          if (cur.kind === 'fight') { UL.Audio.sfx(cur.i === 2 ? 'gasp' : 'bad'); npcs.forEach(o => { if (o !== cur.a && o !== cur.b && o.state !== 'busy' && Math.random() < 0.15) bubble(o, UL.pick(['Uiuiui!', 'Popcorn!', 'Nicht schon wieder …']), 2); }); }
+          cur.i++; cur.next = 2.9;
+          return;
+        }
+        // ohne Einmischung: Folgen für die beiden
+        if (cur.kind === 'fight') { Show.rel(cur.a.c, cur.b.c, -8); Show.change(cur.a.c, { ent: 3 }); Show.change(cur.b.c, { ent: 2 }); Show.log(`Zoff zwischen ${Show.first(cur.a.c)} und ${Show.first(cur.b.c)}.`, '💥'); }
+        else if (cur.kind === 'gossip') { Show.rel(cur.a.c, me, -3); Show.log(`${Show.first(cur.a.c)} lästert bei ${Show.first(cur.b.c)} über ${Show.first(me)}.`, '🐍'); }
+        else Show.rel(cur.a.c, cur.b.c, 4);
+        sceneEnd(cur); return;
+      }
+      scene.t -= dt;
+      if (scene.t > 0 || npcs.length < 2) return;
+      scene.t = 6;
+      const free = npcs.filter(o => o.state !== 'busy' && o.state !== 'walk');
+      if (free.length < 2) return;
+      const [a, b] = UL.rng.shuffle(free), rab = a.c.rel[b.c.id] ?? 50, ram = a.c.rel.me ?? 50;
+      const kind = Math.random() < 0.25 + (rab < 45 ? 0.3 : 0) + a.c.t.drama * 0.2 ? 'fight' : ram < 45 && Math.random() < 0.6 ? 'gossip' : 'chat';
+      a.state = 'busy'; a.f.set('idle');
+      const ang = Math.random() * 6.28, p = { x: a.x + Math.cos(ang) * 1.3, z: a.z + Math.sin(ang) * 1.3 }; st.push(p);
+      b.tx = p.x; b.tz = p.z; b.act = 'idle'; b.state = 'walk';
+      scene.cur = { a, b, kind, lines: UL.pick(D.SCENES[kind]), i: 0, next: 0.3, go: false, wait: 6 };
+    }
+    // Einmischen: schlichten oder mitmischen / zur Rede stellen
+    async function meddle(how) {
+      const cur = scene.cur; if (!cur) return;
+      const { a, b } = cur; spend();
+      UL.faceTo(meO.f, (a.x + b.x) / 2, (a.z + b.z) / 2);
+      if (how === 'calm') {
+        bubble(meO, UL.pick(['Hey, hey! Atmet mal durch!', 'Leute, wir sitzen alle im selben Boot.', 'Schluss jetzt – vertragt euch!']), 2.8); meO.f.play('interact');
+        await UL.sleep(UL.bot ? 0.05 : 1.6);
+        bubble(a, 'Na gut …', 2); bubble(b, 'Okay, sorry.', 2);
+        Show.rel(me, a.c, 5); Show.rel(me, b.c, 5); Show.rel(a.c, b.c, 6);
+        Show.log(`${me.name} schlichtet den Streit zwischen ${Show.first(a.c)} und ${Show.first(b.c)}.`, '🕊️');
+        fx({ sym: 5, ent: 1 }, 'Streit geschlichtet');
+      } else if (how === 'stir') {
+        const side = Math.random() < 0.5 ? a : b, other = side === a ? b : a;
+        bubble(meO, `${Show.first(side.c)} hat völlig recht!`, 2.8); meO.f.play('block'); UL.Audio.sfx('gasp');
+        await UL.sleep(UL.bot ? 0.05 : 1.6);
+        bubble(other, UL.pick(['Ach, jetzt du auch noch?!', 'Klar, verbündet euch nur!']), 2.4); other.f.play('hit');
+        Show.rel(me, side.c, 6); Show.rel(me, other.c, -10); Show.rel(a.c, b.c, -6);
+        Show.log(`${me.name} mischt beim Zoff mit – auf der Seite von ${Show.first(side.c)}.`, '🔥');
+        fx({ sym: -2, ent: 7 }, 'Öl ins Feuer!');
+      } else {
+        bubble(meO, UL.pick(['Ich hab alles gehört!', 'Sagt es mir doch ins Gesicht!']), 2.8); meO.f.play('block');
+        await UL.sleep(UL.bot ? 0.05 : 1.6);
+        bubble(a, UL.pick(['Äh … war nicht so gemeint!', 'Na und? Stimmt doch!']), 2.4);
+        Show.rel(me, a.c, -4);
+        Show.log(`${me.name} stellt ${Show.first(a.c)} zur Rede.`, '🗯️');
+        fx({ sym: 2, ent: 5 }, 'Konfrontation vor laufender Kamera');
+      }
+      sceneEnd(cur);
+    }
+    // Extra-Aktionen fürs Zuschauer-Voting
+    async function showAct(id, o) {
+      spend();
+      if (id === 'sing') {
+        meO.f.set('idle'); meO.f.play('cheer'); bubble(meO, UL.pick(['♪ Oh du schöner Urwald … ♪', '♪ Bohnen zum Frühstück, Bohnen zur Nacht … ♪', '♪ Ich will nach Haus, doch ich halt durch … ♪']), 3.2); UL.Audio.sfx('fanfare');
+        await UL.sleep(UL.bot ? 0.05 : 1.8);
+        const good = Math.random() < 0.55 + me.ent / 400;
+        npcs.forEach(n => { if (n.state !== 'busy' && Math.random() < 0.5) { bubble(n, good ? UL.pick(['Zugabe!', 'Wie schön!', 'Hahaha, Gänsehaut!']) : UL.pick(['Bitte aufhören …', 'Meine Ohren!', 'Die Mücken fliehen!']), 2.2); if (good) n.f.play('cheer'); } });
+        Show.log(`${me.name} singt am Lagerfeuer${good ? ' – alle klatschen' : ' – schief'}.`, '🎤');
+        fx(good ? { sym: 3, ent: 5 } : { sym: -1, ent: 6 }, good ? 'Gänsehaut-Moment!' : 'Schief, aber unterhaltsam');
+      } else if (id === 'massage') {
+        UL.faceTo(meO.f, o.x, o.z); o.state = 'busy'; meO.f.play('use');
+        bubble(meO, 'Komm, ich massier dir mal den Rücken.', 2.6);
+        await UL.sleep(UL.bot ? 0.05 : 1.6);
+        bubble(o, UL.pick(['Ohhh, das tut gut!', 'Du hast goldene Hände!', 'Aua – ah, doch gut!']), 2.4);
+        Show.rel(me, o.c, 9); o.c.mood = Math.min(1, o.c.mood + 0.2); o.state = 'idle'; o.t = 2;
+        Show.log(`${me.name} massiert ${Show.first(o.c)}.`, '💆');
+        fx({ sym: 3, ent: 1 }, 'Wellness im Urwald');
+      } else if (id === 'snack') {
+        meO.f.play('pickup'); UL.Audio.sfx('crunch');
+        const seen = npcs.find(n => n.state !== 'busy' && Math.hypot(n.x - meO.x, n.z - meO.z) < 7 && Math.random() < 0.45);
+        await UL.sleep(UL.bot ? 0.05 : 1.2);
+        if (seen) { bubble(seen, UL.pick(['Hey! Was isst du da?!', 'Ich hab’s genau gesehen!', 'Teilen ist wohl nicht dein Ding?!']), 2.6); seen.f.play('block'); Show.alive().forEach(c => Show.rel(me, c, -2)); Show.rel(me, seen.c, -6); Show.log(`${Show.first(seen.c)} erwischt ${me.name} beim heimlichen Naschen!`, '🍫'); fx({ sym: -6, ent: 6 }, 'Erwischt!'); }
+        else { me.mood = Math.min(1, me.mood + 0.2); Show.log(`${me.name} nascht heimlich – die Zuschauer sehen alles.`, '🍫'); fx({ sym: -2, ent: 4 }, 'Niemand hat’s gesehen … außer ganz Deutschland'); }
+      } else if (id === 'pose') {
+        meO.f.play('cheer'); bubble(meO, UL.pick(['Hallo Mama! Hallo Fans!', 'Das ist meine gute Seite!', 'Wählt mich, ihr Lieben!']), 2.6); UL.Audio.sfx('laugh');
+        Show.log(`${me.name} posiert für die Kamera.`, '📸');
+        fx({ sym: -1, ent: 4 }, 'Kamera-Liebling … oder Selbstdarsteller?');
+      }
+    }
+
+    // Kamera: folgt weich, dreht beim Laufen von selbst hinter die Figur, schaut etwas voraus,
+    // weicht Hütten/Felsen aus und taucht nie in den Boden
+    const camLook = new T.Vector3(), camWant = new T.Vector3();
+    let lookIdle = 9, camInit = false;
     function camTick(dt) {
       if (st.camLock) { st.cine.update(dt); return; }
       const c = st.cam;
+      const manual = Math.abs(In.look.x) + Math.abs(In.look.y) > 0.0005;
+      lookIdle = manual ? 0 : lookIdle + dt;
       c.yaw -= In.look.x; c.pitch = UL.clamp(c.pitch + In.look.y, 0.12, 1.1); c.dist = UL.clamp(c.dist - In.zoom * 1.2, 3.5, 11);
-      const p = meO.f.root.position, port = UL.portrait(), d = c.dist * (port ? 1.25 : 1);
-      const want = new T.Vector3(p.x + Math.sin(c.yaw) * Math.cos(c.pitch) * d, p.y + 1.2 + Math.sin(c.pitch) * d, p.z + Math.cos(c.yaw) * Math.cos(c.pitch) * d);
-      st.camera.position.lerp(want, 1 - Math.exp(-8 * dt)); st.camera.lookAt(p.x, p.y + 1.1, p.z);
+      const p = meO.f.root.position, port = UL.portrait(), moving = meO.f.base === 'walk' || meO.f.base === 'run';
+      if (moving && lookIdle > 1.2 && !day.busy) c.yaw = UL.angDamp(c.yaw, meO.f.root.rotation.y + Math.PI, In.run ? 1.6 : 0.9, dt);
+      let d = c.dist * (port ? 1.3 : 1) * (In.run && moving ? 1.12 : 1);
+      // Hindernisse zwischen Figur und Kamera: näher heranrücken
+      const sx = Math.sin(c.yaw) * Math.cos(c.pitch), sz = Math.cos(c.yaw) * Math.cos(c.pitch);
+      for (let k = 0.15; k <= 1.001; k += 0.12) {
+        const x = p.x + sx * d * k, z = p.z + sz * d * k;
+        if (st.solid.some(o => o.r > 0.8 && !o.low && Math.hypot(x - o.x, z - o.z) < o.r * 0.9) && k * d > 2.2) { d = Math.max(2.4, k * d - 0.4); break; }
+      }
+      camWant.set(p.x + sx * d, p.y + 1.2 + Math.sin(c.pitch) * d, p.z + sz * d);
+      camWant.y = Math.max(camWant.y, st.h(camWant.x, camWant.z) + 0.6);
+      const ahead = moving ? (In.run ? 1.1 : 0.6) : 0, ry = meO.f.root.rotation.y;
+      const lt = new T.Vector3(p.x + Math.sin(ry) * ahead, p.y + 1.1, p.z + Math.cos(ry) * ahead);
+      if (!camInit) { camInit = true; st.camera.position.copy(camWant); camLook.copy(lt); }
+      st.camera.position.lerp(camWant, 1 - Math.exp(-7 * dt)); camLook.lerp(lt, 1 - Math.exp(-6 * dt)); st.camera.lookAt(camLook);
     }
 
     st.update = (dt) => {
@@ -287,11 +409,12 @@
       for (const o of npcs) npcTick(st, o, dt, npcs);
       chatT -= dt;
       if (chatT <= 0) { chatT = UL.rand(4, 8); const o = UL.pick(npcs); if (o && o.state !== 'busy') bubble(o, Math.random() < 0.3 ? o.c.quote : UL.pick(CHATTER), 3.4); }
+      sceneTick(dt);
       if (day.busy) return;
       // Spieler laufen
       let mx = In.move.x, my = In.move.y;
       if (UL.bot) { mx = my = 0; }
-      const sp = (In.run ? 4.6 : 2.4) * Math.min(1, Math.hypot(mx, my));
+      const mag = Math.min(1, Math.hypot(mx, my)), sp = (In.run ? 5.2 : 2.6) * (mag < 0.15 ? 0 : 0.35 + 0.65 * mag);
       if (sp > 0.05) {
         const yaw = st.cam.yaw, fx_ = -Math.sin(yaw), fz = -Math.cos(yaw);
         const vx = fx_ * -my - fz * mx, vz = fz * -my + fx_ * mx;
@@ -313,7 +436,15 @@
       let npcNear = null, nd = 2.0;
       for (const o of npcs) { const d = Math.hypot(o.x - meO.x, o.z - meO.z); if (d < nd) { nd = d; npcNear = o; } }
       if (day.energy > 0) {
-        if (npcNear) cmds.push({ id: 'talk', label: 'Reden mit ' + UL.Show.first(npcNear.c), icon: '💬', hot: true, o: npcNear });
+        const sc = scene.cur;
+        if (sc && sc.go && sc.kind !== 'chat' && Math.hypot((sc.a.x + sc.b.x) / 2 - meO.x, (sc.a.z + sc.b.z) / 2 - meO.z) < 4.5) {
+          if (sc.kind === 'fight') { cmds.push({ id: 'calm', label: 'Streit schlichten', icon: '🕊️', hot: true }); cmds.push({ id: 'stir', label: 'Mitmischen', icon: '🔥', hot: true }); }
+          else cmds.push({ id: 'confront', label: 'Zur Rede stellen', icon: '🗯️', hot: true });
+        }
+        if (npcNear && npcNear.state !== 'busy') { cmds.push({ id: 'talk', label: 'Reden mit ' + UL.Show.first(npcNear.c), icon: '💬', hot: true, o: npcNear }); cmds.push({ id: 'massage', label: 'Massage', icon: '💆', o: npcNear }); }
+        if (near({ x: 0, z: 0 }, 3.4)) cmds.push({ id: 'sing', label: 'Lied singen', icon: '🎤' });
+        if (near(P.beds, 3.4)) cmds.push({ id: 'snack', label: 'Heimlich naschen', icon: '🍫' });
+        if (!npcNear && !near({ x: 0, z: 0 }, 3.4)) cmds.push({ id: 'pose', label: 'Für die Kamera posen', icon: '📸' });
         if (!day.carry && near(P.wood, 2.4)) cmds.push({ id: 'holz', label: 'Holz sammeln', icon: '🪵', hot: true });
         if (!day.carry && near(P.water, 4.4)) cmds.push({ id: 'wasser', label: 'Wasser holen', icon: '🪣', hot: true });
         if (day.carry === 'holz' && near({ x: 0, z: 0 }, 2.6)) cmds.push({ id: 'feuer', label: 'Feuer schüren', icon: '🔥', hot: true });
@@ -336,6 +467,8 @@
       else if (c.id === 'feuer' || c.id === 'kochen') { spend(); day.carry = null; meO.f.play('throw'); UL.Audio.sfx(c.id === 'feuer' ? 'whoosh' : 'splash'); st.fire.scale.setScalar(1.4); UL.after(2, () => st.fire.scale.setScalar(1)); Show.log(`${me.name} ${c.id === 'feuer' ? 'schürt das Feuer' : 'kocht Wasser ab'}.`, c.id === 'feuer' ? '🔥' : '♨️'); fx({ sym: 2 + Math.random() * 2, ent: 0.5 }, c.id === 'feuer' ? 'Das Feuer brennt!' : 'Trinkwasser fürs Camp!'); npcs.forEach(o => { if (o.state === 'sit' && Math.random() < 0.4) bubble(o, UL.pick(['Danke dir!', 'Endlich mal jemand, der was tut!', 'Wärmt schön.']), 2.4); }); }
       else if (c.id === 'klo') { spend(); meO.f.play('use'); Show.log(`${me.name} putzt das Klo. Respekt!`, '🧽'); fx({ sym: 4, ent: 2 }, 'Klo geputzt – die Zuschauer staunen.'); }
       else if (c.id === 'phone') busy(phone);
+      else if (c.id === 'calm' || c.id === 'stir' || c.id === 'confront') busy(() => meddle(c.id === 'confront' ? 'confront' : c.id));
+      else if (c.id === 'sing' || c.id === 'massage' || c.id === 'snack' || c.id === 'pose') busy(() => showAct(c.id, c.o));
       else if (c.id === 'chest') busy(treasure);
       else if (c.id === 'sit') { let best = 0, bd = 1e9; st.seats.forEach((s, i) => { const d = Math.hypot(s.x - meO.x, s.z - meO.z); if (d < bd) { bd = d; best = i; } }); const s = st.seats[best]; meO.x = s.x; meO.z = s.z; meO.f.root.rotation.y = Math.atan2(-s.x, -s.z); meO.f.set('sit'); }
       else if (c.id === 'drum') Show.drum();
@@ -356,7 +489,7 @@
 
   // ---------- Abendessen ----------
   Camp.evening = ({ theme, stars, max, text, by }) => new Promise(async (resolve) => {
-    const Show = UL.Show, S = Show.S;
+    const Show = UL.Show, S = Show.S, me = Show.me(), V = T.Vector3, wait = s => UL.sleep(UL.bot ? 0.05 : s);
     await UI.fade(true, 0.3);
     UI.cmd([]); UI.hud(''); UI.hint({});
     const st = new CampStage(theme, 'evening');
@@ -364,17 +497,111 @@
     figs.forEach((o, i) => seat(st, o, i));
     R.set(st);
     UL.Audio.music('night'); UL.Audio.atmo(theme === 'studio' ? 'studio' : 'night');
-    let ang = 0.4;
-    st.update = (dt) => { st.tick(dt); ang += dt * 0.08; st.camera.position.set(Math.cos(ang) * 7.5, 4.2, Math.sin(ang) * 7.5); st.camera.lookAt(0, 0.6, 0); };
+    const fx = R.particles(st.scene, { n: 140, colors: [0xffffff, 0xe6edf2], size: 0.07, gravity: 1.4, life: 1.8 });
+    st.updaters.push(dt => fx.update(dt));
+    // Kamera (weich nachgeführt) und Laufwege
+    const cam = { p: new V(0, 3.2, 7.5), l: new V(0, 0.8, 0) }, walkers = [];
+    let follow = null, orbit = false, ang = 0.4, steamT = 0, steam = false;
+    const walk = (o, x, z, sp = 1.6) => new Promise(res => { if (UL.bot) { place(st, o, x, z); return res(); } o.f.set('idle'); walkers.push({ o, x, z, sp, res }); });
+    st.update = (dt) => {
+      st.tick(dt);
+      walkers.slice().forEach(w => {
+        const o = w.o, dx = w.x - o.x, dz = w.z - o.z, d = Math.hypot(dx, dz);
+        if (d < 0.12) { o.f.move(0); walkers.splice(walkers.indexOf(w), 1); w.res(); return; }
+        const k = Math.min(d, w.sp * dt); o.x += dx / d * k; o.z += dz / d * k;
+        o.f.root.position.set(o.x, st.h(o.x, o.z), o.z); o.f.root.rotation.y = UL.angDamp(o.f.root.rotation.y, Math.atan2(dx, dz), 10, dt); o.f.move(w.sp);
+      });
+      if (follow) { const p = follow.f.root.position; cam.p.set(p.x + 2.6, p.y + 2.3, p.z + 3.6); cam.l.set(p.x, p.y + 1, p.z); }
+      else if (orbit) { ang += dt * 0.08; cam.p.set(Math.cos(ang) * 7.5, 4.2, Math.sin(ang) * 7.5); cam.l.set(0, 0.6, 0); }
+      if (steam && (steamT -= dt) <= 0) { steamT = 0.12; const pp = st.pot.position; fx.burst(pp.x, pp.y + 0.2, pp.z, 2, 0.25, 0.9); }
+      st.camera.position.lerp(cam.p, 1 - Math.exp(-3 * dt)); st.camera.lookAt(cam.l);
+    };
+    st.camera.position.set(3, 2.6, -6); st.camera.lookAt(0, 1, -11);
     await UI.fade(false, 0.5);
     await UI.banner('🍲 Abendessen', `${stars} von ${max} Portionen`, 1800);
-    await UI.say('camp', (by ? `${by} hat heute ${stars} Sterne geholt. ` : '') + text, { name: 'Am Lagerfeuer' });
+    // 1) Die Lieferung: ein Helfer bringt die Kiste mit den erspielten Portionen
+    const staff = { c: { id: 'staff' }, f: UL.makeFig(D.DOC.look), x: 0, z: -11.5 };
+    st.scene.add(staff.f.root); st.figs.push(staff.f); place(st, staff, 0, -11.5, 0);
+    const box = A.has('crate') ? A.sized('crate', 0.45) : new T.Mesh(new T.BoxGeometry(0.6, 0.4, 0.45), R.mat(0x8a6a3a));
+    box.position.set(0, 0.95, 0.42); staff.f.root.add(box);
+    UL.Tags.set('n:staff', v => v.copy(staff.f.root.position).add(new V(0, 2.1, 0)), '📦 Lieferung', 'tag');
+    follow = staff; UL.Audio.sfx('drum');
+    UI.toast(stars ? `Die Lieferung kommt: ${stars} Portion${stars === 1 ? '' : 'en'}!` : 'Die Lieferung kommt … nur ein Sack.', '📦', 2600);
+    figs.forEach(o => { if (o.c.id !== 'me' && Math.random() < 0.5) { o.f.set('idle'); o.f.root.position.y = st.h(o.x, o.z); } });
+    await walk(staff, 0, -3.7, 1.7);
+    follow = null; cam.p.set(1.8, 2.0, -0.6); cam.l.set(0, 0.6, -3.4);
+    staff.f.play('pickup');
+    st.scene.attach(box); box.position.set(0, st.h(0, -3.2) + 0.22, -3.2); box.rotation.set(0, 0.2, 0);
+    UL.Audio.sfx('pick');
+    await wait(0.5);
+    const kinds = ['fish', 'banana', 'apple', 'carrot', 'pumpkin', 'watermelon'].filter(A.has);
+    const items = [];
+    const bp = box.position;
+    if (stars > 0) {
+      for (let i = 0; i < stars; i++) {
+        const k = kinds.length ? kinds[i % kinds.length] : null;
+        const it = k ? A.sized(k, 0.26) : new T.Mesh(new T.SphereGeometry(0.12, 10, 8), R.mat(0xff8a3a));
+        const n = Math.min(stars, 6), row = Math.floor(i / 6), col = i % 6;
+        it.position.set(bp.x + (col - (Math.min(n, stars - row * 6) - 1) / 2) * 0.34, bp.y + 0.45 + row * 0.32, bp.z + 0.05);
+        st.scene.add(it); items.push(it);
+        UL.Audio.sfx('star'); fx.burst(it.position.x, it.position.y, it.position.z, 8, 1.2, 1.4, [0xffd23a, 0xffffff]);
+        await wait(stars > 6 ? 0.18 : 0.3);
+      }
+      figs.forEach(o => { if (o.c.id !== 'me' && Math.random() < 0.6) o.f.play('cheer'); });
+      UL.Audio.sfx(stars / max >= 0.6 ? 'cheer' : 'ooh');
+    } else {
+      const sack = new T.Mesh(new T.CylinderGeometry(0.22, 0.28, 0.5, 10), R.mat(0xc8a878)); sack.position.set(bp.x, bp.y + 0.45, bp.z); st.scene.add(sack); items.push(sack);
+      const lab = R.sign(['REIS & BOHNEN'], 0.9, 0.22, { bg: '#5a3a1e', w: 300, h: 70, font: '900 34px system-ui' }); lab.position.set(bp.x, bp.y + 0.95, bp.z + 0.1); st.scene.add(lab); items.push(lab);
+      UL.Audio.sfx('boo');
+    }
+    await UI.say('camp', (by ? `${by} hat heute ${stars} Stern${stars === 1 ? '' : 'e'} geholt. ` : '') + text, { name: 'Am Lagerfeuer' });
+    walk(staff, 0, -12.5, 2).then(() => { staff.f.root.visible = false; UL.Tags.del('n:staff'); });
+    // 2) Wer kocht?
+    const npcO = figs.filter(o => o.c.id !== 'me'), meO = figs.find(o => o.c.id === 'me');
+    const bud = npcO.find(o => o.c.id === S.buddy) || npcO.slice().sort((a, b) => b.c.t.fleiss - a.c.t.fleiss)[0];
+    let cook = meO, zoff = false;
+    if (bud) {
+      const v = UL.bot ? 1 : await UI.choose('Wer kocht heute?', 'Der Topf hängt schon über dem Feuer …', [
+        { label: 'Ich koche!', icon: '🧑‍🍳', sub: 'Die Zuschauer mögen Camper, die anpacken.', value: 1 },
+        { label: `${Show.first(bud.c)} kochen lassen`, icon: '🤝', sub: 'Gemütlich zusehen – gut für eure Freundschaft.', value: 2 },
+        { label: `${Show.first(bud.c)} kocht – du redest rein`, icon: '🗯️', sub: 'Besserwisser-Zoff am Topf. Unterhaltsam, aber unbeliebt.', value: 3 }]);
+      if (v !== 1) cook = bud;
+      if (v === 1) { Show.change(me, { sym: 3, ent: 1 }); Show.log(`${me.name} kocht heute für alle.`, '🧑‍🍳'); }
+      else if (v === 2) { Show.rel(me, bud.c, 4); Show.change(bud.c, { sym: 2 }); }
+      else { zoff = true; Show.change(me, { ent: 5, sym: -3 }); Show.rel(me, bud.c, -7); Show.log(`${me.name} und ${Show.first(bud.c)} streiten ums Kochen.`, '💥'); }
+    }
+    // Kamera innerhalb des Sitzkreises, Blick über den Topf auf den Koch
+    const pp = st.pot.position, cx = pp.x + 1.25, cz = pp.z + 0.35;
+    cam.p.set(-0.5, 2.1, 1.9); cam.l.set(pp.x + 0.6, 0.75, pp.z + 0.1);
+    await walk(cook, cx, cz, 1.6);
+    cook.f.root.rotation.y = Math.atan2(pp.x - cx, pp.z - cz); cook.f.set('use');
+    if (zoff) {
+      await walk(meO, cx + 0.35, cz + 0.95, 1.8); UL.faceTo(meO.f, cx, cz);
+      const at = o => v => v.copy(o.f.root.position).add(new V(0, 2.2, 0));
+      bubble2(meO, at, UL.pick(['Mehr Salz! Nicht so viel Wasser!', 'Das brennt doch an!', 'Lass mich mal ran!']));
+      await wait(1.6); UL.Audio.sfx('bad'); cook.f.play('block');
+      bubble2(cook, at, UL.pick(['Dann koch doch selbst!', 'Finger weg von meinem Topf!', 'Du kannst nicht mal Wasser kochen!']));
+      await wait(1.6); cook.f.set('use');
+    }
+    // 3) Kochen: alles wandert in den Topf, es dampft
+    steam = true; UL.Audio.sfx('splash');
+    for (const it of items) {
+      if (UL.bot) { it.visible = false; continue; }
+      const from = it.position.clone(), to = new V(pp.x, pp.y + 0.25, pp.z);
+      await new Promise(res => { let t = 0; st.updaters.push(function f(dt) { t += dt / 0.45; const k = Math.min(1, t); it.position.lerpVectors(from, to, k); it.position.y += Math.sin(k * Math.PI) * 0.8; if (k >= 1) { it.visible = false; st.updaters.splice(st.updaters.indexOf(f), 1); res(); } return; }); });
+      UL.Audio.sfx('gulp');
+    }
+    UI.toast(`${cook === meO ? 'Du kochst' : Show.first(cook.c) + ' kocht'} … es duftet ${stars ? 'richtig gut' : 'nach Reis'}.`, '🍳', 2400);
+    await wait(2.4);
+    steam = false; cook.f.set('idle');
+    // 4) Essen am Feuer
+    seat(st, cook, figs.indexOf(cook)); if (zoff) seat(st, meO, figs.indexOf(meO));
+    orbit = true;
     const q = stars / Math.max(1, max);
-    figs.forEach(o => { if (o.c.id === 'me') return; if (q >= 0.6 && Math.random() < 0.6) { o.f.play('cheer'); UL.Tags.bubble(o.c.id, v => v.copy(o.f.root.position).add(new T.Vector3(0, 2.2, 0)), UL.pick(['Endlich was Richtiges!', 'Hmmm, Fisch!', 'Danke, danke, danke!']), 2.6); } else if (q < 0.3 && Math.random() < 0.5) UL.Tags.bubble(o.c.id, v => v.copy(o.f.root.position).add(new T.Vector3(0, 2.2, 0)), UL.pick(['Schon wieder Bohnen …', 'Mein Magen knurrt.', 'Ich ess einfach Luft.']), 2.6); });
+    figs.forEach(o => { if (o.c.id === 'me') return; if (q >= 0.6 && Math.random() < 0.6) { o.f.play('cheer'); UL.Tags.bubble(o.c.id, v => v.copy(o.f.root.position).add(new T.Vector3(0, 2.2, 0)), UL.pick(['Endlich was Richtiges!', 'Hmmm, Fisch!', 'Danke, danke, danke!', cook !== meO ? 'Lecker gekocht!' : 'Du kannst ja kochen!']), 2.6); } else if (q < 0.3 && Math.random() < 0.5) UL.Tags.bubble(o.c.id, v => v.copy(o.f.root.position).add(new T.Vector3(0, 2.2, 0)), UL.pick(['Schon wieder Bohnen …', 'Mein Magen knurrt.', 'Ich ess einfach Luft.']), 2.6); });
     UL.Audio.sfx(q >= 0.6 ? 'cheer' : 'eat');
     if (stars > 0) {
-      const me = Show.me();
-      const i = await UI.choose('Wie isst du heute?', 'Alle schauen auf den Topf …', [
+      const i = UL.bot ? 1 : await UI.choose('Wie isst du heute?', 'Alle schauen auf den Topf …', [
         { label: 'Gerecht teilen', icon: '🤝', sub: 'Jeder bekommt gleich viel.', value: 1 },
         { label: 'Die größte Portion nehmen', icon: '😋', sub: 'Hunger ist Hunger. Die Zuschauer sehen alles.', value: 2 },
         { label: 'Verzichten – die anderen brauchen es mehr', icon: '💚', sub: 'Du gehst hungrig ins Bett.', value: 3 }]);
@@ -387,6 +614,7 @@
     await UI.fade(true, 0.4);
     resolve();
   });
+  function bubble2(o, at, text) { UL.Tags.bubble(o.c.id, at(o), text, 2.4); }
 
   // ---------- Auszug in der Nacht ----------
   Camp.exit = ({ theme, safe, last2, out }) => new Promise(async (resolve) => {

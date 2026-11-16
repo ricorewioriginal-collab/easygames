@@ -23,7 +23,7 @@
       t.getPos(v); v.project(cam);
       const vis = v.z < 1 && v.z > -1 && Math.abs(v.x) < 1.1 && Math.abs(v.y) < 1.1;
       t.el.style.display = vis ? '' : 'none';
-      if (vis) { t.el.style.left = ((v.x + 1) / 2 * w).toFixed(0) + 'px'; t.el.style.top = ((1 - v.y) / 2 * h).toFixed(0) + 'px'; }
+      if (vis) { const x = (v.x + 1) / 2 * w, m = t.cls === 'bubble' ? Math.min(w / 2, 115) : 0; t.el.style.left = (m ? UL.clamp(x, m, w - m) : x).toFixed(0) + 'px'; t.el.style.top = ((1 - v.y) / 2 * h).toFixed(0) + 'px'; }
     });
   };
 

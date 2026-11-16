@@ -10,7 +10,7 @@ html, body { margin: 0; width: 100vw; height: 100dvh; overflow: hidden; backgrou
 #gl { position: fixed; inset: 0; width: 100vw; height: 100dvh; display: block; outline: none; }
 #ui { position: fixed; inset: 0; pointer-events: none; }
 #ui > * { pointer-events: auto; }
-#ui > .tui, #ui > .tint, #ui > .shout, #ui > .flash, #ui > .crawl { pointer-events: none; }
+#ui > .tui, #ui > .tint, #ui > .shout, #ui > .flash, #ui > .crawl, #ui > .phonecam, #ui > .reactfx { pointer-events: none; }
 .crawl { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 27; }   /* Prüfungs-Einblendungen dürfen Stick und Knöpfe nie blockieren */
 button { font: inherit; color: inherit; }
 [hidden] { display: none !important; }
@@ -177,6 +177,8 @@ kbd.g-switch { background: #2b2b30; color: #fff; border-color: #777; }
 .tb-alt { width: 68px; height: 68px; right: calc(126px + var(--safeR)); bottom: calc(24px + var(--safeB)); }
 .tb-menu { width: 60px; height: 60px; right: calc(40px + var(--safeR)); bottom: calc(134px + var(--safeB)); }
 .tb-back { width: 56px; height: 56px; right: calc(118px + var(--safeR)); bottom: calc(106px + var(--safeB)); }
+.tb-r3 { width: 58px; height: 58px; right: calc(124px + var(--safeR)); bottom: calc(118px + var(--safeB)); }
+.tb-r3 span { font-size: 24px; } .tb-r3.lit { background: rgba(255, 140, 40, .7); border-color: #fff; }
 .tb-l1, .tb-r1 { width: 54px; height: 40px; border-radius: 12px; top: calc(64px + var(--safeT)); }
 .tb-l1 { left: calc(12px + var(--safeL)); } .tb-r1 { right: calc(12px + var(--safeR)); }
 .tb-start { width: 44px; height: 44px; top: calc(10px + var(--safeT)); right: calc(12px + var(--safeR)); border-radius: 12px; font-size: 14px; }
@@ -261,3 +263,19 @@ kbd.g-switch { background: #2b2b30; color: #fff; border-color: #777; }
 .blindfold { opacity: 0; transition: opacity .6s; }
 .blindfold.on { background: radial-gradient(ellipse at 50% 55%, rgba(0, 0, 0, .8) 0, #000 34%); }
 .blindfold.on.mud { background: radial-gradient(ellipse at 50% 50%, rgba(70, 40, 10, .9) 0, #2a1606 50%); }
+/* Zuschauen: Mit-Camper in der Prüfung */
+.aiskip { position: absolute; right: calc(12px + env(safe-area-inset-right)); bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 40; padding: 10px 16px; border-radius: 999px; border: 2px solid #fff6; background: #000a; color: #fff; font: 800 15px system-ui, sans-serif; }
+.dev-touch .aiskip { bottom: auto; top: calc(58px + env(safe-area-inset-top)); }
+/* Buschtelefon: Kamera-Einblendung und Zuschauer-Reaktion */
+.phonecam { position: absolute; inset: 0; z-index: 12; box-shadow: inset 0 0 120px #000c; }
+.phonecam .rec { position: absolute; top: calc(14px + env(safe-area-inset-top)); left: calc(16px + env(safe-area-inset-left)); color: #ff3a3a; font: 900 15px system-ui; letter-spacing: .1em; animation: recb 1s steps(2) infinite; }
+@keyframes recb { 50% { opacity: .2; } }
+.phonecam .lower { position: absolute; left: calc(16px + env(safe-area-inset-left)); top: 22%; background: linear-gradient(90deg, #c0302af0, #c0302a80); color: #fff; padding: 6px 14px 6px 10px; border-left: 5px solid #ffd23a; border-radius: 0 10px 10px 0; display: grid; max-width: 70%; }
+.phonecam .lower b { font: 900 18px system-ui; } .phonecam .lower small { font: 600 12px system-ui; opacity: .9; }
+.reactfx { position: absolute; inset: 0; z-index: 35; overflow: hidden; }
+.reactfx span { position: absolute; bottom: -40px; animation: reactUp 2.6s ease-out forwards; opacity: 0; }
+@keyframes reactUp { 0% { transform: translateY(0) scale(.6); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(-62vh) scale(1.15); opacity: 0; } }
+.reactfx .trend { position: absolute; left: 50%; top: 34%; transform: translateX(-50%); background: #000c; color: #fff; padding: 8px 16px; border-radius: 14px; font: 700 14px system-ui; text-align: center; border: 2px solid #fff4; animation: trendIn 3.4s ease-out forwards; white-space: nowrap; }
+.reactfx .trend.up { border-color: #3fd06b; } .reactfx .trend.down { border-color: #ff5b5b; }
+@keyframes trendIn { 0% { opacity: 0; transform: translate(-50%, 10px); } 12%, 82% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; } }
+.chip.up { background: rgba(31, 140, 70, .8); }

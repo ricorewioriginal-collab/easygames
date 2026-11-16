@@ -139,6 +139,34 @@
     { q: 'Was sagst du den Zuschauern zu Hause?', a: [['Danke für eure Stimmen! Ich geb alles!', 3, 1], ['Ruft bitte meine Mama an. Und bringt Schokolade.', 2, 3], ['Wählt {x} in die Prüfung! Bitte!', -2, 5]] }
   ];
 
+  // Morgen-Clips aus dem Buschtelefon: Mit-Camper über dich ({m}) und andere ({x})
+  D.PHONE_NPC = {
+    bad: ['Ganz ehrlich? {m} spielt hier allen was vor.', '{m} denkt, die Kameras sind nur für {m} da.', 'Wenn {m} noch einmal mein Holz klaut, raste ich aus.', 'Ich trau {m} nicht über den Weg. Null.', '{m} hat gestern die größte Portion gegessen. Hab ich genau gesehen!'],
+    good: ['{m} ist das Herz vom Camp. Echt jetzt.', 'Ohne {m} wär ich schon längst raus.', '{m} bringt mich jeden Tag zum Lachen.', 'Ich hoffe, {m} kommt ins Finale. Verdient!'],
+    mid: ['{m}? Kann ich noch nicht einschätzen.', '{m} ist okay. Aber Freunde werden wir erst nach drei Pizzen.', 'Ich beobachte {m}. Ganz genau.'],
+    other: ['{x} schnarcht wie ein Bär. Jede Nacht!', '{x} hat geheult, weil der Reis kalt war.', 'Ich vermisse mein Bett. Und {x} vermisst sich selbst.', '{x} tut immer so lieb. Ich glaub das nicht.', 'Ich hab Heimweh. Aber {x} tröstet mich.']
+  };
+
+  // Gespräche und Zoff zwischen Mit-Campern im Camp ({a} spricht zuerst, {b} antwortet, {m} = du)
+  D.SCENES = {
+    chat: [
+      ['Wie hältst du das nur aus, {b}?', 'Ich denk an Pizza. Den ganzen Tag.', 'Pizza … jetzt hab ich Hunger.'],
+      ['Meinst du, die Zuschauer mögen uns?', 'Dich bestimmt. Du redest ja ständig.', 'Haha, sehr witzig.'],
+      ['Ich hab heute Nacht kein Auge zugemacht.', 'Ich auch nicht. Irgendwas hat an meinem Zeh geknabbert.', 'IIIH! Erzähl das nicht!'],
+      ['Weißt du, was ich vermisse? Eine Dusche mit warmem Wasser.', 'Ich vermiss meinen Hund. Und Kaffee.', 'Kaffee … hör auf.'],
+      ['Wenn ich hier rauskomme, schreib ich ein Buch.', 'Über Bohnen?', 'Über DICH, {b}.']],
+    gossip: [
+      ['Hast du gesehen, wie {m} sich vor der Kamera aufspielt?', 'Und ob. Total gespielt.', 'Psst, nicht so laut …'],
+      ['{m} tut immer so nett. Ich glaub das nicht.', 'Ich auch nicht. Wart’s ab.', 'Die Zuschauer merken das schon.'],
+      ['Wer, glaubst du, fliegt als Nächstes? Ich tipp auf {m}.', 'Hoffentlich!', 'Das hab ich jetzt nicht gesagt, okay?']],
+    fight: [
+      ['Wer hat schon wieder das letzte Wasser getrunken?!', 'Ich nicht! Frag doch mal dich selbst!', 'Ich hab die Nase voll von dir!'],
+      ['Du hast heute gar nichts gemacht, {b}!', 'Ach ja? Und wer hat das Feuer gerettet?', 'Das war ICH!'],
+      ['Hör auf, so laut zu schnarchen!', 'Ich schnarche nicht! Du redest im Schlaf!', 'Unverschämt!'],
+      ['Das war MEIN Platz am Feuer!', 'Steht da dein Name drauf?', 'Gleich steht da was ganz anderes!'],
+      ['Du lästerst über mich, ich weiß es!', 'Beweis es doch!', 'Die Kameras haben alles!']]
+  };
+
   // Camp-Ereignisse (Entscheidungen)
   D.EVENTS = [
     { id: 'streit', title: 'Streit am Feuer', text: '{a} und {b} streiten lautstark darüber, wer heute Holz holen sollte.', opts: [['Schlichten: „Ich hol’s einfach!“', { sym: 4, ent: 1, work: 1 }], ['Anheizen: „{a} hat recht!“', { sym: -2, ent: 5, relA: 6, relB: -8 }], ['Popcorn holen und zuschauen', { sym: 0, ent: 2 }]] },
