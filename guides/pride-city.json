@@ -181,6 +181,14 @@
         "🏳️‍🌈 „Gay Life! – Das Original“ ist komplett dabei: sieben Viertel, Bewohner, Mehrspieler per PIN/QR und alle 14 Minispiele. Die Minispiele (Date-Roulette, Clubnacht-Manager, Regenbogen-Rave, Outfit-Check, Beinetag, Glitzer-Match, Parade-Runner, Tanzbattle, Strandbad-Sprung, Karaoke, Sauna-Aufguss, Dunkelkammer, Casting-Tag, Klischee-Quiz) startest du auch direkt unter Minispiele.",
         "Die Figuren aus „Leuchtfeuer“ leben heute am Hafen: Finn und Ben am Leuchtturm, Lotte an der Strandbar, Pia, Samira, Tobi und Jörg und Anke Albrecht mit ihrem Fischstand."
       ]
+    },
+    {
+      "t": "Alle Häuser sind betretbar",
+      "p": [
+        "Jedes Haus der Stadt hat eine Tür. Stell dich davor und drück Benutzen (Enter, A oder Tippen auf „Rein“). Läden und Treffpunkte wie Café, Club Prisma, Regenbogenhaus, Boutique, Muckibude, Studio, Checkpoint, One Love Bar, Wachen und Club Leuchtturm sind innen eigen eingerichtet; ihr bisheriges Menü findest du an der Theke.",
+        "Die übrigen Häuser sind feste Orte aus Gay Life!: Kino, Buchladen, Arcade, Sauna, Karaoke-Bar, Tanzschule, Schwimmhalle, Festwagen-Werkstatt, Ramen-Bar und die Wohnungen von Jonas, Mika, Deniz, Elif, Torsten, Noor, Kai und Rosa. Goldene Ringe am Boden zeigen, wo du etwas tun kannst: Gay-Life-Minispiele spielen, Tanz-Battle, Drag-Show, Bar-Schicht, die Romane lesen, mit Bewohner*innen reden oder etwas für deine Bedürfnisse tun.",
+        "Hinaus geht es über die Tür mit dem grünen AUSGANG-Schild oder im Pausemenü mit „Haus verlassen“. Orte für Erwachsene (Videothek, Haus Rosa, Dunkelkammer) öffnen sich nur mit eingeschaltetem 18+."
+      ]
     }
   ],
   "ratgeber": [
@@ -250,6 +258,14 @@
         "Mit dem Auto bist du am schnellsten, die Tram ist bequemer und spart Zeit beim Laufen.",
         "Autos bremsen beim Zusammenstoß ab. Fahr langsam an Kreuzungen und Fußgänger*innen vorbei.",
         "Nachts wird es ruhiger auf den Gehwegen, dafür öffnen Club, Haus Rosa und Park ihr zweites Leben."
+      ]
+    },
+    {
+      "t": "Häuser erkunden",
+      "list": [
+        "Hunger und kein Essen zu Hause? Die Ramen-Bar macht +50 Hunger satt.",
+        "Bewohner*innen einmal am Tag besuchen bringt Kontakte.",
+        "Die Arcade hat drei Gay-Life-Minispiele nebeneinander, gut für Glitzer-Rekorde."
       ]
     }
   ],

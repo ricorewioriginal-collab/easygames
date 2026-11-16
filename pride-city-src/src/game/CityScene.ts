@@ -11,6 +11,7 @@ import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
 import type { Marker } from '../ui/Hud';
 import { Street, type Parked } from './Street';
+import { PLACE_THEMES, houseTheme } from './interiors';
 
 interface Npc { def: NpcDef; a: Actor; wp: number; wait: number; talking: boolean }
 
@@ -28,7 +29,7 @@ export class CityScene implements GameScene {
   private cam = { yaw: Math.PI, pitch: .38, dist: 7.5, tYaw: Math.PI };
   private camPos = new THREE.Vector3();
   private stickerMeshes: THREE.Mesh[] = [];
-  private near: { kind: 'npc' | 'poi' | 'street' | 'car'; id: string; label: string } | null = null;
+  private near: { kind: 'npc' | 'poi' | 'street' | 'car' | 'house'; id: string; label: string } | null = null;
   street!: Street;
   /** Auto, in dem die Spielfigur gerade sitzt */
   private drive: Parked | null = null;
@@ -159,10 +160,11 @@ export class CityScene implements GameScene {
   }
 
   refreshHud() {
-    if (this.mode !== 'play' && this.g.where !== 'home') return;
+    if (this.mode !== 'play' && this.g.where === 'city') return;
     const s = this.g.save.data, gl = goal(s);
     this.world.traces.visible = s.settings.adult;
-    if (this.g.where === 'home') this.g.hud.goal('Zuhause', 'Deine Wohnung', s.chapter === 1 && s.step === 2 ? 'Schau dich um.' : `Ziel: ${gl.title}`);
+    if (this.g.where === 'inside' && this.g.inside) this.g.hud.goal(this.g.inside.theme.icon + ' Drinnen', this.g.inside.theme.title, `Ziel: ${gl.title}`);
+    else if (this.g.where === 'home') this.g.hud.goal('Zuhause', 'Deine Wohnung', s.chapter === 1 && s.step === 2 ? 'Schau dich um.' : `Ziel: ${gl.title}`);
     else this.g.hud.goal(chapterLabel(s), gl.title, gl.sub);
     const days = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
     this.g.hud.stats([`${days[(s.day - 1) % 7]} ${this.clock()}`, `💶 ${s.money} €`, `${moodIcon(mood(s))} ${Math.round(mood(s))}`]);
@@ -200,6 +202,10 @@ export class CityScene implements GameScene {
       const d = Math.hypot(q.x - p.x, q.z - p.z);
       if (d < q.r && d < bd) { bd = d; best = { kind: 'poi', id: q.id, label: q.icon + ' ' + q.name }; }
     }
+    if (!best) for (const h of this.world.houses) {
+      const d = Math.hypot(h.x - p.x, h.z - p.z);
+      if (d < 2 && d < bd) { bd = d; const t = houseTheme(h.i, this.g.save.data.settings.adult); best = { kind: 'house', id: String(h.i), label: '🚪 ' + t.icon + ' ' + t.title }; }
+    }
     this.near = best;
     this.g.hud.prompt(best ? best.label : null);
     this.g.touch.label(best ? (best.kind === 'npc' || best.kind === 'street' ? 'Reden' : best.kind === 'car' ? 'Fahren' : 'Rein') : 'Aktion');
@@ -236,7 +242,18 @@ export class CityScene implements GameScene {
       return;
     }
     if (storyPoi(c, this.near.id)) return;
+    if (this.near.kind === 'house') {
+      const h = this.world.houses[+this.near.id];
+      this.g.enterInterior(houseTheme(h.i, this.g.save.data.settings.adult), { x: h.x + Math.sin(h.yaw) * .8, z: h.z + Math.cos(h.yaw) * .8, yaw: h.yaw });
+      return;
+    }
     if (this.near.id === 'home') { this.g.enterHome(); return; }
+    const th = PLACE_THEMES[this.near.id], q = this.world.pois.find((x) => x.id === this.near!.id);
+    if (th && q && (!th.adult || this.g.save.data.settings.adult)) {
+      const pp = this.player.root.position, yaw = Math.atan2(pp.x - q.x, pp.z - q.z);
+      this.g.enterInterior(th, { x: pp.x, z: pp.z, yaw }, q.id);
+      return;
+    }
     sfx('door'); this.g.placeMenu(this.near.id);
   }
 
