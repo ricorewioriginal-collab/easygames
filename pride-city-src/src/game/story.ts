@@ -30,6 +30,14 @@ export const NPCS: NpcDef[] = [
   { id: 'sam', name: 'Sam', pron: 'er/ihn', color: '#5bcefa', look: { body: 'Man2', palette: 'trans', skin: 2, hair: 3 }, x: 4, z: 30, walk: [[4, 30], [4, 48], [-4, 48], [-4, 30]], petition: true },
   { id: 'leon', name: 'Leon', pron: 'er/ihn', color: '#ff7ac8', look: { body: 'Man', palette: 'rainbow', skin: 2, hair: 0 }, x: 33.9, z: 22.4, yaw: -Math.PI / 2 },
   { id: 'finn', name: 'Finn', pron: 'er/ihn', color: '#f2b544', look: { body: 'Man2', palette: 'rainbow', skin: 0, hair: 1 }, x: -108.5, z: -2, yaw: Math.PI / 2 },
+  // Figuren aus „Leuchtfeuer“, heute erwachsen und in Rainbow City zu Hause (ab Kapitel 2 am Hafen)
+  { id: 'ben', name: 'Ben', pron: 'er/ihn', color: '#2f8f5a', look: { body: 'Man', palette: 'gay', skin: 1, hair: 2 }, x: -106.5, z: -2.8, yaw: Math.PI / 2 },
+  { id: 'lotte', name: 'Lotte', pron: 'sie/ihr', color: '#ee7a1f', look: { body: 'Woman', palette: 'lesbian', skin: 0, hair: 3 }, x: -80.6, z: 26, yaw: -Math.PI / 2 },
+  { id: 'pia', name: 'Pia', pron: 'sie/ihr', color: '#d54a6e', look: { body: 'Woman2', palette: 'pan', skin: 0, hair: 1 }, x: -71, z: 2, walk: [[-71, 2], [-71, 18], [-75, 18], [-75, 2]] },
+  { id: 'joerg', name: 'Jörg Albrecht', pron: 'er/ihn', color: '#8fa0aa', look: { body: 'Man2', palette: 'bear', skin: 1, hair: 5 }, x: -76.5, z: -24, yaw: -Math.PI / 2 },
+  { id: 'anke', name: 'Anke Albrecht', pron: 'sie/ihr', color: '#9c5066', look: { body: 'Woman', palette: 'ace', skin: 1, hair: 6 }, x: -76.5, z: -22.4, yaw: -Math.PI / 2 },
+  { id: 'samira', name: 'Samira', pron: 'sie/ihr', color: '#1e6fb6', look: { body: 'Woman2', palette: 'bi', skin: 4, hair: 2 }, x: -83, z: 34, yaw: Math.PI },
+  { id: 'tobi', name: 'Tobi', pron: 'er/ihn', color: '#c9a26a', look: { body: 'Man2', palette: 'rainbow', skin: 0, hair: 3 }, x: -70, z: 30, walk: [[-70, 30], [-70, 40], [-76, 40], [-76, 30]] },
   { id: 'kim', name: 'Kim', pron: 'they/them', color: '#3da542', look: { body: 'Woman', palette: 'aro', skin: 4, hair: 2 }, x: -26, z: -20, walk: [[-26, -20], [-26, -4], [-14, -4], [-14, -20]], petition: true },
 ];
 
@@ -43,6 +51,8 @@ export const CHAPTERS = [
 
 export interface StoryCtx {
   s: SaveData;
+  /** Original-Romanspiel im Vollbild öffnen (alle Kapitel, Minispiele, Figuren) */
+  roman?(id: 'licht' | 'leuchtfeuer'): void;
   say(lines: Line[], done?: () => void): void;
   toast(t: string): void;
   reward(money: number, rep: number, why: string): void;
@@ -132,7 +142,7 @@ export function marks(s: SaveData): Array<[string, string]> {
 }
 
 /** Nova ist in Kapitel 4 verschwunden */
-export function hidden(s: SaveData, id: string) { return (id === 'nova' && s.chapter === 4 && s.step < 4) || (id === 'leon' && s.chapter < 2) || (id === 'finn' && s.chapter < 2); }
+export function hidden(s: SaveData, id: string) { return (id === 'nova' && s.chapter === 4 && s.step < 4) || (id === 'leon' && s.chapter < 2) || (['finn', 'ben', 'lotte', 'pia', 'joerg', 'anke', 'samira', 'tobi'].includes(id) && s.chapter < 2); }
 
 /** Ziele, die sich von selbst erfüllen (Schicht gearbeitet, Leute kennengelernt) – zweimal pro Sekunde */
 export function storyTick(c: StoryCtx) {
@@ -343,6 +353,7 @@ export function talk(c: StoryCtx, id: string): boolean {
   }
   if (id === 'leon') { licht(c); return true; }
   if (id === 'finn') { leuchtfeuer(c); return true; }
+  if (LF_TALK[id]) { const t = LF_TALK[id]; c.say(t.map(([w, x]) => FP(w, x))); return true; }
   // Allgemeine Gespräche
   const lines: Record<string, string[]> = {
     mo: ['Kaffee geht heute aufs Haus. Morgen nicht mehr!', 'Wenn du was brauchst: Ich bin hier.'],
@@ -561,6 +572,7 @@ export function licht(c: StoryCtx) {
   if (i >= sideOpen(s, LICHT_CHAPTERS.length)) { c.say([LP('leon', sideWait(s))]); return; }
   c.say([LP('leon', i === 0 ? 'Wo war ich? Ach ja, ganz am Anfang.' : 'Setz dich. Ich erzähl weiter.', [
     { label: 'Weiter zuhören', fn: () => setTimeout(() => part(c, i), 60) },
+    ...(c.roman ? [{ label: '🎮 Meine Geschichte selbst spielen (Original-Spiel)', fn: () => c.roman!('licht') }] : []),
     { label: 'Ein andermal', fn: () => {} },
   ])]);
 }
@@ -620,6 +632,7 @@ export function leuchtfeuer(c: StoryCtx) {
   if (i >= sideOpen(s, LF_CHAPTERS.length)) { c.say([FP('finn', sideWait(s))]); return; }
   c.say([FP('finn', i === 0 ? 'Also, ganz von vorn. Erster Schultag.' : 'Setz dich auf den Steg. Ich erzähl weiter.', [
     { label: 'Weiter zuhören', fn: () => setTimeout(() => lfChapter(c, i), 60) },
+    ...(c.roman ? [{ label: '🎮 Unsere Geschichte selbst spielen (Original-Spiel)', fn: () => c.roman!('leuchtfeuer') }] : []),
     { label: 'Ein andermal', fn: () => {} },
   ])]);
 }
@@ -647,3 +660,14 @@ function lfChapter(c: StoryCtx, i: number) {
     c.say(lines, next);
   });
 }
+
+/** Was die Leuchtfeuer-Figuren heute in Rainbow City sagen */
+const LF_TALK: Record<string, Array<[string, string]>> = {
+  ben: [['ben', 'Finn erzählt dir unsere Geschichte? Dann hör gut zu – er lässt die peinlichen Stellen gern weg.'], ['ben', 'Ich trainiere jetzt die Handball-Jugend im Hafenviertel. Und abends sitzen wir am Leuchtturm. Wie früher am Kap Rotenhorn.']],
+  lotte: [['lotte', 'Ich merke immer alles. Das ist ja das Problem. Zum Beispiel, dass du gerade lächelst.'], ['lotte', 'Ich male jetzt Wandbilder für die Stadt. Das Sturmnacht-Plakat hängt immer noch bei Finn und Ben im Flur.']],
+  pia: [['pia', 'Fall 14 ist gelöst, Fall 15 läuft. Ermittlerin Pia Albrecht, inzwischen mit Detektivbüro.'], ['pia', 'Mein Bruder? Hat sich verliebt. Beweise lagen damals in der Küche. Ich hatte recht.']],
+  joerg: [['joerg', 'Albrecht am Hafen, seit 1974 – und jetzt auch in Rainbow City. Buchenholz, Heilbutt, und für dich ein Fischbrötchen.'], ['joerg', 'Wenn einer nett ist, darf Finn ihn mitbringen. Hab ich damals gesagt. Ben ist mehr als nett.']],
+  anke: [['anke', 'Wir haben den Stand hier aufgemacht, um näher bei den Jungs zu sein.'], ['anke', '„Zwei mit Zwiebeln“? Das bestellt Ben immer noch jedes Mal. Ich glaube, das ist ihr Geheimcode.']],
+  samira: [['samira', 'Ich weiß Dinge. Damals wusste ich als Erste, was mit Finn los ist.'], ['samira', 'Heute arbeite ich in der Jugendberatung im Checkpoint. Damit keiner allein bleiben muss.']],
+  tobi: [['tobi', 'Ich war damals ein Idiot. Finn hat mir trotzdem einen Platz am Feuer gemacht.'], ['tobi', 'Heute laufe ich bei jeder Pride mit. Nennt man wohl Wiedergutmachung. Oder Freundschaft.']],
+};

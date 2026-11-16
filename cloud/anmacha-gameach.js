@@ -179,34 +179,19 @@
       {id:"shop",icon:"🎨",title:"Stilbewusst",desc:"Kaufe dein erstes Design in der Sammlung."}
       ]
     },
-    // Im Spiel (gay-life/js/core.js, Array ACH, im Hub als Chips '🏅/🔒 Name') gibt es nur Namen; die Beschreibungen hier sind aus den Bedingungen abgeleitet. Erfolge werden NICHT einzeln gespeichert, sondern bei jeder Anzeige aus dem Spielstand berechnet (Bestwerte
-    "gay-life": {
-      title: "Gay Life!", keys: ["anmachaGayLife"],
-      read: function (raw) { var r={};try{if(!raw)return r;var S=JSON.parse(raw);if(!S||typeof S!=='object')return r;var n=function(v){v=+v;return isFinite(v)?v:0};var b=function(k){return n(S[k]&&S[k].best)};var t=1;
-var dk=S.dates&&typeof S.dates==='object'?Object.keys(S.dates):[];
-if(dk.length>=1)r.erstes_date=t;
-if(dk.filter(function(k){return S.dates[k]&&n(S.dates[k].best)>=7}).length>=3)r.casanova=t;
-var ct=n(S.club&&S.club.total);if(ct>=1000)r.club_besitzer=t;if(ct>=100000)r.club_tycoon=t;
-var rb=S.rave&&S.rave.best;if(rb&&typeof rb==='object'){for(var s in rb){if(n(rb[s])>=8000){r.rave_koenigin=t;break}}}
-if(b('style')>=36)r.stilikone=t;if(b('quiz')>=140)r.wissens_diva=t;if(b('dance')>=10)r.tanzbaer=t;if(b('pool')>=400)r.sprungbrett_star=t;if(b('kara')>=2500)r.superstar=t;if(b('sauna')>=450)r.saunameister=t;if(b('dark')>=550)r.nachtschwaermer=t;if(b('cast')>=800)r.nachwuchsstar=t;if(b('gym')>=12)r.muskelprotz=t;if(b('match')>=2500)r.match_meisterin=t;if(b('run')>=600)r.paradenlaeufer=t;
+    // Pride City (Nachfolger von Gay Life!): Erfolge aus dem Spielstand abgeleitet (Kapitel, Nebengeschichten, Rekorde)
+    "pride-city": {
+      title: "Pride City", keys: ["prideCity.save"],
+      read: function (raw) { var r={};try{if(!raw)return r;var S=JSON.parse(raw);if(!S||typeof S!=='object')return r;var t=1,n=function(v){v=+v;return isFinite(v)?v:0},f=S.flags&&typeof S.flags==='object'?S.flags:{},b=S.best&&typeof S.best==='object'?S.best:{};
+if(n(S.chapter)>=2)r.angekommen=t;if(n(S.chapter)>=6)r.pride=t;if(f.lichtEnd)r.licht=t;if(f.lfEnd)r.leuchtfeuer=t;if(n(b.dance)>=5000)r.tanz=t;if(n(b.bar)>=10)r.bar=t;
 return r}catch(e){return {}} },
       defs: [
-      {id:"erstes_date",icon:"🏅",title:"Erstes Date",desc:"Mindestens ein Date gespielt (dates hat einen Eintrag)."},
-      {id:"casanova",icon:"🏅",title:"Casanova",desc:"Bei 3 verschiedenen Dates mindestens 7 Herzen (dates[id].best >= 7)."},
-      {id:"club_besitzer",icon:"🏅",title:"Club-Besitzer",desc:"Im Club insgesamt 1.000 verdient (club.total >= 1000)."},
-      {id:"club_tycoon",icon:"🏅",title:"Club-Tycoon",desc:"Im Club insgesamt 100.000 verdient (club.total >= 100000)."},
-      {id:"rave_koenigin",icon:"🏅",title:"Rave-Königin",desc:"In einem Song mindestens 8.000 Punkte im Rave (rave.best[song] >= 8000)."},
-      {id:"stilikone",icon:"🏅",title:"Stilikone",desc:"Outfit-Check mit mindestens 36 Punkten (style.best >= 36)."},
-      {id:"wissens_diva",icon:"🏅",title:"Wissens-Diva",desc:"Quiz-Bestwert mindestens 140 (quiz.best >= 140)."},
-      {id:"tanzbaer",icon:"🏅",title:"Tanzbär",desc:"Tanz-Bestwert mindestens 10 Runden (dance.best >= 10)."},
-      {id:"sprungbrett_star",icon:"🏅",title:"Sprungbrett-Star",desc:"Pool-Bestwert mindestens 400 (pool.best >= 400)."},
-      {id:"superstar",icon:"🏅",title:"Superstar",desc:"Karaoke-Bestwert mindestens 2.500 (kara.best >= 2500)."},
-      {id:"saunameister",icon:"🏅",title:"Saunameister",desc:"Sauna-Bestwert mindestens 450 (sauna.best >= 450)."},
-      {id:"nachtschwaermer",icon:"🏅",title:"Nachtschwärmer",desc:"Dunkelraum-Bestwert mindestens 550 (dark.best >= 550)."},
-      {id:"nachwuchsstar",icon:"🏅",title:"Nachwuchsstar",desc:"Casting-Bestwert mindestens 800 (cast.best >= 800)."},
-      {id:"muskelprotz",icon:"🏅",title:"Muskelprotz",desc:"Fitness-Bestwert mindestens 12 Wiederholungen (gym.best >= 12)."},
-      {id:"match_meisterin",icon:"🏅",title:"Match-Meisterin",desc:"Match-Bestwert mindestens 2.500 (match.best >= 2500)."},
-      {id:"paradenlaeufer",icon:"🏅",title:"Paradenläufer",desc:"Lauf-Bestwert mindestens 600 (run.best >= 600)."}
+      {id:"angekommen",icon:"🏳️‍🌈",title:"Angekommen",desc:"Kapitel 1 abgeschlossen."},
+      {id:"pride",icon:"🌈",title:"Pride!",desc:"Die Geschichte bis zur Parade erlebt."},
+      {id:"licht",icon:"✨",title:"Ich bin das Licht",desc:"Leons Geschichte bis zum Ende gehört."},
+      {id:"leuchtfeuer",icon:"🗼",title:"Leuchtfeuer",desc:"Finns Geschichte bis zum Ende gehört."},
+      {id:"tanz",icon:"🪩",title:"Tanzfläche brennt",desc:"Mindestens 5.000 Punkte im Tanz-Battle oder in der Drag-Show."},
+      {id:"bar",icon:"🍸",title:"Barkeeper-Profi",desc:"10 Drinks in einer Barkeeper-Schicht."}
       ]
     },
     // Kein klassisches Erfolgssystem; abgeleitet aus Spielstand (Anzeige im Spiel: Licht-Siegel-Koffer, Championübersicht, Trainerkarte). Spielstand-Slot 1 (Schlüssel ...v2.slot1; Slots 2 und 3 heißen ...v2.slot2/slot3 und werden von read zusätzlich über localStorag

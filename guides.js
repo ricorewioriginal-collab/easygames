@@ -445,18 +445,7 @@ window.EASYGAMES_GUIDES = {
    "Am Barkeeper-Tresen zählt Tempo: Bärenbier ist nur Bier, alle anderen Drinks haben drei Zutaten."
   ]
  },
- "gay-life": {
-  "anleitung": "GayLife ist eine 3D-Lebenssimulation in der Stadt Rainbow City (Regenbogenkiez und weitere Viertel) für Erwachsene. Du achtest auf Essen, Schlaf, Dusche und Menschen, verdienst Geld mit Jobs, lernst Bewohner kennen, gehst auf Dates, richtest deine Wohnung ein und spielst Minispiele und eine Hauptgeschichte. Alle Figuren sind frei erfunden; bis zu 4 Spieler können sich per PIN oder QR-Code besuchen.",
-  "steuerung": [
-   "PC: W A S D oder Pfeiltasten laufen; Kamera mit Maus ziehen oder Q/R drehen. E, Enter oder Leertaste = Aktion (sprechen, Orte betreten). P oder Tab = Handy, M = Karte/Orte, F = Vollbild, Esc = Pause. Im Startmenü Pfeiltasten, Enter und Esc.",
-   "Touch: Fester Stick links zum Laufen; vier Tasten rechts: A Aktion, B Orte, X Handy, Y Menü. Kamera durch Wischen auf dem Bild.",
-   "Controller: linker Stick oder Steuerkreuz laufen, A Aktion, B Karte/Orte, X Handy, Y oder Start Menü, LB/RB drehen die Kamera."
-  ],
-  "tipps": [
-   "Dein Spielstand liegt auf dem Gerät; im Pausenmenü kannst du jederzeit speichern.",
-   "Ein Nein von Figuren wird im Spiel respektiert."
-  ]
- },
+
  "anmacha-podcast-tycoon": {"anleitung": "Das offizielle Spiel zum AnMaCha-Podcast: Du spielst Andrew oder Marco (jederzeit wechselbar) in einer 3D-Stadt rund ums Funkhaus. Sammle Themen-Funken in fünf Rubriken, triff Gäste, repariere den Sendemast und schalte Störsender mit der Schallwelle ab. Danach nehmt ihr die Folge live im Studio auf: Im Kommandomenü wählst du Thema, Pointe, Übergabe, Jingle oder Spezial – mit Minispielen wie Rhythmus, Soundboard, Mischpult und Kabelsalat. Die Hörer bestimmen die Sterne. Modi: Story mit 3 Staffeln und 17 Kapiteln nach echten Folgen und den AnMaCha-Radios bis zum Boss „Der Rauschkönig“, Studio frei gestalten, Live-Show (endlos), Themenjagd (3 Minuten), verrückte KI-Quizshow für 1–2 Spieler und die Stadt mit 10 Nebenaufträgen. Fan-Punkte gibt es für alles – im Fanshop warten Outfits und Studio-Upgrades. Im Radio-Fenster laufen echte Podcast-Folgen und 13 AnMaCha-Sender mit Titelanzeige. 🌐 Online-Koop: Ein Gerät eröffnet das Spiel, der Freund tritt per Link, Code oder QR bei und spielt die andere Figur – Themenjagd, Stadt oder Kapitel zu zweit.", "steuerung": ["Controller: linker Stick laufen, rechter Stick Kamera", "A springen / bestätigen (zweimal = Doppelsprung), B zurück", "X Schallwelle / sprechen, RT ausweichen, RB sprinten", "Y Andrew ↔ Marco wechseln", "LB nächster Sender, LT Radio an/aus, Select Radio & Podcast, Start Pause", "Tastatur: WASD laufen, Maus ziehen Kamera, Leertaste springen, E Welle, C ausweichen, Umschalt sprinten, Q wechseln", "R Radio, N nächster Sender, M Radio an/aus, Esc Pause", "Touch: Stick links, rechts wischen für die Kamera, Knöpfe für Springen, Welle, Ausweichen, Wechsel, Radio und Pause"], "tipps": ["Sammle Funken aller fünf Farben – jede bringt eigene Themenkarten.", "Andrew passt zu Musik und Feelgood, Marco zu Tech und TV.", "Goldene Erinnerungen geben die stärksten Karten.", "Jingles bei sinkendem Hype einsetzen."]},
  "anmacha-klotzfunk": {
   "anleitung": "Klotzfunk 3D ist eine Voxel-Sandbox: Blöcke abbauen und setzen, bauen und erkunden. Es gibt die Modi Überleben (Werkzeuge herstellen, Hunger und Herzen, Tiere, Dörfer mit Handel), Kreativ (alle Blöcke unbegrenzt, Fliegen) und Story (Das große Rauschen mit Aufträgen). Dazu kommen ein Funknetz mit Schaltern und Radio-Blöcken, eine Weltkarte und Mehrspieler für bis zu 4 Gäste.",

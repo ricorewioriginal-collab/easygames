@@ -16,6 +16,9 @@ import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST, lichtPart, l
 import { LF_CHAPTERS, lfEnding, lfPct } from './leuchtfeuer';
 import { LICHT_CHAPTERS, lichtEnding } from './licht';
 import { HomeScene } from './HomeScene';
+import { InteriorScene } from './InteriorScene';
+import type { Spot, Theme } from './interiors';
+import type { Sfx } from '../engine/Audio';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage, level } from './jobs';
 import { photo } from './Photo';
 import { PROFILES, profileShots, profile, dateRec, dateQuestions, finishDate, canStay, DATE_STAGE, testDue, HEALTH_INFO, GLOSSARY, feed, post, bond, TEST_EVERY, FILMS, WORKERS, isLateNight, canMeet, encounter } from './social';
@@ -27,6 +30,17 @@ const BOOKS: Record<BookId, { title: string; file: string; cover: string; blurb:
   leuchtfeuer: { title: 'Leuchtfeuer', file: 'book/leuchtfeuer.json', cover: 'book/leuchtfeuer.jpg', blurb: 'Der Jugendroman von RicoReWi: Finn und Ben, ein Schuljahr in Warnholm und der Leuchtturm Rotenhorn. In Pride City erzählt Finn die Geschichte selbst – am Leuchtturm auf dem Steg.' },
 };
 
+/** Die 14 Minispiele aus Gay Life! (Original-Code, in classic/gay-life/ eingebettet) */
+export const GL_GAMES: Array<[string, string, string, string]> = [
+  ['dates', '🎲', 'Date-Roulette', 'Gay Life! · Wer passt zu dir?'], ['club', '🎛️', 'Clubnacht-Manager', 'Gay Life! · Gäste, Musik, Stimmung'],
+  ['rave', '🌈', 'Regenbogen-Rave', 'Gay Life! · Farben im Takt'], ['style', '👗', 'Outfit-Check', 'Gay Life! · Mode-Urteil'],
+  ['gym', '🏋️', 'Beinetag', 'Gay Life! · Muckibude'], ['match', '✨', 'Glitzer-Match', 'Gay Life! · Paare finden'],
+  ['run', '🏃', 'Parade-Runner', 'Gay Life! · Durch die Parade'], ['dance', '💃', 'Tanzbattle (klassisch)', 'Gay Life! · Tanzschule Pirouette'],
+  ['pool', '🏊', 'Strandbad-Sprung', 'Gay Life! · Sprungturm'], ['kara', '🎤', 'Karaoke', 'Gay Life! · Mikro-Mimosa'],
+  ['sauna', '🧖', 'Sauna-Aufguss', 'Gay Life! · Heißer Stein'], ['dark', '🌑', 'Dunkelkammer', 'Gay Life! · Blackout'],
+  ['cast', '🎬', 'Casting-Tag', 'Gay Life! · Studio Klappe Auf'], ['quiz', '❓', 'Klischee-Quiz', 'Gay Life! · Vorurteile knacken'],
+];
+
 export class Game {
   engine: Engine;
   save = new Save();
@@ -37,7 +51,10 @@ export class Game {
   city!: CityScene;
   menuOpen = false;
   home: HomeScene | null = null;
-  where: 'city' | 'home' = 'city';
+  where: 'city' | 'home' | 'inside' = 'city';
+  inside: InteriorScene | null = null;
+  private insideBack = { x: 0, z: 0, yaw: 0 };
+  private interiors = new Map<string, InteriorScene>();
   private photoIdx = 0;
   private photoFor = '';
   private overlay: HTMLElement | null = null;
@@ -59,7 +76,7 @@ export class Game {
       if (this.dialog.open) this.dialog.update(dt, inp);
       else if (this.menu) this.menu.handle(inp);
     });
-    this.hud.onPrompt = () => (this.where === 'home' ? this.engine.input.tap('confirm') : this.city?.interact());
+    this.hud.onPrompt = () => (this.where !== 'city' ? this.engine.input.tap('confirm') : this.city?.interact());
     this.hud.onPhone = () => { if (!this.menuOpen) this.phone(); };
     this.hud.onMenu = () => this.pauseMenu();
     addEventListener('visibilitychange', () => { if (document.hidden) this.save.write(); });
@@ -186,6 +203,7 @@ export class Game {
   /** Zurück dorthin, wo man war (Stadt oder Wohnung) */
   resume() {
     if (this.where === 'home' && this.home) { this.engine.setScene(this.home); return; }
+    if (this.where === 'inside' && this.inside) { this.engine.setScene(this.inside); return; }
     this.engine.setScene(this.city); this.city.setPlay();
   }
 
@@ -207,6 +225,50 @@ export class Game {
     const s = this.save.data;
     sfx('door');
     this.fade(() => { this.where = 'city'; s.inside = false; s.pos = { x: 3.6, z: 40, yaw: Math.PI / 2 }; this.engine.setScene(this.city); this.city.setPlay(); this.save.write(); });
+  }
+  /* ---------- Innenräume aller Häuser ---------- */
+  /** Haus betreten: Einrichtung aus interiors.ts, zurück vor die Tür (back) */
+  enterInterior(theme: Theme, back: { x: number; z: number; yaw: number }, placeId = '') {
+    const s = this.save.data;
+    if (theme.adult && !s.settings.adult) { toast('Nur mit 18+ (Einstellungen).'); sfx('miss'); return; }
+    sfx('door'); this.closeMenu();
+    this.insideBack = back; s.pos = { ...back };
+    this.fade(async () => {
+      const key = theme.id + '|' + placeId;
+      let sc = this.interiors.get(key);
+      if (!sc) { this.loading.show(theme.title, 'Einrichtung'); sc = new InteriorScene(this, theme, placeId); await sc.build(); this.interiors.set(key, sc); this.loading.hide(); }
+      this.inside = sc; this.where = 'inside';
+      this.engine.setScene(sc);
+    });
+  }
+  leaveInterior() {
+    const s = this.save.data;
+    sfx('door');
+    this.fade(() => { this.where = 'city'; this.inside = null; s.pos = { ...this.insideBack }; this.engine.setScene(this.city); this.city.setPlay(); this.save.write(); });
+  }
+  /** Stelle im Innenraum benutzen */
+  interiorAct(sp: Spot, sc: InteriorScene) {
+    const s = this.save.data, a = sp.act;
+    if (a.k === 'menu') { if (sc.placeId) this.placeMenu(sc.placeId); return; }
+    if (a.k === 'gl') { this.roman('gaylife', a.id); return; }
+    if (a.k === 'dance') { this.goDance(false); return; }
+    if (a.k === 'show') {
+      if (!(s.flags.lichtEnd || lichtPart(s) >= 5)) { toast('Lady Luma probt noch. Ihre Show gibt es ab Leons 5. Rückblende.'); sfx('miss'); return; }
+      this.showMenu((o) => this.goDance(false, undefined, o)); return;
+    }
+    if (a.k === 'bar') { this.barShift(); return; }
+    if (a.k === 'book') { this.book(-1, a.id); return; }
+    if (a.k === 'talk') {
+      const day = s.day % a.lines.length;
+      this.dialog.say([...a.lines.slice(day), ...a.lines.slice(0, day)].map((text) => ({ who: a.who, color: a.color, text })));
+      const k = 'visit_' + a.who; if (s.flags[k] !== s.day) { s.flags[k] = s.day; change(s, { social: 8, fun: 2 }); this.city.refreshHud(); }
+      return;
+    }
+    if (a.adult && !s.settings.adult) return;
+    if (a.cost && s.money < a.cost) { toast('Nicht genug Geld.'); sfx('miss'); return; }
+    if (a.cost) { s.money -= a.cost; sfx('coin'); }
+    if (a.sfx) sfx(a.sfx as Sfx);
+    this.fade(() => { this.pass(a.min); change(s, a.d); toast(a.msg); this.save.write(); this.city.refreshHud(); });
   }
   /** Zeit vergeht durch eine Tätigkeit (Wohnung, Job, Tram) */
   pass(min: number, sleeping = false) {
@@ -284,6 +346,9 @@ export class Game {
         { icon: '📚', label: 'Glossar', sub: 'Begriffe aus der Szene', fn: () => this.phone('glossary') },
         { icon: '📖', label: 'Ich bin das Licht', sub: 'Der Roman von RicoReWi – komplett lesen', fn: () => this.book() },
         { icon: '🗼', label: 'Leuchtfeuer', sub: 'Der Jugendroman von RicoReWi – komplett lesen', fn: () => this.book(-1, 'leuchtfeuer') },
+        { icon: '🎮', label: 'Ich bin das Licht – Das Spiel', sub: 'Original-Spiel: Leon, Lady Luma, Show mit Buch-Hymne', fn: () => { close(); this.roman('licht'); } },
+        { icon: '🏳️‍🌈', label: 'Gay Life! – Das Original', sub: 'Das alte Spiel komplett: sieben Viertel, Mehrspieler, 14 Minispiele', fn: () => { close(); this.roman('gaylife'); } },
+        { icon: '🎮', label: 'Leuchtfeuer – Das Spiel', sub: 'Original-Spiel: 16 Kapitel, fünf Minispiele, Fall 14', fn: () => { close(); this.roman('leuchtfeuer'); } },
         { icon: '←', label: 'Handy weglegen', fn: close },
       ], close, 'phone');
     } else if (app === 'status') {
@@ -563,6 +628,7 @@ export class Game {
       <p>🌈 Pride-Sticker: ${stickers}/${STICKERS.length} · 🪩 Tanz-Rekord: ${s.best.dance || 0}<br>✨ Glitzer: ${s.glitter} · 💶 ${s.money} € · Ruf ${s.rep}</p></div>`, [
       { icon: '▶', label: 'Weiterspielen', fn: back },
       ...(this.where === 'home' ? [{ icon: '🚪', label: 'Wohnung verlassen', sub: 'Zurück auf die Straße', fn: () => { this.closeMenu(); this.leaveHome(); } }] : []),
+      ...(this.where === 'inside' ? [{ icon: '🚪', label: 'Haus verlassen', sub: 'Zurück auf die Straße', fn: () => { this.closeMenu(); this.leaveInterior(); } }] : []),
       { icon: '📱', label: 'Handy', sub: 'Status, Ziele, Karte, Jobs, Kontakte', fn: () => this.phone() },
       { icon: '📖', label: 'Story', sub: 'Kapitel und Entscheidungen', fn: () => this.storyMenu(() => { this.closeMenu(); this.pauseMenu(); }) },
       { icon: '👗', label: 'Kleiderschrank', sub: 'Look, Farbwelt, Pronomen', fn: () => this.fade(() => this.creator(true)) },
@@ -633,6 +699,8 @@ export class Game {
     this.openMenu(`<div class="col"><div class="logo" style="font-size:clamp(30px,5vw,52px)"><span class="l1">Minispiele</span><small>In 3D, mit Rekorden</small></div><div class="slot"></div></div>`, [
       { icon: '🪩', label: 'Tanz-Battle', sub: `Club Prisma gegen Rex · Rekord ${b.dance || 0}`, fn: () => this.goDance(false, back) },
       { icon: '🍸', label: 'Barkeeper-Schicht', sub: `Club Leuchtturm · 75 Sekunden · Rekord ${b.bar || 0} Drinks`, fn: () => this.barShift(() => this.minigames(back), true) },
+      { icon: '🎤', label: 'Lady Lumas Drag-Show', sub: 'Buch-Hymne oder Klaviersongs aus Klavierlicht', fn: () => this.showMenu((o) => this.goDance(false, back, o)) },
+      ...GL_GAMES.map(([id, icon, n, d]) => ({ icon, label: n, sub: d, fn: () => this.roman('gaylife', id) })),
       { icon: '←', label: 'Zurück', fn: back },
     ], back);
   }
@@ -834,6 +902,20 @@ export class Game {
     [{ icon: '▶', label: 'Weiterspielen', fn: fin }], fin, '');
   }
 
+  /** Original-Romanspiel (aus dem früheren easygames-Spiel, unverändert) im Vollbild über der Stadt */
+  roman(id: 'licht' | 'leuchtfeuer' | 'gaylife', game = '') {
+    if (document.querySelector('.roman')) return;
+    this.closeMenu(); this.touch.show(false); this.hud.show(false); music(null); sfx('open');
+    const box = el(`<div class="roman"><iframe src="${id === 'gaylife' ? `classic/gay-life/index.html${game ? '?game=' + game : ''}` : `romane/${id}/index.html`}" allow="autoplay; fullscreen; gamepad; encrypted-media" title="${id === 'licht' ? 'Ich bin das Licht' : id === 'leuchtfeuer' ? 'Leuchtfeuer' : 'Gay Life!'}"></iframe><button class="rClose" aria-label="Zurück nach Pride City">✕ Pride City</button></div>`);
+    document.body.appendChild(box);
+    const prevPaused = this.engine.paused; this.engine.paused = true;
+    const close = () => { removeEventListener('message', onMsg); box.remove(); this.engine.paused = prevPaused; this.hud.show(this.where !== 'city' || this.city.mode === 'play'); this.touch.show(true); music(this.where === 'inside' ? this.inside?.theme.music || 'city' : 'city'); this.city.refreshHud(); };
+    const onMsg = (e: MessageEvent) => { if (e.data?.pcRoman === 'close') close(); };
+    addEventListener('message', onMsg);
+    box.querySelector<HTMLButtonElement>('.rClose')!.onclick = close;
+    box.querySelector('iframe')!.focus();
+  }
+
   /** Rolle wechseln: eigene Figur, Leon Sommer oder Lady Luma */
   playAs(role: '' | 'leon' | 'luma') {
     const s = this.save.data;
@@ -891,7 +973,7 @@ export class Game {
       setTimeout(() => this.done(fin), 1200);
       this.fade(() => {
         if (back) { this.title(); return; }
-        this.engine.setScene(this.city); this.city.setPlay();
+        this.resume();
         if (opt.show && !s.flags.lichtShow) { change(s, { fun: 10 }); s.rep += won ? 2 : 1; toast(won ? 'Lady Luma: „Ich bin das Licht!“ ✨ Standing Ovations!' : 'Applaus für Lady Luma! ✨'); this.save.write(); this.city.refreshHud(); return; }
         danceResult(this.city.ctx(), won);
       });

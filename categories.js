@@ -11,7 +11,7 @@ window.EASYGAMES_CATS = {
   ],
   of: {
     // Abenteuer
-    'kiko-sterneninseln': 'abenteuer', 'taschi': 'abenteuer', 'zotik': 'abenteuer', 'aeru': 'abenteuer', 'anmacha-quest-rpg': 'abenteuer', 'anmacha-urwaldlager': 'abenteuer', 'gay-life': 'abenteuer', 'pride-city': 'abenteuer', 'schatzfieber': 'abenteuer',
+    'kiko-sterneninseln': 'abenteuer', 'taschi': 'abenteuer', 'zotik': 'abenteuer', 'aeru': 'abenteuer', 'anmacha-quest-rpg': 'abenteuer', 'anmacha-urwaldlager': 'abenteuer', 'pride-city': 'abenteuer', 'schatzfieber': 'abenteuer',
     // Action
     'saftblitz': 'action', 'funkgolf': 'action', 'tortenschlacht': 'action', 'sendemast-sumo': 'action', 'wolkenhopser': 'action', 'huepfstrasse': 'action', 'funk-survivor': 'action', 'easyclash': 'action', 'bowling-bahn': 'action', 'kuechen-chaos': 'action', 'konfetti-party': 'action', 'brainrot-parkour': 'action', 'challenge-show': 'action', 'groove-arena': 'musik', 'darts-arena': 'action', 'krawallvoegel': 'action', 'rico-flap': 'action', 'radio-maze': 'action', 'pufi-farbwind': 'action', 'lumo': 'action', 'riftzone': 'action', 'anmacha-radio-surfer': 'action', 'anmacha-flipper': 'action', 'anmacha-snake': 'action', 'anmacha-showdown': 'action', 'anmacha-kart': 'action', 'anmacha-funkparcours': 'action', 'anmacha-podcast-tycoon': 'action', 'turbokick': 'action', 'fabelkick': 'action',
     // Puzzle

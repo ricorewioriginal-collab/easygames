@@ -153,9 +153,6 @@
     ],
     'urwaldlager': [
       { id: 'main', title: 'Sterne gesamt', key: 'ul_best', path: 'stars', order: 'desc', unit: '★' }
-    ],
-    'gay-life': [
-      { id: 'main', title: 'Gesamt-XP', key: 'anmachaGayLife', path: 'xp', order: 'desc', unit: 'XP' }
     ]
   };
 

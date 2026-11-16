@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "59501d94f791",
- "generated": "2026-11-16T05:23:14+01:00",
- "commit": "eec41bf21db147aefac3eb1e96c078f90a22e50b",
+ "version": "bacc2ab5d449",
+ "generated": "2026-11-16T04:40:55+00:00",
+ "commit": "db980124fcbb308dc9b7c21f42e9faa7c63ff658",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8664,7 +8664,7 @@
   {
    "p": "bunte-insel/index.html",
    "s": 111159,
-   "h": "28fc835588c24e772bb6da4d1f76eb853a726bca8855e3d9f69bf10e283e7d63"
+   "h": "462afe3e7c02134f9e4a7b1eaaffc6a6cd5895ee019ea6d6b11f28cbaa497974"
   },
   {
    "p": "bunte-insel/js/arcade.js",
@@ -8723,8 +8723,8 @@
   },
   {
    "p": "bunte-insel/js/bunte-insel.min.js",
-   "s": 1921621,
-   "h": "0c39fb937e91f5bfaf9f5e50efeaaab6fa8dfb9a84ee9edd49ab551005da8049"
+   "s": 1921630,
+   "h": "2d53f93531c285c7e3d8b33d4b501c3127b1369b2c7c6b2ddb9510c60c9d2587"
   },
   {
    "p": "bunte-insel/js/camp.js",
@@ -8978,8 +8978,8 @@
   },
   {
    "p": "bunte-insel/js/portale.js",
-   "s": 15403,
-   "h": "42adbfcf2e26d41af3980395ee11bdc31ea594c3e3668b6a0c936538cf71e03c"
+   "s": 15412,
+   "h": "2c0c27502bfe037873dac90b29623d2917c1032a568f97899e7f35844f468cea"
   },
   {
    "p": "bunte-insel/js/prisma.js",
@@ -9363,8 +9363,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3196,
-   "h": "ad0e5973591ec0ce48e0f95b3263590b402b34514d4c4bb847a7267cbb74b94a"
+   "s": 3171,
+   "h": "8d2db190022119ccf358a99fd05467a0eefab88ff056636dadec8e8ccec1c5e1"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -9438,13 +9438,13 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 25221,
-   "h": "c25889aca3188eea05c04176e08bde3bb74bf2ae2b9496c2342ae79e82716bd9"
+   "s": 25209,
+   "h": "31ab6990057d9a000080701fd3e8cb658dad95a724eaf2a2a37134b9c76c37c8"
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 38146,
-   "h": "64bc09b90954d35686fa88d2e0a6ed7cf3cbdcc46cd82c56a84802c799fcbfc5"
+   "s": 38018,
+   "h": "e935d9dd76e657a4a3163381a3abaf3b634eccd3ccd616bd720d684f890d190a"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -9473,8 +9473,8 @@
   },
   {
    "p": "cloud/anmacha-gameach.js",
-   "s": 45056,
-   "h": "79c4e0e7f7c49c73ce1f4e45a815f7af3f689c66e6872979ee7f4ba84d6f7ac1"
+   "s": 42980,
+   "h": "e828aaec11b441a33ad5463183bbcb499784e3126e14a6df2dad37f182801794"
   },
   {
    "p": "cloud/fire-peer.js",
@@ -10258,233 +10258,8 @@
   },
   {
    "p": "games.js",
-   "s": 54324,
-   "h": "ad2d571fad6bb874108c20280b4a21ea16cebc8fd39f5636af61999a696fd7ce"
-  },
-  {
-   "p": "gay-life/card.jpg",
-   "s": 37921,
-   "h": "82aaf32216582401bc6473d9f04c0f7ee86fd5528d21fb80940e142b758097da"
-  },
-  {
-   "p": "gay-life/index.html",
-   "s": 30768,
-   "h": "abbaa3672129b0a2e6e32ea49d92dd255fc70e33d258d4842272a2dae902035e"
-  },
-  {
-   "p": "gay-life/js/assets.js",
-   "s": 3391,
-   "h": "cd2c63c57530e3a14f013fd945fc0ab3e1430c9e2313129d4cc3e73bf0bfaa73"
-  },
-  {
-   "p": "gay-life/js/audio.js",
-   "s": 4541,
-   "h": "116bf8d2e5289f702c741115452f79fb6166d6a94ff875548c99f8b7ad457635"
-  },
-  {
-   "p": "gay-life/js/club.js",
-   "s": 9683,
-   "h": "aa153b834f3e840be47ac75690c39461be7d987482787713ce7b4a4ee57d1007"
-  },
-  {
-   "p": "gay-life/js/core.js",
-   "s": 191614,
-   "h": "21dc3b1cf8ee27f4083d1897dc76fd9874ba2ae30fb36961a9b344340a484cd6"
-  },
-  {
-   "p": "gay-life/js/dating.js",
-   "s": 32989,
-   "h": "60c6321adbffc88767e4e69afc53cda7fba9c2a45f2fe21aae62a16c92cb26b6"
-  },
-  {
-   "p": "gay-life/js/datingapp.js",
-   "s": 12052,
-   "h": "aa4868f29776a3b92a1a52e40f3b9f65feef7192f62c818696a9978320d67bcc"
-  },
-  {
-   "p": "gay-life/js/districts.js",
-   "s": 20863,
-   "h": "35dd526e69cbf94103e298b5586a70633443f79c20a0ad2227b37d43b8d5f06b"
-  },
-  {
-   "p": "gay-life/js/economy.js",
-   "s": 5838,
-   "h": "98f94a341cfad977f6e356f7513be24644b753e9ec9a5ab3e00407da9d7ea424"
-  },
-  {
-   "p": "gay-life/js/events.js",
-   "s": 5830,
-   "h": "cf897dfe9ecf6d5e214ff04ff83b8e3bc1b2a5abd154b138dcb61440d318ca06"
-  },
-  {
-   "p": "gay-life/js/figures.js",
-   "s": 4264,
-   "h": "f275e830017584a3336e930d852532b94fd9bcd013d5b3d4804ecc8d45d77a4e"
-  },
-  {
-   "p": "gay-life/js/furniture.js",
-   "s": 13802,
-   "h": "c5f87da7eb4bee2db8ff4b240746f71362f4e8dd6cff20c5e4306317f64f4aef"
-  },
-  {
-   "p": "gay-life/js/goals.js",
-   "s": 15720,
-   "h": "fac5f2c4a2fe09f3c017d2e08e70c00500b5b28188bc7e5e680f384f7519346e"
-  },
-  {
-   "p": "gay-life/js/home.js",
-   "s": 14707,
-   "h": "bbb522596fbb602a5524e0d0a064ebf7994832fed225ead64702907ac9eeb534"
-  },
-  {
-   "p": "gay-life/js/jobs.js",
-   "s": 11324,
-   "h": "c398482c05ab8e0df710e0f0d589ae66f3215ddb62fb3aa7083731d088b4f607"
-  },
-  {
-   "p": "gay-life/js/life.js",
-   "s": 7867,
-   "h": "124e9aade289d7661282bfa644ac693f45b316747ff4368ec2790ddf1c57045d"
-  },
-  {
-   "p": "gay-life/js/main.js",
-   "s": 283,
-   "h": "3878678309865a3272bdb21e428a6ec772329e71fb9664bf8590f79000ba39b0"
-  },
-  {
-   "p": "gay-life/js/messages.js",
-   "s": 2159,
-   "h": "0a3cbd5156cbbb3817f927b19da3e209a1b9e841e5ef6516243c205bbbe30c52"
-  },
-  {
-   "p": "gay-life/js/multi.js",
-   "s": 12860,
-   "h": "628813d506992c9f7467b6d168fbfa2558d48a9eaa48e85fa8ad19118a3a0d41"
-  },
-  {
-   "p": "gay-life/js/nightlife.js",
-   "s": 6352,
-   "h": "88c81ff4a2c3cd2b657c7cf40299d28ba5d652181326dcf0d7524acf892afda9"
-  },
-  {
-   "p": "gay-life/js/pad.js",
-   "s": 13771,
-   "h": "cc14740d8b6341a15ed88977ebf66da81470e031653487ab8b8ee8c5f1d73f3b"
-  },
-  {
-   "p": "gay-life/js/people.js",
-   "s": 4743,
-   "h": "92f3b51c4f878289fe8af65529171e88ef97c3f7c67a8b3596b2fd11c38c1c95"
-  },
-  {
-   "p": "gay-life/js/perf.js",
-   "s": 1022,
-   "h": "90f022231f7d57e082e1fad4c984f18b1eff304af3671903648852c45f3223fd"
-  },
-  {
-   "p": "gay-life/js/phone.js",
-   "s": 15351,
-   "h": "a32711e24f8b9bb2594e08706170d5c66775b85899def7aaeb947a1ee5b367a6"
-  },
-  {
-   "p": "gay-life/js/residents.js",
-   "s": 20447,
-   "h": "4c25cdc50da50b6f851c8735a2511e77261bbef27c838d5694bf7bfbed09dc22"
-  },
-  {
-   "p": "gay-life/js/social.js",
-   "s": 1216,
-   "h": "9d1764485c2d373001fd8bada25c312cdfe933d21c32b9aa7e73af409fb430e7"
-  },
-  {
-   "p": "gay-life/js/start.js",
-   "s": 10454,
-   "h": "ff5f7647bc1825ea685ab73b1150d627c0f0ebcd85f49871ed276810b26859f9"
-  },
-  {
-   "p": "gay-life/js/state.js",
-   "s": 3935,
-   "h": "ec175ce61865a972a0b519da6110fbd64f5af035e5ea35de16e328d1a7b1c4a7"
-  },
-  {
-   "p": "gay-life/js/story.js",
-   "s": 13954,
-   "h": "cba5af5c5dca4faecd0e9c0246ecf62cfcbd88059c16303497e729a30443f035"
-  },
-  {
-   "p": "gay-life/js/ui.js",
-   "s": 4032,
-   "h": "d7ccfdd449a799d2195e2984bcacd23d1027e8e1d7c0bf27c2855c59acf20a82"
-  },
-  {
-   "p": "gay-life/js/weather.js",
-   "s": 4879,
-   "h": "cd6c74bfbe676dd85eed43bc9740627bd6b8f49863e3b1cd33dee438fbeb98cc"
-  },
-  {
-   "p": "gay-life/logo.svg",
-   "s": 1616,
-   "h": "03cf2befc2f44e0fbc82e0e8da77fed2329081ff1219204f6d44a6bd935ff3d4"
-  },
-  {
-   "p": "gay-life/manifest.webmanifest",
-   "s": 746,
-   "h": "85dda0095cadaf29527bab7bdaffa2fbf7404737a846e171443036717b266bb1"
-  },
-  {
-   "p": "gay-life/models/Textures/colormap.png",
-   "s": 11143,
-   "h": "4aac939dc33195e35caf8c382ee3cb170054da763577f22d3c22692ec6afccdf"
-  },
-  {
-   "p": "gay-life/models/tree-high-round.glb",
-   "s": 13176,
-   "h": "7f372e338cbf5514a41e8d2afda81acd67277a4c5ad4e6e35a9acfa4a6e3bc4b"
-  },
-  {
-   "p": "gay-life/models/tree-high.glb",
-   "s": 20700,
-   "h": "2dbb718a81d9c3697c069495f58840f6c2002c8cdd13388be560c2199f6d03e7"
-  },
-  {
-   "p": "gay-life/models/tree.glb",
-   "s": 18188,
-   "h": "e8d81b97297de62699b92559cee7b247da84b1815df2515e42fd5a318a30b8d7"
-  },
-  {
-   "p": "gay-life/sounds/buy.mp3",
-   "s": 5277,
-   "h": "d80627936cf852364af1e0b6e1734591c46cd8b0d7a140bdb81a00cf8ad6caff"
-  },
-  {
-   "p": "gay-life/sounds/cat.mp3",
-   "s": 6861,
-   "h": "dcc2c89455aaaf312bd6e50cd7390806bbb888d6d2729809b45b32863ef68c84"
-  },
-  {
-   "p": "gay-life/sounds/coins.mp3",
-   "s": 2253,
-   "h": "9cac9f1ad4b4be66fb96e955effdd9ff4d0a67a9d5232e5fe99e3abeb7cbc107"
-  },
-  {
-   "p": "gay-life/sounds/dog.mp3",
-   "s": 7725,
-   "h": "a6e48ad48049e070df1f6384967331c2495d7df6e3968de385fc5f7b0b5db826"
-  },
-  {
-   "p": "gay-life/sounds/enter.mp3",
-   "s": 5277,
-   "h": "8186591f1fab555f5cd8dc857597f1d8ab2036cb212f230e499007c469cd2a6e"
-  },
-  {
-   "p": "gay-life/sounds/leave.mp3",
-   "s": 4557,
-   "h": "892226922e191bac77cd2cc7c198edd15f8ad37267384d38b050af1b29a4b189"
-  },
-  {
-   "p": "gay-life/sw.js",
-   "s": 1971,
-   "h": "05a56d74e96f128cc4e816f043846d6eba0ec0418afb6f13f0a1b83ec8ce083f"
+   "s": 53824,
+   "h": "814e92a87b85eb7f98699f372bc6f9bfaefb74c0dd4c804c23a48e278ff8b0a7"
   },
   {
    "p": "groove-arena/card.jpg",
@@ -10563,8 +10338,8 @@
   },
   {
    "p": "guides.js",
-   "s": 169620,
-   "h": "dbe99149300d4c664d6f1052f927d458a6119ca3bd0881f7102ba3819e2b47a5"
+   "s": 168482,
+   "h": "a785ce2ef4336dbdb553049144d1e7ee1d6b472c7469bfe8d60a13cf26a9cfac"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10797,11 +10572,6 @@
    "h": "416959a026d644cf25b5a8802ee956f9bde3d888be6522c9519346ff66d41f75"
   },
   {
-   "p": "guides/gay-life.json",
-   "s": 23074,
-   "h": "b8c86692259498b977593fed7b318cd45fa04861d70820f946d1ad0c88e528ce"
-  },
-  {
    "p": "guides/groove-arena.json",
    "s": 13568,
    "h": "36840a79c730abc87d328d613e0396a2545bde6e80ccf21c6b626c7135a5ef05"
@@ -10868,8 +10638,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 23125,
-   "h": "4389680f99853c0cb25a6deca53163107813a85b9319eff552b9fca7990f19d4"
+   "s": 25540,
+   "h": "7bf5c94b5017c2015cbbcfe3309e0fd624de4be03bdee98dea4ac9368476915f"
   },
   {
    "p": "guides/prismrush.json",
@@ -11763,8 +11533,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3571,
-   "h": "560143a7de5e1e96bad3d1e488cbf7f5419909615375c11a3e82ad0dd81ac9a2"
+   "s": 3539,
+   "h": "8093e3079474f210c71618d4214b3a5734b02a9ad9df890fcd7f6877a3daba8c"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-DMBVqCOs.js",
@@ -12652,14 +12422,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
-   "p": "pride-city/assets/index-DJey85h2.css",
-   "s": 22336,
-   "h": "c517a16e37d237ad74e869682e6a90c1c79b4a2f2968f4007267b1cbb1eec286"
+   "p": "pride-city/assets/index-D9TorLtH.css",
+   "s": 22728,
+   "h": "cc6d52f05abd17da8a05e99e567fca19ae53aa0fc467ed9a2964fea5f61927a7"
   },
   {
-   "p": "pride-city/assets/index-PZsv3Fhe.js",
-   "s": 300542,
-   "h": "5e7d95b697cb73fc1fb447b5975be4acf10107982dadc4dc798d49c6de24eba3"
+   "p": "pride-city/assets/index-FC_jfE6o.js",
+   "s": 328020,
+   "h": "1ce0413f2ff8fb784e0b1d4efc04e3ef5d33b2471ef32d4217a91b555608667a"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -12757,9 +12527,9 @@
    "h": "97a4e8c5e93b5c4f68b25e5240f308aa81ff4ae487b750e62f13e02c338d73e8"
   },
   {
-   "p": "pride-city/assets/three-DFC6UmnX.js",
-   "s": 578950,
-   "h": "f9305db592e81f1ec03c31e870dc7475b29be3f2946b1dc68770124edab0efe2"
+   "p": "pride-city/assets/three-BClzYHHQ.js",
+   "s": 579056,
+   "h": "8d6e933b40cb1a823ba49747e720dbd945799d6c7aec9c25a53cf721bd6a8fd6"
   },
   {
    "p": "pride-city/book/cover.jpg",
@@ -12787,9 +12557,224 @@
    "h": "d499242933be43a14eef116e16d51ec620401681023bb362d8007057c930b313"
   },
   {
+   "p": "pride-city/classic/gay-life/card.jpg",
+   "s": 37921,
+   "h": "82aaf32216582401bc6473d9f04c0f7ee86fd5528d21fb80940e142b758097da"
+  },
+  {
+   "p": "pride-city/classic/gay-life/index.html",
+   "s": 27038,
+   "h": "88014077e93e3fde14d3ed4948ab47b29a4972199fc667965e8d1993485125f7"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/assets.js",
+   "s": 3391,
+   "h": "cd2c63c57530e3a14f013fd945fc0ab3e1430c9e2313129d4cc3e73bf0bfaa73"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/audio.js",
+   "s": 4541,
+   "h": "116bf8d2e5289f702c741115452f79fb6166d6a94ff875548c99f8b7ad457635"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/club.js",
+   "s": 9683,
+   "h": "aa153b834f3e840be47ac75690c39461be7d987482787713ce7b4a4ee57d1007"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/core.js",
+   "s": 191614,
+   "h": "21dc3b1cf8ee27f4083d1897dc76fd9874ba2ae30fb36961a9b344340a484cd6"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/dating.js",
+   "s": 32989,
+   "h": "60c6321adbffc88767e4e69afc53cda7fba9c2a45f2fe21aae62a16c92cb26b6"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/datingapp.js",
+   "s": 12052,
+   "h": "aa4868f29776a3b92a1a52e40f3b9f65feef7192f62c818696a9978320d67bcc"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/districts.js",
+   "s": 20863,
+   "h": "35dd526e69cbf94103e298b5586a70633443f79c20a0ad2227b37d43b8d5f06b"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/economy.js",
+   "s": 5838,
+   "h": "98f94a341cfad977f6e356f7513be24644b753e9ec9a5ab3e00407da9d7ea424"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/events.js",
+   "s": 5830,
+   "h": "cf897dfe9ecf6d5e214ff04ff83b8e3bc1b2a5abd154b138dcb61440d318ca06"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/figures.js",
+   "s": 4270,
+   "h": "b93683b4a0368d9b9f676c645eb36cf9018831ce80079ebef72fe6fc36e01eea"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/furniture.js",
+   "s": 13802,
+   "h": "c5f87da7eb4bee2db8ff4b240746f71362f4e8dd6cff20c5e4306317f64f4aef"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/goals.js",
+   "s": 15720,
+   "h": "fac5f2c4a2fe09f3c017d2e08e70c00500b5b28188bc7e5e680f384f7519346e"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/home.js",
+   "s": 14707,
+   "h": "bbb522596fbb602a5524e0d0a064ebf7994832fed225ead64702907ac9eeb534"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/jobs.js",
+   "s": 11324,
+   "h": "c398482c05ab8e0df710e0f0d589ae66f3215ddb62fb3aa7083731d088b4f607"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/life.js",
+   "s": 7867,
+   "h": "124e9aade289d7661282bfa644ac693f45b316747ff4368ec2790ddf1c57045d"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/main.js",
+   "s": 283,
+   "h": "3878678309865a3272bdb21e428a6ec772329e71fb9664bf8590f79000ba39b0"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/messages.js",
+   "s": 2159,
+   "h": "0a3cbd5156cbbb3817f927b19da3e209a1b9e841e5ef6516243c205bbbe30c52"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/multi.js",
+   "s": 12860,
+   "h": "628813d506992c9f7467b6d168fbfa2558d48a9eaa48e85fa8ad19118a3a0d41"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/nightlife.js",
+   "s": 6352,
+   "h": "88c81ff4a2c3cd2b657c7cf40299d28ba5d652181326dcf0d7524acf892afda9"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/pad.js",
+   "s": 13771,
+   "h": "cc14740d8b6341a15ed88977ebf66da81470e031653487ab8b8ee8c5f1d73f3b"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/people.js",
+   "s": 4743,
+   "h": "92f3b51c4f878289fe8af65529171e88ef97c3f7c67a8b3596b2fd11c38c1c95"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/perf.js",
+   "s": 1022,
+   "h": "90f022231f7d57e082e1fad4c984f18b1eff304af3671903648852c45f3223fd"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/phone.js",
+   "s": 15351,
+   "h": "a32711e24f8b9bb2594e08706170d5c66775b85899def7aaeb947a1ee5b367a6"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/residents.js",
+   "s": 20447,
+   "h": "4c25cdc50da50b6f851c8735a2511e77261bbef27c838d5694bf7bfbed09dc22"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/social.js",
+   "s": 1216,
+   "h": "9d1764485c2d373001fd8bada25c312cdfe933d21c32b9aa7e73af409fb430e7"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/start.js",
+   "s": 11006,
+   "h": "ab53393e00c748d5c457b1084ef09fddbfbd75b6b7849bd36fead8940e88ea07"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/state.js",
+   "s": 3935,
+   "h": "ec175ce61865a972a0b519da6110fbd64f5af035e5ea35de16e328d1a7b1c4a7"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/story.js",
+   "s": 13954,
+   "h": "cba5af5c5dca4faecd0e9c0246ecf62cfcbd88059c16303497e729a30443f035"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/ui.js",
+   "s": 4032,
+   "h": "d7ccfdd449a799d2195e2984bcacd23d1027e8e1d7c0bf27c2855c59acf20a82"
+  },
+  {
+   "p": "pride-city/classic/gay-life/js/weather.js",
+   "s": 4879,
+   "h": "cd6c74bfbe676dd85eed43bc9740627bd6b8f49863e3b1cd33dee438fbeb98cc"
+  },
+  {
+   "p": "pride-city/classic/gay-life/logo.svg",
+   "s": 1616,
+   "h": "03cf2befc2f44e0fbc82e0e8da77fed2329081ff1219204f6d44a6bd935ff3d4"
+  },
+  {
+   "p": "pride-city/classic/gay-life/models/Textures/colormap.png",
+   "s": 11143,
+   "h": "4aac939dc33195e35caf8c382ee3cb170054da763577f22d3c22692ec6afccdf"
+  },
+  {
+   "p": "pride-city/classic/gay-life/models/tree-high-round.glb",
+   "s": 13176,
+   "h": "7f372e338cbf5514a41e8d2afda81acd67277a4c5ad4e6e35a9acfa4a6e3bc4b"
+  },
+  {
+   "p": "pride-city/classic/gay-life/models/tree-high.glb",
+   "s": 20700,
+   "h": "2dbb718a81d9c3697c069495f58840f6c2002c8cdd13388be560c2199f6d03e7"
+  },
+  {
+   "p": "pride-city/classic/gay-life/models/tree.glb",
+   "s": 18188,
+   "h": "e8d81b97297de62699b92559cee7b247da84b1815df2515e42fd5a318a30b8d7"
+  },
+  {
+   "p": "pride-city/classic/gay-life/sounds/buy.mp3",
+   "s": 5277,
+   "h": "d80627936cf852364af1e0b6e1734591c46cd8b0d7a140bdb81a00cf8ad6caff"
+  },
+  {
+   "p": "pride-city/classic/gay-life/sounds/cat.mp3",
+   "s": 6861,
+   "h": "dcc2c89455aaaf312bd6e50cd7390806bbb888d6d2729809b45b32863ef68c84"
+  },
+  {
+   "p": "pride-city/classic/gay-life/sounds/coins.mp3",
+   "s": 2253,
+   "h": "9cac9f1ad4b4be66fb96e955effdd9ff4d0a67a9d5232e5fe99e3abeb7cbc107"
+  },
+  {
+   "p": "pride-city/classic/gay-life/sounds/dog.mp3",
+   "s": 7725,
+   "h": "a6e48ad48049e070df1f6384967331c2495d7df6e3968de385fc5f7b0b5db826"
+  },
+  {
+   "p": "pride-city/classic/gay-life/sounds/enter.mp3",
+   "s": 5277,
+   "h": "8186591f1fab555f5cd8dc857597f1d8ab2036cb212f230e499007c469cd2a6e"
+  },
+  {
+   "p": "pride-city/classic/gay-life/sounds/leave.mp3",
+   "s": 4557,
+   "h": "892226922e191bac77cd2cc7c198edd15f8ad37267384d38b050af1b29a4b189"
+  },
+  {
    "p": "pride-city/index.html",
    "s": 5731,
-   "h": "40f26971ec3d8e621c7f2d39d7ac41bd6712656bed5fed814fff8b599e4e0863"
+   "h": "19759c5dfe537975033c557243571a7698c0fddcfd63cf1297b2729f66266f56"
   },
   {
    "p": "pride-city/logo.svg",
@@ -12800,6 +12785,226 @@
    "p": "pride-city/manifest.webmanifest",
    "s": 784,
    "h": "5580a4d4632acdf43876c5c2cb85594d787c8cb15d97f7bdb52114d56081cc14"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/assets/fredoka-latin-wght-normal-DM6njrJ3.woff2",
+   "s": 29732,
+   "h": "99d6c78e043710d4f83ed90716779798b7b04eb690f73e0ad0e8f32d1f0e98c2"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/assets/index-BdisQ57A.js",
+   "s": 207929,
+   "h": "e812eefec28bdd4da5957dbec8818f1d7df6d0e14e6f7fbb653bf1131d706688"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/assets/index-Bt7m9mvP.css",
+   "s": 14867,
+   "h": "b904630bd0e5794cf7e065fe6a0d54240c6d4c28f669fe27c7b355cc12212b72"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/assets/three-BoK-gHdf.js",
+   "s": 704246,
+   "h": "b08c9f2e417b2b71a1d8fc2c71794e0fcdde8e440fcd6581787920b6685dbf71"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/book.json",
+   "s": 307353,
+   "h": "8043d7ebddc8cf84192faed852abdbf6d319d082dfb8dbed7aa5056ace7abb41"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/card.jpg",
+   "s": 34113,
+   "h": "c4155a549de82548357eba3a51c7501bea924df7e7ecd5fa8b7a78f44521c57a"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b005.jpg",
+   "s": 26688,
+   "h": "f269fd27e7d1289c8b120201d9d4c2deae9f097bbb956cf825d3b76c7259a869"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b021.jpg",
+   "s": 22864,
+   "h": "f0325ae12200b95407975eb696dfc22707bfac38c865e19bc4bc2155f17409ce"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b036.jpg",
+   "s": 53454,
+   "h": "a1352a228444bab5ccb5b387be3566fbd5343701fe40612483f3c11db49ae588"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b037.jpg",
+   "s": 25738,
+   "h": "ba7ed118e508fe7ca885ef1c7591387c369cd1ed654175c1a1ce7c50a5edb16a"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b050.jpg",
+   "s": 30317,
+   "h": "7cceb87996fb38fcb8edb72d0258c058ec4ffad45bcad51c66ed64dfab4288e8"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b063.jpg",
+   "s": 35551,
+   "h": "fa1eba42a0f8c0c6e32c28ae8dcdb1c045007e46b5f011c9f91329a71986a37e"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b078.jpg",
+   "s": 52474,
+   "h": "d517b1a42ee7ddb3c9a240d0a1a84380f20fccf85a7f49018fb995f6e7931ebd"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b079.jpg",
+   "s": 18832,
+   "h": "99976ad5abcad55f7169cb5deee17740de3194add130b8ae83a329c4922173fc"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b091.jpg",
+   "s": 14519,
+   "h": "0184be081ddf9383b2a214d288134f3f59cdadcc867779ac6c22a87457c9d80a"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b098.jpg",
+   "s": 19862,
+   "h": "7c81c63f5dbd4f02068ff3a034868074cb0d76747c628590a420eda4e3d701d3"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b110.jpg",
+   "s": 6975,
+   "h": "4f9324cb96c04911e3549a019d581986662ee1d5bb1abd62b02d63e21980265b"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b117.jpg",
+   "s": 31727,
+   "h": "b5254fb69fae074058569536cf35709854e26e11d8994b4e3cfc51f7e95d79e2"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b131.jpg",
+   "s": 23811,
+   "h": "f6dafb397204d195611a8c1e7a84fe0090b3b2e85803aa47f1ade4b052a5c55c"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b143.jpg",
+   "s": 54748,
+   "h": "9644d4796c630bf14ef5eec6aa65c2c6d26effb270e125fd57567b2ce2f2e09f"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b144.jpg",
+   "s": 13431,
+   "h": "56f2b630363e7ab6a034ca757532e623904ddf537fba0cc06864b9cc6fd028f9"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b152.jpg",
+   "s": 31391,
+   "h": "9d6b05f0a3cb9ee91e1b4eeb2e7275eb494648e877316415c183ae32037c9a4e"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b165.jpg",
+   "s": 12180,
+   "h": "36558ac537bdba6242377761bcf71384faec3f876395e0d528909c5567a20edb"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b173.jpg",
+   "s": 12838,
+   "h": "efd862880984beeba0d0ebcba435c0d51b4e071e9c1adfa028a4f680fc6388b2"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b180.jpg",
+   "s": 33369,
+   "h": "f164cacadf9c1878e5542e66d23da9716b7523a6bc75b7fff2bac60a58fd98a4"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b192.jpg",
+   "s": 25657,
+   "h": "cdc18fe2dc456f987b63fe1d9f4eb90ca29cb068589ed4eb94bc0a6b1d0b5db9"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b205.jpg",
+   "s": 12963,
+   "h": "e291a5b968b4a669ef1f0ec8e69ae97ef304cec2205fe7707e89f55c4796c0d2"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b212.jpg",
+   "s": 17856,
+   "h": "c4b99a21000e3c74a3257768d2e8705b57066132448f9d3e2b42e10d7f0208b3"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b226.jpg",
+   "s": 7741,
+   "h": "c77ff88908a0215e75fb780b6e7e742b6f91d054dbc3e2ce8421b903e0b4f372"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b233.jpg",
+   "s": 36221,
+   "h": "51feeba2ca1b879d51f2b6cc70b9090b0b2b4bd5973d0a2690c86bdf048d95e4"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b250.jpg",
+   "s": 7953,
+   "h": "c98d3f0140fe66ad984f4a6c04e8bba11715fb2958d4743fbc2bf3dede7d678c"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b258.jpg",
+   "s": 32168,
+   "h": "de602562219f99e70ef0a2971503859bf7b79a7ffb4c1727655b6d3d1d1150dc"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/b271.jpg",
+   "s": 42213,
+   "h": "5377925af8e2ae036abbff77d3095b1d08f81e86ede6f3b61de010a791f23377"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/img/cover.jpg",
+   "s": 63682,
+   "h": "7135d4d3d92bf3bda9b906ab9d10325b5770ffd280a50a5fde30ef81b8fd43c9"
+  },
+  {
+   "p": "pride-city/romane/leuchtfeuer/index.html",
+   "s": 13182,
+   "h": "4e69ce54402d2d5bea376991ae605f969f1db37c309b1de7a8792e05ed768ad0"
+  },
+  {
+   "p": "pride-city/romane/licht/book.json",
+   "s": 260026,
+   "h": "3aec94f4d68aa6d713b5997dc3fb36251b10707463fc6c9d6ea9007a37b43e37"
+  },
+  {
+   "p": "pride-city/romane/licht/card.jpg",
+   "s": 108945,
+   "h": "72a8dcb1059043e088a52378885b351989e167d7231664bcba065ab910d53a84"
+  },
+  {
+   "p": "pride-city/romane/licht/img/cover.jpg",
+   "s": 296655,
+   "h": "655ebe3741a05b46275322c534d1fb98f0d837e820146f5bb92049d4e8e06c7c"
+  },
+  {
+   "p": "pride-city/romane/licht/img/poster.jpg",
+   "s": 428508,
+   "h": "1de5fa00cc6b4ba634e9731ea3c6ee3c0db6429462e917c2d4aa54cace3cd2f9"
+  },
+  {
+   "p": "pride-city/romane/licht/index.html",
+   "s": 11499,
+   "h": "ed087430a121956be1eca39cf57100496ec83a073eee2f69bf22d509f390b4a0"
+  },
+  {
+   "p": "pride-city/romane/licht/js/app.js",
+   "s": 35295,
+   "h": "4c58a0bcf019d5d9c92df5c6abf03160b6bdb0d0b4dcbb506ba63e12052e09f9"
+  },
+  {
+   "p": "pride-city/romane/licht/js/core.js",
+   "s": 19714,
+   "h": "59b497ad910491cc021e172cc1a4917f9a9494dd1bbf11b414d0d994849e4576"
+  },
+  {
+   "p": "pride-city/romane/licht/js/world.js",
+   "s": 91366,
+   "h": "1be764aa306978b9415e49bfef1678711447ca37fe1eddce9f38ce05efaae5e9"
+  },
+  {
+   "p": "pride-city/romane/licht/style.css",
+   "s": 18376,
+   "h": "c274ba320e2f1c3421d502a6d67eca76ccccbd15df054277ccfcf362c6ad09f0"
   },
   {
    "p": "pride-city/sw.js",
@@ -15173,8 +15378,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 245114,
-   "h": "10b52841030d1f9c578079be69d079ddc923bf178aac319f35951d57890d4bc8"
+   "s": 243204,
+   "h": "d9e5087b379a2ede8ee0335be9122d5d7b3d4c00130cbacb05d1d214ce9d9f51"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -16207,11 +16412,6 @@
    "h": "7987ff498c75efdc83417754570eaed11db2d0aec490fac8d4b405b2f59bc80b"
   },
   {
-   "p": "thumbs/gay-life.webp",
-   "s": 12650,
-   "h": "cdc9c2c73b4b4d8f4f43ebed66870e4eff37166ae187ff64d2c6c32495b9355c"
-  },
-  {
    "p": "thumbs/groove-arena.webp",
    "s": 13380,
    "h": "8b196614b4605df4c6fb93a953fe57ff9ed3212a8faf4288f55f6eae4552d95e"
@@ -16313,8 +16513,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2124,
-   "h": "9e2c3f0e1cbef96d29c1caf970b09f4a1893257924df1c3d2f71956b6832c233"
+   "s": 2100,
+   "h": "8b18fa1a89cc7f2bcf53ed07246a83d9c0494d0c6a6141fd68e834b86dff6ce7"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
