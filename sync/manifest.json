@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "96f8b0f54745",
- "generated": "2026-11-16T20:56:27+01:00",
- "commit": "44685ce9527dc2516e1be4dd0ac6d7abad113e01",
+ "version": "e96a77bdc2fc",
+ "generated": "2026-11-17T00:33:18+01:00",
+ "commit": "90bdbef8be72a5211437fc998df4e0711ceea2c0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2395,171 +2395,6 @@
    "p": "anmacha-kart/zotik-fox.js",
    "s": 15101,
    "h": "ceaf7943a53e0cdb38894890e47f2a13c832bb3fe2284ae891eb1b646942590c"
-  },
-  {
-   "p": "anmacha-kartensammlung/card.jpg",
-   "s": 47953,
-   "h": "cb5916870cf53ff7877f25518e743d864b1868512f8f6816a2ec3b356eef445a"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig0.webp",
-   "s": 5536,
-   "h": "3d11636b5d9d4e05811734db0f27ecd46b535dfdcaf93b33587818e445133ee6"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig1.webp",
-   "s": 6002,
-   "h": "e03536d9004571ab191c8de68fb32c7a80ad4f6a73b22891808b74bbc883c6fe"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig2.webp",
-   "s": 6512,
-   "h": "8866cbde0f322c76abe74968df0aa540e29df1e86db0a987ffad0ef3007019c2"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig3.webp",
-   "s": 5372,
-   "h": "743f6c9866fc7065cdb65637564a2209f94d2e0e7440098948bdf46e3cbd5892"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig4.webp",
-   "s": 5170,
-   "h": "8c8bbc255fd94de925133c824dc65d7bcfa73867ce1224278f93aa3be40b6a1a"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig5.webp",
-   "s": 4764,
-   "h": "7ab9f12e1d52ac65535c4922c38135d6b178b7b37838779822627edd5ce7b8ec"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig6.webp",
-   "s": 6636,
-   "h": "b61cc3c22c359b44299331b86f32f2b809811127427aa88c247dc5802156ec73"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig7.webp",
-   "s": 6118,
-   "h": "1f0b21a411bcef355cad894ef061509047fd31ad66eff67598791b59b11cf8be"
-  },
-  {
-   "p": "anmacha-kartensammlung/index.html",
-   "s": 31978,
-   "h": "042d58fc048ecc544a51c9b011896ee5cf7d7dc4318cf5bac54dc026e8afb32f"
-  },
-  {
-   "p": "anmacha-kartensammlung/js/app.js",
-   "s": 124095,
-   "h": "9438af3e8caf902afeef0af6168dad6426de236bfe9235e1200a18b601d134c6"
-  },
-  {
-   "p": "anmacha-kartensammlung/js/figures.js",
-   "s": 8150,
-   "h": "08ff19cb6e2cdeda1b281349b1a16643758cf6a5a197e998dc6c2861119838b8"
-  },
-  {
-   "p": "anmacha-kartensammlung/js/logic.js",
-   "s": 44313,
-   "h": "844fd6f4a32924f98eafd260c36d135d311ed18323e29d4cdc717e1d93c74f2d"
-  },
-  {
-   "p": "anmacha-kartensammlung/logo.svg",
-   "s": 2145,
-   "h": "f021c4cca1a2319c1876e5cbd2fec21d1555fa44e3d6df24027e3f3ff097da6b"
-  },
-  {
-   "p": "anmacha-kartensammlung/manifest.webmanifest",
-   "s": 811,
-   "h": "5308f18a87e9a56686a34448d517beae83429a127cff521d482acf54e2aa4431"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_ba.glb",
-   "s": 243888,
-   "h": "e9d20bc74b2c3d12ac223b8f52b47dfac51c4fb0634bc498ec23f87bcb21ec12"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_kn.glb",
-   "s": 220180,
-   "h": "a1cd6909b4280cb77b1e32a4d26e1cc5fa253243b6ba2cf1febeb486b9b056c0"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_ma.glb",
-   "s": 227140,
-   "h": "19e538480ebe79ecf8d63b0851882d34f919e6e7372f2b28e5efaf20f3619f8d"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_ra.glb",
-   "s": 302508,
-   "h": "7dc3a159004a9f089b85fe68c759a8ed02fd83cf244153946da19284ffe42b16"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_rh.glb",
-   "s": 243028,
-   "h": "3a237456e0bc41007919b28ae5722bec63054f55d18b10095b15ebb443dfe959"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_ro.glb",
-   "s": 256984,
-   "h": "bf0e8e360211d8cf2c292516c11806d7aeb46aeea9bb7167d3db0edf6d18c1e0"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/anim.glb",
-   "s": 500388,
-   "h": "bfb31b875564085b63845f82cad7be1c3bcc3dc4b948cbfbe05235c75259def7"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/room.glb",
-   "s": 348444,
-   "h": "3a35ef630977d2e8726a08e46bdfea0a98a507a5e28556ebe3111da57d2b262e"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/sk_m.glb",
-   "s": 179036,
-   "h": "4bdfc6f779b3b0630b64e74b337c1648f36022b3b1d56ffb5528e6b1260ef296"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/sk_w.glb",
-   "s": 241272,
-   "h": "36ab3c8eff438e44d354ed85ffa6c8d0762e874b68ccd68e3ddbcaac02b7bc39"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/data/loesbar.json",
-   "s": 3591,
-   "h": "2a9c8ad234902a70f460c5024da18fe9f9ec916813c1ffed1baf76c59c30020f"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/img/anmacha-logo.png",
-   "s": 28394,
-   "h": "466a7c3ba4b450d56054e6442c84ae428911174d276a05e53b1f3ae2583217b3"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/img/radioportal-icon.png",
-   "s": 20776,
-   "h": "06358bdf93261f3ffb84505a41512bfd7e0cd4b5773611d46bf38d9c2a66b43a"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/index.html",
-   "s": 7467,
-   "h": "0291b337f0fb5d54a3d65cd46861ec7bcde266373616eabee8034601eeb5c579"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/js/app.js",
-   "s": 35225,
-   "h": "9582b830327f2ec951b191b1ce0901ae641fcc5853895d72beafc6cbb7344024"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/js/rules.js",
-   "s": 13021,
-   "h": "287457557522274faf28b96c9304d26a6e4e1ab1d2b93e10e4fac5cd7290edf4"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/style.css",
-   "s": 11250,
-   "h": "3a1ae2be3e2d3f61536544520ae5577b6429b39d745daf4318cfeb4397ebbb4c"
-  },
-  {
-   "p": "anmacha-kartensammlung/sw.js",
-   "s": 2019,
-   "h": "489ab13cc0ecf266e2f6eea31a20eb931cd69c0eb82aaf88bea365420ad59914"
   },
   {
    "p": "anmacha-klotzfunk/assets/index-B55ezXFP.js",
@@ -7877,31 +7712,6 @@
    "h": "5d5424f4814ce47d8a5d1067392ea392c5e7a0fb9951d5b5c6c832ea624da677"
   },
   {
-   "p": "anmacha-spielesammlung/card.jpg",
-   "s": 41282,
-   "h": "25cfcdf88a64f960d16ce9d370ebfb0399f96fcf27aef4db81d0ed1306bffeeb"
-  },
-  {
-   "p": "anmacha-spielesammlung/index.html",
-   "s": 100360,
-   "h": "fe79207ee1ad024ae572e5c2cfc5910a874a4cf1c016071acd7260cc8e189545"
-  },
-  {
-   "p": "anmacha-spielesammlung/logo.svg",
-   "s": 1586,
-   "h": "6c8630849e82331ef879607d00275c27feacf2ccd1528ff9481b9cec6a3ed56c"
-  },
-  {
-   "p": "anmacha-spielesammlung/manifest.webmanifest",
-   "s": 811,
-   "h": "3436d3f1bab48daed5555d8d459e53bd9ed36d7510481da1533ad4593686c2ad"
-  },
-  {
-   "p": "anmacha-spielesammlung/sw.js",
-   "s": 2015,
-   "h": "cc3282742cc195b1608ea98bf2e26891fb12e39db0d9d840a75ea67c21619232"
-  },
-  {
    "p": "anmacha-tower-defense/assets/index-BG_UIOR7.js",
    "s": 569667,
    "h": "6ad02b2fcb9487f96b629ca1e37b1278608b3f505f021e542da2a6ce34bf828a"
@@ -9433,8 +9243,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3083,
-   "h": "d4f0494c728655fe03b71b3799e637e9335ce6f85a0f3f7abfdfd5b16853e809"
+   "s": 3019,
+   "h": "739528d817d53832ac25e2351d019f403895019041cf4698560d55d2464c1db7"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -10283,8 +10093,8 @@
   },
   {
    "p": "games.js",
-   "s": 51543,
-   "h": "1dcd3c54a4f3bee9edea67bbaec89de7990ad966457aba06f5c2632661b8f0de"
+   "s": 50583,
+   "h": "b80e2b2d6d4fcdcd21a3b40f0a42e89f004da0e762c581cd31a1cdae80019d22"
   },
   {
    "p": "groove-arena/card.jpg",
@@ -10363,8 +10173,8 @@
   },
   {
    "p": "guides.js",
-   "s": 167852,
-   "h": "6d901743d87fd0c6f9754369e17ca6543205a8bed1a7327d4e51421e142d661d"
+   "s": 168418,
+   "h": "211142ddcd8acbfffb00c630109890236686e6c99d2d6172bdfbfaf2987da61a"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10420,11 +10230,6 @@
    "p": "guides/anmacha-kart.json",
    "s": 49730,
    "h": "ad25edb7140e4c14eab5fa29ee6adaf212e7d45c9fd82e4a524dafb16374b679"
-  },
-  {
-   "p": "guides/anmacha-kartensammlung.json",
-   "s": 25742,
-   "h": "5d5510d764c0ae6bd30bd9397485694bafc531704cdb74789ab0e380238472d3"
   },
   {
    "p": "guides/anmacha-klotzfunk.json",
@@ -10485,11 +10290,6 @@
    "p": "guides/anmacha-snake.json",
    "s": 13550,
    "h": "b3522ccf88de3174966ff5ac2b7a23ad95c226c4ba22ccb364b6f3abb7caecf1"
-  },
-  {
-   "p": "guides/anmacha-spielesammlung.json",
-   "s": 13123,
-   "h": "b8cfa5788ab62ab4a86a38681e252d9e4ba8472a48394bbcf2563e7528285ca8"
   },
   {
    "p": "guides/anmacha-tower-defense.json",
@@ -10632,11 +10432,6 @@
    "h": "56d265b2a668fef17b7ee37d0f5250c10d8b29ac77880534e31460990366351e"
   },
   {
-   "p": "guides/mahjong.json",
-   "s": 14071,
-   "h": "71713fbf60da34dd99b5e6aad3827169f933330df5df9ae171e26679471256a1"
-  },
-  {
    "p": "guides/mimori.json",
    "s": 15866,
    "h": "cbce010221a31cc20f664f21edb53361d286a135e781a30b3aa31d2882884a0b"
@@ -10730,6 +10525,11 @@
    "p": "guides/sonnenhof.json",
    "s": 9857,
    "h": "c9e3421bd4e14878cd15a1db070678c31d9c0a230e9d97100f0b672f16d8ebf8"
+  },
+  {
+   "p": "guides/spielesammlung.json",
+   "s": 52292,
+   "h": "37f4c899f0e44dff5f5401e22c25e5a3d365ac07ef6d1f21b4bf42e80c5bc899"
   },
   {
    "p": "guides/spinwelten.json",
@@ -11337,86 +11137,6 @@
    "h": "14c626be404d5188444f9137fa57bef6a22e7938eb3ab4fde71e8af00f2ef162"
   },
   {
-   "p": "mahjong/card.jpg",
-   "s": 44232,
-   "h": "1bd91240d094c090d96a6ff281019757761488e673aca708b9280e4cf72dd90a"
-  },
-  {
-   "p": "mahjong/icon.svg",
-   "s": 671,
-   "h": "515bdcf8bbe8707b476ec239806c97c6e4a2d7f00b50727007e946cbb2f9ecbf"
-  },
-  {
-   "p": "mahjong/index.html",
-   "s": 13512,
-   "h": "6a541d0ad50f9018409911ca4af46e1000443c92cd4cd39c7fd47d1d58ff9086"
-  },
-  {
-   "p": "mahjong/js/audio.js",
-   "s": 7310,
-   "h": "72b8042faf8bf62eb3f880367ec612ccc8dbf276b6a84eff99c88ce3d697f1ca"
-  },
-  {
-   "p": "mahjong/js/engine.js",
-   "s": 14239,
-   "h": "a2533487e69907272abbcf26597f89b1484ed474ccb60671191e02ee9376b2d9"
-  },
-  {
-   "p": "mahjong/js/faces.js",
-   "s": 19057,
-   "h": "9ddd4b617a7b8c17e15739dd97ba20d62220df6028e0e30e9437485036835630"
-  },
-  {
-   "p": "mahjong/js/input.js",
-   "s": 8744,
-   "h": "c219873e9297912daa514ca6ec08d478c03a7b8c89a4c92eea4bfb4c4435b357"
-  },
-  {
-   "p": "mahjong/js/layouts.js",
-   "s": 9886,
-   "h": "b91207b0ff2ae27a6bfa6baa824e50031b170a8052df4be80683b20968d1275e"
-  },
-  {
-   "p": "mahjong/js/main.js",
-   "s": 35347,
-   "h": "e7f0f62d8575cb9f3ba1d389d02310fa2c9cb0deacca316cdc89a4fec05fe33e"
-  },
-  {
-   "p": "mahjong/js/render.js",
-   "s": 27443,
-   "h": "e1b4127a0e0a22399d9b5286fed7296d3dd7c80fd924fc74c97cdc789b6126c9"
-  },
-  {
-   "p": "mahjong/js/save.js",
-   "s": 8347,
-   "h": "eb3de5be7f04eef1056f4e1184f3ea8c65671ca6d36aae7bbe744ec516bee439"
-  },
-  {
-   "p": "mahjong/js/ui.js",
-   "s": 22879,
-   "h": "e9752cee387a8e17c8c4776585fc384f17342e234f5fd043d3e4615c70713e98"
-  },
-  {
-   "p": "mahjong/logo.svg",
-   "s": 2607,
-   "h": "e95621cb7fb080c5530700e6b26fe82566f4fed47b328dc29ba8dfe57176edf7"
-  },
-  {
-   "p": "mahjong/manifest.webmanifest",
-   "s": 760,
-   "h": "ccc9a7c4bc8c0decb6be6465f594e7a0576614310b795c81b78fa079c4770940"
-  },
-  {
-   "p": "mahjong/style.css",
-   "s": 17200,
-   "h": "d8f76cc09f4660bd08789f0cc16364f0e1aa14f11eacd6bebabb004b48d84891"
-  },
-  {
-   "p": "mahjong/sw.js",
-   "s": 1989,
-   "h": "26169f69def36c14f74757457db98a26f152ca327577ee14d232c5391541c98e"
-  },
-  {
    "p": "manifest.webmanifest",
    "s": 715,
    "h": "8d3c54ea2493b87a40bd61e7f59e677dec0a1aa91f5483a7a595be4e7f24bbc0"
@@ -11518,8 +11238,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3315,
-   "h": "08b66bc8bfa28fef1d033bb3f8a91e3333385dcf3a2a1e0deeb37626a09b4eec"
+   "s": 3262,
+   "h": "05bd73963ae8e32a610529b33597fd6d7da096b5d3a3029796f70fdcfb233437"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-DMBVqCOs.js",
@@ -13863,8 +13583,8 @@
   },
   {
    "p": "saftblitz/js/game.js",
-   "s": 50744,
-   "h": "e34ea46b1f5af4be9d480ccec68b2ee6f4e5f81cc05ec6711aa88a9904a2d016"
+   "s": 50751,
+   "h": "43fb20922cf36d699613b268fe8aa3f6d777e01fa82c5697a496744fd0fbe0bc"
   },
   {
    "p": "saftblitz/manifest.webmanifest",
@@ -15027,6 +14747,256 @@
    "h": "35aa73fdf931a1a9e45ced472ad3870a625f0b8d4ab98d4053f26d8e386e0812"
   },
   {
+   "p": "spielesammlung/card.jpg",
+   "s": 42119,
+   "h": "25807a0545fa9b06d12bea22e3fba0929206dd2f1b0dc522b8edefed32c75625"
+  },
+  {
+   "p": "spielesammlung/index.html",
+   "s": 101041,
+   "h": "48bdb8af32aea8524a3659739f265c704d220b7b8ab4a136603d3496bc698e11"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/card.jpg",
+   "s": 47953,
+   "h": "cb5916870cf53ff7877f25518e743d864b1868512f8f6816a2ec3b356eef445a"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig0.webp",
+   "s": 5536,
+   "h": "3d11636b5d9d4e05811734db0f27ecd46b535dfdcaf93b33587818e445133ee6"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig1.webp",
+   "s": 6002,
+   "h": "e03536d9004571ab191c8de68fb32c7a80ad4f6a73b22891808b74bbc883c6fe"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig2.webp",
+   "s": 6512,
+   "h": "8866cbde0f322c76abe74968df0aa540e29df1e86db0a987ffad0ef3007019c2"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig3.webp",
+   "s": 5372,
+   "h": "743f6c9866fc7065cdb65637564a2209f94d2e0e7440098948bdf46e3cbd5892"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig4.webp",
+   "s": 5170,
+   "h": "8c8bbc255fd94de925133c824dc65d7bcfa73867ce1224278f93aa3be40b6a1a"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig5.webp",
+   "s": 4764,
+   "h": "7ab9f12e1d52ac65535c4922c38135d6b178b7b37838779822627edd5ce7b8ec"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig6.webp",
+   "s": 6636,
+   "h": "b61cc3c22c359b44299331b86f32f2b809811127427aa88c247dc5802156ec73"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig7.webp",
+   "s": 6118,
+   "h": "1f0b21a411bcef355cad894ef061509047fd31ad66eff67598791b59b11cf8be"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/index.html",
+   "s": 28677,
+   "h": "ce14e6816918f1e336a4c0fbdedd0e0f7c734c8766ff89eda05107f541121b71"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/js/app.js",
+   "s": 124095,
+   "h": "9438af3e8caf902afeef0af6168dad6426de236bfe9235e1200a18b601d134c6"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/js/figures.js",
+   "s": 8150,
+   "h": "08ff19cb6e2cdeda1b281349b1a16643758cf6a5a197e998dc6c2861119838b8"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/js/logic.js",
+   "s": 44313,
+   "h": "844fd6f4a32924f98eafd260c36d135d311ed18323e29d4cdc717e1d93c74f2d"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/logo.svg",
+   "s": 2145,
+   "h": "f021c4cca1a2319c1876e5cbd2fec21d1555fa44e3d6df24027e3f3ff097da6b"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_ba.glb",
+   "s": 243888,
+   "h": "e9d20bc74b2c3d12ac223b8f52b47dfac51c4fb0634bc498ec23f87bcb21ec12"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_kn.glb",
+   "s": 220180,
+   "h": "a1cd6909b4280cb77b1e32a4d26e1cc5fa253243b6ba2cf1febeb486b9b056c0"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_ma.glb",
+   "s": 227140,
+   "h": "19e538480ebe79ecf8d63b0851882d34f919e6e7372f2b28e5efaf20f3619f8d"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_ra.glb",
+   "s": 302508,
+   "h": "7dc3a159004a9f089b85fe68c759a8ed02fd83cf244153946da19284ffe42b16"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_rh.glb",
+   "s": 243028,
+   "h": "3a237456e0bc41007919b28ae5722bec63054f55d18b10095b15ebb443dfe959"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_ro.glb",
+   "s": 256984,
+   "h": "bf0e8e360211d8cf2c292516c11806d7aeb46aeea9bb7167d3db0edf6d18c1e0"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/anim.glb",
+   "s": 500388,
+   "h": "bfb31b875564085b63845f82cad7be1c3bcc3dc4b948cbfbe05235c75259def7"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/room.glb",
+   "s": 348444,
+   "h": "3a35ef630977d2e8726a08e46bdfea0a98a507a5e28556ebe3111da57d2b262e"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/sk_m.glb",
+   "s": 179036,
+   "h": "4bdfc6f779b3b0630b64e74b337c1648f36022b3b1d56ffb5528e6b1260ef296"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/sk_w.glb",
+   "s": 241272,
+   "h": "36ab3c8eff438e44d354ed85ffa6c8d0762e874b68ccd68e3ddbcaac02b7bc39"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/data/loesbar.json",
+   "s": 3591,
+   "h": "2a9c8ad234902a70f460c5024da18fe9f9ec916813c1ffed1baf76c59c30020f"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/img/anmacha-logo.png",
+   "s": 28394,
+   "h": "466a7c3ba4b450d56054e6442c84ae428911174d276a05e53b1f3ae2583217b3"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/img/radioportal-icon.png",
+   "s": 20776,
+   "h": "06358bdf93261f3ffb84505a41512bfd7e0cd4b5773611d46bf38d9c2a66b43a"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/index.html",
+   "s": 7468,
+   "h": "69881747503d05be1f68bc32642a9a02a62b1fbb42918524fff7812080bd316d"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/js/app.js",
+   "s": 35225,
+   "h": "9582b830327f2ec951b191b1ce0901ae641fcc5853895d72beafc6cbb7344024"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/js/rules.js",
+   "s": 13021,
+   "h": "287457557522274faf28b96c9304d26a6e4e1ab1d2b93e10e4fac5cd7290edf4"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/style.css",
+   "s": 11250,
+   "h": "3a1ae2be3e2d3f61536544520ae5577b6429b39d745daf4318cfeb4397ebbb4c"
+  },
+  {
+   "p": "spielesammlung/logo.svg",
+   "s": 1586,
+   "h": "6c8630849e82331ef879607d00275c27feacf2ccd1528ff9481b9cec6a3ed56c"
+  },
+  {
+   "p": "spielesammlung/mahjong/card.jpg",
+   "s": 44232,
+   "h": "1bd91240d094c090d96a6ff281019757761488e673aca708b9280e4cf72dd90a"
+  },
+  {
+   "p": "spielesammlung/mahjong/icon.svg",
+   "s": 671,
+   "h": "515bdcf8bbe8707b476ec239806c97c6e4a2d7f00b50727007e946cbb2f9ecbf"
+  },
+  {
+   "p": "spielesammlung/mahjong/index.html",
+   "s": 9747,
+   "h": "81e8fe5f18f2cf4af1a7950eaa867353cab82bc9fbdfb64fe4bc0df991ab9fd7"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/audio.js",
+   "s": 7310,
+   "h": "72b8042faf8bf62eb3f880367ec612ccc8dbf276b6a84eff99c88ce3d697f1ca"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/engine.js",
+   "s": 14239,
+   "h": "a2533487e69907272abbcf26597f89b1484ed474ccb60671191e02ee9376b2d9"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/faces.js",
+   "s": 19057,
+   "h": "9ddd4b617a7b8c17e15739dd97ba20d62220df6028e0e30e9437485036835630"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/input.js",
+   "s": 8747,
+   "h": "9d0ab4944688a80b2e2a14da96ae76f474e36c66d440bc1d2dd5b40d03c4ec42"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/layouts.js",
+   "s": 9886,
+   "h": "b91207b0ff2ae27a6bfa6baa824e50031b170a8052df4be80683b20968d1275e"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/main.js",
+   "s": 35391,
+   "h": "360f649735e3b24a376693a9415d84b079e7f49d82c53a0e25589106e631cea8"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/render.js",
+   "s": 27443,
+   "h": "e1b4127a0e0a22399d9b5286fed7296d3dd7c80fd924fc74c97cdc789b6126c9"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/save.js",
+   "s": 8347,
+   "h": "eb3de5be7f04eef1056f4e1184f3ea8c65671ca6d36aae7bbe744ec516bee439"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/ui.js",
+   "s": 22873,
+   "h": "d6a5d56f108bdeeed1af6758b20f938e68ee846e445c3b091d7fdb7d4bb9a90d"
+  },
+  {
+   "p": "spielesammlung/mahjong/logo.svg",
+   "s": 2607,
+   "h": "e95621cb7fb080c5530700e6b26fe82566f4fed47b328dc29ba8dfe57176edf7"
+  },
+  {
+   "p": "spielesammlung/mahjong/style.css",
+   "s": 17200,
+   "h": "d8f76cc09f4660bd08789f0cc16364f0e1aa14f11eacd6bebabb004b48d84891"
+  },
+  {
+   "p": "spielesammlung/manifest.webmanifest",
+   "s": 819,
+   "h": "95bed4e6ddbb476f545bdcb07d980bc85cdd50a589760e8c843806f762fd990b"
+  },
+  {
+   "p": "spielesammlung/sw.js",
+   "s": 2035,
+   "h": "639e8258d5b2c5fc74d7f54eba0eb9a5ed6ebbe6a17d2375d05f697557a01331"
+  },
+  {
    "p": "spinwelten/card.svg",
    "s": 3970,
    "h": "b14feadf1fbda03dd3a9f961078d5fdfb44cac0204b431d7b3c25ea97d2c3f5d"
@@ -15283,8 +15253,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 238958,
-   "h": "f3366e0d516499f719c4d13198d5034fbeb44e626f402cb330ac13204a0bf167"
+   "s": 237979,
+   "h": "c1ca006263246f6e24b4bdede8154528b6e5dd589d4e081ff57a353528271417"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -16162,11 +16132,6 @@
    "h": "4a94af0588e7014761e3c089be700ef1ec7766abd9e6323c1131fdb85be6ce7f"
   },
   {
-   "p": "thumbs/anmacha-kartensammlung.webp",
-   "s": 17098,
-   "h": "56d678282ae00031a92770194dd57bf2db5b2c783072ec34e7b87b458a7d8f74"
-  },
-  {
    "p": "thumbs/anmacha-klotzfunk.webp",
    "s": 29118,
    "h": "44cf82b9f1b5109f6f1d8fd2dca85daf9ffacda44a9beb3d3a0ce201a97bc0a8"
@@ -16215,11 +16180,6 @@
    "p": "thumbs/anmacha-snake.webp",
    "s": 13836,
    "h": "e4abd8b24015cd07057654ad8991d8422acdc9f347d03698b39e2b9fa30a741f"
-  },
-  {
-   "p": "thumbs/anmacha-spielesammlung.webp",
-   "s": 13884,
-   "h": "bf7e7470e992f579e9f8b0c6b135755fd4a64bf79fcfdfc8b3f2ed8d7f8a9926"
   },
   {
    "p": "thumbs/anmacha-tower-defense.webp",
@@ -16337,11 +16297,6 @@
    "h": "751b2431fef9333a5220c9420f8be8e1a5d932d827e35353d900864d2a4f6974"
   },
   {
-   "p": "thumbs/mahjong.webp",
-   "s": 15732,
-   "h": "f6b8f76dbc8b02c81b64cdc55a88edd9b8a989e6885fe024541a3940a62e8b47"
-  },
-  {
    "p": "thumbs/mimori.webp",
    "s": 24408,
    "h": "07e1526e45a86c49b5d7f5ae70ea1a5dcb57b8dfbf4c1c3f282895170891cae9"
@@ -16407,9 +16362,14 @@
    "h": "892c6979cd97c4d1c837eb2b059ccf126a791e14771f624b9c30dddbaa1beebb"
   },
   {
+   "p": "thumbs/spielesammlung.webp",
+   "s": 14402,
+   "h": "a6c265e22b0ed103c600b2c2d4cb475a713ef28ca82c59a9b85d1d087845e2b6"
+  },
+  {
    "p": "thumbs/thumbs.js",
-   "s": 2019,
-   "h": "2e9d2845442f0b5f2c944bff54020b4461c697cc12ec0923258423ffca125e5a"
+   "s": 1950,
+   "h": "543b40151561a3d933fc78bc0c794ecdea072aca61f9f73a0f7b8a8cc98d793b"
   },
   {
    "p": "thumbs/tortenschlacht.webp",

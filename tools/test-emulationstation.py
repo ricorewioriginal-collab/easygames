@@ -248,7 +248,7 @@ class Bootstrap(Base):
 
 class SyncBatocera(Base):
     """Modus sync auf Batocera: eigene Offline-Kopie über sync/manifest.json, eigenes System, Updates und neue Spiele."""
-    PICK = ['deluxe-2048', 'mahjong', 'saftblitz']
+    PICK = ['deluxe-2048', 'funkblasen', 'saftblitz']
 
     def publish(self, ids):
         """Kleiner „Server“ mit Manifest und Katalog für die gewählten Spiele (echte Dateien aus dem Repository)."""
@@ -313,7 +313,7 @@ class SyncBatocera(Base):
         self.assertIn('batocera', out)
         rom = os.path.join(self.ud, 'roms', 'easygames')
         content = os.path.join(self.ud, 'system', 'easygames', 'content')
-        self.assertTrue(os.path.isfile(os.path.join(content, 'mahjong', 'index.html')))
+        self.assertTrue(os.path.isfile(os.path.join(content, 'funkblasen', 'index.html')))
         sysf = ET.parse(os.path.join(self.ud, 'system', 'configs', 'emulationstation', 'es_systems_easygames.cfg')).getroot()
         self.assertEqual(sysf.find('system').findtext('path'), rom)
         self.assertEqual(sysf.find('system').findtext('theme'), 'easygames')
@@ -358,16 +358,16 @@ class SyncBatocera(Base):
     def test_broken_download_changes_nothing(self):
         content = os.path.join(self.home, 'c', 'content')
         es.sync_content(content, self.url)
-        with open(os.path.join(self.site, 'mahjong', 'index.html'), 'ab') as f:
+        with open(os.path.join(self.site, 'funkblasen', 'index.html'), 'ab') as f:
             f.write(b'manipuliert')
         man = json.load(open(os.path.join(self.site, 'sync', 'manifest.json')))
         for x in man['files']:
-            if x['p'] == 'mahjong/index.html':
+            if x['p'] == 'funkblasen/index.html':
                 x['h'] = '0' * 64
         json.dump(man, open(os.path.join(self.site, 'sync', 'manifest.json'), 'w'))
         with self.assertRaises(IOError):
             es.sync_content(content, self.url)
-        with open(os.path.join(content, 'mahjong', 'index.html'), 'rb') as f:
+        with open(os.path.join(content, 'funkblasen', 'index.html'), 'rb') as f:
             self.assertNotIn(b'manipuliert', f.read())
 
     def test_offline_and_server_rewrite(self):
@@ -377,13 +377,13 @@ class SyncBatocera(Base):
         r = es.sync_content(content, self.url)
         self.assertTrue(r['online'])
         self.assertEqual(es.sync_content(content, self.url)['changed'], 0)
-        with open(os.path.join(content, 'mahjong', 'probe.html'), 'w') as f:
+        with open(os.path.join(content, 'funkblasen', 'probe.html'), 'w') as f:
             f.write('<html><head></head><script src="https://cdn.example.org/lib@1/x.js?v=2"></script></html>')
         state = json.load(open(os.path.join(self.home, 'c', 'sync-state.json')))
         srv = es.start_sync_server(content, state['vendor'], os.path.join(self.home, 'st.json'), 0)
         try:
             base = 'http://127.0.0.1:%d/' % srv.server_address[1]
-            body = urllib.request.urlopen(base + 'mahjong/probe.html').read().decode()
+            body = urllib.request.urlopen(base + 'funkblasen/probe.html').read().decode()
             self.assertIn('src="/index.html?v=2"', body)
             self.assertIn('serviceWorker.register', body)
             self.assertIn('easygames', urllib.request.urlopen(base + '__easygames/laden.html').read().decode())
