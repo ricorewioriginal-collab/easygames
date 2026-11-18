@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0E1530">
+<title>Solitär – Kartensammlung 3D</title>
+<meta name="description" content="AnMaCha Solitaire: Patience, Spider und FreeCell mit AnMaCha-Karten – nur lösbare Partien, Rückgängig, Tipps, Tagesspiel und Cloud-Spielstand.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <section class="scr on" id="sMenu">
+    <div class="menuBox">
+      <div class="brand"><img src="img/anmacha-logo.png" alt="AnMaCha" width="340" height="129"><span>SOLITAIRE</span></div>
+      <div class="games" id="games">
+        <button class="gm" data-g="klondike"><span class="gi">♠♥</span><b>Patience</b><small>Klassiker</small></button>
+        <button class="gm" data-g="spider"><span class="gi">🕷</span><b>Spider</b><small>2 Kartenspiele</small></button>
+        <button class="gm" data-g="freecell"><span class="gi">♦♣</span><b>FreeCell</b><small>alles offen</small></button>
+      </div>
+      <div class="opts" id="optKlondike">
+        <span>Ziehen</span><button class="chip" data-draw="1">1 Karte</button><button class="chip" data-draw="3">3 Karten</button>
+        <label class="check small"><input type="checkbox" id="optSolv"> nur lösbare</label>
+      </div>
+      <div class="opts" id="optSpider" hidden>
+        <span>Farben</span><button class="chip" data-suits="1">1</button><button class="chip" data-suits="2">2</button><button class="chip" data-suits="4">4</button>
+      </div>
+      <div class="opts" id="optFree" hidden><span>4 freie Zellen · fast jede Partie lösbar</span></div>
+      <div class="menuBtns">
+        <button class="btn big pri" id="bResume" hidden>▶ Weiterspielen</button>
+        <button class="btn big pri" id="bNew">Neues Spiel</button>
+        <button class="btn big" id="bDay">📅 Tagesspiel</button>
+        <div class="row2"><button class="btn" id="bHelp">📖 Anleitung</button><button class="btn" id="bSet">⚙️ Einstellungen</button></div>
+      </div>
+      <p class="stat" id="menuStat"></p>
+      <p class="foot"><a href="../" id="backLink">← Zur Kartensammlung</a></p>
+    </div>
+  </section>
+
+  <section class="scr" id="sGame">
+    <header class="top">
+      <button class="icon" id="bMenu" aria-label="Menü">☰</button>
+      <div class="info"><b id="gTitle">Patience</b><span id="gInfo">0:00 · 0 Züge</span></div>
+      <div class="tools">
+        <button class="icon" id="aUndo" title="Rückgängig (Z)" aria-label="Rückgängig">↶</button>
+        <button class="icon" id="aHint" title="Tipp (H)" aria-label="Tipp">💡</button>
+        <button class="icon pri" id="aFinish" title="Automatisch fertig (A)" hidden>⚡</button>
+      </div>
+    </header>
+    <div class="table" id="table"><div class="slots" id="slots"></div><div class="cards" id="cards"></div></div>
+  </section>
+
+  <div class="ov" id="ovMenu" hidden><div class="card">
+    <h2>Pause</h2>
+    <div class="menuBtns">
+      <button class="btn big pri" id="mGo">▶ Weiter</button>
+      <button class="btn" id="mNew">🔀 Neue Partie</button>
+      <button class="btn" id="mRestart">↺ Diese Partie neu starten</button>
+      <button class="btn" id="mHelp">📖 Anleitung</button>
+      <button class="btn" id="mSound">🔊 Ton an</button>
+      <button class="btn" id="mQuit">⏹ Zum Menü</button>
+    </div>
+  </div></div>
+
+  <div class="ov" id="ovWin" hidden><div class="card">
+    <img class="winLogo" src="img/anmacha-logo.png" alt="AnMaCha">
+    <h2 id="winTitle">Gewonnen!</h2>
+    <ol class="rank" id="winRank"></ol>
+    <div class="rowBtns"><button class="btn" id="bWinMenu">Menü</button><button class="btn pri" id="bWinNew">Neue Partie ▶</button></div>
+  </div></div>
+
+  <div class="ov" id="ovStuck" hidden><div class="card">
+    <h2>Keine Züge mehr</h2>
+    <p class="hint">Hier geht nichts mehr weiter. Du kannst Züge zurücknehmen oder neu beginnen.</p>
+    <div class="rowBtns"><button class="btn" id="bStuckUndo">↶ Rückgängig</button><button class="btn" id="bStuckRe">↺ Neu starten</button><button class="btn pri" id="bStuckNew">Neue Partie</button></div>
+  </div></div>
+
+  <div class="ov" id="ovSet" hidden><div class="card">
+    <h2>Einstellungen</h2>
+    <label class="check"><input type="checkbox" id="setSound"> Ton</label>
+    <label class="check"><input type="checkbox" id="setAuto"> Sichere Karten automatisch ablegen</label>
+    <label class="check"><input type="checkbox" id="setTap"> Antippen legt Karten automatisch ab</label>
+    <label class="check"><input type="checkbox" id="setLeft"> Linkshänder (Stapel rechts)</label>
+    <button class="btn pri" id="bSetX">Fertig</button>
+  </div></div>
+
+  <div class="ov" id="ovHelp" hidden><div class="card scroll">
+    <h2>So spielst du</h2>
+    <h3>Patience</h3>
+    <p>Baue in den 7 Spalten absteigende Reihen in wechselnden Farben (rot auf schwarz). Leere Spalten nehmen nur einen König. Ziel: alle Karten nach Farben von Ass bis König auf die 4 Ablagen oben rechts. Tippe auf den Stapel oben links, um 1 bzw. 3 Karten aufzudecken. Mit „nur lösbare“ ist jede Partie garantiert lösbar.</p>
+    <h3>Spider</h3>
+    <p>Zwei Kartenspiele, 10 Spalten. Lege Karten auf eine um eins höhere Karte, egal welche Farbe – verschieben lassen sich aber nur Reihen derselben Farbe. Eine komplette Reihe König bis Ass in einer Farbe wird abgelegt. Der Stapel teilt 10 neue Karten aus (dafür darf keine Spalte leer sein). Mit 1 Farbe ist es am leichtesten, mit 4 am schwersten.</p>
+    <h3>FreeCell</h3>
+    <p>Alle Karten liegen offen. Baue absteigend in wechselnden Farben; die 4 freien Zellen oben links nehmen je eine Karte auf. Wie viele Karten du auf einmal verschieben kannst, hängt von freien Zellen und leeren Spalten ab.</p>
+    <h3>Steuerung</h3>
+    <ul>
+      <li><b>Touch &amp; Maus:</b> Karten ziehen oder einfach antippen – die Karte springt an die beste Stelle. ↶ nimmt Züge zurück, 💡 zeigt einen Tipp, ⚡ legt am Ende alles automatisch ab.</li>
+      <li><b>Tastatur:</b> Pfeile bewegen den Rahmen, Leertaste/Enter nimmt Karten auf und legt sie ab, F legt die markierte Karte automatisch, D zieht vom Stapel, Z rückgängig, H Tipp, A automatisch fertig, Rücktaste abbrechen, Esc Menü.</li>
+      <li><b>Gamecontroller:</b> Steuerkreuz bewegt den Rahmen, A aufnehmen/ablegen, X automatisch legen, Y Stapel ziehen, B abbrechen, LB rückgängig, RB Tipp, Select automatisch fertig, Start Menü.</li>
+    </ul>
+    <p class="hint">Mit Google angemeldet werden Spielstand und Statistik auf allen Geräten gespeichert; Siege zählen für die Ranglisten.</p>
+    <button class="btn pri" id="bHelpX">Verstanden</button>
+  </div></div>
+
+  <div class="toast" id="toast" hidden></div>
+</div>
+
+<script src="js/rules.js"></script>
+<script src="js/app.js"></script>
+<script src="../../../cloud/anmacha-cloud.js" data-game="anmacha-solitaire" data-prefix="anmacha-solitaire-" defer></script>
+<script src="../../../gamepad.js" data-pad-labels="dpad=Bewegt den Rahmen; a=Aufnehmen/ablegen; x=Automatisch legen; y=Stapel ziehen; b=Abbrechen (sonst rückgängig; lb=Rückgängig; rb=Tipp; select=Automatisch fertig; start=Menü" data-pad="a=Space/Enter x=KeyF y=KeyD b=Backspace lb=KeyZ rb=KeyH select=KeyA start=Escape" defer></script>
+<script src="../../../egstat.js" defer></script>
+</body>
+</html>
