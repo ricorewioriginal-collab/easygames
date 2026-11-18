@@ -10,10 +10,8 @@ const ART = require('./card-art.cjs');
 const root = path.resolve(__dirname, '..');
 // id: [Kopfzeile, [Titelzeilen], Heldmotiv, [Begleiter links, rechts]]
 const CARDS = {
-  'anmacha-radio-surfer': ['ANMACHA', ['RADIO', 'SURFER'], '📻', ['🏄', '🌐']],
   'anmacha-radio-match': ['ROYAL · 3D', ['RADIO', 'MATCH'], '👑', ['📻', '🎧']],
   'anmacha-flipper': ['ANMACHA · 3D', ['PINBALL'], '🎱', ['🚀', '⭐']],
-  'anmacha-beat-surfer': ['ANMACHA · 3D', ['BEAT', 'SURFER'], '🎧', ['🎵', '🎶']],
   'anmacha-memory': ['ANMACHA', ['MEMORY'], '🧠', ['📻', '🃏']],
   'anmacha-quest-rpg': ['CHRONIK DER SPHÄREN', ['AETHE-', 'RION'], '⚔️', ['🐉', '🏰']],
   'anmacha-snake': ['ANMACHA · 3D', ['SNAKE', '3D'], '🐍', ['🍎', '💎']],

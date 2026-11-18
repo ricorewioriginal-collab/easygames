@@ -1012,7 +1012,7 @@ function renderRecent() {
   }
   h.classList.remove('hidden'); heroOn = true; heroGame = g.id; filt();
   // daneben: beliebte Spiele (redaktionell, wie im RicoReWi-Portal) – Klick öffnet das Spiel
-  const POP = ['anmacha-quiz', 'anmacha-kart', 'anmacha-radio-surfer', 'anmacha-klotzfunk', 'riftzone', 'anmacha-showdown', 'bunte-insel', 'anmacha-snake', 'kiko-sterneninseln', 'ricorail'];
+  const POP = ['anmacha-quiz', 'anmacha-kart', 'funkrenner', 'anmacha-klotzfunk', 'riftzone', 'anmacha-showdown', 'bunte-insel', 'anmacha-snake', 'kiko-sterneninseln', 'ricorail'];
   const side = $('featSide'); side.appendChild(el('h2', 'ftitle', '🔥 Beliebt bei uns'));
   POP.map(id => GAMES.findIndex(x => x.id === id)).filter(j => j >= 0 && j !== i && GAMES[j].img).slice(0, 4).forEach(j => {
     const x = GAMES[j], bt = el('button', 'pop'), im = el('img'); im.src = pic(x); im.alt = ''; im.loading = 'lazy'; bt.style.background = x.bg || '#222';
@@ -1040,7 +1040,7 @@ function renderRecent() {
   }
   const all = GAMES.map((g, j) => j);
   row('Neue Spiele', all.slice(-NEWN * 2).reverse());
-  const POPR = ['anmacha-quiz', 'anmacha-kart', 'anmacha-radio-surfer', 'anmacha-klotzfunk', 'riftzone', 'anmacha-showdown', 'bunte-insel', 'anmacha-snake', 'kiko-sterneninseln', 'ricorail', 'ricolife', 'ricopoly'];
+  const POPR = ['anmacha-quiz', 'anmacha-kart', 'funkrenner', 'anmacha-klotzfunk', 'riftzone', 'anmacha-showdown', 'bunte-insel', 'anmacha-snake', 'kiko-sterneninseln', 'ricorail', 'ricolife', 'ricopoly'];
   row('Beliebte Spiele', POPR.map(id => GAMES.findIndex(x => x.id === id)).filter(j => j >= 0));
   row('Mit Freunden spielen', all.filter(j => { const m = modesOf(GAMES[j]); return m.online || m.multi; }).slice(0, 14));
   CATS.list.forEach(c => { const idx = all.filter(j => CATS.of[GAMES[j].id] === c.id); if (idx.length >= 5) row(c.icon + ' ' + c.label, idx.slice(0, 12)); });

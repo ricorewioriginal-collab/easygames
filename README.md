@@ -23,10 +23,9 @@ Spieleliste (GitHub Pages): https://ricorewioriginal-collab.github.io/easygames/
 | ZEITSPRUNG MOVIE – moderierte 3D-Filmshow mit 398 Fragen: 318 Quizfragen, 38 Filmmusik- und Serienintro-Hörfragen über Deezer/Spotify sowie 42 Bildrätsel; 12 eingebettete Trailer, A–D-Jahreswahl oder Zeitleiste, TV-Handys per WR-Code/PIN und Google-Speicherung | [`zeitsprung-movie/`](zeitsprung-movie/) |
 | ZEITSPRUNG RADIO – moderierte 3D-Musikshow für TV, Smartphone und PC: 790 Quizfragen zu Charts, Jahrescharts, Künstlern, Songtiteln, Biografien, gemeinfreien Songtexten, ESC, DSDS, Popstars und The Voice; Musikrunden mit A–D-Jahreswahl oder Zeitleiste und Deezer/Spotify-Playern, WebRTC-Handys per WR-Code/PIN, Google-Speicherung und installierbare App. | [`zeitsprung-radio/`](zeitsprung-radio/) |
 | ZOTIK – Die Splitter der Welten – 3D-Action-Rollenspiel mit 10 Kapiteln plus Endspiel und vielen Märchenwelten, wählbarem Kampfsystem (Echtzeit oder Rundenkampf), Begleitern mit eigener Stufe, Rätseln, Zwischensequenzen, drei Enden, Arena mit Superbossen, Fotomodus, Casino, Halle der 100, Neuem Spiel+ und verwandelbarer Nautilux mit Werkstatt (Three.js + Vite; Quelltext in [`zotik-src/`](zotik-src/), Build in `zotik/`) | [`zotik/`](zotik/) |
-| AnMaCha Radio Surfer – 3D-Endless-Runner (Three.js) | [`anmacha-radio-surfer/`](anmacha-radio-surfer/) |
+| Funkrenner – 3D-Runner (Three.js, KayKit-Helden) mit Beat-Modus (13 Sender, Klavierlicht-Lieder) | [`funkrenner/`](funkrenner/) |
 | Royal Radio Match 3D – 3D-Match-3: 200 Level in 10 Radio-Welten, Spezialteile und Kombos, Funkhaus-Ausbau, Bonuslevel, Duell (lokal/KI) (Three.js, Sounds im Browser erzeugt) | [`anmacha-radio-match/`](anmacha-radio-match/) |
 | AnMaCha Pinball – 3D-Flipper mit 13 Tischen (Three.js) | [`anmacha-flipper/`](anmacha-flipper/) (Ordnername bleibt) |
-| AnMaCha Beat Surfer – 3D-Rhythmusspiel (Three.js, Musik wird im Browser erzeugt) | [`anmacha-beat-surfer/`](anmacha-beat-surfer/) |
 | SHOW ME YOUR VOICE – Castingshow-Spiel zur TikTok-Show von RicoReWi: Avatar, Casting mit Jury-Gespräch, Zugabe und Goldenem Ticket, Gruppen-Recall, Mottoshow, Battle, Halbfinale und Finale; eigene Jury mit offenen Kriterien, Community-Voting mit Zitterbank, Backstage-Ereignisse, Training, Winterglanz-Gala, Show-Archiv (YouTube). Noten live aus den laut.fm-Sendern der RicoReWi-Familie (Quelle wird angezeigt), sonst eigene Beats | [`show-me-your-voice/`](show-me-your-voice/) |
 | PRISMRUSH – hypnotisches 3D-Rhythmusspiel: 32 Level in 4 Welten, 13 Modi (Kampagne, Endlos, Tagesrhythmus, Sprint 90, Remix, Zen, Präzision, Spiegelwelt, Turbo, Blindflug, Gleitflug, Wandlauf, Tutorial), Combos, Overdrive, 19 freischaltbare Effekte, installierbar als PWA (TypeScript, Three.js + Vite, Musik und Sounds im Browser erzeugt; Quelltext in [`prismrush-src/`](prismrush-src/), gebautes Ergebnis eingecheckt) | [`prismrush/`](prismrush/) |
 | AnMaCha Memory – modernes Memory mit den Sender-Logos (reines HTML/CSS, ohne Bibliothek) | [`anmacha-memory/`](anmacha-memory/) |
@@ -148,7 +147,7 @@ und **⤴ Teilen**. Dort stehen für jedes Spiel der **direkte Link** und der **
 - Spiel einbetten:
 
 ```html
-<iframe src="https://ricorewioriginal-collab.github.io/easygames/anmacha-radio-surfer/" title="AnMaCha Radio Surfer"
+<iframe src="https://ricorewioriginal-collab.github.io/easygames/funkrenner/" title="Funkrenner"
   allow="fullscreen; autoplay" loading="lazy"
   style="width:100%;max-width:960px;aspect-ratio:16/10;border:0;border-radius:12px"></iframe>
 ```
@@ -249,46 +248,6 @@ Bei Mehrspieler-Spielen (`pad`, `online` oder `multi`) zeigen Übersicht, Einbet
 
 **Spiel-Vertrag, damit es überall sinnvoll läuft:** Das Spiel füllt die Seite (`100vw`/`100dvh`, kein Scrollen), funktioniert in einem iframe, auf Touch, mit Tastatur und mit Pfeiltasten/OK am TV, und behandelt `?join=CODE` (Controller) sowie, falls vorhanden, `?tv` (Gastgeber am TV). Hilfen dafür: `device.js` (Gerät erkennen) und `gamekit.js` (`EasyGamesKit.start({ controller, host, solo })`, `joinUrl()`, `fullscreenOnInput()`, `keepAwake()`, `back()`, `close()`). Details und Beispiele: `einbinden.html`.
 
-## AnMaCha Radio Surfer: eigene Hindernisse
-
-Bilder (JPG, JPEG oder PNG, quadratisch oder quer; Größe wird automatisch angepasst) als
-`anmacha-radio-surfer/hindernisse/01.jpg` bis `20.jpg` (auch `.jpeg` oder `.png`) ablegen. Es werden nur vorhandene Dateien
-verwendet; ohne Bilder läuft das Spiel mit Platzhaltern. Jedes Bild erscheint mal niedrig (springen),
-mal hoch (ausweichen), mal hängend (rutschen).
-
-Die hochgeladenen Bilder erscheinen außerdem als **Poster an den Rack-Wänden** (nur wenn Bilder vorhanden sind).
-
-### Level, Räume und neue Hindernisse
-
-Jedes Level hat einen eigenen Raum (Licht, Nebel, Akzentfarbe) und ab Level 2 kommen neue Hindernisse dazu:
-Kabelsalat (L2), Firewall (L3), Pop-up (L4), Server-Rack + Funkmast (L5), Glasfaser-Laser (L6), Datenwolke (L7),
-Computer-Virus (L8), Satellitenschüssel (L9), Paketflut + Mikrofon (L10). Die Form verrät die Aktion:
-gelber Rahmen = springen, pinker Rahmen = rutschen, blauer Rahmen = ausweichen.
-
-### Bestenliste (Top 10)
-
-Wer es in die Top 10 schafft, kann nach dem Spiel seinen Namen eingeben (max. 12 Zeichen). Standardmäßig wird die Liste
-**im Browser des Spielers** gespeichert (localStorage), sie gilt also pro Gerät.
-
-Für eine **gemeinsame Liste aller Spieler** braucht es einen kleinen Online-Speicher, GitHub Pages allein kann keine Daten speichern.
-Im Spiel (`anmacha-radio-surfer/index.html`) die URL bei `LEADERBOARD_URL` eintragen. Erwartet wird:
-`GET` liefert `[{"n":"Name","s":123}, …]`, `POST` (Body als Text-JSON `{"n":"Name","s":123}`) speichert einen Eintrag.
-Beispiel mit Google Apps Script (Tabelle mit den Spalten Name und Score, als Web-App mit Zugriff „Jeder“ bereitstellen):
-
-```js
-function doGet() {
-  const rows = SpreadsheetApp.getActiveSheet().getDataRange().getValues().slice(1)
-    .map(r => ({ n: String(r[0]), s: +r[1] })).sort((a, b) => b.s - a.s).slice(0, 10);
-  return ContentService.createTextOutput(JSON.stringify(rows)).setMimeType(ContentService.MimeType.JSON);
-}
-function doPost(e) {
-  const d = JSON.parse(e.postData.contents);
-  SpreadsheetApp.getActiveSheet().appendRow([String(d.n).slice(0, 12), Math.floor(+d.s) || 0]);
-  return ContentService.createTextOutput('ok');
-}
-```
-
-Hinweis: Ohne Server-Prüfung können Spieler ihren Score manipulieren – für ein Hobby-Ranking meist ausreichend.
 
 ## AnMaCha Pinball: 13 Tische, Kampagne und freies Spiel
 
@@ -308,21 +267,15 @@ Ein normales Logo (PNG mit Transparenz am besten, auch JPG, SVG oder WebP) als *
 - oder in einem **Spielordner** (z. B. `anmacha-flipper/logo.png`): gilt nur für dieses Spiel und hat Vorrang
 
 Ein Logo im **Hauptordner** ersetzt im Hauptmenü der Spiele das Wort „AnMaCha“ (der Zusatz „FLIPPER“ bzw. „RADIO SURFER“ bleibt darunter).
-Ein Logo im **Spielordner** gilt als kompletter Titel (z. B. „AnMaCha Radio Surfer“) und ersetzt den ganzen Text-Titel; es wird größer dargestellt und am Rand weich ausgeblendet.
+Ein Logo im **Spielordner** gilt als kompletter Titel (z. B. „AnMaCha Pinball“) und ersetzt den ganzen Text-Titel; es wird größer dargestellt und am Rand weich ausgeblendet.
 Tipp: Logos auf ca. 800 px Breite verkleinern (unter ca. 500 KB), dann lädt das Menü schnell.
 Auf dem dunklen Hintergrund passen helle oder farbige Logos am besten. Ohne Logo-Datei bleibt der Text-Titel.
 
-## AnMaCha Beat Surfer: Rhythmusspiel mit 13 Songs
+## Funkrenner: Runner und Beat-Modus
 
-Noten laufen in 4 Spuren auf dich zu – triff sie im Takt der Musik. Die Musik wird komplett im Browser erzeugt (keine Audio-Dateien),
-die Noten ergeben sich aus der Musik (Bass-Drum, Snare, Melodie).
+3D-Endlos-Läufer (Three.js r128, offline in `vendor/`) mit drei Welten (Dschungel, Radiostudio, Fantasy-Welt), je fünf Leveln und Endlos-Modus. Figuren und viele Modelle: KayKit (Kay Lousberg, CC0), Ordner `funkrenner/models/`. Spielkern `js/core.js` (rein rechnerisch, Test: `node funkrenner/tests/core.test.js`), Ansicht `js/view.js`, Welten `js/themes.js`, Oberfläche `js/app.js`.
 
-- **Steuerung:** `D` `F` `J` `K` oder die Pfeiltasten (`←` `↓` `↑` `→`), `P` Pause, `R` Neustart, `M` Ton. Am Handy: 4 große Tasten unten.
-- **Wertung:** Perfekt / Gut / Verpasst, Combo-Multiplikator bis x4, „Welle“ (Lebensanzeige) – wird sie leer, ist der Song verloren. Am Ende gibt es 1–3 Sterne nach Genauigkeit.
-- **Genre pro Sender:** jeder Sender hat einen eigenen Song im passenden Stil (RapRadio 24 Rap, SchlagerPop 24 Schlager, ChristmasRadio 24 Weihnachten, Special-Radio Entspannung, RadioFloh! Kindermusik, Zocker-FM Chiptune usw.). Namen, Genres und Tempo stehen im Array `STATIONS` in `anmacha-beat-surfer/index.html`.
-- **Kampagne:** 13 Songs von leicht nach schwer (Entspannung → … → Club/EDM, 74 → 148 BPM); Fortschritt wird gespeichert. **Freies Spiel:** beliebigen Song wählen.
-- **Logos:** Song *n* nutzt `anmacha-beat-surfer/logos/NN.png|jpg|jpeg` (`01` … `13`); es erscheint als große Tafel hinter der Bahn. Das Titel-Logo (`logo.png`) im Spielordner (oder im Hauptordner) ersetzt den Text-Titel im Menü.
-- **Audio-Versatz:** im Pause-Menü einstellbar (z. B. für Bluetooth-Kopfhörer).
+Der Beat-Modus (13 Sender, Klavierlicht-Lieder) steckt in `js/beat.js`; die Musik wird im Browser erzeugt. Sender-Logos: `funkrenner/logos/01.webp` … `13.webp`. Er löst die früheren Spiele Radio Surfer und Beat Surfer ab.
 
 ## AnMaCha Memory: Logo-Memory mit Mischer und Duell
 

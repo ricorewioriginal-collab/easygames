@@ -709,35 +709,35 @@
    "trailer": null
   },
   {
-   "id": "anmacha-radio-surfer",
-   "title": "AnMaCha Radio Surfer",
-   "desc": "3D-Runner durchs Internet: springen, rutschen, ausweichen – 10 Level.",
-   "icon": "📻",
-   "img": "anmacha-radio-surfer/card.jpg",
-   "bg": "linear-gradient(145deg,#00ff66,#19f0ff)",
-   "glow": "rgba(0,255,150,.5)",
-   "path": "anmacha-radio-surfer/",
+   "id": "funkrenner",
+   "title": "Funkrenner",
+   "desc": "3D-Runner à la Temple Run: 15 Level in Dschungel, Radiostudio und Fantasy-Welt, Endlos-Modus, 5 echte Helden, Upgrades – plus Beat-Modus mit 13 Sender-Songs und 🎹 über 100 Klavierlicht-Liedern.",
+   "icon": "🏃",
+   "img": "funkrenner/card.jpg",
+   "bg": "linear-gradient(145deg,#19f0ff,#7a5cff 55%,#ff3dc8)",
+   "glow": "rgba(122,92,255,.55)",
+   "path": "funkrenner/",
    "modes": {},
    "multiplayer": false,
    "guide": {
-    "anleitung": "Du surfst durch das Internet und weichst Hindernissen aus. Es gibt 10 Level, du hast 3 Leben, und ab Level 4 wird es schneller. Hindernisse sind farbig markiert: niedrige (gelb) überspringst du, hängende (pink) unterrutschst du, hohe (blau) umgehst du durch Spurwechsel. Am Ende kannst du dich in die Top 10 eintragen.",
+    "anleitung": "Dein Held rennt automatisch durch Dschungel, Radiostudio oder Fantasy-Welt. Wechsle die Spur, springe über niedrige und rutsche unter hohen Hindernissen durch. Sammle Münzen und Power-ups, erreiche das Ziel-Tor und hole dir drei Sterne pro Level. Dazu gibt es einen Endlos-Modus und den Beat-Modus mit 13 Sendern und über 100 Liedern.",
     "steuerung": [
-     "PC: Pfeil links/rechts oder A/D = Spur wechseln, Pfeil hoch/W/Leertaste = Springen, Pfeil runter/S = Rutschen, P oder Esc = Pause, Enter/Leertaste = Start bzw. Weiter",
-     "Touch: Wischen links/rechts = Spur wechseln, Wischen nach oben oder Tippen = Springen, Wischen nach unten = Rutschen, Pause-Knopf oben rechts",
-     "Controller: Steuerkreuz oder linker Stick wie die Pfeiltasten (Spur, springen, rutschen), A springt bzw. startet, Start oder B Pause"
+     "PC und TV: Pfeiltasten oder A/D = Spur wechseln, W, Pfeil hoch oder Leertaste = Springen, S oder Pfeil runter = Rutschen, Esc oder P = Pause",
+     "Touch: Wischen links/rechts = Spur wechseln, nach oben wischen oder tippen = Springen, nach unten wischen = Rutschen; im Beat-Modus die vier Felder unten",
+     "Controller: Steuerkreuz oder Stick = Spur, springen, rutschen; A springt, B rutscht, Start = Pause; im Beat-Modus Steuerkreuz oder X, A, Y, B"
     ],
     "tipps": [
-     "Achte auf die Rahmenfarbe: gelb springen, pink rutschen, blau Spur wechseln.",
-     "In jeder normalen Reihe bleibt mindestens eine Spur frei – schau früh nach der Lücke.",
-     "Die Mittelspur ist die beste Grundposition: Von dort erreichst du beide Seiten mit einem Wechsel."
+     "Die Mittelspur ist die beste Grundposition.",
+     "Hohe Hindernisse unterrutschst du, niedrige überspringst du, Blöcke umgehst du.",
+     "Münzen kaufen Upgrades: Magnet und Doppelpunkte lohnen sich zuerst."
     ]
    },
-   "size": 3097888,
-   "files": 21,
+   "size": 12775599,
+   "files": 150,
    "offline": true,
    "cloud": {
-    "game": "radio-surfer",
-    "prefix": "anmachaRadioSurfer"
+    "game": "funkrenner",
+    "prefix": "funkrenner-"
    },
    "trailer": null
   },
@@ -803,37 +803,6 @@
    "cloud": {
     "game": "flipper",
     "prefix": "anmachaFlipper,anmachaPinball"
-   },
-   "trailer": null
-  },
-  {
-   "id": "anmacha-beat-surfer",
-   "title": "AnMaCha Beat Surfer",
-   "desc": "3D-Rhythmusspiel: Triff die Noten im Takt – 13 Sender-Songs, steigende Schwierigkeit, dazu 🎹 über 100 bekannte Lieder aus Klavierlicht (gemeinfrei, Noten folgen der Melodie).",
-   "icon": "🎧",
-   "img": "anmacha-beat-surfer/card.jpg",
-   "bg": "linear-gradient(145deg,#FF2D95,#8B5CF6 55%,#00E5FF)",
-   "glow": "rgba(255,45,149,.5)",
-   "path": "anmacha-beat-surfer/",
-   "modes": {},
-   "multiplayer": false,
-   "guide": {
-    "anleitung": "Ein Rhythmusspiel auf 4 Spuren: Triff die Noten im Takt der Musik. Verpasste Noten senken die Welle (Lebensleiste); fällt sie auf null, ist der Song verloren. In der Kampagne spielst du 13 Sender (Genres) von entspannt bis schwer, im Freien Spiel wählst du einen beliebigen Sender. Am Ende gibt es Sterne, Genauigkeit, maximale Combo und Perfekt-Treffer. Im Bereich 🎹 Lieder spielst du über 100 bekannte, gemeinfreie Lieder aus Klavierlicht – die Noten folgen der echten Melodie, das Klavier spielt die Begleitung, jedes Lied zeigt seine Rechte-Angabe.",
-    "steuerung": [
-     "PC: D, F, J, K oder Pfeil links, runter, hoch, rechts = die vier Spuren treffen, P/Esc = Pause, R = Neustart, M = Ton, Enter/Leertaste = Start bzw. Weiter",
-     "Touch: Die vier großen Tasten unten antippen (links, runter, hoch, rechts); Pause, Ton, Neustart oben rechts",
-     "Controller: Steuerkreuz links, runter, hoch, rechts oder LB, LT, RT, RB = die vier Spuren, A startet/bestätigt, B oder Start = Pause, Select = Ton"
-    ],
-    "tipps": [
-     "Treffer wirken zu früh oder zu spät (z. B. Bluetooth-Kopfhörer)? In der Pause lässt sich der Audio-Versatz anpassen."
-    ]
-   },
-   "size": 2601367,
-   "files": 19,
-   "offline": true,
-   "cloud": {
-    "game": "beat-surfer",
-    "prefix": "anmachaBeat"
    },
    "trailer": null
   },

@@ -13,7 +13,7 @@ window.EASYGAMES_CATS = {
     // Abenteuer
     'kiko-sterneninseln': 'abenteuer', 'taschi': 'abenteuer', 'zotik': 'abenteuer', 'aeru': 'abenteuer', 'anmacha-quest-rpg': 'abenteuer', 'anmacha-urwaldlager': 'abenteuer', 'pride-city': 'abenteuer', 'schatzfieber': 'abenteuer',
     // Action
-    'saftblitz': 'action', 'funkgolf': 'action', 'tortenschlacht': 'action', 'sendemast-sumo': 'action', 'wolkenhopser': 'action', 'huepfstrasse': 'action', 'funk-survivor': 'action', 'easyclash': 'action', 'bowling-bahn': 'action', 'kuechen-chaos': 'action', 'konfetti-party': 'action', 'brainrot-parkour': 'action', 'challenge-show': 'action', 'groove-arena': 'musik', 'darts-arena': 'action', 'krawallvoegel': 'action', 'rico-flap': 'action', 'radio-maze': 'action', 'pufi-farbwind': 'action', 'riftzone': 'action', 'anmacha-radio-surfer': 'action', 'anmacha-flipper': 'action', 'anmacha-snake': 'action', 'anmacha-showdown': 'action', 'anmacha-kart': 'action', 'anmacha-funkparcours': 'action', 'anmacha-podcast-tycoon': 'action', 'turbokick': 'action', 'fabelkick': 'action',
+    'saftblitz': 'action', 'funkgolf': 'action', 'tortenschlacht': 'action', 'sendemast-sumo': 'action', 'wolkenhopser': 'action', 'huepfstrasse': 'action', 'funk-survivor': 'action', 'easyclash': 'action', 'bowling-bahn': 'action', 'kuechen-chaos': 'action', 'konfetti-party': 'action', 'brainrot-parkour': 'action', 'challenge-show': 'action', 'groove-arena': 'musik', 'darts-arena': 'action', 'krawallvoegel': 'action', 'rico-flap': 'action', 'radio-maze': 'action', 'pufi-farbwind': 'action', 'riftzone': 'action', 'funkrenner': 'action', 'anmacha-flipper': 'action', 'anmacha-snake': 'action', 'anmacha-showdown': 'action', 'anmacha-kart': 'action', 'anmacha-funkparcours': 'action', 'anmacha-podcast-tycoon': 'action', 'turbokick': 'action', 'fabelkick': 'action',
     // Puzzle
     'funkblasen': 'denken', 'fall-akte': 'denken', 'colorpop-universe': 'denken', 'kraterkommando': 'denken', 'anmacha-radio-match': 'denken', 'wortspiele': 'denken', 'anmacha-memory': 'denken', 'anmacha-tower-defense': 'denken', 'wobbel': 'denken', 'anmacha-frequenzrad': 'denken', 'frequenzminen': 'denken', 'deluxe-2048': 'denken', 
     // Quiz
@@ -23,6 +23,6 @@ window.EASYGAMES_CATS = {
     // Tisch
     'ricopoly': 'tisch', 'partyverse': 'tisch', 'anmacha-gold-reels': 'tisch', 'spielesammlung': 'tisch', 'anmacha-undercover': 'tisch', 'werwolf-nacht': 'tisch', 'spinwelten': 'tisch', 'funk-billard': 'tisch',
     // Musik
-    'anmacha-beat-surfer': 'musik', 'prismrush': 'musik', 'show-me-your-voice': 'musik', 'beat-studio': 'musik', 'klavierlicht': 'musik'
+    'prismrush': 'musik', 'show-me-your-voice': 'musik', 'beat-studio': 'musik', 'klavierlicht': 'musik'
   }
 };

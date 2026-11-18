@@ -1,7 +1,7 @@
 # Tisch-Logos (nur für AnMaCha Pinball)
 
 Es gibt **13 Tische**. Tisch *n* bekommt das Logo mit der Nummer *n*: `01` … `13`, als `.png`, `.jpg` oder `.jpeg` (Endungen dürfen gemischt sein).
-Jedes Spiel hat seinen eigenen Ordner – die Bilder des Radio Surfers (`anmacha-radio-surfer/hindernisse/`) sind davon getrennt.
+Jedes Spiel hat seinen eigenen Ordner – die Bilder anderer Spiele sind davon getrennt.
 
 - Fehlt ein Logo, zeigt der Tisch einen Platzhalter mit der Nummer
 - Jeder Tisch hat ein eigenes Layout, eigene Farben und Spielfeld-kunst, das Logo erscheint oben auf dem Tisch

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "e96a77bdc2fc",
- "generated": "2026-11-17T00:33:18+01:00",
- "commit": "90bdbef8be72a5211437fc998df4e0711ceea2c0",
+ "version": "7d6345a90ae5",
+ "generated": "2026-11-18T21:03:42+01:00",
+ "commit": "99b2494675e23eb9ac7640bebcbbf85b077b916a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -435,101 +435,6 @@
    "p": "anleitung.html",
    "s": 10371,
    "h": "78d4b57553c3c3cf13cfd4a6e5de1fd9345d6950279e12034ad09bfc109e8aa5"
-  },
-  {
-   "p": "anmacha-beat-surfer/card.jpg",
-   "s": 40453,
-   "h": "7ac721bfd4cc82b257c937a2eecddfe42afb1bb4f9c6e3558748ed812f02c0a3"
-  },
-  {
-   "p": "anmacha-beat-surfer/index.html",
-   "s": 72037,
-   "h": "cf988f568b67b366b81fa61ad531de998b43a9bd939112a44c2c918b41b24ed1"
-  },
-  {
-   "p": "anmacha-beat-surfer/logo.png",
-   "s": 172254,
-   "h": "2334bf70302e49f298ca3043a89fcc1b5312f4fd04c49267dc2201ea8b4dccf5"
-  },
-  {
-   "p": "anmacha-beat-surfer/logo.svg",
-   "s": 1580,
-   "h": "d3454679f34857624dd1d020dcb75726986015464bde7ab66197e707bc537669"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/01.jpg",
-   "s": 31963,
-   "h": "95ca2a58102c4f1a6d632a78582037d7f0b48dbba4be7d52959e73d39ae93516"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/02.png",
-   "s": 147746,
-   "h": "ef00ec17b317f91313dc61f12facab356963ca5ea714a8728c3ec522432bf52e"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/03.png",
-   "s": 231008,
-   "h": "4cb0e87e803619c64c33f2520b33131b0307777dc0b53a6c1f97193c4efd395e"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/04.png",
-   "s": 224422,
-   "h": "c8f147dbab3c2b01379014baa9e7d09e0566eeeca75b0a6d143220606eb342c1"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/05.png",
-   "s": 219732,
-   "h": "c969d2de9cf000d60563b1a9e43e8e24e18ae92e737a7bb6653ceaa425fa9f78"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/06.png",
-   "s": 239933,
-   "h": "30ffffc4cd63b7c2f602df263083a10f11a54cc9fbb4560e7118fb2ec1696588"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/07.png",
-   "s": 177752,
-   "h": "c40b04528ca6f296c4718b8cbe9c90869b1b0dfa907aa558ad86aeb048294264"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/08.png",
-   "s": 250470,
-   "h": "aef316140fe42ebd87d887269ea31aa313698eb32dda372138511d84c9553139"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/09.png",
-   "s": 62466,
-   "h": "b2c82ef43da4f35076445c95468e01a49b9ff656e46ddb3fb6a47d40c077906e"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/10.png",
-   "s": 312694,
-   "h": "ae04ce10ecd9292741b9da7a5665f7d326fa280e4d2240dcc85c939c24ac2ddb"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/11.png",
-   "s": 58237,
-   "h": "ec27117692207c4638305dfa73ea447e73459e881e2d63d513c1233ad359c09a"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/12.png",
-   "s": 166796,
-   "h": "8eabe8d95f3467ebd0a2072e0c861d7e03fd223447c0da3ce7ba8c887afe9eb8"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/13.png",
-   "s": 189026,
-   "h": "c3d7d73173d2bf25765a3ec608b11c1517cde1397511f1b0cbc92f7f722b05e7"
-  },
-  {
-   "p": "anmacha-beat-surfer/manifest.webmanifest",
-   "s": 791,
-   "h": "710e7997d34c394452750b56bf478e66f0ab6c53570b607baf0d9f8815a9ecbe"
-  },
-  {
-   "p": "anmacha-beat-surfer/sw.js",
-   "s": 2007,
-   "h": "7278e220a22ed63b609ba85e4ce9e365aaf00042718ea7d1683fbd69e58d190f"
   },
   {
    "p": "anmacha-flipper/card.jpg",
@@ -7402,111 +7307,6 @@
    "h": "665fcc1d9f7c85790f3697f4ded511d3b9996e76cd3827c563a15532b8b1f276"
   },
   {
-   "p": "anmacha-radio-surfer/card.jpg",
-   "s": 41565,
-   "h": "b09b8589c9d5bb1478bbd73cf64c7859255d425a689b8eb715f410d7fbb701cc"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/01.jpg",
-   "s": 31963,
-   "h": "95ca2a58102c4f1a6d632a78582037d7f0b48dbba4be7d52959e73d39ae93516"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/02.png",
-   "s": 147746,
-   "h": "ef00ec17b317f91313dc61f12facab356963ca5ea714a8728c3ec522432bf52e"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/03.png",
-   "s": 231008,
-   "h": "4cb0e87e803619c64c33f2520b33131b0307777dc0b53a6c1f97193c4efd395e"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/04.png",
-   "s": 224422,
-   "h": "c8f147dbab3c2b01379014baa9e7d09e0566eeeca75b0a6d143220606eb342c1"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/05.png",
-   "s": 219732,
-   "h": "c969d2de9cf000d60563b1a9e43e8e24e18ae92e737a7bb6653ceaa425fa9f78"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/06.png",
-   "s": 239933,
-   "h": "30ffffc4cd63b7c2f602df263083a10f11a54cc9fbb4560e7118fb2ec1696588"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/07.png",
-   "s": 177752,
-   "h": "c40b04528ca6f296c4718b8cbe9c90869b1b0dfa907aa558ad86aeb048294264"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/08.png",
-   "s": 250470,
-   "h": "aef316140fe42ebd87d887269ea31aa313698eb32dda372138511d84c9553139"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/09.png",
-   "s": 62466,
-   "h": "b2c82ef43da4f35076445c95468e01a49b9ff656e46ddb3fb6a47d40c077906e"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/10.png",
-   "s": 312694,
-   "h": "ae04ce10ecd9292741b9da7a5665f7d326fa280e4d2240dcc85c939c24ac2ddb"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/11.png",
-   "s": 58237,
-   "h": "ec27117692207c4638305dfa73ea447e73459e881e2d63d513c1233ad359c09a"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/12.png",
-   "s": 166796,
-   "h": "8eabe8d95f3467ebd0a2072e0c861d7e03fd223447c0da3ce7ba8c887afe9eb8"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/13.png",
-   "s": 189026,
-   "h": "c3d7d73173d2bf25765a3ec608b11c1517cde1397511f1b0cbc92f7f722b05e7"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/14.png",
-   "s": 185188,
-   "h": "7fcaee29fc885649ecdf15c9b30b966538b50bffe23f9d92a6c3aa2d8c3e9171"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/15.jpg",
-   "s": 51165,
-   "h": "d632b956b16ea4f7c691e5aea72ba9ac0b31cba122304f64dd1e1ac185e85c3d"
-  },
-  {
-   "p": "anmacha-radio-surfer/index.html",
-   "s": 61181,
-   "h": "1f090fac53ea55ee0c73cf7457d4711ee863433c297fc6e42c8d3466f8a5e762"
-  },
-  {
-   "p": "anmacha-radio-surfer/logo.png",
-   "s": 442226,
-   "h": "163872661f3b985fd8d19b0ccd987d2d00c2fabf3a6772a2e70e4993073e3233"
-  },
-  {
-   "p": "anmacha-radio-surfer/logo.svg",
-   "s": 1516,
-   "h": "e03c465d248f6cc3ddbcb7c2100fa3ac11084e521c6c674b7b9fd1fd86115487"
-  },
-  {
-   "p": "anmacha-radio-surfer/manifest.webmanifest",
-   "s": 796,
-   "h": "6244f0c7a171e239b329f5fe3e220ebc2bc725beae6810e5a889bdb052632d88"
-  },
-  {
-   "p": "anmacha-radio-surfer/sw.js",
-   "s": 2006,
-   "h": "cca5747e9cc3e3ed88bf69e00aa8d842356bf5c6d3a4f1d8d940bd4e2896f053"
-  },
-  {
    "p": "anmacha-showdown/audio.js",
    "s": 10298,
    "h": "e5f0b6499bf58e013162e72e63bc88136356950080140e49d97c2299310deb85"
@@ -9243,8 +9043,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3019,
-   "h": "739528d817d53832ac25e2351d019f403895019041cf4698560d55d2464c1db7"
+   "s": 2977,
+   "h": "94c745f1302b52cbf177a40686222dec5c21f22bd4df34645a4a167a955505a3"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -9318,13 +9118,13 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 25201,
-   "h": "83519627e7f1378fc7019d025c197e23b29768e0194168f6f3d22a90710506ea"
+   "s": 25184,
+   "h": "9bec9b20f5a8fec148bfed206543f5a3fe27546252620964452c56bd54bca5e4"
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 37882,
-   "h": "67da42914a1c013ac971688749dc0c87ddead7e6daaf9ac695b18d122df8e48f"
+   "s": 37902,
+   "h": "42dddcf6e8492c9c5ce908095dd51433e386f27a963ef2de59bd2b50dad55150"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -10082,6 +9882,756 @@
    "h": "5ebc033bb9b02167d6cbdb58c54be5859a1c01a906c900efef40a77e0b145d0b"
   },
   {
+   "p": "funkrenner/card.jpg",
+   "s": 48387,
+   "h": "eea08f53c9ed803473eafaaafeeb75c2df64a49f963db29f8a7bdf9b25f76c7d"
+  },
+  {
+   "p": "funkrenner/index.html",
+   "s": 14083,
+   "h": "22e9fc103dacc5e7699f8fe66188da0dd8602f370786b983cef5d1c9d6460ee7"
+  },
+  {
+   "p": "funkrenner/js/app.js",
+   "s": 40349,
+   "h": "26c5c24dcc0f274f8f96ace101432cb6b2d611786df5d070486e6d2960d73f22"
+  },
+  {
+   "p": "funkrenner/js/beat.js",
+   "s": 22338,
+   "h": "7582754e9354daf90efaab2dcfb15574dd04f362a367151a40d96ac9a26bf2dd"
+  },
+  {
+   "p": "funkrenner/js/core.js",
+   "s": 12656,
+   "h": "c79525c7b590a6f67d0cc5b776f5a8899be0fd350312e659fbe71dda94c603db"
+  },
+  {
+   "p": "funkrenner/js/hero.js",
+   "s": 3419,
+   "h": "889af70d299a0ee02754e9c0ca3229ce7306f1acf8ae29b4e4f69faea3230a6e"
+  },
+  {
+   "p": "funkrenner/js/themes.js",
+   "s": 32205,
+   "h": "c5ae6d5a72a97794f52b71d0b1d2acd4d17f4120e9a359dc4f6870a16901164b"
+  },
+  {
+   "p": "funkrenner/js/view.js",
+   "s": 16627,
+   "h": "626e6820d211ce41bbc528bf050aa53af6fe59310cf9116de7864d0d79463537"
+  },
+  {
+   "p": "funkrenner/js/world.js",
+   "s": 12559,
+   "h": "d8aa43d532ff319a25abc05de6795af1d3686d7be090b428717f132bdf0c59ba"
+  },
+  {
+   "p": "funkrenner/logos/01.webp",
+   "s": 10202,
+   "h": "67157d7042cdb9c455cd225c12f474c8d0603d406ba145c482363dcefa2976d2"
+  },
+  {
+   "p": "funkrenner/logos/02.webp",
+   "s": 10776,
+   "h": "30d511a1594a68e203f226f1a34e39a7ee9cc38f59465c4eba110400d3b5b611"
+  },
+  {
+   "p": "funkrenner/logos/03.webp",
+   "s": 15444,
+   "h": "66ed5b5ff89db4fd716705388a9fab6b26e47d22c4eacde949ea42f82ccd03a2"
+  },
+  {
+   "p": "funkrenner/logos/04.webp",
+   "s": 12112,
+   "h": "41e1dd60978a46e14829a0c858ba285b48e9ef7f660935614edfbdf5471338ab"
+  },
+  {
+   "p": "funkrenner/logos/05.webp",
+   "s": 14578,
+   "h": "e94a1202a057a41e4bc49742324612cd5b9f80bf31c2819e7b8832f7b98b1edd"
+  },
+  {
+   "p": "funkrenner/logos/06.webp",
+   "s": 14392,
+   "h": "672eef8c9488595f18c9d1f5626df956abaff954d4933dda3f067492c7721ee3"
+  },
+  {
+   "p": "funkrenner/logos/07.webp",
+   "s": 13866,
+   "h": "be6502dda436e45e1a1d1d94e62e9f50f208d76d4a1e518c037adccd92151e63"
+  },
+  {
+   "p": "funkrenner/logos/08.webp",
+   "s": 15816,
+   "h": "b028549cea0a3bd087ad3d10de9474d87afd30ce1fe8d7ce68f4c5eea960315f"
+  },
+  {
+   "p": "funkrenner/logos/09.webp",
+   "s": 4886,
+   "h": "850469fd9d4a3f0db557cea0e13720f2ab55e5be62e8997a9edd833c06a8d523"
+  },
+  {
+   "p": "funkrenner/logos/10.webp",
+   "s": 21882,
+   "h": "2acc5fe10f0a06a56b4025024b27d633e47cee737c30a6d685f3932348b876f0"
+  },
+  {
+   "p": "funkrenner/logos/11.webp",
+   "s": 6634,
+   "h": "697282bdd1a16148b943147cb33777a6af6301270ecc1ee330741f35e234cd74"
+  },
+  {
+   "p": "funkrenner/logos/12.webp",
+   "s": 6756,
+   "h": "964ba1dbbee6fafa1852405190a7d7abe90efcb155051c1fc6968f9536768dd2"
+  },
+  {
+   "p": "funkrenner/logos/13.webp",
+   "s": 7078,
+   "h": "fc84074d141021de57fe3d3e8426e5e5f8b66b2254cfb40280d8b5886e5b1d1e"
+  },
+  {
+   "p": "funkrenner/manifest.webmanifest",
+   "s": 754,
+   "h": "4682469fbbea1c3cc5e76c9736f53ee5030e56786ba39fcf497da5917f09820e"
+  },
+  {
+   "p": "funkrenner/models/env/armchair.glb",
+   "s": 34276,
+   "h": "6b51f1091195b7ce00d522562cc949a8ebc9c5de848315889266df174ccbee7f"
+  },
+  {
+   "p": "funkrenner/models/env/banner_patternA_red.glb",
+   "s": 25164,
+   "h": "64243b0a8110bbc6e5a02f5c0acbe447dc7ea65319123319c402dd26486dad25"
+  },
+  {
+   "p": "funkrenner/models/env/banner_patternB_blue.glb",
+   "s": 24224,
+   "h": "a86be2d4bc01207ab694b614a9bb9e358ed498467a8e8bcd695c838be0f4f88a"
+  },
+  {
+   "p": "funkrenner/models/env/banner_shield_blue.glb",
+   "s": 55104,
+   "h": "27fc58e296e15ce180f212be6998677ab191b5055d194d2b062c95ce8c7acef7"
+  },
+  {
+   "p": "funkrenner/models/env/banner_shield_green.glb",
+   "s": 55104,
+   "h": "6d6363e9dc4ee70a666b7d7cb51bfc1d2cdfaf159d756dd3d3cf7e9ce50d5165"
+  },
+  {
+   "p": "funkrenner/models/env/banner_shield_red.glb",
+   "s": 55104,
+   "h": "d332133c940fa9dc6bea1668f2f8f2c07b5dce5db23b865ade5d035c8dc8e949"
+  },
+  {
+   "p": "funkrenner/models/env/banner_thin_red.glb",
+   "s": 23080,
+   "h": "1a96a91574f6ef233dc11286eb66f9f9502ef3c52a425199109f1469d1fb310a"
+  },
+  {
+   "p": "funkrenner/models/env/banner_triple_blue.glb",
+   "s": 36232,
+   "h": "58e9a9625c99b199e7ae3f387e1594915a4d6091b0e93da0d0b2ac18aeb691bc"
+  },
+  {
+   "p": "funkrenner/models/env/banner_triple_red.glb",
+   "s": 36232,
+   "h": "39a41d11c12ec80629d322107de803a6bc21a4da94b7d4ba5183ee863a877f7e"
+  },
+  {
+   "p": "funkrenner/models/env/banner_triple_yellow.glb",
+   "s": 36236,
+   "h": "cdc8eab3dc0446cb76c8023a398a78e3d67791df3dbb592c64236bba8c063e11"
+  },
+  {
+   "p": "funkrenner/models/env/barrel.glb",
+   "s": 32724,
+   "h": "7329cbf7efb3dd87f1c9354094622ee662a6798aee9b360e3eb3a7214bbd855f"
+  },
+  {
+   "p": "funkrenner/models/env/barrel_large.glb",
+   "s": 44292,
+   "h": "9fae6a79056241baf253fe9272dc7a7ddb174e1caf153eb5013c58a596722148"
+  },
+  {
+   "p": "funkrenner/models/env/barrel_small.glb",
+   "s": 32060,
+   "h": "f46d0c421e46080aff079286ce9459a22da25e1b4f3489a04243f17617175212"
+  },
+  {
+   "p": "funkrenner/models/env/barrel_small_stack.glb",
+   "s": 98092,
+   "h": "c23dc73a11c5a57ed33cb8a9df99f2b2793517341c5d62c6e50b0150652e8e99"
+  },
+  {
+   "p": "funkrenner/models/env/barrier.glb",
+   "s": 23292,
+   "h": "2c6a1b89de1c87778c7ae9afc17fa9eabc4aa4148f3b8748f062b5c8ec7f6c00"
+  },
+  {
+   "p": "funkrenner/models/env/barrier_column.glb",
+   "s": 24856,
+   "h": "aa65dd217a0a1e4d208800023ca93bd6ee6311db20c368142c34861541e914ba"
+  },
+  {
+   "p": "funkrenner/models/env/barrier_half.glb",
+   "s": 19948,
+   "h": "cc4c5641e641c54bc1e7ca7851f9b2d82080ff8f3d0cc334d59e6f1f38245236"
+  },
+  {
+   "p": "funkrenner/models/env/book_set.glb",
+   "s": 28572,
+   "h": "a289798ad81deb7d3c1c82bb0ed140c802b6a70de5b4943e94432136a5932484"
+  },
+  {
+   "p": "funkrenner/models/env/box_large.glb",
+   "s": 28740,
+   "h": "6dacda267f04769f8ebbb7e991885785054923ea3d5eb19e833768a911d5b661"
+  },
+  {
+   "p": "funkrenner/models/env/box_stacked.glb",
+   "s": 146968,
+   "h": "c9035de1145d1cee058941abc4bc9ea7b039c98e94c56712cb5e9626a3d18017"
+  },
+  {
+   "p": "funkrenner/models/env/building_bridge_A.glb",
+   "s": 42732,
+   "h": "dd3d089b51aa49262be6a13ac5fbdff6fcfa492619426eb3d25018f4023679f9"
+  },
+  {
+   "p": "funkrenner/models/env/building_castle_blue.glb",
+   "s": 334920,
+   "h": "6df0ccb7d4f181316de8781e84d4654d5c8c8a3c0261b27e7a3865090ee29a0c"
+  },
+  {
+   "p": "funkrenner/models/env/building_castle_red.glb",
+   "s": 334916,
+   "h": "26dabf6c04aaaf211629a0aafd3e0093d5d50a37dfbbdc975e6f2fcc5862a9ba"
+  },
+  {
+   "p": "funkrenner/models/env/building_church_red.glb",
+   "s": 106940,
+   "h": "9af82a1ed4439e65e10bbe038aa3be61100c264adec853d8e8d6bdcc6453d0fc"
+  },
+  {
+   "p": "funkrenner/models/env/building_home_A_red.glb",
+   "s": 72552,
+   "h": "c665f47be4e82ad5b6d93db5fbd054e2445a969b9068d07ef4241cb6ed4aae98"
+  },
+  {
+   "p": "funkrenner/models/env/building_home_A_yellow.glb",
+   "s": 72556,
+   "h": "e201b540765e6c60f9b3f29511b8c67999160f6a3ea1246482952e07f7b093f9"
+  },
+  {
+   "p": "funkrenner/models/env/building_home_B_blue.glb",
+   "s": 99324,
+   "h": "b0685c1a2a259708e2d52b45e00093ea51069ea7bdb5efe548cfb72f5d47a73c"
+  },
+  {
+   "p": "funkrenner/models/env/building_stage_A.glb",
+   "s": 58988,
+   "h": "5e14fb04410547ee1b0f457a8bdf6f4df9736691dee5ee56a5e83cd95a211f88"
+  },
+  {
+   "p": "funkrenner/models/env/building_tavern_green.glb",
+   "s": 188060,
+   "h": "2c0eb123538b50128469dc582ee461c1fe22aac621a1de741c575487e5944269"
+  },
+  {
+   "p": "funkrenner/models/env/building_tower_A_blue.glb",
+   "s": 130880,
+   "h": "2a170b85a7d553f23aa81f91d451c23307774ac73dbb97771ef5cc27bbce902d"
+  },
+  {
+   "p": "funkrenner/models/env/building_tower_A_red.glb",
+   "s": 130876,
+   "h": "50e60ba42e5ebba903ff538178c550fb31f12741d6b9166edd3772cc546a94d1"
+  },
+  {
+   "p": "funkrenner/models/env/building_tower_B_green.glb",
+   "s": 148980,
+   "h": "d159e3b2fcd25630c9ef3c0ea371a2cd4d828825ffb9ec3d43311bad457f1515"
+  },
+  {
+   "p": "funkrenner/models/env/building_tower_B_yellow.glb",
+   "s": 148984,
+   "h": "2d4c513d43e8a9384eff5c49a877e7fdbfc8f4c03a4bd9e380fe18358f9df637"
+  },
+  {
+   "p": "funkrenner/models/env/building_tower_base_red.glb",
+   "s": 98880,
+   "h": "4691894e47196ae8e08bba980b3a8f1f0db32c3bb01900056f1ae803acd1caf4"
+  },
+  {
+   "p": "funkrenner/models/env/building_watermill_red.glb",
+   "s": 129460,
+   "h": "868659ba76f188edf79136f3397c153f1279f1df996563e0810da9404fda8426"
+  },
+  {
+   "p": "funkrenner/models/env/building_windmill_green.glb",
+   "s": 160688,
+   "h": "4989885606227b114ae03793693d829c988c88eefafd2c2f089f0285a94b584c"
+  },
+  {
+   "p": "funkrenner/models/env/building_windmill_yellow.glb",
+   "s": 160696,
+   "h": "b16942b09db89de4f912a7c4ceefec7f4045f7f0b2259870cca3b895ffe6cea0"
+  },
+  {
+   "p": "funkrenner/models/env/cabinet_medium.glb",
+   "s": 40244,
+   "h": "7f1ed583219592c753ef4903a1f103afcb42e7ed5d900dd1ae56dc5343c340b5"
+  },
+  {
+   "p": "funkrenner/models/env/cabinet_small_decorated.glb",
+   "s": 44552,
+   "h": "32ba445fbf08a6bc1bf87a758468f792efd78a011a8a721bca63ba8705b5a85a"
+  },
+  {
+   "p": "funkrenner/models/env/cactus_medium_A.glb",
+   "s": 34548,
+   "h": "f1a337b605f4530135ec8c7851bde9d02ac135f670f6df79b267e6bf01a17c5d"
+  },
+  {
+   "p": "funkrenner/models/env/cactus_small_A.glb",
+   "s": 26332,
+   "h": "6a574070fb9959439bbae1b90ea80d07468667e74393db25b82fc6b3ed1a2bfe"
+  },
+  {
+   "p": "funkrenner/models/env/candle_triple.glb",
+   "s": 28240,
+   "h": "3536f0a55df50c728ec9c369c4a6a81c913b33a507ac4a192d418d28fd6677c2"
+  },
+  {
+   "p": "funkrenner/models/env/chair_A.glb",
+   "s": 33472,
+   "h": "30791588df73c1d06bf9469c56063ddc13ab9c56ad1e7493de63980292251ef2"
+  },
+  {
+   "p": "funkrenner/models/env/chair_stool.glb",
+   "s": 27816,
+   "h": "02297f1ed26fe12a5f6f3694370e6bf81e690ba2c94bc0f29946badc3942f7f2"
+  },
+  {
+   "p": "funkrenner/models/env/chest_gold.glb",
+   "s": 140140,
+   "h": "04708d5f88ed59d361c8a6cec1efe8b7028dbc641dfae0a1467f272e14a94b6e"
+  },
+  {
+   "p": "funkrenner/models/env/cloud_big.glb",
+   "s": 32016,
+   "h": "80034328fb8c73364db35dc09ac02f7edc5cc683ed0e575a85852de2c2af75c9"
+  },
+  {
+   "p": "funkrenner/models/env/cloud_small.glb",
+   "s": 25288,
+   "h": "b8391d4c383c1c51bd1ea9d2c4fcb153a1c3de653f00fddc75471a07047af8a1"
+  },
+  {
+   "p": "funkrenner/models/env/coin.glb",
+   "s": 21776,
+   "h": "97d3abdd239d8fa365b14957f7bf45c892aad9d211b3c3b47b4b2311bf947297"
+  },
+  {
+   "p": "funkrenner/models/env/coin_stack_large.glb",
+   "s": 101076,
+   "h": "1a64011dc0d6754bc95d932744ad7717132c538206976a0262293bd4ba31627e"
+  },
+  {
+   "p": "funkrenner/models/env/coin_stack_small.glb",
+   "s": 38404,
+   "h": "b7395adb0c3f8d392f42f483d667af672232a25de4e0cdb23c58fca8bab1dd8f"
+  },
+  {
+   "p": "funkrenner/models/env/column.glb",
+   "s": 20260,
+   "h": "761adf0fcc1a86ab1c42740b7a8ad340d73982f94257e7892b2c7998f98c304e"
+  },
+  {
+   "p": "funkrenner/models/env/couch.glb",
+   "s": 38380,
+   "h": "5ea9359e6bc3ae58cd466e6d3769dbddc0361605c2de815ed739fbfe64638930"
+  },
+  {
+   "p": "funkrenner/models/env/couch_pillows.glb",
+   "s": 44604,
+   "h": "88f31fb6ef11a236782f9b0edaaf3e02cadb8381e5e17ba50ba75ceeda204ce6"
+  },
+  {
+   "p": "funkrenner/models/env/crate_A_big.glb",
+   "s": 24180,
+   "h": "5c61ea33b4129f804683e9d3d989607b224d4a035016138d196b339655f352dc"
+  },
+  {
+   "p": "funkrenner/models/env/crate_A_small.glb",
+   "s": 24180,
+   "h": "b063c71d3652b1f5b2c84bba887fdf0f56ac18e0bed7533c1ff7fb796e473bc4"
+  },
+  {
+   "p": "funkrenner/models/env/crate_long_A.glb",
+   "s": 31368,
+   "h": "4ce3cb39e52feb5e7f1103c0ba2b6d74e6d1628678cadf565a9a812b124ebccf"
+  },
+  {
+   "p": "funkrenner/models/env/crates_stacked.glb",
+   "s": 103704,
+   "h": "43182b077ead9b033804300ef453b7402bdc979f00cfce2d7f0c91dcf6bb5d3c"
+  },
+  {
+   "p": "funkrenner/models/env/fence_stone_straight.glb",
+   "s": 30992,
+   "h": "81cde6625a291f3652eb742f43b4a959302e4d9928eb999223c3c77cc79de5af"
+  },
+  {
+   "p": "funkrenner/models/env/fence_wood_straight.glb",
+   "s": 32208,
+   "h": "b0d2c3b8aaeb9d11e13c796ed57af6d646ffe6cb63c18464655e5b1803343489"
+  },
+  {
+   "p": "funkrenner/models/env/flag_blue.glb",
+   "s": 19612,
+   "h": "032c519609204e46fbadd2ed836006c36ed345a1e8888378a09aaac500deb88f"
+  },
+  {
+   "p": "funkrenner/models/env/flag_green.glb",
+   "s": 19616,
+   "h": "556d0558a3bef12cf4b8520cd17487d98fd9e6584757d38c910d5e45eda1675d"
+  },
+  {
+   "p": "funkrenner/models/env/flag_red.glb",
+   "s": 19612,
+   "h": "e1657fccf47d5b768730a6fb02eef3ce82ac4a8d717fcee976c6f036cd0f7391"
+  },
+  {
+   "p": "funkrenner/models/env/flag_yellow.glb",
+   "s": 19616,
+   "h": "103b43448e80da28bc6c2fb913ab2cb3f8e29e424cabc109db3e769b0e935019"
+  },
+  {
+   "p": "funkrenner/models/env/floor_tile_big_spikes.glb",
+   "s": 80644,
+   "h": "7a4e94decf860b64456a45cc1c2d7bb26f0b3ca75824ccf2c4d0addee088d9ad"
+  },
+  {
+   "p": "funkrenner/models/env/hills_A_trees.glb",
+   "s": 48208,
+   "h": "00cd544c80eb5561427b2e493b4288c3054d6f8ec3e96a8e8abc0090637dc464"
+  },
+  {
+   "p": "funkrenner/models/env/hills_B_trees.glb",
+   "s": 42400,
+   "h": "1347d88aba474050a1f4520ca4aa87c5e1b5b3cd8061f06fd82cd1a7821d17d9"
+  },
+  {
+   "p": "funkrenner/models/env/key.glb",
+   "s": 24432,
+   "h": "e9ea072e6e5f8b1f049677f62144d9ae1dcc1cfd2252aec54b42bec29d518dff"
+  },
+  {
+   "p": "funkrenner/models/env/lamp_standing.glb",
+   "s": 28624,
+   "h": "88335223afc7ff04b5a24a6a668a0a32910961769030127f86fd8fcf39c94fca"
+  },
+  {
+   "p": "funkrenner/models/env/lamp_table.glb",
+   "s": 29788,
+   "h": "03e2823ef1a69f44f340796168dceca8805dca04ed92bc76f208b5291cd57e40"
+  },
+  {
+   "p": "funkrenner/models/env/mountain_A.glb",
+   "s": 24800,
+   "h": "46755e39f1629f15058b5c6c90be519f970564b8a4ad3a8336c4998c8d1cbac3"
+  },
+  {
+   "p": "funkrenner/models/env/mountain_A_grass_trees.glb",
+   "s": 44516,
+   "h": "902d922cc0deb26ac25badffd9aafc71590740d625b26c7d28b2f6064daa3e80"
+  },
+  {
+   "p": "funkrenner/models/env/mountain_B.glb",
+   "s": 24804,
+   "h": "7664bbaab8f4cd65427ffc4454c1a42de837dbfed119c8ccdcbf7f1ecda0365a"
+  },
+  {
+   "p": "funkrenner/models/env/mountain_B_grass_trees.glb",
+   "s": 50372,
+   "h": "2be02f3165d1985790b223b409e420200f1ff62dbddf019eeabff9b29c3ddfc0"
+  },
+  {
+   "p": "funkrenner/models/env/mountain_C_grass_trees.glb",
+   "s": 60552,
+   "h": "0c818950e53b693ef37a35750b9257054e30ce7d8a5e18f8349e738a643c7746"
+  },
+  {
+   "p": "funkrenner/models/env/pallet.glb",
+   "s": 22188,
+   "h": "cecb961d03b2c0d753a494af3a7480c4e6f599c140ce4b055eea09e28abd0935"
+  },
+  {
+   "p": "funkrenner/models/env/pictureframe_large_A.glb",
+   "s": 20180,
+   "h": "b3a7c1ea8f0d4092ab207c26d575a6690234af417604a943ccd3aaf8928bc748"
+  },
+  {
+   "p": "funkrenner/models/env/pictureframe_large_B.glb",
+   "s": 20164,
+   "h": "1311091a58379f1c068a6630dd2e052e99710fe27839763c308d3e475abbb87e"
+  },
+  {
+   "p": "funkrenner/models/env/pictureframe_medium.glb",
+   "s": 20180,
+   "h": "f4183318cc9a04c7356d403996d61d1f9425a8eb62b1dd3d7d7ea47c39909f67"
+  },
+  {
+   "p": "funkrenner/models/env/pillar.glb",
+   "s": 25552,
+   "h": "e31da496461921475384c62ce761cd23924892bd6f32aeea68bd913545caee33"
+  },
+  {
+   "p": "funkrenner/models/env/pillar_decorated.glb",
+   "s": 62460,
+   "h": "eecf7d454a1b6767a113e2490cb1536134abea0b57329a50cf2250d3ed8e2f65"
+  },
+  {
+   "p": "funkrenner/models/env/pillow_A.glb",
+   "s": 19700,
+   "h": "a9bad500d3018c59218d6e91e355e32eabaea591f0c26c7841449d54e95385c2"
+  },
+  {
+   "p": "funkrenner/models/env/rock_single_A.glb",
+   "s": 18380,
+   "h": "dacc2975dd4e8699cd9e0df64406e56f9f11015887598df580b34d367801e0fc"
+  },
+  {
+   "p": "funkrenner/models/env/rock_single_B.glb",
+   "s": 18800,
+   "h": "e74e2536509b01d82d353d029d4775084608743b19a0887faac763ccc189070a"
+  },
+  {
+   "p": "funkrenner/models/env/rock_single_C.glb",
+   "s": 19364,
+   "h": "3e274af104879ada8569dda865a3831430c488a5b156ff5970e1dd8a4849d84b"
+  },
+  {
+   "p": "funkrenner/models/env/rock_single_D.glb",
+   "s": 18520,
+   "h": "6294a29febc2c86b507324c2711d863af3823a5fec627e129f6460b9c1704ba6"
+  },
+  {
+   "p": "funkrenner/models/env/rock_single_E.glb",
+   "s": 21480,
+   "h": "3e8638ffa860e5d087c424fdb27858db09d62eefd1014090bd17ffcb190a8a10"
+  },
+  {
+   "p": "funkrenner/models/env/rug_oval_A.glb",
+   "s": 23476,
+   "h": "25589b8b5bfca524a480e1b80de5f5ca88f867fe3ed05e2f3c4c08a9054efcf8"
+  },
+  {
+   "p": "funkrenner/models/env/rug_rectangle_stripes_A.glb",
+   "s": 19632,
+   "h": "78e999d5e5ccfc3dc61c47e867dab21066034bcdf806e46092a0cef93cee012b"
+  },
+  {
+   "p": "funkrenner/models/env/sack.glb",
+   "s": 20400,
+   "h": "082e46cbb5a18b84114958e52ac20614c4212ed33afca4dc561dadeda89c11e2"
+  },
+  {
+   "p": "funkrenner/models/env/shelf_A_big.glb",
+   "s": 27072,
+   "h": "519905a5cbd5a3c4a9f337af6e83522d84696d3eb2761709e3c7296be9367585"
+  },
+  {
+   "p": "funkrenner/models/env/shelf_B_large_decorated.glb",
+   "s": 42772,
+   "h": "031550faeef8bd7809b7294d5dfa53ff51acd9bfd3f2e8c1dc774169442c8da4"
+  },
+  {
+   "p": "funkrenner/models/env/stairs_wide.glb",
+   "s": 43372,
+   "h": "f3301f11a6bb6d9e64fbe625fbc2f0b61ba4f7e1de1ceba348d53c93325d4754"
+  },
+  {
+   "p": "funkrenner/models/env/sword_shield.glb",
+   "s": 47764,
+   "h": "4dc33b156a166b2c47cf3ac0344f9462946e952ee8c12945bbe6aedddf63af72"
+  },
+  {
+   "p": "funkrenner/models/env/table_long.glb",
+   "s": 35128,
+   "h": "83996a7a544a257630510b61eadebb8842e4313ca3c774b35774cad9b6f949c8"
+  },
+  {
+   "p": "funkrenner/models/env/table_low.glb",
+   "s": 29344,
+   "h": "156ba38a462f6d43d517e1f74e296cb2fe1a39d3f15189a80c155d76e91809f1"
+  },
+  {
+   "p": "funkrenner/models/env/table_medium.glb",
+   "s": 26244,
+   "h": "ec3290c87188c433d36b5fba12b58db32052f6c38e1ec22cc4d1b4af088133a2"
+  },
+  {
+   "p": "funkrenner/models/env/table_medium_long.glb",
+   "s": 26252,
+   "h": "f5cdc28332629d38b9ed72b810839377e9b42b33b2c45409f0fe598680f2683b"
+  },
+  {
+   "p": "funkrenner/models/env/target.glb",
+   "s": 24256,
+   "h": "24c1484d287c1d20d23a04635678a95ac0e203b17840cd7498539f461352b1fa"
+  },
+  {
+   "p": "funkrenner/models/env/tent.glb",
+   "s": 23288,
+   "h": "3835a4207f428fb923f1302111395e5fef94a62e69abc08940eb3302ebd81ca3"
+  },
+  {
+   "p": "funkrenner/models/env/torch_lit.glb",
+   "s": 31244,
+   "h": "45fcfeb3b129722019d42aef0acae8f6c5f8f6dbdf5d3346ceea1f084b69b396"
+  },
+  {
+   "p": "funkrenner/models/env/torch_mounted.glb",
+   "s": 33220,
+   "h": "a617c159e02932db48ca81ec46f1f100acc8904fb6ece43e919d2f93c13950e9"
+  },
+  {
+   "p": "funkrenner/models/env/tree_single_A.glb",
+   "s": 20516,
+   "h": "8453f1de1ea6a8534e369cd614d71321f7bbf7db5ae66425094a51eb6191a19a"
+  },
+  {
+   "p": "funkrenner/models/env/tree_single_A_cut.glb",
+   "s": 18232,
+   "h": "c36e39d7dad450e018bc108154785f100fc2f8081cec7f160a7b8c640cdc2124"
+  },
+  {
+   "p": "funkrenner/models/env/tree_single_B.glb",
+   "s": 24544,
+   "h": "4c1a047cce128c2e25829eab9225f4d205f18e826678c121b7a2878b6cbce25c"
+  },
+  {
+   "p": "funkrenner/models/env/trees_A_large.glb",
+   "s": 74212,
+   "h": "b2d84f7de42939c1819600449e58cce82270c87407c4e8d409572e50e4c39ad7"
+  },
+  {
+   "p": "funkrenner/models/env/trees_A_medium.glb",
+   "s": 48868,
+   "h": "f2baf607e0b2ec9ba96e0fb86d9763e9f647be333267e5f0ffd1096629914678"
+  },
+  {
+   "p": "funkrenner/models/env/trees_B_large.glb",
+   "s": 69148,
+   "h": "5b49ec3b99bd7ff64d19f46166e3a39cb0b0875ad58ace0859217c100b9f6745"
+  },
+  {
+   "p": "funkrenner/models/env/trees_B_medium.glb",
+   "s": 54284,
+   "h": "73aea3e1f0235e2f188d41784bb2fe2521da233a228c914a2f46d7c630ba4bae"
+  },
+  {
+   "p": "funkrenner/models/env/wall_arched.glb",
+   "s": 69124,
+   "h": "916a7d81b8d6ebddb069440a0f9ecb14c9c2a1e5cd7769acf2218d630bd56cb8"
+  },
+  {
+   "p": "funkrenner/models/env/wall_archedwindow_open.glb",
+   "s": 58028,
+   "h": "8c75cb77edc51c94b91c5625828391fb56c70bf31e2235cf5abf718eae0d842a"
+  },
+  {
+   "p": "funkrenner/models/env/wall_corner_A_outside.glb",
+   "s": 41964,
+   "h": "88f62c6d6f603ce2195968822f9b4fe427013c60c53ee0c53678efc84f7cebbb"
+  },
+  {
+   "p": "funkrenner/models/env/wall_doorway.glb",
+   "s": 100596,
+   "h": "2be5369a2d1d1d8795150b2156d8343b3e37620d78de256cb03276c54ea70c97"
+  },
+  {
+   "p": "funkrenner/models/env/wall_half.glb",
+   "s": 36840,
+   "h": "9e65c438f55d96cbcd554489bf2dec236feb575a8192c709d3bf6886599339a8"
+  },
+  {
+   "p": "funkrenner/models/env/wall_straight.glb",
+   "s": 48220,
+   "h": "8d29ab925f714295f9b306bf1a5950b95a4244e4a0a663b01bf6b5fe1f697428"
+  },
+  {
+   "p": "funkrenner/models/env/wall_straight_gate.glb",
+   "s": 66192,
+   "h": "3cd304c88a0ecdd6689ecd4e25233f2d17a6d53c707b8549a8620e718b14737a"
+  },
+  {
+   "p": "funkrenner/models/env/waterlily_A.glb",
+   "s": 19768,
+   "h": "21d1937e73dcecbc35badfd8024c556d58187d6d061dc3aa09d3734a41965c25"
+  },
+  {
+   "p": "funkrenner/models/env/waterplant_A.glb",
+   "s": 20160,
+   "h": "d2e4a92fdb24fa40e6f683f1ba9177c2087c5ee5fc05670fddc553bc260b7676"
+  },
+  {
+   "p": "funkrenner/models/env/waterplant_B.glb",
+   "s": 22984,
+   "h": "0f424ab36f94ffd47b3de661bd761cebe42171bb9d17ce61f16940ed373529d1"
+  },
+  {
+   "p": "funkrenner/models/env/weaponrack.glb",
+   "s": 20092,
+   "h": "c29e98b9e249d5bd375e16a18f165464fbe29e43741083d5930c661578034606"
+  },
+  {
+   "p": "funkrenner/models/env/wheelbarrow.glb",
+   "s": 36200,
+   "h": "60901246eda4cf4a1f0ea3e6d846812adffe6e774c402653c75ddb722bfeef6e"
+  },
+  {
+   "p": "funkrenner/models/heroes/Barbarian.glb",
+   "s": 1207604,
+   "h": "0dcc6776925cd2c400c667c2c28f67180e3b4157ecaa24979e8586880ab42fbc"
+  },
+  {
+   "p": "funkrenner/models/heroes/Knight.glb",
+   "s": 1253536,
+   "h": "05bda38b4dee9ad19ed49fc1a5e1983799d49d25cdfad106eb2f35996fcdf924"
+  },
+  {
+   "p": "funkrenner/models/heroes/Mage.glb",
+   "s": 1183972,
+   "h": "d1e8fb595cf69529048f7cda2d808e4c6dcacbf261bf5c0928ed659f5ee8bb68"
+  },
+  {
+   "p": "funkrenner/models/heroes/Rogue.glb",
+   "s": 1210592,
+   "h": "748b5f51b6d8c8cd8f658039f4d4a1017d0a9ab229c3b3126bcaf9c074b255f2"
+  },
+  {
+   "p": "funkrenner/models/heroes/Rogue_Hooded.glb",
+   "s": 1192164,
+   "h": "fd5d25e247158c41d77da54041b5f963c88fa1922f5ee7c56f5c6f8c3ed9ffe7"
+  },
+  {
+   "p": "funkrenner/style.css",
+   "s": 15440,
+   "h": "c5d3cf1e9b0fc470ef575c80ac2ed2542e4f66e01bb45480c3c6d8f73955b7a5"
+  },
+  {
+   "p": "funkrenner/sw.js",
+   "s": 1980,
+   "h": "e9971dd82b0d151f9fe41b78065bbf6d0ee1689719872988b0808ced67c28af0"
+  },
+  {
    "p": "gamekit.js",
    "s": 5678,
    "h": "2408caf366c6c700ee4a1cc935a57e106e1a835ce4bc29826ecbe158261bc96f"
@@ -10093,8 +10643,8 @@
   },
   {
    "p": "games.js",
-   "s": 50583,
-   "h": "b80e2b2d6d4fcdcd21a3b40f0a42e89f004da0e762c581cd31a1cdae80019d22"
+   "s": 50260,
+   "h": "f9f5d52d15e302f0cc826b9a5d7455a04872de294dc30cd20a9c3228dec6cd91"
   },
   {
    "p": "groove-arena/card.jpg",
@@ -10173,8 +10723,8 @@
   },
   {
    "p": "guides.js",
-   "s": 168418,
-   "h": "211142ddcd8acbfffb00c630109890236686e6c99d2d6172bdfbfaf2987da61a"
+   "s": 167146,
+   "h": "72e6513e0a9e873b3f445d74dd216e278429d296aa04968f48f81ac883aa22eb"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10190,11 +10740,6 @@
    "p": "guides/aeru.json",
    "s": 26078,
    "h": "4ab273f5f7f78028955fd9a67af8e72606fcc091461e39ba11bca773852144a4"
-  },
-  {
-   "p": "guides/anmacha-beat-surfer.json",
-   "s": 11830,
-   "h": "ab60fd764196ef61daaccb91d46c84f26647479facee66f1116dd113488df2a8"
   },
   {
    "p": "guides/anmacha-flipper.json",
@@ -10275,11 +10820,6 @@
    "p": "guides/anmacha-radio-match.json",
    "s": 35462,
    "h": "9aa361e8bdcb28c9898cbbb404384d8868aef10a33d6c7e38d528d2b1a193947"
-  },
-  {
-   "p": "guides/anmacha-radio-surfer.json",
-   "s": 12294,
-   "h": "c0ae4b0065aed0f12f354435b62dd0b4c8233ba81ed75684045e7607d5a4c3a3"
   },
   {
    "p": "guides/anmacha-showdown.json",
@@ -10390,6 +10930,11 @@
    "p": "guides/funkmaler.json",
    "s": 11990,
    "h": "416959a026d644cf25b5a8802ee956f9bde3d888be6522c9519346ff66d41f75"
+  },
+  {
+   "p": "guides/funkrenner.json",
+   "s": 7649,
+   "h": "1f48f05cb71ba2b375c7df60a3ab1155ac0f9a5b78af6ef11a8f543b4023ddb3"
   },
   {
    "p": "guides/groove-arena.json",
@@ -10668,8 +11213,8 @@
   },
   {
    "p": "index.html",
-   "s": 103088,
-   "h": "3929dda596e253d4bc7fc226dea46faed9d55ec5ee21e3d5f2004cddb1550b8c"
+   "s": 103068,
+   "h": "af6de030886aa614aa8a368e9364c0139768ea1362e3a35b620932e5d26382c6"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -15253,8 +15798,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 237979,
-   "h": "c1ca006263246f6e24b4bdede8154528b6e5dd589d4e081ff57a353528271417"
+   "s": 236149,
+   "h": "96fb4748bd8406ac253b8080e55058bf92d0ca69f8e0c95300fd87a2b41e880f"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -16102,11 +16647,6 @@
    "h": "63f78661ae16d3bd02515c6f1cf894f48e5a32437068ce200764d3531367b665"
   },
   {
-   "p": "thumbs/anmacha-beat-surfer.webp",
-   "s": 13484,
-   "h": "eaab6d66020b07cb1ec96db87f347db8b775f06cda16551a48c3008e936da1d3"
-  },
-  {
    "p": "thumbs/anmacha-flipper.webp",
    "s": 13448,
    "h": "bb474d785d648c12f41d667e5b32ba6cffbe7ffe7958238946d96b0f9b2c0f99"
@@ -16165,11 +16705,6 @@
    "p": "thumbs/anmacha-radio-match.webp",
    "s": 12514,
    "h": "ee1e5f09f81963e69cf60c3a246124fa1aff77c90d899314af72387dd16c018f"
-  },
-  {
-   "p": "thumbs/anmacha-radio-surfer.webp",
-   "s": 13058,
-   "h": "ed4c9b900d97a007dbc317be8a68d7d966ea1090253e03e05058446aee71e3ba"
   },
   {
    "p": "thumbs/anmacha-showdown.webp",
@@ -16272,6 +16807,11 @@
    "h": "7987ff498c75efdc83417754570eaed11db2d0aec490fac8d4b405b2f59bc80b"
   },
   {
+   "p": "thumbs/funkrenner.webp",
+   "s": 24356,
+   "h": "b6eac84bf8f62cdac80090ae10d174940f63c3a68091c39a695c85c1f4ada3de"
+  },
+  {
    "p": "thumbs/groove-arena.webp",
    "s": 13380,
    "h": "8b196614b4605df4c6fb93a953fe57ff9ed3212a8faf4288f55f6eae4552d95e"
@@ -16368,8 +16908,8 @@
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 1950,
-   "h": "543b40151561a3d933fc78bc0c794ecdea072aca61f9f73a0f7b8a8cc98d793b"
+   "s": 1905,
+   "h": "56e6974a0710c916c151256edde1147b5a954b3309ec404bd9055036dea18b7b"
   },
   {
    "p": "thumbs/tortenschlacht.webp",

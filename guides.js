@@ -71,19 +71,6 @@ window.EASYGAMES_GUIDES = {
    "Das Tagebuch zeigt das aktuelle Ziel; ein Kompass und ein Lichtstrahl weisen den Weg."
   ]
  },
- "anmacha-radio-surfer": {
-  "anleitung": "Du surfst durch das Internet und weichst Hindernissen aus. Es gibt 10 Level, du hast 3 Leben, und ab Level 4 wird es schneller. Hindernisse sind farbig markiert: niedrige (gelb) überspringst du, hängende (pink) unterrutschst du, hohe (blau) umgehst du durch Spurwechsel. Am Ende kannst du dich in die Top 10 eintragen.",
-  "steuerung": [
-   "PC: Pfeil links/rechts oder A/D = Spur wechseln, Pfeil hoch/W/Leertaste = Springen, Pfeil runter/S = Rutschen, P oder Esc = Pause, Enter/Leertaste = Start bzw. Weiter",
-   "Touch: Wischen links/rechts = Spur wechseln, Wischen nach oben oder Tippen = Springen, Wischen nach unten = Rutschen, Pause-Knopf oben rechts",
-   "Controller: Steuerkreuz oder linker Stick wie die Pfeiltasten (Spur, springen, rutschen), A springt bzw. startet, Start oder B Pause"
-  ],
-  "tipps": [
-   "Achte auf die Rahmenfarbe: gelb springen, pink rutschen, blau Spur wechseln.",
-   "In jeder normalen Reihe bleibt mindestens eine Spur frei – schau früh nach der Lücke.",
-   "Die Mittelspur ist die beste Grundposition: Von dort erreichst du beide Seiten mit einem Wechsel."
-  ]
- },
  "anmacha-radio-match": {
   "anleitung": "Royal Radio Match 3D: ein 3D-Match-3 mit 200 Leveln in 10 Radio-Welten. Tausche zwei benachbarte Bauteile, drei gleiche in einer Reihe oder Spalte verschwinden. Jedes Level hat Ziele (Bauteile sammeln, Kisten, Moos, Eis oder Rauschen räumen, Pakete und Kassetten nach unten bringen, Punkte, Combos) in begrenzten Zügen. Vierer, L/T-Formen, Quadrate und Fünfer bauen Wellenrakete, Bassbombe, Funkdrohne und Frequenzkugel; zwei Spezialteile miteinander getauscht ergeben starke Kombos. Mit Sternen baust du das Funkhaus aus, Münzen gibt es nur fürs Spielen. Dazu Bonuslevel und ein Duell zu zweit oder gegen die KI.",
   "steuerung": [
@@ -123,15 +110,17 @@ window.EASYGAMES_GUIDES = {
    "Ohne Internet oder bei Senderproblemen spielt das Spiel eigene Beats; in den Einstellungen lässt sich die Musikquelle festlegen."
   ]
  },
- "anmacha-beat-surfer": {
-  "anleitung": "Ein Rhythmusspiel auf 4 Spuren: Triff die Noten im Takt der Musik. Verpasste Noten senken die Welle (Lebensleiste); fällt sie auf null, ist der Song verloren. In der Kampagne spielst du 13 Sender (Genres) von entspannt bis schwer, im Freien Spiel wählst du einen beliebigen Sender. Am Ende gibt es Sterne, Genauigkeit, maximale Combo und Perfekt-Treffer. Im Bereich 🎹 Lieder spielst du über 100 bekannte, gemeinfreie Lieder aus Klavierlicht – die Noten folgen der echten Melodie, das Klavier spielt die Begleitung, jedes Lied zeigt seine Rechte-Angabe.",
+ "funkrenner": {
+  "anleitung": "Dein Held rennt automatisch durch Dschungel, Radiostudio oder Fantasy-Welt. Wechsle die Spur, springe über niedrige und rutsche unter hohen Hindernissen durch. Sammle Münzen und Power-ups, erreiche das Ziel-Tor und hole dir drei Sterne pro Level. Dazu gibt es einen Endlos-Modus und den Beat-Modus mit 13 Sendern und über 100 Liedern.",
   "steuerung": [
-   "PC: D, F, J, K oder Pfeil links, runter, hoch, rechts = die vier Spuren treffen, P/Esc = Pause, R = Neustart, M = Ton, Enter/Leertaste = Start bzw. Weiter",
-   "Touch: Die vier großen Tasten unten antippen (links, runter, hoch, rechts); Pause, Ton, Neustart oben rechts",
-   "Controller: Steuerkreuz links, runter, hoch, rechts oder LB, LT, RT, RB = die vier Spuren, A startet/bestätigt, B oder Start = Pause, Select = Ton"
+   "PC und TV: Pfeiltasten oder A/D = Spur wechseln, W, Pfeil hoch oder Leertaste = Springen, S oder Pfeil runter = Rutschen, Esc oder P = Pause",
+   "Touch: Wischen links/rechts = Spur wechseln, nach oben wischen oder tippen = Springen, nach unten wischen = Rutschen; im Beat-Modus die vier Felder unten",
+   "Controller: Steuerkreuz oder Stick = Spur, springen, rutschen; A springt, B rutscht, Start = Pause; im Beat-Modus Steuerkreuz oder X, A, Y, B"
   ],
   "tipps": [
-   "Treffer wirken zu früh oder zu spät (z. B. Bluetooth-Kopfhörer)? In der Pause lässt sich der Audio-Versatz anpassen."
+   "Die Mittelspur ist die beste Grundposition.",
+   "Hohe Hindernisse unterrutschst du, niedrige überspringst du, Blöcke umgehst du.",
+   "Münzen kaufen Upgrades: Magnet und Doppelpunkte lohnen sich zuerst."
   ]
  },
  "prismrush": {
