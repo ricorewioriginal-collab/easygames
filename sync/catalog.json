@@ -739,7 +739,12 @@
     "game": "funkrenner",
     "prefix": "funkrenner-"
    },
-   "trailer": null
+   "trailer": {
+    "v16": "promo/funkrenner-trailer-16x9.mp4",
+    "v9": "promo/funkrenner-trailer-9x16.mp4",
+    "p16": "promo/funkrenner-trailer-16x9.jpg",
+    "p9": "promo/funkrenner-trailer-9x16.jpg"
+   }
   },
   {
    "id": "anmacha-radio-match",
