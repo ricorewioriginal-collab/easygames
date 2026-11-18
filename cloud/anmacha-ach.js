@@ -76,12 +76,12 @@
   // Kategorien der Spiele (wie die 7 Gruppen im RicoReWi-Portal) je Cloud-ID; neue Spiele hier ergänzen (tools/test-ach.mjs prüft, dass alle Katalogspiele eingetragen sind)
   var GENRES = {
     abenteuer: ['kiko-sterneninseln', 'taschi', 'quest-rpg', 'aeru', 'urwaldlager', 'pride-city', 'zotik2', 'schatzfieber'],
-    action: ['challenge-show', 'kuechen-chaos', 'brainrot-parkour', 'krawallvoegel', 'huepfstrasse', 'funk-survivor', 'easyclash', 'rico-flap', 'radio-maze', 'pufi-farbwind', 'radio-surfer', 'funkparcours', 'kart', 'turbokick', 'riftzone', 'flipper', 'snake', 'showdown', 'fabelkick', 'funkgolf', 'bowling-bahn', 'darts-arena', 'saftblitz', 'tortenschlacht', 'sendemast-sumo', 'wolkenhopser'],
+    action: ['challenge-show', 'kuechen-chaos', 'brainrot-parkour', 'krawallvoegel', 'huepfstrasse', 'funk-survivor', 'easyclash', 'rico-flap', 'radio-maze', 'pufi-farbwind', 'funkrenner', 'funkparcours', 'kart', 'turbokick', 'riftzone', 'flipper', 'snake', 'showdown', 'fabelkick', 'funkgolf', 'bowling-bahn', 'darts-arena', 'saftblitz', 'tortenschlacht', 'sendemast-sumo', 'wolkenhopser'],
     denken: ['fall-akte', 'kraterkommando', 'funkblasen', 'mahjong', 'colorpop-universe', 'radio-match', 'memory', 'wobbel', 'frequenzrad', 'tower-defense', 'wortfunk', 'wortgitter', 'frequenzminen', 'deluxe-2048'],
     quiz: ['quiz', 'stadt-land-plus', 'gesucht', 'hoererwahl', 'preisradar', 'machmichaus', 'zeitsprung', 'zeitsprung-wissen', 'zeitsprung-movie', 'zeitsprung-radio', 'zeitsprung-castingshow', 'zeitsprung-kinderserien', 'zeitsprung-eurovision', 'koffer-dealer', 'funkmaler', 'funkgalgen', 'radio-bingo'],
     sim: ['ricoville', 'ricolife', 'ricorail', 'mimori', 'markthalle', 'funkhaus', 'klotzfunk', 'bunte-insel', 'anmacha-podcast-tycoon', 'pestwacht', 'sonnenhof'],
     tisch: ['konfetti-party', 'werwolf-nacht', 'funk-billard', 'ricopoly', 'partyverse', 'spielesammlung', 'stapelrausch', 'gold-reels', 'anmacha-undercover', 'spinwelten'],
-    musik: ['groove-arena', 'beat-surfer', 'prismrush', 'show-me-your-voice', 'beat-studio', 'klavierlicht']
+    musik: ['groove-arena', 'prismrush', 'show-me-your-voice', 'beat-studio', 'klavierlicht']
   };
   var GENRE_OF = {};
   Object.keys(GENRES).forEach(function (k) { GENRES[k].forEach(function (id) { GENRE_OF[id] = k; }); });

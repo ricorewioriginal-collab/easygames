@@ -82,14 +82,12 @@
     'riftzone': [
       { id: 'main', title: 'Siege gesamt', key: 'riftzone.profile', path: 'totals.wins', order: 'desc', unit: 'Siege' }
     ],
-    'radio-surfer': [
-      { id: 'main', title: 'Highscore', key: 'anmachaRadioSurferBest', order: 'desc', unit: 'Punkte' }
+    'funkrenner': [
+      { id: 'main', title: 'Endlos – bester Rekord', key: 'funkrenner-save', path: 'endless.*', agg: 'max', order: 'desc', unit: 'Punkte' },
+      { id: 'beat', title: 'Beat-Modus – Gesamtpunkte', key: 'funkrenner-save', path: 'beatBest.*', agg: 'sum', order: 'desc', unit: 'Punkte' }
     ],
     'flipper': [
       { id: 'main', title: 'Highscore', key: 'anmachaFlipperBest', order: 'desc', unit: 'Punkte' }
-    ],
-    'beat-surfer': [
-      { id: 'main', title: 'Gesamtpunkte (alle Tracks)', key: 'anmachaBeatBest', path: '*', agg: 'sum', order: 'desc', unit: 'Punkte' }
     ],
     'prismrush': [
       { id: 'main', title: 'Endlos (normal) – Highscore', key: 'prismrush.save.v1', path: 'records.endless:endless:normal.bestScore', order: 'desc', unit: 'Punkte' }

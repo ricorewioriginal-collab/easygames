@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/funkrenner-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Funkrenner"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#070b18">
+<title>Funkrenner – Dschungel, Studio & Fantasy-Welt</title>
+<meta name="description" content="Funkrenner: Endlos-Runner in 3D mit echten KayKit-Helden. Renne durch Dschungel, Radiostudio und Fantasy-Welt, sammle Münzen, weiche aus – dazu der Beat-Modus mit 13 Sendern und Klavierlicht-Liedern.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<!-- Laden -->
+<section class="scr on" id="sLoad">
+  <div class="load">
+    <div class="eq"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <h1 class="logo">FUNK<span>RENNER</span></h1>
+    <div class="bar"><i id="loadBar"></i></div>
+    <p class="tip" id="loadTip">Strecke wird aufgebaut …</p>
+  </div>
+</section>
+
+<!-- Hauptmenü -->
+<section class="scr" id="sMenu">
+  <div class="menuWrap">
+    <header class="mHead">
+      <h1 class="logo small">FUNK<span>RENNER</span></h1>
+      <div class="chips"><span class="chip" id="chStars">⭐ 0</span><span class="chip" id="chCoins">🪙 0</span></div>
+    </header>
+    <nav class="tiles" id="tiles">
+      <button class="tile nav hero" data-go="worlds"><i>🏃</i><b>Spielen</b><small id="playInfo">15 Level in 3 Welten</small></button>
+      <button class="tile nav" data-go="endless"><i>♾️</i><b>Endlos</b><small id="endInfo">Wie weit kommst du?</small></button>
+      <button class="tile nav" data-go="beat"><i>🎵</i><b>Beat-Modus</b><small>13 Sender · Lieder</small></button>
+      <button class="tile nav" data-go="heroes"><i id="heroIcon">🛡️</i><b>Held wählen</b><small id="heroInfo">Ritter</small></button>
+      <button class="tile nav" data-go="shop"><i>🛒</i><b>Upgrades</b><small>Münzen ausgeben</small></button>
+      <button class="tile nav" data-go="opts"><i>⚙️</i><b>Optionen</b><small>Ton, Grafik, Steuerung</small></button>
+      <button class="tile nav" data-go="help"><i>📖</i><b>Anleitung</b><small>Ziel &amp; Steuerung</small></button>
+    </nav>
+  </div>
+  <p class="corner"><a href="../" id="backLink">← Alle Spiele</a></p>
+</section>
+
+<!-- Welten und Level -->
+<section class="scr" id="sWorlds">
+  <div class="panel wide">
+    <h2 id="wTitle">Welt wählen</h2>
+    <div class="seg" id="wTabs"></div>
+    <p class="hint" id="wDesc"></p>
+    <div class="lvRow" id="lvRow"></div>
+    <p class="hint" id="lvInfo"></p>
+    <div class="rowBtns wrap">
+      <button class="btn pri big nav" id="wGo">▶ Level starten</button>
+      <button class="btn nav" id="wEndless">♾️ Endlos hier</button>
+      <button class="btn nav" data-back>← Zurück</button>
+    </div>
+  </div>
+</section>
+
+<!-- Held wählen -->
+<section class="scr" id="sHeroes">
+  <div class="heroPanel">
+    <div class="heroRow"><button class="btn arrow nav" id="hPrev" aria-label="Vorheriger Held">◀</button>
+      <div class="heroBox"><h2 id="hName">Ritter</h2><p class="perk" id="hPerk"></p><div class="chips" id="hStats"></div></div>
+      <button class="btn arrow nav" id="hNext" aria-label="Nächster Held">▶</button></div>
+    <div class="rowBtns"><button class="btn pri big nav" id="hPick">✔ Diesen Helden nehmen</button><button class="btn nav" data-back>← Zurück</button></div>
+    <p class="hint credit">Figuren: KayKit Adventurers von Kay Lousberg (CC0)</p>
+  </div>
+</section>
+
+<!-- Beat-Modus -->
+<section class="scr" id="sBeat">
+  <div class="panel wide beatP">
+    <h2>🎵 Beat-Modus</h2>
+    <div class="seg" id="bModes"><button class="nav" data-m="campaign">Kampagne</button><button class="nav" data-m="free">Freies Spiel</button><button class="nav" data-m="lieder">🎹 Lieder</button></div>
+    <div class="stGrid" id="stGrid"></div>
+    <div class="lieder" id="lieder" hidden>
+      <input id="lSearch" class="lsearch" type="search" placeholder="🔎 Lied oder Komponist suchen" aria-label="Lied suchen">
+      <div class="seg small" id="lCats"></div>
+      <div class="seg small" id="lLvl"><button class="nav" data-l="leicht">Leicht</button><button class="nav" data-l="normal">Normal</button><button class="nav" data-l="profi">Profi</button></div>
+      <div class="llist" id="lList"><p class="hint">Lieder werden geladen …</p></div>
+      <p class="hint" id="lLic"></p>
+    </div>
+    <p class="hint" id="bInfo"></p>
+    <div class="rowBtns wrap"><button class="btn pri big nav" id="bGo">▶ Los</button><button class="btn nav" data-back>← Zurück</button></div>
+  </div>
+</section>
+
+<!-- Upgrades -->
+<section class="scr" id="sShop">
+  <div class="panel wide"><h2>🛒 Upgrades</h2><p class="hint">Mit gesammelten Münzen dauerhaft verbessern.</p>
+    <div class="shop" id="shopList"></div>
+    <div class="rowBtns"><span class="chip" id="shopCoins">🪙 0</span><button class="btn nav" data-back>← Zurück</button></div></div>
+</section>
+
+<!-- Optionen -->
+<section class="scr" id="sOpts">
+  <div class="panel"><h2>⚙️ Optionen</h2>
+    <div class="optRow"><span>Ton</span><div class="seg small" id="oSound"><button class="nav" data-v="1">An</button><button class="nav" data-v="0">Aus</button></div></div>
+    <div class="optRow"><span>Grafik</span><div class="seg small" id="oQual"><button class="nav" data-v="auto">Auto</button><button class="nav" data-v="high">Hoch</button><button class="nav" data-v="low">Sparsam</button></div></div>
+    <div class="optRow"><span>Beat-Verzögerung</span><div class="seg small"><button class="nav" id="oOffM">−</button><span class="val" id="oOffV">0 ms</span><button class="nav" id="oOffP">+</button></div></div>
+    <div class="optRow"><span>Fortschritt</span><button class="btn nav" id="oReset">Zurücksetzen</button></div>
+    <p class="hint" id="oNote"></p>
+    <div class="rowBtns"><button class="btn nav" data-back>← Zurück</button></div></div>
+</section>
+
+<!-- Anleitung -->
+<section class="scr" id="sHelp">
+  <div class="panel wide help"><h2>📖 So geht's</h2>
+    <p><b>Ziel:</b> Renne durch die Level, weiche Hindernissen aus und sammle Münzen. Du hast drei Leben (♥). Am Ende wartet das Ziel-Tor – bis zu drei Sterne pro Level.</p>
+    <ul>
+      <li><b>Handy:</b> wischen ← → zum Spurwechsel, ↑ springen, ↓ rutschen.</li>
+      <li><b>PC / TV:</b> Pfeiltasten oder A/D, W/Leertaste springen, S rutschen, Esc Pause.</li>
+      <li><b>Controller:</b> Steuerkreuz/Stick Spur wechseln, A springen, B rutschen, Start Pause.</li>
+      <li><b>Hindernisse:</b> niedrig = drüberspringen, hoch = drunter durchrutschen, Block = Spur wechseln.</li>
+      <li><b>Power-ups:</b> 🧲 Magnet, 🛡️ Schild, 2× Doppelwert, 🚀 Turbo, ❤️ Leben.</li>
+      <li><b>Beat-Modus:</b> Noten im Takt treffen – Tasten D F J K oder ← ↓ ↑ →, auf dem Handy die vier Felder, am Controller Steuerkreuz oder X A Y B.</li>
+    </ul>
+    <div class="rowBtns"><button class="btn nav" data-back>← Zurück</button></div></div>
+</section>
+
+<!-- Laufen: Anzeige -->
+<div id="hud" hidden>
+  <div class="hudTop">
+    <div class="hearts" id="hHearts"></div>
+    <div class="hudMid"><b id="hScore">0</b><small id="hDist"></small></div>
+    <div class="hudR"><span class="chip" id="hCoins">🪙 0</span><button class="icon nav" id="bPause" aria-label="Pause">⏸</button></div>
+  </div>
+  <div class="prog"><i id="hProg"></i></div>
+  <div class="pw" id="hPw"></div>
+</div>
+
+<!-- Beat: Anzeige -->
+<div id="bhud" hidden>
+  <div class="hudTop">
+    <div class="hudL"><b id="bScore">0</b><small id="bBest"></small></div>
+    <div class="hudMid"><div class="hp"><i id="bHp"></i></div><small id="bAcc">100 %</small></div>
+    <div class="hudR"><button class="icon nav" id="bbPause" aria-label="Pause">⏸</button></div>
+  </div>
+  <div class="prog"><i id="bProg"></i></div>
+  <div class="combo" id="bCombo"><b id="bComboN"></b><small id="bComboM"></small></div>
+  <div class="judge" id="bJudge"></div>
+  <p class="tname" id="bName"></p>
+  <div class="pads" id="pads"><button data-l="0">D</button><button data-l="1">F</button><button data-l="2">J</button><button data-l="3">K</button></div>
+</div>
+<div class="count" id="count" hidden></div>
+<div class="flash" id="flash"></div>
+
+<!-- Fenster -->
+<div class="ov" id="ovPause" hidden><div class="card"><h2>Pause</h2>
+  <div class="col"><button class="btn pri nav" id="pResume">▶ Weiter</button><button class="btn nav" id="pRestart">↻ Neustart</button><button class="btn nav" id="pSound">🔊 Ton</button><button class="btn nav" id="pMenu">⌂ Menü</button></div></div></div>
+<div class="ov" id="ovRes" hidden><div class="card"><h2 id="rTitle">Geschafft!</h2><div class="stars" id="rStars"></div>
+  <div class="resGrid" id="rGrid"></div><p class="hint" id="rText"></p>
+  <div class="col"><button class="btn pri nav" id="rNext">Weiter</button><button class="btn nav" id="rAgain">↻ Nochmal</button><button class="btn nav" id="rMenu">⌂ Menü</button></div></div></div>
+<div class="ov" id="ovConfirm" hidden><div class="card"><h2>Fortschritt löschen?</h2><p class="hint">Level, Sterne, Münzen und Upgrades werden zurückgesetzt.</p>
+  <div class="col"><button class="btn nav" id="cNo">Abbrechen</button><button class="btn pri nav" id="cYes">Ja, löschen</button></div></div></div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="../vendor/three-r128.min.js"></script>
+<script src="../vendor/three-r128-gltfloader.js"></script>
+<script src="../device.js"></script>
+<script src="../klavierlicht/js/core.js"></script>
+<script src="../klavierlicht/js/songs.js"></script>
+<script src="../klavierlicht/js/songlib.js"></script>
+<script src="js/core.js"></script>
+<script src="js/beat.js"></script>
+<script src="js/hero.js"></script>
+<script src="js/world.js"></script>
+<script src="js/themes.js"></script>
+<script src="js/view.js"></script>
+<script src="js/app.js"></script>
+<script src="../cloud/anmacha-cloud.js" data-game="funkrenner" data-prefix="funkrenner-" defer></script>
+<script src="../gamepad.js" data-pad="info menu=.scr.on,.ov:not([hidden])" data-pad-labels="dpad=Spur wechseln; ls=Spur wechseln; a=Springen; b=Rutschen; x=Beat: Spur 1; y=Beat: Spur 3; lb=Beat: Spur 1; rb=Beat: Spur 4; start=Pause" defer></script>
+<script src="../egstat.js" defer></script>
+</body>
+</html>
