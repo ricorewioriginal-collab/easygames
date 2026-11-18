@@ -17,14 +17,12 @@ const CARDS = {
   'anmacha-snake': ['ANMACHA · 3D', ['SNAKE', '3D'], '🐍', ['🍎', '💎']],
   'anmacha-tower-defense': ['ANMACHA · 3D', ['TOWER', 'DEFENSE'], '🗼', ['🛡️', '👾']],
   'anmacha-markthalle': ['SUPERMARKT · 3D', ['MARKT', 'RAUSCH'], '🛒', ['🥫', '🍎']],
-  'anmacha-spielesammlung': ['ANMACHA · 3D', ['SPIELE-', 'SAMMLUNG'], '🎲', ['♟️', '🎯']],
-  'anmacha-kartensammlung': ['ANMACHA · 3D', ['KARTEN-', 'SAMMLUNG'], '🃏', ['🌈', '🎯']],
+  'spielesammlung': ['3D · BRETT & KARTEN', ['SPIELE-', 'SAMMLUNG'], '🎲', ['🃏', '🀄']],
   'gay-life': ['LEBENSSIMULATION', ['GAY', 'LIFE!'], '🏳️‍🌈', ['🏠', '🍸']],
   'pride-city': ['QUEERE LEBENSSIMULATION', ['PRIDE', 'CITY'], '🏳️‍🌈', ['🪩', '🏠']],
   'anmacha-klotzfunk': ['VOXEL-SANDBOX · 3D', ['KLOTZ-', 'FUNK'], '🧱', ['⛏️', '💎']],
   'partyverse': ['3D-PARTYSPIEL', ['PARTY-', 'VERSE'], '🎲', ['🎉', '🎈']],
   'fabelkick': ['FANTASY-FUSSBALL · 3D', ['FABEL', 'KICK'], '⚽', ['🐒', '🐉']],
-  'mahjong': ['MAHJONG SOLITAIRE · 3D', ['MAHJONG', '3D'], '🀄', ['🎋', '🐉']],
   'pestwacht': ['ÜBERLEBEN · AUFBAU · 3D', ['PEST-', 'WACHT'], '🏰', ['🌿', '⚔️']]
 };
 function colors(id) {

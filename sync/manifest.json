@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f3b3d7794711",
- "generated": "2026-11-16T20:56:27+01:00",
- "commit": "44685ce9527dc2516e1be4dd0ac6d7abad113e01",
+ "version": "7d6345a90ae5",
+ "generated": "2026-11-18T21:03:42+01:00",
+ "commit": "99b2494675e23eb9ac7640bebcbbf85b077b916a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -2300,171 +2300,6 @@
    "p": "anmacha-kart/zotik-fox.js",
    "s": 15101,
    "h": "ceaf7943a53e0cdb38894890e47f2a13c832bb3fe2284ae891eb1b646942590c"
-  },
-  {
-   "p": "anmacha-kartensammlung/card.jpg",
-   "s": 47953,
-   "h": "cb5916870cf53ff7877f25518e743d864b1868512f8f6816a2ec3b356eef445a"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig0.webp",
-   "s": 5536,
-   "h": "3d11636b5d9d4e05811734db0f27ecd46b535dfdcaf93b33587818e445133ee6"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig1.webp",
-   "s": 6002,
-   "h": "e03536d9004571ab191c8de68fb32c7a80ad4f6a73b22891808b74bbc883c6fe"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig2.webp",
-   "s": 6512,
-   "h": "8866cbde0f322c76abe74968df0aa540e29df1e86db0a987ffad0ef3007019c2"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig3.webp",
-   "s": 5372,
-   "h": "743f6c9866fc7065cdb65637564a2209f94d2e0e7440098948bdf46e3cbd5892"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig4.webp",
-   "s": 5170,
-   "h": "8c8bbc255fd94de925133c824dc65d7bcfa73867ce1224278f93aa3be40b6a1a"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig5.webp",
-   "s": 4764,
-   "h": "7ab9f12e1d52ac65535c4922c38135d6b178b7b37838779822627edd5ce7b8ec"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig6.webp",
-   "s": 6636,
-   "h": "b61cc3c22c359b44299331b86f32f2b809811127427aa88c247dc5802156ec73"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig7.webp",
-   "s": 6118,
-   "h": "1f0b21a411bcef355cad894ef061509047fd31ad66eff67598791b59b11cf8be"
-  },
-  {
-   "p": "anmacha-kartensammlung/index.html",
-   "s": 31978,
-   "h": "042d58fc048ecc544a51c9b011896ee5cf7d7dc4318cf5bac54dc026e8afb32f"
-  },
-  {
-   "p": "anmacha-kartensammlung/js/app.js",
-   "s": 124095,
-   "h": "9438af3e8caf902afeef0af6168dad6426de236bfe9235e1200a18b601d134c6"
-  },
-  {
-   "p": "anmacha-kartensammlung/js/figures.js",
-   "s": 8150,
-   "h": "08ff19cb6e2cdeda1b281349b1a16643758cf6a5a197e998dc6c2861119838b8"
-  },
-  {
-   "p": "anmacha-kartensammlung/js/logic.js",
-   "s": 44313,
-   "h": "844fd6f4a32924f98eafd260c36d135d311ed18323e29d4cdc717e1d93c74f2d"
-  },
-  {
-   "p": "anmacha-kartensammlung/logo.svg",
-   "s": 2145,
-   "h": "f021c4cca1a2319c1876e5cbd2fec21d1555fa44e3d6df24027e3f3ff097da6b"
-  },
-  {
-   "p": "anmacha-kartensammlung/manifest.webmanifest",
-   "s": 811,
-   "h": "5308f18a87e9a56686a34448d517beae83429a127cff521d482acf54e2aa4431"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_ba.glb",
-   "s": 243888,
-   "h": "e9d20bc74b2c3d12ac223b8f52b47dfac51c4fb0634bc498ec23f87bcb21ec12"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_kn.glb",
-   "s": 220180,
-   "h": "a1cd6909b4280cb77b1e32a4d26e1cc5fa253243b6ba2cf1febeb486b9b056c0"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_ma.glb",
-   "s": 227140,
-   "h": "19e538480ebe79ecf8d63b0851882d34f919e6e7372f2b28e5efaf20f3619f8d"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_ra.glb",
-   "s": 302508,
-   "h": "7dc3a159004a9f089b85fe68c759a8ed02fd83cf244153946da19284ffe42b16"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_rh.glb",
-   "s": 243028,
-   "h": "3a237456e0bc41007919b28ae5722bec63054f55d18b10095b15ebb443dfe959"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_ro.glb",
-   "s": 256984,
-   "h": "bf0e8e360211d8cf2c292516c11806d7aeb46aeea9bb7167d3db0edf6d18c1e0"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/anim.glb",
-   "s": 500388,
-   "h": "bfb31b875564085b63845f82cad7be1c3bcc3dc4b948cbfbe05235c75259def7"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/room.glb",
-   "s": 348444,
-   "h": "3a35ef630977d2e8726a08e46bdfea0a98a507a5e28556ebe3111da57d2b262e"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/sk_m.glb",
-   "s": 179036,
-   "h": "4bdfc6f779b3b0630b64e74b337c1648f36022b3b1d56ffb5528e6b1260ef296"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/sk_w.glb",
-   "s": 241272,
-   "h": "36ab3c8eff438e44d354ed85ffa6c8d0762e874b68ccd68e3ddbcaac02b7bc39"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/data/loesbar.json",
-   "s": 3591,
-   "h": "2a9c8ad234902a70f460c5024da18fe9f9ec916813c1ffed1baf76c59c30020f"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/img/anmacha-logo.png",
-   "s": 28394,
-   "h": "466a7c3ba4b450d56054e6442c84ae428911174d276a05e53b1f3ae2583217b3"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/img/radioportal-icon.png",
-   "s": 20776,
-   "h": "06358bdf93261f3ffb84505a41512bfd7e0cd4b5773611d46bf38d9c2a66b43a"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/index.html",
-   "s": 7467,
-   "h": "0291b337f0fb5d54a3d65cd46861ec7bcde266373616eabee8034601eeb5c579"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/js/app.js",
-   "s": 35225,
-   "h": "9582b830327f2ec951b191b1ce0901ae641fcc5853895d72beafc6cbb7344024"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/js/rules.js",
-   "s": 13021,
-   "h": "287457557522274faf28b96c9304d26a6e4e1ab1d2b93e10e4fac5cd7290edf4"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/style.css",
-   "s": 11250,
-   "h": "3a1ae2be3e2d3f61536544520ae5577b6429b39d745daf4318cfeb4397ebbb4c"
-  },
-  {
-   "p": "anmacha-kartensammlung/sw.js",
-   "s": 2019,
-   "h": "489ab13cc0ecf266e2f6eea31a20eb931cd69c0eb82aaf88bea365420ad59914"
   },
   {
    "p": "anmacha-klotzfunk/assets/index-B55ezXFP.js",
@@ -7677,31 +7512,6 @@
    "h": "5d5424f4814ce47d8a5d1067392ea392c5e7a0fb9951d5b5c6c832ea624da677"
   },
   {
-   "p": "anmacha-spielesammlung/card.jpg",
-   "s": 41282,
-   "h": "25cfcdf88a64f960d16ce9d370ebfb0399f96fcf27aef4db81d0ed1306bffeeb"
-  },
-  {
-   "p": "anmacha-spielesammlung/index.html",
-   "s": 100360,
-   "h": "fe79207ee1ad024ae572e5c2cfc5910a874a4cf1c016071acd7260cc8e189545"
-  },
-  {
-   "p": "anmacha-spielesammlung/logo.svg",
-   "s": 1586,
-   "h": "6c8630849e82331ef879607d00275c27feacf2ccd1528ff9481b9cec6a3ed56c"
-  },
-  {
-   "p": "anmacha-spielesammlung/manifest.webmanifest",
-   "s": 811,
-   "h": "3436d3f1bab48daed5555d8d459e53bd9ed36d7510481da1533ad4593686c2ad"
-  },
-  {
-   "p": "anmacha-spielesammlung/sw.js",
-   "s": 2015,
-   "h": "cc3282742cc195b1608ea98bf2e26891fb12e39db0d9d840a75ea67c21619232"
-  },
-  {
    "p": "anmacha-tower-defense/assets/index-BG_UIOR7.js",
    "s": 569667,
    "h": "6ad02b2fcb9487f96b629ca1e37b1278608b3f505f021e542da2a6ce34bf828a"
@@ -9233,8 +9043,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3111,
-   "h": "237b8a41a50681c3743541ed0d4552877bc940582de65e10e7b2b2f19aa212fe"
+   "s": 2977,
+   "h": "94c745f1302b52cbf177a40686222dec5c21f22bd4df34645a4a167a955505a3"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -9995,51 +9805,6 @@
    "p": "funkblasen/ui.js",
    "s": 28281,
    "h": "86f83add93f444ee1cf792ff679b9fd6b55538b3d8342a71cfa54f6947b94088"
-  },
-  {
-   "p": "funkgalgen/card.jpg",
-   "s": 37175,
-   "h": "84f80ba2a348e3ad62adc7930bee42f28ca43a680143921a61c93f3f8551445c"
-  },
-  {
-   "p": "funkgalgen/index.html",
-   "s": 14229,
-   "h": "4a6dc60c0371beaeaef8ad0e8b20ae678e975be7ded57692dd1191a5db010914"
-  },
-  {
-   "p": "funkgalgen/js/app.js",
-   "s": 42142,
-   "h": "435f0e563f407d5c1e41e08eef09ee56da3a8773288e701a6033f5aef6eda2d4"
-  },
-  {
-   "p": "funkgalgen/js/core.js",
-   "s": 6752,
-   "h": "9be03ed81f9aca8bd4af869baf0ed01e84d6dd71c861a6c3ddf5f8b92ce9711f"
-  },
-  {
-   "p": "funkgalgen/js/scene.js",
-   "s": 14458,
-   "h": "2096a6dd75bb0f2b65d6032cba168a716915140ac5ede67c44ba01840cb10e6f"
-  },
-  {
-   "p": "funkgalgen/js/words.js",
-   "s": 5953,
-   "h": "e429f8463a246c125aba0aa4f5a4a6ed1bd13c2291a2338a779e122a1b40e530"
-  },
-  {
-   "p": "funkgalgen/manifest.webmanifest",
-   "s": 779,
-   "h": "cf9d7ee330f72f8c74238af03d72473ad5c618d815e8159136333e5805a35b24"
-  },
-  {
-   "p": "funkgalgen/style.css",
-   "s": 12138,
-   "h": "573302966572470c81c27d61dd1efddbc54276d04820ba5ff3b4f9c34d8c6f95"
-  },
-  {
-   "p": "funkgalgen/sw.js",
-   "s": 2005,
-   "h": "6a151e1c8a9c12b0f33fe04866d0cc36f32edbdd09536c51bcafe793d88f5d92"
   },
   {
    "p": "funkgolf/card.jpg",
@@ -10878,8 +10643,8 @@
   },
   {
    "p": "games.js",
-   "s": 53112,
-   "h": "f9fcc95f6293ef1342c0c04a90cf71477208ec76cd829bbe6f553026ce7f4aeb"
+   "s": 50260,
+   "h": "f9f5d52d15e302f0cc826b9a5d7455a04872de294dc30cd20a9c3228dec6cd91"
   },
   {
    "p": "groove-arena/card.jpg",
@@ -10958,8 +10723,8 @@
   },
   {
    "p": "guides.js",
-   "s": 166111,
-   "h": "b868b75dce96b1e1af5941a605c3c741304c9c0ca00dcc3cf9c8401fbcff17d4"
+   "s": 167146,
+   "h": "72e6513e0a9e873b3f445d74dd216e278429d296aa04968f48f81ac883aa22eb"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -11010,11 +10775,6 @@
    "p": "guides/anmacha-kart.json",
    "s": 49730,
    "h": "ad25edb7140e4c14eab5fa29ee6adaf212e7d45c9fd82e4a524dafb16374b679"
-  },
-  {
-   "p": "guides/anmacha-kartensammlung.json",
-   "s": 25742,
-   "h": "5d5510d764c0ae6bd30bd9397485694bafc531704cdb74789ab0e380238472d3"
   },
   {
    "p": "guides/anmacha-klotzfunk.json",
@@ -11070,11 +10830,6 @@
    "p": "guides/anmacha-snake.json",
    "s": 13550,
    "h": "b3522ccf88de3174966ff5ac2b7a23ad95c226c4ba22ccb364b6f3abb7caecf1"
-  },
-  {
-   "p": "guides/anmacha-spielesammlung.json",
-   "s": 13123,
-   "h": "b8cfa5788ab62ab4a86a38681e252d9e4ba8472a48394bbcf2563e7528285ca8"
   },
   {
    "p": "guides/anmacha-tower-defense.json",
@@ -11167,11 +10922,6 @@
    "h": "9bb5af455248b5c854ffde45533ac2ea1a740683412173367410d1fe4f3e434b"
   },
   {
-   "p": "guides/funkgalgen.json",
-   "s": 15093,
-   "h": "ec5a0affbe23f66fb6ca63a2ae2e2770a19809ce26b87cfb977b687d34e5e023"
-  },
-  {
    "p": "guides/funkgolf.json",
    "s": 14330,
    "h": "79773aa432602de2f41638896d6fb0123e2b1648d50ac2ecbe6421d315bdbfb0"
@@ -11225,11 +10975,6 @@
    "p": "guides/kuechen-chaos.json",
    "s": 14187,
    "h": "56d265b2a668fef17b7ee37d0f5250c10d8b29ac77880534e31460990366351e"
-  },
-  {
-   "p": "guides/mahjong.json",
-   "s": 14071,
-   "h": "71713fbf60da34dd99b5e6aad3827169f933330df5df9ae171e26679471256a1"
   },
   {
    "p": "guides/mimori.json",
@@ -11327,14 +11072,14 @@
    "h": "c9e3421bd4e14878cd15a1db070678c31d9c0a230e9d97100f0b672f16d8ebf8"
   },
   {
+   "p": "guides/spielesammlung.json",
+   "s": 52292,
+   "h": "37f4c899f0e44dff5f5401e22c25e5a3d365ac07ef6d1f21b4bf42e80c5bc899"
+  },
+  {
    "p": "guides/spinwelten.json",
    "s": 34782,
    "h": "664fbd67fe34a3ce5de76b60cbe87601928695efceb08fd368cd4efb94fefd23"
-  },
-  {
-   "p": "guides/stadt-land-plus.json",
-   "s": 14717,
-   "h": "609a8cbfb5d1e4b5f330d4cc4f6ece5e6a9549a2c24782ba0d5ec09e66116134"
   },
   {
    "p": "guides/taschi.json",
@@ -11367,14 +11112,9 @@
    "h": "458bcef7500cedfdc96fe366f5a31da9f4bd0b61c714aeaba5d274178fafa947"
   },
   {
-   "p": "guides/wortfunk.json",
-   "s": 15138,
-   "h": "8ffcbc45f794024c703fecb5aae51f346f2436e17abfc1e10f535ac3484445f6"
-  },
-  {
-   "p": "guides/wortgitter.json",
-   "s": 13159,
-   "h": "b1ec075c3dea4363bf56f8daee282f8297aad706afea350807208f384bd28a3c"
+   "p": "guides/wortspiele.json",
+   "s": 57090,
+   "h": "89f3a76116cf2d0cd45d7fa9bde1c0ea6486652daa9af782a88c29afaea66095"
   },
   {
    "p": "guides/zeitsprung-castingshow.json",
@@ -11942,86 +11682,6 @@
    "h": "14c626be404d5188444f9137fa57bef6a22e7938eb3ab4fde71e8af00f2ef162"
   },
   {
-   "p": "mahjong/card.jpg",
-   "s": 44232,
-   "h": "1bd91240d094c090d96a6ff281019757761488e673aca708b9280e4cf72dd90a"
-  },
-  {
-   "p": "mahjong/icon.svg",
-   "s": 671,
-   "h": "515bdcf8bbe8707b476ec239806c97c6e4a2d7f00b50727007e946cbb2f9ecbf"
-  },
-  {
-   "p": "mahjong/index.html",
-   "s": 13512,
-   "h": "6a541d0ad50f9018409911ca4af46e1000443c92cd4cd39c7fd47d1d58ff9086"
-  },
-  {
-   "p": "mahjong/js/audio.js",
-   "s": 7310,
-   "h": "72b8042faf8bf62eb3f880367ec612ccc8dbf276b6a84eff99c88ce3d697f1ca"
-  },
-  {
-   "p": "mahjong/js/engine.js",
-   "s": 14239,
-   "h": "a2533487e69907272abbcf26597f89b1484ed474ccb60671191e02ee9376b2d9"
-  },
-  {
-   "p": "mahjong/js/faces.js",
-   "s": 19057,
-   "h": "9ddd4b617a7b8c17e15739dd97ba20d62220df6028e0e30e9437485036835630"
-  },
-  {
-   "p": "mahjong/js/input.js",
-   "s": 8744,
-   "h": "c219873e9297912daa514ca6ec08d478c03a7b8c89a4c92eea4bfb4c4435b357"
-  },
-  {
-   "p": "mahjong/js/layouts.js",
-   "s": 9886,
-   "h": "b91207b0ff2ae27a6bfa6baa824e50031b170a8052df4be80683b20968d1275e"
-  },
-  {
-   "p": "mahjong/js/main.js",
-   "s": 35347,
-   "h": "e7f0f62d8575cb9f3ba1d389d02310fa2c9cb0deacca316cdc89a4fec05fe33e"
-  },
-  {
-   "p": "mahjong/js/render.js",
-   "s": 27443,
-   "h": "e1b4127a0e0a22399d9b5286fed7296d3dd7c80fd924fc74c97cdc789b6126c9"
-  },
-  {
-   "p": "mahjong/js/save.js",
-   "s": 8347,
-   "h": "eb3de5be7f04eef1056f4e1184f3ea8c65671ca6d36aae7bbe744ec516bee439"
-  },
-  {
-   "p": "mahjong/js/ui.js",
-   "s": 22879,
-   "h": "e9752cee387a8e17c8c4776585fc384f17342e234f5fd043d3e4615c70713e98"
-  },
-  {
-   "p": "mahjong/logo.svg",
-   "s": 2607,
-   "h": "e95621cb7fb080c5530700e6b26fe82566f4fed47b328dc29ba8dfe57176edf7"
-  },
-  {
-   "p": "mahjong/manifest.webmanifest",
-   "s": 760,
-   "h": "ccc9a7c4bc8c0decb6be6465f594e7a0576614310b795c81b78fa079c4770940"
-  },
-  {
-   "p": "mahjong/style.css",
-   "s": 17200,
-   "h": "d8f76cc09f4660bd08789f0cc16364f0e1aa14f11eacd6bebabb004b48d84891"
-  },
-  {
-   "p": "mahjong/sw.js",
-   "s": 1989,
-   "h": "26169f69def36c14f74757457db98a26f152ca327577ee14d232c5391541c98e"
-  },
-  {
    "p": "manifest.webmanifest",
    "s": 715,
    "h": "8d3c54ea2493b87a40bd61e7f59e677dec0a1aa91f5483a7a595be4e7f24bbc0"
@@ -12123,8 +11783,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3539,
-   "h": "8093e3079474f210c71618d4214b3a5734b02a9ad9df890fcd7f6877a3daba8c"
+   "s": 3262,
+   "h": "05bd73963ae8e32a610529b33597fd6d7da096b5d3a3029796f70fdcfb233437"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-DMBVqCOs.js",
@@ -14468,8 +14128,8 @@
   },
   {
    "p": "saftblitz/js/game.js",
-   "s": 50744,
-   "h": "e34ea46b1f5af4be9d480ccec68b2ee6f4e5f81cc05ec6711aa88a9904a2d016"
+   "s": 50751,
+   "h": "43fb20922cf36d699613b268fe8aa3f6d777e01fa82c5697a496744fd0fbe0bc"
   },
   {
    "p": "saftblitz/manifest.webmanifest",
@@ -15632,6 +15292,256 @@
    "h": "35aa73fdf931a1a9e45ced472ad3870a625f0b8d4ab98d4053f26d8e386e0812"
   },
   {
+   "p": "spielesammlung/card.jpg",
+   "s": 42119,
+   "h": "25807a0545fa9b06d12bea22e3fba0929206dd2f1b0dc522b8edefed32c75625"
+  },
+  {
+   "p": "spielesammlung/index.html",
+   "s": 101041,
+   "h": "48bdb8af32aea8524a3659739f265c704d220b7b8ab4a136603d3496bc698e11"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/card.jpg",
+   "s": 47953,
+   "h": "cb5916870cf53ff7877f25518e743d864b1868512f8f6816a2ec3b356eef445a"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig0.webp",
+   "s": 5536,
+   "h": "3d11636b5d9d4e05811734db0f27ecd46b535dfdcaf93b33587818e445133ee6"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig1.webp",
+   "s": 6002,
+   "h": "e03536d9004571ab191c8de68fb32c7a80ad4f6a73b22891808b74bbc883c6fe"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig2.webp",
+   "s": 6512,
+   "h": "8866cbde0f322c76abe74968df0aa540e29df1e86db0a987ffad0ef3007019c2"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig3.webp",
+   "s": 5372,
+   "h": "743f6c9866fc7065cdb65637564a2209f94d2e0e7440098948bdf46e3cbd5892"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig4.webp",
+   "s": 5170,
+   "h": "8c8bbc255fd94de925133c824dc65d7bcfa73867ce1224278f93aa3be40b6a1a"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig5.webp",
+   "s": 4764,
+   "h": "7ab9f12e1d52ac65535c4922c38135d6b178b7b37838779822627edd5ce7b8ec"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig6.webp",
+   "s": 6636,
+   "h": "b61cc3c22c359b44299331b86f32f2b809811127427aa88c247dc5802156ec73"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig7.webp",
+   "s": 6118,
+   "h": "1f0b21a411bcef355cad894ef061509047fd31ad66eff67598791b59b11cf8be"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/index.html",
+   "s": 28677,
+   "h": "ce14e6816918f1e336a4c0fbdedd0e0f7c734c8766ff89eda05107f541121b71"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/js/app.js",
+   "s": 124095,
+   "h": "9438af3e8caf902afeef0af6168dad6426de236bfe9235e1200a18b601d134c6"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/js/figures.js",
+   "s": 8150,
+   "h": "08ff19cb6e2cdeda1b281349b1a16643758cf6a5a197e998dc6c2861119838b8"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/js/logic.js",
+   "s": 44313,
+   "h": "844fd6f4a32924f98eafd260c36d135d311ed18323e29d4cdc717e1d93c74f2d"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/logo.svg",
+   "s": 2145,
+   "h": "f021c4cca1a2319c1876e5cbd2fec21d1555fa44e3d6df24027e3f3ff097da6b"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_ba.glb",
+   "s": 243888,
+   "h": "e9d20bc74b2c3d12ac223b8f52b47dfac51c4fb0634bc498ec23f87bcb21ec12"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_kn.glb",
+   "s": 220180,
+   "h": "a1cd6909b4280cb77b1e32a4d26e1cc5fa253243b6ba2cf1febeb486b9b056c0"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_ma.glb",
+   "s": 227140,
+   "h": "19e538480ebe79ecf8d63b0851882d34f919e6e7372f2b28e5efaf20f3619f8d"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_ra.glb",
+   "s": 302508,
+   "h": "7dc3a159004a9f089b85fe68c759a8ed02fd83cf244153946da19284ffe42b16"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_rh.glb",
+   "s": 243028,
+   "h": "3a237456e0bc41007919b28ae5722bec63054f55d18b10095b15ebb443dfe959"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_ro.glb",
+   "s": 256984,
+   "h": "bf0e8e360211d8cf2c292516c11806d7aeb46aeea9bb7167d3db0edf6d18c1e0"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/anim.glb",
+   "s": 500388,
+   "h": "bfb31b875564085b63845f82cad7be1c3bcc3dc4b948cbfbe05235c75259def7"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/room.glb",
+   "s": 348444,
+   "h": "3a35ef630977d2e8726a08e46bdfea0a98a507a5e28556ebe3111da57d2b262e"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/sk_m.glb",
+   "s": 179036,
+   "h": "4bdfc6f779b3b0630b64e74b337c1648f36022b3b1d56ffb5528e6b1260ef296"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/sk_w.glb",
+   "s": 241272,
+   "h": "36ab3c8eff438e44d354ed85ffa6c8d0762e874b68ccd68e3ddbcaac02b7bc39"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/data/loesbar.json",
+   "s": 3591,
+   "h": "2a9c8ad234902a70f460c5024da18fe9f9ec916813c1ffed1baf76c59c30020f"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/img/anmacha-logo.png",
+   "s": 28394,
+   "h": "466a7c3ba4b450d56054e6442c84ae428911174d276a05e53b1f3ae2583217b3"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/img/radioportal-icon.png",
+   "s": 20776,
+   "h": "06358bdf93261f3ffb84505a41512bfd7e0cd4b5773611d46bf38d9c2a66b43a"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/index.html",
+   "s": 7468,
+   "h": "69881747503d05be1f68bc32642a9a02a62b1fbb42918524fff7812080bd316d"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/js/app.js",
+   "s": 35225,
+   "h": "9582b830327f2ec951b191b1ce0901ae641fcc5853895d72beafc6cbb7344024"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/js/rules.js",
+   "s": 13021,
+   "h": "287457557522274faf28b96c9304d26a6e4e1ab1d2b93e10e4fac5cd7290edf4"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/style.css",
+   "s": 11250,
+   "h": "3a1ae2be3e2d3f61536544520ae5577b6429b39d745daf4318cfeb4397ebbb4c"
+  },
+  {
+   "p": "spielesammlung/logo.svg",
+   "s": 1586,
+   "h": "6c8630849e82331ef879607d00275c27feacf2ccd1528ff9481b9cec6a3ed56c"
+  },
+  {
+   "p": "spielesammlung/mahjong/card.jpg",
+   "s": 44232,
+   "h": "1bd91240d094c090d96a6ff281019757761488e673aca708b9280e4cf72dd90a"
+  },
+  {
+   "p": "spielesammlung/mahjong/icon.svg",
+   "s": 671,
+   "h": "515bdcf8bbe8707b476ec239806c97c6e4a2d7f00b50727007e946cbb2f9ecbf"
+  },
+  {
+   "p": "spielesammlung/mahjong/index.html",
+   "s": 9747,
+   "h": "81e8fe5f18f2cf4af1a7950eaa867353cab82bc9fbdfb64fe4bc0df991ab9fd7"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/audio.js",
+   "s": 7310,
+   "h": "72b8042faf8bf62eb3f880367ec612ccc8dbf276b6a84eff99c88ce3d697f1ca"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/engine.js",
+   "s": 14239,
+   "h": "a2533487e69907272abbcf26597f89b1484ed474ccb60671191e02ee9376b2d9"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/faces.js",
+   "s": 19057,
+   "h": "9ddd4b617a7b8c17e15739dd97ba20d62220df6028e0e30e9437485036835630"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/input.js",
+   "s": 8747,
+   "h": "9d0ab4944688a80b2e2a14da96ae76f474e36c66d440bc1d2dd5b40d03c4ec42"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/layouts.js",
+   "s": 9886,
+   "h": "b91207b0ff2ae27a6bfa6baa824e50031b170a8052df4be80683b20968d1275e"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/main.js",
+   "s": 35391,
+   "h": "360f649735e3b24a376693a9415d84b079e7f49d82c53a0e25589106e631cea8"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/render.js",
+   "s": 27443,
+   "h": "e1b4127a0e0a22399d9b5286fed7296d3dd7c80fd924fc74c97cdc789b6126c9"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/save.js",
+   "s": 8347,
+   "h": "eb3de5be7f04eef1056f4e1184f3ea8c65671ca6d36aae7bbe744ec516bee439"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/ui.js",
+   "s": 22873,
+   "h": "d6a5d56f108bdeeed1af6758b20f938e68ee846e445c3b091d7fdb7d4bb9a90d"
+  },
+  {
+   "p": "spielesammlung/mahjong/logo.svg",
+   "s": 2607,
+   "h": "e95621cb7fb080c5530700e6b26fe82566f4fed47b328dc29ba8dfe57176edf7"
+  },
+  {
+   "p": "spielesammlung/mahjong/style.css",
+   "s": 17200,
+   "h": "d8f76cc09f4660bd08789f0cc16364f0e1aa14f11eacd6bebabb004b48d84891"
+  },
+  {
+   "p": "spielesammlung/manifest.webmanifest",
+   "s": 819,
+   "h": "95bed4e6ddbb476f545bdcb07d980bc85cdd50a589760e8c843806f762fd990b"
+  },
+  {
+   "p": "spielesammlung/sw.js",
+   "s": 2035,
+   "h": "639e8258d5b2c5fc74d7f54eba0eb9a5ed6ebbe6a17d2375d05f697557a01331"
+  },
+  {
    "p": "spinwelten/card.svg",
    "s": 3970,
    "h": "b14feadf1fbda03dd3a9f961078d5fdfb44cac0204b431d7b3c25ea97d2c3f5d"
@@ -15882,109 +15792,14 @@
    "h": "8dad0a6dca23aca404d58d1c96b7918c08d881ecdba7e92d79e459a5c72d60f3"
   },
   {
-   "p": "stadt-land-plus/card.jpg",
-   "s": 33830,
-   "h": "368451e257e4ee49e3acf1885f9be2ab96bc2610a80633160c0bb6bec411e677"
-  },
-  {
-   "p": "stadt-land-plus/index.html",
-   "s": 16166,
-   "h": "114ca71dc6a7f1852aeebb9c5aeecaa7e2d41f781eab549831bec6aea5260e94"
-  },
-  {
-   "p": "stadt-land-plus/js/app.js",
-   "s": 57702,
-   "h": "951171d808b06aa060fa4ec575e7b12c27b63b1246672a79571f15f2a92668a8"
-  },
-  {
-   "p": "stadt-land-plus/js/core.js",
-   "s": 12589,
-   "h": "87bf4f9c7271c580869b8572f1774d243c0099add6fb93ba0c6e83182e324f45"
-  },
-  {
-   "p": "stadt-land-plus/js/db/fluesse.js",
-   "s": 11761,
-   "h": "cb92175b8798ef747dea8e36c1222f976a72d9f7b2e48edbc217ae17edccbdf5"
-  },
-  {
-   "p": "stadt-land-plus/js/db/laender.js",
-   "s": 67323,
-   "h": "d803049a6cb247e24f21415aa866d7aa5cb97d02f33708456984d1f44fd9cd5a"
-  },
-  {
-   "p": "stadt-land-plus/js/db/staedte.js",
-   "s": 999340,
-   "h": "f648166f63f34c860ca2da77137a0bb5daaf001840a33343b9785ac21cac0348"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-beruf.js",
-   "s": 4554,
-   "h": "61179243cbfb42e39cfd627d517bc6baaedc30bc4d1d9f015696549c04bdd0c6"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-essen.js",
-   "s": 3105,
-   "h": "e64103f9dc6f6e99d4afb6c541fb7e49419ec67cf50ee3ea9e578b7d1973907c"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-mehr.js",
-   "s": 8032,
-   "h": "65a7da9285c3a2a7767be2545622d4ff7d8e8870201470f9b844a6b9d075df30"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-pflanze.js",
-   "s": 2355,
-   "h": "6a51b6ff81900aca7c224912014b15238e18ab7a1b1d34f87e2ccdf23288002f"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-tier.js",
-   "s": 4251,
-   "h": "9390ec33682ac2bdf4cdf284ae7c63099d6ca454442885a645e12283ead71459"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-vorname.js",
-   "s": 3346,
-   "h": "e54435100a79785e18184d82e2659e2870176ee7e47ab64334b8f6f047659498"
-  },
-  {
-   "p": "stadt-land-plus/js/db/welt.js",
-   "s": 2862,
-   "h": "b9f23d410a7b58377f80b7ed9df40d8f0d0a8bb9461f338859486771661bf5ba"
-  },
-  {
-   "p": "stadt-land-plus/js/sound.js",
-   "s": 3686,
-   "h": "8c45ca6c9ae3235916e2b8f5090e33a399c6722492cae811cab0e67aca21ce20"
-  },
-  {
-   "p": "stadt-land-plus/js/view.js",
-   "s": 8145,
-   "h": "031859905254a47a160e4b74c49c7931f323d1245df5c7cc98b59d993116354e"
-  },
-  {
-   "p": "stadt-land-plus/manifest.webmanifest",
-   "s": 811,
-   "h": "f315f3a34479636d9375570f5604d05aac5a29426019f359e81d9f9882528c1c"
-  },
-  {
-   "p": "stadt-land-plus/style.css",
-   "s": 23557,
-   "h": "ec87d42ad56d08a7731455ac0a7423e31d85aaa76ecf395ed55f28b65a9819a8"
-  },
-  {
-   "p": "stadt-land-plus/sw.js",
-   "s": 2026,
-   "h": "bdb5d460689b4674ea3c23fa2dd6f792bc05e0211ad4ca63509c7aa0bd22bd2f"
-  },
-  {
    "p": "stream.html",
    "s": 9746,
    "h": "d8a1af246de70f8e5567845a5339b6a3d3b5f476acbfd64b5710d8f358852b1c"
   },
   {
    "p": "sync/catalog.json",
-   "s": 239558,
-   "h": "06646b80c2898cea4f73e63393cfa6cf6f77a2fde69865faf19bf25b22c92041"
+   "s": 236149,
+   "h": "96fb4748bd8406ac253b8080e55058bf92d0ca69f8e0c95300fd87a2b41e880f"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -16857,11 +16672,6 @@
    "h": "4a94af0588e7014761e3c089be700ef1ec7766abd9e6323c1131fdb85be6ce7f"
   },
   {
-   "p": "thumbs/anmacha-kartensammlung.webp",
-   "s": 17098,
-   "h": "56d678282ae00031a92770194dd57bf2db5b2c783072ec34e7b87b458a7d8f74"
-  },
-  {
    "p": "thumbs/anmacha-klotzfunk.webp",
    "s": 29118,
    "h": "44cf82b9f1b5109f6f1d8fd2dca85daf9ffacda44a9beb3d3a0ce201a97bc0a8"
@@ -16905,11 +16715,6 @@
    "p": "thumbs/anmacha-snake.webp",
    "s": 13836,
    "h": "e4abd8b24015cd07057654ad8991d8422acdc9f347d03698b39e2b9fa30a741f"
-  },
-  {
-   "p": "thumbs/anmacha-spielesammlung.webp",
-   "s": 13884,
-   "h": "bf7e7470e992f579e9f8b0c6b135755fd4a64bf79fcfdfc8b3f2ed8d7f8a9926"
   },
   {
    "p": "thumbs/anmacha-tower-defense.webp",
@@ -16992,11 +16797,6 @@
    "h": "6e9bfdfc558ed307b83186c51efd1d8fb81bb70c032bd7c944ca432f8efa6be0"
   },
   {
-   "p": "thumbs/funkgalgen.webp",
-   "s": 17280,
-   "h": "0e366cb5530837fe05a2b4b656d2e162c05737cdaa42c9f03bae33c05c4d7c59"
-  },
-  {
    "p": "thumbs/funkgolf.webp",
    "s": 18870,
    "h": "627e027e794988b7dbdab36f011b100953c45b1c71d92da0130ab587b5018846"
@@ -17035,11 +16835,6 @@
    "p": "thumbs/kuechen-chaos.webp",
    "s": 14096,
    "h": "751b2431fef9333a5220c9420f8be8e1a5d932d827e35353d900864d2a4f6974"
-  },
-  {
-   "p": "thumbs/mahjong.webp",
-   "s": 15732,
-   "h": "f6b8f76dbc8b02c81b64cdc55a88edd9b8a989e6885fe024541a3940a62e8b47"
   },
   {
    "p": "thumbs/mimori.webp",
@@ -17107,14 +16902,14 @@
    "h": "892c6979cd97c4d1c837eb2b059ccf126a791e14771f624b9c30dddbaa1beebb"
   },
   {
-   "p": "thumbs/stadt-land-plus.webp",
-   "s": 15564,
-   "h": "b10120871d5acf7ca3c4c3ab4aaa1f9100a4d14a2107f70c581c6f1d67e67fb0"
+   "p": "thumbs/spielesammlung.webp",
+   "s": 14402,
+   "h": "a6c265e22b0ed103c600b2c2d4cb475a713ef28ca82c59a9b85d1d087845e2b6"
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2055,
-   "h": "d32450a35f389e2c0bfe2d3bd7ecd74826c657102520440feaa39114ff9be0b4"
+   "s": 1905,
+   "h": "56e6974a0710c916c151256edde1147b5a954b3309ec404bd9055036dea18b7b"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
@@ -17137,14 +16932,9 @@
    "h": "00c2b85641e6347f22a6386c8c1a5b64150d4635f5fb29ae86845cef99b15a5f"
   },
   {
-   "p": "thumbs/wortfunk.webp",
-   "s": 16736,
-   "h": "01929bc46ab63b499dc80b3a6343caa46d9a042a83ffecf40e69275a157b991d"
-  },
-  {
-   "p": "thumbs/wortgitter.webp",
-   "s": 14336,
-   "h": "a025fe08a58390c34795dbc0f2312d7857641620650d78fdd5fc9b9e65070fec"
+   "p": "thumbs/wortspiele.webp",
+   "s": 29380,
+   "h": "5e466609eb2a48f031aed5adff96db0b54332d509e8da5f01d9462571f47934c"
   },
   {
    "p": "thumbs/zeitsprung.webp",
@@ -17762,94 +17552,214 @@
    "h": "ffc30668efdf8dce5571e09c868d0529279c6c4d04ca14b10369dc6acfbc2d66"
   },
   {
-   "p": "wortfunk/card.jpg",
+   "p": "wortspiele/card.jpg",
+   "s": 59599,
+   "h": "e58d4a96398099e5c1c18403d78976af329b4f88434a653d09b655f68866d3fa"
+  },
+  {
+   "p": "wortspiele/funkgalgen/card.jpg",
+   "s": 37175,
+   "h": "84f80ba2a348e3ad62adc7930bee42f28ca43a680143921a61c93f3f8551445c"
+  },
+  {
+   "p": "wortspiele/funkgalgen/index.html",
+   "s": 10473,
+   "h": "7341d6de35f47013a80c113a668e4b4d6b43d6d86baa0b5f1e19cc2944d06c74"
+  },
+  {
+   "p": "wortspiele/funkgalgen/js/app.js",
+   "s": 42160,
+   "h": "b84afbb62445e5fc60d4a4eede56d8f4fbcb07e3990e29436052861e74e7293e"
+  },
+  {
+   "p": "wortspiele/funkgalgen/js/core.js",
+   "s": 6752,
+   "h": "9be03ed81f9aca8bd4af869baf0ed01e84d6dd71c861a6c3ddf5f8b92ce9711f"
+  },
+  {
+   "p": "wortspiele/funkgalgen/js/scene.js",
+   "s": 14461,
+   "h": "ee40f9adbc68ac0fcceb54658658fd2e86ed35e0ed47b973cfa45b683f7d434c"
+  },
+  {
+   "p": "wortspiele/funkgalgen/js/words.js",
+   "s": 5953,
+   "h": "e429f8463a246c125aba0aa4f5a4a6ed1bd13c2291a2338a779e122a1b40e530"
+  },
+  {
+   "p": "wortspiele/funkgalgen/style.css",
+   "s": 12138,
+   "h": "573302966572470c81c27d61dd1efddbc54276d04820ba5ff3b4f9c34d8c6f95"
+  },
+  {
+   "p": "wortspiele/index.html",
+   "s": 9883,
+   "h": "eab068d4aeb4045b7fa5d628cafbd2dd4e4fbaad7de3318e2aab6cfd3fa7ef48"
+  },
+  {
+   "p": "wortspiele/manifest.webmanifest",
+   "s": 809,
+   "h": "1886880ce8fc79d935f850c3b2884192c5c22c3bdeb91319702e27ff49dd2820"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/card.jpg",
+   "s": 33830,
+   "h": "368451e257e4ee49e3acf1885f9be2ab96bc2610a80633160c0bb6bec411e677"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/index.html",
+   "s": 12395,
+   "h": "6dbdf7577732a50b2d75765da8f87c1962abf4bfe9030ebbd49fa8e76db1a6f9"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/app.js",
+   "s": 57714,
+   "h": "00b642fc411c6b57e2ff7619294f660e409bfd62795107dc33cd2c83155f29d7"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/core.js",
+   "s": 12589,
+   "h": "87bf4f9c7271c580869b8572f1774d243c0099add6fb93ba0c6e83182e324f45"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/fluesse.js",
+   "s": 11761,
+   "h": "cb92175b8798ef747dea8e36c1222f976a72d9f7b2e48edbc217ae17edccbdf5"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/laender.js",
+   "s": 67323,
+   "h": "d803049a6cb247e24f21415aa866d7aa5cb97d02f33708456984d1f44fd9cd5a"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/staedte.js",
+   "s": 999340,
+   "h": "f648166f63f34c860ca2da77137a0bb5daaf001840a33343b9785ac21cac0348"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-beruf.js",
+   "s": 4554,
+   "h": "61179243cbfb42e39cfd627d517bc6baaedc30bc4d1d9f015696549c04bdd0c6"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-essen.js",
+   "s": 3105,
+   "h": "e64103f9dc6f6e99d4afb6c541fb7e49419ec67cf50ee3ea9e578b7d1973907c"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-mehr.js",
+   "s": 8032,
+   "h": "65a7da9285c3a2a7767be2545622d4ff7d8e8870201470f9b844a6b9d075df30"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-pflanze.js",
+   "s": 2355,
+   "h": "6a51b6ff81900aca7c224912014b15238e18ab7a1b1d34f87e2ccdf23288002f"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-tier.js",
+   "s": 4251,
+   "h": "9390ec33682ac2bdf4cdf284ae7c63099d6ca454442885a645e12283ead71459"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-vorname.js",
+   "s": 3346,
+   "h": "e54435100a79785e18184d82e2659e2870176ee7e47ab64334b8f6f047659498"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/welt.js",
+   "s": 2862,
+   "h": "b9f23d410a7b58377f80b7ed9df40d8f0d0a8bb9461f338859486771661bf5ba"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/sound.js",
+   "s": 3686,
+   "h": "8c45ca6c9ae3235916e2b8f5090e33a399c6722492cae811cab0e67aca21ce20"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/view.js",
+   "s": 8145,
+   "h": "031859905254a47a160e4b74c49c7931f323d1245df5c7cc98b59d993116354e"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/style.css",
+   "s": 23557,
+   "h": "ec87d42ad56d08a7731455ac0a7423e31d85aaa76ecf395ed55f28b65a9819a8"
+  },
+  {
+   "p": "wortspiele/sw.js",
+   "s": 2035,
+   "h": "2a720dd4e14008880d918c64aec4f9ae291f8dda361d070e8e07cc7197f5983d"
+  },
+  {
+   "p": "wortspiele/wortfunk/card.jpg",
    "s": 35670,
    "h": "f91e89e3044d41c9dfce4985a86ffdda87ae0b63cd37570e942d7ebe575f4918"
   },
   {
-   "p": "wortfunk/data/LIZENZ.txt",
+   "p": "wortspiele/wortfunk/data/LIZENZ.txt",
    "s": 1194,
    "h": "c06bf85ed8e45b28e13c181160e1e53840a49a8dba3769c7fc96fc00b83cb39c"
   },
   {
-   "p": "wortfunk/data/bekannt.dawg",
+   "p": "wortspiele/wortfunk/data/bekannt.dawg",
    "s": 123804,
    "h": "3e5e58a43a40e7f9155b0fddd6b6a0316b0a3c8ccd50525d85adf2df0501ecc5"
   },
   {
-   "p": "wortfunk/data/woerter.dawg",
+   "p": "wortspiele/wortfunk/data/woerter.dawg",
    "s": 474064,
    "h": "67141363ee427a01985fb2e65fd062da0dcd297de894993ca0b26f82fbad97cd"
   },
   {
-   "p": "wortfunk/index.html",
-   "s": 14127,
-   "h": "b1608c4c8f1a1dc5ef6f1f9459cf83282390e0765b18765a15755b15c9fe8f4b"
+   "p": "wortspiele/wortfunk/index.html",
+   "s": 10360,
+   "h": "6c821391ee990e1874d37165a4b18c3f65f6c4ca4c37e0a11521fb56b7dce0f5"
   },
   {
-   "p": "wortfunk/js/app.js",
-   "s": 50599,
-   "h": "4a5873b06be354b8681d09bf56aad7378d97cceb26f2ff0e1147c1f96ac8677a"
+   "p": "wortspiele/wortfunk/js/app.js",
+   "s": 50611,
+   "h": "50a03d679e9b19d706604ee92ec00e413d330f3211ac37129a54e7e948593bba"
   },
   {
-   "p": "wortfunk/js/logic.js",
+   "p": "wortspiele/wortfunk/js/logic.js",
    "s": 20477,
    "h": "7678e54707cd339aa46ced5cb657e3ead14fe3aa9cee720e626744c3fc1a041c"
   },
   {
-   "p": "wortfunk/manifest.webmanifest",
-   "s": 766,
-   "h": "bf5ea55083735ba1df6eee3fcdd438d747bc7a344e70c0397e73c106b06a7e11"
-  },
-  {
-   "p": "wortfunk/style.css",
+   "p": "wortspiele/wortfunk/style.css",
    "s": 16377,
    "h": "5f71aeffca53ba75d8776b0afb914930e17941f12dfb65f1aafe275e2e01ab2c"
   },
   {
-   "p": "wortfunk/sw.js",
-   "s": 1996,
-   "h": "bdcf970c73f8441650ea6600d064874a3b8baf8e6ba00ef76a7c5eabb316ce66"
-  },
-  {
-   "p": "wortfunk/worker.js",
+   "p": "wortspiele/wortfunk/worker.js",
    "s": 482,
    "h": "bb23e6703346623691e60cf8dfbc7ba3ec7bf2592719d4b785f6511315be7048"
   },
   {
-   "p": "wortgitter/card.jpg",
+   "p": "wortspiele/wortgitter/card.jpg",
    "s": 34144,
    "h": "22493f93c75b444e74200096552246456947befd32e954c0b5bc28a5e56f461f"
   },
   {
-   "p": "wortgitter/index.html",
-   "s": 12578,
-   "h": "66e3bb95190b26dee0d2f3a8f0393d1c5b8f8dfa829dd55963fc0df1d89bfc54"
+   "p": "wortspiele/wortgitter/index.html",
+   "s": 8807,
+   "h": "8f8283e09d9e3ded869be130695060911310d0fcba2b0490f4b5386029592617"
   },
   {
-   "p": "wortgitter/js/app.js",
-   "s": 38394,
-   "h": "e380f20b33c3e7aaaf74d0bec5cb696262860c9cb21022be783a5dbe4d0b8770"
+   "p": "wortspiele/wortgitter/js/app.js",
+   "s": 38406,
+   "h": "5b29fa9b46e7a67f6372dcfdeb7116e7385de94fb90f58667a3d620c9bd66227"
   },
   {
-   "p": "wortgitter/js/grid.js",
+   "p": "wortspiele/wortgitter/js/grid.js",
    "s": 6492,
    "h": "47b81d2254747b2817a6cba578c20a63cd0a2dd25e8e2c436cc434d3c97d0b37"
   },
   {
-   "p": "wortgitter/manifest.webmanifest",
-   "s": 774,
-   "h": "d591c51f1c371ea5b1bd9b8f333de32a7782d63ed88e9f85905f36f47a8c9e4a"
-  },
-  {
-   "p": "wortgitter/style.css",
+   "p": "wortspiele/wortgitter/style.css",
    "s": 15609,
    "h": "91b7aa669884896f95c3d0817fa832df53b348cf8a5182d1eadaa1763be58914"
-  },
-  {
-   "p": "wortgitter/sw.js",
-   "s": 2000,
-   "h": "920810948ad9169606d0ede35ff11af463a5a85c0e68bca6aed0e555f6a38260"
   },
   {
    "p": "zeitsprung/app.js",

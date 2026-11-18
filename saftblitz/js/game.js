@@ -31,7 +31,7 @@
 
   /* ---------- Grafik: Früchte als vorgezeichnete Bilder ---------- */
   const sprites = new Map();
-  const logo = new Image(); logo.src = '../anmacha-kartensammlung/solitaer/img/anmacha-logo.png'; logo.onload = () => sprites.clear();
+  const logo = new Image(); logo.src = '../spielesammlung/kartensammlung/solitaer/img/anmacha-logo.png'; logo.onload = () => sprites.clear();
   function seeded(n) { let a = n; return () => { a = (a * 16807) % 2147483647; return a / 2147483647; }; }
   function shapePath(g, f, R) {
     g.beginPath();

@@ -216,41 +216,6 @@
    "trailer": null
   },
   {
-   "id": "mahjong",
-   "title": "Mahjong 3D – Jadepalast",
-   "desc": "Mahjong Solitaire in echtem 3D: Paare gleicher, freier Steine abräumen, bis das Brett leer ist. Reise mit 48 Leveln in 8 Welten (Teegarten bis Kaiserstadt) mit Sternen und Zielzeiten, 29 Layouts von der Teeschale bis zur klassischen Schildkröte, Tagesrätsel mit Serie, Zeitjagd und entspannter Zen-Modus. Immer lösbar gemischt, Tipp, unbegrenztes Rückgängig, Mischen, Kombos, 26 Erfolge, zwei Steinbild-Stile (klassisch oder mit großen Zahlen), 8 Tische. Touch mit Zoom, Maus, Tastatur und Gamecontroller; Offline-PWA und Google-Spielstand.",
-   "icon": "🀄",
-   "img": "mahjong/card.jpg",
-   "bg": "linear-gradient(145deg,#0e3b2e,#1f8a64 55%,#e0b24a)",
-   "glow": "rgba(63,209,154,.5)",
-   "path": "mahjong/",
-   "modes": {},
-   "multiplayer": false,
-   "guide": {
-    "anleitung": "Mahjong 3D – Jadepalast ist Mahjong Solitaire in echtem 3D. Auf dem Tisch liegen bis zu 144 Steine in Schichten. Tippe zwei gleiche Steine an, die frei sind – dann verschwinden sie. Frei ist ein Stein, wenn nichts auf ihm liegt und links oder rechts kein Nachbar ist. Alle vier Blumen passen untereinander, ebenso alle vier Jahreszeiten. Ist das Brett leer, hast du gewonnen. Jedes Brett wird immer lösbar gemischt. Auf der Reise spielst du 48 Level in 8 Welten mit eigenen Tischen und holst bis zu drei Sterne (geschafft, unter der Zielzeit, unter der Zielzeit ohne Tipp und Mischen). Dazu kommen das freie Spiel mit 29 Layouts, das Tagesrätsel mit Serie, die Zeitjagd gegen die Uhr und der entspannte Zen-Modus ohne Uhr und Punkte. Gespeichert wird automatisch, eine laufende Partie lässt sich fortsetzen, optional mit Google auf allen Geräten.",
-    "steuerung": [
-     "Touch: Stein antippen. Mit zwei Fingern zoomen und die Ansicht drehen, gezoomt mit einem Finger verschieben, Doppeltippen auf den Tisch zoomt. Unten: Zurück, Tipp, Mischen, Zoom und Ansicht zurücksetzen.",
-     "Maus: Klick wählt einen Stein, Mausrad zoomt, rechte Maustaste gedrückt halten dreht die Ansicht.",
-     "Tastatur: Pfeiltasten springen zwischen freien Steinen, Enter oder Leertaste wählt, H Tipp, U Zurück, R Mischen, + und − Zoom, Q/E drehen, V Ansicht, M Ton, F Vollbild, P oder Esc Pause.",
-     "Gamecontroller: Steuerkreuz oder linker Stick springen, A wählt, B abwählen/Pause, X Tipp, Y Zurück, Select Mischen, LB/RB drehen, LT/RT Zoom, rechter Stick verschieben, Start Pause."
-    ],
-    "tipps": [
-     "Räume zuerst Steine ab, die andere blockieren: hohe Stapel und die langen Reihen von außen.",
-     "Liegen drei gleiche Steine frei, überlege, welcher den meisten Platz schafft.",
-     "Paare kurz hintereinander bringen eine Kombo mit bis zu 50 Punkten pro Paar.",
-     "Auf kleinen Bildschirmen hilft der Steinstil „Klar“ mit großen Zahlen (Einstellungen)."
-    ]
-   },
-   "size": 234223,
-   "files": 16,
-   "offline": true,
-   "cloud": {
-    "game": "mahjong",
-    "prefix": "easygames.mahjong.v1"
-   },
-   "trailer": null
-  },
-  {
    "id": "pestwacht",
    "title": "Pestwacht – Die letzte Zuflucht",
    "desc": "Überleben, Aufbau und Eroberung in 3D: Führe die letzte Zuflucht durch das Jahr der Graupest. Baue eine ummauerte Stadt mit 34 Gebäudearten, pflege Kranke gesund, halte 10 Rohstoffe im Gleichgewicht und erforsche drei Wissensbäume. Verteidige dich gegen Seuchenwellen mit 5 Feindarten und 3 Bossen, führe 12 Helden und 6 Truppenarten in beobachtbare Schlachten. Auf der Weltkarte mit Kriegsnebel schickst du Expeditionen los, während 8 Computer-Fraktionen wirtschaften, Bündnisse schließen und Kriege führen. Kampagne in 5 Kapiteln und Freies Spiel, Ereignisse, Tages- und Wochenaufgaben, Erfolge, 3 Speicherplätze mit Export. Touch, Maus, Tastatur und Gamecontroller; Offline-PWA und Google-Spielstand.",
@@ -1453,42 +1418,56 @@
    "trailer": null
   },
   {
-   "id": "funkgalgen",
-   "title": "Funkgalgen – Rette den Moderator!",
-   "desc": "Modernes Galgenmännchen in 3D: Der Moderator steht auf einem Turm aus Lautsprecher-Kisten über einer Riesen-Torte – jeder falsche Buchstabe schießt eine Kiste heraus. Solo-Serie mit 9 Kategorien oder dem Wortfunk-Wörterbuch, Tageswort zum Teilen, Duell zu zweit und online: reihum denkt sich ein Handy das Wort aus, alle anderen raten um die Wette.",
+   "id": "wortspiele",
+   "title": "Wortspiele – Wortfunk, Wortgitter, Stadt Land Plus & Funkgalgen",
+   "desc": "Vier Wortspiele in einem Spiel: Wortfunk (Wörter legen wie im Kreuzworträtsel, fast 400.000 deutsche Wörter), Wortgitter (Buchstaben zu Wörtern wischen, mit Tagesgitter), Stadt Land Plus (Stadt-Land-Fluss in 3D mit frei wählbarem Thema) und Funkgalgen (Rette den Moderator! – Galgenmännchen in 3D). Gegen den Computer, an einem Gerät oder 🌐 online mit TV-Tisch und Handys – Touch, Maus, Tastatur und Gamecontroller.",
    "icon": "🔤",
-   "img": "funkgalgen/card.jpg",
-   "bg": "linear-gradient(145deg,#8B5CF6,#FF4FAE 55%,#FF8A1F)",
-   "glow": "rgba(255,79,174,.5)",
-   "path": "funkgalgen/",
+   "img": "wortspiele/card.jpg",
+   "bg": "linear-gradient(145deg,#FFD27A,#8B5CF6 55%,#00E5FF)",
+   "glow": "rgba(139,92,246,.5)",
+   "path": "wortspiele/",
    "modes": {
     "pad": true,
     "online": true,
-    "multi": true,
-    "tvParam": true
+    "multi": true
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Funkgalgen ist Galgenmännchen in modern und freundlich: Der Moderator steht auf einem Turm aus 8 Lautsprecher-Kisten über einer Riesen-Torte. Rate das Wort Buchstabe für Buchstabe – richtige Buchstaben erscheinen an allen Stellen, jeder falsche schießt eine Kiste aus dem Turm. Ist die letzte Kiste weg, landet der Moderator in der Torte. 💡 Joker deckt einen Buchstaben auf (kostet Punkte), ✍️ Lösen nimmt das ganze Wort (falsch kostet 2 Kisten). Modi: 🎯 Solo-Serie (9 Kategorien oder 📖 Wörterbuch mit bekannten Wörtern aus dem Wortfunk-Wörterbuch, drei Schwierigkeiten; die Serie läuft, bis es einmal schiefgeht), 📅 Tageswort (für alle gleich, Ergebnis teilen), 👥 Duell (zu zweit an einem Gerät, Wörter werden im Wörterbuch geprüft) und 🌐 Online & Handys: Der Fernseher zeigt Turm und Wort, reihum denkt sich ein Handy das Wort aus, die anderen raten um die Wette (richtiger Buchstabe +5 je Stelle, falscher −2, wer das Wort komplett aufdeckt +10, Lösen +20 plus 3 je verdecktem Buchstaben, falsch lösen −5 und 2 Kisten; landet der Moderator in der Torte, punktet der Wortgeber).",
+    "anleitung": "Wortspiele bündelt vier Wortspiele in einem Spiel: Im Startmenü wählst du Wortfunk, Wortgitter, Stadt Land Plus oder Funkgalgen. Jedes Spiel läuft genau wie zuvor (eigene Regeln, eigene Einstellungen, eigener Spielstand); über „← Wortspiele“ kommst du jederzeit zurück ins Menü. WORTFUNK: Wortfunk ist ein Wortlegespiel für 2 bis 4 Spieler. Jeder hat 7 Buchstabensteine und legt daraus Wörter waagerecht oder senkrecht aufs 15×15-Brett, wie im Kreuzworträtsel. Das erste Wort geht über den Stern in der Mitte, jedes weitere schließt an liegende Steine an. Alle neu entstandenen Wörter müssen im Wörterbuch stehen (fast 400.000 deutsche Wortformen, keine Namen oder Abkürzungen, ß wird als SS gelegt). 2×B/3×B verdoppeln bzw. verdreifachen einen Buchstaben, 2×W/3×W das ganze Wort; alle 7 Steine auf einmal bringen 50 Extrapunkte. Der Joker steht für jeden Buchstaben und zählt 0 Punkte. Statt zu legen darfst du tauschen (solange 7 Steine im Beutel sind) oder passen. Wer zuletzt alle Steine los ist, bekommt die Restpunkte der anderen. Spielbar gegen den Computer in drei Stufen, mit mehreren Menschen an einem Gerät oder über 🌐 Online & Handys: Der Fernseher oder PC zeigt das Brett, jedes Handy nur die eigenen Steine. WORTGITTER: Wortgitter ist ein Wischspiel: Verbinde benachbarte Buchstaben (waagerecht, senkrecht oder schräg) zu Wörtern, jedes Feld darf pro Wort nur einmal vorkommen. Drei Stufen: 4×4 Leicht (ab 3 Buchstaben, 3 Minuten), 5×5 Mittel (ab 4 Buchstaben, 3½ Minuten) und 6×6 Schwer (ab 4 Buchstaben, 4 Minuten); in den Einstellungen geht es auch ohne Zeitlimit (Zen). Längere Wörter bringen mehr Punkte (3 Buchstaben 1, 4 → 2, 5 → 3, 6 → 5, 7 → 8, 8 → 12, jeder weitere +4). Erlaubt sind alle deutschen Wortformen aus dem Wortfunk-Wörterbuch, keine Namen oder Abkürzungen. Nach der Runde siehst du, welche Wörter du verpasst hast. Das Tagesgitter (5×5) ist jeden Tag neu und für alle gleich. Bei 🌐 Online & Handys spielen alle gleichzeitig im selben Gitter, der Fernseher zeigt Gitter, Zeit und wie viele Wörter jeder hat; Wörter, die mehrere gefunden haben, zählen (wenn eingestellt) für niemanden. Computer-Mitspieler sind möglich. STADT LAND PLUS: Stadt Land Plus ist das moderne Stadt-Land-Fluss. Die 3D-Buchstaben-Trommel lost einen Buchstaben aus, dann schreibt jeder zu jeder Spalte ein Wort mit diesem Anfangsbuchstaben: Stadt und Land sind immer dabei, das dritte Thema wählst du frei – Fluss, Tier, Beruf, Vorname, Pflanze, Essen & Trinken, Sportart, Musikinstrument, Gegenstand, Farbe, Marke, Automarke, Berg & Gebirge, Körperteil oder eine ganz eigene Kategorie (z. B. Promi oder Film). Bis zu drei weitere Spalten sind möglich. Ist die Zeit um oder hat jemand STOPP gerufen (dann bleiben noch 10 Sekunden), wird ausgewertet: 20 Punkte, wenn nur du in einer Spalte etwas Gültiges hast, 10 für eine Antwort, die sonst niemand hat, 5, wenn jemand dasselbe geschrieben hat. Die Wissensdatenbank kennt alle Länder, über 33.000 Städte (jede deutsche Gemeinde und die Städte der Welt, auch mit deutschem Namen wie Mailand), viele Flüsse und große Wortlisten; Groß-/Kleinschreibung, Umlaute (ue = ü), Artikel, weibliche Formen und Mehrzahl sind egal, kleine Tippfehler werden erkannt, zusammengesetzte Wörter (Zwergmaus) gelten als wahrscheinlich richtig. Prüfung: 🤖 automatisch, 👍 Abstimmung (bei unsicheren Wörtern stimmen die anderen ab) oder 🧑‍⚖️ Moderator (eine Person gibt jede Antwort frei oder streicht sie, auf Wunsch ohne selbst mitzuspielen). Tippe in der Auswertung auf eine Antwort für Infos mit 3D-Globus – Einwohner, Hauptstadt, Sprachen, Währung, Nachbarländer, Flusslänge. Unter 📚 Nachschlagen geht das auch außerhalb des Spiels. Modi: 🧠 Solo gegen bis zu 5 Computer-Mitspieler in 3 Stärken; 🌐 Online & Handys – der Fernseher zeigt Buchstabe, Uhr und Auswertung, alle schreiben auf dem eigenen Handy (Beitritt per Code, Link oder QR-Code von überall), der Moderator kann der Fernseher oder ein Handy sein. FUNKGALGEN: Funkgalgen ist Galgenmännchen in modern und freundlich: Der Moderator steht auf einem Turm aus 8 Lautsprecher-Kisten über einer Riesen-Torte. Rate das Wort Buchstabe für Buchstabe – richtige Buchstaben erscheinen an allen Stellen, jeder falsche schießt eine Kiste aus dem Turm. Ist die letzte Kiste weg, landet der Moderator in der Torte. 💡 Joker deckt einen Buchstaben auf (kostet Punkte), ✍️ Lösen nimmt das ganze Wort (falsch kostet 2 Kisten). Modi: 🎯 Solo-Serie (9 Kategorien oder 📖 Wörterbuch mit bekannten Wörtern aus dem Wortfunk-Wörterbuch, drei Schwierigkeiten; die Serie läuft, bis es einmal schiefgeht), 📅 Tageswort (für alle gleich, Ergebnis teilen), 👥 Duell (zu zweit an einem Gerät, Wörter werden im Wörterbuch geprüft) und 🌐 Online & Handys: Der Fernseher zeigt Turm und Wort, reihum denkt sich ein Handy das Wort aus, die anderen raten um die Wette (richtiger Buchstabe +5 je Stelle, falscher −2, wer das Wort komplett aufdeckt +10, Lösen +20 plus 3 je verdecktem Buchstaben, falsch lösen −5 und 2 Kisten; landet der Moderator in der Torte, punktet der Wortgeber).",
     "steuerung": [
-     "Tastatur: Buchstaben einfach tippen (auch Ä, Ö, Ü), Enter = Wort lösen, Esc = Pause.",
-     "Touch/Maus: Bildschirmtastatur antippen; 💡 Joker und ✍️ Lösen unten rechts.",
-     "Gamecontroller: Steuerkreuz wählt die Taste, A drückt sie, B zurück, Start = Pause.",
-     "Online: Jedes Handy hat seine eigene Tastatur; der Fernseher zeigt Wort, Turm, Punkte und wer gerade was geraten hat."
+     "Wortfunk – Touch & Maus: Stein antippen, dann Feld antippen – oder ziehen. Gelegten Stein antippen nimmt ihn zurück, Steine in der Bank lassen sich per Ziehen ordnen. ✓ Legen schließt den Zug ab, die Vorschau zeigt vorher Wörter und Punkte.",
+     "Wortfunk – Tastatur: Pfeile bewegen den Rahmen, Buchstaben tippen legt sie (Tab wechselt → / ↓), Enter legt den Zug, Rücktaste nimmt den letzten Stein zurück, Entf alle, 1–7 bzw. − / + wählt einen Stein, Leertaste legt ihn, 8 Tauschen, 9 Mischen, 0 Tipp, Esc Menü.",
+     "Wortfunk – Gamecontroller: Steuerkreuz bewegt den Rahmen, LB/RB wählt den Stein, A legt bzw. nimmt zurück, X legt den Zug, B nimmt den letzten Stein zurück, LT alle zurück, Y mischt, RT tauscht, Select Tipp, Start Menü.",
+     "Wortgitter – Touch & Maus: über die Buchstaben wischen, loslassen prüft das Wort, zurückwischen nimmt den letzten Buchstaben weg. Oder Buchstaben nacheinander antippen und den letzten nochmal antippen bzw. ✓ Wort.",
+     "Wortgitter – Tastatur: Wort einfach tippen (der Weg wird automatisch gesucht), Enter prüft, Rücktaste löscht einen Buchstaben, Esc Menü. Alternativ Pfeile + Leertaste.",
+     "Wortgitter – Gamecontroller: Steuerkreuz bewegt den Rahmen, A nimmt den Buchstaben dazu (auf dem letzten nochmal: prüfen), X prüft, B löscht einen Buchstaben, Start Menü.",
+     "Stadt Land Plus – Touch/Handy: in die Felder tippen, „Weiter“ auf der Tastatur springt zur nächsten Spalte, STOPP-Knopf unten. In der Auswertung Antworten antippen für Infos, 👍/👎 zum Abstimmen.",
+     "Stadt Land Plus – Tastatur: einfach tippen, Enter/Tab nächste Spalte, Pfeile und Enter in den Menüs, Esc Pause.",
+     "Stadt Land Plus – Gamecontroller: Bildschirmtastatur mit Steuerkreuz/Stick, A tippt, B löscht, X Leerzeichen, Y/RB nächste Spalte, Start STOPP (in der Auswertung: weiter).",
+     "Funkgalgen – Tastatur: Buchstaben einfach tippen (auch Ä, Ö, Ü), Enter = Wort lösen, Esc = Pause.",
+     "Funkgalgen – Touch/Maus: Bildschirmtastatur antippen; 💡 Joker und ✍️ Lösen unten rechts.",
+     "Funkgalgen – Gamecontroller: Steuerkreuz wählt die Taste, A drückt sie, B zurück, Start = Pause.",
+     "Funkgalgen – Online: Jedes Handy hat seine eigene Tastatur; der Fernseher zeigt Wort, Turm, Punkte und wer gerade was geraten hat."
     ],
     "tipps": [
-     "Mit häufigen Buchstaben anfangen: E, N, R, I, S, T, A.",
-     "Erst Vokale klären, dann die Mitlaute – so zeigt sich das Wort schnell.",
-     "Den Joker lieber früh in langen Wörtern einsetzen, nicht beim letzten Buchstaben."
+     "Wortfunk: Kurze Wörter auf 3×B- und 2×W-Feldern bringen oft mehr als lange Wörter ohne Bonus.",
+     "Wortfunk: Lege parallel zu einem liegenden Wort – dann zählen auch die kurzen Querwörter mit.",
+     "Wortfunk: Behalte den Joker für einen 7-Steine-Zug – das sind 50 Extrapunkte.",
+     "Wortgitter: Achte auf Endungen wie -EN, -ER, -ES und -TE: Aus einem gefundenen Wort werden oft mehrere.",
+     "Wortgitter: Lange Wörter lohnen sich: ein Wort mit 8 Buchstaben bringt so viel wie zwölf Wörter mit 3.",
+     "Wortgitter: Online mit „doppelt zählt nicht“: Suche lieber die ungewöhnlichen Wörter, die die anderen übersehen.",
+     "Stadt Land Plus: Seltene Antworten bringen mehr: Eine Stadt, die sonst keiner hat, gibt 10 statt 5 Punkte.",
+     "Stadt Land Plus: Ist eine Spalte für alle schwer, lohnt sich jedes Wort – allein gewusst sind es 20 Punkte.",
+     "Stadt Land Plus: Im Nachschlagen kannst du vorher üben: Welche Städte mit Q gibt es?",
+     "Funkgalgen: Mit häufigen Buchstaben anfangen: E, N, R, I, S, T, A.",
+     "Funkgalgen: Erst Vokale klären, dann die Mitlaute – so zeigt sich das Wort schnell.",
+     "Funkgalgen: Den Joker lieber früh in langen Wörtern einsetzen, nicht beim letzten Buchstaben."
     ]
    },
-   "size": 135631,
-   "files": 9,
+   "size": 2296780,
+   "files": 42,
    "offline": true,
-   "cloud": {
-    "game": "funkgalgen",
-    "prefix": "funkgalgen-"
-   },
+   "cloud": null,
    "trailer": null
   },
   {
@@ -2080,44 +2059,6 @@
    "trailer": null
   },
   {
-   "id": "stadt-land-plus",
-   "title": "Stadt Land Plus – Stadt, Land und dein Thema",
-   "desc": "Das moderne Stadt-Land-Fluss in 3D: Die Buchstaben-Trommel lost aus, dann schreibt ihr zu Stadt, Land und einem frei wählbaren dritten Thema – Fluss, Tier, Beruf, Vorname, Essen, Sportart, Automarke und viele mehr oder eine ganz eigene Kategorie, dazu bis zu drei Extra-Spalten. Eine große Wissensdatenbank mit allen Ländern, über 33.000 Städten (jede deutsche Gemeinde, Weltstädte auch mit deutschem Namen) und Flüssen prüft schlau mit Tippfehler-Erkennung; zu jeder Antwort gibt es Infos mit 3D-Globus. Prüfung automatisch, per Abstimmung oder mit Moderator. Solo gegen Computer-Mitspieler, zum Nachschlagen und 🌐 Online & Handys: alle schreiben auf dem eigenen Handy, der Fernseher zeigt Buchstabe, Uhr und Auswertung.",
-   "icon": "🔤",
-   "img": "stadt-land-plus/card.jpg",
-   "bg": "linear-gradient(145deg,#7a6aff,#160c3a 55%,#ffc23a)",
-   "glow": "rgba(255,194,58,.5)",
-   "path": "stadt-land-plus/",
-   "modes": {
-    "pad": true,
-    "online": true,
-    "multi": true,
-    "tvParam": true
-   },
-   "multiplayer": true,
-   "guide": {
-    "anleitung": "Stadt Land Plus ist das moderne Stadt-Land-Fluss. Die 3D-Buchstaben-Trommel lost einen Buchstaben aus, dann schreibt jeder zu jeder Spalte ein Wort mit diesem Anfangsbuchstaben: Stadt und Land sind immer dabei, das dritte Thema wählst du frei – Fluss, Tier, Beruf, Vorname, Pflanze, Essen & Trinken, Sportart, Musikinstrument, Gegenstand, Farbe, Marke, Automarke, Berg & Gebirge, Körperteil oder eine ganz eigene Kategorie (z. B. Promi oder Film). Bis zu drei weitere Spalten sind möglich. Ist die Zeit um oder hat jemand STOPP gerufen (dann bleiben noch 10 Sekunden), wird ausgewertet: 20 Punkte, wenn nur du in einer Spalte etwas Gültiges hast, 10 für eine Antwort, die sonst niemand hat, 5, wenn jemand dasselbe geschrieben hat. Die Wissensdatenbank kennt alle Länder, über 33.000 Städte (jede deutsche Gemeinde und die Städte der Welt, auch mit deutschem Namen wie Mailand), viele Flüsse und große Wortlisten; Groß-/Kleinschreibung, Umlaute (ue = ü), Artikel, weibliche Formen und Mehrzahl sind egal, kleine Tippfehler werden erkannt, zusammengesetzte Wörter (Zwergmaus) gelten als wahrscheinlich richtig. Prüfung: 🤖 automatisch, 👍 Abstimmung (bei unsicheren Wörtern stimmen die anderen ab) oder 🧑‍⚖️ Moderator (eine Person gibt jede Antwort frei oder streicht sie, auf Wunsch ohne selbst mitzuspielen). Tippe in der Auswertung auf eine Antwort für Infos mit 3D-Globus – Einwohner, Hauptstadt, Sprachen, Währung, Nachbarländer, Flusslänge. Unter 📚 Nachschlagen geht das auch außerhalb des Spiels. Modi: 🧠 Solo gegen bis zu 5 Computer-Mitspieler in 3 Stärken; 🌐 Online & Handys – der Fernseher zeigt Buchstabe, Uhr und Auswertung, alle schreiben auf dem eigenen Handy (Beitritt per Code, Link oder QR-Code von überall), der Moderator kann der Fernseher oder ein Handy sein.",
-    "steuerung": [
-     "Touch/Handy: in die Felder tippen, „Weiter“ auf der Tastatur springt zur nächsten Spalte, STOPP-Knopf unten. In der Auswertung Antworten antippen für Infos, 👍/👎 zum Abstimmen.",
-     "Tastatur: einfach tippen, Enter/Tab nächste Spalte, Pfeile und Enter in den Menüs, Esc Pause.",
-     "Gamecontroller: Bildschirmtastatur mit Steuerkreuz/Stick, A tippt, B löscht, X Leerzeichen, Y/RB nächste Spalte, Start STOPP (in der Auswertung: weiter)."
-    ],
-    "tipps": [
-     "Seltene Antworten bringen mehr: Eine Stadt, die sonst keiner hat, gibt 10 statt 5 Punkte.",
-     "Ist eine Spalte für alle schwer, lohnt sich jedes Wort – allein gewusst sind es 20 Punkte.",
-     "Im Nachschlagen kannst du vorher üben: Welche Städte mit Q gibt es?"
-    ]
-   },
-   "size": 1265441,
-   "files": 19,
-   "offline": true,
-   "cloud": {
-    "game": "stadt-land-plus",
-    "prefix": "stadt-land-plus-"
-   },
-   "trailer": null
-  },
-  {
    "id": "konfetti-party",
    "title": "Konfetti-Party – Knallbonbons in der Arena",
    "desc": "Buntes Arena-Partyspiel in 3D: Knallbonbons legen, Geschenkkartons platzen lassen, Extras wie Rollschuhe, Kick-Schuh, Luftballon-Schild und Fernzünder sammeln und die anderen Partygäste mit Konfetti aus der Runde schießen – mit Kettenreaktionen und einer Arena, die sich am Ende schließt. Fünf Arenen von der Geburtstagsparty bis zum Weltraum-Rave, Turnier mit Pokalen und Schnelle Party solo gegen Computer-Gäste, dazu 🌐 Online & Handys: bis zu 4 Gäste mit Handys, Controllern und Tastatur am Fernseher.",
@@ -2676,48 +2617,14 @@
    "trailer": null
   },
   {
-   "id": "anmacha-spielesammlung",
-   "title": "AnMaCha Spielesammlung 3D",
-   "desc": "7 Klassiker in 3D: Rausschmeißer, Würfelfieber, Schach, Leiterspiel, Vier in einer Reihe, Dame und Mühle – gegen den Computer oder zu mehreren.",
+   "id": "spielesammlung",
+   "title": "Spielesammlung 3D – Brettspiele, Kartenspiele & Mahjong",
+   "desc": "Spielesammlung in 3D mit Brettspielen, Kartenspielen und Mahjong: 7 Klassiker (Rausschmeißer, Würfelfieber, Schach, Leiterspiel, Vier in einer Reihe, Dame, Mühle) gegen den Computer oder zu mehreren, dazu die Kartensammlung mit 12 Kartenspielen (Stapelrausch, Farbflash, Phasenjagd, Mau-Mau, Schwimmen, Kartendomino, Siebzehn und Vier, Schwarzer Peter, Paare-Memo, Patience, Spider, FreeCell) in der 3D-Kartenstube mit KayKit-Figuren, online per Code/QR oder mit TV-Tisch und Handys, und Mahjong 3D – Jadepalast mit 48 Leveln in 8 Welten, 29 Layouts, Tagesrätsel, Zeitjagd und Zen-Modus. Touch, Maus, Tastatur und Gamecontroller; Offline-PWA.",
    "icon": "🎲",
-   "img": "anmacha-spielesammlung/card.jpg",
+   "img": "spielesammlung/card.jpg",
    "bg": "linear-gradient(145deg,#ff2d95,#8B5CF6 50%,#00c9a7)",
    "glow": "rgba(255,45,149,.5)",
-   "path": "anmacha-spielesammlung/",
-   "modes": {
-    "multi": true
-   },
-   "multiplayer": true,
-   "guide": {
-    "anleitung": "Sammlung von sieben 3D-Brettspielen: Rausschmeißer, Würfelfieber, Schach, Leiterspiel, Vier in einer Reihe, Dame und Mühle. Du spielst gegen den Computer (leicht, mittel, schwer) oder zu mehreren an einem Gerät. Wähle im Menü ein Spiel, lege die Plätze fest (Mensch, Computer oder nicht dabei) und starte; die Regeln stehen bei jedem Spiel unter Regeln (?).",
-    "steuerung": [
-     "PC: Mit der Maus auf Figuren, Felder, Würfel oder Spalten klicken. Ziehen mit gedrückter Maus dreht die Ansicht, Mausrad zoomt; ↻ dreht die Ansicht um 90 Grad.",
-     "Touch: Figur, Feld, Würfel oder Spalte antippen (Schach: Figur antippen, mögliche Züge leuchten grün, Schlagen rot). Mit einem Finger wischen = Ansicht drehen, mit zwei Fingern zusammenziehen = zoomen.",
-     "Controller: Der rechte Stick bewegt einen Zeiger, A klickt; in Menüs springt das Steuerkreuz zwischen den Knöpfen."
-    ],
-    "tipps": [
-     "Würfelfieber: Würfel antippen, um sie zu halten; danach ein Feld auf dem Zettel wählen.",
-     "Dame: Bei Mehrfachsprüngen direkt das letzte Zielfeld antippen."
-    ]
-   },
-   "size": 146054,
-   "files": 5,
-   "offline": true,
-   "cloud": {
-    "game": "spielesammlung",
-    "prefix": "anmacha-sg-"
-   },
-   "trailer": null
-  },
-  {
-   "id": "anmacha-kartensammlung",
-   "title": "AnMaCha Kartensammlung 3D",
-   "desc": "12 Kartenspiele in 3D mit echten KayKit-Figuren im Tavernen-Saal: Stapelrausch, Farbflash, Phasenjagd, Mau-Mau, Schwimmen (31), Kartendomino, Siebzehn und Vier, Schwarzer Peter, Paare-Memo sowie Patience, Spider und FreeCell (Solitär) – Konsolen-Menüs, voll mit Touch, Tastatur oder PlayStation-/Switch-/Xbox-Controller spielbar, Turnier, Schnellstart, gegen den Computer, an einem Gerät, 🌐 online per Code/QR oder mit TV-Tisch und Handys.",
-   "icon": "🃏",
-   "img": "anmacha-kartensammlung/card.jpg",
-   "bg": "linear-gradient(145deg,#00E5FF,#8B5CF6 55%,#FF2D95)",
-   "glow": "rgba(139,92,246,.55)",
-   "path": "anmacha-kartensammlung/",
+   "path": "spielesammlung/",
    "modes": {
     "pad": true,
     "online": true,
@@ -2725,24 +2632,37 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Sammlung von zwölf Kartenspielen in 3D: Am Tavernentisch sitzen echte KayKit-Figuren (Ritter, Barbar, Magierin, Jäger, Schurkin, Schatten, Knochenritter, Knochenhexe), die beim Ziehen, Ablegen und Gewinnen reagieren. Stapelrausch: Zahlentürme von 1 bis 12 bauen und den Zielstapel leeren, Sterne sind Joker. Farbflash: gleiche Farbe oder gleiches Zeichen ablegen, Aktionskarten nutzen. Phasenjagd: 10 Phasen aus Zwillingen, Folgen und Farben. Mau-Mau: 7 = zwei ziehen, 8 = aussetzen, Bube = Wunschfarbe. Schwimmen: 31 Punkte in einer Farbe sammeln. Kartendomino: von den Siebenern aus Reihen anlegen. Siebzehn und Vier: so nah wie möglich an 21, ohne drüber, gegen die Bank. Schwarzer Peter: Paare ablegen, beim Nachbarn ziehen, am Ende nicht den Peter halten. Paare: Memo mit 32 Karten. Dazu Solitär mit Patience, Spider und FreeCell. Modi: gegen 1–3 Computer, an einem Gerät, 🌐 online per Code, Link oder QR, 📺 TV + Handys, ⚡ Schnellstart und 🏆 Turnier über mehrere Spiele.",
+    "anleitung": "Die Spielesammlung vereint drei Bereiche: Brettspiele (7 Klassiker in 3D), die Kartensammlung (12 Kartenspiele) und Mahjong 3D. Im Menü wählst du ein Spiel oder öffnest die Kartensammlung bzw. Mahjong 3D; dort bringt dich „←“ zurück zur Spielesammlung. Jeder Bereich behält seine eigenen Einstellungen und Spielstände. BRETTSPIELE: Sammlung von sieben 3D-Brettspielen: Rausschmeißer, Würfelfieber, Schach, Leiterspiel, Vier in einer Reihe, Dame und Mühle. Du spielst gegen den Computer (leicht, mittel, schwer) oder zu mehreren an einem Gerät. Wähle im Menü ein Spiel, lege die Plätze fest (Mensch, Computer oder nicht dabei) und starte; die Regeln stehen bei jedem Spiel unter Regeln (?). KARTENSAMMLUNG: Sammlung von zwölf Kartenspielen in 3D: Am Tavernentisch sitzen echte KayKit-Figuren (Ritter, Barbar, Magierin, Jäger, Schurkin, Schatten, Knochenritter, Knochenhexe), die beim Ziehen, Ablegen und Gewinnen reagieren. Stapelrausch: Zahlentürme von 1 bis 12 bauen und den Zielstapel leeren, Sterne sind Joker. Farbflash: gleiche Farbe oder gleiches Zeichen ablegen, Aktionskarten nutzen. Phasenjagd: 10 Phasen aus Zwillingen, Folgen und Farben. Mau-Mau: 7 = zwei ziehen, 8 = aussetzen, Bube = Wunschfarbe. Schwimmen: 31 Punkte in einer Farbe sammeln. Kartendomino: von den Siebenern aus Reihen anlegen. Siebzehn und Vier: so nah wie möglich an 21, ohne drüber, gegen die Bank. Schwarzer Peter: Paare ablegen, beim Nachbarn ziehen, am Ende nicht den Peter halten. Paare: Memo mit 32 Karten. Dazu Solitär mit Patience, Spider und FreeCell. Modi: gegen 1–3 Computer, an einem Gerät, 🌐 online per Code, Link oder QR, 📺 TV + Handys, ⚡ Schnellstart und 🏆 Turnier über mehrere Spiele. MAHJONG 3D: Mahjong 3D – Jadepalast ist Mahjong Solitaire in echtem 3D. Auf dem Tisch liegen bis zu 144 Steine in Schichten. Tippe zwei gleiche Steine an, die frei sind – dann verschwinden sie. Frei ist ein Stein, wenn nichts auf ihm liegt und links oder rechts kein Nachbar ist. Alle vier Blumen passen untereinander, ebenso alle vier Jahreszeiten. Ist das Brett leer, hast du gewonnen. Jedes Brett wird immer lösbar gemischt. Auf der Reise spielst du 48 Level in 8 Welten mit eigenen Tischen und holst bis zu drei Sterne (geschafft, unter der Zielzeit, unter der Zielzeit ohne Tipp und Mischen). Dazu kommen das freie Spiel mit 29 Layouts, das Tagesrätsel mit Serie, die Zeitjagd gegen die Uhr und der entspannte Zen-Modus ohne Uhr und Punkte. Gespeichert wird automatisch, eine laufende Partie lässt sich fortsetzen, optional mit Google auf allen Geräten.",
     "steuerung": [
-     "Controller (PlayStation/Switch/Xbox): Steuerkreuz oder linker Stick bewegt den Rahmen, ✕/B/A wählt und legt, ○/A/B zurück, □/Y/X, △/X/Y und R2/ZR für Spielaktionen, L1/R1 bzw. L/R wechseln Spiel oder Hand, Options/+ Pause, Share/− Anleitung. Die Tastenbilder passen sich dem angeschlossenen Controller an.",
-     "Tastatur: Pfeile bewegen, Enter/Leertaste bestätigen, Esc/Rücktaste zurück, X, Y, R oder 1, 2, 3 für Spielaktionen, Q/E wechseln, P Pause, H Anleitung.",
-     "Touch & Maus: Karte antippen, dann Ziel antippen; Knöpfe unten für Ziehen, Auslegen, Behalten."
+     "Brettspiele – PC: Mit der Maus auf Figuren, Felder, Würfel oder Spalten klicken. Ziehen mit gedrückter Maus dreht die Ansicht, Mausrad zoomt; ↻ dreht die Ansicht um 90 Grad.",
+     "Brettspiele – Touch: Figur, Feld, Würfel oder Spalte antippen (Schach: Figur antippen, mögliche Züge leuchten grün, Schlagen rot). Mit einem Finger wischen = Ansicht drehen, mit zwei Fingern zusammenziehen = zoomen.",
+     "Brettspiele – Controller: Der rechte Stick bewegt einen Zeiger, A klickt; in Menüs springt das Steuerkreuz zwischen den Knöpfen.",
+     "Kartensammlung – Controller (PlayStation/Switch/Xbox): Steuerkreuz oder linker Stick bewegt den Rahmen, ✕/B/A wählt und legt, ○/A/B zurück, □/Y/X, △/X/Y und R2/ZR für Spielaktionen, L1/R1 bzw. L/R wechseln Spiel oder Hand, Options/+ Pause, Share/− Anleitung. Die Tastenbilder passen sich dem angeschlossenen Controller an.",
+     "Kartensammlung – Tastatur: Pfeile bewegen, Enter/Leertaste bestätigen, Esc/Rücktaste zurück, X, Y, R oder 1, 2, 3 für Spielaktionen, Q/E wechseln, P Pause, H Anleitung.",
+     "Kartensammlung – Touch & Maus: Karte antippen, dann Ziel antippen; Knöpfe unten für Ziehen, Auslegen, Behalten.",
+     "Mahjong 3D – Touch: Stein antippen. Mit zwei Fingern zoomen und die Ansicht drehen, gezoomt mit einem Finger verschieben, Doppeltippen auf den Tisch zoomt. Unten: Zurück, Tipp, Mischen, Zoom und Ansicht zurücksetzen.",
+     "Mahjong 3D – Maus: Klick wählt einen Stein, Mausrad zoomt, rechte Maustaste gedrückt halten dreht die Ansicht.",
+     "Mahjong 3D – Tastatur: Pfeiltasten springen zwischen freien Steinen, Enter oder Leertaste wählt, H Tipp, U Zurück, R Mischen, + und − Zoom, Q/E drehen, V Ansicht, M Ton, F Vollbild, P oder Esc Pause.",
+     "Mahjong 3D – Gamecontroller: Steuerkreuz oder linker Stick springen, A wählt, B abwählen/Pause, X Tipp, Y Zurück, Select Mischen, LB/RB drehen, LT/RT Zoom, rechter Stick verschieben, Start Pause."
     ],
     "tipps": [
-     "Im Menü Einstellungen kannst du die Tastenbilder (PlayStation, Switch, Xbox) festlegen und die Bestätigen-Taste wie bei Nintendo tauschen.",
-     "„Sparsam“ in den Einstellungen bewegt die Figuren nur bei Aktionen – schont Akku und alte Geräte.",
-     "Turnier: Ein Sieg bringt 3 Punkte, wer nach allen Runden vorne liegt, gewinnt."
+     "Brettspiele: Würfelfieber: Würfel antippen, um sie zu halten; danach ein Feld auf dem Zettel wählen.",
+     "Brettspiele: Dame: Bei Mehrfachsprüngen direkt das letzte Zielfeld antippen.",
+     "Kartensammlung: Im Menü Einstellungen kannst du die Tastenbilder (PlayStation, Switch, Xbox) festlegen und die Bestätigen-Taste wie bei Nintendo tauschen.",
+     "Kartensammlung: „Sparsam“ in den Einstellungen bewegt die Figuren nur bei Aktionen – schont Akku und alte Geräte.",
+     "Kartensammlung: Turnier: Ein Sieg bringt 3 Punkte, wer nach allen Runden vorne liegt, gewinnt.",
+     "Mahjong 3D: Räume zuerst Steine ab, die andere blockieren: hohe Stapel und die langen Reihen von außen.",
+     "Mahjong 3D: Liegen drei gleiche Steine frei, überlege, welcher den meisten Platz schafft.",
+     "Mahjong 3D: Paare kurz hintereinander bringen eine Kombo mit bis zu 50 Punkten pro Paar.",
+     "Mahjong 3D: Auf kleinen Bildschirmen hilft der Steinstil „Klar“ mit großen Zahlen (Einstellungen)."
     ]
    },
-   "size": 3190166,
-   "files": 33,
+   "size": 3559386,
+   "files": 50,
    "offline": true,
    "cloud": {
-    "game": "stapelrausch",
-    "prefix": "kartenrausch-,stapelrausch-name"
+    "game": "spielesammlung",
+    "prefix": "anmacha-sg-"
    },
    "trailer": null
   },
@@ -2772,87 +2692,12 @@
      "Im Radio-Rhythmus ist der höchste Punkt einer Frucht genau auf dem Schlag – dort schneiden!"
     ]
    },
-   "size": 118171,
+   "size": 118178,
    "files": 7,
    "offline": true,
    "cloud": {
     "game": "saftblitz",
     "prefix": "saftblitz-"
-   },
-   "trailer": null
-  },
-  {
-   "id": "wortfunk",
-   "title": "Wortfunk – Das Wortlegespiel",
-   "desc": "Wörter legen und punkten wie im Kreuzworträtsel: 15×15-Brett mit Bonusfeldern, fast 400.000 deutsche Wörter, Joker, Tauschen und 50 Extrapunkte für alle 7 Steine – für 2 bis 4 Spieler gegen den Computer (3 Stufen), an einem Gerät oder online mit TV-Tisch und Handys.",
-   "icon": "🔤",
-   "img": "wortfunk/card.jpg",
-   "bg": "linear-gradient(145deg,#FFD27A,#8B5CF6 55%,#00E5FF)",
-   "glow": "rgba(255,210,122,.5)",
-   "path": "wortfunk/",
-   "modes": {
-    "pad": true,
-    "online": true,
-    "multi": true,
-    "tvParam": true
-   },
-   "multiplayer": true,
-   "guide": {
-    "anleitung": "Wortfunk ist ein Wortlegespiel für 2 bis 4 Spieler. Jeder hat 7 Buchstabensteine und legt daraus Wörter waagerecht oder senkrecht aufs 15×15-Brett, wie im Kreuzworträtsel. Das erste Wort geht über den Stern in der Mitte, jedes weitere schließt an liegende Steine an. Alle neu entstandenen Wörter müssen im Wörterbuch stehen (fast 400.000 deutsche Wortformen, keine Namen oder Abkürzungen, ß wird als SS gelegt). 2×B/3×B verdoppeln bzw. verdreifachen einen Buchstaben, 2×W/3×W das ganze Wort; alle 7 Steine auf einmal bringen 50 Extrapunkte. Der Joker steht für jeden Buchstaben und zählt 0 Punkte. Statt zu legen darfst du tauschen (solange 7 Steine im Beutel sind) oder passen. Wer zuletzt alle Steine los ist, bekommt die Restpunkte der anderen. Spielbar gegen den Computer in drei Stufen, mit mehreren Menschen an einem Gerät oder über 🌐 Online & Handys: Der Fernseher oder PC zeigt das Brett, jedes Handy nur die eigenen Steine.",
-    "steuerung": [
-     "Touch & Maus: Stein antippen, dann Feld antippen – oder ziehen. Gelegten Stein antippen nimmt ihn zurück, Steine in der Bank lassen sich per Ziehen ordnen. ✓ Legen schließt den Zug ab, die Vorschau zeigt vorher Wörter und Punkte.",
-     "Tastatur: Pfeile bewegen den Rahmen, Buchstaben tippen legt sie (Tab wechselt → / ↓), Enter legt den Zug, Rücktaste nimmt den letzten Stein zurück, Entf alle, 1–7 bzw. − / + wählt einen Stein, Leertaste legt ihn, 8 Tauschen, 9 Mischen, 0 Tipp, Esc Menü.",
-     "Gamecontroller: Steuerkreuz bewegt den Rahmen, LB/RB wählt den Stein, A legt bzw. nimmt zurück, X legt den Zug, B nimmt den letzten Stein zurück, LT alle zurück, Y mischt, RT tauscht, Select Tipp, Start Menü."
-    ],
-    "tipps": [
-     "Kurze Wörter auf 3×B- und 2×W-Feldern bringen oft mehr als lange Wörter ohne Bonus.",
-     "Lege parallel zu einem liegenden Wort – dann zählen auch die kurzen Querwörter mit.",
-     "Behalte den Joker für einen 7-Steine-Zug – das sind 50 Extrapunkte."
-    ]
-   },
-   "size": 739556,
-   "files": 11,
-   "offline": true,
-   "cloud": {
-    "game": "wortfunk",
-    "prefix": "wortfunk-"
-   },
-   "trailer": null
-  },
-  {
-   "id": "wortgitter",
-   "title": "Wortgitter – Wörter wischen",
-   "desc": "Wische benachbarte Buchstaben zu Wörtern – 4×4 Leicht, 5×5 Mittel oder 6×6 Schwer, mit Zeitlimit oder Zen. Tagesgitter für alle, nach jeder Runde alle verpassten Wörter, und online mit TV und Handys: alle im selben Gitter, doppelt gefundene Wörter zählen nicht.",
-   "icon": "🔠",
-   "img": "wortgitter/card.jpg",
-   "bg": "linear-gradient(145deg,#00E5FF,#8B5CF6 55%,#FFD27A)",
-   "glow": "rgba(0,229,255,.45)",
-   "path": "wortgitter/",
-   "modes": {
-    "pad": true,
-    "online": true,
-    "tvParam": true
-   },
-   "multiplayer": true,
-   "guide": {
-    "anleitung": "Wortgitter ist ein Wischspiel: Verbinde benachbarte Buchstaben (waagerecht, senkrecht oder schräg) zu Wörtern, jedes Feld darf pro Wort nur einmal vorkommen. Drei Stufen: 4×4 Leicht (ab 3 Buchstaben, 3 Minuten), 5×5 Mittel (ab 4 Buchstaben, 3½ Minuten) und 6×6 Schwer (ab 4 Buchstaben, 4 Minuten); in den Einstellungen geht es auch ohne Zeitlimit (Zen). Längere Wörter bringen mehr Punkte (3 Buchstaben 1, 4 → 2, 5 → 3, 6 → 5, 7 → 8, 8 → 12, jeder weitere +4). Erlaubt sind alle deutschen Wortformen aus dem Wortfunk-Wörterbuch, keine Namen oder Abkürzungen. Nach der Runde siehst du, welche Wörter du verpasst hast. Das Tagesgitter (5×5) ist jeden Tag neu und für alle gleich. Bei 🌐 Online & Handys spielen alle gleichzeitig im selben Gitter, der Fernseher zeigt Gitter, Zeit und wie viele Wörter jeder hat; Wörter, die mehrere gefunden haben, zählen (wenn eingestellt) für niemanden. Computer-Mitspieler sind möglich.",
-    "steuerung": [
-     "Touch & Maus: über die Buchstaben wischen, loslassen prüft das Wort, zurückwischen nimmt den letzten Buchstaben weg. Oder Buchstaben nacheinander antippen und den letzten nochmal antippen bzw. ✓ Wort.",
-     "Tastatur: Wort einfach tippen (der Weg wird automatisch gesucht), Enter prüft, Rücktaste löscht einen Buchstaben, Esc Menü. Alternativ Pfeile + Leertaste.",
-     "Gamecontroller: Steuerkreuz bewegt den Rahmen, A nimmt den Buchstaben dazu (auf dem letzten nochmal: prüfen), X prüft, B löscht einen Buchstaben, Start Menü."
-    ],
-    "tipps": [
-     "Achte auf Endungen wie -EN, -ER, -ES und -TE: Aus einem gefundenen Wort werden oft mehrere.",
-     "Lange Wörter lohnen sich: ein Wort mit 8 Buchstaben bringt so viel wie zwölf Wörter mit 3.",
-     "Online mit „doppelt zählt nicht“: Suche lieber die ungewöhnlichen Wörter, die die anderen übersehen."
-    ]
-   },
-   "size": 109991,
-   "files": 7,
-   "offline": true,
-   "cloud": {
-    "game": "wortgitter",
-    "prefix": "wortgitter-"
    },
    "trailer": null
   },
