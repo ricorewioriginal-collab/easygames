@@ -18,7 +18,7 @@ Show, Moderatoren (Lotte Brandt, Mats Feldmann), Sanitäter Doc Rudi, Ranger Kal
 Die Zuschauerstimmung ist eine offene Simulation: 45 % Sympathie, 30 % Unterhaltung, 25 % Prüfungsleistung (sichtbar in der Buschtrommel).
 
 ## Prüfungen
-Ekel-Kisten · Dschungel-Dinner · Schlammbecken (tauchen) · Wackelsteg · Krabbel-Tunnel · Ekel-Dusche · Wissens-Tank · Schlamm-Parcours · Lianen-Rutsche, dazu das IBES-Fan-Quiz (deutsche und britische Show) und der Gruppenmarsch ins Lager – jede im Dschungel und im Studio spielbar, auch einzeln über „Prüfungen spielen“.
+Ekel-Kisten · Dschungel-Dinner · Schlammbecken (tauchen) · Wackelsteg · Krabbel-Tunnel · Ekel-Dusche · Wissens-Tank · Schlamm-Parcours · Lianen-Rutsche · Schlangengrube · Höhlenlabyrinth (Taschenlampe) · Floßrennen · Kletterwand, dazu das IBES-Fan-Quiz (deutsche und britische Show) und der Gruppenmarsch ins Lager – jede im Dschungel und im Studio spielbar, auch einzeln über „Prüfungen spielen“.
 
 ## Steuerung (ein Bedienkonzept für alle Geräte)
 | Aktion | Tastatur | PlayStation | Switch | Handy |

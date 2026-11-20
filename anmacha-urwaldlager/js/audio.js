@@ -71,6 +71,7 @@
     tense: t => { tone(55, t, 1.6, 'sawtooth', 0.08); tone(58, t, 1.6, 'sawtooth', 0.08); },
     phone: t => { for (let i = 0; i < 4; i++) tone(i % 2 ? 1200 : 1500, t + i * 0.09, 0.08, 'square', 0.06); },
     whoosh: t => noise(t, 0.4, 0.2, 1500, 0.5, sfxG, 'highpass'),
+    hiss: t => { noise(t, 0.7, 0.16, 5200, 2, sfxG, 'highpass'); },
     crunch: t => { for (let i = 0; i < 4; i++) noise(t + i * 0.04, 0.05, 0.3, 2500, 5); }
   };
   Au.sfx = (n) => { if (!Au.on) return; const f = SFX[n]; if (f) try { f(now()); } catch (e) { } };
