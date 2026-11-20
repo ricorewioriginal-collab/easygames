@@ -3,7 +3,7 @@
    sind Instanzen (ein Zeichenaufruf je Bauteil), Materialien werden geteilt. */
 import {
   Node3, Vector3, Color3, HemisphericLight, DirectionalLight, PointLight, ShadowGenerator, ShaderMaterial, Effect, Mesh, VertexData, VertexBuffer,
-  Matrix, Quaternion, Scene, PBRMaterial, Texture, TransformNode, type AbstractMesh, col, smoothstep, v3,
+  Matrix, Quaternion, Scene, PBRMaterial, Texture, TransformNode, type AbstractMesh, col, smoothstep, v3, HDRCubeTexture, RawTexture, type InstancedMesh,
 } from '../engine/bjs';
 import { instance, preload } from '../engine/Assets';
 import { planeZ, ground, box, cyl, sphere, ring, torus, pbr, glow, canvasTex } from '../engine/geo';
@@ -128,6 +128,7 @@ export class World {
     await Promise.all(tasks);
     this.plaza(); this.park(); this.decorate(); this.signs(); await this.harbour();
     await this.spawnCars();
+    this.buildEnv();
     this.setTime(.3);
   }
 
@@ -218,12 +219,95 @@ export class World {
       const m = (mesh as Mesh).material as PBRMaterial | null;
       if (!m || !(m instanceof PBRMaterial) || this.tuned.has(m)) continue;
       this.tuned.add(m);
-      if (/building/.test(path)) { m.roughness = .78; m.metallic = 0; m.emissiveTexture = this.windowMask(); m.emissiveColor = new Color3(0, 0, 0); this.winTex!.coordinatesIndex = m.albedoTexture?.coordinatesIndex ?? 0; this.winMats.push(m); }
+      if (/building/.test(path)) {
+        m.roughness = 1; m.metallic = 1; m.emissiveTexture = this.windowMask(); m.emissiveColor = new Color3(0, 0, 0); this.winTex!.coordinatesIndex = m.albedoTexture?.coordinatesIndex ?? 0; this.winMats.push(m);
+        this.surface(m, 'building');
+        // Putz- und Backstein-Struktur über eine zweite UV (Würfel-Projektion in Metern)
+        m.detailMap.texture = this.detailTex(); m.detailMap.isEnabled = true; m.detailMap.diffuseBlendLevel = .55; m.detailMap.bumpLevel = .9; m.detailMap.roughnessBlendLevel = .4;
+        m.detailMap.texture.coordinatesIndex = 1;
+        for (const ms of o.getChildMeshes()) if ((ms as Mesh).material === m || (ms as InstancedMesh).sourceMesh?.material === m) this.boxUv(ms);
+      }
       else if (/road|base/.test(path)) { m.roughness = .72; m.metallic = 0; this.roadMats.push(m); }
-      else if (/car_/.test(path)) { m.roughness = .22; m.metallic = .35; }
+      else if (/car_/.test(path)) {
+        // Autolack mit Klarlack, getönte Scheiben, Gummi und Chrom (je Farbfeld im Atlas)
+        m.roughness = 1; m.metallic = 1; this.surface(m, 'car');
+        m.clearCoat.isEnabled = true; m.clearCoat.intensity = .7; m.clearCoat.roughness = .06;
+      }
       else if (/streetlight|trafficlight|firehydrant/.test(path)) { m.roughness = .35; m.metallic = .5; }
       else { m.roughness = .7; m.metallic = 0; }
     }
+  }
+
+  /* ---------- Spiegelungen: echte Stadt-HDRIs (Poly Haven, CC0) für Lack, Glas und nasse Straße ---------- */
+  private envs: Record<'day' | 'dusk' | 'night', HDRCubeTexture> | null = null;
+  private envNow = '';
+  private buildEnv() {
+    const sc = this.scene, mk = (f: string) => new HDRCubeTexture('./assets/env/' + f + '.hdr', sc, 128, false, true, false, false);
+    this.envs = { day: mk('city'), dusk: mk('sunset'), night: mk('night') };
+  }
+  private pickEnv(day: number, dusk: number) {
+    if (!this.envs) return;
+    const k = dusk > .45 ? 'dusk' : day > .5 ? 'day' : 'night';
+    if (k !== this.envNow) { this.envNow = k; this.scene.environmentTexture = this.envs[k]; }
+    this.scene.environmentIntensity = .25 + .35 * day;
+  }
+  /** Rauheit (G) und Metall (B) je Farbfeld des KayKit-Atlas (8 × 4 Felder) */
+  private surfTex: Record<string, Texture> = {};
+  private surface(m: PBRMaterial, kind: 'car' | 'building') {
+    let t = this.surfTex[kind];
+    if (!t) {
+      // [Spalte, Zeile, Rauheit, Metall]
+      const car: Array<[number, number, number, number]> = [[0, 0, .05, .85], [1, 1, .05, .85], [2, 1, .06, .8], [0, 1, .05, .8], [4, 0, .85, 0], [3, 0, .3, .9], [2, 0, .22, .95], [1, 0, .3, .2]];
+      const bld: Array<[number, number, number, number]> = [[2, 1, .04, .75], [0, 1, .05, .7], [1, 1, .06, .6], [0, 0, .12, .6], [3, 0, .35, .7], [2, 0, .45, .6]];
+      const base = kind === 'car' ? [.2, .1] : [.88, 0];
+      const list = kind === 'car' ? car : bld;
+      const data = new Uint8Array(8 * 4 * 4);
+      for (let y = 0; y < 4; y++) for (let x = 0; x < 8; x++) {
+        const hit = list.find((c) => c[0] === x && c[1] === y), o = (y * 8 + x) * 4;
+        data[o] = 255; data[o + 1] = Math.round((hit ? hit[2] : base[0]) * 255); data[o + 2] = Math.round((hit ? hit[3] : base[1]) * 255); data[o + 3] = 255;
+      }
+      t = this.surfTex[kind] = RawTexture.CreateRGBATexture(data, 8, 4, this.scene, false, true, Texture.NEAREST_SAMPLINGMODE);
+    }
+    t.coordinatesIndex = m.albedoTexture?.coordinatesIndex ?? 0;
+    m.metallicTexture = t; m.useRoughnessFromMetallicTextureGreen = true; m.useMetallnessFromMetallicTextureBlue = true; m.useRoughnessFromMetallicTextureAlpha = false;
+  }
+  /** Detail-Textur (R = Helligkeit, G = Normal Y, B = Rauheit, A = Normal X): Putz mit feinen Fugen */
+  private detail: Texture | null = null;
+  private detailTex() {
+    if (this.detail) return this.detail;
+    const N2 = 256, d = new Uint8Array(N2 * N2 * 4), h = new Float32Array(N2 * N2);
+    let seed = 7; const rn = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    const noise = new Float32Array(64 * 64).map(() => rn());
+    const smooth = (x: number, y: number) => { const xi = Math.floor(x) & 63, yi = Math.floor(y) & 63, fx = x - Math.floor(x), fy = y - Math.floor(y), a = noise[yi * 64 + xi], b = noise[yi * 64 + ((xi + 1) & 63)], c = noise[((yi + 1) & 63) * 64 + xi], e = noise[((yi + 1) & 63) * 64 + ((xi + 1) & 63)]; return (a * (1 - fx) + b * fx) * (1 - fy) + (c * (1 - fx) + e * fx) * fy; };
+    for (let y = 0; y < N2; y++) for (let x = 0; x < N2; x++) {
+      // Steinreihen (Fugen alle 32 px, versetzt) + Putz-Rauschen
+      const row = Math.floor(y / 32), bx = (x + (row % 2) * 32) % 64, joint = (y % 32 < 2 || bx < 2) ? 1 : 0;
+      h[y * N2 + x] = .5 + (smooth(x / 8, y / 8) - .5) * .5 + (smooth(x / 2.5, y / 2.5) - .5) * .25 - joint * .45;
+    }
+    for (let y = 0; y < N2; y++) for (let x = 0; x < N2; x++) {
+      const i = y * N2 + x, hx = h[y * N2 + ((x + 1) % N2)] - h[y * N2 + ((x + N2 - 1) % N2)], hy = h[((y + 1) % N2) * N2 + x] - h[((y + N2 - 1) % N2) * N2 + x];
+      d[i * 4] = Math.max(0, Math.min(255, 128 + (h[i] - .5) * 150));
+      d[i * 4 + 1] = Math.max(0, Math.min(255, 128 - hy * 180));
+      d[i * 4 + 2] = Math.max(0, Math.min(255, 128 + (.5 - h[i]) * 120));
+      d[i * 4 + 3] = Math.max(0, Math.min(255, 128 - hx * 180));
+    }
+    const t = (this.detail = RawTexture.CreateRGBATexture(d, N2, N2, this.scene, true, false, Texture.TRILINEAR_SAMPLINGMODE));
+    t.wrapU = t.wrapV = Texture.WRAP_ADDRESSMODE;
+    return t;
+  }
+  /** Zweite UV aus der Lage im Modell (Würfel-Projektion), einmal je Geometrie */
+  private uvDone = new Set<unknown>();
+  private boxUv(ms: AbstractMesh) {
+    const src = ((ms as InstancedMesh).sourceMesh || ms) as Mesh;
+    const geo = src.geometry; if (!geo || this.uvDone.has(geo)) return; this.uvDone.add(geo);
+    const pos = src.getVerticesData(VertexBuffer.PositionKind), nor = src.getVerticesData(VertexBuffer.NormalKind); if (!pos || !nor) return;
+    const uv = new Float32Array(pos.length / 3 * 2), k = 1.2; // gut 80 cm je Kachel: Steinreihen um 10 cm
+    for (let i = 0; i < pos.length / 3; i++) {
+      const ax = Math.abs(nor[i * 3]), ay = Math.abs(nor[i * 3 + 1]), az = Math.abs(nor[i * 3 + 2]);
+      const [u, v] = ax > ay && ax > az ? [pos[i * 3 + 2], pos[i * 3 + 1]] : az > ay ? [pos[i * 3], pos[i * 3 + 1]] : [pos[i * 3], pos[i * 3 + 2]];
+      uv[i * 2] = u * k; uv[i * 2 + 1] = v * k;
+    }
+    src.setVerticesData(VertexBuffer.UV2Kind, uv, false);
   }
 
   /** Requisite merken (r = Kollisionsradius, solid = Figur stößt dagegen) */
@@ -283,6 +367,7 @@ export class World {
     sm.setVector3('sunDir', new Vector3(Math.cos(ang) * .8, up, .45).normalize());
     sm.setColor3('sunCol', new Color3(1, .82, .6).scale(smoothstep(up, -.08, .1)));
     this.scene.fogColor = bot;
+    this.pickEnv(day, dusk);
     this.scene.clearColor.set(bot.r, bot.g, bot.b, 1);
     // Fenster nachts warm, Straßen nachts feucht glänzend
     this.winMats.forEach((m) => m.emissiveColor.set(1 * this.night * .9, .72 * this.night * .9, .4 * this.night * .9));
