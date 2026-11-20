@@ -111,14 +111,21 @@ html.touch #touch.on{display:block}
 #tStick{position:absolute;width:120px;height:120px;border-radius:50%;border:2px solid rgba(255,255,255,.28);background:rgba(10,12,20,.25);left:40px;bottom:40px;top:auto;opacity:.55;pointer-events:none;transition:opacity .15s}
 #tStick.on{opacity:1}
 #tKnob{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.85);box-shadow:0 2px 12px rgba(0,0,0,.4)}
-#tBtns{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));width:230px;height:230px;pointer-events:auto}
-#tBtns button{position:absolute;width:72px;height:72px;border-radius:50%;border:2px solid rgba(255,255,255,.35);background:rgba(14,16,26,.55);font-weight:900;font-size:13px;font-style:italic;touch-action:none;backdrop-filter:blur(6px)}
-#tBtns button.down{background:rgba(255,212,58,.85);color:#111;transform:scale(.94)}
-#tBtns [data-act=ollie]{right:79px;bottom:0;width:84px;height:84px;border-color:var(--a2)}
-#tBtns [data-act=flip]{right:158px;bottom:80px;border-color:var(--a3)}
-#tBtns [data-act=grab]{right:0;bottom:80px;border-color:var(--a1)}
-#tBtns [data-act=grind]{right:79px;bottom:158px;border-color:var(--ok)}
-#tBtns [data-act=manual]{right:166px;bottom:166px;width:58px;height:58px;font-size:11px}
+#tBtns{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));width:228px;height:228px;pointer-events:auto}
+#tBtns button,#tSh button{touch-action:none;backdrop-filter:blur(6px);-webkit-user-select:none;user-select:none}
+#tBtns button{position:absolute;width:76px;height:76px;border-radius:50%;border:3px solid var(--c);background:radial-gradient(circle at 50% 35%,rgba(40,44,60,.75),rgba(10,12,20,.7));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;box-shadow:0 4px 14px rgba(0,0,0,.35),inset 0 0 12px color-mix(in srgb,var(--c) 30%,transparent)}
+#tBtns button i{font-style:normal;font-size:26px;line-height:1;color:var(--c)}
+#tBtns button b{font-size:10px;font-weight:900;letter-spacing:.06em;font-style:italic;color:#fff;opacity:.9}
+#tBtns button.down,#tSh button.down{background:var(--c);transform:scale(.93)}
+#tBtns button.down i,#tBtns button.down b{color:#111}
+#tBtns [data-act=grind]{left:76px;top:0;--c:#39e07a}
+#tBtns [data-act=flip]{left:0;top:76px;--c:#2ec4ff}
+#tBtns [data-act=grab]{right:0;top:76px;--c:#ff5a3c}
+#tBtns [data-act=ollie]{left:76px;bottom:0;--c:#ffd43a}
+#tSh{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:calc(max(14px,env(safe-area-inset-bottom)) + 240px);width:228px;display:grid;grid-template-columns:1fr 1fr;gap:8px;pointer-events:auto}
+#tSh button{--c:#c9d2ff;height:40px;border-radius:12px 12px 8px 8px;border:2px solid rgba(255,255,255,.35);background:rgba(14,16,26,.6);font-weight:900;font-style:italic;font-size:13px;color:#fff}
+#tSh [data-act=revert]{grid-column:1/3;height:34px;border-radius:10px;font-size:12px;--c:#b98cff}
+@media (max-height:520px){#tBtns{transform:scale(.8);transform-origin:100% 100%}#tSh{transform:scale(.8);transform-origin:100% 100%;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 192px)}}
 /* ---------- Laden */
 #loading{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:radial-gradient(ellipse at center,#1a1d2c,#07080d);transition:opacity .35s}
 #loading.hide{opacity:0;pointer-events:none}
@@ -148,7 +155,10 @@ html.touch #touch.on{display:block}
   <div id="tZone"></div>
   <div id="tStick"><div id="tKnob"></div></div>
   <div id="tBtns">
-    <button data-act="grind">GRIND</button><button data-act="flip">FLIP</button><button data-act="grab">GRAB</button><button data-act="ollie">OLLIE</button><button data-act="manual">MANUAL</button>
+    <button data-act="grind" aria-label="Grind"><i>⫽</i><b>GRIND</b></button><button data-act="flip" aria-label="Flip"><i>↻</i><b>FLIP</b></button><button data-act="grab" aria-label="Grab"><i>✋</i><b>GRAB</b></button><button data-act="ollie" aria-label="Ollie"><i>⤒</i><b>OLLIE</b></button>
+  </div>
+  <div id="tSh">
+    <button data-act="spinL" aria-label="Drehen links">L ⟲</button><button data-act="spinR" aria-label="Drehen rechts">⟳ R</button><button data-act="revert" aria-label="Revert">REVERT</button>
   </div>
 </div>
 
@@ -205,13 +215,14 @@ html.touch #touch.on{display:block}
 <div class="menu dim" id="mHelp"><div class="center glass">
   <h2>Steuerung</h2>
   <div class="keys">
-    <div><b>Fahren</b><br>Lenken: <kbd>←</kbd><kbd>→</kbd> / <kbd>A</kbd><kbd>D</kbd> · linker Stick · Touch-Stick<br>Anschieben <kbd>↑</kbd> · Bremsen <kbd>↓</kbd><br>In der Luft drehen: Lenken oder <kbd>Q</kbd>/<kbd>E</kbd> · LT/RT</div>
+    <div><b>Fahren</b><br>Lenken: <kbd>←</kbd><kbd>→</kbd> / <kbd>A</kbd><kbd>D</kbd> · linker Stick · Touch-Stick<br>Anschieben <kbd>↑</kbd> · Bremsen <kbd>↓</kbd><br>In der Luft drehen: Lenken oder Schultertasten <kbd>Q</kbd>/<kbd>E</kbd> · LB/RB · Touch L/R</div>
     <div><b>Ollie</b> – halten zum Laden, loslassen zum Springen<br><kbd>Leertaste</kbd> · Controller <b>A</b> · Touch OLLIE</div>
     <div><b>Flip</b> + Richtung (9 Flips)<br><kbd>J</kbd> · Controller <b>X</b> · Touch FLIP<br>In der Luft zweimal = Doppel-Flip</div>
     <div><b>Grab</b> + Richtung, halten = mehr Punkte<br><kbd>K</kbd> · Controller <b>B</b> · Touch GRAB</div>
     <div><b>Grind</b> + Richtung über Rail, Kante oder Coping<br><kbd>L</kbd> · Controller <b>Y</b> · Touch GRIND<br>Balance mit Links/Rechts</div>
-    <div><b>Manual</b> am Boden, nach der Landung hält die Combo · <b>Revert</b> nach Landung in der Rampe<br><kbd>I</kbd>/<kbd>Shift</kbd> · Controller <b>RB</b> · Touch MANUAL<br>Balance mit Hoch/Runter</div>
-    <div><b>Spezialtricks</b> bei voller Leiste<br>Flip+Grab zusammen · Grab+Grind in der Luft · Manual-Taste beim Grinden</div>
+    <div><b>Manual</b>: schnell Hoch, dann Runter (Nose Manual: Runter, dann Hoch) – am Boden oder kurz vor der Landung, hält die Combo<br>Balance mit Hoch/Runter</div>
+    <div><b>Revert</b> nach einer Landung in Rampe oder Pool, danach Manual = Combo läuft weiter<br><kbd>R</kbd>/<kbd>Shift</kbd> · Controller <b>LT</b>/<b>RT</b> · Touch REVERT</div>
+    <div><b>Spezialtricks</b> bei voller Leiste<br>Flip+Grab zusammen · Grab+Grind in der Luft · Hoch, Runter beim Grinden</div>
     <div><b>Menü</b><br>Pause <kbd>Esc</kbd>/<kbd>P</kbd> · Start · ⏸<br>Ziele <kbd>Tab</kbd>/<kbd>G</kbd> · Select · 🎯<br>TV: Pfeile, OK = Ollie, Zurück = Pause</div>
   </div>
   <p class="sub">Combo: Tricks aneinanderreihen – Grinds, Manuals und Reverts verbinden Sprünge. Punkte = Summe × Anzahl Tricks. Ein Sturz kostet die ganze Combo.</p>
@@ -246,7 +257,7 @@ html.touch #touch.on{display:block}
 
 <script type="module" src="/src/main.js"></script>
 <script src="../cloud/anmacha-cloud.js" data-mount="#cloudbox" data-hint="Optional: Fortschritt mit Google sichern und auf anderen Geräten weiterfahren. Ohne Anmeldung bleibt alles auf diesem Gerät." data-game="concrete-pulse" data-prefix="concrete-pulse_" defer></script>
-<script src="../gamepad.js" data-pad="info menu=.menu.on hud=l3" data-pad-labels="ls=Lenken · Anschieben/Bremsen · in der Luft drehen · Trick-Richtung; rs=Kamera umschauen; dpad=wie linker Stick · in Menüs wählen; a=Ollie (halten = laden) · Bestätigen; x=Flip-Trick (+Richtung); b=Grab (+Richtung, halten) · Zurück; y=Grind (+Richtung); rb=Manual · Revert · Spezial-Grind; lb=Manual; lt=Drehung links; rt=Drehung rechts; start=Pause; select=Ziele" defer></script>
+<script src="../gamepad.js" data-pad="info menu=.menu.on hud=l3" data-pad-labels="ls=Lenken · Anschieben/Bremsen · in der Luft drehen · Trick-Richtung · Hoch→Runter = Manual; rs=Kamera umschauen; dpad=wie linker Stick · in Menüs wählen; a=Ollie (halten = laden) · Bestätigen; x=Flip-Trick (+Richtung); b=Grab (+Richtung, halten) · Zurück; y=Grind (+Richtung); lb=Drehung links; rb=Drehung rechts; lt=Revert; rt=Revert; start=Pause; select=Ziele" defer></script>
 <script src="../egstat.js" defer></script>
 </body>
 </html>

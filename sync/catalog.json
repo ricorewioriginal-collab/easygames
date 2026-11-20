@@ -21,21 +21,22 @@
    "guide": {
     "anleitung": "Concrete Pulse ist ein Skateboard-Spiel in 3D. Du fährst durch drei Parks (Hafenkante, Dachgarten, Neonbucht) und reihst Flips, Grabs, Grinds, Manuals und Drehungen zu Combos aneinander. Eine Combo zählt erst, wenn du sauber landest; Manuals verbinden Tricks über den Boden. In der Karriere erfüllst du in 2-Minuten-Läufen je Park 10 Ziele (Punkte, die Buchstaben P-U-L-S-E, die versteckte Kassette, Combos, Gaps und Sonderaufgaben). 5 Ziele schalten den nächsten Park frei, weitere Ziele neue Skater und Boards. Dazu kommen Highscore-Lauf, Freies Fahren ohne Zeit und das Duell für 2 bis 4 Spieler an einem Gerät. Ist die Spezialleiste voll, kannst du die Spezialtricks deines Skaters zeigen.",
     "steuerung": [
-     "Touch: linkes Feld ist der Stick (lenken, Richtung für Tricks), rechts die Knöpfe Ollie, Flip, Grab, Grind und Manual.",
-     "Tastatur: W A S D oder Pfeile lenken, Leertaste/Enter Ollie (halten zum Ausholen), J Flip, K Grab, L Grind, I oder Shift Manual, Q/E drehen, Esc/P Pause, Tab/G Ziele.",
-     "Gamecontroller: linker Stick lenkt, A Ollie, X Flip, B Grab, Y Grind, LB/RB Manual, LT/RT drehen, Start Pause, Select Ziele.",
-     "Spezialtrick bei voller Leiste: in der Luft Flip und Grab zusammen oder Grab mit Grind; am Rail Grind und Manual zusammen.",
-     "Einfach-Modus (Einstellungen): in der Luft Ollie tippen = Flip, halten = Grab; dazu automatisches Anschieben."
+     "Touch wie ein Konsolen-Controller: links der Stick (lenken, anschieben, Trick-Richtung), rechts vier Aktionstasten in Rautenform – unten Ollie, links Flip, rechts Grab, oben Grind. Darüber die Schultertasten L/R (drehen) und Revert.",
+     "Tastatur: W A S D oder Pfeile lenken, Leertaste/Enter Ollie (halten zum Laden), J Flip, K Grab, L Grind, Q/E drehen, R oder Shift Revert, Esc/P Pause, Tab/G Ziele.",
+     "Gamecontroller: linker Stick oder Steuerkreuz lenkt, A Ollie, X Flip, B Grab, Y Grind, LB/RB drehen, LT/RT Revert, Start Pause, Select Ziele.",
+     "Manual wie an der Konsole: schnell Hoch, dann Runter (Nose Manual: Runter, dann Hoch) – am Boden oder kurz vor der Landung. Balance mit Hoch/Runter.",
+     "Spezialtrick bei voller Leiste: in der Luft Flip und Grab zusammen oder Grab mit Grind; beim Grinden Hoch, dann Runter."
     ],
     "tipps": [
      "Richtung plus Trickknopf ergibt andere Tricks – probiere alle acht Richtungen.",
-     "Zwischen zwei Rails oder Rampen einen Manual einbauen, dann läuft die Combo weiter.",
+     "Nach jeder Landung sofort Hoch, Runter für einen Manual – so läuft die Combo bis zum nächsten Rail weiter.",
      "An Quarterpipes und im Pool bergab beschleunigen, bergauf bremst du weniger – so holst du Höhe für Vert-Tricks.",
      "Gleiche Tricks bringen in einer Combo immer weniger, also abwechseln.",
-     "Kurz vor der Landung loslassen: Ein unfertiger Flip oder Grab führt zum Sturz."
+     "Kurz vor der Landung loslassen: Ein unfertiger Flip oder Grab führt zum Sturz.",
+     "In der Rampe gelandet? Revert drücken und direkt Hoch, Runter: Revert plus Manual hält die Combo am Leben."
     ]
    },
-   "size": 9153953,
+   "size": 9156014,
    "files": 331,
    "offline": true,
    "cloud": {
