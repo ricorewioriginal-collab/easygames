@@ -379,7 +379,7 @@
     // Krone aufsetzen
     const crowned = UL.makeFig(Object.assign({}, w.look, { hat: 'krone', hatColor: 0xffc000 }));
     crowned.root.position.copy(w._fig.root.position); st.scene.remove(w._fig.root); st.scene.add(crowned.root); st.figs.push(crowned); crowned.play('cheer');
-    UL.Audio.sfx('fanfare'); UL.Audio.sfx('cheer');
+    UL.Audio.sfx('fanfare'); UL.Audio.sfx('cheer'); UL.Audio.music('finale');
     if (st.env && st.env.cheer !== undefined) st.env.cheer = 3;
     st.cine.move(crowned.root.position.clone().add(new T.Vector3(0, 1.6, 3)), crowned.root.position.clone().add(new T.Vector3(0, 1.2, 0)), 1.2);
     await UI.banner('👑 ' + Show.form(w), w.name, 2600);

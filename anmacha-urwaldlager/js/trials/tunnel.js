@@ -20,6 +20,7 @@
 
   UL.Trials.maze = maze;   // auch fürs Höhlenlabyrinth
   UL.Trials.reg('tunnel', {
+    atmo: 'cave',
     env: () => ({ none: true }),
     setup(ctx) {
       const sc = ctx.scene, studio = ctx.theme === 'studio';

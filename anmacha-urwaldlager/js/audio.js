@@ -83,12 +83,21 @@
     trial: { bpm: 128, steps: 16, f: (s, t, b) => { if (s % 4 === 0) tone(60, t, 0.25, 'sine', 0.35, musicG, 0.5); if (s % 8 === 4) noise(t, 0.12, 0.18, 1800, 1, musicG); if (s % 2) noise(t, 0.03, 0.06, 7000, 1, musicG, 'highpass'); if ([0, 6, 10].includes(s)) tone(mt([45, 45, 41, 43][b % 4]), t, 0.18, 'sawtooth', 0.06, musicG); } },
     tense: { bpm: 70, steps: 8, f: (s, t, b) => { if (s === 0) { tone(mt(40), t, 3, 'sawtooth', 0.05, musicG); tone(mt(47), t, 3, 'sine', 0.06, musicG); } if (s % 2 === 0) tone(1200 + (s * 50), t, 0.05, 'sine', 0.02, musicG); } },
     show: { bpm: 118, steps: 16, f: (s, t, b) => { if (s % 4 === 0) tone(55, t, 0.2, 'sine', 0.3, musicG, 0.5); if (s % 4 === 2) noise(t, 0.1, 0.12, 2500, 1, musicG); const ch = [[60, 64, 67], [57, 60, 64], [53, 57, 60], [55, 59, 62]][b % 4]; if (s === 0 || s === 10) ch.forEach(n => tone(mt(n + 12), t, 0.4, 'triangle', 0.05, musicG)); if (s % 2 === 0) tone(mt(ch[0] - 12), t, 0.15, 'square', 0.04, musicG); } },
+    // Krönung: feierliche Hymne mit Pauke, Bläser-Akkorden und Glocken
+    finale: { bpm: 92, steps: 16, f: (s, t, b) => { const ch = [[60, 64, 67], [65, 69, 72], [67, 71, 74], [60, 64, 67]][b % 4]; if (s === 0) ch.forEach(n => { tone(mt(n), t, 1.9, 'sawtooth', 0.035, musicG); tone(mt(n - 12), t, 1.9, 'triangle', 0.06, musicG); }); if (s % 4 === 0) tone(65, t, 0.45, 'sine', 0.32, musicG, 0.5); if (s === 12 || s === 14) tone(65, t, 0.3, 'sine', 0.22, musicG, 0.5); if ([0, 6, 8, 12].includes(s)) tone(mt(ch[(s >> 2) % 3] + 24), t, 0.9, 'sine', 0.05, musicG); } },
     night: { bpm: 60, steps: 8, f: (s, t, b) => { if (s === 0) [48, 55, 64].forEach(n => tone(mt(n), t, 3.5, 'sine', 0.06, musicG)); if (s === 4) tone(mt(67 + (b % 2) * 2), t, 1.5, 'sine', 0.05, musicG); } }
   };
   const mt = n => 440 * Math.pow(2, (n - 69) / 12);
   let song = null, step = 0, bar = 0, nextT = 0;
   Au.music = (name) => { if (!Au.on) { Au._want = name; return; } song = SONG[name] || null; step = 0; bar = 0; nextT = now() + 0.1; };
   // ---------- Atmo ----------
+  function cicada(t, dur) { const c = Au.ctx, s = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain(), l = c.createOscillator(), lg = c.createGain();
+    s.buffer = noiseBuf; fl.type = 'bandpass'; fl.frequency.value = 5200 + Math.random() * 1500; fl.Q.value = 12; l.frequency.value = 38 + Math.random() * 20; lg.gain.value = 0.03; l.connect(lg); lg.connect(g.gain);
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.035, t + 0.3); g.gain.linearRampToValueAtTime(0.0001, t + dur);
+    s.connect(fl); fl.connect(g); g.connect(atmoG); s.start(t, Math.random()); l.start(t); s.stop(t + dur + 0.05); l.stop(t + dur + 0.05); }
+  function frog(t, n) { const f = 160 + Math.random() * 120; for (let i = 0; i < n; i++) { tone(f, t + i * 0.22, 0.12, 'square', 0.035, atmoG, 0.7); noise(t + i * 0.22, 0.1, 0.03, f * 3, 4, atmoG); } }
+  function howl(t) { const c = Au.ctx, o = c.createOscillator(), fl = c.createBiquadFilter(), g = c.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(110, t); o.frequency.linearRampToValueAtTime(150, t + 0.6); o.frequency.linearRampToValueAtTime(95, t + 1.6);
+    fl.type = 'lowpass'; fl.frequency.value = 500; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.05, t + 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.7); o.connect(fl); fl.connect(g); g.connect(atmoG); o.start(t); o.stop(t + 1.8); }
   let atmo = null, atmoT = 0, rainLvl = 0, rainT = 0;
   Au.rain = (lvl) => { rainLvl = lvl || 0; };   // Regenrauschen 0..1, läuft über der Atmo
   Au.atmo = (name) => { atmo = name; };
@@ -103,12 +112,29 @@
     if (rainLvl > 0 && t > rainT) { rainT = t + 0.3; noise(t, 0.45, 0.07 * rainLvl, 3200, 0.4, atmoG, 'highpass'); noise(t, 0.45, 0.05 * rainLvl, 700, 0.6, atmoG, 'lowpass'); }
     if (atmo && t > atmoT) {
       if (atmo === 'jungle') {
-        atmoT = t + 0.6 + Math.random() * 1.6;
-        if (Math.random() < 0.5) { const f = 2400 + Math.random() * 1800; for (let i = 0; i < 3; i++) tone(f * (1 + i * 0.06), t + i * 0.09, 0.07, 'sine', 0.05, atmoG, 1.2); }
+        atmoT = t + 0.5 + Math.random() * 1.4;
+        const r = Math.random();
+        if (r < 0.32) { const f = 2400 + Math.random() * 1800; for (let i = 0; i < 3; i++) tone(f * (1 + i * 0.06), t + i * 0.09, 0.07, 'sine', 0.05, atmoG, 1.2); }   // Vogel-Triller
+        else if (r < 0.5) cicada(t, 1.6);   // Zikaden
+        else if (r < 0.62) { tone(1400, t, 0.18, 'sine', 0.05, atmoG, 0.55); tone(1300, t + 0.26, 0.22, 'sine', 0.05, atmoG, 0.5); }   // Tukan-Ruf
+        else if (r < 0.7) { for (let i = 0; i < 3; i++) noise(t + i * 0.12, 0.09, 0.05, 2200 + i * 300, 6, atmoG); }   // Papagei kreischt
+        else if (r < 0.76) howl(t);   // Brüllaffe in der Ferne
+        else if (r < 0.88) frog(t, 2);
         else noise(t, 1.6, 0.05, 5500, 8, atmoG);
       } else if (atmo === 'night') {
-        atmoT = t + 0.4 + Math.random(); noise(t, 0.9, 0.04, 4200, 14, atmoG);
-        if (Math.random() < 0.15) tone(380, t, 0.4, 'sine', 0.04, atmoG, 0.8);
+        atmoT = t + 0.35 + Math.random() * 0.9;
+        const r = Math.random();
+        if (r < 0.55) { for (let i = 0; i < 3; i++) tone(4300 + Math.random() * 200, t + i * 0.07, 0.04, 'sine', 0.025, atmoG); }   // Grillen
+        else if (r < 0.75) frog(t, 3);
+        else if (r < 0.85) { tone(380, t, 0.35, 'sine', 0.045, atmoG, 0.85); tone(360, t + 0.5, 0.5, 'sine', 0.04, atmoG, 0.8); }   // Eule
+        else noise(t, 0.9, 0.04, 4200, 14, atmoG);
+      } else if (atmo === 'cave') {
+        atmoT = t + 0.6 + Math.random() * 1.8;
+        const f = 900 + Math.random() * 900; tone(f, t, 0.12, 'sine', 0.06, atmoG, 0.6); tone(f, t + 0.18, 0.12, 'sine', 0.025, atmoG, 0.6); tone(f, t + 0.36, 0.12, 'sine', 0.01, atmoG, 0.6);   // Tropfen mit Echo
+        if (Math.random() < 0.2) noise(t, 2, 0.03, 200, 0.6, atmoG, 'lowpass');
+      } else if (atmo === 'river') {
+        atmoT = t + 0.35; noise(t, 0.6, 0.06, 900, 0.4, atmoG, 'lowpass'); noise(t, 0.5, 0.025, 3500, 1.5, atmoG);
+        if (Math.random() < 0.1) { const f = 2600 + Math.random() * 1500; for (let i = 0; i < 2; i++) tone(f, t + i * 0.1, 0.06, 'sine', 0.04, atmoG, 1.2); }
       } else if (atmo === 'studio') {
         atmoT = t + 1.5 + Math.random() * 2; noise(t, 1.8, 0.03, 800, 0.5, atmoG);
       } else atmoT = t + 1;
