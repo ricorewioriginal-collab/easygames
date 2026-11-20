@@ -1,4 +1,4 @@
-import{$ as o}from"./index-fGy-ktFQ.js";const e="postprocessVertexShader",s=`attribute vec2 position;uniform vec2 scale;varying vec2 vUV;const vec2 madd=vec2(0.5,0.5);
+import{$ as o}from"./index-BE6VplCL.js";const e="postprocessVertexShader",s=`attribute vec2 position;uniform vec2 scale;varying vec2 vUV;const vec2 madd=vec2(0.5,0.5);
 #define CUSTOM_VERTEX_DEFINITIONS
 void main(void) {
 #define CUSTOM_VERTEX_MAIN_BEGIN

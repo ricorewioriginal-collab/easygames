@@ -21,7 +21,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); 
   ok(!r && await p.evaluate(() => __zotik.S().hp === __zotik.maxHp()), 'Am Feuer rasten füllt das Leben ' + (r || ''));
   // Weltenstein → Weltreise mit Camp-Eintrag
   r = await talk(p, 'Weltenstein'); await w(300);
-  ok(!r && await p.evaluate(() => !document.getElementById('menu').hidden && /Vorwelt: Camp/.test(document.getElementById('mcont').textContent)), 'Weltenstein öffnet die Weltreise (Camp ist eingetragen) ' + (r || ''));
+  ok(!r && await p.evaluate(() => !document.getElementById('menu').hidden && /Vorwelt:? ?Camp/.test(document.getElementById('mcont').textContent)), 'Weltenstein öffnet die Weltreise (Camp ist eingetragen) ' + (r || ''));
   await p.evaluate(() => __zotik.toggleMenu(false));
   // Pfad nach Lunaris und zurück
   r = await talk(p, 'Pfad nach Lunaris'); await w(2500); await calm();
@@ -29,7 +29,7 @@ let fails = 0; const ok = (c, m) => { console.log((c ? 'ok   ' : 'FEHL ') + m); 
   await flood(p); r = await talk(p, 'Pfad zum Camp'); await w(2500); await calm();
   L = await where(); ok(!r && L.camp, 'Wegweiser in Lunaris führt zurück ins Camp ' + (r || ''));
   // Gefährten sitzen am Feuer und reden dort
-  await p.evaluate(() => { const Z = __zotik, S = Z.S(); S.stage = 8; for (const id of ['lyra', 'nia', 'rovan']) Z.joinParty(id); Z.switchWorld(1); }); await w(800);
+  await p.evaluate(() => { const Z = __zotik, S = Z.S(); S.stage = 8; for (const id of ['lyra', 'nia', 'rovan']) Z.joinParty(id); Z.switchWorld(1); }); await w(800); await calm();   /* Begrüßungsszene der Gefährten in Lunaris erst beenden, sonst sperrt der Dialog die Reise */
   await p.evaluate(() => __zotik.travel(13)); await w(2500); await calm(); await w(500);
   const seats = await p.evaluate(() => { const Z = __zotik, f = Z.WLD.fire; return Z.CMP.map(a => +Math.hypot(a.x - f[0], a.z - f[1]).toFixed(1)); });
   ok(seats.length === 3 && seats.every(d => d > 2.5 && d < 3.6), 'Gefährten sitzen ums Feuer ' + seats.join(', '));
