@@ -16,7 +16,7 @@
   Show.pop = pop;
   // Hunger (🍗 satt) und Schlaf (😴 ausgeruht), 0–100; alte Spielstände bekommen Startwerte
   const vit = Show.vit = c => { if (c.hun == null) c.hun = 70; if (c.slp == null) c.slp = 70; return c; };
-  Show.log = (txt, icon = '📝') => { const S = Show.S; if (!S) return; S.log.unshift({ d: S.day, txt, icon }); if (S.log.length > 60) S.log.length = 60; };
+  Show.log = (txt, icon = '📝') => { const S = Show.S; if (!S) return; S.cnt = S.cnt || {}; S.cnt[icon] = (S.cnt[icon] || 0) + 1; S.log.unshift({ d: S.day, txt, icon }); if (S.log.length > 60) S.log.length = 60; };
   Show.change = (c, d) => {
     if (!c) return;
     for (const k of ['sym', 'ent', 'perf']) if (d[k]) c[k] = UL.clamp(c[k] + d[k], 0, 100);
@@ -240,6 +240,7 @@
     const S = Show.S, q = r.max ? r.stars / r.max : 0;
     S.food = r.stars; S.foodMax = r.max; S.foodBy = c.id;
     c.starsWon += r.stars;
+    if (c.id === 'me') (S.myTrials = S.myTrials || []).push({ id: def.id, n: def.name, i: def.icon, s: r.stars, m: r.max, q: !!r.quit, d: S.day });
     c.perf = UL.clamp(c.perf * 0.6 + q * 100 * 0.4 + (r.quit ? -6 : 0), 0, 100);
     Show.change(c, { ent: r.quit ? 6 : 3 + q * 4, sym: r.quit ? -5 : q * 5 });
     Show.log(r.quit ? `${firstName(c)} bricht „${def.name}“ ab.` : `${firstName(c)}: ${r.stars}/${r.max} Sterne bei „${def.name}“.`, def.icon);
@@ -361,13 +362,18 @@
     // Krönung
     const rank = fin.map(c => ({ c, p: pop(c) + UL.rand(-3, 3) })).sort((a, b) => b.p - a.p).map(x => x.c);
     st = await hostSet('night', s => {
-      rank.forEach((c, i) => { const f = UL.makeFig(c.look); f.root.position.set((i - 1) * 1.6, s.theme === 'studio' ? 0 : 0.3, 0.6); f.root.rotation.y = 0; s.scene.add(f.root); s.figs.push(f); c._fig = f; });
+      const y0 = s.theme === 'studio' ? 0 : 0.3;
+      rank.forEach((c, i) => { const f = UL.makeFig(c.look); f.root.position.set((i - 1) * 1.6, y0, 0.6); f.root.rotation.y = 0; s.scene.add(f.root); s.figs.push(f); c._fig = f; });
+      // Abschlussshow: alle ausgeschiedenen Camper kommen zurück und stehen im Halbkreis
+      S.campers.filter(c => !rank.includes(c)).forEach((c, i) => { const sd = i % 2 ? 1 : -1, k = i >> 1, f = UL.makeFig(c.look); f.root.position.set(sd * (3.0 + k * 0.9), y0, -1.8 + k * 0.9); f.root.rotation.y = -sd * 0.9; s.scene.add(f.root); s.figs.push(f); (s.fans = s.fans || []).push(f); });
+      s.throne = throne(s, y0); s.fw = R.particles(s.scene, { n: 260, size: 0.14, gravity: -2.5, life: 2.2 }); s.updaters.push(dt => s.fw.update(dt));
     });
     st.cine.cut(new T.Vector3(0, 2.2, 6.5), new T.Vector3(0, 1.2, 0));
+    await recap(st);
     await st.line('mats', 'Die Zuschauer haben abgestimmt. Hier ist das Ergebnis.');
     UL.Audio.sfx('tense'); await UI.banner('Platz 3', rank[2].name, 1800); await st.mod('third', { n: rank[2].name });
     UL.Audio.sfx('tense'); await UI.banner('Platz 2', rank[1].name, 1800); await st.mod('second', { n: rank[1].name });
-    const w = rank[0];
+    const w = rank[0]; S.rank = rank.map(c => c.id);
     await st.line('mats', D.MOD.winner[0][1]);
     UL.Audio.sfx('drum'); await UL.sleep(UL.bot ? 0.1 : 1.2);
     // Krone aufsetzen
@@ -377,10 +383,42 @@
     if (st.env && st.env.cheer !== undefined) st.env.cheer = 3;
     st.cine.move(crowned.root.position.clone().add(new T.Vector3(0, 1.6, 3)), crowned.root.position.clone().add(new T.Vector3(0, 1.2, 0)), 1.2);
     await UI.banner('👑 ' + Show.form(w), w.name, 2600);
-    await st.line('lotte', UI.fmt(D.MOD.winner[1][1], { n: w.name }));
+    // Auf den Thron, Feuerwerk, alle jubeln
+    const tp = st.throne.position; crowned.root.position.set(tp.x, tp.y + 0.3, tp.z + 0.9); crowned.root.rotation.y = 0; crowned.release(); crowned.set('idle'); st.crowned = crowned;
+    rank.filter(c => c !== w).forEach((c, i) => { c._fig.root.position.set(i ? 1.7 : -1.7, tp.y + 0.3, tp.z + 1.0); c._fig.root.rotation.y = i ? -0.3 : 0.3; c._fig.play('cheer'); }); (st.fans || []).forEach(f => f.play('cheer'));
+    (st.hosts || []).forEach((h, i) => { h.root.position.x = i ? 2.9 : -2.9; h.root.position.z = -0.6; h.root.rotation.y = i ? -0.5 : 0.5; });
+    st.cine.move(new T.Vector3(0, 3.2, tp.z + 6.6), new T.Vector3(0, 1.3, tp.z), 1.4);
+    for (let i = 0; i < (UL.bot ? 1 : 6); i++) UL.after(i * 0.45, () => { st.fw.burst(UL.rand(-3, 3), UL.rand(4, 6), tp.z - 1.5, 50, 4, 4, [UL.pick([0xff4060, 0xffd23a, 0x3ad0ff, 0x7cff6a, 0xffffff])]); UL.Audio.sfx('whoosh'); });
+    await UI.say('lotte', UI.fmt(D.MOD.winner[1][1], { n: w.name }));   // Kamera bleibt auf dem Thron
+    await UI.say('mats', `${D.SHOW.title} – das war die Staffel! Danke an alle Camper und an euch zu Hause!`);
     S.place = rank.indexOf(me()) + 1;
     await Show.endScreen(w.id === 'me');
   };
+
+  // Thron aus Bambus und Gold für die Krönung
+  function throne(s, y0) {
+    const g = new T.Group(), wood = R.mat(0x6a4426), gold = R.mat(0xffc830), red = R.mat(0xb02030);
+    const step = new T.Mesh(new T.CylinderGeometry(1.5, 1.7, 0.3, 24), wood); step.position.y = 0.15; g.add(step);
+    const seat = new T.Mesh(new T.BoxGeometry(1.0, 0.18, 0.8), red); seat.position.y = 0.6; g.add(seat);
+    const base = new T.Mesh(new T.BoxGeometry(1.0, 0.3, 0.8), wood); base.position.y = 0.36; g.add(base);
+    const back = new T.Mesh(new T.BoxGeometry(1.1, 1.7, 0.14), wood); back.position.set(0, 1.35, -0.38); g.add(back);
+    for (const x of [-0.6, 0.6]) { const p = new T.Mesh(new T.CylinderGeometry(0.07, 0.07, 2.4, 8), gold); p.position.set(x, 1.2, -0.38); g.add(p); const b = new T.Mesh(new T.SphereGeometry(0.12, 10, 8), gold); b.position.set(x, 2.45, -0.38); g.add(b); const a = new T.Mesh(new T.BoxGeometry(0.12, 0.12, 0.8), gold); a.position.set(x * 0.92, 0.85, 0); g.add(a); }
+    const cr = new T.Mesh(new T.CylinderGeometry(0.28, 0.22, 0.24, 8, 1, true), gold); cr.position.set(0, 2.4, -0.38); g.add(cr);
+    const sg = R.sign(['👑 ' + D.SHOW.title.toUpperCase()], 2.6, 0.5, { bg: '#5a1a10', w: 512, h: 100, font: '900 46px system-ui' }); sg.position.set(0, 2.95, -0.4); g.add(sg);
+    for (const x of [-1.6, 1.6]) { const t = A.has('kd_torch_mounted') ? A.sized('kd_torch_mounted', 1.4) : new T.Group(); t.position.set(x, 0.3, -0.2); g.add(t); }
+    g.position.set(0, y0, -3.3); g.traverse(o => { if (o.isMesh) o.castShadow = true; }); s.scene.add(g);
+    const l = new T.PointLight(0xffc870, 1.4, 7); l.position.set(0, y0 + 3, -2.2); s.scene.add(l);
+    return g;
+  }
+  // Rückblick der Moderatoren: die stärksten Momente der Staffel
+  async function recap(st) {
+    const S = Show.S, m = me(), best = (S.myTrials || []).filter(t => !t.q).sort((a, b) => b.s / b.m - a.s / a.m)[0];
+    const big = S.log.filter(l => /💥|🐍|💚|⛺|🧑‍🍳|🤝|🧽/.test(l.icon)).slice(0, 3).map(l => l.txt.replace(/\.$/, ''));
+    await st.line('lotte', `Bevor es ernst wird – ein Blick zurück auf ${S.days} Tage ${S.theme === 'studio' ? 'im Studio' : 'im Dschungel'}!`);
+    if (best) await st.line('mats', `Unvergessen: ${firstName(m)} bei „${best.n}“ mit ${best.s} von ${best.m} Sternen!`);
+    if (big.length) await st.line('lotte', `Und das Lager wird nie vergessen: ${big.join('. ')}.`);
+    if ((st.fans || []).length) { st.fans.forEach(f => f.play('cheer')); UL.Audio.sfx('cheer'); await st.line('mats', 'Und seht mal, wer zur Abschlussshow zurück ist: alle Ex-Camper!'); }
+  }
 
   // ---------- Ende ----------
   Show.endScreen = async (won) => {
@@ -393,10 +431,26 @@
       <p><b>${esc(m.name)}</b> – ${won ? Show.form(m) + '!' : 'Platz ' + place + ' von ' + S.campers.length}</p>
       <div class="statrow"><span>⭐ ${m.starsWon} Sterne erspielt</span><span>🎯 ${m.trials} Prüfungen</span><span>❤️ Sympathie ${Math.round(m.sym)}</span><span>😂 Unterhaltung ${Math.round(m.ent)}</span></div>`;
     UL.Audio.music(won ? 'show' : 'night');
-    await UI.choose(won ? 'Du hast gewonnen!' : 'Staffel vorbei', html, [{ label: 'Zum Titel', icon: '🏠', value: 1 }], { wide: true });
+    const v = await UI.choose(won ? 'Du hast gewonnen!' : 'Staffel vorbei', html, [{ label: 'Staffel-Statistik', icon: '📊', value: 2 }, { label: 'Zum Titel', icon: '🏠', value: 1 }], { wide: true });
+    if (v === 2 && !UL.bot) await UI.choose('📊 Staffel-Statistik', seasonStats(S, place), [{ label: 'Zum Titel', icon: '🏠', value: 1 }], { wide: true });
     Show.S = null;
     UL.Menus.title();
   };
+
+  // Staffel-Statistik: deine Prüfungen, Endstand aller Camper, Lager-Zahlen
+  function seasonStats(S, place) {
+    const m = me(), T2 = S.myTrials || [], c = S.cnt || {}, relOf = (a, b) => a.rel[b.id] ?? 50, others = S.campers.filter(x => x !== m);
+    const fr = others.length ? others.reduce((a, b) => relOf(m, b) > relOf(m, a) ? b : a) : null, fo = others.length ? others.reduce((a, b) => relOf(m, b) < relOf(m, a) ? b : a) : null;
+    const trials = T2.length ? T2.map(t => `<li>${t.i} <small>Tag ${t.d}</small> ${esc(t.n)}: ${t.q ? '🏳️ abgebrochen' : `${t.s}/${t.m} ` + '⭐'.repeat(t.s) + '☆'.repeat(Math.max(0, t.m - t.s))}</li>`).join('') : '<li>Keine eigene Prüfung</li>';
+    const key = x => { const r = (S.rank || []).indexOf(x.id); return r >= 0 ? r : !x.out ? 50 : 100 - x.outDay; }, order = S.campers.slice().sort((a, b) => key(a) - key(b));
+    const table = order.map((x, i) => `<li>${i + 1}. ${x.id === 'me' ? '⭐' : x.out ? '🚪' : (S.rank || [])[0] === x.id ? '👑' : '🏁'} <b>${esc(x.name)}</b> <small>${x.out ? 'raus an Tag ' + x.outDay : 'bis zum Finale'} · ⭐ ${x.starsWon}</small></li>`).join('');
+    const nums = [['🧑‍🍳', 'mal gekocht', (c['🧑‍🍳'] || 0) - 0], ['🔥', 'mal Feuer geschürt', c['🔥'] || 0], ['💥', 'Streits', c['💥'] || 0], ['🐍', 'Lästereien', c['🐍'] || 0], ['⛺', 'Planen gespannt', c['⛺'] || 0], ['⛈️', 'Gewittertage', c['⛈️'] || 0], ['🌧️', 'Regentage', c['🌧️'] || 0]].filter(n => n[2]);
+    return `<div class="statrow"><span>📅 ${S.days} Tage</span><span>⭐ ${m.starsWon} / ${T2.reduce((a, t) => a + t.m, 0)} Sterne</span><span>🎯 ${T2.filter(t => !t.q).length} von ${T2.length} geschafft</span>${fr ? `<span>💚 ${esc(firstName(fr))}</span>` : ''}${fo && relOf(m, fo) < 45 ? `<span>⚡ ${esc(firstName(fo))}</span>` : ''}</div>
+      <h3>Deine Prüfungen</h3><ul class="log">${trials}</ul>
+      <h3>Endstand</h3><ul class="log">${table}</ul>
+      ${nums.length ? `<h3>Das Lager in Zahlen</h3><div class="statrow">${nums.map(n => `<span>${n[0]} ${n[2]} ${n[1]}</span>`).join('')}</div>` : ''}`;
+  }
+  Show.seasonStats = seasonStats;
 
   // ---------- Buschtrommel: Stimmung, Camper, Tagebuch ----------
   Show.drum = () => {
