@@ -7,7 +7,7 @@ Show, Moderatoren (Lotte Brandt, Mats Feldmann), Sanitäter Doc Rudi, Ranger Kal
 `index.html` über einen Webserver öffnen (z. B. `python3 -m http.server` in der Repo-Wurzel). three.js r128 liegt unter `vendor/`, es wird kein CDN gebraucht.
 
 ## Ablauf einer Staffel
-1. **Einzug** mit Moderation und Vorstellung der Camper, gleich danach die erste Prüfung.
+1. **Einzug** mit Moderation und Vorstellung der Camper, dann per Helikopter oder zu Fuß ins Lager – unterwegs die Gruppenprüfung „Dschungel-Marsch“ (alle Camper sammeln gemeinsam Sterne, Bonus fürs erste Abendessen), gleich danach die erste Prüfung.
 2. **Morgens** wählen die Zuschauer, wer in die Prüfung muss – oft du, manchmal jemand anderes (dann gibt es eine Zusammenfassung).
 3. **Urwaldprüfung** in 3D (9 Stück, siehe unten). Jeder Stern ist eine Portion fürs Camp. Abbruch jederzeit mit dem Satz „Ich bin raus aus dem Urwald!“.
 4. **Camp:** frei herumlaufen, Check-up bei Sanitäter Doc Rudi im Sani-Zelt, Ranger Kalle auf seiner Runde ansprechen (Tipps, manchmal ein Hinweis auf die Schatzkiste), Holz holen und das Feuer schüren, Wasser abkochen, Klo putzen, mit Campern reden (plaudern, Komplimente, Witze, trösten, lästern, Bündnisse), Buschtelefon, Schatzkiste mit Rätsel, zufällige Ereignisse. Vier Aktionen pro Tag.

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "37ea714a63ea",
- "generated": "2026-11-20T02:39:46+01:00",
- "commit": "6c16c81598e4c9066ebcb225806bbb4992d3b648",
+ "version": "9c88090ff08b",
+ "generated": "2026-11-20T01:44:42+00:00",
+ "commit": "20963f72b452ae6fc172a0d2919a47f057f4561d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7868,8 +7868,8 @@
   },
   {
    "p": "anmacha-urwaldlager/index.html",
-   "s": 8017,
-   "h": "9d5d73c16c7387bc75af2858ac9e11405105cdd6deb3b6e251084590c0693fd1"
+   "s": 8061,
+   "h": "977ea0bc17d4c8d658801e9e8d944b5077f928249a51f477e24a387792acf117"
   },
   {
    "p": "anmacha-urwaldlager/js/assets.js",
@@ -7893,8 +7893,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/data.js",
-   "s": 29113,
-   "h": "3080b41c9074182f1a61372fc2d965f64606eddcb04844630719a46e8697f0af"
+   "s": 29591,
+   "h": "c5780f669c9e7e4bb9b766a37bd4b5280394e0c6f26698e4f2b2766ad0e9e488"
   },
   {
    "p": "anmacha-urwaldlager/js/input.js",
@@ -7903,8 +7903,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/main.js",
-   "s": 2662,
-   "h": "499e7d86aa644f23d5e91d7683eb0083866140a2abf1402f41338addaa43b4a9"
+   "s": 2761,
+   "h": "50e57917150425399471f3d0714c67898e4c94e81bf0e88545d41044cc2b8aa4"
   },
   {
    "p": "anmacha-urwaldlager/js/menus.js",
@@ -7923,8 +7923,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/show.js",
-   "s": 21418,
-   "h": "83fa1bc8ad36b8cc78b4f2c3d57319dc68546946bc229e6de3b79c4df2e03e94"
+   "s": 23463,
+   "h": "f398da7566ddebe335f422171c510bc42d477cb226773dd054d2fa0a08fd0fcc"
   },
   {
    "p": "anmacha-urwaldlager/js/stage.js",
@@ -7970,6 +7970,11 @@
    "p": "anmacha-urwaldlager/js/trials/kit.js",
    "s": 25805,
    "h": "44148478279a4c15a63a741d9586818aee3bda727a0fd23a334c83a8216eb098"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/marsch.js",
+   "s": 9555,
+   "h": "6d538104478b92d95aa0234aa50157a10a37a0a1db80a512d460801fba45e375"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/parcours.js",
@@ -10843,8 +10848,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 14926,
-   "h": "ec38bf34e73938fad31655ba9c4a2eac519fbf74870cfaebfe1819c82487601d"
+   "s": 15173,
+   "h": "73229bf017165f7d9f1330786bd2ab23b91b9713567dff460e2893ae48086751"
   },
   {
    "p": "guides/beat-studio.json",
@@ -15799,7 +15804,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236340,
-   "h": "5e9e84a58680e826045152e5828aed5aa6e460fa323121a459f416d5067676b9"
+   "h": "e7a41cb92185710b7985348509eba3bcdc1261a4c06d1e726e2b35962c17b12d"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
