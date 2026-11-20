@@ -77,6 +77,7 @@
   ];
   D.TRIAL = Object.fromEntries(D.TRIALS.map(t => [t.id, t]));
   // Gruppenprüfung beim Einzug (nicht in der normalen Zuschauerwahl): alle Camper suchen gemeinsam, jeder Stern zählt fürs Camp
+  D.TRIAL.fanquiz = { id: 'fanquiz', name: 'Das IBES-Fan-Quiz', icon: '🏆', stars: 10, time: 0, fan: true, desc: 'Der Wissens-Tank für echte Fans: Fragen zur deutschen Show „Ich bin ein Star – Holt mich hier raus!“ und zum britischen Original „I\'m a Celebrity … Get Me Out of Here!“. Drei Fehler, und der Tank ist voll.', ctrl: [['move', 'Antwort wählen'], ['ok', 'Antworten']] };
   D.TRIAL.marsch = { id: 'marsch', name: 'Der Dschungel-Marsch', icon: '🥾', stars: 10, time: 90, group: true, desc: 'Gruppenprüfung auf dem Weg ins Lager: Alle Camper suchen gemeinsam die Sterne im Dschungel. Jeder Stern ist eine Portion fürs erste Abendessen.', ctrl: [['move', 'Laufen'], ['ok', 'Springen'], ['alt', 'Rennen (halten)']] };
   // Finale: drei kurze Prüfungen für das Finalmenü (Vorspeise, Hauptgang, Nachtisch)
   D.FINAL = [{ id: 'dinner', course: 'Vorspeise' }, { id: 'kisten', course: 'Hauptgang' }, { id: 'quiz', course: 'Nachtisch' }];
@@ -245,6 +246,46 @@
     ['Welche Tiere leben in einem Bienenstock?', ['Bienen', 'Wespen', 'Ameisen', 'Hummeln']],
     ['Welches Organ pumpt das Blut?', ['Herz', 'Lunge', 'Leber', 'Magen']],
     ['Wie viele Beine hat ein Insekt?', ['Sechs', 'Acht', 'Vier', 'Zehn']]
+  ];
+
+
+  // IBES-Fan-Quiz: Fragen zur echten TV-Show „Ich bin ein Star – Holt mich hier raus!“ (RTL) und „I'm a Celebrity … Get Me Out of Here!“ (ITV).
+  // Nur allgemein bekannte, geprüfte Fakten (Stand 2025). Richtige Antwort steht immer zuerst.
+  D.FANQUIZ = [
+    ['Wer wurde 2004 der allererste Dschungelkönig?', ['Costa Cordalis', 'Ross Antony', 'Joey Heindle', 'Marc Terenzi']],
+    ['Wer wurde 2004 in der zweiten Staffel Dschungelkönigin?', ['Désirée Nick', 'Ingrid van Bergen', 'Brigitte Nielsen', 'Melanie Müller']],
+    ['Wer gewann 2008 die dritte Staffel?', ['Ross Antony', 'Costa Cordalis', 'Peer Kusmagk', 'Menderes Bağcı']],
+    ['Wer wurde 2009 Dschungelkönigin?', ['Ingrid van Bergen', 'Désirée Nick', 'Jenny Frankhauser', 'Djamila Rowe']],
+    ['Wer wurde 2013 Dschungelkönig?', ['Joey Heindle', 'Marc Terenzi', 'Filip Pavlović', 'Costa Cordalis']],
+    ['Wer wurde 2017 Dschungelkönig?', ['Marc Terenzi', 'Joey Heindle', 'Ross Antony', 'Prince Damien']],
+    ['Wer wurde 2018 Dschungelkönigin?', ['Jenny Frankhauser', 'Evelyn Burdecki', 'Lilly Becker', 'Lucy Diakovska']],
+    ['Wer wurde 2019 Dschungelkönigin?', ['Evelyn Burdecki', 'Jenny Frankhauser', 'Djamila Rowe', 'Désirée Nick']],
+    ['Wer gewann 2022 das Dschungelcamp in Südafrika?', ['Filip Pavlović', 'Joey Heindle', 'Marc Terenzi', 'Peer Kusmagk']],
+    ['Wer wurde 2023 Dschungelkönigin?', ['Djamila Rowe', 'Lucy Diakovska', 'Evelyn Burdecki', 'Ingrid van Bergen']],
+    ['Wer wurde 2024 Dschungelkönigin?', ['Lucy Diakovska', 'Lilly Becker', 'Djamila Rowe', 'Jenny Frankhauser']],
+    ['Wer wurde 2025 Dschungelkönigin?', ['Lilly Becker', 'Lucy Diakovska', 'Evelyn Burdecki', 'Désirée Nick']],
+    ['Auf welchem Sender läuft das deutsche Dschungelcamp?', ['RTL', 'ZDF', 'ProSieben', 'Sat.1']],
+    ['In welchem Land wird das deutsche Dschungelcamp normalerweise gedreht?', ['Australien', 'Brasilien', 'Thailand', 'Costa Rica']],
+    ['In welchem Land fand das deutsche Dschungelcamp 2022 ausnahmsweise statt?', ['Südafrika', 'Australien', 'Wales', 'Kenia']],
+    ['Welches Moderatoren-Duo führte durch die ersten Staffeln?', ['Sonja Zietlow und Dirk Bach', 'Sonja Zietlow und Daniel Hartwich', 'Ant und Dec', 'Jan Köppen und Daniel Hartwich']],
+    ['Wer übernahm 2013 die Moderation an der Seite von Sonja Zietlow?', ['Daniel Hartwich', 'Jan Köppen', 'Dirk Bach', 'Oliver Pocher']],
+    ['Wie heißt der Satz, mit dem man die Show freiwillig verlässt?', ['„Ich bin ein Star – holt mich hier raus!“', '„Ich will nach Hause!“', '„Ich gebe auf!“', '„Ende im Gelände!“']],
+    ['Was gibt es im Camp zu essen, wenn keine Sterne erspielt wurden?', ['Reis und Bohnen', 'Nudeln mit Soße', 'Brot und Wasser', 'Kartoffeln']],
+    ['Wie heißt der Ort, an dem die Camper allein in die Kamera sprechen?', ['Dschungeltelefon', 'Beichtstuhl', 'Sprechzimmer', 'Buschfunk']],
+    ['Unter welchem Spitznamen wurde der langjährige Sanitäter der Show bekannt?', ['Dr. Bob', 'Dr. Jungle', 'Doc Holiday', 'Dr. Croc']],
+    ['Wie hieß 2021 die Ersatz-Show aus Deutschland, als nicht im Dschungel gedreht wurde?', ['Ich bin ein Star – Die große Dschungelshow', 'Dschungelcamp Spezial', 'Das Dschungel-Studio', 'Dschungel Daheim']],
+    ['Wer gewann 2002 die allererste britische Staffel von „I\'m a Celebrity“?', ['Tony Blackburn', 'Phil Tufnell', 'Joe Swash', 'Kian Egan']],
+    ['Welches Duo moderiert „I\'m a Celebrity … Get Me Out of Here!“ in Großbritannien?', ['Ant und Dec', 'Sonja Zietlow und Dirk Bach', 'Holly und Phillip', 'Jedward']],
+    ['Auf welchem Sender läuft die britische Show?', ['ITV', 'BBC One', 'Channel 4', 'Sky One']],
+    ['In welchem Land wurde die britische Show 2020 und 2021 in einer Burg gedreht?', ['Wales', 'Schottland', 'Irland', 'Australien']],
+    ['Wer gewann 2008 die britische Staffel?', ['Joe Swash', 'Matt Willis', 'Gino D\'Acampo', 'Carl Fogarty']],
+    ['Welches Westlife-Mitglied gewann 2013 in Großbritannien?', ['Kian Egan', 'Shane Filan', 'Nicky Byrne', 'Mark Feehily']],
+    ['Wer gewann 2015 die britische Staffel?', ['Vicky Pattison', 'Scarlett Moffatt', 'Charlie Brooks', 'Giovanna Fletcher']],
+    ['Wer gewann 2016 die britische Staffel?', ['Scarlett Moffatt', 'Vicky Pattison', 'Jill Scott', 'Kerry Katona']],
+    ['Welche Fußball-Europameisterin gewann 2022 in Großbritannien?', ['Jill Scott', 'Vicky Pattison', 'Scarlett Moffatt', 'Giovanna Fletcher']],
+    ['Wer gewann 2023 die britische Staffel?', ['Sam Thompson', 'Danny Jones', 'Danny Miller', 'Joe Swash']],
+    ['Welches McFly-Mitglied gewann 2024 in Großbritannien?', ['Danny Jones', 'Dougie Poynter', 'Tom Fletcher', 'Harry Judd']],
+    ['Welches McFly-Mitglied gewann schon 2011 in Großbritannien?', ['Dougie Poynter', 'Danny Jones', 'Tom Fletcher', 'Harry Judd']]
   ];
 
   // Ekel-Gänge (erfunden)
