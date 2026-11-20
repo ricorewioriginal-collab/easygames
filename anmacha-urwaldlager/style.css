@@ -10,7 +10,7 @@ html, body { margin: 0; width: 100vw; height: 100dvh; overflow: hidden; backgrou
 #gl { position: fixed; inset: 0; width: 100vw; height: 100dvh; display: block; outline: none; }
 #ui { position: fixed; inset: 0; pointer-events: none; }
 #ui > * { pointer-events: auto; }
-#ui > .tui, #ui > .tint, #ui > .shout, #ui > .flash, #ui > .crawl, #ui > .phonecam, #ui > .reactfx { pointer-events: none; }
+#ui > .tui, #ui > .starptr, #ui > .tint, #ui > .shout, #ui > .flash, #ui > .crawl, #ui > .phonecam, #ui > .reactfx { pointer-events: none; }
 .crawl { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 27; }   /* Prüfungs-Einblendungen dürfen Stick und Knöpfe nie blockieren */
 button { font: inherit; color: inherit; }
 [hidden] { display: none !important; }
@@ -161,6 +161,7 @@ kbd.g-switch { background: #2b2b30; color: #fff; border-color: #777; }
 #labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .tag { position: absolute; transform: translate(-50%, -100%); padding: 3px 9px; border-radius: 99px; background: rgba(0, 0, 0, .6); font: 700 12px system-ui; white-space: nowrap; }
 .tag.me { background: var(--gold); color: #1b1300; }
+.tag.crew { background: rgba(40, 70, 30, .8); border: 1px solid #d8c89a88; }
 .tag.ex { background: var(--red); animation: pulse .8s infinite; font-size: 16px; }
 .bubble { position: absolute; transform: translate(-50%, -100%); max-width: 220px; padding: 7px 11px; border-radius: 14px; background: #fff; color: #102017; font: 600 13px/1.3 system-ui; box-shadow: 0 4px 12px #0006; }
 .bubble::after { content: ''; position: absolute; left: 50%; bottom: -7px; border: 7px solid transparent; border-top-color: #fff; border-bottom: 0; transform: translateX(-50%); }
@@ -279,3 +280,9 @@ kbd.g-switch { background: #2b2b30; color: #fff; border-color: #777; }
 .reactfx .trend.up { border-color: #3fd06b; } .reactfx .trend.down { border-color: #ff5b5b; }
 @keyframes trendIn { 0% { opacity: 0; transform: translate(-50%, 10px); } 12%, 82% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; } }
 .chip.up { background: rgba(31, 140, 70, .8); }
+
+/* Wegweiser zum nächsten Stern am Bildrand */
+.starptr { position: absolute; transform: translate(-50%, -50%); font-size: 26px; pointer-events: none; filter: drop-shadow(0 0 6px #ffb000); animation: pulse .8s infinite; }
+.starptr::after { content: ''; position: absolute; left: 50%; top: 50%; width: 0; height: 0; border: 9px solid transparent; border-left: 14px solid #ffd23a; transform: rotate(var(--a)) translate(18px, -9px); transform-origin: 0 9px; }
+.tui .lbl.lean { font-size: 22px; color: #ffd23a; }
+.tui .lbl.lean.danger { color: #ff5a4a; animation: pulse .4s infinite; }

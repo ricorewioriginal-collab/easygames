@@ -28,3 +28,19 @@ Bäume, Felsen und Friedhofsteile aus „Lowpoly Stylized Fantasy Environment Pa
 `kb/kb.glb` (zusammen mit Wänden, Böden und Säulen aus dem KayKit Dungeon Pack, ebenfalls CC0): Burg, Wachturm, Mühlen, Markt, Brunnen und weitere Gebäude.
 Quelle: https://kaylousberg.itch.io/kaykit-medieval-builder-pack · Lizenz: Creative Commons Zero (CC0 1.0). Aufbereitung: `tools/make-zotik-kaybuild.mjs`.
 - Quaternius (CC0, quaternius.com): qr/qr.glb – animiertes Basismodell für alle Menschen-Figuren außer Zotik (Rollen-Looks in src/quat.js und kaykit.js).
+
+## Sketchfab-Figuren (Ordner `sf/`)
+
+Alle CC-BY 4.0, mit verkleinerten Texturen und vereinfachten Netzen (gltf-transform):
+- `anime.glb` – „Stylized Anime Female Character“ von DevPoly3D
+- `rogue.glb` – „Animated Stylized Character – Rogue Warrior“ von Karthik Naidu
+- `ritter.glb` – „Fantasy Warrior | Free Low-Poly 3D Model“ von Stan
+- `magier.glb` – „Stylized Battle Wizard“ von Aartee
+
+Monster (`sf/m_*.glb`, alle CC-BY 4.0, verkleinert):
+- `m_wolf` – „Stylized Wolf“ von ESO · `m_pilz` – „Mushroom Warrior“ von Muru · `m_tiger` – „Running Tiger“ von Amil (francescolima74)
+- `m_troll` – „Troll“ von SJunior3d · `m_ratte` – „Rat Animated“ von Shintokin · `m_spinne` – „Spider animated character“ von TheGameAssets
+- `m_skorpion` – „Scorpion“ von anthonyvanoo · `m_hai` – „Great White Shark“ von Mateus Schwaab · `m_qualle` – „jellyfish“ von yanix
+- `m_fledermaus` – „Emerald Bat“ von CataRackta · `m_geist` – „Cute ghost“ von Urielgc · `m_geist2` – „Rigged Animated Ghost“ von Dani
+- `m_eisgolem` – „Drugdör The Golem Animated“ von Phons · `m_steingolem` – „Golem Rigged“ von FourthGreen · `m_affe` – „Monkey“ von tomkranis
+- `m_schleim` – „Ice Cream Slime“ von Empsy

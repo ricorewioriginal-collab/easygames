@@ -96,8 +96,25 @@
     const rv = byId(S.rival), bd = byId(S.buddy);
     if (rv) await st.line('lotte', `Ein Auge solltet ihr auf ${rv.name} haben – ${firstName(rv)} sagt, was sie denkt. Und zwar über jeden. Besonders über ${firstName(me())}.`.replace(' sie ', rv.form === 'm' ? ' er ' : ' sie '));
     if (bd) await st.line('mats', `Und ${bd.name} hat schon angekündigt, sich um alle zu kümmern. Vielleicht findet ${firstName(me())} hier eine echte Freundschaft.`);
-    await st.line('mats', 'Und weil wir gemein sind, geht es gleich mit der ersten Prüfung los.');
+    await Show.travel(st);
+    { const st2 = await hostSet('day'); await UI.banner('🌴 Angekommen!', 'Das Urwaldlager', 1600); await st2.line('mats', 'Willkommen im Lager! Und weil wir gemein sind, geht es gleich mit der ersten Prüfung los.'); }
     S.forceMe = true;
+  };
+  // Der Weg ins Lager: Helikopter oder Fußmarsch, unterwegs eine Gruppenprüfung (Sterne = Bonus-Portionen fürs erste Abendessen)
+  Show.travel = async (st) => {
+    const S = Show.S, team = alive().filter(c => c.id !== 'me');
+    const how = UL.bot ? 'walk' : await UI.choose('Wie geht es ins Lager?', '<p>Die Promis warten am Treffpunkt. Wie wollt ihr ins Urwaldlager?</p>', [
+      { label: 'Mit dem Helikopter', icon: '🚁', sub: 'Spektakulärer Anflug – Landung auf einer Lichtung, dann zu Fuß weiter.', value: 'heli' },
+      { label: 'Zu Fuß durch den Dschungel', icon: '🥾', sub: 'Ein Marsch durchs Dickicht – mit allen anderen Campern.', value: 'walk' }], { cls: 'clear' });
+    if (how === 'heli') { UL.Audio.sfx('whoosh'); await st.line('lotte', 'Der Helikopter hebt ab … und landet mitten im Dschungel. Den Rest müsst ihr laufen!'); }
+    else await st.line('lotte', 'Rucksäcke auf, Wanderschuhe an – und ab ins Dickicht!');
+    await st.line('mats', 'Aber nicht so schnell: Unterwegs wartet die erste Gruppenprüfung. Sammelt gemeinsam die Sterne – sie landen heute Abend auf euren Tellern.');
+    const r = await UL.Trials.run('marsch', { theme: S.theme, diff: S.diff, name: me().name, look: me().look, form: me().form, seed: S.seed + 7, heli: how === 'heli', team, practice: true });
+    if (Show.abort) return;
+    S.bonusFood = r.quit ? 0 : r.stars; S.bonusMax = r.max;
+    Show.log(r.quit ? `${firstName(me())} bricht die Gruppenprüfung auf dem Weg ins Lager ab.` : `Gruppenprüfung beim Einzug: ${r.stars}/${r.max} Sterne fürs Camp.`, how === 'heli' ? '🚁' : '🥾');
+    alive().forEach(c => { if (c.id !== 'me') Show.rel(me(), c, r.quit ? -4 : r.stars / r.max * 5); });
+    Show.change(me(), { sym: r.quit ? -4 : 2, ent: 2 });
   };
 
   // Morgen: Zuschauer wählen
@@ -160,6 +177,7 @@
     UL.Audio.sfx('drum');
     if (st.mod) await st.mod(again ? 'pickAgain' : 'pick', { n: c.id === 'me' ? c.name : c.name });
     c.trials++;
+    if (!UL.bot) await UI.say('ranger', UL.pick(D.RANGER_LINES.pick).replace('{n}', firstName(c)));
     if (c.id === 'me') {
       const r = await UL.Trials.run(id, { theme: S.theme, diff: S.diff, name: c.name, look: c.look, form: c.form, seed: S.seed + S.day * 31 });
       if (Show.abort) return;
@@ -202,7 +220,8 @@
 
   // Abend: Essen am Lagerfeuer
   Show.evening = async () => {
-    const S = Show.S, n = Math.max(0, S.food), max = S.foodMax || 1, q = n / max;
+    const S = Show.S, bonus = S.bonusFood || 0, n = Math.max(0, S.food) + bonus, max = (S.foodMax || 1) + (bonus || S.bonusMax ? S.bonusMax || 0 : 0), q = n / max;
+    S.bonusFood = 0; S.bonusMax = 0;
     const key = n === 0 ? 'none' : q < 0.6 ? 'few' : 'full';
     alive().forEach(c => { c.mood = UL.clamp(c.mood * 0.5 + q * 0.5, 0, 1); });
     const by = byId(S.foodBy);

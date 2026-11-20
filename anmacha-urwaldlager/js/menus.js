@@ -44,7 +44,7 @@
       <div class="menu">
         ${save ? `<button class="btn" data-a="cont"><b>▶ Weiterspielen</b><small>Tag ${save.day} von ${save.days} · ${save.theme === 'studio' ? 'TV-Studio' : 'Dschungel'} · ${esc(save.name)}</small></button>` : ''}
         <button class="btn" data-a="new"><b>🌴 Neue Staffel</b><small>Ab ins Camp – die Zuschauer entscheiden</small></button>
-        <button class="btn" data-a="practice"><b>⭐ Prüfungen spielen</b><small>Alle 13 Urwaldprüfungen einzeln, Dschungel oder Studio</small></button>
+        <button class="btn" data-a="practice"><b>⭐ Prüfungen spielen</b><small>Alle Urwaldprüfungen, Fan-Quiz und Gruppenmarsch einzeln</small></button>
         <button class="btn" data-a="settings"><b>⚙️ Einstellungen</b></button>
         <button class="btn" data-a="controls"><b>🎮 Steuerung</b><small>Handy · Tastatur · PlayStation · Switch</small></button>
         <button class="btn" data-a="cloud"><b>☁️ Speichern mit Google</b></button>
@@ -136,7 +136,7 @@
     const draw = () => {
       p.el.querySelector('.box').innerHTML = `<h2>⭐ Urwaldprüfungen</h2>
         <div class="tabs">${In.device === 'pad' ? In.glyph('l1') : ''}<button class="tab ${theme === 'dschungel' ? 'on' : ''}" data-t="dschungel">🌴 Dschungel</button><button class="tab ${theme === 'studio' ? 'on' : ''}" data-t="studio">🎬 TV-Studio</button>${In.device === 'pad' ? In.glyph('r1') : ''}</div>
-        <div class="grid2">${UL.D.TRIALS.map(t => `<button class="opt" data-id="${t.id}"><b>${t.icon} ${esc(t.name)}</b><small>Bestwert: ${best[t.id] != null ? best[t.id] + ' / ' + t.stars + ' ⭐' : '–'}</small></button>`).join('')}</div>
+        <div class="grid2">${UL.D.TRIALS.concat([UL.D.TRIAL.fanquiz, UL.D.TRIAL.marsch]).map(t => `<button class="opt" data-id="${t.id}"><b>${t.icon} ${esc(t.name)}</b><small>Bestwert: ${best[t.id] != null ? best[t.id] + ' / ' + t.stars + ' ⭐' : '–'}</small></button>`).join('')}</div>
         <div class="foot">${In.glyph('back')} Zurück</div>`;
       p.el.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { theme = b.dataset.t; UL.store.set('practiceTheme', theme); draw(); UI.refresh(p); });
       p.el.querySelectorAll('[data-id]').forEach(b => b.onclick = async () => {

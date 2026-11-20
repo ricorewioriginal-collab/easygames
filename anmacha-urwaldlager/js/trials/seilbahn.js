@@ -7,6 +7,7 @@
   const dims = studio => studio ? { L: 38, y0: 9, y1: 5.6 } : { L: 64, y0: 17, y1: 10 };
 
   UL.Trials.reg('seilbahn', {
+    orbit: true,
     env: (theme) => theme === 'studio' ? { radius: 20 } : { tod: 'day', radius: 30, seed: 99, density: 0.7 },
     setup(ctx) {
       const sc = ctx.scene, studio = ctx.theme === 'studio', D = ctx.D = dims(studio);
