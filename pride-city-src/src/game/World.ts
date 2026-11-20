@@ -130,12 +130,13 @@ export class World {
       if (house) this.houses.push(house);
       tasks.push(this.place(C(kind), x, .1, z, rot).then((o) => {
         const r = this.footprint(o, x, z);
+        this.blocks.push({ r, o });
         // Haustür direkt vor die echte Fassade legen (keine Klingel mitten auf dem Gehweg)
         if (house) { const sx = Math.round(Math.sin(rot)), sz = Math.round(Math.cos(rot)), d = sx ? r.hx + (r.x - x) * sx : r.hz + (r.z - z) * sz; house.x = x + Math.sin(rot) * (d + .7); house.z = z + Math.cos(rot) * (d + .7); }
       }));
     }
     await Promise.all(tasks);
-    this.plaza(); this.park(); this.decorate(); this.signs(); await this.harbour();
+    this.plaza(); this.park(); this.decorate(); this.signs(); this.paintHouses(); this.neonCity(); await this.harbour();
     await buildUptown(this);
     await this.spawnCars();
     this.buildEnv();
@@ -193,16 +194,22 @@ export class World {
   /** Kollision eines Hauses aus seinem echten Grundriss: nur Teile, die bis zum Boden reichen (Markisen und Schilder oben zählen nicht) */
   private foot = new Map<string, number[] | null>();
   private footprint(o: TransformNode, x: number, z: number) {
+    const b = this.bounds(o, .5, 2.2, this.foot);
+    const r: Rect = b ? { x: (b[0] + b[1]) / 2, z: (b[2] + b[3]) / 2, hx: Math.max(1, (b[1] - b[0]) / 2 - .1), hz: Math.max(1, (b[3] - b[2]) / 2 - .1) } : { x, z, hx: TILE * .4, hz: TILE * .4 };
+    this.colliders.push(r); return r;
+  }
+  /** Ausdehnung eines Hauses in einer Höhenschicht (Weltkoordinaten: x0, x1, z0, z1) */
+  private bounds(o: TransformNode, lo: number, hi: number, cache: Map<string, number[] | null>) {
     let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
     for (const m of o.getChildMeshes()) {
       // Grundriss aus den Wänden im Erdgeschoss (0,5–2,2 m), ohne Gehweg-Platte, Markisen und Schilder
-      let f = this.foot.get(m.name);
+      let f = cache.get(m.name);
       if (f === undefined) {
         const pos = m.getVerticesData('position'); f = null;
         if (pos) { const sy = m.absoluteScaling.y || 1, oy = m.absolutePosition.y; let a = Infinity, b = -Infinity, c = Infinity, d = -Infinity;
-          for (let i = 0; i < pos.length; i += 3) { const y = pos[i + 1] * sy + oy; if (y < .5 || y > 2.2) continue; a = Math.min(a, pos[i]); b = Math.max(b, pos[i]); c = Math.min(c, pos[i + 2]); d = Math.max(d, pos[i + 2]); }
+          for (let i = 0; i < pos.length; i += 3) { const y = pos[i + 1] * sy + oy; if (y < lo || y > hi) continue; a = Math.min(a, pos[i]); b = Math.max(b, pos[i]); c = Math.min(c, pos[i + 2]); d = Math.max(d, pos[i + 2]); }
           if (isFinite(a)) f = [a, b, c, d]; }
-        this.foot.set(m.name, f);
+        cache.set(m.name, f);
       }
       if (!f) continue;
       const wm = m.getWorldMatrix();
@@ -211,8 +218,7 @@ export class World {
         x0 = Math.min(x0, q.x); x1 = Math.max(x1, q.x); z0 = Math.min(z0, q.z); z1 = Math.max(z1, q.z);
       }
     }
-    const r: Rect = isFinite(x0) ? { x: (x0 + x1) / 2, z: (z0 + z1) / 2, hx: Math.max(1, (x1 - x0) / 2 - .1), hz: Math.max(1, (z1 - z0) / 2 - .1) } : { x, z, hx: TILE * .4, hz: TILE * .4 };
-    this.colliders.push(r); return r;
+    return isFinite(x0) ? [x0, x1, z0, z1] : null;
   }
   /** feste Teile: Weltmatrix einfrieren (spart Rechenzeit) */
   still(m: AbstractMesh, cast = true, receive = true) {
@@ -409,6 +415,7 @@ export class World {
     this.sun.direction = this._sunDir.scale(-1);
     this.lamps.albedoColor = new Color3(1, .95, .75).scale(.6 + this.night * 3.2);
     this.neon.forEach((n) => { n.m.albedoColor = n.base.scale(1 + this.night * 2.4); });
+    this.pools.forEach((m) => { m.alpha = this.night * .38; });
     // Lichter, die nichts beitragen, ganz abschalten: jedes aktive Licht kostet in jedem Bildpunkt Rechenzeit
     const lit = this.night > .03 && !this.low;
     this.lampLights.forEach((l) => { l.intensity = this.night * 40; if (l.isEnabled() !== lit) l.setEnabled(lit); });
@@ -614,7 +621,7 @@ export class World {
     lines.forEach(([x1, z1, x2, z2], li) => {
       const yaw = Math.atan2(x2 - x1, z2 - z1) + Math.PI / 2, n = per([x1, z1, x2, z2]), long = n > 10, pal = long ? PALETTES[0].colors : flags[li % flags.length].colors;
       for (let i = 0; i < n; i++) {
-        const u = i / (n - 1), sag = Math.sin(u * Math.PI) * (long ? 1.4 : .7), y = (long ? 7.2 : 6.3) - sag, x = x1 + (x2 - x1) * u, z = z1 + (z2 - z1) * u;
+        const u = i / (n - 1), sag = Math.sin(u * Math.PI) * (long ? 1.4 : .7), y = (long ? 8.6 : 8.1) - sag, x = x1 + (x2 - x1) * u, z = z1 + (z2 - z1) * u;
         Matrix.Compose(Vector3.One(), Quaternion.RotationAxis(Vector3.Up(), yaw), new Vector3(x, y, z)).copyToArray(mats, k * 16);
         Matrix.Translation(x, y + .08, z).copyToArray(bm, k * 16);
         const c = col(pal[i % pal.length]); colors.set([c.r, c.g, c.b, 1], k * 4); k++;
@@ -660,6 +667,47 @@ export class World {
   }
 
   /* Neon-Schilder über den Türen (leuchten nachts, Bloom auf hoher Stufe) */
+  private blocks: Array<{ r: Rect; o: TransformNode }> = [];
+  private pools: PBRMaterial[] = [];
+  /** Jedes Haus der Innenstadt in einer eigenen kräftigen Farbe (Farbe je Instanz, die Bauteile bleiben geteilt) */
+  private paintHouses() {
+    const T = [[1.6, .7, 1.25], [.55, 2, 2.2], [1.6, 1.7, .5], [1.05, .8, 2.1], [.6, 2.1, 1.1], [1.8, 1.25, .5], [1.75, .55, 1.05], [.6, 1.3, 2.4]];
+    const C4 = this.scene.clearColor.constructor as new (r: number, g: number, b: number, a: number) => unknown;
+    const srcs = new Set<Mesh>(), mine = new Map<AbstractMesh, number[]>();
+    this.blocks.forEach(({ o }, i) => { for (const m of o.getChildMeshes()) { const sm = (m as InstancedMesh).sourceMesh; if (sm) { srcs.add(sm); mine.set(m, T[(i * 3 + (i >> 2)) % T.length]); } } });
+    for (const sm of srcs) {
+      sm.registerInstancedBuffer('color', 4); sm.instancedBuffers.color = new C4(1, 1, 1, 1);
+      // dieselben Bauteile stehen auch in der Hochstadt: dort bleibt die Farbe, wie sie war
+      for (const im of sm.instances) { const t = mine.get(im) || [1, 1, 1]; im.instancedBuffers.color = new C4(t[0], t[1], t[2], 1); }
+    }
+  }
+  /** Neon: Leuchtbänder um jedes Haus, Leuchtschriften an den Fassaden, nachts farbige Lichtflecken auf dem Gehweg */
+  private neonCity() {
+    const sc = this.scene, NEON = ['#ff3fb0', '#5ce1ff', '#ffd23b', '#b56bff', '#3ee69a', '#ff7a3b', '#ff4b6b', '#6f8cff'];
+    const mt: number[] = [], cl: number[] = [];
+    const tube = (x: number, y: number, z: number, sx: number, sy: number, sz: number, hexc: string) => {
+      mt.push(...Matrix.Compose(new Vector3(sx, sy, sz), Quaternion.Identity(), new Vector3(x, y, z)).asArray()); const k = col(hexc); cl.push(k.r, k.g, k.b, 1);
+    };
+    this.blocks.forEach(({ r }, i) => {
+      // Band auf Höhe der Ladenzeile, direkt an den Wänden des Erdgeschosses (dort stimmt der Grundriss sicher)
+      const a = NEON[i % 8], b = NEON[(i + 3) % 8], T = .09, y = 2.5, ex = r.hx + .14, ez = r.hz + .14;
+      tube(r.x, y, r.z - ez, ex * 2, T, T, a); tube(r.x, y, r.z + ez, ex * 2, T, T, a); tube(r.x - ex, y, r.z, T, T, ez * 2, a); tube(r.x + ex, y, r.z, T, T, ez * 2, a);
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) tube(r.x + sx * ex, y / 2 + .1, r.z + sz * ez, T, y - .2, T, b);
+    });
+    const t = box(sc, 1, 1, 1), tm = glow(sc, 0xffffff, 1); t.material = tm; t.parent = this.root; t.isPickable = false;
+    t.thinInstanceSetBuffer('matrix', new Float32Array(mt), 16, true); t.thinInstanceSetBuffer('color', new Float32Array(cl), 4, true); t.alwaysSelectAsActiveMesh = true;
+    this.neon.push({ m: tm, base: new Color3(1, 1, 1) });
+    const WORDS = ['LOVE', 'PRIDE', 'QUEER', 'YAS!', 'SLAY', 'LOVE IS LOVE', 'FABULOUS', 'KISS ME', 'DIVA', 'GLITZER', 'OUT & PROUD', 'TANZ!', 'KÜSSCHEN', 'DRAMA', 'HEISS', 'BUNT', 'FREI', 'STOLZ'];
+    const pool = NEON.map((c) => { const m = glow(sc, c, 1, { add: true, alpha: 0 }); this.pools.push(m); const g = ground(sc, 5, 3); g.material = m; g.setEnabled(false); g.parent = this.root; return g; });
+    let n = 0;
+    for (const h of this.houses) {
+      if (Math.abs(h.x) > 62 || Math.abs(h.z) > 62) continue;
+      const ci = (n * 3) % 8, sx = Math.sin(h.yaw), sz = Math.cos(h.yaw);
+      this.neonSign(WORDS[n % WORDS.length], NEON[ci], h.x - sx * .56, 6.3, h.z - sz * .56, h.yaw, undefined, 5.2);
+      const g = pool[ci].createInstance('pool'); g.position.set(h.x + sx * 1.1, .13, h.z + sz * 1.1); g.rotation.y = h.yaw; this.still(g, false, false);
+      n++;
+    }
+  }
   private signs() {
     for (const p of this.pois) {
       if (!p.sign) continue;

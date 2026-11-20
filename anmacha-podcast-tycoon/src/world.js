@@ -51,7 +51,7 @@
     W.quality = q === 'low' ? 0 : q === 'mid' ? 1 : q === 'high' ? 2 : (touch ? 1 : 2);
     // Babylon.js zeichnet (babylon/amc-babylon.js); ohne Babylon oder mit ?engine=three wie früher
     let R = null;
-    if (root.AMC_BJS && !/[?&]engine=three/.test(location.search)) try { R = root.AMC_BJS.createRenderer(T, canvas, { antialias: W.quality > 0 }); W.babylon = true; } catch (e) { console.warn('Babylon.js nicht verfügbar', e); R = null; }
+    if (root.AMC_BJS && W.useBabylon !== false && !/[?&]engine=three/.test(location.search)) try { R = root.AMC_BJS.createRenderer(T, canvas, { antialias: W.quality > 0 }); W.babylon = true; } catch (e) { console.warn('Babylon.js nicht verfügbar', e); R = null; }
     if (!R) R = new T.WebGLRenderer({ canvas, antialias: W.quality > 0, powerPreference: 'high-performance', alpha: false });
     W.renderer = R;
     R.outputEncoding = T.sRGBEncoding; R.toneMapping = T.ACESFilmicToneMapping; R.toneMappingExposure = 1.08;

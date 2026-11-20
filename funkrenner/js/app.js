@@ -376,13 +376,21 @@
   addEventListener('pointerdown', () => { document.body.classList.remove('kbd'); wakeAudio(); }, true);
 
   /* ---------- Eingabe: Wischen ---------- */
-  const SW = { id: null, x: 0, y: 0, done: false };
-  addEventListener('pointerdown', e => { if (S.mode !== 'run' || e.target.closest('button,.ov')) return; SW.id = e.pointerId; SW.x = e.clientX; SW.y = e.clientY; SW.done = false; });
+  /* Ruhiger: Schwelle wächst mit der Bildschirmgröße, Richtung muss klar überwiegen, eine Aktion pro Wisch;
+     ein zweiter Schritt im selben Wisch erst nach deutlich weiterem Weg und kurzer Pause. Tippen = Springen nur bei kurzem, ruhigem Tipp. */
+  const SW = { id: null, x: 0, y: 0, x0: 0, y0: 0, t0: 0, tA: 0, n: 0 };
+  const swTh = () => Math.max(34, Math.min(70, Math.min(innerWidth, innerHeight) * .085));
+  addEventListener('pointerdown', e => { if (S.mode !== 'run' || e.target.closest('button,.ov') || (SW.id != null && SW.id !== e.pointerId)) return; SW.id = e.pointerId; SW.x = SW.x0 = e.clientX; SW.y = SW.y0 = e.clientY; SW.t0 = performance.now(); SW.tA = 0; SW.n = 0; });
   addEventListener('pointermove', e => {
-    if (e.pointerId !== SW.id || SW.done || S.mode !== 'run') return; const dx = e.clientX - SW.x, dy = e.clientY - SW.y, m = Math.max(Math.abs(dx), Math.abs(dy)); if (m < 26) return;
-    SW.done = true; if (Math.abs(dx) > Math.abs(dy)) runAct(dx < 0 ? 'l' : 'r'); else runAct(dy < 0 ? 'u' : 'd'); SW.x = e.clientX; SW.y = e.clientY; SW.done = false;
+    if (e.pointerId !== SW.id || S.mode !== 'run') return;
+    const dx = e.clientX - SW.x, dy = e.clientY - SW.y, ax = Math.abs(dx), ay = Math.abs(dy), m = Math.max(ax, ay), now = performance.now();
+    const need = swTh() * (SW.n ? 1.6 : 1); if (m < need || (SW.n && now - SW.tA < 160)) return;
+    if (Math.max(ax, ay) < Math.min(ax, ay) * 1.35) { SW.x = e.clientX; SW.y = e.clientY; return; }   // schräg: nichts auslösen
+    if (ax > ay) runAct(dx < 0 ? 'l' : 'r'); else runAct(dy < 0 ? 'u' : 'd');
+    SW.n++; SW.tA = now; SW.x = e.clientX; SW.y = e.clientY;
   });
-  addEventListener('pointerup', e => { if (e.pointerId === SW.id) { if (!SW.done && S.mode === 'run' && Math.hypot(e.clientX - SW.x, e.clientY - SW.y) < 10 && S.phase === 'play') runAct('u'); SW.id = null; } });
+  const swEnd = e => { if (e.pointerId !== SW.id) return; if (e.type === 'pointerup' && !SW.n && S.mode === 'run' && S.phase === 'play' && Math.hypot(e.clientX - SW.x0, e.clientY - SW.y0) < 12 && performance.now() - SW.t0 < 260) runAct('u'); SW.id = null; };
+  addEventListener('pointerup', swEnd); addEventListener('pointercancel', swEnd);
 
   /* ---------- Eingabe: Controller ---------- */
   const PAD = { b: [], dir: null }; let padNavT = 0;

@@ -40,6 +40,8 @@ export class Engine {
   readonly mobile: boolean;
   /** Dynamische Auflösung: 1 = volle Stufe, kleiner = weniger Bildpunkte (hält das Spiel am Handy flüssig) */
   private res = 1;
+  private upN = 0;
+  private lastKey = '';
   private resT = 0; private resFrames = 0;
 
   constructor(readonly canvas: HTMLCanvasElement) {
@@ -110,11 +112,12 @@ export class Engine {
     const cap = this.mobile ? (q === 0 ? 1.5 : 2) : q === 2 ? 2 : q === 1 ? 1.5 : 1;
     let scale = Math.min(dpr, cap) * this.res;
     if (this.mobile) scale = Math.max(Math.min(dpr, 1.1), scale);
-    this.bjs.setHardwareScalingLevel(1 / scale);
-    this.bjs.resize();
+    // nur umstellen, wenn sich wirklich etwas ändert (gleiche Größe = kein neuer Bildpuffer, kein Ruck)
+    const cv = this.bjs.getRenderingCanvas(), key = Math.round(scale * 40) + '/' + (cv?.clientWidth || 0) + 'x' + (cv?.clientHeight || 0);
+    if (key !== this.lastKey) { this.lastKey = key; this.bjs.setHardwareScalingLevel(1 / scale); this.bjs.resize(); }
     // Hochkant: Blickwinkel weiten, damit man die Stadt sieht und nicht nur einen schmalen Streifen Straße
     const c = this.scene?.camera as (FreeCamera & { _pcFov?: number }) | undefined;
-    if (c && c._pcFov) { const a = this.aspect; c.fov = a >= 1.2 ? c._pcFov : Math.min(1.42, 2 * Math.atan(Math.tan(c._pcFov / 2) * 1.2 / a)); }
+    if (c && c._pcFov) { const a = this.aspect; c.fov = a >= 1.2 ? c._pcFov : Math.min(1.2, 2 * Math.atan(Math.tan(c._pcFov / 2) * 1.2 / a)); }
   }
 
   /* Filmischer Look: ACES, Kontrast, mehr Sättigung, kühle Schatten / warme Lichter, Vignette, Bloom auf hoher Stufe */
@@ -185,7 +188,11 @@ export class Engine {
       const f = this.resFrames / this.resT; this.resFrames = 0; this.resT = 0;
       const min = this.mobile ? .72 : .7, was = this.res;
       if (!this.paused && !document.hidden) {
-        if (f < 48) this.res = Math.max(min, this.res * (f < 30 ? .85 : .93)); else if (f > 57) this.res = Math.min(1, this.res * 1.04);
+        // runter sofort, hoch erst nach vier ruhigen Sekunden (und nach einem Absenken erst nach zehn):
+        // jedes Umstellen legt die Bildpuffer neu an und ruckt, ständiges Pendeln wäre schlimmer als etwas weniger Schärfe
+        if (f < 48) { this.res = Math.max(min, this.res * (f < 30 ? .85 : .93)); this.upN = -12; }
+        else if (f > 57) { if (++this.upN >= 8) { this.res = Math.min(1, this.res * 1.08); this.upN = 0; } }
+        else if (this.upN > 0) this.upN = 0;
         if (Math.abs(this.res - was) > .01) this.resize();
       }
     }

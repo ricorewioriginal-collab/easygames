@@ -702,6 +702,10 @@
     {
       "q": "Das Bild ist am Handy unscharf oder ruckelt. Was tun?",
       "a": "Unter Optionen, Grafik wählst du Automatisch, Niedrig, Mittel oder Hoch. Niedrig läuft am flüssigsten und bleibt trotzdem scharf, Mittel und Hoch zeigen mehr Details und Schatten. Das Spiel passt die Auflösung beim Spielen selbst an."
+    },
+    {
+      "q": "Turbo geht nicht oder die Kamera dreht sich nicht mit. Was tun?",
+      "a": "Turbo ist am Handy ein Schalter: einmal tippen, dann rennst du, bis du wieder tippst. Mit leerer Energie rennst du langsamer, also schlafen oder Kaffee trinken. Die Kamera dreht sich beim Laufen von selbst hinter deine Figur. Wischst du über das Bild, bleibt sie kurz dort, wo du hinschaust."
     }
   ]
 }

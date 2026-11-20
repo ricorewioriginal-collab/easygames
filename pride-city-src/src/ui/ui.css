@@ -142,7 +142,7 @@ html[data-input=touch] #touch.on { display: block; }
 #touch .bB { right: 92px; bottom: 6px; width: 62px; height: 62px; font-size: 16px; }
 #touch .bS { right: 18px; bottom: 94px; width: 56px; height: 56px; font-size: 15px; }
 #touch .bX { right: 84px; bottom: 82px; width: 60px; height: 60px; font-size: 20px; background: rgba(255,75,92,.5) !important; }
-#touch .bW { right: 152px; bottom: 34px; width: 50px; height: 50px; font-size: 16px; }
+#touch .bW { right: 160px; bottom: 58px; width: 50px; height: 50px; font-size: 16px; }
 html[data-input=touch] body:has(#dialog) #touch .bX, html[data-input=touch] body:has(#dialog) #touch .bW { display: none; }
 #touch .bS.on { background: rgba(255,79,163,.6); }
 @media (orientation: portrait) {
