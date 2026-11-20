@@ -7,8 +7,8 @@ export default defineConfig({
   build: {
     target: 'es2020',
     sourcemap: false,
-    chunkSizeWarningLimit: 900,
-    rollupOptions: { output: { manualChunks: { three: ['three'] } } },
+    chunkSizeWarningLimit: 3000,
+    rollupOptions: { output: { manualChunks: { babylon: ['@babylonjs/core'], loaders: ['@babylonjs/loaders'] } } },
   },
   server: { host: true },
   test: { include: ['tests/**/*.test.ts'], environment: 'node' },

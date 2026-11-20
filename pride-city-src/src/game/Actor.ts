@@ -1,271 +1,175 @@
-/* Animierte Figur auf Basis der Quaternius-Menschen (CC0): Kleidung in Pride-Farben, Hautton und Haarfarbe wählbar,
-   Outfits per Shader, weiche Übergänge zwischen Animationen. */
-import * as THREE from 'three';
-import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { skinned } from '../engine/Assets';
-import { palette, SKINS, HAIRS, body, type BodyDef } from './palettes';
+/* Animierte Figur: echte Menschen aus Microsoft Rocketbox (MIT) mit geteilten Animationen (Laufen, Rennen, Tanzen,
+   Jubeln, Winken, Sitzen, Reden …), weiche Überblendung zwischen Animationen. Läuft in jeder Babylon-Szene. */
+import { AnimationGroup, Node3, Vector3, type Scene, type TransformNode, type AbstractMesh } from '../engine/bjs';
+import { container, skinned } from '../engine/Assets';
+import { avatarFor, type Avatar } from './avatars';
 
-export const CHAR_HEIGHT = 1.85;
+export const CHAR_HEIGHT = 1.75;
+/** Schrittweite der Animationen: so schnell (m/s) läuft die Figur bei Tempo 1 */
+export const WALK_MPS = 1.02, RUN_MPS = 3.6;
 
-/** Outfits (Durchgang 3a): Niveau Bade- und Unterwäschemode, keine anatomischen Details. top = BH/Bikini-Oberteil */
+/** Outfits aus dem alten Spiel: bleiben im Spielstand (Rocketbox-Figuren tragen ihre eigene Kleidung) */
 export type Outfit = 'clothed' | 'shirtless' | 'underwear' | 'swim' | 'harness';
 export const OUTFITS: Array<{ id: Outfit; name: string; adult?: boolean }> = [
   { id: 'clothed', name: 'Angezogen' }, { id: 'shirtless', name: 'Oberkörperfrei' }, { id: 'underwear', name: 'Unterwäsche' },
   { id: 'swim', name: 'Badehose / Bikini' }, { id: 'harness', name: 'Harness', adult: true },
 ];
-export interface Look { body: string; palette: string; skin: number; hair?: number; cape?: boolean; hat?: boolean; mug?: boolean; outfit?: Outfit; top?: boolean; /** 18+: knappere Wäsche, glänzende Haut */ hot?: boolean }
+/** rb = feste Rocketbox-Figur (sonst passend zu body/palette/skin gewählt) */
+export interface Look { body: string; palette: string; skin: number; hair?: number; rb?: string; cape?: boolean; hat?: boolean; mug?: boolean; outfit?: Outfit; top?: boolean; /** 18+ */ hot?: boolean }
 
-/** Aussehen der Spielfigur aus dem Spielstand (Harness nur mit 18+) */
 /** Spielbare Romanfigur aus „Ich bin das Licht“: Leon Sommer als Mann oder als Lady Luma in Drag */
 export const ROLE_LOOKS: Record<string, Look> = {
-  leon: { body: 'Man', palette: 'rainbow', skin: 2, hair: 0, outfit: 'clothed' },
-  luma: { body: 'Woman2', palette: 'neon', skin: 2, hair: 1, cape: true, outfit: 'clothed', top: true },
+  leon: { body: 'Man', rb: 'Male_Adult_03', palette: 'rainbow', skin: 2, hair: 0, outfit: 'clothed' },
+  luma: { body: 'Woman2', rb: 'Female_Party_02', palette: 'neon', skin: 2, hair: 1, cape: true, outfit: 'clothed', top: true },
 };
+/** Aussehen der Spielfigur aus dem Spielstand */
 export function playerLook(s: { body: string; palette: string; skin: number; pronouns: string; flags: Record<string, unknown>; settings: { adult: boolean } }): Look {
   const role = ROLE_LOOKS[String(s.flags.playAs || '')];
   if (role) return { ...role };
   let outfit = (s.flags.outfit as Outfit) || 'clothed';
   if (!OUTFITS.some((o) => o.id === outfit) || (OUTFITS.find((o) => o.id === outfit)!.adult && !s.settings.adult)) outfit = 'clothed';
   const hair = typeof s.flags.hair === 'number' && (s.flags.hair as number) >= 0 ? s.flags.hair as number : undefined;
-  return { body: body(s.body).id, palette: s.palette, skin: s.skin, hair, outfit, top: s.pronouns !== 'he', hot: s.settings.adult };
+  const av = avatarFor({ body: s.body, palette: s.palette, skin: s.skin, hair, top: s.pronouns !== 'he' });
+  return { body: av.id, rb: av.id, palette: s.palette, skin: s.skin, hair, outfit, top: s.pronouns !== 'he', hot: s.settings.adult };
 }
 
 /** Auf der Straße: Unterwäsche nur zuhause, draußen ist die Figur angezogen */
 export function streetLook(l: Look): Look { return l.outfit === 'underwear' ? { ...l, outfit: 'clothed' } : l; }
 
-/* Shader: jede Materialrolle bekommt ihre Farbe; Outfits ersetzen Kleidung durch Haut, Slip, BH oder Harness.
-   vYN = Höhe in der Ruhepose (0 Fuß, 1 Scheitel), vSN = seitlicher Abstand zur Körpermitte, beides relativ zur Körpergröße. */
-const OUTFIT_ID: Record<Outfit, number> = { clothed: 0, shirtless: 1, underwear: 2, swim: 3, harness: 4 };
-const FRAG = `
-if (uRole > -.5) {
-  float r = uRole, y = vYN, sx = abs(vSN), o = uOutfit;
-  vec3 base = diffuseColor.rgb;
-  if (r > 8.5 && r < 9.5) { // Farbfeld-Textur: nächste Grundfarbe bestimmt die Rolle
-    vec3 c = pow(max(base, vec3(0.)), vec3(1. / 2.2));
-    float best = 9.; r = 0.;
-    vec3 P[6]; P[0] = vec3(.906, .741, .569); P[1] = vec3(.906, .396, .361); P[2] = vec3(.82, .76, .44); P[3] = vec3(.38, .53, .827); P[4] = vec3(.16); P[5] = vec3(.94, .278, .184);
-    float R[6]; R[0] = 1.; R[1] = 2.; R[2] = 7.; R[3] = 4.; R[4] = 0.; R[5] = 5.;
-    for (int i = 0; i < 6; i++) { float d = distance(c, P[i]); if (d < best) { best = d; r = R[i]; } }
-    if (r > 4.5 && r < 5.5 && y > .1) r = 2.;
-    if (r > 1.5 && r < 2.5 && y < .08) r = 5.;
-  } else if (r > 9.5) { // bemalte Figur (ohne Kleidung modelliert)
-    if (y < .035) r = 5.; else if (y < .52) r = 4.;
-    else if (y < .815) r = sx < uTorso + .07 ? 2. : 1.;
-    else if (y > .945) r = 7.; else r = 1.;
-  }
-  bool under = o > 1.5 && o < 3.5;
-  bool bra = uTop > .5 && y > uBra.x && y < uBra.y && sx < uTorso + .02;
-  vec3 col = base;
-  if (r < .5) col = y < .06 ? (under ? uSkin : uShoe) : base;
-  else if (r < 1.5) col = uSkin;
-  else if (r < 3.5) { if (o < .5) col = r < 2.5 ? uC0 : uC2; else col = bra ? uCloth : uSkin; }
-  else if (r < 4.5) col = under ? (y < uBrief || (uHot > .5 && y < uBrief + .07 && sx > .022 + (y - uBrief) * 1.5) ? uSkin : uCloth) : uC1;
-  else if (r < 5.5) col = under ? uSkin : uShoe;
-  else if (r < 6.5) col = under ? uSkin : vec3(.82);
-  else if (r < 7.5) col = uHair;
-  else { if (under) discard; col = uC3; }
-  if (o > 3.5 && r > .5 && r < 3.5 && y > uBra.x - .09 && y < uBra.y + .06 && sx < uTorso + .02) {
-    float d = abs(sx - (uBra.y + .06 - y) * .55);
-    if (d < .012 || abs(y - (uBra.x - .045)) < .011) col = vec3(.05);
-  }
-  bool bare = col == uSkin && r > .5 && r < 3.5;
-  if (bare && vNF > .35) { // Brustwarzen (nur ohne Oberteil-Flag) und Bauchnabel, stilisiert
-    float n = length(vec2(sx - uNip.x, y - uNip.y));
-    if (uTop < .5 && n < .0105) col = uSkin * (n < .004 ? vec3(.5, .36, .34) : vec3(.72, .55, .52));
-    if (length(vec2(vSN, (y - uNavel) * .8)) < .0055) col = uSkin * .42;
-  }
-  pcSkin = col == uSkin || bare ? 1. : 0.;
-  diffuseColor.rgb = col;
-}`;
-/* Form unter der Kleidung (nur angedeutet, keine Details): Brust bei Figuren mit Oberteil, mit 18+ eine dezente Beule im Slip */
-const SHAPE = `
-float sxv = abs(vSN), fv = max(vNF, 0.);
-if (uTop > .5 && ((uRole > .5 && uRole < 3.5) || uRole > 8.5)) {
-  float d = length(vec2(sxv - uNip.x, (vYN - uNip.y) * 1.1));
-  transformed += uFront * smoothstep(.065, .0, d) * fv * .02 * uH;
-}
-if (uTop < .5 && uHot > .5 && uOutfit > 1.5 && uOutfit < 3.5 && ((uRole > 3.5 && uRole < 4.5) || uRole > 8.5)) {
-  float k = smoothstep(.04, .0, sxv) * smoothstep(uBrief - .01, uBrief + .03, vYN) * smoothstep(uBrief + .09, uBrief + .045, vYN);
-  transformed += uFront * k * fv * .014 * uH;
-}`;
-function outfitShader(mat: THREE.MeshStandardMaterial, role: number, b: BodyDef, lo: number, h: number, front: THREE.Vector3) {
-  const ax = (i: number) => new THREE.Vector3(i === 0 ? 1 : 0, i === 1 ? 1 : 0, i === 2 ? 1 : 0);
-  const c = () => ({ value: new THREE.Color() });
-  const u = {
-    uOutfit: { value: 0 }, uRole: { value: role }, uTop: { value: 0 }, uSkin: c(), uCloth: c(), uC0: c(), uC1: c(), uC2: c(), uC3: c(), uShoe: c(), uHair: c(),
-    uUp: { value: ax(b.up) }, uSide: { value: ax(b.side) }, uLo: { value: lo }, uH: { value: h }, uBrief: { value: b.brief }, uBra: { value: new THREE.Vector2(...b.bra) }, uTorso: { value: b.torso },
-    uNip: { value: new THREE.Vector2(...b.nip) }, uNavel: { value: b.navel }, uHot: { value: 0 }, uFront: { value: front },
-  };
-  mat.userData.outfit = u;
-  mat.onBeforeCompile = (sh) => {
-    Object.assign(sh.uniforms, u);
-    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nuniform vec3 uUp, uSide, uFront;\nuniform float uLo, uH, uOutfit, uTop, uRole, uBrief, uHot;\nuniform vec2 uNip;\nvarying float vYN, vSN, vNF;')
-      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvYN = (dot(position, uUp) - uLo) / uH; vSN = dot(position, uSide) / uH; vNF = dot(normalize(normal), uFront);' + SHAPE);
-    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying float vYN, vSN, vNF;\nuniform float uOutfit, uRole, uTop, uBrief, uTorso, uNavel, uHot;\nuniform vec2 uBra, uNip;\nuniform vec3 uSkin, uCloth, uC0, uC1, uC2, uC3, uShoe, uHair;')
-      .replace('#include <map_fragment>', '#include <map_fragment>\nfloat pcSkin = 0.;\n' + FRAG)
-      .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, .36, pcSkin * uHot);');
-  };
-  mat.customProgramCacheKey = () => 'people';
-}
-
-/* Weiche Schattierung: die Modelle sind facettiert (Low-Poly). Gleiche Punkte werden zusammengelegt und die Normalen
-   neu gemittelt, damit Haut und Kleidung rund wirken. Einmal pro Geometrie, danach aus dem Zwischenspeicher. */
-const smoothCache = new WeakMap<THREE.BufferGeometry, THREE.BufferGeometry>();
-function smooth(g: THREE.BufferGeometry, keepUv: boolean, tol: number) {
-  let s = smoothCache.get(g);
-  if (!s) {
-    const c = g.clone();
-    c.deleteAttribute('normal');
-    if (!keepUv) c.deleteAttribute('uv');
-    s = mergeVertices(c, tol);
-    s.computeVertexNormals();
-    smoothCache.set(g, s);
-  }
-  return s;
-}
-
-export type Anim = 'idle' | 'walk' | 'run' | 'cheer' | 'interact' | 'sit' | 'wave' | 'dance1' | 'dance2' | 'dance3' | 'jump' | 'hit' | 'pose';
-/** Clip-Namen (ohne Armatur- und Man_/Female_-Präfix), der erste vorhandene gewinnt */
-const CLIP: Record<Anim, string[]> = {
-  idle: ['Idle'], walk: ['Walk', 'Walking'], run: ['Run', 'Running'], cheer: ['Clapping', 'Jump2', 'Jump'], interact: ['PickUp', 'Working', 'Clapping'],
-  sit: ['SitIdle', 'Sitting'], wave: ['Clapping', 'PickUp', 'Working'], dance1: ['Clapping', 'Idle'], dance2: ['Idle'], dance3: ['Jump2', 'Jump', 'Idle'],
-  jump: ['Jump'], hit: ['RecieveHit', 'Death'], pose: ['Clapping', 'Idle'],
+export type Anim = 'idle' | 'walk' | 'run' | 'cheer' | 'interact' | 'sit' | 'wave' | 'dance1' | 'dance2' | 'dance3' | 'jump' | 'hit' | 'pose' | 'talk' | 'clap' | 'phone' | 'drink' | 'laugh';
+/** Spiel-Animation → Rocketbox-Animation (Datei rb/anim/<m|f>_<name>.glb) */
+const CLIP: Record<Anim, string> = {
+  idle: 'idle', walk: 'walk', run: 'run', cheer: 'cheer', interact: 'clap', sit: 'sit', wave: 'wave', dance1: 'dance1', dance2: 'dance2', dance3: 'dance3',
+  jump: 'cheer', hit: 'laugh', pose: 'talk', talk: 'talk', clap: 'clap', phone: 'phone', drink: 'drink', laugh: 'laugh',
 };
-const ONCE: Anim[] = ['interact', 'wave', 'jump', 'hit'];
+export const CLIPS = ['idle', 'walk', 'run', 'cheer', 'clap', 'sit', 'wave', 'dance1', 'dance2', 'dance3', 'talk', 'phone', 'drink', 'laugh'];
+const ONCE: Anim[] = ['interact', 'wave', 'jump', 'hit', 'clap', 'laugh'];
 const DANCE: Anim[] = ['dance1', 'dance2', 'dance3'];
-const clipKey = (n: string) => n.split('|').pop()!.replace(/^(Man|Female)_/, '');
+
+/** Animationen einer Szene einmal laden (je Geschlecht), dann von allen Figuren geteilt */
+const libs = new WeakMap<Scene, Map<string, Promise<AnimationGroup | null>>>();
+function clip(scene: Scene, g: 'm' | 'f', name: string) {
+  let m = libs.get(scene); if (!m) libs.set(scene, (m = new Map()));
+  const k = g + '_' + name;
+  let p = m.get(k);
+  if (!p) { p = container(scene, 'rb/anim/' + k + '.glb').then((c) => c.animationGroups[0] || null).catch(() => null); m.set(k, p); }
+  return p;
+}
+/** Vorladen (Ladebildschirm): alle Animationen beider Geschlechter und die genannten Figuren */
+export function preloadPeople(scene: Scene, avatars: string[] = []) {
+  return Promise.all([...(['m', 'f'] as const).flatMap((g) => CLIPS.map((c) => clip(scene, g, c))), ...avatars.map((a) => container(scene, 'rb/' + a + '.glb'))]);
+}
+
+/** alle Figuren je Szene (weit entfernte oder unsichtbare Figuren werden nicht animiert) */
+const crowds = new WeakMap<Scene, Set<Actor>>();
 
 export class Actor {
-  readonly root = new THREE.Group();
-  model!: THREE.Object3D;
-  private mixer!: THREE.AnimationMixer;
-  private actions = new Map<Anim, THREE.AnimationAction>();
+  readonly root: Node3;
+  model!: TransformNode;
+  avatar!: Avatar;
+  private groups = new Map<Anim, AnimationGroup>();
   private cur: Anim | null = null;
-  private mats: THREE.MeshStandardMaterial[] = [];
-  private clips: THREE.AnimationClip[] = [];
-  private def!: BodyDef;
-  private baseY = 0;
-  private hands: THREE.Object3D[] = [];
-  private fixes: Array<[THREE.Object3D, THREE.Quaternion]> = [];
+  private curG: AnimationGroup | null = null;
+  private fadeG: AnimationGroup | null = null;
+  private fadeT = 0; private fadeD = .2;
   private t = 0;
+  private tick = 0;
+  private sleeping = false;
   look: Look;
 
-  private constructor(look: Look) { this.look = { ...look }; }
+  private constructor(readonly scene: Scene, look: Look) { this.look = { ...look }; this.root = new Node3('actor', scene); }
 
-  static async create(look: Look): Promise<Actor> {
-    const a = new Actor(look);
-    const b = (a.def = body(look.body));
-    a.look.body = b.id;
-    const { scene, clips } = await skinned('people/' + b.id + '.glb');
-    a.model = scene;
-    scene.updateMatrixWorld(true);
-    // Größe vereinheitlichen und auf den Boden stellen
-    const box = new THREE.Box3().setFromObject(scene);
-    const k = b.height / (box.max.y - box.min.y || 1);
-    scene.scale.multiplyScalar(k);
-    a.baseY = scene.position.y = -box.min.y * k;
-    // Ruhepose-Höhe in Geometrie-Koordinaten (alle Teile teilen sich den Raum)
-    let lo = Infinity, hi = -Infinity;
-    scene.traverse((o) => {
-      const m = o as THREE.SkinnedMesh;
-      if (!m.isSkinnedMesh) return;
-      m.geometry.computeBoundingBox();
-      const bb = m.geometry.boundingBox!;
-      lo = Math.min(lo, bb.min.getComponent(b.up)); hi = Math.max(hi, bb.max.getComponent(b.up));
-    });
-    // Blickrichtung der Figur (Welt +Z) im Koordinatenraum der Geometrie, für Brust und Bauchnabel vorne
-    const front = new THREE.Vector3(0, 0, 1);
-    scene.traverse((o) => { if ((o as THREE.SkinnedMesh).isSkinnedMesh && front.z === 1 && front.x === 0) front.transformDirection(new THREE.Matrix4().copy(o.matrixWorld).invert()); });
-    scene.traverse((o) => {
-      const m = o as THREE.Mesh;
-      if (!m.isMesh) return;
-      m.castShadow = true; m.frustumCulled = false;
-      const src = m.material as THREE.MeshStandardMaterial;
-      m.geometry = smooth(m.geometry, !!src.map, (hi - lo) * 2e-4);
-      const mat = src.clone();
-      mat.roughness = .75; mat.metalness = 0;
-      outfitShader(mat, b.roles[src.name] ?? 0, b, lo, hi - lo, front);
-      m.material = mat; a.mats.push(mat);
-    });
-    if (b.hands) for (const n of b.hands[0]) { const o = scene.getObjectByName(n); if (o) a.hands.push(o); }
-    for (const [n, x, y, z] of b.fix || []) { const o = scene.getObjectByName(n); if (o) a.fixes.push([o, new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z))]); }
-    a.root.add(scene);
-    a.mixer = new THREE.AnimationMixer(scene);
-    a.clips = clips;
-    for (const [an, names] of Object.entries(CLIP) as [Anim, string[]][]) {
-      let c: THREE.AnimationClip | undefined;
-      for (const n of names) { c = clips.find((x) => clipKey(x.name) === n); if (c) break; }
-      if (!c) continue;
-      const act = a.mixer.clipAction(c);
-      if (ONCE.includes(an)) { act.setLoop(THREE.LoopOnce, 1); act.clampWhenFinished = true; }
-      a.actions.set(an, act);
+  static async create(scene: Scene, look: Look): Promise<Actor> {
+    const a = new Actor(scene, look);
+    const av = (a.avatar = avatarFor(look));
+    a.look.body = av.id;
+    const [{ root, groups }] = await Promise.all([skinned(scene, 'rb/' + av.id + '.glb'), preloadPeople(scene)]);
+    groups.forEach((g) => g.dispose());
+    a.model = root; root.parent = a.root;
+    root.getChildMeshes().forEach((m: AbstractMesh) => { m.receiveShadows = true; (m as AbstractMesh & { _pcCast?: boolean })._pcCast = true; });
+    const nodes = new Map<string, TransformNode>();
+    root.getChildTransformNodes(false).forEach((n) => nodes.set(n.name, n));
+    // Animationen auf das eigene Skelett übertragen (gleiche Knochennamen „Bip01 …“)
+    const made = new Map<string, AnimationGroup>();
+    for (const an of Object.keys(CLIP) as Anim[]) {
+      const key = CLIP[an];
+      let g = made.get(key);
+      if (!g) {
+        const src = await clip(scene, av.g, key); if (!src) continue;
+        g = new AnimationGroup(key, scene);
+        for (const ta of src.targetedAnimations) { const n = nodes.get((ta.target as TransformNode).name); if (n) g.addTargetedAnimation(ta.animation, n); }
+        g.normalize(src.from, src.to);
+        made.set(key, g);
+      }
+      a.groups.set(an, g);
     }
-    a.setLook(look);
+    let set = crowds.get(scene);
+    if (!set) {
+      const s = (set = new Set());
+      crowds.set(scene, s);
+      scene.onBeforeAnimationsObservable.add(() => { const f = scene.getFrameId(); s.forEach((x) => x.sleep(f - x.tick > 2 || !x.root.isEnabled())); });
+    }
+    set.add(a);
+    a.root.onDisposeObservable.add(() => { set!.delete(a); made.forEach((g) => g.dispose()); });
+    a.tick = scene.getFrameId();
     a.play('idle', 0);
     return a;
   }
 
-  setLook(look: Partial<Look>) {
-    Object.assign(this.look, look);
-    this.look.body = this.def.id;
-    const cols = palette(this.look.palette).colors, P = (i: number) => new THREE.Color(cols[i % cols.length]).multiplyScalar(.86);
-    const dark = new THREE.Color('#1b1a24');
-    const skin = new THREE.Color(SKINS[this.look.skin] || SKINS[1]).multiplyScalar(.88);
-    const hair = new THREE.Color(this.look.hair != null && HAIRS[this.look.hair] ? HAIRS[this.look.hair] : this.def.hair);
-    const cloth = P(this.look.outfit === 'swim' ? 2 : 0);
-    const o = OUTFIT_ID[this.look.outfit || 'clothed'];
-    for (const m of this.mats) {
-      const u = m.userData.outfit; if (!u) continue;
-      u.uOutfit.value = o; u.uTop.value = this.look.top ? 1 : 0; u.uHot.value = this.look.hot ? 1 : 0;
-      u.uSkin.value.copy(skin); u.uHair.value.copy(hair); u.uCloth.value.copy(cloth);
-      u.uC0.value.copy(P(0)); u.uC1.value.copy(P(1)).lerp(dark, .45); u.uC2.value.copy(P(2)).lerp(dark, .2); u.uC3.value.copy(P(3));
-      u.uShoe.value.set('#e9e6f0').lerp(P(cols.length - 1), .25); // helle Sneaker, damit die Füße erkennbar sind
-    }
+  /** Rocketbox-Figuren tragen ihre eigene Kleidung; das Aussehen wird nur gemerkt */
+  setLook(look: Partial<Look>) { Object.assign(this.look, look); this.look.body = this.avatar.id; }
+
+  private sleep(on: boolean) {
+    if (on === this.sleeping) return;
+    this.sleeping = on;
+    if (on) { this.curG?.pause(); this.fadeG?.stop(); this.fadeG = null; this.curG?.setWeightForAllAnimatables(1); }
+    else this.curG?.play(this.curG.loopAnimation);
   }
 
   play(a: Anim, fade = .22, speed = 1) {
-    if (this.cur === a && !ONCE.includes(a)) return;
-    const next = this.actions.get(a) || this.actions.get('idle');
+    if (this.cur === a && !ONCE.includes(a)) { if (this.curG) this.curG.speedRatio = speed; return; }
+    const next = this.groups.get(a) || this.groups.get('idle');
     if (!next) return;
-    const prev = this.cur ? this.actions.get(this.cur) : null;
-    next.reset(); next.timeScale = speed; next.enabled = true; next.setEffectiveWeight(1);
-    if (prev && prev !== next) next.crossFadeFrom(prev, fade, true);
-    next.play();
-    this.cur = a;
-    if (!DANCE.includes(a)) { this.model.position.y = this.baseY; this.model.rotation.y = 0; }
-    if (ONCE.includes(a)) {
-      const back = () => { this.mixer.removeEventListener('finished', back); if (this.cur === a) this.play('idle'); };
-      this.mixer.addEventListener('finished', back);
-    }
+    const prev = this.curG, once = ONCE.includes(a), blend = !!prev && prev !== next && fade > 0;
+    if (blend) { this.fadeG?.stop(); this.fadeG = prev; this.fadeT = 0; this.fadeD = fade; }
+    else if (prev && prev !== next) prev.stop();
+    if (next === this.fadeG) { this.fadeG = null; }
+    next.stop();
+    next.start(!once, speed, next.from, next.to);
+    next.setWeightForAllAnimatables(blend ? 0 : 1);
+    this.curG = next; this.cur = a; this.sleeping = false;
+    if (!DANCE.includes(a)) this.model.position.y = 0;
+    if (once) next.onAnimationGroupEndObservable.addOnce(() => { if (this.cur === a) this.play('idle'); });
   }
   get anim() { return this.cur; }
-  /** Standbild (für Fotos): Animation (Anim) oder Clip-Name, t in Sekunden */
-  pose(clip: string, t = .5) {
-    const c = this.actions.get(clip as Anim)?.getClip() || this.clips.find((x) => clipKey(x.name) === clip); if (!c) return;
-    this.mixer.stopAllAction(); this.cur = null;
-    const a = this.mixer.clipAction(c); a.reset(); a.setLoop(THREE.LoopOnce, 1); a.clampWhenFinished = true; a.play();
-    this.mixer.setTime(Math.min(t, c.duration - .01));
-    this.shape();
+  /** Standbild (für Fotos): Animation oder Clip-Name, t in Sekunden */
+  pose(name: string, t = .5) {
+    const g = this.groups.get(name as Anim) || [...this.groups.values()].find((x) => x.name === name) || this.groups.get('idle');
+    if (!g) return;
+    this.groups.forEach((x) => x.stop()); this.fadeG = null;
+    g.start(false, 1, g.from, g.to); g.setWeightForAllAnimatables(1);
+    const fps = g.targetedAnimations[0]?.animation.framePerSecond || 60;
+    g.goToFrame(Math.min(g.to, g.from + t * fps)); g.pause();
+    this.curG = g; this.cur = null;
   }
 
   update(dt: number) {
-    this.mixer.update(dt);
-    this.shape();
-    if (this.cur && DANCE.includes(this.cur)) { // Tanzen: federn und hüftschwingen über der Animation
+    this.tick = this.scene.getFrameId();
+    if (this.fadeG && this.curG) {
+      this.fadeT += dt;
+      const k = Math.min(1, this.fadeT / this.fadeD);
+      this.curG.setWeightForAllAnimatables(k); this.fadeG.setWeightForAllAnimatables(1 - k);
+      if (k >= 1) { this.fadeG.stop(); this.fadeG = null; }
+    }
+    if (this.cur && DANCE.includes(this.cur)) { // Tanzen: leicht federn über der Animation
       this.t += dt;
       const f = this.cur === 'dance3' ? 7 : this.cur === 'dance2' ? 5 : 6;
-      this.model.position.y = this.baseY + Math.abs(Math.sin(this.t * f)) * .07;
-      this.model.rotation.y = Math.sin(this.t * f * .5) * (this.cur === 'dance2' ? .6 : .3);
+      this.model.position.y = Math.abs(Math.sin(this.t * f)) * .03;
     }
   }
 
-  /** nach jeder Animation: Hände kleiner, Haltung korrigieren */
-  private shape() {
-    const k = this.def.hands?.[1] ?? 1;
-    for (const h of this.hands) h.scale.setScalar(k);
-    if (this.cur === 'idle' || this.cur === null) for (const [o, q] of this.fixes) o.quaternion.multiply(q); // Arme im Stand anlegen
-  }
-
   /** Kopf-Position (für Sprechblasen und Kamera) */
-  head(out = new THREE.Vector3()) { return this.root.getWorldPosition(out).add(new THREE.Vector3(0, (this.def?.height ?? CHAR_HEIGHT) * .95, 0)); }
+  head(out = new Vector3()) { out.copyFrom(this.root.position); out.y += CHAR_HEIGHT * .95; return out; }
+  /** Figur wegräumen */
+  dispose() { this.root.dispose(false, false); }
 }

@@ -23,4 +23,8 @@ const { chromium, ARGS, open, intro } = require('./lib.cjs');
   ok('Spiel: Zotik läuft nicht durch das Hindernis', !!g && g.min > g.r + .5 - .12 && g.lief > 1, JSON.stringify(g));
   ok('Spiel: Zotik gleitet am Hindernis vorbei', !!g && g.vorbei, g && String(g.vorbei));
   ok('Spiel: Schritte laufen über Babylon (über 80 %)', !!g && g.bjs > 20 && g.bjs / (g.bjs + g.alt) > .8, g && g.bjs + ' Babylon / ' + g.alt + ' alt');
+  // fast mittig gegen das Hindernis: Zotik muss so zügig herumgleiten wie früher (altes Verfahren: 40–47 Bilder)
+  const gl = await p.evaluate(() => { const Z = __zotik, out = []; const cs = Z.COL.filter(c => c.t == null && c.r > .5 && !Z.COL.some(q => q !== c && Math.hypot(q.x - c.x, q.z - c.z) < q.r + c.r + 4) && !Z.pBlocked(c.x, c.z - c.r - 2.5) && !Z.pBlocked(c.x, c.z) && !Z.pBlocked(c.x, c.z + c.r + 3)).slice(0, 4);
+    for (const c of cs) { Z.pl.x = c.x + .02; Z.pl.z = c.z - c.r - 2.5; Z.pl.y = Z.hgt(Z.pl.x, Z.pl.z); Z.pl.face = 0; Z.keys.KeyW = true; let k = 0; for (; k < 240 && Z.pl.z < c.z + c.r + .6; k++) { Z.setCam(Math.PI, .42, 7.6); Z.step(1 / 30, 1); } Z.keys.KeyW = false; Z.step(1 / 30, 3); out.push(k); } return out; });
+  ok('Spiel: gleitet zügig um Hindernisse (höchstens 52 Bilder)', gl.length > 0 && Math.max(...gl) <= 52, gl.join(' '));
   ok('keine Seitenfehler', p.errs.length === 0, p.errs.join(' | ')); await b.close(); process.exit(fail ? 1 : 0); })();

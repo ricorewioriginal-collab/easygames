@@ -1,32 +1,16 @@
-/* Engine: Renderer, Spielschleife, Szenenwechsel und automatische Grafikstufe.
-   Eine Szene liefert eine three-Szene, eine Kamera und update(dt). Der Rest (Auflösung, Schatten, Leuchten) regelt die Engine. */
-import * as THREE from 'three';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
-
-/** Filmischer Farblook (vor Tonemapping, linear): Sättigung, Kontrast, kühle Schatten / warme Lichter, Vignette */
-const GRADE = {
-  uniforms: { tDiffuse: { value: null }, sat: { value: 1.12 }, con: { value: 1.08 }, vig: { value: .32 } },
-  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-  fragmentShader: `uniform sampler2D tDiffuse; uniform float sat, con, vig; varying vec2 vUv;
-    void main(){ vec4 t = texture2D(tDiffuse, vUv); vec3 c = max(t.rgb, 0.0);
-      float l = dot(c, vec3(.2126, .7152, .0722));
-      c = mix(vec3(l), c, sat);
-      c *= mix(vec3(.93, 1.0, 1.07), vec3(1.06, 1.0, .93), smoothstep(.02, .9, l));
-      c = .18 * pow(c / .18 + 1e-5, vec3(con));
-      vec2 d = vUv - .5; c *= 1.0 - vig * dot(d, d) * 2.0;
-      gl_FragColor = vec4(c, t.a); }`,
-};
+/* Engine (Babylon.js): Renderer, Spielschleife, Szenenwechsel und automatische Grafikstufe.
+   Jede Spielszene hat eine eigene Babylon-Szene mit Kamera und update(dt). Auflösung, Schatten, Leuchten und
+   den filmischen Farblook (ACES, Kontrast, Sättigung, Vignette) regelt die Engine für alle Szenen gleich. */
+import { Engine as BEngine, Scene, FreeCamera, DefaultRenderingPipeline, ImageProcessingConfiguration, ColorCurves, Vector3, Matrix, Color4, Material } from './bjs';
 import { Input } from './Input';
 
 export interface GameScene {
-  root: THREE.Scene;
-  camera: THREE.PerspectiveCamera;
+  scene: Scene;
+  camera: FreeCamera;
   /** Leuchten (Neon) stärker/schwächer, 0 = aus */
   bloom?: number;
+  /** wird beim Verlassen weggeräumt (Editor, Tanz) */
+  transient?: boolean;
   enter?(): void;
   exit?(): void;
   update(dt: number, t: number): void;
@@ -36,39 +20,58 @@ export interface GameScene {
 export type Quality = 0 | 1 | 2;
 
 export class Engine {
-  readonly renderer: THREE.WebGLRenderer;
+  readonly bjs: BEngine;
   readonly input: Input;
   scene: GameScene | null = null;
   quality: Quality = 1;
   /** -1 = automatisch, sonst feste Stufe */
   qualitySetting = -1;
-  private composer: EffectComposer | null = null;
-  private renderPass: RenderPass | null = null;
-  private bloomPass: UnrealBloomPass | null = null;
+  private pipes = new Map<Scene, DefaultRenderingPipeline>();
   private last = 0;
   private frames = 0;
   private slow = 0;
   private fast = 0;
   private sampleT = 0;
   private hooks = new Set<(dt: number) => void>();
+  /** Szenen melden sich hier, damit Schatten der Grafikstufe folgen */
+  private qualityHooks = new Set<(q: Quality) => void>();
   fps = 60;
   paused = false;
 
   constructor(readonly canvas: HTMLCanvasElement) {
     const mobile = matchMedia('(pointer: coarse)').matches;
-    this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', stencil: false });
-    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.05;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.bjs = new BEngine(canvas, true, { powerPreference: 'high-performance', stencil: true, preserveDrawingBuffer: false, antialias: true, audioEngine: false } as never, false);
+    this.bjs.disableManifestCheck = true;
     this.input = new Input(canvas);
     this.quality = mobile ? 1 : 2;
     addEventListener('resize', () => this.resize());
     screen.orientation?.addEventListener?.('change', () => setTimeout(() => this.resize(), 120));
   }
 
+  /** Neue Szene mit den gemeinsamen Grundeinstellungen */
+  newScene(clear = 0x120a26) {
+    const s = new Scene(this.bjs);
+    s.useRightHandedSystem = true;
+    s.clearColor = Color4.FromHexString('#' + clear.toString(16).padStart(6, '0') + 'ff').toLinearSpace();
+    s.ambientColor.set(0, 0, 0);
+    s.skipPointerMovePicking = true;
+    s.autoClear = true;
+    // genug Lichter pro Material (Sonne, Himmel, Laternen, Neon)
+    s.onNewMaterialAddedObservable.add((m: Material) => { (m as Material & { maxSimultaneousLights?: number }).maxSimultaneousLights = 8; });
+    const ip = s.imageProcessingConfiguration;
+    ip.toneMappingEnabled = true; ip.toneMappingType = ImageProcessingConfiguration.TONEMAPPING_ACES;
+    ip.exposure = 1.05; ip.contrast = 1.08;
+    return s;
+  }
+  newCamera(s: Scene, fovDeg: number, near = .1, far = 400) {
+    const c = new FreeCamera('cam', new Vector3(0, 2, 6), s);
+    c.fov = fovDeg * Math.PI / 180; c.minZ = near; c.maxZ = far; c.inputs.clear();
+    return c;
+  }
+
   /** Jedes Bild aufgerufen (für UI, die unabhängig von der Szene läuft) */
   onFrame(fn: (dt: number) => void) { this.hooks.add(fn); return () => this.hooks.delete(fn); }
+  onQuality(fn: (q: Quality) => void) { this.qualityHooks.add(fn); fn(this.quality); return () => this.qualityHooks.delete(fn); }
 
   setQuality(q: number) {
     this.qualitySetting = q;
@@ -76,44 +79,64 @@ export class Engine {
   }
   private applyQuality(q: Quality) {
     this.quality = q;
-    this.renderer.shadowMap.enabled = q > 0;
-    this.renderer.shadowMap.needsUpdate = true;
+    this.qualityHooks.forEach((f) => f(q));
+    this.pipes.forEach((p) => this.tunePipe(p));
     this.resize();
     document.documentElement.dataset.quality = String(q);
   }
 
+  get aspect() { return innerWidth / Math.max(1, innerHeight); }
+
   setScene(s: GameScene) {
-    this.scene?.exit?.();
+    const prev = this.scene;
+    prev?.exit?.();
     this.scene = s;
-    this.composer = null;
     s.enter?.();
+    this.ensurePipe(s);
     this.resize();
+    if (prev && prev !== s && prev.transient) { this.pipes.get(prev.scene)?.dispose(); this.pipes.delete(prev.scene); prev.scene.dispose(); }
   }
+  /** Szene sofort wegräumen (z. B. alter Innenraum) */
+  disposeScene(s: GameScene) { if (s === this.scene) return; this.pipes.get(s.scene)?.dispose(); this.pipes.delete(s.scene); s.scene.dispose(); }
 
   resize() {
-    const w = innerWidth, h = innerHeight;
     const cap = this.quality === 2 ? 2 : this.quality === 1 ? 1.5 : 1;
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio || 1, cap));
-    this.renderer.setSize(w, h, false);
-    if (this.scene) { this.scene.camera.aspect = w / h; this.scene.camera.updateProjectionMatrix(); }
-    this.composer?.setSize(w, h);
-    this.composer?.setPixelRatio(this.renderer.getPixelRatio());
+    this.bjs.setHardwareScalingLevel(1 / Math.min(devicePixelRatio || 1, cap));
+    this.bjs.resize();
   }
 
-  private ensureComposer(s: GameScene) {
-    if (this.composer) return;
-    // eigenes Ziel mit 4-fach-Multisampling, sonst sind Kanten mit Bloom pixelig
-    const c = new EffectComposer(this.renderer, new THREE.WebGLRenderTarget(innerWidth, innerHeight, { type: THREE.HalfFloatType, samples: 4 }));
-    this.renderPass = new RenderPass(s.root, s.camera);
-    c.addPass(this.renderPass);
-    this.bloomPass = new UnrealBloomPass(new THREE.Vector2(innerWidth / 2, innerHeight / 2), .55, .5, .82);
-    c.addPass(this.bloomPass);
-    c.addPass(new ShaderPass(GRADE));
-    c.addPass(new OutputPass());
-    c.setPixelRatio(this.renderer.getPixelRatio());
-    c.setSize(innerWidth, innerHeight);
-    this.composer = c;
+  /* Filmischer Look: ACES, Kontrast, mehr Sättigung, kühle Schatten / warme Lichter, Vignette, Bloom auf hoher Stufe */
+  private ensurePipe(s: GameScene) {
+    if (this.pipes.has(s.scene)) return;
+    const p = new DefaultRenderingPipeline('pc', true, s.scene, [s.camera]);
+    p.imageProcessingEnabled = true;
+    const ip = p.imageProcessing;
+    ip.toneMappingEnabled = true; ip.toneMappingType = ImageProcessingConfiguration.TONEMAPPING_ACES;
+    ip.exposure = 1.05; ip.contrast = 1.1;
+    ip.vignetteEnabled = true; ip.vignetteWeight = 1.6; ip.vignetteStretch = .4; ip.vignetteCameraFov = .8;
+    const cc = new ColorCurves();
+    cc.globalSaturation = 14; cc.shadowsHue = 220; cc.shadowsDensity = 12; cc.shadowsSaturation = 30; cc.highlightsHue = 35; cc.highlightsDensity = 10; cc.highlightsSaturation = 25;
+    ip.colorCurvesEnabled = true; ip.colorCurves = cc;
+    p.bloomThreshold = .82; p.bloomKernel = 48; p.bloomScale = .5;
+    this.pipes.set(s.scene, p);
+    this.tunePipe(p);
   }
+  private tunePipe(p: DefaultRenderingPipeline) {
+    const q = this.quality;
+    p.samples = q === 2 ? 4 : 1;
+    p.fxaaEnabled = q === 1;
+    p.bloomEnabled = q === 2;
+  }
+
+  /** Weltpunkt → Bildschirm (Pixel), behind = hinter der Kamera */
+  project(p: { x: number; y: number; z: number }) {
+    const s = this.scene; if (!s) return { x: 0, y: 0, behind: true };
+    const m = s.camera.getTransformationMatrix();
+    const v = Vector3.TransformCoordinates(new Vector3(p.x, p.y, p.z), m);
+    const w = p.x * m.m[3] + p.y * m.m[7] + p.z * m.m[11] + m.m[15];
+    return { x: (v.x * .5 + .5) * innerWidth, y: (-v.y * .5 + .5) * innerHeight, behind: w < 0 };
+  }
+  static readonly I = Matrix.Identity();
 
   start() {
     this.applyQuality(this.quality);
@@ -126,13 +149,10 @@ export class Engine {
       const s = this.scene;
       if (s && !this.paused) {
         s.update(dt, t / 1000);
-        const bloom = s.bloom ?? 0;
-        if (this.quality === 2 && bloom > 0) {
-          this.ensureComposer(s);
-          this.renderPass!.scene = s.root; this.renderPass!.camera = s.camera;
-          this.bloomPass!.strength = bloom;
-          this.composer!.render(dt);
-        } else this.renderer.render(s.root, s.camera);
+        const p = this.pipes.get(s.scene);
+        if (p && this.quality === 2) p.bloomWeight = Math.max(0, s.bloom ?? 0) * .55;
+        if (s.scene.activeCamera !== s.camera) s.scene.activeCamera = s.camera;
+        this.bjs.beginFrame(); s.scene.render(); this.bjs.endFrame();
       }
       this.input.endFrame();
       this.measure(dt);

@@ -1,10 +1,10 @@
 # Pride City – Quellcode
 
 Relaunch von **Gay Life!** als „Pride City – Ein Leben in allen Farben“. Queere 3D-Lebenssimulation in Rainbow City.
-Technik: Vite, TypeScript, three.js (aktuell), eigene kleine Engine. Ausgabe nach `../pride-city/` (wird mit eingecheckt, die Apps laden diesen Ordner).
+Technik: Vite, TypeScript, Babylon.js (seit 20.11.2026, vorher three.js), eigene kleine Engine; alle Menschen sind Microsoft-Rocketbox-Avatare (MIT). Ausgabe nach `../pride-city/` (wird mit eingecheckt, die Apps laden diesen Ordner).
 
 ```
-npm install              # KayKit-Modelle (Stadt, Wohnung) lädt `npm run build` selbst (scripts/fetch-assets.mjs); Figuren liegen in public/assets/people
+npm install              # KayKit-Modelle (Stadt, Wohnung) lädt `npm run build` selbst (scripts/fetch-assets.mjs); Rocketbox-Figuren liegen in public/assets/rb (neu erzeugen: `node scripts/rocketbox.mjs`, nur Animationen: `… anim`)
 npm run dev               # Entwicklung (http://localhost:5173, Pfade zu ../gamepad.js usw. fehlen dort)
 npm test                  # Unit-Tests (Spielstand, Migration, Story)
 npm run build:easygames   # Typprüfung, Build, Kopie nach ../pride-city (Manifest/Service Worker/card.jpg bleiben)
@@ -16,16 +16,18 @@ E2E-Test (Browser, SwiftShader): Server im Repo starten (`python3 -m http.server
 
 | Ordner/Datei | Aufgabe |
 |---|---|
-| `src/engine/Engine.ts` | Renderer (ACES, sRGB, Schatten), Spielschleife, Szenenwechsel, automatische Grafikstufe (Auflösung, Schatten, Bloom nur auf „hoch“) |
+| `src/engine/bjs.ts`, `geo.ts` | Babylon-Importe (tiefe Pfade, kleines Paket) und Grundformen/Materialien (`planeZ`, `box`, `pbr`, `glow`, `canvasTex`) |
+| `src/engine/Engine.ts` | Babylon-Engine, eine Szene je Spielszene, Nachbearbeitung (ACES, Farbkurven, Vignette, Bloom/MSAA nur auf „hoch“), Schatten, Spielschleife, Szenenwechsel, automatische Grafikstufe (Auflösung, Schatten, Bloom nur auf „hoch“) |
 | `src/engine/Input.ts` | Ein Eingabe-System für Tastatur, Maus, Touch und Gamecontroller → Aktionen (`confirm`, `back`, `menu`, Richtungen, `sprint` …) mit Wiederholung für Menüs |
-| `src/engine/Assets.ts` | glTF laden (einmal, mit Fortschritt), Kopien mit eigenem Skelett |
+| `src/engine/Assets.ts` | glTF als AssetContainer je Szene laden (mit Fortschritt); statische Teile als Instanzen, Figuren mit eigenem Skelett |
 | `src/engine/Audio.ts` | Musik und Effekte live per WebAudio erzeugt (keine Audiodateien) |
 | `src/engine/Save.ts` | Spielstand `prideCity.save` (Cloud-Präfix `prideCity.`), Migration, Übernahme aus Gay Life! (`anmachaGayLife`) |
 | `src/ui/` | Konsolen-Menü (`Menu`), Ladebildschirm, Dialog mit Antworten, HUD mit Zielmarkern, Touch-Stick und -Tasten, Kapitelkarten |
-| `src/game/Actor.ts` | Menschen-Figuren (Quaternius, CC0, sechs Modelle): Pride-Farben je Palette, Hautton, Haarfarbe, weiche Animationswechsel, Tanz-Federn, Outfits per Shader (oberkörperfrei, Unterwäsche, Bademode, Harness). Rollen und Körperbänder je Modell in `palettes.ts` (`BODIES`) |
+| `src/game/Actor.ts`, `avatars.ts` | Menschen: 33 Microsoft-Rocketbox-Avatare (Alltag, Party, Polizei, Feuerwehr, Sanitäterin, Security, Köchin, Sport, Business, Kurier) mit gemeinsamen Animationen (`rb/anim`, per Knotenname übertragen), weiche Übergänge; alte Spielstände bekommen über `avatarFor()` eine passende Figur |
 | `src/game/World.ts` | Rainbow City aus City-Builder-Bits plus Pride-Deko, Hafenviertel (Kai, Strand, Steg, Leuchtturm, Club), Polizei- und Feuerwache, Tag/Nacht, Verkehr, Kollision (`walkable`) |
 | `src/game/Street.ts` | Belebte Straßen: Passant*innen, Streife, Feuerwehr, Löschzug und Blaulicht, Sexarbeiter*innen vor Haus Rosa (18+), geparkte Autos zum Fahren |
 | `src/game/CityScene.ts` | Laufen, Kamera, Figuren, Interaktion, Sticker, Titel-Kamerafahrt |
+| `src/game/gigs.ts`, `empire.ts` | Aufträge per Anruf, Regenbogen-Taxi (Fahrgäste in Serie), Imperium (Läden, Bars, Clubs kaufen, Tageseinnahmen) |
 | `src/game/story.ts` | Figuren, fünf Kapitel bis zum Ende, Ziele (`goal`), automatische Fortschritte (`storyTick`), Gespräche, Entscheidungen (`save.flags`), Ende (`ending`) |
 | `src/game/life.ts` | Bedürfnisse, Stimmung, Uhrzeit und Tageswechsel, Tagesziele (aus Gay Life! übernommen) |
 | `src/game/jobs.ts` | Fünf Jobs mit Situationen, Lohn, Stufen und Beförderung |

@@ -22,7 +22,7 @@
     {
       "t": "Deine Figur",
       "p": [
-        "Im Editor wählst du eine von sechs Figuren (vier realistische Menschen, eine schlichte Figur und eine im Comic-Look), eine Farbwelt (Regenbogen, Progress, Trans, Bi, Lesbisch, Pan, Nichtbinär, Ace, Aro, Gay, Bear, Leder, Neon-Nacht), einen von sechs Hauttönen, eine Haarfarbe, deinen Namen und deine Pronomen. Über das Pausenmenü (Kleiderschrank) oder den Kleiderschrank in deiner Wohnung änderst du alles jederzeit. Dazu kommt das Outfit: angezogen, oberkörperfrei, Unterwäsche oder Badehose/Bikini; mit „Inhalte ab 18“ auch Harness. Figuren mit den Pronomen sie oder they tragen bei Unterwäsche und Bademode immer ein Oberteil."
+        "Im Editor wählst du eine von über 20 echten Menschen-Figuren (Microsoft Rocketbox, jede mit eigener Kleidung und eigenem Stil), dazu deinen Namen und deine Pronomen. Über das Pausenmenü (Kleiderschrank) oder den Kleiderschrank in deiner Wohnung wechselst du die Figur jederzeit. Alle Menschen in Rainbow City sind solche Figuren: Passant*innen, Polizei, Feuerwehr, Sanitäterin, Türsteher, Köchin und Kurier."
       ]
     },
     {
@@ -115,6 +115,14 @@
       "p": [
         "Fünf Jobs aus Gay Life!: Verkäufer*in (Boutique, 10–20 Uhr), Fitnesstrainer*in (Muckibude, 8–21 Uhr), Fotograf*in (Studio, 10–20 Uhr), DJ (Club Prisma, 20–2 Uhr) und Eventmanager*in (Regenbogenhaus, 10–18 Uhr).",
         "Eine Schicht dauert vier Stunden und besteht aus drei Situationen mit je drei Antworten. Die beste Antwort bringt 2 Punkte. Lohn = 4 × Stundenlohn + Punkte-Bonus, mal Stimmung. Mit Erfahrung wirst du befördert (vier Stufen, je +25 % Lohn). Höchstens zwei Schichten am Tag."
+      ]
+    },
+    {
+      "t": "Aufträge, Taxi und Imperium",
+      "list": [
+        "Aufträge: Leute aus der Stadt rufen an (oder du wählst im Handy unter „Aufträge“). Folge der gelben Lichtsäule und dem Radar und schaff alle Stationen in der Zeit. Neu sind unter anderem „Ehe für alle“ (Ringe und Torte zur Trauung im Park), der Vogue-Ball am Plaza, Lady Lumas Perücken-Notfall, die CSD-Demo, das Bärchen-Grillfest und nachts Kofis Gästeliste.",
+        "Regenbogen-Taxi: Steig in ein Auto und wähle im Handy unter „Aufträge“ das Regenbogen-Taxi. Hol Fahrgäste ab (Drag-Queens, Brautpaare, Ballroom-Kids, der Lesbenchor …) und bring sie ans Ziel. Jede Fahrt in Folge bringt mehr Geld, ab der dritten auch Ruf. Steigst du aus oder bist zu langsam, endet die Schicht.",
+        "Imperium: In der Handy-App „Imperium“ steigst du bei Läden, Bars und Clubs ein – vom Späti bis zum Club Prisma. Jedes Geschäft kostet Geld und braucht genug Ruf, zahlt dafür jeden Tag Einnahmen aus (auch für Tage, an denen du nicht gespielt hast, bis zu einer Woche) und bringt Ruf."
       ]
     },
     {
@@ -266,6 +274,14 @@
         "Hunger und kein Essen zu Hause? Die Ramen-Bar macht +50 Hunger satt.",
         "Bewohner*innen einmal am Tag besuchen bringt Kontakte.",
         "Die Arcade hat drei Gay-Life-Minispiele nebeneinander, gut für Glitzer-Rekorde."
+      ]
+    },
+    {
+      "t": "Geld verdienen wie ein Profi",
+      "list": [
+        "Fang mit dem Späti im Imperium an: Er kostet wenig und zahlt jeden Tag.",
+        "Taxi-Serien lohnen sich: Je länger du ohne Pause fährst, desto höher der Lohn.",
+        "Aufträge bringen Ruf – den brauchst du für die großen Clubs."
       ]
     }
   ],

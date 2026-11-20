@@ -63,8 +63,12 @@ try {
   check(true, 'Charakter-Editor öffnet');
   await p.fill('#cName', 'Testi');
   await ev(p, () => document.activeElement.blur());
-  await p.keyboard.press('ArrowDown'); await sleep(500); await p.keyboard.press('ArrowRight'); await sleep(1500);
-  check((await S(p)).palette === 'progress', 'Farbwelt mit ←/→ geändert');
+  const body0 = (await S(p)).body;
+  await p.keyboard.press('ArrowRight'); await sleep(2500);
+  check((await S(p)).body !== body0, 'Rocketbox-Figur mit ←/→ gewechselt');
+  const pr0 = (await S(p)).pronouns;
+  await p.keyboard.press('ArrowDown'); await sleep(500); await p.keyboard.press('ArrowRight'); await sleep(800);
+  check((await S(p)).pronouns !== pr0, 'Pronomen mit ←/→ geändert');
   for (let i = 0; i < 12 && !(await p.locator('.mi.sel b').innerText()).startsWith('Los'); i++) { await p.keyboard.press('ArrowUp'); await sleep(500); }
   await p.keyboard.press('Enter');
   await p.waitForFunction(() => window.__pc.city.mode === 'play', null, { timeout: 60000 });

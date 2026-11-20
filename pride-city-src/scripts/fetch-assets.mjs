@@ -1,4 +1,4 @@
-/* Lädt die KayKit-Modelle (CC0) für Stadt und Wohnung nach public/assets, falls sie fehlen. Die Figuren (Quaternius, CC0) liegen in public/assets/people im Repo.
+/* Lädt die KayKit-Modelle (CC0) für Stadt und Wohnung nach public/assets, falls sie fehlen. Die Menschen (Microsoft Rocketbox, MIT) liegen in public/assets/rb im Repo (scripts/rocketbox.mjs).
    Bei .gltf werden die verknüpften .bin- und Textur-Dateien mitgeladen. */
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 const R = 'https://raw.githubusercontent.com/KayKit-Game-Assets/';
