@@ -163,8 +163,10 @@
     UL.Audio.music('camp'); UL.Audio.atmo(theme === 'studio' ? 'studio' : 'jungle');
     UI.hint({ move: 'Laufen', run: 'Rennen', look: 'Kamera', ok: 'Kommando', menu: 'Buschtrommel', start: 'Pause' });
     await UI.fade(false, 0.4);
-    const me = meO.c;
-    const day = st.day = { energy: ENERGY, carry: null, event: false, eventT: UL.rand(25, 45), chestOpen: false, busy: false, done: false, talked: {} };
+    const me = UL.Show.vit(meO.c);
+    // hungrig oder müde: weniger Kraft für Aktionen
+    const MAXE = Math.max(2, ENERGY - (me.slp < 35 ? 1 : 0) - (me.hun < 30 ? 1 : 0));
+    const day = st.day = { energy: MAXE, carry: null, event: false, eventT: UL.rand(25, 45), chestOpen: false, busy: false, done: false, talked: {} };
     // Schatzkiste an manchen Tagen
     const chestSpots = [[-3, 9], [9.5, 8], [-10, 2], [4, -9], [-4, -9.5]];
     let chest = null;
@@ -172,12 +174,12 @@
     // Trag-Objekte
     const carryObj = { holz: R.log(0.8, 0.09), wasser: new T.Mesh(new T.CylinderGeometry(0.16, 0.13, 0.3, 10), R.mat(0x8a8f99)) };
     let chatT = 3;
-    if (!UL.bot) UI.toast(`Tag ${S.day}: Hilf im Camp, rede mit den anderen – du hast ${ENERGY} Aktionen.`, '🌴', 4200);
+    if (!UL.bot) UI.toast(`Tag ${S.day}: Hilf im Camp, rede mit den anderen – du hast ${MAXE} Aktionen.${MAXE < ENERGY ? (me.hun < 30 ? ' Dein Magen knurrt.' : '') + (me.slp < 35 ? ' Du bist todmüde.' : '') : ''}`, '🌴', 4200);
 
     const near = (p, r) => Math.hypot(meO.x - p.x, meO.z - p.z) < r;
     const rank0 = UL.Phone.rank(me).pos;
     const rankChip = () => { const r = UL.Phone.rank(me), d = rank0 - r.pos; return `<span class="chip ${d > 0 ? 'up' : d < 0 ? 'warn' : ''}">📺 Platz ${r.pos}/${r.n}${d > 0 ? ' ▲' : d < 0 ? ' ▼' : ''}</span>`; };
-    const hud = () => UI.hud(`<span class="chip big">📅 Tag ${S.day}/${S.days}</span><span class="chip">⚡ ${'●'.repeat(day.energy)}${'○'.repeat(ENERGY - day.energy)}</span><span class="chip">❤️ ${Math.round(me.sym)} · 😂 ${Math.round(me.ent)}</span>${rankChip()}${day.carry ? `<span class="chip">${day.carry === 'holz' ? '🪵 Holz' : '🪣 Wasser'}</span>` : ''}`);
+    const hud = () => UI.hud(`<span class="chip big">📅 Tag ${S.day}/${S.days}</span><span class="chip">⚡ ${'●'.repeat(day.energy)}${'○'.repeat(MAXE - day.energy)}</span><span class="chip ${me.hun < 30 ? 'warn' : ''}">🍗 ${Math.round(me.hun)}</span><span class="chip ${me.slp < 35 ? 'warn' : ''}">😴 ${Math.round(me.slp)}</span><span class="chip">❤️ ${Math.round(me.sym)} · 😂 ${Math.round(me.ent)}</span>${rankChip()}${day.carry ? `<span class="chip">${day.carry === 'holz' ? '🪵 Holz' : '🪣 Wasser'}</span>` : ''}`);
     hud();
 
     const spend = () => { day.energy--; hud(); };
@@ -656,6 +658,7 @@
         { label: 'Gerecht teilen', icon: '🤝', sub: 'Jeder bekommt gleich viel.', value: 1 },
         { label: 'Die größte Portion nehmen', icon: '😋', sub: 'Hunger ist Hunger. Die Zuschauer sehen alles.', value: 2 },
         { label: 'Verzichten – die anderen brauchen es mehr', icon: '💚', sub: 'Du gehst hungrig ins Bett.', value: 3 }]);
+      S.mealPick = i;
       if (i === 1) Show.change(me, { sym: 2 });
       else if (i === 2) { Show.change(me, { sym: -4, ent: 4 }); Show.alive().forEach(c => Show.rel(me, c, -3)); Show.log(`${me.name} schnappt sich die größte Portion.`, '😋'); }
       else if (i === 3) { Show.change(me, { sym: 5 }); me.mood = Math.max(0, me.mood - 0.2); Show.alive().forEach(c => Show.rel(me, c, 3)); Show.log(`${me.name} verzichtet aufs Essen.`, '💚'); }
