@@ -253,6 +253,19 @@ export async function buildUptown(w: World) {
     }
     tasks.push(w.place('city/dumpster.gltf', cx - 7.6, .1, cz - 7.8, 0), w.place('city/dumpster.gltf', cx - 5, .1, cz - 7.9, .1));
     tasks.push(w.car('car_sedan').then((o) => { o.position.set(cx - 5.2, .1, cz - 6); o.rotation.y = Math.PI; }), w.car('car_hatchback').then((o) => { o.position.set(cx + 5.2, .1, cz + 6.5); }));
+    // Garage Schraubenschlüssel: Werkstatt mit Rolltor, Reifenstapel und Leuchtschild (Fahrzeuge kaufen, lackieren, tunen)
+    const gx = cx + 5.5, gz = cz - 6.4;
+    const wall = pbr(sc, 0x3d4756, .7, .2), roof = pbr(sc, 0x20252e, .6, .4), door = pbr(sc, 0xc9ced6, .35, .8), stripe = pbr(sc, 0xffd23b, .5);
+    const body = box(sc, 7, 3.6, 5); body.material = wall; body.position.set(gx, 1.9, gz); still(body);
+    const top = box(sc, 7.4, .25, 5.4); top.material = roof; top.position.set(gx, 3.82, gz); still(top);
+    const gate = box(sc, 3.4, 2.7, .08); gate.material = door; gate.position.set(gx - 1.3, 1.45, gz + 2.52); still(gate, false);
+    for (let i = 0; i < 6; i++) { const r = box(sc, 3.4, .04, .1); r.material = roof; r.position.set(gx - 1.3, .4 + i * .45, gz + 2.55); still(r, false); }
+    const st = box(sc, 7.02, .3, .06); st.material = stripe; st.position.set(gx, 3.3, gz + 2.52); still(st, false);
+    const side = box(sc, 1.1, 2.1, .08); side.material = pbr(sc, 0x7a2a2a, .6); side.position.set(gx + 2.3, 1.15, gz + 2.52); still(side, false);
+    const tyre = pbr(sc, 0x15151a, .95);
+    for (let i = 0; i < 4; i++) { const t = box(sc, .75, .22, .75); t.material = tyre; t.position.set(gx + 3.1, .22 + i * .23, gz + 3.2); t.rotation.y = i * .5; still(t); }
+    w.neonSign('GARAGE', '#ffd23b', gx, 4.6, gz + 2.6, 0, undefined, 5);
+    w.colliders.push({ x: gx, z: gz, hx: 3.5, hz: 2.5 }, { x: gx + 3.1, z: gz + 3.2, hx: .45, hz: .45 });
   }
   /* ----- Kleiner Park mit Basketballplatz ----- */
   function pocketPark(cx: number, cz: number) {

@@ -248,6 +248,18 @@
         "Die Figur mit dem Symbol 🌆 über dem Kopf hat die nächste Mission. Nach dem Gespräch wählst du „Los geht’s“. Eine Lichtsäule und das Radar zeigen die Stationen, oben läuft die Zeit. Läuft sie ab, sprichst du die Figur einfach noch einmal an.",
         "Neue Figuren: Mama Vega (Neonplatz), Dee (Parkplatz unter der Hochbahn), Reporter Yusuf, Stadträtin Ines Okafor, Hochbahnfahrer Piet und die Bauunternehmerin Aurelia Kron. Niemand wird verletzt, am Ende steht ein Gespräch mit zwei möglichen Ausgängen."
       ]
+    },
+    {
+      "t": "Garage, eigener Wagen und Rennen",
+      "p": [
+        "In der Hochstadt steht auf dem Parkplatz unter der Hochbahn die Garage (🔧 auf dem Radar). Dort kaufst du eigene Autos: vom Bulli „Flower Power“ (600 €) über Pick-up, Geländewagen, Flitzer GTI und Sportcoupé „Blitz“ bis zum Rennwagen „Regenbogenpfeil“ (5000 €). Jedes Auto fährt sich anders: Tempo, Turbo, Antritt und Lenkung.",
+        "Dein eigener Wagen bleibt stehen, wo du aussteigst, und gilt nie als geklaut. In der Garage holst du ihn zurück, lackierst ihn um (40 €) und baust in drei Stufen mehr Turbo ein (300, 600, 1200 €)."
+      ],
+      "list": [
+        "Rennen: Vier Strecken mit 🏁 auf der Straße (Altstadtring, Brückensprint, Hochstadt-Grand-Prix, Stadtmarathon). Halte mit dem Auto an der Zielflagge an und starte. Du fährst gegen die Uhr durch die Tore, für Gold, Silber und Bronze gibt es Preisgeld und Ansehen.",
+        "Paketdienst Eilbote: im Handy unter Aufträge. Am Depot bei der Garage laden und ausliefern. Jede pünktliche Lieferung in Folge bringt mehr Lohn, mit Ladefläche (Kombi, Bulli, Lieferwagen, Pick-up) 25 % extra.",
+        "Bedienung wie immer: dieselben Tasten und Knöpfe an Handy, PC, TV und Controller."
+      ]
     }
   ],
   "ratgeber": [
@@ -368,6 +380,16 @@
         "Zwei Missionen gehen nur nachts. Die Figur bietet dir an, bis 21 Uhr zu warten.",
         "Für „Papierkrieg“ und die Ballnacht geht es über die Regenbogenbrücke in die Altstadt und zurück. Mit Turbo (Sprinttaste) reicht die Zeit gut."
       ]
+    },
+    {
+      "t": "Rennen und Garage",
+      "list": [
+        "Spar zuerst auf den Flitzer GTI (1200 €): Er lenkt am besten und reicht für Silber auf allen Strecken.",
+        "Turbo erst auf den Geraden zünden, vor Kurven vom Gas gehen. Ein Rempler kostet mehr Zeit als eine sauber gefahrene Kurve.",
+        "Preisgeld gibt es nur für eine bessere Medaille als bisher, sonst 15 € Antrittsgeld. Für Gold lohnt die dritte Turbo-Stufe.",
+        "Für den Paketdienst nimm einen Wagen mit Ladefläche und bleib in einem Viertel: kurze Wege halten die Serie am Leben.",
+        "Auto weg? Die Garage bringt deinen Wagen jederzeit kostenlos zurück."
+      ]
     }
   ],
   "loesung": [
@@ -483,6 +505,16 @@
         "7 Nacht der tausend Lichter (Vega, ab 21 Uhr): Boutique, Club Prisma, One Love Bar, zurück zum Neonplatz. 220 €.",
         "8 Das Kaleidoskop bleibt (Aurelia Kron, vor dem Turm): Entscheide dich für den gemeinsamen Bau oder den Rückzug, hol alle zum Platz. 1500 €, +10 Ruf und das Theater Kaleidoskop im Imperium (+180 € am Tag)."
       ]
+    },
+    {
+      "t": "Rennen: Goldzeiten",
+      "list": [
+        "Altstadtring: Gold unter 44 s (150 €), Silber 54 s, Bronze 70 s.",
+        "Brückensprint: Gold unter 40 s (200 €), Silber 50 s, Bronze 66 s.",
+        "Hochstadt-Grand-Prix: Gold unter 62 s (350 €), Silber 76 s, Bronze 98 s.",
+        "Stadtmarathon: Gold unter 78 s (500 €), Silber 95 s, Bronze 125 s.",
+        "Mit dem Rennwagen „Regenbogenpfeil“ und Turbo Stufe 3 ist überall Gold drin."
+      ]
     }
   ],
   "faq": [
@@ -501,6 +533,10 @@
     {
       "q": "Das Spiel ruckelt am Handy. Was tun?",
       "a": "Am Handy startet Pride City jetzt auf der sparsamen Grafikstufe und regelt die Auflösung selbst nach, bis es flüssig läuft. Unter Menü → Einstellungen → Grafik kannst du die Stufe auch fest auf „Niedrig“ stellen."
+    },
+    {
+      "q": "Gibt es Motorräder, Fahrräder oder Boote?",
+      "a": "Noch nicht. Es gibt zwölf Autos, vom Kleinwagen bis zum Rennwagen. Weitere Fahrzeugarten folgen, sobald passende freie Modelle vorliegen."
     }
   ]
 }
