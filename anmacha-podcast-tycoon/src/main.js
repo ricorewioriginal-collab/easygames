@@ -17,8 +17,12 @@
       progress(0.02, '3D-Grafik');
       await loadScript('../vendor/three-r128.min.js');
       await Promise.all(['../vendor/three-r128-gltfloader.js', '../figuren/figuren.js'].map(loadScript));
-      progress(0.05, '3D-Engine (Babylon.js)');
-      if (!/[?&]engine=three/.test(location.search)) await import(new URL('babylon/amc-babylon.js', document.baseURI).href).catch(e => console.warn('Babylon.js', e));
+      // 3D-Technik: Babylon.js zeichnet über eine Übersetzungsschicht und kostet am Handy ein Vielfaches an Rechenzeit (gemessen ~12×) –
+      // Handys und die App nutzen darum automatisch den schnellen klassischen Renderer, PCs Babylon. Einstellbar unter ⚙️ Einstellungen.
+      const eng = (Save.data.settings || {}).engine || 'auto', qs = location.search;
+      W.useBabylon = /[?&]engine=babylon/.test(qs) ? true : /[?&]engine=three/.test(qs) ? false : eng === 'babylon' ? true : eng === 'three' ? false : !U.isTouch();
+      progress(0.05, W.useBabylon ? '3D-Engine (Babylon.js)' : '3D-Engine');
+      if (W.useBabylon) await import(new URL('babylon/amc-babylon.js', document.baseURI).href).catch(e => console.warn('Babylon.js', e));
       progress(0.08, '3D-Modelle');
       const cv = U.$('view'); I.bindCanvas(cv);
       await W.init(cv, (f, l) => progress(0.08 + f * 0.82, l));
@@ -398,6 +402,7 @@
     const s = UI.open('<div class="panel glass"><header><h2>⚙️ Einstellungen</h2><button class="btn small" data-nav id="eBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
       rng('sMus', '🎵 Spielmusik', st.music) + rng('sSfx', '🔊 Effekte', st.sfx) + rng('sRad', '📻 Radio & Podcast', st.radio) +
       '<label class="set"><span>🖥️ Grafik</span><select data-nav id="sQ"><option value="auto">Automatisch</option><option value="low">Niedrig (schnell)</option><option value="mid">Mittel</option><option value="high">Hoch</option></select></label>' +
+      '<label class="set"><span>🧩 3D-Technik</span><select data-nav id="sEng"><option value="auto">Automatisch (Handy schnell, PC Babylon.js)</option><option value="three">Schnell (klassisch)</option><option value="babylon">Babylon.js</option></select></label>' +
       tog('sInv', '🎥 Kamera umkehren (oben/unten)', st.invert) + tog('sShake', '📳 Bildschirm wackeln', st.shake) + tog('sSub', '💬 Sprechblasen in der Aufnahme', st.subtitles !== false) + tog('sVoice', '🗣️ Stimmen (Szenen, Story, Aufnahme)', st.voice !== false) +
       '<label class="set"><span>🎯 Kamera-Empfindlichkeit</span><input type="range" min="0.4" max="2" step="0.1" value="' + st.sens + '" data-nav id="sSens"></label>' +
       '<button type="button" class="btn danger" data-nav id="sReset">🗑️ Spielstand zurücksetzen</button></div>', { back: () => UI.close(s) });
@@ -407,6 +412,7 @@
     $('sSfx').oninput = e => { st.sfx = +e.target.value; AMC.Audio.apply(); AMC.Audio.sfx('ui'); Save.save(); };
     $('sRad').oninput = e => { AMC.Media.setVolume(e.target.value); Save.save(); };
     $('sSens').oninput = e => { st.sens = +e.target.value; Save.save(); };
+    $('sEng').value = st.engine || 'auto'; $('sEng').onchange = e => { st.engine = e.target.value; Save.save(); UI.toast('🧩 3D-Technik wird beim nächsten Start übernommen.'); };
     $('sQ').value = st.quality; $('sQ').onchange = e => { st.quality = e.target.value; Save.save(); UI.toast('🖥️ Grafik wird beim nächsten Start übernommen.'); };
     $('sQ').addEventListener('keydown', e => { if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') e.preventDefault(); });
     s.o.onKey = () => { const f = s.focus; if (f && f.id === 'sQ' && (I.hit('left') || I.hit('right') || I.hit('ok'))) { const o = ['auto', 'low', 'mid', 'high'], i = (o.indexOf(f.value) + (I.hit('left') ? 3 : 1)) % 4; f.value = o[i]; f.onchange({ target: f }); AMC.Audio.sfx('tick'); return true; } return false; };
