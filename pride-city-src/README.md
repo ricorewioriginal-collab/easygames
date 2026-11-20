@@ -34,6 +34,7 @@ E2E-Test (Browser, SwiftShader): Server im Repo starten (`python3 -m http.server
 | `src/engine/Radio.ts` | Autoradio: 13 echte Sender (laut.fm, Stream und „Jetzt läuft“), vier Stadt-Sender als Ersatz ohne Netz |
 | `src/game/saga.ts` | Akt II „Die Lichter der Hochstadt“: acht Missionen, sechs Figuren, baut auf den Aufträgen (`gigs.ts`) auf |
 | `src/game/vehicles.ts` | Fuhrpark (Fahrwerte je Auto), Garage (Kauf, Lack, Turbo), Rennen mit Medaillen, Paketdienst |
+| `src/game/manage.ts` | Geschäft führen: Personal, Ausbauten, Beliebtheit, Veranstaltungen, Probleme (Auszahlung in `empire.ts`) |
 | `src/game/kerb.ts` | Laternenmeile: Hupen im Auto, Einsteigen, ruhige Ecke, Abblende (ab 18) |
 | `src/game/story.ts` | Figuren, fünf Kapitel bis zum Ende, Ziele (`goal`), automatische Fortschritte (`storyTick`), Gespräche, Entscheidungen (`save.flags`), Ende (`ending`) |
 | `src/game/life.ts` | Bedürfnisse, Stimmung, Uhrzeit und Tageswechsel, Tagesziele (aus Gay Life! übernommen) |

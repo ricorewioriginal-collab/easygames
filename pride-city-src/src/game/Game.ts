@@ -14,6 +14,7 @@ import { World } from './World';
 import { pianoSongs, pianoParts } from './minigames/showSongs';
 import { openGigs, GIGS, fmtTime } from './gigs';
 import { BUSINESSES, owns, owned, income, buy } from './empire';
+import { STAFF, UPGRADES, UP_MAX, SPECIAL, daily as bizDaily, staffOf, upOf, popOf, issueOf, eventReady, hire, upgrade, workIn, hostEvent, fixIssue, upCost, staffFee, fixCost, eventCost } from './manage';
 import { SHOP, RACES, PAINTS, PAINT_COST, TUNE_COST, MEDALS, ownsCar, myCar, tuneLevel, buyCar, buyTune, buyPaint, bestTime, medalFor, stats } from './vehicles';
 import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST, lichtPart, lichtLight, lfPart, lfGlow } from './story';
 import { LF_CHAPTERS, lfEnding, lfPct } from './leuchtfeuer';
@@ -43,6 +44,8 @@ function famSub(s: Game['save']['data']) {
   return sp ? `Verheiratet mit ${sp.name}${k ? ' · ' + k.name + ' wohnt bei euch' : s.flags.adopt ? ' · Adoption läuft' : ''}` : fi ? `Verlobt mit ${fi.name}` : 'Heiraten und Adoption';
 }
 
+/** Kaufpreis des Penthouse in der Hochstadt */
+export const PENTHOUSE = 6000;
 export class Game {
   engine: Engine;
   save = new Save();
@@ -473,9 +476,23 @@ export class Game {
     } else if (app === 'empire') {
       const list = BUSINESSES.map((b) => `<p>${b.icon} <b>${b.name}</b>${owns(s, b.id) ? ' · <b style="color:#3ee69a">gehört dir</b>' : ''}<br><small>${b.pitch}</small></p>`).join('');
       this.openMenu(frame('Imperium', `<div class="pbody"><p>Steig bei Läden, Bars und Clubs ein. Jedes Geschäft zahlt jeden Morgen aus und bringt Ruf.<br>💼 Einnahmen: <b>${income(s)} €</b> am Tag · 🌈 Ruf ${s.rep}</p>${list}</div>`), [
-        ...BUSINESSES.map((b) => ({ icon: b.icon, label: owns(s, b.id) ? `${b.name} ✓` : b.gift ? b.name : `${b.name} kaufen`, sub: owns(s, b.id) ? `+${b.daily} € am Tag` : b.gift || `${b.price} € · +${b.daily} €/Tag · ab ${b.need} Ruf`, disabled: owns(s, b.id) || !!b.gift,
-          fn: () => { const why = buy(s, b); if (why) { sfx('miss'); toast(why); return; } sfx('win'); this.hud.banner(`${b.icon} ${b.name} gehört jetzt dir!`, `+${b.daily} € jeden Tag · +${b.rep} Ruf`, 'good', 4000); this.save.write(); this.city.refreshHud(); this.phone('empire'); } })),
+        ...BUSINESSES.map((b) => ({ icon: b.icon, label: owns(s, b.id) ? `${b.name} ✓` : b.gift ? b.name : `${b.name} kaufen`, sub: owns(s, b.id) ? `${issueOf(s, b.id) ? '⚠️ Problem · ' : ''}+${bizDaily(s, b).net} € am Tag · führen: Personal, Ausbau, Events` : b.gift || `${b.price} € · +${b.daily} €/Tag · ab ${b.need} Ruf`, disabled: !owns(s, b.id) && !!b.gift,
+          fn: () => { if (owns(s, b.id)) { this.phone('biz_' + b.id); return; } const why = buy(s, b); if (why) { sfx('miss'); toast(why); return; } sfx('win'); this.hud.banner(`${b.icon} ${b.name} gehört jetzt dir!`, `+${b.daily} € jeden Tag · +${b.rep} Ruf`, 'good', 4000); this.save.write(); this.city.refreshHud(); this.phone('empire'); } })),
         { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app.startsWith('biz_')) {
+      // Geschäft führen: Personal, Ausbauten, Veranstaltung, Probleme (Regeln in manage.ts)
+      const b = BUSINESSES.find((x) => 'biz_' + x.id === app)!, sp = SPECIAL[b.id], d = bizDaily(s, b), st = staffOf(s, b.id), pop = popOf(s, b.id), iss = issueOf(s, b.id), wait = eventReady(s, b.id);
+      const again = () => this.phone(app), back = () => this.phone('empire');
+      const act = (why: string | null, ok: string) => { if (why) { sfx('miss'); toast(why); return; } sfx('win'); toast(ok); this.save.write(); this.city.refreshHud(); again(); };
+      const bar = (v: number, c: string) => `<span style="display:inline-block;width:120px;height:8px;border-radius:4px;background:#ffffff22;vertical-align:middle"><span style="display:block;width:${v}%;height:8px;border-radius:4px;background:${c}"></span></span>`;
+      this.openMenu(frame(b.name, `<div class="pbody"><p>${b.icon} <b>${d.net} € Gewinn am Tag</b><br><small>Umsatz ${d.gross} € · Lohn ${d.wage} €</small></p><p>💖 Beliebtheit ${bar(pop, pop >= 60 ? '#3ee69a' : '#ffb347')} ${pop}<br>👥 Personal: <b>${STAFF[st].name}</b><br><small>${STAFF[st].text}</small></p>${iss ? `<p>⚠️ <b>${iss.text}</b><br><small>Bis das geklärt ist, kommt nur der halbe Umsatz.</small></p>` : ''}</div>`), [
+        ...(iss ? [{ icon: '🧰', label: iss.fix, sub: `${fixCost(b)} € · Umsatz läuft wieder voll`, fn: () => act(fixIssue(s, b), 'Problem gelöst. Der Laden läuft wieder.') }] : []),
+        { icon: '🤝', label: 'Selbst mit anpacken', sub: s.flags[`mg_${b.id}_work`] === s.day ? 'heute schon erledigt' : '2 Stunden · +12 Beliebtheit · −10 Energie', disabled: s.flags[`mg_${b.id}_work`] === s.day, fn: () => { const why = workIn(s, b); if (why) { sfx('miss'); toast(why); return; } this.closeMenu(); this.fade(() => { this.pass(120); change(s, { energy: -10, social: 10, fun: 4 }); toast(`Zwei Stunden im ${b.name}. Die Gäste freuen sich, dich zu sehen. Beliebtheit +12`); this.save.write(); this.city.refreshHud(); this.touch.show(true); }); } },
+        { icon: '🎉', label: sp.event, sub: wait ? `wieder in ${wait} ${wait === 1 ? 'Tag' : 'Tagen'}` : `${eventCost(b)} € · Kasse morgen früh · +20 Beliebtheit · +2 Ruf`, disabled: !!wait, fn: () => { const why = hostEvent(s, b); if (!why) this.hud.banner(`🎉 ${sp.event}`, sp.eventText, 'good', 4200); act(why, 'Die Einnahmen kommen morgen früh.'); } },
+        { icon: '👥', label: st < STAFF.length - 1 ? `Einstellen: ${STAFF[st + 1].name}` : 'Personal: voll besetzt', sub: st < STAFF.length - 1 ? `${staffFee(b, st + 1) - staffFee(b, st)} € einmalig · Lohn ${Math.round(b.daily * STAFF[st + 1].wage)} €/Tag · Umsatz ×${STAFF[st + 1].mult}` : STAFF[st].text, disabled: st >= STAFF.length - 1, fn: () => act(hire(s, b, st + 1), `${STAFF[Math.min(STAFF.length - 1, st + 1)].name} eingestellt. Willkommen im Team!`) },
+        ...(st ? [{ icon: '👋', label: `Zurückstufen: ${STAFF[st - 1].name}`, sub: 'weniger Lohn, weniger Umsatz', fn: () => act(hire(s, b, st - 1), 'Das Team ist kleiner geworden.') }] : []),
+        ...UPGRADES.map((u) => { const l = upOf(s, b.id, u.id); return { icon: u.icon, label: `${u.id === 'extra' ? sp.extra : u.name} ${'★'.repeat(l)}${'☆'.repeat(UP_MAX - l)}`, sub: l >= UP_MAX ? 'voll ausgebaut' : `${upCost(b, l)} € · +12 % Umsatz${u.id === 'werbung' ? ' · +8 Beliebtheit' : ''} · ${u.id === 'extra' ? 'das gewisse Etwas' : u.text}`, disabled: l >= UP_MAX, fn: () => act(upgrade(s, b, u.id), `${u.id === 'extra' ? sp.extra : u.name}: Stufe ${l + 1}. Das spricht sich herum!`) }; }),
+        { icon: '←', label: 'Zurück', fn: back }], back, 'phone');
     } else if (app === 'glossary') {
       const g = GLOSSARY.filter(([, , a]) => !a || s.settings.adult);
       this.openMenu(frame('Glossar', `<div class="pbody">${g.map(([t, x]) => `<p><b>${t}</b><br>${x}</p>`).join('')}${s.settings.adult ? '' : '<p><small>Weitere Begriffe mit „Inhalte ab 18“ in den Optionen.</small></p>'}</div>`),
@@ -930,6 +947,9 @@ export class Game {
         { icon: '🗺️', label: 'Fahrplan', sub: 'Ziel wählen', fn: () => this.phone('map') }] },
       laterne: { t: 'Laternenmeile', d: s.settings.adult ? 'Rote Lichter, Leuchtschilder und nachts Sexarbeiter*innen am Bordstein. Fahr im Auto langsam vorbei und hup: Wer mag, kommt ans Fenster.' : 'Eine Straße mit roten Leuchtschildern. Hier ist vor allem nachts etwas los.', items: [
         { icon: '🚗', label: 'Wie läuft das?', sub: 'Im Auto anhalten und hupen', fn: () => { close(); this.dialog.say([{ who: 'Laternenmeile', color: '#ff2a55', text: s.settings.adult ? 'Nachts ab etwa 22 Uhr stehen hier Nico, Roxy, Teo und Jules. Fahr langsam heran und hup (Angriffstaste). Preis und Regeln werden vorher abgesprochen, das Kondom bringen sie mit.' : 'Hier gibt es nur etwas zu sehen, wenn „Inhalte ab 18“ in den Optionen eingeschaltet ist.' }, ...(s.settings.adult ? [{ who: 'Laternenmeile', color: '#ff2a55', text: 'Fahr danach an eine ruhige Ecke. Und Achtung: Sieht dich eine Streife dabei, gibt es einen Stern.' }] : [])]); } }] },
+      penthouse: { t: 'Penthouse Himmelblau', d: 'Die Concierge lächelt: „42. Stock, Whirlpool, Blick bis zum Hafen. Der Schlüssel gehört Ihnen, sobald die Unterschrift trocken ist.“', items: [
+        { icon: '🏙️', label: 'Penthouse kaufen', sub: `${PENTHOUSE} € · eigenes Zuhause über den Dächern: schlafen, Whirlpool, Gäste`, fn: () => { if (s.money < PENTHOUSE) { toast(`Dafür fehlen dir ${PENTHOUSE - s.money} €.`); sfx('miss'); return; } s.money -= PENTHOUSE; s.flags.penthouse = s.day; s.rep += 5; sfx('win'); this.save.write(); this.city.refreshHud(); close(); this.hud.banner('🏙️ Penthouse Himmelblau', 'Der Schlüssel gehört dir. Fahr hoch!', 'info', 3600); } },
+        { icon: '👀', label: 'Nur mal gucken', sub: 'Die Concierge zeigt dir Fotos', fn: () => { close(); this.dialog.say([{ who: 'Concierge Bente', color: '#9ad8ff', text: 'Bodentiefe Fenster nach Westen. Abends sehen Sie die Regenbogenbrücke leuchten, und morgens weckt Sie die Hochbahn. Ganz leise.' }]); } }] },
       samenbank: { t: 'Samenbank Zukunft', d: 'Hier spenden Menschen für Paare und Singles mit Kinderwunsch, auch für queere Familien. Diskret, ärztlich begleitet und nur für Erwachsene.', items: [
         { icon: '🧪', label: 'Spenden', sub: !s.settings.adult ? 'nur mit „Inhalten ab 18“' : s.flags.donate === s.day ? 'Heute schon gespendet. Morgen wieder.' : `+${DONATE} € · 45 Minuten · Test nicht älter als ${TEST_EVERY} Tage`, disabled: !s.settings.adult || s.flags.donate === s.day, fn: () => { close(); this.donate(); } },
         { icon: 'ℹ️', label: 'Wie läuft das ab?', sub: 'Ablauf, Rechte, Familien', fn: () => { close(); this.dialog.say([
@@ -947,6 +967,7 @@ export class Game {
         { icon: '✨', label: s.flags.barDeko ? 'Deko schon gekauft' : 'Deko kaufen', sub: '80 € · Discokugel und Neon · mehr Trinkgeld', disabled: !!s.flags.barDeko, fn: buy(80, 'Der Leuchtturm funkelt! ✨', () => { s.flags.barDeko = true; }) }] } : {
         t: 'Alte Lagerhalle', d: `Ein Schild an der Tür: „Zu vermieten – ${BAR_COST} € Startmiete“. Platz für einen ganzen Club.`, items: [] },
     };
+    { const bz = BUSINESSES.find((x) => x.poi === id && owns(s, x.id)); if (P[id] && bz) P[id].items.unshift({ icon: '📊', label: 'Dein Geschäft führen', sub: `${issueOf(s, bz.id) ? '⚠️ Problem · ' : ''}+${bizDaily(s, bz).net} € am Tag · Personal, Ausbau, Events`, fn: () => { this.closeMenu(); this.phone('biz_' + bz.id); } }); }
     for (const pr of PROFILES) {
       const r = s.dates[pr.id];
       if (P[id] && r && r.plan === s.day && r.at === id) P[id].items.unshift({ icon: '💘', label: `Date mit ${pr.name}`, sub: `${pr.age} · ${pr.pron} · ${DATE_STAGE[r.st]}`, fn: () => { close(); this.runDate(pr.id); } });

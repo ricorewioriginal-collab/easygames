@@ -15,7 +15,7 @@ import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
 import type { Marker } from '../ui/Hud';
 import { type Gig, pickCall, fmtTime } from './gigs';
-import { collect, nextFare } from './empire';
+import { collect, collectNotes, nextFare } from './empire';
 import { Street, type Parked } from './Street';
 import { PLACE_THEMES, houseTheme } from './interiors';
 import { Combat } from './Combat';
@@ -216,7 +216,7 @@ export class CityScene implements GameScene {
     if (this.mode !== 'play' && this.g.where === 'city') return;
     const s = this.g.save.data, gl = goal(s);
     const paid = collect(s);
-    if (paid) { sfx('coin'); this.g.hud.banner('💼 Einnahmen deines Imperiums', `+${paid} € aus deinen Geschäften`, 'good', 3600); this.g.save.write(); }
+    if (paid) { sfx('coin'); this.g.hud.banner('💼 Einnahmen deines Imperiums', `+${paid} € aus deinen Geschäften`, 'good', 3600); collectNotes.slice(0, 3).forEach((n, i) => setTimeout(() => toast(n), 3800 + i * 2600)); this.g.save.write(); }
     const nk = arrive(s);
     if (nk) { sfx('win'); this.g.hud.banner('👶 Willkommen zu Hause!', `${nk.name} ist bei euch eingezogen. Schau in deiner Wohnung vorbei.`, 'good', 5000); this.g.save.write(); void this.g.home?.syncFamily(); }
     this.world.traces.visible = s.settings.adult;
@@ -332,6 +332,7 @@ export class CityScene implements GameScene {
     sfx('door'); this.g.placeMenu(this.near.id);
   }
 
+    if (this.near.id === 'penthouse' && !this.g.save.data.flags.penthouse) { sfx('door'); this.g.placeMenu('penthouse'); return; }
   /** Gespräch mit einer Story-Figur starten (z. B. aus einem Ortsmenü) */
   talkTo(id: string) { const c = this.ctx(); talk(c, id); }
 

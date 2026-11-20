@@ -8,7 +8,7 @@ import {
 import { instance, preload } from '../engine/Assets';
 import { planeZ, ground, box, cyl, sphere, ring, torus, pbr, glow, canvasTex } from '../engine/geo';
 import { PALETTES } from './palettes';
-import { buildUptown, EAST, BRIDGE } from './uptown';
+import { buildUptown, EAST, BRIDGE, UPTOWN_PLACES, doorStep } from './uptown';
 
 export const TILE = 10;
 const S = TILE / 2; // KayKit-Kacheln sind 2 Einheiten breit
@@ -179,6 +179,7 @@ export class World {
     P('tramhoch', 'Hochbahn Hochstadt', '🚇', 157, 22, undefined, undefined, 3.6);
     P('laterne', 'Laternenmeile', '🏮', 105, -27, undefined, undefined, 2);
     P('garage', 'Garage Schraubenschlüssel', '🔧', 170.5, -47.4, undefined, undefined, 2.6);
+    for (const u of UPTOWN_PLACES) { const d = doorStep(u); P(u.id, u.name, u.icon, d.x, d.z, undefined, undefined, 2.2); }
   }
 
   async place(path: string, x: number, y: number, z: number, rot: number, s = S, flat = false, cast = true) {
