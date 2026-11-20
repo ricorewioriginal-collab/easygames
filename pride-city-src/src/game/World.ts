@@ -130,7 +130,8 @@ export class World {
       if (house) this.houses.push(house);
       tasks.push(this.place(C(kind), x, .1, z, rot).then((o) => {
         const r = this.footprint(o, x, z);
-        this.blocks.push({ r, o });
+        const u = this.bounds(o, 2.6, 4.6, this.foot2);
+        this.blocks.push({ r, o, n: u ? { x: (u[0] + u[1]) / 2, z: (u[2] + u[3]) / 2, hx: (u[1] - u[0]) / 2, hz: (u[3] - u[2]) / 2 } : r });
         // Haustür direkt vor die echte Fassade legen (keine Klingel mitten auf dem Gehweg)
         if (house) { const sx = Math.round(Math.sin(rot)), sz = Math.round(Math.cos(rot)), d = sx ? r.hx + (r.x - x) * sx : r.hz + (r.z - z) * sz; house.x = x + Math.sin(rot) * (d + .7); house.z = z + Math.cos(rot) * (d + .7); }
       }));
@@ -193,17 +194,24 @@ export class World {
   }
   /** Kollision eines Hauses aus seinem echten Grundriss: nur Teile, die bis zum Boden reichen (Markisen und Schilder oben zählen nicht) */
   private foot = new Map<string, number[] | null>();
+  private foot2 = new Map<string, number[] | null>();
   private footprint(o: TransformNode, x: number, z: number) {
+    const b = this.bounds(o, .5, 2.2, this.foot);
+    const r: Rect = b ? { x: (b[0] + b[1]) / 2, z: (b[2] + b[3]) / 2, hx: Math.max(1, (b[1] - b[0]) / 2 - .1), hz: Math.max(1, (b[3] - b[2]) / 2 - .1) } : { x, z, hx: TILE * .4, hz: TILE * .4 };
+    this.colliders.push(r); return r;
+  }
+  /** Ausdehnung eines Hauses in einer Höhenschicht (Weltkoordinaten: x0, x1, z0, z1) */
+  private bounds(o: TransformNode, lo: number, hi: number, cache: Map<string, number[] | null>) {
     let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
     for (const m of o.getChildMeshes()) {
       // Grundriss aus den Wänden im Erdgeschoss (0,5–2,2 m), ohne Gehweg-Platte, Markisen und Schilder
-      let f = this.foot.get(m.name);
+      let f = cache.get(m.name);
       if (f === undefined) {
         const pos = m.getVerticesData('position'); f = null;
         if (pos) { const sy = m.absoluteScaling.y || 1, oy = m.absolutePosition.y; let a = Infinity, b = -Infinity, c = Infinity, d = -Infinity;
-          for (let i = 0; i < pos.length; i += 3) { const y = pos[i + 1] * sy + oy; if (y < .5 || y > 2.2) continue; a = Math.min(a, pos[i]); b = Math.max(b, pos[i]); c = Math.min(c, pos[i + 2]); d = Math.max(d, pos[i + 2]); }
+          for (let i = 0; i < pos.length; i += 3) { const y = pos[i + 1] * sy + oy; if (y < lo || y > hi) continue; a = Math.min(a, pos[i]); b = Math.max(b, pos[i]); c = Math.min(c, pos[i + 2]); d = Math.max(d, pos[i + 2]); }
           if (isFinite(a)) f = [a, b, c, d]; }
-        this.foot.set(m.name, f);
+        cache.set(m.name, f);
       }
       if (!f) continue;
       const wm = m.getWorldMatrix();
@@ -212,8 +220,7 @@ export class World {
         x0 = Math.min(x0, q.x); x1 = Math.max(x1, q.x); z0 = Math.min(z0, q.z); z1 = Math.max(z1, q.z);
       }
     }
-    const r: Rect = isFinite(x0) ? { x: (x0 + x1) / 2, z: (z0 + z1) / 2, hx: Math.max(1, (x1 - x0) / 2 - .1), hz: Math.max(1, (z1 - z0) / 2 - .1) } : { x, z, hx: TILE * .4, hz: TILE * .4 };
-    this.colliders.push(r); return r;
+    return isFinite(x0) ? [x0, x1, z0, z1] : null;
   }
   /** feste Teile: Weltmatrix einfrieren (spart Rechenzeit) */
   still(m: AbstractMesh, cast = true, receive = true) {
@@ -662,7 +669,7 @@ export class World {
   }
 
   /* Neon-Schilder über den Türen (leuchten nachts, Bloom auf hoher Stufe) */
-  private blocks: Array<{ r: Rect; o: TransformNode }> = [];
+  private blocks: Array<{ r: Rect; o: TransformNode; n: Rect }> = [];
   private pools: PBRMaterial[] = [];
   /** Jedes Haus der Innenstadt in einer eigenen kräftigen Farbe (Farbe je Instanz, die Bauteile bleiben geteilt) */
   private paintHouses() {
@@ -683,8 +690,8 @@ export class World {
     const tube = (x: number, y: number, z: number, sx: number, sy: number, sz: number, hexc: string) => {
       mt.push(...Matrix.Compose(new Vector3(sx, sy, sz), Quaternion.Identity(), new Vector3(x, y, z)).asArray()); const k = col(hexc); cl.push(k.r, k.g, k.b, 1);
     };
-    this.blocks.forEach(({ r }, i) => {
-      const a = NEON[i % 8], b = NEON[(i + 3) % 8], T = .1, y = 3.5, ex = r.hx + .17, ez = r.hz + .17;
+    this.blocks.forEach(({ n: r }, i) => {
+      const a = NEON[i % 8], b = NEON[(i + 3) % 8], T = .1, y = 3.5, ex = r.hx + .07, ez = r.hz + .07;
       tube(r.x, y, r.z - ez, ex * 2, T, T, a); tube(r.x, y, r.z + ez, ex * 2, T, T, a); tube(r.x - ex, y, r.z, T, T, ez * 2, a); tube(r.x + ex, y, r.z, T, T, ez * 2, a);
       for (const sx of [-1, 1]) for (const sz of [-1, 1]) tube(r.x + sx * ex, y / 2 + .1, r.z + sz * ez, T, y - .2, T, b);
     });
