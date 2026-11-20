@@ -20,12 +20,12 @@ export async function createBPhys({ T, scene3, hgt, COL, HOUSES, max = 28, life 
   const hk = await HavokPhysics(wasmBinary ? { wasmBinary } : { locateFile: () => wasmUrl });
   const engine = new NullEngine(), scene = new Scene(engine);
   scene.enablePhysics(new Vector3(0, -18, 0), new HavokPlugin(true, hk));   /* etwas mehr Fall als echt: wirkt knackiger, wie im Vorbild */
-  const pe = scene.getPhysicsEngine(), G = 8, N = 16, _v = new Vector3(), _p = new Vector3();
+  const pe = scene.getPhysicsEngine(), G = 12, N = 20, _v = new Vector3(), _p = new Vector3();
   let statics = [], gx = 1e9, gz = 1e9, pieces = [], acc = 0, ms = 0;
   const geo = new T.BoxGeometry(1, 1, 1);
   const dropStatics = () => { for (const s of statics) { s.agg.dispose(); s.mesh.dispose(); } statics = []; gx = gz = 1e9; };
   const addStatic = (mesh, type) => { mesh.computeWorldMatrix(true); statics.push({ mesh, agg: new PhysicsAggregate(mesh, type, { mass: 0, friction: .8, restitution: .25 }, scene) }); };
-  /* Boden (aus der Höhenfunktion des Spiels) und Hindernisse im Umkreis von G Metern um (x,z) */
+  /* Boden (aus der Höhenfunktion des Spiels) und Hindernisse im Umkreis von G Metern (Boden 24 × 24 m) um (x,z) */
   function ground(x, z) {
     if (Math.hypot(x - gx, z - gz) < G * .4) return; dropStatics(); gx = x; gz = z;
     const pos = [], idx = [], st = 2 * G / N;
@@ -64,6 +64,7 @@ export async function createBPhys({ T, scene3, hgt, COL, HOUSES, max = 28, life 
         const k = .6 * Math.min(sp, 9); p.agg.body.applyImpulse(_v.set((vx / sp * .7 + dx / (d || 1) * .3) * k * .6, (1.2 + sp * .12) * .6, (vz / sp * .7 + dz / (d || 1) * .3) * k * .6), b); } }
     const t0 = performance.now(); acc = Math.min(acc + dt, .05); let k = 0; while (acc >= 1 / 60 && k < 3) { pe._step(1 / 60); acc -= 1 / 60; k++; } ms = performance.now() - t0;
     for (let i = pieces.length - 1; i >= 0; i--) { const p = pieces[i]; p.t -= dt; if (p.kc > 0) p.kc -= dt; const b = p.bm.position, q = p.bm.rotationQuaternion;
+      if (p.t > .35 && (Math.abs(b.x - gx) > G - .6 || Math.abs(b.z - gz) > G - .6)) p.t = .35;   /* fliegt ein Teil über den Rand des Physik-Bodens hinaus, verschwindet es sofort (sonst fiele es durch die Welt) */
       if (p.t <= 0 || b.y < hgt(b.x, b.z) - 6) { kill(p); pieces.splice(i, 1); continue; }
       p.m.position.set(b.x, b.y, b.z); p.m.quaternion.set(q.x, q.y, q.z, q.w); if (p.t < 1) { const s = Math.max(.01, p.t); p.m.scale.set(p.w * s, p.h * s, p.d * s); } }
     return k;
