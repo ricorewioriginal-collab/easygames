@@ -172,10 +172,19 @@ export function createKayKit({ T, G, TOUCH }) {
       g.scene.updateMatrixWorld(true); g.scene.traverse(m => { if (m.isSkinnedMesh) m.skeleton.update(); });
       if (!H['sf' + id]) { const b = new T.Box3().setFromObject(g.scene, true); H['sf' + id] = { h: Math.max(1e-4, b.max.y - b.min.y), y: b.min.y }; }
       const q = H['sf' + id], sc = (o.h || 1.7) / q.h; c.scale.setScalar(sc); c.position.y = -q.y * sc; if (o.ry) c.rotation.y = o.ry;
-      const body = new T.Group(); body.add(c); root.add(body); P.body = body; P.model = c; P.ready = true;
+      const body = new T.Group(); body.add(c); root.add(body); P.body = body; P.model = c;
+      if (g.animations.length) {   // eigene Bewegungen des Modells: Stehen, Gehen/Laufen, Angriff, Tod
+        const A = g.animations, f = r => A.find(a => r.test(a.name)), mx = new T.AnimationMixer(c), ac = a => a && mx.clipAction(a);
+        const walk = f(/walk|run|swim/i) || A[0];
+        P.mixer = mx; P.cl = { idle: ac(f(/idle/i) || walk), walk: ac(walk), atk: ac(f(/attack|bite/i)), die: ac(f(/death|die/i)) };
+        if (P.cl.die) { P.cl.die.setLoop(T.LoopOnce); P.cl.die.clampWhenFinished = true; }
+        P.cl.idle.play(); P.ca = P.cl.idle; P.ca.time = Math.random() * P.ca.getClip().duration;
+      }
+      P.ready = true;
     }).catch(() => { });
     LIVE.add(P); return P;
   }
+  function sfClip(P, a, k = 1) { if (!a || P.ca === a) { if (P.ca) P.ca.timeScale = k; return; } a.reset(); a.timeScale = k; a.play(); if (P.ca) P.ca.crossFadeTo(a, .2, false); P.ca = a; }
   const _q = new T.Quaternion(), _ax = new T.Vector3();
   /* Knochen um eine Achse im Figurenraum drehen (unabhängig von der Achsenlage im Modell) */
   function rot(P, n, x, y, z) { const b = P.bones[n], r = P.rest[n]; if (!b) return; b.quaternion.copy(r.q);   // Reihenfolge: erst z (Arme senken), dann y, dann x (Schwingen)
@@ -184,6 +193,12 @@ export function createKayKit({ T, G, TOUCH }) {
     if (x) { _q.setFromAxisAngle(_ax.set(1, 0, 0), x); b.quaternion.premultiply(r.pwi.clone().multiply(_q).multiply(r.pw)); } }
   function procAnim(P, dt) {
     const v = P.spd, a = P.swing, B = P.body;
+    if (P.sf && P.mixer) {
+      const C = P.cl; if (P.dead > 0) { P.dead += dt; if (C.die) sfClip(P, C.die); else { const k = Math.min(1, P.dead / .6); B.rotation.z = 1.5 * k * k; } P.mixer.update(dt); P.cur = 'Death'; return; }
+      B.rotation.z = 0; const h = P.hit > 0 ? (P.hit -= dt) / .25 : 0;
+      if (a > 0 && C.atk) sfClip(P, C.atk); else if (v > .05) sfClip(P, C.walk, Math.min(1.6, .5 + v)); else sfClip(P, C.idle);
+      B.rotation.x = a > 0 && !C.atk ? a * .4 : -.25 * h; P.mixer.update(dt); P.cur = a > 0 ? 'Attack' : v > .05 ? 'Walk' : 'Idle'; return;
+    }
     if (P.sf) {
       if (P.dead > 0) { P.dead += dt; const k = Math.min(1, P.dead / .6); B.rotation.x = -1.45 * k * k; B.position.y = .05 * k; P.cur = 'Death'; return; }
       P.ph += dt * (3 + v * 7); const h = P.hit > 0 ? (P.hit -= dt) / .25 : 0, w = Math.min(1, v * 1.2);
