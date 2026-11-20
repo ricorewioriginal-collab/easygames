@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "23fead61df0a",
- "generated": "2026-11-20T19:42:52+00:00",
- "commit": "6938f7323d181ebb1929bf903761c58458ee74a6",
+ "version": "fd4bd8420b6e",
+ "generated": "2026-11-20T19:42:51+00:00",
+ "commit": "7afd83b11dcad08195d9d1463f380df39aaf038c",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7883,8 +7883,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/assets.js",
-   "s": 29971,
-   "h": "0fcb38cebcd604310c5f3cf17e03c201b08e66a96cf2271e669b6c0e0d25dc30"
+   "s": 27040,
+   "h": "901beca33abf24f21a5f08d471fa7921ba196dbe1ebdab64658001bc92cdfedb"
   },
   {
    "p": "anmacha-urwaldlager/js/audio.js",
@@ -7893,8 +7893,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/camp.js",
-   "s": 66220,
-   "h": "5bd41a93a075d1a8dd577b9f2439eb59d539e286660495e522b30ed6614f9ec8"
+   "s": 64963,
+   "h": "6fcc1391d4abdc1c640bca4624e5c0919450cae60294852dc1011f0c31054171"
   },
   {
    "p": "anmacha-urwaldlager/js/core.js",
@@ -7918,8 +7918,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/menus.js",
-   "s": 23907,
-   "h": "74b24bb6db25fb3fab620f59ca0193a1ce20bf3ae6c57fa1e1e9234bd235e23d"
+   "s": 23699,
+   "h": "ce0cf4171fd7e50293b1743b80fc2e0868b6e1f1d5fb146210091706b32649e5"
   },
   {
    "p": "anmacha-urwaldlager/js/phone.js",
@@ -7928,8 +7928,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/progress.js",
-   "s": 4292,
-   "h": "a64e4f17876ed08563aaec3d9053bda3ea9126c2ce17f6a1a5594af3041eff65"
+   "s": 4294,
+   "h": "7d9e36421f27c6fcaf40a1d3c70a5fd0e75ec0022d3dae43262555c81df5cd15"
   },
   {
    "p": "anmacha-urwaldlager/js/render.js",
@@ -11008,8 +11008,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 21313,
-   "h": "066d59352c4efeee7fe799bcfd4d93d71a5a00b5b60a82d4395019d426535570"
+   "s": 21328,
+   "h": "7e868c4db43aef56b20d20053ba9750b5d6dae6b4250464f6658674e8c41547b"
   },
   {
    "p": "guides/beat-studio.json",
@@ -16414,7 +16414,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236363,
-   "h": "b60c92712decf86a270fece37190c872b908b0b251345c34168ec78298390b24"
+   "h": "ce7961c1bd0140392a08644e404daf24b97f0987a1dd94b4a2d3a02c229ff14f"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
