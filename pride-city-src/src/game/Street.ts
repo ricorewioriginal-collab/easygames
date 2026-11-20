@@ -92,11 +92,12 @@ export class Street {
     this.world.cars.push({ o: truck, path: [new THREE.Vector3(57, .1, -33), new THREE.Vector3(-57, .1, -33)], seg: 0, u: .3, v: 6 });
     // Geparkte Autos zum Einsteigen
     const spots: Array<[string, string, number, number, number]> = [
-      ['car_hatchback', 'Kleinwagen', 8.6, 47, Math.PI], ['car_sedan', 'Limousine', -8.6, 26, 0],
-      ['car_taxi', 'Taxi', -24, 8.6, Math.PI / 2], ['car_stationwagon', 'Kombi', -66, 14, 0],
+      // am Fahrbahnrand der ruhigen Querstraße z = 30 (vorher teils im Haus oder auf dem Gehweg)
+      ['car_hatchback', 'Kleinwagen', 11, 32.7, -Math.PI / 2], ['car_sedan', 'Limousine', -11, 27.3, Math.PI / 2],
+      ['car_taxi', 'Taxi', -20, 27.3, Math.PI / 2], ['car_stationwagon', 'Kombi', -66, 14, 0],
     ];
     for (const [file, name, x, z, yaw] of spots) {
-      const o = await instance('city/' + file + '.gltf');
+      const o = await instance('city/' + file + '.gltf'); this.world.tune('car_', o);
       o.scale.setScalar(5); o.position.set(x, .1, z); o.rotation.y = yaw; this.root.add(o);
       this.parked.push({ o, name, yaw, v: 0 });
     }

@@ -1,6 +1,7 @@
 /* Stadt-Szene: Rainbow City zum Herumlaufen (Spielmodus) und als Kulisse fürs Titelmenü (Kameraflug, tanzende Leute). */
 import * as THREE from 'three';
 import type { GameScene } from '../engine/Engine';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { Actor, streetLook, playerLook } from './Actor';
 import { World, walkable } from './World';
 import { NPCS, CHAPTERS, goal, talk, poi as storyPoi, marks, hidden, storyTick, chapterLabel, type NpcDef, type StoryCtx } from './story';
@@ -43,6 +44,9 @@ export class CityScene implements GameScene {
 
   async build() {
     this.world = new World(this.root);
+    // Umgebungskarte für Spiegelungen auf Autos, Glas und nassen Straßen
+    const pm = new THREE.PMREMGenerator(this.g.engine.renderer);
+    this.root.environment = pm.fromScene(new RoomEnvironment(), .04).texture; pm.dispose();
     await this.world.build();
     const s = this.g.save.data;
     this.player = await Actor.create(streetLook(playerLook(s)));
@@ -68,6 +72,19 @@ export class CityScene implements GameScene {
     }
     this.street = new Street(this.root, this.world);
     await this.street.build();
+    this.g.hud.setRadarMap((c, px) => {
+      c.fillStyle = '#123a52'; c.fillRect(0, 0, 512, 512);                       // Wasser
+      c.fillStyle = '#3c4f45'; c.fillRect(px(-65), px(-65), 130 * 2, 130 * 2);   // Innenstadt
+      c.fillStyle = '#9b8f7a'; c.fillRect(px(-92), px(-35), 27 * 2, 80 * 2);      // Kai
+      c.fillStyle = '#d8c48a'; c.fillRect(px(-97), px(17), 6 * 2, 26 * 2);        // Strand
+      c.fillStyle = '#7a5a3a'; c.fillRect(px(-111), px(-3.4), 20 * 2, 2.8 * 2);   // Steg
+      c.fillStyle = '#4c7a4a'; c.fillRect(px(35), px(35), 20 * 2, 20 * 2);        // Park
+      c.fillStyle = '#c9ccd6';
+      for (let i = -60; i <= 60; i += 30) { c.fillRect(px(-64), px(i - 3.6), 128 * 2, 7.2 * 2); c.fillRect(px(i - 3.6), px(-64), 7.2 * 2, 128 * 2); }
+      c.fillRect(px(-80), px(-1.8), 20 * 2, 3.6 * 2);                             // Kaistraße
+    });
+    // Verkehr hält vor geparkten und vom Spieler gefahrenen Autos
+    this.world.extraBlock = (x, z) => this.street.parked.some((c) => Math.hypot(c.o.position.x - x, c.o.position.z - z) < 2.6);
     this.buildStickers();
   }
 
@@ -155,7 +172,7 @@ export class CityScene implements GameScene {
       barShift: (done) => g.barShift(done),
       credits: () => g.ending(),
       card: (k, t, x) => g.chapterCard(k, t, x),
-      roman: (id) => g.roman(id),
+      roman: (id, game, done) => g.roman(id, game, done),
     };
   }
 
@@ -332,6 +349,43 @@ export class CityScene implements GameScene {
     if (snap || f < 1) this.camPos.lerp(want, snap ? 1 : Math.min(1, dt * 20)); else this.camPos.lerp(want, Math.min(1, dt * 8));
     this.camera.position.copy(this.camPos);
     this.camera.lookAt(tgt);
+    this.clearView(tgt);
+  }
+
+  private radarT = 0;
+  enter() { this.g.hud.radarOn(true); }
+  exit() { this.g.hud.radarOn(false); }
+  /** Missionsmarker wie im Open-World-Krimi: leuchtende Lichtsäule über dem Ziel */
+  private beam: THREE.Mesh | null = null;
+  private goalBeam(p: THREE.Vector3 | undefined, t: number) {
+    if (!this.beam) {
+      const m = new THREE.MeshBasicMaterial({ color: 0xff3fb0, transparent: true, opacity: .35, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, toneMapped: false });
+      this.beam = new THREE.Mesh(new THREE.CylinderGeometry(.9, .9, 14, 20, 1, true).translate(0, 7, 0), m);
+      const ring = new THREE.Mesh(new THREE.RingGeometry(1.1, 1.45, 32).rotateX(-Math.PI / 2), m); ring.position.y = .15; this.beam.add(ring);
+      this.root.add(this.beam);
+    }
+    this.beam.visible = !!p && this.mode === 'play';
+    if (!p) return;
+    this.beam.position.set(p.x, 0, p.z);
+    (this.beam.material as THREE.MeshBasicMaterial).opacity = .22 + Math.sin(t * 3) * .08;
+  }
+
+  /** Laternen, Masten, Bänke und Bäume zwischen Kamera und Figur ausblenden, statt durch sie hindurchzuschauen */
+  private hidden = new Set<THREE.Object3D>();
+  private clearView(tgt: THREE.Vector3) {
+    const c = this.camPos, sx = tgt.x - c.x, sz = tgt.z - c.z, len2 = sx * sx + sz * sz || 1;
+    const now = new Set<THREE.Object3D>();
+    for (const q of this.world.props) {
+      const dx = q.x - c.x, dz = q.z - c.z;
+      if (dx * dx + dz * dz > 400) continue;
+      const u = (dx * sx + dz * sz) / len2;
+      if (u > .92) continue;
+      const cu = Math.max(0, u), ex = c.x + sx * cu - q.x, ez = c.z + sz * cu - q.z;
+      if (ex * ex + ez * ez < (q.r + .55) ** 2) q.o.forEach((o) => now.add(o));
+    }
+    this.hidden.forEach((o) => { if (!now.has(o)) o.visible = true; });
+    now.forEach((o) => (o.visible = false));
+    this.hidden = now;
   }
 
   /* ---------- Bild für Bild ---------- */
@@ -388,7 +442,17 @@ export class CityScene implements GameScene {
 
     this.hudT -= dt;
     if (this.hudT <= 0) { this.hudT = .5; if (!busy) storyTick(this.ctx()); this.refreshHud(); if (mood(s) >= 75 && !busy) g.done(track(s, 'mood')); }
-    g.hud.markers(busy ? [] : this.markers(), this.camera);
+    const mk = busy ? [] : this.markers();
+    g.hud.markers(mk, this.camera);
+    if ((this.radarT -= dt) <= 0) {
+      this.radarT = 1 / 20;
+      const pp = this.player.root.position;
+      g.hud.radar(pp.x, pp.z, this.cam.yaw, [
+        ...this.world.pois.filter((q) => Math.hypot(q.x - pp.x, q.z - pp.z) < 60).map((q) => ({ x: q.x, z: q.z, icon: q.icon })),
+        ...mk.map((m) => ({ x: m.pos.x, z: m.pos.z, color: m.id === 'g' ? '#ff3fb0' : '#ffd23b', goal: m.id === 'g' })),
+      ]);
+    }
+    this.goalBeam(mk.find((m) => m.id === 'g')?.pos, t);
     if (!busy) {
       this.findNear();
       const inp = g.engine.input;
@@ -412,6 +476,11 @@ export class CityScene implements GameScene {
       const sp = (run ? 7.8 : 4.4) * Math.min(1, mag);
       p.x += (dx / mag) * sp * dt * Math.min(1, mag); p.z += (dz / mag) * sp * dt * Math.min(1, mag);
       this.world.collide(p, .45);
+      // Figuren schieben sich sanft auseinander, statt ineinander zu laufen
+      const bump = (q: THREE.Vector3, m: number) => { const dx = p.x - q.x, dz = p.z - q.z, d = Math.hypot(dx, dz); if (d < m && d > 0) { p.x += dx / d * (m - d); p.z += dz / d * (m - d); } };
+      for (const n of this.npcs) bump(n.a.root.position, .75);
+      for (const n of this.street.people) if (n.a.root.visible) bump(n.a.root.position, .75);
+      if (this.world.night > .5) for (const a of this.crowd) bump(a.root.position, .75);
       for (const c of this.street.parked) { const dx = p.x - c.o.position.x, dz = p.z - c.o.position.z, d = Math.hypot(dx, dz); if (d < 1.9 && d > 0) { p.x += dx / d * (1.9 - d); p.z += dz / d * (1.9 - d); } }
       const want = Math.atan2(dx, dz);
       let d = want - this.player.root.rotation.y; d = Math.atan2(Math.sin(d), Math.cos(d));

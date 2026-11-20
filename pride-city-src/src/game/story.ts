@@ -52,7 +52,7 @@ export const CHAPTERS = [
 export interface StoryCtx {
   s: SaveData;
   /** Original-Romanspiel im Vollbild öffnen (alle Kapitel, Minispiele, Figuren) */
-  roman?(id: 'licht' | 'leuchtfeuer'): void;
+  roman?(id: 'licht' | 'leuchtfeuer', game?: string, done?: () => void): void;
   say(lines: Line[], done?: () => void): void;
   toast(t: string): void;
   reward(money: number, rep: number, why: string): void;
@@ -572,7 +572,6 @@ export function licht(c: StoryCtx) {
   if (i >= sideOpen(s, LICHT_CHAPTERS.length)) { c.say([LP('leon', sideWait(s))]); return; }
   c.say([LP('leon', i === 0 ? 'Wo war ich? Ach ja, ganz am Anfang.' : 'Setz dich. Ich erzähl weiter.', [
     { label: 'Weiter zuhören', fn: () => setTimeout(() => part(c, i), 60) },
-    ...(c.roman ? [{ label: '🎮 Meine Geschichte selbst spielen (Original-Spiel)', fn: () => c.roman!('licht') }] : []),
     { label: 'Ein andermal', fn: () => {} },
   ])]);
 }
@@ -632,9 +631,14 @@ export function leuchtfeuer(c: StoryCtx) {
   if (i >= sideOpen(s, LF_CHAPTERS.length)) { c.say([FP('finn', sideWait(s))]); return; }
   c.say([FP('finn', i === 0 ? 'Also, ganz von vorn. Erster Schultag.' : 'Setz dich auf den Steg. Ich erzähl weiter.', [
     { label: 'Weiter zuhören', fn: () => setTimeout(() => lfChapter(c, i), 60) },
-    ...(c.roman ? [{ label: '🎮 Unsere Geschichte selbst spielen (Original-Spiel)', fn: () => c.roman!('leuchtfeuer') }] : []),
     { label: 'Ein andermal', fn: () => {} },
   ])]);
+}
+
+/** Minispiel einer Leuchtfeuer-Rückblende (Original-Spiel, Sprung direkt hinein) */
+function lfGameId(g?: string) {
+  if (!g) return '';
+  return g.startsWith('🗼') ? 'beam' : g.startsWith('🎨') ? 'poster' : g.startsWith('💨') ? 'run' : g.startsWith('🐟') ? 'booth' : g.startsWith('🔎') ? 'case' : '';
 }
 
 function lfChapter(c: StoryCtx, i: number) {
@@ -642,11 +646,17 @@ function lfChapter(c: StoryCtx, i: number) {
   const lines: Line[] = ch.lines.map(([who, t]) => FP(who, t));
   let reply = '';
   if (ch.choices) lines.push(FP('finn', 'Was tust du an meiner Stelle?', ch.choices.map((x) => ({ label: x.t, sub: `+${x.g} Leuchtkraft`, fn: () => { addGlow(s, x.g); reply = x.r; } }))), FP('', () => reply));
-  if (ch.game) lines.push(FP('', `${ch.game} Du erlebst es mit Finn. +6 Leuchtkraft`));
+  // Minispiel der Rückblende direkt mitspielen (Leuchtturm, Plakat, Deich, Räucherei, Pias Fall)
+  let play = false;
+  const gid = lfGameId(ch.game);
+  if (ch.game) lines.push(FP('', `${ch.game} +6 Leuchtkraft`, c.roman && gid ? [
+    { label: '▶ Mit Finn erleben (Minispiel)', fn: () => { play = true; } },
+    { label: 'Nur erzählen lassen', fn: () => {} }] : undefined));
+  const withGame = (then: () => void) => { if (play && gid && c.roman) c.roman('leuchtfeuer', gid, then); else then(); };
   const next = () => { if (ch.game) addGlow(s, 6); s.flags.lf = i + 1; c.reward(0, 2, 'Finns Geschichte'); };
   c.card(`Rückblende · ${/^\d/.test(ch.n) ? 'Kapitel ' + ch.n : ch.n}`, ch.title, 'Leuchtfeuer – Finns Geschichte').then(() => {
     if (ch.end) {
-      c.say(lines, () => {
+      c.say(lines, () => withGame(() => {
         next();
         const e = lfEnding(lfGlow(s));
         s.flags.lfEnd = e.id;
@@ -654,10 +664,10 @@ function lfChapter(c: StoryCtx, i: number) {
           c.reward(0, 10, '„Leuchtfeuer“ zu Ende erlebt');
           c.card('Leuchtfeuer', e.title, e.text);
         });
-      });
+      }));
       return;
     }
-    c.say(lines, next);
+    c.say(lines, () => withGame(next));
   });
 }
 
