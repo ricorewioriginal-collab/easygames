@@ -117,9 +117,13 @@ export class World {
       if (door) rot = door.x > 0 ? -Math.PI / 2 : Math.PI / 2;
       let kind = BUILD[Math.floor(rnd() * BUILD.length)];
       if (door) kind = door.id === 'club' ? 'building_H' : door.id === 'center' ? 'building_G' : door.id === 'home' ? 'building_E' : door.id === 'cafe' ? 'building_B' : door.id === 'boutique' ? 'building_F' : door.id === 'gym' ? 'building_D' : door.id === 'studio' ? 'building_A' : door.id === 'checkpoint' ? 'building_E' : door.id === 'onelove' ? 'building_H' : door.id === 'police' ? 'building_A' : door.id === 'fire' ? 'building_G' : 'building_C';
-      tasks.push(this.place(C(kind), x, .1, z, rot));
-      if (!door) this.houses.push({ i: this.houses.length, x: x + Math.sin(rot) * (TILE * .4 + .5), z: z + Math.cos(rot) * (TILE * .4 + .5), yaw: rot });
-      this.colliders.push({ x, z, hx: TILE * .4, hz: TILE * .4 });
+      const house = door ? null : { i: this.houses.length, x: x + Math.sin(rot) * (TILE * .4 + .5), z: z + Math.cos(rot) * (TILE * .4 + .5), yaw: rot };
+      if (house) this.houses.push(house);
+      tasks.push(this.place(C(kind), x, .1, z, rot).then((o) => {
+        const r = this.footprint(o, x, z);
+        // Haustür direkt vor die echte Fassade legen (keine Klingel mitten auf dem Gehweg)
+        if (house) { const sx = Math.round(Math.sin(rot)), sz = Math.round(Math.cos(rot)), d = sx ? r.hx + (r.x - x) * sx : r.hz + (r.z - z) * sz; house.x = x + Math.sin(rot) * (d + .7); house.z = z + Math.cos(rot) * (d + .7); }
+      }));
     }
     await Promise.all(tasks);
     this.plaza(); this.park(); this.decorate(); this.signs(); await this.harbour();
@@ -168,6 +172,30 @@ export class World {
     o.parent = this.root;
     o.getChildMeshes().forEach((m) => { m.freezeWorldMatrix(); m.doNotSyncBoundingInfo = true; });
     return o;
+  }
+  /** Kollision eines Hauses aus seinem echten Grundriss: nur Teile, die bis zum Boden reichen (Markisen und Schilder oben zählen nicht) */
+  private foot = new Map<string, number[] | null>();
+  private footprint(o: TransformNode, x: number, z: number) {
+    let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+    for (const m of o.getChildMeshes()) {
+      // Grundriss aus den Wänden im Erdgeschoss (0,5–2,2 m), ohne Gehweg-Platte, Markisen und Schilder
+      let f = this.foot.get(m.name);
+      if (f === undefined) {
+        const pos = m.getVerticesData('position'); f = null;
+        if (pos) { const sy = m.absoluteScaling.y || 1, oy = m.absolutePosition.y; let a = Infinity, b = -Infinity, c = Infinity, d = -Infinity;
+          for (let i = 0; i < pos.length; i += 3) { const y = pos[i + 1] * sy + oy; if (y < .5 || y > 2.2) continue; a = Math.min(a, pos[i]); b = Math.max(b, pos[i]); c = Math.min(c, pos[i + 2]); d = Math.max(d, pos[i + 2]); }
+          if (isFinite(a)) f = [a, b, c, d]; }
+        this.foot.set(m.name, f);
+      }
+      if (!f) continue;
+      const wm = m.getWorldMatrix();
+      for (const [lx, lz] of [[f[0], f[2]], [f[1], f[2]], [f[0], f[3]], [f[1], f[3]]]) {
+        const q = Vector3.TransformCoordinates(new Vector3(lx, 0, lz), wm);
+        x0 = Math.min(x0, q.x); x1 = Math.max(x1, q.x); z0 = Math.min(z0, q.z); z1 = Math.max(z1, q.z);
+      }
+    }
+    const r: Rect = isFinite(x0) ? { x: (x0 + x1) / 2, z: (z0 + z1) / 2, hx: Math.max(1, (x1 - x0) / 2 - .1), hz: Math.max(1, (z1 - z0) / 2 - .1) } : { x, z, hx: TILE * .4, hz: TILE * .4 };
+    this.colliders.push(r); return r;
   }
   /** feste Teile: Weltmatrix einfrieren (spart Rechenzeit) */
   private still(m: AbstractMesh, cast = true, receive = true) {

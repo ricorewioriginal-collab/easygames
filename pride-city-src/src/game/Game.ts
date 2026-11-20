@@ -13,6 +13,7 @@ import { DanceScene } from './minigames/DanceScene';
 import { World } from './World';
 import { pianoSongs, pianoParts } from './minigames/showSongs';
 import { openGigs, GIGS, fmtTime } from './gigs';
+import { BUSINESSES, owns, owned, income, buy } from './empire';
 import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST, lichtPart, lichtLight, lfPart, lfGlow } from './story';
 import { LF_CHAPTERS, lfEnding, lfPct } from './leuchtfeuer';
 import { LICHT_CHAPTERS, lichtEnding } from './licht';
@@ -333,6 +334,7 @@ export class Game {
         { icon: '🗺️', label: 'Karte & Tram', sub: 'Orte, Ziel markieren, hinfahren', fn: () => this.phone('map') },
         { icon: '💼', label: 'Jobs', sub: `${JOBS.length} Jobs in der Stadt`, fn: () => this.phone('jobs') },
         { icon: '📞', label: 'Aufträge', sub: this.city.gig ? `Läuft: ${this.city.gig.g.title}` : `${openGigs(s).length} Leute brauchen Hilfe · ${Number(s.flags.gigs) || 0} erledigt`, fn: () => this.phone('gigs') },
+        { icon: '🏙️', label: 'Imperium', sub: owned(s).length ? `${owned(s).length} Geschäfte · +${income(s)} € am Tag` : 'Läden, Bars und Clubs übernehmen', fn: () => this.phone('empire') },
         { icon: '👥', label: 'Kontakte', sub: `${Object.keys(s.rel).length} Leute kennengelernt`, fn: () => this.phone('contacts') },
         { icon: '💘', label: 'Rainbow Match', sub: `Dating · ${PROFILES.filter((p) => s.dates[p.id]).length} Matches`, fn: () => this.phone('dating') },
         { icon: '📣', label: 'Feed', sub: 'Was in der Szene los ist', fn: () => this.phone('feed') },
@@ -368,8 +370,15 @@ export class Game {
     } else if (app === 'gigs') {
       const run = this.city.gig, open = openGigs(s);
       this.openMenu(frame('Aufträge', `<div class="pbody"><p>Leute aus der Stadt brauchen dich. Nimm an, folg der gelben Lichtsäule und dem Radar und schaff es in der Zeit.</p>${run ? `<p>⏱ Läuft: <b>${run.g.title}</b> für ${run.g.who}</p>` : ''}</div>`), [
-        ...(run ? [{ icon: '✖', label: 'Auftrag abbrechen', sub: run.g.title, fn: () => { this.city.gig = null; this.hud.gig(null); toast('Auftrag abgebrochen.'); close(); } }] : []),
+        ...(run ? [{ icon: '✖', label: 'Auftrag abbrechen', sub: run.g.title, fn: () => { this.city.gig = null; this.city.taxi = -1; this.hud.gig(null); toast('Auftrag abgebrochen.'); close(); } }] : []),
+        { icon: '🚕', label: 'Regenbogen-Taxi', sub: this.city.driving ? `Fahrgäste fahren, Trinkgeld je Serie · Rekord ${Number(s.flags.taxiBest) || 0} Fahrten` : 'Erst in ein Auto steigen', disabled: !!run || !this.city.driving, fn: () => { close(); this.city.startTaxi(); } },
         ...GIGS.map((g) => ({ icon: g.night ? '🌙' : g.car ? '🚗' : '🚶', label: `${g.title} · ${g.who}`, sub: !open.includes(g) ? 'nur nachts (21–5 Uhr)' : `${g.pay} € · +${g.rep} Ruf · ${fmtTime(g.time)} Min. · ${g.steps.length} Stationen${s.flags['gig_' + g.id] === s.day ? ' · heute erledigt' : ''}`, disabled: !!run || !open.includes(g), fn: () => { close(); this.city.startGig(g); } })),
+        { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'empire') {
+      const list = BUSINESSES.map((b) => `<p>${b.icon} <b>${b.name}</b>${owns(s, b.id) ? ' · <b style="color:#3ee69a">gehört dir</b>' : ''}<br><small>${b.pitch}</small></p>`).join('');
+      this.openMenu(frame('Imperium', `<div class="pbody"><p>Steig bei Läden, Bars und Clubs ein. Jedes Geschäft zahlt jeden Morgen aus und bringt Ruf.<br>💼 Einnahmen: <b>${income(s)} €</b> am Tag · 🌈 Ruf ${s.rep}</p>${list}</div>`), [
+        ...BUSINESSES.map((b) => ({ icon: b.icon, label: owns(s, b.id) ? `${b.name} ✓` : `${b.name} kaufen`, sub: owns(s, b.id) ? `+${b.daily} € am Tag` : `${b.price} € · +${b.daily} €/Tag · ab ${b.need} Ruf`, disabled: owns(s, b.id),
+          fn: () => { const why = buy(s, b); if (why) { sfx('miss'); toast(why); return; } sfx('win'); this.hud.banner(`${b.icon} ${b.name} gehört jetzt dir!`, `+${b.daily} € jeden Tag · +${b.rep} Ruf`, 'good', 4000); this.save.write(); this.city.refreshHud(); this.phone('empire'); } })),
         { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'glossary') {
       const g = GLOSSARY.filter(([, , a]) => !a || s.settings.adult);

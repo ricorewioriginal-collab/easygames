@@ -27,6 +27,7 @@ E2E-Test (Browser, SwiftShader): Server im Repo starten (`python3 -m http.server
 | `src/game/World.ts` | Rainbow City aus City-Builder-Bits plus Pride-Deko, Hafenviertel (Kai, Strand, Steg, Leuchtturm, Club), Polizei- und Feuerwache, Tag/Nacht, Verkehr, Kollision (`walkable`) |
 | `src/game/Street.ts` | Belebte Straßen: Passant*innen, Streife, Feuerwehr, Löschzug und Blaulicht, Sexarbeiter*innen vor Haus Rosa (18+), geparkte Autos zum Fahren |
 | `src/game/CityScene.ts` | Laufen, Kamera, Figuren, Interaktion, Sticker, Titel-Kamerafahrt |
+| `src/game/gigs.ts`, `empire.ts` | Aufträge per Anruf, Regenbogen-Taxi (Fahrgäste in Serie), Imperium (Läden, Bars, Clubs kaufen, Tageseinnahmen) |
 | `src/game/story.ts` | Figuren, fünf Kapitel bis zum Ende, Ziele (`goal`), automatische Fortschritte (`storyTick`), Gespräche, Entscheidungen (`save.flags`), Ende (`ending`) |
 | `src/game/life.ts` | Bedürfnisse, Stimmung, Uhrzeit und Tageswechsel, Tagesziele (aus Gay Life! übernommen) |
 | `src/game/jobs.ts` | Fünf Jobs mit Situationen, Lohn, Stufen und Beförderung |

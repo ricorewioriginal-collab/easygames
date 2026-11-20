@@ -13,7 +13,7 @@ import type { Spot, Theme } from './interiors';
 import { roomLights, collectCasters } from './HomeScene';
 
 interface Box { x: number; z: number; hx: number; hz: number }
-const W = 12, D = 9, K = 1.6;
+const W = 12, D = 9, K = .9, H = 3.6; // Raum in Metern, KayKit-Möbel 1 Einheit ≈ 1 m (Figur ≈ 1,8 m)
 const DOOR: Spot = { id: 'door', label: '🚪 Rausgehen', x: W / 2 - .8, z: 3.4, r: 1.5, act: { k: 'menu' } };
 
 export class InteriorScene implements GameScene {
@@ -21,6 +21,7 @@ export class InteriorScene implements GameScene {
   camera: FreeCamera;
   bloom = .6;
   private player!: Actor;
+  private folk: Actor[] = [];
   private boxes: Box[] = [];
   private glow: PBRMaterial[] = [];
   private sg!: ShadowGenerator;
@@ -39,7 +40,7 @@ export class InteriorScene implements GameScene {
     const amb = new HemisphericLight('amb', new Vector3(0, -1, 0), sc); amb.intensity = .25;
     const floor = ground(sc, W, D); floor.material = pbr(sc, t.floor, .75); floor.receiveShadows = true;
     const wallM = pbr(sc, t.wall, .9);
-    const wall = (w: number, d: number, x: number, z: number) => { const m = box(sc, w, 4, d); m.material = wallM; m.position.set(x, 2, z); m.receiveShadows = true; };
+    const wall = (w: number, d: number, x: number, z: number) => { const m = box(sc, w, H, d); m.material = wallM; m.position.set(x, H / 2, z); m.receiveShadows = true; };
     wall(W, .2, 0, -D / 2); wall(.2, D, -W / 2, 0); wall(.2, D, W / 2, 0);
     // Tür rechts mit Leuchtschild
     const dx = W / 2 - .12, dz = DOOR.z;
@@ -66,6 +67,27 @@ export class InteriorScene implements GameScene {
     // Markierung auf dem Boden für jede benutzbare Stelle
     const ringM = glow(sc, 0xffd23b, 1.2, { alpha: .55 });
     for (const s of this.theme.spots) { const o = ring(sc, .42, .55, 24); o.material = ringM; o.position.set(s.x, .03, s.z); }
+    // Leben im Raum: im Club tanzt die Menge, sonst stehen Gäste zusammen und reden
+    const party = t.music === 'club' || t.music === 'show';
+    const guests = party ? ['Female_Party_01', 'Male_Adult_07', 'Female_Adult_09', 'Male_Adult_04', 'Female_Party_02', 'Male_Adult_02']
+      : ['Female_Adult_04', 'Male_Adult_10'];
+    const seed = [...t.id].reduce((n, ch) => n + ch.charCodeAt(0), 0);
+    const folk = await Promise.all(guests.map((_, i) => Actor.create(sc, { body: guests[(i + seed) % guests.length], rb: guests[(i + seed) % guests.length], palette: 'rainbow', skin: 0 })));
+    // freie Stelle: nicht in Möbeln, nicht auf einer benutzbaren Stelle, nicht vor der Tür
+    const free = (x: number, z: number) => Math.abs(x) < W / 2 - .8 && Math.abs(z) < D / 2 - .8 && x < W / 2 - 2.2
+      && this.boxes.every((b) => Math.abs(x - b.x) > b.hx + .5 || Math.abs(z - b.z) > b.hz + .5)
+      && this.spots.every((q) => Math.hypot(q.x - x, q.z - z) > 1.1);
+    const cand: [number, number][] = [];
+    for (let gz = -3; gz <= 3; gz += .8) for (let gx = -4.6; gx <= 3.6; gx += .9) cand.push([gx, gz]);
+    folk.forEach((a, i) => {
+      const order = party ? [-.2, 1.8, -1.2, 1] : [-1.6, -.4, 1.2];
+      let x = 0, z = 0, ok = false;
+      for (const oz of order) { for (const ox of party ? [-2.4, -.2, 2, -1.3, 1.1] : [-1.6, -.5, 2.4, 3.5]) { if (free(ox + (i % 2) * .3, oz)) { x = ox + (i % 2) * .3; z = oz; ok = true; break; } } if (ok) break; }
+      if (!ok) { const c = cand.find(([cx, cz]) => free(cx, cz)); if (!c) { a.root.visible = false; return; } [x, z] = c; }
+      a.root.position.set(x, 0, z); a.root.rotation.y = party ? (i * 1.7) % (Math.PI * 2) : (i ? -Math.PI / 2 : Math.PI / 2);
+      a.play(party ? (['dance1', 'dance2', 'dance3'] as const)[i % 3] : 'talk', 0, .9 + (i % 3) * .08);
+      this.folk.push(a); this.boxes.push({ x, z, hx: .25, hz: .25 });
+    });
     this.player = await Actor.create(sc, streetLook(playerLook(this.g.save.data)));
     collectCasters(sc, this.sg);
   }
@@ -91,6 +113,7 @@ export class InteriorScene implements GameScene {
   update(dt: number, t: number) {
     const g = this.g, inp = g.engine.input, p = this.player.root.position;
     this.player.update(dt);
+    for (const a of this.folk) a.update(dt);
     const busy = g.dialog.open || g.menuOpen;
     this.hudT -= dt;
     for (const [i, m] of this.glow.entries()) m.emissiveColor = col(m.metadata.c, .35 + Math.sin(t * 3 + i) * .25);
@@ -120,7 +143,7 @@ export class InteriorScene implements GameScene {
       g.hud.markers(best === DOOR ? [] : [{ id: 'exit', icon: '🚪', label: 'Ausgang', pos: this.exitPos }], (q) => g.engine.project(q));
     } else { g.hud.prompt(null); g.hud.markers([]); }
     const k = Math.max(1, 1.25 / g.engine.aspect);
-    this.camera.position.set(p.x * .45 / k, 7.6 * (1 + (k - 1) * .6), 9.4 * k + p.z * .2);
-    this.camera.setTarget(new Vector3(p.x * .6, .8, p.z * .5 - .6));
+    this.camera.position.set(p.x * .5 / k, 6 * (1 + (k - 1) * .6), 7.6 * k + p.z * .35);
+    this.camera.setTarget(new Vector3(p.x * .7, .7, p.z * .6 - .6));
   }
 }
