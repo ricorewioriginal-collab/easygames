@@ -7,6 +7,7 @@ import { Actor, streetLook, playerLook, WALK_MPS, RUN_MPS, type Look } from './A
 import { World, walkable } from './World';
 import { NPCS, CHAPTERS, goal, talk, poi as storyPoi, marks, hidden, storyTick, chapterLabel, type NpcDef, type StoryCtx } from './story';
 import type { Game } from './Game';
+import { radio, STATIONS, stationOf } from '../engine/Radio';
 import { sfx, music } from '../engine/Audio';
 import { toast, hints } from '../ui/ui';
 import { rollEvent, testDue, post } from './social';
@@ -109,7 +110,9 @@ export class CityScene implements GameScene {
       c.fillRect(px(-80), px(-1.8), 20 * 2, 3.6 * 2);                             // Kaistraße
     });
     // Verkehr hält vor geparkten und vom Spieler gefahrenen Autos
-    this.g.hud.onRadio = () => { if (this.drive) this.radio(1); };
+    this.g.hud.onRadio = () => { if (this.drive) this.radio(this.g.hud.wheelOpen ? 1 : 0); };
+    this.g.hud.onStation = (i) => { if (this.drive) this.radio(0, i); };
+    radio.subscribe((r, what) => { if (!this.drive) return; if (what === 'error') toast(`📻 ${r.err}`); this.showRadio(what !== 'song' ? this.g.hud.wheelOpen : true); });
     this.world.extraBlock = (x, z) => this.street.parked.some((c) => Math.hypot(c.o.position.x - x, c.o.position.z - z) < 2.6);
     this.buildStickers();
     this.world.castShadows();
@@ -203,6 +206,7 @@ export class CityScene implements GameScene {
       credits: () => g.ending(),
       card: (k, t, x) => g.chapterCard(k, t, x),
       roman: (id, game, done) => g.roman(id, game, done),
+      mission: (gg) => this.startGig(gg),
     };
   }
 
@@ -335,7 +339,7 @@ export class CityScene implements GameScene {
       const o = this.drive.o, sx = Math.cos(o.rotation.y), sz = -Math.sin(o.rotation.y);
       for (const k of [2.2, -2.2, 3.4, -3.4]) { const x = o.position.x + sx * k, z = o.position.z + sz * k; if (walkable(x, z) && !this.world.colliders.some((c) => Math.abs(x - c.x) < c.hx + .4 && Math.abs(z - c.z) < c.hz + .4)) { p.set(x, .1, z); break; } }
       this.drive.v = 0; this.drive = null;
-      music('city'); this.g.hud.radioBtn(false);
+      this.radioOff(); music('city');
       this.player.root.visible = true; this.player.play('idle');
       hints([['move', 'Laufen'], ['a', 'Aktion'], ['atk', 'Angriff'], ['wpn', 'Waffe'], ['cam', 'Kamera'], ['y', 'Menü']]);
       sfx('open');
@@ -347,7 +351,7 @@ export class CityScene implements GameScene {
     this.cam.dist = Math.max(this.cam.dist, 9);
     this.cam.tYaw = this.drive.o.rotation.y + Math.PI;
     hints([['move', 'Lenken & Gas'], ['a', 'Aussteigen'], ['atk', 'Hupen'], ['cam', 'Kamera'], ['y', 'Menü']]);
-    this.radio(0); this.g.hud.radioBtn(true);
+    this.g.hud.radioBtn(true); this.radio(0);
     toast('🚗 Gute Fahrt! Q/R oder LB/RB wechselt den Sender.');
     sfx('open');
   }
@@ -408,8 +412,8 @@ export class CityScene implements GameScene {
   }
 
   private radarT = 0;
-  enter() { this.g.hud.radarOn(true); }
-  exit() { this.g.hud.radarOn(false); }
+  enter() { this.g.hud.radarOn(true); if (this.drive) { this.g.hud.radioBtn(true); this.radio(0); } }
+  exit() { this.g.hud.radarOn(false); if (this.drive) this.radioOff(); }
   /** Missionsmarker wie im Open-World-Krimi: leuchtende Lichtsäule über dem Ziel */
   private beam: TransformNode | null = null;
   private beamMat: ReturnType<typeof glow> | null = null;
@@ -458,6 +462,7 @@ export class CityScene implements GameScene {
     const s = this.g.save.data;
     if (!this.gig) {
       this.g.hud.gig(null);
+      if (s.flags.sagaRun) delete s.flags.sagaRun; // Mission lief beim letzten Speichern noch
       // ab und zu klingelt das Handy (erst nach der Einführung)
       if (s.step >= 2 || s.chapter > 1) this.callT -= dt;
       if (this.callT <= 0) { this.callT = 210 + Math.random() * 120; this.ring(); }
@@ -474,6 +479,7 @@ export class CityScene implements GameScene {
       sfx('win'); this.g.hud.banner('Auftrag erledigt!', `+${q.g.pay} € · +${q.g.rep} Ruf · ${q.g.done}`, 'good', 4200);
       this.player.play('cheer'); setTimeout(() => this.player.anim === 'cheer' && this.player.play('idle'), 1800);
       this.g.save.write(); this.refreshHud();
+      if (q.g.after) setTimeout(q.g.after, 1800);
       // Taxi-Schicht: nächster Fahrgast meldet sich, solange du im Auto sitzt
       if (q.g.id === 'taxi' && this.taxi >= 0) {
         this.taxi++; s.flags.taxiBest = Math.max(Number(s.flags.taxiBest) || 0, this.taxi);
@@ -481,7 +487,7 @@ export class CityScene implements GameScene {
       }
       return;
     }
-    if (q.t <= 0) { if (q.g.id === 'taxi') this.taxi = -1; this.gig = null; this.g.hud.gig(null); sfx('miss'); this.g.hud.banner('Auftrag gescheitert', 'Zu spät. Vielleicht klappt es beim nächsten Anruf.', 'bad'); }
+    if (q.t <= 0) { if (q.g.id === 'taxi') this.taxi = -1; q.g.failed?.(); this.gig = null; this.g.hud.gig(null); sfx('miss'); this.g.hud.banner('Auftrag gescheitert', 'Zu spät. Vielleicht klappt es beim nächsten Anruf.', 'bad'); }
   }
   /** Anruf: annehmen oder ablehnen */
   private ring() {
@@ -495,16 +501,23 @@ export class CityScene implements GameScene {
       { label: 'Gerade nicht', fn: () => { back(); toast(`${g.who}: Okay, ich frag jemand anderen.`); } }] }]);
   }
 
-  /* ---------- Autoradio ---------- */
-  private static STATIONS: Array<[string, string, 'title' | 'neon' | 'club' | 'lounge' | null]> = [
-    ['📻 Regenbogen FM', 'Pop für die ganze Stadt', 'title'], ['🌴 Neon 88', 'Synthwave für Nachtfahrten', 'neon'],
-    ['🪩 Prisma Radio', 'Clubsound live aus dem Prisma', 'club'], ['🌊 Hafen Lounge', 'Ruhige Töne vom Kai', 'lounge'], ['🔇 Radio aus', '', null]];
-  private radio(dir = 0) {
-    const s = this.g.save.data, n = CityScene.STATIONS.length;
-    const i = (((Number(s.flags.radio) || 0) + dir) % n + n) % n; s.flags.radio = i;
-    const [name, sub, song] = CityScene.STATIONS[i];
-    music(song); this.g.hud.banner(name, sub, 'info', 1800);
+  /* ---------- Autoradio: 13 echte Sender (laut.fm) und vier Stadt-Sender, Senderrad wie im Open-World-Krimi ---------- */
+  private radio(dir = 0, to?: number) {
+    const s = this.g.save.data, n = STATIONS.length, was = radio.state.st;
+    let i = STATIONS.indexOf(stationOf(s.flags.radio));
+    i = to ?? ((i + dir) % n + n) % n;
+    const st = STATIONS[i]; s.flags.radio = st.id;
+    if (st !== was || !(radio.state.on || radio.state.loading) && st.id !== 'off') radio.tune(st);
+    this.showRadio();
   }
+  private showRadio(wheel = true) {
+    const r = radio.state, st = r.st;
+    const song = r.title ? (r.artist ? `${r.title} · ${r.artist}` : r.title) : '';
+    const sub = r.err || (st.slug ? (r.loading ? 'Sender wird eingestellt …' : song || 'Live') : st.sub);
+    if (wheel) this.g.hud.radioWheel(STATIONS, STATIONS.indexOf(st), st.name, sub, !!st.slug && !r.err);
+    this.g.hud.nowPlaying(st.id === 'off' ? null : `${st.icon} ${st.name}`, st.slug ? (r.err || song || (r.loading ? '…' : 'Live')) : st.sub);
+  }
+  private radioOff() { radio.stop(); this.g.hud.nowPlaying(null); this.g.hud.radioWheel(null); this.g.hud.radioBtn(false); }
 
   /** Laternen, Masten, Bänke und Bäume zwischen Kamera und Figur ausblenden, statt durch sie hindurchzuschauen */
   private hidden = new Set<TransformNode>();
@@ -553,6 +566,7 @@ export class CityScene implements GameScene {
 
     // Spielzeit läuft nur ohne Dialog und Menü
     const busy = g.dialog.open || g.menuOpen;
+    radio.duck(busy);
     if (!busy) {
       s.playMs += dt * 1000;
       if (advance(s, dt / DAY_SEC * 1440)) toast(`Tag ${s.day} beginnt.`);
