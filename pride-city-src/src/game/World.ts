@@ -25,6 +25,8 @@ export function walkable(x: number, z: number) {
   return z > -3.3 && z < -.7 && x >= -110;
 }
 export interface Rect { x: number; z: number; hx: number; hz: number }
+/** Schlanke Requisiten (Laternen, Masten, Bänke, Bäume): runde Kollision und Ausblenden, wenn sie der Kamera im Weg stehen */
+export interface Prop { x: number; z: number; r: number; o: THREE.Object3D[]; solid: boolean }
 
 const isRoad = (i: number) => i % 3 === 0;
 const rnd = (() => { let s = 7; return () => ((s = (s * 16807) % 2147483647) / 2147483647); })();
@@ -32,6 +34,7 @@ const rnd = (() => { let s = 7; return () => ((s = (s * 16807) % 2147483647) / 2
 export class World {
   readonly root = new THREE.Group();
   readonly colliders: Rect[] = [];
+  readonly props: Prop[] = [];
   readonly pois: Poi[] = [];
   /** Türen aller übrigen Häuser (jedes ist betretbar, Innenraum aus interiors.ts) */
   readonly houses: Array<{ i: number; x: number; z: number; yaw: number }> = [];
@@ -44,6 +47,11 @@ export class World {
   private neon: THREE.MeshBasicMaterial[] = [];
   readonly cars: Array<{ o: THREE.Object3D; path: THREE.Vector3[]; seg: number; u: number; v: number }> = [];
   private lampLights: THREE.PointLight[] = [];
+  /** Echte Laternenlichter, die nachts an die nächsten Laternen beim Spieler springen */
+  private poolLights: THREE.PointLight[] = [];
+  private poolT = 0;
+  /** Leuchtkörper aller Laternen (nachts wandern ein paar echte Lichter mit dem Spieler mit) */
+  readonly lampSpots: THREE.Vector3[] = [];
   night = 0;
   /** Spuren im Park, nur mit 18+ */ readonly traces = new THREE.Group();
 
@@ -71,7 +79,7 @@ export class World {
     const special = new Map<string, Poi>();
     for (const p of this.pois) special.set(this.blockOf(p.x, p.z), p);
 
-    const tasks: Promise<void>[] = [];
+    const tasks: Promise<unknown>[] = [];
     for (let ix = -N; ix <= N; ix++) for (let iz = -N; iz <= N; iz++) {
       const x = ix * TILE, z = iz * TILE;
       if (isRoad(ix) || isRoad(iz)) { tasks.push(this.road(ix, iz, x, z)); continue; }
@@ -127,10 +135,42 @@ export class World {
 
   private async place(path: string, x: number, y: number, z: number, rot: number, s = S, flat = false) {
     const o = await instance(path);
+    this.tune(path, o);
     o.position.set(x, y, z); o.rotation.y = rot; o.scale.set(s, flat ? 1 : s, s);
     o.matrixAutoUpdate = false; o.updateMatrix(); o.traverse((c) => { c.matrixAutoUpdate = false; c.updateMatrix(); });
     this.root.add(o);
+    return o;
   }
+  /* ---------- Materialien: realistischer statt Spielzeug-Glanz ---------- */
+  private tuned = new Set<THREE.Material>();
+  private winMats: THREE.MeshStandardMaterial[] = [];
+  private roadMats: THREE.MeshStandardMaterial[] = [];
+  private winTex: THREE.Texture | null = null;
+  /** Fenster-Maske im KayKit-Atlas: nachts leuchten die Scheiben warm */
+  private windowMask() {
+    if (this.winTex) return this.winTex;
+    const c = document.createElement('canvas'); c.width = 8; c.height = 4;
+    const g = c.getContext('2d')!; g.fillStyle = '#000'; g.fillRect(0, 0, 8, 4);
+    g.fillStyle = '#fff'; g.fillRect(2, 1, 1, 1); // blaugraue Scheiben
+    const t = new THREE.CanvasTexture(c); t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.flipY = false; t.colorSpace = THREE.SRGBColorSpace;
+    return (this.winTex = t);
+  }
+  tune(path: string, o: THREE.Object3D) {
+    o.traverse((c) => {
+      const m = (c as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
+      if (!m || !m.isMeshStandardMaterial || this.tuned.has(m)) return;
+      this.tuned.add(m);
+      if (/building/.test(path)) { m.roughness = .78; m.emissiveMap = this.windowMask(); m.emissive.setRGB(0, 0, 0); this.winMats.push(m); }
+      else if (/road|base/.test(path)) { m.roughness = .72; this.roadMats.push(m); }
+      else if (/car_/.test(path)) { m.roughness = .2; m.metalness = .45; }
+      else if (/streetlight|trafficlight|firehydrant/.test(path)) { m.roughness = .35; m.metalness = .55; }
+      else m.roughness = .7;
+      m.needsUpdate = true;
+    });
+  }
+
+  /** Requisite merken (r = Kollisionsradius, solid = Figur stößt dagegen) */
+  prop(x: number, z: number, r: number, o: THREE.Object3D[], solid = true) { this.props.push({ x, z, r, o, solid }); }
 
   private async road(ix: number, iz: number, x: number, z: number) {
     const rx = isRoad(ix), rz = isRoad(iz);
@@ -145,10 +185,12 @@ export class World {
     // Laternen am Rand, jede zweite Kachel
     if ((ix + iz) % 2 === 0) {
       const side = rx ? [x + TILE * .44, z] : [x, z + TILE * .44];
-      await this.place(C('streetlight'), side[0], .1, side[1], rx ? Math.PI : -Math.PI / 2);
+      const lamp = await this.place(C('streetlight'), side[0], .1, side[1], rx ? Math.PI : -Math.PI / 2);
       const bulb = new THREE.Mesh(new THREE.SphereGeometry(.35, 8, 6), this.lamps);
       bulb.position.set(side[0] + (rx ? -1.05 : 0), 4.55, side[1] + (rx ? 0 : -1.05));
       this.root.add(bulb);
+      this.prop(side[0], side[1], .3, [lamp, bulb]);
+      this.lampSpots.push(bulb.position.clone());
     }
   }
 
@@ -156,17 +198,20 @@ export class World {
   private buildSky() {
     const m = new THREE.ShaderMaterial({
       side: THREE.BackSide, depthWrite: false, fog: false,
-      uniforms: { top: { value: new THREE.Color() }, bot: { value: new THREE.Color() }, stars: { value: 0 } },
+      uniforms: { top: { value: new THREE.Color() }, bot: { value: new THREE.Color() }, stars: { value: 0 }, sunDir: { value: new THREE.Vector3(0, 1, 0) }, sunCol: { value: new THREE.Color() } },
       vertexShader: 'varying vec3 vp; void main(){ vp = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
-      fragmentShader: `uniform vec3 top; uniform vec3 bot; uniform float stars; varying vec3 vp;
+      fragmentShader: `uniform vec3 top; uniform vec3 bot; uniform float stars; uniform vec3 sunDir; uniform vec3 sunCol; varying vec3 vp;
         float h(vec3 p){ return fract(sin(dot(p, vec3(12.9898,78.233,37.719)))*43758.5453); }
         void main(){ float y = max(vp.y, 0.0); vec3 c = mix(bot, top, pow(y, .55));
           vec3 q = floor(vp*220.0); float s = step(.997, h(q)) * stars * smoothstep(.05,.4,y);
+          float sd = max(dot(normalize(vp), sunDir), 0.0);
+          c += sunCol * (pow(sd, 900.0) * 6.0 + pow(sd, 12.0) * .35);
+          c = mix(c, bot * 1.08, exp(-y * 7.0) * .45);
           gl_FragColor = vec4(c + s, 1.0); }`,
     });
     this.sky = new THREE.Mesh(new THREE.SphereGeometry(280, 24, 12), m);
     this.root.add(this.sky);
-    this.scene.fog = new THREE.Fog(0xcfe3ff, 70, 230);
+    this.scene.fog = new THREE.FogExp2(0xcfe3ff, .0058);
   }
 
   /** t: Tagesanteil 0..1, 0 = 6:00 Uhr */
@@ -176,16 +221,24 @@ export class World {
     const up = Math.sin(ang);
     const day = THREE.MathUtils.smoothstep(up, -.15, .25);
     this.night = 1 - day;
-    const dusk = Math.max(0, 1 - Math.abs(up) * 4) * (up > -.3 ? 1 : 0);
+    const dusk = Math.max(0, 1 - Math.abs(up) * 2.6) * (up > -.35 ? 1 : 0); // längere Abendröte in Pink und Violett
     const top = new THREE.Color(0x1a1450).lerp(new THREE.Color(0x3d7fe0), day).lerp(new THREE.Color(0x5b3a9a), dusk * .6);
-    const bot = new THREE.Color(0x4a2a78).lerp(new THREE.Color(0xcfe6ff), day).lerp(new THREE.Color(0xff8a6a), dusk * .8);
+    const bot = new THREE.Color(0x4a2a78).lerp(new THREE.Color(0xcfe6ff), day).lerp(new THREE.Color(0xff6f9a), dusk * .85);
     this.sky.material.uniforms.top.value.copy(top);
     this.sky.material.uniforms.bot.value.copy(bot);
     this.sky.material.uniforms.stars.value = this.night;
-    (this.scene.fog as THREE.Fog).color.copy(bot);
+    (this.scene.fog as THREE.FogExp2).color.copy(bot);
+    this.sky.material.uniforms.sunDir.value.set(Math.cos(ang) * .8, up, .45).normalize();
+    this.sky.material.uniforms.sunCol.value.setRGB(1, .82, .6).multiplyScalar(THREE.MathUtils.smoothstep(up, -.08, .1));
+    // Umgebungslicht aus der Umgebungskarte, Fenster nachts warm, Straßen nachts feucht glänzend
+    this.scene.environmentIntensity = .06 + .16 * day;
+    this.winMats.forEach((m) => m.emissive.setRGB(1, .72, .4).multiplyScalar(this.night * .9));
+    this.roadMats.forEach((m) => { m.roughness = .72 - .38 * this.night; });
+    // immer im Shader lassen (Umschalten würde alle Materialien neu übersetzen und kurz ruckeln)
+    this.poolLights.forEach((l) => (l.intensity = this.night * 14));
     this.sun.intensity = .55 + 1.9 * day;
     this.sun.color.setHex(0x8fa0ff).lerp(new THREE.Color(0xffffff), day).lerp(new THREE.Color(0xffa060), dusk);
-    this.hemi.intensity = 1.0 + .5 * day;
+    this.hemi.intensity = .9 + .45 * day;
     this.hemi.color.setHex(0x7a6cff).lerp(new THREE.Color(0xbfd8ff), day);
     this._sunDir.set(Math.cos(ang) * .8, Math.max(.25, Math.abs(up)), .45).normalize();
     this.lamps.color.setRGB(1, .95, .75).multiplyScalar(.6 + this.night * 3.2);
@@ -228,11 +281,23 @@ export class World {
     // Bänke
     for (let i = 0; i < 4; i++) {
       const a = i * Math.PI / 2 + Math.PI / 4;
-      this.place(C('bench'), cx + Math.cos(a) * 6, .1, cz + Math.sin(a) * 6, -a + Math.PI / 2);
+      const bx = cx + Math.cos(a) * 6, bz = cz + Math.sin(a) * 6;
+      this.place(C('bench'), bx, .1, bz, -a + Math.PI / 2).then((o) => this.prop(bx, bz, .95, [o]));
     }
+    for (const [x, z] of [[-24, 6], [-6, 6], [-24, 24], [-6, 24]]) this.palm(x, z, 1.1);
     // Bühne für Events
-    const stage = new THREE.Mesh(new THREE.BoxGeometry(7, .6, 3.4), new THREE.MeshStandardMaterial({ color: 0x2a1d44, roughness: .5 }));
+    const stage = new THREE.Mesh(new THREE.BoxGeometry(7, .6, 3.4), new THREE.MeshStandardMaterial({ color: 0x6b4a32, roughness: .55 }));
     stage.position.set(cx, .4, cz - 7.6); stage.castShadow = stage.receiveShadow = true; this.root.add(stage);
+    // LED-Kante in Regenbogenfarben und Traversen mit Scheinwerfern
+    PALETTES[0].colors.forEach((c, i) => {
+      const led = new THREE.MeshBasicMaterial({ color: c, toneMapped: false }); led.userData.base = new THREE.Color(c).multiplyScalar(.7); this.neon.push(led);
+      const e = new THREE.Mesh(new THREE.BoxGeometry(7 / 6, .1, .04), led); e.position.set(cx - 3.5 + (i + .5) * 7 / 6, .62, cz - 5.88); this.root.add(e);
+    });
+    const truss = new THREE.MeshStandardMaterial({ color: 0x2b2b30, metalness: .8, roughness: .35 });
+    for (const sx of [-3.3, 3.3]) { const t = new THREE.Mesh(new THREE.BoxGeometry(.18, 4.2, .18), truss); t.position.set(cx + sx, 2.8, cz - 9.1); t.castShadow = true; this.root.add(t); }
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(6.8, .18, .18), truss); beam.position.set(cx, 4.9, cz - 9.1); this.root.add(beam);
+    const spot = new THREE.MeshBasicMaterial({ color: 0xfff1d0, toneMapped: false }); spot.userData.base = new THREE.Color(.8, .75, .6); this.neon.push(spot);
+    for (let i = 0; i < 4; i++) { const sp = new THREE.Mesh(new THREE.CylinderGeometry(.16, .22, .35, 10), spot); sp.position.set(cx - 2.4 + i * 1.6, 4.65, cz - 9.1); sp.rotation.x = .5; this.root.add(sp); }
     this.colliders.push({ x: cx, z: cz - 7.6, hx: 3.5, hz: 1.7 });
   }
 
@@ -262,6 +327,33 @@ export class World {
     g.add(t, top, top2); g.position.set(x, 0, z); g.scale.setScalar(s * 1.6); g.rotation.y = rnd() * 6;
     this.root.add(g);
     this.colliders.push({ x, z, hx: .5, hz: .5 });
+    this.prop(x, z, .5, [g], false);
+  }
+
+  /* ---------- Palmen (Strand-Boulevard-Gefühl am Kai, am Strand und am Platz) ---------- */
+  private palmGeo: { trunk: THREE.BufferGeometry; frond: THREE.BufferGeometry } | null = null;
+  private palmMat = { trunk: new THREE.MeshStandardMaterial({ color: 0x8a6a48, roughness: .95 }), frond: new THREE.MeshStandardMaterial({ color: 0x2f8a45, roughness: .8, side: THREE.DoubleSide }) };
+  palm(x: number, z: number, s = 1) {
+    if (!this.palmGeo) {
+      const trunk = new THREE.CylinderGeometry(.16, .26, 6, 7, 6, true).translate(0, 3, 0);
+      const tp = trunk.attributes.position;
+      for (let i = 0; i < tp.count; i++) { const y = tp.getY(i); tp.setX(i, tp.getX(i) + (y / 6) ** 2 * .9); }
+      trunk.computeVertexNormals();
+      const frond = new THREE.PlaneGeometry(1.25, 3.4, 2, 6).rotateX(-Math.PI / 2).translate(0, 0, 1.7);
+      const fp = frond.attributes.position;
+      for (let i = 0; i < fp.count; i++) { const d = fp.getZ(i); fp.setY(i, -d * d * .12 + d * .25); fp.setX(i, fp.getX(i) * (1 - d / 3.8)); fp.setY(i, fp.getY(i) - Math.abs(fp.getX(i)) * .35); }
+      frond.computeVertexNormals();
+      this.palmGeo = { trunk, frond };
+    }
+    const g = new THREE.Group();
+    const t = new THREE.Mesh(this.palmGeo.trunk, this.palmMat.trunk); t.castShadow = true; g.add(t);
+    for (let i = 0; i < 9; i++) {
+      const f = new THREE.Mesh(this.palmGeo.frond, this.palmMat.frond); f.castShadow = true;
+      f.position.set(.9, 5.9, 0); f.rotation.y = (i / 9) * Math.PI * 2 + rnd() * .3; g.add(f);
+    }
+    g.position.set(x, .05, z); g.rotation.y = rnd() * 6; g.scale.setScalar(s);
+    this.root.add(g);
+    this.prop(x, z, .35 * s, [g]);
   }
 
   /* ---------- Flaggen, Zebrastreifen, Wimpel ---------- */
@@ -286,18 +378,20 @@ export class World {
     const pole = new THREE.Mesh(this.poleGeo, this.poleMat); pole.scale.y = h; pole.position.set(x, h / 2, z); pole.castShadow = true;
     const f = new THREE.Mesh(this.flagGeo, mat); f.position.set(x, h - .8, z); f.rotation.y = rot; f.castShadow = true;
     this.root.add(pole, f);
+    this.prop(x, z, .22, [pole, f]);
   }
 
   private decorate() {
     // Regenbogen-Zebrastreifen an allen vier Seiten der Hauptkreuzung und vor dem Club
-    const cols = PALETTES[0].colors.map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: .7 }));
-    const stripe = new THREE.PlaneGeometry(1.1, 7.4);
+    // echte Zebrastreifen: sechs Balken in Fahrtrichtung, quer über die Fahrbahn verteilt (vorher eine geschlossene Farbfläche)
+    const cols = PALETTES[0].colors.map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: .55, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+    const stripe = new THREE.PlaneGeometry(.72, 2.6);
     const crossing = (x: number, z: number, alongX: boolean) => {
       cols.forEach((m, i) => {
         const s = new THREE.Mesh(stripe, m); s.rotation.x = -Math.PI / 2; s.receiveShadow = true;
-        const off = (i - 2.5) * 1.15;
-        if (alongX) { s.position.set(x + off, .115, z); }
-        else { s.rotation.z = Math.PI / 2; s.position.set(x, .115, z + off); }
+        const off = (i - 2.5) * 1.18;
+        if (alongX) { s.rotation.z = Math.PI / 2; s.position.set(x, .112, z + off); }
+        else s.position.set(x + off, .112, z);
         this.root.add(s);
       });
     };
@@ -326,6 +420,7 @@ export class World {
     // Ein paar Bäume an den Straßen
     for (let i = -5; i <= 5; i += 2) { this.tree(-34, i * 10 + 5, .8); this.tree(34, i * 10 - 5, .8); }
     // Echte Lichter nur am Platz (spart Leistung)
+    for (let i = 0; i < 4; i++) { const l = new THREE.PointLight(0xffc98a, 0, 15, 1.6); l.position.set(0, -50, 0); this.root.add(l); this.poolLights.push(l); }
     for (const [x, z] of [[-15, 15], [5, -10]]) { const l = new THREE.PointLight(0xff7ad9, 0, 26, 1.6); l.position.set(x, 5, z); this.root.add(l); this.lampLights.push(l); }
   }
 
@@ -363,7 +458,7 @@ export class World {
     const M = (c: THREE.ColorRepresentation, r = .8, extra: THREE.MeshStandardMaterialParameters = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: r, ...extra });
     const plane = (w: number, l: number, m: THREE.Material, x: number, y: number, z: number) => { const o = new THREE.Mesh(new THREE.PlaneGeometry(w, l), m); o.rotation.x = -Math.PI / 2; o.position.set(x, y, z); o.receiveShadow = true; this.root.add(o); return o; };
     const box = (w: number, h: number, l: number, m: THREE.Material, x: number, y: number, z: number, col = false) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, l), m); o.position.set(x, y, z); o.castShadow = o.receiveShadow = true; this.root.add(o); if (col) this.colliders.push({ x, z, hx: w / 2, hz: l / 2 }); return o; };
-    plane(27, 80, M(0xbdb5a8), -78.5, .06, 5);                      // Kai-Pflaster
+    plane(27, 80, M(0x948c80, .9), -78.5, .06, 5);                      // Kai-Pflaster
     plane(400, 600, M(0x2f8fd0, .12, { metalness: .25, emissive: 0x08243a }), -292, .02, 0); // Wasser
     plane(10, 26, M(0xf0d9a0, 1), -92, .07, 30);                    // Sandstrand
     box(.5, .5, 80, M(0x8c8579), -91.4, .25, 5);                     // Kaimauer
@@ -390,18 +485,20 @@ export class World {
     for (const z of [28.6, 30, 31.4]) box(.45, .7, .45, M(0xff4fa3, .6), -80.2, .35, z); // Hocker
     PALETTES[0].colors.forEach((c, i) => box(6, .12, .75, M(c, .7), -84, 3.1 + i * .02, 27.8 + i * .75));
     this.neonSign('SANDBANK', '#ff9ad5', -81.45, 3.6, 30, Math.PI / 2, undefined, 4.2);
-    for (let i = 0; i < 4; i++) { const u = new THREE.Mesh(new THREE.ConeGeometry(1.4, .6, 10), M([0xff4fa3, 0x5ce1ff, 0xffd23b, 0x7bffb0][i], .7)); u.position.set(-90 - (i % 2) * 3, 2.3, 22 + i * 4.5); this.root.add(u); box(.08, 2.2, .08, M(0xffffff), u.position.x, 1.1, u.position.z); }
+    for (let i = 0; i < 4; i++) { const u = new THREE.Mesh(new THREE.ConeGeometry(1.4, .6, 10), M([0xff4fa3, 0x5ce1ff, 0xffd23b, 0x7bffb0][i], .7)); u.position.set(-90 - (i % 2) * 3, 2.3, 22 + i * 4.5); this.root.add(u); const st = box(.08, 2.2, .08, M(0xffffff), u.position.x, 1.1, u.position.z); this.prop(u.position.x, u.position.z, .25, [u, st]); }
     // Container in Pride-Farben
     PALETTES[0].colors.forEach((c, i) => box(6, 2.6, 2.4, M(c, .6), -82, 1.3 + Math.floor(i / 3) * 2.6, -27 + (i % 3) * 2.5));
     this.colliders.push({ x: -82, z: -24.5, hx: 3, hz: 3.7 });
     // Tram-Haltestelle, Laternen, Flaggen und Bänke am Kai
-    box(4, .12, 1.6, M(0xff4fa3, .5), -70, 3, 8); box(.12, 3, .12, M(0x9aa0aa), -71.8, 1.5, 8); box(.12, 3, .12, M(0x9aa0aa), -68.2, 1.5, 8);
-    const tasks: Promise<void>[] = [];
-    for (let z = -30; z <= 40; z += 14) tasks.push(this.place(C('streetlight'), -89.5, .1, z, Math.PI / 2));
-    for (const z of [2, 16, 38]) tasks.push(this.place(C('bench'), -88.5, .1, z, -Math.PI / 2));
+    box(4, .12, 1.6, M(0xff4fa3, .5), -70, 3, 8); this.prop(-71.8, 8, .2, [box(.12, 3, .12, M(0x9aa0aa), -71.8, 1.5, 8)]); this.prop(-68.2, 8, .2, [box(.12, 3, .12, M(0x9aa0aa), -68.2, 1.5, 8)]);
+    const tasks: Promise<unknown>[] = [];
+    for (let z = -30; z <= 40; z += 14) tasks.push(this.place(C('streetlight'), -89.5, .1, z, Math.PI / 2).then((o) => this.prop(-89.5, z, .3, [o])));
+    for (const z of [2, 16, 38]) tasks.push(this.place(C('bench'), -88.5, .1, z, -Math.PI / 2).then((o) => this.prop(-88.5, z, .95, [o])));
     await Promise.all(tasks);
     [PALETTES[0], PALETTES[2], PALETTES[3], PALETTES[5]].forEach((p, i) => this.flag(-90.5, -6 + i * 7.5, p.colors, 6, Math.PI / 2));
     for (const z of [-30, -21, 20, 34]) this.tree(-66.5, z, 1);
+    for (const z of [-23, -9, 5, 19, 33]) this.palm(-88.6, z, 1 + rnd() * .25);
+    for (const [x, z] of [[-94, 21], [-95, 27], [-93.5, 35], [-95.2, 40]]) this.palm(x, z, .9 + rnd() * .3);
   }
 
   /* ---------- Verkehr ---------- */
@@ -413,27 +510,39 @@ export class World {
     ];
     for (let i = 0; i < loops.length; i++) {
       const o = await instance(C(CARS[i % CARS.length]));
-      o.userData.kind = CARS[i % CARS.length];
+      o.userData.kind = CARS[i % CARS.length]; this.tune('car_', o);
       o.scale.setScalar(S); this.root.add(o);
       const path = loops[i].map(([x, z]) => new THREE.Vector3(x, .1, z));
       this.cars.push({ o, path, seg: 0, u: rnd(), v: 7 + rnd() * 4 });
     }
   }
 
+  /** Weitere Hindernisse für den Verkehr (geparkte/gefahrene Autos des Spielers) */
+  extraBlock?: (x: number, z: number) => boolean;
   /** Spieler-Position, damit Autos bremsen */
   update(dt: number, t: number, player?: THREE.Vector3) {
     this.flagTime.value = t;
+    if (player && this.night > .05 && (this.poolT -= dt) <= 0) {
+      this.poolT = .6;
+      const near = this.lampSpots.map((q) => [q.distanceToSquared(player), q] as const).sort((a, b) => a[0] - b[0]);
+      this.poolLights.forEach((l, i) => { const q = near[i]?.[1]; if (q) l.position.set(q.x, q.y - .5, q.z); });
+    }
     for (const c of this.cars) {
       const a = c.path[0], b = c.path[1];
       const len = a.distanceTo(b);
       let speed = c.v;
-      if (player) {
-        const p = new THREE.Vector3().lerpVectors(a, b, c.u);
-        const ahead = new THREE.Vector3().subVectors(b, a).normalize();
-        const d = new THREE.Vector3().subVectors(player, p);
-        const along = d.dot(ahead), side = Math.abs(d.x * ahead.z - d.z * ahead.x);
-        if (along > 0 && along < 9 && side < 2.2) speed = 0;
+      const p = c.o.position, ax = (b.x - a.x) / len, az = (b.z - a.z) / len;
+      const blocked = (qx: number, qz: number, reach: number, wide: number) => {
+        const dx = qx - p.x, dz = qz - p.z, along = dx * ax + dz * az, side = Math.abs(dx * az - dz * ax);
+        return along > 0 && along < reach && side < wide;
+      };
+      if (player && blocked(player.x, player.z, 9, 2.2)) speed = 0;
+      // anderen Autos nicht hinten auffahren und an Kreuzungen Vorfahrt lassen (feste Reihenfolge, damit sich nichts verklemmt)
+      for (let j = 0; j < this.cars.length && speed > 0; j++) {
+        const o = this.cars[j]; if (o === c) continue;
+        if (blocked(o.o.position.x, o.o.position.z, 7, 1.6) || (j < this.cars.indexOf(c) && blocked(o.o.position.x, o.o.position.z, 6, 3.6))) speed = 0;
       }
+      if (this.extraBlock && this.extraBlock(p.x + ax * 3.5, p.z + az * 3.5)) speed = 0;
       c.u += (speed * dt) / len;
       if (c.u > 1) c.u = 0;
       c.o.position.lerpVectors(a, b, c.u);
@@ -444,6 +553,11 @@ export class World {
   /** Kreis gegen Rechtecke, verschiebt p aus Hindernissen heraus */
   private last = new THREE.Vector3();
   collide(p: THREE.Vector3, r: number) {
+    for (const q of this.props) {
+      if (!q.solid) continue;
+      const dx = p.x - q.x, dz = p.z - q.z, m = q.r + r;
+      if (dx * dx + dz * dz < m * m) { const d = Math.hypot(dx, dz) || .001; p.x = q.x + dx / d * m; p.z = q.z + dz / d * m; }
+    }
     for (const c of this.colliders) {
       const dx = p.x - c.x, dz = p.z - c.z;
       const px = c.hx + r - Math.abs(dx), pz = c.hz + r - Math.abs(dz);

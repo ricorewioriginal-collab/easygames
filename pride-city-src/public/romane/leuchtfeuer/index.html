@@ -199,5 +199,13 @@
 <script src="../../../egstat.js" defer></script>
 <script src="../../../cloud/anmacha-cloud.js" data-game="leuchtfeuer" data-prefix="lf-" defer></script>
 <script>document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("[data-pc-close]");if(a){e.preventDefault();parent.postMessage({pcRoman:"close"},"*");}});</script>
+<script>/* Pride City: ?pc=<spiel> springt direkt in ein Minispiel und kehrt danach zurück */
+(function(){var m=/[?&]pc=([a-z]+)/.exec(location.search);if(!m)return;var go=m[1],st=0,n=0;
+var css=document.createElement("style");css.textContent="#sTitle,#sMenu{visibility:hidden}";document.head.appendChild(css);
+var iv=setInterval(function(){var on=document.querySelector(".scr.on");if(!on)return;var id=on.id;n++;
+if(st===0){if(id==="sTitle"){var b=document.getElementById("bPress");if(b)b.click();}else if(id==="sMenu"){var t=document.querySelector('[data-go="'+go+'"]');if(t){t.click();st=1;n=0;}}else if(n>200){st=2;}}
+else if(st===1){if(id!=="sMenu"&&id!=="sTitle"){st=2;css.textContent="";}else if(n>40){st=2;css.textContent="";}}
+else if(id==="sMenu"||id==="sTitle"){clearInterval(iv);parent.postMessage({pcRoman:"close"},"*");}
+},150);})();</script>
 </body>
 </html>

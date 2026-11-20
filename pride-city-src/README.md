@@ -39,6 +39,13 @@ E2E-Test (Browser, SwiftShader): Server im Repo starten (`python3 -m http.server
 Regeln: Ein Bedienkonzept für alle Geräte (Richtungen wählen, A bestätigt, B zurück, Y/Start Menü). Neue Daten in `defaults()` (Save.ts) eintragen.
 Assets nur mit freier Lizenz, jede Quelle in `public/CREDITS.md`.
 
+## Open-World-Ausbau (20.11.2026)
+
+- Die Romane und Gay Life! sind keine eigenen Menüpunkte mehr: Gay-Life-Minispiele stehen an ihren Orten in der Stadt, die Minispiele aus „Leuchtfeuer“ (Leuchtturm, Plakat, Deich, Räucherei, Pias Fall) spielt man direkt in Finns Rückblenden (`romane/leuchtfeuer/index.html?pc=<spiel>` springt hinein und schließt danach).
+- Kollision mit Laternen, Flaggenmasten, Bänken, Palmen und Figuren (`World.props`), Autos halten Abstand und lassen Vorfahrt; Requisiten zwischen Kamera und Figur werden ausgeblendet.
+- Look: Umgebungskarte (Spiegelungen), Sonnenscheibe und Dunst, lange Abendröte in Pink/Violett, Palmen, nachts warme Fenster, feuchte Straßen und mitwandernde Laternenlichter, Farblook-Pass (Stufe „hoch“).
+- Radar-Minikarte unten links (Handy: oben rechts) und Lichtsäule über dem Missionsziel.
+
 ## Stand und Fahrplan
 
 Siehe [`FAHRPLAN.md`](FAHRPLAN.md).
