@@ -76,6 +76,8 @@
     { id: 'seilbahn', name: 'Die Lianen-Rutsche', icon: '🐒', stars: 9, time: 0, desc: 'Drei Fahrten an der Seilrutsche durch die Baumkronen. Lenk dich zu den Sternen und weich Ästen und Wespennestern aus.', ctrl: [['move', 'Lenken'], ['ok', 'Bremsen'], ['alt', 'Beine anziehen']] }
   ];
   D.TRIAL = Object.fromEntries(D.TRIALS.map(t => [t.id, t]));
+  // Gruppenprüfung beim Einzug (nicht in der normalen Zuschauerwahl): alle Camper suchen gemeinsam, jeder Stern zählt fürs Camp
+  D.TRIAL.marsch = { id: 'marsch', name: 'Der Dschungel-Marsch', icon: '🥾', stars: 10, time: 90, group: true, desc: 'Gruppenprüfung auf dem Weg ins Lager: Alle Camper suchen gemeinsam die Sterne im Dschungel. Jeder Stern ist eine Portion fürs erste Abendessen.', ctrl: [['move', 'Laufen'], ['ok', 'Springen'], ['alt', 'Rennen (halten)']] };
   // Finale: drei kurze Prüfungen für das Finalmenü (Vorspeise, Hauptgang, Nachtisch)
   D.FINAL = [{ id: 'dinner', course: 'Vorspeise' }, { id: 'kisten', course: 'Hauptgang' }, { id: 'quiz', course: 'Nachtisch' }];
 
