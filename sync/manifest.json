@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "230e70fe8295",
- "generated": "2026-11-20T17:17:10+00:00",
- "commit": "5571c7e920dd5e28f5829d9208c2051cf4292700",
+ "version": "fa334a3a7a3b",
+ "generated": "2026-11-20T18:17:41+01:00",
+ "commit": "3645e56421269abd5b7c8d7120dceb5125507062",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -13333,8 +13333,8 @@
   },
   {
    "p": "pride-city/card.jpg",
-   "s": 44060,
-   "h": "d499242933be43a14eef116e16d51ec620401681023bb362d8007057c930b313"
+   "s": 77749,
+   "h": "cf362189cad4da7deb12ef103f3a4b8f5817d0db4ce569b107a4b62678065c72"
   },
   {
    "p": "pride-city/classic/gay-life/card.jpg",
@@ -16329,7 +16329,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236341,
-   "h": "534e1061e8d5be59dcbc58827f4ad97d1d20dde00ffc1773103822f2442d4b41"
+   "h": "77902db975c5484ff2b0affe251d53b8c7720ee112533067455988dc54515812"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -17383,8 +17383,8 @@
   },
   {
    "p": "thumbs/pride-city.webp",
-   "s": 15218,
-   "h": "091b514592b21c722fa3b752d627923755db3fd95480f69d1cfacffb0c34b56a"
+   "s": 41370,
+   "h": "74398ae36fc07e17ccd3e8bbc4730eeed1767f1021927a7cd1dd655525db2cfc"
   },
   {
    "p": "thumbs/prismrush.webp",
@@ -17439,7 +17439,7 @@
   {
    "p": "thumbs/thumbs.js",
    "s": 1905,
-   "h": "56e6974a0710c916c151256edde1147b5a954b3309ec404bd9055036dea18b7b"
+   "h": "d8b8c33f5f4bb6e7911f399c7b4fb45e4dbeac4109d77976c9983d356841b278"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
