@@ -1,53 +1,67 @@
-/* Assets: lädt glTF-Modelle einmal, meldet den Fortschritt an den Ladebildschirm und liefert Kopien. */
-import * as THREE from 'three';
-import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { clone as skClone } from 'three/examples/jsm/utils/SkeletonUtils.js';
+/* Assets: lädt glTF-Modelle einmal je Szene (Babylon-AssetContainer), meldet den Fortschritt an den Ladebildschirm
+   und liefert Kopien: statische Teile als Instanzen (ein Zeichenaufruf für viele Häuser), Figuren mit eigenem Skelett. */
+import { LoadAssetContainerAsync, Texture, TransformNode, type AssetContainer, type Scene, type AnimationGroup, type AbstractMesh } from './bjs';
 
 const BASE = './assets/';
-const cache = new Map<string, Promise<GLTF>>();
-let manager = new THREE.LoadingManager();
-let loader = new GLTFLoader(manager);
+const added = new WeakSet<AssetContainer>();
+const cache = new WeakMap<Scene, Map<string, Promise<AssetContainer>>>();
 
 export type Progress = (done: number, total: number) => void;
+let prog: Progress | null = null, pDone = 0, pTotal = 0;
 
 /** Fortschritt einer Ladephase beobachten. Liefert eine Funktion zum Abmelden. */
 export function trackProgress(fn: Progress) {
-  manager.onProgress = (_u, done, total) => fn(done, total);
-  return () => { manager.onProgress = () => {}; };
+  prog = fn; pDone = 0; pTotal = 0;
+  return () => { prog = null; };
 }
 
-export function gltf(path: string): Promise<GLTF> {
-  let p = cache.get(path);
+export function container(scene: Scene, path: string): Promise<AssetContainer> {
+  let m = cache.get(scene); if (!m) cache.set(scene, (m = new Map()));
+  let p = m.get(path);
   if (!p) {
-    p = loader.loadAsync(BASE + path).then((g) => {
+    pTotal++; prog?.(pDone, pTotal);
+    const i = path.lastIndexOf('/');
+    p = LoadAssetContainerAsync(BASE + path.slice(0, i + 1) + path.slice(i + 1), scene).then((c) => {
       // KayKit-Texturen sind auf „Nearest“ gestellt – das wirkt am Handy pixelig. Weich filtern mit Mipmaps.
-      g.scene.traverse((o) => {
-        const m = (o as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
-        const t = m?.map; if (!t || t.userData.smooth) return;
-        t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.generateMipmaps = true; t.anisotropy = 4; t.userData.smooth = true; t.needsUpdate = true;
-      });
-      return g;
+      for (const t of c.textures) if (t instanceof Texture) { t.updateSamplingMode(Texture.TRILINEAR_SAMPLINGMODE); t.anisotropicFilteringLevel = 4; }
+      pDone++; prog?.(pDone, pTotal);
+      return c;
     });
-    p.catch(() => cache.delete(path));
-    cache.set(path, p);
+    p.catch(() => m!.delete(path));
+    m.set(path, p);
   }
   return p;
 }
 
-/** Statische Kopie (Gebäude, Requisiten) – Geometrie und Material bleiben geteilt */
-export async function instance(path: string): Promise<THREE.Object3D> {
-  const g = await gltf(path);
-  const o = g.scene.clone(true);
-  o.traverse((c) => { const m = c as THREE.Mesh; if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
-  return o;
+/** Statische Kopie (Gebäude, Requisiten): Instanzen teilen Geometrie und Material */
+export async function instance(scene: Scene, path: string, opts: { shadows?: boolean; clone?: boolean } = {}): Promise<TransformNode> {
+  const c = await container(scene, path);
+  if (!opts.clone && !added.has(c)) {
+    // Quellen in die Szene holen (sonst bekommen Instanzen keine Lichter zugewiesen), selbst aber unsichtbar
+    added.add(c); c.addAllToScene();
+    for (const m of c.meshes) { m.isVisible = false; m.isPickable = false; }
+    for (const g of c.animationGroups) g.stop();
+  }
+  const e = c.instantiateModelsToScene((n) => n, false, { doNotInstantiate: !!opts.clone });
+  const root = new TransformNode(path, scene);
+  for (const n of e.rootNodes) n.parent = root;
+  root.getChildMeshes().forEach((m) => { m.isVisible = true; m.receiveShadows = true; (m as AbstractMesh & { _pcCast?: boolean })._pcCast = opts.shadows !== false; m.isPickable = false; });
+  return root;
 }
 
-/** Kopie mit eigenem Skelett (animierte Figuren) */
-export async function skinned(path: string): Promise<{ scene: THREE.Object3D; clips: THREE.AnimationClip[] }> {
-  const g = await gltf(path);
-  return { scene: skClone(g.scene), clips: g.animations };
+/** Kopie mit eigenem Skelett und eigenen Animationen (Figuren) */
+export async function skinned(scene: Scene, path: string): Promise<{ root: TransformNode; groups: AnimationGroup[] }> {
+  const c = await container(scene, path);
+  const e = c.instantiateModelsToScene((n) => n, false, { doNotInstantiate: true });
+  const root = new TransformNode(path, scene);
+  for (const n of e.rootNodes) n.parent = root;
+  root.getChildMeshes().forEach((m) => { m.isPickable = false; });
+  return { root, groups: e.animationGroups };
 }
 
-export function preload(paths: string[]): Promise<unknown> {
-  return Promise.all(paths.map((p) => gltf(p)));
+export function preload(scene: Scene, paths: string[]): Promise<unknown> {
+  return Promise.all(paths.map((p) => container(scene, p)));
 }
+
+/** Alle Meshes unter einem Knoten (für Schattenwurf) */
+export function meshesOf(n: TransformNode) { return n.getChildMeshes(false); }

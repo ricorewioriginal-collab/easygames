@@ -1,44 +1,44 @@
-/* Charakter-Editor im Fotostudio: Figur, Farbwelt, Hautton, Extras, Name, Pronomen. Vorschau dreht sich auf einer Bühne. */
-import * as THREE from 'three';
+/* Charakter-Editor im Fotostudio (Babylon.js): echte Rocketbox-Figur wählen, Name und Pronomen.
+   Vorschau dreht sich auf einer Bühne mit Regenbogen-Ring. */
 import type { GameScene } from '../engine/Engine';
-import { Actor, playerLook, OUTFITS } from './Actor';
-import { BODIES, PALETTES, PRONOUNS, SKINS, HAIRS } from './palettes';
+import { Vector3, TransformNode, HemisphericLight, SpotLight, PointLight, ShadowGenerator, Scene, type FreeCamera, type Mesh, col } from '../engine/bjs';
+import { ground, cyl, torus, pbr, glow, canvasTex } from '../engine/geo';
+import { Actor, playerLook } from './Actor';
+import { EDITOR_AVATARS } from './avatars';
+import { PRONOUNS } from './palettes';
 import type { Game } from './Game';
 import { Menu, el, hints, $ } from '../ui/ui';
 import { music, sfx } from '../engine/Audio';
 
 export class CreatorScene implements GameScene {
-  root = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(38, 1, .1, 100);
+  scene: Scene;
+  camera: FreeCamera;
   bloom = .18;
+  transient = true;
   private actor: Actor | null = null;
   private actors = new Map<string, Actor>();
   private menu!: Menu;
   private screen!: HTMLElement;
   private spin = 0;
-  private ring!: THREE.Mesh;
+  private ring!: Mesh;
   private busy = false;
+  private sg!: ShadowGenerator;
 
   constructor(private g: Game, private done: () => void, private cancel: () => void) {
-    const r = this.root;
-    r.background = new THREE.Color(0x120a26);
-    r.fog = new THREE.Fog(0x120a26, 12, 30);
-    r.add(new THREE.HemisphereLight(0xe6dcff, 0x40305a, 2.2));
-    const key = new THREE.SpotLight(0xffffff, 140, 30, .5, .5, 1.2); key.position.set(3, 7, 6); key.castShadow = true; key.shadow.mapSize.set(1024, 1024); r.add(key, key.target);
-    const rim = new THREE.PointLight(0xff4fa3, 30, 14); rim.position.set(-3, 3, -3); r.add(rim);
-    const rim2 = new THREE.PointLight(0x4fb8ff, 25, 14); rim2.position.set(3, 2, -3); r.add(rim2);
-    const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 48), new THREE.MeshStandardMaterial({ color: 0x1c1236, roughness: .4, metalness: .2 }));
-    floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; r.add(floor);
-    const podium = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.6, .3, 48), new THREE.MeshStandardMaterial({ color: 0x2c1f4f, roughness: .3, metalness: .4 }));
-    podium.position.y = .15; podium.receiveShadow = true; podium.castShadow = true; r.add(podium);
+    const sc = (this.scene = g.engine.newScene(0x120a26));
+    this.camera = g.engine.newCamera(sc, 38, .1, 100);
+    sc.fogMode = Scene.FOGMODE_LINEAR; sc.fogStart = 12; sc.fogEnd = 30; sc.fogColor = col(0x120a26);
+    const h = new HemisphericLight('h', new Vector3(0, 1, 0), sc); h.intensity = 1.1; h.diffuse = col(0xe6dcff); h.groundColor = col(0x40305a);
+    const key = new SpotLight('key', new Vector3(3, 7, 6), new Vector3(-3, -7, -6).normalize(), .9, 2, sc); key.intensity = 140; key.range = 30;
+    this.sg = new ShadowGenerator(1024, key); this.sg.usePercentageCloserFiltering = true;
+    const rim = new PointLight('rim', new Vector3(-3, 3, -3), sc); rim.diffuse = col(0xff4fa3); rim.intensity = 30; rim.range = 14;
+    const rim2 = new PointLight('rim2', new Vector3(3, 2, -3), sc); rim2.diffuse = col(0x4fb8ff); rim2.intensity = 25; rim2.range = 14;
+    const floor = ground(sc, 60, 60); floor.material = pbr(sc, 0x1c1236, .4, .2); floor.receiveShadows = true;
+    const podium = cyl(sc, 1.5, 1.6, .3, 48); podium.material = pbr(sc, 0x2c1f4f, .3, .4); podium.position.y = .15; podium.receiveShadows = true;
     // Regenbogen-Ring hinter der Figur
-    const c = document.createElement('canvas'); c.width = 256; c.height = 4;
-    const x = c.getContext('2d')!, grd = x.createLinearGradient(0, 0, 256, 0);
-    ['#e40303', '#ff8c00', '#ffed00', '#008026', '#004dff', '#750787', '#e40303'].forEach((col, i) => grd.addColorStop(i / 6, col));
-    x.fillStyle = grd; x.fillRect(0, 0, 256, 4);
-    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
-    this.ring = new THREE.Mesh(new THREE.TorusGeometry(2.3, .07, 8, 96), new THREE.MeshBasicMaterial({ map: t, toneMapped: false }));
-    this.ring.position.set(0, 1.4, -1.4); r.add(this.ring);
+    const t = canvasTex(sc, 256, 4, (x) => { const grd = x.createLinearGradient(0, 0, 256, 0); ['#e40303', '#ff8c00', '#ffed00', '#008026', '#004dff', '#750787', '#e40303'].forEach((c, i) => grd.addColorStop(i / 6, c)); x.fillStyle = grd; x.fillRect(0, 0, 256, 4); });
+    this.ring = torus(sc, 2.3, .07, 96); this.ring.material = glow(sc, 0xffffff, 1.4, { tex: t });
+    const tilt = new TransformNode('ringTilt', sc); tilt.rotation.x = Math.PI / 2; tilt.position.set(0, 1.4, -1.4); this.ring.parent = tilt;
     this.camera.position.set(0, 1.6, 6.2);
   }
 
@@ -52,38 +52,35 @@ export class CreatorScene implements GameScene {
     inp.addEventListener('input', () => { s.name = inp.value.replace(/[<>]/g, '').slice(0, 16); });
     inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') { inp.blur(); e.preventDefault(); } });
     const cyc = <T,>(arr: T[], cur: number, d: number) => (cur + d + arr.length) % arr.length;
-    const bi = () => Math.max(0, BODIES.findIndex((b) => b.id === s.body));
-    const pi = () => Math.max(0, PALETTES.findIndex((p) => p.id === s.palette));
+    const ai = () => Math.max(0, EDITOR_AVATARS.findIndex((a) => a.id === playerLook({ ...s, flags: { ...s.flags, playAs: '' } }).rb));
     const ni = () => Math.max(0, PRONOUNS.findIndex((p) => p.id === s.pronouns));
-    const hairStep = (d: number) => { const h = typeof s.flags.hair === 'number' ? s.flags.hair as number : -1; const n = h + d; return n < 0 || n >= HAIRS.length ? (n < -1 ? HAIRS.length - 1 : -1) : n; };
-    const outfits = () => OUTFITS.filter((o) => !o.adult || s.settings.adult);
-    const oi = () => Math.max(0, outfits().findIndex((o) => o.id === (s.flags.outfit || 'clothed')));
+    const pick = (d: number) => { const a = EDITOR_AVATARS[cyc(EDITOR_AVATARS, ai(), d)]; this.setBody(a.id); };
     this.menu = new Menu([
-      { icon: '🧍', label: 'Figur', value: () => BODIES[bi()].desc, left: () => this.setBody(BODIES[cyc(BODIES, bi(), -1)].id), right: () => this.setBody(BODIES[cyc(BODIES, bi(), 1)].id) },
-      { icon: '🏳️‍🌈', label: 'Farbwelt', value: () => PALETTES[pi()].name, left: () => { s.palette = PALETTES[cyc(PALETTES, pi(), -1)].id; this.apply(); }, right: () => { s.palette = PALETTES[cyc(PALETTES, pi(), 1)].id; this.apply(); } },
-      { icon: '✋', label: 'Hautton', value: () => `${s.skin + 1} / ${SKINS.length}`, left: () => { s.skin = cyc(SKINS, s.skin, -1); this.apply(); }, right: () => { s.skin = cyc(SKINS, s.skin, 1); this.apply(); } },
-      { icon: '💇', label: 'Haare', value: () => (typeof s.flags.hair === 'number' && (s.flags.hair as number) >= 0 ? `${(s.flags.hair as number) + 1} / ${HAIRS.length}` : 'Natur'), left: () => { s.flags.hair = hairStep(-1); this.apply(); }, right: () => { s.flags.hair = hairStep(1); this.apply(); } },
+      { icon: '🧍', label: 'Figur', value: () => { const a = EDITOR_AVATARS[ai()]; return `${a.name} · ${a.desc}`; }, left: () => pick(-1), right: () => pick(1) },
       { icon: '💬', label: 'Pronomen', value: () => PRONOUNS[ni()].label, left: () => { s.pronouns = PRONOUNS[cyc(PRONOUNS, ni(), -1)].id; this.apply(); }, right: () => { s.pronouns = PRONOUNS[cyc(PRONOUNS, ni(), 1)].id; this.apply(); } },
-      { icon: '👙', label: 'Outfit', value: () => outfits()[oi()].name, left: () => { s.flags.outfit = outfits()[cyc(outfits(), oi(), -1)].id; this.apply(); }, right: () => { s.flags.outfit = outfits()[cyc(outfits(), oi(), 1)].id; this.apply(); } },
       { icon: '✨', label: 'Los geht’s!', sub: 'Ab nach Rainbow City', big: true, fn: () => { if (!s.name.trim()) s.name = 'Alex'; this.done(); } },
     ]);
     this.menu.onBack = () => this.cancel();
     $('#cMenu', this.screen).appendChild(this.menu.el);
     hints([['dpad', 'Wählen'], ['lr', 'Ändern'], ['a', 'Bestätigen'], ['b', 'Zurück']]);
     music('title');
-    this.setBody(s.body);
+    this.setBody(EDITOR_AVATARS[ai()].id);
   }
-  exit() { this.screen?.remove(); this.actors.forEach((a) => this.root.remove(a.root)); }
+  exit() { this.screen?.remove(); }
 
   private async setBody(id: string) {
     const s = this.g.save.data; s.body = id;
+    this.menu?.render();
     if (this.busy) return; this.busy = true;
     let a = this.actors.get(id);
-    if (!a) { a = await Actor.create(playerLook({ ...s, body: id })); a.root.position.y = .3; this.actors.set(id, a); }
+    if (!a) {
+      a = await Actor.create(this.scene, { ...playerLook(s), body: id, rb: id }); a.root.position.y = .3; this.actors.set(id, a);
+      a.model.getChildMeshes().forEach((m) => this.sg.addShadowCaster(m, false));
+    }
     this.busy = false;
-    if (this.actor) this.root.remove(this.actor.root);
-    this.actor = a; this.root.add(a.root);
-    this.apply(); a.play('cheer'); setTimeout(() => a!.play('idle'), 1400);
+    this.actors.forEach((x) => (x.root.visible = x === a));
+    this.actor = a;
+    this.apply(); a.play('wave');
     if (s.body !== id) this.setBody(s.body);
   }
   private apply() {
@@ -97,10 +94,10 @@ export class CreatorScene implements GameScene {
     this.menu.handle(inp);
     this.spin += dt * .5 + inp.look.x * .01;
     if (this.actor) { this.actor.root.rotation.y = this.spin; this.actor.update(dt); }
-    this.ring.rotation.z = t * .3;
+    this.ring.rotation.y = t * .3;
     // Hochformat: Figur oben, Menü unten – Kamera etwas höher und weiter weg
     const portrait = innerHeight > innerWidth;
     this.camera.position.set(portrait ? 0 : -1.2, portrait ? .4 : 1.5, portrait ? 8.6 : 6.2);
-    this.camera.lookAt(portrait ? 0 : -1.2, portrait ? 0.1 : 1.2, 0);
+    this.camera.setTarget(new Vector3(portrait ? 0 : -1.2, portrait ? 0.1 : 1.2, 0));
   }
 }

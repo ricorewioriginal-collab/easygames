@@ -14,10 +14,14 @@
     "assets": "node scripts/fetch-assets.mjs"
   },
   "dependencies": {
-    "three": "^0.180.0"
+    "@babylonjs/core": "^9.37.1",
+    "@babylonjs/loaders": "^9.37.1"
   },
   "devDependencies": {
-    "@types/three": "^0.180.0",
+    "@gltf-transform/core": "^4.5.1",
+    "fbx2gltf": "^0.9.7-p1",
+    "jpeg-js": "^0.4.4",
+    "pngjs": "^7.0.0",
     "typescript": "^5.9.3",
     "vite": "^7.1.12",
     "vitest": "^3.2.4"

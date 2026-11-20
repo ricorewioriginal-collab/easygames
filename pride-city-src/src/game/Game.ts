@@ -1,16 +1,16 @@
 /* Spielablauf: Ladebildschirm → Titel (Stadt als Kulisse) → Editor → Stadt ↔ Minispiele. Menüs im Konsolen-Stil. */
 import { Engine } from '../engine/Engine';
 import { Save } from '../engine/Save';
-import { trackProgress, preload } from '../engine/Assets';
+import { trackProgress } from '../engine/Assets';
 import { unlock, music, vol, applyVolume, sfx, nightSounds } from '../engine/Audio';
 import { Loading, Dialog, Menu, el, $, esc, hints, toast, chapterCard, bindInputMode, type Item } from '../ui/ui';
 import { Hud } from '../ui/Hud';
 import { Touch } from '../ui/Touch';
 import { CityScene, STICKERS } from './CityScene';
+import { preloadPeople } from './Actor';
 import { CreatorScene } from './CreatorScene';
 import { DanceScene } from './minigames/DanceScene';
 import { World } from './World';
-import { BODIES } from './palettes';
 import { pianoSongs, pianoParts } from './minigames/showSongs';
 import { openGigs, GIGS, fmtTime } from './gigs';
 import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST, lichtPart, lichtLight, lfPart, lfGlow } from './story';
@@ -77,9 +77,9 @@ export class Game {
     this.loading.show('Pride City', 'Rainbow City wird gebaut');
     const stop = trackProgress((d, t) => this.loading.progress(Math.min(.95, d / Math.max(1, t)), 'Modelle und Texturen'));
     const s = this.save.data;
-    await Promise.all([World.load(), preload(BODIES.map((b) => 'people/' + b.id + '.glb'))]);
-    this.loading.progress(.96, 'Stadt wird aufgebaut');
     this.city = new CityScene(this);
+    await Promise.all([World.load(this.city.scene), preloadPeople(this.city.scene)]);
+    this.loading.progress(.96, 'Stadt wird aufgebaut');
     await this.city.build();
     stop();
     this.engine.setScene(this.city);
@@ -227,7 +227,9 @@ export class Game {
     this.fade(async () => {
       const key = theme.id + '|' + placeId;
       let sc = this.interiors.get(key);
-      if (!sc) { this.loading.show(theme.title, 'Einrichtung'); sc = new InteriorScene(this, theme, placeId); await sc.build(); this.interiors.set(key, sc); this.loading.hide(); }
+      if (!sc) { this.loading.show(theme.title, 'Einrichtung'); sc = new InteriorScene(this, theme, placeId); await sc.build(); this.interiors.set(key, sc); this.loading.hide();
+        // nur die letzten Räume behalten (Speicher am Handy)
+        for (const [k, old] of this.interiors) { if (this.interiors.size <= 3) break; if (old !== sc) { this.engine.disposeScene(old); this.interiors.delete(k); } } }
       this.inside = sc; this.where = 'inside';
       this.engine.setScene(sc);
     });
@@ -626,7 +628,7 @@ export class Game {
       ...(this.where === 'inside' ? [{ icon: '🚪', label: 'Haus verlassen', sub: 'Zurück auf die Straße', fn: () => { this.closeMenu(); this.leaveInterior(); } }] : []),
       { icon: '📱', label: 'Handy', sub: 'Status, Ziele, Karte, Jobs, Kontakte', fn: () => this.phone() },
       { icon: '📖', label: 'Story', sub: 'Kapitel und Entscheidungen', fn: () => this.storyMenu(() => { this.closeMenu(); this.pauseMenu(); }) },
-      { icon: '👗', label: 'Kleiderschrank', sub: 'Look, Farbwelt, Pronomen', fn: () => this.fade(() => this.creator(true)) },
+      { icon: '👗', label: 'Kleiderschrank', sub: 'Figur und Pronomen', fn: () => this.fade(() => this.creator(true)) },
       { icon: '⚙️', label: 'Optionen', fn: () => this.options(() => { this.closeMenu(); this.pauseMenu(); }) },
       { icon: '💾', label: 'Speichern', fn: () => { this.save.write(); toast('Gespeichert.'); } },
       { icon: '🏠', label: 'Titelbildschirm', sub: 'Speichert automatisch', fn: () => { this.save.write(); this.closeMenu(); this.where = 'city'; this.fade(() => this.title()); } },
@@ -702,8 +704,8 @@ export class Game {
   credits() {
     this.openMenu(`<div class="col"><div class="panel" style="max-height:70dvh;overflow:auto"><h3>Mitwirkende</h3>
       <p><b style="color:#fff">Pride City</b> – Relaunch von Gay Life! für easygames.</p>
-      <p>Figuren: <b style="color:#fff">Quaternius</b> (über Poly Pizza) – CC0 1.0. Stadt und Wohnung: <b style="color:#fff">KayKit</b> von Kay Lousberg (City Builder Bits, Furniture Bits, Restaurant Bits) – CC0 1.0. In Pride-Farben umgefärbt.</p>
-      <p>3D: three.js (MIT). Musik und Klänge werden live im Spiel erzeugt.</p>
+      <p>Menschen: <b style="color:#fff">Microsoft Rocketbox</b> – 115 Figuren mit Animationen, MIT-Lizenz (© 2020 Microsoft Corporation, github.com/microsoft/Microsoft-Rocketbox). Stadt und Wohnung: <b style="color:#fff">KayKit</b> von Kay Lousberg (City Builder Bits, Furniture Bits, Restaurant Bits) – CC0 1.0. In Pride-Farben umgefärbt.</p>
+      <p>3D: Babylon.js (Apache 2.0). Musik und Klänge werden live im Spiel erzeugt.</p>
       <p>Alle Figuren sind erwachsen und frei erfunden. Zustimmung zählt.</p><div class="slot"></div></div></div>`,
     [{ icon: '←', label: 'Zurück', fn: () => this.title() }], () => this.title());
   }
