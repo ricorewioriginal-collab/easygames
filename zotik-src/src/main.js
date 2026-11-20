@@ -742,7 +742,11 @@ const CAST_KK={mira:['ad_ma',/Hat/,{r:'staff'},{hair:0x4a86f0,top:0xc8d8ff,top2:
   prof:['ad_ra',/Quiver/,{r:'crossbow_1handed'},{hair:0xf4f4f4,top:0xefe4c8,top2:0xb98a4a,pants:0x5a4030},1.74],
   kael:['ad_rh',/Mask/,{r:'dagger',l:'dagger'}],mirael:['ad_ma',/Hat/,{r:'staff'}],toren:['ad_kn',/Helmet|Visor/,{r:'hammer_A'}],eryn:['ad_ma',/Hat/,{r:'spellbook_open'}],aera:['ad_ro',/^$/,{r:'staff_A'}],
   rico:['ad_ra',/Cape|Quiver/,{deco:P=>ricoDeco(P)},{hair:0x3a2414,shirt:0x6a34a8,top:0x3a2a22,top2:0x2a2232,pants:0x2a3040,eye:0x4a3020},1.78]};
-function kkCast(id){const c=CAST_KK[id]||CAST_KK.rovan,g=c[3]?null:GLOOK[id],pal=c[3]||{hair:g.hair,top:g.cloth,top2:g.cape||g.cloth2,pants:g.cloth2,eye:g.eye};
+/* Sketchfab-Figuren (CC-BY, models/sf/) für Gäste und Märchen-Rollen: Modell, Höhe, Farbton-Drehung */
+const SF_CAST={kael:['rogue',1.78,0],toren:['ritter',1.86,0],mirael:['anime',1.62,.9],eryn:['anime',1.6,-1.6],aera:['anime',1.58,2.4],
+  garrik:['ritter',1.9,.5],little:['ritter',2,-.4],stella:['anime',1.6,-.5],dame:['anime',1.62,1.7],schatzmeister:['rogue',1.72,1.3]};
+const sfCast=id=>{const c=SF_CAST[id];if(!c)return null;const P=KK.sfig(c[0],{h:c[1],hue:c[2]});return{root:P.root,kk:P}};
+function kkCast(id){if(SF_CAST[id])return sfCast(id);const c=CAST_KK[id]||CAST_KK.rovan,g=c[3]?null:GLOOK[id],pal=c[3]||{hair:g.hair,top:g.cloth,top2:g.cape||g.cloth2,pants:g.cloth2,eye:g.eye};
   const P=KK.char(c[0],{h:c[4]||1.66*(g&&g.sc||1),hide:c[1],pal,...c[2]});return{root:P.root,kk:P}}
 function makeVillager(o){
   // Stilisierte Figuren passend zu Zotik: großer Kopf mit Augen, Brauen, Mund und Wangen, Frisuren, Gürtel, Stiefel
@@ -1037,11 +1041,16 @@ Object.assign(ED,{
   skm:{name:'Skelettmagier',hp:36,dmg:8,spd:3.4,xp:20,aggro:18,rng:9,ranged:true,wind:.9,cool:2.4,make:kkFoe('sk_m',1.85,'Skeleton_Staff'),sc:1,sh:[1,3],base:'rift',col:0x9a7aff,weak:'light'},
   skn:{name:'Knochenwicht',hp:28,dmg:6,spd:5,xp:12,aggro:14,rng:2.2,wind:.55,cool:1.2,make:kkFoe('sk_n',1.5),sc:1,sh:[1,2],base:'wolf',col:0xd0c8b0,weak:'light'}});
 /* Bestien (Quaternius Bestiary): Imp mit Streitkolben (zäh, harte Schläge), Puglin mit Knüppel (flink, springt an) – Farbvariante je Welt */
-const qbFoe=(id,h,v)=>()=>{const P=KK.beast(id,{h,v:v>1?v:0});return{root:P.root,kk:P}},qbV=()=>{const n=chNow()||1;return n%3+1};
+const sfFoe=(id,h,hue)=>()=>{const P=KK.sfig(id,{h,hue});return{root:P.root,kk:P}},qbFoe=(id,h,v)=>()=>{const P=KK.beast(id,{h,v:v>1?v:0});return{root:P.root,kk:P}},qbV=()=>{const n=chNow()||1;return n%3+1};
 Object.assign(ED,{
   qimp:{name:'Kettenimp',hp:90,dmg:14,spd:3.8,xp:30,aggro:15,rng:2.8,wind:.85,cool:1.6,make:()=>qbFoe('imp',2.1,qbV())(),sc:1,sh:[2,5],base:'wolf',col:0xff7a3a,weak:'ice'},
-  qpug:{name:'Puglin',hp:44,dmg:8,spd:6.2,xp:20,aggro:16,rng:2.3,wind:.5,cool:1.1,make:()=>qbFoe('puglin',1.35,qbV())(),sc:1,sh:[1,3],base:'wolf',col:0x8ac04a,leap:1,weak:'fire'}});
-const SKEL=['skw','skw','skr','skm','skn','qimp','qpug','qpug'],skelKey=()=>SKEL[Math.random()*SKEL.length|0];Object.assign(ED.boss,{base:'wolf',sub:'Hüter des Risses',p2t:'Der Mondwolf heult auf!',minion:'rift'});
+  qpug:{name:'Puglin',hp:44,dmg:8,spd:6.2,xp:20,aggro:16,rng:2.3,wind:.5,cool:1.1,make:()=>qbFoe('puglin',1.35,qbV())(),sc:1,sh:[1,3],base:'wolf',col:0x8ac04a,leap:1,weak:'fire'},
+  /* Sketchfab-Magier „Battle Wizard“ (CC-BY, Aartee), je Art eingefärbt und mit eigenem Verhalten */
+  smf:{name:'Flammenmagier',hp:70,dmg:16,spd:3.4,xp:34,aggro:17,rng:8,wind:.9,cool:2.2,make:()=>sfFoe('magier',1.5,0)(),sc:1,sh:[2,5],base:'wolf',col:0xff6a3a,weak:'ice'},
+  smi:{name:'Frostmagier',hp:64,dmg:13,spd:3.2,xp:34,aggro:17,rng:8,wind:1,cool:2.4,make:()=>sfFoe('magier',1.5,3.6)(),sc:1,sh:[2,5],base:'wolf',col:0x6ac8ff,weak:'fire'},
+  smg:{name:'Giftmagier',hp:82,dmg:12,spd:3,xp:38,aggro:16,rng:7,wind:1,cool:2,make:()=>sfFoe('magier',1.6,2.1)(),sc:1,sh:[2,6],base:'wolf',col:0x7ae03a,weak:'fire'},
+  sms:{name:'Schattenmagier',hp:58,dmg:20,spd:3.8,xp:40,aggro:19,rng:8,wind:.8,cool:2.6,make:()=>sfFoe('magier',1.4,-1.3)(),sc:1,sh:[3,6],base:'wolf',col:0xa070ff,weak:'fire'}});
+const SKEL=['skw','skw','skr','skm','skn','qimp','qpug','qpug','smf','smi','smg','sms'],skelKey=()=>SKEL[Math.random()*SKEL.length|0];Object.assign(ED.boss,{base:'wolf',sub:'Hüter des Risses',p2t:'Der Mondwolf heult auf!',minion:'rift'});
 const E=[],telGeo=new T.CircleGeometry(1,40);telGeo.rotateX(-Math.PI/2);
 /* Gegnerstufen: jede Welt hat einen Stufenbereich (Welt 1 schwach), Werte folgen der Stufe. Wer weit über dem Bereich liegt, trifft auf etwas stärkere Gegner (halber Abstand), bekommt aber weniger EP – Leveln lohnt sich, bleibt machbar. */
 const WLV=[0,1,5,8,10,12,14,16,18,20,22,24],RHP={A:1,B:1.35,M:3.2,X:8},RDM={A:.9,B:1.1,M:1.3,X:1.5},RXP={A:1,B:1.3,M:4,X:10};
@@ -3774,7 +3783,7 @@ const ADVT={2:'Im Wald kreisen die Wölfe – lass sie zu dir kommen, dann triff
   6:'Kälte zehrt. Halte Heiltränke bereit und bleib in Bewegung.',7:'Der Boden hier glüht. Spring nicht blind – manche Felsen tragen nicht.',8:'Sterne lügen nicht. Folge den hellen Pfaden am Himmel.',9:'Die Ringe ziehen an allem. Weich seitlich aus, nicht nach hinten.',10:'Wir sind nah am Kern. Was hier wartet, ist alt und zornig.',11:'Jenseits davon kennt niemand den Weg. Du bist der Erste.'};
 /* Dorfbewohner aus den KayKit-Abenteurern (CC0), ohne Rüstung und Waffen, eingefärbt nach ihrer Kleidung – bewusst anders als Zotiks Gefährten.
    Frauen: Magierin (ohne Hut), Schurkin, Kapuze ohne Maske; Männer: Ritter ohne Helm, Barbar, Waldläufer */
-function folkNpc(name,v={},w={}){const FEM=new Set(['Elwen','Sari','Sela','Lotte','Amani','Perla','Ysa','Brisa','Zinna','Vael','Nyx','Sora','Eryn','Mina','Greta','Lina','Mara','Tilda','Lumi','Samira','Maris','Hilde','Nella','Sille','Iris','Marla','Wenke','Glimma','Nerea','Brenna','Veyra','Stella','Nuri']);if(CAST_KK[name.toLowerCase()])return kkCast(name.toLowerCase());const FOLK={f:[['ad_ma',/Hat|Cape/],['ad_ro',/Cape/],['ad_rh',/Mask|Cape/],['ad_ma',/Hat/]],m:[['ad_kn',/Helmet|Visor|Cape/],['ad_ba',/BearHat/],['ad_ra',/Quiver|Cape/],['ad_ba',/^$/],['ad_ra',/Quiver/]]};const f=v.g==='f'||(v.g!=='m'&&(FEM.has(name)||/in$/.test(name)||(!v.beard&&!v.bald&&[1,2,3].includes(v.hs)))),L=!f&&v.beard?FOLK.m.filter(q=>q[0]==='ad_ba'):FOLK[f?'f':'m'],h=[...name].reduce((a,c)=>a*31+c.charCodeAt(0)|0,7)>>>0,q=L[h%L.length],kid=(v.sc||1)<.75;
+function folkNpc(name,v={},w={}){const FEM=new Set(['Elwen','Sari','Sela','Lotte','Amani','Perla','Ysa','Brisa','Zinna','Vael','Nyx','Sora','Eryn','Mina','Greta','Lina','Mara','Tilda','Lumi','Samira','Maris','Hilde','Nella','Sille','Iris','Marla','Wenke','Glimma','Nerea','Brenna','Veyra','Stella','Nuri']);if(CAST_KK[name.toLowerCase()]||SF_CAST[name.toLowerCase()])return kkCast(name.toLowerCase());const FOLK={f:[['ad_ma',/Hat|Cape/],['ad_ro',/Cape/],['ad_rh',/Mask|Cape/],['ad_ma',/Hat/]],m:[['ad_kn',/Helmet|Visor|Cape/],['ad_ba',/BearHat/],['ad_ra',/Quiver|Cape/],['ad_ba',/^$/],['ad_ra',/Quiver/]]};const f=v.g==='f'||(v.g!=='m'&&(FEM.has(name)||/in$/.test(name)||(!v.beard&&!v.bald&&[1,2,3].includes(v.hs)))),L=!f&&v.beard?FOLK.m.filter(q=>q[0]==='ad_ba'):FOLK[f?'f':'m'],h=[...name].reduce((a,c)=>a*31+c.charCodeAt(0)|0,7)>>>0,q=L[h%L.length],kid=(v.sc||1)<.75;
   const o={h:kid?1.1:1.62*(v.sc||1)*(f?.96:1),hide:w.hideX?new RegExp(q[1].source+'|'+w.hideX):q[1],r:w.r,l:w.l,v,name};
   if(w.pal)o.pal={hair:v.hair||0x5a3a22,top:v.cloth||0x8a7a6a,top2:v.cape||v.cloth2||0x5a4a3a,pants:v.cloth2||0x4a3a2a,...(v.skin?{skin:v.skin}:{})};else{o.tint=v.cloth||0xffffff;o.tk=.22}
   const P=KK.char(q[0],o);return{root:P.root,kk:P}}
@@ -3900,7 +3909,7 @@ function buildCave(){const f=S.cave.f||1,R=mul32((S.cave.seed|0)*977+f*131),rr=(
   mk2('km','Skelettmagier',22+lvl*11,5+lvl*1.1,0x9a7aff,{make:kkFoe('sk_m',1.85,'Skeleton_Staff'),base:'rift',ranged:true,weak:'light'});
   mk2('kx','Wächter der Tiefe',220+lvl*70,10+lvl*1.6,0xffe27a,{make:()=>tintModel(makeWolf(true),0xffe27a,.5),base:'wolf',spd:5.2,rng:4.4,wind:.7,cool:1.1,sc:1.8,aggro:30,boss:true,sub:'Ebene '+f,p2t:'Der Wächter tobt!',minion:'ka',xp:Math.round(60+lvl*20)});
   const cells=[];for(let i=1;i<N-1;i++)for(let j=1;j<N-1;j++)if(!g[i][j]&&dist[i][j]>3&&!(i===far[0]&&j===far[1]))cells.push([i,j]);
-  const ne=Math.min(26,10+Math.floor(f/3));for(let n=0;n<ne&&cells.length;n++){const [i,j]=cells.splice(R()*cells.length|0,1)[0],k0=R()<.5?'ka':'kb';spawnEnemy(Math.random()<.45?['ks','ks','kr','km','qimp','qpug'][Math.random()*6|0]:k0,cx(i),cz(j))}
+  const ne=Math.min(26,10+Math.floor(f/3));for(let n=0;n<ne&&cells.length;n++){const [i,j]=cells.splice(R()*cells.length|0,1)[0],k0=R()<.5?'ka':'kb';spawnEnemy(Math.random()<.45?['ks','ks','kr','km','qimp','qpug','sms','smf'][Math.random()*8|0]:k0,cx(i),cz(j))}
   /* Siegel: auf jeder zweiten Ebene ist die Treppe versiegelt – mal Glutkristalle in den Gängen entzünden, mal alle Gegner vertreiben */
   if(f%10!==0&&f%2===0){if((f/2)%2){const pos=[];for(let k=0;k<3&&cells.length;k++){const [i,j]=cells.splice(R()*cells.length|0,1)[0];pos.push([cx(i),cz(j)])}
       const pz=RMS().build('orbs',{x0:0,x1:1,z0:0,z1:1},{pos,hold:55-Math.min(25,f/2),lv:f,R},()=>{toast('🗝️ Das Siegel der Treppe ist gebrochen');WLD.refresh()});WLD.seal=()=>!pz.solved;WLD.sealT=()=>'Die Treppe ist versiegelt: Entzünde die 3 Glutkristalle in den Gängen, bevor der erste erlischt.'}

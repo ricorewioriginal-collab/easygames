@@ -28,3 +28,11 @@ Bäume, Felsen und Friedhofsteile aus „Lowpoly Stylized Fantasy Environment Pa
 `kb/kb.glb` (zusammen mit Wänden, Böden und Säulen aus dem KayKit Dungeon Pack, ebenfalls CC0): Burg, Wachturm, Mühlen, Markt, Brunnen und weitere Gebäude.
 Quelle: https://kaylousberg.itch.io/kaykit-medieval-builder-pack · Lizenz: Creative Commons Zero (CC0 1.0). Aufbereitung: `tools/make-zotik-kaybuild.mjs`.
 - Quaternius (CC0, quaternius.com): qr/qr.glb – animiertes Basismodell für alle Menschen-Figuren außer Zotik (Rollen-Looks in src/quat.js und kaykit.js).
+
+## Sketchfab-Figuren (Ordner `sf/`)
+
+Alle CC-BY 4.0, mit verkleinerten Texturen und vereinfachten Netzen (gltf-transform):
+- `anime.glb` – „Stylized Anime Female Character“ von DevPoly3D
+- `rogue.glb` – „Animated Stylized Character – Rogue Warrior“ von Karthik Naidu
+- `ritter.glb` – „Fantasy Warrior | Free Low-Poly 3D Model“ von Stan
+- `magier.glb` – „Stylized Battle Wizard“ von Aartee
