@@ -18,8 +18,9 @@ const { chromium, ARGS, open, intro } = require('./lib.cjs');
   // im Spiel: Zotik läuft gegen ein frei stehendes Hindernis und bleibt draußen
   const g = await p.evaluate(() => { const Z = __zotik; Z.switchWorld(2); Z.step(1 / 30, 5); for (const e of Z.E) if (!e.dead) { e.dead = true; e.m.root.visible = false; }
     const c = Z.COL.find(c => c.t == null && c.r > .5 && !Z.COL.some(q => q !== c && Math.hypot(q.x - c.x, q.z - c.z) < q.r + c.r + 4) && !Z.pBlocked(c.x, c.z - c.r - 2.5) && !Z.pBlocked(c.x, c.z)); if (!c) return null;
-    Z.pl.x = c.x + .15; Z.pl.z = c.z - c.r - 2.5; Z.pl.y = Z.hgt(Z.pl.x, Z.pl.z); Z.pl.face = 0; Z.setCam(Math.PI, .42, 7.6); const z0 = Z.pl.z; let min = 99; Z.keys.KeyW = true;
-    for (let k = 0; k < 90; k++) { Z.step(1 / 30, 1); min = Math.min(min, Math.hypot(Z.pl.x - c.x, Z.pl.z - c.z)); } Z.keys.KeyW = false; return { r: c.r, min: +min.toFixed(2), lief: +(Z.pl.z - z0).toFixed(2), vorbei: Z.pl.z > c.z }; });
+    Z.pl.x = c.x + .15; Z.pl.z = c.z - c.r - 2.5; Z.pl.y = Z.hgt(Z.pl.x, Z.pl.z); Z.pl.face = 0; Z.setCam(Math.PI, .42, 7.6); const z0 = Z.pl.z; let min = 99; Z.bst.bjs = Z.bst.alt = 0; Z.keys.KeyW = true;
+    for (let k = 0; k < 90; k++) { Z.step(1 / 30, 1); min = Math.min(min, Math.hypot(Z.pl.x - c.x, Z.pl.z - c.z)); } Z.keys.KeyW = false; return { r: c.r, min: +min.toFixed(2), lief: +(Z.pl.z - z0).toFixed(2), vorbei: Z.pl.z > c.z, bjs: Z.bst.bjs, alt: Z.bst.alt }; });
   ok('Spiel: Zotik läuft nicht durch das Hindernis', !!g && g.min > g.r + .5 - .12 && g.lief > 1, JSON.stringify(g));
   ok('Spiel: Zotik gleitet am Hindernis vorbei', !!g && g.vorbei, g && String(g.vorbei));
+  ok('Spiel: Schritte laufen über Babylon (über 80 %)', !!g && g.bjs > 20 && g.bjs / (g.bjs + g.alt) > .8, g && g.bjs + ' Babylon / ' + g.alt + ' alt');
   ok('keine Seitenfehler', p.errs.length === 0, p.errs.join(' | ')); await b.close(); process.exit(fail ? 1 : 0); })();
