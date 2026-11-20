@@ -28,3 +28,14 @@ Bäume, Felsen und Friedhofsteile aus „Lowpoly Stylized Fantasy Environment Pa
 `kb/kb.glb` (zusammen mit Wänden, Böden und Säulen aus dem KayKit Dungeon Pack, ebenfalls CC0): Burg, Wachturm, Mühlen, Markt, Brunnen und weitere Gebäude.
 Quelle: https://kaylousberg.itch.io/kaykit-medieval-builder-pack · Lizenz: Creative Commons Zero (CC0 1.0). Aufbereitung: `tools/make-zotik-kaybuild.mjs`.
 - Quaternius (CC0, quaternius.com): qr/qr.glb – animiertes Basismodell für alle Menschen-Figuren außer Zotik (Rollen-Looks in src/quat.js und kaykit.js).
+
+## Sketchfab – stilisierte Natur (Ordner `sf/`, CC BY 4.0)
+`sf/sf.glb`: Bäume, Busch, Baumstumpf, Felsen und Blumen. Lizenz jeweils **Creative Commons Attribution 4.0** (https://creativecommons.org/licenses/by/4.0/).
+Geändert: zu einer Datei zusammengefasst, Texturen verkleinert, Normal-/ORM-Karten entfernt, Geometrie quantisiert, Eiche vereinfacht (`tools/make-zotik-sketchfab.mjs`).
+- „Stylized Low Poly Fantasy Oak Tree“ von **Specter** – https://sketchfab.com/3d-models/stylized-low-poly-fantasy-oak-tree-7487e9ceb2e14fbf9c5e31b01a93d545
+- „Pine Tree [Game-ready]“ von **Wenedi** – https://sketchfab.com/3d-models/pine-tree-game-ready-dc3fbd9205cf4027a4455d1f415e0478
+- „Coconut Tree“ von **sujirour** – https://sketchfab.com/3d-models/coconut-tree-d141941578044b0f861ca83b36d4c411
+- „Stylized Bush“ von **Daniel (danielpetrov)** – https://sketchfab.com/3d-models/stylized-bush-9d9ce79d3ae040619e96d5b22c7de1a6
+- „Free Pack - Rocks Stylized“ von **PolyOne Studio** – https://sketchfab.com/3d-models/free-pack-rocks-stylized-7c60b4d1b8ab4187965f30c5e0212fc0
+- „Stylized tree stump“ von **Aartee** – https://sketchfab.com/3d-models/stylized-tree-stump-04d51f5c2fb643aab3b93b451d1b77c9
+- „Stylized Flowers and Dandelions“ von **Botanical_Blacksmith** – https://sketchfab.com/3d-models/stylized-flowers-and-dandelions-bffdeb9b066c43ac9456d9899e37d509
