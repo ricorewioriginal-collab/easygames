@@ -136,14 +136,14 @@ export class Combat {
   }
 
   /** Vergehen: gemeldet, wenn eine Streife es sieht – sonst ruft manchmal jemand die Polizei */
-  private crime(law: Law, at: Vector3) {
+  crime(law: Law, at: Vector3) {
     const seen = this.copNear(at, SEE) || this.wanted.stars > 0;
     if (!seen) { if (Math.random() < .45) toast('📞 Jemand hat die Polizei gerufen!'); else return; }
     const more = this.wanted.add(law);
     if (more) { sfx('siren'); this.g.hud.banner(`${'★'.repeat(this.wanted.stars)} Fahndung`, LAWS[law].name, 'bad', 2600); }
   }
 
-  private copNear(p: Vector3, r: number) {
+  copNear(p: Vector3, r: number) {
     for (const c of [...this.cops, ...this.extra]) { if (!c.a.root.isEnabled() || this.bodies.get(c.a)?.down) continue; if (Vector3.Distance(c.a.root.position, p) < r) return true; }
     return false;
   }

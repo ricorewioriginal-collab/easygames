@@ -41,9 +41,9 @@ export class Hud {
   private radarBase: HTMLCanvasElement | null = null;
   /** Karte einmal zeichnen: Straßen alle 30 m, Häuserblöcke, Wasser und Hafen */
   setRadarMap(draw: (g: CanvasRenderingContext2D, px: (v: number) => number) => void) {
-    const c = document.createElement('canvas'); c.width = c.height = 512;
+    const c = document.createElement('canvas'); c.width = c.height = 1024;
     const g = c.getContext('2d')!;
-    draw(g, (v) => 256 + v * 2); // 2 px je Meter, Mitte = Weltursprung
+    draw(g, (v) => 512 + v * 2); // 2 px je Meter, Mitte = Weltursprung (±256 m)
     this.radarBase = c;
   }
   radar(x: number, z: number, yaw: number, blips: Blip[]) {
@@ -52,7 +52,7 @@ export class Hud {
     g.clearRect(0, 0, 200, 200);
     g.save(); g.beginPath(); g.arc(R, R, R - 3, 0, Math.PI * 2); g.clip();
     g.fillStyle = '#123a52'; g.fillRect(0, 0, 200, 200);
-    g.translate(R, R); g.rotate(yaw); g.scale(1.4, 1.4); g.translate(-(256 + x * 2), -(256 + z * 2));
+    g.translate(R, R); g.rotate(yaw); g.scale(1.4, 1.4); g.translate(-(512 + x * 2), -(512 + z * 2));
     g.drawImage(this.radarBase, 0, 0);
     g.restore();
     // Blips (Ziel am Rand festhalten wie im Radar üblich)

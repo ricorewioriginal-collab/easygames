@@ -29,6 +29,7 @@ import { PROFILES, profileShots, profile, dateRec, dateQuestions, finishDate, ca
 import { NEEDS, mood, moodIcon, moodName, change, advance, minutesUntil, track, dailyState, clock, weekday, hour, type Daily } from './life';
 
 type BookId = 'licht' | 'leuchtfeuer';
+export const DONATE = 60;
 const BOOKS: Record<BookId, { title: string; file: string; cover: string; blurb: string }> = {
   licht: { title: 'Ich bin das Licht', file: 'book/ich-bin-das-licht.json', cover: 'book/cover.jpg', blurb: 'Der Roman von RicoReWi: Leon Sommer, Lady Luma und die One Love Bar. In Pride City erzählt Leon seine Geschichte auch selbst – an der One Love Bar.' },
   leuchtfeuer: { title: 'Leuchtfeuer', file: 'book/leuchtfeuer.json', cover: 'book/leuchtfeuer.jpg', blurb: 'Der Jugendroman von RicoReWi: Finn und Ben, ein Schuljahr in Warnholm und der Leuchtturm Rotenhorn. In Pride City erzählt Finn die Geschichte selbst – am Leuchtturm auf dem Steg.' },
@@ -603,7 +604,7 @@ export class Game {
 
   /* ---------- Nachtleben 18+ (Durchgang 3b): angedeutet, Abblende, Zustimmung und Kondom ---------- */
   /** Abblende mit kurzer Zeile, danach Zeit vorspulen und weiter */
-  private fadeNight(title: string, tags: string[], minutes: number, kind: Parameters<typeof encounter>[1], after?: () => void) {
+  fadeNight(title: string, tags: string[], minutes: number, kind: Parameters<typeof encounter>[1], after?: () => void) {
     const s = this.save.data;
     const b = el(`<div class="night"><p>${esc(title)}</p><small>${tags.map(esc).join(' · ')}</small></div>`);
     document.body.appendChild(b); if (kind !== 'talk') nightSounds();
@@ -617,6 +618,29 @@ export class Game {
   }
   private adultOnly(name: string) {
     this.dialog.say([{ who: name, color: '#ff6ad5', text: 'Hier kommst du nur rein, wenn „Inhalte ab 18“ in den Optionen eingeschaltet ist.' }]);
+  }
+  /** Samenbank Zukunft: Gesundheitstest, Kabine, Abblende – danach Geld und manchmal Post von einer Familie */
+  private donate() {
+    const s = this.save.data, A = (text: string, choices?: Array<{ label: string; fn: () => void }>) => ({ who: 'Dr. Amara Wolff', color: '#7fd4ff', text, choices });
+    if (!s.health.test || s.day - s.health.test > TEST_EVERY) { this.dialog.say([A('Schön, dass du helfen willst! Bitte mach vorher einen aktuellen Test im Checkpoint Regenbogen. Der ist kostenlos und geht schnell.')]); return; }
+    this.dialog.say([A('Dein Test ist aktuell, alles bestens. Kabine 2 ist frei: Becher, Zeitschriften, Kopfhörer und ein Schloss an der Tür.', [
+      { label: 'Ich bin bereit', fn: () => setTimeout(() => {
+        const b = el(`<div class="night"><p>🧪 Kabine 2 …</p><small>Gesundheitscheck ✔︎ · Einverständnis ✔︎ · Diskretion ✔︎</small></div>`);
+        document.body.appendChild(b); sfx('door');
+        setTimeout(() => {
+          this.pass(45); b.remove();
+          s.money += DONATE; s.flags.donate = s.day; s.flags.donations = (Number(s.flags.donations) || 0) + 1;
+          change(s, { fun: 10, energy: -6, hygiene: -5 });
+          const n = Number(s.flags.donations);
+          const lines = [A(`Vielen Dank! Die Aufwandsentschädigung: ${DONATE} €. Komm gern wieder, frühestens morgen.`)];
+          if (n === 3) { s.rep += 3; post(s, 'Samenbank Zukunft', 'Gute Nachricht: Mit deiner Spende hat sich ein Kinderwunsch erfüllt. Zwei Mamas sagen Danke! 💙'); lines.push(A('Ach, und eine Nachricht für dich: Eine Familie freut sich über Nachwuchs. Mehr dürfen wir nicht sagen. 💙')); }
+          if (n === 6) { s.rep += 3; post(s, 'Samenbank Zukunft', 'Ein Papa-Paar aus der Hochstadt schickt eine Karte mit Babyfüßchen. Danke, dass du hilfst! 👣'); }
+          this.save.write(); this.city.refreshHud(); sfx('coin');
+          this.dialog.say(lines);
+        }, 2600);
+      }, 50) },
+      { label: 'Heute doch nicht', fn: () => {} },
+    ])]);
   }
   /** Videothek: Film leihen (Titel und Cover nur als Text) */
   private rentFilm() {
@@ -689,9 +713,15 @@ export class Game {
 
   private drawMap() {
     const c = document.getElementById('pmap') as HTMLCanvasElement | null; if (!c) return;
-    // Ausschnitt x −115…65 (mit Hafen), z −90…90
-    const x = c.getContext('2d')!, k = 300 / 180, PX = (v: number) => (v + 115) * k, PZ = (v: number) => (v + 90) * k;
+    // Ausschnitt x −115…215 (Hafen bis Hochstadt), z −165…165
+    const x = c.getContext('2d')!, k = 300 / 330, PX = (v: number) => (v + 115) * k, PZ = (v: number) => (v + 165) * k;
     x.fillStyle = '#2f8fd0'; x.fillRect(0, 0, 300, 300);
+    x.fillStyle = '#4a4a52'; x.fillRect(PX(-66), PZ(-165), 400 * k, 99 * k); x.fillRect(PX(-66), PZ(66), 400 * k, 99 * k);
+    x.fillStyle = '#2f8fd0'; x.fillRect(PX(64), 0, 26 * k, 300);
+    x.fillStyle = '#5a6a7a'; x.fillRect(PX(85), PZ(-65), 130 * k, 130 * k);
+    x.fillStyle = '#3a3f55'; x.fillRect(PX(60), PZ(-5), 32 * k, 10 * k);
+    for (let i = 9; i <= 21; i += 3) x.fillRect(PX(i * 10 - 5), PZ(-65), 10 * k, 130 * k);
+    for (let i = -6; i <= 6; i += 3) x.fillRect(PX(85), PZ(i * 10 - 5), 130 * k, 10 * k);
     x.fillStyle = '#5c9a52'; x.fillRect(PX(-65), PZ(-65), 130 * k, 130 * k);
     x.fillStyle = '#bdb5a8'; x.fillRect(PX(-92), PZ(-35), 27 * k, 80 * k); x.fillStyle = '#f0d9a0'; x.fillRect(PX(-97), PZ(17), 5 * k, 26 * k);
     x.fillStyle = '#8a5a35'; x.fillRect(PX(-111), PZ(-3.5), 20 * k, 3 * k);
@@ -882,6 +912,16 @@ export class Game {
         { icon: '📖', label: 'Den Roman lesen', sub: '„Ich bin das Licht“ von RicoReWi', fn: () => { close(); this.book(); } }] },
       tramhafen: { t: 'Tram Hafen', d: 'Endstation am Regenbogenkai. Zurück in die Innenstadt in zehn Minuten.', items: [
         { icon: '🗺️', label: 'Fahrplan', sub: 'Ziel wählen', fn: () => this.phone('map') }] },
+      tramhoch: { t: 'Hochbahn Hochstadt', d: 'Die Hochbahn rattert über die Avenue. Von hier kommst du in jedes Viertel – auch zurück über die Regenbogenbrücke.', items: [
+        { icon: '🗺️', label: 'Fahrplan', sub: 'Ziel wählen', fn: () => this.phone('map') }] },
+      laterne: { t: 'Laternenmeile', d: s.settings.adult ? 'Rote Lichter, Leuchtschilder und nachts Sexarbeiter*innen am Bordstein. Fahr im Auto langsam vorbei und hup: Wer mag, kommt ans Fenster.' : 'Eine Straße mit roten Leuchtschildern. Hier ist vor allem nachts etwas los.', items: [
+        { icon: '🚗', label: 'Wie läuft das?', sub: 'Im Auto anhalten und hupen', fn: () => { close(); this.dialog.say([{ who: 'Laternenmeile', color: '#ff2a55', text: s.settings.adult ? 'Nachts ab etwa 22 Uhr stehen hier Nico, Roxy, Teo und Jules. Fahr langsam heran und hup (Angriffstaste). Preis und Regeln werden vorher abgesprochen, das Kondom bringen sie mit.' : 'Hier gibt es nur etwas zu sehen, wenn „Inhalte ab 18“ in den Optionen eingeschaltet ist.' }, ...(s.settings.adult ? [{ who: 'Laternenmeile', color: '#ff2a55', text: 'Fahr danach an eine ruhige Ecke. Und Achtung: Sieht dich eine Streife dabei, gibt es einen Stern.' }] : [])]); } }] },
+      samenbank: { t: 'Samenbank Zukunft', d: 'Hier spenden Menschen für Paare und Singles mit Kinderwunsch, auch für queere Familien. Diskret, ärztlich begleitet und nur für Erwachsene.', items: [
+        { icon: '🧪', label: 'Spenden', sub: !s.settings.adult ? 'nur mit „Inhalten ab 18“' : s.flags.donate === s.day ? 'Heute schon gespendet. Morgen wieder.' : `+${DONATE} € · 45 Minuten · Test nicht älter als ${TEST_EVERY} Tage`, disabled: !s.settings.adult || s.flags.donate === s.day, fn: () => { close(); this.donate(); } },
+        { icon: 'ℹ️', label: 'Wie läuft das ab?', sub: 'Ablauf, Rechte, Familien', fn: () => { close(); this.dialog.say([
+          { who: 'Dr. Amara Wolff', color: '#7fd4ff', text: 'Wer spenden will, braucht einen aktuellen Gesundheitstest. Den macht der Checkpoint Regenbogen kostenlos.' },
+          { who: 'Dr. Amara Wolff', color: '#7fd4ff', text: 'Gespendet wird allein in einer ruhigen Kabine. Wir untersuchen die Probe, frieren sie ein und vermitteln sie an Familien mit Kinderwunsch.' },
+          { who: 'Dr. Amara Wolff', color: '#7fd4ff', text: 'Kinder dürfen später erfahren, wer ihr Spender ist. Eltern bist du dadurch aber nicht – das bleiben die Familien. 💙' }]); } }] },
       beach: { t: 'Strandbar Sandbank', d: 'Liegestühle, Sand zwischen den Zehen und der beste Sonnenuntergang der Stadt.', items: [
         { icon: '🍹', label: 'Cocktail am Strand', sub: '5 € · +12 Spaß · +6 Kontakte', fn: buy(5, 'Sonne, Sand, Strohhalm. 🍹', eat({ fun: 12, social: 6 })) },
         { icon: '🏊', label: 'Schwimmen gehen', sub: '45 Minuten · +15 Spaß · −10 Energie', fn: () => { close(); this.fade(() => { this.pass(45); change(s, { fun: 15, energy: -10, hygiene: 10 }); this.save.write(); toast('Erfrischend! 🌊'); }); } },
