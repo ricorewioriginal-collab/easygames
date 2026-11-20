@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9cea600d2af8",
- "generated": "2026-11-20T18:29:43+00:00",
- "commit": "2848e23151c1dc53d2d680905a7d0b10db3598ca",
+ "version": "d224adf7b389",
+ "generated": "2026-11-20T19:14:09+00:00",
+ "commit": "9b73313e2e62a575ee8942e517eecb4e7abfd1bc",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7878,8 +7878,8 @@
   },
   {
    "p": "anmacha-urwaldlager/index.html",
-   "s": 8277,
-   "h": "4bbc968044562c4da87f1a714dac13df122be826f13d865abe689fa91352f2eb"
+   "s": 8315,
+   "h": "2fd98bfc68feec03f4c3c637a2a0d28fe6ca9c4531fc8cf7cb5e638bd0ce402d"
   },
   {
    "p": "anmacha-urwaldlager/js/assets.js",
@@ -7888,13 +7888,13 @@
   },
   {
    "p": "anmacha-urwaldlager/js/audio.js",
-   "s": 10108,
-   "h": "fce330e266a73d6608bd15f25d2f65c4dddc836bbf476fa4a85094236123e494"
+   "s": 10570,
+   "h": "ec6a1179d46b1023bbd411a7ea12208fcd9055d306c28436151feabf0100a357"
   },
   {
    "p": "anmacha-urwaldlager/js/camp.js",
-   "s": 58195,
-   "h": "84e9d7ddeb67ad23fbf06b723a7e51cc91b933e5980828652beaae281e5151af"
+   "s": 64927,
+   "h": "6302aaa6b16f4e25644c69dadf134557a01960e204dbf6a32a1d2d534235b71c"
   },
   {
    "p": "anmacha-urwaldlager/js/core.js",
@@ -7903,8 +7903,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/data.js",
-   "s": 38080,
-   "h": "e38b72f07d64d3bbd1a6fd1602a0723dc6bd9681599ef61558948eb17f2e552a"
+   "s": 41437,
+   "h": "569f449b566b78de05a7dd65d8a25fb6bee049becf3baad43de0aaf43b47f0a7"
   },
   {
    "p": "anmacha-urwaldlager/js/input.js",
@@ -7913,8 +7913,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/main.js",
-   "s": 3120,
-   "h": "487293ec96e84d5c8c6594075aa3cad8928707b4c2bdce047f042823ce243dd2"
+   "s": 3261,
+   "h": "76bf24c3dd2bdcc26300b4482b5114f41e44575436be195548f6db6fc0f236d0"
   },
   {
    "p": "anmacha-urwaldlager/js/menus.js",
@@ -7928,13 +7928,13 @@
   },
   {
    "p": "anmacha-urwaldlager/js/render.js",
-   "s": 30130,
-   "h": "854ef6c9892ac5382826882594fdadf60265d57838caef19022ba3d753e5b066"
+   "s": 30209,
+   "h": "9970bee827aa81515fbae74367328e13b971b459ab9cd82745a29296c3ba0002"
   },
   {
    "p": "anmacha-urwaldlager/js/show.js",
-   "s": 29581,
-   "h": "d390924b26ccd14f688201fdeb703f1b853cd400ec8b190170cf4e643966a69a"
+   "s": 31366,
+   "h": "bd53119493713b344ac949851e0af420500d1534a4e77511d8020d8b9947a270"
   },
   {
    "p": "anmacha-urwaldlager/js/stage.js",
@@ -7988,8 +7988,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kit.js",
-   "s": 25805,
-   "h": "44148478279a4c15a63a741d9586818aee3bda727a0fd23a334c83a8216eb098"
+   "s": 26468,
+   "h": "abee8259058da7b9bf56993e738ed3230acedcceea5a2fe5bf65a47ebfafc2a1"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/klettern.js",
@@ -8045,6 +8045,11 @@
    "p": "anmacha-urwaldlager/js/watch.js",
    "s": 8989,
    "h": "c49afbe28d6a97ab43063b89a99194cf420acfc9c39e33e60771e8b2ac1ba789"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/weather.js",
+   "s": 3854,
+   "h": "282ecf4907ea1a962a6ff19bf8725cb953a791b82cfb917d00f61ef041a71266"
   },
   {
    "p": "anmacha-urwaldlager/logo.svg",
@@ -10998,8 +11003,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 17435,
-   "h": "8815f0aae6b36285567d8872b9c273b59e4ffb14fc214d26b862b36dd35819df"
+   "s": 18959,
+   "h": "7e6286018d89c97ed8c38690282bc7118684d338ae4b22afa5209b514b58381c"
   },
   {
    "p": "guides/beat-studio.json",
@@ -11148,8 +11153,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 38761,
-   "h": "1ce52abfea491a53f637176a0a9e7a4072e5655f9fd1b49ec61e4337d9419db7"
+   "s": 50725,
+   "h": "4dc43c8c3c56e69d508d28c7ce0820642755039b2797390ccdbb5b57d0acfc12"
   },
   {
    "p": "guides/prismrush.json",
@@ -11938,8 +11943,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3262,
-   "h": "05bd73963ae8e32a610529b33597fd6d7da096b5d3a3029796f70fdcfb233437"
+   "s": 3296,
+   "h": "fd91e8a61db85f3bd97c98e54b6be285b29d6ab0b8703f367afbcf1b6536645a"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-DMBVqCOs.js",
@@ -12982,14 +12987,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
-   "p": "pride-city/assets/index-D3Ff-ytT.js",
-   "s": 394456,
-   "h": "5108ff00453f4c68c1d270e6c9e9156e5a5889701916205d67a34db68390964e"
+   "p": "pride-city/assets/index-BEOyCN4q.js",
+   "s": 470337,
+   "h": "4c63cf7e88fcc5448825febf7482b3435eb363f790c9a00858c2e44a9e242b43"
   },
   {
-   "p": "pride-city/assets/index-pJKtPnKu.css",
-   "s": 28146,
-   "h": "4e6658b93aa72d8a08c5110f4a96c85e7f600c23337d82eb57af47f6cd5a8287"
+   "p": "pride-city/assets/index-CYTo2T58.css",
+   "s": 29110,
+   "h": "1c3b4af0342d4adfb93eb8bb0eca05a140b250879bf9a4ef4538a3b4f0d632b4"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -13628,8 +13633,8 @@
   },
   {
    "p": "pride-city/index.html",
-   "s": 5812,
-   "h": "7991b4ae43147675b463be0bb56b628be51f836da422a0114dc135dd0857ce07"
+   "s": 5862,
+   "h": "fcd5896bf4e21496334ce2b796431cdf23768b9e0d06290eea282c61fe4318ff"
   },
   {
    "p": "pride-city/logo.svg",
@@ -16403,8 +16408,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 236341,
-   "h": "6a71f2a36f772cf6491323413304cf0eb50f47e26cc52388769f42d17fa80c8e"
+   "s": 236363,
+   "h": "8f9fd4dc9843a347150743ba05505f72a17c2f8b1940c779d20f8ab788b66bbc"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

@@ -131,6 +131,22 @@
     "Im Camp unterhalten sich die Mit-Camper, lästern oder streiten. Bist du in der Nähe, kannst du einen Streit schlichten, mitmischen oder Lästerer zur Rede stellen. Weitere Aktionen fürs Voting: Lied am Feuer singen, Massage anbieten, heimlich naschen, für die Kamera posen. Oben siehst du deinen Zuschauer-Platz (▲/▼ seit Tagesbeginn).",
     "Rennen: auf dem Handy den 🏃-Knopf antippen oder den Stick ganz nach außen schieben, am PC Shift halten, am Controller B halten, L3 drücken oder den Stick voll durchdrücken. Die Kamera dreht beim Laufen von selbst hinter die Figur und rückt bei Hütten näher heran."
    ]
+  },
+  {
+   "t": "Kochen, Lagerfeuer und Freundschaften",
+   "p": [
+    "Wenn du abends selbst kochst, gibst du drei Zutaten in den Topf: Ein Zeiger pendelt über die Hitze-Leiste, drück Aktion oder tippe aufs Bild, wenn er im grünen Bereich ist. Jede perfekte Zutat macht alle etwas satter und bringt Sympathie, angebranntes Essen bringt nur Lacher.",
+    "Nach dem Essen stellt ein Camper eine Frage in die Runde. Deine Antwort am Lagerfeuer verändert Sympathie, Unterhaltung und die Freundschaften. Lästern bringt Quote, aber Ärger mit dem Betroffenen.",
+    "Am Namensschild siehst du, wer dich mag (💚) und mit wem es Zoff gibt (⚡). In der Buschtrommel steht unter Freundschaften & Zoff für jeden Camper der beste Freund und der größte Gegner."
+   ]
+  },
+  {
+   "t": "Wetter",
+   "p": [
+    "Im Dschungel wird jeden Morgen das Wetter ausgewürfelt: Sonne, Tropenregen oder Gewitter. Der Einzugstag ist immer sonnig, im Studio bleibt es trocken.",
+    "Bei Regen hast du in Prüfungen weniger Zeit (10 %, bei Gewitter 15 %), bei Gewitter blitzt und donnert es. Auch die Mit-Camper schneiden schlechter ab.",
+    "Regen und Gewitter stören den Schlaf. Spann bei den Betten mit ⛺ Plane über die Betten spannen eine Plane, dann bleibt die Nacht trocken."
+   ]
   }
  ],
  "ratgeber": [
@@ -140,7 +156,9 @@
     "Übe die Prüfungen unter Prüfungen spielen, bevor du eine Staffel startest.",
     "Lies das Regelfenster vor jeder Prüfung: dort steht die Steuerung.",
     "Nutze im Camp alle vier Aktionen, jede Hilfe bringt Sympathie.",
-    "Komplimente und Plaudern sind sichere Gesprächsthemen."
+    "Komplimente und Plaudern sind sichere Gesprächsthemen.",
+    "Am Lagerfeuer bringen ehrliche, nette Antworten Sympathie, Lästern über andere bringt Unterhaltung, kostet aber Freundschaft.",
+    "Bei Regen oder Gewitter zuerst die Plane über die Betten spannen, das schützt den Schlaf aller Camper."
    ]
   },
   {

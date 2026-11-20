@@ -1,6 +1,6 @@
 /* Klang ohne Audiodateien: Effekte und Musik werden live mit WebAudio erzeugt (spart Download, läuft offline). */
 
-export type Sfx = 'move' | 'ok' | 'back' | 'coin' | 'win' | 'miss' | 'hit' | 'open' | 'step' | 'cheer'
+export type Sfx = 'rain' | 'thunder' | 'move' | 'ok' | 'back' | 'coin' | 'win' | 'miss' | 'hit' | 'open' | 'step' | 'cheer'
   | 'door' | 'engine' | 'horn' | 'siren' | 'glass' | 'pour' | 'phone' | 'shower' | 'cook' | 'kiss' | 'giggle' | 'sheets' | 'heart' | 'splash' | 'tram' | 'camera' | 'applause' | 'whoosh' | 'slap' | 'boing' | 'squeak';
 
 let ctx: AudioContext | null = null;
@@ -82,6 +82,8 @@ export function sfx(k: Sfx) {
     case 'door': tone(45, t, .12, 'square', .06, sfxBus, -3); noise(t, .08, .1, sfxBus, 0, 400); tone(40, t + .18, .2, 'sine', .25, sfxBus, -6); noise(t + .18, .1, .12, sfxBus, 0, 250); break;
     case 'engine': for (let i = 0; i < 3; i++) tone(31 + i, t + i * .12, .5, 'sawtooth', .07, sfxBus, 7); break;
     case 'horn': tone(64, t, .35, 'square', .06, sfxBus); tone(68, t, .35, 'square', .05, sfxBus); break;
+    case 'rain': noise(t, 1.5, .022, sfxBus, 0, 2600); noise(t + .3, 1.3, .014, sfxBus, 7000); break;
+    case 'thunder': noise(t, 2.6, .28, sfxBus, 0, 110); noise(t + .15, 1.8, .16, sfxBus, 0, 70); break;
     case 'siren': for (let i = 0; i < 4; i++) tone(i % 2 ? 76 : 81, t + i * .45, .45, 'triangle', .07, sfxBus); break;
     case 'glass': tone(100, t, .5, 'sine', .08, sfxBus); tone(105, t + .01, .4, 'sine', .05, sfxBus); break;
     case 'pour': noise(t, .9, .06, sfxBus, 0, 900); noise(t + .3, .6, .04, sfxBus, 0, 1400); break;

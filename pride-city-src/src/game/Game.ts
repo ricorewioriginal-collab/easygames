@@ -3,7 +3,7 @@ import { Engine } from '../engine/Engine';
 import { Save } from '../engine/Save';
 import { trackProgress } from '../engine/Assets';
 import { unlock, music, vol, applyVolume, sfx, nightSounds } from '../engine/Audio';
-import { Loading, Dialog, Menu, el, $, esc, hints, toast, chapterCard, bindInputMode, type Item } from '../ui/ui';
+import { Loading, Dialog, Menu, el, $, esc, hints, toast, chapterCard, bindInputMode, type Item, type Line } from '../ui/ui';
 import { Hud } from '../ui/Hud';
 import { Touch } from '../ui/Touch';
 import { CityScene, STICKERS } from './CityScene';
@@ -14,6 +14,9 @@ import { World } from './World';
 import { pianoSongs, pianoParts } from './minigames/showSongs';
 import { openGigs, GIGS, fmtTime } from './gigs';
 import { BUSINESSES, owns, owned, income, buy } from './empire';
+import { SKY, skyAt, forecast } from './weather';
+import { closeness, levelName, addCloseness, chatOpen, chatOf, replyChat, OUTINGS, outingWhy, doOuting, GIFTS, giveGift, model, partners, jealousy, type Model } from './bond';
+import { STAFF, UPGRADES, UP_MAX, SPECIAL, daily as bizDaily, staffOf, upOf, popOf, issueOf, eventReady, hire, upgrade, workIn, hostEvent, fixIssue, upCost, staffFee, fixCost, eventCost } from './manage';
 import { SHOP, RACES, PAINTS, PAINT_COST, TUNE_COST, MEDALS, ownsCar, myCar, tuneLevel, buyCar, buyTune, buyPaint, bestTime, medalFor, stats } from './vehicles';
 import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST, lichtPart, lichtLight, lfPart, lfGlow } from './story';
 import { LF_CHAPTERS, lfEnding, lfPct } from './leuchtfeuer';
@@ -22,6 +25,7 @@ import { HomeScene } from './HomeScene';
 import { LAWS } from './crime';
 import { RING, WEDDING, ADOPT, KID_NAMES, spouse, fiance, kid, canPropose, propose, canWed, wed, canAdopt, applyAdopt } from './family';
 import { InteriorScene } from './InteriorScene';
+import { ALPHA, QUICK, EMOTES, MAX_GUESTS, normCode, netError } from './online';
 import type { Spot, Theme } from './interiors';
 import type { Sfx } from '../engine/Audio';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage, level } from './jobs';
@@ -43,6 +47,8 @@ function famSub(s: Game['save']['data']) {
   return sp ? `Verheiratet mit ${sp.name}${k ? ' · ' + k.name + ' wohnt bei euch' : s.flags.adopt ? ' · Adoption läuft' : ''}` : fi ? `Verlobt mit ${fi.name}` : 'Heiraten und Adoption';
 }
 
+/** Kaufpreis des Penthouse in der Hochstadt */
+export const PENTHOUSE = 6000;
 export class Game {
   engine: Engine;
   save = new Save();
@@ -100,6 +106,9 @@ export class Game {
     const q = new URLSearchParams(location.search);
     if (q.has('play') && s.started) { if (s.inside) this.enterHome(); else this.city.setPlay(); return; }
     this.title();
+    // Einladungslink: Code steht schon drin
+    this.joinCode = normCode(q.get('join') || '');
+    if (this.joinCode.length === 4) { if (this.save.hasGame) this.codeMenu(() => this.title(), () => this.play()); else toast(`🌐 Einladung in die Stadt ${this.joinCode}: Starte erst ein neues Spiel, dann unter „Online & Freunde“ beitreten.`, 7000); }
   }
 
   /* ---------- Overlay-Menüs ---------- */
@@ -135,6 +144,7 @@ export class Game {
     items.push({ icon: '✨', label: 'Neues Spiel', sub: 'Dein Leben in Rainbow City beginnt', big: !s.hasGame, fn: () => this.newGame() });
     items.push({ icon: '📖', label: 'Story', sub: 'Kapitel und roter Faden', fn: () => this.storyMenu(() => this.title()) });
     items.push({ icon: '🪩', label: 'Minispiele', sub: 'Tanz-Battle, Bar, Drag-Show', fn: () => this.minigames(() => this.title()) });
+    items.push({ icon: '🌐', label: 'Online & Freunde', sub: this.city.friends.net.on ? `Verbunden · Stadt ${this.city.friends.net.code}` : 'Zusammen durch Rainbow City, per Link oder Code', fn: () => this.onlineMenu(() => this.title(), () => this.play()) });
     items.push({ icon: '⚙️', label: 'Optionen', sub: 'Grafik, Ton, Steuerung', fn: () => this.options(() => this.title()) });
     items.push({ icon: '💜', label: 'Mitwirkende', sub: 'Assets und Lizenzen', fn: () => this.credits() });
     this.openMenu(`<div class="col"><div class="logo"><span class="l1">Pride</span><span class="l2">City</span><small>Ein Leben in allen Farben</small></div><div class="slot"></div></div>
@@ -420,6 +430,7 @@ export class Game {
         { icon: '🗺️', label: 'Karte & Tram', sub: 'Orte, Ziel markieren, hinfahren', fn: () => this.phone('map') },
         { icon: '💼', label: 'Jobs', sub: `${JOBS.length} Jobs in der Stadt`, fn: () => this.phone('jobs') },
         { icon: '📞', label: 'Aufträge', sub: this.city.gig ? `Läuft: ${this.city.gig.g.title}` : `${openGigs(s).length} Leute brauchen Hilfe · ${Number(s.flags.gigs) || 0} erledigt`, fn: () => this.phone('gigs') },
+        { icon: SKY[skyAt(s.day, s.time)].icon, label: 'Wetter und Termine', sub: `${SKY[skyAt(s.day, s.time)].name}${(s.day - 1) % 7 === 5 ? ' · heute CSD-Parade, 12–18 Uhr' : ' · CSD-Parade am Samstag'}`, fn: () => this.phone('wetter') },
         { icon: '🏙️', label: 'Imperium', sub: owned(s).length ? `${owned(s).length} Geschäfte · +${income(s)} € am Tag` : 'Läden, Bars und Clubs übernehmen', fn: () => this.phone('empire') },
         { icon: '👨‍👩‍👧', label: 'Familie', sub: famSub(s), fn: () => this.phone('family') },
         { icon: '👥', label: 'Kontakte', sub: `${Object.keys(s.rel).length} Leute kennengelernt`, fn: () => this.phone('contacts') },
@@ -473,9 +484,27 @@ export class Game {
     } else if (app === 'empire') {
       const list = BUSINESSES.map((b) => `<p>${b.icon} <b>${b.name}</b>${owns(s, b.id) ? ' · <b style="color:#3ee69a">gehört dir</b>' : ''}<br><small>${b.pitch}</small></p>`).join('');
       this.openMenu(frame('Imperium', `<div class="pbody"><p>Steig bei Läden, Bars und Clubs ein. Jedes Geschäft zahlt jeden Morgen aus und bringt Ruf.<br>💼 Einnahmen: <b>${income(s)} €</b> am Tag · 🌈 Ruf ${s.rep}</p>${list}</div>`), [
-        ...BUSINESSES.map((b) => ({ icon: b.icon, label: owns(s, b.id) ? `${b.name} ✓` : b.gift ? b.name : `${b.name} kaufen`, sub: owns(s, b.id) ? `+${b.daily} € am Tag` : b.gift || `${b.price} € · +${b.daily} €/Tag · ab ${b.need} Ruf`, disabled: owns(s, b.id) || !!b.gift,
-          fn: () => { const why = buy(s, b); if (why) { sfx('miss'); toast(why); return; } sfx('win'); this.hud.banner(`${b.icon} ${b.name} gehört jetzt dir!`, `+${b.daily} € jeden Tag · +${b.rep} Ruf`, 'good', 4000); this.save.write(); this.city.refreshHud(); this.phone('empire'); } })),
+        ...BUSINESSES.map((b) => ({ icon: b.icon, label: owns(s, b.id) ? `${b.name} ✓` : b.gift ? b.name : `${b.name} kaufen`, sub: owns(s, b.id) ? `${issueOf(s, b.id) ? '⚠️ Problem · ' : ''}+${bizDaily(s, b).net} € am Tag · führen: Personal, Ausbau, Events` : b.gift || `${b.price} € · +${b.daily} €/Tag · ab ${b.need} Ruf`, disabled: !owns(s, b.id) && !!b.gift,
+          fn: () => { if (owns(s, b.id)) { this.phone('biz_' + b.id); return; } const why = buy(s, b); if (why) { sfx('miss'); toast(why); return; } sfx('win'); this.hud.banner(`${b.icon} ${b.name} gehört jetzt dir!`, `+${b.daily} € jeden Tag · +${b.rep} Ruf`, 'good', 4000); this.save.write(); this.city.refreshHud(); this.phone('empire'); } })),
         { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app.startsWith('biz_')) {
+      // Geschäft führen: Personal, Ausbauten, Veranstaltung, Probleme (Regeln in manage.ts)
+      const b = BUSINESSES.find((x) => 'biz_' + x.id === app)!, sp = SPECIAL[b.id], d = bizDaily(s, b), st = staffOf(s, b.id), pop = popOf(s, b.id), iss = issueOf(s, b.id), wait = eventReady(s, b.id);
+      const again = () => this.phone(app), back = () => this.phone('empire');
+      const act = (why: string | null, ok: string) => { if (why) { sfx('miss'); toast(why); return; } sfx('win'); toast(ok); this.save.write(); this.city.refreshHud(); again(); };
+      const bar = (v: number, c: string) => `<span style="display:inline-block;width:120px;height:8px;border-radius:4px;background:#ffffff22;vertical-align:middle"><span style="display:block;width:${v}%;height:8px;border-radius:4px;background:${c}"></span></span>`;
+      this.openMenu(frame(b.name, `<div class="pbody"><p>${b.icon} <b>${d.net} € Gewinn am Tag</b><br><small>Umsatz ${d.gross} € · Lohn ${d.wage} €</small></p><p>💖 Beliebtheit ${bar(pop, pop >= 60 ? '#3ee69a' : '#ffb347')} ${pop}<br>👥 Personal: <b>${STAFF[st].name}</b><br><small>${STAFF[st].text}</small></p>${iss ? `<p>⚠️ <b>${iss.text}</b><br><small>Bis das geklärt ist, kommt nur der halbe Umsatz.</small></p>` : ''}</div>`), [
+        ...(iss ? [{ icon: '🧰', label: iss.fix, sub: `${fixCost(b)} € · Umsatz läuft wieder voll`, fn: () => act(fixIssue(s, b), 'Problem gelöst. Der Laden läuft wieder.') }] : []),
+        { icon: '🤝', label: 'Selbst mit anpacken', sub: s.flags[`mg_${b.id}_work`] === s.day ? 'heute schon erledigt' : '2 Stunden · +12 Beliebtheit · −10 Energie', disabled: s.flags[`mg_${b.id}_work`] === s.day, fn: () => { const why = workIn(s, b); if (why) { sfx('miss'); toast(why); return; } this.closeMenu(); this.fade(() => { this.pass(120); change(s, { energy: -10, social: 10, fun: 4 }); toast(`Zwei Stunden im ${b.name}. Die Gäste freuen sich, dich zu sehen. Beliebtheit +12`); this.save.write(); this.city.refreshHud(); this.touch.show(true); }); } },
+        { icon: '🎉', label: sp.event, sub: wait ? `wieder in ${wait} ${wait === 1 ? 'Tag' : 'Tagen'}` : `${eventCost(b)} € · Kasse morgen früh · +20 Beliebtheit · +2 Ruf`, disabled: !!wait, fn: () => { const why = hostEvent(s, b); if (!why) this.hud.banner(`🎉 ${sp.event}`, sp.eventText, 'good', 4200); act(why, 'Die Einnahmen kommen morgen früh.'); } },
+        { icon: '👥', label: st < STAFF.length - 1 ? `Einstellen: ${STAFF[st + 1].name}` : 'Personal: voll besetzt', sub: st < STAFF.length - 1 ? `${staffFee(b, st + 1) - staffFee(b, st)} € einmalig · Lohn ${Math.round(b.daily * STAFF[st + 1].wage)} €/Tag · Umsatz ×${STAFF[st + 1].mult}` : STAFF[st].text, disabled: st >= STAFF.length - 1, fn: () => act(hire(s, b, st + 1), `${STAFF[Math.min(STAFF.length - 1, st + 1)].name} eingestellt. Willkommen im Team!`) },
+        ...(st ? [{ icon: '👋', label: `Zurückstufen: ${STAFF[st - 1].name}`, sub: 'weniger Lohn, weniger Umsatz', fn: () => act(hire(s, b, st - 1), 'Das Team ist kleiner geworden.') }] : []),
+        ...UPGRADES.map((u) => { const l = upOf(s, b.id, u.id); return { icon: u.icon, label: `${u.id === 'extra' ? sp.extra : u.name} ${'★'.repeat(l)}${'☆'.repeat(UP_MAX - l)}`, sub: l >= UP_MAX ? 'voll ausgebaut' : `${upCost(b, l)} € · +12 % Umsatz${u.id === 'werbung' ? ' · +8 Beliebtheit' : ''} · ${u.id === 'extra' ? 'das gewisse Etwas' : u.text}`, disabled: l >= UP_MAX, fn: () => act(upgrade(s, b, u.id), `${u.id === 'extra' ? sp.extra : u.name}: Stufe ${l + 1}. Das spricht sich herum!`) }; }),
+        { icon: '←', label: 'Zurück', fn: back }], back, 'phone');
+    } else if (app === 'wetter') {
+      const fc = forecast(s.day, s.time), toSat = (5 - (s.day - 1) % 7 + 7) % 7;
+      this.openMenu(frame('Wetter und Termine', `<div class="pbody">${fc.map((f) => `<p>${SKY[f.sky].icon} <b>${f.label}</b>: ${SKY[f.sky].name}${f.parade ? ' · 🏳️‍🌈 CSD-Parade' : ''}</p>`).join('')}<p>🏳️‍🌈 <b>CSD-Parade</b><br><small>Jeden Samstag von 12 bis 18 Uhr auf der Hauptstraße: Festwagen, Tanzgruppen, Konfetti. ${toSat ? `Die nächste ist in ${toSat} ${toSat === 1 ? 'Tag' : 'Tagen'}.` : 'Heute ist es so weit!'} Lauf mit oder spring auf einen Wagen.</small></p><p><small>Nach Regen am Tag zeigt sich oft ein Regenbogen. Bei Regen glänzen die Straßen, bei Gewitter blitzt es über der Skyline.</small></p></div>`),
+        [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'glossary') {
       const g = GLOSSARY.filter(([, , a]) => !a || s.settings.adult);
       this.openMenu(frame('Glossar', `<div class="pbody">${g.map(([t, x]) => `<p><b>${t}</b><br>${x}</p>`).join('')}${s.settings.adult ? '' : '<p><small>Weitere Begriffe mit „Inhalte ab 18“ in den Optionen.</small></p>'}</div>`),
@@ -485,8 +514,8 @@ export class Game {
       return;
     } else if (app === 'matches') {
       const ms = PROFILES.filter((p) => s.dates[p.id]);
-      this.openMenu(frame('Matches', `<div class="pbody">${ms.length ? '<p>Wähle ein Match, um ein Date zu planen.</p>' : '<p>Noch keine Matches. Wisch los!</p>'}</div>`),
-        [...ms.map((p) => { const r = dateRec(s, p.id); return { icon: '💘', label: `${p.name}, ${p.age}`, sub: `${DATE_STAGE[r.st]}${r.plan === s.day ? ' · Date heute: ' + (r.at === 'club' ? 'Club Prisma' : 'Café') : ''}`, fn: () => this.planDate(p.id) }; }),
+      this.openMenu(frame('Matches', `<div class="pbody">${ms.length ? '<p>Wähle ein Match: Nachrichten, Dates, Unternehmungen und Geschenke.</p>' : '<p>Noch keine Matches. Wisch los!</p>'}</div>`),
+        [...ms.map((p) => { const r = dateRec(s, p.id); return { icon: chatOpen(s, p.id) ? '💬' : '💘', label: `${p.name}, ${p.age}`, sub: `${DATE_STAGE[r.st]} · ${levelName(s, p.id)}${chatOpen(s, p.id) ? ' · neue Nachricht' : ''}${r.plan === s.day ? ' · Date heute: ' + (r.at === 'club' ? 'Club Prisma' : 'Café') : ''}`, fn: () => this.planDate(p.id) }; }),
           { icon: '←', label: 'Zurück', fn: () => this.phone('dating') }], () => this.phone('dating'), 'phone');
     } else if (app === 'map') {
       const pois = this.city.world.pois.filter((p) => !p.id.startsWith('tram'));
@@ -552,17 +581,122 @@ export class Game {
       c.addEventListener('pointerup', up); c.addEventListener('pointercancel', up);
     }
   }
-  private planDate(id: string) {
+  /** Chat mit einem Match: Date planen, Nachricht beantworten, schenken, etwas unternehmen, jetzt treffen */
+  planDate(id: string) {
     const s = this.save.data, p = profile(id)!, r = dateRec(s, id), close = () => { this.closeMenu(); this.touch.show(true); };
-    if (r.last === s.day) { toast(`Ihr hattet heute schon ein Date. ${p.name} schreibt: „Bis morgen? 😘“`); return; }
+    const dated = r.last === s.day, again = () => this.planDate(id), buddy = this.city.buddy;
     const set = (at: string, msg: string) => { r.plan = s.day; r.at = at; s.pin = at; this.save.write(); toast(msg); close(); };
+    const up = (m: string | null | undefined) => { if (m) { sfx('win'); this.hud.banner('💞 Ihr seid euch näher gekommen', m, 'good', 4600); } };
+    const v = closeness(s, id), chat = chatOpen(s, id) ? chatOf(s, id) : null, evening = hour(s) >= 18 || hour(s) < 4;
+    const sub = (title: string, items: Item[]) => this.openMenu(`<div class="phoneBox"><div class="ph"><span>${clock(s)}</span><b>${title}</b><span>${s.money} €</span></div><div class="slot"></div></div>`, [...items, { icon: '←', label: 'Zurück', fn: again }], again, 'phone');
     this.openMenu(`<div class="phoneBox"><div class="ph"><span>${clock(s)}</span><b>💬 ${p.name}</b><span>${DATE_STAGE[r.st]}</span></div><div class="pbody">
-      <p class="bubble">Hey! ${r.st ? 'Ich hab an dich gedacht. 🥰' : 'Schön, dass wir gematcht haben. 😊'} Wollen wir uns treffen?</p></div><div class="slot"></div></div>`, [
-      { icon: '☕', label: 'Café Kaffeeklatsch', sub: 'heute, wann du willst', fn: () => set('cafe', `Date mit ${p.name} im Café – auf der Karte markiert.`) },
-      { icon: '🪩', label: 'Club Prisma', sub: 'heute Abend', fn: () => set('club', `Date mit ${p.name} im Club Prisma – auf der Karte markiert.`) },
+      <p>${levelName(s, id)} · Nähe ${v}/100${model(s) && r.st >= 3 ? ` · ${model(s) === 'mono' ? 'exklusiv' : 'offen'}` : ''}</p>
+      <p class="bubble">${chat ? chat.text : dated ? 'Das war schön heute. Bis morgen? 😘' : `Hey! ${r.st ? 'Ich hab an dich gedacht. 🥰' : 'Schön, dass wir gematcht haben. 😊'} Wollen wir uns treffen?`}</p></div><div class="slot"></div></div>`, [
+      ...(chat ? chat.replies.map(([label], i) => ({ icon: '✍️', label, fn: () => { const a = replyChat(s, id, i); this.save.write(); this.city.refreshHud(); close(); this.dialog.say([{ who: p.name, color: p.color, text: a.answer }], () => up(a.up)); } })) : []),
+      { icon: '☕', label: 'Date im Café Kaffeeklatsch', sub: dated ? 'heute hattet ihr schon ein Date' : 'heute, wann du willst', disabled: dated, fn: () => set('cafe', `Date mit ${p.name} im Café – auf der Karte markiert.`) },
+      { icon: '🪩', label: 'Date im Club Prisma', sub: dated ? 'heute hattet ihr schon ein Date' : 'heute Abend', disabled: dated, fn: () => set('club', `Date mit ${p.name} im Club Prisma – auf der Karte markiert.`) },
+      { icon: '🗓️', label: 'Etwas unternehmen', sub: s.flags[`bd_${id}_out`] === s.day ? 'heute schon erledigt' : 'Park, Kino, Strand, Skybar …', fn: () => sub(`🗓️ Mit ${p.name}`, OUTINGS.map((o) => { const why = outingWhy(s, id, o, evening, !!myCar(s)); return { icon: o.icon, label: o.name, sub: why || `${o.cost ? o.cost + ' €' : 'kostenlos'} · ${o.min >= 120 ? Math.round(o.min / 60) + ' Stunden' : o.min + ' Minuten'} · Nähe +${o.bond}`, disabled: !!why, fn: () => { close(); this.fade(() => { this.pass(o.min); const m = doOuting(s, id, o); post(s, p.name, `${o.icon} ${o.name} mit dir. Schön war das.`); this.save.write(); this.city.refreshHud(); this.dialog.say([{ who: `${p.name} und du`, color: p.color, text: o.text }], () => up(m)); }); } }; })) },
+      { icon: '🎁', label: 'Geschenk machen', sub: s.flags[`bd_${id}_gift`] === s.day ? 'heute schon beschenkt' : `${p.name} mag: ${p.likes}`, fn: () => sub(`🎁 Für ${p.name}`, GIFTS.map((g) => ({ icon: g.icon, label: g.name, sub: `${g.price} €`, fn: () => { const res = giveGift(s, p, g); if (res.why) { sfx('miss'); toast(res.why); return; } sfx('coin'); this.save.write(); this.city.refreshHud(); close(); this.dialog.say([{ who: p.name, color: p.color, text: res.text! }], () => up(res.up)); } }))) },
+      ...(r.st >= 1 ? [{ icon: '🚶', label: buddy.who?.id === id ? 'Ihr seid gerade zusammen unterwegs' : 'Jetzt treffen und zusammen losziehen', sub: this.where !== 'city' ? 'geht nur draußen in der Stadt' : buddy.who && buddy.who.id !== id ? `${buddy.who.name} ist gerade bei dir` : `${p.name} kommt zu dir und begleitet dich drei Stunden`, disabled: this.where !== 'city' || !!buddy.who, fn: () => { close(); void this.city.meetBuddy(p); } }] : []),
+      ...(r.st >= 3 ? [{ icon: '💞', label: 'Wie wollen wir zusammen sein?', sub: model(s) ? `abgesprochen: ${model(s) === 'mono' ? 'exklusiv' : 'offen'} · neu besprechen` : 'exklusiv oder offen: sprecht es ab', fn: () => { close(); this.modelTalk(id); } }] : []),
       ...(r.st >= 3 && !s.flags.spouse && !s.flags.engaged ? [{ icon: '💍', label: `${p.name} einen Antrag machen`, sub: canPropose(s, id) || 'Ring ist dabei – jetzt oder nie!', disabled: !!canPropose(s, id), fn: () => this.proposal(id) }] : []),
       { icon: '←', label: 'Zurück', fn: () => this.phone('matches') },
     ], () => this.phone('matches'), 'phone');
+  }
+  /** Absprache: exklusiv oder offen. Beides ist gut, solange alle Bescheid wissen. */
+  private modelTalk(id: string) {
+    const s = this.save.data, p = profile(id)!, many = partners(s).length > 1;
+    const W = (text: Line['text'], choices?: Line['choices']): Line => ({ who: p.name, color: p.color, text, choices });
+    let pick: Model = '';
+    this.dialog.say([W('Gut, dass du fragst. Mir ist wichtig, dass wir beide wissen, woran wir sind.'),
+      W('Was wünschst du dir?', [
+        { label: 'Nur wir zwei. Exklusiv.', fn: () => { pick = 'mono'; } },
+        { label: 'Offen: Wir dürfen auch andere treffen und reden darüber.', fn: () => { pick = 'offen'; } }]),
+      W(() => pick === 'mono' ? (many ? 'Exklusiv? Dann musst du erst mit den anderen reden, mit denen du zusammen bist. Ich warte, aber nicht ewig. 💛' : 'Das wünsche ich mir auch. Nur wir zwei. 💍') : 'Offen und ehrlich. Hauptsache, wir erzählen uns alles und passen aufeinander auf. 💜')], () => {
+      if (pick === 'mono' && many) return;
+      s.flags.relModel = pick; const m = addCloseness(s, id, 4);
+      toast(pick === 'mono' ? '💞 Abgesprochen: exklusiv' : '💞 Abgesprochen: offen'); sfx('win');
+      if (m) this.hud.banner('💞 Ihr seid euch näher gekommen', m, 'good', 4600);
+      this.save.write();
+    });
+  }
+  /* ---------- Online: Freund*innen in der Stadt ---------- */
+  /** Code aus dem Einladungslink (?join=…) oder der letzten Eingabe */
+  joinCode = '';
+  private emoteT = 0;
+  /** back = zurück ins vorige Menü, go = ins Spiel (vom Titel aus) */
+  onlineMenu(back: () => void, go?: () => void) {
+    const f = this.city.friends, net = f.net, has = this.save.hasGame, again = () => this.onlineMenu(back, go);
+    const need = has ? undefined : 'erst ein Spiel beginnen';
+    if (!net.on) {
+      this.openMenu(`<div class="col"><div class="panel online"><h3>🌐 Online & Freunde</h3><p>Lade Freund*innen in deine Stadt ein oder besuche ihre. Mitspieler*innen können per Link oder Code von überall beitreten: Handy, PC, TV oder App.</p><p>Jede*r spielt den eigenen Spielstand weiter. Ihr seht euch in der Stadt, fahrt zusammen herum, tanzt und ruft euch etwas zu.</p><div class="slot"></div></div></div>`, [
+        { icon: '🏙️', label: 'Meine Stadt öffnen', sub: need || `Code und Link zum Teilen · bis zu ${MAX_GUESTS} Gäste`, disabled: !has, fn: () => {
+          this.loading.show('Online', 'Deine Stadt wird geöffnet'); net.host().then(() => { this.loading.hide(); sfx('win'); again(); }).catch((e) => { this.loading.hide(); sfx('miss'); toast(netError(e), 4200); });
+        } },
+        { icon: '🔑', label: 'Code eingeben', sub: need || 'Eine Freundin oder einen Freund besuchen', disabled: !has, fn: () => this.codeMenu(again, go || back) },
+        { icon: '←', label: 'Zurück', fn: back }], back);
+      return;
+    }
+    const host = net.role === 'host', link = net.link(), people = f.list;
+    const who = people.length ? people.map((m) => `<li>${m.st.c ? '🚗' : '🌐'} ${esc(m.name)}</li>`).join('') : `<li class="mu">${host ? 'Noch niemand da. Schick den Link oder den Code los.' : 'Verbindung steht.'}</li>`;
+    this.openMenu(`<div class="col"><div class="panel online"><h3>🌐 ${host ? 'Deine Stadt ist offen' : 'Zu Besuch in der Stadt ' + net.code}</h3>
+      ${host ? `<div class="oRow"><div class="oQr" id="oQr"></div><div><small>Code</small><div class="oCode">${net.code}</div><p class="oUrl">${esc(link)}</p></div></div><p>Mitspieler*innen können per Link, QR-Code oder Code von überall beitreten.</p>` : ''}
+      <ul class="oList">${who}</ul><div class="slot"></div></div></div>`, [
+      ...(go ? [{ icon: '▶', label: 'In die Stadt', big: true, fn: go }] : []),
+      ...(host ? [{ icon: '🔗', label: 'Link kopieren', fn: () => { const ok = () => toast('🔗 Link kopiert.'); try { navigator.clipboard.writeText(link).then(ok, () => toast(link, 6000)); } catch { toast(link, 6000); } } },
+        ...(typeof navigator.share === 'function' ? [{ icon: '📤', label: 'Einladung teilen', fn: () => { navigator.share({ title: 'Pride City', text: `Komm in meine Stadt! Code ${net.code}`, url: link }).catch(() => {}); } }] : [])] : []),
+      ...(people.length ? [{ icon: '💬', label: 'Etwas zurufen', sub: 'Kurze Sprüche für alle', fn: () => this.quickMenu(again) }] : []),
+      { icon: '🔄', label: 'Liste aktualisieren', fn: again },
+      { icon: '🚪', label: host ? 'Stadt schließen' : 'Besuch beenden', fn: () => { f.leave(); toast(host ? '🌐 Deine Stadt ist wieder privat.' : '🌐 Besuch beendet.'); again(); } },
+      { icon: '←', label: 'Zurück', fn: back }], back);
+    if (host) loadQr().then((qr) => { const box = document.getElementById('oQr'); if (!box) return; const q = qr(0, 'M'); q.addData(link); q.make(); box.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); }).catch(() => {});
+  }
+  /** Code wählen: tippen oder mit ←/→ blättern (ein Bedienkonzept für Tastatur, Touch, Controller und TV) */
+  private codeMenu(back: () => void, done: () => void) {
+    const f = this.city.friends, ch = Array.from((this.joinCode + 'AAAA').slice(0, 4));
+    const code = () => ch.join(''), sync = () => { this.joinCode = code(); const i = document.getElementById('oIn') as HTMLInputElement | null; if (i && normCode(i.value) !== code()) i.value = code(); };
+    const step = (i: number, d: number) => { ch[i] = ALPHA[(ALPHA.indexOf(ch[i]) + d + ALPHA.length) % ALPHA.length]; sync(); };
+    this.openMenu(`<div class="col"><div class="panel online"><h3>🔑 Code eingeben</h3><p>Vier Zeichen, die dir die Gastgeberin oder der Gastgeber nennt. Mit dem Einladungslink ist der Code schon eingetragen.</p>
+      <input type="text" id="oIn" class="oIn" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${code()}" aria-label="Code"><div class="slot"></div></div></div>`, [
+      ...ch.map((_, i) => ({ icon: '🔤', label: `${i + 1}. Zeichen`, value: () => ch[i], left: () => step(i, -1), right: () => step(i, 1) })),
+      { icon: '🌐', label: 'Beitreten', big: true, fn: () => {
+        this.loading.show('Online', `Stadt ${code()} wird gesucht`);
+        f.net.join(code()).then(() => { this.loading.hide(); f.hello(); sfx('win'); toast('🌐 Verbunden. Viel Spaß zusammen!'); done(); }).catch((e) => { this.loading.hide(); sfx('miss'); toast(netError(e), 4200); });
+      } },
+      { icon: '←', label: 'Zurück', fn: back }], back);
+    const inp = document.getElementById('oIn') as HTMLInputElement | null;
+    if (inp) inp.oninput = () => { const v = normCode(inp.value); inp.value = v; Array.from(v).forEach((c, i) => (ch[i] = c)); this.joinCode = code(); this.menu?.render(); };
+  }
+  private quickMenu(back: () => void) {
+    const f = this.city.friends;
+    this.openMenu('<div class="col"><div class="panel online"><h3>💬 Etwas zurufen</h3><div class="slot"></div></div></div>',
+      [...QUICK.map((q, i) => ({ label: q, fn: () => { f.quick(i); toast(`Du: ${q}`); back(); } })), { icon: '←', label: 'Zurück', fn: back }], back);
+  }
+  /** Freund*in in der Stadt ansprechen */
+  friendMenu(id: string) {
+    const f = this.city.friends, m = f.roster.members.get(id); if (!m) return;
+    const s = this.save.data, close = () => { this.closeMenu(); this.touch.show(true); };
+    this.touch.show(false);
+    this.openMenu(`<div class="place"><h3>🌐 ${esc(m.name)}</h3><p>Zu Besuch in deiner Runde. Gesten sehen alle, die gerade in der Stadt sind.</p><div class="slot"></div></div>`, [
+      ...EMOTES.map(([k, icon, label]) => ({ icon, label, fn: () => {
+        close(); this.city.player.play(k as Parameters<typeof this.city.player.play>[0]); f.emote(k);
+        if (performance.now() - this.emoteT > 60000) { this.emoteT = performance.now(); change(s, { social: 6, fun: 4 }); this.city.refreshHud(); }
+      } })),
+      { icon: '💬', label: 'Etwas zurufen', fn: () => this.quickMenu(close) },
+      { icon: '←', label: 'Zurück', fn: close }], close, '');
+  }
+
+  /** Begleitung ansprechen */
+  buddyMenu() {
+    const s = this.save.data, b = this.city.buddy, p = b.who; if (!p) return;
+    const r = dateRec(s, p.id), close = () => { this.closeMenu(); this.touch.show(true); };
+    this.touch.show(false);
+    this.openMenu(`<div class="place"><h3>${p.name}</h3><p>${levelName(s, p.id)} · noch etwa ${Math.max(1, Math.round(b.left / 60))} Stunden zusammen unterwegs. Gemeinsame Zeit bringt Nähe.</p><div class="slot"></div></div>`, [
+      { icon: '📸', label: 'Foto zusammen', sub: s.flags[`bd_${p.id}_foto`] === s.day ? 'heute schon gemacht' : 'für den Feed · Nähe +2', disabled: s.flags[`bd_${p.id}_foto`] === s.day, fn: () => { s.flags[`bd_${p.id}_foto`] = s.day; const m = addCloseness(s, p.id, 2); change(s, { fun: 6, social: 6 }); post(s, 'Du', `Unterwegs mit ${p.name}. 📸💕`); sfx('coin'); close(); toast(`📸 Ihr zwei vor der Skyline. ${p.name} stellt es gleich in den Feed.`); if (m) this.hud.banner('💞 Ihr seid euch näher gekommen', m, 'good', 4600); this.save.write(); this.city.refreshHud(); } },
+      { icon: r.st >= 2 ? '💋' : '🤗', label: r.st >= 2 ? 'Kuss' : 'Umarmung', sub: '+Kontakte · +Spaß', fn: () => { change(s, { social: 8, fun: 5 }); sfx('giggle'); close(); toast(r.st >= 2 ? `💋 ${p.name} küsst dich mitten auf dem Gehweg.` : `🤗 ${p.name} drückt dich fest.`); this.city.refreshHud(); } },
+      { icon: '💬', label: 'Reden', fn: () => { close(); this.dialog.say([{ who: p.name, color: p.color, text: [`Weißt du, was ich an dieser Stadt mag? Dass ich hier deine Hand halten kann, ohne nachzudenken.`, `${p.bio} Aber das weißt du ja längst.`, 'Lass uns irgendwo reingehen. Du suchst aus, ich zahle den Nachtisch.', 'Ich könnte ewig so mit dir herumlaufen.'][(s.day + Math.floor(s.time * 8)) % 4] }]); } },
+      { icon: '👋', label: 'Verabschieden', fn: () => { close(); this.city.byeBuddy('Das war schön. Schreib mir, ja? 💜'); } },
+      { icon: '←', label: 'Zurück', fn: close }], close, '');
   }
   /** Das Date selbst: drei Situationen, danach – nur mit Zustimmung beider – vielleicht mehr */
   runDate(id: string) {
@@ -574,6 +708,9 @@ export class Game {
       this.pass(90);
       change(s, { social: 20, fun: 15 });
       const res = finishDate(s, id, pts);
+      const near = addCloseness(s, id, pts >= 4 ? 4 : 1), hurt = res.up ? jealousy(s, id) : null;
+      if (near) toast(near);
+      if (hurt) { sfx('miss'); this.hud.banner('💔 Verletzte Absprache', hurt, 'bad', 5200); }
       if (res.up) post(s, p.name, ['Bestes Date seit Langem. 💕', 'Hab Schmetterlinge im Bauch …', 'Ich glaube, ich bin verliebt. 🌈'][Math.min(2, r.st - 1)] || 'Schöner Abend!');
       const after = () => { this.save.write(); this.city.refreshHud(); };
       if (!res.up) { this.dialog.say([W(pts >= 2 ? 'Das war nett. Lass uns das wiederholen – vielleicht.' : 'Hm, ich glaube, es hat heute nicht so gefunkt. Trotzdem danke!')], after); return; }
@@ -764,6 +901,7 @@ export class Game {
       { icon: '📱', label: 'Handy', sub: 'Status, Ziele, Karte, Jobs, Kontakte', fn: () => this.phone() },
       { icon: '📖', label: 'Story', sub: 'Kapitel und Entscheidungen', fn: () => this.storyMenu(() => { this.closeMenu(); this.pauseMenu(); }) },
       { icon: '👗', label: 'Kleiderschrank', sub: 'Figur, Outfit und Pronomen', fn: () => this.fade(() => this.creator(true)) },
+      { icon: '🌐', label: 'Online & Freunde', sub: this.city.friends.net.on ? `Verbunden · ${this.city.friends.list.length} in der Stadt` : 'Freund*innen einladen oder besuchen', fn: () => this.onlineMenu(() => { this.closeMenu(); this.pauseMenu(); }, back) },
       { icon: '⚙️', label: 'Optionen', fn: () => this.options(() => { this.closeMenu(); this.pauseMenu(); }) },
       { icon: '💾', label: 'Speichern', fn: () => { this.save.write(); toast('Gespeichert.'); } },
       { icon: '🏠', label: 'Titelbildschirm', sub: 'Speichert automatisch', fn: () => { this.save.write(); this.closeMenu(); this.where = 'city'; this.fade(() => this.title()); } },
@@ -930,6 +1068,9 @@ export class Game {
         { icon: '🗺️', label: 'Fahrplan', sub: 'Ziel wählen', fn: () => this.phone('map') }] },
       laterne: { t: 'Laternenmeile', d: s.settings.adult ? 'Rote Lichter, Leuchtschilder und nachts Sexarbeiter*innen am Bordstein. Fahr im Auto langsam vorbei und hup: Wer mag, kommt ans Fenster.' : 'Eine Straße mit roten Leuchtschildern. Hier ist vor allem nachts etwas los.', items: [
         { icon: '🚗', label: 'Wie läuft das?', sub: 'Im Auto anhalten und hupen', fn: () => { close(); this.dialog.say([{ who: 'Laternenmeile', color: '#ff2a55', text: s.settings.adult ? 'Nachts ab etwa 22 Uhr stehen hier Nico, Roxy, Teo und Jules. Fahr langsam heran und hup (Angriffstaste). Preis und Regeln werden vorher abgesprochen, das Kondom bringen sie mit.' : 'Hier gibt es nur etwas zu sehen, wenn „Inhalte ab 18“ in den Optionen eingeschaltet ist.' }, ...(s.settings.adult ? [{ who: 'Laternenmeile', color: '#ff2a55', text: 'Fahr danach an eine ruhige Ecke. Und Achtung: Sieht dich eine Streife dabei, gibt es einen Stern.' }] : [])]); } }] },
+      penthouse: { t: 'Penthouse Himmelblau', d: 'Die Concierge lächelt: „42. Stock, Whirlpool, Blick bis zum Hafen. Der Schlüssel gehört Ihnen, sobald die Unterschrift trocken ist.“', items: [
+        { icon: '🏙️', label: 'Penthouse kaufen', sub: `${PENTHOUSE} € · eigenes Zuhause über den Dächern: schlafen, Whirlpool, Gäste`, fn: () => { if (s.money < PENTHOUSE) { toast(`Dafür fehlen dir ${PENTHOUSE - s.money} €.`); sfx('miss'); return; } s.money -= PENTHOUSE; s.flags.penthouse = s.day; s.rep += 5; sfx('win'); this.save.write(); this.city.refreshHud(); close(); this.hud.banner('🏙️ Penthouse Himmelblau', 'Der Schlüssel gehört dir. Fahr hoch!', 'info', 3600); } },
+        { icon: '👀', label: 'Nur mal gucken', sub: 'Die Concierge zeigt dir Fotos', fn: () => { close(); this.dialog.say([{ who: 'Concierge Bente', color: '#9ad8ff', text: 'Bodentiefe Fenster nach Westen. Abends sehen Sie die Regenbogenbrücke leuchten, und morgens weckt Sie die Hochbahn. Ganz leise.' }]); } }] },
       samenbank: { t: 'Samenbank Zukunft', d: 'Hier spenden Menschen für Paare und Singles mit Kinderwunsch, auch für queere Familien. Diskret, ärztlich begleitet und nur für Erwachsene.', items: [
         { icon: '🧪', label: 'Spenden', sub: !s.settings.adult ? 'nur mit „Inhalten ab 18“' : s.flags.donate === s.day ? 'Heute schon gespendet. Morgen wieder.' : `+${DONATE} € · 45 Minuten · Test nicht älter als ${TEST_EVERY} Tage`, disabled: !s.settings.adult || s.flags.donate === s.day, fn: () => { close(); this.donate(); } },
         { icon: 'ℹ️', label: 'Wie läuft das ab?', sub: 'Ablauf, Rechte, Familien', fn: () => { close(); this.dialog.say([
@@ -947,6 +1088,7 @@ export class Game {
         { icon: '✨', label: s.flags.barDeko ? 'Deko schon gekauft' : 'Deko kaufen', sub: '80 € · Discokugel und Neon · mehr Trinkgeld', disabled: !!s.flags.barDeko, fn: buy(80, 'Der Leuchtturm funkelt! ✨', () => { s.flags.barDeko = true; }) }] } : {
         t: 'Alte Lagerhalle', d: `Ein Schild an der Tür: „Zu vermieten – ${BAR_COST} € Startmiete“. Platz für einen ganzen Club.`, items: [] },
     };
+    { const bz = BUSINESSES.find((x) => x.poi === id && owns(s, x.id)); if (P[id] && bz) P[id].items.unshift({ icon: '📊', label: 'Dein Geschäft führen', sub: `${issueOf(s, bz.id) ? '⚠️ Problem · ' : ''}+${bizDaily(s, bz).net} € am Tag · Personal, Ausbau, Events`, fn: () => { this.closeMenu(); this.phone('biz_' + bz.id); } }); }
     for (const pr of PROFILES) {
       const r = s.dates[pr.id];
       if (P[id] && r && r.plan === s.day && r.at === id) P[id].items.unshift({ icon: '💘', label: `Date mit ${pr.name}`, sub: `${pr.age} · ${pr.pron} · ${DATE_STAGE[r.st]}`, fn: () => { close(); this.runDate(pr.id); } });
@@ -1139,4 +1281,17 @@ export class Game {
     sc.build().then(() => { this.loading.progress(1, 'Los!'); this.engine.setScene(sc); this.loading.hide(); });
     music(null);
   }
+}
+
+/* QR-Code für den Einladungslink: kleine Bibliothek aus ../vendor, erst bei Bedarf geladen */
+type QrMake = (type: number, level: string) => { addData(d: string): void; make(): void; createSvgTag(o: { cellSize: number; margin: number; scalable: boolean }): string };
+let qrLib: Promise<QrMake> | null = null;
+function loadQr(): Promise<QrMake> {
+  const w = window as unknown as { qrcode?: QrMake };
+  return qrLib || (qrLib = new Promise<QrMake>((res, rej) => {
+    if (w.qrcode) return res(w.qrcode);
+    const sc = document.createElement('script'); sc.src = '../vendor/qrcode-generator-1.4.4.js';
+    sc.onload = () => (w.qrcode ? res(w.qrcode) : rej(new Error('qr'))); sc.onerror = () => { qrLib = null; rej(new Error('qr')); };
+    document.head.appendChild(sc);
+  }));
 }

@@ -20,7 +20,8 @@
     if (q.get('trial') && UL.D.TRIAL[q.get('trial')]) {
       // Entwickler-/Teststart: index.html?trial=kisten&theme=studio&bot=1&short=1
       if (UL.A.rbAll) await UL.A.rbAll;
-      const r = await UL.Trials.run(q.get('trial'), { theme: q.get('theme') === 'studio' ? 'studio' : 'dschungel', diff: q.get('diff') || 'normal', short: q.get('short') === '1', practice: true, name: 'Testpilot', ai: q.get('ai') ? { skill: +q.get('ai') || 0.6 } : null, team: q.get('team') ? UL.D.CAST.slice(0, +q.get('team') || 4) : null, heli: q.get('heli') === '1' });
+      if (q.get('wx')) UL.Show.S = { weather: q.get('wx'), theme: 'dschungel', campers: [] };   // Wetter testen: &wx=regen|gewitter
+      const r = await UL.Trials.run(q.get('trial'), { theme: q.get('theme') === 'studio' ? 'studio' : 'dschungel', diff: q.get('diff') || 'normal', short: q.get('short') === '1', practice: !q.get('wx'), name: 'Testpilot', ai: q.get('ai') ? { skill: +q.get('ai') || 0.6 } : null, team: q.get('team') ? UL.D.CAST.slice(0, +q.get('team') || 4) : null, heli: q.get('heli') === '1' });
       window.TRIAL_RESULT = r;
       UL.Menus.title();
       return;

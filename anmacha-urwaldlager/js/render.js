@@ -41,6 +41,7 @@
   R.set = (stage) => {
     if (R.stage && R.stage.dispose) try { R.stage.dispose(); } catch (e) { console.error(e); }
     R.stage = stage;
+    if (UL.Audio && UL.Audio.rain) UL.Audio.rain(stage && stage.rainLvl || 0);
     if (stage && stage.camera) { stage.camera.aspect = R.aspect; R.fitFov(stage.camera); stage.camera.updateProjectionMatrix(); }
   };
   // Bildrate beobachten und Auflösung anpassen

@@ -20,6 +20,24 @@ export const QUIET: Array<{ x: number; z: number; name: string }> = [
   { x: 108.5, z: 15, name: 'Basketballplatz im Hochstadtpark' },
 ];
 /** Straßenstrich an der Laternenmeile (Gehweg südlich der Häuser, z = −24,4) */
+/** Betretbare Orte der Hochstadt: Tür an der Fassade (x, z), rot = Blickrichtung der Tür (0 = +z, π = −z, −π/2 = −x).
+    sign = eigenes Leuchtschild (leer: Schild hängt schon), tower = Eingang mit Vordach. Einrichtung: interiors.ts */
+export const UPTOWN_PLACES: Array<{ id: string; name: string; icon: string; x: number; z: number; rot: number; color: string; sign?: string; tower?: boolean }> = [
+  { id: 'kaleido', name: 'Revuetheater Kaleidoskop', icon: '🎭', x: 126.6, z: 39, rot: -Math.PI / 2, color: '#ffd23b', sign: 'KALEIDOSKOP' },
+  { id: 'komet', name: 'Bar Komet', icon: '🍸', x: 128, z: 36.6, rot: Math.PI, color: '#ff6ad5' },
+  { id: 'astra', name: 'Kino Astra', icon: '🎬', x: 141, z: 36.6, rot: Math.PI, color: '#ff3b6b' },
+  { id: 'china', name: 'China Palast', icon: '🥡', x: 128, z: 53.4, rot: 0, color: '#ff4b3b' },
+  { id: 'diner', name: 'Diner 66', icon: '🍔', x: 140, z: 53.4, rot: 0, color: '#5ce1ff' },
+  { id: 'hotel', name: 'Grand Hotel Aurora', icon: '🏨', x: 135, z: -6.7, rot: 0, color: '#ffd9a0', sign: 'GRAND HOTEL AURORA', tower: true },
+  { id: 'wolke', name: 'Skybar Wolke 7', icon: '🌃', x: 135, z: 6.7, rot: Math.PI, color: '#7fd4ff', sign: 'SKYBAR WOLKE 7', tower: true },
+  { id: 'penthouse', name: 'Penthouse Himmelblau', icon: '🏙️', x: 165, z: -6.7, rot: 0, color: '#9ad8ff', sign: 'HIMMELBLAU', tower: true },
+  { id: 'pizza', name: 'Pizza Nonna', icon: '🍕', x: 190.8, z: 6.6, rot: Math.PI, color: '#ffb347', sign: 'PIZZA NONNA' },
+  { id: 'wasch', name: 'Waschsalon Schaumparty', icon: '🧺', x: 199.2, z: 6.6, rot: Math.PI, color: '#5ce1ff', sign: 'WASCHSALON' },
+  { id: 'galerie', name: 'Galerie Farbrausch', icon: '🖼️', x: 190.8, z: 23.4, rot: 0, color: '#c9a2ff', sign: 'GALERIE' },
+  { id: 'deli', name: 'Deli 24', icon: '🥯', x: 190.8, z: 36.6, rot: Math.PI, color: '#7bffb0', sign: 'DELI 24' },
+];
+/** Standpunkt vor der Tür (auf dem Gehweg) */
+export const doorStep = (p: { x: number; z: number; rot: number }, d = 1.1) => ({ x: p.x + Math.sin(p.rot) * d, z: p.z + Math.cos(p.rot) * d });
 export const CURB_SPOTS: Array<[number, number]> = [[99, -24.4], [103.5, -24.4], [108, -24.4], [112.5, -24.4]];
 
 let seed = 21;
@@ -303,10 +321,21 @@ export async function buildUptown(w: World) {
   }
   // Leuchtschilder über den Läden (eigene Namen)
   const SHOPS: Array<[string, string, number, number, number]> = [
-    ['PIZZA NONNA', '#ffb347', 194, -36.6, Math.PI], ['WASCHSALON', '#5ce1ff', 200, -36.6, Math.PI], ['DELI 24', '#7bffb0', 190, 36.6, 0], ['BAGEL BOX', '#ffd23b', 198, 53.4, Math.PI],
+    ['BAGEL BOX', '#ffd23b', 199.2, 53.4, 0],
     ['BAR KOMET', '#ff6ad5', 128, 36.6, Math.PI], ['KINO ASTRA', '#ff3b6b', 141, 36.6, Math.PI], ['CHINA PALAST', '#ff4b3b', 128, 53.4, 0], ['DINER 66', '#5ce1ff', 140, 53.4, 0],
   ];
   for (const [t, c, x, z, r] of SHOPS) w.neonSign(t, c, x, 3.9, z + (r === 0 ? .9 : -.9), r, undefined, 4.6);
+  // Türen der betretbaren Orte: leuchtender Türrahmen, Schild, bei den Türmen ein Vordach mit Läufer
+  for (const p of UPTOWN_PLACES) {
+    const nx = Math.sin(p.rot), nz = Math.cos(p.rot), side = Math.abs(nx) > .5;
+    const d = planeZ(sc, p.tower ? 2.6 : 1.7, p.tower ? 3 : 2.5); d.material = glow(sc, p.color, 1.3, { alpha: .6 });
+    d.position.set(p.x + nx * .16, p.tower ? 1.6 : 1.4, p.z + nz * .16); d.rotation.y = p.rot; still(d, false, false);
+    if (p.sign) w.neonSign(p.sign, p.color, p.x + nx * (p.tower || side ? .2 : .9), p.tower ? 4.5 : side ? 5 : 3.9, p.z + nz * (p.tower || side ? .2 : .9), p.rot, undefined, p.tower || side ? 7 : 4.6);
+    if (p.tower || side) {
+      B.metal.box(p.x + nx * 1.1, 3.5, p.z + nz * 1.1, side ? 2.2 : 4.4, .18, side ? 4.4 : 2.2);
+      const mat = ground(sc, side ? 2 : 2.4, side ? 2.4 : 2); mat.material = pbr(sc, 0x9a1230, .9); mat.position.set(p.x + nx * 1.1, .125, p.z + nz * 1.1); still(mat, false);
+    }
+  }
   // Rotlicht-Meile: rote Schaufenster und Schilder (die Damen und Herren stehen nur nachts mit 18+ draußen)
   for (const [t, x] of [['NACHTFALTER', 99], ['LUSTGARTEN', 105], ['ROTLICHT', 111]] as const) w.neonSign(t, '#ff2a55', x, 4.1, -24.5, Math.PI, undefined, 5);
   { const rl = new PointLight('rotlicht', new Vector3(105, 3, -27), sc); rl.diffuse = col(0xff2a55); rl.range = 22; rl.intensity = 0; w.lampLights.push(rl); }
