@@ -7,6 +7,13 @@
 
   const CHATTER = ['Ich hab so Hunger …', 'Wer hat schon wieder die Bohnen versteckt?', 'Ich vermisse mein Bett.', 'Hast du das Krabbeln gehört?', 'Heute Nacht hat jemand geschnarcht. Laut!', 'Noch ein Tag Reis und ich werd selber zur Bohne.', 'Die Zuschauer lieben mich, oder?', 'Wann kommt endlich das Luxuspaket?', 'Ich geh gleich in die Lagune.', 'Pssst – ich glaub, wir werden gefilmt. Ach so, ja.'];
 
+  // Regenplane über den Betten (blaue Plane an vier Stangen)
+  function tarpMesh(st) {
+    const g = new T.Group(), b = st.poi.beds; g.position.set(b.x, st.h(b.x, b.z), b.z);
+    const pl = new T.Mesh(new T.PlaneGeometry(4.2, 3.2), new T.MeshLambertMaterial({ color: R.lin(0x2a6ac8), side: T.DoubleSide })); pl.rotation.x = -Math.PI / 2 + 0.2; pl.position.y = 2.2; g.add(pl);
+    for (const x of [-2, 2]) for (const z of [-1.5, 1.5]) { const p = new T.Mesh(new T.CylinderGeometry(0.04, 0.05, 2.4 - z * 0.15, 6), R.mat(0x6a4a2a)); p.position.set(x, (2.4 - z * 0.15) / 2, z); g.add(p); }
+    st.scene.add(g); return g;
+  }
   // ---------- Kulisse ----------
   class CampStage extends R.Stage {
     constructor(theme, tod = 'day') {
@@ -83,6 +90,9 @@
       if (!studio) for (let i = 0; i < 8; i++) { const a = i / 8 * 6.28 + 0.2; at(A.sized('kd_torch_mounted', 1.2), Math.cos(a) * 11.5, Math.sin(a) * 11.5, -a); }
       this.cine = new UL.Cine(this.camera);
       this.cam = { yaw: Math.PI * 0.85, pitch: 0.38, dist: 6.5 };
+      // Wetter des Tages (nur im Dschungel); bei Regen: Plane über den Betten, wenn gespannt
+      const S = UL.Show && UL.Show.S;
+      if (!studio && S && UL.Weather) { UL.Weather.attach(this, S.weather); if (S.tarp) tarpMesh(this); }
     }
     // Figur aus Hindernissen schieben
     push(p, r = 0.35) {
@@ -182,7 +192,8 @@
     const near = (p, r) => Math.hypot(meO.x - p.x, meO.z - p.z) < r;
     const rank0 = UL.Phone.rank(me).pos;
     const rankChip = () => { const r = UL.Phone.rank(me), d = rank0 - r.pos; return `<span class="chip ${d > 0 ? 'up' : d < 0 ? 'warn' : ''}">📺 Platz ${r.pos}/${r.n}${d > 0 ? ' ▲' : d < 0 ? ' ▼' : ''}</span>`; };
-    const hud = () => UI.hud(`<span class="chip big">📅 Tag ${S.day}/${S.days}</span><span class="chip">⚡ ${'●'.repeat(day.energy)}${'○'.repeat(MAXE - day.energy)}</span><span class="chip ${me.hun < 30 ? 'warn' : ''}">🍗 ${Math.round(me.hun)}</span><span class="chip ${me.slp < 35 ? 'warn' : ''}">😴 ${Math.round(me.slp)}</span><span class="chip">❤️ ${Math.round(me.sym)} · 😂 ${Math.round(me.ent)}</span>${rankChip()}${(me.lux || []).length ? `<span class="chip">🎒 ${(me.lux || []).map(id => { const l = D.LUX.find(x => x.id === id); return UL.Show.hasLux(id) ? l.icon + (S.luxUses && S.luxUses[id] != null ? '×' + S.luxUses[id] : '') : '🚫'; }).join(' ')}</span>` : ''}${day.carry ? `<span class="chip">${day.carry === 'holz' ? '🪵 Holz' : '🪣 Wasser'}</span>` : ''}`);
+    const hud = () => UI.hud(`<span class="chip big">📅 Tag ${S.day}/${S.days}</span><span class="chip">⚡ ${'●'.repeat(day.energy)}${'○'.repeat(MAXE - day.energy)}</span><span class="chip ${me.hun < 30 ? 'warn' : ''}">🍗 ${Math.round(me.hun)}</span><span class="chip ${me.slp < 35 ? 'warn' : ''}">😴 ${Math.round(me.slp)}</span><span class="chip">❤️ ${Math.round(me.sym)} · 😂 ${Math.round(me.ent)}</span>${rankChip()}${(me.lux || []).length ? `<span class="chip">🎒 ${(me.lux || []).map(id => { const l = D.LUX.find(x => x.id === id); return UL.Show.hasLux(id) ? l.icon + (S.luxUses && S.luxUses[id] != null ? '×' + S.luxUses[id] : '') : '🚫'; }).join(' ')}</span>` : ''}${day.carry ? `<span class="chip">${day.carry === 'holz' ? '🪵 Holz' : '🪣 Wasser'}</span>` : ''}${wxChip()}`);
+    const wxChip = () => { const K = UL.Weather && UL.Weather.get(); return K && theme !== 'studio' ? `<span class="chip ${K.rain && !S.tarp ? 'warn' : ''}">${K.icon} ${K.name}${K.rain ? (S.tarp ? ' · ⛺ Plane' : '') : ''}</span>` : ''; };
     hud();
 
     const spend = () => { day.energy--; hud(); };
@@ -496,6 +507,7 @@
         if (npcNear && npcNear.state !== 'busy') { cmds.push({ id: 'talk', label: 'Reden mit ' + UL.Show.first(npcNear.c), icon: '💬', hot: true, o: npcNear }); cmds.push({ id: 'massage', label: 'Massage', icon: '💆', o: npcNear }); }
         if (near({ x: 0, z: 0 }, 3.4)) cmds.push({ id: 'sing', label: 'Lied singen', icon: '🎤' });
         if (near(P.beds, 3.4)) cmds.push({ id: 'snack', label: 'Heimlich naschen', icon: '🍫' });
+        { const K = UL.Weather && UL.Weather.get(); if (K && K.rain && !S.tarp && theme !== 'studio' && near(P.beds, 3.4)) cmds.unshift({ id: 'plane', label: 'Plane über die Betten spannen', icon: '⛺', hot: true }); }
         if (!npcNear && !near({ x: 0, z: 0 }, 3.4)) cmds.push({ id: 'pose', label: 'Für die Kamera posen', icon: '📸' });
         if (!day.carry && near(P.wood, 2.4)) cmds.push({ id: 'holz', label: 'Holz sammeln', icon: '🪵', hot: true });
         if (!day.carry && near(P.water, 4.4)) cmds.push({ id: 'wasser', label: 'Wasser holen', icon: '🪣', hot: true });
@@ -523,6 +535,7 @@
       else if (c.id === 'holz') { day.carry = 'holz'; meO.f.play('pickup'); UL.Audio.sfx('chop'); hud(); }
       else if (c.id === 'wasser') { day.carry = 'wasser'; meO.f.play('pickup'); UL.Audio.sfx('splash'); hud(); }
       else if (c.id === 'feuer' || c.id === 'kochen') { spend(); day.carry = null; meO.f.play('throw'); UL.Audio.sfx(c.id === 'feuer' ? 'whoosh' : 'splash'); st.fire.scale.setScalar(1.4); UL.after(2, () => st.fire.scale.setScalar(1)); Show.log(`${me.name} ${c.id === 'feuer' ? 'schürt das Feuer' : 'kocht Wasser ab'}.`, c.id === 'feuer' ? '🔥' : '♨️'); fx({ sym: 2 + Math.random() * 2, ent: 0.5 }, c.id === 'feuer' ? 'Das Feuer brennt!' : 'Trinkwasser fürs Camp!'); npcs.forEach(o => { if (o.state === 'sit' && Math.random() < 0.4) bubble(o, UL.pick(['Danke dir!', 'Endlich mal jemand, der was tut!', 'Wärmt schön.']), 2.4); }); }
+      else if (c.id === 'plane') { spend(); S.tarp = true; meO.f.play('raise'); UL.Audio.sfx('whoosh'); tarpMesh(st); Show.log(`${me.name} spannt die Plane über die Betten.`, '⛺'); fx({ sym: 3, ent: 0.5 }, 'Trockene Betten heute Nacht!'); npcs.forEach(o => { if (Math.random() < 0.4) bubble(o, UL.pick(['Danke! Endlich trocken!', 'Held:in des Tages!', 'Gute Idee bei dem Wetter.']), 2.4); }); hud(); }
       else if (c.id === 'klo') { spend(); meO.f.play('use'); Show.log(`${me.name} putzt das Klo. Respekt!`, '🧽'); fx({ sym: 4, ent: 2 }, 'Klo geputzt – die Zuschauer staunen.'); }
       else if (c.id === 'phone') busy(phone);
       else if (c.id === 'doc') busy(docVisit);
@@ -545,6 +558,7 @@
       const hot = cmds.find(c => c.hot && c.id !== 'end' && c.id !== 'talk');
       if (hot) return hot;
       if (day.energy <= 0) return cmds.find(c => c.id === 'end');
+      const K = UL.Weather && UL.Weather.get(); if (K && K.rain && !S.tarp && theme !== 'studio') { meO.x = st.poi.beds.x + 1.5; meO.z = st.poi.beds.z + 1.5; return null; }
       meO.x = st.poi.wood.x - 1.4; meO.z = st.poi.wood.z - 1; if (day.carry) { meO.x = 0; meO.z = 2; }
       return null;
     }

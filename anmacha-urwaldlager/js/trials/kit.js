@@ -76,6 +76,9 @@
     // Spielfigur
     ctx.player = UL.makeFig(ctx.look, 1.75); stage.scene.add(ctx.player.root); stage.figs.push(ctx.player);
     try { impl.setup(ctx); } catch (e) { console.error(e); }
+    // Wetter des Tages (nur in der Staffel und draußen): Regen/Gewitter = weniger Zeit, Blitz und Donner
+    const WK = !opt.practice && UL.Weather && theme !== 'studio' && stage.env ? UL.Weather.get() : null;
+    if (WK && WK.rain) { UL.Weather.attach(stage, UL.Show.S.weather, { shake: !ai }); if (ctx.time) { ctx.time = Math.round(ctx.time * WK.time); ctx.timeMax = ctx.time; } ctx.wx = WK; }
     // Moderatoren an ihrem Platz
     ctx.hosts = UL.D.HOSTS.map((h, i) => { const f = UL.makeFig(h.look, i ? 1.82 : 1.72); const side = new T.Vector3(Math.cos(ctx.hostRy), 0, -Math.sin(ctx.hostRy)).multiplyScalar(i ? 0.7 : -0.7); f.root.position.copy(ctx.hostPos).add(side); f.root.rotation.y = ctx.hostRy; stage.scene.add(f.root); stage.figs.push(f); return f; });
     // Sanitäter Doc Rudi und Ranger Kalle stehen bei jeder Prüfung bereit
@@ -95,6 +98,7 @@
       for (const [w, t] of [UL.pick(UL.D.MOD.intro)]) await UI.say(w, UI.fmt(t, vars));
       if (ctx.intro) { stage.cine.move(ctx.intro.pos, ctx.intro.look, 2.5); await UI.say(UL.pick(['lotte', 'mats']), def.desc); }
       else await UI.say(UL.pick(['lotte', 'mats']), def.desc);
+      if (ctx.wx) await UI.say('mats', `${ctx.wx.icon} Und dazu ${ctx.wx.name === 'Gewitter' ? 'dieses Gewitter' : 'der Tropenregen'}: Alles ist nass und rutschig – ihr habt heute weniger Zeit!`);
     }
     if (ai && !UL.bot) {
       await UI.say(UL.pick(['lotte', 'mats']), UL.pick([`Und jetzt schauen wir ${ctx.name} zu. Wird ${ctx.name} sich trauen?`, `${ctx.name} ist dran – das Camp drückt die Daumen!`, `Mal sehen, ob ${ctx.name} heute Sterne holt … oder den Satz sagt.`]));
@@ -194,7 +198,7 @@
       const st = `<span class="chip big">⭐ <b>${ctx.stars}</b> / ${max}</span>`;
       const tm = ctx.time ? `<span class="chip big ${ctx.time < 10 ? 'warn' : ''}">⏱ ${UL.fmtTime(ctx.time)}</span>` : '';
       const q = qh > 0 ? `<span class="chip warn">🏳️ „Ich bin raus …“ <span class="bar"><i style="width:${Math.min(100, qh / 1.5 * 100)}%"></i></span></span>` : '';
-      UI.hud((ai ? `<span class="chip">📺 ${UL.esc(ctx.name)}</span>` : '') + st + tm + (ctx.extraHud || '') + q);
+      UI.hud((ai ? `<span class="chip">📺 ${UL.esc(ctx.name)}</span>` : '') + st + tm + (ctx.wx ? `<span class="chip warn">${ctx.wx.icon}</span>` : '') + (ctx.extraHud || '') + q);
       const m = document.getElementById('meter');
       if (ctx.meters.length) { const hb = document.getElementById('hud').getBoundingClientRect(); m.style.top = Math.round(hb.bottom + 6) + 'px'; m.hidden = false; m.innerHTML = ctx.meters.map(x => `<div class="meter ${x.danger ? 'danger' : ''}">${x.label}<div class="bar"><i style="width:${Math.round(UL.clamp(x.v, 0, 1) * 100)}%;${x.color ? 'background:' + x.color : ''}"></i></div></div>`).join(''); }
       else m.hidden = true;
