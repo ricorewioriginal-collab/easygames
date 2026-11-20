@@ -293,6 +293,7 @@ export class CityScene implements GameScene {
     const icon: Record<string, string> = { worker: '🏮 ', police: '🚓 ', fire: '🚒 ', medic: '🚑 ', security: '🛡️ ', chef: '👩‍🍳 ', courier: '📦 ' };
     if (!best) { const st = this.street.near(p); if (st) best = { kind: 'street', id: String(this.street.people.indexOf(st)), label: (icon[st.kind] || '💬 ') + st.name }; }
     if (!best) { const car = this.street.nearCar(p); if (car) best = { kind: 'car', id: String(this.street.parked.indexOf(car)), label: `${car.def.icon} Einsteigen: ${car.name}${car.own ? ' (dein Wagen)' : ''}` }; }
+    if (!best) { const tc = this.street.nearTraffic(p); if (tc) best = { kind: 'car', id: 't' + this.world.cars.indexOf(tc), label: `🚗 Ausleihen: ${this.street.trafficDef(tc).name}` }; }
     const want = goal(this.g.save.data).poi;
     if (!best) for (const q of this.world.pois) {
       if ((q.id === 'plaza' || q.id === 'park') && want !== q.id) continue;
@@ -395,7 +396,13 @@ export class CityScene implements GameScene {
       sfx('open');
       return;
     }
-    this.drive = this.street.parked[+id];
+    if (id[0] === 't') {
+      // Auto aus dem Verkehr: freundlich fragen statt rauszerren
+      const tc = this.world.cars[+id.slice(1)]; if (!tc) return;
+      this.drive = this.street.borrow(tc);
+      const says = ['„Na gut, Schätzchen. Aber bring ihn heil zurück!“', '„Für dich immer. Ich wollte eh zu Fuß zum Café.“', '„Nimm ihn, ich hab heute frei. Tank ist voll!“', '„Okay, aber nur weil du so nett fragst.“'];
+      toast(`🙋 ${says[Math.floor(Math.random() * says.length)]}`);
+    } else this.drive = this.street.parked[+id];
     if (!this.drive.own) this.combat.enterCar(); sfx('door'); setTimeout(() => sfx('engine'), 250);
     this.player.root.visible = false;
     this.cam.dist = Math.max(this.cam.dist, 9);
@@ -659,6 +666,7 @@ export class CityScene implements GameScene {
     }
     for (const a of this.crowd) if (a.root.visible) a.update(dt);
     this.street.update(dt, this.world.night, s.settings.adult, ref);
+    this.street.giveBack(ref, this.drive);
     this.stickerMeshes.forEach((m) => { m.rotation.y = t * 2; m.position.y = 1.4 + Math.sin(t * 3 + m.metadata.i) * .15; });
 
     if (this.mode === 'title') {

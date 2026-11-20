@@ -179,7 +179,8 @@ export class Game {
       this.save.data.started = true; this.save.write();
       this.fade(async () => {
         await this.city.rebuildPlayer();
-        if (fromGame) { this.resume(); return; }
+        // auch in der Wohnung und im Laden steht sofort die neue Figur (sonst blieb dort die alte)
+        if (fromGame) { if (this.where === 'home') await this.home?.syncPlayer(); else if (this.where === 'inside') await this.inside?.syncPlayer(); this.resume(); return; }
         this.loadChapter();
       });
     }, () => this.fade(() => (fromGame ? this.resume() : this.title())));

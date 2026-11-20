@@ -343,7 +343,15 @@
       "p": [
         "Jeder Laden und jedes Wohnhaus ist ein richtiger Raum mit Dielen, Fliesen oder Tanzboden, Tapete oder Klinker, Decke mit Lampen und Fenstern zur Straße. Theken haben Platte, Lichtleiste und ein Flaschenregal an der Wand, in der Muckibude stehen Hantelbänke und ein Laufband, im Diner Barhocker am Tresen.",
         "Die Kamera sitzt wie draußen hinter deiner Figur. Wische über das Bild, um dich umzusehen. Beim Laufen dreht sie sich von selbst mit, an Wänden rückt sie heran und schaut etwas steiler.",
-        "Die gelben Ringe am Boden zeigen, wo du etwas tun kannst. Der Ausgang ist rechts vorn und immer mit 🚪 markiert."
+        "Die gelben Ringe am Boden zeigen, wo du etwas tun kannst. Der Ausgang ist rechts vorn und immer mit 🚪 markiert.",
+        "Deine eigene Wohnung ist im selben Stil gebaut: Dielen, Tapete, Fenster zur Straße über dem Sofa, geflieste Duschecke, und die Kamera steht hinter dir. In der Boutique hängen die Kollektionen auf Kleiderstangen."
+      ]
+    },
+    {
+      "t": "🚗 Autos ausleihen",
+      "p": [
+        "Geparkte Autos kannst du direkt nehmen. Autos im Verkehr halten an, wenn du dich davorstellst: Geh hin und drück A („Ausleihen“). Die Fahrerin oder der Fahrer überlässt dir den Wagen freundlich, niemand wird herausgezerrt. Sieht es eine Streife, gibt es trotzdem einen Stern.",
+        "Lässt du ein geliehenes Auto stehen und gehst weit weg, fährt es wieder seine Runde. Streifenwagen und Löschzug bleiben im Dienst."
       ]
     }
   ],
@@ -714,6 +722,10 @@
     {
       "q": "Turbo geht nicht oder die Kamera dreht sich nicht mit. Was tun?",
       "a": "Turbo ist am Handy ein Schalter: einmal tippen, dann rennst du, bis du wieder tippst. Mit leerer Energie rennst du langsamer, also schlafen oder Kaffee trinken. Die Kamera dreht sich beim Laufen von selbst hinter deine Figur. Wischst du über das Bild, bleibt sie kurz dort, wo du hinschaust."
+    },
+    {
+      "q": "Ich habe einen Mann gewählt und spiele trotzdem eine Frau, oder das Umkleiden klappt nicht. Was tun?",
+      "a": "Das war ein Fehler und ist behoben: Der Kleiderschrank in der Wohnung und „Neuer Look“ in der Boutique tauschen jetzt sofort die Figur, und alte Spielstände bekommen nicht mehr ungefragt eine Frauenfigur. Öffne einmal den Kleiderschrank (Menü oder Wohnung), tippe bei „Figur“ rechts für die nächste und links für die vorige Figur und bestätige mit „Los geht’s!“."
     }
   ]
 }

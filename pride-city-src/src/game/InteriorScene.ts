@@ -11,7 +11,7 @@ import { advance, DAY_SEC } from './life';
 import { music } from '../engine/Audio';
 import type { Spot, Theme } from './interiors';
 import { roomLights, collectCasters } from './HomeScene';
-import { buildShell, shellTime, furnish, styleOf, type Shell } from './room';
+import { buildShell, shellTime, furnish, styleOf, RoomCam, type Shell } from './room';
 
 interface Box { x: number; z: number; hx: number; hz: number }
 const W = 12, D = 9, K = .9, H = 3.6; // Raum in Metern, KayKit-Möbel 1 Einheit ≈ 1 m (Figur ≈ 1,8 m)
@@ -27,10 +27,7 @@ export class InteriorScene implements GameScene {
   private glow: PBRMaterial[] = [];
   private sg!: ShadowGenerator;
   private shell!: Shell;
-  private cam = { yaw: .95, tYaw: .95, pitch: .36, dist: 4.2 };
-  private camPos = new Vector3();
-  private lookIdle = 9;
-  private snap = true;
+  private cam = new RoomCam(W, D, H);
   readonly spots: Spot[];
   private hudT = 0;
   private exitPos = new Vector3(W / 2 - .2, 3.4, 3.4);
@@ -119,6 +116,17 @@ export class InteriorScene implements GameScene {
     collectCasters(sc, this.sg);
   }
 
+  /** Neue Figur, wenn im Kleiderschrank die Figur gewechselt wurde */
+  async syncPlayer() {
+    const look = streetLook(playerLook(this.g.save.data));
+    if (this.player.look.body === look.body) return;
+    const old = this.player;
+    this.player = await Actor.create(this.scene, look);
+    this.player.root.position.copyFrom(old.root.position); this.player.root.rotation.y = old.root.rotation.y;
+    old.dispose();
+    collectCasters(this.scene, this.sg);
+  }
+
   private neon(text: string, color: string, x: number, y: number, z: number, ry: number, w: number) {
     const sc = this.scene;
     const tex = canvasTex(sc, 512, 96, (g2) => { g2.font = '900 64px system-ui, sans-serif'; g2.textAlign = 'center'; g2.textBaseline = 'middle'; g2.shadowColor = color; g2.shadowBlur = 18; g2.fillStyle = color; g2.fillText(text, 256, 50, 500); }, true);
@@ -129,7 +137,7 @@ export class InteriorScene implements GameScene {
   enter() {
     this.player.root.position.set(W / 2 - 2.4, 0, DOOR.z - .9);
     this.player.root.rotation.y = -Math.PI / 2 - .5;
-    this.cam.yaw = this.cam.tYaw = .95; this.cam.pitch = .36; this.lookIdle = 0; this.snap = true;
+    this.cam.reset();
     this.player.setLook(streetLook(playerLook(this.g.save.data)));
     this.g.hud.show(true); this.g.touch.show(true);
     this.g.city.refreshHud();
@@ -152,7 +160,7 @@ export class InteriorScene implements GameScene {
       const mx = inp.move.x, my = inp.move.y, mag = Math.hypot(mx, my);
       if (mag > .08) {
         // Bewegung relativ zur Kamera, wie draußen
-        const yaw = this.cam.yaw, fx = -Math.sin(yaw), fz = -Math.cos(yaw), dx = fx * my - fz * mx, dz = fz * my + fx * mx;
+        const [dx, dz] = this.cam.dir(mx, my);
         p.x += dx / mag * 3.6 * dt * Math.min(1, mag); p.z += dz / mag * 3.6 * dt * Math.min(1, mag);
         p.x = Math.max(-W / 2 + .5, Math.min(W / 2 - .5, p.x)); p.z = Math.max(-D / 2 + .5, Math.min(D / 2 - .5, p.z));
         for (const b of this.boxes) {
@@ -172,23 +180,8 @@ export class InteriorScene implements GameScene {
       else if (inp.pressed('menu') || inp.pressed('back')) { inp.consume('menu'); inp.consume('back'); g.pauseMenu(); }
       g.hud.markers(best === DOOR ? [] : [{ id: 'exit', icon: '🚪', label: 'Ausgang', pos: this.exitPos }], (q) => g.engine.project(q));
     } else { g.hud.prompt(null); g.hud.markers([]); }
-    // Kamera hinter der Figur wie draußen: wischen dreht, beim Laufen folgt sie; an Wänden und Decke rückt sie heran
-    const c = this.cam, st = g.save.data.settings, lk = .005 * st.camSpeed;
-    if (!busy) {
-      c.tYaw -= inp.look.x * lk; c.pitch = Math.max(.08, Math.min(.9, c.pitch + inp.look.y * lk * (st.invertY ? -1 : 1)));
-      this.lookIdle = inp.look.x || inp.look.y ? 0 : this.lookIdle + dt;
-      if (this.lookIdle > 1.2 && Math.hypot(inp.move.x, inp.move.y) > .3) { let d = this.player.root.rotation.y + Math.PI - c.tYaw; d = Math.atan2(Math.sin(d), Math.cos(d)); if (Math.abs(d) < 2.3) c.tYaw += d * Math.min(1, dt * 1.5); }
-    }
-    c.yaw += (c.tYaw - c.yaw) * Math.min(1, dt * 12);
-    const ty = 1.45, vx = Math.sin(c.yaw) * Math.cos(c.pitch) * c.dist, vy = Math.sin(c.pitch) * c.dist, vz = Math.cos(c.yaw) * Math.cos(c.pitch) * c.dist;
-    let f = 1;
-    const lim = (v: number, room: number) => { if (v > 1e-4 && room / v < f) f = Math.max(.2, room / v); };
-    lim(vx, W / 2 - .3 - p.x); lim(-vx, p.x + W / 2 - .3); lim(vz, D / 2 - .3 - p.z); lim(-vz, p.z + D / 2 - .3); lim(vy, H - .3 - ty);
-    // wird es eng, schaut die Kamera steiler von oben, statt der Figur im Nacken zu sitzen
-    const wx = p.x + vx * f, wy = Math.min(H - .3, ty + vy * f + (1 - f) * 1.5), wz = p.z + vz * f, e = this.snap ? 1 : Math.min(1, dt * 9);
-    this.camPos.set(this.camPos.x + (wx - this.camPos.x) * e, this.camPos.y + (wy - this.camPos.y) * e, this.camPos.z + (wz - this.camPos.z) * e); this.snap = false;
-    this.camera.position.copyFrom(this.camPos);
-    this.camera.setTarget(new Vector3(p.x, ty + (g.engine.aspect < 1 ? .25 : 0), p.z));
+    const st = g.save.data.settings;
+    this.cam.update(dt, this.camera, p, this.player.root.rotation.y, { look: inp.look, move: inp.move, speed: st.camSpeed, invertY: st.invertY, busy, portrait: g.engine.aspect < 1 });
     shellTime(this.shell, g.city.world.night, t);
   }
 }

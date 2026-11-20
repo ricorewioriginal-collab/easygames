@@ -1,5 +1,6 @@
 /* Deine Wohnung (begehbar, aus Gay Life! übernommen, Babylon.js): KayKit-Möbel, benutzbar – Bett, Dusche, Herd,
-   Kühlschrank, Sofa mit TV, Kleiderschrank, Tür. Pride-Wandbild, Lichterkette, Fenster mit Tag-/Nachthimmel. */
+   Kühlschrank, Sofa mit TV, Kleiderschrank, Tür. Pride-Wandbild, Lichterkette, Fenster mit Tag-/Nachthimmel.
+   Raumhülle (room.ts) und Kamera hinter der Figur wie in allen anderen Häusern. */
 import type { GameScene } from '../engine/Engine';
 import { Vector3, Matrix, HemisphericLight, DirectionalLight, PointLight, ShadowGenerator, TransformNode, Color3, type FreeCamera, type Scene, type PBRMaterial, type Mesh, type AbstractMesh, col } from '../engine/bjs';
 import { instance, preload } from '../engine/Assets';
@@ -10,6 +11,8 @@ import { hints, toast } from '../ui/ui';
 import { advance, DAY_SEC } from './life';
 import { music, sfx } from '../engine/Audio';
 import { PALETTES } from './palettes';
+import { buildShell, shellTime, RoomCam, type Shell } from './room';
+import type { Theme } from './interiors';
 import { spouse, kid, spouseLook, kidLook } from './family';
 
 export const HOME_FILES = ['home/bed_double_A', 'home/couch_pillows', 'home/table_low', 'home/rug_rectangle_stripes_A', 'home/lamp_standing', 'home/shelf_A_big', 'home/cabinet_medium_decorated',
@@ -20,6 +23,8 @@ interface Spot { id: string; label: string; x: number; z: number; r: number }
 interface Box { x: number; z: number; hx: number; hz: number }
 
 const W = 9, D = 7, H = 3; // Innenmaße in Metern (Figur ≈ 1,8 m)
+/** Farben der Wohnung für die gemeinsame Raumhülle (Dielen, helle Tapete, warmes Licht) */
+const HOME: Theme = { id: 'home', title: 'Deine Wohnung', icon: '🏠', floor: 0xc7925e, wall: 0xf3e6ff, light: 0xffb070, items: [], spots: [], own: true };
 const K = .9;              // KayKit-Möbel: 1 Einheit ≈ 1 m → Arbeitsplatte 0,9 m, Sofa 1,1 m, Kühlschrank 2,2 m
 
 /** Raumlicht wie in einer Wohnung: Himmel, Sonne mit weichen Schatten, warmes Licht (gemeinsam für Wohnung und Innenräume) */
@@ -42,6 +47,8 @@ export class HomeScene implements GameScene {
   scene: Scene;
   camera: FreeCamera;
   bloom = .45;
+  private shell!: Shell;
+  private cam = new RoomCam(W, D, H, 3.6);
   private player!: Actor;
   private boxes: Box[] = [];
   readonly spots: Spot[] = [
@@ -68,23 +75,26 @@ export class HomeScene implements GameScene {
   private exitPos = new Vector3(W / 2 - .2, 2.6, .3);
   constructor(private g: Game) {
     this.scene = g.engine.newScene(0x140c26);
-    this.camera = g.engine.newCamera(this.scene, 50, .1, 100);
+    this.camera = g.engine.newCamera(this.scene, 62, .1, 100);
   }
 
   async build() {
     const sc = this.scene;
-    this.sg = roomLights(sc, { hemi: 1.1, sun: 1.6, lamp: 9, lampCol: 0xffb070, lampPos: [-.5, 2.6, .6] }).sg;
-    // Raum: Holzboden, drei Wände (Kamera schaut von vorne rein)
-    const floor = ground(sc, W, D); floor.material = pbr(sc, 0xc7925e, .7); floor.receiveShadows = true;
-    const wallM = pbr(sc, 0xf3e6ff, .9);
-    const wall = (w: number, d: number, x: number, z: number) => { const m = box(sc, w, H, d); m.material = wallM; m.position.set(x, H / 2, z); m.receiveShadows = true; };
-    wall(W, .2, 0, -D / 2); wall(.2, D, -W / 2, 0); wall(.2, D, W / 2, 0);
+    this.sg = roomLights(sc, { hemi: .95, sun: 1.1, lamp: 20, lampCol: 0xffb070, lampPos: [-.5, 2.6, .6] }).sg;
+    const amb = new HemisphericLight('amb', new Vector3(0, -1, 0), sc); amb.intensity = .25;
+    // Raumhülle wie in allen Häusern: Dielen, Tapete mit Paneel, Decke mit Lampen, Fenster zur Straße über dem Sofa
+    this.shell = buildShell(sc, HOME, W, D, H, [.9]);
+    // Duschecke gefliest
+    const tile = pbr(sc, 0xffffff, .2); tile.albedoTexture = canvasTex(sc, 128, 128, (g2) => { g2.fillStyle = '#e8f6fb'; g2.fillRect(0, 0, 128, 128); g2.strokeStyle = '#a9cfdc'; g2.lineWidth = 3; for (let i = 0; i <= 128; i += 32) { g2.beginPath(); g2.moveTo(i, 0); g2.lineTo(i, 128); g2.moveTo(0, i); g2.lineTo(128, i); g2.stroke(); } });
+    tile.albedoTexture.wrapU = tile.albedoTexture.wrapV = 1; (tile.albedoTexture as typeof tile.albedoTexture & { uScale: number; vScale: number }).uScale = 2.5; (tile.albedoTexture as typeof tile.albedoTexture & { uScale: number; vScale: number }).vScale = 4;
+    const t1 = planeZ(sc, 1.4, 2.3); t1.material = tile; t1.rotation.y = Math.PI / 2; t1.position.set(-W / 2 + .015, 1.15, 2.8);
+    const t2 = planeZ(sc, 1.4, 2.3); t2.material = tile; t2.rotation.y = Math.PI; t2.position.set(-3.8, 1.15, D / 2 - .015);
     // Pride-Wandbild über dem Sofa
-    PALETTES[0].colors.forEach((c, i) => { const s = planeZ(sc, .32, 1.5); s.material = pbr(sc, c, .8); s.position.set(-W / 2 + .12, 1.75, -.4 + i * .34); s.rotation.y = Math.PI / 2; });
+    PALETTES[0].colors.forEach((c, i) => { const s = planeZ(sc, .32, 1.5); s.material = pbr(sc, c, .8); s.position.set(-W / 2 + .02, 1.75, -.4 + i * .34); s.rotation.y = Math.PI / 2; });
     // Fenster mit Himmel
     this.window = glow(sc, 0x9fd2ff, 1);
-    const win = planeZ(sc, 1.8, 1.1); win.material = this.window; win.position.set(-3.1, 1.95, -D / 2 + .12);
-    const frame = box(sc, 1.96, 1.26, .1); frame.material = pbr(sc, 0xffffff, .5); frame.position.set(-3.1, 1.95, -D / 2 + .08);
+    const win = planeZ(sc, 1.8, 1.1); win.material = this.window; win.position.set(-3.1, 1.95, -D / 2 + .07);
+    const frame = box(sc, 1.96, 1.26, .1); frame.material = pbr(sc, 0xffffff, .5); frame.position.set(-3.1, 1.95, -D / 2 + .01);
     // Lichterkette (eine Kugel, viele Kopien mit eigener Farbe)
     const bulb = sphere(sc, .06, 6); bulb.material = glow(sc, 0xffffff, 1);
     const ms = new Float32Array(24 * 16), cs = new Float32Array(24 * 4);
@@ -136,9 +146,9 @@ export class HomeScene implements GameScene {
     const tray = box(sc, 1.3, .1, 1.3); tray.material = pbr(sc, 0xffffff, .3); tray.position.set(-3.8, .05, 2.8);
     const glass = box(sc, .05, 2.1, 1.3); glass.material = pbr(sc, 0xbfe8ff, .05, 0, { alpha: .3 }); glass.position.set(-3.13, 1.05, 2.8);
     this.boxes.push({ x: -3.13, z: 3.05, hx: .05, hz: .4 });
-    const head = cyl(sc, .18, .18, .05, 16); head.material = pbr(sc, 0xcccccc, .2, .8); head.position.set(-4.25, 2.2, 3.1);
+    const head = cyl(sc, .18, .18, .05, 16); head.material = pbr(sc, 0xcccccc, .2, .8); head.position.set(-4.3, 2.2, 2.8);
     // Wohnungstür an der rechten Wand mit Leuchtschild „AUSGANG“ und Fußmatte
-    const dx = W / 2 - .12, dz = .3, wood = pbr(sc, 0x7a3fb0, .6);
+    const dx = W / 2 - .04, dz = .3, wood = pbr(sc, 0x7a3fb0, .6);
     const door = box(sc, .06, 2.5, 1.3); door.material = wood; door.position.set(dx, 1.25, dz);
     const trim = pbr(sc, 0xffffff, .5);
     for (const z of [dz - .72, dz + .72]) { const post = box(sc, .1, 2.65, .12); post.material = trim; post.position.set(dx - .02, 1.32, z); }
@@ -189,8 +199,9 @@ export class HomeScene implements GameScene {
   enter() {
     this.showMess();
     void this.syncFamily();
-    this.player.root.position.set(W / 2 - 1, 0, .3);
-    this.player.root.rotation.y = -Math.PI / 2;
+    this.player.root.position.set(W / 2 - 1.9, 0, .3);
+    this.player.root.rotation.y = -Math.PI / 2 - .5;
+    this.cam.reset(.5, .4);
     const s = this.g.save.data;
     this.player.setLook(playerLook(s));
     this.g.hud.show(true); this.g.touch.show(true);
@@ -254,14 +265,15 @@ export class HomeScene implements GameScene {
       if (this.hudT <= 0) { this.hudT = .5; g.city.world.setTime(sv.time); this.setSky(g.city.world.night); g.city.refreshHud(); }
       const mx = inp.move.x, my = inp.move.y, mag = Math.hypot(mx, my);
       if (mag > .08) {
-        p.x += mx * 3.6 * dt; p.z -= my * 3.6 * dt;
+        const [dx, dz] = this.cam.dir(mx, my), sp = 3.6 * dt * Math.min(1, mag) / mag;   // Bewegung relativ zur Kamera, wie draußen
+        p.x += dx * sp; p.z += dz * sp;
         p.x = Math.max(-W / 2 + .5, Math.min(W / 2 - .5, p.x)); p.z = Math.max(-D / 2 + .5, Math.min(D / 2 - .3, p.z));
         for (const a of [this.fam.spouse, this.fam.kid]) if (a) { const dx = p.x - a.root.position.x, dz = p.z - a.root.position.z, d = Math.hypot(dx, dz); if (d < .6 && d > 0) { p.x += dx / d * (.6 - d); p.z += dz / d * (.6 - d); } }
         for (const b of this.boxes) {
           const dx = p.x - b.x, dz = p.z - b.z, px = b.hx + .35 - Math.abs(dx), pz = b.hz + .35 - Math.abs(dz);
           if (px > 0 && pz > 0) { if (px < pz) p.x += Math.sign(dx) * px; else p.z += Math.sign(dz) * pz; }
         }
-        this.player.root.rotation.y = Math.atan2(mx, -my);
+        { let dr = Math.atan2(dx, dz) - this.player.root.rotation.y; dr = Math.atan2(Math.sin(dr), Math.cos(dr)); this.player.root.rotation.y += dr * Math.min(1, dt * 14); }
         this.player.play('walk', .18, Math.max(1, 3.6 * Math.min(1, mag) / 1.02 * .55));
       } else if (this.player.anim === 'walk') this.player.play('idle');
       let best: Spot | null = null, bd = 9;
@@ -274,10 +286,9 @@ export class HomeScene implements GameScene {
       else if (inp.pressed('menu') || inp.pressed('back')) { inp.consume('menu'); inp.consume('back'); g.pauseMenu(); }
       g.hud.markers(best?.id === 'door' ? [] : [{ id: 'exit', icon: '🚪', label: 'Ausgang', pos: this.exitPos }], proj);
     } else { g.hud.prompt(null); g.hud.markers([]); }
-    // Kamera: von vorne schräg in den Raum, folgt leicht
-    const k = Math.max(1, 1.25 / g.engine.aspect); // Hochformat: weiter weg, damit der Raum passt
-    this.camera.position.set(p.x * .4 / k, 5.6 * (1 + (k - 1) * .6), 7.2 * k + p.z * .25);
-    this.camera.setTarget(new Vector3(p.x * .55, .7, p.z * .45 - .5));
+    const st = g.save.data.settings;
+    this.cam.update(dt, this.camera, p, this.player.root.rotation.y, { look: inp.look, move: inp.move, speed: st.camSpeed, invertY: st.invertY, busy, portrait: g.engine.aspect < 1 });
+    shellTime(this.shell, g.city.world.night, t);
     if (this.steam) { this.steam.scaling.y = 1.4 + Math.sin(t * 4) * .15; (this.steam.material as PBRMaterial).alpha = .3 + Math.sin(t * 3) * .08; }
     this.stoveGlow.albedoColor = col(this.activity === 'stove' ? 0xff5a1a : 0x220800, this.activity === 'stove' ? 2 : 1);
     this.tvScreen.albedoColor = this.activity === 'tv' ? Color3.FromHSV(((t * .3) % 1) * 360, .8, 1).toLinearSpace().scale(1.4) : col(0x111122);
