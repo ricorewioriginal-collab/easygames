@@ -122,7 +122,7 @@
     for (const b of ['ok', 'alt', 'menu', 'back', 'l1', 'r1', 'r3']) {
       const el = document.querySelector('#touchPad [data-b="' + b + '"]'); if (!el) continue;
       const v = map[b];
-      el.hidden = v == null; if (v != null) el.querySelector('span').textContent = v;
+      el.hidden = v == null; if (v != null) { const sp = el.querySelector('span'), lw = Math.max(...String(v).split(/\s+/).map(w => w.length)); sp.textContent = v; sp.style.fontSize = lw > 9 ? '9.5px' : lw > 7 ? '11px' : ''; }   // lange Wörter kleiner statt zerhackt
     }
   };
 

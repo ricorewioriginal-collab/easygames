@@ -23,7 +23,8 @@ const CARDS = {
   'anmacha-klotzfunk': ['VOXEL-SANDBOX · 3D', ['KLOTZ-', 'FUNK'], '🧱', ['⛏️', '💎']],
   'partyverse': ['3D-PARTYSPIEL', ['PARTY-', 'VERSE'], '🎲', ['🎉', '🎈']],
   'fabelkick': ['FANTASY-FUSSBALL · 3D', ['FABEL', 'KICK'], '⚽', ['🐒', '🐉']],
-  'pestwacht': ['ÜBERLEBEN · AUFBAU · 3D', ['PEST-', 'WACHT'], '🏰', ['🌿', '⚔️']]
+  'pestwacht': ['ÜBERLEBEN · AUFBAU · 3D', ['PEST-', 'WACHT'], '🏰', ['🌿', '⚔️']],
+  'concrete-pulse': ['SKATE · 3D', ['CONCRETE', 'PULSE'], '🛹', ['⚡', '🏆']]
 };
 function colors(id) {
   const src = fs.readFileSync(path.join(root, 'games.js'), 'utf8'), i = src.indexOf("id: '" + id + "'");

@@ -331,6 +331,10 @@
   {
    "q": "Wie renne ich?",
    "a": "Handy: 🏃-Knopf oder Stick ganz nach außen. PC: Shift. Controller: B halten, L3 oder Stick voll durchdrücken."
+  },
+  {
+   "q": "Warum bewegen sich die Figuren so echt?",
+   "a": "Gehen, Rennen, Stehen, Jubeln und Sitzen sind echte Bewegungsaufnahmen (Motion Capture) aus der freien Rocketbox-Bibliothek, getrennt für Frauen und Männer. Beim Tauchen liegt die Figur waagerecht im Wasser und schwimmt im ruhigen Kraul-Rhythmus."
   }
  ]
 }

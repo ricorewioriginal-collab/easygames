@@ -80,7 +80,9 @@
   const rbPend = {}, rbFail = {};
   const rbFallback = (L) => { const P = (UL.D && UL.D.RB_PLAYER) || []; if (!P.length) return null; let h = 0; const k = String(L.model || '') + (L.shirt || 0) + (L.skin || 0); for (let i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) >>> 0; return P[h % P.length][0]; };
   const rbFlush = (id) => { const l = rbPend[id]; if (!l || !A.ready) return; delete rbPend[id]; const src = rbSrc[id] || rbSrc[Object.keys(rbSrc)[0]]; l.forEach(f => { if (f.ready) return; const base = f.base; if (src) f.buildRb(src); else { const s2 = figSrc[f.look.model] || figSrc.knight; if (s2) f.build(s2); } if (f.ready && base && base !== 'idle') f.set(base, 0); }); };
-  let clips = {}, rbClips = {};
+  let clips = {}, rbClips = {}, mocap = {};
+  // echte Bewegungsaufnahmen (Rocketbox, MIT) für die häufigsten Bewegungen; Frauen bekommen eigene Aufnahmen
+  const MOCAP = { idle: 'idle', idle2: 'idle2', walk: 'walk', run: 'run', cheer: 'cheer', sit: 'sit' };
   // Echte Menschen (Microsoft Rocketbox, MIT): Name → Datei models/menschen/<id>.glb
   A.RB = [];
   A.hasRb = id => !!rbSrc[id];
@@ -297,6 +299,9 @@
       if (this.toes.length) { const r0 = this.root, sv = r0.matrix.clone(); r0.matrix.identity(); r0.matrixWorld.identity(); inst.updateMatrixWorld(true); this.toeBind = Math.min(...this.toes.map(t => t.matrixWorld.elements[13])); r0.matrix.copy(sv); r0.updateMatrixWorld(true); this.instY = inst.position.y; this.lift = 0; }
       this.mixer = new T.AnimationMixer(inst);
       for (const [n, c] of Object.entries(rbClips)) this.actions[n] = this.mixer.clipAction(c);
+      const fem = /Female/.test(this.look.rb || '');
+      for (const [k, m] of Object.entries(MOCAP)) { const c = (fem && mocap['rbf_' + m]) || mocap['rb_' + m]; if (c) this.actions[CLIP[k] || k] = this.mixer.clipAction(c); }
+      this.mocap = !!mocap.rb_walk;
       this.ready = true;
       this.set('idle', 0);
       this.mixer.update(Math.random() * 2);
@@ -343,15 +348,23 @@
     play(name, { hold = false, speed = 1 } = {}) {
       const a = this.act(name); if (!a) return 0;
       this.one = name; this._go(name, 0.15, false); a.setEffectiveTimeScale(speed);
-      this.oneT = hold ? Infinity : a.getClip().duration / speed - 0.15;
-      return a.getClip().duration / speed;
+      const dur = Math.min(a.getClip().duration, this.mocap && name === 'cheer' ? 2.8 : Infinity);   // lange Jubel-Aufnahme nach kurzer Zeit ausblenden
+      this.oneT = hold ? Infinity : dur / speed - 0.15;
+      return dur / speed;
     }
     release() { if (this.one) { this.one = null; this._go(this.base, 0.25, true); } }
     move(speed) {   // m/s → Bewegung
       if (this.one) return;
-      const want = speed > 3.2 ? 'run' : speed > 0.25 ? 'walk' : (this.base === 'walk' || this.base === 'run' ? 'idle' : this.base);
-      if (want !== this.base) this.set(want, 0.18);
-      if (this.cur && (want === 'walk' || want === 'run')) this.cur.setEffectiveTimeScale(want === 'run' ? UL.clamp(speed / 5, 0.7, 1.3) : UL.clamp(speed / 1.6, 0.6, 1.5));
+      if (this.swim) {   // Schwimmen: liegend, Arme und Beine im ruhigen Kraul-Rhythmus (Laufaufnahme verlangsamt)
+        const want = speed > 0.2 ? 'run' : 'idle';
+        if (want !== this.base) this.set(want, 0.3);
+        if (this.cur && want === 'run') this.cur.setEffectiveTimeScale(UL.clamp(0.35 + speed * 0.18, 0.4, 0.8));
+        return;
+      }
+      const mc = this.mocap;   // echte Aufnahmen: Gehen ≈ 1,35 m/s, Rennen ≈ 3,8 m/s bei normaler Geschwindigkeit
+      const want = speed > (mc ? 2.6 : 3.2) ? 'run' : speed > 0.25 ? 'walk' : (this.base === 'walk' || this.base === 'run' ? 'idle' : this.base);
+      if (want !== this.base) this.set(want, 0.22);
+      if (this.cur && (want === 'walk' || want === 'run')) this.cur.setEffectiveTimeScale(want === 'run' ? UL.clamp(speed / (mc ? 3.8 : 5), 0.7, 1.35) : UL.clamp(speed / (mc ? 1.35 : 1.6), 0.6, 1.5));
     }
     update(dt) {
       if (!this.mixer) return;
@@ -359,6 +372,7 @@
       this.mixer.update(dt);
       if (this.toes && this.toes.length && this.root.parent) {   // Füße nie im Boden (Messung vom letzten Bild, ohne Zusatzkosten)
         const e = this.root.matrixWorld.elements, sy = Math.hypot(e[4], e[5], e[6]) || 1;
+        if (this.swim || this.base === 'sit' || e[5] / sy < 0.9) { this.lift = 0; this.inst.position.y = this.instY - (this.base === 'sit' && this.mocap && !this.one ? 0.1 : 0); return; }   // Sitzen: Stuhl-Aufnahme etwas tiefer auf Baumstamm/Bank   // liegend/schwimmend: keine Bodenkorrektur
         let mn = Infinity; for (const t of this.toes) mn = Math.min(mn, (t.matrixWorld.elements[13] - e[13]) / sy);
         if (isFinite(mn)) { const raw = mn - this.lift, want = Math.max(0, this.toeBind - raw); this.lift += (want - this.lift) * Math.min(1, dt * 12); this.inst.position.y = this.instY + this.lift; }
       }
@@ -395,7 +409,7 @@
     const list = [['set', base + 'set.glb'], ['set', base + 'ph.glb'], ['anim', base + 'figuren/anim.glb']]
       .concat(FIG.map(f => ['fig:' + f, base + 'figuren/' + f + '.glb']))
       .concat(['crab', 'frog', 'bat', 'bee'].map(t => ['tier:' + t, base + 'tiere/' + t + '.glb']))
-      .concat(A.RB.length ? [['rbanim', base + 'menschen/anim.glb']].concat(A.RB_CORE().map(id => ['rb:' + id, base + 'menschen/' + id + '.glb'])) : []);
+      .concat(A.RB.length ? [['rbanim', base + 'menschen/anim.glb'], ['rbmocap', base + 'menschen/mocap.glb']].concat(A.RB_CORE().map(id => ['rb:' + id, base + 'menschen/' + id + '.glb'])) : []);
     let done = 0;
     const take = ([k, url]) => A.load(url).then(g => {
       done++; onProgress && onProgress(done / list.length);
@@ -428,6 +442,8 @@
         figSrc[k.slice(4)] = g;
       } else if (k === 'rbanim') {
         for (const c of g.animations) rbClips[c.name] = c;
+      } else if (k === 'rbmocap') {
+        for (const c of g.animations) mocap[c.name] = c;
       } else if (k.startsWith('rb:')) {
         g.scene.updateMatrixWorld(true);
         const box = new T.Box3(); g.scene.traverse(o => { if (o.isMesh) skinnedBox(o, box); });
