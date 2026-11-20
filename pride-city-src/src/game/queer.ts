@@ -77,12 +77,23 @@ export async function applyStyle(scene: Scene, root: AbstractMesh | { getChildMe
   }
 }
 
+/** größte Kante der gemalten Textur */
+const MAX = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches ? 512 : 1024;
 interface Geo { w: number; h: number; data: Uint8Array; src: Uint8Array; uv: Float32Array | number[]; idx: ArrayLike<number>; pos: Float32Array | number[]; bone: (v: number) => string; up: number; side: number; depth: number; srcTex: Texture }
 async function geo(m: Mesh, mat: PBRMaterial): Promise<Geo | null> {
   const srcTex = mat.albedoTexture as Texture | null; if (!srcTex) return null;
-  const { width: w, height: h } = srcTex.getSize();
-  const px = await srcTex.readPixels(); if (!px) return null;
-  const data = new Uint8Array(px.buffer.slice(px.byteOffset, px.byteOffset + w * h * 4));
+  const { width: w0, height: h0 } = srcTex.getSize();
+  // Auslesen darf nie hängen bleiben (manche Handys antworten nicht): nach 4 s ohne Look weiter
+  const px = await Promise.race([srcTex.readPixels(), new Promise<null>((r) => setTimeout(() => r(null), 4000))]); if (!px) return null;
+  // kleiner malen: spart am Handy sehr viel Grafikspeicher (sonst je Figur mehrere volle Texturen)
+  const f = Math.max(1, Math.ceil(Math.max(w0, h0) / MAX)), w = Math.max(1, Math.floor(w0 / f)), h = Math.max(1, Math.floor(h0 / f));
+  const full = new Uint8Array(px.buffer, px.byteOffset, w0 * h0 * 4), data = new Uint8Array(w * h * 4);
+  if (f === 1) data.set(full);
+  else for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    let r = 0, g = 0, b = 0, al = 0;
+    for (let j = 0; j < f; j++) for (let i = 0; i < f; i++) { const o = ((y * f + j) * w0 + x * f + i) * 4; r += full[o]; g += full[o + 1]; b += full[o + 2]; al += full[o + 3]; }
+    const o = (y * w + x) * 4, n = f * f; data[o] = r / n; data[o + 1] = g / n; data[o + 2] = b / n; data[o + 3] = al / n;
+  }
   const uv = m.getVerticesData('uv'), idx = m.getIndices(), pos = m.getVerticesData('position'), mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights'), sk = m.skeleton;
   if (!uv || !idx || !pos || !mi || !mw || !sk) return null;
   const names: string[] = []; sk.bones.forEach((b) => { names[b.getIndex()] = b.name; });
