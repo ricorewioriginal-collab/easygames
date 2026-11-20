@@ -14,7 +14,24 @@
     { id: 'mats', name: 'Mats Feldmann', look: { model: 'knight', skin: 1, shirt: 0x1f2a44, pants: 0x1f2a44, accent: 0xf4f4f4, hair: 0x3a2a1a, mic: true, cards: true, micColor: 0x37c46a } }
   ];
   D.DOC = { id: 'doc', name: 'Doc Rudi', look: { model: 'mage', skin: 2, shirt: 0xf2f2ee, pants: 0x3a5a7a, accent: 0xffffff, glasses: true, hat: 'cap', hatColor: 0x2a8a4a } };
-  D.VOICE = { lotte: { pitch: 1.12, rate: 1.04 }, mats: { pitch: 0.92, rate: 1.0 }, doc: { pitch: 0.8, rate: 0.95 } };
+  // Ranger: bewachen das Lager, bringen Lieferungen, holen Camper zur Prüfung ab (frei erfunden)
+  D.RANGER = { id: 'ranger', name: 'Ranger Kalle', look: { model: 'barbarian', skin: 1, shirt: 0x6b6a3a, pants: 0x3a4a2a, accent: 0xd8c89a, hat: 'busch', hatColor: 0x7a6a3a } };
+  D.VOICE = { lotte: { pitch: 1.12, rate: 1.04 }, mats: { pitch: 0.92, rate: 1.0 }, doc: { pitch: 0.8, rate: 0.95 }, ranger: { pitch: 0.7, rate: 0.98 } };
+  // Sprüche von Lager-Sanitäter Doc Rudi (eigene Figur) und Ranger Kalle
+  D.DOC_LINES = {
+    check: ['Zunge raus … sehr schön. Puls ein bisschen hoch, aber das ist hier normal.', 'Blutdruck okay, Hände zittern ein bisschen. Viel trinken, weniger Drama!', 'Du hast einen Mückenstich. Einen. Du wirst es überleben.', 'Kreislauf stabil. Wenn dir schwindlig wird: hinsetzen, Wasser, Schatten.'],
+    trialQuit: ['Ganz ruhig, tief durchatmen. Abbrechen ist keine Schande – deine Gesundheit geht vor.', 'Alles gut, ich bin da. Erstmal hinsetzen und einen Schluck Wasser.'],
+    trialBad: ['Kurz durchchecken … Puls hoch, aber alles im grünen Bereich. Du hast gekämpft!', 'Ein paar Kratzer, viel Ekel – aber medizinisch alles in Ordnung.'],
+    trialGood: ['Alle Werte top. Und Nerven wie Drahtseile!', 'Ich hab schon viele Prüfungen gesehen. Das war richtig stark.'],
+    tips: ['Wer wenig isst, hat schlechte Laune. Wer schlecht schläft, auch.', 'In der Prüfung zählt: ruhig atmen, dann erst handeln.', 'Holz holen und Wasser abkochen – das hält das Camp gesund.']
+  };
+  D.RANGER_LINES = {
+    hello: ['Alles ruhig im Lager? Ich dreh meine Runde.', 'Ich hab ein Auge auf euch. Und auf die Schlangen.', 'Bleibt im Camp. Hinter der Brücke ist Sperrgebiet.'],
+    tips: ['Morgen früh holen wir wieder jemanden zur Prüfung ab. Die Zuschauer haben schon abgestimmt …', 'Am Feuer redet es sich am besten. Und Komplimente kosten nichts.', 'Wer im Buschtelefon ehrlich ist, kommt bei den Zuschauern gut an.', 'Heute ist es heiß. Wasser abkochen nicht vergessen!'],
+    chest: ['Psst … ich hab heute eine Kiste gesehen. Irgendwo dort hinten – ich hab sie markiert.', 'Unter uns: Da drüben steht eine Schatzkiste. Mehr verrat ich nicht.'],
+    pick: ['{n}, mitkommen bitte. Die Prüfung wartet.', '{n}, du bist dran. Ich bring dich hin.'],
+    delivery: ['Lieferung fürs Camp!', 'Euer Essen. Teilt gerecht!']
+  };
 
   // Camper-Kleidung wie im Original: rote Hemden, Khaki-Hosen; Hüte und Tücher als Erkennungszeichen
   const RED = 0xc8372d, KHAKI = 0xb79a6a;
@@ -44,7 +61,7 @@
 
   // Prüfungen: Ablauf und Wertung wie im Original – Sterne = Essensportionen fürs Camp
   D.TRIALS = [
-    { id: 'kisten', name: 'Die fiesen Kisten', icon: '📦', stars: 8, time: 120, desc: 'Greif in acht Kisten voller (virtueller) Krabbeltiere und hol die Sterne heraus. Berühr die Tiere möglichst nicht – sonst steigt dein Ekel.', ctrl: [['move', 'Hand bewegen'], ['ok', 'Zugreifen'], ['alt', 'Nächste Kiste']] },
+    { id: 'kisten', name: 'Die fiesen Kisten', icon: '📦', stars: 8, time: 120, desc: 'Lauf am Kistentisch entlang, steck die Hand in die Kisten voller (virtueller) Krabbeltiere und hol die Sterne heraus. Berühr die Tiere möglichst nicht – sonst steigt dein Ekel.', ctrl: [['move', 'Laufen / Hand bewegen'], ['ok', 'Hineingreifen / Zugreifen'], ['alt', 'Kiste verlassen']] },
     { id: 'dinner', name: 'Das Urwald-Dinner', icon: '🍽️', stars: 6, time: 150, desc: 'Sechs erfundene Ekel-Gänge. Spieß die zappelnden Happen selbst mit der Gabel auf, kau sie runter, leer die Ekel-Drinks und halt dabei das Würgen in Schach.', ctrl: [['move', 'Gabel führen / Würgen ausgleichen'], ['ok', 'Aufspießen & kauen'], ['alt', 'Trinken (halten)']] },
     { id: 'tauchen', name: 'Das Schlammbecken', icon: '🤿', stars: 9, time: 120, desc: 'Tauch durchs trübe Becken und sammle die Sterne vom Grund. Achte auf deine Luft – an der Oberfläche holst du neue.', ctrl: [['move', 'Schwimmen'], ['ok', 'Abtauchen'], ['alt', 'Auftauchen']] },
     { id: 'steg', name: 'Der Wackelsteg', icon: '🌉', stars: 8, time: 110, desc: 'Balancier über den Steg hoch über der Schlucht. Wind und lose Bretter wollen dich runterholen – greif dir die Sterne an den Seilen.', ctrl: [['move', 'Gehen / Balance halten'], ['ok', 'Stern greifen'], ['alt', 'Springen']] },
@@ -59,6 +76,9 @@
     { id: 'seilbahn', name: 'Die Lianen-Rutsche', icon: '🐒', stars: 9, time: 0, desc: 'Drei Fahrten an der Seilrutsche durch die Baumkronen. Lenk dich zu den Sternen und weich Ästen und Wespennestern aus.', ctrl: [['move', 'Lenken'], ['ok', 'Bremsen'], ['alt', 'Beine anziehen']] }
   ];
   D.TRIAL = Object.fromEntries(D.TRIALS.map(t => [t.id, t]));
+  // Gruppenprüfung beim Einzug (nicht in der normalen Zuschauerwahl): alle Camper suchen gemeinsam, jeder Stern zählt fürs Camp
+  D.TRIAL.fanquiz = { id: 'fanquiz', name: 'Das IBES-Fan-Quiz', icon: '🏆', stars: 10, time: 0, fan: true, desc: 'Der Wissens-Tank für echte Fans: Fragen zur deutschen Show „Ich bin ein Star – Holt mich hier raus!“ und zum britischen Original „I\'m a Celebrity … Get Me Out of Here!“. Drei Fehler, und der Tank ist voll.', ctrl: [['move', 'Antwort wählen'], ['ok', 'Antworten']] };
+  D.TRIAL.marsch = { id: 'marsch', name: 'Der Dschungel-Marsch', icon: '🥾', stars: 10, time: 90, group: true, desc: 'Gruppenprüfung auf dem Weg ins Lager: Alle Camper suchen gemeinsam die Sterne im Dschungel. Jeder Stern ist eine Portion fürs erste Abendessen.', ctrl: [['move', 'Laufen'], ['ok', 'Springen'], ['alt', 'Rennen (halten)']] };
   // Finale: drei kurze Prüfungen für das Finalmenü (Vorspeise, Hauptgang, Nachtisch)
   D.FINAL = [{ id: 'dinner', course: 'Vorspeise' }, { id: 'kisten', course: 'Hauptgang' }, { id: 'quiz', course: 'Nachtisch' }];
 
@@ -226,6 +246,46 @@
     ['Welche Tiere leben in einem Bienenstock?', ['Bienen', 'Wespen', 'Ameisen', 'Hummeln']],
     ['Welches Organ pumpt das Blut?', ['Herz', 'Lunge', 'Leber', 'Magen']],
     ['Wie viele Beine hat ein Insekt?', ['Sechs', 'Acht', 'Vier', 'Zehn']]
+  ];
+
+
+  // IBES-Fan-Quiz: Fragen zur echten TV-Show „Ich bin ein Star – Holt mich hier raus!“ (RTL) und „I'm a Celebrity … Get Me Out of Here!“ (ITV).
+  // Nur allgemein bekannte, geprüfte Fakten (Stand 2025). Richtige Antwort steht immer zuerst.
+  D.FANQUIZ = [
+    ['Wer wurde 2004 der allererste Dschungelkönig?', ['Costa Cordalis', 'Ross Antony', 'Joey Heindle', 'Marc Terenzi']],
+    ['Wer wurde 2004 in der zweiten Staffel Dschungelkönigin?', ['Désirée Nick', 'Ingrid van Bergen', 'Brigitte Nielsen', 'Melanie Müller']],
+    ['Wer gewann 2008 die dritte Staffel?', ['Ross Antony', 'Costa Cordalis', 'Peer Kusmagk', 'Menderes Bağcı']],
+    ['Wer wurde 2009 Dschungelkönigin?', ['Ingrid van Bergen', 'Désirée Nick', 'Jenny Frankhauser', 'Djamila Rowe']],
+    ['Wer wurde 2013 Dschungelkönig?', ['Joey Heindle', 'Marc Terenzi', 'Filip Pavlović', 'Costa Cordalis']],
+    ['Wer wurde 2017 Dschungelkönig?', ['Marc Terenzi', 'Joey Heindle', 'Ross Antony', 'Prince Damien']],
+    ['Wer wurde 2018 Dschungelkönigin?', ['Jenny Frankhauser', 'Evelyn Burdecki', 'Lilly Becker', 'Lucy Diakovska']],
+    ['Wer wurde 2019 Dschungelkönigin?', ['Evelyn Burdecki', 'Jenny Frankhauser', 'Djamila Rowe', 'Désirée Nick']],
+    ['Wer gewann 2022 das Dschungelcamp in Südafrika?', ['Filip Pavlović', 'Joey Heindle', 'Marc Terenzi', 'Peer Kusmagk']],
+    ['Wer wurde 2023 Dschungelkönigin?', ['Djamila Rowe', 'Lucy Diakovska', 'Evelyn Burdecki', 'Ingrid van Bergen']],
+    ['Wer wurde 2024 Dschungelkönigin?', ['Lucy Diakovska', 'Lilly Becker', 'Djamila Rowe', 'Jenny Frankhauser']],
+    ['Wer wurde 2025 Dschungelkönigin?', ['Lilly Becker', 'Lucy Diakovska', 'Evelyn Burdecki', 'Désirée Nick']],
+    ['Auf welchem Sender läuft das deutsche Dschungelcamp?', ['RTL', 'ZDF', 'ProSieben', 'Sat.1']],
+    ['In welchem Land wird das deutsche Dschungelcamp normalerweise gedreht?', ['Australien', 'Brasilien', 'Thailand', 'Costa Rica']],
+    ['In welchem Land fand das deutsche Dschungelcamp 2022 ausnahmsweise statt?', ['Südafrika', 'Australien', 'Wales', 'Kenia']],
+    ['Welches Moderatoren-Duo führte durch die ersten Staffeln?', ['Sonja Zietlow und Dirk Bach', 'Sonja Zietlow und Daniel Hartwich', 'Ant und Dec', 'Jan Köppen und Daniel Hartwich']],
+    ['Wer übernahm 2013 die Moderation an der Seite von Sonja Zietlow?', ['Daniel Hartwich', 'Jan Köppen', 'Dirk Bach', 'Oliver Pocher']],
+    ['Wie heißt der Satz, mit dem man die Show freiwillig verlässt?', ['„Ich bin ein Star – holt mich hier raus!“', '„Ich will nach Hause!“', '„Ich gebe auf!“', '„Ende im Gelände!“']],
+    ['Was gibt es im Camp zu essen, wenn keine Sterne erspielt wurden?', ['Reis und Bohnen', 'Nudeln mit Soße', 'Brot und Wasser', 'Kartoffeln']],
+    ['Wie heißt der Ort, an dem die Camper allein in die Kamera sprechen?', ['Dschungeltelefon', 'Beichtstuhl', 'Sprechzimmer', 'Buschfunk']],
+    ['Unter welchem Spitznamen wurde der langjährige Sanitäter der Show bekannt?', ['Dr. Bob', 'Dr. Jungle', 'Doc Holiday', 'Dr. Croc']],
+    ['Wie hieß 2021 die Ersatz-Show aus Deutschland, als nicht im Dschungel gedreht wurde?', ['Ich bin ein Star – Die große Dschungelshow', 'Dschungelcamp Spezial', 'Das Dschungel-Studio', 'Dschungel Daheim']],
+    ['Wer gewann 2002 die allererste britische Staffel von „I\'m a Celebrity“?', ['Tony Blackburn', 'Phil Tufnell', 'Joe Swash', 'Kian Egan']],
+    ['Welches Duo moderiert „I\'m a Celebrity … Get Me Out of Here!“ in Großbritannien?', ['Ant und Dec', 'Sonja Zietlow und Dirk Bach', 'Holly und Phillip', 'Jedward']],
+    ['Auf welchem Sender läuft die britische Show?', ['ITV', 'BBC One', 'Channel 4', 'Sky One']],
+    ['In welchem Land wurde die britische Show 2020 und 2021 in einer Burg gedreht?', ['Wales', 'Schottland', 'Irland', 'Australien']],
+    ['Wer gewann 2008 die britische Staffel?', ['Joe Swash', 'Matt Willis', 'Gino D\'Acampo', 'Carl Fogarty']],
+    ['Welches Westlife-Mitglied gewann 2013 in Großbritannien?', ['Kian Egan', 'Shane Filan', 'Nicky Byrne', 'Mark Feehily']],
+    ['Wer gewann 2015 die britische Staffel?', ['Vicky Pattison', 'Scarlett Moffatt', 'Charlie Brooks', 'Giovanna Fletcher']],
+    ['Wer gewann 2016 die britische Staffel?', ['Scarlett Moffatt', 'Vicky Pattison', 'Jill Scott', 'Kerry Katona']],
+    ['Welche Fußball-Europameisterin gewann 2022 in Großbritannien?', ['Jill Scott', 'Vicky Pattison', 'Scarlett Moffatt', 'Giovanna Fletcher']],
+    ['Wer gewann 2023 die britische Staffel?', ['Sam Thompson', 'Danny Jones', 'Danny Miller', 'Joe Swash']],
+    ['Welches McFly-Mitglied gewann 2024 in Großbritannien?', ['Danny Jones', 'Dougie Poynter', 'Tom Fletcher', 'Harry Judd']],
+    ['Welches McFly-Mitglied gewann schon 2011 in Großbritannien?', ['Dougie Poynter', 'Danny Jones', 'Tom Fletcher', 'Harry Judd']]
   ];
 
   // Ekel-Gänge (erfunden)

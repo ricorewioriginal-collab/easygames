@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "92adf313d11e",
- "generated": "2026-11-19T13:26:01+00:00",
- "commit": "06ecf49171b9b4799effed1dfbd7b344b5df1a46",
+ "version": "1095214c99da",
+ "generated": "2026-11-20T01:53:37+00:00",
+ "commit": "145940ed1bfa99d6d93d332bc72ad7a0e1830750",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7868,8 +7868,8 @@
   },
   {
    "p": "anmacha-urwaldlager/index.html",
-   "s": 8017,
-   "h": "9d5d73c16c7387bc75af2858ac9e11405105cdd6deb3b6e251084590c0693fd1"
+   "s": 8061,
+   "h": "977ea0bc17d4c8d658801e9e8d944b5077f928249a51f477e24a387792acf117"
   },
   {
    "p": "anmacha-urwaldlager/js/assets.js",
@@ -7883,8 +7883,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/camp.js",
-   "s": 51516,
-   "h": "ec7726a0eb2ef799db4722d86f8f2d83e828e916ef005255c18daed676ae19d7"
+   "s": 56041,
+   "h": "61670a770fd78c74c73dc3337e19abff935782dcfa03ad2cdf53a2d8ee2bd703"
   },
   {
    "p": "anmacha-urwaldlager/js/core.js",
@@ -7893,8 +7893,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/data.js",
-   "s": 26799,
-   "h": "bacb79285f53b7515d27a419b9e2d14d370974a63c731aa56c65319c5da0d570"
+   "s": 34823,
+   "h": "b81dcbd76551ad51cb88f7287cadc5de3ab2d8889b879c02f543f1f16a35449b"
   },
   {
    "p": "anmacha-urwaldlager/js/input.js",
@@ -7903,13 +7903,13 @@
   },
   {
    "p": "anmacha-urwaldlager/js/main.js",
-   "s": 2662,
-   "h": "499e7d86aa644f23d5e91d7683eb0083866140a2abf1402f41338addaa43b4a9"
+   "s": 2761,
+   "h": "50e57917150425399471f3d0714c67898e4c94e81bf0e88545d41044cc2b8aa4"
   },
   {
    "p": "anmacha-urwaldlager/js/menus.js",
-   "s": 20762,
-   "h": "2b12df92dd0290e5b85f6707e870477176ecba8b30db21640604978d3c2be131"
+   "s": 20812,
+   "h": "7ac22726e211dfcf0f5e8b6e5c4f3a797025b772f9c74474565050d24a73040f"
   },
   {
    "p": "anmacha-urwaldlager/js/phone.js",
@@ -7918,13 +7918,13 @@
   },
   {
    "p": "anmacha-urwaldlager/js/render.js",
-   "s": 29139,
-   "h": "91e4b07502f9ea06426df012e616eac5ac1e53e2f84e5e91a8d3d4a2404cce5d"
+   "s": 30130,
+   "h": "854ef6c9892ac5382826882594fdadf60265d57838caef19022ba3d753e5b066"
   },
   {
    "p": "anmacha-urwaldlager/js/show.js",
-   "s": 21318,
-   "h": "4cb75634712826904564ea41100085408e92dad4c44dd1108cb3b843f35618d1"
+   "s": 23463,
+   "h": "f398da7566ddebe335f422171c510bc42d477cb226773dd054d2fa0a08fd0fcc"
   },
   {
    "p": "anmacha-urwaldlager/js/stage.js",
@@ -7933,8 +7933,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/bach.js",
-   "s": 10365,
-   "h": "17d95e18d4df359a73b66afd407555aec8313ac0d9321a7380936367ea90265f"
+   "s": 10397,
+   "h": "183545fd00f81dda462d4913d3f662b2ae841b44f5ecb8fdb7ae0421953be7bb"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/blind.js",
@@ -7953,8 +7953,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/dusche.js",
-   "s": 9470,
-   "h": "05a561a63c520e8006dcf428b08bddfa356d9bb2a4f3e6315d083fbc0f148da7"
+   "s": 9502,
+   "h": "571ca99682191265b03844330fd7019b48c2e6effa5d2648f70f0bb18699a968"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/grab.js",
@@ -7963,33 +7963,38 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kisten.js",
-   "s": 11418,
-   "h": "696b9ab21b21788d33a6a9fd25af329102dfbb85a42b2d7252f657b7b67255e2"
+   "s": 13573,
+   "h": "30fbe5bba2dbeeda534de30fb801d3f83bc7ebb7cd4e7d9b8363278410e657f9"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kit.js",
-   "s": 20919,
-   "h": "07b0086703a5bfc6afdc53ed7bc489dec20c3fc0b941686fe8daa73939760a11"
+   "s": 25805,
+   "h": "44148478279a4c15a63a741d9586818aee3bda727a0fd23a334c83a8216eb098"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/marsch.js",
+   "s": 9555,
+   "h": "6d538104478b92d95aa0234aa50157a10a37a0a1db80a512d460801fba45e375"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/parcours.js",
-   "s": 13005,
-   "h": "5dc1c8a96a0a45a49d8a6f6fd1bb94b178a3fdc3d074f5bd781fed83e5caa9d6"
+   "s": 13126,
+   "h": "f1e6a7dec43599057c223a17969d734451414819427352d2553607d0f4fcb227"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/quiz.js",
-   "s": 7993,
-   "h": "dffd4961e365bd8429ebb887b516aad8eb310a3d8f24eef6fbbc4cfd6fb104df"
+   "s": 8388,
+   "h": "2a9dca7000e6b9820d6e31b1ae259092d4fbe6a3665eb6a4f6f09120129d7227"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/seilbahn.js",
-   "s": 10996,
-   "h": "91728c5444a6149fb18583b92838655a943e324de6cab69afaea00301e719007"
+   "s": 11013,
+   "h": "43e986983fcb1b9926f1ca37f92a19bd668d037ef9a23ad41221039ed29e7c83"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/steg.js",
-   "s": 9123,
-   "h": "56bb412c31d479c056a1e4eb8ae5a56aea9ae456d0f0a221c24fdbae652ca23f"
+   "s": 9353,
+   "h": "44c8219ae9edf48e0a305b33dc6fd287e0b1cbe010b5faa93af4e9f7ced48faa"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/tauchen.js",
@@ -8003,8 +8008,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/ui.js",
-   "s": 12914,
-   "h": "2a99c00b48cd69d33121d4dcc35f93efef4c6059a9da1c294845ccf67dbe211a"
+   "s": 12988,
+   "h": "92d3ffadcc7f6ca75c91cbaddb0502a52ac5081504de87eb496d2bc3d883cb04"
   },
   {
    "p": "anmacha-urwaldlager/logo.svg",
@@ -8078,8 +8083,8 @@
   },
   {
    "p": "anmacha-urwaldlager/style.css",
-   "s": 27557,
-   "h": "5e4160865459fbc1cb432669284acd93e90572613c2ae443fb7b584eec286b51"
+   "s": 28234,
+   "h": "5e58079c1feb9bad3aa0cb322af55339ba98f2533804dc813b5e839e00c36498"
   },
   {
    "p": "anmacha-urwaldlager/sw.js",
@@ -10843,8 +10848,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 14567,
-   "h": "08e10c1672569a558e53f337213da0cac782193d9aab2c2e00f3156ab5cc2f03"
+   "s": 15303,
+   "h": "147926f7157164868843c580e7652526df963066aab847ffcbe397908174a3a4"
   },
   {
    "p": "guides/beat-studio.json",
@@ -15799,7 +15804,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236340,
-   "h": "b4dbc24308bb7df603dae363aa6315b53dfb8b5c7e49c60715cea6d2366ffea1"
+   "h": "8a501fa3b11fa22889277122d3fedf638a0b0bc2ddfb2b3307bfdedc8be95081"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -71382,9 +71387,84 @@
    "h": "9e629369f7a54ab0b5ef047ea685f1a41154903e478869c95eca8a5590cc4681"
   },
   {
-   "p": "zotik/assets/index-nj4Ad3yK.js",
-   "s": 2155991,
-   "h": "705ccf763fc7a866bfabab2e9c3d4d638200f5253159a3fdac9975669421c7ad"
+   "p": "zotik/assets/basisTextureLoader-Bqq505Kz.js",
+   "s": 29845,
+   "h": "eed8464fcb17e40669d42e2e456cb2f3118039bded8b25d13fb025220f4601f4"
+  },
+  {
+   "p": "zotik/assets/cubemapToSphericalPolynomial-DvlXrV_X.js",
+   "s": 3667,
+   "h": "283600d5aad7645f304ff7798e53d309f136bd0e6e50b39790a2ed70c5d1ade2"
+  },
+  {
+   "p": "zotik/assets/dds.pure-DXWp0BvU.js",
+   "s": 7054,
+   "h": "ddfb3b30c23fc9969bc4230e2b9e40559ea2c6bacb11c7381e43a4bb5c1bd235"
+  },
+  {
+   "p": "zotik/assets/ddsTextureLoader-D-bN9Mpf.js",
+   "s": 1317,
+   "h": "1f4d53227b7edcb5a70460a4e5b7509ebe233dc7337d68e93821f3902374203c"
+  },
+  {
+   "p": "zotik/assets/empty-Dd4V9ggj.js",
+   "s": 41,
+   "h": "2daa995e49659d6afb5d023678f1442a2d9742a9d3b1327547662112e45048e7"
+  },
+  {
+   "p": "zotik/assets/envTextureLoader-gcpEr06Q.js",
+   "s": 31696,
+   "h": "f1be5a870a0ee35771f689644d11ab623608cb17cde297af10b3192fe3856826"
+  },
+  {
+   "p": "zotik/assets/hdrTextureLoader-uIlgWB6O.js",
+   "s": 2448,
+   "h": "2da05798051a7530a370ef4ce02dbbdc787e5388cbde876441600f3a684c218f"
+  },
+  {
+   "p": "zotik/assets/iesTextureLoader-BG123Ht9.js",
+   "s": 2489,
+   "h": "0f9a67c93086055e666e1531a7060d5f7ce742fa1b6e5ab00944c180b4e81d5d"
+  },
+  {
+   "p": "zotik/assets/index-Be7NgE4Y.js",
+   "s": 3068849,
+   "h": "561a84f7d3b489195f14f2e9390e0cddd9ba4b6aed17282a51aed35c81bde11a"
+  },
+  {
+   "p": "zotik/assets/ktxTextureLoader-DX2v8HKM.js",
+   "s": 16756,
+   "h": "62618c02a248be815782b76472baf1e3df94eafd15b0613e68d98fcc82ebaabb"
+  },
+  {
+   "p": "zotik/assets/mesh.vertexData.functions-ayNlGC5K.js",
+   "s": 960,
+   "h": "109b0c291f78ec6b98053b23c7a9ce01eb8bcee909a0964ce337a68a9b4bc61e"
+  },
+  {
+   "p": "zotik/assets/postprocess.vertex-B-LgnIA8.js",
+   "s": 583,
+   "h": "e1f73a40255226c3b2e7a02fa331bb9082d9431515fd309170e733e546944d27"
+  },
+  {
+   "p": "zotik/assets/postprocess.vertex-KlycNKbg.js",
+   "s": 459,
+   "h": "f318d059656d2ea0aa728faa3ba78dbe9f894b095d13b6103743f893897d4fff"
+  },
+  {
+   "p": "zotik/assets/rgbdDecode.fragment-C-wz2x1V.js",
+   "s": 7344,
+   "h": "5e47fd6571d91a9dfe9c02bac3917e9ba8f817a1317639a430d54ef7fcc0cf7f"
+  },
+  {
+   "p": "zotik/assets/rgbdDecode.fragment-CXc3z6Kg.js",
+   "s": 7135,
+   "h": "ffd4b3624778c5f61aea250d14ba45d6019af0798ce509b686385de993a9e63d"
+  },
+  {
+   "p": "zotik/assets/tgaTextureLoader-CfZN5TRA.js",
+   "s": 3527,
+   "h": "b55383a2f78e77b764c58a7ad64410a01419558e494823e4cb351fdb27be4f02"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -71424,7 +71504,7 @@
   {
    "p": "zotik/index.html",
    "s": 78401,
-   "h": "b478da03884c997bdf60b1f480c4055a209593dfbbf1e98894ba5a9cae3c9de6"
+   "h": "a2a6324511bd1d52ca2ddc7336ae46e51b26708cfc15955686f21b0db35deee9"
   },
   {
    "p": "zotik/manifest.webmanifest",
@@ -71555,6 +71635,106 @@
    "p": "zotik/models/qr/qr.glb",
    "s": 660208,
    "h": "a24a3bc1160b9ee730f0d01d0a6d2c8c74e35fa9a5671843d9a4a61444a95119"
+  },
+  {
+   "p": "zotik/models/sf/anime.glb",
+   "s": 1125412,
+   "h": "b630556dec8dc5d610032e96ac4c0d24102c538f2972bd334412f01eff990d95"
+  },
+  {
+   "p": "zotik/models/sf/m_affe.glb",
+   "s": 620728,
+   "h": "6a5f0f0761567ca19a298ea5978b7b8c9abfe1b304b43315a8b309f236b4faf9"
+  },
+  {
+   "p": "zotik/models/sf/m_eisgolem.glb",
+   "s": 578420,
+   "h": "daa52dc75d3ff1d79ae2694f6f1c8c5f42f8b070d69cfc62b8b87df029e2c0e7"
+  },
+  {
+   "p": "zotik/models/sf/m_fledermaus.glb",
+   "s": 356564,
+   "h": "f57e0de4a9634115040d87fd4ebd162ebba829891405533a2003a2b59b25a6cc"
+  },
+  {
+   "p": "zotik/models/sf/m_geist.glb",
+   "s": 91696,
+   "h": "a76dd181b7970e2988279e0a725811eecbb8d486557db717176bb0d15755438d"
+  },
+  {
+   "p": "zotik/models/sf/m_geist2.glb",
+   "s": 476232,
+   "h": "064f7ca4bf39fb56150c34967ed71912a94f92c108c7e98c62f3bbb72dcfeb9b"
+  },
+  {
+   "p": "zotik/models/sf/m_hai.glb",
+   "s": 544704,
+   "h": "daeecf480b35d0ef71ac7fbe2e02d54f50e679b3dbf57e6e1d9783ddbe9ede39"
+  },
+  {
+   "p": "zotik/models/sf/m_pilz.glb",
+   "s": 2229144,
+   "h": "026335d99c9929b452907a8ec2845d7c6e21838beac74b07e2a1c3a35430ab2e"
+  },
+  {
+   "p": "zotik/models/sf/m_qualle.glb",
+   "s": 971908,
+   "h": "d3d9f2d60091fc1a2e9c2a150dcd5f02a5fcbbde0bb07ff7844169f3de1e1d23"
+  },
+  {
+   "p": "zotik/models/sf/m_ratte.glb",
+   "s": 516020,
+   "h": "6347d4d6df4985c89935f879960dbe077594f44998cf5e75176f0e24f200be46"
+  },
+  {
+   "p": "zotik/models/sf/m_schleim.glb",
+   "s": 15396,
+   "h": "abb62c5926a5f6ccc63c6edf4ef350496acaea1b3748ca184e3e85b89f2c937f"
+  },
+  {
+   "p": "zotik/models/sf/m_skorpion.glb",
+   "s": 1285456,
+   "h": "6770b9fb3e889a806fd5da63f385211aeb032780024b847e8841fca680b5b7eb"
+  },
+  {
+   "p": "zotik/models/sf/m_spinne.glb",
+   "s": 836632,
+   "h": "f870b4913e252d8ae6435d5d5d26bf60df2286572ef1a5babe5f43021a5b3bab"
+  },
+  {
+   "p": "zotik/models/sf/m_steingolem.glb",
+   "s": 926204,
+   "h": "d7096eb2d860b40b0c012db6a66cbbfc107232a46d73d0edc84a5e2596dcecc9"
+  },
+  {
+   "p": "zotik/models/sf/m_tiger.glb",
+   "s": 558184,
+   "h": "cfac3195f4db3a007d12ec524432b44a85a03e76662035786ad8e58c0b418323"
+  },
+  {
+   "p": "zotik/models/sf/m_troll.glb",
+   "s": 4325484,
+   "h": "cd1961d8fc5fa957d7ebc9d8b3bfe25cd1a05c98ef23f4a261f4803612c34b67"
+  },
+  {
+   "p": "zotik/models/sf/m_wolf.glb",
+   "s": 828164,
+   "h": "a1baf13a9c3d29297b0a61524659b97357495aeddaa77aabe93f4e658becb14c"
+  },
+  {
+   "p": "zotik/models/sf/magier.glb",
+   "s": 991884,
+   "h": "e6fdb2441f30dbe7eb17bdc9790abf04875854f3e40da90d0a3f7164e9c279cd"
+  },
+  {
+   "p": "zotik/models/sf/ritter.glb",
+   "s": 1235736,
+   "h": "f2cecd3266e3101c7640fc70924ca2c3d0ddcc5719f4559e2dbd167be1cfb178"
+  },
+  {
+   "p": "zotik/models/sf/rogue.glb",
+   "s": 2319760,
+   "h": "9522a3bd4ad177917d3b06d2c5458c218477c3eb05811238b3f03b0246f13c65"
   },
   {
    "p": "zotik/models/sf/sf.glb",

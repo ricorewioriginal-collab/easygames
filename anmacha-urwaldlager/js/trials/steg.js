@@ -5,6 +5,7 @@
   const LEN = 34, H = 6;   // Länge und Höhe des Stegs
 
   UL.Trials.reg('steg', {
+    orbit: true,
     env: (theme) => theme === 'studio' ? { radius: 20 } : { tod: 'day', radius: 22, ring: true, clear: [{ x: 0, z: 0, r: 4 }], seed: 55, y: -3, density: 0.6 },
     setup(ctx) {
       const sc = ctx.scene, studio = ctx.theme === 'studio';
@@ -93,7 +94,9 @@
       fig.root.rotation.z = -ctx.lean * 0.5; fig.root.rotation.y = 0;
       if (ctx.jump <= 0 && !fig.one) fig.move(fwd * sp);
       ctx.windArrow.style.background = Math.abs(ctx.wind) > 0.4 ? `linear-gradient(${ctx.wind > 0 ? 90 : 270}deg, rgba(255,255,255,.18), transparent 30%)` : 'transparent';
-      ctx.meters = [{ label: '⚖️ Gleichgewicht', v: 1 - Math.abs(ctx.lean), danger: Math.abs(ctx.lean) > 0.65 }, { label: '🏁 Strecke', v: (ctx.z + LEN / 2) / LEN, color: '#5ad1ff' }];
+      ctx.meters = [{ label: '🏁 Strecke', v: (ctx.z + LEN / 2) / LEN, color: '#5ad1ff' }];
+      // Gleichgewicht ohne Balken: die Figur kippt sichtbar, bei Gefahr zeigt ein Pfeil die Gegenrichtung
+      ctx.overlay(Math.abs(ctx.lean) > 0.35 ? `<div class="lbl lean ${Math.abs(ctx.lean) > 0.65 ? 'danger' : ''}">${ctx.lean > 0 ? '◀◀ nach links lehnen' : 'nach rechts lehnen ▶▶'}</div>` : '');
       ctx.extraHud = Math.abs(ctx.wind) > 0.4 ? `<span class="chip warn">💨 Wind von ${ctx.wind > 0 ? 'links' : 'rechts'}!</span>` : '';
       Tcam(ctx, dt);
     },

@@ -10,6 +10,7 @@
   const yawAt = s => { const a = s / RC; return Math.atan2(Math.cos(a), -Math.sin(a)); };
 
   UL.Trials.reg('parcours', {
+    orbit: true,
     env: (theme) => theme === 'studio' ? { radius: RC + W + 4 } : { tod: 'day', radius: RC + 7, clear: [{ x: 0, z: 0, r: RC + W + 2, k: 0.4 }], seed: 88, density: 0.8 },
     setup(ctx) {
       const sc = ctx.scene, studio = ctx.theme === 'studio';
@@ -26,7 +27,7 @@
       // Start/Ziel-Tor
       const gate = new T.Group(); gate.position.copy(P(0, 0, 0)); gate.rotation.y = yawAt(0); sc.add(gate);
       for (const x of [-W - 0.5, W + 0.5]) { const p = new T.Mesh(new T.BoxGeometry(0.25, 3.6, 0.25), R.mat(studio ? 0xc0c8d0 : 0x5a3a1e)); p.position.set(x, 1.8, 0); gate.add(p); }
-      const ban = R.sign(['START · ZIEL'], 4.6, 0.7, { bg: studio ? '#141824' : '#2f6a2a', w: 640, h: 100, font: '900 60px system-ui' }); ban.position.set(0, 3.3, 0); ban.material.side = T.DoubleSide; gate.add(ban);
+      const ban = R.sign(['START · ZIEL'], 4.6, 0.7, { bg: studio ? '#141824' : '#2f6a2a', w: 640, h: 100, font: '900 60px system-ui' }); ban.position.set(0, 3.3, 0.01); gate.add(ban); const ban2 = ban.clone(); ban2.position.z = -0.01; ban2.rotation.y = Math.PI; gate.add(ban2);   // beidseitig lesbar, nicht gespiegelt
       const chk = new T.Mesh(new T.PlaneGeometry(2 * W + 0.6, 0.4), new T.MeshBasicMaterial({ map: checker() })); chk.rotation.x = -Math.PI / 2; chk.position.y = Y0 + 0.015; gate.add(chk);
       // Hindernisse
       const kinds = ['log', 'beam', 'crates', 'mud', 'sack', 'log', 'crates', 'beam', 'sack', 'mud', 'log', 'beam'];
