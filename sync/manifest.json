@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "fa74940f3681",
- "generated": "2026-11-20T21:06:02+00:00",
- "commit": "73f17af7f7ad3148d3c85c81b7840de9a584c670",
+ "version": "0234de5591be",
+ "generated": "2026-11-20T21:16:55+00:00",
+ "commit": "97e54a3e1d82298528879db71b2c1c4c95ed9723",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7928,8 +7928,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/assets.js",
-   "s": 29971,
-   "h": "0fcb38cebcd604310c5f3cf17e03c201b08e66a96cf2271e669b6c0e0d25dc30"
+   "s": 31528,
+   "h": "06b330796f51cb754dbbfd8e1ac9dde550dcd56e2a736e348f3f986cf2505a67"
   },
   {
    "p": "anmacha-urwaldlager/js/audio.js",
@@ -7938,8 +7938,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/camp.js",
-   "s": 66220,
-   "h": "5bd41a93a075d1a8dd577b9f2439eb59d539e286660495e522b30ed6614f9ec8"
+   "s": 66243,
+   "h": "7cb54cdaf4100b9eea573677b089b7d95f2a4ee2e68744adebe3ea36ba9d2033"
   },
   {
    "p": "anmacha-urwaldlager/js/core.js",
@@ -7953,8 +7953,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/input.js",
-   "s": 14441,
-   "h": "d84ff87f3474d08e6442291da1b4e69e279d8832d3cbd982b4d17d04720890cb"
+   "s": 14624,
+   "h": "4f7d5c0e6bb6f2ada854a16d731b2b647ea2f74f3a37bb63f1053e8f77b7dd6d"
   },
   {
    "p": "anmacha-urwaldlager/js/main.js",
@@ -7988,8 +7988,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/stage.js",
-   "s": 9414,
-   "h": "b0bc177bdab91802d0ccf82f2144a860e63f2a9d0e987653ea0ec8ca21d9e089"
+   "s": 10084,
+   "h": "0c7832fa0aa2f17a3aeaee0a3ba3490006c5218b0217e3b6b07aa391333f88ff"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/bach.js",
@@ -8078,8 +8078,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/tauchen.js",
-   "s": 8829,
-   "h": "35e43faa6f4adeadeb7267c5faa1358f220bb3e801f7397609cdf82c311cf1b6"
+   "s": 9043,
+   "h": "0e683942e6cae32a6e1b5c4a74d4a5c52a16dc9442e2533082004d13c91797e7"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/tunnel.js",
@@ -8257,6 +8257,11 @@
    "h": "7bd174881786e318b7f5df8b8e7d601274c2eb90c0b09d024bc7e501d7df541c"
   },
   {
+   "p": "anmacha-urwaldlager/models/menschen/mocap.glb",
+   "s": 479192,
+   "h": "4746c0b8f8482709b575258c79f517bc327ab95f0547c2f82a5bdbb121c12375"
+  },
+  {
    "p": "anmacha-urwaldlager/models/ph.glb",
    "s": 471864,
    "h": "0a1e2c4d6ced3d7791a1724302f959746f04a163654a15ef8f2818051d2ba3cc"
@@ -8288,8 +8293,8 @@
   },
   {
    "p": "anmacha-urwaldlager/style.css",
-   "s": 28422,
-   "h": "66947ec77d673bc575f7c41bfd189b9d9086b30187ecb1f29608cfc4f6cb2336"
+   "s": 28505,
+   "h": "f9614ce06c7d6e441997cd32e2ab620557b4d32bfcb8601e79d15ccfea3c6e4e"
   },
   {
    "p": "anmacha-urwaldlager/sw.js",
@@ -11053,8 +11058,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 21849,
-   "h": "985910d1c6186def77223ff706a5596dbd5cb735dca8e6dbd65053c8d1a93b83"
+   "s": 22168,
+   "h": "c5b08f37bdbf6719f84c854319afbf4cc5e2418c08052c5027007f282f0a41ac"
   },
   {
    "p": "guides/beat-studio.json",
@@ -16559,7 +16564,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236550,
-   "h": "9e00ed2972f7aa7e3a5b05efd66b133247f37f82592880a7200d7089c7bf2689"
+   "h": "ee4f6d4d45a342014a70e1ac8f0d288c4a2a969b358a7ac45f89741660ef173c"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
