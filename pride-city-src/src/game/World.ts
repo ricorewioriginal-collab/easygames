@@ -685,18 +685,9 @@ export class World {
   private neonCity() {
     const sc = this.scene, NEON = ['#ff3fb0', '#5ce1ff', '#ffd23b', '#b56bff', '#3ee69a', '#ff7a3b', '#ff4b6b', '#6f8cff'];
     const mt: number[] = [], cl: number[] = [];
-    const tube = (x: number, y: number, z: number, sx: number, sy: number, sz: number, hexc: string) => {
-      mt.push(...Matrix.Compose(new Vector3(sx, sy, sz), Quaternion.Identity(), new Vector3(x, y, z)).asArray()); const k = col(hexc); cl.push(k.r, k.g, k.b, 1);
+    const tube = (x: number, y: number, z: number, sx: number, sy: number, sz: number, hexc: string, yaw = 0) => {
+      mt.push(...Matrix.Compose(new Vector3(sx, sy, sz), Quaternion.FromEulerAngles(0, yaw, 0), new Vector3(x, y, z)).asArray()); const k = col(hexc); cl.push(k.r, k.g, k.b, 1);
     };
-    this.blocks.forEach(({ r }, i) => {
-      // Band auf Höhe der Ladenzeile, direkt an den Wänden des Erdgeschosses (dort stimmt der Grundriss sicher)
-      const a = NEON[i % 8], b = NEON[(i + 3) % 8], T = .09, y = 2.5, ex = r.hx + .14, ez = r.hz + .14;
-      tube(r.x, y, r.z - ez, ex * 2, T, T, a); tube(r.x, y, r.z + ez, ex * 2, T, T, a); tube(r.x - ex, y, r.z, T, T, ez * 2, a); tube(r.x + ex, y, r.z, T, T, ez * 2, a);
-      for (const sx of [-1, 1]) for (const sz of [-1, 1]) tube(r.x + sx * ex, y / 2 + .1, r.z + sz * ez, T, y - .2, T, b);
-    });
-    const t = box(sc, 1, 1, 1), tm = glow(sc, 0xffffff, 1); t.material = tm; t.parent = this.root; t.isPickable = false;
-    t.thinInstanceSetBuffer('matrix', new Float32Array(mt), 16, true); t.thinInstanceSetBuffer('color', new Float32Array(cl), 4, true); t.alwaysSelectAsActiveMesh = true;
-    this.neon.push({ m: tm, base: new Color3(1, 1, 1) });
     const WORDS = ['LOVE', 'PRIDE', 'QUEER', 'YAS!', 'SLAY', 'LOVE IS LOVE', 'FABULOUS', 'KISS ME', 'DIVA', 'GLITZER', 'OUT & PROUD', 'TANZ!', 'KÜSSCHEN', 'DRAMA', 'HEISS', 'BUNT', 'FREI', 'STOLZ'];
     const pool = NEON.map((c) => { const m = glow(sc, c, 1, { add: true, alpha: 0 }); this.pools.push(m); const g = ground(sc, 5, 3); g.material = m; g.setEnabled(false); g.parent = this.root; return g; });
     let n = 0;
@@ -705,8 +696,15 @@ export class World {
       const ci = (n * 3) % 8, sx = Math.sin(h.yaw), sz = Math.cos(h.yaw);
       this.neonSign(WORDS[n % WORDS.length], NEON[ci], h.x - sx * .56, 6.3, h.z - sz * .56, h.yaw, undefined, 5.2);
       const g = pool[ci].createInstance('pool'); g.position.set(h.x + sx * 1.1, .13, h.z + sz * 1.1); g.rotation.y = h.yaw; this.still(g, false, false);
+      // Neonrahmen um den Schriftzug an der Fassade (statt Bändern am Gehweg, die wie Geländer wirkten)
+      { const fx = h.x - sx * .5, fz = h.z - sz * .5, c2 = NEON[(ci + 3) % 8], T = .08, w = 5.9, cx = Math.cos(h.yaw), cz = -Math.sin(h.yaw);
+        tube(fx, 7.15, fz, w, T, T, c2, h.yaw); tube(fx, 5.45, fz, w, T, T, c2, h.yaw);
+        for (const e of [-1, 1]) tube(fx + cx * e * w / 2, 6.3, fz + cz * e * w / 2, T, 1.7, T, c2, h.yaw); }
       n++;
     }
+    const t = box(sc, 1, 1, 1), tm = glow(sc, 0xffffff, 1); t.material = tm; t.parent = this.root; t.isPickable = false;
+    t.thinInstanceSetBuffer('matrix', new Float32Array(mt), 16, true); t.thinInstanceSetBuffer('color', new Float32Array(cl), 4, true); t.alwaysSelectAsActiveMesh = true;
+    this.neon.push({ m: tm, base: new Color3(1, 1, 1) });
   }
   private signs() {
     for (const p of this.pois) {
