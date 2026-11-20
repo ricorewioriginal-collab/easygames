@@ -1,0 +1,38 @@
+<!doctype html><body>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+const NAMES = { m_idle_neutral_01:'rb_idle', m_idle_look_around_01:'rb_idle2', m_walk_neutral_01:'rb_walk', m_run_neutral_01:'rb_run', m_cheer_01:'rb_cheer', m_sit_chair_idle_neutral_01:'rb_sit', m_wave_01:'rb_wave', m_crouch_idle:'rb_crouch', m_claphands_01:'rb_clap',
+ f_idle_neutral_01:'rbf_idle', f_idle_look_around_01:'rbf_idle2', f_walk_neutral_01:'rbf_walk', f_run_neutral_01:'rbf_run', f_cheer_01:'rbf_cheer', f_sit_chair_idle_neutral_01:'rbf_sit' };
+const L = new FBXLoader();
+const skel = await L.loadAsync('src/Adults/Male_Adult_01/Export/Male_Adult_01.fbx');
+const ms = []; skel.traverse(o => { if (o.isMesh) ms.push(o); }); ms.forEach(m => m.parent.remove(m));
+const nodes = new Set(); skel.traverse(o => nodes.add(o.name));
+const info = {}; const clips = [];
+for (const [f, n] of Object.entries(NAMES)) {
+  const a = await L.loadAsync('mocap/' + f + '.fbx'); const c = a.animations[0];
+  const keep = c.tracks.filter(t => { const [node, prop] = t.name.split('.'); if (!nodes.has(node) || /Footsteps|Finger[0-4][12]|Nub|Toe/.test(node)) return false; if (prop === 'quaternion') return true; if (prop === 'position') return node === 'Bip01' || node === 'Bip01_Pelvis'; return false; });
+  const pos = keep.filter(t => t.name.endsWith('.position')).map(t => t.name + ':' + Array.from(t.values.slice(0, 3)).map(v => v.toFixed(1)).join(','));
+  info[n] = { dur: +c.duration.toFixed(2), tracks: keep.length, all: c.tracks.length, pos };
+  // nur auf der Stelle: waagerechte Wurzelbewegung entfernen, Höhe (Wippen) behalten
+  for (const t of keep) if (t.name === 'Bip01.position') { const v = t.values; for (let i = 0; i < v.length; i += 3) { v[i] = 0; v[i + 2] = 0; } }
+  // lange Clips kürzen: Schnitt dort, wo die Haltung dem Anfang am nächsten ist (nahtlose Schleife)
+  const MAX = { rb_idle: 8, rbf_idle: 8, rb_cheer: 5, rbf_cheer: 5, rb_sit: 9, rbf_sit: 9, rb_crouch: 5, rb_clap: 4 }[n];
+  let cl = new THREE.AnimationClip(n, c.duration, keep);
+  if (MAX && c.duration > MAX) {
+    const qt = keep.filter(t => t.name.endsWith('.quaternion') && /Spine|Thigh|Calf|UpperArm|Forearm|Head|Pelvis/.test(t.name));
+    const at = (t, time) => { const i = t.createInterpolant(); return i.evaluate(time).slice(); };
+    let best = MAX, bd = 1e9;
+    for (let tm = MAX * 0.55; tm <= MAX; tm += 1 / 30) { let d = 0; for (const t of qt) { const a0 = at(t, 0), a1 = at(t, tm); const dot = Math.abs(a0[0]*a1[0]+a0[1]*a1[1]+a0[2]*a1[2]+a0[3]*a1[3]); d += 1 - Math.min(1, dot); } if (d < bd) { bd = d; best = tm; } }
+    cl = THREE.AnimationUtils.subclip(cl, n, 0, Math.round(best * 30), 30); cl.name = n; info[n].cut = +best.toFixed(2);
+  }
+  clips.push(cl);
+}
+const sp = {}; skel.traverse(o => { if (o.name === 'Bip01' || o.name === 'Bip01_Pelvis') sp[o.name] = o.position.toArray().map(v => +v.toFixed(1)); });
+info.skel = sp;
+window.INFO = info;
+window.exportGlb = async () => { const r = await new GLTFExporter().parseAsync(skel, { binary: true, animations: clips }); const u8 = new Uint8Array(r); let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
+window.READY = 1;
+</script>

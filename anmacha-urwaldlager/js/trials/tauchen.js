@@ -47,7 +47,7 @@
       UL.Trials.sign(ctx, 0, -RAD - 2.2, 0);
       ctx.cam.position.set(0, 3, -RAD - 3); ctx.cam.lookAt(0, 0, 0);
     },
-    start(ctx) { ctx.player.set('walk'); },
+    start(ctx) { ctx.player.root.rotation.order = 'YXZ'; ctx.player.set('walk'); },   // YXZ: Neigung um die eigene Querachse (sonst kippt die Figur je nach Richtung seitlich)
     update(dt, ctx) {
       const I = ctx.inp, p = ctx.pos, v = ctx.vel, sc = ctx.scene;
       // Touch: Stick links/rechts dreht (wie im Tunnel) – der rechte Daumen bleibt frei für Tauchen/Auftauchen
@@ -76,6 +76,7 @@
       const fig = ctx.player.root; fig.position.copy(p).add(new T.Vector3(0, under ? -0.4 : -1.25, 0));
       const hv = Math.hypot(v.x, v.z); if (hv > 0.2) fig.rotation.y = UL.angDamp(fig.rotation.y, Math.atan2(v.x, v.z), 6, dt);
       fig.rotation.x = UL.damp(fig.rotation.x, under ? 1.25 : 0.3, 5, dt);
+      ctx.player.swim = under;
       ctx.player.move(under ? 1.2 + hv * 0.3 : hv > 0.3 ? 1.4 : 0);
       // Sterne einsammeln
       for (const s of ctx.starObjs) { if (!s.visible) continue; s.rotation.y += dt * 1.5; if (s.position.distanceTo(p) < 0.9) { s.visible = false; ctx.addStar(s.position); } }
@@ -99,7 +100,7 @@
       }
       ctx.meters = [{ label: '🫧 Luft', v: ctx.air, danger: ctx.air < 0.3, color: ctx.air < 0.3 ? '' : '#5ad1ff' }];
     },
-    finish(ctx) { const f = ctx.player.root; f.rotation.x = 0; f.position.set(-RAD + 1, ctx.theme === 'studio' ? 0.6 : 0, -RAD + 1); f.rotation.y = 0.8; if (ctx.scene.fog && ctx.fogAbove) { ctx.scene.fog.color.copy(ctx.fogAbove.c); ctx.scene.fog.near = ctx.fogAbove.n; ctx.scene.fog.far = ctx.fogAbove.f; } },
+    finish(ctx) { ctx.player.swim = false; const f = ctx.player.root; f.rotation.x = 0; f.rotation.order = 'XYZ'; f.position.set(-RAD + 1, ctx.theme === 'studio' ? 0.6 : 0, -RAD + 1); f.rotation.y = 0.8; if (ctx.scene.fog && ctx.fogAbove) { ctx.scene.fog.color.copy(ctx.fogAbove.c); ctx.scene.fog.near = ctx.fogAbove.n; ctx.scene.fog.far = ctx.fogAbove.f; } },
     bot(dt, ctx, I) {
       const p = ctx.pos;
       if (ctx.air < 0.28 || ctx.surf) { ctx.surf = ctx.air < 0.95; I.altD = true; return; }
