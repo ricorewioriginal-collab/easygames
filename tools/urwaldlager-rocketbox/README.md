@@ -13,3 +13,10 @@ Die Umrechnung richtet zuerst die Arme und Beine der Zielfigur auf die Ruhehaltu
 
 `outfit.html` färbt die Körpertextur einer fertigen GLB um: Die Kleidungsbereiche (Oberteil, Hose, Stiefel) ergeben sich aus den Knochen-Gewichten der Dreiecke (UV-Maske), Kopf und Hände bleiben unverändert, nackte Unterarme/Waden behalten ihre Haut (Hautton aus der Kopftextur).
 Farben je Figur stehen in `outfits.json`; `node outfit.cjs` (Server im Ordner mit `glb/` und `node_modules/three`, Port 8091) schreibt die umgefärbten GLBs zurück.
+
+## Echte Bewegungen (Motion Capture)
+
+Gehen, Rennen, Stehen, Umschauen, Jubeln, Sitzen (je Mann und Frau) und Winken, Hocken, Klatschen stammen aus `Assets/Animations` der Rocketbox-Bibliothek (MIT, gleiches Skelett, keine Umrechnung).
+Gehen/Rennen aus `all_animations_max_motextr_xy`, der Rest aus `…_static` nach `mocap/` laden, dann `node mocap.cjs` (Server Port 8091, `src/Adults/Male_Adult_01/Export/Male_Adult_01.fbx` als Skelett):
+waagerechte Wurzelbewegung wird entfernt, lange Clips werden an der passendsten Stelle für eine nahtlose Schleife gekürzt, Finger-/Zehenspuren entfallen.
+Danach `gltf-transform resample mocap_raw.glb mocap_r.glb --tolerance 0.0015` und `quantize` → `models/menschen/mocap.glb`.
