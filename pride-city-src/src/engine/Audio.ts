@@ -17,6 +17,9 @@ export const SONGS: Record<string, Song> = {
   title: { bpm: 104, chords: [[57, 61, 64, 68], [54, 57, 61, 64], [50, 54, 57, 61], [52, 56, 59, 64]], bass: true, hats: true, kick: true, lead: [76, 0, 73, 0, 71, 73, 0, 76, 78, 0, 76, 0, 73, 0, 71, 0] },
   city: { bpm: 96, chords: [[60, 64, 67, 71], [57, 60, 64, 67], [53, 57, 60, 64], [55, 59, 62, 65]], bass: true, hats: true },
   show: { bpm: 120, chords: [[57, 61, 64, 68], [54, 57, 61, 64], [50, 54, 57, 61], [52, 56, 59, 64]], bass: true, hats: true, kick: true, lead: [76, 0, 76, 78, 0, 80, 0, 76, 0, 73, 0, 76, 78, 0, 0, 0] },
+  // Autoradio: Neon 88 (Synthwave) und Hafen Lounge (ruhig, ohne Schlagzeug)
+  neon: { bpm: 108, chords: [[57, 60, 64, 67], [53, 57, 60, 64], [48, 52, 55, 59], [55, 59, 62, 65]], bass: true, hats: true, kick: true, lead: [69, 72, 76, 72, 69, 72, 76, 79, 77, 76, 72, 69, 67, 69, 72, 0] },
+  lounge: { bpm: 84, chords: [[50, 53, 57, 60, 64], [55, 59, 62, 65], [48, 52, 55, 59, 62], [45, 48, 52, 55, 59]], bass: true, lead: [74, 0, 0, 72, 0, 69, 0, 0, 71, 0, 0, 67, 0, 0, 0, 0] },
   club: { bpm: 124, chords: [[57, 60, 64], [53, 57, 60], [55, 59, 62], [52, 55, 59]], bass: true, hats: true, kick: true, lead: [81, 0, 79, 81, 0, 76, 0, 79, 0, 81, 0, 84, 81, 0, 79, 0] },
 };
 

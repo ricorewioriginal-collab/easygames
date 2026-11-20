@@ -50,7 +50,7 @@ export function advance(s: SaveData, minutes: number, sleeping = false): number 
 
 /** Minuten bis zu einer Uhrzeit (z. B. 7 Uhr morgens) */
 export function minutesUntil(s: SaveData, h: number) {
-  let d = h - hour(s); if (d <= 0) d += 24; return Math.round(d * 60);
+  let d = h - hour(s); if (d <= 0) d += 24; return Math.ceil(d * 60 + .5); // aufrunden: sonst steht die Uhr bei 20:59,7 und „ab 21 Uhr“ greift nicht
 }
 
 /* ---------- Tagesziele (Idee 2: Ziele und Wachstum) ---------- */

@@ -29,7 +29,7 @@
   Show.save = () => { const S = Show.S; if (!S || S.over) return; try { UL.store.set('save', S.snap || S); } catch (e) { } };
   Show.snapshot = () => { const S = Show.S; S.snap = null; S.snap = JSON.parse(JSON.stringify(S)); Show.save(); };
   Show.peek = () => { const s = UL.store.get('save'); return s && s.v === VER && !s.over ? { day: s.day, days: s.days, theme: s.theme, name: s.campers.find(c => c.id === 'me').name } : null; };
-  Show.continue = () => { const s = UL.store.get('save'); if (!s || s.v !== VER) return UL.Menus.title(); Show.S = s; Show.abort = false; Show.day(); };
+  Show.continue = () => { const s = UL.store.get('save'); if (!s || s.v !== VER) return UL.Menus.title(); Show.S = s; Show.abort = false; s.campers.forEach(c => { const d = D.CAST.find(x => x.id === c.id); if (d && c.look && c.look.rb === undefined) c.look.rb = d.look.rb; }); Show.day(); };
 
   // ---------- Neue Staffel ----------
   Show.newSeason = ({ theme, len, diff, me: m }) => {
@@ -59,6 +59,7 @@
   // ---------- Ein Tag ----------
   Show.day = async () => {
     const S = Show.S; Show.abort = false;
+    if (UL.A.rbAll) await UL.A.rbAll;   // echte Figuren fertig laden
     S.snap = null; Show.snapshot();
     UI.closeAll(); UL.Tags.clear(); UI.cmd([]); UI.hud('');
     try {

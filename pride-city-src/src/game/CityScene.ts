@@ -11,6 +11,7 @@ import { toast, hints } from '../ui/ui';
 import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
 import type { Marker } from '../ui/Hud';
+import { type Gig, pickCall, fmtTime } from './gigs';
 import { Street, type Parked } from './Street';
 import { PLACE_THEMES, houseTheme } from './interiors';
 
@@ -70,6 +71,15 @@ export class CityScene implements GameScene {
       a.play(i % 2 ? 'cheer' : 'dance1', 0, .9 + i * .05);
       this.root.add(a.root); this.crowd.push(a);
     }
+    // Nachtleben: Schlangen vor Club Prisma und One Love Bar (nur nachts sichtbar, wie die Tanzenden am Platz)
+    const queue: Array<[number, number, number]> = [[3.6, -6.4, -Math.PI / 2], [3.4, -4.9, -Math.PI / 2], [3.7, -3.4, -Math.PI / 2], [33.6, 23.2, -Math.PI / 2], [33.4, 24.7, -Math.PI / 2]];
+    const qLooks = ['bi', 'trans', 'pan', 'gay', 'leather'];
+    await Promise.all(queue.map(async ([x, z, yaw], i) => {
+      const a = await Actor.create({ body: bodies[(i + 2) % 6], palette: qLooks[i], skin: (i * 2) % 6 });
+      a.root.position.set(x, .1, z); a.root.rotation.y = yaw + (i % 2 ? .4 : -.3);
+      a.play(i % 3 === 0 ? 'wave' : i % 3 === 1 ? 'idle' : 'dance2', 0, .8);
+      this.root.add(a.root); this.crowd.push(a);
+    }));
     this.street = new Street(this.root, this.world);
     await this.street.build();
     this.g.hud.setRadarMap((c, px) => {
@@ -84,6 +94,7 @@ export class CityScene implements GameScene {
       c.fillRect(px(-80), px(-1.8), 20 * 2, 3.6 * 2);                             // Kaistraße
     });
     // Verkehr hält vor geparkten und vom Spieler gefahrenen Autos
+    this.g.hud.onRadio = () => { if (this.drive) this.radio(1); };
     this.world.extraBlock = (x, z) => this.street.parked.some((c) => Math.hypot(c.o.position.x - x, c.o.position.z - z) < 2.6);
     this.buildStickers();
   }
@@ -193,6 +204,7 @@ export class CityScene implements GameScene {
     const v = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
     if (gl.npc) { const n = this.npcs.find((x) => x.def.id === gl.npc); if (n) out.push({ id: 'g', icon: '⭐', label: n.def.name, pos: n.a.root.position.clone().setY(2.6) }); }
     if (gl.poi) { const p = this.world.pois.find((x) => x.id === gl.poi); if (p) out.push({ id: 'g', icon: '⭐', label: p.name, pos: v(p.x, 4, p.z) }); }
+    if (this.gig) { const st = this.gig.g.steps[this.gig.i]; out.push({ id: 'gig', icon: st.icon, label: st.label, pos: v(st.x, 3, st.z) }); }
     for (const [id, icon] of marks(s)) { const n = this.npcs.find((x) => x.def.id === id); if (n?.a.root.visible) out.push({ id: 'p' + id, icon, pos: n.a.root.position.clone().setY(2.5) }); }
     return out;
   }
@@ -284,6 +296,7 @@ export class CityScene implements GameScene {
       const o = this.drive.o, side = new THREE.Vector3(Math.cos(o.rotation.y), 0, -Math.sin(o.rotation.y));
       for (const k of [2.2, -2.2, 3.4, -3.4]) { const x = o.position.x + side.x * k, z = o.position.z + side.z * k; if (walkable(x, z) && !this.world.colliders.some((c) => Math.abs(x - c.x) < c.hx + .4 && Math.abs(z - c.z) < c.hz + .4)) { p.set(x, .1, z); break; } }
       this.drive.v = 0; this.drive = null;
+    music('city'); this.g.hud.radioBtn(false);
       this.player.root.visible = true; this.player.play('idle');
       hints([['move', 'Laufen'], ['a', 'Aktion'], ['cam', 'Kamera'], ['y', 'Menü']]);
       sfx('open');
@@ -294,11 +307,13 @@ export class CityScene implements GameScene {
     this.cam.dist = Math.max(this.cam.dist, 9);
     this.cam.tYaw = this.drive.o.rotation.y + Math.PI;
     hints([['move', 'Lenken & Gas'], ['a', 'Aussteigen'], ['cam', 'Kamera'], ['y', 'Menü']]);
-    toast('🚗 Gute Fahrt! Vorsicht vor Fußgänger*innen.');
+    this.radio(0); this.g.hud.radioBtn(true);
+    toast('🚗 Gute Fahrt! Q/R oder LB/RB wechselt den Sender.');
     sfx('open');
   }
   private moveCar(dt: number) {
     const c = this.drive!, o = c.o, inp = this.g.engine.input;
+    if (inp.pressed('tabR')) this.radio(1); else if (inp.pressed('tabL')) this.radio(-1);
     const thr = Math.abs(inp.move.y) > .08 ? inp.move.y : 0, steer = Math.abs(inp.move.x) > .08 ? inp.move.x : 0;
     const max = inp.held('sprint') ? 24 : 15;
     if (thr > 0) c.v = Math.min(max, c.v + thr * (c.v < 0 ? 22 : 9) * dt);
@@ -327,8 +342,8 @@ export class CityScene implements GameScene {
     this.cam.tYaw -= inp.look.x * k;
     this.cam.pitch = THREE.MathUtils.clamp(this.cam.pitch + inp.look.y * k * (st.invertY ? -1 : 1), .08, 1.1);
     this.cam.dist = THREE.MathUtils.clamp(this.cam.dist + inp.zoom * .8, 3.5, 14);
-    if (inp.held('tabL')) this.cam.tYaw += dt * 2.2;
-    if (inp.held('tabR')) this.cam.tYaw -= dt * 2.2;
+    if (!this.drive && inp.held('tabL')) this.cam.tYaw += dt * 2.2;
+    if (!this.drive && inp.held('tabR')) this.cam.tYaw -= dt * 2.2;
     if (inp.pressed('camReset')) this.cam.tYaw = this.player.root.rotation.y + Math.PI;
     this.cam.yaw += (this.cam.tYaw - this.cam.yaw) * Math.min(1, dt * 12);
     const p = this.player.root.position;
@@ -357,7 +372,7 @@ export class CityScene implements GameScene {
   exit() { this.g.hud.radarOn(false); }
   /** Missionsmarker wie im Open-World-Krimi: leuchtende Lichtsäule über dem Ziel */
   private beam: THREE.Mesh | null = null;
-  private goalBeam(p: THREE.Vector3 | undefined, t: number) {
+  private goalBeam(p: THREE.Vector3 | undefined, t: number, color = 0xff3fb0) {
     if (!this.beam) {
       const m = new THREE.MeshBasicMaterial({ color: 0xff3fb0, transparent: true, opacity: .35, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, toneMapped: false });
       this.beam = new THREE.Mesh(new THREE.CylinderGeometry(.9, .9, 14, 20, 1, true).translate(0, 7, 0), m);
@@ -367,7 +382,61 @@ export class CityScene implements GameScene {
     this.beam.visible = !!p && this.mode === 'play';
     if (!p) return;
     this.beam.position.set(p.x, 0, p.z);
-    (this.beam.material as THREE.MeshBasicMaterial).opacity = .22 + Math.sin(t * 3) * .08;
+    const bm = this.beam.material as THREE.MeshBasicMaterial;
+    bm.opacity = .22 + Math.sin(t * 3) * .08; bm.color.setHex(color);
+  }
+
+  /* ---------- Aufträge per Anruf ---------- */
+  gig: { g: Gig; i: number; t: number } | null = null;
+  private callT = 150;
+  /** Auftrag annehmen (aus Anruf oder Handy-App) */
+  startGig(g: Gig) {
+    this.gig = { g, i: 0, t: g.time };
+    this.g.hud.banner(g.title, `Auftrag von ${g.who}${g.car ? ' · Tipp: Mit dem Auto geht es schneller' : ''}`, 'info', 2600);
+    sfx('open');
+  }
+  private gigTick(dt: number) {
+    const s = this.g.save.data;
+    if (!this.gig) {
+      this.g.hud.gig(null);
+      // ab und zu klingelt das Handy (erst nach der Einführung)
+      if (s.step >= 2 || s.chapter > 1) this.callT -= dt;
+      if (this.callT <= 0) { this.callT = 210 + Math.random() * 120; this.ring(); }
+      return;
+    }
+    const q = this.gig, st = q.g.steps[q.i], p = this.player.root.position;
+    q.t -= dt;
+    this.g.hud.gig(`⏱ ${fmtTime(q.t)} · ${q.g.title} ${q.i + 1}/${q.g.steps.length}: ${st.label}`, q.t < 15);
+    if (Math.hypot(p.x - st.x, p.z - st.z) < (this.drive ? 4.5 : 3)) {
+      q.i++; sfx('coin');
+      if (q.i < q.g.steps.length) { toast(`✓ ${st.label}`); return; }
+      this.gig = null; this.g.hud.gig(null);
+      s.money += q.g.pay; s.rep += q.g.rep; s.flags['gig_' + q.g.id] = s.day; s.flags.gigs = (Number(s.flags.gigs) || 0) + 1;
+      sfx('win'); this.g.hud.banner('Auftrag erledigt!', `+${q.g.pay} € · +${q.g.rep} Ruf · ${q.g.done}`, 'good', 4200);
+      this.g.save.write(); this.refreshHud();
+      return;
+    }
+    if (q.t <= 0) { this.gig = null; this.g.hud.gig(null); sfx('miss'); this.g.hud.banner('Auftrag gescheitert', 'Zu spät. Vielleicht klappt es beim nächsten Anruf.', 'bad'); }
+  }
+  /** Anruf: annehmen oder ablehnen */
+  private ring() {
+    const g = pickCall(this.g.save.data, Math.random());
+    if (!g) return;
+    sfx('phone'); setTimeout(() => sfx('phone'), 500);
+    this.g.dialog.say([{ who: `📞 ${g.who}`, color: g.color, text: g.call, choices: [
+      { label: `Annehmen (${g.pay} €, ${fmtTime(g.time)} Min.)`, fn: () => this.startGig(g) },
+      { label: 'Gerade nicht', fn: () => toast(`${g.who}: Okay, ich frag jemand anderen.`) }] }]);
+  }
+
+  /* ---------- Autoradio ---------- */
+  private static STATIONS: Array<[string, string, 'title' | 'neon' | 'club' | 'lounge' | null]> = [
+    ['📻 Regenbogen FM', 'Pop für die ganze Stadt', 'title'], ['🌴 Neon 88', 'Synthwave für Nachtfahrten', 'neon'],
+    ['🪩 Prisma Radio', 'Clubsound live aus dem Prisma', 'club'], ['🌊 Hafen Lounge', 'Ruhige Töne vom Kai', 'lounge'], ['🔇 Radio aus', '', null]];
+  private radio(dir = 0) {
+    const s = this.g.save.data, n = CityScene.STATIONS.length;
+    const i = (((Number(s.flags.radio) || 0) + dir) % n + n) % n; s.flags.radio = i;
+    const [name, sub, song] = CityScene.STATIONS[i];
+    music(song); this.g.hud.banner(name, sub, 'info', 1800);
   }
 
   /** Laternen, Masten, Bänke und Bäume zwischen Kamera und Figur ausblenden, statt durch sie hindurchzuschauen */
@@ -449,10 +518,13 @@ export class CityScene implements GameScene {
       const pp = this.player.root.position;
       g.hud.radar(pp.x, pp.z, this.cam.yaw, [
         ...this.world.pois.filter((q) => Math.hypot(q.x - pp.x, q.z - pp.z) < 60).map((q) => ({ x: q.x, z: q.z, icon: q.icon })),
-        ...mk.map((m) => ({ x: m.pos.x, z: m.pos.z, color: m.id === 'g' ? '#ff3fb0' : '#ffd23b', goal: m.id === 'g' })),
+        ...mk.map((m) => ({ x: m.pos.x, z: m.pos.z, color: m.id === 'g' ? '#ff3fb0' : m.id === 'gig' ? '#ffd23b' : '#ffffff', goal: m.id === 'g' || m.id === 'gig' })),
       ]);
     }
-    this.goalBeam(mk.find((m) => m.id === 'g')?.pos, t);
+    // Lichtsäule: laufender Auftrag hat Vorrang (gelb), sonst das Story-Ziel (pink)
+    const gm = mk.find((m) => m.id === 'gig');
+    this.goalBeam((gm || mk.find((m) => m.id === 'g'))?.pos, t, gm ? 0xffd23b : 0xff3fb0);
+    if (!busy) this.gigTick(dt);
     if (!busy) {
       this.findNear();
       const inp = g.engine.input;
