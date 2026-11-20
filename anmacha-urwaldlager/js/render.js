@@ -83,7 +83,24 @@
     return starGeo;
   };
   const starMat = new T.MeshLambertMaterial({ color: lin(0xffd23a), emissive: lin(0x8a5a00) });
-  R.star = (size = 1) => { const m = new T.Mesh(R.starGeo(), starMat); m.scale.setScalar(size); m.castShadow = true; return m; };
+  // Sterne leuchten: heller Grundton plus Lichthof, der auch hinter Pflanzen und im Schlamm sichtbar bleibt
+  starMat.emissive = lin(0xc08a10);
+  let glowMat = null;
+  R.starGlow = () => {
+    if (!glowMat) {
+      const cv = document.createElement('canvas'); cv.width = cv.height = 64; const c = cv.getContext('2d'), g = c.createRadialGradient(32, 32, 0, 32, 32, 32);
+      g.addColorStop(0, 'rgba(255,230,120,1)'); g.addColorStop(0.35, 'rgba(255,200,60,.55)'); g.addColorStop(1, 'rgba(255,180,0,0)'); c.fillStyle = g; c.fillRect(0, 0, 64, 64);
+      glowMat = new T.SpriteMaterial({ map: new T.CanvasTexture(cv), blending: T.AdditiveBlending, depthTest: false, depthWrite: false, transparent: true, opacity: 0.6 });
+    }
+    return glowMat;
+  };
+  R.starList = null;   // während einer Prüfung: alle Sterne (für den Wegweiser am Bildrand)
+  R.star = (size = 1) => {
+    const m = new T.Mesh(R.starGeo(), starMat); m.scale.setScalar(size); m.castShadow = true;
+    const h = new T.Sprite(R.starGlow()); h.scale.setScalar(2.4); h.renderOrder = 5; m.add(h);
+    if (R.starList) R.starList.push(m);
+    return m;
+  };
 
   // Schrift-Tafel (Canvas → Textur)
   R.textTex = (lines, { w = 512, h = 256, bg = '#0b2b1c', fg = '#fff', font = 'bold 64px system-ui', accent = '#ffcf3a' } = {}) => {
