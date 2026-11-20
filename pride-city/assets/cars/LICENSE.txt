@@ -1,0 +1,2 @@
+Fahrzeugmodelle: Kenney Car Kit (https://kenney.nl/assets/car-kit), Creative Commons Zero (CC0 1.0).
+Bezogen über das npm-Paket @netforge/asset-library-files (optimierte Kopien), hier ohne Meshopt-Kompression gespeichert.

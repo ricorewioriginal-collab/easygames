@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f3831b938062",
- "generated": "2026-11-20T17:54:24+00:00",
- "commit": "876d1bb5d19402c00094afade8c65f49c3f9ab94",
+ "version": "31166902d5ee",
+ "generated": "2026-11-20T19:16:08+01:00",
+ "commit": "41e7c0106ff6c7c74e5d990d1d448fe25b7dea38",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7883,8 +7883,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/camp.js",
-   "s": 63013,
-   "h": "ba32839d68eaed9646f7a7726a05d8d83e3589803716ca162b760a236ebbef23"
+   "s": 58195,
+   "h": "84e9d7ddeb67ad23fbf06b723a7e51cc91b933e5980828652beaae281e5151af"
   },
   {
    "p": "anmacha-urwaldlager/js/core.js",
@@ -7893,8 +7893,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/data.js",
-   "s": 41437,
-   "h": "569f449b566b78de05a7dd65d8a25fb6bee049becf3baad43de0aaf43b47f0a7"
+   "s": 38080,
+   "h": "e38b72f07d64d3bbd1a6fd1602a0723dc6bd9681599ef61558948eb17f2e552a"
   },
   {
    "p": "anmacha-urwaldlager/js/input.js",
@@ -7923,8 +7923,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/show.js",
-   "s": 30616,
-   "h": "5f87be1a2f2ef9357c0a7116109b8e619dff247a25818fa3ac836e9bd65b4040"
+   "s": 29581,
+   "h": "d390924b26ccd14f688201fdeb703f1b853cd400ec8b190170cf4e643966a69a"
   },
   {
    "p": "anmacha-urwaldlager/js/stage.js",
@@ -10988,8 +10988,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 18337,
-   "h": "40f20ac14a1c37e66fab9e323fea23f169280a4381e5d05ce3e713d12cdb1ace"
+   "s": 17435,
+   "h": "8815f0aae6b36285567d8872b9c273b59e4ffb14fc214d26b862b36dd35819df"
   },
   {
    "p": "guides/beat-studio.json",
@@ -11138,8 +11138,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 35431,
-   "h": "bc9a74a888c914bfcd36e6a41300b353158cc0c896db4bf5687706cd539b7e8e"
+   "s": 42947,
+   "h": "a02bc7c08d62b421beda688c1fd4c2bf68e126934bbcdebf769627e19f38a005"
   },
   {
    "p": "guides/prismrush.json",
@@ -12312,6 +12312,51 @@
    "h": "22b61d58266c4521d81989c918a80e1385690b992bcca69765aab737ff90240c"
   },
   {
+   "p": "pride-city/assets/cars/delivery_van.glb",
+   "s": 57460,
+   "h": "1446041c65c2308195e5ec22521fbb0d9d6fe655a604b7de80b8796029bb0545"
+  },
+  {
+   "p": "pride-city/assets/cars/hatchback_sports.glb",
+   "s": 53876,
+   "h": "3416f1d25bf084dadd981cc175bfdc901b644c6ab7c2f620f7522420789f9a28"
+  },
+  {
+   "p": "pride-city/assets/cars/kart_a.glb",
+   "s": 65508,
+   "h": "dabf27d47d85aa4dd057e432a04ae5bfb630cc087ba9809101f2116fc320d288"
+  },
+  {
+   "p": "pride-city/assets/cars/race_car.glb",
+   "s": 46168,
+   "h": "05d7a2c8c6faf02522cc26d114f8fe974e651894c71f5df5f01e776e20aeaece"
+  },
+  {
+   "p": "pride-city/assets/cars/sedan_sports.glb",
+   "s": 54728,
+   "h": "d0201e3a78c8163ed2970d85efc7933d4c8dd17df2812b0a65e22fa5eb13c94d"
+  },
+  {
+   "p": "pride-city/assets/cars/suv.glb",
+   "s": 60408,
+   "h": "e434cfe5c66b5e61e447a34a3175ca055ae9d8757c4ea779919c3ade7f6b47d1"
+  },
+  {
+   "p": "pride-city/assets/cars/suv_luxury.glb",
+   "s": 53484,
+   "h": "529f66a752821040a9bbccba227cf11c091d97560a44dcc32bed4b502660f721"
+  },
+  {
+   "p": "pride-city/assets/cars/truck.glb",
+   "s": 53196,
+   "h": "973734d34528bc8a7211917384b3fb1e89ec8cf793d05784737ce854673a4d4e"
+  },
+  {
+   "p": "pride-city/assets/cars/van.glb",
+   "s": 53248,
+   "h": "89f1d1d4cb16bcd93bd7d758a5615053d1e31d005cb37c21c9f13adf23893bb5"
+  },
+  {
    "p": "pride-city/assets/city/base.bin",
    "s": 3432,
    "h": "2b00ed6bb88a18e91fc80ec037cca4a20fba9fdeb21f8f781fc3a7f8be919f8a"
@@ -12927,9 +12972,9 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
-   "p": "pride-city/assets/index-DDgyLIow.js",
-   "s": 373757,
-   "h": "0377944af76c2f082bff079acd33142a5d6b0c513c4f0b1302ea13db47cd72da"
+   "p": "pride-city/assets/index-8awWF_eF.js",
+   "s": 417190,
+   "h": "33fbca2483193cf84f5bf5f6159aa0c5e59e557cbbf32b66d910c08179859f69"
   },
   {
    "p": "pride-city/assets/index-pJKtPnKu.css",
@@ -13574,7 +13619,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5812,
-   "h": "864240d98ef9ad02d1f368e9b3bacd818ba317fff9d924169cd9cb094a284c7e"
+   "h": "4bbc7f78028daa8a164eef433d00540c25b15122ca36bc747063ca30bbf3f24e"
   },
   {
    "p": "pride-city/logo.svg",
@@ -16349,7 +16394,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236341,
-   "h": "2f07a6db073ddcd499206aa581869f2fdf9b1a0bc6caa834026a3a1d2fa87b8a"
+   "h": "65d5f7750b5bc4b6ef309a463b8f5e605822dbbd03bfdaff17c4bfe5a8df9df8"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

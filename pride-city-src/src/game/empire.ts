@@ -3,6 +3,7 @@
    Fahrgäste mit eigenen Geschichten, je schneller, desto mehr Trinkgeld. */
 import type { SaveData } from '../engine/Save';
 import type { Gig } from './gigs';
+import { daily, dayTick } from './manage';
 
 export interface Business { id: string; name: string; icon: string; poi: string; price: number; daily: number; rep: number; need: number; pitch: string; /** nicht käuflich: Belohnung aus der Geschichte */ gift?: string }
 
@@ -19,7 +20,8 @@ export const BUSINESSES: Business[] = [
 const key = (id: string) => 'biz_' + id;
 export const owns = (s: SaveData, id: string) => !!s.flags[key(id)];
 export const owned = (s: SaveData) => BUSINESSES.filter((b) => owns(s, b.id));
-export const income = (s: SaveData) => owned(s).reduce((n, b) => n + b.daily, 0);
+/** Tagesgewinn aller Geschäfte (Umsatz minus Lohn, siehe manage.ts) */
+export const income = (s: SaveData) => owned(s).reduce((n, b) => n + daily(s, b).net, 0);
 
 /** Kaufen: liefert einen Grund, falls es nicht geht */
 export function buy(s: SaveData, b: Business): string | null {
@@ -32,12 +34,17 @@ export function buy(s: SaveData, b: Business): string | null {
   return null;
 }
 
-/** Tageseinnahmen auszahlen (einmal je neuem Tag). Liefert den ausgezahlten Betrag. */
+/** Meldungen der letzten Auszahlung (Veranstaltungskasse, Probleme) */
+export const collectNotes: string[] = [];
+const roll = (id: string, day: number) => { let h = day * 2654435761; for (const ch of id) h = Math.imul(h ^ ch.charCodeAt(0), 16777619); return ((h >>> 0) % 1000) / 1000; };
+/** Tageseinnahmen auszahlen (einmal je neuem Tag, höchstens eine Woche rückwirkend). Liefert den ausgezahlten Betrag. */
 export function collect(s: SaveData): number {
-  const n = income(s); if (!n) return 0;
+  const mine = owned(s); if (!mine.length) return 0;
   const last = Number(s.flags.bizDay ?? s.day);
   if (s.day <= last) return 0;
-  const pay = n * Math.min(7, s.day - last);
+  collectNotes.length = 0;
+  let pay = 0;
+  for (let d = Math.max(last + 1, s.day - 6); d <= s.day; d++) for (const b of mine) { const t = dayTick(s, b, roll(b.id, d)); pay += t.pay; collectNotes.push(...t.notes); }
   s.money += pay; s.flags.bizDay = s.day;
   return pay;
 }

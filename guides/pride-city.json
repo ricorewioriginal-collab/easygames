@@ -201,10 +201,11 @@
     {
       "t": "Spaßwaffen, Gesetze und Fahndungssterne",
       "p": [
-        "Mit Angriff (F, LT am Controller, 👊 auf dem Handy) teilst du aus, mit Waffe wechseln (G, L3, 🔄 oder Antippen der Waffen-Anzeige) wählst du: Klaps, Regenbogen-Poolnudel, Gleitgel-Flasche und – nur mit „Inhalte ab 18“ und einem Toy aus der Boutique – den Glitzer-Dildo. Getroffene fallen komisch um und stehen nach ein paar Sekunden wieder auf; niemand wird verletzt.",
+        "Mit Angriff (F, LT am Controller, 👊 auf dem Handy) teilst du aus, mit Waffe wechseln (G, L3, 🔄 oder Antippen der Waffen-Anzeige) wählst du: Klaps, Regenbogen-Poolnudel, Gleitgel-Flasche und – mit „Inhalte ab 18“ – den Glitzer-Dildo. Getroffene fallen komisch um und stehen nach ein paar Sekunden wieder auf; niemand wird verletzt.",
         "Gleitgel (4 € im Späti Lecker) wirfst du vor dich auf den Boden. Wer durch die Pfütze läuft, rutscht aus – auch die Polizei. Rennst du selbst hindurch, landest du ebenfalls auf dem Hosenboden.",
         "Rainbow City hat Gesetze: Hauen (1 Stern), Polizei angreifen (2 Sterne), Gleitgel auf dem Gehweg (1), Erregung öffentlichen Ärgernisses mit dem Dildo vor der Streife (1) und Autodiebstahl vor Polizeiaugen (1). Sieht dich keine Streife, ruft manchmal jemand die Polizei.",
-        "Mit Sternen rennt die Streife hinterher, ab drei Sternen kommt Verstärkung. Bleibst du lange ungesehen (8 Sekunden plus 5 je Stern), hängst du sie ab. Erwischt dich jemand, gibt es Bußgeld und zwei Stunden Papierkram auf der Wache. Sofort weg sind die Sterne mit dem Undercover-Umstyling in der Boutique oder wenn du dich auf der Polizeiwache stellst und zahlst."
+        "Mit Sternen rennt die Streife hinterher, ab drei Sternen kommt Verstärkung. Bleibst du lange ungesehen (8 Sekunden plus 5 je Stern), hängst du sie ab. Erwischt dich jemand, gibt es Bußgeld und zwei Stunden Papierkram auf der Wache. Sofort weg sind die Sterne mit dem Undercover-Umstyling in der Boutique oder wenn du dich auf der Polizeiwache stellst und zahlst.",
+        "Schläge haben Wucht: Deine Figur dreht sich zum Ziel, holt aus und schlägt zu. Der erste Treffer lässt Leute nur taumeln, erst nach zwei Treffern (Poolnudel, Glitzer-Dildo) oder drei Klapsen fallen sie um. Die Gleitgel-Flasche fliegt im Bogen und zerplatzt zur Pfütze. Der Glitzer-Dildo gehört mit „Inhalte ab 18“ fest zur Ausrüstung, ein Toy aus dem Laden brauchst du dafür nicht mehr."
       ]
     },
     {
@@ -246,6 +247,46 @@
         "Ab Kapitel 2 wartet in der Hochstadt eine eigene Missionsreihe mit acht Missionen. Das alte Revuetheater Kaleidoskop am Neonplatz soll einem Glasturm weichen, und das Haus Vega bittet dich um Hilfe.",
         "Die Figur mit dem Symbol 🌆 über dem Kopf hat die nächste Mission. Nach dem Gespräch wählst du „Los geht’s“. Eine Lichtsäule und das Radar zeigen die Stationen, oben läuft die Zeit. Läuft sie ab, sprichst du die Figur einfach noch einmal an.",
         "Neue Figuren: Mama Vega (Neonplatz), Dee (Parkplatz unter der Hochbahn), Reporter Yusuf, Stadträtin Ines Okafor, Hochbahnfahrer Piet und die Bauunternehmerin Aurelia Kron. Niemand wird verletzt, am Ende steht ein Gespräch mit zwei möglichen Ausgängen."
+      ]
+    },
+    {
+      "t": "Garage, eigener Wagen und Rennen",
+      "p": [
+        "In der Hochstadt steht auf dem Parkplatz unter der Hochbahn die Garage (🔧 auf dem Radar). Dort kaufst du eigene Autos: vom Bulli „Flower Power“ (600 €) über Pick-up, Geländewagen, Flitzer GTI und Sportcoupé „Blitz“ bis zum Rennwagen „Regenbogenpfeil“ (5000 €). Jedes Auto fährt sich anders: Tempo, Turbo, Antritt und Lenkung.",
+        "Dein eigener Wagen bleibt stehen, wo du aussteigst, und gilt nie als geklaut. In der Garage holst du ihn zurück, lackierst ihn um (40 €) und baust in drei Stufen mehr Turbo ein (300, 600, 1200 €)."
+      ],
+      "list": [
+        "Rennen: Vier Strecken mit 🏁 auf der Straße (Altstadtring, Brückensprint, Hochstadt-Grand-Prix, Stadtmarathon). Halte mit dem Auto an der Zielflagge an und starte. Du fährst gegen die Uhr durch die Tore, für Gold, Silber und Bronze gibt es Preisgeld und Ansehen.",
+        "Paketdienst Eilbote: im Handy unter Aufträge. Am Depot bei der Garage laden und ausliefern. Jede pünktliche Lieferung in Folge bringt mehr Lohn, mit Ladefläche (Kombi, Bulli, Lieferwagen, Pick-up) 25 % extra.",
+        "Bedienung wie immer: dieselben Tasten und Knöpfe an Handy, PC, TV und Controller."
+      ]
+    },
+    {
+      "t": "Hochstadt von innen: Theater, Hotel, Skybar, Penthouse",
+      "p": [
+        "Auch in der Hochstadt kannst du durch leuchtende Türen in die Häuser gehen. Zwölf Orte haben eine eigene Einrichtung mit Stellen zum Benutzen (gelber Ring am Boden)."
+      ],
+      "list": [
+        "Revuetheater Kaleidoskop (Neonplatz, Westseite): Revue ansehen, selbst auf die Bühne zum Ball der Häuser, Nähstube, Mama Vega hinter der Bühne.",
+        "Bar Komet, Kino Astra, China Palast und Diner 66 am Neonplatz: Drinks, Dart, Karaoke, Spätvorstellung, Essen rund um die Uhr.",
+        "Grand Hotel Aurora (Turm an der Hauptstraße): Zimmer für die Nacht (90 €), Spa, Flügel in der Lobby.",
+        "Skybar Wolke 7 (Turm gegenüber): Cocktail, Tanzen und der Blick über die Skyline.",
+        "Penthouse Himmelblau: für 6000 € dein zweites Zuhause im Glasturm, mit Bett, Whirlpool, vollem Kühlschrank und Platz für Gäste.",
+        "Pizza Nonna, Waschsalon Schaumparty, Galerie Farbrausch und Deli 24 im Osten der Hochstadt.",
+        "Die Wohnhäuser mit Treppe vor der Tür (Brownstones) sind wie in der Altstadt betretbar."
+      ]
+    },
+    {
+      "t": "Geschäfte führen: Personal, Ausbau, Veranstaltungen",
+      "p": [
+        "Ein gekauftes Geschäft läuft von allein, aber du kannst es führen: im Handy unter Imperium das Geschäft antippen oder im Laden „Dein Geschäft führen“ wählen. Oben siehst du Gewinn, Umsatz, Lohn und die Beliebtheit."
+      ],
+      "list": [
+        "Personal: Aushilfe, festes Team, Geschäftsführung. Jede Stufe kostet einmalig Einarbeitung und täglich Lohn, bringt aber deutlich mehr Umsatz. Die Geschäftsführung löst Probleme selbst.",
+        "Ausbauten: Einrichtung, Werbung und das Besondere des Hauses (zum Beispiel die Regenbogen-Ecke im Café oder der Kronleuchter im Kaleidoskop), je drei Stufen mit +12 % Umsatz.",
+        "Beliebtheit: 60 ist normal. Mehr Beliebtheit bringt bis zu 20 % mehr Umsatz. Sie steigt, wenn du selbst mit anpackst (einmal am Tag) oder etwas veranstaltest.",
+        "Veranstaltungen: alle drei Tage möglich, zum Beispiel die Queer Beach Party an der Strandbar. Die Kasse kommt am nächsten Morgen, dazu +2 Ruf.",
+        "Probleme: Ab und zu fällt die Kühlung aus oder eine Lieferung fehlt. Dann kommt nur der halbe Umsatz, bis du es im Menü löst."
       ]
     }
   ],
@@ -367,6 +408,36 @@
         "Zwei Missionen gehen nur nachts. Die Figur bietet dir an, bis 21 Uhr zu warten.",
         "Für „Papierkrieg“ und die Ballnacht geht es über die Regenbogenbrücke in die Altstadt und zurück. Mit Turbo (Sprinttaste) reicht die Zeit gut."
       ]
+    },
+    {
+      "t": "Rennen und Garage",
+      "list": [
+        "Spar zuerst auf den Flitzer GTI (1200 €): Er lenkt am besten und reicht für Silber auf allen Strecken.",
+        "Turbo erst auf den Geraden zünden, vor Kurven vom Gas gehen. Ein Rempler kostet mehr Zeit als eine sauber gefahrene Kurve.",
+        "Preisgeld gibt es nur für eine bessere Medaille als bisher, sonst 15 € Antrittsgeld. Für Gold lohnt die dritte Turbo-Stufe.",
+        "Für den Paketdienst nimm einen Wagen mit Ladefläche und bleib in einem Viertel: kurze Wege halten die Serie am Leben.",
+        "Auto weg? Die Garage bringt deinen Wagen jederzeit kostenlos zurück."
+      ]
+    },
+    {
+      "t": "Hochstadt clever nutzen",
+      "list": [
+        "Kein Weg nach Hause? Im Grand Hotel Aurora schläfst du für 90 € aus, das Spa füllt die Hygiene komplett.",
+        "Am günstigsten satt wirst du bei Pizza Nonna (8 €) und im Diner 66 (9 €).",
+        "Das Penthouse spart auf Dauer Hotel und Essen: Schlafen, Whirlpool und Kühlschrank kosten dort nichts.",
+        "Kontakte niedrig? Waschsalon (kostenlos plaudern), Bar Komet oder Gäste ins Penthouse einladen.",
+        "Auf der Karte im Handy stehen alle neuen Orte, die Hochbahn bringt dich direkt hin."
+      ]
+    },
+    {
+      "t": "Mehr Gewinn aus deinen Geschäften",
+      "list": [
+        "Stell zuerst in den teuren Läden Personal ein: Der Aufschlag rechnet sich dort am schnellsten.",
+        "Vor einer Veranstaltung erst selbst mit anpacken: Die Kasse hängt von der Beliebtheit ab.",
+        "Probleme sofort lösen. Die Reparatur kostet etwa einen Tagesumsatz, der halbe Umsatz kostet dich jeden Tag.",
+        "Die Geschäftsführung lohnt sich, sobald du mehrere Läden hast: Sie hält die Beliebtheit und räumt Probleme allein weg.",
+        "Werbung zuerst ausbauen: Sie bringt Umsatz und sofort +8 Beliebtheit."
+      ]
     }
   ],
   "loesung": [
@@ -467,7 +538,9 @@
       "t": "Hochstadt-Extras",
       "list": [
         "Nach drei Spenden in der Samenbank: +3 Ruf und Post von einer Familie, nach sechs Spenden eine zweite Karte.",
-        "Eine Runde reden im Auto (ein Drittel des Preises) bringt Kontakte ohne Fahndungsrisiko."
+        "Eine Runde reden im Auto (ein Drittel des Preises) bringt Kontakte ohne Fahndungsrisiko.",
+        "Penthouse Himmelblau: 6000 € sparen (Rennen, Imperium, Akt II), dann am Glasturm an der Hauptstraße (Radar 🏙️) kaufen. Bringt einmalig +5 Ansehen.",
+        "Alle zwölf Orte der Hochstadt haben eine eigene leuchtende Tür, sie stehen mit Symbol auf Radar und Karte."
       ]
     },
     {
@@ -481,6 +554,16 @@
         "6 Der letzte Zug (Piet, Station): unter der Hochbahn nach Süden, Scheinwerfer laden, zum Neonplatz. 180 €.",
         "7 Nacht der tausend Lichter (Vega, ab 21 Uhr): Boutique, Club Prisma, One Love Bar, zurück zum Neonplatz. 220 €.",
         "8 Das Kaleidoskop bleibt (Aurelia Kron, vor dem Turm): Entscheide dich für den gemeinsamen Bau oder den Rückzug, hol alle zum Platz. 1500 €, +10 Ruf und das Theater Kaleidoskop im Imperium (+180 € am Tag)."
+      ]
+    },
+    {
+      "t": "Rennen: Goldzeiten",
+      "list": [
+        "Altstadtring: Gold unter 44 s (150 €), Silber 54 s, Bronze 70 s.",
+        "Brückensprint: Gold unter 40 s (200 €), Silber 50 s, Bronze 66 s.",
+        "Hochstadt-Grand-Prix: Gold unter 62 s (350 €), Silber 76 s, Bronze 98 s.",
+        "Stadtmarathon: Gold unter 78 s (500 €), Silber 95 s, Bronze 125 s.",
+        "Mit dem Rennwagen „Regenbogenpfeil“ und Turbo Stufe 3 ist überall Gold drin."
       ]
     }
   ],
@@ -496,6 +579,18 @@
     {
       "q": "Läuft das Spiel auf dem Handy?",
       "a": "Ja, im Hoch- und Querformat mit Touch-Steuerung. Die Grafikstufe passt sich automatisch an."
+    },
+    {
+      "q": "Das Spiel ruckelt am Handy. Was tun?",
+      "a": "Am Handy startet Pride City jetzt auf der sparsamen Grafikstufe und regelt die Auflösung selbst nach, bis es flüssig läuft. Unter Menü → Einstellungen → Grafik kannst du die Stufe auch fest auf „Niedrig“ stellen."
+    },
+    {
+      "q": "Gibt es Motorräder, Fahrräder oder Boote?",
+      "a": "Noch nicht. Es gibt zwölf Autos, vom Kleinwagen bis zum Rennwagen. Weitere Fahrzeugarten folgen, sobald passende freie Modelle vorliegen."
+    },
+    {
+      "q": "Warum bringt mein Geschäft plötzlich weniger Geld?",
+      "a": "Dann gibt es dort ein Problem (⚠️ im Handy unter Imperium). Öffne das Geschäft und löse es, danach läuft der Umsatz wieder voll. Mit einer Geschäftsführung passiert das von allein."
     }
   ]
 }

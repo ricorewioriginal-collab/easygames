@@ -8,7 +8,7 @@ import {
 import { instance, preload } from '../engine/Assets';
 import { planeZ, ground, box, cyl, sphere, ring, torus, pbr, glow, canvasTex } from '../engine/geo';
 import { PALETTES } from './palettes';
-import { buildUptown, EAST, BRIDGE } from './uptown';
+import { buildUptown, EAST, BRIDGE, UPTOWN_PLACES, doorStep } from './uptown';
 
 export const TILE = 10;
 const S = TILE / 2; // KayKit-Kacheln sind 2 Einheiten breit
@@ -178,6 +178,8 @@ export class World {
     P('samenbank', 'Samenbank Zukunft', '🧪', 96, -11, 'SAMENBANK', '#7fd4ff');
     P('tramhoch', 'Hochbahn Hochstadt', '🚇', 157, 22, undefined, undefined, 3.6);
     P('laterne', 'Laternenmeile', '🏮', 105, -27, undefined, undefined, 2);
+    P('garage', 'Garage Schraubenschlüssel', '🔧', 170.5, -47.4, undefined, undefined, 2.6);
+    for (const u of UPTOWN_PLACES) { const d = doorStep(u); P(u.id, u.name, u.icon, d.x, d.z, undefined, undefined, 2.2); }
   }
 
   async place(path: string, x: number, y: number, z: number, rot: number, s = S, flat = false, cast = true) {
@@ -401,9 +403,25 @@ export class World {
     this.sun.direction = this._sunDir.scale(-1);
     this.lamps.albedoColor = new Color3(1, .95, .75).scale(.6 + this.night * 3.2);
     this.neon.forEach((n) => { n.m.albedoColor = n.base.scale(1 + this.night * 2.4); });
-    this.lampLights.forEach((l) => (l.intensity = this.night * 40));
+    // Lichter, die nichts beitragen, ganz abschalten: jedes aktive Licht kostet in jedem Bildpunkt Rechenzeit
+    const lit = this.night > .03 && !this.low;
+    this.lampLights.forEach((l) => { l.intensity = this.night * 40; if (l.isEnabled() !== lit) l.setEnabled(lit); });
+    this.poolLights.forEach((l) => { if (l.isEnabled() !== lit) l.setEnabled(lit); });
   }
   private _sunDir = new Vector3(.5, .8, .4);
+  /** niedrige Grafikstufe (Handy): keine Punktlichter, kein Klarlack, keine Feinstruktur */
+  low = false;
+  setLow(on: boolean) {
+    if (on === this.low) return; this.low = on;
+    for (const m of this.scene.materials) {
+      if (!(m instanceof PBRMaterial)) continue;
+      const k = m as PBRMaterial & { _pcFx?: [boolean, boolean] };
+      if (!k._pcFx) k._pcFx = [m.detailMap.isEnabled, m.clearCoat.isEnabled];
+      m.detailMap.isEnabled = !on && k._pcFx[0]; m.clearCoat.isEnabled = !on && k._pcFx[1];
+    }
+    const lit = this.night > .03 && !on;
+    for (const l of [...this.lampLights, ...this.poolLights]) l.setEnabled(lit);
+  }
 
   /** Schatten folgen dem Spieler */
   follow(p: Vector3) {
@@ -697,11 +715,65 @@ export class World {
   }
   /** Auto als bewegliche Kopie (Wurzel mit visible) */
   async car(kind: string) {
+    if (kind.startsWith('k:')) return this.kenneyCar(kind);
     const inner = await instance(this.scene, C(kind));
     this.tune('car_', inner);
     // KayKit-Räder reichen 0,061 Einheiten unter den Ursprung: anheben, damit die Reifen auf dem Asphalt (y 0,073) stehen
     const o = new Node3(kind, this.scene); inner.parent = o; inner.scaling.setAll(S); inner.position.y = .061 * S - .025; o.parent = this.root;
     return o;
+  }
+
+  /** Kenney Car Kit (CC0): eigene Kopie mit eigenem Lack-Material, Räder stehen bei y 0 */
+  private async kenneyCar(kind: string) {
+    const inner = await instance(this.scene, 'cars/' + kind.slice(2) + '.glb', { clone: true });
+    const mats = new Map<PBRMaterial, PBRMaterial>();
+    for (const ms of inner.getChildMeshes()) {
+      const m = ms.material as PBRMaterial | null; if (!(m instanceof PBRMaterial)) continue;
+      const body = !/wheel/.test(ms.name);
+      let c = body ? mats.get(m) : this.wheelMat.get(m);
+      if (!c) {
+        c = m.clone(m.name + (body ? '_lack' : '_rad'));
+        if (body) { c.roughness = .3; c.metallic = .25; c.clearCoat.isEnabled = !this.low; c.clearCoat.intensity = .6; c.clearCoat.roughness = .08; (c as PBRMaterial & { _pcFx?: [boolean, boolean] })._pcFx = [false, true]; mats.set(m, c); }
+        else { c.roughness = .85; c.metallic = 0; this.wheelMat.set(m, c); }
+      }
+      ms.material = c;
+    }
+    const o = new Node3(kind, this.scene); inner.parent = o; inner.scaling.setAll(1.5); inner.position.y = -.027; o.parent = this.root;
+    return o;
+  }
+  private wheelMat = new Map<PBRMaterial, PBRMaterial>();
+  private paintSrc = new WeakMap<Texture, Promise<{ px: Uint8Array; w: number; h: number }>>();
+  /** Eigenen Wagen umlackieren: Die Lackfarbe (häufigster kräftiger Farbton der Karosserie) wird auf den Wunsch-Farbton gedreht. hue < 0 = Original. */
+  async paintCar(o: TransformNode, hue: number) {
+    for (const ms of o.getChildMeshes()) {
+      const m = ms.material as (PBRMaterial & { _pcOrig?: Texture }) | null;
+      if (!(m instanceof PBRMaterial) || !/_lack$/.test(m.name)) continue;
+      const src = (m._pcOrig ||= m.albedoTexture as Texture); if (!src) continue;
+      if (hue < 0) { m.albedoTexture = src; continue; }
+      let pr = this.paintSrc.get(src);
+      if (!pr) { pr = (async () => { const sz = src.getSize(); const px = new Uint8Array(((await src.readPixels()) as ArrayBufferView).buffer.slice(0)); return { px, w: sz.width, h: sz.height }; })(); this.paintSrc.set(src, pr); }
+      const { px, w, h } = await pr;
+      // Lackfarbe aus den UVs der Karosserie bestimmen
+      const uv = ms.getVerticesData(VertexBuffer.UVKind) || [], hist = new Float32Array(36);
+      const hsv = (r: number, g: number, b: number) => { const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn; let hh = 0; if (d) hh = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; return [(hh * 60 + 360) % 360, mx ? d / mx : 0, mx / 255]; };
+      for (let i = 0; i < uv.length; i += 2) {
+        const u = uv[i] * src.uScale + src.uOffset, v = uv[i + 1] * src.vScale + src.vOffset;
+        const x = Math.min(w - 1, Math.max(0, Math.floor((u - Math.floor(u)) * w))), y = Math.min(h - 1, Math.max(0, Math.floor((v - Math.floor(v)) * h))), k = (y * w + x) * 4;
+        const [hh, ss, vv] = hsv(px[k], px[k + 1], px[k + 2]); if (ss > .35 && vv > .25) hist[Math.floor(hh / 10) % 36]++;
+      }
+      let top = 0; for (let i = 1; i < 36; i++) if (hist[i] > hist[top]) top = i;
+      if (!hist[top]) continue;
+      const h0 = top * 10 + 5, out = new Uint8Array(px.length);
+      for (let k = 0; k < px.length; k += 4) {
+        const [hh, ss, vv] = hsv(px[k], px[k + 1], px[k + 2]); let d = Math.abs(hh - h0); if (d > 180) d = 360 - d;
+        if (ss > .3 && d < 28) { const c = Color3.FromHSV((hue + hh - h0 + 360) % 360, ss, vv); out[k] = c.r * 255; out[k + 1] = c.g * 255; out[k + 2] = c.b * 255; }
+        else { out[k] = px[k]; out[k + 1] = px[k + 1]; out[k + 2] = px[k + 2]; }
+        out[k + 3] = px[k + 3];
+      }
+      const t = RawTexture.CreateRGBATexture(out, w, h, this.scene, false, false, Texture.NEAREST_SAMPLINGMODE);
+      t.uScale = src.uScale; t.vScale = src.vScale; t.uOffset = src.uOffset; t.vOffset = src.vOffset; t.wrapU = src.wrapU; t.wrapV = src.wrapV; t.coordinatesIndex = src.coordinatesIndex; t.gammaSpace = src.gammaSpace;
+      m.albedoTexture = t;
+    }
   }
 
   /** Weitere Hindernisse für den Verkehr (geparkte/gefahrene Autos des Spielers) */
