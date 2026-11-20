@@ -1,4 +1,4 @@
-import{b0 as e,by as t,bz as r,bA as a,bB as f,bC as l,bD as d,bo as s,bE as S,bF as P,bG as _,bH as m,bI as E}from"./babylon-CrqguZSV.js";const o="gaussianSplattingVertexShader",n=`#include<__decl__gaussianSplattingVertex>
+import{b1 as e,bz as t,bA as r,bB as a,bC as f,bD as l,bE as d,bp as s,bF as S,bG as P,bH as _,bI as m,bJ as E}from"./babylon-Bf8I0q6J.js";const o="gaussianSplattingVertexShader",n=`#include<__decl__gaussianSplattingVertex>
 #ifdef LOGARITHMICDEPTH
 #extension GL_EXT_frag_depth : enable
 #endif

@@ -48,6 +48,7 @@ export { DefaultRenderingPipeline } from '@babylonjs/core/PostProcesses/RenderPi
 export { ImageProcessingConfiguration } from '@babylonjs/core/Materials/imageProcessingConfiguration';
 export { ColorCurves } from '@babylonjs/core/Materials/colorCurves';
 export { ReflectionProbe } from '@babylonjs/core/Probes/reflectionProbe';
+export { HDRCubeTexture } from '@babylonjs/core/Materials/Textures/hdrCubeTexture';
 export { LoadAssetContainerAsync } from '@babylonjs/core/Loading/sceneLoader';
 export { AssetContainer } from '@babylonjs/core/assetContainer';
 export { AnimationGroup } from '@babylonjs/core/Animations/animationGroup';
