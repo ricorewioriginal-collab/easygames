@@ -77,6 +77,10 @@
     try { impl.setup(ctx); } catch (e) { console.error(e); }
     // Moderatoren an ihrem Platz
     ctx.hosts = UL.D.HOSTS.map((h, i) => { const f = UL.makeFig(h.look, i ? 1.82 : 1.72); const side = new T.Vector3(Math.cos(ctx.hostRy), 0, -Math.sin(ctx.hostRy)).multiplyScalar(i ? 0.7 : -0.7); f.root.position.copy(ctx.hostPos).add(side); f.root.rotation.y = ctx.hostRy; stage.scene.add(f.root); stage.figs.push(f); return f; });
+    // Sanitäter Doc Rudi und Ranger Kalle stehen bei jeder Prüfung bereit
+    { const sd = new T.Vector3(Math.cos(ctx.hostRy), 0, -Math.sin(ctx.hostRy)), bk = new T.Vector3(Math.sin(ctx.hostRy), 0, Math.cos(ctx.hostRy)).multiplyScalar(-0.6);
+      ctx.crew = [[UL.D.DOC, 2.0], [UL.D.RANGER, -2.0]].map(([d, k]) => { const f = UL.makeFig(d.look, d === UL.D.DOC ? 1.7 : 1.85); f.root.position.copy(ctx.hostPos).addScaledVector(sd, k).add(bk); f.root.rotation.y = ctx.hostRy + (k > 0 ? -0.3 : 0.3); stage.scene.add(f.root); stage.figs.push(f); return f; });
+      ctx.doc = ctx.crew[0]; ctx.ranger = ctx.crew[1]; }
     R.set(stage);
     UL.Audio.music('tense'); UL.Audio.atmo(theme === 'studio' ? 'studio' : 'jungle');
     UI.hint({}); UI.cmd([]); UI.hud('');
@@ -170,6 +174,12 @@
         const key = ctx.quit ? 'quit' : stars >= max * 0.75 ? 'good' : stars >= max * 0.4 ? 'mid' : 'bad';
         if (key === 'good') { UL.Audio.sfx('cheer'); ctx.hosts.forEach(h => h.play('cheer')); }
         await UI.mod(key, vars);
+        // Doc Rudi schaut nach dem Prüfling (bei Abbruch immer, sonst manchmal)
+        if (ctx.doc && (ctx.quit || Math.random() < (key === 'good' ? 0.3 : 0.6))) {
+          const dp = ctx.doc.root.position; stage.cine.move(dp.clone().add(fw.clone().multiplyScalar(2.6)).add(new T.Vector3(0, 1.5, 0)), dp.clone().add(new T.Vector3(0, 1.2, 0)), 1);
+          ctx.doc.play('interact');
+          await UI.say('doc', UL.pick(UL.D.DOC_LINES[ctx.quit ? 'trialQuit' : key === 'good' ? 'trialGood' : 'trialBad']).replace(/^/, ctx.ai ? ctx.name + ', ' : ''));
+        }
         await UI.choose(def.icon + ' ' + def.name, `<div class="stars">${'⭐'.repeat(stars)}<span class="off">${'⭐'.repeat(max - stars)}</span></div><p>${stars} von ${max} Sternen${opt.practice ? '' : ' – das sind ' + stars + ' Portionen fürs Camp'}.</p>`, [{ label: 'Weiter', value: 1 }], { cls: 'clear' });
       }
       await UI.fade(true, 0.35);

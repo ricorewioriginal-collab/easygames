@@ -14,7 +14,24 @@
     { id: 'mats', name: 'Mats Feldmann', look: { model: 'knight', skin: 1, shirt: 0x1f2a44, pants: 0x1f2a44, accent: 0xf4f4f4, hair: 0x3a2a1a, mic: true, cards: true, micColor: 0x37c46a } }
   ];
   D.DOC = { id: 'doc', name: 'Doc Rudi', look: { model: 'mage', skin: 2, shirt: 0xf2f2ee, pants: 0x3a5a7a, accent: 0xffffff, glasses: true, hat: 'cap', hatColor: 0x2a8a4a } };
-  D.VOICE = { lotte: { pitch: 1.12, rate: 1.04 }, mats: { pitch: 0.92, rate: 1.0 }, doc: { pitch: 0.8, rate: 0.95 } };
+  // Ranger: bewachen das Lager, bringen Lieferungen, holen Camper zur Prüfung ab (frei erfunden)
+  D.RANGER = { id: 'ranger', name: 'Ranger Kalle', look: { model: 'barbarian', skin: 1, shirt: 0x6b6a3a, pants: 0x3a4a2a, accent: 0xd8c89a, hat: 'busch', hatColor: 0x7a6a3a } };
+  D.VOICE = { lotte: { pitch: 1.12, rate: 1.04 }, mats: { pitch: 0.92, rate: 1.0 }, doc: { pitch: 0.8, rate: 0.95 }, ranger: { pitch: 0.7, rate: 0.98 } };
+  // Sprüche von Lager-Sanitäter Doc Rudi (eigene Figur) und Ranger Kalle
+  D.DOC_LINES = {
+    check: ['Zunge raus … sehr schön. Puls ein bisschen hoch, aber das ist hier normal.', 'Blutdruck okay, Hände zittern ein bisschen. Viel trinken, weniger Drama!', 'Du hast einen Mückenstich. Einen. Du wirst es überleben.', 'Kreislauf stabil. Wenn dir schwindlig wird: hinsetzen, Wasser, Schatten.'],
+    trialQuit: ['Ganz ruhig, tief durchatmen. Abbrechen ist keine Schande – deine Gesundheit geht vor.', 'Alles gut, ich bin da. Erstmal hinsetzen und einen Schluck Wasser.'],
+    trialBad: ['Kurz durchchecken … Puls hoch, aber alles im grünen Bereich. Du hast gekämpft!', 'Ein paar Kratzer, viel Ekel – aber medizinisch alles in Ordnung.'],
+    trialGood: ['Alle Werte top. Und Nerven wie Drahtseile!', 'Ich hab schon viele Prüfungen gesehen. Das war richtig stark.'],
+    tips: ['Wer wenig isst, hat schlechte Laune. Wer schlecht schläft, auch.', 'In der Prüfung zählt: ruhig atmen, dann erst handeln.', 'Holz holen und Wasser abkochen – das hält das Camp gesund.']
+  };
+  D.RANGER_LINES = {
+    hello: ['Alles ruhig im Lager? Ich dreh meine Runde.', 'Ich hab ein Auge auf euch. Und auf die Schlangen.', 'Bleibt im Camp. Hinter der Brücke ist Sperrgebiet.'],
+    tips: ['Morgen früh holen wir wieder jemanden zur Prüfung ab. Die Zuschauer haben schon abgestimmt …', 'Am Feuer redet es sich am besten. Und Komplimente kosten nichts.', 'Wer im Buschtelefon ehrlich ist, kommt bei den Zuschauern gut an.', 'Heute ist es heiß. Wasser abkochen nicht vergessen!'],
+    chest: ['Psst … ich hab heute eine Kiste gesehen. Irgendwo dort hinten – ich hab sie markiert.', 'Unter uns: Da drüben steht eine Schatzkiste. Mehr verrat ich nicht.'],
+    pick: ['{n}, mitkommen bitte. Die Prüfung wartet.', '{n}, du bist dran. Ich bring dich hin.'],
+    delivery: ['Lieferung fürs Camp!', 'Euer Essen. Teilt gerecht!']
+  };
 
   // Camper-Kleidung wie im Original: rote Hemden, Khaki-Hosen; Hüte und Tücher als Erkennungszeichen
   const RED = 0xc8372d, KHAKI = 0xb79a6a;
