@@ -6,14 +6,14 @@ import { box, cyl, pbr, glow } from '../engine/geo';
 import { Actor, WALK_MPS, RUN_MPS, type Anim, type Look } from './Actor';
 import { WORKERS, CURB } from './social';
 import { CURB_SPOTS } from './uptown';
-import { carDef, type CarDef } from './vehicles';
-import type { World } from './World';
+import { carDef, CAR_DEFS, type CarDef } from './vehicles';
+import type { World, Car } from './World';
 import { sfx } from '../engine/Audio';
 import type { PBRMaterial, Scene } from '../engine/bjs';
 
 export type StreetKind = 'walker' | 'police' | 'fire' | 'worker' | 'curb' | 'medic' | 'security' | 'chef' | 'courier';
 export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean; down?: boolean; chase?: boolean; away?: boolean; /** läuft Hand in Hand neben dieser Person */ mate?: StreetNpc; /** feste Blickrichtung */ yaw?: number }
-export interface Parked { o: Node3; name: string; yaw: number; v: number; def: CarDef; /** dein eigener Wagen aus der Garage */ own?: boolean }
+export interface Parked { o: Node3; name: string; yaw: number; v: number; def: CarDef; /** dein eigener Wagen aus der Garage */ own?: boolean; /** geliehen aus dem Verkehr: fährt später seine Runde weiter */ route?: Car }
 
 const LINES: Record<Exclude<StreetKind, 'worker' | 'curb'>, string[]> = {
   walker: ['Schönen Tag noch!', 'Hast du schon alle Pride-Sticker gefunden?', 'Der Späti hat die besten Brezeln der Stadt.', 'Ich bin auf dem Weg ins Prisma!', 'Kennst du schon den Club Leuchtturm am Hafen?', 'Rainbow City ist einfach die beste Stadt.', 'Die Strandbar am Hafen macht die besten Cocktails.', 'Heute ist so ein schöner Tag zum Rumlaufen.'],
@@ -214,5 +214,22 @@ export class Street {
   }
   line(n: StreetNpc, day: number) { const pool = LINES[n.kind as Exclude<StreetKind, 'worker' | 'curb'>] || LINES.walker; return pool[(day + n.name.length + Math.floor(this.t / 20)) % pool.length]; }
   nearCar(p: Vector3, r = 3.2) { return this.parked.find((c) => Vector3.Distance(c.o.position, p) < r) || null; }
+  /** Auto im Verkehr in Reichweite (hält an, wenn du davorstehst): lässt sich ausleihen. Streife und Löschzug bleiben im Dienst. */
+  nearTraffic(p: Vector3, r = 5.5) { return this.world.cars.find((c) => !c.off && c.kind !== 'truck' && c.kind !== 'car_police' && Vector3.Distance(c.o.position, p) < r) || null; }
+  trafficDef(c: Car) { return CAR_DEFS.find((d) => d.file === c.kind) || carDef('hatch'); }
+  /** Auto aus dem Verkehr nehmen und fahrbar machen */
+  borrow(c: Car): Parked {
+    const i = this.world.cars.indexOf(c); if (i >= 0) this.world.cars.splice(i, 1);
+    const def = this.trafficDef(c), car: Parked = { o: c.o, name: def.name, yaw: c.o.rotation.y, v: 0, def, route: c };
+    this.parked.push(car); return car;
+  }
+  /** Geliehene Autos, die weit weg stehen gelassen wurden, fahren wieder ihre Runde */
+  giveBack(p: Vector3, driving: Parked | null) {
+    for (let i = this.parked.length - 1; i >= 0; i--) {
+      const c = this.parked[i];
+      if (!c.route || c === driving || Vector3.Distance(c.o.position, p) < 75) continue;
+      this.parked.splice(i, 1); c.route.u = Math.random(); this.world.cars.push(c.route);
+    }
+  }
 }
 export { TransformNode };

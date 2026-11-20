@@ -1,7 +1,7 @@
 /* Innenräume mit Charakter: Boden, Wände, Decke und Fenster mit gemalten Oberflächen (Dielen, Fliesen, Tapete, Klinker),
    Deckenlampen und LED-Leisten, dazu Möbel aus den einfachen Maßen der Einrichtungsliste: Theke mit Sockel, Platte,
    Flaschenregal und Lichtleiste, Schränke und Automaten mit Fronten, Hocker mit Polster. Ein Raum = wenige Materialien. */
-import { Matrix, Quaternion, Vector3, Texture, col, type Scene, type Mesh, type PBRMaterial } from '../engine/bjs';
+import { Matrix, Quaternion, Vector3, Texture, col, type Scene, type Mesh, type PBRMaterial, type FreeCamera } from '../engine/bjs';
 import { planeZ, ground, box, cyl, pbr, glow, canvasTex } from '../engine/geo';
 import type { Theme, Item } from './interiors';
 
@@ -99,7 +99,7 @@ function frontTex(sc: Scene, kind: 'slats' | 'panel' | 'plain', u = 1, v = 1) {
 export interface Shell { leds: PBRMaterial[]; panes: PBRMaterial[]; }
 
 /** Raumhülle: Boden, vier Wände, Decke, Fenster zur Straße, Deckenlampen, Lichtleisten */
-export function buildShell(sc: Scene, t: Theme, W: number, D: number, H: number): Shell {
+export function buildShell(sc: Scene, t: Theme, W: number, D: number, H: number, wins: number[] = [-W / 4 - .4, W / 4 - .4]): Shell {
   const style = styleOf(t), dark = style === 'dark';
   const leds: PBRMaterial[] = [], panes: PBRMaterial[] = [];
   const fm = pbr(sc, 0xffffff, dark ? .22 : style === 'tile' ? .35 : style === 'wood' ? .5 : .95, dark ? .25 : 0);
@@ -134,7 +134,7 @@ export function buildShell(sc: Scene, t: Theme, W: number, D: number, H: number)
     for (let x = 0; x < 256;) { const bw = 26 + rnd() * 34, bh = 50 + rnd() * 60, cc = ['#e86a9a', '#6ac8e8', '#f0c05a', '#9a7ae8', '#6ad8a0'][Math.floor(rnd() * 5)]; g.fillStyle = cc; g.fillRect(x, 128 - bh, bw, bh); g.fillStyle = 'rgba(255,255,255,.75)'; for (let wy = 128 - bh + 8; wy < 120; wy += 14) for (let wx = x + 5; wx < x + bw - 7; wx += 11) g.fillRect(wx, wy, 6, 8); x += bw + 2; }
   });
   const frameM = pbr(sc, dark ? 0x15101c : 0xf3efe8, .6);
-  for (const wx of [-W / 4 - .4, W / 4 - .4]) {
+  for (const wx of wins) {
     const pm = glow(sc, 0xffffff, 1, { tex: view }); panes.push(pm);
     const p = planeZ(sc, 2.6, 1.5); p.material = pm; p.rotation.y = Math.PI; p.position.set(wx, 1.95, D / 2 - .02); p.isPickable = false;
     for (const [fw, fh, fx, fy] of [[2.8, .1, 0, .8], [2.8, .1, 0, -.8], [.1, 1.7, -1.35, 0], [.1, 1.7, 1.35, 0], [.06, 1.5, 0, 0]]) { const f = box(sc, fw, fh, .08); f.material = frameM; f.position.set(wx + fx, 1.95 + fy, D / 2 - .05); f.isPickable = false; }
@@ -223,6 +223,26 @@ export function furnish(sc: Scene, it: BoxItem, t: Theme, W: number, D: number, 
     }
     return true;
   }
+  // Boutique: Kleiderstange mit bunten Teilen auf Bügeln statt Schrank, darunter Schuhe
+  if (t.id === 'boutique' && it.col && !y0 && h >= 1.3 && w >= 1.2 && d <= .8) {
+    const steel = pbr(sc, 0xd8c690, .25, .9);
+    part(w, .06, d + .2, it.x, 0, it.z, pbr(sc, shade(c, .8), .5));
+    for (const sx of [-1, 1]) part(.05, h, .05, it.x + sx * (w / 2 - .05), .06, it.z, steel);
+    part(w - .06, .04, .04, it.x, h, it.z, steel);
+    const sign = part(w * .5, .22, .04, it.x, h + .12, it.z, emis(pbr(sc, c, .5))); sign.receiveShadows = false;
+    const cloth = box(sc, .05, 1, .46); cloth.isPickable = false; cloth.material = pbr(sc, 0xffffff, .85); cast(cloth);
+    const shoe = box(sc, .12, .1, .28); shoe.isPickable = false; shoe.material = pbr(sc, 0xffffff, .4);
+    const pal = [0xff4fa3, 0x9b5cff, 0x5ce1ff, 0xffc83d, 0xff3b3b, 0x3ee69a, 0x16161c, 0xf2f2f2, 0xff8a3b, c];
+    const rnd = rng(Math.round(Math.abs(it.x * 37)) + 3), cm: number[] = [], cc: number[] = [], sm: number[] = [], sc3: number[] = [];
+    for (let u = -w / 2 + .18; u < w / 2 - .12; u += .1 + rnd() * .05) {
+      const len = .55 + rnd() * .55, k = col(pal[Math.floor(rnd() * pal.length)]);
+      Matrix.Compose(new Vector3(1, len, .8 + rnd() * .25), Quaternion.FromEulerAngles(0, (rnd() - .5) * .25, 0), new Vector3(it.x + u, h - .06 - len / 2, it.z)).toArray(cm, cm.length); cc.push(k.r, k.g, k.b, 1);
+    }
+    for (let u = -w / 2 + .25; u < w / 2 - .2; u += .34) { const k = col(pal[Math.floor(rnd() * pal.length)]); Matrix.Translation(it.x + u, .11, it.z + .05).toArray(sm, sm.length); sc3.push(k.r, k.g, k.b, 1); }
+    cloth.thinInstanceSetBuffer('matrix', new Float32Array(cm), 16, true); cloth.thinInstanceSetBuffer('color', new Float32Array(cc), 4, true); cloth.alwaysSelectAsActiveMesh = true;
+    shoe.thinInstanceSetBuffer('matrix', new Float32Array(sm), 16, true); shoe.thinInstanceSetBuffer('color', new Float32Array(sc3), 4, true); shoe.alwaysSelectAsActiveMesh = true;
+    return true;
+  }
   // Schrank, Automat, Kabine: hoch und fest
   if (it.col && !y0 && h >= 1.3) {
     const cols2 = Math.max(1, Math.round(w / .8)), rows = Math.max(1, Math.round(h / 1.1));
@@ -240,4 +260,34 @@ export function furnish(sc: Scene, it: BoxItem, t: Theme, W: number, D: number, 
     return true;
   }
   return false;
+}
+
+/** Kamera hinter der Figur wie draußen: wischen dreht, beim Laufen folgt sie; an Wänden und Decke rückt sie heran */
+export class RoomCam {
+  yaw = .95; tYaw = .95; pitch = .36;
+  private pos = new Vector3();
+  private idle = 9;
+  private snap = true;
+  constructor(private W: number, private D: number, private H: number, public dist = 4.2) {}
+  reset(yaw = .95, pitch = .36) { this.yaw = this.tYaw = yaw; this.pitch = pitch; this.idle = 0; this.snap = true; }
+  /** Laufrichtung in der Welt aus dem Stick, relativ zur Kamera */
+  dir(mx: number, my: number): [number, number] { const fx = -Math.sin(this.yaw), fz = -Math.cos(this.yaw); return [fx * my - fz * mx, fz * my + fx * mx]; }
+  update(dt: number, camera: FreeCamera, p: Vector3, facing: number, o: { look: { x: number; y: number }; move: { x: number; y: number }; speed: number; invertY: boolean; busy: boolean; portrait: boolean }) {
+    const { W, D, H } = this, lk = .005 * o.speed;
+    if (!o.busy) {
+      this.tYaw -= o.look.x * lk; this.pitch = Math.max(.08, Math.min(.9, this.pitch + o.look.y * lk * (o.invertY ? -1 : 1)));
+      this.idle = o.look.x || o.look.y ? 0 : this.idle + dt;
+      if (this.idle > 1.2 && Math.hypot(o.move.x, o.move.y) > .3) { let d = facing + Math.PI - this.tYaw; d = Math.atan2(Math.sin(d), Math.cos(d)); if (Math.abs(d) < 2.3) this.tYaw += d * Math.min(1, dt * 1.5); }
+    }
+    this.yaw += (this.tYaw - this.yaw) * Math.min(1, dt * 12);
+    const ty = 1.45, vx = Math.sin(this.yaw) * Math.cos(this.pitch) * this.dist, vy = Math.sin(this.pitch) * this.dist, vz = Math.cos(this.yaw) * Math.cos(this.pitch) * this.dist;
+    let f = 1;
+    const lim = (v: number, room: number) => { if (v > 1e-4 && room / v < f) f = Math.max(.2, room / v); };
+    lim(vx, W / 2 - .3 - p.x); lim(-vx, p.x + W / 2 - .3); lim(vz, D / 2 - .3 - p.z); lim(-vz, p.z + D / 2 - .3); lim(vy, H - .3 - ty);
+    // wird es eng, schaut die Kamera steiler von oben, statt der Figur im Nacken zu sitzen
+    const wx = p.x + vx * f, wy = Math.min(H - .3, ty + vy * f + (1 - f) * 1.5), wz = p.z + vz * f, e = this.snap ? 1 : Math.min(1, dt * 9);
+    this.pos.set(this.pos.x + (wx - this.pos.x) * e, this.pos.y + (wy - this.pos.y) * e, this.pos.z + (wz - this.pos.z) * e); this.snap = false;
+    camera.position.copyFrom(this.pos);
+    camera.setTarget(new Vector3(p.x, ty + (o.portrait ? .25 : 0), p.z));
+  }
 }

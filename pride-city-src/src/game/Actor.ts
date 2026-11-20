@@ -31,7 +31,8 @@ export function playerLook(s: { body: string; palette: string; skin: number; pro
   let outfit = (s.flags.outfit as Outfit) || 'clothed';
   if (!OUTFITS.some((o) => o.id === outfit) || (OUTFITS.find((o) => o.id === outfit)!.adult && !s.settings.adult)) outfit = 'clothed';
   const hair = typeof s.flags.hair === 'number' && (s.flags.hair as number) >= 0 ? s.flags.hair as number : undefined;
-  const av = avatarFor({ body: s.body, palette: s.palette, skin: s.skin, hair, top: s.pronouns !== 'he' });
+  // alte Spielstände (Körper „Hero“): nur mit „sie“ eine Frau, sonst ein Mann – nie ungefragt das andere Geschlecht
+  const av = avatarFor({ body: s.body, palette: s.palette, skin: s.skin, hair, top: s.pronouns === 'she' });
   return { body: av.id, rb: av.id, palette: s.palette, skin: s.skin, hair, outfit, top: s.pronouns !== 'he', hot: s.settings.adult };
 }
 
