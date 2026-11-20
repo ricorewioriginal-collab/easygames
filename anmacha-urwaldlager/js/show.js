@@ -255,10 +255,12 @@
     alive().forEach(c => {
       vit(c); let add = 15 + q * 55;
       if (c.id === 'me') { if (S.mealPick === 2) add += 15; else if (S.mealPick === 3) add = 15; }
+      if (S.cookQ > 0) add += S.cookQ * 4;   // selbst gut gekocht: alle werden satter
       c.hun = UL.clamp(c.hun - 30 + add, 0, 100);
       if (c.hun < 30) c.mood = Math.min(c.mood, 0.35);
     });
-    S.mealPick = 0;
+    if (S.cookQ >= 0) { const m = me(); Show.change(m, { sym: S.cookQ, ent: S.cookQ === 0 ? 2 : 0 }); Show.log(S.cookQ === 3 ? `${m.name} kocht ein Dschungel-Festessen!` : S.cookQ === 0 ? `${m.name} lässt das Essen anbrennen.` : `${m.name} kocht ordentlich.`, '🧑‍🍳'); }
+    S.mealPick = 0; S.cookQ = -1;
     Show.log(`Abendessen: ${n} Portionen. ${key === 'none' ? 'Reis und Bohnen.' : key === 'full' ? 'Festmahl!' : ''}`, '🍲');
   };
 
@@ -400,10 +402,14 @@
     const rows = list.map((c, i) => `<div class="drum-row ${c.out ? 'out' : ''} ${c.id === 'me' ? 'me' : ''}"><b>${c.out ? '🚪' : i + 1 + '.'} ${esc(c.name)}</b>
       <small>${c.out ? 'raus an Tag ' + c.outDay : esc(c.job || '')}</small>
       <div class="drum-bars">❤️${bar(c.sym, '#ff5a7a')}😂${bar(c.ent, '#ffd23a')}⭐${bar(c.perf, '#5ad1ff')}${c.out ? '' : `🍗${bar(vit(c).hun, '#ff9a3a')}😴${bar(c.slp, '#a07aff')}`}</div></div>`).join('');
+    // Beziehungen: bester Freund und größter Zoff je Camper
+    const live = S.campers.filter(c => !c.out), relOf = (a, b) => a.rel[b.id] ?? 50;
+    const rels = live.map(c => { const o = live.filter(x => x !== c); if (!o.length) return ''; const fr = o.reduce((a, b) => relOf(c, b) > relOf(c, a) ? b : a), fo = o.reduce((a, b) => relOf(c, b) < relOf(c, a) ? b : a);
+      return `<li><b>${esc(firstName(c))}</b> ${relOf(c, fr) >= 60 ? `💚 ${esc(firstName(fr))}` : '<small>noch keine Freundschaft</small>'}${relOf(c, fo) <= 40 ? ` · ⚡ ${esc(firstName(fo))}` : ''}</li>`; }).join('');
     const log = S.log.slice(0, 14).map(l => `<li>${l.icon} <small>Tag ${l.d}</small> ${esc(l.txt)}</li>`).join('');
     const p = UI.open(`<div class="box wide"><h2>🥁 Buschtrommel · Tag ${S.day}/${S.days}</h2>
       <p class="txt"><small>Simulierte Zuschauerstimmung: 45 % Sympathie, 30 % Unterhaltung, 25 % Prüfungsleistung.</small></p>
-      <div class="drum">${rows}</div><h3>Tagebuch</h3><ul class="log">${log}</ul>
+      <div class="drum">${rows}</div><h3>👥 Freundschaften & Zoff</h3><ul class="log">${rels}</ul><h3>Tagebuch</h3><ul class="log">${log}</ul>
       <div class="row"><button class="btn" data-ok><b>Zurück</b></button></div></div>`, { onBack: () => go(), startCloses: true });
     const go = () => { UI.close(p); UL.paused = false; };
     p.el.querySelector('[data-ok]').onclick = go;
