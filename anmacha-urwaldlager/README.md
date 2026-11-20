@@ -26,6 +26,9 @@ Jeden Morgen Sonne, Tropenregen oder Gewitter (`js/weather.js`): Regenstreifen, 
 ## Finale
 Rückblick der Moderatoren, alle Ex-Camper kehren zur Abschlussshow zurück, Krönung mit Thron und Feuerwerk, danach Staffel-Statistik (eigene Prüfungen, Endstand, Freund/Zoff, Lager in Zahlen).
 
+## Klang
+WebAudio ohne Dateien (`js/audio.js`): Dschungel-Atmo (Zikaden, Vögel, Tukan, Papagei, Brüllaffe, Frösche), Nacht (Grillen, Eule), Höhle (Tropfen mit Echo), Fluss; Live-Kommentar der Moderatoren in den Prüfungen (`D.LIVE`, Toast + Sprachausgabe), Finale-Hymne zur Krönung.
+
 ## Prüfungen
 Ekel-Kisten · Dschungel-Dinner · Schlammbecken (tauchen) · Wackelsteg · Krabbel-Tunnel · Ekel-Dusche · Wissens-Tank · Schlamm-Parcours · Lianen-Rutsche · Schlangengrube · Höhlenlabyrinth (Taschenlampe) · Floßrennen · Kletterwand, dazu das IBES-Fan-Quiz (deutsche und britische Show) und der Gruppenmarsch ins Lager – jede im Dschungel und im Studio spielbar, auch einzeln über „Prüfungen spielen“.
 

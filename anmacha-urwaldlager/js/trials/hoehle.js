@@ -7,7 +7,7 @@
   const CS = 2.6, WT = 0.5, HT = 2.1;
 
   UL.Trials.reg('hoehle', {
-    orbit: true, relMove: true, noPointer: true,
+    orbit: true, relMove: true, noPointer: true, atmo: 'cave',
     env: () => ({ none: true }),
     setup(ctx) {
       const sc = ctx.scene, rng = ctx.rng, studio = ctx.theme === 'studio';
