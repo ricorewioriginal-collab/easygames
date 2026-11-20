@@ -1,4 +1,4 @@
-import{a$ as e,bm as a,bn as r,bo as t,bp as d,bq as f,br as P,bs as l,bt as S,bu as g,bv as s,bw as c}from"./babylon-Dq6Gvf5C.js";const o="gaussianSplattingPixelShader",n=`#include<clipPlaneFragmentDeclaration>
+import{b0 as e,bn as a,bo as r,bp as t,bq as d,br as f,bs as P,bt as l,bu as S,bv as g,bw as s,bx as c}from"./babylon-CrqguZSV.js";const o="gaussianSplattingPixelShader",n=`#include<clipPlaneFragmentDeclaration>
 #include<logDepthDeclaration>
 #include<fogFragmentDeclaration>
 #define PREPASS_CUSTOM_VARYINGS
@@ -84,4 +84,4 @@ gl_FragColor=finalColor;
 #endif
 #define CUSTOM_FRAGMENT_MAIN_END
 }
-`;e.ShadersStore[o]||(e.ShadersStore[o]=n);const m=[a,r,t,d,f,P,l,S,g,s,c];for(const i of m)e.IncludesShadersStore[i.name]||(e.IncludesShadersStore[i.name]=i.shader);const v={name:o,shader:n};export{v as gaussianSplattingPixelShader};
+`;e.ShadersStore[o]||(e.ShadersStore[o]=n);const E=[a,r,t,d,f,P,l,S,g,s,c];for(const i of E)e.IncludesShadersStore[i.name]||(e.IncludesShadersStore[i.name]=i.shader);const v={name:o,shader:n};export{v as gaussianSplattingPixelShader};

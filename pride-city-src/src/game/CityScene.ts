@@ -16,6 +16,8 @@ import { type Gig, pickCall, fmtTime } from './gigs';
 import { collect, nextFare } from './empire';
 import { Street, type Parked } from './Street';
 import { PLACE_THEMES, houseTheme } from './interiors';
+import { Combat } from './Combat';
+import { arrive } from './family';
 
 interface Npc { def: NpcDef; a: Actor; wp: number; wait: number; talking: boolean }
 
@@ -36,6 +38,7 @@ export class CityScene implements GameScene {
   private stickerMeshes: Mesh[] = [];
   private near: { kind: 'npc' | 'poi' | 'street' | 'car' | 'house'; id: string; label: string } | null = null;
   street!: Street;
+  combat!: Combat;
   /** Auto, in dem die Spielfigur gerade sitzt */
   private drive: Parked | null = null;
   private stepT = 0;
@@ -83,6 +86,8 @@ export class CityScene implements GameScene {
     }));
     this.street = new Street(sc, this.world);
     await this.street.build();
+    this.combat = new Combat(this.g, this, sc); this.combat.init();
+    this.g.hud.onWeapon = () => { if (this.mode === 'play') this.combat.cycle(); };
     this.g.hud.setRadarMap((c, px) => {
       c.fillStyle = '#123a52'; c.fillRect(0, 0, 512, 512);                       // Wasser
       c.fillStyle = '#3c4f45'; c.fillRect(px(-65), px(-65), 130 * 2, 130 * 2);   // Innenstadt
@@ -144,7 +149,8 @@ export class CityScene implements GameScene {
     this.crowd.forEach((a) => (a.root.visible = this.world.night > .5));
     this.refreshStickers();
     this.g.hud.show(true); this.g.touch.show(true);
-    hints([['move', 'Laufen'], ['a', 'Aktion'], ['cam', 'Kamera'], ['y', 'Menü']]);
+    this.combat.showWeapon();
+    hints([['move', 'Laufen'], ['a', 'Aktion'], ['atk', 'Angriff'], ['wpn', 'Waffe'], ['cam', 'Kamera'], ['y', 'Menü']]);
     music('city');
     this.snapCam();
     this.refreshHud();
@@ -196,7 +202,10 @@ export class CityScene implements GameScene {
     const s = this.g.save.data, gl = goal(s);
     const paid = collect(s);
     if (paid) { sfx('coin'); this.g.hud.banner('💼 Einnahmen deines Imperiums', `+${paid} € aus deinen Geschäften`, 'good', 3600); this.g.save.write(); }
+    const nk = arrive(s);
+    if (nk) { sfx('win'); this.g.hud.banner('👶 Willkommen zu Hause!', `${nk.name} ist bei euch eingezogen. Schau in deiner Wohnung vorbei.`, 'good', 5000); this.g.save.write(); void this.g.home?.syncFamily(); }
     this.world.traces.visible = s.settings.adult;
+    if (this.g.where === 'city' && this.mode === 'play') this.combat?.showWeapon(); else { this.g.hud.weapon(null); this.g.hud.wanted(0); }
     if (this.g.where === 'inside' && this.g.inside) this.g.hud.goal(this.g.inside.theme.icon + ' Drinnen', this.g.inside.theme.title, `Ziel: ${gl.title}`);
     else if (this.g.where === 'home') this.g.hud.goal('Zuhause', 'Deine Wohnung', s.chapter === 1 && s.step === 2 ? 'Schau dich um.' : `Ziel: ${gl.title}`);
     else this.g.hud.goal(chapterLabel(s), gl.title, gl.sub);
@@ -317,10 +326,11 @@ export class CityScene implements GameScene {
       this.drive.v = 0; this.drive = null;
       music('city'); this.g.hud.radioBtn(false);
       this.player.root.visible = true; this.player.play('idle');
-      hints([['move', 'Laufen'], ['a', 'Aktion'], ['cam', 'Kamera'], ['y', 'Menü']]);
+      hints([['move', 'Laufen'], ['a', 'Aktion'], ['atk', 'Angriff'], ['wpn', 'Waffe'], ['cam', 'Kamera'], ['y', 'Menü']]);
       sfx('open');
       return;
     }
+    this.combat.enterCar();
     this.drive = this.street.parked[+id]; sfx('door'); setTimeout(() => sfx('engine'), 250);
     this.player.root.visible = false;
     this.cam.dist = Math.max(this.cam.dist, 9);
@@ -412,6 +422,14 @@ export class CityScene implements GameScene {
   /** Regenbogen-Taxi: Zahl der Fahrten in Folge (-1 = aus) */
   taxi = -1;
   get driving() { return !!this.drive; }
+  /** Tempo des gefahrenen Autos (0 zu Fuß) */
+  get carSpeed() { return Math.abs(this.drive?.v || 0); }
+  /** Aussteigen erzwingen (z. B. bei der Festnahme) */
+  leaveCar() { if (this.drive) this.toggleCar('exit'); }
+  /** Sichtbare Story-Figuren (für Schläge mit Spaßwaffen) */
+  storyActors() { return this.npcs.filter((n) => n.a.root.visible && !n.talking).map((n) => ({ a: n.a, name: n.def.name, id: n.def.id })); }
+  /** Story-Figur ist sauer auf dich (Freundschaft sinkt) */
+  annoy(id: string) { const s = this.g.save.data, r = (s.rel[id] ||= { f: 0, last: 0 }); r.f = Math.max(0, r.f - 8); }
   /** Taxi-Schicht beginnen (nur im Auto) */
   startTaxi() { this.taxi = 0; this.startGig(nextFare(0, Math.random())); }
   private callT = 150;
@@ -560,12 +578,15 @@ export class CityScene implements GameScene {
     const gm = mk.find((m) => m.id === 'gig');
     this.goalBeam((gm || mk.find((m) => m.id === 'g'))?.pos as Vector3 | undefined, t, gm ? 0xffd23b : 0xff3fb0);
     if (!busy) this.gigTick(dt);
+    if (!busy) this.combat.update(dt, t);
     if (!busy) {
       this.findNear();
       const inp = g.engine.input;
       if (inp.pressed('confirm')) { inp.consume('confirm'); this.interact(); }
       else if (inp.pressed('phone')) { inp.consume('phone'); g.phone(); }
       else if (inp.pressed('map')) { inp.consume('map'); g.phone('map'); }
+      else if (inp.pressed('attack')) { inp.consume('attack'); this.combat.attack(); }
+      else if (inp.pressed('weapon')) { inp.consume('weapon'); this.combat.cycle(); }
       else if (inp.pressed('menu') || inp.pressed('back')) { inp.consume('menu'); inp.consume('back'); g.pauseMenu(); }
       this.checkStickers();
     } else g.hud.prompt(null);

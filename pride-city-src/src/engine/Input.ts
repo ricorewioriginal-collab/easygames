@@ -4,7 +4,7 @@
 export type Action =
   | 'confirm' | 'back' | 'menu' | 'phone' | 'map'
   | 'up' | 'down' | 'left' | 'right'
-  | 'tabL' | 'tabR' | 'sprint' | 'camReset';
+  | 'tabL' | 'tabR' | 'sprint' | 'camReset' | 'attack' | 'weapon';
 
 export type InputMode = 'kb' | 'touch' | 'pad';
 
@@ -14,10 +14,10 @@ const KEYS: Record<string, Action[]> = {
   Enter: ['confirm'], Space: ['confirm'], KeyE: ['confirm'], NumpadEnter: ['confirm'],
   Escape: ['back', 'menu'], Backspace: ['back'],
   KeyP: ['phone'], KeyM: ['map'], ShiftLeft: ['sprint'], ShiftRight: ['sprint'],
-  KeyQ: ['tabL'], KeyR: ['tabR'], KeyC: ['camReset'],
+  KeyQ: ['tabL'], KeyR: ['tabR'], KeyC: ['camReset'], KeyF: ['attack'], KeyG: ['weapon'],
 };
-/* Standard-Layout (gamepad.js liefert jeden Controller so): A B X Y LB RB LT RT Select Start L3 R3 ↑ ↓ ← → */
-const PAD: Array<Action | null> = ['confirm', 'back', 'phone', 'menu', 'tabL', 'tabR', null, 'sprint', 'map', 'menu', null, 'camReset', 'up', 'down', 'left', 'right'];
+/* Standard-Layout (gamepad.js liefert jeden Controller so): A B X Y LB RB LT(Angriff) RT Select Start L3(Waffe) R3 ↑ ↓ ← → */
+const PAD: Array<Action | null> = ['confirm', 'back', 'phone', 'menu', 'tabL', 'tabR', 'attack', 'sprint', 'map', 'menu', 'weapon', 'camReset', 'up', 'down', 'left', 'right'];
 const NAV: Action[] = ['up', 'down', 'left', 'right'];
 
 export class Input {
@@ -140,7 +140,6 @@ export class Input {
         if (b.pressed) { any = true; if (a) this.pad.add(a); }
       });
       // Dpad nur für Menüs/Bewegung als Richtung, nicht als zusätzlicher Stick
-      if (p.buttons[6]?.value > .3) this.zoom += .15;
       if (p.buttons[4]?.pressed && p.buttons[5]?.pressed) this.pad.add('camReset');
       if (any) this.setMode('pad');
     }

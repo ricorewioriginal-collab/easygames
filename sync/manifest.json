@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "cccecb3183e4",
- "generated": "2026-11-20T09:31:07+00:00",
- "commit": "aebafbefabcace6430f06ecd7a007756e21d67ee",
+ "version": "a046974008f8",
+ "generated": "2026-11-20T09:31:13+00:00",
+ "commit": "6802efeedf168d7d1a450777ab37ad7ad272b58f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -11118,8 +11118,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 26746,
-   "h": "df5b29ff13b59383e3a1138a9fa112b0e32c165e112c9c54e5ec54092318536f"
+   "s": 28428,
+   "h": "c870e087c3d1fd170755243a7624242b1e109c196b923574a2836983cf9e4902"
   },
   {
    "p": "guides/prismrush.json",
@@ -12287,9 +12287,9 @@
    "h": "62759995b42672bed9d17515b2145b873d408dddcedeb55dbe93b6918e99047b"
   },
   {
-   "p": "pride-city/assets/babylon-Dq6Gvf5C.js",
-   "s": 3811748,
-   "h": "e1eefdd128538464475d474cf4e84365c6c50eb71a75de5881ca6047e2825505"
+   "p": "pride-city/assets/babylon-CrqguZSV.js",
+   "s": 3811757,
+   "h": "cde7c4463de6b43c15a2e727ffe3487ced34a1059887355e38618c31f99b29a5"
   },
   {
    "p": "pride-city/assets/city/base.bin",
@@ -12627,94 +12627,94 @@
    "h": "55ae59f2a21ad38c64312a4c00d6808dc486bf4a8e8a8c969bc9e26cdc84d8f3"
   },
   {
-   "p": "pride-city/assets/flowGraphDebugBlock.pure-BP8LveKt.js",
+   "p": "pride-city/assets/flowGraphDebugBlock.pure-CK_2wjHv.js",
    "s": 1451,
-   "h": "e0bff6106ea9ba599df5cc8961c9cec30bd0c4b2882c51cb0b2b98b6c6637696"
+   "h": "b2d38c69c5eb233ce83b00ba6bb2fe10b947581756250c219ee7b4d195ffb46f"
   },
   {
-   "p": "pride-city/assets/flowGraphPointerDownEventBlock.pure-yBZlxDbV.js",
+   "p": "pride-city/assets/flowGraphPointerDownEventBlock.pure-CRSrL8JC.js",
    "s": 943,
-   "h": "09b7039263292ca46c09a8b5ebb94a3b893aad5ac66e3c7f72fb1c3183328b67"
+   "h": "4d8da9c9fbba673d32117ac825a38f290e9daca0ef1ac0eaafb67438172c86f5"
   },
   {
-   "p": "pride-city/assets/flowGraphPointerMoveEventBlock.pure-BhGfcSKk.js",
+   "p": "pride-city/assets/flowGraphPointerMoveEventBlock.pure-5-vVLtFd.js",
    "s": 961,
-   "h": "2bf3c6a16d1050ef1a758b687eedc20c81da45717ad540b2fa6a3593dbdec07d"
+   "h": "9fbb7857002bae4027e2bcab52b58c1ddf1344c5105fe187adf1a44736e42b0c"
   },
   {
-   "p": "pride-city/assets/flowGraphPointerUpEventBlock.pure-yIJA8ZQV.js",
+   "p": "pride-city/assets/flowGraphPointerUpEventBlock.pure-CBKiO2PY.js",
    "s": 933,
-   "h": "a062e99f63a08d8137cb35d4ad9e192c85a96142f8ec449465f5bcf2fdd5d091"
+   "h": "d8621f581eff65c33b3666829c08da180273c493787f51d9c35037db028fad11"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.fragment-CW5MTcDs.js",
+   "p": "pride-city/assets/gaussianSplatting.fragment-DGQzThzF.js",
    "s": 2928,
-   "h": "99ce49233ff62e8fe88b7d768fcee7e8e66f04c362bfb2a28e08675012a61560"
+   "h": "6e167709211faacfa41e57ecc0dbb9738a9c8d182e39b62d4dea54f630c9173c"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.fragment-vbaRPd3w.js",
+   "p": "pride-city/assets/gaussianSplatting.fragment-DiC6ZxRs.js",
    "s": 3059,
-   "h": "0201924815945d87669be531bbb2755d40adc45f9cdf856f4089132306493f72"
+   "h": "661d2e17387a509901c0f9b6ceaded34afb3305bf0cd286eebe5785f20885063"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.vertex-CdtBxbNS.js",
-   "s": 6846,
-   "h": "ff5937b6fa158415c2b5d14df82a4f253e7043cef8a9a6f1d33640133cf3ed13"
-  },
-  {
-   "p": "pride-city/assets/gaussianSplatting.vertex-D-O4gYRJ.js",
+   "p": "pride-city/assets/gaussianSplatting.vertex-CiINsqnZ.js",
    "s": 8147,
-   "h": "4ee928b309d1aa58807a70cb7c98a909026659dc1f19f9b53967513528081d4a"
+   "h": "91e81787fb2a68a2c1d0c483fb4dd0c26ee60abbd9286c2949a6eab19bfcd857"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-Bh8rRg2I.js",
-   "s": 1760,
-   "h": "6291cc4e4c0070ea3da5a37bf226fff56ab31727d0f62507b3ddf65d4f38341f"
+   "p": "pride-city/assets/gaussianSplatting.vertex-DGnd2vWi.js",
+   "s": 6846,
+   "h": "d7844dff9773574945ce823092c9b418c22569e695579a8eaf6e48381c2fd271"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-BnRcXjyG.js",
+   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-BQJeFzYb.js",
    "s": 1435,
-   "h": "0737e44f976794184c9e05b9734ec262b9739364d5a63bb98c14c7849c64df64"
+   "h": "1af26d674ad32a5af1476021c044a9399c9595c6122d34a3370f1e412cebfa69"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-BMaPUCHC.js",
+   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-CnYQgK-L.js",
+   "s": 1760,
+   "h": "e28af16774cfcdb5df35cea2614a0222b4ce2f477222505b540aaa6d78080ee6"
+  },
+  {
+   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-Cvj96bmA.js",
    "s": 2489,
-   "h": "3fa4294d1596851f7977692787eda757da571e2daf58a418c360a08e03c3e54b"
+   "h": "7140a7e8e6d37f70a00b3819e916b3328c8045070253b05c2b5175f679d67b3a"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-BsbIWwxm.js",
+   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-US47oqg_.js",
    "s": 1765,
-   "h": "3d698886f94e9bb8f19da36b633205acde42ae6562c58a50fde5146c457534af"
+   "h": "fa4291eb24a6020a29c47df3c4b8d269675b4a894ebed0bc35a919ff0702ee3c"
   },
   {
-   "p": "pride-city/assets/gsSortCount.compute-Ci_LpDy3.js",
+   "p": "pride-city/assets/gsSortCount.compute-CKWApVRR.js",
    "s": 1013,
-   "h": "7f285ed8adb21704e67762553da19a003b6ce7f614c3e92d29971f36420f9824"
+   "h": "508b315a5153985f4f4c20386360d4d110f5dbaf603c8eba64890996d6533cd7"
   },
   {
-   "p": "pride-city/assets/gsSortKeys.compute-CFrUBARV.js",
+   "p": "pride-city/assets/gsSortKeys.compute-BI5sPlDH.js",
    "s": 2155,
-   "h": "905257379f830425b5d86f231d89f6bbbb84805c29c8865b4fc9325496644b82"
+   "h": "920e7a62b1d399ae4e0dbf8bc3f8109868a9a937406e0d67f405c8d056496a2d"
   },
   {
-   "p": "pride-city/assets/gsSortOutput.compute-DqB3fiIp.js",
+   "p": "pride-city/assets/gsSortOutput.compute-BXMLpXMH.js",
    "s": 922,
-   "h": "fe68ead610dd36c4f392947e57fd3939b2e1fcc53c20e5e4227f918c114a589c"
+   "h": "878d6ecb5143f5b72b7e2342efdb682d4b4b72082376bf53ccfe725a57bc9dbb"
   },
   {
-   "p": "pride-city/assets/gsSortScanLocal.compute-BW8yyXMt.js",
+   "p": "pride-city/assets/gsSortScanLocal.compute-RsIFIHvP.js",
    "s": 1260,
-   "h": "a81776e1c2bdd8f1c531490bed6cb925014198ad04bcb1edbef5c308f5459e24"
+   "h": "42430dc36b1ca0baec850a66fce1921eef523145464d5a5e854dd7bee1fbb6d1"
   },
   {
-   "p": "pride-city/assets/gsSortScanSums.compute-Bb3G8Pkb.js",
+   "p": "pride-city/assets/gsSortScanSums.compute-Bjb7GrUc.js",
    "s": 831,
-   "h": "3b79de702b8ba71f370f8c2e01eaa4c67ce1b8efa78b0b409c6afef53cce3801"
+   "h": "a5a4b23e889a95e9ab50af385c46e13d64a39f42921175c3bb222517e9bfe822"
   },
   {
-   "p": "pride-city/assets/gsSortScatter.compute-DJp76Q2I.js",
+   "p": "pride-city/assets/gsSortScatter.compute-CCBJvfx0.js",
    "s": 2525,
-   "h": "854004965ecf5d9ce17a0e8c1d5661505ba1fe5d6c49679b64dcf807207697eb"
+   "h": "1483a9113006ccf9fd69acd53a9e7d70b61f8272ca259ebe1e35af374c70674c"
   },
   {
    "p": "pride-city/assets/home/armchair_pillows.bin",
@@ -12892,14 +12892,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
-   "p": "pride-city/assets/index-Cay2Vu10.css",
-   "s": 24264,
-   "h": "99d83706163ac38984f75f5d8cd463fd2c7655c5ed9ea5f543fa90fca941297f"
+   "p": "pride-city/assets/index-_3tsDjwD.js",
+   "s": 319628,
+   "h": "dde0077ce5c40931bf89f99254bee2b23afabaa9370d3d22f6d4c4fdce73513e"
   },
   {
-   "p": "pride-city/assets/index-ZNxVezZC.js",
-   "s": 291166,
-   "h": "25be790d430d697d65582553f5bcf97bf4776001ed630e03dbfba6d0a1be81a5"
+   "p": "pride-city/assets/index-jKIuJLl_.css",
+   "s": 25466,
+   "h": "ff97766a5e73ee34ad119b86e2320551b12c67ed863e8f4fac8c727b05c2d61b"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -12967,9 +12967,9 @@
    "h": "cce0730ec2025399a68cb6afaa8acb2f54fcb3d70537a26f62564f6f7754f679"
   },
   {
-   "p": "pride-city/assets/loaders-Cv5dOHmQ.js",
+   "p": "pride-city/assets/loaders-Dzgj2kkk.js",
    "s": 323809,
-   "h": "8fb4bf3e99cd6a1b8b7cb7d163d3820c56fe571a501a4243cd21a33cfd8ab200"
+   "h": "7cc58b3355ad7d5465cb010d3643762d13964066f1dfd4237918215c974f04cc"
   },
   {
    "p": "pride-city/assets/rb/Business_Male_01.glb",
@@ -13035,6 +13035,11 @@
    "p": "pride-city/assets/rb/Female_Adult_10.glb",
    "s": 646484,
    "h": "56ce512b3d5ca652545c7a817aa064f78fc9293b0139f7f466eab0e6ab4ec515"
+  },
+  {
+   "p": "pride-city/assets/rb/Female_Child_01.glb",
+   "s": 710172,
+   "h": "9162e9b1871ea591a52a37d70ff8cf740495b4edd2010539c1103c3866565a2a"
   },
   {
    "p": "pride-city/assets/rb/Female_Party_01.glb",
@@ -13105,6 +13110,11 @@
    "p": "pride-city/assets/rb/Male_Adult_10.glb",
    "s": 1017188,
    "h": "e258cd646fa9bdcfe4fd33d1d22198a7ba276be90064d96ff816449ede8152c4"
+  },
+  {
+   "p": "pride-city/assets/rb/Male_Child_01.glb",
+   "s": 740932,
+   "h": "1b97100252bd1254a1b1293f1a39a3d334a10f407bf2b078c53884f7561d3c6e"
   },
   {
    "p": "pride-city/assets/rb/Medical_Female_01.glb",
@@ -13277,14 +13287,14 @@
    "h": "bb54b03536a540d6ae76784cffb63967936dc4caa18917a339908ba5fa5b828c"
   },
   {
-   "p": "pride-city/assets/textureProcessor.fragment-CKxmfEYq.js",
-   "s": 6031,
-   "h": "fee89fe22e6e3aa9520bcfde64810d3829206f7ddaf78597ebc05ce2124f1dbc"
+   "p": "pride-city/assets/textureProcessor.fragment-CZAlKqpz.js",
+   "s": 5008,
+   "h": "f64a8b71ae01781ee140c74a2ff54772a4b97c5c3f0fd06749a924f1270c0cff"
   },
   {
-   "p": "pride-city/assets/textureProcessor.fragment-CmVyP9VR.js",
-   "s": 5008,
-   "h": "b7c63ad6021482b08bb647e510a6214a2e11fd5585ec3f16fdbccf6348c807d4"
+   "p": "pride-city/assets/textureProcessor.fragment-DXPwQ7-L.js",
+   "s": 6031,
+   "h": "6bb60bb536793109033ae5cbb696ededdc19d4c1e99cf9f563c1e468b952f3bc"
   },
   {
    "p": "pride-city/book/cover.jpg",
@@ -13529,7 +13539,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5812,
-   "h": "587c007f6dbd5d2be270de652a42052f7895162ebbb3f993e6bf8bb9877ca44d"
+   "h": "e1c9c42e9108819500c6d827743aa62925cc30647d30c4143379cc5d9371b6ce"
   },
   {
    "p": "pride-city/logo.svg",
@@ -16304,7 +16314,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236341,
-   "h": "d8940724decaaa6d67bb33a38215849ede2c2b527b508b8998b12517c23801d8"
+   "h": "f429ef8634ed02584631a46c393f4f84df4f0c1ad74c37a1deffb60c5727e935"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

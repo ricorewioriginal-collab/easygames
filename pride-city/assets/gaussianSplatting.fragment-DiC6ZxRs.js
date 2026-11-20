@@ -1,4 +1,4 @@
-import{a$ as e,b0 as o,b1 as r,b2 as a,b3 as f,b4 as d,b5 as S,b6 as P,b7 as l,b8 as s,b9 as m,ba as g,bb as E}from"./babylon-Dq6Gvf5C.js";const n="gaussianSplattingPixelShader",t=`#include<clipPlaneFragmentDeclaration>
+import{b0 as e,b1 as o,b2 as r,b3 as a,b4 as f,b5 as d,b6 as S,b7 as P,b8 as l,b9 as s,ba as m,bb as g,bc as E}from"./babylon-CrqguZSV.js";const n="gaussianSplattingPixelShader",t=`#include<clipPlaneFragmentDeclaration>
 #include<logDepthDeclaration>
 #include<fogFragmentDeclaration>
 #define PREPASS_CUSTOM_VARYINGS
@@ -82,4 +82,4 @@ fragmentOutputs.color=finalColor;
 #endif
 #define CUSTOM_FRAGMENT_MAIN_END
 }
-`;e.ShadersStoreWGSL[n]||(e.ShadersStoreWGSL[n]=t);const u=[o,r,a,f,d,S,P,l,s,m,g,E];for(const i of u)e.IncludesShadersStoreWGSL[i.name]||(e.IncludesShadersStoreWGSL[i.name]=i.shader);const A={name:n,shader:t};export{A as gaussianSplattingPixelShaderWGSL};
+`;e.ShadersStoreWGSL[n]||(e.ShadersStoreWGSL[n]=t);const c=[o,r,a,f,d,S,P,l,s,m,g,E];for(const i of c)e.IncludesShadersStoreWGSL[i.name]||(e.IncludesShadersStoreWGSL[i.name]=i.shader);const A={name:n,shader:t};export{A as gaussianSplattingPixelShaderWGSL};

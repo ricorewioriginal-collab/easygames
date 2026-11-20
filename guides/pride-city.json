@@ -1,397 +1,432 @@
 {
-  "id": "pride-city",
-  "handbuch": [
-    {
-      "t": "Worum geht es?",
-      "p": [
-        "Pride City ist eine queere 3D-Lebenssimulation. Du ziehst nach Rainbow City, findest Freund*innen und hilfst der Szene, das Regenbogenhaus vor dem Verkauf an einen Investor zu retten. Die Geschichte hat fünf Kapitel – vom Ankommen bis zur großen Pride-Parade. Danach geht das Leben in der Stadt im freien Spiel weiter.",
-        "Alle Figuren sind erwachsen und frei erfunden. Zustimmung zählt, ein Nein wird respektiert."
-      ]
-    },
-    {
-      "t": "Start und Menü",
-      "list": [
-        "Fortsetzen: lädt deinen Spielstand.",
-        "Neues Spiel: startet mit dem Charakter-Editor. Findet das Spiel einen alten Gay-Life!-Spielstand, kannst du Name, Erspartes und Glitzer übernehmen.",
-        "Story: zeigt die Kapitel und deine bisherigen Entscheidungen.",
-        "Minispiele: Tanz-Battle direkt spielen; weitere Minispiele folgen.",
-        "Optionen: Grafik (automatisch, niedrig, mittel, hoch), Musik, Effekte, Kamera-Tempo, Kamera umkehren, Vollbild und Google-Spielstand.",
-        "Mitwirkende: Herkunft und Lizenzen der Grafiken."
-      ]
-    },
-    {
-      "t": "Deine Figur",
-      "p": [
-        "Im Editor wählst du eine von über 20 echten Menschen-Figuren (Microsoft Rocketbox, jede mit eigener Kleidung und eigenem Stil), dazu deinen Namen und deine Pronomen. Über das Pausenmenü (Kleiderschrank) oder den Kleiderschrank in deiner Wohnung wechselst du die Figur jederzeit. Alle Menschen in Rainbow City sind solche Figuren: Passant*innen, Polizei, Feuerwehr, Sanitäterin, Türsteher, Köchin und Kurier."
-      ]
-    },
-    {
-      "t": "In der Stadt",
-      "list": [
-        "Oben links steht dein aktuelles Ziel, ein Stern über Figuren oder Orten zeigt, wohin es geht.",
-        "Oben rechts: Wochentag und Uhrzeit, Geld, Stimmung und fünf kleine Balken für deine Bedürfnisse (rot = dringend).",
-        "Gehst du nah an eine Figur oder Tür, erscheint ein Hinweis; mit der Aktionstaste sprichst du oder gehst hinein.",
-        "Ein Spieltag dauert etwa 16 Minuten. Nachts leuchten Neon-Schilder und Laternen, auf dem Platz wird getanzt.",
-        "Autos halten an, wenn du vor ihnen stehst."
-      ]
-    },
-    {
-      "t": "Orte",
-      "list": [
-        "Café Kaffeeklatsch: Cappuccino (+Energie) und Regenbogenkuchen bei Mo, mit Gästen plaudern.",
-        "Deine Wohnung: begehbar, mit Bett, Dusche, Herd, Kühlschrank, Fernseher und Kleiderschrank.",
-        "Regenbogenhaus: Treffpunkt der Szene, Spenden und Job als Eventmanager*in.",
-        "Club Prisma: Tanz-Battle, Drinks an der Bar, ab 20 Uhr Job als DJ.",
-        "Späti Lecker: Brezel, Mate und Lebensmittel zum Kochen.",
-        "Boutique Fabelhaft: Job im Verkauf und neuer Look.",
-        "Muckibude Muskelkater: Training, Duschen und Job als Fitnesstrainer*in.",
-        "Studio Klappe Auf: Job als Fotograf*in.",
-        "Checkpoint Regenbogen: kostenlose HIV- und STI-Tests, PrEP-Beratung, gratis Kondome, Infos zu U=U, PrEP, PEP und Safer Sex.",
-        "Tram: für 2 € in zehn Minuten an jeden Ort.",
-        "Pride Plaza mit Brunnen, Flaggen aller Communitys und Bühne, dazu der Regenbogenpark."
-      ]
-    },
-    {
-      "t": "Hafenviertel",
-      "p": [
-        "Westlich der Innenstadt liegt der Hafen am Regenbogenkai. Du erreichst ihn zu Fuß über die westliche Ringstraße, mit dem Auto oder mit der Tram (Karte im Handy, 2 €)."
-      ],
-      "list": [
-        "Club Leuchtturm: die alte Lagerhalle, die du in Kapitel 3 für 300 € mietest. Danach dein eigener Club mit Barkeeper-Schichten, Party-Nächten (ab 21 Uhr, einmal pro Nacht) und Deko für mehr Trinkgeld.",
-        "Strandbar Sandbank: Cocktails, Schwimmen, Sonnenbaden und Beachvolleyball.",
-        "Steg mit Leuchtturm, Container in Pride-Farben und die Tram-Endstation Hafen."
-      ]
-    },
-    {
-      "t": "Belebte Stadt und Autos",
-      "list": [
-        "Passant*innen laufen auf den Gehwegen, tagsüber mehr als nachts. Mit A bzw. Enter kannst du sie ansprechen.",
-        "Polizeiwache Mitte und Feuerwache Regenbogen liegen nördlich der großen Kreuzung. Die Polizei hat eine Ansprechperson für queere Menschen, die Feuerwehr lädt zum Tag der offenen Tür ein. Ein Streifenwagen und ein Löschzug fahren mit Blaulicht durch die Stadt.",
-        "Vier geparkte Autos (Kleinwagen vor deiner Wohnung, Limousine und Taxi nahe der Plaza, Kombi am Hafen): Stell dich daneben und drück A zum Einsteigen. Stick oder WASD lenken und geben Gas, Turbo (Shift/RT) beschleunigt, A steigt wieder aus.",
-        "Mit „Inhalte ab 18“ stehen nachts vor dem Haus Rosa selbstbestimmte Sexarbeiter*innen. Ansprechen führt zu derselben respektvollen Absprache wie im Haus (Zustimmung und Kondom sind Pflicht, alles nur angedeutet)."
-      ]
-    },
-    {
-      "t": "Ich bin das Licht – Leons Geschichte",
-      "p": [
-        "Der Roman „Ich bin das Licht“ von RicoReWi ist Teil von Pride City. Ab Kapitel 2 steht Leon vor der One Love Bar (im Osten neben der Boutique Fabelhaft). Abends ist er Lady Luma.",
-        "Sprich ihn an, und er erzählt seine Geschichte in zwölf Rückblenden: vom Esstisch der Eltern über Samira, die Regennacht mit Mert und Velvet bis zur Wiedereröffnung der One Love Bar und dem Satz seines Vaters. In jeder Rückblende entscheidest du, was Leon tut. Mutige Entscheidungen bringen mehr Licht.",
-        "Am Spiegel mit den Glühbirnen stellst du Lady Lumas Look zusammen (Perücke, Kleid, Schmuck). Bei der Wiedereröffnung spielst du den Buchsong als Tanz-Battle. Am Ende zählt dein Licht: „Ich bin das Licht“ (ab 85), „Glamour in den Adern“ (ab 55) oder „Ein erster Funke“.",
-        "Den kompletten Roman liest du im Handy unter 📖 „Ich bin das Licht“ oder in der One Love Bar. Das Spiel merkt sich, wo du warst.",
-        "Die Rückblenden laufen parallel zur Hauptgeschichte: In Kapitel 2 sind etwa ein Viertel frei, in Kapitel 3 die Hälfte, in Kapitel 4 drei Viertel, in Kapitel 5 fast alle. Den Schluss erzählt die Figur erst nach der Parade.",
-        "Ab Leons fünfter Rückblende kannst du in der One Love Bar Lady Lumas Drag-Show selbst spielen: Wähle die Buch-Hymne „Ich bin das Licht“ (offizielles YouTube-Video, lädt erst nach Zustimmung, sonst Beat im Takt) oder einen der Klaviersongs aus Klavierlicht. Dort kannst du auch als Leon Sommer oder als Lady Luma durch die Stadt laufen."
-      ]
-    },
-    {
-      "t": "Leuchtfeuer – Finns Geschichte",
-      "p": [
-        "Auch der Jugendroman „Leuchtfeuer“ von RicoReWi ist Teil von Pride City. Ab Kapitel 2 steht Finn am Ende des Stegs im Hafenviertel, direkt am Leuchtturm. Er lebt heute mit Ben in Rainbow City.",
-        "Sprich ihn an, und er erzählt von seinem letzten Schuljahr in Warnholm in 16 Rückblenden: Schwarzes Brett, Flaschenpost, das Sturmnacht-Plakat mit Ben, Funkstille, Pias Fall 14, Gegenwind am Deich bis zum Feuer am Nordstrand.",
-        "Deine Entscheidungen bringen Leuchtkraft. Die fünf Spiele aus dem Buch (Leuchtturm-Licht, Plakat, „Zwei mit Zwiebeln“, Gegenwind, Fall 14) erlebst du als Erinnerung mit, jede bringt 6 Leuchtkraft. Am Ende wartet eins von drei Enden.",
-        "Den kompletten Roman liest du im Handy unter 🗼 „Leuchtfeuer“. Das Spiel merkt sich, wo du warst. Beim Pride-Finale laufen Finn und Ben ganz vorne mit.",
-        "Die Rückblenden laufen parallel zur Hauptgeschichte: In Kapitel 2 sind etwa ein Viertel frei, in Kapitel 3 die Hälfte, in Kapitel 4 drei Viertel, in Kapitel 5 fast alle. Den Schluss erzählt die Figur erst nach der Parade."
-      ]
-    },
-    {
-      "t": "Alltag und Bedürfnisse",
-      "p": [
-        "Wie in Gay Life! hast du fünf Bedürfnisse: Energie, Satt, Frisch, Kontakte und Spaß. Sie sinken mit der Zeit, im Schlaf erholt sich die Energie. Aus allen fünf ergibt sich deine Stimmung; gute Stimmung bringt bis zu 15 % mehr Lohn, schlechte bis zu 20 % weniger.",
-        "Bei niedrigen Werten gibt das Spiel einen Tipp. Energie unter 10 heißt: kein Sprinten mehr."
-      ]
-    },
-    {
-      "t": "Wohnung",
-      "list": [
-        "Bett: Schlafen bis 7 Uhr (Energie voll, speichert) oder Nickerchen.",
-        "Dusche: Frisch auf 100.",
-        "Herd: kochen, braucht Lebensmittel aus dem Späti (+50 Satt).",
-        "Fernseher: +25 Spaß.",
-        "Kleiderschrank: Look ändern.",
-        "Tür: zurück in die Stadt."
-      ]
-    },
-    {
-      "t": "Jobs",
-      "p": [
-        "Fünf Jobs aus Gay Life!: Verkäufer*in (Boutique, 10–20 Uhr), Fitnesstrainer*in (Muckibude, 8–21 Uhr), Fotograf*in (Studio, 10–20 Uhr), DJ (Club Prisma, 20–2 Uhr) und Eventmanager*in (Regenbogenhaus, 10–18 Uhr).",
-        "Eine Schicht dauert vier Stunden und besteht aus drei Situationen mit je drei Antworten. Die beste Antwort bringt 2 Punkte. Lohn = 4 × Stundenlohn + Punkte-Bonus, mal Stimmung. Mit Erfahrung wirst du befördert (vier Stufen, je +25 % Lohn). Höchstens zwei Schichten am Tag."
-      ]
-    },
-    {
-      "t": "Aufträge, Taxi und Imperium",
-      "list": [
-        "Aufträge: Leute aus der Stadt rufen an (oder du wählst im Handy unter „Aufträge“). Folge der gelben Lichtsäule und dem Radar und schaff alle Stationen in der Zeit. Neu sind unter anderem „Ehe für alle“ (Ringe und Torte zur Trauung im Park), der Vogue-Ball am Plaza, Lady Lumas Perücken-Notfall, die CSD-Demo, das Bärchen-Grillfest und nachts Kofis Gästeliste.",
-        "Regenbogen-Taxi: Steig in ein Auto und wähle im Handy unter „Aufträge“ das Regenbogen-Taxi. Hol Fahrgäste ab (Drag-Queens, Brautpaare, Ballroom-Kids, der Lesbenchor …) und bring sie ans Ziel. Jede Fahrt in Folge bringt mehr Geld, ab der dritten auch Ruf. Steigst du aus oder bist zu langsam, endet die Schicht.",
-        "Imperium: In der Handy-App „Imperium“ steigst du bei Läden, Bars und Clubs ein – vom Späti bis zum Club Prisma. Jedes Geschäft kostet Geld und braucht genug Ruf, zahlt dafür jeden Tag Einnahmen aus (auch für Tage, an denen du nicht gespielt hast, bis zu einer Woche) und bringt Ruf."
-      ]
-    },
-    {
-      "t": "Handy",
-      "list": [
-        "Öffnen mit P, dem 📱-Knopf am Touchscreen oder X am Controller (M bzw. Select öffnet direkt die Karte).",
-        "Status: Bedürfnisse, Stimmung, Geld, Ruf, Glitzer.",
-        "Ziele: Kapitelziel, drei Tagesziele mit Glitzer-Belohnung, Sammelstand.",
-        "Karte & Tram: alle Orte, mit der Tram hinfahren.",
-        "Jobs: alle Jobs mit Stufe, Lohn und Öffnungszeit, Ort markieren.",
-        "Kontakte: Leute, mit denen du gesprochen hast, und eure Freundschaft.",
-        "Rainbow Match: Dating-App mit Profilfotos der Figuren (tippe aufs Bild oder nutze „Fotos“ mit ←/→; mit 18+ zusätzlich sexy Pose und Unterwäsche) – Profile nach rechts (Ja) oder links (Nein) wischen, am Controller und an der Tastatur mit ←/→. Bei einem Match planst du ein Date im Café oder Club.",
-        "Feed: Neuigkeiten aus der Szene, Gerüchte und deine eigenen Momente.",
-        "Gesundheit: letzter Test, PrEP-Status und Erinnerung, Infos.",
-        "Glossar: Begriffe aus der Szene."
-      ]
-    },
-    {
-      "t": "Freundschaft und Dates",
-      "p": [
-        "Sprich jeden Tag mit Leuten: Das füllt Kontakte und Freundschaft. Ab 80 Freundschaft gehört jemand zu deiner Wahlfamilie.",
-        "Ein Date besteht aus drei Situationen. Mit mindestens 4 von 6 Punkten steigt eure Beziehung: Match → Erstes Date → Verliebt → Zusammen. Zustimmung ist immer Pflicht, ein Nein wird respektiert."
-      ]
-    },
-    {
-      "t": "Inhalte ab 18",
-      "p": [
-        "In den Optionen lässt sich „Inhalte ab 18“ einschalten (nach Altersabfrage, standardmäßig aus). Dann zeigen Profile Vorlieben, das Glossar weitere Begriffe, die Boutique Toys, und ab „Verliebt“ kann ein Date – wenn beide wollen und ein Kondom da ist – über Nacht gehen. Die Szene wird nur angedeutet und blendet ab; am Morgen danach sieht man die Spuren in der Wohnung.",
-        "Gesundheitsinfos (Checkpoint, PrEP, Tests, U=U) sind immer sichtbar."
-      ]
-    },
-    {
-      "t": "Tanz-Battle",
-      "p": [
-        "Pfeile fliegen auf vier Leuchtspuren heran. Drücke die passende Richtung, wenn ein Pfeil den Ring erreicht: Perfekt bringt 100, Super 70, Gut 40 Punkte plus Combo-Bonus. Drei Runden werden immer dichter. Wer am Ende mehr Punkte hat als Rex, gewinnt."
-      ]
-    },
-    {
-      "t": "Barkeeper-Minispiel",
-      "p": [
-        "Im Club Leuchtturm (und unter Minispiele) mischst du 75 Sekunden lang Drinks. Oben steht, wer was bestellt, darunter die Karte mit den Zutaten. Wähle die Zutaten in beliebiger Reihenfolge und drück Servieren. Jeder richtige Drink bringt Trinkgeld, Fehler kosten Zeit. Am Ende gibt es Lohn, Kontakte und etwas Ruf."
-      ]
-    },
-    {
-      "t": "Nachtleben (nur mit „Inhalte ab 18“)",
-      "p": [
-        "Mit eingeschaltetem 18+-Schalter öffnen sich drei Orte für Erwachsene. Alles wird nur angedeutet: Das Bild blendet ab, gezeigt werden nur Absprache, Zustimmung und Safer Sex.",
-        "Videothek Kopfkino (unten an der Hauptstraße): Filme mit frechen Parodie-Titeln, von denen du nur Titel und Cover-Beschreibung siehst, ein Kondomautomat und die Kabinen. Dort gilt zweimal Klopfen als Frage – du wartest die Antwort ab, ein Schweigen ist ein Nein.",
-        "Haus Rosa: Hier mieten selbstbestimmte erwachsene Sexarbeiter*innen eigene Zimmer. Jede Person nennt vorher ihre Regeln und den Preis; das Haus stellt Kondome. Du kannst auch nur reden und Tee trinken.",
-        "Regenbogenpark: Ab 22 Uhr gibt es Cruising. Ein Nicken ist die Frage, ein Kopfschütteln wird respektiert, ohne Kondom läuft nichts. Mit 18+ siehst du im Park auch die Spuren anderer Nächte.",
-        "Nach jeder Begegnung erinnert dich das Spiel an den nächsten Test im Checkpoint, wenn er länger als zwei Wochen her ist."
-      ]
-    },
-    {
-      "t": "Fortschritt und Speichern",
-      "p": [
-        "Das Spiel speichert automatisch bei wichtigen Schritten, beim Schlafen und beim Verlassen. Im Pausenmenü kannst du jederzeit speichern. In den Optionen sicherst du den Spielstand mit deinem Google-Konto und spielst auf anderen Geräten weiter."
-      ]
-    },
-    {
-      "t": "Originale: Romanspiele und Gay Life!",
-      "p": [
-        "Im Handy findest du die Original-Spiele: 🎮 „Ich bin das Licht – Das Spiel“ (Leon, Lady Luma, Show mit Buch-Hymne) und 🎮 „Leuchtfeuer – Das Spiel“ (16 Kapitel, Leuchtturm, Plakat, „Zwei mit Zwiebeln“, Gegenwind, Fall 14). Leon und Finn bieten sie auch im Gespräch an. Mit „✕ Pride City“ kommst du zurück.",
-        "🏳️‍🌈 „Gay Life! – Das Original“ ist komplett dabei: sieben Viertel, Bewohner, Mehrspieler per PIN/QR und alle 14 Minispiele. Die Minispiele (Date-Roulette, Clubnacht-Manager, Regenbogen-Rave, Outfit-Check, Beinetag, Glitzer-Match, Parade-Runner, Tanzbattle, Strandbad-Sprung, Karaoke, Sauna-Aufguss, Dunkelkammer, Casting-Tag, Klischee-Quiz) startest du auch direkt unter Minispiele.",
-        "Die Figuren aus „Leuchtfeuer“ leben heute am Hafen: Finn und Ben am Leuchtturm, Lotte an der Strandbar, Pia, Samira, Tobi und Jörg und Anke Albrecht mit ihrem Fischstand."
-      ]
-    },
-    {
-      "t": "Alle Häuser sind betretbar",
-      "p": [
-        "Jedes Haus der Stadt hat eine Tür. Stell dich davor und drück Benutzen (Enter, A oder Tippen auf „Rein“). Läden und Treffpunkte wie Café, Club Prisma, Regenbogenhaus, Boutique, Muckibude, Studio, Checkpoint, One Love Bar, Wachen und Club Leuchtturm sind innen eigen eingerichtet; ihr bisheriges Menü findest du an der Theke.",
-        "Die übrigen Häuser sind feste Orte aus Gay Life!: Kino, Buchladen, Arcade, Sauna, Karaoke-Bar, Tanzschule, Schwimmhalle, Festwagen-Werkstatt, Ramen-Bar und die Wohnungen von Jonas, Mika, Deniz, Elif, Torsten, Noor, Kai und Rosa. Goldene Ringe am Boden zeigen, wo du etwas tun kannst: Gay-Life-Minispiele spielen, Tanz-Battle, Drag-Show, Bar-Schicht, die Romane lesen, mit Bewohner*innen reden oder etwas für deine Bedürfnisse tun.",
-        "Hinaus geht es über die Tür mit dem grünen AUSGANG-Schild oder im Pausemenü mit „Haus verlassen“. Orte für Erwachsene (Videothek, Haus Rosa, Dunkelkammer) öffnen sich nur mit eingeschaltetem 18+."
-      ]
-    }
-  ],
-  "ratgeber": [
-    {
-      "t": "Einsteiger",
-      "list": [
-        "Folge dem Stern: Er zeigt immer das nächste Story-Ziel.",
-        "Halte Sprinten gedrückt (Shift, RT oder Turbo), um schneller voranzukommen.",
-        "Dreh die Kamera mit dem rechten Stick, der Maus oder durch Wischen, wenn ein Gebäude die Sicht verdeckt."
-      ]
-    },
-    {
-      "t": "Unterschriften",
-      "list": [
-        "Frag freundlich und erkläre, worum es geht – dann unterschreiben die meisten.",
-        "Drängeln führt zu einem Nein. Das ist okay: Es gibt genug andere Leute in der Stadt.",
-        "Wer gerade keinen Kopf dafür hat und dabei respektiert wird, bringt dir trotzdem Ruf."
-      ]
-    },
-    {
-      "t": "Tanz-Battle meistern",
-      "list": [
-        "Schau auf den Ring, nicht auf die Pfeile weit hinten.",
-        "Combos bringen bis zu 50 Bonuspunkte pro Pfeil – eine lange Serie ist mehr wert als einzelne perfekte Treffer.",
-        "In Runde 3 kommen Doppel-Pfeile auf halben Schlägen: Rhythmus mitzählen hilft."
-      ]
-    },
-    {
-      "t": "Häufige Fehler",
-      "list": [
-        "Nova öffnet den Club erst um 21 Uhr – vor der Tür kannst du einfach warten.",
-        "Wer im Battle auf Zurück drückt, gibt auf; du kannst Rex danach jederzeit erneut herausfordern."
-      ]
-    },
-    {
-      "t": "Alltag meistern",
-      "list": [
-        "Morgens duschen und Kaffee bei Mo, dann eine Schicht: so startet die Stimmung hoch.",
-        "Lebensmittel im Späti sind günstiger als Essen im Café: 6 € für drei Portionen.",
-        "Rede jeden Tag mit Leuten – das füllt Kontakte und Freundschaft, beides nur einmal pro Person und Tag.",
-        "Die Tagesziele wechseln jeden Tag und bringen Glitzer.",
-        "Schlaf vor Mitternacht, sonst bist du am nächsten Tag zu müde für zwei Schichten."
-      ]
-    },
-    {
-      "t": "Dating und Gesundheit",
-      "list": [
-        "Gute Date-Antworten: zuhören, nachfragen, Humor, und fragen statt bestimmen.",
-        "Ruf und gute Stimmung erhöhen die Chance auf ein Match.",
-        "Gratis-Kondome gibt es einmal am Tag im Checkpoint, Kondome und Gleitgel auch im Späti.",
-        "Mit PrEP erinnert dich das Handy alle 14 Spieltage an den nächsten Test.",
-        "Im Nachtleben immer ein Kondom dabeihaben: Späti (3 Stück für 3 €), Automat in der Videothek (1 €) oder gratis im Checkpoint."
-      ]
-    },
-    {
-      "t": "Eigener Club und Geld",
-      "list": [
-        "Für die 300 € Clubmiete: zwei bis drei Schichten im Job, dazu Battles gegen Rex (25 € pro Sieg).",
-        "Die Deko (80 €) lohnt sich schnell: Sie erhöht Trinkgeld und Gäste bei Party-Nächten.",
-        "Party-Nächte bringen mehr Gäste, je höher dein Ruf ist. Wählst du bei Rex „Komm zu uns“, legt er im Leuchtturm auf und bringt zusätzliche Gäste.",
-        "Merk dir die Karte: Bärenbier ist nur Bier, alle anderen Drinks haben drei Zutaten."
-      ]
-    },
-    {
-      "t": "Unterwegs",
-      "list": [
-        "Mit dem Auto bist du am schnellsten, die Tram ist bequemer und spart Zeit beim Laufen.",
-        "Autos bremsen beim Zusammenstoß ab. Fahr langsam an Kreuzungen und Fußgänger*innen vorbei.",
-        "Nachts wird es ruhiger auf den Gehwegen, dafür öffnen Club, Haus Rosa und Park ihr zweites Leben."
-      ]
-    },
-    {
-      "t": "Häuser erkunden",
-      "list": [
-        "Hunger und kein Essen zu Hause? Die Ramen-Bar macht +50 Hunger satt.",
-        "Bewohner*innen einmal am Tag besuchen bringt Kontakte.",
-        "Die Arcade hat drei Gay-Life-Minispiele nebeneinander, gut für Glitzer-Rekorde."
-      ]
-    },
-    {
-      "t": "Geld verdienen wie ein Profi",
-      "list": [
-        "Fang mit dem Späti im Imperium an: Er kostet wenig und zahlt jeden Tag.",
-        "Taxi-Serien lohnen sich: Je länger du ohne Pause fährst, desto höher der Lohn.",
-        "Aufträge bringen Ruf – den brauchst du für die großen Clubs."
-      ]
-    }
-  ],
-  "loesung": [
-    {
-      "t": "Kapitel 1: Ankommen",
-      "steps": [
-        "Geh die Hauptstraße hinunter zum Café Kaffeeklatsch und sprich mit Mo. Deine Antwort, wie du dich fühlst, merkt sich das Spiel.",
-        "Geh nach Süden zu deiner Wohnung (Tür an der Hauptstraße) und bring den Koffer hinein.",
-        "Sprich im Norden hinter der großen Kreuzung vor dem Regenbogenhaus mit Jules und wähle deinen Weg: laut, kreativ oder diplomatisch.",
-        "Sammle drei Unterschriften bei Figuren mit ✍️: Lena (Pride Plaza), Hilde (Bank am Platz), Kim (Nordwesten), Sam (Süden an der Hauptstraße) oder Tariq (Regenbogenpark im Südosten). Antworte freundlich und erkläre, worum es geht.",
-        "Bring die Liste zu Jules.",
-        "Geh zum Club Prisma und sprich mit Nova. Vor 21 Uhr wählst du „Bis 21 Uhr warten“.",
-        "Gewinne das Tanz-Battle gegen Rex. Bei einer Niederlage sprichst du Nova einfach erneut an.",
-        "Kapitel 1 ist geschafft: 120 € und 15 Ruf."
-      ]
-    },
-    {
-      "t": "Kapitel 2: Wurzeln schlagen",
-      "steps": [
-        "Sprich mit Mo vor dem Café. Sie schickt dich auf Jobsuche.",
-        "Arbeite eine Schicht: Im Handy unter Jobs siehst du Arbeitsorte und Zeiten, am Ort wählst du „Schicht als …“.",
-        "Lerne sechs Leute aus der Stadt kennen (einmal ansprechen reicht). Danach lädt Hilde zum Essen ein.",
-        "Geh ab 18 Uhr zu Hilde auf der Pride Plaza und wähle, was du mitbringst (Musik, Kuchen oder deine Geschichte). Kapitel 2 ist geschafft."
-      ]
-    },
-    {
-      "t": "Kapitel 3: Die Szene",
-      "steps": [
-        "Nova vor dem Club Prisma plant eine Drag-Show. Sprich sie an.",
-        "Geh in die Boutique Fabelhaft im Osten und wähle deinen Drag-Namen.",
-        "Ab 21 Uhr sprichst du Nova wieder an: Drag-Show und Revanche gegen Rex im Tanz-Battle. Bei einer Niederlage einfach nochmal.",
-        "Sprich danach mit Rex vor dem Club. Deine Antwort (Freundschaft, Job als DJ oder Rivalität) beeinflusst das Ende.",
-        "Spare 300 € und geh zur Lagerhalle im Hafenviertel. Du eröffnest den Club Leuchtturm und arbeitest die erste Barkeeper-Schicht. Kapitel 3 ist geschafft."
-      ]
-    },
-    {
-      "t": "Kapitel 4: Gegenwind",
-      "steps": [
-        "Jules im Regenbogenhaus erzählt: Nova ist verschwunden, Glanz Immobilien will räumen.",
-        "Frag Rex (vor dem Club), Bruno (Späti) und Kim (läuft westlich des Regenbogenhauses) nach Hinweisen. Die Lupe zeigt, wer noch etwas weiß.",
-        "Lass Brunos Fotos im Studio Klappe Auf vergrößern.",
-        "Geh ab 22 Uhr in den Regenbogenpark zum Wasserturm. Dort findest du Nova.",
-        "Zurück bei Jules entscheidest du, was mit den Beweisen passiert (Presse, Bezirksamt oder Konfrontation). Das Regenbogenhaus ist gerettet. Optional: In der Polizeiwache Anzeige gegen Glanz erstatten (+3 Ruf)."
-      ]
-    },
-    {
-      "t": "Kapitel 5: Pride",
-      "steps": [
-        "Sprich mit Jules und wähle deine Rolle bei der Pride (Rede, Club-Wagen oder Vortanzen).",
-        "Hol Lena, Bruno und Tariq ins Team (Regenbogen-Symbol über dem Kopf).",
-        "Geh ab 12 Uhr auf die Pride Plaza. Nach dem Parade-Tanz zeigt das Spiel dein Ende: Was Jules, Rex, Hilde und Mo sagen, hängt von deinen Entscheidungen und deinem Ruf ab (ab 80 Ruf gibt es ein besonderes Lob).",
-        "Danach läuft der Abspann, und du spielst frei weiter."
-      ]
-    },
-    {
-      "t": "Ich bin das Licht (Nebengeschichte)",
-      "steps": [
-        "Ab Kapitel 2: Geh zur One Love Bar im Osten und sprich Leon an. Sag Ja, wenn er fragt, ob du seine Geschichte hören willst.",
-        "Sprich ihn für jede weitere Rückblende wieder an (insgesamt zwölf). Für das beste Ende wähle immer die mutigere Antwort, sie bringt mehr Licht.",
-        "Rückblende 5 (Der Spiegel mit den Glühbirnen): Lady Lumas Look wählen, bringt 6 Licht.",
-        "Rückblende 10 (Die Nacht der Wiedereröffnung): Tanz-Battle gewinnen bringt 20 Licht, verlieren 10.",
-        "Nach der letzten Rückblende zeigt das Spiel dein Ende. Danach kannst du in der One Love Bar die Lady-Luma-Show ansehen, und bei der Pride-Parade ruft Lady Luma die Stadt zum Mitsingen auf."
-      ]
-    },
-    {
-      "t": "Leuchtfeuer (Nebengeschichte)",
-      "steps": [
-        "Ab Kapitel 2 mit der Tram zum Hafen fahren und über den Steg bis zum Leuchtturm gehen. Finn ansprechen und „Ja, erzähl.“ wählen.",
-        "Für jede weitere Rückblende Finn wieder ansprechen (insgesamt 16). Die mutigere Antwort bringt mehr Leuchtkraft.",
-        "Enden nach Leuchtkraft: ab 78 % „Leuchtfeuer“, ab 50 % „Ein Licht im Fenster“, sonst „Ein erster Strahl“. Fortschritt steht im Story-Menü."
-      ]
-    },
-    {
-      "t": "Pride-Sticker (8)",
-      "list": [
-        "Pride Plaza, Südseite.",
-        "Regenbogenpark, Südteil.",
-        "Nordwestliche Stadtecke.",
-        "Östlicher Stadtrand, nördlich der Mitte.",
-        "Südwestlicher Stadtrand.",
-        "Nördlicher Stadtrand, östlich der Hauptstraße.",
-        "Nordwesten, nahe dem Regenbogenhaus.",
-        "Südöstlich der Hauptkreuzung.",
-        "Jeder Sticker bringt 10 Glitzer, alle zusammen 10 Ruf."
-      ]
-    },
-    {
-      "t": "Freies Spiel und Extras",
-      "list": [
-        "Im freien Spiel kannst du Rex im Club Prisma beliebig oft herausfordern; ein Sieg bringt 25 € und 2 Ruf.",
-        "Täglicher Cappuccino bei Mo bringt beim ersten Mal am Tag 1 Ruf.",
-        "Spenden im Regenbogenhaus: 10 € für 2 Ruf.",
-        "Nach der Parade kannst du den Abspann jederzeit im Story-Menü ansehen. Alle Entscheidungen stehen dort.",
-        "Club Leuchtturm: Barkeeper-Rekord jagen, Party-Nächte feiern, Deko kaufen."
-      ]
-    }
-  ],
-  "faq": [
-    {
-      "q": "Was ist mit meinem Gay-Life!-Spielstand?",
-      "a": "Beim ersten neuen Spiel bietet Pride City an, Name, Erspartes und Glitzer zu übernehmen. Gay Life! bleibt bis zum Abschluss des Relaunchs weiter spielbar."
-    },
-    {
-      "q": "Gibt es Mehrspieler?",
-      "a": "Noch nicht in Pride City. Der Mehrspieler aus Gay Life! wird in einem späteren Update übernommen."
-    },
-    {
-      "q": "Läuft das Spiel auf dem Handy?",
-      "a": "Ja, im Hoch- und Querformat mit Touch-Steuerung. Die Grafikstufe passt sich automatisch an."
-    }
-  ]
+ "id": "pride-city",
+ "handbuch": [
+  {
+   "t": "Worum geht es?",
+   "p": [
+    "Pride City ist eine queere 3D-Lebenssimulation. Du ziehst nach Rainbow City, findest Freund*innen und hilfst der Szene, das Regenbogenhaus vor dem Verkauf an einen Investor zu retten. Die Geschichte hat fünf Kapitel – vom Ankommen bis zur großen Pride-Parade. Danach geht das Leben in der Stadt im freien Spiel weiter.",
+    "Alle Figuren sind erwachsen und frei erfunden. Zustimmung zählt, ein Nein wird respektiert."
+   ]
+  },
+  {
+   "t": "Start und Menü",
+   "list": [
+    "Fortsetzen: lädt deinen Spielstand.",
+    "Neues Spiel: startet mit dem Charakter-Editor. Findet das Spiel einen alten Gay-Life!-Spielstand, kannst du Name, Erspartes und Glitzer übernehmen.",
+    "Story: zeigt die Kapitel und deine bisherigen Entscheidungen.",
+    "Minispiele: Tanz-Battle direkt spielen; weitere Minispiele folgen.",
+    "Optionen: Grafik (automatisch, niedrig, mittel, hoch), Musik, Effekte, Kamera-Tempo, Kamera umkehren, Vollbild und Google-Spielstand.",
+    "Mitwirkende: Herkunft und Lizenzen der Grafiken."
+   ]
+  },
+  {
+   "t": "Deine Figur",
+   "p": [
+    "Im Editor wählst du eine von über 20 echten Menschen-Figuren (Microsoft Rocketbox, jede mit eigener Kleidung und eigenem Stil), dazu deinen Namen und deine Pronomen. Über das Pausenmenü (Kleiderschrank) oder den Kleiderschrank in deiner Wohnung wechselst du die Figur jederzeit. Alle Menschen in Rainbow City sind solche Figuren: Passant*innen, Polizei, Feuerwehr, Sanitäterin, Türsteher, Köchin und Kurier."
+   ]
+  },
+  {
+   "t": "In der Stadt",
+   "list": [
+    "Oben links steht dein aktuelles Ziel, ein Stern über Figuren oder Orten zeigt, wohin es geht.",
+    "Oben rechts: Wochentag und Uhrzeit, Geld, Stimmung und fünf kleine Balken für deine Bedürfnisse (rot = dringend).",
+    "Gehst du nah an eine Figur oder Tür, erscheint ein Hinweis; mit der Aktionstaste sprichst du oder gehst hinein.",
+    "Ein Spieltag dauert etwa 16 Minuten. Nachts leuchten Neon-Schilder und Laternen, auf dem Platz wird getanzt.",
+    "Autos halten an, wenn du vor ihnen stehst."
+   ]
+  },
+  {
+   "t": "Orte",
+   "list": [
+    "Café Kaffeeklatsch: Cappuccino (+Energie) und Regenbogenkuchen bei Mo, mit Gästen plaudern.",
+    "Deine Wohnung: begehbar, mit Bett, Dusche, Herd, Kühlschrank, Fernseher und Kleiderschrank.",
+    "Regenbogenhaus: Treffpunkt der Szene, Spenden und Job als Eventmanager*in.",
+    "Club Prisma: Tanz-Battle, Drinks an der Bar, ab 20 Uhr Job als DJ.",
+    "Späti Lecker: Brezel, Mate und Lebensmittel zum Kochen.",
+    "Boutique Fabelhaft: Job im Verkauf und neuer Look.",
+    "Muckibude Muskelkater: Training, Duschen und Job als Fitnesstrainer*in.",
+    "Studio Klappe Auf: Job als Fotograf*in.",
+    "Checkpoint Regenbogen: kostenlose HIV- und STI-Tests, PrEP-Beratung, gratis Kondome, Infos zu U=U, PrEP, PEP und Safer Sex.",
+    "Tram: für 2 € in zehn Minuten an jeden Ort.",
+    "Pride Plaza mit Brunnen, Flaggen aller Communitys und Bühne, dazu der Regenbogenpark."
+   ]
+  },
+  {
+   "t": "Hafenviertel",
+   "p": [
+    "Westlich der Innenstadt liegt der Hafen am Regenbogenkai. Du erreichst ihn zu Fuß über die westliche Ringstraße, mit dem Auto oder mit der Tram (Karte im Handy, 2 €)."
+   ],
+   "list": [
+    "Club Leuchtturm: die alte Lagerhalle, die du in Kapitel 3 für 300 € mietest. Danach dein eigener Club mit Barkeeper-Schichten, Party-Nächten (ab 21 Uhr, einmal pro Nacht) und Deko für mehr Trinkgeld.",
+    "Strandbar Sandbank: Cocktails, Schwimmen, Sonnenbaden und Beachvolleyball.",
+    "Steg mit Leuchtturm, Container in Pride-Farben und die Tram-Endstation Hafen."
+   ]
+  },
+  {
+   "t": "Belebte Stadt und Autos",
+   "list": [
+    "Passant*innen laufen auf den Gehwegen, tagsüber mehr als nachts. Mit A bzw. Enter kannst du sie ansprechen.",
+    "Polizeiwache Mitte und Feuerwache Regenbogen liegen nördlich der großen Kreuzung. Die Polizei hat eine Ansprechperson für queere Menschen, die Feuerwehr lädt zum Tag der offenen Tür ein. Ein Streifenwagen und ein Löschzug fahren mit Blaulicht durch die Stadt.",
+    "Vier geparkte Autos (Kleinwagen vor deiner Wohnung, Limousine und Taxi nahe der Plaza, Kombi am Hafen): Stell dich daneben und drück A zum Einsteigen. Stick oder WASD lenken und geben Gas, Turbo (Shift/RT) beschleunigt, A steigt wieder aus.",
+    "Mit „Inhalte ab 18“ stehen nachts vor dem Haus Rosa selbstbestimmte Sexarbeiter*innen. Ansprechen führt zu derselben respektvollen Absprache wie im Haus (Zustimmung und Kondom sind Pflicht, alles nur angedeutet)."
+   ]
+  },
+  {
+   "t": "Ich bin das Licht – Leons Geschichte",
+   "p": [
+    "Der Roman „Ich bin das Licht“ von RicoReWi ist Teil von Pride City. Ab Kapitel 2 steht Leon vor der One Love Bar (im Osten neben der Boutique Fabelhaft). Abends ist er Lady Luma.",
+    "Sprich ihn an, und er erzählt seine Geschichte in zwölf Rückblenden: vom Esstisch der Eltern über Samira, die Regennacht mit Mert und Velvet bis zur Wiedereröffnung der One Love Bar und dem Satz seines Vaters. In jeder Rückblende entscheidest du, was Leon tut. Mutige Entscheidungen bringen mehr Licht.",
+    "Am Spiegel mit den Glühbirnen stellst du Lady Lumas Look zusammen (Perücke, Kleid, Schmuck). Bei der Wiedereröffnung spielst du den Buchsong als Tanz-Battle. Am Ende zählt dein Licht: „Ich bin das Licht“ (ab 85), „Glamour in den Adern“ (ab 55) oder „Ein erster Funke“.",
+    "Den kompletten Roman liest du im Handy unter 📖 „Ich bin das Licht“ oder in der One Love Bar. Das Spiel merkt sich, wo du warst.",
+    "Die Rückblenden laufen parallel zur Hauptgeschichte: In Kapitel 2 sind etwa ein Viertel frei, in Kapitel 3 die Hälfte, in Kapitel 4 drei Viertel, in Kapitel 5 fast alle. Den Schluss erzählt die Figur erst nach der Parade.",
+    "Ab Leons fünfter Rückblende kannst du in der One Love Bar Lady Lumas Drag-Show selbst spielen: Wähle die Buch-Hymne „Ich bin das Licht“ (offizielles YouTube-Video, lädt erst nach Zustimmung, sonst Beat im Takt) oder einen der Klaviersongs aus Klavierlicht. Dort kannst du auch als Leon Sommer oder als Lady Luma durch die Stadt laufen."
+   ]
+  },
+  {
+   "t": "Leuchtfeuer – Finns Geschichte",
+   "p": [
+    "Auch der Jugendroman „Leuchtfeuer“ von RicoReWi ist Teil von Pride City. Ab Kapitel 2 steht Finn am Ende des Stegs im Hafenviertel, direkt am Leuchtturm. Er lebt heute mit Ben in Rainbow City.",
+    "Sprich ihn an, und er erzählt von seinem letzten Schuljahr in Warnholm in 16 Rückblenden: Schwarzes Brett, Flaschenpost, das Sturmnacht-Plakat mit Ben, Funkstille, Pias Fall 14, Gegenwind am Deich bis zum Feuer am Nordstrand.",
+    "Deine Entscheidungen bringen Leuchtkraft. Die fünf Spiele aus dem Buch (Leuchtturm-Licht, Plakat, „Zwei mit Zwiebeln“, Gegenwind, Fall 14) erlebst du als Erinnerung mit, jede bringt 6 Leuchtkraft. Am Ende wartet eins von drei Enden.",
+    "Den kompletten Roman liest du im Handy unter 🗼 „Leuchtfeuer“. Das Spiel merkt sich, wo du warst. Beim Pride-Finale laufen Finn und Ben ganz vorne mit.",
+    "Die Rückblenden laufen parallel zur Hauptgeschichte: In Kapitel 2 sind etwa ein Viertel frei, in Kapitel 3 die Hälfte, in Kapitel 4 drei Viertel, in Kapitel 5 fast alle. Den Schluss erzählt die Figur erst nach der Parade."
+   ]
+  },
+  {
+   "t": "Alltag und Bedürfnisse",
+   "p": [
+    "Wie in Gay Life! hast du fünf Bedürfnisse: Energie, Satt, Frisch, Kontakte und Spaß. Sie sinken mit der Zeit, im Schlaf erholt sich die Energie. Aus allen fünf ergibt sich deine Stimmung; gute Stimmung bringt bis zu 15 % mehr Lohn, schlechte bis zu 20 % weniger.",
+    "Bei niedrigen Werten gibt das Spiel einen Tipp. Energie unter 10 heißt: kein Sprinten mehr."
+   ]
+  },
+  {
+   "t": "Wohnung",
+   "list": [
+    "Bett: Schlafen bis 7 Uhr (Energie voll, speichert) oder Nickerchen.",
+    "Dusche: Frisch auf 100.",
+    "Herd: kochen, braucht Lebensmittel aus dem Späti (+50 Satt).",
+    "Fernseher: +25 Spaß.",
+    "Kleiderschrank: Look ändern.",
+    "Tür: zurück in die Stadt."
+   ]
+  },
+  {
+   "t": "Jobs",
+   "p": [
+    "Fünf Jobs aus Gay Life!: Verkäufer*in (Boutique, 10–20 Uhr), Fitnesstrainer*in (Muckibude, 8–21 Uhr), Fotograf*in (Studio, 10–20 Uhr), DJ (Club Prisma, 20–2 Uhr) und Eventmanager*in (Regenbogenhaus, 10–18 Uhr).",
+    "Eine Schicht dauert vier Stunden und besteht aus drei Situationen mit je drei Antworten. Die beste Antwort bringt 2 Punkte. Lohn = 4 × Stundenlohn + Punkte-Bonus, mal Stimmung. Mit Erfahrung wirst du befördert (vier Stufen, je +25 % Lohn). Höchstens zwei Schichten am Tag."
+   ]
+  },
+  {
+   "t": "Aufträge, Taxi und Imperium",
+   "list": [
+    "Aufträge: Leute aus der Stadt rufen an (oder du wählst im Handy unter „Aufträge“). Folge der gelben Lichtsäule und dem Radar und schaff alle Stationen in der Zeit. Neu sind unter anderem „Ehe für alle“ (Ringe und Torte zur Trauung im Park), der Vogue-Ball am Plaza, Lady Lumas Perücken-Notfall, die CSD-Demo, das Bärchen-Grillfest und nachts Kofis Gästeliste.",
+    "Regenbogen-Taxi: Steig in ein Auto und wähle im Handy unter „Aufträge“ das Regenbogen-Taxi. Hol Fahrgäste ab (Drag-Queens, Brautpaare, Ballroom-Kids, der Lesbenchor …) und bring sie ans Ziel. Jede Fahrt in Folge bringt mehr Geld, ab der dritten auch Ruf. Steigst du aus oder bist zu langsam, endet die Schicht.",
+    "Imperium: In der Handy-App „Imperium“ steigst du bei Läden, Bars und Clubs ein – vom Späti bis zum Club Prisma. Jedes Geschäft kostet Geld und braucht genug Ruf, zahlt dafür jeden Tag Einnahmen aus (auch für Tage, an denen du nicht gespielt hast, bis zu einer Woche) und bringt Ruf."
+   ]
+  },
+  {
+   "t": "Handy",
+   "list": [
+    "Öffnen mit P, dem 📱-Knopf am Touchscreen oder X am Controller (M bzw. Select öffnet direkt die Karte).",
+    "Status: Bedürfnisse, Stimmung, Geld, Ruf, Glitzer.",
+    "Ziele: Kapitelziel, drei Tagesziele mit Glitzer-Belohnung, Sammelstand.",
+    "Karte & Tram: alle Orte, mit der Tram hinfahren.",
+    "Jobs: alle Jobs mit Stufe, Lohn und Öffnungszeit, Ort markieren.",
+    "Kontakte: Leute, mit denen du gesprochen hast, und eure Freundschaft.",
+    "Rainbow Match: Dating-App mit Profilfotos der Figuren (tippe aufs Bild oder nutze „Fotos“ mit ←/→; mit 18+ zusätzlich sexy Pose und Unterwäsche) – Profile nach rechts (Ja) oder links (Nein) wischen, am Controller und an der Tastatur mit ←/→. Bei einem Match planst du ein Date im Café oder Club.",
+    "Feed: Neuigkeiten aus der Szene, Gerüchte und deine eigenen Momente.",
+    "Gesundheit: letzter Test, PrEP-Status und Erinnerung, Infos.",
+    "Glossar: Begriffe aus der Szene."
+   ]
+  },
+  {
+   "t": "Freundschaft und Dates",
+   "p": [
+    "Sprich jeden Tag mit Leuten: Das füllt Kontakte und Freundschaft. Ab 80 Freundschaft gehört jemand zu deiner Wahlfamilie.",
+    "Ein Date besteht aus drei Situationen. Mit mindestens 4 von 6 Punkten steigt eure Beziehung: Match → Erstes Date → Verliebt → Zusammen. Zustimmung ist immer Pflicht, ein Nein wird respektiert."
+   ]
+  },
+  {
+   "t": "Inhalte ab 18",
+   "p": [
+    "In den Optionen lässt sich „Inhalte ab 18“ einschalten (nach Altersabfrage, standardmäßig aus). Dann zeigen Profile Vorlieben, das Glossar weitere Begriffe, die Boutique Toys, und ab „Verliebt“ kann ein Date – wenn beide wollen und ein Kondom da ist – über Nacht gehen. Die Szene wird nur angedeutet und blendet ab; am Morgen danach sieht man die Spuren in der Wohnung.",
+    "Gesundheitsinfos (Checkpoint, PrEP, Tests, U=U) sind immer sichtbar."
+   ]
+  },
+  {
+   "t": "Tanz-Battle",
+   "p": [
+    "Pfeile fliegen auf vier Leuchtspuren heran. Drücke die passende Richtung, wenn ein Pfeil den Ring erreicht: Perfekt bringt 100, Super 70, Gut 40 Punkte plus Combo-Bonus. Drei Runden werden immer dichter. Wer am Ende mehr Punkte hat als Rex, gewinnt."
+   ]
+  },
+  {
+   "t": "Barkeeper-Minispiel",
+   "p": [
+    "Im Club Leuchtturm (und unter Minispiele) mischst du 75 Sekunden lang Drinks. Oben steht, wer was bestellt, darunter die Karte mit den Zutaten. Wähle die Zutaten in beliebiger Reihenfolge und drück Servieren. Jeder richtige Drink bringt Trinkgeld, Fehler kosten Zeit. Am Ende gibt es Lohn, Kontakte und etwas Ruf."
+   ]
+  },
+  {
+   "t": "Nachtleben (nur mit „Inhalte ab 18“)",
+   "p": [
+    "Mit eingeschaltetem 18+-Schalter öffnen sich drei Orte für Erwachsene. Alles wird nur angedeutet: Das Bild blendet ab, gezeigt werden nur Absprache, Zustimmung und Safer Sex.",
+    "Videothek Kopfkino (unten an der Hauptstraße): Filme mit frechen Parodie-Titeln, von denen du nur Titel und Cover-Beschreibung siehst, ein Kondomautomat und die Kabinen. Dort gilt zweimal Klopfen als Frage – du wartest die Antwort ab, ein Schweigen ist ein Nein.",
+    "Haus Rosa: Hier mieten selbstbestimmte erwachsene Sexarbeiter*innen eigene Zimmer. Jede Person nennt vorher ihre Regeln und den Preis; das Haus stellt Kondome. Du kannst auch nur reden und Tee trinken.",
+    "Regenbogenpark: Ab 22 Uhr gibt es Cruising. Ein Nicken ist die Frage, ein Kopfschütteln wird respektiert, ohne Kondom läuft nichts. Mit 18+ siehst du im Park auch die Spuren anderer Nächte.",
+    "Nach jeder Begegnung erinnert dich das Spiel an den nächsten Test im Checkpoint, wenn er länger als zwei Wochen her ist."
+   ]
+  },
+  {
+   "t": "Fortschritt und Speichern",
+   "p": [
+    "Das Spiel speichert automatisch bei wichtigen Schritten, beim Schlafen und beim Verlassen. Im Pausenmenü kannst du jederzeit speichern. In den Optionen sicherst du den Spielstand mit deinem Google-Konto und spielst auf anderen Geräten weiter."
+   ]
+  },
+  {
+   "t": "Originale: Romanspiele und Gay Life!",
+   "p": [
+    "Im Handy findest du die Original-Spiele: 🎮 „Ich bin das Licht – Das Spiel“ (Leon, Lady Luma, Show mit Buch-Hymne) und 🎮 „Leuchtfeuer – Das Spiel“ (16 Kapitel, Leuchtturm, Plakat, „Zwei mit Zwiebeln“, Gegenwind, Fall 14). Leon und Finn bieten sie auch im Gespräch an. Mit „✕ Pride City“ kommst du zurück.",
+    "🏳️‍🌈 „Gay Life! – Das Original“ ist komplett dabei: sieben Viertel, Bewohner, Mehrspieler per PIN/QR und alle 14 Minispiele. Die Minispiele (Date-Roulette, Clubnacht-Manager, Regenbogen-Rave, Outfit-Check, Beinetag, Glitzer-Match, Parade-Runner, Tanzbattle, Strandbad-Sprung, Karaoke, Sauna-Aufguss, Dunkelkammer, Casting-Tag, Klischee-Quiz) startest du auch direkt unter Minispiele.",
+    "Die Figuren aus „Leuchtfeuer“ leben heute am Hafen: Finn und Ben am Leuchtturm, Lotte an der Strandbar, Pia, Samira, Tobi und Jörg und Anke Albrecht mit ihrem Fischstand."
+   ]
+  },
+  {
+   "t": "Alle Häuser sind betretbar",
+   "p": [
+    "Jedes Haus der Stadt hat eine Tür. Stell dich davor und drück Benutzen (Enter, A oder Tippen auf „Rein“). Läden und Treffpunkte wie Café, Club Prisma, Regenbogenhaus, Boutique, Muckibude, Studio, Checkpoint, One Love Bar, Wachen und Club Leuchtturm sind innen eigen eingerichtet; ihr bisheriges Menü findest du an der Theke.",
+    "Die übrigen Häuser sind feste Orte aus Gay Life!: Kino, Buchladen, Arcade, Sauna, Karaoke-Bar, Tanzschule, Schwimmhalle, Festwagen-Werkstatt, Ramen-Bar und die Wohnungen von Jonas, Mika, Deniz, Elif, Torsten, Noor, Kai und Rosa. Goldene Ringe am Boden zeigen, wo du etwas tun kannst: Gay-Life-Minispiele spielen, Tanz-Battle, Drag-Show, Bar-Schicht, die Romane lesen, mit Bewohner*innen reden oder etwas für deine Bedürfnisse tun.",
+    "Hinaus geht es über die Tür mit dem grünen AUSGANG-Schild oder im Pausemenü mit „Haus verlassen“. Orte für Erwachsene (Videothek, Haus Rosa, Dunkelkammer) öffnen sich nur mit eingeschaltetem 18+."
+   ]
+  },
+  {
+   "t": "Spaßwaffen, Gesetze und Fahndungssterne",
+   "p": [
+    "Mit Angriff (F, LT am Controller, 👊 auf dem Handy) teilst du aus, mit Waffe wechseln (G, L3, 🔄 oder Antippen der Waffen-Anzeige) wählst du: Klaps, Regenbogen-Poolnudel, Gleitgel-Flasche und – nur mit „Inhalte ab 18“ und einem Toy aus der Boutique – den Glitzer-Dildo. Getroffene fallen komisch um und stehen nach ein paar Sekunden wieder auf; niemand wird verletzt.",
+    "Gleitgel (4 € im Späti Lecker) wirfst du vor dich auf den Boden. Wer durch die Pfütze läuft, rutscht aus – auch die Polizei. Rennst du selbst hindurch, landest du ebenfalls auf dem Hosenboden.",
+    "Rainbow City hat Gesetze: Hauen (1 Stern), Polizei angreifen (2 Sterne), Gleitgel auf dem Gehweg (1), Erregung öffentlichen Ärgernisses mit dem Dildo vor der Streife (1) und Autodiebstahl vor Polizeiaugen (1). Sieht dich keine Streife, ruft manchmal jemand die Polizei.",
+    "Mit Sternen rennt die Streife hinterher, ab drei Sternen kommt Verstärkung. Bleibst du lange ungesehen (8 Sekunden plus 5 je Stern), hängst du sie ab. Erwischt dich jemand, gibt es Bußgeld und zwei Stunden Papierkram auf der Wache. Sofort weg sind die Sterne mit dem Undercover-Umstyling in der Boutique oder wenn du dich auf der Polizeiwache stellst und zahlst."
+   ]
+  },
+  {
+   "t": "Heiraten und Kinder adoptieren",
+   "p": [
+    "Wer bei Rainbow Match „Zusammen“ ist, kann heiraten: Kauf in der Boutique Fabelhaft einen Verlobungsring (150 €) und wähle beim Planen eines Dates „Antrag machen“.",
+    "Die Hochzeit feiert ihr im Regenbogenhaus (400 €, +5 Ruf). Danach wohnt deine Partnerin, dein Partner oder deine Partner*in bei dir und wartet zu Hause zum Kuscheln, Tanzen und Reden.",
+    "Verheiratet und mit mindestens 5 Ruf könnt ihr im Regenbogenhaus eine Adoption beantragen (250 €). Ihr wählt Junge oder Mädchen und einen Namen, nach drei Tagen zieht euer Kind ein. Zu Hause spielt, lest und malt ihr zusammen – das bringt Spaß, Kontakte und Ruf.",
+    "Das Handy zeigt unter „Familie“ euren Stand und die aktuelle Fahndung."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Einsteiger",
+   "list": [
+    "Folge dem Stern: Er zeigt immer das nächste Story-Ziel.",
+    "Halte Sprinten gedrückt (Shift, RT oder Turbo), um schneller voranzukommen.",
+    "Dreh die Kamera mit dem rechten Stick, der Maus oder durch Wischen, wenn ein Gebäude die Sicht verdeckt."
+   ]
+  },
+  {
+   "t": "Unterschriften",
+   "list": [
+    "Frag freundlich und erkläre, worum es geht – dann unterschreiben die meisten.",
+    "Drängeln führt zu einem Nein. Das ist okay: Es gibt genug andere Leute in der Stadt.",
+    "Wer gerade keinen Kopf dafür hat und dabei respektiert wird, bringt dir trotzdem Ruf."
+   ]
+  },
+  {
+   "t": "Tanz-Battle meistern",
+   "list": [
+    "Schau auf den Ring, nicht auf die Pfeile weit hinten.",
+    "Combos bringen bis zu 50 Bonuspunkte pro Pfeil – eine lange Serie ist mehr wert als einzelne perfekte Treffer.",
+    "In Runde 3 kommen Doppel-Pfeile auf halben Schlägen: Rhythmus mitzählen hilft."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "Nova öffnet den Club erst um 21 Uhr – vor der Tür kannst du einfach warten.",
+    "Wer im Battle auf Zurück drückt, gibt auf; du kannst Rex danach jederzeit erneut herausfordern."
+   ]
+  },
+  {
+   "t": "Alltag meistern",
+   "list": [
+    "Morgens duschen und Kaffee bei Mo, dann eine Schicht: so startet die Stimmung hoch.",
+    "Lebensmittel im Späti sind günstiger als Essen im Café: 6 € für drei Portionen.",
+    "Rede jeden Tag mit Leuten – das füllt Kontakte und Freundschaft, beides nur einmal pro Person und Tag.",
+    "Die Tagesziele wechseln jeden Tag und bringen Glitzer.",
+    "Schlaf vor Mitternacht, sonst bist du am nächsten Tag zu müde für zwei Schichten."
+   ]
+  },
+  {
+   "t": "Dating und Gesundheit",
+   "list": [
+    "Gute Date-Antworten: zuhören, nachfragen, Humor, und fragen statt bestimmen.",
+    "Ruf und gute Stimmung erhöhen die Chance auf ein Match.",
+    "Gratis-Kondome gibt es einmal am Tag im Checkpoint, Kondome und Gleitgel auch im Späti.",
+    "Mit PrEP erinnert dich das Handy alle 14 Spieltage an den nächsten Test.",
+    "Im Nachtleben immer ein Kondom dabeihaben: Späti (3 Stück für 3 €), Automat in der Videothek (1 €) oder gratis im Checkpoint."
+   ]
+  },
+  {
+   "t": "Eigener Club und Geld",
+   "list": [
+    "Für die 300 € Clubmiete: zwei bis drei Schichten im Job, dazu Battles gegen Rex (25 € pro Sieg).",
+    "Die Deko (80 €) lohnt sich schnell: Sie erhöht Trinkgeld und Gäste bei Party-Nächten.",
+    "Party-Nächte bringen mehr Gäste, je höher dein Ruf ist. Wählst du bei Rex „Komm zu uns“, legt er im Leuchtturm auf und bringt zusätzliche Gäste.",
+    "Merk dir die Karte: Bärenbier ist nur Bier, alle anderen Drinks haben drei Zutaten."
+   ]
+  },
+  {
+   "t": "Unterwegs",
+   "list": [
+    "Mit dem Auto bist du am schnellsten, die Tram ist bequemer und spart Zeit beim Laufen.",
+    "Autos bremsen beim Zusammenstoß ab. Fahr langsam an Kreuzungen und Fußgänger*innen vorbei.",
+    "Nachts wird es ruhiger auf den Gehwegen, dafür öffnen Club, Haus Rosa und Park ihr zweites Leben."
+   ]
+  },
+  {
+   "t": "Häuser erkunden",
+   "list": [
+    "Hunger und kein Essen zu Hause? Die Ramen-Bar macht +50 Hunger satt.",
+    "Bewohner*innen einmal am Tag besuchen bringt Kontakte.",
+    "Die Arcade hat drei Gay-Life-Minispiele nebeneinander, gut für Glitzer-Rekorde."
+   ]
+  },
+  {
+   "t": "Geld verdienen wie ein Profi",
+   "list": [
+    "Fang mit dem Späti im Imperium an: Er kostet wenig und zahlt jeden Tag.",
+    "Taxi-Serien lohnen sich: Je länger du ohne Pause fährst, desto höher der Lohn.",
+    "Aufträge bringen Ruf – den brauchst du für die großen Clubs."
+   ]
+  },
+  {
+   "t": "Ärger mit der Polizei vermeiden",
+   "list": [
+    "Schau dich um, bevor du zuschlägst: Steht eine Streife in der Nähe, gibt es sofort Sterne.",
+    "Mit Sternen schnell um eine Hausecke laufen und warten – ungesehen hängst du die Polizei ab.",
+    "Im Auto entkommst du leichter, aber Einsteigen vor der Polizei zählt als Autodiebstahl.",
+    "Wird es eng: Boutique (Umstyling) oder Polizeiwache (Bußgeld) machen die Fahndung sofort weg."
+   ]
+  },
+  {
+   "t": "Schneller zur Familie",
+   "list": [
+    "Dates im Café und im Club bringen euch über Erstes Date und Verliebt zu Zusammen.",
+    "Spar früh: Ring, Hochzeit und Adoption kosten zusammen 800 €. Das Imperium hilft.",
+    "Ruf für die Adoption gibt es mit Aufträgen, Spenden im Regenbogenhaus und dem Taxi."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Kapitel 1: Ankommen",
+   "steps": [
+    "Geh die Hauptstraße hinunter zum Café Kaffeeklatsch und sprich mit Mo. Deine Antwort, wie du dich fühlst, merkt sich das Spiel.",
+    "Geh nach Süden zu deiner Wohnung (Tür an der Hauptstraße) und bring den Koffer hinein.",
+    "Sprich im Norden hinter der großen Kreuzung vor dem Regenbogenhaus mit Jules und wähle deinen Weg: laut, kreativ oder diplomatisch.",
+    "Sammle drei Unterschriften bei Figuren mit ✍️: Lena (Pride Plaza), Hilde (Bank am Platz), Kim (Nordwesten), Sam (Süden an der Hauptstraße) oder Tariq (Regenbogenpark im Südosten). Antworte freundlich und erkläre, worum es geht.",
+    "Bring die Liste zu Jules.",
+    "Geh zum Club Prisma und sprich mit Nova. Vor 21 Uhr wählst du „Bis 21 Uhr warten“.",
+    "Gewinne das Tanz-Battle gegen Rex. Bei einer Niederlage sprichst du Nova einfach erneut an.",
+    "Kapitel 1 ist geschafft: 120 € und 15 Ruf."
+   ]
+  },
+  {
+   "t": "Kapitel 2: Wurzeln schlagen",
+   "steps": [
+    "Sprich mit Mo vor dem Café. Sie schickt dich auf Jobsuche.",
+    "Arbeite eine Schicht: Im Handy unter Jobs siehst du Arbeitsorte und Zeiten, am Ort wählst du „Schicht als …“.",
+    "Lerne sechs Leute aus der Stadt kennen (einmal ansprechen reicht). Danach lädt Hilde zum Essen ein.",
+    "Geh ab 18 Uhr zu Hilde auf der Pride Plaza und wähle, was du mitbringst (Musik, Kuchen oder deine Geschichte). Kapitel 2 ist geschafft."
+   ]
+  },
+  {
+   "t": "Kapitel 3: Die Szene",
+   "steps": [
+    "Nova vor dem Club Prisma plant eine Drag-Show. Sprich sie an.",
+    "Geh in die Boutique Fabelhaft im Osten und wähle deinen Drag-Namen.",
+    "Ab 21 Uhr sprichst du Nova wieder an: Drag-Show und Revanche gegen Rex im Tanz-Battle. Bei einer Niederlage einfach nochmal.",
+    "Sprich danach mit Rex vor dem Club. Deine Antwort (Freundschaft, Job als DJ oder Rivalität) beeinflusst das Ende.",
+    "Spare 300 € und geh zur Lagerhalle im Hafenviertel. Du eröffnest den Club Leuchtturm und arbeitest die erste Barkeeper-Schicht. Kapitel 3 ist geschafft."
+   ]
+  },
+  {
+   "t": "Kapitel 4: Gegenwind",
+   "steps": [
+    "Jules im Regenbogenhaus erzählt: Nova ist verschwunden, Glanz Immobilien will räumen.",
+    "Frag Rex (vor dem Club), Bruno (Späti) und Kim (läuft westlich des Regenbogenhauses) nach Hinweisen. Die Lupe zeigt, wer noch etwas weiß.",
+    "Lass Brunos Fotos im Studio Klappe Auf vergrößern.",
+    "Geh ab 22 Uhr in den Regenbogenpark zum Wasserturm. Dort findest du Nova.",
+    "Zurück bei Jules entscheidest du, was mit den Beweisen passiert (Presse, Bezirksamt oder Konfrontation). Das Regenbogenhaus ist gerettet. Optional: In der Polizeiwache Anzeige gegen Glanz erstatten (+3 Ruf)."
+   ]
+  },
+  {
+   "t": "Kapitel 5: Pride",
+   "steps": [
+    "Sprich mit Jules und wähle deine Rolle bei der Pride (Rede, Club-Wagen oder Vortanzen).",
+    "Hol Lena, Bruno und Tariq ins Team (Regenbogen-Symbol über dem Kopf).",
+    "Geh ab 12 Uhr auf die Pride Plaza. Nach dem Parade-Tanz zeigt das Spiel dein Ende: Was Jules, Rex, Hilde und Mo sagen, hängt von deinen Entscheidungen und deinem Ruf ab (ab 80 Ruf gibt es ein besonderes Lob).",
+    "Danach läuft der Abspann, und du spielst frei weiter."
+   ]
+  },
+  {
+   "t": "Ich bin das Licht (Nebengeschichte)",
+   "steps": [
+    "Ab Kapitel 2: Geh zur One Love Bar im Osten und sprich Leon an. Sag Ja, wenn er fragt, ob du seine Geschichte hören willst.",
+    "Sprich ihn für jede weitere Rückblende wieder an (insgesamt zwölf). Für das beste Ende wähle immer die mutigere Antwort, sie bringt mehr Licht.",
+    "Rückblende 5 (Der Spiegel mit den Glühbirnen): Lady Lumas Look wählen, bringt 6 Licht.",
+    "Rückblende 10 (Die Nacht der Wiedereröffnung): Tanz-Battle gewinnen bringt 20 Licht, verlieren 10.",
+    "Nach der letzten Rückblende zeigt das Spiel dein Ende. Danach kannst du in der One Love Bar die Lady-Luma-Show ansehen, und bei der Pride-Parade ruft Lady Luma die Stadt zum Mitsingen auf."
+   ]
+  },
+  {
+   "t": "Leuchtfeuer (Nebengeschichte)",
+   "steps": [
+    "Ab Kapitel 2 mit der Tram zum Hafen fahren und über den Steg bis zum Leuchtturm gehen. Finn ansprechen und „Ja, erzähl.“ wählen.",
+    "Für jede weitere Rückblende Finn wieder ansprechen (insgesamt 16). Die mutigere Antwort bringt mehr Leuchtkraft.",
+    "Enden nach Leuchtkraft: ab 78 % „Leuchtfeuer“, ab 50 % „Ein Licht im Fenster“, sonst „Ein erster Strahl“. Fortschritt steht im Story-Menü."
+   ]
+  },
+  {
+   "t": "Pride-Sticker (8)",
+   "list": [
+    "Pride Plaza, Südseite.",
+    "Regenbogenpark, Südteil.",
+    "Nordwestliche Stadtecke.",
+    "Östlicher Stadtrand, nördlich der Mitte.",
+    "Südwestlicher Stadtrand.",
+    "Nördlicher Stadtrand, östlich der Hauptstraße.",
+    "Nordwesten, nahe dem Regenbogenhaus.",
+    "Südöstlich der Hauptkreuzung.",
+    "Jeder Sticker bringt 10 Glitzer, alle zusammen 10 Ruf."
+   ]
+  },
+  {
+   "t": "Freies Spiel und Extras",
+   "list": [
+    "Im freien Spiel kannst du Rex im Club Prisma beliebig oft herausfordern; ein Sieg bringt 25 € und 2 Ruf.",
+    "Täglicher Cappuccino bei Mo bringt beim ersten Mal am Tag 1 Ruf.",
+    "Spenden im Regenbogenhaus: 10 € für 2 Ruf.",
+    "Nach der Parade kannst du den Abspann jederzeit im Story-Menü ansehen. Alle Entscheidungen stehen dort.",
+    "Club Leuchtturm: Barkeeper-Rekord jagen, Party-Nächte feiern, Deko kaufen."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Was ist mit meinem Gay-Life!-Spielstand?",
+   "a": "Beim ersten neuen Spiel bietet Pride City an, Name, Erspartes und Glitzer zu übernehmen. Gay Life! bleibt bis zum Abschluss des Relaunchs weiter spielbar."
+  },
+  {
+   "q": "Gibt es Mehrspieler?",
+   "a": "Noch nicht in Pride City. Der Mehrspieler aus Gay Life! wird in einem späteren Update übernommen."
+  },
+  {
+   "q": "Läuft das Spiel auf dem Handy?",
+   "a": "Ja, im Hoch- und Querformat mit Touch-Steuerung. Die Grafikstufe passt sich automatisch an."
+  }
+ ]
 }
