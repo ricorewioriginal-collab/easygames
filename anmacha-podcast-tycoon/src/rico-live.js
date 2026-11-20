@@ -171,7 +171,7 @@
       up.apply(AMC.Acts, arguments);
       if ((wait -= dt) > 0) return; wait = 1;
       const S = AMC.Play.state(); if (!S || S.mode !== 'free' || S.net || S.drive || AMC.Cut.active() || AMC.UI.isOpen() || (AMC.Worlds && AMC.Worlds.busy && AMC.Worlds.busy())) return;
-      const a = Save.data.acts || {}; if (!(a.seen || {})[a.cur || 0] && (a.cur || 0) < 5) return;   // erst die Einleitung des laufenden Akts
+      const a = Save.data.acts || {}; if (!(a.seen || {})[a.cur || 0] && (a.cur || 0) < AMC.Acts.ACTS.length) return;   // erst die Einleitung des laufenden Akts
       if (AMC.Acts.lastCut && Date.now() - AMC.Acts.lastCut < 45000) return;
       const id = ['andrew', 'marco', 'duo'].find(k => !SC.seen(k) && SCENES[k].need()); if (!id) return beam(null);
       beam(S);
