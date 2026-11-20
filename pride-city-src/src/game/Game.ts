@@ -106,6 +106,9 @@ export class Game {
     const q = new URLSearchParams(location.search);
     if (q.has('play') && s.started) { if (s.inside) this.enterHome(); else this.city.setPlay(); return; }
     this.title();
+    // Einladungslink: Code steht schon drin
+    this.joinCode = normCode(q.get('join') || '');
+    if (this.joinCode.length === 4) { if (this.save.hasGame) this.codeMenu(() => this.title(), () => this.play()); else toast(`🌐 Einladung in die Stadt ${this.joinCode}: Starte erst ein neues Spiel, dann unter „Online & Freunde“ beitreten.`, 7000); }
   }
 
   /* ---------- Overlay-Menüs ---------- */
@@ -141,6 +144,7 @@ export class Game {
     items.push({ icon: '✨', label: 'Neues Spiel', sub: 'Dein Leben in Rainbow City beginnt', big: !s.hasGame, fn: () => this.newGame() });
     items.push({ icon: '📖', label: 'Story', sub: 'Kapitel und roter Faden', fn: () => this.storyMenu(() => this.title()) });
     items.push({ icon: '🪩', label: 'Minispiele', sub: 'Tanz-Battle, Bar, Drag-Show', fn: () => this.minigames(() => this.title()) });
+    items.push({ icon: '🌐', label: 'Online & Freunde', sub: this.city.friends.net.on ? `Verbunden · Stadt ${this.city.friends.net.code}` : 'Zusammen durch Rainbow City, per Link oder Code', fn: () => this.onlineMenu(() => this.title(), () => this.play()) });
     items.push({ icon: '⚙️', label: 'Optionen', sub: 'Grafik, Ton, Steuerung', fn: () => this.options(() => this.title()) });
     items.push({ icon: '💜', label: 'Mitwirkende', sub: 'Assets und Lizenzen', fn: () => this.credits() });
     this.openMenu(`<div class="col"><div class="logo"><span class="l1">Pride</span><span class="l2">City</span><small>Ein Leben in allen Farben</small></div><div class="slot"></div></div>
@@ -897,6 +901,7 @@ export class Game {
       { icon: '📱', label: 'Handy', sub: 'Status, Ziele, Karte, Jobs, Kontakte', fn: () => this.phone() },
       { icon: '📖', label: 'Story', sub: 'Kapitel und Entscheidungen', fn: () => this.storyMenu(() => { this.closeMenu(); this.pauseMenu(); }) },
       { icon: '👗', label: 'Kleiderschrank', sub: 'Figur, Outfit und Pronomen', fn: () => this.fade(() => this.creator(true)) },
+      { icon: '🌐', label: 'Online & Freunde', sub: this.city.friends.net.on ? `Verbunden · ${this.city.friends.list.length} in der Stadt` : 'Freund*innen einladen oder besuchen', fn: () => this.onlineMenu(() => { this.closeMenu(); this.pauseMenu(); }, back) },
       { icon: '⚙️', label: 'Optionen', fn: () => this.options(() => { this.closeMenu(); this.pauseMenu(); }) },
       { icon: '💾', label: 'Speichern', fn: () => { this.save.write(); toast('Gespeichert.'); } },
       { icon: '🏠', label: 'Titelbildschirm', sub: 'Speichert automatisch', fn: () => { this.save.write(); this.closeMenu(); this.where = 'city'; this.fade(() => this.title()); } },

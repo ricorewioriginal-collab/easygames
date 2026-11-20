@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "861c5db66a68",
- "generated": "2026-11-20T18:52:29+00:00",
- "commit": "b2434305bfef743ad4bd7534e9bed3c435bbc162",
+ "version": "0aba12f96887",
+ "generated": "2026-11-20T19:52:51+01:00",
+ "commit": "79cd9023a75d42f2e1ea160635024330f4dea1fd",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -11143,8 +11143,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 48347,
-   "h": "ee95e259e6be2ffa11d596b107216d72160ef5dc3e79eaa00da4212adaa3c585"
+   "s": 50725,
+   "h": "4dc43c8c3c56e69d508d28c7ce0820642755039b2797390ccdbb5b57d0acfc12"
   },
   {
    "p": "guides/prismrush.json",
@@ -11933,8 +11933,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3262,
-   "h": "05bd73963ae8e32a610529b33597fd6d7da096b5d3a3029796f70fdcfb233437"
+   "s": 3296,
+   "h": "fd91e8a61db85f3bd97c98e54b6be285b29d6ab0b8703f367afbcf1b6536645a"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-DMBVqCOs.js",
@@ -12977,14 +12977,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
+   "p": "pride-city/assets/index-BEOyCN4q.js",
+   "s": 470337,
+   "h": "4c63cf7e88fcc5448825febf7482b3435eb363f790c9a00858c2e44a9e242b43"
+  },
+  {
    "p": "pride-city/assets/index-CYTo2T58.css",
    "s": 29110,
    "h": "1c3b4af0342d4adfb93eb8bb0eca05a140b250879bf9a4ef4538a3b4f0d632b4"
-  },
-  {
-   "p": "pride-city/assets/index-DRyzzQ5i.js",
-   "s": 469573,
-   "h": "7cb7c46ab79acbc8663ef676551c7497902ea01e7c7b20271c45d4172c1bf58b"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -13623,8 +13623,8 @@
   },
   {
    "p": "pride-city/index.html",
-   "s": 5812,
-   "h": "2c9912efce8d29cb1230653d8118b37bb7385867f6954e62c3d910155f4e36ab"
+   "s": 5862,
+   "h": "fcd5896bf4e21496334ce2b796431cdf23768b9e0d06290eea282c61fe4318ff"
   },
   {
    "p": "pride-city/logo.svg",
@@ -16398,8 +16398,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 236341,
-   "h": "b1e9593a7bd56bf8aaf8e66aab0dd5aabc7d7e59840f65f5e46e40c4bf48394d"
+   "s": 236363,
+   "h": "c0e91c131993ca676a5bbe4cad2e4d8d1443e98a094b50934137f853f974e996"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
