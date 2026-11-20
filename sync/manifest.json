@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "f9d57a759e3f",
- "generated": "2026-11-20T21:04:41+00:00",
- "commit": "71be2a8f0918fa685c9e969be658f5454b23db17",
+ "version": "fa74940f3681",
+ "generated": "2026-11-20T21:06:02+00:00",
+ "commit": "73f17af7f7ad3148d3c85c81b7840de9a584c670",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7928,8 +7928,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/assets.js",
-   "s": 31528,
-   "h": "06b330796f51cb754dbbfd8e1ac9dde550dcd56e2a736e348f3f986cf2505a67"
+   "s": 29971,
+   "h": "0fcb38cebcd604310c5f3cf17e03c201b08e66a96cf2271e669b6c0e0d25dc30"
   },
   {
    "p": "anmacha-urwaldlager/js/audio.js",
@@ -7938,8 +7938,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/camp.js",
-   "s": 66243,
-   "h": "7cb54cdaf4100b9eea573677b089b7d95f2a4ee2e68744adebe3ea36ba9d2033"
+   "s": 66220,
+   "h": "5bd41a93a075d1a8dd577b9f2439eb59d539e286660495e522b30ed6614f9ec8"
   },
   {
    "p": "anmacha-urwaldlager/js/core.js",
@@ -7953,8 +7953,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/input.js",
-   "s": 14624,
-   "h": "4f7d5c0e6bb6f2ada854a16d731b2b647ea2f74f3a37bb63f1053e8f77b7dd6d"
+   "s": 14441,
+   "h": "d84ff87f3474d08e6442291da1b4e69e279d8832d3cbd982b4d17d04720890cb"
   },
   {
    "p": "anmacha-urwaldlager/js/main.js",
@@ -7988,8 +7988,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/stage.js",
-   "s": 10084,
-   "h": "0c7832fa0aa2f17a3aeaee0a3ba3490006c5218b0217e3b6b07aa391333f88ff"
+   "s": 9414,
+   "h": "b0bc177bdab91802d0ccf82f2144a860e63f2a9d0e987653ea0ec8ca21d9e089"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/bach.js",
@@ -8078,8 +8078,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/tauchen.js",
-   "s": 9043,
-   "h": "0e683942e6cae32a6e1b5c4a74d4a5c52a16dc9442e2533082004d13c91797e7"
+   "s": 8829,
+   "h": "35e43faa6f4adeadeb7267c5faa1358f220bb3e801f7397609cdf82c311cf1b6"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/tunnel.js",
@@ -8257,11 +8257,6 @@
    "h": "7bd174881786e318b7f5df8b8e7d601274c2eb90c0b09d024bc7e501d7df541c"
   },
   {
-   "p": "anmacha-urwaldlager/models/menschen/mocap.glb",
-   "s": 479192,
-   "h": "4746c0b8f8482709b575258c79f517bc327ab95f0547c2f82a5bdbb121c12375"
-  },
-  {
    "p": "anmacha-urwaldlager/models/ph.glb",
    "s": 471864,
    "h": "0a1e2c4d6ced3d7791a1724302f959746f04a163654a15ef8f2818051d2ba3cc"
@@ -8293,8 +8288,8 @@
   },
   {
    "p": "anmacha-urwaldlager/style.css",
-   "s": 28505,
-   "h": "f9614ce06c7d6e441997cd32e2ab620557b4d32bfcb8601e79d15ccfea3c6e4e"
+   "s": 28422,
+   "h": "66947ec77d673bc575f7c41bfd189b9d9086b30187ecb1f29608cfc4f6cb2336"
   },
   {
    "p": "anmacha-urwaldlager/sw.js",
@@ -11058,8 +11053,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 22168,
-   "h": "c5b08f37bdbf6719f84c854319afbf4cc5e2418c08052c5027007f282f0a41ac"
+   "s": 21849,
+   "h": "985910d1c6186def77223ff706a5596dbd5cb735dca8e6dbd65053c8d1a93b83"
   },
   {
    "p": "guides/beat-studio.json",
@@ -11208,8 +11203,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 52392,
-   "h": "bf93adc207f47c0053d2f450180d92bf4c804137310ff6dcfad378ead88cb403"
+   "s": 53140,
+   "h": "8f2d1f48c6cfc60af067f07fdbbc263584fb09f8861c2efb15d9d5c0969aaf33"
   },
   {
    "p": "guides/prismrush.json",
@@ -12917,6 +12912,16 @@
    "h": "06ce4ee6232ee68e791927e838bb8e77c11391b7de9ba3141374626a910772e5"
   },
   {
+   "p": "pride-city/assets/home/cabinet_small_decorated.bin",
+   "s": 27552,
+   "h": "b123a747dd82f2088e2e823e9a3e42cb581b42878e67ac9060363c7d612e07f2"
+  },
+  {
+   "p": "pride-city/assets/home/cabinet_small_decorated.gltf",
+   "s": 3068,
+   "h": "3d241df76df2030583c7ebdc292063b5ded40cf9c642e8cfb18b4e0855f3702a"
+  },
+  {
    "p": "pride-city/assets/home/cactus_medium_A.bin",
    "s": 17536,
    "h": "be9378a1328b82751ac651de9387d7b20db4ffbb5e1c087b0e634a00ebf7cc0f"
@@ -12925,6 +12930,16 @@
    "p": "pride-city/assets/home/cactus_medium_A.gltf",
    "s": 3072,
    "h": "902c48a87bf8e48a2d72055485eaaeae3aefd91224e5af914aeb42fca99759a8"
+  },
+  {
+   "p": "pride-city/assets/home/cactus_medium_B.bin",
+   "s": 17536,
+   "h": "3b19e4f559ff111ef66f8bfaea3989f31368ca86d4c46212be4ee26d1a56aee4"
+  },
+  {
+   "p": "pride-city/assets/home/cactus_medium_B.gltf",
+   "s": 3072,
+   "h": "849e6bf20405548890ebff081970f92a39af6e749a3fbb0ecc8f0363748c5e3b"
   },
   {
    "p": "pride-city/assets/home/cactus_small_A.bin",
@@ -12945,6 +12960,26 @@
    "p": "pride-city/assets/home/chair_A.gltf",
    "s": 3022,
    "h": "fdc71044f23c89c5cff9093cff18bac295c9b750e73daf3cbd8ee6ca9e930dbb"
+  },
+  {
+   "p": "pride-city/assets/home/chair_B.bin",
+   "s": 18240,
+   "h": "1862f8c8392a67e39219e480ba2aafd19e67bbbfe7c6d3b459f082dea041a1fa"
+  },
+  {
+   "p": "pride-city/assets/home/chair_B.gltf",
+   "s": 3049,
+   "h": "e9cb04ebee4a60a22a26449b46c22efd3c7a022a3bab937ac813ed30f4392855"
+  },
+  {
+   "p": "pride-city/assets/home/chair_stool.bin",
+   "s": 10832,
+   "h": "c99c96e2440a55c6c08ac929493424b221b11482618229fcf8574baa93ab4566"
+  },
+  {
+   "p": "pride-city/assets/home/chair_stool.gltf",
+   "s": 3042,
+   "h": "6f830305b9afb97f8d77d52a92971ee237d3012db2ca1abbd4abafc2d82f4c46"
   },
   {
    "p": "pride-city/assets/home/couch_pillows.bin",
@@ -12992,6 +13027,26 @@
    "h": "b12aadc4e0179aa9c27a18cd31f5a980159188a20d11cc62b9c5a97e4381c59f"
   },
   {
+   "p": "pride-city/assets/home/pictureframe_large_B.bin",
+   "s": 3176,
+   "h": "ff87db23fa7e1b9c7e55c8a25bbb9b5d37f11bf94c36e1d97b104fa8d9b22660"
+  },
+  {
+   "p": "pride-city/assets/home/pictureframe_large_B.gltf",
+   "s": 3054,
+   "h": "1ee9d4842d9f4626e08ffce88e34293a7a8b11ffdc1cd0340eb934c209a97cdc"
+  },
+  {
+   "p": "pride-city/assets/home/pictureframe_medium.bin",
+   "s": 3176,
+   "h": "ae120086448ad5f8c8a2e1a360355f9052f4b7848e5b422b00398827b9355e8d"
+  },
+  {
+   "p": "pride-city/assets/home/pictureframe_medium.gltf",
+   "s": 3069,
+   "h": "768ebf5e81d2d4dfe87276e70b7373ee541592ca409a57067e5e76626a010926"
+  },
+  {
    "p": "pride-city/assets/home/rug_oval_A.bin",
    "s": 6560,
    "h": "4d55cba0cc3e86c930b320a14a25d2742e8bd214f298bfbf23f73329b0cea32e"
@@ -13000,6 +13055,16 @@
    "p": "pride-city/assets/home/rug_oval_A.gltf",
    "s": 2970,
    "h": "5d49e065dcb89c0585a17c41823b19788c6e41ab2d8dd45299250241911b1231"
+  },
+  {
+   "p": "pride-city/assets/home/rug_rectangle_A.bin",
+   "s": 1800,
+   "h": "10eb71fc2b20b056b6186526d451ee0a560c425495402d7818f4413795aba506"
+  },
+  {
+   "p": "pride-city/assets/home/rug_rectangle_A.gltf",
+   "s": 2971,
+   "h": "892417306a01eac711c6af97b148fc152d375940ec3660964b36e10ea2a8cfda"
   },
   {
    "p": "pride-city/assets/home/rug_rectangle_stripes_A.bin",
@@ -13022,6 +13087,16 @@
    "h": "e2f1e24576e603a390f29f5c55c2013389cebaddb0255e1a4808e35ef1279873"
   },
   {
+   "p": "pride-city/assets/home/shelf_B_large_decorated.bin",
+   "s": 25772,
+   "h": "80b560eac9dd1d2750149f96f4845ead4c734f446088975a5c0a1c259dd50611"
+  },
+  {
+   "p": "pride-city/assets/home/shelf_B_large_decorated.gltf",
+   "s": 3069,
+   "h": "fc613ad31e07529ad1ec9044a8e7e900821c8636efbd714a3238292326a49fad"
+  },
+  {
    "p": "pride-city/assets/home/table_low.bin",
    "s": 12408,
    "h": "e9f604c5676bfa974d6d1bf45757a11d298ac40e8e7981be29d249936c8339cd"
@@ -13042,14 +13117,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
+   "p": "pride-city/assets/index-BdGIyU2K.js",
+   "s": 500851,
+   "h": "c5b3f8c67d05ffc3843162154ee3f4ae698d49a4e0a795442e64ec10807318b8"
+  },
+  {
    "p": "pride-city/assets/index-CfnxkA8u.css",
    "s": 29331,
    "h": "390e81a55682ee59e338f0dc00a05d16747b1a0870476cdb43ddf1bcc597b160"
-  },
-  {
-   "p": "pride-city/assets/index-Dy1fwynf.js",
-   "s": 488080,
-   "h": "388a4e707ea763264cb8f4d367ba8648288cd6fee1d303fad2e85d9f0dea0193"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -13115,6 +13190,26 @@
    "p": "pride-city/assets/kitchen/stove_single.gltf",
    "s": 3008,
    "h": "cce0730ec2025399a68cb6afaa8acb2f54fcb3d70537a26f62564f6f7754f679"
+  },
+  {
+   "p": "pride-city/assets/kitchen/table_round_A_decorated.bin",
+   "s": 172612,
+   "h": "6c095e9fc82a138da8809cbe97f11c129b811b6c613553d4e3e5ef5410d7e1d8"
+  },
+  {
+   "p": "pride-city/assets/kitchen/table_round_A_decorated.gltf",
+   "s": 3034,
+   "h": "4e1e3a78f39eedd74cb274d77e35c1582324aab81aeef0bf74cd43c5d51a430d"
+  },
+  {
+   "p": "pride-city/assets/kitchen/table_round_A_small_decorated.bin",
+   "s": 30936,
+   "h": "0bb14d0b133e9bc093d76c390ef0ee360a0ee902fa008965c062dfa60dbd3f54"
+  },
+  {
+   "p": "pride-city/assets/kitchen/table_round_A_small_decorated.gltf",
+   "s": 3039,
+   "h": "e7ec4792ff25dd495aa9ccc485b771a762f1aa052382a973b8253ddc82b91199"
   },
   {
    "p": "pride-city/assets/loaders-CjgBAcMz.js",
@@ -13689,7 +13784,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5862,
-   "h": "20e97419a7361c151de67d63ffa96f37241ed38b9df5a8a853eee233b5f018d6"
+   "h": "dfbb9f39b5bcd8f1eb3505c616b7a9e2daadc4854f7a54c88de88b33af588d71"
   },
   {
    "p": "pride-city/logo.svg",
@@ -16464,7 +16559,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236550,
-   "h": "6da0df0fc9bdc1d4152d05f532f0bb6c8fa707cbf3fb7bcdeeab3a823e54bc3f"
+   "h": "9e00ed2972f7aa7e3a5b05efd66b133247f37f82592880a7200d7089c7bf2689"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
