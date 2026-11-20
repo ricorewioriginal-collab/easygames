@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "25f9137638bc",
- "generated": "2026-11-20T20:31:58+00:00",
- "commit": "2d9bebf14f288f9fc6488acc6ba8e6342fe04d1d",
+ "version": "23e24a23e962",
+ "generated": "2026-11-20T20:40:06+00:00",
+ "commit": "3167327a9de56f04cde11a936200b0a4ab2c4cbc",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8033,13 +8033,13 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kisten.js",
-   "s": 13573,
-   "h": "30fbe5bba2dbeeda534de30fb801d3f83bc7ebb7cd4e7d9b8363278410e657f9"
+   "s": 19419,
+   "h": "654b16603d087a4b6cb3ede4084f5c140937218890ffc5d00ec65eac4e1bb0d3"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kit.js",
-   "s": 27598,
-   "h": "08f2632ca91121abef258ec67ad52f889b0998dc296520cd2fddfd43f5cbd974"
+   "s": 27614,
+   "h": "3052bdbdf76930907ec3bf65577521fca897793f7ffaac42606805948a973469"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/klettern.js",
@@ -8088,8 +8088,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/ui.js",
-   "s": 12988,
-   "h": "92d3ffadcc7f6ca75c91cbaddb0502a52ac5081504de87eb496d2bc3d883cb04"
+   "s": 15011,
+   "h": "dcf165d998514e8a32af94b0ecaa0284c1110d92ec180b9a2e1826b0f7c2feae"
   },
   {
    "p": "anmacha-urwaldlager/js/watch.js",
@@ -11053,8 +11053,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 21313,
-   "h": "066d59352c4efeee7fe799bcfd4d93d71a5a00b5b60a82d4395019d426535570"
+   "s": 21849,
+   "h": "985910d1c6186def77223ff706a5596dbd5cb735dca8e6dbd65053c8d1a93b83"
   },
   {
    "p": "guides/beat-studio.json",
@@ -16459,7 +16459,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236550,
-   "h": "9a96b2da71fe4f405da45711348f637a16b04e4db11414a2b9f3d0c55bed871d"
+   "h": "27961e3374e6bffed99862ae2b2a467a43efb85d22d654792876eff8f8769a36"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

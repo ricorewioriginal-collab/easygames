@@ -215,7 +215,7 @@
       if (UL.bot || !ctx.running) return; if (!force && ctx.t - quipT < 6) return; quipT = ctx.t;
       const [who, txt] = UL.pick(UL.D.LIVE[kind] || []) || []; if (!txt) return;
       const t = UI.fmt(txt, { n: ctx.name, s: ctx.stars, m: max });
-      UI.toast(t, who === 'lotte' ? '🎤' : '🎙️', 2200); UL.Voice && UL.Voice.say(t, who);
+      UI.toast(t, who === 'lotte' ? '🎤' : '🎙️', 2200); UL.Voice && UL.Voice.say(t, who, { soft: true });
     }
     UL.Trials.current = ctx;
 

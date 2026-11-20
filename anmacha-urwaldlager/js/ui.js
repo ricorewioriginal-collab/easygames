@@ -7,21 +7,34 @@
   UI.$ = $;
 
   // ---------- Sprachausgabe der Moderatoren (optional, Einstellungen) ----------
+  // Sätze einzeln vorlesen (Android/Chrome bricht lange Ansagen ab), Ende melden, nur abbrechen wenn wirklich etwas läuft
   const Voice = UL.Voice = {
-    ok: 'speechSynthesis' in window, voices: [],
+    ok: 'speechSynthesis' in window, voices: [], live: [], done: true, onEnd: null,
     pick() { if (!this.ok) return; this.voices = speechSynthesis.getVoices().filter(v => /^de/i.test(v.lang)); },
-    say(text, who) {
-      if (!this.ok || !UL.settings.voice || UL.bot) return;
+    busy() { try { return this.ok && (speechSynthesis.speaking || speechSynthesis.pending); } catch (e) { return false; } },
+    chunks(t) { const out = []; for (let s of (t.match(/[^.!?…]+[.!?…]*/g) || [])) { s = s.trim(); if (!s) continue; if (s.length <= 160) { out.push(s); continue; } let cur = ''; for (const w of s.split(/,\s+/)) { const add = cur ? cur + ', ' + w : w; if (add.length > 160 && cur) { out.push(cur + ','); cur = w; } else cur = add; } if (cur) out.push(cur); } return out; },
+    // Rückgabe: true = spricht (Ende kommt über onEnd/done), false = stumm
+    say(text, who, opts = {}) {
+      if (!this.ok || !UL.settings.voice || UL.bot) return false;
+      if (opts.soft && this.busy()) return false;   // Live-Sprüche nie über eine laufende Moderation legen
       try {
-        speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text.replace(/[„“”"*]/g, ''));
-        u.lang = 'de-DE'; const p = UL.D.VOICE[who] || {}; u.pitch = p.pitch || 1; u.rate = (p.rate || 1) * 1.05; u.volume = 0.9;
+        if (this.busy() || this.live.length) this.stop();
+        const p = UL.D.VOICE[who] || {}, parts = this.chunks(String(text).replace(/[„“”"*]/g, '').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '').trim());
+        if (!parts.length) return false;
         if (!this.voices.length) this.pick();
-        if (this.voices.length) { const v = this.voices; u.voice = who === 'lotte' ? (v.find(x => /female|frau|anna|petra|katja|helena|marlene|vicki/i.test(x.name)) || v[0]) : (v.find(x => /male|mann|markus|yannick|stefan|hans|conrad/i.test(x.name)) || v[v.length > 1 ? 1 : 0]); }
-        speechSynthesis.speak(u);
-      } catch (e) { }
+        const v = this.voices, voice = v.length ? (who === 'lotte' ? (v.find(x => /female|frau|anna|petra|katja|helena|marlene|vicki/i.test(x.name)) || v[0]) : (v.find(x => /male|mann|markus|yannick|stefan|hans|conrad/i.test(x.name)) || v[v.length > 1 ? 1 : 0])) : null;
+        const gen = this.gen = (this.gen || 0) + 1; this.done = false;
+        parts.forEach((t, i) => {
+          const u = new SpeechSynthesisUtterance(t);
+          u.lang = 'de-DE'; u.pitch = p.pitch || 1; u.rate = (p.rate || 1) * 1.05; u.volume = 0.9; if (voice) u.voice = voice;
+          const last = i === parts.length - 1, end = () => { const k = this.live.indexOf(u); if (k >= 0) this.live.splice(k, 1); if (last && gen === this.gen) { this.done = true; const f = this.onEnd; this.onEnd = null; if (f) f(); } };
+          u.onend = end; u.onerror = end; this.live.push(u);
+          speechSynthesis.speak(u);
+        });
+        return true;
+      } catch (e) { this.done = true; return false; }
     },
-    stop() { if (this.ok) try { speechSynthesis.cancel(); } catch (e) { } }
+    stop() { this.gen = (this.gen || 0) + 1; this.live = []; this.done = true; this.onEnd = null; if (this.ok) try { speechSynthesis.cancel(); } catch (e) { } }
   };
   if (Voice.ok) { Voice.pick(); try { speechSynthesis.onvoiceschanged = () => Voice.pick(); } catch (e) { } }
 
@@ -119,12 +132,17 @@
     const name = opts.name || (UL.D.HOSTS.find(h => h.id === who) || {}).name || (who === 'doc' ? UL.D.DOC.name : who === 'ranger' ? UL.D.RANGER.name : who === 'off' ? 'Stimme aus dem Off' : who);
     cap.innerHTML = `<div class="cap-in ${who}"><div class="cap-who">${PORTRAIT[who] || opts.icon || '💬'} ${esc(name)}</div><div class="cap-txt">${esc(text)}</div><div class="cap-go">${In.glyph('ok')}<span>${In.device === 'touch' ? 'Tippen' : 'Weiter'}</span></div></div>`;
     cap.hidden = false;
-    if (opts.voice !== false && (who === 'lotte' || who === 'mats' || who === 'doc' || who === 'ranger')) Voice.say(text, who);
+    const spoken = opts.voice !== false && (who === 'lotte' || who === 'mats' || who === 'doc' || who === 'ranger') && Voice.say(text, who);
     const minT = 0.35, auto = opts.auto != null ? opts.auto : Math.min(9, 2.2 + text.length * 0.055) * (UL.bot ? 0.05 : 1);
-    let t = 0, done = false;
+    // mit Stimme: weiter erst, wenn der Satz zu Ende gesprochen ist (kurze Pause danach); Notbremse, falls das Gerät kein Ende meldet
+    const maxT = spoken ? Math.min(30, Math.max(auto, 2.5 + text.length / 11)) : auto;
+    let t = 0, done = false, endAt = -1;
     const fin = () => { if (done) return; done = true; cap.hidden = true; cap.onclick = null; UI._cap = null; Voice.stop(); res(); };
     cap.onclick = () => { if (t > minT) fin(); };
-    UI._cap = { tick(dt) { t += dt; if (t > minT && (In.pressed('ok') || In.pressed('back'))) { In.eat('ok'); fin(); } if (auto && t > auto) fin(); }, fin };
+    UI._cap = { tick(dt) { t += dt; if (t > minT && (In.pressed('ok') || In.pressed('back'))) { In.eat('ok'); fin(); }
+      if (!auto) return;
+      if (spoken) { if (Voice.done && endAt < 0) endAt = t; if ((endAt >= 0 && t > Math.max(endAt + 0.45, 1.2)) || t > maxT) fin(); }
+      else if (t > auto) fin(); }, fin };
   });
   UI.sayAll = async (lines, vars = {}) => { for (const [who, txt] of lines) await UI.say(who, UI.fmt(txt, vars)); };
   UI.fmt = (s, v) => String(s).replace(/\{(\w)\}/g, (m, k) => v[k] != null ? v[k] : m);
