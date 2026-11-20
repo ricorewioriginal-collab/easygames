@@ -8,6 +8,7 @@ import {
 import { instance, preload } from '../engine/Assets';
 import { planeZ, ground, box, cyl, sphere, ring, torus, pbr, glow, canvasTex } from '../engine/geo';
 import { PALETTES } from './palettes';
+import { buildUptown, EAST, BRIDGE } from './uptown';
 
 export const TILE = 10;
 const S = TILE / 2; // KayKit-Kacheln sind 2 Einheiten breit
@@ -23,7 +24,11 @@ export interface Poi { id: string; name: string; icon: string; x: number; z: num
 /** Begehbar: Innenstadt, Kai, Strand und Steg (nicht ins Wasser) */
 export function walkable(x: number, z: number) {
   const lim = HALF - 1;
-  if (Math.abs(z) > lim || x > lim) return false;
+  if (x > lim) { // Regenbogenbrücke und Hochstadt
+    if (x < BRIDGE.x1 - .5) return Math.abs(z) < BRIDGE.hz;
+    return x <= EAST && Math.abs(z) <= lim;
+  }
+  if (Math.abs(z) > lim) return false;
   if (x >= -lim) return true;
   if (z > -34 && z < 44 && x >= -91) return true;
   if (z > 18 && z < 42 && x >= -96) return true;
@@ -62,9 +67,13 @@ export class World {
   private sky!: Mesh;
   private skyMat!: ShaderMaterial;
   private lamps: PBRMaterial;
-  private neon: Array<{ m: PBRMaterial; base: Color3 }> = [];
+  readonly neon: Array<{ m: PBRMaterial; base: Color3 }> = [];
+  /** Fassaden mit Fenstern, die nachts leuchten (Hochstadt) */
+  readonly nightMats: PBRMaterial[] = [];
+  /** zusätzliche Bewegungen je Bild (Hochbahn, Dampf, Warnlichter) */
+  readonly extras: Array<(dt: number, t: number) => void> = [];
   readonly cars: Car[] = [];
-  private lampLights: PointLight[] = [];
+  readonly lampLights: PointLight[] = [];
   /** Echte Laternenlichter, die nachts an die nächsten Laternen beim Spieler springen */
   private poolLights: PointLight[] = [];
   private poolT = 0;
@@ -75,7 +84,7 @@ export class World {
 
   static load(scene: Scene) { return preload(scene, CITY_FILES); }
 
-  constructor(private scene: Scene) {
+  constructor(readonly scene: Scene) {
     this.root = new Node3('world', scene);
     this.traces = new Node3('traces', scene); this.traces.parent = this.root;
     this.lamps = glow(scene, 0xfff2c0, 1);
@@ -127,6 +136,7 @@ export class World {
     }
     await Promise.all(tasks);
     this.plaza(); this.park(); this.decorate(); this.signs(); await this.harbour();
+    await buildUptown(this);
     await this.spawnCars();
     this.buildEnv();
     this.setTime(.3);
@@ -164,9 +174,13 @@ export class World {
     P('beach', 'Strandbar Sandbank', '🏖️', -80.4, 30);
     P('tramhafen', 'Tram Hafen', '🚋', -70, 8, undefined, undefined, 3.6);
     P('tram', 'Tram Rainbow City', '🚋', 0, 52, undefined, undefined, 4);
+    // Hochstadt östlich der Regenbogenbrücke
+    P('samenbank', 'Samenbank Zukunft', '🧪', 96, -11, 'SAMENBANK', '#7fd4ff');
+    P('tramhoch', 'Hochbahn Hochstadt', '🚇', 157, 22, undefined, undefined, 3.6);
+    P('laterne', 'Laternenmeile', '🏮', 105, -27, undefined, undefined, 2);
   }
 
-  private async place(path: string, x: number, y: number, z: number, rot: number, s = S, flat = false, cast = true) {
+  async place(path: string, x: number, y: number, z: number, rot: number, s = S, flat = false, cast = true) {
     const o = await instance(this.scene, path, { shadows: cast });
     this.tune(path, o);
     o.position.set(x, y, z); o.rotation.y = rot; o.scaling.set(s, flat ? 1 : s, s);
@@ -199,7 +213,7 @@ export class World {
     this.colliders.push(r); return r;
   }
   /** feste Teile: Weltmatrix einfrieren (spart Rechenzeit) */
-  private still(m: AbstractMesh, cast = true, receive = true) {
+  still(m: AbstractMesh, cast = true, receive = true) {
     m.parent = this.root; m.isPickable = false; m.receiveShadows = receive; (m as AbstractMesh & { _pcCast?: boolean })._pcCast = cast;
     m.computeWorldMatrix(true); m.freezeWorldMatrix();
     return m;
@@ -273,7 +287,7 @@ export class World {
   }
   /** Detail-Textur (R = Helligkeit, G = Normal Y, B = Rauheit, A = Normal X): Putz mit feinen Fugen */
   private detail: Texture | null = null;
-  private detailTex() {
+  detailTex() {
     if (this.detail) return this.detail;
     const N2 = 256, d = new Uint8Array(N2 * N2 * 4), h = new Float32Array(N2 * N2);
     let seed = 7; const rn = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
@@ -313,12 +327,14 @@ export class World {
   /** Requisite merken (r = Kollisionsradius, solid = Figur stößt dagegen) */
   prop(x: number, z: number, r: number, o: TransformNode[], solid = true) { this.props.push({ x, z, r, o, solid }); }
 
-  private async road(ix: number, iz: number, x: number, z: number) {
+  /** Straßenkachel; lo/hi = westlicher und östlicher Rand des Viertels (an der Brücke z = 0 geht es weiter) */
+  async road(ix: number, iz: number, x: number, z: number, lo = -N, hi = N) {
     const rx = isRoad(ix), rz = isRoad(iz);
     if (rx && rz) {
-      const edgeX = Math.abs(ix) === N, edgeZ = Math.abs(iz) === N;
-      if (edgeX && edgeZ) return this.place(C('road_corner'), x, 0, z, ix > 0 ? (iz > 0 ? Math.PI : -Math.PI / 2) : (iz > 0 ? Math.PI / 2 : 0), S, true, false);
-      if (edgeX) return this.place(C('road_tsplit'), x, 0, z, ix > 0 ? Math.PI / 2 : -Math.PI / 2, S, true, false);
+      const bridge = iz === 0 && (ix === N || ix === 9);
+      const edgeX = (ix === lo || ix === hi) && !bridge, edgeZ = Math.abs(iz) === N;
+      if (edgeX && edgeZ) return this.place(C('road_corner'), x, 0, z, ix === hi ? (iz > 0 ? Math.PI : -Math.PI / 2) : (iz > 0 ? Math.PI / 2 : 0), S, true, false);
+      if (edgeX) return this.place(C('road_tsplit'), x, 0, z, ix === hi ? Math.PI / 2 : -Math.PI / 2, S, true, false);
       if (edgeZ) return this.place(C('road_tsplit'), x, 0, z, iz > 0 ? 0 : Math.PI, S, true, false);
       return this.place(C('road_junction'), x, 0, z, 0, S, true, false);
     }
@@ -367,10 +383,13 @@ export class World {
     sm.setVector3('sunDir', new Vector3(Math.cos(ang) * .8, up, .45).normalize());
     sm.setColor3('sunCol', new Color3(1, .82, .6).scale(smoothstep(up, -.08, .1)));
     this.scene.fogColor = bot;
+    // tagsüber Dunst, abends und nachts klarer, damit die Skyline mit ihren Fenstern zu sehen ist
+    this.scene.fogDensity = .0024 + .0034 * day * (1 - dusk);
     this.pickEnv(day, dusk);
     this.scene.clearColor.set(bot.r, bot.g, bot.b, 1);
     // Fenster nachts warm, Straßen nachts feucht glänzend
     this.winMats.forEach((m) => m.emissiveColor.set(1 * this.night * .9, .72 * this.night * .9, .4 * this.night * .9));
+    this.nightMats.forEach((m) => m.emissiveColor.set(.04 + this.night * 1.1, .04 + this.night * 1.05, .04 + this.night));
     this.roadMats.forEach((m) => { m.roughness = .72 - .38 * this.night; });
     this.poolLights.forEach((l) => (l.intensity = this.night * 14));
     this.sun.intensity = .55 + 1.9 * day;
@@ -450,7 +469,7 @@ export class World {
   }
 
   private treeSrc: { trunk: Mesh; tops: Mesh[] } | null = null;
-  private tree(x: number, z: number, s: number) {
+  tree(x: number, z: number, s: number) {
     const sc = this.scene;
     if (!this.treeSrc) {
       const trunk = cyl(sc, .18, .26, 1.6, 6); trunk.material = pbr(sc, 0x7a4a2a, .9); trunk.convertToFlatShadedMesh();
@@ -586,7 +605,7 @@ export class World {
     }
   }
   /** Leuchtschild mit Türrahmen (door = x-Position der Tür, sonst ohne Tür) */
-  private neonSign(text: string, color: string, x: number, y: number, z: number, rot: number, door?: number, maxW = 8) {
+  neonSign(text: string, color: string, x: number, y: number, z: number, rot: number, door?: number, maxW = 8) {
     const sc = this.scene;
     const t = canvasTex(sc, 512, 128, (g) => {
       g.fillStyle = 'rgba(10,6,24,.85)'; g.fillRect(0, 0, 512, 128);
@@ -662,13 +681,18 @@ export class World {
   private async spawnCars() {
     const loops: number[][][] = [
       [[-3, -57], [-3, 57]], [[3, 57], [3, -57]],
-      [[-57, 3], [57, 3]], [[57, -3], [-57, -3]],
+      [[-57, 3], [207, 3]], [[207, -3], [-57, -3]],
       [[27, -57], [27, 57]], [[-33, 57], [-33, -57]],
+      // Hochstadt: viel gelbes Taxi, wie es sich für eine Großstadt gehört
+      [[117, -57], [117, 57]], [[123, 57], [123, -57]], [[177, -57], [177, 57]], [[183, 57], [183, -57]], [[147, 57], [147, -57]],
+      [[93, -27], [207, -27]], [[207, -33], [93, -33]], [[93, 33], [207, 33]], [[207, 27], [93, 27]], [[93, -57], [93, 57]],
     ];
+    const UP = ['car_taxi', 'car_taxi', 'car_sedan', 'car_taxi', 'car_hatchback', 'car_taxi', 'car_stationwagon', 'car_taxi', 'car_taxi', 'car_sedan'];
     for (let i = 0; i < loops.length; i++) {
-      const o = await this.car(CARS[i % CARS.length]);
+      const kind = i < 6 ? CARS[i % CARS.length] : UP[i - 6];
+      const o = await this.car(kind);
       const path = loops[i].map(([x, z]) => new Vector3(x, .1, z));
-      this.cars.push({ o, path, seg: 0, u: rnd(), v: 7 + rnd() * 4, kind: CARS[i % CARS.length] });
+      this.cars.push({ o, path, seg: 0, u: rnd(), v: 7 + rnd() * 4, kind });
     }
   }
   /** Auto als bewegliche Kopie (Wurzel mit visible) */
@@ -684,6 +708,7 @@ export class World {
   /** Spieler-Position, damit Autos bremsen */
   update(dt: number, t: number, player?: Vector3) {
     this.waveFlags(t);
+    for (const f of this.extras) f(dt, t);
     if (player && this.night > .05 && (this.poolT -= dt) <= 0) {
       this.poolT = .6;
       const near = this.lampSpots.map((q) => [Vector3.DistanceSquared(q, player), q] as const).sort((a, b) => a[0] - b[0]);
@@ -730,7 +755,7 @@ export class World {
       if (walkable(p.x, this.last.z)) p.z = this.last.z;
       else if (walkable(this.last.x, p.z)) p.x = this.last.x;
       else if (walkable(this.last.x, this.last.z)) p.set(this.last.x, p.y, this.last.z);
-      else { const lim = HALF - 1; p.x = Math.max(-lim, Math.min(lim, p.x)); p.z = Math.max(-lim, Math.min(lim, p.z)); }
+      else { const lim = HALF - 1; p.x = Math.max(-lim, Math.min(EAST, p.x)); p.z = Math.max(-lim, Math.min(lim, p.z)); }
     }
     this.last.copyFrom(p);
   }

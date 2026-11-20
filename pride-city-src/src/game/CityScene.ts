@@ -18,6 +18,7 @@ import { Street, type Parked } from './Street';
 import { PLACE_THEMES, houseTheme } from './interiors';
 import { Combat } from './Combat';
 import { arrive } from './family';
+import { Kerb } from './kerb';
 
 interface Npc { def: NpcDef; a: Actor; wp: number; wait: number; talking: boolean }
 
@@ -39,6 +40,7 @@ export class CityScene implements GameScene {
   private near: { kind: 'npc' | 'poi' | 'street' | 'car' | 'house'; id: string; label: string } | null = null;
   street!: Street;
   combat!: Combat;
+  kerb!: Kerb;
   /** Auto, in dem die Spielfigur gerade sitzt */
   private drive: Parked | null = null;
   private stepT = 0;
@@ -87,9 +89,16 @@ export class CityScene implements GameScene {
     this.street = new Street(sc, this.world);
     await this.street.build();
     this.combat = new Combat(this.g, this, sc); this.combat.init();
+    this.kerb = new Kerb(this.g, this);
     this.g.hud.onWeapon = () => { if (this.mode === 'play') this.combat.cycle(); };
     this.g.hud.setRadarMap((c, px) => {
-      c.fillStyle = '#123a52'; c.fillRect(0, 0, 512, 512);                       // Wasser
+      c.fillStyle = '#123a52'; c.fillRect(0, 0, 1024, 1024);                     // Wasser
+      c.fillStyle = '#34343c'; c.fillRect(px(-66), px(66), 370 * 2, 120 * 2); c.fillRect(px(-66), px(-186), 370 * 2, 120 * 2); c.fillRect(px(214), px(-66), 90 * 2, 132 * 2); // äußere Stadt
+      c.fillStyle = '#1f6f9a'; c.fillRect(px(64), px(-300), 26 * 2, 600 * 2);       // Fluss
+      c.fillStyle = '#3c4f45'; c.fillRect(px(85), px(-65), 130 * 2, 130 * 2);        // Hochstadt
+      c.fillStyle = '#c9ccd6'; c.fillRect(px(60), px(-4.5), 32 * 2, 9 * 2);           // Regenbogenbrücke
+      for (let i = -60; i <= 60; i += 30) c.fillRect(px(85), px(i - 3.6), 128 * 2, 7.2 * 2);
+      for (let i = 90; i <= 210; i += 30) c.fillRect(px(i - 3.6), px(-64), 7.2 * 2, 128 * 2);
       c.fillStyle = '#3c4f45'; c.fillRect(px(-65), px(-65), 130 * 2, 130 * 2);   // Innenstadt
       c.fillStyle = '#9b8f7a'; c.fillRect(px(-92), px(-35), 27 * 2, 80 * 2);      // Kai
       c.fillStyle = '#d8c48a'; c.fillRect(px(-97), px(17), 6 * 2, 26 * 2);        // Strand
@@ -220,6 +229,7 @@ export class CityScene implements GameScene {
     if (gl.npc) { const n = this.npcs.find((x) => x.def.id === gl.npc); if (n) out.push({ id: 'g', icon: '⭐', label: n.def.name, pos: at(n.a.root.position, 2.6) }); }
     if (gl.poi) { const p = this.world.pois.find((x) => x.id === gl.poi); if (p) out.push({ id: 'g', icon: '⭐', label: p.name, pos: new Vector3(p.x, 4, p.z) }); }
     if (this.gig) { const st = this.gig.g.steps[this.gig.i]; out.push({ id: 'gig', icon: st.icon, label: st.label, pos: new Vector3(st.x, 3, st.z) }); }
+    if (this.kerb?.spot) out.push({ id: 'kerb', icon: '🌙', label: this.kerb.spot.name, pos: new Vector3(this.kerb.spot.x, 3, this.kerb.spot.z) });
     for (const [id, icon] of marks(s)) { const n = this.npcs.find((x) => x.def.id === id); if (n?.a.root.visible) out.push({ id: 'p' + id, icon, pos: at(n.a.root.position, 2.5) }); }
     return out;
   }
@@ -229,7 +239,8 @@ export class CityScene implements GameScene {
     const p = this.player.root.position;
     let best: typeof this.near = null, bd = 1e9;
     if (this.drive) {
-      this.near = { kind: 'car', id: 'exit', label: '🚗 Aussteigen' };
+      const curb = this.kerb.nearCurb();
+      this.near = { kind: 'car', id: 'exit', label: this.kerb.rider ? `🚗 Aussteigen · ${this.kerb.rider.name} fährt mit` : curb ? `🚗 Aussteigen · 📯 Hupen: ${curb.name} steigt vielleicht ein` : '🚗 Aussteigen' };
       this.g.hud.prompt(this.near.label); this.g.touch.label('Raus');
       return;
     }
@@ -335,7 +346,7 @@ export class CityScene implements GameScene {
     this.player.root.visible = false;
     this.cam.dist = Math.max(this.cam.dist, 9);
     this.cam.tYaw = this.drive.o.rotation.y + Math.PI;
-    hints([['move', 'Lenken & Gas'], ['a', 'Aussteigen'], ['cam', 'Kamera'], ['y', 'Menü']]);
+    hints([['move', 'Lenken & Gas'], ['a', 'Aussteigen'], ['atk', 'Hupen'], ['cam', 'Kamera'], ['y', 'Menü']]);
     this.radio(0); this.g.hud.radioBtn(true);
     toast('🚗 Gute Fahrt! Q/R oder LB/RB wechselt den Sender.');
     sfx('open');
@@ -424,6 +435,10 @@ export class CityScene implements GameScene {
   get driving() { return !!this.drive; }
   /** Tempo des gefahrenen Autos (0 zu Fuß) */
   get carSpeed() { return Math.abs(this.drive?.v || 0); }
+  /** gefahrenes Auto (oder null) */
+  get carNode() { return this.drive?.o || null; }
+  /** Auto anhalten (z. B. beim Schaukeln an der ruhigen Ecke) */
+  holdCar() { if (this.drive) this.drive.v = 0; }
   /** Aussteigen erzwingen (z. B. bei der Festnahme) */
   leaveCar() { if (this.drive) this.toggleCar('exit'); }
   /** Sichtbare Story-Figuren (für Schläge mit Spaßwaffen) */
@@ -557,7 +572,7 @@ export class CityScene implements GameScene {
       this.crowd.forEach((a) => (a.root.visible = this.world.night > .5));
     }
     this.player.update(dt);
-    if (!busy) { if (this.drive) this.moveCar(dt); else this.movePlayer(dt); }
+    if (!busy) { if (this.drive) this.moveCar(dt); else this.movePlayer(dt); this.kerb.update(dt, t); }
     this.updateCam(dt);
     this.world.follow(this.player.root.position);
     this.world.update(dt, t, this.player.root.position);
@@ -571,11 +586,11 @@ export class CityScene implements GameScene {
       const pp = this.player.root.position;
       g.hud.radar(pp.x, pp.z, this.cam.yaw, [
         ...this.world.pois.filter((q) => Math.hypot(q.x - pp.x, q.z - pp.z) < 60).map((q) => ({ x: q.x, z: q.z, icon: q.icon })),
-        ...mk.map((m) => ({ x: m.pos.x, z: m.pos.z, color: m.id === 'g' ? '#ff3fb0' : m.id === 'gig' ? '#ffd23b' : '#ffffff', goal: m.id === 'g' || m.id === 'gig' })),
+        ...mk.map((m) => ({ x: m.pos.x, z: m.pos.z, color: m.id === 'g' ? '#ff3fb0' : m.id === 'gig' ? '#ffd23b' : m.id === 'kerb' ? '#ff6ad5' : '#ffffff', goal: m.id === 'g' || m.id === 'gig' || m.id === 'kerb' })),
       ]);
     }
     // Lichtsäule: laufender Auftrag hat Vorrang (gelb), sonst das Story-Ziel (pink)
-    const gm = mk.find((m) => m.id === 'gig');
+    const gm = mk.find((m) => m.id === 'gig' || m.id === 'kerb');
     this.goalBeam((gm || mk.find((m) => m.id === 'g'))?.pos as Vector3 | undefined, t, gm ? 0xffd23b : 0xff3fb0);
     if (!busy) this.gigTick(dt);
     if (!busy) this.combat.update(dt, t);
@@ -585,7 +600,7 @@ export class CityScene implements GameScene {
       if (inp.pressed('confirm')) { inp.consume('confirm'); this.interact(); }
       else if (inp.pressed('phone')) { inp.consume('phone'); g.phone(); }
       else if (inp.pressed('map')) { inp.consume('map'); g.phone('map'); }
-      else if (inp.pressed('attack')) { inp.consume('attack'); this.combat.attack(); }
+      else if (inp.pressed('attack')) { inp.consume('attack'); if (this.drive) this.kerb.honk(); else this.combat.attack(); }
       else if (inp.pressed('weapon')) { inp.consume('weapon'); this.combat.cycle(); }
       else if (inp.pressed('menu') || inp.pressed('back')) { inp.consume('menu'); inp.consume('back'); g.pauseMenu(); }
       this.checkStickers();

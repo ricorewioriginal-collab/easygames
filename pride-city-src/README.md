@@ -30,6 +30,8 @@ E2E-Test (Browser, SwiftShader): Server im Repo starten (`python3 -m http.server
 | `src/game/gigs.ts`, `empire.ts` | Aufträge per Anruf, Regenbogen-Taxi (Fahrgäste in Serie), Imperium (Läden, Bars, Clubs kaufen, Tageseinnahmen) |
 | `src/game/crime.ts`, `Combat.ts` | Gesetze und Fahndungssterne, Spaßwaffen (Poolnudel, Glitzer-Dildo ab 18, Gleitgel), Polizei-Verfolgung und Festnahme |
 | `src/game/family.ts` | Antrag, Hochzeit, Adoption; Partner*in und Kind wohnen zu Hause |
+| `src/game/uptown.ts` | Hochstadt: prozedurale Hochhäuser, Brownstones, Hochbahn, Brücke, Skyline (ein Mesh je Material) |
+| `src/game/kerb.ts` | Laternenmeile: Hupen im Auto, Einsteigen, ruhige Ecke, Abblende (ab 18) |
 | `src/game/story.ts` | Figuren, fünf Kapitel bis zum Ende, Ziele (`goal`), automatische Fortschritte (`storyTick`), Gespräche, Entscheidungen (`save.flags`), Ende (`ending`) |
 | `src/game/life.ts` | Bedürfnisse, Stimmung, Uhrzeit und Tageswechsel, Tagesziele (aus Gay Life! übernommen) |
 | `src/game/jobs.ts` | Fünf Jobs mit Situationen, Lohn, Stufen und Beförderung |
