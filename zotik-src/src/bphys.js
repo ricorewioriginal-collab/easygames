@@ -38,19 +38,19 @@ export async function createBPhys({ T, scene3, hgt, COL, HOUSES, max = 28, life 
   }
   let lx = 0, lz = 0, lset = false;
   const kill = p => { p.agg.dispose(); p.bm.dispose(); scene3.remove(p.m); p.m.material.dispose(); };
-  /* n Trümmerteile bei (x,y,z), Schwung in Richtung (ax,az); col = Holzfarbe, rund = Fassdauben statt Bretter */
-  function burst(x, y, z, ax, az, col = 0xb08050, n = 7, rund = false) {
-    ground(x, z); const out = [];
+  /* n Trümmerteile bei (x,y,z), Schwung in Richtung (ax,az). art: 'brett' (Kiste), 'daube' (Fass), 'brocken' (Gegner zerfällt; gr = Größe, leuchtet nach) */
+  function burst(x, y, z, ax, az, col = 0x8a5a2c, n = 7, art = 'brett', gr = 1) {
+    ground(x, z); const out = [], br = art === 'brocken';
     for (let i = 0; i < n; i++) {
-      const w = rund ? .12 + Math.random() * .08 : .3 + Math.random() * .35, h = rund ? .5 + Math.random() * .3 : .06 + Math.random() * .05, d = rund ? .05 : .12 + Math.random() * .12;
-      const bm = CreateBox('teil', { width: w, height: h, depth: d }, scene); bm.position.set(x + (Math.random() - .5) * .7, y + .25 + Math.random() * .8, z + (Math.random() - .5) * .7);
+      let w, h, d; if (art === 'daube') { w = .16 + Math.random() * .1; h = .6 + Math.random() * .35; d = .07; } else if (br) { w = (.16 + Math.random() * .2) * gr; h = (.14 + Math.random() * .18) * gr; d = (.14 + Math.random() * .2) * gr; } else { w = .42 + Math.random() * .45; h = .08 + Math.random() * .05; d = .16 + Math.random() * .14; }
+      const sp0 = br ? .5 * gr : .35, bm = CreateBox('teil', { width: w, height: h, depth: d }, scene); bm.position.set(x + (Math.random() - .5) * 2 * sp0, y + .25 + Math.random() * (br ? 1.2 * gr : .8), z + (Math.random() - .5) * 2 * sp0);
       bm.rotationQuaternion = Quaternion.FromEulerAngles(Math.random() * 6.28, Math.random() * 6.28, Math.random() * 6.28);
-      const agg = new PhysicsAggregate(bm, PhysicsShapeType.BOX, { mass: .6, friction: .7, restitution: .35 }, scene);
-      const sp = 2.5 + Math.random() * 3.5, an = Math.random() * 6.283, sx = ax * sp + Math.cos(an) * 1.8, sz = az * sp + Math.sin(an) * 1.8;
-      agg.body.applyImpulse(_v.set(sx * .6, (3 + Math.random() * 3.5) * .6, sz * .6), bm.position);
+      const mass = br ? .5 * gr : .6, agg = new PhysicsAggregate(bm, PhysicsShapeType.BOX, { mass, friction: .7, restitution: br ? .45 : .35 }, scene);
+      const sp = 2.5 + Math.random() * 3.5, an = Math.random() * 6.283, rnd = br ? 3 : 1.8, sx = ax * sp + Math.cos(an) * rnd, sz = az * sp + Math.sin(an) * rnd;
+      agg.body.applyImpulse(_v.set(sx * mass, (3 + Math.random() * (br ? 5 : 3.5)) * mass, sz * mass), bm.position);
       agg.body.setAngularVelocity(_v.set((Math.random() - .5) * 14, (Math.random() - .5) * 14, (Math.random() - .5) * 14));
-      const c = new T.Color(col).multiplyScalar(.75 + Math.random() * .45), m = new T.Mesh(geo, new T.MeshStandardMaterial({ color: c, roughness: .85, metalness: 0 })); m.scale.set(w, h, d); m.castShadow = true; m.position.set(bm.position.x, bm.position.y, bm.position.z); scene3.add(m);
-      const p = { bm, agg, m, kc: 0, t: life + Math.random() * 1.5, w, h, d }; pieces.push(p); out.push(p);
+      const c = new T.Color(col).multiplyScalar(.7 + Math.random() * .5), m = new T.Mesh(geo, new T.MeshStandardMaterial(br ? { color: c, roughness: .45, metalness: .1, emissive: c, emissiveIntensity: .55 } : { color: c, roughness: .85, metalness: 0 })); m.scale.set(w, h, d); m.castShadow = true; m.position.set(bm.position.x, bm.position.y, bm.position.z); scene3.add(m);
+      const p = { bm, agg, m, kc: 0, t: (br ? life * .6 : life) + Math.random() * 1.5, w, h, d, mass }; pieces.push(p); out.push(p);
     }
     while (pieces.length > max) kill(pieces.shift());
     return out;
@@ -68,6 +68,8 @@ export async function createBPhys({ T, scene3, hgt, COL, HOUSES, max = 28, life 
       p.m.position.set(b.x, b.y, b.z); p.m.quaternion.set(q.x, q.y, q.z, q.w); if (p.t < 1) { const s = Math.max(.01, p.t); p.m.scale.set(p.w * s, p.h * s, p.d * s); } }
     return k;
   }
+  /* Druckwelle (Schlag, Zauber): schleudert liegende Trümmer im Umkreis r von (x,z) weg; Rückgabe: Zahl der getroffenen Teile */
+  function blast(x, y, z, r = 2.5, pow = 5) { let k = 0; for (const p of pieces) { const b = p.bm.position, dx = b.x - x, dz = b.z - z, d = Math.hypot(dx, dz); if (d > r || Math.abs(b.y - y) > 2.5) continue; const f = pow * (1 - d / r * .6) * p.mass; p.agg.body.applyImpulse(_v.set(dx / (d || 1) * f, f * .7, dz / (d || 1) * f), b); k++; } return k; }
   const clear = () => { for (const p of pieces) kill(p); pieces = []; dropStatics(); };
-  return { burst, step, clear, count: () => pieces.length, pieces: () => pieces.map(p => { p.agg.body.getLinearVelocityToRef(_p); return { x: p.bm.position.x, y: p.bm.position.y, z: p.bm.position.z, v: _p.length() }; }), statics: () => statics.length, ms: () => ms };
+  return { burst, blast, step, clear, count: () => pieces.length, pieces: () => pieces.map(p => { p.agg.body.getLinearVelocityToRef(_p); return { x: p.bm.position.x, y: p.bm.position.y, z: p.bm.position.z, v: _p.length() }; }), statics: () => statics.length, ms: () => ms };
 }
