@@ -197,7 +197,7 @@
       outro: [['a', 'Frohes Neues! Und ein Hoch auf die Nostalgie.'], ['m', 'Ich nehm mein Klapphandy mit ins Jahr. Für die Akustik.']]
     },
     {
-      id: 'c4', title: 'Ma\' wird ja wohl mal noch …', when: 'Staffel 2', ep: 8,
+      id: 'c4', title: 'Ma\' wird ja wohl mal noch …', when: 'Herbst 2021', ep: 8,
       sky: 'sunset', obj: { type: 'antenna', n: 3, t: 300 }, drones: 6, show: { rounds: 6, goal: [260, 440, 620] },
       intro: [
         ['n', 'Staffel 2 startet. Doch kurz vor der Aufnahme rauscht es auf allen Kanälen: Die Störsender haben den Sendemast gekapert!'],
@@ -208,7 +208,7 @@
       outro: [['a', 'Signal steht! Staffel 2 kann kommen.'], ['m', 'Und ich hab Höhenangst überwunden. Für etwa vier Minuten.']]
     },
     {
-      id: 'c5', title: 'Die Bahn kommt! – Irgendwann', when: 'Staffel 3', ep: 13,
+      id: 'c5', title: 'Die Bahn kommt! – Irgendwann', when: 'Herbst 2023', ep: 13,
       sky: 'day', obj: { type: 'train', n: 10, t: 150 }, drones: 4, show: { rounds: 6, goal: [300, 500, 700] },
       intro: [
         ['n', 'Staffel 3. Die Folge über die Bahn soll pünktlich erscheinen. Ironisch, dass ausgerechnet der Zug nicht pünktlich ist.'],
@@ -219,7 +219,7 @@
       outro: [['m', 'Pünktlich! Wir! Das glaubt uns keiner.'], ['a', 'Schreib es in dein Tagebuch, Marco.']]
     },
     {
-      id: 'c6', title: 'Köttbullar und andere gute Nachrichten', when: 'Staffel 4', ep: 22,
+      id: 'c6', title: 'Köttbullar und andere gute Nachrichten', when: 'Januar 2026', ep: 22,
       sky: 'day', obj: { type: 'collect', n: 18, t: 260, focus: 'feel' }, drones: 7, show: { rounds: 7, goal: [360, 580, 800] },
       intro: [
         ['n', 'Staffel 4. Die Welt braucht gute Nachrichten – und die Störsender versuchen, genau die zu verschlucken.'],
@@ -230,7 +230,7 @@
       outro: [['a', 'So viele gute Nachrichten in einer Folge!'], ['m', 'Und kein einziges Köttbullar übrig.']]
     },
     {
-      id: 'c7', title: '(Sch)Leckmuschel', when: 'Live vor der 1996er-Party', ep: 23,
+      id: 'c7', title: '(Sch)Leckmuschel', when: 'März 2026 · Live vor der 1996er-Party', ep: 23,
       sky: 'party', obj: { type: 'party', n: 10, t: 240 }, drones: 6, show: { rounds: 7, goal: [420, 660, 900] },
       intro: [
         ['n', 'Diese Folge wird LIVE aufgenommen – vor der 1996er-Party der Rückspul Helden. Die Stadt leuchtet in Neonfarben.'],
@@ -259,7 +259,7 @@
     },
     // ---------------- Staffel 2: Das Funkloch kehrt zurück
     {
-      id: 'c9', season: 2, title: 'Imbisskind', when: 'Staffel 2 · Rückblende Februar 2021', ep: 4,
+      id: 'c9', season: 2, title: 'Imbisskind', when: 'Rückblende · Februar 2021', ep: 4,
       sky: 'day', obj: { type: 'deliver', n: 5, t: 260 }, drones: 5, show: { rounds: 6, goal: [540, 820, 1100] },
       intro: [
         ['n', 'Nach dem Festival ist Ruhe eingekehrt. Doch im Archiv rauscht es: Das Funkloch hat Bruchstücke alter Folgen in der Stadt verstreut.'],
@@ -270,7 +270,7 @@
       outro: [['a', 'Alle satt, alle glücklich. Imbisskind forever!'], ['m', 'Ich hab eine Pommes gefunden. Im Mischpult. Von 2021.']]
     },
     {
-      id: 'c10', season: 2, title: 'Die Katze und die Gurke', when: 'Staffel 2 · Rückblende Februar 2023', ep: 11,
+      id: 'c10', season: 2, title: 'Die Katze und die Gurke', when: 'Rückblende · Februar 2023', ep: 11,
       sky: 'sunset', obj: { type: 'cat', n: 3, t: 240 }, drones: 4, show: { rounds: 6, goal: [580, 880, 1180] },
       intro: [
         ['n', 'Elektroautos, Verkaufs-Apps und ein Geburtstag – Folge 11. Doch mitten in der Aufnahme springt eine Katze aufs Mischpult und flitzt mit dem Studio-Schlüssel davon.'],
@@ -281,7 +281,7 @@
       outro: [['m', 'Schlüssel zurück, Katze glücklich.'], ['a', 'Und die Gurke? Die bleibt im Kühlschrank. Für immer.']]
     },
     {
-      id: 'c11', season: 2, title: 'Hör\' mir uff!', when: 'Staffel 2 · Rückblende April 2023', ep: 12,
+      id: 'c11', season: 2, title: 'Hör\' mir uff!', when: 'Rückblende · April 2023', ep: 12,
       sky: 'night', obj: { type: 'hunt', n: 12, t: 270 }, drones: 9, show: { rounds: 7, goal: [640, 960, 1280] },
       intro: [
         ['n', 'Folge 12: Künstliche Intelligenz. Das Funkloch hat sich das Thema zu Herzen genommen – und eine Armee von KI-Drohnen gebaut.'],
@@ -292,7 +292,7 @@
       outro: [['a', 'Ruhe im Äther. Herrlich.'], ['m', 'Ich hab eine Drohne behalten. Sie heißt jetzt Klaus und sagt nur noch „Hallo“.']]
     },
     {
-      id: 'c12', season: 2, title: 'Giselas Camper', when: 'Staffel 2 · Jubiläum', ep: 20,
+      id: 'c12', season: 2, title: 'Giselas Camper', when: 'Rückblende · August 2025 · Jubiläum', ep: 20,
       sky: 'festival', obj: { type: 'boss', n: 3, t: 380, hp: 13, name: 'Das Funkloch 2.0', rival: 'Ralf Rauschmann' }, drones: 5, show: { rounds: 8, goal: [720, 1080, 1440] },
       intro: [
         ['n', 'Jubiläums-Folge 20: Camping, Urlaub und ein Wohnmobil namens Gisela. Die ganze Stadt feiert – bis der Himmel violett wird.'],
@@ -309,7 +309,7 @@
     },
     // ---------------- Staffel 3: Auf Sendung – die AnMaCha-Radios
     {
-      id: 'c13', radio: 'anmacha24', season: 3, title: 'AnMaCha24 – Die Podcastnacht', when: 'Staffel 3 · AnMaCha24', ep: 21,
+      id: 'c13', radio: 'anmacha24', season: 3, title: 'AnMaCha24 – Die Podcastnacht', when: 'AnMaCha24', ep: 21,
       sky: 'night', obj: { type: 'collect', n: 16, t: 270, gold: 4 }, drones: 6, show: { rounds: 7, goal: [760, 1120, 1500] },
       intro: [
         ['n', 'Aus dem Podcast wird ein Sender: AnMaCha24 geht rund um die Uhr auf Sendung. Erste Nacht, erste Livesendung – und das Programm ist noch leer.'],
@@ -321,7 +321,7 @@
       outro: [['a', 'Acht Stunden durchgesendet. Ich höre jetzt Stimmen.'], ['m', 'Das sind die Hörer, Andrew. Die rufen an.']]
     },
     {
-      id: 'c14', radio: 'clubradio24', season: 3, title: 'Clubradio24', when: 'Staffel 3 · Clubradio24', ep: 22,
+      id: 'c14', radio: 'clubradio24', season: 3, title: 'Clubradio24', when: 'Clubradio24', ep: 22,
       sky: 'party', obj: { type: 'party', n: 12, t: 250 }, drones: 7, show: { rounds: 7, goal: [800, 1180, 1560] },
       intro: [
         ['n', 'Clubradio24 legt auf – aber das Funkloch hat die Club-Mixtapes in der ganzen Stadt versteckt.'],
@@ -334,7 +334,7 @@
       outro: [['a', 'Der Bass wackelt bis zum Funkhaus.'], ['m', 'Das ist nicht der Bass, das ist Gisela. Die tanzt mit.']]
     },
     {
-      id: 'c15', radio: 'christmasradio24', season: 3, title: 'Christmasradio24', when: 'Staffel 3 · Christmasradio24', ep: 23,
+      id: 'c15', radio: 'christmasradio24', season: 3, title: 'Christmasradio24', when: 'Christmasradio24', ep: 23,
       sky: 'xmas', obj: { type: 'guest', n: 4, t: 300 }, drones: 5, show: { rounds: 7, goal: [840, 1240, 1640] },
       intro: [
         ['n', 'Christmasradio24 sendet die große Weihnachtsshow. Es schneit, es glitzert – und die Gäste stecken im Schnee fest.'],
@@ -345,7 +345,7 @@
       outro: [['m', 'Frohe Weihnachten an alle Hörer!'], ['a', 'Und an Gisela. Die steht jetzt mit Lichterkette vorm Haus.']]
     },
     {
-      id: 'c16', radio: 'yourtime-fm', season: 3, title: 'YourTime-FM – Giselas Roadtrip', when: 'Staffel 3 · YourTime-FM', ep: 24,
+      id: 'c16', radio: 'yourtime-fm', season: 3, title: 'YourTime-FM – Giselas Roadtrip', when: 'YourTime-FM', ep: 24,
       sky: 'day', obj: { type: 'train', n: 10, t: 170 }, drones: 5, show: { rounds: 7, goal: [880, 1300, 1720] },
       intro: [
         ['n', 'YourTime-FM schickt AnMaCha auf Tour: Eine Sendung an jeder Haltestelle der Stadt. Gisela ist leider in der Werkstatt.'],
@@ -356,7 +356,7 @@
       outro: [['a', 'Zehn Haltestellen, zehn Sendungen. Meine Füße senden SOS.'], ['m', 'Nächstes Mal fährt Gisela. Versprochen. Vielleicht.']]
     },
     {
-      id: 'c17', radio: 'rockradio24', season: 3, title: 'Rockradio24 – Der Rauschkönig', when: 'Staffel 3 · Finale', ep: 25,
+      id: 'c17', radio: 'rockradio24', season: 3, title: 'Rockradio24 – Der Rauschkönig', when: 'Rockradio24 · Finale der Radios', ep: 25,
       sky: 'festival', obj: { type: 'boss', n: 3, t: 400, hp: 16, name: 'Die Rauschkönig-Drohne', rival: 'Ralf „Rauschkönig“ Rauschmann' }, drones: 6, show: { rounds: 8, goal: [960, 1420, 1880] },
       intro: [
         ['n', 'Rockradio24 eröffnet mit einem Konzert vor dem Funkhaus. Doch über der Bühne schwebt Rauschmanns größte Störsender-Drohne aller Zeiten.'],
@@ -368,7 +368,7 @@
       outro: [
         ['m', 'Der Rauschkönig hat aufgegeben. Er moderiert jetzt eine Gartensendung. Und mein Trommelfell ist weg.'],
         ['a', 'Podcast, Radio, Rockkonzert. Was kommt als Nächstes?'],
-        ['n', 'Staffel 3 ist im Kasten. Alle AnMaCha-Radios senden wieder – hört rein auf anmacha.de!']
+        ['n', 'Die AnMaCha-Radios sind auf Sendung. Alle 12 Sender hört ihr auf MeinRadio.com – und den Podcast überall, wo es Podcasts gibt!']
       ]
     }
   ];
@@ -394,6 +394,13 @@
     { id: 'watch', name: 'Stoppuhr', icon: '⏱️', cost: 450, desc: '+20 Sekunden in den Story-Kapiteln.' }
   ];
 
+  // Echte Folgennummern (Radio-Kapitel sind keine Podcast-Folgen) und echte Staffeln laut anmacha.de / Podcast-Feed
+  D.CHAPTERS.forEach(c => { c.folge = c.radio ? null : c.ep; });
+  /** Staffel des echten Podcasts zu einer Folgennummer: #01–#07 Staffel 1, #08–#09 Staffel 2, #10–#16 Staffel 3, #17–#23 Staffel 4, ab #24 Staffel 5 */
+  D.realSeason = n => (n <= 7 ? 1 : n <= 9 ? 2 : n <= 16 ? 3 : n <= 23 ? 4 : 5);
+  D.folgeNr = n => (n < 10 ? '#0' : '#') + n;
+  D.PARTS = { 1: 'Teil 1 · Die Geschichte von AnMaCha', 2: 'Teil 2 · Das Funkloch kehrt zurück', 3: 'Teil 3 · Auf Sendung – die AnMaCha-Radios' };
+
   // ---------------------------------------------------------------- Nebenaufträge (Stadt erkunden) – check(S) bekommt den Stand der Stadt
   const sum = S => D.RUBRIC_IDS.reduce((a, r) => a + S.got[r], 0);
   D.QUESTS = [
@@ -409,28 +416,36 @@
     { id: 'q10', icon: '⇄', name: 'Teamwork', desc: 'Wechsle 10-mal zwischen Andrew und Marco', goal: 10, val: S => S.swaps || 0, pts: 100 }
   ];
 
-  // ---------------------------------------------------------------- Die 13 Sender (AnMaCha-Radioproduktion bei laut.fm, alle auch bei RicoReWi Radio)
+  // ---------------------------------------------------------------- Die 12 Sender der AnMaCha-Radioproduktion (MeinRadio.com, Slogans laut anmacha.de) + RicoReWi Radio
   D.STATIONS = [
     { slug: 'anmacha24', name: 'AnMaCha24', desc: 'Musik, die mich anmacht! Nachts die AnMaCha & Friends Podcastnacht.', icon: '▶️', color: '#ff8a1e' },
     { slug: 'ricorewi', name: 'RicoReWi Radio', desc: 'Der Sender der RicoReWi-Familie.', icon: '📻', color: '#ffd45a' },
-    { slug: 'yourtime-fm', name: 'YourTime-FM', desc: 'Reisen, Freizeit, Feelgood – Zeit für Dein nächstes Abenteuer.', icon: '🧭', color: '#2fd3a0' },
-    { slug: 'chartradio24', name: 'Chartradio24', desc: 'Die aktuellen Hits.', icon: '🏆', color: '#ff4f6d' },
-    { slug: 'clubradio24', name: 'Clubradio24', desc: 'Dance und House – erlebe den Beat!', icon: '🪩', color: '#a46cff' },
-    { slug: 'special-radio', name: 'Special-Radio', desc: 'Besondere Sendungen und Specials.', icon: '✨', color: '#5fb8ff' },
-    { slug: 'kultradio24', name: 'Kultradio24', desc: 'Kult-Hits der 80er und 90er.', icon: '📼', color: '#ff9fd0' },
-    { slug: 'rockradio24', name: 'Rockradio24', desc: 'Gitarren und Gas.', icon: '🎸', color: '#e0503a' },
-    { slug: 'zockerfm', name: 'Zocker-FM', desc: 'Musik zum Zocken.', icon: '🎮', color: '#6cff8a' },
-    { slug: 'rapradio24', name: 'Rapradio24', desc: 'Rap, R&B und Groove.', icon: '🎤', color: '#ffcf3a' },
-    { slug: 'schlagerpop24', name: 'Schlagerpop24', desc: 'Schlager und Gefühl.', icon: '💖', color: '#ff6fb0' },
-    { slug: 'christmasradio24', name: 'Christmasradio24', desc: 'Weihnachtsmusik – das ganze Jahr.', icon: '🎄', color: '#4fd06a' },
-    { slug: 'radiofloh', name: 'RadioFloh', desc: 'Das Kinderradio.', icon: '🦊', color: '#ffa94d' }
+    { slug: 'yourtime-fm', name: 'YourTime-FM', desc: 'Zeit für Dein nächstes Abenteuer!', icon: '🧭', color: '#2fd3a0' },
+    { slug: 'chartradio24', name: 'Chartradio24', desc: 'Deine Charts immer und überall.', icon: '🏆', color: '#ff4f6d' },
+    { slug: 'clubradio24', name: 'Clubradio24', desc: '… erlebe den Beat!', icon: '🪩', color: '#a46cff' },
+    { slug: 'special-radio', name: 'Special-Radio', desc: 'Zeit für andere Musik!', icon: '✨', color: '#5fb8ff' },
+    { slug: 'kultradio24', name: 'Kultradio24', desc: 'Da läuft meine Lieblingsmusik!', icon: '📼', color: '#ff9fd0' },
+    { slug: 'rockradio24', name: 'Rockradio24', desc: 'Wir rocken das!', icon: '🎸', color: '#e0503a' },
+    { slug: 'zockerfm', name: 'Zocker-FM', desc: 'Die beste Musik zum Zocken.', icon: '🎮', color: '#6cff8a' },
+    { slug: 'rapradio24', name: 'Rapradio24', desc: 'Dein Rapradio.', icon: '🎤', color: '#ffcf3a' },
+    { slug: 'schlagerpop24', name: 'Schlagerpop24', desc: 'Bester Schlagerpop für Dich!', icon: '💖', color: '#ff6fb0' },
+    { slug: 'christmasradio24', name: 'Christmasradio24', desc: 'Dein Weihnachtsradio.', icon: '🎄', color: '#4fd06a' },
+    { slug: 'radiofloh', name: 'RadioFloh!', desc: 'Dein Kinder- und Familienradio.', icon: '🦊', color: '#ffa94d' }
   ];
 
   // ---------------------------------------------------------------- Podcast: offizieller Feed (podcaster.de) + eingebaute Liste als Rückfall
   D.PODCAST = {
     name: 'AnMaCha – Der Podcast', by: 'Marco und Andrew',
     feed: 'https://fodftf.podcaster.de/dieanmacha.rss', itunes: 1546299338,
-    page: 'https://anmacha.de/podcast/', spotify: 'https://open.spotify.com/show/1EAnAGpmpO759oJO8hEm81'
+    page: 'https://anmacha.de/podcast/', spotify: 'https://open.spotify.com/show/1EAnAGpmpO759oJO8hEm81',
+    // Plattformen laut anmacha.de/podcast (Stand Nov. 2026)
+    links: [
+      ['Spotify', 'https://open.spotify.com/show/1EAnAGpmpO759oJO8hEm81'], ['Apple Podcasts', 'https://podcasts.apple.com/de/podcast/anmacha-der-podcast/id1546299338'],
+      ['Amazon Music', 'https://music.amazon.de/podcasts/d92e3855-2e15-448a-a07c-7aa1b850c3fd/anmacha---der-podcast'], ['Podimo', 'https://podimo.com/de/shows/anmacha-der-podcast'],
+      ['radio.de', 'https://www.radio.de/podcast/anmacha-der-podcast'], ['Castbox', 'https://castbox.fm/vh/6415892'], ['podcaster.de (RSS)', 'https://fodftf.podcaster.de/dieanmacha.rss']
+    ],
+    radio: 'https://meinradio.com/', site: 'https://anmacha.de/', insta: 'https://instagram.com/dieanmacha', tiktok: 'https://tiktok.com/@anmacha.radioproduktion', fanshop: 'https://anmacha-fanshop.myspreadshop.de/',
+    show: 'Die AnMaCha Podcast Show'   // so läuft der Podcast im Radio
   };
   const M = 'https://fodftf.podcaster.de/dieanmacha/media/';
   D.EPISODES = [
@@ -444,13 +459,13 @@
     ['#18', 'Hypersensibel', 'AnMaCha_-_Der_Podcast_-18_-_Hypersensibel_cut.mp3', '2025-05-04', 4807, 'Serious 15: Gendern und Gender-Pay-Gap, TV-Anmacher: ESC 2025.'],
     ['#17', 'Bahnfetisch', 'AnMaCha_-_Der_Podcast_-17_-_Bahnfetisch_cut.mp3', '2025-04-12', 4594, 'Serious 15: Einkauf – online oder regional?'],
     ['#16', 'Total zerbeult', 'AnMaCha_-_Der_Podcast_-16_-_Slow-TV.mp3', '2024-05-10', 3573, 'Serious 15: Reißverschlussverkehr, TEC News: Kabelvertrag und Fritzbox.'],
-    ['#15', 'Beschissen aber lustig', 'AnMaCha_-_Der_Podcast_-15_-_Beschissen_aber_lustig.mp3', '2024-01-31', 3814, 'Serious 15: Zusammenhalt in der Gesellschaft.'],
+    ['#15', 'Behämmert aber lustig', 'AnMaCha_-_Der_Podcast_-15_-_Beschissen_aber_lustig.mp3', '2024-02-01', 3814, 'Serious 15: Zusammenhalt in der Gesellschaft.'],
     ['#14', 'All Inclusive Streaming', 'AnMaCha_-_Der_Podcast_-014_-_All_Inclusive_Streaming.mp3', '2023-11-12', 4245, 'Serious 15: Barrierefreiheit, TEC News: Soundbars.'],
     ['#13', 'Die Bahn kommt! – Irgendwann', 'AnMaCha_-013_-_Die_Bahn_kommt-_-_Irgendwann.mp3', '2023-09-20', 3669, 'Warum die Bahn es gut meint, aber nichts auf die Reihe bekommt.'],
     ['#12', 'Hör\' mir uff!', 'AnMaCha_-_Der_Podcast_-12_-_Hoer-_mir_uff.mp3', '2023-04-24', 3957, 'Serious 15: Künstliche Intelligenz, TEC News: DSL oder Glasfaser.'],
     ['#11', 'Die Katze und die Gurke', 'AnMaCha_-011_-_Die_Katze_und_die_Gurke.mp3', '2023-02-11', 3951, 'Elektroautos, Verkaufs-Apps und ein Geburtstag.'],
-    ['#10', 'Der AnMaCha Doppel-Wumms', 'AnMaCha_-_Der_Podcast_-010_-_Der_AnMaCha_Doppel-Wumms.mp3', '2023-01-07', 3981, 'Staffel 3: Wohnungsmangel, Streaming-Neuheiten und mehr.'],
-    ['Spezial #1', 'Bericht von der polnisch-ukrainischen Grenze', 'AnMaCha_-_Spezial_-01_-_Bericht_von_der_polnisch-ukrainischen_Grenze.mp3', '2022-03-29', 2561, 'Marcos Bericht von der Grenze.'],
+    ['#10', 'Der AnMaCha Doppel-Wumms', 'AnMaCha_-_Der_Podcast_-010_-_Der_AnMaCha_Doppel-Wumms.mp3', '2023-01-08', 3981, 'Staffel 3: Wohnungsmangel, Streaming-Neuheiten und mehr.'],
+    ['Spezial #1', 'Bericht von der polnisch-ukrainischen Grenze', 'AnMaCha_-_Spezial_-01_-_Bericht_von_der_polnisch-ukrainischen_Grenze.mp3', '2022-03-30', 2561, 'Marcos Bericht von der Grenze.'],
     ['#09', 'Wer billig kauft, kauft zweimal!', 'AnMaCha_09_-_Wer_billig_kauft-_kauft_zweimal.mp3', '2022-02-26', 4050, 'Staffel 2 geht weiter.'],
     ['#08', 'Ma\' wird ja wohl mal noch …', 'AnMaCha_-_Der_Podcast_-08_-_Ma-_wird_ja_wohl_mal_noch.mp3', '2021-11-04', 4478, 'Es geht in die 2. Staffel!'],
     ['#07', 'Hausgrillen (Sommerausgabe)', 'AnMaCha_-_Der_Podcast_007_-_Hausgrillen_(Sommeredition).mp3', '2021-07-17', 3868, 'Sommer zu Hause im zweiten Corona-Sommer.'],
@@ -507,7 +522,7 @@
     ['Was misst man in Dezibel?', 'Lautstärke (Schallpegel)', 'Temperatur', 'Stromverbrauch', 'Helligkeit', 'Tech'],
     ['Welches Gerät wandelt Schall in elektrische Signale um?', 'Mikrofon', 'Lautsprecher', 'Router', 'Akku', 'Tech'],
     ['Was macht ein Pop-Schutz vor dem Mikrofon?', 'Dämpft P- und B-Laute', 'Macht den Ton lauter', 'Spielt Popmusik', 'Schützt vor Regen', 'Tech'],
-    ['Wie heißt die Plattform, auf der die AnMaCha-Sender laufen?', 'laut.fm', 'leise.fm', 'radio.tv', 'stream.de', 'Radio'],
+    ['Auf welcher eigenen Plattform laufen die 12 AnMaCha-Sender?', 'MeinRadio.com', 'DeinFunk.de', 'radio.tv', 'stream24.net', 'Radio'],
     ['Was bedeutet „On Air“ im Studio?', 'Wir sind auf Sendung', 'Die Lüftung läuft', 'Das Studio ist frei', 'Feierabend', 'Radio'],
     ['Wie heißt die Rubrik über Fernsehen und Streaming?', 'TV-Anmacher', 'Glotzen-Talk', 'Serien-Sofa', 'Bildschirm-Bingo', 'AnMaCha'],
     ['Wie heißt die Rubrik über Musik bei AnMaCha?', 'Musik-Anmacher', 'Ohrwurm-Ecke', 'Hitparade 15', 'Beat-Box', 'AnMaCha']
