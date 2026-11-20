@@ -61,6 +61,20 @@ export class InteriorScene implements GameScene {
         if (it.col) this.boxes.push({ x: it.x, z: it.z, hx: w / 2, hz: d / 2 });
       } else if ('screen' in it) {
         const o = planeZ(sc, it.screen[0], it.screen[1]); o.material = glow(sc, it.c, 1.2); o.position.set(it.x, it.y, it.z + .02); o.rotation.y = it.ry || 0;
+      } else if ('view' in it) {
+        // Fenster zur Skyline: Türme mit erleuchteten Fenstern, nachts der Blick aus dem Hochhaus
+        const [vw, vh] = it.view, tex = canvasTex(sc, 1024, 256, (g2) => {
+          const gr = g2.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, '#0b1030'); gr.addColorStop(.6, '#3a1d5c'); gr.addColorStop(1, '#ff7a6b'); g2.fillStyle = gr; g2.fillRect(0, 0, 1024, 256);
+          let r = 7; const rnd = () => (r = (r * 16807) % 2147483647) / 2147483647;
+          for (let i = 0; i < 60; i++) { g2.fillStyle = `rgba(255,255,255,${.3 + rnd() * .6})`; g2.fillRect(rnd() * 1024, rnd() * 110, 2, 2); }
+          for (let layer = 0; layer < 2; layer++) for (let x = -10; x < 1024;) {
+            const bw = 26 + rnd() * 48, bh = (layer ? 50 : 90) + rnd() * (layer ? 90 : 120); g2.fillStyle = layer ? '#0a0c1c' : '#1a1838'; g2.fillRect(x, 256 - bh, bw, bh);
+            for (let wy = 256 - bh + 6; wy < 250; wy += 9) for (let wx = x + 4; wx < x + bw - 5; wx += 8) if (rnd() < (layer ? .45 : .3)) { g2.fillStyle = ['#ffd98a', '#ffe9c0', '#7fd4ff', '#ff9ad5'][Math.floor(rnd() * 4)]; g2.fillRect(wx, wy, 4, 5); }
+            x += bw + 2 + rnd() * 6;
+          }
+          g2.fillStyle = '#0a0c1c'; for (let x = 0; x <= 1024; x += 170) g2.fillRect(x - 4, 0, 8, 256);   // Fensterrahmen
+        });
+        const o = planeZ(sc, vw, vh); o.material = glow(sc, 0xffffff, .85, { tex }); o.position.set(it.x, it.y, it.z + .02); o.rotation.y = it.ry || 0;
       } else this.neon(it.neon, it.c, it.x, it.y, it.z + .02, it.ry || 0, it.w || Math.min(8, it.neon.length * .42));
     }
     await Promise.all(jobs);
@@ -69,7 +83,7 @@ export class InteriorScene implements GameScene {
     for (const s of this.theme.spots) { const o = ring(sc, .42, .55, 24); o.material = ringM; o.position.set(s.x, .03, s.z); }
     // Leben im Raum: im Club tanzt die Menge, sonst stehen Gäste zusammen und reden
     const party = t.music === 'club' || t.music === 'show';
-    const guests = party ? ['Female_Party_01', 'Male_Adult_07', 'Female_Adult_09', 'Male_Adult_04', 'Female_Party_02', 'Male_Adult_02']
+    const guests = t.own ? [] : party ? ['Female_Party_01', 'Male_Adult_07', 'Female_Adult_09', 'Male_Adult_04', 'Female_Party_02', 'Male_Adult_02']
       : ['Female_Adult_04', 'Male_Adult_10'];
     const seed = [...t.id].reduce((n, ch) => n + ch.charCodeAt(0), 0);
     const folk = await Promise.all(guests.map((_, i) => Actor.create(sc, { body: guests[(i + seed) % guests.length], rb: guests[(i + seed) % guests.length], palette: 'rainbow', skin: 0 })));

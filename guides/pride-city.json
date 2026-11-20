@@ -260,6 +260,34 @@
         "Paketdienst Eilbote: im Handy unter Aufträge. Am Depot bei der Garage laden und ausliefern. Jede pünktliche Lieferung in Folge bringt mehr Lohn, mit Ladefläche (Kombi, Bulli, Lieferwagen, Pick-up) 25 % extra.",
         "Bedienung wie immer: dieselben Tasten und Knöpfe an Handy, PC, TV und Controller."
       ]
+    },
+    {
+      "t": "Hochstadt von innen: Theater, Hotel, Skybar, Penthouse",
+      "p": [
+        "Auch in der Hochstadt kannst du durch leuchtende Türen in die Häuser gehen. Zwölf Orte haben eine eigene Einrichtung mit Stellen zum Benutzen (gelber Ring am Boden)."
+      ],
+      "list": [
+        "Revuetheater Kaleidoskop (Neonplatz, Westseite): Revue ansehen, selbst auf die Bühne zum Ball der Häuser, Nähstube, Mama Vega hinter der Bühne.",
+        "Bar Komet, Kino Astra, China Palast und Diner 66 am Neonplatz: Drinks, Dart, Karaoke, Spätvorstellung, Essen rund um die Uhr.",
+        "Grand Hotel Aurora (Turm an der Hauptstraße): Zimmer für die Nacht (90 €), Spa, Flügel in der Lobby.",
+        "Skybar Wolke 7 (Turm gegenüber): Cocktail, Tanzen und der Blick über die Skyline.",
+        "Penthouse Himmelblau: für 6000 € dein zweites Zuhause im Glasturm, mit Bett, Whirlpool, vollem Kühlschrank und Platz für Gäste.",
+        "Pizza Nonna, Waschsalon Schaumparty, Galerie Farbrausch und Deli 24 im Osten der Hochstadt.",
+        "Die Wohnhäuser mit Treppe vor der Tür (Brownstones) sind wie in der Altstadt betretbar."
+      ]
+    },
+    {
+      "t": "Geschäfte führen: Personal, Ausbau, Veranstaltungen",
+      "p": [
+        "Ein gekauftes Geschäft läuft von allein, aber du kannst es führen: im Handy unter Imperium das Geschäft antippen oder im Laden „Dein Geschäft führen“ wählen. Oben siehst du Gewinn, Umsatz, Lohn und die Beliebtheit."
+      ],
+      "list": [
+        "Personal: Aushilfe, festes Team, Geschäftsführung. Jede Stufe kostet einmalig Einarbeitung und täglich Lohn, bringt aber deutlich mehr Umsatz. Die Geschäftsführung löst Probleme selbst.",
+        "Ausbauten: Einrichtung, Werbung und das Besondere des Hauses (zum Beispiel die Regenbogen-Ecke im Café oder der Kronleuchter im Kaleidoskop), je drei Stufen mit +12 % Umsatz.",
+        "Beliebtheit: 60 ist normal. Mehr Beliebtheit bringt bis zu 20 % mehr Umsatz. Sie steigt, wenn du selbst mit anpackst (einmal am Tag) oder etwas veranstaltest.",
+        "Veranstaltungen: alle drei Tage möglich, zum Beispiel die Queer Beach Party an der Strandbar. Die Kasse kommt am nächsten Morgen, dazu +2 Ruf.",
+        "Probleme: Ab und zu fällt die Kühlung aus oder eine Lieferung fehlt. Dann kommt nur der halbe Umsatz, bis du es im Menü löst."
+      ]
     }
   ],
   "ratgeber": [
@@ -390,6 +418,26 @@
         "Für den Paketdienst nimm einen Wagen mit Ladefläche und bleib in einem Viertel: kurze Wege halten die Serie am Leben.",
         "Auto weg? Die Garage bringt deinen Wagen jederzeit kostenlos zurück."
       ]
+    },
+    {
+      "t": "Hochstadt clever nutzen",
+      "list": [
+        "Kein Weg nach Hause? Im Grand Hotel Aurora schläfst du für 90 € aus, das Spa füllt die Hygiene komplett.",
+        "Am günstigsten satt wirst du bei Pizza Nonna (8 €) und im Diner 66 (9 €).",
+        "Das Penthouse spart auf Dauer Hotel und Essen: Schlafen, Whirlpool und Kühlschrank kosten dort nichts.",
+        "Kontakte niedrig? Waschsalon (kostenlos plaudern), Bar Komet oder Gäste ins Penthouse einladen.",
+        "Auf der Karte im Handy stehen alle neuen Orte, die Hochbahn bringt dich direkt hin."
+      ]
+    },
+    {
+      "t": "Mehr Gewinn aus deinen Geschäften",
+      "list": [
+        "Stell zuerst in den teuren Läden Personal ein: Der Aufschlag rechnet sich dort am schnellsten.",
+        "Vor einer Veranstaltung erst selbst mit anpacken: Die Kasse hängt von der Beliebtheit ab.",
+        "Probleme sofort lösen. Die Reparatur kostet etwa einen Tagesumsatz, der halbe Umsatz kostet dich jeden Tag.",
+        "Die Geschäftsführung lohnt sich, sobald du mehrere Läden hast: Sie hält die Beliebtheit und räumt Probleme allein weg.",
+        "Werbung zuerst ausbauen: Sie bringt Umsatz und sofort +8 Beliebtheit."
+      ]
     }
   ],
   "loesung": [
@@ -490,7 +538,9 @@
       "t": "Hochstadt-Extras",
       "list": [
         "Nach drei Spenden in der Samenbank: +3 Ruf und Post von einer Familie, nach sechs Spenden eine zweite Karte.",
-        "Eine Runde reden im Auto (ein Drittel des Preises) bringt Kontakte ohne Fahndungsrisiko."
+        "Eine Runde reden im Auto (ein Drittel des Preises) bringt Kontakte ohne Fahndungsrisiko.",
+        "Penthouse Himmelblau: 6000 € sparen (Rennen, Imperium, Akt II), dann am Glasturm an der Hauptstraße (Radar 🏙️) kaufen. Bringt einmalig +5 Ansehen.",
+        "Alle zwölf Orte der Hochstadt haben eine eigene leuchtende Tür, sie stehen mit Symbol auf Radar und Karte."
       ]
     },
     {
@@ -537,6 +587,10 @@
     {
       "q": "Gibt es Motorräder, Fahrräder oder Boote?",
       "a": "Noch nicht. Es gibt zwölf Autos, vom Kleinwagen bis zum Rennwagen. Weitere Fahrzeugarten folgen, sobald passende freie Modelle vorliegen."
+    },
+    {
+      "q": "Warum bringt mein Geschäft plötzlich weniger Geld?",
+      "a": "Dann gibt es dort ein Problem (⚠️ im Handy unter Imperium). Öffne das Geschäft und löse es, danach läuft der Umsatz wieder voll. Mit einer Geschäftsführung passiert das von allein."
     }
   ]
 }
