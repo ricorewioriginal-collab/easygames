@@ -1469,10 +1469,13 @@
      "Funkgalgen: Den Joker lieber früh in langen Wörtern einsetzen, nicht beim letzten Buchstaben."
     ]
    },
-   "size": 2296780,
+   "size": 2296885,
    "files": 42,
    "offline": true,
-   "cloud": null,
+   "cloud": {
+    "game": "wortspiele",
+    "prefix": "wortspiele-"
+   },
    "trailer": null
   },
   {
@@ -2733,7 +2736,7 @@
      "Am Barkeeper-Tresen zählt Tempo: Bärenbier ist nur Bier, alle anderen Drinks haben drei Zutaten."
     ]
    },
-   "size": 61492414,
+   "size": 61507530,
    "files": 310,
    "offline": true,
    "cloud": {
@@ -2757,7 +2760,7 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Das offizielle Spiel zum AnMaCha-Podcast: Du spielst Andrew oder Marco (jederzeit wechselbar) in einer 3D-Stadt rund ums Funkhaus. Sammle Themen-Funken in fünf Rubriken, triff Gäste, repariere den Sendemast und schalte Störsender mit der Schallwelle ab. Danach nehmt ihr die Folge live im Studio auf: Im Kommandomenü wählst du Thema, Pointe, Übergabe, Jingle oder Spezial – mit Minispielen wie Rhythmus, Soundboard, Mischpult und Kabelsalat. Die Hörer bestimmen die Sterne. Modi: Story mit 3 Staffeln und 17 Kapiteln nach echten Folgen und den AnMaCha-Radios bis zum Boss „Der Rauschkönig“, Studio frei gestalten, Live-Show (endlos), Themenjagd (3 Minuten), verrückte KI-Quizshow für 1–2 Spieler und die Stadt mit 10 Nebenaufträgen. Fan-Punkte gibt es für alles – im Fanshop warten Outfits und Studio-Upgrades. Im Radio-Fenster laufen echte Podcast-Folgen und 13 AnMaCha-Sender mit Titelanzeige. 🌐 Online-Koop: Ein Gerät eröffnet das Spiel, der Freund tritt per Link, Code oder QR bei und spielt die andere Figur – Themenjagd, Stadt oder Kapitel zu zweit.",
+    "anleitung": "Das offizielle Spiel zum AnMaCha-Podcast: Du spielst Andrew oder Marco (jederzeit wechselbar) in einer 3D-Stadt rund ums Funkhaus. Sammle Themen-Funken in fünf Rubriken, triff Gäste, repariere den Sendemast und schalte Störsender mit der Schallwelle ab. Danach nehmt ihr die Folge live im Studio auf: Im Kommandomenü wählst du Thema, Pointe, Übergabe, Jingle oder Spezial – mit Minispielen wie Rhythmus, Soundboard, Mischpult und Kabelsalat. Die Hörer bestimmen die Sterne. Ein Hauptweg führt durch 5 Akte mit 17 Kapiteln nach echten Folgen (Staffel 1 bis 5) und den AnMaCha-Radios bis zum großen Radio-Festival mit Abspann; oben links steht immer das nächste Ziel. Dazu: Studio frei gestalten, Live-Show (endlos), Themenjagd (3 Minuten), verrückte KI-Quizshow für 1–2 Spieler und die Stadt mit 10 Nebenaufträgen. Fan-Punkte gibt es für alles – im Fanshop warten Outfits und Studio-Upgrades. Im Radio-Fenster laufen alle echten Podcast-Folgen und die 12 AnMaCha-Radios mit Titelanzeige, dazu alle Podcast-Plattformen zum Folgen. 🌐 Online-Koop: Ein Gerät eröffnet das Spiel, der Freund tritt per Link, Code oder QR bei und spielt die andere Figur – Themenjagd, Stadt oder Kapitel zu zweit.",
     "steuerung": [
      "Controller: linker Stick laufen, rechter Stick Kamera",
      "A springen / bestätigen (zweimal = Doppelsprung), B zurück",
@@ -2775,8 +2778,8 @@
      "Jingles bei sinkendem Hype einsetzen."
     ]
    },
-   "size": 18029983,
-   "files": 613,
+   "size": 18163779,
+   "files": 622,
    "offline": true,
    "cloud": {
     "game": "anmacha-podcast-tycoon",

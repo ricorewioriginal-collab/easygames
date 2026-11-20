@@ -220,8 +220,10 @@ html[data-input=touch] #mg .lanes { display: flex; }
 #pmap { display: block; width: min(220px, 60vw, 28dvh); aspect-ratio: 1; margin: 0 auto 6px; border-radius: 16px; border: 2px solid var(--line); }
 @media (orientation: landscape) and (max-height: 480px) {
   .phoneBox { flex-direction: row; flex-wrap: wrap; width: min(720px, 96vw); max-height: 94dvh; }
-  .phoneBox .ph { width: 100%; }
-  .phoneBox .pbody { flex: 1; max-height: 70dvh; }
+  .phoneBox .ph { flex: 0 0 100%; box-sizing: border-box; }
+  .phoneBox .pbody { flex: 1 1 40%; max-height: calc(94dvh - 84px); }
+  /* die Liste braucht eine eigene Breite und Höhe, sonst rutscht sie neben die Kopfzeile und verschwindet */
+  .phoneBox .slot { flex: 1 1 45%; min-width: 0; max-height: calc(94dvh - 84px); }
   #pmap { width: 150px; }
 }
 .phoneBox .menu { gap: 6px; padding: 2px; }
@@ -363,3 +365,6 @@ body:has(#ui .screen) #hud :is(.rwheel, .nowplay) { visibility: hidden; }
 .online .oList li { background: rgba(255, 255, 255, .08); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
 .online .oList .mu { color: var(--mu); background: none; border: 0; padding: 4px 0; }
 .online .oIn { width: 100%; box-sizing: border-box; margin: 2px 0 10px; padding: 10px 14px; font: inherit; font-size: 1.5em; font-weight: 800; letter-spacing: .3em; text-align: center; text-transform: uppercase; color: #fff; background: rgba(0, 0, 0, .35); border: 1px solid var(--line); border-radius: 12px; }
+
+/* Querformat am Handy: Das Handy-Menü braucht die ganze Fläche, die Anzeigen dahinter machen Platz */
+@media (max-height: 480px) and (orientation: landscape) { body:has(#ui .screen.phone) #hud > * { visibility: hidden; } }

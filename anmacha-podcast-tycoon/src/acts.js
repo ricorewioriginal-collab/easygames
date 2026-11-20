@@ -158,50 +158,99 @@
   };
 
   // ------------------------------------------------------------------ Akte
-  const st = () => { const a = Save.data.acts = Save.data.acts || { cur: 0, seen: {}, w: {} }; a.seen = a.seen || {}; a.w = a.w || {}; return a; };
+  const st = () => {
+    const a = Save.data.acts = Save.data.acts || { cur: 0, seen: {}, w: {}, v: 2 }; a.seen = a.seen || {}; a.w = a.w || {};
+    if (a.v !== 2) {   // alter Spielstand (Akte über Welten/RicoReWi): auf den neuen Hauptweg umrechnen, ohne Belohnungen doppelt zu zahlen
+      a.v = 2; const had = Object.keys(a.seen).length > 0;
+      if (a.final) a.cur = ACTS.length; else { let i = 0; while (i < ACTS.length - 1 && ACTS[i].ok()) i++; a.cur = i; }
+      a.seen = {}; for (let i = 0; i < a.cur; i++) a.seen[i] = 1; if (had && a.cur < ACTS.length) a.seen[a.cur] = 1;
+      Save.save();
+    }
+    return a;
+  };
   const career = () => AMC.Career ? AMC.Career.state() : { eps: 0, abos: 0 };
   const guestsMet = () => Object.keys(((Save.data.guests || {}).n) || {}).length;
   const HOSTS_AT = (S, x, y, z, ry, anim) => ['andrew', 'marco'].forEach((id, i) => { const f = W.hosts[id]; if (!f) return; if (!f.root.parent) S.group.add(f.root); f.root.position.set(x + (i ? 1.4 : -1.4), y, z); f.root.rotation.y = ry; f.play(anim || 'idle', { fade: 0.2 }); });
   const around = (S, dx, dy, dz) => [S.pl.x + dx, (S.pl.y || 0) + dy, S.pl.z + dz];
+  // Hauptweg: EINE Geschichte. Jeder Akt = Story-Kapitel (echte Folgen) + Ziel in der freien Stadt; Finale mit Abspann.
+  const chDone = () => ((Save.data.story || {}).done) || 0;
+  const chRange = (from, to) => [Math.max(0, Math.min(to, chDone()) - from + 1), to - from + 1];   // Kapitel from..to (1-basiert)
+  const chOk = to => chDone() >= to;
+  const abos = () => Math.round(career().abos || 0);
+  /** nächstes offenes Story-Kapitel (0-basiert) oder -1 */
+  const nextCh = () => (D.CHAPTERS && chDone() < D.CHAPTERS.length ? chDone() : -1);
   const ACTS = [
-    { t: 'Akt 1 · Garage mit Mikro', goal: 'Nehmt eure erste Folge auf (abends im Funkhaus).', prog: () => [Math.min(1, career().eps), 1], ok: () => career().eps >= 1, reward: 100,
+    { t: 'Akt 1 · Garage mit Mikro', short: 'Spielt Kapitel 1 und nehmt eure erste Folge auf', to: 1,
+      goal: 'Spielt Kapitel 1 „Da muss man erstmal reinwachsen“: Themen in der Stadt sammeln, dann die erste Folge aufnehmen.',
+      prog: () => chRange(1, 1), ok: () => chOk(1), reward: 100,
       intro: S => [{ cam: around(S, 6, 3, 7), to: around(S, 3.5, 2, 4.5), look: around(S, 0, 1.4, 0), pose: S => HOSTS_AT(S, S.pl.x, S.pl.y || 0.12, S.pl.z, 0.7, 'idle'), lines: [
         ['n', 'Medienstadt. Zwei Freunde, ein Mikrofon – und ein Camper namens Gisela.'],
         ['andrew', 'Marco, wir machen das jetzt richtig. Ein Podcast, den die ganze Stadt hört.'],
         ['marco', 'Die ganze Stadt? Andrew, uns hören gerade drei Leute. Und eine davon ist deine Mutter.'],
         ['andrew', 'Dann fangen wir eben mit vier an. Erste Folge – heute Abend!']]}],
       outro: S => [{ cam: around(S, -5, 3, 6), to: around(S, -3, 2, 4), look: around(S, 0, 1.4, 0), pose: S => HOSTS_AT(S, S.pl.x, S.pl.y || 0.12, S.pl.z, -0.6, 'yes'), lines: [
-        ['marco', 'Folge eins ist draußen!'], ['andrew', 'Und die Kommentare sind … überraschend nett!'], ['n', 'Doch jenseits des Wassers warten noch vier Welten.']]}] },
-    { t: 'Akt 2 · Über die Brücken', goal: 'Besucht alle vier Welten: Hafen, Insel, Berg und RicoReWi-Universum.', prog: () => [Object.keys(st().w).length, 4], ok: () => Object.keys(st().w).length >= 4, reward: 200,
-      intro: () => [{ cam: [72, 16, 26], to: [80, 12, 14], look: [112, 4, 0], dur: 8, lines: [
-        ['andrew', 'Siehst du die Brücke? Dahinter liegt der Medienhafen mit Kanal 9.'],
-        ['marco', 'Im Norden der Funkturm, im Süden die Festival-Insel …'],
-        ['andrew', '… und im Westen leuchtet alles in Neon. Lass uns überall hin!'], ['gisela', 'Tröööt!']]}],
-      outro: () => [{ cam: [0, 60, 60], to: [0, 70, 20], look: [0, 0, -20], dur: 7, lines: [['n', 'Hafen, Berg, Insel und Neon-Universum – überall kennt man jetzt AnMaCha.']]}] },
-    { t: 'Akt 3 · Ricos Einladung', goal: 'Entdeckt alle sechs Orte im RicoReWi-Universum.', prog: () => [AMC.Worlds ? AMC.Worlds.ricoQuest().n : 0, 6], ok: () => !!(Save.data.ricoU || {}).done, reward: 150,
-      intro: () => [{ cam: [-80, 9, 16], to: [-100, 8, 12], look: [-140, 6, 0], dur: 7, lines: [
-        ['rico', 'Licht an, Kamera läuft – willkommen im RicoReWi-Universum!', { src: 'sounds/rico/live-1.mp3' }],
-        ['rico', 'Hey, ihr zwei! Ich bin Rico. Kommt rüber über die Neonbrücke – ich zeig euch mein Universum.'],
-        ['marco', 'Musik, Bücher, Apps … der Typ macht alles gleichzeitig?']]},
-        { cam: [-150, 14, 26], to: [-165, 10, 18], look: [-185, 7, -20], dur: 6, lines: [['rico', 'Ich habe nicht zu viele Ideen. Die Welt hat nur zu wenig Tabs offen.']]}],
-      outro: () => [{ cam: [-160, 8, 20], to: [-172, 6, 10], look: [-185, 6, -20], dur: 6, lines: [['rico', 'Ich bin RicoReWi. Und das hier ist echt – kein Filter, kein Fake.', { src: 'sounds/rico/live-4.mp3' }], ['rico', 'Ab heute seid ihr Teil meines Universums. Und ich komme gern mal in eure Show!'], ['andrew', 'Deal! Studiogast RicoReWi – das wird groß.']]}] },
-    { t: 'Akt 4 · Die Stimme der Stadt', goal: 'Holt 3 verschiedene Studiogäste und erreicht 1.000 Follower in der AnMaCha-App.', prog: () => [Math.min(3, guestsMet()) + (AMC.Feed && AMC.Feed.followers() >= 1000 ? 1 : 0), 4], ok: () => guestsMet() >= 3 && AMC.Feed && AMC.Feed.followers() >= 1000, reward: 250,
+        ['marco', 'Folge eins ist draußen!'], ['andrew', 'Und die Kommentare sind … überraschend nett!'], ['n', 'Die ersten Hörer sind da. Jetzt wollen sie mehr.']]}] },
+    { t: 'Akt 2 · Die ersten Fans', short: 'Kapitel 2–4 spielen und 400 Abos holen', to: 4,
+      goal: 'Spielt die Kapitel 2 bis 4 (Folgen #02, #03 und #08) und holt 400 Abos – jede Folge am Abend im Funkhaus bringt neue.',
+      prog: () => { const c = chRange(2, 4); return [c[0] + (abos() >= 400 ? 1 : 0), c[1] + 1]; }, ok: () => chOk(4) && abos() >= 400, reward: 200,
+      intro: S => [{ cam: around(S, 5, 3, -6), to: around(S, 3, 2, -4), look: around(S, 0, 1.4, 0), pose: S => HOSTS_AT(S, S.pl.x, S.pl.y || 0.12, S.pl.z, 2.4, 'idle'), lines: [
+        ['marco', 'Andrew, wir haben Post! Jemand will wissen, ob wir eher Typ Sommer oder Typ Weihnachten sind.'],
+        ['andrew', 'Dann machen wir daraus die nächste Folge. Und danach eine über Klapphandys.'],
+        ['n', 'Jede Folge bringt neue Abos. Tagsüber Themen sammeln, abends aufnehmen.']]}] },
+    { t: 'Akt 3 · Auf die große Bühne', short: 'Kapitel 5–8 spielen bis zum Podfluencer Festival', to: 8,
+      goal: 'Spielt die Kapitel 5 bis 8 (Folgen #13, #22, #23 und #24) – am Ende wartet die Side-Stage des Podfluencer Festivals in München.',
+      prog: () => chRange(5, 8), ok: () => chOk(8), reward: 300,
+      intro: S => [{ cam: around(S, 6, 3, 6), to: around(S, 4, 2, 4), look: around(S, 0, 1.4, 0), pose: S => HOSTS_AT(S, S.pl.x, S.pl.y || 0.12, S.pl.z, 0.8, 'yes'), lines: [
+        ['andrew', 'Marco, die vom Podfluencer Festival haben geschrieben. Die wollen uns LIVE.'],
+        ['marco', 'Live? Ohne Schnitt? Dann hört ja jeder, wie oft ich „äh“ sage.'],
+        ['n', 'Bis zum Festival sind es noch vier Folgen. Und irgendwer stört plötzlich den Funk.']]}],
+      outro: S => [{ cam: around(S, 5, 3, 6), to: around(S, 3, 2, 4), look: around(S, 0, 1.4, 0), pose: S => HOSTS_AT(S, S.pl.x, S.pl.y || 0.12, S.pl.z, 0.5, 'yes'), lines: [
+        ['andrew', 'LIVE vom Podfluencer Festival. Das war unser Ding, Marco.'], ['marco', 'Und Rauschmann hat zugeschaut. Der kommt wieder, wetten?']]}] },
+    { t: 'Akt 4 · Das Funkloch kehrt zurück', short: 'Kapitel 9–12 spielen und 3 Studiogäste holen', to: 12,
+      goal: 'Spielt die Rückblenden in Kapitel 9 bis 12 (Folgen #04, #11, #12 und #20) und holt 3 verschiedene Studiogäste in eure Show.',
+      prog: () => { const c = chRange(9, 12); return [c[0] + Math.min(3, guestsMet()), c[1] + 3]; }, ok: () => chOk(12) && guestsMet() >= 3, reward: 250,
       intro: () => [{ cam: [150, 6, -4], to: [156, 9, -8], look: [158, 14, -16], dur: 7, lines: [
         ['jana', 'Ihr zwei seid das Stadtgespräch! Wer bei euch zu Gast ist, landet morgen in den Nachrichten.'],
-        ['andrew', 'Dann holen wir die besten Gäste ins Studio.'], ['marco', 'Und posten alles in der App. Gisela braucht auch Follower.'], ['gisela', 'Tröööt!']]}],
-      outro: S => [{ cam: around(S, 5, 3, -5), to: around(S, 3, 2, -3), look: around(S, 0, 1.4, 0), lines: [['n', 'Tausend Follower, drei Studiogäste. Die Medienstadt hat eine neue Stimme.']]}] },
-    { t: 'Finale · Das große Radio-Festival', goal: 'Werdet Stadtgespräch (8.000 Abos) und tretet dann auf der Festival-Insel auf.', prog: () => [Math.min(8000, Math.round(career().abos)), 8000], ok: () => !!st().final, reward: 1000, finale: true,
+        ['andrew', 'Dann holen wir die besten Gäste ins Studio.'], ['marco', 'Und Rauschmann streut schon wieder Störsender in alte Folgen.'], ['gisela', 'Tröööt!']]}],
+      outro: S => [{ cam: around(S, 5, 3, -5), to: around(S, 3, 2, -3), look: around(S, 0, 1.4, 0), lines: [['n', 'Zwanzig Folgen, drei Studiogäste und ein besiegtes Funkloch. Die Medienstadt hört zu.']]}] },
+    { t: 'Akt 5 · Auf Sendung', short: 'Kapitel 13–17 auf den AnMaCha-Radios spielen', to: 17,
+      goal: 'Bringt die AnMaCha-Radioproduktion auf Sendung: Spielt die Kapitel 13 bis 17 auf AnMaCha24, Clubradio24, Christmasradio24, YourTime-FM und Rockradio24.',
+      prog: () => chRange(13, 17), ok: () => chOk(17), reward: 400,
+      intro: S => [{ cam: around(S, -6, 3, 6), to: around(S, -4, 2, 4), look: around(S, 0, 1.4, 0), pose: S => HOSTS_AT(S, S.pl.x, S.pl.y || 0.12, S.pl.z, -0.7, 'idle'), lines: [
+        ['marco', 'Andrew, ein Podcast reicht mir nicht mehr. Ich will Radio. Rund um die Uhr.'],
+        ['andrew', 'Zwölf Sender hat die AnMaCha-Radioproduktion. Fangen wir mit AnMaCha24 an.'],
+        ['n', 'Die Sender stehen in der ganzen Stadt. Und Rauschmann plant schon seinen größten Störsender.']]}] },
+    { t: 'Finale · Das große Radio-Festival', short: '8.000 Abos holen und auf der Festival-Insel auftreten', goal: 'Werdet Stadtgespräch (8.000 Abos) und tretet dann auf der Festival-Insel auf.', prog: () => [Math.min(8000, abos()), 8000], ok: () => !!st().final, reward: 1000, finale: true,
       intro: () => [{ cam: [0, 26, 140], to: [0, 16, 160], look: [0, 6, 196], dur: 8, lines: [
         ['n', 'Eine Nachricht von der Festival-Insel …'],
         ['jana', 'Das Radio-Festival braucht einen Abschluss-Act. Und alle wollen nur euch!'],
         ['marco', 'Live? Vor tausend Leuten?'], ['andrew', 'Vor tausend Leuten. Und Gisela fährt uns hin.']]}] }
   ];
   AC.ACTS = ACTS;
+  AC.nextChapter = nextCh;
+  /** Zeile oben links in der Stadt: immer das nächste Ziel des Hauptwegs */
+  AC.hud = function () {
+    const a = st(); if (a.cur >= ACTS.length) return null;
+    const d = ACTS[a.cur], p = d.prog(), frac = p[1] ? p[0] / p[1] : 0, tap = I.device === 'touch' ? ' · hier tippen' : I.device === 'pad' ? '' : ' · hier klicken';
+    if (!a.seen[a.cur]) return ['📖 ' + d.t + ' beginnt gleich …', frac];
+    if (d.finale) return abos() < 8000 ? ['🏆 Finale: Holt 8.000 Abos (' + U.fmt(abos()) + ') – nehmt abends im Funkhaus Folgen auf', abos() / 8000] : ['🏆 Finale: Fahrt zur Festival-Insel und tretet auf der Hauptbühne auf!', 1];
+    const n = nextCh();
+    if (n >= 0 && n < d.to) return ['📖 ' + d.t.replace(/^Akt (\d+) · /, 'Akt $1: ') + ' – Kapitel ' + (n + 1) + ' „' + D.CHAPTERS[n].title + '“ spielen' + tap, frac];
+    if (a.cur === 1 && abos() < 400) return ['📖 Akt 2: Holt 400 Abos (' + U.fmt(abos()) + ') – abends im Funkhaus eine Folge aufnehmen', frac];
+    if (a.cur === 3 && guestsMet() < 3) return ['📖 Akt 4: Holt Studiogäste (' + guestsMet() + '/3) – Leute mit ⭐ in der Stadt ansprechen', frac];
+    return ['📖 ' + d.t + ' – ' + d.short, frac];
+  };
+  /** Hauptweg fortsetzen: nächstes Kapitel starten, sonst die Übersicht zeigen */
+  AC.go = function () {
+    const a = st(), n = nextCh(), d = ACTS[Math.min(a.cur, ACTS.length - 1)];
+    if (n >= 0 && a.cur < ACTS.length && !d.finale && n < d.to && AMC.Game && AMC.Game.storyChapter) { AMC.UI.closeAll(); AMC.Game.storyChapter(n); return true; }
+    AC.panel(); return false;
+  };
   AC.state = () => { const a = st(), d = ACTS[Math.min(a.cur, ACTS.length - 1)], p = d.prog(); return { i: a.cur, done: a.cur >= ACTS.length, title: d.t, goal: d.goal, have: p[0], need: p[1] }; };
   const finaleReady = () => st().cur === ACTS.length - 1 && career().abos >= 8000 && !st().final;
   AC.finaleReady = finaleReady;
   let V = null;
-  AC.start = function (S) { V = null; if (!S || S.mode !== 'free' || S.net) return; V = { S, t: 2.5 }; };
+  AC.start = function (S) { V = null; if (!S || S.mode !== 'free' || S.net) return; V = { S, t: st().seen[0] ? 2.5 : 0.6 }; };
   AC.stop = () => { if (C) finish(); V = null; };
   AC.update = function (dt) {
     if (!V || C) return; const S = V.S, a = st();
@@ -210,7 +259,7 @@
     if (a.cur >= ACTS.length) return; const d = ACTS[a.cur];
     if (!a.seen[a.cur] && !d.finale && d.ok()) { a.seen[a.cur] = 1; a.cur++; Save.save(); const f = Save.earn(d.reward); AMC.UI.toast('📖 ' + d.t + ' schon geschafft! +' + f + ' 🎟️', 3200); return; }   // Spielstand ist schon weiter
     if (!a.seen[a.cur] && AC.lastCut && Date.now() - AC.lastCut < 40000) return;   // neuer Akt erst nach etwas freiem Spiel, nicht direkt hinter der letzten Szene
-    if (!a.seen[a.cur]) { a.seen[a.cur] = 1; Save.save(); CUT.play(d.intro(S), () => AMC.UI.toast('📖 ' + d.t + ': ' + d.goal, 5000)); return; }
+    if (!a.seen[a.cur]) { a.seen[a.cur] = 1; Save.save(); CUT.play(d.intro(S), () => a.cur === 0 ? AC.welcome() : AMC.UI.toast('📖 ' + d.t + ': ' + d.goal, 5000)); return; }
     if (d.finale) { if (finaleReady() && Math.hypot(S.pl.x, S.pl.z - 186) < 7) finale(S); return; }
     if (d.ok()) { const r = d.outro ? d.outro(S) : null; a.cur++; Save.save(); const f = Save.earn(d.reward); AMC.Audio.sfx('win'); const after = () => AMC.UI.toast('📖 ' + d.t + ' geschafft! +' + f + ' 🎟️', 4200); if (r) CUT.play(r, after); else after(); }
   };
@@ -235,9 +284,42 @@
       ['n', 'Die Insel bebt. Die ganze Medienstadt singt mit.'], ['rico', 'Was für ein Auftritt! AnMaCha forever!'],
       ['andrew', 'Marco … wir haben’s geschafft.'], ['marco', 'Ja. Und morgen Abend? Neue Folge.'], ['gisela', 'Tröööt!']]}], () => {
       AMC.Audio.sfx('applause');
-      AMC.UI.bubble('🏆 Festival-Legenden', 'Ihr habt die Story der Medienstadt abgeschlossen! Die Stadt, die Welten und eure Show laufen weiter – jeder Tag bringt neue Gäste, Trends und Folgen.', '+' + f + ' 🎟️ · Abos-Schub nach dem Festival');
+      AC.credits(() => AMC.UI.bubble('🏆 Festival-Legenden', 'Ihr habt die Story der Medienstadt abgeschlossen! Die Stadt, die Welten und eure Show laufen weiter – jeder Tag bringt neue Gäste, Trends und Folgen. Alle Kapitel könnt ihr im Menü nochmal spielen.', '+' + f + ' 🎟️ · Abos-Schub nach dem Festival'));
     });
   }
+  // Abspann nach dem Finale: echte Menschen und echte Wege zu Podcast und Radio, danach geht das Spiel weiter
+  AC.credits = function (done) {
+    const P = D.PODCAST || {}, c = career(), stars = Object.values((Save.data.story || {}).stars || {}).reduce((a, b) => a + b, 0);
+    const sec = (h, rows) => '<section><h3>' + h + '</h3>' + rows.map(r => '<p>' + r + '</p>').join('') + '</section>';
+    const s = AMC.UI.open('<div class="ac-roll"><div class="ac-roll-in">' +
+      '<img class="ac-logo" src="' + AMC.UI.podLogo + '" alt=""><h2>AnMaCha – Der Podcast</h2><p class="ac-sub">Das offizielle Spiel</p>' +
+      sec('Mit', ['Marco und Andrew', 'und RicoReWi']) +
+      sec('Eure Show', [U.fmt(c.eps || 0) + ' Folgen aufgenommen', U.fmt(Math.round(c.abos || 0)) + ' Abos', '⭐ ' + stars + ' von ' + D.CHAPTERS.length * 3 + ' Sternen in ' + D.CHAPTERS.length + ' Kapiteln']) +
+      sec('Nach echten Folgen', [D.EPISODES.length + ' Folgen „AnMaCha – Der Podcast“ seit 2020', 'Serious 15 · TV-Anmacher · Musik-Anmacher · TEC News · Feelgood']) +
+      sec('Die AnMaCha-Radioproduktion', [D.STATIONS.filter(x => x.slug !== 'ricorewi').map(x => x.name).join(' · '), 'Alle 12 Sender auf MeinRadio.com']) +
+      sec('Hört rein', ['Spotify · Apple Podcasts · Amazon Music · Podimo · radio.de · Castbox', 'anmacha.de · Instagram @dieanmacha']) +
+      sec('Ein Spiel aus der easygames-Sammlung', ['Wir ♥ Medien']) +
+      '<p class="ac-end">Danke fürs Zuhören – und fürs Spielen!</p></div>' +
+      '<div class="row ac-roll-btn"><button class="btn primary" data-nav data-first id="acR1">🏙️ Weiterspielen</button>' + (P.spotify ? '<a class="btn" data-nav href="' + P.spotify + '" target="_blank" rel="noopener">🎧 Podcast hören</a>' : '') + '</div></div>',
+      { cls: 'ac-credits', back: () => end() });
+    let ended = false; const end = () => { if (ended) return; ended = true; AMC.UI.close(s); if (done) done(); };
+    s.el.querySelector('#acR1').onclick = end;
+    return s;
+  };
+  // Erste Schritte: nach der Einleitung einmal kurz zeigen, wie das Spiel funktioniert – und direkt ins erste Kapitel
+  AC.welcome = function () {
+    const pause = I.device === 'touch' ? '⏸ oben rechts' : I.device === 'pad' ? AMC.glyph('start') : 'Esc';
+    const s = AMC.UI.open('<div class="panel glass ac-welcome"><header><h2>🎙️ So geht AnMaCha</h2></header><ol class="ac-steps">' +
+      '<li><b>📖 Ziel oben links</b><span>Dort steht immer, was als Nächstes dran ist. Antippen startet es.</span></li>' +
+      '<li><b>☀️ Tagsüber: Stadt</b><span>Themen-Funken sammeln, Fans und Gäste treffen, Störsender abschalten.</span></li>' +
+      '<li><b>🌙 Abends: Folge aufnehmen</b><span>Im Funkhaus wird aus allem eine echte AnMaCha-Folge. Gute Folgen bringen Abos.</span></li>' +
+      '<li><b>🏆 Ziel des Spiels</b><span>5 Akte mit 17 Kapiteln nach echten Folgen – bis zum großen Radio-Festival.</span></li>' +
+      '<li><b>⏸ Menü</b><span>' + pause + ' öffnet das Menü mit allen Extras: Minispiele, Studio, Radio, Online.</span></li></ol>' +
+      '<div class="row"><button class="btn primary" data-nav data-first id="acW1">▶ Kapitel 1 starten</button><button class="btn" data-nav id="acW2">Erst umsehen</button></div></div>', { back: () => AMC.UI.close(s) });
+    s.el.querySelector('#acW1').onclick = () => { AMC.UI.close(s); AC.go(); };
+    s.el.querySelector('#acW2').onclick = () => AMC.UI.close(s);
+    return s;
+  };
   // Übersicht (Gesamtmenü): Akte, Fortschritt, Szenen nochmal ansehen
   AC.panel = function () {
     const a = st(), inCity = AMC.Play.state() && AMC.Play.state().mode === 'free' && !AMC.Play.state().net;
