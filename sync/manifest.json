@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "bb2db9d18fcd",
- "generated": "2026-11-20T20:49:06+00:00",
- "commit": "3a5c35ae6af2bbc7b7d604cee8237b0db04f2318",
+ "version": "b3eec06db4a2",
+ "generated": "2026-11-20T20:55:09+00:00",
+ "commit": "b3b8361605187091fcc781f0a4b5f7fcf6ed015a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -8033,13 +8033,13 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kisten.js",
-   "s": 13573,
-   "h": "30fbe5bba2dbeeda534de30fb801d3f83bc7ebb7cd4e7d9b8363278410e657f9"
+   "s": 19419,
+   "h": "654b16603d087a4b6cb3ede4084f5c140937218890ffc5d00ec65eac4e1bb0d3"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kit.js",
-   "s": 27598,
-   "h": "08f2632ca91121abef258ec67ad52f889b0998dc296520cd2fddfd43f5cbd974"
+   "s": 27614,
+   "h": "3052bdbdf76930907ec3bf65577521fca897793f7ffaac42606805948a973469"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/klettern.js",
@@ -8088,8 +8088,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/ui.js",
-   "s": 12988,
-   "h": "92d3ffadcc7f6ca75c91cbaddb0502a52ac5081504de87eb496d2bc3d883cb04"
+   "s": 15011,
+   "h": "dcf165d998514e8a32af94b0ecaa0284c1110d92ec180b9a2e1826b0f7c2feae"
   },
   {
    "p": "anmacha-urwaldlager/js/watch.js",
@@ -10103,8 +10103,8 @@
   },
   {
    "p": "funkrenner/js/app.js",
-   "s": 40349,
-   "h": "26c5c24dcc0f274f8f96ace101432cb6b2d611786df5d070486e6d2960d73f22"
+   "s": 41152,
+   "h": "eea49d07ec92caabc2a1842238fe24335045902d7b5f7bcb812bf206fd9a5f4b"
   },
   {
    "p": "funkrenner/js/beat.js",
@@ -10123,18 +10123,18 @@
   },
   {
    "p": "funkrenner/js/themes.js",
-   "s": 32205,
-   "h": "c5ae6d5a72a97794f52b71d0b1d2acd4d17f4120e9a359dc4f6870a16901164b"
+   "s": 32708,
+   "h": "27ddb04ff96096ce76ee2cb18ccc4b648d00772c9ef489aa224105dbc8a349ef"
   },
   {
    "p": "funkrenner/js/view.js",
-   "s": 16627,
-   "h": "626e6820d211ce41bbc528bf050aa53af6fe59310cf9116de7864d0d79463537"
+   "s": 17683,
+   "h": "890178b10b9f96ccf5ac91e3169030612855b18086cfdf9810696096dd0ec3a0"
   },
   {
    "p": "funkrenner/js/world.js",
-   "s": 12559,
-   "h": "d8aa43d532ff319a25abc05de6795af1d3686d7be090b428717f132bdf0c59ba"
+   "s": 14689,
+   "h": "6cdb85a9f47be9ef2793a4f4b016b4d37436566a648fd62c9f984ec72db1b3e7"
   },
   {
    "p": "funkrenner/logos/01.webp",
@@ -11053,8 +11053,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 21313,
-   "h": "066d59352c4efeee7fe799bcfd4d93d71a5a00b5b60a82d4395019d426535570"
+   "s": 21849,
+   "h": "985910d1c6186def77223ff706a5596dbd5cb735dca8e6dbd65053c8d1a93b83"
   },
   {
    "p": "guides/beat-studio.json",
@@ -16459,7 +16459,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236550,
-   "h": "c6608fcc67b396a1bdc8bc19f76ea527a5fd55a6b4b3ebb75bbdf8e7221fc34d"
+   "h": "9fec60cb8dc2a53fb896c88a39837e0911efc55b9cc77a5acbfbea694417dc48"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
