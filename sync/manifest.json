@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "24a8d52721b7",
- "generated": "2026-11-20T01:22:24+00:00",
- "commit": "213585fa9e3bf4b925f66d18f22bc331a0312aaf",
+ "version": "956b3962ef11",
+ "generated": "2026-11-20T01:22:26+00:00",
+ "commit": "5b99d987db7f43029c4e72622f4fbb852229654a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7973,8 +7973,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/parcours.js",
-   "s": 13022,
-   "h": "f0b94a9178a5595be72ad61ce27fa6405cdfa5ffd76a126c92419327ae1e5bd7"
+   "s": 13126,
+   "h": "f1e6a7dec43599057c223a17969d734451414819427352d2553607d0f4fcb227"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/quiz.js",
@@ -15799,7 +15799,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236340,
-   "h": "85e99792766c602fb8188092686315a7dfd6dce3765d3ecdfac3cd0c5abab529"
+   "h": "37794ab044e6b9a43f80b0302eb862f4442f873928bdf3c0c720ec98b2cac568"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
