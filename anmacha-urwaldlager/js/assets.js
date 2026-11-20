@@ -218,6 +218,14 @@
         put(new T.SphereGeometry(r * 0.1, 8, 6), 0xe0304a, bones.head, cx, top + r * 0.08, cz + r * 0.7);
       } else if (hat === 'kopftuch') {
         put(new T.SphereGeometry(r * 1.04, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2.2), look.hatColor || 0x2a8cff, bones.head, cx, top - r * 0.66, cz - r * 0.04);
+      } else if (hat === 'tropen') {   // Tropenhelm: hohe Kuppel, schmale Krempe, Band
+        put(new T.SphereGeometry(r * 1.08, 18, 9, 0, Math.PI * 2, 0, Math.PI / 2), look.hatColor || 0xe8dcb4, bones.head, cx, top - r * 0.5, cz).scale.set(1, 1.15, 1.08);
+        put(new T.CylinderGeometry(r * 1.42, r * 1.48, r * 0.05, 20), look.hatColor || 0xe8dcb4, bones.head, cx, top - r * 0.5, cz).scale.set(1, 1, 1.12);
+        put(new T.CylinderGeometry(r * 1.09, r * 1.09, r * 0.12, 18), 0x5a3a1e, bones.head, cx, top - r * 0.42, cz).scale.set(1, 1, 1.08);
+      } else if (hat === 'blumen') {   // Blumenkranz: Ring aus Blättern mit bunten Blüten
+        put(new T.TorusGeometry(r * 0.96, r * 0.1, 6, 22), 0x2f8a3a, bones.head, cx, top - r * 0.44, cz, Math.PI / 2).scale.set(1.02, (dz / r) * 1.02, 1);
+        const FC = [0xff4fa0, 0xffd23a, 0xffffff, 0xff7a2e, look.hatColor || 0xb06aff];
+        for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; put(new T.SphereGeometry(r * 0.16, 7, 5), FC[i % 5], bones.head, cx + Math.cos(a) * r * 0.98, top - r * 0.42, cz + Math.sin(a) * dz * 1.0); }
       }
       if (look.glasses) {   // Sonnenbrille
         const gy = lo.y + H * 0.5, gz = hi.z + r * 0.02;

@@ -29,6 +29,9 @@ Rückblick der Moderatoren, alle Ex-Camper kehren zur Abschlussshow zurück, Kr�
 ## Klang
 WebAudio ohne Dateien (`js/audio.js`): Dschungel-Atmo (Zikaden, Vögel, Tukan, Papagei, Brüllaffe, Frösche), Nacht (Grillen, Eule), Höhle (Tropfen mit Echo), Fluss; Live-Kommentar der Moderatoren in den Prüfungen (`D.LIVE`, Toast + Sprachausgabe), Finale-Hymne zur Krönung.
 
+## Fortschritt
+`js/progress.js` (`UL.Prog`): 14 Erfolge (`ul_ach`), Zähler (`ul_stats`), Bestwert pro Prüfung (`ul_best`, Staffel und Üben, „Neuer Bestwert!“ im Ergebnis). Erfolge schalten Outfit-Teile im Figur-Editor frei: Tropenhelm, Blumenkranz, Krone, Camp-Hemd Gold/Tarngrün, Hutfarbe Gold. Menü „🏆 Erfolge & Bestwerte“.
+
 ## Prüfungen
 Ekel-Kisten · Dschungel-Dinner · Schlammbecken (tauchen) · Wackelsteg · Krabbel-Tunnel · Ekel-Dusche · Wissens-Tank · Schlamm-Parcours · Lianen-Rutsche · Schlangengrube · Höhlenlabyrinth (Taschenlampe) · Floßrennen · Kletterwand, dazu das IBES-Fan-Quiz (deutsche und britische Show) und der Gruppenmarsch ins Lager – jede im Dschungel und im Studio spielbar, auch einzeln über „Prüfungen spielen“.
 

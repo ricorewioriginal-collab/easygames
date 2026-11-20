@@ -264,6 +264,8 @@
       if (c.hun < 30) c.mood = Math.min(c.mood, 0.35);
     });
     if (S.cookQ >= 0) { const m = me(); Show.change(m, { sym: S.cookQ, ent: S.cookQ === 0 ? 2 : 0 }); Show.log(S.cookQ === 3 ? `${m.name} kocht ein Dschungel-Festessen!` : S.cookQ === 0 ? `${m.name} lässt das Essen anbrennen.` : `${m.name} kocht ordentlich.`, '🧑‍🍳'); }
+    if (S.cookQ === 3 && UL.Prog) UL.Prog.unlock('koch');
+    if (UL.Prog) UL.Prog.checkFriends(S);
     S.mealPick = 0; S.cookQ = -1;
     Show.log(`Abendessen: ${n} Portionen. ${key === 'none' ? 'Reis und Bohnen.' : key === 'full' ? 'Festmahl!' : ''}`, '🍲');
   };
@@ -426,6 +428,7 @@
     const place = won ? 1 : S.place || (alive().length + 1);
     S.over = true; UL.store.set('save', null);
     const hof = UL.store.get('hof') || []; hof.unshift({ name: m.name, place, theme: S.theme, len: S.len, date: Date.now() }); UL.store.set('hof', hof.slice(0, 20));
+    if (UL.Prog) { UL.Prog.checkFriends(S); UL.Prog.season(S, place, won); }
     if (!won && m.out) { const st = await hostSet('night'); await st.line('lotte', `${m.name}, dein Abenteuer im Urwaldlager endet heute. Du warst großartig!`); }
     const html = `<div class="stars">${won ? '👑' : '🏅'}</div>
       <p><b>${esc(m.name)}</b> – ${won ? Show.form(m) + '!' : 'Platz ' + place + ' von ' + S.campers.length}</p>

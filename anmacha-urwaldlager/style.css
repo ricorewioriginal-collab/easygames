@@ -286,3 +286,8 @@ kbd.g-switch { background: #2b2b30; color: #fff; border-color: #777; }
 .starptr::after { content: ''; position: absolute; left: 50%; top: 50%; width: 0; height: 0; border: 9px solid transparent; border-left: 14px solid #ffd23a; transform: rotate(var(--a)) translate(18px, -9px); transform-origin: 0 9px; }
 .tui .lbl.lean { font-size: 22px; color: #ffd23a; }
 .tui .lbl.lean.danger { color: #ff5a4a; animation: pulse .4s infinite; }
+/* Erfolge & Bestwerte */
+.ach:not(.on) { opacity: .6; }
+.ach.on { border-color: rgba(255, 207, 58, .55); }
+.pill.lock { opacity: .55; }
+.newbest { color: var(--gold); font-weight: 800; }
