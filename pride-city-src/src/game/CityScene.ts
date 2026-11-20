@@ -1,8 +1,9 @@
-/* Stadt-Szene: Rainbow City zum Herumlaufen (Spielmodus) und als Kulisse fürs Titelmenü (Kameraflug, tanzende Leute). */
-import * as THREE from 'three';
+/* Stadt-Szene (Babylon.js): Rainbow City zum Herumlaufen (Spielmodus) und als Kulisse fürs Titelmenü (Kameraflug,
+   tanzende Leute). Alle Menschen sind Rocketbox-Figuren. */
 import type { GameScene } from '../engine/Engine';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { Actor, streetLook, playerLook } from './Actor';
+import { Vector3, TransformNode, type Mesh, type FreeCamera, type Scene, clamp, dist, col } from '../engine/bjs';
+import { planeZ, cyl, ring, glow, canvasTex } from '../engine/geo';
+import { Actor, streetLook, playerLook, WALK_MPS, RUN_MPS, type Look } from './Actor';
 import { World, walkable } from './World';
 import { NPCS, CHAPTERS, goal, talk, poi as storyPoi, marks, hidden, storyTick, chapterLabel, type NpcDef, type StoryCtx } from './story';
 import type { Game } from './Game';
@@ -18,10 +19,11 @@ import { PLACE_THEMES, houseTheme } from './interiors';
 interface Npc { def: NpcDef; a: Actor; wp: number; wait: number; talking: boolean }
 
 export const STICKERS: Array<[number, number]> = [[-15, 24], [45, 52], [-50, -50], [52, -30], [-45, 45], [18, -52], [-28, -32], [28, 28]];
+const L = (rb: string): Look => ({ body: rb, rb, palette: 'rainbow', skin: 0 });
 
 export class CityScene implements GameScene {
-  root = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(55, 1, .1, 400);
+  scene: Scene;
+  camera: FreeCamera;
   bloom = 0;
   world!: World;
   player!: Actor;
@@ -29,8 +31,8 @@ export class CityScene implements GameScene {
   private npcs: Npc[] = [];
   private crowd: Actor[] = [];
   private cam = { yaw: Math.PI, pitch: .38, dist: 7.5, tYaw: Math.PI };
-  private camPos = new THREE.Vector3();
-  private stickerMeshes: THREE.Mesh[] = [];
+  private camPos = new Vector3();
+  private stickerMeshes: Mesh[] = [];
   private near: { kind: 'npc' | 'poi' | 'street' | 'car' | 'house'; id: string; label: string } | null = null;
   street!: Street;
   /** Auto, in dem die Spielfigur gerade sitzt */
@@ -41,46 +43,44 @@ export class CityScene implements GameScene {
   private hudT = 0;
   private titleT = 0;
 
-  constructor(private g: Game) {}
+  constructor(private g: Game) {
+    this.scene = g.engine.newScene(0x8fb8e8);
+    this.camera = g.engine.newCamera(this.scene, 55, .1, 400);
+  }
 
   async build() {
-    this.world = new World(this.root);
-    // Umgebungskarte für Spiegelungen auf Autos, Glas und nassen Straßen
-    const pm = new THREE.PMREMGenerator(this.g.engine.renderer);
-    this.root.environment = pm.fromScene(new RoomEnvironment(), .04).texture; pm.dispose();
+    const sc = this.scene;
+    this.world = new World(sc);
     await this.world.build();
     const s = this.g.save.data;
-    this.player = await Actor.create(streetLook(playerLook(s)));
-    this.root.add(this.player.root);
+    this.player = await Actor.create(sc, streetLook(playerLook(s)));
     await Promise.all(NPCS.map(async (d) => {
-      const a = await Actor.create(d.look);
+      const a = await Actor.create(sc, d.look);
       a.root.position.set(d.x, .1, d.z); a.root.rotation.y = d.yaw ?? 0;
       if (d.anim) a.play(d.anim, 0);
-      this.root.add(a.root);
       this.npcs.push({ def: d, a, wp: 0, wait: Math.random() * 3, talking: false });
-      if (d.anim === 'sit') a.root.position.y = -.25;
+      if (d.anim === 'sit') a.root.position.y = -.05;
     }));
     // Tanzende Menge auf dem Platz (Titelbild und Abendstimmung)
-    const looks = ['rainbow', 'trans', 'bi', 'pan', 'gay', 'progress'];
-    const bodies = ['Man2', 'Woman2', 'Man', 'Woman', 'Human', 'Hero'];
-    for (let i = 0; i < 6; i++) {
-      const a = await Actor.create({ body: bodies[i], palette: looks[i], skin: i % 6 });
+    const crowd = ['Female_Party_01', 'Male_Adult_07', 'Female_Adult_04', 'Male_Adult_02', 'Female_Party_02', 'Male_Adult_09'];
+    await Promise.all(crowd.map(async (rb, i) => {
+      const a = await Actor.create(sc, L(rb));
       const ang = (i / 6) * Math.PI * 2;
       a.root.position.set(-15 + Math.cos(ang) * 4.6, .1, 15 + Math.sin(ang) * 4.6);
       a.root.rotation.y = -ang - Math.PI / 2;
-      a.play(i % 2 ? 'cheer' : 'dance1', 0, .9 + i * .05);
-      this.root.add(a.root); this.crowd.push(a);
-    }
+      a.play((['dance1', 'cheer', 'dance2', 'dance3', 'dance1', 'clap'] as const)[i], 0, .9 + i * .05);
+      this.crowd.push(a);
+    }));
     // Nachtleben: Schlangen vor Club Prisma und One Love Bar (nur nachts sichtbar, wie die Tanzenden am Platz)
     const queue: Array<[number, number, number]> = [[3.6, -6.4, -Math.PI / 2], [3.4, -4.9, -Math.PI / 2], [3.7, -3.4, -Math.PI / 2], [33.6, 23.2, -Math.PI / 2], [33.4, 24.7, -Math.PI / 2]];
-    const qLooks = ['bi', 'trans', 'pan', 'gay', 'leather'];
+    const qa = ['Female_Adult_08', 'Male_Adult_03', 'Female_Adult_02', 'Male_Adult_05', 'Male_Adult_01'];
     await Promise.all(queue.map(async ([x, z, yaw], i) => {
-      const a = await Actor.create({ body: bodies[(i + 2) % 6], palette: qLooks[i], skin: (i * 2) % 6 });
+      const a = await Actor.create(sc, L(qa[i]));
       a.root.position.set(x, .1, z); a.root.rotation.y = yaw + (i % 2 ? .4 : -.3);
-      a.play(i % 3 === 0 ? 'wave' : i % 3 === 1 ? 'idle' : 'dance2', 0, .8);
-      this.root.add(a.root); this.crowd.push(a);
+      a.play((['phone', 'talk', 'dance2', 'drink', 'laugh'] as const)[i], 0, .9);
+      this.crowd.push(a);
     }));
-    this.street = new Street(this.root, this.world);
+    this.street = new Street(sc, this.world);
     await this.street.build();
     this.g.hud.setRadarMap((c, px) => {
       c.fillStyle = '#123a52'; c.fillRect(0, 0, 512, 512);                       // Wasser
@@ -97,27 +97,29 @@ export class CityScene implements GameScene {
     this.g.hud.onRadio = () => { if (this.drive) this.radio(1); };
     this.world.extraBlock = (x, z) => this.street.parked.some((c) => Math.hypot(c.o.position.x - x, c.o.position.z - z) < 2.6);
     this.buildStickers();
+    this.world.castShadows();
+    // Schatten folgen der Grafikstufe (niedrig = aus)
+    this.g.engine.onQuality((q) => { this.world.sun.shadowEnabled = q > 0; this.world.shadows.mapSize = q === 2 ? 2048 : 1024; });
   }
 
   /* ---------- Sticker zum Sammeln ---------- */
   private buildStickers() {
-    const c = document.createElement('canvas'); c.width = c.height = 128;
-    const x = c.getContext('2d')!;
-    const grd = x.createConicGradient(0, 64, 64);
-    ['#e40303', '#ff8c00', '#ffed00', '#008026', '#004dff', '#750787', '#e40303'].forEach((col, i) => grd.addColorStop(i / 6, col));
-    x.fillStyle = grd; x.beginPath();
-    for (let i = 0; i < 10; i++) { const r = i % 2 ? 26 : 60, a = (i / 10) * Math.PI * 2 - Math.PI / 2; x.lineTo(64 + Math.cos(a) * r, 64 + Math.sin(a) * r); }
-    x.closePath(); x.fill(); x.lineWidth = 6; x.strokeStyle = '#fff'; x.stroke();
-    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
-    const m = new THREE.MeshBasicMaterial({ map: t, transparent: true, side: THREE.DoubleSide, toneMapped: false });
-    const geo = new THREE.PlaneGeometry(1.2, 1.2);
+    const sc = this.scene;
+    const t = canvasTex(sc, 128, 128, (x) => {
+      const grd = x.createConicGradient(0, 64, 64);
+      ['#e40303', '#ff8c00', '#ffed00', '#008026', '#004dff', '#750787', '#e40303'].forEach((col, i) => grd.addColorStop(i / 6, col));
+      x.fillStyle = grd; x.beginPath();
+      for (let i = 0; i < 10; i++) { const r = i % 2 ? 26 : 60, a = (i / 10) * Math.PI * 2 - Math.PI / 2; x.lineTo(64 + Math.cos(a) * r, 64 + Math.sin(a) * r); }
+      x.closePath(); x.fill(); x.lineWidth = 6; x.strokeStyle = '#fff'; x.stroke();
+    }, true);
+    const m = glow(sc, 0xffffff, 1.3, { tex: t, double: true });
     STICKERS.forEach(([sx, sz], i) => {
-      const mesh = new THREE.Mesh(geo, m); mesh.position.set(sx, 1.4, sz); mesh.userData.i = i;
-      this.root.add(mesh); this.stickerMeshes.push(mesh);
+      const mesh = planeZ(sc, 1.2, 1.2, true); mesh.material = m; mesh.position.set(sx, 1.4, sz); mesh.metadata = { i }; mesh.isPickable = false;
+      this.stickerMeshes.push(mesh);
     });
     this.refreshStickers();
   }
-  refreshStickers() { this.stickerMeshes.forEach((m) => (m.visible = !this.g.save.data.goals.includes('sticker' + m.userData.i))); }
+  refreshStickers() { this.stickerMeshes.forEach((m) => m.setEnabled(!this.g.save.data.goals.includes('sticker' + m.metadata.i))); }
 
   /* ---------- Modus ---------- */
   setTitle() {
@@ -146,16 +148,17 @@ export class CityScene implements GameScene {
     this.snapCam();
     this.refreshHud();
   }
-  /* Ersetzt die Spielfigur nach dem Editor (andere Körperform = anderes Modell) */
+  /* Ersetzt die Spielfigur nach dem Editor (andere Figur = anderes Modell) */
   async rebuildPlayer() {
     const s = this.g.save.data;
     const look = streetLook(playerLook(s));
     if (this.player.look.body === look.body) { this.player.setLook(look); return; }
-    const old = this.player.root;
-    this.root.remove(old);
-    this.player = await Actor.create(look);
-    this.player.root.position.copy(old.position); this.player.root.rotation.y = old.rotation.y;
-    this.root.add(this.player.root);
+    const old = this.player;
+    this.player = await Actor.create(this.scene, look);
+    this.player.root.position.copyFrom(old.root.position); this.player.root.rotation.y = old.root.rotation.y;
+    this.player.root.visible = old.root.visible;
+    old.dispose();
+    this.world.castShadows();
   }
 
   hour() { return lifeHour(this.g.save.data); }
@@ -201,11 +204,11 @@ export class CityScene implements GameScene {
 
   private markers(): Marker[] {
     const s = this.g.save.data, gl = goal(s), out: Marker[] = [];
-    const v = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
-    if (gl.npc) { const n = this.npcs.find((x) => x.def.id === gl.npc); if (n) out.push({ id: 'g', icon: '⭐', label: n.def.name, pos: n.a.root.position.clone().setY(2.6) }); }
-    if (gl.poi) { const p = this.world.pois.find((x) => x.id === gl.poi); if (p) out.push({ id: 'g', icon: '⭐', label: p.name, pos: v(p.x, 4, p.z) }); }
-    if (this.gig) { const st = this.gig.g.steps[this.gig.i]; out.push({ id: 'gig', icon: st.icon, label: st.label, pos: v(st.x, 3, st.z) }); }
-    for (const [id, icon] of marks(s)) { const n = this.npcs.find((x) => x.def.id === id); if (n?.a.root.visible) out.push({ id: 'p' + id, icon, pos: n.a.root.position.clone().setY(2.5) }); }
+    const at = (p: Vector3, y: number) => new Vector3(p.x, y, p.z);
+    if (gl.npc) { const n = this.npcs.find((x) => x.def.id === gl.npc); if (n) out.push({ id: 'g', icon: '⭐', label: n.def.name, pos: at(n.a.root.position, 2.6) }); }
+    if (gl.poi) { const p = this.world.pois.find((x) => x.id === gl.poi); if (p) out.push({ id: 'g', icon: '⭐', label: p.name, pos: new Vector3(p.x, 4, p.z) }); }
+    if (this.gig) { const st = this.gig.g.steps[this.gig.i]; out.push({ id: 'gig', icon: st.icon, label: st.label, pos: new Vector3(st.x, 3, st.z) }); }
+    for (const [id, icon] of marks(s)) { const n = this.npcs.find((x) => x.def.id === id); if (n?.a.root.visible) out.push({ id: 'p' + id, icon, pos: at(n.a.root.position, 2.5) }); }
     return out;
   }
 
@@ -220,10 +223,11 @@ export class CityScene implements GameScene {
     }
     for (const n of this.npcs) {
       if (!n.a.root.visible) continue;
-      const d = n.a.root.position.distanceTo(p);
+      const d = Vector3.Distance(n.a.root.position, p);
       if (d < 2.6 && d < bd) { bd = d; best = { kind: 'npc', id: n.def.id, label: 'Sprechen mit ' + n.def.name }; }
     }
-    if (!best) { const st = this.street.near(p); if (st) best = { kind: 'street', id: String(this.street.people.indexOf(st)), label: (st.kind === 'worker' ? '🏮 ' : st.kind === 'police' ? '🚓 ' : st.kind === 'fire' ? '🚒 ' : '💬 ') + st.name }; }
+    const icon: Record<string, string> = { worker: '🏮 ', police: '🚓 ', fire: '🚒 ', medic: '🚑 ', security: '🛡️ ', chef: '👩‍🍳 ', courier: '📦 ' };
+    if (!best) { const st = this.street.near(p); if (st) best = { kind: 'street', id: String(this.street.people.indexOf(st)), label: (icon[st.kind] || '💬 ') + st.name }; }
     if (!best) { const car = this.street.nearCar(p); if (car) best = { kind: 'car', id: String(this.street.parked.indexOf(car)), label: '🚗 Einsteigen: ' + car.name }; }
     const want = goal(this.g.save.data).poi;
     if (!best) for (const q of this.world.pois) {
@@ -240,16 +244,18 @@ export class CityScene implements GameScene {
     this.g.touch.label(best ? (best.kind === 'npc' || best.kind === 'street' ? 'Reden' : best.kind === 'car' ? 'Fahren' : 'Rein') : 'Aktion');
   }
 
+  private face(a: Actor, to: Vector3) { a.root.rotation.y = Math.atan2(to.x - a.root.position.x, to.z - a.root.position.z); }
+
   interact() {
     if (!this.near || this.g.dialog.open) return;
     const c = this.ctx();
     if (this.near.kind === 'npc') {
       const n = this.npcs.find((x) => x.def.id === this.near!.id)!;
       n.talking = true;
-      if (n.def.anim !== 'sit') { n.a.play('idle'); n.a.root.rotation.y = Math.atan2(this.player.root.position.x - n.a.root.position.x, this.player.root.position.z - n.a.root.position.z); }
-      this.player.root.rotation.y = Math.atan2(n.a.root.position.x - this.player.root.position.x, n.a.root.position.z - this.player.root.position.z);
+      if (n.def.anim !== 'sit') { n.a.play('talk'); this.face(n.a, this.player.root.position); }
+      this.face(this.player, n.a.root.position);
       this.player.play('idle');
-      const end = () => { n.talking = false; };
+      const end = () => { n.talking = false; if (n.def.anim !== 'sit') n.a.play(n.def.anim || 'idle'); };
       const prevSay = c.say; c.say = (l, d) => prevSay(l, () => { end(); d?.(); });
       talk(c, n.def.id);
       if (!this.g.dialog.open) end();
@@ -260,11 +266,10 @@ export class CityScene implements GameScene {
     if (this.near.kind === 'car') { this.toggleCar(this.near.id); return; }
     if (this.near.kind === 'street') {
       const n = this.street.people[+this.near.id], s = this.g.save.data;
-      n.talking = true; n.a.play('idle');
-      n.a.root.rotation.y = Math.atan2(this.player.root.position.x - n.a.root.position.x, this.player.root.position.z - n.a.root.position.z);
-      this.player.root.rotation.y = Math.atan2(n.a.root.position.x - this.player.root.position.x, n.a.root.position.z - this.player.root.position.z);
+      n.talking = true; n.a.play('talk');
+      this.face(n.a, this.player.root.position); this.face(this.player, n.a.root.position);
       this.player.play('idle');
-      const end = () => { n.talking = false; };
+      const end = () => { n.talking = false; n.a.play(n.anim || 'idle'); };
       if (n.kind === 'worker') { this.g.booking(n.id!); setTimeout(end, 4000); return; }
       this.g.dialog.say([{ who: n.name, color: n.color, text: this.street.line(n, s.day) }], end);
       change(s, { social: 3 });
@@ -293,10 +298,10 @@ export class CityScene implements GameScene {
   private toggleCar(id: string) {
     const p = this.player.root.position;
     if (this.drive) {
-      const o = this.drive.o, side = new THREE.Vector3(Math.cos(o.rotation.y), 0, -Math.sin(o.rotation.y));
-      for (const k of [2.2, -2.2, 3.4, -3.4]) { const x = o.position.x + side.x * k, z = o.position.z + side.z * k; if (walkable(x, z) && !this.world.colliders.some((c) => Math.abs(x - c.x) < c.hx + .4 && Math.abs(z - c.z) < c.hz + .4)) { p.set(x, .1, z); break; } }
+      const o = this.drive.o, sx = Math.cos(o.rotation.y), sz = -Math.sin(o.rotation.y);
+      for (const k of [2.2, -2.2, 3.4, -3.4]) { const x = o.position.x + sx * k, z = o.position.z + sz * k; if (walkable(x, z) && !this.world.colliders.some((c) => Math.abs(x - c.x) < c.hx + .4 && Math.abs(z - c.z) < c.hz + .4)) { p.set(x, .1, z); break; } }
       this.drive.v = 0; this.drive = null;
-    music('city'); this.g.hud.radioBtn(false);
+      music('city'); this.g.hud.radioBtn(false);
       this.player.root.visible = true; this.player.play('idle');
       hints([['move', 'Laufen'], ['a', 'Aktion'], ['cam', 'Kamera'], ['y', 'Menü']]);
       sfx('open');
@@ -320,50 +325,50 @@ export class CityScene implements GameScene {
     else if (thr < 0) c.v = Math.max(-6, c.v + thr * (c.v > 0 ? 22 : 6) * dt);
     else c.v *= Math.max(0, 1 - dt * 1.2);
     if (Math.abs(c.v) < .05) c.v = 0;
-    o.rotation.y -= steer * dt * 2 * THREE.MathUtils.clamp(c.v / 5, -1, 1);
+    o.rotation.y -= steer * dt * 2 * clamp(c.v / 5, -1, 1);
     const before = o.position.clone();
     o.position.x += Math.sin(o.rotation.y) * c.v * dt; o.position.z += Math.cos(o.rotation.y) * c.v * dt;
     const want = o.position.clone();
     this.world.collide(o.position, 1.2);
-    for (const t of this.world.cars) if (t.o.position.distanceTo(o.position) < 3.2) { o.position.copy(before); c.v *= -.25; }
-    if (o.position.distanceTo(want) > .02 && Math.abs(c.v) > 4) { c.v *= .4; sfx('miss'); }
+    for (const t of this.world.cars) if (Vector3.Distance(t.o.position, o.position) < 3.2) { o.position.copyFrom(before); c.v *= -.25; }
+    if (Vector3.Distance(o.position, want) > .02 && Math.abs(c.v) > 4) { c.v *= .4; sfx('miss'); }
     o.position.y = .1;
-    o.updateMatrix(); o.traverse((x) => x.matrixAutoUpdate || x.updateMatrix());
-    this.player.root.position.copy(o.position);
-    if (Math.abs(c.v) > 1) this.cam.tYaw += (o.rotation.y + Math.PI * (c.v > 0 ? 1 : 1) - this.cam.tYaw) * Math.min(1, dt * 2.5);
+    this.player.root.position.copyFrom(o.position);
+    if (Math.abs(c.v) > 1) this.cam.tYaw += (o.rotation.y + Math.PI - this.cam.tYaw) * Math.min(1, dt * 2.5);
     const s = this.g.save.data; s.pos.x = o.position.x; s.pos.z = o.position.z; s.pos.yaw = o.rotation.y;
   }
 
   /* ---------- Kamera ---------- */
   private snapCam() { this.updateCam(1, true); }
+  private tgt = new Vector3();
   private updateCam(dt: number, snap = false) {
     const inp = this.g.engine.input, st = this.g.save.data.settings;
     const k = .005 * st.camSpeed;
     this.cam.tYaw -= inp.look.x * k;
-    this.cam.pitch = THREE.MathUtils.clamp(this.cam.pitch + inp.look.y * k * (st.invertY ? -1 : 1), .08, 1.1);
-    this.cam.dist = THREE.MathUtils.clamp(this.cam.dist + inp.zoom * .8, 3.5, 14);
+    this.cam.pitch = clamp(this.cam.pitch + inp.look.y * k * (st.invertY ? -1 : 1), .08, 1.1);
+    this.cam.dist = clamp(this.cam.dist + inp.zoom * .8, 3.5, 14);
     if (!this.drive && inp.held('tabL')) this.cam.tYaw += dt * 2.2;
     if (!this.drive && inp.held('tabR')) this.cam.tYaw -= dt * 2.2;
     if (inp.pressed('camReset')) this.cam.tYaw = this.player.root.rotation.y + Math.PI;
     this.cam.yaw += (this.cam.tYaw - this.cam.yaw) * Math.min(1, dt * 12);
     const p = this.player.root.position;
-    const tgt = new THREE.Vector3(p.x, p.y + 1.5, p.z);
-    const want = new THREE.Vector3(
+    const tgt = this.tgt.set(p.x, p.y + 1.5, p.z);
+    const want = new Vector3(
       tgt.x + Math.sin(this.cam.yaw) * Math.cos(this.cam.pitch) * this.cam.dist,
       tgt.y + Math.sin(this.cam.pitch) * this.cam.dist,
       tgt.z + Math.cos(this.cam.yaw) * Math.cos(this.cam.pitch) * this.cam.dist);
     // Kamera-Kollision: nicht in Häusern oder Autos stecken, sondern davor heranrücken
-    const dir = want.clone().sub(tgt), cars = this.world.cars;
+    const dir = want.subtract(tgt), cars = this.world.cars;
     let f = 1;
     for (let i = 1; i <= 14 && f === 1; i++) {
       const u = i / 14, x = tgt.x + dir.x * u, y = tgt.y + dir.y * u, z = tgt.z + dir.z * u;
       if (y < 7 && this.world.colliders.some((c) => Math.abs(x - c.x) < c.hx + .35 && Math.abs(z - c.z) < c.hz + .35)) f = Math.max(.18, (i - 1) / 14);
       else if (y < 2.2 && cars.some((c) => Math.hypot(x - c.o.position.x, z - c.o.position.z) < 1.7)) f = Math.max(.18, (i - 1) / 14);
     }
-    if (f < 1) want.copy(tgt).addScaledVector(dir, f);
-    if (snap || f < 1) this.camPos.lerp(want, snap ? 1 : Math.min(1, dt * 20)); else this.camPos.lerp(want, Math.min(1, dt * 8));
-    this.camera.position.copy(this.camPos);
-    this.camera.lookAt(tgt);
+    if (f < 1) want.copyFrom(tgt).addInPlace(dir.scale(f));
+    Vector3.LerpToRef(this.camPos, want, snap ? 1 : Math.min(1, dt * (f < 1 ? 20 : 8)), this.camPos);
+    this.camera.position.copyFrom(this.camPos);
+    this.camera.setTarget(tgt);
     this.clearView(tgt);
   }
 
@@ -371,19 +376,21 @@ export class CityScene implements GameScene {
   enter() { this.g.hud.radarOn(true); }
   exit() { this.g.hud.radarOn(false); }
   /** Missionsmarker wie im Open-World-Krimi: leuchtende Lichtsäule über dem Ziel */
-  private beam: THREE.Mesh | null = null;
-  private goalBeam(p: THREE.Vector3 | undefined, t: number, color = 0xff3fb0) {
+  private beam: TransformNode | null = null;
+  private beamMat: ReturnType<typeof glow> | null = null;
+  private goalBeam(p: Vector3 | undefined, t: number, color = 0xff3fb0) {
     if (!this.beam) {
-      const m = new THREE.MeshBasicMaterial({ color: 0xff3fb0, transparent: true, opacity: .35, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, toneMapped: false });
-      this.beam = new THREE.Mesh(new THREE.CylinderGeometry(.9, .9, 14, 20, 1, true).translate(0, 7, 0), m);
-      const ring = new THREE.Mesh(new THREE.RingGeometry(1.1, 1.45, 32).rotateX(-Math.PI / 2), m); ring.position.y = .15; this.beam.add(ring);
-      this.root.add(this.beam);
+      const sc = this.scene, m = (this.beamMat = glow(sc, 0xff3fb0, 1, { alpha: .35, add: true, double: true }));
+      this.beam = new TransformNode('beam', sc);
+      const c = cyl(sc, .9, .9, 14, 20, false); c.position.y = 7; c.material = m; c.parent = this.beam; c.isPickable = false;
+      const r = ring(sc, 1.1, 1.45, 32); r.position.y = .15; r.material = m; r.parent = this.beam;
     }
-    this.beam.visible = !!p && this.mode === 'play';
+    this.beam.setEnabled(!!p && this.mode === 'play');
     if (!p) return;
     this.beam.position.set(p.x, 0, p.z);
-    const bm = this.beam.material as THREE.MeshBasicMaterial;
-    bm.opacity = .22 + Math.sin(t * 3) * .08; bm.color.setHex(color);
+    const bm = this.beamMat!;
+    bm.alpha = .22 + Math.sin(t * 3) * .08;
+    bm.albedoColor = color === 0xffd23b ? glowCol.gig : glowCol.story;
   }
 
   /* ---------- Aufträge per Anruf ---------- */
@@ -413,6 +420,7 @@ export class CityScene implements GameScene {
       this.gig = null; this.g.hud.gig(null);
       s.money += q.g.pay; s.rep += q.g.rep; s.flags['gig_' + q.g.id] = s.day; s.flags.gigs = (Number(s.flags.gigs) || 0) + 1;
       sfx('win'); this.g.hud.banner('Auftrag erledigt!', `+${q.g.pay} € · +${q.g.rep} Ruf · ${q.g.done}`, 'good', 4200);
+      this.player.play('cheer'); setTimeout(() => this.player.anim === 'cheer' && this.player.play('idle'), 1800);
       this.g.save.write(); this.refreshHud();
       return;
     }
@@ -423,9 +431,11 @@ export class CityScene implements GameScene {
     const g = pickCall(this.g.save.data, Math.random());
     if (!g) return;
     sfx('phone'); setTimeout(() => sfx('phone'), 500);
+    if (!this.drive) this.player.play('phone');
+    const back = () => { if (this.player.anim === 'phone') this.player.play('idle'); };
     this.g.dialog.say([{ who: `📞 ${g.who}`, color: g.color, text: g.call, choices: [
-      { label: `Annehmen (${g.pay} €, ${fmtTime(g.time)} Min.)`, fn: () => this.startGig(g) },
-      { label: 'Gerade nicht', fn: () => toast(`${g.who}: Okay, ich frag jemand anderen.`) }] }]);
+      { label: `Annehmen (${g.pay} €, ${fmtTime(g.time)} Min.)`, fn: () => { back(); this.startGig(g); } },
+      { label: 'Gerade nicht', fn: () => { back(); toast(`${g.who}: Okay, ich frag jemand anderen.`); } }] }]);
   }
 
   /* ---------- Autoradio ---------- */
@@ -440,10 +450,10 @@ export class CityScene implements GameScene {
   }
 
   /** Laternen, Masten, Bänke und Bäume zwischen Kamera und Figur ausblenden, statt durch sie hindurchzuschauen */
-  private hidden = new Set<THREE.Object3D>();
-  private clearView(tgt: THREE.Vector3) {
+  private hidden = new Set<TransformNode>();
+  private clearView(tgt: Vector3) {
     const c = this.camPos, sx = tgt.x - c.x, sz = tgt.z - c.z, len2 = sx * sx + sz * sz || 1;
-    const now = new Set<THREE.Object3D>();
+    const now = new Set<TransformNode>();
     for (const q of this.world.props) {
       const dx = q.x - c.x, dz = q.z - c.z;
       if (dx * dx + dz * dz > 400) continue;
@@ -452,33 +462,34 @@ export class CityScene implements GameScene {
       const cu = Math.max(0, u), ex = c.x + sx * cu - q.x, ez = c.z + sz * cu - q.z;
       if (ex * ex + ez * ez < (q.r + .55) ** 2) q.o.forEach((o) => now.add(o));
     }
-    this.hidden.forEach((o) => { if (!now.has(o)) o.visible = true; });
-    now.forEach((o) => (o.visible = false));
+    this.hidden.forEach((o) => { if (!now.has(o)) o.setEnabled(true); });
+    now.forEach((o) => o.setEnabled(false));
     this.hidden = now;
   }
 
   /* ---------- Bild für Bild ---------- */
+  private plazaRef = new Vector3(-15, 0, 15);
   update(dt: number, t: number) {
     const g = this.g, s = g.save.data;
     this.bloom = .35 + this.world.night * .5;
     // Figuren nur in der Nähe animieren (Leistung)
-    const ref = this.mode === 'play' ? this.player.root.position : new THREE.Vector3(-15, 0, 15);
+    const ref = this.mode === 'play' ? this.player.root.position : this.plazaRef;
     for (const n of this.npcs) {
-      const near = n.a.root.position.distanceToSquared(ref) < 70 * 70;
+      const near = Vector3.DistanceSquared(n.a.root.position, ref) < 70 * 70;
       if (near) n.a.update(dt);
       if (!n.talking && n.def.walk) this.walkNpc(n, dt);
       n.a.root.visible = (!n.def.night || this.world.night > .4) && !hidden(s, n.def.id);
     }
     for (const a of this.crowd) if (a.root.visible) a.update(dt);
-    this.street.update(dt, this.world.night, s.settings.adult, this.mode === 'play' ? this.player.root.position : ref);
-    this.stickerMeshes.forEach((m) => { m.rotation.y = t * 2; m.position.y = 1.4 + Math.sin(t * 3 + m.userData.i) * .15; });
+    this.street.update(dt, this.world.night, s.settings.adult, ref);
+    this.stickerMeshes.forEach((m) => { m.rotation.y = t * 2; m.position.y = 1.4 + Math.sin(t * 3 + m.metadata.i) * .15; });
 
     if (this.mode === 'title') {
       this.titleT += dt;
       const a = this.titleT * .07;
       this.camera.position.set(-15 + Math.sin(a) * 11, 3.6 + Math.sin(a * .7) * .8, 15 + Math.cos(a) * 11);
-      this.camera.lookAt(-15 - Math.sin(a) * 2, 1.6, 15 - Math.cos(a) * 2);
-      this.world.follow(new THREE.Vector3(-15, 0, 15));
+      this.camera.setTarget(new Vector3(-15 - Math.sin(a) * 2, 1.6, 15 - Math.cos(a) * 2));
+      this.world.follow(this.plazaRef);
       this.world.update(dt, t);
       return;
     }
@@ -512,7 +523,7 @@ export class CityScene implements GameScene {
     this.hudT -= dt;
     if (this.hudT <= 0) { this.hudT = .5; if (!busy) storyTick(this.ctx()); this.refreshHud(); if (mood(s) >= 75 && !busy) g.done(track(s, 'mood')); }
     const mk = busy ? [] : this.markers();
-    g.hud.markers(mk, this.camera);
+    g.hud.markers(mk, (q) => g.engine.project(q));
     if ((this.radarT -= dt) <= 0) {
       this.radarT = 1 / 20;
       const pp = this.player.root.position;
@@ -523,7 +534,7 @@ export class CityScene implements GameScene {
     }
     // Lichtsäule: laufender Auftrag hat Vorrang (gelb), sonst das Story-Ziel (pink)
     const gm = mk.find((m) => m.id === 'gig');
-    this.goalBeam((gm || mk.find((m) => m.id === 'g'))?.pos, t, gm ? 0xffd23b : 0xff3fb0);
+    this.goalBeam((gm || mk.find((m) => m.id === 'g'))?.pos as Vector3 | undefined, t, gm ? 0xffd23b : 0xff3fb0);
     if (!busy) this.gigTick(dt);
     if (!busy) {
       this.findNear();
@@ -549,7 +560,7 @@ export class CityScene implements GameScene {
       p.x += (dx / mag) * sp * dt * Math.min(1, mag); p.z += (dz / mag) * sp * dt * Math.min(1, mag);
       this.world.collide(p, .45);
       // Figuren schieben sich sanft auseinander, statt ineinander zu laufen
-      const bump = (q: THREE.Vector3, m: number) => { const dx = p.x - q.x, dz = p.z - q.z, d = Math.hypot(dx, dz); if (d < m && d > 0) { p.x += dx / d * (m - d); p.z += dz / d * (m - d); } };
+      const bump = (q: Vector3, m: number) => { const dx = p.x - q.x, dz = p.z - q.z, d = Math.hypot(dx, dz); if (d < m && d > 0) { p.x += dx / d * (m - d); p.z += dz / d * (m - d); } };
       for (const n of this.npcs) bump(n.a.root.position, .75);
       for (const n of this.street.people) if (n.a.root.visible) bump(n.a.root.position, .75);
       if (this.world.night > .5) for (const a of this.crowd) bump(a.root.position, .75);
@@ -557,8 +568,10 @@ export class CityScene implements GameScene {
       const want = Math.atan2(dx, dz);
       let d = want - this.player.root.rotation.y; d = Math.atan2(Math.sin(d), Math.cos(d));
       this.player.root.rotation.y += d * Math.min(1, dt * 14);
-      this.player.play(run ? 'run' : 'walk', .18, run ? 1 : .6 + mag * .55);
-      this.stepT -= dt * (run ? 1.6 : 1);
+      // langsam = gehen, sonst joggen, mit Turbo rennen (Schrittweite passend zur Geschwindigkeit)
+      const v = sp * Math.min(1, mag), jog = v > 2.2;
+      this.player.play(jog ? 'run' : 'walk', .18, jog ? Math.min(1.75, v / RUN_MPS) : Math.max(.6, v / WALK_MPS));
+      this.stepT -= dt * (run ? 1.6 : jog ? 1.25 : 1);
       if (this.stepT <= 0) { this.stepT = .38; sfx('step'); }
       const s = this.g.save.data; s.pos.x = p.x; s.pos.z = p.z; s.pos.yaw = this.player.root.rotation.y;
     } else if (this.player.anim === 'walk' || this.player.anim === 'run') this.player.play('idle');
@@ -570,24 +583,25 @@ export class CityScene implements GameScene {
     const [tx, tz] = w[n.wp], p = n.a.root.position;
     const dx = tx - p.x, dz = tz - p.z, d = Math.hypot(dx, dz);
     if (d < .3) { n.wp = (n.wp + 1) % w.length; n.wait = 1.5 + Math.random() * 3; return; }
-    p.x += (dx / d) * 1.6 * dt; p.z += (dz / d) * 1.6 * dt;
+    p.x += (dx / d) * 1.4 * dt; p.z += (dz / d) * 1.4 * dt;
     n.a.root.rotation.y = Math.atan2(dx, dz);
-    n.a.play('walk', .25, .7);
+    n.a.play('walk', .25, 1.4 / WALK_MPS);
   }
 
   private checkStickers() {
     const p = this.player.root.position, s = this.g.save.data;
     for (const m of this.stickerMeshes) {
-      if (!m.visible) continue;
-      if (Math.hypot(m.position.x - p.x, m.position.z - p.z) < 1.4) {
-        m.visible = false; s.goals.push('sticker' + m.userData.i); s.glitter += 10;
+      if (!m.isEnabled()) continue;
+      if (dist(m.position, p) < 1.4) {
+        m.setEnabled(false); s.goals.push('sticker' + m.metadata.i); s.glitter += 10;
         const n = s.goals.filter((x) => x.startsWith('sticker')).length;
         sfx('win'); toast(`🌈 Pride-Sticker ${n}/${STICKERS.length} gefunden! +10 Glitzer`);
         if (n === STICKERS.length) { s.rep += 10; toast('Alle Sticker gesammelt! +10 Ruf'); }
-        this.player.play('cheer'); setTimeout(() => this.player.play('idle'), 1200);
+        this.player.play('cheer'); setTimeout(() => this.player.anim === 'cheer' && this.player.play('idle'), 1500);
         this.g.save.write();
       }
     }
   }
-
 }
+
+const glowCol = { gig: col(0xffd23b), story: col(0xff3fb0) };

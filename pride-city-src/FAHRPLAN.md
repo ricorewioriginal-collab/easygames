@@ -16,3 +16,4 @@ Funktionen übernehmen, neuer Name und neues Cover. Dazu die Ideen 1–15 aus de
 | 5 | Kapitel 4 Mystery „Verschwundene DJ“ (Idee 11); belebte Stadt (Passanten, Polizei, Feuerwehr, Sexarbeit 18+), fahrbare Autos; Rückblenden (Idee 15) und Jahreszeiten (Idee 9) offen | erledigt (Rest optional) |
 | 6 | Kapitel 5 Pride-Parade, Enden je nach Entscheidungen (Idee 10), Abspann; Mehrspieler (Firebase/PeerJS) und Rhythmus-Karriere (Idee 13) offen | Story erledigt, Rest optional |
 | 7 | Gay Life! ablösen: Spieleliste umstellen, alten Ordner auf Pride City umleiten | offen |
+| 8 | Engine von three.js auf Babylon.js (Vite bleibt), alle Menschen als Microsoft-Rocketbox-Avatare (33 Figuren, 15 Animationen), neue Stadtfiguren (Sanitäterin, Türsteher, Köchin, Kurier); Hautton/Haare/Outfit/Farbwelt entfallen im Editor, weil die Figuren eigene Kleidung mitbringen | erledigt |

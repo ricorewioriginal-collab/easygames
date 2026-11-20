@@ -1,10 +1,11 @@
 /* HUD in der Stadt: Kapitel-Ziel, Geld/Ruf/Uhrzeit, Aktions-Hinweis, Markierungen über Zielen. */
-import * as THREE from 'three';
 import { el, esc, glyph } from './ui';
 
 const NEED_ICONS: Array<[string, string]> = [['energy', '⚡'], ['hunger', '🍝'], ['hygiene', '🚿'], ['social', '💬'], ['fun', '🎉']];
 
-export interface Marker { id: string; icon: string; label?: string; pos: THREE.Vector3 }
+export interface Marker { id: string; icon: string; label?: string; pos: { x: number; y: number; z: number } }
+/** Weltpunkt → Bildschirm (Pixel) */
+export type Project = (p: { x: number; y: number; z: number }) => { x: number; y: number; behind: boolean };
 /** Punkt auf dem Radar (Welt-Koordinaten) */
 export interface Blip { x: number; z: number; icon?: string; color?: string; goal?: boolean }
 
@@ -103,20 +104,20 @@ export class Hud {
     this.promptEl.classList.toggle('on', !!text);
     if (text) this.promptEl.innerHTML = (glyph('a') || '<i class="g a">A</i>') + ' ' + esc(text);
   }
-  markers(list: Marker[], cam: THREE.Camera) {
+  markers(list: Marker[], project?: Project) {
     const seen = new Set<string>();
-    const v = new THREE.Vector3(), w = innerWidth, h = innerHeight;
+    const w = innerWidth, h = innerHeight;
     for (const m of list) {
+      if (!project) break;
       seen.add(m.id);
       let e = this.markerEls.get(m.id);
       if (!e) { e = el('<div class="marker"></div>'); this.markersEl.appendChild(e); this.markerEls.set(m.id, e); }
       const html = m.icon + (m.label ? `<small>${esc(m.label)}</small>` : '');
       if (e.dataset.h !== html) { e.innerHTML = html; e.dataset.h = html; }
-      v.copy(m.pos).project(cam);
-      const behind = v.z > 1;
-      let x = (v.x * .5 + .5) * w, y = (-v.y * .5 + .5) * h;
+      const v = project(m.pos);
+      let x = v.x, y = v.y;
       // Ziele außerhalb des Bildes am Rand anzeigen
-      if (behind) { x = w - x; y = h - 40; }
+      if (v.behind) { x = w - x; y = h - 40; }
       x = Math.max(28, Math.min(w - 28, x)); y = Math.max(70, Math.min(h - 60, y));
       e.style.left = x + 'px'; e.style.top = y + 'px';
     }
