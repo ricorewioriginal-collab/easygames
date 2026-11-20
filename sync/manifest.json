@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b512a64eeebe",
- "generated": "2026-11-20T18:52:18+00:00",
- "commit": "7710e0f1f6dcf044a016b1875768ed433c869335",
+ "version": "861c5db66a68",
+ "generated": "2026-11-20T18:52:29+00:00",
+ "commit": "b2434305bfef743ad4bd7534e9bed3c435bbc162",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10993,8 +10993,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 19175,
-   "h": "ed36858035670f423a328bee477d12040e4c783ee95a3a2ff31275dc9a04f654"
+   "s": 18959,
+   "h": "7e6286018d89c97ed8c38690282bc7118684d338ae4b22afa5209b514b58381c"
   },
   {
    "p": "guides/beat-studio.json",
