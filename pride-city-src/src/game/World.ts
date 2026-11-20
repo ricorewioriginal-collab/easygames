@@ -37,7 +37,7 @@ export function walkable(x: number, z: number) {
 export interface Rect { x: number; z: number; hx: number; hz: number }
 /** Schlanke Requisiten (Laternen, Masten, Bänke, Bäume): runde Kollision und Ausblenden, wenn sie der Kamera im Weg stehen */
 export interface Prop { x: number; z: number; r: number; o: TransformNode[]; solid: boolean }
-export interface Car { o: Node3; path: Vector3[]; seg: number; u: number; v: number; kind?: string }
+export interface Car { o: Node3; path: Vector3[]; seg: number; u: number; v: number; kind?: string; /** vorübergehend aus dem Verkehr (Parade) */ off?: boolean }
 
 const isRoad = (i: number) => i % 3 === 0;
 const rnd = (() => { let s = 7; return () => ((s = (s * 16807) % 2147483647) / 2147483647); })();
@@ -380,23 +380,26 @@ export class World {
     const dusk = Math.max(0, 1 - Math.abs(up) * 2.6) * (up > -.35 ? 1 : 0); // längere Abendröte in Pink und Violett
     const top = Color3.Lerp(Color3.Lerp(col(0x1a1450), col(0x3d7fe0), day), col(0x5b3a9a), dusk * .6);
     const bot = Color3.Lerp(Color3.Lerp(col(0x4a2a78), col(0xcfe6ff), day), col(0xff6f9a), dusk * .85);
+    // Wetter: Wolken machen den Himmel grau und das Licht flacher, Nebel und Regen verdichten den Dunst
+    const wx = this.wx;
+    if (wx.gloom > .01) { const grey = col(0x77808f).scale(.25 + .75 * day); Color3.LerpToRef(top, grey.scale(.8), wx.gloom * .8, top); Color3.LerpToRef(bot, grey, wx.gloom * .8, bot); }
     const sm = this.skyMat;
-    sm.setColor3('top', top); sm.setColor3('bot', bot); sm.setFloat('stars', this.night);
+    sm.setColor3('top', top); sm.setColor3('bot', bot); sm.setFloat('stars', this.night * (1 - wx.gloom));
     sm.setVector3('sunDir', new Vector3(Math.cos(ang) * .8, up, .45).normalize());
-    sm.setColor3('sunCol', new Color3(1, .82, .6).scale(smoothstep(up, -.08, .1)));
+    sm.setColor3('sunCol', new Color3(1, .82, .6).scale(smoothstep(up, -.08, .1) * (1 - wx.gloom)));
     this.scene.fogColor = bot;
     // tagsüber Dunst, abends und nachts klarer, damit die Skyline mit ihren Fenstern zu sehen ist
-    this.scene.fogDensity = .0024 + .0034 * day * (1 - dusk);
+    this.scene.fogDensity = .0024 + .0034 * day * (1 - dusk) + wx.fog;
     this.pickEnv(day, dusk);
     this.scene.clearColor.set(bot.r, bot.g, bot.b, 1);
     // Fenster nachts warm, Straßen nachts feucht glänzend
     this.winMats.forEach((m) => m.emissiveColor.set(1 * this.night * .9, .72 * this.night * .9, .4 * this.night * .9));
     this.nightMats.forEach((m) => m.emissiveColor.set(.04 + this.night * 1.1, .04 + this.night * 1.05, .04 + this.night));
-    this.roadMats.forEach((m) => { m.roughness = .72 - .38 * this.night; });
+    this.roadMats.forEach((m) => { m.roughness = (.72 - .38 * this.night) * (1 - wx.wet * .62); });
     this.poolLights.forEach((l) => (l.intensity = this.night * 14));
-    this.sun.intensity = .55 + 1.9 * day;
+    this.sun.intensity = (.55 + 1.9 * day) * (1 - wx.gloom * .6);
     this.sun.diffuse = Color3.Lerp(Color3.Lerp(col(0x8fa0ff), Color3.White(), day), col(0xffa060), dusk);
-    this.hemi.intensity = .55 + .45 * day;
+    this.hemi.intensity = (.55 + .45 * day) * (1 - wx.gloom * .18) + wx.flash * 2.4;
     this.hemi.diffuse = Color3.Lerp(col(0x7a6cff), col(0xbfd8ff), day);
     this.hemi.groundColor = Color3.Lerp(col(0x2a2040), col(0x4a3a5a), day);
     this._sunDir.set(Math.cos(ang) * .8, Math.max(.25, Math.abs(up)), .45).normalize();
@@ -409,6 +412,8 @@ export class World {
     this.poolLights.forEach((l) => { if (l.isEnabled() !== lit) l.setEnabled(lit); });
   }
   private _sunDir = new Vector3(.5, .8, .4);
+  /** Wetter (weather.ts): Bewölkung, nasse Straßen, zusätzlicher Dunst, Blitz */
+  readonly wx = { gloom: 0, wet: 0, fog: 0, flash: 0 };
   /** niedrige Grafikstufe (Handy): keine Punktlichter, kein Klarlack, keine Feinstruktur */
   low = false;
   setLow(on: boolean) {
@@ -788,6 +793,7 @@ export class World {
       this.poolLights.forEach((l, i) => { const q = near[i]?.[1]; if (q) l.position.set(q.x, q.y - .5, q.z); });
     }
     for (const c of this.cars) {
+      if (c.off) { c.o.position.set(0, -40, -500); continue; }
       const a = c.path[0], b = c.path[1];
       const len = Vector3.Distance(a, b);
       let speed = c.v;
@@ -800,7 +806,7 @@ export class World {
       // anderen Autos nicht hinten auffahren und an Kreuzungen Vorfahrt lassen (feste Reihenfolge, damit sich nichts verklemmt)
       const me = this.cars.indexOf(c);
       for (let j = 0; j < this.cars.length && speed > 0; j++) {
-        const o = this.cars[j]; if (o === c) continue;
+        const o = this.cars[j]; if (o === c || o.off) continue;
         if (blocked(o.o.position.x, o.o.position.z, 7, 1.6) || (j < me && blocked(o.o.position.x, o.o.position.z, 6, 3.6))) speed = 0;
       }
       if (this.extraBlock && this.extraBlock(p.x + ax * 3.5, p.z + az * 3.5)) speed = 0;
