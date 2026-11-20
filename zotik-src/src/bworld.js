@@ -15,6 +15,7 @@ export function createBWorld({ COL, HOUSES, OB, obPass, radius = 40 }) {
   scene.collisionsEnabled = true;
   const cylSrc = CreateCylinder('cyl', { diameter: 2, height: 8, tessellation: 10 }, scene), boxSrc = CreateBox('box', { size: 1 }, scene);
   for (const m of [cylSrc, boxSrc]) { m.isVisible = false; m.checkCollisions = true; m.position.y = -999; m.computeWorldMatrix(true); }
+  const _ell = new Vector3(), _vel = new Vector3();
   const mover = CreateBox('mover', { size: 1 }, scene); mover.checkCollisions = false;
   let proxies = [], cx = 1e9, cz = 1e9;
   const clear = () => { for (const p of proxies) p.dispose(); proxies = []; };
@@ -36,13 +37,11 @@ export function createBWorld({ COL, HOUSES, OB, obPass, radius = 40 }) {
   function move(o, dx, dz, r = .4, h = 1.8) {
     focus(o.x, o.z);
     if (o.y != null) for (const m of proxies) m.checkCollisions = !(m._top != null && o.y > m._top - .5);   /* Dächer/Plattformen: oben drüber frei */
-    mover.ellipsoid = new Vector3(r, h / 2, r); mover.position.set(o.x, h / 2, o.z); mover.computeWorldMatrix(true);
-    mover.checkCollisions = true; mover.moveWithCollisions(new Vector3(dx, 0, dz)); mover.checkCollisions = false;
+    _ell.set(r, h / 2, r); mover.ellipsoid = _ell; mover.position.set(o.x, h / 2, o.z); mover.computeWorldMatrix(true);
+    mover.checkCollisions = true; mover.moveWithCollisions(_vel.set(dx, 0, dz)); mover.checkCollisions = false;
     for (const m of proxies) m.checkCollisions = true;
     const nx = mover.position.x, nz = mover.position.z, d = Math.hypot(nx - o.x, nz - o.z);
     o.x = nx; o.z = nz; return d;
   }
-  /* wie pushOut: aus Hindernissen herausschieben */
-  const resolve = (o, r = .4, h = 1.8) => move(o, 0, 0, r, h);
-  return { scene, engine, focus, move, resolve, count: () => proxies.length, dispose() { clear(); scene.dispose(); engine.dispose(); } };
+  return { scene, engine, focus, move, count: () => proxies.length, dispose() { clear(); scene.dispose(); engine.dispose(); } };
 }

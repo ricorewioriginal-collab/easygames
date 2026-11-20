@@ -1,14 +1,25 @@
-// Babylon-Kollisionswelt (Phase 1): Vergleich mit dem vorhandenen pushOut an Zufallspunkten in Welt 2 und Welt 5.
+// Babylon-Kollisionswelt: läuft allein (ohne pushOut) gegen Rundhindernisse und darf nicht eindringen; im Spiel darf Zotik nicht durch Hindernisse laufen.
 //   node tools/test-zotik/babylon-kollision.cjs
 const { chromium, ARGS, open, intro } = require('./lib.cjs');
 (async () => { const b = await chromium.launch({ args: ARGS }); const p = await open(b); let fail = 0;
   const ok = (n, c, i) => { if (!c) fail++; console.log(`${c ? 'ok  ' : 'FEHL'} ${n}${i ? ' · ' + i : ''}`); };
   await p.evaluate(() => { const Z = __zotik; Z.startDbg(); const S = Z.S(); S.stage = 8; for (let n = 2; n <= 10; n++) S.cd[n] = { fin: 1 }; }); await intro(p);
   for (const w of [2, 5]) {
-    const r = await p.evaluate(async w => { const Z = __zotik; Z.switchWorld(w); Z.step(1 / 30, 5); const t0 = performance.now(), bw = await Z.bw(), tLoad = performance.now() - t0;
-      let n = 0, agree = 0, moved = 0, tMs = 0; const R = .5;
-      for (let i = 0; i < 400; i++) { const c = Z.COL[(i * 7) % Math.max(1, Z.COL.length)]; if (!c) break; const a = i * 2.399, d = c.r + R * .5 + (i % 3) * .1, o1 = { x: c.x + Math.cos(a) * d, z: c.z + Math.sin(a) * d }, o2 = { ...o1 };
-        Z.pushOut(o1, R); bw.focus(o2.x, o2.z); const t = performance.now(); bw.resolve(o2, R); tMs += performance.now() - t; n++; if (Math.hypot(o1.x - o2.x, o1.z - o2.z) < .5) agree++; if (Math.hypot(o1.x - (c.x + Math.cos(a) * d), o1.z - (c.z + Math.sin(a) * d)) > .01) moved++; }
-      const proxies = bw.count(); bw.dispose(); return { n, agree, moved, proxies, tLoad: Math.round(tLoad), ms: +(tMs / Math.max(1, n)).toFixed(2), col: Z.COL.length }; }, w);
-    ok(`Welt ${w}: Babylon schiebt wie pushOut (≤ 0,5 m Abweichung)`, r.n > 20 && r.agree / r.n > .85, JSON.stringify(r)); }
+    const r = await p.evaluate(async w => { const Z = __zotik; Z.switchWorld(w); Z.step(1 / 30, 5); const bw = await Z.bw(); const R = .5;
+      let n = 0, halt = 0, frei = 0, tief = 0, tMs = 0, calls = 0;
+      for (let i = 0; i < 120; i++) { const c = Z.COL[(i * 7) % Math.max(1, Z.COL.length)]; if (!c || c.t != null) continue; const a = i * 2.399, d0 = c.r + R + 2, o = { x: c.x + Math.cos(a) * d0, z: c.z + Math.sin(a) * d0 }, ux = -Math.cos(a), uz = -Math.sin(a);
+        /* nur Hindernisse, die frei stehen (kein Nachbar im Anlauf) */ if (Z.COL.some(q => q !== c && Math.hypot(q.x - c.x, q.z - c.z) < q.r + c.r + 4)) continue;
+        bw.focus(o.x, o.z, true); const t = performance.now(); let mn = 99; for (let k = 0; k < 40; k++) { bw.move(o, ux * .1, uz * .1, R); calls++; mn = Math.min(mn, Math.hypot(o.x - c.x, o.z - c.z)); } tMs += performance.now() - t;
+        n++; if (mn < c.r + R - .2) tief++; else if (mn < c.r + R + .3) halt++;   /* halt = bis an den Rand gekommen, nie hinein */
+        const f = { x: c.x + Math.cos(a) * d0, z: c.z + Math.sin(a) * d0 }; bw.move(f, -ux * .5, -uz * .5, R); if (Math.abs(Math.hypot(f.x - c.x, f.z - c.z) - d0 - .5) < .01) frei++; }
+      bw.dispose(); return { n, halt, tief, frei, ms: +(tMs / Math.max(1, calls)).toFixed(3) }; }, w);
+    ok(`Welt ${w}: Babylon hält vor dem Hindernis an`, r.n >= 5 && r.halt >= r.n - 1 && r.tief === 0, JSON.stringify(r));
+    ok(`Welt ${w}: freier Weg bleibt frei (höchstens 1 durch Wand/Block daneben)`, r.frei >= r.n - 1, r.frei + '/' + r.n); }
+  // im Spiel: Zotik läuft gegen ein frei stehendes Hindernis und bleibt draußen
+  const g = await p.evaluate(() => { const Z = __zotik; Z.switchWorld(2); Z.step(1 / 30, 5); for (const e of Z.E) if (!e.dead) { e.dead = true; e.m.root.visible = false; }
+    const c = Z.COL.find(c => c.t == null && c.r > .5 && !Z.COL.some(q => q !== c && Math.hypot(q.x - c.x, q.z - c.z) < q.r + c.r + 4) && !Z.pBlocked(c.x, c.z - c.r - 2.5) && !Z.pBlocked(c.x, c.z)); if (!c) return null;
+    Z.pl.x = c.x + .15; Z.pl.z = c.z - c.r - 2.5; Z.pl.y = Z.hgt(Z.pl.x, Z.pl.z); Z.pl.face = 0; Z.setCam(Math.PI, .42, 7.6); const z0 = Z.pl.z; let min = 99; Z.keys.KeyW = true;
+    for (let k = 0; k < 90; k++) { Z.step(1 / 30, 1); min = Math.min(min, Math.hypot(Z.pl.x - c.x, Z.pl.z - c.z)); } Z.keys.KeyW = false; return { r: c.r, min: +min.toFixed(2), lief: +(Z.pl.z - z0).toFixed(2), vorbei: Z.pl.z > c.z }; });
+  ok('Spiel: Zotik läuft nicht durch das Hindernis', !!g && g.min > g.r + .5 - .12 && g.lief > 1, JSON.stringify(g));
+  ok('Spiel: Zotik gleitet am Hindernis vorbei', !!g && g.vorbei, g && String(g.vorbei));
   ok('keine Seitenfehler', p.errs.length === 0, p.errs.join(' | ')); await b.close(); process.exit(fail ? 1 : 0); })();
