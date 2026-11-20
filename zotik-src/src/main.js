@@ -1,6 +1,7 @@
 import {createPolish,createAmbient,createRays,PROFILES,loadProfile,saveProfile} from './polish.js';
 import * as THREE from 'three';
 import { createPost } from './post.js';
+import { createBWorld } from './bworld.js';
 import { createExtra } from './extra.js';
 import { createOnline } from './online.js';
 import { createHdri } from './hdri.js';
@@ -119,6 +120,8 @@ function clbStep(dt){const c=pl.clb;c.t+=dt;const p=Math.min(1,c.t/c.T),k=c.hang
   else{const q=(p-k)/(1-k),e=q*q*(3-2*q);if(!c.s2){c.s2=1;sfx('jump');emit(c.x1,c.y1+.1,c.z1,0xd8d0c0,8,2,.4,.5,0)}pl.x=lerp(c.xw,c.x1,sm(.35,1,q));pl.z=lerp(c.zw,c.z1,sm(.35,1,q));pl.y=lerp(c.hang?yh:c.y0,c.y1,Math.min(1,e*1.3))}
   if(p>=1){pl.clb=null;pl.y=c.y1;pl.clbC=.35;if(!S.fl.clb1){S.fl.clb1=1;toast('🧗 Kante gepackt: Lauf gegen eine Kante und spring – Zotik zieht sich hoch')}}}
 function platWall(x,z,y,gr){const st=gr?1.25:.4;for(const p of PLAT)if(Math.abs(x-p.x)<p.hx+.3&&Math.abs(z-p.z)<p.hz+.3&&y<p.top-st&&y+1.5>p.top-p.th)return true;return false}
+let BWD=null;   /* Babylon-Kollisionswelt (Phase 2): Spieler wird zuerst von Babylon aus Hindernissen geschoben, pushOut bleibt als Absicherung */
+function pushOutB(o,r){if(!BWD)BWD=createBWorld({COL,HOUSES,get OB(){return OB},obPass});try{BWD.resolve(o,r)}catch(e){BWD=null}pushOut(o,r)}
 function pushOut(o,r){for(let ps=0;ps<2;ps++){const x0=o.x,z0=o.z;pushOut1(o,r);if(o.x===x0&&o.z===z0)break}}
 function pushOut1(o,r){
   for(let k=0;k<HOUSES.length;k++){const H=HOUSES[k],ex0=o.x-H.x,ez0=o.z-H.z,lim=H.R+r+1;if(ex0*ex0+ez0*ez0>lim*lim||(o.y!=null&&H.top!=null&&o.y>H.top-.5))continue;
@@ -1516,7 +1519,7 @@ function updatePlayer(dt){
   if((ix||iy)&&pl.atk<0&&pl.dash<=0){const want=Math.atan2(pl.vx,pl.vz);pl.face+=ang(pl.face,want)*Math.min(1,dt*14)}
   let mvx=(pl.vx+pl.kx)*dt*(pl.wat?.62:1),mvz=(pl.vz+pl.kz)*dt*(pl.wat?.62:1),ns=Math.min(10,Math.max(1,Math.ceil(Math.hypot(mvx,mvz)/.3)));pl.kx*=Math.exp(-9*dt);pl.kz*=Math.exp(-9*dt);
   {const pb=(x,z)=>(pBlocked(x,z)&&!(PLAT.length&&platTop(x,z,pl.y,pl.air?0:1.25))&&!(pl.y>hgt(x,z)+.9&&clbY(x,z,pl.y)>hgt(x,z)+.9))||(PLAT.length&&platWall(x,z,pl.y,!pl.air));   /* Brücken und Platten tragen auch über Schluchten */if(pl.air&&pl.jfw>0){pl.jfw-=dt;mvx+=Math.sin(pl.face)*6*dt;mvz+=Math.cos(pl.face)*6*dt}if(pl.fvx||pl.fvz){if(pl.air){mvx+=pl.fvx*dt;mvz+=pl.fvz*dt;const d=Math.exp(-1.5*dt);pl.fvx*=d;pl.fvz*=d}else pl.fvx=pl.fvz=0}   /* Schwung aus dem Rissfluss */   /* Fernbedienung: der Sprung trägt nach vorn */
-  for(let q=0;q<ns;q++){const nx=pl.x+mvx/ns,nz=pl.z+mvz/ns;if(!pb(nx,nz)){pl.x=nx;pl.z=nz}else if(!pb(nx,pl.z))pl.x=nx;else if(!pb(pl.x,nz))pl.z=nz;pushOut(pl,.5)}}
+  for(let q=0;q<ns;q++){const nx=pl.x+mvx/ns,nz=pl.z+mvz/ns;if(!pb(nx,nz)){pl.x=nx;pl.z=nz}else if(!pb(nx,pl.z))pl.x=nx;else if(!pb(pl.x,nz))pl.z=nz;pushOutB(pl,.5)}}
   if(!naut.on&&(ix||iy)&&pBlocked(pl.x,pl.z)&&!pl.on&&pl.y<hgt(pl.x,pl.z)+.9){pl.stk=(pl.stk||0)+dt;if(pl.stk>.6){pl.stk=0;landSafe()}}else pl.stk=0;   /* steckt Zotik in gesperrtem Gelände fest, kommt er an der nächsten freien Stelle heraus */
   let ty=hgt(pl.x,pl.z)+naut.lift;{const gh=hgt(pl.x,pl.z),LK=naut.on&&!nAir()?NZ().lakeAt(pl.x,pl.z)||owLake(pl.x,pl.z):null;
     if(nAir()||(nSub()&&curCh===5)){naut.alt=Math.max(gh+(nAir()?3:.6),Math.min(80,(naut.alt??gh+6)+(nUp()?11:nDn()?-11:0)*dt));ty=naut.alt}
