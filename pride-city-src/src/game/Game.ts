@@ -12,6 +12,7 @@ import { DanceScene } from './minigames/DanceScene';
 import { World } from './World';
 import { BODIES } from './palettes';
 import { pianoSongs, pianoParts } from './minigames/showSongs';
+import { openGigs, GIGS, fmtTime } from './gigs';
 import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST, lichtPart, lichtLight, lfPart, lfGlow } from './story';
 import { LF_CHAPTERS, lfEnding, lfPct } from './leuchtfeuer';
 import { LICHT_CHAPTERS, lichtEnding } from './licht';
@@ -329,6 +330,7 @@ export class Game {
         { icon: '🎯', label: 'Ziele', sub: open ? `${open} Tagesziele offen` : 'Alle Tagesziele erledigt', fn: () => this.phone('goals') },
         { icon: '🗺️', label: 'Karte & Tram', sub: 'Orte, Ziel markieren, hinfahren', fn: () => this.phone('map') },
         { icon: '💼', label: 'Jobs', sub: `${JOBS.length} Jobs in der Stadt`, fn: () => this.phone('jobs') },
+        { icon: '📞', label: 'Aufträge', sub: this.city.gig ? `Läuft: ${this.city.gig.g.title}` : `${openGigs(s).length} Leute brauchen Hilfe · ${Number(s.flags.gigs) || 0} erledigt`, fn: () => this.phone('gigs') },
         { icon: '👥', label: 'Kontakte', sub: `${Object.keys(s.rel).length} Leute kennengelernt`, fn: () => this.phone('contacts') },
         { icon: '💘', label: 'Rainbow Match', sub: `Dating · ${PROFILES.filter((p) => s.dates[p.id]).length} Matches`, fn: () => this.phone('dating') },
         { icon: '📣', label: 'Feed', sub: 'Was in der Szene los ist', fn: () => this.phone('feed') },
@@ -361,6 +363,12 @@ export class Game {
       const due = testDue(s);
       this.openMenu(frame('Gesundheit', `<div class="pbody"><p>${due ? '⚠️ <b>Dein Test ist fällig.</b> Geh im Checkpoint vorbei.' : '💚 Alles im grünen Bereich.'}</p><p>🧪 Letzter Test: ${s.health.test ? 'Tag ' + s.health.test : 'noch keiner'}<br>💊 PrEP: ${s.health.prep ? `aktiv, Test alle ${TEST_EVERY} Tage` : 'nicht aktiv'}<br>🎈 Kondome: ${s.inv.condom || 0} · 💧 Gleitgel: ${s.inv.lube || 0}</p>${HEALTH_INFO.map(([t, x]) => `<h4>${t}</h4><p>${x}</p>`).join('')}</div>`),
         [{ icon: '📍', label: 'Checkpoint markieren', fn: () => { s.pin = 'checkpoint'; toast('Checkpoint auf der Karte markiert.'); close(); } }, { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'gigs') {
+      const run = this.city.gig, open = openGigs(s);
+      this.openMenu(frame('Aufträge', `<div class="pbody"><p>Leute aus der Stadt brauchen dich. Nimm an, folg der gelben Lichtsäule und dem Radar und schaff es in der Zeit.</p>${run ? `<p>⏱ Läuft: <b>${run.g.title}</b> für ${run.g.who}</p>` : ''}</div>`), [
+        ...(run ? [{ icon: '✖', label: 'Auftrag abbrechen', sub: run.g.title, fn: () => { this.city.gig = null; this.hud.gig(null); toast('Auftrag abgebrochen.'); close(); } }] : []),
+        ...GIGS.map((g) => ({ icon: g.night ? '🌙' : g.car ? '🚗' : '🚶', label: `${g.title} · ${g.who}`, sub: !open.includes(g) ? 'nur nachts (21–5 Uhr)' : `${g.pay} € · +${g.rep} Ruf · ${fmtTime(g.time)} Min. · ${g.steps.length} Stationen${s.flags['gig_' + g.id] === s.day ? ' · heute erledigt' : ''}`, disabled: !!run || !open.includes(g), fn: () => { close(); this.city.startGig(g); } })),
+        { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'glossary') {
       const g = GLOSSARY.filter(([, , a]) => !a || s.settings.adult);
       this.openMenu(frame('Glossar', `<div class="pbody">${g.map(([t, x]) => `<p><b>${t}</b><br>${x}</p>`).join('')}${s.settings.adult ? '' : '<p><small>Weitere Begriffe mit „Inhalte ab 18“ in den Optionen.</small></p>'}</div>`),
