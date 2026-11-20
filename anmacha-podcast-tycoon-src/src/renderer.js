@@ -63,7 +63,8 @@ export function createRenderer(T, canvas, opts) {
   // ------------------------------------------------------------------ Zustand
   let frame = 0;
   const ents = new Map();          // Szenengraph-Objekt → Eintrag
-  const lastRender = new Map();    // Szene → Bildnummer
+  const lastRender = new Map();    // Szene → Zeitpunkt (ms) des letzten Bildes
+  const KEEP_MS = 20000;           // nicht gezeigte Szenen so lange behalten (schnelles Zurückwechseln), danach freigeben
   const masters = new Map();       // Geometrie+Material → Babylon-Vorlage (Instanzen teilen sie)
   const geoCache = new Map();      // Geometrie → { ver, data } (Vertexdaten einmal umgerechnet)
   const mats = new Map();          // Material → Babylon-Material
@@ -129,6 +130,11 @@ export function createRenderer(T, canvas, opts) {
 
   // ------------------------------------------------------------------ Materialien
   const PBR_OPAQUE = 0, PBR_TEST = 1, PBR_BLEND = 2;
+  // Nebelart wechseln (Szenenwechsel): Babylon würde jedes Material einzeln durch alle Meshes markieren – hier ein Durchgang über die Meshes
+  function setFogMode(fm) {
+    scene._blockMaterialDirtyMechanism = true; scene.fogMode = fm; scene._blockMaterialDirtyMechanism = false;
+    for (const ms of scene.meshes) if (ms.subMeshes) for (const sm of ms.subMeshes) { const d = sm.materialDefines; if (d && d.markAsMiscDirty) d.markAsMiscDirty(); }
+  }
   function matFor(m, kind) {
     let e = mats.get(m);
     if (!e || e.kind !== kind) {
@@ -136,8 +142,14 @@ export function createRenderer(T, canvas, opts) {
       e = { kind, bm: null, f: -1, sig: '' };
       if (kind === 'sky') e.bm = skyMat(m);
       else if (kind === 'points') e.bm = pointsMat(m);
-      else { e.bm = new PBRMaterial('m', scene); e.bm.maxSimultaneousLights = 8; e.bm.usePhysicalLightFalloff = false; e.bm.environmentIntensity = 0; e.bm.forceIrradianceInFragment = true; }
       mats.set(m, e);
+      if (kind !== 'sky' && kind !== 'points') {
+        // Neues Material hängt noch an keinem Mesh: Babylon würde bei jedem Setter alle Szenen-Meshes durchsuchen (beim Stadtwechsel tausende × tausende).
+        // Daher die Erstbelegung ohne Dirty-Markierung; Meshes, die es danach bekommen, bauen ihre Shader-Defines ohnehin neu auf.
+        scene._blockMaterialDirtyMechanism = true;
+        try { e.bm = new PBRMaterial('m', scene); e.bm.maxSimultaneousLights = 8; e.bm.usePhysicalLightFalloff = false; e.bm.environmentIntensity = 0; e.bm.forceIrradianceInFragment = true; e.f = frame; syncMat(m, e); }
+        finally { scene._blockMaterialDirtyMechanism = false; }
+      }
     }
     if (e.f !== frame) { e.f = frame; syncMat(m, e); }
     return e.bm;
@@ -543,12 +555,16 @@ export function createRenderer(T, canvas, opts) {
   function syncScene(sc, cam3) {
     // Nebel und Hintergrund
     const f = sc.fog;
+    const fm = f && f.isFog ? Scene.FOGMODE_LINEAR : f && f.isFogExp2 ? Scene.FOGMODE_EXP2 : Scene.FOGMODE_NONE;
+    if (scene.fogMode !== fm) setFogMode(fm);
     if (f && f.isFog) { scene.fogMode = Scene.FOGMODE_LINEAR; scene.fogStart = f.near; scene.fogEnd = f.far; setColor(scene.fogColor, f.color); }
     else if (f && f.isFogExp2) { scene.fogMode = Scene.FOGMODE_EXP2; scene.fogDensity = f.density; setColor(scene.fogColor, f.color); }
     else scene.fogMode = Scene.FOGMODE_NONE;
     const bg = sc.background;
     if (bg && bg.isColor) scene.clearColor.set(bg.r, bg.g, bg.b, 1); else scene.clearColor.set(0, 0, 0, 1);
-    ip.exposure = (R.toneMappingExposure || 1) * look.exposureK;
+    // Belichtung ist nur ein Uniform: direkt setzen, sonst markiert Babylon bei jeder Änderung (Tageszeit) alle Materialien × alle Meshes neu
+    const ex = (R.toneMappingExposure || 1) * look.exposureK;
+    if (ex !== 1 && ip._exposure !== 1) ip._exposure = ex; else ip.exposure = ex;
     // Kamera
     const me = cam3.matrixWorld.elements;
     Matrix.FromArrayToRef(me, 0, tmpM); tmpM.decompose(tmpS, cam.rotationQuaternion, cam.position);
@@ -566,15 +582,15 @@ export function createRenderer(T, canvas, opts) {
     frame++;
     if (sc.autoUpdate !== false) sc.updateMatrixWorld();
     if (cam3.parent === null) cam3.updateMatrixWorld();
-    curScene = sc; lastRender.set(sc, frame);
+    const now = performance.now(); curScene = sc; lastRender.set(sc, now);
     walk(sc, true);
     // Aufräumen: aus der Szene entfernt → weg; gehört zu einer gerade nicht gezeigten Szene → aus
     for (const e of ents.values()) {
       if (e.f === frame) continue;
-      if (e.scn === sc || !e.scn || (frame - (lastRender.get(e.scn) || 0)) > 1800) disposeEnt(e);
+      if (e.scn === sc || !e.scn || now - (lastRender.get(e.scn) || 0) > KEEP_MS) disposeEnt(e);
       else if (e.on) setOn(e, false);
     }
-    for (const [s, f] of lastRender) if (frame - f > 1800) lastRender.delete(s);
+    for (const [s, t] of lastRender) if (now - t > KEEP_MS) lastRender.delete(s);
     syncScene(sc, cam3);
     look.beforeRender(sc, frame);
     engine.beginFrame();
