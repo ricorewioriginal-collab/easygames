@@ -699,7 +699,8 @@ export class World {
   async car(kind: string) {
     const inner = await instance(this.scene, C(kind));
     this.tune('car_', inner);
-    const o = new Node3(kind, this.scene); inner.parent = o; inner.scaling.setAll(S); o.parent = this.root;
+    // KayKit-Räder reichen 0,061 Einheiten unter den Ursprung: anheben, damit die Reifen auf dem Asphalt (y 0,073) stehen
+    const o = new Node3(kind, this.scene); inner.parent = o; inner.scaling.setAll(S); inner.position.y = .061 * S - .025; o.parent = this.root;
     return o;
   }
 
