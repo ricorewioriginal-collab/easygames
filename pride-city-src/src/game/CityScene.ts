@@ -434,6 +434,9 @@ export class CityScene implements GameScene {
   private snapCam() { this.updateCam(1, true); }
   private tgt = new Vector3();
   private aim = new Vector3();
+  private tiredTold = false;
+  /** Sekunden seit dem letzten Wischen an der Kamera */
+  private lookIdle = 9;
   private updateCam(dt: number, snap = false) {
     const inp = this.g.engine.input, st = this.g.save.data.settings;
     const k = .005 * st.camSpeed;
@@ -443,6 +446,12 @@ export class CityScene implements GameScene {
     if (!this.drive && inp.held('tabL')) this.cam.tYaw += dt * 2.2;
     if (!this.drive && inp.held('tabR')) this.cam.tYaw -= dt * 2.2;
     if (inp.pressed('camReset')) this.cam.tYaw = this.player.root.rotation.y + Math.PI;
+    // Folgekamera zu Fuß: dreht sich sanft hinter die Figur, solange du läufst und nicht selbst an der Kamera wischst
+    this.lookIdle = inp.look.x || inp.look.y || inp.held('tabL') || inp.held('tabR') ? 0 : this.lookIdle + dt;
+    if (!this.drive && !snap && this.lookIdle > 1.2 && Math.hypot(inp.move.x, inp.move.y) > .3) {
+      let d = this.player.root.rotation.y + Math.PI - this.cam.tYaw; d = Math.atan2(Math.sin(d), Math.cos(d));
+      if (Math.abs(d) < 2.3) this.cam.tYaw += d * Math.min(1, dt * 1.5);   // wer auf die Kamera zuläuft, wird nicht herumgerissen
+    }
     this.cam.yaw += (this.cam.tYaw - this.cam.yaw) * Math.min(1, dt * 12);
     const p = this.player.root.position;
     const tgt = this.tgt.set(p.x, p.y + 1.5, p.z);
@@ -451,19 +460,18 @@ export class CityScene implements GameScene {
       tgt.y + Math.sin(this.cam.pitch) * this.cam.dist,
       tgt.z + Math.cos(this.cam.yaw) * Math.cos(this.cam.pitch) * this.cam.dist);
     // Kamera-Kollision: nicht in Häusern oder Autos stecken, sondern davor heranrücken
-    const dir = want.subtract(tgt), cars = this.world.cars;
+    const dir = want.subtract(tgt);
     let f = 1;
     for (let i = 1; i <= 14 && f === 1; i++) {
       const u = i / 14, x = tgt.x + dir.x * u, y = tgt.y + dir.y * u, z = tgt.z + dir.z * u;
       if (y < 7 && this.world.colliders.some((c) => Math.abs(x - c.x) < c.hx + .35 && Math.abs(z - c.z) < c.hz + .35)) f = Math.max(.18, (i - 1) / 14);
-      else if (y < 2.2 && cars.some((c) => Math.hypot(x - c.o.position.x, z - c.o.position.z) < 1.7)) f = Math.max(.18, (i - 1) / 14);
     }
     if (f < 1) want.copyFrom(tgt).addInPlace(dir.scale(f));
-    Vector3.LerpToRef(this.camPos, want, snap ? 1 : Math.min(1, dt * (f < 1 ? 20 : 8)), this.camPos);
+    Vector3.LerpToRef(this.camPos, want, snap ? 1 : Math.min(1, dt * (f < 1 ? 14 : 5)), this.camPos);
     this.camera.position.copyFrom(this.camPos);
     if (this.shake > 0) { this.shake = Math.max(0, this.shake - dt); const k = this.shake * .5; this.camera.position.x += (Math.random() - .5) * k; this.camera.position.y += (Math.random() - .5) * k; }
     // Hochkant: etwas über die Figur hinweg schauen, damit die Stadt das Bild füllt und nicht der Asphalt
-    const up = this.g.engine.aspect < 1 ? 1.9 : 0;
+    const up = this.g.engine.aspect < 1 ? 1.2 : 0;
     if (up) { this.aim.copyFrom(tgt); this.aim.y += up; this.camera.setTarget(this.aim); } else this.camera.setTarget(tgt);
     this.clearView(tgt);
   }
@@ -739,8 +747,10 @@ export class CityScene implements GameScene {
       // Bewegung relativ zur Kamera
       const fx = -Math.sin(yaw), fz = -Math.cos(yaw), rx = -fz, rz = fx;
       const dx = fx * my + rx * mx, dz = fz * my + rz * mx;
-      const run = inp.held('sprint') && this.g.save.data.needs.energy >= 10;
-      const sp = (run ? 7.8 : 4.4) * Math.min(1, mag);
+      // Turbo geht immer; wer erschöpft ist, rennt nur langsamer (und bekommt einmal den Hinweis)
+      const run = inp.held('sprint'), tired = this.g.save.data.needs.energy < 10;
+      if (run && tired && !this.tiredTold) { this.tiredTold = true; toast('⚡ Du bist müde und rennst langsamer. Schlaf dich aus oder trink einen Kaffee.'); }
+      const sp = (run ? (tired ? 6.3 : 7.8) : 4.4) * Math.min(1, mag);
       p.x += (dx / mag) * sp * dt * Math.min(1, mag); p.z += (dz / mag) * sp * dt * Math.min(1, mag);
       this.world.collide(p, .45);
       // Figuren schieben sich sanft auseinander, statt ineinander zu laufen

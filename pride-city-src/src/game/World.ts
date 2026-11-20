@@ -616,7 +616,7 @@ export class World {
     lines.forEach(([x1, z1, x2, z2], li) => {
       const yaw = Math.atan2(x2 - x1, z2 - z1) + Math.PI / 2, n = per([x1, z1, x2, z2]), long = n > 10, pal = long ? PALETTES[0].colors : flags[li % flags.length].colors;
       for (let i = 0; i < n; i++) {
-        const u = i / (n - 1), sag = Math.sin(u * Math.PI) * (long ? 1.4 : .7), y = (long ? 7.2 : 6.3) - sag, x = x1 + (x2 - x1) * u, z = z1 + (z2 - z1) * u;
+        const u = i / (n - 1), sag = Math.sin(u * Math.PI) * (long ? 1.4 : .7), y = (long ? 8.6 : 8.1) - sag, x = x1 + (x2 - x1) * u, z = z1 + (z2 - z1) * u;
         Matrix.Compose(Vector3.One(), Quaternion.RotationAxis(Vector3.Up(), yaw), new Vector3(x, y, z)).copyToArray(mats, k * 16);
         Matrix.Translation(x, y + .08, z).copyToArray(bm, k * 16);
         const c = col(pal[i % pal.length]); colors.set([c.r, c.g, c.b, 1], k * 4); k++;
