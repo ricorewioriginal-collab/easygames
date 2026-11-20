@@ -1588,7 +1588,7 @@ function atkPose(f,p,cm){const P=APOSE[cm]||APOSE[0],a=.3,s2=.55,eo=t=>1-(1-t)*(
   if(cm===3&&p>=a&&p<s2+.08)f.body.position.y=-.16*lunge}
 let lastPr='';
 function updateNpcs(dt){
-  nearI=null;let nd=3.9;const hiP=CLB.length&&!naut.on&&pl.y>hgt(pl.x,pl.z)+1.6;   /* auf dem Dach: nichts im Haus darunter ansprechen */
+  nearI=null;let nd=3.9;const hiP=CLB.length&&!naut.on&&!SWIM()&&pl.y>hgt(pl.x,pl.z)+1.6;   /* auf dem Dach: nichts im Haus darunter ansprechen (unter Wasser schwebt Zotik ständig über den Dingen – dort gilt das nicht) */
   for(const n of NPC){n.t+=dt;let dx=pl.x-n.x,dz=pl.z-n.z,d=Math.hypot(dx,dz);XO.npc(n,dt,d);dx=pl.x-n.x;dz=pl.z-n.z;
     if(n.mv)n.face+=ang(n.face,n.mf)*Math.min(1,dt*6);else if(d<8)n.face+=ang(n.face,Math.atan2(dx,dz))*Math.min(1,dt*3);else n.face+=ang(n.face,n.base)*Math.min(1,dt*2);
     const vv=d<90&&!n.P.hid;if(n.col)n.col.r=n.P.hid?0:.5;if(n.P.root.visible!==vv)n.P.root.visible=vv;if(!vv){n.spr.visible=false;continue}if(n.P.fig){const nr=d<(TOUCH?34:52);if(n.P.fig.root.visible!==nr){n.P.fig.root.visible=nr;n.P.body.visible=!nr}}n.P.root.rotation.y=n.face;animHuman(n.P,n.t,n.mv||0);
@@ -3885,9 +3885,10 @@ function seaRing(n,y){const sh=new T.Shape([new T.Vector2(-900,-900),new T.Vecto
   const arc=new T.Mesh(new T.TorusGeometry(2.4,.12,8,24,Math.PI),M(0x8ad0ff,{e:0x6ac0ff,ei:1.8}));arc.position.y=3.8;gt.add(arc);gt.add(glow(0x8ad0ff,4,0,3,0,.6));scene.add(gt);addCol(gx-2.4,gz,.4);addCol(gx+2.4,gz,.4)}
 function owSign(n,x,z){const g=new T.Group();g.position.set(x,hgt(x,z),z);const wd=M(0x6a4a2a);g.add(mk(G.cyl0,wd,0,1.1,0,.12,2.2,.12));const b=mk(G.box,M(0x9a7a4a),.45,1.75,0,1,.36,.08);b.rotation.z=.08;g.add(b);g.add(mk(G.box,M(0x9a7a4a),-.4,1.3,0,.9,.32,.08));g.add(glow(0x8ad0ff,1.6,0,2.35,0,.6));scene.add(g);
   INT.push({x,z,name:'Wegweiser',pr:'🗺️ Zur Weltkarte',rad:2.6,vis:()=>chOpen(15)&&curCh===n,talk(){owGo(n)}});return g}
+/* Wegpfad-Tor liegt bei z 72; die Obergrenze z 90 hält Ruinen (z > 300, gleiche x-Mitte) heraus – sonst warf die Hinweistafel Zotik auf die Weltkarte */
 function owEdge(dt){if(curCh<2||curCh>11||!WLD||WLD.cave||WLD.story||dlg.on||menuOpen||naut.on||mode!=='play'){X.owE=0;return}
   if(!chOpen(15)){if(pl.z>72&&!X.owAsk){X.owAsk=1;toast('🗺️ Der Wegpfad führt zur Weltkarte – sie öffnet sich, sobald das Weltentor in Lunaris offen ist.')}else if(pl.z<66)X.owAsk=0;return}
-  if(pl.z>73.5&&Math.abs(pl.x)<3){X.owE=(X.owE||0)+dt;if(X.owE>.15&&!X.owAsk){X.owAsk=1;banner('🗺️ Weltkarte','Der Wegpfad führt weiter übers Land');owGo(curCh)}}
+  if(pl.z>73.5&&pl.z<90&&Math.abs(pl.x)<3){X.owE=(X.owE||0)+dt;if(X.owE>.15&&!X.owAsk){X.owAsk=1;banner('🗺️ Weltkarte','Der Wegpfad führt weiter übers Land');owGo(curCh)}}
   else{X.owE=0;if(pl.z<66)X.owAsk=0}}
 function buildCamp(){const FX=0,FZ=-14,RAD=19;
   const seat=i=>{const a=Math.PI*.15+i*Math.PI*.62,x=FX+Math.sin(a)*3.1,z=FZ+Math.cos(a)*3.1;return[x,z,Math.atan2(FX-x,FZ-z)]};

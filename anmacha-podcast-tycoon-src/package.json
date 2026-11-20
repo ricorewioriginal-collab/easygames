@@ -1,0 +1,17 @@
+{
+  "name": "anmacha-podcast-babylon",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AnMaCha – Der Podcast: Babylon.js-Renderer und Medienstadt-Module (Vite). Baut nach ../anmacha-podcast-tycoon/babylon/",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@babylonjs/core": "9.37.1"
+  },
+  "devDependencies": {
+    "vite": "7.3.7"
+  }
+}

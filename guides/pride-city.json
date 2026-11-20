@@ -315,6 +315,20 @@
         "Absprache: Ab „Verliebt“ besprecht ihr, ob ihr exklusiv oder offen lebt. Wer Exklusivität ausmacht und sich woanders verliebt, verletzt die Partnerperson (Nähe −15).",
         "Pflege: Wer sich mehr als vier Tage nicht meldet, verliert langsam Nähe und bekommt eine Nachricht."
       ]
+    },
+    {
+      "t": "🌐 Online & Freunde: zusammen durch Rainbow City",
+      "p": [
+        "Im Titelmenü und im Pause-Menü findest du „🌐 Online & Freunde“. Eine Person öffnet ihre Stadt und bekommt einen Code mit vier Zeichen, einen Link und einen QR-Code. Bis zu fünf Gäste können per Link oder Code von überall beitreten: Handy, PC, TV oder App.",
+        "Jede*r spielt den eigenen Spielstand weiter: eigenes Geld, eigene Story, eigene Uhrzeit. Geteilt wird, wo ihr seid, wie ihr ausseht und in welchem Wagen ihr sitzt."
+      ],
+      "list": [
+        "Stadt öffnen: „Meine Stadt öffnen“ wählen, dann Link kopieren, teilen oder den QR-Code zeigen.",
+        "Beitreten: Einladungslink öffnen (der Code ist dann schon eingetragen) oder „Code eingeben“ wählen. Den Code tippst du oder blätterst ihn mit links und rechts durch, das geht auch mit Controller und Fernbedienung.",
+        "In der Stadt: Freund*innen tragen ihren Namen über dem Kopf und haben eine Markierung. Geh hin und drück Aktion zum Winken, Tanzen, Jubeln oder Zurufen.",
+        "Zurufen: kurze fertige Sprüche wie „Komm zu mir!“ oder „Auf zur Parade!“. Freien Text gibt es bewusst nicht.",
+        "Beenden: im selben Menü „Stadt schließen“ oder „Besuch beenden“. Schließt die Gastgeberin oder der Gastgeber, endet die Runde für alle."
+      ]
     }
   ],
   "ratgeber": [
@@ -486,6 +500,16 @@
         "Die Spritztour mit Radio braucht einen eigenen Wagen aus der Garage und bringt ohne Kosten 9 Nähe.",
         "Redet früh über exklusiv oder offen. Offen heißt: keine Eifersucht bei weiteren Dates."
       ]
+    },
+    {
+      "t": "Online: so klappt die Runde",
+      "list": [
+        "Erst ein eigenes Spiel beginnen und die Figur erstellen, dann beitreten.",
+        "Die Gastgeberin oder der Gastgeber sollte das Gerät mit der stabilsten Verbindung sein, denn alle Nachrichten laufen darüber.",
+        "Am Fernseher den QR-Code zeigen: Handys scannen ihn und sind sofort im richtigen Menü.",
+        "Gesten bei Freund*innen füllen Kontakte und Spaß (einmal pro Minute).",
+        "Outfit gewechselt? Die anderen sehen es, sobald du wieder auf der Straße stehst."
+      ]
     }
   ],
   "loesung": [
@@ -637,7 +661,7 @@
     },
     {
       "q": "Gibt es Mehrspieler?",
-      "a": "Noch nicht in Pride City. Der Mehrspieler aus Gay Life! wird in einem späteren Update übernommen."
+      "a": "Ja. Unter „🌐 Online & Freunde“ öffnest du deine Stadt für bis zu fünf Gäste oder besuchst andere per Link oder Code. Ihr seht euch, fahrt herum, tanzt und ruft euch etwas zu. Jede*r behält den eigenen Spielstand."
     },
     {
       "q": "Läuft das Spiel auf dem Handy?",
@@ -662,6 +686,10 @@
     {
       "q": "Warum ist mein Match auf einmal weg?",
       "a": "Die Begleitung bleibt drei Spielstunden und verabschiedet sich dann. Über Rainbow, „Jetzt treffen“ kommt sie wieder. Nähe durch gemeinsame Zeit gibt es bis zu 8 Punkte am Tag."
+    },
+    {
+      "q": "Der Code funktioniert nicht. Was tun?",
+      "a": "Der Code gilt nur, solange die Stadt offen ist, und ändert sich bei jedem Öffnen. Prüfe die vier Zeichen (es gibt kein O, 0, I, 1 oder L) und ob beide online sind. Ist die Stadt voll (fünf Gäste), kommt eine Meldung."
     }
   ]
 }

@@ -39,6 +39,8 @@ E2E-Test (Browser, SwiftShader): Server im Repo starten (`python3 -m http.server
 | `src/game/citylife.ts` | Zufallsereignisse am Straßenrand (leihen sich Passant*innen) und die CSD-Parade am Samstag |
 | `src/game/bond.ts` | Nähe zu Matches in fünf Stufen: Nachrichten, Unternehmungen, Geschenke, Absprache exklusiv/offen, Eifersucht, Pflege |
 | `src/game/Companion.ts` | Begleitung: Das Match läuft deiner Spur nach, steigt mit ins Auto und verabschiedet sich nach drei Spielstunden |
+| `src/game/online.ts` | Online-Modus: Code, Sternnetz über `../cloud/fire-peer.js`, Prüfung aller eingehenden Daten, Liste der Anwesenden |
+| `src/game/Friends.ts` | Freund*innen in der Stadt: Figuren und Wagen der anderen, eigene Lage senden, Gesten und Zurufe |
 | `src/game/kerb.ts` | Laternenmeile: Hupen im Auto, Einsteigen, ruhige Ecke, Abblende (ab 18) |
 | `src/game/story.ts` | Figuren, fünf Kapitel bis zum Ende, Ziele (`goal`), automatische Fortschritte (`storyTick`), Gespräche, Entscheidungen (`save.flags`), Ende (`ending`) |
 | `src/game/life.ts` | Bedürfnisse, Stimmung, Uhrzeit und Tageswechsel, Tagesziele (aus Gay Life! übernommen) |

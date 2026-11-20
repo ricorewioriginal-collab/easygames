@@ -609,3 +609,23 @@ body:has(#hud:not([hidden]) #hMap) .ttop { top: calc(178px + var(--safe-t)); fle
   .oa-hud { font-size: 11px; } .oa-job { -webkit-line-clamp: 1; }
 }
 .oa-st { color: #ffd23f; letter-spacing: 1px; } .oa-st i { font-style: normal; color: rgba(255, 255, 255, .22); }
+
+/* Medien-Aufträge (medien-gta.js) */
+.gta-hud { position: absolute; top: calc(10px + var(--safe-t)); left: 50%; transform: translateX(-50%); width: min(360px, 34vw); padding: 8px 12px; border-radius: 16px; border-top: 3px solid #ff3da8; }
+.gta-hud b { display: block; font-size: 14px; } .gta-hud b small { color: var(--mut); font-weight: 400; } .gta-hud p { margin: 3px 0 5px; font-size: 13px; }
+.gta-time { float: right; font-weight: 700; font-size: 14px; margin-top: -18px; } .gta-time.low { color: #ff6a6a; animation: blink 1s infinite; }
+.gta-bar { height: 6px; border-radius: 6px; background: rgba(255, 255, 255, .14); overflow: hidden; } .gta-bar i { display: block; height: 100%; background: linear-gradient(90deg, #ff3da8, #ffd23f); transition: width .2s; }
+.gta-bar.comfort i { background: linear-gradient(90deg, #ff5a5a, #3dff9a); }
+.gta-stars { position: absolute; top: calc(10px + var(--safe-t)); right: calc(170px + var(--safe-r)); font-size: 18px; letter-spacing: 1px; color: rgba(255, 255, 255, .25); text-shadow: 0 2px 6px #000; }
+.gta-stars:empty { display: none; } .gta-stars i { font-style: normal; } .gta-stars i.on { color: #ffd23f; } .gta-stars.hot i.on { animation: blink .6s infinite; }
+.gta-radio { --c: #ff8a1e; position: fixed; z-index: 6; left: 50%; bottom: calc(10px + var(--safe-b)); transform: translate(-50%, 140%); display: flex; align-items: center; gap: 8px; padding: 6px 14px 6px 8px; border-radius: 99px; background: rgba(10, 11, 18, .82); border: 1px solid var(--c); box-shadow: 0 0 18px color-mix(in srgb, var(--c) 45%, transparent); font-size: 13px; pointer-events: none; transition: transform .35s; max-width: min(420px, 60vw); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gta-radio.on { transform: translate(-50%, 0); } .gta-radio b { color: var(--c); }
+.gta-flash { position: fixed; inset: 0; z-index: 20; background: #fff; pointer-events: none; animation: gtaFlash .45s forwards; }
+@keyframes gtaFlash { from { opacity: .85; } to { opacity: 0; } }
+@media (max-aspect-ratio: 1/1) {
+  .gta-hud { top: calc(270px + var(--safe-t)); width: min(360px, 92vw); padding: 6px 10px; }
+  .gta-stars { top: calc(122px + var(--safe-t)); right: calc(12px + var(--safe-r)); }
+  .gta-radio { bottom: auto; top: calc(10px + var(--safe-t)); max-width: 46vw; transform: translate(-50%, -160%); } .gta-radio.on { transform: translate(-50%, 0); }
+}
+.gta-radio img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: #1b1d2a; flex: none; } .gta-radio span { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.gta-radio small { font-size: 10px; color: var(--mut); } .gta-radio em { font-style: normal; font-size: 11px; color: var(--mut); overflow: hidden; text-overflow: ellipsis; }
