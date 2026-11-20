@@ -61,7 +61,7 @@
 
   // Prüfungen: Ablauf und Wertung wie im Original – Sterne = Essensportionen fürs Camp
   D.TRIALS = [
-    { id: 'kisten', name: 'Die fiesen Kisten', icon: '📦', stars: 8, time: 120, desc: 'Greif in acht Kisten voller (virtueller) Krabbeltiere und hol die Sterne heraus. Berühr die Tiere möglichst nicht – sonst steigt dein Ekel.', ctrl: [['move', 'Hand bewegen'], ['ok', 'Zugreifen'], ['alt', 'Nächste Kiste']] },
+    { id: 'kisten', name: 'Die fiesen Kisten', icon: '📦', stars: 8, time: 120, desc: 'Lauf am Kistentisch entlang, steck die Hand in die Kisten voller (virtueller) Krabbeltiere und hol die Sterne heraus. Berühr die Tiere möglichst nicht – sonst steigt dein Ekel.', ctrl: [['move', 'Laufen / Hand bewegen'], ['ok', 'Hineingreifen / Zugreifen'], ['alt', 'Kiste verlassen']] },
     { id: 'dinner', name: 'Das Urwald-Dinner', icon: '🍽️', stars: 6, time: 150, desc: 'Sechs erfundene Ekel-Gänge. Spieß die zappelnden Happen selbst mit der Gabel auf, kau sie runter, leer die Ekel-Drinks und halt dabei das Würgen in Schach.', ctrl: [['move', 'Gabel führen / Würgen ausgleichen'], ['ok', 'Aufspießen & kauen'], ['alt', 'Trinken (halten)']] },
     { id: 'tauchen', name: 'Das Schlammbecken', icon: '🤿', stars: 9, time: 120, desc: 'Tauch durchs trübe Becken und sammle die Sterne vom Grund. Achte auf deine Luft – an der Oberfläche holst du neue.', ctrl: [['move', 'Schwimmen'], ['ok', 'Abtauchen'], ['alt', 'Auftauchen']] },
     { id: 'steg', name: 'Der Wackelsteg', icon: '🌉', stars: 8, time: 110, desc: 'Balancier über den Steg hoch über der Schlucht. Wind und lose Bretter wollen dich runterholen – greif dir die Sterne an den Seilen.', ctrl: [['move', 'Gehen / Balance halten'], ['ok', 'Stern greifen'], ['alt', 'Springen']] },
