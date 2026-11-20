@@ -5,6 +5,21 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+
+/** Filmischer Farblook (vor Tonemapping, linear): Sättigung, Kontrast, kühle Schatten / warme Lichter, Vignette */
+const GRADE = {
+  uniforms: { tDiffuse: { value: null }, sat: { value: 1.12 }, con: { value: 1.08 }, vig: { value: .32 } },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: `uniform sampler2D tDiffuse; uniform float sat, con, vig; varying vec2 vUv;
+    void main(){ vec4 t = texture2D(tDiffuse, vUv); vec3 c = max(t.rgb, 0.0);
+      float l = dot(c, vec3(.2126, .7152, .0722));
+      c = mix(vec3(l), c, sat);
+      c *= mix(vec3(.93, 1.0, 1.07), vec3(1.06, 1.0, .93), smoothstep(.02, .9, l));
+      c = .18 * pow(c / .18 + 1e-5, vec3(con));
+      vec2 d = vUv - .5; c *= 1.0 - vig * dot(d, d) * 2.0;
+      gl_FragColor = vec4(c, t.a); }`,
+};
 import { Input } from './Input';
 
 export interface GameScene {
@@ -93,6 +108,7 @@ export class Engine {
     c.addPass(this.renderPass);
     this.bloomPass = new UnrealBloomPass(new THREE.Vector2(innerWidth / 2, innerHeight / 2), .55, .5, .82);
     c.addPass(this.bloomPass);
+    c.addPass(new ShaderPass(GRADE));
     c.addPass(new OutputPass());
     c.setPixelRatio(this.renderer.getPixelRatio());
     c.setSize(innerWidth, innerHeight);

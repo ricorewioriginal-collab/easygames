@@ -24,6 +24,13 @@
       UL.Menus.title();
       return;
     }
+    if (q.get('watch') === '1') {
+      // Teststart Nachtwache: index.html?watch=1&bot=1
+      const r = await UL.Camp.watch({ theme: q.get('theme') === 'studio' ? 'studio' : 'dschungel', me: { name: 'Testpilot', look: UL.D.CAST[0].look } });
+      window.TRIAL_RESULT = r;
+      UL.Menus.title();
+      return;
+    }
     UL.Menus.title();
   }
 
