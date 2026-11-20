@@ -1,10 +1,13 @@
 // Figuren selbst steuern: Lyra (Fernkampf) und Rovan (Nahkampf) übernehmen, Zotik ist unsichtbar, Angriffe treffen, zurück zu Zotik
-const { chromium, ARGS, open, intro } = require('./lib.cjs');
+const { chromium, ARGS, open, intro, skip } = require('./lib.cjs');
 (async () => { const b = await chromium.launch({ args: ARGS }); const p = await open(b); const res = [], w = ms => p.waitForTimeout(ms);
   const ok = (name, pass, info) => { res.push(pass); console.log(`${pass ? 'ok  ' : 'FEHL'} ${name}${info ? ' · ' + info : ''}`); };
   await p.evaluate(() => { const Z = __zotik; Z.startDbg(); Z.S().stage = 8; for (const e of Z.E) e.dead = true; }); await intro(p);
   await p.evaluate(() => { const Z = __zotik; for (const id of ['lyra', 'nia', 'rovan']) Z.joinParty(id); Z.switchWorld(2); for (const e of Z.E) e.dead = true; }); await w(600);
+  /* Begrüßungsszenen der Gefährten erst beenden: solange ein Dialog läuft, steht das Spiel */
+  const calm = async () => { for (let k = 0; k < 60 && await p.evaluate(() => __zotik.dlg.on); k++) { await skip(p); await w(300); } };
   for (const id of ['lyra', 'rovan']) {
+    await calm();
     const r0 = await p.evaluate(id => { const Z = __zotik; Z.setLead(id); const pl = Z.pl; const e = Z.spawnEnemy('wolf', pl.x, pl.z + (id === 'lyra' ? 6 : 1.8)); e.st = 'chase'; e.max = e.hp = 1e6; e.cd = 99; window.__e = e; window.__hp0 = e.hp; return { fox: Z.camera && true }; }, id); await w(200);
     for (let k = 0; k < 6; k++) { await p.evaluate(() => { const Z = __zotik, e = window.__e; Z.pl.face = Math.atan2(e.x - Z.pl.x, e.z - Z.pl.z); Z.startAttack(); }); await w(450); }
     const r = await p.evaluate(id => { const Z = __zotik, a = Z.CMP.find(c => c.id === id); return { lead: Z.S().lead, fox: Z.fox.root.visible, name: document.querySelector('#pname span').textContent, vis: a.P.root.visible, dx: Math.hypot(a.x - Z.pl.x, a.z - Z.pl.z), hit: window.__e.hp < window.__hp0 || window.__e.dead }; }, id);

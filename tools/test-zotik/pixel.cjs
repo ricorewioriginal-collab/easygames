@@ -13,7 +13,8 @@ const { chromium, ARGS, open, intro, shot } = require('./lib.cjs');
   const r0 = await p.evaluate(() => { const Z = __zotik; Z.switchWorld(14); return { pix: !!(Z.WLD && Z.WLD.pix), knopf: Z.INT.some(i => /Knopf/.test(i.name)) }; });
   ok('Pixelpforte: bunter Raum mit Knopf', r0.pix && r0.knopf, JSON.stringify(r0));
   if (process.env.SHOTS) { await p.evaluate(() => { const Z = __zotik; Z.pl.x = 0; Z.pl.z = 6; Z.pl.face = Math.PI; }); await w(1200); await shot(p, 'pix-raum'); }
-  await p.evaluate(() => { const Z = __zotik; Z.pl.x = 0; Z.pl.z = -3; }); await p.waitForFunction(() => __zotik.mode === 'pix', null, { timeout: 6000 }).catch(() => {});
+  await w(1500); for (let k = 0; k < 40 && await p.evaluate(() => __zotik.dlg.on); k++) { await require('./lib.cjs').skip(p); await w(300); }   /* Ankunftsszene erst beenden: solange sie läuft, reagiert der Knopf nicht */
+  await p.evaluate(() => { const Z = __zotik; Z.pl.x = 0; Z.pl.z = -3; }); await p.waitForFunction(() => __zotik.mode === 'pix', null, { timeout: 40000 }).catch(() => {});
   ok('Knopf betreten → 16-Bit-Welt', await p.evaluate(() => __zotik.mode === 'pix' && !document.getElementById('pix').hidden && document.getElementById('hud').hidden));
   await w(700); if (process.env.SHOTS) await shot(p, 'pix-start'); await clear();
   /* Dorf: Wache, Merle, Laden, Gasthaus */
@@ -50,7 +51,7 @@ const { chromium, ARGS, open, intro, shot } = require('./lib.cjs');
   await step('u'); await step('u'); await w(800); await clear(); s = await st(); ok('Treppe führt zur Turmspitze', s.map === 'turm3', s.map);
   /* Boss */
   await p.evaluate(() => { const P = __zotik.PX().P(); P.lv = 12; P.hp = { z: 999, l: 999 }; P.mp = { z: 99, l: 99 }; for (const id of ['z', 'l']) { const s = __zotik.PX().stat(id, 12); P.hp[id] = s.mhp; P.mp[id] = s.mmp; } __zotik.PX().load('turm3', 7, 4, 1); }); await w(300); await clear();
-  await face(1); await press('a'); for (let i = 0; i < 4; i++) await press('a'); await w(1200);
+  await face(1); await press('a'); for (let i = 0; i < 30 && !await p.evaluate(() => !!__zotik.PX().B); i++) { await press('a'); await w(150); } await w(1200);   /* das Gespräch vor dem Kampf hat drei Seiten mit Schreibeffekt */
   if (process.env.SHOTS) { await press('a'); await w(300); await shot(p, 'pix-boss'); }
   for (let i = 0; i < 200 && await p.evaluate(() => !!__zotik.PX().B); i++) await press('a');
   await clear(); s = await st(); ok('Grauwächter besiegt', !!s.fl.boss, `lv ${s.lv} hp ${JSON.stringify(s.hp)}`);

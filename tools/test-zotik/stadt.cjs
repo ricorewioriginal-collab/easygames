@@ -11,9 +11,9 @@ const L = require('./lib.cjs'), { chromium, ARGS, open, shot } = L;
   for (let n = from; n <= to; n++) {
     const r = await p.evaluate(n => { const Z = __zotik, S = Z.S(); for (let k = 2; k < n; k++) S.cd[k] = { st: 7, fin: 1, bd: 1, arr: 1, e1: 1, e2: 1, k: 0, b: [0, 0, 0], ord: 0 };
       if (n > 1) { if (Z.ch !== 1) Z.switchWorld(1); Z.switchWorld(n); } const d = document.getElementById('dlg'); for (let k = 0; k < 30 && !d.hidden; k++) { d.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); Z.step(1 / 30, 2); }
-      /* Flutfüllung zu Fuß ab Marktplatz, halber Meter */
+      /* Flutfüllung zu Fuß ab Marktplatz, halber Meter (bis 140 m: die Welten sind gewachsen, Häuser stehen auch weit draußen) */
       const st = .5, key = (i, j) => i * 4000 + j, seen = new Map(), q = [[0, 18]]; seen.set(key(0, 18), 1);
-      while (q.length) { const [i, j] = q.pop(); for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const a = i + di, c = j + dj, k = key(a, c); if (seen.has(k) || Math.abs(a) > 110 || c > 100 || c < -70 || Z.pBlocked(a * st, c * st)) continue; seen.set(k, 1); q.push([a, c]); } }
+      while (q.length) { const [i, j] = q.pop(); for (const [di, dj] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const a = i + di, c = j + dj, k = key(a, c); if (seen.has(k) || Math.abs(a) > 280 || c > 200 || c < -280 || Z.pBlocked(a * st, c * st)) continue; seen.set(k, 1); q.push([a, c]); } }
       window.__near = (x, z, r) => { let best = null, bd = 9; const i0 = Math.round(x / st), j0 = Math.round(z / st), m = Math.ceil(r / st); for (let a = -m; a <= m; a++) for (let c = -m; c <= m; c++) { const dd = Math.hypot(a, c) * st; if (dd >= .9 && dd < bd && dd <= r && seen.has(key(i0 + a, j0 + c))) { bd = dd; best = [(i0 + a) * st, (j0 + c) * st]; } } return best; };
       const need = ['tw_smith', 'tw_magic', 'tw_potions', 'tw_church', 'tw_tavern'].concat(n === 3 ? ['tw_dealer', 'tw_stella'] : []), out = [];
       for (const id of need) { const np = Z.NPC.find(q => q.id === id); out.push(id.slice(3) + (!np ? ':FEHLT' : window.__near(np.x, np.z, 3) ? '' : ':NICHT ERREICHBAR')); }
