@@ -112,7 +112,7 @@ export function buildShell(sc: Scene, t: Theme, W: number, D: number, H: number)
     for (const [x0, y0, x1, y1] of [[0, 0, 0, 46], [0, 256, 0, 210], [0, 0, 46, 0], [256, 0, 210, 0]]) { const gr = g.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, 'rgba(0,0,0,.55)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, 256, 256); }
   }, true) }); ao.material = aoM;
   const accent = t.light;
-  const wallMat = (len: number) => { const m = pbr(sc, 0xffffff, .92); m.albedoTexture = wrap(wallTex(sc, style, t.wall, accent), len / 3.2, 1); return m; };
+  const wallMat = (len: number) => { const m = pbr(sc, 0xffffff, .92); m.albedoTexture = wrap(wallTex(sc, style, t.wall, accent), len / 3.2, -1); return m; };   // v gespiegelt: Paneel unten, Schatten zur Decke oben
   const mLong = wallMat(W), mShort = wallMat(D);
   const wall = (w: number, d: number, x: number, z: number, m: PBRMaterial) => { const o = box(sc, w, H, d); o.material = m; o.position.set(x, H / 2, z); o.receiveShadows = true; o.isPickable = false; return o; };
   wall(W + .4, .2, 0, -D / 2 - .1, mLong); wall(W + .4, .2, 0, D / 2 + .1, mLong); wall(.2, D, -W / 2 - .1, 0, mShort); wall(.2, D, W / 2 + .1, 0, mShort);
@@ -165,6 +165,23 @@ export function furnish(sc: Scene, it: BoxItem, t: Theme, W: number, D: number, 
     const leg = cast(cyl(sc, .05, .05, h - .12, 10)); leg.material = pbr(sc, 0xc8ccd4, .25, .9); leg.position.set(it.x, (h - .12) / 2, it.z);
     const foot = cast(cyl(sc, .22, .24, .04, 16)); foot.material = leg.material; foot.position.set(it.x, .02, it.z);
     const seat = cast(cyl(sc, .24, .22, .12, 18)); seat.material = pbr(sc, c, .55); seat.position.set(it.x, h - .06, it.z);
+    return true;
+  }
+  // Muckibude: Hantelbank mit Ständer und Langhantel statt grauer Kästen, Laufband mit Pult
+  if (t.id === 'gym' && it.col && !y0 && h >= 1.1) {
+    const steel = pbr(sc, 0xc4cad2, .28, .9), pad = pbr(sc, 0x1c1c22, .7), plate = pbr(sc, 0x2a2a30, .5, .3);
+    if (c === 0x16161c) {
+      // Laufband
+      part(w - .1, .18, d, it.x, 0, it.z, pad); part(w - .3, .03, d - .5, it.x, .18, it.z + .15, pbr(sc, 0x33333a, .9));
+      for (const sx of [-1, 1]) { part(.06, 1.2, .06, it.x + sx * (w / 2 - .1), .18, it.z - d / 2 + .15, steel); part(.05, .05, 1, it.x + sx * (w / 2 - .1), 1.05, it.z - d / 2 + .6, steel); }
+      part(w - .2, .3, .1, it.x, 1.25, it.z - d / 2 + .15, pad);
+      const scr = box(sc, w - .45, .2, .02); scr.material = glow(sc, 0x5ce1ff, 1.1); scr.position.set(it.x, 1.42, it.z - d / 2 + .21); scr.isPickable = false;
+      return true;
+    }
+    part(.42, .12, d - .5, it.x, .42, it.z + .15, pad); part(.3, .42, .1, it.x, 0, it.z + d / 2 - .25, steel); part(.3, .42, .1, it.x, 0, it.z - .3, steel);
+    for (const sx of [-1, 1]) { part(.07, 1.25, .07, it.x + sx * .52, 0, it.z - d / 2 + .3, steel); part(.07, .07, .5, it.x + sx * .52, 0, it.z - d / 2 + .3, steel); }
+    const bar = cast(cyl(sc, .025, .025, 1.9, 10)); bar.material = steel; bar.rotation.z = Math.PI / 2; bar.position.set(it.x, 1.2, it.z - d / 2 + .3);
+    for (const sx of [-1, 1]) for (const k of [0, 1]) { const pl = cast(cyl(sc, .24 - k * .05, .24 - k * .05, .05, 18)); pl.material = k ? pbr(sc, [0xff3b6b, 0x5ce1ff, 0xffd23b][Math.abs(Math.round(it.x)) % 3], .5) : plate; pl.rotation.z = Math.PI / 2; pl.position.set(it.x + sx * (.74 + k * .07), 1.2, it.z - d / 2 + .3); }
     return true;
   }
   // Theke: hüfthoch, lang und schmal
