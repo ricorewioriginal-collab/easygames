@@ -67,6 +67,15 @@
       P.exit = { x: 0, z: -12 };
       if (studio) { const g = new T.Group(); for (const x of [-1.4, 1.4]) { const p = new T.Mesh(new T.BoxGeometry(0.3, 3, 0.3), R.mat(0xc0c8d0)); p.position.set(x, 1.5, 0); g.add(p); } const s = R.sign(['AUSGANG'], 3, 0.6, { bg: '#141824', w: 400, h: 80, font: '900 52px system-ui' }); s.position.y = 3.1; g.add(s); at(g, 0, -12.5); }
       else { const br = UL.ropeBridge(12, 1.2); br.position.set(0, 1.1, -19); sc.add(br); const s = R.sign([D.SHOW.bridge.toUpperCase()], 2.6, 0.6, { bg: '#5a3a1e', w: 400, h: 90, font: '900 50px system-ui' }); s.position.set(0, 2.4, -12.6); sc.add(s); }
+      // Sani-Zelt von Doc Rudi (weißes Zelt mit rotem Kreuz)
+      P.doc = { x: 3.2, z: 9.0 };
+      { const g = new T.Group(), white = new T.MeshLambertMaterial({ color: R.lin(0xf2f2ee), side: T.DoubleSide });
+        const roof = new T.Mesh(new T.ConeGeometry(1.7, 1.6, 4, 1, true), white); roof.position.y = 2.0; roof.rotation.y = Math.PI / 4; g.add(roof);
+        for (const [x, z] of [[-1.1, -1.1], [1.1, -1.1], [-1.1, 1.1], [1.1, 1.1]]) { const p = new T.Mesh(new T.CylinderGeometry(0.05, 0.05, 1.3, 6), R.mat(0xc0c0c8)); p.position.set(x, 0.65, z); g.add(p); }
+        const back = new T.Mesh(new T.PlaneGeometry(2.3, 1.3), white); back.position.set(0, 0.65, 1.15); g.add(back);
+        const cross = R.sign(['✚'], 0.6, 0.6, { bg: '#ffffff', fg: '#d8262b', w: 128, h: 128, font: '900 110px system-ui' }); cross.position.set(0, 2.05, -0.86); cross.rotation.x = -0.45; cross.rotation.y = Math.PI; g.add(cross);
+        if (A.has('kd_bed_floor')) { const b = A.sized('kd_bed_floor', 0.35); b.position.set(0.4, 0, 0.3); g.add(b); }
+        at(g, 3.6, 10.0, Math.PI); this.solid.push({ x: 3.6, z: 10.3, r: 1.0 }); }
       // Kisten, Fässer, Deko
       at(A.sized('kd_barrel_large', 0.9), 3.4, -3.2); at(A.sized('kd_crates_stacked', 1.0), 4.3, -2.6, 0.4); at(A.sized('kd_table_medium_decorated_A', 0.8), 3.6, -1.6, 0.6);
       this.solid.push({ x: 3.8, z: -2.5, r: 1.0 });
@@ -134,6 +143,22 @@
     const meO = figs.find(o => o.c.id === 'me'), npcs = figs.filter(o => o !== meO);
     npcs.forEach((o, i) => { if (i < 4) seat(st, o, i * 2 + 1); else { const a = Math.random() * 6.28, d = UL.rand(4, 9); const p = { x: Math.cos(a) * d, z: Math.sin(a) * d }; st.push(p); place(st, o, p.x, p.z, Math.random() * 6); } });
     place(st, meO, 0, 4.2, Math.PI);
+    // Doc Rudi am Sani-Zelt, Ranger Kalle dreht seine Runden am Lagerrand
+    const crewTag = (o, txt) => UL.Tags.set('n:' + o.c.id, v => v.copy(o.f.root.position).add(new T.Vector3(0, o.f.height + 0.35, 0)), txt, 'tag crew');
+    const docO = { c: { id: 'doc' }, f: UL.makeFig(D.DOC.look, 1.7), x: 0, z: 0 }, rangerO = { c: { id: 'ranger' }, f: UL.makeFig(D.RANGER.look, 1.85), x: 0, z: 0, wp: 0, wait: 0 };
+    for (const o of [docO, rangerO]) { st.scene.add(o.f.root); st.figs.push(o.f); }
+    place(st, docO, st.poi.doc.x, st.poi.doc.z, Math.PI); crewTag(docO, '🩺 ' + D.DOC.name); crewTag(rangerO, '🪖 ' + D.RANGER.name);
+    const PATROL = [[0, -10.6], [8.5, -8], [11.2, 0], [9, 8.5], [0, 11.2], [-8.5, 8.5], [-11.2, 0], [-9, -8.5]];
+    place(st, rangerO, PATROL[0][0], PATROL[0][1], 0);
+    st.crew = { doc: docO, ranger: rangerO };
+    function rangerTick(dt) {
+      const o = rangerO; if (o.busy) return;
+      if (o.wait > 0) { o.wait -= dt; o.f.move(0); return; }
+      const [tx, tz] = PATROL[o.wp], dx = tx - o.x, dz = tz - o.z, d = Math.hypot(dx, dz);
+      if (d < 0.3) { o.wp = (o.wp + 1) % PATROL.length; o.wait = UL.rand(1.5, 4); o.f.move(0); if (Math.random() < 0.4) o.f.play('idle2'); return; }
+      const sp = 1.2; o.x += dx / d * sp * dt; o.z += dz / d * sp * dt;
+      o.f.root.position.set(o.x, st.h(o.x, o.z), o.z); o.f.root.rotation.y = UL.angDamp(o.f.root.rotation.y, Math.atan2(dx, dz), 6, dt); o.f.move(sp);
+    }
     R.set(st);
     UL.Audio.music('camp'); UL.Audio.atmo(theme === 'studio' ? 'studio' : 'jungle');
     UI.hint({ move: 'Laufen', run: 'Rennen', look: 'Kamera', ok: 'Kommando', menu: 'Buschtrommel', start: 'Pause' });
@@ -200,6 +225,7 @@
       UL.Tags.clear();
       const r = await UL.Phone.interview({ theme: S.theme, me, others: Show.alive().filter(c => c.id !== 'me') });
       figs.forEach(o => UL.Tags.set('n:' + o.c.id, v => v.copy(o.f.root.position).add(new T.Vector3(0, o.f.height + 0.35, 0)), esc(UL.Show.first(o.c)) + (o.c.id === 'me' ? ' ⭐' : ''), 'tag' + (o.c.id === 'me' ? ' me' : '')));
+      crewTag(docO, '🩺 ' + D.DOC.name); crewTag(rangerO, '🪖 ' + D.RANGER.name);
       if (!r.said.length) return;
       spend();
       Show.log(`Buschtelefon: „${r.said[0]}“`, '📞');
@@ -219,6 +245,25 @@
         npcs.forEach(o => { if (Math.random() < 0.5) { bubble(o, UL.pick(['Jaaa!', 'Du bist die Beste! Der Beste! Egal!', n + '! Endlich!']), 2.5); o.f.play('cheer'); } });
       } else { UL.Audio.sfx('boo'); fx({ sym: -1, ent: 2 }, `Falsch! Richtig wäre „${ans[0]}“ gewesen.`); }
       if (chest) { chest.rotation.x = -0.3; }
+    }
+    // Besuch im Sani-Zelt: Check-up hebt die Stimmung, Doc gibt Tipps
+    async function docVisit() {
+      spend(); UL.faceTo(docO.f, meO.x, meO.z); UL.faceTo(meO.f, docO.x, docO.z); docO.f.play('interact');
+      st.cam.yaw = Math.atan2(meO.x - docO.x, meO.z - docO.z) + Math.PI * 0.35;
+      await UI.say('doc', UL.pick(D.DOC_LINES.check));
+      me.mood = Math.min(1, (me.mood || 0.5) + 0.25); day.docSeen = true;
+      await UI.say('doc', UL.pick(D.DOC_LINES.tips));
+      Show.log(`${me.name} lässt sich von ${D.DOC.name} durchchecken.`, '🩺');
+      fx({ sym: 1 }, 'Gesundheits-Check');
+    }
+    // Ranger ansprechen: kostet nichts, verrät Tipps – und manchmal, wo die Schatzkiste steht
+    async function rangerTalk() {
+      rangerO.busy = true; rangerO.f.move(0); UL.faceTo(rangerO.f, meO.x, meO.z); UL.faceTo(meO.f, rangerO.x, rangerO.z); rangerO.f.play('interact');
+      if (chest && !day.chestOpen && !day.chestHint) {
+        day.chestHint = true; await UI.say('ranger', UL.pick(D.RANGER_LINES.chest));
+        const p = chest.userData.p; UL.Tags.set('n:chest', v => v.set(p.x, st.h(p.x, p.z) + 1.4, p.z), '🧰 Schatzkiste', 'tag crew');
+      } else await UI.say('ranger', UL.pick(day.rangerTalked ? D.RANGER_LINES.tips : D.RANGER_LINES.hello.concat(D.RANGER_LINES.tips)));
+      day.rangerTalked = true; rangerO.busy = false; rangerO.wait = 2;
     }
     // Story-Momente mit Rivale und Kumpel
     async function story() {
@@ -408,6 +453,7 @@
       camTick(dt);
       // NPCs
       for (const o of npcs) npcTick(st, o, dt, npcs);
+      rangerTick(dt);
       chatT -= dt;
       if (chatT <= 0) { chatT = UL.rand(4, 8); const o = UL.pick(npcs); if (o && o.state !== 'busy') bubble(o, Math.random() < 0.3 ? o.c.quote : UL.pick(CHATTER), 3.4); }
       sceneTick(dt);
@@ -452,8 +498,10 @@
         if (day.carry === 'wasser' && near({ x: 0, z: 0 }, 2.6)) cmds.push({ id: 'kochen', label: 'Wasser abkochen', icon: '♨️', hot: true });
         if (near(P.loo, 2.2)) cmds.push({ id: 'klo', label: 'Klo putzen', icon: '🧽', hot: true });
         if (near(P.phone, 2.6)) cmds.push({ id: 'phone', label: D.SHOW.phone, icon: '📞', hot: true });
+        if (!day.docSeen && near(P.doc, 2.6)) cmds.push({ id: 'doc', label: 'Check-up bei ' + D.DOC.name, icon: '🩺', hot: true });
         if (chest && !day.chestOpen && near(chest.userData.p, 1.8)) cmds.push({ id: 'chest', label: 'Schatzkiste öffnen', icon: '🧰', hot: true });
       }
+      if (!rangerO.busy && Math.hypot(rangerO.x - meO.x, rangerO.z - meO.z) < 2.4) cmds.unshift({ id: 'ranger', label: D.RANGER.name + ' ansprechen', icon: '🪖', hot: !day.rangerTalked });
       if (!npcNear && near({ x: 0, z: 0 }, 3.2) && meO.f.base !== 'sit') cmds.push({ id: 'sit', label: 'Ans Feuer setzen', icon: '🪵' });
       cmds.push({ id: 'drum', label: 'Buschtrommel', icon: '🥁' });
       cmds.push({ id: 'end', label: day.energy > 0 ? 'Tag beenden' : 'Abendessen!', icon: '🌅', hot: day.energy <= 0 });
@@ -468,6 +516,8 @@
       else if (c.id === 'feuer' || c.id === 'kochen') { spend(); day.carry = null; meO.f.play('throw'); UL.Audio.sfx(c.id === 'feuer' ? 'whoosh' : 'splash'); st.fire.scale.setScalar(1.4); UL.after(2, () => st.fire.scale.setScalar(1)); Show.log(`${me.name} ${c.id === 'feuer' ? 'schürt das Feuer' : 'kocht Wasser ab'}.`, c.id === 'feuer' ? '🔥' : '♨️'); fx({ sym: 2 + Math.random() * 2, ent: 0.5 }, c.id === 'feuer' ? 'Das Feuer brennt!' : 'Trinkwasser fürs Camp!'); npcs.forEach(o => { if (o.state === 'sit' && Math.random() < 0.4) bubble(o, UL.pick(['Danke dir!', 'Endlich mal jemand, der was tut!', 'Wärmt schön.']), 2.4); }); }
       else if (c.id === 'klo') { spend(); meO.f.play('use'); Show.log(`${me.name} putzt das Klo. Respekt!`, '🧽'); fx({ sym: 4, ent: 2 }, 'Klo geputzt – die Zuschauer staunen.'); }
       else if (c.id === 'phone') busy(phone);
+      else if (c.id === 'doc') busy(docVisit);
+      else if (c.id === 'ranger') busy(rangerTalk);
       else if (c.id === 'calm' || c.id === 'stir' || c.id === 'confront') busy(() => meddle(c.id === 'confront' ? 'confront' : c.id));
       else if (c.id === 'sing' || c.id === 'massage' || c.id === 'snack' || c.id === 'pose') busy(() => showAct(c.id, c.o));
       else if (c.id === 'chest') busy(treasure);
@@ -521,11 +571,11 @@
     await UI.fade(false, 0.5);
     await UI.banner('🍲 Abendessen', `${stars} von ${max} Portionen`, 1800);
     // 1) Die Lieferung: ein Helfer bringt die Kiste mit den erspielten Portionen
-    const staff = { c: { id: 'staff' }, f: UL.makeFig(D.DOC.look), x: 0, z: -11.5 };
+    const staff = { c: { id: 'staff' }, f: UL.makeFig(D.RANGER.look, 1.85), x: 0, z: -11.5 };
     st.scene.add(staff.f.root); st.figs.push(staff.f); place(st, staff, 0, -11.5, 0);
     const box = A.has('crate') ? A.sized('crate', 0.45) : new T.Mesh(new T.BoxGeometry(0.6, 0.4, 0.45), R.mat(0x8a6a3a));
     box.position.set(0, 0.95, 0.42); staff.f.root.add(box);
-    UL.Tags.set('n:staff', v => v.copy(staff.f.root.position).add(new V(0, 2.1, 0)), '📦 Lieferung', 'tag');
+    UL.Tags.set('n:staff', v => v.copy(staff.f.root.position).add(new V(0, 2.1, 0)), '🪖 ' + D.RANGER.name + ' · 📦 Lieferung', 'tag crew');
     follow = staff; UL.Audio.sfx('drum');
     UI.toast(stars ? `Die Lieferung kommt: ${stars} Portion${stars === 1 ? '' : 'en'}!` : 'Die Lieferung kommt … nur ein Sack.', '📦', 2600);
     figs.forEach(o => { if (o.c.id !== 'me' && Math.random() < 0.5) { o.f.set('idle'); o.f.root.position.y = st.h(o.x, o.z); } });

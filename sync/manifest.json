@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "12a5f1dba9a3",
- "generated": "2026-11-16T20:24:22+01:00",
- "commit": "c62528263bf8068140d257eda8964262999318be",
+ "version": "dbc09f64857a",
+ "generated": "2026-11-20T01:11:41+00:00",
+ "commit": "fdbc76f31642a2dbe43f3381b1bb3a787f03a633",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -435,101 +435,6 @@
    "p": "anleitung.html",
    "s": 10371,
    "h": "78d4b57553c3c3cf13cfd4a6e5de1fd9345d6950279e12034ad09bfc109e8aa5"
-  },
-  {
-   "p": "anmacha-beat-surfer/card.jpg",
-   "s": 40453,
-   "h": "7ac721bfd4cc82b257c937a2eecddfe42afb1bb4f9c6e3558748ed812f02c0a3"
-  },
-  {
-   "p": "anmacha-beat-surfer/index.html",
-   "s": 72037,
-   "h": "cf988f568b67b366b81fa61ad531de998b43a9bd939112a44c2c918b41b24ed1"
-  },
-  {
-   "p": "anmacha-beat-surfer/logo.png",
-   "s": 172254,
-   "h": "2334bf70302e49f298ca3043a89fcc1b5312f4fd04c49267dc2201ea8b4dccf5"
-  },
-  {
-   "p": "anmacha-beat-surfer/logo.svg",
-   "s": 1580,
-   "h": "d3454679f34857624dd1d020dcb75726986015464bde7ab66197e707bc537669"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/01.jpg",
-   "s": 31963,
-   "h": "95ca2a58102c4f1a6d632a78582037d7f0b48dbba4be7d52959e73d39ae93516"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/02.png",
-   "s": 147746,
-   "h": "ef00ec17b317f91313dc61f12facab356963ca5ea714a8728c3ec522432bf52e"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/03.png",
-   "s": 231008,
-   "h": "4cb0e87e803619c64c33f2520b33131b0307777dc0b53a6c1f97193c4efd395e"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/04.png",
-   "s": 224422,
-   "h": "c8f147dbab3c2b01379014baa9e7d09e0566eeeca75b0a6d143220606eb342c1"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/05.png",
-   "s": 219732,
-   "h": "c969d2de9cf000d60563b1a9e43e8e24e18ae92e737a7bb6653ceaa425fa9f78"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/06.png",
-   "s": 239933,
-   "h": "30ffffc4cd63b7c2f602df263083a10f11a54cc9fbb4560e7118fb2ec1696588"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/07.png",
-   "s": 177752,
-   "h": "c40b04528ca6f296c4718b8cbe9c90869b1b0dfa907aa558ad86aeb048294264"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/08.png",
-   "s": 250470,
-   "h": "aef316140fe42ebd87d887269ea31aa313698eb32dda372138511d84c9553139"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/09.png",
-   "s": 62466,
-   "h": "b2c82ef43da4f35076445c95468e01a49b9ff656e46ddb3fb6a47d40c077906e"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/10.png",
-   "s": 312694,
-   "h": "ae04ce10ecd9292741b9da7a5665f7d326fa280e4d2240dcc85c939c24ac2ddb"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/11.png",
-   "s": 58237,
-   "h": "ec27117692207c4638305dfa73ea447e73459e881e2d63d513c1233ad359c09a"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/12.png",
-   "s": 166796,
-   "h": "8eabe8d95f3467ebd0a2072e0c861d7e03fd223447c0da3ce7ba8c887afe9eb8"
-  },
-  {
-   "p": "anmacha-beat-surfer/logos/13.png",
-   "s": 189026,
-   "h": "c3d7d73173d2bf25765a3ec608b11c1517cde1397511f1b0cbc92f7f722b05e7"
-  },
-  {
-   "p": "anmacha-beat-surfer/manifest.webmanifest",
-   "s": 791,
-   "h": "710e7997d34c394452750b56bf478e66f0ab6c53570b607baf0d9f8815a9ecbe"
-  },
-  {
-   "p": "anmacha-beat-surfer/sw.js",
-   "s": 2007,
-   "h": "7278e220a22ed63b609ba85e4ce9e365aaf00042718ea7d1683fbd69e58d190f"
   },
   {
    "p": "anmacha-flipper/card.jpg",
@@ -2395,171 +2300,6 @@
    "p": "anmacha-kart/zotik-fox.js",
    "s": 15101,
    "h": "ceaf7943a53e0cdb38894890e47f2a13c832bb3fe2284ae891eb1b646942590c"
-  },
-  {
-   "p": "anmacha-kartensammlung/card.jpg",
-   "s": 47953,
-   "h": "cb5916870cf53ff7877f25518e743d864b1868512f8f6816a2ec3b356eef445a"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig0.webp",
-   "s": 5536,
-   "h": "3d11636b5d9d4e05811734db0f27ecd46b535dfdcaf93b33587818e445133ee6"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig1.webp",
-   "s": 6002,
-   "h": "e03536d9004571ab191c8de68fb32c7a80ad4f6a73b22891808b74bbc883c6fe"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig2.webp",
-   "s": 6512,
-   "h": "8866cbde0f322c76abe74968df0aa540e29df1e86db0a987ffad0ef3007019c2"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig3.webp",
-   "s": 5372,
-   "h": "743f6c9866fc7065cdb65637564a2209f94d2e0e7440098948bdf46e3cbd5892"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig4.webp",
-   "s": 5170,
-   "h": "8c8bbc255fd94de925133c824dc65d7bcfa73867ce1224278f93aa3be40b6a1a"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig5.webp",
-   "s": 4764,
-   "h": "7ab9f12e1d52ac65535c4922c38135d6b178b7b37838779822627edd5ce7b8ec"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig6.webp",
-   "s": 6636,
-   "h": "b61cc3c22c359b44299331b86f32f2b809811127427aa88c247dc5802156ec73"
-  },
-  {
-   "p": "anmacha-kartensammlung/img/fig7.webp",
-   "s": 6118,
-   "h": "1f0b21a411bcef355cad894ef061509047fd31ad66eff67598791b59b11cf8be"
-  },
-  {
-   "p": "anmacha-kartensammlung/index.html",
-   "s": 31978,
-   "h": "042d58fc048ecc544a51c9b011896ee5cf7d7dc4318cf5bac54dc026e8afb32f"
-  },
-  {
-   "p": "anmacha-kartensammlung/js/app.js",
-   "s": 124095,
-   "h": "9438af3e8caf902afeef0af6168dad6426de236bfe9235e1200a18b601d134c6"
-  },
-  {
-   "p": "anmacha-kartensammlung/js/figures.js",
-   "s": 8150,
-   "h": "08ff19cb6e2cdeda1b281349b1a16643758cf6a5a197e998dc6c2861119838b8"
-  },
-  {
-   "p": "anmacha-kartensammlung/js/logic.js",
-   "s": 44313,
-   "h": "844fd6f4a32924f98eafd260c36d135d311ed18323e29d4cdc717e1d93c74f2d"
-  },
-  {
-   "p": "anmacha-kartensammlung/logo.svg",
-   "s": 2145,
-   "h": "f021c4cca1a2319c1876e5cbd2fec21d1555fa44e3d6df24027e3f3ff097da6b"
-  },
-  {
-   "p": "anmacha-kartensammlung/manifest.webmanifest",
-   "s": 811,
-   "h": "5308f18a87e9a56686a34448d517beae83429a127cff521d482acf54e2aa4431"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_ba.glb",
-   "s": 243888,
-   "h": "e9d20bc74b2c3d12ac223b8f52b47dfac51c4fb0634bc498ec23f87bcb21ec12"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_kn.glb",
-   "s": 220180,
-   "h": "a1cd6909b4280cb77b1e32a4d26e1cc5fa253243b6ba2cf1febeb486b9b056c0"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_ma.glb",
-   "s": 227140,
-   "h": "19e538480ebe79ecf8d63b0851882d34f919e6e7372f2b28e5efaf20f3619f8d"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_ra.glb",
-   "s": 302508,
-   "h": "7dc3a159004a9f089b85fe68c759a8ed02fd83cf244153946da19284ffe42b16"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_rh.glb",
-   "s": 243028,
-   "h": "3a237456e0bc41007919b28ae5722bec63054f55d18b10095b15ebb443dfe959"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/ad_ro.glb",
-   "s": 256984,
-   "h": "bf0e8e360211d8cf2c292516c11806d7aeb46aeea9bb7167d3db0edf6d18c1e0"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/anim.glb",
-   "s": 500388,
-   "h": "bfb31b875564085b63845f82cad7be1c3bcc3dc4b948cbfbe05235c75259def7"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/room.glb",
-   "s": 348444,
-   "h": "3a35ef630977d2e8726a08e46bdfea0a98a507a5e28556ebe3111da57d2b262e"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/sk_m.glb",
-   "s": 179036,
-   "h": "4bdfc6f779b3b0630b64e74b337c1648f36022b3b1d56ffb5528e6b1260ef296"
-  },
-  {
-   "p": "anmacha-kartensammlung/models/sk_w.glb",
-   "s": 241272,
-   "h": "36ab3c8eff438e44d354ed85ffa6c8d0762e874b68ccd68e3ddbcaac02b7bc39"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/data/loesbar.json",
-   "s": 3591,
-   "h": "2a9c8ad234902a70f460c5024da18fe9f9ec916813c1ffed1baf76c59c30020f"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/img/anmacha-logo.png",
-   "s": 28394,
-   "h": "466a7c3ba4b450d56054e6442c84ae428911174d276a05e53b1f3ae2583217b3"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/img/radioportal-icon.png",
-   "s": 20776,
-   "h": "06358bdf93261f3ffb84505a41512bfd7e0cd4b5773611d46bf38d9c2a66b43a"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/index.html",
-   "s": 7467,
-   "h": "0291b337f0fb5d54a3d65cd46861ec7bcde266373616eabee8034601eeb5c579"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/js/app.js",
-   "s": 35225,
-   "h": "9582b830327f2ec951b191b1ce0901ae641fcc5853895d72beafc6cbb7344024"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/js/rules.js",
-   "s": 13021,
-   "h": "287457557522274faf28b96c9304d26a6e4e1ab1d2b93e10e4fac5cd7290edf4"
-  },
-  {
-   "p": "anmacha-kartensammlung/solitaer/style.css",
-   "s": 11250,
-   "h": "3a1ae2be3e2d3f61536544520ae5577b6429b39d745daf4318cfeb4397ebbb4c"
-  },
-  {
-   "p": "anmacha-kartensammlung/sw.js",
-   "s": 2019,
-   "h": "489ab13cc0ecf266e2f6eea31a20eb931cd69c0eb82aaf88bea365420ad59914"
   },
   {
    "p": "anmacha-klotzfunk/assets/index-B55ezXFP.js",
@@ -7567,111 +7307,6 @@
    "h": "665fcc1d9f7c85790f3697f4ded511d3b9996e76cd3827c563a15532b8b1f276"
   },
   {
-   "p": "anmacha-radio-surfer/card.jpg",
-   "s": 41565,
-   "h": "b09b8589c9d5bb1478bbd73cf64c7859255d425a689b8eb715f410d7fbb701cc"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/01.jpg",
-   "s": 31963,
-   "h": "95ca2a58102c4f1a6d632a78582037d7f0b48dbba4be7d52959e73d39ae93516"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/02.png",
-   "s": 147746,
-   "h": "ef00ec17b317f91313dc61f12facab356963ca5ea714a8728c3ec522432bf52e"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/03.png",
-   "s": 231008,
-   "h": "4cb0e87e803619c64c33f2520b33131b0307777dc0b53a6c1f97193c4efd395e"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/04.png",
-   "s": 224422,
-   "h": "c8f147dbab3c2b01379014baa9e7d09e0566eeeca75b0a6d143220606eb342c1"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/05.png",
-   "s": 219732,
-   "h": "c969d2de9cf000d60563b1a9e43e8e24e18ae92e737a7bb6653ceaa425fa9f78"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/06.png",
-   "s": 239933,
-   "h": "30ffffc4cd63b7c2f602df263083a10f11a54cc9fbb4560e7118fb2ec1696588"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/07.png",
-   "s": 177752,
-   "h": "c40b04528ca6f296c4718b8cbe9c90869b1b0dfa907aa558ad86aeb048294264"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/08.png",
-   "s": 250470,
-   "h": "aef316140fe42ebd87d887269ea31aa313698eb32dda372138511d84c9553139"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/09.png",
-   "s": 62466,
-   "h": "b2c82ef43da4f35076445c95468e01a49b9ff656e46ddb3fb6a47d40c077906e"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/10.png",
-   "s": 312694,
-   "h": "ae04ce10ecd9292741b9da7a5665f7d326fa280e4d2240dcc85c939c24ac2ddb"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/11.png",
-   "s": 58237,
-   "h": "ec27117692207c4638305dfa73ea447e73459e881e2d63d513c1233ad359c09a"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/12.png",
-   "s": 166796,
-   "h": "8eabe8d95f3467ebd0a2072e0c861d7e03fd223447c0da3ce7ba8c887afe9eb8"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/13.png",
-   "s": 189026,
-   "h": "c3d7d73173d2bf25765a3ec608b11c1517cde1397511f1b0cbc92f7f722b05e7"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/14.png",
-   "s": 185188,
-   "h": "7fcaee29fc885649ecdf15c9b30b966538b50bffe23f9d92a6c3aa2d8c3e9171"
-  },
-  {
-   "p": "anmacha-radio-surfer/hindernisse/15.jpg",
-   "s": 51165,
-   "h": "d632b956b16ea4f7c691e5aea72ba9ac0b31cba122304f64dd1e1ac185e85c3d"
-  },
-  {
-   "p": "anmacha-radio-surfer/index.html",
-   "s": 61181,
-   "h": "1f090fac53ea55ee0c73cf7457d4711ee863433c297fc6e42c8d3466f8a5e762"
-  },
-  {
-   "p": "anmacha-radio-surfer/logo.png",
-   "s": 442226,
-   "h": "163872661f3b985fd8d19b0ccd987d2d00c2fabf3a6772a2e70e4993073e3233"
-  },
-  {
-   "p": "anmacha-radio-surfer/logo.svg",
-   "s": 1516,
-   "h": "e03c465d248f6cc3ddbcb7c2100fa3ac11084e521c6c674b7b9fd1fd86115487"
-  },
-  {
-   "p": "anmacha-radio-surfer/manifest.webmanifest",
-   "s": 796,
-   "h": "6244f0c7a171e239b329f5fe3e220ebc2bc725beae6810e5a889bdb052632d88"
-  },
-  {
-   "p": "anmacha-radio-surfer/sw.js",
-   "s": 2006,
-   "h": "cca5747e9cc3e3ed88bf69e00aa8d842356bf5c6d3a4f1d8d940bd4e2896f053"
-  },
-  {
    "p": "anmacha-showdown/audio.js",
    "s": 10298,
    "h": "e5f0b6499bf58e013162e72e63bc88136356950080140e49d97c2299310deb85"
@@ -7875,31 +7510,6 @@
    "p": "anmacha-snake/sw.js",
    "s": 1988,
    "h": "5d5424f4814ce47d8a5d1067392ea392c5e7a0fb9951d5b5c6c832ea624da677"
-  },
-  {
-   "p": "anmacha-spielesammlung/card.jpg",
-   "s": 41282,
-   "h": "25cfcdf88a64f960d16ce9d370ebfb0399f96fcf27aef4db81d0ed1306bffeeb"
-  },
-  {
-   "p": "anmacha-spielesammlung/index.html",
-   "s": 100360,
-   "h": "fe79207ee1ad024ae572e5c2cfc5910a874a4cf1c016071acd7260cc8e189545"
-  },
-  {
-   "p": "anmacha-spielesammlung/logo.svg",
-   "s": 1586,
-   "h": "6c8630849e82331ef879607d00275c27feacf2ccd1528ff9481b9cec6a3ed56c"
-  },
-  {
-   "p": "anmacha-spielesammlung/manifest.webmanifest",
-   "s": 811,
-   "h": "3436d3f1bab48daed5555d8d459e53bd9ed36d7510481da1533ad4593686c2ad"
-  },
-  {
-   "p": "anmacha-spielesammlung/sw.js",
-   "s": 2015,
-   "h": "cc3282742cc195b1608ea98bf2e26891fb12e39db0d9d840a75ea67c21619232"
   },
   {
    "p": "anmacha-tower-defense/assets/index-BG_UIOR7.js",
@@ -8273,8 +7883,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/camp.js",
-   "s": 51516,
-   "h": "ec7726a0eb2ef799db4722d86f8f2d83e828e916ef005255c18daed676ae19d7"
+   "s": 56041,
+   "h": "61670a770fd78c74c73dc3337e19abff935782dcfa03ad2cdf53a2d8ee2bd703"
   },
   {
    "p": "anmacha-urwaldlager/js/core.js",
@@ -8283,8 +7893,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/data.js",
-   "s": 26665,
-   "h": "a462661088314afed7a49d69c93d252480e3e192ad20bb54fa5a42e50e46af3d"
+   "s": 29050,
+   "h": "ca85edbeb1f9874bb071c21d589f5c9a416eef1a441a30e554247680e9d1cf07"
   },
   {
    "p": "anmacha-urwaldlager/js/input.js",
@@ -8313,8 +7923,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/show.js",
-   "s": 21318,
-   "h": "4cb75634712826904564ea41100085408e92dad4c44dd1108cb3b843f35618d1"
+   "s": 21418,
+   "h": "83fa1bc8ad36b8cc78b4f2c3d57319dc68546946bc229e6de3b79c4df2e03e94"
   },
   {
    "p": "anmacha-urwaldlager/js/stage.js",
@@ -8338,8 +7948,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/dinner.js",
-   "s": 10492,
-   "h": "aedf71e9aae9e3632696dbe610b1b4a1d604fba2eca91b50255ec6b81556f218"
+   "s": 16521,
+   "h": "190c48d61fe14ce6db70b61d5d7546292de696a0cbd80f3ea24aa2c9b6c68d04"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/dusche.js",
@@ -8348,8 +7958,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/grab.js",
-   "s": 10337,
-   "h": "0278f1132db4cf17ba9a3b20a2b794690bca0dac0bc58abb8489486c34fe3a11"
+   "s": 12820,
+   "h": "c6ad808de5662f406fc5a059bd6417b2893da42db25d1000500242beb21c3325"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kisten.js",
@@ -8358,8 +7968,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kit.js",
-   "s": 20919,
-   "h": "07b0086703a5bfc6afdc53ed7bc489dec20c3fc0b941686fe8daa73939760a11"
+   "s": 22099,
+   "h": "cb7237cb7de749f5f2d42909d758dfcd0626217256a70ef49fcfa3a2e165cb82"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/parcours.js",
@@ -8393,8 +8003,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/ui.js",
-   "s": 12914,
-   "h": "2a99c00b48cd69d33121d4dcc35f93efef4c6059a9da1c294845ccf67dbe211a"
+   "s": 12988,
+   "h": "92d3ffadcc7f6ca75c91cbaddb0502a52ac5081504de87eb496d2bc3d883cb04"
   },
   {
    "p": "anmacha-urwaldlager/logo.svg",
@@ -8468,8 +8078,8 @@
   },
   {
    "p": "anmacha-urwaldlager/style.css",
-   "s": 27557,
-   "h": "5e4160865459fbc1cb432669284acd93e90572613c2ae443fb7b584eec286b51"
+   "s": 27634,
+   "h": "11c6e30b0c039d251125b757ddacf6a2825a63ffb60fef40f64fb0ce46e23711"
   },
   {
    "p": "anmacha-urwaldlager/sw.js",
@@ -9433,8 +9043,8 @@
   },
   {
    "p": "categories.js",
-   "s": 3153,
-   "h": "be88fb9f30f13f5ec8bb69ae59f322d649d1d70a89f669667556f1c7eddc5185"
+   "s": 2977,
+   "h": "94c745f1302b52cbf177a40686222dec5c21f22bd4df34645a4a167a955505a3"
   },
   {
    "p": "challenge-show/card.jpg",
@@ -9508,13 +9118,13 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 25201,
-   "h": "83519627e7f1378fc7019d025c197e23b29768e0194168f6f3d22a90710506ea"
+   "s": 25184,
+   "h": "9bec9b20f5a8fec148bfed206543f5a3fe27546252620964452c56bd54bca5e4"
   },
   {
    "p": "cloud/anmacha-board.js",
-   "s": 37882,
-   "h": "67da42914a1c013ac971688749dc0c87ddead7e6daaf9ac695b18d122df8e48f"
+   "s": 37902,
+   "h": "42dddcf6e8492c9c5ce908095dd51433e386f27a963ef2de59bd2b50dad55150"
   },
   {
    "p": "cloud/anmacha-bug.js",
@@ -10197,51 +9807,6 @@
    "h": "86f83add93f444ee1cf792ff679b9fd6b55538b3d8342a71cfa54f6947b94088"
   },
   {
-   "p": "funkgalgen/card.jpg",
-   "s": 37175,
-   "h": "84f80ba2a348e3ad62adc7930bee42f28ca43a680143921a61c93f3f8551445c"
-  },
-  {
-   "p": "funkgalgen/index.html",
-   "s": 14229,
-   "h": "4a6dc60c0371beaeaef8ad0e8b20ae678e975be7ded57692dd1191a5db010914"
-  },
-  {
-   "p": "funkgalgen/js/app.js",
-   "s": 42142,
-   "h": "435f0e563f407d5c1e41e08eef09ee56da3a8773288e701a6033f5aef6eda2d4"
-  },
-  {
-   "p": "funkgalgen/js/core.js",
-   "s": 6752,
-   "h": "9be03ed81f9aca8bd4af869baf0ed01e84d6dd71c861a6c3ddf5f8b92ce9711f"
-  },
-  {
-   "p": "funkgalgen/js/scene.js",
-   "s": 14458,
-   "h": "2096a6dd75bb0f2b65d6032cba168a716915140ac5ede67c44ba01840cb10e6f"
-  },
-  {
-   "p": "funkgalgen/js/words.js",
-   "s": 5953,
-   "h": "e429f8463a246c125aba0aa4f5a4a6ed1bd13c2291a2338a779e122a1b40e530"
-  },
-  {
-   "p": "funkgalgen/manifest.webmanifest",
-   "s": 779,
-   "h": "cf9d7ee330f72f8c74238af03d72473ad5c618d815e8159136333e5805a35b24"
-  },
-  {
-   "p": "funkgalgen/style.css",
-   "s": 12138,
-   "h": "573302966572470c81c27d61dd1efddbc54276d04820ba5ff3b4f9c34d8c6f95"
-  },
-  {
-   "p": "funkgalgen/sw.js",
-   "s": 2005,
-   "h": "6a151e1c8a9c12b0f33fe04866d0cc36f32edbdd09536c51bcafe793d88f5d92"
-  },
-  {
    "p": "funkgolf/card.jpg",
    "s": 40797,
    "h": "d33391abccdc5ba277d03093bb241168c310101d67a6d24b59491afedd59f252"
@@ -10317,6 +9882,756 @@
    "h": "5ebc033bb9b02167d6cbdb58c54be5859a1c01a906c900efef40a77e0b145d0b"
   },
   {
+   "p": "funkrenner/card.jpg",
+   "s": 48387,
+   "h": "eea08f53c9ed803473eafaaafeeb75c2df64a49f963db29f8a7bdf9b25f76c7d"
+  },
+  {
+   "p": "funkrenner/index.html",
+   "s": 14083,
+   "h": "22e9fc103dacc5e7699f8fe66188da0dd8602f370786b983cef5d1c9d6460ee7"
+  },
+  {
+   "p": "funkrenner/js/app.js",
+   "s": 40349,
+   "h": "26c5c24dcc0f274f8f96ace101432cb6b2d611786df5d070486e6d2960d73f22"
+  },
+  {
+   "p": "funkrenner/js/beat.js",
+   "s": 22338,
+   "h": "7582754e9354daf90efaab2dcfb15574dd04f362a367151a40d96ac9a26bf2dd"
+  },
+  {
+   "p": "funkrenner/js/core.js",
+   "s": 12656,
+   "h": "c79525c7b590a6f67d0cc5b776f5a8899be0fd350312e659fbe71dda94c603db"
+  },
+  {
+   "p": "funkrenner/js/hero.js",
+   "s": 3419,
+   "h": "889af70d299a0ee02754e9c0ca3229ce7306f1acf8ae29b4e4f69faea3230a6e"
+  },
+  {
+   "p": "funkrenner/js/themes.js",
+   "s": 32205,
+   "h": "c5ae6d5a72a97794f52b71d0b1d2acd4d17f4120e9a359dc4f6870a16901164b"
+  },
+  {
+   "p": "funkrenner/js/view.js",
+   "s": 16627,
+   "h": "626e6820d211ce41bbc528bf050aa53af6fe59310cf9116de7864d0d79463537"
+  },
+  {
+   "p": "funkrenner/js/world.js",
+   "s": 12559,
+   "h": "d8aa43d532ff319a25abc05de6795af1d3686d7be090b428717f132bdf0c59ba"
+  },
+  {
+   "p": "funkrenner/logos/01.webp",
+   "s": 10202,
+   "h": "67157d7042cdb9c455cd225c12f474c8d0603d406ba145c482363dcefa2976d2"
+  },
+  {
+   "p": "funkrenner/logos/02.webp",
+   "s": 10776,
+   "h": "30d511a1594a68e203f226f1a34e39a7ee9cc38f59465c4eba110400d3b5b611"
+  },
+  {
+   "p": "funkrenner/logos/03.webp",
+   "s": 15444,
+   "h": "66ed5b5ff89db4fd716705388a9fab6b26e47d22c4eacde949ea42f82ccd03a2"
+  },
+  {
+   "p": "funkrenner/logos/04.webp",
+   "s": 12112,
+   "h": "41e1dd60978a46e14829a0c858ba285b48e9ef7f660935614edfbdf5471338ab"
+  },
+  {
+   "p": "funkrenner/logos/05.webp",
+   "s": 14578,
+   "h": "e94a1202a057a41e4bc49742324612cd5b9f80bf31c2819e7b8832f7b98b1edd"
+  },
+  {
+   "p": "funkrenner/logos/06.webp",
+   "s": 14392,
+   "h": "672eef8c9488595f18c9d1f5626df956abaff954d4933dda3f067492c7721ee3"
+  },
+  {
+   "p": "funkrenner/logos/07.webp",
+   "s": 13866,
+   "h": "be6502dda436e45e1a1d1d94e62e9f50f208d76d4a1e518c037adccd92151e63"
+  },
+  {
+   "p": "funkrenner/logos/08.webp",
+   "s": 15816,
+   "h": "b028549cea0a3bd087ad3d10de9474d87afd30ce1fe8d7ce68f4c5eea960315f"
+  },
+  {
+   "p": "funkrenner/logos/09.webp",
+   "s": 4886,
+   "h": "850469fd9d4a3f0db557cea0e13720f2ab55e5be62e8997a9edd833c06a8d523"
+  },
+  {
+   "p": "funkrenner/logos/10.webp",
+   "s": 21882,
+   "h": "2acc5fe10f0a06a56b4025024b27d633e47cee737c30a6d685f3932348b876f0"
+  },
+  {
+   "p": "funkrenner/logos/11.webp",
+   "s": 6634,
+   "h": "697282bdd1a16148b943147cb33777a6af6301270ecc1ee330741f35e234cd74"
+  },
+  {
+   "p": "funkrenner/logos/12.webp",
+   "s": 6756,
+   "h": "964ba1dbbee6fafa1852405190a7d7abe90efcb155051c1fc6968f9536768dd2"
+  },
+  {
+   "p": "funkrenner/logos/13.webp",
+   "s": 7078,
+   "h": "fc84074d141021de57fe3d3e8426e5e5f8b66b2254cfb40280d8b5886e5b1d1e"
+  },
+  {
+   "p": "funkrenner/manifest.webmanifest",
+   "s": 754,
+   "h": "4682469fbbea1c3cc5e76c9736f53ee5030e56786ba39fcf497da5917f09820e"
+  },
+  {
+   "p": "funkrenner/models/env/armchair.glb",
+   "s": 34276,
+   "h": "6b51f1091195b7ce00d522562cc949a8ebc9c5de848315889266df174ccbee7f"
+  },
+  {
+   "p": "funkrenner/models/env/banner_patternA_red.glb",
+   "s": 25164,
+   "h": "64243b0a8110bbc6e5a02f5c0acbe447dc7ea65319123319c402dd26486dad25"
+  },
+  {
+   "p": "funkrenner/models/env/banner_patternB_blue.glb",
+   "s": 24224,
+   "h": "a86be2d4bc01207ab694b614a9bb9e358ed498467a8e8bcd695c838be0f4f88a"
+  },
+  {
+   "p": "funkrenner/models/env/banner_shield_blue.glb",
+   "s": 55104,
+   "h": "27fc58e296e15ce180f212be6998677ab191b5055d194d2b062c95ce8c7acef7"
+  },
+  {
+   "p": "funkrenner/models/env/banner_shield_green.glb",
+   "s": 55104,
+   "h": "6d6363e9dc4ee70a666b7d7cb51bfc1d2cdfaf159d756dd3d3cf7e9ce50d5165"
+  },
+  {
+   "p": "funkrenner/models/env/banner_shield_red.glb",
+   "s": 55104,
+   "h": "d332133c940fa9dc6bea1668f2f8f2c07b5dce5db23b865ade5d035c8dc8e949"
+  },
+  {
+   "p": "funkrenner/models/env/banner_thin_red.glb",
+   "s": 23080,
+   "h": "1a96a91574f6ef233dc11286eb66f9f9502ef3c52a425199109f1469d1fb310a"
+  },
+  {
+   "p": "funkrenner/models/env/banner_triple_blue.glb",
+   "s": 36232,
+   "h": "58e9a9625c99b199e7ae3f387e1594915a4d6091b0e93da0d0b2ac18aeb691bc"
+  },
+  {
+   "p": "funkrenner/models/env/banner_triple_red.glb",
+   "s": 36232,
+   "h": "39a41d11c12ec80629d322107de803a6bc21a4da94b7d4ba5183ee863a877f7e"
+  },
+  {
+   "p": "funkrenner/models/env/banner_triple_yellow.glb",
+   "s": 36236,
+   "h": "cdc8eab3dc0446cb76c8023a398a78e3d67791df3dbb592c64236bba8c063e11"
+  },
+  {
+   "p": "funkrenner/models/env/barrel.glb",
+   "s": 32724,
+   "h": "7329cbf7efb3dd87f1c9354094622ee662a6798aee9b360e3eb3a7214bbd855f"
+  },
+  {
+   "p": "funkrenner/models/env/barrel_large.glb",
+   "s": 44292,
+   "h": "9fae6a79056241baf253fe9272dc7a7ddb174e1caf153eb5013c58a596722148"
+  },
+  {
+   "p": "funkrenner/models/env/barrel_small.glb",
+   "s": 32060,
+   "h": "f46d0c421e46080aff079286ce9459a22da25e1b4f3489a04243f17617175212"
+  },
+  {
+   "p": "funkrenner/models/env/barrel_small_stack.glb",
+   "s": 98092,
+   "h": "c23dc73a11c5a57ed33cb8a9df99f2b2793517341c5d62c6e50b0150652e8e99"
+  },
+  {
+   "p": "funkrenner/models/env/barrier.glb",
+   "s": 23292,
+   "h": "2c6a1b89de1c87778c7ae9afc17fa9eabc4aa4148f3b8748f062b5c8ec7f6c00"
+  },
+  {
+   "p": "funkrenner/models/env/barrier_column.glb",
+   "s": 24856,
+   "h": "aa65dd217a0a1e4d208800023ca93bd6ee6311db20c368142c34861541e914ba"
+  },
+  {
+   "p": "funkrenner/models/env/barrier_half.glb",
+   "s": 19948,
+   "h": "cc4c5641e641c54bc1e7ca7851f9b2d82080ff8f3d0cc334d59e6f1f38245236"
+  },
+  {
+   "p": "funkrenner/models/env/book_set.glb",
+   "s": 28572,
+   "h": "a289798ad81deb7d3c1c82bb0ed140c802b6a70de5b4943e94432136a5932484"
+  },
+  {
+   "p": "funkrenner/models/env/box_large.glb",
+   "s": 28740,
+   "h": "6dacda267f04769f8ebbb7e991885785054923ea3d5eb19e833768a911d5b661"
+  },
+  {
+   "p": "funkrenner/models/env/box_stacked.glb",
+   "s": 146968,
+   "h": "c9035de1145d1cee058941abc4bc9ea7b039c98e94c56712cb5e9626a3d18017"
+  },
+  {
+   "p": "funkrenner/models/env/building_bridge_A.glb",
+   "s": 42732,
+   "h": "dd3d089b51aa49262be6a13ac5fbdff6fcfa492619426eb3d25018f4023679f9"
+  },
+  {
+   "p": "funkrenner/models/env/building_castle_blue.glb",
+   "s": 334920,
+   "h": "6df0ccb7d4f181316de8781e84d4654d5c8c8a3c0261b27e7a3865090ee29a0c"
+  },
+  {
+   "p": "funkrenner/models/env/building_castle_red.glb",
+   "s": 334916,
+   "h": "26dabf6c04aaaf211629a0aafd3e0093d5d50a37dfbbdc975e6f2fcc5862a9ba"
+  },
+  {
+   "p": "funkrenner/models/env/building_church_red.glb",
+   "s": 106940,
+   "h": "9af82a1ed4439e65e10bbe038aa3be61100c264adec853d8e8d6bdcc6453d0fc"
+  },
+  {
+   "p": "funkrenner/models/env/building_home_A_red.glb",
+   "s": 72552,
+   "h": "c665f47be4e82ad5b6d93db5fbd054e2445a969b9068d07ef4241cb6ed4aae98"
+  },
+  {
+   "p": "funkrenner/models/env/building_home_A_yellow.glb",
+   "s": 72556,
+   "h": "e201b540765e6c60f9b3f29511b8c67999160f6a3ea1246482952e07f7b093f9"
+  },
+  {
+   "p": "funkrenner/models/env/building_home_B_blue.glb",
+   "s": 99324,
+   "h": "b0685c1a2a259708e2d52b45e00093ea51069ea7bdb5efe548cfb72f5d47a73c"
+  },
+  {
+   "p": "funkrenner/models/env/building_stage_A.glb",
+   "s": 58988,
+   "h": "5e14fb04410547ee1b0f457a8bdf6f4df9736691dee5ee56a5e83cd95a211f88"
+  },
+  {
+   "p": "funkrenner/models/env/building_tavern_green.glb",
+   "s": 188060,
+   "h": "2c0eb123538b50128469dc582ee461c1fe22aac621a1de741c575487e5944269"
+  },
+  {
+   "p": "funkrenner/models/env/building_tower_A_blue.glb",
+   "s": 130880,
+   "h": "2a170b85a7d553f23aa81f91d451c23307774ac73dbb97771ef5cc27bbce902d"
+  },
+  {
+   "p": "funkrenner/models/env/building_tower_A_red.glb",
+   "s": 130876,
+   "h": "50e60ba42e5ebba903ff538178c550fb31f12741d6b9166edd3772cc546a94d1"
+  },
+  {
+   "p": "funkrenner/models/env/building_tower_B_green.glb",
+   "s": 148980,
+   "h": "d159e3b2fcd25630c9ef3c0ea371a2cd4d828825ffb9ec3d43311bad457f1515"
+  },
+  {
+   "p": "funkrenner/models/env/building_tower_B_yellow.glb",
+   "s": 148984,
+   "h": "2d4c513d43e8a9384eff5c49a877e7fdbfc8f4c03a4bd9e380fe18358f9df637"
+  },
+  {
+   "p": "funkrenner/models/env/building_tower_base_red.glb",
+   "s": 98880,
+   "h": "4691894e47196ae8e08bba980b3a8f1f0db32c3bb01900056f1ae803acd1caf4"
+  },
+  {
+   "p": "funkrenner/models/env/building_watermill_red.glb",
+   "s": 129460,
+   "h": "868659ba76f188edf79136f3397c153f1279f1df996563e0810da9404fda8426"
+  },
+  {
+   "p": "funkrenner/models/env/building_windmill_green.glb",
+   "s": 160688,
+   "h": "4989885606227b114ae03793693d829c988c88eefafd2c2f089f0285a94b584c"
+  },
+  {
+   "p": "funkrenner/models/env/building_windmill_yellow.glb",
+   "s": 160696,
+   "h": "b16942b09db89de4f912a7c4ceefec7f4045f7f0b2259870cca3b895ffe6cea0"
+  },
+  {
+   "p": "funkrenner/models/env/cabinet_medium.glb",
+   "s": 40244,
+   "h": "7f1ed583219592c753ef4903a1f103afcb42e7ed5d900dd1ae56dc5343c340b5"
+  },
+  {
+   "p": "funkrenner/models/env/cabinet_small_decorated.glb",
+   "s": 44552,
+   "h": "32ba445fbf08a6bc1bf87a758468f792efd78a011a8a721bca63ba8705b5a85a"
+  },
+  {
+   "p": "funkrenner/models/env/cactus_medium_A.glb",
+   "s": 34548,
+   "h": "f1a337b605f4530135ec8c7851bde9d02ac135f670f6df79b267e6bf01a17c5d"
+  },
+  {
+   "p": "funkrenner/models/env/cactus_small_A.glb",
+   "s": 26332,
+   "h": "6a574070fb9959439bbae1b90ea80d07468667e74393db25b82fc6b3ed1a2bfe"
+  },
+  {
+   "p": "funkrenner/models/env/candle_triple.glb",
+   "s": 28240,
+   "h": "3536f0a55df50c728ec9c369c4a6a81c913b33a507ac4a192d418d28fd6677c2"
+  },
+  {
+   "p": "funkrenner/models/env/chair_A.glb",
+   "s": 33472,
+   "h": "30791588df73c1d06bf9469c56063ddc13ab9c56ad1e7493de63980292251ef2"
+  },
+  {
+   "p": "funkrenner/models/env/chair_stool.glb",
+   "s": 27816,
+   "h": "02297f1ed26fe12a5f6f3694370e6bf81e690ba2c94bc0f29946badc3942f7f2"
+  },
+  {
+   "p": "funkrenner/models/env/chest_gold.glb",
+   "s": 140140,
+   "h": "04708d5f88ed59d361c8a6cec1efe8b7028dbc641dfae0a1467f272e14a94b6e"
+  },
+  {
+   "p": "funkrenner/models/env/cloud_big.glb",
+   "s": 32016,
+   "h": "80034328fb8c73364db35dc09ac02f7edc5cc683ed0e575a85852de2c2af75c9"
+  },
+  {
+   "p": "funkrenner/models/env/cloud_small.glb",
+   "s": 25288,
+   "h": "b8391d4c383c1c51bd1ea9d2c4fcb153a1c3de653f00fddc75471a07047af8a1"
+  },
+  {
+   "p": "funkrenner/models/env/coin.glb",
+   "s": 21776,
+   "h": "97d3abdd239d8fa365b14957f7bf45c892aad9d211b3c3b47b4b2311bf947297"
+  },
+  {
+   "p": "funkrenner/models/env/coin_stack_large.glb",
+   "s": 101076,
+   "h": "1a64011dc0d6754bc95d932744ad7717132c538206976a0262293bd4ba31627e"
+  },
+  {
+   "p": "funkrenner/models/env/coin_stack_small.glb",
+   "s": 38404,
+   "h": "b7395adb0c3f8d392f42f483d667af672232a25de4e0cdb23c58fca8bab1dd8f"
+  },
+  {
+   "p": "funkrenner/models/env/column.glb",
+   "s": 20260,
+   "h": "761adf0fcc1a86ab1c42740b7a8ad340d73982f94257e7892b2c7998f98c304e"
+  },
+  {
+   "p": "funkrenner/models/env/couch.glb",
+   "s": 38380,
+   "h": "5ea9359e6bc3ae58cd466e6d3769dbddc0361605c2de815ed739fbfe64638930"
+  },
+  {
+   "p": "funkrenner/models/env/couch_pillows.glb",
+   "s": 44604,
+   "h": "88f31fb6ef11a236782f9b0edaaf3e02cadb8381e5e17ba50ba75ceeda204ce6"
+  },
+  {
+   "p": "funkrenner/models/env/crate_A_big.glb",
+   "s": 24180,
+   "h": "5c61ea33b4129f804683e9d3d989607b224d4a035016138d196b339655f352dc"
+  },
+  {
+   "p": "funkrenner/models/env/crate_A_small.glb",
+   "s": 24180,
+   "h": "b063c71d3652b1f5b2c84bba887fdf0f56ac18e0bed7533c1ff7fb796e473bc4"
+  },
+  {
+   "p": "funkrenner/models/env/crate_long_A.glb",
+   "s": 31368,
+   "h": "4ce3cb39e52feb5e7f1103c0ba2b6d74e6d1628678cadf565a9a812b124ebccf"
+  },
+  {
+   "p": "funkrenner/models/env/crates_stacked.glb",
+   "s": 103704,
+   "h": "43182b077ead9b033804300ef453b7402bdc979f00cfce2d7f0c91dcf6bb5d3c"
+  },
+  {
+   "p": "funkrenner/models/env/fence_stone_straight.glb",
+   "s": 30992,
+   "h": "81cde6625a291f3652eb742f43b4a959302e4d9928eb999223c3c77cc79de5af"
+  },
+  {
+   "p": "funkrenner/models/env/fence_wood_straight.glb",
+   "s": 32208,
+   "h": "b0d2c3b8aaeb9d11e13c796ed57af6d646ffe6cb63c18464655e5b1803343489"
+  },
+  {
+   "p": "funkrenner/models/env/flag_blue.glb",
+   "s": 19612,
+   "h": "032c519609204e46fbadd2ed836006c36ed345a1e8888378a09aaac500deb88f"
+  },
+  {
+   "p": "funkrenner/models/env/flag_green.glb",
+   "s": 19616,
+   "h": "556d0558a3bef12cf4b8520cd17487d98fd9e6584757d38c910d5e45eda1675d"
+  },
+  {
+   "p": "funkrenner/models/env/flag_red.glb",
+   "s": 19612,
+   "h": "e1657fccf47d5b768730a6fb02eef3ce82ac4a8d717fcee976c6f036cd0f7391"
+  },
+  {
+   "p": "funkrenner/models/env/flag_yellow.glb",
+   "s": 19616,
+   "h": "103b43448e80da28bc6c2fb913ab2cb3f8e29e424cabc109db3e769b0e935019"
+  },
+  {
+   "p": "funkrenner/models/env/floor_tile_big_spikes.glb",
+   "s": 80644,
+   "h": "7a4e94decf860b64456a45cc1c2d7bb26f0b3ca75824ccf2c4d0addee088d9ad"
+  },
+  {
+   "p": "funkrenner/models/env/hills_A_trees.glb",
+   "s": 48208,
+   "h": "00cd544c80eb5561427b2e493b4288c3054d6f8ec3e96a8e8abc0090637dc464"
+  },
+  {
+   "p": "funkrenner/models/env/hills_B_trees.glb",
+   "s": 42400,
+   "h": "1347d88aba474050a1f4520ca4aa87c5e1b5b3cd8061f06fd82cd1a7821d17d9"
+  },
+  {
+   "p": "funkrenner/models/env/key.glb",
+   "s": 24432,
+   "h": "e9ea072e6e5f8b1f049677f62144d9ae1dcc1cfd2252aec54b42bec29d518dff"
+  },
+  {
+   "p": "funkrenner/models/env/lamp_standing.glb",
+   "s": 28624,
+   "h": "88335223afc7ff04b5a24a6a668a0a32910961769030127f86fd8fcf39c94fca"
+  },
+  {
+   "p": "funkrenner/models/env/lamp_table.glb",
+   "s": 29788,
+   "h": "03e2823ef1a69f44f340796168dceca8805dca04ed92bc76f208b5291cd57e40"
+  },
+  {
+   "p": "funkrenner/models/env/mountain_A.glb",
+   "s": 24800,
+   "h": "46755e39f1629f15058b5c6c90be519f970564b8a4ad3a8336c4998c8d1cbac3"
+  },
+  {
+   "p": "funkrenner/models/env/mountain_A_grass_trees.glb",
+   "s": 44516,
+   "h": "902d922cc0deb26ac25badffd9aafc71590740d625b26c7d28b2f6064daa3e80"
+  },
+  {
+   "p": "funkrenner/models/env/mountain_B.glb",
+   "s": 24804,
+   "h": "7664bbaab8f4cd65427ffc4454c1a42de837dbfed119c8ccdcbf7f1ecda0365a"
+  },
+  {
+   "p": "funkrenner/models/env/mountain_B_grass_trees.glb",
+   "s": 50372,
+   "h": "2be02f3165d1985790b223b409e420200f1ff62dbddf019eeabff9b29c3ddfc0"
+  },
+  {
+   "p": "funkrenner/models/env/mountain_C_grass_trees.glb",
+   "s": 60552,
+   "h": "0c818950e53b693ef37a35750b9257054e30ce7d8a5e18f8349e738a643c7746"
+  },
+  {
+   "p": "funkrenner/models/env/pallet.glb",
+   "s": 22188,
+   "h": "cecb961d03b2c0d753a494af3a7480c4e6f599c140ce4b055eea09e28abd0935"
+  },
+  {
+   "p": "funkrenner/models/env/pictureframe_large_A.glb",
+   "s": 20180,
+   "h": "b3a7c1ea8f0d4092ab207c26d575a6690234af417604a943ccd3aaf8928bc748"
+  },
+  {
+   "p": "funkrenner/models/env/pictureframe_large_B.glb",
+   "s": 20164,
+   "h": "1311091a58379f1c068a6630dd2e052e99710fe27839763c308d3e475abbb87e"
+  },
+  {
+   "p": "funkrenner/models/env/pictureframe_medium.glb",
+   "s": 20180,
+   "h": "f4183318cc9a04c7356d403996d61d1f9425a8eb62b1dd3d7d7ea47c39909f67"
+  },
+  {
+   "p": "funkrenner/models/env/pillar.glb",
+   "s": 25552,
+   "h": "e31da496461921475384c62ce761cd23924892bd6f32aeea68bd913545caee33"
+  },
+  {
+   "p": "funkrenner/models/env/pillar_decorated.glb",
+   "s": 62460,
+   "h": "eecf7d454a1b6767a113e2490cb1536134abea0b57329a50cf2250d3ed8e2f65"
+  },
+  {
+   "p": "funkrenner/models/env/pillow_A.glb",
+   "s": 19700,
+   "h": "a9bad500d3018c59218d6e91e355e32eabaea591f0c26c7841449d54e95385c2"
+  },
+  {
+   "p": "funkrenner/models/env/rock_single_A.glb",
+   "s": 18380,
+   "h": "dacc2975dd4e8699cd9e0df64406e56f9f11015887598df580b34d367801e0fc"
+  },
+  {
+   "p": "funkrenner/models/env/rock_single_B.glb",
+   "s": 18800,
+   "h": "e74e2536509b01d82d353d029d4775084608743b19a0887faac763ccc189070a"
+  },
+  {
+   "p": "funkrenner/models/env/rock_single_C.glb",
+   "s": 19364,
+   "h": "3e274af104879ada8569dda865a3831430c488a5b156ff5970e1dd8a4849d84b"
+  },
+  {
+   "p": "funkrenner/models/env/rock_single_D.glb",
+   "s": 18520,
+   "h": "6294a29febc2c86b507324c2711d863af3823a5fec627e129f6460b9c1704ba6"
+  },
+  {
+   "p": "funkrenner/models/env/rock_single_E.glb",
+   "s": 21480,
+   "h": "3e8638ffa860e5d087c424fdb27858db09d62eefd1014090bd17ffcb190a8a10"
+  },
+  {
+   "p": "funkrenner/models/env/rug_oval_A.glb",
+   "s": 23476,
+   "h": "25589b8b5bfca524a480e1b80de5f5ca88f867fe3ed05e2f3c4c08a9054efcf8"
+  },
+  {
+   "p": "funkrenner/models/env/rug_rectangle_stripes_A.glb",
+   "s": 19632,
+   "h": "78e999d5e5ccfc3dc61c47e867dab21066034bcdf806e46092a0cef93cee012b"
+  },
+  {
+   "p": "funkrenner/models/env/sack.glb",
+   "s": 20400,
+   "h": "082e46cbb5a18b84114958e52ac20614c4212ed33afca4dc561dadeda89c11e2"
+  },
+  {
+   "p": "funkrenner/models/env/shelf_A_big.glb",
+   "s": 27072,
+   "h": "519905a5cbd5a3c4a9f337af6e83522d84696d3eb2761709e3c7296be9367585"
+  },
+  {
+   "p": "funkrenner/models/env/shelf_B_large_decorated.glb",
+   "s": 42772,
+   "h": "031550faeef8bd7809b7294d5dfa53ff51acd9bfd3f2e8c1dc774169442c8da4"
+  },
+  {
+   "p": "funkrenner/models/env/stairs_wide.glb",
+   "s": 43372,
+   "h": "f3301f11a6bb6d9e64fbe625fbc2f0b61ba4f7e1de1ceba348d53c93325d4754"
+  },
+  {
+   "p": "funkrenner/models/env/sword_shield.glb",
+   "s": 47764,
+   "h": "4dc33b156a166b2c47cf3ac0344f9462946e952ee8c12945bbe6aedddf63af72"
+  },
+  {
+   "p": "funkrenner/models/env/table_long.glb",
+   "s": 35128,
+   "h": "83996a7a544a257630510b61eadebb8842e4313ca3c774b35774cad9b6f949c8"
+  },
+  {
+   "p": "funkrenner/models/env/table_low.glb",
+   "s": 29344,
+   "h": "156ba38a462f6d43d517e1f74e296cb2fe1a39d3f15189a80c155d76e91809f1"
+  },
+  {
+   "p": "funkrenner/models/env/table_medium.glb",
+   "s": 26244,
+   "h": "ec3290c87188c433d36b5fba12b58db32052f6c38e1ec22cc4d1b4af088133a2"
+  },
+  {
+   "p": "funkrenner/models/env/table_medium_long.glb",
+   "s": 26252,
+   "h": "f5cdc28332629d38b9ed72b810839377e9b42b33b2c45409f0fe598680f2683b"
+  },
+  {
+   "p": "funkrenner/models/env/target.glb",
+   "s": 24256,
+   "h": "24c1484d287c1d20d23a04635678a95ac0e203b17840cd7498539f461352b1fa"
+  },
+  {
+   "p": "funkrenner/models/env/tent.glb",
+   "s": 23288,
+   "h": "3835a4207f428fb923f1302111395e5fef94a62e69abc08940eb3302ebd81ca3"
+  },
+  {
+   "p": "funkrenner/models/env/torch_lit.glb",
+   "s": 31244,
+   "h": "45fcfeb3b129722019d42aef0acae8f6c5f8f6dbdf5d3346ceea1f084b69b396"
+  },
+  {
+   "p": "funkrenner/models/env/torch_mounted.glb",
+   "s": 33220,
+   "h": "a617c159e02932db48ca81ec46f1f100acc8904fb6ece43e919d2f93c13950e9"
+  },
+  {
+   "p": "funkrenner/models/env/tree_single_A.glb",
+   "s": 20516,
+   "h": "8453f1de1ea6a8534e369cd614d71321f7bbf7db5ae66425094a51eb6191a19a"
+  },
+  {
+   "p": "funkrenner/models/env/tree_single_A_cut.glb",
+   "s": 18232,
+   "h": "c36e39d7dad450e018bc108154785f100fc2f8081cec7f160a7b8c640cdc2124"
+  },
+  {
+   "p": "funkrenner/models/env/tree_single_B.glb",
+   "s": 24544,
+   "h": "4c1a047cce128c2e25829eab9225f4d205f18e826678c121b7a2878b6cbce25c"
+  },
+  {
+   "p": "funkrenner/models/env/trees_A_large.glb",
+   "s": 74212,
+   "h": "b2d84f7de42939c1819600449e58cce82270c87407c4e8d409572e50e4c39ad7"
+  },
+  {
+   "p": "funkrenner/models/env/trees_A_medium.glb",
+   "s": 48868,
+   "h": "f2baf607e0b2ec9ba96e0fb86d9763e9f647be333267e5f0ffd1096629914678"
+  },
+  {
+   "p": "funkrenner/models/env/trees_B_large.glb",
+   "s": 69148,
+   "h": "5b49ec3b99bd7ff64d19f46166e3a39cb0b0875ad58ace0859217c100b9f6745"
+  },
+  {
+   "p": "funkrenner/models/env/trees_B_medium.glb",
+   "s": 54284,
+   "h": "73aea3e1f0235e2f188d41784bb2fe2521da233a228c914a2f46d7c630ba4bae"
+  },
+  {
+   "p": "funkrenner/models/env/wall_arched.glb",
+   "s": 69124,
+   "h": "916a7d81b8d6ebddb069440a0f9ecb14c9c2a1e5cd7769acf2218d630bd56cb8"
+  },
+  {
+   "p": "funkrenner/models/env/wall_archedwindow_open.glb",
+   "s": 58028,
+   "h": "8c75cb77edc51c94b91c5625828391fb56c70bf31e2235cf5abf718eae0d842a"
+  },
+  {
+   "p": "funkrenner/models/env/wall_corner_A_outside.glb",
+   "s": 41964,
+   "h": "88f62c6d6f603ce2195968822f9b4fe427013c60c53ee0c53678efc84f7cebbb"
+  },
+  {
+   "p": "funkrenner/models/env/wall_doorway.glb",
+   "s": 100596,
+   "h": "2be5369a2d1d1d8795150b2156d8343b3e37620d78de256cb03276c54ea70c97"
+  },
+  {
+   "p": "funkrenner/models/env/wall_half.glb",
+   "s": 36840,
+   "h": "9e65c438f55d96cbcd554489bf2dec236feb575a8192c709d3bf6886599339a8"
+  },
+  {
+   "p": "funkrenner/models/env/wall_straight.glb",
+   "s": 48220,
+   "h": "8d29ab925f714295f9b306bf1a5950b95a4244e4a0a663b01bf6b5fe1f697428"
+  },
+  {
+   "p": "funkrenner/models/env/wall_straight_gate.glb",
+   "s": 66192,
+   "h": "3cd304c88a0ecdd6689ecd4e25233f2d17a6d53c707b8549a8620e718b14737a"
+  },
+  {
+   "p": "funkrenner/models/env/waterlily_A.glb",
+   "s": 19768,
+   "h": "21d1937e73dcecbc35badfd8024c556d58187d6d061dc3aa09d3734a41965c25"
+  },
+  {
+   "p": "funkrenner/models/env/waterplant_A.glb",
+   "s": 20160,
+   "h": "d2e4a92fdb24fa40e6f683f1ba9177c2087c5ee5fc05670fddc553bc260b7676"
+  },
+  {
+   "p": "funkrenner/models/env/waterplant_B.glb",
+   "s": 22984,
+   "h": "0f424ab36f94ffd47b3de661bd761cebe42171bb9d17ce61f16940ed373529d1"
+  },
+  {
+   "p": "funkrenner/models/env/weaponrack.glb",
+   "s": 20092,
+   "h": "c29e98b9e249d5bd375e16a18f165464fbe29e43741083d5930c661578034606"
+  },
+  {
+   "p": "funkrenner/models/env/wheelbarrow.glb",
+   "s": 36200,
+   "h": "60901246eda4cf4a1f0ea3e6d846812adffe6e774c402653c75ddb722bfeef6e"
+  },
+  {
+   "p": "funkrenner/models/heroes/Barbarian.glb",
+   "s": 1207604,
+   "h": "0dcc6776925cd2c400c667c2c28f67180e3b4157ecaa24979e8586880ab42fbc"
+  },
+  {
+   "p": "funkrenner/models/heroes/Knight.glb",
+   "s": 1253536,
+   "h": "05bda38b4dee9ad19ed49fc1a5e1983799d49d25cdfad106eb2f35996fcdf924"
+  },
+  {
+   "p": "funkrenner/models/heroes/Mage.glb",
+   "s": 1183972,
+   "h": "d1e8fb595cf69529048f7cda2d808e4c6dcacbf261bf5c0928ed659f5ee8bb68"
+  },
+  {
+   "p": "funkrenner/models/heroes/Rogue.glb",
+   "s": 1210592,
+   "h": "748b5f51b6d8c8cd8f658039f4d4a1017d0a9ab229c3b3126bcaf9c074b255f2"
+  },
+  {
+   "p": "funkrenner/models/heroes/Rogue_Hooded.glb",
+   "s": 1192164,
+   "h": "fd5d25e247158c41d77da54041b5f963c88fa1922f5ee7c56f5c6f8c3ed9ffe7"
+  },
+  {
+   "p": "funkrenner/style.css",
+   "s": 15440,
+   "h": "c5d3cf1e9b0fc470ef575c80ac2ed2542e4f66e01bb45480c3c6d8f73955b7a5"
+  },
+  {
+   "p": "funkrenner/sw.js",
+   "s": 1980,
+   "h": "e9971dd82b0d151f9fe41b78065bbf6d0ee1689719872988b0808ced67c28af0"
+  },
+  {
    "p": "gamekit.js",
    "s": 5678,
    "h": "2408caf366c6c700ee4a1cc935a57e106e1a835ce4bc29826ecbe158261bc96f"
@@ -10328,8 +10643,8 @@
   },
   {
    "p": "games.js",
-   "s": 53435,
-   "h": "3307184ff0e2239654c49d20e7a2bc5b89e41492f885d67b7a916e822fee14bf"
+   "s": 50260,
+   "h": "f9f5d52d15e302f0cc826b9a5d7455a04872de294dc30cd20a9c3228dec6cd91"
   },
   {
    "p": "groove-arena/card.jpg",
@@ -10408,8 +10723,8 @@
   },
   {
    "p": "guides.js",
-   "s": 167383,
-   "h": "7b582488d623ef66b2d00901734664e8cb54c8ddf70733f04abba154f18f7a9d"
+   "s": 167146,
+   "h": "72e6513e0a9e873b3f445d74dd216e278429d296aa04968f48f81ac883aa22eb"
   },
   {
    "p": "guides/FunkhausReality.json",
@@ -10425,11 +10740,6 @@
    "p": "guides/aeru.json",
    "s": 26078,
    "h": "4ab273f5f7f78028955fd9a67af8e72606fcc091461e39ba11bca773852144a4"
-  },
-  {
-   "p": "guides/anmacha-beat-surfer.json",
-   "s": 11830,
-   "h": "ab60fd764196ef61daaccb91d46c84f26647479facee66f1116dd113488df2a8"
   },
   {
    "p": "guides/anmacha-flipper.json",
@@ -10465,11 +10775,6 @@
    "p": "guides/anmacha-kart.json",
    "s": 49730,
    "h": "ad25edb7140e4c14eab5fa29ee6adaf212e7d45c9fd82e4a524dafb16374b679"
-  },
-  {
-   "p": "guides/anmacha-kartensammlung.json",
-   "s": 25742,
-   "h": "5d5510d764c0ae6bd30bd9397485694bafc531704cdb74789ab0e380238472d3"
   },
   {
    "p": "guides/anmacha-klotzfunk.json",
@@ -10517,11 +10822,6 @@
    "h": "9aa361e8bdcb28c9898cbbb404384d8868aef10a33d6c7e38d528d2b1a193947"
   },
   {
-   "p": "guides/anmacha-radio-surfer.json",
-   "s": 12294,
-   "h": "c0ae4b0065aed0f12f354435b62dd0b4c8233ba81ed75684045e7607d5a4c3a3"
-  },
-  {
    "p": "guides/anmacha-showdown.json",
    "s": 12066,
    "h": "1cdbf2739aea6b41ba42d0a5a8035d67c497d047d663d2a10978b711b2992009"
@@ -10530,11 +10830,6 @@
    "p": "guides/anmacha-snake.json",
    "s": 13550,
    "h": "b3522ccf88de3174966ff5ac2b7a23ad95c226c4ba22ccb364b6f3abb7caecf1"
-  },
-  {
-   "p": "guides/anmacha-spielesammlung.json",
-   "s": 13123,
-   "h": "b8cfa5788ab62ab4a86a38681e252d9e4ba8472a48394bbcf2563e7528285ca8"
   },
   {
    "p": "guides/anmacha-tower-defense.json",
@@ -10548,8 +10843,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 14275,
-   "h": "a6b9673b0a2d60e0aa1f3025685713d1fb94ec816590556a40337decd62a9f8d"
+   "s": 14817,
+   "h": "bf8fd66d0c52f915daf91818c49a8fe871a84fa508ffde04c89ffdb117f06c8c"
   },
   {
    "p": "guides/beat-studio.json",
@@ -10627,11 +10922,6 @@
    "h": "9bb5af455248b5c854ffde45533ac2ea1a740683412173367410d1fe4f3e434b"
   },
   {
-   "p": "guides/funkgalgen.json",
-   "s": 15093,
-   "h": "ec5a0affbe23f66fb6ca63a2ae2e2770a19809ce26b87cfb977b687d34e5e023"
-  },
-  {
    "p": "guides/funkgolf.json",
    "s": 14330,
    "h": "79773aa432602de2f41638896d6fb0123e2b1648d50ac2ecbe6421d315bdbfb0"
@@ -10640,6 +10930,11 @@
    "p": "guides/funkmaler.json",
    "s": 11990,
    "h": "416959a026d644cf25b5a8802ee956f9bde3d888be6522c9519346ff66d41f75"
+  },
+  {
+   "p": "guides/funkrenner.json",
+   "s": 7649,
+   "h": "1f48f05cb71ba2b375c7df60a3ab1155ac0f9a5b78af6ef11a8f543b4023ddb3"
   },
   {
    "p": "guides/groove-arena.json",
@@ -10680,11 +10975,6 @@
    "p": "guides/kuechen-chaos.json",
    "s": 14187,
    "h": "56d265b2a668fef17b7ee37d0f5250c10d8b29ac77880534e31460990366351e"
-  },
-  {
-   "p": "guides/mahjong.json",
-   "s": 14071,
-   "h": "71713fbf60da34dd99b5e6aad3827169f933330df5df9ae171e26679471256a1"
   },
   {
    "p": "guides/mimori.json",
@@ -10782,14 +11072,14 @@
    "h": "c9e3421bd4e14878cd15a1db070678c31d9c0a230e9d97100f0b672f16d8ebf8"
   },
   {
+   "p": "guides/spielesammlung.json",
+   "s": 52292,
+   "h": "37f4c899f0e44dff5f5401e22c25e5a3d365ac07ef6d1f21b4bf42e80c5bc899"
+  },
+  {
    "p": "guides/spinwelten.json",
    "s": 34782,
    "h": "664fbd67fe34a3ce5de76b60cbe87601928695efceb08fd368cd4efb94fefd23"
-  },
-  {
-   "p": "guides/stadt-land-plus.json",
-   "s": 14717,
-   "h": "609a8cbfb5d1e4b5f330d4cc4f6ece5e6a9549a2c24782ba0d5ec09e66116134"
   },
   {
    "p": "guides/taschi.json",
@@ -10822,14 +11112,9 @@
    "h": "458bcef7500cedfdc96fe366f5a31da9f4bd0b61c714aeaba5d274178fafa947"
   },
   {
-   "p": "guides/wortfunk.json",
-   "s": 15138,
-   "h": "8ffcbc45f794024c703fecb5aae51f346f2436e17abfc1e10f535ac3484445f6"
-  },
-  {
-   "p": "guides/wortgitter.json",
-   "s": 13159,
-   "h": "b1ec075c3dea4363bf56f8daee282f8297aad706afea350807208f384bd28a3c"
+   "p": "guides/wortspiele.json",
+   "s": 57090,
+   "h": "89f3a76116cf2d0cd45d7fa9bde1c0ea6486652daa9af782a88c29afaea66095"
   },
   {
    "p": "guides/zeitsprung-castingshow.json",
@@ -10928,8 +11213,8 @@
   },
   {
    "p": "index.html",
-   "s": 103088,
-   "h": "3929dda596e253d4bc7fc226dea46faed9d55ec5ee21e3d5f2004cddb1550b8c"
+   "s": 103068,
+   "h": "af6de030886aa614aa8a368e9364c0139768ea1362e3a35b620932e5d26382c6"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -11397,86 +11682,6 @@
    "h": "14c626be404d5188444f9137fa57bef6a22e7938eb3ab4fde71e8af00f2ef162"
   },
   {
-   "p": "mahjong/card.jpg",
-   "s": 44232,
-   "h": "1bd91240d094c090d96a6ff281019757761488e673aca708b9280e4cf72dd90a"
-  },
-  {
-   "p": "mahjong/icon.svg",
-   "s": 671,
-   "h": "515bdcf8bbe8707b476ec239806c97c6e4a2d7f00b50727007e946cbb2f9ecbf"
-  },
-  {
-   "p": "mahjong/index.html",
-   "s": 13512,
-   "h": "6a541d0ad50f9018409911ca4af46e1000443c92cd4cd39c7fd47d1d58ff9086"
-  },
-  {
-   "p": "mahjong/js/audio.js",
-   "s": 7310,
-   "h": "72b8042faf8bf62eb3f880367ec612ccc8dbf276b6a84eff99c88ce3d697f1ca"
-  },
-  {
-   "p": "mahjong/js/engine.js",
-   "s": 14239,
-   "h": "a2533487e69907272abbcf26597f89b1484ed474ccb60671191e02ee9376b2d9"
-  },
-  {
-   "p": "mahjong/js/faces.js",
-   "s": 19057,
-   "h": "9ddd4b617a7b8c17e15739dd97ba20d62220df6028e0e30e9437485036835630"
-  },
-  {
-   "p": "mahjong/js/input.js",
-   "s": 8744,
-   "h": "c219873e9297912daa514ca6ec08d478c03a7b8c89a4c92eea4bfb4c4435b357"
-  },
-  {
-   "p": "mahjong/js/layouts.js",
-   "s": 9886,
-   "h": "b91207b0ff2ae27a6bfa6baa824e50031b170a8052df4be80683b20968d1275e"
-  },
-  {
-   "p": "mahjong/js/main.js",
-   "s": 35347,
-   "h": "e7f0f62d8575cb9f3ba1d389d02310fa2c9cb0deacca316cdc89a4fec05fe33e"
-  },
-  {
-   "p": "mahjong/js/render.js",
-   "s": 27443,
-   "h": "e1b4127a0e0a22399d9b5286fed7296d3dd7c80fd924fc74c97cdc789b6126c9"
-  },
-  {
-   "p": "mahjong/js/save.js",
-   "s": 8347,
-   "h": "eb3de5be7f04eef1056f4e1184f3ea8c65671ca6d36aae7bbe744ec516bee439"
-  },
-  {
-   "p": "mahjong/js/ui.js",
-   "s": 22879,
-   "h": "e9752cee387a8e17c8c4776585fc384f17342e234f5fd043d3e4615c70713e98"
-  },
-  {
-   "p": "mahjong/logo.svg",
-   "s": 2607,
-   "h": "e95621cb7fb080c5530700e6b26fe82566f4fed47b328dc29ba8dfe57176edf7"
-  },
-  {
-   "p": "mahjong/manifest.webmanifest",
-   "s": 760,
-   "h": "ccc9a7c4bc8c0decb6be6465f594e7a0576614310b795c81b78fa079c4770940"
-  },
-  {
-   "p": "mahjong/style.css",
-   "s": 17200,
-   "h": "d8f76cc09f4660bd08789f0cc16364f0e1aa14f11eacd6bebabb004b48d84891"
-  },
-  {
-   "p": "mahjong/sw.js",
-   "s": 1989,
-   "h": "26169f69def36c14f74757457db98a26f152ca327577ee14d232c5391541c98e"
-  },
-  {
    "p": "manifest.webmanifest",
    "s": 715,
    "h": "8d3c54ea2493b87a40bd61e7f59e677dec0a1aa91f5483a7a595be4e7f24bbc0"
@@ -11578,8 +11783,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3539,
-   "h": "8093e3079474f210c71618d4214b3a5734b02a9ad9df890fcd7f6877a3daba8c"
+   "s": 3262,
+   "h": "05bd73963ae8e32a610529b33597fd6d7da096b5d3a3029796f70fdcfb233437"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-DMBVqCOs.js",
@@ -13923,8 +14128,8 @@
   },
   {
    "p": "saftblitz/js/game.js",
-   "s": 50744,
-   "h": "e34ea46b1f5af4be9d480ccec68b2ee6f4e5f81cc05ec6711aa88a9904a2d016"
+   "s": 50751,
+   "h": "43fb20922cf36d699613b268fe8aa3f6d777e01fa82c5697a496744fd0fbe0bc"
   },
   {
    "p": "saftblitz/manifest.webmanifest",
@@ -15087,6 +15292,256 @@
    "h": "35aa73fdf931a1a9e45ced472ad3870a625f0b8d4ab98d4053f26d8e386e0812"
   },
   {
+   "p": "spielesammlung/card.jpg",
+   "s": 42119,
+   "h": "25807a0545fa9b06d12bea22e3fba0929206dd2f1b0dc522b8edefed32c75625"
+  },
+  {
+   "p": "spielesammlung/index.html",
+   "s": 101041,
+   "h": "48bdb8af32aea8524a3659739f265c704d220b7b8ab4a136603d3496bc698e11"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/card.jpg",
+   "s": 47953,
+   "h": "cb5916870cf53ff7877f25518e743d864b1868512f8f6816a2ec3b356eef445a"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig0.webp",
+   "s": 5536,
+   "h": "3d11636b5d9d4e05811734db0f27ecd46b535dfdcaf93b33587818e445133ee6"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig1.webp",
+   "s": 6002,
+   "h": "e03536d9004571ab191c8de68fb32c7a80ad4f6a73b22891808b74bbc883c6fe"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig2.webp",
+   "s": 6512,
+   "h": "8866cbde0f322c76abe74968df0aa540e29df1e86db0a987ffad0ef3007019c2"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig3.webp",
+   "s": 5372,
+   "h": "743f6c9866fc7065cdb65637564a2209f94d2e0e7440098948bdf46e3cbd5892"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig4.webp",
+   "s": 5170,
+   "h": "8c8bbc255fd94de925133c824dc65d7bcfa73867ce1224278f93aa3be40b6a1a"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig5.webp",
+   "s": 4764,
+   "h": "7ab9f12e1d52ac65535c4922c38135d6b178b7b37838779822627edd5ce7b8ec"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig6.webp",
+   "s": 6636,
+   "h": "b61cc3c22c359b44299331b86f32f2b809811127427aa88c247dc5802156ec73"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/img/fig7.webp",
+   "s": 6118,
+   "h": "1f0b21a411bcef355cad894ef061509047fd31ad66eff67598791b59b11cf8be"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/index.html",
+   "s": 28677,
+   "h": "ce14e6816918f1e336a4c0fbdedd0e0f7c734c8766ff89eda05107f541121b71"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/js/app.js",
+   "s": 124095,
+   "h": "9438af3e8caf902afeef0af6168dad6426de236bfe9235e1200a18b601d134c6"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/js/figures.js",
+   "s": 8150,
+   "h": "08ff19cb6e2cdeda1b281349b1a16643758cf6a5a197e998dc6c2861119838b8"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/js/logic.js",
+   "s": 44313,
+   "h": "844fd6f4a32924f98eafd260c36d135d311ed18323e29d4cdc717e1d93c74f2d"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/logo.svg",
+   "s": 2145,
+   "h": "f021c4cca1a2319c1876e5cbd2fec21d1555fa44e3d6df24027e3f3ff097da6b"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_ba.glb",
+   "s": 243888,
+   "h": "e9d20bc74b2c3d12ac223b8f52b47dfac51c4fb0634bc498ec23f87bcb21ec12"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_kn.glb",
+   "s": 220180,
+   "h": "a1cd6909b4280cb77b1e32a4d26e1cc5fa253243b6ba2cf1febeb486b9b056c0"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_ma.glb",
+   "s": 227140,
+   "h": "19e538480ebe79ecf8d63b0851882d34f919e6e7372f2b28e5efaf20f3619f8d"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_ra.glb",
+   "s": 302508,
+   "h": "7dc3a159004a9f089b85fe68c759a8ed02fd83cf244153946da19284ffe42b16"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_rh.glb",
+   "s": 243028,
+   "h": "3a237456e0bc41007919b28ae5722bec63054f55d18b10095b15ebb443dfe959"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/ad_ro.glb",
+   "s": 256984,
+   "h": "bf0e8e360211d8cf2c292516c11806d7aeb46aeea9bb7167d3db0edf6d18c1e0"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/anim.glb",
+   "s": 500388,
+   "h": "bfb31b875564085b63845f82cad7be1c3bcc3dc4b948cbfbe05235c75259def7"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/room.glb",
+   "s": 348444,
+   "h": "3a35ef630977d2e8726a08e46bdfea0a98a507a5e28556ebe3111da57d2b262e"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/sk_m.glb",
+   "s": 179036,
+   "h": "4bdfc6f779b3b0630b64e74b337c1648f36022b3b1d56ffb5528e6b1260ef296"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/models/sk_w.glb",
+   "s": 241272,
+   "h": "36ab3c8eff438e44d354ed85ffa6c8d0762e874b68ccd68e3ddbcaac02b7bc39"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/data/loesbar.json",
+   "s": 3591,
+   "h": "2a9c8ad234902a70f460c5024da18fe9f9ec916813c1ffed1baf76c59c30020f"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/img/anmacha-logo.png",
+   "s": 28394,
+   "h": "466a7c3ba4b450d56054e6442c84ae428911174d276a05e53b1f3ae2583217b3"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/img/radioportal-icon.png",
+   "s": 20776,
+   "h": "06358bdf93261f3ffb84505a41512bfd7e0cd4b5773611d46bf38d9c2a66b43a"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/index.html",
+   "s": 7468,
+   "h": "69881747503d05be1f68bc32642a9a02a62b1fbb42918524fff7812080bd316d"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/js/app.js",
+   "s": 35225,
+   "h": "9582b830327f2ec951b191b1ce0901ae641fcc5853895d72beafc6cbb7344024"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/js/rules.js",
+   "s": 13021,
+   "h": "287457557522274faf28b96c9304d26a6e4e1ab1d2b93e10e4fac5cd7290edf4"
+  },
+  {
+   "p": "spielesammlung/kartensammlung/solitaer/style.css",
+   "s": 11250,
+   "h": "3a1ae2be3e2d3f61536544520ae5577b6429b39d745daf4318cfeb4397ebbb4c"
+  },
+  {
+   "p": "spielesammlung/logo.svg",
+   "s": 1586,
+   "h": "6c8630849e82331ef879607d00275c27feacf2ccd1528ff9481b9cec6a3ed56c"
+  },
+  {
+   "p": "spielesammlung/mahjong/card.jpg",
+   "s": 44232,
+   "h": "1bd91240d094c090d96a6ff281019757761488e673aca708b9280e4cf72dd90a"
+  },
+  {
+   "p": "spielesammlung/mahjong/icon.svg",
+   "s": 671,
+   "h": "515bdcf8bbe8707b476ec239806c97c6e4a2d7f00b50727007e946cbb2f9ecbf"
+  },
+  {
+   "p": "spielesammlung/mahjong/index.html",
+   "s": 9747,
+   "h": "81e8fe5f18f2cf4af1a7950eaa867353cab82bc9fbdfb64fe4bc0df991ab9fd7"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/audio.js",
+   "s": 7310,
+   "h": "72b8042faf8bf62eb3f880367ec612ccc8dbf276b6a84eff99c88ce3d697f1ca"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/engine.js",
+   "s": 14239,
+   "h": "a2533487e69907272abbcf26597f89b1484ed474ccb60671191e02ee9376b2d9"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/faces.js",
+   "s": 19057,
+   "h": "9ddd4b617a7b8c17e15739dd97ba20d62220df6028e0e30e9437485036835630"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/input.js",
+   "s": 8747,
+   "h": "9d0ab4944688a80b2e2a14da96ae76f474e36c66d440bc1d2dd5b40d03c4ec42"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/layouts.js",
+   "s": 9886,
+   "h": "b91207b0ff2ae27a6bfa6baa824e50031b170a8052df4be80683b20968d1275e"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/main.js",
+   "s": 35391,
+   "h": "360f649735e3b24a376693a9415d84b079e7f49d82c53a0e25589106e631cea8"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/render.js",
+   "s": 27443,
+   "h": "e1b4127a0e0a22399d9b5286fed7296d3dd7c80fd924fc74c97cdc789b6126c9"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/save.js",
+   "s": 8347,
+   "h": "eb3de5be7f04eef1056f4e1184f3ea8c65671ca6d36aae7bbe744ec516bee439"
+  },
+  {
+   "p": "spielesammlung/mahjong/js/ui.js",
+   "s": 22873,
+   "h": "d6a5d56f108bdeeed1af6758b20f938e68ee846e445c3b091d7fdb7d4bb9a90d"
+  },
+  {
+   "p": "spielesammlung/mahjong/logo.svg",
+   "s": 2607,
+   "h": "e95621cb7fb080c5530700e6b26fe82566f4fed47b328dc29ba8dfe57176edf7"
+  },
+  {
+   "p": "spielesammlung/mahjong/style.css",
+   "s": 17200,
+   "h": "d8f76cc09f4660bd08789f0cc16364f0e1aa14f11eacd6bebabb004b48d84891"
+  },
+  {
+   "p": "spielesammlung/manifest.webmanifest",
+   "s": 819,
+   "h": "95bed4e6ddbb476f545bdcb07d980bc85cdd50a589760e8c843806f762fd990b"
+  },
+  {
+   "p": "spielesammlung/sw.js",
+   "s": 2035,
+   "h": "639e8258d5b2c5fc74d7f54eba0eb9a5ed6ebbe6a17d2375d05f697557a01331"
+  },
+  {
    "p": "spinwelten/card.svg",
    "s": 3970,
    "h": "b14feadf1fbda03dd3a9f961078d5fdfb44cac0204b431d7b3c25ea97d2c3f5d"
@@ -15337,109 +15792,14 @@
    "h": "8dad0a6dca23aca404d58d1c96b7918c08d881ecdba7e92d79e459a5c72d60f3"
   },
   {
-   "p": "stadt-land-plus/card.jpg",
-   "s": 33830,
-   "h": "368451e257e4ee49e3acf1885f9be2ab96bc2610a80633160c0bb6bec411e677"
-  },
-  {
-   "p": "stadt-land-plus/index.html",
-   "s": 16166,
-   "h": "114ca71dc6a7f1852aeebb9c5aeecaa7e2d41f781eab549831bec6aea5260e94"
-  },
-  {
-   "p": "stadt-land-plus/js/app.js",
-   "s": 57702,
-   "h": "951171d808b06aa060fa4ec575e7b12c27b63b1246672a79571f15f2a92668a8"
-  },
-  {
-   "p": "stadt-land-plus/js/core.js",
-   "s": 12589,
-   "h": "87bf4f9c7271c580869b8572f1774d243c0099add6fb93ba0c6e83182e324f45"
-  },
-  {
-   "p": "stadt-land-plus/js/db/fluesse.js",
-   "s": 11761,
-   "h": "cb92175b8798ef747dea8e36c1222f976a72d9f7b2e48edbc217ae17edccbdf5"
-  },
-  {
-   "p": "stadt-land-plus/js/db/laender.js",
-   "s": 67323,
-   "h": "d803049a6cb247e24f21415aa866d7aa5cb97d02f33708456984d1f44fd9cd5a"
-  },
-  {
-   "p": "stadt-land-plus/js/db/staedte.js",
-   "s": 999340,
-   "h": "f648166f63f34c860ca2da77137a0bb5daaf001840a33343b9785ac21cac0348"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-beruf.js",
-   "s": 4554,
-   "h": "61179243cbfb42e39cfd627d517bc6baaedc30bc4d1d9f015696549c04bdd0c6"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-essen.js",
-   "s": 3105,
-   "h": "e64103f9dc6f6e99d4afb6c541fb7e49419ec67cf50ee3ea9e578b7d1973907c"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-mehr.js",
-   "s": 8032,
-   "h": "65a7da9285c3a2a7767be2545622d4ff7d8e8870201470f9b844a6b9d075df30"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-pflanze.js",
-   "s": 2355,
-   "h": "6a51b6ff81900aca7c224912014b15238e18ab7a1b1d34f87e2ccdf23288002f"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-tier.js",
-   "s": 4251,
-   "h": "9390ec33682ac2bdf4cdf284ae7c63099d6ca454442885a645e12283ead71459"
-  },
-  {
-   "p": "stadt-land-plus/js/db/w-vorname.js",
-   "s": 3346,
-   "h": "e54435100a79785e18184d82e2659e2870176ee7e47ab64334b8f6f047659498"
-  },
-  {
-   "p": "stadt-land-plus/js/db/welt.js",
-   "s": 2862,
-   "h": "b9f23d410a7b58377f80b7ed9df40d8f0d0a8bb9461f338859486771661bf5ba"
-  },
-  {
-   "p": "stadt-land-plus/js/sound.js",
-   "s": 3686,
-   "h": "8c45ca6c9ae3235916e2b8f5090e33a399c6722492cae811cab0e67aca21ce20"
-  },
-  {
-   "p": "stadt-land-plus/js/view.js",
-   "s": 8145,
-   "h": "031859905254a47a160e4b74c49c7931f323d1245df5c7cc98b59d993116354e"
-  },
-  {
-   "p": "stadt-land-plus/manifest.webmanifest",
-   "s": 811,
-   "h": "f315f3a34479636d9375570f5604d05aac5a29426019f359e81d9f9882528c1c"
-  },
-  {
-   "p": "stadt-land-plus/style.css",
-   "s": 23557,
-   "h": "ec87d42ad56d08a7731455ac0a7423e31d85aaa76ecf395ed55f28b65a9819a8"
-  },
-  {
-   "p": "stadt-land-plus/sw.js",
-   "s": 2026,
-   "h": "bdb5d460689b4674ea3c23fa2dd6f792bc05e0211ad4ca63509c7aa0bd22bd2f"
-  },
-  {
    "p": "stream.html",
    "s": 9746,
    "h": "d8a1af246de70f8e5567845a5339b6a3d3b5f476acbfd64b5710d8f358852b1c"
   },
   {
    "p": "sync/catalog.json",
-   "s": 241388,
-   "h": "15b541f87630444f026ab1eb16567769725ce7b23609e9edc101812869f64803"
+   "s": 236340,
+   "h": "4ccbe8d2079a90b5cab02a4aea68e313a7ac24b491aeec473bc064c3b3167eb8"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -16287,11 +16647,6 @@
    "h": "63f78661ae16d3bd02515c6f1cf894f48e5a32437068ce200764d3531367b665"
   },
   {
-   "p": "thumbs/anmacha-beat-surfer.webp",
-   "s": 13484,
-   "h": "eaab6d66020b07cb1ec96db87f347db8b775f06cda16551a48c3008e936da1d3"
-  },
-  {
    "p": "thumbs/anmacha-flipper.webp",
    "s": 13448,
    "h": "bb474d785d648c12f41d667e5b32ba6cffbe7ffe7958238946d96b0f9b2c0f99"
@@ -16315,11 +16670,6 @@
    "p": "thumbs/anmacha-kart.webp",
    "s": 29546,
    "h": "4a94af0588e7014761e3c089be700ef1ec7766abd9e6323c1131fdb85be6ce7f"
-  },
-  {
-   "p": "thumbs/anmacha-kartensammlung.webp",
-   "s": 17098,
-   "h": "56d678282ae00031a92770194dd57bf2db5b2c783072ec34e7b87b458a7d8f74"
   },
   {
    "p": "thumbs/anmacha-klotzfunk.webp",
@@ -16357,11 +16707,6 @@
    "h": "ee1e5f09f81963e69cf60c3a246124fa1aff77c90d899314af72387dd16c018f"
   },
   {
-   "p": "thumbs/anmacha-radio-surfer.webp",
-   "s": 13058,
-   "h": "ed4c9b900d97a007dbc317be8a68d7d966ea1090253e03e05058446aee71e3ba"
-  },
-  {
    "p": "thumbs/anmacha-showdown.webp",
    "s": 8658,
    "h": "58beecf994656819d200fca4521d649741dfb59b0f3e7c34257e86fb854b6516"
@@ -16370,11 +16715,6 @@
    "p": "thumbs/anmacha-snake.webp",
    "s": 13836,
    "h": "e4abd8b24015cd07057654ad8991d8422acdc9f347d03698b39e2b9fa30a741f"
-  },
-  {
-   "p": "thumbs/anmacha-spielesammlung.webp",
-   "s": 13884,
-   "h": "bf7e7470e992f579e9f8b0c6b135755fd4a64bf79fcfdfc8b3f2ed8d7f8a9926"
   },
   {
    "p": "thumbs/anmacha-tower-defense.webp",
@@ -16457,11 +16797,6 @@
    "h": "6e9bfdfc558ed307b83186c51efd1d8fb81bb70c032bd7c944ca432f8efa6be0"
   },
   {
-   "p": "thumbs/funkgalgen.webp",
-   "s": 17280,
-   "h": "0e366cb5530837fe05a2b4b656d2e162c05737cdaa42c9f03bae33c05c4d7c59"
-  },
-  {
    "p": "thumbs/funkgolf.webp",
    "s": 18870,
    "h": "627e027e794988b7dbdab36f011b100953c45b1c71d92da0130ab587b5018846"
@@ -16470,6 +16805,11 @@
    "p": "thumbs/funkmaler.webp",
    "s": 13530,
    "h": "7987ff498c75efdc83417754570eaed11db2d0aec490fac8d4b405b2f59bc80b"
+  },
+  {
+   "p": "thumbs/funkrenner.webp",
+   "s": 24356,
+   "h": "b6eac84bf8f62cdac80090ae10d174940f63c3a68091c39a695c85c1f4ada3de"
   },
   {
    "p": "thumbs/groove-arena.webp",
@@ -16495,11 +16835,6 @@
    "p": "thumbs/kuechen-chaos.webp",
    "s": 14096,
    "h": "751b2431fef9333a5220c9420f8be8e1a5d932d827e35353d900864d2a4f6974"
-  },
-  {
-   "p": "thumbs/mahjong.webp",
-   "s": 15732,
-   "h": "f6b8f76dbc8b02c81b64cdc55a88edd9b8a989e6885fe024541a3940a62e8b47"
   },
   {
    "p": "thumbs/mimori.webp",
@@ -16567,14 +16902,14 @@
    "h": "892c6979cd97c4d1c837eb2b059ccf126a791e14771f624b9c30dddbaa1beebb"
   },
   {
-   "p": "thumbs/stadt-land-plus.webp",
-   "s": 15564,
-   "h": "b10120871d5acf7ca3c4c3ab4aaa1f9100a4d14a2107f70c581c6f1d67e67fb0"
+   "p": "thumbs/spielesammlung.webp",
+   "s": 14402,
+   "h": "a6c265e22b0ed103c600b2c2d4cb475a713ef28ca82c59a9b85d1d087845e2b6"
   },
   {
    "p": "thumbs/thumbs.js",
-   "s": 2100,
-   "h": "8b18fa1a89cc7f2bcf53ed07246a83d9c0494d0c6a6141fd68e834b86dff6ce7"
+   "s": 1905,
+   "h": "56e6974a0710c916c151256edde1147b5a954b3309ec404bd9055036dea18b7b"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
@@ -16597,14 +16932,9 @@
    "h": "00c2b85641e6347f22a6386c8c1a5b64150d4635f5fb29ae86845cef99b15a5f"
   },
   {
-   "p": "thumbs/wortfunk.webp",
-   "s": 16736,
-   "h": "01929bc46ab63b499dc80b3a6343caa46d9a042a83ffecf40e69275a157b991d"
-  },
-  {
-   "p": "thumbs/wortgitter.webp",
-   "s": 14336,
-   "h": "a025fe08a58390c34795dbc0f2312d7857641620650d78fdd5fc9b9e65070fec"
+   "p": "thumbs/wortspiele.webp",
+   "s": 29380,
+   "h": "5e466609eb2a48f031aed5adff96db0b54332d509e8da5f01d9462571f47934c"
   },
   {
    "p": "thumbs/zeitsprung.webp",
@@ -17222,94 +17552,214 @@
    "h": "ffc30668efdf8dce5571e09c868d0529279c6c4d04ca14b10369dc6acfbc2d66"
   },
   {
-   "p": "wortfunk/card.jpg",
+   "p": "wortspiele/card.jpg",
+   "s": 59599,
+   "h": "e58d4a96398099e5c1c18403d78976af329b4f88434a653d09b655f68866d3fa"
+  },
+  {
+   "p": "wortspiele/funkgalgen/card.jpg",
+   "s": 37175,
+   "h": "84f80ba2a348e3ad62adc7930bee42f28ca43a680143921a61c93f3f8551445c"
+  },
+  {
+   "p": "wortspiele/funkgalgen/index.html",
+   "s": 10473,
+   "h": "7341d6de35f47013a80c113a668e4b4d6b43d6d86baa0b5f1e19cc2944d06c74"
+  },
+  {
+   "p": "wortspiele/funkgalgen/js/app.js",
+   "s": 42160,
+   "h": "b84afbb62445e5fc60d4a4eede56d8f4fbcb07e3990e29436052861e74e7293e"
+  },
+  {
+   "p": "wortspiele/funkgalgen/js/core.js",
+   "s": 6752,
+   "h": "9be03ed81f9aca8bd4af869baf0ed01e84d6dd71c861a6c3ddf5f8b92ce9711f"
+  },
+  {
+   "p": "wortspiele/funkgalgen/js/scene.js",
+   "s": 14461,
+   "h": "ee40f9adbc68ac0fcceb54658658fd2e86ed35e0ed47b973cfa45b683f7d434c"
+  },
+  {
+   "p": "wortspiele/funkgalgen/js/words.js",
+   "s": 5953,
+   "h": "e429f8463a246c125aba0aa4f5a4a6ed1bd13c2291a2338a779e122a1b40e530"
+  },
+  {
+   "p": "wortspiele/funkgalgen/style.css",
+   "s": 12138,
+   "h": "573302966572470c81c27d61dd1efddbc54276d04820ba5ff3b4f9c34d8c6f95"
+  },
+  {
+   "p": "wortspiele/index.html",
+   "s": 9883,
+   "h": "eab068d4aeb4045b7fa5d628cafbd2dd4e4fbaad7de3318e2aab6cfd3fa7ef48"
+  },
+  {
+   "p": "wortspiele/manifest.webmanifest",
+   "s": 809,
+   "h": "1886880ce8fc79d935f850c3b2884192c5c22c3bdeb91319702e27ff49dd2820"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/card.jpg",
+   "s": 33830,
+   "h": "368451e257e4ee49e3acf1885f9be2ab96bc2610a80633160c0bb6bec411e677"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/index.html",
+   "s": 12395,
+   "h": "6dbdf7577732a50b2d75765da8f87c1962abf4bfe9030ebbd49fa8e76db1a6f9"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/app.js",
+   "s": 57714,
+   "h": "00b642fc411c6b57e2ff7619294f660e409bfd62795107dc33cd2c83155f29d7"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/core.js",
+   "s": 12589,
+   "h": "87bf4f9c7271c580869b8572f1774d243c0099add6fb93ba0c6e83182e324f45"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/fluesse.js",
+   "s": 11761,
+   "h": "cb92175b8798ef747dea8e36c1222f976a72d9f7b2e48edbc217ae17edccbdf5"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/laender.js",
+   "s": 67323,
+   "h": "d803049a6cb247e24f21415aa866d7aa5cb97d02f33708456984d1f44fd9cd5a"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/staedte.js",
+   "s": 999340,
+   "h": "f648166f63f34c860ca2da77137a0bb5daaf001840a33343b9785ac21cac0348"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-beruf.js",
+   "s": 4554,
+   "h": "61179243cbfb42e39cfd627d517bc6baaedc30bc4d1d9f015696549c04bdd0c6"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-essen.js",
+   "s": 3105,
+   "h": "e64103f9dc6f6e99d4afb6c541fb7e49419ec67cf50ee3ea9e578b7d1973907c"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-mehr.js",
+   "s": 8032,
+   "h": "65a7da9285c3a2a7767be2545622d4ff7d8e8870201470f9b844a6b9d075df30"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-pflanze.js",
+   "s": 2355,
+   "h": "6a51b6ff81900aca7c224912014b15238e18ab7a1b1d34f87e2ccdf23288002f"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-tier.js",
+   "s": 4251,
+   "h": "9390ec33682ac2bdf4cdf284ae7c63099d6ca454442885a645e12283ead71459"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/w-vorname.js",
+   "s": 3346,
+   "h": "e54435100a79785e18184d82e2659e2870176ee7e47ab64334b8f6f047659498"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/db/welt.js",
+   "s": 2862,
+   "h": "b9f23d410a7b58377f80b7ed9df40d8f0d0a8bb9461f338859486771661bf5ba"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/sound.js",
+   "s": 3686,
+   "h": "8c45ca6c9ae3235916e2b8f5090e33a399c6722492cae811cab0e67aca21ce20"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/js/view.js",
+   "s": 8145,
+   "h": "031859905254a47a160e4b74c49c7931f323d1245df5c7cc98b59d993116354e"
+  },
+  {
+   "p": "wortspiele/stadt-land-plus/style.css",
+   "s": 23557,
+   "h": "ec87d42ad56d08a7731455ac0a7423e31d85aaa76ecf395ed55f28b65a9819a8"
+  },
+  {
+   "p": "wortspiele/sw.js",
+   "s": 2035,
+   "h": "2a720dd4e14008880d918c64aec4f9ae291f8dda361d070e8e07cc7197f5983d"
+  },
+  {
+   "p": "wortspiele/wortfunk/card.jpg",
    "s": 35670,
    "h": "f91e89e3044d41c9dfce4985a86ffdda87ae0b63cd37570e942d7ebe575f4918"
   },
   {
-   "p": "wortfunk/data/LIZENZ.txt",
+   "p": "wortspiele/wortfunk/data/LIZENZ.txt",
    "s": 1194,
    "h": "c06bf85ed8e45b28e13c181160e1e53840a49a8dba3769c7fc96fc00b83cb39c"
   },
   {
-   "p": "wortfunk/data/bekannt.dawg",
+   "p": "wortspiele/wortfunk/data/bekannt.dawg",
    "s": 123804,
    "h": "3e5e58a43a40e7f9155b0fddd6b6a0316b0a3c8ccd50525d85adf2df0501ecc5"
   },
   {
-   "p": "wortfunk/data/woerter.dawg",
+   "p": "wortspiele/wortfunk/data/woerter.dawg",
    "s": 474064,
    "h": "67141363ee427a01985fb2e65fd062da0dcd297de894993ca0b26f82fbad97cd"
   },
   {
-   "p": "wortfunk/index.html",
-   "s": 14127,
-   "h": "b1608c4c8f1a1dc5ef6f1f9459cf83282390e0765b18765a15755b15c9fe8f4b"
+   "p": "wortspiele/wortfunk/index.html",
+   "s": 10360,
+   "h": "6c821391ee990e1874d37165a4b18c3f65f6c4ca4c37e0a11521fb56b7dce0f5"
   },
   {
-   "p": "wortfunk/js/app.js",
-   "s": 50599,
-   "h": "4a5873b06be354b8681d09bf56aad7378d97cceb26f2ff0e1147c1f96ac8677a"
+   "p": "wortspiele/wortfunk/js/app.js",
+   "s": 50611,
+   "h": "50a03d679e9b19d706604ee92ec00e413d330f3211ac37129a54e7e948593bba"
   },
   {
-   "p": "wortfunk/js/logic.js",
+   "p": "wortspiele/wortfunk/js/logic.js",
    "s": 20477,
    "h": "7678e54707cd339aa46ced5cb657e3ead14fe3aa9cee720e626744c3fc1a041c"
   },
   {
-   "p": "wortfunk/manifest.webmanifest",
-   "s": 766,
-   "h": "bf5ea55083735ba1df6eee3fcdd438d747bc7a344e70c0397e73c106b06a7e11"
-  },
-  {
-   "p": "wortfunk/style.css",
+   "p": "wortspiele/wortfunk/style.css",
    "s": 16377,
    "h": "5f71aeffca53ba75d8776b0afb914930e17941f12dfb65f1aafe275e2e01ab2c"
   },
   {
-   "p": "wortfunk/sw.js",
-   "s": 1996,
-   "h": "bdcf970c73f8441650ea6600d064874a3b8baf8e6ba00ef76a7c5eabb316ce66"
-  },
-  {
-   "p": "wortfunk/worker.js",
+   "p": "wortspiele/wortfunk/worker.js",
    "s": 482,
    "h": "bb23e6703346623691e60cf8dfbc7ba3ec7bf2592719d4b785f6511315be7048"
   },
   {
-   "p": "wortgitter/card.jpg",
+   "p": "wortspiele/wortgitter/card.jpg",
    "s": 34144,
    "h": "22493f93c75b444e74200096552246456947befd32e954c0b5bc28a5e56f461f"
   },
   {
-   "p": "wortgitter/index.html",
-   "s": 12578,
-   "h": "66e3bb95190b26dee0d2f3a8f0393d1c5b8f8dfa829dd55963fc0df1d89bfc54"
+   "p": "wortspiele/wortgitter/index.html",
+   "s": 8807,
+   "h": "8f8283e09d9e3ded869be130695060911310d0fcba2b0490f4b5386029592617"
   },
   {
-   "p": "wortgitter/js/app.js",
-   "s": 38394,
-   "h": "e380f20b33c3e7aaaf74d0bec5cb696262860c9cb21022be783a5dbe4d0b8770"
+   "p": "wortspiele/wortgitter/js/app.js",
+   "s": 38406,
+   "h": "5b29fa9b46e7a67f6372dcfdeb7116e7385de94fb90f58667a3d620c9bd66227"
   },
   {
-   "p": "wortgitter/js/grid.js",
+   "p": "wortspiele/wortgitter/js/grid.js",
    "s": 6492,
    "h": "47b81d2254747b2817a6cba578c20a63cd0a2dd25e8e2c436cc434d3c97d0b37"
   },
   {
-   "p": "wortgitter/manifest.webmanifest",
-   "s": 774,
-   "h": "d591c51f1c371ea5b1bd9b8f333de32a7782d63ed88e9f85905f36f47a8c9e4a"
-  },
-  {
-   "p": "wortgitter/style.css",
+   "p": "wortspiele/wortgitter/style.css",
    "s": 15609,
    "h": "91b7aa669884896f95c3d0817fa832df53b348cf8a5182d1eadaa1763be58914"
-  },
-  {
-   "p": "wortgitter/sw.js",
-   "s": 2000,
-   "h": "920810948ad9169606d0ede35ff11af463a5a85c0e68bca6aed0e555f6a38260"
   },
   {
    "p": "zeitsprung/app.js",
@@ -70932,9 +71382,9 @@
    "h": "9e629369f7a54ab0b5ef047ea685f1a41154903e478869c95eca8a5590cc4681"
   },
   {
-   "p": "zotik/assets/index-CKalkwI7.js",
-   "s": 2156975,
-   "h": "7506626fe298c108a1bbcb551d185b7377e157d4b7c28d862e58828184f34365"
+   "p": "zotik/assets/index-BhQrc3cX.js",
+   "s": 2158296,
+   "h": "5e99be3a4c458b17e12c3beae2c42736fbbc8373e0fd563011bedeedb4922bc3"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -70974,7 +71424,7 @@
   {
    "p": "zotik/index.html",
    "s": 78401,
-   "h": "de1d78f934b55e037068fd01c5973153ea56c2976feb0694595ada44f7a68c51"
+   "h": "93b8125767a3b050eec666f42d848bfbaf7d5ecd10c60eb9c25b71d0d6fcc554"
   },
   {
    "p": "zotik/manifest.webmanifest",

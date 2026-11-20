@@ -14,7 +14,24 @@
     { id: 'mats', name: 'Mats Feldmann', look: { model: 'knight', skin: 1, shirt: 0x1f2a44, pants: 0x1f2a44, accent: 0xf4f4f4, hair: 0x3a2a1a, mic: true, cards: true, micColor: 0x37c46a } }
   ];
   D.DOC = { id: 'doc', name: 'Doc Rudi', look: { model: 'mage', skin: 2, shirt: 0xf2f2ee, pants: 0x3a5a7a, accent: 0xffffff, glasses: true, hat: 'cap', hatColor: 0x2a8a4a } };
-  D.VOICE = { lotte: { pitch: 1.12, rate: 1.04 }, mats: { pitch: 0.92, rate: 1.0 }, doc: { pitch: 0.8, rate: 0.95 } };
+  // Ranger: bewachen das Lager, bringen Lieferungen, holen Camper zur Prüfung ab (frei erfunden)
+  D.RANGER = { id: 'ranger', name: 'Ranger Kalle', look: { model: 'barbarian', skin: 1, shirt: 0x6b6a3a, pants: 0x3a4a2a, accent: 0xd8c89a, hat: 'busch', hatColor: 0x7a6a3a } };
+  D.VOICE = { lotte: { pitch: 1.12, rate: 1.04 }, mats: { pitch: 0.92, rate: 1.0 }, doc: { pitch: 0.8, rate: 0.95 }, ranger: { pitch: 0.7, rate: 0.98 } };
+  // Sprüche von Lager-Sanitäter Doc Rudi (eigene Figur) und Ranger Kalle
+  D.DOC_LINES = {
+    check: ['Zunge raus … sehr schön. Puls ein bisschen hoch, aber das ist hier normal.', 'Blutdruck okay, Hände zittern ein bisschen. Viel trinken, weniger Drama!', 'Du hast einen Mückenstich. Einen. Du wirst es überleben.', 'Kreislauf stabil. Wenn dir schwindlig wird: hinsetzen, Wasser, Schatten.'],
+    trialQuit: ['Ganz ruhig, tief durchatmen. Abbrechen ist keine Schande – deine Gesundheit geht vor.', 'Alles gut, ich bin da. Erstmal hinsetzen und einen Schluck Wasser.'],
+    trialBad: ['Kurz durchchecken … Puls hoch, aber alles im grünen Bereich. Du hast gekämpft!', 'Ein paar Kratzer, viel Ekel – aber medizinisch alles in Ordnung.'],
+    trialGood: ['Alle Werte top. Und Nerven wie Drahtseile!', 'Ich hab schon viele Prüfungen gesehen. Das war richtig stark.'],
+    tips: ['Wer wenig isst, hat schlechte Laune. Wer schlecht schläft, auch.', 'In der Prüfung zählt: ruhig atmen, dann erst handeln.', 'Holz holen und Wasser abkochen – das hält das Camp gesund.']
+  };
+  D.RANGER_LINES = {
+    hello: ['Alles ruhig im Lager? Ich dreh meine Runde.', 'Ich hab ein Auge auf euch. Und auf die Schlangen.', 'Bleibt im Camp. Hinter der Brücke ist Sperrgebiet.'],
+    tips: ['Morgen früh holen wir wieder jemanden zur Prüfung ab. Die Zuschauer haben schon abgestimmt …', 'Am Feuer redet es sich am besten. Und Komplimente kosten nichts.', 'Wer im Buschtelefon ehrlich ist, kommt bei den Zuschauern gut an.', 'Heute ist es heiß. Wasser abkochen nicht vergessen!'],
+    chest: ['Psst … ich hab heute eine Kiste gesehen. Irgendwo dort hinten – ich hab sie markiert.', 'Unter uns: Da drüben steht eine Schatzkiste. Mehr verrat ich nicht.'],
+    pick: ['{n}, mitkommen bitte. Die Prüfung wartet.', '{n}, du bist dran. Ich bring dich hin.'],
+    delivery: ['Lieferung fürs Camp!', 'Euer Essen. Teilt gerecht!']
+  };
 
   // Camper-Kleidung wie im Original: rote Hemden, Khaki-Hosen; Hüte und Tücher als Erkennungszeichen
   const RED = 0xc8372d, KHAKI = 0xb79a6a;
@@ -45,7 +62,7 @@
   // Prüfungen: Ablauf und Wertung wie im Original – Sterne = Essensportionen fürs Camp
   D.TRIALS = [
     { id: 'kisten', name: 'Die fiesen Kisten', icon: '📦', stars: 8, time: 120, desc: 'Greif in acht Kisten voller (virtueller) Krabbeltiere und hol die Sterne heraus. Berühr die Tiere möglichst nicht – sonst steigt dein Ekel.', ctrl: [['move', 'Hand bewegen'], ['ok', 'Zugreifen'], ['alt', 'Nächste Kiste']] },
-    { id: 'dinner', name: 'Das Urwald-Dinner', icon: '🍽️', stars: 6, time: 150, desc: 'Sechs erfundene Ekel-Gänge. Kau im Takt, halt das Würg-Meter in Schach und schluck runter.', ctrl: [['ok', 'Kauen (im Takt)'], ['move', 'Würgen ausgleichen (links/rechts)'], ['alt', 'Schlucken']] },
+    { id: 'dinner', name: 'Das Urwald-Dinner', icon: '🍽️', stars: 6, time: 150, desc: 'Sechs erfundene Ekel-Gänge. Spieß die zappelnden Happen selbst mit der Gabel auf, kau sie runter, leer die Ekel-Drinks und halt dabei das Würgen in Schach.', ctrl: [['move', 'Gabel führen / Würgen ausgleichen'], ['ok', 'Aufspießen & kauen'], ['alt', 'Trinken (halten)']] },
     { id: 'tauchen', name: 'Das Schlammbecken', icon: '🤿', stars: 9, time: 120, desc: 'Tauch durchs trübe Becken und sammle die Sterne vom Grund. Achte auf deine Luft – an der Oberfläche holst du neue.', ctrl: [['move', 'Schwimmen'], ['ok', 'Abtauchen'], ['alt', 'Auftauchen']] },
     { id: 'steg', name: 'Der Wackelsteg', icon: '🌉', stars: 8, time: 110, desc: 'Balancier über den Steg hoch über der Schlucht. Wind und lose Bretter wollen dich runterholen – greif dir die Sterne an den Seilen.', ctrl: [['move', 'Gehen / Balance halten'], ['ok', 'Stern greifen'], ['alt', 'Springen']] },
     { id: 'tunnel', name: 'Der Krabbeltunnel', icon: '🪲', stars: 8, time: 140, desc: 'Kriech mit der Stirnlampe durch das enge Tunnelsystem. In den Sackgassen warten die Sterne – und jede Menge Gekrabbel.', ctrl: [['move', 'Kriechen'], ['look', 'Umsehen'], ['ok', 'Stern nehmen']] },
@@ -55,7 +72,7 @@
     { id: 'bach', name: 'Der Sternen-Bach', icon: '🌊', stars: 8, time: 100, desc: 'Wate durch den Bach, schnapp dir die Schaumstoff-Sterne und bring sie ins Netz. Von oben rollen riesige Bälle heran – wer getroffen wird, verliert seinen Stern.', ctrl: [['move', 'Waten'], ['ok', 'Hechtsprung']] },
     { id: 'blind', name: 'Die Blindfahrt', icon: '🚙', stars: 6, time: 130, desc: 'Augenbinde auf, ab hinters Steuer! Dein Beifahrer sagt an, wohin es geht. An jeder Station anhalten und den Stern greifen – unterwegs warten Fässer, Schlamm- und Kakerlaken-Duschen.', ctrl: [['move', 'Gas (hoch), Lenken (links/rechts)'], ['ok', 'Bremsen & greifen']] },
     { id: 'box', name: 'Die Ekel-Box', icon: '🪳', stars: 7, time: 90, desc: 'Kopf in die Plexiglas-Box! Oben werden Kakerlaken und Mehlwürmer eingefüllt. Zieh die Sterne mit den Zähnen von den Wänden – aber beiß nicht in die Spinnennester.', ctrl: [['move', 'Kopf drehen'], ['ok', 'Stern ziehen'], ['alt', 'Ruhig atmen']] },
-    { id: 'grab', name: 'Das Madengrab', icon: '⚰️', stars: 6, time: 110, desc: 'Du liegst in einer Kiste unter der Erde, Maden und Krabbeltiere rieseln herein. Dreh die Schrauben am Deckel auf – hinter jeder steckt ein Stern.', ctrl: [['move', 'Im Kreis drehen: aufschrauben'], ['ok', 'Schrauben'], ['alt', 'Ruhig atmen']] },
+    { id: 'grab', name: 'Das Madengrab', icon: '⚰️', stars: 6, time: 110, desc: 'Du liegst in einer Kiste unter der Erde, Maden und Krabbeltiere rieseln herein. Führ deine Hand zu den Schrauben am Deckel, pack zu und dreh sie heraus – hinter jeder steckt ein Stern.', ctrl: [['move', 'Hand führen / im Kreis drehen'], ['ok', 'Schraube packen (halten)'], ['alt', 'Ruhig atmen']] },
     { id: 'seilbahn', name: 'Die Lianen-Rutsche', icon: '🐒', stars: 9, time: 0, desc: 'Drei Fahrten an der Seilrutsche durch die Baumkronen. Lenk dich zu den Sternen und weich Ästen und Wespennestern aus.', ctrl: [['move', 'Lenken'], ['ok', 'Bremsen'], ['alt', 'Beine anziehen']] }
   ];
   D.TRIAL = Object.fromEntries(D.TRIALS.map(t => [t.id, t]));

@@ -1,10 +1,10 @@
-// Sucht lösbare Patience-Mischungen (Löser aus anmacha-kartensammlung/solitaer/js/rules.js) und schreibt anmacha-kartensammlung/solitaer/data/loesbar.json.
+// Sucht lösbare Patience-Mischungen (Löser aus spielesammlung/kartensammlung/solitaer/js/rules.js) und schreibt spielesammlung/kartensammlung/solitaer/data/loesbar.json.
 // Aufruf: node tools/anmacha-solitaire/mkseeds.js [Anzahl je Variante=250] [Knotenlimit=60000]
 'use strict';
 const fs = require('fs'), path = require('path');
-const AS = require('../../anmacha-kartensammlung/solitaer/js/rules.js');
+const AS = require('../../spielesammlung/kartensammlung/solitaer/js/rules.js');
 const want = +process.argv[2] || 250, limit = +process.argv[3] || 60000;
-const out = path.join(__dirname, '../../anmacha-kartensammlung/solitaer/data/loesbar.json');
+const out = path.join(__dirname, '../../spielesammlung/kartensammlung/solitaer/data/loesbar.json');
 const res = { info: 'Startwerte lösbarer Patience-Partien (geprüft mit solveKlondike)', d1: [], d3: [] };
 for (const draw of [1, 3]) {
   const list = res['d' + draw];

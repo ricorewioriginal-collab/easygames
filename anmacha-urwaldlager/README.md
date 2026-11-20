@@ -1,7 +1,7 @@
 # Urwaldlager – Die Promi-Show (3D)
 
 Eine Promi-Show im Dschungel – oder im TV-Studio – als 3D-Spiel für Browser, Handy, PC und TV. Du ziehst als Promi ins Lager, die (simulierten) Zuschauer schicken dich in Urwaldprüfungen, du sammelst Sterne fürs Abendessen, überstehst die Auszüge und kämpfst im Finale um die Krone.
-Show, Moderatoren (Lotte Brandt, Mats Feldmann, Doc Rudi), Camper, Sprüche und Logo sind frei erfunden und nur an das bekannte Format angelehnt – keine echten Personen, Logos oder Musik einer TV-Sendung.
+Show, Moderatoren (Lotte Brandt, Mats Feldmann), Sanitäter Doc Rudi, Ranger Kalle, Camper, Sprüche und Logo sind frei erfunden und nur an das bekannte Format angelehnt – keine echten Personen, Logos oder Musik einer TV-Sendung.
 
 ## Spielen
 `index.html` über einen Webserver öffnen (z. B. `python3 -m http.server` in der Repo-Wurzel). three.js r128 liegt unter `vendor/`, es wird kein CDN gebraucht.
@@ -10,7 +10,7 @@ Show, Moderatoren (Lotte Brandt, Mats Feldmann, Doc Rudi), Camper, Sprüche und 
 1. **Einzug** mit Moderation und Vorstellung der Camper, gleich danach die erste Prüfung.
 2. **Morgens** wählen die Zuschauer, wer in die Prüfung muss – oft du, manchmal jemand anderes (dann gibt es eine Zusammenfassung).
 3. **Urwaldprüfung** in 3D (9 Stück, siehe unten). Jeder Stern ist eine Portion fürs Camp. Abbruch jederzeit mit dem Satz „Ich bin raus aus dem Urwald!“.
-4. **Camp:** frei herumlaufen, Holz holen und das Feuer schüren, Wasser abkochen, Klo putzen, mit Campern reden (plaudern, Komplimente, Witze, trösten, lästern, Bündnisse), Buschtelefon, Schatzkiste mit Rätsel, zufällige Ereignisse. Vier Aktionen pro Tag.
+4. **Camp:** frei herumlaufen, Check-up bei Sanitäter Doc Rudi im Sani-Zelt, Ranger Kalle auf seiner Runde ansprechen (Tipps, manchmal ein Hinweis auf die Schatzkiste), Holz holen und das Feuer schüren, Wasser abkochen, Klo putzen, mit Campern reden (plaudern, Komplimente, Witze, trösten, lästern, Bündnisse), Buschtelefon, Schatzkiste mit Rätsel, zufällige Ereignisse. Vier Aktionen pro Tag.
 5. **Abendessen** am Feuer – so viel, wie Sterne geholt wurden. Teilen, zugreifen oder verzichten.
 6. **Auszug** in den letzten Tagen: Die Zuschauer entscheiden, wer gehen muss.
 7. **Finale** mit drei Gängen (Vorspeise, Hauptgang, Nachtisch) und **Krönung** zum Urwaldkönig / zur Urwaldkönigin.

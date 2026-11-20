@@ -113,13 +113,13 @@
   UI.alert = (title, text, btn = 'Weiter') => UI.choose(title, text, [{ label: btn, value: true }]);
 
   // ---------- Moderation / Sprecher-Einblendung (unteres Drittel) ----------
-  const PORTRAIT = { lotte: '🎤', mats: '🎙️', doc: '🩺', off: '📞', camp: '🔥' };
+  const PORTRAIT = { lotte: '🎤', mats: '🎙️', doc: '🩺', ranger: '🪖', off: '📞', camp: '🔥' };
   UI.say = (who, text, opts = {}) => new Promise(res => {
     const cap = $('#cap');
-    const name = opts.name || (UL.D.HOSTS.find(h => h.id === who) || {}).name || (who === 'doc' ? UL.D.DOC.name : who === 'off' ? 'Stimme aus dem Off' : who);
+    const name = opts.name || (UL.D.HOSTS.find(h => h.id === who) || {}).name || (who === 'doc' ? UL.D.DOC.name : who === 'ranger' ? UL.D.RANGER.name : who === 'off' ? 'Stimme aus dem Off' : who);
     cap.innerHTML = `<div class="cap-in ${who}"><div class="cap-who">${PORTRAIT[who] || opts.icon || '💬'} ${esc(name)}</div><div class="cap-txt">${esc(text)}</div><div class="cap-go">${In.glyph('ok')}<span>${In.device === 'touch' ? 'Tippen' : 'Weiter'}</span></div></div>`;
     cap.hidden = false;
-    if (opts.voice !== false && (who === 'lotte' || who === 'mats' || who === 'doc')) Voice.say(text, who);
+    if (opts.voice !== false && (who === 'lotte' || who === 'mats' || who === 'doc' || who === 'ranger')) Voice.say(text, who);
     const minT = 0.35, auto = opts.auto != null ? opts.auto : Math.min(9, 2.2 + text.length * 0.055) * (UL.bot ? 0.05 : 1);
     let t = 0, done = false;
     const fin = () => { if (done) return; done = true; cap.hidden = true; cap.onclick = null; UI._cap = null; Voice.stop(); res(); };

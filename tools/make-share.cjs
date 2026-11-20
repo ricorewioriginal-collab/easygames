@@ -74,7 +74,7 @@ const PORTAL = {
   radio: { eyebrow: 'RICOREWI RADIO · SPIELEN & HÖREN', title: 'Games', sub: 'Radio hören und nebenbei zocken – direkt im Browser', accent: '#2bb8e8', accent2: '#8a4dff' }
 };
 function portalHtml(brand) {
-  const P = PORTAL[brand] || PORTAL.easygames, picks = ['anmacha-quiz', 'anmacha-kart', 'anmacha-radio-surfer', 'anmacha-klotzfunk', 'riftzone', 'bunte-insel', 'ricoville', 'anmacha-showdown', 'kiko-sterneninseln', 'ricolife', 'ricopoly', 'zotik', 'wobbel', 'anmacha-snake']
+  const P = PORTAL[brand] || PORTAL.easygames, picks = ['anmacha-quiz', 'anmacha-kart', 'funkrenner', 'anmacha-klotzfunk', 'riftzone', 'bunte-insel', 'ricoville', 'anmacha-showdown', 'kiko-sterneninseln', 'ricolife', 'ricopoly', 'zotik', 'wobbel', 'anmacha-snake']
     .map(id => GAMES.find(g => g.id === id)).filter(g => g && g.img && b64(g.img)).slice(0, 9);
   const tiles = picks.map((g, i) => `<div class="t" style="--i:${i};background:${g.bg || '#222'}"><img src="${b64(g.img)}"></div>`).join('');
   return `<!doctype html><meta charset="utf-8"><style>
