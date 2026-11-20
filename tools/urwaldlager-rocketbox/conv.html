@@ -1,0 +1,110 @@
+<!doctype html><body style="margin:0;background:#556">
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+const q = new URLSearchParams(location.search), FBX = q.get('fbx'), TEX = q.get('tex');
+const MAP = { hips: 'Bip01_Pelvis', spine: 'Bip01_Spine', chest: 'Bip01_Spine2', head: 'Bip01_Head',
+  upperarml: 'Bip01_L_UpperArm', lowerarml: 'Bip01_L_Forearm', handl: 'Bip01_L_Hand',
+  upperarmr: 'Bip01_R_UpperArm', lowerarmr: 'Bip01_R_Forearm', handr: 'Bip01_R_Hand',
+  upperlegl: 'Bip01_L_Thigh', lowerlegl: 'Bip01_L_Calf', footl: 'Bip01_L_Foot',
+  upperlegr: 'Bip01_R_Thigh', lowerlegr: 'Bip01_R_Calf', footr: 'Bip01_R_Foot' };
+if (q.get('swap') === '1') for (const k of Object.keys(MAP)) { if (/[lr]$/.test(k)) { const v = MAP[k]; MAP[k] = v.includes('_L_') ? v.replace('_L_', '_R_') : v.replace('_R_', '_L_'); } }
+const mgr = new THREE.LoadingManager();
+mgr.setURLModifier(u => { const m = u.match(/([a-z]+\d+_(body|head|opacity)_color)\.tga/i); if (!m) return /\.tga$/i.test(u) ? 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' : u; const n = u.match(/([a-z]+\d+_(body|head|opacity)_color)\.tga/i)[1]; return TEX + n + (n.includes('opacity') ? '.png' : '.jpg'); });
+mgr.addHandler(/\.tga$/i, new THREE.TextureLoader(mgr));
+const fbx = await new FBXLoader(mgr).loadAsync(FBX);
+fbx.traverse(o => { if (!o.isMesh) return; const conv = m => { if (m.map) m.map.colorSpace = THREE.SRGBColorSpace; const op = /opacity/.test(m.name); return new THREE.MeshStandardMaterial({ name: m.name, map: m.map, roughness: 0.9, metalness: 0, alphaTest: op ? 0.5 : 0, side: op ? THREE.DoubleSide : THREE.FrontSide }); }; o.material = Array.isArray(o.material) ? o.material.map(conv) : conv(o.material); });
+const kkA = await new GLTFLoader().loadAsync('kk/figuren/anim.glb');
+const kk = await new GLTFLoader().loadAsync('kk/figuren/knight.glb');
+await new Promise(r => setTimeout(r, 300));
+fbx.animations = [];
+const src = kk.scene, sb = {}, tb = {};
+src.traverse(o => { if (o.isBone) sb[o.name] = o; });
+fbx.traverse(o => { if (o.isBone) tb[o.name] = o; });
+src.updateMatrixWorld(true);
+// Ruhehaltung der Quelle = Ausgangszustand der Knoten
+src.updateMatrixWorld(true); fbx.updateMatrixWorld(true);
+const tRest0 = {}; for (const n in tb) tRest0[n] = tb[n].quaternion.clone();
+// Zielskelett in die Ruhehaltung der Quelle drehen (A-Pose → Haltung der Quelle), Kette für Kette
+const wp = o => o.getWorldPosition(new THREE.Vector3());
+for (const [sa, sb2, ta, tb2] of [['upperarml','lowerarml','Bip01_L_UpperArm','Bip01_L_Forearm'],['lowerarml','handl','Bip01_L_Forearm','Bip01_L_Hand'],['upperarmr','lowerarmr','Bip01_R_UpperArm','Bip01_R_Forearm'],['lowerarmr','handr','Bip01_R_Forearm','Bip01_R_Hand'],
+  ['upperlegl','lowerlegl','Bip01_L_Thigh','Bip01_L_Calf'],['lowerlegl','footl','Bip01_L_Calf','Bip01_L_Foot'],['upperlegr','lowerlegr','Bip01_R_Thigh','Bip01_R_Calf'],['lowerlegr','footr','Bip01_R_Calf','Bip01_R_Foot']]) {
+  fbx.updateMatrixWorld(true);
+  const ds = wp(sb[sb2]).sub(wp(sb[sa])).normalize(), dt = wp(tb[tb2]).sub(wp(tb[ta])).normalize();
+  const sw = new THREE.Quaternion().setFromUnitVectors(dt, ds), b = tb[ta];
+  const w = b.getWorldQuaternion(new THREE.Quaternion()), pw = b.parent.getWorldQuaternion(new THREE.Quaternion());
+  b.quaternion.copy(pw.invert().multiply(sw.multiply(w)));
+}
+fbx.updateMatrixWorld(true);
+const wq = o => o.getWorldQuaternion(new THREE.Quaternion());
+const sRest = {}, tRest = {}, tRestLocal = {};
+for (const k in MAP) sRest[k] = wq(sb[k]);
+for (const n in tb) { tRest[n] = wq(tb[n]); tRestLocal[n] = tb[n].quaternion.clone(); }
+const pelvis = tb['Bip01_Pelvis'], pelvisRestPos = pelvis.position.clone();
+const sHipRest = sb.hips.getWorldPosition(new THREE.Vector3());
+// Höhenverhältnis: Hüfthöhe
+const tHip = pelvis.getWorldPosition(new THREE.Vector3()), tFoot = tb['Bip01_L_Foot'].getWorldPosition(new THREE.Vector3());
+const sFoot = sb.footl.getWorldPosition(new THREE.Vector3());
+const ratio = (tHip.y - tFoot.y) / Math.max(1e-4, sHipRest.y - sFoot.y);
+const mixer = new THREE.AnimationMixer(src);
+const order = []; fbx.traverse(o => { if (o.isBone) order.push(o); });
+const inv = Object.fromEntries(Object.entries(MAP).map(([k, v]) => [v, k]));
+const CHAIN = { Bip01_L_UpperArm: { child: 'Bip01_L_Forearm', k: 0.5, side: 'al' }, Bip01_R_UpperArm: { child: 'Bip01_R_Forearm', k: 0.5, side: 'ar' },
+  Bip01_L_Thigh: { child: 'Bip01_L_Calf', k: 0.7, side: 'll', leg: 1 }, Bip01_R_Thigh: { child: 'Bip01_R_Calf', k: 0.7, side: 'lr', leg: 1 } };
+const SIDE = {}; for (const b of order) { const n = b.name; let p = b, sd = null; while (p && p.isBone) { if (CHAIN[p.name]) { sd = CHAIN[p.name].side; break; } p = p.parent; } if (sd) SIDE[n] = sd; }
+const clips = [];
+for (const clip of kkA.animations) {
+  mixer.stopAllAction(); const a = mixer.clipAction(clip); a.reset().play();
+  const fps = 30, n = Math.max(2, Math.round(clip.duration * fps) + 1), times = [];
+  const qv = {}; for (const v of Object.values(MAP)) qv[v] = [];
+  const pv = [];
+  for (let i = 0; i < n; i++) {
+    const t = Math.min(clip.duration, i / fps); times.push(t);
+    mixer.setTime(t); src.updateMatrixWorld(true);
+    const world = {}, corr = {};
+    for (const b of order) {
+      const pw = b.parent && b.parent.isBone ? world[b.parent.name] : wq(b.parent);
+      const k = inv[b.name];
+      if (k) { const d = wq(sb[k]).multiply(sRest[k].clone().invert()); world[b.name] = d.multiply(tRest[b.name].clone()); }
+      else world[b.name] = pw.clone().multiply(tRestLocal[b.name]);
+      // Comic-Bewegungen der Quelle (breiter Körper) für echte Proportionen entschärfen: Arme näher an den Körper, Knie weniger hoch
+      const fix = CHAIN[b.name];
+      if (fix && !(fix.leg && /Sit/.test(clip.name))) {
+        const dir = tb[fix.child].position.clone().normalize().applyQuaternion(world[b.name]);
+        const al = Math.acos(THREE.MathUtils.clamp(-dir.y, -1, 1)), want = al <= 1.1 ? al * fix.k : 1.1 * fix.k + (al - 1.1) * (Math.PI - 1.1 * fix.k) / (Math.PI - 1.1);
+        if (al - want > 0.01) { const ax = new THREE.Vector3().crossVectors(dir, new THREE.Vector3(0, -1, 0)).normalize(); corr[fix.side] = new THREE.Quaternion().setFromAxisAngle(ax, al - want); }
+      }
+      const cs = SIDE[b.name]; if (cs && corr[cs]) world[b.name] = corr[cs].clone().multiply(world[b.name]);
+      if (k) { const l = pw.clone().invert().multiply(world[b.name]); qv[b.name].push(l.x, l.y, l.z, l.w); }
+    }
+    const hp = sb.hips.getWorldPosition(new THREE.Vector3()).sub(sHipRest).multiplyScalar(ratio);
+    const pp = pelvis.parent.worldToLocal(pelvis.parent.localToWorld(pelvisRestPos.clone()).add(hp));
+    pv.push(pp.x, pp.y, pp.z);
+  }
+  const tracks = Object.entries(qv).map(([name, v]) => new THREE.QuaternionKeyframeTrack(tb[name].uuid + '.quaternion', times, v));
+  tracks.push(new THREE.VectorKeyframeTrack(pelvis.uuid + '.position', times, pv));
+  clips.push(new THREE.AnimationClip(clip.name, clip.duration, tracks));
+}
+// Vorschau
+const ren = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); ren.setSize(innerWidth, innerHeight); document.body.appendChild(ren.domElement);
+const sc = new THREE.Scene(); ren.setClearColor(0x556677); sc.add(new THREE.HemisphereLight(0xffffff, 0x445544, 1.2)); const dl = new THREE.DirectionalLight(0xffffff, 1.5); dl.position.set(2, 4, 3); sc.add(dl);
+const cam = new THREE.PerspectiveCamera(35, innerWidth / innerHeight, 1, 5000);
+sc.add(fbx); fbx.traverse(o => { if (o.isMesh) { o.frustumCulled = false; (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => { if (/opacity/.test(m.name)) { m.transparent = false; m.alphaTest = 0.5; } }); } });
+const m2 = new THREE.AnimationMixer(fbx);
+window.show = (name, t, yaw = 0) => { m2.stopAllAction(); const c = clips.find(c => c.name === name); const a = m2.clipAction(c); a.play(); m2.setTime(t); const d = 420; cam.position.set(Math.sin(yaw) * d, 110, Math.cos(yaw) * d); cam.lookAt(0, 90, 0); ren.render(sc, cam); };
+window.exportGlb = async () => { fbx.traverse(o => { if (o.isMesh && !o.geometry.index) { const g = o.geometry; const groups = g.groups.slice(); const m = mergeVertices(g, 1e-4); m.clearGroups(); groups.forEach(gr => m.addGroup(gr.start, gr.count, gr.materialIndex)); o.geometry = m; } if (o.isMesh) (Array.isArray(o.material) ? o.material : [o.material]).forEach(mt => { if (mt.map) mt.map.userData.mimeType = /opacity/.test(mt.name) ? 'image/png' : 'image/jpeg'; }); }); m2.stopAllAction(); fbx.traverse(o => { if (o.isBone) { o.quaternion.copy(tRest0[o.name]); } }); pelvis.position.copy(pelvisRestPos);
+  if (q.get('anim') === '1') { const ms = []; fbx.traverse(o => { if (o.isMesh) ms.push(o); }); ms.forEach(m => m.parent.remove(m)); }
+  const r = await new GLTFExporter().parseAsync(fbx, { binary: true, animations: q.get('anim') === '1' ? clips : [] }); const u8 = new Uint8Array(r); let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
+window.DBG = () => { const out = {}; fbx.traverse(o => { if (o.isBone && /Pelvis|L_UpperArm|L_Calf/.test(o.name)) out[o.name] = [o.quaternion.toArray().map(v => +v.toFixed(3)), o.position.toArray().map(v => +v.toFixed(1))]; }); out.root = [fbx.position.toArray(), fbx.scale.toArray()]; out.mats = []; fbx.traverse(o => { if (o.isMesh) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => out.mats.push([m.type, m.name, m.color.getHexString(), m.map && m.map.image && (m.map.image.src || '').slice(-40), m.opacity, m.transparent, m.emissive && m.emissive.getHexString()])); }); out.calls = ren.info.render.calls; return out; };
+const dir = (a, b) => b.getWorldPosition(new THREE.Vector3()).sub(a.getWorldPosition(new THREE.Vector3())).normalize().toArray().map(v => +v.toFixed(2));
+window.REST = { sL: dir(sb.upperarml, sb.lowerarml), sR: dir(sb.upperarmr, sb.lowerarmr), sLeg: dir(sb.upperlegl, sb.lowerlegl), sHead: dir(sb.chest, sb.head), sFoot: dir(sb.footl, sb.toesl),
+  tL: dir(tb.Bip01_L_UpperArm, tb.Bip01_L_Forearm), tR: dir(tb.Bip01_R_UpperArm, tb.Bip01_R_Forearm), tLeg: dir(tb.Bip01_L_Thigh, tb.Bip01_L_Calf), tHead: dir(tb.Bip01_Spine2, tb.Bip01_Head), tFoot: dir(tb.Bip01_L_Foot, tb.Bip01_L_Toe0) };
+window.sHip = () => [pelvis.getWorldPosition(new THREE.Vector3()).toArray().map(v=>v|0), sHipRest.toArray(), pelvisRestPos.toArray(), pelvis.quaternion.toArray()];
+window.tb_pos = () => ['Bip01_L_Forearm','Bip01_L_Calf','Bip01_L_UpperArm'].map(n => tb[n].position.toArray().map(v => +v.toFixed(2)));
+window.READY = { ratio, clips: clips.map(c => c.name) };
+</script>
+</body>
