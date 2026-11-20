@@ -36,6 +36,7 @@
     const dk = UL.D.DIFF[opt.diff || 'normal'].k;
     const short = !!opt.short;
     const max = short ? Math.max(3, Math.round(def.stars * 0.5)) : def.stars;
+    R.starList = [];
     const stage = new TrialStage(theme, impl.env ? impl.env(theme) : {});
     // Zuschauen: ein Mit-Camper absolviert die Prüfung (KI steuert, zögert je nach Mut, bricht evtl. ab)
     const ai = opt.ai || null, auto = UL.bot || !!ai;
@@ -106,7 +107,7 @@
       if (go === 'quit') { ctx.quit = true; ctx.end('quit'); return; }
     }
     if (impl.start) impl.start(ctx);
-    UI.hint(ai ? { select: 'Überspringen' } : Object.fromEntries(def.ctrl.map(([k, t]) => [k, t]).concat([['select', 'Halten: Abbruch']])));
+    UI.hint(ai ? { select: 'Überspringen' } : Object.fromEntries(def.ctrl.map(([k, t]) => [k, t]).concat(impl.orbit && !def.ctrl.some(c => c[0] === 'look') ? [['look', 'Kamera']] : []).concat([['select', 'Halten: Abbruch']])));
     UL.Audio.music('trial'); UL.Audio.voicePitch = opt.form === 'm' ? 0.62 : opt.form === 'w' ? 1.05 : 0.85;
     if (!UL.bot) { for (const n of ['3', '2', '1']) { UL.Audio.sfx('drum'); await UI.banner(n, '', 650); } UL.Audio.sfx('gong'); UI.banner('LOS!', '', 700); }
     ctx.running = true;
@@ -126,12 +127,56 @@
       else { I.mx = In.move.x; I.my = In.move.y; I.ok = In.pressed('ok'); I.okD = In.down('ok'); I.alt = In.pressed('alt'); I.altD = In.down('alt'); I.lx = In.look.x; I.ly = In.look.y; I.menu = In.pressed('menu'); }
       if (UL.query.get('fast') && ctx.t > 6) { ctx.end('zeit'); return; }   // nur für automatische Tests
       if (ctx.time) { ctx.time -= dt; if (ctx.time <= 0) { ctx.time = 0; ctx.end('zeit'); return; } }
+      if (orbit) orbit.restore();
+      if (orbit && impl.relMove && orbit.yaw) { const c = Math.cos(orbit.yaw), s = Math.sin(orbit.yaw), x = I.mx, y = I.my; I.mx = x * c + y * s; I.my = -x * s + y * c; }
       try { impl.update(dt, ctx); } catch (e) { console.error(e); ctx.end('fehler'); return; }
+      if (orbit) orbit.apply(dt, auto);
+      starPointer();
       // „Ich bin raus!“: Select / H halten
       if (ai) { if (In.pressed('select') || In.pressed('menu')) { ctx.skip = true; ctx.end('skip'); return; } }
       else if (In.down('select')) { quitHold += dt; if (quitHold > 1.5) { ctx.quit = true; ctx.end('quit'); return; } } else quitHold = 0;
       hudT -= dt; if (hudT <= 0 || lastStars !== ctx.stars) { hudT = 0.2; lastStars = ctx.stars; hud(false, quitHold); }
     };
+    // Freie Kamera: rechter Stick / Maus / rechts wischen dreht die Sicht um die Figur, kehrt nach kurzer Pause zurück.
+    // Die Prüfung setzt ihre Kamera wie gewohnt; hier wird nur die Abweichung des Spielers darübergelegt.
+    const orbit = impl.orbit ? (() => {
+      const cam = ctx.cam, baseP = new T.Vector3(), baseQ = new T.Quaternion(), piv = new T.Vector3(), off = new T.Vector3(), qy = new T.Quaternion(), qp = new T.Quaternion(), right = new T.Vector3(), Y = new T.Vector3(0, 1, 0);
+      const o = { yaw: 0, pitch: 0, zoom: 1, idle: 9, has: false };
+      o.restore = () => { if (o.has) { cam.position.copy(baseP); cam.quaternion.copy(baseQ); } };
+      o.apply = (dt, autoOn) => {
+        baseP.copy(cam.position); baseQ.copy(cam.quaternion); o.has = true;
+        const lx = autoOn ? 0 : In.look.x, ly = autoOn ? 0 : In.look.y, moved = Math.abs(lx) + Math.abs(ly) > 0.0005;
+        o.idle = moved ? 0 : o.idle + dt;
+        o.yaw = UL.clamp(o.yaw - lx, -1.3, 1.3); o.pitch = UL.clamp(o.pitch + ly, -0.3, 0.55);
+        if (!autoOn) o.zoom = UL.clamp(o.zoom - In.zoom * 0.15, 0.6, 1.5);
+        if (o.idle > 1.6) { o.yaw = UL.damp(o.yaw, 0, 2.2, dt); o.pitch = UL.damp(o.pitch, 0, 2.2, dt); }
+        if (Math.abs(o.yaw) + Math.abs(o.pitch) < 0.002 && Math.abs(o.zoom - 1) < 0.002) return;
+        piv.copy(ctx.player.root.position); piv.y += 1.0;
+        off.copy(cam.position).sub(piv).multiplyScalar(o.zoom);
+        right.set(1, 0, 0).applyQuaternion(cam.quaternion); right.y = 0; right.normalize();
+        qy.setFromAxisAngle(Y, o.yaw); qp.setFromAxisAngle(right, -o.pitch); qy.multiply(qp);
+        off.applyQuaternion(qy); cam.position.copy(piv).add(off); if (cam.position.y < 0.3) cam.position.y = 0.3;
+        cam.quaternion.premultiply(qy);
+      };
+      return o;
+    })() : null;
+    ctx.orbit = orbit;
+    // Wegweiser zum nächsten Stern, wenn er außerhalb des Bildes liegt
+    const ptr = document.createElement('div'); ptr.className = 'starptr'; ptr.hidden = true; ptr.textContent = '⭐'; document.getElementById('ui').appendChild(ptr); ctx._ptr = ptr;
+    const sv = new T.Vector3(), wp = new T.Vector3();
+    const shown = m => { for (let o = m; o; o = o.parent) { if (!o.visible) return false; if (o === stage.scene) return true; } return false; };
+    function starPointer() {
+      if (!R.starList || !R.starList.length || impl.noPointer) { ptr.hidden = true; return; }
+      let best = null, bd = 1e9; const pp = ctx.player.root.position;
+      for (const m of R.starList) { if (!shown(m)) continue; m.getWorldPosition(wp); const d = wp.distanceToSquared(pp); if (d < bd) { bd = d; best = m; } }
+      if (!best) { ptr.hidden = true; return; }
+      best.getWorldPosition(sv); sv.project(ctx.cam);
+      const behind = sv.z > 1, inView = !behind && Math.abs(sv.x) < 0.92 && Math.abs(sv.y) < 0.88;
+      if (inView) { ptr.hidden = true; return; }
+      let x = behind ? -sv.x : sv.x, y = behind ? -sv.y : sv.y; const k = 0.86 / Math.max(Math.abs(x), Math.abs(y), 0.001); x *= k; y *= k;
+      ptr.hidden = false; ptr.style.left = ((x + 1) / 2 * 100) + '%'; ptr.style.top = ((1 - y) / 2 * 100) + '%';
+      ptr.style.setProperty('--a', Math.atan2(-y, x) + 'rad');
+    }
     // KI-Camper: zögert (Eingaben ruhen), ruft vor Angst, sagt vielleicht den Satz
     function aiTick(dt) {
       ai.hes = (ai.hes || 0) - dt; ai.next = (ai.next ?? 1.5) - dt;
@@ -163,6 +208,9 @@
       if (impl.finish) try { impl.finish(ctx); } catch (e) { console.error(e); }
       if (ctx.ui) { ctx.ui.remove(); ctx.ui = null; }
       if (ctx._skipBtn) { ctx._skipBtn.remove(); ctx._skipBtn = null; }
+      if (ctx._ptr) { ctx._ptr.remove(); ctx._ptr = null; }
+      if (orbit) orbit.restore();
+      R.starList = null;
       if (ctx.skip) { await UI.fade(true, 0.3); UI.hud(''); resolve({ stars: ctx.stars, max, quit: false, skip: true }); return; }
       const stars = ctx.quit ? 0 : ctx.stars;
       Object.assign(vars, { s: stars });

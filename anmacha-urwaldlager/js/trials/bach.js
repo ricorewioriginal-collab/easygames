@@ -5,6 +5,7 @@
   const HW = 3.2, ZT = -10, ZB = 7.5, NET = 6.2;   // halbe Breite, oberes/unteres Ende, Netz-Linie
 
   UL.Trials.reg('bach', {
+    orbit: true, relMove: true,
     env: (theme) => theme === 'studio' ? { radius: 17 } : { tod: 'day', radius: 18, clear: [{ x: 0, z: -8, r: 6 }, { x: 0, z: -2, r: 6 }, { x: 0, z: 4, r: 6 }, { x: 0, z: 9, r: 5 }], seed: 91 },
     setup(ctx) {
       const sc = ctx.scene, studio = ctx.theme === 'studio', L = ZB - ZT + 4;

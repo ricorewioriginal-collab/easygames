@@ -10,6 +10,7 @@
   const yawAt = s => { const a = s / RC; return Math.atan2(Math.cos(a), -Math.sin(a)); };
 
   UL.Trials.reg('parcours', {
+    orbit: true,
     env: (theme) => theme === 'studio' ? { radius: RC + W + 4 } : { tod: 'day', radius: RC + 7, clear: [{ x: 0, z: 0, r: RC + W + 2, k: 0.4 }], seed: 88, density: 0.8 },
     setup(ctx) {
       const sc = ctx.scene, studio = ctx.theme === 'studio';
