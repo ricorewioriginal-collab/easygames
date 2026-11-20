@@ -201,10 +201,11 @@
     {
       "t": "Spaßwaffen, Gesetze und Fahndungssterne",
       "p": [
-        "Mit Angriff (F, LT am Controller, 👊 auf dem Handy) teilst du aus, mit Waffe wechseln (G, L3, 🔄 oder Antippen der Waffen-Anzeige) wählst du: Klaps, Regenbogen-Poolnudel, Gleitgel-Flasche und – nur mit „Inhalte ab 18“ und einem Toy aus der Boutique – den Glitzer-Dildo. Getroffene fallen komisch um und stehen nach ein paar Sekunden wieder auf; niemand wird verletzt.",
+        "Mit Angriff (F, LT am Controller, 👊 auf dem Handy) teilst du aus, mit Waffe wechseln (G, L3, 🔄 oder Antippen der Waffen-Anzeige) wählst du: Klaps, Regenbogen-Poolnudel, Gleitgel-Flasche und – mit „Inhalte ab 18“ – den Glitzer-Dildo. Getroffene fallen komisch um und stehen nach ein paar Sekunden wieder auf; niemand wird verletzt.",
         "Gleitgel (4 € im Späti Lecker) wirfst du vor dich auf den Boden. Wer durch die Pfütze läuft, rutscht aus – auch die Polizei. Rennst du selbst hindurch, landest du ebenfalls auf dem Hosenboden.",
         "Rainbow City hat Gesetze: Hauen (1 Stern), Polizei angreifen (2 Sterne), Gleitgel auf dem Gehweg (1), Erregung öffentlichen Ärgernisses mit dem Dildo vor der Streife (1) und Autodiebstahl vor Polizeiaugen (1). Sieht dich keine Streife, ruft manchmal jemand die Polizei.",
-        "Mit Sternen rennt die Streife hinterher, ab drei Sternen kommt Verstärkung. Bleibst du lange ungesehen (8 Sekunden plus 5 je Stern), hängst du sie ab. Erwischt dich jemand, gibt es Bußgeld und zwei Stunden Papierkram auf der Wache. Sofort weg sind die Sterne mit dem Undercover-Umstyling in der Boutique oder wenn du dich auf der Polizeiwache stellst und zahlst."
+        "Mit Sternen rennt die Streife hinterher, ab drei Sternen kommt Verstärkung. Bleibst du lange ungesehen (8 Sekunden plus 5 je Stern), hängst du sie ab. Erwischt dich jemand, gibt es Bußgeld und zwei Stunden Papierkram auf der Wache. Sofort weg sind die Sterne mit dem Undercover-Umstyling in der Boutique oder wenn du dich auf der Polizeiwache stellst und zahlst.",
+        "Schläge haben Wucht: Deine Figur dreht sich zum Ziel, holt aus und schlägt zu. Der erste Treffer lässt Leute nur taumeln, erst nach zwei Treffern (Poolnudel, Glitzer-Dildo) oder drei Klapsen fallen sie um. Die Gleitgel-Flasche fliegt im Bogen und zerplatzt zur Pfütze. Der Glitzer-Dildo gehört mit „Inhalte ab 18“ fest zur Ausrüstung, ein Toy aus dem Laden brauchst du dafür nicht mehr."
       ]
     },
     {
@@ -230,6 +231,34 @@
         "Nur mit „Inhalten ab 18“: Nachts ab etwa 22 Uhr stehen Nico, Roxy, Teo und Jules an der Laternenmeile. Fahr im Auto langsam heran und drück die Angriffstaste zum Hupen (F, LT oder 👊). Wer mag, kommt ans Fenster und nennt Preis und Regeln.",
         "Steigt jemand ein, zeigt dir eine Lichtsäule eine ruhige Ecke. Halte dort an: Das Auto schaukelt, das Bild blendet ab. Gezeigt wird nichts. Sieht dich dabei eine Streife, gibt es einen Stern. Steigst du vorher aus, bekommst du dein Geld zurück.",
         "Samenbank Zukunft: Mit einem aktuellen Test aus dem Checkpoint kannst du einmal am Tag spenden (60 €). Nach ein paar Spenden schreibt dir die Samenbank, dass sich ein Kinderwunsch erfüllt hat."
+      ]
+    },
+    {
+      "t": "Autoradio: 13 echte Sender",
+      "p": [
+        "Im Auto läuft Radio wie in den großen Open-World-Spielen. Mit Q und R (Controller: LB und RB, am Handy der Knopf 📻) drehst du am Senderrad. Antippen oder Anklicken eines Senders im Rad wählt ihn direkt.",
+        "Zur Wahl stehen die 13 echten Sender der RicoReWi-Familie live aus dem Internet: RicoReWi Radio, YourTime FM, Chartradio 24, Clubradio 24, Rapradio 24, Rockradio 24, Schlagerpop 24, Kultradio 24, AnMaCha 24, Zocker FM, Radiofloh, Christmasradio 24 und Special Radio. Unten links steht, welcher Titel gerade läuft.",
+        "Dazu kommen die vier Stadt-Sender Regenbogen FM, Neon 88, Prisma Radio und Hafen Lounge. Sie laufen auch ohne Internet. Ist ein echter Sender nicht erreichbar, springt automatisch Regenbogen FM ein. Der Musikregler in den Einstellungen gilt auch für das Radio, bei Gesprächen wird es leiser."
+      ]
+    },
+    {
+      "t": "Akt II: Die Lichter der Hochstadt",
+      "p": [
+        "Ab Kapitel 2 wartet in der Hochstadt eine eigene Missionsreihe mit acht Missionen. Das alte Revuetheater Kaleidoskop am Neonplatz soll einem Glasturm weichen, und das Haus Vega bittet dich um Hilfe.",
+        "Die Figur mit dem Symbol 🌆 über dem Kopf hat die nächste Mission. Nach dem Gespräch wählst du „Los geht’s“. Eine Lichtsäule und das Radar zeigen die Stationen, oben läuft die Zeit. Läuft sie ab, sprichst du die Figur einfach noch einmal an.",
+        "Neue Figuren: Mama Vega (Neonplatz), Dee (Parkplatz unter der Hochbahn), Reporter Yusuf, Stadträtin Ines Okafor, Hochbahnfahrer Piet und die Bauunternehmerin Aurelia Kron. Niemand wird verletzt, am Ende steht ein Gespräch mit zwei möglichen Ausgängen."
+      ]
+    },
+    {
+      "t": "Garage, eigener Wagen und Rennen",
+      "p": [
+        "In der Hochstadt steht auf dem Parkplatz unter der Hochbahn die Garage (🔧 auf dem Radar). Dort kaufst du eigene Autos: vom Bulli „Flower Power“ (600 €) über Pick-up, Geländewagen, Flitzer GTI und Sportcoupé „Blitz“ bis zum Rennwagen „Regenbogenpfeil“ (5000 €). Jedes Auto fährt sich anders: Tempo, Turbo, Antritt und Lenkung.",
+        "Dein eigener Wagen bleibt stehen, wo du aussteigst, und gilt nie als geklaut. In der Garage holst du ihn zurück, lackierst ihn um (40 €) und baust in drei Stufen mehr Turbo ein (300, 600, 1200 €)."
+      ],
+      "list": [
+        "Rennen: Vier Strecken mit 🏁 auf der Straße (Altstadtring, Brückensprint, Hochstadt-Grand-Prix, Stadtmarathon). Halte mit dem Auto an der Zielflagge an und starte. Du fährst gegen die Uhr durch die Tore, für Gold, Silber und Bronze gibt es Preisgeld und Ansehen.",
+        "Paketdienst Eilbote: im Handy unter Aufträge. Am Depot bei der Garage laden und ausliefern. Jede pünktliche Lieferung in Folge bringt mehr Lohn, mit Ladefläche (Kombi, Bulli, Lieferwagen, Pick-up) 25 % extra.",
+        "Bedienung wie immer: dieselben Tasten und Knöpfe an Handy, PC, TV und Controller."
       ]
     }
   ],
@@ -342,6 +371,25 @@
         "Vor dem Hupen an der Laternenmeile langsam fahren, sonst steigt niemand ein.",
         "Die ruhigen Ecken (Parkplatz unter der Hochbahn, Basketballplatz, Hafen-Container) liegen abseits der Streifen."
       ]
+    },
+    {
+      "t": "Hochstadt-Missionen schaffen",
+      "list": [
+        "Missionen mit Auto-Tipp immer im Auto beginnen: erst einsteigen, dann neben der Figur aussteigen und ansprechen.",
+        "„Der letzte Zug“ ist knapp. Stell das Auto vorher an der Station ab und fahr geradeaus unter den Gleisen nach Süden.",
+        "Zwei Missionen gehen nur nachts. Die Figur bietet dir an, bis 21 Uhr zu warten.",
+        "Für „Papierkrieg“ und die Ballnacht geht es über die Regenbogenbrücke in die Altstadt und zurück. Mit Turbo (Sprinttaste) reicht die Zeit gut."
+      ]
+    },
+    {
+      "t": "Rennen und Garage",
+      "list": [
+        "Spar zuerst auf den Flitzer GTI (1200 €): Er lenkt am besten und reicht für Silber auf allen Strecken.",
+        "Turbo erst auf den Geraden zünden, vor Kurven vom Gas gehen. Ein Rempler kostet mehr Zeit als eine sauber gefahrene Kurve.",
+        "Preisgeld gibt es nur für eine bessere Medaille als bisher, sonst 15 € Antrittsgeld. Für Gold lohnt die dritte Turbo-Stufe.",
+        "Für den Paketdienst nimm einen Wagen mit Ladefläche und bleib in einem Viertel: kurze Wege halten die Serie am Leben.",
+        "Auto weg? Die Garage bringt deinen Wagen jederzeit kostenlos zurück."
+      ]
     }
   ],
   "loesung": [
@@ -444,6 +492,29 @@
         "Nach drei Spenden in der Samenbank: +3 Ruf und Post von einer Familie, nach sechs Spenden eine zweite Karte.",
         "Eine Runde reden im Auto (ein Drittel des Preises) bringt Kontakte ohne Fahndungsrisiko."
       ]
+    },
+    {
+      "t": "Akt II: Die Lichter der Hochstadt",
+      "list": [
+        "1 Über die Brücke (Mama Vega, Neonplatz): Zettel an der Theatertür lesen, Bühneneingang ansehen, zurück zu Vega. 80 €.",
+        "2 Das Haus Vega (Dee, Parkplatz): Kiki, die Zwillinge und Oma Tilly einsammeln und zum Neonplatz fahren. 120 €.",
+        "3 Papierkrieg (Yusuf, unter der Hochbahn): Akte im Regenbogenhaus holen, im Studio kopieren, zurück zu Yusuf. 150 €.",
+        "4 Nachtschicht (Yusuf, ab 21 Uhr): Baubüro, Schaufenster und Theater fotografieren. 160 €.",
+        "5 Stimmen für das Kaleidoskop (Ines, im Osten): fünf Listen einsammeln. 140 €.",
+        "6 Der letzte Zug (Piet, Station): unter der Hochbahn nach Süden, Scheinwerfer laden, zum Neonplatz. 180 €.",
+        "7 Nacht der tausend Lichter (Vega, ab 21 Uhr): Boutique, Club Prisma, One Love Bar, zurück zum Neonplatz. 220 €.",
+        "8 Das Kaleidoskop bleibt (Aurelia Kron, vor dem Turm): Entscheide dich für den gemeinsamen Bau oder den Rückzug, hol alle zum Platz. 1500 €, +10 Ruf und das Theater Kaleidoskop im Imperium (+180 € am Tag)."
+      ]
+    },
+    {
+      "t": "Rennen: Goldzeiten",
+      "list": [
+        "Altstadtring: Gold unter 44 s (150 €), Silber 54 s, Bronze 70 s.",
+        "Brückensprint: Gold unter 40 s (200 €), Silber 50 s, Bronze 66 s.",
+        "Hochstadt-Grand-Prix: Gold unter 62 s (350 €), Silber 76 s, Bronze 98 s.",
+        "Stadtmarathon: Gold unter 78 s (500 €), Silber 95 s, Bronze 125 s.",
+        "Mit dem Rennwagen „Regenbogenpfeil“ und Turbo Stufe 3 ist überall Gold drin."
+      ]
     }
   ],
   "faq": [
@@ -458,6 +529,14 @@
     {
       "q": "Läuft das Spiel auf dem Handy?",
       "a": "Ja, im Hoch- und Querformat mit Touch-Steuerung. Die Grafikstufe passt sich automatisch an."
+    },
+    {
+      "q": "Das Spiel ruckelt am Handy. Was tun?",
+      "a": "Am Handy startet Pride City jetzt auf der sparsamen Grafikstufe und regelt die Auflösung selbst nach, bis es flüssig läuft. Unter Menü → Einstellungen → Grafik kannst du die Stufe auch fest auf „Niedrig“ stellen."
+    },
+    {
+      "q": "Gibt es Motorräder, Fahrräder oder Boote?",
+      "a": "Noch nicht. Es gibt zwölf Autos, vom Kleinwagen bis zum Rennwagen. Weitere Fahrzeugarten folgen, sobald passende freie Modelle vorliegen."
     }
   ]
 }

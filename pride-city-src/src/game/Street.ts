@@ -6,13 +6,14 @@ import { box, cyl, pbr, glow } from '../engine/geo';
 import { Actor, WALK_MPS, RUN_MPS, type Anim, type Look } from './Actor';
 import { WORKERS, CURB } from './social';
 import { CURB_SPOTS } from './uptown';
+import { carDef, type CarDef } from './vehicles';
 import type { World } from './World';
 import { sfx } from '../engine/Audio';
 import type { PBRMaterial, Scene } from '../engine/bjs';
 
 export type StreetKind = 'walker' | 'police' | 'fire' | 'worker' | 'curb' | 'medic' | 'security' | 'chef' | 'courier';
 export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean; down?: boolean; chase?: boolean; away?: boolean }
-export interface Parked { o: Node3; name: string; yaw: number; v: number }
+export interface Parked { o: Node3; name: string; yaw: number; v: number; def: CarDef; /** dein eigener Wagen aus der Garage */ own?: boolean }
 
 const LINES: Record<Exclude<StreetKind, 'worker' | 'curb'>, string[]> = {
   walker: ['Schönen Tag noch!', 'Hast du schon alle Pride-Sticker gefunden?', 'Der Späti hat die besten Brezeln der Stadt.', 'Ich bin auf dem Weg ins Prisma!', 'Kennst du schon den Club Leuchtturm am Hafen?', 'Rainbow City ist einfach die beste Stadt.', 'Die Strandbar am Hafen macht die besten Cocktails.', 'Heute ist so ein schöner Tag zum Rumlaufen.'],
@@ -110,15 +111,27 @@ export class Street {
     truck.parent = this.world.root;
     this.world.cars.push({ o: truck, path: [new Vector3(57, .1, -33), new Vector3(-57, .1, -33)], seg: 0, u: .3, v: 6, kind: 'truck' });
     // Geparkte Autos zum Einsteigen (am Fahrbahnrand der ruhigen Querstraße z = 30 und am Kai)
-    const spots: Array<[string, string, number, number, number]> = [
-      ['car_hatchback', 'Kleinwagen', 11, 32.7, -Math.PI / 2], ['car_sedan', 'Limousine', -11, 27.3, Math.PI / 2],
-      ['car_taxi', 'Taxi', -20, 27.3, Math.PI / 2], ['car_stationwagon', 'Kombi', -66, 14, 0],
+    // dazu in der Hochstadt: Sportwagen, Geländewagen, Bulli und Pick-up (Kenney Car Kit) auf dem Parkplatz und am Neonplatz
+    const spots: Array<[string, number, number, number]> = [
+      ['hatch', 11, 32.7, -Math.PI / 2], ['sedan', -11, 27.3, Math.PI / 2], ['taxi', -20, 27.3, Math.PI / 2], ['kombi', -66, 14, 0],
+      ['flitzer', 24, 32.7, -Math.PI / 2], ['suv', -66, 22, 0],
+      ['sport', 157.2, -51, Math.PI], ['bulli', 162.4, -51, Math.PI], ['pickup', 159.8, -38.5, 0], ['lux', 130, 62.7, -Math.PI / 2], ['liefer', 196, -62.7, Math.PI / 2],
     ];
-    for (const [file, name, x, z, yaw] of spots) {
-      const o = await this.world.car(file);
+    for (const [id, x, z, yaw] of spots) {
+      const def = carDef(id), o = await this.world.car(def.file);
       o.position.set(x, .1, z); o.rotation.y = yaw;
-      this.parked.push({ o, name, yaw, v: 0 });
+      this.parked.push({ o, name: def.name, yaw, v: 0, def });
     }
+  }
+  /** Eigenen Wagen hinstellen (ersetzt den bisherigen) */
+  async spawnOwn(def: CarDef, x: number, z: number, yaw: number, hue: number) {
+    const old = this.parked.findIndex((c) => c.own);
+    const o = await this.world.car(def.file);
+    o.position.set(x, .1, z); o.rotation.y = yaw;
+    if (hue >= 0) await this.world.paintCar(o, hue);
+    const car: Parked = { o, name: def.name, yaw, v: 0, def, own: true };
+    if (old >= 0) { this.parked[old].o.dispose(); this.parked[old] = car; } else this.parked.push(car);
+    return car;
   }
 
   /** dt, Nacht (0–1), 18+ an, Bezugspunkt (Spieler) */
@@ -130,12 +143,13 @@ export class Street {
     this.t += dt;
     const on = Math.floor(this.t * 4) % 2;
     for (const [a, b] of this.flash) { a.m.albedoColor = a.c.scale(on ? 1 : .12); b.m.albedoColor = b.c.scale(on ? .12 : 1); }
+    const far = this.world.low ? 62 : 90, anim = this.world.low ? 36 : 60;
     this.people.forEach((n, i) => {
       const show = n.away ? false : n.kind === 'worker' || n.kind === 'curb' ? adult && night > .4 : n.kind === 'walker' ? (night < .5 || i % 2 === 0) : n.kind === 'security' ? night > .3 : true;
       const d2 = Vector3.DistanceSquared(n.a.root.position, ref);
-      n.a.root.visible = !n.away && (n.chase || n.talking || (show && d2 < 90 * 90));
+      n.a.root.visible = !n.away && (n.chase || n.talking || (show && d2 < far * far));
       if (!n.a.root.visible) return;
-      if (d2 < 60 * 60 || n.chase) n.a.update(dt);
+      if (d2 < anim * anim || n.chase) n.a.update(dt);
       if (n.talking || n.down || n.chase) return;
       if (n.path.length < 2) return;
       if (n.wait > 0) { n.wait -= dt; if (n.a.anim !== 'idle') n.a.play('idle'); return; }

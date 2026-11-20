@@ -41,7 +41,8 @@ describe('Story', () => {
     expect(goal(s).title).toContain('1/3');
     s.step = 6; expect(goal(s).npc).toBe('nova');
     s.chapter = 2; s.step = 0; expect(goal(s).npc).toBe('mo');
-    s.chapter = 6; expect(goal(s).title).toBe('Freies Spiel');
+    s.chapter = 6; expect(goal(s).title).toContain('Hochstadt 1/8'); // Akt II übernimmt nach dem Abspann
+    s.flags.saga = 8; expect(goal(s).title).toBe('Freies Spiel');
   });
   it('lässt sich von Kapitel 2 bis zum Abspann durchspielen', () => {
     const s = defaults(); s.chapter = 2; s.step = 0;
@@ -52,7 +53,7 @@ describe('Story', () => {
       reward: (m, r) => { s.money += m; s.rep += r; }, step: (n) => { s.step = n; },
       dance: () => danceResult(c, true), barShift: (d) => d?.(),
       chapterDone: () => { s.chapter++; s.step = 0; },
-      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>,
+      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>, mission: () => {},
     };
     // Kapitel 2
     talk(c, 'mo'); expect(s.step).toBe(1);
@@ -69,7 +70,7 @@ describe('Story', () => {
     s.money = 400; poi(c, 'bar'); expect(s.flags.bar).toBe(true); expect(s.chapter).toBe(4);
     // Kapitel 4
     expect(hidden(s, 'nova')).toBe(true);
-    talk(c, 'jules'); expect(marks(s).length).toBe(3);
+    talk(c, 'jules'); expect(marks(s).filter((m) => m[1] !== '🌆').length).toBe(3);
     for (const id of ['rex', 'bruno', 'kim']) talk(c, id);
     expect(s.step).toBe(2);
     poi(c, 'studio'); h = 23; poi(c, 'park'); expect(s.step).toBe(4); expect(hidden(s, 'nova')).toBe(false);
@@ -93,7 +94,7 @@ describe('Story', () => {
       say: (lines: Line[], done) => { for (const l of lines) { l.choices?.[l.choices.length > 1 && l.choices[0].label.startsWith('Später') ? 1 : 0]?.fn?.(); if (typeof l.text === 'function') l.text(); } done?.(); },
       reward: (m, r) => { s.money += m; s.rep += r; }, step: () => {}, chapterDone: () => {}, barShift: (d) => d?.(),
       dance: () => { danced++; danceResult(c, true); },
-      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>,
+      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>, mission: () => {},
     };
     expect(hidden(defaults(), 'leon')).toBe(true);
     for (let k = 0; k < 8; k++) { talk(c, 'leon'); await new Promise((r) => setTimeout(r, 80)); }
@@ -115,7 +116,7 @@ describe('Story', () => {
       s, toast: () => {}, hour: () => 12, skipToHour: () => {}, enterHome: (a) => a?.(), credits: () => {},
       say: (lines: Line[], done) => { for (const l of lines) { l.choices?.[0]?.fn?.(); if (typeof l.text === 'function') l.text(); } done?.(); },
       reward: (m, r) => { s.money += m; s.rep += r; }, step: () => {}, chapterDone: () => {}, barShift: (d) => d?.(), dance: () => {},
-      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>,
+      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>, mission: () => {},
     };
     expect(hidden(defaults(), 'finn')).toBe(true);
     for (let k = 0; k < 8; k++) { talk(c, 'finn'); await new Promise((r) => setTimeout(r, 70)); }
