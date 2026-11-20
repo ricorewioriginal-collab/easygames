@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "6c944143021d",
- "generated": "2026-11-20T20:13:29+00:00",
- "commit": "f60f03cfcb13de6bb9c684a05dd9f5e7ac2223bb",
+ "version": "95a0ebb351f9",
+ "generated": "2026-11-20T21:22:54+01:00",
+ "commit": "f4f6ad3def96c4c76e42ad5571dafeeb6e29bb74",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3783,8 +3783,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/main.js",
-   "s": 50204,
-   "h": "6bcd52f258e27b7cb3837dcb82ce25ec962c0c48a0928094bbf171dbcc6107df"
+   "s": 51189,
+   "h": "c6590399be1749b9bf56fe4db062f2566ca2563cb5daed39a265288d86674549"
   },
   {
    "p": "anmacha-podcast-tycoon/src/media.js",
@@ -3883,8 +3883,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/world.js",
-   "s": 36212,
-   "h": "3f79f43fe0a78620a29203db1986aac786c919b82531a05a8ce0231a03774525"
+   "s": 36238,
+   "h": "c99222f8ca9c07006c7124efc7a2cd110d7be3cffb3d7804b48a7f4c838e7e19"
   },
   {
    "p": "anmacha-podcast-tycoon/src/worldfx.js",
@@ -16459,7 +16459,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236550,
-   "h": "a1e8f3c837382b8ff6af14003d957396110160c042e9139e68f246c7878f8d6b"
+   "h": "98e187cd503d9d817deb5821c794f2841db655ab8e63d318e8a1fbb361daac4b"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
