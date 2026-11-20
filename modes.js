@@ -23,6 +23,7 @@ window.EASYGAMES_MODES = {
   'colorpop-universe': { multi: true },
   'ricopoly': { online: true, multi: true },
   'partyverse': { online: true, multi: true },
+  'pride-city': { online: true },
   'riftzone': { online: true },
   'taschi': { online: true },
   'ricolife': { online: true },

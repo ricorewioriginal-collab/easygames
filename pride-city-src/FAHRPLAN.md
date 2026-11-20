@@ -27,3 +27,4 @@ Funktionen übernehmen, neuer Name und neues Cover. Dazu die Ideen 1–15 aus de
 | 16 | Geschäfte führen: Personal in drei Stufen, Ausbauten, Beliebtheit, Veranstaltungen, Probleme lösen | erledigt |
 | 17 | Lebendige Stadt: Wetter (Regen, Gewitter, Nebel, Regenbogen), acht Zufallsereignisse am Straßenrand, CSD-Parade jeden Samstag mit Festwagen, Tanzgruppe und Konfetti | erledigt |
 | 18 | Beziehungen vertiefen: Nähe in fünf Stufen, tägliche Nachrichten, neun Unternehmungen, Geschenke mit Vorlieben, Begleitung durch die Stadt, Absprache exklusiv oder offen | erledigt |
+| 19 | Online & Freunde: Stadt öffnen, per Link, QR-Code oder Code beitreten, bis zu fünf Gäste, Gesten und Zurufe | erledigt |

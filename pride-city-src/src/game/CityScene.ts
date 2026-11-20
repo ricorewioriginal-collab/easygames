@@ -127,7 +127,7 @@ export class CityScene implements GameScene {
     radio.subscribe((r, what) => { if (!this.drive) return; if (what === 'error') toast(`📻 ${r.err}`); this.showRadio(what !== 'song' ? this.g.hud.wheelOpen : true); });
     this.weather = new Weather(this.scene, this.world); this.life = new CityLife(this.g, this, this.scene); this.buddy = new Companion(this.scene);
     this.friends = new Friends(this.scene, this.world, () => this.g.save.data.settings.adult);
-    this.friends.me = () => ({ n: this.g.save.data.name, l: playerLook(this.g.save.data), s: this.netState() });
+    this.friends.me = () => ({ n: this.g.save.data.name, l: streetLook(playerLook(this.g.save.data)), s: this.netState() });
     this.friends.onNote = (text, kind) => { toast(text, 3600); sfx(kind === 'join' ? 'win' : kind === 'leave' ? 'back' : 'move'); };
     this.world.extraBlock = (x, z) => this.street.parked.some((c) => Math.hypot(c.o.position.x - x, c.o.position.z - z) < 2.6);
     this.buildStickers();
@@ -171,6 +171,7 @@ export class CityScene implements GameScene {
     this.drive = null;
     this.player.root.visible = true;
     this.player.setLook(streetLook(playerLook(s)));
+    this.friends.relook();
     this.player.root.position.set(s.pos.x, .1, s.pos.z);
     this.player.root.rotation.y = s.pos.yaw;
     this.cam.yaw = this.cam.tYaw = s.pos.yaw + Math.PI;
