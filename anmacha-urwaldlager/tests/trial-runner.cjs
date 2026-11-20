@@ -8,7 +8,7 @@ const { chromium } = require('playwright');
   const errs = [];
   p.on('pageerror', e => errs.push(e.message)); p.on('console', m => { if (m.type() === 'error') errs.push(m.text()); });
   const t0 = Date.now();
-  await p.goto(`http://localhost:8080/anmacha-urwaldlager/index.html?trial=${id}&theme=${theme}&bot=1`);
+  await p.goto(`http://localhost:8080/anmacha-urwaldlager/index.html?trial=${id}&theme=${theme}&bot=1${process.env.WX ? '&wx=' + process.env.WX : ''}`);
   await p.waitForTimeout(+shotAt * 1000);
   if (out) await p.screenshot({ path: out });
   const r = await p.waitForFunction('window.TRIAL_RESULT', null, { timeout: 900000 }).then(x => x.jsonValue()).catch(() => null);

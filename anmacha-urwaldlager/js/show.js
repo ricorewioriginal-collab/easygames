@@ -60,6 +60,7 @@
   Show.day = async () => {
     const S = Show.S; Show.abort = false;
     if (UL.A.rbAll) await UL.A.rbAll;   // echte Figuren fertig laden
+    if (UL.Weather) UL.Weather.roll(S);   // Wetter des Tages
     S.snap = null; Show.snapshot();
     UI.closeAll(); UL.Tags.clear(); UI.cmd([]); UI.hud('');
     try {
@@ -84,6 +85,7 @@
   async function hostSet(tod, extra) {
     await UI.fade(true, 0.3);
     const st = new UL.HostSet(Show.S.theme, { tod, extra });
+    if (UL.Weather && Show.S.theme !== 'studio') UL.Weather.attach(st, Show.S.weather);
     R.set(st); UI.hud(''); UI.cmd([]); UI.hint({});
     UL.Audio.music(tod === 'night' ? 'night' : 'show'); UL.Audio.atmo(Show.S.theme === 'studio' ? 'studio' : tod === 'night' ? 'night' : 'jungle');
     await UI.fade(false, 0.4);
@@ -143,6 +145,7 @@
     const S = Show.S, st = await hostSet('day');
     await UI.banner(`Tag ${S.day}`, `${alive().length} Camper im Lager`, 1600);
     await st.mod('morning', { d: S.day });
+    { const K = UL.Weather && UL.Weather.get(); if (K && S.theme !== 'studio') { await st.line('mats', `${K.icon} Wetterbericht: ${K.say}`); if (K.rain) Show.log(`Wetter: ${K.name}.`, K.icon); } }
     // Was bisher geschah
     const y = S.log.filter(l => l.d === S.day - 1 && !/^Abendessen/.test(l.txt)).slice(0, 2).map(l => l.txt.replace(/\.$/, ''));
     if (y.length) await st.line('lotte', `Was gestern im Lager los war: ${y.join('. Und: ')}.`);
@@ -230,7 +233,7 @@
   function simTrial(c, def) {
     const k = D.DIFF[Show.S.diff].k;
     const quit = UL.rng.chance(Math.max(0, 0.18 - c.t.mut * 0.2) * k);
-    vit(c); const q = UL.clamp(c.t.mut * 0.55 + c.t.fleiss * 0.2 + UL.rand(-0.15, 0.35) - (k - 1) * 0.25 - (c.slp < 35 ? 0.1 : 0) - (c.hun < 30 ? 0.08 : 0), 0, 1);
+    vit(c); const q = UL.clamp(c.t.mut * 0.55 + c.t.fleiss * 0.2 + UL.rand(-0.15, 0.35) - (k - 1) * 0.25 - (c.slp < 35 ? 0.1 : 0) - (c.hun < 30 ? 0.08 : 0) - (1 - ((UL.Weather && UL.Weather.get()) || { time: 1 }).time) * 0.6, 0, 1);
     return { stars: quit ? 0 : Math.round(def.stars * q), max: def.stars, quit };
   }
   function applyTrial(c, r, def) {
@@ -323,7 +326,9 @@
       const ok = Math.random() < 0.4 + w.t.fleiss * 0.5 + (w.slp > 50 ? 0.1 : -0.1);
       res = { fireOk: ok, scared: ok ? 2 : 0, stolen: ok ? 0 : 1 + (Math.random() < 0.4 ? 1 : 0) };
     }
-    list.forEach(c => { const rest = (c === w ? 10 : res.fireOk ? 35 : 20) + (c.id === 'me' && Show.hasLux('kissen') ? 10 : 0); c.slp = UL.clamp(c.slp - 25 + rest, 0, 100); });
+    const WK = UL.Weather && UL.Weather.get(), wet = WK && WK.sleep && !S.tarp ? WK.sleep : 0;   // Regen/Gewitter ohne Plane: schlechter Schlaf
+    list.forEach(c => { const rest = (c === w ? 10 : res.fireOk ? 35 : 20) + (c.id === 'me' && Show.hasLux('kissen') ? 10 : 0) - wet; c.slp = UL.clamp(c.slp - 25 + rest, 0, 100); });
+    if (wet) Show.log(`${WK.icon} Nasse Nacht – alle schlafen schlecht.`, '😴'); else if (WK && WK.sleep && S.tarp) Show.log('Dank der Plane bleiben die Betten trocken.', '⛺');
     if (Show.hasLux('tagebuch')) Show.change(m, { ent: 2 });
     if (S.luxGone && S.day + 1 >= S.luxGone.back) { Show.log(`${firstName(m)} bekommt den Luxusartikel zurück.`, '🎒'); S.luxGone = null; }
     if (res.stolen) list.forEach(c => { c.hun = UL.clamp(c.hun - res.stolen * 4, 0, 100); });
