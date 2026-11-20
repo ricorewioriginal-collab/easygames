@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "28898efd2ebb",
- "generated": "2026-11-20T02:38:40+00:00",
- "commit": "7ccc76d0050311738aa3ea4e31d87cc8072613d1",
+ "version": "b6b5f93b58ab",
+ "generated": "2026-11-20T03:39:15+01:00",
+ "commit": "16aab83ac48f2d68a462a4f058f1f980f4dec791",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -15924,7 +15924,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236341,
-   "h": "870069e4464da67670eda393c3b7b2f7f65d1fb0fc41dde0b3261550aebd1443"
+   "h": "419938416454f6bbb6414adac9ea35823ccecdd39f84143a8ebb26d17294805c"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -71507,24 +71507,24 @@
    "h": "9e629369f7a54ab0b5ef047ea685f1a41154903e478869c95eca8a5590cc4681"
   },
   {
-   "p": "zotik/assets/basisTextureLoader-DWblVv28.js",
+   "p": "zotik/assets/basisTextureLoader-CERPUaY1.js",
    "s": 29845,
-   "h": "646b0dcee9e2e34a34fa73d7075c99ddec6e1bbc59792bade4672e1c0e22175c"
+   "h": "8c73c6143174225b4e27bf29e698e9b15c44a0c71a5fe380f219e0943744272f"
   },
   {
-   "p": "zotik/assets/cubemapToSphericalPolynomial-ZHTj0oAp.js",
+   "p": "zotik/assets/cubemapToSphericalPolynomial-BYNqHKWd.js",
    "s": 3667,
-   "h": "8679696ea82f447ecd0d9b7dd042993a3d2bf379da4b17c32ea2bc4741edd2eb"
+   "h": "395bf75857e79ec56943bb6efea4344d371c1a6e10001d4020a4e063c7874b9b"
   },
   {
-   "p": "zotik/assets/dds.pure-_eUSt5xY.js",
+   "p": "zotik/assets/dds.pure-BYZg_0yh.js",
    "s": 7054,
-   "h": "148ceee4c15e4d41637116b3f474f8bfd0aa70e4dc96b5cb7884e3de45df6ff5"
+   "h": "34585e393d4afa387149af56c0283d261f9d85370d0dda9d42436a025594373a"
   },
   {
-   "p": "zotik/assets/ddsTextureLoader-D1V_wszR.js",
+   "p": "zotik/assets/ddsTextureLoader-Bq8_v1qe.js",
    "s": 1317,
-   "h": "2060df9a201035a65873a5f71b4a63dfbfe4a754b82b60b939641ace63249bbb"
+   "h": "29ce104c805946fbe358798a73e6ed0b237830486f00078a837f01e5d174a7bb"
   },
   {
    "p": "zotik/assets/empty-Dd4V9ggj.js",
@@ -71532,9 +71532,9 @@
    "h": "2daa995e49659d6afb5d023678f1442a2d9742a9d3b1327547662112e45048e7"
   },
   {
-   "p": "zotik/assets/envTextureLoader-BKvmqovx.js",
+   "p": "zotik/assets/envTextureLoader-FNfffuzY.js",
    "s": 31696,
-   "h": "0f32e223f6c37f646f1d8b64ea28f1e4d6e5836b556b466d65b5cc4127406ae3"
+   "h": "b3e42288555c5b1bd84946832162411c4260de5c1c531919579201b05c93fc25"
   },
   {
    "p": "zotik/assets/hdrTextureLoader-uIlgWB6O.js",
@@ -71542,19 +71542,19 @@
    "h": "2da05798051a7530a370ef4ce02dbbdc787e5388cbde876441600f3a684c218f"
   },
   {
-   "p": "zotik/assets/iesTextureLoader-CDNirV_7.js",
+   "p": "zotik/assets/iesTextureLoader-C92zL96G.js",
    "s": 2489,
-   "h": "b5219f326a537563fefdf34bb0271203e38f8adfd007fbe0a0d4a5613fd1c2bc"
+   "h": "f534025c4ad830ea4cc17a0e851dee6b8f06dd18345ab40ae06ef7fb8d8ea412"
   },
   {
-   "p": "zotik/assets/index-Bxpr13xs.js",
-   "s": 3069227,
-   "h": "0fce5d0cfad3c61b5a39b127ec6d12f62bb0997cd328d82d44b1d9bec6e83e30"
+   "p": "zotik/assets/index-DX-_Lca6.js",
+   "s": 3069606,
+   "h": "75abd79e31c5e95848a1e83dfd46443230b961910c1eb30efe647d5b25e6aa51"
   },
   {
-   "p": "zotik/assets/ktxTextureLoader-Ce6c4160.js",
+   "p": "zotik/assets/ktxTextureLoader-DHRa8w-9.js",
    "s": 16756,
-   "h": "43b62a84e8da2af640d66158b007174d9a0e3a0c37760d376042161c48c81cf3"
+   "h": "45c767d4587d7d31fe40e3604beaeb57b6ac44ec2f65d11c37eb6d0c70793193"
   },
   {
    "p": "zotik/assets/mesh.vertexData.functions-ayNlGC5K.js",
@@ -71562,29 +71562,29 @@
    "h": "109b0c291f78ec6b98053b23c7a9ce01eb8bcee909a0964ce337a68a9b4bc61e"
   },
   {
-   "p": "zotik/assets/postprocess.vertex-00fQyr7r.js",
+   "p": "zotik/assets/postprocess.vertex-5Rs76QNK.js",
    "s": 459,
-   "h": "8701cc54700080aa655710a715762c2c50494dfca83db2eecd28f31b6417f7ae"
+   "h": "01f61137d5e1e76542d76df3eb7a040970b1f1927b87158f4876410025b70125"
   },
   {
-   "p": "zotik/assets/postprocess.vertex-uXgbULxg.js",
+   "p": "zotik/assets/postprocess.vertex-Ci6SwoQ6.js",
    "s": 583,
-   "h": "1b6834d20a7a68cd01165e7bffe4a58e7155de10022eb01de4bc0e05cdbc8e38"
+   "h": "1e5a5c96c0578b8f73b1229be14335861a6bbcc8081ecde3ce4b00874080d8e2"
   },
   {
-   "p": "zotik/assets/rgbdDecode.fragment-Cg7Dt9mz.js",
-   "s": 7135,
-   "h": "b2855cb6741845b248d80923346d0816d35ad0f24c824071e6ea75b08c9c9f2a"
-  },
-  {
-   "p": "zotik/assets/rgbdDecode.fragment-Cxv7oXni.js",
+   "p": "zotik/assets/rgbdDecode.fragment-C1oIWd3f.js",
    "s": 7344,
-   "h": "be7dfe54a51262de409faf6bc3ff640f9c30e73cca87042df92950c8998cca35"
+   "h": "f8e3dcd8f94c9475f788467f5f9fdcfea9f8e8898456324f78786d31aabdc742"
   },
   {
-   "p": "zotik/assets/tgaTextureLoader-LHN_TLlc.js",
+   "p": "zotik/assets/rgbdDecode.fragment-DFTSDrFz.js",
+   "s": 7135,
+   "h": "99cf8eb71b681d710f20de99a8282deea4fe7f84d5e6d69da145158d77a7b502"
+  },
+  {
+   "p": "zotik/assets/tgaTextureLoader-BzMJeT_s.js",
    "s": 3527,
-   "h": "62c184154c7a0c5f3cddf5a32e1af78e4941f91f261349d248baac1936ea1e8d"
+   "h": "2a8ab4847b8f7a7a0a940d5812a48aa591f63a0721b2634c7eebdc47f28400eb"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -71624,7 +71624,7 @@
   {
    "p": "zotik/index.html",
    "s": 78401,
-   "h": "47b6280435c3c294af7caad443da56235b0395b6ab507e25fef9576f940998e2"
+   "h": "c3e4eb157aa899628a99cd4905b4f3311577a375d62090c500bd53c44caeb189"
   },
   {
    "p": "zotik/manifest.webmanifest",
