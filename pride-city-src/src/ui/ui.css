@@ -351,3 +351,15 @@ body:has(#hud:not(.hidden)) .screen.title { background: rgba(9,6,20,.8); backdro
 #hud .nowplay span { display: block; font-weight: 700; font-size: .9em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (pointer: coarse) { #hud .nowplay { left: 50%; translate: -50% 0; bottom: auto; top: calc(8px + var(--safe-t)); max-width: 40vw; padding: 5px 10px; font-size: .85em; } }
 body:has(#ui .screen) #hud :is(.rwheel, .nowplay) { visibility: hidden; }
+
+/* Online: Einladung mit Code, Link und QR-Code */
+.online { max-width: 560px; }
+.online .oRow { display: flex; gap: 16px; align-items: center; margin: 6px 0 10px; }
+.online .oQr { width: 116px; height: 116px; flex: none; background: #fff; border-radius: 10px; padding: 8px; }
+.online .oQr svg { width: 100%; height: 100%; display: block; }
+.online .oCode { font-size: clamp(30px, 6vw, 46px); font-weight: 800; letter-spacing: .18em; line-height: 1.1; color: #fff; }
+.online .oUrl { font-size: .78em; word-break: break-all; margin: 4px 0 0; }
+.online .oList { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.online .oList li { background: rgba(255, 255, 255, .08); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
+.online .oList .mu { color: var(--mu); background: none; border: 0; padding: 4px 0; }
+.online .oIn { width: 100%; box-sizing: border-box; margin: 2px 0 10px; padding: 10px 14px; font: inherit; font-size: 1.5em; font-weight: 800; letter-spacing: .3em; text-align: center; text-transform: uppercase; color: #fff; background: rgba(0, 0, 0, .35); border: 1px solid var(--line); border-radius: 12px; }

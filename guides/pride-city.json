@@ -288,6 +288,33 @@
         "Veranstaltungen: alle drei Tage möglich, zum Beispiel die Queer Beach Party an der Strandbar. Die Kasse kommt am nächsten Morgen, dazu +2 Ruf.",
         "Probleme: Ab und zu fällt die Kühlung aus oder eine Lieferung fehlt. Dann kommt nur der halbe Umsatz, bis du es im Menü löst."
       ]
+    },
+    {
+      "t": "Wetter, Stadtleben und CSD-Parade",
+      "p": [
+        "Über Rainbow City zieht jetzt Wetter: klar, wolkig, Regen, Gewitter oder Nebel. Es wechselt alle sechs Stunden, das Symbol steht oben neben der Uhr. Im Handy zeigt „Wetter und Termine“ die Vorhersage."
+      ],
+      "list": [
+        "Regen: nasse, glänzende Straßen und Tropfen. Bei Gewitter blitzt und donnert es. Nach Regen am Tag erscheint ein Regenbogen (Spaß +8).",
+        "Zufallsereignisse: Am Straßenrand taucht immer wieder etwas auf, zum Beispiel Straßenmusik, ein Flashmob, ein verlorener Geldbeutel, ein Heiratsantrag oder ein Infostand. Ein Symbol zeigt die Stelle, mit der Aktionstaste machst du mit. Jede Entscheidung hat Folgen für Geld, Ruf und Bedürfnisse.",
+        "CSD-Parade: jeden Samstag von 12 bis 18 Uhr auf der Hauptstraße, mit Banner, zwei Festwagen, Tanzgruppe und Konfetti. Die Autos machen so lange Platz.",
+        "Mitlaufen bringt laufend Spaß und Kontakte und einmal am Tag +2 Ruf. Am Festwagen kannst du aufspringen und im Tanz-Battle mittanzen.",
+        "Zur Parade scheint immer die Sonne."
+      ]
+    },
+    {
+      "t": "Beziehungen vertiefen: Nähe, Unternehmungen, Geschenke",
+      "p": [
+        "Mit jedem Rainbow-Match wächst Nähe in fünf Stufen: Kennenlernen, Vertraut, Eng, Unzertrennlich, Seelenverwandt. Im Handy unter Rainbow das Match antippen, dort findest du alles. Jede neue Stufe bringt etwas: Spitznamen, ein Mixtape (Spaß), einen Schlüssel (Ruf) und am Ende „Mit dir ist überall Zuhause“."
+      ],
+      "list": [
+        "Nachrichten: Einmal am Tag schreibt dir dein Match. Eine aufmerksame Antwort bringt Nähe, eine abweisende kostet welche.",
+        "Unternehmungen: einmal am Tag, vom Spaziergang im Regenbogenpark über Kino Astra, Sonnenuntergang am Strand und Skybar Wolke 7 bis zum Wochenende im Grand Hotel Aurora. Manche gibt es erst ab einer Date-Stufe, abends oder mit eigenem Wagen.",
+        "Geschenke: eines am Tag. Jede Person hat Lieblinge, die deutlich mehr Nähe bringen. Zweimal dasselbe hintereinander wirkt nur höflich.",
+        "Jetzt treffen: Dein Match kommt zu dir und begleitet dich drei Spielstunden durch die Stadt, steigt mit ins Auto und bringt jede Viertelstunde Nähe (bis 8 am Tag). Sprich die Begleitung an, um zu reden oder dich zu verabschieden.",
+        "Absprache: Ab „Verliebt“ besprecht ihr, ob ihr exklusiv oder offen lebt. Wer Exklusivität ausmacht und sich woanders verliebt, verletzt die Partnerperson (Nähe −15).",
+        "Pflege: Wer sich mehr als vier Tage nicht meldet, verliert langsam Nähe und bekommt eine Nachricht."
+      ]
     }
   ],
   "ratgeber": [
@@ -438,6 +465,27 @@
         "Die Geschäftsführung lohnt sich, sobald du mehrere Läden hast: Sie hält die Beliebtheit und räumt Probleme allein weg.",
         "Werbung zuerst ausbauen: Sie bringt Umsatz und sofort +8 Beliebtheit."
       ]
+    },
+    {
+      "t": "Stadtleben mitnehmen",
+      "list": [
+        "Bleib bei Ereignissen stehen: Die meisten kosten nichts und bringen Ruf, Kontakte oder ein paar Euro.",
+        "Den Geldbeutel bei der Wache abgeben bringt weniger Geld, aber +2 Ruf. Behalten kostet Ruf und Laune.",
+        "Samstagmittag zur Hauptstraße: Eine Stunde bei der Parade mitlaufen füllt Spaß und Kontakte fast komplett.",
+        "Bei Regen sind draußen keine Musik und kein Flashmob. Nutze die Zeit für Läden, Kino oder dein Geschäft.",
+        "Nach Regen am Vormittag lohnt sich mittags ein Blick nach draußen: Der Regenbogen gibt Spaß."
+      ]
+    },
+    {
+      "t": "Schnell zu mehr Nähe",
+      "list": [
+        "Jeden Tag die Nachricht beantworten: kostet nichts und bringt bis zu 4 Nähe.",
+        "Lieblingsgeschenke: Kai Kochbuch oder Schallplatte, Luca Schallplatte oder Karten fürs Kaleidoskop, Malik Buch oder Pralinen, Robin Zimmerpflanze oder Buch, Ella Zimmerpflanze, Karten oder Blumen, Jonas Kochbuch, Laufsocken oder Schallplatte.",
+        "Geschenke abwechseln, sonst bringt das zweite nur 2 statt 12 Nähe.",
+        "„Jetzt treffen“ vor Erledigungen in der Stadt: Die gemeinsame Zeit zählt nebenbei.",
+        "Die Spritztour mit Radio braucht einen eigenen Wagen aus der Garage und bringt ohne Kosten 9 Nähe.",
+        "Redet früh über exklusiv oder offen. Offen heißt: keine Eifersucht bei weiteren Dates."
+      ]
     }
   ],
   "loesung": [
@@ -565,6 +613,21 @@
         "Stadtmarathon: Gold unter 78 s (500 €), Silber 95 s, Bronze 125 s.",
         "Mit dem Rennwagen „Regenbogenpfeil“ und Turbo Stufe 3 ist überall Gold drin."
       ]
+    },
+    {
+      "t": "Alle Unternehmungen zu zweit",
+      "list": [
+        "Spaziergang im Regenbogenpark: gratis, +5 Nähe, ab Match.",
+        "Essen bei Pizza Nonna: 18 €, +7 Nähe, ab Match.",
+        "Spätvorstellung im Kino Astra: 28 €, +8, ab erstem Date.",
+        "Sonnenuntergang am Strand: gratis, +8, ab erstem Date, ab 18 Uhr.",
+        "Spritztour mit Radio: gratis, +9, ab erstem Date, eigener Wagen.",
+        "Zusammen kochen: 10 €, +9, ab Verliebt.",
+        "Skybar Wolke 7: 26 €, +10, ab Verliebt, ab 18 Uhr.",
+        "Ball im Kaleidoskop: 30 €, +12, ab Verliebt, ab 18 Uhr.",
+        "Wochenende im Grand Hotel Aurora: 180 €, +20, ab Zusammen. Füllt Energie und Hygiene ganz auf.",
+        "Stufen der Nähe: 20 Vertraut, 45 Eng, 70 Unzertrennlich, 90 Seelenverwandt."
+      ]
     }
   ],
   "faq": [
@@ -591,6 +654,14 @@
     {
       "q": "Warum bringt mein Geschäft plötzlich weniger Geld?",
       "a": "Dann gibt es dort ein Problem (⚠️ im Handy unter Imperium). Öffne das Geschäft und löse es, danach läuft der Umsatz wieder voll. Mit einer Geschäftsführung passiert das von allein."
+    },
+    {
+      "q": "Wann ist die CSD-Parade?",
+      "a": "Jeden Samstag von 12 bis 18 Uhr auf der Hauptstraße der Altstadt. Im Handy unter „Wetter und Termine“ steht, wie viele Tage es noch sind."
+    },
+    {
+      "q": "Warum ist mein Match auf einmal weg?",
+      "a": "Die Begleitung bleibt drei Spielstunden und verabschiedet sich dann. Über Rainbow, „Jetzt treffen“ kommt sie wieder. Nähe durch gemeinsame Zeit gibt es bis zu 8 Punkte am Tag."
     }
   ]
 }

@@ -25,3 +25,5 @@ Funktionen übernehmen, neuer Name und neues Cover. Dazu die Ideen 1–15 aus de
 | 14 | Fuhrpark mit zwölf Autos (Kenney Car Kit, CC0), Garage in der Hochstadt (kaufen, lackieren, Turbo), vier Straßenrennen gegen die Uhr mit Medaillen, Paketdienst Eilbote mit Serienbonus | erledigt |
 | 15 | Hochstadt von innen: zwölf betretbare Orte (Revuetheater Kaleidoskop, Bar Komet, Kino Astra, China Palast, Diner 66, Grand Hotel Aurora, Skybar Wolke 7, Pizza Nonna, Waschsalon, Galerie, Deli) und das kaufbare Penthouse Himmelblau | erledigt |
 | 16 | Geschäfte führen: Personal in drei Stufen, Ausbauten, Beliebtheit, Veranstaltungen, Probleme lösen | erledigt |
+| 17 | Lebendige Stadt: Wetter (Regen, Gewitter, Nebel, Regenbogen), acht Zufallsereignisse am Straßenrand, CSD-Parade jeden Samstag mit Festwagen, Tanzgruppe und Konfetti | erledigt |
+| 18 | Beziehungen vertiefen: Nähe in fünf Stufen, tägliche Nachrichten, neun Unternehmungen, Geschenke mit Vorlieben, Begleitung durch die Stadt, Absprache exklusiv oder offen | erledigt |
