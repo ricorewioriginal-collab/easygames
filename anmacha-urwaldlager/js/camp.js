@@ -99,6 +99,12 @@
       for (const s of this.solid) { const dx = p.x - s.x, dz = p.z - s.z, d = Math.hypot(dx, dz), m = s.r + r; if (d < m && d > 0.001) { p.x = s.x + dx / d * m; p.z = s.z + dz / d * m; } }
       const d = Math.hypot(p.x, p.z), lim = 12.5; if (d > lim) { p.x *= lim / d; p.z *= lim / d; }
     }
+    // Figuren laufen nicht ineinander: Abstand zu allen anderen Personen halten (true = jemand stand im Weg)
+    sep(p, self, m = 0.6) {
+      let hit = false;
+      for (const b of this.bodies || []) { if (b === self || !b.f || !b.f.root.visible || !b.f.root.parent) continue; const dx = p.x - b.x, dz = p.z - b.z, d = Math.hypot(dx, dz); if (d < m) { hit = true; const k = d > 0.001 ? m / d : 0; if (k) { p.x = b.x + dx * k; p.z = b.z + dz * k; } else p.x += m; } }
+      return hit;
+    }
   }
   Camp.Stage = CampStage;
 
@@ -128,7 +134,8 @@
       const dx = o.tx - o.x, dz = o.tz - o.z, d = Math.hypot(dx, dz);
       if (d < 0.25) { o.state = 'do'; o.t = UL.rand(4, 10); f.move(0); if (o.act === 'sit') { f.set('sit'); f.root.rotation.y = Math.atan2(-o.x, -o.z); } else if (o.act) f.set(o.act); return; }
       const sp = 1.4; o.x += dx / d * sp * dt; o.z += dz / d * sp * dt;
-      const p = { x: o.x, z: o.z }; st.push(p); o.x = p.x; o.z = p.z;
+      const p = { x: o.x, z: o.z }; st.push(p); const hit = st.sep(p, o); o.x = p.x; o.z = p.z;
+      if (hit) { o.stuck = (o.stuck || 0) + dt; if (d < 1.2 || o.stuck > 2.5) { o.stuck = 0; o.state = 'do'; o.t = UL.rand(2, 5); f.move(0); f.set('idle'); f.root.position.set(o.x, st.h(o.x, o.z), o.z); return; } } else o.stuck = 0;
       f.root.position.set(o.x, st.h(o.x, o.z), o.z); f.root.rotation.y = UL.angDamp(f.root.rotation.y, Math.atan2(dx, dz), 8, dt); f.move(sp);
       return;
     }
@@ -137,9 +144,10 @@
     // neues Ziel
     const P = st.poi, r = Math.random();
     let tx, tz, act = 'idle';
-    if (r < 0.35) { const s = st.seats[(Math.random() * st.seats.length) | 0]; tx = s.x; tz = s.z; act = 'sit'; }
-    else if (r < 0.5) { tx = P.water.x - 3.2; tz = P.water.z + 1.2; act = 'interact'; }
-    else if (r < 0.62) { tx = P.wood.x - 1.2; tz = P.wood.z - 0.4; act = 'use'; }
+    const freeSeats = st.seats.filter(s => !(st.bodies || others || []).some(q => q !== o && (Math.hypot(q.x - s.x, q.z - s.z) < 0.7 || (q.state === 'walk' && q.act === 'sit' && Math.hypot(q.tx - s.x, q.tz - s.z) < 0.5))));
+    if (r < 0.35 && freeSeats.length) { const s = UL.pick(freeSeats); tx = s.x; tz = s.z; act = 'sit'; }
+    else if (r < 0.5) { tx = P.water.x - 3.2 + UL.rand(-0.8, 0.8); tz = P.water.z + 1.2 + UL.rand(-0.5, 0.5); act = 'interact'; }
+    else if (r < 0.62) { tx = P.wood.x - 1.2 + UL.rand(-0.6, 0.6); tz = P.wood.z - 0.4 + UL.rand(-0.6, 0.6); act = 'use'; }
     else if (r < 0.74) { tx = P.beds.x + UL.rand(-2, 2); tz = P.beds.z + 2.2; act = 'idle2'; }
     else { const a = Math.random() * 6.28, d = UL.rand(4, 9); tx = Math.cos(a) * d; tz = Math.sin(a) * d; act = 'idle'; }
     const p = { x: tx, z: tz }; st.push(p);
@@ -154,7 +162,8 @@
     const list = Show.alive();
     const figs = cast(st, list);
     const meO = figs.find(o => o.c.id === 'me'), npcs = figs.filter(o => o !== meO);
-    npcs.forEach((o, i) => { if (i < 4) seat(st, o, i * 2 + 1); else { const a = Math.random() * 6.28, d = UL.rand(4, 9); const p = { x: Math.cos(a) * d, z: Math.sin(a) * d }; st.push(p); place(st, o, p.x, p.z, Math.random() * 6); } });
+    st.bodies = figs.slice();
+    npcs.forEach((o, i) => { if (i < 4) seat(st, o, i * 2 + 1); else { const a = Math.random() * 6.28, d = UL.rand(4, 9); const p = { x: Math.cos(a) * d, z: Math.sin(a) * d }; st.push(p); st.sep(p, o, 0.9); st.push(p); place(st, o, p.x, p.z, Math.random() * 6); } });
     place(st, meO, 0, 4.2, Math.PI);
     // Doc Rudi am Sani-Zelt, Ranger Kalle dreht seine Runden am Lagerrand
     const crewTag = (o, txt) => UL.Tags.set('n:' + o.c.id, v => v.copy(o.f.root.position).add(new T.Vector3(0, o.f.height + 0.35, 0)), txt, 'tag crew');
@@ -163,13 +172,14 @@
     place(st, docO, st.poi.doc.x, st.poi.doc.z, Math.PI); crewTag(docO, '🩺 ' + D.DOC.name); crewTag(rangerO, '🪖 ' + D.RANGER.name);
     const PATROL = [[0, -10.6], [8.5, -8], [11.2, 0], [9, 8.5], [0, 11.2], [-8.5, 8.5], [-11.2, 0], [-9, -8.5]];
     place(st, rangerO, PATROL[0][0], PATROL[0][1], 0);
-    st.crew = { doc: docO, ranger: rangerO };
+    st.crew = { doc: docO, ranger: rangerO }; st.bodies.push(docO, rangerO);
     function rangerTick(dt) {
       const o = rangerO; if (o.busy) return;
       if (o.wait > 0) { o.wait -= dt; o.f.move(0); return; }
       const [tx, tz] = PATROL[o.wp], dx = tx - o.x, dz = tz - o.z, d = Math.hypot(dx, dz);
       if (d < 0.3) { o.wp = (o.wp + 1) % PATROL.length; o.wait = UL.rand(1.5, 4); o.f.move(0); if (Math.random() < 0.4) o.f.play('idle2'); return; }
       const sp = 1.2; o.x += dx / d * sp * dt; o.z += dz / d * sp * dt;
+      const q = { x: o.x, z: o.z }; if (st.sep(q, o)) { o.x = q.x; o.z = q.z; }
       o.f.root.position.set(o.x, st.h(o.x, o.z), o.z); o.f.root.rotation.y = UL.angDamp(o.f.root.rotation.y, Math.atan2(dx, dz), 6, dt); o.f.move(sp);
     }
     R.set(st);
@@ -483,7 +493,7 @@
         const vx = fx_ * -my - fz * mx, vz = fz * -my + fx_ * mx;
         const l = Math.hypot(vx, vz) || 1;
         meO.x += vx / l * sp * dt; meO.z += vz / l * sp * dt;
-        const p = { x: meO.x, z: meO.z }; st.push(p); meO.x = p.x; meO.z = p.z;
+        const p = { x: meO.x, z: meO.z }; st.push(p); st.sep(p, meO, 0.55); st.push(p); meO.x = p.x; meO.z = p.z;
         meO.f.root.rotation.y = UL.angDamp(meO.f.root.rotation.y, Math.atan2(vx, vz), 12, dt);
         if (meO.f.base === 'sit') meO.f.set('idle');
       }
