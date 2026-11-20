@@ -14,15 +14,18 @@ export function createKayKit({ T, G, TOUCH }) {
   const anims = () => load('anim').then(g => clips || (clips = Object.fromEntries(g.animations.map(a => { for (const t of a.tracks) t.name = t.name.replace(/_1(?=\.(quaternion|position|scale)$)/, ''); return [a.name, a]; }))));
   /* Materialien: Cel-Shading mit der Farbtextur, „Glow“ (Augen der Skelette) leuchtet */
   const mats = new Map();
-  function toon(src, skin) {
-    const k = src.uuid + (skin ? 's' : ''); if (mats.has(k)) return mats.get(k);
+  /* keep: Sketchfab-Teile behalten Alpha-Maske (Laub), Doppelseitigkeit und Grundfarbe ohne Textur */
+  function toon(src, skin, keep) {
+    const k = src.uuid + (skin ? 's' : '') + (keep ? 'k' : ''); if (mats.has(k)) return mats.get(k);
+    if (keep) { const m = new T.MeshToonMaterial({ map: src.map, color: src.map ? 0xffffff : src.color, gradientMap: G, alphaTest: src.alphaTest || 0, side: src.side, vertexColors: !!src.vertexColors });
+      if (m.map) { m.map.encoding = T.sRGBEncoding; m.map.anisotropy = TOUCH ? 4 : 8; } m.name = src.name; mats.set(k, m); return m; }
     const glowM = /glow/i.test(src.name || '') || (src.emissive && src.emissive.getHex() > 0 && !src.map);
     const m = glowM ? new T.MeshBasicMaterial({ color: src.emissive && src.emissive.getHex() ? src.emissive : 0xffffff, skinning: skin })
       : new T.MeshToonMaterial({ map: src.map, color: 0xffffff, gradientMap: G, skinning: skin });
     if (m.map) { m.map.encoding = T.sRGBEncoding; m.map.anisotropy = TOUCH ? 4 : 8; }
     m.name = src.name; mats.set(k, m); return m;
   }
-  const dress = (root, skin) => root.traverse(o => { if (!o.isMesh) return; o.material = toon(o.material, !!o.isSkinnedMesh); o.castShadow = !TOUCH; o.receiveShadow = false; if (o.isSkinnedMesh) o.frustumCulled = false; });
+  const dress = (root, skin, keep) => root.traverse(o => { if (!o.isMesh) return; o.material = toon(o.material, !!o.isSkinnedMesh, keep); o.castShadow = !TOUCH; o.receiveShadow = false; if (o.isSkinnedMesh) o.frustumCulled = false; });
   const H = {};   // Höhe je Figur (aus der Ruhepose)
   const LIVE = new Set();
   const WPN = { r: 'handslotr', l: 'handslotl' };   // three entfernt Punkte aus Knotennamen
@@ -273,8 +276,8 @@ export function createKayKit({ T, G, TOUCH }) {
 
   /* Requisiten */
   const PR = {};
-  /* Requisiten-Dateien: 'props' (KayKit) oder 'wz' (Wizp, models/wz/); three entfernt ':' aus Knotennamen (p:chest → pchest) */
-  const props = (f = 'props') => PR[f] || (PR[f] = (f === 'props' ? load('props') : new Promise((res, rej) => new GLTFLoader().load('models/' + f + '/' + f + '.glb', res, null, rej))).then(g => { const m = {}; for (const c of g.scene.children) if (/^p/.test(c.name)) { dress(c, false); m[c.name.replace(/^p[:_]?/, '')] = c; } return m; }));
+  /* Requisiten-Dateien: 'props' (KayKit), 'wz' (Wizp, models/wz/) oder 'sf' (Sketchfab CC BY, models/sf/); three entfernt ':' aus Knotennamen (p:chest → pchest) */
+  const props = (f = 'props') => PR[f] || (PR[f] = (f === 'props' ? load('props') : new Promise((res, rej) => new GLTFLoader().load('models/' + f + '/' + f + '.glb', res, null, rej))).then(g => { const m = {}; for (const c of g.scene.children) if (/^p/.test(c.name)) { dress(c, false, f === 'sf'); m[c.name.replace(/^p[:_]?/, '')] = c; } return m; }));
   function prop(name, s = 1) {
     const g = new T.Group(); g.scale.setScalar(s);
     props().then(m => { const src = m[name]; if (!src) return; const c = src.clone(true); c.position.set(0, 0, 0); g.add(c); }).catch(() => { });

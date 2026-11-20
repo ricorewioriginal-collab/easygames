@@ -103,6 +103,18 @@ html[data-input=touch] #hints { display: none; }
 #hud .prompt.on { display: inline-flex; animation: fadein .2s both; }
 #hud .radar { position: absolute; left: clamp(10px, 2vw, 24px); bottom: calc(14px + var(--safe-b)); width: clamp(120px, 16vw, 180px); height: auto; aspect-ratio: 1; border-radius: 50%; box-shadow: 0 6px 24px rgba(0,0,0,.45); opacity: .95; }
 @media (pointer: coarse) { #hud .radar { left: auto; right: 10px; bottom: auto; top: calc(96px + var(--safe-t)); width: 110px; } }
+#hud .gigbar { position: absolute; left: 50%; top: calc(12px + var(--safe-t)); translate: -50% 0; padding: 7px 14px; border-radius: 12px; background: rgba(10,6,24,.72); border: 1px solid rgba(255,210,59,.6); color: #ffe27a; font-weight: 900; font-size: .9em; display: none; white-space: nowrap; max-width: 60vw; overflow: hidden; text-overflow: ellipsis; }
+#hud .gigbar.on { display: block; }
+@media (pointer: coarse) { #hud .gigbar { top: auto; bottom: calc(168px + var(--safe-b)); font-size: .8em; } }
+#hud .gigbar.urgent { color: #ff6b7d; border-color: #ff6b7d; animation: gigPulse .6s infinite alternate; }
+@keyframes gigPulse { to { scale: 1.06; } }
+#hud .banner { position: absolute; left: 50%; top: 34%; translate: -50% -50%; text-align: center; opacity: 0; transition: opacity .35s; pointer-events: none; }
+#hud .banner.on { opacity: 1; }
+#hud .banner b { display: block; font: italic 900 clamp(30px, 6vw, 64px)/1 system-ui, sans-serif; letter-spacing: .02em; text-transform: uppercase; -webkit-text-stroke: 2px #1a0d2e; text-shadow: 0 4px 0 #1a0d2e, 0 0 24px rgba(255,63,176,.6); }
+#hud .banner.good b { color: #ffd23b; }
+#hud .banner.bad b { color: #ff4b5c; }
+#hud .banner.info b { color: #5ce1ff; font-size: clamp(22px, 4vw, 40px); }
+#hud .banner small { display: block; margin-top: 8px; font-weight: 800; font-size: clamp(14px, 2vw, 20px); text-shadow: 0 2px 6px #000; }
 #hud .toast { position: absolute; left: 50%; top: calc(74px + var(--safe-t)); translate: -50% 0; display: flex; flex-direction: column; gap: 6px; align-items: center; }
 #hud .toast div { padding: 9px 16px; border-radius: 12px; background: var(--panel2); border: 1px solid var(--line); font-weight: 700; animation: fadein .25s both; max-width: 86vw; text-align: center; }
 #hud .marker { position: absolute; translate: -50% -100%; font-size: 26px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.6)); animation: bob 1.2s infinite; }

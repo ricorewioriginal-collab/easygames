@@ -76,7 +76,7 @@ try {
 
   console.log('Laufen und Kamera');
   const a = await ev(p, () => window.__pc.city.player.root.position.z);
-  await p.keyboard.down('KeyW'); await sleep(2500); await p.keyboard.up('KeyW');
+  await p.keyboard.down('KeyW'); await sleep(5000); await p.keyboard.up('KeyW'); // SwiftShader: wenige Bilder pro Sekunde
   const b = await ev(p, () => window.__pc.city.player.root.position.z);
   check(b < a - .5, `W läuft vorwärts (${a.toFixed(1)} → ${b.toFixed(1)})`);
   await goTo(p, 3, 20);
@@ -121,6 +121,10 @@ try {
   console.log('Alltag: Schicht, Handy, Wohnung');
   await ev(p, () => { const s = window.__pc.save.data; s.time = (12 - 6) / 24; s.needs.energy = 90; });
   await goTo(p, 34, 10); await act(p);
+  // Läden sind begehbar: erst hinein, dann die Theke (Ladenmenü) benutzen
+  await p.waitForFunction(() => window.__pc.where === 'inside', null, { timeout: 30000 }); await sleep(1200);
+  check(true, 'Boutique ist begehbar');
+  await ev(p, () => window.__pc.placeMenu('boutique')); await sleep(600);
   check((await p.locator('.screen .panel h3').innerText()) === 'Boutique Fabelhaft', 'Boutique öffnet mit Job');
   const m0 = (await S(p)).money;
   await p.keyboard.press('Enter'); await sleep(600);
@@ -128,6 +132,8 @@ try {
   await dlg(p); await sleep(1500);
   s = await S(p);
   check(s.money > m0 && s.jobs.shop?.shifts === 1, `Schicht gearbeitet (+${s.money - m0} €)`);
+  await ev(p, () => { window.__pc.closeMenu(); if (window.__pc.where === 'inside') window.__pc.leaveInterior(); });
+  await p.waitForFunction(() => window.__pc.where === 'city', null, { timeout: 30000 }); await sleep(1000);
   await p.keyboard.press('KeyP'); await sleep(600);
   check(await p.locator('.phoneBox').count() === 1, 'Handy öffnet mit P');
   await p.keyboard.press('Escape'); await sleep(500);
@@ -143,7 +149,8 @@ try {
   console.log('Sammeln, Orte, Pause');
   await goTo(p, -15, 24); await sleep(800);
   check((await S(p)).goals.includes('sticker0'), 'Pride-Sticker eingesammelt');
-  await goTo(p, 4.6, 10); await act(p);
+  // Läden sind begehbar (Betreten prüft der Boutique-Abschnitt), hier nur das Ladenmenü
+  await ev(p, () => window.__pc.placeMenu('cafe')); await sleep(600);
   check(await p.locator('.screen .panel h3').innerText() === 'Café Kaffeeklatsch', 'Café-Menü öffnet');
   const cm = (await S(p)).money;
   await p.keyboard.press('Enter'); await sleep(600);
@@ -154,7 +161,7 @@ try {
   await p.keyboard.press('Escape'); await sleep(400);
   check(await p.locator('.screen').count() === 0, 'Esc schließt Pausenmenü');
   console.log('Nachtleben 18+');
-  await goTo(p, 4.6, -40); await act(p);
+  await ev(p, () => window.__pc.placeMenu('kopfkino')); await sleep(600);
   check(await p.locator('.screen .panel h3').innerText() === 'Videothek Kopfkino', 'Videothek öffnet');
   check(!(await p.locator('.screen').innerText()).includes('Kabinen'), 'ohne 18+ keine Kabinen');
   await p.keyboard.press('Escape'); await sleep(500);
@@ -174,7 +181,7 @@ try {
   check(await p.locator('#barBox').isVisible(), 'Barkeeper-Minispiel läuft');
   await ev(p, () => { window.__pc.closeMenu(); window.__pc.touch.show(true); }); await sleep(1200);
   const car0 = await ev(p, () => { const c = window.__pc.city; c.toggleCar('3'); return c.street.parked[3].o.position.z; });
-  await p.keyboard.down('KeyW'); await sleep(2500);
+  await p.keyboard.down('KeyW'); await sleep(5000);
   const [car1, v] = await ev(p, () => { const c = window.__pc.city.street.parked[3]; return [c.o.position.z, c.v]; });
   await p.keyboard.up('KeyW');
   check(car1 - car0 > .3 && v > 1, `Auto fährt (${car0.toFixed(1)} → ${car1.toFixed(1)}, ${v.toFixed(1)} m/s)`);
