@@ -1,5 +1,6 @@
 /* Babylon-Optik für alle Szenen: weiche Schatten, Leuchten (Neon, ON AIR, Bildschirme), Bloom, Kantenglättung, Filmlook.
-   Grafikstufe wie bisher (W.quality): 0 schnell (ohne Nachbearbeitung), 1 mittel (FXAA, Leuchten), 2 hoch (MSAA, Leuchten, weichere Schatten). */
+   Grafikstufe (W.quality): 0 schnell, 1 mittel = Handy (keine Nachbearbeitung: scharfe Kanten über die Kantenglättung des Bildschirms, dafür höhere Auflösung),
+   2 hoch (Nachbearbeitung mit MSAA, Schärfen, Leuchten, weichere Schatten). */
 import { ShadowGenerator, DefaultRenderingPipeline, GlowLayer, ColorCurves } from './babylon.js';
 
 export class Look {
@@ -19,7 +20,7 @@ export class Look {
   apply(q) {
     this.q = q;
     const s = this.scene, gl2 = s.getEngine().webGLVersion > 1;
-    if (q >= 1 && !this.pipe) {
+    if (q >= 2 && !this.pipe) {
       const p = this.pipe = new DefaultRenderingPipeline('look', false, s, [this.cam]);
       p.imageProcessingEnabled = false;   // Farblook rechnen die Materialien selbst (Himmel bleibt unverändert)
       p.bloomThreshold = 0.93; p.bloomWeight = 0.16; p.bloomKernel = 40; p.bloomScale = 0.5;   // nur echte Lichtspitzen, Tageslicht bleibt klar
@@ -30,9 +31,9 @@ export class Look {
       p.samples = q > 1 && gl2 ? 4 : 1;
       p.fxaaEnabled = q === 1 || !gl2;
       p.bloomEnabled = false;            // Bloom überstrahlt die helle Tagesstadt – Leuchten übernimmt der GlowLayer gezielt
-      if (q < 1) { p.dispose(); this.pipe = null; }
+      if (q < 2) { p.dispose(); this.pipe = null; }
     }
-    if (q >= 1 && !this.glow) {
+    if (q >= 2 && !this.glow) {
       this.glow = new GlowLayer('neon', s, { mainTextureRatio: q > 1 ? 0.5 : 0.35, blurKernelSize: q > 1 ? 48 : 32 });
       this.glow.intensity = 0.55;
       // Nur starke Leuchtfarben (Neon, ON AIR, Bildschirme) leuchten nach – leicht getönte Fassaden nicht
@@ -40,7 +41,7 @@ export class Look {
         const e = mat && mat.emissiveColor; const k = e ? Math.max(e.r, e.g, e.b) : 0;
         if (e && (k > 0.85 || (mat.emissiveTexture && k > 0.6))) out.set(e.r, e.g, e.b, 1); else out.set(0, 0, 0, 1);
       };
-    } else if (q < 1 && this.glow) { this.glow.dispose(); this.glow = null; }
+    } else if (q < 2 && this.glow) { this.glow.dispose(); this.glow = null; }
     this.sgs.forEach(sg => { if (!sg.getShadowMap()) this.sgs.delete(sg); else this.tuneShadow(sg); });
   }
   makeShadow(light, size) {
@@ -53,7 +54,7 @@ export class Look {
     return sg;
   }
   tuneShadow(sg) {
-    sg.filteringQuality = this.q > 1 ? ShadowGenerator.QUALITY_HIGH : ShadowGenerator.QUALITY_MEDIUM;
+    sg.filteringQuality = this.q > 1 ? ShadowGenerator.QUALITY_HIGH : ShadowGenerator.QUALITY_LOW;
     sg.darkness = 0;
   }
   fitShadow(sg, light, c) {

@@ -137,14 +137,20 @@
     const M = AMC.Media;
     M.refresh();
     const st = D.STATIONS.map(s => '<button type="button" class="st-item" data-nav data-st="' + s.slug + '" style="--c:' + s.color + '"><span class="st-ic"><img src="' + UI.senderLogo(s.slug) + '" alt="" loading="lazy"></span><span><b>' + U.esc(s.name) + '</b><small>' + U.esc(s.desc) + '</small></span><span class="st-eq"><i></i><i></i><i></i></span></button>').join('');
+    // Echte Wege zum Podcast und zu den Sendern (Daten aus anmacha.de, siehe D.PODCAST)
+    const lk = (href, ic, t, sub) => '<a class="st-item" data-nav href="' + href + '" target="_blank" rel="noopener"><span class="st-ic">' + ic + '</span><span><b>' + U.esc(t) + '</b><small>' + U.esc(sub) + '</small></span></a>';
+    const links = () => (D.PODCAST.links || []).map(([t, u]) => lk(u, '🎧', t, 'AnMaCha – Der Podcast hören')).join('') +
+      lk(D.PODCAST.radio, '📻', 'MeinRadio.com', 'Alle 12 AnMaCha-Radios live') + lk(D.PODCAST.site, '🌐', 'anmacha.de', 'Die AnMaCha-Radioproduktion: Shows, News, Empfang') +
+      lk(D.PODCAST.insta, '📸', 'Instagram @dieanmacha', 'Schreib Marco und Andrew') + lk(D.PODCAST.tiktok, '🎵', 'TikTok @anmacha.radioproduktion', 'Clips aus Podcast und Radio') +
+      lk(D.PODCAST.fanshop, '🛍️', 'AnMaCha-Fanshop', 'Echtes Merch');
     const s = UI.open(
       '<div class="panel glass wide radio"><header><h2>📻 Radio &amp; Podcast</h2><button class="btn small" data-nav id="rClose">' + AMC.glyph('b') + ' Zurück</button></header>' +
       '<div class="np-card" id="rNow"></div>' +
       '<div class="r-ctl"><button class="btn" data-nav id="rPrev">⏮</button><button class="btn primary" data-nav data-first id="rPlay">▶ Abspielen</button><button class="btn" data-nav id="rNext">⏭</button><button class="btn" data-nav id="rBack">-30 s</button><button class="btn" data-nav id="rFwd">+30 s</button>' +
       '<label class="vol">🔈<input type="range" min="0" max="1" step="0.05" data-nav id="rVol" aria-label="Lautstärke Radio und Podcast"></label></div>' +
-      '<div class="r-tabs"><button class="tab on" data-nav data-tab="pod">🎙️ AnMaCha – Der Podcast</button><button class="tab" data-nav data-tab="st">📻 Die Sender (13)</button></div>' +
-      '<div class="r-list" id="rPod"></div><div class="r-list" id="rSt" hidden>' + st + '</div>' +
-      '<p class="src">Podcast: offizieller Feed von <a href="' + D.PODCAST.page + '" target="_blank" rel="noopener">anmacha.de</a> · Sender live über <a href="https://laut.fm" target="_blank" rel="noopener">laut.fm</a> · auch in der RicoReWi Radio App. Spielmusik pausiert, solange Radio läuft.</p></div>',
+      '<div class="r-tabs"><button class="tab on" data-nav data-tab="pod">🎙️ AnMaCha – Der Podcast</button><button class="tab" data-nav data-tab="st">📻 Die Sender</button><button class="tab" data-nav data-tab="ln">🔗 Hören &amp; folgen</button></div>' +
+      '<div class="r-list" id="rPod"></div><div class="r-list" id="rSt" hidden>' + st + '</div><div class="r-list r-links" id="rLn" hidden>' + links() + '</div>' +
+      '<p class="src">Podcast: offizieller Feed von <a href="' + D.PODCAST.page + '" target="_blank" rel="noopener">anmacha.de</a> · 12 Sender der AnMaCha-Radioproduktion auf <a href="' + D.PODCAST.radio + '" target="_blank" rel="noopener">MeinRadio.com</a> (Stream über laut.fm) · auch in der RicoReWi Radio App. Spielmusik pausiert, solange Radio läuft.</p></div>',
       { cls: 'radio-screen', back: () => close(), noRadio: true });
     const el = s.el;
     function close() { unsub(); UI.close(s); }
@@ -171,7 +177,7 @@
     el.querySelector('#rBack').onclick = () => M.seek(-30); el.querySelector('#rFwd').onclick = () => M.seek(30);
     const vol = el.querySelector('#rVol'); vol.value = AMC.Save.data.settings.radio; vol.oninput = () => { M.setVolume(vol.value); AMC.Save.save(); };
     el.querySelectorAll('[data-st]').forEach(b => b.onclick = () => M.playStation(b.dataset.st));
-    el.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { el.querySelectorAll('[data-tab]').forEach(x => x.classList.toggle('on', x === b)); el.querySelector('#rPod').hidden = b.dataset.tab !== 'pod'; el.querySelector('#rSt').hidden = b.dataset.tab !== 'st'; });
+    el.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { el.querySelectorAll('[data-tab]').forEach(x => x.classList.toggle('on', x === b)); el.querySelector('#rPod').hidden = b.dataset.tab !== 'pod'; el.querySelector('#rSt').hidden = b.dataset.tab !== 'st'; el.querySelector('#rLn').hidden = b.dataset.tab !== 'ln'; });
     return s;
   };
 
