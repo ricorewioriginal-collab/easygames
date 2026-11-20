@@ -209,6 +209,16 @@
   D.TREASURE = [
     { q: 'Ihr habt die Kiste gefunden! Öffnen für das Camp – oder lieber die sichere Flasche Wasser nehmen?', a: ['Kiste öffnen!', 'Wasser nehmen'] }
   ];
+  // Luxusartikel: jeder Camper darf zwei mitnehmen
+  D.LUX = [
+    { id: 'kissen', name: 'Kopfkissen', icon: '🛏️', desc: 'Besser schlafen: jede Nacht +10 😴.' },
+    { id: 'kaffee', name: 'Instant-Kaffee', icon: '☕', desc: 'Morgens wach: Müdigkeit kostet dich keine Aktion.' },
+    { id: 'schoko', name: 'Tafel Schokolade', icon: '🍫', desc: 'Drei Stück für Notfälle: im Camp naschen, +20 🍗.', uses: 3 },
+    { id: 'foto', name: 'Familienfoto', icon: '🖼️', desc: 'Gegen Heimweh: einmal am Tag anschauen, gute Laune und Sympathie.' },
+    { id: 'karten', name: 'Kartenspiel', icon: '🃏', desc: 'Einmal am Tag mit einem Camper spielen: Freundschaft +, kostet keine Aktion.' },
+    { id: 'harmonika', name: 'Mundharmonika', icon: '🎵', desc: 'Dein Lied am Lagerfeuer gelingt immer.' },
+    { id: 'tagebuch', name: 'Tagebuch', icon: '📔', desc: 'Jeden Abend schreiben: die Zuschauer lieben deine Gedanken (+😂).' }
+  ];
   D.LOOT = [['Kekse', '🍪'], ['Kaffee', '☕'], ['Schokolade', '🍫'], ['Kartenspiel', '🃏'], ['Kissen', '🛏️'], ['Gewürze', '🧂']];
 
   // Quiz (Wissens-Tank, Schatzsuche, Finale)

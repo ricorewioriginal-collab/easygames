@@ -165,7 +165,7 @@
     await UI.fade(false, 0.4);
     const me = UL.Show.vit(meO.c);
     // hungrig oder müde: weniger Kraft für Aktionen
-    const MAXE = Math.max(2, ENERGY - (me.slp < 35 ? 1 : 0) - (me.hun < 30 ? 1 : 0));
+    const MAXE = Math.max(2, ENERGY - (me.slp < 35 && !UL.Show.hasLux('kaffee') ? 1 : 0) - (me.hun < 30 ? 1 : 0));
     const day = st.day = { energy: MAXE, carry: null, event: false, eventT: UL.rand(25, 45), chestOpen: false, busy: false, done: false, talked: {} };
     // Schatzkiste an manchen Tagen
     const chestSpots = [[-3, 9], [9.5, 8], [-10, 2], [4, -9], [-4, -9.5]];
@@ -179,7 +179,7 @@
     const near = (p, r) => Math.hypot(meO.x - p.x, meO.z - p.z) < r;
     const rank0 = UL.Phone.rank(me).pos;
     const rankChip = () => { const r = UL.Phone.rank(me), d = rank0 - r.pos; return `<span class="chip ${d > 0 ? 'up' : d < 0 ? 'warn' : ''}">📺 Platz ${r.pos}/${r.n}${d > 0 ? ' ▲' : d < 0 ? ' ▼' : ''}</span>`; };
-    const hud = () => UI.hud(`<span class="chip big">📅 Tag ${S.day}/${S.days}</span><span class="chip">⚡ ${'●'.repeat(day.energy)}${'○'.repeat(MAXE - day.energy)}</span><span class="chip ${me.hun < 30 ? 'warn' : ''}">🍗 ${Math.round(me.hun)}</span><span class="chip ${me.slp < 35 ? 'warn' : ''}">😴 ${Math.round(me.slp)}</span><span class="chip">❤️ ${Math.round(me.sym)} · 😂 ${Math.round(me.ent)}</span>${rankChip()}${day.carry ? `<span class="chip">${day.carry === 'holz' ? '🪵 Holz' : '🪣 Wasser'}</span>` : ''}`);
+    const hud = () => UI.hud(`<span class="chip big">📅 Tag ${S.day}/${S.days}</span><span class="chip">⚡ ${'●'.repeat(day.energy)}${'○'.repeat(MAXE - day.energy)}</span><span class="chip ${me.hun < 30 ? 'warn' : ''}">🍗 ${Math.round(me.hun)}</span><span class="chip ${me.slp < 35 ? 'warn' : ''}">😴 ${Math.round(me.slp)}</span><span class="chip">❤️ ${Math.round(me.sym)} · 😂 ${Math.round(me.ent)}</span>${rankChip()}${(me.lux || []).length ? `<span class="chip">🎒 ${(me.lux || []).map(id => { const l = D.LUX.find(x => x.id === id); return UL.Show.hasLux(id) ? l.icon + (S.luxUses && S.luxUses[id] != null ? '×' + S.luxUses[id] : '') : '🚫'; }).join(' ')}</span>` : ''}${day.carry ? `<span class="chip">${day.carry === 'holz' ? '🪵 Holz' : '🪣 Wasser'}</span>` : ''}`);
     hud();
 
     const spend = () => { day.energy--; hud(); };
@@ -397,7 +397,7 @@
       if (id === 'sing') {
         meO.f.set('idle'); meO.f.play('cheer'); bubble(meO, UL.pick(['♪ Oh du schöner Urwald … ♪', '♪ Bohnen zum Frühstück, Bohnen zur Nacht … ♪', '♪ Ich will nach Haus, doch ich halt durch … ♪']), 3.2); UL.Audio.sfx('fanfare');
         await UL.sleep(UL.bot ? 0.05 : 1.8);
-        const good = Math.random() < 0.55 + me.ent / 400;
+        const good = UL.Show.hasLux('harmonika') || Math.random() < 0.55 + me.ent / 400;
         npcs.forEach(n => { if (n.state !== 'busy' && Math.random() < 0.5) { bubble(n, good ? UL.pick(['Zugabe!', 'Wie schön!', 'Hahaha, Gänsehaut!']) : UL.pick(['Bitte aufhören …', 'Meine Ohren!', 'Die Mücken fliehen!']), 2.2); if (good) n.f.play('cheer'); } });
         Show.log(`${me.name} singt am Lagerfeuer${good ? ' – alle klatschen' : ' – schief'}.`, '🎤');
         fx(good ? { sym: 3, ent: 5 } : { sym: -1, ent: 6 }, good ? 'Gänsehaut-Moment!' : 'Schief, aber unterhaltsam');
@@ -505,6 +505,10 @@
       }
       if (!rangerO.busy && Math.hypot(rangerO.x - meO.x, rangerO.z - meO.z) < 2.4) cmds.unshift({ id: 'ranger', label: D.RANGER.name + ' ansprechen', icon: '🪖', hot: !day.rangerTalked });
       if (!npcNear && near({ x: 0, z: 0 }, 3.2) && meO.f.base !== 'sit') cmds.push({ id: 'sit', label: 'Ans Feuer setzen', icon: '🪵' });
+      // Luxusartikel (kosten keine Aktion)
+      if (UL.Show.hasLux('schoko') && S.luxUses && S.luxUses.schoko > 0) cmds.push({ id: 'lux_schoko', label: `Schokolade naschen (${S.luxUses.schoko})`, icon: '🍫' });
+      if (UL.Show.hasLux('foto') && !day.foto) cmds.push({ id: 'lux_foto', label: 'Familienfoto anschauen', icon: '🖼️' });
+      if (UL.Show.hasLux('karten') && !day.karten && npcNear && npcNear.state !== 'busy') cmds.push({ id: 'lux_karten', label: 'Karten spielen mit ' + UL.Show.first(npcNear.c), icon: '🃏', o: npcNear });
       cmds.push({ id: 'drum', label: 'Buschtrommel', icon: '🥁' });
       cmds.push({ id: 'end', label: day.energy > 0 ? 'Tag beenden' : 'Abendessen!', icon: '🌅', hot: day.energy <= 0 });
       UI.cmd(cmds);
@@ -524,6 +528,9 @@
       else if (c.id === 'sing' || c.id === 'massage' || c.id === 'snack' || c.id === 'pose') busy(() => showAct(c.id, c.o));
       else if (c.id === 'chest') busy(treasure);
       else if (c.id === 'sit') { let best = 0, bd = 1e9; st.seats.forEach((s, i) => { const d = Math.hypot(s.x - meO.x, s.z - meO.z); if (d < bd) { bd = d; best = i; } }); const s = st.seats[best]; meO.x = s.x; meO.z = s.z; meO.f.root.rotation.y = Math.atan2(-s.x, -s.z); meO.f.set('sit'); }
+      else if (c.id === 'lux_schoko') { S.luxUses.schoko--; me.hun = Math.min(100, me.hun + 20); meO.f.play('pickup'); UL.Audio.sfx('crunch'); UI.toast('Mmmh, Schokolade! 🍗 +20', '🍫', 2200); hud(); }
+      else if (c.id === 'lux_foto') { day.foto = true; me.mood = Math.min(1, (me.mood || 0.5) + 0.3); meO.f.play('interact'); bubble(meO, UL.pick(['Ich vermiss euch so …', 'Bald bin ich wieder da!', 'Für euch halte ich durch!']), 2.6); fx({ sym: 2, ent: 1 }, 'Heimweh-Moment'); }
+      else if (c.id === 'lux_karten') { day.karten = true; const o = c.o; UL.faceTo(meO.f, o.x, o.z); meO.f.play('interact'); Show.rel(me, o.c, 6); bubble(o, UL.pick(['Ha, gewonnen!', 'Noch eine Runde!', 'Du schummelst doch!']), 2.4); Show.log(`${me.name} spielt Karten mit ${Show.first(o.c)}.`, '🃏'); fx({ sym: 1, ent: 1 }, 'Kartenrunde im Lager'); }
       else if (c.id === 'drum') Show.drum();
       else if (c.id === 'end') busy(() => endDay(day.energy > 0));
       if (day.energy <= 0 && !day.hinted) { day.hinted = true; UI.toast('Keine Aktionen mehr – Zeit fürs Abendessen!', '🌅', 3000); }

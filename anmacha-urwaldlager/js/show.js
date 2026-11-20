@@ -98,6 +98,7 @@
     await st.mod(S.theme === 'studio' ? 'welcomeStudio' : 'welcome', { k: S.campers.length }, true);
     const cards = S.campers.map(c => `<div class="cast"><b>${esc(c.name)}</b><small>${esc(c.job || '')}${c.id === 'me' ? ' · <em>Du</em>' : ''}</small></div>`).join('');
     await UI.choose('Die Camper', `<div class="castgrid">${cards}</div>`, [{ label: 'Ab ins Lager!', icon: '🌴', value: 1 }], { wide: true });
+    await Show.pickLux(st);
     const rv = byId(S.rival), bd = byId(S.buddy);
     if (rv) await st.line('lotte', `Ein Auge solltet ihr auf ${rv.name} haben – ${firstName(rv)} sagt, was sie denkt. Und zwar über jeden. Besonders über ${firstName(me())}.`.replace(' sie ', rv.form === 'm' ? ' er ' : ' sie '));
     if (bd) await st.line('mats', `Und ${bd.name} hat schon angekündigt, sich um alle zu kümmern. Vielleicht findet ${firstName(me())} hier eine echte Freundschaft.`);
@@ -105,6 +106,21 @@
     { const st2 = await hostSet('day'); await UI.banner('🌴 Angekommen!', 'Das Urwaldlager', 1600); await st2.line('mats', 'Willkommen im Lager! Und weil wir gemein sind, geht es gleich mit der ersten Prüfung los.'); }
     S.forceMe = true;
   };
+  // Zwei Luxusartikel einpacken
+  Show.pickLux = async (st) => {
+    const S = Show.S, m = me(); m.lux = []; S.luxUses = {};
+    if (st && st.line) await st.line('lotte', 'Jeder darf zwei Luxusartikel mitnehmen. Überleg gut – im Dschungel ist alles Gold wert!');
+    for (let k = 0; k < 2; k++) {
+      const left = D.LUX.filter(l => !m.lux.includes(l.id));
+      const id = UL.bot ? left[0].id : await UI.choose(`🎒 Luxusartikel ${k + 1} von 2`, '<p>Was kommt in deinen Rucksack?</p>', left.map(l => ({ label: l.name, icon: l.icon, sub: l.desc, value: l.id })), { cls: 'clear' });
+      m.lux.push(id || left[0].id);
+      const l = D.LUX.find(x => x.id === m.lux[k]); if (l.uses) S.luxUses[l.id] = l.uses;
+    }
+    Show.log(`${firstName(m)} packt ein: ${m.lux.map(id => D.LUX.find(l => l.id === id).name).join(' und ')}.`, '🎒');
+  };
+  // hat der Spieler den Artikel (und ist er nicht gerade eingezogen)?
+  Show.hasLux = id => { const S = Show.S, m = S && me(); return !!(m && (m.lux || []).includes(id) && !(S.luxGone && S.luxGone.id === id && S.day < S.luxGone.back)); };
+
   // Der Weg ins Lager: Helikopter oder Fußmarsch, unterwegs eine Gruppenprüfung (Sterne = Bonus-Portionen fürs erste Abendessen)
   Show.travel = async (st) => {
     const S = Show.S, team = alive().filter(c => c.id !== 'me');
@@ -179,6 +195,7 @@
     const S = Show.S, st = R.stage, c = pick(), id = nextTrial(), def = D.TRIAL[id];
     S.used[id] = (S.used[id] || 0) + 1; S.lastTrial = id;
     const again = S.lastPick === c.id; S.lastPick = c.id;
+    if (S.day > 1 && !UL.bot) await Show.voteBoard('📞 Zuschauer-Voting', 'Wer muss heute in die Prüfung?', c, alive().map(o => ({ c: o, w: Math.max(1, o.ent * 0.8 + (100 - o.sym) * 0.4) })));
     UL.Audio.sfx('drum');
     if (st.mod) await st.mod(again ? 'pickAgain' : 'pick', { n: c.id === 'me' ? c.name : c.name });
     c.trials++;
@@ -187,6 +204,9 @@
       const r = await UL.Trials.run(id, { theme: S.theme, diff: S.diff, name: c.name, look: c.look, form: c.form, seed: S.seed + S.day * 31 });
       if (Show.abort) return;
       applyTrial(c, r, def);
+      // Entzug: wer abbricht, muss einen Luxusartikel für zwei Tage abgeben
+      const own = (c.lux || []).filter(Show.hasLux);
+      if (r.quit && own.length) { const l = D.LUX.find(x => x.id === UL.pick(own)); S.luxGone = { id: l.id, back: S.day + 2 }; Show.log(`Entzug! ${D.RANGER.name} sammelt ${firstName(c)}s ${l.name} für zwei Tage ein.`, '🎒'); if (!UL.bot) await UI.say('ranger', `Abgebrochen ist abgebrochen. Dein ${l.name} ${l.icon} bleibt zwei Tage bei mir.`); Show.change(c, { ent: 3 }); c.mood = Math.max(0, (c.mood || 0.5) - 0.2); }
     } else {
       const sim = simTrial(c, def);
       const how = UL.bot ? 'sim' : await UI.choose(def.icon + ' ' + def.name, `<p><b>${esc(c.name)}</b> muss in die Prüfung „${def.name}“. Willst du zusehen, wie ${firstName(c)} sich schlägt?</p>`, [
@@ -242,11 +262,25 @@
     Show.log(`Abendessen: ${n} Portionen. ${key === 'none' ? 'Reis und Bohnen.' : key === 'full' ? 'Festmahl!' : ''}`, '🍲');
   };
 
+  // Ergebnis eines Votings als Balken (Woche 1: Prüfung, Woche 2: Rauswahl). top bekommt die meisten Stimmen.
+  Show.voteBoard = async (title, q, top, list, low) => {
+    const tot = list.reduce((a, x) => a + x.w, 0) || 1;
+    let rows = list.map(x => ({ c: x.c, p: x.w / tot * 100 }));
+    const ex = low ? Math.min(...rows.map(r => r.p)) : Math.max(...rows.map(r => r.p)), tr = rows.find(r => r.c === top);
+    if (tr && tr.p !== ex) { const o = rows.find(r => r.p === ex); [o.p, tr.p] = [tr.p, o.p]; }
+    rows.sort((a, b) => b.p - a.p);
+    const sum = rows.reduce((a, r) => a + Math.round(r.p), 0); if (rows[0]) rows[0].p += 100 - sum;
+    const html = `<p class="txt">${esc(q)}</p><div class="drum">${(low ? rows : rows.slice(0, 6)).map(r => `<div class="drum-row ${r.c === top ? 'me' : ''} ${r.c.id === 'me' ? 'me' : ''}"><b>${esc(r.c.name)}${r.c === top ? ' ⬅' : ''}</b><div class="drum-bars"><span class="bar" style="display:inline-block;width:150px;max-width:40vw"><i style="width:${Math.round(r.p)}%;background:${r.c === top ? '#ffd23a' : '#5ad1ff'}"></i></span> ${Math.round(r.p)} %</div></div>`).join('')}</div>`;
+    UL.Audio.sfx('tense');
+    await UI.choose(title, html, [{ label: 'Weiter', icon: '▶️', value: 1 }], { wide: true });
+  };
+
   // Nacht: wer muss gehen?
   Show.exitNight = async () => {
     const S = Show.S, list = alive();
     const scored = list.map(c => ({ c, p: pop(c) + UL.rand(-4, 4) })).sort((a, b) => b.p - a.p);
     const out = scored[scored.length - 1].c, last2 = scored[scored.length - 2].c;
+    if (!UL.bot) await Show.voteBoard('📞 Anrufe der Zuschauer', 'Woche 2: Die Zuschauer rufen für ihren Liebling an. Wer die wenigsten Anrufe bekommt, muss gehen.', out, scored.map(x => ({ c: x.c, w: Math.max(1, x.p) })), true);
     const res = await UL.Camp.exit({ theme: S.theme, safe: scored.slice(0, -2).map(x => x.c), last2, out });
     out.out = true; out.outDay = S.day;
     if (out.id === S.rival) Show.log(`Der große Rivale ${firstName(out)} ist raus!`, '🎭');
@@ -287,7 +321,9 @@
       const ok = Math.random() < 0.4 + w.t.fleiss * 0.5 + (w.slp > 50 ? 0.1 : -0.1);
       res = { fireOk: ok, scared: ok ? 2 : 0, stolen: ok ? 0 : 1 + (Math.random() < 0.4 ? 1 : 0) };
     }
-    list.forEach(c => { const rest = c === w ? 10 : res.fireOk ? 35 : 20; c.slp = UL.clamp(c.slp - 25 + rest, 0, 100); });
+    list.forEach(c => { const rest = (c === w ? 10 : res.fireOk ? 35 : 20) + (c.id === 'me' && Show.hasLux('kissen') ? 10 : 0); c.slp = UL.clamp(c.slp - 25 + rest, 0, 100); });
+    if (Show.hasLux('tagebuch')) Show.change(m, { ent: 2 });
+    if (S.luxGone && S.day + 1 >= S.luxGone.back) { Show.log(`${firstName(m)} bekommt den Luxusartikel zurück.`, '🎒'); S.luxGone = null; }
     if (res.stolen) list.forEach(c => { c.hun = UL.clamp(c.hun - res.stolen * 4, 0, 100); });
     if (mine) {
       Show.change(m, { sym: (res.fireOk ? 4 : -3) + res.scared * 1.5 - res.stolen * 1.5, ent: res.scared + res.stolen * 2 });
