@@ -329,6 +329,14 @@
         "Zurufen: kurze fertige Sprüche wie „Komm zu mir!“ oder „Auf zur Parade!“. Freien Text gibt es bewusst nicht.",
         "Beenden: im selben Menü „Stadt schließen“ oder „Besuch beenden“. Schließt die Gastgeberin oder der Gastgeber, endet die Runde für alle."
       ]
+    },
+    {
+      "t": "🏳️‍🌈 Die Szene auf der Straße und die bunte Stadt",
+      "p": [
+        "Rainbow City zeigt Flagge: Regenbogen-Übergänge an allen Kreuzungen der Innenstadt, Wimpelketten und Lichterketten über jeder Straße, Pride-Banner in vielen Flaggenfarben an den Laternen und Ballonbögen an den Stadteingängen und am Platz.",
+        "Auf den Gehwegen triffst du die ganze Szene: Paare, die nebeneinander durch die Stadt laufen, Bären, Lederkerle, Dragqueens mit bunten Haaren, Menschen in Trans-, Bi-, Pan-, Lesben- und Nichtbinär-Farben, Glitzer und Neon. Am Platz wird getanzt, vor dem Club steht die Schlange, vor dem Café wird geplaudert.",
+        "Am Handy stellt sich die Schärfe von selbst ein: Das Bild bleibt klar, auch wenn das Spiel für flüssigen Lauf Details zurücknimmt. Hochkant siehst du mehr von der Stadt, quer passt das Handy-Menü jetzt vollständig auf den Bildschirm."
+      ]
     }
   ],
   "ratgeber": [
@@ -690,6 +698,14 @@
     {
       "q": "Der Code funktioniert nicht. Was tun?",
       "a": "Der Code gilt nur, solange die Stadt offen ist, und ändert sich bei jedem Öffnen. Prüfe die vier Zeichen (es gibt kein O, 0, I, 1 oder L) und ob beide online sind. Ist die Stadt voll (fünf Gäste), kommt eine Meldung."
+    },
+    {
+      "q": "Das Bild ist am Handy unscharf oder ruckelt. Was tun?",
+      "a": "Unter Optionen, Grafik wählst du Automatisch, Niedrig, Mittel oder Hoch. Niedrig läuft am flüssigsten und bleibt trotzdem scharf, Mittel und Hoch zeigen mehr Details und Schatten. Das Spiel passt die Auflösung beim Spielen selbst an."
+    },
+    {
+      "q": "Turbo geht nicht oder die Kamera dreht sich nicht mit. Was tun?",
+      "a": "Turbo ist am Handy ein Schalter: einmal tippen, dann rennst du, bis du wieder tippst. Mit leerer Energie rennst du langsamer, also schlafen oder Kaffee trinken. Die Kamera dreht sich beim Laufen von selbst hinter deine Figur. Wischst du über das Bild, bleibt sie kurz dort, wo du hinschaust."
     }
   ]
 }

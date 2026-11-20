@@ -51,7 +51,7 @@
     W.quality = q === 'low' ? 0 : q === 'mid' ? 1 : q === 'high' ? 2 : (touch ? 1 : 2);
     // Babylon.js zeichnet (babylon/amc-babylon.js); ohne Babylon oder mit ?engine=three wie früher
     let R = null;
-    if (root.AMC_BJS && !/[?&]engine=three/.test(location.search)) try { R = root.AMC_BJS.createRenderer(T, canvas, { antialias: W.quality > 0 }); W.babylon = true; } catch (e) { console.warn('Babylon.js nicht verfügbar', e); R = null; }
+    if (root.AMC_BJS && W.useBabylon !== false && !/[?&]engine=three/.test(location.search)) try { R = root.AMC_BJS.createRenderer(T, canvas, { antialias: W.quality > 0 }); W.babylon = true; } catch (e) { console.warn('Babylon.js nicht verfügbar', e); R = null; }
     if (!R) R = new T.WebGLRenderer({ canvas, antialias: W.quality > 0, powerPreference: 'high-performance', alpha: false });
     W.renderer = R;
     R.outputEncoding = T.sRGBEncoding; R.toneMapping = T.ACESFilmicToneMapping; R.toneMappingExposure = 1.08;
@@ -105,14 +105,15 @@
     PF.ema += (dt - PF.ema) * 0.05; PF.frame++;
     if (R.shadowMap.enabled && !R.shadowMap.autoUpdate) R.shadowMap.needsUpdate = PF.frame % (PF.ema > 1 / 40 ? 3 : 2) === 0;
     if ((PF.t += dt) < 1.2) return; PF.t = 0;
-    if (PF.ema > 1 / 45 && PF.scale > 0.8) { PF.scale = Math.max(0.8, PF.scale - 0.1); PF.good = 0; W.resize(); }
+    const lo = U.isTouch() ? 0.65 : 0.8;   // Handy rechnet mit voller Schärfe und gibt bei Rucklern stufenweise nach
+    if (PF.ema > 1 / 45 && PF.scale > lo) { PF.scale = Math.max(lo, PF.scale - (PF.ema > 1 / 28 ? 0.2 : 0.1)); PF.good = 0; W.resize(); }   // sehr langsam: schneller nachgeben
     else if (PF.ema < 1 / 56 && PF.scale < 1) { if (++PF.good >= 4) { PF.good = 0; PF.scale = Math.min(1, PF.scale + 0.1); W.resize(); } }
     else PF.good = 0;
   };
   W.perfState = () => ({ scale: PF.scale, fps: Math.round(1 / PF.ema) });
   W.resize = function () {
     if (!W.renderer) return;
-    const w = root.innerWidth, h = root.innerHeight, dr = root.devicePixelRatio || 1, dpr = Math.max(Math.min(dr, 1.25), Math.min(dr, [1, 1.5, 2][W.quality]) * PF.scale);   // nie unscharf: mindestens 1,25-fach auf scharfen Displays
+    const w = root.innerWidth, h = root.innerHeight, dr = root.devicePixelRatio || 1, touch = U.isTouch(), dpr = Math.max(Math.min(dr, 1.25), Math.min(dr, [1, touch ? 2 : 1.5, 2][W.quality]) * PF.scale);   // nie unscharf: mindestens 1,25-fach; Handy bis 2-fach, solange es flüssig läuft
     W.renderer.setPixelRatio(dpr); W.renderer.setSize(w, h, false);
     W.camera.aspect = w / h; W.camera.fov = w / h < 0.8 ? 72 : 60; W.camera.updateProjectionMatrix();
   };

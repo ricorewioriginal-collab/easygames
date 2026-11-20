@@ -17,8 +17,12 @@
       progress(0.02, '3D-Grafik');
       await loadScript('../vendor/three-r128.min.js');
       await Promise.all(['../vendor/three-r128-gltfloader.js', '../figuren/figuren.js'].map(loadScript));
-      progress(0.05, '3D-Engine (Babylon.js)');
-      if (!/[?&]engine=three/.test(location.search)) await import(new URL('babylon/amc-babylon.js', document.baseURI).href).catch(e => console.warn('Babylon.js', e));
+      // 3D-Technik: Babylon.js zeichnet über eine Übersetzungsschicht und kostet am Handy ein Vielfaches an Rechenzeit (gemessen ~12×) –
+      // Handys und die App nutzen darum automatisch den schnellen klassischen Renderer, PCs Babylon. Einstellbar unter ⚙️ Einstellungen.
+      const eng = (Save.data.settings || {}).engine || 'auto', qs = location.search;
+      W.useBabylon = /[?&]engine=babylon/.test(qs) ? true : /[?&]engine=three/.test(qs) ? false : eng === 'babylon' ? true : eng === 'three' ? false : !U.isTouch();
+      progress(0.05, W.useBabylon ? '3D-Engine (Babylon.js)' : '3D-Engine');
+      if (W.useBabylon) await import(new URL('babylon/amc-babylon.js', document.baseURI).href).catch(e => console.warn('Babylon.js', e));
       progress(0.08, '3D-Modelle');
       const cv = U.$('view'); I.bindCanvas(cv);
       await W.init(cv, (f, l) => progress(0.08 + f * 0.82, l));
@@ -68,28 +72,31 @@
     const st = Save.data.story, chDone = st.done, stars = Object.values(st.stars).reduce((a, b) => a + b, 0);
     const s = UI.open(
       '<div class="menu-l"><div class="m-logo"><img src="' + UI.podLogo + '" alt=""><div><h1>AnMa<span>Cha</span> – Der Podcast</h1><p>Offizielles Spiel</p></div></div>' +
-      '<nav class="m-list">' + (inCity ? mi('resume', '🏙️', 'Weiter in der Stadt', Object.keys(Save.data.quests).length + '/' + D.QUESTS.length + ' Aufträge · Funkhaus, Senderhäuser, Läden und Häuser sind begehbar', true) : '') +
-      mi('story', '▶', 'Story: Staffel 1–3', chDone >= D.CHAPTERS.length ? 'Alle ' + D.CHAPTERS.length + ' Kapitel geschafft · ⭐ ' + stars + '/' + D.CHAPTERS.length * 3 : 'Kapitel ' + (chDone + 1) + ' von ' + D.CHAPTERS.length + ' · ⭐ ' + stars, !inCity) +
-      mi('live', '🎙️', 'Live-Show', 'Endlos-Aufnahme · Rekord ' + U.fmt(Save.data.best.live) + ' Hörer') +
-      mi('jagd', '🏃', 'Themenjagd', '3 Minuten durch die Stadt · Rekord ' + U.fmt(Save.data.best.jagd)) +
-      mi('race', '🏁', 'Funk-Rennen', '10 Tore auf Zeit · ' + (Save.data.best.race ? 'Bestzeit ' + Save.data.best.race.toFixed(1) + ' s' : 'noch keine Bestzeit')) +
-      mi('quiz', '🧠', 'KI-Quizshow', '1 Spieler oder 2 Spieler: Andrew gegen Marco') +
-      (inCity ? '' : mi('free', '🏙️', 'Stadt & Nebenaufträge', Object.keys(Save.data.quests).length + '/' + D.QUESTS.length + ' Aufträge erledigt · frei spielen, Radio hören')) +
-      mi('koop', '🌐', 'Online-Koop', 'Zu zweit auf zwei Geräten: Andrew & Marco – per Link, Code oder QR') +
-      mi('walk', '🚶', 'Studio betreten', 'Zu Fuß durchs Studio: Pult, Rico, Einrichten, Musikshop') +
-      (AMC.Events ? mi('week', AMC.Events.week().icon, 'Woche ' + AMC.Events.week().n + ': ' + AMC.Events.week().name, AMC.Events.week().goal + ' ' + AMC.Events.week().have + '/' + AMC.Events.week().need + ' · 📼 ' + AMC.Events.tapes() + '/20 Kassetten') : '') +
-      (AMC.Missions ? mi('missions', '📋', 'Auftragsbuch', (AMC.Missions.active() ? '▶ ' + AMC.Missions.active().t + ' · ' : '') + 'Story-Aufträge ' + AMC.Missions.progress().done + '/' + AMC.Missions.progress().of + ' · Tagesjobs') : '') +
-      (AMC.GTA ? mi('gta', '🎬', 'Medien-Aufträge', 'Eilmeldung, Live-Schalte, Funkloch-Jagd, Studiogast-Taxi, Hörerwunsch · ' + Object.values(AMC.GTA.stats().done).reduce((a, b) => a + b, 0) + ' geschafft · 🎬 Stunts ' + AMC.GTA.stats().stunts) : '') +
-      (AMC.Acts ? mi('acts', '📖', 'Story-Akte', AMC.Acts.state().done ? '🏆 Alle Akte geschafft' : AMC.Acts.state().title + ' · ' + U.fmt(AMC.Acts.state().have) + '/' + U.fmt(AMC.Acts.state().need)) : '') +
-      (AMC.Guests ? mi('guests', '🎙️', 'Studiogäste', (AMC.Guests.today() ? 'Heute: ' + AMC.Guests.today().name : 'Noch kein Gast für heute') + ' · ' + AMC.Guests.list().filter(g => g.open).length + '/' + AMC.Guests.ROSTER.length + ' freigeschaltet') : '') +
-      (AMC.Feed ? mi('app', '📱', 'AnMaCha-App', U.fmt(AMC.Feed.followers()) + ' Follower · Trend ' + AMC.Feed.trend().tag) : '') +
-      mi('friends', '❤️', 'Freundebuch', (AMC.Social ? Object.keys((Save.data.social || {}).f || {}).length + ' Bekanntschaften · 💖 ' + AMC.Social.superfans() + ' Superfans' : '')) +
-      mi('home', '🏠', 'Zuhause', 'Andrews Wohnung & Marcos Haus · ' + ['andrew', 'marco'].map(id => D.HOSTS[id].name + ' ' + Math.round(AMC.Home.mood(id) * 100) + ' % fit').join(' · ')) +
-      mi('arcade', '🕹️', 'Arcade: 3D-Minispiele', AMC.Arcade.GAMES.map(g => g.name).join(' · ')) +
-      mi('music', '🎹', 'Musikshop', (Save.data.songs || []).length + ' gekaufte Lieder · freie Klavierlicht-Melodien für Hörerwünsche') +
-      mi('studio', '🛠️', 'Studio gestalten', 'Studio-Wert ' + AMC.StudioEdit.value() + ' · Möbel, Deko, Technik frei hinstellen – bringt Hörer-Bonus') +
-      mi('shop', '🛍️', 'Fanshop', '🎟️ ' + U.fmt(Save.data.fan) + ' Fan-Punkte · Outfits & Studio-Upgrades') +
-      mi('radio', '📻', 'Radio & Podcast', 'Alle Folgen und die 13 AnMaCha-Sender') +
+      '<nav class="m-list" id="mList">' + (inCity ? mi('resume', '🏙️', 'Weiter in der Stadt', AMC.Acts && AMC.Acts.hud && AMC.Acts.hud() ? AMC.Acts.hud()[0].replace(/ · hier (tippen|klicken)$/, '') : 'Funkhaus, Senderhäuser, Läden und Häuser sind begehbar', true) : '') +
+      (AMC.Acts ? mi('acts', '📖', 'Story', AMC.Acts.state().done ? '🏆 Alle 5 Akte und das Finale geschafft' : AMC.Acts.state().title + ' · ' + U.fmt(AMC.Acts.state().have) + '/' + U.fmt(AMC.Acts.state().need) + ' · Kapitel ' + Math.min(chDone + 1, D.CHAPTERS.length) + ' von ' + D.CHAPTERS.length, !inCity) : '') +
+      grp('pod', '🎙️', 'Podcast & Studio', 'Kapitel nochmal spielen, Live-Show, Studio, Gäste, Zuhause, Fanshop') +
+      sub('pod', mi('story', '▶', 'Kapitel nochmal spielen', chDone >= D.CHAPTERS.length ? 'Alle ' + D.CHAPTERS.length + ' Kapitel geschafft · ⭐ ' + stars + '/' + D.CHAPTERS.length * 3 : chDone + ' von ' + D.CHAPTERS.length + ' Kapiteln · ⭐ ' + stars) +
+        mi('live', '🎙️', 'Live-Show', 'Endlos-Aufnahme · Rekord ' + U.fmt(Save.data.best.live) + ' Hörer') +
+        mi('walk', '🚶', 'Studio betreten', 'Zu Fuß durchs Studio: Pult, Rico, Einrichten, Musikshop') +
+        mi('studio', '🛠️', 'Studio gestalten', 'Studio-Wert ' + AMC.StudioEdit.value() + ' · Möbel, Deko, Technik – bringt Hörer-Bonus') +
+        (AMC.Guests ? mi('guests', '🎙️', 'Studiogäste', (AMC.Guests.today() ? 'Heute: ' + AMC.Guests.today().name : 'Noch kein Gast für heute') + ' · ' + AMC.Guests.list().filter(g => g.open).length + '/' + AMC.Guests.ROSTER.length + ' freigeschaltet') : '') +
+        mi('home', '🏠', 'Zuhause', 'Andrews Wohnung & Marcos Haus · ' + ['andrew', 'marco'].map(id => D.HOSTS[id].name + ' ' + Math.round(AMC.Home.mood(id) * 100) + ' % fit').join(' · ')) +
+        mi('music', '🎹', 'Musikshop', (Save.data.songs || []).length + ' gekaufte Lieder · freie Klavierlicht-Melodien für Hörerwünsche') +
+        mi('shop', '🛍️', 'Fanshop', '🎟️ ' + U.fmt(Save.data.fan) + ' Fan-Punkte · Outfits & Studio-Upgrades')) +
+      grp('city', '🏙️', 'Stadt & Aufträge', 'Nebenaufträge, Medien-Aufträge, Wochen-Motto, App, Freundebuch') +
+      sub('city', (AMC.Missions ? mi('missions', '📋', 'Auftragsbuch', (AMC.Missions.active() ? '▶ ' + AMC.Missions.active().t + ' · ' : '') + 'Nebenaufträge ' + AMC.Missions.progress().done + '/' + AMC.Missions.progress().of + ' · Tagesjobs') : '') +
+        (AMC.GTA ? mi('gta', '🎬', 'Medien-Aufträge', 'Eilmeldung, Live-Schalte, Funkloch-Jagd, Studiogast-Taxi, Hörerwunsch · ' + Object.values(AMC.GTA.stats().done).reduce((a, b) => a + b, 0) + ' geschafft · 🎬 Stunts ' + AMC.GTA.stats().stunts) : '') +
+        (AMC.Events ? mi('week', AMC.Events.week().icon, 'Woche ' + AMC.Events.week().n + ': ' + AMC.Events.week().name, AMC.Events.week().goal + ' ' + AMC.Events.week().have + '/' + AMC.Events.week().need + ' · 📼 ' + AMC.Events.tapes() + '/20 Kassetten') : '') +
+        (AMC.Feed ? mi('app', '📱', 'AnMaCha-App', U.fmt(AMC.Feed.followers()) + ' Follower · Trend ' + AMC.Feed.trend().tag) : '') +
+        mi('friends', '❤️', 'Freundebuch', (AMC.Social ? Object.keys((Save.data.social || {}).f || {}).length + ' Bekanntschaften · 💖 ' + AMC.Social.superfans() + ' Superfans' : '')) +
+        (inCity ? '' : mi('free', '🏙️', 'Stadt & Nebenaufträge', Object.keys(Save.data.quests).length + '/' + D.QUESTS.length + ' Aufträge erledigt · frei spielen, Radio hören'))) +
+      grp('mini', '🕹️', 'Minispiele', 'Arcade, KI-Quizshow, Themenjagd, Funk-Rennen') +
+      sub('mini', mi('arcade', '🕹️', 'Arcade: 3D-Minispiele', AMC.Arcade.GAMES.map(g => g.name).join(' · ')) +
+        mi('quiz', '🧠', 'KI-Quizshow', '1 Spieler oder 2 Spieler: Andrew gegen Marco') +
+        mi('jagd', '🏃', 'Themenjagd', '3 Minuten durch die Stadt · Rekord ' + U.fmt(Save.data.best.jagd)) +
+        mi('race', '🏁', 'Funk-Rennen', '10 Tore auf Zeit · ' + (Save.data.best.race ? 'Bestzeit ' + Save.data.best.race.toFixed(1) + ' s' : 'noch keine Bestzeit'))) +
+      mi('koop', '🌐', 'Online & Handys', 'Zu zweit auf zwei Geräten: Andrew & Marco – Mitspieler treten per Link, Code oder QR von überall bei') +
+      mi('radio', '📻', 'Radio & Podcast', 'Alle ' + D.EPISODES.length + ' Folgen, die 12 AnMaCha-Radios und alle Podcast-Plattformen') +
       '</nav><div class="m-row">' + mi('settings', '⚙️', 'Einstellungen') + mi('controls', '🎮', 'Steuerung') + mi('credits', 'ℹ️', 'Mitwirkende') + '</div></div>' +
       '<div class="menu-r"><button type="button" class="host-pick glass" data-nav id="mHost"></button><div class="m-hint" id="mHint"></div></div>',
       { cls: 'main-menu' + (inCity ? ' in-city' : ''), back: () => resume() });
@@ -107,8 +114,15 @@
     updHost();
     const go = { resume, arcade: arcadeMenu, walk: walkStudio, friends: () => AMC.Social.book(), guests: () => AMC.Guests.panel(), acts: () => AMC.Acts.panel(), missions: () => AMC.Missions.panel(), gta: () => AMC.GTA.panel(), app: () => AMC.Feed.panel(), week: () => AMC.Events.panel(), home: homeMenu, music: () => AMC.Home.musicShop(), studio: studioEdit, story: storyMenu, live: startLive, jagd: () => startCity('jagd'), race: () => startCity('race'), quiz: quizMenu, free: () => startCity('free'), radio: () => UI.radio(), koop: () => AMC.Net.lobby(), shop, settings, controls, credits };
     el.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go[b.dataset.go]());
+    // Gruppen: ein Eintrag klappt seine Funktionen auf, ein zweiter Druck (oder Zurück) klappt sie wieder zu
+    const list = el.querySelector('#mList'); let open = null;
+    const setGrp = g => { open = g; el.querySelectorAll('[data-grp]').forEach(b => b.classList.toggle('on', b.dataset.grp === g)); el.querySelectorAll('.m-sub').forEach(d => d.classList.toggle('open', d.dataset.in === g)); list.classList.toggle('grp-open', !!g); };
+    el.querySelectorAll('[data-grp]').forEach(b => b.onclick = () => { setGrp(open === b.dataset.grp ? null : b.dataset.grp); if (open) { const f = el.querySelector('.m-sub.open [data-nav]'); if (f) UI.focus(f); } });
+    const back0 = s.o.back; s.o.back = () => { if (open) { const b = el.querySelector('[data-grp="' + open + '"]'); setGrp(null); if (b) UI.focus(b); return; } back0 && back0(); };
     G.menu = s;
   }
+  const grp = (g, icon, label, subt) => '<button type="button" class="m-item m-grp" data-nav data-grp="' + g + '"><span class="mi-ic">' + icon + '</span><span class="mi-t"><b>' + label + '</b><small>' + subt + '</small></span><span class="mi-arr">›</span></button>';
+  const sub = (g, html) => '<div class="m-sub" data-in="' + g + '">' + html + '</div>';
   const mi = (go, icon, label, sub, first) => '<button type="button" class="m-item" data-nav data-go="' + go + '"' + (first ? ' data-first' : '') + '><span class="mi-ic">' + icon + '</span><span class="mi-t"><b>' + label + '</b>' + (sub ? '<small>' + sub + '</small>' : '') + '</span></button>';
 
   // ------------------------------------------------------------------ Sims-Teil: Zuhause und begehbares Studio
@@ -162,13 +176,13 @@
   // ------------------------------------------------------------------ Story
   function storyMenu() {
     const st = Save.data.story;
-    const s = UI.open('<div class="panel glass wide"><header><h2>▶ Die Staffel</h2><button class="btn small" data-nav id="sBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
-      '<p class="lead">Staffel 1: von der ersten Folge im Sommer 2020 bis LIVE auf dem Podfluencer Festival. Staffel 2: Das Funkloch kehrt zurück – und streut alte Folgen in der Stadt.</p><div class="ch-grid">' +
+    const s = UI.open('<div class="panel glass wide"><header><h2>▶ Die Kapitel</h2><button class="btn small" data-nav id="sBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
+      '<p class="lead">17 Kapitel nach echten Folgen von „AnMaCha – Der Podcast“ (Staffel 1 bis 5) und den AnMaCha-Radios. Teil 1 führt vom Sommer 2020 LIVE aufs Podfluencer Festival, Teil 2 erzählt Rückblenden, Teil 3 bringt die Sender auf Sendung. Der Hauptweg (📖 Story) führt euch der Reihe nach durch.</p><div class="ch-grid">' +
       D.CHAPTERS.map((c, i) => {
-        const head = i === 0 || (D.CHAPTERS[i - 1].season || 1) !== (c.season || 1) ? '<h3 class="ch-season">Staffel ' + (c.season || 1) + ({ 2: ' · Das Funkloch kehrt zurück', 3: ' · Auf Sendung – die AnMaCha-Radios' }[c.season] || ' · Die Geschichte von AnMaCha') + '</h3>' : '';
+        const head = i === 0 || (D.CHAPTERS[i - 1].season || 1) !== (c.season || 1) ? '<h3 class="ch-season">' + D.PARTS[c.season || 1] + '</h3>' : '';
         const open = i <= st.done, stars = st.stars[c.id] || 0;
         return head + '<button type="button" class="ch-card' + (open ? '' : ' locked') + '" data-nav data-ch="' + i + '"' + (i === Math.min(st.done, D.CHAPTERS.length - 1) ? ' data-first' : '') + (open ? '' : ' disabled') + ' style="--i:' + i + '">' +
-          '<span class="ch-n">' + (i + 1) + '</span><span class="ch-t"><small>' + c.when + ' · Folge ' + (c.ep < 10 ? '#0' : '#') + c.ep + '</small><b>' + c.title + '</b><em>' + objName(c) + '</em></span>' +
+          '<span class="ch-n">' + (i + 1) + '</span><span class="ch-t"><small>' + (c.folge ? c.when + ' · Staffel ' + D.realSeason(c.folge) + ' · Folge ' + D.folgeNr(c.folge) : '📻 Radio-Kapitel · ' + c.when) + '</small><b>' + c.title + '</b><em>' + objName(c) + '</em></span>' +
           '<span class="ch-s">' + (open ? '★★★'.split('').map((x, k) => '<i class="' + (k < stars ? 'on' : '') + '">★</i>').join('') : '🔒') + '</span></button>';
       }).join('') + '</div></div>', { back: () => UI.close(s) });
     s.el.querySelector('#sBack').onclick = () => UI.close(s);
@@ -252,6 +266,7 @@
   G.netLobby = () => { UI.closeAll(); hub(); AMC.Net.lobby(); };
 
   function playChapterDirect(i) { startCity('story', D.CHAPTERS[i]); }
+  G.storyChapter = i => { UI.closeAll(); if (G.menu) G.menu = null; playChapter(i); };
   G.playChapter = i => { UI.closeAll(); G.chapter = i; playChapterDirect(i); };
   const fanLine = n => ['🎟️ Fan-Punkte', '+' + U.fmt(n) + ' (jetzt ' + U.fmt(Save.data.fan) + ')'];
   const sumGot = got => D.RUBRIC_IDS.reduce((a, r) => a + (got[r] || 0), 0);
@@ -295,10 +310,10 @@
     const seasonEnd = idx === D.CHAPTERS.length - 1 || (D.CHAPTERS[idx + 1] && (D.CHAPTERS[idx + 1].season || 1) !== (ch.season || 1));
     toMenuScene();
     UI.dialog(ch.outro, () => {
-      const epIdx = AMC.Media.episodes.findIndex(e => e.nr === (ch.ep < 10 ? '#0' : '#') + ch.ep);
+      const epIdx = ch.folge ? AMC.Media.episodes.findIndex(e => e.nr === D.folgeNr(ch.folge)) : -1;
       results({
         title: '✅ Kapitel ' + (idx + 1) + ' geschafft!', stars: r.stars,
-        lines: [['Hörer', U.fmt(r.listeners)], ['Themen-Funken', sumGot(cityRes.got)], ['Störsender', cityRes.kills], ['Fans gesprochen', cityRes.talks], fanLine(fp)].concat(evl).concat(first && seasonEnd ? [['🏆', 'Staffel ' + (ch.season || 1) + ' abgeschlossen!' + (idx < D.CHAPTERS.length - 1 ? ' Staffel ' + ((ch.season || 1) + 1) + ' ist freigeschaltet.' : ' Danke fürs Spielen!')]] : []),
+        lines: [['Hörer', U.fmt(r.listeners)], ['Themen-Funken', sumGot(cityRes.got)], ['Störsender', cityRes.kills], ['Fans gesprochen', cityRes.talks], fanLine(fp)].concat(evl).concat(first && seasonEnd ? [['🏆', D.PARTS[ch.season || 1].replace(/ · .*/, '') + ' abgeschlossen!' + (idx < D.CHAPTERS.length - 1 ? ' ' + D.PARTS[(ch.season || 1) + 1].replace(/ · .*/, '') + ' ist freigeschaltet.' : ' Jetzt wartet das Finale auf der Festival-Insel!')]] : []),
         next: idx < D.CHAPTERS.length - 1 ? () => playChapter(idx + 1) : null,
         again: () => playChapter(idx),
         episode: epIdx >= 0 ? epIdx : null
@@ -387,6 +402,7 @@
     const s = UI.open('<div class="panel glass"><header><h2>⚙️ Einstellungen</h2><button class="btn small" data-nav id="eBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
       rng('sMus', '🎵 Spielmusik', st.music) + rng('sSfx', '🔊 Effekte', st.sfx) + rng('sRad', '📻 Radio & Podcast', st.radio) +
       '<label class="set"><span>🖥️ Grafik</span><select data-nav id="sQ"><option value="auto">Automatisch</option><option value="low">Niedrig (schnell)</option><option value="mid">Mittel</option><option value="high">Hoch</option></select></label>' +
+      '<label class="set"><span>🧩 3D-Technik</span><select data-nav id="sEng"><option value="auto">Automatisch (Handy schnell, PC Babylon.js)</option><option value="three">Schnell (klassisch)</option><option value="babylon">Babylon.js</option></select></label>' +
       tog('sInv', '🎥 Kamera umkehren (oben/unten)', st.invert) + tog('sShake', '📳 Bildschirm wackeln', st.shake) + tog('sSub', '💬 Sprechblasen in der Aufnahme', st.subtitles !== false) + tog('sVoice', '🗣️ Stimmen (Szenen, Story, Aufnahme)', st.voice !== false) +
       '<label class="set"><span>🎯 Kamera-Empfindlichkeit</span><input type="range" min="0.4" max="2" step="0.1" value="' + st.sens + '" data-nav id="sSens"></label>' +
       '<button type="button" class="btn danger" data-nav id="sReset">🗑️ Spielstand zurücksetzen</button></div>', { back: () => UI.close(s) });
@@ -396,6 +412,7 @@
     $('sSfx').oninput = e => { st.sfx = +e.target.value; AMC.Audio.apply(); AMC.Audio.sfx('ui'); Save.save(); };
     $('sRad').oninput = e => { AMC.Media.setVolume(e.target.value); Save.save(); };
     $('sSens').oninput = e => { st.sens = +e.target.value; Save.save(); };
+    $('sEng').value = st.engine || 'auto'; $('sEng').onchange = e => { st.engine = e.target.value; Save.save(); UI.toast('🧩 3D-Technik wird beim nächsten Start übernommen.'); };
     $('sQ').value = st.quality; $('sQ').onchange = e => { st.quality = e.target.value; Save.save(); UI.toast('🖥️ Grafik wird beim nächsten Start übernommen.'); };
     $('sQ').addEventListener('keydown', e => { if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') e.preventDefault(); });
     s.o.onKey = () => { const f = s.focus; if (f && f.id === 'sQ' && (I.hit('left') || I.hit('right') || I.hit('ok'))) { const o = ['auto', 'low', 'mid', 'high'], i = (o.indexOf(f.value) + (I.hit('left') ? 3 : 1)) % 4; f.value = o[i]; f.onchange({ target: f }); AMC.Audio.sfx('tick'); return true; } return false; };
@@ -418,8 +435,8 @@
   function credits() {
     const s = UI.open('<div class="panel glass"><header><h2>ℹ️ Mitwirkende</h2><button class="btn small" data-nav data-first id="crBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
       '<p><b>AnMaCha – Der Podcast (Offizielles Spiel)</b><br>Mit Marco und Andrew. Story frei nach den Folgen, Rubriken und Neuigkeiten auf <a href="https://anmacha.de" target="_blank" rel="noopener" data-nav>anmacha.de</a>.</p>' +
-      '<p><b>Podcast & Sender</b><br>Folgen direkt vom offiziellen Podcast-Feed (podcaster.de), Sender live über laut.fm – nichts davon ist im Spiel gespeichert. Die Sender laufen auch bei RicoReWi Radio.</p>' +
-      '<p><b>3D & Ton (frei lizenziert)</b><br>Menschen und Bewegungen: Quaternius „Universal Base Characters“ und „Universal Animation Library“ (CC0) · Gebäude: Quaternius „Ultimate Textured Building Pack“ (CC0) · Katze: Quaternius „Ultimate Monsters“ (CC0) · Bäume, Brunnen, Felsen: Kenney „Fantasy Town Kit“ (CC0) · Geräusche: Kenney (CC0) · Musikwünsche: gemeinfreie Melodien aus Klavierlicht · Musik und Effekte: im Browser erzeugt · Three.js (MIT) · Schrift Fredoka (OFL).</p>' +
+      '<p><b>Podcast & Sender</b><br>Folgen direkt vom offiziellen Podcast-Feed (podcaster.de), die 12 Sender der AnMaCha-Radioproduktion live wie auf MeinRadio.com (Stream über laut.fm) – nichts davon ist im Spiel gespeichert. Die Sender laufen auch bei RicoReWi Radio.</p>' +
+      '<p><b>3D & Ton (frei lizenziert)</b><br>Menschen und Bewegungen: Quaternius „Universal Base Characters“ und „Universal Animation Library“ (CC0) · Gebäude: Quaternius „Ultimate Textured Building Pack“ (CC0) · Katze: Quaternius „Ultimate Monsters“ (CC0) · Bäume, Brunnen, Felsen: Kenney „Fantasy Town Kit“ (CC0) · Geräusche: Kenney (CC0) · Musikwünsche: gemeinfreie Melodien aus Klavierlicht · Musik und Effekte: im Browser erzeugt · Babylon.js (Apache 2.0) · Three.js (MIT) · Schrift Fredoka (OFL).</p>' +
       '<p class="hint">Ein Spiel aus der easygames-Sammlung · Wir ♥ Medien</p></div>', { back: () => UI.close(s) });
     s.el.querySelector('#crBack').onclick = () => UI.close(s);
   }

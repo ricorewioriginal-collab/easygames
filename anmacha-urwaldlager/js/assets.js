@@ -76,6 +76,10 @@
   const FIG = ['knight', 'mage', 'rogue', 'rogue_hooded', 'barbarian'];
   A.FIG = FIG;
   const figSrc = {}, rbSrc = {};
+  // echte Menschen (Rocketbox) für alle Figuren: noch nicht geladene warten unsichtbar und erscheinen, sobald ihr Modell da ist
+  const rbPend = {}, rbFail = {};
+  const rbFallback = (L) => { const P = (UL.D && UL.D.RB_PLAYER) || []; if (!P.length) return null; let h = 0; const k = String(L.model || '') + (L.shirt || 0) + (L.skin || 0); for (let i = 0; i < k.length; i++) h = (h * 31 + k.charCodeAt(i)) >>> 0; return P[h % P.length][0]; };
+  const rbFlush = (id) => { const l = rbPend[id]; if (!l || !A.ready) return; delete rbPend[id]; const src = rbSrc[id] || rbSrc[Object.keys(rbSrc)[0]]; l.forEach(f => { if (f.ready) return; const base = f.base; if (src) f.buildRb(src); else { const s2 = figSrc[f.look.model] || figSrc.knight; if (s2) f.build(s2); } if (f.ready && base && base !== 'idle') f.set(base, 0); }); };
   let clips = {}, rbClips = {};
   // Echte Menschen (Microsoft Rocketbox, MIT): Name → Datei models/menschen/<id>.glb
   A.RB = [];
@@ -227,6 +231,11 @@
         const FC = [0xff4fa0, 0xffd23a, 0xffffff, 0xff7a2e, look.hatColor || 0xb06aff];
         for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2; put(new T.SphereGeometry(r * 0.16, 7, 5), FC[i % 5], bones.head, cx + Math.cos(a) * r * 0.98, top - r * 0.42, cz + Math.sin(a) * dz * 1.0); }
       }
+      if (look.scarf) {   // Halstuch (freischaltbar): Ring um den Hals, Zipfel vorn
+        const neck = bones.Bip01_Neck || bones.neck || bones.head, ny = lo.y - r * 0.08;
+        put(new T.TorusGeometry(r * 0.62, r * 0.16, 6, 18), look.scarf, neck, cx, ny, cz, Math.PI / 2).scale.set(1, (dz / r) * 1.05, 1);
+        put(new T.ConeGeometry(r * 0.26, r * 0.5, 4), look.scarf, neck, cx, ny - r * 0.3, cz + dz * 0.7, Math.PI, Math.PI / 4);
+      }
       if (look.glasses) {   // Sonnenbrille
         const gy = lo.y + H * 0.5, gz = hi.z + r * 0.02;
         for (const sx of [-1, 1]) put(new T.BoxGeometry(r * 0.42, r * 0.24, r * 0.06), 0x111418, bones.head, cx + sx * r * 0.3, gy, gz);
@@ -257,8 +266,11 @@
       this.root = new T.Group(); this.root.name = 'fig';
       this.mixer = null; this.actions = {}; this.cur = null; this.base = 'idle'; this.one = null; this.oneT = 0;
       this.ready = false; this.bones = {};
-      const rb = this.look.rb && rbSrc[this.look.rb];
-      if (rb) this.buildRb(rb);
+      if (!this.look.rb) this.look.rb = rbFallback(this.look);   // keine Comic-Figuren mehr: jede Figur ist ein echter Mensch
+      const id = this.look.rb, rb = id && rbSrc[id];
+      if (rb && A.ready) this.buildRb(rb);
+      else if (id && !rbFail[id] && (A.RB || []).includes(id)) (rbPend[id] = rbPend[id] || []).push(this);   // lädt noch
+      else if (Object.keys(rbSrc).length && A.ready) this.buildRb(rbSrc[Object.keys(rbSrc)[0]]);
       else { const src = figSrc[this.look.model] || figSrc.knight; if (src) this.build(src); }
     }
     // echter Mensch: eigene Textur, gemeinsame (umgerechnete) Bewegungen
@@ -280,6 +292,9 @@
       inst.position.set(-(b.min.x + b.max.x) / 2 * k, -b.min.y * k, -(b.min.z + b.max.z) / 2 * k);
       this.inst = inst; this.rb = true;
       this.root.add(inst);
+      // Bodenkontakt: Zehenhöhe in Ruhehaltung merken; die Bewegungen senken die Hüfte, update() hebt die Figur dann wieder auf den Boden
+      this.toes = [B.Bip01_L_Toe0 || B.Bip01_L_Foot, B.Bip01_R_Toe0 || B.Bip01_R_Foot].filter(Boolean);
+      if (this.toes.length) { const r0 = this.root, sv = r0.matrix.clone(); r0.matrix.identity(); r0.matrixWorld.identity(); inst.updateMatrixWorld(true); this.toeBind = Math.min(...this.toes.map(t => t.matrixWorld.elements[13])); r0.matrix.copy(sv); r0.updateMatrixWorld(true); this.instY = inst.position.y; this.lift = 0; }
       this.mixer = new T.AnimationMixer(inst);
       for (const [n, c] of Object.entries(rbClips)) this.actions[n] = this.mixer.clipAction(c);
       this.ready = true;
@@ -342,6 +357,11 @@
       if (!this.mixer) return;
       if (this.one && this.oneT !== Infinity) { this.oneT -= dt; if (this.oneT <= 0) this.release(); }
       this.mixer.update(dt);
+      if (this.toes && this.toes.length && this.root.parent) {   // Füße nie im Boden (Messung vom letzten Bild, ohne Zusatzkosten)
+        const e = this.root.matrixWorld.elements, sy = Math.hypot(e[4], e[5], e[6]) || 1;
+        let mn = Infinity; for (const t of this.toes) mn = Math.min(mn, (t.matrixWorld.elements[13] - e[13]) / sy);
+        if (isFinite(mn)) { const raw = mn - this.lift, want = Math.max(0, this.toeBind - raw); this.lift += (want - this.lift) * Math.min(1, dt * 12); this.inst.position.y = this.instY + this.lift; }
+      }
     }
     bonePos(name, out = new T.Vector3()) { const b = this.bones[name]; if (b) b.getWorldPosition(out); else this.root.getWorldPosition(out); return out; }
     headPos(out) { return this.bonePos('head', out).add(new T.Vector3(0, this.height * 0.12, 0)); }
@@ -415,13 +435,14 @@
         const hb = new T.Box3(), cut = box.min.y + (box.max.y - box.min.y) * 0.875;
         hb.set(new T.Vector3(box.min.x, cut, box.min.z), box.max.clone());
         g.box = box; g.headBox = rbHead(g.scene, cut) || hb;
-        rbSrc[k.slice(3)] = g;
+        rbSrc[k.slice(3)] = g; rbFlush(k.slice(3));
       } else if (k.startsWith('tier:')) {
         g.scene.updateMatrixWorld(true); const bx = new T.Box3(); g.scene.traverse(o => { if (o.isMesh) skinnedBox(o, bx); }); g.box = bx; animals[k.slice(5)] = g;
       }
-    }).catch(e => { done++; console.warn('Modell fehlt', url, e); });
+    }).catch(e => { done++; console.warn('Modell fehlt', url, e); if (k.startsWith('rb:')) { rbFail[k.slice(3)] = true; rbFlush(k.slice(3)); } });
     await Promise.all(list.map(take));
     A.ready = true;
+    Object.keys(rbPend).forEach(id => { if (rbSrc[id] || rbFail[id]) rbFlush(id); });
     // übrige echte Figuren im Hintergrund nachladen (Titelbild und Editor überbrücken die Zeit)
     const rest = A.RB.filter(id => !rbSrc[id]);
     A.rbAll = Promise.all(rest.map(id => take(['rb:' + id, base + 'menschen/' + id + '.glb']))).then(() => { A.rbAll = null; });

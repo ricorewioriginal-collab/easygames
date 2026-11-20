@@ -629,3 +629,25 @@ body:has(#hud:not([hidden]) #hMap) .ttop { top: calc(178px + var(--safe-t)); fle
 }
 .gta-radio img { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: #1b1d2a; flex: none; } .gta-radio span { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
 .gta-radio small { font-size: 10px; color: var(--mut); } .gta-radio em { font-style: normal; font-size: 11px; color: var(--mut); overflow: hidden; text-overflow: ellipsis; }
+
+/* Release: Hauptweg-Ziel oben links ist antippbar, Gesamtmenü in Gruppen, Erste Schritte, Abspann */
+#hud.h-free .h-obj { cursor: pointer; pointer-events: auto; } #hud.h-free .h-obj:hover { border-color: rgba(255, 138, 30, .7); }
+.m-sub { display: none; } .m-sub.open { display: contents; }
+.m-sub.open .m-item { margin-left: 18px; border-left: 3px solid var(--or); }
+.m-grp .mi-arr { margin-left: auto; font-size: 22px; opacity: .7; transition: transform .2s; } .m-grp.on .mi-arr { transform: rotate(90deg); } .m-grp.on { border-color: rgba(255, 138, 30, .7); }
+.ac-welcome { max-width: 560px; } .ac-steps { margin: 6px 0 14px; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.ac-steps li { display: flex; flex-direction: column; padding: 8px 12px; border-radius: 12px; background: rgba(255, 255, 255, .06); } .ac-steps b { font-size: 15.5px; } .ac-steps span { font-size: 13.5px; opacity: .85; }
+.screen.ac-credits { background: rgba(5, 6, 12, .94); }
+.ac-roll { position: absolute; inset: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
+.ac-roll-in { width: min(560px, 92vw); text-align: center; padding-top: 100vh; animation: acRoll 38s linear forwards; }
+.ac-roll-in h2 { font-size: 34px; margin: 10px 0 0; } .ac-roll-in .ac-sub { opacity: .75; margin: 0 0 30px; }
+.ac-roll-in section { margin: 0 0 28px; } .ac-roll-in h3 { color: var(--or2, #ffb347); font-size: 15px; text-transform: uppercase; letter-spacing: .08em; margin: 0 0 6px; } .ac-roll-in p { margin: 3px 0; font-size: 17px; }
+.ac-logo { width: 140px; height: 140px; border-radius: 24px; } .ac-end { font-size: 22px !important; margin-top: 40px !important; }
+.ac-roll-btn { position: absolute; left: 0; right: 0; bottom: 0; justify-content: center; gap: 10px; padding: 40px 0 calc(18px + var(--safe-b)); background: linear-gradient(transparent, rgba(5, 6, 12, .97) 45%); } .ac-roll-btn a.btn { text-decoration: none; }
+@keyframes acRoll { to { transform: translateY(calc(-100% + 40vh)); } }
+.r-links .st-item { text-decoration: none; color: inherit; }
+@media (orientation: portrait) and (max-width: 640px) {
+  #hud.h-free .h-rub, #hud.h-free .h-tl .h-host { display: none; }
+  #hud.h-free .h-obj span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  #hud.h-free #hTitle { display: none; }
+}

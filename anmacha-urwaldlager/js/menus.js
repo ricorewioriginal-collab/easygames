@@ -84,7 +84,7 @@
   M.creator = (theme) => new Promise(res => {
     const st = R.stage;
     const me = UL.store.get('me', null) || { name: '', job: UL.D.PLAYER_JOBS[0], form: 'n', look: { model: 'rogue', skin: 0, shirt: 0xc8372d, pants: 0xb79a6a, accent: 0xf2e6c8, hat: 'busch', hatColor: 0xb08850, glasses: false } };
-    if (me.look.rb === undefined) me.look.rb = UL.D.RB_PLAYER[3][0];
+    if (!me.look.rb) me.look.rb = UL.D.RB_PLAYER[3][0];   // nur echte Menschen (keine Comic-Figuren)
     let fig = null;
     const show = () => {
       if (fig) { fig.dispose(); st.figs.splice(st.figs.indexOf(fig), 1); }
@@ -107,7 +107,8 @@
           <span>Bekannt als</span><select class="field" data-job>${UL.D.PLAYER_JOBS.map(j => `<option ${j === me.job ? 'selected' : ''}>${esc(j)}</option>`).join('')}</select>
           <span>Titel bei Sieg</span><select class="field" data-form>${Object.entries(UL.D.TITLE).map(([k, v]) => `<option value="${k}" ${k === me.form ? 'selected' : ''}>${v}</option>`).join('')}</select>
         </div>
-        <h3>Person</h3><div class="row">${UL.D.RB_PLAYER.map(([id, n]) => `<button class="pill ${L.rb === id ? 'on' : ''}" data-k="rb" data-v="${id}">${n}</button>`).join('')}<button class="pill ${!L.rb ? 'on' : ''}" data-k="rb" data-v="">🧸 Comic</button></div>
+        <h3>Person</h3><div class="row">${UL.D.RB_PLAYER.map(([id, n]) => `<button class="pill ${L.rb === id ? 'on' : ''}" data-k="rb" data-v="${id}">${n}</button>`).join('')}</div>
+        <h3>Halstuch</h3><div class="row"><button class="pill ${!L.scarf ? 'on' : ''}" data-k="scarf" data-v="0">Ohne</button>${sw([[0xc8372d, 'Rot'], [0x2d6ac8, 'Blau'], [0xe8dcb4, 'Sand']].concat(free(PG.SHIRTS)), 'scarf', L.scarf)}${lock(PG.SHIRTS)}</div>
         ${L.rb ? '' : `<h3>Figur</h3><div class="row">${A.FIG.map((f, i) => `<button class="pill ${L.model === f ? 'on' : ''}" data-k="model" data-v="${f}">Typ ${i + 1}</button>`).join('')}</div>
         <h3>Hautton</h3><div class="row">${SK.map((c, i) => `<button class="swatch ${L.skin === i ? 'on' : ''}" data-k="skin" data-v="${i}" style="background:${c}"></button>`).join('')}</div>
         <h3>Camp-Hemd</h3><div class="row">${sw(UL.D.SHIRTS.concat(free(PG.SHIRTS)), 'shirt', L.shirt)}${lock(PG.SHIRTS)}</div>`}
@@ -168,7 +169,7 @@
     const rows = list.map(t => `<li>${t.icon} ${esc(t.name)} <small>${best[t.id] != null ? '⭐'.repeat(best[t.id]) + ` ${best[t.id]}/${t.stars}` : '–'} · ${s.plays[t.id] || 0}× gespielt</small></li>`).join('');
     const p = UI.open(`<div class="box wide"><h2>🏆 Erfolge & Bestwerte</h2>
       <div class="statrow"><span>🏆 ${PG.count()} / ${PG.ACH.length} Erfolge</span><span>⭐ ${s.stars} Sterne gesamt</span><span>🎯 ${s.done} Prüfungen geschafft</span></div>
-      <p class="txt"><small>Erfolge mit 🎁 schalten Outfit-Teile im Figur-Editor frei (Kopf, Camp-Hemd, Hutfarbe).</small></p>
+      <p class="txt"><small>Erfolge mit 🎁 schalten Outfit-Teile im Figur-Editor frei (Kopf, Halstuch, Hutfarbe).</small></p>
       <div class="grid2">${cards}</div>
       <h3>Bestwerte pro Prüfung</h3><ul class="log">${rows}</ul>
       <div class="row"><button class="btn" data-ok><b>Zurück</b></button></div></div>`, { onBack: () => UI.close(p) });

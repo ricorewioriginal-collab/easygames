@@ -624,6 +624,7 @@
   // ------------------------------------------------------------------ HUD
   function buildHud() {
     const hud = U.$('hud'); hud.hidden = false;
+    hud.classList.toggle('h-free', S.mode === 'free');   // freie Stadt: Handy hochkant blendet Nebenanzeigen aus
     const ch = S.ch;
     hud.innerHTML = '<div class="h-tl"><div class="h-obj glass"><b id="hTitle"></b><span id="hObj"></span><i class="h-objbar"><em id="hObjBar"></em></i></div>' +
       '<div class="h-rub" id="hRub"></div></div>' +
@@ -635,6 +636,7 @@
     placeHost();
     drawRub();
     updHost();
+    hud.querySelector('.h-obj').addEventListener('click', () => { if (S.mode === 'free' && !S.net && !S.drive && AMC.Acts && AMC.Acts.hud && AMC.Acts.hud() && !AMC.UI.isOpen()) AMC.Acts.go(); });
     U.$('hMap').addEventListener('click', () => AMC.UI && AMC.UI.toast('🗺️ Orange = Ziel, Punkte = Funken, Rot = Störsender'));
   }
   /** Handy hochkant: Figurenkarte in die linke Spalte, damit sich nichts überlappt */
@@ -675,7 +677,8 @@
     if (t === 'boss') return [S.boss.state === 'intro' ? S.bossName + ' erscheint …' : 'Triff ' + S.bossName.replace(/^Das /, 'das ') + ', wenn der Schild offen ist', 1 - S.boss.hp / S.boss.max];
     if (t === 'race') { const k = S.gates.filter(g => g.passed).length, b = AMC.Save.data.best.race; return ['🏁 Tore ' + k + '/' + S.gates.length + ' – so schnell wie möglich!' + (b ? ' · Bestzeit ' + b.toFixed(1) + ' s' : ''), k / S.gates.length]; }
     if (t === 'jagd') return ['Sammle so viele Themen wie möglich! Punkte: ' + U.fmt(S.score), 1 - S.left / 180];
-    const mt = AMC.Missions && AMC.Missions.text(); if (mt) return mt;
+    const mt = AMC.Missions && AMC.Missions.active() && AMC.Missions.text(); if (mt) return mt;
+    const ah = !S.net && AMC.Acts && AMC.Acts.hud && AMC.Acts.hud(); if (ah) return ah;   // Hauptweg: immer das nächste Story-Ziel
     const q = nextQuest(), er = AMC.Drive ? AMC.Drive.errandText() : '';
     if (er && (S.drive || !q)) return [er + (S.drive ? '' : ' · Marco fährt Gisela'), 0.5];
     if (q) { const v = Math.min(q.goal, q.val(S)); return ['📋 Nebenauftrag: ' + q.icon + ' ' + q.desc + ' (' + U.fmt(v) + '/' + U.fmt(q.goal) + ')' + (AMC.Missions && !AMC.Missions.active() ? ' · ❗ Aufträge auf der Karte' : ''), v / q.goal]; }

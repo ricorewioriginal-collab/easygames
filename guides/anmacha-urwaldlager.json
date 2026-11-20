@@ -22,7 +22,7 @@
   {
    "t": "Dein Promi",
    "p": [
-    "Im Figur-Editor wählst du Name, Beruf, die Form deines Titels (König, Königin oder Royal), Figur, Hautton, Shirt, Kopfbedeckung, Farbe und Sonnenbrille. Alle Figuren sind KayKit-Figuren in Camp-Kleidung."
+    "Im Figur-Editor wählst du Name, Beruf, die Form deines Titels (König, Königin oder Royal), Person, Kopfbedeckung, Farbe, Halstuch und Sonnenbrille. Alle Figuren sind echte Menschen in Camp-Kleidung."
    ]
   },
   {
@@ -40,7 +40,7 @@
     "Morgen: Die Moderatoren Lotte Brandt und Mats Feldmann verkünden, wen die Zuschauer in die Urwaldprüfung schicken. Am ersten Tag bist immer du dran.",
     "Prüfung: Spielst du selbst, holst du Sterne. Muss jemand anderes ran, siehst du das Ergebnis.",
     "Camp: Du läufst frei herum und hast vier Aktionen.",
-    "Deine Figur: Im Editor wählst du unter „Person“ einen von sechs echten Menschen oder die Comic-Figur. Hut und Sonnenbrille passen auf beide.",
+    "Deine Figur: Im Editor wählst du unter „Person“ einen von sechs echten Menschen. Hut, Halstuch und Sonnenbrille passen auf alle.",
     "Abendessen: Jeder Stern ist eine Portion. Du entscheidest, ob du teilst, zugreifst oder verzichtest.",
     "Luxusartikel: Beim Einzug packst du zwei ein, zum Beispiel Kopfkissen (besser schlafen), Instant-Kaffee (Müdigkeit kostet keine Aktion), Schokolade (drei Stück gegen Hunger), Familienfoto, Kartenspiel, Mundharmonika oder Tagebuch. Brichst du eine Prüfung ab, sammelt Ranger Kalle einen Artikel für zwei Tage ein.",
     "Voting: Jeden Morgen siehst du, wen die Zuschauer in die Prüfung wählen. In der zweiten Hälfte zeigen die Anrufe, wer die wenigsten Stimmen hat und gehen muss.",
@@ -63,7 +63,8 @@
     "Der Wissens-Tank: im Glastank Fragen beantworten, bei Fehlern läuft Schleim nach.",
     "Das IBES-Fan-Quiz: Fragen zur deutschen Dschungelshow und zum britischen Original, einzeln unter „Prüfungen spielen“.",
     "Der Schlamm-Parcours: Rundkurs mit Stämmen, Balken, Schlamm, Sandsäcken und Kisten.",
-    "Die Lianen-Rutsche: drei Fahrten an der Seilrutsche, lenken, Beine anziehen, bremsen."
+    "Die Lianen-Rutsche: drei Fahrten an der Seilrutsche, lenken, Beine anziehen, bremsen.",
+    "Fiese Kisten: In der Kiste schaust du von oben hinein, der Stern leuchtet immer sichtbar über Tieren und Schleim. Auf dem Handy tippst du einfach auf den Stern – die Hand fährt hin und greift zu. Mit Stick oder Tasten führst du die Hand selbst und greifst mit der Aktionstaste."
    ]
   },
   {
@@ -161,14 +162,15 @@
    "p": [
     "Im Dschungel zirpen Zikaden, Vögel trillern, Tukane und Papageien rufen und ab und zu brüllt ein Brüllaffe. Nachts hörst du Grillen, Frösche und eine Eule. In der Höhle tropft es mit Echo, beim Floßrennen rauscht der Fluss.",
     "Während jeder Prüfung kommentieren die Moderatoren live: bei Sternen, Fehlern, zur Halbzeit, in den letzten Sekunden und wenn lange nichts passiert. Mit Sprachausgabe sprechen sie die Sprüche auch; abschalten kannst du sie in den Einstellungen.",
-    "Zur Krönung spielt eine eigene Finale-Hymne."
+    "Zur Krönung spielt eine eigene Finale-Hymne.",
+    "Die Stimmen lesen jeden Satz vollständig vor; die Untertitel bleiben stehen, bis der Satz zu Ende gesprochen ist. Live-Sprüche während der Prüfungen fallen nie mehr einer laufenden Moderation ins Wort. Tippen überspringt wie gewohnt."
    ]
   },
   {
    "t": "Erfolge, Outfits und Bestwerte",
    "p": [
     "Im Hauptmenü unter „🏆 Erfolge & Bestwerte“ siehst du 14 Erfolge, deine gesammelten Sterne und für jede Prüfung deinen Bestwert und wie oft du sie gespielt hast. Bestwerte zählen in der Staffel und beim Üben; ein neuer Rekord steht direkt im Prüfungsergebnis.",
-    "Erfolge mit 🎁 schalten Outfit-Teile im Figur-Editor frei: Tropenhelm (jede Prüfung gespielt), Blumenkranz (echte Freundschaft im Camp), Krone (Staffel gewonnen), Camp-Hemd Gold (alle Sterne in einer Prüfung), Camp-Hemd Tarngrün (im Gewitter mindestens die Hälfte der Sterne) und Hutfarbe Gold (100 Sterne insgesamt). Gesperrte Teile tragen ein 🔒; antippen zeigt, was dafür fehlt."
+    "Erfolge mit 🎁 schalten Outfit-Teile im Figur-Editor frei: Tropenhelm (jede Prüfung gespielt), Blumenkranz (echte Freundschaft im Camp), Krone (Staffel gewonnen), Halstuch Gold (alle Sterne in einer Prüfung), Halstuch Tarngrün (im Gewitter mindestens die Hälfte der Sterne) und Hutfarbe Gold (100 Sterne insgesamt). Gesperrte Teile tragen ein 🔒; antippen zeigt, was dafür fehlt."
    ]
   }
  ],
@@ -223,7 +225,7 @@
    "t": "Erfolge schnell freischalten",
    "list": [
     "Spiel unter „Prüfungen spielen“ jede Prüfung einmal: Das bringt den Tropenhelm und viele Sterne für den Sternesammler.",
-    "Das Tarngrün-Hemd gibt es nur in der Staffel: Am Gewittertag die Prüfung ruhig angehen, die Hälfte der Sterne reicht.",
+    "Das Tarngrün-Halstuch gibt es nur in der Staffel: Am Gewittertag die Prüfung ruhig angehen, die Hälfte der Sterne reicht.",
     "Für den Blumenkranz am Lagerfeuer freundlich antworten, gut kochen und bei Regen die Plane spannen."
    ]
   }

@@ -4,28 +4,28 @@
     {
       "t": "Ziel des Spiels",
       "p": [
-        "AnMaCha – Der Podcast ist das offizielle Spiel zum AnMaCha-Podcast. Du spielst Andrew und Marco, die Stimmen hinter „Wir ♥ Medien“. In der 3D-Stadt rund ums Funkhaus jagst du Themen, triffst Gäste und schaltest Störsender ab. Danach geht es ins Studio: Dort nehmt ihr die Folge live auf.",
-        "Die Story hat drei Staffeln mit 17 Kapiteln nach echten Folgen und den AnMaCha-Radios. Staffel 1 reicht von Folge 1 „Da muss man erstmal reinwachsen“ bis zum Finale „LIVE vom Podfluencer Festival“ gegen Ralf Rauschmann und seine Drohne „Das Funkloch“. In Staffel 2 kehrt das Funkloch zurück: Imbisskind, Die Katze und die Gurke, Hör' mir uff! und Giselas Camper mit dem Boss „Das Funkloch 2.0“. Staffel 3 geht auf Sendung: AnMaCha24, Clubradio24, Christmasradio24, YourTime-FM und Rockradio24 mit dem Finale gegen den „Rauschkönig“. Jedes Kapitel bringt bis zu 3 Sterne."
+        "AnMaCha – Der Podcast ist das offizielle Spiel zum Podcast „AnMaCha – Der Podcast“ mit Marco und Andrew und zur AnMaCha-Radioproduktion. Du spielst Andrew und Marco (später auch RicoReWi). Tagsüber sammelst du in der 3D-Medienstadt Themen, triffst Fans und Gäste und schaltest Störsender ab. Abends nehmt ihr im Funkhaus eine Folge auf. Gute Folgen bringen Abos.",
+        "Es gibt einen Hauptweg: 5 Akte mit 17 Kapiteln und einem Finale. Teil 1 erzählt echte Folgen von #01 „Da muss man erstmal reinwachsen“ (Sommer 2020, Staffel 1) bis #24 „LIVE vom Podfluencer Festival“ (Herbst 2026, Start von Staffel 5) gegen Ralf Rauschmann und seine Drohne „Das Funkloch“. Teil 2 erzählt Rückblenden (#04, #11, #12 und #20) mit dem Boss „Das Funkloch 2.0“. Teil 3 bringt die AnMaCha-Radios auf Sendung: AnMaCha24, Clubradio24, Christmasradio24, YourTime-FM und Rockradio24 mit dem Kampf gegen den „Rauschkönig“. Diese Radio-Kapitel sind keine Podcast-Folgen und tragen darum keine Folgennummer.",
+        "Ab 8.000 Abos ruft das große Radio-Festival auf der Festival-Insel. Danach läuft der Abspann – und das Spiel geht weiter: Stadt, Show, Gäste und alle Extras bleiben."
       ]
     },
     {
       "t": "Start und Gesamtmenü",
       "p": [
-        "Nach dem Startbildschirm geht es direkt in die Stadt. Ein separates Hauptmenü gibt es nicht mehr: Alle Funktionen stecken im Gesamtmenü, das du mitten in der Stadt aufrufst (⏸-Knopf, Esc oder Start) oder am Empfang im Funkhaus. Dort geht es mit „🏙️ Weiter in der Stadt“ zurück ins Spiel."
+        "Nach dem Startbildschirm geht es direkt in die Stadt. Beim ersten Start zeigt eine kurze Szene Andrew und Marco, danach erklärt die Karte „So geht AnMaCha“ in fünf Punkten, wie das Spiel läuft. Mit „▶ Kapitel 1 starten“ geht es sofort los.",
+        "Oben links steht immer das nächste Ziel des Hauptwegs, zum Beispiel „Akt 1: Garage mit Mikro – Kapitel 1 spielen“. Antippen oder Anklicken startet das nächste Kapitel direkt.",
+        "Das Gesamtmenü öffnest du mitten in der Stadt (⏸-Knopf, Esc oder Start) oder am Empfang im Funkhaus. Es ist in Gruppen sortiert; eine Gruppe klappt mit einem Druck auf und mit Zurück wieder zu."
       ],
       "list": [
-        "▶ Story: Staffel 1–3 – 17 Kapitel, eins nach dem anderen freigeschaltet. Staffel 3 folgt den AnMaCha-Radios.",
-        "🎙️ Live-Show – Endlos-Aufnahme im Studio, bis der Hype auf null fällt. Rekord wird gespeichert.",
-        "🏃 Themenjagd – 3 Minuten in der Stadt, so viele Punkte wie möglich.",
-        "🏁 Funk-Rennen – lauf auf Zeit durch 10 nummerierte Tore. Medaillen: Gold bis 50 s, Silber bis 70 s, Bronze bis 100 s; die Bestzeit wird gespeichert.",
-        "🤖 Die verrückte KI-Quizshow – 10 Fragen, allein gegen die KI oder zu zweit an einem Gerät.",
-        "🏙️ Stadt & Nebenaufträge – die Stadt ohne Zeitdruck, mit 10 Nebenaufträgen für Fan-Punkte.",
-        "🌐 Online-Koop – zu zweit auf zwei Geräten: einer spielt Andrew, einer Marco.",
-        "📻 Radio & Podcast – echte Folgen und 13 AnMaCha-Sender mit Titelanzeige.",
-        "🛍️ Fanshop – Outfits für Andrew und Marco und Studio-Upgrades, bezahlt mit Fan-Punkten.",
-        "⚙️ Einstellungen, 🎮 Steuerung und Credits.",
-        "Mit Y (Controller), Q (Tastatur) oder dem Figuren-Knopf wählst du, ob du als Andrew oder Marco startest.",
-        "🛠️ Studio gestalten – Möbel, Deko und Technik frei ins Studio stellen, Wände, Boden und Licht ändern."
+        "🏙️ Weiter in der Stadt – zurück ins Spiel, mit dem nächsten Ziel.",
+        "📖 Story – der Hauptweg mit allen Akten, Fortschritt und Szenen zum Nochmal-Ansehen.",
+        "🎙️ Podcast & Studio – Kapitel nochmal spielen, Live-Show, Studio betreten und gestalten, Studiogäste, Zuhause, Musikshop und Fanshop.",
+        "🏙️ Stadt & Aufträge – Auftragsbuch (Nebenaufträge und Tagesjobs), Medien-Aufträge, Wochen-Motto, AnMaCha-App und Freundebuch.",
+        "🕹️ Minispiele – Arcade mit 3D-Minispielen, KI-Quizshow, Themenjagd und Funk-Rennen.",
+        "🌐 Online & Handys – zu zweit auf zwei Geräten: Mitspieler treten per Link, Code oder QR von überall bei.",
+        "📻 Radio & Podcast – alle Folgen, die 12 AnMaCha-Radios und unter „🔗 Hören & folgen“ alle Podcast-Plattformen.",
+        "⚙️ Einstellungen, 🎮 Steuerung und ℹ️ Mitwirkende.",
+        "Mit Y (Controller), Q (Tastatur) oder dem Figuren-Knopf wechselst du zwischen Andrew und Marco."
       ]
     },
     {
@@ -305,7 +305,8 @@
     {
       "t": "Radio & Podcast im Spiel",
       "p": [
-        "Im Radio-Fenster hörst du echte AnMaCha-Folgen aus dem offiziellen Feed (mit Spulen ±30 s; die Position wird gemerkt) oder einen der 13 AnMaCha-Sender, die auch in der RicoReWi Radio App laufen: AnMaCha24, RicoReWi Radio, YourTime-FM, Chartradio24, Clubradio24, Special-Radio, Kultradio24, Rockradio24, Zocker-FM, Rapradio24, Schlagerpop24, Christmasradio24 und RadioFloh. Oben erscheint der aktuelle Titel. Solange das Radio läuft, pausiert die Spielmusik."
+        "Im Radio-Fenster hörst du alle echten Folgen von „AnMaCha – Der Podcast“ aus dem offiziellen Feed bei podcaster.de (mit Spulen ±30 s; die Position wird gemerkt) oder einen der 12 Sender der AnMaCha-Radioproduktion, die es auch auf MeinRadio.com gibt: AnMaCha24, YourTime-FM, Chartradio24, Clubradio24, Rockradio24, Kultradio24, Schlagerpop24, Special-Radio, Zocker-FM, Rapradio24, RadioFloh! und Christmasradio24 – dazu RicoReWi Radio. Oben erscheint der aktuelle Titel. Solange das Radio läuft, pausiert die Spielmusik.",
+        "Unter „🔗 Hören & folgen“ stehen alle Wege zum echten Podcast und Radio: Spotify, Apple Podcasts, Amazon Music, Podimo, radio.de, Castbox, der RSS-Feed bei podcaster.de, MeinRadio.com, anmacha.de, Instagram @dieanmacha, TikTok @anmacha.radioproduktion und der AnMaCha-Fanshop."
       ]
     },
     {
@@ -322,10 +323,11 @@
       ]
     },
     {
-      "t": "Story-Akte und Festival-Finale",
+      "t": "Story: der Hauptweg in 5 Akten",
       "p": [
-        "📖 In der Stadt erzählt die Story der Medienstadt fünf Akte mit Zwischensequenzen (Kamerafahrt, Untertitel, Stimmen): Akt 1 Garage mit Mikro (erste Folge), Akt 2 Über die Brücken (alle vier Welten besuchen), Akt 3 Ricos Einladung (alle sechs Orte im RicoReWi-Universum), Akt 4 Die Stimme der Stadt (3 Studiogäste und 1.000 Follower) und das Finale: Ab 8.000 Abos ruft das Radio-Festival – geht auf der Festival-Insel zur Hauptbühne und spielt den großen Abschluss-Auftritt.",
-        "Szenen weiterschalten mit Ⓐ, Leertaste oder Tippen, überspringen mit Ⓑ oder Esc. Stimmen lassen sich in den Einstellungen ausschalten. Im Gesamtmenü unter „📖 Story-Akte“ seht ihr Ziel und Fortschritt und könnt geschaffte Szenen noch einmal ansehen. Jeder Akt bringt 🎟️, das Finale 1.000 und mehr plus einen großen Abo-Schub."
+        "📖 Die Geschichte läuft über alle 17 Kapitel. Jeder Akt beginnt mit einer Zwischensequenz und nennt sein Ziel oben links:",
+        "Akt 1 · Garage mit Mikro: Kapitel 1 spielen und die erste Folge aufnehmen. Akt 2 · Die ersten Fans: Kapitel 2 bis 4 und 400 Abos. Akt 3 · Auf die große Bühne: Kapitel 5 bis 8 bis zum Podfluencer Festival. Akt 4 · Das Funkloch kehrt zurück: Kapitel 9 bis 12 und 3 verschiedene Studiogäste. Akt 5 · Auf Sendung: Kapitel 13 bis 17 auf den AnMaCha-Radios. Finale · Das große Radio-Festival: 8.000 Abos holen und auf der Festival-Insel an der Hauptbühne auftreten.",
+        "Nach dem Finale läuft ein Abspann mit euren Zahlen (Folgen, Abos, Sterne) und den echten Wegen zu Podcast und Radio. Mit „🏙️ Weiterspielen“ geht das Spiel weiter. Szenen weiterschalten mit Ⓐ, Leertaste oder Tippen, überspringen mit Ⓑ oder Esc. Im Menü unter „📖 Story“ seht ihr Ziel und Fortschritt und könnt geschaffte Szenen noch einmal ansehen. Ältere Spielstände werden automatisch auf den neuen Hauptweg umgerechnet."
       ]
     },
     {
@@ -356,9 +358,9 @@
     {
       "t": "Aufträge (❗ und ❔)",
       "p": [
-        "📋 In der Stadt und in den Welten warten Auftraggeber mit einem ❗ über dem Kopf (Story-Aufträge) oder einem ❔ (Tagesjobs). Sprich sie an: Eine kurze Szene erklärt den Auftrag, danach zeigt eine orange Lichtsäule das nächste Ziel, auch auf der Karte.",
+        "📋 In der Stadt und in den Welten warten Auftraggeber mit einem ❗ über dem Kopf (Nebenaufträge mit eigener kleiner Geschichte) oder einem ❔ (Tagesjobs). Sprich sie an: Eine kurze Szene erklärt den Auftrag, danach zeigt eine orange Lichtsäule das nächste Ziel, auch auf der Karte.",
         "Ein Auftrag hat mehrere Schritte: hinfahren (manchmal auf Zeit oder nur im Auto), Teile einsammeln, Leute befragen, Gäste begleiten (sie steigen mit ins Auto), ein Minispiel vor Ort oder eine Rangelei mit Rauschmanns Leuten. Der Fortschritt bleibt erhalten, auch wenn du zwischendurch ein Gebäude betrittst.",
-        "Es gibt 19 Story-Aufträge in zwei Kapiteln, die nacheinander freigeschaltet werden, und jeden Tag 3 neue Tagesjobs (Kurier, Funken-Regen, Fotojob). Kapitel 2 („Die Stadt hört zu“) führt durch die Läden: Schichten, Ruf-Stufen, Gisela ausbauen und Partner gewinnen – bis zur Jubiläumsfolge vom Fernsehturm. Belohnung: Fan-Punkte, Abos, Themen-Funken und manchmal eine Idee. Übersicht und Abbrechen im Gesamtmenü unter „📋 Auftragsbuch“."
+        "Es gibt 19 Nebenaufträge in zwei Kapiteln, die nacheinander freigeschaltet werden, und jeden Tag 3 neue Tagesjobs (Kurier, Funken-Regen, Fotojob). Kapitel 2 („Die Stadt hört zu“) führt durch die Läden: Schichten, Ruf-Stufen, Gisela ausbauen und Partner gewinnen – bis zur Jubiläumsfolge vom Fernsehturm. Belohnung: Fan-Punkte, Abos, Themen-Funken und manchmal eine Idee. Übersicht und Abbrechen im Gesamtmenü unter „📋 Auftragsbuch“."
       ]
     },
     {
@@ -426,6 +428,18 @@
     }
   ],
   "loesung": [
+    {
+      "t": "Der Hauptweg in der richtigen Reihenfolge",
+      "steps": [
+        "Akt 1: Kapitel 1 spielen (Themen-Funken sammeln, dann aufnehmen).",
+        "Akt 2: Kapitel 2 bis 4 spielen. Fehlen danach noch Abos bis 400, abends im Funkhaus freie Folgen aufnehmen.",
+        "Akt 3: Kapitel 5 bis 8. Kapitel 8 ist der Bosskampf gegen „Das Funkloch“ auf dem Podfluencer Festival.",
+        "Akt 4: Kapitel 9 bis 12 und nebenbei 3 Studiogäste holen (Leute mit ⭐ ansprechen und ins Studio einladen).",
+        "Akt 5: Kapitel 13 bis 17, Kapitel 17 ist der Kampf gegen den Rauschkönig.",
+        "Finale: Mit Folgen am Abend, Gästen, Studio-Ausbau und Partnersendern auf 8.000 Abos kommen, dann mit der Fähre oder Gisela zur Festival-Insel fahren und an der Hauptbühne auftreten.",
+        "Nach dem Abspann bleibt alles offen: fehlende Sterne holen, Nebenaufträge, Medien-Aufträge und Kassetten sammeln."
+      ]
+    },
     {
       "t": "Kapitel 1 – Da muss man erstmal reinwachsen",
       "p": [
@@ -537,7 +551,7 @@
       ]
     },
     {
-      "t": "Alle Story-Aufträge",
+      "t": "Alle Nebenaufträge (❗)",
       "list": [
         "1 Das verschwundene Mikro (Sanne, Funkhaus): 5 Mikro-Teile sammeln, ins Tonstudio, zurück ins Funkhaus.",
         "2 Eilzustellung für Kanal 9 (Jonas, Radio-Lounge): in 90 s mit einem Auto zu Kanal 9, Mia sprechen, Kamera-Minispiel.",

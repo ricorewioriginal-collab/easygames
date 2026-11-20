@@ -130,12 +130,13 @@ export class World {
       if (house) this.houses.push(house);
       tasks.push(this.place(C(kind), x, .1, z, rot).then((o) => {
         const r = this.footprint(o, x, z);
+        this.blocks.push({ r, o });
         // Haustür direkt vor die echte Fassade legen (keine Klingel mitten auf dem Gehweg)
         if (house) { const sx = Math.round(Math.sin(rot)), sz = Math.round(Math.cos(rot)), d = sx ? r.hx + (r.x - x) * sx : r.hz + (r.z - z) * sz; house.x = x + Math.sin(rot) * (d + .7); house.z = z + Math.cos(rot) * (d + .7); }
       }));
     }
     await Promise.all(tasks);
-    this.plaza(); this.park(); this.decorate(); this.signs(); await this.harbour();
+    this.plaza(); this.park(); this.decorate(); this.signs(); this.paintHouses(); this.neonCity(); await this.harbour();
     await buildUptown(this);
     await this.spawnCars();
     this.buildEnv();
@@ -193,16 +194,22 @@ export class World {
   /** Kollision eines Hauses aus seinem echten Grundriss: nur Teile, die bis zum Boden reichen (Markisen und Schilder oben zählen nicht) */
   private foot = new Map<string, number[] | null>();
   private footprint(o: TransformNode, x: number, z: number) {
+    const b = this.bounds(o, .5, 2.2, this.foot);
+    const r: Rect = b ? { x: (b[0] + b[1]) / 2, z: (b[2] + b[3]) / 2, hx: Math.max(1, (b[1] - b[0]) / 2 - .1), hz: Math.max(1, (b[3] - b[2]) / 2 - .1) } : { x, z, hx: TILE * .4, hz: TILE * .4 };
+    this.colliders.push(r); return r;
+  }
+  /** Ausdehnung eines Hauses in einer Höhenschicht (Weltkoordinaten: x0, x1, z0, z1) */
+  private bounds(o: TransformNode, lo: number, hi: number, cache: Map<string, number[] | null>) {
     let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
     for (const m of o.getChildMeshes()) {
       // Grundriss aus den Wänden im Erdgeschoss (0,5–2,2 m), ohne Gehweg-Platte, Markisen und Schilder
-      let f = this.foot.get(m.name);
+      let f = cache.get(m.name);
       if (f === undefined) {
         const pos = m.getVerticesData('position'); f = null;
         if (pos) { const sy = m.absoluteScaling.y || 1, oy = m.absolutePosition.y; let a = Infinity, b = -Infinity, c = Infinity, d = -Infinity;
-          for (let i = 0; i < pos.length; i += 3) { const y = pos[i + 1] * sy + oy; if (y < .5 || y > 2.2) continue; a = Math.min(a, pos[i]); b = Math.max(b, pos[i]); c = Math.min(c, pos[i + 2]); d = Math.max(d, pos[i + 2]); }
+          for (let i = 0; i < pos.length; i += 3) { const y = pos[i + 1] * sy + oy; if (y < lo || y > hi) continue; a = Math.min(a, pos[i]); b = Math.max(b, pos[i]); c = Math.min(c, pos[i + 2]); d = Math.max(d, pos[i + 2]); }
           if (isFinite(a)) f = [a, b, c, d]; }
-        this.foot.set(m.name, f);
+        cache.set(m.name, f);
       }
       if (!f) continue;
       const wm = m.getWorldMatrix();
@@ -211,8 +218,7 @@ export class World {
         x0 = Math.min(x0, q.x); x1 = Math.max(x1, q.x); z0 = Math.min(z0, q.z); z1 = Math.max(z1, q.z);
       }
     }
-    const r: Rect = isFinite(x0) ? { x: (x0 + x1) / 2, z: (z0 + z1) / 2, hx: Math.max(1, (x1 - x0) / 2 - .1), hz: Math.max(1, (z1 - z0) / 2 - .1) } : { x, z, hx: TILE * .4, hz: TILE * .4 };
-    this.colliders.push(r); return r;
+    return isFinite(x0) ? [x0, x1, z0, z1] : null;
   }
   /** feste Teile: Weltmatrix einfrieren (spart Rechenzeit) */
   still(m: AbstractMesh, cast = true, receive = true) {
@@ -351,8 +357,11 @@ export class World {
       const bn = new TransformNode('lampbulb', this.scene); bulb.parent = bn; bn.parent = this.root;
       this.prop(side[0], side[1], .3, [lamp, bn]);
       this.lampSpots.push(bulb.position.clone());
+      this.lampPosts.push([side[0], side[1], rx]);
     }
   }
+  /** Laternenmasten: x, z, Straße läuft in z-Richtung */
+  private lampPosts: Array<[number, number, boolean]> = [];
   private bulbSrc: Mesh | null = null;
   private bulb() {
     if (!this.bulbSrc) { this.bulbSrc = sphere(this.scene, .35, 8); this.bulbSrc.material = this.lamps; this.bulbSrc.setEnabled(false); }
@@ -389,7 +398,7 @@ export class World {
     sm.setColor3('sunCol', new Color3(1, .82, .6).scale(smoothstep(up, -.08, .1) * (1 - wx.gloom)));
     this.scene.fogColor = bot;
     // tagsüber Dunst, abends und nachts klarer, damit die Skyline mit ihren Fenstern zu sehen ist
-    this.scene.fogDensity = .0024 + .0034 * day * (1 - dusk) + wx.fog;
+    this.scene.fogDensity = .0022 + .0012 * day * (1 - dusk) + wx.fog;
     this.pickEnv(day, dusk);
     this.scene.clearColor.set(bot.r, bot.g, bot.b, 1);
     // Fenster nachts warm, Straßen nachts feucht glänzend
@@ -406,6 +415,7 @@ export class World {
     this.sun.direction = this._sunDir.scale(-1);
     this.lamps.albedoColor = new Color3(1, .95, .75).scale(.6 + this.night * 3.2);
     this.neon.forEach((n) => { n.m.albedoColor = n.base.scale(1 + this.night * 2.4); });
+    this.pools.forEach((m) => { m.alpha = this.night * .38; });
     // Lichter, die nichts beitragen, ganz abschalten: jedes aktive Licht kostet in jedem Bildpunkt Rechenzeit
     const lit = this.night > .03 && !this.low;
     this.lampLights.forEach((l) => { l.intensity = this.night * 40; if (l.isEnabled() !== lit) l.setEnabled(lit); });
@@ -422,7 +432,8 @@ export class World {
       if (!(m instanceof PBRMaterial)) continue;
       const k = m as PBRMaterial & { _pcFx?: [boolean, boolean] };
       if (!k._pcFx) k._pcFx = [m.detailMap.isEnabled, m.clearCoat.isEnabled];
-      m.detailMap.isEnabled = !on && k._pcFx[0]; m.clearCoat.isEnabled = !on && k._pcFx[1];
+      // Fassadenstruktur (Ziegel, Putz) bleibt auch auf der sparsamen Stufe: ohne sie sind die Häuser nur farbige Klötze
+      m.detailMap.isEnabled = k._pcFx[0]; m.clearCoat.isEnabled = !on && k._pcFx[1];
     }
     const lit = this.night > .03 && !on;
     for (const l of [...this.lampLights, ...this.poolLights]) l.setEnabled(lit);
@@ -591,25 +602,61 @@ export class World {
         this.still(s, false);
       });
     };
-    crossing(0, 7, false); crossing(0, -7, false); crossing(7, 0, true); crossing(-7, 0, true);
-    crossing(30, -7, false); crossing(-30, 7, false);
+    // an jeder Kreuzung der Innenstadt, in alle vier Richtungen
+    for (const cx of [-30, 0, 30]) for (const cz of [-30, 0, 30]) { crossing(cx, cz + 7, false); crossing(cx, cz - 7, false); crossing(cx + 7, cz, true); crossing(cx - 7, cz, true); }
     // Wimpelketten über den Straßen rund um den Platz (eine Form, viele Kopien mit eigener Farbe)
     const tri = new Mesh('wimpel', sc), vd = new VertexData();
     vd.positions = [-.35, 0, 0, .35, 0, 0, 0, -.7, 0]; vd.indices = [0, 1, 2]; vd.normals = [0, 0, 1, 0, 0, 1, 0, 0, 1]; vd.applyToMesh(tri);
     tri.material = pbr(sc, 0xffffff, .8, 0, { double: true }); tri.parent = this.root;
     const lines: Array<[number, number, number, number]> = [[-28, 5, -28, 25], [-2, 5, -2, 25], [-25, 2, -5, 2], [-25, 28, -5, 28], [2, -25, 2, 25], [-25, -2, 25, -2]];
-    const count = lines.length * 22, mats = new Float32Array(count * 16), colors = new Float32Array(count * 4);
-    let k = 0;
-    for (const [x1, z1, x2, z2] of lines) {
-      const yaw = Math.atan2(x2 - x1, z2 - z1) + Math.PI / 2;
-      for (let i = 0; i < 22; i++) {
-        const u = i / 21, sag = Math.sin(u * Math.PI) * 1.4;
-        Matrix.Compose(Vector3.One(), Quaternion.RotationAxis(Vector3.Up(), yaw), new Vector3(x1 + (x2 - x1) * u, 7.2 - sag, z1 + (z2 - z1) * u)).copyToArray(mats, k * 16);
-        const c = col(PALETTES[0].colors[i % 6]); colors.set([c.r, c.g, c.b, 1], k * 4); k++;
-      }
+    // dazu quer über jede Straße der Innenstadt, alle acht Meter, jede Kette in einer anderen Pride-Flagge
+    for (const c of [-30, 0, 30]) for (let u = -54; u <= 54; u += 8) {
+      if ([-60, -30, 0, 30, 60].some((k2) => Math.abs(u - k2) < 7.5)) continue;
+      lines.push([c - 5.8, u, c + 5.8, u], [u, c - 5.8, u, c + 5.8]);
     }
+    const per = (l: number[]) => (Math.hypot(l[2] - l[0], l[3] - l[1]) > 15 ? 22 : 10);
+    const count = lines.reduce((n, l) => n + per(l), 0), mats = new Float32Array(count * 16), colors = new Float32Array(count * 4), bm = new Float32Array(count * 16);
+    const flags = PALETTES.filter((q) => !['ace', 'aro', 'leather', 'bear'].includes(q.id));
+    let k = 0;
+    lines.forEach(([x1, z1, x2, z2], li) => {
+      const yaw = Math.atan2(x2 - x1, z2 - z1) + Math.PI / 2, n = per([x1, z1, x2, z2]), long = n > 10, pal = long ? PALETTES[0].colors : flags[li % flags.length].colors;
+      for (let i = 0; i < n; i++) {
+        const u = i / (n - 1), sag = Math.sin(u * Math.PI) * (long ? 1.4 : .7), y = (long ? 8.6 : 8.1) - sag, x = x1 + (x2 - x1) * u, z = z1 + (z2 - z1) * u;
+        Matrix.Compose(Vector3.One(), Quaternion.RotationAxis(Vector3.Up(), yaw), new Vector3(x, y, z)).copyToArray(mats, k * 16);
+        Matrix.Translation(x, y + .08, z).copyToArray(bm, k * 16);
+        const c = col(pal[i % pal.length]); colors.set([c.r, c.g, c.b, 1], k * 4); k++;
+      }
+    });
     tri.thinInstanceSetBuffer('matrix', mats, 16, true); tri.thinInstanceSetBuffer('color', colors, 4, true);
     tri.alwaysSelectAsActiveMesh = true;
+    // Lichterkette auf denselben Schnüren: leuchtet in den Flaggenfarben, nachts das halbe Stadtbild
+    const bulb = sphere(sc, .075, 4); const bmat = pbr(sc, 0xffffff, .5); bmat.unlit = true; bulb.material = bmat; bulb.parent = this.root; bulb.isPickable = false;
+    bulb.thinInstanceSetBuffer('matrix', bm, 16, true); bulb.thinInstanceSetBuffer('color', colors, 4, true); bulb.alwaysSelectAsActiveMesh = true;
+    // Pride-Banner an jeder Laterne, darüber drei Luftballons
+    const banners = flags.map((q) => {
+      const t = canvasTex(sc, 32, 96, (g) => { q.colors.forEach((cc, i) => { g.fillStyle = cc; g.fillRect(0, Math.floor(i * 96 / q.colors.length), 32, Math.ceil(96 / q.colors.length)); }); });
+      const m = pbr(sc, 0xffffff, .7, 0, { double: true }); m.albedoTexture = t;
+      const b = planeZ(sc, .62, 1.7, true); b.material = m; b.setEnabled(false); b.parent = this.root; return b;
+    });
+    const balloon = sphere(sc, .26, 6); balloon.scaling.y = 1.2; const balMat = pbr(sc, 0xffffff, .22); balloon.material = balMat; balloon.parent = this.root; balloon.isPickable = false;
+    const bal: number[] = [], balC: number[] = [];
+    const addBalloon = (x: number, y: number, z: number, hexc: string) => { const mtx = Matrix.Compose(new Vector3(1, 1.2, 1), Quaternion.Identity(), new Vector3(x, y, z)); bal.push(...mtx.asArray()); const c = col(hexc); balC.push(c.r, c.g, c.b, 1); };
+    this.lampPosts.forEach(([x, z, rx], i) => {
+      if (Math.abs(x) > 62 || Math.abs(z) > 62) return;
+      const b = banners[i % banners.length].createInstance('banner');
+      b.position.set(x + (rx ? .42 : 0), 3.1, z + (rx ? 0 : .42)); b.rotation.y = rx ? 0 : Math.PI / 2; this.still(b, false, false);
+      const rb = PALETTES[0].colors;
+      for (let j = 0; j < 3; j++) addBalloon(x + (rx ? .3 : (j - 1) * .3), 4.9 + (j === 1 ? .35 : 0), z + (rx ? (j - 1) * .3 : .3), rb[(i * 2 + j * 2) % 6]);
+    });
+    // Ballonbögen in Regenbogenfarben über den Einfahrten zur Innenstadt
+    const pole = cyl(sc, .09, .09, 3.2, 8); pole.material = pbr(sc, 0xf2f2f6, .4, .3); pole.setEnabled(false); pole.parent = this.root;
+    const arch = (x: number, z: number, alongZ: boolean) => {
+      const R = 6.9, n = 34;
+      for (let i = 0; i < n; i++) { const a = (i / (n - 1)) * Math.PI, o = Math.cos(a) * R, y = 3.2 + Math.sin(a) * R * .62; addBalloon(alongZ ? x + o : x, y, alongZ ? z : z + o, PALETTES[0].colors[Math.floor(i / n * 6)]); if (i % 2) addBalloon(alongZ ? x + o * .97 : x + .35, y + .38, alongZ ? z + .35 : z + o * .97, PALETTES[0].colors[Math.floor(i / n * 6)]); }
+      for (const sgn of [-1, 1]) { const q = pole.createInstance('archpole'); q.position.set(alongZ ? x + sgn * R : x, 1.7, alongZ ? z : z + sgn * R); this.still(q, false, false); }
+    };
+    arch(0, 44, true); arch(0, -44, true); arch(-44, 0, false); arch(44, 0, false); arch(0, 13.5, true); arch(-16.5, 30, false);
+    balloon.thinInstanceSetBuffer('matrix', new Float32Array(bal), 16, true); balloon.thinInstanceSetBuffer('color', new Float32Array(balC), 4, true); balloon.alwaysSelectAsActiveMesh = true;
     // Flaggen an Hausecken entlang der Hauptstraße
     for (let z = -50; z <= 50; z += 20) if (Math.abs(z) > 8) this.flag(5.2, z + 5, PALETTES[(Math.abs(z) / 10) % PALETTES.length | 0].colors, 5, Math.PI / 2);
     // Ein paar Bäume an den Straßen
@@ -620,6 +667,47 @@ export class World {
   }
 
   /* Neon-Schilder über den Türen (leuchten nachts, Bloom auf hoher Stufe) */
+  private blocks: Array<{ r: Rect; o: TransformNode }> = [];
+  private pools: PBRMaterial[] = [];
+  /** Jedes Haus der Innenstadt in einer eigenen kräftigen Farbe (Farbe je Instanz, die Bauteile bleiben geteilt) */
+  private paintHouses() {
+    const T = [[1.6, .7, 1.25], [.55, 2, 2.2], [1.6, 1.7, .5], [1.05, .8, 2.1], [.6, 2.1, 1.1], [1.8, 1.25, .5], [1.75, .55, 1.05], [.6, 1.3, 2.4]];
+    const C4 = this.scene.clearColor.constructor as new (r: number, g: number, b: number, a: number) => unknown;
+    const srcs = new Set<Mesh>(), mine = new Map<AbstractMesh, number[]>();
+    this.blocks.forEach(({ o }, i) => { for (const m of o.getChildMeshes()) { const sm = (m as InstancedMesh).sourceMesh; if (sm) { srcs.add(sm); mine.set(m, T[(i * 3 + (i >> 2)) % T.length]); } } });
+    for (const sm of srcs) {
+      sm.registerInstancedBuffer('color', 4); sm.instancedBuffers.color = new C4(1, 1, 1, 1);
+      // dieselben Bauteile stehen auch in der Hochstadt: dort bleibt die Farbe, wie sie war
+      for (const im of sm.instances) { const t = mine.get(im) || [1, 1, 1]; im.instancedBuffers.color = new C4(t[0], t[1], t[2], 1); }
+    }
+  }
+  /** Neon: Leuchtbänder um jedes Haus, Leuchtschriften an den Fassaden, nachts farbige Lichtflecken auf dem Gehweg */
+  private neonCity() {
+    const sc = this.scene, NEON = ['#ff3fb0', '#5ce1ff', '#ffd23b', '#b56bff', '#3ee69a', '#ff7a3b', '#ff4b6b', '#6f8cff'];
+    const mt: number[] = [], cl: number[] = [];
+    const tube = (x: number, y: number, z: number, sx: number, sy: number, sz: number, hexc: string) => {
+      mt.push(...Matrix.Compose(new Vector3(sx, sy, sz), Quaternion.Identity(), new Vector3(x, y, z)).asArray()); const k = col(hexc); cl.push(k.r, k.g, k.b, 1);
+    };
+    this.blocks.forEach(({ r }, i) => {
+      // Band auf Höhe der Ladenzeile, direkt an den Wänden des Erdgeschosses (dort stimmt der Grundriss sicher)
+      const a = NEON[i % 8], b = NEON[(i + 3) % 8], T = .09, y = 2.5, ex = r.hx + .14, ez = r.hz + .14;
+      tube(r.x, y, r.z - ez, ex * 2, T, T, a); tube(r.x, y, r.z + ez, ex * 2, T, T, a); tube(r.x - ex, y, r.z, T, T, ez * 2, a); tube(r.x + ex, y, r.z, T, T, ez * 2, a);
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) tube(r.x + sx * ex, y / 2 + .1, r.z + sz * ez, T, y - .2, T, b);
+    });
+    const t = box(sc, 1, 1, 1), tm = glow(sc, 0xffffff, 1); t.material = tm; t.parent = this.root; t.isPickable = false;
+    t.thinInstanceSetBuffer('matrix', new Float32Array(mt), 16, true); t.thinInstanceSetBuffer('color', new Float32Array(cl), 4, true); t.alwaysSelectAsActiveMesh = true;
+    this.neon.push({ m: tm, base: new Color3(1, 1, 1) });
+    const WORDS = ['LOVE', 'PRIDE', 'QUEER', 'YAS!', 'SLAY', 'LOVE IS LOVE', 'FABULOUS', 'KISS ME', 'DIVA', 'GLITZER', 'OUT & PROUD', 'TANZ!', 'KÜSSCHEN', 'DRAMA', 'HEISS', 'BUNT', 'FREI', 'STOLZ'];
+    const pool = NEON.map((c) => { const m = glow(sc, c, 1, { add: true, alpha: 0 }); this.pools.push(m); const g = ground(sc, 5, 3); g.material = m; g.setEnabled(false); g.parent = this.root; return g; });
+    let n = 0;
+    for (const h of this.houses) {
+      if (Math.abs(h.x) > 62 || Math.abs(h.z) > 62) continue;
+      const ci = (n * 3) % 8, sx = Math.sin(h.yaw), sz = Math.cos(h.yaw);
+      this.neonSign(WORDS[n % WORDS.length], NEON[ci], h.x - sx * .56, 6.3, h.z - sz * .56, h.yaw, undefined, 5.2);
+      const g = pool[ci].createInstance('pool'); g.position.set(h.x + sx * 1.1, .13, h.z + sz * 1.1); g.rotation.y = h.yaw; this.still(g, false, false);
+      n++;
+    }
+  }
   private signs() {
     for (const p of this.pois) {
       if (!p.sign) continue;
