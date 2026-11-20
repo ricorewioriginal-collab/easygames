@@ -229,6 +229,15 @@
     "Ekel-Box: Kopf drehen, bis das Fadenkreuz gelb leuchtet, dann die Aktionstaste halten. Rotes Fadenkreuz heißt Spinnennest – nicht zubeißen. Steigt die Panik über drei Viertel, die zweite Taste halten und ruhig atmen.",
     "Madengrab: Die eigene Hand mit dem Stick zu einer Schraube führen, Aktion gedrückt halten zum Zupacken und dabei den Stick im Kreis drehen (oder Aktion schnell tippen), bis die Schraube herausfällt. Die Reihenfolge ist frei. Bei hoher Panik kurz ruhig atmen – eine Panikattacke dreht alle Schrauben ein Stück zurück."
    ]
+  },
+  {
+   "t": "Schlangengrube, Höhlenlabyrinth, Floßrennen und Kletterwand",
+   "list": [
+    "Schlangengrube: Zweite Taste halten zum Schleichen, dann bleibt die Unruhe-Anzeige grün. Erst neben einem Korb anhalten und mit Aktion öffnen. Richtet sich eine Schlange auf, langsam rückwärts weg, ein Biss kostet Zeit.",
+    "Höhlenlabyrinth: Sterne sieht man nur im Lichtkegel, also in jede Sackgasse hineinleuchten. Rote Augen an der Decke sind Fledermäuse: kurz das Licht ausmachen und vorbeigehen. Grüne Ersatzbatterien füllen die Lampe auf.",
+    "Floßrennen: Aktion im ruhigen Takt drücken (etwa zweimal pro Sekunde), dann zeigt der Bildschirm Im Takt und das Floß wird schneller. Hektisches Drücken bringt weniger. Bojen mit Sternen anfahren, Felsen und Treibholz umfahren. Platz 1 bringt zwei Bonussterne.",
+    "Kletterwand: Den Stick zum nächsten Griff halten, der Ring zeigt ihn an, dann Aktion. Grüne Griffe füllen die Kraft auf, braune Griffe brechen nach gut einer Sekunde weg. Die Glocke oben beendet die Prüfung, also vorher die Sterne an den Griffen mitnehmen."
+   ]
   }
  ],
  "faq": [
