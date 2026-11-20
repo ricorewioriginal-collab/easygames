@@ -1,0 +1,189 @@
+{
+ "id": "concrete-pulse",
+ "handbuch": [
+  {
+   "t": "Ziel des Spiels",
+   "p": [
+    "Concrete Pulse ist ein Skateboard-Spiel in 3D. Du fährst mit deinem Skater durch frei befahrbare Parks und sammelst Punkte mit Tricks. Mehrere Tricks hintereinander ohne Bodenkontakt (oder mit Manuals verbunden) bilden eine Combo: Ihre Punkte werden mit der Anzahl der Tricks multipliziert und erst bei einer sauberen Landung gutgeschrieben.",
+    "Im Karrieremodus hat jeder Park 10 Ziele. Mit 5 erfüllten Zielen öffnet sich der nächste Park, mit weiteren Zielen schaltest du neue Skater und Boards frei."
+   ]
+  },
+  {
+   "t": "Hauptmenü und Modi",
+   "list": [
+    "Karriere: 2-Minuten-Läufe, erfüllte Ziele bleiben gespeichert.",
+    "Highscore-Lauf: 2 Minuten, nur die Punkte zählen; dein Bestwert pro Park wird gespeichert.",
+    "Freies Fahren: ohne Zeitlimit, ideal zum Üben.",
+    "Duell: 2 bis 4 Spieler an einem Gerät fahren nacheinander je 60 Sekunden, am Ende gewinnt die höchste Punktzahl.",
+    "Skater: einen der 6 Skater wählen, Boards: eines der 8 Boards wählen.",
+    "Einstellungen: Grafikqualität, Musik- und Effektlautstärke, Musikstück, Kamera, Einfach-Modus, automatisches Anschieben und Google-Spielstand.",
+    "Hilfe: kurze Übersicht der Steuerung."
+   ]
+  },
+  {
+   "t": "Fahren",
+   "list": [
+    "Lenken mit Stick, W A S D oder Pfeilen. Nach vorne beschleunigt der Skater (Anschieben), nach hinten bremst er.",
+    "Ollie: Taste halten zum Ausholen, loslassen zum Springen – je länger gehalten, desto höher.",
+    "Rampen, Quarterpipes und Pools: Bergab wirst du schneller. Fährst du über die Kante einer steilen Rampe, fliegst du senkrecht nach oben (Vert) und landest wieder auf der Rampe.",
+    "Drehungen: in der Luft links oder rechts lenken bzw. Q/E oder LT/RT. Ab 180 Grad zählt die Drehung als eigener Trick (180, 360, 540, 720, 900, 1080).",
+    "Gegen Wände prallst du ab; nur ein sehr harter Frontalaufprall führt zum Sturz."
+   ]
+  },
+  {
+   "t": "Tricks",
+   "list": [
+    "Flip-Tricks (Flip-Taste, in der Luft): Kickflip, Heelflip, Pop Shove-It, Impossible, 360 Shove-It, Varial Kickflip, Hardflip, 360 Flip, Varial Heelflip – je nach Richtung.",
+    "Grabs (Grab-Taste halten, in der Luft): Indy, Nosegrab, Tailgrab, Melon, Mute, Method, Crail, Stalefish, Roastbeef. Je länger du hältst, desto mehr Punkte.",
+    "Grinds (Grind-Taste nahe an Rail, Ledge oder Rampenkante): 50-50, Nosegrind, 5-0, Boardslide, Lipslide, Crooked, Overcrook, Smith, Feeble. Am Rail mit links/rechts die Balance halten.",
+    "Manuals (Manual-Taste am Boden): Manual (hinten) oder Nose Manual (vorne). Die Balance hältst du mit vor/zurück.",
+    "Spezialtricks: Jeder Skater hat drei eigene. Die Spezialleiste füllt sich mit gelandeten Combos. Ist sie voll: in der Luft Flip und Grab zusammen (Spezial-Flip), Grab mit Grind (Spezial-Grab) oder beim Grind zusätzlich Manual (Spezial-Grind)."
+   ]
+  },
+  {
+   "t": "Wertung",
+   "list": [
+    "Jeder Trick hat Grundpunkte, Grinds und Manuals bringen zusätzlich Punkte pro Sekunde.",
+    "Combo-Wert = Summe der Trickpunkte × Anzahl der Tricks.",
+    "Wiederholst du denselben Trick, bringt er weniger Punkte.",
+    "Gaps (besondere Sprünge, z. B. über den Lichtschacht) geben Bonuspunkte und erscheinen als Meldung.",
+    "Sturz: Die laufende Combo geht verloren und die Spezialleiste sinkt."
+   ]
+  },
+  {
+   "t": "Parks",
+   "list": [
+    "Hafenkante: Container, Funbox, Treppen, Pool und Pyramide – der Einstiegspark.",
+    "Dachgarten: zwei Dächer mit Halfpipe, getrennt durch einen 7 Meter breiten Lichtschacht.",
+    "Neonbucht: großer Pool, Vert-Rampe, Hügel und Kicker unter Neonlicht."
+   ]
+  },
+  {
+   "t": "Fortschritt und Speichern",
+   "p": [
+    "Ziele, Bestwerte, Freischaltungen und Einstellungen werden automatisch auf dem Gerät gespeichert. In den Einstellungen kannst du dich optional mit Google anmelden, dann wird der Stand gesichert und auf anderen Geräten fortgesetzt. Die Bestenliste zeigt deinen besten Lauf."
+   ]
+  },
+  {
+   "t": "Mehrspieler",
+   "p": [
+    "Das Duell spielt ihr an einem Gerät: Jeder Spieler fährt einen 60-Sekunden-Lauf, danach gibt das Gerät an den nächsten weiter. Am Ende zeigt die Auswertung alle Punktzahlen und den Sieger."
+   ]
+  },
+  {
+   "t": "Bedienung auf allen Geräten",
+   "list": [
+    "Handy und Tablet: Stick links, Knöpfe rechts; Menüs antippen.",
+    "PC: Tastatur oder Maus in den Menüs, Tastatur zum Fahren.",
+    "Gamecontroller und TV: Menüs mit Steuerkreuz und A, zurück mit B. Auf dem Fernseher startet das Spiel automatisch im Einfach-Modus mit Anschieben."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Einsteiger",
+   "list": [
+    "Schalte im Zweifel den Einfach-Modus ein: Ollie in der Luft tippen ergibt einen Flip, halten einen Grab.",
+    "Übe im Freien Fahren die Quarterpipes: gerade anfahren, oben Grab halten, rechtzeitig loslassen.",
+    "Lande gerade: Wenn der Skater quer zur Fahrtrichtung aufkommt, stürzt er."
+   ]
+  },
+  {
+   "t": "Fortgeschrittene",
+   "list": [
+    "Combos verlängern: nach einer Landung sofort Manual drücken und zum nächsten Rail fahren.",
+    "Rails von oben anspringen und kurz vorher Grind drücken – du rastest automatisch ein.",
+    "Abwechslung zahlt sich aus: Jeder neue Trick in der Combo erhöht den Multiplikator voll."
+   ]
+  },
+  {
+   "t": "Profis",
+   "list": [
+    "Im Pool von Kante zu Kante fliegen und dabei Drehungen mit Grabs verbinden.",
+    "Spezialtricks gezielt am Ende einer langen Combo einsetzen – sie zählen viele Punkte und erhöhen den Multiplikator.",
+    "Für hohe Punktzahlen Grind → Manual → Grind-Ketten über den ganzen Park legen."
+   ]
+  },
+  {
+   "t": "Häufige Fehler",
+   "list": [
+    "Zu lange Grab gehalten: Ist der Skater noch im Trick, wenn er landet, stürzt er.",
+    "Manual ohne Balance: vor/zurück gegensteuern, wenn der Balkenzeiger ausschlägt.",
+    "Bei voller Spezialleiste stürzen kostet die halbe Leiste."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Hafenkante (10 Ziele)",
+   "list": [
+    "15.000, 40.000 und 90.000 Punkte in einem Lauf.",
+    "P-U-L-S-E: die fünf schwebenden Buchstaben im Park einsammeln.",
+    "Versteckte Kassette: schwebt erhöht am Parkrand und ist nur mit einem Sprung erreichbar.",
+    "6.000er-Combo landen.",
+    "Gap Container-Hüpfer: von Container zu Container springen.",
+    "Kickflip über die Funbox (Funbox-Sprung mit Kickflip).",
+    "3 Sekunden am Stück grinden, einen Manual 4 Sekunden halten."
+   ]
+  },
+  {
+   "t": "Dachgarten (10 Ziele)",
+   "list": [
+    "30.000, 80.000 und 160.000 Punkte.",
+    "P-U-L-S-E und die versteckte Kassette.",
+    "15.000er-Combo.",
+    "Lichtschacht-Sprung: mit vollem Tempo über die Kante zwischen den Dächern springen.",
+    "540er-Drehung landen (am besten aus der Halfpipe).",
+    "Einen Spezialtrick landen, 5 Sekunden am Stück grinden."
+   ]
+  },
+  {
+   "t": "Neonbucht (10 Ziele)",
+   "list": [
+    "50.000, 120.000 und 250.000 Punkte.",
+    "P-U-L-S-E und die versteckte Kassette.",
+    "30.000er-Combo.",
+    "1,4 Sekunden an der Vert-Rampe fliegen: mit hohem Tempo anfahren, oben Ollie.",
+    "720er-Drehung landen, einen Spezialtrick landen.",
+    "Aus dem großen Pool hinausfliegen (Gap Pool-Ausflug)."
+   ]
+  },
+  {
+   "t": "Freischaltungen",
+   "list": [
+    "Dachgarten: 5 Ziele in der Hafenkante. Neonbucht: 5 Ziele im Dachgarten.",
+    "Zara Nox ab 6 Zielen, Timo Flink ab 12, Lia Wirbel ab 20.",
+    "Board Beton ab 9 Zielen, Goldkante ab 25."
+   ]
+  },
+  {
+   "t": "Die Skater",
+   "list": [
+    "Mika Sturm (Street): Pulsar-Flip, Kometen-Grab, Funkenstrich.",
+    "Juna Kade (Vert): Sternenwirbel 900, Himmelsleiter, Neonfaden.",
+    "Ole Brandt (Technik): Dreifach-Kick, Wolkenkratzer, Endlos-Smith.",
+    "Zara Nox (Allround): Nachtfalter-Flip, Rückenwind, Glutspur.",
+    "Timo Flink (Tempo): Turbo-Kick, Raketenstart, Blitzleiter.",
+    "Lia Wirbel (Show): Wirbelsturm 1080, Schmetterling, Regenbogenbahn."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Warum bekomme ich keine Punkte für meine Combo?",
+   "a": "Punkte zählen erst nach einer sauberen Landung. Stürzt du, ist die Combo verloren."
+  },
+  {
+   "q": "Wie schalte ich den nächsten Park frei?",
+   "a": "Erfülle im Karrieremodus 5 Ziele im aktuellen Park."
+  },
+  {
+   "q": "Kann ich mit mehreren Leuten spielen?",
+   "a": "Ja, im Duell spielen 2 bis 4 Spieler nacheinander an einem Gerät."
+  },
+  {
+   "q": "Das Spiel ruckelt – was tun?",
+   "a": "Stell in den Einstellungen die Grafikqualität auf Niedrig."
+  }
+ ]
+}
