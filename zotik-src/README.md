@@ -17,4 +17,6 @@ npm run build   # schreibt nach ../zotik/ – danach den Ordner mit committen, d
 - `public/` – Service Worker, Manifest, Minispiele, Vorschaubild (landen unverändert in `../zotik/`)
 
 Qualität: die automatische Stufenregelung (`setQ`) schaltet bei niedriger Bildrate zuerst Fell-Schalen und Auflösung herunter, dann die Nachbearbeitung.
+- `src/bworld.js` – **Babylon.js-Umstellung, Phase 1**: Kollisionswelt (NullEngine, Proxys nur im Umkreis des Spielers), per `await __zotik.bw()` (Debug) ladbar; Test `tools/test-zotik/babylon-kollision.cjs`. Phase 2: Bewegung/Kamera-Raycasts darauf umstellen, danach Rendering Welt für Welt.
+
 Debug: `?debug` an die Adresse hängen, dann steht `__zotik` in der Konsole bereit.
