@@ -10,7 +10,7 @@ Show, Moderatoren (Lotte Brandt, Mats Feldmann), Sanitäter Doc Rudi, Ranger Kal
 1. **Einzug** mit Moderation und Vorstellung der Camper, dann per Helikopter oder zu Fuß ins Lager – unterwegs die Gruppenprüfung „Dschungel-Marsch“ (alle Camper sammeln gemeinsam Sterne, Bonus fürs erste Abendessen), gleich danach die erste Prüfung.
 2. **Morgens** wählen die Zuschauer, wer in die Prüfung muss – oft du, manchmal jemand anderes (dann gibt es eine Zusammenfassung).
 3. **Urwaldprüfung** in 3D (9 Stück, siehe unten). Jeder Stern ist eine Portion fürs Camp. Abbruch jederzeit mit dem Satz „Ich bin raus aus dem Urwald!“.
-4. **Camp:** frei herumlaufen, Check-up bei Sanitäter Doc Rudi im Sani-Zelt, Ranger Kalle auf seiner Runde ansprechen (Tipps, manchmal ein Hinweis auf die Schatzkiste), Holz holen und das Feuer schüren, Wasser abkochen, Klo putzen, mit Campern reden (plaudern, Komplimente, Witze, trösten, lästern, Bündnisse), Buschtelefon, Schatzkiste mit Rätsel, zufällige Ereignisse. Vier Aktionen pro Tag.
+4. **Camp:** frei herumlaufen, Check-up bei Sanitäter Doc Rudi im Sani-Zelt, Ranger Kalle auf seiner Runde ansprechen (Tipps, manchmal ein Hinweis auf die Schatzkiste), Holz holen und das Feuer schüren, Wasser abkochen, Klo putzen, mit Campern reden (plaudern, Komplimente, Witze, trösten, lästern, Bündnisse), Buschtelefon, Schatzkiste mit Rätsel, zufällige Ereignisse. Vier Aktionen pro Tag. Hunger 🍗 und Schlaf 😴 zählen mit: hungrig oder müde gibt es eine Aktion weniger. Jede dritte Nacht spielst du die **Nachtwache** (Feuer am Leben halten, Tiere von den Vorräten verscheuchen).
 5. **Abendessen** am Feuer – so viel, wie Sterne geholt wurden. Teilen, zugreifen oder verzichten.
 6. **Auszug** in den letzten Tagen: Die Zuschauer entscheiden, wer gehen muss.
 7. **Finale** mit drei Gängen (Vorspeise, Hauptgang, Nachtisch) und **Krönung** zum Urwaldkönig / zur Urwaldkönigin.
@@ -18,7 +18,7 @@ Show, Moderatoren (Lotte Brandt, Mats Feldmann), Sanitäter Doc Rudi, Ranger Kal
 Die Zuschauerstimmung ist eine offene Simulation: 45 % Sympathie, 30 % Unterhaltung, 25 % Prüfungsleistung (sichtbar in der Buschtrommel).
 
 ## Prüfungen
-Ekel-Kisten · Dschungel-Dinner · Schlammbecken (tauchen) · Wackelsteg · Krabbel-Tunnel · Ekel-Dusche · Wissens-Tank · Schlamm-Parcours · Lianen-Rutsche – jede im Dschungel und im Studio spielbar, auch einzeln über „Prüfungen spielen“.
+Ekel-Kisten · Dschungel-Dinner · Schlammbecken (tauchen) · Wackelsteg · Krabbel-Tunnel · Ekel-Dusche · Wissens-Tank · Schlamm-Parcours · Lianen-Rutsche, dazu das IBES-Fan-Quiz (deutsche und britische Show) und der Gruppenmarsch ins Lager – jede im Dschungel und im Studio spielbar, auch einzeln über „Prüfungen spielen“.
 
 ## Steuerung (ein Bedienkonzept für alle Geräte)
 | Aktion | Tastatur | PlayStation | Switch | Handy |

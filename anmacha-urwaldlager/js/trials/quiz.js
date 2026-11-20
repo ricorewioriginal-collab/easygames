@@ -28,7 +28,10 @@
       ctx.hidden = []; ctx.player.root.traverse(o => { if (o.userData.gear === 'head' && o.visible) { o.visible = false; ctx.hidden.push(o); } });
       // Krabbeltiere, die mit dem Schleim kommen
       ctx.bugs = UL.Trials.bugs(sc, 40, 0x2a1a0a); ctx.bugs.list.forEach(b => { b.s = 0; }); ctx.bugs.sync(); ctx.bugN = 0;
-      ctx.qs = ctx.rng.shuffle(UL.D.QUIZ).slice(0, ctx.max + 2);
+      // Fan-Quiz: nur Fragen zur echten Show; normale Staffel: ab und zu eine Fan-Frage dazwischen
+      ctx.fan = ctx.id === 'fanquiz';
+      ctx.qs = ctx.fan ? ctx.rng.shuffle(UL.D.FANQUIZ).slice(0, ctx.max + 2) : ctx.rng.shuffle(UL.D.QUIZ).slice(0, ctx.max).concat(ctx.rng.shuffle(UL.D.FANQUIZ).slice(0, 2));
+      if (!ctx.fan) ctx.qs = ctx.rng.shuffle(ctx.qs);
       ctx.qi = -1; ctx.wrong = 0; ctx.fill = 0; ctx.fillTo = 0; ctx.sel = 0; ctx.qt = QT; ctx.lock = 0; ctx.prevX = 0; ctx.prevY = 0;
       ctx.hostPos.set(-2.6, 0, -0.9); ctx.hostRy = 0.8;
       ctx.intro = { pos: new T.Vector3(2.5, 2, 3), look: new T.Vector3(0, 1, 0) };
@@ -95,4 +98,6 @@
       if (ctx._bt <= 0) { ctx._bt = 0.5; ctx.sel = ctx.rng.chance(ctx.ai ? 0.45 + (ctx.ai.skill ?? 0.6) * 0.45 : 0.9) ? ctx.right : (ctx.right + 1) % 4; I.ok = true; }
     }
   });
+  // Das IBES-Fan-Quiz nutzt denselben Tank
+  UL.Trials.reg('fanquiz', UL.Trials.impl.quiz);
 })();

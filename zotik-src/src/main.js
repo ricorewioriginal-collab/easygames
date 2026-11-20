@@ -3828,25 +3828,26 @@ function kbDress(n){const L0=KBW[n];if(!L0||!WLD)return;const R=mul32(n*4513+11)
       out.push({k,x,y:y0-.25,z,ry:Math.atan2(px-x,0)+(R()-.5)*.6,s});addCol(x,z,rad*.9);break}}
   KK.place(scene,out,'kb')}
 /* Landschaft aus dem Wizp-Pack (CC0): Bäume, Felsen und Friedhöfe je Klimazone, als Instanzen in der Wildnis verteilt (mit Kollision) */
-const WZ={2:[['birch1',7],['birch3',6.5],['birch5',5],['garden_tree_green',6],['pine2',8],['rock_medium_1',1.4],['rock_big_2',2.6],['grass_green_group',.6]],
-  3:[['garden_tree_yellow',5.5],['garden_tree_green',5.5],['garden_plant_1',1.2],['rock_medium_2',1.3],['rock_big_B_gray_1',2.4]],
-  4:[['cactus1',3.2],['cactus2',3.6],['cactus3',1.8],['coconut1',8],['coconut2',7.5],['palm2',7],['rock_big_1',2.8],['rock_medium_3',1.4]],
-  5:[['coconut1',8],['palm2',7],['waterlily_pink_group',.4],['rock_big_B_gray_1',2.6],['rock_medium_1',1.3]],
-  6:[['ancient_tree_winter_1',8],['pine1',8],['pine3',7],['garden_plant_winter',1.4],['branch_winter_1',1],['rock_big_B_gray_1',2.8],['rock_medium_2',1.4]],
-  7:[['creepy_tree1',6],['creepy_tree2',6.5],['rock_big_B_dark_2',3],['rock_big_3',2.4],['bones_group',.6],['root_2',.8]],
-  8:[['creepy_tree1',6],['creepy_tree2',6.5],['grass_purple_group',.6],['rock_big_B_dark_2',2.6]],
-  9:[['ancient_tree_pink_1',8],['garden_tree_pink',6],['grass_purple_group',.6],['rock_medium_3',1.4]],
-  10:[['ancient_tree_yellow_1',8],['garden_tree_yellow',6],['rock_big_2',2.6],['rock_medium_1',1.3]],
-  11:[['creepy_tree2',6.5],['rock_big_B_dark_2',3],['root_2',.8],['bones_group',.6]]};
+/* Einträge [Teil, Höhe] aus models/wz (Wizp, CC0); [Teil, Höhe, 'sf'] aus models/sf (Sketchfab, CC BY – stilisierte, handgemalte Bäume, Büsche, Felsen, Blumen) */
+const WZ={2:[['eiche',8,'sf'],['tanne',9,'sf'],['birch1',7],['garden_tree_green',6],['busch',1.6,'sf'],['stumpf',1.1,'sf'],['fels1',2.4,'sf'],['fels3',1.4,'sf'],['blume1',.5,'sf'],['blume3',.5,'sf'],['grass_green_group',.6]],
+  3:[['eiche',7,'sf'],['garden_tree_yellow',5.5],['busch',1.5,'sf'],['garden_plant_1',1.2],['blume2',.5,'sf'],['blume4',.5,'sf'],['fels5',1.3,'sf'],['rock_big_B_gray_1',2.4]],
+  4:[['palme',8,'sf'],['cactus1',3.2],['cactus2',3.6],['cactus3',1.8],['palm2',7],['fels6',2.6,'sf'],['fels2',1.4,'sf'],['rock_big_1',2.8]],
+  5:[['palme',8.5,'sf'],['coconut1',8],['waterlily_pink_group',.4],['fels4',2.4,'sf'],['blume1',.5,'sf'],['rock_medium_1',1.3]],
+  6:[['tanne',9,'sf'],['ancient_tree_winter_1',8],['pine1',8],['garden_plant_winter',1.4],['branch_winter_1',1],['fels7',2.8,'sf'],['fels9',1.4,'sf']],
+  7:[['creepy_tree1',6],['creepy_tree2',6.5],['stumpf',1.3,'sf'],['fels8',3,'sf'],['rock_big_3',2.4],['bones_group',.6],['root_2',.8]],
+  8:[['creepy_tree1',6],['creepy_tree2',6.5],['stumpf',1.2,'sf'],['grass_purple_group',.6],['fels10',2.6,'sf']],
+  9:[['eiche',7.5,'sf'],['ancient_tree_pink_1',8],['garden_tree_pink',6],['busch',1.5,'sf'],['blume1',.5,'sf'],['blume2',.5,'sf'],['blume4',.5,'sf'],['grass_purple_group',.6],['fels11',1.4,'sf']],
+  10:[['eiche',8,'sf'],['ancient_tree_yellow_1',8],['garden_tree_yellow',6],['busch',1.5,'sf'],['blume2',.5,'sf'],['fels1',2.6,'sf'],['rock_medium_1',1.3]],
+  11:[['creepy_tree2',6.5],['stumpf',1.3,'sf'],['fels8',3,'sf'],['rock_big_B_dark_2',3],['root_2',.8],['bones_group',.6]]};
 const WZG={8:1,7:1};   /* Welten mit kleinem Friedhof am Wegrand */
-function wzDress(n){const L0=WZ[n];if(!L0||!WLD)return;const R=mul32(n*7919+3),out=[],N=TOUCH?60:110,big=k=>/tree|birch|pine|coconut|palm|cactus1|cactus2/.test(k);
+function wzDress(n){const L0=WZ[n];if(!L0||!WLD)return;const R=mul32(n*7919+3),out=[],N=TOUCH?60:110,big=k=>/tree|birch|pine|coconut|palm|cactus1|cactus2|eiche|tanne|palme/.test(k);
   for(let t=0,c=0;c<N&&t<N*12;t++){const z=-30-R()*125,px=WLD.path?WLD.path(z):0,sd=R()<.5?-1:1,x=px+sd*(9+R()*36);
     if(blocked(x,z)||(WLD.reach&&!WLD.reach(x,z)))continue;const q=L0[R()*L0.length|0],r=big(q[0])?.7:q[1]>1.5?q[1]*.35:0;if(r&&!colFree(x,z,r+.6))continue;
-    out.push({k:q[0],x,y:hgt(x,z)-.05,z,ry:R()*6.28,h:q[1]*(.85+R()*.3)});if(r)addCol(x,z,r);c++}
+    out.push({k:q[0],x,y:hgt(x,z)-.05,z,ry:R()*6.28,h:q[1]*(.85+R()*.3),f:q[2]||'wz'});if(r)addCol(x,z,r);c++}
   if(WZG[n]){for(let t=0;t<40;t++){const z=-60-R()*60,px=WLD.path?WLD.path(z):0,x=px+(R()<.5?-1:1)*(10+R()*8);if(blocked(x,z)||!colFree(x,z,5))continue;
     const G2=[['tomb_statue',2.4,0,0],['tomb_1',1.1,-2,1.2],['tomb_2',1.1,2,1.2],['tomb_3',1.1,-2,-1.4],['prop_tomb_1',.6,2,-1.4],['coffin',.5,0,2.6],['lamp',2.2,-3.2,0],['column_1',2.4,3.2,0]];
     for(const [k,h,dx,dz] of G2){const qx=x+dx,qz=z+dz;out.push({k,x:qx,y:hgt(qx,qz)-.03,z:qz,ry:0,h});if(h>1)addCol(qx,qz,.5)}break}}
-  KK.place(scene,out,'wz');return out.length}
+  KK.place(scene,out.filter(q=>q.f!=='sf'),'wz');KK.place(scene,out.filter(q=>q.f==='sf'),'sf');return out.length}
 function advTalk(n,who,i){const k='adv'+n;
   if(!S.fl[k]){S.fl[k]=1;S.potions++;sfx('pick');say([[who,i===0?'Ein Reisender mit Fuchsschwanz? Setz dich ans Feuer.':i===1?'Wir ziehen seit Wochen durch die Welten. Du siehst aus, als bräuchtest du Proviant.':'Psst – wir haben noch einen Trank übrig. Nimm ihn.'],[who,ADVT[n]||'Pass auf dich auf da draußen.']],()=>toast('🧪 +1 Heiltrank vom Abenteurerlager'));saveGame(true);return}
   say([[who,[ADVT[n]||'Pass auf dich auf.','Die Skelette in den Hallen fürchten Licht. Merk dir das.','Wenn du wieder hier vorbeikommst, brennt das Feuer noch.'][(i+Math.floor(time/20))%3]]])}

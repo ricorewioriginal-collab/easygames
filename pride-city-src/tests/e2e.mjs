@@ -22,6 +22,8 @@ async function page(browser, opts = {}, pre) {
   if (pre) await p.addInitScript(pre);
   await p.goto(BASE, { waitUntil: 'load' });
   await p.waitForSelector('.mi', { timeout: 90000 });
+  // SwiftShader zeichnet langsam: Test auf Stufe „mittel“, damit Eingaben rechtzeitig ankommen
+  await p.evaluate(() => window.__pc.engine.setQuality(1));
   return p;
 }
 const ev = (p, fn, arg) => p.evaluate(fn, arg);
