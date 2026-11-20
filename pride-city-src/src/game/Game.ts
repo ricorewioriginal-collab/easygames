@@ -18,6 +18,8 @@ import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST, lichtPart, l
 import { LF_CHAPTERS, lfEnding, lfPct } from './leuchtfeuer';
 import { LICHT_CHAPTERS, lichtEnding } from './licht';
 import { HomeScene } from './HomeScene';
+import { LAWS } from './crime';
+import { RING, WEDDING, ADOPT, KID_NAMES, spouse, fiance, kid, canPropose, propose, canWed, wed, canAdopt, applyAdopt } from './family';
 import { InteriorScene } from './InteriorScene';
 import type { Spot, Theme } from './interiors';
 import type { Sfx } from '../engine/Audio';
@@ -27,11 +29,18 @@ import { PROFILES, profileShots, profile, dateRec, dateQuestions, finishDate, ca
 import { NEEDS, mood, moodIcon, moodName, change, advance, minutesUntil, track, dailyState, clock, weekday, hour, type Daily } from './life';
 
 type BookId = 'licht' | 'leuchtfeuer';
+export const DONATE = 60;
 const BOOKS: Record<BookId, { title: string; file: string; cover: string; blurb: string }> = {
   licht: { title: 'Ich bin das Licht', file: 'book/ich-bin-das-licht.json', cover: 'book/cover.jpg', blurb: 'Der Roman von RicoReWi: Leon Sommer, Lady Luma und die One Love Bar. In Pride City erzählt Leon seine Geschichte auch selbst – an der One Love Bar.' },
   leuchtfeuer: { title: 'Leuchtfeuer', file: 'book/leuchtfeuer.json', cover: 'book/leuchtfeuer.jpg', blurb: 'Der Jugendroman von RicoReWi: Finn und Ben, ein Schuljahr in Warnholm und der Leuchtturm Rotenhorn. In Pride City erzählt Finn die Geschichte selbst – am Leuchtturm auf dem Steg.' },
 };
 
+
+/** Kurzinfo Familie fürs Handy */
+function famSub(s: Game['save']['data']) {
+  const sp = spouse(s), fi = fiance(s), k = kid(s);
+  return sp ? `Verheiratet mit ${sp.name}${k ? ' · ' + k.name + ' wohnt bei euch' : s.flags.adopt ? ' · Adoption läuft' : ''}` : fi ? `Verlobt mit ${fi.name}` : 'Heiraten und Adoption';
+}
 
 export class Game {
   engine: Engine;
@@ -283,6 +292,7 @@ export class Game {
       if (s.food <= 0) { toast('Keine Lebensmittel. Im Späti Lecker gibt es welche.'); sfx('miss'); return; }
       busy('stove', 45, () => { s.food--; change(s, { hunger: 50, fun: 5 }); this.done(track(s, 'eat')); }, `Lecker gekocht! Noch ${s.food - 1 < 0 ? 0 : s.food} Portionen übrig.`); return;
     }
+    if (id === 'spouse' || id === 'kid') { this.familyAction(id); return; }
     if (id === 'fridge') { toast(s.food ? `Im Kühlschrank: ${s.food} Portionen zum Kochen.` : 'Der Kühlschrank ist leer.'); return; }
     if (id === 'bed') {
       const back = () => { this.closeMenu(); this.touch.show(true); };
@@ -294,6 +304,81 @@ export class Game {
         { icon: '←', label: 'Zurück', fn: back },
       ], back, '');
     }
+  }
+
+  /** Zu Hause mit Partner*in oder Kind */
+  private familyAction(id: 'spouse' | 'kid') {
+    const s = this.save.data, h = this.home!, back = () => { this.closeMenu(); this.touch.show(true); };
+    const sp = spouse(s), k = kid(s);
+    const act = (min: number, fx: Parameters<typeof change>[1], msg: string, who: 'spouse' | 'kid', anim: 'dance1' | 'laugh' | 'clap' | 'cheer' | 'talk') => () => {
+      back(); h.familyPlay(who, anim); sfx(who === 'kid' ? 'giggle' : 'kiss');
+      setTimeout(() => { this.pass(min); change(s, fx); this.save.write(); this.city.refreshHud(); toast(msg); }, 1200);
+    };
+    this.touch.show(false);
+    if (id === 'spouse' && sp) {
+      this.openMenu(`<div class="col"><div class="panel"><h3>💞 ${esc(sp.name)}</h3><p>${['Na, Schatz? Wie war dein Tag in der Stadt?', 'Ich hab dich vermisst. Bleib noch ein bisschen.', 'Erzähl mal – was hast du heute wieder angestellt? 😏'][s.day % 3]}</p><div class="slot"></div></div></div>`, [
+        { icon: '🫂', label: 'Kuscheln', sub: '30 Minuten · +25 Kontakte · +10 Spaß', fn: act(30, { social: 25, fun: 10 }, `${sp.name} kuschelt sich an dich. 💞`, 'spouse', 'laugh') },
+        { icon: '💃', label: 'Zusammen tanzen', sub: '20 Minuten · +20 Spaß', fn: act(20, { fun: 20, energy: -5 }, 'Wohnzimmer-Disco! 🪩', 'spouse', 'dance1') },
+        { icon: '💬', label: 'Über den Tag reden', sub: '15 Minuten · +12 Kontakte', fn: act(15, { social: 12 }, `${sp.name}: „Ich bin stolz auf dich.“`, 'spouse', 'talk') },
+        { icon: '←', label: 'Zurück', fn: back }], back);
+      return;
+    }
+    if (id === 'kid' && k) {
+      this.openMenu(`<div class="col"><div class="panel"><h3>${k.g === 'f' ? '👧' : '👦'} ${esc(k.name)}</h3><p>${['Spielst du mit mir? Bitte, bitte!', 'Guck mal, ich hab ein Regenbogen-Bild gemalt!', 'Liest du mir was vor? Das mit dem Leuchtturm!'][s.day % 3]}</p><div class="slot"></div></div></div>`, [
+        { icon: '🧸', label: 'Spielen', sub: '30 Minuten · +20 Spaß · −8 Energie', fn: act(30, { fun: 20, energy: -8 }, `${k.name} quietscht vor Freude. 🧸`, 'kid', 'dance1') },
+        { icon: '📖', label: 'Vorlesen', sub: '20 Minuten · +12 Kontakte · +8 Spaß', fn: act(20, { social: 12, fun: 8 }, `${k.name} schläft fast ein. „Noch ein Kapitel …“`, 'kid', 'clap') },
+        { icon: '🎨', label: 'Zusammen malen', sub: '30 Minuten · +15 Spaß · +1 Ruf beim ersten Mal am Tag', fn: () => { if (s.flags.kidArt !== s.day) { s.flags.kidArt = s.day; s.rep++; } act(30, { fun: 15 }, 'Ein Regenbogen mit sieben Farben. Kommt an den Kühlschrank! 🌈', 'kid', 'cheer')(); } },
+        { icon: '←', label: 'Zurück', fn: back }], back);
+    }
+  }
+
+  /* ---------- Familie: Antrag, Hochzeit, Adoption ---------- */
+  private proposal(id: string) {
+    const s = this.save.data, p = profile(id)!, close = () => { this.closeMenu(); this.touch.show(true); };
+    const W = (text: string) => ({ who: p.name, color: p.color, text });
+    close();
+    const why = propose(s, id);
+    if (why) { toast(why); sfx('miss'); return; }
+    sfx('heart'); this.save.write();
+    this.dialog.say([{ who: s.name, color: '#ff3fb0', text: `${p.name} … ich will jeden Morgen neben dir aufwachen. Willst du mich heiraten? 💍` },
+      W('*hält sich die Hand vor den Mund* JA! Ja, ja, tausendmal ja! 🥹🌈'),
+      W('Lass uns im Regenbogenhaus feiern. Mit allen. Mit Konfetti. Mit Drag-Show!')], () => {
+      sfx('applause'); post(s, p.name, 'Wir sind verlobt!!! 💍🌈'); this.hud.banner('💍 Verlobt!', `${p.name} hat Ja gesagt. Die Hochzeit feiert ihr im Regenbogenhaus.`, 'good', 4200);
+      s.pin = 'center'; this.save.write();
+    });
+  }
+  private wedding() {
+    const s = this.save.data, p = fiance(s)!;
+    const why = wed(s);
+    if (why) { toast(why); sfx('miss'); return; }
+    this.fade(() => {
+      this.pass(180); change(s, { social: 40, fun: 40 }); this.save.write(); this.city.refreshHud();
+      sfx('applause');
+      this.dialog.say([
+        { who: 'Standesbeamtin Mira', color: '#ff9bd2', text: `Liebe Gäste, wir sind heute im Regenbogenhaus, weil Liebe hier immer ein Zuhause hatte. ${s.name} und ${p.name}, wollt ihr einander lieben, ehren und ab und zu den Abwasch machen?` },
+        { who: `${s.name} & ${p.name}`, color: '#ffd23b', text: 'Ja, wir wollen! 💍💍' },
+        { who: 'Standesbeamtin Mira', color: '#ff9bd2', text: 'Dann erkläre ich euch kraft der Ehe für alle zu Eheleuten. Ihr dürft euch küssen! 💋' },
+        { who: 'Lady Luma', color: '#ff3fb0', text: 'Und jetzt alle auf die Tanzfläche, Darlings! Die Torte hat sieben Schichten – eine für jede Farbe und eine extra für Glitzer.' },
+      ], () => {
+        post(s, p.name, `Verheiratet! Danke an alle, die mit uns gefeiert haben. 💒✨`);
+        this.chapterCard('💒 Hochzeit', `${s.name} & ${p.name}`, `Ihr seid verheiratet! ${p.name} zieht bei dir ein und wartet ab jetzt zu Hause. Im Regenbogenhaus könnt ihr eine Adoption beantragen.`);
+        this.home?.syncFamily();
+      });
+    });
+  }
+  private adoption(back: () => void) {
+    const s = this.save.data;
+    if (s.flags.kid) { back(); return; }
+    const pick = (g: 'm' | 'f') => {
+      const names = KID_NAMES[g];
+      this.openMenu(`<div class="col"><div class="panel"><h3>👶 Wie soll euer Kind heißen?</h3><p>Das Jugendamt macht einen Hausbesuch, dann kommt euer Kind in ein paar Tagen zu euch.</p><div class="slot"></div></div></div>`,
+        [...names.map((n) => ({ icon: g === 'f' ? '👧' : '👦', label: n, fn: () => { const why = applyAdopt(s, g, n); back(); if (why) { toast(why); sfx('miss'); return; } this.save.write(); this.city.refreshHud(); sfx('heart'); this.dialog.say([{ who: 'Jugendamt Rainbow City', color: '#3ee69a', text: `Antrag angenommen! Zwei liebevolle Eltern sind genau das, was ${n} braucht. Wir melden uns in drei Tagen.` }]); } })),
+          { icon: '←', label: 'Zurück', fn: back }], back);
+    };
+    this.openMenu(`<div class="col"><div class="panel"><h3>👶 Adoption</h3><p>Ehe für alle heißt auch Adoption für alle. Erzählt uns, wen ihr in eure Familie aufnehmen möchtet.</p><div class="slot"></div></div></div>`, [
+      { icon: '👦', label: 'Einen Jungen', fn: () => pick('m') },
+      { icon: '👧', label: 'Ein Mädchen', fn: () => pick('f') },
+      { icon: '←', label: 'Zurück', fn: back }], back);
   }
 
   /* ---------- Jobs ---------- */
@@ -335,6 +420,7 @@ export class Game {
         { icon: '💼', label: 'Jobs', sub: `${JOBS.length} Jobs in der Stadt`, fn: () => this.phone('jobs') },
         { icon: '📞', label: 'Aufträge', sub: this.city.gig ? `Läuft: ${this.city.gig.g.title}` : `${openGigs(s).length} Leute brauchen Hilfe · ${Number(s.flags.gigs) || 0} erledigt`, fn: () => this.phone('gigs') },
         { icon: '🏙️', label: 'Imperium', sub: owned(s).length ? `${owned(s).length} Geschäfte · +${income(s)} € am Tag` : 'Läden, Bars und Clubs übernehmen', fn: () => this.phone('empire') },
+        { icon: '👨‍👩‍👧', label: 'Familie', sub: famSub(s), fn: () => this.phone('family') },
         { icon: '👥', label: 'Kontakte', sub: `${Object.keys(s.rel).length} Leute kennengelernt`, fn: () => this.phone('contacts') },
         { icon: '💘', label: 'Rainbow Match', sub: `Dating · ${PROFILES.filter((p) => s.dates[p.id]).length} Matches`, fn: () => this.phone('dating') },
         { icon: '📣', label: 'Feed', sub: 'Was in der Szene los ist', fn: () => this.phone('feed') },
@@ -359,6 +445,13 @@ export class Game {
     } else if (app === 'contacts') {
       const met = NPCS.filter((n) => s.rel[n.id]);
       this.openMenu(frame('Kontakte', `<div class="pbody">${met.length ? met.map((n) => { const f = Number(s.rel[n.id].f) || 0; return `<p><b style="color:${n.color}">●</b> <b>${n.name}</b> <small>(${n.pron})</small><br>${'❤️'.repeat(Math.min(5, Math.ceil(f / 20)))}${'🤍'.repeat(5 - Math.min(5, Math.ceil(f / 20)))} ${bond(f)}</p>`; }).join('') : '<p>Noch niemand. Sprich Leute in der Stadt an!</p>'}</div>`),
+        [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'family') {
+      const sp = spouse(s), fi = fiance(s), k = kid(s);
+      const w = this.city.combat?.wanted;
+      this.openMenu(frame('Familie', `<div class="pbody">${sp ? `<p>💍 Verheiratet mit <b>${esc(sp.name)}</b> (${sp.pron}) seit Tag ${s.flags.wedDay}.</p>` : fi ? `<p>💍 Verlobt mit <b>${esc(fi.name)}</b>. Die Hochzeit feiert ihr im Regenbogenhaus (${WEDDING} €).</p>` : '<p>💘 Noch Single oder frisch verliebt. Wer bei Rainbow Match „Zusammen“ ist, kann mit einem Ring aus der Boutique einen Antrag machen.</p>'}
+        ${k ? `<p>${k.g === 'f' ? '👧' : '👦'} <b>${esc(k.name)}</b> wohnt seit Tag ${k.day} bei euch. Spielen und Vorlesen zu Hause macht alle glücklich.</p>` : s.flags.adopt ? `<p>📝 Adoptionsantrag läuft seit Tag ${s.flags.adopt}. Das Jugendamt meldet sich bald.</p>` : sp ? `<p>👶 Ihr könnt im Regenbogenhaus eine Adoption beantragen (${ADOPT} €).</p>` : ''}
+        <h4>Gesetze von Rainbow City</h4><p>⭐ Fahndung: ${w?.stars ? '★'.repeat(w.stars) + ' – lauf der Streife davon oder zahl das Bußgeld auf der Wache.' : 'keine. Bleib brav – oder hab Spaß und renn schnell. 😉'}</p></div>`),
         [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'feed') {
       this.openMenu(frame('Feed', `<div class="pbody">${feed(s).map((p) => `<p class="post"><b>@${esc(p.who)}</b> <small>Tag ${p.d}</small><br>${esc(p.t)}</p>`).join('')}</div>`),
@@ -464,6 +557,7 @@ export class Game {
       <p class="bubble">Hey! ${r.st ? 'Ich hab an dich gedacht. 🥰' : 'Schön, dass wir gematcht haben. 😊'} Wollen wir uns treffen?</p></div><div class="slot"></div></div>`, [
       { icon: '☕', label: 'Café Kaffeeklatsch', sub: 'heute, wann du willst', fn: () => set('cafe', `Date mit ${p.name} im Café – auf der Karte markiert.`) },
       { icon: '🪩', label: 'Club Prisma', sub: 'heute Abend', fn: () => set('club', `Date mit ${p.name} im Club Prisma – auf der Karte markiert.`) },
+      ...(r.st >= 3 && !s.flags.spouse && !s.flags.engaged ? [{ icon: '💍', label: `${p.name} einen Antrag machen`, sub: canPropose(s, id) || 'Ring ist dabei – jetzt oder nie!', disabled: !!canPropose(s, id), fn: () => this.proposal(id) }] : []),
       { icon: '←', label: 'Zurück', fn: () => this.phone('matches') },
     ], () => this.phone('matches'), 'phone');
   }
@@ -510,7 +604,7 @@ export class Game {
 
   /* ---------- Nachtleben 18+ (Durchgang 3b): angedeutet, Abblende, Zustimmung und Kondom ---------- */
   /** Abblende mit kurzer Zeile, danach Zeit vorspulen und weiter */
-  private fadeNight(title: string, tags: string[], minutes: number, kind: Parameters<typeof encounter>[1], after?: () => void) {
+  fadeNight(title: string, tags: string[], minutes: number, kind: Parameters<typeof encounter>[1], after?: () => void) {
     const s = this.save.data;
     const b = el(`<div class="night"><p>${esc(title)}</p><small>${tags.map(esc).join(' · ')}</small></div>`);
     document.body.appendChild(b); if (kind !== 'talk') nightSounds();
@@ -524,6 +618,29 @@ export class Game {
   }
   private adultOnly(name: string) {
     this.dialog.say([{ who: name, color: '#ff6ad5', text: 'Hier kommst du nur rein, wenn „Inhalte ab 18“ in den Optionen eingeschaltet ist.' }]);
+  }
+  /** Samenbank Zukunft: Gesundheitstest, Kabine, Abblende – danach Geld und manchmal Post von einer Familie */
+  private donate() {
+    const s = this.save.data, A = (text: string, choices?: Array<{ label: string; fn: () => void }>) => ({ who: 'Dr. Amara Wolff', color: '#7fd4ff', text, choices });
+    if (!s.health.test || s.day - s.health.test > TEST_EVERY) { this.dialog.say([A('Schön, dass du helfen willst! Bitte mach vorher einen aktuellen Test im Checkpoint Regenbogen. Der ist kostenlos und geht schnell.')]); return; }
+    this.dialog.say([A('Dein Test ist aktuell, alles bestens. Kabine 2 ist frei: Becher, Zeitschriften, Kopfhörer und ein Schloss an der Tür.', [
+      { label: 'Ich bin bereit', fn: () => setTimeout(() => {
+        const b = el(`<div class="night"><p>🧪 Kabine 2 …</p><small>Gesundheitscheck ✔︎ · Einverständnis ✔︎ · Diskretion ✔︎</small></div>`);
+        document.body.appendChild(b); sfx('door');
+        setTimeout(() => {
+          this.pass(45); b.remove();
+          s.money += DONATE; s.flags.donate = s.day; s.flags.donations = (Number(s.flags.donations) || 0) + 1;
+          change(s, { fun: 10, energy: -6, hygiene: -5 });
+          const n = Number(s.flags.donations);
+          const lines = [A(`Vielen Dank! Die Aufwandsentschädigung: ${DONATE} €. Komm gern wieder, frühestens morgen.`)];
+          if (n === 3) { s.rep += 3; post(s, 'Samenbank Zukunft', 'Gute Nachricht: Mit deiner Spende hat sich ein Kinderwunsch erfüllt. Zwei Mamas sagen Danke! 💙'); lines.push(A('Ach, und eine Nachricht für dich: Eine Familie freut sich über Nachwuchs. Mehr dürfen wir nicht sagen. 💙')); }
+          if (n === 6) { s.rep += 3; post(s, 'Samenbank Zukunft', 'Ein Papa-Paar aus der Hochstadt schickt eine Karte mit Babyfüßchen. Danke, dass du hilfst! 👣'); }
+          this.save.write(); this.city.refreshHud(); sfx('coin');
+          this.dialog.say(lines);
+        }, 2600);
+      }, 50) },
+      { label: 'Heute doch nicht', fn: () => {} },
+    ])]);
   }
   /** Videothek: Film leihen (Titel und Cover nur als Text) */
   private rentFilm() {
@@ -596,9 +713,15 @@ export class Game {
 
   private drawMap() {
     const c = document.getElementById('pmap') as HTMLCanvasElement | null; if (!c) return;
-    // Ausschnitt x −115…65 (mit Hafen), z −90…90
-    const x = c.getContext('2d')!, k = 300 / 180, PX = (v: number) => (v + 115) * k, PZ = (v: number) => (v + 90) * k;
+    // Ausschnitt x −115…215 (Hafen bis Hochstadt), z −165…165
+    const x = c.getContext('2d')!, k = 300 / 330, PX = (v: number) => (v + 115) * k, PZ = (v: number) => (v + 165) * k;
     x.fillStyle = '#2f8fd0'; x.fillRect(0, 0, 300, 300);
+    x.fillStyle = '#4a4a52'; x.fillRect(PX(-66), PZ(-165), 400 * k, 99 * k); x.fillRect(PX(-66), PZ(66), 400 * k, 99 * k);
+    x.fillStyle = '#2f8fd0'; x.fillRect(PX(64), 0, 26 * k, 300);
+    x.fillStyle = '#5a6a7a'; x.fillRect(PX(85), PZ(-65), 130 * k, 130 * k);
+    x.fillStyle = '#3a3f55'; x.fillRect(PX(60), PZ(-5), 32 * k, 10 * k);
+    for (let i = 9; i <= 21; i += 3) x.fillRect(PX(i * 10 - 5), PZ(-65), 10 * k, 130 * k);
+    for (let i = -6; i <= 6; i += 3) x.fillRect(PX(85), PZ(i * 10 - 5), 130 * k, 10 * k);
     x.fillStyle = '#5c9a52'; x.fillRect(PX(-65), PZ(-65), 130 * k, 130 * k);
     x.fillStyle = '#bdb5a8'; x.fillRect(PX(-92), PZ(-35), 27 * k, 80 * k); x.fillStyle = '#f0d9a0'; x.fillRect(PX(-97), PZ(17), 5 * k, 26 * k);
     x.fillStyle = '#8a5a35'; x.fillRect(PX(-111), PZ(-3.5), 20 * k, 3 * k);
@@ -637,7 +760,7 @@ export class Game {
       ...(this.where === 'inside' ? [{ icon: '🚪', label: 'Haus verlassen', sub: 'Zurück auf die Straße', fn: () => { this.closeMenu(); this.leaveInterior(); } }] : []),
       { icon: '📱', label: 'Handy', sub: 'Status, Ziele, Karte, Jobs, Kontakte', fn: () => this.phone() },
       { icon: '📖', label: 'Story', sub: 'Kapitel und Entscheidungen', fn: () => this.storyMenu(() => { this.closeMenu(); this.pauseMenu(); }) },
-      { icon: '👗', label: 'Kleiderschrank', sub: 'Figur und Pronomen', fn: () => this.fade(() => this.creator(true)) },
+      { icon: '👗', label: 'Kleiderschrank', sub: 'Figur, Outfit und Pronomen', fn: () => this.fade(() => this.creator(true)) },
       { icon: '⚙️', label: 'Optionen', fn: () => this.options(() => { this.closeMenu(); this.pauseMenu(); }) },
       { icon: '💾', label: 'Speichern', fn: () => { this.save.write(); toast('Gespeichert.'); } },
       { icon: '🏠', label: 'Titelbildschirm', sub: 'Speichert automatisch', fn: () => { this.save.write(); this.closeMenu(); this.where = 'city'; this.fade(() => this.title()); } },
@@ -715,7 +838,7 @@ export class Game {
       <p><b style="color:#fff">Pride City</b> – Relaunch von Gay Life! für easygames.</p>
       <p>Menschen: <b style="color:#fff">Microsoft Rocketbox</b> – 115 Figuren mit Animationen, MIT-Lizenz (© 2020 Microsoft Corporation, github.com/microsoft/Microsoft-Rocketbox). Stadt und Wohnung: <b style="color:#fff">KayKit</b> von Kay Lousberg (City Builder Bits, Furniture Bits, Restaurant Bits) – CC0 1.0. In Pride-Farben umgefärbt.</p>
       <p>3D: Babylon.js (Apache 2.0). Musik und Klänge werden live im Spiel erzeugt.</p>
-      <p>Alle Figuren sind erwachsen und frei erfunden. Zustimmung zählt.</p><div class="slot"></div></div></div>`,
+      <p>Alle Figuren sind frei erfunden. Wer flirtet oder datet, ist erwachsen; Kinder gibt es nur als Familienmitglieder. Zustimmung zählt.</p><div class="slot"></div></div></div>`,
     [{ icon: '←', label: 'Zurück', fn: () => this.title() }], () => this.title());
   }
 
@@ -739,9 +862,13 @@ export class Game {
         { icon: '🪩', label: 'Tanz-Battle', sub: `Rekord ${s.best.dance || 0}`, fn: () => this.goDance(false) },
         { icon: '🍹', label: 'Drink an der Bar', sub: '6 € · +10 Spaß · +8 Kontakte', fn: buy(6, 'Prost! 🍹', eat({ fun: 10, social: 8, energy: -3 })) }] },
       center: { t: 'Regenbogenhaus', d: 'Beratung, Jugendgruppe, Kaffee und Kummer – seit dreißig Jahren.', items: [
-        { icon: '💜', label: 'Spenden', sub: '10 € · +2 Ruf', fn: buy(10, 'Danke! Jedes bisschen hilft.', () => { s.rep += 2; }) }] },
+        { icon: '💜', label: 'Spenden', sub: '10 € · +2 Ruf', fn: buy(10, 'Danke! Jedes bisschen hilft.', () => { s.rep += 2; }) },
+        ...(s.flags.engaged && !s.flags.spouse ? [{ icon: '💒', label: `Hochzeit mit ${fiance(s)?.name}`, sub: canWed(s) || `${WEDDING} € · Trauung im Saal, Party mit allen · +5 Ruf`, disabled: !!canWed(s), fn: () => { close(); this.wedding(); } }] : []),
+        ...(s.flags.spouse ? [{ icon: '👶', label: s.flags.kid ? `${s.flags.kid} geht es gut` : 'Adoption beantragen', sub: canAdopt(s) || `${ADOPT} € · Beratung, Kurs, Hausbesuch · Kind kommt nach ein paar Tagen`, disabled: !!canAdopt(s), fn: () => this.adoption(close) }] : [])] },
       boutique: { t: 'Boutique Fabelhaft', d: 'Glitzer, Leder, Regenbogen – hier findest du deinen Look.', items: [
         { icon: '👗', label: 'Neuer Look', sub: 'Zum Kleiderschrank', fn: () => this.fade(() => this.creator(true)) },
+        ...(this.city.combat?.wanted.stars ? [{ icon: '🕶️', label: 'Undercover-Umstyling', sub: `${60 * this.city.combat.wanted.stars} € · Perücke, Sonnenbrille – die Polizei erkennt dich nicht mehr`, fn: buy(60 * this.city.combat.wanted.stars, 'Neuer Look, neues Glück. Die Fahndung ist weg! 🕶️', () => this.city.combat.wanted.clear()) }] : []),
+        { icon: '💍', label: 'Verlobungsring', sub: `${RING} € · Regenbogen-Gold · du hast ${s.inv.ring || 0}`, fn: buy(RING, 'Ein Ring mit Regenbogen-Steinen. Jetzt fehlt nur noch die Frage … 💍', () => { s.inv.ring = (s.inv.ring || 0) + 1; }) },
         ...(s.settings.adult ? [{ icon: '🍆', label: 'Toy aus der Hinterzimmer-Ecke', sub: `25 € · diskret verpackt · du hast ${s.inv.toy || 0}`, fn: buy(25, 'Diskret verpackt. Viel Spaß! 😏', () => { s.inv.toy = (s.inv.toy || 0) + 1; change(s, { fun: 10 }); }) }] : [])] },
       gym: { t: 'Muckibude Muskelkater', d: 'Bären, Twinks und alle dazwischen – hier schwitzt die ganze Szene.', items: [
         { icon: '🏋️', label: 'Training', sub: '4 € · 1 Stunde · +15 Spaß, −20 Energie, −20 Hygiene', fn: () => { if (s.needs.energy < 20) { toast('Zu erschöpft fürs Training.'); sfx('miss'); return; } buy(4, 'Gepumpt! 💪', () => { this.pass(60); change(s, { fun: 15, energy: -20, hygiene: -20, hunger: -10 }); })(); } },
@@ -767,6 +894,8 @@ export class Game {
       tram: { t: 'Tram Rainbow City', d: 'Für 2 € in zehn Minuten an jeden Ort – auch raus ins Hafenviertel.', items: [
         { icon: '🗺️', label: 'Fahrplan', sub: 'Ziel wählen', fn: () => this.phone('map') }] },
       police: { t: 'Polizeiwache Mitte', d: 'Freund und Helfer – mit eigener Ansprechperson für queere Menschen.', items: [
+        ...(this.city.combat?.wanted.stars ? [{ icon: '💶', label: 'Stellen und Bußgeld zahlen', sub: `${this.city.combat.wanted.fines + this.city.combat.wanted.stars * 10} € · Fahndung sofort vorbei`, fn: buy(this.city.combat.wanted.fines + this.city.combat.wanted.stars * 10, 'Bußgeld bezahlt. Akte zu, Glitzer bleibt. 🚓', () => this.city.combat.wanted.clear()) }] : []),
+        { icon: '⚖️', label: 'Gesetze von Rainbow City', sub: 'Was die Polizei verfolgt', fn: () => { close(); this.dialog.say(Object.values(LAWS).map((l) => ({ who: 'Kommissarin Yıldız', color: '#5b86d6', text: `${l.name}: ${'★'.repeat(l.stars)} · Bußgeld ${l.fine} €` })).concat([{ who: 'Kommissarin Yıldız', color: '#5b86d6', text: 'Wer Sterne hat, wird verfolgt. Abhängen geht, wenn dich lange keine Streife sieht – oder du stellst dich hier und zahlst.' }])); } },
         { icon: '🗣️', label: 'Ansprechperson LSBTIQ*', sub: 'Beratung bei Anfeindungen', fn: () => { close(); this.dialog.say([
           { who: 'Kommissarin Yıldız', color: '#5b86d6', text: 'Ich bin hier die Ansprechperson für LSBTIQ*. Wenn dich jemand beleidigt, bedroht oder angreift: Komm vorbei oder ruf 110 an.' },
           { who: 'Kommissarin Yıldız', color: '#5b86d6', text: 'Hassgewalt gehört angezeigt – auch wenn es „nur“ Worte waren. Das Regenbogenhaus begleitet dich, wenn du magst.' }]); } },
@@ -783,6 +912,16 @@ export class Game {
         { icon: '📖', label: 'Den Roman lesen', sub: '„Ich bin das Licht“ von RicoReWi', fn: () => { close(); this.book(); } }] },
       tramhafen: { t: 'Tram Hafen', d: 'Endstation am Regenbogenkai. Zurück in die Innenstadt in zehn Minuten.', items: [
         { icon: '🗺️', label: 'Fahrplan', sub: 'Ziel wählen', fn: () => this.phone('map') }] },
+      tramhoch: { t: 'Hochbahn Hochstadt', d: 'Die Hochbahn rattert über die Avenue. Von hier kommst du in jedes Viertel – auch zurück über die Regenbogenbrücke.', items: [
+        { icon: '🗺️', label: 'Fahrplan', sub: 'Ziel wählen', fn: () => this.phone('map') }] },
+      laterne: { t: 'Laternenmeile', d: s.settings.adult ? 'Rote Lichter, Leuchtschilder und nachts Sexarbeiter*innen am Bordstein. Fahr im Auto langsam vorbei und hup: Wer mag, kommt ans Fenster.' : 'Eine Straße mit roten Leuchtschildern. Hier ist vor allem nachts etwas los.', items: [
+        { icon: '🚗', label: 'Wie läuft das?', sub: 'Im Auto anhalten und hupen', fn: () => { close(); this.dialog.say([{ who: 'Laternenmeile', color: '#ff2a55', text: s.settings.adult ? 'Nachts ab etwa 22 Uhr stehen hier Nico, Roxy, Teo und Jules. Fahr langsam heran und hup (Angriffstaste). Preis und Regeln werden vorher abgesprochen, das Kondom bringen sie mit.' : 'Hier gibt es nur etwas zu sehen, wenn „Inhalte ab 18“ in den Optionen eingeschaltet ist.' }, ...(s.settings.adult ? [{ who: 'Laternenmeile', color: '#ff2a55', text: 'Fahr danach an eine ruhige Ecke. Und Achtung: Sieht dich eine Streife dabei, gibt es einen Stern.' }] : [])]); } }] },
+      samenbank: { t: 'Samenbank Zukunft', d: 'Hier spenden Menschen für Paare und Singles mit Kinderwunsch, auch für queere Familien. Diskret, ärztlich begleitet und nur für Erwachsene.', items: [
+        { icon: '🧪', label: 'Spenden', sub: !s.settings.adult ? 'nur mit „Inhalten ab 18“' : s.flags.donate === s.day ? 'Heute schon gespendet. Morgen wieder.' : `+${DONATE} € · 45 Minuten · Test nicht älter als ${TEST_EVERY} Tage`, disabled: !s.settings.adult || s.flags.donate === s.day, fn: () => { close(); this.donate(); } },
+        { icon: 'ℹ️', label: 'Wie läuft das ab?', sub: 'Ablauf, Rechte, Familien', fn: () => { close(); this.dialog.say([
+          { who: 'Dr. Amara Wolff', color: '#7fd4ff', text: 'Wer spenden will, braucht einen aktuellen Gesundheitstest. Den macht der Checkpoint Regenbogen kostenlos.' },
+          { who: 'Dr. Amara Wolff', color: '#7fd4ff', text: 'Gespendet wird allein in einer ruhigen Kabine. Wir untersuchen die Probe, frieren sie ein und vermitteln sie an Familien mit Kinderwunsch.' },
+          { who: 'Dr. Amara Wolff', color: '#7fd4ff', text: 'Kinder dürfen später erfahren, wer ihr Spender ist. Eltern bist du dadurch aber nicht – das bleiben die Familien. 💙' }]); } }] },
       beach: { t: 'Strandbar Sandbank', d: 'Liegestühle, Sand zwischen den Zehen und der beste Sonnenuntergang der Stadt.', items: [
         { icon: '🍹', label: 'Cocktail am Strand', sub: '5 € · +12 Spaß · +6 Kontakte', fn: buy(5, 'Sonne, Sand, Strohhalm. 🍹', eat({ fun: 12, social: 6 })) },
         { icon: '🏊', label: 'Schwimmen gehen', sub: '45 Minuten · +15 Spaß · −10 Energie', fn: () => { close(); this.fade(() => { this.pass(45); change(s, { fun: 15, energy: -10, hygiene: 10 }); this.save.write(); toast('Erfrischend! 🌊'); }); } },

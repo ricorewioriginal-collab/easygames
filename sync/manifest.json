@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "99bab68cf993",
- "generated": "2026-11-20T13:15:48+00:00",
- "commit": "9736a935d13ded503ccf385d58b0107d6cb368d6",
+ "version": "fa334a3a7a3b",
+ "generated": "2026-11-20T18:17:41+01:00",
+ "commit": "3645e56421269abd5b7c8d7120dceb5125507062",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -11118,8 +11118,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 26746,
-   "h": "df5b29ff13b59383e3a1138a9fa112b0e32c165e112c9c54e5ec54092318536f"
+   "s": 31944,
+   "h": "ac496a93089bdb7440491b8e1191a51c5da4876abeabe84e62c9acb170ae19f3"
   },
   {
    "p": "guides/prismrush.json",
@@ -12287,9 +12287,9 @@
    "h": "62759995b42672bed9d17515b2145b873d408dddcedeb55dbe93b6918e99047b"
   },
   {
-   "p": "pride-city/assets/babylon-Dq6Gvf5C.js",
-   "s": 3811748,
-   "h": "e1eefdd128538464475d474cf4e84365c6c50eb71a75de5881ca6047e2825505"
+   "p": "pride-city/assets/babylon-Bf8I0q6J.js",
+   "s": 3862941,
+   "h": "22b61d58266c4521d81989c918a80e1385690b992bcca69765aab737ff90240c"
   },
   {
    "p": "pride-city/assets/city/base.bin",
@@ -12627,94 +12627,109 @@
    "h": "55ae59f2a21ad38c64312a4c00d6808dc486bf4a8e8a8c969bc9e26cdc84d8f3"
   },
   {
-   "p": "pride-city/assets/flowGraphDebugBlock.pure-BP8LveKt.js",
+   "p": "pride-city/assets/env/city.hdr",
+   "s": 524337,
+   "h": "f0d115d3be5977465ff5883d6b269f7758ee6c08cdc76e9f66cca2e3259f5144"
+  },
+  {
+   "p": "pride-city/assets/env/night.hdr",
+   "s": 524337,
+   "h": "55f7b50954b257431ead0db43f6c36bd4fa5952d66f46bd023b1055d82c916f4"
+  },
+  {
+   "p": "pride-city/assets/env/sunset.hdr",
+   "s": 524337,
+   "h": "8e2c01f21c7ffd2e9bd3fafd50d9d8090d69991a9dad79b3ca36171b70ffb1c3"
+  },
+  {
+   "p": "pride-city/assets/flowGraphDebugBlock.pure-DNSLSxhb.js",
    "s": 1451,
-   "h": "e0bff6106ea9ba599df5cc8961c9cec30bd0c4b2882c51cb0b2b98b6c6637696"
+   "h": "a34b4ccff025190e7c420c0657f9429127a3ad882a17edd8f65689e5226f2c17"
   },
   {
-   "p": "pride-city/assets/flowGraphPointerDownEventBlock.pure-yBZlxDbV.js",
+   "p": "pride-city/assets/flowGraphPointerDownEventBlock.pure-D3TyvXnG.js",
    "s": 943,
-   "h": "09b7039263292ca46c09a8b5ebb94a3b893aad5ac66e3c7f72fb1c3183328b67"
+   "h": "b4ffd254c4be13ec6beb716a85899c75a6c420515ae732416c507e3918081bb9"
   },
   {
-   "p": "pride-city/assets/flowGraphPointerMoveEventBlock.pure-BhGfcSKk.js",
+   "p": "pride-city/assets/flowGraphPointerMoveEventBlock.pure-DL4FpOK6.js",
    "s": 961,
-   "h": "2bf3c6a16d1050ef1a758b687eedc20c81da45717ad540b2fa6a3593dbdec07d"
+   "h": "3b95ba3b5ffa5ea7060805f66bc57b2454e16ca5c6693ef844202cf77fefb5dd"
   },
   {
-   "p": "pride-city/assets/flowGraphPointerUpEventBlock.pure-yIJA8ZQV.js",
+   "p": "pride-city/assets/flowGraphPointerUpEventBlock.pure-i9dDDaI_.js",
    "s": 933,
-   "h": "a062e99f63a08d8137cb35d4ad9e192c85a96142f8ec449465f5bcf2fdd5d091"
+   "h": "54f5dc8cda688981b9604f2409f3e9aba945c912e7e603be7b952f519141c7ae"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.fragment-CW5MTcDs.js",
+   "p": "pride-city/assets/gaussianSplatting.fragment-D0O7NBNb.js",
    "s": 2928,
-   "h": "99ce49233ff62e8fe88b7d768fcee7e8e66f04c362bfb2a28e08675012a61560"
+   "h": "b22486365a0211c9ee6fa5fe1010b4b36f24b7596e8c29fb311ee4dd4952ad32"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.fragment-vbaRPd3w.js",
+   "p": "pride-city/assets/gaussianSplatting.fragment-qZSl41Qe.js",
    "s": 3059,
-   "h": "0201924815945d87669be531bbb2755d40adc45f9cdf856f4089132306493f72"
+   "h": "d3dffa1531069e93772bfdb16f9b776aa6c3a6eca339254503edbf5a700a521b"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.vertex-CdtBxbNS.js",
+   "p": "pride-city/assets/gaussianSplatting.vertex-BAL9vZ-9.js",
    "s": 6846,
-   "h": "ff5937b6fa158415c2b5d14df82a4f253e7043cef8a9a6f1d33640133cf3ed13"
+   "h": "69cf1f99305474af965a1620bb98f9a738d3be6d0128b82ba05e018ba95f9427"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.vertex-D-O4gYRJ.js",
+   "p": "pride-city/assets/gaussianSplatting.vertex-Byg27RHa.js",
    "s": 8147,
-   "h": "4ee928b309d1aa58807a70cb7c98a909026659dc1f19f9b53967513528081d4a"
+   "h": "97f9003d74b0424d0599c4e9f09bac9889b531c6503adc67c2c836feeaf42b78"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-Bh8rRg2I.js",
-   "s": 1760,
-   "h": "6291cc4e4c0070ea3da5a37bf226fff56ab31727d0f62507b3ddf65d4f38341f"
-  },
-  {
-   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-BnRcXjyG.js",
+   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-BxpF0wLA.js",
    "s": 1435,
-   "h": "0737e44f976794184c9e05b9734ec262b9739364d5a63bb98c14c7849c64df64"
+   "h": "1be91e36dfe79758a2e0cbc838e4c724388376d954f2d168dc7b17d6880fa219"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-BMaPUCHC.js",
-   "s": 2489,
-   "h": "3fa4294d1596851f7977692787eda757da571e2daf58a418c360a08e03c3e54b"
+   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-dcoH5oQS.js",
+   "s": 1760,
+   "h": "30ac9fa89e060cb72410afd42adfd6cf100a6c441d18b29b7a14967cc69e6b83"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-BsbIWwxm.js",
+   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-CyaNMO7a.js",
    "s": 1765,
-   "h": "3d698886f94e9bb8f19da36b633205acde42ae6562c58a50fde5146c457534af"
+   "h": "df6a3ad9c662fb89af41ffcbc3e2d6dba5b4f7cffbdf859767e3b56d5cd9b071"
   },
   {
-   "p": "pride-city/assets/gsSortCount.compute-Ci_LpDy3.js",
+   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-D05oHp5f.js",
+   "s": 2489,
+   "h": "992cfe8fc01f663bcd2a980b7430ff3b5e9105bfe686b6bee94266fee9b806a0"
+  },
+  {
+   "p": "pride-city/assets/gsSortCount.compute-DdvEELpo.js",
    "s": 1013,
-   "h": "7f285ed8adb21704e67762553da19a003b6ce7f614c3e92d29971f36420f9824"
+   "h": "535fbe0269ed346a3ae6ad2dfa5e55ca33e84768fd9b817c0f3680ce20d13cbc"
   },
   {
-   "p": "pride-city/assets/gsSortKeys.compute-CFrUBARV.js",
+   "p": "pride-city/assets/gsSortKeys.compute-CRfH0Jly.js",
    "s": 2155,
-   "h": "905257379f830425b5d86f231d89f6bbbb84805c29c8865b4fc9325496644b82"
+   "h": "23ecab692e639e49024b17604da37cbbfe38eeb04aa080494433019843715597"
   },
   {
-   "p": "pride-city/assets/gsSortOutput.compute-DqB3fiIp.js",
+   "p": "pride-city/assets/gsSortOutput.compute-DTMCcTFU.js",
    "s": 922,
-   "h": "fe68ead610dd36c4f392947e57fd3939b2e1fcc53c20e5e4227f918c114a589c"
+   "h": "a9c877d63ed8c02427b3b01d691360c9749c951ba58469f738f7184d16e7450f"
   },
   {
-   "p": "pride-city/assets/gsSortScanLocal.compute-BW8yyXMt.js",
+   "p": "pride-city/assets/gsSortScanLocal.compute-B1WUIfTJ.js",
    "s": 1260,
-   "h": "a81776e1c2bdd8f1c531490bed6cb925014198ad04bcb1edbef5c308f5459e24"
+   "h": "eedf7615ee547217f9992e29a227024b577780912ce52172f4a3574714cc8d17"
   },
   {
-   "p": "pride-city/assets/gsSortScanSums.compute-Bb3G8Pkb.js",
+   "p": "pride-city/assets/gsSortScanSums.compute-CtMiZu__.js",
    "s": 831,
-   "h": "3b79de702b8ba71f370f8c2e01eaa4c67ce1b8efa78b0b409c6afef53cce3801"
+   "h": "77aaacebf8545265a5adbe9e73ce179ac20a14d04997e994c37ad91f6088a16d"
   },
   {
-   "p": "pride-city/assets/gsSortScatter.compute-DJp76Q2I.js",
+   "p": "pride-city/assets/gsSortScatter.compute-BoglNrEy.js",
    "s": 2525,
-   "h": "854004965ecf5d9ce17a0e8c1d5661505ba1fe5d6c49679b64dcf807207697eb"
+   "h": "c0e69d6cda726caf5b9b245a0ac2b62d31c76b12f42b636b899272427eb06a47"
   },
   {
    "p": "pride-city/assets/home/armchair_pillows.bin",
@@ -12892,14 +12907,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
-   "p": "pride-city/assets/index-Cay2Vu10.css",
-   "s": 24264,
-   "h": "99d83706163ac38984f75f5d8cd463fd2c7655c5ed9ea5f543fa90fca941297f"
+   "p": "pride-city/assets/index-BRjHky6u.js",
+   "s": 353720,
+   "h": "ef986983e1e021d5ee345f94446ffe845a19aeac5f1ba48abea70df5236be5b1"
   },
   {
-   "p": "pride-city/assets/index-ZNxVezZC.js",
-   "s": 291166,
-   "h": "25be790d430d697d65582553f5bcf97bf4776001ed630e03dbfba6d0a1be81a5"
+   "p": "pride-city/assets/index-jKIuJLl_.css",
+   "s": 25466,
+   "h": "ff97766a5e73ee34ad119b86e2320551b12c67ed863e8f4fac8c727b05c2d61b"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -12967,9 +12982,9 @@
    "h": "cce0730ec2025399a68cb6afaa8acb2f54fcb3d70537a26f62564f6f7754f679"
   },
   {
-   "p": "pride-city/assets/loaders-Cv5dOHmQ.js",
+   "p": "pride-city/assets/loaders-CjgBAcMz.js",
    "s": 323809,
-   "h": "8fb4bf3e99cd6a1b8b7cb7d163d3820c56fe571a501a4243cd21a33cfd8ab200"
+   "h": "9ee3a15c2c71690a85856da45f2262e795f7a1306d63a25e9c58d60147bbfc88"
   },
   {
    "p": "pride-city/assets/rb/Business_Male_01.glb",
@@ -13035,6 +13050,11 @@
    "p": "pride-city/assets/rb/Female_Adult_10.glb",
    "s": 646484,
    "h": "56ce512b3d5ca652545c7a817aa064f78fc9293b0139f7f466eab0e6ab4ec515"
+  },
+  {
+   "p": "pride-city/assets/rb/Female_Child_01.glb",
+   "s": 710172,
+   "h": "9162e9b1871ea591a52a37d70ff8cf740495b4edd2010539c1103c3866565a2a"
   },
   {
    "p": "pride-city/assets/rb/Female_Party_01.glb",
@@ -13105,6 +13125,11 @@
    "p": "pride-city/assets/rb/Male_Adult_10.glb",
    "s": 1017188,
    "h": "e258cd646fa9bdcfe4fd33d1d22198a7ba276be90064d96ff816449ede8152c4"
+  },
+  {
+   "p": "pride-city/assets/rb/Male_Child_01.glb",
+   "s": 740932,
+   "h": "1b97100252bd1254a1b1293f1a39a3d334a10f407bf2b078c53884f7561d3c6e"
   },
   {
    "p": "pride-city/assets/rb/Medical_Female_01.glb",
@@ -13277,14 +13302,14 @@
    "h": "bb54b03536a540d6ae76784cffb63967936dc4caa18917a339908ba5fa5b828c"
   },
   {
-   "p": "pride-city/assets/textureProcessor.fragment-CKxmfEYq.js",
-   "s": 6031,
-   "h": "fee89fe22e6e3aa9520bcfde64810d3829206f7ddaf78597ebc05ce2124f1dbc"
+   "p": "pride-city/assets/textureProcessor.fragment-BQJimKYR.js",
+   "s": 5008,
+   "h": "08dfc2544ac559e3a44a8e1ee6b2a26630dc092e49184c730fdfcce6f65fbee1"
   },
   {
-   "p": "pride-city/assets/textureProcessor.fragment-CmVyP9VR.js",
-   "s": 5008,
-   "h": "b7c63ad6021482b08bb647e510a6214a2e11fd5585ec3f16fdbccf6348c807d4"
+   "p": "pride-city/assets/textureProcessor.fragment-DgF69W9W.js",
+   "s": 6031,
+   "h": "646ff5b164707380a2017366f1810af88f23ccd87b64fa8976834c220df20149"
   },
   {
    "p": "pride-city/book/cover.jpg",
@@ -13308,8 +13333,8 @@
   },
   {
    "p": "pride-city/card.jpg",
-   "s": 44060,
-   "h": "d499242933be43a14eef116e16d51ec620401681023bb362d8007057c930b313"
+   "s": 77749,
+   "h": "cf362189cad4da7deb12ef103f3a4b8f5817d0db4ce569b107a4b62678065c72"
   },
   {
    "p": "pride-city/classic/gay-life/card.jpg",
@@ -13529,7 +13554,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5812,
-   "h": "587c007f6dbd5d2be270de652a42052f7895162ebbb3f993e6bf8bb9877ca44d"
+   "h": "0dfbe0065424292c30e6499f997cdf0bcc78c30cbbbe6b070c314360f7186db0"
   },
   {
    "p": "pride-city/logo.svg",
@@ -16304,7 +16329,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236341,
-   "h": "5f7aac2a66a629bd405e0f37d4fb2be3fda750ec48acb4484a3e06df5e14bec3"
+   "h": "77902db975c5484ff2b0affe251d53b8c7720ee112533067455988dc54515812"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -17358,8 +17383,8 @@
   },
   {
    "p": "thumbs/pride-city.webp",
-   "s": 15218,
-   "h": "091b514592b21c722fa3b752d627923755db3fd95480f69d1cfacffb0c34b56a"
+   "s": 41370,
+   "h": "74398ae36fc07e17ccd3e8bbc4730eeed1767f1021927a7cd1dd655525db2cfc"
   },
   {
    "p": "thumbs/prismrush.webp",
@@ -17414,7 +17439,7 @@
   {
    "p": "thumbs/thumbs.js",
    "s": 1905,
-   "h": "56e6974a0710c916c151256edde1147b5a954b3309ec404bd9055036dea18b7b"
+   "h": "d8b8c33f5f4bb6e7911f399c7b4fb45e4dbeac4109d77976c9983d356841b278"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
@@ -71892,29 +71917,29 @@
    "h": "026917766f534c156286f07975850978dabf17c42e742bbfaaebbcb2215e4e11"
   },
   {
-   "p": "zotik/assets/basisTextureLoader-DZTn4Rkw.js",
+   "p": "zotik/assets/basisTextureLoader-kGQAHr8e.js",
    "s": 29845,
-   "h": "f3dbf516cdba8fde8e953691415f8d9eca66fe208884de8f637cb9439715e2bf"
+   "h": "ef446179754d2532a685644b8be1c20753a40a254680543261663d126b806e90"
   },
   {
-   "p": "zotik/assets/bphys-DLOk0PLJ.js",
-   "s": 102008,
-   "h": "3f0bc797250db87fb060bb5116c25f4e828d50cdfac43b55641efb394733fab3"
+   "p": "zotik/assets/bphys-BrMlENs5.js",
+   "s": 102644,
+   "h": "94a07a33c2ee43dc03e265de452a8da5ec85d6c50ec62081eed4724d7eb7d9ea"
   },
   {
-   "p": "zotik/assets/cubemapToSphericalPolynomial-M4GHfhRK.js",
+   "p": "zotik/assets/cubemapToSphericalPolynomial-YK4DO3XE.js",
    "s": 3667,
-   "h": "532325e765aab6adade78c84cfed05047df95f9a865735c0e85ee17a60b45742"
+   "h": "f23bcad20c3793a4fa8fdee2a3aaf5623c2fb9013b91607384f92616bffc4892"
   },
   {
-   "p": "zotik/assets/dds.pure-BahSJBlH.js",
+   "p": "zotik/assets/dds.pure-BtTykZvI.js",
    "s": 7054,
-   "h": "1c14a7ae46aa190c707ba0c8329d02007e3029524e749627ebd75a41b77d9178"
+   "h": "cbe9cd286587368bda605572e35c5b43bffaeb522bf49e5a72957bd06e24b37b"
   },
   {
-   "p": "zotik/assets/ddsTextureLoader-DWF5nvca.js",
+   "p": "zotik/assets/ddsTextureLoader-CrHz7zWn.js",
    "s": 1317,
-   "h": "186fc85a83b1f1031ba2dce821d89ff494a9ddfbb624c65b20bfbfd60a753402"
+   "h": "020dd16c3e43752e1c02099b40dc5239793d940785ea4b82d6f65778e3bad613"
   },
   {
    "p": "zotik/assets/empty-Dd4V9ggj.js",
@@ -71922,9 +71947,9 @@
    "h": "2daa995e49659d6afb5d023678f1442a2d9742a9d3b1327547662112e45048e7"
   },
   {
-   "p": "zotik/assets/envTextureLoader-D8UgkfxW.js",
+   "p": "zotik/assets/envTextureLoader-6hSQEhOD.js",
    "s": 31696,
-   "h": "e0bf85c406297bf1a94ad014086e62c577d5b61ef06be77b59f5f97ac774d959"
+   "h": "01a0ef8e2aefc77d64c0a15e4ec513e48391f702b21c636c32b2d4056d89b3cf"
   },
   {
    "p": "zotik/assets/hdrTextureLoader-uIlgWB6O.js",
@@ -71932,19 +71957,19 @@
    "h": "2da05798051a7530a370ef4ce02dbbdc787e5388cbde876441600f3a684c218f"
   },
   {
-   "p": "zotik/assets/iesTextureLoader-BhqENqO6.js",
+   "p": "zotik/assets/iesTextureLoader-4h-ibV-2.js",
    "s": 2489,
-   "h": "ef12305b59f5137eaaa113820692443ced8f7ce4b82a8be8703d96918efd615c"
+   "h": "8eca5baff4b815c2d36fc44b053e7bca412828fa0c9067e4d70270db69321dc1"
   },
   {
-   "p": "zotik/assets/index-CJalPtlB.js",
-   "s": 3070364,
-   "h": "a40ca96a734ae5876277b4e78c9925c50554925fb2e85fdb8e11b1d0c40cb7cc"
+   "p": "zotik/assets/index-fGy-ktFQ.js",
+   "s": 3072522,
+   "h": "91be8578c5da6d60d6c36d59283e856259e42d3134b1fe64c1c3e4b7b7e7863e"
   },
   {
-   "p": "zotik/assets/ktxTextureLoader-DGAzyo3z.js",
+   "p": "zotik/assets/ktxTextureLoader-CbP2GqAE.js",
    "s": 16756,
-   "h": "e74dc58be33b4b6c8f5e9b2c4866bd9005a4646995e27f09279ecf1c0aead557"
+   "h": "77a0bdaf36661d527e0f1bea1676715605473988d083a90ec55cf4a074d972e9"
   },
   {
    "p": "zotik/assets/mesh.vertexData.functions-ayNlGC5K.js",
@@ -71952,29 +71977,29 @@
    "h": "109b0c291f78ec6b98053b23c7a9ce01eb8bcee909a0964ce337a68a9b4bc61e"
   },
   {
-   "p": "zotik/assets/postprocess.vertex-BwDRJ6hA.js",
-   "s": 583,
-   "h": "4f73bc1a46b5c0bb8d9aee833ffb93978a5de85a5ca9fbb24fb3d7e4b20a8fb6"
-  },
-  {
-   "p": "zotik/assets/postprocess.vertex-Dk-zaD72.js",
+   "p": "zotik/assets/postprocess.vertex-BUL3inHs.js",
    "s": 459,
-   "h": "fa1dc4e7cab4508665230599a75176e96be609d59a059cf1409c98aabe1dfb84"
+   "h": "d4b2925dcb88497a670c09db5a4bb464ac6cad23a2b957bd28b82bda52146c8d"
   },
   {
-   "p": "zotik/assets/rgbdDecode.fragment-CXF7uMy0.js",
-   "s": 7344,
-   "h": "ca5d51c0a647473f3d3323d184e6d843171ec24c41259a2aa4d7f7aa6ff0555d"
+   "p": "zotik/assets/postprocess.vertex-BkwEZq6l.js",
+   "s": 583,
+   "h": "12c155338e656bfda54782ca079c78776abacb6083e863b930440573ae5638f4"
   },
   {
-   "p": "zotik/assets/rgbdDecode.fragment-CfMm5W-K.js",
+   "p": "zotik/assets/rgbdDecode.fragment-Bdw_siSC.js",
    "s": 7135,
-   "h": "c6224983935f2ca839f4ccb538f2c3101d029bf5b95d7b51268a2fdbaa463a6e"
+   "h": "e16f0b7b4d876452b7c7135f2907a1222d887b66eda60fa297fdde81692d7418"
   },
   {
-   "p": "zotik/assets/tgaTextureLoader-CbMi500Z.js",
+   "p": "zotik/assets/rgbdDecode.fragment-CuAtKSBl.js",
+   "s": 7344,
+   "h": "5c52d8854586d1e1c873d1e0d9fa73876f8b18fff6dc34e4c0847e66400fc91a"
+  },
+  {
+   "p": "zotik/assets/tgaTextureLoader-BqRNndHu.js",
    "s": 3527,
-   "h": "a2c7fd6e3011cfeba0c67867b8acb0e0d62be3e0614d688acfa7906ac8bcfbc5"
+   "h": "5ea6e52c0e6ec3ce33512d7adc958263c23c05278eed5517d789c57460dcf9c8"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -72014,7 +72039,7 @@
   {
    "p": "zotik/index.html",
    "s": 78401,
-   "h": "51a0ce8e7a88160ff0d319e05e5493ef69e34a755939363ebe820fe167954549"
+   "h": "79818f86b70ec36abdb30fd16cec6390820f39abb5d9e3f33483d794eed5f27f"
   },
   {
    "p": "zotik/manifest.webmanifest",

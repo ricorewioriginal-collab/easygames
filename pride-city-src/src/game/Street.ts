@@ -4,16 +4,17 @@
 import { Vector3, Color3, Node3, TransformNode, type Mesh } from '../engine/bjs';
 import { box, cyl, pbr, glow } from '../engine/geo';
 import { Actor, WALK_MPS, RUN_MPS, type Anim, type Look } from './Actor';
-import { WORKERS } from './social';
+import { WORKERS, CURB } from './social';
+import { CURB_SPOTS } from './uptown';
 import type { World } from './World';
 import { sfx } from '../engine/Audio';
 import type { PBRMaterial, Scene } from '../engine/bjs';
 
-export type StreetKind = 'walker' | 'police' | 'fire' | 'worker' | 'medic' | 'security' | 'chef' | 'courier';
-export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean }
+export type StreetKind = 'walker' | 'police' | 'fire' | 'worker' | 'curb' | 'medic' | 'security' | 'chef' | 'courier';
+export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean; down?: boolean; chase?: boolean; away?: boolean }
 export interface Parked { o: Node3; name: string; yaw: number; v: number }
 
-const LINES: Record<Exclude<StreetKind, 'worker'>, string[]> = {
+const LINES: Record<Exclude<StreetKind, 'worker' | 'curb'>, string[]> = {
   walker: ['Schönen Tag noch!', 'Hast du schon alle Pride-Sticker gefunden?', 'Der Späti hat die besten Brezeln der Stadt.', 'Ich bin auf dem Weg ins Prisma!', 'Kennst du schon den Club Leuchtturm am Hafen?', 'Rainbow City ist einfach die beste Stadt.', 'Die Strandbar am Hafen macht die besten Cocktails.', 'Heute ist so ein schöner Tag zum Rumlaufen.'],
   police: ['Alles ruhig heute. Wenn dich jemand belästigt, sprich uns an – wir haben eine Ansprechperson für queere Menschen.', 'Bitte nicht bei Rot über die Straße. Auch nicht mit Glitzer.', 'Wir begleiten die Pride-Parade. Wird wieder schön!', 'Hassgewalt bitte immer anzeigen. Wir nehmen das ernst.'],
   fire: ['Rauchmelder schon getestet? Einmal im Monat kurz drücken!', 'Bei der Pride fahren wir mit Regenbogen-Fontäne mit.', 'Notruf 112 – auch wenn es nur nach Rauch riecht.', 'Kalender-Shooting? Erst nach Dienstschluss. 😄'],
@@ -65,8 +66,17 @@ export class Street {
       sina: { ...L('Female_Party_01'), top: true, hot: true },
     };
     WORKERS.forEach((w, i) => jobs.push(mk(wl[w.id], 'worker', w.name, w.color, [[-4.4, -36 - i * 2.2]], w.id, i % 2 ? 'pose' : 'idle')));
+    // Laternenmeile in der Hochstadt (18+, nachts): steigen ein, wenn du im Auto hupst
+    const cl: Record<string, Look> = {
+      nico: { ...L('Male_Adult_02'), outfit: 'shirtless', hot: true }, roxy: { ...L('Female_Party_02'), outfit: 'underwear', top: true, hot: true },
+      teo: { ...L('Male_Adult_09'), outfit: 'underwear', hot: true }, jules: { ...L('Female_Adult_09'), outfit: 'harness', top: true, hot: true },
+    };
+    CURB.forEach((w, i) => jobs.push(mk(cl[w.id], 'curb', w.name, w.color, [CURB_SPOTS[i]], w.id, i % 2 ? 'pose' : 'idle')));
+    // Passant*innen in der Hochstadt
+    const up: Array<[number, number]> = [[90, -30], [120, 0], [150, 30], [180, -30], [90, 30], [180, 0]];
+    up.forEach(([a, b], i) => jobs.push(mk(L(WALKERS[(i + 5) % WALKERS.length]), 'walker', NAMES[(i + 5) % NAMES.length], '#8fa3c8', block(a, b, i % 2 === 1))));
     await Promise.all(jobs);
-    this.people.filter((p) => p.path.length === 1).forEach((p) => (p.a.root.rotation.y = p.path[0][0] > 0 ? -Math.PI / 2 : Math.PI / 2));
+    this.people.filter((p) => p.path.length === 1).forEach((p) => (p.a.root.rotation.y = p.kind === 'curb' ? Math.PI : p.path[0][0] > 0 ? -Math.PI / 2 : Math.PI / 2));
     await this.cars();
   }
 
@@ -121,12 +131,12 @@ export class Street {
     const on = Math.floor(this.t * 4) % 2;
     for (const [a, b] of this.flash) { a.m.albedoColor = a.c.scale(on ? 1 : .12); b.m.albedoColor = b.c.scale(on ? .12 : 1); }
     this.people.forEach((n, i) => {
-      const show = n.kind === 'worker' ? adult && night > .4 : n.kind === 'walker' ? (night < .5 || i % 2 === 0) : n.kind === 'security' ? night > .3 : true;
+      const show = n.away ? false : n.kind === 'worker' || n.kind === 'curb' ? adult && night > .4 : n.kind === 'walker' ? (night < .5 || i % 2 === 0) : n.kind === 'security' ? night > .3 : true;
       const d2 = Vector3.DistanceSquared(n.a.root.position, ref);
-      n.a.root.visible = show && d2 < 90 * 90;
+      n.a.root.visible = !n.away && (n.chase || n.talking || (show && d2 < 90 * 90));
       if (!n.a.root.visible) return;
-      if (d2 < 60 * 60) n.a.update(dt);
-      if (n.talking) return;
+      if (d2 < 60 * 60 || n.chase) n.a.update(dt);
+      if (n.talking || n.down || n.chase) return;
       if (n.path.length < 2) return;
       if (n.wait > 0) { n.wait -= dt; if (n.a.anim !== 'idle') n.a.play('idle'); return; }
       const [tx, tz] = n.path[n.wp], p = n.a.root.position, dx = tx - p.x, dz = tz - p.z, d = Math.hypot(dx, dz);
@@ -145,7 +155,7 @@ export class Street {
     for (const n of this.people) { if (!n.a.root.visible) continue; const d = Vector3.Distance(n.a.root.position, p); if (d < bd) { bd = d; best = n; } }
     return best;
   }
-  line(n: StreetNpc, day: number) { const pool = LINES[n.kind as Exclude<StreetKind, 'worker'>] || LINES.walker; return pool[(day + n.name.length + Math.floor(this.t / 20)) % pool.length]; }
+  line(n: StreetNpc, day: number) { const pool = LINES[n.kind as Exclude<StreetKind, 'worker' | 'curb'>] || LINES.walker; return pool[(day + n.name.length + Math.floor(this.t / 20)) % pool.length]; }
   nearCar(p: Vector3, r = 3.2) { return this.parked.find((c) => Vector3.Distance(c.o.position, p) < r) || null; }
 }
 export { TransformNode };

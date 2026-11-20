@@ -9,7 +9,9 @@ export class Touch {
     this.el = el(`<div id="touch"><div class="stick"><i></i></div><div class="btns">
       <button class="bA" data-a="confirm">A<small>Aktion</small></button>
       <button class="bB" data-a="back">B<small>Zurück</small></button>
-      <button class="bS" data-a="sprint">»<small>Turbo</small></button></div></div>`);
+      <button class="bS" data-a="sprint">»<small>Turbo</small></button>
+      <button class="bX" data-a="attack">👊<small>Angriff</small></button>
+      <button class="bW" data-a="weapon">🔄<small>Waffe</small></button></div></div>`);
     document.body.appendChild(this.el);
     const stick = this.el.querySelector('.stick') as HTMLElement, knob = stick.querySelector('i') as HTMLElement;
     let id = -1, cx = 0, cy = 0;

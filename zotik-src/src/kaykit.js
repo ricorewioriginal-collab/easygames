@@ -234,7 +234,8 @@ export function createKayKit({ T, G, TOUCH }) {
   /** Daueranimation (Idle/Gehen/Laufen) – eine laufende Einmal-Animation läuft erst zu Ende */
   function loop(P, n) { if (P.down) return; P.want = n; if (!P.once) play(P, n); }
   /** Einmal-Animation (Treffer, Tod, Wurf …) */
-  function once(P, n, fade = .1) { if (P.down && n !== 'Death_A') return; if (!P.act[n] && P.ready) return; P.once = n; P.cur = ''; play(P, n, fade); }
+  function once(P, n, fade = .1) { if (!P.act) { if (n === 'Hit_A') P.hit = .25; else if (n === 'Throw') P.swing = 1; return; }   /* prozedurale Figuren (Sketchfab, Bestiary) haben keine Animationstabelle: Treffer/Schlag über ihre eigenen Werte, sonst bricht der Rundenkampf ab */
+    if (P.down && n !== 'Death_A') return; if (!P.act[n] && P.ready) return; P.once = n; P.cur = ''; play(P, n, fade); }
 
   /* Gegner steuern: Zustand des Gegners → Bewegung, Ausholen per Arm-Schwung über der Animation */
   function drive(P, e, spd) {

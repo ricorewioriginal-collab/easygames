@@ -1,5 +1,6 @@
 /* Animierte Figur: echte Menschen aus Microsoft Rocketbox (MIT) mit geteilten Animationen (Laufen, Rennen, Tanzen,
    Jubeln, Winken, Sitzen, Reden …), weiche Überblendung zwischen Animationen. Läuft in jeder Babylon-Szene. */
+import { applyOutfit } from './outfit';
 import { AnimationGroup, Node3, Vector3, type Scene, type TransformNode, type AbstractMesh } from '../engine/bjs';
 import { container, skinned } from '../engine/Assets';
 import { avatarFor, type Avatar } from './avatars';
@@ -88,7 +89,7 @@ export class Actor {
     a.model = root; root.parent = a.root;
     root.getChildMeshes().forEach((m: AbstractMesh) => { m.receiveShadows = true; (m as AbstractMesh & { _pcCast?: boolean })._pcCast = true; });
     const nodes = new Map<string, TransformNode>();
-    root.getChildTransformNodes(false).forEach((n) => nodes.set(n.name, n));
+    root.getChildTransformNodes(false).forEach((n) => nodes.set(n.name.replace(/^Bip0\d/, 'Bip01'), n)); // Kinder heißen „Bip02 …“
     // Animationen auf das eigene Skelett übertragen (gleiche Knochennamen „Bip01 …“)
     const made = new Map<string, AnimationGroup>();
     for (const an of Object.keys(CLIP) as Anim[]) {
@@ -97,7 +98,12 @@ export class Actor {
       if (!g) {
         const src = await clip(scene, av.g, key); if (!src) continue;
         g = new AnimationGroup(key, scene);
-        for (const ta of src.targetedAnimations) { const n = nodes.get((ta.target as TransformNode).name); if (n) g.addTargetedAnimation(ta.animation, n); }
+        for (const ta of src.targetedAnimations) {
+          const n = nodes.get((ta.target as TransformNode).name); if (!n) continue;
+          // Kinder: Hüfthöhe der Erwachsenen-Animation nicht übernehmen (sonst schweben sie)
+          if (av.job === 'kid' && ta.animation.targetProperty === 'position') continue;
+          g.addTargetedAnimation(ta.animation, n);
+        }
         g.normalize(src.from, src.to);
         made.set(key, g);
       }
@@ -113,11 +119,24 @@ export class Actor {
     a.root.onDisposeObservable.add(() => { set!.delete(a); made.forEach((g) => g.dispose()); });
     a.tick = scene.getFrameId();
     a.play('idle', 0);
+    await a.dress();
     return a;
   }
 
-  /** Rocketbox-Figuren tragen ihre eigene Kleidung; das Aussehen wird nur gemerkt */
-  setLook(look: Partial<Look>) { Object.assign(this.look, look); this.look.body = this.avatar.id; }
+  /** Aussehen ändern; ein anderes Outfit wird auf die Textur gemalt */
+  setLook(look: Partial<Look>) {
+    const before = this.dressed;
+    Object.assign(this.look, look); this.look.body = this.avatar.id;
+    if (this.outfitKey() !== before) void this.dress();
+  }
+  private dressed = 'clothed';
+  private outfitKey() { return this.look.outfit || 'clothed'; }
+  /** Outfit (oberkörperfrei, Unterwäsche, Badesachen, Harness) auf die Textur malen */
+  async dress() {
+    const k = this.outfitKey(); if (k === this.dressed || this.avatar.job === 'kid') return;
+    this.dressed = k;
+    try { await applyOutfit(this.scene, this.model, this.avatar.id, this.look.outfit, this.avatar.g === 'f'); } catch (e) { console.warn('outfit', e); }
+  }
 
   private sleep(on: boolean) {
     if (on === this.sleeping) return;

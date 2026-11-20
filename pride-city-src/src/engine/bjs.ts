@@ -35,6 +35,7 @@ export { Material } from '@babylonjs/core/Materials/material';
 export { Effect } from '@babylonjs/core/Materials/effect';
 export { Texture } from '@babylonjs/core/Materials/Textures/texture';
 export { DynamicTexture } from '@babylonjs/core/Materials/Textures/dynamicTexture';
+export { RawTexture } from '@babylonjs/core/Materials/Textures/rawTexture';
 export { RenderTargetTexture } from '@babylonjs/core/Materials/Textures/renderTargetTexture';
 export { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
 export { DirectionalLight } from '@babylonjs/core/Lights/directionalLight';
@@ -47,6 +48,7 @@ export { DefaultRenderingPipeline } from '@babylonjs/core/PostProcesses/RenderPi
 export { ImageProcessingConfiguration } from '@babylonjs/core/Materials/imageProcessingConfiguration';
 export { ColorCurves } from '@babylonjs/core/Materials/colorCurves';
 export { ReflectionProbe } from '@babylonjs/core/Probes/reflectionProbe';
+export { HDRCubeTexture } from '@babylonjs/core/Materials/Textures/hdrCubeTexture';
 export { LoadAssetContainerAsync } from '@babylonjs/core/Loading/sceneLoader';
 export { AssetContainer } from '@babylonjs/core/assetContainer';
 export { AnimationGroup } from '@babylonjs/core/Animations/animationGroup';

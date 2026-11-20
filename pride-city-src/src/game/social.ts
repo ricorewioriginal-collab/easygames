@@ -159,6 +159,13 @@ export const WORKERS: Worker[] = [
   { id: 'dani', name: 'Dani', age: 29, pron: 'they', color: '#9c59d1', offer: 'Gespräch und Zärtlichkeit', price: 70, rules: 'Viele kommen eigentlich zum Reden. Alles andere nur mit Kondom und wenn wir beide Ja sagen.' },
   { id: 'sina', name: 'Sina', age: 34, pron: 'sie', color: '#ff6ad5', offer: 'Begleitung und Verwöhnen', price: 90, rules: 'Bezahlt wird vorher, gefragt wird immer. Ein Nein ist ein Nein – auch mittendrin.' },
 ];
+/** Laternenmeile in der Hochstadt: steigen nachts zu dir ins Auto, wenn du hupst (18+, Absprache vorab, Kondom haben sie dabei) */
+export const CURB: Worker[] = [
+  { id: 'nico', name: 'Nico', age: 26, pron: 'er', color: '#ff5a8a', offer: 'Eine Runde im Auto', price: 60, rules: 'Erst reden, dann fahren. Ich sage, was geht, und das Gummi ist von mir.' },
+  { id: 'roxy', name: 'Roxy', age: 32, pron: 'sie', color: '#ff2a55', offer: 'Eine Runde im Auto', price: 70, rules: 'Bezahlt wird vorher. Ein Nein ist ein Nein, auch mittendrin. Kondom ist Pflicht.' },
+  { id: 'teo', name: 'Teo', age: 29, pron: 'er', color: '#ffb347', offer: 'Eine Runde im Auto', price: 60, rules: 'Ich steig nur ein, wenn du freundlich bleibst. Safer Sex oder gar nicht.' },
+  { id: 'jules', name: 'Jules', age: 35, pron: 'they', color: '#b56bff', offer: 'Eine Runde im Auto', price: 80, rules: 'Wir sprechen kurz ab, was du magst. Meine Grenzen gelten, deine auch.' },
+];
 export const isLateNight = (h: number) => h >= 22 || h < 4;
 /** Begegnung im Nachtleben: braucht 18+, Zustimmung und (außer beim Reden) ein Kondom. Gibt einen Grund zurück, falls es nicht geht. */
 export function canMeet(s: SaveData, needsCondom = true): 'off' | 'condom' | null {
