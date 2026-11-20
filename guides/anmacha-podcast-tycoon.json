@@ -360,6 +360,23 @@
         "Ein Auftrag hat mehrere Schritte: hinfahren (manchmal auf Zeit oder nur im Auto), Teile einsammeln, Leute befragen, Gäste begleiten (sie steigen mit ins Auto), ein Minispiel vor Ort oder eine Rangelei mit Rauschmanns Leuten. Der Fortschritt bleibt erhalten, auch wenn du zwischendurch ein Gebäude betrittst.",
         "Es gibt 19 Story-Aufträge in zwei Kapiteln, die nacheinander freigeschaltet werden, und jeden Tag 3 neue Tagesjobs (Kurier, Funken-Regen, Fotojob). Kapitel 2 („Die Stadt hört zu“) führt durch die Läden: Schichten, Ruf-Stufen, Gisela ausbauen und Partner gewinnen – bis zur Jubiläumsfolge vom Fernsehturm. Belohnung: Fan-Punkte, Abos, Themen-Funken und manchmal eine Idee. Übersicht und Abbrechen im Gesamtmenü unter „📋 Auftragsbuch“."
       ]
+    },
+    {
+      "t": "Medien-Aufträge in der Stadt",
+      "p": [
+        "In der Stadt warten bunte Marker mit Symbol auf der Karte. Jeder gehört zu einem AnMaCha-Sender. Lauf oder fahr hin und drück die Aktionstaste, dann läuft die Zeit.",
+        "🗞️ Eilmeldung: Hol die Info ab und bring sie zum Senderhaus. 📡 Live-Schalte: Stell dich in drei Ringe und halte die Stellung, bis der Balken voll ist. 🏴‍☠️ Störsender-Jagd: Bleib dicht am Funkloch-Van von Radio Funkloch, bis er aufgibt. 🎙️ Studiogast-Taxi: Hol den Gast ab und fahr vorsichtig, sonst sinkt die Laune. 🎵 Hörerwunsch-Rallye: Sammle fünf Noten in beliebiger Reihenfolge.",
+        "Jeder Auftrag bringt Themen-Funken für die Abendfolge von Andrew und Marco, Fan-Punkte und Ruf beim Sender. Läuft das Radio, schaltet es auf den Sender des Auftrags um.",
+        "Hype-Sterne: Wilde Fahrten, Stunts und Rempler machen euch berühmt. Ab einem Stern folgen Paparazzi, bei fünf Sternen kreist der Kanal-9-Hubschrauber. Abhängen oder stehen bleiben und lächeln, der Blitz kostet ein paar Fan-Punkte. Stunt-Rampen in der Stadt bringen Clips für die AnMaCha-App.",
+        "Übersicht im Hauptmenü unter 🎬 Medien-Aufträge."
+      ]
+    },
+    {
+      "t": "Grafik (Babylon.js)",
+      "p": [
+        "Das Spiel zeichnet die 3D-Welt mit Babylon.js: weiche Schatten, leuchtende Neonschilder und Bildschirme, Kantenglättung und Farblook. Die Grafikstufe in den Einstellungen schaltet die Effekte: Schnell ohne Nachbearbeitung, Mittel mit Leuchten, Hoch mit allem.",
+        "Falls ein altes Gerät Probleme hat, öffnet die Adresse mit ?engine=three die frühere Darstellung."
+      ]
     }
   ],
   "ratgeber": [
@@ -374,7 +391,8 @@
         "Fahren: Stick oder W/S für Gas und Rückwärts, am Controller auch RT (Gas) und LT (Bremse/rückwärts). Lenken klappt auch beim Rangieren. Wer sich festfährt, wird nach kurzer Zeit automatisch auf die Straße zurückgesetzt.",
         "Jedes Auto im Verkehr ist fahrbar: Vor ein haltendes Auto stellen und mit X/E „Auto leihen“ – in der Stadt und in allen Welten.",
         "Schick Marco und Andrew vor wichtigen Aufnahmen nach Hause: ausgeschlafen und satt bringen sie mehr Start-Hype, und Schreibtisch-Ideen werden zu starken Themenkarten.",
-        "Vor dem Abend ins Senderhaus: Eine Gastmoderation am On-Air-Pult bringt Cross-Promo, also mehr Hörer für die Aufnahme am Abend. Eine Idee als Joker macht die Sendung fast sicher zu ★★★★."
+        "Vor dem Abend ins Senderhaus: Eine Gastmoderation am On-Air-Pult bringt Cross-Promo, also mehr Hörer für die Aufnahme am Abend. Eine Idee als Joker macht die Sendung fast sicher zu ★★★★.",
+        "Medien-Aufträge lohnen sich vor der Aufnahme: Sie füllen die Themen-Funken für die Abendfolge schnell auf."
       ]
     },
     {
@@ -543,6 +561,17 @@
         "Tipp: Minispiel nicht geschafft? Einfach nochmal starten. Zeit abgelaufen? Der Schritt beginnt neu.",
         "Langzeit-Tipp: Pro Tag jeden Laden besuchen (Gespräche, Aktion, zwei Schichten). So steigt der Ruf gleichmäßig, Partner-Läden geben dauerhaft mehr Hörer."
       ]
+    },
+    {
+      "t": "Medien-Aufträge – alle fünf Arten",
+      "p": [
+        "Eilmeldung: Fahr zuerst zum Abholpunkt (Ring auf der Karte), dann direkt zum Senderhaus. Ein Auto spart viel Zeit.",
+        "Live-Schalte: Bleib in jedem Ring stehen, der Balken füllt sich nur im Ring. Drei Schalten, dann ist der Auftrag geschafft.",
+        "Störsender-Jagd: Steig in ein Auto. Der Van fährt die Straßen ab; bleib unter etwa 12 Metern Abstand, bis der Balken voll ist.",
+        "Studiogast-Taxi: Nach dem Einsteigen nicht gegen Wände fahren und keine Fußgänger anrempeln, dann bleibt die Laune oben und es gibt den Bonus. Der Gast kann danach im Studio als Tagesgast auftreten.",
+        "Hörerwunsch-Rallye: Die Noten sind als Ringe auf der Karte; die Reihenfolge ist egal.",
+        "Stunts: Nimm eine Stunt-Rampe mit Schwung (Tempo über 9). Ab 0,5 Sekunden Flug gibt es einen Clip und Fan-Punkte."
+      ]
     }
   ],
   "faq": [
@@ -573,6 +602,10 @@
     {
       "q": "Ruckelt das Spiel auf meinem Handy?",
       "a": "Das Spiel passt die Bildschärfe automatisch an, bis es flüssig läuft, und zeichnet weit entfernte Dinge im Nebel gar nicht erst. In den Einstellungen kannst du die Grafik zusätzlich auf „Niedrig“ stellen."
+    },
+    {
+      "q": "Die Grafik ruckelt oder bleibt schwarz – was tun?",
+      "a": "Stell in den Einstellungen die Grafik auf Schnell. Hilft das nicht, öffne das Spiel mit ?engine=three am Ende der Adresse, dann läuft die frühere Darstellung."
     }
   ]
 }

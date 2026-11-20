@@ -9,7 +9,8 @@
 - Senderlogos (`img/sender/*.jpg`): RicoReWi Radio (ricorewi-radio.de), mit Erlaubnis des Rechteinhabers.
 - Sounds `sounds/coins.mp3`, `enter.mp3`, `buy.mp3`: Kenney – CC0.
 - Schrift Fredoka: SIL Open Font License (`../vendor/fonts/`).
-- Three.js r128: MIT.
+- Babylon.js 9 (`@babylonjs/core`, gebündelt mit Vite in `babylon/amc-babylon.js`, Quelle `../anmacha-podcast-tycoon-src/`): Apache-2.0.
+- Three.js r128: MIT (Szenenbeschreibung und Ersatz-Darstellung mit `?engine=three`).
 - Podcast-Folgen: offizieller Feed von anmacha.de (podcaster.de), nur gestreamt, nicht im Spiel gespeichert.
 - Radiosender: Live-Streams über laut.fm, nur gestreamt; Titelanzeige über die öffentliche laut.fm-API.
 
