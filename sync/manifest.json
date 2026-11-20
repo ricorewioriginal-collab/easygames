@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "88140af01c6a",
- "generated": "2026-11-20T01:24:00+00:00",
- "commit": "892ffe0f7bfc0364c580a3556f5d633d94ace77c",
+ "version": "c051dad31b35",
+ "generated": "2026-11-20T01:26:19+00:00",
+ "commit": "d7409a8542434a994bd1846ee89b0841828e19a9",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -15799,7 +15799,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236340,
-   "h": "a08fe727f8a1fff0001d3416119cbf526fc80e0bf5488100e71642ffefe7156f"
+   "h": "725b30e639eae59ba6f2d013604089510b3caf1ce3811673e997af8673ca4e64"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -71382,9 +71382,9 @@
    "h": "9e629369f7a54ab0b5ef047ea685f1a41154903e478869c95eca8a5590cc4681"
   },
   {
-   "p": "zotik/assets/index-BhQrc3cX.js",
-   "s": 2158296,
-   "h": "5e99be3a4c458b17e12c3beae2c42736fbbc8373e0fd563011bedeedb4922bc3"
+   "p": "zotik/assets/index-C2nrZDEA.js",
+   "s": 2160000,
+   "h": "e116da4901c4107b69628a56dcad858e37e133e7b11b5863549c484ab04effc6"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -71424,7 +71424,7 @@
   {
    "p": "zotik/index.html",
    "s": 78401,
-   "h": "93b8125767a3b050eec666f42d848bfbaf7d5ecd10c60eb9c25b71d0d6fcc554"
+   "h": "67fc7adf9c3389eade63303bd103f552b50507d816ba8664675152e204bc0cbe"
   },
   {
    "p": "zotik/manifest.webmanifest",
@@ -71560,6 +71560,51 @@
    "p": "zotik/models/sf/anime.glb",
    "s": 1125412,
    "h": "b630556dec8dc5d610032e96ac4c0d24102c538f2972bd334412f01eff990d95"
+  },
+  {
+   "p": "zotik/models/sf/m_hai.glb",
+   "s": 544704,
+   "h": "daeecf480b35d0ef71ac7fbe2e02d54f50e679b3dbf57e6e1d9783ddbe9ede39"
+  },
+  {
+   "p": "zotik/models/sf/m_pilz.glb",
+   "s": 2229144,
+   "h": "026335d99c9929b452907a8ec2845d7c6e21838beac74b07e2a1c3a35430ab2e"
+  },
+  {
+   "p": "zotik/models/sf/m_qualle.glb",
+   "s": 971908,
+   "h": "d3d9f2d60091fc1a2e9c2a150dcd5f02a5fcbbde0bb07ff7844169f3de1e1d23"
+  },
+  {
+   "p": "zotik/models/sf/m_ratte.glb",
+   "s": 516020,
+   "h": "6347d4d6df4985c89935f879960dbe077594f44998cf5e75176f0e24f200be46"
+  },
+  {
+   "p": "zotik/models/sf/m_skorpion.glb",
+   "s": 1285456,
+   "h": "6770b9fb3e889a806fd5da63f385211aeb032780024b847e8841fca680b5b7eb"
+  },
+  {
+   "p": "zotik/models/sf/m_spinne.glb",
+   "s": 836632,
+   "h": "f870b4913e252d8ae6435d5d5d26bf60df2286572ef1a5babe5f43021a5b3bab"
+  },
+  {
+   "p": "zotik/models/sf/m_tiger.glb",
+   "s": 558184,
+   "h": "cfac3195f4db3a007d12ec524432b44a85a03e76662035786ad8e58c0b418323"
+  },
+  {
+   "p": "zotik/models/sf/m_troll.glb",
+   "s": 4325484,
+   "h": "cd1961d8fc5fa957d7ebc9d8b3bfe25cd1a05c98ef23f4a261f4803612c34b67"
+  },
+  {
+   "p": "zotik/models/sf/m_wolf.glb",
+   "s": 828164,
+   "h": "a1baf13a9c3d29297b0a61524659b97357495aeddaa77aabe93f4e658becb14c"
   },
   {
    "p": "zotik/models/sf/magier.glb",

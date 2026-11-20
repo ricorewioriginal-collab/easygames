@@ -36,3 +36,8 @@ Alle CC-BY 4.0, mit verkleinerten Texturen und vereinfachten Netzen (gltf-transf
 - `rogue.glb` – „Animated Stylized Character – Rogue Warrior“ von Karthik Naidu
 - `ritter.glb` – „Fantasy Warrior | Free Low-Poly 3D Model“ von Stan
 - `magier.glb` – „Stylized Battle Wizard“ von Aartee
+
+Monster (`sf/m_*.glb`, alle CC-BY 4.0, verkleinert):
+- `m_wolf` – „Stylized Wolf“ von ESO · `m_pilz` – „Mushroom Warrior“ von Muru · `m_tiger` – „Running Tiger“ von Amil (francescolima74)
+- `m_troll` – „Troll“ von SJunior3d · `m_ratte` – „Rat Animated“ von Shintokin · `m_spinne` – „Spider animated character“ von TheGameAssets
+- `m_skorpion` – „Scorpion“ von anthonyvanoo · `m_hai` – „Great White Shark“ von Mateus Schwaab · `m_qualle` – „jellyfish“ von yanix
