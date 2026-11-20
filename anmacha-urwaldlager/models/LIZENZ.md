@@ -14,6 +14,7 @@ Die Dateien wurden mit `tools/make-urwaldlager-assets.mjs` (gltf-transform) zusa
 | `tiere/crab.glb`, `frog.glb`, `bat.glb`, `bee.glb` | Tiere für Prüfungen | Quaternius (quaternius.com), über das npm-Paket `@netforge/asset-library-files` 0.2.0 | CC0 |
 
 | `menschen/*.glb` (22 Figuren) und `menschen/anim.glb` | Echte Menschen für Camper, Moderatoren, Doc Rudi und Ranger Kalle; Texturen auf 512 px verkleinert, Kleidung auf Camp-Outfits umgefärbt, Bewegungen von KayKit auf das Rocketbox-Skelett übertragen | Microsoft Rocketbox Avatar Library (github.com/microsoft/Microsoft-Rocketbox), © Microsoft Corporation | MIT, Lizenztext in [`menschen/LICENSE-Rocketbox.txt`](menschen/LICENSE-Rocketbox.txt) |
+| `menschen/mocap.glb` | Motion-Capture-Bewegungen (Gehen, Rennen, Stehen, Umschauen, Jubeln, Sitzen, Winken, Hocken, Klatschen), auf der Stelle, gekürzt | Microsoft Rocketbox Avatar Library, `Assets/Animations`, © Microsoft Corporation | MIT, Lizenztext in [`menschen/LICENSE-Rocketbox.txt`](menschen/LICENSE-Rocketbox.txt) |
 
 Texturen (Himmel, Böden, Holz): Poly Haven, CC0 – siehe [`../textures/LIZENZ.md`](../textures/LIZENZ.md).
 
