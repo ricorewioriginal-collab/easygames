@@ -10,12 +10,12 @@
 
   // Moderatoren-Duo und Lager-Arzt (KayKit-Figuren, umgefärbt)
   D.HOSTS = [
-    { id: 'lotte', name: 'Lotte Brandt', look: { model: 'rogue', skin: 0, shirt: 0x7a1f3d, pants: 0x22283a, accent: 0xffd36b, hair: 0x6b3a1f, mic: true, micColor: 0x37c46a } },
-    { id: 'mats', name: 'Mats Feldmann', look: { model: 'knight', skin: 1, shirt: 0x1f2a44, pants: 0x1f2a44, accent: 0xf4f4f4, hair: 0x3a2a1a, mic: true, cards: true, micColor: 0x37c46a } }
+    { id: 'lotte', name: 'Lotte Brandt', look: { rb: 'Business_Female_01', model: 'rogue', skin: 0, shirt: 0x7a1f3d, pants: 0x22283a, accent: 0xffd36b, hair: 0x6b3a1f, mic: true, micColor: 0x37c46a } },
+    { id: 'mats', name: 'Mats Feldmann', look: { rb: 'Business_Male_01', model: 'knight', skin: 1, shirt: 0x1f2a44, pants: 0x1f2a44, accent: 0xf4f4f4, hair: 0x3a2a1a, mic: true, cards: true, micColor: 0x37c46a } }
   ];
-  D.DOC = { id: 'doc', name: 'Doc Rudi', look: { model: 'mage', skin: 2, shirt: 0xf2f2ee, pants: 0x3a5a7a, accent: 0xffffff, glasses: true, hat: 'cap', hatColor: 0x2a8a4a } };
+  D.DOC = { id: 'doc', name: 'Doc Rudi', look: { rb: 'Medical_Male_01', model: 'mage', skin: 2, shirt: 0xf2f2ee, pants: 0x3a5a7a, accent: 0xffffff, glasses: true, hat: 'cap', hatColor: 0x2a8a4a } };
   // Ranger: bewachen das Lager, bringen Lieferungen, holen Camper zur Prüfung ab (frei erfunden)
-  D.RANGER = { id: 'ranger', name: 'Ranger Kalle', look: { model: 'barbarian', skin: 1, shirt: 0x6b6a3a, pants: 0x3a4a2a, accent: 0xd8c89a, hat: 'busch', hatColor: 0x7a6a3a } };
+  D.RANGER = { id: 'ranger', name: 'Ranger Kalle', look: { rb: 'Male_Adult_05', model: 'barbarian', skin: 1, shirt: 0x6b6a3a, pants: 0x3a4a2a, accent: 0xd8c89a, hat: 'busch', hatColor: 0x7a6a3a } };
   D.VOICE = { lotte: { pitch: 1.12, rate: 1.04 }, mats: { pitch: 0.92, rate: 1.0 }, doc: { pitch: 0.8, rate: 0.95 }, ranger: { pitch: 0.7, rate: 0.98 } };
   // Sprüche von Lager-Sanitäter Doc Rudi (eigene Figur) und Ranger Kalle
   D.DOC_LINES = {
@@ -50,6 +50,13 @@
     { id: 'lia', name: 'Lia Lametta', job: 'Popsängerin', form: 'w', model: 'mage', skin: 3, hat: 'band', hatColor: 0x8a5cff, hair: 0x1a1018, t: { nett: 0.9, drama: 0.3, mut: 0.4, fleiss: 0.6, humor: 0.5 }, quote: 'Ich vermisse meine Katze. Und mein Kopfkissen. Und Pommes.' }
   ];
   D.CAST.forEach(c => { c.look = Object.assign({ model: c.model, skin: c.skin, shirt: RED, pants: KHAKI, accent: 0xf2e6c8 }, { hat: c.hat, hatColor: c.hatColor, glasses: c.glasses, hair: c.hair, keepHat: c.keepHat, mug: c.mug }); });
+  // echte Menschen (Microsoft Rocketbox, MIT-Lizenz) für jeden Camper; KayKit bleibt als Rückfall, falls eine Datei fehlt
+  const CAST_RB = { mandy: 'Female_Adult_03', gisela: 'Female_Adult_05', chantal: 'Female_Adult_08', svenja: 'Female_Adult_01', tamara: 'Female_Adult_04', lia: 'Female_Adult_07',
+    ronny: 'Male_Adult_06', kev: 'Male_Adult_04', bodo: 'Male_Adult_02', hanno: 'Male_Adult_08', moritz: 'Male_Adult_01', dieter: 'Male_Adult_03' };
+  D.CAST.forEach(c => { c.look.rb = CAST_RB[c.id]; });
+  // Auswahl für die eigene Figur
+  D.RB_PLAYER = [['Female_Adult_02', 'Anna'], ['Female_Adult_09', 'Jule'], ['Female_Adult_06', 'Amira'], ['Male_Adult_09', 'Ben'], ['Male_Adult_10', 'Leo'], ['Male_Adult_07', 'Can']];
+  D.RB_ALL = [...new Set(Object.values(CAST_RB).concat(D.RB_PLAYER.map(x => x[0]), ['Business_Female_01', 'Business_Male_01', 'Medical_Male_01', 'Male_Adult_05']))];
   D.PLAYER_JOBS = ['Schauspieler:in', 'Sänger:in', 'Influencer:in', 'Sportler:in', 'Comedian', 'TV-Koch/Köchin', 'Model', 'Reality-Star', 'Moderator:in', 'Tänzer:in'];
   D.HATS = [['none', 'Ohne'], ['busch', 'Buschhut'], ['cap', 'Kappe'], ['band', 'Stirnband'], ['kopftuch', 'Kopftuch']];
   D.SHIRTS = [[0xc8372d, 'Camp-Rot'], [0xd8622d, 'Orange'], [0x2d6ac8, 'Blau'], [0x2d9a52, 'Grün'], [0x8a3dc8, 'Lila'], [0x333a48, 'Anthrazit']];
@@ -201,6 +208,16 @@
   // Schatzsuche: Frage für das Camp
   D.TREASURE = [
     { q: 'Ihr habt die Kiste gefunden! Öffnen für das Camp – oder lieber die sichere Flasche Wasser nehmen?', a: ['Kiste öffnen!', 'Wasser nehmen'] }
+  ];
+  // Luxusartikel: jeder Camper darf zwei mitnehmen
+  D.LUX = [
+    { id: 'kissen', name: 'Kopfkissen', icon: '🛏️', desc: 'Besser schlafen: jede Nacht +10 😴.' },
+    { id: 'kaffee', name: 'Instant-Kaffee', icon: '☕', desc: 'Morgens wach: Müdigkeit kostet dich keine Aktion.' },
+    { id: 'schoko', name: 'Tafel Schokolade', icon: '🍫', desc: 'Drei Stück für Notfälle: im Camp naschen, +20 🍗.', uses: 3 },
+    { id: 'foto', name: 'Familienfoto', icon: '🖼️', desc: 'Gegen Heimweh: einmal am Tag anschauen, gute Laune und Sympathie.' },
+    { id: 'karten', name: 'Kartenspiel', icon: '🃏', desc: 'Einmal am Tag mit einem Camper spielen: Freundschaft +, kostet keine Aktion.' },
+    { id: 'harmonika', name: 'Mundharmonika', icon: '🎵', desc: 'Dein Lied am Lagerfeuer gelingt immer.' },
+    { id: 'tagebuch', name: 'Tagebuch', icon: '📔', desc: 'Jeden Abend schreiben: die Zuschauer lieben deine Gedanken (+😂).' }
   ];
   D.LOOT = [['Kekse', '🍪'], ['Kaffee', '☕'], ['Schokolade', '🍫'], ['Kartenspiel', '🃏'], ['Kissen', '🛏️'], ['Gewürze', '🧂']];
 

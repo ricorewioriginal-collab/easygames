@@ -82,6 +82,7 @@
   M.creator = (theme) => new Promise(res => {
     const st = R.stage;
     const me = UL.store.get('me', null) || { name: '', job: UL.D.PLAYER_JOBS[0], form: 'n', look: { model: 'rogue', skin: 0, shirt: 0xc8372d, pants: 0xb79a6a, accent: 0xf2e6c8, hat: 'busch', hatColor: 0xb08850, glasses: false } };
+    if (me.look.rb === undefined) me.look.rb = UL.D.RB_PLAYER[3][0];
     let fig = null;
     const show = () => {
       if (fig) { fig.dispose(); st.figs.splice(st.figs.indexOf(fig), 1); }
@@ -102,16 +103,17 @@
           <span>Bekannt als</span><select class="field" data-job>${UL.D.PLAYER_JOBS.map(j => `<option ${j === me.job ? 'selected' : ''}>${esc(j)}</option>`).join('')}</select>
           <span>Titel bei Sieg</span><select class="field" data-form>${Object.entries(UL.D.TITLE).map(([k, v]) => `<option value="${k}" ${k === me.form ? 'selected' : ''}>${v}</option>`).join('')}</select>
         </div>
-        <h3>Figur</h3><div class="row">${A.FIG.map((f, i) => `<button class="pill ${L.model === f ? 'on' : ''}" data-k="model" data-v="${f}">Typ ${i + 1}</button>`).join('')}</div>
+        <h3>Person</h3><div class="row">${UL.D.RB_PLAYER.map(([id, n]) => `<button class="pill ${L.rb === id ? 'on' : ''}" data-k="rb" data-v="${id}">${n}</button>`).join('')}<button class="pill ${!L.rb ? 'on' : ''}" data-k="rb" data-v="">🧸 Comic</button></div>
+        ${L.rb ? '' : `<h3>Figur</h3><div class="row">${A.FIG.map((f, i) => `<button class="pill ${L.model === f ? 'on' : ''}" data-k="model" data-v="${f}">Typ ${i + 1}</button>`).join('')}</div>
         <h3>Hautton</h3><div class="row">${SK.map((c, i) => `<button class="swatch ${L.skin === i ? 'on' : ''}" data-k="skin" data-v="${i}" style="background:${c}"></button>`).join('')}</div>
-        <h3>Camp-Hemd</h3><div class="row">${sw(UL.D.SHIRTS, 'shirt', L.shirt)}</div>
+        <h3>Camp-Hemd</h3><div class="row">${sw(UL.D.SHIRTS, 'shirt', L.shirt)}</div>`}
         <h3>Kopf</h3><div class="row">${UL.D.HATS.map(([k, n]) => `<button class="pill ${(L.hat || 'none') === k ? 'on' : ''}" data-k="hat" data-v="${k}">${n}</button>`).join('')}<button class="pill ${L.glasses ? 'on' : ''}" data-k="glasses" data-v="1">😎 Brille</button></div>
         <div class="row" style="margin-top:8px">${sw(UL.D.HATCOL.map(c => [c, '']), 'hatColor', L.hatColor)}</div>
         <div class="row gobar"><button class="btn" data-go><b>✅ Ab in den ${theme === 'studio' ? 'Studio-Dschungel' : 'Dschungel'}!</b></button></div>
         <div class="foot">${In.glyph('back')} Zurück</div>`;
       p.el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => {
         const k = b.dataset.k, v = b.dataset.v;
-        if (k === 'model' || k === 'hat') L[k] = v; else if (k === 'glasses') L.glasses = !L.glasses; else L[k] = +v;
+        if (k === 'rb') L.rb = v || null; else if (k === 'model' || k === 'hat') L[k] = v; else if (k === 'glasses') L.glasses = !L.glasses; else L[k] = +v;
         draw(); UI.refresh(p); const i = p.items.findIndex(x => x.dataset.k === k && x.dataset.v === v); UI.focus(p, i >= 0 ? i : 0); show();
       });
       const nm = p.el.querySelector('[data-name]'); nm.oninput = () => me.name = nm.value;
@@ -142,6 +144,7 @@
       p.el.querySelectorAll('[data-id]').forEach(b => b.onclick = async () => {
         const id = b.dataset.id; UI.closeAll();
         await UI.fade(true, 0.3);
+        if (UL.A.rbAll) await UL.A.rbAll;
         const me = UL.store.get('me', null);
         const r = await UL.Trials.run(id, { theme, practice: true, diff: 'normal', name: me ? me.name : 'Du', look: me ? Object.assign({}, me.look, { hat: me.look.hat === 'none' ? null : me.look.hat }) : undefined });
         const b2 = UL.store.get('best', {}); if (!(b2[id] >= r.stars)) { b2[id] = r.stars; UL.store.set('best', b2); }

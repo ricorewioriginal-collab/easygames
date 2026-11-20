@@ -75,8 +75,11 @@
   // ---------- Figuren ----------
   const FIG = ['knight', 'mage', 'rogue', 'rogue_hooded', 'barbarian'];
   A.FIG = FIG;
-  const figSrc = {};
-  let clips = {};
+  const figSrc = {}, rbSrc = {};
+  let clips = {}, rbClips = {};
+  // Echte Menschen (Microsoft Rocketbox, MIT): Name → Datei models/menschen/<id>.glb
+  A.RB = [];
+  A.hasRb = id => !!rbSrc[id];
   // Anzeige-Namen der Bewegungen
   const CLIP = { idle: 'Unarmed_Idle', idle2: 'Idle', walk: 'Walking_A', run: 'Running_A', jump: 'Jump_Full_Short', cheer: 'Cheer', sit: 'Sit_Chair_Idle',
     interact: 'Interact', pickup: 'PickUp', throw: 'Throw', use: 'Use_Item', hit: 'Hit_A', faint: 'Death_A', raise: 'Spellcast_Raise', block: 'Block', ready: '2H_Melee_Idle' };
@@ -84,7 +87,7 @@
 
   // Hülle einer gehäuteten Figur in Ruhehaltung (Box3 kennt in r128 weder Häutung noch quantisierte Werte)
   const NORM = { Int8Array: 127, Uint8Array: 255, Int16Array: 32767, Uint16Array: 65535 };
-  function skinnedBox(mesh, box = new T.Box3()) {
+  function skinnedBox(mesh, box = new T.Box3(), cut, top) {
     const g = mesh.geometry, pos = g.attributes.position, div = pos.normalized ? (NORM[pos.array.constructor.name] || 1) : 1, v = new T.Vector3(), base = new T.Vector3(), acc = new T.Vector3(), m = new T.Matrix4();
     mesh.updateMatrixWorld(true);
     const si = g.attributes.skinIndex, sw = g.attributes.skinWeight, wd = sw && sw.normalized ? (NORM[sw.array.constructor.name] || 1) : 1;
@@ -103,10 +106,17 @@
         v.copy(acc).applyMatrix4(mesh.bindMatrixInverse).applyMatrix4(mesh.matrixWorld);
       } else v.applyMatrix4(mesh.matrixWorld);
       box.expandByPoint(v);
+      if (top && v.y > cut) top.expandByPoint(v);
     }
     return box;
   }
   A.skinnedBox = skinnedBox;
+  // Hülle aller Punkte oberhalb von cut (Kopf einer echten Figur, in Ruhehaltung)
+  function rbHead(root, cut) {
+    const box = new T.Box3(), all = new T.Box3();
+    root.traverse(o => { if (!o.isMesh) return; all.makeEmpty(); skinnedBox(o, all, cut, box); });
+    return box.isEmpty() ? null : box;
+  }
   // r128 rechnet Hüllen quantisierter Geometrie aus Rohwerten → falsche Größen und Sichtbarkeitsprüfung. Hier richtig setzen.
   function fixBounds(geo) {
     const pos = geo.attributes.position; if (!pos || !pos.normalized) return;
@@ -179,12 +189,13 @@
   // Zubehör aus einfachen Formen, an Knochen gehängt
   const accMat = new Map();
   const am = c => { if (!accMat.has(c)) accMat.set(c, new T.MeshLambertMaterial({ color: new T.Color(c).convertSRGBToLinear() })); return accMat.get(c); };
-  function gear(inst, look) {
+  function gear(inst, look, u = 1) {
     const bones = {}; inst.traverse(o => { if (o.isBone) bones[o.name] = o; });
+    if (!bones.head && bones.Bip01_Head) { bones.head = bones.Bip01_Head; bones['handslot.r'] = bones.Bip01_R_Hand; bones['handslot.l'] = bones.Bip01_L_Hand; }
     const head = inst.userData.headBox;
     inst.updateMatrixWorld(true);
     const put = (geo, color, bone, x, y, z, rx = 0, ry = 0, rz = 0) => {
-      const m = new T.Mesh(geo, am(color)); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); m.castShadow = true; m.userData.gear = bone ? bone.name : "";
+      const m = new T.Mesh(geo, am(color)); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); m.castShadow = true; m.userData.gear = bone ? (bone === bones.head ? 'head' : bone.name) : "";
       inst.add(m); m.updateMatrixWorld(true); if (bone) bone.attach(m); return m;
     };
     if (head && bones.head) {
@@ -218,7 +229,7 @@
     if (look.mic && hand) {   // Handmikrofon der Moderatoren
       const p = new T.Vector3(); hand.getWorldPosition(p); const lp = inst.worldToLocal(p);
       const g = new T.Group(); g.position.copy(lp); inst.add(g);
-      const s = 0.09;
+      const s = 0.09 * u;
       const b = new T.Mesh(new T.CylinderGeometry(s * 0.35, s * 0.25, s * 2.4, 8), am(0x1c1f26)); b.position.y = s * 0.6; g.add(b);
       const h = new T.Mesh(new T.SphereGeometry(s * 0.6, 10, 8), am(0x9aa3ad)); h.position.y = s * 2; g.add(h);
       const f = new T.Mesh(new T.BoxGeometry(s * 0.9, s * 0.6, s * 0.9), am(look.micColor || 0xffb000)); f.position.y = s * 1.3; g.add(f);
@@ -226,7 +237,7 @@
     }
     if (look.cards && handL) {   // Moderationskarten
       const p = new T.Vector3(); handL.getWorldPosition(p); const lp = inst.worldToLocal(p);
-      put(new T.BoxGeometry(0.16, 0.24, 0.02), 0xfff6dc, handL, lp.x, lp.y + 0.08, lp.z + 0.02, 0.3);
+      put(new T.BoxGeometry(0.16 * u, 0.24 * u, 0.02 * u), 0xfff6dc, handL, lp.x, lp.y + 0.08 * u, lp.z + 0.02 * u, 0.3);
     }
   }
 
@@ -238,8 +249,34 @@
       this.root = new T.Group(); this.root.name = 'fig';
       this.mixer = null; this.actions = {}; this.cur = null; this.base = 'idle'; this.one = null; this.oneT = 0;
       this.ready = false; this.bones = {};
-      const src = figSrc[this.look.model] || figSrc.knight;
-      if (src) this.build(src);
+      const rb = this.look.rb && rbSrc[this.look.rb];
+      if (rb) this.buildRb(rb);
+      else { const src = figSrc[this.look.model] || figSrc.knight; if (src) this.build(src); }
+    }
+    // echter Mensch: eigene Textur, gemeinsame (umgerechnete) Bewegungen
+    buildRb(src) {
+      const inst = cloneRig(src.scene);
+      inst.userData.headBox = src.headBox;
+      inst.traverse(o => {
+        if (!o.isMesh) return;
+        const conv = m => new T.MeshLambertMaterial({ map: m.map || null, color: 0xffffff, skinning: !!o.isSkinnedMesh, alphaTest: m.alphaTest || 0, side: m.alphaTest ? T.DoubleSide : T.FrontSide });
+        o.material = Array.isArray(o.material) ? o.material.map(conv) : conv(o.material);
+        o.castShadow = true; o.receiveShadow = false;
+      });
+      inst.traverse(o => { if (o.isBone) this.bones[o.name] = o; });
+      const B = this.bones; B.head = B.Bip01_Head; B.handr = B.Bip01_R_Hand; B.handl = B.Bip01_L_Hand; B['handslot.r'] = B.handr; B['handslot.l'] = B.handl;
+      const b = src.box, h = b.max.y - b.min.y, k = this.height / Math.max(0.01, h);
+      const kk = figSrc.knight && figSrc.knight.box, u = kk ? h / (kk.max.y - kk.min.y) : 1;
+      gear(inst, this.look, u);
+      inst.scale.setScalar(k);
+      inst.position.set(-(b.min.x + b.max.x) / 2 * k, -b.min.y * k, -(b.min.z + b.max.z) / 2 * k);
+      this.inst = inst; this.rb = true;
+      this.root.add(inst);
+      this.mixer = new T.AnimationMixer(inst);
+      for (const [n, c] of Object.entries(rbClips)) this.actions[n] = this.mixer.clipAction(c);
+      this.ready = true;
+      this.set('idle', 0);
+      this.mixer.update(Math.random() * 2);
     }
     build(src) {
       const inst = cloneRig(src.scene), L = this.look;
@@ -325,12 +362,14 @@
 
   // ---------- Laden ----------
   A.loadAll = async (onProgress) => {
+    A.RB = (UL.D && UL.D.RB_ALL) || [];
     const base = (UL.base || '') + 'models/';
     const list = [['set', base + 'set.glb'], ['set', base + 'ph.glb'], ['anim', base + 'figuren/anim.glb']]
       .concat(FIG.map(f => ['fig:' + f, base + 'figuren/' + f + '.glb']))
-      .concat(['crab', 'frog', 'bat', 'bee'].map(t => ['tier:' + t, base + 'tiere/' + t + '.glb']));
+      .concat(['crab', 'frog', 'bat', 'bee'].map(t => ['tier:' + t, base + 'tiere/' + t + '.glb']))
+      .concat(A.RB.length ? [['rbanim', base + 'menschen/anim.glb']].concat(A.RB_CORE().map(id => ['rb:' + id, base + 'menschen/' + id + '.glb'])) : []);
     let done = 0;
-    await Promise.all(list.map(([k, url]) => A.load(url).then(g => {
+    const take = ([k, url]) => A.load(url).then(g => {
       done++; onProgress && onProgress(done / list.length);
       if (k === 'set') {
         const sc = g.scene; sc.updateMatrixWorld(true);
@@ -359,10 +398,26 @@
         });
         g.swatchUse = use;
         figSrc[k.slice(4)] = g;
+      } else if (k === 'rbanim') {
+        for (const c of g.animations) rbClips[c.name] = c;
+      } else if (k.startsWith('rb:')) {
+        g.scene.updateMatrixWorld(true);
+        const box = new T.Box3(); g.scene.traverse(o => { if (o.isMesh) skinnedBox(o, box); });
+        // Kopf: oberstes Achtel der Figur (für Hüte, Brille)
+        const hb = new T.Box3(), cut = box.min.y + (box.max.y - box.min.y) * 0.875;
+        hb.set(new T.Vector3(box.min.x, cut, box.min.z), box.max.clone());
+        g.box = box; g.headBox = rbHead(g.scene, cut) || hb;
+        rbSrc[k.slice(3)] = g;
       } else if (k.startsWith('tier:')) {
         g.scene.updateMatrixWorld(true); const bx = new T.Box3(); g.scene.traverse(o => { if (o.isMesh) skinnedBox(o, bx); }); g.box = bx; animals[k.slice(5)] = g;
       }
-    }).catch(e => { done++; console.warn('Modell fehlt', url, e); })));
+    }).catch(e => { done++; console.warn('Modell fehlt', url, e); });
+    await Promise.all(list.map(take));
     A.ready = true;
+    // übrige echte Figuren im Hintergrund nachladen (Titelbild und Editor überbrücken die Zeit)
+    const rest = A.RB.filter(id => !rbSrc[id]);
+    A.rbAll = Promise.all(rest.map(id => take(['rb:' + id, base + 'menschen/' + id + '.glb']))).then(() => { A.rbAll = null; });
   };
+  // zuerst laden: Moderatoren, Crew und die eigene Figur
+  A.RB_CORE = () => { const D = UL.D, me = UL.store.get('me', null); return [...new Set([D.HOSTS[0].look.rb, D.HOSTS[1].look.rb, D.DOC.look.rb, D.RANGER.look.rb, me && me.look && me.look.rb].filter(Boolean))]; };
 })();
