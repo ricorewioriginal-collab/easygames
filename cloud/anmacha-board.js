@@ -53,6 +53,9 @@
     'krawallvoegel': [
       { id: 'main', title: 'Gesamtpunkte (alle Level)', key: 'easygames.krawallvoegel.v1', path: 'lv.*.1', agg: 'sum', order: 'desc', unit: 'Punkte' }
     ],
+    'concrete-pulse': [
+      { id: 'main', title: 'Bester Lauf', key: 'concrete-pulse_save', path: 'best', order: 'desc', unit: 'Punkte' }
+    ],
     'pestwacht': [
       { id: 'main', title: 'Meiste abgewehrte Wellen', key: 'easygames.pestwacht.best', path: 'waves', order: 'desc', unit: 'Wellen' },
       { id: 'pop', title: 'Größte Zuflucht', key: 'easygames.pestwacht.best', path: 'pop', order: 'desc', unit: 'Bewohner' },

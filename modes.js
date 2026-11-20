@@ -5,6 +5,7 @@
 //   multi  = Mehrspieler/Duell/Splitscreen auf einem Gerät
 //   tvParam = Das Spiel kennt den Parameter ?tv (öffnet direkt die Lobby mit QR-Code für den Fernseher)
 window.EASYGAMES_MODES = {
+  'concrete-pulse': { multi: true },
   'anmacha-undercover': { online: true },
   'spinwelten': { online: true },
   'anmacha-podcast-tycoon': { online: true, multi: true },

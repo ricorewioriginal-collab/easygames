@@ -6,6 +6,45 @@
  },
  "games": [
   {
+   "id": "concrete-pulse",
+   "title": "Concrete Pulse – Skate 3D",
+   "desc": "Skateboard-Action in modernem 3D: Fahre durch drei Parks (Hafenkante, Dachgarten, Neonbucht) mit Rampen, Pools, Rails, Ledges und Treppen. Über 30 Flip-, Grab-, Grind- und Manual-Tricks, Drehungen bis 1080, Combos mit Manual-Verbindungen, Gaps und Spezialtricks. Karriere mit 30 Zielen (Punkte, P-U-L-S-E-Buchstaben, versteckte Kassette, Combos, Gaps), Highscore-Lauf, Freies Fahren und Duell für 2 bis 4 Spieler an einem Gerät. 6 eigene Skater mit Werten und Spezialtricks, 8 Boards, eigene Musik. Einfach-Modus, Touch, Maus, Tastatur und Gamecontroller; Offline-PWA und Google-Spielstand.",
+   "icon": "🛹",
+   "img": "concrete-pulse/card.jpg",
+   "bg": "linear-gradient(145deg,#ff5a3c,#7b2cff 55%,#2ec4ff)",
+   "glow": "rgba(46,196,255,.5)",
+   "path": "concrete-pulse/",
+   "modes": {
+    "multi": true
+   },
+   "multiplayer": true,
+   "guide": {
+    "anleitung": "Concrete Pulse ist ein Skateboard-Spiel in 3D. Du fährst durch drei Parks (Hafenkante, Dachgarten, Neonbucht) und reihst Flips, Grabs, Grinds, Manuals und Drehungen zu Combos aneinander. Eine Combo zählt erst, wenn du sauber landest; Manuals verbinden Tricks über den Boden. In der Karriere erfüllst du in 2-Minuten-Läufen je Park 10 Ziele (Punkte, die Buchstaben P-U-L-S-E, die versteckte Kassette, Combos, Gaps und Sonderaufgaben). 5 Ziele schalten den nächsten Park frei, weitere Ziele neue Skater und Boards. Dazu kommen Highscore-Lauf, Freies Fahren ohne Zeit und das Duell für 2 bis 4 Spieler an einem Gerät. Ist die Spezialleiste voll, kannst du die Spezialtricks deines Skaters zeigen.",
+    "steuerung": [
+     "Touch: linkes Feld ist der Stick (lenken, Richtung für Tricks), rechts die Knöpfe Ollie, Flip, Grab, Grind und Manual.",
+     "Tastatur: W A S D oder Pfeile lenken, Leertaste/Enter Ollie (halten zum Ausholen), J Flip, K Grab, L Grind, I oder Shift Manual, Q/E drehen, Esc/P Pause, Tab/G Ziele.",
+     "Gamecontroller: linker Stick lenkt, A Ollie, X Flip, B Grab, Y Grind, LB/RB Manual, LT/RT drehen, Start Pause, Select Ziele.",
+     "Spezialtrick bei voller Leiste: in der Luft Flip und Grab zusammen oder Grab mit Grind; am Rail Grind und Manual zusammen.",
+     "Einfach-Modus (Einstellungen): in der Luft Ollie tippen = Flip, halten = Grab; dazu automatisches Anschieben."
+    ],
+    "tipps": [
+     "Richtung plus Trickknopf ergibt andere Tricks – probiere alle acht Richtungen.",
+     "Zwischen zwei Rails oder Rampen einen Manual einbauen, dann läuft die Combo weiter.",
+     "An Quarterpipes und im Pool bergab beschleunigen, bergauf bremst du weniger – so holst du Höhe für Vert-Tricks.",
+     "Gleiche Tricks bringen in einer Combo immer weniger, also abwechseln.",
+     "Kurz vor der Landung loslassen: Ein unfertiger Flip oder Grab führt zum Sturz."
+    ]
+   },
+   "size": 9153915,
+   "files": 331,
+   "offline": true,
+   "cloud": {
+    "game": "concrete-pulse",
+    "prefix": "concrete-pulse_"
+   },
+   "trailer": null
+  },
+  {
    "id": "ricolife",
    "title": "RicoLife 3D – Dein Leben. Deine Regeln.",
    "desc": "Eigenständige 3D-Lebenssimulation in einer lebendigen offenen Stadt: eigenen Haushalt erstellen, begehbare Häuser bauen und einrichten, Bedürfnisse und Emotionen erleben, Berufe ausüben, Freundschaften und Familien gründen, Lebensgeschichten entdecken. Frei spielbar, auch offline, mit optionalem Google-Spielstand. Für Handy, PC und Controller.",
