@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9c88090ff08b",
- "generated": "2026-11-20T01:44:42+00:00",
- "commit": "20963f72b452ae6fc172a0d2919a47f057f4561d",
+ "version": "7a41ed21567c",
+ "generated": "2026-11-20T01:46:19+00:00",
+ "commit": "cfcb373594ccbd4aebbeb7faee651e51133f065a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7893,8 +7893,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/data.js",
-   "s": 29591,
-   "h": "c5780f669c9e7e4bb9b766a37bd4b5280394e0c6f26698e4f2b2766ad0e9e488"
+   "s": 34823,
+   "h": "b81dcbd76551ad51cb88f7287cadc5de3ab2d8889b879c02f543f1f16a35449b"
   },
   {
    "p": "anmacha-urwaldlager/js/input.js",
@@ -7908,8 +7908,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/menus.js",
-   "s": 20762,
-   "h": "2b12df92dd0290e5b85f6707e870477176ecba8b30db21640604978d3c2be131"
+   "s": 20812,
+   "h": "7ac22726e211dfcf0f5e8b6e5c4f3a797025b772f9c74474565050d24a73040f"
   },
   {
    "p": "anmacha-urwaldlager/js/phone.js",
@@ -7983,8 +7983,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/quiz.js",
-   "s": 7993,
-   "h": "dffd4961e365bd8429ebb887b516aad8eb310a3d8f24eef6fbbc4cfd6fb104df"
+   "s": 8388,
+   "h": "2a9dca7000e6b9820d6e31b1ae259092d4fbe6a3665eb6a4f6f09120129d7227"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/seilbahn.js",
@@ -10848,8 +10848,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 15173,
-   "h": "73229bf017165f7d9f1330786bd2ab23b91b9713567dff460e2893ae48086751"
+   "s": 15303,
+   "h": "147926f7157164868843c580e7652526df963066aab847ffcbe397908174a3a4"
   },
   {
    "p": "guides/beat-studio.json",
@@ -15804,7 +15804,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236340,
-   "h": "e7a41cb92185710b7985348509eba3bcdc1261a4c06d1e726e2b35962c17b12d"
+   "h": "37539a2ccf5fe91c64453d1adf9aed3bebc8873c8b8216f2993e2394ba87fb0d"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
