@@ -97,7 +97,9 @@ function brkScatter(n){const R=mul32(n*3301+7),K=['barrel_large','box_large','bo
   const disc=n>=MW_FIRST||!WLD;for(let t=0,c=0;c<14&&t<600;t++){let x,z;if(disc){const a=R()*6.283,r=8+R()*(n===1?40:75);x=Math.sin(a)*r;z=Math.cos(a)*r-10}else{z=6-R()*150;x=(WLD.path?WLD.path(z):0)+(R()<.5?-1:1)*(4+R()*16)}if(blocked(x,z)||(WLD&&WLD.reach&&!WLD.reach(x,z))||!colFree(x,z,1.6)||Math.hypot(x,z-9)<5)continue;
     const k=K[R()*K.length|0],y=hgt(x,z);L.push({k,x,y,z,ry:R()*6.28});if(R()<.5){const a=R()*6.28;L.push({k:K[R()*2|0],x:x+Math.cos(a)*1.3,y,z:z+Math.sin(a)*1.3,ry:R()*6.28})}c++}
   placeBrk(scene,L)}
-const colFree=(x,z,r)=>!COL.some(c=>Math.hypot(c.x-x,c.z-z)<c.r+r)&&!HOUSES.some(H=>Math.hypot(H.x-x,H.z-z)<H.R+r);   /* kein Baum, Fels oder Haus im Weg */
+/* Platzierung: frei von Kollisionen, Häusern und Sprungplatten (samt Rand), damit keine Deko, Figur oder Requisite auf Platten steht */
+const colFree=(x,z,r)=>colFree0(x,z,r)&&!PLAT.some(p=>Math.abs(x-p.x)<p.hx+r+1&&Math.abs(z-p.z)<p.hz+r+1);
+const colFree0=(x,z,r)=>!COL.some(c=>Math.hypot(c.x-x,c.z-z)<c.r+r)&&!HOUSES.some(H=>Math.hypot(H.x-x,H.z-z)<H.R+r);   /* kein Baum, Fels oder Haus im Weg */
 const CAMCOL=[],HOUSES=[];let inH=null;
 /* Springen und Plattformen: PLAT = schwebende Platten {x,z,hx,hz,top,th}; man landet von oben darauf, von der Seite sind sie eine Wand, hohe Platten unterläuft man */
 const PLAT=[],GRAV=26,JUMPV=10;
@@ -1389,7 +1391,7 @@ function swimTick(dt){const L=LAKEW(pl.x,pl.z),off=()=>{if(pl.wat){pl.wat=0;pl.d
 function swimStroke(){if(pl.swc>0||pl.y>hgt(pl.x,pl.z)+15)return;pl.swc=.24;pl.air=true;pl.vy=Math.max(pl.vy||0,JUMPV*.55);sfx('ui');emit(pl.x,pl.y+.4,pl.z,0xd8f8ff,10,1.6,.9,.3,-3)}
 function jump(){if(naut.on||pl.dead||dlg.on||menuOpen||mode!=='play')return;if(pl.flow){_fl.jump();return}if(_fl&&!pl.air&&_fl.grabPole())return;if(pl.wat&&pl.dv){pl.wvy=5.5;sfx('ui');return}if(SWIM()&&pl.air)return swimStroke();const lp=skR('leap');if(pl.air&&artOn('wall')&&wallNear()){const fx=Math.sin(pl.face),fz=Math.cos(pl.face);pl.face=Math.atan2(-fx,-fz);pl.dx=-fx;pl.dz=-fz;pl.dash=.18;pl.vy=JUMPV*.95;pl.dj=false;pl.ad=0;sfx('jump');emit(pl.x+fx*.5,pl.y+.8,pl.z+fz*.5,0xffe8b0,14,3,.4,.4,0);return}if(pl.air){if(lp<3||pl.dj)return;pl.dj=true;pl.vy=JUMPV*.85;sfx('ui');emit(pl.x,pl.y+.1,pl.z,0xb0ffd8,12,3,.4,.5,0);return}pl.dj=false;pl.air=true;pl.vy=JUMPV*Math.sqrt(1+.05*lp)*(X.form&&X.form.on>0?1.12:1)*(artOn('hijump')?1.25:1);pl.jfw=REMOTE?.75:0;sfx('jump');emit(pl.x,pl.y+.1,pl.z,0xcfe0ff,10,3,.4,.5,0)}
 /* Wand direkt vor oder neben Zotik (für den Wandsprung) */
-function wallNear(){for(const a of [0,.6,-.6,1.2,-1.2]){const f=pl.face+a,x=pl.x+Math.sin(f)*.9,z=pl.z+Math.cos(f)*.9;if(pBlocked(x,z)||!colFree(x,z,.15)||hgt(x,z)>pl.y+.8){pl.face=f;return true}}return false}
+function wallNear(){for(const a of [0,.6,-.6,1.2,-1.2]){const f=pl.face+a,x=pl.x+Math.sin(f)*.9,z=pl.z+Math.cos(f)*.9;if(pBlocked(x,z)||!colFree0(x,z,.15)||hgt(x,z)>pl.y+.8){pl.face=f;return true}}return false}
 function dodge(){if(naut.on||pl.dead||dlg.on)return;if(pl.flow){_fl.drop();return}if(pl.wat){pl.wvy=-5.5;pl.dv=1;sfx('dodge');emit(pl.x,pl.y+1,pl.z,0xd8f8ff,8,2,.5,.3,-4);return}if(pl.cd.dg>0||pl.dash>0)return;if(pl.air){if(!artOn('airdash')||pl.ad)return;pl.ad=1;pl.vy=Math.max(pl.vy,1.2)}const [ix,iy]=inputVec();let dx=Math.sin(pl.face),dz=Math.cos(pl.face);if(ix||iy){const w=worldDir(ix,iy);dx=w[0];dz=w[1]}
   pl.dx=dx;pl.dz=dz;pl.dash=.34;pl.iframes=artOn('shade')?.56:.42;pl.shH=artOn('shade')?new Set():null;pl.cd.dg=.8;pl.atk=-1;pl.face=Math.atan2(dx,dz);sfx('dodge');emit(pl.x,pl.y+.3,pl.z,0xcfe8ff,8,2,.4,.5)}
 function skill1(){if(naut.on)return;if(S.lead&&CSK[S.lead])return cmpSkill(S.lead);if(pl.dead||dlg.on||pl.cd.s1>0)return;if(S.mp<formMp(18)){toast('Zu wenig Mana');return}S.mp-=formMp(18);pl.cd.s1=2.6;pl.spin=.55;pl.atk=-1;mpSend({t:'sk',k:1,x:r2(pl.x),z:r2(pl.z)});sfx('skill1');wrFire(pl.x,pl.z);wrEcho();fxRing(pl.x,pl.z,0xffa040,5,.5);MFX.swirl(pl.x,pl.y,pl.z,0xffa040,2.3,2.2,.6);MFX.circle(pl.x,pl.y,pl.z,0xff8a30,2.6,.7);emit(pl.x,pl.y+1,pl.z,0xffb050,40,8,.6,.7,0);camShake=.2;
@@ -3811,7 +3813,7 @@ function folkNpc(name,v={},w={}){const FEM=new Set(['Elwen','Sari','Sela','Lotte
   const o={h:kid?1.1:1.62*(v.sc||1)*(f?.96:1),hide:w.hideX?new RegExp(q[1].source+'|'+w.hideX):q[1],r:w.r,l:w.l,v,name};
   if(w.pal)o.pal={hair:v.hair||0x5a3a22,top:v.cloth||0x8a7a6a,top2:v.cape||v.cloth2||0x5a4a3a,pants:v.cloth2||0x4a3a2a,...(v.skin?{skin:v.skin}:{})};else{o.tint=v.cloth||0xffffff;o.tk=.22}
   const P=KK.char(q[0],o);return{root:P.root,kk:P}}
-function advCamp(n){const p=(()=>{for(let t=0;t<60;t++){const z=-14-t*1.7,x=(WLD.path?WLD.path(z):0)+(t%2?11:-11)+(Math.random()-.5)*4;if(!blocked(x,z)&&colFree(x,z,4)&&!blocked(x+3,z)&&!blocked(x-3,z))return[x,z]}return null})();if(!p)return;
+function advCamp(n){const p=(()=>{for(let t=0;t<60;t++){const z=-14-t*1.7,x=(WLD.path?WLD.path(z):0)+(t%2?11:-11)+(Math.random()-.5)*4;if(!blocked(x,z)&&colFree(x,z,4)&&!blocked(x+3,z)&&!blocked(x-3,z)&&natFree(x,z,3))return[x,z]}return null})();if(!p)return;
   const [cx,cz]=p,y=hgt(cx,cz),f=new T.Group();f.position.set(cx,y,cz);
   for(let i=0;i<4;i++){const l=mk(G.cyl0,M(0x5a3a22,{r:.9}),0,.1,0,.09,.8,.09);l.rotation.set(Math.PI/2,i*.8,0);l.position.y=.1;f.add(l)}
   const fl=mk(G.cone0,M(0xffa040,{e:0xff7a20,ei:2.2}),0,.42,0,.24,.6,.24,false);f.add(fl);f.add(glow(0xffa050,3.2,0,.6,0,.7));scene.add(f);animObjs.push({fn(t){fl.scale.set(.24+Math.sin(t*9)*.03,.6+Math.sin(t*13)*.08,.24)}});addCol(cx,cz,.6);
@@ -3843,9 +3845,13 @@ const WZ={2:[['eiche',8,'sf'],['tanne',9,'sf'],['birch1',7],['garden_tree_green'
   10:[['eiche',8,'sf'],['ancient_tree_yellow_1',8],['garden_tree_yellow',6],['busch',1.5,'sf'],['blume2',.5,'sf'],['fels1',2.6,'sf'],['rock_medium_1',1.3]],
   11:[['creepy_tree2',6.5],['stumpf',1.3,'sf'],['fels8',3,'sf'],['rock_big_B_dark_2',3],['root_2',.8],['bones_group',.6]]};
 const WZG={8:1,7:1};   /* Welten mit kleinem Friedhof am Wegrand */
+/* Natur und Lager nie auf Sprungplatten, Plattform-Wegen, Truhen, Rätsel- und Spielobjekten */
+function natFree(x,z,m=0){for(const p of PLAT)if(Math.abs(x-p.x)<p.hx+4+m&&Math.abs(z-p.z)<p.hz+4+m)return false;
+  for(const p of (WLD&&WLD._jp)||[])if(Math.hypot(x-p[0],z-p[1])<9+m)return false;
+  for(const o of [...chests,...INT,...OB])if(o&&o.x!=null&&Math.hypot(x-o.x,z-o.z)<4+m)return false;return true}
 function wzDress(n){const L0=WZ[n];if(!L0||!WLD)return;const R=mul32(n*7919+3),out=[],N=TOUCH?60:110,big=k=>/tree|birch|pine|coconut|palm|cactus1|cactus2|eiche|tanne|palme/.test(k);
   for(let t=0,c=0;c<N&&t<N*12;t++){const z=-30-R()*125,px=WLD.path?WLD.path(z):0,sd=R()<.5?-1:1,x=px+sd*(9+R()*36);
-    if(blocked(x,z)||(WLD.reach&&!WLD.reach(x,z)))continue;const q=L0[R()*L0.length|0],r=big(q[0])?.7:q[1]>1.5?q[1]*.35:0;if(r&&!colFree(x,z,r+.6))continue;
+    if(blocked(x,z)||(WLD.reach&&!WLD.reach(x,z))||!natFree(x,z))continue;const q=L0[R()*L0.length|0],r=big(q[0])?.7:q[1]>1.5?q[1]*.35:0;if(r&&!colFree(x,z,r+.6))continue;
     out.push({k:q[0],x,y:hgt(x,z)-.05,z,ry:R()*6.28,h:q[1]*(.85+R()*.3),f:q[2]||'wz'});if(r)addCol(x,z,r);c++}
   if(WZG[n]){for(let t=0;t<40;t++){const z=-60-R()*60,px=WLD.path?WLD.path(z):0,x=px+(R()<.5?-1:1)*(10+R()*8);if(blocked(x,z)||!colFree(x,z,5))continue;
     const G2=[['tomb_statue',2.4,0,0],['tomb_1',1.1,-2,1.2],['tomb_2',1.1,2,1.2],['tomb_3',1.1,-2,-1.4],['prop_tomb_1',.6,2,-1.4],['coffin',.5,0,2.6],['lamp',2.2,-3.2,0],['column_1',2.4,3.2,0]];
