@@ -1,0 +1,757 @@
+{
+ "id": "spielesammlung",
+ "handbuch": [
+  {
+   "t": "Die Spielesammlung im Überblick",
+   "p": [
+    "Die Spielesammlung vereint drei Bereiche in einem Spiel: sieben Brettspiel-Klassiker in 3D, die Kartensammlung mit zwölf Kartenspielen und Mahjong 3D – Jadepalast. Im Menü tippst du ein Spiel an; die Kartensammlung und Mahjong 3D öffnen sich als eigene Bereiche, aus denen dich „←“ zurück zur Spielesammlung bringt. Einstellungen, Bestwerte und Spielstände jedes Bereichs bleiben getrennt gespeichert."
+   ]
+  },
+  {
+   "t": "Brettspiele – Was ist die Spielesammlung?",
+   "p": [
+    "Die 3D-Spielesammlung enthält sieben Brettspiel-Klassiker in 3D: Rausschmeißer, Würfelfieber, Schach, Leiterspiel, Vier in einer Reihe, Dame und Mühle. Du spielst gegen den Computer oder mit mehreren Menschen abwechselnd an einem Gerät – auf Handy und PC.",
+    "Jedes Spiel hat seine eigenen Regeln und sein eigenes Ziel. Die Regeln findest du im Spiel jederzeit unter „Regeln“ bzw. dem ?-Knopf."
+   ]
+  },
+  {
+   "t": "Brettspiele – Menü und Spieleinrichtung",
+   "steps": [
+    "Im Menü tippst du eine Spielkarte an. Auf jeder Karte steht, für wie viele Spieler das Spiel ist.",
+    "In der Einrichtung legst du für jeden Platz fest, wer spielt: Mensch, Computer leicht, Computer mittel oder Computer schwer. Im Leiterspiel gibt es nur „Computer“, weil dort allein der Würfel entscheidet. Plätze über der Mindestzahl kannst du auf „— nicht dabei —“ stellen.",
+    "„Regeln“ zeigt die Spielregeln, „Spiel starten“ beginnt, „Zurück“ führt ins Menü. Die Platzwahl wird pro Spiel gespeichert.",
+    "Im Spiel oben: ☰ zurück zum Menü, ↻ dreht die Ansicht um 90 Grad, ? zeigt die Regeln, 🔊 schaltet den Ton.",
+    "Am Ende erscheint das Ergebnis mit „Nochmal“ oder „Zum Menü“."
+   ]
+  },
+  {
+   "t": "Brettspiele – Bedienung",
+   "list": [
+    "PC: mit der Maus auf Figuren, Felder, Würfel oder Spalten klicken. Mit gedrückter Maustaste ziehen dreht die Ansicht, das Mausrad zoomt. ↻ dreht um 90 Grad.",
+    "Touch: Figur, Feld, Würfel oder Spalte antippen. Mit einem Finger wischen dreht die Ansicht, mit zwei Fingern zusammenziehen oder spreizen zoomt.",
+    "Gamecontroller: Der rechte Stick bewegt einen Mauszeiger, A klickt. Mit dem Steuerkreuz springst du zwischen den Knöpfen der Menüs.",
+    "Ist der Computer dran, steht oben „… denkt …“ – dann einfach kurz warten."
+   ]
+  },
+  {
+   "t": "Brettspiele – 🎲 Rausschmeißer (2–4 Spieler)",
+   "list": [
+    "Farben: Rot, Gelb, Grün, Blau. Jeder hat vier Figuren im Haus. Der Rundkurs hat 40 Felder, dazu 4 Zielfelder pro Farbe.",
+    "Zum Würfeln den Würfel in der Mitte antippen.",
+    "Wer eine 6 würfelt, muss eine Figur auf sein Startfeld setzen und darf nochmal würfeln.",
+    "Solange noch Figuren im Haus stehen, muss das eigene Startfeld frei gemacht werden.",
+    "Landest du auf einer gegnerischen Figur, fliegt sie zurück ins Haus. Eigene Figuren kann man nicht schlagen und nicht überdecken.",
+    "Ohne Figur auf dem Feld hast du drei Versuche für eine 6.",
+    "Ins Ziel geht es nur mit passender Augenzahl. Wer zuerst alle vier Figuren im Ziel hat, gewinnt.",
+    "Gibt es mehrere mögliche Züge, tippst du die Figur an, die ziehen soll."
+   ]
+  },
+  {
+   "t": "Brettspiele – 🎯 Würfelfieber (1–4 Spieler)",
+   "list": [
+    "5 Würfel, pro Zug bis zu drei Würfe. Tippe Würfel an, um sie zu halten (sie wandern nach hinten).",
+    "Danach trägst du das Ergebnis in ein freies Feld des Zettels ein. Passt nichts, streichst du ein Feld mit 0.",
+    "Oberer Teil: Einer bis Sechser zählen die Summe dieser Augen. Ab 63 Punkten oben gibt es 35 Bonus.",
+    "Unterer Teil: Dreierpasch und Viererpasch = Summe aller Augen, Full House (3 + 2 gleiche) = 25, Kleine Straße (4 in Folge) = 30, Große Straße (5 in Folge) = 40, Fünferpasch (5 gleiche) = 50, Chance = Summe aller Augen.",
+    "Nach 13 Runden gewinnt die höchste Gesamtsumme. Allein gespielt jagst du deinen eigenen Rekord."
+   ]
+  },
+  {
+   "t": "Brettspiele – ♞ Schach (2 Spieler)",
+   "list": [
+    "Weiß beginnt. Tippe eine Figur an – mögliche Züge leuchten grün, Schlagzüge rot.",
+    "Es gelten alle Regeln: Rochade, en passant, Bauernumwandlung (du wählst die Figur), Schach und Matt.",
+    "Remis bei Patt, dreifacher Stellungswiederholung, 50 Zügen ohne Schlagen oder Bauernzug oder zu wenig Material."
+   ]
+  },
+  {
+   "t": "Brettspiele – 🪜 Leiterspiel (2–4 Spieler)",
+   "list": [
+    "Würfle und ziehe so viele Felder weiter. Am Fuß einer Leiter kletterst du hoch, auf dem Kopf einer Schlange rutschst du runter. Leiterfelder sind grün, Schlangenfelder rot beschriftet.",
+    "Mit einer 6 darfst du nochmal würfeln.",
+    "Feld 100 muss genau erreicht werden – würfelst du zu viel, bleibst du stehen.",
+    "Wer zuerst auf Feld 100 steht, gewinnt."
+   ]
+  },
+  {
+   "t": "Brettspiele – 🔴 Vier in einer Reihe (2 Spieler)",
+   "list": [
+    "Rot gegen Gelb. Tippe auf eine Spalte, um deinen Stein einzuwerfen; er fällt nach unten.",
+    "Wer zuerst vier Steine waagerecht, senkrecht oder diagonal in einer Reihe hat, gewinnt.",
+    "Ist das Brett voll, endet das Spiel unentschieden."
+   ]
+  },
+  {
+   "t": "Brettspiele – ⚪ Dame (2 Spieler)",
+   "list": [
+    "Weiß gegen Rot auf einem 8×8-Brett, je 12 Steine auf den dunklen Feldern.",
+    "Steine ziehen ein Feld diagonal nach vorn. Geschlagen wird durch Überspringen – auch rückwärts.",
+    "Es herrscht Schlagpflicht. Mehrfachsprünge werden bis zum Ende ausgeführt; tippe direkt das letzte Zielfeld an.",
+    "Wer die gegnerische Grundreihe erreicht, wird zur Dame: Sie zieht und schlägt beliebig weit diagonal.",
+    "Wer nicht mehr ziehen kann, verliert."
+   ]
+  },
+  {
+   "t": "Brettspiele – ⚫ Mühle (2 Spieler)",
+   "list": [
+    "Weiß gegen Schwarz auf dem Mühlebrett mit 24 Punkten.",
+    "Zuerst setzt jeder abwechselnd seine 9 Steine. Danach werden Steine entlang der Linien auf ein freies Nachbarfeld gezogen.",
+    "Wer nur noch 3 Steine hat, darf springen – auf jedes freie Feld.",
+    "Drei eigene Steine in einer Linie sind eine Mühle. Dann darfst du einen gegnerischen Stein nehmen; Steine in Mühlen nur, wenn es keine anderen gibt.",
+    "Wer weniger als 3 Steine hat oder nicht mehr ziehen kann, verliert."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Ziel des Spiels",
+   "p": [
+    "Kartensammlung 3D vereint zwölf Kartenspiele: neun Tischspiele in einer 3D-Kartenstube (Stapelrausch, Farbflash, Phasenjagd, Mau-Mau, Schwimmen, Kartendomino, Siebzehn und Vier, Schwarzer Peter und Paare) und drei Solitär-Spiele (Patience, Spider und FreeCell). Am Tisch sitzen alle Mitspielerinnen und Mitspieler als animierte 3D-Figuren.",
+    "Je nach Spiel gewinnt, wer zuerst alle Karten los ist, die meisten Punkte oder Paare hat oder als Letzte:r übrig bleibt. Bei Schwarzer Peter verliert, wer zum Schluss den ♠ Buben hält."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Hauptmenü, Start und Spielerwahl",
+   "steps": [
+    "Das Hauptmenü sieht aus wie an einer Spielkonsole: oben rechts dein Profil (Figur und Name) und die Uhr, in der Mitte die Leiste mit allen Spielen. Das gewählte Spiel wird groß mit Beschreibung angezeigt.",
+    "Wähle ein Spiel aus der Leiste. Tischspiele öffnen die Spielvorbereitung, Patience, Spider und FreeCell öffnen den Solitär-Bereich.",
+    "Wähle, wie gespielt wird: 🤖 Computer (1, 2 oder 3 Gegner), 👥 Ein Gerät (2, 3 oder 4 Spieler), 🌐 Online oder 📺 TV + Handys.",
+    "Stelle die Optionen ein, falls das Spiel welche hat: Stapelrausch „Zielstapel: Kurz 15 / Normal 30“, Phasenjagd „Länge: Kurz 5 / Alle 10“, Siebzehn und Vier „Runden: 3, 5 oder 8“.",
+    "Gib deinen Namen ein und wähle deine Figur: Ritter, Barbar, Magierin, Jäger, Schurkin, Schatten, Knochenritter oder Knochenhexe. Beim Spiel an einem Gerät bekommt jede Person Name und Figur.",
+    "Mit „Los geht's“ startet die Partie. Beim ersten Start eines Spiels erscheint automatisch seine Anleitung; später findest du sie jederzeit unter ? oder 📖 Anleitung.",
+    "Unter der Spieleleiste: ⚡ Schnellstart (zufälliges Spiel gegen 2 Computer-Gegner), 🏆 Turnier, 🌐 Online beitreten, ⚙️ Einstellungen und 📖 Anleitung."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Bedienung",
+   "list": [
+    "Touch und Maus: Karte antippen bzw. anklicken, dann das Ziel antippen (Turm, Ablage, Auslage oder Mitte). Karten, die gerade passen, leuchten. Knöpfe unter dem Tisch dienen zum Ziehen, Auslegen, Behalten, Passen, Halten, Schieben oder Klopfen.",
+    "Tastatur: Pfeiltasten bewegen einen leuchtenden Rahmen über Karten und Felder, Enter legt bzw. wählt, Esc hebt die Auswahl auf oder öffnet die Pause. X, Y und R (oder 1, 2, 3) drücken die Knöpfe unter dem Tisch, Q und E springen zur vorigen bzw. nächsten Handkarte, P ist Pause, H die Anleitung. In den Menüs bewegen die Pfeiltasten den Fokus, Enter bestätigt, Esc geht zurück, Q/E blättern durch die Spiele.",
+    "PlayStation-Controller: Steuerkreuz oder linker Stick wählt, ✕ bestätigt, ○ zurück, □ Aktion 1, △ Aktion 2, R2 Aktion 3, L1/R1 vorige/nächste Handkarte, Options Pause, Create Anleitung.",
+    "Switch-Controller (Pro Controller, Joy-Con): wie an der Switch bestätigt A (rechts) und B geht zurück, Y Aktion 1, X Aktion 2, ZR Aktion 3, L/R Handkarte wechseln, + Pause, − Anleitung.",
+    "Xbox- und andere Controller: A bestätigt, B zurück, X/Y Aktion 1 und 2, RT Aktion 3, LB/RB Handkarte, Start Pause, Back Anleitung. Die Knopf-Symbole auf dem Bildschirm passen sich automatisch dem angeschlossenen Controller an; in den ⚙️ Einstellungen lassen sich Symbole und Bestätigen-Knopf auch fest einstellen. Select + Start öffnet die Controller-Belegung zum Umbelegen.",
+    "Oben: ☰ öffnet die Pause (Weiterspielen, 📖 Anleitung, ⚙️ Einstellungen, Spiel beenden), 🔊 schaltet den Ton, ? zeigt die Anleitung des laufenden Spiels.",
+    "Farbwahl (Farbflash) und Wunschfarbe (Mau-Mau): Nach einer Farbwahl-Karte oder einem Buben erscheint „Welche Farbe?“ mit vier Knöpfen.",
+    "Ein Gerät: Nach jedem Zug erscheint der Übergabe-Bildschirm „… ist dran – Gerät übergeben, die Karten sind verdeckt“. Erst mit Aufdecken sieht die nächste Person ihre Karten."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Stapelrausch",
+   "list": [
+    "Gespielt wird mit Zahlenkarten 1 bis 12 (je 12-mal) und 18 Jokern (★).",
+    "Ziel: Werde als Erste:r deinen Zielstapel los (goldener Platz links, 15 oder 30 Karten). Nur seine oberste Karte ist offen.",
+    "In der Mitte stehen 4 Türme. Jeder beginnt mit 1 und wird lückenlos bis 12 gebaut. Unter jedem Turm steht, welche Zahl als Nächstes passt. Ein fertiger Turm (12 Karten) wird abgeräumt und später neu gemischt.",
+    "Dein Zug: Du bekommst automatisch 5 Handkarten. Spiele so viele Karten wie möglich auf die Türme – von der Hand, vom Zielstapel oder von deinen 4 Ablagen (jeweils die oberste).",
+    "★ Joker passen auf jede Zahl. Hast du alle 5 Handkarten gespielt, ziehst du sofort 5 neue.",
+    "Zum Schluss legst du eine Handkarte auf eine deiner 4 Ablagen. Damit endet dein Zug."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Farbflash",
+   "list": [
+    "Kartenspiel mit vier Farben (Rot, Gelb, Grün, Blau), Zahlen 0 bis 9, Aktionskarten und schwarzen Karten. Jede:r startet mit 7 Karten.",
+    "Lege eine Karte auf die Ablage, die in Farbe oder Zahl/Zeichen zur obersten Karte passt.",
+    "Keine passt? Tippe auf den Ziehstapel. Passt die gezogene Karte, darfst du sie gleich spielen oder behalten; sonst ist die nächste Person dran.",
+    "⊘ Aussetzen: Die nächste Person wird übersprungen.",
+    "⇄ Richtungswechsel: Die Spielrichtung dreht sich (zu zweit wirkt er wie Aussetzen).",
+    "+2: Die nächste Person zieht 2 Karten und setzt aus.",
+    "★ Farbwahl (schwarz, passt immer): Du bestimmst die neue Farbe.",
+    "+4 (schwarz, passt immer): Farbe wählen, die nächste Person zieht 4 und setzt aus.",
+    "Bei der letzten Karte ruft deine Figur automatisch „Flash!“. Wer zuerst keine Karte mehr hat, gewinnt."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Phasenjagd",
+   "p": [
+    "Jede:r bekommt pro Runde 10 Karten. Im Spiel sind Zahlen 1 bis 12 in vier Farben (jede doppelt), 8 Joker (★) und 4 Aussetzen-Karten (⊘). Erfülle die Phasen der Reihe nach; bei „Kurz 5“ nur die ersten fünf."
+   ],
+   "list": [
+    "Phase 1: 3 gleiche Zahlen + 3 gleiche Zahlen",
+    "Phase 2: 3 gleiche Zahlen + Folge aus 4",
+    "Phase 3: 4 gleiche Zahlen + Folge aus 4",
+    "Phase 4: Folge aus 7",
+    "Phase 5: Folge aus 8",
+    "Phase 6: Folge aus 9",
+    "Phase 7: 4 gleiche Zahlen + 4 gleiche Zahlen",
+    "Phase 8: 7 Karten einer Farbe",
+    "Phase 9: 5 gleiche Zahlen + 2 gleiche Zahlen",
+    "Phase 10: 5 gleiche Zahlen + 3 gleiche Zahlen",
+    "Dein Zug: Ziehstapel oder oberste Karte der Ablage antippen (eine Aussetzen-Karte kann man nicht von der Ablage nehmen). Hast du deine Phase, tippe die Karten an und dann „Phase auslegen“. Danach darfst du einzelne Karten an jede Auslage anlegen. Zum Schluss eine Karte abwerfen.",
+    "Begriffe: Gleiche Zahlen = Farbe egal. Folge = lückenlos aufsteigend, z. B. 4-5-6-7. Farbe = alle Karten in einer Farbe. ★ Joker ersetzt jede Karte. ⊘ Aussetzen abwerfen: Die nächste Person setzt einmal aus.",
+    "Rundenende: Hat jemand keine Karte mehr, endet die Runde. Wer seine Phase ausgelegt hat, kommt zur nächsten Phase. Restkarten zählen als Minuspunkte: 1–9 = 5, 10–12 = 10, Aussetzen = 15, Joker = 25.",
+    "Wer zuerst die letzte Phase schafft, gewinnt. Schaffen es mehrere in derselben Runde, gewinnt, wer die wenigsten Minuspunkte hat."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Mau-Mau",
+   "list": [
+    "32er-Blatt (7 bis Ass) in ♣ ♠ ♥ ♦. Jede:r startet mit 5 Karten.",
+    "Lege eine Karte gleicher Farbe oder gleichen Werts auf die Ablage. Kannst du nicht, ziehst du eine Karte – passt sie, darfst du sie gleich legen oder behalten.",
+    "7: Die nächste Person zieht 2 Karten. Sie kann mit einer eigenen 7 kontern, dann zieht die übernächste 4 usw.",
+    "8: Die nächste Person setzt aus.",
+    "Bube: passt auf alles außer auf einen Buben – du wünschst dir eine Farbe.",
+    "Bleibt dir nur noch eine Karte, ruft deine Figur „Mau!“, mit der letzten Karte „Mau-Mau!“. Wer zuerst alle Karten los ist, gewinnt."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Schwimmen",
+   "list": [
+    "Jede:r hat 3 Leben ❤️ und 3 Karten, in der Mitte liegen 3 offene Karten (32er-Blatt).",
+    "Gezählt wird nur eine Farbe: Ass = 11, Bube/Dame/König = 10, sonst der Kartenwert. Drei gleiche Werte (z. B. drei Damen) zählen 30,5. Bestwert: 31.",
+    "Dein Zug – eins davon: Tauschen (eine eigene Karte antippen, dann eine Karte in der Mitte), Alle tauschen (deine 3 gegen die 3 der Mitte), Schieben (nichts tun; schieben alle nacheinander, kommen 3 neue Karten in die Mitte) oder Klopfen (du bist zufrieden – alle anderen haben noch genau einen Zug).",
+    "Rundenende: Nach dem Klopfen wird gezählt. Der niedrigste Wert verliert ein Leben. Hat jemand 31, endet die Runde sofort und alle anderen verlieren ein Leben.",
+    "Ist das letzte Leben weg, „schwimmt“ man noch eine Runde; verliert man dann erneut, ist man raus. Wer als Letzte:r übrig ist, gewinnt."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Kartendomino",
+   "list": [
+    "Alle 52 Karten (2 bis Ass) werden verteilt.",
+    "Wer die ♥ 7 hat, beginnt und muss sie legen.",
+    "Eine neue 7 eröffnet die Reihe ihrer Farbe. An jede Reihe passt nur die Karte direkt darunter (6, 5 … 2) oder direkt darüber (8, 9 … Ass) in derselben Farbe.",
+    "Kannst du nicht, tippe auf Passen. Wer legen kann, muss legen.",
+    "Wer zuerst alle Karten los ist, gewinnt."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Siebzehn und Vier",
+   "list": [
+    "52 Karten. Alle spielen gleichzeitig gegen die Bank, nicht gegeneinander.",
+    "Werte: 2 bis 10 zählen ihren Wert, Bube, Dame und König 10, das Ass 11 oder 1 – je nachdem, was besser ist.",
+    "Jede:r bekommt 2 offene Karten, die Bank eine offene und eine verdeckte. Im Zug ziehst du mit „Karte“ eine weitere oder beendest mit „Halten“. Über 21 hast du die Runde verloren.",
+    "Danach deckt die Bank auf und zieht, bis sie mindestens 17 hat.",
+    "Punkte je Runde: besser als die Bank oder die Bank über 21 = +1, 21 aus den ersten zwei Karten = +2, gleich = 0, schlechter oder über 21 = −1.",
+    "Nach 3, 5 oder 8 Runden gewinnt, wer die meisten Punkte hat."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Schwarzer Peter",
+   "list": [
+    "32er-Blatt ohne den ♣ Buben – darum hat der ♠ Bube, der Schwarze Peter, keinen Partner.",
+    "Paare sind zwei Karten mit gleichem Wert und gleicher Farbe (♣/♠ schwarz, ♥/♦ rot). Sie werden automatisch abgelegt, schon beim Austeilen.",
+    "Dein Zug: Tippe eine verdeckte Karte des nächsten Mitspielers an, der noch Karten hat. Ergibt sie ein Paar, wird es sofort abgelegt.",
+    "Wer keine Karten mehr hat, ist fertig. Wer zuerst fertig ist, gewinnt; wer am Ende den Peter hält, hat verloren."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Paare",
+   "list": [
+    "Memory mit 32 Karten (7 bis Ass), die verdeckt in vier Reihen liegen.",
+    "Ein Paar sind zwei Karten mit gleichem Wert und gleicher Farbe, z. B. ♥ 9 und ♦ 9 oder ♣ Dame und ♠ Dame.",
+    "Dein Zug: Decke zwei Karten auf. Ist es ein Paar, nimmst du es und bist nochmal dran. Sonst bleiben beide offen liegen, bis die nächste Person aufdeckt.",
+    "Wer am Ende die meisten Paare hat, gewinnt."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Solitär: Patience, Spider und FreeCell",
+   "p": [
+    "Der Solitär-Bereich hat ein eigenes Menü mit Neuem Spiel, ▶ Weiterspielen, 📅 Tagesspiel, Statistik und Einstellungen. „← Zur Kartensammlung“, Esc oder ○/B führen zurück ins Hauptmenü."
+   ],
+   "list": [
+    "Patience: In 7 Spalten absteigend in wechselnden Farben bauen, leere Spalten nehmen nur einen König; alle Karten nach Farben von Ass bis König auf die 4 Ablagen. 1 oder 3 Karten ziehen, auf Wunsch nur lösbare Partien.",
+    "Spider: zwei Kartenspiele, 10 Spalten. Absteigend bauen, verschieben lassen sich nur Reihen derselben Farbe; eine komplette Reihe König bis Ass wird abgelegt. 1, 2 oder 4 Farben.",
+    "FreeCell: alle Karten offen, absteigend in wechselnden Farben bauen; 4 freie Zellen nehmen je eine Karte auf.",
+    "Steuerung im Solitär: Karten ziehen oder antippen; Tastatur Pfeile, Leertaste/Enter, F automatisch legen, D Stapel, Z rückgängig, H Tipp, A automatisch fertig; Controller Steuerkreuz, A/✕ aufnehmen und ablegen, X/□ automatisch legen, Y/△ Stapel ziehen, LB/L1 rückgängig, RB/R1 Tipp, Start/Options Menü."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Turnier und Schnellstart",
+   "list": [
+    "🏆 Turnier: drei zufällige Tischspiele hintereinander gegen 1 bis 3 Computer-Gegner. Jeder Sieg bringt 3 Punkte. Nach jedem Spiel zeigt der Turnier-Stand Siege und Punkte; nach drei Spielen holt die meiste Punktzahl den Pokal.",
+    "⚡ Schnellstart: startet sofort ein zufälliges Tischspiel gegen 2 Computer-Gegner."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Einstellungen",
+   "list": [
+    "Ton an oder aus.",
+    "Grafik: Hoch (Figuren bewegen sich ständig, Kamera kreist im Menü) oder Sparsam (Figuren bewegen sich nur bei Aktionen, schont Akku und schwache Geräte).",
+    "Symbole: Auto, PlayStation, Switch oder Xbox – bestimmt, welche Knopf-Symbole angezeigt werden.",
+    "Bestätigen: Auto, Unten (✕ wie bei PlayStation) oder Rechts (A wie bei Nintendo).",
+    "Die Tastenbelegung für PlayStation, Switch und Tastatur steht als Tabelle direkt in den Einstellungen."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Online, Ein Gerät und TV + Handys",
+   "list": [
+    "🌐 Online: Du tippst auf „🏠 Raum erstellen“ und bekommst einen 4-stelligen Code, einen Link und einen QR-Code. Mitspieler treten von überall bei (bis 4 Spieler): im Hauptmenü „🌐 Online beitreten“ den Code eingeben und „🔑 Beitreten“, den Link öffnen oder den QR-Code scannen. Das Spiel wählt der Gastgeber, der mit „Spiel starten“ beginnt.",
+    "📺 TV + Handys: Dieses Gerät (TV, PC, Spielkonsole mit Browser oder Tablet) zeigt den Tisch für alle. 2 bis 4 Spieler treten online mit dem eigenen Handy bei und sehen dort nur ihre eigenen Karten. „📺 TV-Tisch öffnen“ erstellt den Raum.",
+    "👥 Ein Gerät: 2 bis 4 Personen spielen abwechselnd; die Karten bleiben bis zum Aufdecken verdeckt.",
+    "🤖 Computer: 1 bis 3 Computer-Gegner mit eigenen Figuren.",
+    "Online, Ein Gerät und TV + Handys gibt es für alle neun Tischspiele; die Solitär-Spiele spielst du allein."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Ende und Speichern",
+   "p": [
+    "Am Ende zeigt das Spiel „Gewonnen! 🏆“ oder „… gewinnt!“, bei Siebzehn und Vier, Schwarzer Peter und Paare mit Ergebnistabelle, dazu die Knöpfe Nochmal (im Turnier: Turnier-Stand) und Zum Menü. Gespeichert werden Name, Figur, Optionen, Einstellungen und welche Anleitungen du schon gesehen hast – keine laufende Tischpartie. Im Solitär werden die laufende Partie und die Statistik automatisch gespeichert, mit Google auch in der Cloud."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Ziel des Spiels",
+   "p": [
+    "Mahjong 3D – Jadepalast ist Mahjong Solitaire in echtem 3D. Auf dem Tisch liegen bis zu 144 Steine in mehreren Schichten. Du räumst sie paarweise ab: Tippe zwei gleiche Steine an, die beide frei sind – dann verschwinden sie.",
+    "Ist das Brett leer, hast du gewonnen. Jedes Brett wird so gemischt, dass es lösbar ist (im Freien Spiel und Zen abschaltbar)."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Wann ist ein Stein frei?",
+   "list": [
+    "Es liegt kein Stein darauf – auch nicht halb.",
+    "Und mindestens eine lange Seite (links oder rechts) hat keinen direkten Nachbarn.",
+    "Blockierte Steine sind abgedunkelt (abschaltbar). Tippst du einen blockierten Stein an, wackelt er.",
+    "Oben im Spiel zeigt „Paare frei“, wie viele Paare gerade möglich sind. Steht dort 0, musst du zurücknehmen oder mischen."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Welche Steine passen?",
+   "list": [
+    "Gleiche Bilder passen zusammen: Kreise 1–9, Bambus 1–9, Zeichen 1–9, die vier Winde und die drei Drachen – jeweils viermal vorhanden.",
+    "Ausnahme Blumen: Alle vier Blumen passen untereinander.",
+    "Ausnahme Jahreszeiten: Alle vier Jahreszeiten passen untereinander.",
+    "Die Steinbilder kannst du in den Einstellungen auf „Klar“ stellen – dann zeigen sie große Zahlen."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Hauptmenü und Spielarten",
+   "list": [
+    "▶ Weiterspielen: setzt die gespeicherte Partie fort.",
+    "🗺️ Reise: 48 Level in 8 Welten, jede Welt mit eigenem Tisch, bis zu drei Sterne pro Level.",
+    "🀄 Freies Spiel: alle 29 Layouts frei wählbar, sortiert nach Größe, A–Z oder 🎲 Zufall. Für jedes Layout wird ein Bestwert gespeichert.",
+    "📅 Tagesrätsel: jeden Tag ein neues großes Brett (mindestens 100 Steine), für alle gleich. Löst du es an aufeinanderfolgenden Tagen, wächst deine Serie 🔥.",
+    "⏱️ Zeitjagd: Bretter gegen die Uhr. Du startest mit 2:30 Minuten, jedes Paar gibt +3 Sekunden, jedes abgeräumte Brett +30 Sekunden. Gespielt werden mittelgroße Layouts mit 40 bis 90 Steinen.",
+    "🍵 Zen: ohne Uhr und Punkte, Bretter folgen endlos. Gibt es keine Paare mehr, wird gratis neu gemischt.",
+    "🏆 Erfolge, ⚙️ Einstellungen, 📖 Anleitung, ☁️ Mit Google speichern, ⛶ Vollbild."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Hilfen im Spiel",
+   "list": [
+    "💡 Tipp: zeigt ein freies Paar (−20 Punkte).",
+    "↶ Zurück: nimmt Züge zurück, so oft du willst. Die Punkte des Paars werden abgezogen.",
+    "🔀 Mischen: verteilt die restlichen Steine neu, und zwar lösbar (−50 Punkte).",
+    "Gibt es keinen Zug mehr, meldet das Spiel das sofort (abschaltbar). In der Zeitjagd wird dann automatisch gemischt (−10 Sekunden), im Zen gratis.",
+    "In Welt 1 der Reise zeigt das Spiel nach 25 Sekunden ohne Aktion von selbst einen kostenlosen Tipp.",
+    "Option „Passende Steine zeigen“: Nach dem Antippen leuchten freie Partner auf – das zählt nicht als Tipp."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Bedienung",
+   "list": [
+    "Touch: Stein antippen. Mit zwei Fingern zoomen und drehen, gezoomt mit einem Finger verschieben, Doppeltippen auf den Tisch zoomt. Unten die Knöpfe ↶ Zurück, 💡 Tipp, 🔀 Mischen, − / + Zoom und ⟲ Ansicht zurücksetzen.",
+    "Maus: Klick wählt einen Stein, Mausrad zoomt, rechte Maustaste gedrückt halten dreht die Ansicht.",
+    "Tastatur: Pfeiltasten springen zwischen freien Steinen, Enter oder Leertaste wählt, H Tipp, U Zurück, R Mischen, + und − Zoom, Q/E drehen, V Ansicht, M Ton, F Vollbild, P oder Esc Pause.",
+    "Gamecontroller: Steuerkreuz oder linker Stick springen, A wählt, B abwählen/Pause, X Tipp, Y Zurück, Select Mischen, LB/RB drehen, LT/RT Zoom, rechter Stick verschieben, Start Pause."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Punkte, Kombos und Sterne",
+   "list": [
+    "Jedes Paar bringt 10 Punkte. Folgt das nächste Paar innerhalb von 4,5 Sekunden, steigt die Kombo: 20, 30, 40 und höchstens 50 Punkte pro Paar.",
+    "Zeitbonus am Ende: 3 Punkte für jede Sekunde unter der Zielzeit.",
+    "Perfekt-Bonus: +250 für einen Sieg ohne Tipp, Mischen und Zurück.",
+    "Reise-Sterne: ★ geschafft · ★★ unter der Zielzeit · ★★★ unter der Zielzeit ohne Tipp und Mischen (Zurück ist erlaubt).",
+    "Zeitjagd: Punkte aller Bretter werden addiert, der Rekord wird gespeichert."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Einstellungen",
+   "list": [
+    "Soundeffekte und Musik: je ein Lautstärkeregler.",
+    "Steinbilder: Klassisch oder Klar (große Zahlen).",
+    "Hilfszeichen: kleine Zahl bzw. Buchstabe in der Ecke jedes Steins.",
+    "Blockierte Steine abdunkeln, Passende Steine zeigen, Immer lösbar mischen (Freies Spiel und Zen), Hinweis bei „keine Züge“.",
+    "Tisch, Steinrücken (Jade, Rubin, Saphir, Gold, Ebenholz), Blickwinkel (Von oben, Normal, Flach), Grafik (Automatisch, Hoch, Mittel, Sparsam) und Linkshänder (Knöpfe gespiegelt)."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Speichern",
+   "p": [
+    "Dein Fortschritt – Sterne, Bestwerte, Erfolge, Einstellungen und die laufende Partie – wird immer automatisch auf diesem Gerät gespeichert. Mit einer Google-Anmeldung (☁️ Mit Google speichern) kommt er zusätzlich in die Cloud und folgt dir auf Handy, Tablet und PC. Es gilt immer der zuletzt gespielte Stand. Eine Zeitjagd wird nicht zum Fortsetzen gespeichert."
+   ]
+  }
+ ],
+ "ratgeber": [
+  {
+   "t": "Brettspiele – Tipps für Einsteiger",
+   "list": [
+    "Fang gegen „Computer leicht“ an. Er macht absichtlich öfter zufällige Züge.",
+    "Dreh die Ansicht (↻ oder Wischen), wenn Figuren verdeckt sind. In Schach, Dame und Mühle siehst du so alle Felder.",
+    "Lies vor dem ersten Spiel die Regeln (?) – sie gelten genau so im Spiel.",
+    "Würfelfieber: Halte die Würfel, die du behalten willst, bevor du erneut würfelst."
+   ]
+  },
+  {
+   "t": "Brettspiele – Strategien je Spiel",
+   "list": [
+    "Rausschmeißer: Bring früh mehrere Figuren aufs Feld, damit du bei jedem Wurf eine Wahl hast. Bleib nicht direkt vor gegnerischen Figuren stehen (1 bis 6 Felder dahinter ist gefährlich) und wirf Gegner, die kurz vor ihrem Ziel sind.",
+    "Würfelfieber: Kümmere dich früh um den oberen Bonus – dafür brauchst du im Schnitt drei gleiche je Zahl (3 Einer, 3 Zweier … ergibt genau 63). Nutze die Chance als Reserve für einen schlechten Wurf.",
+    "Schach: Entwickle Springer und Läufer, rochiere früh und lass deine Dame nicht ungeschützt. Gegen „schwer“ hilft solides Spiel mehr als schnelle Angriffe.",
+    "Vier in einer Reihe: Die mittlere Spalte ist die stärkste. Baue Drohungen auf zwei Stellen gleichzeitig, dann kann der Gegner nur eine abwehren.",
+    "Dame: Halte die eigene Grundreihe lange besetzt, damit der Gegner keine Dame bekommt. Denk an die Schlagpflicht – du kannst den Gegner zu Zügen zwingen.",
+    "Mühle: In der Setzphase nicht zu früh auf Mühlen gehen, sondern bewegliche Steine an Kreuzungspunkten platzieren. Eine „Zwickmühle“ (ein Stein, der hin und her eine Mühle schließt) gewinnt fast immer.",
+    "Leiterspiel: Hier entscheidet nur der Würfel. Genieße die Leitern!"
+   ]
+  },
+  {
+   "t": "Brettspiele – Profi-Tricks",
+   "list": [
+    "Würfelfieber: Eine Kleine Straße (30) bekommst du auch, wenn ein Würfel nicht passt – halte 3-4-5 oder 2-3-4 und würfle den Rest neu.",
+    "Würfelfieber: Ein Fünferpasch zählt nicht als Full House. Trag ihn lieber als Fünferpasch (50) ein.",
+    "Rausschmeißer: Steht noch eine Figur im Haus, musst du dein Startfeld räumen – plane, welche Figur du dafür nimmst.",
+    "Dame: Bei Mehrfachsprüngen gleich das letzte Zielfeld antippen; die Zwischenschritte führt das Spiel automatisch aus.",
+    "Mühle: Mit 3 Steinen springst du. Nutze das, um gegnerische Mühlen in letzter Sekunde zu blockieren."
+   ]
+  },
+  {
+   "t": "Brettspiele – Häufige Fehler",
+   "list": [
+    "Rausschmeißer: zu dicht hinter dem eigenen Startfeld auf Figuren von Gegnern warten, die gleich herauskommen.",
+    "Vier in einer Reihe: nur auf die eigene Reihe schauen und die Drohung des Gegners übersehen.",
+    "Schach: bei Schach nicht den König schützen – das Spiel lässt nur legale Züge zu, aber ein Matt ist schnell passiert.",
+    "Mühle: in der Setzphase alle Steine am Rand verteilen; dann fehlen später Zugmöglichkeiten."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Tipps für Einsteiger",
+   "list": [
+    "Achte auf die leuchtenden Karten – sie zeigen dir immer, was gerade passt.",
+    "Starte gegen 1 Computer-Gegner, um ein neues Spiel kennenzulernen, und lies die Anleitung unter ?.",
+    "Stapelrausch und Phasenjagd haben eine kurze Variante (Zielstapel 15, Phasen 5) für schnelle Partien."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Stapelrausch und Phasenjagd",
+   "list": [
+    "Stapelrausch: Spiele Karten vom Zielstapel immer zuerst – nur er entscheidet über den Sieg.",
+    "Stapelrausch: Lege auf eine Ablage absteigend (z. B. 9, 8, 7), dann kannst du sie später nacheinander spielen.",
+    "Stapelrausch: Hebe Joker auf, um eine Lücke direkt unter deiner obersten Zielstapel-Karte zu schließen.",
+    "Phasenjagd: Nach dem Auslegen darfst du Karten an alle Auslagen anlegen – so wirst du deine Hand schneller los und senkst die Minuspunkte.",
+    "Phasenjagd: Wirf zuerst hohe Karten (10–12 = 10 Minuspunkte) ab, Joker (25) möglichst schnell verwenden statt halten.",
+    "Phasenjagd: Bei Folgen-Phasen (4–6) lieber die Ablage beobachten – nimm Karten, die eine Lücke schließen."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Farbflash und Mau-Mau",
+   "list": [
+    "Halte schwarze Karten (Farbwahl, +4) und Buben für den Schluss oder für Notfälle zurück – sie passen fast immer.",
+    "Spiele Aussetzen, +2 und +4 vor allem dann, wenn die nächste Person nur noch wenige Karten hat.",
+    "Wähle bei Farbwahl bzw. Wunschfarbe die Farbe, von der du die meisten Karten hast.",
+    "Mau-Mau: Behalte eine 7 als Konter – wird dir eine 7 gespielt, gibst du die Strafe weiter.",
+    "Wechsle bei gleichem Wert die Farbe, wenn du in der aktuellen Farbe kaum noch Karten hast."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Schwimmen und Kartendomino",
+   "list": [
+    "Schwimmen: Konzentriere dich früh auf eine Farbe mit Ass und Bildkarten.",
+    "Schwimmen: Klopfe, sobald du um die 27 Punkte hast – danach hat jede:r nur noch einen Zug.",
+    "Schwimmen: Drei gleiche Werte (30,5) sind fast so gut wie 31.",
+    "Kartendomino: Halte Karten zurück, die anderen weiterhelfen würden, und spiele zuerst dort, wo du selbst noch Karten nachlegen kannst.",
+    "Kartendomino: Eine 7 erst legen, wenn du Karten dieser Farbe hast – sonst öffnest du die Reihe nur für die anderen."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Siebzehn und Vier, Schwarzer Peter und Paare",
+   "list": [
+    "Siebzehn und Vier: Mit 12 bis 16 halten, wenn die offene Bankkarte 2 bis 6 ist – die Bank überkauft sich dann oft. Zeigt sie 7 oder mehr, lieber bis 17 ziehen.",
+    "Siebzehn und Vier: Ein Ass zählt flexibel – mit Ass und kleiner Karte (z. B. Ass + 5) kannst du gefahrlos noch eine Karte ziehen.",
+    "Schwarzer Peter: Paare gehen von selbst weg – zieh zügig, denn wer zuerst fertig ist, gewinnt.",
+    "Paare: Merke dir jede aufgedeckte Karte, auch die der anderen. Deck zuerst eine unbekannte Karte auf – passt sie zu einer bekannten, holst du das Paar sicher."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Solitär",
+   "list": [
+    "Patience: Decke zuerst Karten in den Spalten auf, bevor du den Stapel durchziehst; leere Spalten nur für Könige freiräumen.",
+    "Spider: Erst eine Farbe sortieren, vor dem Austeilen alle Spalten auffüllen.",
+    "FreeCell: Freie Zellen sind wertvoll – halte mindestens eine frei, damit du längere Reihen verschieben kannst.",
+    "💡 Tipp und ↶ Rückgängig sind unbegrenzt – nutze sie, um Varianten auszuprobieren."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Häufige Fehler",
+   "list": [
+    "Stapelrausch: den Zug zu früh beenden. Erst alles spielen, was passt, dann eine Karte auf die Ablage legen.",
+    "Phasenjagd: Karten anlegen wollen, bevor die eigene Phase ausliegt – das geht erst danach.",
+    "Ein Gerät: Das Gerät nicht verdeckt übergeben. Erst die nächste Person tippt auf Aufdecken.",
+    "Online: Mitspieler suchen das Spiel selbst aus – das Spiel wählt aber der Gastgeber."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Tipps für Einsteiger",
+   "list": [
+    "Räume zuerst Steine ab, die andere blockieren: hohe Stapel und die langen Reihen von außen.",
+    "Schau vor jedem Paar auf „Paare frei“. Sinkt die Zahl auf 1, wird es eng.",
+    "Lass „Blockierte Steine abdunkeln“ an – so siehst du sofort, was spielbar ist.",
+    "Auf kleinen Bildschirmen hilft der Steinstil „Klar“ mit großen Zahlen."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Strategien für Fortgeschrittene",
+   "list": [
+    "Liegen drei gleiche Steine frei, überlege, welcher den meisten Platz schafft. Nimm die zwei, die jeweils am meisten blockieren.",
+    "Liegen alle vier gleichen frei, räume sie sofort ab – sie können sich nicht gegenseitig blockieren.",
+    "Arbeite die Stapel von oben ab, damit untere Schichten früh erreichbar werden.",
+    "Merke dir, wo der vierte Stein einer Sorte steckt. Liegt er unter seinem eigenen Partner, musst du die Reihenfolge planen.",
+    "Lange waagerechte Reihen von beiden Enden her abbauen, damit die Mitte nicht dauerhaft blockiert."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Profi-Tricks für Punkte und Sterne",
+   "list": [
+    "Kombos: Suche erst mehrere Paare, dann tippe sie zügig nacheinander an – jedes innerhalb von 4,5 Sekunden. Ab dem 5. Paar gibt es dauerhaft 50 Punkte pro Paar.",
+    "Für ★★★ darfst du ↶ Zurück benutzen, aber keinen Tipp und kein Mischen. Ein Fehler lässt sich also korrigieren.",
+    "Für den Perfekt-Bonus (+250) und den Erfolg „Ohne Netz“ ist auch Zurück tabu.",
+    "Zeitjagd: Jedes Paar bringt 3 Sekunden. Schnell spielen lohnt sich doppelt, Zurücknehmen kostet die 3 Sekunden wieder."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Häufige Fehler",
+   "list": [
+    "Paare aus derselben Reihe abräumen, die ohnehin bald frei wären, statt blockierende Steine zu lösen.",
+    "Zu früh mischen: Kostet 50 Punkte – oft hilft ein paar Züge zurück.",
+    "Blumen und Jahreszeiten übersehen: Sie passen innerhalb ihrer Gruppe alle zusammen.",
+    "Im Tagesrätsel an zwei Tagen hintereinander vergessen zu spielen – dann beginnt die Serie wieder bei 1."
+   ]
+  }
+ ],
+ "loesung": [
+  {
+   "t": "Brettspiele – Leiterspiel: alle Leitern und Schlangen",
+   "p": [
+    "Das Brett hat die Felder 1 bis 100 in Schlangenlinien. Diese Verbindungen sind fest:"
+   ],
+   "list": [
+    "Leitern: 1 → 38, 4 → 14, 9 → 31, 21 → 42, 28 → 84, 36 → 44, 51 → 67, 71 → 91, 80 → 100",
+    "Schlangen: 16 → 6, 47 → 26, 49 → 11, 56 → 53, 62 → 19, 64 → 60, 87 → 24, 93 → 73, 95 → 75, 98 → 78",
+    "Die größten Sprünge: Leiter 28 → 84 (+56) und die Leiter 80 → 100 direkt ins Ziel.",
+    "Die gefährlichste Schlange: 87 → 24 (−63), gefolgt von 62 → 19 (−43) und 49 → 11 (−38).",
+    "Kurz vor dem Ziel warten drei Schlangen auf 93, 95 und 98."
+   ]
+  },
+  {
+   "t": "Brettspiele – Würfelfieber: Wertungstabelle und Höchstpunkte",
+   "list": [
+    "Einer bis Sechser: höchstens 5, 10, 15, 20, 25 bzw. 30 Punkte (fünf gleiche).",
+    "Oberer Bonus: 35 Punkte ab 63 Punkten im oberen Teil.",
+    "Dreierpasch und Viererpasch: höchstens 30 (fünf Sechsen).",
+    "Full House: 25 · Kleine Straße: 30 · Große Straße: 40 · Fünferpasch: 50 · Chance: höchstens 30.",
+    "Theoretisches Maximum: 105 oben + 35 Bonus + 235 unten = 375 Punkte.",
+    "Strategie: Fünferpasch und Große Straße früh offen halten, Chance und Einer als Streichfelder für schlechte Würfe nutzen."
+   ]
+  },
+  {
+   "t": "Brettspiele – Die Computergegner",
+   "list": [
+    "Schach: leicht rechnet 1 Halbzug voraus und wählt zufällig unter guten Zügen, mittel 2, schwer 3 Halbzüge.",
+    "Vier in einer Reihe: leicht 2 Züge voraus (und manchmal zufällig), mittel 5, schwer 8 – auf schwer kaum zu schlagen. Spiel aus der Mitte und vermeide, ihm eine Doppeldrohung zu erlauben.",
+    "Dame: leicht 2, mittel 4, schwer 7 Züge voraus. Gegen schwer zählt jede Schlagpflicht-Falle.",
+    "Mühle: leicht 1, mittel 2, schwer 2 bis 4 Züge voraus (in der Setzphase weniger, gegen Ende mehr).",
+    "Würfelfieber: Der Computer probiert für jede Haltemöglichkeit viele Würfe im Kopf durch (leicht 10, mittel 40, schwer 120) und trägt auf leicht manchmal zufällig ein.",
+    "Rausschmeißer: leicht zieht oft zufällig, mittel und schwer bewerten jeden Zug (Schlagen, Sicherheit, Ziel)."
+   ]
+  },
+  {
+   "t": "Brettspiele – Beste Strategie gegen schwere Computer",
+   "steps": [
+    "Vier in einer Reihe: Nimm Rot (Rot beginnt) und setze den ersten Stein in die Mitte. Versuche, Drohungen in ungeraden Reihen (von unten gezählt) aufzubauen.",
+    "Schach: Spiele sichere Eröffnungen (Bauer e4 oder d4, Springer raus, Rochade). Der Computer schaut nur wenige Züge voraus – lange Pläne und Fallen über mehrere Züge funktionieren.",
+    "Dame: Tausche nur, wenn du danach mehr Steine hast. Biete keine Doppelschläge an.",
+    "Mühle: Belege in der Setzphase die vier Kreuzungspunkte der mittleren Reihe und baue eine Zwickmühle auf."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Beste Strategie je Spiel",
+   "list": [
+    "Stapelrausch: Zielstapel-Karte zuerst, Handkarten danach, Ablagen zuletzt. Ablagen absteigend sortieren und eine Ablage für hohe Karten (10–12) reservieren.",
+    "Farbflash: Aktionskarten gezielt gegen die Person mit den wenigsten Karten einsetzen; schwarze Karten bis zum Schluss aufheben.",
+    "Phasenjagd: Erst die Phase sichern, dann so viele Karten wie möglich anlegen. Die Runde selbst beenden, wenn deine Gegner noch viele Minuspunkte auf der Hand haben.",
+    "Mau-Mau: Achter und Siebener gegen Mitspieler mit 1–2 Karten, Bube als letzte oder vorletzte Karte.",
+    "Schwimmen: Ab 27 Punkten klopfen; mit schwacher Hand lieber tauschen als schieben.",
+    "Kartendomino: Reihen dort öffnen, wo du die längste Kette hast; Schlüsselkarten (6 und 8) zurückhalten, wenn andere sie brauchen.",
+    "Siebzehn und Vier: Unter 12 immer ziehen, ab 17 immer halten; dazwischen gegen eine schwache Bankkarte (2–6) halten, gegen eine starke ziehen.",
+    "Schwarzer Peter: Glück entscheidet – du siehst nicht, wo der Peter steckt. Halte die Paare im Blick: Wer viele Karten hat, hält ihn eher.",
+    "Paare: Systematisch Reihe für Reihe aufdecken und das Gitter im Kopf führen; mit vielen Spielern lohnt sich das Merken der fremden Züge besonders."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Phasenjagd: Lösungshilfe für jede Phase",
+   "list": [
+    "Phase 1 und 2: Paare sammeln und aus der Ablage zu Drillingen ergänzen.",
+    "Phase 3: Vierlinge sind schwer – halte einen Joker dafür zurück.",
+    "Phase 4 bis 6 (Folgen 7, 8, 9): Sammle eine durchgehende Mitte (z. B. 4 bis 9) und schließe die Ränder mit Jokern.",
+    "Phase 7: zwei Vierlinge – sammle die zwei häufigsten Zahlen deiner Hand.",
+    "Phase 8: sieben Karten einer Farbe – entscheide dich schnell für die Farbe, von der du am meisten hast.",
+    "Phase 9 und 10: Fünflinge brauchen fast immer einen oder zwei Joker; wirf keinen Joker ab.",
+    "Minuspunkte im Blick: Joker 25, Aussetzen 15, 10–12 je 10, 1–9 je 5 Punkte."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Schwimmen: Wertungstabelle",
+   "list": [
+    "31 = Ass + zwei Zehner-Karten (10, Bube, Dame oder König) in einer Farbe – beendet die Runde sofort, alle anderen verlieren ein Leben.",
+    "30,5 = drei gleiche Werte in beliebigen Farben (z. B. drei Siebenen).",
+    "30 = drei Zehner-Karten einer Farbe; 29 bis 21 je nach Kombination, z. B. Ass + König einer Farbe = 21.",
+    "Es zählt immer nur die beste Farbe deiner Hand."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Kleine Geheimnisse",
+   "list": [
+    "Deine Figur reagiert: Sie greift nach Karten, zuckt bei Strafkarten zusammen, hüpft beim Sieg – und wer bei Schwarzer Peter verliert, fällt um.",
+    "Bei der letzten Karte ruft deine Figur „Flash!“ (Farbflash) bzw. „Mau!“ und beim Ablegen der letzten Karte „Mau-Mau!“.",
+    "Im Hauptmenü stehen schon drei Figuren am Tisch, darunter deine eigene; wählst du eine neue Figur, tritt sie sofort an den Tisch.",
+    "Die Anleitung eines Spiels öffnet sich nur beim allerersten Start automatisch; danach merkt sich das Spiel, dass du sie gesehen hast."
+   ]
+  },
+  {
+   "t": "Kartensammlung – Solitär: Lösungshilfe",
+   "list": [
+    "Patience mit „nur lösbare“: Jede Partie stammt aus einer geprüften Liste und ist garantiert lösbar.",
+    "Patience: Karten nur auf die Ablagen legen, wenn die gleichfarbigen Karten eine Stufe darunter schon dort liegen – sonst fehlen sie später zum Bauen.",
+    "Spider 4 Farben: Gleichfarbige Reihen bevorzugen, auch wenn ein anderer Zug mehr Karten bewegt.",
+    "FreeCell: Asse und Zweien früh befreien; mit 4 freien Zellen und einer leeren Spalte verschiebst du bis zu 10 Karten auf einmal."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Reise Welt 1–4 (Zielzeiten für ★★)",
+   "list": [
+    "Welt 1 Teegarten: 1-1 Teeschale (30 Steine, 1:48) · 1-2 Laterne (32, 1:53) · 1-3 Fächer (32, 2:03) · 1-4 Herz (42, 2:19) · 1-5 Treppe (48, 2:35) · 1-6 Brücke (30, 1:48)",
+    "Welt 2 Bambuswald: 2-1 Lotusblüte (26, 1:44) · 2-2 Kreuz (40, 2:08) · 2-3 Pyramide (86, 4:11) · 2-4 Zwei Ringe (58, 2:42) · 2-5 Goldfisch (80, 3:46) · 2-6 Pagode (68, 3:27)",
+    "Welt 3 Lotusteich: 3-1 Diamant (72, 3:26) · 3-2 Schmetterling (102, 4:25) · 3-3 Mondtor (78, 3:29) · 3-4 Glückskatze (78, 3:29) · 3-5 Glückswolke (86, 3:58) · 3-6 Spinne (50, 2:35)",
+    "Welt 4 Kirschblütenfest: 4-1 Stern (56, 2:30) · 4-2 Schlange (70, 2:51) · 4-3 Kaiserkrone (106, 4:18) · 4-4 Festung (140, 5:41) · 4-5 Herz (42, 2:00) · 4-6 Jadetempel (144, 5:40)"
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Reise Welt 5–8 (Zielzeiten für ★★)",
+   "list": [
+    "Welt 5 Drachenberg: 5-1 Drache (68, 2:46) · 5-2 Heiliger Berg (124, 4:58) · 5-3 Zwillingstürme (108, 4:36) · 5-4 Arena (112, 4:04) · 5-5 Pyramide (86, 3:32) · 5-6 Schildkröte (144, 5:38)",
+    "Welt 6 Mondpalast: 6-1 Mondtor (78, 2:54) · 6-2 Kaiserpalast (144, 5:16) · 6-3 Schmetterling (102, 3:39) · 6-4 Diamant (72, 2:53) · 6-5 Glückswolke (86, 3:19) · 6-6 Festung (140, 4:59)",
+    "Welt 7 Jadetempel: 7-1 Jadetempel (144, 4:35) · 7-2 Spinne (50, 2:05) · 7-3 Heiliger Berg (124, 4:21) · 7-4 Kaiserkrone (106, 3:30) · 7-5 Drache (68, 2:26) · 7-6 Arena (112, 3:30)",
+    "Welt 8 Kaiserstadt: 8-1 Kaiserpalast (144, 4:33) · 8-2 Zwillingstürme (108, 3:47) · 8-3 Stern (56, 1:57) · 8-4 Schlange (70, 2:09) · 8-5 Festung (140, 4:17) · 8-6 Schildkröte (144, 4:33)",
+    "Jedes Reise-Level hat eine feste Mischung – du kannst also üben und dir die Lage der Steine merken."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Freischaltungen",
+   "list": [
+    "Innerhalb einer Welt öffnet jedes geschaffte Level das nächste.",
+    "Eine neue Welt öffnet sich, wenn alle 6 Level der vorherigen Welt geschafft sind (ein Stern pro Level reicht).",
+    "Freies Spiel, Tagesrätsel, Zeitjagd und Zen sind von Anfang an offen.",
+    "Nach Level 8-6: „Du hast die ganze Reise geschafft! 👑“"
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Alle 29 Layouts",
+   "p": [
+    "Klein: Lotusblüte (26 Steine), Teeschale (30), Brücke (30), Laterne (32), Fächer (32), Kreuz (40), Herz (42), Treppe (48), Spinne (50), Stern (56), Zwei Ringe (58).",
+    "Mittel: Pagode (68), Drache (68), Schlange (70), Diamant (72), Mondtor (78), Glückskatze (78), Goldfisch (80), Pyramide (86), Glückswolke (86).",
+    "Groß: Schmetterling (102), Kaiserkrone (106), Zwillingstürme (108, 6 Ebenen), Arena (112), Heiliger Berg (124), Festung (140), Schildkröte (144), Jadetempel (144), Kaiserpalast (144)."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Erfolge und Bedingungen",
+   "list": [
+    "🀄 Erstes Paar: dein erstes Steinpaar. 🧺 Fleißige Hände: 500 Paare. 🏯 Steinmeister: 3.000 Paare.",
+    "🎉 Erster Sieg: ein Brett komplett abräumen. 🏅 Routiniert: 25 Siege. 🏆 Großmeister: 100 Siege.",
+    "🔥 Im Fluss: 5er-Kombo. 🌊 Unaufhaltsam: 12er-Kombo.",
+    "🧘 Ohne Netz: Sieg ohne Tipp, Mischen und Rückgängig.",
+    "🐢 Die Schildkröte: das klassische Schildkröten-Layout abräumen.",
+    "⚡ Blitzhand: ein Brett mit 144 Steinen in unter 4 Minuten.",
+    "📅 Tagesrätsel: eins lösen. 🗓️ Sieben Tage: 7 Tage in Folge.",
+    "⏱️ Zeitjäger: 3 Bretter in einer Zeitjagd-Runde.",
+    "🍵 Innere Ruhe: insgesamt 30 Minuten im Zen-Modus.",
+    "⭐ Sternensammler: 50 Sterne auf der Reise. 🌟 Sternenhimmel: alle 144 Sterne.",
+    "🍵 Teegarten, 🎋 Bambuswald, 🪷 Lotusteich, 🌸 Kirschblütenfest, 🐉 Drachenberg, 🌙 Mondpalast, ⛩️ Jadetempel, 👑 Kaiserstadt: die jeweilige Welt abschließen.",
+    "🗺️ Weltenbummler: jedes der 29 Layouts mindestens einmal abräumen (zählt in allen Spielarten)."
+   ]
+  },
+  {
+   "t": "Mahjong 3D – Strategie je Spielart",
+   "list": [
+    "Reise: Erst einmal sicher lösen (★), dann mit Kombos auf Zeit (★★), zuletzt ohne Tipp und Mischen (★★★). Die Zielzeiten werden ab Welt 2 von Welt zu Welt knapper.",
+    "Tagesrätsel: Ziel ist das 1,9-Fache der Steinzahl in Sekunden plus 10 Sekunden pro Ebene. Ruhig, aber zügig spielen.",
+    "Freies Spiel: Ziel ist das 2,2-Fache der Steinzahl in Sekunden plus 10 Sekunden pro Ebene – gut zum Bestwerte-Jagen.",
+    "Zeitjagd: Mittelgroße Bretter schnell abräumen. Jedes Brett bringt +30 Sekunden; drei Bretter in einer Runde geben den Erfolg „Zeitjäger“.",
+    "Zen: Perfekt für den Erfolg „Innere Ruhe“ und um das Weltenbummler-Ziel bei Layouts ab 50 Steinen zu sammeln."
+   ]
+  }
+ ],
+ "faq": [
+  {
+   "q": "Brettspiele: Es erscheint „Keine Verbindung“.",
+   "a": "Die 3D-Grafik (three.js) wird beim ersten Spielstart aus dem Internet geladen. Prüfe die Verbindung und versuche es noch einmal."
+  },
+  {
+   "q": "Brettspiele: Kann ich ein Spiel speichern?",
+   "a": "Nein. Gespeichert werden nur die Platzwahl pro Spiel und die Ton-Einstellung. Eine Partie beginnt nach dem Schließen neu."
+  },
+  {
+   "q": "Brettspiele: Kann ich online gegen andere spielen?",
+   "a": "Nein. Mehrere Menschen spielen abwechselnd an einem Gerät; ansonsten spielst du gegen den Computer."
+  },
+  {
+   "q": "Brettspiele: Ich sehe die Figuren nicht gut.",
+   "a": "Dreh die Ansicht mit ↻ oder durch Wischen bzw. Ziehen mit der Maus und zoome mit zwei Fingern oder dem Mausrad."
+  },
+  {
+   "q": "Brettspiele: Warum kann ich im Leiterspiel keinen Schwierigkeitsgrad wählen?",
+   "a": "Im Leiterspiel entscheidet allein der Würfel, deshalb gibt es dort nur „Computer“."
+  },
+  {
+   "q": "Kartensammlung: Online beitreten klappt nicht.",
+   "a": "Der Code hat genau 4 Zeichen und funktioniert nur, solange der Gastgeber den Raum offen hat. Beide Geräte brauchen Internet. Alternativ den Link oder QR-Code des Gastgebers nutzen."
+  },
+  {
+   "q": "Kartensammlung: Wie spielen wir mit dem Fernseher?",
+   "a": "Öffne das Spiel auf dem Fernseher, PC oder Tablet und wähle 📺 TV + Handys und „📺 TV-Tisch öffnen“. Jedes Handy tritt per Code, Link oder QR-Code bei und zeigt nur die eigenen Karten."
+  },
+  {
+   "q": "Kartensammlung: Kann ich eine Partie speichern und später weiterspielen?",
+   "a": "Tischpartien nicht – gespeichert werden Name, Figur, Optionen, Einstellungen und die gesehenen Anleitungen. Solitär-Partien speichert das Spiel automatisch und setzt sie mit „▶ Weiterspielen“ fort."
+  },
+  {
+   "q": "Kartensammlung: Wo finde ich die Regeln während des Spiels?",
+   "a": "Tippe oben auf ? oder öffne im Pausenmenü ☰ den Punkt 📖 Anleitung."
+  },
+  {
+   "q": "Kartensammlung: Das 3D läuft nicht oder ruckelt.",
+   "a": "Das Spiel braucht beim ersten Laden Internet für die 3D-Grafik und die Figuren. Auf schwachen Geräten stelle in den ⚙️ Einstellungen die Grafik auf „Sparsam“ und schließe andere Tabs."
+  },
+  {
+   "q": "Kartensammlung: Kann ich mit dem Controller spielen?",
+   "a": "Ja, vollständig: Mit dem Steuerkreuz wählst du Karten und Felder (leuchtender Rahmen), ✕/A bestätigt, ○/B geht zurück, □/△ bzw. Y/X drücken die Knöpfe unter dem Tisch. PlayStation-, Switch- und Xbox-Controller zeigen ihre eigenen Symbole; auch die Menüs bedienst du wie an der Konsole."
+  },
+  {
+   "q": "Kartensammlung: Wo ist AnMaCha Solitaire geblieben?",
+   "a": "Solitaire ist jetzt Teil der Kartensammlung: Patience, Spider und FreeCell findest du rechts in der Spieleleiste. Alte Links und Lesezeichen leiten automatisch weiter, Spielstand und Statistik bleiben erhalten."
+  },
+  {
+   "q": "Kartensammlung: Kann ich auf der Spielkonsole spielen?",
+   "a": "Ja, im Browser der Konsole oder auf dem Fernseher: Die Menüs funktionieren wie an der Konsole mit Fokusrahmen, und mit 📺 TV + Handys zeigt der Fernseher den Tisch, während alle mit dem Handy spielen."
+  },
+  {
+   "q": "Mahjong 3D: Ist jedes Brett lösbar?",
+   "a": "Ja, solange „Immer lösbar mischen“ an ist (Standard). In Reise, Tagesrätsel und Zeitjagd ist das immer so, und auch Mischen verteilt die Steine lösbar. Nur wenn du die Option fürs Freie Spiel und Zen ausschaltest, ist echter Zufall möglich."
+  },
+  {
+   "q": "Mahjong 3D: Ich habe keine Züge mehr – was nun?",
+   "a": "Nimm mit ↶ Zurück ein paar Paare zurück oder drücke 🔀 Mischen (−50 Punkte). Im Zen wird automatisch gratis gemischt, in der Zeitjagd kostet es 10 Sekunden."
+  },
+  {
+   "q": "Mahjong 3D: Warum habe ich nur zwei Sterne, obwohl ich schnell war?",
+   "a": "Für drei Sterne darfst du weder Tipp noch Mischen benutzen. Zurücknehmen ist erlaubt."
+  },
+  {
+   "q": "Mahjong 3D: Mein Fortschritt ist weg.",
+   "a": "Er liegt im Browser dieses Geräts. Melde dich über „☁️ Mit Google speichern“ an, dann ist er zusätzlich in der Cloud und auf allen Geräten verfügbar."
+  },
+  {
+   "q": "Mahjong 3D: Die Steine sind auf dem Handy zu klein.",
+   "a": "Stelle in den Einstellungen die Steinbilder auf „Klar“, zoome mit zwei Fingern oder wähle den Blickwinkel „Von oben“."
+  },
+  {
+   "q": "Mahjong 3D: Das Spiel ruckelt oder der Akku wird schnell leer.",
+   "a": "Stelle unter Einstellungen die Grafik auf „Sparsam“ oder „Mittel“."
+  }
+ ]
+}

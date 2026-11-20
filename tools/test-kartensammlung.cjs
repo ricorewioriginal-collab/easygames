@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// Prüft die Spiellogik von AnMaCha Kartensammlung 3D (anmacha-kartensammlung/js/logic.js):
+// Prüft die Spiellogik von Kartensammlung 3D (spielesammlung/kartensammlung/js/logic.js):
 // viele Partien nur mit Computer-Spielern, Kartenzahl bleibt gleich, jede Partie endet, falsche Eingaben werden abgelehnt.
 //   node tools/test-kartensammlung.cjs
 'use strict';
 const path = require('path');
-require(path.join(__dirname, '..', 'anmacha-kartensammlung', 'js', 'logic.js'));
+require(path.join(__dirname, '..', 'spielesammlung', 'kartensammlung', 'js', 'logic.js'));
 const KR = globalThis.KR;
 let seed = 12345; KR.RND = () => ((seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x80000000);
 let fails = 0;

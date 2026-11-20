@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<!--pwa--><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="../pwa-icons/wortspiele-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Wortspiele"><script>(function(){var ua=navigator.userAgent,fr=false;try{fr=top!==self}catch(e){fr=true}
+if(fr||/RicoReWiApp/.test(ua)||location.hostname==='appassets.local'||(location.protocol!=='https:'&&location.hostname!=='localhost'))return;
+var sa=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+if('serviceWorker' in navigator)addEventListener('load',function(){var reloadAfterUpdate=false,offered=false;navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){function offer(w){if(offered||!w)return;offered=true;var d=document.createElement('div'),b=document.createElement('button'),t=document.createElement('span');d.id='egUpdate';d.setAttribute('role','status');d.style.cssText='position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:10px 12px 10px 16px;background:#102747;color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.35);font:600 14px system-ui,sans-serif';t.textContent='✨ Ein Update ist bereit';b.type='button';b.textContent='Jetzt aktualisieren';b.style.cssText='border:0;border-radius:12px;padding:9px 12px;background:#ff9e28;color:#fff;font:700 14px system-ui,sans-serif;cursor:pointer';b.onclick=function(){reloadAfterUpdate=true;b.disabled=true;b.textContent='Lädt …';w.postMessage({type:'EG_SKIP_WAITING'})};d.append(t,b);document.body.appendChild(d)}function check(){if(r.waiting&&navigator.serviceWorker.controller)offer(r.waiting)}check();r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)offer(w)})});navigator.serviceWorker.addEventListener('controllerchange',function(){if(reloadAfterUpdate)location.reload()});document.addEventListener('visibilitychange',function(){if(!document.hidden)try{r.update()}catch(e){}})}).catch(function(){})});
+var dp=null,K='egPwaHide';
+function hid(){try{return Date.now()-(+localStorage.getItem(K)||0)<6048e5}catch(e){return false}}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(sa||hid())return;setTimeout(pill,4000)});
+addEventListener('appinstalled',function(){var p=document.getElementById('egPwa');if(p)p.remove()});
+function pill(){if(!dp||document.getElementById('egPwa'))return;var d=document.createElement('div');d.id='egPwa';
+d.style.cssText='position:fixed;left:50%;bottom:calc(10px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2147483000;display:flex;gap:2px;align-items:center;background:rgba(10,12,30,.92);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:999px;font:600 13px system-ui,sans-serif;box-shadow:0 4px 18px rgba(0,0,0,.45)';
+var b=document.createElement('button'),x=document.createElement('button');
+b.textContent='\ud83d\udcf2 Als App installieren';x.textContent='\u2715';x.setAttribute('aria-label','Hinweis schließen');
+b.style.cssText='all:unset;cursor:pointer;padding:9px 6px 9px 14px';x.style.cssText='all:unset;cursor:pointer;padding:9px 13px 9px 8px;opacity:.7';
+b.onclick=function(){d.remove();dp.prompt();dp=null};x.onclick=function(){d.remove();try{localStorage.setItem(K,Date.now())}catch(e){}};
+d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},15000)}})();</script><!--/pwa-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0B0F1E">
+<title>Wortspiele – Wortfunk, Wortgitter, Stadt Land Plus &amp; Funkgalgen</title>
+<meta name="description" content="Wortspiele: Wortfunk, Wortgitter, Stadt Land Plus und Funkgalgen in einem Spiel – Wörter legen, wischen, raten und Stadt-Land-Fluss, solo, zu mehreren oder online.">
+<style>
+:root { --bg:#0B0F1E; --bg2:#141A33; --line:rgba(255,255,255,.12); --text:#F2F5FF; --muted:#A3ADCC; --acc:#00E5FF; --acc2:#FF2D95; --acc3:#8B5CF6; --gold:#FFC94D; }
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif; }
+body { min-height: 100vh; min-height: 100dvh; background: radial-gradient(900px 500px at 15% -10%, rgba(139,92,246,.35), transparent 60%), radial-gradient(800px 500px at 100% 0, rgba(0,229,255,.22), transparent 60%), linear-gradient(180deg, var(--bg2), var(--bg)); padding: max(18px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+main { max-width: 980px; margin: 0 auto; }
+h1 { margin: 6px 0 4px; font-size: clamp(30px, 6vw, 52px); line-height: 1.05; text-align: center; letter-spacing: .02em; background: linear-gradient(90deg, var(--gold), var(--acc2) 45%, var(--acc)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.sub { text-align: center; color: var(--muted); margin: 0 0 22px; font-size: clamp(14px, 2.4vw, 17px); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 14px; }
+a.card { display: flex; flex-direction: column; text-decoration: none; color: inherit; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: rgba(255,255,255,.05); transition: transform .15s, border-color .15s, box-shadow .15s; outline: none; }
+a.card:hover, a.card:focus-visible { transform: translateY(-3px); border-color: var(--acc); box-shadow: 0 10px 32px rgba(0,229,255,.25); }
+a.card .pic { aspect-ratio: 16 / 9; background-size: cover; background-position: center; }
+a.card .txt { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+a.card h2 { margin: 0; font-size: 20px; }
+a.card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; flex: 1; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.tags span { font-size: 12px; padding: 3px 9px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid var(--line); }
+.play { margin-top: 8px; align-self: flex-start; padding: 8px 16px; border-radius: 12px; font-weight: 700; color: #0B0F1E; background: linear-gradient(90deg, var(--gold), var(--acc)); }
+.foot { margin: 22px 0 0; text-align: center; }
+.foot a { color: var(--muted); text-decoration: none; padding: 10px 14px; border-radius: 12px; display: inline-block; }
+.foot a:hover, .foot a:focus-visible { color: var(--text); background: rgba(255,255,255,.08); outline: none; }
+.hint { text-align: center; color: var(--muted); font-size: 12.5px; margin: 14px 0 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Wortspiele</h1>
+  <p class="sub">Vier Wortspiele in einem Spiel – such dir eins aus</p>
+  <nav class="grid" aria-label="Wortspiele">
+    <a class="card" href="wortfunk/" id="gWortfunk">
+      <div class="pic" style="background-image:url(wortfunk/card.jpg)"></div>
+      <div class="txt"><h2>🔤 Wortfunk</h2>
+        <p>Das Wortlegespiel: Wörter legen wie im Kreuzworträtsel, 15×15-Brett mit Bonusfeldern, fast 400.000 deutsche Wörter, Joker und 50 Extrapunkte für alle 7 Steine.</p>
+        <div class="tags"><span>👥 2–4 Spieler</span><span>🤖 Computer</span><span>🌐 Online &amp; Handys</span></div>
+        <span class="play">▶ Spielen</span></div>
+    </a>
+    <a class="card" href="wortgitter/" id="gWortgitter">
+      <div class="pic" style="background-image:url(wortgitter/card.jpg)"></div>
+      <div class="txt"><h2>🔠 Wortgitter</h2>
+        <p>Wörter wischen: Verbinde benachbarte Buchstaben zu Wörtern – 4×4, 5×5 oder 6×6, mit Zeitlimit oder Zen, dazu ein Tagesgitter für alle.</p>
+        <div class="tags"><span>⏱ Zeitlimit oder Zen</span><span>📅 Tagesgitter</span><span>🌐 Online &amp; Handys</span></div>
+        <span class="play">▶ Spielen</span></div>
+    </a>
+    <a class="card" href="stadt-land-plus/" id="gStadtLandPlus">
+      <div class="pic" style="background-image:url(stadt-land-plus/card.jpg)"></div>
+      <div class="txt"><h2>🌍 Stadt Land Plus</h2>
+        <p>Stadt-Land-Fluss in 3D: Die Buchstaben-Trommel lost aus, ihr schreibt zu Stadt, Land und einem frei wählbaren Thema – oder einer eigenen Kategorie.</p>
+        <div class="tags"><span>👥 Mehrspieler</span><span>🤖 Computer</span><span>🌐 Online &amp; Handys</span></div>
+        <span class="play">▶ Spielen</span></div>
+    </a>
+    <a class="card" href="funkgalgen/" id="gFunkgalgen">
+      <div class="pic" style="background-image:url(funkgalgen/card.jpg)"></div>
+      <div class="txt"><h2>🎙️ Funkgalgen</h2>
+        <p>Rette den Moderator! Modernes Galgenmännchen in 3D mit 9 Kategorien oder dem Wortfunk-Wörterbuch, Tageswort zum Teilen und Duell.</p>
+        <div class="tags"><span>🎲 9 Kategorien</span><span>📅 Tageswort</span><span>🌐 Online &amp; Handys</span></div>
+        <span class="play">▶ Spielen</span></div>
+    </a>
+  </nav>
+  <p class="foot"><a href="../" id="backLink">← Alle Spiele</a></p>
+  <p class="hint">Fortschritt und Einstellungen jedes Spiels bleiben getrennt gespeichert.</p>
+</main>
+<script>if (window.self !== window.top) document.getElementById('backLink').style.display = 'none';</script>
+<script src="../gamepad.js" data-pad-labels="dpad=Wählt ein Spiel; a=Startet das Spiel; b=Zurück" defer></script>
+<script src="../egstat.js" defer></script>
+</body>
+</html>

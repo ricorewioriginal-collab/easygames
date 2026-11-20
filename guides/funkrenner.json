@@ -1,0 +1,176 @@
+{
+  "id": "funkrenner",
+  "handbuch": [
+    {
+      "t": "Ziel des Spiels",
+      "p": [
+        "Funkrenner ist ein 3D-Endlos-Läufer im Stil von Temple Run und Subway Surfers. Dein Held rennt automatisch auf drei Spuren durch den Dschungel, ein Radiostudio oder eine Fantasy-Welt. Du weichst Hindernissen aus, sammelst Münzen und Power-ups und willst das Ziel-Tor erreichen.",
+        "Du hast drei Leben (♥). Jeder Treffer kostet ein Leben, bei null ist der Lauf vorbei. Ein Schild fängt einen Treffer ab."
+      ]
+    },
+    {
+      "t": "Menü",
+      "list": [
+        "Spielen: drei Welten mit je fünf Leveln. Ein Level wird freigeschaltet, wenn das vorige geschafft ist.",
+        "Endlos: kein Ziel, das Tempo steigt, es zählt der Rekord pro Welt.",
+        "Beat-Modus: Rhythmusspiel mit 13 Sendern und über 100 Liedern aus Klavierlicht.",
+        "Held wählen: fünf Figuren, jede mit einer kleinen Stärke.",
+        "Upgrades: Münzen gegen längere Power-ups und ein Start-Schild.",
+        "Optionen: Ton, Grafik und Beat-Verzögerung."
+      ]
+    },
+    {
+      "t": "Steuerung",
+      "list": [
+        "Handy: nach links oder rechts wischen = Spur wechseln, nach oben wischen oder tippen = springen, nach unten wischen = rutschen.",
+        "PC und TV: Pfeiltasten oder A/D = Spur, W, Pfeil hoch oder Leertaste = springen, S oder Pfeil runter = rutschen, Esc oder P = Pause, M = Ton.",
+        "Controller: Steuerkreuz oder Stick = Spur, springen, rutschen; A springt, B rutscht, Start = Pause."
+      ]
+    },
+    {
+      "t": "Hindernisse",
+      "list": [
+        "Niedrige Hindernisse überspringst du.",
+        "Hohe oder hängende Hindernisse unterrutschst du.",
+        "Blöcke, lange Wände und rollende Felsen (oder Discokugeln) umgehst du per Spurwechsel.",
+        "Hinter jedem Treffer räumt das Spiel die Strecke kurz frei, damit du dich fangen kannst."
+      ]
+    },
+    {
+      "t": "Sammelobjekte",
+      "list": [
+        "🪙 Münzen: bringen Punkte und werden für Upgrades gespart.",
+        "🧲 Magnet zieht Münzen an.",
+        "🛡️ Schild fängt einen Treffer ab.",
+        "✖️2 verdoppelt die Punkte.",
+        "🚀 Turbo: kurz unverwundbar und schnell.",
+        "❤️ gibt ein Leben zurück."
+      ]
+    },
+    {
+      "t": "Sterne und Wertung",
+      "p": [
+        "Pro Level gibt es bis zu drei Sterne: Ziel erreicht, mindestens 65 % der Münzen gesammelt und kein Treffer kassiert. Beim Beenden bekommst du die gesammelten Münzen gutgeschrieben."
+      ]
+    },
+    {
+      "t": "Die Welten",
+      "list": [
+        "Dschungel: Lianen, Ruinen, Wasserfälle und rollende Felsen.",
+        "Radiostudio: Boxentürme, Lichttraversen, ON-AIR-Schilder und Goldene Schallplatten.",
+        "Fantasy-Welt: Brücke durch den Himmel mit Schwebeinseln, Burgen und Kristallen.",
+        "Jedes Level hat eine Tageszeit: Tag, Abend oder Nacht."
+      ]
+    },
+    {
+      "t": "Helden",
+      "list": [
+        "Ritter: startet mit Schild.",
+        "Barbar: Magnet reicht weiter.",
+        "Magier: Power-ups halten 40 % länger.",
+        "Schurkin: springt höher und rutscht länger.",
+        "Schatten: 10 % mehr Münzwert und ein Herz mehr."
+      ]
+    },
+    {
+      "t": "Beat-Modus",
+      "p": [
+        "Die Noten laufen auf vier Spuren auf dich zu. Triff sie im Takt: Tasten D F J K oder Pfeile, auf dem Handy die vier Felder, am Controller Steuerkreuz oder X, A, Y, B. Verpasste Noten senken die Lebensleiste; bei null ist das Lied verloren.",
+        "Kampagne: 13 Sender, jeder neue wird durch den vorigen freigeschaltet. Freies Spiel: jeder Sender sofort. Lieder: bekannte gemeinfreie Melodien mit Schwierigkeit Leicht, Normal oder Profi. Sterne gibt es nach Genauigkeit.",
+        "Treffer wirken verschoben (zum Beispiel bei Bluetooth-Kopfhörern)? Stelle in den Optionen die Beat-Verzögerung ein."
+      ]
+    },
+    {
+      "t": "Speichern",
+      "p": [
+        "Fortschritt, Sterne, Münzen, Upgrades und Bestwerte liegen auf diesem Gerät. Unter Optionen kannst du alles zurücksetzen. Stände der früheren Spiele Radio Surfer und Beat Surfer werden beim ersten Start übernommen, soweit sie auf diesem Gerät vorhanden sind."
+      ]
+    },
+    {
+      "t": "Quellen und Lizenzen",
+      "p": [
+        "Die Heldenfiguren und viele Umgebungsmodelle stammen aus den KayKit-Paketen von Kay Lousberg (CC0, kostenlos nutzbar). Die Lieder stammen aus Klavierlicht und sind gemeinfrei."
+      ]
+    }
+  ],
+  "ratgeber": [
+    {
+      "t": "Für Einsteiger",
+      "list": [
+        "Bleib möglichst auf der Mittelspur, von dort kommst du mit einem Wechsel auf jede Seite.",
+        "Schau weit nach vorn, nicht auf den Helden.",
+        "Spring nicht zu früh: Springen und Rutschen reagieren sofort, eine Landung dauert einen Moment."
+      ]
+    },
+    {
+      "t": "Fortgeschritten",
+      "list": [
+        "Wer in der Luft rutscht, landet sofort wieder. Das nutzt du bei hohen Hindernissen kurz nach niedrigen.",
+        "Hole zuerst Magnet und Doppelpunkte im Shop, die lohnen sich in jedem Lauf.",
+        "Für drei Sterne ohne Treffer: Lieber eine Münzreihe auslassen als ein Risiko eingehen."
+      ]
+    },
+    {
+      "t": "Beat-Modus",
+      "list": [
+        "Auf Handy und TV zuerst die Beat-Verzögerung prüfen.",
+        "Ghost-Taps (zu viel drücken) kosten nichts, rhythmisches Zählen hilft mehr als schnelles Hacken.",
+        "Im Lieder-Modus mit Leicht anfangen, Profi folgt der echten Melodie sehr genau."
+      ]
+    },
+    {
+      "t": "Häufige Fehler",
+      "list": [
+        "Zu spät nach Blöcken ausweichen.",
+        "Rollende Felsen kreuzen die Strecke seitlich: nicht in ihre Richtung wechseln.",
+        "Das Schild sofort verbrauchen, statt die gefährlichen Stellen abzuwarten."
+      ]
+    }
+  ],
+  "loesung": [
+    {
+      "t": "Level 1 bis 5 jeder Welt",
+      "p": [
+        "Jede Welt hat fünf Level: Das erste ist ruhig, das zweite bringt hohe Hindernisse, ab dem dritten rollen Felsen oder Kugeln über die Strecke, ab dem vierten kommen lange Wände. Das fünfte Level ist am schnellsten."
+      ],
+      "list": [
+        "Dschungel: Dschungeleingang, Lianenpfad, Tempelruinen, Wasserfall-Schlucht, Herz des Urwalds.",
+        "Radiostudio: Empfang, Sendesaal, Regie & Mischpult, Technikkeller, Live auf Sendung.",
+        "Fantasy-Welt: Burgstraße und vier weitere Abschnitte bis zum Finale."
+      ]
+    },
+    {
+      "t": "Alle 45 Sterne",
+      "steps": [
+        "Starte mit dem Helden Schatten, er hat ein Herz mehr.",
+        "Kaufe die Upgrades Magnet und Doppelpunkte auf Stufe 3.",
+        "Spiele jedes Level ohne Treffer und sammle fast alle Münzen: Münzreihen liegen in der Spur, die du ohnehin brauchst.",
+        "Hol verpasste Sterne mit dem Helden Magier nach (längere Power-ups)."
+      ]
+    },
+    {
+      "t": "Beat-Kampagne",
+      "p": [
+        "Spiele die Sender in der Reihenfolge der Kampagne. Mit 90 % Genauigkeit gibt es drei Sterne."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Wie schalte ich Level frei?",
+      "a": "Schaffe das vorige Level der Welt. Die drei Welten sind von Anfang an offen."
+    },
+    {
+      "q": "Was ist aus Radio Surfer und Beat Surfer geworden?",
+      "a": "Beide stecken jetzt in Funkrenner: der Lauf-Modus und der Beat-Modus."
+    },
+    {
+      "q": "Das Bild ruckelt auf meinem Gerät.",
+      "a": "Stelle unter Optionen die Grafik auf Sparsam und starte das Spiel neu."
+    },
+    {
+      "q": "Das Lied lässt sich nicht laden.",
+      "a": "Lieder werden online geladen. Prüfe die Verbindung oder wähle einen Sender."
+    }
+  ]
+}
