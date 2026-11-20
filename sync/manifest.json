@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "14e1c3c8e08d",
- "generated": "2026-11-20T01:51:39+00:00",
- "commit": "9a82c9335aae82afc977e2a1c64324c1e755d329",
+ "version": "f0a19f8f871b",
+ "generated": "2026-11-20T01:58:47+00:00",
+ "commit": "5638c06d4bc80a2a84725cb474809ce22f887bfc",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -12682,14 +12682,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
-   "p": "pride-city/assets/index-D9TorLtH.css",
-   "s": 22728,
-   "h": "cc6d52f05abd17da8a05e99e567fca19ae53aa0fc467ed9a2964fea5f61927a7"
+   "p": "pride-city/assets/index-Bg0467s-.css",
+   "s": 23049,
+   "h": "01ab258b337eb49d854eb6a3f7c90f234735e4bc3f4f710ea1e4c67470f44f0f"
   },
   {
-   "p": "pride-city/assets/index-FC_jfE6o.js",
-   "s": 328020,
-   "h": "1ce0413f2ff8fb784e0b1d4efc04e3ef5d33b2471ef32d4217a91b555608667a"
+   "p": "pride-city/assets/index-DfrNlHEN.js",
+   "s": 338026,
+   "h": "1cfbdee2ababff2e0d67c59a7e5d36be72375c29ed8d2e0acb4e90e54b989a57"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -12787,9 +12787,9 @@
    "h": "97a4e8c5e93b5c4f68b25e5240f308aa81ff4ae487b750e62f13e02c338d73e8"
   },
   {
-   "p": "pride-city/assets/three-BClzYHHQ.js",
-   "s": 579056,
-   "h": "8d6e933b40cb1a823ba49747e720dbd945799d6c7aec9c25a53cf721bd6a8fd6"
+   "p": "pride-city/assets/three-BMVjH9h9.js",
+   "s": 581097,
+   "h": "65305bf37073532faf26b52bf1bab24fb874f2e7f91896b98f8f17e62f38b88b"
   },
   {
    "p": "pride-city/book/cover.jpg",
@@ -13034,7 +13034,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5731,
-   "h": "19759c5dfe537975033c557243571a7698c0fddcfd63cf1297b2729f66266f56"
+   "h": "04babaa3c3d95d5e8a9ab2f54db8a77ba1fcc063fbc2a7116110516c6fd53c41"
   },
   {
    "p": "pride-city/logo.svg",
@@ -13218,8 +13218,8 @@
   },
   {
    "p": "pride-city/romane/leuchtfeuer/index.html",
-   "s": 13182,
-   "h": "4e69ce54402d2d5bea376991ae605f969f1db37c309b1de7a8792e05ed768ad0"
+   "s": 14040,
+   "h": "a62998989a7448d54a09ffa751463a47411f57ce410243ac4bef7a0b4ce9e7bf"
   },
   {
    "p": "pride-city/romane/licht/book.json",
@@ -13243,8 +13243,8 @@
   },
   {
    "p": "pride-city/romane/licht/index.html",
-   "s": 11499,
-   "h": "ed087430a121956be1eca39cf57100496ec83a073eee2f69bf22d509f390b4a0"
+   "s": 12357,
+   "h": "e18dd8bdce1b58afbd569f39a3948f61e82d5c10830a05b96d8c320d0a184175"
   },
   {
    "p": "pride-city/romane/licht/js/app.js",
@@ -15809,7 +15809,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236340,
-   "h": "e13dfffa83265b3a00fef72fb8e2927366dfc4b89e782dd8a74c4fcbcb09c35c"
+   "h": "bdacd9dc59a2ff8459d6f751e262327e4774a3f337218a9ad7e4874ca039358e"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
