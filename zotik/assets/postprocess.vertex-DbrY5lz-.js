@@ -1,4 +1,4 @@
-import{v as o}from"./bworld-DDi3oIsO.js";import"./index-CTWJsPEN.js";const e="postprocessVertexShader",t=`attribute vec2 position;uniform vec2 scale;varying vec2 vUV;const vec2 madd=vec2(0.5,0.5);
+import{v as o}from"./bworld-BFVsI_As.js";import"./index-C_5GBVTL.js";const e="postprocessVertexShader",t=`attribute vec2 position;uniform vec2 scale;varying vec2 vUV;const vec2 madd=vec2(0.5,0.5);
 #define CUSTOM_VERTEX_DEFINITIONS
 void main(void) {
 #define CUSTOM_VERTEX_MAIN_BEGIN
