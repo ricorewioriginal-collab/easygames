@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "bb2db9d18fcd",
- "generated": "2026-11-20T20:49:06+00:00",
- "commit": "3a5c35ae6af2bbc7b7d604cee8237b0db04f2318",
+ "version": "974610d090e1",
+ "generated": "2026-11-20T20:51:36+00:00",
+ "commit": "754e4d34298dff9cb5578f10661308540cad79af",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -10103,8 +10103,8 @@
   },
   {
    "p": "funkrenner/js/app.js",
-   "s": 40349,
-   "h": "26c5c24dcc0f274f8f96ace101432cb6b2d611786df5d070486e6d2960d73f22"
+   "s": 41152,
+   "h": "eea49d07ec92caabc2a1842238fe24335045902d7b5f7bcb812bf206fd9a5f4b"
   },
   {
    "p": "funkrenner/js/beat.js",
@@ -10123,18 +10123,18 @@
   },
   {
    "p": "funkrenner/js/themes.js",
-   "s": 32205,
-   "h": "c5ae6d5a72a97794f52b71d0b1d2acd4d17f4120e9a359dc4f6870a16901164b"
+   "s": 32708,
+   "h": "27ddb04ff96096ce76ee2cb18ccc4b648d00772c9ef489aa224105dbc8a349ef"
   },
   {
    "p": "funkrenner/js/view.js",
-   "s": 16627,
-   "h": "626e6820d211ce41bbc528bf050aa53af6fe59310cf9116de7864d0d79463537"
+   "s": 17683,
+   "h": "890178b10b9f96ccf5ac91e3169030612855b18086cfdf9810696096dd0ec3a0"
   },
   {
    "p": "funkrenner/js/world.js",
-   "s": 12559,
-   "h": "d8aa43d532ff319a25abc05de6795af1d3686d7be090b428717f132bdf0c59ba"
+   "s": 14689,
+   "h": "6cdb85a9f47be9ef2793a4f4b016b4d37436566a648fd62c9f984ec72db1b3e7"
   },
   {
    "p": "funkrenner/logos/01.webp",
@@ -16459,7 +16459,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236550,
-   "h": "c6608fcc67b396a1bdc8bc19f76ea527a5fd55a6b4b3ebb75bbdf8e7221fc34d"
+   "h": "39af8b8312329c3c5b3c6f0d4a1a8f5d281bb7b645f4afb5b3c78b509901b29c"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
