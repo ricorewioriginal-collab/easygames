@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "d224adf7b389",
- "generated": "2026-11-20T19:14:09+00:00",
- "commit": "9b73313e2e62a575ee8942e517eecb4e7abfd1bc",
+ "version": "3693fb84a406",
+ "generated": "2026-11-20T19:14:15+00:00",
+ "commit": "99005eeac6b969d71297218ac36593d3dc9963d0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3013,8 +3013,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/babylon/amc-babylon.js",
-   "s": 2629909,
-   "h": "a61e51573195ba224fe9ee2e8bdab83d488f11d798267a7cd05b3809c8451f50"
+   "s": 2629879,
+   "h": "6207f94e4b18a10a7bdfa13a3502d8878587e7477844e18c9b6fb9b9c0c5c265"
   },
   {
    "p": "anmacha-podcast-tycoon/card.svg",
@@ -16409,7 +16409,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236363,
-   "h": "8f9fd4dc9843a347150743ba05505f72a17c2f8b1940c779d20f8ab788b66bbc"
+   "h": "77a68a9da6f8d25ef309aae7f6fafffb046bf73f4f7a906f13b83e8e42ea1002"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
