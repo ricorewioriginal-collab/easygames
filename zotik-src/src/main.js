@@ -1046,8 +1046,10 @@ Object.assign(ED,{
 /* Bestien (Quaternius Bestiary): Imp mit Streitkolben (zäh, harte Schläge), Puglin mit Knüppel (flink, springt an) – Farbvariante je Welt */
 /* Sketchfab-Monster (CC-BY, models/sf/m_*.glb) je Gegnerart: [Modell, Höhe, Farbton-Drehung, Blickkorrektur] – eigene Bewegungen aus dem Modell */
 const SF_MON={pilz:['m_pilz',1.3,0],thornwolf:['m_wolf',1.15,0],frostwolf:['m_wolf',1.15,3.2],rothund:['m_wolf',1,.6],steppenwolf:['m_wolf',1.2,-.3],tiger:['m_tiger',1.3,0],
-  riese:['m_troll',3.4,0],ratte:['m_ratte',.6,0,Math.PI/2],kriecher:['m_spinne',.9,0],spinne:['m_spinne',.9,0],skorpion:['m_skorpion',1,0],hai:['m_hai',1.3,0],qualle:['m_qualle',1.6,0]};
-const sfMon=kind=>{const c=SF_MON[kind];if(!c)return null;const P=KK.sfig(c[0],{h:c[1],hue:c[2],ry:c[3]});return{root:P.root,kk:P}};
+  riese:['m_troll',3.4,0],ratte:['m_ratte',.6,0,Math.PI/2],kriecher:['m_spinne',.9,0],spinne:['m_spinne',.9,0],skorpion:['m_skorpion',1,0],hai:['m_hai',1.3,0],qualle:['m_qualle',1.6,0],
+  fledermaus:['m_fledermaus',.9,0],geist:['m_geist',1.4,0,0,0xa8b8d8],'geist@6':['m_geist2',1.5,0,0,0x9ab8e0],eisgolem:['m_eisgolem',2.4,0],nullgolem:['m_eisgolem',2.4,1.6],
+  steinfratze:['m_steingolem',2.2,0],wasserspeier:['m_steingolem',2.8,-.4],affe:['m_affe',1.2,0],schleim:['m_schleim',.8,0]};
+const sfMon=(kind,n)=>{const c=SF_MON[kind+'@'+n]||SF_MON[kind];if(!c)return null;const P=KK.sfig(c[0],{h:c[1],hue:c[2],ry:c[3],tint:c[4]});return{root:P.root,kk:P}};
 const sfFoe=(id,h,hue)=>()=>{const P=KK.sfig(id,{h,hue});return{root:P.root,kk:P}},qbFoe=(id,h,v)=>()=>{const P=KK.beast(id,{h,v:v>1?v:0});return{root:P.root,kk:P}},qbV=()=>{const n=chNow()||1;return n%3+1};
 Object.assign(ED,{
   qimp:{name:'Kettenimp',hp:90,dmg:14,spd:3.8,xp:30,aggro:15,rng:2.8,wind:.85,cool:1.6,make:()=>qbFoe('imp',2.1,qbV())(),sc:1,sh:[2,5],base:'wolf',col:0xff7a3a,weak:'ice'},
@@ -2633,8 +2635,8 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
     setTimeout(()=>{if(cut.mid)cutscene(cut.mid,()=>say(C.d.gate));else say(C.d.gate)},1000)}
   /* Gegner */
   const mkE=(key,d,make,extra)=>{ED[key]=Object.assign({hp:d[1],dmg:Math.round(d[2]*.8),xp:Math.round(d[1]*.45),spd:3.4,aggro:17,rng:9,wind:.8,cool:2.4,sc:1,sh:[n,n*2+2],col:d[3],name:d[0],make},extra);edKeys.push(key)};
-  const own=(sl,d,fb)=>()=>{const pk=CR().PLAN[n],sm=pk&&sfMon(pk['ABMX'.indexOf(sl)]);if(sm)return sm;const m=CR().makeCreature(n,sl,d[3]);return m||fb()};   // eigene Gegner je Welt (creatures.js), sonst wie bisher
-  mkE('a'+n,C.A,own('A',C.A,()=>tintModel(makeRiftling(),C.A[3],.6)),{base:'rift',ranged:true,hov:1.3});{const k0=CR().PLAN[n]&&CR().PLAN[n][0];if(SF_MON[k0]&&k0!=='qualle')ED['a'+n].hov=0}
+  const own=(sl,d,fb)=>()=>{const pk=CR().PLAN[n],sm=pk&&sfMon(pk['ABMX'.indexOf(sl)],n);if(sm)return sm;const m=CR().makeCreature(n,sl,d[3]);return m||fb()};   // eigene Gegner je Welt (creatures.js), sonst wie bisher
+  mkE('a'+n,C.A,own('A',C.A,()=>tintModel(makeRiftling(),C.A[3],.6)),{base:'rift',ranged:true,hov:1.3});{const k0=CR().PLAN[n]&&CR().PLAN[n][0];if(SF_MON[k0]&&!['qualle','geist','fledermaus'].includes(k0))ED['a'+n].hov=0}
   const WKN={3:'nature',5:'storm',6:'ice',8:'storm',10:'light'}[n];   /* die Kunst aus der Welt davor trifft hier die Schwäche */
   mkE('b'+n,C.B,own('B',C.B,()=>tintModel(makeWolf(false),C.B[3],.5)),{weak:WKN,base:'wolf',spd:5.8,aggro:15,rng:2.5,wind:.6,cool:1.3,sh:[n+1,n*2+3]});
   mkE('m'+n,C.M,own('M',C.M,()=>tintModel(makeWolf(false),C.M[3],.55)),{kit:MKIT[n],base:'wolf',spd:5.2,aggro:30,rng:3.4,wind:.75,cool:1.1,sc:1.55,hp:C.M[1],xp:Math.round(C.M[1]*.7),sh:[10+n*3,18+n*5],mini:true});

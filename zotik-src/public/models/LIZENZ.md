@@ -41,3 +41,6 @@ Monster (`sf/m_*.glb`, alle CC-BY 4.0, verkleinert):
 - `m_wolf` – „Stylized Wolf“ von ESO · `m_pilz` – „Mushroom Warrior“ von Muru · `m_tiger` – „Running Tiger“ von Amil (francescolima74)
 - `m_troll` – „Troll“ von SJunior3d · `m_ratte` – „Rat Animated“ von Shintokin · `m_spinne` – „Spider animated character“ von TheGameAssets
 - `m_skorpion` – „Scorpion“ von anthonyvanoo · `m_hai` – „Great White Shark“ von Mateus Schwaab · `m_qualle` – „jellyfish“ von yanix
+- `m_fledermaus` – „Emerald Bat“ von CataRackta · `m_geist` – „Cute ghost“ von Urielgc · `m_geist2` – „Rigged Animated Ghost“ von Dani
+- `m_eisgolem` – „Drugdör The Golem Animated“ von Phons · `m_steingolem` – „Golem Rigged“ von FourthGreen · `m_affe` – „Monkey“ von tomkranis
+- `m_schleim` – „Ice Cream Slime“ von Empsy
