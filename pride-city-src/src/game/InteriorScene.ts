@@ -11,6 +11,7 @@ import { advance, DAY_SEC } from './life';
 import { music } from '../engine/Audio';
 import type { Spot, Theme } from './interiors';
 import { roomLights, collectCasters } from './HomeScene';
+import { buildShell, shellTime, furnish, styleOf, type Shell } from './room';
 
 interface Box { x: number; z: number; hx: number; hz: number }
 const W = 12, D = 9, K = .9, H = 3.6; // Raum in Metern, KayKit-Möbel 1 Einheit ≈ 1 m (Figur ≈ 1,8 m)
@@ -25,23 +26,26 @@ export class InteriorScene implements GameScene {
   private boxes: Box[] = [];
   private glow: PBRMaterial[] = [];
   private sg!: ShadowGenerator;
+  private shell!: Shell;
+  private cam = { yaw: .95, tYaw: .95, pitch: .36, dist: 4.2 };
+  private camPos = new Vector3();
+  private lookIdle = 9;
+  private snap = true;
   readonly spots: Spot[];
   private hudT = 0;
   private exitPos = new Vector3(W / 2 - .2, 3.4, 3.4);
   constructor(private g: Game, readonly theme: Theme, readonly placeId = '') {
     this.spots = [...theme.spots, DOOR];
     this.scene = g.engine.newScene(0x0e0a1a);
-    this.camera = g.engine.newCamera(this.scene, 50, .1, 100);
+    this.camera = g.engine.newCamera(this.scene, 62, .1, 100);
   }
 
   async build() {
     const sc = this.scene, t = this.theme;
-    this.sg = roomLights(sc, { hemi: 1.05, sun: 1.2, lamp: 26, lampCol: t.light, lampPos: [0, 3.4, 0] }).sg;
-    const amb = new HemisphericLight('amb', new Vector3(0, -1, 0), sc); amb.intensity = .25;
-    const floor = ground(sc, W, D); floor.material = pbr(sc, t.floor, .75); floor.receiveShadows = true;
-    const wallM = pbr(sc, t.wall, .9);
-    const wall = (w: number, d: number, x: number, z: number) => { const m = box(sc, w, H, d); m.material = wallM; m.position.set(x, H / 2, z); m.receiveShadows = true; };
-    wall(W, .2, 0, -D / 2); wall(.2, D, -W / 2, 0); wall(.2, D, W / 2, 0);
+    const dark = styleOf(t) === 'dark';
+    this.sg = roomLights(sc, { hemi: dark ? .5 : .85, sun: dark ? .45 : .95, lamp: dark ? 36 : 28, lampCol: t.light, lampPos: [0, 3.2, 0] }).sg;
+    const amb = new HemisphericLight('amb', new Vector3(0, -1, 0), sc); amb.intensity = dark ? .16 : .25;
+    this.shell = buildShell(sc, t, W, D, H);
     // Tür rechts mit Leuchtschild
     const dx = W / 2 - .12, dz = DOOR.z;
     const door = box(sc, .06, 2.5, 1.3); door.material = pbr(sc, 0x7a3fb0, .6); door.position.set(dx, 1.25, dz);
@@ -55,9 +59,12 @@ export class InteriorScene implements GameScene {
         if (it.col) { const b = o.getHierarchyBoundingVectors(true); this.boxes.push({ x: (b.min.x + b.max.x) / 2, z: (b.min.z + b.max.z) / 2, hx: Math.max(.2, (b.max.x - b.min.x) / 2 - .08), hz: Math.max(.2, (b.max.z - b.min.z) / 2 - .08) }); }
       }).catch(() => { /* Modell fehlt: Raum bleibt nutzbar */ }));
       else if ('box' in it) {
-        const [w, h, d] = it.box, m = pbr(sc, it.c, .7, 0, it.e ? { emissive: it.c, ei: it.e } : {});
-        const o = box(sc, w, h, d); o.material = m; o.position.set(it.x, (it.y || 0) + h / 2, it.z); o.receiveShadows = true; (o as typeof o & { _pcCast?: boolean })._pcCast = true;
-        if (it.e) { m.metadata = { c: it.c }; this.glow.push(m); }
+        const [w, h, d] = it.box;
+        if (!furnish(sc, it, t, W, D, this.glow)) {
+          const m = pbr(sc, it.c, h < .15 ? .25 : .6, 0, it.e ? { emissive: it.c, ei: it.e } : {});
+          const o = box(sc, w, h, d); o.material = m; o.position.set(it.x, (it.y || 0) + h / 2, it.z); o.receiveShadows = true; (o as typeof o & { _pcCast?: boolean })._pcCast = true;
+          if (it.e) { m.metadata = { c: it.c }; this.glow.push(m); }
+        }
         if (it.col) this.boxes.push({ x: it.x, z: it.z, hx: w / 2, hz: d / 2 });
       } else if ('screen' in it) {
         const o = planeZ(sc, it.screen[0], it.screen[1]); o.material = glow(sc, it.c, 1.2); o.position.set(it.x, it.y, it.z + .02); o.rotation.y = it.ry || 0;
@@ -77,6 +84,12 @@ export class InteriorScene implements GameScene {
         const o = planeZ(sc, vw, vh); o.material = glow(sc, 0xffffff, .85, { tex }); o.position.set(it.x, it.y, it.z + .02); o.rotation.y = it.ry || 0;
       } else this.neon(it.neon, it.c, it.x, it.y, it.z + .02, it.ry || 0, it.w || Math.min(8, it.neon.length * .42));
     }
+    // Bilder an der linken Wand und Pflanzen in freien Ecken: kein Raum bleibt kahl
+    const deco = (m: string, x: number, y: number, z: number, r: number, s = 1) => jobs.push(instance(sc, m + '.gltf').then((o) => { o.position.set(x, y, z); o.rotation.y = r; o.scaling.setAll(K * s); }).catch(() => { /* fehlt: egal */ }));
+    deco('home/pictureframe_large_B', -W / 2 + .06, 1.9, -1.6, Math.PI / 2); deco('home/pictureframe_medium', -W / 2 + .06, 2, .4, Math.PI / 2); deco('home/pictureframe_large_A', -W / 2 + .06, 1.9, 2.4, Math.PI / 2);
+    const clear = (x: number, z: number) => t.items.every((q) => Math.hypot(q.x - x, q.z - z) > 1.3) && t.spots.every((q) => Math.hypot(q.x - x, q.z - z) > 1.2);
+    for (const [cx, cz, m] of [[-W / 2 + .7, D / 2 - .7, 'home/cactus_medium_B'], [-W / 2 + .7, -D / 2 + .7, 'home/cactus_medium_A'], [W / 2 - .7, -D / 2 + .7, 'home/cactus_medium_B']] as const)
+      if (clear(cx, cz)) { deco(m, cx, 0, cz, 0); this.boxes.push({ x: cx, z: cz, hx: .3, hz: .3 }); }
     await Promise.all(jobs);
     // Markierung auf dem Boden für jede benutzbare Stelle
     const ringM = glow(sc, 0xffd23b, 1.2, { alpha: .55 });
@@ -114,8 +127,9 @@ export class InteriorScene implements GameScene {
   }
 
   enter() {
-    this.player.root.position.set(W / 2 - 1.2, 0, DOOR.z);
-    this.player.root.rotation.y = -Math.PI / 2;
+    this.player.root.position.set(W / 2 - 2.4, 0, DOOR.z - .9);
+    this.player.root.rotation.y = -Math.PI / 2 - .5;
+    this.cam.yaw = this.cam.tYaw = .95; this.cam.pitch = .36; this.lookIdle = 0; this.snap = true;
     this.player.setLook(streetLook(playerLook(this.g.save.data)));
     this.g.hud.show(true); this.g.touch.show(true);
     this.g.city.refreshHud();
@@ -137,13 +151,15 @@ export class InteriorScene implements GameScene {
       if (this.hudT <= 0) { this.hudT = .5; g.city.world.setTime(sv.time); g.city.refreshHud(); }
       const mx = inp.move.x, my = inp.move.y, mag = Math.hypot(mx, my);
       if (mag > .08) {
-        p.x += mx * 3.6 * dt; p.z -= my * 3.6 * dt;
-        p.x = Math.max(-W / 2 + .5, Math.min(W / 2 - .5, p.x)); p.z = Math.max(-D / 2 + .5, Math.min(D / 2 - .3, p.z));
+        // Bewegung relativ zur Kamera, wie draußen
+        const yaw = this.cam.yaw, fx = -Math.sin(yaw), fz = -Math.cos(yaw), dx = fx * my - fz * mx, dz = fz * my + fx * mx;
+        p.x += dx / mag * 3.6 * dt * Math.min(1, mag); p.z += dz / mag * 3.6 * dt * Math.min(1, mag);
+        p.x = Math.max(-W / 2 + .5, Math.min(W / 2 - .5, p.x)); p.z = Math.max(-D / 2 + .5, Math.min(D / 2 - .5, p.z));
         for (const b of this.boxes) {
           const dx = p.x - b.x, dz = p.z - b.z, px = b.hx + .35 - Math.abs(dx), pz = b.hz + .35 - Math.abs(dz);
           if (px > 0 && pz > 0) { if (px < pz) p.x += Math.sign(dx) * px; else p.z += Math.sign(dz) * pz; }
         }
-        this.player.root.rotation.y = Math.atan2(mx, -my);
+        { const want = Math.atan2(dx, dz); let dr = want - this.player.root.rotation.y; dr = Math.atan2(Math.sin(dr), Math.cos(dr)); this.player.root.rotation.y += dr * Math.min(1, dt * 14); }
         this.player.play('walk', .18, Math.max(1, 3.6 * Math.min(1, mag) / 1.02 * .55));
       } else if (this.player.anim === 'walk') this.player.play('idle');
       let best: Spot | null = null, bd = 9;
@@ -156,8 +172,23 @@ export class InteriorScene implements GameScene {
       else if (inp.pressed('menu') || inp.pressed('back')) { inp.consume('menu'); inp.consume('back'); g.pauseMenu(); }
       g.hud.markers(best === DOOR ? [] : [{ id: 'exit', icon: '🚪', label: 'Ausgang', pos: this.exitPos }], (q) => g.engine.project(q));
     } else { g.hud.prompt(null); g.hud.markers([]); }
-    const k = Math.max(1, 1.25 / g.engine.aspect);
-    this.camera.position.set(p.x * .5 / k, 6 * (1 + (k - 1) * .6), 7.6 * k + p.z * .35);
-    this.camera.setTarget(new Vector3(p.x * .7, .7, p.z * .6 - .6));
+    // Kamera hinter der Figur wie draußen: wischen dreht, beim Laufen folgt sie; an Wänden und Decke rückt sie heran
+    const c = this.cam, st = g.save.data.settings, lk = .005 * st.camSpeed;
+    if (!busy) {
+      c.tYaw -= inp.look.x * lk; c.pitch = Math.max(.08, Math.min(.9, c.pitch + inp.look.y * lk * (st.invertY ? -1 : 1)));
+      this.lookIdle = inp.look.x || inp.look.y ? 0 : this.lookIdle + dt;
+      if (this.lookIdle > 1.2 && Math.hypot(inp.move.x, inp.move.y) > .3) { let d = this.player.root.rotation.y + Math.PI - c.tYaw; d = Math.atan2(Math.sin(d), Math.cos(d)); if (Math.abs(d) < 2.3) c.tYaw += d * Math.min(1, dt * 1.5); }
+    }
+    c.yaw += (c.tYaw - c.yaw) * Math.min(1, dt * 12);
+    const ty = 1.45, vx = Math.sin(c.yaw) * Math.cos(c.pitch) * c.dist, vy = Math.sin(c.pitch) * c.dist, vz = Math.cos(c.yaw) * Math.cos(c.pitch) * c.dist;
+    let f = 1;
+    const lim = (v: number, room: number) => { if (v > 1e-4 && room / v < f) f = Math.max(.2, room / v); };
+    lim(vx, W / 2 - .3 - p.x); lim(-vx, p.x + W / 2 - .3); lim(vz, D / 2 - .3 - p.z); lim(-vz, p.z + D / 2 - .3); lim(vy, H - .3 - ty);
+    // wird es eng, schaut die Kamera steiler von oben, statt der Figur im Nacken zu sitzen
+    const wx = p.x + vx * f, wy = Math.min(H - .3, ty + vy * f + (1 - f) * 1.5), wz = p.z + vz * f, e = this.snap ? 1 : Math.min(1, dt * 9);
+    this.camPos.set(this.camPos.x + (wx - this.camPos.x) * e, this.camPos.y + (wy - this.camPos.y) * e, this.camPos.z + (wz - this.camPos.z) * e); this.snap = false;
+    this.camera.position.copyFrom(this.camPos);
+    this.camera.setTarget(new Vector3(p.x, ty + (g.engine.aspect < 1 ? .25 : 0), p.z));
+    shellTime(this.shell, g.city.world.night, t);
   }
 }

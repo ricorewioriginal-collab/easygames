@@ -434,6 +434,8 @@ export class CityScene implements GameScene {
   private snapCam() { this.updateCam(1, true); }
   private tgt = new Vector3();
   private aim = new Vector3();
+  /** Einrichtung aller Orte (auch für Tests erreichbar) */
+  readonly themes = PLACE_THEMES;
   private tiredTold = false;
   /** Sekunden seit dem letzten Wischen an der Kamera */
   private lookIdle = 9;
