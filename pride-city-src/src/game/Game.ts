@@ -14,6 +14,7 @@ import { World } from './World';
 import { pianoSongs, pianoParts } from './minigames/showSongs';
 import { openGigs, GIGS, fmtTime } from './gigs';
 import { BUSINESSES, owns, owned, income, buy } from './empire';
+import { SHOP, RACES, PAINTS, PAINT_COST, TUNE_COST, MEDALS, ownsCar, myCar, tuneLevel, buyCar, buyTune, buyPaint, bestTime, medalFor, stats } from './vehicles';
 import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST, lichtPart, lichtLight, lfPart, lfGlow } from './story';
 import { LF_CHAPTERS, lfEnding, lfPct } from './leuchtfeuer';
 import { LICHT_CHAPTERS, lichtEnding } from './licht';
@@ -463,8 +464,10 @@ export class Game {
     } else if (app === 'gigs') {
       const run = this.city.gig, open = openGigs(s);
       this.openMenu(frame('Aufträge', `<div class="pbody"><p>Leute aus der Stadt brauchen dich. Nimm an, folg der gelben Lichtsäule und dem Radar und schaff es in der Zeit.</p>${run ? `<p>⏱ Läuft: <b>${run.g.title}</b> für ${run.g.who}</p>` : ''}</div>`), [
-        ...(run ? [{ icon: '✖', label: 'Auftrag abbrechen', sub: run.g.title, fn: () => { this.city.gig = null; this.city.taxi = -1; this.hud.gig(null); toast('Auftrag abgebrochen.'); close(); } }] : []),
+        ...(run ? [{ icon: '✖', label: 'Auftrag abbrechen', sub: run.g.title, fn: () => { this.city.gig?.g.failed?.(); this.city.gig = null; this.city.taxi = -1; this.city.parcel = -1; this.hud.gig(null); toast('Auftrag abgebrochen.'); close(); } }] : []),
         { icon: '🚕', label: 'Regenbogen-Taxi', sub: this.city.driving ? `Fahrgäste fahren, Trinkgeld je Serie · Rekord ${Number(s.flags.taxiBest) || 0} Fahrten` : 'Erst in ein Auto steigen', disabled: !!run || !this.city.driving, fn: () => { close(); this.city.startTaxi(); } },
+        { icon: '📦', label: 'Paketdienst Eilbote', sub: this.city.driving ? `Pakete ab der Garage in der Hochstadt · mit Ladefläche +25 % · Rekord ${Number(s.flags.parcelBest) || 0}` : 'Erst in ein Auto steigen', disabled: !!run || !this.city.driving, fn: () => { close(); this.city.startParcel(); } },
+        { icon: '🏁', label: 'Straßenrennen', sub: `${RACES.filter((r) => bestTime(s, r.id)).length}/${RACES.length} gefahren · im Auto an einer 🏁 anhalten`, fn: () => { close(); this.dialog.say([{ who: '🏁 Rennleitung', color: '#ffd23b', text: RACES.map((r) => { const b = bestTime(s, r.id), m = b ? medalFor(r, b) : -1; return `${r.name}: ${b ? b.toFixed(1) + ' s' + (m >= 0 ? ' ' + MEDALS[m] : '') : 'noch nicht gefahren'}`; }).join(' · ') + '. Die Startflaggen siehst du im Auto als 🏁: Altstadtring an der Querstraße beim Plaza, Brückensprint vor der Regenbogenbrücke, Grand Prix unter der Hochbahn, Stadtmarathon an der Kaistraße.' }]); } },
         ...GIGS.map((g) => ({ icon: g.night ? '🌙' : g.car ? '🚗' : '🚶', label: `${g.title} · ${g.who}`, sub: !open.includes(g) ? 'nur nachts (21–5 Uhr)' : `${g.pay} € · +${g.rep} Ruf · ${fmtTime(g.time)} Min. · ${g.steps.length} Stationen${s.flags['gig_' + g.id] === s.day ? ' · heute erledigt' : ''}`, disabled: !!run || !open.includes(g), fn: () => { close(); this.city.startGig(g); } })),
         { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'empire') {
@@ -910,6 +913,17 @@ export class Game {
         { icon: '👑', label: s.flags.playAs === 'luma' ? 'Abschminken – wieder du selbst' : 'Als Lady Luma spielen', sub: 'Leon in Drag: Glitzer, Perücke, Lichtumhang', disabled: !(s.flags.lichtEnd || lichtPart(s) >= 5), fn: () => { close(); this.playAs(s.flags.playAs === 'luma' ? '' : 'luma'); } },
         { icon: '🍸', label: 'Drink an der Bar', sub: '5 € · +8 Spaß · +6 Kontakte', fn: buy(5, 'Velvet schiebt dir das Glas rüber. 🍸', eat({ fun: 8, social: 6 })) },
         { icon: '📖', label: 'Den Roman lesen', sub: '„Ich bin das Licht“ von RicoReWi', fn: () => { close(); this.book(); } }] },
+      garage: (() => {
+        const mine = myCar(s), tl = tuneLevel(s), hue = s.flags.carHue === undefined ? -1 : Number(s.flags.carHue), pi = Math.max(0, PAINTS.findIndex((q) => q[2] === hue)), np = PAINTS[(pi + 1) % PAINTS.length];
+        const done = (why: string | null, ok: string, after?: () => void) => { if (why) { sfx('miss'); toast(why); return; } sfx('win'); toast(ok); after?.(); this.save.write(); this.city.refreshHud(); close(); this.placeMenu('garage'); };
+        return { t: 'Garage Schraubenschlüssel', d: `Meisterin Rosi schraubt an allem, was Räder hat. ${mine ? `Dein Wagen: ${mine.icon} ${mine.name}${tl ? ` · Turbo-Stufe ${tl}` : ''}. Er wartet dort, wo du ihn abgestellt hast.` : 'Kauf dir deinen ersten eigenen Wagen: Niemand hält dich dann mehr für einen Autodieb.'}`, items: [
+          ...(mine ? [
+            { icon: '🅿️', label: 'Wagen vor die Garage holen', sub: 'Rosi fährt ihn dir vor', fn: () => { close(); void this.city.placeOwnCar(true).then(() => toast(`${mine.icon} ${mine.name} steht vor der Garage.`)); } },
+            { icon: np[1], label: `Umlackieren: ${np[0]}`, sub: `${PAINT_COST} € · jetzt ${PAINTS[pi][0]}`, fn: () => done(buyPaint(s, np[2]), `Frisch lackiert: ${np[0]}!`, () => void this.city.placeOwnCar(true)) },
+            { icon: '🚀', label: tl >= TUNE_COST.length ? 'Turbo voll ausgebaut' : `Turbo-Stufe ${tl + 1} einbauen`, sub: tl >= TUNE_COST.length ? `Spitze ${Math.round(stats(mine, tl).turbo * 3.6)} km/h` : `${TUNE_COST[tl]} € · +7 % Tempo, besserer Antritt`, disabled: tl >= TUNE_COST.length, fn: () => done(buyTune(s), 'Der Turbo pfeift! 🚀') }] : []),
+          ...SHOP.map((c) => ({ icon: c.icon, label: ownsCar(s, c.id) ? (mine?.id === c.id ? `${c.name} ✓` : `${c.name} nehmen`) : `${c.name} kaufen`, sub: `${ownsCar(s, c.id) ? 'gehört dir' : c.price + ' €'} · Spitze ${Math.round(c.turbo * 3.6)} km/h${c.cargo ? ' · Ladefläche' : ''}`, disabled: mine?.id === c.id,
+            fn: () => { if (ownsCar(s, c.id)) { s.flags.myCar = c.id; done(null, `${c.icon} ${c.name} steht bereit.`, () => void this.city.placeOwnCar(true)); } else done(buyCar(s, c), `${c.icon} ${c.name} gehört jetzt dir!`, () => void this.city.placeOwnCar(true)); } }))] };
+      })(),
       tramhafen: { t: 'Tram Hafen', d: 'Endstation am Regenbogenkai. Zurück in die Innenstadt in zehn Minuten.', items: [
         { icon: '🗺️', label: 'Fahrplan', sub: 'Ziel wählen', fn: () => this.phone('map') }] },
       tramhoch: { t: 'Hochbahn Hochstadt', d: 'Die Hochbahn rattert über die Avenue. Von hier kommst du in jedes Viertel – auch zurück über die Regenbogenbrücke.', items: [
