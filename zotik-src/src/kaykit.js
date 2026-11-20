@@ -166,6 +166,7 @@ export function createKayKit({ T, G, TOUCH }) {
     sload(id).then(g => {
       const c = skClone(g.scene); c.traverse(m => { if (!m.isMesh) return; const s = m.material, pr = o.parts && o.parts.find(q => q[0].test(s.name || '')), col = pr ? pr[1] : o.tint, k = s.uuid + '/' + (col ?? '') + '/' + (o.hue || 0) + (m.isSkinnedMesh ? 's' : '');
         if (!mats.has(k)) { const mm = toon(s, !!m.isSkinnedMesh).clone(); if (col != null && mm.color) mm.color.set(col);
+          if (s.transparent || s.opacity < 1) { mm.transparent = true; mm.opacity = s.opacity; mm.depthWrite = false; } if (s.alphaTest) mm.alphaTest = s.alphaTest;
           if (o.hue && mm.map) { const a = o.hue.toFixed(3); mm.onBeforeCompile = sh => { sh.fragmentShader = sh.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>\n{ float a = ' + a + '; vec3 k = vec3(.57735); float c = cos(a); diffuseColor.rgb = diffuseColor.rgb * c + cross(k, diffuseColor.rgb) * sin(a) + k * dot(k, diffuseColor.rgb) * (1. - c); }'); }; mm.customProgramCacheKey = () => 'hue' + a; }
           mats.set(k, mm); }
         m.material = mats.get(k); m.castShadow = !TOUCH; m.frustumCulled = false; });
