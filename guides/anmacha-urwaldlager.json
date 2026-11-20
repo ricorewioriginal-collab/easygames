@@ -147,6 +147,14 @@
     "Bei Regen hast du in Prüfungen weniger Zeit (10 %, bei Gewitter 15 %), bei Gewitter blitzt und donnert es. Auch die Mit-Camper schneiden schlechter ab.",
     "Regen und Gewitter stören den Schlaf. Spann bei den Betten mit ⛺ Plane über die Betten spannen eine Plane, dann bleibt die Nacht trocken."
    ]
+  },
+  {
+   "t": "Finale, Krönung und Staffel-Statistik",
+   "p": [
+    "Am letzten Tag spielen die drei Beliebtesten die Finalprüfungen. Danach blicken die Moderatoren auf die Staffel zurück, und alle ausgeschiedenen Camper kommen zur Abschlussshow zurück.",
+    "Die Zuschauer entscheiden über Platz 3, 2 und 1. Wer gewinnt, bekommt die Krone, steht vor dem Thron, und ein Feuerwerk geht los.",
+    "Nach dem Ende zeigt die Staffel-Statistik alle deine Prüfungen mit Sternen, den Endstand aller Camper, deinen besten Freund und deinen größten Zoff sowie das Lager in Zahlen."
+   ]
   }
  ],
  "ratgeber": [

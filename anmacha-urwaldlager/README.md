@@ -23,6 +23,9 @@ Holz und Wasser holen, Feuer schüren, Kochspiel am Topf (Hitze-Leiste, drei Zut
 ## Wetter
 Jeden Morgen Sonne, Tropenregen oder Gewitter (`js/weather.js`): Regenstreifen, dunklere Lichter, Blitze, Donner und Regenrauschen im Dschungel; Prüfungen mit weniger Zeit, schlechterer Schlaf, außer jemand spannt die Plane. Test: `&wx=regen|gewitter`, `WX=gewitter node tests/trial-runner.cjs <id>`.
 
+## Finale
+Rückblick der Moderatoren, alle Ex-Camper kehren zur Abschlussshow zurück, Krönung mit Thron und Feuerwerk, danach Staffel-Statistik (eigene Prüfungen, Endstand, Freund/Zoff, Lager in Zahlen).
+
 ## Prüfungen
 Ekel-Kisten · Dschungel-Dinner · Schlammbecken (tauchen) · Wackelsteg · Krabbel-Tunnel · Ekel-Dusche · Wissens-Tank · Schlamm-Parcours · Lianen-Rutsche · Schlangengrube · Höhlenlabyrinth (Taschenlampe) · Floßrennen · Kletterwand, dazu das IBES-Fan-Quiz (deutsche und britische Show) und der Gruppenmarsch ins Lager – jede im Dschungel und im Studio spielbar, auch einzeln über „Prüfungen spielen“.
 

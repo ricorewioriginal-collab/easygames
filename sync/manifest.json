@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "abbdd6f7751b",
- "generated": "2026-11-20T19:18:51+00:00",
- "commit": "15d64526bfd60ffaf3fece58c61912da61786127",
+ "version": "29051ae5bf9e",
+ "generated": "2026-11-20T19:30:48+00:00",
+ "commit": "a838fea08fa7d190ffb544a53efcdfdb33857b1a",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7933,8 +7933,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/show.js",
-   "s": 31366,
-   "h": "bd53119493713b344ac949851e0af420500d1534a4e77511d8020d8b9947a270"
+   "s": 38233,
+   "h": "93e75e99aec39f32a0cdb09e61f152c50c3c2fcd9e6ca88999c0cbaa1058dda6"
   },
   {
    "p": "anmacha-urwaldlager/js/stage.js",
@@ -11003,8 +11003,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 18959,
-   "h": "7e6286018d89c97ed8c38690282bc7118684d338ae4b22afa5209b514b58381c"
+   "s": 19550,
+   "h": "f353e5c94ffd410c84c9c75092b857a6041222a2e81e0084b98261d118ee634e"
   },
   {
    "p": "guides/beat-studio.json",
@@ -16409,7 +16409,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236363,
-   "h": "957545cf1d6e3e6e32c9b187c6eed374827346de91eb0014982177a86fe99aab"
+   "h": "7011814090e544c7c497f2907d5e3c5a53eb7f6c6c37613754edb3990b6057cc"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
