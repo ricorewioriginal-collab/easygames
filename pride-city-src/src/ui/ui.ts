@@ -20,6 +20,8 @@ const GLYPH: Record<string, Record<InputMode, string>> = {
   dpad: { pad: '<i class="g">✚</i>', kb: '<i class="g">↑↓</i>', touch: '' },
   lr: { pad: '<i class="g">◀ ▶</i>', kb: '<i class="g">←→</i>', touch: '' },
   move: { pad: '<i class="g">L</i>', kb: '<i class="g">WASD</i>', touch: '' },
+  atk: { pad: '<i class="g">LT</i>', kb: '<i class="g">F</i>', touch: '' },
+  wpn: { pad: '<i class="g">L3</i>', kb: '<i class="g">G</i>', touch: '' },
   cam: { pad: '<i class="g">R</i>', kb: '<i class="g">Maus</i>', touch: '' },
 };
 let hintSpec: Array<[string, string]> = [];

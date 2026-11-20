@@ -10,7 +10,7 @@ import { sfx } from '../engine/Audio';
 import type { PBRMaterial, Scene } from '../engine/bjs';
 
 export type StreetKind = 'walker' | 'police' | 'fire' | 'worker' | 'medic' | 'security' | 'chef' | 'courier';
-export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean }
+export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean; down?: boolean; chase?: boolean }
 export interface Parked { o: Node3; name: string; yaw: number; v: number }
 
 const LINES: Record<Exclude<StreetKind, 'worker'>, string[]> = {
@@ -123,10 +123,10 @@ export class Street {
     this.people.forEach((n, i) => {
       const show = n.kind === 'worker' ? adult && night > .4 : n.kind === 'walker' ? (night < .5 || i % 2 === 0) : n.kind === 'security' ? night > .3 : true;
       const d2 = Vector3.DistanceSquared(n.a.root.position, ref);
-      n.a.root.visible = show && d2 < 90 * 90;
+      n.a.root.visible = n.chase || (show && d2 < 90 * 90);
       if (!n.a.root.visible) return;
-      if (d2 < 60 * 60) n.a.update(dt);
-      if (n.talking) return;
+      if (d2 < 60 * 60 || n.chase) n.a.update(dt);
+      if (n.talking || n.down || n.chase) return;
       if (n.path.length < 2) return;
       if (n.wait > 0) { n.wait -= dt; if (n.a.anim !== 'idle') n.a.play('idle'); return; }
       const [tx, tz] = n.path[n.wp], p = n.a.root.position, dx = tx - p.x, dz = tz - p.z, d = Math.hypot(dx, dz);

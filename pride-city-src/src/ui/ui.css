@@ -141,6 +141,9 @@ html[data-input=touch] #touch.on { display: block; }
 #touch .bA { right: 0; bottom: 0; width: 84px; height: 84px; background: rgba(47,179,108,.55) !important; font-size: 22px; }
 #touch .bB { right: 92px; bottom: 6px; width: 62px; height: 62px; font-size: 16px; }
 #touch .bS { right: 18px; bottom: 94px; width: 56px; height: 56px; font-size: 15px; }
+#touch .bX { right: 84px; bottom: 82px; width: 60px; height: 60px; font-size: 20px; background: rgba(255,75,92,.5) !important; }
+#touch .bW { right: 152px; bottom: 34px; width: 50px; height: 50px; font-size: 16px; }
+html[data-input=touch] body:has(#dialog) #touch .bX, html[data-input=touch] body:has(#dialog) #touch .bW { display: none; }
 #touch .bS.on { background: rgba(255,79,163,.6); }
 @media (orientation: portrait) {
   #touch .stick { width: 120px; height: 120px; bottom: calc(28px + var(--safe-b)); }
@@ -321,3 +324,12 @@ body:has(#hud:not(.hidden)) .screen.title { background: rgba(9,6,20,.8); backdro
 .roman { position: fixed; inset: 0; z-index: 80; background: #000; }
 .roman iframe { width: 100%; height: 100%; border: 0; display: block; }
 .roman .rClose { position: absolute; top: calc(8px + var(--safe-t, 0px)); right: calc(8px + env(safe-area-inset-right)); z-index: 2; padding: 8px 14px; border-radius: 99px; border: 1px solid rgba(255,255,255,.3); background: rgba(20,10,40,.8); color: #fff; font-weight: 800; font-size: 14px; cursor: pointer; }
+
+/* Fahndungssterne und Waffe */
+#hud .wanted { position: absolute; left: 50%; top: calc(50px + var(--safe-t)); translate: -50% 0; font: 900 26px/1 system-ui, sans-serif; letter-spacing: 3px; color: #ffd23b; -webkit-text-stroke: 1.5px #1a0d2e; text-shadow: 0 3px 0 #1a0d2e, 0 0 14px rgba(255,210,59,.6); pointer-events: none; display: none; }
+#hud .wanted.on { display: block; }
+#hud .wanted i { font-style: normal; color: rgba(255,255,255,.22); text-shadow: none; }
+#hud .wanted.flash { opacity: .35; }
+#hud .weapon { position: absolute; left: clamp(10px, 2vw, 24px); bottom: calc(14px + var(--safe-b) + clamp(120px, 16vw, 180px) + 10px); padding: 6px 12px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); font-weight: 900; font-size: .85em; pointer-events: auto; cursor: pointer; display: none; }
+#hud .weapon.on { display: block; }
+@media (pointer: coarse) { #hud .weapon { left: auto; right: 10px; bottom: auto; top: calc(214px + var(--safe-t)); font-size: .75em; } #hud .wanted { top: calc(54px + var(--safe-t)); font-size: 22px; } }

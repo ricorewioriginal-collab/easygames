@@ -20,11 +20,12 @@ export class Hud {
   onMenu: (() => void) | null = null;
   onPhone: (() => void) | null = null;
   onRadio: (() => void) | null = null;
+  onWeapon: (() => void) | null = null;
   private needsEl!: HTMLElement;
   constructor() {
     this.el = el(`<div id="hud" class="hidden"><div class="lcol"><div class="goal"></div><div class="needs"></div></div><div class="stats"></div>
       <div class="menuBtn"><button data-k="radio" aria-label="Radiosender wechseln" hidden>📻</button><button data-k="phone" aria-label="Handy">📱</button><button data-k="menu" aria-label="Menü">☰</button></div>
-      <div class="markers pass"></div><div class="prompt"></div><div class="toast"></div><canvas class="radar" width="200" height="200"></canvas><div class="gigbar"></div><div class="banner"></div></div>`);
+      <div class="markers pass"></div><div class="prompt"></div><div class="toast"></div><canvas class="radar" width="200" height="200"></canvas><div class="gigbar"></div><div class="banner"></div><div class="wanted"></div><button class="weapon" aria-label="Waffe wechseln"></button></div>`);
     document.body.appendChild(this.el);
     this.goalEl = this.el.querySelector('.goal')!; this.statsEl = this.el.querySelector('.stats')!;
     this.promptEl = this.el.querySelector('.prompt')!; this.markersEl = this.el.querySelector('.markers')!;
@@ -33,6 +34,7 @@ export class Hud {
     this.el.querySelector<HTMLButtonElement>('[data-k=phone]')!.onclick = () => this.onPhone?.();
     this.el.querySelector<HTMLButtonElement>('[data-k=radio]')!.onclick = () => this.onRadio?.();
     this.needsEl = this.el.querySelector('.needs')!;
+    this.el.querySelector<HTMLButtonElement>('.weapon')!.onclick = () => this.onWeapon?.();
     this.needsEl.innerHTML = NEED_ICONS.map(([k, i]) => `<span data-n="${k}" title="${k}">${i}<i><b></b></i></span>`).join('');
   }
   /* ---------- Radar (Minikarte unten links, dreht mit der Kamera) ---------- */
@@ -83,6 +85,16 @@ export class Hud {
     clearTimeout(this.bannerT); this.bannerT = window.setTimeout(() => (e.className = 'banner'), ms);
   }
   private bannerT = 0;
+  /** Aktuelle Spaßwaffe (null = ausblenden) */
+  weapon(text: string | null) { const e = this.el.querySelector<HTMLElement>('.weapon')!; e.classList.toggle('on', !!text); if (text && e.textContent !== text) e.textContent = text; }
+  private lastWanted = '';
+  /** Fahndungssterne oben in der Mitte, blinken, wenn dich gerade keine Streife sieht */
+  wanted(n: number, flash = false) {
+    const k = n + (flash ? 'f' : ''); if (k === this.lastWanted) return; this.lastWanted = k;
+    const e = this.el.querySelector<HTMLElement>('.wanted')!;
+    e.className = 'wanted' + (n ? ' on' : '') + (flash ? ' flash' : '');
+    e.innerHTML = '★'.repeat(n) + '<i>' + '★'.repeat(Math.max(0, 5 - n)) + '</i>';
+  }
   radarOn(on: boolean) { this.el.querySelector<HTMLElement>('.radar')!.style.display = on ? '' : 'none'; }
   show(on: boolean) { this.el.classList.toggle('hidden', !on); }
   goal(ch: string, title: string, sub = '') {

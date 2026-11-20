@@ -22,6 +22,7 @@ export const AVATARS: Avatar[] = [
   A('Fire_Male_01', 'm', 'Feuerwehrmann', 'Einsatzkleidung', 'fire'), A('Fire_Female_01', 'f', 'Feuerwehrfrau', 'Einsatzkleidung', 'fire'),
   A('Medical_Female_01', 'f', 'Sanitäterin', 'Kittel', 'medical'), A('Security_Male_01', 'm', 'Security', 'Türsteher', 'security'),
   A('Chef_Female_01', 'f', 'Köchin', 'Kochjacke', 'chef'), A('Delivery_Male_01', 'm', 'Kurier', 'Lieferdienst', 'delivery'),
+  A('Male_Child_01', 'm', 'Kind', 'Shirt, Jeans', 'kid'), A('Female_Child_01', 'f', 'Kind', 'Kleid, bunt', 'kid'),
 ];
 export const EDITOR_AVATARS = AVATARS.filter((a) => a.editor);
 export const avatar = (id: string) => AVATARS.find((a) => a.id === id);

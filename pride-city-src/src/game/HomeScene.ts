@@ -10,6 +10,7 @@ import { hints, toast } from '../ui/ui';
 import { advance, DAY_SEC } from './life';
 import { music, sfx } from '../engine/Audio';
 import { PALETTES } from './palettes';
+import { spouse, kid, spouseLook, kidLook } from './family';
 
 export const HOME_FILES = ['home/bed_double_A', 'home/couch_pillows', 'home/table_low', 'home/rug_rectangle_stripes_A', 'home/lamp_standing', 'home/shelf_A_big', 'home/cabinet_medium_decorated',
   'home/cactus_medium_A', 'home/cactus_small_A', 'home/pictureframe_large_A', 'home/book_set', 'home/armchair_pillows', 'home/lamp_table', 'home/cabinet_small',
@@ -58,6 +59,8 @@ export class HomeScene implements GameScene {
   private stoveGlow!: PBRMaterial;
   private sg!: ShadowGenerator;
   activity: '' | 'shower' | 'stove' | 'tv' = '';
+  /** Familie zu Hause: Partner*in am Sofa, Kind auf dem Teppich */
+  private fam: { spouse?: Actor; kid?: Actor; key: string; spots: Spot[] } = { key: '', spots: [] };
 
   static load(sc: Scene) { return preload(sc, HOME_FILES); }
 
@@ -185,6 +188,7 @@ export class HomeScene implements GameScene {
 
   enter() {
     this.showMess();
+    void this.syncFamily();
     this.player.root.position.set(W / 2 - 1, 0, .3);
     this.player.root.rotation.y = -Math.PI / 2;
     const s = this.g.save.data;
@@ -196,6 +200,34 @@ export class HomeScene implements GameScene {
     music('city');
   }
 
+  /** Partner*in und Kind nach Hochzeit bzw. Adoption in die Wohnung holen */
+  async syncFamily() {
+    const s = this.g.save.data, sl = spouseLook(s), kl = kidLook(s), key = (sl ? sl.body + sl.palette : '') + '|' + (kl?.body || '');
+    if (key === this.fam.key) { this.famSpots(); return; }
+    this.fam.key = key;
+    this.fam.spouse?.dispose(); this.fam.kid?.dispose(); this.fam.spouse = this.fam.kid = undefined;
+    const [a, b] = await Promise.all([sl ? Actor.create(this.scene, sl) : null, kl ? Actor.create(this.scene, kl) : null]);
+    if (a) { a.root.position.set(2.5, 0, 1.3); a.root.rotation.y = -Math.PI / 2 - .5; a.play('idle', 0); this.fam.spouse = a; }
+    if (b) { b.root.position.set(-.5, 0, -.5); b.root.rotation.y = Math.PI * .15; b.play('dance2', 0, .9); this.fam.kid = b; }
+    this.famSpots();
+    collectCasters(this.scene, this.sg);
+  }
+  private famSpots() {
+    const s = this.g.save.data, sp = spouse(s), k = kid(s), out: Spot[] = [];
+    if (sp && this.fam.spouse) out.push({ id: 'spouse', label: `💞 ${sp.name}`, x: 2.5, z: 1.3, r: 1.2 });
+    // nach einer wilden Nacht (18+) übernachtet das Kind bei den Großeltern
+    const away = this.mess.isEnabled();
+    this.fam.kid?.root.setEnabled(!away);
+    if (k && this.fam.kid && !away) out.push({ id: 'kid', label: `🧸 ${k.name}`, x: -.5, z: -.5, r: 1.1 });
+    this.fam.spots = out;
+  }
+  /** Kurze Animation mit Partner*in oder Kind */
+  familyPlay(who: 'spouse' | 'kid', anim: 'dance1' | 'laugh' | 'clap' | 'cheer' | 'talk') {
+    const a = who === 'spouse' ? this.fam.spouse : this.fam.kid; if (!a) return;
+    a.root.rotation.y = Math.atan2(this.player.root.position.x - a.root.position.x, this.player.root.position.z - a.root.position.z);
+    a.play(anim); this.player.play(anim === 'talk' ? 'talk' : anim === 'dance1' ? 'dance1' : 'laugh');
+    setTimeout(() => { a.play(who === 'kid' ? 'dance2' : 'idle'); if (this.player.anim !== 'walk') this.player.play('idle'); }, 3500);
+  }
   setSky(night: number) { this.window.albedoColor = new Color3(.62 - night * .55, .82 - night * .7, 1 - night * .6).toLinearSpace(); }
 
   /** Kurze Animation für eine Tätigkeit (Dampf, Herd, TV) */
@@ -212,6 +244,7 @@ export class HomeScene implements GameScene {
   update(dt: number, t: number) {
     const g = this.g, inp = g.engine.input, p = this.player.root.position;
     this.player.update(dt);
+    this.fam.spouse?.update(dt); this.fam.kid?.update(dt);
     const busy = g.dialog.open || g.menuOpen;
     this.hudT -= dt;
     const proj = (q: { x: number; y: number; z: number }) => g.engine.project(q);
@@ -223,6 +256,7 @@ export class HomeScene implements GameScene {
       if (mag > .08) {
         p.x += mx * 3.6 * dt; p.z -= my * 3.6 * dt;
         p.x = Math.max(-W / 2 + .5, Math.min(W / 2 - .5, p.x)); p.z = Math.max(-D / 2 + .5, Math.min(D / 2 - .3, p.z));
+        for (const a of [this.fam.spouse, this.fam.kid]) if (a) { const dx = p.x - a.root.position.x, dz = p.z - a.root.position.z, d = Math.hypot(dx, dz); if (d < .6 && d > 0) { p.x += dx / d * (.6 - d); p.z += dz / d * (.6 - d); } }
         for (const b of this.boxes) {
           const dx = p.x - b.x, dz = p.z - b.z, px = b.hx + .35 - Math.abs(dx), pz = b.hz + .35 - Math.abs(dz);
           if (px > 0 && pz > 0) { if (px < pz) p.x += Math.sign(dx) * px; else p.z += Math.sign(dz) * pz; }
@@ -231,7 +265,7 @@ export class HomeScene implements GameScene {
         this.player.play('walk', .18, Math.max(1, 3.6 * Math.min(1, mag) / 1.02 * .55));
       } else if (this.player.anim === 'walk') this.player.play('idle');
       let best: Spot | null = null, bd = 9;
-      for (const s of this.spots) { const d = Math.hypot(s.x - p.x, s.z - p.z); if (d < s.r && d < bd) { bd = d; best = s; } }
+      for (const s of [...this.spots, ...this.fam.spots]) { const d = Math.hypot(s.x - p.x, s.z - p.z); if (d < s.r && d < bd) { bd = d; best = s; } }
       g.hud.prompt(best ? best.label : null);
       g.touch.label(best ? 'Nutzen' : 'Aktion');
       if (inp.pressed('confirm') && best) { inp.consume('confirm'); this.player.play('interact'); g.homeAction(best.id); }

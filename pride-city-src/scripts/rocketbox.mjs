@@ -23,6 +23,7 @@ export const AVATARS = [
   'Professions/Police_Female_01', 'Professions/Police_Male_01', 'Professions/Fire_Female_01', 'Professions/Fire_Male_01',
   'Professions/Medical_Female_01', 'Professions/Security_Male_01', 'Professions/Chef_Female_01', 'Professions/Sports_Male_01',
   'Professions/Sports_Female_01', 'Professions/Business_Male_01', 'Professions/Delivery_Male_01',
+  'Children/Male_Child_01', 'Children/Female_Child_01',
 ];
 /** Animationen: Name im Spiel → Datei (m_/f_ wird vorangestellt), xy = Bewegung herausgerechnet (läuft auf der Stelle) */
 export const ANIMS = {
@@ -73,7 +74,7 @@ async function avatar(path) {
   mkdirSync(dir, { recursive: true });
   const fbx = await get(RAW + 'Avatars/' + path + '/Export/' + name + '.fbx', new URL(name + '.fbx', dir));
   // Texturnamen stehen in der FBX (z. B. m002_body_color.tga)
-  const tex = [...new Set(fbx.toString('latin1').match(/[a-z]\d{3}_[a-z]+_(color|normal)\.tga/g) || [])];
+  const tex = [...new Set(fbx.toString('latin1').match(/[a-z]+\d{3}_[a-z]+_(color|normal)\.tga/g) || [])];
   execFileSync(FBX2GLTF, ['--binary', '--input', new URL(name + '.fbx', dir).pathname, '--output', new URL('out', dir).pathname], { stdio: 'pipe' });
   const io = new NodeIO(), doc = await io.read(new URL('out.glb', dir).pathname), root = doc.getRoot();
   const imgs = {};

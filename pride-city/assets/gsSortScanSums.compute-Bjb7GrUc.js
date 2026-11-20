@@ -1,4 +1,4 @@
-import{a$ as a}from"./babylon-Dq6Gvf5C.js";const r="gsSortScanSumsComputeShader",o=`struct GsSortPassParams {count : u32,
+import{b0 as o}from"./babylon-CrqguZSV.js";const r="gsSortScanSumsComputeShader",u=`struct GsSortPassParams {count : u32,
 numBlocks : u32,
 shift : u32,
 chunkCount : u32,}
@@ -6,4 +6,4 @@ chunkCount : u32,}
 fn main(@builtin(local_invocation_id) lid : vec3u) {let t=lid.x;let v=select(0u,chunkSums[t],t<params.chunkCount);sums[t]=v;workgroupBarrier();for (var off=1u; off<256u; off=off<<1u) {var add=0u;if (t>=off) {add=sums[t-off];}
 workgroupBarrier();sums[t]+=add;workgroupBarrier();}
 if (t<params.chunkCount) {chunkSums[t]=sums[t]-v;}}
-`;a.ShadersStoreWGSL[r]||(a.ShadersStoreWGSL[r]=o);const s={name:r,shader:o};export{s as gsSortScanSumsComputeShaderWGSL};
+`;o.ShadersStoreWGSL[r]||(o.ShadersStoreWGSL[r]=u);const s={name:r,shader:u};export{s as gsSortScanSumsComputeShaderWGSL};
