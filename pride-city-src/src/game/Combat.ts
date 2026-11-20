@@ -2,22 +2,25 @@
    umhauen, Gleitgel auf den Boden werfen und zusehen, wie alle ausrutschen. Wer erwischt wird, bekommt Sterne,
    die Streife rennt hinterher – mit genug Abstand und Zeit hängst du sie ab, sonst gibt es Bußgeld auf der Wache.
    Ein Bedienkonzept: Angriff (F / LT / 👊), Waffe wechseln (G / L3 / Waffen-Knopf im HUD). */
-import { Vector3, Mesh, TransformNode, type Scene, type PBRMaterial } from '../engine/bjs';
+import { Vector3, Quaternion, Matrix, Mesh, TransformNode, type Scene, type PBRMaterial } from '../engine/bjs';
 import { cyl, sphere, ring, pbr } from '../engine/geo';
 import { sfx } from '../engine/Audio';
 import { toast } from '../ui/ui';
 import { Actor, RUN_MPS } from './Actor';
-import { Wanted, WEAPONS, arsenal, LAWS, type Weapon, type Law } from './crime';
+import { Wanted, WEAPONS, arsenal, landHit, LAWS, type Weapon, type Law } from './crime';
 import type { StreetNpc } from './Street';
 import type { CityScene } from './CityScene';
 import type { Game } from './Game';
 
-interface Body { a: Actor; down: number; up: number; kind: string; name: string }
+interface Body { a: Actor; down: number; up: number; kind: string; name: string; vx: number; vz: number }
+interface Spark { m: Mesh; vx: number; vy: number; vz: number; t: number }
 interface Puddle { m: Mesh; x: number; z: number; t: number; hit: Set<Actor> }
 interface Cop { a: Actor; home: [number, number]; extra: boolean; n?: StreetNpc }
 
 const SEE = 32, CATCH = 1.15, COP_SPEED = 5.4;
 const OUCH = ['Aua! Spinnst du?', 'Hey! Das gibt Ärger!', 'Ich ruf die Polizei!', 'Uff – mein Rücken!', 'Was für ein Abend …', 'Na warte!'];
+const AU = ['Au!', 'Hey!', 'Lass das!', 'Geht’s noch?!', 'Uff!', 'Finger weg!'];
+const UP = new Vector3(0, 1, 0), TQ = new Quaternion(), TM = new Matrix();
 const SLIP = ['Huch – glitschig!', 'Uiii!', 'Wer hat hier Gleitgel verschüttet?!', 'Meine Frisur!'];
 
 export class Combat {
@@ -29,10 +32,20 @@ export class Combat {
   private extra: Cop[] = [];
   private held: TransformNode;
   private holdParts: Record<'noodle' | 'dildo' | 'lube', TransformNode>;
-  private swing = 0;
+  /** Treffer bzw. Wurf, sobald der Arm vorn ist */
+  private impact: (() => void) | null = null;
   private cool = 0;
   private puddleM: PBRMaterial;
   private seenIndecent = 0;
+  /** Schlag läuft: 1 → 0 */
+  private strike = 0;
+  private wob = 0;
+  private now = 0;
+  private chain = new Map<Actor, { n: number; t: number }>();
+  private stagger = new Map<Actor, { t: number; vx: number; vz: number }>();
+  private sparks: Spark[] = [];
+  private bottle: { m: TransformNode; t: number; from: Vector3; to: Vector3 } | null = null;
+  private hintAdult = false;
   private arrestT = 0;
 
   constructor(private g: Game, private city: CityScene, private scene: Scene) {
@@ -55,6 +68,11 @@ export class Combat {
     this.holdParts = { noodle, dildo, lube };
     this.held.getChildMeshes().forEach((m) => { m.isPickable = false; });
     this.puddleM = pbr(sc, 0x7fe8ff, .02, 0, { alpha: .55, emissive: 0x2a8fd0, ei: .25 });
+    // Glitzer-Funken beim Treffer (kleiner Vorrat, wird wiederverwendet)
+    const cols = [0xff4fd8, 0xffd23b, 0x5ce1ff, 0xffffff];
+    for (let i = 0; i < 14; i++) { const m = sphere(sc, .035, 6); m.material = pbr(sc, cols[i % 4], .3, 0, { emissive: cols[i % 4], ei: 1.4 }); m.isPickable = false; m.setEnabled(false); this.sparks.push({ m, vx: 0, vy: 0, vz: 0, t: 0 }); }
+    // Arm und Waffe nach der Animation führen: so holt die Figur wirklich aus und schlägt zu
+    sc.onAfterAnimationsObservable.add(() => this.pose());
   }
 
   /** Streife aus der Straße übernehmen (nach dem Aufbau) */
@@ -63,7 +81,7 @@ export class Combat {
   }
 
   private get save() { return this.g.save.data; }
-  list() { return arsenal(this.save.settings.adult, this.save.inv.toy || 0); }
+  list() { return arsenal(this.save.settings.adult); }
 
   /** Nächste Waffe */
   cycle() {
@@ -72,6 +90,7 @@ export class Combat {
     sfx('move');
     const w = WEAPONS[this.weapon];
     toast(`${w.icon} ${w.name}${this.weapon === 'lube' ? ` · ${this.save.inv.lube || 0} Flaschen` : ''}`);
+    if (!this.save.settings.adult && !this.hintAdult && this.weapon === 'hand') { this.hintAdult = true; toast('🍆 Den Glitzer-Dildo gibt es mit „Inhalte ab 18“ (Menü → Einstellungen).'); }
     this.showWeapon();
   }
   /** Waffen-Anzeige im HUD (Antippen wechselt) */
@@ -81,42 +100,112 @@ export class Combat {
     this.g.hud.weapon(`${w.icon} ${w.name}${this.weapon === 'lube' ? ' ×' + (this.save.inv.lube || 0) : ''}`);
   }
 
-  /** Angriff bzw. Wurf */
+  /** Angriff bzw. Wurf: ausholen, zum Ziel drehen, zuschlagen. Erst mehrere Treffer hauen jemanden um. */
   attack() {
     if (this.cool > 0 || this.city.driving) return;
-    const s = this.save, w = WEAPONS[this.weapon], me = this.city.player, p = me.root.position, yaw = me.root.rotation.y;
+    const s = this.save, me = this.city.player, p = me.root.position;
     if (!this.list().includes(this.weapon)) this.weapon = 'hand';
-    this.cool = .55; this.swing = 1;
-    me.play('wave', .08, 2.2);
+    const w = WEAPONS[this.weapon];
+    this.cool = .6; this.strike = 1;
     if (w.throw) {
-      if ((s.inv.lube || 0) <= 0) { toast('Kein Gleitgel mehr – im Späti Lecker gibt es Nachschub (4 €).'); sfx('miss'); return; }
+      if ((s.inv.lube || 0) <= 0) { this.strike = 0; toast('Kein Gleitgel mehr – im Späti Lecker gibt es Nachschub (4 €).'); sfx('miss'); return; }
       s.inv.lube--; this.showWeapon();
-      const x = p.x + Math.sin(yaw) * 2.4, z = p.z + Math.cos(yaw) * 2.4;
-      setTimeout(() => this.puddle(x, z), 280);
+      const yaw = me.root.rotation.y, to = new Vector3(p.x + Math.sin(yaw) * 4.2, .05, p.z + Math.cos(yaw) * 4.2);
+      this.impact = () => { sfx('whoosh'); this.bottle = { m: this.holdParts.lube.clone('flask', null)!, t: 0, from: this.held.position.clone(), to }; this.bottle.m.setEnabled(true); };
       return;
     }
-    sfx('move');
-    // Ziel: nächste Person vor dir
-    let best: { a: Actor; kind: string; name: string; cop: boolean; id?: string } | null = null, bd = w.reach;
+    // Ziel: nächste Person vor dir (etwas weiter als die Reichweite – dann machst du einen Schritt darauf zu)
+    let best: { a: Actor; kind: string; name: string; cop: boolean; id?: string } | null = null, bd = w.reach * 1.8;
+    const yaw0 = me.root.rotation.y;
     const consider = (a: Actor, kind: string, name: string, cop = false, id?: string) => {
       if (!a.root.isEnabled() || this.bodies.get(a)?.down) return;
       const dx = a.root.position.x - p.x, dz = a.root.position.z - p.z, d = Math.hypot(dx, dz);
       if (d > bd) return;
-      let ang = Math.atan2(dx, dz) - yaw; ang = Math.atan2(Math.sin(ang), Math.cos(ang));
+      let ang = Math.atan2(dx, dz) - yaw0; ang = Math.atan2(Math.sin(ang), Math.cos(ang));
       if (Math.abs(ang) > 1.1) return;
       bd = d; best = { a, kind, name, cop, id };
     };
     for (const n of this.city.street.people) if (n.a.root.visible) consider(n.a, n.kind, n.name, n.kind === 'police');
     for (const c of this.extra) if (c.a.root.isEnabled()) consider(c.a, 'police', 'Polizei', true);
     for (const n of this.city.storyActors()) consider(n.a, 'story', n.name, false, n.id);
+    this.impact = null;
+    setTimeout(() => sfx('whoosh'), 150);
     if (!best) return;
     const t = best as { a: Actor; kind: string; name: string; cop: boolean; id?: string };
-    setTimeout(() => {
-      sfx('hit'); setTimeout(() => sfx('applause'), 120);
-      if (t.kind === 'story') { t.a.play('laugh'); toast(`${t.name}: „Hey! Lass das!“`); this.city.annoy(t.id!); this.crime('assault', p); return; }
-      this.knock(t.a, t.kind, t.name, OUCH[Math.floor(Math.random() * OUCH.length)], yaw);
-      this.crime(t.cop ? 'police' : 'assault', p);
-    }, 160);
+    // zum Ziel drehen und, wenn nötig, einen Ausfallschritt machen
+    const tp = t.a.root.position, dx = tp.x - p.x, dz = tp.z - p.z, d = Math.hypot(dx, dz) || 1, yaw = Math.atan2(dx, dz);
+    me.root.rotation.y = yaw;
+    if (d > w.reach * .85) { const step = d - w.reach * .8; p.x += dx / d * step; p.z += dz / d * step; this.city.world.collide(p, .4); }
+    this.impact = () => {
+      if (!t.a.root.isEnabled() || this.bodies.get(t.a)?.down) return;
+      sfx(this.weapon === 'hand' ? 'slap' : this.weapon === 'noodle' ? 'boing' : 'squeak');
+      this.wob = 1; this.city.shake = this.weapon === 'hand' ? .12 : .2;
+      this.burst(tp.x - dx / d * .25, 1.25, tp.z - dz / d * .25);
+      if (t.kind === 'story') { t.a.play('laugh'); toast(`${t.name}: „Hey! Lass das!“`); this.city.annoy(t.id!); this.push(t.a, dx / d, dz / d, w.push * .5); this.crime('assault', p); return; }
+      let h = this.chain.get(t.a); if (!h) this.chain.set(t.a, (h = { n: 0, t: -9 }));
+      const first = h.n === 0 || this.now - h.t > 4;
+      if (landHit(h, this.now, w.hits)) { sfx('hit'); setTimeout(() => sfx('applause'), 200); this.knock(t.a, t.kind, t.name, OUCH[Math.floor(Math.random() * OUCH.length)], yaw, dx / d * w.push * 4, dz / d * w.push * 4); }
+      else { this.push(t.a, dx / d, dz / d, w.push); toast(`${t.name}: „${AU[Math.floor(Math.random() * AU.length)]}“`); }
+      if (first) this.crime(t.cop ? 'police' : 'assault', p);
+    };
+  }
+
+  /** Taumeln: ein Stück zurück, kurz nach hinten kippen, dann wieder fangen */
+  private push(a: Actor, nx: number, nz: number, force: number) {
+    this.stagger.set(a, { t: .38, vx: nx * force / .38, vz: nz * force / .38 });
+    const n = this.city.street.people.find((q) => q.a === a); if (n) n.down = true;
+  }
+  /** Glitzer-Funken an der Trefferstelle */
+  private burst(x: number, y: number, z: number) {
+    for (const q of this.sparks) { const a = Math.random() * Math.PI * 2, v = 1.2 + Math.random() * 2.2; q.m.position.set(x, y, z); q.vx = Math.cos(a) * v; q.vz = Math.sin(a) * v; q.vy = 1.5 + Math.random() * 2.5; q.t = .45 + Math.random() * .25; q.m.setEnabled(true); }
+  }
+
+  /* ---------- Arm und Waffe: nach der Lauf-Animation überschreiben (ausholen → zuschlagen → zurück) ---------- */
+  private arm: { up: TransformNode; fore: TransformNode; hand: TransformNode } | null = null;
+  private armFor: Actor | null = null;
+  private armNodes() {
+    const me = this.city.player;
+    if (this.armFor !== me) {
+      this.armFor = me; const ns = me.model.getChildTransformNodes(false), f = (re: RegExp) => ns.find((n) => re.test(n.name));
+      const up = f(/ R UpperArm$/), fore = f(/ R Forearm$/), hand = f(/ R Hand$/);
+      this.arm = up && fore && hand ? { up, fore, hand } : null;
+    }
+    return this.arm;
+  }
+  /** Knochen so drehen, dass er (Richtung zum Kind) in die Weltrichtung dir zeigt; w = Gewicht gegenüber der Animation */
+  private aim(n: TransformNode, child: TransformNode, dir: Vector3, w: number) {
+    const par = n.parent as TransformNode | null; if (!par || !n.rotationQuaternion) return;
+    par.computeWorldMatrix(true); n.computeWorldMatrix(true); child.computeWorldMatrix(true);
+    const d0 = child.getAbsolutePosition().subtract(n.getAbsolutePosition()).normalize();
+    const q = Quaternion.FromUnitVectorsToRef(d0, dir, TQ), local = n.getWorldMatrix().multiply(Matrix.FromQuaternionToRef(q, TM)).multiply(Matrix.Invert(par.getWorldMatrix()));
+    const rot = new Quaternion(); if (!local.decompose(undefined, rot)) return;
+    Quaternion.SlerpToRef(n.rotationQuaternion, rot, w, n.rotationQuaternion);
+    n.computeWorldMatrix(true);
+  }
+  private pose() {
+    const city = this.city, me = city.player; if (!me || city.mode !== 'play') return;
+    const show = !city.driving && this.weapon !== 'hand';
+    for (const [k, n] of Object.entries(this.holdParts)) n.setEnabled(show && k === this.weapon && !(k === 'lube' && this.bottle));
+    const arm = city.driving ? null : this.armNodes(); if (!arm) return;
+    const yaw = me.root.rotation.y, f = new Vector3(Math.sin(yaw), 0, Math.cos(yaw)), r = new Vector3(Math.cos(yaw), 0, -Math.sin(yaw));
+    const mix = (a: number, b: number, c: number) => new Vector3(f.x * a + r.x * c, b, f.z * a + r.z * c).normalize();
+    let dir: Vector3 | null = null;
+    if (this.strike > 0) {
+      const k = 1 - this.strike, slap = this.weapon === 'hand', lob = this.weapon === 'lube';
+      const A = slap ? mix(-.15, .3, .95) : lob ? mix(-.5, .2, .4) : mix(-.4, .9, .3), B = slap ? mix(.8, .1, -.55) : lob ? mix(.8, .55, 0) : mix(.85, -.4, -.12);
+      let wgt = 1;
+      if (k < .36) { dir = A; wgt = Math.min(1, k / .2); }
+      else if (k < .56) dir = Vector3.SlerpToRef(A, B, (k - .36) / .2, new Vector3());
+      else { dir = B; wgt = 1 - (k - .56) / .44; }
+      this.aim(arm.up, arm.fore, dir, wgt); this.aim(arm.fore, arm.hand, dir, wgt);
+    }
+    if (!show) return;
+    arm.hand.computeWorldMatrix(true);
+    this.held.position.copyFrom(arm.hand.getAbsolutePosition());
+    // Waffe verlängert den Unterarm; in Ruhe zeigt sie schräg nach oben vorn. Nach dem Treffer wackelt sie nach.
+    const rest = mix(.5, .85, .05), axis = dir ? Vector3.LerpToRef(rest, dir, Math.min(1, this.strike * 3), new Vector3()).normalize() : rest;
+    if (this.wob > 0) { const s = Math.sin(this.wob * 28) * this.wob * (this.weapon === 'dildo' ? .5 : .28); axis.addInPlace(r.scale(s)).normalize(); }
+    this.held.rotationQuaternion = Quaternion.FromUnitVectorsToRef(UP, axis, this.held.rotationQuaternion || new Quaternion());
   }
 
   /** Gleitgel-Pfütze auf den Boden */
@@ -128,8 +217,9 @@ export class Combat {
   }
 
   /** Umfallen (ausgerutscht oder umgehauen), steht nach ein paar Sekunden wieder auf */
-  private knock(a: Actor, kind: string, name: string, line: string, dir: number) {
-    this.bodies.set(a, { a, down: 3.2, up: 0, kind, name });
+  private knock(a: Actor, kind: string, name: string, line: string, dir: number, vx = 0, vz = 0) {
+    this.stagger.delete(a);
+    this.bodies.set(a, { a, down: 3.2, up: 0, kind, name, vx, vz });
     a.root.rotation.y = dir + Math.PI; // fällt nach hinten, weg von dir
     const n = this.city.street.people.find((q) => q.a === a); if (n) n.down = true;
     toast(`${name}: „${line}“`);
@@ -164,15 +254,26 @@ export class Combat {
   update(dt: number, t: number) {
     const me = this.city.player, p = me.root.position, inp = this.g.engine.input;
     this.cool -= dt; this.arrestT -= dt;
-    // gehaltene Waffe an der rechten Hand
-    const hand = this.handNode();
+    this.now = t;
+    this.strike = Math.max(0, this.strike - dt / .5);
+    if (this.impact && this.strike < .56) { const f = this.impact; this.impact = null; f(); }
+    this.wob = Math.max(0, this.wob - dt * 2.4);
     const show = !this.city.driving && this.weapon !== 'hand' && this.city.mode === 'play';
-    for (const [k, n] of Object.entries(this.holdParts)) n.setEnabled(show && k === this.weapon);
-    if (show && hand) {
-      this.held.position.copyFrom(hand.getAbsolutePosition());
-      this.swing = Math.max(0, this.swing - dt * 3.2);
-      const sw = Math.sin((1 - this.swing) * Math.PI) * (this.swing > 0 ? 1 : 0);
-      this.held.rotation.set(-.4 - sw * 1.6, me.root.rotation.y, 0);
+    // Taumeln nach einem Treffer
+    for (const [a, q] of this.stagger) {
+      q.t -= dt; const r = a.root;
+      r.position.x += q.vx * dt; r.position.z += q.vz * dt; this.city.world.collide(r.position, .4);
+      r.rotation.x = -Math.sin(Math.max(0, q.t) / .38 * Math.PI) * .32;
+      if (q.t <= 0) { r.rotation.x = 0; this.stagger.delete(a); const n = this.city.street.people.find((x) => x.a === a); if (n && !this.bodies.get(a)) n.down = false; }
+    }
+    // Funken fliegen auseinander und fallen
+    for (const q of this.sparks) { if (q.t <= 0) continue; q.t -= dt; q.vy -= 9 * dt; q.m.position.x += q.vx * dt; q.m.position.y += q.vy * dt; q.m.position.z += q.vz * dt; q.m.scaling.setAll(Math.max(.1, q.t * 2)); if (q.t <= 0) q.m.setEnabled(false); }
+    // geworfene Gleitgel-Flasche: Bogen, dann Pfütze
+    if (this.bottle) {
+      const b = this.bottle; b.t += dt / .5; const k = Math.min(1, b.t);
+      b.m.position.set(b.from.x + (b.to.x - b.from.x) * k, b.from.y + (b.to.y - b.from.y) * k + Math.sin(k * Math.PI) * 1.3, b.from.z + (b.to.z - b.from.z) * k);
+      b.m.rotation.x += dt * 14;
+      if (k >= 1) { b.m.dispose(); this.bottle = null; sfx('splash'); this.puddle(b.to.x, b.to.z); }
     }
     // Erregung öffentlichen Ärgernisses: Dildo in der Hand vor der Streife
     if (show && this.weapon === 'dildo' && this.copNear(p, 9)) { this.seenIndecent += dt; if (this.seenIndecent > 1.2) { this.seenIndecent = -20; this.crime('indecent', p); } }
@@ -200,6 +301,7 @@ export class Combat {
     // Umgefallene liegen, stehen dann wieder auf
     for (const [a, b] of this.bodies) {
       const r = a.root;
+      if (b.down > 2.85) { r.position.x += b.vx * dt; r.position.z += b.vz * dt; this.city.world.collide(r.position, .4); }
       if (b.down > 0) { b.down -= dt; r.rotation.x = Math.max(-Math.PI / 2 + .05, r.rotation.x - dt * 9); r.position.y = .25; if (b.down <= 0) b.up = .6; }
       else if (b.up > 0) { b.up -= dt; r.rotation.x = Math.min(0, r.rotation.x + dt * 3.5); if (b.up <= 0) { r.rotation.x = 0; r.position.y = .1; this.bodies.delete(a); const n = this.city.street.people.find((q) => q.a === a); if (n) n.down = false; a.play(b.kind === 'police' ? 'run' : 'laugh'); } }
     }
@@ -258,14 +360,5 @@ export class Combat {
       this.g.save.write(); this.city.refreshHud();
       this.g.hud.banner('🚓 Festgenommen', `${fine} € Bußgeld und zwei Stunden Papierkram auf der Wache.`, 'bad', 4200);
     });
-  }
-
-  /** Rechte Hand der Spielfigur (Rocketbox: „Bip01 R Hand“) */
-  private hand: TransformNode | null = null;
-  private handFor: Actor | null = null;
-  private handNode() {
-    const me = this.city.player;
-    if (this.handFor !== me) { this.handFor = me; this.hand = me.model.getChildTransformNodes(false).find((n) => n.name === 'Bip01 R Hand') || null; }
-    return this.hand;
   }
 }

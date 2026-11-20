@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { defaults } from '../src/engine/Save';
-import { Wanted, arsenal, LAWS, MAX_STARS } from '../src/game/crime';
+import { Wanted, arsenal, landHit, LAWS, MAX_STARS } from '../src/game/crime';
 import { dateRec } from '../src/game/social';
 import { canPropose, propose, wed, canAdopt, applyAdopt, arrive, spouse, kid, kidLook, spouseLook, WEDDING, ADOPT, ADOPT_DAYS } from '../src/game/family';
 
@@ -30,9 +30,11 @@ describe('Gesetze und Fahndungssterne', () => {
     w.add('slip'); expect(w.arrest(1000)).toBe(LAWS.slip.fine + 25);
   });
   it('Glitzer-Dildo nur mit 18+ und gekauftem Toy', () => {
-    expect(arsenal(false, 3)).not.toContain('dildo');
-    expect(arsenal(true, 0)).not.toContain('dildo');
-    expect(arsenal(true, 1)).toEqual(['hand', 'noodle', 'dildo', 'lube']);
+    expect(arsenal(false)).not.toContain('dildo');
+    expect(arsenal(true)).toEqual(['hand', 'noodle', 'dildo', 'lube']);
+    const h = { n: 0, t: 0 };
+    expect(landHit(h, 1, 3)).toBe(false); expect(landHit(h, 2, 3)).toBe(false); expect(landHit(h, 3, 3)).toBe(true);
+    expect(landHit(h, 4, 2)).toBe(false); expect(landHit(h, 9, 2)).toBe(false); // verfallen
   });
 });
 

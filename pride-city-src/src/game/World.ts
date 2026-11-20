@@ -401,9 +401,25 @@ export class World {
     this.sun.direction = this._sunDir.scale(-1);
     this.lamps.albedoColor = new Color3(1, .95, .75).scale(.6 + this.night * 3.2);
     this.neon.forEach((n) => { n.m.albedoColor = n.base.scale(1 + this.night * 2.4); });
-    this.lampLights.forEach((l) => (l.intensity = this.night * 40));
+    // Lichter, die nichts beitragen, ganz abschalten: jedes aktive Licht kostet in jedem Bildpunkt Rechenzeit
+    const lit = this.night > .03 && !this.low;
+    this.lampLights.forEach((l) => { l.intensity = this.night * 40; if (l.isEnabled() !== lit) l.setEnabled(lit); });
+    this.poolLights.forEach((l) => { if (l.isEnabled() !== lit) l.setEnabled(lit); });
   }
   private _sunDir = new Vector3(.5, .8, .4);
+  /** niedrige Grafikstufe (Handy): keine Punktlichter, kein Klarlack, keine Feinstruktur */
+  low = false;
+  setLow(on: boolean) {
+    if (on === this.low) return; this.low = on;
+    for (const m of this.scene.materials) {
+      if (!(m instanceof PBRMaterial)) continue;
+      const k = m as PBRMaterial & { _pcFx?: [boolean, boolean] };
+      if (!k._pcFx) k._pcFx = [m.detailMap.isEnabled, m.clearCoat.isEnabled];
+      m.detailMap.isEnabled = !on && k._pcFx[0]; m.clearCoat.isEnabled = !on && k._pcFx[1];
+    }
+    const lit = this.night > .03 && !on;
+    for (const l of [...this.lampLights, ...this.poolLights]) l.setEnabled(lit);
+  }
 
   /** Schatten folgen dem Spieler */
   follow(p: Vector3) {

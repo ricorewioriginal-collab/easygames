@@ -1,7 +1,7 @@
 /* Klang ohne Audiodateien: Effekte und Musik werden live mit WebAudio erzeugt (spart Download, läuft offline). */
 
 export type Sfx = 'move' | 'ok' | 'back' | 'coin' | 'win' | 'miss' | 'hit' | 'open' | 'step' | 'cheer'
-  | 'door' | 'engine' | 'horn' | 'siren' | 'glass' | 'pour' | 'phone' | 'shower' | 'cook' | 'kiss' | 'giggle' | 'sheets' | 'heart' | 'splash' | 'tram' | 'camera' | 'applause';
+  | 'door' | 'engine' | 'horn' | 'siren' | 'glass' | 'pour' | 'phone' | 'shower' | 'cook' | 'kiss' | 'giggle' | 'sheets' | 'heart' | 'splash' | 'tram' | 'camera' | 'applause' | 'whoosh' | 'slap' | 'boing' | 'squeak';
 
 let ctx: AudioContext | null = null;
 let master: GainNode, sfxBus: GainNode, musicBus: GainNode;
@@ -94,6 +94,10 @@ export function sfx(k: Sfx) {
     case 'heart': for (let i = 0; i < 3; i++) { tone(36, t + i * .7, .12, 'sine', .4, sfxBus, -4); tone(35, t + i * .7 + .18, .12, 'sine', .3, sfxBus, -4); } break;
     case 'splash': noise(t, .5, .12, sfxBus, 0, 800); noise(t + .05, .3, .06, sfxBus, 3000); break;
     case 'tram': tone(84, t, .5, 'sine', .08, sfxBus); tone(84, t + .6, .5, 'sine', .08, sfxBus); noise(t, 1.2, .03, sfxBus, 0, 300); break;
+    case 'whoosh': noise(t, .16, .09, sfxBus, 0, 900); noise(t + .05, .12, .06, sfxBus, 0, 1800); break;
+    case 'slap': noise(t, .05, .32, sfxBus, 0, 2600); noise(t, .09, .16, sfxBus, 0, 900); break;
+    case 'boing': tone(52, t, .22, 'sine', .3, sfxBus, 9); tone(64, t + .04, .18, 'triangle', .12, sfxBus, -7); noise(t, .05, .12, sfxBus, 0, 700); break;
+    case 'squeak': tone(86, t, .09, 'sine', .16, sfxBus, 7); tone(79, t + .09, .14, 'sine', .14, sfxBus, -9); noise(t, .05, .14, sfxBus, 0, 1200); break;
     case 'camera': noise(t, .05, .15, sfxBus, 3000); noise(t + .09, .07, .1, sfxBus, 2000); break;
   }
 }

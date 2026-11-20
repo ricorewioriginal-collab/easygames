@@ -201,10 +201,11 @@
     {
       "t": "Spaßwaffen, Gesetze und Fahndungssterne",
       "p": [
-        "Mit Angriff (F, LT am Controller, 👊 auf dem Handy) teilst du aus, mit Waffe wechseln (G, L3, 🔄 oder Antippen der Waffen-Anzeige) wählst du: Klaps, Regenbogen-Poolnudel, Gleitgel-Flasche und – nur mit „Inhalte ab 18“ und einem Toy aus der Boutique – den Glitzer-Dildo. Getroffene fallen komisch um und stehen nach ein paar Sekunden wieder auf; niemand wird verletzt.",
+        "Mit Angriff (F, LT am Controller, 👊 auf dem Handy) teilst du aus, mit Waffe wechseln (G, L3, 🔄 oder Antippen der Waffen-Anzeige) wählst du: Klaps, Regenbogen-Poolnudel, Gleitgel-Flasche und – mit „Inhalte ab 18“ – den Glitzer-Dildo. Getroffene fallen komisch um und stehen nach ein paar Sekunden wieder auf; niemand wird verletzt.",
         "Gleitgel (4 € im Späti Lecker) wirfst du vor dich auf den Boden. Wer durch die Pfütze läuft, rutscht aus – auch die Polizei. Rennst du selbst hindurch, landest du ebenfalls auf dem Hosenboden.",
         "Rainbow City hat Gesetze: Hauen (1 Stern), Polizei angreifen (2 Sterne), Gleitgel auf dem Gehweg (1), Erregung öffentlichen Ärgernisses mit dem Dildo vor der Streife (1) und Autodiebstahl vor Polizeiaugen (1). Sieht dich keine Streife, ruft manchmal jemand die Polizei.",
-        "Mit Sternen rennt die Streife hinterher, ab drei Sternen kommt Verstärkung. Bleibst du lange ungesehen (8 Sekunden plus 5 je Stern), hängst du sie ab. Erwischt dich jemand, gibt es Bußgeld und zwei Stunden Papierkram auf der Wache. Sofort weg sind die Sterne mit dem Undercover-Umstyling in der Boutique oder wenn du dich auf der Polizeiwache stellst und zahlst."
+        "Mit Sternen rennt die Streife hinterher, ab drei Sternen kommt Verstärkung. Bleibst du lange ungesehen (8 Sekunden plus 5 je Stern), hängst du sie ab. Erwischt dich jemand, gibt es Bußgeld und zwei Stunden Papierkram auf der Wache. Sofort weg sind die Sterne mit dem Undercover-Umstyling in der Boutique oder wenn du dich auf der Polizeiwache stellst und zahlst.",
+        "Schläge haben Wucht: Deine Figur dreht sich zum Ziel, holt aus und schlägt zu. Der erste Treffer lässt Leute nur taumeln, erst nach zwei Treffern (Poolnudel, Glitzer-Dildo) oder drei Klapsen fallen sie um. Die Gleitgel-Flasche fliegt im Bogen und zerplatzt zur Pfütze. Der Glitzer-Dildo gehört mit „Inhalte ab 18“ fest zur Ausrüstung, ein Toy aus dem Laden brauchst du dafür nicht mehr."
       ]
     },
     {
@@ -496,6 +497,10 @@
     {
       "q": "Läuft das Spiel auf dem Handy?",
       "a": "Ja, im Hoch- und Querformat mit Touch-Steuerung. Die Grafikstufe passt sich automatisch an."
+    },
+    {
+      "q": "Das Spiel ruckelt am Handy. Was tun?",
+      "a": "Am Handy startet Pride City jetzt auf der sparsamen Grafikstufe und regelt die Auflösung selbst nach, bis es flüssig läuft. Unter Menü → Einstellungen → Grafik kannst du die Stufe auch fest auf „Niedrig“ stellen."
     }
   ]
 }

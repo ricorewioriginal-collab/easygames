@@ -117,7 +117,7 @@ export class CityScene implements GameScene {
     this.buildStickers();
     this.world.castShadows();
     // Schatten folgen der Grafikstufe (niedrig = aus)
-    this.g.engine.onQuality((q) => { this.world.sun.shadowEnabled = q > 0; this.world.shadows.mapSize = q === 2 ? 2048 : 1024; });
+    this.g.engine.onQuality((q) => { this.world.sun.shadowEnabled = q > 0; this.world.shadows.mapSize = q === 2 ? 2048 : 1024; this.world.setLow(q === 0); });
   }
 
   /* ---------- Sticker zum Sammeln ---------- */
@@ -378,6 +378,8 @@ export class CityScene implements GameScene {
   }
 
   /* ---------- Kamera ---------- */
+  /** kurzes Kamerawackeln (Treffer) */
+  shake = 0;
   private snapCam() { this.updateCam(1, true); }
   private tgt = new Vector3();
   private updateCam(dt: number, snap = false) {
@@ -407,6 +409,7 @@ export class CityScene implements GameScene {
     if (f < 1) want.copyFrom(tgt).addInPlace(dir.scale(f));
     Vector3.LerpToRef(this.camPos, want, snap ? 1 : Math.min(1, dt * (f < 1 ? 20 : 8)), this.camPos);
     this.camera.position.copyFrom(this.camPos);
+    if (this.shake > 0) { this.shake = Math.max(0, this.shake - dt); const k = this.shake * .5; this.camera.position.x += (Math.random() - .5) * k; this.camera.position.y += (Math.random() - .5) * k; }
     this.camera.setTarget(tgt);
     this.clearView(tgt);
   }
