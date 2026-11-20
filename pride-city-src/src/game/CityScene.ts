@@ -13,6 +13,7 @@ import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
 import type { Marker } from '../ui/Hud';
 import { type Gig, pickCall, fmtTime } from './gigs';
+import { collect, nextFare } from './empire';
 import { Street, type Parked } from './Street';
 import { PLACE_THEMES, houseTheme } from './interiors';
 
@@ -193,6 +194,8 @@ export class CityScene implements GameScene {
   refreshHud() {
     if (this.mode !== 'play' && this.g.where === 'city') return;
     const s = this.g.save.data, gl = goal(s);
+    const paid = collect(s);
+    if (paid) { sfx('coin'); this.g.hud.banner('💼 Einnahmen deines Imperiums', `+${paid} € aus deinen Geschäften`, 'good', 3600); this.g.save.write(); }
     this.world.traces.visible = s.settings.adult;
     if (this.g.where === 'inside' && this.g.inside) this.g.hud.goal(this.g.inside.theme.icon + ' Drinnen', this.g.inside.theme.title, `Ziel: ${gl.title}`);
     else if (this.g.where === 'home') this.g.hud.goal('Zuhause', 'Deine Wohnung', s.chapter === 1 && s.step === 2 ? 'Schau dich um.' : `Ziel: ${gl.title}`);
@@ -221,7 +224,18 @@ export class CityScene implements GameScene {
       this.g.hud.prompt(this.near.label); this.g.touch.label('Raus');
       return;
     }
-    for (const n of this.npcs) {
+    // Direkt vor einer Tür hat die Tür Vorrang (sonst schnappt sich eine vorbeilaufende Figur den Knopf)
+    const want0 = goal(this.g.save.data).poi;
+    for (const q of this.world.pois) {
+      if (!q.sign && q.id !== want0) continue;
+      const d = Math.hypot(q.x - p.x, q.z - p.z);
+      if (d < 1.4 && d < bd) { bd = d; best = { kind: 'poi', id: q.id, label: q.icon + ' ' + q.name }; }
+    }
+    for (const h of this.world.houses) {
+      const d = Math.hypot(h.x - p.x, h.z - p.z);
+      if (d < 1.2 && d < bd) { bd = d; const t = houseTheme(h.i, this.g.save.data.settings.adult); best = { kind: 'house', id: String(h.i), label: '🚪 ' + t.icon + ' ' + t.title }; }
+    }
+    if (!best) for (const n of this.npcs) {
       if (!n.a.root.visible) continue;
       const d = Vector3.Distance(n.a.root.position, p);
       if (d < 2.6 && d < bd) { bd = d; best = { kind: 'npc', id: n.def.id, label: 'Sprechen mit ' + n.def.name }; }
@@ -395,6 +409,11 @@ export class CityScene implements GameScene {
 
   /* ---------- Aufträge per Anruf ---------- */
   gig: { g: Gig; i: number; t: number } | null = null;
+  /** Regenbogen-Taxi: Zahl der Fahrten in Folge (-1 = aus) */
+  taxi = -1;
+  get driving() { return !!this.drive; }
+  /** Taxi-Schicht beginnen (nur im Auto) */
+  startTaxi() { this.taxi = 0; this.startGig(nextFare(0, Math.random())); }
   private callT = 150;
   /** Auftrag annehmen (aus Anruf oder Handy-App) */
   startGig(g: Gig) {
@@ -422,9 +441,14 @@ export class CityScene implements GameScene {
       sfx('win'); this.g.hud.banner('Auftrag erledigt!', `+${q.g.pay} € · +${q.g.rep} Ruf · ${q.g.done}`, 'good', 4200);
       this.player.play('cheer'); setTimeout(() => this.player.anim === 'cheer' && this.player.play('idle'), 1800);
       this.g.save.write(); this.refreshHud();
+      // Taxi-Schicht: nächster Fahrgast meldet sich, solange du im Auto sitzt
+      if (q.g.id === 'taxi' && this.taxi >= 0) {
+        this.taxi++; s.flags.taxiBest = Math.max(Number(s.flags.taxiBest) || 0, this.taxi);
+        setTimeout(() => { if (this.taxi >= 0 && this.drive && !this.gig) { const f = nextFare(this.taxi, Math.random()); toast(`🚕 ${f.who}: ${f.call}`); this.startGig(f); } else this.taxi = -1; }, 2600);
+      }
       return;
     }
-    if (q.t <= 0) { this.gig = null; this.g.hud.gig(null); sfx('miss'); this.g.hud.banner('Auftrag gescheitert', 'Zu spät. Vielleicht klappt es beim nächsten Anruf.', 'bad'); }
+    if (q.t <= 0) { if (q.g.id === 'taxi') this.taxi = -1; this.gig = null; this.g.hud.gig(null); sfx('miss'); this.g.hud.banner('Auftrag gescheitert', 'Zu spät. Vielleicht klappt es beim nächsten Anruf.', 'bad'); }
   }
   /** Anruf: annehmen oder ablehnen */
   private ring() {

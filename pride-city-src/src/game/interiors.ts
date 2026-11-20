@@ -23,10 +23,10 @@ export interface Theme { id: string; title: string; icon: string; floor: number;
 const C = { wood: 0x8a5a35, dark: 0x1c1430, white: 0xf2f2f2, steel: 0x9aa3ad, red: 0xd8261e, pink: 0xff4fa3, black: 0x16161c, green: 0x2f8f5a, blue: 0x3a7bff, gold: 0xffc83d };
 const menu = (label = '🛎️ Theke'): Spot => ({ id: 'menu', label, x: 0, z: -2.6, r: 2, act: { k: 'menu' } });
 const counter: Item[] = [{ box: [4.2, 1.1, .9], c: C.wood, x: 0, z: -3.4, col: true }, { box: [4.4, .08, 1], c: C.white, x: 0, z: -3.4, y: 1.12 }];
-const tables = (n: number, z = 1.4): Item[] => Array.from({ length: n }, (_, i) => [
-  { m: 'home/table_medium', x: -4 + i * (8 / Math.max(1, n - 1)), z, col: true } as Item,
-  { m: 'home/chair_A', x: -4 + i * (8 / Math.max(1, n - 1)) - 1, z, r: Math.PI / 2 } as Item,
-  { m: 'home/chair_A', x: -4 + i * (8 / Math.max(1, n - 1)) + 1, z, r: -Math.PI / 2 } as Item]).flat();
+const tables = (n: number, z = 1.4, span = 8): Item[] => Array.from({ length: n }, (_, i) => [
+  { m: 'home/table_medium', x: -4 + i * (span / Math.max(1, n - 1)), z, s: .75, col: true } as Item,
+  { m: 'home/chair_A', x: -4 + i * (span / Math.max(1, n - 1)) - .7, z, r: Math.PI / 2 } as Item,
+  { m: 'home/chair_A', x: -4 + i * (span / Math.max(1, n - 1)) + .7, z, r: -Math.PI / 2 } as Item]).flat();
 const shelves = (z = -4.1): Item[] => [-4.4, -2.2, 2.2, 4.4].map((x) => ({ m: 'home/shelf_A_big', x, z, col: true } as Item));
 const dancefloor = (c1: number, c2: number): Item[] => Array.from({ length: 16 }, (_, i) => ({ box: [1.4, .06, 1.4], c: i % 2 ? c1 : c2, x: -2.1 + (i % 4) * 1.4, z: -.6 + Math.floor(i / 4) * 1.4, e: .6 } as Item));
 const gl = (id: string, label: string, x: number, z: number): Spot => ({ id: 'gl_' + id, label, x, z, r: 1.8, act: { k: 'gl', id } });
@@ -35,7 +35,7 @@ const doIt = (id: string, label: string, x: number, z: number, a: Omit<Extract<A
 /** Läden und Treffpunkte mit eigenem Ladenmenü (Schlüssel = POI-ID) */
 export const PLACE_THEMES: Record<string, Theme> = {
   cafe: { id: 'cafe', title: 'Café Kaffeeklatsch', icon: '☕', floor: 0xc7925e, wall: 0xffe9d0, light: 0xffc890,
-    items: [...counter, ...tables(3), { m: 'kitchen/kitchencounter_straight_A', x: 3.6, z: -4.1 }, { m: 'home/cactus_medium_A', x: 5.3, z: 3.4 }, { neon: 'KAFFEEKLATSCH', c: '#ffb347', x: 0, z: -4.38, y: 3.1 }],
+    items: [...counter, ...tables(3), { m: 'kitchen/kitchencounter_straight_A', x: 3.6, z: -4.1 }, { m: 'home/cactus_medium_A', x: 5.3, z: -1.2 }, { neon: 'KAFFEEKLATSCH', c: '#ffb347', x: 0, z: -4.38, y: 3.1 }],
     spots: [menu('☕ Bestellen'), doIt('coffee', '☕ Kaffee am Tisch', -3, 1.4, { cost: 3, min: 20, d: { energy: 12, social: 6 }, msg: 'Cappuccino mit Herz-Schaum. Energie +12', sfx: 'pour' }), gl('dates', '🎲 Date-Roulette', 3, 1.4)] },
   club: { id: 'club', title: 'Club Prisma', icon: '🪩', floor: 0x120c22, wall: 0x241640, light: 0xb56bff, music: 'club',
     items: [...dancefloor(0xff3b8d, 0x3bd1ff), { box: [3, 1.1, .9], c: 0x2a1650, x: 0, z: -3.6, col: true, e: .3 }, { box: [2.4, 1.1, .8], c: C.dark, x: 4.4, z: 1.6, col: true }, { neon: 'PRISMA', c: '#b56bff', x: 0, z: -4.38, y: 3 }],
@@ -56,7 +56,7 @@ export const PLACE_THEMES: Record<string, Theme> = {
     items: [{ box: [6, 3.4, .1], c: 0x5ce1ff, x: 0, z: -4.2, e: .25 }, { box: [.3, 2.4, .3], c: C.black, x: -3.6, z: 1.6, col: true }, { box: [.3, 2.4, .3], c: C.black, x: 3.6, z: 1.6, col: true }, { screen: [.6, .6], c: 0xffffff, x: -3.6, z: 1.6, y: 2.5 }, { screen: [.6, .6], c: 0xffffff, x: 3.6, z: 1.6, y: 2.5 }, { box: [.5, 1.4, .5], c: C.black, x: 0, z: 2.6, col: true }],
     spots: [gl('cast', '🎬 Casting-Tag', 0, -2.4), { id: 'menu', label: '📸 Fotoshooting und Studio', x: 0, z: 1.6, r: 1.8, act: { k: 'menu' } }] },
   checkpoint: { id: 'checkpoint', title: 'Checkpoint Regenbogen', icon: '🩺', floor: 0xe6f2ec, wall: 0xffffff, light: 0xe6fff2,
-    items: [{ box: [3, 1, .8], c: 0x3ee69a, x: 0, z: -3.4, col: true }, ...[-4, -2.8, -1.6].map((x) => ({ m: 'home/chair_A', x, z: 2.4, r: Math.PI } as Item)), { m: 'home/cactus_medium_A', x: 5.2, z: 3.2 }, { neon: 'CHECKPOINT', c: '#3ee69a', x: 0, z: -4.38, y: 3.1 }],
+    items: [{ box: [3, 1, .8], c: 0x3ee69a, x: 0, z: -3.4, col: true }, ...[-4, -2.8, -1.6].map((x) => ({ m: 'home/chair_A', x, z: 2.4, r: Math.PI } as Item)), { m: 'home/cactus_medium_A', x: 5.2, z: -1.2 }, { neon: 'CHECKPOINT', c: '#3ee69a', x: 0, z: -4.38, y: 3.1 }],
     spots: [menu('🩺 Beratung, Test, PrEP'), doIt('info', '📋 Infowand lesen', -4.6, -3, { min: 10, d: { fun: 1 }, msg: 'U=U: Unter der Nachweisgrenze heißt nicht übertragbar. Tests sind hier anonym und kostenlos.' })] },
   kopfkino: { id: 'kopfkino', title: 'Videothek Kopfkino', icon: '📼', floor: 0x1a1018, wall: 0x2a1424, light: 0xff3b6b, adult: true,
     items: [...shelves(), { box: [2.4, 1, .8], c: C.black, x: 3.6, z: 2, col: true }, { box: [1.6, 2.4, 1.6], c: 0x3a1020, x: -4.4, z: 2.4, col: true }, { neon: 'KOPFKINO', c: '#ff3b6b', x: 0, z: -4.38, y: 3.2 }],
@@ -65,7 +65,7 @@ export const PLACE_THEMES: Record<string, Theme> = {
     items: [{ m: 'home/couch_pillows', x: -2.6, z: 1.8, r: Math.PI, col: true }, { m: 'home/lamp_standing', x: -5, z: 2.6 }, { box: [2.4, 1, .8], c: C.wood, x: 3, z: -3.4, col: true }, { neon: 'HAUS ROSA', c: '#ff6ad5', x: 0, z: -4.38, y: 3.1 }],
     spots: [{ id: 'menu', label: '🏮 Empfang (18+)', x: 3, z: -2.6, r: 1.8, act: { k: 'menu' } }] },
   onelove: { id: 'onelove', title: 'One Love Bar', icon: '💗', floor: 0x2a0f22, wall: 0x3a1430, light: 0xff3fb0, music: 'show',
-    items: [{ box: [6, .5, 2.4], c: 0x5a1a44, x: 0, z: -3.2, col: true, e: .2 }, { screen: [5, .12], c: 0xffd23b, x: 0, z: -2, y: .52 }, { box: [.8, 1.1, 3], c: C.wood, x: 5, z: 1.4, col: true }, ...tables(2, 2.6), { neon: 'ONE LOVE', c: '#ff3fb0', x: 0, z: -4.38, y: 3.2 }],
+    items: [{ box: [6, .5, 2.4], c: 0x5a1a44, x: 0, z: -3.2, col: true, e: .2 }, { screen: [5, .12], c: 0xffd23b, x: 0, z: -2, y: .52 }, { box: [.8, 1.1, 3], c: C.wood, x: 5, z: 1.4, col: true }, ...tables(2, 2.6, 5), { neon: 'ONE LOVE', c: '#ff3fb0', x: 0, z: -4.38, y: 3.2 }],
     spots: [{ id: 'show', label: '🎤 Bühne: Lady Lumas Drag-Show', x: 0, z: -1.2, r: 1.8, act: { k: 'show' } }, { id: 'menu', label: '🍸 Bar, Leon, Lady Luma', x: 4, z: 1.4, r: 1.8, act: { k: 'menu' } }, gl('kara', '🎤 Karaoke', -3.6, 1.2), { id: 'book', label: '📖 „Ich bin das Licht“ lesen', x: -4.8, z: -2, r: 1.6, act: { k: 'book', id: 'licht' } }] },
   police: { id: 'police', title: 'Polizeiwache Mitte', icon: '🚓', floor: 0xb8c0cc, wall: 0xe8eef6, light: 0xdde8ff,
     items: [{ box: [4, 1.1, .9], c: 0x5b86d6, x: 0, z: -3.4, col: true }, ...[-4, -2.8].map((x) => ({ m: 'home/chair_A', x, z: 2.4, r: Math.PI } as Item)), { neon: 'POLIZEI', c: '#5b86d6', x: 0, z: -4.38, y: 3.1 }],
@@ -86,7 +86,7 @@ const R = (who: string, color: string, lines: string[], extra: Spot[] = []): The
 });
 export const HOUSE_THEMES: Theme[] = [
   { id: 'kino', title: 'Kino Lichtspiel', icon: '🎬', floor: 0x2a1018, wall: 0x3a1420, light: 0xff9a6a,
-    items: [{ screen: [8, 3.2], c: 0xdde8ff, x: 0, z: -4.3, y: 2.2 }, ...[0, 1, 2].flatMap((r) => [-3, -1.5, 0, 1.5, 3].map((x) => ({ box: [1.1, .9, .9], c: 0x8a1a2a, x, z: -.4 + r * 1.6, col: r === 0 } as Item)))],
+    items: [{ screen: [8, 3.2], c: 0xdde8ff, x: 0, z: -4.3, y: 2.2 }, ...[0, 1, 2, 3].flatMap((r) => [-3.6, -2.7, -1.8, -.9, .9, 1.8, 2.7, 3.6].map((x) => ({ box: [.7, .95, .7], c: 0x8a1a2a, x, z: -.8 + r * 1.3, col: true } as Item)))],
     spots: [doIt('film', '🎬 Film ansehen (12 €)', 0, 3.4, { cost: 12, min: 120, d: { fun: 22, social: 6, hunger: -5 }, msg: 'Ein Film, in dem am Ende alle glücklich sind. Spaß +22' })] },
   { id: 'books', title: 'Buchladen Bunte Seiten', icon: '📚', floor: 0x9a6a44, wall: 0xf3e6d0, light: 0xffd6a0,
     items: [...shelves(), { m: 'home/armchair_pillows', x: -3, z: 2, r: Math.PI, col: true }, { m: 'home/lamp_standing', x: -4.6, z: 2.6 }, { box: [2.2, 1, .8], c: C.wood, x: 3.4, z: 2, col: true }],
@@ -98,7 +98,7 @@ export const HOUSE_THEMES: Theme[] = [
     items: [{ box: [10, .6, 1.2], c: 0xa87040, x: 0, z: -3.6, col: true }, { box: [10, .6, 1.2], c: 0xa87040, x: 0, z: -2.2, y: -.3, col: true }, { box: [1, .8, 1], c: 0x5a5a5a, x: 4.6, z: 2.4, col: true }],
     spots: [gl('sauna', '🧖 Aufguss (Sauna-Aufguss)', 0, -1.2), doIt('schwitzen', '♨️ Schwitzen und entspannen', -3, 1, { min: 45, d: { fun: 12, hygiene: 10, energy: -6 }, msg: 'Herrlich durchgeschwitzt. Spaß +12', sfx: 'shower' })] },
   { id: 'karaoke', title: 'Karaoke Mikro-Mimosa', icon: '🎤', floor: 0x2a1040, wall: 0x3a1a5a, light: 0xff6ad5, music: 'show',
-    items: [{ box: [4, .4, 2], c: 0x5a2a8a, x: 0, z: -3.4, col: true, e: .3 }, { screen: [3, 1.6], c: 0x5ce1ff, x: 0, z: -4.3, y: 2.2 }, ...tables(2, 2.4)],
+    items: [{ box: [4, .4, 2], c: 0x5a2a8a, x: 0, z: -3.4, col: true, e: .3 }, { screen: [3, 1.6], c: 0x5ce1ff, x: 0, z: -4.3, y: 2.2 }, ...tables(2, 2.4, 5)],
     spots: [gl('kara', '🎤 Karaoke singen', 0, -1.8), doIt('mimosa', '🥂 Mimosa an der Bar', 4.4, 0, { cost: 6, min: 15, d: { fun: 8, social: 6 }, msg: 'Prickelnd! Spaß +8', sfx: 'glass' })] },
   { id: 'tanzschule', title: 'Tanzschule Pirouette', icon: '💃', floor: 0xc8a070, wall: 0xf6f0ff, light: 0xffffff,
     items: [{ box: [10, 2.4, .08], c: 0xbfe8ff, x: 0, z: -4.3, y: .4, e: .15 }, { box: [10, .08, .1], c: C.steel, x: 0, z: -3.9, y: 1.1 }],
