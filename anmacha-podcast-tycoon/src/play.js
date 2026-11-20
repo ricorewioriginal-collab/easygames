@@ -505,6 +505,7 @@
     if (AMC.WorldFX) AMC.WorldFX.build(CTX);
     if (AMC.Acts) AMC.Acts.start(S);
     if (AMC.Missions) AMC.Missions.build(CTX);
+    if (AMC.GTA) AMC.GTA.build(CTX);
     AMC.Audio.music(sky === 'party' ? 'party' : ch && ch.obj.type === 'boss' ? 'city' : 'city');
     return S;
   };
@@ -519,6 +520,7 @@
     if (AMC.WorldFX) AMC.WorldFX.stop();
     if (AMC.Acts) AMC.Acts.stop();
     if (AMC.Missions) AMC.Missions.stop();
+    if (AMC.GTA) AMC.GTA.stop();
     ['andrew', 'marco', 'rico'].forEach(id => { const f = W.hosts[id]; if (f && f.root.parent) f.root.parent.remove(f.root); });
     S.npcs.forEach(n => { if (n.fig) n.fig.dispose(); n.fig = null; });
     if (S.cat) { if (S.cat.mixer) S.cat.mixer.stopAllAction(); S.group.remove(S.cat.m); }
@@ -715,7 +717,7 @@
     if (S.stations) for (const st of S.stations) { if (!st.sp.visible) continue; const sd = st.id.startsWith('sender:'); g.fillStyle = sd ? (D.STATIONS.find(x => 'sender:' + x.slug === st.id) || {}).color || '#fff' : '#ffffff'; g.fillRect(X(st.x) - 2.5, Z(st.z) - 2.5, 5, 5); }
     if (AMC.Transit) for (const d of AMC.Transit.mapDots()) { g.fillStyle = d.c; g.fillRect(X(d.x) - 4, Z(d.z) - 3, 8, 6); }
     if (AMC.Drive) for (const d of AMC.Drive.mapDots()) { g.fillStyle = d.c; g.beginPath(); g.arc(X(d.x), Z(d.z), d.big ? 4.5 : 2.6, 0, 7); g.fill(); if (d.big) { g.strokeStyle = '#000'; g.lineWidth = 1; g.stroke(); } }
-    if (AMC.Missions) for (const d of AMC.Missions.mapDots()) { if (d.ring) { g.strokeStyle = d.c; g.lineWidth = 2.5; g.beginPath(); g.arc(X(d.x), Z(d.z), 6 + Math.sin(S.time * 6) * 1.5, 0, 7); g.stroke(); } else { g.font = 'bold 13px sans-serif'; g.fillStyle = d.c; g.fillText(d.t, X(d.x) - 4, Z(d.z) + 5); } }
+    for (const M of [AMC.Missions, AMC.GTA]) if (M) for (const d of M.mapDots()) { if (d.ring) { g.strokeStyle = d.c; g.lineWidth = 2.5; g.beginPath(); g.arc(X(d.x), Z(d.z), 6 + Math.sin(S.time * 6) * 1.5, 0, 7); g.stroke(); } else if (d.dot) { g.fillStyle = d.c; g.beginPath(); g.arc(X(d.x), Z(d.z), 3, 0, 7); g.fill(); } else { g.font = 'bold 13px sans-serif'; g.fillStyle = d.c; g.fillText(d.t, X(d.x) - 4, Z(d.z) + 5); } }
     if (S.beacon.visible) { g.strokeStyle = '#ff8a1e'; g.lineWidth = 2.5; g.beginPath(); g.arc(X(S.beacon.position.x), Z(S.beacon.position.z), 6 + Math.sin(S.time * 6) * 1.5, 0, 7); g.stroke(); }
     // Spieler-Pfeil (Blickrichtung der Kamera)
     const p = S.pl; g.save(); g.translate(X(p.x), Z(p.z)); g.rotate(-p.yaw + Math.PI); g.fillStyle = '#fff'; g.strokeStyle = '#000'; g.lineWidth = 1;
@@ -728,6 +730,7 @@
     if (S.drive) return { label: 'Aussteigen 🚪' };
     const dv = AMC.Drive && p === S.pl ? AMC.Drive.interact(p) : null; if (dv) return dv;
     const ms = AMC.Missions && p === S.pl && S.mode === 'free' ? AMC.Missions.interact(p) : null; if (ms) return ms;
+    const gm = AMC.GTA && p === S.pl && S.mode === 'free' ? AMC.GTA.interact(p) : null; if (gm) return gm;
     for (const n of S.npcs) {
       const d = Math.hypot(n.x - p.x, n.z - p.z);
       if (d < 2.4) {
@@ -946,7 +949,7 @@
     S.hurtT += dt; if (S.hurtT > 4) S.energy = Math.min(100, S.energy + dt * 6);
     // Zeit
     if (S.left > 0 && S.mode !== 'free') { S.left -= dt; if (S.left <= 0) { S.left = 0; if (S.mode === 'jagd') return finish(true, 'time'); if (!S.done) return finish(false, 'time'); } }
-    updPickups(dt); updDrones(dt); updNpcs(dt); if (AMC.Transit) AMC.Transit.update(dt); if (AMC.District) AMC.District.update(dt); if (AMC.Events) AMC.Events.update(dt); if (AMC.Worlds) AMC.Worlds.update(dt); if (AMC.Atmos) AMC.Atmos.update(dt); if (AMC.WorldFX) AMC.WorldFX.update(dt); if (AMC.Acts) AMC.Acts.update(dt); if (AMC.Missions) AMC.Missions.update(dt); if (AMC.CityVibe) AMC.CityVibe.update(dt, S); if (AMC.Career) AMC.Career.update(dt, S); updObjective(dt); updRings(dt);
+    updPickups(dt); updDrones(dt); updNpcs(dt); if (AMC.Transit) AMC.Transit.update(dt); if (AMC.District) AMC.District.update(dt); if (AMC.Events) AMC.Events.update(dt); if (AMC.Worlds) AMC.Worlds.update(dt); if (AMC.Atmos) AMC.Atmos.update(dt); if (AMC.WorldFX) AMC.WorldFX.update(dt); if (AMC.Acts) AMC.Acts.update(dt); if (AMC.Missions) AMC.Missions.update(dt); if (AMC.GTA) AMC.GTA.update(dt); if (AMC.CityVibe) AMC.CityVibe.update(dt, S); if (AMC.Career) AMC.Career.update(dt, S); updObjective(dt); updRings(dt);
     if (S.rico && !S.rico.away) { S.rico.f.update(dt); if (S.rico.t > 0) S.rico.t -= dt; }
     if (S.gisela) { if (S.gisela.t > 0) S.gisela.t -= dt; S.gisela.g.position.y = S.gisela.t > 0 ? Math.abs(Math.sin(S.time * 18)) * 0.06 : 0; }
     if (S.boss) updBoss(dt);

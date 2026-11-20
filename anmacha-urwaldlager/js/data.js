@@ -115,6 +115,14 @@
   };
 
   // Moderationen (Vorlagen): {n} Name, {s} Sterne, {m} maximal, {t} Prüfung, {d} Tag, {k} Camper im Camp
+  // Live-Kommentar der Moderatoren während der Prüfung (kurz, nicht blockierend)
+  D.LIVE = {
+    star: [['lotte', 'Da ist der Stern!'], ['mats', 'Zack, eingesackt!'], ['lotte', 'Das Camp wird jubeln!'], ['mats', 'Läuft bei {n}!'], ['lotte', 'Noch einer! Weiter so!'], ['mats', 'So sieht ein Profi aus.']],
+    bad: [['mats', 'Uiii, das tat weh.'], ['lotte', 'Oh nein! Nicht aufgeben!'], ['mats', 'Das gibt Bonuspunkte beim Ekelfaktor.'], ['lotte', 'Durchatmen, {n}!'], ['mats', 'Autsch. Das schauen wir uns nachher in Zeitlupe an.']],
+    half: [['lotte', 'Halbzeit! {s} Sterne bisher.'], ['mats', 'Die Hälfte der Zeit ist um – {s} Sterne im Sack.']],
+    last: [['mats', 'Noch zehn Sekunden!'], ['lotte', 'Gleich ist Schluss – jetzt alles geben!']],
+    slow: [['mats', 'Hallo? Da liegen noch Sterne!'], ['lotte', 'Komm schon, {n}, du schaffst das!'], ['mats', 'Ich glaube, {n} macht gerade Urlaub.']]
+  };
   D.MOD = {
     welcome: [
       ['lotte', 'Herzlich willkommen im Urwaldlager! {k} Promis, kein Komfort, aber jede Menge Abenteuer.'],

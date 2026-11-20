@@ -23,6 +23,15 @@ Holz und Wasser holen, Feuer schüren, Kochspiel am Topf (Hitze-Leiste, drei Zut
 ## Wetter
 Jeden Morgen Sonne, Tropenregen oder Gewitter (`js/weather.js`): Regenstreifen, dunklere Lichter, Blitze, Donner und Regenrauschen im Dschungel; Prüfungen mit weniger Zeit, schlechterer Schlaf, außer jemand spannt die Plane. Test: `&wx=regen|gewitter`, `WX=gewitter node tests/trial-runner.cjs <id>`.
 
+## Finale
+Rückblick der Moderatoren, alle Ex-Camper kehren zur Abschlussshow zurück, Krönung mit Thron und Feuerwerk, danach Staffel-Statistik (eigene Prüfungen, Endstand, Freund/Zoff, Lager in Zahlen).
+
+## Klang
+WebAudio ohne Dateien (`js/audio.js`): Dschungel-Atmo (Zikaden, Vögel, Tukan, Papagei, Brüllaffe, Frösche), Nacht (Grillen, Eule), Höhle (Tropfen mit Echo), Fluss; Live-Kommentar der Moderatoren in den Prüfungen (`D.LIVE`, Toast + Sprachausgabe), Finale-Hymne zur Krönung.
+
+## Fortschritt
+`js/progress.js` (`UL.Prog`): 14 Erfolge (`ul_ach`), Zähler (`ul_stats`), Bestwert pro Prüfung (`ul_best`, Staffel und Üben, „Neuer Bestwert!“ im Ergebnis). Erfolge schalten Outfit-Teile im Figur-Editor frei: Tropenhelm, Blumenkranz, Krone, Halstuch Gold/Tarngrün, Hutfarbe Gold. Menü „🏆 Erfolge & Bestwerte“.
+
 ## Prüfungen
 Ekel-Kisten · Dschungel-Dinner · Schlammbecken (tauchen) · Wackelsteg · Krabbel-Tunnel · Ekel-Dusche · Wissens-Tank · Schlamm-Parcours · Lianen-Rutsche · Schlangengrube · Höhlenlabyrinth (Taschenlampe) · Floßrennen · Kletterwand, dazu das IBES-Fan-Quiz (deutsche und britische Show) und der Gruppenmarsch ins Lager – jede im Dschungel und im Studio spielbar, auch einzeln über „Prüfungen spielen“.
 
@@ -41,7 +50,7 @@ Ekel-Kisten · Dschungel-Dinner · Schlammbecken (tauchen) · Wackelsteg · Krab
 
 ## Technik
 - Klassische Skripte ohne Build: `js/core.js`, `data.js`, `input.js`, `audio.js`, `assets.js`, `render.js`, `ui.js`, `stage.js`, `trials/*.js`, `camp.js`, `show.js`, `menus.js`, `main.js`.
-- Menschen: echte Figuren aus der Microsoft Rocketbox Avatar Library (MIT) für Camper, Moderatoren, Doc Rudi, Ranger Kalle und die eigene Figur (im Editor unter „Person“, Comic-Figur weiter wählbar), Camper, Spielerfiguren und Ranger in Camp-Kleidung (Khaki, Oliv, Camp-Rot, Cargohosen, Stiefel); Umwandlung und Umfärben mit `tools/urwaldlager-rocketbox/`.
+- Menschen: echte Figuren aus der Microsoft Rocketbox Avatar Library (MIT) für Camper, Moderatoren, Doc Rudi, Ranger Kalle und die eigene Figur (im Editor unter „Person“; keine Comic-Figuren mehr – Figuren ohne `rb` bekommen automatisch einen echten Menschen, noch ladende erscheinen, sobald ihr Modell da ist; Füße werden pro Bild auf den Boden gehoben, Camper halten Abstand zueinander), Camper, Spielerfiguren und Ranger in Camp-Kleidung (Khaki, Oliv, Camp-Rot, Cargohosen, Stiefel); Umwandlung und Umfärben mit `tools/urwaldlager-rocketbox/`.
 - Modelle: KayKit, Kenney, Quaternius, Wizp (alle CC0) – Herkunft in [models/LIZENZ.md](models/LIZENZ.md), Aufbereitung mit `tools/make-urwaldlager-assets.mjs`.
 - Musik und Geräusche entstehen per Web Audio im Browser, Moderationen optional per Sprachausgabe.
 - Testpilot: `index.html?trial=<id>&theme=studio&bot=1` spielt eine Prüfung automatisch (`tests/trial-runner.cjs`).

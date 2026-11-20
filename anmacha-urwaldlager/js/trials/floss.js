@@ -18,7 +18,7 @@
   }
 
   UL.Trials.reg('floss', {
-    env: () => ({ none: true }),
+    env: () => ({ none: true }), atmo: 'river',
     setup(ctx) {
       const sc = ctx.scene, rng = ctx.rng, studio = ctx.theme === 'studio';
       sc.add(R.sky(0x3f8fe0, 0xbfe6ff, 0x7fb070, null, 'sky-day')); sc.fog = new T.Fog(R.lin(0xa9d6c8), 25, 80);

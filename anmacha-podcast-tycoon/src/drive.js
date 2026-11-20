@@ -280,7 +280,7 @@
     car.trail = car.trail || [];
     if (!blocked(car, nx, nz, nh) && (!car.trailT || S.time > car.trailT)) { car.trailT = S.time + 0.5; car.trail.push({ x: nx, z: nz, h: nh }); if (car.trail.length > 6) car.trail.shift(); }
     car.x = nx; car.z = nz;
-    car.g.position.set(car.x, Math.abs(car.v) > 1 ? Math.abs(Math.sin(S.time * 14)) * 0.025 : 0, car.z); car.g.rotation.y = car.h;
+    car.g.position.set(car.x, car.air ? Math.max(0, car.y || 0) : Math.abs(car.v) > 1 ? Math.abs(Math.sin(S.time * 14)) * 0.025 : 0, car.z); car.g.rotation.y = car.h;
     car.g.rotation.z = U.damp(car.g.rotation.z || 0, -steer * Math.min(1, Math.abs(car.v) / 12) * 0.05, 6, dt);
     // Driften: scharfe Kurve bei Tempo oder Handbremse → Funken und Reifenqualm an den Hinterrädern
     if (!car.gisela && ((Math.abs(steer) > 0.6 && sp > 11) || (hb && sp > 6)) && (car.sparkT = (car.sparkT || 0) - dt) <= 0) {
@@ -313,12 +313,14 @@
   function crash(car, v) {
     if (v < 3 || car.crashT > C.S.time) return;
     car.crashT = C.S.time + 0.8;
+    if (AMC.GTA) AMC.GTA.onCrash(car, v);
     AMC.Audio.sfx('hit'); W.cam.shake = Math.min(0.8, v / 20);
     W.particles.burst(car.x + Math.sin(car.h) * car.len, 1, car.z + Math.cos(car.h) * car.len, 0xcccccc, 14, { speed: 3 });
     if (car.gisela) { C.S.giselaBumps = (C.S.giselaBumps || 0) + 1; C.msg(U.pick(CRASH), 2.6); }
     else C.msg(U.pick(CARCRASH), 2);
   }
   function honkPeds(car) {
+    if (AMC.GTA) AMC.GTA.onHonk();
     if (AMC.WorldFX && AMC.WorldFX.react) AMC.WorldFX.react(car.x, car.z, 12, 'honk');
     for (const n of C.S.npcs) if (n.fig && Math.hypot(n.x - car.x, n.z - car.z) < 10) { n.fig.root.rotation.y = Math.atan2(car.x - n.x, car.z - n.z); C.setAnim(n, car.gisela ? 'yes' : 'arms'); setTimeout(() => n.fig && C.setAnim(n, 'idle'), 1400); }
   }
@@ -328,7 +330,7 @@
       const dx = n.x - car.x, dz = n.z - car.z, d = Math.hypot(dx, dz);
       if (d < 2.6 && Math.abs(car.v) > 2) {   // springt zur Seite – niemand wird angefahren
         n.x += dx / (d || 1) * 1.6; n.z += dz / (d || 1) * 1.6; n.fig.root.position.set(n.x, n.y, n.z);
-        if (!(n.pedT > C.S.time)) { n.pedT = C.S.time + 3; C.msg('🗣️ ' + n.name + ': „' + U.pick(PED) + '“', 1.8); car.v *= 0.6; }
+        if (!(n.pedT > C.S.time)) { n.pedT = C.S.time + 3; if (AMC.GTA) AMC.GTA.onPed(); C.msg('🗣️ ' + n.name + ': „' + U.pick(PED) + '“', 1.8); car.v *= 0.6; }
       }
     }
   }

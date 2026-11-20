@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "0aba12f96887",
- "generated": "2026-11-20T19:52:51+01:00",
- "commit": "79cd9023a75d42f2e1ea160635024330f4dea1fd",
+ "version": "23fead61df0a",
+ "generated": "2026-11-20T20:12:15+00:00",
+ "commit": "d5e2031effb0852844f5fa12d104b28159e7d15f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3012,6 +3012,11 @@
    "h": "b25bb8ac77b240050fd145da912dd6dc1edcf44b86b46b8c6b62a6b49031dfcd"
   },
   {
+   "p": "anmacha-podcast-tycoon/babylon/amc-babylon.js",
+   "s": 2629879,
+   "h": "6207f94e4b18a10a7bdfa13a3502d8878587e7477844e18c9b6fb9b9c0c5c265"
+  },
+  {
    "p": "anmacha-podcast-tycoon/card.svg",
    "s": 3176,
    "h": "27e8ed4029020e9ef1fbb9af1ecef67ac0c8fbf86197d7488aa9eb78e6bdc840"
@@ -3088,8 +3093,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/index.html",
-   "s": 7423,
-   "h": "4afabeb5cf31fc0d539b277a4d9a82564b786b5a9f57ae067ce5f2ac60d52f9c"
+   "s": 7465,
+   "h": "1aa03549f3703cd515fbedd0ca8de68b6f45f5225085558c51e3ec9fa108d85b"
   },
   {
    "p": "anmacha-podcast-tycoon/manifest.webmanifest",
@@ -3758,8 +3763,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/drive.js",
-   "s": 30925,
-   "h": "a8be47cc48b8424af275ffdf01c43d63550fee25cd8b2be9fb87b1ea405c55db"
+   "s": 31068,
+   "h": "06c15822fc2cbba20547d1b1a16e0389eb7bdae187dcd61e079f3f7d778ecdac"
   },
   {
    "p": "anmacha-podcast-tycoon/src/events.js",
@@ -3778,13 +3783,18 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/main.js",
-   "s": 47575,
-   "h": "a72b2ac1a8dbbf18d8ba51b35c8f54302b7455fc8990b73f1c8a72181aec2f45"
+   "s": 48080,
+   "h": "b0aae736fea4fec47698973969e08c8388f3028b5b790e6cadfa14ec80074df5"
   },
   {
    "p": "anmacha-podcast-tycoon/src/media.js",
    "s": 11476,
    "h": "4f2cf790628072dc5c91427a2e579d8fa2b2949fae6f1232b290c9abfdfb78ff"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/src/medien-gta.js",
+   "s": 30662,
+   "h": "ec28de7f111d2db2c146b33313276ea1e426f02039c744b6a95c7d5e713ee761"
   },
   {
    "p": "anmacha-podcast-tycoon/src/minis.js",
@@ -3813,8 +3823,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/play.js",
-   "s": 111917,
-   "h": "86d52ad514ae20f6e6d2a93db51c47af30d8e3fca21922c5a56f527eeb11f9a1"
+   "s": 112242,
+   "h": "6afc7f79230f3040aac7e90ff1fb75f5aa2e67d65b3df1c59f50471d60571cd9"
   },
   {
    "p": "anmacha-podcast-tycoon/src/quiz.js",
@@ -3873,8 +3883,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/world.js",
-   "s": 35606,
-   "h": "946e9cc409764efcf4a7cf71fbbd3696229a6f4a9dddd1e522a7b842a5191613"
+   "s": 35973,
+   "h": "67e92424d06308e318699c959c9f49cd389064fec5008a05ebf7006d68066d08"
   },
   {
    "p": "anmacha-podcast-tycoon/src/worldfx.js",
@@ -3888,8 +3898,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/style.css",
-   "s": 75916,
-   "h": "0d7f39a75b841859e40338d56e2998b490f06a91e086158b69be95aad7f13840"
+   "s": 78695,
+   "h": "07b56f8b859391b14ab8d4b24022bc33232a6d64233a4192e6bd5f21408a798c"
   },
   {
    "p": "anmacha-podcast-tycoon/sw.js",
@@ -7868,23 +7878,23 @@
   },
   {
    "p": "anmacha-urwaldlager/index.html",
-   "s": 8315,
-   "h": "2fd98bfc68feec03f4c3c637a2a0d28fe6ca9c4531fc8cf7cb5e638bd0ce402d"
+   "s": 8354,
+   "h": "151032cf17d2223a33110b66a9a939b2b0a71fd8bc94ae6964bb1aec68c92851"
   },
   {
    "p": "anmacha-urwaldlager/js/assets.js",
-   "s": 25938,
-   "h": "d22edef7e0c70838995ed8d27acbd45dba24012cab7569af5cc1e43f78318274"
+   "s": 29971,
+   "h": "0fcb38cebcd604310c5f3cf17e03c201b08e66a96cf2271e669b6c0e0d25dc30"
   },
   {
    "p": "anmacha-urwaldlager/js/audio.js",
-   "s": 10570,
-   "h": "ec6a1179d46b1023bbd411a7ea12208fcd9055d306c28436151feabf0100a357"
+   "s": 14016,
+   "h": "e540b71abf426ae5322db7ec160a332d3f4fae5bbd34fc48296cb2ab9a77d80c"
   },
   {
    "p": "anmacha-urwaldlager/js/camp.js",
-   "s": 64927,
-   "h": "6302aaa6b16f4e25644c69dadf134557a01960e204dbf6a32a1d2d534235b71c"
+   "s": 66220,
+   "h": "5bd41a93a075d1a8dd577b9f2439eb59d539e286660495e522b30ed6614f9ec8"
   },
   {
    "p": "anmacha-urwaldlager/js/core.js",
@@ -7893,8 +7903,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/data.js",
-   "s": 41437,
-   "h": "569f449b566b78de05a7dd65d8a25fb6bee049becf3baad43de0aaf43b47f0a7"
+   "s": 42355,
+   "h": "a949a49065e04395a654276b0094d5b4986c3eee4c1c6902c1a30e3c06956af0"
   },
   {
    "p": "anmacha-urwaldlager/js/input.js",
@@ -7908,13 +7918,18 @@
   },
   {
    "p": "anmacha-urwaldlager/js/menus.js",
-   "s": 21244,
-   "h": "ec5e48afdc2cc7cdfaf39ec6252c8eddac5d2782edb9d38dc9a9dab59aeae994"
+   "s": 23907,
+   "h": "74b24bb6db25fb3fab620f59ca0193a1ce20bf3ae6c57fa1e1e9234bd235e23d"
   },
   {
    "p": "anmacha-urwaldlager/js/phone.js",
    "s": 8860,
    "h": "ea60ada1c46bd59e1fb4014b53f90c05483743a62f8a19eac82b0d8b7858a94c"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/progress.js",
+   "s": 4292,
+   "h": "a64e4f17876ed08563aaec3d9053bda3ea9126c2ce17f6a1a5594af3041eff65"
   },
   {
    "p": "anmacha-urwaldlager/js/render.js",
@@ -7923,8 +7938,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/show.js",
-   "s": 31366,
-   "h": "bd53119493713b344ac949851e0af420500d1534a4e77511d8020d8b9947a270"
+   "s": 38436,
+   "h": "c3a32ab08a56ec97087e524b487587b5cde2b9f7f315aa439b2bd765e7a9b951"
   },
   {
    "p": "anmacha-urwaldlager/js/stage.js",
@@ -7958,8 +7973,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/floss.js",
-   "s": 11212,
-   "h": "f3937e61a10bb45892008c747383d574a6d5419c87876a8ceb3093734155402a"
+   "s": 11227,
+   "h": "74fb029d3b0721e0d72b24ed42e4cc6521fb1c95ef6ff378bf0d50165e5ab93c"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/grab.js",
@@ -7968,8 +7983,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/hoehle.js",
-   "s": 13236,
-   "h": "08579960abd46d44ea3c70e1b131b5de7b9842ae830f5eac72a42c93228feaae"
+   "s": 13250,
+   "h": "fd72fb128c488c6245ed0b9fc30d0c800d9c670385d52ca1c4d9e02de1378d93"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kisten.js",
@@ -7978,8 +7993,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kit.js",
-   "s": 26468,
-   "h": "abee8259058da7b9bf56993e738ed3230acedcceea5a2fe5bf65a47ebfafc2a1"
+   "s": 27598,
+   "h": "08f2632ca91121abef258ec67ad52f889b0998dc296520cd2fddfd43f5cbd974"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/klettern.js",
@@ -8023,8 +8038,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/tunnel.js",
-   "s": 13817,
-   "h": "1acb3a9dc6d29665f4ff82c57920ebc255f22a58fb9214a810ddb9cda0ff5a0c"
+   "s": 13835,
+   "h": "87981b40b02be3e05b7d43a2c904ed8f5ad39282102537f1d835bcee515bc608"
   },
   {
    "p": "anmacha-urwaldlager/js/ui.js",
@@ -8228,8 +8243,8 @@
   },
   {
    "p": "anmacha-urwaldlager/style.css",
-   "s": 28234,
-   "h": "5e58079c1feb9bad3aa0cb322af55339ba98f2533804dc813b5e839e00c36498"
+   "s": 28422,
+   "h": "66947ec77d673bc575f7c41bfd189b9d9086b30187ecb1f29608cfc4f6cb2336"
   },
   {
    "p": "anmacha-urwaldlager/sw.js",
@@ -10948,8 +10963,8 @@
   },
   {
    "p": "guides/anmacha-podcast-tycoon.json",
-   "s": 51312,
-   "h": "0eef2cd031f15dfa6099ba07e5fe38c79a61b09d2f13836bc5d3e4bd5aa0e0ea"
+   "s": 54297,
+   "h": "f014da4147cf0313d19df0b8815323a7a6fdeddb32bd50fe659baf38f4e91139"
   },
   {
    "p": "guides/anmacha-preisradar.json",
@@ -10993,8 +11008,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 18959,
-   "h": "7e6286018d89c97ed8c38690282bc7118684d338ae4b22afa5209b514b58381c"
+   "s": 21313,
+   "h": "066d59352c4efeee7fe799bcfd4d93d71a5a00b5b60a82d4395019d426535570"
   },
   {
    "p": "guides/beat-studio.json",
@@ -16399,7 +16414,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236363,
-   "h": "c0e91c131993ca676a5bbe4cad2e4d8d1443e98a094b50934137f853f974e996"
+   "h": "b60c92712decf86a270fece37190c872b908b0b251345c34168ec78298390b24"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -71987,29 +72002,29 @@
    "h": "026917766f534c156286f07975850978dabf17c42e742bbfaaebbcb2215e4e11"
   },
   {
-   "p": "zotik/assets/basisTextureLoader-kGQAHr8e.js",
+   "p": "zotik/assets/basisTextureLoader-BN-lt0-H.js",
    "s": 29845,
-   "h": "ef446179754d2532a685644b8be1c20753a40a254680543261663d126b806e90"
+   "h": "2524c6ed030ee8302d16fc937ce23a93c5f05847946c68851d68393b2f0c60f6"
   },
   {
-   "p": "zotik/assets/bphys-BrMlENs5.js",
+   "p": "zotik/assets/bphys-BQs6esHB.js",
    "s": 102644,
-   "h": "94a07a33c2ee43dc03e265de452a8da5ec85d6c50ec62081eed4724d7eb7d9ea"
+   "h": "5cf90824c5e043c7b7cd3114604ee4fa286194f2994f3254f10b7de74bfae3d5"
   },
   {
-   "p": "zotik/assets/cubemapToSphericalPolynomial-YK4DO3XE.js",
+   "p": "zotik/assets/cubemapToSphericalPolynomial-qStKPILy.js",
    "s": 3667,
-   "h": "f23bcad20c3793a4fa8fdee2a3aaf5623c2fb9013b91607384f92616bffc4892"
+   "h": "8fe24a04873a7f0cca3e264deaffb2bd99042da29d2c841986ad784bd63703dc"
   },
   {
-   "p": "zotik/assets/dds.pure-BtTykZvI.js",
+   "p": "zotik/assets/dds.pure-D8I4ldc6.js",
    "s": 7054,
-   "h": "cbe9cd286587368bda605572e35c5b43bffaeb522bf49e5a72957bd06e24b37b"
+   "h": "4f06c0affbe44a2e833c172024802383dd960ce50f215aa523bf98e82e83a147"
   },
   {
-   "p": "zotik/assets/ddsTextureLoader-CrHz7zWn.js",
+   "p": "zotik/assets/ddsTextureLoader-D9e8kTzg.js",
    "s": 1317,
-   "h": "020dd16c3e43752e1c02099b40dc5239793d940785ea4b82d6f65778e3bad613"
+   "h": "839ee6b11e51c2b70af98c21f14d9e4d11989ac42bc4c5969b771b578ad2d156"
   },
   {
    "p": "zotik/assets/empty-Dd4V9ggj.js",
@@ -72017,9 +72032,9 @@
    "h": "2daa995e49659d6afb5d023678f1442a2d9742a9d3b1327547662112e45048e7"
   },
   {
-   "p": "zotik/assets/envTextureLoader-6hSQEhOD.js",
+   "p": "zotik/assets/envTextureLoader-Bo0UqpG7.js",
    "s": 31696,
-   "h": "01a0ef8e2aefc77d64c0a15e4ec513e48391f702b21c636c32b2d4056d89b3cf"
+   "h": "a607c5ffd3252b753f5a55b96291093673217f3c5cb4b245d6e811701737dcc5"
   },
   {
    "p": "zotik/assets/hdrTextureLoader-uIlgWB6O.js",
@@ -72027,19 +72042,19 @@
    "h": "2da05798051a7530a370ef4ce02dbbdc787e5388cbde876441600f3a684c218f"
   },
   {
-   "p": "zotik/assets/iesTextureLoader-4h-ibV-2.js",
+   "p": "zotik/assets/iesTextureLoader-TrE4-uCB.js",
    "s": 2489,
-   "h": "8eca5baff4b815c2d36fc44b053e7bca412828fa0c9067e4d70270db69321dc1"
+   "h": "0aa7feb73c30836cf92256f99994b847fdd3796474281c606c71826b58d93510"
   },
   {
-   "p": "zotik/assets/index-fGy-ktFQ.js",
-   "s": 3072522,
-   "h": "91be8578c5da6d60d6c36d59283e856259e42d3134b1fe64c1c3e4b7b7e7863e"
+   "p": "zotik/assets/index-BE6VplCL.js",
+   "s": 3072537,
+   "h": "e9de28c383ab215a4890143991bcf479111b32b14abebb1338ef4baae30e0982"
   },
   {
-   "p": "zotik/assets/ktxTextureLoader-CbP2GqAE.js",
+   "p": "zotik/assets/ktxTextureLoader-Bx43Ef1W.js",
    "s": 16756,
-   "h": "77a0bdaf36661d527e0f1bea1676715605473988d083a90ec55cf4a074d972e9"
+   "h": "8e2e7ceca9a3c44fa6b51a42d93c286913c8e87f25c6e8148e2263b473438d6e"
   },
   {
    "p": "zotik/assets/mesh.vertexData.functions-ayNlGC5K.js",
@@ -72047,29 +72062,29 @@
    "h": "109b0c291f78ec6b98053b23c7a9ce01eb8bcee909a0964ce337a68a9b4bc61e"
   },
   {
-   "p": "zotik/assets/postprocess.vertex-BUL3inHs.js",
-   "s": 459,
-   "h": "d4b2925dcb88497a670c09db5a4bb464ac6cad23a2b957bd28b82bda52146c8d"
-  },
-  {
-   "p": "zotik/assets/postprocess.vertex-BkwEZq6l.js",
+   "p": "zotik/assets/postprocess.vertex-DO-EzSuF.js",
    "s": 583,
-   "h": "12c155338e656bfda54782ca079c78776abacb6083e863b930440573ae5638f4"
+   "h": "7f5ad99d2e53c007ae97bd259f8034d5edee56cb6868db640bc6b3012d806ecc"
   },
   {
-   "p": "zotik/assets/rgbdDecode.fragment-Bdw_siSC.js",
-   "s": 7135,
-   "h": "e16f0b7b4d876452b7c7135f2907a1222d887b66eda60fa297fdde81692d7418"
+   "p": "zotik/assets/postprocess.vertex-jykOttsM.js",
+   "s": 459,
+   "h": "fe5dc12ff59f0f528f147681b62ab1f864da41c9c989279dc9d9b3e0bbd3b249"
   },
   {
-   "p": "zotik/assets/rgbdDecode.fragment-CuAtKSBl.js",
+   "p": "zotik/assets/rgbdDecode.fragment-BquG7ZT5.js",
    "s": 7344,
-   "h": "5c52d8854586d1e1c873d1e0d9fa73876f8b18fff6dc34e4c0847e66400fc91a"
+   "h": "45fd21c47e1185f310c8fc960a6437e69f2f4ad98ca246ee66a0bdd49e8902fd"
   },
   {
-   "p": "zotik/assets/tgaTextureLoader-BqRNndHu.js",
+   "p": "zotik/assets/rgbdDecode.fragment-D9oHbiCl.js",
+   "s": 7135,
+   "h": "18f3aa13adf1147d38d94667bf24fbd7716f1fee765786370243a55f7780a004"
+  },
+  {
+   "p": "zotik/assets/tgaTextureLoader-CgPvanOK.js",
    "s": 3527,
-   "h": "5ea6e52c0e6ec3ce33512d7adc958263c23c05278eed5517d789c57460dcf9c8"
+   "h": "5e8d7102b02bcbdf632719bd87b5d8f7f341218833900ea646005d9be2318781"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -72109,7 +72124,7 @@
   {
    "p": "zotik/index.html",
    "s": 78401,
-   "h": "79818f86b70ec36abdb30fd16cec6390820f39abb5d9e3f33483d794eed5f27f"
+   "h": "cf1a37dd48324c0e364710bae8691ae383c797a0332c9dd37695cd1183c45271"
   },
   {
    "p": "zotik/manifest.webmanifest",

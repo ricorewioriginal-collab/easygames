@@ -54,7 +54,8 @@
         if (stage.env && stage.env.cheer !== undefined) stage.env.cheer = 1.2;
         if (ctx.hosts && Math.random() < 0.5) UL.pick(ctx.hosts).play('cheer');
         hud(true);
-        if (ctx.stars >= max) UL.after(0.6, () => ctx.end('alle'));
+        if (ctx.stars >= max) UL.after(0.6, () => ctx.end('alle')); else if (Math.random() < 0.35) quip('star');
+        ctx._lastStar = ctx.t;
       },
       bad(txt, kind) {
         UL.Audio.sfx('bad'); In.rumble(140, 0.6, 0.3); R.shake = 0.5; if (txt) UI.toast(txt, '😖', 1500);
@@ -64,6 +65,7 @@
         UL.Audio.sfx(k); Tr.shout(UL.pick(SHOUT[k] || SHOUT.scream), k === 'yuck' ? 'green' : 'red');
         if (k !== 'ugh' && !impl.noCrawl) Tr.crawl(2 + Math.floor(Math.random() * 3));
         if (stage.env && stage.env.cheer !== undefined && Math.random() < 0.6) { UL.Audio.sfx('ooh'); }
+        if (Math.random() < 0.4) quip('bad');
         if (ctx.hosts && Math.random() < 0.35) { const h = UL.pick(ctx.hosts); h.play(Math.random() < 0.5 ? 'cheer' : 'interact'); if (Math.random() < 0.5) UL.Audio.sfx('laugh'); }
       },
       end(reason) { if (ctx.done) return; ctx.done = true; ctx.running = false; ctx.reason = reason || 'ende'; finish(); },
@@ -86,7 +88,7 @@
       ctx.crew = [[UL.D.DOC, 2.0], [UL.D.RANGER, -2.0]].map(([d, k]) => { const f = UL.makeFig(d.look, d === UL.D.DOC ? 1.7 : 1.85); f.root.position.copy(ctx.hostPos).addScaledVector(sd, k).add(bk); f.root.rotation.y = ctx.hostRy + (k > 0 ? -0.3 : 0.3); stage.scene.add(f.root); stage.figs.push(f); return f; });
       ctx.doc = ctx.crew[0]; ctx.ranger = ctx.crew[1]; }
     R.set(stage);
-    UL.Audio.music('tense'); UL.Audio.atmo(theme === 'studio' ? 'studio' : 'jungle');
+    UL.Audio.music('tense'); UL.Audio.atmo(impl.atmo || (theme === 'studio' ? 'studio' : 'jungle'));
     UI.hint({}); UI.cmd([]); UI.hud('');
     const vars = { n: ctx.name, t: def.name, m: max };
     // Intro: Kamera auf die Moderatoren, dann Rundflug über die Prüfung
@@ -130,7 +132,10 @@
       }
       else { I.mx = In.move.x; I.my = In.move.y; I.ok = In.pressed('ok'); I.okD = In.down('ok'); I.alt = In.pressed('alt'); I.altD = In.down('alt'); I.lx = In.look.x; I.ly = In.look.y; I.menu = In.pressed('menu'); }
       if (UL.query.get('fast') && ctx.t > 6) { ctx.end('zeit'); return; }   // nur für automatische Tests
-      if (ctx.time) { ctx.time -= dt; if (ctx.time <= 0) { ctx.time = 0; ctx.end('zeit'); return; } }
+      if (ctx.time) { ctx.time -= dt; if (ctx.time <= 0) { ctx.time = 0; ctx.end('zeit'); return; }
+        if (!ctx._half && ctx.time < ctx.timeMax / 2) { ctx._half = 1; quip('half', true); }
+        if (!ctx._last && ctx.time < 10 && ctx.timeMax > 30) { ctx._last = 1; quip('last', true); } }
+      if (ctx.t - (ctx._lastStar || 0) > 22 && ctx.stars < max) { ctx._lastStar = ctx.t; quip('slow'); }
       if (orbit) orbit.restore();
       if (orbit && impl.relMove && orbit.yaw) { const c = Math.cos(orbit.yaw), s = Math.sin(orbit.yaw), x = I.mx, y = I.my; I.mx = x * c + y * s; I.my = -x * s + y * c; }
       try { impl.update(dt, ctx); } catch (e) { console.error(e); ctx.end('fehler'); return; }
@@ -204,6 +209,14 @@
       else m.hidden = true;
     }
     ctx.hud = hud;
+    // Live-Kommentar: kurze Sprüche der Moderatoren (Einblendung + Sprachausgabe), höchstens alle 6 s
+    let quipT = -9;
+    function quip(kind, force) {
+      if (UL.bot || !ctx.running) return; if (!force && ctx.t - quipT < 6) return; quipT = ctx.t;
+      const [who, txt] = UL.pick(UL.D.LIVE[kind] || []) || []; if (!txt) return;
+      const t = UI.fmt(txt, { n: ctx.name, s: ctx.stars, m: max });
+      UI.toast(t, who === 'lotte' ? '🎤' : '🎙️', 2200); UL.Voice && UL.Voice.say(t, who);
+    }
     UL.Trials.current = ctx;
 
     async function finish() {
@@ -218,6 +231,7 @@
       if (ctx.skip) { await UI.fade(true, 0.3); UI.hud(''); resolve({ stars: ctx.stars, max, quit: false, skip: true }); return; }
       const stars = ctx.quit ? 0 : ctx.stars;
       Object.assign(vars, { s: stars });
+      const rec = !opt.ai && UL.Prog ? UL.Prog.trial(id, stars, max, ctx.quit, { wx: ctx.wx, practice: opt.practice }) : false;
       UL.Audio.music('show');
       if (!UL.bot) {
         await UI.banner(ctx.quit ? 'ABBRUCH!' : ctx.reason === 'alle' ? 'ALLE STERNE!' : ctx.reason === 'zeit' ? 'ZEIT!' : 'ENDE!', ctx.quit ? '„' + UL.D.SHOW.exit + '“' : '', 1500);
@@ -232,7 +246,7 @@
           ctx.doc.play('interact');
           await UI.say('doc', UL.pick(UL.D.DOC_LINES[ctx.quit ? 'trialQuit' : key === 'good' ? 'trialGood' : 'trialBad']).replace(/^/, ctx.ai ? ctx.name + ', ' : ''));
         }
-        await UI.choose(def.icon + ' ' + def.name, `<div class="stars">${'⭐'.repeat(stars)}<span class="off">${'⭐'.repeat(max - stars)}</span></div><p>${stars} von ${max} Sternen${opt.practice ? '' : ' – das sind ' + stars + ' Portionen fürs Camp'}.</p>`, [{ label: 'Weiter', value: 1 }], { cls: 'clear' });
+        await UI.choose(def.icon + ' ' + def.name, `<div class="stars">${'⭐'.repeat(stars)}<span class="off">${'⭐'.repeat(max - stars)}</span></div><p>${stars} von ${max} Sternen${opt.practice ? '' : ' – das sind ' + stars + ' Portionen fürs Camp'}.</p>${rec ? '<p class="newbest">🏅 Neuer Bestwert!</p>' : ''}`, [{ label: 'Weiter', value: 1 }], { cls: 'clear' });
       }
       await UI.fade(true, 0.35);
       UI.hud('');
