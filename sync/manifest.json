@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c28692d6d6ec",
- "generated": "2026-11-20T21:01:13+00:00",
- "commit": "3ee8444b11491b8c0d2d8fdfae1c584385f8f526",
+ "version": "58313bca7188",
+ "generated": "2026-11-20T21:01:55+00:00",
+ "commit": "9f7cf0eca80d31247f59de2622cb729886d6f56c",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -9328,8 +9328,8 @@
   },
   {
    "p": "cloud/anmacha-ach.js",
-   "s": 25184,
-   "h": "9bec9b20f5a8fec148bfed206543f5a3fe27546252620964452c56bd54bca5e4"
+   "s": 25216,
+   "h": "a4022ccc2c1063fad01b17eb3d5b38dc7207e9b710574fb77ba7a8f32b148e3e"
   },
   {
    "p": "cloud/anmacha-board.js",
@@ -19565,6 +19565,11 @@
    "p": "vendor/qrcode-generator-1.4.4.js",
    "s": 56694,
    "h": "18ae399f81182bc9de916e9c77b195df20cc58d6f2d55a62b085a299f1bf1780"
+  },
+  {
+   "p": "vendor/spz-0.2.2/spz.js",
+   "s": 851099,
+   "h": "677e43c3c38a9e477d4116aba40c2ca6ed01f4eb083c5fd6fbd90f73f90a722e"
   },
   {
    "p": "vendor/three-r128-gltfloader.js",
@@ -78228,6 +78233,7 @@
   "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js": "vendor/three-r128.min.js",
   "https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap": "vendor/fonts/fredoka.css",
   "https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap": "vendor/fonts/fredoka.css",
-  "https://fonts.googleapis.com/fredoka-latin-wght-normal.woff2": "vendor/fonts/fredoka-latin-wght-normal.woff2"
+  "https://fonts.googleapis.com/fredoka-latin-wght-normal.woff2": "vendor/fonts/fredoka-latin-wght-normal.woff2",
+  "https://unpkg.com/@adobe/spz@0.2.2/dist/spz.js": "vendor/spz-0.2.2/spz.js"
  }
 }

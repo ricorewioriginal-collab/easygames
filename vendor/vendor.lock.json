@@ -5,6 +5,7 @@
   "licenses/jsqr-MIT.txt": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08",
   "licenses/mediapipe-pose-Apache-2.0-README.md": "9dad28188ae54ea420e3d29c23360b040a0dfb88954b99a3e456b8a8c93cf2a1",
   "licenses/planck-MIT.txt": "49fd3df949edd5f294edafb22e8905263dd7560b514bee6df2f17538069aafca",
+  "licenses/spz-MIT.txt": "d2b852220d1043148f523c4154e8bf7d9c5e419aede33b4c94115cfc457e4714",
   "mediapipe-pose/pose.js": "fcb703afcce65d0a1c540f6a70c3bb45fc84521498c21a9d4160265dde648ab4",
   "mediapipe-pose/pose_landmark_lite.tflite": "f17bfbecadb61c3be1baa8b8d851cc6619c870a87167b32848ad20db306b9d61",
   "mediapipe-pose/pose_solution_packed_assets.data": "a63c614bef30d35947f13be361820b1e4e3bec9cfeebf4d11216a18373108e85",
@@ -18,5 +19,6 @@
   "peerjs-1.5.4.min.js": "ad5d8870d1e389914f9cba8d35be313c4327c69ee0a221e482e9bf7621136fe5",
   "planck-1.4.2.min.js": "c16edf1b6f0b74526a6da9db3241f8a0cc7b174acbfea058e660a6e270ab693f",
   "qrcode-generator-1.4.4.js": "18ae399f81182bc9de916e9c77b195df20cc58d6f2d55a62b085a299f1bf1780",
+  "spz-0.2.2/spz.js": "677e43c3c38a9e477d4116aba40c2ca6ed01f4eb083c5fd6fbd90f73f90a722e",
   "three-r128.min.js": "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
 }
