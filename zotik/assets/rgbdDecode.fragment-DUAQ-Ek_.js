@@ -1,4 +1,4 @@
-import{v as e}from"./bworld-DDi3oIsO.js";import"./index-CTWJsPEN.js";const t="helperFunctions",c=`const PI: f32=3.1415926535897932384626433832795;const TWO_PI: f32=6.283185307179586;const HALF_PI: f32=1.5707963267948966;const RECIPROCAL_PI: f32=0.3183098861837907;const RECIPROCAL_PI2: f32=0.15915494309189535;const RECIPROCAL_PI4: f32=0.07957747154594767;const HALF_MIN: f32=5.96046448e-08; 
+import{w as e}from"./index-MTeCkGep.js";const t="helperFunctions",c=`const PI: f32=3.1415926535897932384626433832795;const TWO_PI: f32=6.283185307179586;const HALF_PI: f32=1.5707963267948966;const RECIPROCAL_PI: f32=0.3183098861837907;const RECIPROCAL_PI2: f32=0.15915494309189535;const RECIPROCAL_PI4: f32=0.07957747154594767;const HALF_MIN: f32=5.96046448e-08; 
 const LinearEncodePowerApprox: f32=2.2;const GammaEncodePowerApprox: f32=1.0/LinearEncodePowerApprox;const LuminanceEncodeApprox: vec3f=vec3f(0.2126,0.7152,0.0722);const Epsilon:f32=0.0000001;fn square(x: f32)->f32 {return x*x;}
 fn saturate(x: f32)->f32 {return clamp(x,0.0,1.0);}
 fn saturateVec3(x: vec3f)->vec3f {return clamp(x,vec3f(),vec3f(1.0));}
@@ -84,8 +84,8 @@ fn max3(v: vec3f)->f32 {return max(v.x,max(v.y,v.z));}
 fn uint2float(i: u32)->f32 {return bitcast<f32>(0x3F800000u | (i>>9u))-1.0;}
 fn plasticSequence(rstate: u32)->vec2f {return vec2f(uint2float(rstate*3242174889u),
 uint2float(rstate*2447445414u));}
-`;e.IncludesShadersStoreWGSL[t]||(e.IncludesShadersStoreWGSL[t]=c);const o={name:t,shader:c},a="rgbdDecodePixelShader",n=`varying vUV: vec2f;var textureSamplerSampler: sampler;var textureSampler: texture_2d<f32>;
+`;e.IncludesShadersStoreWGSL[t]||(e.IncludesShadersStoreWGSL[t]=c);const f={name:t,shader:c},a="rgbdDecodePixelShader",n=`varying vUV: vec2f;var textureSamplerSampler: sampler;var textureSampler: texture_2d<f32>;
 #include<helperFunctions>
 #define CUSTOM_FRAGMENT_DEFINITIONS
 @fragment
-fn main(input: FragmentInputs)->FragmentOutputs {fragmentOutputs.color=vec4f(fromRGBD(textureSample(textureSampler,textureSamplerSampler,input.vUV)),1.0);}`;e.ShadersStoreWGSL[a]||(e.ShadersStoreWGSL[a]=n);const f=[o];for(const r of f)e.IncludesShadersStoreWGSL[r.name]||(e.IncludesShadersStoreWGSL[r.name]=r.shader);const s={name:a,shader:n};export{s as rgbdDecodePixelShaderWGSL};
+fn main(input: FragmentInputs)->FragmentOutputs {fragmentOutputs.color=vec4f(fromRGBD(textureSample(textureSampler,textureSamplerSampler,input.vUV)),1.0);}`;e.ShadersStoreWGSL[a]||(e.ShadersStoreWGSL[a]=n);const o=[f];for(const r of o)e.IncludesShadersStoreWGSL[r.name]||(e.IncludesShadersStoreWGSL[r.name]=r.shader);const l={name:a,shader:n};export{l as rgbdDecodePixelShaderWGSL};
