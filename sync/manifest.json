@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "a03109439b98",
- "generated": "2026-11-20T01:10:11+00:00",
- "commit": "dfd9a89e3f50c669e17aaf757f316675f72ff4cd",
+ "version": "dbc09f64857a",
+ "generated": "2026-11-20T01:11:41+00:00",
+ "commit": "fdbc76f31642a2dbe43f3381b1bb3a787f03a633",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -15799,7 +15799,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236340,
-   "h": "6c0225c9f10deca6665b59e58856a0ef551e5910ab9f003ac631843cef685e4c"
+   "h": "4ccbe8d2079a90b5cab02a4aea68e313a7ac24b491aeec473bc064c3b3167eb8"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -71382,9 +71382,9 @@
    "h": "9e629369f7a54ab0b5ef047ea685f1a41154903e478869c95eca8a5590cc4681"
   },
   {
-   "p": "zotik/assets/index-1mEZt7qI.js",
-   "s": 2155250,
-   "h": "e64daaa841bd2252fe9f16a7483503ee784b22227cd0a94a4b6cdb11c24671a4"
+   "p": "zotik/assets/index-BhQrc3cX.js",
+   "s": 2158296,
+   "h": "5e99be3a4c458b17e12c3beae2c42736fbbc8373e0fd563011bedeedb4922bc3"
   },
   {
    "p": "zotik/assets/zotik-180-sQKcJfHD.png",
@@ -71424,7 +71424,7 @@
   {
    "p": "zotik/index.html",
    "s": 78401,
-   "h": "6042c8e3b0f017ad26887b93b92ce4afc9f8952e373a0fa8c39daea4f052128d"
+   "h": "93b8125767a3b050eec666f42d848bfbaf7d5ecd10c60eb9c25b71d0d6fcc554"
   },
   {
    "p": "zotik/manifest.webmanifest",
@@ -71555,6 +71555,26 @@
    "p": "zotik/models/qr/qr.glb",
    "s": 660208,
    "h": "a24a3bc1160b9ee730f0d01d0a6d2c8c74e35fa9a5671843d9a4a61444a95119"
+  },
+  {
+   "p": "zotik/models/sf/anime.glb",
+   "s": 1125412,
+   "h": "b630556dec8dc5d610032e96ac4c0d24102c538f2972bd334412f01eff990d95"
+  },
+  {
+   "p": "zotik/models/sf/magier.glb",
+   "s": 991884,
+   "h": "e6fdb2441f30dbe7eb17bdc9790abf04875854f3e40da90d0a3f7164e9c279cd"
+  },
+  {
+   "p": "zotik/models/sf/ritter.glb",
+   "s": 1235736,
+   "h": "f2cecd3266e3101c7640fc70924ca2c3d0ddcc5719f4559e2dbd167be1cfb178"
+  },
+  {
+   "p": "zotik/models/sf/rogue.glb",
+   "s": 2319760,
+   "h": "9522a3bd4ad177917d3b06d2c5458c218477c3eb05811238b3f03b0246f13c65"
   },
   {
    "p": "zotik/models/wz/wz.glb",
