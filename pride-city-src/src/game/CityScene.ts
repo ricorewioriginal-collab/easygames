@@ -83,7 +83,7 @@ export class CityScene implements GameScene {
     // Tanzende Menge auf dem Platz (Titelbild und Abendstimmung)
     const crowd = ['Female_Party_01', 'Male_Adult_07', 'Female_Adult_04', 'Male_Adult_02', 'Female_Party_02', 'Male_Adult_09'];
     await Promise.all(crowd.map(async (rb, i) => {
-      const a = await Actor.create(sc, L(rb));
+      const a = await Actor.create(sc, { ...L(rb), style: ['drag', 'crop', 'trans', 'regenbogen', 'gold', 'leder'][i] });
       const ang = (i / 6) * Math.PI * 2;
       a.root.position.set(-15 + Math.cos(ang) * 4.6, .1, 15 + Math.sin(ang) * 4.6);
       a.root.rotation.y = -ang - Math.PI / 2;
@@ -94,7 +94,7 @@ export class CityScene implements GameScene {
     const queue: Array<[number, number, number]> = [[3.6, -6.4, -Math.PI / 2], [3.4, -4.9, -Math.PI / 2], [3.7, -3.4, -Math.PI / 2], [33.6, 23.2, -Math.PI / 2], [33.4, 24.7, -Math.PI / 2]];
     const qa = ['Female_Adult_08', 'Male_Adult_03', 'Female_Adult_02', 'Male_Adult_05', 'Male_Adult_01'];
     await Promise.all(queue.map(async ([x, z, yaw], i) => {
-      const a = await Actor.create(sc, L(qa[i]));
+      const a = await Actor.create(sc, { ...L(qa[i]), style: ['lesbisch', 'lederjacke', 'glitzer', 'bear', 'pan'][i] });
       a.root.position.set(x, .1, z); a.root.rotation.y = yaw + (i % 2 ? .4 : -.3);
       a.play((['phone', 'talk', 'dance2', 'drink', 'laugh'] as const)[i], 0, .9);
       this.crowd.push(a);
@@ -242,7 +242,7 @@ export class CityScene implements GameScene {
     else if (this.g.where === 'home') this.g.hud.goal('Zuhause', 'Deine Wohnung', s.chapter === 1 && s.step === 2 ? 'Schau dich um.' : `Ziel: ${gl.title}`);
     else this.g.hud.goal(chapterLabel(s), gl.title, gl.sub);
     const days = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-    this.g.hud.stats([`${days[(s.day - 1) % 7]} ${this.clock()} ${SKY[this.weather?.sky || 'klar'].icon}`, `💶 ${s.money} €`, `${moodIcon(mood(s))} ${Math.round(mood(s))}`]);
+    this.g.hud.stats([`${days[(s.day - 1) % 7]} ${this.clock()} ${this.world.night > .5 && (this.weather?.sky || 'klar') === 'klar' ? '🌙' : SKY[this.weather?.sky || 'klar'].icon}`, `💶 ${s.money} €`, `${moodIcon(mood(s))} ${Math.round(mood(s))}`]);
     this.g.hud.needs(s.needs);
   }
 
@@ -433,6 +433,7 @@ export class CityScene implements GameScene {
   shake = 0;
   private snapCam() { this.updateCam(1, true); }
   private tgt = new Vector3();
+  private aim = new Vector3();
   private updateCam(dt: number, snap = false) {
     const inp = this.g.engine.input, st = this.g.save.data.settings;
     const k = .005 * st.camSpeed;
@@ -461,7 +462,9 @@ export class CityScene implements GameScene {
     Vector3.LerpToRef(this.camPos, want, snap ? 1 : Math.min(1, dt * (f < 1 ? 20 : 8)), this.camPos);
     this.camera.position.copyFrom(this.camPos);
     if (this.shake > 0) { this.shake = Math.max(0, this.shake - dt); const k = this.shake * .5; this.camera.position.x += (Math.random() - .5) * k; this.camera.position.y += (Math.random() - .5) * k; }
-    this.camera.setTarget(tgt);
+    // Hochkant: etwas über die Figur hinweg schauen, damit die Stadt das Bild füllt und nicht der Asphalt
+    const up = this.g.engine.aspect < 1 ? 1.9 : 0;
+    if (up) { this.aim.copyFrom(tgt); this.aim.y += up; this.camera.setTarget(this.aim); } else this.camera.setTarget(tgt);
     this.clearView(tgt);
   }
 

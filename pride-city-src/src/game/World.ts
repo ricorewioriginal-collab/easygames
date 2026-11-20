@@ -351,8 +351,11 @@ export class World {
       const bn = new TransformNode('lampbulb', this.scene); bulb.parent = bn; bn.parent = this.root;
       this.prop(side[0], side[1], .3, [lamp, bn]);
       this.lampSpots.push(bulb.position.clone());
+      this.lampPosts.push([side[0], side[1], rx]);
     }
   }
+  /** Laternenmasten: x, z, Straße läuft in z-Richtung */
+  private lampPosts: Array<[number, number, boolean]> = [];
   private bulbSrc: Mesh | null = null;
   private bulb() {
     if (!this.bulbSrc) { this.bulbSrc = sphere(this.scene, .35, 8); this.bulbSrc.material = this.lamps; this.bulbSrc.setEnabled(false); }
@@ -389,7 +392,7 @@ export class World {
     sm.setColor3('sunCol', new Color3(1, .82, .6).scale(smoothstep(up, -.08, .1) * (1 - wx.gloom)));
     this.scene.fogColor = bot;
     // tagsüber Dunst, abends und nachts klarer, damit die Skyline mit ihren Fenstern zu sehen ist
-    this.scene.fogDensity = .0024 + .0034 * day * (1 - dusk) + wx.fog;
+    this.scene.fogDensity = .0022 + .0012 * day * (1 - dusk) + wx.fog;
     this.pickEnv(day, dusk);
     this.scene.clearColor.set(bot.r, bot.g, bot.b, 1);
     // Fenster nachts warm, Straßen nachts feucht glänzend
@@ -422,7 +425,8 @@ export class World {
       if (!(m instanceof PBRMaterial)) continue;
       const k = m as PBRMaterial & { _pcFx?: [boolean, boolean] };
       if (!k._pcFx) k._pcFx = [m.detailMap.isEnabled, m.clearCoat.isEnabled];
-      m.detailMap.isEnabled = !on && k._pcFx[0]; m.clearCoat.isEnabled = !on && k._pcFx[1];
+      // Fassadenstruktur (Ziegel, Putz) bleibt auch auf der sparsamen Stufe: ohne sie sind die Häuser nur farbige Klötze
+      m.detailMap.isEnabled = k._pcFx[0]; m.clearCoat.isEnabled = !on && k._pcFx[1];
     }
     const lit = this.night > .03 && !on;
     for (const l of [...this.lampLights, ...this.poolLights]) l.setEnabled(lit);
@@ -591,25 +595,61 @@ export class World {
         this.still(s, false);
       });
     };
-    crossing(0, 7, false); crossing(0, -7, false); crossing(7, 0, true); crossing(-7, 0, true);
-    crossing(30, -7, false); crossing(-30, 7, false);
+    // an jeder Kreuzung der Innenstadt, in alle vier Richtungen
+    for (const cx of [-30, 0, 30]) for (const cz of [-30, 0, 30]) { crossing(cx, cz + 7, false); crossing(cx, cz - 7, false); crossing(cx + 7, cz, true); crossing(cx - 7, cz, true); }
     // Wimpelketten über den Straßen rund um den Platz (eine Form, viele Kopien mit eigener Farbe)
     const tri = new Mesh('wimpel', sc), vd = new VertexData();
     vd.positions = [-.35, 0, 0, .35, 0, 0, 0, -.7, 0]; vd.indices = [0, 1, 2]; vd.normals = [0, 0, 1, 0, 0, 1, 0, 0, 1]; vd.applyToMesh(tri);
     tri.material = pbr(sc, 0xffffff, .8, 0, { double: true }); tri.parent = this.root;
     const lines: Array<[number, number, number, number]> = [[-28, 5, -28, 25], [-2, 5, -2, 25], [-25, 2, -5, 2], [-25, 28, -5, 28], [2, -25, 2, 25], [-25, -2, 25, -2]];
-    const count = lines.length * 22, mats = new Float32Array(count * 16), colors = new Float32Array(count * 4);
-    let k = 0;
-    for (const [x1, z1, x2, z2] of lines) {
-      const yaw = Math.atan2(x2 - x1, z2 - z1) + Math.PI / 2;
-      for (let i = 0; i < 22; i++) {
-        const u = i / 21, sag = Math.sin(u * Math.PI) * 1.4;
-        Matrix.Compose(Vector3.One(), Quaternion.RotationAxis(Vector3.Up(), yaw), new Vector3(x1 + (x2 - x1) * u, 7.2 - sag, z1 + (z2 - z1) * u)).copyToArray(mats, k * 16);
-        const c = col(PALETTES[0].colors[i % 6]); colors.set([c.r, c.g, c.b, 1], k * 4); k++;
-      }
+    // dazu quer über jede Straße der Innenstadt, alle acht Meter, jede Kette in einer anderen Pride-Flagge
+    for (const c of [-30, 0, 30]) for (let u = -54; u <= 54; u += 8) {
+      if ([-60, -30, 0, 30, 60].some((k2) => Math.abs(u - k2) < 7.5)) continue;
+      lines.push([c - 5.8, u, c + 5.8, u], [u, c - 5.8, u, c + 5.8]);
     }
+    const per = (l: number[]) => (Math.hypot(l[2] - l[0], l[3] - l[1]) > 15 ? 22 : 10);
+    const count = lines.reduce((n, l) => n + per(l), 0), mats = new Float32Array(count * 16), colors = new Float32Array(count * 4), bm = new Float32Array(count * 16);
+    const flags = PALETTES.filter((q) => !['ace', 'aro', 'leather', 'bear'].includes(q.id));
+    let k = 0;
+    lines.forEach(([x1, z1, x2, z2], li) => {
+      const yaw = Math.atan2(x2 - x1, z2 - z1) + Math.PI / 2, n = per([x1, z1, x2, z2]), long = n > 10, pal = long ? PALETTES[0].colors : flags[li % flags.length].colors;
+      for (let i = 0; i < n; i++) {
+        const u = i / (n - 1), sag = Math.sin(u * Math.PI) * (long ? 1.4 : .7), y = (long ? 7.2 : 6.3) - sag, x = x1 + (x2 - x1) * u, z = z1 + (z2 - z1) * u;
+        Matrix.Compose(Vector3.One(), Quaternion.RotationAxis(Vector3.Up(), yaw), new Vector3(x, y, z)).copyToArray(mats, k * 16);
+        Matrix.Translation(x, y + .08, z).copyToArray(bm, k * 16);
+        const c = col(pal[i % pal.length]); colors.set([c.r, c.g, c.b, 1], k * 4); k++;
+      }
+    });
     tri.thinInstanceSetBuffer('matrix', mats, 16, true); tri.thinInstanceSetBuffer('color', colors, 4, true);
     tri.alwaysSelectAsActiveMesh = true;
+    // Lichterkette auf denselben Schnüren: leuchtet in den Flaggenfarben, nachts das halbe Stadtbild
+    const bulb = sphere(sc, .075, 4); const bmat = pbr(sc, 0xffffff, .5); bmat.unlit = true; bulb.material = bmat; bulb.parent = this.root; bulb.isPickable = false;
+    bulb.thinInstanceSetBuffer('matrix', bm, 16, true); bulb.thinInstanceSetBuffer('color', colors, 4, true); bulb.alwaysSelectAsActiveMesh = true;
+    // Pride-Banner an jeder Laterne, darüber drei Luftballons
+    const banners = flags.map((q) => {
+      const t = canvasTex(sc, 32, 96, (g) => { q.colors.forEach((cc, i) => { g.fillStyle = cc; g.fillRect(0, Math.floor(i * 96 / q.colors.length), 32, Math.ceil(96 / q.colors.length)); }); });
+      const m = pbr(sc, 0xffffff, .7, 0, { double: true }); m.albedoTexture = t;
+      const b = planeZ(sc, .62, 1.7, true); b.material = m; b.setEnabled(false); b.parent = this.root; return b;
+    });
+    const balloon = sphere(sc, .26, 6); balloon.scaling.y = 1.2; const balMat = pbr(sc, 0xffffff, .22); balloon.material = balMat; balloon.parent = this.root; balloon.isPickable = false;
+    const bal: number[] = [], balC: number[] = [];
+    const addBalloon = (x: number, y: number, z: number, hexc: string) => { const mtx = Matrix.Compose(new Vector3(1, 1.2, 1), Quaternion.Identity(), new Vector3(x, y, z)); bal.push(...mtx.asArray()); const c = col(hexc); balC.push(c.r, c.g, c.b, 1); };
+    this.lampPosts.forEach(([x, z, rx], i) => {
+      if (Math.abs(x) > 62 || Math.abs(z) > 62) return;
+      const b = banners[i % banners.length].createInstance('banner');
+      b.position.set(x + (rx ? .42 : 0), 3.1, z + (rx ? 0 : .42)); b.rotation.y = rx ? 0 : Math.PI / 2; this.still(b, false, false);
+      const rb = PALETTES[0].colors;
+      for (let j = 0; j < 3; j++) addBalloon(x + (rx ? .3 : (j - 1) * .3), 4.9 + (j === 1 ? .35 : 0), z + (rx ? (j - 1) * .3 : .3), rb[(i * 2 + j * 2) % 6]);
+    });
+    // Ballonbögen in Regenbogenfarben über den Einfahrten zur Innenstadt
+    const pole = cyl(sc, .09, .09, 3.2, 8); pole.material = pbr(sc, 0xf2f2f6, .4, .3); pole.setEnabled(false); pole.parent = this.root;
+    const arch = (x: number, z: number, alongZ: boolean) => {
+      const R = 6.9, n = 34;
+      for (let i = 0; i < n; i++) { const a = (i / (n - 1)) * Math.PI, o = Math.cos(a) * R, y = 3.2 + Math.sin(a) * R * .62; addBalloon(alongZ ? x + o : x, y, alongZ ? z : z + o, PALETTES[0].colors[Math.floor(i / n * 6)]); if (i % 2) addBalloon(alongZ ? x + o * .97 : x + .35, y + .38, alongZ ? z + .35 : z + o * .97, PALETTES[0].colors[Math.floor(i / n * 6)]); }
+      for (const sgn of [-1, 1]) { const q = pole.createInstance('archpole'); q.position.set(alongZ ? x + sgn * R : x, 1.7, alongZ ? z : z + sgn * R); this.still(q, false, false); }
+    };
+    arch(0, 44, true); arch(0, -44, true); arch(-44, 0, false); arch(44, 0, false); arch(0, 13.5, true); arch(-16.5, 30, false);
+    balloon.thinInstanceSetBuffer('matrix', new Float32Array(bal), 16, true); balloon.thinInstanceSetBuffer('color', new Float32Array(balC), 4, true); balloon.alwaysSelectAsActiveMesh = true;
     // Flaggen an Hausecken entlang der Hauptstraße
     for (let z = -50; z <= 50; z += 20) if (Math.abs(z) > 8) this.flag(5.2, z + 5, PALETTES[(Math.abs(z) / 10) % PALETTES.length | 0].colors, 5, Math.PI / 2);
     // Ein paar Bäume an den Straßen

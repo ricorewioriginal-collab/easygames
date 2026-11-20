@@ -12,7 +12,7 @@ import { sfx } from '../engine/Audio';
 import type { PBRMaterial, Scene } from '../engine/bjs';
 
 export type StreetKind = 'walker' | 'police' | 'fire' | 'worker' | 'curb' | 'medic' | 'security' | 'chef' | 'courier';
-export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean; down?: boolean; chase?: boolean; away?: boolean }
+export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean; down?: boolean; chase?: boolean; away?: boolean; /** läuft Hand in Hand neben dieser Person */ mate?: StreetNpc; /** feste Blickrichtung */ yaw?: number }
 export interface Parked { o: Node3; name: string; yaw: number; v: number; def: CarDef; /** dein eigener Wagen aus der Garage */ own?: boolean }
 
 const LINES: Record<Exclude<StreetKind, 'worker' | 'curb'>, string[]> = {
@@ -30,7 +30,24 @@ const block = (a: number, b: number, rev = false): Array<[number, number]> => {
   const p: Array<[number, number]> = [[a + 5.4, b + 5.4], [a + 24.6, b + 5.4], [a + 24.6, b + 24.6], [a + 5.4, b + 24.6]];
   return rev ? p.reverse() : p;
 };
-const L = (rb: string): Look => ({ body: rb, rb, palette: 'rainbow', skin: 0 });
+const L = (rb: string, style?: string): Look => ({ body: rb, rb, palette: 'rainbow', skin: 0, style });
+/** Szene-Looks der Passant*innen: fast alle zeigen Farbe */
+const WALK_STYLE = ['regenbogen', 'lesbisch', 'bear', 'trans', 'lederjacke', 'crop', 'bi', 'glitzer', 'pan', 'enby', '', 'pink'];
+/** Paare, die Hand in Hand durch die Stadt gehen: [Figur, Look, Figur, Look, Block] */
+const COUPLES: Array<[string, string, string, string, number, number]> = [
+  ['Male_Adult_01', 'regenbogen', 'Male_Adult_08', 'bear', 0, 0], ['Female_Adult_02', 'lesbisch', 'Female_Adult_07', 'pink', -30, 0], ['Male_Adult_05', 'leder', 'Male_Adult_03', 'lederjacke', 0, -30],
+  ['Female_Adult_04', 'trans', 'Male_Adult_07', 'pan', -30, -30], ['Female_Party_01', 'drag', 'Female_Party_02', 'gold', 30, 0], ['Sports_Male_01', 'crop', 'Male_Adult_10', 'progress', -60, 0],
+  ['Female_Adult_09', 'bi', 'Sports_Female_01', 'enby', 120, 0], ['Male_Adult_04', 'glitzer', 'Male_Adult_02', 'regenbogen', 150, -30],
+];
+/** Szene-Leute, die an festen Plätzen stehen, tanzen, lachen: [Figur, Look, x, z, Blick, Bewegung] */
+const SCENE: Array<[string, string, number, number, number, Anim]> = [
+  ['Female_Party_02', 'drag', -11.5, 9.5, 2.3, 'pose'], ['Female_Party_01', 'gold', -10.2, 8.3, -1.2, 'talk'], ['Male_Adult_09', 'glitzer', -12.4, 8.1, .6, 'cheer'],
+  ['Male_Adult_08', 'leder', 5.7, -11.6, -.4, 'talk'], ['Male_Adult_06', 'bear', 5.9, -10.3, -2.6, 'talk'],
+  ['Male_Adult_03', 'crop', 5.5, 17.5, -1.6, 'dance1'], ['Male_Adult_07', 'regenbogen', 6, 18.9, -2.4, 'dance2'],
+  ['Female_Adult_03', 'lesbisch', -5.6, 14, 1.6, 'talk'], ['Female_Adult_08', 'trans', -5.9, 15.2, 2.3, 'drink'],
+  ['Female_Adult_06', 'pan', -5.6, -11, 1.6, 'phone'], ['Male_Adult_02', 'progress', 24.4, 5.6, 0, 'cheer'], ['Female_Adult_10', 'enby', -24.5, -5.6, 3.1, 'dance2'],
+  ['Male_Adult_04', 'lederjacke', 128.6, 37.4, -1.6, 'talk'], ['Female_Party_02', 'glitzer', 128.9, 40.6, -2, 'dance3'], ['Male_Adult_10', 'pink', 127.4, 10.5, 1.2, 'talk'],
+];
 
 export class Street {
   readonly people: StreetNpc[] = [];
@@ -44,11 +61,12 @@ export class Street {
       const a = await Actor.create(this.scene, look);
       a.root.position.set(path[0][0], .1, path[0][1]);
       if (anim) a.play(anim, 0);
-      this.people.push({ a, kind, name, color, path, wp: 1 % path.length, wait: Math.random() * 4, id, anim });
+      const n: StreetNpc = { a, kind, name, color, path, wp: 1 % path.length, wait: Math.random() * 4, id, anim };
+      this.people.push(n); return n;
     };
     const blocks: Array<[number, number]> = [[0, 0], [-30, -30], [0, -30], [30, -30], [30, 0], [-60, 0], [0, 30], [-30, 30], [-60, -30], [30, 30], [-60, 30], [0, -60]];
-    const jobs: Promise<void>[] = [];
-    blocks.forEach(([a, b], i) => jobs.push(mk(L(WALKERS[i]), 'walker', NAMES[i], '#8fa3c8', block(a, b, i % 2 === 0))));
+    const jobs: Promise<unknown>[] = [];
+    blocks.forEach(([a, b], i) => jobs.push(mk(L(WALKERS[i], WALK_STYLE[i]), 'walker', NAMES[i], '#8fa3c8', block(a, b, i % 2 === 0))));
     // Streife auf der Hauptstraße, Feuerwehr vor der Wache
     jobs.push(mk(L('Police_Male_01'), 'police', 'Polizist Okafor', '#5b86d6', [[4.6, -16], [4.6, 26], [-4.6, 26], [-4.6, -16]]));
     jobs.push(mk(L('Police_Female_01'), 'police', 'Polizistin Brandt', '#5b86d6', [[4.6, -16], [4.6, 26], [-4.6, 26], [-4.6, -16]].reverse() as Array<[number, number]>));
@@ -75,9 +93,24 @@ export class Street {
     CURB.forEach((w, i) => jobs.push(mk(cl[w.id], 'curb', w.name, w.color, [CURB_SPOTS[i]], w.id, i % 2 ? 'pose' : 'idle')));
     // Passant*innen in der Hochstadt
     const up: Array<[number, number]> = [[90, -30], [120, 0], [150, 30], [180, -30], [90, 30], [180, 0]];
-    up.forEach(([a, b], i) => jobs.push(mk(L(WALKERS[(i + 5) % WALKERS.length]), 'walker', NAMES[(i + 5) % NAMES.length], '#8fa3c8', block(a, b, i % 2 === 1))));
+    up.forEach(([a, b], i) => jobs.push(mk(L(WALKERS[(i + 5) % WALKERS.length], WALK_STYLE[(i + 3) % WALK_STYLE.length]), 'walker', NAMES[(i + 5) % NAMES.length], '#8fa3c8', block(a, b, i % 2 === 1))));
+    // Paare Hand in Hand (die zweite Person läuft neben der ersten her) und Szene-Leute an festen Plätzen
+    COUPLES.forEach(([ra, sa, rb, sb, bx, bz], i) => jobs.push((async () => {
+      const path = block(bx, bz, i % 2 === 1).map(([x, z]) => [x + (x > bx + 15 ? .5 : -.5), z + (z > bz + 15 ? .5 : -.5)] as [number, number]);
+      const start = (i * 2 + 1) % 4; const p2 = [...path.slice(start), ...path.slice(0, start)];
+      const lead = await mk(L(ra, sa), 'walker', i % 2 ? 'Verliebte' : 'Verliebter', '#ff8ac8', p2);
+      (await mk(L(rb, sb), 'walker', i % 3 ? 'Verliebter' : 'Verliebte', '#ff8ac8', [p2[0]])).mate = lead;
+    })()));
+    // nie in einer Hauswand stehen: notfalls Schritt für Schritt zur Straße hin rücken
+    const blocked = (x: number, z: number) => this.world.colliders.some((c) => Math.abs(x - c.x) < c.hx + .5 && Math.abs(z - c.z) < c.hz + .5);
+    const clear = (x: number, z: number): [number, number] => {
+      const rx = Math.round(x / 30) * 30, rz = Math.round(z / 30) * 30, alongX = Math.abs(x - rx) < Math.abs(z - rz);
+      for (let i = 0; i < 12 && blocked(x, z); i++) { if (alongX) x += Math.sign(rx - x) * .3; else z += Math.sign(rz - z) * .3; }
+      return [x, z];
+    };
+    SCENE.map(([rb, st, x0, z0, yaw, anim]) => [rb, st, ...clear(x0, z0), yaw, anim] as const).forEach(([rb, st, x, z, yaw, anim]) => jobs.push(mk(L(rb, st), 'walker', 'Szene-Mensch', '#ffb347', [[x, z]], undefined, anim).then((n) => { n.yaw = yaw; })));
     await Promise.all(jobs);
-    this.people.filter((p) => p.path.length === 1).forEach((p) => (p.a.root.rotation.y = p.kind === 'curb' ? Math.PI : p.path[0][0] > 0 ? -Math.PI / 2 : Math.PI / 2));
+    this.people.filter((p) => p.path.length === 1).forEach((p) => (p.a.root.rotation.y = p.yaw !== undefined ? p.yaw : p.kind === 'curb' ? Math.PI : p.path[0][0] > 0 ? -Math.PI / 2 : Math.PI / 2));
     await this.cars();
   }
 
@@ -145,12 +178,22 @@ export class Street {
     for (const [a, b] of this.flash) { a.m.albedoColor = a.c.scale(on ? 1 : .12); b.m.albedoColor = b.c.scale(on ? .12 : 1); }
     const far = this.world.low ? 62 : 90, anim = this.world.low ? 36 : 60;
     this.people.forEach((n, i) => {
-      const show = n.away ? false : n.kind === 'worker' || n.kind === 'curb' ? adult && night > .4 : n.kind === 'walker' ? (night < .5 || i % 2 === 0) : n.kind === 'security' ? night > .3 : true;
+      const show = n.away ? false : n.kind === 'worker' || n.kind === 'curb' ? adult && night > .4 : n.kind === 'walker' ? (night < .5 || i % 2 === 0 || !!n.mate || n.yaw !== undefined) : n.kind === 'security' ? night > .3 : true;
       const d2 = Vector3.DistanceSquared(n.a.root.position, ref);
       n.a.root.visible = !n.away && (n.chase || n.talking || (show && d2 < far * far));
       if (!n.a.root.visible) return;
       if (d2 < anim * anim || n.chase) n.a.update(dt);
       if (n.talking || n.down || n.chase) return;
+      // Hand in Hand: neben der Partnerperson herlaufen, gleiche Richtung, gleicher Schritt
+      const m = n.mate;
+      if (m) {
+        if (m.talking || m.down || m.chase || m.away) { if (n.a.anim !== 'idle') n.a.play('idle'); return; }
+        const yaw = m.a.root.rotation.y, q = m.a.root.position, p = n.a.root.position, tx = q.x + Math.cos(yaw) * .62, tz = q.z - Math.sin(yaw) * .62;
+        if (Math.hypot(tx - p.x, tz - p.z) > 6) p.set(tx, .1, tz); else { p.x += (tx - p.x) * Math.min(1, dt * 6); p.z += (tz - p.z) * Math.min(1, dt * 6); }
+        n.a.root.rotation.y = yaw;
+        if (m.a.anim === 'walk') n.a.play('walk', .25, 1.4 / WALK_MPS); else if (n.a.anim !== 'idle') n.a.play('idle');
+        return;
+      }
       if (n.path.length < 2) return;
       if (n.wait > 0) { n.wait -= dt; if (n.a.anim !== 'idle') n.a.play('idle'); return; }
       const [tx, tz] = n.path[n.wp], p = n.a.root.position, dx = tx - p.x, dz = tz - p.z, d = Math.hypot(dx, dz);

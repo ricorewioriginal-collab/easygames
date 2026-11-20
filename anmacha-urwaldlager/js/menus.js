@@ -45,6 +45,7 @@
         ${save ? `<button class="btn" data-a="cont"><b>▶ Weiterspielen</b><small>Tag ${save.day} von ${save.days} · ${save.theme === 'studio' ? 'TV-Studio' : 'Dschungel'} · ${esc(save.name)}</small></button>` : ''}
         <button class="btn" data-a="new"><b>🌴 Neue Staffel</b><small>Ab ins Camp – die Zuschauer entscheiden</small></button>
         <button class="btn" data-a="practice"><b>⭐ Prüfungen spielen</b><small>Alle Urwaldprüfungen, Fan-Quiz und Gruppenmarsch einzeln</small></button>
+        <button class="btn" data-a="progress"><b>🏆 Erfolge & Bestwerte</b><small>${UL.Prog.count()} von ${UL.Prog.ACH.length} Erfolgen · Outfits freischalten</small></button>
         <button class="btn" data-a="settings"><b>⚙️ Einstellungen</b></button>
         <button class="btn" data-a="controls"><b>🎮 Steuerung</b><small>Handy · Tastatur · PlayStation · Switch</small></button>
         <button class="btn" data-a="cloud"><b>☁️ Speichern mit Google</b></button>
@@ -55,6 +56,7 @@
       if (a === 'cont') { UI.close(p); UL.Show.continue(); }
       else if (a === 'new') M.newSeason();
       else if (a === 'practice') M.practice();
+      else if (a === 'progress') M.progress();
       else if (a === 'settings') M.settings();
       else if (a === 'controls') M.controls();
       else if (a === 'cloud') M.cloud();
@@ -82,7 +84,7 @@
   M.creator = (theme) => new Promise(res => {
     const st = R.stage;
     const me = UL.store.get('me', null) || { name: '', job: UL.D.PLAYER_JOBS[0], form: 'n', look: { model: 'rogue', skin: 0, shirt: 0xc8372d, pants: 0xb79a6a, accent: 0xf2e6c8, hat: 'busch', hatColor: 0xb08850, glasses: false } };
-    if (me.look.rb === undefined) me.look.rb = UL.D.RB_PLAYER[3][0];
+    if (!me.look.rb) me.look.rb = UL.D.RB_PLAYER[3][0];   // nur echte Menschen (keine Comic-Figuren)
     let fig = null;
     const show = () => {
       if (fig) { fig.dispose(); st.figs.splice(st.figs.indexOf(fig), 1); }
@@ -95,6 +97,8 @@
       if (pt) { c.position.set(fx, 1.9, 10.6); c.lookAt(fx, -2.2, 3); } else { c.position.set(fx + 2.3, 1.4, 7.4); c.lookAt(fx + 2.3, 1.0, 3); } };
     const sw = (arr, key, cur) => arr.map(c => `<button class="swatch ${cur === c[0] ? 'on' : ''}" data-k="${key}" data-v="${c[0]}" style="background:#${c[0].toString(16).padStart(6, '0')}" title="${c[1]}"></button>`).join('');
     const SK = ['#f6d5bf', '#e7b896', '#c88f6a', '#9a6a4c', '#6b4636'];
+    // freischaltbare Teile (Erfolge): frei = normal wählbar, sonst 🔒 mit Hinweis
+    const PG = UL.Prog, free = l => l.filter(x => PG.has(x[2])), lock = l => l.filter(x => !PG.has(x[2])).map(x => `<button class="pill lock" data-lock="${x[2]}" title="${esc(x[1])}">🔒 ${esc(x[1])}</button>`).join('');
     const draw = () => {
       const L = me.look;
       p.el.querySelector('.box').innerHTML = `<h2>Dein Promi</h2>
@@ -103,12 +107,13 @@
           <span>Bekannt als</span><select class="field" data-job>${UL.D.PLAYER_JOBS.map(j => `<option ${j === me.job ? 'selected' : ''}>${esc(j)}</option>`).join('')}</select>
           <span>Titel bei Sieg</span><select class="field" data-form>${Object.entries(UL.D.TITLE).map(([k, v]) => `<option value="${k}" ${k === me.form ? 'selected' : ''}>${v}</option>`).join('')}</select>
         </div>
-        <h3>Person</h3><div class="row">${UL.D.RB_PLAYER.map(([id, n]) => `<button class="pill ${L.rb === id ? 'on' : ''}" data-k="rb" data-v="${id}">${n}</button>`).join('')}<button class="pill ${!L.rb ? 'on' : ''}" data-k="rb" data-v="">🧸 Comic</button></div>
+        <h3>Person</h3><div class="row">${UL.D.RB_PLAYER.map(([id, n]) => `<button class="pill ${L.rb === id ? 'on' : ''}" data-k="rb" data-v="${id}">${n}</button>`).join('')}</div>
+        <h3>Halstuch</h3><div class="row"><button class="pill ${!L.scarf ? 'on' : ''}" data-k="scarf" data-v="0">Ohne</button>${sw([[0xc8372d, 'Rot'], [0x2d6ac8, 'Blau'], [0xe8dcb4, 'Sand']].concat(free(PG.SHIRTS)), 'scarf', L.scarf)}${lock(PG.SHIRTS)}</div>
         ${L.rb ? '' : `<h3>Figur</h3><div class="row">${A.FIG.map((f, i) => `<button class="pill ${L.model === f ? 'on' : ''}" data-k="model" data-v="${f}">Typ ${i + 1}</button>`).join('')}</div>
         <h3>Hautton</h3><div class="row">${SK.map((c, i) => `<button class="swatch ${L.skin === i ? 'on' : ''}" data-k="skin" data-v="${i}" style="background:${c}"></button>`).join('')}</div>
-        <h3>Camp-Hemd</h3><div class="row">${sw(UL.D.SHIRTS, 'shirt', L.shirt)}</div>`}
-        <h3>Kopf</h3><div class="row">${UL.D.HATS.map(([k, n]) => `<button class="pill ${(L.hat || 'none') === k ? 'on' : ''}" data-k="hat" data-v="${k}">${n}</button>`).join('')}<button class="pill ${L.glasses ? 'on' : ''}" data-k="glasses" data-v="1">😎 Brille</button></div>
-        <div class="row" style="margin-top:8px">${sw(UL.D.HATCOL.map(c => [c, '']), 'hatColor', L.hatColor)}</div>
+        <h3>Camp-Hemd</h3><div class="row">${sw(UL.D.SHIRTS.concat(free(PG.SHIRTS)), 'shirt', L.shirt)}${lock(PG.SHIRTS)}</div>`}
+        <h3>Kopf</h3><div class="row">${UL.D.HATS.map(([k, n]) => `<button class="pill ${(L.hat || 'none') === k ? 'on' : ''}" data-k="hat" data-v="${k}">${n}</button>`).join('')}${free(PG.HATS).map(([k, n]) => `<button class="pill ${L.hat === k ? 'on' : ''}" data-k="hat" data-v="${k}">✨ ${n}</button>`).join('')}<button class="pill ${L.glasses ? 'on' : ''}" data-k="glasses" data-v="1">😎 Brille</button>${lock(PG.HATS)}</div>
+        <div class="row" style="margin-top:8px">${sw(UL.D.HATCOL.map(c => [c, '']).concat(free(PG.HATCOL)), 'hatColor', L.hatColor)}${lock(PG.HATCOL)}</div>
         <div class="row gobar"><button class="btn" data-go><b>✅ Ab in den ${theme === 'studio' ? 'Studio-Dschungel' : 'Dschungel'}!</b></button></div>
         <div class="foot">${In.glyph('back')} Zurück</div>`;
       p.el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => {
@@ -116,6 +121,7 @@
         if (k === 'rb') L.rb = v || null; else if (k === 'model' || k === 'hat') L[k] = v; else if (k === 'glasses') L.glasses = !L.glasses; else L[k] = +v;
         draw(); UI.refresh(p); const i = p.items.findIndex(x => x.dataset.k === k && x.dataset.v === v); UI.focus(p, i >= 0 ? i : 0); show();
       });
+      p.el.querySelectorAll('[data-lock]').forEach(b => b.onclick = () => { const a = PG.achOf(b.dataset.lock); UI.toast(`Noch gesperrt – Erfolg „${a.name}“: ${a.txt}`, '🔒', 3400); });
       const nm = p.el.querySelector('[data-name]'); nm.oninput = () => me.name = nm.value;
       nm.onkeydown = e => { if (e.key === 'Enter' || e.key === 'Escape') nm.blur(); e.stopPropagation(); };
       p.el.querySelector('[data-job]').onchange = e => me.job = e.target.value;
@@ -153,6 +159,21 @@
       UI.refresh(p);
     };
     draw(); UI.focus(p, 2);
+  };
+
+  // ---------- Erfolge, Outfits, Bestwerte ----------
+  M.progress = () => {
+    const PG = UL.Prog, s = PG.stats(), best = UL.store.get('best', {}), ach = UL.store.get('ach', {});
+    const list = UL.D.TRIALS.concat([UL.D.TRIAL.fanquiz, UL.D.TRIAL.marsch]);
+    const cards = PG.ACH.map(a => { const on = !!ach[a.id]; return `<button class="opt ach ${on ? 'on' : ''}"><b>${on ? a.icon : '🔒'} ${esc(a.name)}</b><small>${esc(a.txt)}${a.reward ? ` · 🎁 ${esc(a.reward)}` : ''}${on ? ' · ✅ ' + new Date(ach[a.id]).toLocaleDateString('de-DE') : ''}</small></button>`; }).join('');
+    const rows = list.map(t => `<li>${t.icon} ${esc(t.name)} <small>${best[t.id] != null ? '⭐'.repeat(best[t.id]) + ` ${best[t.id]}/${t.stars}` : '–'} · ${s.plays[t.id] || 0}× gespielt</small></li>`).join('');
+    const p = UI.open(`<div class="box wide"><h2>🏆 Erfolge & Bestwerte</h2>
+      <div class="statrow"><span>🏆 ${PG.count()} / ${PG.ACH.length} Erfolge</span><span>⭐ ${s.stars} Sterne gesamt</span><span>🎯 ${s.done} Prüfungen geschafft</span></div>
+      <p class="txt"><small>Erfolge mit 🎁 schalten Outfit-Teile im Figur-Editor frei (Kopf, Halstuch, Hutfarbe).</small></p>
+      <div class="grid2">${cards}</div>
+      <h3>Bestwerte pro Prüfung</h3><ul class="log">${rows}</ul>
+      <div class="row"><button class="btn" data-ok><b>Zurück</b></button></div></div>`, { onBack: () => UI.close(p) });
+    p.el.querySelector('[data-ok]').onclick = () => UI.close(p);
   };
 
   // ---------- Einstellungen ----------

@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "46cddf6724aa",
- "generated": "2026-11-20T20:13:04+00:00",
- "commit": "7c7120492f5bbf1bd532e328c2c5c95dafcf0ec0",
+ "version": "6c944143021d",
+ "generated": "2026-11-20T20:13:29+00:00",
+ "commit": "f60f03cfcb13de6bb9c684a05dd9f5e7ac2223bb",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7923,23 +7923,23 @@
   },
   {
    "p": "anmacha-urwaldlager/index.html",
-   "s": 8315,
-   "h": "2fd98bfc68feec03f4c3c637a2a0d28fe6ca9c4531fc8cf7cb5e638bd0ce402d"
+   "s": 8354,
+   "h": "151032cf17d2223a33110b66a9a939b2b0a71fd8bc94ae6964bb1aec68c92851"
   },
   {
    "p": "anmacha-urwaldlager/js/assets.js",
-   "s": 25938,
-   "h": "d22edef7e0c70838995ed8d27acbd45dba24012cab7569af5cc1e43f78318274"
+   "s": 29971,
+   "h": "0fcb38cebcd604310c5f3cf17e03c201b08e66a96cf2271e669b6c0e0d25dc30"
   },
   {
    "p": "anmacha-urwaldlager/js/audio.js",
-   "s": 10570,
-   "h": "ec6a1179d46b1023bbd411a7ea12208fcd9055d306c28436151feabf0100a357"
+   "s": 14016,
+   "h": "e540b71abf426ae5322db7ec160a332d3f4fae5bbd34fc48296cb2ab9a77d80c"
   },
   {
    "p": "anmacha-urwaldlager/js/camp.js",
-   "s": 64927,
-   "h": "6302aaa6b16f4e25644c69dadf134557a01960e204dbf6a32a1d2d534235b71c"
+   "s": 66220,
+   "h": "5bd41a93a075d1a8dd577b9f2439eb59d539e286660495e522b30ed6614f9ec8"
   },
   {
    "p": "anmacha-urwaldlager/js/core.js",
@@ -7948,8 +7948,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/data.js",
-   "s": 41437,
-   "h": "569f449b566b78de05a7dd65d8a25fb6bee049becf3baad43de0aaf43b47f0a7"
+   "s": 42355,
+   "h": "a949a49065e04395a654276b0094d5b4986c3eee4c1c6902c1a30e3c06956af0"
   },
   {
    "p": "anmacha-urwaldlager/js/input.js",
@@ -7963,13 +7963,18 @@
   },
   {
    "p": "anmacha-urwaldlager/js/menus.js",
-   "s": 21244,
-   "h": "ec5e48afdc2cc7cdfaf39ec6252c8eddac5d2782edb9d38dc9a9dab59aeae994"
+   "s": 23907,
+   "h": "74b24bb6db25fb3fab620f59ca0193a1ce20bf3ae6c57fa1e1e9234bd235e23d"
   },
   {
    "p": "anmacha-urwaldlager/js/phone.js",
    "s": 8860,
    "h": "ea60ada1c46bd59e1fb4014b53f90c05483743a62f8a19eac82b0d8b7858a94c"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/progress.js",
+   "s": 4292,
+   "h": "a64e4f17876ed08563aaec3d9053bda3ea9126c2ce17f6a1a5594af3041eff65"
   },
   {
    "p": "anmacha-urwaldlager/js/render.js",
@@ -7978,8 +7983,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/show.js",
-   "s": 38233,
-   "h": "93e75e99aec39f32a0cdb09e61f152c50c3c2fcd9e6ca88999c0cbaa1058dda6"
+   "s": 38436,
+   "h": "c3a32ab08a56ec97087e524b487587b5cde2b9f7f315aa439b2bd765e7a9b951"
   },
   {
    "p": "anmacha-urwaldlager/js/stage.js",
@@ -8013,8 +8018,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/floss.js",
-   "s": 11212,
-   "h": "f3937e61a10bb45892008c747383d574a6d5419c87876a8ceb3093734155402a"
+   "s": 11227,
+   "h": "74fb029d3b0721e0d72b24ed42e4cc6521fb1c95ef6ff378bf0d50165e5ab93c"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/grab.js",
@@ -8023,8 +8028,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/hoehle.js",
-   "s": 13236,
-   "h": "08579960abd46d44ea3c70e1b131b5de7b9842ae830f5eac72a42c93228feaae"
+   "s": 13250,
+   "h": "fd72fb128c488c6245ed0b9fc30d0c800d9c670385d52ca1c4d9e02de1378d93"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kisten.js",
@@ -8033,8 +8038,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kit.js",
-   "s": 26468,
-   "h": "abee8259058da7b9bf56993e738ed3230acedcceea5a2fe5bf65a47ebfafc2a1"
+   "s": 27598,
+   "h": "08f2632ca91121abef258ec67ad52f889b0998dc296520cd2fddfd43f5cbd974"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/klettern.js",
@@ -8078,8 +8083,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/tunnel.js",
-   "s": 13817,
-   "h": "1acb3a9dc6d29665f4ff82c57920ebc255f22a58fb9214a810ddb9cda0ff5a0c"
+   "s": 13835,
+   "h": "87981b40b02be3e05b7d43a2c904ed8f5ad39282102537f1d835bcee515bc608"
   },
   {
    "p": "anmacha-urwaldlager/js/ui.js",
@@ -8283,8 +8288,8 @@
   },
   {
    "p": "anmacha-urwaldlager/style.css",
-   "s": 28234,
-   "h": "5e58079c1feb9bad3aa0cb322af55339ba98f2533804dc813b5e839e00c36498"
+   "s": 28422,
+   "h": "66947ec77d673bc575f7c41bfd189b9d9086b30187ecb1f29608cfc4f6cb2336"
   },
   {
    "p": "anmacha-urwaldlager/sw.js",
@@ -11048,8 +11053,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 19550,
-   "h": "f353e5c94ffd410c84c9c75092b857a6041222a2e81e0084b98261d118ee634e"
+   "s": 21313,
+   "h": "066d59352c4efeee7fe799bcfd4d93d71a5a00b5b60a82d4395019d426535570"
   },
   {
    "p": "guides/beat-studio.json",
@@ -11198,8 +11203,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 50725,
-   "h": "4dc43c8c3c56e69d508d28c7ce0820642755039b2797390ccdbb5b57d0acfc12"
+   "s": 51995,
+   "h": "5bd244998498e1098a4e0483014966cc752c244dc5691a3b900d4efcfcfd8314"
   },
   {
    "p": "guides/prismrush.json",
@@ -13032,14 +13037,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
-   "p": "pride-city/assets/index-BEOyCN4q.js",
-   "s": 470337,
-   "h": "4c63cf7e88fcc5448825febf7482b3435eb363f790c9a00858c2e44a9e242b43"
+   "p": "pride-city/assets/index-BO63r9W6.js",
+   "s": 484474,
+   "h": "2a711902125a4027266472be8ca11aee2005a1c0a60d140274ecd67854f0ae10"
   },
   {
-   "p": "pride-city/assets/index-CYTo2T58.css",
-   "s": 29110,
-   "h": "1c3b4af0342d4adfb93eb8bb0eca05a140b250879bf9a4ef4538a3b4f0d632b4"
+   "p": "pride-city/assets/index-CtVuNu0w.css",
+   "s": 29331,
+   "h": "cdf96c70a53af4b2adf2d26e96ad1749d4a5610638572b4f38dd086cb0aa0926"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -13679,7 +13684,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5862,
-   "h": "fcd5896bf4e21496334ce2b796431cdf23768b9e0d06290eea282c61fe4318ff"
+   "h": "b3e96a717e1089d27e3147c67c0755fda83281d52df3d0e5504f66a81d641095"
   },
   {
    "p": "pride-city/logo.svg",
@@ -16454,7 +16459,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236550,
-   "h": "6939a17d373680b291634ac22f48d6d74c47b8156a0d8a460a3ffc4d734590a4"
+   "h": "a1e8f3c837382b8ff6af14003d957396110160c042e9139e68f246c7878f8d6b"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

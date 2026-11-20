@@ -28,3 +28,4 @@ Funktionen übernehmen, neuer Name und neues Cover. Dazu die Ideen 1–15 aus de
 | 17 | Lebendige Stadt: Wetter (Regen, Gewitter, Nebel, Regenbogen), acht Zufallsereignisse am Straßenrand, CSD-Parade jeden Samstag mit Festwagen, Tanzgruppe und Konfetti | erledigt |
 | 18 | Beziehungen vertiefen: Nähe in fünf Stufen, tägliche Nachrichten, neun Unternehmungen, Geschenke mit Vorlieben, Begleitung durch die Stadt, Absprache exklusiv oder offen | erledigt |
 | 19 | Online & Freunde: Stadt öffnen, per Link, QR-Code oder Code beitreten, bis zu fünf Gäste, Gesten und Zurufe | erledigt |
+| 20 | Handy-Grafik und Szene: scharfes Bild auf jeder Stufe, weiter Blick hochkant, Handy-Menü quer, queere Looks und Paare auf der Straße, Regenbogen-Übergänge, Wimpel, Banner, Ballonbögen | erledigt |
