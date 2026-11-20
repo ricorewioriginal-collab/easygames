@@ -231,6 +231,7 @@
       if (ctx.skip) { await UI.fade(true, 0.3); UI.hud(''); resolve({ stars: ctx.stars, max, quit: false, skip: true }); return; }
       const stars = ctx.quit ? 0 : ctx.stars;
       Object.assign(vars, { s: stars });
+      const rec = !opt.ai && UL.Prog ? UL.Prog.trial(id, stars, max, ctx.quit, { wx: ctx.wx, practice: opt.practice }) : false;
       UL.Audio.music('show');
       if (!UL.bot) {
         await UI.banner(ctx.quit ? 'ABBRUCH!' : ctx.reason === 'alle' ? 'ALLE STERNE!' : ctx.reason === 'zeit' ? 'ZEIT!' : 'ENDE!', ctx.quit ? '„' + UL.D.SHOW.exit + '“' : '', 1500);
@@ -245,7 +246,7 @@
           ctx.doc.play('interact');
           await UI.say('doc', UL.pick(UL.D.DOC_LINES[ctx.quit ? 'trialQuit' : key === 'good' ? 'trialGood' : 'trialBad']).replace(/^/, ctx.ai ? ctx.name + ', ' : ''));
         }
-        await UI.choose(def.icon + ' ' + def.name, `<div class="stars">${'⭐'.repeat(stars)}<span class="off">${'⭐'.repeat(max - stars)}</span></div><p>${stars} von ${max} Sternen${opt.practice ? '' : ' – das sind ' + stars + ' Portionen fürs Camp'}.</p>`, [{ label: 'Weiter', value: 1 }], { cls: 'clear' });
+        await UI.choose(def.icon + ' ' + def.name, `<div class="stars">${'⭐'.repeat(stars)}<span class="off">${'⭐'.repeat(max - stars)}</span></div><p>${stars} von ${max} Sternen${opt.practice ? '' : ' – das sind ' + stars + ' Portionen fürs Camp'}.</p>${rec ? '<p class="newbest">🏅 Neuer Bestwert!</p>' : ''}`, [{ label: 'Weiter', value: 1 }], { cls: 'clear' });
       }
       await UI.fade(true, 0.35);
       UI.hud('');
