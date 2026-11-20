@@ -43,15 +43,23 @@ export class Wanted {
   clear() { this.stars = 0; this.unseen = 0; this.fines = 0; this.last = null; }
 }
 
-/** Spaßwaffen: Klaps, Poolnudel (immer) und Glitzer-Dildo (nur 18+ und mit Toy), Gleitgel zum Werfen */
+/** Spaßwaffen: Klaps und Poolnudel (immer), Glitzer-Dildo (mit „Inhalte ab 18“), Gleitgel zum Werfen.
+    hits = Treffer bis zum Umfallen, davor taumelt das Ziel nur. */
 export type Weapon = 'hand' | 'noodle' | 'dildo' | 'lube';
-export const WEAPONS: Record<Weapon, { name: string; icon: string; reach: number; throw?: boolean }> = {
-  hand: { name: 'Klaps', icon: '✋', reach: 1.3 },
-  noodle: { name: 'Regenbogen-Poolnudel', icon: '🌈', reach: 1.9 },
-  dildo: { name: 'Glitzer-Dildo', icon: '🍆', reach: 1.6 },
-  lube: { name: 'Gleitgel-Flasche', icon: '💧', reach: 0, throw: true },
+export const WEAPONS: Record<Weapon, { name: string; icon: string; reach: number; hits: number; push: number; throw?: boolean }> = {
+  hand: { name: 'Klaps', icon: '✋', reach: 1.3, hits: 3, push: .45 },
+  noodle: { name: 'Regenbogen-Poolnudel', icon: '🌈', reach: 2, hits: 2, push: .9 },
+  dildo: { name: 'Glitzer-Dildo', icon: '🍆', reach: 1.6, hits: 2, push: .7 },
+  lube: { name: 'Gleitgel-Flasche', icon: '💧', reach: 0, hits: 0, push: 0, throw: true },
 };
-/** Welche Waffen du gerade hast */
-export function arsenal(adult: boolean, toys: number): Weapon[] {
-  return ['hand', 'noodle', ...(adult && toys > 0 ? ['dildo' as const] : []), 'lube'];
+/** Welche Waffen du gerade hast (der Glitzer-Dildo gehört ab 18 zur Grundausstattung) */
+export function arsenal(adult: boolean): Weapon[] {
+  return ['hand', 'noodle', ...(adult ? ['dildo' as const] : []), 'lube'];
+}
+/** Trefferfolge: liefert true, wenn das Ziel jetzt umfällt (Treffer verfallen nach vier Sekunden) */
+export function landHit(h: { n: number; t: number }, now: number, need: number) {
+  if (now - h.t > 4) h.n = 0;
+  h.n++; h.t = now;
+  if (h.n >= need) { h.n = 0; return true; }
+  return false;
 }

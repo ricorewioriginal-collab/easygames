@@ -1,7 +1,7 @@
 /* Klang ohne Audiodateien: Effekte und Musik werden live mit WebAudio erzeugt (spart Download, läuft offline). */
 
-export type Sfx = 'move' | 'ok' | 'back' | 'coin' | 'win' | 'miss' | 'hit' | 'open' | 'step' | 'cheer'
-  | 'door' | 'engine' | 'horn' | 'siren' | 'glass' | 'pour' | 'phone' | 'shower' | 'cook' | 'kiss' | 'giggle' | 'sheets' | 'heart' | 'splash' | 'tram' | 'camera' | 'applause';
+export type Sfx = 'rain' | 'thunder' | 'move' | 'ok' | 'back' | 'coin' | 'win' | 'miss' | 'hit' | 'open' | 'step' | 'cheer'
+  | 'door' | 'engine' | 'horn' | 'siren' | 'glass' | 'pour' | 'phone' | 'shower' | 'cook' | 'kiss' | 'giggle' | 'sheets' | 'heart' | 'splash' | 'tram' | 'camera' | 'applause' | 'whoosh' | 'slap' | 'boing' | 'squeak';
 
 let ctx: AudioContext | null = null;
 let master: GainNode, sfxBus: GainNode, musicBus: GainNode;
@@ -10,6 +10,8 @@ let nextNote = 0;
 let step = 0;
 let song: Song | null = null;
 export const vol = { music: .55, sfx: .8 };
+/** weitere Tonquellen (Autoradio), die dem Musikregler folgen */
+export const onVolume: Array<() => void> = [];
 
 export interface Song { bpm: number; chords: number[][]; bass?: boolean; hats?: boolean; kick?: boolean; lead?: number[] }
 
@@ -36,6 +38,7 @@ export function unlock() {
 }
 
 export function applyVolume() {
+  for (const f of onVolume) f();
   if (!ctx) return;
   sfxBus.gain.value = vol.sfx;
   musicBus.gain.value = vol.music * .32;
@@ -79,6 +82,8 @@ export function sfx(k: Sfx) {
     case 'door': tone(45, t, .12, 'square', .06, sfxBus, -3); noise(t, .08, .1, sfxBus, 0, 400); tone(40, t + .18, .2, 'sine', .25, sfxBus, -6); noise(t + .18, .1, .12, sfxBus, 0, 250); break;
     case 'engine': for (let i = 0; i < 3; i++) tone(31 + i, t + i * .12, .5, 'sawtooth', .07, sfxBus, 7); break;
     case 'horn': tone(64, t, .35, 'square', .06, sfxBus); tone(68, t, .35, 'square', .05, sfxBus); break;
+    case 'rain': noise(t, 1.5, .022, sfxBus, 0, 2600); noise(t + .3, 1.3, .014, sfxBus, 7000); break;
+    case 'thunder': noise(t, 2.6, .28, sfxBus, 0, 110); noise(t + .15, 1.8, .16, sfxBus, 0, 70); break;
     case 'siren': for (let i = 0; i < 4; i++) tone(i % 2 ? 76 : 81, t + i * .45, .45, 'triangle', .07, sfxBus); break;
     case 'glass': tone(100, t, .5, 'sine', .08, sfxBus); tone(105, t + .01, .4, 'sine', .05, sfxBus); break;
     case 'pour': noise(t, .9, .06, sfxBus, 0, 900); noise(t + .3, .6, .04, sfxBus, 0, 1400); break;
@@ -91,6 +96,10 @@ export function sfx(k: Sfx) {
     case 'heart': for (let i = 0; i < 3; i++) { tone(36, t + i * .7, .12, 'sine', .4, sfxBus, -4); tone(35, t + i * .7 + .18, .12, 'sine', .3, sfxBus, -4); } break;
     case 'splash': noise(t, .5, .12, sfxBus, 0, 800); noise(t + .05, .3, .06, sfxBus, 3000); break;
     case 'tram': tone(84, t, .5, 'sine', .08, sfxBus); tone(84, t + .6, .5, 'sine', .08, sfxBus); noise(t, 1.2, .03, sfxBus, 0, 300); break;
+    case 'whoosh': noise(t, .16, .09, sfxBus, 0, 900); noise(t + .05, .12, .06, sfxBus, 0, 1800); break;
+    case 'slap': noise(t, .05, .32, sfxBus, 0, 2600); noise(t, .09, .16, sfxBus, 0, 900); break;
+    case 'boing': tone(52, t, .22, 'sine', .3, sfxBus, 9); tone(64, t + .04, .18, 'triangle', .12, sfxBus, -7); noise(t, .05, .12, sfxBus, 0, 700); break;
+    case 'squeak': tone(86, t, .09, 'sine', .16, sfxBus, 7); tone(79, t + .09, .14, 'sine', .14, sfxBus, -9); noise(t, .05, .14, sfxBus, 0, 1200); break;
     case 'camera': noise(t, .05, .15, sfxBus, 3000); noise(t + .09, .07, .1, sfxBus, 2000); break;
   }
 }

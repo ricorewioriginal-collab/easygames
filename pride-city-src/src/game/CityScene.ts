@@ -7,15 +7,23 @@ import { Actor, streetLook, playerLook, WALK_MPS, RUN_MPS, type Look } from './A
 import { World, walkable } from './World';
 import { NPCS, CHAPTERS, goal, talk, poi as storyPoi, marks, hidden, storyTick, chapterLabel, type NpcDef, type StoryCtx } from './story';
 import type { Game } from './Game';
+import { radio, STATIONS, stationOf } from '../engine/Radio';
+import { RACES, MEDALS, raceGig, finishRace, bestTime, nextParcel, stats, myCar, tuneLevel, GARAGE, type Race } from './vehicles';
 import { sfx, music } from '../engine/Audio';
 import { toast, hints } from '../ui/ui';
 import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
 import type { Marker } from '../ui/Hud';
 import { type Gig, pickCall, fmtTime } from './gigs';
-import { collect, nextFare } from './empire';
+import { collect, collectNotes, nextFare } from './empire';
 import { Street, type Parked } from './Street';
 import { PLACE_THEMES, houseTheme } from './interiors';
+import { Weather, SKY } from './weather';
+import { CityLife } from './citylife';
+import { Friends } from './Friends';
+import { Companion } from './Companion';
+import { together, bondTick } from './bond';
+import type { Profile } from './social';
 import { Combat } from './Combat';
 import { arrive } from './family';
 import { Kerb } from './kerb';
@@ -37,10 +45,15 @@ export class CityScene implements GameScene {
   private cam = { yaw: Math.PI, pitch: .38, dist: 7.5, tYaw: Math.PI };
   private camPos = new Vector3();
   private stickerMeshes: Mesh[] = [];
-  private near: { kind: 'npc' | 'poi' | 'street' | 'car' | 'house'; id: string; label: string } | null = null;
+  private near: { kind: 'npc' | 'poi' | 'street' | 'car' | 'house' | 'life' | 'buddy' | 'friend'; id: string; label: string } | null = null;
   street!: Street;
   combat!: Combat;
   kerb!: Kerb;
+  weather!: Weather;
+  life!: CityLife;
+  buddy!: Companion;
+  /** Online: Freund*innen in deiner Stadt */
+  friends!: Friends;
   /** Auto, in dem die Spielfigur gerade sitzt */
   private drive: Parked | null = null;
   private stepT = 0;
@@ -109,12 +122,18 @@ export class CityScene implements GameScene {
       c.fillRect(px(-80), px(-1.8), 20 * 2, 3.6 * 2);                             // Kaistraße
     });
     // Verkehr hält vor geparkten und vom Spieler gefahrenen Autos
-    this.g.hud.onRadio = () => { if (this.drive) this.radio(1); };
+    this.g.hud.onRadio = () => { if (this.drive) this.radio(this.g.hud.wheelOpen ? 1 : 0); };
+    this.g.hud.onStation = (i) => { if (this.drive) this.radio(0, i); };
+    radio.subscribe((r, what) => { if (!this.drive) return; if (what === 'error') toast(`📻 ${r.err}`); this.showRadio(what !== 'song' ? this.g.hud.wheelOpen : true); });
+    this.weather = new Weather(this.scene, this.world); this.life = new CityLife(this.g, this, this.scene); this.buddy = new Companion(this.scene);
+    this.friends = new Friends(this.scene, this.world, () => this.g.save.data.settings.adult);
+    this.friends.me = () => ({ n: this.g.save.data.name, l: streetLook(playerLook(this.g.save.data)), s: this.netState() });
+    this.friends.onNote = (text, kind) => { toast(text, 3600); sfx(kind === 'join' ? 'win' : kind === 'leave' ? 'back' : 'move'); };
     this.world.extraBlock = (x, z) => this.street.parked.some((c) => Math.hypot(c.o.position.x - x, c.o.position.z - z) < 2.6);
     this.buildStickers();
     this.world.castShadows();
     // Schatten folgen der Grafikstufe (niedrig = aus)
-    this.g.engine.onQuality((q) => { this.world.sun.shadowEnabled = q > 0; this.world.shadows.mapSize = q === 2 ? 2048 : 1024; });
+    this.g.engine.onQuality((q) => { this.world.sun.shadowEnabled = q > 0; this.world.shadows.mapSize = q === 2 ? 2048 : 1024; this.world.setLow(q === 0); });
   }
 
   /* ---------- Sticker zum Sammeln ---------- */
@@ -152,12 +171,14 @@ export class CityScene implements GameScene {
     this.drive = null;
     this.player.root.visible = true;
     this.player.setLook(streetLook(playerLook(s)));
+    this.friends.relook();
     this.player.root.position.set(s.pos.x, .1, s.pos.z);
     this.player.root.rotation.y = s.pos.yaw;
     this.cam.yaw = this.cam.tYaw = s.pos.yaw + Math.PI;
     this.crowd.forEach((a) => (a.root.visible = this.world.night > .5));
     this.refreshStickers();
     this.g.hud.show(true); this.g.touch.show(true);
+    void this.placeOwnCar();
     this.combat.showWeapon();
     hints([['move', 'Laufen'], ['a', 'Aktion'], ['atk', 'Angriff'], ['wpn', 'Waffe'], ['cam', 'Kamera'], ['y', 'Menü']]);
     music('city');
@@ -203,6 +224,7 @@ export class CityScene implements GameScene {
       credits: () => g.ending(),
       card: (k, t, x) => g.chapterCard(k, t, x),
       roman: (id, game, done) => g.roman(id, game, done),
+      mission: (gg) => this.startGig(gg),
     };
   }
 
@@ -210,7 +232,8 @@ export class CityScene implements GameScene {
     if (this.mode !== 'play' && this.g.where === 'city') return;
     const s = this.g.save.data, gl = goal(s);
     const paid = collect(s);
-    if (paid) { sfx('coin'); this.g.hud.banner('💼 Einnahmen deines Imperiums', `+${paid} € aus deinen Geschäften`, 'good', 3600); this.g.save.write(); }
+    if (paid) { sfx('coin'); this.g.hud.banner('💼 Einnahmen deines Imperiums', `+${paid} € aus deinen Geschäften`, 'good', 3600); collectNotes.slice(0, 3).forEach((n, i) => setTimeout(() => toast(n), 3800 + i * 2600)); this.g.save.write(); }
+    for (const [i, n] of bondTick(s).entries()) setTimeout(() => toast(n), 1200 + i * 2600);
     const nk = arrive(s);
     if (nk) { sfx('win'); this.g.hud.banner('👶 Willkommen zu Hause!', `${nk.name} ist bei euch eingezogen. Schau in deiner Wohnung vorbei.`, 'good', 5000); this.g.save.write(); void this.g.home?.syncFamily(); }
     this.world.traces.visible = s.settings.adult;
@@ -219,7 +242,7 @@ export class CityScene implements GameScene {
     else if (this.g.where === 'home') this.g.hud.goal('Zuhause', 'Deine Wohnung', s.chapter === 1 && s.step === 2 ? 'Schau dich um.' : `Ziel: ${gl.title}`);
     else this.g.hud.goal(chapterLabel(s), gl.title, gl.sub);
     const days = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-    this.g.hud.stats([`${days[(s.day - 1) % 7]} ${this.clock()}`, `💶 ${s.money} €`, `${moodIcon(mood(s))} ${Math.round(mood(s))}`]);
+    this.g.hud.stats([`${days[(s.day - 1) % 7]} ${this.clock()} ${SKY[this.weather?.sky || 'klar'].icon}`, `💶 ${s.money} €`, `${moodIcon(mood(s))} ${Math.round(mood(s))}`]);
     this.g.hud.needs(s.needs);
   }
 
@@ -229,8 +252,12 @@ export class CityScene implements GameScene {
     if (gl.npc) { const n = this.npcs.find((x) => x.def.id === gl.npc); if (n) out.push({ id: 'g', icon: '⭐', label: n.def.name, pos: at(n.a.root.position, 2.6) }); }
     if (gl.poi) { const p = this.world.pois.find((x) => x.id === gl.poi); if (p) out.push({ id: 'g', icon: '⭐', label: p.name, pos: new Vector3(p.x, 4, p.z) }); }
     if (this.gig) { const st = this.gig.g.steps[this.gig.i]; out.push({ id: 'gig', icon: st.icon, label: st.label, pos: new Vector3(st.x, 3, st.z) }); }
+    if (this.drive && !this.gig) { const p = this.drive.o.position; for (const r of RACES) if (Math.hypot(r.start[0] - p.x, r.start[1] - p.z) < 90) out.push({ id: 'race' + r.id, icon: '🏁', label: r.name, pos: new Vector3(r.start[0], 3, r.start[1]) }); }
     if (this.kerb?.spot) out.push({ id: 'kerb', icon: '🌙', label: this.kerb.spot.name, pos: new Vector3(this.kerb.spot.x, 3, this.kerb.spot.z) });
     for (const [id, icon] of marks(s)) { const n = this.npcs.find((x) => x.def.id === id); if (n?.a.root.visible) out.push({ id: 'p' + id, icon, pos: at(n.a.root.position, 2.5) }); }
+    const lm = this.life?.marker(); if (lm && !this.drive) out.push(lm);
+    if (this.friends?.net.on) for (const m of this.friends.list) { const q = this.friends.posOf(m.id); if (q) out.push({ id: 'fr' + m.id, icon: m.st.c ? '🚗' : '🌐', label: m.name, pos: new Vector3(q.x, m.st.c ? 2.6 : 2.35, q.z) }); }
+    const ph = this.life?.parade.head(); if (ph && Vector3.Distance(ph, this.player.root.position) > 26) out.push({ id: 'parade', icon: '🏳️‍🌈', label: 'CSD-Parade', pos: ph });
     return out;
   }
 
@@ -255,6 +282,9 @@ export class CityScene implements GameScene {
       const d = Math.hypot(h.x - p.x, h.z - p.z);
       if (d < 1.2 && d < bd) { bd = d; const t = houseTheme(h.i, this.g.save.data.settings.adult); best = { kind: 'house', id: String(h.i), label: '🚪 ' + t.icon + ' ' + t.title }; }
     }
+    { const lf = this.life.near(p); if (lf && !best) best = { kind: 'life', id: 'life', label: lf }; }
+    { const fr = this.friends.net.on && !best ? this.friends.nearest(p, 2.2) : null; if (fr) best = { kind: 'friend', id: fr.id, label: '🌐 ' + fr.name }; }
+    { const bp = this.buddy.pos; if (bp && !best && Vector3.Distance(bp, p) < 2.1) best = { kind: 'buddy', id: 'buddy', label: '💬 ' + this.buddy.who!.name }; }
     if (!best) for (const n of this.npcs) {
       if (!n.a.root.visible) continue;
       const d = Vector3.Distance(n.a.root.position, p);
@@ -262,7 +292,7 @@ export class CityScene implements GameScene {
     }
     const icon: Record<string, string> = { worker: '🏮 ', police: '🚓 ', fire: '🚒 ', medic: '🚑 ', security: '🛡️ ', chef: '👩‍🍳 ', courier: '📦 ' };
     if (!best) { const st = this.street.near(p); if (st) best = { kind: 'street', id: String(this.street.people.indexOf(st)), label: (icon[st.kind] || '💬 ') + st.name }; }
-    if (!best) { const car = this.street.nearCar(p); if (car) best = { kind: 'car', id: String(this.street.parked.indexOf(car)), label: '🚗 Einsteigen: ' + car.name }; }
+    if (!best) { const car = this.street.nearCar(p); if (car) best = { kind: 'car', id: String(this.street.parked.indexOf(car)), label: `${car.def.icon} Einsteigen: ${car.name}${car.own ? ' (dein Wagen)' : ''}` }; }
     const want = goal(this.g.save.data).poi;
     if (!best) for (const q of this.world.pois) {
       if ((q.id === 'plaza' || q.id === 'park') && want !== q.id) continue;
@@ -275,13 +305,35 @@ export class CityScene implements GameScene {
     }
     this.near = best;
     this.g.hud.prompt(best ? best.label : null);
-    this.g.touch.label(best ? (best.kind === 'npc' || best.kind === 'street' ? 'Reden' : best.kind === 'car' ? 'Fahren' : 'Rein') : 'Aktion');
+    this.g.touch.label(best ? (best.kind === 'npc' || best.kind === 'street' || best.kind === 'buddy' || best.kind === 'friend' ? 'Reden' : best.kind === 'car' ? 'Fahren' : best.kind === 'life' ? 'Los' : 'Rein') : 'Aktion');
+  }
+
+  /** Match kommt vorbei und begleitet dich */
+  async meetBuddy(p: Profile) {
+    this.g.loading.show(p.name, 'ist gleich da');
+    await this.buddy.meet(p, this.drive ? this.drive.o.position : this.player.root.position);
+    this.g.loading.hide(); sfx('win');
+    this.g.dialog.say([{ who: p.name, color: p.color, text: ['Da bin ich! Wohin gehen wir?', 'Hey du. Ich hab drei Stunden und gute Laune mitgebracht.', 'Na? Zeig mir deine Stadt.'][this.g.save.data.day % 3] }]);
+  }
+  byeBuddy(text: string) {
+    const p = this.buddy.who; if (!p) return;
+    this.buddy.bye(); this.g.save.write();
+    if (!this.g.dialog.open) this.g.dialog.say([{ who: p.name, color: p.color, text }]); else toast(`👋 ${p.name} verabschiedet sich.`);
+  }
+
+  /** eigene Lage für die anderen (Online) */
+  netState() {
+    const d = this.drive, o = d ? d.o : this.player.root, hue = d?.own && this.g.save.data.flags.carHue !== undefined ? Number(this.g.save.data.flags.carHue) : -1;
+    return { x: o.position.x, z: o.position.z, r: o.rotation.y, a: d ? 'idle' : String(this.player.anim), c: d ? d.def.id : '', h: hue };
   }
 
   private face(a: Actor, to: Vector3) { a.root.rotation.y = Math.atan2(to.x - a.root.position.x, to.z - a.root.position.z); }
 
   interact() {
     if (!this.near || this.g.dialog.open) return;
+    if (this.near.kind === 'life') { this.life.interact(this.player.root.position); return; }
+    if (this.near.kind === 'buddy') { this.g.buddyMenu(); return; }
+    if (this.near.kind === 'friend') { this.g.friendMenu(this.near.id); return; }
     const c = this.ctx();
     if (this.near.kind === 'npc') {
       const n = this.npcs.find((x) => x.def.id === this.near!.id)!;
@@ -316,6 +368,7 @@ export class CityScene implements GameScene {
       return;
     }
     if (this.near.id === 'home') { this.g.enterHome(); return; }
+    if (this.near.id === 'penthouse' && !this.g.save.data.flags.penthouse) { sfx('door'); this.g.placeMenu('penthouse'); return; }
     const th = PLACE_THEMES[this.near.id], q = this.world.pois.find((x) => x.id === this.near!.id);
     if (th && q && (!th.adult || this.g.save.data.settings.adult)) {
       const pp = this.player.root.position, yaw = Math.atan2(pp.x - q.x, pp.z - q.z);
@@ -334,33 +387,35 @@ export class CityScene implements GameScene {
     if (this.drive) {
       const o = this.drive.o, sx = Math.cos(o.rotation.y), sz = -Math.sin(o.rotation.y);
       for (const k of [2.2, -2.2, 3.4, -3.4]) { const x = o.position.x + sx * k, z = o.position.z + sz * k; if (walkable(x, z) && !this.world.colliders.some((c) => Math.abs(x - c.x) < c.hx + .4 && Math.abs(z - c.z) < c.hz + .4)) { p.set(x, .1, z); break; } }
-      this.drive.v = 0; this.drive = null;
-      music('city'); this.g.hud.radioBtn(false);
+      if (this.drive.own) { const sv = this.g.save.data; sv.flags.ownX = Math.round(o.position.x * 10) / 10; sv.flags.ownZ = Math.round(o.position.z * 10) / 10; sv.flags.ownYaw = Math.round(o.rotation.y * 100) / 100; }
+      this.drive.v = 0; this.drive = null; this.parcel = -1;
+      this.radioOff(); music('city');
       this.player.root.visible = true; this.player.play('idle');
       hints([['move', 'Laufen'], ['a', 'Aktion'], ['atk', 'Angriff'], ['wpn', 'Waffe'], ['cam', 'Kamera'], ['y', 'Menü']]);
       sfx('open');
       return;
     }
-    this.combat.enterCar();
-    this.drive = this.street.parked[+id]; sfx('door'); setTimeout(() => sfx('engine'), 250);
+    this.drive = this.street.parked[+id];
+    if (!this.drive.own) this.combat.enterCar(); sfx('door'); setTimeout(() => sfx('engine'), 250);
     this.player.root.visible = false;
     this.cam.dist = Math.max(this.cam.dist, 9);
     this.cam.tYaw = this.drive.o.rotation.y + Math.PI;
     hints([['move', 'Lenken & Gas'], ['a', 'Aussteigen'], ['atk', 'Hupen'], ['cam', 'Kamera'], ['y', 'Menü']]);
-    this.radio(0); this.g.hud.radioBtn(true);
-    toast('🚗 Gute Fahrt! Q/R oder LB/RB wechselt den Sender.');
+    this.g.hud.radioBtn(true); this.radio(0);
+    toast(`${this.drive.def.icon} ${this.drive.def.name}${this.drive.own ? ' (dein Wagen)' : ''} · Q/R oder LB/RB wechselt den Sender.`);
     sfx('open');
   }
   private moveCar(dt: number) {
     const c = this.drive!, o = c.o, inp = this.g.engine.input;
     if (inp.pressed('tabR')) this.radio(1); else if (inp.pressed('tabL')) this.radio(-1);
     const thr = Math.abs(inp.move.y) > .08 ? inp.move.y : 0, steer = Math.abs(inp.move.x) > .08 ? inp.move.x : 0;
-    const max = inp.held('sprint') ? 24 : 15;
-    if (thr > 0) c.v = Math.min(max, c.v + thr * (c.v < 0 ? 22 : 9) * dt);
+    const st = stats(c.def, c.own ? tuneLevel(this.g.save.data) : 0), max = inp.held('sprint') ? st.turbo : st.max;
+    if (thr > 0) c.v = Math.min(max, c.v + thr * (c.v < 0 ? 22 : st.acc) * dt);
+    else if (c.v > max) c.v = Math.max(max, c.v - 14 * dt);
     else if (thr < 0) c.v = Math.max(-6, c.v + thr * (c.v > 0 ? 22 : 6) * dt);
     else c.v *= Math.max(0, 1 - dt * 1.2);
     if (Math.abs(c.v) < .05) c.v = 0;
-    o.rotation.y -= steer * dt * 2 * clamp(c.v / 5, -1, 1);
+    o.rotation.y -= steer * dt * st.steer * clamp(c.v / 5, -1, 1);
     const before = o.position.clone();
     o.position.x += Math.sin(o.rotation.y) * c.v * dt; o.position.z += Math.cos(o.rotation.y) * c.v * dt;
     const want = o.position.clone();
@@ -374,6 +429,8 @@ export class CityScene implements GameScene {
   }
 
   /* ---------- Kamera ---------- */
+  /** kurzes Kamerawackeln (Treffer) */
+  shake = 0;
   private snapCam() { this.updateCam(1, true); }
   private tgt = new Vector3();
   private updateCam(dt: number, snap = false) {
@@ -403,13 +460,14 @@ export class CityScene implements GameScene {
     if (f < 1) want.copyFrom(tgt).addInPlace(dir.scale(f));
     Vector3.LerpToRef(this.camPos, want, snap ? 1 : Math.min(1, dt * (f < 1 ? 20 : 8)), this.camPos);
     this.camera.position.copyFrom(this.camPos);
+    if (this.shake > 0) { this.shake = Math.max(0, this.shake - dt); const k = this.shake * .5; this.camera.position.x += (Math.random() - .5) * k; this.camera.position.y += (Math.random() - .5) * k; }
     this.camera.setTarget(tgt);
     this.clearView(tgt);
   }
 
   private radarT = 0;
-  enter() { this.g.hud.radarOn(true); }
-  exit() { this.g.hud.radarOn(false); }
+  enter() { this.g.hud.radarOn(true); if (this.drive) { this.g.hud.radioBtn(true); this.radio(0); } }
+  exit() { this.g.hud.radarOn(false); if (this.drive) this.radioOff(); }
   /** Missionsmarker wie im Open-World-Krimi: leuchtende Lichtsäule über dem Ziel */
   private beam: TransformNode | null = null;
   private beamMat: ReturnType<typeof glow> | null = null;
@@ -448,6 +506,39 @@ export class CityScene implements GameScene {
   /** Taxi-Schicht beginnen (nur im Auto) */
   startTaxi() { this.taxi = 0; this.startGig(nextFare(0, Math.random())); }
   private callT = 150;
+  /** Paketdienst-Schicht (nur im Auto): Serie wie beim Taxi, mit Ladefläche mehr Lohn */
+  parcel = -1;
+  startParcel() { if (!this.drive) return; this.parcel = 0; const f = nextParcel(0, Math.random(), !!this.drive.def.cargo); toast(`📦 ${f.call}`); this.startGig(f); }
+  /* ---------- Straßenrennen: im Auto an der Startflagge anhalten ---------- */
+  private raceAsk = 0;
+  private raceCheck(dt: number) {
+    this.raceAsk -= dt;
+    if (!this.drive || this.raceAsk > 0 || Math.abs(this.drive.v) > 2.5) return;
+    const p = this.drive.o.position, r = RACES.find((q) => Math.hypot(q.start[0] - p.x, q.start[1] - p.z) < 5);
+    if (!r) return;
+    this.raceAsk = 12; this.drive.v = 0;
+    const s = this.g.save.data, best = bestTime(s, r.id);
+    this.g.dialog.say([{ who: '🏁 Rennleitung', color: '#ffd23b', text: `${r.name}: ${r.text} Gold bis ${r.medal[0]} s, Silber bis ${r.medal[1]} s, Bronze bis ${r.medal[2]} s.${best ? ` Deine Bestzeit: ${best.toFixed(1)} s.` : ''}`, choices: [
+      { label: `Start! (bis ${r.prize[0]} €)`, fn: () => this.startRace(r) }, { label: 'Heute nicht', fn: () => {} }] }]);
+  }
+  startRace(r: Race) {
+    const s = this.g.save.data;
+    this.taxi = -1; this.parcel = -1; sfx('horn');
+    this.startGig(raceGig(r, (sec) => {
+      const res = finishRace(s, r, sec); this.raceAsk = 8;
+      sfx(res.medal >= 0 ? 'win' : 'miss');
+      this.g.hud.banner(res.medal >= 0 ? MEDALS[res.medal] : 'Im Ziel', `${r.name} in ${sec.toFixed(1)} s${res.record ? ' · neue Bestzeit' : ''}${res.pay ? ` · +${res.pay} €` : ''}`, res.medal >= 0 ? 'good' : 'info', 4600);
+      this.g.save.write(); this.refreshHud();
+    }, () => { this.raceAsk = 8; sfx('miss'); this.g.hud.banner('Zeit abgelaufen', `${r.name}: Bronze gibt es bis ${r.medal[2]} s. Gleich noch mal?`, 'bad', 3600); }));
+  }
+  /** Eigener Wagen: an die gemerkte Stelle stellen (oder vor die Garage) */
+  async placeOwnCar(atGarage = false) {
+    const s = this.g.save.data, def = myCar(s); if (!def) return;
+    if (this.drive?.own) this.leaveCar();
+    const [gx, gz, gy] = GARAGE.spawn, has = !atGarage && s.flags.ownX !== undefined;
+    await this.street.spawnOwn(def, has ? Number(s.flags.ownX) : gx, has ? Number(s.flags.ownZ) : gz, has ? Number(s.flags.ownYaw) || 0 : gy, s.flags.carHue === undefined ? -1 : Number(s.flags.carHue));
+    if (atGarage) { delete s.flags.ownX; delete s.flags.ownZ; delete s.flags.ownYaw; }
+  }
   /** Auftrag annehmen (aus Anruf oder Handy-App) */
   startGig(g: Gig) {
     this.gig = { g, i: 0, t: g.time };
@@ -458,6 +549,8 @@ export class CityScene implements GameScene {
     const s = this.g.save.data;
     if (!this.gig) {
       this.g.hud.gig(null);
+      if (s.flags.sagaRun) delete s.flags.sagaRun; // Mission lief beim letzten Speichern noch
+      this.raceCheck(dt);
       // ab und zu klingelt das Handy (erst nach der Einführung)
       if (s.step >= 2 || s.chapter > 1) this.callT -= dt;
       if (this.callT <= 0) { this.callT = 210 + Math.random() * 120; this.ring(); }
@@ -470,10 +563,16 @@ export class CityScene implements GameScene {
       q.i++; sfx('coin');
       if (q.i < q.g.steps.length) { toast(`✓ ${st.label}`); return; }
       this.gig = null; this.g.hud.gig(null);
+      if (q.g.quiet) { q.g.after?.(q.t); return; }
       s.money += q.g.pay; s.rep += q.g.rep; s.flags['gig_' + q.g.id] = s.day; s.flags.gigs = (Number(s.flags.gigs) || 0) + 1;
       sfx('win'); this.g.hud.banner('Auftrag erledigt!', `+${q.g.pay} € · +${q.g.rep} Ruf · ${q.g.done}`, 'good', 4200);
       this.player.play('cheer'); setTimeout(() => this.player.anim === 'cheer' && this.player.play('idle'), 1800);
       this.g.save.write(); this.refreshHud();
+      if (q.g.after) { const f = q.g.after, left = q.t; setTimeout(() => f(left), 1800); }
+      if (q.g.id === 'parcel' && this.parcel >= 0) {
+        this.parcel++; s.flags.parcelBest = Math.max(Number(s.flags.parcelBest) || 0, this.parcel);
+        setTimeout(() => { if (this.parcel >= 0 && this.drive && !this.gig) { const f = nextParcel(this.parcel, Math.random(), !!this.drive.def.cargo); toast(`📦 ${f.call}`); this.startGig(f); } else this.parcel = -1; }, 2600);
+      }
       // Taxi-Schicht: nächster Fahrgast meldet sich, solange du im Auto sitzt
       if (q.g.id === 'taxi' && this.taxi >= 0) {
         this.taxi++; s.flags.taxiBest = Math.max(Number(s.flags.taxiBest) || 0, this.taxi);
@@ -481,7 +580,8 @@ export class CityScene implements GameScene {
       }
       return;
     }
-    if (q.t <= 0) { if (q.g.id === 'taxi') this.taxi = -1; this.gig = null; this.g.hud.gig(null); sfx('miss'); this.g.hud.banner('Auftrag gescheitert', 'Zu spät. Vielleicht klappt es beim nächsten Anruf.', 'bad'); }
+    if (q.t <= 0 && q.g.quiet) { q.g.failed?.(); this.gig = null; this.g.hud.gig(null); return; }
+    if (q.t <= 0) { if (q.g.id === 'taxi') this.taxi = -1; if (q.g.id === 'parcel') this.parcel = -1; q.g.failed?.(); this.gig = null; this.g.hud.gig(null); sfx('miss'); this.g.hud.banner('Auftrag gescheitert', 'Zu spät. Vielleicht klappt es beim nächsten Anruf.', 'bad'); }
   }
   /** Anruf: annehmen oder ablehnen */
   private ring() {
@@ -495,16 +595,23 @@ export class CityScene implements GameScene {
       { label: 'Gerade nicht', fn: () => { back(); toast(`${g.who}: Okay, ich frag jemand anderen.`); } }] }]);
   }
 
-  /* ---------- Autoradio ---------- */
-  private static STATIONS: Array<[string, string, 'title' | 'neon' | 'club' | 'lounge' | null]> = [
-    ['📻 Regenbogen FM', 'Pop für die ganze Stadt', 'title'], ['🌴 Neon 88', 'Synthwave für Nachtfahrten', 'neon'],
-    ['🪩 Prisma Radio', 'Clubsound live aus dem Prisma', 'club'], ['🌊 Hafen Lounge', 'Ruhige Töne vom Kai', 'lounge'], ['🔇 Radio aus', '', null]];
-  private radio(dir = 0) {
-    const s = this.g.save.data, n = CityScene.STATIONS.length;
-    const i = (((Number(s.flags.radio) || 0) + dir) % n + n) % n; s.flags.radio = i;
-    const [name, sub, song] = CityScene.STATIONS[i];
-    music(song); this.g.hud.banner(name, sub, 'info', 1800);
+  /* ---------- Autoradio: 13 echte Sender (laut.fm) und vier Stadt-Sender, Senderrad wie im Open-World-Krimi ---------- */
+  private radio(dir = 0, to?: number) {
+    const s = this.g.save.data, n = STATIONS.length, was = radio.state.st;
+    let i = STATIONS.indexOf(stationOf(s.flags.radio));
+    i = to ?? ((i + dir) % n + n) % n;
+    const st = STATIONS[i]; s.flags.radio = st.id;
+    if (st !== was || !(radio.state.on || radio.state.loading) && st.id !== 'off') radio.tune(st);
+    this.showRadio();
   }
+  private showRadio(wheel = true) {
+    const r = radio.state, st = r.st;
+    const song = r.title ? (r.artist ? `${r.title} · ${r.artist}` : r.title) : '';
+    const sub = r.err || (st.slug ? (r.loading ? 'Sender wird eingestellt …' : song || 'Live') : st.sub);
+    if (wheel) this.g.hud.radioWheel(STATIONS, STATIONS.indexOf(st), st.name, sub, !!st.slug && !r.err);
+    this.g.hud.nowPlaying(st.id === 'off' ? null : `${st.icon} ${st.name}`, st.slug ? (r.err || song || (r.loading ? '…' : 'Live')) : st.sub);
+  }
+  private radioOff() { radio.stop(); this.g.hud.nowPlaying(null); this.g.hud.radioWheel(null); this.g.hud.radioBtn(false); }
 
   /** Laternen, Masten, Bänke und Bäume zwischen Kamera und Figur ausblenden, statt durch sie hindurchzuschauen */
   private hidden = new Set<TransformNode>();
@@ -553,6 +660,7 @@ export class CityScene implements GameScene {
 
     // Spielzeit läuft nur ohne Dialog und Menü
     const busy = g.dialog.open || g.menuOpen;
+    radio.duck(busy);
     if (!busy) {
       s.playMs += dt * 1000;
       if (advance(s, dt / DAY_SEC * 1440)) toast(`Tag ${s.day} beginnt.`);
@@ -576,6 +684,19 @@ export class CityScene implements GameScene {
     this.updateCam(dt);
     this.world.follow(this.player.root.position);
     this.world.update(dt, t, this.player.root.position);
+    // Wetter und Stadtleben (Zufallsereignisse, samstags die Parade)
+    if (this.weather.update(dt, s.day, s.time, this.player.root.position) && !busy) { change(s, { fun: 8 }); sfx('win'); g.hud.banner('🌈 Ein Regenbogen über Rainbow City', 'Nach dem Regen. Spaß +8', 'good', 4200); }
+    this.friends.update(dt, this.netState());
+    // Begleitung: läuft mit, bringt Nähe, verabschiedet sich nach ein paar Stunden
+    if (this.buddy.who && !busy) {
+      const b = this.buddy, who = b.who!;
+      if (b.update(dt, dt / DAY_SEC * 1440, this.player.root.position, this.player.root.rotation.y, !!this.drive)) {
+        change(s, { social: 3, fun: 1 }); const m = together(s, who.id);
+        if (m) { sfx('win'); g.hud.banner('💞 Ihr seid euch näher gekommen', m, 'good', 4600); }
+      }
+      if (b.left <= 0) this.byeBuddy('Ich muss langsam los. Das war ein richtig schöner Tag mit dir. 💜');
+    }
+    this.life.update(dt, t, this.player.root.position, { busy: busy || !!this.gig || !!this.kerb.rider || this.combat.wanted.stars > 0, night: this.world.night > .5, rain: this.weather.rain > .2, onFoot: !this.drive });
 
     this.hudT -= dt;
     if (this.hudT <= 0) { this.hudT = .5; if (!busy) storyTick(this.ctx()); this.refreshHud(); if (mood(s) >= 75 && !busy) g.done(track(s, 'mood')); }

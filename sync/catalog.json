@@ -2612,8 +2612,8 @@
      "Wer im Camp hilft, gewinnt Sympathie; Lästern bringt Unterhaltung, kostet aber Freunde."
     ]
    },
-   "size": 19915886,
-   "files": 80,
+   "size": 19980354,
+   "files": 85,
    "offline": true,
    "cloud": {
     "game": "urwaldlager",
@@ -2715,8 +2715,10 @@
    "bg": "linear-gradient(145deg,#ff2f7a,#7b3cff 52%,#1aa7ff)",
    "glow": "rgba(255,47,122,.55)",
    "path": "pride-city/",
-   "modes": {},
-   "multiplayer": false,
+   "modes": {
+    "online": true
+   },
+   "multiplayer": true,
    "guide": {
     "anleitung": "Pride City ist der Relaunch von Gay Life!: eine queere 3D-Lebenssimulation in Rainbow City. Du gestaltest deine Figur in einer von 13 Pride-Farbwelten, ziehst in die Stadt, triffst Mo, Jules, Nova und viele andere und erlebst fünf Kapitel bis zur großen Pride-Parade: Job und Wahlfamilie, Drag-Show, dein eigener Club Leuchtturm am Hafen, die Suche nach der verschwundenen DJ Nova und ein Ende, das von deinen Entscheidungen abhängt. Außerdem erzählt Leon an der One Love Bar den Roman „Ich bin das Licht“ in zwölf Rückblenden, und im Handy liest du das ganze Buch. Die Stadt lebt: Passant*innen, Polizei, Feuerwehr, Verkehr und Autos, die du selbst fährst. Dazu der Alltag aus Gay Life!: Bedürfnisse, fünf Jobs mit Beförderung, eine begehbare Wohnung zum Schlafen, Duschen und Kochen, ein Handy mit Karte, Zielen, Kontakten, Feed und der Dating-App Rainbow Match (wischen wie bei Tinder), Dates, Wahlfamilie, ein Checkpoint mit Tests, PrEP und U=U-Infos, optional Inhalte ab 18 (nur angedeutet), Tagesziele, Sticker und Tag und Nacht. Alle Figuren sind erwachsen und frei erfunden.",
     "steuerung": [
@@ -2731,8 +2733,8 @@
      "Am Barkeeper-Tresen zählt Tempo: Bärenbier ist nur Bier, alle anderen Drinks haben drei Zutaten."
     ]
    },
-   "size": 60840338,
-   "files": 301,
+   "size": 61492414,
+   "files": 310,
    "offline": true,
    "cloud": {
     "game": "pride-city",
@@ -2773,8 +2775,8 @@
      "Jingles bei sinkendem Hype einsetzen."
     ]
    },
-   "size": 15365281,
-   "files": 611,
+   "size": 18029983,
+   "files": 613,
    "offline": true,
    "cloud": {
     "game": "anmacha-podcast-tycoon",

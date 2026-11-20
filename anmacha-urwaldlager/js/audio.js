@@ -71,6 +71,8 @@
     tense: t => { tone(55, t, 1.6, 'sawtooth', 0.08); tone(58, t, 1.6, 'sawtooth', 0.08); },
     phone: t => { for (let i = 0; i < 4; i++) tone(i % 2 ? 1200 : 1500, t + i * 0.09, 0.08, 'square', 0.06); },
     whoosh: t => noise(t, 0.4, 0.2, 1500, 0.5, sfxG, 'highpass'),
+    thunder: t => { noise(t, 2.8, 0.5, 120, 0.7, sfxG, 'lowpass'); noise(t + 0.05, 0.6, 0.35, 400, 0.5, sfxG, 'lowpass'); tone(48, t, 2.2, 'sine', 0.25, sfxG, 0.7); },
+    hiss: t => { noise(t, 0.7, 0.16, 5200, 2, sfxG, 'highpass'); },
     crunch: t => { for (let i = 0; i < 4; i++) noise(t + i * 0.04, 0.05, 0.3, 2500, 5); }
   };
   Au.sfx = (n) => { if (!Au.on) return; const f = SFX[n]; if (f) try { f(now()); } catch (e) { } };
@@ -87,7 +89,8 @@
   let song = null, step = 0, bar = 0, nextT = 0;
   Au.music = (name) => { if (!Au.on) { Au._want = name; return; } song = SONG[name] || null; step = 0; bar = 0; nextT = now() + 0.1; };
   // ---------- Atmo ----------
-  let atmo = null, atmoT = 0;
+  let atmo = null, atmoT = 0, rainLvl = 0, rainT = 0;
+  Au.rain = (lvl) => { rainLvl = lvl || 0; };   // Regenrauschen 0..1, läuft über der Atmo
   Au.atmo = (name) => { atmo = name; };
   function tick() {
     if (!Au.ctx || Au.ctx.state !== 'running') return;
@@ -97,6 +100,7 @@
       const dt = 60 / song.bpm / 4;
       while (nextT < t + 0.15) { try { song.f(step, nextT, bar); } catch (e) { } step++; if (step >= song.steps) { step = 0; bar++; } nextT += dt; }
     }
+    if (rainLvl > 0 && t > rainT) { rainT = t + 0.3; noise(t, 0.45, 0.07 * rainLvl, 3200, 0.4, atmoG, 'highpass'); noise(t, 0.45, 0.05 * rainLvl, 700, 0.6, atmoG, 'lowpass'); }
     if (atmo && t > atmoT) {
       if (atmo === 'jungle') {
         atmoT = t + 0.6 + Math.random() * 1.6;

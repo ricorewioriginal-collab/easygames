@@ -333,3 +333,33 @@ body:has(#hud:not(.hidden)) .screen.title { background: rgba(9,6,20,.8); backdro
 #hud .weapon { position: absolute; left: clamp(10px, 2vw, 24px); bottom: calc(14px + var(--safe-b) + clamp(120px, 16vw, 180px) + 10px); padding: 6px 12px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); font-weight: 900; font-size: .85em; pointer-events: auto; cursor: pointer; display: none; }
 #hud .weapon.on { display: block; }
 @media (pointer: coarse) { #hud .weapon { left: auto; right: 10px; bottom: auto; top: calc(214px + var(--safe-t)); font-size: .75em; } #hud .wanted { top: calc(54px + var(--safe-t)); font-size: 22px; } }
+/* Autoradio: Senderrad und „Jetzt läuft“ */
+#hud .rwheel { --d: min(74vmin, 440px); --c: #ff3fb0; position: absolute; left: 50%; top: 46%; width: var(--d); height: var(--d); translate: -50% -50%; opacity: 0; scale: .92; transition: opacity .25s, scale .25s; pointer-events: none; }
+#hud .rwheel.on { opacity: 1; scale: 1; }
+#hud .rwheel::before { content: ''; position: absolute; inset: 6%; border-radius: 50%; background: radial-gradient(circle, rgba(10,6,24,.86) 52%, rgba(10,6,24,.5) 70%, transparent 71%); box-shadow: 0 0 0 2px color-mix(in srgb, var(--c) 60%, transparent), 0 0 40px color-mix(in srgb, var(--c) 45%, transparent); }
+#hud .rwheel .ring { --r: 0deg; position: absolute; inset: 0; transform: rotate(var(--r)); transition: transform .3s; }
+#hud .rwheel .ring button { --s: calc(var(--d) * .105); position: absolute; left: 50%; top: 50%; width: var(--s); height: var(--s); margin: calc(var(--s) / -2); padding: 0; border-radius: 50%; border: 2px solid var(--c); background: #140a26; font-size: calc(var(--s) * .5); line-height: 1; transform: rotate(var(--a)) translateY(calc(var(--d) * -.44)) rotate(calc(var(--a) * -1 - var(--r))); transition: transform .3s, scale .2s, box-shadow .2s; opacity: .82; }
+#hud .rwheel.on .ring button { pointer-events: auto; cursor: pointer; }
+#hud .rwheel .ring button.cur { scale: 1.45; opacity: 1; background: var(--c); box-shadow: 0 0 22px var(--c); z-index: 1; }
+#hud .rwheel .mid { position: absolute; inset: 24%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 6px; }
+#hud .rwheel .mid em { font: 900 clamp(10px, 1.6vmin, 13px)/1 system-ui, sans-serif; letter-spacing: .2em; color: var(--c); font-style: normal; }
+#hud .rwheel .mid b { font: italic 900 clamp(18px, 4.4vmin, 32px)/1.05 system-ui, sans-serif; text-transform: uppercase; color: #fff; text-shadow: 0 0 18px var(--c); }
+#hud .rwheel .mid small { font-weight: 700; font-size: clamp(12px, 2.2vmin, 16px); opacity: .92; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+#hud .nowplay { position: absolute; left: calc(clamp(10px, 2vw, 24px) + clamp(120px, 16vw, 180px) + 12px); bottom: calc(58px + var(--safe-b)); max-width: min(46vw, 420px); padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(255,63,176,.55); background: rgba(10,6,24,.72); color: #fff; text-align: left; display: none; pointer-events: auto; cursor: pointer; font: inherit; }
+#hud .nowplay.on { display: block; }
+#hud .nowplay b { display: block; font-size: .78em; font-weight: 900; color: #ff8ad1; letter-spacing: .04em; text-transform: uppercase; }
+#hud .nowplay span { display: block; font-weight: 700; font-size: .9em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (pointer: coarse) { #hud .nowplay { left: 50%; translate: -50% 0; bottom: auto; top: calc(8px + var(--safe-t)); max-width: 40vw; padding: 5px 10px; font-size: .85em; } }
+body:has(#ui .screen) #hud :is(.rwheel, .nowplay) { visibility: hidden; }
+
+/* Online: Einladung mit Code, Link und QR-Code */
+.online { max-width: 560px; }
+.online .oRow { display: flex; gap: 16px; align-items: center; margin: 6px 0 10px; }
+.online .oQr { width: 116px; height: 116px; flex: none; background: #fff; border-radius: 10px; padding: 8px; }
+.online .oQr svg { width: 100%; height: 100%; display: block; }
+.online .oCode { font-size: clamp(30px, 6vw, 46px); font-weight: 800; letter-spacing: .18em; line-height: 1.1; color: #fff; }
+.online .oUrl { font-size: .78em; word-break: break-all; margin: 4px 0 0; }
+.online .oList { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.online .oList li { background: rgba(255, 255, 255, .08); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
+.online .oList .mu { color: var(--mu); background: none; border: 0; padding: 4px 0; }
+.online .oIn { width: 100%; box-sizing: border-box; margin: 2px 0 10px; padding: 10px 14px; font: inherit; font-size: 1.5em; font-weight: 800; letter-spacing: .3em; text-align: center; text-transform: uppercase; color: #fff; background: rgba(0, 0, 0, .35); border: 1px solid var(--line); border-radius: 12px; }

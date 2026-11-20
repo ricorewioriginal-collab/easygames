@@ -31,6 +31,16 @@ E2E-Test (Browser, SwiftShader): Server im Repo starten (`python3 -m http.server
 | `src/game/crime.ts`, `Combat.ts` | Gesetze und Fahndungssterne, Spaßwaffen (Poolnudel, Glitzer-Dildo ab 18, Gleitgel), Polizei-Verfolgung und Festnahme |
 | `src/game/family.ts` | Antrag, Hochzeit, Adoption; Partner*in und Kind wohnen zu Hause |
 | `src/game/uptown.ts` | Hochstadt: prozedurale Hochhäuser, Brownstones, Hochbahn, Brücke, Skyline (ein Mesh je Material) |
+| `src/engine/Radio.ts` | Autoradio: 13 echte Sender (laut.fm, Stream und „Jetzt läuft“), vier Stadt-Sender als Ersatz ohne Netz |
+| `src/game/saga.ts` | Akt II „Die Lichter der Hochstadt“: acht Missionen, sechs Figuren, baut auf den Aufträgen (`gigs.ts`) auf |
+| `src/game/vehicles.ts` | Fuhrpark (Fahrwerte je Auto), Garage (Kauf, Lack, Turbo), Rennen mit Medaillen, Paketdienst |
+| `src/game/manage.ts` | Geschäft führen: Personal, Ausbauten, Beliebtheit, Veranstaltungen, Probleme (Auszahlung in `empire.ts`) |
+| `src/game/weather.ts` | Wetter je Tagesabschnitt, Regen als mitlaufendes Gitter, Blitz, Regenbogen, Vorhersage |
+| `src/game/citylife.ts` | Zufallsereignisse am Straßenrand (leihen sich Passant*innen) und die CSD-Parade am Samstag |
+| `src/game/bond.ts` | Nähe zu Matches in fünf Stufen: Nachrichten, Unternehmungen, Geschenke, Absprache exklusiv/offen, Eifersucht, Pflege |
+| `src/game/Companion.ts` | Begleitung: Das Match läuft deiner Spur nach, steigt mit ins Auto und verabschiedet sich nach drei Spielstunden |
+| `src/game/online.ts` | Online-Modus: Code, Sternnetz über `../cloud/fire-peer.js`, Prüfung aller eingehenden Daten, Liste der Anwesenden |
+| `src/game/Friends.ts` | Freund*innen in der Stadt: Figuren und Wagen der anderen, eigene Lage senden, Gesten und Zurufe |
 | `src/game/kerb.ts` | Laternenmeile: Hupen im Auto, Einsteigen, ruhige Ecke, Abblende (ab 18) |
 | `src/game/story.ts` | Figuren, fünf Kapitel bis zum Ende, Ziele (`goal`), automatische Fortschritte (`storyTick`), Gespräche, Entscheidungen (`save.flags`), Ende (`ending`) |
 | `src/game/life.ts` | Bedürfnisse, Stimmung, Uhrzeit und Tageswechsel, Tagesziele (aus Gay Life! übernommen) |

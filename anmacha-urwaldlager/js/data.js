@@ -80,7 +80,11 @@
     { id: 'blind', name: 'Die Blindfahrt', icon: '🚙', stars: 6, time: 130, desc: 'Augenbinde auf, ab hinters Steuer! Dein Beifahrer sagt an, wohin es geht. An jeder Station anhalten und den Stern greifen – unterwegs warten Fässer, Schlamm- und Kakerlaken-Duschen.', ctrl: [['move', 'Gas (hoch), Lenken (links/rechts)'], ['ok', 'Bremsen & greifen']] },
     { id: 'box', name: 'Die Ekel-Box', icon: '🪳', stars: 7, time: 90, desc: 'Kopf in die Plexiglas-Box! Oben werden Kakerlaken und Mehlwürmer eingefüllt. Zieh die Sterne mit den Zähnen von den Wänden – aber beiß nicht in die Spinnennester.', ctrl: [['move', 'Kopf drehen'], ['ok', 'Stern ziehen'], ['alt', 'Ruhig atmen']] },
     { id: 'grab', name: 'Das Madengrab', icon: '⚰️', stars: 6, time: 110, desc: 'Du liegst in einer Kiste unter der Erde, Maden und Krabbeltiere rieseln herein. Führ deine Hand zu den Schrauben am Deckel, pack zu und dreh sie heraus – hinter jeder steckt ein Stern.', ctrl: [['move', 'Hand führen / im Kreis drehen'], ['ok', 'Schraube packen (halten)'], ['alt', 'Ruhig atmen']] },
-    { id: 'seilbahn', name: 'Die Lianen-Rutsche', icon: '🐒', stars: 9, time: 0, desc: 'Drei Fahrten an der Seilrutsche durch die Baumkronen. Lenk dich zu den Sternen und weich Ästen und Wespennestern aus.', ctrl: [['move', 'Lenken'], ['ok', 'Bremsen'], ['alt', 'Beine anziehen']] }
+    { id: 'seilbahn', name: 'Die Lianen-Rutsche', icon: '🐒', stars: 9, time: 0, desc: 'Drei Fahrten an der Seilrutsche durch die Baumkronen. Lenk dich zu den Sternen und weich Ästen und Wespennestern aus.', ctrl: [['move', 'Lenken'], ['ok', 'Bremsen'], ['alt', 'Beine anziehen']] },
+    { id: 'schlangen', name: 'Die Schlangengrube', icon: '🐍', stars: 8, time: 120, desc: 'Ab in die Grube voller (ungiftiger) Schlangen! Öffne die Körbe – in manchen liegt ein Stern, in manchen noch eine Schlange. Wer rennt, weckt sie auf, also lieber leise schleichen.', ctrl: [['move', 'Laufen'], ['alt', 'Schleichen (halten)'], ['ok', 'Korb öffnen']] },
+    { id: 'hoehle', name: 'Das Höhlenlabyrinth', icon: '🔦', stars: 8, time: 150, desc: 'Stockdunkle Höhle, nur eine Taschenlampe. Die Sterne siehst du nur im Lichtkegel, die Batterie wird schwächer. Und leuchte bloß keine schlafenden Fledermäuse an!', ctrl: [['move', 'Laufen'], ['alt', 'Licht an/aus']] },
+    { id: 'floss', name: 'Das Floßrennen', icon: '🚣', stars: 9, time: 100, desc: 'Auf dem Floß den Dschungelfluss hinunter, gegen zwei Mit-Camper. Paddel im Takt, lenk um Felsen und Treibholz und schnapp dir die Sterne an den Bojen. Platz 1 bringt zwei Bonussterne.', ctrl: [['move', 'Lenken'], ['ok', 'Paddeln (im Takt)']] },
+    { id: 'klettern', name: 'Die Kletterwand', icon: '🧗', stars: 8, time: 130, desc: 'Kletter die Felswand hoch bis zur Glocke. Die Sterne hängen an den Griffen. Die Kraft lässt nach – an grünen Griffen verschnaufen, braune Griffe brechen weg.', ctrl: [['move', 'Griff wählen'], ['ok', 'Greifen']] }
   ];
   D.TRIAL = Object.fromEntries(D.TRIALS.map(t => [t.id, t]));
   // Gruppenprüfung beim Einzug (nicht in der normalen Zuschauerwahl): alle Camper suchen gemeinsam, jeder Stern zählt fürs Camp
@@ -90,6 +94,20 @@
   D.FINAL = [{ id: 'dinner', course: 'Vorspeise' }, { id: 'kisten', course: 'Hauptgang' }, { id: 'quiz', course: 'Nachtisch' }];
 
   // Essen: Sterne = Portionen
+  // Lagerfeuer-Gespräche nach dem Essen: ein Camper fragt, du antwortest. {x} = ein anderer Camper.
+  // Antwort: [Text, Sympathie, Unterhaltung, Beziehung zum Fragenden, Beziehung zu allen, Beziehung zu {x}, Reaktion]
+  D.FIRETALK = [
+    { q: 'Was vermisst ihr hier drin am meisten?', a: [['Meine Familie. Jeden Abend.', 3, 0, 4, 2, 0, 'Oh, das geht mir genauso …'], ['Mein Bett. Und meine Kaffeemaschine. Und Pizza.', 1, 3, 2, 1, 0, 'Pizza! Sag das Wort nicht!'], ['Nichts. Ich hab hier alles, was ich brauche.', -1, 2, -2, -1, 0, 'Ja klar … du Held.']] },
+    { q: 'Mal ehrlich: Wer tut hier am wenigsten im Lager?', a: [['Darüber red ich nicht hinter dem Rücken.', 3, 0, 1, 2, 0, 'Respekt, du bist fair.'], ['{x}. Hat heute kein einziges Holzscheit getragen.', -1, 5, 3, -1, -10, 'Ha! Hab ich auch gemerkt!'], ['Ich glaube, ich selbst. Ich arbeite dran!', 2, 2, 2, 2, 0, 'Wenigstens bist du ehrlich.']] },
+    { q: 'Wenn ihr morgen rausfliegt – was wäre euer letzter Satz?', a: [['Danke, Leute, ihr seid die beste Truppe!', 3, 1, 2, 3, 0, 'Hör auf, ich muss gleich weinen.'], ['Ich komme wieder – als Moderator:in!', 1, 4, 1, 1, 0, 'Das würde ich sehen wollen!'], ['Ein Glück, endlich duschen.', 0, 3, 0, -1, 0, 'Charmant wie immer …']] },
+    { q: 'Habt ihr schon einen Lieblingsmenschen im Camp?', a: [['Ja – {x}. Mit dir kann man lachen.', 2, 1, 0, 0, 10, '{x} strahlt übers ganze Gesicht.'], ['Du! Wer sonst?', 1, 2, 9, -1, 0, 'Oh, wie süß!'], ['Ich mag alle gleich gern.', 1, 0, 0, 2, 0, 'Diplomatisch …']] },
+    { q: 'Was war heute euer peinlichster Moment?', a: [['Ich bin vorhin in den Schlamm gefallen. Mit Anlauf.', 2, 4, 2, 2, 0, 'Das hab ich gesehen! Legendär!'], ['Als {x} mich beim Schnarchen nachgemacht hat.', 0, 4, 1, 0, -3, 'Aber es war schon lustig.'], ['Peinlich? Mir passiert nie was Peinliches.', -2, 2, -1, -1, 0, 'Ja ja …']] },
+    { q: 'Warum seid ihr eigentlich hier im Lager?', a: [['Ich will mich selbst herausfordern.', 3, 0, 2, 1, 0, 'Starke Antwort.'], ['Ganz ehrlich? Für die Karriere.', -1, 3, 0, -1, 0, 'Wenigstens ehrlich.'], ['Weil meine Oma gesagt hat, ich trau mich nicht.', 2, 4, 3, 2, 0, 'Grüße an deine Oma!']] },
+    { q: 'Wer von uns gewinnt am Ende die Krone?', a: [['{x}! Hat es am meisten verdient.', 3, 0, 0, 1, 8, 'Wie nett von dir!'], ['Na ich natürlich!', -1, 4, -1, -2, 0, 'Träum weiter!'], ['Das entscheiden die Zuschauer, nicht wir.', 2, 0, 1, 1, 0, 'Stimmt eigentlich.']] },
+    { q: 'Erzählt doch mal eine Gruselgeschichte!', a: [['Hier im Dschungel lebt ein Wesen, das nur nachts … BUH!', 1, 5, 2, 2, 0, 'AAAH! Du Idiot!'], ['Lieber nicht, sonst schläft hier keiner.', 1, 0, 0, 1, 0, 'Vernünftig.'], ['Ich hab mal mein Handy drei Tage nicht gefunden.', 1, 3, 2, 1, 0, 'Das ist wirklich gruselig!']] },
+    { q: 'Was würdet ihr für ein Stück Schokolade tun?', a: [['Alles. Wirklich alles.', 0, 4, 2, 1, 0, 'Ich auch!'], ['Mit {x} teilen, wenn es eins gäbe.', 2, 0, 0, 1, 6, 'Merk ich mir!'], ['Ich ernähr mich gerade sowieso gesund.', -1, 1, -1, -1, 0, 'Pff …']] },
+    { q: 'Wer war heute der größte Held im Lager?', a: [['{x} – hat sich um alle gekümmert.', 3, 0, 0, 1, 7, 'Hört, hört!'], ['Unser Lagerfeuer. Hat durchgehalten.', 1, 3, 1, 1, 0, 'Ha, gut gesagt!'], ['Ich. Ich hab heute Wasser geholt!', 0, 2, 0, -1, 0, 'Ein Mal …']] }
+  ];
   D.MEALS = {
     none: 'Reis und Bohnen – wie jeden Tag ohne Sterne.',
     few: 'Ein paar Portionen Fisch, der Rest teilt sich Reis und Bohnen.',

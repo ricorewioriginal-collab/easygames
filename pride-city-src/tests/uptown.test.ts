@@ -17,3 +17,22 @@ describe('Hochstadt', () => {
     for (const q of QUIET) expect(walkable(q.x, q.z)).toBe(true);
   });
 });
+
+import { UPTOWN_PLACES, doorStep } from '../src/game/uptown';
+import { PLACE_THEMES } from '../src/game/interiors';
+describe('Betretbare Orte der Hochstadt', () => {
+  it('haben alle eine Einrichtung mit erreichbaren Stellen', () => {
+    for (const p of UPTOWN_PLACES) {
+      const t = PLACE_THEMES[p.id];
+      expect(t, p.id).toBeTruthy();
+      expect(t.spots.length).toBeGreaterThan(1);
+      for (const s of t.spots) { expect(Math.abs(s.x), p.id + ' ' + s.id).toBeLessThan(5.5); expect(Math.abs(s.z)).toBeLessThan(4); }
+    }
+  });
+  it('stehen mit der Tür am Gehweg, nicht auf der Fahrbahn', () => {
+    for (const p of UPTOWN_PLACES) {
+      const d = doorStep(p), near = (v: number) => Math.abs(v - Math.round(v / 30) * 30);
+      expect(Math.min(near(d.x), near(d.z)), p.id).toBeGreaterThan(4);
+    }
+  });
+});

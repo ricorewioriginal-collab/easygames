@@ -37,13 +37,18 @@ export class Engine {
   private qualityHooks = new Set<(q: Quality) => void>();
   fps = 60;
   paused = false;
+  readonly mobile: boolean;
+  /** Dynamische Auflösung: 1 = volle Stufe, kleiner = weniger Bildpunkte (hält das Spiel am Handy flüssig) */
+  private res = 1;
+  private resT = 0; private resFrames = 0;
 
   constructor(readonly canvas: HTMLCanvasElement) {
     const mobile = matchMedia('(pointer: coarse)').matches;
-    this.bjs = new BEngine(canvas, true, { powerPreference: 'high-performance', stencil: true, preserveDrawingBuffer: false, antialias: true, audioEngine: false } as never, false);
+    this.bjs = new BEngine(canvas, true, { powerPreference: 'high-performance', stencil: true, preserveDrawingBuffer: false, antialias: !mobile, audioEngine: false } as never, false);
     this.bjs.disableManifestCheck = true;
     this.input = new Input(canvas);
-    this.quality = mobile ? 1 : 2;
+    this.mobile = mobile;
+    this.quality = mobile ? 0 : 2; // Handys starten sparsam und schalten hoch, wenn Luft ist
     addEventListener('resize', () => this.resize());
     screen.orientation?.addEventListener?.('change', () => setTimeout(() => this.resize(), 120));
   }
@@ -101,7 +106,7 @@ export class Engine {
 
   resize() {
     const cap = this.quality === 2 ? 2 : this.quality === 1 ? 1.5 : 1;
-    this.bjs.setHardwareScalingLevel(1 / Math.min(devicePixelRatio || 1, cap));
+    this.bjs.setHardwareScalingLevel(1 / (Math.min(devicePixelRatio || 1, cap) * this.res));
     this.bjs.resize();
   }
 
@@ -117,6 +122,8 @@ export class Engine {
     const cc = new ColorCurves();
     cc.globalSaturation = 14; cc.shadowsHue = 220; cc.shadowsDensity = 12; cc.shadowsSaturation = 30; cc.highlightsHue = 35; cc.highlightsDensity = 10; cc.highlightsSaturation = 25;
     ip.colorCurvesEnabled = true; ip.colorCurves = cc;
+    const sip = s.scene.imageProcessingConfiguration;
+    sip.contrast = 1.1; sip.colorCurvesEnabled = true; sip.colorCurves = cc;
     p.bloomThreshold = .82; p.bloomKernel = 48; p.bloomScale = .5;
     this.pipes.set(s.scene, p);
     this.tunePipe(p);
@@ -126,6 +133,8 @@ export class Engine {
     p.samples = q === 2 ? 4 : 1;
     p.fxaaEnabled = q === 1;
     p.bloomEnabled = q === 2;
+    // niedrige Stufe: kein Nachbearbeitungs-Durchgang (spart am Handy einen ganzen Bildschirm voll Arbeit), der Farblook läuft dann im Material mit
+    p.imageProcessingEnabled = q > 0;
   }
 
   /** Weltpunkt → Bildschirm (Pixel), behind = hinter der Kamera */
@@ -142,7 +151,7 @@ export class Engine {
     this.applyQuality(this.quality);
     const loop = (t: number) => {
       requestAnimationFrame(loop);
-      const dt = Math.min(.05, (t - (this.last || t)) / 1000);
+      const dt = Math.min(.085, (t - (this.last || t)) / 1000); // bis 12 Bilder/s läuft das Spiel in Echtzeit statt in Zeitlupe
       this.last = t;
       this.input.update(t);
       this.hooks.forEach((f) => f(dt));
@@ -163,12 +172,22 @@ export class Engine {
   /* Automatische Grafikstufe: über 2 s gemessen, bei Ruckeln eine Stufe runter, bei viel Luft wieder hoch. */
   private measure(dt: number) {
     this.frames++; this.sampleT += dt;
+    // Auflösung jede halbe Sekunde nachregeln: unter 48 Bildern/s weniger Bildpunkte, über 57 wieder mehr
+    this.resFrames++; this.resT += dt;
+    if (this.resT >= .5) {
+      const f = this.resFrames / this.resT; this.resFrames = 0; this.resT = 0;
+      const min = this.mobile ? .55 : .7, was = this.res;
+      if (!this.paused && !document.hidden) {
+        if (f < 48) this.res = Math.max(min, this.res * (f < 30 ? .85 : .93)); else if (f > 57) this.res = Math.min(1, this.res * 1.04);
+        if (Math.abs(this.res - was) > .01) this.resize();
+      }
+    }
     if (this.sampleT < 2) return;
     this.fps = this.frames / this.sampleT;
     this.frames = 0; this.sampleT = 0;
     if (this.qualitySetting >= 0 || document.hidden) return;
     if (this.fps < 40) { this.slow++; this.fast = 0; } else if (this.fps > 58) { this.fast++; this.slow = 0; } else { this.slow = 0; this.fast = 0; }
-    if (this.slow >= 2 && this.quality > 0) { this.applyQuality((this.quality - 1) as Quality); this.slow = 0; }
-    if (this.fast >= 8 && this.quality < 2 && !matchMedia('(pointer: coarse)').matches) { this.applyQuality((this.quality + 1) as Quality); this.fast = 0; }
+    if (this.slow >= 2 && this.res <= (this.mobile ? .56 : .71) && this.quality > 0) { this.applyQuality((this.quality - 1) as Quality); this.slow = 0; }
+    if (this.fast >= 8 && this.res >= 1 && this.quality < (this.mobile ? 1 : 2)) { this.applyQuality((this.quality + 1) as Quality); this.fast = 0; }
   }
 }

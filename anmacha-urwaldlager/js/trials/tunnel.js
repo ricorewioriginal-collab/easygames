@@ -18,6 +18,7 @@
     return cells;
   }
 
+  UL.Trials.maze = maze;   // auch fürs Höhlenlabyrinth
   UL.Trials.reg('tunnel', {
     env: () => ({ none: true }),
     setup(ctx) {

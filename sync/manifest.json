@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "230e70fe8295",
- "generated": "2026-11-20T17:17:10+00:00",
- "commit": "5571c7e920dd5e28f5829d9208c2051cf4292700",
+ "version": "3693fb84a406",
+ "generated": "2026-11-20T19:14:15+00:00",
+ "commit": "99005eeac6b969d71297218ac36593d3dc9963d0",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3012,6 +3012,11 @@
    "h": "b25bb8ac77b240050fd145da912dd6dc1edcf44b86b46b8c6b62a6b49031dfcd"
   },
   {
+   "p": "anmacha-podcast-tycoon/babylon/amc-babylon.js",
+   "s": 2629879,
+   "h": "6207f94e4b18a10a7bdfa13a3502d8878587e7477844e18c9b6fb9b9c0c5c265"
+  },
+  {
    "p": "anmacha-podcast-tycoon/card.svg",
    "s": 3176,
    "h": "27e8ed4029020e9ef1fbb9af1ecef67ac0c8fbf86197d7488aa9eb78e6bdc840"
@@ -3088,8 +3093,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/index.html",
-   "s": 7423,
-   "h": "4afabeb5cf31fc0d539b277a4d9a82564b786b5a9f57ae067ce5f2ac60d52f9c"
+   "s": 7465,
+   "h": "1aa03549f3703cd515fbedd0ca8de68b6f45f5225085558c51e3ec9fa108d85b"
   },
   {
    "p": "anmacha-podcast-tycoon/manifest.webmanifest",
@@ -3758,8 +3763,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/drive.js",
-   "s": 30925,
-   "h": "a8be47cc48b8424af275ffdf01c43d63550fee25cd8b2be9fb87b1ea405c55db"
+   "s": 31068,
+   "h": "06c15822fc2cbba20547d1b1a16e0389eb7bdae187dcd61e079f3f7d778ecdac"
   },
   {
    "p": "anmacha-podcast-tycoon/src/events.js",
@@ -3778,13 +3783,18 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/main.js",
-   "s": 47575,
-   "h": "a72b2ac1a8dbbf18d8ba51b35c8f54302b7455fc8990b73f1c8a72181aec2f45"
+   "s": 48080,
+   "h": "b0aae736fea4fec47698973969e08c8388f3028b5b790e6cadfa14ec80074df5"
   },
   {
    "p": "anmacha-podcast-tycoon/src/media.js",
    "s": 11476,
    "h": "4f2cf790628072dc5c91427a2e579d8fa2b2949fae6f1232b290c9abfdfb78ff"
+  },
+  {
+   "p": "anmacha-podcast-tycoon/src/medien-gta.js",
+   "s": 30662,
+   "h": "ec28de7f111d2db2c146b33313276ea1e426f02039c744b6a95c7d5e713ee761"
   },
   {
    "p": "anmacha-podcast-tycoon/src/minis.js",
@@ -3813,8 +3823,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/play.js",
-   "s": 111917,
-   "h": "86d52ad514ae20f6e6d2a93db51c47af30d8e3fca21922c5a56f527eeb11f9a1"
+   "s": 112242,
+   "h": "6afc7f79230f3040aac7e90ff1fb75f5aa2e67d65b3df1c59f50471d60571cd9"
   },
   {
    "p": "anmacha-podcast-tycoon/src/quiz.js",
@@ -3873,8 +3883,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/src/world.js",
-   "s": 35606,
-   "h": "946e9cc409764efcf4a7cf71fbbd3696229a6f4a9dddd1e522a7b842a5191613"
+   "s": 35973,
+   "h": "67e92424d06308e318699c959c9f49cd389064fec5008a05ebf7006d68066d08"
   },
   {
    "p": "anmacha-podcast-tycoon/src/worldfx.js",
@@ -3888,8 +3898,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/style.css",
-   "s": 75916,
-   "h": "0d7f39a75b841859e40338d56e2998b490f06a91e086158b69be95aad7f13840"
+   "s": 78695,
+   "h": "07b56f8b859391b14ab8d4b24022bc33232a6d64233a4192e6bd5f21408a798c"
   },
   {
    "p": "anmacha-podcast-tycoon/sw.js",
@@ -7868,8 +7878,8 @@
   },
   {
    "p": "anmacha-urwaldlager/index.html",
-   "s": 8097,
-   "h": "f574680a38a05f8c1c8ab101a7a1518c3e510a859c5d9ab55272504d25b1c742"
+   "s": 8315,
+   "h": "2fd98bfc68feec03f4c3c637a2a0d28fe6ca9c4531fc8cf7cb5e638bd0ce402d"
   },
   {
    "p": "anmacha-urwaldlager/js/assets.js",
@@ -7878,13 +7888,13 @@
   },
   {
    "p": "anmacha-urwaldlager/js/audio.js",
-   "s": 10040,
-   "h": "39bd8cbbcdf041a8aa9971313272c012c8cee7024b0bcf91f87cd50c9ba34a45"
+   "s": 10570,
+   "h": "ec6a1179d46b1023bbd411a7ea12208fcd9055d306c28436151feabf0100a357"
   },
   {
    "p": "anmacha-urwaldlager/js/camp.js",
-   "s": 58195,
-   "h": "84e9d7ddeb67ad23fbf06b723a7e51cc91b933e5980828652beaae281e5151af"
+   "s": 64927,
+   "h": "6302aaa6b16f4e25644c69dadf134557a01960e204dbf6a32a1d2d534235b71c"
   },
   {
    "p": "anmacha-urwaldlager/js/core.js",
@@ -7893,8 +7903,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/data.js",
-   "s": 36758,
-   "h": "e4020bdc780e099897fc44dd1780802e2b2062aa0037120acb8e3c2d2085d76c"
+   "s": 41437,
+   "h": "569f449b566b78de05a7dd65d8a25fb6bee049becf3baad43de0aaf43b47f0a7"
   },
   {
    "p": "anmacha-urwaldlager/js/input.js",
@@ -7903,8 +7913,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/main.js",
-   "s": 3120,
-   "h": "487293ec96e84d5c8c6594075aa3cad8928707b4c2bdce047f042823ce243dd2"
+   "s": 3261,
+   "h": "76bf24c3dd2bdcc26300b4482b5114f41e44575436be195548f6db6fc0f236d0"
   },
   {
    "p": "anmacha-urwaldlager/js/menus.js",
@@ -7918,13 +7928,13 @@
   },
   {
    "p": "anmacha-urwaldlager/js/render.js",
-   "s": 30130,
-   "h": "854ef6c9892ac5382826882594fdadf60265d57838caef19022ba3d753e5b066"
+   "s": 30209,
+   "h": "9970bee827aa81515fbae74367328e13b971b459ab9cd82745a29296c3ba0002"
   },
   {
    "p": "anmacha-urwaldlager/js/show.js",
-   "s": 29581,
-   "h": "d390924b26ccd14f688201fdeb703f1b853cd400ec8b190170cf4e643966a69a"
+   "s": 31366,
+   "h": "bd53119493713b344ac949851e0af420500d1534a4e77511d8020d8b9947a270"
   },
   {
    "p": "anmacha-urwaldlager/js/stage.js",
@@ -7957,9 +7967,19 @@
    "h": "571ca99682191265b03844330fd7019b48c2e6effa5d2648f70f0bb18699a968"
   },
   {
+   "p": "anmacha-urwaldlager/js/trials/floss.js",
+   "s": 11212,
+   "h": "f3937e61a10bb45892008c747383d574a6d5419c87876a8ceb3093734155402a"
+  },
+  {
    "p": "anmacha-urwaldlager/js/trials/grab.js",
    "s": 12820,
    "h": "c6ad808de5662f406fc5a059bd6417b2893da42db25d1000500242beb21c3325"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/hoehle.js",
+   "s": 13236,
+   "h": "08579960abd46d44ea3c70e1b131b5de7b9842ae830f5eac72a42c93228feaae"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kisten.js",
@@ -7968,8 +7988,13 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/kit.js",
-   "s": 25805,
-   "h": "44148478279a4c15a63a741d9586818aee3bda727a0fd23a334c83a8216eb098"
+   "s": 26468,
+   "h": "abee8259058da7b9bf56993e738ed3230acedcceea5a2fe5bf65a47ebfafc2a1"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/klettern.js",
+   "s": 10215,
+   "h": "5b8ba07d1392042123d129a0f8f4a223368423faa74acc98ae42c2bbefbeb328"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/marsch.js",
@@ -7985,6 +8010,11 @@
    "p": "anmacha-urwaldlager/js/trials/quiz.js",
    "s": 8388,
    "h": "2a9dca7000e6b9820d6e31b1ae259092d4fbe6a3665eb6a4f6f09120129d7227"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/trials/schlangen.js",
+   "s": 11066,
+   "h": "22b93ce038ed631b916418ce179998dec13b25f6dda0b109c9a7233407ab1a6e"
   },
   {
    "p": "anmacha-urwaldlager/js/trials/seilbahn.js",
@@ -8003,8 +8033,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/trials/tunnel.js",
-   "s": 13759,
-   "h": "79f66c0ab631e42cd1e485278305f914393c1a31e9a4042ede04348ce58220ac"
+   "s": 13817,
+   "h": "1acb3a9dc6d29665f4ff82c57920ebc255f22a58fb9214a810ddb9cda0ff5a0c"
   },
   {
    "p": "anmacha-urwaldlager/js/ui.js",
@@ -8015,6 +8045,11 @@
    "p": "anmacha-urwaldlager/js/watch.js",
    "s": 8989,
    "h": "c49afbe28d6a97ab43063b89a99194cf420acfc9c39e33e60771e8b2ac1ba789"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/weather.js",
+   "s": 3854,
+   "h": "282ecf4907ea1a962a6ff19bf8725cb953a791b82cfb917d00f61ef041a71266"
   },
   {
    "p": "anmacha-urwaldlager/logo.svg",
@@ -10923,8 +10958,8 @@
   },
   {
    "p": "guides/anmacha-podcast-tycoon.json",
-   "s": 51312,
-   "h": "0eef2cd031f15dfa6099ba07e5fe38c79a61b09d2f13836bc5d3e4bd5aa0e0ea"
+   "s": 54297,
+   "h": "f014da4147cf0313d19df0b8815323a7a6fdeddb32bd50fe659baf38f4e91139"
   },
   {
    "p": "guides/anmacha-preisradar.json",
@@ -10968,8 +11003,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 16335,
-   "h": "10d693e9753aaffd3667a00788373e6d02d71e67fe2ca780632aec8620ffbce6"
+   "s": 18959,
+   "h": "7e6286018d89c97ed8c38690282bc7118684d338ae4b22afa5209b514b58381c"
   },
   {
    "p": "guides/beat-studio.json",
@@ -11118,8 +11153,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 31944,
-   "h": "ac496a93089bdb7440491b8e1191a51c5da4876abeabe84e62c9acb170ae19f3"
+   "s": 50725,
+   "h": "4dc43c8c3c56e69d508d28c7ce0820642755039b2797390ccdbb5b57d0acfc12"
   },
   {
    "p": "guides/prismrush.json",
@@ -11908,8 +11943,8 @@
   },
   {
    "p": "modes.js",
-   "s": 3262,
-   "h": "05bd73963ae8e32a610529b33597fd6d7da096b5d3a3029796f70fdcfb233437"
+   "s": 3296,
+   "h": "fd91e8a61db85f3bd97c98e54b6be285b29d6ab0b8703f367afbcf1b6536645a"
   },
   {
    "p": "partyverse/app/assets/BufferGeometryUtils-DMBVqCOs.js",
@@ -12290,6 +12325,51 @@
    "p": "pride-city/assets/babylon-Bf8I0q6J.js",
    "s": 3862941,
    "h": "22b61d58266c4521d81989c918a80e1385690b992bcca69765aab737ff90240c"
+  },
+  {
+   "p": "pride-city/assets/cars/delivery_van.glb",
+   "s": 57460,
+   "h": "1446041c65c2308195e5ec22521fbb0d9d6fe655a604b7de80b8796029bb0545"
+  },
+  {
+   "p": "pride-city/assets/cars/hatchback_sports.glb",
+   "s": 53876,
+   "h": "3416f1d25bf084dadd981cc175bfdc901b644c6ab7c2f620f7522420789f9a28"
+  },
+  {
+   "p": "pride-city/assets/cars/kart_a.glb",
+   "s": 65508,
+   "h": "dabf27d47d85aa4dd057e432a04ae5bfb630cc087ba9809101f2116fc320d288"
+  },
+  {
+   "p": "pride-city/assets/cars/race_car.glb",
+   "s": 46168,
+   "h": "05d7a2c8c6faf02522cc26d114f8fe974e651894c71f5df5f01e776e20aeaece"
+  },
+  {
+   "p": "pride-city/assets/cars/sedan_sports.glb",
+   "s": 54728,
+   "h": "d0201e3a78c8163ed2970d85efc7933d4c8dd17df2812b0a65e22fa5eb13c94d"
+  },
+  {
+   "p": "pride-city/assets/cars/suv.glb",
+   "s": 60408,
+   "h": "e434cfe5c66b5e61e447a34a3175ca055ae9d8757c4ea779919c3ade7f6b47d1"
+  },
+  {
+   "p": "pride-city/assets/cars/suv_luxury.glb",
+   "s": 53484,
+   "h": "529f66a752821040a9bbccba227cf11c091d97560a44dcc32bed4b502660f721"
+  },
+  {
+   "p": "pride-city/assets/cars/truck.glb",
+   "s": 53196,
+   "h": "973734d34528bc8a7211917384b3fb1e89ec8cf793d05784737ce854673a4d4e"
+  },
+  {
+   "p": "pride-city/assets/cars/van.glb",
+   "s": 53248,
+   "h": "89f1d1d4cb16bcd93bd7d758a5615053d1e31d005cb37c21c9f13adf23893bb5"
   },
   {
    "p": "pride-city/assets/city/base.bin",
@@ -12907,14 +12987,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
-   "p": "pride-city/assets/index-BRjHky6u.js",
-   "s": 353720,
-   "h": "ef986983e1e021d5ee345f94446ffe845a19aeac5f1ba48abea70df5236be5b1"
+   "p": "pride-city/assets/index-BEOyCN4q.js",
+   "s": 470337,
+   "h": "4c63cf7e88fcc5448825febf7482b3435eb363f790c9a00858c2e44a9e242b43"
   },
   {
-   "p": "pride-city/assets/index-jKIuJLl_.css",
-   "s": 25466,
-   "h": "ff97766a5e73ee34ad119b86e2320551b12c67ed863e8f4fac8c727b05c2d61b"
+   "p": "pride-city/assets/index-CYTo2T58.css",
+   "s": 29110,
+   "h": "1c3b4af0342d4adfb93eb8bb0eca05a140b250879bf9a4ef4538a3b4f0d632b4"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -13333,8 +13413,8 @@
   },
   {
    "p": "pride-city/card.jpg",
-   "s": 44060,
-   "h": "d499242933be43a14eef116e16d51ec620401681023bb362d8007057c930b313"
+   "s": 77749,
+   "h": "cf362189cad4da7deb12ef103f3a4b8f5817d0db4ce569b107a4b62678065c72"
   },
   {
    "p": "pride-city/classic/gay-life/card.jpg",
@@ -13553,8 +13633,8 @@
   },
   {
    "p": "pride-city/index.html",
-   "s": 5812,
-   "h": "0dfbe0065424292c30e6499f997cdf0bcc78c30cbbbe6b070c314360f7186db0"
+   "s": 5862,
+   "h": "fcd5896bf4e21496334ce2b796431cdf23768b9e0d06290eea282c61fe4318ff"
   },
   {
    "p": "pride-city/logo.svg",
@@ -16328,8 +16408,8 @@
   },
   {
    "p": "sync/catalog.json",
-   "s": 236341,
-   "h": "534e1061e8d5be59dcbc58827f4ad97d1d20dde00ffc1773103822f2442d4b41"
+   "s": 236363,
+   "h": "77a68a9da6f8d25ef309aae7f6fafffb046bf73f4f7a906f13b83e8e42ea1002"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
@@ -17383,8 +17463,8 @@
   },
   {
    "p": "thumbs/pride-city.webp",
-   "s": 15218,
-   "h": "091b514592b21c722fa3b752d627923755db3fd95480f69d1cfacffb0c34b56a"
+   "s": 41370,
+   "h": "74398ae36fc07e17ccd3e8bbc4730eeed1767f1021927a7cd1dd655525db2cfc"
   },
   {
    "p": "thumbs/prismrush.webp",
@@ -17439,7 +17519,7 @@
   {
    "p": "thumbs/thumbs.js",
    "s": 1905,
-   "h": "56e6974a0710c916c151256edde1147b5a954b3309ec404bd9055036dea18b7b"
+   "h": "d8b8c33f5f4bb6e7911f399c7b4fb45e4dbeac4109d77976c9983d356841b278"
   },
   {
    "p": "thumbs/tortenschlacht.webp",
