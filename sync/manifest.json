@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "679de4eb6dc1",
- "generated": "2026-11-20T01:51:31+00:00",
- "commit": "f8f3b05e95e5bd07c9b5fbe0a1aa8048889b8e07",
+ "version": "14e1c3c8e08d",
+ "generated": "2026-11-20T01:51:39+00:00",
+ "commit": "9a82c9335aae82afc977e2a1c64324c1e755d329",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -7868,8 +7868,8 @@
   },
   {
    "p": "anmacha-urwaldlager/index.html",
-   "s": 8061,
-   "h": "977ea0bc17d4c8d658801e9e8d944b5077f928249a51f477e24a387792acf117"
+   "s": 8097,
+   "h": "f574680a38a05f8c1c8ab101a7a1518c3e510a859c5d9ab55272504d25b1c742"
   },
   {
    "p": "anmacha-urwaldlager/js/assets.js",
@@ -7883,8 +7883,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/camp.js",
-   "s": 56041,
-   "h": "61670a770fd78c74c73dc3337e19abff935782dcfa03ad2cdf53a2d8ee2bd703"
+   "s": 56483,
+   "h": "61c457c2b900039966846d085aaa832d1cb63f55d223698b12d175aca7362cf8"
   },
   {
    "p": "anmacha-urwaldlager/js/core.js",
@@ -7903,8 +7903,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/main.js",
-   "s": 2761,
-   "h": "50e57917150425399471f3d0714c67898e4c94e81bf0e88545d41044cc2b8aa4"
+   "s": 3080,
+   "h": "7e3878509a8a746172a5902f7f6b1d699b44cdbc8fc5cfc37d3c5237a52cc315"
   },
   {
    "p": "anmacha-urwaldlager/js/menus.js",
@@ -7923,8 +7923,8 @@
   },
   {
    "p": "anmacha-urwaldlager/js/show.js",
-   "s": 23463,
-   "h": "f398da7566ddebe335f422171c510bc42d477cb226773dd054d2fa0a08fd0fcc"
+   "s": 25753,
+   "h": "655ec591a70213e55d6c7f9ab01151a94e7e164110aafbc8743a10bcd01096c0"
   },
   {
    "p": "anmacha-urwaldlager/js/stage.js",
@@ -8010,6 +8010,11 @@
    "p": "anmacha-urwaldlager/js/ui.js",
    "s": 12988,
    "h": "92d3ffadcc7f6ca75c91cbaddb0502a52ac5081504de87eb496d2bc3d883cb04"
+  },
+  {
+   "p": "anmacha-urwaldlager/js/watch.js",
+   "s": 8989,
+   "h": "c49afbe28d6a97ab43063b89a99194cf420acfc9c39e33e60771e8b2ac1ba789"
   },
   {
    "p": "anmacha-urwaldlager/logo.svg",
@@ -10848,8 +10853,8 @@
   },
   {
    "p": "guides/anmacha-urwaldlager.json",
-   "s": 15303,
-   "h": "147926f7157164868843c580e7652526df963066aab847ffcbe397908174a3a4"
+   "s": 15688,
+   "h": "b94adb468e6307fb5d60a2180a63e7fcf5c0aadfeffbf8439a6195fab44a4236"
   },
   {
    "p": "guides/beat-studio.json",
@@ -15804,7 +15809,7 @@
   {
    "p": "sync/catalog.json",
    "s": 236340,
-   "h": "532018abba8edf2b49cbdab7d2c3dd2a31ed34aeb91e25105f22c615345c2c7c"
+   "h": "e13dfffa83265b3a00fef72fb8e2927366dfc4b89e782dd8a74c4fcbcb09c35c"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

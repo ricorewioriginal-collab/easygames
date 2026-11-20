@@ -14,6 +14,8 @@
   // Beliebtheit (simuliert, transparent): Sympathie 45 %, Unterhaltung 30 %, Leistung 25 %
   const pop = c => 0.45 * c.sym + 0.3 * c.ent + 0.25 * c.perf;
   Show.pop = pop;
+  // Hunger (🍗 satt) und Schlaf (😴 ausgeruht), 0–100; alte Spielstände bekommen Startwerte
+  const vit = Show.vit = c => { if (c.hun == null) c.hun = 70; if (c.slp == null) c.slp = 70; return c; };
   Show.log = (txt, icon = '📝') => { const S = Show.S; if (!S) return; S.log.unshift({ d: S.day, txt, icon }); if (S.log.length > 60) S.log.length = 60; };
   Show.change = (c, d) => {
     if (!c) return;
@@ -36,7 +38,7 @@
     const mk = (c, isMe) => ({
       id: isMe ? 'me' : c.id, name: c.name, job: c.job, form: c.form || 'n', look: c.look, t: c.t || { nett: 0.5, drama: 0.5, mut: 0.6, fleiss: 0.5, humor: 0.5 },
       quote: c.quote || '', sym: isMe ? 52 : 40 + (c.t.nett * 22) + UL.rand(-6, 6), ent: isMe ? 50 : 35 + (c.t.drama + c.t.humor) * 14 + UL.rand(-6, 6), perf: 50,
-      trials: 0, starsWon: 0, out: false, outDay: 0, rel: {}, mood: 0.6
+      trials: 0, starsWon: 0, out: false, outDay: 0, rel: {}, mood: 0.6, hun: 70, slp: 70
     });
     const meC = mk({ name: m.name || 'Du', job: m.job, form: m.form, look: m.look }, true);
     Show.S = {
@@ -71,6 +73,8 @@
       if (Show.abort) return;
       if (exitDays(S).includes(S.day)) { const gone = await Show.exitNight(); if (Show.abort) return; if (gone === 'me') { await Show.endScreen(false); return; } }
       Show.simulateNight();
+      await Show.nightWatch();
+      if (Show.abort) return;
       S.day++;
       Show.day();
     } catch (e) { console.error(e); UI.alert('Hoppla', 'Da ist etwas schiefgelaufen. Der Spielstand vom Morgen ist gespeichert.').then(() => UL.Menus.title()); }
@@ -205,7 +209,7 @@
   function simTrial(c, def) {
     const k = D.DIFF[Show.S.diff].k;
     const quit = UL.rng.chance(Math.max(0, 0.18 - c.t.mut * 0.2) * k);
-    const q = UL.clamp(c.t.mut * 0.55 + c.t.fleiss * 0.2 + UL.rand(-0.15, 0.35) - (k - 1) * 0.25, 0, 1);
+    vit(c); const q = UL.clamp(c.t.mut * 0.55 + c.t.fleiss * 0.2 + UL.rand(-0.15, 0.35) - (k - 1) * 0.25 - (c.slp < 35 ? 0.1 : 0) - (c.hun < 30 ? 0.08 : 0), 0, 1);
     return { stars: quit ? 0 : Math.round(def.stars * q), max: def.stars, quit };
   }
   function applyTrial(c, r, def) {
@@ -226,6 +230,14 @@
     alive().forEach(c => { c.mood = UL.clamp(c.mood * 0.5 + q * 0.5, 0, 1); });
     const by = byId(S.foodBy);
     await UL.Camp.evening({ theme: S.theme, stars: n, max, text: D.MEALS[key], by: by ? firstName(by) : '' });
+    // satt werden: tagsüber −30, Abendessen +15 (Reis) bis +70 (Festmahl); deine Wahl am Topf zählt mit
+    alive().forEach(c => {
+      vit(c); let add = 15 + q * 55;
+      if (c.id === 'me') { if (S.mealPick === 2) add += 15; else if (S.mealPick === 3) add = 15; }
+      c.hun = UL.clamp(c.hun - 30 + add, 0, 100);
+      if (c.hun < 30) c.mood = Math.min(c.mood, 0.35);
+    });
+    S.mealPick = 0;
     Show.log(`Abendessen: ${n} Portionen. ${key === 'none' ? 'Reis und Bohnen.' : key === 'full' ? 'Festmahl!' : ''}`, '🍲');
   };
 
@@ -260,6 +272,27 @@
       if (c.id === 'me') { c.ent = UL.clamp(c.ent - 2, 0, 100); return; }   // wer nichts macht, wird langweilig
       Show.change(c, { sym: (c.t.nett - 0.5) * 4 + UL.rand(-2, 2), ent: (c.t.drama + c.t.humor - 1) * 3 + UL.rand(-2, 2) - 1 });
     });
+  };
+
+  // Nachtwache: reihum hält jemand das Feuer am Leben; jede dritte Nacht bist du dran (spielbar)
+  Show.nightWatch = async () => {
+    const S = Show.S, list = alive(), m = me(), npcs = list.filter(c => c.id !== 'me');
+    list.forEach(vit);
+    const mine = S.day % 3 === 1 || !npcs.length;
+    let res, w;
+    if (mine) { w = m; res = await UL.Camp.watch({ theme: S.theme, me: m }); }
+    else {
+      w = npcs[S.day % npcs.length];
+      const ok = Math.random() < 0.4 + w.t.fleiss * 0.5 + (w.slp > 50 ? 0.1 : -0.1);
+      res = { fireOk: ok, scared: ok ? 2 : 0, stolen: ok ? 0 : 1 + (Math.random() < 0.4 ? 1 : 0) };
+    }
+    list.forEach(c => { const rest = c === w ? 10 : res.fireOk ? 35 : 20; c.slp = UL.clamp(c.slp - 25 + rest, 0, 100); });
+    if (res.stolen) list.forEach(c => { c.hun = UL.clamp(c.hun - res.stolen * 4, 0, 100); });
+    if (mine) {
+      Show.change(m, { sym: (res.fireOk ? 4 : -3) + res.scared * 1.5 - res.stolen * 1.5, ent: res.scared + res.stolen * 2 });
+      list.forEach(c => { if (c !== m) Show.rel(c, m, res.fireOk ? 3 : -4); });
+    } else if (!res.fireOk) { Show.rel(m, w, -2); Show.change(w, { sym: -2, ent: 2 }); }
+    Show.log(`Nachtwache ${firstName(w)}: ${res.fireOk ? 'Feuer brennt die ganze Nacht' : 'das Feuer geht aus, alle frieren'}${res.scared ? `, ${res.scared} Tiere verscheucht` : ''}${res.stolen ? `, ${res.stolen} Portion${res.stolen > 1 ? 'en' : ''} geklaut` : ''}.`, res.fireOk ? '🔥' : '🥶');
   };
 
   // ---------- Finale ----------
@@ -329,7 +362,7 @@
     const bar = (v, c) => `<span class="bar"><i style="width:${Math.round(v)}%;background:${c}"></i></span>`;
     const rows = list.map((c, i) => `<div class="drum-row ${c.out ? 'out' : ''} ${c.id === 'me' ? 'me' : ''}"><b>${c.out ? '🚪' : i + 1 + '.'} ${esc(c.name)}</b>
       <small>${c.out ? 'raus an Tag ' + c.outDay : esc(c.job || '')}</small>
-      <div class="drum-bars">❤️${bar(c.sym, '#ff5a7a')}😂${bar(c.ent, '#ffd23a')}⭐${bar(c.perf, '#5ad1ff')}</div></div>`).join('');
+      <div class="drum-bars">❤️${bar(c.sym, '#ff5a7a')}😂${bar(c.ent, '#ffd23a')}⭐${bar(c.perf, '#5ad1ff')}${c.out ? '' : `🍗${bar(vit(c).hun, '#ff9a3a')}😴${bar(c.slp, '#a07aff')}`}</div></div>`).join('');
     const log = S.log.slice(0, 14).map(l => `<li>${l.icon} <small>Tag ${l.d}</small> ${esc(l.txt)}</li>`).join('');
     const p = UI.open(`<div class="box wide"><h2>🥁 Buschtrommel · Tag ${S.day}/${S.days}</h2>
       <p class="txt"><small>Simulierte Zuschauerstimmung: 45 % Sympathie, 30 % Unterhaltung, 25 % Prüfungsleistung.</small></p>
