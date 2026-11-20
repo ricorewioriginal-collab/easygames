@@ -162,7 +162,7 @@ export class UI {
     $('#hTime').hidden = g.mode === 'free'; $('#bGoals').hidden = g.mode !== 'career';
     this.lastPts = -1; this.comboHold = 0; this.comboEl.className = ''; this.cT.textContent = ''; this.cV.textContent = '';
     const dev = g.input.lastDevice;
-    $('#hint').textContent = dev === 'pad' ? 'A Ollie · X Flip · B Grab · Y Grind · RB Manual · Start Pause' : 'Leertaste Ollie · J Flip · K Grab · L Grind · I Manual · Esc Pause';
+    $('#hint').textContent = dev === 'pad' ? 'A Ollie · X Flip · B Grab · Y Grind · LB/RB Drehen · Hoch→Runter Manual · LT/RT Revert' : 'Leertaste Ollie · J Flip · K Grab · L Grind · Q/E Drehen · W→S Manual · R Revert · Esc Pause';
     setTimeout(() => { $('#hint').style.opacity = '0'; $('#hint').style.transition = 'opacity 1s'; }, 9000);
     $('#hint').style.opacity = '1';
     const pr = save.parks[g.park.id] || { goals: [] }; $('#gCount').textContent = `${pr.goals.length}/${g.park.goals.length}`;

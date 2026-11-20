@@ -26,7 +26,7 @@
     "Lenken mit Stick, W A S D oder Pfeilen. Nach vorne beschleunigt der Skater (Anschieben), nach hinten bremst er.",
     "Ollie: Taste halten zum Ausholen, loslassen zum Springen – je länger gehalten, desto höher.",
     "Rampen, Quarterpipes und Pools: Bergab wirst du schneller. Fährst du über die Kante einer steilen Rampe, fliegst du senkrecht nach oben (Vert) und landest wieder auf der Rampe.",
-    "Drehungen: in der Luft links oder rechts lenken bzw. Q/E oder LT/RT. Ab 180 Grad zählt die Drehung als eigener Trick (180, 360, 540, 720, 900, 1080).",
+    "Drehungen: in der Luft links oder rechts lenken oder die Schultertasten halten (Q/E, LB/RB, Touch L/R). Ab 180 Grad zählt die Drehung als eigener Trick (180, 360, 540, 720, 900, 1080).",
     "Gegen Wände prallst du ab; nur ein sehr harter Frontalaufprall führt zum Sturz."
    ]
   },
@@ -36,8 +36,9 @@
     "Flip-Tricks (Flip-Taste, in der Luft): Kickflip, Heelflip, Pop Shove-It, Impossible, 360 Shove-It, Varial Kickflip, Hardflip, 360 Flip, Varial Heelflip – je nach Richtung.",
     "Grabs (Grab-Taste halten, in der Luft): Indy, Nosegrab, Tailgrab, Melon, Mute, Method, Crail, Stalefish, Roastbeef. Je länger du hältst, desto mehr Punkte.",
     "Grinds (Grind-Taste nahe an Rail, Ledge oder Rampenkante): 50-50, Nosegrind, 5-0, Boardslide, Lipslide, Crooked, Overcrook, Smith, Feeble. Am Rail mit links/rechts die Balance halten.",
-    "Manuals (Manual-Taste am Boden): Manual (hinten) oder Nose Manual (vorne). Die Balance hältst du mit vor/zurück.",
-    "Spezialtricks: Jeder Skater hat drei eigene. Die Spezialleiste füllt sich mit gelandeten Combos. Ist sie voll: in der Luft Flip und Grab zusammen (Spezial-Flip), Grab mit Grind (Spezial-Grab) oder beim Grind zusätzlich Manual (Spezial-Grind)."
+    "Manuals: schnell Hoch, dann Runter für einen Manual, Runter, dann Hoch für einen Nose Manual – am Boden oder kurz vor der Landung. Die Balance hältst du mit Hoch/Runter.",
+    "Spezialtricks: Jeder Skater hat drei eigene. Die Spezialleiste füllt sich mit gelandeten Combos. Ist sie voll: in der Luft Flip und Grab zusammen (Spezial-Flip), Grab mit Grind (Spezial-Grab) oder beim Grinden Hoch, dann Runter (Spezial-Grind).",
+    "Revert: Landest du in einer Rampe oder im Pool, drehst du mit der Revert-Taste (R/Shift, LT/RT, Touch REVERT) um 180 Grad und die Combo läuft weiter. Direkt danach Hoch, Runter für einen Manual."
    ]
   },
   {
@@ -73,7 +74,7 @@
   {
    "t": "Bedienung auf allen Geräten",
    "list": [
-    "Handy und Tablet: Stick links, Knöpfe rechts; Menüs antippen.",
+    "Handy und Tablet: links der Stick, rechts vier Aktionstasten in Rautenform wie auf einem Controller (unten Ollie, links Flip, rechts Grab, oben Grind), darüber L/R zum Drehen und Revert.",
     "PC: Tastatur oder Maus in den Menüs, Tastatur zum Fahren.",
     "Gamecontroller und TV: Menüs mit Steuerkreuz und A, zurück mit B. Auf dem Fernseher startet das Spiel automatisch im Einfach-Modus mit Anschieben."
    ]
@@ -91,7 +92,7 @@
   {
    "t": "Fortgeschrittene",
    "list": [
-    "Combos verlängern: nach einer Landung sofort Manual drücken und zum nächsten Rail fahren.",
+    "Combos verlängern: nach einer Landung sofort Hoch, Runter für einen Manual und zum nächsten Rail fahren. In Rampen erst Revert, dann Manual.",
     "Rails von oben anspringen und kurz vorher Grind drücken – du rastest automatisch ein.",
     "Abwechslung zahlt sich aus: Jeder neue Trick in der Combo erhöht den Multiplikator voll."
    ]
