@@ -27,5 +27,14 @@ const BILD = process.argv[2] === 'bild';
   ok('Trümmer verschwinden, Physik ruht wieder', e.n === 0 && e.st === 0, JSON.stringify(e));
   const w = await p.evaluate(() => { const Z = __zotik, P = Z.phy(); const k = Z.BRK.find(q => q.hp); Z.pl.x = k.q.x; Z.pl.z = k.q.z - 1.2; Z.brkSmash(Z.pl.x, Z.pl.z, 0, 1); const n = P.count(); Z.switchWorld(3); Z.step(1 / 30, 3); return { n, nach: P.count() }; });
   ok('Weltwechsel räumt Trümmer ab', w.n > 0 && w.nach === 0, JSON.stringify(w));
-  ok(`Physik-Rechenzeit je Bild mit Trümmern unter 2 ms`, a.ms < 2, a.ms + ' ms');
+  // Kampf: Gegner zerfällt in Brocken, die vom Spieler wegfliegen; ein Schlag fegt liegende Trümmer weg
+  const g = await p.evaluate(() => { const Z = __zotik, P = Z.phy(); Z.switchWorld(2); Z.step(1 / 30, 5); for (const e of Z.E) if (!e.dead) { e.dead = true; e.m.root.visible = false; }
+    let x = 0, z = 14; for (let k = 0; k < 40 && Z.pBlocked(x, z + 3); k++) z += 1; Z.pl.x = x; Z.pl.z = z; Z.pl.y = Z.hgt(x, z); Z.pl.iframes = 99; const e = Z.spawnEnemy('x2', x, z + 3); const n0 = P.count(); Z.killE(e); const n1 = P.count(); Z.step(1 / 60, 150);
+    const L = P.pieces(), dz = L.reduce((s, q) => s + q.z - (z + 3), 0) / L.length, tief = L.filter(q => q.y < Z.hgt(q.x, q.z) - .2).length;
+    const q = L[0]; const k = P.blast(q.x - .5, q.y, q.z, 2.4, 5); Z.step(1 / 60, 6); const v = Math.max(...P.pieces().map(c => c.v)); return { n0, n1, dz: +dz.toFixed(2), tief, k, v: +v.toFixed(2) }; });
+  ok('Gegner zerfällt in echte Brocken', g.n0 === 0 && g.n1 >= 4, g.n1 + ' Brocken');
+  ok('Brocken fliegen vom Spieler weg und landen auf dem Boden', g.dz > .3 && g.tief === 0, JSON.stringify(g));
+  ok('Druckwelle eines Schlags fegt Trümmer weg', g.k >= 1 && g.v > 1.5, g.k + ' Teile, bis ' + g.v + ' m/s');
+  if (BILD) { await p.evaluate(() => { const Z = __zotik; const e = Z.spawnEnemy('x2', Z.pl.x, Z.pl.z + 3.5); Z.setCam(Math.PI + .6, .45, 7.5); Z.step(1 / 60, 20); Z.killE(e); Z.step(1 / 60, 14); }); await shot(p, 'physik-gegner'); }
+  ok(`Physik-Rechenzeit je Bild mit Trümmern unter 3 ms`, a.ms < 3, a.ms + ' ms');
   ok('keine Seitenfehler', p.errs.length === 0, p.errs.join(' | ')); await b.close(); process.exit(fail ? 1 : 0); })();

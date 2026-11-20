@@ -88,9 +88,9 @@ function addCol(x,z,r,t){COL.push(t==null?{x,z,r}:{x,z,r,t})}
 /* Kisten, Fässer und Kistenstapel (KayKit) lassen sich überall zerschlagen: Splitter, manchmal Trank, Äther oder Gefährten-Ausrüstung */
 const BRK=[],BRKRE=/barrel|box_|crate/i;
 /* Echte Physik (Havok über Babylon, bphys.js): Trümmer fliegen, prallen ab und lassen sich wegkicken. Lädt erst, wenn es Zerschlagbares gibt. */
-let PHY=null,PHYP=null;function phyLoad(){if(!PHYP&&BJS_ON)PHYP=import('./bphys.js').then(q=>q.createBPhys({T,scene3:scene,hgt:(x,z)=>hgt(x,z),COL,HOUSES,max:TOUCH?16:28})).then(q=>(PHY=q)).catch(e=>{console.warn('[Zotik] Physik nicht geladen',e);return null});return PHYP}
-function phyBurst(x,y,z,ax,az,rund){const go=q=>q&&q.burst(x,y,z,ax,az,rund?0x8a6238:0xb08050,TOUCH?5:8,rund);if(PHY)go(PHY);else{const q=phyLoad();q&&q.then(go)}}
-function brkAdd(L){for(const q of L){if(!BRKRE.test(q.k))continue;let c=COL.find(o=>Math.abs(o.x-q.x)<.01&&Math.abs(o.z-q.z)<.01);if(!c){c={x:q.x,z:q.z,r:.6};COL.push(c)}BRK.push({q,c,hp:1})}}
+let PHY=null,PHYP=null;const frameNo=()=>Math.round(time*1000);function phyLoad(){if(!PHYP&&BJS_ON)PHYP=import('./bphys.js').then(q=>q.createBPhys({T,scene3:scene,hgt:(x,z)=>hgt(x,z),COL,HOUSES,max:TOUCH?16:28})).then(q=>(PHY=q)).catch(e=>{console.warn('[Zotik] Physik nicht geladen',e);return null});return PHYP}
+function phyBurst(x,y,z,ax,az,rund,col,n,gr){const go=q=>q&&(col!=null?q.burst(x,y,z,ax,az,col,n,'brocken',gr):q.burst(x,y,z,ax,az,rund?0x7a4a22:0x8a5a2c,TOUCH?5:8,rund?'daube':'brett'));if(PHY)go(PHY);else{const q=phyLoad();q&&q.then(go)}}
+function brkAdd(L){if(!PHYP&&!brkAdd.t)brkAdd.t=setTimeout(phyLoad,6000);   /* Physik im Hintergrund vorladen, damit der erste Schlag nicht wartet */for(const q of L){if(!BRKRE.test(q.k))continue;let c=COL.find(o=>Math.abs(o.x-q.x)<.01&&Math.abs(o.z-q.z)<.01);if(!c){c={x:q.x,z:q.z,r:.6};COL.push(c)}BRK.push({q,c,hp:1})}}
 function placeBrk(par,L,f){KK.place(par,L,f);brkAdd(L)}
 function brkSmash(px,pz,ax,az){let hit=false;for(const b of BRK){if(!b.hp)continue;const dx=b.q.x-px,dz=b.q.z-pz,d=Math.hypot(dx,dz);if(d>2.5||(d>.6&&(dx*ax+dz*az)/d<.2))continue;b.hp=0;hit=true;KK.hideQ(b.q);const i=COL.indexOf(b.c);if(i>=0)COL.splice(i,1);
   const x=b.q.x,z=b.q.z,y=(b.q.y||hgt(x,z));emit(x,y+.6,z,0xb08050,18,4.5,.8,.3,9,3);FXH.impact(x,y+.7,z,0xffe0a0,false);sfx('chest');phyBurst(x,y,z,ax,az,/barrel/.test(b.q.k));camShake=Math.max(camShake,.12);XT.count&&XT.count('box');
@@ -1152,7 +1152,7 @@ function hurtE(e,dmg,kx,kz,crit,el){if(e.dead)return;if(tbOk(e)&&tbGo(e,'p'))ret
   if(e.hp<=0){killE(e);return}
   if(el)XT.reaction(e,el,dmg);
   if(!(e.brk>0)){e.bg=(e.bg||0)+dmg/e.max*100*(wk?1.8:1)*(crit?1.4:1)*(e.boss?1.6:1.1);if(e.bg>=100)enterBreak(e)}}
-function killE(e,remote){LF().kill(e);if(e.rw)ruinKill(e);e.dead=true;e.dt=0;e.tel.visible=false;e.atk=null;sfx('die');FXH.soul(e.x,e.m.root.position.y+1.2*e.d.sc,e.z,e.d.col||0xbfd8ff);emit(e.x,e.m.root.position.y+1,e.z,e.d.col||(e.k==='rift'?0xa070ff:0x9ab0ff),30,6,.9,.8,4);
+function killE(e,remote){LF().kill(e);if(e.rw)ruinKill(e);e.dead=true;e.dt=0;e.tel.visible=false;e.atk=null;sfx('die');if(!e.sea&&!X.sea&&mode==='play'&&phyBurst.f!==frameNo()){phyBurst.f=frameNo();const dx=e.x-pl.x,dz=e.z-pl.z,d=Math.hypot(dx,dz)||1,sc=Math.min(2.2,e.d.sc||1);phyBurst(e.x,e.m.root.position.y||hgt(e.x,e.z),e.z,dx/d,dz/d,false,e.d.col||(e.k==='rift'?0xa070ff:0x9ab0ff),Math.round((TOUCH?4:7)*(e.boss?1.8:1)),sc)}   /* Gegner zerfällt in echte Brocken, die vom Schlag wegfliegen – nicht im Runden-/Seekampf, höchstens ein Zerfall je Bild */FXH.soul(e.x,e.m.root.position.y+1.2*e.d.sc,e.z,e.d.col||0xbfd8ff);emit(e.x,e.m.root.position.y+1,e.z,e.d.col||(e.k==='rift'?0xa070ff:0x9ab0ff),30,6,.9,.8,4);
   gainXp(Math.round((e.xp?e.xp*Math.max(.2,Math.min(1.3,1-(S.lvl-e.lv)*.12)):e.d.xp)*XT.rew()*XO.ev('xp',e)));extKill(e,remote);if(!remote){XT.kill(e);XO.kill(e)}drop(e.x,e.z,'shard',Math.round((e.d.sh[0]+(Math.random()*(e.d.sh[1]-e.d.sh[0]+1)|0))*XO.ev('sh')));if(Math.random()<(e.boss?1:.12))drop(e.x,e.z,'potion',e.boss?2:1);
   if(remote){if(e.boss)$('boss').hidden=true;return}
   if(MP.role==='host')mpSend({t:'k',i:e.id});
@@ -1348,7 +1348,7 @@ function startAttack(){if(pl.dead||dlg.on||pl.dash>0||pl.flow||(naut.on&&!seaFig
   sfx(pl.combo>=2?'heavy':'slash')}
 const ATD=[.34,.34,.5,.62];
 function doHit(){let any=false;const mult=[1,1,1.55,2.2][pl.combo]*(1+Math.min(.2,CB.n*.01)),ax=Math.sin(pl.face),az=Math.cos(pl.face);const LR=leadRanged();if(LR){const crit=Math.random()<.14+gsum('crit'),el=CEL[S.lead],dmg=atkV()*mult*.85*cwMul(S.lead)*(crit?1.8:1),c=el?elCol(el):LR.col;proj(pl.x+ax*.6,pl.y+1.2,pl.z+az*.6,ax*24,az*24,dmg,false,c,1.1,el);if(pl.combo>=2)for(const o of [-.25,.25])proj(pl.x+ax*.6,pl.y+1.2,pl.z+az*.6,Math.sin(pl.face+o)*22,Math.cos(pl.face+o)*22,dmg*.6,false,c,1,el);S.mp=Math.min(maxMp(),S.mp+2);return}
-  if(WPX().W)WPX().smash(pl.x,pl.z,ax,az);brkSmash(pl.x,pl.z,ax,az);
+  if(WPX().W)WPX().smash(pl.x,pl.z,ax,az);brkSmash(pl.x,pl.z,ax,az);if(PHY&&PHY.count())PHY.blast(pl.x+ax*1.3,pl.y+.6,pl.z+az*1.3,2.4,5);   /* Schläge fegen liegende Trümmer weg */
   for(const e of E){if(e.dead)continue;const dx=e.x-pl.x,dz=e.z-pl.z,d=Math.hypot(dx,dz);if(d>(pl.combo===3?4.6:2.9)+e.rad)continue;if(pl.combo!==3&&d>.8&&(dx*ax+dz*az)/d<.35)continue;
     const crit=Math.random()<.14+gsum('crit')+.02*skR('prec');const dmg=atkV()*mult*(.9+Math.random()*.2)*(crit?1.8:1);hurtE(e,dmg,dx/d,dz/d,crit);extOnHit(e,dmg);any=true}
   slashG.position.set(pl.x,pl.y+.9,pl.z);slashG.rotation.y=pl.face+(pl.combo===1?0:0);slashM.scale.setScalar(1);slashM.material.opacity=.85;slashM.rotation.z=pl.combo===1?3.1416:0;pl.slashT=.18;
