@@ -27,7 +27,7 @@ export class InteriorScene implements GameScene {
   private glow: PBRMaterial[] = [];
   private sg!: ShadowGenerator;
   private shell!: Shell;
-  private cam = { yaw: .95, tYaw: .95, pitch: .3, dist: 3.6 };
+  private cam = { yaw: .95, tYaw: .95, pitch: .36, dist: 4.2 };
   private camPos = new Vector3();
   private lookIdle = 9;
   private snap = true;
@@ -129,7 +129,7 @@ export class InteriorScene implements GameScene {
   enter() {
     this.player.root.position.set(W / 2 - 2.4, 0, DOOR.z - .9);
     this.player.root.rotation.y = -Math.PI / 2 - .5;
-    this.cam.yaw = this.cam.tYaw = .95; this.cam.pitch = .3; this.lookIdle = 0; this.snap = true;
+    this.cam.yaw = this.cam.tYaw = .95; this.cam.pitch = .36; this.lookIdle = 0; this.snap = true;
     this.player.setLook(streetLook(playerLook(this.g.save.data)));
     this.g.hud.show(true); this.g.touch.show(true);
     this.g.city.refreshHud();
@@ -184,7 +184,8 @@ export class InteriorScene implements GameScene {
     let f = 1;
     const lim = (v: number, room: number) => { if (v > 1e-4 && room / v < f) f = Math.max(.2, room / v); };
     lim(vx, W / 2 - .3 - p.x); lim(-vx, p.x + W / 2 - .3); lim(vz, D / 2 - .3 - p.z); lim(-vz, p.z + D / 2 - .3); lim(vy, H - .3 - ty);
-    const wx = p.x + vx * f, wy = ty + vy * f, wz = p.z + vz * f, e = this.snap ? 1 : Math.min(1, dt * 9);
+    // wird es eng, schaut die Kamera steiler von oben, statt der Figur im Nacken zu sitzen
+    const wx = p.x + vx * f, wy = Math.min(H - .3, ty + vy * f + (1 - f) * 1.5), wz = p.z + vz * f, e = this.snap ? 1 : Math.min(1, dt * 9);
     this.camPos.set(this.camPos.x + (wx - this.camPos.x) * e, this.camPos.y + (wy - this.camPos.y) * e, this.camPos.z + (wz - this.camPos.z) * e); this.snap = false;
     this.camera.position.copyFrom(this.camPos);
     this.camera.setTarget(new Vector3(p.x, ty + (g.engine.aspect < 1 ? .25 : 0), p.z));
