@@ -65,6 +65,8 @@ export function preloadPeople(scene: Scene, avatars: string[] = []) {
 /** alle Figuren je Szene (weit entfernte oder unsichtbare Figuren werden nicht animiert) */
 const crowds = new WeakMap<Scene, Set<Actor>>();
 
+let styleQueue: Promise<unknown> = Promise.resolve();
+
 export class Actor {
   readonly root: Node3;
   model!: TransformNode;
@@ -131,6 +133,7 @@ export class Actor {
     if (this.outfitKey() !== before) void this.dress();
   }
   private dressed = 'clothed/';
+  private styled = false;
   private outfitKey() { return (this.look.outfit || 'clothed') + '/' + (this.look.style || ''); }
   /** Outfit (oberkörperfrei, Unterwäsche, Badesachen, Harness) auf die Textur malen */
   async dress() {
@@ -138,7 +141,16 @@ export class Actor {
     this.dressed = k;
     try {
       await applyOutfit(this.scene, this.model, this.avatar.id, this.look.outfit, this.avatar.g === 'f');
-      await applyStyle(this.scene, this.model, this.avatar.id, this.look.style, (this.look.outfit || 'clothed') + (this.avatar.g === 'f' ? 'f' : 'm'));
+      // Szene-Look der Reihe nach im Hintergrund malen: das Laden wartet nie darauf
+      if (this.look.style || this.styled) {
+        this.styled = true;
+        const base = (this.look.outfit || 'clothed') + (this.avatar.g === 'f' ? 'f' : 'm');
+        styleQueue = styleQueue.then(async () => {
+          if (this.root.isDisposed() || this.dressed !== k) return;
+          await applyStyle(this.scene, this.model, this.avatar.id, this.look.style, base);
+          await new Promise((r) => setTimeout(r, 40));
+        }).catch((e) => console.warn('style', e));
+      }
     } catch (e) { console.warn('outfit', e); }
   }
 
