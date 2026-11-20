@@ -35,7 +35,7 @@ Ekel-Kisten · Dschungel-Dinner · Schlammbecken (tauchen) · Wackelsteg · Krab
 
 ## Technik
 - Klassische Skripte ohne Build: `js/core.js`, `data.js`, `input.js`, `audio.js`, `assets.js`, `render.js`, `ui.js`, `stage.js`, `trials/*.js`, `camp.js`, `show.js`, `menus.js`, `main.js`.
-- Menschen: echte Figuren aus der Microsoft Rocketbox Avatar Library (MIT) für Camper, Moderatoren, Doc Rudi, Ranger Kalle und die eigene Figur (im Editor unter „Person“, Comic-Figur weiter wählbar); Umwandlung mit `tools/urwaldlager-rocketbox/`.
+- Menschen: echte Figuren aus der Microsoft Rocketbox Avatar Library (MIT) für Camper, Moderatoren, Doc Rudi, Ranger Kalle und die eigene Figur (im Editor unter „Person“, Comic-Figur weiter wählbar), Camper, Spielerfiguren und Ranger in Camp-Kleidung (Khaki, Oliv, Camp-Rot, Cargohosen, Stiefel); Umwandlung und Umfärben mit `tools/urwaldlager-rocketbox/`.
 - Modelle: KayKit, Kenney, Quaternius, Wizp (alle CC0) – Herkunft in [models/LIZENZ.md](models/LIZENZ.md), Aufbereitung mit `tools/make-urwaldlager-assets.mjs`.
 - Musik und Geräusche entstehen per Web Audio im Browser, Moderationen optional per Sprachausgabe.
 - Testpilot: `index.html?trial=<id>&theme=studio&bot=1` spielt eine Prüfung automatisch (`tests/trial-runner.cjs`).

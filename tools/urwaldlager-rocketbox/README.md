@@ -8,3 +8,8 @@ Wandelt Avatare der Microsoft Rocketbox Avatar Library (MIT) in kleine GLB-Datei
 4. Figuren: `gltf-transform quantize glb/X.glb … --pattern "{POSITION,NORMAL,JOINTS_0,WEIGHTS_0}"` (ohne Texturkoordinaten, three r128 kennt KHR_texture_transform nicht).
 
 Die Umrechnung richtet zuerst die Arme und Beine der Zielfigur auf die Ruhehaltung der Quelle aus und überträgt dann die Drehungen im Weltraum. Comic-Bewegungen werden entschärft: Arme näher am Körper, Knie beim Gehen weniger hoch.
+
+## Camp-Kleidung umfärben
+
+`outfit.html` färbt die Körpertextur einer fertigen GLB um: Die Kleidungsbereiche (Oberteil, Hose, Stiefel) ergeben sich aus den Knochen-Gewichten der Dreiecke (UV-Maske), Kopf und Hände bleiben unverändert, nackte Unterarme/Waden behalten ihre Haut (Hautton aus der Kopftextur).
+Farben je Figur stehen in `outfits.json`; `node outfit.cjs` (Server im Ordner mit `glb/` und `node_modules/three`, Port 8091) schreibt die umgefärbten GLBs zurück.
