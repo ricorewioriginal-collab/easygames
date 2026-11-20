@@ -31,6 +31,8 @@ E2E-Test (Browser, SwiftShader): Server im Repo starten (`python3 -m http.server
 | `src/game/crime.ts`, `Combat.ts` | Gesetze und Fahndungssterne, Spaßwaffen (Poolnudel, Glitzer-Dildo ab 18, Gleitgel), Polizei-Verfolgung und Festnahme |
 | `src/game/family.ts` | Antrag, Hochzeit, Adoption; Partner*in und Kind wohnen zu Hause |
 | `src/game/uptown.ts` | Hochstadt: prozedurale Hochhäuser, Brownstones, Hochbahn, Brücke, Skyline (ein Mesh je Material) |
+| `src/engine/Radio.ts` | Autoradio: 13 echte Sender (laut.fm, Stream und „Jetzt läuft“), vier Stadt-Sender als Ersatz ohne Netz |
+| `src/game/saga.ts` | Akt II „Die Lichter der Hochstadt“: acht Missionen, sechs Figuren, baut auf den Aufträgen (`gigs.ts`) auf |
 | `src/game/kerb.ts` | Laternenmeile: Hupen im Auto, Einsteigen, ruhige Ecke, Abblende (ab 18) |
 | `src/game/story.ts` | Figuren, fünf Kapitel bis zum Ende, Ziele (`goal`), automatische Fortschritte (`storyTick`), Gespräche, Entscheidungen (`save.flags`), Ende (`ending`) |
 | `src/game/life.ts` | Bedürfnisse, Stimmung, Uhrzeit und Tageswechsel, Tagesziele (aus Gay Life! übernommen) |

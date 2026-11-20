@@ -10,6 +10,8 @@ let nextNote = 0;
 let step = 0;
 let song: Song | null = null;
 export const vol = { music: .55, sfx: .8 };
+/** weitere Tonquellen (Autoradio), die dem Musikregler folgen */
+export const onVolume: Array<() => void> = [];
 
 export interface Song { bpm: number; chords: number[][]; bass?: boolean; hats?: boolean; kick?: boolean; lead?: number[] }
 
@@ -36,6 +38,7 @@ export function unlock() {
 }
 
 export function applyVolume() {
+  for (const f of onVolume) f();
   if (!ctx) return;
   sfxBus.gain.value = vol.sfx;
   musicBus.gain.value = vol.music * .32;

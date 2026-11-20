@@ -4,6 +4,8 @@ import type { SaveData } from '../engine/Save';
 import type { Line } from '../ui/ui';
 import type { Look } from './Actor';
 import { LICHT_CHAPTERS, LICHT_PEOPLE, LICHT_START, LICHT_SHOW, LUMA, lichtEnding } from './licht';
+import { SAGA_NPCS, sagaTalk, sagaGoal, sagaMarks, sagaHidden } from './saga';
+import type { Gig } from './gigs';
 import { LF_CHAPTERS, LF_PEOPLE, LF_START, lfEnding } from './leuchtfeuer';
 
 export interface NpcDef {
@@ -38,6 +40,7 @@ export const NPCS: NpcDef[] = [
   { id: 'anke', name: 'Anke Albrecht', pron: 'sie/ihr', color: '#9c5066', look: { body: 'Woman', palette: 'ace', skin: 1, hair: 6 }, x: -76.5, z: -22.4, yaw: -Math.PI / 2 },
   { id: 'samira', name: 'Samira', pron: 'sie/ihr', color: '#1e6fb6', look: { body: 'Woman2', palette: 'bi', skin: 4, hair: 2 }, x: -83, z: 34, yaw: Math.PI },
   { id: 'tobi', name: 'Tobi', pron: 'er/ihn', color: '#c9a26a', look: { body: 'Man2', palette: 'rainbow', skin: 0, hair: 3 }, x: -70, z: 30, walk: [[-70, 30], [-70, 40], [-76, 40], [-76, 30]] },
+  ...SAGA_NPCS,
   { id: 'kim', name: 'Kim', pron: 'they/them', color: '#3da542', look: { body: 'Woman', palette: 'aro', skin: 4, hair: 2 }, x: -26, z: -20, walk: [[-26, -20], [-26, -4], [-14, -4], [-14, -20]], petition: true },
 ];
 
@@ -69,6 +72,8 @@ export interface StoryCtx {
   credits(): void;
   /** Kapitelkarte (Rückblende) */
   card(kick: string, title: string, text: string): Promise<void>;
+  /** Mission mit Stationen und Zeit starten (Akt II) */
+  mission(g: Gig): void;
 }
 
 const me = (s: SaveData) => s.name;
@@ -120,6 +125,8 @@ export function goal(s: SaveData): Goal {
     case 1: return { title: `Hol Leute ins Pride-Team (${count(s, 'help_', HELPERS)}/3)`, sub: 'Lena, Bruno und Tariq. 🏳️‍🌈 zeigt, wer fehlt.' };
     case 2: return { title: 'Die Parade beginnt auf der Pride Plaza', sub: 'Ab 12 Uhr. Alle warten auf dich!', poi: 'plaza' };
   }
+  const sg = sagaGoal(s);
+  if (sg && (s.chapter > 5 || s.flags.sagaRun)) return sg;
   if (s.chapter > 1 && s.chapter <= 5) return { title: 'Erkunde Rainbow City', sub: 'Sprich mit deinen Freund*innen – die Geschichte geht gleich weiter.' };
   if (s.chapter > 5) return { title: 'Freies Spiel', sub: 'Die Geschichte ist erzählt. Arbeite, date, feiere – Rainbow City gehört dir.' };
   switch (s.step) {
@@ -134,7 +141,8 @@ export function goal(s: SaveData): Goal {
 }
 
 /** Figuren, die gerade ein Symbol über dem Kopf brauchen */
-export function marks(s: SaveData): Array<[string, string]> {
+export function marks(s: SaveData): Array<[string, string]> { return [...mainMarks(s), ...sagaMarks(s)]; }
+function mainMarks(s: SaveData): Array<[string, string]> {
   if (s.chapter === 1 && s.step === 4) return NPCS.filter((n) => n.petition && s.flags['sig_' + n.id] === undefined).map((n) => [n.id, '✍️']);
   if (s.chapter === 4 && s.step === 1) return CLUES.filter((id) => !s.flags['clue_' + id]).map((id) => [id, '🔎']);
   if (s.chapter === 5 && s.step === 1) return HELPERS.filter((id) => !s.flags['help_' + id]).map((id) => [id, '🏳️‍🌈']);
@@ -142,7 +150,7 @@ export function marks(s: SaveData): Array<[string, string]> {
 }
 
 /** Nova ist in Kapitel 4 verschwunden */
-export function hidden(s: SaveData, id: string) { return (id === 'nova' && s.chapter === 4 && s.step < 4) || (id === 'leon' && s.chapter < 2) || (['finn', 'ben', 'lotte', 'pia', 'joerg', 'anke', 'samira', 'tobi'].includes(id) && s.chapter < 2); }
+export function hidden(s: SaveData, id: string) { return sagaHidden(s, id) || (id === 'nova' && s.chapter === 4 && s.step < 4) || (id === 'leon' && s.chapter < 2) || (['finn', 'ben', 'lotte', 'pia', 'joerg', 'anke', 'samira', 'tobi'].includes(id) && s.chapter < 2); }
 
 /** Ziele, die sich von selbst erfüllen (Schicht gearbeitet, Leute kennengelernt) – zweimal pro Sekunde */
 export function storyTick(c: StoryCtx) {
@@ -154,6 +162,7 @@ export function storyTick(c: StoryCtx) {
 
 /** Gespräch – true, wenn die Geschichte es übernommen hat */
 export function talk(c: StoryCtx, id: string): boolean {
+  if (sagaTalk(c, id)) return true;
   const s = c.s, n = npc(id);
   if (!n) return false;
   if (s.chapter === 1) {

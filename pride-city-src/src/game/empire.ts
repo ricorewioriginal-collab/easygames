@@ -4,7 +4,7 @@
 import type { SaveData } from '../engine/Save';
 import type { Gig } from './gigs';
 
-export interface Business { id: string; name: string; icon: string; poi: string; price: number; daily: number; rep: number; need: number; pitch: string }
+export interface Business { id: string; name: string; icon: string; poi: string; price: number; daily: number; rep: number; need: number; pitch: string; /** nicht käuflich: Belohnung aus der Geschichte */ gift?: string }
 
 export const BUSINESSES: Business[] = [
   { id: 'spaeti', name: 'Späti Lecker', icon: '🛒', poi: 'spaeti', price: 400, daily: 30, rep: 1, need: 0, pitch: 'Tariq sucht eine Teilhaberschaft. Kalte Mate, warme Worte, offen bis spät.' },
@@ -12,6 +12,7 @@ export const BUSINESSES: Business[] = [
   { id: 'beach', name: 'Strandbar Sandbank', icon: '🏖️', poi: 'beach', price: 1200, daily: 80, rep: 3, need: 6, pitch: 'Bruno verkauft die Strandbar. Sonnenuntergang, Cocktails, Queer Beach Party jeden Sonntag.' },
   { id: 'boutique', name: 'Boutique Fabelhaft', icon: '👗', poi: 'boutique', price: 1500, daily: 95, rep: 3, need: 8, pitch: 'Glitzer, Leder, Regenbogen: Die Boutique bekommt eine eigene Drag-Kollektion – mit dir.' },
   { id: 'onelove', name: 'One Love Bar', icon: '💗', poi: 'onelove', price: 2500, daily: 150, rep: 5, need: 12, pitch: 'Lady Luma braucht eine Partnerin für die Bühne und die Bar. Showtime jede Nacht.' },
+  { id: 'kaleido', name: 'Theater Kaleidoskop', icon: '🎭', poi: 'kaleido', price: 0, daily: 180, rep: 0, need: 0, gift: 'Belohnung für Akt II in der Hochstadt', pitch: 'Das Revuetheater am Neonplatz. Das Haus Vega spielt, du bist Ehrenmitglied und am Gewinn beteiligt.' },
   { id: 'prisma', name: 'Club Prisma', icon: '🪩', poi: 'club', price: 4000, daily: 240, rep: 8, need: 18, pitch: 'Der größte Club der Stadt. Wer das Prisma hat, macht die Nächte von Rainbow City.' },
 ];
 
@@ -23,6 +24,7 @@ export const income = (s: SaveData) => owned(s).reduce((n, b) => n + b.daily, 0)
 /** Kaufen: liefert einen Grund, falls es nicht geht */
 export function buy(s: SaveData, b: Business): string | null {
   if (owns(s, b.id)) return 'Gehört dir schon.';
+  if (b.gift) return b.gift + '.';
   if (s.rep < b.need) return `Dafür brauchst du ${b.need} Ruf (du hast ${s.rep}).`;
   if (s.money < b.price) return `Dafür fehlen dir ${b.price - s.money} €.`;
   s.money -= b.price; s.rep += b.rep; s.flags[key(b.id)] = s.day;
