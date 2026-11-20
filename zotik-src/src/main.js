@@ -87,10 +87,13 @@ const COL=[];
 function addCol(x,z,r,t){COL.push(t==null?{x,z,r}:{x,z,r,t})}
 /* Kisten, Fässer und Kistenstapel (KayKit) lassen sich überall zerschlagen: Splitter, manchmal Trank, Äther oder Gefährten-Ausrüstung */
 const BRK=[],BRKRE=/barrel|box_|crate/i;
+/* Echte Physik (Havok über Babylon, bphys.js): Trümmer fliegen, prallen ab und lassen sich wegkicken. Lädt erst, wenn es Zerschlagbares gibt. */
+let PHY=null,PHYP=null;function phyLoad(){if(!PHYP&&BJS_ON)PHYP=import('./bphys.js').then(q=>q.createBPhys({T,scene3:scene,hgt:(x,z)=>hgt(x,z),COL,HOUSES,max:TOUCH?16:28})).then(q=>(PHY=q)).catch(e=>{console.warn('[Zotik] Physik nicht geladen',e);return null});return PHYP}
+function phyBurst(x,y,z,ax,az,rund){const go=q=>q&&q.burst(x,y,z,ax,az,rund?0x8a6238:0xb08050,TOUCH?5:8,rund);if(PHY)go(PHY);else{const q=phyLoad();q&&q.then(go)}}
 function brkAdd(L){for(const q of L){if(!BRKRE.test(q.k))continue;let c=COL.find(o=>Math.abs(o.x-q.x)<.01&&Math.abs(o.z-q.z)<.01);if(!c){c={x:q.x,z:q.z,r:.6};COL.push(c)}BRK.push({q,c,hp:1})}}
 function placeBrk(par,L,f){KK.place(par,L,f);brkAdd(L)}
 function brkSmash(px,pz,ax,az){let hit=false;for(const b of BRK){if(!b.hp)continue;const dx=b.q.x-px,dz=b.q.z-pz,d=Math.hypot(dx,dz);if(d>2.5||(d>.6&&(dx*ax+dz*az)/d<.2))continue;b.hp=0;hit=true;KK.hideQ(b.q);const i=COL.indexOf(b.c);if(i>=0)COL.splice(i,1);
-  const x=b.q.x,z=b.q.z,y=(b.q.y||hgt(x,z));emit(x,y+.6,z,0xb08050,18,4.5,.8,.3,9,3);FXH.impact(x,y+.7,z,0xffe0a0,false);sfx('chest');camShake=Math.max(camShake,.12);XT.count&&XT.count('box');
+  const x=b.q.x,z=b.q.z,y=(b.q.y||hgt(x,z));emit(x,y+.6,z,0xb08050,18,4.5,.8,.3,9,3);FXH.impact(x,y+.7,z,0xffe0a0,false);sfx('chest');phyBurst(x,y,z,ax,az,/barrel/.test(b.q.k));camShake=Math.max(camShake,.12);XT.count&&XT.count('box');
   const r=Math.random(),n=chNow()||1;if(r<.12){S.potions++;dnum(x,y+1.4,z,'🧪 +1','h')}else if(r<.18){cgGive(cgDrop(n<12?n:6))}else if(r<.22){S.items=S.items||{};S.items.ether=(S.items.ether||0)+1;dnum(x,y+1.4,z,'🔷 +1','x')}else{const sh=2+(Math.random()*5|0)+Math.min(10,n);S.shards+=sh;dnum(x,y+1.4,z,'💎 +'+sh,'x')}}return hit}
 /* in jeder Welt ein paar Kistenstapel und Fässer am Weg (auch Lunaris und Märchenwelten) */
 function brkScatter(n){const R=mul32(n*3301+7),K=['barrel_large','box_large','box_stacked','crates_stacked','barrel_small_stack'],L=[];
@@ -1686,7 +1689,7 @@ function updateFelli(dt){fel.t+=dt;const tx=pl.x-Math.sin(pl.face)*2.2+Math.cos(
   if(d>.4){const sp=Math.min(d*3,9);fel.x+=(tx-fel.x)/d*sp*dt;fel.z+=(tz-fel.z)/d*sp*dt}if(d>14){fel.x=tx;fel.z=tz}
   const hop=d>.6?Math.abs(Math.sin(fel.t*9))*.35:Math.sin(fel.t*2)*.03;felli.root.position.set(fel.x,hgt(fel.x,fel.z)+hop,fel.z);felli.root.rotation.y=Math.atan2(pl.x-fel.x,pl.z-fel.z);felli.body.scale.set(1+hop*.2,1-hop*.15,1+hop*.2)}
 
-function update(dt){KK.update(dt,camera.position);if(X.sea){SBX().update(dt);dlgTick(dt);return}LF().update(dt);owEdge(dt);if(curCh===1&&!WLD&&!X.owSign1&&mode==='play'){X.owSign1=1;owSign(1,3.2,13)}if(WLD&&WLD.tick&&mode==='play')WLD.tick(dt);
+function update(dt){KK.update(dt,camera.position);if(PHY)PHY.step(dt,pl);if(X.sea){SBX().update(dt);dlgTick(dt);return}LF().update(dt);owEdge(dt);if(curCh===1&&!WLD&&!X.owSign1&&mode==='play'){X.owSign1=1;owSign(1,3.2,13)}if(WLD&&WLD.tick&&mode==='play')WLD.tick(dt);
   updNaut(dt);if(mode==='play'&&!dlg.on){NZ().update(dt,time);EPX().update(dt,time)}const frozen=dlg.on;S.t=(S.t||0)+dt;
   updatePlayer(dt);updHouses(dt);zonesUpd(dt);worldRuleUpd(dt);
   if(MP.on){
@@ -1907,7 +1910,7 @@ function restoreLunaris(){
   const a=ARR();for(const k in a){a[k].length=0;a[k].push(...LS.sv[k])}
   boss=LS.boss;MBG=LS.mbg;ARENA.x=LS.ax;ARENA.z=LS.az;setAtmos(ATM0);LS=null}
 function switchWorld(n){
-  if(n===curCh&&(n===1||WLD))return;
+  if(n===curCh&&(n===1||WLD))return;if(PHY)PHY.clear();
   MP.quiet=true;
   try{WPX().clear();if(_fl)_fl.clear();if(_emb)_emb.clear();BRK.length=0;if(curCh===1&&!WLD){if(n!==1)leaveLunaris()}else destroyWorld();
   if(n===1)restoreLunaris();else if(n===12)buildCave();else if(n===13)buildCamp();else if(n===14)buildPixRoom();else if(n===15)buildOver();else if(n>=MW_FIRST)MWX().build(n);else buildWorld(n)}finally{MP.quiet=false}
@@ -4145,5 +4148,5 @@ ensureBoss();
 camTarget.set(0,2,12);
 requestAnimationFrame(frame);
 if(/[?&]debug\b/.test(location.search)||/^(localhost|127\.0\.0\.1)$/.test(location.hostname))window.__zotik={sfMon:k=>sfMon(k),lockCycle,lockSide,get lock(){return X.lock},tallOf,camInfo:()=>({yaw:camYaw,pitch:camPitch,tx:camTarget.x,tz:camTarget.z,ty:camTarget.y,cy:camera.position.y,cd:camera.position.distanceTo(camTarget),inK:camInK,bigK:camBigK}),folkNpc:(n,v,w)=>folkNpc(n,v,w),SBX,dlg,dlgQ,cycleCombat,beistand,setCombat,combatMode,turnFor,FLX:()=>FLX(),EMB:()=>EMB(),FOTO:()=>FOTO(),setCombat,combatMode,turnFor,AR:()=>AR(),OB,TWR,BRK,CLB,clbY,NZ:()=>NZ(),dodge:()=>dodge(),jump:()=>jump(),gainXp:n=>gainXp(n),kkCast:id=>kkCast(id),dunEnter:(n,c)=>dunEnter(n,c),set noRender(v){frame.off=!!v},owGo,owLake,mount,cycleNaut,get naut(){return naut},get nearI(){return nearI},get MFX(){return MFX},ipUse,WPNS,KK,ED,MINI,get mState(){return mState},PX:()=>PX(),WP:()=>WPX(),RIDE:()=>RIDEX(),doHit:()=>doHit(),pixEnter:()=>pixEnter(),get mode(){return mode},INP,T,platWall,MWX:()=>MWX(),FXH:()=>FXH,TOWN,NPC,NQ,killE,E,resetEnemy,RMS,refreshQuest,ARTS,artOn,get WR(){return WRU},WRN,WM,wmStart,guestBye,guestArrive,partyPick,setLead,ruinGuard,leadSkill2,CSK2,WWG,cwOf,fox,profJoin,miraJoin,recruit,skill1,skill2,ZON,BKIT,MKIT,startAtk,ED,zone,artThorn,artGust,artFrost,artBolt,artStar,startAttack,dodge,keys,skR,skFree,spawnEnemy,PLAT,jump,dunEnter,dunLeave,DUNF,dunWin(){if(X.dun)dunLeave(true)},get dun(){return X.dun},get WLD(){return WLD},get jp(){return WLD?WLD.jp:JP1},setCam(y,pt,di){camIn=time;camYaw=y;if(pt!=null)camPitch=pt;if(di!=null)camDist=di},AF,NZ,EPX,nautTo,pl,joy,inputVec,CR:()=>CR(),get goTo(){return goTo},get steer(){return steer},set steer(v){steer=v},get mode(){return mode},startNew(){S=DEF();S.ch=13;S.x=0;S.z=1;mode='play';begin(true)},startDbg(){S=DEF();for(let n=2;n<=10;n++)S.fl['wr'+n]=1;S.cos={fur:cr.fur,scarf:cr.scarf,outfit:cr.outfit};mode='play';begin(true)},X,OB,GEAR,TOOLS,lockCycle,doReaction,teamAttack,formStart,ipUse,useTool,toolNext,caveEnter,caveNext,caveExit,LF:()=>LF(),get CUT(){return CUT},giveGear,equip,feed,felliXp,deckExec,deckMove,deckOpen,ruinGo,unstuck,get CAVE_DOOR(){return CAVE_DOOR},spellHeal,useEther,fStage,findRx,proj,maxHp:()=>maxHp(),atkV:()=>atkV(),toBunt,BUNT_URL,get qLv(){return qLv},setQ,get naut(){return naut},pushOut,INST,blocked,hgt,pBlocked,COL,HOUSES,PZD,CUT,openPuzzle,closePuzzle,cutscene,joinParty,CMP,lunOpen,spawnOrun,get puzOpen(){return puzOpen},get W(){return WLD},get ch(){return curCh},INT,CHP,switchWorld,travel,ARENA,herbs,chests,drops,projs,step:(dt,n)=>{for(let i=0;i<n;i++){time+=dt;for(const o of animObjs)o.fn(time,dt);update(dt);updParticles(dt)}},cam:(y,p,d)=>{camYaw=y;camPitch=p;camDist=d},S:()=>S,pl,E,NPC,begin,say,toast,setStage,hurtP,get boss(){return boss},camera,scene,renderer,skill1,skill2,startAttack,dodge,interact,keys,MP,mpMsg,mpSend,mpHost,mpJoin,mpTick,variantCos,sharedFlat,spawnEnemy,hurtE,killE,get boss2(){return boss},toggleMenu,renderMenu,XT,XO};
-if(window.__zotik){window.__zotik.bst=BST}
+if(window.__zotik){window.__zotik.bst=BST;window.__zotik.phy=()=>PHY;window.__zotik.phyLoad=phyLoad;window.__zotik.BRK=BRK;window.__zotik.brkSmash=brkSmash}
 if(window.__zotik)window.__zotik.bw=async()=>{const {createBWorld}=await import('./bworld.js');return createBWorld({COL,HOUSES})};   /* Babylon-Kollisionswelt (Phase 1, nur Debug) */
