@@ -28,7 +28,7 @@ const tables = (n: number, z = 1.4, span = 8): Item[] => Array.from({ length: n 
   { m: 'home/table_medium', x: -4 + i * (span / Math.max(1, n - 1)), z, s: .75, col: true } as Item,
   { m: 'home/chair_A', x: -4 + i * (span / Math.max(1, n - 1)) - .7, z, r: Math.PI / 2 } as Item,
   { m: 'home/chair_A', x: -4 + i * (span / Math.max(1, n - 1)) + .7, z, r: -Math.PI / 2 } as Item]).flat();
-const shelves = (z = -4.1): Item[] => [-4.4, -2.2, 2.2, 4.4].map((x) => ({ m: 'home/shelf_A_big', x, z, col: true } as Item));
+const shelves = (z = -4.1): Item[] => [-4.4, -2.2, 2.2, 4.4].map((x, i) => ({ m: i % 2 ? 'home/shelf_B_large_decorated' : 'home/shelf_A_big', x, z, col: true } as Item));
 const dancefloor = (c1: number, c2: number): Item[] => Array.from({ length: 16 }, (_, i) => ({ box: [1.4, .06, 1.4], c: i % 2 ? c1 : c2, x: -2.1 + (i % 4) * 1.4, z: -.6 + Math.floor(i / 4) * 1.4, e: .6 } as Item));
 const gl = (id: string, label: string, x: number, z: number): Spot => ({ id: 'gl_' + id, label, x, z, r: 1.8, act: { k: 'gl', id } });
 const doIt = (id: string, label: string, x: number, z: number, a: Omit<Extract<Act, { k: 'do' }>, 'k'>): Spot => ({ id, label, x, z, r: 1.8, act: { k: 'do', ...a } });

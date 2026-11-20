@@ -84,15 +84,16 @@ function wallTex(sc: Scene, style: RoomStyle, c: number, accent: number) {
 
 /** Front eines Möbels: Kassetten mit Kanten (wird mit der Farbe des Möbels getönt) */
 const fronts = new WeakMap<Scene, Record<string, Texture>>();
-function frontTex(sc: Scene, kind: 'slats' | 'panel' | 'plain') {
-  const all = fronts.get(sc) || {}; fronts.set(sc, all);
-  if (all[kind]) return all[kind];
-  return (all[kind] = wrap(canvasTex(sc, 256, 256, (g) => {
+function frontTex(sc: Scene, kind: 'slats' | 'panel' | 'plain', u = 1, v = 1) {
+  // je Wiederholung eine eigene Textur (eine Kopie einer Canvas-Textur bliebe schwarz)
+  const all = fronts.get(sc) || {}, key = kind + '/' + u.toFixed(2) + '/' + v.toFixed(2); fronts.set(sc, all);
+  if (all[key]) return all[key];
+  return (all[key] = wrap(canvasTex(sc, 256, 256, (g) => {
     g.fillStyle = '#e8e8e8'; g.fillRect(0, 0, 256, 256);
     if (kind === 'slats') for (let x = 0; x < 256; x += 32) { const gr = g.createLinearGradient(x, 0, x + 32, 0); gr.addColorStop(0, '#ffffff'); gr.addColorStop(.8, '#cfcfcf'); gr.addColorStop(1, '#6a6a6a'); g.fillStyle = gr; g.fillRect(x, 0, 32, 256); }
     else if (kind === 'panel') { g.fillStyle = '#f6f6f6'; g.fillRect(14, 14, 228, 228); g.strokeStyle = '#7a7a7a'; g.lineWidth = 5; g.strokeRect(14, 14, 228, 228); g.strokeStyle = '#ffffff'; g.lineWidth = 2; g.strokeRect(20, 20, 216, 216); g.fillStyle = '#9a9a9a'; g.fillRect(116, 118, 24, 6); }
     const v = g.createLinearGradient(0, 0, 0, 256); v.addColorStop(0, 'rgba(255,255,255,.12)'); v.addColorStop(1, 'rgba(0,0,0,.22)'); g.fillStyle = v; g.fillRect(0, 0, 256, 256);
-  }), 1, 1));
+  }), u, v));
 }
 
 export interface Shell { leds: PBRMaterial[]; panes: PBRMaterial[]; }
@@ -111,8 +112,7 @@ export function buildShell(sc: Scene, t: Theme, W: number, D: number, H: number)
     for (const [x0, y0, x1, y1] of [[0, 0, 0, 46], [0, 256, 0, 210], [0, 0, 46, 0], [256, 0, 210, 0]]) { const gr = g.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, 'rgba(0,0,0,.55)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, 256, 256); }
   }, true) }); ao.material = aoM;
   const accent = t.light;
-  const wt = wallTex(sc, style, t.wall, accent);
-  const wallMat = (len: number) => { const m = pbr(sc, 0xffffff, .92); const tx = wt.clone(); wrap(tx as Texture, len / 3.2, 1); m.albedoTexture = tx; return m; };
+  const wallMat = (len: number) => { const m = pbr(sc, 0xffffff, .92); m.albedoTexture = wrap(wallTex(sc, style, t.wall, accent), len / 3.2, -1); return m; };   // v gespiegelt: Paneel unten, Schatten zur Decke oben
   const mLong = wallMat(W), mShort = wallMat(D);
   const wall = (w: number, d: number, x: number, z: number, m: PBRMaterial) => { const o = box(sc, w, H, d); o.material = m; o.position.set(x, H / 2, z); o.receiveShadows = true; o.isPickable = false; return o; };
   wall(W + .4, .2, 0, -D / 2 - .1, mLong); wall(W + .4, .2, 0, D / 2 + .1, mLong); wall(.2, D, -W / 2 - .1, 0, mShort); wall(.2, D, W / 2 + .1, 0, mShort);
@@ -155,7 +155,7 @@ export function furnish(sc: Scene, it: BoxItem, t: Theme, W: number, D: number, 
   const [w, h, d] = it.box, y0 = it.y || 0, c = it.c;
   const cast = (m: Mesh) => { m.receiveShadows = true; (m as Mesh & { _pcCast?: boolean })._pcCast = true; m.isPickable = false; return m; };
   const part = (bw: number, bh: number, bd: number, x: number, y: number, z: number, m: PBRMaterial) => { const o = cast(box(sc, bw, bh, bd)); o.material = m; o.position.set(x, y + bh / 2, z); return o; };
-  const tinted = (cc: number, kind: 'slats' | 'panel' | 'plain', u: number, v: number, r = .6) => { const m = pbr(sc, cc, r); const tx = frontTex(sc, kind).clone() as Texture; wrap(tx, u, v); m.albedoTexture = tx; return m; };
+  const tinted = (cc: number, kind: 'slats' | 'panel' | 'plain', u: number, v: number, r = .6) => { const m = pbr(sc, cc, r); m.albedoTexture = frontTex(sc, kind, Math.max(1, Math.round(u)), Math.max(1, Math.round(v))); return m; };
   const emis = (m: PBRMaterial) => { if (it.e) { m.emissiveColor = col(c, it.e); m.metadata = { c }; glowing.push(m); } return m; };
   const long = Math.max(w, d), short = Math.min(w, d), alongX = w >= d;
   // Tanzfläche und andere flache Leuchtflächen: glänzend lassen
@@ -165,6 +165,23 @@ export function furnish(sc: Scene, it: BoxItem, t: Theme, W: number, D: number, 
     const leg = cast(cyl(sc, .05, .05, h - .12, 10)); leg.material = pbr(sc, 0xc8ccd4, .25, .9); leg.position.set(it.x, (h - .12) / 2, it.z);
     const foot = cast(cyl(sc, .22, .24, .04, 16)); foot.material = leg.material; foot.position.set(it.x, .02, it.z);
     const seat = cast(cyl(sc, .24, .22, .12, 18)); seat.material = pbr(sc, c, .55); seat.position.set(it.x, h - .06, it.z);
+    return true;
+  }
+  // Muckibude: Hantelbank mit Ständer und Langhantel statt grauer Kästen, Laufband mit Pult
+  if (t.id === 'gym' && it.col && !y0 && h >= 1.1) {
+    const steel = pbr(sc, 0xc4cad2, .28, .9), pad = pbr(sc, 0x1c1c22, .7), plate = pbr(sc, 0x2a2a30, .5, .3);
+    if (c === 0x16161c) {
+      // Laufband
+      part(w - .1, .18, d, it.x, 0, it.z, pad); part(w - .3, .03, d - .5, it.x, .18, it.z + .15, pbr(sc, 0x33333a, .9));
+      for (const sx of [-1, 1]) { part(.06, 1.2, .06, it.x + sx * (w / 2 - .1), .18, it.z - d / 2 + .15, steel); part(.05, .05, 1, it.x + sx * (w / 2 - .1), 1.05, it.z - d / 2 + .6, steel); }
+      part(w - .2, .3, .1, it.x, 1.25, it.z - d / 2 + .15, pad);
+      const scr = box(sc, w - .45, .2, .02); scr.material = glow(sc, 0x5ce1ff, 1.1); scr.position.set(it.x, 1.42, it.z - d / 2 + .21); scr.isPickable = false;
+      return true;
+    }
+    part(.42, .12, d - .5, it.x, .42, it.z + .15, pad); part(.3, .42, .1, it.x, 0, it.z + d / 2 - .25, steel); part(.3, .42, .1, it.x, 0, it.z - .3, steel);
+    for (const sx of [-1, 1]) { part(.07, 1.25, .07, it.x + sx * .52, 0, it.z - d / 2 + .3, steel); part(.07, .07, .5, it.x + sx * .52, 0, it.z - d / 2 + .3, steel); }
+    const bar = cast(cyl(sc, .025, .025, 1.9, 10)); bar.material = steel; bar.rotation.z = Math.PI / 2; bar.position.set(it.x, 1.2, it.z - d / 2 + .3);
+    for (const sx of [-1, 1]) for (const k of [0, 1]) { const pl = cast(cyl(sc, .24 - k * .05, .24 - k * .05, .05, 18)); pl.material = k ? pbr(sc, [0xff3b6b, 0x5ce1ff, 0xffd23b][Math.abs(Math.round(it.x)) % 3], .5) : plate; pl.rotation.z = Math.PI / 2; pl.position.set(it.x + sx * (.74 + k * .07), 1.2, it.z - d / 2 + .3); }
     return true;
   }
   // Theke: hüfthoch, lang und schmal
@@ -192,7 +209,7 @@ export function furnish(sc: Scene, it: BoxItem, t: Theme, W: number, D: number, 
       const wz = sz * (D / 2 - .16), wxx = sx * (W / 2 - .16);
       const boardM = pbr(sc, shade(c, .5), .5), light = glow(sc, t.light, .9);
       const panel = box(sc, backZ ? len : .04, 1.25, backZ ? .04 : len); panel.material = light; panel.isPickable = false; panel.position.set(backZ ? it.x : wxx + sx * .1, 1.95, backZ ? wz + sz * .1 : it.z);
-      const bottle = cyl(sc, .045, .055, .3, 8); bottle.isPickable = false; const bm = pbr(sc, 0xffffff, .15, 0); bottle.material = bm;
+      const bottle = cyl(sc, .028, .06, .3, 8); bottle.isPickable = false; const bm = pbr(sc, 0xffffff, .15, 0); bottle.material = bm;
       const mats: number[] = [], cols: number[] = [], pal = [0xff5c8a, 0x5ce1ff, 0xffd23b, 0x7bffb0, 0xb56bff, 0xff8a3b, 0xf2f2f2, 0x2f8f5a];
       const rnd = rng(Math.round(Math.abs(it.x * 31 + it.z * 17)) + 5);
       for (const sy of [1.5, 1.95, 2.4]) {
