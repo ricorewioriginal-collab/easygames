@@ -6,11 +6,11 @@
   // Erfolge: id, Symbol, Name, Bedingung, Belohnung (Outfit-Teil)
   P.ACH = [
     { id: 'erste', icon: '🎬', name: 'Erste Prüfung', txt: 'Beende deine erste Urwaldprüfung.' },
-    { id: 'perfekt', icon: '⭐', name: 'Perfekt!', txt: 'Hol in einer Prüfung alle Sterne.', reward: 'Camp-Hemd „Gold“' },
+    { id: 'perfekt', icon: '⭐', name: 'Perfekt!', txt: 'Hol in einer Prüfung alle Sterne.', reward: 'Halstuch „Gold“' },
     { id: 'tapfer', icon: '💪', name: 'Durchgehalten', txt: 'Beende 10 Prüfungen ohne Abbruch.' },
     { id: 'abenteurer', icon: '🧭', name: 'Abenteurer:in', txt: 'Spiel jede Prüfung mindestens einmal.', reward: 'Tropenhelm' },
     { id: 'sammler', icon: '💯', name: 'Sternesammler:in', txt: 'Sammle insgesamt 100 Sterne.', reward: 'Hutfarbe „Gold“' },
-    { id: 'sturm', icon: '⛈️', name: 'Sturmerprobt', txt: 'Hol im Gewitter mindestens die Hälfte der Sterne.', reward: 'Camp-Hemd „Tarngrün“' },
+    { id: 'sturm', icon: '⛈️', name: 'Sturmerprobt', txt: 'Hol im Gewitter mindestens die Hälfte der Sterne.', reward: 'Halstuch „Tarngrün“' },
     { id: 'koch', icon: '🧑‍🍳', name: 'Sternekoch', txt: 'Koch am Lagerfeuer ein Festessen (drei gute Zutaten).' },
     { id: 'plane', icon: '⛺', name: 'Trockene Füße', txt: 'Spann bei Regen die Plane über die Betten.' },
     { id: 'freund', icon: '💚', name: 'Beste Freunde', txt: 'Schließ im Camp eine echte Freundschaft.', reward: 'Blumenkranz' },
