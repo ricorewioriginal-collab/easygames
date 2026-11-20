@@ -70,7 +70,7 @@ export class Engine {
   }
   newCamera(s: Scene, fovDeg: number, near = .1, far = 400) {
     const c = new FreeCamera('cam', new Vector3(0, 2, 6), s);
-    c.fov = fovDeg * Math.PI / 180; c.minZ = near; c.maxZ = far; c.inputs.clear();
+    c.fov = fovDeg * Math.PI / 180; (c as FreeCamera & { _pcFov?: number })._pcFov = c.fov; c.minZ = near; c.maxZ = far; c.inputs.clear();
     return c;
   }
 
@@ -105,9 +105,16 @@ export class Engine {
   disposeScene(s: GameScene) { if (s === this.scene) return; this.pipes.get(s.scene)?.dispose(); this.pipes.delete(s.scene); s.scene.dispose(); }
 
   resize() {
-    const cap = this.quality === 2 ? 2 : this.quality === 1 ? 1.5 : 1;
-    this.bjs.setHardwareScalingLevel(1 / (Math.min(devicePixelRatio || 1, cap) * this.res));
+    const dpr = devicePixelRatio || 1, q = this.quality;
+    // Handys haben sehr dichte Bildschirme: dort nie unter 1,1 Bildpunkte je CSS-Pixel, sonst wird das Bild matschig
+    const cap = this.mobile ? (q === 0 ? 1.5 : 2) : q === 2 ? 2 : q === 1 ? 1.5 : 1;
+    let scale = Math.min(dpr, cap) * this.res;
+    if (this.mobile) scale = Math.max(Math.min(dpr, 1.1), scale);
+    this.bjs.setHardwareScalingLevel(1 / scale);
     this.bjs.resize();
+    // Hochkant: Blickwinkel weiten, damit man die Stadt sieht und nicht nur einen schmalen Streifen Straße
+    const c = this.scene?.camera as (FreeCamera & { _pcFov?: number }) | undefined;
+    if (c && c._pcFov) { const a = this.aspect; c.fov = a >= 1.2 ? c._pcFov : Math.min(1.42, 2 * Math.atan(Math.tan(c._pcFov / 2) * 1.2 / a)); }
   }
 
   /* Filmischer Look: ACES, Kontrast, mehr Sättigung, kühle Schatten / warme Lichter, Vignette, Bloom auf hoher Stufe */
@@ -120,7 +127,7 @@ export class Engine {
     ip.exposure = 1.05; ip.contrast = 1.1;
     ip.vignetteEnabled = true; ip.vignetteWeight = 1.6; ip.vignetteStretch = .4; ip.vignetteCameraFov = .8;
     const cc = new ColorCurves();
-    cc.globalSaturation = 14; cc.shadowsHue = 220; cc.shadowsDensity = 12; cc.shadowsSaturation = 30; cc.highlightsHue = 35; cc.highlightsDensity = 10; cc.highlightsSaturation = 25;
+    cc.globalSaturation = 34; cc.shadowsHue = 220; cc.shadowsDensity = 12; cc.shadowsSaturation = 30; cc.highlightsHue = 35; cc.highlightsDensity = 10; cc.highlightsSaturation = 25;
     ip.colorCurvesEnabled = true; ip.colorCurves = cc;
     const sip = s.scene.imageProcessingConfiguration;
     sip.contrast = 1.1; sip.colorCurvesEnabled = true; sip.colorCurves = cc;
@@ -176,7 +183,7 @@ export class Engine {
     this.resFrames++; this.resT += dt;
     if (this.resT >= .5) {
       const f = this.resFrames / this.resT; this.resFrames = 0; this.resT = 0;
-      const min = this.mobile ? .55 : .7, was = this.res;
+      const min = this.mobile ? .72 : .7, was = this.res;
       if (!this.paused && !document.hidden) {
         if (f < 48) this.res = Math.max(min, this.res * (f < 30 ? .85 : .93)); else if (f > 57) this.res = Math.min(1, this.res * 1.04);
         if (Math.abs(this.res - was) > .01) this.resize();
@@ -187,7 +194,7 @@ export class Engine {
     this.frames = 0; this.sampleT = 0;
     if (this.qualitySetting >= 0 || document.hidden) return;
     if (this.fps < 40) { this.slow++; this.fast = 0; } else if (this.fps > 58) { this.fast++; this.slow = 0; } else { this.slow = 0; this.fast = 0; }
-    if (this.slow >= 2 && this.res <= (this.mobile ? .56 : .71) && this.quality > 0) { this.applyQuality((this.quality - 1) as Quality); this.slow = 0; }
+    if (this.slow >= 2 && this.res <= (this.mobile ? .73 : .71) && this.quality > 0) { this.applyQuality((this.quality - 1) as Quality); this.slow = 0; }
     if (this.fast >= 8 && this.res >= 1 && this.quality < (this.mobile ? 1 : 2)) { this.applyQuality((this.quality + 1) as Quality); this.fast = 0; }
   }
 }

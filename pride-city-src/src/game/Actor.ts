@@ -1,6 +1,7 @@
 /* Animierte Figur: echte Menschen aus Microsoft Rocketbox (MIT) mit geteilten Animationen (Laufen, Rennen, Tanzen,
    Jubeln, Winken, Sitzen, Reden …), weiche Überblendung zwischen Animationen. Läuft in jeder Babylon-Szene. */
 import { applyOutfit } from './outfit';
+import { applyStyle } from './queer';
 import { AnimationGroup, Node3, Vector3, type Scene, type TransformNode, type AbstractMesh } from '../engine/bjs';
 import { container, skinned } from '../engine/Assets';
 import { avatarFor, type Avatar } from './avatars';
@@ -16,7 +17,7 @@ export const OUTFITS: Array<{ id: Outfit; name: string; adult?: boolean }> = [
   { id: 'swim', name: 'Badehose / Bikini' }, { id: 'harness', name: 'Harness', adult: true },
 ];
 /** rb = feste Rocketbox-Figur (sonst passend zu body/palette/skin gewählt) */
-export interface Look { body: string; palette: string; skin: number; hair?: number; rb?: string; cape?: boolean; hat?: boolean; mug?: boolean; outfit?: Outfit; top?: boolean; /** 18+ */ hot?: boolean }
+export interface Look { body: string; palette: string; skin: number; hair?: number; rb?: string; cape?: boolean; hat?: boolean; mug?: boolean; outfit?: Outfit; top?: boolean; /** Szene-Look aus queer.ts (Flaggen-Shirt, Leder, Glitzer, gefärbte Haare) */ style?: string; /** 18+ */ hot?: boolean }
 
 /** Spielbare Romanfigur aus „Ich bin das Licht“: Leon Sommer als Mann oder als Lady Luma in Drag */
 export const ROLE_LOOKS: Record<string, Look> = {
@@ -129,13 +130,16 @@ export class Actor {
     Object.assign(this.look, look); this.look.body = this.avatar.id;
     if (this.outfitKey() !== before) void this.dress();
   }
-  private dressed = 'clothed';
-  private outfitKey() { return this.look.outfit || 'clothed'; }
+  private dressed = 'clothed/';
+  private outfitKey() { return (this.look.outfit || 'clothed') + '/' + (this.look.style || ''); }
   /** Outfit (oberkörperfrei, Unterwäsche, Badesachen, Harness) auf die Textur malen */
   async dress() {
     const k = this.outfitKey(); if (k === this.dressed || this.avatar.job === 'kid') return;
     this.dressed = k;
-    try { await applyOutfit(this.scene, this.model, this.avatar.id, this.look.outfit, this.avatar.g === 'f'); } catch (e) { console.warn('outfit', e); }
+    try {
+      await applyOutfit(this.scene, this.model, this.avatar.id, this.look.outfit, this.avatar.g === 'f');
+      await applyStyle(this.scene, this.model, this.avatar.id, this.look.style, (this.look.outfit || 'clothed') + (this.avatar.g === 'f' ? 'f' : 'm'));
+    } catch (e) { console.warn('outfit', e); }
   }
 
   private sleep(on: boolean) {
