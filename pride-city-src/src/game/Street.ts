@@ -130,12 +130,13 @@ export class Street {
     this.t += dt;
     const on = Math.floor(this.t * 4) % 2;
     for (const [a, b] of this.flash) { a.m.albedoColor = a.c.scale(on ? 1 : .12); b.m.albedoColor = b.c.scale(on ? .12 : 1); }
+    const far = this.world.low ? 62 : 90, anim = this.world.low ? 36 : 60;
     this.people.forEach((n, i) => {
       const show = n.away ? false : n.kind === 'worker' || n.kind === 'curb' ? adult && night > .4 : n.kind === 'walker' ? (night < .5 || i % 2 === 0) : n.kind === 'security' ? night > .3 : true;
       const d2 = Vector3.DistanceSquared(n.a.root.position, ref);
-      n.a.root.visible = !n.away && (n.chase || n.talking || (show && d2 < 90 * 90));
+      n.a.root.visible = !n.away && (n.chase || n.talking || (show && d2 < far * far));
       if (!n.a.root.visible) return;
-      if (d2 < 60 * 60 || n.chase) n.a.update(dt);
+      if (d2 < anim * anim || n.chase) n.a.update(dt);
       if (n.talking || n.down || n.chase) return;
       if (n.path.length < 2) return;
       if (n.wait > 0) { n.wait -= dt; if (n.a.anim !== 'idle') n.a.play('idle'); return; }
