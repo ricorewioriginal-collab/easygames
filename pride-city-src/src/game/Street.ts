@@ -176,7 +176,7 @@ export class Street {
     this.t += dt;
     const on = Math.floor(this.t * 4) % 2;
     for (const [a, b] of this.flash) { a.m.albedoColor = a.c.scale(on ? 1 : .12); b.m.albedoColor = b.c.scale(on ? .12 : 1); }
-    const far = this.world.low ? 62 : 90, anim = this.world.low ? 36 : 60;
+    const far = this.world.low ? 50 : 90, anim = this.world.low ? 28 : 60;
     this.people.forEach((n, i) => {
       const show = n.away ? false : n.kind === 'worker' || n.kind === 'curb' ? adult && night > .4 : n.kind === 'walker' ? (night < .5 || i % 2 === 0 || !!n.mate || n.yaw !== undefined) : n.kind === 'security' ? night > .3 : true;
       const d2 = Vector3.DistanceSquared(n.a.root.position, ref);
