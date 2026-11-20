@@ -160,6 +160,7 @@
     UL.Audio.sfx('drum');
     if (st.mod) await st.mod(again ? 'pickAgain' : 'pick', { n: c.id === 'me' ? c.name : c.name });
     c.trials++;
+    if (!UL.bot) await UI.say('ranger', UL.pick(D.RANGER_LINES.pick).replace('{n}', firstName(c)));
     if (c.id === 'me') {
       const r = await UL.Trials.run(id, { theme: S.theme, diff: S.diff, name: c.name, look: c.look, form: c.form, seed: S.seed + S.day * 31 });
       if (Show.abort) return;
