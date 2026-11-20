@@ -93,6 +93,9 @@
   Camp.Stage = CampStage;
 
   // Camper-Figuren erzeugen
+  // Freundschaft 💚 / Zoff ⚡ mit dir am Namensschild
+  function relIcon(c) { const r = c.rel && c.rel.me; return r == null ? '' : r >= 72 ? ' 💚' : r <= 30 ? ' ⚡' : ''; }
+  Camp.relIcon = relIcon;
   function cast(st, list, withMe = true) {
     const figs = [];
     list.forEach(c => {
@@ -100,7 +103,7 @@
       const f = UL.makeFig(c.look); st.scene.add(f.root); st.figs.push(f);
       const o = { c, f, x: 0, z: 0, tx: 0, tz: 0, state: 'idle', t: UL.rand(0.5, 4), act: '' };
       figs.push(o);
-      UL.Tags.set('n:' + c.id, v => v.copy(f.root.position).add(new T.Vector3(0, f.height + 0.35, 0)), esc(UL.Show.first(c)) + (c.id === 'me' ? ' ⭐' : ''), 'tag' + (c.id === 'me' ? ' me' : ''));
+      UL.Tags.set('n:' + c.id, v => v.copy(f.root.position).add(new T.Vector3(0, f.height + 0.35, 0)), esc(UL.Show.first(c)) + (c.id === 'me' ? ' ⭐' : relIcon(c)), 'tag' + (c.id === 'me' ? ' me' : ''));
     });
     return figs;
   }
@@ -226,7 +229,7 @@
       // eigenes Interview-Set: zwei Fragen aus dem Off, Zuschauer reagieren sofort
       UL.Tags.clear();
       const r = await UL.Phone.interview({ theme: S.theme, me, others: Show.alive().filter(c => c.id !== 'me') });
-      figs.forEach(o => UL.Tags.set('n:' + o.c.id, v => v.copy(o.f.root.position).add(new T.Vector3(0, o.f.height + 0.35, 0)), esc(UL.Show.first(o.c)) + (o.c.id === 'me' ? ' ⭐' : ''), 'tag' + (o.c.id === 'me' ? ' me' : '')));
+      figs.forEach(o => UL.Tags.set('n:' + o.c.id, v => v.copy(o.f.root.position).add(new T.Vector3(0, o.f.height + 0.35, 0)), esc(UL.Show.first(o.c)) + (o.c.id === 'me' ? ' ⭐' : relIcon(o.c)), 'tag' + (o.c.id === 'me' ? ' me' : '')));
       crewTag(docO, '🩺 ' + D.DOC.name); crewTag(rangerO, '🪖 ' + D.RANGER.name);
       if (!r.said.length) return;
       spend();
@@ -643,7 +646,9 @@
       bubble2(cook, at, UL.pick(['Dann koch doch selbst!', 'Finger weg von meinem Topf!', 'Du kannst nicht mal Wasser kochen!']));
       await wait(1.6); cook.f.set('use');
     }
-    // 3) Kochen: alles wandert in den Topf, es dampft
+    // 3) Kochen: selbst gekocht → drei Zutaten im richtigen Moment in den Topf (Hitze-Leiste)
+    S.cookQ = -1;
+    if (cook === meO) { cam.p.set(pp.x + 1.6, 1.7, pp.z + 1.9); cam.l.set(pp.x, 0.7, pp.z); S.cookQ = await cookGame(st); }
     steam = true; UL.Audio.sfx('splash');
     for (const it of items) {
       if (UL.bot) { it.visible = false; continue; }
@@ -670,11 +675,66 @@
       else if (i === 2) { Show.change(me, { sym: -4, ent: 4 }); Show.alive().forEach(c => Show.rel(me, c, -3)); Show.log(`${me.name} schnappt sich die größte Portion.`, '😋'); }
       else if (i === 3) { Show.change(me, { sym: 5 }); me.mood = Math.max(0, me.mood - 0.2); Show.alive().forEach(c => Show.rel(me, c, 3)); Show.log(`${me.name} verzichtet aufs Essen.`, '💚'); }
     }
+    // 5) Lagerfeuer-Gespräch: ein Camper fragt in die Runde, deine Antwort zählt
+    if (npcO.length >= 2) await fireTalk(npcO, meO, cam, () => { orbit = false; }, () => { orbit = true; });
     await UI.say(UL.pick(['lotte', 'mats']), UL.pick(D.MOD.evening)[1]);
     UL.Tags.clear();
     await UI.fade(true, 0.4);
     resolve();
   });
+
+  // Kochen am Feuer: Zeiger pendelt über die Hitze-Leiste, im grünen Bereich die Zutat in den Topf geben
+  function cookGame(st) {
+    if (UL.bot) return Promise.resolve(2);
+    const NAMES = [['🧅', 'Zwiebeln'], ['🐟', 'Fisch'], ['🌿', 'Dschungel-Kräuter']];
+    const ui = document.createElement('div'); ui.className = 'tui cookgame'; document.getElementById('ui').appendChild(ui);
+    let round = 0, x = 0, dir = 1, good = 0, wait = 0, tapped = false, res;
+    const zone = () => [0.5 - (0.13 - round * 0.025), 0.5 + (0.13 - round * 0.025)];
+    const draw = (msg) => { const [a, b] = zone(); ui.innerHTML = `<div class="lbl">🍳 ${NAMES[round] ? NAMES[round][0] + ' ' + NAMES[round][1] + ' in den Topf – im grünen Bereich ' + In.glyph('ok') + ' drücken!' : ''}</div>
+      <div style="position:relative;width:min(78vw,420px);height:26px;margin:8px auto;border-radius:13px;background:linear-gradient(90deg,#3a7ae0,#ffd23a 40%,#ff5a2a 80%,#7a1a10);box-shadow:0 2px 8px #0008">
+      <i style="position:absolute;left:${a * 100}%;width:${(b - a) * 100}%;top:0;bottom:0;background:#5ad05acc;border:2px solid #fff;border-radius:8px"></i>
+      <b style="position:absolute;left:calc(${x * 100}% - 4px);top:-6px;width:8px;height:38px;background:#fff;border-radius:4px;box-shadow:0 0 6px #000"></b></div>
+      <div class="lbl">${msg || '⭐'.repeat(good) + '☆'.repeat(Math.max(0, round - good))}</div>`; };
+    const tap = () => { tapped = true; }; addEventListener('pointerdown', tap);   // Handy: Tippen irgendwo
+    const f = (dt) => {
+      if (wait > 0) { wait -= dt; if (wait <= 0) { round++; if (round >= 3) { st.updaters.splice(st.updaters.indexOf(f), 1); removeEventListener('pointerdown', tap); ui.remove(); res(good); return; } } return; }
+      x += dir * dt * (0.75 + round * 0.3); if (x > 1) { x = 1; dir = -1; } if (x < 0) { x = 0; dir = 1; }
+      if (In.pressed('ok') || tapped) {
+        tapped = false; const [a, b] = zone(), hit = x >= a && x <= b, near = x >= a - 0.12 && x <= b + 0.12;
+        if (hit) { good++; UL.Audio.sfx('star'); } else UL.Audio.sfx(near ? 'gulp' : 'bad');
+        draw(hit ? 'Perfekt! 👌' : near ? 'Geht so …' : x > b ? 'Angebrannt! 🔥' : 'Noch zu kalt … 🥶'); wait = 0.9; return;
+      }
+      draw();
+    };
+    return new Promise(r => { res = r; draw(); st.updaters.push(f); });
+  }
+
+  // Lagerfeuer-Gespräch mit Entscheidung
+  async function fireTalk(npcO, meO, cam, stop, go) {
+    const Show = UL.Show, me = meO.c, S = Show.S;
+    const ask = UL.pick(npcO), others = npcO.filter(o => o !== ask), x = UL.pick(others);
+    const t = UL.pick(D.FIRETALK.filter(t => !(S.talked || []).includes(t.q))) || UL.pick(D.FIRETALK);
+    S.talked = (S.talked || []).concat([t.q]).slice(-6);
+    const nm = Show.first(x.c), fill = s => s.replace(/\{x\}/g, nm);
+    stop(); const p = ask.f.root.position; cam.p.set(p.x * 0.4, 1.9, p.z * 0.4 + 0.1); cam.l.set(p.x, p.y + 0.9, p.z);
+    ask.f.play('interact');
+    await UI.say('camp', t.q, { name: '🔥 ' + Show.first(ask.c) });
+    const opts = t.a.map((a, i) => ({ label: fill(a[0]), value: i, icon: ['💬', '😄', '🙃'][i] }));
+    const i = UL.bot ? 0 : await UI.choose('🔥 Am Lagerfeuer', `${UL.esc(Show.first(ask.c))} fragt: „${UL.esc(t.q)}“`, opts);
+    const [, sym, ent, rA, rAll, rX, re] = t.a[i];
+    Show.change(me, { sym, ent });
+    if (rAll) npcO.forEach(o => Show.rel(me, o.c, rAll));
+    if (rA) Show.rel(me, ask.c, rA);
+    if (rX) Show.rel(me, x.c, rX);
+    const who = rX && /\{x\}/.test(re) ? x : rX < -5 ? x : ask;
+    who.f.play(rX < 0 && who === x ? 'block' : sym >= 2 || ent >= 4 ? 'cheer' : 'interact');
+    UL.Tags.bubble(who.c.id, v => v.copy(who.f.root.position).add(new T.Vector3(0, 2.2, 0)), fill(re), 2.8);
+    if (rX <= -5) { UL.Tags.bubble(x.c.id, v => v.copy(x.f.root.position).add(new T.Vector3(0, 2.2, 0)), UL.pick(['Wie bitte?!', 'Das sagst du mir nicht ins Gesicht?', 'Na warte …']), 2.6); Show.log(`${me.name} lästert am Feuer über ${nm}.`, '🐍'); }
+    else if (rX >= 6) Show.log(`${me.name} lobt ${nm} am Lagerfeuer.`, '💚');
+    UL.Audio.sfx(ent >= 4 ? 'laugh' : sym >= 2 ? 'ooh' : 'tick');
+    await UL.sleep(UL.bot ? 0.05 : 2.6);
+    go();
+  }
   function bubble2(o, at, text) { UL.Tags.bubble(o.c.id, at(o), text, 2.4); }
 
   // ---------- Auszug in der Nacht ----------

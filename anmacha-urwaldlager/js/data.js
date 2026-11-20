@@ -94,6 +94,20 @@
   D.FINAL = [{ id: 'dinner', course: 'Vorspeise' }, { id: 'kisten', course: 'Hauptgang' }, { id: 'quiz', course: 'Nachtisch' }];
 
   // Essen: Sterne = Portionen
+  // Lagerfeuer-Gespräche nach dem Essen: ein Camper fragt, du antwortest. {x} = ein anderer Camper.
+  // Antwort: [Text, Sympathie, Unterhaltung, Beziehung zum Fragenden, Beziehung zu allen, Beziehung zu {x}, Reaktion]
+  D.FIRETALK = [
+    { q: 'Was vermisst ihr hier drin am meisten?', a: [['Meine Familie. Jeden Abend.', 3, 0, 4, 2, 0, 'Oh, das geht mir genauso …'], ['Mein Bett. Und meine Kaffeemaschine. Und Pizza.', 1, 3, 2, 1, 0, 'Pizza! Sag das Wort nicht!'], ['Nichts. Ich hab hier alles, was ich brauche.', -1, 2, -2, -1, 0, 'Ja klar … du Held.']] },
+    { q: 'Mal ehrlich: Wer tut hier am wenigsten im Lager?', a: [['Darüber red ich nicht hinter dem Rücken.', 3, 0, 1, 2, 0, 'Respekt, du bist fair.'], ['{x}. Hat heute kein einziges Holzscheit getragen.', -1, 5, 3, -1, -10, 'Ha! Hab ich auch gemerkt!'], ['Ich glaube, ich selbst. Ich arbeite dran!', 2, 2, 2, 2, 0, 'Wenigstens bist du ehrlich.']] },
+    { q: 'Wenn ihr morgen rausfliegt – was wäre euer letzter Satz?', a: [['Danke, Leute, ihr seid die beste Truppe!', 3, 1, 2, 3, 0, 'Hör auf, ich muss gleich weinen.'], ['Ich komme wieder – als Moderator:in!', 1, 4, 1, 1, 0, 'Das würde ich sehen wollen!'], ['Ein Glück, endlich duschen.', 0, 3, 0, -1, 0, 'Charmant wie immer …']] },
+    { q: 'Habt ihr schon einen Lieblingsmenschen im Camp?', a: [['Ja – {x}. Mit dir kann man lachen.', 2, 1, 0, 0, 10, '{x} strahlt übers ganze Gesicht.'], ['Du! Wer sonst?', 1, 2, 9, -1, 0, 'Oh, wie süß!'], ['Ich mag alle gleich gern.', 1, 0, 0, 2, 0, 'Diplomatisch …']] },
+    { q: 'Was war heute euer peinlichster Moment?', a: [['Ich bin vorhin in den Schlamm gefallen. Mit Anlauf.', 2, 4, 2, 2, 0, 'Das hab ich gesehen! Legendär!'], ['Als {x} mich beim Schnarchen nachgemacht hat.', 0, 4, 1, 0, -3, 'Aber es war schon lustig.'], ['Peinlich? Mir passiert nie was Peinliches.', -2, 2, -1, -1, 0, 'Ja ja …']] },
+    { q: 'Warum seid ihr eigentlich hier im Lager?', a: [['Ich will mich selbst herausfordern.', 3, 0, 2, 1, 0, 'Starke Antwort.'], ['Ganz ehrlich? Für die Karriere.', -1, 3, 0, -1, 0, 'Wenigstens ehrlich.'], ['Weil meine Oma gesagt hat, ich trau mich nicht.', 2, 4, 3, 2, 0, 'Grüße an deine Oma!']] },
+    { q: 'Wer von uns gewinnt am Ende die Krone?', a: [['{x}! Hat es am meisten verdient.', 3, 0, 0, 1, 8, 'Wie nett von dir!'], ['Na ich natürlich!', -1, 4, -1, -2, 0, 'Träum weiter!'], ['Das entscheiden die Zuschauer, nicht wir.', 2, 0, 1, 1, 0, 'Stimmt eigentlich.']] },
+    { q: 'Erzählt doch mal eine Gruselgeschichte!', a: [['Hier im Dschungel lebt ein Wesen, das nur nachts … BUH!', 1, 5, 2, 2, 0, 'AAAH! Du Idiot!'], ['Lieber nicht, sonst schläft hier keiner.', 1, 0, 0, 1, 0, 'Vernünftig.'], ['Ich hab mal mein Handy drei Tage nicht gefunden.', 1, 3, 2, 1, 0, 'Das ist wirklich gruselig!']] },
+    { q: 'Was würdet ihr für ein Stück Schokolade tun?', a: [['Alles. Wirklich alles.', 0, 4, 2, 1, 0, 'Ich auch!'], ['Mit {x} teilen, wenn es eins gäbe.', 2, 0, 0, 1, 6, 'Merk ich mir!'], ['Ich ernähr mich gerade sowieso gesund.', -1, 1, -1, -1, 0, 'Pff …']] },
+    { q: 'Wer war heute der größte Held im Lager?', a: [['{x} – hat sich um alle gekümmert.', 3, 0, 0, 1, 7, 'Hört, hört!'], ['Unser Lagerfeuer. Hat durchgehalten.', 1, 3, 1, 1, 0, 'Ha, gut gesagt!'], ['Ich. Ich hab heute Wasser geholt!', 0, 2, 0, -1, 0, 'Ein Mal …']] }
+  ];
   D.MEALS = {
     none: 'Reis und Bohnen – wie jeden Tag ohne Sterne.',
     few: 'Ein paar Portionen Fisch, der Rest teilt sich Reis und Bohnen.',
