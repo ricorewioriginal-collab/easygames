@@ -1,4 +1,4 @@
-/* Prüfung: Die fiesen Kisten – Hand in Kisten voller (virtueller) Krabbeltiere, Stern greifen, Ekel-Meter */
+/* Prüfung: Die fiesen Kisten – selbst am Kistentisch entlanglaufen, an einer Kiste die Hand hineinstecken, zwischen Krabbeltieren den Stern greifen */
 (function () {
   'use strict';
   const UL = window.UL, T = THREE, R = UL.R, A = UL.A;
@@ -34,7 +34,7 @@
         const c = crate(wood, dark); const x = (i - (n - 1) / 2) * 0.85; c.position.set(x, 0.94, 0); sc.add(c);
         const num = R.sign([String(i + 1)], 0.24, 0.24, { w: 64, h: 64, bg: '#ffcf3a', fg: '#000', accent: '#1b1300', font: '900 44px system-ui' }); num.position.set(x, 1.12, IN.d / 2 + 0.05); sc.add(num);
         const kind = KINDS[i % KINDS.length];
-        const box = { i, x, y: 0.94, kind, group: c, star: null, crit: [], done: false };
+        const box = { i, x, y: 0.94, kind, group: c, num, star: null, crit: [], done: false };
         // Stern irgendwo im Stroh
         const st = R.star(0.16); st.rotation.x = -Math.PI / 2 + 0.3; st.position.set(x + ctx.rng.range(-0.2, 0.2), 0.94 + 0.04, ctx.rng.range(-0.15, 0.15)); sc.add(st); box.star = st;
         // Bewohner
@@ -74,17 +74,42 @@
       UL.Trials.sign(ctx, 0, -1.6, 0);
       ctx.cam.position.set(0, 2.4, 3.6); ctx.cam.lookAt(0, 1, 0);
     },
-    start(ctx) { this.enter(ctx, 0); },
+    start(ctx) { this.leave(ctx); },
+    // Laufen: Figur selbst vor dem Tisch bewegen, an einer Kiste mit Aktion hineingreifen
+    leave(ctx) {
+      ctx.mode = 'walk'; ctx.cur = -1; ctx.hand.visible = false; ctx.player.root.visible = true;
+      const n = ctx.boxes.filter(b => b.done).length;
+      ctx.extraHud = `<span class="chip">📦 ${n}/${ctx.boxes.length} Kisten geschafft</span>`;
+    },
+    walk(dt, ctx) {
+      const I = ctx.inp, f = ctx.player, p = f.root.position, tw = ctx.boxes.length * 0.85;
+      const m = Math.min(1, Math.hypot(I.mx, I.my));
+      if (m > 0.15) {
+        p.x = UL.clamp(p.x + I.mx * 2.2 * dt, -tw / 2, tw / 2); p.z = UL.clamp(p.z + I.my * 2.2 * dt, 0.75, 2.6);
+        f.root.rotation.y = UL.angDamp(f.root.rotation.y, Math.atan2(I.mx, I.my), 10, dt);
+      } else f.root.rotation.y = UL.angDamp(f.root.rotation.y, Math.PI, 4, dt);
+      f.move(m > 0.15 ? 2.2 * m : 0);
+      let near = null; for (const b of ctx.boxes) if (!b.done && Math.abs(b.x - p.x) < 0.42 && p.z < 1.5) near = b;
+      ctx.boxes.forEach(b => { if (b.num) b.num.scale.setScalar(b === near ? 1.3 + Math.sin(ctx.t * 8) * 0.1 : 1); });
+      const G = UL.In.glyph;
+      ctx.overlay(near ? `<div class="lbl">📦 Kiste ${near.i + 1}: ${NAME[near.kind]} – ${G('ok')} Hand hineinstecken</div>` : '<div class="lbl">🚶 Lauf zu einer Kiste am Tisch</div>');
+      if (near && I.ok) { f.root.rotation.y = Math.PI; f.play('use'); this.enter(ctx, near.i); }
+      const port = UL.portrait();
+      ctx.cam.position.lerp(new T.Vector3(p.x * 0.85, port ? 2.9 : 2.3, p.z + (port ? 3.4 : 2.6)), 1 - Math.exp(-5 * dt)); ctx.cam.lookAt(p.x * 0.9, 1.0, p.z - 1.2);
+      ctx.meters = [{ label: '🤢 Ekel', v: ctx.ekel, danger: ctx.ekel > 0.7 }];
+      ctx.ekel = Math.max(0, ctx.ekel - dt * 0.12);
+    },
     enter(ctx, i) {
       while (i < ctx.boxes.length && ctx.boxes[i].done) i++;
       if (i >= ctx.boxes.length) { ctx.end('alle'); return; }
-      ctx.cur = i; ctx.hp.set(0, 0.18); ctx.hand.visible = true;
+      ctx.mode = 'box'; ctx.cur = i; ctx.hp.set(0, 0.18); ctx.hand.visible = true; ctx.overlay(`<div class="lbl">✋ Stern greifen: ${UL.In.glyph('ok')} · Kiste verlassen: ${UL.In.glyph('alt')}</div>`);
       const b = ctx.boxes[i];
       ctx.player.root.visible = false;
       ctx.extraHud = `<span class="chip">📦 Kiste ${i + 1}: ${NAME[b.kind]}</span>`;
       UL.UI.toast('Kiste ' + (i + 1) + ': ' + NAME[b.kind], '📦', 1400);
     },
     update(dt, ctx) {
+      if (ctx.mode !== 'box') { this.walk(dt, ctx); return; }
       const b = ctx.boxes[ctx.cur], I = ctx.inp; if (!b) return;
       // Kamera über der Kiste
       const cp = new T.Vector3(b.x, 1.72, 0.5); ctx.cam.position.lerp(cp, 1 - Math.exp(-6 * dt)); ctx.cam.lookAt(b.x, b.y, 0.02);
@@ -129,12 +154,12 @@
         if (ctx.grab > 0.15 && ctx.grab < 0.32 && !b.done) {
           const s = b.star.position; if ((s.x - hx) ** 2 + (s.z - hz) ** 2 < 0.075 * 0.075) {
             b.done = true; ctx.addStar(s); b.star.visible = false; 
-            ctx.hand.visible = false; UL.after(0.7, () => { if (ctx.running) this.enter(ctx, ctx.cur + 1); });
+            ctx.hand.visible = false; UL.after(0.7, () => { if (ctx.running) { if (ctx.boxes.every(x => x.done)) ctx.end('alle'); else this.leave(ctx); } });
             ctx.cur = -1; return;
           }
         }
       }
-      if (I.alt) { b.skipped = true; const nx = ctx.boxes.findIndex((x, i) => i > ctx.cur && !x.done); if (nx >= 0) this.enter(ctx, nx); else { const first = ctx.boxes.findIndex(x => !x.done && x !== b); if (first >= 0) this.enter(ctx, first); } }
+      if (I.alt) { this.leave(ctx); return; }
       ctx.meters = [{ label: '🤢 Ekel', v: ctx.ekel, danger: ctx.ekel > 0.7 }];
       // Stern leuchtet leicht, wenn die Hand nah ist
       const d = Math.hypot(b.star.position.x - (b.x + ctx.hp.x), b.star.position.z - ctx.hp.y);
@@ -142,6 +167,7 @@
     },
     finish(ctx) { ctx.hand.visible = false; ctx.player.root.visible = true; ctx.player.root.position.set(0, 0, 1.4); ctx.player.root.rotation.y = 0; ctx.player.play(ctx.stars >= ctx.max / 2 ? 'cheer' : 'hit'); },
     bot(dt, ctx, I) {
+      if (ctx.mode !== 'box') { const t = ctx.boxes.find(x => !x.done), p = ctx.player.root.position; if (!t) return; const dx = t.x - p.x, dz = 1.0 - p.z; if (Math.abs(dx) > 0.2 || Math.abs(dz) > 0.3) { I.mx = UL.clamp(dx * 4, -1, 1); I.my = UL.clamp(dz * 4, -1, 1); } else I.ok = true; return; }
       const b = ctx.boxes[ctx.cur]; if (!b || ctx.stun > 0) return;
       const tx = b.star.position.x - b.x - ctx.hp.x, tz = b.star.position.z - ctx.hp.y, d = Math.hypot(tx, tz);
       if (d > 0.03) { I.mx = UL.clamp(tx * 12, -1, 1); I.my = UL.clamp(tz * 12, -1, 1); } else if (ctx.grab <= 0) I.ok = true;

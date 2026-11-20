@@ -5,6 +5,7 @@
   const N = 4, SP = 1.5;   // Rohr-Raster N×N, Abstand
 
   UL.Trials.reg('dusche', {
+    orbit: true, relMove: true,
     env: (theme) => theme === 'studio' ? {} : { tod: 'day', radius: 14, clear: [{ x: 0, z: 0, r: 6 }], seed: 66 },
     setup(ctx) {
       const sc = ctx.scene, studio = ctx.theme === 'studio', half = (N - 1) * SP / 2;
