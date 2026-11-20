@@ -18,17 +18,19 @@ export class Hud {
   onPrompt: (() => void) | null = null;
   onMenu: (() => void) | null = null;
   onPhone: (() => void) | null = null;
+  onRadio: (() => void) | null = null;
   private needsEl!: HTMLElement;
   constructor() {
     this.el = el(`<div id="hud" class="hidden"><div class="lcol"><div class="goal"></div><div class="needs"></div></div><div class="stats"></div>
-      <div class="menuBtn"><button data-k="phone" aria-label="Handy">📱</button><button data-k="menu" aria-label="Menü">☰</button></div>
-      <div class="markers pass"></div><div class="prompt"></div><div class="toast"></div><canvas class="radar" width="200" height="200"></canvas></div>`);
+      <div class="menuBtn"><button data-k="radio" aria-label="Radiosender wechseln" hidden>📻</button><button data-k="phone" aria-label="Handy">📱</button><button data-k="menu" aria-label="Menü">☰</button></div>
+      <div class="markers pass"></div><div class="prompt"></div><div class="toast"></div><canvas class="radar" width="200" height="200"></canvas><div class="gigbar"></div><div class="banner"></div></div>`);
     document.body.appendChild(this.el);
     this.goalEl = this.el.querySelector('.goal')!; this.statsEl = this.el.querySelector('.stats')!;
     this.promptEl = this.el.querySelector('.prompt')!; this.markersEl = this.el.querySelector('.markers')!;
     this.promptEl.addEventListener('click', () => this.onPrompt?.());
     this.el.querySelector<HTMLButtonElement>('[data-k=menu]')!.onclick = () => this.onMenu?.();
     this.el.querySelector<HTMLButtonElement>('[data-k=phone]')!.onclick = () => this.onPhone?.();
+    this.el.querySelector<HTMLButtonElement>('[data-k=radio]')!.onclick = () => this.onRadio?.();
     this.needsEl = this.el.querySelector('.needs')!;
     this.needsEl.innerHTML = NEED_ICONS.map(([k, i]) => `<span data-n="${k}" title="${k}">${i}<i><b></b></i></span>`).join('');
   }
@@ -64,6 +66,22 @@ export class Hud {
     g.fillStyle = '#fff'; g.strokeStyle = '#000'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(R, R - 9); g.lineTo(R + 6, R + 7); g.lineTo(R, R + 3); g.lineTo(R - 6, R + 7); g.closePath(); g.fill(); g.stroke();
     g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 3; g.beginPath(); g.arc(R, R, R - 3, 0, Math.PI * 2); g.stroke();
   }
+  /** Radio-Knopf nur im Auto */
+  radioBtn(on: boolean) { this.el.querySelector<HTMLButtonElement>('[data-k=radio]')!.hidden = !on; }
+  /** Laufender Auftrag: Zeit und nächste Station (null = aus) */
+  gig(text: string | null, urgent = false) {
+    const e = this.el.querySelector<HTMLElement>('.gigbar')!;
+    e.classList.toggle('on', !!text); e.classList.toggle('urgent', urgent);
+    if (text && e.textContent !== text) e.textContent = text;
+  }
+  /** Großer Schriftzug in der Bildmitte (Auftrag erledigt / gescheitert, Radiosender) */
+  banner(title: string, sub = '', kind: 'good' | 'bad' | 'info' = 'good', ms = 3200) {
+    const e = this.el.querySelector<HTMLElement>('.banner')!;
+    e.className = 'banner on ' + kind;
+    e.innerHTML = `<b>${esc(title)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}`;
+    clearTimeout(this.bannerT); this.bannerT = window.setTimeout(() => (e.className = 'banner'), ms);
+  }
+  private bannerT = 0;
   radarOn(on: boolean) { this.el.querySelector<HTMLElement>('.radar')!.style.display = on ? '' : 'none'; }
   show(on: boolean) { this.el.classList.toggle('hidden', !on); }
   goal(ch: string, title: string, sub = '') {
