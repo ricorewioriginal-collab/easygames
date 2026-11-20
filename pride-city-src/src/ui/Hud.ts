@@ -21,11 +21,12 @@ export class Hud {
   onPhone: (() => void) | null = null;
   onRadio: (() => void) | null = null;
   onWeapon: (() => void) | null = null;
+  onStation: ((i: number) => void) | null = null;
   private needsEl!: HTMLElement;
   constructor() {
     this.el = el(`<div id="hud" class="hidden"><div class="lcol"><div class="goal"></div><div class="needs"></div></div><div class="stats"></div>
       <div class="menuBtn"><button data-k="radio" aria-label="Radiosender wechseln" hidden>📻</button><button data-k="phone" aria-label="Handy">📱</button><button data-k="menu" aria-label="Menü">☰</button></div>
-      <div class="markers pass"></div><div class="prompt"></div><div class="toast"></div><canvas class="radar" width="200" height="200"></canvas><div class="gigbar"></div><div class="banner"></div><div class="wanted"></div><button class="weapon" aria-label="Waffe wechseln"></button></div>`);
+      <div class="markers pass"></div><div class="prompt"></div><div class="toast"></div><canvas class="radar" width="200" height="200"></canvas><div class="gigbar"></div><div class="banner"></div><div class="rwheel"><div class="ring"></div><div class="mid"><em>Radio</em><b></b><small></small></div></div><button class="nowplay" aria-label="Radiosender wählen"><b></b><span></span></button><div class="wanted"></div><button class="weapon" aria-label="Waffe wechseln"></button></div>`);
     document.body.appendChild(this.el);
     this.goalEl = this.el.querySelector('.goal')!; this.statsEl = this.el.querySelector('.stats')!;
     this.promptEl = this.el.querySelector('.prompt')!; this.markersEl = this.el.querySelector('.markers')!;
@@ -33,6 +34,7 @@ export class Hud {
     this.el.querySelector<HTMLButtonElement>('[data-k=menu]')!.onclick = () => this.onMenu?.();
     this.el.querySelector<HTMLButtonElement>('[data-k=phone]')!.onclick = () => this.onPhone?.();
     this.el.querySelector<HTMLButtonElement>('[data-k=radio]')!.onclick = () => this.onRadio?.();
+    this.el.querySelector<HTMLButtonElement>('.nowplay')!.onclick = () => this.onRadio?.();
     this.needsEl = this.el.querySelector('.needs')!;
     this.el.querySelector<HTMLButtonElement>('.weapon')!.onclick = () => this.onWeapon?.();
     this.needsEl.innerHTML = NEED_ICONS.map(([k, i]) => `<span data-n="${k}" title="${k}">${i}<i><b></b></i></span>`).join('');
@@ -68,6 +70,36 @@ export class Hud {
     // Spieler-Pfeil
     g.fillStyle = '#fff'; g.strokeStyle = '#000'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(R, R - 9); g.lineTo(R + 6, R + 7); g.lineTo(R, R + 3); g.lineTo(R - 6, R + 7); g.closePath(); g.fill(); g.stroke();
     g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 3; g.beginPath(); g.arc(R, R, R - 3, 0, Math.PI * 2); g.stroke();
+  }
+  /* ---------- Senderrad: alle Sender im Kreis, der gewählte steht oben; Antippen wählt direkt ---------- */
+  wheelOpen = false;
+  private wheelT = 0; private wheelRot = 0; private wheelCur = -1;
+  radioWheel(list: Array<{ icon: string; color: string; name: string }> | null, cur = 0, name = '', sub = '', live = false, ms = 4200) {
+    const w = this.el.querySelector<HTMLElement>('.rwheel')!, ring = w.querySelector<HTMLElement>('.ring')!;
+    clearTimeout(this.wheelT);
+    if (!list) { w.classList.remove('on'); this.wheelOpen = false; return; }
+    const n = list.length;
+    if (ring.children.length !== n) {
+      ring.innerHTML = list.map((s, i) => `<button data-i="${i}" style="--c:${s.color};--a:${i * 360 / n}deg" aria-label="${esc(s.name)}">${s.icon}</button>`).join('');
+      ring.onclick = (e) => { const b = (e.target as HTMLElement).closest('button'); if (b) this.onStation?.(+b.dataset.i!); };
+      this.wheelCur = cur; this.wheelRot = cur;
+    }
+    // kürzester Weg, damit das Rad nicht einmal ganz herumdreht
+    let d = cur - this.wheelCur; if (d > n / 2) d -= n; if (d < -n / 2) d += n;
+    this.wheelRot += d; this.wheelCur = cur;
+    [...ring.children].forEach((b, i) => b.classList.toggle('cur', i === cur));
+    ring.style.setProperty('--r', (-this.wheelRot * 360 / n) + 'deg');
+    w.querySelector('em')!.textContent = live ? '● LIVE' : 'Radio';
+    w.querySelector('b')!.textContent = name; w.querySelector('small')!.textContent = sub;
+    w.style.setProperty('--c', list[cur].color);
+    w.classList.add('on'); this.wheelOpen = true;
+    this.wheelT = window.setTimeout(() => { w.classList.remove('on'); this.wheelOpen = false; }, ms);
+  }
+  /** Kleine Anzeige beim Fahren: Sender und laufender Titel (null = aus) */
+  nowPlaying(station: string | null, song = '') {
+    const e = this.el.querySelector<HTMLElement>('.nowplay')!;
+    e.classList.toggle('on', !!station);
+    if (station) { e.querySelector('b')!.textContent = station; e.querySelector('span')!.textContent = song; }
   }
   /** Radio-Knopf nur im Auto */
   radioBtn(on: boolean) { this.el.querySelector<HTMLButtonElement>('[data-k=radio]')!.hidden = !on; }

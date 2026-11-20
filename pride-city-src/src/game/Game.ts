@@ -470,7 +470,7 @@ export class Game {
     } else if (app === 'empire') {
       const list = BUSINESSES.map((b) => `<p>${b.icon} <b>${b.name}</b>${owns(s, b.id) ? ' · <b style="color:#3ee69a">gehört dir</b>' : ''}<br><small>${b.pitch}</small></p>`).join('');
       this.openMenu(frame('Imperium', `<div class="pbody"><p>Steig bei Läden, Bars und Clubs ein. Jedes Geschäft zahlt jeden Morgen aus und bringt Ruf.<br>💼 Einnahmen: <b>${income(s)} €</b> am Tag · 🌈 Ruf ${s.rep}</p>${list}</div>`), [
-        ...BUSINESSES.map((b) => ({ icon: b.icon, label: owns(s, b.id) ? `${b.name} ✓` : `${b.name} kaufen`, sub: owns(s, b.id) ? `+${b.daily} € am Tag` : `${b.price} € · +${b.daily} €/Tag · ab ${b.need} Ruf`, disabled: owns(s, b.id),
+        ...BUSINESSES.map((b) => ({ icon: b.icon, label: owns(s, b.id) ? `${b.name} ✓` : b.gift ? b.name : `${b.name} kaufen`, sub: owns(s, b.id) ? `+${b.daily} € am Tag` : b.gift || `${b.price} € · +${b.daily} €/Tag · ab ${b.need} Ruf`, disabled: owns(s, b.id) || !!b.gift,
           fn: () => { const why = buy(s, b); if (why) { sfx('miss'); toast(why); return; } sfx('win'); this.hud.banner(`${b.icon} ${b.name} gehört jetzt dir!`, `+${b.daily} € jeden Tag · +${b.rep} Ruf`, 'good', 4000); this.save.write(); this.city.refreshHud(); this.phone('empire'); } })),
         { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'glossary') {
