@@ -5,10 +5,13 @@ import type { GameScene } from '../engine/Engine';
 import { Vector3, Matrix, HemisphericLight, DirectionalLight, PointLight, ShadowGenerator, TransformNode, Color3, type FreeCamera, type Scene, type PBRMaterial, type Mesh, type AbstractMesh, col } from '../engine/bjs';
 import { instance, preload } from '../engine/Assets';
 import { planeZ, ground, box, cyl, sphere, torus, pbr, glow, canvasTex } from '../engine/geo';
-import { Actor, playerLook } from './Actor';
+import { Actor, playerLook, type Look } from './Actor';
+import { loveScene, morningAfter } from './liebe';
+import { mates, mateInfo, homeNow, pet, petHungry } from './wahl';
+import { Pet3D } from './pet3d';
 import type { Game } from './Game';
 import { hints, toast } from '../ui/ui';
-import { advance, DAY_SEC } from './life';
+import { advance, DAY_SEC, hour } from './life';
 import { music, sfx } from '../engine/Audio';
 import { PALETTES } from './palettes';
 import { buildShell, shellTime, RoomCam, type Shell } from './room';
@@ -50,7 +53,13 @@ export class HomeScene implements GameScene {
   bloom = .45;
   private shell!: Shell;
   private cam = new RoomCam(W, D, H, 3.6);
-  private player!: Actor;
+  player!: Actor;
+  /** Filmszene läuft (liebe.ts): übernimmt Kamera und Figuren */
+  cine: ((dt: number) => void) | null = null;
+  /** Partner*in am Morgen danach (Kaffee in der Küche) */
+  private guest: Actor | null = null;
+  /** Wahlfamilie (wahl.ts): Mitbewohner*innen am Abend und das Haustier */
+  private wg: { actors: Map<string, Actor>; key: string; spots: Spot[]; pet: Pet3D | null; petKey: string } = { actors: new Map(), key: '', spots: [], pet: null, petKey: '' };
   private boxes: Box[] = [];
   readonly spots: Spot[] = [
     { id: 'bed', label: '😴 Schlafen', x: -3, z: -.9, r: 1.7 },
@@ -314,6 +323,7 @@ export class HomeScene implements GameScene {
   enter() {
     this.showMess();
     void this.syncFamily();
+    void this.syncWg();
     this.applyUpgrades();
     if (this.fromAnnex) { this.fromAnnex = false; this.player.root.position.set(3.0, 0, D / 2 - 1.1); this.player.root.rotation.y = Math.PI; }
     else { this.player.root.position.set(W / 2 - 1.9, 0, .3); this.player.root.rotation.y = -Math.PI / 2 - .5; }
@@ -338,6 +348,28 @@ export class HomeScene implements GameScene {
     if (b) { b.root.position.set(-.5, 0, -.5); b.root.rotation.y = Math.PI * .15; b.play('dance2', 0, .9); this.fam.kid = b; }
     this.famSpots();
     collectCasters(this.scene, this.sg);
+  }
+  /** Mitbewohner*innen (abends) und Haustier in die Wohnung holen */
+  async syncWg() {
+    const s = this.g.save.data, h = Math.floor(hour(s)), ids = homeNow(h) ? mates(s) : [], key = ids.join(',');
+    const P: Array<[number, number, number]> = [[-.3, 2.2, Math.PI * .8], [2.0, 2.3, -Math.PI * .75]];
+    if (key !== this.wg.key) {
+      this.wg.key = key;
+      for (const [id, a] of this.wg.actors) if (!ids.includes(id)) { a.dispose(); this.wg.actors.delete(id); }
+      await Promise.all(ids.map(async (id, i) => {
+        if (this.wg.actors.has(id)) return;
+        const m = mateInfo(id)!, a = await Actor.create(this.scene, m.look);
+        a.root.position.set(P[i][0], 0, P[i][1]); a.root.rotation.y = P[i][2]; a.play(i ? 'phone' : 'talk', 0);
+        this.wg.actors.set(id, a);
+      }));
+      collectCasters(this.scene, this.sg);
+    }
+    this.wg.spots = ids.map((id, i) => ({ id: 'wg_' + id, label: `🏠 ${mateInfo(id)!.name}`, x: P[i][0], z: P[i][1], r: 1.1 }));
+    const pt = pet(s), pk = pt ? pt.kind.id + (s.flags.petColor || 0) : '';
+    if (pk !== this.wg.petKey) {
+      this.wg.petKey = pk; this.wg.pet?.dispose(); this.wg.pet = null;
+      if (pt) { const cols = pt.kind.id === 'hund' ? [0xc98a4b, 0x2b2420, 0xe8dcc8] : [0xd9822b, 0x6f6f78, 0x231f1f]; this.wg.pet = new Pet3D(this.scene, pt.kind.id, cols[Number(s.flags.petColor) || 0]); this.wg.pet.place(-1.2, 1.4, 2); collectCasters(this.scene, this.sg); }
+    }
   }
   private famSpots() {
     const s = this.g.save.data, sp = spouse(s), k = kid(s), out: Spot[] = [];
@@ -368,8 +400,40 @@ export class HomeScene implements GameScene {
     setTimeout(() => { this.activity = ''; if (this.steam) { this.steam.dispose(false, true); this.steam = null; } }, ms);
   }
 
+  portrait() { return this.g.engine.aspect < 1; }
+  private petSpot(): Spot[] { const p = this.wg.pet, pt = pet(this.g.save.data); return p && pt ? [{ id: 'pet', label: `${pt.kind.icon} ${pt.name}${petHungry(this.g.save.data) ? ' (hat Hunger)' : ''}`, x: p.root.position.x, z: p.root.position.z, r: .9 }] : []; }
+  /** Mitbewohner*in reagiert (Animation zum Spieler hin) */
+  wgPlay(id: string, anim: 'laugh' | 'talk' | 'cheer' | 'dance1' | 'clap') {
+    const a = this.wg.actors.get(id); if (!a) return;
+    a.root.rotation.y = Math.atan2(this.player.root.position.x - a.root.position.x, this.player.root.position.z - a.root.position.z);
+    a.play(anim); setTimeout(() => a.play('talk'), 3200);
+  }
+  /** Gemeinsamer Abend: alle tanzen/lachen kurz zusammen */
+  wgParty(anim: 'laugh' | 'dance1' | 'clap' | 'cheer') { for (const a of this.wg.actors.values()) a.play(anim); this.fam.spouse?.play(anim); this.player.play(anim === 'dance1' ? 'dance1' : 'laugh'); setTimeout(() => { for (const a of this.wg.actors.values()) a.play('talk'); this.fam.spouse?.play('idle'); this.player.play('idle'); }, 3600); }
+  /** Liebesszene (18+) mit Gast oder Partner*in zu Hause */
+  romance(look: Look, name: string, done: () => void) {
+    const sp = spouseLook(this.g.save.data), mine = sp && this.fam.spouse && sp.body === look.body && sp.palette === look.palette ? this.fam.spouse : undefined;
+    this.fam.kid?.root.setEnabled(false); this.setSky(1);
+    this.g.hud.show(false); this.g.touch.show(false); this.g.hud.prompt(null); this.g.hud.markers([]);
+    return loveScene(this, look, name, () => { if (mine) { mine.root.position.set(2.5, 0, 1.3); mine.root.rotation.y = -Math.PI / 2 - .5; } this.player.root.position.set(-2.4, 0, .6); this.cam.reset(.5, .4); this.g.hud.show(true); this.g.touch.show(true); done(); }, mine);
+  }
+  /** Morgen danach: Gast mit Kaffee in der Küche, geht beim Verlassen der Wohnung */
+  async morning(look: Look | null) {
+    this.guest?.dispose(); this.guest = null;
+    if (look) this.guest = await morningAfter(this.scene, look);
+  }
+
   update(dt: number, t: number) {
     const g = this.g, inp = g.engine.input, p = this.player.root.position;
+    if (this.cine) {
+      this.cine(dt); this.fam.spouse?.update(dt);
+      if (inp.pressed('confirm') || inp.pressed('back')) { inp.consume('confirm'); inp.consume('back'); (document.querySelector('.cine button') as HTMLButtonElement | null)?.click(); }
+      shellTime(this.shell, 1, t);
+      return;
+    }
+    this.guest?.update(dt);
+    for (const a of this.wg.actors.values()) a.update(dt);
+    this.wg.pet?.update(dt, this.player.root.position, !petHungry(g.save.data), [-W / 2 + .4, W / 2 - .4, -D / 2 + .4, D / 2 - .4]);
     this.player.update(dt);
     this.fam.spouse?.update(dt); this.fam.kid?.update(dt);
     const busy = g.dialog.open || g.menuOpen;
@@ -378,13 +442,13 @@ export class HomeScene implements GameScene {
     if (!busy) {
       const sv = g.save.data; sv.playMs += dt * 1000;
       if (advance(sv, dt / DAY_SEC * 1440)) toast(`Tag ${sv.day} beginnt.`);
-      if (this.hudT <= 0) { this.hudT = .5; g.city.world.setTime(sv.time); this.setSky(g.city.world.night); g.city.refreshHud(); }
+      if (this.hudT <= 0) { this.hudT = .5; if ((homeNow(Math.floor(hour(sv))) ? mates(sv).join(',') : '') !== this.wg.key || (pet(sv) ? pet(sv)!.kind.id + (sv.flags.petColor || 0) : '') !== this.wg.petKey) void this.syncWg(); g.city.world.setTime(sv.time); this.setSky(g.city.world.night); g.city.refreshHud(); }
       const mx = inp.move.x, my = inp.move.y, mag = Math.hypot(mx, my);
       if (mag > .08) {
         const [dx, dz] = this.cam.dir(mx, my), sp = 3.6 * dt * Math.min(1, mag) / mag;   // Bewegung relativ zur Kamera, wie draußen
         p.x += dx * sp; p.z += dz * sp;
         p.x = Math.max(-W / 2 + .5, Math.min(W / 2 - .5, p.x)); p.z = Math.max(-D / 2 + .5, Math.min(D / 2 - .3, p.z));
-        for (const a of [this.fam.spouse, this.fam.kid]) if (a) { const dx = p.x - a.root.position.x, dz = p.z - a.root.position.z, d = Math.hypot(dx, dz); if (d < .6 && d > 0) { p.x += dx / d * (.6 - d); p.z += dz / d * (.6 - d); } }
+        for (const a of [this.fam.spouse, this.fam.kid, ...this.wg.actors.values()]) if (a) { const dx = p.x - a.root.position.x, dz = p.z - a.root.position.z, d = Math.hypot(dx, dz); if (d < .6 && d > 0) { p.x += dx / d * (.6 - d); p.z += dz / d * (.6 - d); } }
         for (const b of this.boxes) {
           const dx = p.x - b.x, dz = p.z - b.z, px = b.hx + .35 - Math.abs(dx), pz = b.hz + .35 - Math.abs(dz);
           if (px > 0 && pz > 0) { if (px < pz) p.x += Math.sign(dx) * px; else p.z += Math.sign(dz) * pz; }
@@ -393,7 +457,7 @@ export class HomeScene implements GameScene {
         this.player.play('walk', .18, Math.max(1, 3.6 * Math.min(1, mag) / 1.02 * .55));
       } else if (this.player.anim === 'walk') this.player.play('idle');
       let best: Spot | null = null, bd = 9;
-      for (const s of [...this.spots, ...this.fam.spots, ...this.upSpots]) { const d = Math.hypot(s.x - p.x, s.z - p.z); if (d < s.r && d < bd) { bd = d; best = s; } }
+      for (const s of [...this.spots, ...this.fam.spots, ...this.wg.spots, ...this.petSpot(), ...this.upSpots]) { const d = Math.hypot(s.x - p.x, s.z - p.z); if (d < s.r && d < bd) { bd = d; best = s; } }
       g.hud.prompt(best ? best.label : null);
       g.touch.label(best ? 'Nutzen' : 'Aktion');
       if (inp.pressed('confirm') && best) { inp.consume('confirm'); this.player.play('interact'); g.homeAction(best.id); }

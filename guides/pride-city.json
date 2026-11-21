@@ -394,6 +394,37 @@
         "Boden (Dielen, Marmor, Regenbogen-Parkett, Flauschteppich) und Lichtstimmung kaufst du einmal und wechselst sie jederzeit.",
         "Anbau: Partykeller, Wellness-Oase, Ankleide mit Fotostudio und Dachgarten. Jeder Raum hat drei Stufen mit neuer Einrichtung und neuen Dingen zum Tun, zum Beispiel Hausparty, Sauna, Fotoshooting oder Grillen über den Dächern. Betreten über dieselbe Tür."
       ]
+    },
+    {
+      "t": "💘 Rainbow Match: Dates mit Folgen",
+      "p": [
+        "Rainbow Match im Handy hat jetzt zwölf Profile, darunter Sami (trans Mann), Noa (bi), Henri (67, Witwer), Aylin, Ash (ace) und Mateo (polyamor). Jedes neue Profil zeigt unter „💡“ ein Stück echtes Wissen.",
+        "Dates haben Folgen: Nach dem ersten guten Date redet die Stadt im Feed, später schreibt dein Match täglich, und wer „Zusammen“ ist, ist offiziell ein Paar und kann zusammenziehen. Ein schlechtes Date endet mit einer ehrlichen Absage statt Ghosting.",
+        "„🛡️ Sicher daten“ in der App erklärt erstes Treffen, Fake-Profile, Romance-Scam, Getränke, Zustimmung und Hilfe bei Gewalt."
+      ]
+    },
+    {
+      "t": "🏠 Wahlfamilie, WG und Haustiere",
+      "p": [
+        "Im Handy unter Familie, „Wahlfamilie & WG“, können bis zu zwei Menschen bei dir einziehen: gute Freund*innen ab „befreundet“ oder dein Match, wenn ihr zusammen seid. Ab 18 Uhr sind sie zu Hause.",
+        "Sprich sie in der Wohnung an für einen gemeinsamen Abend (einmal am Tag): Spieleabend, Kochabend, Filmabend mit queeren Klassikern, Erzählabend über Wahlfamilien damals oder Wohnzimmer-Karaoke. Film- und Erzählabend bringen echtes Wissen.",
+        "Im Tierheim Pfötchenglück (Handy, Familie) adoptierst du einen Hund oder eine Katze. Das Tier läuft dir in der Wohnung nach. Einmal am Tag füttern (3 €), dazu streicheln, spielen und mit dem Hund Gassi gehen."
+      ]
+    },
+    {
+      "t": "🧖 Sauna und Strandbar am Hafen",
+      "p": [
+        "Die Sauna Heißer Stein steht jetzt als eigenes Holzhaus am Hafen neben der Strandbar. Drinnen: Aufguss, Schwitzen, Sauna-Torsten, Massage und mit „Inhalten ab 18“ ein Ruheraum, in dem alles nur angedeutet ist.",
+        "Beide Treffpunkte haben je drei eigene Aufträge (Kräuter für den Aufguss, Handtuch-Notstand, Lange Saunanacht; Liegestühle retten, Sonnencreme-Station, Queer Beach Party). Wer alle drei schafft, wird Stammgast.",
+        "An der Strandbar gibt es abends den Sonnenuntergangs-Treff, sonntags ab 20 Uhr die Queer Beach Party und Tipps zu Sonne und Strand. In der Sauna erklärt die Sauna-Knigge Regeln, Gesundheit und Geschichte."
+      ]
+    },
+    {
+      "t": "🕯️ Liebesszenen (nur 18+)",
+      "p": [
+        "Mit „Inhalten ab 18“ wird eine gemeinsame Nacht nach einem Date oder mit deiner*deinem Ehepartner*in zu Hause zur kleinen Filmszene: Kerzenlicht, ruhige Musik, Annäherung, Umarmung, Kuss, Ausziehen bis zur Unterwäsche, dann blendet die Kamera zum Fenster ab.",
+        "Nichts davon ist explizit. Zustimmung und Kondom oder PrEP sind Pflicht, und mit „Überspringen“ oder der Bestätigen-Taste kommst du jederzeit direkt zum Morgen danach. Dann steht dein Date mit Kaffee in der Küche."
+      ]
     }
   ],
   "ratgeber": [
@@ -584,6 +615,16 @@
         "Das Awareness-Team kostet wenig und hebt Beliebtheit und Ruf. Bei Problemen in der Clubnacht hilft es zusätzlich.",
         "Themennächte am echten Jahrestag bringen die meisten Gäste: Der Kalender im Klemmbrett zeigt die nächsten Termine."
       ]
+    },
+    {
+      "t": "Wahlfamilie und Treffpunkte: so lohnt es sich",
+      "list": [
+        "Freundschaften erst im Gespräch auf „befreundet“ bringen, dann einziehen lassen. Gemeinsame Abende geben jedem in der WG +4 Freundschaft.",
+        "Der Kochabend braucht eine Portion aus dem Späti, der Filmabend 6 € für Snacks.",
+        "Haustier jeden Tag füttern, sonst ist es traurig und wedelt kaum.",
+        "Nachtaufträge an Sauna und Strandbar gibt es nur von 21 bis 5 Uhr. Mit Auto sind die langen Strecken leichter.",
+        "Stammgast in der Sauna macht die Massage günstiger."
+      ]
     }
   ],
   "loesung": [
@@ -740,6 +781,13 @@
       "t": "🪩 Clubnacht: gute Entscheidungen",
       "p": [
         "Gut für die Stimmung: Getränke an die Schlange, ruhig dazwischengehen oder ein Taxi spendieren, die Diva-Hymne, Eis holen lassen, Cherry auf die Bühne lassen, den Nachbarn einladen. Weggucken oder Ignorieren kostet Stimmung und Ruf. Ab 20 Stimmungspunkten wird die Nacht „legendär“ und bringt einen Ruf-Punkt extra."
+      ]
+    },
+    {
+      "t": "🏠 Wahlfamilie und Treffpunkte: alles freischalten",
+      "p": [
+        "Stammgast im Heißen Stein: Kräuter (Späti, Regenbogenhaus, Sauna), Handtücher (Muckibude, Sauna) und nachts die Plakate (One Love Bar, Prisma, Leuchtturm, Sauna). Stammgast in der Sandbank: Liegestühle am Kai, Sonnencreme aus dem Checkpoint und nachts Boxen (Prisma) und Lichterketten (Studio).",
+        "Zusammenziehen mit einem Match: drei gute Dates bis „Zusammen“, dann im Handy unter Familie, „Wahlfamilie & WG“."
       ]
     }
   ],

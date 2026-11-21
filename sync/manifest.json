@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "632769c28c6d",
- "generated": "2026-11-21T19:42:26+00:00",
- "commit": "e69eca5252b4567c7869f518a310b77edd890cb0",
+ "version": "ec15f9a341d1",
+ "generated": "2026-11-21T20:45:15+01:00",
+ "commit": "2aa517255e25c5ab2983b82bc1818cc09f645d1b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -12918,8 +12918,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 63809,
-   "h": "813ed2d55e36788ff5add7952654bbf4bdd8fabbf5862dcb8fd08d144650fd80"
+   "s": 67795,
+   "h": "db0d6e899018a9321c8fb9b814bcc6d78e791571c091bfd866b3e77bf63e0fea"
   },
   {
    "p": "guides/prismrush.json",
@@ -14832,14 +14832,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
-   "p": "pride-city/assets/index-BIGmJNpZ.css",
-   "s": 33356,
-   "h": "b90eabf52d249b78a7c7b3e3f625a3487a9cd8b18e8487cdd993451896d8f5c2"
+   "p": "pride-city/assets/index-BnbrZyi3.css",
+   "s": 34313,
+   "h": "00393fd9a69eb71cf0f39b099b37f95652c4450899542acd07ace6116c46c9ee"
   },
   {
-   "p": "pride-city/assets/index-BtZ4QfQ1.js",
-   "s": 700043,
-   "h": "fd860ea66e3e4d458abbf0163dbc0272aa4be860f5aad2207b846f9c24d7d449"
+   "p": "pride-city/assets/index-DSgcndXb.js",
+   "s": 740613,
+   "h": "aa1574ae515873719e5db94a325d7afbdd93a2885afe3371d6629bd683b9f718"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -15499,7 +15499,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5862,
-   "h": "7b16d3c7e645684ff58391100636919321db0bb65c4895e4fa4cd2268284751a"
+   "h": "607c6d2ca3380942dcc09933dc542e7520a5b49ccdda3685c64a3515e831802f"
   },
   {
    "p": "pride-city/logo.svg",
@@ -18274,7 +18274,7 @@
   {
    "p": "sync/catalog.json",
    "s": 241235,
-   "h": "592c1070b592619d6526a7292be99039f53591a5b01e9903cde42ba7a079990a"
+   "h": "7d27f0cd97699c504f86c61f2f1556ce9efa8c5010c3b704a006e93054e93f9e"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

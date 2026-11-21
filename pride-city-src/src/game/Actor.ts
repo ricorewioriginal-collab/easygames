@@ -91,6 +91,8 @@ export class Actor {
   private tick = 0;
   private sleeping = false;
   look: Look;
+  /** Knochen der Figur (Name „Bip01 …“), z. B. für Umarmungen und Küsse in Filmszenen */
+  bones = new Map<string, TransformNode>();
 
   private constructor(readonly scene: Scene, look: Look) { this.look = { ...look }; this.root = new Node3('actor', scene); }
 
@@ -110,6 +112,7 @@ export class Actor {
     root.getChildMeshes().forEach((m: AbstractMesh) => { m.receiveShadows = true; (m as AbstractMesh & { _pcCast?: boolean })._pcCast = true; });
     const nodes = new Map<string, TransformNode>();
     root.getChildTransformNodes(false).forEach((n) => nodes.set(n.name.replace(/^Bip0\d/, 'Bip01'), n)); // Kinder heißen „Bip02 …“
+    a.bones = nodes;
     // Animationen auf das eigene Skelett übertragen (gleiche Knochennamen „Bip01 …“)
     const made = new Map<string, AnimationGroup>();
     for (const an of Object.keys(CLIP) as Anim[]) {

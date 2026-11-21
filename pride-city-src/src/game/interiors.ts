@@ -81,6 +81,12 @@ export const PLACE_THEMES: Record<string, Theme> = {
   bar: { id: 'bar', title: 'Club Leuchtturm', icon: '🗼', floor: 0x16121e, wall: 0x2a2234, light: 0xffd23b, music: 'club',
     items: [...dancefloor(0xffd23b, 0x5ce1ff), { box: [.8, 1.1, 4], c: C.wood, x: 4.8, z: .6, col: true }, { neon: 'LEUCHTTURM', c: '#ffd23b', x: 0, z: -4.38, y: 3.1 }],
     spots: [{ id: 'menu', label: '🗼 Dein Club', x: 0, z: -3, r: 1.8, act: { k: 'menu' } }, { id: 'bar', label: '🍸 Hinter die Bar', x: 3.8, z: .6, r: 1.8, act: { k: 'bar' } }, { id: 'dance', label: '🪩 Tanzen', x: 0, z: 1, r: 1.8, act: { k: 'dance' } }] },
+  // Sauna Heißer Stein am Hafen: Treffpunkt mit eigenen Aufträgen von Sauna-Torsten (treff.ts), 18+ nur angedeutet
+  sauna: { id: 'sauna', title: 'Sauna Heißer Stein', icon: '🧖', floor: 0xb08050, wall: 0xc8925a, light: 0xffb070,
+    items: [{ box: [10, .6, 1.2], c: 0xa87040, x: 0, z: -3.6, col: true }, { box: [10, .6, 1.2], c: 0xa87040, x: 0, z: -2.2, y: -.3, col: true }, { box: [1, .8, 1], c: 0x5a5a5a, x: 4.6, z: 2.4, col: true }, { box: [2.4, 1, .8], c: C.wood, x: -3.6, z: 2.6, col: true }, { neon: 'HEISSER STEIN', c: '#ffb36b', x: 0, z: -4.38, y: 3 }],
+    spots: [{ id: 'menu', label: '🧖 Kasse, Aufträge, Sauna-Knigge', x: -3.6, z: 1.6, r: 1.8, act: { k: 'menu' } }, gl('sauna', '🧖 Aufguss (Sauna-Aufguss)', 0, -1.2), doIt('schwitzen', '♨️ Schwitzen und entspannen', -3, -.6, { min: 45, d: { fun: 12, hygiene: 10, energy: -6 }, msg: 'Herrlich durchgeschwitzt. Spaß +12', sfx: 'shower' }),
+      { id: 'torsten', label: '💬 Sauna-Torsten', x: 4.6, z: 1.2, r: 1.6, act: { k: 'talk', who: 'Sauna-Torsten', color: '#d56300', lines: ['Moin! Beim Aufguss wird nicht gequatscht, danach umso mehr.', 'Handtuch immer unterlegen, kein Schweiß aufs Holz. Das ist die einzige Regel, die ich ernst meine.', 'Seit 1987 gibt es den Heißen Stein. Damals war das einer der wenigen Orte, an denen Männer offen Männer kennenlernen konnten.'] } },
+      doIt('ruhe', '🌫️ Ruheraum (18+)', 3, -1, { min: 40, d: { fun: 16, social: 8, energy: 8 }, msg: 'Halbdunkel, Blicke, ein Lächeln. Was dort passiert, bleibt hinter dem Vorhang. Spaß +16', adult: true })] },
 };
 
 /* ---------- Hochstadt: Läden, Theater, Hotel und Türme (Türen und Schilder in uptown.ts, UPTOWN_PLACES) ---------- */
@@ -168,9 +174,10 @@ export const HOUSE_THEMES: Theme[] = [
   { id: 'arcade', title: 'Arcade Funkel', icon: '🕹️', floor: 0x14102a, wall: 0x1e1840, light: 0x8a2bff, music: 'club',
     items: [-4.4, -2.2, 0, 2.2, 4.4].flatMap((x, i) => [{ box: [1.2, 2, 1], c: 0x1a1a2a, x, z: -3.8, col: true } as Item, { screen: [.9, .7], c: [0xff2fd2, 0x00f0ff, 0xffe600, 0x5dff7a, 0xff8a3b][i], x, z: -3.28, y: 1.5 } as Item]),
     spots: [gl('match', '✨ Glitzer-Match', -3.3, -2.6), gl('run', '🏃 Parade-Runner', 0, -2.6), gl('rave', '🌈 Regenbogen-Rave', 3.3, -2.6), mini('jump', '🚀 Hüpf-Automat (3D)', -2.2, 1.8), mini('toast', '🍞 Toast-Automat (3D)', 2.2, 1.8)] },
-  { id: 'sauna', title: 'Sauna Heißer Stein', icon: '🧖', floor: 0xb08050, wall: 0xc8925a, light: 0xffb070,
-    items: [{ box: [10, .6, 1.2], c: 0xa87040, x: 0, z: -3.6, col: true }, { box: [10, .6, 1.2], c: 0xa87040, x: 0, z: -2.2, y: -.3, col: true }, { box: [1, .8, 1], c: 0x5a5a5a, x: 4.6, z: 2.4, col: true }],
-    spots: [gl('sauna', '🧖 Aufguss (Sauna-Aufguss)', 0, -1.2), doIt('schwitzen', '♨️ Schwitzen und entspannen', -3, 1, { min: 45, d: { fun: 12, hygiene: 10, energy: -6 }, msg: 'Herrlich durchgeschwitzt. Spaß +12', sfx: 'shower' })] },
+  { id: 'tierheim', title: 'Tierheim Pfötchenglück', icon: '🐾', floor: 0xcfc6b4, wall: 0xf3efe2, light: 0xfff2d6,
+    items: [...[-4, -2, 0, 2, 4].map((x) => ({ box: [1.6, 1.2, 1.2], c: 0x9fb7c8, x, z: -3.6, col: true } as Item)), { box: [2.4, 1, .8], c: C.wood, x: 3.4, z: 2, col: true }, { neon: 'PFÖTCHENGLÜCK', c: '#7bffb0', x: 0, z: -4.38, y: 3 }],
+    spots: [{ id: 'tierheim', label: '🐾 Mit Pfleger Can sprechen', x: 3.4, z: 1, r: 1.8, act: { k: 'talk', who: 'Can (Tierheim)', color: '#7bffb0', lines: ['Hallo! Adoptieren kannst du übers Handy unter Familie, dann kommen wir mit dem Vertrag vorbei.', 'Eine Schutzgebühr deckt Impfungen, Chip und Kastration. Und wir schauen, ob Tier und Zuhause passen.', 'Viele unserer Hunde kommen aus Haushalten, die sich übernommen haben. Ein Tier ist für viele Jahre.'] } },
+      doIt('gassi', '🦮 Ehrenamtlich mit Tierheimhunden spazieren', -2, 1.4, { min: 60, d: { fun: 14, social: 10, energy: -8 }, msg: 'Eine Stunde mit drei glücklichen Hunden. Spaß +14', sfx: 'step' })] },
   { id: 'karaoke', title: 'Karaoke Mikro-Mimosa', icon: '🎤', floor: 0x2a1040, wall: 0x3a1a5a, light: 0xff6ad5, music: 'show',
     items: [{ box: [4, .4, 2], c: 0x5a2a8a, x: 0, z: -3.4, col: true, e: .3 }, { screen: [3, 1.6], c: 0x5ce1ff, x: 0, z: -4.3, y: 2.2 }, ...tables(2, 2.4, 5)],
     spots: [gl('kara', '🎤 Karaoke singen', 0, -1.8), doIt('mimosa', '🥂 Mimosa an der Bar', 4.4, 0, { cost: 6, min: 15, d: { fun: 8, social: 6 }, msg: 'Prickelnd! Spaß +8', sfx: 'glass' })] },
