@@ -83,6 +83,26 @@ export function fadenTick(c: StoryCtx) {
     calm = 0; fadenKrone(c, String(f.drag || s.name));
     return;
   }
+  // Erster Platz 1 mit dem eigenen CSD-Wagen (festwagen.ts/citylife.ts zählen wagenWins): Jules ist stolz
+  if (Number(f.wagenWins) > 0 && !f.wagenWinCall) {
+    if (++calm < 6) return;
+    ring('wagenWinCall', 'Jules', '#9c59d1', [
+      'Platz 1 bei der CSD-Parade! Hilde hat geweint, Mo hat Konfetti geworfen, ich habe beides gemacht.',
+      'Vor ein paar Monaten hast du noch Unterschriften für das Regenbogenhaus gesammelt. Heute jubelt dir die ganze Hauptstraße zu.',
+    ]);
+    return;
+  }
+  // Wahlfamilie (bond.ts, wahl.ts): beim ersten festen Paar, der ersten WG oder dem ersten Haustier ruft Hilde an
+  if (s.chapter > 2 && !f.familieCall && (f.wg || f.pet || Object.keys(f).some((k) => k.endsWith('_official')))) {
+    if (++calm < 6) return;
+    ring('familieCall', 'Hilde', '#a3a3a3', [
+      Object.keys(f).some((k) => k.endsWith('_official')) ? 'Mo hat es mir erzählt, natürlich hat Mo es mir erzählt: Ihr seid offiziell zusammen! Ich freue mich so für dich.'
+        : f.wg ? 'Du hast jetzt eine WG? Wie schön. Ein Zuhause wird erst richtig warm, wenn man es teilt.'
+        : 'Ein Haustier! Bring es nächstes Mal mit auf die Plaza, ich habe immer Leckerli in der Handtasche.',
+      'Familie ist, wer bleibt. Und am Sonntag wird bei mir gegessen, alle zusammen. Keine Widerrede!',
+    ]);
+    return;
+  }
   if (a === 1 || a === 4) return;
   if (++calm < 6) return; // drei ruhige Sekunden, bevor es klingelt
   if (a === 2 && !f.faden2) {
@@ -98,6 +118,22 @@ export function fadenTick(c: StoryCtx) {
     ring('nachtCall', 'Rocco Sterling', '#ffcf5a', [
       'Guten Abend. Rocco Sterling, Sterling Nights. Bar Komet, Skybar Wolke 7, du kennst das.',
       'Ich habe dich tanzen sehen. Ich brauche jemanden, der Nächte führen kann. Komm nach 21 Uhr zur Skybar in der Hochstadt, dann reden wir.',
+    ]);
+    return;
+  }
+  // Pride-Saison: jeden Samstag CSD-Parade, Jules lädt zum eigenen Festwagen ein (festwagen.ts)
+  if (f.faden2 && (a === 2 || f.faden3) && !f.wagen && !f.wagenCall) {
+    ring('wagenCall', 'Jules', '#9c59d1', [
+      'Seit unserer Pride fährt jeden Samstag von 12 bis 18 Uhr die CSD-Parade über die Hauptstraße. Und dieses Jahr gibt es eine Jury!',
+      'Bau dir deinen eigenen Festwagen: im Handy unter „Wetter und Termine“ oder in einer Festwagen-Werkstatt. Flagge, Motto, Deko, Musik. Ich will dich da oben tanzen sehen.',
+    ]);
+    return;
+  }
+  // Pride FM 88,8 (pridefm.ts): Kiki Kaleido holt dich für die eigene Sendung „Rainbow Talk“ ans Mikro
+  if (f.wagenCall && (a === 2 || f.faden3) && !f.radioShows && !f.fmCall) {
+    ring('fmCall', 'Kiki Kaleido', '#ff9ad5', [
+      'Hallöchen, hier ist Kiki Kaleido von Pride FM 88,8! Die ganze Stadt redet über dich, also soll die ganze Stadt dich auch hören.',
+      'Du bekommst deine eigene Sendung: „Rainbow Talk“. Leute rufen an, du antwortest. Im Handy unter Pride FM geht es los.',
     ]);
     return;
   }

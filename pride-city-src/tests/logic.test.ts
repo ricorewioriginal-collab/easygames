@@ -50,7 +50,7 @@ describe('Story', () => {
     s.settings.adult = true; expect(goal(s).title).toContain('Insel 1/5');
     for (const id of ['einhorn', 'canaria', 'lindenhof', 'rummel', 'cruising']) s.flags['w_' + id] = 4;
     s.flags.fadenCall = true; expect(goal(s).poi).toBe('plaza');
-    s.flags.fadenEnd = 9; expect(goal(s).poi).toBe('onelove'); s.flags.dragKrone = true; expect(goal(s).title).toBe('Freies Spiel');
+    s.flags.fadenEnd = 9; expect(goal(s).poi).toBe('onelove'); s.flags.dragKrone = true; expect(goal(s).title).toMatch(/Festwagen/); s.flags.wagen = 'progress,pink,0,ballons,pop'; expect(goal(s).title).toMatch(/Rainbow Talk/); s.flags.radioShows = 1; expect(goal(s).title).toBe('Freies Spiel');
   });
   it('lässt sich von Kapitel 2 bis zum Abspann durchspielen', () => {
     const s = defaults(); s.chapter = 2; s.step = 0;
@@ -176,6 +176,8 @@ describe('Roter Faden (Akt II und III)', () => {
     tick(); expect(calls).toEqual(['📞 Mama Vega']); expect(cards).toContain('Akt II');
     s.flags.saga = 1; tick(); expect(calls[1]).toBe('📞 Rocco Sterling');
     s.flags.saga = 8; s.flags.nacht = 5; s.flags.biz_prisma = 2; s.flags.cl_prisma_nights = 1; tick(); expect(calls[2]).toBe('📞 Jules'); expect(cards).toContain('Akt III');
+    tick(); expect(calls[3]).toBe('📞 Jules'); expect(s.flags.wagenCall).toBe(true); calls.splice(3, 1); s.flags.wagen = 'progress,pink,0,ballons,pop';
+    tick(); expect(calls[3]).toBe('📞 Kiki Kaleido'); calls.splice(3, 1); s.flags.radioShows = 1;
     s.flags.w_einhorn = 4; tick(); expect(calls[3]).toBe('📞 Stella Sternenstaub'); expect(goal(s).isle).toBe('canaria');
     for (const id of ['canaria', 'lindenhof', 'rummel']) s.flags['w_' + id] = 4;
     tick(); tick(); expect(s.flags.fadenCall).toBe(true); expect(goal(s).poi).toBe('plaza');
@@ -183,6 +185,17 @@ describe('Roter Faden (Akt II und III)', () => {
     poi(c, 'plaza'); expect(s.flags.fadenEnd).toBeTruthy(); expect(cards).toContain('Akt III abgeschlossen');
     expect(goal(s).title).toMatch(/^Drag-Karriere 1\/5/); s.flags.dragKrone = true;
     expect(goal(s).title).toBe('Freies Spiel');
+    s.day = 6; s.time = 7 / 24; expect(goal(s).title).toMatch(/^CSD-Parade/); s.flags.wagenPrize = 6; expect(goal(s).title).toBe('Freies Spiel');
+    s.flags.wagenWins = 1; tick(); expect(calls.at(-1)).toBe('📞 Nova'); tick(); expect(calls.at(-1)).toBe('📞 Jules'); expect(s.flags.wagenWinCall).toBe(true);
+  });
+  it('Wahlfamilie: Hilde ruft beim ersten festen Paar an', () => {
+    const s = defaults(); s.chapter = 4; s.step = 1;
+    const calls: string[] = [];
+    const c = { s, say: (_l: Line[], d?: () => void) => d?.(), phone: (l: Line[], d?: () => void) => { calls.push(String(l[0].who) + l[0].text); d?.(); } } as unknown as StoryCtx;
+    for (let i = 0; i < 6; i++) storyTick(c);
+    expect(calls).toEqual([]);
+    s.flags.bd_lena_official = 3; for (let i = 0; i < 12; i++) storyTick(c);
+    expect(calls.length).toBe(1); expect(calls[0]).toMatch(/^📞 Hilde.*offiziell/);
   });
   it('dockt die Drag-Karriere an: Vega ruft nach der ersten Show, Nova nach der Krone', () => {
     const s = defaults(); s.chapter = 3; s.step = 4;
@@ -198,7 +211,7 @@ describe('Roter Faden (Akt II und III)', () => {
 describe('3D-Minispiele in der Story', () => {
   it('Finale: Parade-Runner vor dem Tanz, Strandbad nach Playa', () => {
     const s = defaults(); s.chapter = 6; s.flags.saga = 8; s.flags.nacht = 5; s.flags.biz_prisma = 1; s.flags.cl_prisma_nights = 1;
-    s.flags.faden2 = true; s.flags.faden3 = true; s.flags.fadenNext = 'canaria';
+    s.flags.faden2 = true; s.flags.faden3 = true; s.flags.fadenNext = 'canaria'; s.flags.wagenCall = true; s.flags.fmCall = true;
     const minis: string[] = [];
     const c: StoryCtx = {
       s, toast: () => {}, hour: () => 14, skipToHour: () => {}, enterHome: (a) => a?.(), credits: () => {},
