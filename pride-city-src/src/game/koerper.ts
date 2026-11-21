@@ -9,7 +9,7 @@ import { skinned } from '../engine/Assets';
 export const BARE_OUTFITS = new Set(['shirtless', 'harness', 'underwear', 'swim']);
 export const bareId = (g: 'm' | 'f') => (g === 'f' ? 'Sports_Female_01' : 'Sports_Male_01');
 
-export interface Bare { root: TransformNode; meshes: Mesh[]; tint(rgb: number[]): void; dispose(): void }
+export interface Bare { root: TransformNode; meshes: Mesh[]; /** Faktor je Farbkanal (eigene Haut / Sport-Haut) */ tint(ratio: number[]): void; dispose(): void }
 const isBody = (m: AbstractMesh) => !!(m as Mesh).skeleton && /_body/.test((((m.material as { _orig?: { name: string } } | null)?._orig) || m.material)?.name || '');
 
 /** Körper anlegen: hängt unter model, folgt den Knochen (Name → Knoten) der Figur */
@@ -46,10 +46,12 @@ export async function bareBody(scene: Scene, model: TransformNode, bones: Map<st
   const obs = scene.onBeforeRenderObservable.add(() => { if (root.isEnabled()) sync(); });
   root.onDisposeObservable.addOnce(() => scene.onBeforeRenderObservable.remove(obs));
   let neckMat: PBRMaterial | null = null;
-  const tint = (rgb: number[]) => {
+  const tint = (rgb: number[]) => {   // rgb = Faktor
     if (!neck) return;
-    if (!neckMat) { neckMat = (neck.material as PBRMaterial).clone((neck.material?.name || 'hals') + '_haut'); neckMat.albedoTexture = null; neck.material = neckMat; }
-    neckMat.albedoColor = Color3.FromInts(Math.round(rgb[0]), Math.round(rgb[1]), Math.round(rgb[2])).toLinearSpace();
+    // echte Haut-Textur behalten, nur umfärben (Faktor eigene Haut / Sport-Haut, linear)
+    if (!neckMat) { neckMat = (neck.material as PBRMaterial).clone((neck.material?.name || 'hals') + '_haut'); neck.material = neckMat; }
+    const f = (v: number) => Math.pow(Math.max(.35, Math.min(2.4, v)), 2.2);
+    neckMat.albedoColor = new Color3(f(rgb[0]), f(rgb[1]), f(rgb[2]));
   };
   root.onDisposeObservable.addOnce(() => neckMat?.dispose());
   return { root, meshes, tint, dispose: () => root.dispose() };
