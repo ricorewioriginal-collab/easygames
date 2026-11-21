@@ -35,7 +35,7 @@ export function fadenGoal(s: SaveData): Goal | null {
   const w = islesLeft(s)[0], all = chain(s).length;
   if (w) {
     const st = worldStage(s.flags, w.id), n = all - islesLeft(s).length + 1;
-    return { title: `Insel ${n}/${all}: ${w.icon} ${w.name}`, sub: st ? `Mach weiter bei ${w.host.name}. Über die Brücke am Kai erreichst du jede Insel.` : `${w.host.name} wartet auf dem Platz. Über die Brücke am Kai, dann immer der Lichtsäule nach.`, isle: w.id };
+    return { title: `Insel ${n}/${all}: ${w.icon} ${w.name}`, sub: st ? `Mach weiter bei ${w.host.name}. Über die Brücke oder mit dem 🚤 Glitzer-Boot vom Kai.` : `${w.host.name} wartet auf dem Platz. Über die Brücke am Kai oder mit dem 🚤 Glitzer-Boot, dann der Lichtsäule nach.`, isle: w.id };
   }
   if (!s.flags.fadenCall) return { title: 'Ruf bei Jules an', sub: 'Alle Inseln sind bereit. Jules weiß, wie es weitergeht.', npc: 'jules' };
   return { title: 'Die Pride der Inseln auf der Pride Plaza', sub: 'Alle Inseln feiern mit dir. Ab 12 Uhr geht es los.', poi: 'plaza' };
@@ -80,7 +80,7 @@ export function fadenTick(c: StoryCtx) {
     ring('faden3', 'Jules', '#9c59d1', [
       'Das Kaleidoskop bleibt! Yusuf hat es mir sofort geschrieben. Du bist unglaublich.',
       'Und jetzt kommt Post von den Inseln vor der Küste. Fünf Orte, fünf Gastgeber*innen. Alle wollen ihre eigene Pride, und alle brauchen Hilfe.',
-      w ? `Fang bei ${w.icon} ${w.name} an. ${w.host.name} wartet dort. Die Brücke liegt am Kai im Hafen. Wenn alle Inseln bereit sind, feiern wir zusammen: die Pride der Inseln.` : 'Wenn alle bereit sind, feiern wir zusammen: die Pride der Inseln.',
+      w ? `Fang bei ${w.icon} ${w.name} an. ${w.host.name} wartet dort. Die Brücke liegt am Kai im Hafen, und dort wartet auch das Glitzer-Boot. Wenn alle Inseln bereit sind, feiern wir zusammen: die Pride der Inseln.` : 'Wenn alle bereit sind, feiern wir zusammen: die Pride der Inseln.',
     ], () => { f.fadenNext = w?.id || ''; c.card('Akt III', ACTS[2].title, ACTS[2].text).then(() => history(s, 'a3', c.card)); });
     return;
   }

@@ -40,3 +40,11 @@ describe('Fuhrpark, Garage und Rennen', () => {
     expect(nextParcel(3, .3, false).rep).toBe(1);
   });
 });
+
+describe('Weitere Fahrzeuge (Roller, Bus, Boot)', () => {
+  it('sind als eigene Fahrzeuge da, nicht käuflich und mit Autosteuerung', () => {
+    for (const id of ['roller', 'pridebus', 'boot']) { const c = carDef(id); expect(c.id).toBe(id); expect(c.ride).toBeTruthy(); expect(c.price).toBe(0); expect(c.turbo).toBeGreaterThan(c.max); }
+    expect(walkable(-98.4, 30)).toBe(false);   // Boot liegt im Wasser am Kai
+    expect(walkable(-95.5, 30)).toBe(true);    // vom Kai aus erreichbar
+  });
+});
