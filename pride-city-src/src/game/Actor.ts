@@ -171,8 +171,8 @@ export class Actor {
       const bare = !!this.look.outfit && BARE_OUTFITS.has(this.look.outfit);
       if (bare && !this.bare) {
         this.bare = await bareBody(this.scene, this.model, this.bones, this.avatar.g);
-        const own0 = this.ownBody()[0], sk = own0 && await skinOf(own0);
-        if (sk) this.bare?.tint(sk);
+        const own0 = this.ownBody()[0], sk = own0 && await skinOf(own0), sp = this.bare?.meshes[0] && await skinOf(this.bare.meshes[0]);
+        if (sk && sp) this.bare?.tint(sk.map((v, i) => v / Math.max(1, sp[i])));
       }
       if (this.dressed !== k || this.root.isDisposed()) return;
       const own = this.ownBody();
