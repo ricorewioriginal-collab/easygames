@@ -1,10 +1,29 @@
 // Oberfläche: Menüs (Tastatur/TV/Touch/Controller über gamepad.js), HUD, Ergebnisse.
-import { PARKS, SKATERS, BOARDS } from './parks.js';
+import { PARKS, SKATERS, BOARDS, customSkater } from './parks.js';
 import { save, persist } from './save.js';
 import * as A from './audio.js';
 
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const fmt = n => Math.round(n).toLocaleString('de-DE');
+const MODE_NAME = { career: 'Karriere', score: 'Highscore-Lauf', free: 'Freies Fahren', duel: 'Duell', comp: 'Wettbewerb', skate: 'S-K-A-T-E' };
+const MEDAL = ['', '🥉', '🥈', '🥇'];
+const STAT_N = { speed: 'Tempo', ollie: 'Sprung', spin: 'Drehung', balance: 'Balance', air: 'Air' };
+// Editor-Felder: [Schlüssel, Bezeichnung, [[Wert, Anzeige] …]]
+const COLS = ['#ff5a3c', '#ffd43a', '#2ecc71', '#2ec4ff', '#7c4dff', '#ff4f8b', '#111318', '#f2f2f2', '#26324d', '#5a4636'];
+const sw = c => [c, `<span class="sw" style="background:${c}"></span>`];
+const EDIT = [
+  ['body', 'Figur', [['m', 'A'], ['f', 'B']]],
+  ['skin', 'Haut', ['#f0c7a3', '#e6b48f', '#c9926a', '#8d5a3b', '#5c3a26'].map(sw)],
+  ['hairStyle', 'Frisur', [['short', 'Kurz'], ['long', 'Lang'], ['pony', 'Zopf'], ['bob', 'Bob'], ['afro', 'Locken'], ['bald', 'Glatze']]],
+  ['hair', 'Haarfarbe', ['#120c08', '#2b1b12', '#d9a441', '#ff4f8b', '#6a3dff', '#e8e4d8'].map(sw)],
+  ['hat', 'Kopf', [['none', 'Nichts'], ['cap', 'Kappe'], ['beanie', 'Mütze'], ['helmet', 'Helm']]],
+  ['hatColor', 'Kopf-Farbe', COLS.slice(0, 8).map(sw)],
+  ['topStyle', 'Oberteil', [['tee', 'Shirt'], ['tank', 'Top'], ['long', 'Langarm']]],
+  ['top', 'Oberteil-Farbe', COLS.map(sw)],
+  ['bottomStyle', 'Hose', [['pants', 'Lang'], ['shorts', 'Kurz']]],
+  ['bottom', 'Hosen-Farbe', COLS.map(sw)],
+  ['shoes', 'Schuhe', COLS.slice(0, 8).map(sw)]
+];
 
 export class UI {
   constructor() {
@@ -75,6 +94,10 @@ export class UI {
     if (go) { A.sfx('ui'); return this.go(go); }
     if (b.dataset.park != null) { if (b.classList.contains('lock')) { A.sfx('uiBack'); return; } A.sfx('ui'); return this.pickPark(+b.dataset.park); }
     if (b.dataset.sk != null) { if (b.classList.contains('lock')) return A.sfx('uiBack'); save.skater = +b.dataset.sk; persist(); A.sfx('ui'); this.fill('mSkater'); g.spawnSkater().then(() => g.skater.reset(g.park.spawn)); return; }
+    if (b.dataset.statup) { A.sfx(g.addStat(g.skaterDef, b.dataset.statup) ? 'collect' : 'uiBack'); return this.fill('mSkater'); }
+    if (b.hasAttribute('data-statreset')) { g.resetStats(g.skaterDef); A.sfx('ui'); return this.fill('mSkater'); }
+    if (b.dataset.ed) { const v = b.dataset.v; save.custom[b.dataset.ed] = v; persist(); A.sfx('ui'); this.fill('mEdit'); if (save.skater === -1) { clearTimeout(this._edT); this._edT = setTimeout(() => g.spawnSkater().then(() => g.skater.reset(g.park.spawn)), 120); } return; }
+    if (b.dataset.skate) { A.sfx('ui'); this.skatePlayers = +b.dataset.skate; this.parkMode = 'skate'; return this.show('mPark'); }
     if (b.dataset.bd != null) { if (b.classList.contains('lock')) return A.sfx('uiBack'); save.board = +b.dataset.bd; persist(); A.sfx('ui'); this.fill('mBoard'); g.spawnSkater().then(() => g.skater.reset(g.park.spawn)); return; }
     if (b.dataset.players) { A.sfx('ui'); this.duelPlayers = +b.dataset.players; this.parkMode = 'duel'; return this.show('mPark'); }
     if (b.classList.contains('opt')) {
@@ -95,6 +118,8 @@ export class UI {
     switch (what) {
       case 'career': case 'score': case 'free': this.parkMode = what; return this.show('mPark');
       case 'duel': return this.show('mDuel');
+      case 'comp': this.parkMode = 'comp'; return this.show('mPark');
+      case 'edit': if (save.skater !== -1) { save.skater = -1; persist(); g.spawnSkater().then(() => g.skater.reset(g.park.spawn)); } return this.show('mEdit');
       case 'skater': return this.show('mSkater');
       case 'board': return this.show('mBoard');
       case 'settings': return this.show('mSettings');
@@ -109,7 +134,7 @@ export class UI {
     const g = this.game; this.stack = [];
     this.show(null, false);
     if (this.qualityChanged) { this.qualityChanged = false; }
-    await g.start(this.parkMode, i, this.parkMode === 'duel' ? this.duelPlayers : undefined);
+    await g.start(this.parkMode, i, this.parkMode === 'duel' ? this.duelPlayers : this.parkMode === 'skate' ? this.skatePlayers : this.parkMode === 'comp' ? 'new' : undefined);
   }
 
   fill(id) {
@@ -119,23 +144,30 @@ export class UI {
     }
     if (id === 'mPark') {
       const mode = this.parkMode;
-      $('#pTitle').textContent = { career: 'Karriere', score: 'Highscore-Lauf', free: 'Freies Fahren', duel: 'Duell' }[mode] || 'Park';
-      $('#pSub').textContent = mode === 'career' ? 'Erfülle Ziele im 2-Minuten-Lauf. 5 Ziele schalten den nächsten Park frei.' : mode === 'free' ? 'Fahr ohne Zeitdruck – ideal zum Üben.' : mode === 'duel' ? `${this.duelPlayers || 2} Spieler, je 60 Sekunden.` : 'Zwei Minuten, ein Ziel: Punkte.';
+      $('#pTitle').textContent = MODE_NAME[mode] || 'Park';
+      $('#pSub').textContent = mode === 'career' ? 'Erfülle Ziele im 2-Minuten-Lauf und sammle Stat-Punkte (grüne Marken). 5 Ziele schalten den nächsten Park frei.' : mode === 'free' ? 'Fahr ohne Zeitdruck – ideal zum Üben. Stat-Punkte kannst du auch hier sammeln.' : mode === 'duel' ? `${this.duelPlayers || 2} Spieler, je 60 Sekunden.` : mode === 'comp' ? 'Drei Läufe à 60 Sekunden vor der Jury. Die besten zwei zählen. Platz 1–3 gibt eine Medaille und Stat-Punkte.' : mode === 'skate' ? `${this.skatePlayers || 2} Spieler, je ein Combo-Versuch pro Runde.` : 'Zwei Minuten, ein Ziel: Punkte.';
       $('#pList').innerHTML = PARKS.map((p, i) => {
-        const pr = save.parks[p.id] || { goals: [], best: 0 }, open = g.parkUnlocked(i) || mode === 'free';
-        return `<button class="card ${open ? '' : 'lock'}" data-park="${i}"><b>${open ? '' : '🔒 '}${p.name}</b><span>${p.sub}</span><span>🎯 ${pr.goals.length}/${p.goals.length} · Bestwert ${fmt(pr.best || 0)}</span>${open ? '' : '<span>5 Ziele im vorigen Park nötig</span>'}</button>`;
+        const pr = save.parks[p.id] || { goals: [], best: 0 }, open = g.parkUnlocked(i) || mode === 'free' || mode === 'duel' || mode === 'skate', md = save.medals[p.id] || 0;
+        return `<button class="card ${open ? '' : 'lock'}" data-park="${i}"><b>${open ? '' : '🔒 '}${p.name} ${md ? MEDAL[md] : ''}</b><span>${p.sub}</span><span>🎯 ${pr.goals.length}/${p.goals.length} · ⬢ ${(save.coins[p.id] || []).length}/${(p.coins || []).length} · Bestwert ${fmt(pr.best || 0)}</span>${open ? '' : '<span>5 Ziele im vorigen Park nötig</span>'}</button>`;
       }).join('');
     }
     if (id === 'mSkater') {
       const tot = g.goalsTotal();
-      $('#skList').innerHTML = SKATERS.map((s, i) => { const lock = (s.unlock || 0) > tot; return `<button class="card ${i === save.skater ? 'cur' : ''} ${lock ? 'lock' : ''}" data-sk="${i}" style="min-height:70px"><b style="font-size:15px">${lock ? '🔒 ' : ''}${s.name}</b><span>${lock ? s.unlock + ' Ziele' : s.style}</span></button>`; }).join('');
-      const s = g.skaterDef; $('#skName').textContent = s.name; $('#skStyle').textContent = 'Stil: ' + s.style + ' · Spezial: ' + s.specials.map(x => x.name).join(', ');
-      const N = { speed: 'Tempo', ollie: 'Sprung', spin: 'Drehung', balance: 'Balance', air: 'Air' };
-      $('#skStats').innerHTML = Object.keys(N).map(k => `<span>${N[k]}</span><i style="width:${s.stats[k] * 10}%"></i>`).join('');
+      $('#skList').innerHTML = SKATERS.map((s, i) => { const lock = (s.unlock || 0) > tot; return `<button class="card ${i === save.skater ? 'cur' : ''} ${lock ? 'lock' : ''}" data-sk="${i}" style="min-height:64px"><b style="font-size:14px">${lock ? '🔒 ' : ''}${s.name}</b><span>${lock ? s.unlock + ' Ziele' : s.style}</span></button>`; }).join('')
+        + `<button class="card ${save.skater === -1 ? 'cur' : ''}" data-sk="-1" style="min-height:64px"><b style="font-size:14px">✏️ ${save.custom.name || 'Eigener Skater'}</b><span>Eigenbau</span></button>`;
+      const s = g.skaterDef, st = g.statsFor(s), free = g.statPoints() - g.spentFor(s.id);
+      $('#skName').textContent = s.name; $('#skStyle').textContent = 'Stil: ' + s.style + ' · Spezial: ' + s.specials.map(x => x.name).join(', ');
+      $('#skPts').innerHTML = `⬢ <b>${free}</b> ${free === 1 ? "freier Stat-Punkt" : "freie Stat-Punkte"} für ${s.name} · Punkte gibt es für Ziele, grüne Marken in den Parks und Medaillen`;
+      $('#skStats').innerHTML = Object.keys(STAT_N).map(k => `<span>${STAT_N[k]} ${st[k]}</span><div class="bar"><i style="width:${st[k] * 10}%"></i></div><button data-statup="${k}" aria-label="${STAT_N[k]} erhöhen" ${free > 0 && st[k] < 10 ? '' : 'disabled'}>+</button>`).join('');
+      $('#skEdit').querySelector('span:last-child').textContent = save.skater === -1 ? 'Aussehen' : 'Eigener Skater';
+    }
+    if (id === 'mEdit') {
+      const c = save.custom;
+      $('#edRows').innerHTML = EDIT.map(([k, label, opts]) => `<div class="set"><span>${label}</span><div class="opts">${opts.map(([v, t]) => `<button class="opt ${String(c[k]) === v ? 'on' : ''}" data-ed="${k}" data-v="${v}">${t}</button>`).join('')}</div></div>`).join('');
     }
     if (id === 'mBoard') {
-      const tot = g.goalsTotal(), cur = save.board >= 0 ? save.board : g.skaterDef.board;
-      $('#bdList').innerHTML = BOARDS.map((b, i) => { const lock = (b.unlock || 0) > tot; return `<button class="card ${i === cur ? 'cur' : ''} ${lock ? 'lock' : ''}" data-bd="${i}" style="min-height:64px"><b style="font-size:15px;background:linear-gradient(90deg,${b.c1},${b.c2});-webkit-background-clip:text;background-clip:text;color:transparent">${lock ? '🔒 ' : ''}${b.name}</b><span>${lock ? b.unlock + ' Ziele' : b.label}</span></button>`; }).join('');
+      const tot = g.goalsTotal(), cur = save.board >= 0 ? save.board : g.skaterDef.board, gold = g.medalsGold();
+      $('#bdList').innerHTML = BOARDS.map((b, i) => { const lock = (b.unlock || 0) > tot || (b.medal || 0) > gold; return `<button class="card ${i === cur ? 'cur' : ''} ${lock ? 'lock' : ''}" data-bd="${i}" style="min-height:64px"><b style="font-size:15px;background:linear-gradient(90deg,${b.c1},${b.c2});-webkit-background-clip:text;background-clip:text;color:transparent">${lock ? '🔒 ' : ''}${b.name}</b><span>${lock ? (b.medal ? b.medal + ' Goldmedaillen' : b.unlock + ' Ziele') : b.label}</span></button>`; }).join('');
       $('#bdName').textContent = BOARDS[cur] ? BOARDS[cur].name : '';
     }
     if (id === 'mSettings') {
@@ -143,7 +175,7 @@ export class UI {
       if (this.qualityChanged) $('#mSettings .sub') && 0;
     }
     if (id === 'mGoals') this.fillGoals();
-    if (id === 'mPause') { const p = g.park; $('#psSub').textContent = p.name + ' · ' + ({ career: 'Karriere', score: 'Highscore-Lauf', free: 'Freies Fahren', duel: 'Duell' }[g.mode]); }
+    if (id === 'mPause') { const p = g.park; $('#psSub').textContent = p.name + ' · ' + MODE_NAME[g.mode]; }
   }
   fillGoals() {
     const g = this.game, p = g.park, pr = save.parks[p.id] || { goals: [] };
@@ -166,7 +198,10 @@ export class UI {
     setTimeout(() => { $('#hint').style.opacity = '0'; $('#hint').style.transition = 'opacity 1s'; }, 9000);
     $('#hint').style.opacity = '1';
     const pr = save.parks[g.park.id] || { goals: [] }; $('#gCount').textContent = `${pr.goals.length}/${g.park.goals.length}`;
-    if (g.mode === 'duel') this.flash(`Spieler ${g.duel.cur + 1}`); else this.flash(g.park.name);
+    if (g.mode === 'duel') this.flash(`Spieler ${g.duel.cur + 1}`);
+    else if (g.mode === 'comp') this.flash(`Lauf ${g.comp.run + 1} von 3`);
+    else if (g.mode === 'skate') { this.flash(`Spieler ${g.skate.cur + 1}: eine Combo!`); this.feed('S-K-A-T-E: Lande eine Combo – nur der erste Versuch zählt', 'gap'); }
+    else this.flash(g.park.name);
   }
   hud(g, dt) {
     const sk = g.skater, run = g.run;
@@ -198,8 +233,8 @@ export class UI {
 
   results(g, r) {
     this.stack = [];
-    const duel = g.mode === 'duel' ? g.duel : null;
-    $('#rsTitle').textContent = duel ? `Spieler ${duel.cur} fertig` : g.mode === 'free' ? 'Session beendet' : 'Lauf beendet';
+    const duel = g.mode === 'duel' ? g.duel : null, comp = g.mode === 'comp' ? g.comp : null, sk8 = g.mode === 'skate' ? g.skate : null;
+    $('#rsTitle').textContent = duel ? `Spieler ${duel.cur} fertig` : comp ? (comp.run >= 3 ? 'Wettbewerb beendet' : `Lauf ${comp.run} von 3`) : sk8 ? (sk8.winner != null ? 'S-K-A-T-E beendet' : 'Zug beendet') : g.mode === 'free' ? 'Session beendet' : 'Lauf beendet';
     $('#rsScore').textContent = fmt(r.score);
     $('#rsSub').textContent = g.park.name + (r.newBest ? ' · Neuer Bestwert!' : '');
     $('#rsInfo').textContent = `Beste Combo: ${fmt(r.bestCombo)}`;
@@ -215,9 +250,28 @@ export class UI {
       goalsHtml = sc.map((s, i) => `<div class="${done && s === Math.max(...sc) ? 'ok' : ''}"><i>${done && s === Math.max(...sc) ? '🏆' : i + 1}</i>Spieler ${i + 1}: ${fmt(s)}</div>`).join('');
       if (!done) goalsHtml += `<div><i>➜</i>Als Nächstes: Spieler ${duel.cur + 1} – Gerät weitergeben!</div>`;
     }
+    if (comp) {
+      const last = comp.scores[comp.scores.length - 1];
+      $('#rsInfo').textContent = `Jury: ${last.judges.map(j => j.toFixed(1)).join(' · ')} → ${last.avg.toFixed(1)} · ${r.bestCombo ? 'Beste Combo ' + fmt(r.bestCombo) : ''}`;
+      if (comp.run >= 3) {
+        goalsHtml = comp.table.map((t, i) => `<div class="${t.me ? 'ok' : ''}"><i>${i < 3 ? MEDAL[3 - i] : i + 1}</i>${t.name}: ${t.score.toFixed(1)}</div>`).join('');
+        if (comp.newMedal) goalsHtml += `<div class="ok"><i>⬢</i>Neue Medaille – mehr Stat-Punkte!</div>`;
+      } else goalsHtml = comp.scores.map((x, i) => `<div><i>${i + 1}</i>Lauf ${i + 1}: ${x.avg.toFixed(1)} (${fmt(x.pts)} Punkte)</div>`).join('') + comp.rivals.map(t => `<div><i>•</i>${t.name}: ${t.score.toFixed(1)}</div>`).join('');
+    }
+    if (sk8) {
+      const W = 'SKATE';
+      $('#rsScore').textContent = r.score ? fmt(r.score) : 'Kein Combo';
+      goalsHtml = sk8.letters.map((l, i) => `<div class="${sk8.winner === i ? 'ok' : ''}"><i>${sk8.winner === i ? '🏆' : l >= 5 ? '✗' : i + 1}</i>Spieler ${i + 1}: <b style="letter-spacing:.2em;margin-left:6px">${W.slice(0, l) || '–'}</b></div>`).join('');
+      if (sk8.last && sk8.round.length === 0) goalsHtml = `<div><i>ℹ</i>${sk8.last.loser >= 0 ? `Runde vorbei: Spieler ${sk8.last.loser + 1} bekommt einen Buchstaben.` : 'Runde vorbei: Gleichstand, kein Buchstabe.'}</div>` + goalsHtml;
+      if (sk8.winner == null) goalsHtml += `<div><i>➜</i>Als Nächstes: Spieler ${sk8.cur + 1} – Gerät weitergeben!</div>`;
+    }
     $('#rsGoals').innerHTML = goalsHtml;
     const btns = [];
-    if (duel && duel.cur < duel.players) btns.push(['next', '▶', `Spieler ${duel.cur + 1} starten`, true]);
+    if (comp && comp.run < 3) btns.push(['compNext', '▶', `Lauf ${comp.run + 1} starten`, true]);
+    else if (comp) btns.push(['compAgain', '↻', 'Neuer Wettbewerb', true]);
+    else if (sk8 && sk8.winner == null) btns.push(['skateNext', '▶', `Spieler ${sk8.cur + 1} starten`, true]);
+    else if (sk8) btns.push(['skateAgain', '↻', 'Neue Partie', true]);
+    else if (duel && duel.cur < duel.players) btns.push(['next', '▶', `Spieler ${duel.cur + 1} starten`, true]);
     else if (duel) btns.push(['duelAgain', '↻', 'Neues Duell', true]);
     else btns.push(['again', '↻', 'Nochmal', true]);
     btns.push(['menu', '⌂', 'Hauptmenü']);
@@ -229,6 +283,10 @@ export class UI {
     if (k === 'again') return g.restart();
     if (k === 'next') return g.start('duel', g.parkIdx);
     if (k === 'duelAgain') { const n = g.duel.players; g.duel = null; return g.start('duel', g.parkIdx, n); }
+    if (k === 'compNext') return g.start('comp', g.parkIdx);
+    if (k === 'compAgain') return g.start('comp', g.parkIdx, 'new');
+    if (k === 'skateNext') return g.start('skate', g.parkIdx);
+    if (k === 'skateAgain') return g.start('skate', g.parkIdx, g.skate.players);
     g.quit(); this.show('mMain', false); g.showcase(0);
   }
 }

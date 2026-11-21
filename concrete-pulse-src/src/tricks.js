@@ -48,3 +48,15 @@ export function dirOf(x, y) {
   if (a > -112.5 && a <= -67.5) return 'd'; return 'dr';
 }
 export const DIR_SYM = { n: '•', u: '↑', d: '↓', l: '←', r: '→', ul: '↖', ur: '↗', dl: '↙', dr: '↘' };
+// Lip-Tricks: an der Rampenkante (Coping) aus der Senkrechten, Grind + Richtung. pitch/yawOff = Brettlage
+export const LIPS = {
+  n: { name: 'Rock to Fakie', pts: 150, pps: 120, yawOff: Math.PI / 2, pitch: 0.35 },
+  u: { name: 'Nose Stall', pts: 200, pps: 140, yawOff: 0, pitch: -0.55 },
+  d: { name: 'Tail Stall', pts: 200, pps: 140, yawOff: 0, pitch: 0.55 },
+  l: { name: 'Axle Stall', pts: 220, pps: 150, yawOff: Math.PI / 2, pitch: 0 },
+  r: { name: 'Blunt Stall', pts: 260, pps: 160, yawOff: 0, pitch: 0.9 },
+  ul: { name: 'Nose Pick', pts: 300, pps: 170, yawOff: 0.3, pitch: -0.8 },
+  ur: { name: 'Disaster', pts: 300, pps: 170, yawOff: Math.PI / 2, pitch: 0.2 },
+  dl: { name: 'Handplant', pts: 420, pps: 200, yawOff: 0, pitch: -1.2, hand: true },
+  dr: { name: 'Eggplant', pts: 420, pps: 200, yawOff: 0.4, pitch: -1.1, hand: true }
+};

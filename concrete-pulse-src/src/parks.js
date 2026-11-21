@@ -1,4 +1,4 @@
-// Die drei Parks von CONCRETE PULSE – alles eigene Entwürfe.
+// Die Parks von CONCRETE PULSE – alles eigene Entwürfe.
 // Koordinaten in Metern, y = Höhe. rot: Drehung um die Hochachse (0 = Rampe steigt nach +z).
 const PI = Math.PI;
 const wallRing = (x0, z0, x1, z1, h, mat) => [
@@ -93,8 +93,11 @@ export const PARKS = [
       { type: 'gap', gap: 'Container-Hüpfer', text: 'Spring von Container zu Container' },
       { type: 'trickgap', gap: 'Funbox-Sprung', trick: 'Kickflip', text: 'Kickflip über die Funbox' },
       { type: 'grindTime', n: 3, text: 'Grinde 3 Sekunden am Stück' },
-      { type: 'manualTime', n: 4, text: 'Halte einen Manual 4 Sekunden' }
-    ]
+      { type: 'manualTime', n: 4, text: 'Halte einen Manual 4 Sekunden' },
+      { type: 'trick', trick: 'Wallride', text: 'Mach einen Wallride an der Hafenmauer' },
+      { type: 'lipTime', n: 1, text: 'Halte einen Lip-Trick 1 Sekunde an der Quarterpipe' }
+    ],
+    coins: [[14, 1.3, -8], [-17, 2.1, -18], [-30, 1.9, 0]]
   },
   {
     id: 'dach', name: 'Dachgarten', sub: 'Halfpipe über den Dächern · Abendrot',
@@ -150,8 +153,11 @@ export const PARKS = [
       { type: 'gap', gap: 'Lichtschacht-Sprung', text: 'Spring über den Lichtschacht' },
       { type: 'spin', n: 540, text: 'Lande eine 540er-Drehung' },
       { type: 'special', text: 'Lande einen Spezialtrick' },
-      { type: 'grindTime', n: 5, text: 'Grinde 5 Sekunden am Stück' }
-    ]
+      { type: 'grindTime', n: 5, text: 'Grinde 5 Sekunden am Stück' },
+      { type: 'trick', trick: 'Wallie', text: 'Spring mit einem Wallie von einer Wand ab' },
+      { type: 'trick', trick: 'plant', text: 'Lande einen Handplant oder Eggplant in der Halfpipe' }
+    ],
+    coins: [[-28, 1.55, 0], [-3, 4.6, 20.4], [14, 3.3, -28]]
   },
   {
     id: 'neon', name: 'Neonbucht', sub: 'Pools und Neon an der Promenade · Nacht',
@@ -206,7 +212,129 @@ export const PARKS = [
       { type: 'gap', gap: 'Vert-Höhenflug', text: 'Flieg 1,4 Sekunden an der Vert-Rampe' },
       { type: 'spin', n: 720, text: 'Lande eine 720er-Drehung' },
       { type: 'special', text: 'Lande einen Spezialtrick' },
-      { type: 'gap', gap: 'Pool-Ausflug', text: 'Flieg aus dem großen Pool' }
+      { type: 'gap', gap: 'Pool-Ausflug', text: 'Flieg aus dem großen Pool' },
+      { type: 'trick', trick: 'Wallride', text: 'Mach einen Wallride an der Neonwand' },
+      { type: 'lipTime', n: 1.5, text: 'Halte einen Lip-Trick 1,5 Sekunden im Pool' }
+    ],
+    coins: [[-14, 1.65, -15], [26, 2.9, 32], [8, -2.2, 8]]
+  },
+  {
+    id: 'depot', name: 'Gleisdepot', sub: 'Güterbahnhof mit Halfpipe · Dämmerung',
+    hdr: 'abend', envRot: 0.9, fog: '#c99a7a', fogD: 0.0045, sun: [0.6, -0.5, 0.4], sunI: 2.8, sunC: '#ffc08a', hemiI: 0.3, hemiC: '#ffb59a', exposure: 1.0,
+    ground: 'concrete', groundC: '#7a756c', palette: { ramp: '#c9c1b2', deck: '#6b5038', wall: '#7a4636', accent: '#ff8a2a', accent2: '#3cf0ff' },
+    bounds: [-38, -30, 38, 30], spawn: [0, 12, Math.PI], music: 4,
+    elements: [
+      ...wallRing(-38, -30, 38, 30, 4.2, 'brick'),
+      // Zwei Güterwaggons mit Kicker
+      { t: 'box', x: -6, z: -14, w: 16, d: 3, h: 2.4, grind: ['n', 's'], mat: 'container', side: 'container' },
+      { t: 'box', x: -6, z: -19.5, w: 16, d: 3, h: 2.4, grind: ['n', 's'], mat: 'container2', side: 'container2' },
+      kicker(-6, -10.7, PI, 4, 3.6, 1.8),
+      // Gleis als flaches Rail
+      { t: 'rail', a: [-20, 0.3, -27.5], b: [30, 0.3, -27.5] },
+      // Laderampe mit Treppe, Handlauf und Auffahrt
+      { t: 'box', x: -10, z: 25.5, w: 36, d: 7, h: 1.2, grind: ['s'], mat: 'concrete' },
+      { t: 'stairs', x: 2, z: 20.5, rot: PI, w: 4, d: 3, n: 4, h: 1.2 },
+      { t: 'rail', a: [4.25, 2.0, 22], b: [4.25, 0.8, 19.2] },
+      { t: 'ramp', x: -24, z: 20.2, rot: 0, w: 6, d: 3.6, h: 1.2 },
+      // Halfpipe in der Osthalle
+      ...halfpipe(27, 2, 12, 6, 3.4, 3.2, 2.2),
+      // Versteckter Hof hinter der Mauer: über die Plattform hinein, über die Rampe hinaus
+      { t: 'wall', x: -23, z: -25.5, w: 1, d: 9, h: 2.0, mat: 'brick', top: 'wallTop' },
+      { t: 'wall', x: -30.5, z: -21, w: 15, d: 1, h: 2.0, mat: 'brick', top: 'wallTop' },
+      { t: 'box', x: -18, z: -24, w: 4, d: 4, h: 1.4, grind: ['w'], mat: 'metalBox', side: 'metalBox' },
+      kicker(-14.6, -24, -PI / 2, 4, 2.8, 1.4),
+      { t: 'ramp', x: -27, z: -25.5, rot: PI / 2, w: 4, d: 6, h: 2.0 },
+      // Hallenstützen, Ledges, Manual-Pad
+      { t: 'cyl', x: -12, z: 8, r: 0.6, h: 4.2, mat: 'metalDark' }, { t: 'cyl', x: 12, z: 8, r: 0.6, h: 4.2, mat: 'metalDark' },
+      { t: 'box', x: -22, z: 6, w: 10, d: 1.2, h: 0.5, grind: true, mat: 'ledge' },
+      { t: 'box', x: 10, z: -4, w: 1.2, d: 8, h: 0.45, grind: true, mat: 'ledge' },
+      { t: 'box', x: -6, z: 4, w: 6, d: 2.2, h: 0.22, grind: ['n', 's'], mat: 'ledge' }
+    ],
+    deco: [
+      { t: 'crane', x: -50, z: -40 }, { t: 'crane', x: 52, z: 30 }, { t: 'city', seed: 23, r: 80, n: 26, hMin: 8, hMax: 34, lit: true },
+      { t: 'lamp', x: -34, z: 0 }, { t: 'lamp', x: 34, z: -26 }, { t: 'lamp', x: -34, z: 26 }, { t: 'lamp', x: 14, z: 26 }, { t: 'antenna', x: 44, z: -36 }
+    ],
+    letters: [[-6, 3.35, -14], [27, 4.8, 9.6], [-10, 2.1, 25], [10, 1.4, -2], [-25, 2.6, -25.5]],
+    tape: [-34, 1.0, -27],
+    coins: [[-6, 3.35, -19.5], [4.25, 2.3, 20.6], [-32, 1.0, -23.5]],
+    gaps: [
+      { name: 'Auf den Waggon', pts: 350, from: [-8, -12.5, -4, -8.9], to: [-14, -15.5, 2, -12.5], minY: 2.2 },
+      { name: 'Waggon-Hüpfer', pts: 450, from: [-14, -15.5, 2, -12.5], to: [-14, -21, 2, -18], minY: 2.2 },
+      { name: 'Ins Versteck', pts: 600, from: [-20, -26, -13, -22], to: [-38, -30, -23.5, -21.5] },
+      { name: 'Raus aus dem Versteck', pts: 400, from: [-30, -28, -23.5, -23], to: [-23, -30, 38, 30] },
+      { name: 'Laderampen-Satz', pts: 300, from: [-2, 22, 6, 29], to: [-2, 12, 6, 18.8] },
+      { name: 'Halfpipe-Höhenflug', pts: 350, from: [21, -7, 33, 11], to: [21, -7, 33, 11], minAir: 1.2 }
+    ],
+    goals: [
+      { type: 'score', n: 60000, text: 'Erreiche 60.000 Punkte' },
+      { type: 'score', n: 130000, text: 'Erreiche 130.000 Punkte' },
+      { type: 'score', n: 260000, text: 'Erreiche 260.000 Punkte' },
+      { type: 'letters', text: 'Sammle P-U-L-S-E' },
+      { type: 'tape', text: 'Finde die Kassette im versteckten Hof' },
+      { type: 'combo', n: 25000, text: 'Lande eine 25.000er-Combo' },
+      { type: 'gap', gap: 'Waggon-Hüpfer', text: 'Spring von Waggon zu Waggon' },
+      { type: 'gap', gap: 'Ins Versteck', text: 'Finde den Weg in den versteckten Hof' },
+      { type: 'trick', trick: 'Wallie', text: 'Mach einen Wallie an einer Mauer' },
+      { type: 'lipTime', n: 1.5, text: 'Halte einen Lip-Trick 1,5 Sekunden in der Halfpipe' },
+      { type: 'trickgap', gap: 'Laderampen-Satz', trick: 'Heelflip', text: 'Heelflip die Treppe der Laderampe hinunter' },
+      { type: 'manualTime', n: 6, text: 'Halte einen Manual 6 Sekunden' }
+    ]
+  },
+  {
+    id: 'kanal', name: 'Trockenkanal', sub: 'Leere Flutrinne in der Wüstenstadt · Mittag',
+    hdr: 'tag', envRot: 2.0, fog: '#e8d2b0', fogD: 0.003, sun: [0.3, -1, -0.6], sunI: 3.8, sunC: '#fff0d0', hemiI: 0.3, hemiC: '#ffe2b8', exposure: 0.9,
+    ground: 'concrete', groundC: '#b39d80', palette: { ramp: '#d7cbb5', deck: '#8a6a48', wall: '#b08a64', accent: '#ffb02e', accent2: '#2ec4ff' },
+    bounds: [-30, -50, 30, 50], spawn: [0, 30.5, Math.PI], music: 5,
+    elements: [
+      ...wallRing(-30, -50, 30, 50, 4.4, 'parapet'),
+      // Die Rinne: riesige Halfpipe entlang z, Ufer links und rechts
+      ...halfpipe(0, -6, 68, 8, 4.0, 3.0, 3.0, PI / 2),
+      { t: 'box', x: 20.5, z: -6, w: 19, d: 68, h: 3.0, grind: ['n'], mat: 'concrete' },
+      { t: 'box', x: -20.5, z: -6, w: 19, d: 68, h: 3.0, grind: ['n'], mat: 'concrete' },
+      { t: 'ramp', x: 20, z: 30.5, rot: PI, w: 8, d: 5, h: 3.0 },
+      { t: 'ramp', x: -20, z: 30.5, rot: PI, w: 8, d: 5, h: 3.0 },
+      // In der Rinne: Funbox, Rail, Brückenpfeiler
+      ...funbox(0, -2, 3, 3, 0.8, 2.2),
+      { t: 'rail', a: [0, 0.5, -32], b: [0, 0.5, -20] },
+      { t: 'cyl', x: 0, z: -14, r: 0.7, h: 1.8, mat: 'concrete' },
+      // Ost-Ufer: Rail und Ledge
+      { t: 'rail', a: [18, 3.55, -30], b: [18, 3.55, 0] },
+      { t: 'box', x: 24, z: 10, w: 1.2, d: 10, h: 3.45, grind: ['e', 'w'], mat: 'ledge' },
+      // West-Ufer: Pumpenhaus mit Auffahrt (versteckte Kassette auf dem Dach)
+      { t: 'box', x: -22, z: -20, w: 6, d: 6, h: 5.2, grind: ['n', 'e'], mat: 'brick', side: 'brick' },
+      kicker(-22, -15.5, PI, 4, 3, 2.2, 3.0),
+      { t: 'cyl', x: -24, z: 12, r: 1, h: 3.6, mat: 'planter' },
+      // Auffangbecken im Norden
+      { t: 'bowl', x: 0, z: 41, R: 7, depth: 2.8, rt: 3.0 }
+    ],
+    deco: [
+      { t: 'city', seed: 31, r: 90, n: 22, hMin: 6, hMax: 24 }, { t: 'palm', x: -27, z: 46 }, { t: 'palm', x: 27, z: 46 }, { t: 'palm', x: -27, z: -46 }, { t: 'palm', x: 27, z: -46 },
+      { t: 'palm', x: 27, z: 20 }, { t: 'antenna', x: -40, z: 0 }, { t: 'billboard', x: 0, z: 70 }, { t: 'lamp', x: 12, z: 30 }, { t: 'lamp', x: -12, z: 30 }
+    ],
+    letters: [[0, 1.4, -30], [8.6, 4.6, -6], [18, 4.45, -15], [-8.6, 4.6, -26], [0, -1.9, 41]],
+    tape: [-22, 6.2, -21],
+    coins: [[24, 4.35, 10], [0, 1.7, -2], [-20, 3.9, 25]],
+    gaps: [
+      { name: 'Ufer-Drop', pts: 300, from: [11, -40, 30, 28], to: [-4, -40, 4, 28] },
+      { name: 'Ufer-Drop', pts: 300, from: [-30, -40, -11, 28], to: [-4, -40, 4, 28] },
+      { name: 'Pumpenhaus-Dach', pts: 700, from: [-26, -17, -18, -13], to: [-25, -23, -19, -17], minY: 5.0 },
+      { name: 'Becken-Ausflug', pts: 400, from: [-8, 33, 8, 49], to: [-30, -50, 30, 50], outBowl: true },
+      { name: 'Funbox-Flug', pts: 250, from: [-4, -6, 4, 2], to: [-4, -8, 4, 4], over: true },
+      { name: 'Rinnen-Höhenflug', pts: 450, from: [-11, -40, 11, 28], to: [-11, -40, 11, 28], minAir: 1.3 }
+    ],
+    goals: [
+      { type: 'score', n: 70000, text: 'Erreiche 70.000 Punkte' },
+      { type: 'score', n: 150000, text: 'Erreiche 150.000 Punkte' },
+      { type: 'score', n: 300000, text: 'Erreiche 300.000 Punkte' },
+      { type: 'letters', text: 'Sammle P-U-L-S-E' },
+      { type: 'tape', text: 'Finde die Kassette auf dem Pumpenhaus' },
+      { type: 'combo', n: 40000, text: 'Lande eine 40.000er-Combo' },
+      { type: 'gap', gap: 'Pumpenhaus-Dach', text: 'Spring aufs Dach des Pumpenhauses' },
+      { type: 'gap', gap: 'Ufer-Drop', text: 'Spring vom Ufer in die Rinne' },
+      { type: 'trick', trick: 'Wallride', text: 'Mach einen Wallride am Pumpenhaus' },
+      { type: 'lipTime', n: 2, text: 'Halte einen Lip-Trick 2 Sekunden' },
+      { type: 'spin', n: 900, text: 'Lande eine 900er-Drehung' },
+      { type: 'special', text: 'Lande einen Spezialtrick in der Rinne' }
     ]
   }
 ];
@@ -241,5 +369,18 @@ export const BOARDS = [
   { name: 'Gelbblitz', c1: '#ffd43a', c2: '#ff7a1a', c3: '#111111', pattern: 'bolt', label: 'FAST' },
   { name: 'Raster', c1: '#3cf0ff', c2: '#ff3cf0', c3: '#ffffff', pattern: 'grid', label: 'SHOW' },
   { name: 'Beton', c1: '#9a9a96', c2: '#5c5c58', c3: '#ff5a3c', pattern: 'stripes', label: 'BETON', unlock: 9 },
-  { name: 'Goldkante', c1: '#ffcf3a', c2: '#8a5a00', c3: '#fff3c4', pattern: 'grid', label: 'GOLD', unlock: 25 }
+  { name: 'Goldkante', c1: '#ffcf3a', c2: '#8a5a00', c3: '#fff3c4', pattern: 'grid', label: 'GOLD', unlock: 25 },
+  { name: 'Rostspur', c1: '#b8572a', c2: '#3a1c10', c3: '#ffb02e', pattern: 'stripes', label: 'DEPOT', unlock: 35 },
+  { name: 'Wüstenwind', c1: '#ffd9a0', c2: '#c0702a', c3: '#2ec4ff', pattern: 'wave', label: 'KANAL', unlock: 45 },
+  { name: 'Medaille', c1: '#fff3c4', c2: '#c9a227', c3: '#7c4dff', pattern: 'dots', label: 'CHAMP', medal: 3 }
 ];
+
+// Eigener Skater (Editor): Grundwerte 5, eigene Spezialtricks
+export const CUSTOM_SPECIALS = [{ name: 'Pulsschlag-Flip', pts: 1500, dur: 0.9, roll: 2, yaw: 1 }, { name: 'Betonwelle', pts: 1450, dur: 0.95, yaw: 1.5, pitch: 0.5 }, { name: 'Funkenregen', pts: 1350, pps: 500 }];
+export function customSkater(c) {
+  return { id: 'eigen', name: c.name || 'Eigener Skater', style: 'Eigenbau', body: c.body, skin: c.skin, top: c.top, bottom: c.bottom, shoes: c.shoes, topStyle: c.topStyle, bottomStyle: c.bottomStyle, hair: c.hair, hairStyle: c.hairStyle,
+    hat: c.hat && c.hat !== 'none' ? { type: c.hat, color: c.hatColor, back: c.hat === 'cap' } : null, stats: { speed: 5, ollie: 5, spin: 5, balance: 5, air: 5 }, board: 0, specials: CUSTOM_SPECIALS };
+}
+// Konkurrenz im Wettbewerb (erfundene Namen); Wertung je Park
+export const RIVALS = ['Kai Blitz', 'Noa Rampe', 'Fynn Kante', 'Mo Asphalt', 'Ela Kurve', 'Ben Drift', 'Lou Beton', 'Ida Funke'];
+export const COMP_BASE = [62, 68, 74, 78, 82];
