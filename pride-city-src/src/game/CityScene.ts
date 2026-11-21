@@ -157,7 +157,8 @@ export class CityScene implements GameScene {
     radio.subscribe((r, what) => { if (!this.drive) return; if (what === 'error') toast(`📻 ${r.err}`); this.showRadio(what !== 'song' ? this.g.hud.wheelOpen : true); });
     this.weather = new Weather(this.scene, this.world); this.life = new CityLife(this.g, this, this.scene); this.buddy = new Companion(this.scene);
     this.friends = new Friends(this.scene, this.world, () => this.g.save.data.settings.adult);
-    this.friends.me = () => ({ n: this.g.save.data.name, l: streetLook(playerLook(this.g.save.data)), s: this.netState() });
+    this.friends.me = () => ({ n: this.g.save.data.name, l: streetLook(playerLook(this.g.save.data)), s: this.g.where === 'inside' && this.g.inside?.netKey ? this.g.inside.netState() : this.netState() });
+    this.friends.onInvite = (who, inv) => this.g.clubInvite(who.name, inv);
     this.friends.onNote = (text, kind) => { toast(text, 3600); sfx(kind === 'join' ? 'win' : kind === 'leave' ? 'back' : 'move'); };
     this.world.extraBlock = (x, z) => this.street.parked.some((c) => Math.hypot(c.o.position.x - x, c.o.position.z - z) < 2.6);
     this.buildStickers();
@@ -255,6 +256,7 @@ export class CityScene implements GameScene {
       card: (k, t, x) => g.chapterCard(k, t, x).then(() => this.wissenTip(k)),
       roman: (id, game, done) => g.roman(id, game, done),
       mission: (gg) => this.startGig(gg),
+      mini: (id, done) => g.playMini(id, { onDone: (r) => done?.(!!r.won && !r.quit) }),
       phone: (lines, done) => {
         sfx('phone'); setTimeout(() => sfx('phone'), 500);
         if (!this.drive) this.player.play('phone');

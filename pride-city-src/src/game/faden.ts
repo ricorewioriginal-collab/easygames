@@ -92,7 +92,14 @@ export function fadenTick(c: StoryCtx) {
     c.phone(call(prev && isleDone(s, prev.id) ? prev.host.name : w.host.name, prev && isleDone(s, prev.id) ? prev.host.color : w.host.color, [
       prev && isleDone(s, prev.id) ? `Danke für alles auf ${prev.icon} ${prev.name}! Ich habe schon bei ${w.host.name} angerufen.` : `Hier ist ${w.host.name}.`,
       `${w.icon} ${w.name} braucht dich als Nächstes. Komm über die Brücke, ich warte auf dem Platz.`,
-    ]));
+    ]), () => {
+      // Playa Arcoíris geschafft: Lola lädt zum Turmspringen ins Strandbad ein (3D-Minispiel, freiwillig)
+      if (prev?.id !== 'canaria' || !c.mini || f.fadenPool) return;
+      f.fadenPool = true;
+      c.say([{ who: prev.host.name, color: prev.host.color, text: 'Ach, und bevor du gehst: Im Strandbad steht der Sprungturm. Zeigst du mir einen Salto für die Insel-Pride?', choices: [
+        { label: '🏊 Springen!', fn: () => setTimeout(() => c.mini!('pool', (won) => { if (won) c.reward(60, 2, 'Strandbad-Sprung für Lola'); }), 200) },
+        { label: 'Ein andermal', fn: () => {} }] }]);
+    });
     return;
   }
   if (!w && !f.fadenCall) {
@@ -124,8 +131,12 @@ export function fadenPoi(c: StoryCtx, id: string): boolean {
     { ...J, text: `Schau dich um, ${s.name}. Rainbow City, die Hochstadt und alle Inseln an einem Platz.` },
     ...hosts.map((h) => ({ ...h, text: said[h.who] || 'Danke für alles!' })),
     { who: 'Mama Vega', color: '#ff3fb0', text: 'Das Haus Vega läuft die erste Kategorie. Und du, Liebes, tanzt den Schluss.' },
-    { ...J, text: 'Musik ab! Pride der Inseln, TANZT!' },
-  ], () => { s.flags.inselShow = true; c.dance(); });
+    { ...J, text: c.mini ? 'Der Festwagen fährt los! Lauf vorne mit, und dann tanzt du den Schluss.' : 'Musik ab! Pride der Inseln, TANZT!' },
+  ], () => {
+    const dance = () => { s.flags.inselShow = true; c.dance(); };
+    // Parade-Runner (3D) neben dem Festwagen, danach der Finaltanz
+    if (c.mini) c.mini('run', () => c.say([{ ...J, text: 'Was für ein Lauf! Jetzt alle auf die Plaza. Musik ab, Pride der Inseln, TANZT!' }], dance)); else dance();
+  });
   return true;
 }
 

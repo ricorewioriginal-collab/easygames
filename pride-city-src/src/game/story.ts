@@ -77,6 +77,8 @@ export interface StoryCtx {
   card(kick: string, title: string, text: string): Promise<void>;
   /** Mission mit Stationen und Zeit starten (Akt II) */
   mission(g: Gig): void;
+  /** 3D-Minispiel spielen (minis.ts), danach weiter (won = Ziel erreicht) */
+  mini?(id: string, done?: (won: boolean) => void): void;
   /** Anruf: Handy klingelt, dann das Gespräch */
   phone(lines: Line[], done?: () => void): void;
 }
@@ -495,8 +497,8 @@ export function poi(c: StoryCtx, id: string): boolean {
     c.say([
       L(npc('jules'), 'Schau dich um. Tausende Menschen. Und alle sind gekommen, weil wir nicht aufgegeben haben.'),
       L(role === 'speech' ? 'Du' : npc('mo'), role === 'speech' ? 'Ich weiß noch, wie nervös ich war, als ich hier ankam. Heute weiß ich: Hier darf ich sein, wer ich bin. Und ihr auch!' : role === 'float' ? 'Der Wagen vom Club Leuchtturm! Hast du den wirklich selbst gebaut?' : 'Du tanzt vorne weg? Dann zeig allen, wie man feiert!'),
-      L(npc('nova'), 'Musik ab! Rainbow City, TANZT!'),
-    ], () => c.dance());
+      L(npc('nova'), c.mini ? 'Der Wagen vom Regenbogenhaus fährt los! Lauf vorne mit, am Ende der Strecke wird getanzt.' : 'Musik ab! Rainbow City, TANZT!'),
+    ], () => { if (c.mini) c.mini('run', () => c.say([L(npc('nova'), 'Angekommen! Musik ab! Rainbow City, TANZT!')], () => c.dance())); else c.dance(); });
     return true;
   }
   return false;
