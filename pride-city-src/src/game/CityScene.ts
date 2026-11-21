@@ -7,7 +7,7 @@ import { planeZ, cyl, ring, glow, canvasTex } from '../engine/geo';
 import { Actor, streetLook, playerLook, WALK_MPS, RUN_MPS, type Look } from './Actor';
 import { World, walkable } from './World';
 import { history } from './faden';
-import { nachtBought } from './nacht';
+import { nachtBought, nachtParty } from './nacht';
 import { pcEvents } from './hooks';
 import { NPCS, CHAPTERS, goal, talk, poi as storyPoi, marks, hidden, storyTick, chapterLabel, type NpcDef, type StoryCtx } from './story';
 import type { Game } from './Game';
@@ -73,6 +73,7 @@ export class CityScene implements GameScene {
   constructor(private g: Game) {
     // Sterling Nights: Kauf des Prisma schließt die Reihe ab (Anruf von Rocco, sobald das Kaufmenü zu ist)
     pcEvents.on('clubGekauft', (e) => setTimeout(() => nachtBought(this.ctx(), e.id), 2500));
+    pcEvents.on('clubNacht', (e) => setTimeout(() => nachtParty(this.ctx(), e), 2500));
     this.scene = g.engine.newScene(0x8fb8e8);
     cullAhead(this.scene); // Babylon prüft sonst jedes Bild alle 4.000+ Meshes, auch die hinter der Kamera
     this.camera = g.engine.newCamera(this.scene, 55, .1, 400);
@@ -156,7 +157,8 @@ export class CityScene implements GameScene {
     radio.subscribe((r, what) => { if (!this.drive) return; if (what === 'error') toast(`📻 ${r.err}`); this.showRadio(what !== 'song' ? this.g.hud.wheelOpen : true); });
     this.weather = new Weather(this.scene, this.world); this.life = new CityLife(this.g, this, this.scene); this.buddy = new Companion(this.scene);
     this.friends = new Friends(this.scene, this.world, () => this.g.save.data.settings.adult);
-    this.friends.me = () => ({ n: this.g.save.data.name, l: streetLook(playerLook(this.g.save.data)), s: this.netState() });
+    this.friends.me = () => ({ n: this.g.save.data.name, l: streetLook(playerLook(this.g.save.data)), s: this.g.where === 'inside' && this.g.inside?.netKey ? this.g.inside.netState() : this.netState() });
+    this.friends.onInvite = (who, inv) => this.g.clubInvite(who.name, inv);
     this.friends.onNote = (text, kind) => { toast(text, 3600); sfx(kind === 'join' ? 'win' : kind === 'leave' ? 'back' : 'move'); };
     this.world.extraBlock = (x, z) => this.street.parked.some((c) => Math.hypot(c.o.position.x - x, c.o.position.z - z) < 2.6);
     this.buildStickers();

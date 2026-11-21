@@ -44,7 +44,7 @@ describe('Story', () => {
     s.chapter = 6; expect(goal(s).title).toContain('Hochstadt 1/8'); // Akt II übernimmt nach dem Abspann
     s.flags.saga = 1; expect(goal(s).title).toContain('Sterling Nights 1/5'); // Akt II wechselt zum Nachtleben
     s.flags.saga = 8; s.flags.nacht = 5; expect(goal(s).title).toContain('Club Prisma'); // Krönung: eigener großer Club
-    s.flags.biz_prisma = 3; expect(goal(s).title).toContain('Insel 1/4'); // Akt III: die Inselkette
+    s.flags.biz_prisma = 3; s.flags.cl_prisma_nights = 1; expect(goal(s).title).toContain('Insel 1/4'); // Akt III: die Inselkette
     expect(goal(s).isle).toBe('einhorn');
     s.settings.adult = true; expect(goal(s).title).toContain('Insel 1/5');
     for (const id of ['einhorn', 'canaria', 'lindenhof', 'rummel', 'cruising']) s.flags['w_' + id] = 4;
@@ -174,7 +174,7 @@ describe('Roter Faden (Akt II und III)', () => {
     const tick = () => { for (let i = 0; i < 6; i++) storyTick(c); };
     tick(); expect(calls).toEqual(['📞 Mama Vega']); expect(cards).toContain('Akt II');
     s.flags.saga = 1; tick(); expect(calls[1]).toBe('📞 Rocco Sterling');
-    s.flags.saga = 8; s.flags.nacht = 5; s.flags.biz_prisma = 2; tick(); expect(calls[2]).toBe('📞 Jules'); expect(cards).toContain('Akt III');
+    s.flags.saga = 8; s.flags.nacht = 5; s.flags.biz_prisma = 2; s.flags.cl_prisma_nights = 1; tick(); expect(calls[2]).toBe('📞 Jules'); expect(cards).toContain('Akt III');
     s.flags.w_einhorn = 4; tick(); expect(calls[3]).toBe('📞 Stella Sternenstaub'); expect(goal(s).isle).toBe('canaria');
     for (const id of ['canaria', 'lindenhof', 'rummel']) s.flags['w_' + id] = 4;
     tick(); tick(); expect(s.flags.fadenCall).toBe(true); expect(goal(s).poi).toBe('plaza');
@@ -186,7 +186,7 @@ describe('Roter Faden (Akt II und III)', () => {
 
 describe('3D-Minispiele in der Story', () => {
   it('Finale: Parade-Runner vor dem Tanz, Strandbad nach Playa', () => {
-    const s = defaults(); s.chapter = 6; s.flags.saga = 8; s.flags.nacht = 5; s.flags.biz_prisma = 1;
+    const s = defaults(); s.chapter = 6; s.flags.saga = 8; s.flags.nacht = 5; s.flags.biz_prisma = 1; s.flags.cl_prisma_nights = 1;
     s.flags.faden2 = true; s.flags.faden3 = true; s.flags.fadenNext = 'canaria';
     const minis: string[] = [];
     const c: StoryCtx = {
