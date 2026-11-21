@@ -8,7 +8,7 @@ import { Actor, streetLook, playerLook, WALK_MPS, RUN_MPS, type Look } from './A
 import { World, walkable, isLand } from './World';
 import type { CarDef } from './vehicles';
 import { history } from './faden';
-import { nachtBought } from './nacht';
+import { nachtBought, nachtParty } from './nacht';
 import { pcEvents } from './hooks';
 import { NPCS, CHAPTERS, goal, talk, poi as storyPoi, marks, hidden, storyTick, chapterLabel, type NpcDef, type StoryCtx } from './story';
 import type { Game } from './Game';
@@ -74,6 +74,7 @@ export class CityScene implements GameScene {
   constructor(private g: Game) {
     // Sterling Nights: Kauf des Prisma schließt die Reihe ab (Anruf von Rocco, sobald das Kaufmenü zu ist)
     pcEvents.on('clubGekauft', (e) => setTimeout(() => nachtBought(this.ctx(), e.id), 2500));
+    pcEvents.on('clubNacht', (e) => setTimeout(() => nachtParty(this.ctx(), e), 2500));
     this.scene = g.engine.newScene(0x8fb8e8);
     cullAhead(this.scene); // Babylon prüft sonst jedes Bild alle 4.000+ Meshes, auch die hinter der Kamera
     this.camera = g.engine.newCamera(this.scene, 55, .1, 400);
