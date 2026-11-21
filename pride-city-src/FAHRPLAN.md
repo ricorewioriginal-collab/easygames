@@ -33,3 +33,5 @@ Funktionen übernehmen, neuer Name und neues Cover. Dazu die Ideen 1–15 aus de
 | 22 | Innenräume neu: Raumhülle mit Decke und Fenstern, gemalte Böden und Wände, Theken mit Flaschenregal, Kamera hinter der Figur wie draußen | erledigt |
 | 23 | Eigene Wohnung im Stil der Innenräume, Boutique mit Kleiderstangen, Autos aus dem Verkehr ausleihen, Kleiderschrank tauscht die Figur überall sofort | erledigt |
 | 24 | Neon: Rahmen um die Schriftzüge an den Fassaden statt Bändern am Gehweg (wirkten wie Geländer) | erledigt |
+| 25 | Welten jenseits der Stadt: Weltentor am Hafen und Schnellreise, Flitzer zum Fahren und Fliegen, Glitzeria (Einhorn-Welt), Playa Arcoíris (Insel-Pride), je drei Aufgaben mit Geschichte | erledigt |
+| 26 | Weitere Welten: Cruising-Welt (18+, nur angedeutet), Welten im Geist bekannter queerer Serien und Filme mit eigenen Namen und Figuren | offen |
