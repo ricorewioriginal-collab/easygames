@@ -26,6 +26,9 @@ button.ghost { background: #3a2a6a; }
 #gate .box { max-width: 420px; }
 #gate .r { font-size: 72px; font-weight: 900; background: linear-gradient(180deg, #ff4fa3, #7b3cff); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .hidden { display: none !important; }
+.thumbs { display: grid; grid-template-columns: 2fr 1fr 1.2fr; gap: 16px; align-items: start; }
+@media (max-width: 720px) { .thumbs { grid-template-columns: 1fr; } }
+.thumbs img { width: 100%; max-height: 72vh; object-fit: contain; border-radius: 10px; display: block; }
 small { color: var(--mu); }
 </style></head><body>
 <div id="gate"><div class="box"><div class="r">18+</div>
@@ -39,6 +42,12 @@ small { color: var(--mu); }
     <b>Quer 16:9 · YouTube, Facebook</b><a class="btn" href="pride-city-trailer-16x9.mp4" download>⬇️ Herunterladen (MP4, 14 MB)</a></div>
   <div class="card"><video controls playsinline preload="none" poster="pride-city-trailer-9x16.jpg" src="pride-city-trailer-9x16.mp4"></video>
     <b>Hochkant 9:16 · TikTok, Reels, Shorts</b><a class="btn" href="pride-city-trailer-9x16.mp4" download>⬇️ Herunterladen (MP4, 14 MB)</a></div>
+</div>
+<h2>Thumbnails</h2>
+<div class="thumbs">
+  <div class="card"><img src="pride-city-thumbnail-16x9.jpg" alt="Thumbnail 16:9"><b>16:9 · YouTube (1280×720)</b><a class="btn" href="pride-city-thumbnail-16x9.jpg" download>⬇️ Herunterladen</a></div>
+  <div class="card"><img src="pride-city-thumbnail-9x16.jpg" alt="Thumbnail 9:16"><b>9:16 · TikTok, Reels, Shorts (1080×1920)</b><a class="btn" href="pride-city-thumbnail-9x16.jpg" download>⬇️ Herunterladen</a></div>
+  <div class="card"><img src="pride-city-thumbnail-1x1.jpg" alt="Thumbnail 1:1"><b>1:1 · Instagram, Facebook (1080×1080)</b><a class="btn" href="pride-city-thumbnail-1x1.jpg" download>⬇️ Herunterladen</a></div>
 </div>
 <h2>Texte zum Kopieren</h2>
 <div id="texts"></div>
