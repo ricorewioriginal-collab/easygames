@@ -213,7 +213,7 @@ export class Dialog {
 }
 
 /** Großer Kapitel-Bildschirm (Start/Ende eines Kapitels) */
-export function chapterCard(kick: string, title: string, text: string, ms = 3200): Promise<void> {
+export function chapterCard(kick: string, title: string, text: string, ms = Math.max(3200, text.length * 40)): Promise<void> {
   return new Promise((res) => {
     const c = el(`<div id="chapterCard"><div><div class="k">${esc(kick)}</div><h1>${esc(title)}</h1><div class="stripe"></div><p>${esc(text)}</p></div></div>`);
     document.body.appendChild(c); sfx('win');

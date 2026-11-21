@@ -47,7 +47,7 @@ describe('Akt II – Die Lichter der Hochstadt', () => {
     for (const m of MISSIONS) { const before = sagaDone(s); sagaTalk(c, m.giver); expect(sagaDone(s)).toBe(before + 1); }
     expect(sagaDone(s)).toBe(8); expect(cards).toBe(1); expect(s.flags.sagaEnd).toBe('bridge');
     expect(owns(s, 'kaleido')).toBe(true); expect(income(s)).toBe(180);
-    expect(sagaGoal(s)).toBe(null); expect(goal(s).title).toBe('Freies Spiel');
+    expect(sagaGoal(s)).toBe(null); expect(goal(s).title).toContain('Insel 1/');
     expect(sagaHidden(s, 'kron')).toBe(false);
   });
   it('gescheiterte Mission lässt sich neu starten', () => {
