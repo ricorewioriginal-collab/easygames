@@ -85,7 +85,7 @@ export class Game {
   }
   async start(mode, parkIdx, players, opts = {}) {
     this.mode = mode; A.initAudio();
-    if (!(opts.keep && this.scene)) await this.load(parkIdx, opts.def || null); else this.camState = null;
+    if (!(opts.keep && this.scene)) { if (this.state === 'play' || this.state === 'ending') this.state = 'loading'; await this.load(parkIdx, opts.def || null); } else this.camState = null;
     this.run = { t: mode === 'free' ? Infinity : mode === 'duel' ? DUEL_TIME : mode === 'comp' ? COMP_TIME : mode === 'skate' ? SKATE_TIME : RUN_TIME, score: 0, best: 0, letters: new Set(), tape: false, gaps: new Set(), done: [], maxGrind: 0, maxManual: 0, maxLip: 0, ending: 0, bestCombo: 0, tricks: new Set(), bails: 0 };
     if (mode === 'duel') { this.duel = this.duel && this.duel.parkIdx === parkIdx && players == null ? this.duel : { parkIdx, players: players || 2, cur: 0, scores: [] }; }
     if (mode === 'comp') { if (!this.comp || this.comp.parkIdx !== parkIdx || players === 'new' || this.comp.run >= 3) this.comp = { parkIdx, run: 0, scores: [], rivals: this.makeRivals(parkIdx) }; }
