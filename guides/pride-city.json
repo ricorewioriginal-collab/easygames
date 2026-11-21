@@ -179,6 +179,18 @@
       ]
     },
     {
+      "t": "3D-Minispiele: Parade-Runner",
+      "p": [
+        "Ersetzt das 2D-Spiel aus Gay Life! (Arcade, Festwagen-Werkstatt, Minispiele). Du rennst neben dem Festwagen die Paradestraße entlang: links/rechts wechselt die Spur, A springt über rote Absperrungen (Spaßbremsen). Grummelwolken musst du ausweichen. Glitzer bringt 5, Regenbogenflaggen 30 Punkte, jeder Meter zählt. Drei Herzen, 60 Sekunden, das Tempo steigt. Ziel: 700 Punkte."
+      ]
+    },
+    {
+      "t": "3D-Minispiele: Strandbad-Sprung",
+      "p": [
+        "Ersetzt das 2D-Spiel aus Gay Life! (Strandbad, Minispiele). Fünf Sprünge vom Turm: A stoppt die Kraft, A stoppt den Winkel. In der Luft A halten dreht Saltos (40 Punkte je Salto). Lass rechtzeitig los, damit du gerade eintauchst (50 Stilpunkte), sonst gibt es einen Bauchklatscher. Je näher am gelben Ring, desto mehr Punkte (bis 100). Ziel: 450 Punkte. Die 2D-Originale aus Gay Life! bleiben unter Minispiele → Gay Life! Originale spielbar."
+      ]
+    },
+    {
       "t": "Nachtleben (nur mit „Inhalte ab 18“)",
       "p": [
         "Mit eingeschaltetem 18+-Schalter öffnen sich drei Orte für Erwachsene. Alles wird nur angedeutet: Das Bild blendet ab, gezeigt werden nur Absprache, Zustimmung und Safer Sex.",

@@ -247,20 +247,28 @@ export class CityScene implements GameScene {
         const done = CHAPTERS[s.chapter - 1], next = CHAPTERS[s.chapter];
         s.chapter++; s.step = 0; g.save.write(); this.refreshHud();
         if (!done) return;
-        g.chapterCard(`Kapitel ${done.n} abgeschlossen`, done.title, sum).then(() => { if (next) g.chapterCard(`Kapitel ${next.n}`, next.title, next.text).then(() => history(s, 'k' + next.n, (k, x, y) => g.chapterCard(k, x, y))); });
+        g.chapterCard(`Kapitel ${done.n} abgeschlossen`, done.title, sum).then(() => { if (next) g.chapterCard(`Kapitel ${next.n}`, next.title, next.text).then(() => history(s, 'k' + next.n, (k, x, y) => g.chapterCard(k, x, y).then(() => this.wissenTip(k)))); });
       },
       enterHome: (after) => g.enterHome(after),
       barShift: (done) => g.barShift(done),
       credits: () => g.ending(),
-      card: (k, t, x) => g.chapterCard(k, t, x),
+      card: (k, t, x) => g.chapterCard(k, t, x).then(() => this.wissenTip(k)),
       roman: (id, game, done) => g.roman(id, game, done),
       mission: (gg) => this.startGig(gg),
+      mini: (id, done) => g.playMini(id, { onDone: (r) => done?.(!!r.won && !r.quit) }),
       phone: (lines, done) => {
         sfx('phone'); setTimeout(() => sfx('phone'), 500);
         if (!this.drive) this.player.play('phone');
         g.dialog.say(lines, () => { if (this.player.anim === 'phone') this.player.play('idle'); done?.(); this.refreshHud(); g.save.write(); });
       },
     };
+  }
+
+  /** Nach der ersten „Damals“-Karte einmal auf die Wissen-App hinweisen */
+  private wissenTip(kick: string) {
+    const s = this.g.save.data;
+    if (!kick.startsWith('Damals') || s.flags.wissenTip) return;
+    s.flags.wissenTip = true; toast('🧠 Mehr Geschichte, Flaggen und ein Quiz mit Hilde: Handy → Wissen');
   }
 
   refreshHud() {
