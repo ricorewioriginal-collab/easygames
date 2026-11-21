@@ -697,6 +697,7 @@ export class CityScene implements GameScene {
     if (!this.gig) {
       this.g.hud.gig(null);
       if (s.flags.sagaRun) delete s.flags.sagaRun; // Mission lief beim letzten Speichern noch
+      if (s.flags.nachtRun) delete s.flags.nachtRun;
       this.raceCheck(dt);
       // ab und zu klingelt das Handy (erst nach der Einführung)
       if (s.step >= 2 || s.chapter > 1) this.callT -= dt;

@@ -66,6 +66,13 @@ Assets nur mit freier Lizenz, jede Quelle in `public/CREDITS.md`.
 - Look: Umgebungskarte (Spiegelungen), Sonnenscheibe und Dunst, lange Abendröte in Pink/Violett, Palmen, nachts warme Fenster, feuchte Straßen und mitwandernde Laternenlichter, Farblook-Pass (Stufe „hoch“).
 - Radar-Minikarte unten links (Handy: oben rechts) und Lichtsäule über dem Missionsziel.
 
+## Clubs, Club-Management und Zuhause-Ausbau (21.11.2026)
+
+- `club.ts` (Logik): Resident-DJ, Getränkepreise, Türpolitik, Deko, Awareness-Team, Themennächte zu echten queeren Jahrestagen (`QEVENTS`), Clubnacht mit drei Entscheidungen (`momentsFor`, `runNight`, `bookNight`). Wirkt über `clubFactor` auf den Tagesumsatz in `manage.ts`; ohne Einstellungen Faktor 1.
+- `clubdeco.ts` (3D im Club): DJ-Schild und Lichtfarben, Preistafel, Deko-Gruppen, Samtkordel, Awareness-Schild, Banner, Menge nach Beliebtheit. `clubui.ts`: Kauf im Club (Verhandeln, `SELLERS`/`priceOf` in `empire.ts`), Klemmbrett, Clubnacht.
+- `house.ts` / `houseui.ts`: Möbel und Deko in der Wohnung (`HomeScene.applyUpgrades`), Boden und Licht, Anbau-Räume (`roomTheme`, betreten über `Game.enterAnnex`, zurück in die Wohnung).
+- **Schnittstelle** `hooks.ts`: `pcEvents.on('clubGekauft' | 'geschaeftGekauft' | 'clubNacht' | 'clubEinnahmen' | 'clubGeaendert' | 'hausAusbau', fn)`, im Browser auch `window.__pc.events`. Story-Angebot: `s.flags['deal_<business-id>'] = Rabatt in %`.
+
 ## Stand und Fahrplan
 
 Siehe [`FAHRPLAN.md`](FAHRPLAN.md).
