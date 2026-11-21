@@ -18,7 +18,7 @@ const policy0 = s => {
   if (s.chim) return { j: s.prevJ ? 0 : 1 };   // Kamin: schnell hintereinander stemmen
   if (s.glide) return { r: 1, j: s.glide.x >= s.c.o[s.glide.i].x2 - 0.01 && !s.prevJ ? 1 : 0 };   // Gleiter: am Ende abspringen
   if (s.wall) return { r: 1, j: 0 };   // Steilwand: durchrennen, oben greifen (tapGrab), dann hochziehen
-  if (s.hang) { const o = s.c.o[s.hang.bar]; return { r: 1, j: o.ledge ? (s.x >= o.x2 - 0.1 ? 1 : 0) : (s.x >= o.x2 + 0.05 ? 1 : 0) }; }   // Griffleiste: am Ende hechten; Stangen: am Ende abspringen
+  if (s.hang) { const o = s.c.o[s.hang.bar]; return { r: 1, j: o.ledge ? (s.x >= o.x2 - 0.1 ? 1 : 0) : (s.x >= o.x2 - 0.02 ? 1 : 0) }; }   // Griffleiste: am Ende hechten; Stangen: am Ende abspringen
   if (s.rope) return { r: 1, j: s.rope.a > 0.2 && s.rope.da > 0 ? 1 : 0 };   // am Seil: loslassen, wenn es nach vorn schwingt
   if (s.onGround && s.ground && s.ground.x1 - s.x >= 0.6 && duckAhead(s)) return { r: 1, d: 1 };
   if (s.onGround && s.ground) { const g = s.ground; if (g.x1 - s.x >= 0.45 || g.wall) return { r: 1, j: 0 };
