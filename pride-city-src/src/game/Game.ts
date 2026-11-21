@@ -22,6 +22,7 @@ import type { Invite } from './online';
 import { pcEvents } from './hooks';
 import { dragAct } from './drag';
 import { wagenMenu, wagenOf } from './festwagen';
+import { fmMenu } from './pridefm';
 import { houseMenu, useHomeItem } from './houseui';
 import { roomTheme, roomLevel } from './house';
 import { SKY, skyAt, forecast } from './weather';
@@ -545,6 +546,7 @@ export class Game {
         { icon: '👨‍👩‍👧', label: 'Familie', sub: famSub(s), fn: () => this.phone('family') },
         { icon: '👥', label: 'Kontakte', sub: `${Object.keys(s.rel).length} Leute kennengelernt`, fn: () => this.phone('contacts') },
         { icon: '💘', label: 'Rainbow Match', sub: `Dating · ${PROFILES.filter((p) => s.dates[p.id]).length} Matches`, fn: () => this.phone('dating') },
+        { icon: '📻', label: 'Pride FM 88,8', sub: s.flags.radioShowDay === s.day ? 'Deine Sendung lief heute' : 'Gruß senden, eigene Sendung moderieren', fn: () => this.phone('fm') },
         { icon: '📣', label: 'Feed', sub: 'Was in der Szene los ist', fn: () => this.phone('feed') },
         { icon: '🩺', label: 'Gesundheit', sub: testDue(s) ? '⚠️ Test fällig!' : s.health.prep ? 'PrEP aktiv' : 'Tests, PrEP, U=U', fn: () => this.phone('health') },
         { icon: '📚', label: 'Glossar', sub: 'Begriffe aus der Szene', fn: () => this.phone('glossary') },
@@ -613,6 +615,8 @@ export class Game {
         ...(st ? [{ icon: '👋', label: `Zurückstufen: ${STAFF[st - 1].name}`, sub: 'weniger Lohn, weniger Umsatz', fn: () => act(hire(s, b, st - 1), 'Das Team ist kleiner geworden.') }] : []),
         ...UPGRADES.map((u) => { const l = upOf(s, b.id, u.id); return { icon: u.icon, label: `${u.id === 'extra' ? sp.extra : u.name} ${'★'.repeat(l)}${'☆'.repeat(UP_MAX - l)}`, sub: l >= UP_MAX ? 'voll ausgebaut' : `${upCost(b, l)} € · +12 % Umsatz${u.id === 'werbung' ? ' · +8 Beliebtheit' : ''} · ${u.id === 'extra' ? 'das gewisse Etwas' : u.text}`, disabled: l >= UP_MAX, fn: () => act(upgrade(s, b, u.id), `${u.id === 'extra' ? sp.extra : u.name}: Stufe ${l + 1}. Das spricht sich herum!`) }; }),
         { icon: '←', label: 'Zurück', fn: back }], back, 'phone');
+    } else if (app === 'fm') {
+      fmMenu(this, frame, home);
     } else if (app === 'wetter') {
       const fc = forecast(s.day, s.time), toSat = (5 - (s.day - 1) % 7 + 7) % 7;
       this.openMenu(frame('Wetter und Termine', `<div class="pbody">${fc.map((f) => `<p>${SKY[f.sky].icon} <b>${f.label}</b>: ${SKY[f.sky].name}${f.parade ? ' · 🏳️‍🌈 CSD-Parade' : ''}</p>`).join('')}<p>🏳️‍🌈 <b>CSD-Parade</b><br><small>Jeden Samstag von 12 bis 18 Uhr auf der Hauptstraße: Festwagen, Tanzgruppen, Konfetti. ${toSat ? `Die nächste ist in ${toSat} ${toSat === 1 ? 'Tag' : 'Tagen'}.` : 'Heute ist es so weit!'} Lauf mit oder spring auf einen Wagen.</small></p><p><small>Nach Regen am Tag zeigt sich oft ein Regenbogen. Bei Regen glänzen die Straßen, bei Gewitter blitzt es über der Skyline.</small></p></div>`),

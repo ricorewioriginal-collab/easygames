@@ -18,6 +18,7 @@ export const STATIONS: Station[] = [
   { id: 'floh', slug: 'radiofloh', name: 'Radiofloh', sub: 'Für die ganze Familie', icon: '🐞', color: '#ffb347' },
   { id: 'xmas', slug: 'christmasradio24', name: 'Christmasradio 24', sub: 'Weihnachten das ganze Jahr', icon: '🎄', color: '#e23b3b' },
   { id: 'special', slug: 'special-radio', name: 'Special Radio', sub: 'Das Besondere', icon: '✨', color: '#c9a2ff' },
+  { id: 'pridefm', song: 'show', name: 'Pride FM 88,8', sub: 'Queeres Radio: Talk, Anrufe, Wissen', icon: '🎙️', color: '#5ce1ff' },
   { id: 'regenbogen', song: 'title', name: 'Regenbogen FM', sub: 'Pop für die ganze Stadt', icon: '🌈', color: '#ff6fb5' },
   { id: 'neon', song: 'neon', name: 'Neon 88', sub: 'Synthwave für Nachtfahrten', icon: '🌴', color: '#ff3fb0' },
   { id: 'prisma', song: 'club', name: 'Prisma Radio', sub: 'Clubsound live aus dem Prisma', icon: '💎', color: '#9b6bff' },

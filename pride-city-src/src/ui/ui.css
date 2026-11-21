@@ -358,6 +358,8 @@ body:has(#hud:not(.hidden)) .screen.title { background: rgba(9,6,20,.8); backdro
 #hud .rwheel .mid small { font-weight: 700; font-size: clamp(12px, 2.2vmin, 16px); opacity: .92; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 #hud .nowplay { position: absolute; left: calc(clamp(10px, 2vw, 24px) + clamp(120px, 16vw, 180px) + 12px); bottom: calc(58px + var(--safe-b)); max-width: min(46vw, 420px); padding: 8px 14px; border-radius: 12px; border: 1px solid rgba(255,63,176,.55); background: rgba(10,6,24,.72); color: #fff; text-align: left; display: none; pointer-events: auto; cursor: pointer; font: inherit; }
 #hud .nowplay.on { display: block; }
+#hud .nowplay.talk span { white-space: normal; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; font-weight: 600; }
+#hud .nowplay.talk { max-width: min(62vw, 480px); }
 #hud .nowplay b { display: block; font-size: .78em; font-weight: 900; color: #ff8ad1; letter-spacing: .04em; text-transform: uppercase; }
 #hud .nowplay span { display: block; font-weight: 700; font-size: .9em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (pointer: coarse) { #hud .nowplay { left: 50%; translate: -50% 0; bottom: auto; top: calc(8px + var(--safe-t)); max-width: 40vw; padding: 5px 10px; font-size: .85em; } }
