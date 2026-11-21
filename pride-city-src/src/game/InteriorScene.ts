@@ -14,7 +14,9 @@ import { roomLights, collectCasters } from './HomeScene';
 import { buildShell, shellTime, furnish, styleOf, RoomCam, type Shell } from './room';
 import { ClubDeco, CLUB_LAYOUT } from './clubdeco';
 import { BUSINESSES, owns, SELLERS } from './empire';
-import { clubOf, nightDone, nightOpen } from './club';
+import { clubOf, nightDone, nightOpen, DJS, QEVENTS, type ClubState } from './club';
+import { RoomFriends } from './Friends';
+import type { PState } from './online';
 import { popOf } from './manage';
 import { hour } from './life';
 import type { Color3 } from '../engine/bjs';
@@ -27,7 +29,7 @@ export class InteriorScene implements GameScene {
   scene: Scene;
   camera: FreeCamera;
   bloom = .6;
-  private player!: Actor;
+  player!: Actor;
   private folk: Actor[] = [];
   private boxes: Box[] = [];
   private glow: PBRMaterial[] = [];
@@ -43,8 +45,13 @@ export class InteriorScene implements GameScene {
   private extra: Spot[] = [];
   /** läuft gerade eine Clubnacht: Name fürs Banner */
   party = '';
+  /** Online: Ort-ID für Freund*innen im selben Raum (leer = privat, z. B. Wohnung, Anbau, Wohnhäuser) */
+  readonly netKey: string;
+  private roomFriends: RoomFriends | null = null;
+  private friendSpot: Spot | null = null;
   constructor(private g: Game, readonly theme: Theme, readonly placeId = '') {
     this.spots = [...theme.spots, DOOR];
+    this.netKey = placeId && !theme.own && /^[a-z0-9_]{1,24}$/.test(placeId) ? placeId : '';
     this.scene = g.engine.newScene(0x0e0a1a);
     this.camera = g.engine.newCamera(this.scene, 62, .1, 100);
   }
@@ -125,6 +132,7 @@ export class InteriorScene implements GameScene {
       this.folk.push(a); this.boxes.push({ x, z, hx: .25, hz: .25 });
     });
     this.player = await Actor.create(sc, streetLook(playerLook(this.g.save.data)));
+    if (this.netKey) this.roomFriends = new RoomFriends(sc, this.g.city.friends, this.netKey);
     if (CLUB_LAYOUT[t.id] && !t.own) {
       this.club = new ClubDeco(sc, t.id, W, D, H, this.glow);
       const [cx, cz] = CLUB_LAYOUT[t.id].spot, o = ring(sc, .42, .55, 24); o.material = glow(sc, 0x3ee69a, 1.4, { alpha: .6 }); o.position.set(cx, .035, cz); this.clubRing = o;
@@ -132,13 +140,18 @@ export class InteriorScene implements GameScene {
     collectCasters(sc, this.sg);
   }
 
+  /** Eigene Lage für Online (Raumkoordinaten mit Ort) */
+  netState(): PState { const r = this.player.root; return { x: r.position.x, z: r.position.z, r: r.rotation.y, a: String(this.player.anim), c: '', h: -1, w: this.netKey }; }
   /** Geschäft zu diesem Raum (Club, Bar), falls es eins ist */
   get business() { return this.club ? BUSINESSES.find((b) => b.poi === this.theme.id) || null : null; }
   /** Club-Zustand neu anwenden (nach Kauf, Einstellungen, Clubnacht) */
   refreshClub() {
     const b = this.business; if (!b || !this.club) return;
-    const s = this.g.save.data, mine = owns(s, b.id), sale = !mine && !b.gift;
-    this.club.apply(mine ? clubOf(s, b.id) : null, { sale, event: this.party || undefined, party: !!this.party }, this.folk, popOf(s, b.id));
+    const s = this.g.save.data, mine = owns(s, b.id), guest = !mine && this.g.clubGuest?.p === this.netKey ? this.g.clubGuest : null, sale = !mine && !b.gift && !guest;
+    // zu Gast im Club einer Freundin/eines Freundes: deren Einstellungen und Party-Banner
+    const gst: ClubState | null = guest ? { dj: DJS.find((d) => d.id === guest.dj) || DJS[0], price: 1, door: guest.door, deco: guest.deco, decos: guest.deco ? [guest.deco] : [], aware: guest.aw } : null;
+    const gev = guest ? `🎉 BEI ${guest.from.toUpperCase()}${guest.e ? ' · ' + (QEVENTS.find((q) => q.id === guest.e)?.night || '') : ''}` : '';
+    this.club.apply(mine ? clubOf(s, b.id) : gst, { sale, event: this.party || gev || undefined, party: !!this.party || !!guest }, this.folk, popOf(s, b.id));
     const [x, z] = CLUB_LAYOUT[this.theme.id].spot;
     const night = mine && nightOpen(hour(s)) && !nightDone(s, b.id);
     this.extra = mine ? [{ id: 'club', label: night ? '📋 Club führen · 🪩 Türen auf' : '📋 Club führen', x, z, r: 1.6, act: { k: 'club' } }]
@@ -149,7 +162,7 @@ export class InteriorScene implements GameScene {
   /** Neue Figur, wenn im Kleiderschrank die Figur gewechselt wurde */
   async syncPlayer() {
     const look = streetLook(playerLook(this.g.save.data));
-    if (this.player.look.body === look.body) return;
+    if (this.player.look.body === look.body) { this.player.setLook(look); return; }
     const old = this.player;
     this.player = await Actor.create(this.scene, look);
     this.player.root.position.copyFrom(old.root.position); this.player.root.rotation.y = old.root.rotation.y;
@@ -182,6 +195,7 @@ export class InteriorScene implements GameScene {
     this.player.update(dt);
     for (const a of this.folk) if (a.root.isEnabled()) a.update(dt);
     this.club?.update(dt);
+    if (this.netKey && this.g.city.friends.net.on) { this.g.city.friends.send(dt, this.netState()); this.roomFriends?.update(dt); }
     const busy = g.dialog.open || g.menuOpen;
     this.hudT -= dt;
     // Leuchtfarben pulsieren (ohne Setter, Basisfarbe zwischengespeichert; Tempo steigt in der Clubnacht)
@@ -205,14 +219,17 @@ export class InteriorScene implements GameScene {
         this.player.play('walk', .18, Math.max(1, 3.6 * Math.min(1, mag) / 1.02 * .55));
       } else if (this.player.anim === 'walk') this.player.play('idle');
       let best: Spot | null = null, bd = 9;
-      for (const s of this.extra.length ? [...this.spots, ...this.extra] : this.spots) { const d = Math.hypot(s.x - p.x, s.z - p.z); if (d < (s.r || 1.8) && d < bd) { bd = d; best = s; } }
+      const fr = this.roomFriends?.count ? this.roomFriends.nearest(p.x, p.z, 1.6) : null;
+      this.friendSpot = fr ? { id: 'friend:' + fr.id, label: '🌐 ' + fr.name, x: fr.x, z: fr.z, r: 1.6, act: { k: 'menu' } } : null;
+      const list = this.extra.length || fr ? [...this.spots, ...this.extra, ...(this.friendSpot ? [this.friendSpot] : [])] : this.spots;
+      for (const s of list) { const d = Math.hypot(s.x - p.x, s.z - p.z); if (d < (s.r || 1.8) && d < bd) { bd = d; best = s; } }
       g.hud.prompt(best ? best.label : null);
       g.touch.label(best ? 'Nutzen' : 'Aktion');
-      if (inp.pressed('confirm') && best) { inp.consume('confirm'); this.player.play('interact'); if (best === DOOR) g.leaveInterior(); else g.interiorAct(best, this); }
+      if (inp.pressed('confirm') && best) { inp.consume('confirm'); this.player.play('interact'); if (best === DOOR) g.leaveInterior(); else if (best === this.friendSpot) g.friendMenu(best.id.slice(7)); else g.interiorAct(best, this); }
       else if (inp.pressed('phone')) { inp.consume('phone'); g.phone(); }
       else if (inp.pressed('map')) { inp.consume('map'); g.phone('map'); }
       else if (inp.pressed('menu') || inp.pressed('back')) { inp.consume('menu'); inp.consume('back'); g.pauseMenu(); }
-      g.hud.markers(best === DOOR ? [] : [{ id: 'exit', icon: '🚪', label: 'Ausgang', pos: this.exitPos }], (q) => g.engine.project(q));
+      g.hud.markers([...(best === DOOR ? [] : [{ id: 'exit', icon: '🚪', label: 'Ausgang', pos: this.exitPos }]), ...(this.roomFriends?.count ? this.roomFriends.marks() : [])], (q) => g.engine.project(q));
     } else { g.hud.prompt(null); g.hud.markers([]); }
     const st = g.save.data.settings;
     this.cam.update(dt, this.camera, p, this.player.root.rotation.y, { look: inp.look, move: inp.move, speed: st.camSpeed, invertY: st.invertY, busy, portrait: g.engine.aspect < 1 });

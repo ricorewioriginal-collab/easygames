@@ -10,14 +10,19 @@ import { CityScene, STICKERS } from './CityScene';
 import { preloadPeople } from './Actor';
 import { CreatorScene } from './CreatorScene';
 import { DanceScene } from './minigames/DanceScene';
-import { MINIS, miniById, miniName, miniIcon, miniSub, type MiniResult } from './minigames/minis';
+import { MINIS, miniById, miniForGl, miniName, miniIcon, miniSub, type MiniResult } from './minigames/minis';
 import { World } from './World';
 import { pianoSongs, pianoParts } from './minigames/showSongs';
 import { openGigs, GIGS, fmtTime } from './gigs';
 import { BUSINESSES, owns, owned, income, buy } from './empire';
 import { clubDeal, clubManage } from './clubui';
-import { isClub } from './club';
+import { isClub, QEVENTS } from './club';
+import { CLUB_LAYOUT } from './clubdeco';
+import type { Invite } from './online';
 import { pcEvents } from './hooks';
+import { dragAct } from './drag';
+import { wagenMenu, wagenOf } from './festwagen';
+import { fmMenu } from './pridefm';
 import { houseMenu, useHomeItem } from './houseui';
 import { roomTheme, roomLevel } from './house';
 import { SKY, skyAt, forecast } from './weather';
@@ -27,6 +32,7 @@ import { SHOP, RACES, PAINTS, PAINT_COST, TUNE_COST, MEDALS, ownsCar, myCar, tun
 import { ACTS, act, actLabel, chain, islesLeft, HISTORY, HIST_ORDER } from './faden';
 import { sagaDone, MISSIONS } from './saga';
 import { nachtDone, NACHT } from './nacht';
+import { timeline, PEOPLE, RIGHTS, flags, todaysQuiz, quizDoneToday, quizReward, type Q } from './wissen';
 import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST, lichtPart, lichtLight, lfPart, lfGlow } from './story';
 import { LF_CHAPTERS, lfEnding, lfPct } from './leuchtfeuer';
 import { LICHT_CHAPTERS, lichtEnding } from './licht';
@@ -39,7 +45,7 @@ import { InteriorScene } from './InteriorScene';
 import { WorldScene } from './WorldScene';
 import { WORLDS, worldDef, worldStage, cityGate, SIDE_GATE } from './worlds';
 import { ALPHA, QUICK, EMOTES, MAX_GUESTS, normCode, netError } from './online';
-import type { Spot, Theme } from './interiors';
+import { PLACE_THEMES, type Spot, type Theme } from './interiors';
 import type { Sfx } from '../engine/Audio';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage, level } from './jobs';
 import { photo } from './Photo';
@@ -82,6 +88,8 @@ export class Game {
   inside: InteriorScene | null = null;
   private insideBack = { x: 0, z: 0, yaw: 0 };
   private insideWorld = false;
+  /** Online: zu Gast im Club einer Freundin/eines Freundes */
+  clubGuest: (Invite & { from: string }) | null = null;
   /** Innenraum ist ein Anbau des Zuhauses: zurück in die Wohnung */
   private insideHome = false;
   private interiors = new Map<string, InteriorScene>();
@@ -325,9 +333,33 @@ export class Game {
   leaveInterior() {
     const s = this.save.data;
     sfx('door');
+    if (this.clubGuest && this.inside?.netKey === this.clubGuest.p) this.clubGuest = null;
     if (this.insideHome && this.home) { const h = this.home; this.insideHome = false; this.fade(() => { this.where = 'home'; this.inside = null; h.fromAnnex = true; h.setSky(this.city.world.night); this.engine.setScene(h); this.save.write(); }); return; }
     if (this.insideWorld && this.world) { const w = this.world; this.fade(() => { this.where = 'world'; this.inside = null; w.back = { ...this.insideBack }; this.engine.setScene(w); this.save.write(); }); return; }
     this.fade(() => { this.where = 'city'; this.inside = null; s.pos = { ...this.insideBack }; this.engine.setScene(this.city); this.city.setPlay(); this.save.write(); });
+  }
+  /** Online-Einladung in einen Club: hingehen oder später */
+  clubInvite(from: string, inv: Invite) {
+    const theme = PLACE_THEMES[inv.p]; if (!theme || !CLUB_LAYOUT[inv.p]) return;
+    const ev = QEVENTS.find((q) => q.id === inv.e), here = this.where === 'inside' && this.inside?.netKey === inv.p;
+    sfx('win');
+    if (here) { this.clubGuest = { ...inv, from }; this.inside!.refreshClub(); toast(`🎉 ${from} feiert hier${ev ? ': ' + ev.name : ''}!`, 4000); return; }
+    if (this.dialog.open || this.menuOpen) { toast(`🎉 ${from} lädt dich in den ${inv.n} ein${ev ? ' (' + ev.name + ')' : ''}. Öffne „Online & Freunde“, um hinzugehen.`, 5000); this.pendingInvite = { ...inv, from }; return; }
+    this.dialog.say([{ who: `🌐 ${from}`, color: '#ff6ad5', text: `Komm in meinen Club! Im ${inv.n} ist ${ev ? ev.name : 'Clubnacht'}. Wir feiern zusammen.`, choices: [
+      { label: '🪩 Hingehen', fn: () => setTimeout(() => this.joinFriendClub({ ...inv, from }), 50) },
+      { label: 'Später', sub: 'im Online-Menü geht es auch noch', fn: () => { this.pendingInvite = { ...inv, from }; } }] }]);
+  }
+  pendingInvite: (Invite & { from: string }) | null = null;
+  /** In den Club einer Freundin/eines Freundes gehen (aus Stadt, Wohnung oder anderem Raum) */
+  joinFriendClub(inv: Invite & { from: string }) {
+    const s = this.save.data, theme = PLACE_THEMES[inv.p]; if (!theme) return;
+    if (this.where === 'world') { toast('Erst zurück nach Rainbow City, dann in den Club.'); return; }
+    this.pendingInvite = null; this.clubGuest = inv;
+    let back = { ...s.pos };
+    if (this.where === 'city') { const r = this.city.player.root; back = { x: r.position.x, z: r.position.z, yaw: r.rotation.y }; }
+    if (this.where === 'home') { s.inside = false; back = { x: 3.6, z: 40, yaw: Math.PI / 2 }; }
+    if (this.where === 'inside' && this.inside?.netKey === inv.p) { this.inside.refreshClub(); return; }
+    this.enterInterior(theme, back, inv.p);
   }
   /** Anbau betreten (Raum aus house.ts, Stufe im Namen, damit ein Ausbau neu eingerichtet wird) */
   enterAnnex(room: string) {
@@ -342,7 +374,9 @@ export class Game {
     if (a.k === 'menu') { if (sc?.placeId) this.placeMenu(sc.placeId); return; }
     if (a.k === 'club' || a.k === 'deal') { if (sc?.business) clubDeal(this, sc.business, sc); return; }
     if (a.k === 'annex') { this.annexAct(a.room); return; }
-    if (a.k === 'gl') { this.roman('gaylife', a.id); return; }
+    if (a.k === 'drag') { dragAct(this, a.what); return; }
+    if (a.k === 'wagen') { wagenMenu(this); return; }
+    if (a.k === 'gl') { const m = miniForGl(a.id); if (m) this.playMini(m.id); else this.roman('gaylife', a.id); return; }
     if (a.k === 'mini') { this.playMini(a.id); return; }
     if (a.k === 'dance') { this.goDance(false); return; }
     if (a.k === 'show') {
@@ -555,9 +589,11 @@ export class Game {
         { icon: '👨‍👩‍👧', label: 'Familie', sub: famSub(s), fn: () => this.phone('family') },
         { icon: '👥', label: 'Kontakte', sub: `${Object.keys(s.rel).length} Leute kennengelernt`, fn: () => this.phone('contacts') },
         { icon: '💘', label: 'Rainbow Match', sub: `Dating · ${PROFILES.filter((p) => s.dates[p.id]).length} Matches`, fn: () => this.phone('dating') },
+        { icon: '📻', label: 'Pride FM 88,8', sub: s.flags.radioShowDay === s.day ? 'Deine Sendung lief heute' : 'Gruß senden, eigene Sendung moderieren', fn: () => this.phone('fm') },
         { icon: '📣', label: 'Feed', sub: 'Was in der Szene los ist', fn: () => this.phone('feed') },
         { icon: '🩺', label: 'Gesundheit', sub: testDue(s) ? '⚠️ Test fällig!' : s.health.prep ? 'PrEP aktiv' : 'Tests, PrEP, U=U', fn: () => this.phone('health') },
         { icon: '📚', label: 'Glossar', sub: 'Begriffe aus der Szene', fn: () => this.phone('glossary') },
+        { icon: '🧠', label: 'Wissen', sub: quizDoneToday(s) ? 'Geschichte, Persönlichkeiten, Flaggen, Rechte' : '🎯 Heute neues Quiz mit Hilde · Glitzer zu gewinnen', fn: () => this.phone('wissen') },
         { icon: '📖', label: 'Ich bin das Licht', sub: 'Der Roman von RicoReWi – komplett lesen', fn: () => this.book() },
         { icon: '🗼', label: 'Leuchtfeuer', sub: 'Der Jugendroman von RicoReWi – komplett lesen', fn: () => this.book(-1, 'leuchtfeuer') },
         { icon: '←', label: 'Handy weglegen', fn: close },
@@ -639,10 +675,31 @@ export class Game {
         ...(st ? [{ icon: '👋', label: `Zurückstufen: ${STAFF[st - 1].name}`, sub: 'weniger Lohn, weniger Umsatz', fn: () => act(hire(s, b, st - 1), 'Das Team ist kleiner geworden.') }] : []),
         ...UPGRADES.map((u) => { const l = upOf(s, b.id, u.id); return { icon: u.icon, label: `${u.id === 'extra' ? sp.extra : u.name} ${'★'.repeat(l)}${'☆'.repeat(UP_MAX - l)}`, sub: l >= UP_MAX ? 'voll ausgebaut' : `${upCost(b, l)} € · +12 % Umsatz${u.id === 'werbung' ? ' · +8 Beliebtheit' : ''} · ${u.id === 'extra' ? 'das gewisse Etwas' : u.text}`, disabled: l >= UP_MAX, fn: () => act(upgrade(s, b, u.id), `${u.id === 'extra' ? sp.extra : u.name}: Stufe ${l + 1}. Das spricht sich herum!`) }; }),
         { icon: '←', label: 'Zurück', fn: back }], back, 'phone');
+    } else if (app === 'fm') {
+      fmMenu(this, frame, home);
     } else if (app === 'wetter') {
       const fc = forecast(s.day, s.time), toSat = (5 - (s.day - 1) % 7 + 7) % 7;
       this.openMenu(frame('Wetter und Termine', `<div class="pbody">${fc.map((f) => `<p>${SKY[f.sky].icon} <b>${f.label}</b>: ${SKY[f.sky].name}${f.parade ? ' · 🏳️‍🌈 CSD-Parade' : ''}</p>`).join('')}<p>🏳️‍🌈 <b>CSD-Parade</b><br><small>Jeden Samstag von 12 bis 18 Uhr auf der Hauptstraße: Festwagen, Tanzgruppen, Konfetti. ${toSat ? `Die nächste ist in ${toSat} ${toSat === 1 ? 'Tag' : 'Tagen'}.` : 'Heute ist es so weit!'} Lauf mit oder spring auf einen Wagen.</small></p><p><small>Nach Regen am Tag zeigt sich oft ein Regenbogen. Bei Regen glänzen die Straßen, bei Gewitter blitzt es über der Skyline.</small></p></div>`),
-        [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+        [{ icon: '🎨', label: wagenOf(s) ? 'Deinen Festwagen umbauen' : 'Eigenen Festwagen bauen', sub: 'Flagge, Motto, Deko, Musik · Jury-Preis bei der Parade', fn: () => wagenMenu(this, () => this.phone('wetter')) }, { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'wissen') {
+      const tl = timeline(s), seen = tl.filter((r) => r.seen).length;
+      this.openMenu(frame('Wissen', `<div class="pbody"><p>Queere Geschichte, Menschen, Flaggen und Rechte. Neue Kapitel der Zeitleiste schaltest du in der Story frei.</p><p>🏳️‍🌈 Zeitleiste ${seen}/${tl.length} · 🎯 Quiz: ${Number(s.flags.quizRight) || 0} richtige Antworten</p></div>`), [
+        { icon: '🎯', label: 'Quiz mit Hilde', sub: quizDoneToday(s) ? 'Heute schon gespielt · zum Üben nochmal' : '3 Fragen · bis zu 15 ✨ Glitzer und Ruf', fn: () => this.quiz(todaysQuiz(s), 0, 0) },
+        { icon: '🕰️', label: 'Zeitleiste', sub: '1867 bis heute', fn: () => this.phone('w_hist') },
+        { icon: '👤', label: 'Persönlichkeiten', sub: `${PEOPLE.length} Menschen, die Geschichte gemacht haben`, fn: () => this.phone('w_people') },
+        { icon: '🎌', label: 'Flaggen', sub: 'Was die Farben bedeuten', fn: () => this.phone('w_flags') },
+        { icon: '⚖️', label: 'Rechte und Hilfe', sub: 'Was in Deutschland gilt', fn: () => this.phone('w_rights') },
+        { icon: '📚', label: 'Glossar', sub: 'Begriffe aus der Szene', fn: () => this.phone('glossary') },
+        { icon: '🩺', label: 'Gesundheit', sub: 'PrEP, PEP, U=U, Tests', fn: () => this.phone('health') },
+        { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'w_hist' || app === 'w_people' || app === 'w_rights' || app === 'w_flags') {
+      const back = () => this.phone('wissen');
+      const row = (e: { year?: string; title: string; text: string }) => `<p><small>${esc(e.year || '')}</small><br><b>${esc(e.title)}</b><br>${esc(e.text)}</p>`;
+      const body = app === 'w_hist' ? timeline(s).map((r) => (r.seen ? row(r) : `<p><small>${esc(r.year || '')}</small><br><b>🔒 ${esc(r.title)}</b><br><i>Erlebst du in der Story.</i></p>`)).join('')
+        : app === 'w_people' ? PEOPLE.map(row).join('')
+        : app === 'w_rights' ? RIGHTS.map(row).join('')
+        : flags().map((f) => `<p><span style="display:flex;height:14px;border-radius:4px;overflow:hidden;margin-bottom:4px">${f.colors.map((c) => `<i style="flex:1;background:${c}"></i>`).join('')}</span><b>${esc(f.name)}</b><br>${esc(f.info)}</p>`).join('');
+      this.openMenu(frame({ w_hist: 'Zeitleiste', w_people: 'Persönlichkeiten', w_rights: 'Rechte und Hilfe', w_flags: 'Flaggen' }[app]!, `<div class="pbody">${body}</div>`), [{ icon: '←', label: 'Zurück', fn: back }], back, 'phone');
     } else if (app === 'glossary') {
       const g = GLOSSARY.filter(([, , a]) => !a || s.settings.adult);
       this.openMenu(frame('Glossar', `<div class="pbody">${g.map(([t, x]) => `<p><b>${t}</b><br>${x}</p>`).join('')}${s.settings.adult ? '' : '<p><small>Weitere Begriffe mit „Inhalte ab 18“ in den Optionen.</small></p>'}</div>`),
@@ -799,6 +856,7 @@ export class Game {
       ...(go ? [{ icon: '▶', label: 'In die Stadt', big: true, fn: go }] : []),
       ...(host ? [{ icon: '🔗', label: 'Link kopieren', fn: () => { const ok = () => toast('🔗 Link kopiert.'); try { navigator.clipboard.writeText(link).then(ok, () => toast(link, 6000)); } catch { toast(link, 6000); } } },
         ...(typeof navigator.share === 'function' ? [{ icon: '📤', label: 'Einladung teilen', fn: () => { navigator.share({ title: 'Pride City', text: `Komm in meine Stadt! Code ${net.code}`, url: link }).catch(() => {}); } }] : [])] : []),
+      ...(this.pendingInvite ? [{ icon: '🪩', label: `Zu ${this.pendingInvite.from} in den ${this.pendingInvite.n}`, sub: 'Einladung annehmen', big: true, fn: () => { const inv = this.pendingInvite!; this.closeMenu(); this.touch.show(true); this.joinFriendClub(inv); } }] : []),
       ...(people.length ? [{ icon: '💬', label: 'Etwas zurufen', sub: 'Kurze Sprüche für alle', fn: () => this.quickMenu(again) }] : []),
       { icon: '🔄', label: 'Liste aktualisieren', fn: again },
       { icon: '🚪', label: host ? 'Stadt schließen' : 'Besuch beenden', fn: () => { f.leave(); toast(host ? '🌐 Deine Stadt ist wieder privat.' : '🌐 Besuch beendet.'); again(); } },
@@ -833,7 +891,7 @@ export class Game {
     this.touch.show(false);
     this.openMenu(`<div class="place"><h3>🌐 ${esc(m.name)}</h3><p>Zu Besuch in deiner Runde. Gesten sehen alle, die gerade in der Stadt sind.</p><div class="slot"></div></div>`, [
       ...EMOTES.map(([k, icon, label]) => ({ icon, label, fn: () => {
-        close(); this.city.player.play(k as Parameters<typeof this.city.player.play>[0]); f.emote(k);
+        close(); (this.where === 'inside' && this.inside ? this.inside.player : this.city.player).play(k as Parameters<typeof this.city.player.play>[0]); f.emote(k);
         if (performance.now() - this.emoteT > 60000) { this.emoteT = performance.now(); change(s, { social: 6, fun: 4 }); this.city.refreshHud(); }
       } })),
       { icon: '💬', label: 'Etwas zurufen', fn: () => this.quickMenu(close) },
@@ -1072,6 +1130,25 @@ export class Game {
     this.fade(go);
   }
 
+  /** Quiz im Handy: Hilde fragt, Antwort wählen, danach Auflösung; Belohnung einmal am Tag */
+  private quiz(qs: Q[], i: number, right: number) {
+    const s = this.save.data, back = () => this.phone('wissen');
+    const frame = (body: string) => `<div class="phoneBox"><div class="ph"><span>${clock(s)}</span><b>Quiz ${Math.min(i + 1, qs.length)}/${qs.length}</b><span>✨ ${s.glitter}</span></div>${body}<div class="slot"></div></div>`;
+    if (i >= qs.length) {
+      const r = quizReward(s, right); this.save.write(); this.city.refreshHud();
+      sfx(right === qs.length ? 'win' : 'ok');
+      this.openMenu(frame(`<div class="pbody"><p><b>Hilde:</b> ${right === qs.length ? 'Alles richtig! Du hättest 1979 mit uns marschieren sollen.' : right ? 'Gut gemacht. Den Rest lernst du bestimmt noch.' : 'Macht nichts, Kindchen. Wissen wächst mit jedem Mal.'}</p><p>${right}/${qs.length} richtig${r.glitter ? ` · +${r.glitter} ✨ Glitzer · +${r.rep} Ruf` : ' · Belohnung gibt es einmal am Tag'}</p></div>`), [{ icon: '←', label: 'Zurück zu Wissen', fn: back }], back, 'phone');
+      return;
+    }
+    const q = qs[i];
+    this.openMenu(frame(`<div class="pbody"><p><b>Hilde fragt:</b><br>${esc(q.q)}</p></div>`), [
+      ...q.a.map((a, k) => ({ icon: ['A', 'B', 'C'][k], label: a, fn: () => {
+        const ok = k === q.ok; sfx(ok ? 'coin' : 'miss');
+        this.openMenu(frame(`<div class="pbody"><p>${ok ? '✅ Richtig!' : `❌ Leider nicht. Richtig ist: <b>${esc(q.a[q.ok])}</b>`}</p><p>${esc(q.why)}</p></div>`), [{ icon: '▶', label: i + 1 < qs.length ? 'Nächste Frage' : 'Ergebnis', fn: () => this.quiz(qs, i + 1, right + (ok ? 1 : 0)) }], back, 'phone');
+      } })),
+      { icon: '←', label: 'Abbrechen', fn: back }], back, 'phone');
+  }
+
   /* ---------- Pausenmenü ---------- */
   pauseMenu() {
     if (this.menuOpen || this.dialog.open) return;
@@ -1162,6 +1239,7 @@ export class Game {
       { icon: '🍸', label: 'Barkeeper-Schicht', sub: `Club Leuchtturm · 75 Sekunden · Rekord ${b.bar || 0} Drinks`, fn: () => this.barShift(() => this.minigames(back), true) },
       { icon: '🎤', label: 'Lady Lumas Drag-Show', sub: 'Buch-Hymne oder Klaviersongs aus Klavierlicht', fn: () => this.showMenu((o) => this.goDance(false, back, o)) },
       ...MINIS.map((m) => { const ad = !!this.save.data.settings.adult; return { icon: miniIcon(m, ad), label: miniName(m, ad), sub: `${miniSub(m, ad)} · Rekord ${b['mini_' + m.id] || 0}`, disabled: !!m.adultOnly && !ad, fn: () => this.playMini(m.id, { back: () => this.minigames(back), title: true }) }; }),
+      { icon: '🕹️', label: 'Gay Life! Originale', sub: 'Alle 14 Minispiele aus Gay Life! in 2D', fn: () => this.roman('gaylife', '', () => this.minigames(back)) },
       { icon: '←', label: 'Zurück', fn: back },
     ], back);
   }
@@ -1492,7 +1570,7 @@ export class Game {
       });
     });
     sc.build().then(() => { this.loading.progress(1, 'Los!'); this.engine.setScene(sc); this.loading.hide(); })
-      .catch((e) => { console.error(e); this.loading.hide(); toast('Das Minispiel konnte nicht starten.'); this.resume(); });
+      .catch((e) => { console.error(e); this.loading.hide(); toast('Das Minispiel konnte nicht starten.'); if (o.back) o.back(); else if (o.title) this.title(); else this.resume(); });
   }
 
   /* ---------- Minispiel ---------- */

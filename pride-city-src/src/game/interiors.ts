@@ -11,7 +11,9 @@ export type Act =
   | { k: 'do'; cost?: number; min: number; d: Partial<Record<'energy' | 'hunger' | 'hygiene' | 'social' | 'fun', number>>; msg: string; sfx?: string; adult?: boolean }
   | { k: 'talk'; who: string; color: string; lines: string[] }
   | { k: 'club' } | { k: 'deal' }                  // eigenen Club führen bzw. kaufen (clubui.ts)
-  | { k: 'annex'; room: string };                  // Anbau des Zuhauses (house.ts)
+  | { k: 'annex'; room: string }                   // Anbau des Zuhauses (house.ts)
+  | { k: 'drag'; what: 'look' | 'battle' }
+  | { k: 'wagen' };                                // eigener CSD-Festwagen (festwagen.ts)        // Drag-Karriere im Haus Vega (drag.ts)
 
 /** Möbel: KayKit-Modell (gltf) oder Platzhalter-Form (box/screen/neon) */
 export type Item =
@@ -70,8 +72,9 @@ export const PLACE_THEMES: Record<string, Theme> = {
     items: [{ m: 'home/couch_pillows', x: -2.6, z: 1.8, r: Math.PI, col: true }, { m: 'home/lamp_standing', x: -5, z: 2.6 }, { box: [2.4, 1, .8], c: C.wood, x: 3, z: -3.4, col: true }, { neon: 'HAUS ROSA', c: '#ff6ad5', x: 0, z: -4.38, y: 3.1 }],
     spots: [{ id: 'menu', label: '🏮 Empfang (18+)', x: 3, z: -2.6, r: 1.8, act: { k: 'menu' } }] },
   onelove: { id: 'onelove', title: 'One Love Bar', icon: '💗', floor: 0x2a0f22, wall: 0x3a1430, light: 0xff3fb0, music: 'show',
-    items: [{ box: [6, .5, 2.4], c: 0x5a1a44, x: 0, z: -3.2, col: true, e: .2 }, { screen: [5, .12], c: 0xffd23b, x: 0, z: -2, y: .52 }, { box: [.8, 1.1, 3], c: C.wood, x: 5, z: 1.4, col: true }, ...tables(2, 2.6, 5), { neon: 'ONE LOVE', c: '#ff3fb0', x: 0, z: -4.38, y: 3.2 }],
-    spots: [{ id: 'show', label: '🎤 Bühne: Lady Lumas Drag-Show', x: 0, z: -1.2, r: 1.8, act: { k: 'show' } }, { id: 'menu', label: '🍸 Bar, Leon, Lady Luma', x: 4, z: 1.4, r: 1.8, act: { k: 'menu' } }, gl('kara', '🎤 Karaoke', -3.6, 1.2), { id: 'book', label: '📖 „Ich bin das Licht“ lesen', x: -4.8, z: -2, r: 1.6, act: { k: 'book', id: 'licht' } }] },
+    items: [{ box: [6, .5, 2.4], c: 0x5a1a44, x: 0, z: -3.2, col: true, e: .2 }, { screen: [5, .12], c: 0xffd23b, x: 0, z: -2, y: .52 }, { box: [.8, 1.1, 3], c: C.wood, x: 5, z: 1.4, col: true }, ...tables(2, 2.6, 5), { neon: 'ONE LOVE', c: '#ff3fb0', x: 0, z: -4.38, y: 3.2 }, { box: [1.3, 1.7, .06], c: 0xffe9b0, x: 4.4, z: -4.3, y: .9, e: .5 }, { box: [1.6, .8, .6], c: 0x5a1a44, x: 4.4, z: -3.8, col: true }, { neon: 'HAUS VEGA', c: '#ffd23b', x: -3, z: -4.38, y: 2.4, w: 2.4 }],
+    spots: [{ id: 'show', label: '🎤 Bühne: Lady Lumas Drag-Show', x: 0, z: -1.2, r: 1.8, act: { k: 'show' } }, { id: 'menu', label: '🍸 Bar, Leon, Lady Luma', x: 4, z: 1.4, r: 1.8, act: { k: 'menu' } }, gl('kara', '🎤 Karaoke', -3.6, 1.2), { id: 'book', label: '📖 „Ich bin das Licht“ lesen', x: -4.8, z: -2, r: 1.6, act: { k: 'book', id: 'licht' } },
+      { id: 'mirror', label: '💄 Schminkspiegel: Drag-Look bauen', x: 4.4, z: -2.6, r: 1.5, act: { k: 'drag', what: 'look' } }, { id: 'battle', label: '👑 Lip-Sync-Battle (Haus Vega)', x: -2.6, z: -3, r: 1.4, act: { k: 'drag', what: 'battle' } }] },
   police: { id: 'police', title: 'Polizeiwache Mitte', icon: '🚓', floor: 0xb8c0cc, wall: 0xe8eef6, light: 0xdde8ff,
     items: [{ box: [4, 1.1, .9], c: 0x5b86d6, x: 0, z: -3.4, col: true }, ...[-4, -2.8].map((x) => ({ m: 'home/chair_A', x, z: 2.4, r: Math.PI } as Item)), { neon: 'POLIZEI', c: '#5b86d6', x: 0, z: -4.38, y: 3.1 }],
     spots: [menu('🚓 Wache')] },
@@ -189,7 +192,7 @@ export const HOUSE_THEMES: Theme[] = [
     spots: [gl('pool', '🏊 Strandbad-Sprung (Turm)', 4.6, -2.4), doIt('schwimmen', '🌊 Bahnen schwimmen', -2, 1.2, { min: 40, d: { energy: -10, fun: 10, hygiene: 8 }, msg: 'Zwanzig Bahnen. Spaß +10', sfx: 'splash' })] },
   { id: 'werkstatt', title: 'Festwagen-Werkstatt', icon: '🛠️', floor: 0x5a5a60, wall: 0xb8b8c0, light: 0xfff0d0,
     items: [{ box: [3.4, 1.4, 5], c: C.pink, x: -1.4, z: -1, col: true, e: .2 }, { box: [3.6, .2, 5.2], c: C.gold, x: -1.4, z: -1, y: 1.5 }, { box: [2.4, 1, .8], c: C.steel, x: 4, z: -3.4, col: true }],
-    spots: [gl('run', '🏃 Parade-Runner (Probefahrt)', 2.2, 1.2), doIt('deko', '🎨 Festwagen dekorieren', 4, -2.4, { min: 60, d: { fun: 12, energy: -6 }, msg: 'Glitzer, Federn, Regenbogen. Spaß +12' })] },
+    spots: [gl('run', '🏃 Parade-Runner (Probefahrt)', 2.2, 1.2), { id: 'wagen', label: '🎨 Deinen CSD-Festwagen gestalten', x: 4, z: -2.4, r: 1.8, act: { k: 'wagen' } }] },
   { id: 'ramen', title: 'Ramen Nachteule', icon: '🍜', floor: 0x3a2a22, wall: 0x5a3a2a, light: 0xffb070,
     items: [...counter, ...[-3, -1, 1, 3].map((x) => ({ box: [.5, .8, .5], c: C.red, x, z: -2.4, col: true } as Item)), { neon: 'RAMEN', c: '#ff8a3b', x: 0, z: -4.38, y: 3.1 }],
     spots: [doIt('ramen', '🍜 Ramen essen (11 €)', 0, -1.6, { cost: 11, min: 30, d: { hunger: 50 }, msg: 'Heiße Brühe. Hunger +50', sfx: 'cook' })] },

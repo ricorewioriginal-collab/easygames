@@ -9,6 +9,7 @@ import type { Mission } from './saga';
 import { sagaDone, MISSIONS as SAGA, isNight } from './saga';
 import type { GigStep } from './gigs';
 import { owns, priceOf, BUSINESSES } from './empire';
+import { nightsOf } from './club';
 
 export const NACHT_NPCS: NpcDef[] = [
   { id: 'rocco', name: 'Rocco Sterling', pron: 'er/ihn', color: '#ffcf5a', look: { body: 'Man', rb: 'Business_Male_01', palette: 'rainbow', skin: 1, hair: 0 }, x: 130.5, z: 4.3, yaw: Math.PI },
@@ -79,7 +80,9 @@ export const nachtNext = (s: SaveData) => (nachtOpen(s) ? NACHT[nachtDone(s)] ||
 export const CLUB = 'prisma';
 /** Roccos Starthilfe: Story-Rabatt auf das Prisma (s.flags.deal_prisma, siehe hooks.ts) */
 export const DEAL = 40;
-export const nachtOver = (s: SaveData) => nachtDone(s) >= NACHT.length && owns(s, CLUB);
+/** erste eigene Clubnacht im Prisma gespielt (club.ts) */
+const partied = (s: SaveData) => nightsOf(s, CLUB) > 0;
+export const nachtOver = (s: SaveData) => nachtDone(s) >= NACHT.length && owns(s, CLUB) && partied(s);
 /** Akt II wechselt zwischen Hochstadt und Nachtleben: wer weniger weit ist, ist dran */
 export const nachtFirst = (s: SaveData) => !nachtOver(s) && (sagaDone(s) >= SAGA.length || nachtDone(s) / NACHT.length < sagaDone(s) / SAGA.length);
 
@@ -89,6 +92,7 @@ export function nachtGoal(s: SaveData): Goal | null {
   const m = nachtNext(s);
   if (m) return { title: `Sterling Nights ${nachtDone(s) + 1}/${NACHT.length}: ${m.title}`, sub: m.hint, npc: 'rocco' };
   if (nachtOpen(s) && !owns(s, CLUB)) return { title: s.money >= clubPrice(s) ? 'Kauf deinen ersten großen Club: das Prisma' : `Spare für das Club Prisma (${s.money}/${clubPrice(s)} €)`, sub: `Bei Dario im Prisma oder im Handy unter Imperium${s.flags['deal_' + CLUB] ? ` · ${DEAL} % Rabatt von Rocco` : ''}.`, poi: 'club' };
+  if (nachtOpen(s) && nachtDone(s) >= NACHT.length && !partied(s)) return { title: 'Deine erste Clubnacht im Prisma', sub: 'Im Club am Klemmbrett starten: DJ, Preise, Tür. Freund*innen kannst du online dazu einladen (🌐).', poi: 'club' };
   return null;
 }
 export const nachtMarks = (s: SaveData): Array<[string, string]> => (nachtNext(s) ? [['rocco', '🥂']] : []);
@@ -137,5 +141,16 @@ export function nachtBought(c: StoryCtx, id: string) {
   c.phone([
     { who: `📞 ${R.name}`, color: R.color, text: 'Ich habe es gerade gehört. Das Prisma gehört dir! Dario hat geweint, ich übrigens auch, ein bisschen.' },
     { who: `📞 ${R.name}`, color: R.color, text: 'Ab heute bist du nicht mehr meine rechte Hand. Du bist die Konkurrenz. Die schönste, die ich je hatte.' },
-  ], () => { c.reward(0, 5, 'Club-Mogul*in'); c.card('Sterling Nights', 'Club-Mogul*in', 'Das Prisma gehört dir. Führ es im Handy unter Imperium: DJs, Preise, Tür und Clubnächte.'); });
+  ], () => { c.reward(0, 5, 'Club-Mogul*in'); c.card('Sterling Nights', 'Club-Mogul*in', 'Das Prisma gehört dir. Starte im Club am Klemmbrett deine erste Clubnacht. Freund*innen kannst du online dazu einladen.'); });
+}
+
+/** Erste Clubnacht im Prisma (pcEvents clubNacht): Rocco war heimlich da */
+export function nachtParty(c: StoryCtx, e: { id: string; guests: number; revenue: number }) {
+  const s = c.s;
+  if (e.id !== CLUB || s.flags.nachtParty || nachtDone(s) < NACHT.length) return;
+  s.flags.nachtParty = true;
+  c.phone([
+    { who: `📞 ${R.name}`, color: R.color, text: `Ich stand ganz hinten an der Bar, mit Sonnenbrille. ${e.guests} Gäste, ${e.revenue} € Umsatz und niemand wollte nach Hause.` },
+    { who: `📞 ${R.name}`, color: R.color, text: 'Das ist keine Clubnacht mehr, das ist eine Legende. Sterling Nights verbeugt sich.' },
+  ], () => c.card('Sterling Nights', 'Die Nacht gehört dir', 'Deine erste Clubnacht im Prisma ist Stadtgespräch. Rocco ist stolz, und die Inseln haben davon gehört.'));
 }

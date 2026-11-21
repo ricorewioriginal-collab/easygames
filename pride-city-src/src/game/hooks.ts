@@ -1,4 +1,4 @@
-/* Schnittstelle für Story, Minispiele und andere Systeme: Ereignisse rund um Clubs, Geschäfte und das eigene Zuhause.
+/* Schnittstelle für Story, Minispiele und andere Systeme: Ereignisse rund um Clubs, Geschäfte, das eigene Zuhause und die Drag-Karriere.
    Zuhören:  import { pcEvents } from './hooks';  pcEvents.on('clubGekauft', (e) => …)
    Im Browser auch über window.__pc.events (z. B. für Tests).
    Story-Angebot: s.flags['deal_<business-id>'] = Rabatt in Prozent (0–90) macht den Kauf günstiger, bis gekauft wurde. */
@@ -29,5 +29,19 @@ export interface PcEvents extends Record<string, unknown> {
   haustier: { kind: string; name: string };
   /** Auftrag an einem Treffpunkt (Sauna, Strandbar) erledigt */
   treffAuftrag: { place: string; id: string };
+  /** Drag-Look am Schminkspiegel gespeichert (drag.ts, dragLook.ts) */
+  dragLook: { look: Record<string, string>; style: string };
+  /** Lip-Sync-Battle vorbei (stage 1–5 = Karriere-Stufe, 0 = Kronen-Verteidigung) */
+  dragBattle: { rival: string; name: string; won: boolean; score: number; stage: number; defend: boolean };
+  /** Alle fünf Queens geschlagen: Krone von Rainbow City (Flag dragKrone) */
+  dragKrone: { name: string };
+  /** Eine Wissenskarte mit echter queerer Geschichte wurde freigeschaltet (Drag, CSD, Radio …) */
+  wissen: { key: string; title: string; topic: string };
+  /** Eigener CSD-Festwagen gebaut oder umgebaut (festwagen.ts) */
+  wagenGestaltet: { flag: string; motto: string; deko: string; sound: string; score: number; first: boolean };
+  /** Jury-Preis für den eigenen Wagen bei der CSD-Parade (Platz 1–3) */
+  paradeWagen: { place: number; score: number; money: number; rep: number; motto: string };
+  /** Eigene Radiosendung „Rainbow Talk“ auf Pride FM gesendet (pridefm.ts) */
+  radioSendung: { points: number; listeners: number; money: number };
 }
 export const pcEvents = new Emitter<PcEvents>();

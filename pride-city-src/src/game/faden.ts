@@ -35,7 +35,7 @@ export function fadenGoal(s: SaveData): Goal | null {
   const w = islesLeft(s)[0], all = chain(s).length;
   if (w) {
     const st = worldStage(s.flags, w.id), n = all - islesLeft(s).length + 1;
-    return { title: `Insel ${n}/${all}: ${w.icon} ${w.name}`, sub: st ? `Mach weiter bei ${w.host.name}. Über die Brücke am Kai erreichst du jede Insel.` : `${w.host.name} wartet auf dem Platz. Über die Brücke am Kai, dann immer der Lichtsäule nach.`, isle: w.id };
+    return { title: `Insel ${n}/${all}: ${w.icon} ${w.name}`, sub: st ? `Mach weiter bei ${w.host.name}. Über die Brücke oder mit dem 🚤 Glitzer-Boot vom Kai.` : `${w.host.name} wartet auf dem Platz. Über die Brücke am Kai oder mit dem 🚤 Glitzer-Boot, dann der Lichtsäule nach.`, isle: w.id };
   }
   if (!s.flags.fadenCall) return { title: 'Ruf bei Jules an', sub: 'Alle Inseln sind bereit. Jules weiß, wie es weitergeht.', npc: 'jules' };
   return { title: 'Die Pride der Inseln auf der Pride Plaza', sub: 'Alle Inseln feiern mit dir. Ab 12 Uhr geht es los.', poi: 'plaza' };
@@ -48,23 +48,49 @@ export function isleVia(s: SaveData, id: string): string | null {
   return i <= 0 ? 'Jules hat angerufen und gesagt, du kommst. Rainbow City schickt uns die Person, die zwei Viertel gerettet hat!' : `${chain(s)[i - 1].host.name} hat dich schon angekündigt. Du bist also die Person, die überall hilft.`;
 }
 
+const VEGA_STAGE = [
+  'Liebes, hier ist Mama Vega. Ich war gestern im Prisma. Diese Show! Du hast Drag im Blut.',
+  'Komm in die One Love Bar. Am Schminkspiegel bauen wir deinen Look, und auf meiner Bühne warten fünf Queens. Wer alle schlägt, trägt die Krone von Rainbow City.',
+];
+/** Krone der Drag-Karriere gewonnen (Flag dragKrone aus drag.ts): Nova gratuliert, das Prisma hat dich zuerst gesehen */
+export function fadenKrone(c: StoryCtx, name: string) {
+  if (c.s.flags.dragKroneCall) return;
+  c.s.flags.dragKroneCall = true;
+  c.phone(call('Nova', '#ff6ad5', [
+    `${name}, Königin von Rainbow City! Ich habe es im Radio gehört und sofort angerufen.`,
+    'Weißt du noch, dein erster Auftritt im Prisma gegen Rex? Ich wusste es damals schon. Komm vorbei, die erste Runde geht auf mich.',
+  ]));
+}
 const call = (who: string, color: string, text: string[]): Line[] => text.map((t) => ({ who: `📞 ${who}`, color, text: t }));
 let calm = 0;
 
 /** Anrufe zwischen den Akten und Inseln – aus storyTick, also nur, wenn nichts anderes läuft */
 export function fadenTick(c: StoryCtx) {
   const s = c.s, f = s.flags, a = act(s);
-  if (a === 1 || a === 4) return;
-  if (++calm < 6) return; // drei ruhige Sekunden, bevor es klingelt
   const ring = (key: string, who: string, color: string, text: string[], done?: () => void) => {
     calm = 0; f[key] = true;
     c.phone(call(who, color, text), done);
   };
+  // Nach der ersten Drag-Show (Kapitel 3) holt Mama Vega dich auf ihre Bühne: Drag-Karriere in der One Love Bar (drag.ts)
+  if (a === 1 && s.chapter === 3 && s.step === 4 && !f.dragCall && !f.dragWins) {
+    if (++calm < 6) return;
+    ring('dragCall', 'Mama Vega', '#ffd23b', [VEGA_STAGE[0], VEGA_STAGE[1]]);
+    return;
+  }
+  // Krone von Rainbow City (drag.ts setzt dragKrone): Nova ruft an, sobald alle Karten zu sind
+  if (f.dragKrone && !f.dragKroneCall) {
+    if (++calm < 6) return;
+    calm = 0; fadenKrone(c, String(f.drag || s.name));
+    return;
+  }
+  if (a === 1 || a === 4) return;
+  if (++calm < 6) return; // drei ruhige Sekunden, bevor es klingelt
   if (a === 2 && !f.faden2) {
     const fresh = sagaDone(s) === 0;
     ring('faden2', 'Mama Vega', '#ff3fb0', [
       'Hier ist Vega, Mutter vom Haus Vega drüben in der Hochstadt. Ganz Rainbow City redet von deiner Pride.',
       fresh ? 'Wir haben auch ein Haus, das gerettet werden muss: das Kaleidoskop am Neonplatz. Komm über die Regenbogenbrücke, ich warte auf dich.' : 'Du hast uns schon so geholfen. Bring es mit uns zu Ende, das Kaleidoskop braucht dich noch.',
+      ...(f.dragWins || f.dragCall ? [] : [VEGA_STAGE[1]]),
     ], () => c.card('Akt II', ACTS[1].title, ACTS[1].text).then(() => history(s, 'a2', c.card)));
     return;
   }
@@ -80,7 +106,7 @@ export function fadenTick(c: StoryCtx) {
     ring('faden3', 'Jules', '#9c59d1', [
       'Das Kaleidoskop bleibt! Yusuf hat es mir sofort geschrieben. Du bist unglaublich.',
       'Und jetzt kommt Post von den Inseln vor der Küste. Fünf Orte, fünf Gastgeber*innen. Alle wollen ihre eigene Pride, und alle brauchen Hilfe.',
-      w ? `Fang bei ${w.icon} ${w.name} an. ${w.host.name} wartet dort. Die Brücke liegt am Kai im Hafen. Wenn alle Inseln bereit sind, feiern wir zusammen: die Pride der Inseln.` : 'Wenn alle bereit sind, feiern wir zusammen: die Pride der Inseln.',
+      w ? `Fang bei ${w.icon} ${w.name} an. ${w.host.name} wartet dort. Die Brücke liegt am Kai im Hafen, und dort wartet auch das Glitzer-Boot. Wenn alle Inseln bereit sind, feiern wir zusammen: die Pride der Inseln.` : 'Wenn alle bereit sind, feiern wir zusammen: die Pride der Inseln.',
     ], () => { f.fadenNext = w?.id || ''; c.card('Akt III', ACTS[2].title, ACTS[2].text).then(() => history(s, 'a3', c.card)); });
     return;
   }
@@ -92,7 +118,14 @@ export function fadenTick(c: StoryCtx) {
     c.phone(call(prev && isleDone(s, prev.id) ? prev.host.name : w.host.name, prev && isleDone(s, prev.id) ? prev.host.color : w.host.color, [
       prev && isleDone(s, prev.id) ? `Danke für alles auf ${prev.icon} ${prev.name}! Ich habe schon bei ${w.host.name} angerufen.` : `Hier ist ${w.host.name}.`,
       `${w.icon} ${w.name} braucht dich als Nächstes. Komm über die Brücke, ich warte auf dem Platz.`,
-    ]));
+    ]), () => {
+      // Playa Arcoíris geschafft: Lola lädt zum Turmspringen ins Strandbad ein (3D-Minispiel, freiwillig)
+      if (prev?.id !== 'canaria' || !c.mini || f.fadenPool) return;
+      f.fadenPool = true;
+      c.say([{ who: prev.host.name, color: prev.host.color, text: 'Ach, und bevor du gehst: Im Strandbad steht der Sprungturm. Zeigst du mir einen Salto für die Insel-Pride?', choices: [
+        { label: '🏊 Springen!', fn: () => setTimeout(() => c.mini!('pool', (won) => { if (won) c.reward(60, 2, 'Strandbad-Sprung für Lola'); }), 200) },
+        { label: 'Ein andermal', fn: () => {} }] }]);
+    });
     return;
   }
   if (!w && !f.fadenCall) {
@@ -124,8 +157,12 @@ export function fadenPoi(c: StoryCtx, id: string): boolean {
     { ...J, text: `Schau dich um, ${s.name}. Rainbow City, die Hochstadt und alle Inseln an einem Platz.` },
     ...hosts.map((h) => ({ ...h, text: said[h.who] || 'Danke für alles!' })),
     { who: 'Mama Vega', color: '#ff3fb0', text: 'Das Haus Vega läuft die erste Kategorie. Und du, Liebes, tanzt den Schluss.' },
-    { ...J, text: 'Musik ab! Pride der Inseln, TANZT!' },
-  ], () => { s.flags.inselShow = true; c.dance(); });
+    { ...J, text: c.mini ? 'Der Festwagen fährt los! Lauf vorne mit, und dann tanzt du den Schluss.' : 'Musik ab! Pride der Inseln, TANZT!' },
+  ], () => {
+    const dance = () => { s.flags.inselShow = true; c.dance(); };
+    // Parade-Runner (3D) neben dem Festwagen, danach der Finaltanz
+    if (c.mini) c.mini('run', () => c.say([{ ...J, text: 'Was für ein Lauf! Jetzt alle auf die Plaza. Musik ab, Pride der Inseln, TANZT!' }], dance)); else dance();
+  });
   return true;
 }
 

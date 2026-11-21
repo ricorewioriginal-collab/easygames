@@ -114,3 +114,19 @@ describe('Online: Verbindung im Sternnetz', () => {
     expect(full).toContainEqual({ t: 'full' });
   });
 });
+
+describe('Online: Nachtleben im Club', () => {
+  it('Ort drinnen nur als einfache ID, draußen ohne w', () => {
+    expect(cleanState({ ...st, w: 'club' }).w).toBe('club');
+    expect(cleanState({ ...st, w: '<script>' }).w).toBeUndefined();
+    expect('w' in cleanState(st)).toBe(false);
+  });
+  it('Club-Einladung: nur bekannte DJs, Deko und Themennächte', async () => {
+    const { cleanInvite } = await import('../src/game/online');
+    expect(cleanInvite({ p: 'club', n: '<b>Prisma</b>', dj: 'bass', deco: 'disco', e: 'stonewall', door: 9, aw: 1 })).toEqual({ p: 'club', n: 'bPrisma/b', dj: 'bass', deco: 'disco', e: 'stonewall', door: 2, aw: true });
+    expect(cleanInvite({ p: '../x' })).toBeNull();
+    expect(cleanInvite({ p: 'club', dj: 'hacker', deco: 'x', e: 'y' })).toMatchObject({ dj: 'haus', deco: '', e: '' });
+    const r = new Roster(() => false); r.apply({ t: 'hi', id: 'a', n: 'Kim', l: look, s: st });
+    expect(r.apply({ t: 'club', id: 'a', p: 'club', n: 'Club Prisma' })?.ev).toBe('invite');
+  });
+});

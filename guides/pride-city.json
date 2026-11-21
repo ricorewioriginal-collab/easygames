@@ -179,6 +179,18 @@
       ]
     },
     {
+      "t": "3D-Minispiele: Parade-Runner",
+      "p": [
+        "Ersetzt das 2D-Spiel aus Gay Life! (Arcade, Festwagen-Werkstatt, Minispiele). Du rennst neben dem Festwagen die Paradestraße entlang: links/rechts wechselt die Spur, A springt über rote Absperrungen (Spaßbremsen). Grummelwolken musst du ausweichen. Glitzer bringt 5, Regenbogenflaggen 30 Punkte, jeder Meter zählt. Drei Herzen, 60 Sekunden, das Tempo steigt. Ziel: 700 Punkte."
+      ]
+    },
+    {
+      "t": "3D-Minispiele: Strandbad-Sprung",
+      "p": [
+        "Ersetzt das 2D-Spiel aus Gay Life! (Strandbad, Minispiele). Fünf Sprünge vom Turm: A stoppt die Kraft, A stoppt den Winkel. In der Luft A halten dreht Saltos (40 Punkte je Salto). Lass rechtzeitig los, damit du gerade eintauchst (50 Stilpunkte), sonst gibt es einen Bauchklatscher. Je näher am gelben Ring, desto mehr Punkte (bis 100). Ziel: 450 Punkte. Die 2D-Originale aus Gay Life! bleiben unter Minispiele → Gay Life! Originale spielbar."
+      ]
+    },
+    {
       "t": "Nachtleben (nur mit „Inhalte ab 18“)",
       "p": [
         "Mit eingeschaltetem 18+-Schalter öffnen sich drei Orte für Erwachsene. Alles wird nur angedeutet: Das Bild blendet ab, gezeigt werden nur Absprache, Zustimmung und Safer Sex.",
@@ -384,7 +396,8 @@
       "p": [
         "Clubs kaufst du jetzt im Club selbst: Geh hinein und zum grünen Ring. Dort wartet die Besitzerin oder der Besitzer (Dario im Club Prisma, Lady Luma in der One Love Bar, Wirtin Jo in der Bar Komet, Valentin in der Skybar Wolke 7). Unterschreiben oder verhandeln: Mit 5 Ruf mehr als nötig gibt es 15 % Nachlass, ein Versuch am Tag. Neu käuflich: Bar Komet und Skybar Wolke 7.",
         "Am Klemmbrett 📋 (grüner Ring) führst du deinen Club: Resident-DJ (sieben DJs, jede*r mit eigener Gage und Lichtfarbe), Getränkepreise (günstig = voller, Luxus = mehr je Gast), Türpolitik (offen, Dresscode Glitzer, Gästeliste mit Samtkordel), Deko (Neon, Discokugel, Ballroom-Gold, Tropical Pride) und ein Awareness-Team. Alles sieht man sofort im Raum; je beliebter der Club, desto voller die Tanzfläche.",
-        "Ab 20 Uhr: „Türen auf“. Wähl eine normale Nacht oder eine Themennacht zu einem echten Tag der queeren Geschichte (Stonewall 28.6., CSD, IDAHOBIT 17.5., Trans Visibility 31.3., Coming Out Day 11.10., Welt-Aids-Tag 1.12. und mehr). Während der Nacht triffst du drei Entscheidungen, danach kommt die Abrechnung mit Gästen, Umsatz, Kosten und Ruf. Am echten Jahrestag (±3 Tage, Datum deines Geräts) kommen noch mehr Leute."
+        "Ab 20 Uhr: „Türen auf“. Wähl eine normale Nacht oder eine Themennacht zu einem echten Tag der queeren Geschichte (Stonewall 28.6., CSD, IDAHOBIT 17.5., Trans Visibility 31.3., Coming Out Day 11.10., Welt-Aids-Tag 1.12. und mehr). Während der Nacht triffst du drei Entscheidungen, danach kommt die Abrechnung mit Gästen, Umsatz, Kosten und Ruf. Am echten Jahrestag (±3 Tage, Datum deines Geräts) kommen noch mehr Leute.",
+        "🌐 Online feiern: Ist deine Stadt offen (Online & Freunde), lädst du am Klemmbrett deine Runde in den Club ein; beim Start einer Clubnacht geht die Einladung automatisch raus. Deine Gäste kommen mit einem Tipp hinein (oder später über „Online & Freunde“), sehen deinen DJ, deine Deko und ein Party-Banner, und ihr seht euch gegenseitig tanzen. Gesten und Sprüche gehen über das Ansprechen der anderen Figur. Auch in Läden und Bars sieht man Freund*innen, die gerade im selben Raum sind; Wohnung und Anbau bleiben privat."
       ]
     },
     {

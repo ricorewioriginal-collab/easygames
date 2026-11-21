@@ -7,6 +7,7 @@ import { Actor, WALK_MPS, RUN_MPS, type Anim, type Look } from './Actor';
 import { WORKERS, CURB } from './social';
 import { buildFlitzer } from './flitzer';
 import { buildRingMobil } from './toys';
+import { buildRide } from './rides';
 import { CURB_SPOTS } from './uptown';
 import { carDef, CAR_DEFS, type CarDef } from './vehicles';
 import type { World, Car } from './World';
@@ -152,6 +153,7 @@ export class Street {
       ['flitzer', 24, 32.7, -Math.PI / 2], ['suv', -66, 22, 0],
       ['rakete', -75, 19, 0],
       ['ringmobil', -22, 32.7, -Math.PI / 2], ['ringmobil', -66, 30, 0],
+      ['roller', -6, 32.7, -Math.PI / 2], ['roller', -66, 37, 0], ['pridebus', -15, -27.3, Math.PI / 2], ['boot', -98.4, 30, -Math.PI / 2],
       ['sport', 157.2, -51, Math.PI], ['bulli', 162.4, -51, Math.PI], ['pickup', 159.8, -38.5, 0], ['lux', 130, 62.7, -Math.PI / 2], ['liefer', 196, -62.7, Math.PI / 2],
     ];
     for (const [id, x, z, yaw] of spots) {
@@ -160,6 +162,7 @@ export class Street {
       // der Flitzer zum Fliegen steht neben dem Weltentor (Form je nach 18+ setzt CityScene)
       if (def.fly) { this.addFlyer(x, z, yaw); continue; }
       // Penisring- bzw. Donut-Mobil (Form je nach 18+ setzt CityScene)
+      if (def.ride) { o = new Node3(def.id, this.scene); buildRide(this.scene, o, def.ride); o.parent = this.world.root; o.position.set(x, def.ride === 'boat' ? .05 : .1, z); o.rotation.y = yaw; this.parked.push({ o, name: def.name, yaw, v: 0, def }); continue; }
       if (def.toy) { o = new Node3('ringmobil', this.scene); buildRingMobil(this.scene, o, false); o.parent = this.world.root; o.position.set(x, .1, z); o.rotation.y = yaw; this.parked.push({ o, name: 'Donut-Mobil', yaw, v: 0, def }); continue; }
       o = await this.world.car(def.file);
       o.position.set(x, .1, z); o.rotation.y = yaw;

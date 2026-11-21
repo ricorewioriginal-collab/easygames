@@ -8,6 +8,7 @@ import { SAGA_NPCS, sagaTalk, sagaGoal, sagaMarks, sagaHidden } from './saga';
 import type { Gig } from './gigs';
 import { LF_CHAPTERS, LF_PEOPLE, LF_START, lfEnding } from './leuchtfeuer';
 import { NACHT_NPCS, nachtTalk, nachtGoal, nachtMarks, nachtFirst } from './nacht';
+import { dragGoal } from './drag';
 import { fadenGoal, fadenTick, fadenPoi, fadenDance, actLabel, history } from './faden';
 
 export interface NpcDef {
@@ -77,6 +78,8 @@ export interface StoryCtx {
   card(kick: string, title: string, text: string): Promise<void>;
   /** Mission mit Stationen und Zeit starten (Akt II) */
   mission(g: Gig): void;
+  /** 3D-Minispiel spielen (minis.ts), danach weiter (won = Ziel erreicht) */
+  mini?(id: string, done?: (won: boolean) => void): void;
   /** Anruf: Handy klingelt, dann das Gespräch */
   phone(lines: Line[], done?: () => void): void;
 }
@@ -128,13 +131,15 @@ export function goal(s: SaveData): Goal {
   if (s.chapter === 5) switch (s.step) {
     case 0: return { title: 'Plane die Pride mit Jules', npc: 'jules' };
     case 1: return { title: `Hol Leute ins Pride-Team (${count(s, 'help_', HELPERS)}/3)`, sub: 'Lena, Bruno und Tariq. 🏳️‍🌈 zeigt, wer fehlt.' };
-    case 2: return { title: 'Die Parade beginnt auf der Pride Plaza', sub: 'Ab 12 Uhr. Alle warten auf dich!', poi: 'plaza' };
+    case 2: return { title: 'Die Parade beginnt auf der Pride Plaza', sub: 'Ab 12 Uhr. Alle warten auf dich! Der Pride-Bus „CSD-Shuttle“ steht an der Polizeiwache.', poi: 'plaza' };
   }
   const ng = nachtGoal(s);
   if (ng && (s.flags.nachtRun || (s.chapter > 5 && !s.flags.sagaRun && nachtFirst(s)))) return ng;
   const sg = sagaGoal(s);
   if (sg && (s.chapter > 5 || s.flags.sagaRun)) return sg;
   const fg = fadenGoal(s); if (fg) return fg;
+  const dg = s.chapter > 3 ? dragGoal(s) : null;
+  if (dg) return { title: dg, sub: 'Mama Vega wartet: erst an den Schminkspiegel, dann auf die Bühne.', poi: 'onelove' };
   if (s.chapter > 1 && s.chapter <= 5) return { title: 'Erkunde Rainbow City', sub: 'Sprich mit deinen Freund*innen – die Geschichte geht gleich weiter.' };
   if (s.chapter > 5) return { title: 'Freies Spiel', sub: 'Die Geschichte ist erzählt. Arbeite, date, feiere – Rainbow City gehört dir.' };
   switch (s.step) {
@@ -495,8 +500,8 @@ export function poi(c: StoryCtx, id: string): boolean {
     c.say([
       L(npc('jules'), 'Schau dich um. Tausende Menschen. Und alle sind gekommen, weil wir nicht aufgegeben haben.'),
       L(role === 'speech' ? 'Du' : npc('mo'), role === 'speech' ? 'Ich weiß noch, wie nervös ich war, als ich hier ankam. Heute weiß ich: Hier darf ich sein, wer ich bin. Und ihr auch!' : role === 'float' ? 'Der Wagen vom Club Leuchtturm! Hast du den wirklich selbst gebaut?' : 'Du tanzt vorne weg? Dann zeig allen, wie man feiert!'),
-      L(npc('nova'), 'Musik ab! Rainbow City, TANZT!'),
-    ], () => c.dance());
+      L(npc('nova'), c.mini ? 'Der Wagen vom Regenbogenhaus fährt los! Lauf vorne mit, am Ende der Strecke wird getanzt.' : 'Musik ab! Rainbow City, TANZT!'),
+    ], () => { if (c.mini) c.mini('run', () => c.say([L(npc('nova'), 'Angekommen! Musik ab! Rainbow City, TANZT!')], () => c.dance())); else c.dance(); });
     return true;
   }
   return false;

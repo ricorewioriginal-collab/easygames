@@ -38,8 +38,10 @@ export class Input {
     });
     zone.addEventListener('pointermove', e => {
       if (e.pointerId !== ts.id) return;
-      let dx = (e.clientX - ts.cx) / 50, dy = -(e.clientY - ts.cy) / 50; const m = Math.hypot(dx, dy); if (m > 1) { dx /= m; dy /= m; }
-      ts.x = dx; ts.y = dy; setKnob();
+      let dx = (e.clientX - ts.cx) / 55, dy = -(e.clientY - ts.cy) / 55; let m = Math.hypot(dx, dy); if (m > 1) { dx /= m; dy /= m; m = 1; }
+      // Totzone gegen Daumenzittern, danach weich ansteigend
+      const k = m < 0.14 ? 0 : (m - 0.14) / 0.86 / m;
+      ts.x = dx * k; ts.y = dy * k; knob.style.transform = `translate(${dx * 42}px, ${-dy * 42}px)`;
     });
     const end = e => { if (e.pointerId !== ts.id) return; ts.id = null; ts.x = ts.y = 0; setKnob(); stick.classList.remove('on'); };
     zone.addEventListener('pointerup', end); zone.addEventListener('pointercancel', end);
@@ -80,11 +82,11 @@ export class Input {
     const m = Math.hypot(x, y); if (m > 1) { x /= m; y /= m; }
     this.x = x; this.y = y;
     // Manual als Richtungsfolge: kurz Hoch, dann Runter (Manual) bzw. kurz Runter, dann Hoch (Nose Manual)
-    const now = performance.now() / 1000, q = this.seq, z = y > 0.6 ? 1 : y < -0.6 ? -1 : 0;
+    const now = performance.now() / 1000, q = this.seq, th = this.touchStick.id != null ? 0.72 : 0.6, z = y > th ? 1 : y < -th ? -1 : 0;
     this.manualPulse = false;
     if (z !== q.zone) {
       if (q.zone !== 0) { q.last = q.zone; q.lastEnd = now; q.lastLen = now - q.since; }
-      if (z !== 0 && q.last === -z && now - q.lastEnd < 0.28 && q.lastLen < 0.4) { this.manualPulse = true; this.manualDir = z < 0 ? 'd' : 'u'; q.last = 0; }
+      if (z !== 0 && q.last === -z && now - q.lastEnd < 0.25 && q.lastLen < 0.32) { this.manualPulse = true; this.manualDir = z < 0 ? 'd' : 'u'; q.last = 0; }
       q.zone = z; q.since = now;
     }
     c.manual = this.manualPulse;

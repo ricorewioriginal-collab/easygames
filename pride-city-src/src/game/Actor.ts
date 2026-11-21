@@ -5,6 +5,7 @@ import { applyStyle } from './queer';
 import { AnimationGroup, Node3, Vector3, type Scene, type TransformNode, type AbstractMesh } from '../engine/bjs';
 import { container, skinned } from '../engine/Assets';
 import { avatarFor, type Avatar } from './avatars';
+import { playerDrag } from './dragLook';
 
 export const CHAR_HEIGHT = 1.75;
 /** Schrittweite der Animationen: so schnell (m/s) läuft die Figur bei Tempo 1 */
@@ -33,7 +34,7 @@ export function playerLook(s: { body: string; palette: string; skin: number; pro
   const hair = typeof s.flags.hair === 'number' && (s.flags.hair as number) >= 0 ? s.flags.hair as number : undefined;
   // alte Spielstände (Körper „Hero“): nur mit „sie“ eine Frau, sonst ein Mann – nie ungefragt das andere Geschlecht
   const av = avatarFor({ body: s.body, palette: s.palette, skin: s.skin, hair, top: s.pronouns === 'she' });
-  return { body: av.id, rb: av.id, palette: s.palette, skin: s.skin, hair, outfit, top: s.pronouns !== 'he', hot: s.settings.adult };
+  return { body: av.id, rb: av.id, palette: s.palette, skin: s.skin, hair, outfit, top: s.pronouns !== 'he', hot: s.settings.adult, style: playerDrag(s.flags) };
 }
 
 /** Auf der Straße: Unterwäsche nur zuhause, draußen ist die Figur angezogen */

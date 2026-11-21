@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { migrate, fromGayLife, defaults } from '../src/engine/Save';
 import { goal, talk, poi, danceResult, storyTick, hidden, marks, lichtPart, lfPart, lfGlow, lichtLight, type StoryCtx } from '../src/game/story';
+import { fadenKrone } from '../src/game/faden';
 import { LICHT_CHAPTERS, lichtMax } from '../src/game/licht';
 import { LF_CHAPTERS, lfMax } from '../src/game/leuchtfeuer';
 import type { Line } from '../src/ui/ui';
@@ -44,12 +45,12 @@ describe('Story', () => {
     s.chapter = 6; expect(goal(s).title).toContain('Hochstadt 1/8'); // Akt II übernimmt nach dem Abspann
     s.flags.saga = 1; expect(goal(s).title).toContain('Sterling Nights 1/5'); // Akt II wechselt zum Nachtleben
     s.flags.saga = 8; s.flags.nacht = 5; expect(goal(s).title).toContain('Club Prisma'); // Krönung: eigener großer Club
-    s.flags.biz_prisma = 3; expect(goal(s).title).toContain('Insel 1/4'); // Akt III: die Inselkette
+    s.flags.biz_prisma = 3; s.flags.cl_prisma_nights = 1; expect(goal(s).title).toContain('Insel 1/4'); // Akt III: die Inselkette
     expect(goal(s).isle).toBe('einhorn');
     s.settings.adult = true; expect(goal(s).title).toContain('Insel 1/5');
     for (const id of ['einhorn', 'canaria', 'lindenhof', 'rummel', 'cruising']) s.flags['w_' + id] = 4;
     s.flags.fadenCall = true; expect(goal(s).poi).toBe('plaza');
-    s.flags.fadenEnd = 9; expect(goal(s).title).toBe('Freies Spiel');
+    s.flags.fadenEnd = 9; expect(goal(s).poi).toBe('onelove'); s.flags.dragKrone = true; expect(goal(s).title).toBe('Freies Spiel');
   });
   it('lässt sich von Kapitel 2 bis zum Abspann durchspielen', () => {
     const s = defaults(); s.chapter = 2; s.step = 0;
@@ -174,12 +175,48 @@ describe('Roter Faden (Akt II und III)', () => {
     const tick = () => { for (let i = 0; i < 6; i++) storyTick(c); };
     tick(); expect(calls).toEqual(['📞 Mama Vega']); expect(cards).toContain('Akt II');
     s.flags.saga = 1; tick(); expect(calls[1]).toBe('📞 Rocco Sterling');
-    s.flags.saga = 8; s.flags.nacht = 5; s.flags.biz_prisma = 2; tick(); expect(calls[2]).toBe('📞 Jules'); expect(cards).toContain('Akt III');
+    s.flags.saga = 8; s.flags.nacht = 5; s.flags.biz_prisma = 2; s.flags.cl_prisma_nights = 1; tick(); expect(calls[2]).toBe('📞 Jules'); expect(cards).toContain('Akt III');
     s.flags.w_einhorn = 4; tick(); expect(calls[3]).toBe('📞 Stella Sternenstaub'); expect(goal(s).isle).toBe('canaria');
     for (const id of ['canaria', 'lindenhof', 'rummel']) s.flags['w_' + id] = 4;
     tick(); tick(); expect(s.flags.fadenCall).toBe(true); expect(goal(s).poi).toBe('plaza');
     h = 9; expect(poi(c, 'plaza')).toBe(true); expect(h).toBe(12); // wartet bis 12 Uhr
     poi(c, 'plaza'); expect(s.flags.fadenEnd).toBeTruthy(); expect(cards).toContain('Akt III abgeschlossen');
+    expect(goal(s).title).toMatch(/^Drag-Karriere 1\/5/); s.flags.dragKrone = true;
     expect(goal(s).title).toBe('Freies Spiel');
+  });
+  it('dockt die Drag-Karriere an: Vega ruft nach der ersten Show, Nova nach der Krone', () => {
+    const s = defaults(); s.chapter = 3; s.step = 4;
+    const calls: string[] = [];
+    const c = { s, say: (_l: Line[], d?: () => void) => d?.(), phone: (l: Line[], d?: () => void) => { calls.push(String(l[0].who)); d?.(); } } as unknown as StoryCtx;
+    for (let i = 0; i < 6; i++) storyTick(c);
+    expect(calls).toEqual(['📞 Mama Vega']); expect(s.flags.dragCall).toBe(true);
+    s.chapter = 4; s.step = 9; expect(goal(s).poi).toBe('onelove');
+    s.flags.dragKrone = true; for (let i = 0; i < 12; i++) storyTick(c); fadenKrone(c, 'Divine Dynamite'); expect(calls).toEqual(['📞 Mama Vega', '📞 Nova']);
+  });
+});
+
+describe('3D-Minispiele in der Story', () => {
+  it('Finale: Parade-Runner vor dem Tanz, Strandbad nach Playa', () => {
+    const s = defaults(); s.chapter = 6; s.flags.saga = 8; s.flags.nacht = 5; s.flags.biz_prisma = 1; s.flags.cl_prisma_nights = 1;
+    s.flags.faden2 = true; s.flags.faden3 = true; s.flags.fadenNext = 'canaria';
+    const minis: string[] = [];
+    const c: StoryCtx = {
+      s, toast: () => {}, hour: () => 14, skipToHour: () => {}, enterHome: (a) => a?.(), credits: () => {},
+      say: (lines: Line[], done) => { for (const l of lines) { if (typeof l.text === 'function') l.text(); l.choices?.[0]?.fn?.(); } done?.(); },
+      reward: () => {}, step: () => {}, dance: () => danceResult(c, true), barShift: (d) => d?.(), chapterDone: () => {},
+      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>, mission: () => {},
+      phone: (l, d) => c.say(l, d), mini: (id, d) => { minis.push(id); d?.(true); },
+    };
+    s.flags.w_einhorn = 4; s.flags.w_canaria = 4;
+    return new Promise<void>((res) => {
+      for (let i = 0; i < 6; i++) storyTick(c);
+      setTimeout(() => {
+        expect(minis).toEqual(['pool']);
+        for (const id of ['lindenhof', 'rummel']) s.flags['w_' + id] = 4;
+        for (let i = 0; i < 12; i++) storyTick(c);
+        poi(c, 'plaza'); expect(minis).toEqual(['pool', 'run']); expect(s.flags.fadenEnd).toBeTruthy();
+        res();
+      }, 300);
+    });
   });
 });
