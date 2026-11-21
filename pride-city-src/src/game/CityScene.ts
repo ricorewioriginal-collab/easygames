@@ -17,7 +17,7 @@ import type { Marker } from '../ui/Hud';
 import { type Gig, pickCall, fmtTime } from './gigs';
 import { collect, collectNotes, nextFare } from './empire';
 import { Street, type Parked } from './Street';
-import { WORLDS, ISLES, worldDef, cityGate, cityIsle } from './worlds';
+import { WORLDS, ISLES, ISLE_BOUNDS, worldDef, cityGate, cityIsle } from './worlds';
 import { Isle } from './Isle';
 import { buildFlitzer } from './flitzer';
 import { PLACE_THEMES, houseTheme } from './interiors';
@@ -105,12 +105,17 @@ export class CityScene implements GameScene {
     this.street = new Street(sc, this.world);
     await this.street.build();
     // Welten als echte Inseln vor dem Kai (nahtlos, Isle.ts), je mit einem Flitzer am Brückentor
-    for (const [id, at] of Object.entries(ISLES)) { const def = worldDef(id); if (!def) continue; const i = new Isle(this.g, sc, this.world, def, at.x, at.z); await i.build(); this.isles.push(i); this.street.addFlyer(i.pad[0], i.pad[1], i.yawW(Math.PI)); }
+    for (const [id, at] of Object.entries(ISLES)) {
+      const def = worldDef(id); if (!def) continue;
+      const to = at.to ? ISLES[at.to] : undefined, td = at.to ? worldDef(at.to) : undefined;
+      const i = new Isle(this.g, sc, this.world, def, at.x, at.z, to && td ? { x: to.x, z: to.z, r: td.r, icon: td.icon, name: td.name, color: td.host.color } : undefined);
+      await i.build(); this.isles.push(i); this.street.addFlyer(i.pad[0], i.pad[1], i.yawW(Math.PI));
+    }
     this.combat = new Combat(this.g, this, sc); this.combat.init();
     this.kerb = new Kerb(this.g, this);
     this.g.hud.onWeapon = () => { if (this.mode === 'play') this.combat.cycle(); };
     this.g.hud.setRadarMap((c, px) => {
-      c.fillStyle = '#123a52'; c.fillRect(0, 0, 1024, 1024);                     // Wasser
+      c.fillStyle = '#123a52'; c.fillRect(0, 0, 1536, 1536);                     // Wasser
       c.fillStyle = '#34343c'; c.fillRect(px(-66), px(66), 370 * 2, 120 * 2); c.fillRect(px(-66), px(-186), 370 * 2, 120 * 2); c.fillRect(px(214), px(-66), 90 * 2, 132 * 2); // äußere Stadt
       c.fillStyle = '#1f6f9a'; c.fillRect(px(64), px(-300), 26 * 2, 600 * 2);       // Fluss
       c.fillStyle = '#3c4f45'; c.fillRect(px(85), px(-65), 130 * 2, 130 * 2);        // Hochstadt
@@ -122,13 +127,13 @@ export class CityScene implements GameScene {
       c.fillStyle = '#d8c48a'; c.fillRect(px(-97), px(17), 6 * 2, 26 * 2);        // Strand
       c.fillStyle = '#7a5a3a'; c.fillRect(px(-111), px(-3.4), 20 * 2, 2.8 * 2);   // Steg
       c.fillStyle = '#4c7a4a'; c.fillRect(px(35), px(35), 20 * 2, 20 * 2);        // Park
-      for (const [id, at] of Object.entries(ISLES)) {                           // Inseln der Welten mit Brücke und Ringstraße
-        const d = worldDef(id); if (!d) continue;
-        c.fillStyle = '#c9ccd6'; c.fillRect(px(at.x), px(at.z - 5), (-91 - at.x) * 2, 10 * 2);
-        c.fillStyle = '#e8dcae'; c.beginPath(); c.arc(px(at.x), px(at.z), (d.r + 5) * 2, 0, 7); c.fill();
-        c.fillStyle = '#' + d.ground.toString(16).padStart(6, '0'); c.globalAlpha = .75; c.beginPath(); c.arc(px(at.x), px(at.z), d.r * 2, 0, 7); c.fill(); c.globalAlpha = 1;
-        c.fillStyle = '#c9ccd6'; c.fillRect(px(at.x), px(at.z - 3.6), d.r * 2, 7.2 * 2);
-        c.strokeStyle = '#c9ccd6'; c.lineWidth = 14; c.strokeRect(px(at.x - 10), px(at.z - 20), 30 * 2, 40 * 2);
+      for (const i of this.isles) {                                             // Inseln der Welten mit Brücke und Ringstraße
+        const d = i.def, [a, b] = i.bridge();
+        c.strokeStyle = '#c9ccd6'; c.lineCap = 'butt'; c.lineWidth = 20; c.beginPath(); c.moveTo(px(i.ox), px(i.oz)); c.lineTo(px(b[0]), px(b[1])); c.stroke();
+        c.fillStyle = '#e8dcae'; c.beginPath(); c.arc(px(i.ox), px(i.oz), (d.r + 5) * 2, 0, 7); c.fill();
+        c.fillStyle = '#' + d.ground.toString(16).padStart(6, '0'); c.globalAlpha = .75; c.beginPath(); c.arc(px(i.ox), px(i.oz), d.r * 2, 0, 7); c.fill(); c.globalAlpha = 1;
+        c.lineWidth = 14; c.beginPath(); c.moveTo(px(i.ox), px(i.oz)); c.lineTo(px(a[0]), px(a[1])); c.stroke();
+        const [rx, rz, rw, rh] = i.ring(); c.strokeRect(px(rx), px(rz), rw * 2, rh * 2);
       }
       c.fillStyle = '#c9ccd6';
       for (let i = -60; i <= 60; i += 30) { c.fillRect(px(-64), px(i - 3.6), 128 * 2, 7.2 * 2); c.fillRect(px(i - 3.6), px(-64), 7.2 * 2, 128 * 2); }
@@ -492,7 +497,7 @@ export class CityScene implements GameScene {
     o.position.x += Math.sin(o.rotation.y) * c.v * dt; o.position.z += Math.cos(o.rotation.y) * c.v * dt;
     const want = o.position.clone();
     if (!high) this.world.collide(o.position, 1.2);
-    else { o.position.x = clamp(o.position.x, -215, 260); o.position.z = clamp(o.position.z, -120, 120); }
+    else { o.position.x = clamp(o.position.x, ISLE_BOUNDS.x0, 260); o.position.z = clamp(o.position.z, ISLE_BOUNDS.z0, ISLE_BOUNDS.z1); }
     if (!fly || this.alt < 2.5) for (const t of this.world.cars) if (Vector3.Distance(t.o.position, o.position) < 3.2) { o.position.copyFrom(before); c.v *= -.25; }
     if (!high && Vector3.Distance(o.position, want) > .02 && Math.abs(c.v) > 4) { c.v *= .4; if (!fly) sfx('miss'); }
     o.position.y = fly ? this.alt + Math.sin(performance.now() / 330) * .08 : .1;

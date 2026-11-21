@@ -388,7 +388,13 @@ export const worldDef = (id: string) => WORLDS.find((w) => w.id === id);
 export const cityGate = (id: string) => ({ x: -88.6, z: 2 + Math.max(0, WORLDS.findIndex((w) => w.id === id)) * 4.5 });
 /** Welten, die als echte Insel nahtlos in der Stadt liegen (Isle.ts): Mittelpunkt in Stadtkoordinaten; die Brücke setzt am Kai (QUAY_X) an */
 export const QUAY_X = -91;
-export const ISLES: Record<string, { x: number; z: number }> = { einhorn: { x: -157, z: -14 } };
+/* Inselkette vor der Küste: Glitzeria hängt am Kai, jede weitere Insel per Brücke an einer Nachbarinsel (to) – eine offene Welt am Stück. */
+export const ISLES: Record<string, { x: number; z: number; to?: string }> = {
+  einhorn: { x: -157, z: -14 },
+  canaria: { x: -157, z: -149, to: 'einhorn' },
+};
+/** Außengrenze der Inselkette (Flug, Karten) */
+export const ISLE_BOUNDS = (() => { let x0 = -215, z0 = -120, z1 = 120; for (const i of Object.values(ISLES)) { x0 = Math.min(x0, i.x - 70); z0 = Math.min(z0, i.z - 70); z1 = Math.max(z1, i.z + 70); } return { x0, z0, z1 }; })();
 export const cityIsle = (id: string) => { const i = Math.max(1, WORLDS.findIndex((w) => w.id === id)) - 1; return { x: i % 2 ? -150 : -122, z: 72 + Math.floor(i / 2) * 28 }; };
 /** Nachbarwelt im Ring (dir −1 Westen, +1 Osten); ohne 18+ wird die Cruising-Welt übersprungen */
 export function neighbour(id: string, dir: 1 | -1, adult: boolean) {

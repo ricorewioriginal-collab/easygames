@@ -14,7 +14,7 @@ import { toast } from '../ui/ui';
 import type { Marker } from '../ui/Hud';
 import { change } from './life';
 import { sfx } from '../engine/Audio';
-import { worldStage, townFree, neighbour, SLOTS, SHOP_SLOTS, SIDE_GATE, QUAY_X, type Kit, type WorldDef, type WorldNpc } from './worlds';
+import { worldStage, townFree, neighbour, SLOTS, SHOP_SLOTS, SIDE_GATE, QUAY_X, ISLES, type Kit, type WorldDef, type WorldNpc } from './worlds';
 
 interface Folk { a: Actor; d: WorldNpc; host: boolean }
 const RAINBOW = [0xff3b3b, 0xff8a3b, 0xffd23b, 0x3ee69a, 0x3a7bff, 0xb56bff];
@@ -44,15 +44,20 @@ function speck(sc: Scene, pave: boolean) {
 }
 
 /** Lage der Figur für die Insel: Ort, im Fahrzeug, Flughöhe */
+/** Nachbarinsel, an der die Brücke ansetzt */
+export interface IsleLink { x: number; z: number; r: number; icon: string; name: string; color: string }
 export interface IsleRef { x: number; z: number; driving: boolean; alt: number; busy: boolean; gig: boolean }
 
 export class Isle {
   readonly root: Node3;
   /** Figur ist auf der Insel (Anzeige oben, Wegweiser) */
   active = false;
-  private sx = -1;
+  private ex: Pt = [0, 1];
+  private ez: Pt = [1, 0];
   private R: number;
-  private L: number;
+  /** Brückenlänge vom Inselrand bis zum Kai bzw. ein Stück auf die Nachbarinsel; gap = offenes Wasser */
+  readonly L: number;
+  private gap: number;
   private folk: Folk[] = [];
   private peopleAsked = false;
   private solids: Array<{ x: number; z: number; r: number }> = [];
@@ -74,19 +79,31 @@ export class Isle {
   /** Startplatz des Flitzers (Welt) */
   pad: Pt = [0, 0];
 
-  constructor(private g: Game, private sc: Scene, private W: World, readonly def: WorldDef, readonly ox: number, readonly oz: number) {
-    this.R = def.r; this.L = QUAY_X - (ox + def.r);
-    this.root = new Node3('isle_' + def.id, sc); this.root.position.set(ox, .06, oz); this.root.rotation.y = Math.PI / 2;
-    this.root.computeWorldMatrix(true);
-    const m = this.root.getWorldMatrix();
-    if (Vector3.TransformCoordinates(new Vector3(0, 0, 1), m).x < ox) { this.root.rotation.y = -Math.PI / 2; this.root.computeWorldMatrix(true); }
-    this.sx = Vector3.TransformCoordinates(new Vector3(1, 0, 0), this.root.getWorldMatrix()).z > oz ? 1 : -1;
+  /** link: Nachbarinsel, an die diese Insel per Brücke angehängt ist (sonst Brücke zum Kai der Stadt) */
+  constructor(private g: Game, private sc: Scene, private W: World, readonly def: WorldDef, readonly ox: number, readonly oz: number, readonly link?: IsleLink) {
+    this.R = def.r;
+    const dx = link ? link.x - ox : 1, dz = link ? link.z - oz : 0;
+    this.gap = link ? Math.hypot(dx, dz) - def.r - link.r : QUAY_X - (ox + def.r);
+    this.L = link ? this.gap + 4 : this.gap;
+    // Insel so drehen, dass ihr Süden (Brückentor, +z) zur Stadt bzw. zur Nachbarinsel zeigt (Vielfache von 90°)
+    this.root = new Node3('isle_' + def.id, sc); this.root.position.set(ox, .06, oz);
+    const o = new Vector3(ox, .06, oz), axes = () => {
+      this.root.computeWorldMatrix(true); const m = this.root.getWorldMatrix();
+      const a = Vector3.TransformCoordinates(new Vector3(1, 0, 0), m).subtract(o), b = Vector3.TransformCoordinates(new Vector3(0, 0, 1), m).subtract(o);
+      this.ex = [Math.round(a.x), Math.round(a.z)]; this.ez = [Math.round(b.x), Math.round(b.z)];
+    };
+    this.root.rotation.y = Math.round(Math.atan2(dx, dz) / (Math.PI / 2)) * (Math.PI / 2); axes();
+    if (this.ez[0] * dx + this.ez[1] * dz < 0) { this.root.rotation.y += Math.PI; axes(); }
   }
   /** Insel → Stadt */
-  w(lx: number, lz: number): Pt { return [this.ox + lz, this.oz + this.sx * lx]; }
+  w(lx: number, lz: number): Pt { return [this.ox + lx * this.ex[0] + lz * this.ez[0], this.oz + lx * this.ex[1] + lz * this.ez[1]]; }
   /** Stadt → Insel */
-  l(x: number, z: number): Pt { return [this.sx * (z - this.oz), x - this.ox]; }
-  yawW(a: number) { return Math.atan2(Math.cos(a), this.sx * Math.sin(a)); }
+  l(x: number, z: number): Pt { const dx = x - this.ox, dz = z - this.oz; return [dx * this.ex[0] + dz * this.ex[1], dx * this.ez[0] + dz * this.ez[1]]; }
+  yawW(a: number) { const s = Math.sin(a), c = Math.cos(a); return Math.atan2(s * this.ex[0] + c * this.ez[0], s * this.ex[1] + c * this.ez[1]); }
+  /** Brücke in Stadtkoordinaten (Inselrand, anderes Ende) für die Karten */
+  bridge(): [Pt, Pt] { return [this.w(0, this.R), this.w(0, this.R + this.L)]; }
+  /** Grundriss der Ringstraße in Stadtkoordinaten (Karten) */
+  ring(): [number, number, number, number] { const a = this.w(-20, -10), b = this.w(20, 20); return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1])]; }
   private get flags() { return this.g.save.data.flags; }
   private get stage() { return worldStage(this.flags, this.def.id); }
   private setStage(n: number) { this.flags['w_' + this.def.id] = n; this.g.save.write(); this.showQuest(); }
@@ -125,18 +142,20 @@ export class Isle {
     const rects = await this.buildTown(kit, own);
     d.build(kit);
     // Brücke zum Kai: Fahrbahn, Regenbogen-Geländer, Laternenkugeln; am Inselufer das Tor mit dem Namen
-    const deck = kit.M(0x8d8799, .9), post = kit.M(0xffffff, .5);
+    const deck = kit.M(0x8d8799, .9), post = kit.M(0xffffff, .5), G = this.gap, lk = this.link;
     kit.box(10.6, .3, L + 6, deck, 0, -.17, R + L / 2 - 1);
     for (const s of [-1, 1]) {
-      RAINBOW.forEach((c, i) => kit.box(.12, .1, L + 3, kit.G(c, 1.1), s * 5.1, .35 + i * .13, R + L / 2 - .5));
-      for (let z = R - 1; z <= R + L; z += 5) { kit.box(.22, 1.5, .22, post, s * 5.1, .7, z); kit.ball(.2, kit.G(0xffe2a8, 1.6), s * 5.1, 1.6, z); }
+      RAINBOW.forEach((c, i) => kit.box(.12, .1, G + 3, kit.G(c, 1.1), s * 5.1, .35 + i * .13, R + G / 2 - .5));
+      for (let z = R - 1; z <= R + G; z += 5) { kit.box(.22, 1.5, .22, post, s * 5.1, .7, z); kit.ball(.2, kit.G(0xffe2a8, 1.6), s * 5.1, 1.6, z); }
     }
     RAINBOW.forEach((c, i) => kit.arc(4.2 - i * .22, .13, kit.G(c, 1.1), 0, 0, R - 6));
     kit.sign(`${d.icon} ${d.name.toUpperCase()}`, d.host.color, 0, 5.2, R - 5.9, 0, 6.4);
-    kit.sign('RAINBOW CITY', '#ffffff', 0, 5.2, R - 6.1, Math.PI, 5.4);
+    kit.sign(lk ? `${lk.icon} ${lk.name.toUpperCase()}` : 'RAINBOW CITY', lk ? lk.color : '#ffffff', 0, 5.2, R - 6.1, Math.PI, 5.4);
+    // auf der Nachbarinsel: Bogen mit Wegweiser zu dieser Insel
+    if (lk) { RAINBOW.forEach((c, i) => kit.arc(4.2 - i * .22, .13, kit.G(c, 1.1), 0, 0, R + G + 2)); kit.sign(`${d.icon} ${d.name.toUpperCase()}`, d.host.color, 0, 5.2, R + G + 2.1, 0, 6.4); }
     // Seitentore zu den Nachbarwelten (noch als Tor, bis auch sie Inseln sind)
     for (const sx of [-1, 1] as const) {
-      const nb = neighbour(d.id, sx, true); if (!nb || nb.id === d.id) continue;
+      const nb = neighbour(d.id, sx, true); if (!nb || nb.id === d.id || ISLES[nb.id]) continue;   // Inseln erreicht man über ihre Brücken
       const x = sx * SIDE_GATE.x, z = SIDE_GATE.z, c = parseInt(nb.host.color.slice(1), 16);
       for (let i = 0; i < 3; i++) kit.arc(2.5 - i * .22, .12, kit.G(i === 1 ? 0xffffff : c, 1.1), x, 0, z, Math.PI / 2);
       kit.cyl(2.9, 3.1, .14, kit.M(0xffffff, .5), x, .07, z, 20);
@@ -172,7 +191,8 @@ export class Isle {
       this.rings.push({ m, x, y, z });
     });
     // Kollision und begehbare Fläche in der Stadt anmelden
-    for (const r of rects) { const [x, z] = this.w(r.x, r.z); this.W.colliders.push({ x, z, hx: r.hz, hz: r.hx }); }
+    const swap = Math.abs(this.ez[0]) > .5;
+    for (const r of rects) { const [x, z] = this.w(r.x, r.z); this.W.colliders.push({ x, z, hx: swap ? r.hz : r.hx, hz: swap ? r.hx : r.hz }); }
     for (const q of this.solids) { const [x, z] = this.w(q.x, q.z); this.W.prop(x, z, q.r, []); }
     extraWalk.push((x, z) => { const [lx, lz] = this.l(x, z); return Math.hypot(lx, lz) < R - 1.2 || (Math.abs(lx) < 4.6 && lz > 0 && lz < R + L + 1); });
     this.showQuest();
