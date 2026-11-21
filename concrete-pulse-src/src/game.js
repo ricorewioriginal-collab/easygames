@@ -194,7 +194,7 @@ export class Game {
     const fx = Math.sin(yaw), fz = Math.cos(yaw);
     const p = sk.holder.position;
     const sp = sk.speed;
-    const back = dist * 0.92 + Math.min(1.4, sp * 0.07), up = 1.4 + Math.min(0.5, sp * 0.018) + (sk.mode === 'air' ? 0.25 : 0) - this.input.ry * 0.8;
+    const tall = this.engine.getRenderWidth() < this.engine.getRenderHeight(), back = dist * (tall ? 0.96 : 0.92) + Math.min(1.4, sp * 0.07), up = (tall ? 1.75 : 1.4) + Math.min(0.5, sp * 0.018) + (sk.mode === 'air' ? 0.25 : 0) - this.input.ry * 0.8;
     let tx = p.x - fx * back, tz = p.z - fz * back, ty = p.y + up;
     // Kamera nicht in Geometrie: von der Figur nach hinten tasten
     const steps = 12; let lastOk = 0;
@@ -221,7 +221,9 @@ export class Game {
     st.punch = Math.max(0, (st.punch || 0) - dt * 1.5);
     const fovT = 0.98 + Math.min(0.3, sp * 0.019) + (sk.special >= 1 ? 0.05 : 0) + st.punch * 0.12;
     st.fov += (fovT - st.fov) * (1 - Math.exp(-3.5 * dt));
-    cam.fov = st.fov;
+    // Hochformat: horizontales Sichtfeld festhalten, sonst sieht man am Handy kaum, wohin man fährt
+    const portrait = this.engine.getRenderWidth() < this.engine.getRenderHeight();
+    cam.fovMode = portrait ? 1 : 0; cam.fov = portrait ? st.fov * 0.98 : st.fov;
   }
 
   // Bildschirmposition eines Punkts über dem Skater (für die Balance-Anzeige)
