@@ -18,6 +18,7 @@ import { BUSINESSES, owns, owned, income, buy } from './empire';
 import { clubDeal, clubManage } from './clubui';
 import { isClub } from './club';
 import { pcEvents } from './hooks';
+import { dragAct } from './drag';
 import { houseMenu, useHomeItem } from './houseui';
 import { roomTheme, roomLevel } from './house';
 import { SKY, skyAt, forecast } from './weather';
@@ -338,6 +339,7 @@ export class Game {
     if (a.k === 'menu') { if (sc?.placeId) this.placeMenu(sc.placeId); return; }
     if (a.k === 'club' || a.k === 'deal') { if (sc?.business) clubDeal(this, sc.business, sc); return; }
     if (a.k === 'annex') { this.annexAct(a.room); return; }
+    if (a.k === 'drag') { dragAct(this, a.what); return; }
     if (a.k === 'gl') { this.roman('gaylife', a.id); return; }
     if (a.k === 'mini') { this.playMini(a.id); return; }
     if (a.k === 'dance') { this.goDance(false); return; }
