@@ -117,16 +117,18 @@ async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<
     }
   }
   const skin = skinRef || (sn ? [sr / sn, sg / sn, sb / sn] : [200, 160, 130]);
-  const hands = !!skinRef;   // fremder Körper (koerper.ts): Hände in der Hautfarbe des eigenen Kopfes
+  // Sport-Körper (koerper.ts): Die Textur zeigt schon echte Haut (Muskeln, Brustwarzen, Nabel, Poren). Sie wird nicht
+  // übermalt, sondern nur auf die Hautfarbe des eigenen Kopfes umgefärbt. Die echte Sport-Unterhose bleibt.
+  const hands = !!skinRef, own = sn ? [sr / sn, sg / sn, sb / sn] : skin;
+  const tint = hands ? own.map((v, i) => Math.max(.35, Math.min(2.4, skin[i] / Math.max(1, v)))) : null;
   let n = 0;
   for (const [a, b, c, part] of tri) {
     if ((++n & 63) === 0) await breathe();
-    // fremder Körper: Hände und Halsansatz (hängen an Kopf/Händen) in der eigenen Hautfarbe
-    const want = part === 'other' && hands && /Hand|Finger|Head|Neck/.test(vBone(a)) ? 'skin' : p[part]; if (!want) continue;
+    const want = hands && (part === 'other' || part === 'foot') ? 'skin' : hands && part === 'hip' && p.hip === 0x1a1a24 ? 'skin' : p[part]; if (!want) continue;
     const col = want === 'skin' ? skin : [(want >> 16) & 255, (want >> 8) & 255, want & 255];
-    fill(data, orig, w, h, [uv[a * 2] * w, uv[a * 2 + 1] * h], [uv[b * 2] * w, uv[b * 2 + 1] * h], [uv[c * 2] * w, uv[c * 2 + 1] * h], col, want === 'skin');
+    fill(data, orig, w, h, [uv[a * 2] * w, uv[a * 2 + 1] * h], [uv[b * 2] * w, uv[b * 2 + 1] * h], [uv[c * 2] * w, uv[c * 2 + 1] * h], col, want === 'skin', want === 'skin' ? tint : null);
   }
-  if (p.chest === 'skin') details(m, data, w, h, uv, tri, skin, bra);
+  if (p.chest === 'skin' && (!hands || bra !== null)) details(m, data, w, h, uv, tri, skin, bra, !hands);
   for (let o = 3; o < data.length; o += 4) data[o] = 255;   // deckend: Körper nie durchsichtig
   const t = RawTexture.CreateRGBATexture(data, w, h, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
   t.hasAlpha = false;
@@ -139,7 +141,7 @@ async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<
 }
 
 /** Dreieck in der Textur füllen (mit 1,5 px Rand gegen Nähte); Haut behält etwas Schattierung der Kleidung */
-function fill(d: Uint8Array, src: Uint8Array, w: number, h: number, A: number[], B: number[], C: number[], col: number[], shade: boolean) {
+function fill(d: Uint8Array, src: Uint8Array, w: number, h: number, A: number[], B: number[], C: number[], col: number[], shade: boolean, tint: number[] | null = null) {
   const minX = Math.max(0, Math.floor(Math.min(A[0], B[0], C[0]) - 2)), maxX = Math.min(w - 1, Math.ceil(Math.max(A[0], B[0], C[0]) + 2));
   const minY = Math.max(0, Math.floor(Math.min(A[1], B[1], C[1]) - 2)), maxY = Math.min(h - 1, Math.ceil(Math.max(A[1], B[1], C[1]) + 2));
   const area = (B[0] - A[0]) * (C[1] - A[1]) - (C[0] - A[0]) * (B[1] - A[1]); if (Math.abs(area) < 1e-6) return;
@@ -149,6 +151,7 @@ function fill(d: Uint8Array, src: Uint8Array, w: number, h: number, A: number[],
     const cx = x + .5, cy = y + .5;
     if (edge(A, B, cx, cy) > e || edge(B, C, cx, cy) > e || edge(C, A, cx, cy) > e) continue;
     const o = (y * w + x) * 4;
+    if (tint) { d[o] = Math.min(255, src[o] * tint[0]); d[o + 1] = Math.min(255, src[o + 1] * tint[1]); d[o + 2] = Math.min(255, src[o + 2] * tint[2]); continue; }
     const lum = shade ? .85 + .25 * ((src[o] + src[o + 1] + src[o + 2]) / 765) : 1;
     d[o] = Math.min(255, col[0] * lum); d[o + 1] = Math.min(255, col[1] * lum); d[o + 2] = Math.min(255, col[2] * lum);
   }
@@ -156,8 +159,8 @@ function fill(d: Uint8Array, src: Uint8Array, w: number, h: number, A: number[],
 
 /** Brustwarzen und Bauchnabel auf nackter Haut, an der echten Körperstelle (Ruhepose, Höhe relativ zur Körpergröße).
     Vorne ist, wohin die Zehen zeigen. Gemalt wird nur auf Rumpf-Dreiecken, die vorne liegen. */
-function details(m: Mesh, d: Uint8Array, w: number, h: number, uv: ArrayLike<number>, tri: Array<[number, number, number, Part]>, skin: number[], bra: number | null) {
-  const chest = bra === null, braC = bra === null ? null : [(bra >> 16) & 255, (bra >> 8) & 255, bra & 255];
+function details(m: Mesh, d: Uint8Array, w: number, h: number, uv: ArrayLike<number>, tri: Array<[number, number, number, Part]>, skin: number[], bra: number | null, marks = true) {
+  const chest = bra === null && marks, braC = bra === null ? null : [(bra >> 16) & 255, (bra >> 8) & 255, bra & 255];
   const inBra = (t: number, s: number) => (t > .665 && t < .79) || (t >= .79 && t < .835 && Math.abs(Math.abs(s) - .062) < .011);
   const pos = m.getVerticesData('position'), mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights'); if (!pos || !mi || !mw) return;
   const names = boneNames(m), nv = pos.length / 3;
@@ -186,7 +189,7 @@ function details(m: Mesh, d: Uint8Array, w: number, h: number, uv: ArrayLike<num
   const areola = [skin[0] * .74, skin[1] * .56, skin[2] * .55], nip = [skin[0] * .56, skin[1] * .4, skin[2] * .4], navel = [skin[0] * .4, skin[1] * .32, skin[2] * .3];
   const spots: Array<[number, number, number, number[], number[] | null, number]> = [];
   if (chest) for (const sd of [-1, 1]) spots.push([.722, sd * .056, .0085, areola, nip, 1]);
-  spots.push([.6, 0, .0045, navel, null, 1.7]);
+  if (marks) spots.push([.6, 0, .0045, navel, null, 1.7]);
   for (const [a, b, c, part] of tri) {
     if (part !== 'chest' && part !== 'belly') continue;
     const ta = T(a), tb = T(b), tc = T(c), sa = S(a), sb = S(b), sc = S(c);
