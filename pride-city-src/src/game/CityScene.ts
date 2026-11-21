@@ -17,6 +17,8 @@ import type { Marker } from '../ui/Hud';
 import { type Gig, pickCall, fmtTime } from './gigs';
 import { collect, collectNotes, nextFare } from './empire';
 import { Street, type Parked } from './Street';
+import { WORLDS, cityGate, cityIsle } from './worlds';
+import { buildFlitzer } from './flitzer';
 import { PLACE_THEMES, houseTheme } from './interiors';
 import { Weather, SKY } from './weather';
 import { CityLife } from './citylife';
@@ -267,8 +269,10 @@ export class CityScene implements GameScene {
     let best: typeof this.near = null, bd = 1e9;
     if (this.drive) {
       const curb = this.kerb.nearCurb();
-      this.near = { kind: 'car', id: 'exit', label: this.kerb.rider ? `🚗 Aussteigen · ${this.kerb.rider.name} fährt mit` : curb ? `🚗 Aussteigen · 📯 Hupen: ${curb.name} steigt vielleicht ein` : '🚗 Aussteigen' };
-      this.g.hud.prompt(this.near.label); this.g.touch.label('Raus');
+      this.near = { kind: 'car', id: 'exit', label: this.drive.def.fly ? '🚀 Absteigen' : this.kerb.rider ? `🚗 Aussteigen · ${this.kerb.rider.name} fährt mit` : curb ? `🚗 Aussteigen · 📯 Hupen: ${curb.name} steigt vielleicht ein` : '🚗 Aussteigen' };
+      // im Flug keine Einblendung (verdeckt die Sicht): erst am Boden steht „Absteigen“ da
+      const air = !!this.drive.def.fly && this.alt > 1.6;
+      this.g.hud.prompt(air ? null : this.near.label); this.g.touch.label(air ? 'Landen' : 'Raus');
       return;
     }
     // Direkt vor einer Tür hat die Tür Vorrang (sonst schnappt sich eine vorbeilaufende Figur den Knopf)
@@ -388,6 +392,11 @@ export class CityScene implements GameScene {
     const p = this.player.root.position;
     if (this.drive) {
       const o = this.drive.o, sx = Math.cos(o.rotation.y), sz = -Math.sin(o.rotation.y);
+      if (this.drive.def.fly) {
+        if (this.alt > 1.6 && id !== 'force') { toast('🚀 Erst landen: Turbo loslassen, bis du am Boden bist.'); sfx('miss'); return; }
+        this.alt = 0; o.position.y = .75; o.getChildMeshes().find((m) => m.name === 'flame')?.setEnabled(false); this.player.root.position.y = .1;
+        if (!walkable(o.position.x, o.position.z)) { o.position.set(-75, .75, 19); o.rotation.y = 0; }   // über dem Meer verlassen: zurück an den Kai
+      }
       for (const k of [2.2, -2.2, 3.4, -3.4]) { const x = o.position.x + sx * k, z = o.position.z + sz * k; if (walkable(x, z) && !this.world.colliders.some((c) => Math.abs(x - c.x) < c.hx + .4 && Math.abs(z - c.z) < c.hz + .4)) { p.set(x, .1, z); break; } }
       if (this.drive.own) { const sv = this.g.save.data; sv.flags.ownX = Math.round(o.position.x * 10) / 10; sv.flags.ownZ = Math.round(o.position.z * 10) / 10; sv.flags.ownYaw = Math.round(o.rotation.y * 100) / 100; }
       this.drive.v = 0; this.drive = null; this.parcel = -1;
@@ -404,6 +413,13 @@ export class CityScene implements GameScene {
       const says = ['„Na gut, Schätzchen. Aber bring ihn heil zurück!“', '„Für dich immer. Ich wollte eh zu Fuß zum Café.“', '„Nimm ihn, ich hab heute frei. Tank ist voll!“', '„Okay, aber nur weil du so nett fragst.“'];
       toast(`🙋 ${says[Math.floor(Math.random() * says.length)]}`);
     } else this.drive = this.street.parked[+id];
+    if (this.drive.def.fly) {
+      this.syncFlyer(); this.alt = .75; this.player.play('sit'); sfx('open');
+      this.cam.dist = Math.max(this.cam.dist, 10); this.cam.tYaw = this.drive.o.rotation.y + Math.PI;
+      hints([['move', 'Lenken & Gas'], ['a', 'Absteigen (am Boden)'], ['cam', 'Kamera'], ['y', 'Menü']]);
+      toast(`🚀 ${this.drive.o.metadata?.adult ? 'Glitzer-Dildo „Big Bertha“' : 'Regenbogen-Rakete'}: Turbo halten = steigen, loslassen = sinken. Über die Dächer geht es ab 17 m.`);
+      return;
+    }
     if (!this.drive.own) this.combat.enterCar(); sfx('door'); setTimeout(() => sfx('engine'), 250);
     this.player.root.visible = false;
     this.cam.dist = Math.max(this.cam.dist, 9);
@@ -413,11 +429,36 @@ export class CityScene implements GameScene {
     toast(`${this.drive.def.icon} ${this.drive.def.name}${this.drive.own ? ' (dein Wagen)' : ''} · Q/R oder LB/RB wechselt den Sender.`);
     sfx('open');
   }
+  /** Wege in die Welten: Tor an der Kaimauer (zu Fuß, im Auto, im Tiefflug) oder Insel vor der Küste (Flug) */
+  private gateIn = '';
+  private worldGates() {
+    const p = this.drive ? this.drive.o.position : this.player.root.position, flying = !!this.drive?.def.fly && this.alt > 3;
+    let hit = '';
+    for (const w of WORLDS) {
+      const g = cityGate(w.id), isle = cityIsle(w.id);
+      if ((!flying && Math.hypot(p.x - g.x, p.z - g.z) < 1.7) || (flying && Math.hypot(p.x - isle.x, p.z - isle.z) < 13)) hit = w.id;
+    }
+    if (hit && hit !== this.gateIn) this.g.enterWorld(hit);
+    this.gateIn = hit;
+  }
+  /** Flughöhe auf dem Flitzer */
+  private alt = 0;
+  /** Flitzer am Weltentor: mit 18+ ein Glitzer-Dildo, sonst eine Rakete */
+  private syncFlyer() {
+    const f = this.street.parked.find((c) => c.def.fly), adult = !!this.g.save.data.settings.adult;
+    if (f && f.o.metadata?.adult !== adult) { buildFlitzer(this.scene, f.o, adult); f.o.getChildMeshes().find((m) => m.name === 'flame')?.setEnabled(false); }
+  }
   private moveCar(dt: number) {
-    const c = this.drive!, o = c.o, inp = this.g.engine.input;
+    const c = this.drive!, o = c.o, inp = this.g.engine.input, fly = !!c.def.fly;
     if (inp.pressed('tabR')) this.radio(1); else if (inp.pressed('tabL')) this.radio(-1);
     const thr = Math.abs(inp.move.y) > .08 ? inp.move.y : 0, steer = Math.abs(inp.move.x) > .08 ? inp.move.x : 0;
     const st = stats(c.def, c.own ? tuneLevel(this.g.save.data) : 0), max = inp.held('sprint') ? st.turbo : st.max;
+    // Flitzer: Turbo steigt, sonst sinkt er; über den Dächern (in der Hochstadt höher) fliegt er frei
+    if (fly) this.alt = clamp(this.alt + (inp.held('sprint') ? 7 : -5) * dt, .75, 55);
+    // über dem Wasser bleibt er auf mindestens 8 m und fliegt frei, weit draußen ist Schluss
+    const sea = fly && !walkable(o.position.x, o.position.z);
+    if (sea) this.alt = Math.max(this.alt, 8);
+    const high = sea || (fly && this.alt > (o.position.x > 86 ? 42 : 17));
     if (thr > 0) c.v = Math.min(max, c.v + thr * (c.v < 0 ? 22 : st.acc) * dt);
     else if (c.v > max) c.v = Math.max(max, c.v - 14 * dt);
     else if (thr < 0) c.v = Math.max(-6, c.v + thr * (c.v > 0 ? 22 : 6) * dt);
@@ -427,11 +468,13 @@ export class CityScene implements GameScene {
     const before = o.position.clone();
     o.position.x += Math.sin(o.rotation.y) * c.v * dt; o.position.z += Math.cos(o.rotation.y) * c.v * dt;
     const want = o.position.clone();
-    this.world.collide(o.position, 1.2);
-    for (const t of this.world.cars) if (Vector3.Distance(t.o.position, o.position) < 3.2) { o.position.copyFrom(before); c.v *= -.25; }
-    if (Vector3.Distance(o.position, want) > .02 && Math.abs(c.v) > 4) { c.v *= .4; sfx('miss'); }
-    o.position.y = .1;
+    if (!high) this.world.collide(o.position, 1.2);
+    else { o.position.x = clamp(o.position.x, -168, 260); o.position.z = clamp(o.position.z, -120, 120); }
+    if (!fly || this.alt < 2.5) for (const t of this.world.cars) if (Vector3.Distance(t.o.position, o.position) < 3.2) { o.position.copyFrom(before); c.v *= -.25; }
+    if (!high && Vector3.Distance(o.position, want) > .02 && Math.abs(c.v) > 4) { c.v *= .4; if (!fly) sfx('miss'); }
+    o.position.y = fly ? this.alt + Math.sin(performance.now() / 330) * .08 : .1;
     this.player.root.position.copyFrom(o.position);
+    if (fly) { this.player.root.position.y -= .35; this.player.root.rotation.y = o.rotation.y; const fl = o.getChildMeshes().find((m) => m.name === 'flame'); if (fl) { fl.setEnabled(true); fl.scaling.y = .8 + Math.sin(performance.now() / 33) * .25; } }
     if (Math.abs(c.v) > 1) this.cam.tYaw += (o.rotation.y + Math.PI - this.cam.tYaw) * Math.min(1, dt * 2.5);
     const s = this.g.save.data; s.pos.x = o.position.x; s.pos.z = o.position.z; s.pos.yaw = o.rotation.y;
   }
@@ -487,7 +530,7 @@ export class CityScene implements GameScene {
   }
 
   private radarT = 0;
-  enter() { this.g.hud.radarOn(true); if (this.drive) { this.g.hud.radioBtn(true); this.radio(0); } }
+  enter() { this.syncFlyer(); this.g.hud.radarOn(true); if (this.drive) { this.g.hud.radioBtn(true); this.radio(0); } }
   exit() { this.g.hud.radarOn(false); if (this.drive) this.radioOff(); }
   /** Missionsmarker wie im Open-World-Krimi: leuchtende Lichtsäule über dem Ziel */
   private beam: TransformNode | null = null;
@@ -519,7 +562,7 @@ export class CityScene implements GameScene {
   /** Auto anhalten (z. B. beim Schaukeln an der ruhigen Ecke) */
   holdCar() { if (this.drive) this.drive.v = 0; }
   /** Aussteigen erzwingen (z. B. bei der Festnahme) */
-  leaveCar() { if (this.drive) this.toggleCar('exit'); }
+  leaveCar() { if (this.drive) this.toggleCar('force'); }
   /** Sichtbare Story-Figuren (für Schläge mit Spaßwaffen) */
   storyActors() { return this.npcs.filter((n) => n.a.root.visible && !n.talking).map((n) => ({ a: n.a, name: n.def.name, id: n.def.id })); }
   /** Story-Figur ist sauer auf dich (Freundschaft sinkt) */
@@ -746,7 +789,7 @@ export class CityScene implements GameScene {
       else if (inp.pressed('attack')) { inp.consume('attack'); if (this.drive) this.kerb.honk(); else this.combat.attack(); }
       else if (inp.pressed('weapon')) { inp.consume('weapon'); this.combat.cycle(); }
       else if (inp.pressed('menu') || inp.pressed('back')) { inp.consume('menu'); inp.consume('back'); g.pauseMenu(); }
-      this.checkStickers();
+      this.checkStickers(); this.worldGates();
     } else g.hud.prompt(null);
   }
 

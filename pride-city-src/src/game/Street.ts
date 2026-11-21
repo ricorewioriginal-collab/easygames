@@ -5,6 +5,7 @@ import { Vector3, Color3, Node3, TransformNode, type Mesh } from '../engine/bjs'
 import { box, cyl, pbr, glow } from '../engine/geo';
 import { Actor, WALK_MPS, RUN_MPS, type Anim, type Look } from './Actor';
 import { WORKERS, CURB } from './social';
+import { buildFlitzer } from './flitzer';
 import { CURB_SPOTS } from './uptown';
 import { carDef, CAR_DEFS, type CarDef } from './vehicles';
 import type { World, Car } from './World';
@@ -148,11 +149,16 @@ export class Street {
     const spots: Array<[string, number, number, number]> = [
       ['hatch', 11, 32.7, -Math.PI / 2], ['sedan', -11, 27.3, Math.PI / 2], ['taxi', -20, 27.3, Math.PI / 2], ['kombi', -66, 14, 0],
       ['flitzer', 24, 32.7, -Math.PI / 2], ['suv', -66, 22, 0],
+      ['rakete', -75, 19, 0],
       ['sport', 157.2, -51, Math.PI], ['bulli', 162.4, -51, Math.PI], ['pickup', 159.8, -38.5, 0], ['lux', 130, 62.7, -Math.PI / 2], ['liefer', 196, -62.7, Math.PI / 2],
     ];
     for (const [id, x, z, yaw] of spots) {
-      const def = carDef(id), o = await this.world.car(def.file);
-      o.position.set(x, .1, z); o.rotation.y = yaw;
+      const def = carDef(id);
+      let o: Node3;
+      // der Flitzer zum Fliegen steht neben dem Weltentor (Form je nach 18+ setzt CityScene)
+      if (def.fly) { o = new Node3('rakete', this.scene); buildFlitzer(this.scene, o, false); o.parent = this.world.root; }
+      else o = await this.world.car(def.file);
+      o.position.set(x, def.fly ? .75 : .1, z); o.rotation.y = yaw;
       this.parked.push({ o, name: def.name, yaw, v: 0, def });
     }
   }
