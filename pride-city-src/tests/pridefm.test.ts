@@ -1,24 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { defaults } from '../src/engine/Save';
-import { segment, cityNews, FmTalk, showCalls, showResult, SHOW_CALLS, FM_WISSEN } from '../src/game/pridefm';
+import { showCalls, showResult, SHOW_CALLS, FM_WISSEN } from '../src/game/pridefm';
+import { STATIONS } from '../src/engine/Radio';
 
-describe('Pride FM', () => {
-  it('Beiträge wechseln sich ab: Moderation, Anruf, Nachrichten, Wissen', () => {
-    const s = defaults(), kinds = new Set<string>();
-    for (let n = 0; n < 10; n++) segment(s, n).forEach((x) => kinds.add(x.who.split(' ')[0]));
-    expect(kinds.has('📞')).toBe(true); expect(kinds.has('📚')).toBe(true);
+describe('Pride FM und Autoradio', () => {
+  it('Autoradio: nur die 13 eigenen Sender, eigene Stream-Adresse und Aus', () => {
+    expect(STATIONS.filter((s) => s.slug).length).toBe(13);
+    expect(STATIONS.map((s) => s.id).filter((id) => !STATIONS.find((s) => s.id === id)!.slug)).toEqual(['eigen', 'off']);
     expect(FM_WISSEN.length).toBeGreaterThanOrEqual(8);
-  });
-  it('Gruß kommt einmal auf Sendung, Nachrichten folgen dem Spielstand', () => {
-    const s = defaults(); s.name = 'Rico'; s.flags.radioGruss = 'Hallo Welt';
-    expect(segment(s, 7)[0].text).toContain('Hallo Welt'); expect(s.flags.radioGruss).toBeUndefined();
-    expect(cityNews(s)).toEqual([]);
-    s.flags.dragKrone = true; s.flags.drag = 'Rica Royale';
-    expect(cityNews(s)[0]).toContain('Rica Royale');
-  });
-  it('Untertitel laufen der Reihe nach', () => {
-    const s = defaults(), t = new FmTalk();
-    expect(t.tick(1, s)).toBe(false); expect(t.tick(6, s)).toBe(true); expect(t.cur?.text).toBeTruthy();
   });
   it('Sendung: drei verschiedene Anrufe am Tag, jede Frage hat eine beste Antwort', () => {
     const s = defaults(); s.day = 3;
