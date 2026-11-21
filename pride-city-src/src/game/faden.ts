@@ -48,23 +48,49 @@ export function isleVia(s: SaveData, id: string): string | null {
   return i <= 0 ? 'Jules hat angerufen und gesagt, du kommst. Rainbow City schickt uns die Person, die zwei Viertel gerettet hat!' : `${chain(s)[i - 1].host.name} hat dich schon angekündigt. Du bist also die Person, die überall hilft.`;
 }
 
+const VEGA_STAGE = [
+  'Liebes, hier ist Mama Vega. Ich war gestern im Prisma. Diese Show! Du hast Drag im Blut.',
+  'Komm in die One Love Bar. Am Schminkspiegel bauen wir deinen Look, und auf meiner Bühne warten fünf Queens. Wer alle schlägt, trägt die Krone von Rainbow City.',
+];
+/** Krone der Drag-Karriere gewonnen (Flag dragKrone aus drag.ts): Nova gratuliert, das Prisma hat dich zuerst gesehen */
+export function fadenKrone(c: StoryCtx, name: string) {
+  if (c.s.flags.dragKroneCall) return;
+  c.s.flags.dragKroneCall = true;
+  c.phone(call('Nova', '#ff6ad5', [
+    `${name}, Königin von Rainbow City! Ich habe es im Radio gehört und sofort angerufen.`,
+    'Weißt du noch, dein erster Auftritt im Prisma gegen Rex? Ich wusste es damals schon. Komm vorbei, die erste Runde geht auf mich.',
+  ]));
+}
 const call = (who: string, color: string, text: string[]): Line[] => text.map((t) => ({ who: `📞 ${who}`, color, text: t }));
 let calm = 0;
 
 /** Anrufe zwischen den Akten und Inseln – aus storyTick, also nur, wenn nichts anderes läuft */
 export function fadenTick(c: StoryCtx) {
   const s = c.s, f = s.flags, a = act(s);
-  if (a === 1 || a === 4) return;
-  if (++calm < 6) return; // drei ruhige Sekunden, bevor es klingelt
   const ring = (key: string, who: string, color: string, text: string[], done?: () => void) => {
     calm = 0; f[key] = true;
     c.phone(call(who, color, text), done);
   };
+  // Nach der ersten Drag-Show (Kapitel 3) holt Mama Vega dich auf ihre Bühne: Drag-Karriere in der One Love Bar (drag.ts)
+  if (a === 1 && s.chapter === 3 && s.step === 4 && !f.dragCall && !f.dragWins) {
+    if (++calm < 6) return;
+    ring('dragCall', 'Mama Vega', '#ffd23b', [VEGA_STAGE[0], VEGA_STAGE[1]]);
+    return;
+  }
+  // Krone von Rainbow City (drag.ts setzt dragKrone): Nova ruft an, sobald alle Karten zu sind
+  if (f.dragKrone && !f.dragKroneCall) {
+    if (++calm < 6) return;
+    calm = 0; fadenKrone(c, String(f.drag || s.name));
+    return;
+  }
+  if (a === 1 || a === 4) return;
+  if (++calm < 6) return; // drei ruhige Sekunden, bevor es klingelt
   if (a === 2 && !f.faden2) {
     const fresh = sagaDone(s) === 0;
     ring('faden2', 'Mama Vega', '#ff3fb0', [
       'Hier ist Vega, Mutter vom Haus Vega drüben in der Hochstadt. Ganz Rainbow City redet von deiner Pride.',
       fresh ? 'Wir haben auch ein Haus, das gerettet werden muss: das Kaleidoskop am Neonplatz. Komm über die Regenbogenbrücke, ich warte auf dich.' : 'Du hast uns schon so geholfen. Bring es mit uns zu Ende, das Kaleidoskop braucht dich noch.',
+      ...(f.dragWins || f.dragCall ? [] : [VEGA_STAGE[1]]),
     ], () => c.card('Akt II', ACTS[1].title, ACTS[1].text).then(() => history(s, 'a2', c.card)));
     return;
   }

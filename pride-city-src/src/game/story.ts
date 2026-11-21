@@ -8,6 +8,7 @@ import { SAGA_NPCS, sagaTalk, sagaGoal, sagaMarks, sagaHidden } from './saga';
 import type { Gig } from './gigs';
 import { LF_CHAPTERS, LF_PEOPLE, LF_START, lfEnding } from './leuchtfeuer';
 import { NACHT_NPCS, nachtTalk, nachtGoal, nachtMarks, nachtFirst } from './nacht';
+import { dragGoal } from './drag';
 import { fadenGoal, fadenTick, fadenPoi, fadenDance, actLabel, history } from './faden';
 
 export interface NpcDef {
@@ -137,6 +138,8 @@ export function goal(s: SaveData): Goal {
   const sg = sagaGoal(s);
   if (sg && (s.chapter > 5 || s.flags.sagaRun)) return sg;
   const fg = fadenGoal(s); if (fg) return fg;
+  const dg = s.chapter > 3 ? dragGoal(s) : null;
+  if (dg) return { title: dg, sub: 'Mama Vega wartet: erst an den Schminkspiegel, dann auf die Bühne.', poi: 'onelove' };
   if (s.chapter > 1 && s.chapter <= 5) return { title: 'Erkunde Rainbow City', sub: 'Sprich mit deinen Freund*innen – die Geschichte geht gleich weiter.' };
   if (s.chapter > 5) return { title: 'Freies Spiel', sub: 'Die Geschichte ist erzählt. Arbeite, date, feiere – Rainbow City gehört dir.' };
   switch (s.step) {

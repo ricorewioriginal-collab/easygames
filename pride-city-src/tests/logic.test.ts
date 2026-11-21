@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { migrate, fromGayLife, defaults } from '../src/engine/Save';
 import { goal, talk, poi, danceResult, storyTick, hidden, marks, lichtPart, lfPart, lfGlow, lichtLight, type StoryCtx } from '../src/game/story';
+import { fadenKrone } from '../src/game/faden';
 import { LICHT_CHAPTERS, lichtMax } from '../src/game/licht';
 import { LF_CHAPTERS, lfMax } from '../src/game/leuchtfeuer';
 import type { Line } from '../src/ui/ui';
@@ -49,7 +50,7 @@ describe('Story', () => {
     s.settings.adult = true; expect(goal(s).title).toContain('Insel 1/5');
     for (const id of ['einhorn', 'canaria', 'lindenhof', 'rummel', 'cruising']) s.flags['w_' + id] = 4;
     s.flags.fadenCall = true; expect(goal(s).poi).toBe('plaza');
-    s.flags.fadenEnd = 9; expect(goal(s).title).toBe('Freies Spiel');
+    s.flags.fadenEnd = 9; expect(goal(s).poi).toBe('onelove'); s.flags.dragKrone = true; expect(goal(s).title).toBe('Freies Spiel');
   });
   it('lässt sich von Kapitel 2 bis zum Abspann durchspielen', () => {
     const s = defaults(); s.chapter = 2; s.step = 0;
@@ -180,7 +181,17 @@ describe('Roter Faden (Akt II und III)', () => {
     tick(); tick(); expect(s.flags.fadenCall).toBe(true); expect(goal(s).poi).toBe('plaza');
     h = 9; expect(poi(c, 'plaza')).toBe(true); expect(h).toBe(12); // wartet bis 12 Uhr
     poi(c, 'plaza'); expect(s.flags.fadenEnd).toBeTruthy(); expect(cards).toContain('Akt III abgeschlossen');
+    expect(goal(s).title).toMatch(/^Drag-Karriere 1\/5/); s.flags.dragKrone = true;
     expect(goal(s).title).toBe('Freies Spiel');
+  });
+  it('dockt die Drag-Karriere an: Vega ruft nach der ersten Show, Nova nach der Krone', () => {
+    const s = defaults(); s.chapter = 3; s.step = 4;
+    const calls: string[] = [];
+    const c = { s, say: (_l: Line[], d?: () => void) => d?.(), phone: (l: Line[], d?: () => void) => { calls.push(String(l[0].who)); d?.(); } } as unknown as StoryCtx;
+    for (let i = 0; i < 6; i++) storyTick(c);
+    expect(calls).toEqual(['📞 Mama Vega']); expect(s.flags.dragCall).toBe(true);
+    s.chapter = 4; s.step = 9; expect(goal(s).poi).toBe('onelove');
+    s.flags.dragKrone = true; for (let i = 0; i < 12; i++) storyTick(c); fadenKrone(c, 'Divine Dynamite'); expect(calls).toEqual(['📞 Mama Vega', '📞 Nova']);
   });
 });
 
