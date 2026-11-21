@@ -77,7 +77,7 @@ export class Arena {
     this.red = new T.PointLight(lin(0xff1010), 0, 34, 1.2); this.red.position.set(0, 5, 4); this.s.add(this.red); this.alarmT = 0;
     this.hero = new T.SpotLight(lin(0xfff4e6), 0.9, 22, 0.36, 0.7, 1.2); this.hero.position.set(0, 9, 7); this.s.add(this.hero, this.hero.target);
     this.mark = new T.Sprite(new T.SpriteMaterial({ map: puff(), color: lin(0x5dff9e), transparent: true, opacity: 0, depthWrite: false, depthTest: false, blending: T.AdditiveBlending, toneMapped: false })); this.mark.renderOrder = 5; this.s.add(this.mark); this.markA = 0; this.streakT = 0;
-    this.attract = null; this.root = new T.Group(); this.s.add(this.root); this.dyn = []; this.heads = []; this.pots = []; this.time = 0; this.energy = 0.3; this.ghost = null; this.prevG = true; this.lastVy = 0; this.dustT = 0; this.clockT = 0;
+    this.attract = null; this.root = new T.Group(); this.s.add(this.root); this.dyn = []; this.occ = []; this.heads = []; this.pots = []; this.time = 0; this.energy = 0.3; this.ghost = null; this.prevG = true; this.lastVy = 0; this.dustT = 0; this.clockT = 0;
     this.pool = []; this.live = []; this.initPool(); this.buildWater(); this.buildSet();
     this.kit = window.EasyFiguren ? window.EasyFiguren.create({ THREE: T, base: '../figuren/', srgb: true }) : null;
     this.runner = this.makeRunner(PAL.pad, 6, 0); this.s.add(this.runner.g); this.fpsT = 0; this.fpsN = 0; this.slow = 0; this.resize();
@@ -252,8 +252,8 @@ export class Arena {
     return g;
   }
   setCourse(c) {
-    this.course = c; const keep = new Set(Object.values(cache)); while (this.root.children.length) { const ch = this.root.children[0]; this.root.remove(ch); ch.traverse(o => { if (o.geometry && !keep.has(o.geometry)) o.geometry.dispose(); const ms = o.material ? [].concat(o.material) : []; ms.forEach(m => { if (!keep.has(m) && !m.userData.shared) { if (m.map && !Object.values(this.tx).includes(m.map) && m.map !== cache.puff) m.map.dispose(); m.dispose(); } }); }); }
-    this.dyn = []; this.heads = []; this.pots = []; this.buzzer = null; this.clock = null; this.ladders = []; this.signs = []; this.vv = [];
+    this.course = c; const keep = new Set(Object.values(cache)); while (this.root.children.length) { const ch = this.root.children[0]; this.root.remove(ch); ch.traverse(o => { if (o.userData.fm) { [].concat(o.userData.fm).forEach(m => m.dispose()); o.material = o.userData.om; o.userData.fm = o.userData.om = null; } }); ch.traverse(o => { if (o.geometry && !keep.has(o.geometry)) o.geometry.dispose(); const ms = o.material ? [].concat(o.material) : []; ms.forEach(m => { if (!keep.has(m) && !m.userData.shared) { if (m.map && !Object.values(this.tx).includes(m.map) && m.map !== cache.puff) m.map.dispose(); m.dispose(); } }); }); }
+    this.dyn = []; this.occ = []; this.heads = []; this.pots = []; this.buzzer = null; this.clock = null; this.ladders = []; this.signs = []; this.vv = [];
     const bs = new Beams(), post = C('postG', () => new T.CylinderGeometry(0.16, 0.22, 1, 12));
     const addPost = (grp, h, x = 0, z = 0) => { const p = new T.Mesh(post, this.M('steel')); p.scale.y = h; p.position.set(x, -0.64 - h / 2, z); grp.add(p); };
     c.o.forEach((o, i) => {
@@ -263,7 +263,7 @@ export class Arena {
         if (o.k === 'sink') for (let k = -1; k <= 1; k++) { const cr = new T.Mesh(C('crackG', () => new T.BoxGeometry(0.04, 0.012, 3.2)), glow(0xff4a10)); cr.position.set(k * w * 0.27, 0.006, 0); cr.rotation.y = k * 0.12; g.add(cr); }
         if (o.k === 'move') { [-1, 1].forEach(sd => { const st = new T.Mesh(C('railG' + w.toFixed(2), () => new T.BoxGeometry(w, 0.05, 0.08)), glow(PAL.amber)); st.position.set(0, 0.01, sd * 1.82); g.add(st); }); }
         if (o.k === 'plat') addPost(g, Math.max(0.3, o.y + 1.4)), this.ripple(o.x + w / 2);
-        if (o.look === 'high') { const tw = new T.Mesh(new T.BoxGeometry(w - 0.1, o.y + 1.2, 3.4), this.M('plate')); tw.position.y = -(o.y + 1.2) / 2 - 0.3; tw.castShadow = tw.receiveShadow = true; g.add(tw);
+        if (o.look === 'high') { const tw = new T.Mesh(new T.BoxGeometry(w - 0.1, o.y + 1.2, 2.2), this.M('plate')); tw.position.set(0, -(o.y + 1.2) / 2 - 0.3, -0.6); /* Turm schmal und nach hinten versetzt: verdeckt seitlich nicht den Läufer im Kamin */ tw.castShadow = tw.receiveShadow = true; g.add(tw);
           const st = new T.Mesh(new T.BoxGeometry(0.06, o.y + 0.6, 0.06), glow(PAL.pad)); st.position.set(-w / 2 + 0.02, -(o.y + 0.6) / 2 - 0.3, 1.72); g.add(st); }
         g.position.set(o.x + w / 2, o.y, 0); this.root.add(g); this.dyn.push({ o, m: g, i });
       } else if (o.k === 'swing') {
@@ -272,7 +272,7 @@ export class Arena {
         const h = o.h || 1.1, sack = new T.Mesh(C('sackG', () => new T.CylinderGeometry(0.4, 0.42, 1.1, 24, 1)), this.M('sack')); sack.scale.y = h / 1.1; sack.position.y = -o.len; sack.castShadow = true; grp.add(sack);
         [-0.32, 0.32].forEach(f => { const band = new T.Mesh(C('sackB', () => new T.CylinderGeometry(0.43, 0.43, 0.09, 24, 1, true)), this.M('white')); band.position.y = -o.len + f * h; grp.add(band); });
         const capT = new T.Mesh(C('sackC', () => new T.SphereGeometry(0.4, 24, 8, 0, Math.PI * 2, 0, Math.PI / 2)), this.M('sack')); capT.position.y = -o.len + h / 2; capT.scale.y = 0.35; grp.add(capT);
-        grp.position.set(o.px, o.py, 0); this.root.add(grp); this.dyn.push({ o, m: grp, i });
+        grp.position.set(o.px, o.py, 0); this.root.add(grp); this.dyn.push({ o, m: grp, i }); this.occ.push({ g: grp, x0: o.px - o.len * Math.sin(o.amp) - 0.5, x1: o.px + o.len * Math.sin(o.amp) + 0.5 });
       } else if (o.k === 'log') {
         // Pendelbalken: gepolsterter Balken an zwei Ketten, bleibt beim Schwingen waagerecht
         bs.truss([o.px, o.py, -2.3], [o.px, o.py, 2.3], 0.4); bs.add(o.px, o.py, -2.3, o.px, 10.5, -5.6, 0.12);
@@ -280,15 +280,15 @@ export class Arena {
         [-1.5, 1.5].forEach(z => { const ch = new T.Mesh(C('chainG', () => new T.CylinderGeometry(0.03, 0.03, 1, 6)), this.M('chrome')); ch.scale.y = o.len - LOG_HH; ch.position.set(0, -(o.len - LOG_HH) / 2, z); grp.add(ch); });
         const log = new T.Mesh(roundBox(LOG_HW * 2, LOG_HH * 2, 3.4, 0.2), this.M('pad')); log.castShadow = true; beam.add(log);
         [-1.1, 0, 1.1].forEach(z => { const b = new T.Mesh(C('logBand', () => roundBox(LOG_HW * 2 + 0.03, LOG_HH * 2 + 0.03, 0.14, 0.2)), this.M('dark')); b.position.z = z; beam.add(b); });
-        beam.position.y = -o.len; grp.position.set(o.px, o.py, 0); this.root.add(grp); this.dyn.push({ o, m: grp, beam, i });
+        beam.position.y = -o.len; grp.position.set(o.px, o.py, 0); this.root.add(grp); this.dyn.push({ o, m: grp, beam, i }); this.occ.push({ g: grp, x0: o.px - o.len * Math.sin(o.amp) - LOG_HW - 0.2, x1: o.px + o.len * Math.sin(o.amp) + LOG_HW + 0.2 });
       } else if (o.k === 'gate') {
         // Rutschtunnel: gepolstertes Tor, unten weich, nur geduckt passierbar
         const g = new T.Group(), hgt = o.h - o.gap, blk = new T.Mesh(roundBox(o.w, hgt, 3.6, 0.18), this.M('padBlue').clone()); blk.position.y = o.gap + hgt / 2; blk.castShadow = true; g.add(blk);
         const lip = new T.Mesh(roundBox(o.w + 0.08, 0.3, 3.7, 0.14), this.M('pad')); lip.position.y = o.gap + 0.15; g.add(lip);
         const sg = new T.Mesh(C('tunnelSignG', () => new T.PlaneGeometry(o.w * 0.9, o.w * 0.17)), new T.MeshBasicMaterial({ map: C('tunnelSign', () => sign('Ducken!', 1024, 192, '#ffffff', '#45d4ff')), toneMapped: false })); sg.position.set(0, o.gap + hgt * 0.62, 1.82); g.add(sg);
-        this.vv.push(b => { blk.material.transparent = b; blk.material.opacity = b ? 0.42 : 1; blk.material.depthWrite = !b; blk.material.needsUpdate = true; sg.position.set(b ? -o.w / 2 - 0.03 : 0, o.gap + hgt * 0.62, b ? 0 : 1.82); sg.rotation.y = b ? -Math.PI / 2 : 0; });   // von hinten: Tor halb durchsichtig, Schild auf der Anlaufseite
+        this.vv.push(b => { blk.material.transparent = b; blk.material.opacity = b ? 0.5 : 1; blk.material.needsUpdate = true; sg.position.set(b ? -o.w / 2 - 0.03 : 0, o.gap + hgt * 0.62, b ? 0 : 1.82); sg.rotation.y = b ? -Math.PI / 2 : 0; });   // von hinten: Tor halb durchsichtig, Schild auf der Anlaufseite
         [-1.9, 1.9].forEach(z => { const p = new T.Mesh(C('gatePost', () => new T.BoxGeometry(0.22, 1, 0.22)), this.M('steel')); p.scale.y = o.gap; p.position.set(0, o.gap / 2, z); g.add(p); });
-        g.position.set(o.x + o.w / 2, o.y, 0); this.root.add(g);
+        g.position.set(o.x + o.w / 2, o.y, 0); this.root.add(g); this.occ.push({ g, x0: o.x - 0.2, x1: o.x + o.w + 0.2 });
       } else if (o.k === 'roll') {
         // Drehwalze: liegende Walze mit Streifen (dreht sich mit der Oberflächen-Geschwindigkeit), Achslager an beiden Enden
         const g = new T.Group(), drum = new T.Mesh(C('rollG' + o.r, () => new T.CylinderGeometry(o.r, o.r, 3.6, 40, 1)), C('rollM', () => std(0xffffff, { map: cvs(512, 64, (x, w, h) => { for (let i = 0; i < 8; i++) { x.fillStyle = i % 2 ? '#ff6a1a' : '#16181d'; x.fillRect(i * w / 8, 0, w / 8, h); } }), roughness: 0.45, metalness: 0.1, envMapIntensity: 0.8 })));
@@ -527,7 +527,14 @@ export class Arena {
     const ix = sim ? sim.px + (sim.x - sim.px) * k : idleX != null ? idleX : 2, iy = sim ? sim.py + (sim.y - sim.py) * k : 0, x = ix;
     if (sim) {
       this.pose(this.runner, ix, iy, sim, dt);
+      // Drehwalzen: Füße auf die runde Oberfläche setzen (die Physik rechnet mit einer flachen Oberkante, sonst schwebt der Läufer an den Walzenkanten)
+      if (sim.onGround && sim.ground && this.course && this.course.o[sim.ground.i] && this.course.o[sim.ground.i].k === 'roll') { let top = -9; for (const o of this.course.o) if (o.k === 'roll') { const dx = Math.max(0, Math.abs(ix - o.x - o.w / 2) - 0.3); if (dx < o.r) top = Math.max(top, o.y - o.r + Math.sqrt(o.r * o.r - dx * dx)); } if (top > -9 && top < iy) this.runner.g.position.y -= iy - top; }
       if (sim.ladder) this.runner.g.position.y = this.ladders.find(L => L.i === sim.ladder.i).y - PH + (this.runner.g.position.y - iy);
+      // Greifen: Hände fliegen weich an Stange, Seil, Ring, Griff (statt sichtbar hinzuspringen)
+      const rp = this.runner.g.position; if (sim !== this.snapSim) { this.snapSim = sim; this.snapG = sim.grabs; this.snap = null; }
+      else if (sim.grabs !== this.snapG) { this.snapG = sim.grabs; if (this.lastRP) { const dx = this.lastRP.x - rp.x, dy = this.lastRP.y - rp.y; if (Math.hypot(dx, dy) < 1.5) this.snap = { x: dx, y: dy }; } }
+      if (this.snap) { rp.x += this.snap.x; rp.y += this.snap.y; const f = Math.exp(-dt * 20); this.snap.x *= f; this.snap.y *= f; if (Math.abs(this.snap.x) + Math.abs(this.snap.y) < 0.004) this.snap = null; }
+      this.lastRP = { x: rp.x, y: rp.y };
       if (!sim.onGround) this.lastVy = sim.vy;
       if (sim.onGround && !this.prevG && this.lastVy < -5 && !sim.dead) { this.dust(sim.x, sim.y, 8, 3); this.shake = Math.max(this.shake, Math.min(0.12, -this.lastVy * 0.01)); }
       this.prevG = sim.onGround; this.dustT -= dt; if (sim.onGround && Math.abs(sim.vx) > (sim.slide ? 1 : 3) && !sim.dead && !sim.finished && this.dustT <= 0) { this.dustT = sim.slide ? 0.05 : 0.13; this.dust(sim.x - sim.face * 0.2, sim.y, 1, 1); }
@@ -544,11 +551,17 @@ export class Arena {
     const tgt = this._tgt || (this._tgt = new T.Vector3()), off = this._off || (this._off = new T.Vector3());
     if (back) { this.cam.position.set(this.cx - (port ? 7.2 : 5.6) - 3.0 + sx, this.cy + (port ? 2.6 : 1.9) + sy, 1.1); tgt.set(this.cx + 6.5 - 3.0, this.cy - 0.3, -0.2); }   // von hinten: Kamera folgt dem Läufer, Blick in den Parcours
     else { this.cam.position.set(this.cx - 1.4 + sx, this.cy + 2.9 + sy, this.dist); tgt.set(this.cx, this.cy - 0.1, 0); }
+    // von hinten: Kamera nie in hohen Plattformen (Kamin-Turm, Leiter-Plattform) – weich darüber anheben
+    let lift = 0; if (back && this.course) { const px = this.cam.position.x; for (const o of this.course.o) if (o.k === 'plat' && px > o.x - 1.2 && px < o.x + o.w + 1.2) lift = Math.max(lift, o.y + 0.9 - this.cam.position.y); }
+    this.camLift = (this.camLift || 0) + (lift - (this.camLift || 0)) * Math.min(1, dt * 6); if (this.camLift > 0.01) this.cam.position.y += this.camLift;
     if (this.camYaw || this.camPitch || this.camZoom !== 1) {   // Spieler-Kamera: um den Blickpunkt drehen, neigen, zoomen
       if (back) tgt.lerp(this.cam.position, 0.55); off.subVectors(this.cam.position, tgt); const r = off.length() * this.camZoom, th = Math.atan2(off.x, off.z) + this.camYaw, ph = Math.max(0.12, Math.min(1.45, Math.acos(off.y / off.length()) - this.camPitch));
       this.cam.position.set(tgt.x + r * Math.sin(ph) * Math.sin(th), Math.max(0.6, tgt.y + r * Math.cos(ph)), tgt.z + r * Math.sin(ph) * Math.cos(th));
     }
     this.cam.lookAt(tgt);
+    // von hinten: Hindernisse zwischen Kamera und Läufer (Pendelbalken, Sandsäcke, Tunnel-Tore) durchsichtig, damit sie den Läufer nicht verdecken
+    const rx = this.runner.g.position.x;
+    for (const q of this.occ || []) { const f = back && q.x1 > this.cam.position.x - 0.6 && q.x0 < rx - 0.35; if (f !== !!q.f) { q.f = f; q.g.traverse(m => { if (!m.isMesh) return; if (f) { if (!m.userData.fm) { m.userData.om = m.material; const fade = x => { const c = x.clone(); c.transparent = true; c.opacity = 0.2; c.depthWrite = false; return c; }; m.userData.fm = Array.isArray(m.material) ? m.material.map(fade) : fade(m.material); } m.material = m.userData.fm; } else if (m.userData.om) m.material = m.userData.om; }); } }
     if (back) for (const g of this.signs) g.visible = g.position.x - this.cam.position.x > 4.5 || g.position.y < this.cam.position.y - 3;   // Schilder kurz vor der Kamera ausblenden statt durchzufahren
     else if (this.signs.length && !this.signs[0].visible) this.signs.forEach(g => g.visible = true);
     const fov = this.baseFov + (back ? 10 : 0) + Math.min(5, Math.abs(vx) * 0.6); if (Math.abs(fov - this.cam.fov) > 0.05) { this.cam.fov += (fov - this.cam.fov) * Math.min(1, dt * 3); this.cam.updateProjectionMatrix(); }
