@@ -11,7 +11,7 @@ import { change, advance } from './life';
 import { pcEvents } from './hooks';
 import { DanceScene } from './minigames/DanceScene';
 import { playerLook, type Look } from './Actor';
-import { CATS, PARTS, lookKey, lookOf, piece, match, dragStyle, type Cat, type DragLook, type PartKey } from './dragLook';
+import { CATS, PARTS, DRAG_HISTORY, lookKey, lookOf, piece, match, dragStyle, type Cat, type DragLook, type PartKey } from './dragLook';
 import type { SaveData } from '../engine/Save';
 
 const VEGA = { who: 'Mama Vega', pron: 'sie/ihr', color: '#ffd23b' };
@@ -24,7 +24,7 @@ export const RIVALS: Rival[] = [
     hello: 'Pailletten-Nacht, Schätzchen! Ich glitzere so hell, dass die Discokugel Urlaub nimmt.', win: 'Okay, okay. Du hast mich weggewirbelt. Ich nehme es mit Glitzer.', lose: 'Ein Tornado lässt sich nicht so leicht wegpusten. Komm wieder!' },
   { id: 'lakritz', name: 'Lakritz LaBelle', color: '#c9a2ff', cat: 'retro', skill: .66, pts: 85, look: Q('Female_Adult_06', 'gold'), hist: 'mahlsdorf',
     hello: 'Ich singe seit den Neunzigern auf dieser Bühne. Heute: Diven von damals. Zeig mir, dass du Geschichte kennst.', win: 'Du hast den alten Glanz verstanden. Das ehrt mich, Kindchen.', lose: 'Erfahrung schlägt Wimpern. Noch.' },
-  { id: 'chrom', name: 'Contessa Chrom', color: '#5ce1ff', cat: 'neon', skill: .72, pts: 90, look: Q('Male_Adult_07', 'drag'), hist: 'star',
+  { id: 'chrom', name: 'Contessa Chrom', color: '#5ce1ff', cat: 'neon', skill: .72, pts: 90, look: Q('Male_Adult_07', 'drag'), hist: 'divine',
     hello: 'Neon-Futur. Ich bin aus dem Jahr 3000 gekommen, nur um dich zu schlagen.', win: 'Die Zukunft gehört dir. Ich fliege zurück und schreibe es in die Geschichtsbücher.', lose: 'Zu langsam für die Zukunft. Lade dich auf und komm wieder.' },
   { id: 'bambi', name: 'Bambi Bling', color: '#ffb347', cat: 'regenbogen', skill: .78, pts: 95, look: Q('Male_Adult_05', 'crop'), hist: 'conchita',
     hello: 'Regenbogen-Revue! Ich habe alle sechs Farben an und drei, die es noch gar nicht gibt.', win: 'Du hast den Regenbogen zum Strahlen gebracht. Schwesterherz, das war groß.', lose: 'Ein Regenbogen braucht Regen. Heute war ich die Sonne.' },
@@ -32,14 +32,6 @@ export const RIVALS: Rival[] = [
     hello: 'Ich trage die Krone von Rainbow City seit sieben Jahren. Königlicher Auftritt, Darling. Ich gebe sie nicht einfach her.', win: 'Sieben Jahre … und heute fühlt es sich richtig an, sie weiterzugeben. Trag sie mit Herz.', lose: 'Die Krone bleibt, wo sie ist. Aber ich habe gezittert, das gebe ich zu.' },
 ];
 
-/** Echte Drag-Geschichte zu jedem Sieg (ergänzt die „Damals“-Karten der Hauptgeschichte, nichts doppelt) */
-export const DRAG_HISTORY: Record<string, { year: string; title: string; text: string }> = {
-  sarria: { year: '1961', title: 'José Sarria, die Nelly Queen', text: 'Im Black Cat Café in San Francisco singt José Sarria in Drag Opern-Parodien und lässt das Publikum am Ende „God Save Us Nelly Queens“ singen. 1961 kandidiert Sarria für den Stadtrat, als erste offen schwule Person, die in den USA für ein öffentliches Amt antritt.' },
-  mahlsdorf: { year: '1928 bis 2002', title: 'Charlotte von Mahlsdorf', text: 'Charlotte von Mahlsdorf lebt in Frauenkleidern durch die NS-Zeit und die DDR. In Berlin gründet sie das Gründerzeitmuseum und rettet dort die Einrichtung der Mulackritze, einer berühmten Kneipe der Szene. 1992 bekommt sie das Bundesverdienstkreuz.' },
-  star: { year: '1970', title: 'STAR', text: 'Marsha P. Johnson und Sylvia Rivera gründen in New York die Street Transvestite Action Revolutionaries. Sie öffnen ein Haus für obdachlose junge queere Menschen und trans Menschen, die sonst niemand aufnimmt.' },
-  conchita: { year: '10. Mai 2014', title: 'Rise Like a Phoenix', text: 'Conchita Wurst gewinnt in Kopenhagen den Eurovision Song Contest für Österreich. Mit Bart und Abendkleid wird sie zum Gesicht für Toleranz in ganz Europa.' },
-  race: { year: 'seit 2009', title: 'Lip-Sync for Your Life', text: 'Seit 2009 läuft „RuPaul’s Drag Race“. Die Show macht Lip-Sync-Battles weltweit bekannt und gewinnt viele Emmys. Drag ist damit endgültig aus den Kellerclubs auf die großen Bühnen gekommen.' },
-};
 
 export const dragOpen = (s: SaveData) => s.chapter > 3 || (s.chapter === 3 && s.step >= 3) || !!s.flags.drag;
 export const dragWins = (s: SaveData) => Math.min(RIVALS.length, Number(s.flags.dragWins) || 0);
@@ -170,3 +162,4 @@ export function dragGoal(s: SaveData): string | null {
   return `Drag-Karriere ${dragWins(s) + 1}/${RIVALS.length}: Lip-Sync gegen ${r.name} (One Love Bar)`;
 }
 export type { DragLook };
+export { DRAG_HISTORY };

@@ -43,6 +43,15 @@ export type PartKey = typeof PARTS[number][0];
 export type DragLook = Record<PartKey, string>;
 const DEF: DragLook = { kleid: 'pink', schnitt: 'lang', beine: 'pink', peruecke: 'pink' };
 
+/** Echte Drag-Geschichte zu jedem Sieg (ergänzt die „Damals“-Karten der Story und die Wissen-App, nichts doppelt; Flag dwiss_<key>) */
+export const DRAG_HISTORY: Record<string, { year: string; title: string; text: string }> = {
+  sarria: { year: '1961', title: 'José Sarria, die Nelly Queen', text: 'Im Black Cat Café in San Francisco singt José Sarria in Drag Opern-Parodien und lässt das Publikum am Ende „God Save Us Nelly Queens“ singen. 1961 kandidiert Sarria für den Stadtrat, als erste offen schwule Person, die in den USA für ein öffentliches Amt antritt.' },
+  mahlsdorf: { year: '1928 bis 2002', title: 'Charlotte von Mahlsdorf', text: 'Charlotte von Mahlsdorf lebt in Frauenkleidern durch die NS-Zeit und die DDR. In Berlin gründet sie das Gründerzeitmuseum und rettet dort die Einrichtung der Mulackritze, einer berühmten Kneipe der Szene. 1992 bekommt sie das Bundesverdienstkreuz.' },
+  divine: { year: '1972', title: 'Divine', text: 'Harris Glenn Milstead wird als Divine zum Kultstar: Im Film „Pink Flamingos“ von John Waters spielt die Drag-Ikone 1972 „die schmutzigste Person der Welt“. Später singt Divine Disco-Hits wie „You Think You’re a Man“.' },
+  conchita: { year: '10. Mai 2014', title: 'Rise Like a Phoenix', text: 'Conchita Wurst gewinnt in Kopenhagen den Eurovision Song Contest für Österreich. Mit Bart und Abendkleid wird sie zum Gesicht für Toleranz in ganz Europa.' },
+  race: { year: 'seit 2009', title: 'Lip-Sync for Your Life', text: 'Seit 2009 läuft „RuPaul’s Drag Race“. Die Show macht Lip-Sync-Battles weltweit bekannt und gewinnt viele Emmys. Drag ist damit endgültig aus den Kellerclubs auf die großen Bühnen gekommen.' },
+};
+
 type Flags = Record<string, unknown>;
 export function lookOf(f: Flags): DragLook {
   const v = String(f.dragLook || '').split(','), out = { ...DEF };
