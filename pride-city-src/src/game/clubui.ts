@@ -55,6 +55,7 @@ export function clubManage(g: Game, b: Business, sc?: InteriorScene) {
   g.touch.show(false);
   const items: Item[] = [
     { icon: '🪩', label: 'Türen auf: Clubnacht starten', sub: !sc ? 'nur im Club selbst' : nightDone(s, id) ? 'heute schon gefeiert' : !nightOpen(h) ? 'ab 20 Uhr' : 'Themennacht wählen, live entscheiden, abrechnen', disabled: !can, big: can, fn: () => nightPick(g, b, sc!) },
+    ...(g.city.friends.net.on && sc ? [{ icon: '🌐', label: 'Freund*innen in den Club einladen', sub: `${g.city.friends.list.length} online · sie sehen deinen DJ, deine Deko und tanzen mit`, fn: () => { invite(g, b); toast('🌐 Einladung verschickt.'); } } as Item] : []),
     { icon: '🎧', label: 'Resident-DJ', sub: `${st.dj.style}${st.dj.fee ? ` · Gage ${st.dj.fee} € am Abend` : ' · kostet nichts'}`, value: () => clubOf(s, id).dj.name,
       left: () => { setDj(s, id, DJS[cyc(DJS, DJS.indexOf(clubOf(s, id).dj), -1)].id); live(); }, right: () => { setDj(s, id, DJS[cyc(DJS, DJS.indexOf(clubOf(s, id).dj), 1)].id); live(); } },
     { icon: '🍹', label: 'Getränkepreise', sub: 'günstig = voller, Luxus = mehr Umsatz je Gast', value: () => PRICES[clubOf(s, id).price].name,
@@ -73,6 +74,11 @@ export function clubManage(g: Game, b: Business, sc?: InteriorScene) {
   hints([['dpad', 'Wählen'], ['a', 'Bestätigen'], ['b', 'Zurück']]);
 }
 
+/** Online-Runde in den eigenen Club einladen (mit DJ, Deko, Tür und Themennacht) */
+export function invite(g: Game, b: Business, ev?: QEvent) {
+  const st = clubOf(g.save.data, b.id);
+  if (g.city.friends.net.on) g.city.friends.invite({ p: b.poi, n: b.name, e: ev?.id || '', dj: st.dj.id, deco: st.deco, door: st.door, aw: st.aware });
+}
 /** Themennacht wählen: normale Nacht oder ein echter Tag der queeren Geschichte */
 function nightPick(g: Game, b: Business, sc: InteriorScene) {
   const s = g.save.data, back = () => clubManage(g, b, sc);
@@ -87,7 +93,7 @@ function nightPick(g: Game, b: Business, sc: InteriorScene) {
 function playNight(g: Game, b: Business, sc: InteriorScene, ev?: QEvent) {
   const s = g.save.data;
   g.closeMenu(); g.touch.show(true);
-  sc.party = ev?.night || 'CLUBNACHT'; sc.refreshClub();
+  sc.party = ev?.night || 'CLUBNACHT'; sc.refreshClub(); invite(g, b, ev);
   sfx('cheer');
   g.hud.banner(`🪩 ${ev ? ev.name : 'Clubnacht'} im ${b.name}`, ev ? ev.fact : clubOf(s, b.id).dj.line, 'good', 5200);
   let mood = 0;
