@@ -1,6 +1,7 @@
 /* Rainbow City – Innenstadt aus KayKit-City-Bausteinen (Babylon.js), ergänzt um Pride-Deko: Regenbogen-Zebrastreifen,
    wehende Flaggen, Wimpelketten, Neon-Schilder, Palmen, fahrende Autos und ein Tag-/Nacht-Himmel. Häuser und Straßen
    sind Instanzen (ein Zeichenaufruf je Bauteil), Materialien werden geteilt. */
+import { WORLDS, cityGate, cityIsle } from './worlds';
 import {
   Node3, Vector3, Color3, HemisphericLight, DirectionalLight, PointLight, ShadowGenerator, ShaderMaterial, Effect, Mesh, VertexData, VertexBuffer,
   Matrix, Quaternion, Scene, PBRMaterial, Texture, TransformNode, type AbstractMesh, col, smoothstep, v3, HDRCubeTexture, RawTexture, type InstancedMesh,
@@ -746,6 +747,17 @@ export class World {
     // Weltentor am Kai: Regenbogenbogen mit leuchtendem Wirbel (Reise in andere Welten, worlds.ts)
     [0xff3b3b, 0xff8a3b, 0xffd23b, 0x3ee69a, 0x3a7bff, 0xb56bff].forEach((c, i) => { const m = glow(sc, c, 1); this.neon.push({ m, base: m.albedoColor.clone() }); const a = torus(sc, 3.3 - i * .22, .13, 28); a.material = m; a.rotation.set(Math.PI / 2, Math.PI / 2, 0); a.position.set(-80, 0, 13); this.still(a, false); });
     { const m = glow(sc, 0xd9b8ff, 1, { alpha: .45 }); const d = cyl(sc, 2.1, 2.1, .05, 28); d.material = m; d.rotation.z = Math.PI / 2; d.position.set(-80, 1.6, 13); this.still(d, false); this.neonSign('WELTENTOR', '#ffffff', -79.9, 4.3, 13, Math.PI / 2, undefined, 5); }
+    // Welten-Meile an der Kaimauer: je Welt ein eigenes Tor (durchlaufen oder durchfahren) und draußen vor der Küste
+    // ihre Insel mit Leuchtsäule (mit dem Flitzer hinfliegen)
+    for (const w of WORLDS) {
+      const g = cityGate(w.id), isle = cityIsle(w.id), c = w.host.color, m = glow(sc, c, 1.1); this.neon.push({ m, base: m.albedoColor.clone() });
+      for (let i = 0; i < 3; i++) { const a = torus(sc, 1.95 - i * .2, .11, 24); a.material = i === 1 ? glow(sc, 0xffffff, 1) : m; a.rotation.set(Math.PI / 2, Math.PI / 2, 0); a.position.set(g.x, 0, g.z); this.still(a, false); }
+      { const d = cyl(sc, 1.5, 1.5, .05, 24); d.material = glow(sc, c, .9, { alpha: .4 }); d.rotation.z = Math.PI / 2; d.position.set(g.x, .9, g.z); this.still(d, false); }
+      this.neonSign(`${w.icon} ${w.name.toUpperCase()}`, c, g.x + .1, 2.75, g.z, Math.PI / 2, undefined, 3.9);
+      const land = cyl(sc, 9, 10.5, 1.2, 20); land.material = M(w.ground, .95); land.position.set(isle.x, 0, isle.z); this.still(land, false);
+      const beam = cyl(sc, 1.1, 1.1, 46, 12, false); beam.material = glow(sc, c, 1, { alpha: .35 }); beam.position.set(isle.x, 23, isle.z); this.still(beam, false, false);
+      const hut = box(sc, 4, 3.5, 4); hut.material = M(w.town.plaza, .8); hut.position.set(isle.x, 2.3, isle.z); this.still(hut, false);
+    }
     // Steg mit Leuchtturm
     const wood = M(0x8a5a35, .9);
     bx(20, .3, 3, wood, -101, .2, -2);
@@ -782,11 +794,11 @@ export class World {
     for (const x of [-71.8, -68.2]) { const p = bx(.12, 3, .12, M(0x9aa0aa), x, 1.5, 8); const node = new TransformNode('tp', sc); node.parent = this.root; p.parent = node; this.prop(x, 8, .2, [node]); }
     const tasks: Promise<unknown>[] = [];
     for (let z = -30; z <= 40; z += 14) tasks.push(this.place(C('streetlight'), -89.5, .1, z, Math.PI / 2).then((o) => this.prop(-89.5, z, .3, [o])));
-    for (const z of [2, 16, 38]) tasks.push(this.place(C('bench'), -88.5, .1, z, -Math.PI / 2).then((o) => this.prop(-88.5, z, .95, [o])));
+    for (const z of [-12, 24, 38]) tasks.push(this.place(C('bench'), -88.5, .1, z, -Math.PI / 2).then((o) => this.prop(-88.5, z, .95, [o])));
     await Promise.all(tasks);
     [PALETTES[0], PALETTES[2], PALETTES[3], PALETTES[5]].forEach((p, i) => this.flag(-90.5, -6 + i * 7.5, p.colors, 6, Math.PI / 2));
     for (const z of [-30, -21, 20, 34]) this.tree(-66.5, z, 1);
-    for (const z of [-23, -9, 5, 19, 33]) this.palm(-88.6, z, 1 + rnd() * .25);
+    for (const z of [-23, -9, 28, 33]) this.palm(-88.6, z, 1 + rnd() * .25);
     for (const [x, z] of [[-94, 21], [-95, 27], [-93.5, 35], [-95.2, 40]]) this.palm(x, z, .9 + rnd() * .3);
   }
 
