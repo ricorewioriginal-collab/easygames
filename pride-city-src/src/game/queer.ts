@@ -70,7 +70,7 @@ export async function applyStyle(scene: Scene, root: AbstractMesh | { getChildMe
     const kind = /_body$/.test(orig.name) ? 'body' : /_head$/.test(orig.name) ? 'head' : /_opacity$/.test(orig.name) ? 'strands' : '';
     if (!kind || (kind === 'body' && !def.top && def.legs === undefined) || (kind !== 'body' && def.hair === undefined)) continue;
     const key = [id, base, style, kind].join('|');
-    const cache = sceneCache(scene, caches), make = () => (kind === 'body' ? body(scene, m, mm, def, id, base.endsWith('f')) : head(scene, m, mm, def.hair!, id, kind === 'strands')).catch(() => null);
+    const cache = sceneCache(scene, caches), make = () => (kind === 'body' ? body(scene, m, mm, def, id, base.endsWith('f'), /^(shirtless|harness|underwear|swim)/.test(base)) : head(scene, m, mm, def.hair!, id, kind === 'strands')).catch(() => null);
     let job = cache.get(key);
     if (!job) { job = make(); cache.set(key, job); }
     let tex = await job;
@@ -140,7 +140,7 @@ function tri(g: Geo, a: number, b: number, c: number, val: (v: number) => [numbe
   }
 }
 
-async function body(scene: Scene, m: Mesh, mat: PBRMaterial, def: StyleDef, id: string, fem = false): Promise<Texture | null> {
+async function body(scene: Scene, m: Mesh, mat: PBRMaterial, def: StyleDef, id: string, fem = false, bare = false): Promise<Texture | null> {
   const g = await geo(m, mat); if (!g) return null;
   const { idx, pos } = g, nv = pos.length / 3, zone: Zone[] = new Array(nv);
   let tLo = 1e9, tHi = -1e9, sMax = 1e-6, sr = 0, sg = 0, sb = 0, sn = 0;
@@ -161,8 +161,8 @@ async function body(scene: Scene, m: Mesh, mat: PBRMaterial, def: StyleDef, id: 
   if (top === 'harness') {
     // nackter Oberkörper mit Brustgurt und zwei Schulterriemen, die sich in der Mitte treffen
     // Frauen tragen darunter ein schwarzes Bandeau
-    torso = (t, s, _x, _y, lum) => ((fem && t > .55 && t < .8) || Math.abs(t - .62) < .035 || (t > .62 && Math.abs(Math.abs(s) - (.12 + (t - .62) * 1.25)) < .07) || (t < .62 && t > .3 && Math.abs(s) < .05) ? shade(leather, lum, .3) : skinAt(lum));
-    arm = (_t, _s, _x, _y, lum) => skinAt(lum);
+    torso = (t, s, _x, _y, lum) => ((fem && t > .55 && t < .8) || Math.abs(t - .56) < .032 || (t > .56 && Math.abs(Math.abs(s) - (.1 + (t - .56) * 1.1)) < .065) || (t < .56 && t > .44 && Math.abs(s) < .045) ? shade(leather, lum, .3) : bare ? null : skinAt(lum));   // schon nackt: Haut mit Brustwarzen und Nabel bleibt
+    arm = bare ? null : (_t, _s, _x, _y, lum) => skinAt(lum);
   } else if (top === 'leather') {
     torso = (_t, s, _x, _y, lum) => (Math.abs(s) < .03 ? [150, 150, 160] : shade(leather, lum, .35));   // Reißverschluss
     arm = (_t, _s, _x, _y, lum) => shade(leather, lum, .35);
