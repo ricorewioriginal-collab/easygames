@@ -6,6 +6,7 @@ import { RawTexture, Texture, type Mesh, type PBRMaterial, type Scene, type Abst
 import { palette } from './palettes';
 import { pixels, remember, quietClone, breathe, sharedMat, dropMat } from './texpix';
 import { fullIndices } from './lod';
+import { sceneCache, alive } from './outfit';
 
 export interface StyleDef {
   name: string;
@@ -33,8 +34,10 @@ export const STYLES: Record<string, StyleDef> = {
   drag: { name: 'Drag in Türkis', top: { glitter: 0x00e5d0, crop: true }, legs: { glitter: 0xff2fd2 }, hair: 0xb57bff },
   neon: { name: 'Neon-Haare', hair: 0x3ee69a },
   pink: { name: 'Pinke Haare', hair: 0xff4fb0 },
+  /** Outfit „Harness“ ohne eigenen Look: Gurte auf nackter Haut (nicht in der Zufallsauswahl) */
+  gurt: { name: 'Harness', top: 'harness' },
 };
-export const STYLE_IDS = Object.keys(STYLES);
+export const STYLE_IDS = Object.keys(STYLES).filter((k) => k !== 'gurt');
 
 type Zone = 'torso' | 'arm' | 'leg' | 'hand' | 'other';
 const zoneOf = (bone: string): Zone => {
@@ -50,7 +53,7 @@ const hex = (s: string) => rgb(parseInt(s.slice(1), 16));
 /** fester Zufall je Texel (für Pailletten) */
 const spark = (x: number, y: number) => { let h = Math.imul(x * 374761393 + y * 668265263, 1274126177); h ^= h >>> 15; return (h >>> 0) / 4294967296; };
 
-const cache = new Map<string, Promise<Texture | null>>();
+const caches = new WeakMap<Scene, Map<string, Promise<Texture | null>>>();
 const smalls = new WeakMap<Uint8Array, Uint8Array>();
 const skins = new Map<string, number[]>();
 type Mat = PBRMaterial & { _orig?: PBRMaterial; _style?: string };
@@ -69,10 +72,13 @@ export async function applyStyle(scene: Scene, root: AbstractMesh | { getChildMe
     const kind = /_body$/.test(orig.name) ? 'body' : /_head$/.test(orig.name) ? 'head' : /_opacity$/.test(orig.name) ? 'strands' : '';
     if (!kind || (kind === 'body' && !def.top && def.legs === undefined) || (kind !== 'body' && def.hair === undefined)) continue;
     const key = [id, base, style, kind].join('|');
+    const cache = sceneCache(scene, caches), make = () => (kind === 'body' ? body(scene, m, mm, def, id, base.endsWith('f'), /^(shirtless|harness|underwear|swim)/.test(base)) : head(scene, m, mm, def.hair!, id, kind === 'strands')).catch(() => null);
     let job = cache.get(key);
-    if (!job) { job = (kind === 'body' ? body(scene, m, mm, def, id) : head(scene, m, mm, def.hair!, id, kind === 'strands')).catch(() => null); cache.set(key, job); }
-    const tex = await job; if (!tex) continue;
-    const nm = sharedMat(scene, 's|' + key + '|' + mm.uniqueId, () => quietClone(scene, mm, orig.name + '_' + style, (c) => { c.albedoTexture = tex; if (kind === 'strands') c.opacityTexture = tex; })) as Mat;
+    if (!job) { job = make(); cache.set(key, job); }
+    let tex = await job;
+    if (tex && !alive(tex)) { job = make(); cache.set(key, job); tex = await job; }
+    if (!alive(tex) || m.isDisposed()) continue;
+    const nm = sharedMat(scene, 's|' + key + '|' + mm.uniqueId + '|' + tex.uniqueId, () => quietClone(scene, mm, orig.name + '_' + style, (c) => { c.albedoTexture = tex; if (kind === 'strands') c.opacityTexture = tex; })) as Mat;
     nm._orig = orig; nm._style = style;
     if (mm._orig && mm !== nm) dropMat(mm);
     m.material = nm;
@@ -145,7 +151,7 @@ function tri(g: Geo, a: number, b: number, c: number, val: (v: number) => [numbe
   }
 }
 
-async function body(scene: Scene, m: Mesh, mat: PBRMaterial, def: StyleDef, id: string): Promise<Texture | null> {
+async function body(scene: Scene, m: Mesh, mat: PBRMaterial, def: StyleDef, id: string, fem = false, bare = false): Promise<Texture | null> {
   const g = await geo(m, mat); if (!g) return null;
   const { idx, pos } = g, nv = pos.length / 3, zone: Zone[] = new Array(nv);
   let tLo = 1e9, tHi = -1e9, sMax = 1e-6, sr = 0, sg = 0, sb = 0, sn = 0;
@@ -166,8 +172,9 @@ async function body(scene: Scene, m: Mesh, mat: PBRMaterial, def: StyleDef, id: 
   let torso: Fn = null, arm: Fn = null;
   if (top === 'harness') {
     // nackter Oberkörper mit Brustgurt und zwei Schulterriemen, die sich in der Mitte treffen
-    torso = (t, s, _x, _y, lum) => (Math.abs(t - .62) < .035 || (t > .62 && Math.abs(Math.abs(s) - (.12 + (t - .62) * 1.25)) < .07) || (t < .62 && t > .3 && Math.abs(s) < .05) ? shade(leather, lum, .3) : skinAt(lum));
-    arm = (_t, _s, _x, _y, lum) => skinAt(lum);
+    // Frauen tragen darunter ein schwarzes Bandeau
+    torso = (t, s, _x, _y, lum) => ((fem && t > .55 && t < .8) || Math.abs(t - .56) < .032 || (t > .56 && Math.abs(Math.abs(s) - (.1 + (t - .56) * 1.1)) < .065) || (t < .56 && t > .44 && Math.abs(s) < .045) ? shade(leather, lum, .3) : bare ? null : skinAt(lum));   // schon nackt: Haut mit Brustwarzen und Nabel bleibt
+    arm = bare ? null : (_t, _s, _x, _y, lum) => skinAt(lum);
   } else if (top === 'leather') {
     torso = (_t, s, _x, _y, lum) => (Math.abs(s) < .03 ? [150, 150, 160] : shade(leather, lum, .35));   // Reißverschluss
     arm = (_t, _s, _x, _y, lum) => shade(leather, lum, .35);

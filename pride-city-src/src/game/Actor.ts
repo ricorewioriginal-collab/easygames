@@ -1,7 +1,8 @@
 /* Animierte Figur: echte Menschen aus Microsoft Rocketbox (MIT) mit geteilten Animationen (Laufen, Rennen, Tanzen,
    Jubeln, Winken, Sitzen, Reden …), weiche Überblendung zwischen Animationen. Läuft in jeder Babylon-Szene. */
-import { applyOutfit } from './outfit';
+import { applyOutfit, skinOf } from './outfit';
 import { applyStyle } from './queer';
+import { bareBody, bareId, BARE_OUTFITS, type Bare } from './koerper';
 import { AnimationGroup, Node3, Vector3, type Scene, type TransformNode, type AbstractMesh, type Mesh } from '../engine/bjs';
 import { container, skinned } from '../engine/Assets';
 import { avatarFor, type Avatar } from './avatars';
@@ -147,7 +148,7 @@ export class Actor {
     a.root.onDisposeObservable.add(() => { set!.delete(a); made.forEach((g) => g.dispose()); });
     a.tick = scene.getFrameId();
     // Detailstufen: einmal je Modell vereinfacht, danach wählt jede Figur nach Abstand (lod.ts)
-    root.getChildMeshes().forEach((m) => { if ((m as Mesh).skeleton) void lodFor(m as Mesh).then((l) => { if (l && !a.root.isDisposed()) a.lods.push([m as Mesh, l]); }); });
+    root.getChildMeshes().forEach((m) => { if ((m as Mesh).skeleton) a.addLod(m as Mesh); });
     a.play('idle', 0);
     await a.dress();
     return a;
@@ -160,21 +161,42 @@ export class Actor {
     if (this.outfitKey() !== before) void this.dress();
   }
   private dressed = 'clothed/';
+  private bare: Bare | null = null;
+  /** Körper-Meshes der eigenen Figur (ohne den angelegten Sport-Körper) */
+  private ownBody() { return this.model.getChildMeshes().filter((m) => (m as Mesh).skeleton && !(this.bare && m.isDescendantOf(this.bare.root)) && /_body/.test(((m.material as { _orig?: { name: string } })?._orig || m.material)?.name || '')) as Mesh[]; }
   private styled = false;
-  private outfitKey() { return (this.look.outfit || 'clothed') + '/' + (this.look.style || ''); }
+  /** Harness ohne eigenen Look: Gurte werden als Look auf die nackte Haut gemalt */
+  private styleNow() { return this.look.style || (this.look.outfit === 'harness' ? 'gurt' : undefined); }
+  private outfitKey() { return (this.look.outfit || 'clothed') + '/' + (this.styleNow() || ''); }
   /** Outfit (oberkörperfrei, Unterwäsche, Badesachen, Harness) auf die Textur malen */
   async dress() {
     const k = this.outfitKey(); if (k === this.dressed || this.avatar.job === 'kid') return;
     this.dressed = k;
     try {
-      await applyOutfit(this.scene, this.model, this.avatar.id, this.look.outfit, this.avatar.g === 'f');
+      // ohne Kleidung: eng anliegender echter Körper statt umgemalter Kleidung (koerper.ts)
+      const bare = !!this.look.outfit && BARE_OUTFITS.has(this.look.outfit);
+      if (bare && !this.bare) {
+        this.bare = await bareBody(this.scene, this.model, this.bones, this.avatar.g);
+        this.bare?.meshes.forEach((m) => this.addLod(m as Mesh));
+        const own0 = this.ownBody()[0], sk = own0 && await skinOf(own0);
+        if (sk) this.bare?.tint(sk);
+      }
+      if (this.dressed !== k || this.root.isDisposed()) return;
+      const own = this.ownBody();
+      const useBare = bare && !!this.bare;
+      own.forEach((m) => m.setEnabled(!useBare));
+      if (this.bare) this.bare.root.setEnabled(useBare);
+      if (useBare) await applyOutfit(this.scene, this.bare!.root, this.avatar.id + '@' + bareId(this.avatar.g), this.look.outfit, this.avatar.g === 'f', own[0]);
+      else await applyOutfit(this.scene, this.model, this.avatar.id, this.look.outfit, this.avatar.g === 'f');
       // Szene-Look der Reihe nach im Hintergrund malen: das Laden wartet nie darauf
-      if (this.look.style || this.styled) {
+      const style = this.styleNow();
+      if (style || this.styled) {
         this.styled = true;
         const base = (this.look.outfit || 'clothed') + (this.avatar.g === 'f' ? 'f' : 'm');
         styleQueue = styleQueue.then(async () => {
           if (this.root.isDisposed() || this.dressed !== k) return;
-          await applyStyle(this.scene, this.model, this.avatar.id, this.look.style, base);
+          const parts = { getChildMeshes: () => this.model.getChildMeshes().filter((m) => m.isEnabled()) };
+          await applyStyle(this.scene, parts, this.avatar.id, style, base);
           await new Promise((r) => setTimeout(r, 40));
         }).catch((e) => console.warn('style', e));
       }
@@ -193,6 +215,14 @@ export class Actor {
   }
 
   private lods: Array<[Mesh, Lod]> = [];
+  /** Detailstufen für ein Figuren-Mesh anmelden (sobald berechnet, gleich auf die aktuelle Stufe stellen) */
+  private addLod(m: Mesh) {
+    void lodFor(m).then((l) => {
+      if (!l || this.root.isDisposed() || m.isDisposed()) return;
+      this.lods.push([m, l]);
+      const s = m.subMeshes?.[0], r = l.ranges[Math.min(this.lodLevel, l.ranges.length - 1)]; if (s) { s.indexStart = r[0]; s.indexCount = r[1]; }
+    });
+  }
   private lodLevel = 0;
   private hidden = false;
   private mask = 0;
