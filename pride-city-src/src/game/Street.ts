@@ -156,11 +156,17 @@ export class Street {
       const def = carDef(id);
       let o: Node3;
       // der Flitzer zum Fliegen steht neben dem Weltentor (Form je nach 18+ setzt CityScene)
-      if (def.fly) { o = new Node3('rakete', this.scene); buildFlitzer(this.scene, o, false); o.parent = this.world.root; }
-      else o = await this.world.car(def.file);
-      o.position.set(x, def.fly ? .75 : .1, z); o.rotation.y = yaw;
+      if (def.fly) { this.addFlyer(x, z, yaw); continue; }
+      o = await this.world.car(def.file);
+      o.position.set(x, .1, z); o.rotation.y = yaw;
       this.parked.push({ o, name: def.name, yaw, v: 0, def });
     }
+  }
+  /** ein Flitzer zum Fliegen (Form je nach 18+ setzt CityScene); steht am Weltentor und auf den Inseln */
+  addFlyer(x: number, z: number, yaw: number) {
+    const def = carDef('rakete'), o = new Node3('rakete', this.scene); buildFlitzer(this.scene, o, false); o.parent = this.world.root;
+    o.position.set(x, .75, z); o.rotation.y = yaw;
+    this.parked.push({ o, name: def.name, yaw, v: 0, def });
   }
   /** Eigenen Wagen hinstellen (ersetzt den bisherigen) */
   async spawnOwn(def: CarDef, x: number, z: number, yaw: number, hue: number) {

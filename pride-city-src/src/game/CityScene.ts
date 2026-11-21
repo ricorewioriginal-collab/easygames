@@ -17,7 +17,8 @@ import type { Marker } from '../ui/Hud';
 import { type Gig, pickCall, fmtTime } from './gigs';
 import { collect, collectNotes, nextFare } from './empire';
 import { Street, type Parked } from './Street';
-import { WORLDS, cityGate, cityIsle } from './worlds';
+import { WORLDS, ISLES, worldDef, cityGate, cityIsle } from './worlds';
+import { Isle } from './Isle';
 import { buildFlitzer } from './flitzer';
 import { PLACE_THEMES, houseTheme } from './interiors';
 import { Weather, SKY } from './weather';
@@ -47,7 +48,7 @@ export class CityScene implements GameScene {
   private cam = { yaw: Math.PI, pitch: .38, dist: 7.5, tYaw: Math.PI };
   private camPos = new Vector3();
   private stickerMeshes: Mesh[] = [];
-  private near: { kind: 'npc' | 'poi' | 'street' | 'car' | 'house' | 'life' | 'buddy' | 'friend'; id: string; label: string } | null = null;
+  private near: { kind: 'npc' | 'poi' | 'street' | 'car' | 'house' | 'life' | 'buddy' | 'friend' | 'isle'; id: string; label: string } | null = null;
   street!: Street;
   combat!: Combat;
   kerb!: Kerb;
@@ -103,6 +104,8 @@ export class CityScene implements GameScene {
     }));
     this.street = new Street(sc, this.world);
     await this.street.build();
+    // Welten als echte Inseln vor dem Kai (nahtlos, Isle.ts), je mit einem Flitzer am Brückentor
+    for (const [id, at] of Object.entries(ISLES)) { const def = worldDef(id); if (!def) continue; const i = new Isle(this.g, sc, this.world, def, at.x, at.z); await i.build(); this.isles.push(i); this.street.addFlyer(i.pad[0], i.pad[1], i.yawW(Math.PI)); }
     this.combat = new Combat(this.g, this, sc); this.combat.init();
     this.kerb = new Kerb(this.g, this);
     this.g.hud.onWeapon = () => { if (this.mode === 'play') this.combat.cycle(); };
@@ -119,6 +122,14 @@ export class CityScene implements GameScene {
       c.fillStyle = '#d8c48a'; c.fillRect(px(-97), px(17), 6 * 2, 26 * 2);        // Strand
       c.fillStyle = '#7a5a3a'; c.fillRect(px(-111), px(-3.4), 20 * 2, 2.8 * 2);   // Steg
       c.fillStyle = '#4c7a4a'; c.fillRect(px(35), px(35), 20 * 2, 20 * 2);        // Park
+      for (const [id, at] of Object.entries(ISLES)) {                           // Inseln der Welten mit Brücke und Ringstraße
+        const d = worldDef(id); if (!d) continue;
+        c.fillStyle = '#c9ccd6'; c.fillRect(px(at.x), px(at.z - 5), (-91 - at.x) * 2, 10 * 2);
+        c.fillStyle = '#e8dcae'; c.beginPath(); c.arc(px(at.x), px(at.z), (d.r + 5) * 2, 0, 7); c.fill();
+        c.fillStyle = '#' + d.ground.toString(16).padStart(6, '0'); c.globalAlpha = .75; c.beginPath(); c.arc(px(at.x), px(at.z), d.r * 2, 0, 7); c.fill(); c.globalAlpha = 1;
+        c.fillStyle = '#c9ccd6'; c.fillRect(px(at.x), px(at.z - 3.6), d.r * 2, 7.2 * 2);
+        c.strokeStyle = '#c9ccd6'; c.lineWidth = 14; c.strokeRect(px(at.x - 10), px(at.z - 20), 30 * 2, 40 * 2);
+      }
       c.fillStyle = '#c9ccd6';
       for (let i = -60; i <= 60; i += 30) { c.fillRect(px(-64), px(i - 3.6), 128 * 2, 7.2 * 2); c.fillRect(px(i - 3.6), px(-64), 7.2 * 2, 128 * 2); }
       c.fillRect(px(-80), px(-1.8), 20 * 2, 3.6 * 2);                             // Kaistraße
@@ -242,6 +253,7 @@ export class CityScene implements GameScene {
     if (this.g.where === 'city' && this.mode === 'play') this.combat?.showWeapon(); else { this.g.hud.weapon(null); this.g.hud.wanted(0); }
     if (this.g.where === 'inside' && this.g.inside) this.g.hud.goal(this.g.inside.theme.icon + ' Drinnen', this.g.inside.theme.title, `Ziel: ${gl.title}`);
     else if (this.g.where === 'home') this.g.hud.goal('Zuhause', 'Deine Wohnung', s.chapter === 1 && s.step === 2 ? 'Schau dich um.' : `Ziel: ${gl.title}`);
+    else if (this.isles.some((i) => i.active)) this.g.hud.goal(...this.isles.find((i) => i.active)!.goal());
     else this.g.hud.goal(chapterLabel(s), gl.title, gl.sub);
     const days = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
     this.g.hud.stats([`${days[(s.day - 1) % 7]} ${this.clock()} ${this.world.night > .5 && (this.weather?.sky || 'klar') === 'klar' ? '🌙' : SKY[this.weather?.sky || 'klar'].icon}`, `💶 ${s.money} €`, `${moodIcon(mood(s))} ${Math.round(mood(s))}`]);
@@ -259,6 +271,7 @@ export class CityScene implements GameScene {
     for (const [id, icon] of marks(s)) { const n = this.npcs.find((x) => x.def.id === id); if (n?.a.root.visible) out.push({ id: 'p' + id, icon, pos: at(n.a.root.position, 2.5) }); }
     const lm = this.life?.marker(); if (lm && !this.drive) out.push(lm);
     if (this.friends?.net.on) for (const m of this.friends.list) { const q = this.friends.posOf(m.id); if (q) out.push({ id: 'fr' + m.id, icon: m.st.c ? '🚗' : '🌐', label: m.name, pos: new Vector3(q.x, m.st.c ? 2.6 : 2.35, q.z) }); }
+    for (const i of this.isles) out.push(...i.markers());
     const ph = this.life?.parade.head(); if (ph && Vector3.Distance(ph, this.player.root.position) > 26) out.push({ id: 'parade', icon: '🏳️‍🌈', label: 'CSD-Parade', pos: ph });
     return out;
   }
@@ -289,6 +302,7 @@ export class CityScene implements GameScene {
     { const lf = this.life.near(p); if (lf && !best) best = { kind: 'life', id: 'life', label: lf }; }
     { const fr = this.friends.net.on && !best ? this.friends.nearest(p, 2.2) : null; if (fr) best = { kind: 'friend', id: fr.id, label: '🌐 ' + fr.name }; }
     { const bp = this.buddy.pos; if (bp && !best && Vector3.Distance(bp, p) < 2.1) best = { kind: 'buddy', id: 'buddy', label: '💬 ' + this.buddy.who!.name }; }
+    if (!best) for (const i of this.isles) if (i.label) best = { kind: 'isle', id: i.def.id, label: i.label };
     if (!best) for (const n of this.npcs) {
       if (!n.a.root.visible) continue;
       const d = Vector3.Distance(n.a.root.position, p);
@@ -337,6 +351,7 @@ export class CityScene implements GameScene {
   interact() {
     if (!this.near || this.g.dialog.open) return;
     if (this.near.kind === 'life') { this.life.interact(this.player.root.position); return; }
+    if (this.near.kind === 'isle') { this.isles.find((i) => i.def.id === this.near!.id)?.use(); return; }
     if (this.near.kind === 'buddy') { this.g.buddyMenu(); return; }
     if (this.near.kind === 'friend') { this.g.friendMenu(this.near.id); return; }
     const c = this.ctx();
@@ -430,11 +445,19 @@ export class CityScene implements GameScene {
     sfx('open');
   }
   /** Wege in die Welten: Tor an der Kaimauer (zu Fuß, im Auto, im Tiefflug) oder Insel vor der Küste (Flug) */
+  /** Welten, die als Insel in der Stadt liegen */
+  readonly isles: Isle[] = [];
+  /** Figur an einen Ort der Stadt setzen (Schnellreise, Ankunft auf einer Insel) */
+  warp(x: number, z: number, yaw: number) {
+    const s = this.g.save.data; s.pos = { x, z, yaw }; s.inside = false;
+    this.player.root.position.set(x, .1, z); this.player.root.rotation.y = yaw; this.cam.yaw = this.cam.tYaw = yaw + Math.PI; this.snapCam();
+  }
   private gateIn = '';
   private worldGates() {
     const p = this.drive ? this.drive.o.position : this.player.root.position, flying = !!this.drive?.def.fly && this.alt > 3;
     let hit = '';
     for (const w of WORLDS) {
+      if (ISLES[w.id]) continue;
       const g = cityGate(w.id), isle = cityIsle(w.id);
       if ((!flying && Math.hypot(p.x - g.x, p.z - g.z) < 1.7) || (flying && Math.hypot(p.x - isle.x, p.z - isle.z) < 13)) hit = w.id;
     }
@@ -445,8 +468,8 @@ export class CityScene implements GameScene {
   private alt = 0;
   /** Flitzer am Weltentor: mit 18+ ein Glitzer-Dildo, sonst eine Rakete */
   private syncFlyer() {
-    const f = this.street.parked.find((c) => c.def.fly), adult = !!this.g.save.data.settings.adult;
-    if (f && f.o.metadata?.adult !== adult) { buildFlitzer(this.scene, f.o, adult); f.o.getChildMeshes().find((m) => m.name === 'flame')?.setEnabled(false); }
+    const adult = !!this.g.save.data.settings.adult;
+    for (const f of this.street.parked) if (f.def.fly && f.o.metadata?.adult !== adult) { buildFlitzer(this.scene, f.o, adult); f.o.getChildMeshes().find((m) => m.name === 'flame')?.setEnabled(false); }
   }
   private moveCar(dt: number) {
     const c = this.drive!, o = c.o, inp = this.g.engine.input, fly = !!c.def.fly;
@@ -469,7 +492,7 @@ export class CityScene implements GameScene {
     o.position.x += Math.sin(o.rotation.y) * c.v * dt; o.position.z += Math.cos(o.rotation.y) * c.v * dt;
     const want = o.position.clone();
     if (!high) this.world.collide(o.position, 1.2);
-    else { o.position.x = clamp(o.position.x, -168, 260); o.position.z = clamp(o.position.z, -120, 120); }
+    else { o.position.x = clamp(o.position.x, -215, 260); o.position.z = clamp(o.position.z, -120, 120); }
     if (!fly || this.alt < 2.5) for (const t of this.world.cars) if (Vector3.Distance(t.o.position, o.position) < 3.2) { o.position.copyFrom(before); c.v *= -.25; }
     if (!high && Vector3.Distance(o.position, want) > .02 && Math.abs(c.v) > 4) { c.v *= .4; if (!fly) sfx('miss'); }
     o.position.y = fly ? this.alt + Math.sin(performance.now() / 330) * .08 : .1;
@@ -749,6 +772,7 @@ export class CityScene implements GameScene {
     this.updateCam(dt);
     this.world.follow(this.player.root.position);
     this.world.update(dt, t, this.player.root.position);
+    { const pp = this.player.root.position; for (const i of this.isles) i.update(dt, t, { x: pp.x, z: pp.z, driving: !!this.drive, alt: this.drive?.def.fly ? this.alt : 0, busy, gig: !!this.gig }); }
     // Wetter und Stadtleben (Zufallsereignisse, samstags die Parade)
     if (this.weather.update(dt, s.day, s.time, this.player.root.position) && !busy) { change(s, { fun: 8 }); sfx('win'); g.hud.banner('🌈 Ein Regenbogen über Rainbow City', 'Nach dem Regen. Spaß +8', 'good', 4200); }
     this.friends.update(dt, this.netState());
