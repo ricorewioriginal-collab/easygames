@@ -8,6 +8,7 @@ import '@babylonjs/core/Animations/animatable';
 import '@babylonjs/core/Meshes/thinInstanceMesh';
 import '@babylonjs/core/Materials/Textures/Loaders/envTextureLoader';
 import '@babylonjs/loaders/glTF/2.0';
+import '@babylonjs/core/Particles/particleSystemComponent';
 export { Engine } from '@babylonjs/core/Engines/engine';
 export { Scene } from '@babylonjs/core/scene';
 export { Vector3, Matrix, Quaternion, Vector2 } from '@babylonjs/core/Maths/math.vector';
@@ -54,6 +55,7 @@ export { AssetContainer } from '@babylonjs/core/assetContainer';
 export { AnimationGroup } from '@babylonjs/core/Animations/animationGroup';
 export { Node } from '@babylonjs/core/node';
 export { Tools } from '@babylonjs/core/Misc/tools';
+export { ParticleSystem } from '@babylonjs/core/Particles/particleSystem';
 
 import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';

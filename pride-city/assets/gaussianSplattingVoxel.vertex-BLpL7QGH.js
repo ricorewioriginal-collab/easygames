@@ -1,4 +1,4 @@
-import{b1 as a,bz as o,bA as r,bB as n,bC as l,bG as s}from"./babylon-Bf8I0q6J.js";const e="gaussianSplattingVoxelVertexShader",i=`#include<__decl__gaussianSplattingVertex>
+import{b2 as a,bA as o,bB as r,bC as n,bD as l,bH as s}from"./babylon-CryeMBBY.js";const e="gaussianSplattingVoxelVertexShader",i=`#include<__decl__gaussianSplattingVertex>
 uniform vec2 dataTextureSize;uniform float alpha;uniform mat4 invWorldScale;uniform mat4 viewMatrix;uniform sampler2D rotationsATexture;uniform sampler2D rotationsBTexture;uniform sampler2D rotationScaleTexture;uniform sampler2D centersTexture;uniform sampler2D colorsTexture;
 #if IS_COMPOUND
 uniform mat4 partWorld[MAX_PART_COUNT];uniform float partVisibility[MAX_PART_COUNT];uniform sampler2D partIndicesTexture;

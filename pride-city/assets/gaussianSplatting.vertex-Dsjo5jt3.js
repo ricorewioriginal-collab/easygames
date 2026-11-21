@@ -1,4 +1,4 @@
-import{b1 as e,be as r,bf as n,bg as a,bh as f,bi as s,b3 as d,bj as l,bk as S,bl as P,bm as u,bn as v}from"./babylon-Bf8I0q6J.js";const i="gaussianSplattingVertexShader",o=`#include<sceneUboDeclaration>
+import{b2 as e,bf as r,bg as n,bh as a,bi as f,bj as s,b4 as d,bk as l,bl as S,bm as P,bn as u,bo as v}from"./babylon-CryeMBBY.js";const i="gaussianSplattingVertexShader",o=`#include<sceneUboDeclaration>
 #include<meshUboDeclaration>
 #include<helperFunctions>
 #include<clipPlaneVertexDeclaration>

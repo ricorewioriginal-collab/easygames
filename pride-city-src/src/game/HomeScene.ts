@@ -14,6 +14,7 @@ import { PALETTES } from './palettes';
 import { buildShell, shellTime, RoomCam, type Shell } from './room';
 import type { Theme } from './interiors';
 import { spouse, kid, spouseLook, kidLook } from './family';
+import { HOME_ITEMS, ownsItem, floorOf, lightOf } from './house';
 
 export const HOME_FILES = ['home/bed_double_A', 'home/couch_pillows', 'home/table_low', 'home/rug_rectangle_stripes_A', 'home/lamp_standing', 'home/shelf_A_big', 'home/cabinet_medium_decorated',
   'home/cactus_medium_A', 'home/cactus_small_A', 'home/pictureframe_large_A', 'home/book_set', 'home/armchair_pillows', 'home/lamp_table', 'home/cabinet_small',
@@ -59,7 +60,17 @@ export class HomeScene implements GameScene {
     { id: 'tv', label: '📺 Fernsehen', x: .9, z: 1.75, r: 1.7 },
     { id: 'wardrobe', label: '👗 Kleiderschrank', x: 3.5, z: 2.5, r: 1.4 },
     { id: 'door', label: '🚪 Rausgehen', x: W / 2 - .7, z: .3, r: 1.2 },
+    { id: 'annex', label: '🔨 Zuhause ausbauen', x: 3.0, z: D / 2 - .75, r: 1.1 },
   ];
+  /** Ausbau (house.ts): Möbel/Deko-Gruppen, ihre Stellen, Bodenbelag, Licht */
+  private ups = new Map<string, TransformNode>();
+  private upSpots: Spot[] = [];
+  private floorPlane: Mesh | null = null;
+  private floorMats = new Map<string, PBRMaterial>();
+  private discoBall: TransformNode | null = null;
+  private bedB = { x0: -4.4, x1: -2, z0: -3.4, z1: -1, top: .6 };
+  /** Wohin nach dem Anbau: an die Anbau-Tür statt an die Wohnungstür */
+  fromAnnex = false;
   private window!: PBRMaterial;
   private steam: Mesh | null = null;
   private tvScreen!: PBRMaterial;
@@ -115,7 +126,7 @@ export class HomeScene implements GameScene {
       if (o.col !== false) this.boxes.push({ x: (b.min.x + b.max.x) / 2, z: (b.min.z + b.max.z) / 2, hx: Math.max(.15, (b.max.x - b.min.x) / 2 - .08), hz: Math.max(.15, (b.max.z - b.min.z) / 2 - .08) });
       return m;
     };
-    await Promise.all([
+    const [bed] = await Promise.all([
       put('home/bed_double_A', -3.1, 0, { back: true, left: true, s: K * .85 }),
       put('home/cabinet_small', -1.45, 0, { back: true, s: K * .6 }),
       put('home/lamp_table', -1.45, -3.1, { y: .54, s: K * .55, col: false }),
@@ -132,6 +143,15 @@ export class HomeScene implements GameScene {
       put('home/cactus_medium_A', -1.1, 3.05, { s: K * .8 }),
       put('home/shelf_A_big', 0, 2.5, { right: true, rot: Math.PI / 2 }),
     ]);
+    { const b = bed.getHierarchyBoundingVectors(true); this.bedB = { x0: b.min.x, x1: b.max.x, z0: b.min.z, z1: b.max.z, top: b.max.y }; }
+    // Tür zum Anbau an der vorderen Wand (rechts neben dem Fenster)
+    { const ax = 3.0, az = D / 2 - .04, trim = pbr(sc, 0xffffff, .5);
+      const d2 = box(sc, 1.2, 2.4, .06); d2.material = pbr(sc, 0xff4fa3, .6); d2.position.set(ax, 1.2, az);
+      for (const x of [ax - .66, ax + .66]) { const p2 = box(sc, .1, 2.55, .1); p2.material = trim; p2.position.set(x, 1.27, az - .02); }
+      const k2 = sphere(sc, .06, 10); k2.material = pbr(sc, 0xffd23b, .3, .8); k2.position.set(ax - .4, 1.1, az - .07);
+      const tx = canvasTex(sc, 256, 64, (g2) => { g2.fillStyle = '#2a1650'; g2.fillRect(0, 0, 256, 64); g2.font = '900 34px system-ui, sans-serif'; g2.textAlign = 'center'; g2.textBaseline = 'middle'; g2.fillStyle = '#ffd23b'; g2.fillText('🔨 ANBAU', 128, 34); });
+      const sg2 = planeZ(sc, 1.1, .28); sg2.material = glow(sc, 0xffffff, 1.2, { tex: tx }); sg2.position.set(ax, 2.66, az - .06); sg2.rotation.y = Math.PI;
+      this.boxes.push({ x: ax, z: az - .05, hx: .6, hz: .08 }); }
     const shelfBooks = await instance(sc, 'home/book_set.gltf'); shelfBooks.scaling.setAll(K * .8); shelfBooks.rotation.y = Math.PI / 2; shelfBooks.position.set(W / 2 - .3, .62, 2.5);
     // Herdplatte glüht beim Kochen
     this.stoveGlow = glow(sc, 0x220800, 1);
@@ -187,6 +207,101 @@ export class HomeScene implements GameScene {
   /** Zeigt die Spuren am Morgen danach */
   showMess() { const s = this.g.save.data; this.mess.setEnabled(s.settings.adult && s.flags.wild === s.day); }
 
+  /** Ausbau anwenden: gekaufte Möbel und Deko zeigen, Boden und Licht setzen, Stellen zum Benutzen */
+  applyUpgrades() {
+    const s = this.g.save.data;
+    for (const it of HOME_ITEMS) { const on = ownsItem(s, it.id); if (on) this.upgrade(it.id).setEnabled(true); else this.ups.get(it.id)?.setEnabled(false); }
+    this.upSpots = HOME_ITEMS.filter((it) => it.use && ownsItem(s, it.id)).map((it) => ({ id: 'up_' + it.id, label: it.use!.label, x: it.use!.x, z: it.use!.z, r: 1.1 }));
+    const f = floorOf(s);
+    if (f.id === 'dielen') this.floorPlane?.setEnabled(false);
+    else {
+      if (!this.floorPlane) { this.floorPlane = ground(this.scene, W - .02, D - .02); this.floorPlane.position.y = .006; this.floorPlane.receiveShadows = true; this.floorPlane.isPickable = false; this.floorPlane.freezeWorldMatrix(); }
+      this.floorPlane.material = this.floorMat(f.id); this.floorPlane.setEnabled(true);
+    }
+    const lamp = this.scene.getLightByName('lamp') as PointLight | null; if (lamp) lamp.diffuse = col(lightOf(s).c);
+  }
+  private floorMat(id: string) {
+    let m = this.floorMats.get(id); if (m) return m;
+    const sc = this.scene;
+    m = pbr(sc, 0xffffff, id === 'marmor' ? .18 : id === 'teppich' ? 1 : .45, 0);
+    m.albedoTexture = canvasTex(sc, 512, 512, (g2) => {
+      if (id === 'marmor') {
+        for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) { g2.fillStyle = (x + y) % 2 ? '#ece8f0' : '#f8f6fa'; g2.fillRect(x * 128, y * 128, 128, 128); }
+        g2.strokeStyle = 'rgba(150,140,170,.35)'; g2.lineWidth = 2; let r = 3; const rnd = () => (r = (r * 16807) % 2147483647) / 2147483647;
+        for (let i = 0; i < 18; i++) { g2.beginPath(); let x = rnd() * 512, y = rnd() * 512; g2.moveTo(x, y); for (let j = 0; j < 6; j++) { x += (rnd() - .3) * 90; y += (rnd() - .5) * 60; g2.lineTo(x, y); } g2.stroke(); }
+        g2.strokeStyle = 'rgba(120,110,140,.5)'; g2.lineWidth = 2; for (let i = 0; i <= 512; i += 128) { g2.beginPath(); g2.moveTo(i, 0); g2.lineTo(i, 512); g2.moveTo(0, i); g2.lineTo(512, i); g2.stroke(); }
+      } else if (id === 'regenbogen') {
+        const cs = ['#e40303', '#ff8c00', '#ffed00', '#008026', '#004dff', '#750787'];
+        for (let i = 0; i < 24; i++) { g2.fillStyle = cs[i % 6]; g2.fillRect(0, i * 512 / 24, 512, 512 / 24 + 1); }
+        g2.fillStyle = 'rgba(255,255,255,.35)'; g2.fillRect(0, 0, 512, 512);
+        g2.strokeStyle = 'rgba(60,30,20,.35)'; g2.lineWidth = 2; for (let i = 0; i < 24; i++) { const y = i * 512 / 24; g2.beginPath(); g2.moveTo(0, y); g2.lineTo(512, y); g2.stroke(); for (let x = (i % 3) * 60; x < 512; x += 180) { g2.beginPath(); g2.moveTo(x, y); g2.lineTo(x, y + 512 / 24); g2.stroke(); } }
+      } else { g2.fillStyle = '#8a5cc8'; g2.fillRect(0, 0, 512, 512); let r = 9; const rnd = () => (r = (r * 16807) % 2147483647) / 2147483647; for (let i = 0; i < 4000; i++) { g2.fillStyle = rnd() < .5 ? 'rgba(255,255,255,.12)' : 'rgba(40,10,80,.15)'; g2.fillRect(rnd() * 512, rnd() * 512, 2, 2); } }
+    });
+    const tx = m.albedoTexture as typeof m.albedoTexture & { uScale: number; vScale: number; wrapU: number; wrapV: number };
+    tx.wrapU = tx.wrapV = 1; tx.uScale = W / 3; tx.vScale = D / 3;
+    this.floorMats.set(id, m); return m;
+  }
+  /** Ein Möbelstück/Deko einmalig bauen */
+  private upgrade(id: string): TransformNode {
+    let g = this.ups.get(id); if (g) return g;
+    const sc = this.scene; g = new TransformNode('up_' + id, sc); this.ups.set(id, g);
+    const add = (m: Mesh, mt: PBRMaterial, x: number, y: number, z: number) => { m.material = mt; m.position.set(x, y, z); m.parent = g!; cast(m); return m; };
+    const B = this.bedB;
+    if (id === 'himmelbett') {
+      const wood = pbr(sc, 0xffffff, .5), cloth = pbr(sc, 0xff9ad5, .9, 0, { alpha: .75, double: true });
+      for (const [x, z] of [[B.x0 + .06, B.z0 + .06], [B.x1 - .06, B.z0 + .06], [B.x0 + .06, B.z1 - .06], [B.x1 - .06, B.z1 - .06]]) add(cyl(sc, .05, .05, 2.25, 8), wood, x, 1.125, z);
+      add(box(sc, B.x1 - B.x0, .06, B.z1 - B.z0), cloth, (B.x0 + B.x1) / 2, 2.25, (B.z0 + B.z1) / 2);
+      for (const z of [B.z0 + .05, B.z1 - .05]) add(box(sc, B.x1 - B.x0, .5, .02), cloth, (B.x0 + B.x1) / 2, 2.0, z);
+    } else if (id === 'musik') {
+      const blk = pbr(sc, 0x18181f, .5), cone = pbr(sc, 0x3a3a44, .3, .6);
+      for (const x of [-.35, 2.15]) { add(box(sc, .38, 1.1, .36), blk, x, .55, -.25); for (const y of [.35, .8]) { const c = add(cyl(sc, .12, .12, .02, 16), cone, x, y, -.06); c.rotation.x = Math.PI / 2; } }
+      this.boxes.push({ x: -.35, z: -.25, hx: .19, hz: .18 }, { x: 2.15, z: -.25, hx: .19, hz: .18 });
+    } else if (id === 'hausbar') {
+      add(box(sc, .5, .95, 1.3), pbr(sc, 0x5b3b8c, .5), -W / 2 + .3, .475, 1.2);
+      add(box(sc, .56, .05, 1.36), pbr(sc, 0xffc83d, .3, .8), -W / 2 + .3, .97, 1.2);
+      add(box(sc, .03, .04, 1.2), glow(sc, 0xff4fa3, 1.6), -W / 2 + .56, .12, 1.2);
+      const bottle = add(cyl(sc, .04, .05, .28, 8), pbr(sc, 0x3ee69a, .1, 0, { alpha: .8 }), -W / 2 + .3, 1.14, .7);
+      const ms = new Float32Array(5 * 16); for (let i = 0; i < 5; i++) Matrix.Translation(0, 0, i * .25).copyToArray(ms, i * 16); bottle.thinInstanceSetBuffer('matrix', ms, 16, true);
+      this.boxes.push({ x: -W / 2 + .3, z: 1.2, hx: .25, hz: .65 });
+    } else if (id === 'hantel') {
+      const pad = pbr(sc, 0x1a1a22, .7), steel = pbr(sc, 0xaab0b8, .3, .9);
+      add(box(sc, .36, .08, 1.15), pad, -2.6, .45, 1.55);
+      for (const z of [1.1, 2.0]) add(box(sc, .06, .42, .06), steel, -2.6, .21, z);
+      const bar = add(cyl(sc, .02, .02, 1.5, 8), steel, -2.6, .95, 1.25); bar.rotation.z = Math.PI / 2;
+      for (const x of [-3.25, -1.95]) { const w = add(cyl(sc, .17, .17, .06, 16), pad, x, .95, 1.25); w.rotation.z = Math.PI / 2; }
+      for (const z of [1.25]) for (const x of [-2.95, -2.25]) add(box(sc, .05, .5, .05), steel, x, .7, z);
+      this.boxes.push({ x: -2.6, z: 1.55, hx: .2, hz: .58 });
+    } else if (id === 'aquarium') {
+      add(box(sc, 1.3, .6, .45), pbr(sc, 0x2a1a3a, .6), -2.1, .3, D / 2 - .3);
+      add(box(sc, 1.26, .62, .42), glow(sc, 0x3aa8ff, .9, { alpha: .55 }), -2.1, .92, D / 2 - .3);
+      add(box(sc, 1.2, .06, .38), pbr(sc, 0xe8d4a0, .9), -2.1, .64, D / 2 - .3);
+      const fish = add(sphere(sc, .045, 6), glow(sc, 0xffffff, 1.4), -2.1, .95, D / 2 - .3); fish.scaling.set(1.6, 1, .6);
+      const ms = new Float32Array(9 * 16), cs = new Float32Array(9 * 4);
+      for (let i = 0; i < 9; i++) { Matrix.Translation(-.5 + (i * .37) % 1, ((i * .23) % .4) - .2, ((i * .17) % .26) - .13).copyToArray(ms, i * 16); const c = col(PALETTES[0].colors[i % 6], 1.3); cs.set([c.r, c.g, c.b, 1], i * 4); }
+      fish.thinInstanceSetBuffer('matrix', ms, 16, true); fish.thinInstanceSetBuffer('color', cs, 4, true);
+      this.boxes.push({ x: -2.1, z: D / 2 - .3, hx: .65, hz: .23 });
+    } else if (id === 'flaggen') {
+      const flags: string[][] = [['#e40303', '#ff8c00', '#ffed00', '#008026', '#004dff', '#750787'], ['prog'], ['#5bcefa', '#f5a9b8', '#ffffff', '#f5a9b8', '#5bcefa'], ['#d60270', '#d60270', '#9b4f96', '#0038a8', '#0038a8'], ['#d52d00', '#ff9a56', '#ffffff', '#d362a4', '#a30262'], ['#fcf434', '#ffffff', '#9c59d1', '#2c2c2c']];
+      flags.forEach((cs, i) => {
+        const tx = canvasTex(sc, 96, 64, (g2) => {
+          const st = cs[0] === 'prog' ? ['#e40303', '#ff8c00', '#ffed00', '#008026', '#004dff', '#750787'] : cs;
+          st.forEach((c, j) => { g2.fillStyle = c; g2.fillRect(0, j * 64 / st.length, 96, 64 / st.length + 1); });
+          if (cs[0] === 'prog') for (const [c, o] of [['#000000', 0], ['#784f17', 8], ['#5bcefa', 16], ['#f5a9b8', 24], ['#ffffff', 32]] as const) { g2.fillStyle = c; g2.beginPath(); g2.moveTo(o, 0); g2.lineTo(o + 32, 32); g2.lineTo(o, 64); g2.lineTo(o - 14, 64); g2.lineTo(o + 18, 32); g2.lineTo(o - 14, 0); g2.closePath(); g2.fill(); }
+        });
+        const f = planeZ(sc, .5, .33); f.material = pbr(sc, 0xffffff, .85); (f.material as PBRMaterial).albedoTexture = tx; f.rotation.y = Math.PI; f.parent = g!;
+        f.position.set(-2.75 + (i % 3) * .62, i < 3 ? 2.45 : 2.0, D / 2 - .03);
+      });
+    } else if (id === 'neon') {
+      const tx = canvasTex(sc, 512, 96, (g2) => { g2.font = '900 64px system-ui, sans-serif'; g2.textAlign = 'center'; g2.textBaseline = 'middle'; g2.shadowColor = '#ff4fa3'; g2.shadowBlur = 18; g2.fillStyle = '#ff6ad5'; g2.fillText('LOVE IS LOVE', 256, 50, 500); }, true);
+      const n = planeZ(sc, 2.4, .45); n.material = glow(sc, 0xffffff, 1.6, { tex: tx }); n.position.set(1.0, 2.4, -D / 2 + .04); n.parent = g;
+    } else if (id === 'disco') {
+      this.discoBall = new TransformNode('discoSpin', sc); this.discoBall.parent = g; this.discoBall.position.set(-.3, H - .26, -1.5);
+      const ball = sphere(sc, .17, 14); ball.material = pbr(sc, 0xe8e8f0, .1, 1, { emissive: 0x9090b0, ei: .4 }); ball.parent = this.discoBall;
+      const wire = cyl(sc, .008, .008, .1, 4); wire.material = pbr(sc, 0x222222, .5); wire.position.set(-.3, H - .05, -1.5); wire.parent = g;
+    }
+    return g;
+  }
+
   /** Neue Figur, wenn im Editor die Figur gewechselt wurde */
   async syncPlayer() {
     const s = this.g.save.data, look = playerLook(s);
@@ -199,8 +314,9 @@ export class HomeScene implements GameScene {
   enter() {
     this.showMess();
     void this.syncFamily();
-    this.player.root.position.set(W / 2 - 1.9, 0, .3);
-    this.player.root.rotation.y = -Math.PI / 2 - .5;
+    this.applyUpgrades();
+    if (this.fromAnnex) { this.fromAnnex = false; this.player.root.position.set(3.0, 0, D / 2 - 1.1); this.player.root.rotation.y = Math.PI; }
+    else { this.player.root.position.set(W / 2 - 1.9, 0, .3); this.player.root.rotation.y = -Math.PI / 2 - .5; }
     this.cam.reset(.5, .4);
     const s = this.g.save.data;
     this.player.setLook(playerLook(s));
@@ -277,7 +393,7 @@ export class HomeScene implements GameScene {
         this.player.play('walk', .18, Math.max(1, 3.6 * Math.min(1, mag) / 1.02 * .55));
       } else if (this.player.anim === 'walk') this.player.play('idle');
       let best: Spot | null = null, bd = 9;
-      for (const s of [...this.spots, ...this.fam.spots]) { const d = Math.hypot(s.x - p.x, s.z - p.z); if (d < s.r && d < bd) { bd = d; best = s; } }
+      for (const s of [...this.spots, ...this.fam.spots, ...this.upSpots]) { const d = Math.hypot(s.x - p.x, s.z - p.z); if (d < s.r && d < bd) { bd = d; best = s; } }
       g.hud.prompt(best ? best.label : null);
       g.touch.label(best ? 'Nutzen' : 'Aktion');
       if (inp.pressed('confirm') && best) { inp.consume('confirm'); this.player.play('interact'); g.homeAction(best.id); }
@@ -289,6 +405,7 @@ export class HomeScene implements GameScene {
     const st = g.save.data.settings;
     this.cam.update(dt, this.camera, p, this.player.root.rotation.y, { look: inp.look, move: inp.move, speed: st.camSpeed, invertY: st.invertY, busy, portrait: g.engine.aspect < 1 });
     shellTime(this.shell, g.city.world.night, t);
+    if (this.discoBall?.isEnabled()) this.discoBall.rotation.y += dt * .7;
     if (this.steam) { this.steam.scaling.y = 1.4 + Math.sin(t * 4) * .15; (this.steam.material as PBRMaterial).alpha = .3 + Math.sin(t * 3) * .08; }
     this.stoveGlow.albedoColor = col(this.activity === 'stove' ? 0xff5a1a : 0x220800, this.activity === 'stove' ? 2 : 1);
     this.tvScreen.albedoColor = this.activity === 'tv' ? Color3.FromHSV(((t * .3) % 1) * 360, .8, 1).toLinearSpace().scale(1.4) : col(0x111122);

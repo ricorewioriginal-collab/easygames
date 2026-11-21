@@ -3,6 +3,7 @@
    Ohne Eingriff bleibt alles wie bisher: Grundertrag, Beliebtheit 60 = Faktor 1. */
 import type { SaveData } from '../engine/Save';
 import type { Business } from './empire';
+import { clubFactor } from './club';
 
 export const STAFF = [
   { name: 'Nur du', mult: 1, wage: 0, fee: 0, text: 'Du schließt selbst auf und ab.' },
@@ -25,6 +26,8 @@ export const SPECIAL: Record<string, { extra: string; event: string; eventText: 
   boutique: { extra: 'Eigene Drag-Kollektion', event: 'Modenschau auf dem Gehweg', eventText: 'Der Bürgersteig wird zum Laufsteg, das Viertel applaudiert.' },
   onelove: { extra: 'Größere Bühne mit Flügel', event: 'Galaabend mit Lady Luma', eventText: 'Ausverkauft, Stehplätze bis zur Tür, drei Zugaben.' },
   kaleido: { extra: 'Restaurierter Kronleuchter', event: 'Großer Ball der Häuser', eventText: 'Fünf Häuser, zwölf Kategorien, eine Nacht.' },
+  komet: { extra: 'Spiegelbühne mit Klavierbar', event: 'Karaoke-Nacht der Stammgäste', eventText: 'Jo singt „I Will Survive“, der ganze Komet singt mit.' },
+  wolke: { extra: 'Glasboden über der Stadt', event: 'Sunset-Session über den Dächern', eventText: 'Sonnenuntergang im 40. Stock, Saxofon und Glitzer-Cocktails.' },
   prisma: { extra: 'Lasershow und zweiter Floor', event: 'Prisma-Nacht mit Star-DJ', eventText: 'Die Schlange reicht bis zum Pride Plaza.' },
 };
 export const ISSUES = [
@@ -41,7 +44,7 @@ export const staffOf = (s: SaveData, b: string) => Math.min(STAFF.length - 1, nu
 export const upOf = (s: SaveData, b: string, u: UpId) => Math.min(UP_MAX, num(s, k(b, u)));
 export const popOf = (s: SaveData, b: string) => Math.max(0, Math.min(100, num(s, k(b, 'pop'), 60)));
 export const issueOf = (s: SaveData, b: string) => ISSUES.find((i) => i.id === s.flags[k(b, 'issue')]) || null;
-const setPop = (s: SaveData, b: string, v: number) => { s.flags[k(b, 'pop')] = Math.max(0, Math.min(100, Math.round(v))); };
+export const setPop = (s: SaveData, b: string, v: number) => { s.flags[k(b, 'pop')] = Math.max(0, Math.min(100, Math.round(v))); };
 
 /** Faktor aus der Beliebtheit: 60 = 1, 100 = 1,2, 0 = 0,7 */
 export const popFactor = (pop: number) => .7 + pop * .005;
@@ -53,8 +56,9 @@ export const eventCost = (b: Business) => Math.round(b.daily * 1.5);
 /** Umsatz und Lohn eines Tages */
 export function daily(s: SaveData, b: Business) {
   const st = STAFF[staffOf(s, b.id)], ups = UPGRADES.reduce((n, u) => n + upOf(s, b.id, u.id), 0);
-  const gross = Math.round(b.daily * st.mult * (1 + ups * UP_GAIN) * popFactor(popOf(s, b.id)) * (issueOf(s, b.id) ? .5 : 1));
-  const wage = Math.round(b.daily * st.wage);
+  const cf = clubFactor(s, b.id);   // Nachtclubs: DJ, Preise, Tür, Deko (club.ts), sonst Faktor 1
+  const gross = Math.round(b.daily * st.mult * (1 + ups * UP_GAIN) * popFactor(popOf(s, b.id)) * (issueOf(s, b.id) ? .5 : 1) * cf.mult);
+  const wage = Math.round(b.daily * st.wage) + cf.cost;
   return { gross, wage, net: gross - wage };
 }
 
@@ -107,6 +111,7 @@ export function dayTick(s: SaveData, b: Business, r: number): { pay: number; not
   // Beliebtheit pendelt sich ein: ohne Personal bei 60, mit Team bei 75, die Geschäftsführung hält sie zwischen 70 und 90
   const pop = popOf(s, b.id);
   if (st === 3 && pop < 70) setPop(s, b.id, pop + 2); else if (pop > [60, 75, 75, 90][st]) setPop(s, b.id, pop - (st ? 1 : 2));
+  { const cp = clubFactor(s, b.id).pop; if (cp) setPop(s, b.id, popOf(s, b.id) + cp); }
   if (issueOf(s, b.id)) { if (st === 3) { delete s.flags[k(b.id, 'issue')]; notes.push(`${b.icon} ${b.name}: Die Geschäftsführung hat das Problem gelöst.`); } }
   else if (r < .1 && s.day - Number(s.flags['biz_' + b.id] || 0) >= 3) { const i = ISSUES[Math.floor(r * 10 * ISSUES.length) % ISSUES.length]; s.flags[k(b.id, 'issue')] = i.id; notes.push(`⚠️ ${b.name}: ${i.text} Bis das geklärt ist, kommt nur der halbe Umsatz.`); }
   return { pay, notes };
