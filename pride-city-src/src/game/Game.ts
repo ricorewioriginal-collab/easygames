@@ -46,6 +46,9 @@ import { WorldScene } from './WorldScene';
 import { WORLDS, worldDef, worldStage, cityGate, SIDE_GATE } from './worlds';
 import { ALPHA, QUICK, EMOTES, MAX_GUESTS, normCode, netError } from './online';
 import { PLACE_THEMES, type Spot, type Theme } from './interiors';
+import { strangerTalk, enterDarkroom, leaveDarkroom, darkVend, type TalkOpts } from './flirtui';
+import { stiTick, testAndTreat, symptoms, inTreatment, STI_INFO, hivUU, exposure } from './sti';
+import type { Stranger } from './flirt';
 import type { Sfx } from '../engine/Audio';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage, level } from './jobs';
 import { photo } from './Photo';
@@ -86,7 +89,9 @@ export class Game {
   /** aktuelle Welt jenseits der Stadt (worlds.ts) */
   world: WorldScene | null = null;
   inside: InteriorScene | null = null;
-  private insideBack = { x: 0, z: 0, yaw: 0 };
+  insideBack = { x: 0, z: 0, yaw: 0 };
+  /** Darkroom: aus welchem Club man kam (zurück durch den Vorhang) */
+  darkFrom: { theme: Theme; place: string } | null = null;
   private insideWorld = false;
   /** Online: zu Gast im Club einer Freundin/eines Freundes */
   clubGuest: (Invite & { from: string }) | null = null;
@@ -333,6 +338,7 @@ export class Game {
   leaveInterior() {
     const s = this.save.data;
     sfx('door');
+    if (this.inside?.theme.id === 'darkroom' && leaveDarkroom(this)) return;
     if (this.clubGuest && this.inside?.netKey === this.clubGuest.p) this.clubGuest = null;
     if (this.insideHome && this.home) { const h = this.home; this.insideHome = false; this.fade(() => { this.where = 'home'; this.inside = null; h.fromAnnex = true; h.setSky(this.city.world.night); this.engine.setScene(h); this.save.write(); }); return; }
     if (this.insideWorld && this.world) { const w = this.world; this.fade(() => { this.where = 'world'; this.inside = null; w.back = { ...this.insideBack }; this.engine.setScene(w); this.save.write(); }); return; }
@@ -376,6 +382,8 @@ export class Game {
     if (a.k === 'annex') { this.annexAct(a.room); return; }
     if (a.k === 'drag') { dragAct(this, a.what); return; }
     if (a.k === 'wagen') { wagenMenu(this); return; }
+    if (a.k === 'darkroom') { if (sc) enterDarkroom(this, sc); return; }
+    if (sc?.theme.id === 'darkroom' && sp.id === 'automat') { darkVend(this); return; }
     if (a.k === 'gl') { const m = miniForGl(a.id); if (m) this.playMini(m.id); else this.roman('gaylife', a.id); return; }
     if (a.k === 'mini') { this.playMini(a.id); return; }
     if (a.k === 'dance') { this.goDance(false); return; }
@@ -396,6 +404,18 @@ export class Game {
     if (a.cost) { s.money -= a.cost; sfx('coin'); }
     if (a.sfx) sfx(a.sfx as Sfx);
     this.fade(() => { this.pass(a.min); change(s, a.d); toast(a.msg); this.save.write(); this.city.refreshHud(); });
+  }
+  /** Mit einer fremden erwachsenen Person reden (Straße, Häuser, Inseln, Darkroom) */
+  strangerTalk(st: Stranger, o: TalkOpts, end?: () => void) { strangerTalk(this, st, o, end); }
+  /** Einmal am Tag: Symptome von Geschlechtskrankheiten melden, Behandlungen abschließen (18+) */
+  stiCheck() {
+    const s = this.save.data; if (!s.settings.adult || s.flags.stiDay === s.day || this.dialog.open) return;
+    s.flags.stiDay = s.day;
+    const r = stiTick(s), sym = symptoms(s);
+    if (sym.length) change(s, { fun: -8 * sym.length });
+    if (r.news.length) { sfx('miss'); this.hud.banner('🩺 Da stimmt was nicht …', r.news.join(' ') + ' Ab in den Checkpoint Regenbogen: Test und Behandlung sind anonym.', 'bad', 6500); s.pin = 'checkpoint'; }
+    else if (r.healed.length) { sfx('win'); this.hud.banner('💚 Wieder gesund', `${r.healed.join(', ')} ausgeheilt. Kontrolltest nicht vergessen!`, 'good', 4500); }
+    this.save.write();
   }
   /** Zeit vergeht durch eine Tätigkeit (Wohnung, Job, Tram) */
   pass(min: number, sleeping = false) {
@@ -967,13 +987,15 @@ export class Game {
 
   /* ---------- Nachtleben 18+ (Durchgang 3b): angedeutet, Abblende, Zustimmung und Kondom ---------- */
   /** Abblende mit kurzer Zeile, danach Zeit vorspulen und weiter */
-  fadeNight(title: string, tags: string[], minutes: number, kind: Parameters<typeof encounter>[1], after?: () => void) {
+  fadeNight(title: string, tags: string[], minutes: number, kind: Parameters<typeof encounter>[1], after?: () => void, bare = false) {
     const s = this.save.data;
     const b = el(`<div class="night"><p>${esc(title)}</p><small>${tags.map(esc).join(' · ')}</small></div>`);
     document.body.appendChild(b); if (kind !== 'talk') nightSounds();
     setTimeout(() => {
       this.pass(minutes);
+      if (bare) s.inv.condom = (s.inv.condom || 0) + 1;   // ohne Kondom: encounter verbraucht keins
       const r = encounter(s, kind);
+      if (bare) exposure(s, true);
       this.save.write(); this.city.refreshHud(); b.remove();
       if (r.remindTest && kind !== 'talk') toast('🩺 Denk an deinen nächsten Test im Checkpoint – anonym und kostenlos.');
       after?.();
@@ -1077,13 +1099,16 @@ export class Game {
   }
   /** Cruising im Park: nur spät nachts, Blickkontakt und Nicken als Zustimmung */
   private cruising() {
-    const s = this.save.data, Q = (text: string, choices?: Array<{ label: string; fn: () => void }>) => ({ who: 'Im Gebüsch', color: '#3ee69a', text, choices });
+    const s = this.save.data, Q = (text: string, choices?: Array<{ label: string; sub?: string; fn: () => void }>) => ({ who: 'Im Gebüsch', color: '#3ee69a', text, choices });
     this.closeMenu(); this.touch.show(true);
     if (Math.random() < .25) { this.dialog.say([Q('Heute ist nichts los. Nur ein Igel raschelt im Laub. 🦔')]); this.pass(20); return; }
     this.dialog.say([Q('Im Schatten der Bäume steht jemand. Ein Blick, ein Lächeln, ein Nicken in Richtung der Büsche.', [
       { label: 'Zurücknicken und mitgehen', fn: () => setTimeout(() => {
         if (canMeet(s) === 'condom') { this.dialog.say([Q('„Hast du ein Gummi?“ – Hast du nicht. „Dann ein andermal.“ Er zwinkert und verschwindet.')]); return; }
         this.fadeNight('🌙 Zwischen den Büschen …', ['Nicken: Ja ✔︎', `${condomLabel(s)} ✔︎`, s.health.prep ? 'PrEP ✔︎' : ''].filter(Boolean), 30, 'cruising', () => this.dialog.say([{ who: 'Du', color: '#ff4fa3', text: 'Die Verpackung kommt in den Mülleimer. Wir sind ja nicht die anderen. 😅' }]));
+      }, 50) },
+      { label: '⚠️ Mitgehen, ohne Gummi – nur wenn er das auch will', sub: s.health.prep ? 'PrEP schützt vor HIV, nicht vor anderen STI' : 'Risiko für HIV und andere STI', fn: () => setTimeout(() => {
+        this.dialog.say([Q('Ihr flüstert kurz. „Ohne? Okay, wenn du willst.“ Beide nicken.')], () => this.fadeNight('🌙 Zwischen den Büschen …', ['Absprache: ohne Kondom', s.health.prep ? 'PrEP ✔︎' : 'keine PrEP'], 30, 'cruising', () => this.dialog.say([{ who: 'Du', color: '#ff4fa3', text: 'Ohne war abgesprochen. Trotzdem: in ein paar Tagen in den Checkpoint. Und ohne PrEP gilt: PEP bis 72 Stunden danach.' }]), true));
       }, 50) },
       { label: 'Freundlich den Kopf schütteln und weitergehen', fn: () => setTimeout(() => this.dialog.say([Q('Er nickt verständnisvoll. Kein Ding.')]), 50) },
     ])]);
@@ -1299,7 +1324,13 @@ export class Game {
         { icon: '🏋️', label: 'Training', sub: '4 € · 1 Stunde · +15 Spaß, −20 Energie, −20 Hygiene', fn: () => { if (s.needs.energy < 20) { toast('Zu erschöpft fürs Training.'); sfx('miss'); return; } buy(4, 'Gepumpt! 💪', () => { this.pass(60); change(s, { fun: 15, energy: -20, hygiene: -20, hunger: -10 }); })(); } },
         { icon: '🚿', label: 'Duschen', sub: '1 € · Hygiene voll', fn: buy(1, 'Frisch!', () => { this.pass(15); change(s, { hygiene: 100 }); this.done(track(s, 'shower')); }) }] },
       checkpoint: { t: 'Checkpoint Regenbogen', d: 'Beratung, Tests und PrEP – anonym, ohne Urteil, mit Gummibärchen.', items: [
-        { icon: '🧪', label: 'HIV- und STI-Test', sub: `kostenlos · 30 Minuten · ${s.health.test ? 'letzter Test: Tag ' + s.health.test : 'noch nie getestet'}`, fn: () => { close(); this.fade(() => { this.pass(30); s.health.test = s.day; change(s, { fun: 3 }); this.save.write(); this.dialog.say([{ who: 'Checkpoint', color: '#3ee69a', text: 'Alles negativ. Danke, dass du auf dich und andere achtest! 💚' }, { who: 'Checkpoint', color: '#3ee69a', text: s.health.prep ? `Mit PrEP sehen wir uns in ${TEST_EVERY} Tagen wieder – das Handy erinnert dich.` : 'Wenn du öfter wechselnde Partner*innen hast: Frag uns nach PrEP.' }]); }); } },
+        { icon: '🧪', label: 'HIV- und STI-Test', sub: `kostenlos · 30 Minuten · ${s.health.test ? 'letzter Test: Tag ' + s.health.test : 'noch nie getestet'}${symptoms(s).length ? ' · ⚠️ Beschwerden' : ''}`, fn: () => { close(); this.fade(() => { this.pass(30); s.health.test = s.day; change(s, { fun: 3 }); const r = testAndTreat(s); this.save.write(); this.city.refreshHud(); const C = (text: string) => ({ who: 'Checkpoint', color: '#3ee69a', text });
+          const lines = r.found.length ? [C(`Dein Ergebnis: ${r.found.map((d) => d.icon + ' ' + d.name).join(', ')}. Kein Grund zur Scham – das ist häufig und gut behandelbar.`), ...r.found.map((d) => C(`${d.name}: ${d.cure}. In ${d.cureDays} ${d.cureDays === 1 ? 'Tag' : 'Tagen'} ausgeheilt. Bis dahin kein Sex, und sag deinen letzten Partner*innen Bescheid.`))] : [C('Alles negativ. 💚 Bleib dran: regelmäßig testen ist das beste Safer-Sex-Werkzeug.')];
+          if (r.pep) lines.push(C('Und weil das ungeschützte Mal weniger als 72 Stunden her ist und du keine PrEP nimmst: Hier ist deine PEP. Vier Wochen Tabletten, dann ein Kontrolltest.'));
+          if (r.hivNew) lines.push(C('Der HIV-Test ist reaktiv. Atme durch: HIV ist heute gut behandelbar. Du startest heute die Therapie, in wenigen Tagen bist du unter der Nachweisgrenze – dann ist HIV nicht mehr übertragbar (U=U), und du lebst so lange wie alle anderen.'));
+          if (s.flags.hiv && !r.hivNew) lines.push(C(hivUU(s) ? 'Deine HIV-Therapie wirkt: unter der Nachweisgrenze. U=U – nicht übertragbar. 💚' : 'Deine HIV-Therapie läuft. Bald bist du unter der Nachweisgrenze.'));
+          this.dialog.say(lines); }); } },
+        ...(s.settings.adult ? [{ icon: '🦠', label: 'STI-Infos', sub: inTreatment(s).length ? `in Behandlung: ${inTreatment(s).map((d) => d.name).join(', ')}` : 'Chlamydien, Tripper, Syphilis, PEP, Doxy-PEP', fn: () => { close(); this.dialog.say(STI_INFO.map(([t, x]) => ({ who: t, color: '#3ee69a', text: x }))); } }] : []),
         { icon: '💊', label: s.health.prep ? 'PrEP beenden' : 'PrEP beginnen', sub: 'Tablette, die vor HIV schützt · Beratung gratis', fn: () => { s.health.prep = !s.health.prep; if (s.health.prep && s.health.test !== s.day) toast('Vor dem Start gehört ein HIV-Test dazu – mach ihn gleich mit!'); else toast(s.health.prep ? 'PrEP läuft. Regelmäßig testen nicht vergessen! 💊' : 'PrEP beendet.'); this.save.write(); close(); } },
         { icon: '🎈', label: 'Gratis Kondome', sub: '3 Stück, einmal am Tag', fn: () => { if (s.flags.freeCondoms === s.day) { toast('Für heute hast du schon welche.'); return; } s.flags.freeCondoms = s.day; s.inv.condom = (s.inv.condom || 0) + 3; toast('Drei Kondome eingesteckt. 🎈'); sfx('coin'); close(); } },
         { icon: 'ℹ️', label: 'Infos: U=U, PrEP, PEP, Safer Sex', fn: () => { close(); this.dialog.say(HEALTH_INFO.map(([t, x]) => ({ who: t, color: '#3ee69a', text: x }))); } }] },

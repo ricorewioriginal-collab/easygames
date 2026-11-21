@@ -19,7 +19,10 @@ import { RoomFriends } from './Friends';
 import type { PState } from './online';
 import { popOf } from './manage';
 import { hour } from './life';
-import type { Color3 } from '../engine/bjs';
+import type { Color3, Mesh } from '../engine/bjs';
+import { guestCast, type Guest } from './flirt';
+import { bedMess, darkroom } from './spuren';
+import { darkAtmo } from '../engine/Audio';
 
 interface Box { x: number; z: number; hx: number; hz: number }
 const W = 12, D = 9, K = .9, H = 3.6; // Raum in Metern, KayKit-Möbel 1 Einheit ≈ 1 m (Figur ≈ 1,8 m)
@@ -31,6 +34,14 @@ export class InteriorScene implements GameScene {
   bloom = .6;
   player!: Actor;
   private folk: Actor[] = [];
+  /** Gäste mit Namen (ansprechbar), gleiche Reihenfolge wie folk */
+  readonly guests: Array<{ a: Actor; g: Guest }> = [];
+  private guestSpot: Spot | null = null;
+  /** Spuren wilder Nächte am Bett (nur 18+) */
+  private mess: Mesh | null = null;
+  private darkTick: ((t: number) => void) | null = null;
+  /** Hausparty läuft: Gäste tanzen, Licht pulsiert schnell */
+  partyOn = false;
   private boxes: Box[] = [];
   private glow: PBRMaterial[] = [];
   private sg!: ShadowGenerator;
@@ -102,20 +113,18 @@ export class InteriorScene implements GameScene {
     }
     // Bilder an der linken Wand und Pflanzen in freien Ecken: kein Raum bleibt kahl
     const deco = (m: string, x: number, y: number, z: number, r: number, s = 1) => jobs.push(instance(sc, m + '.gltf').then((o) => { o.position.set(x, y, z); o.rotation.y = r; o.scaling.setAll(K * s); }).catch(() => { /* fehlt: egal */ }));
-    deco('home/pictureframe_large_B', -W / 2 + .06, 1.9, -1.6, Math.PI / 2); deco('home/pictureframe_medium', -W / 2 + .06, 2, .4, Math.PI / 2); deco('home/pictureframe_large_A', -W / 2 + .06, 1.9, 2.4, Math.PI / 2);
+if (t.id !== 'darkroom') {     deco('home/pictureframe_large_B', -W / 2 + .06, 1.9, -1.6, Math.PI / 2); deco('home/pictureframe_medium', -W / 2 + .06, 2, .4, Math.PI / 2); deco('home/pictureframe_large_A', -W / 2 + .06, 1.9, 2.4, Math.PI / 2); }
     const clear = (x: number, z: number) => t.items.every((q) => Math.hypot(q.x - x, q.z - z) > 1.3) && t.spots.every((q) => Math.hypot(q.x - x, q.z - z) > 1.2);
-    for (const [cx, cz, m] of [[-W / 2 + .7, D / 2 - .7, 'home/cactus_medium_B'], [-W / 2 + .7, -D / 2 + .7, 'home/cactus_medium_A'], [W / 2 - .7, -D / 2 + .7, 'home/cactus_medium_B']] as const)
+    if (t.id !== 'darkroom') for (const [cx, cz, m] of [[-W / 2 + .7, D / 2 - .7, 'home/cactus_medium_B'], [-W / 2 + .7, -D / 2 + .7, 'home/cactus_medium_A'], [W / 2 - .7, -D / 2 + .7, 'home/cactus_medium_B']] as const)
       if (clear(cx, cz)) { deco(m, cx, 0, cz, 0); this.boxes.push({ x: cx, z: cz, hx: .3, hz: .3 }); }
     await Promise.all(jobs);
     // Markierung auf dem Boden für jede benutzbare Stelle
     const ringM = glow(sc, 0xffd23b, 1.2, { alpha: .55 });
-    for (const s of this.theme.spots) { const o = ring(sc, .42, .55, 24); o.material = ringM; o.position.set(s.x, .03, s.z); }
-    // Leben im Raum: im Club tanzt die Menge, sonst stehen Gäste zusammen und reden
-    const party = t.music === 'club' || t.music === 'show';
-    const guests = t.own ? [] : party ? ['Female_Party_01', 'Male_Adult_07', 'Female_Adult_09', 'Male_Adult_04', 'Female_Party_02', 'Male_Adult_02']
-      : ['Female_Adult_04', 'Male_Adult_10'];
-    const seed = [...t.id].reduce((n, ch) => n + ch.charCodeAt(0), 0);
-    const folk = await Promise.all(guests.map((_, i) => Actor.create(sc, { body: guests[(i + seed) % guests.length], rb: guests[(i + seed) % guests.length], palette: 'rainbow', skin: 0 })));
+    for (const s of this.theme.spots) { if (s.act.k === 'darkroom' && !this.g.save.data.settings.adult) continue; const o = ring(sc, .42, .55, 24); o.material = ringM; o.position.set(s.x, .03, s.z); }
+    // Leben im Raum: verschiedene Menschen je Raum (Figur, Hautton, Haare, Szene-Look, Outfit), alle ansprechbar
+    const party = t.music === 'club' || t.music === 'show', darkRoom = t.id === 'darkroom', adult = this.g.save.data.settings.adult;
+    const cast = t.own ? [] : guestCast(t.id + '|' + this.placeId, darkRoom ? 5 : party ? 6 : 3, { adult, party, swim: t.id === 'bad' || t.id === 'sauna', dark: darkRoom });
+    const folk = await Promise.all(cast.map((c) => Actor.create(sc, { body: c.rb, rb: c.rb, palette: 'rainbow', skin: 0, style: c.style, outfit: c.outfit, hot: adult })));
     // freie Stelle: nicht in Möbeln, nicht auf einer benutzbaren Stelle, nicht vor der Tür
     const free = (x: number, z: number) => Math.abs(x) < W / 2 - .8 && Math.abs(z) < D / 2 - .8 && x < W / 2 - 2.2
       && this.boxes.every((b) => Math.abs(x - b.x) > b.hx + .5 || Math.abs(z - b.z) > b.hz + .5)
@@ -128,9 +137,14 @@ export class InteriorScene implements GameScene {
       for (const oz of order) { for (const ox of party ? [-2.4, -.2, 2, -1.3, 1.1] : [-1.6, -.5, 2.4, 3.5]) { if (free(ox + (i % 2) * .3, oz)) { x = ox + (i % 2) * .3; z = oz; ok = true; break; } } if (ok) break; }
       if (!ok) { const c = cand.find(([cx, cz]) => free(cx, cz)); if (!c) { a.root.visible = false; return; } [x, z] = c; }
       a.root.position.set(x, 0, z); a.root.rotation.y = party ? (i * 1.7) % (Math.PI * 2) : (i ? -Math.PI / 2 : Math.PI / 2);
-      a.play(party ? (['dance1', 'dance2', 'dance3'] as const)[i % 3] : 'talk', 0, .9 + (i % 3) * .08);
-      this.folk.push(a); this.boxes.push({ x, z, hx: .25, hz: .25 });
+      a.play(party && !darkRoom ? (['dance1', 'dance2', 'dance3'] as const)[i % 3] : darkRoom ? 'idle' : (['talk', 'idle', 'drink'] as const)[i % 3], 0, .9 + (i % 3) * .08);
+      this.folk.push(a); this.guests.push({ a, g: cast[i] }); this.boxes.push({ x, z, hx: .25, hz: .25 });
     });
+    // fremde Schlafzimmer: Spuren der letzten Nacht (nur mit 18+ sichtbar)
+    const seed = [...t.id].reduce((n, ch) => n + ch.charCodeAt(0), 0);
+    const bed = t.own ? null : t.items.find((q) => 'm' in q && q.m === 'home/bed_double_A');
+    if (bed) { this.mess = bedMess(sc, bed.x, bed.z, seed); this.mess?.setEnabled(adult); }
+    if (darkRoom) { this.darkTick = darkroom(sc, W, D); this.folk.forEach((a) => a.root.getChildMeshes().forEach((m) => { const mt = m.material as PBRMaterial | null; if (mt && 'albedoColor' in mt) { mt.albedoColor.scaleInPlace(.25); mt.environmentIntensity = .05; } })); }
     this.player = await Actor.create(sc, streetLook(playerLook(this.g.save.data)));
     if (this.netKey) this.roomFriends = new RoomFriends(sc, this.g.city.friends, this.netKey);
     if (CLUB_LAYOUT[t.id] && !t.own) {
@@ -157,6 +171,25 @@ export class InteriorScene implements GameScene {
     this.extra = mine ? [{ id: 'club', label: night ? '📋 Club führen · 🪩 Türen auf' : '📋 Club führen', x, z, r: 1.6, act: { k: 'club' } }]
       : sale ? [{ id: 'deal', label: `🤝 ${SELLERS[b.poi]?.who || 'Besitzer*in'}: Club kaufen`, x, z, r: 1.6, act: { k: 'deal' } }] : [];
     this.clubRing?.setEnabled(this.extra.length > 0);
+  }
+
+  /** Mit einem Gast reden: Person dreht sich zu dir, danach geht es im Gesprächsmenü weiter (Game.strangerTalk) */
+  private talkGuest(i: number) {
+    const q = this.guests[i]; if (!q) return;
+    const a = q.a, p = this.player.root.position, prev = a.anim;
+    a.root.rotation.y = Math.atan2(p.x - a.root.position.x, p.z - a.root.position.z);
+    this.player.root.rotation.y = Math.atan2(a.root.position.x - p.x, a.root.position.z - p.z);
+    if (!this.partyOn) a.play('talk');
+    this.g.strangerTalk(q.g.st, { actor: a, room: this, look: { body: q.g.rb, rb: q.g.rb, palette: 'rainbow', skin: 0, style: q.g.style, outfit: 'clothed' } }, () => { if (!this.partyOn && prev) a.play(prev); });
+  }
+  /** Ist der Raum eine Wohnung oder Partylocation (für Hauspartys)? */
+  get partyPlace() { return this.theme.id.startsWith('res_') || this.theme.music === 'club' || this.theme.music === 'show'; }
+  /** Hausparty: alle tanzen, Licht pulsiert schnell; aus = zurück zum Alltag */
+  houseParty(on: boolean) {
+    this.partyOn = on;
+    this.guests.forEach((q, i) => q.a.play(on ? (['dance1', 'dance2', 'dance3'] as const)[i % 3] : this.theme.music === 'club' ? (['dance1', 'dance2', 'dance3'] as const)[i % 3] : 'talk'));
+    this.player.play(on ? 'dance2' : 'idle');
+    music(on ? 'club' : this.theme.music || 'city');
   }
 
   /** Neue Figur, wenn im Kleiderschrank die Figur gewechselt wurde */
@@ -188,6 +221,8 @@ export class InteriorScene implements GameScene {
     music(this.theme.music || 'city');
     toast(`${this.theme.icon} ${this.theme.title}`);
     this.refreshClub();
+    this.mess?.setEnabled(this.g.save.data.settings.adult);
+    if (this.darkTick) darkAtmo(() => this.g.inside === this && this.g.where === 'inside' && !this.scene.isDisposed);
   }
 
   update(dt: number, t: number) {
@@ -199,7 +234,8 @@ export class InteriorScene implements GameScene {
     const busy = g.dialog.open || g.menuOpen;
     this.hudT -= dt;
     // Leuchtfarben pulsieren (ohne Setter, Basisfarbe zwischengespeichert; Tempo steigt in der Clubnacht)
-    const pulse = this.club?.pulse || 3;
+    this.darkTick?.(t);
+    const pulse = this.partyOn ? 9 : this.club?.pulse || 3;
     for (const [i, m] of this.glow.entries()) { const md = m.metadata as { c: number; cc?: Color3 }; (md.cc ||= col(md.c)).scaleToRef(.35 + Math.sin(t * pulse + i) * .25, m.emissiveColor); }
     if (!busy) {
       const sv = g.save.data; sv.playMs += dt * 1000;
@@ -221,11 +257,16 @@ export class InteriorScene implements GameScene {
       let best: Spot | null = null, bd = 9;
       const fr = this.roomFriends?.count ? this.roomFriends.nearest(p.x, p.z, 1.6) : null;
       this.friendSpot = fr ? { id: 'friend:' + fr.id, label: '🌐 ' + fr.name, x: fr.x, z: fr.z, r: 1.6, act: { k: 'menu' } } : null;
-      const list = this.extra.length || fr ? [...this.spots, ...this.extra, ...(this.friendSpot ? [this.friendSpot] : [])] : this.spots;
+      // nächste ansprechbare Person (alle Gäste sind erwachsen und haben etwas zu sagen)
+      let gi = -1, gd = 1.5;
+      this.guests.forEach((q, i) => { if (!q.a.root.visible) return; const d = Math.hypot(q.a.root.position.x - p.x, q.a.root.position.z - p.z); if (d < gd) { gd = d; gi = i; } });
+      this.guestSpot = gi >= 0 ? { id: 'guest:' + gi, label: '💬 ' + this.guests[gi].g.st.name, x: this.guests[gi].a.root.position.x, z: this.guests[gi].a.root.position.z, r: 1.5, act: { k: 'menu' } } : null;
+      const adult = g.save.data.settings.adult;
+      const list = [...this.spots.filter((q) => adult || q.act.k !== 'darkroom'), ...this.extra, ...(this.friendSpot ? [this.friendSpot] : []), ...(this.guestSpot ? [this.guestSpot] : [])];
       for (const s of list) { const d = Math.hypot(s.x - p.x, s.z - p.z); if (d < (s.r || 1.8) && d < bd) { bd = d; best = s; } }
       g.hud.prompt(best ? best.label : null);
       g.touch.label(best ? 'Nutzen' : 'Aktion');
-      if (inp.pressed('confirm') && best) { inp.consume('confirm'); this.player.play('interact'); if (best === DOOR) g.leaveInterior(); else if (best === this.friendSpot) g.friendMenu(best.id.slice(7)); else g.interiorAct(best, this); }
+      if (inp.pressed('confirm') && best) { inp.consume('confirm'); this.player.play('interact'); if (best === DOOR) g.leaveInterior(); else if (best === this.friendSpot) g.friendMenu(best.id.slice(7)); else if (best === this.guestSpot) this.talkGuest(+best.id.slice(6)); else g.interiorAct(best, this); }
       else if (inp.pressed('phone')) { inp.consume('phone'); g.phone(); }
       else if (inp.pressed('map')) { inp.consume('map'); g.phone('map'); }
       else if (inp.pressed('menu') || inp.pressed('back')) { inp.consume('menu'); inp.consume('back'); g.pauseMenu(); }

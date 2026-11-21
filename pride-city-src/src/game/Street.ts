@@ -9,6 +9,7 @@ import { buildFlitzer } from './flitzer';
 import { buildRingMobil } from './toys';
 import { buildRide } from './rides';
 import { CURB_SPOTS } from './uptown';
+import { escortSign } from './spuren';
 import { carDef, CAR_DEFS, type CarDef } from './vehicles';
 import type { World, Car } from './World';
 import { sfx } from '../engine/Audio';
@@ -113,6 +114,11 @@ export class Street {
     };
     SCENE.map(([rb, st, x0, z0, yaw, anim]) => [rb, st, ...clear(x0, z0), yaw, anim] as const).forEach(([rb, st, x, z, yaw, anim]) => jobs.push(mk(L(rb, st), 'walker', 'Szene-Mensch', '#ffb347', [[x, z]], undefined, anim).then((n) => { n.yaw = yaw; })));
     await Promise.all(jobs);
+    // Sexarbeiter*innen klar erkennbar: Leuchtschild mit Name und Angebot, roter Kreis (sichtbar nur mit 18+ und nachts, wie die Figur)
+    for (const n of this.people) {
+      if (n.kind === 'worker') { const w = WORKERS.find((x) => x.id === n.id); if (w) escortSign(this.world.scene, n.a.root, `🏮 ESCORT ${w.name.toUpperCase()}`, `${w.age} · ${w.price} €/Std · Haus Rosa`, '#ff3b6b'); }
+      if (n.kind === 'curb') { const w = CURB.find((x) => x.id === n.id); if (w) escortSign(this.world.scene, n.a.root, `💋 ${w.name.toUpperCase()}`, `Laternenmeile · ${w.price} € · hupen`, '#ff2a55'); }
+    }
     this.people.filter((p) => p.path.length === 1).forEach((p) => (p.a.root.rotation.y = p.yaw !== undefined ? p.yaw : p.kind === 'curb' ? Math.PI : p.path[0][0] > 0 ? -Math.PI / 2 : Math.PI / 2));
     await this.cars();
   }
