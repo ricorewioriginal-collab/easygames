@@ -368,6 +368,7 @@ export class CityScene implements GameScene {
       this.g.enterInterior(houseTheme(h.i, this.g.save.data.settings.adult), { x: h.x + Math.sin(h.yaw) * .8, z: h.z + Math.cos(h.yaw) * .8, yaw: h.yaw });
       return;
     }
+    if (this.near.id === 'welten') { this.g.worldMenu(); return; }
     if (this.near.id === 'home') { this.g.enterHome(); return; }
     if (this.near.id === 'penthouse' && !this.g.save.data.flags.penthouse) { sfx('door'); this.g.placeMenu('penthouse'); return; }
     const th = PLACE_THEMES[this.near.id], q = this.world.pois.find((x) => x.id === this.near!.id);
