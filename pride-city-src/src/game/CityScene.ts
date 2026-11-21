@@ -109,7 +109,7 @@ export class CityScene implements GameScene {
       const def = worldDef(id); if (!def) continue;
       const to = at.to ? ISLES[at.to] : undefined, td = at.to ? worldDef(at.to) : undefined;
       const i = new Isle(this.g, sc, this.world, def, at.x, at.z, to && td ? { x: to.x, z: to.z, r: td.r, icon: td.icon, name: td.name, color: td.host.color } : undefined);
-      await i.build(); this.isles.push(i); this.street.addFlyer(i.pad[0], i.pad[1], i.yawW(Math.PI));
+      await i.build(); this.isles.push(i); if (!def.adult) this.street.addFlyer(i.pad[0], i.pad[1], i.yawW(Math.PI));
     }
     this.combat = new Combat(this.g, this, sc); this.combat.init();
     this.kerb = new Kerb(this.g, this);
@@ -128,6 +128,7 @@ export class CityScene implements GameScene {
       c.fillStyle = '#7a5a3a'; c.fillRect(px(-111), px(-3.4), 20 * 2, 2.8 * 2);   // Steg
       c.fillStyle = '#4c7a4a'; c.fillRect(px(35), px(35), 20 * 2, 20 * 2);        // Park
       for (const i of this.isles) {                                             // Inseln der Welten mit Brücke und Ringstraße
+        if (i.locked) continue;
         const d = i.def, [a, b] = i.bridge();
         c.strokeStyle = '#c9ccd6'; c.lineCap = 'butt'; c.lineWidth = 20; c.beginPath(); c.moveTo(px(i.ox), px(i.oz)); c.lineTo(px(b[0]), px(b[1])); c.stroke();
         c.fillStyle = '#e8dcae'; c.beginPath(); c.arc(px(i.ox), px(i.oz), (d.r + 5) * 2, 0, 7); c.fill();

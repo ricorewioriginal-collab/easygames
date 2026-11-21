@@ -104,6 +104,8 @@ export class Isle {
   bridge(): [Pt, Pt] { return [this.w(0, this.R), this.w(0, this.R + this.L)]; }
   /** Grundriss der Ringstraße in Stadtkoordinaten (Karten) */
   ring(): [number, number, number, number] { const a = this.w(-20, -10), b = this.w(20, 20); return [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1])]; }
+  /** 18+-Insel ohne 18+: unsichtbar, nicht begehbar */
+  get locked() { return !!this.def.adult && !this.g.save.data.settings.adult; }
   private get flags() { return this.g.save.data.flags; }
   private get stage() { return worldStage(this.flags, this.def.id); }
   private setStage(n: number) { this.flags['w_' + this.def.id] = n; this.g.save.write(); this.showQuest(); }
@@ -194,7 +196,7 @@ export class Isle {
     const swap = Math.abs(this.ez[0]) > .5;
     for (const r of rects) { const [x, z] = this.w(r.x, r.z); this.W.colliders.push({ x, z, hx: swap ? r.hz : r.hx, hz: swap ? r.hx : r.hz }); }
     for (const q of this.solids) { const [x, z] = this.w(q.x, q.z); this.W.prop(x, z, q.r, []); }
-    extraWalk.push((x, z) => { const [lx, lz] = this.l(x, z); return Math.hypot(lx, lz) < R - 1.2 || (Math.abs(lx) < 4.6 && lz > 0 && lz < R + L + 1); });
+    extraWalk.push((x, z) => { if (this.locked) return false; const [lx, lz] = this.l(x, z); return Math.hypot(lx, lz) < R - 1.2 || (Math.abs(lx) < 4.6 && lz > 0 && lz < R + L + 1); });
     this.showQuest();
   }
 
@@ -360,7 +362,7 @@ export class Isle {
   /** je Bild aus der Stadt: Verkehr, Leute, Sammeln, Ringe, Auftrag, Übergänge */
   update(dt: number, t: number, ref: IsleRef) {
     const g = this.g, d = this.def, R = this.R, lp = this.lp = this.l(ref.x, ref.z), dist = Math.hypot(lp[0], lp[1]);
-    const show = dist < (g.engine.mobile ? 200 : 260);
+    const show = dist < (g.engine.mobile ? 200 : 260) && !this.locked;
     if (show !== this.shown) { this.shown = show; this.root.setEnabled(show); }
     this.act = null; this.label = null;
     if (!show) { this.active = false; return; }
