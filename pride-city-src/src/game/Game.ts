@@ -21,6 +21,7 @@ import { CLUB_LAYOUT } from './clubdeco';
 import type { Invite } from './online';
 import { pcEvents } from './hooks';
 import { dragAct } from './drag';
+import { wagenMenu, wagenOf } from './festwagen';
 import { houseMenu, useHomeItem } from './houseui';
 import { roomTheme, roomLevel } from './house';
 import { SKY, skyAt, forecast } from './weather';
@@ -369,6 +370,7 @@ export class Game {
     if (a.k === 'club' || a.k === 'deal') { if (sc?.business) clubDeal(this, sc.business, sc); return; }
     if (a.k === 'annex') { this.annexAct(a.room); return; }
     if (a.k === 'drag') { dragAct(this, a.what); return; }
+    if (a.k === 'wagen') { wagenMenu(this); return; }
     if (a.k === 'gl') { const m = miniForGl(a.id); if (m) this.playMini(m.id); else this.roman('gaylife', a.id); return; }
     if (a.k === 'mini') { this.playMini(a.id); return; }
     if (a.k === 'dance') { this.goDance(false); return; }
@@ -614,7 +616,7 @@ export class Game {
     } else if (app === 'wetter') {
       const fc = forecast(s.day, s.time), toSat = (5 - (s.day - 1) % 7 + 7) % 7;
       this.openMenu(frame('Wetter und Termine', `<div class="pbody">${fc.map((f) => `<p>${SKY[f.sky].icon} <b>${f.label}</b>: ${SKY[f.sky].name}${f.parade ? ' · 🏳️‍🌈 CSD-Parade' : ''}</p>`).join('')}<p>🏳️‍🌈 <b>CSD-Parade</b><br><small>Jeden Samstag von 12 bis 18 Uhr auf der Hauptstraße: Festwagen, Tanzgruppen, Konfetti. ${toSat ? `Die nächste ist in ${toSat} ${toSat === 1 ? 'Tag' : 'Tagen'}.` : 'Heute ist es so weit!'} Lauf mit oder spring auf einen Wagen.</small></p><p><small>Nach Regen am Tag zeigt sich oft ein Regenbogen. Bei Regen glänzen die Straßen, bei Gewitter blitzt es über der Skyline.</small></p></div>`),
-        [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+        [{ icon: '🎨', label: wagenOf(s) ? 'Deinen Festwagen umbauen' : 'Eigenen Festwagen bauen', sub: 'Flagge, Motto, Deko, Musik · Jury-Preis bei der Parade', fn: () => wagenMenu(this, () => this.phone('wetter')) }, { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'wissen') {
       const tl = timeline(s), seen = tl.filter((r) => r.seen).length;
       this.openMenu(frame('Wissen', `<div class="pbody"><p>Queere Geschichte, Menschen, Flaggen und Rechte. Neue Kapitel der Zeitleiste schaltest du in der Story frei.</p><p>🏳️‍🌈 Zeitleiste ${seen}/${tl.length} · 🎯 Quiz: ${Number(s.flags.quizRight) || 0} richtige Antworten</p></div>`), [

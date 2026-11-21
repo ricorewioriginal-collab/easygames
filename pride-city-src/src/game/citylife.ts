@@ -12,6 +12,8 @@ import type { SaveData } from '../engine/Save';
 import type { Game } from './Game';
 import type { CityScene } from './CityScene';
 import type { StreetNpc } from './Street';
+import { pcEvents } from './hooks';
+import { wagenOf, wagenKey, wagenColors, mottoText, score as wagenScore, place, PRIZE } from './festwagen';
 
 /* ---------- Zufallsereignisse ---------- */
 interface Out { text: string; money?: number; rep?: number; need?: Parameters<typeof change>[1]; min?: number }
@@ -147,7 +149,7 @@ export class CityLife {
 export const paradeOn = (s: SaveData) => (s.day - 1) % 7 === 5 && hour(s) >= 12 && hour(s) < 18;
 const Z0 = 58, LEN = 116, SPEED = 1.25;
 const RAINBOW = [0xe40303, 0xff8c00, 0xffed00, 0x008026, 0x24408e, 0x732982];
-interface Unit { node: Node3; off: number; float: boolean; z: number; riders: Array<{ a: Actor; dx: number; dz: number; y: number; walk: boolean }> }
+interface Unit { node: Node3; off: number; float: boolean; own?: boolean; z: number; riders: Array<{ a: Actor; dx: number; dz: number; y: number; walk: boolean }> }
 
 export class Parade {
   on = false;
@@ -160,34 +162,46 @@ export class Parade {
   private joinT = 0;
   private cheerT = 0;
   private parked: Array<{ off?: boolean }> = [];
+  /** eigener Festwagen (festwagen.ts): Bau-Funktion aus build(), Schlüssel des gebauten Entwurfs */
+  private mkFloat: ((off: number, body: number, text: string, stripe?: string[], deco?: string) => Unit) | null = null;
+  private ownKey = '';
+  /** Du fährst auf deinem eigenen Wagen mit */
+  riding = false;
+  private rideT = 0;
   constructor(private g: Game, private city: CityScene, private scene: Scene) {}
 
   private async build() {
     this.building = true;
     const sc = this.scene, w = this.city.world, low = w.low, adult = this.g.save.data.settings.adult;
     const L = (rb: string, hot = false): Look => ({ body: rb, rb, palette: 'rainbow', skin: 0, ...(hot && adult ? { outfit: 'shirtless' as const, hot: true } : {}) });
-    const stripe = canvasTex(sc, 256, 64, (c) => { RAINBOW.forEach((k, i) => { c.fillStyle = '#' + k.toString(16).padStart(6, '0'); c.fillRect(0, i * 64 / 6, 256, 64 / 6 + 1); }); });
-    const stripeM = pbr(sc, 0xffffff, .6); stripeM.albedoTexture = stripe;
+    const hexes = RAINBOW.map((k) => '#' + k.toString(16).padStart(6, '0'));
+    const stripeOf = (cols: string[]) => { const m = pbr(sc, 0xffffff, .6); m.albedoTexture = canvasTex(sc, 256, 64, (c) => { cols.forEach((k, i) => { c.fillStyle = k; c.fillRect(0, i * 64 / cols.length, 256, 64 / cols.length + 1); }); }); return m; };
+    const stripeM = stripeOf(hexes);
     const sign = (text: string, bg: string, fg: string) => glow(sc, 0xffffff, 1, { double: true, tex: canvasTex(sc, 512, 128, (c) => {
       const gr = c.createLinearGradient(0, 0, 512, 0); RAINBOW.forEach((k, i) => gr.addColorStop(i / 5, '#' + k.toString(16).padStart(6, '0'))); c.fillStyle = bg || gr; c.fillRect(0, 0, 512, 128);
       c.fillStyle = fg; c.font = '900 58px system-ui, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(text, 256, 68, 490);
     }) });
     const unit = (off: number, float: boolean): Unit => { const node = new Node3('parade', sc); node.parent = w.root; node.rotation.y = Math.PI; node.visible = false; const u = { node, off, float, z: 0, riders: [] }; this.units.push(u); return u; };
     const add = (u: Unit, m: Mesh, x: number, y: number, z: number) => { m.parent = u.node; m.position.set(x, y, z); m.isPickable = false; return m; };
-    const float = (off: number, body: number, text: string) => {
+    const float = (off: number, body: number, text: string, stripe?: string[], deco = 'ballons') => {
       const u = unit(off, true), bm = pbr(sc, body, .5, .1), dark = pbr(sc, 0x1a1a22, .8);
-      add(u, box(sc, 2.7, .7, 6.2), 0, .75, 0).material = stripeM;
+      add(u, box(sc, 2.7, .7, 6.2), 0, .75, 0).material = stripe ? stripeOf(stripe) : stripeM;
       add(u, box(sc, 2.8, .12, 6.3), 0, 1.16, 0).material = bm;
       add(u, box(sc, 2.5, 1.7, 1.7), 0, 1.25, 3.9).material = bm;
       add(u, box(sc, 2.3, .7, .1), 0, 1.6, 4.76).material = pbr(sc, 0x9ad8ff, .15, .6);
       for (const [x, z] of [[-1.3, 2.2], [1.3, 2.2], [-1.3, -2.2], [1.3, -2.2], [-1.3, 3.9], [1.3, 3.9]]) { const c = add(u, cyl(sc, .42, .42, .3, 14), x, .42, z); c.rotation.z = Math.PI / 2; c.material = dark; }
       for (const s of [-1, 1]) { add(u, box(sc, .7, 1.3, .7), s * .85, 1.87, -2.5).material = dark; const cone = add(u, cyl(sc, .22, .22, .05, 14), s * .85, 2, -2.13); cone.rotation.x = Math.PI / 2; cone.material = glow(sc, 0xff6ad5, 1.2); }
-      RAINBOW.forEach((k, i) => { const x = (i % 2 ? 1 : -1) * 1.25, z = -2.6 + Math.floor(i / 2) * 2.3; add(u, box(sc, .03, 1.3, .03), x, 1.85, z).material = dark; add(u, sphere(sc, .3, 10), x, 2.75, z).material = pbr(sc, k, .25, 0, { emissive: k, ei: .25 }); });
+      const cols = (stripe || hexes).map((h) => parseInt(h.slice(1), 16));
+      if (deco === 'kugel') { const k = add(u, sphere(sc, .75, 16), 0, 2.65, 1.2); k.material = pbr(sc, 0xdfe6ff, .05, 1, { emissive: 0x8a7bff, ei: .35 }); add(u, cyl(sc, .06, .06, 1.1, 8), 0, 1.75, 1.2).material = dark; }
+      else if (deco === 'herz') { const hm = pbr(sc, 0xff2a6d, .3, 0, { emissive: 0xff2a6d, ei: .35 }); for (const sx of [-1, 1]) add(u, sphere(sc, .5, 14), sx * .38, 2.75, 1.2).material = hm; const t = add(u, box(sc, .78, .78, .5), 0, 2.4, 1.2); t.rotation.z = Math.PI / 4; t.material = hm; }
+      else if (deco === 'federn') { cols.forEach((k, i) => { const f = add(u, cyl(sc, .02, .32, 1.6, 8), (i - (cols.length - 1) / 2) * .38, 2.1, 2.4); f.rotation.z = ((i - (cols.length - 1) / 2) / cols.length) * 1.4; f.material = pbr(sc, k, .6, 0, { emissive: k, ei: .3 }); }); }
+      else cols.slice(0, 6).forEach((k, i) => { const x = (i % 2 ? 1 : -1) * 1.25, z = -2.6 + Math.floor(i / 2) * 2.3; add(u, box(sc, .03, 1.3, .03), x, 1.85, z).material = dark; add(u, sphere(sc, .3, 10), x, 2.75, z).material = pbr(sc, k, .25, 0, { emissive: k, ei: .25 }); });
       const sm = sign(text, '#16101f', '#ffd23b');
       for (const s of [-1, 1]) { const p = add(u, planeZ(sc, 5, 1.25, true), s * 1.37, .78, -.2); p.rotation.y = s * Math.PI / 2; p.material = sm; }
       return u;
     };
     const walkers = (off: number) => unit(off, false);
+    this.mkFloat = float;
     // Spitze: Banner, dann Festwagen, Tanzgruppe, Festwagen
     const lead = walkers(0);
     add(lead, planeZ(sc, 5.2, 1.1, true), 0, 1.55, .6).material = sign('CSD RAINBOW CITY', '', '#ffffff');
@@ -213,7 +227,21 @@ export class Parade {
     this.built = true; this.building = false;
   }
 
+  /** Eigenen Wagen (neu) bauen, wenn der Entwurf sich geändert hat; fährt als Letzter mit */
+  private ensureOwn() {
+    const s = this.g.save.data, w = wagenOf(s); if (!this.mkFloat) return;
+    const key = w ? wagenKey(w) + (s.flags.dragKrone ? 'k' : '') : '';
+    if (key === this.ownKey) return;
+    const old = this.units.find((u) => u.own);
+    if (old) { old.node.dispose(false, true); this.units.splice(this.units.indexOf(old), 1); }
+    this.ownKey = key; if (!w) return;
+    const c = wagenColors(w), u = this.mkFloat(36, c.body, mottoText(s, w), c.stripe, w.deko); u.own = true; u.node.visible = this.on;
+  }
+  /** Entwurf in der Werkstatt gespeichert: beim nächsten Bild neu bauen */
+  refreshOwn() { this.ownKey = '-'; if (this.built) this.ensureOwn(); }
   private show(on: boolean) {
+    if (on) this.ensureOwn();
+    if (!on && this.riding) this.leave();
     for (const u of this.units) { u.node.visible = on; if (!on) for (const r of u.riders) r.a.root.visible = false; }
     if (!on) this.confetti.forEach((m) => m.setEnabled(false));
     // Autos von der Hauptstraße nehmen, solange die Parade läuft
@@ -243,6 +271,7 @@ export class Parade {
         r.a.update(dt);
       }
     }
+    if (this.riding) this.rideTick(dt, t);
     const close = Math.abs(ref.x) < 45 && Math.abs(ref.z) < 75;
     this.fall = (this.fall + dt * 1.6) % 9;
     this.confetti.forEach((m, i) => { m.setEnabled(close); if (close) m.position.set(0, (i % 2 ? 9 : 0) - this.fall + .2, Math.max(-44, Math.min(44, ref.z))); });
@@ -256,8 +285,43 @@ export class Parade {
     if (close && (this.cheerT -= dt) <= 0) { this.cheerT = 9 + Math.random() * 8; if (Math.abs(ref.x) < 20) sfx('cheer'); }
   }
   /** Festwagen in Reichweite? */
-  near(p: Vector3) { return this.on && this.units.some((u) => u.float && Math.abs(p.x) < 3.4 && Math.abs(u.z - p.z) < 4.6) ? '🪩 Auf den Festwagen: mittanzen' : null; }
-  join() { this.g.goDance(false); }
+  near(p: Vector3) {
+    if (!this.on) return null;
+    if (this.riding) return '⬇️ Vom Wagen springen';
+    const u = this.units.find((q) => q.float && Math.abs(p.x) < 3.4 && Math.abs(q.z - p.z) < 4.6);
+    return u ? (u.own ? '🎉 Auf deinen eigenen Wagen springen' : '🪩 Auf den Festwagen: mittanzen') : null;
+  }
+  join() {
+    if (this.riding) { this.leave(); return; }
+    const p = this.city.player.root.position, u = this.units.find((q) => q.float && Math.abs(p.x) < 3.4 && Math.abs(q.z - p.z) < 4.6);
+    if (u?.own) { this.riding = true; this.rideT = 0; sfx('cheer'); this.g.hud.banner('🎉 Dein Wagen rollt!', 'Bleib eine Weile oben, dann kommt die Jury. Aktion = abspringen.', 'good', 4200); return; }
+    this.g.goDance(false);
+  }
+  /** Auf dem eigenen Wagen: Figur fährt mit, tanzt, Jubel und am Ende der Jury-Preis */
+  private rideTick(dt: number, t: number) {
+    const u = this.units.find((q) => q.own); if (!u) { this.leave(); return; }
+    const pl = this.city.player, s = this.g.save.data;
+    pl.root.position.set(0, 1.22 + Math.abs(Math.sin(t * 5)) * .03, u.z + 1.6); pl.root.rotation.y = Math.PI;
+    if (!/dance|cheer/.test(String(pl.anim))) pl.play((['dance1', 'dance2', 'cheer', 'dance3'] as const)[Math.floor(t / 6) % 4]);
+    this.rideT += dt;
+    if (this.rideT > 45 && s.flags.wagenPrize !== s.day) this.jury();
+  }
+  private jury() {
+    const s = this.g.save.data, w = wagenOf(s); if (!w) return;
+    const pts = wagenScore(s, w), pl = place(pts), [money, rep] = PRIZE[pl - 1];
+    s.flags.wagenPrize = s.day; s.flags.wagenWins = (Number(s.flags.wagenWins) || 0) + (pl === 1 ? 1 : 0);
+    s.money += money; s.rep += rep; change(s, { fun: 15, social: 12 }); this.g.save.write(); this.city.refreshHud();
+    sfx('win'); sfx('cheer');
+    this.g.hud.banner(`🏆 Jury: Platz ${pl} für „${mottoText(s, w)}“`, `${pts} Punkte · +${money} € · +${rep} Ruf`, 'good', 5200);
+    pcEvents.emit('paradeWagen', { place: pl, score: pts, money, rep, motto: mottoText(s, w) });
+  }
+  leave() {
+    if (!this.riding) return;
+    this.riding = false;
+    const pl = this.city.player, p = pl.root.position;
+    p.set(3.6, .1, p.z); pl.play('idle');
+    if (this.rideT < 45 && this.g.save.data.flags.wagenPrize !== this.g.save.data.day) toast('Die Jury hat deinen Wagen noch nicht gesehen. Bleib länger oben!');
+  }
   /** Spitze der Parade (für Radar und Wegweiser) */
   head() { return this.on && this.units[0] ? new Vector3(0, 3, this.units[0].z) : null; }
 }
