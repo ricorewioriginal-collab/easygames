@@ -184,6 +184,16 @@ html.touch #touch.on{display:block}
 #tSh button{--c:#c9d2ff;height:40px;border-radius:12px 12px 8px 8px;border:2px solid rgba(255,255,255,.35);background:rgba(14,16,26,.6);font-weight:900;font-style:italic;font-size:13px;color:#fff}
 #tSh [data-act=revert]{grid-column:1/3;height:34px;border-radius:10px;font-size:12px;--c:#b98cff}
 @media (max-height:520px){#tBtns{transform:scale(.8);transform-origin:100% 100%}#tSh{transform:scale(.8);transform-origin:100% 100%;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 192px)}}
+/* Hochformat am Handy: Stick links unten, Tasten kompakt rechts, Mitte frei für die Sicht */
+@media (orientation:portrait) and (max-width:760px){
+  #tZone{top:42%;width:52%}
+  #tStick{left:max(18px,env(safe-area-inset-left));bottom:calc(max(18px,env(safe-area-inset-bottom)) + 24px)}
+  #tBtns{transform:scale(.74);transform-origin:100% 100%;right:max(8px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom))}
+  #tSh{width:150px;grid-template-columns:1fr 1fr;gap:6px;right:max(10px,env(safe-area-inset-right));bottom:calc(max(10px,env(safe-area-inset-bottom)) + 182px)}
+  #tSh button{height:34px;font-size:12px}#tSh [data-act=revert]{height:30px;font-size:11px}
+  html.touch #combo{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 300px)}
+  #trk{top:28%}
+}
 /* ---------- Park-Editor */
 #edHud{position:fixed;inset:0;z-index:7;pointer-events:none}
 #edHud button{pointer-events:auto;touch-action:manipulation}
