@@ -144,7 +144,7 @@ if (t.id !== 'darkroom') {     deco('home/pictureframe_large_B', -W / 2 + .06, 1
     const seed = [...t.id].reduce((n, ch) => n + ch.charCodeAt(0), 0);
     const bed = t.own ? null : t.items.find((q) => 'm' in q && q.m === 'home/bed_double_A');
     if (bed) { this.mess = bedMess(sc, bed.x, bed.z, seed); this.mess?.setEnabled(adult); }
-    if (darkRoom) { this.darkTick = darkroom(sc, W, D); this.folk.forEach((a) => a.root.getChildMeshes().forEach((m) => { const mt = m.material as PBRMaterial | null; if (mt && 'albedoColor' in mt) { mt.albedoColor.scaleInPlace(.25); mt.environmentIntensity = .05; } })); }
+    if (darkRoom) { this.darkTick = darkroom(sc, W, D); const dim = new Set<PBRMaterial>(); this.folk.forEach((a) => a.root.getChildMeshes().forEach((m) => { const mt = m.material as PBRMaterial | null; if (mt && 'albedoColor' in mt && !dim.has(mt)) { dim.add(mt); mt.albedoColor.scaleInPlace(.25); mt.environmentIntensity = .05; } })); }
     this.player = await Actor.create(sc, streetLook(playerLook(this.g.save.data)));
     if (this.netKey) this.roomFriends = new RoomFriends(sc, this.g.city.friends, this.netKey);
     if (CLUB_LAYOUT[t.id] && !t.own) {
