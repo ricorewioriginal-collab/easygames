@@ -840,12 +840,106 @@ export function createRenderer(T, canvas, opts) {
         shadowLights.add(e);
         for (const x of ents.values()) if (x.cs && x.mesh) e.sg.addShadowCaster(x.mesh, false);
         for (const c of chunks.values()) if (c.cs && c.mesh) e.sg.addShadowCaster(c.mesh, false);
+        for (const m of natives) if (m.__cs) e.sg.addShadowCaster(m, false);
       } else if (!want && e.sg) { shadowLights.delete(e); look.sgs.delete(e.sg); e.sg.dispose(); e.sg = null; }
       if (e.sg) {
         const c = o.shadow.camera;
         look.fitShadow(e.sg, l, c, o.shadow);
         if (!R.shadowMap.autoUpdate) { const rt = e.sg.getShadowMap(); if (rt) { rt.refreshRate = R.shadowMap.needsUpdate ? 1 : 0; if (R.shadowMap.needsUpdate) rt.resetRefreshCounter(); } }
         else { const rt = e.sg.getShadowMap(); if (rt && rt.refreshRate !== 1) rt.refreshRate = 1; }
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------ Direkt in Babylon gebaut (fest stehende Kulissen)
+  // R.bake(obj, parent): ein Spielteil, das nach dem Aufbau nie mehr bewegt oder umgefärbt wird (Buden, Deko …), wird nicht in den
+  // Szenengraph gehängt, sondern sofort als Babylon-Meshes gebaut: je Material EIN zusammengefasstes Mesh, Lage fest eingerechnet,
+  // eingefroren. Es kostet danach pro Bild keinerlei Abgleich. Babylon-Materialien sind dieselben wie sonst (gleiche Optik, Leinwände und
+  // Farbwechsel laufen weiter). Was sich so nicht bauen lässt (Figuren, Sprites, Partikel …), bleibt normal im Szenengraph.
+  const nroots = [];        // { o: Elternobjekt im Szenengraph, meshes:[], mw, on, gone }
+  const natives = new Set(); // alle direkt gebauten Meshes (für Schatten)
+  const NM2 = new T.Matrix3(), RM = new T.Matrix4(), IM = new T.Matrix4();
+  function bakeable(o) {
+    if (!o.isMesh || o.isSkinnedMesh || o.isInstancedMesh || o.onBeforeRender !== OBR || o.visible === false) return false;
+    const g = o.geometry, m = o.material; if (!g || !g.attributes || !g.attributes.position || Array.isArray(m) || !m) return false;
+    if (g.morphAttributes && Object.keys(g.morphAttributes).length) return false;
+    if (g.drawRange && (g.drawRange.start || g.drawRange.count !== Infinity)) return false;
+    return !!(BASIC[m.type] || LIT[m.type]) && !m.wireframe && m.visible !== false;
+  }
+  R.bake = function (obj, parent) {
+    parent.add(obj); parent.updateMatrixWorld(true);
+    const buckets = new Map(), take = [];
+    obj.traverseVisible(o => { if (o !== obj || o.isMesh) if (bakeable(o)) take.push(o); });
+    for (const o of take) { const k = o.material.uuid + '|' + (o.castShadow ? 1 : 0) + (o.receiveShadow ? 1 : 0) + '|' + (o.renderOrder || 0); (buckets.get(k) || buckets.set(k, []).get(k)).push(o); }
+    R.bakeLists(parent, buckets.values());
+    // Leere Gruppen gleich mit entfernen; was übrig ist (nicht baubar), läuft normal weiter
+    const left = []; obj.traverse(o => { if (o !== obj && (o.isMesh || o.isSprite || o.isPoints || o.isLight || o.isSkinnedMesh)) left.push(o); });
+    if (!left.length) parent.remove(obj);
+    return obj;
+  };
+  R.canBake = bakeable;
+  /** Listen gleicher Teile (gleiches Material, gleicher Schatten) je als EIN festes Babylon-Mesh unter parent bauen; die Teile verlassen den Szenengraph.
+   *  Teile ohne Eltern (vorbereitete Modell-Kopien) gehen auch: ihre matrixWorld gilt. */
+  R.bakeLists = function (parent, lists) {
+    parent.updateMatrixWorld(true);
+    IM.copy(parent.matrixWorld).invert();
+    const root = { o: parent, meshes: [], mw: new Float64Array(16).fill(NaN), on: null, gone: 0 };
+    let n = 0;
+    for (const list of lists) {
+      if (!list.length) continue; n += list.length;
+      let nv = 0, ni = 0; const ds = [];
+      for (const o of list) { const d = geoData(o.geometry); if (!d) continue; ds.push([o, d]); nv += d.n; ni += d.idx.length; }
+      if (!ds.length) continue;
+      const m = list[0].material, vc = !!m.vertexColors;
+      const pos = new Float32Array(nv * 3), nor = new Float32Array(nv * 3), uvA = ds.some(([, d]) => d.uv) ? new Float32Array(nv * 2) : null, col = vc ? new Float32Array(nv * 4) : null;
+      const idx = nv > 65535 ? new Uint32Array(ni) : new Uint16Array(ni);
+      let vo = 0, io = 0;
+      for (const [o, d] of ds) {
+        RM.multiplyMatrices(IM, o.matrixWorld); const me = RM.elements; NM2.getNormalMatrix(RM); const ne = NM2.elements;
+        const det = me[0] * (me[5] * me[10] - me[6] * me[9]) - me[4] * (me[1] * me[10] - me[2] * me[9]) + me[8] * (me[1] * me[6] - me[2] * me[5]);
+        const P = d.pos, N = d.nor;
+        for (let i = 0; i < d.n; i++) {
+          const x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2], j = (vo + i) * 3;
+          pos[j] = me[0] * x + me[4] * y + me[8] * z + me[12]; pos[j + 1] = me[1] * x + me[5] * y + me[9] * z + me[13]; pos[j + 2] = me[2] * x + me[6] * y + me[10] * z + me[14];
+          const a = N[i * 3], b = N[i * 3 + 1], c = N[i * 3 + 2];
+          const nx = ne[0] * a + ne[3] * b + ne[6] * c, ny = ne[1] * a + ne[4] * b + ne[7] * c, nz = ne[2] * a + ne[5] * b + ne[8] * c, l = Math.hypot(nx, ny, nz) || 1;
+          nor[j] = nx / l; nor[j + 1] = ny / l; nor[j + 2] = nz / l;
+          if (uvA) { uvA[(vo + i) * 2] = d.uv ? d.uv[i * 2] : 0; uvA[(vo + i) * 2 + 1] = d.uv ? d.uv[i * 2 + 1] : 0; }
+          if (col) { const k = (vo + i) * 4; if (d.col) { col[k] = d.col[i * 4]; col[k + 1] = d.col[i * 4 + 1]; col[k + 2] = d.col[i * 4 + 2]; col[k + 3] = d.col[i * 4 + 3]; } else col[k] = col[k + 1] = col[k + 2] = col[k + 3] = 1; }
+        }
+        const I = d.idx;
+        if (det < 0) for (let t = 0; t + 2 < I.length; t += 3) { idx[io + t] = I[t] + vo; idx[io + t + 1] = I[t + 2] + vo; idx[io + t + 2] = I[t + 1] + vo; }
+        else for (let t = 0; t < I.length; t++) idx[io + t] = I[t] + vo;
+        vo += d.n; io += I.length;
+      }
+      const mesh = new Mesh('bau', scene); mesh.isPickable = false;
+      mesh.setVerticesData(VertexBuffer.PositionKind, pos, false, 3); mesh.setVerticesData(VertexBuffer.NormalKind, nor, false, 3);
+      if (uvA) mesh.setVerticesData(VertexBuffer.UVKind, uvA, false, 2);
+      if (col) { mesh.setVerticesData(VertexBuffer.ColorKind, col, false, 4); mesh.useVertexColors = true; mesh.hasVertexAlpha = false; }
+      mesh.setIndices(idx, nv);
+      mesh.material = matFor(m, 'std'); mesh.receiveShadows = !!list[0].receiveShadow;
+      const grp = m.depthTest === false ? 2 : 1; mesh.renderingGroupId = grp; if (list[0].renderOrder) mesh.alphaIndex = list[0].renderOrder;
+      mesh.rotationQuaternion = new Quaternion(); mesh.__cs = !!list[0].castShadow; mesh.__m = m;
+      if (mesh.__cs) for (const l of shadowLights) l.sg.addShadowCaster(mesh, false);
+      mesh.setEnabled(false);
+      root.meshes.push(mesh); natives.add(mesh);
+      for (const o of list) if (o.parent) o.parent.remove(o);   // aus dem Szenengraph: Babylon zeichnet es jetzt selbst
+    }
+    if (root.meshes.length) nroots.push(root);
+    R.stats.baked = (R.stats.baked || 0) + n;
+    return n;
+  };
+  // pro Bild: nur die (wenigen) Wurzeln prüfen – gezeigt, wenn ihre Szene gerade gezeichnet wird
+  function syncNative(sc) {
+    for (let i = nroots.length - 1; i >= 0; i--) {
+      const r = nroots[i]; let top = r.o, vis = true; while (top.parent) { if (top.visible === false) vis = false; top = top.parent; } if (top.visible === false) vis = false;
+      if (!top.isScene) { if (++r.gone > 600) { for (const m of r.meshes) { natives.delete(m); for (const l of shadowLights) l.sg.removeShadowCaster(m, false); m.dispose(false, false); } nroots.splice(i, 1); } else if (r.on) { r.on = false; for (const m of r.meshes) m.setEnabled(false); candDirty = true; } continue; }
+      r.gone = 0;
+      const on = vis && top === sc;
+      if (on !== r.on) { r.on = on; for (const m of r.meshes) m.setEnabled(on); candDirty = true; }
+      if (on && !sameM(r.o.matrixWorld.elements, r.mw)) {
+        r.mw.set(r.o.matrixWorld.elements);
+        for (const m of r.meshes) { m.unfreezeWorldMatrix(); setTRS(m, r.o.matrixWorld.elements); m.freezeWorldMatrix(); }
       }
     }
   }
@@ -1035,6 +1129,7 @@ export function createRenderer(T, canvas, opts) {
     }
     tC = performance.now();
     if (BATCH) batchStep();
+    if (nroots.length) syncNative(sc);
     syncScene(sc, cam3);
     look.beforeRender(sc, frame);
     const tD = performance.now();
@@ -1049,7 +1144,7 @@ export function createRenderer(T, canvas, opts) {
 
   // Aufräumen, wenn der Szenengraph Geometrien/Materialien wegwirft
   R.prune = function () {
-    const usedM = new Set(); for (const ms of masters.values()) usedM.add(ms.mesh.material); for (const e of ents.values()) if (e.mesh && e.type === 'own') usedM.add(e.mesh.material);
+    const usedM = new Set(); for (const ms of masters.values()) usedM.add(ms.mesh.material); for (const m of natives) usedM.add(m.material); for (const e of ents.values()) if (e.mesh && e.type === 'own') usedM.add(e.mesh.material);
     for (const [m, e] of mats) if (frame - e.f > 600 && !usedM.has(e.bm) && ![...usedM].some(x => x && x.subMaterials && x.subMaterials.includes(e.bm))) { e.bm.dispose(); mats.delete(m); }
     const bms = [...[...mats.values()].map(x => x.bm), ...[...cmats.values()].map(x => x.bm)];
     for (const [t, e] of texs) { let used = false; for (const b of bms) { if (b.albedoTexture === e.bt || b.emissiveTexture === e.bt || b.bumpTexture === e.bt) { used = true; break; } } if (!used && e.bt) { e.bt.dispose(); texs.delete(t); } }

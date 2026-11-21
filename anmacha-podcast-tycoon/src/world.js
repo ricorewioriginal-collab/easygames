@@ -316,7 +316,19 @@
     });
     return mergeBuckets(root, buckets, inv);
   };
+  const bakeOn = () => W.renderer && W.renderer.bakeLists && !/[?&]bake=0/.test(location.search);
   function mergeBuckets(root, buckets, inv) {
+    // Babylon: unveränderte Teile direkt als feste Babylon-Meshes bauen (kein Szenengraph, kein Abgleich pro Bild)
+    if (bakeOn()) {
+      const R = W.renderer, lists = [], rest = new Map();
+      buckets.forEach((list, k) => { const ok = list.filter(o => R.canBake(o) || (o.userData.inst && o.isMesh)), no = list.filter(o => !ok.includes(o)); if (ok.length) lists.push(ok); if (no.length) rest.set(k, no); });
+      const n = R.bakeLists(root, lists);
+      const r = rest.size ? mergeBuckets3(root, rest, inv) : { merged: 0, made: 0 };
+      return { merged: r.merged + n, made: r.made + lists.length, baked: n };
+    }
+    return mergeBuckets3(root, buckets, inv);
+  }
+  function mergeBuckets3(root, buckets, inv) {
     let merged = 0, made = 0; const m4 = new T.Matrix4(), n3 = new T.Matrix3(), v = new T.Vector3();
     buckets.forEach(list => {
       if (list.length < 2 && !list[0].userData.inst) return;
@@ -367,6 +379,8 @@
     const m = new T.MeshStandardMaterial({ color: W.lin(color), roughness: o.r == null ? 0.7 : o.r, metalness: o.m || 0, emissive: W.lin(o.e || 0x000000), emissiveIntensity: o.ei == null ? 1 : o.ei, transparent: !!o.t, opacity: o.t || 1, map: o.map || null, side: o.side || T.FrontSide });
     matCache.set(k, m); return m;
   };
+  /** Fest stehendes Spielteil einhängen: mit Babylon direkt als feste Meshes gebaut (kein Abgleich pro Bild), sonst normal. */
+  W.bake = (o, parent) => (bakeOn() ? W.renderer.bake(o, parent) : (parent.add(o), o));
   W.box = (w, h, d, mat, x, y, z, parent, shadow) => { const m = new T.Mesh(new T.BoxGeometry(w, h, d), mat); m.position.set(x || 0, y || 0, z || 0); m.castShadow = shadow !== false; m.receiveShadow = true; if (parent) parent.add(m); return m; };
   W.cyl = (rt, rb, h, mat, x, y, z, parent, seg) => { const m = new T.Mesh(new T.CylinderGeometry(rt, rb, h, seg || 16), mat); m.position.set(x || 0, y || 0, z || 0); m.castShadow = true; m.receiveShadow = true; if (parent) parent.add(m); return m; };
   W.glow = (color, size, parent, x, y, z) => { const s = new T.Sprite(new T.SpriteMaterial({ map: W.glowTex, color, blending: T.AdditiveBlending, depthWrite: false, transparent: true })); s.scale.set(size, size, 1); s.position.set(x || 0, y || 0, z || 0); if (parent) parent.add(s); return s; };

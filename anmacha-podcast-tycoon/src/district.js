@@ -51,7 +51,7 @@
     V = { S, cur: '' };
   };
   function booth(g, pl, x, z, ry) {
-    const b = new T.Group(); b.position.set(x, 0.16, z); b.rotation.y = ry; g.add(b);
+    const b = new T.Group(); b.position.set(x, 0.16, z); b.rotation.y = ry;   // fest stehend: am Ende direkt gebaut (W.bake)
     const col = new T.Color(pl.col).getHex(), M = (c, o) => W.mat(c, o || { r: 0.6 });
     W.box(3.0, 1.1, 1.2, M(0xf2efe6), 0, 0.55, 0.6, b, true);           // Theke
     W.box(3.1, 0.08, 1.3, M(col), 0, 1.12, 0.6, b, false);
@@ -72,6 +72,7 @@
       hoersaal: () => { const t2 = new T.TextureLoader().load(AMC.UI.podLogo); t2.encoding = T.sRGBEncoding; const m = new T.Mesh(new T.PlaneGeometry(1.0, 1.0), new T.MeshBasicMaterial({ map: t2 })); m.position.set(0, 1.85, -0.58); b.add(m); },
       selfie: () => { const t2 = new T.TextureLoader().load(AMC.UI.podLogo); t2.encoding = T.sRGBEncoding; const m = new T.Mesh(new T.PlaneGeometry(1.3, 1.3), new T.MeshBasicMaterial({ map: t2 })); m.position.set(0, 1.8, -0.58); b.add(m); const r = new T.Mesh(new T.TorusGeometry(0.35, 0.04, 8, 24), M(0xffffff, { e: 0xffffff, ei: 1.2 })); r.position.set(1.0, 1.6, 1.9); b.add(r); W.cyl(0.02, 0.02, 1.4, M(0x333333), 1.0, 0.7, 1.9, b, 6); } };
     (P[pl.id] || (() => {}))();
+    W.bake(b, g);
   }
 
   // Viertel-Anzeige: Titel oben links wechselt, beim ersten Betreten eine kurze Meldung
