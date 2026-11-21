@@ -1,7 +1,7 @@
 /* Babylon-Optik für alle Szenen: weiche Schatten, Leuchten (Neon, ON AIR, Bildschirme), Bloom, Kantenglättung, Filmlook.
    Grafikstufe (W.quality): 0 schnell, 1 mittel = Handy (keine Nachbearbeitung: scharfe Kanten über die Kantenglättung des Bildschirms, dafür höhere Auflösung),
    2 hoch (Nachbearbeitung mit MSAA, Schärfen, Leuchten, weichere Schatten). */
-import { ShadowGenerator, DefaultRenderingPipeline, GlowLayer, ColorCurves } from './babylon.js';
+import { ShadowGenerator, DefaultRenderingPipeline, GlowLayer, ColorCurves, Frustum } from './babylon.js';
 
 export class Look {
   constructor(R, scene, cam) {
@@ -51,6 +51,15 @@ export class Look {
     light.shadowOrthoScale = 0;
     this.sgs.add(sg);
     this.tuneShadow(sg);
+    // Nur Schattenwerfer im Schattenbereich der Sonne zeichnen (Babylon zeichnet sonst ALLE Werfer der Stadt in die Schattenkarte)
+    const planes = Frustum.GetPlanes(sg.getTransformMatrix()), out = [];
+    sg.getShadowMap().getCustomRenderList = (layer, list, n) => {
+      if (!list) return null;
+      Frustum.GetPlanesToRef(sg.getTransformMatrix(), planes); out.length = 0;
+      for (let i = 0; i < n; i++) { const m = list[i]; if (m.isEnabled() && m.isVisible && m.isInFrustum(planes)) out.push(m); }
+      this.shadowCasters = out.length;
+      return out;
+    };
     return sg;
   }
   tuneShadow(sg) {
