@@ -79,7 +79,7 @@ export function texGraffiti(scene, seed, palette) {
     for (let i = 0; i < 14; i++) { g.fillStyle = palette[1 + (r() * (palette.length - 1) | 0)]; g.globalAlpha = 0.85; g.beginPath(); const x = r() * S, y = r() * S; g.ellipse(x, y, 30 + r() * 120, 15 + r() * 60, r() * 3, 0, 7); g.fill(); }
     g.globalAlpha = 1; g.lineWidth = 9; g.lineCap = 'round';
     for (let i = 0; i < 9; i++) { g.strokeStyle = palette[1 + (r() * (palette.length - 1) | 0)]; g.beginPath(); let x = r() * S, y = r() * S; g.moveTo(x, y); for (let k = 0; k < 5; k++) { x += r() * 120 - 60; y += r() * 80 - 40; g.quadraticCurveTo(x + 30, y - 30, x, y); } g.stroke(); }
-    const words = ['PULSE', 'FLOW', 'BETON', 'LINE', 'KICK', 'ROLL', 'NOX', 'DRIFT'];
+    const words = ['LEGEND', 'FLOW', 'BETON', 'LINE', 'KICK', 'ROLL', 'NOX', 'DRIFT'];
     g.font = '900 86px system-ui, sans-serif'; g.textAlign = 'center';
     for (let i = 0; i < 2; i++) { const w = words[r() * words.length | 0]; g.save(); g.translate(S * (0.3 + r() * 0.4), S * (0.3 + i * 0.4)); g.rotate(r() * 0.4 - 0.2); g.lineWidth = 14; g.strokeStyle = '#111'; g.strokeText(w, 0, 0); g.fillStyle = palette[1 + (r() * (palette.length - 1) | 0)]; g.fillText(w, 0, 0); g.restore(); }
   });

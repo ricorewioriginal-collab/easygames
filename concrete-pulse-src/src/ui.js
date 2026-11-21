@@ -11,26 +11,64 @@ const MODE_NAME = { career: 'Karriere', score: 'Highscore-Lauf', free: 'Freies F
 const MEDAL = ['', '🥉', '🥈', '🥇'];
 const STAT_N = { speed: 'Tempo', ollie: 'Sprung', spin: 'Drehung', balance: 'Balance', air: 'Air' };
 // Editor-Felder: [Schlüssel, Bezeichnung, [[Wert, Anzeige] …]]
-const COLS = ['#ff5a3c', '#ffd43a', '#2ecc71', '#2ec4ff', '#7c4dff', '#ff4f8b', '#111318', '#f2f2f2', '#26324d', '#5a4636'];
+const COLS = ['#ff5a3c', '#ff8a1e', '#ffd43a', '#2ecc71', '#0fb39a', '#2ec4ff', '#3a6bff', '#7c4dff', '#b04dff', '#ff4f8b', '#c0262d', '#111318', '#3a3d48', '#9aa0ad', '#f2f2f2', '#e8dcc0', '#26324d', '#5a4636', '#7e4e2c', '#3d5a2a'];
+const SKINS = ['#f6d7bf', '#f0c7a3', '#e6b48f', '#d6a07a', '#c9926a', '#a96f4a', '#8d5a3b', '#5c3a26', '#3e2618'];
+const HAIRS = ['#0e0a08', '#2b1b12', '#4b2e1a', '#6b4528', '#a0623a', '#c9844a', '#d9a441', '#efe0b0', '#9aa0ad', '#f2f2f2', '#ff4f8b', '#6a3dff', '#2ec4ff', '#2ecc71', '#ff5a3c'];
 const sw = c => [c, `<span class="sw" style="background:${c}"></span>`];
+// Editor-Felder in Reitern: [Reiter, [[Schlüssel, Bezeichnung, [[Wert, Anzeige] …]] …]]
 const EDIT = [
-  ['body', 'Figur', [['m', 'A'], ['f', 'B']]],
-  ['skin', 'Haut', ['#f0c7a3', '#e6b48f', '#c9926a', '#8d5a3b', '#5c3a26'].map(sw)],
-  ['hairStyle', 'Frisur', [['short', 'Kurz'], ['long', 'Lang'], ['pony', 'Zopf'], ['bob', 'Bob'], ['afro', 'Locken'], ['bald', 'Glatze']]],
-  ['hair', 'Haarfarbe', ['#120c08', '#2b1b12', '#d9a441', '#ff4f8b', '#6a3dff', '#e8e4d8'].map(sw)],
-  ['hat', 'Kopf', [['none', 'Nichts'], ['cap', 'Kappe'], ['beanie', 'Mütze'], ['helmet', 'Helm']]],
-  ['hatColor', 'Kopf-Farbe', COLS.slice(0, 8).map(sw)],
-  ['topStyle', 'Oberteil', [['tee', 'Shirt'], ['tank', 'Top'], ['long', 'Langarm']]],
-  ['top', 'Oberteil-Farbe', COLS.map(sw)],
-  ['bottomStyle', 'Hose', [['pants', 'Lang'], ['shorts', 'Kurz']]],
-  ['bottom', 'Hosen-Farbe', COLS.map(sw)],
-  ['shoes', 'Schuhe', COLS.slice(0, 8).map(sw)]
+  ['Körper', [
+    ['body', 'Körperbau', [['m', 'Typ A'], ['f', 'Typ B']]],
+    ['bulk', 'Statur', [['0.94', 'Schmal'], ['1', 'Normal'], ['1.08', 'Kräftig'], ['1.15', 'Breit']]],
+    ['skin', 'Hautton', SKINS.map(sw)],
+    ['style', 'Fahrstil (Werte)', [['Allround', 'Allround'], ['Street', 'Street'], ['Vert', 'Vert'], ['Technik', 'Technik'], ['Tempo', 'Tempo']]]]],
+  ['Kopf', [
+    ['hairStyle', 'Frisur', [['short', 'Kurz'], ['buzz', 'Stoppel'], ['spiky', 'Gestylt'], ['mohawk', 'Iro'], ['curly', 'Locken'], ['afro', 'Afro'], ['bob', 'Bob'], ['long', 'Lang'], ['pony', 'Zopf'], ['bald', 'Glatze']]],
+    ['hair', 'Haarfarbe', HAIRS.map(sw)],
+    ['beard', 'Bart', [['none', 'Keiner'], ['stubble', 'Dreitage'], ['full', 'Vollbart'], ['goatee', 'Kinnbart'], ['moustache', 'Schnurrbart']]],
+    ['glasses', 'Brille', [['none', 'Keine'], ['round', 'Rund'], ['square', 'Eckig'], ['shades', 'Sonnenbrille']]],
+    ['earring', 'Ohrring', [['none', 'Keiner'], ['one', 'Einer'], ['both', 'Beide']]]]],
+  ['Kleidung', [
+    ['topStyle', 'Oberteil', [['tee', 'Shirt'], ['tank', 'Tanktop'], ['long', 'Langarm'], ['hoodie', 'Hoodie'], ['vest', 'Weste']]],
+    ['top', 'Oberteil-Farbe', COLS.map(sw)],
+    ['print', 'Aufdruck', [['none', 'Ohne'], ...COLS.slice(0, 16).map(sw)]],
+    ['bottomStyle', 'Hose', [['pants', 'Jeans'], ['cargo', 'Cargo'], ['shorts', 'Shorts']]],
+    ['bottom', 'Hosen-Farbe', COLS.map(sw)],
+    ['shoes', 'Schuhe', COLS.map(sw)],
+    ['sole', 'Sohle', ['#f2f2f2', '#e8dcc0', '#111318', '#ff5a3c', '#2ec4ff', '#ffd43a'].map(sw)]]],
+  ['Extras', [
+    ['hat', 'Kopfbedeckung', [['none', 'Nichts'], ['cap', 'Kappe'], ['beanie', 'Mütze'], ['bucket', 'Fischerhut'], ['helmet', 'Helm']]],
+    ['hatColor', 'Farbe Kopfbedeckung', COLS.map(sw)],
+    ['headphones', 'Kopfhörer', [['off', 'Aus'], ['on', 'An']]],
+    ['scarf', 'Schal', [['none', 'Keiner'], ...COLS.slice(0, 12).map(sw)]],
+    ['chain', 'Kette', [['off', 'Aus'], ['on', 'An']]]]],
+  ['Board', [['board', 'Brett', BOARDS.map((b, i) => [String(i), `<span class="sw" style="background:linear-gradient(135deg,${b.c1},${b.c2})"></span>`])]]]
+];
+
+const TIPS = [
+  'Nach jeder Landung schnell Hoch, dann Runter: Mit einem Manual läuft deine Combo weiter.',
+  'Gleiche Tricks bringen in einer Combo immer weniger – wechsle zwischen Flips, Grabs und Grinds.',
+  'Ist die Spezialleiste voll, leuchtet sie gold: Jetzt bringen Spezialtricks richtig Punkte.',
+  'In der Quarterpipe gelandet? Revert drücken und direkt in einen Manual – so bleibt die Combo am Leben.',
+  'Halte Ollie gedrückt, um Kraft zu laden. Je länger, desto höher der Sprung.',
+  'Wallride: in der Luft seitlich an eine Wand und Grind drücken. Mit Ollie springst du als Wallie ab.',
+  'Im Replay mit 0,25× siehst du genau, ob ein Flip vor der Landung fertig war.',
+  'Zotik, Ricardo, Andrew und Marco findest du im Skater-Menü – jeder mit eigenen Spezialtricks.',
+  'Im Skater-Editor stellst du Körper, Frisur, Bart, Kleidung, Extras, Brett und Fahrstil ein.',
+  'Sammle in jedem Park die Buchstaben S-T-Y-L-E und die versteckte Kassette.'
 ];
 
 export class UI {
+  randomSkater() {
+    const c = save.custom, pick = a => a[Math.floor(Math.random() * a.length)];
+    for (const [, rows] of EDIT) for (const [k, , opts] of rows) if (k !== 'board' && k !== 'style') c[k] = pick(opts)[0];
+    if (Math.random() < 0.6) c.beard = 'none'; if (Math.random() < 0.6) c.glasses = 'none'; if (Math.random() < 0.5) c.hat = 'none'; if (Math.random() < 0.7) c.scarf = 'none';
+    persist(); A.sfx('ui'); this.fill('mEdit'); this.respawnCustom();
+  }
+  respawnCustom() { const g = this.game; if (save.skater === -1 && g) { clearTimeout(this._edT); this._edT = setTimeout(() => g.spawnSkater().then(() => g.skater.reset(g.park.spawn)), 120); } }
   constructor() {
     this.stack = []; this.game = null;
-    this.lets = $('#lets'); this.lets.innerHTML = 'PULSE'.split('').map(c => `<b>${c}</b>`).join('');
+    this.lets = $('#lets'); this.lets.innerHTML = 'STYLE'.split('').map(c => `<b>${c}</b>`).join('');
     // Menü-Navigation mit Pfeilen / Enter / Esc (Tastatur, TV-Fernbedienung)
     addEventListener('keydown', e => this.menuKey(e), true);
     document.addEventListener('click', e => this.click(e));
@@ -38,6 +76,7 @@ export class UI {
     $('#bGoals').addEventListener('click', () => this.game && this.toggleGoals(this.game));
     this.comboEl = $('#combo'); this.cT = $('#cT'); this.cV = $('#cV');
     this.initEditHud(); this.initReplayHud();
+    $('#edNm').addEventListener('input', e => { save.custom.name = e.target.value.trim().slice(0, 18) || 'Eigener Skater'; persist(); });
   }
   bind(game) { this.game = game; }
 
@@ -49,6 +88,7 @@ export class UI {
     if (id) { const m = $('#' + id); this.fill(id); setTimeout(() => this.focusFirst(m), 30); }
     $('#hud').classList.toggle('off', !(this.game && (this.game.state === 'play' || this.game.state === 'ending') && !id));
     $('#touch').classList.toggle('on', !id && this.game && this.game.state === 'play');
+    document.body.classList.toggle('inmenu', !!id); if (id) { $('#speed').style.opacity = 0; this._sf = 0; } document.body.classList.toggle('home', id === 'mMain');
   }
   hideAll() { this.stack = []; this.show(null, false); }
   back() {
@@ -101,7 +141,9 @@ export class UI {
     if (b.dataset.sk != null) { if (b.classList.contains('lock')) return A.sfx('uiBack'); save.skater = +b.dataset.sk; persist(); A.sfx('ui'); this.fill('mSkater'); g.spawnSkater().then(() => g.skater.reset(g.park.spawn)); return; }
     if (b.dataset.statup) { A.sfx(g.addStat(g.skaterDef, b.dataset.statup) ? 'collect' : 'uiBack'); return this.fill('mSkater'); }
     if (b.hasAttribute('data-statreset')) { g.resetStats(g.skaterDef); A.sfx('ui'); return this.fill('mSkater'); }
-    if (b.dataset.ed) { const v = b.dataset.v; save.custom[b.dataset.ed] = v; persist(); A.sfx('ui'); this.fill('mEdit'); if (save.skater === -1) { clearTimeout(this._edT); this._edT = setTimeout(() => g.spawnSkater().then(() => g.skater.reset(g.park.spawn)), 120); } return; }
+    if (b.dataset.edtab) { this.edTab = +b.dataset.edtab; A.sfx('ui'); this.fill('mEdit'); return; }
+    if (b.dataset.edrand !== undefined) { this.randomSkater(); return; }
+    if (b.dataset.ed) { const v = b.dataset.v; save.custom[b.dataset.ed] = v; if (b.dataset.ed === 'board') save.board = +v; persist(); A.sfx('ui'); this.fill('mEdit'); this.respawnCustom(); return; }
     if (b.dataset.skate) { A.sfx('ui'); this.skatePlayers = +b.dataset.skate; this.parkMode = 'skate'; return this.show('mPark'); }
     if (b.dataset.bd != null) { if (b.classList.contains('lock')) return A.sfx('uiBack'); save.board = +b.dataset.bd; persist(); A.sfx('ui'); this.fill('mBoard'); g.spawnSkater().then(() => g.skater.reset(g.park.spawn)); return; }
     if (b.dataset.players) { A.sfx('ui'); this.duelPlayers = +b.dataset.players; this.parkMode = 'duel'; return this.show('mPark'); }
@@ -154,7 +196,10 @@ export class UI {
   fill(id) {
     const g = this.game;
     if (id === 'mMain') {
-      const n = g.goalsTotal(); $('#mStats').textContent = `🎯 ${n}/${PARKS.reduce((a, p) => a + p.goals.length, 0)} Ziele · Bestwert ${fmt(save.best || 0)}`;
+      const n = g.goalsTotal(); $('#mStats').textContent = `🎯 ${n}/${PARKS.reduce((a, p) => a + p.goals.length, 0)} · 🏁 ${fmt(save.best || 0)}`;
+      $('#mProfile').textContent = '🛹 ' + g.skaterDef.name;
+      const tick = () => { const d = new Date(); $('#mClock').textContent = d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0'); };
+      tick(); clearInterval(this._clk); this._clk = setInterval(tick, 15000);
     }
     if (id === 'mPark') {
       const mode = this.parkMode;
@@ -167,8 +212,9 @@ export class UI {
     }
     if (id === 'mSkater') {
       const tot = g.goalsTotal();
-      $('#skList').innerHTML = SKATERS.map((s, i) => { const lock = (s.unlock || 0) > tot; return `<button class="card ${i === save.skater ? 'cur' : ''} ${lock ? 'lock' : ''}" data-sk="${i}" style="min-height:64px"><b style="font-size:14px">${lock ? '🔒 ' : ''}${s.name}</b><span>${lock ? s.unlock + ' Ziele' : s.style}</span></button>`; }).join('')
-        + `<button class="card ${save.skater === -1 ? 'cur' : ''}" data-sk="-1" style="min-height:64px"><b style="font-size:14px">✏️ ${save.custom.name || 'Eigener Skater'}</b><span>Eigenbau</span></button>`;
+      const order = SKATERS.map((s, i) => i).sort((a, b) => (SKATERS[b].star ? 1 : 0) - (SKATERS[a].star ? 1 : 0));
+      $('#skList').innerHTML = order.map(i => { const s = SKATERS[i], lock = (s.unlock || 0) > tot; return `<button class="card sk ${i === save.skater ? 'cur' : ''} ${lock ? 'lock' : ''}" data-sk="${i}" style="--c1:${s.top};--c2:${s.bottom}">${s.star ? '<span class="st">★ STAR</span>' : ''}<b>${lock ? '🔒 ' : ''}${esc(s.name)}</b><span>${lock ? s.unlock + ' Ziele' : s.style}</span></button>`; }).join('')
+        + `<button class="card sk ${save.skater === -1 ? 'cur' : ''}" data-sk="-1" style="--c1:${save.custom.top};--c2:#2a2d3e"><span class="st">✏️ EIGEN</span><b>${esc(save.custom.name || 'Eigener Skater')}</b><span>Editor</span></button>`;
       const s = g.skaterDef, st = g.statsFor(s), free = g.statPoints() - g.spentFor(s.id);
       $('#skName').textContent = s.name; $('#skStyle').textContent = 'Stil: ' + s.style + ' · Spezial: ' + s.specials.map(x => x.name).join(', ');
       $('#skPts').innerHTML = `⬢ <b>${free}</b> ${free === 1 ? "freier Stat-Punkt" : "freie Stat-Punkte"} für ${s.name} · Punkte gibt es für Ziele, grüne Marken in den Parks und Medaillen`;
@@ -176,8 +222,12 @@ export class UI {
       $('#skEdit').querySelector('span:last-child').textContent = save.skater === -1 ? 'Aussehen' : 'Eigener Skater';
     }
     if (id === 'mEdit') {
-      const c = save.custom;
-      $('#edRows').innerHTML = EDIT.map(([k, label, opts]) => `<div class="set"><span>${label}</span><div class="opts">${opts.map(([v, t]) => `<button class="opt ${String(c[k]) === v ? 'on' : ''}" data-ed="${k}" data-v="${v}">${t}</button>`).join('')}</div></div>`).join('');
+      const c = save.custom, t = this.edTab || 0, tot = g.goalsTotal(), gold = g.medalsGold();
+      $('#edTabs').innerHTML = EDIT.map(([n], i) => `<button class="tab ${i === t ? 'on' : ''}" data-edtab="${i}">${n}</button>`).join('');
+      const nm = $('#edNm'); if (document.activeElement !== nm) nm.value = c.name || '';
+      $('#edRows').innerHTML = EDIT[t][1].map(([k, label, opts]) => `<div class="set"><span>${label}</span><div class="opts">${opts.map(([v, tx]) => {
+        const lock = k === 'board' && ((BOARDS[+v].unlock || 0) > tot || (BOARDS[+v].medal || 0) > gold);
+        return `<button class="opt ${String(c[k]) === v ? 'on' : ''} ${lock ? 'lock' : ''}" data-ed="${k}" data-v="${v}" ${lock ? 'disabled' : ''} title="${k === 'board' ? BOARDS[+v].name : ''}">${tx}</button>`; }).join('')}</div></div>`).join('');
     }
     if (id === 'mBoard') {
       const tot = g.goalsTotal(), cur = save.board >= 0 ? save.board : g.skaterDef.board, gold = g.medalsGold();
@@ -211,7 +261,11 @@ export class UI {
   }
   toggleGoals(g) { if ($('#mGoals').classList.contains('on')) { this.show(null, false); g.paused = false; } else { g.paused = true; this.stack = []; this.show('mGoals', false); this._goalsFromGame = true; } }
 
-  loading(on, name) { const l = $('#loading'); if (on) { l.classList.remove('hide'); $('#ldTxt').textContent = name ? name + ' wird aufgebaut …' : 'Lädt …'; } else l.classList.add('hide'); }
+  loading(on, name) {
+    const l = $('#loading');
+    if (on) { l.classList.remove('hide'); $('#ldTxt').textContent = name ? name + ' wird aufgebaut …' : 'Lädt …'; $('#ldTipT').textContent = TIPS[(this._tip = ((this._tip ?? Math.floor(Math.random() * TIPS.length)) + 1) % TIPS.length)]; }
+    else l.classList.add('hide');
+  }
 
   // ---------------------------------------------------------- HUD
   startRun(g) {
@@ -236,14 +290,24 @@ export class UI {
     const sp = $('#spec'); sp.firstChild.style.width = (sk.special * 100).toFixed(1) + '%'; sp.classList.toggle('full', sk.special >= 1);
     // Combo
     const c = sk.combo;
-    if (c.active) { this.comboEl.className = ''; this.cT.textContent = c.text(); this.cV.innerHTML = `${fmt(c.sum)} <em>× ${c.mult}</em>`; this.comboEl.style.opacity = 1; this.comboHold = 0; }
+    if (c.active) {
+      if (c.mult !== this._lastMult) { this._lastMult = c.mult; this.comboEl.className = ''; void this.comboEl.offsetWidth; this.comboEl.className = 'pop'; }
+      this.cT.textContent = c.text(); this.cV.innerHTML = `${fmt(c.sum)} <em>× ${c.mult}</em>`; this.comboEl.style.opacity = 1; this.comboHold = 0;
+    } else this._lastMult = 0;
+    if (!c.active) {}
     else if (this.comboHold > 0) { this.comboHold -= dt; if (this.comboHold <= 0) this.comboEl.style.opacity = 0; }
     else this.comboEl.style.opacity = 0;
     // Balance
     const bal = $('#bal');
-    if (sk.grind) { bal.className = 'on'; bal.firstChild.style.left = (50 + sk.grind.bal * 50) + '%'; bal.firstChild.style.top = ''; }
-    else if (sk.manual) { bal.className = 'on v'; bal.firstChild.style.top = (50 - sk.manual.bal * 50) + '%'; bal.firstChild.style.left = ''; }
-    else bal.className = '';
+    const b = sk.grind ? sk.grind.bal : sk.manual ? sk.manual.bal : null;
+    if (b != null) {
+      bal.className = sk.grind ? 'on' : 'on v';
+      bal.firstChild.style.setProperty('--a', (sk.grind ? b * 60 : -b * 60).toFixed(1) + 'deg');
+      const sp = g.screenPos && g.screenPos(sk, sk.grind ? 2.35 : 1.1);
+      if (sp) { bal.style.left = (sk.grind ? sp.x : sp.x + 70) + 'px'; bal.style.top = sp.y + 'px'; }
+    } else bal.className = '';
+    const sf = Math.max(0, Math.min(0.85, (sk.speed - 10) / 7));
+    if (Math.abs(sf - (this._sf || 0)) > 0.03) { this._sf = sf; $('#speed').style.opacity = sf.toFixed(2); }
   }
   bank(v, list) { this.comboEl.className = 'bank'; this.cV.innerHTML = '+' + fmt(v); this.comboHold = 1.6; this.comboEl.style.opacity = 1; }
   bail(why, lost) { this.comboEl.className = 'fail'; this.cT.textContent = why; this.cV.textContent = lost ? '−' + fmt(lost) : 'Sturz!'; this.comboHold = 1.6; this.comboEl.style.opacity = 1; }

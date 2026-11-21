@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "Concrete Pulse – Skate 3D",
-  "short_name": "Concrete Pulse",
+  "name": "Skate Legends – Skateboarding 3D",
+  "short_name": "Skate Legends",
   "lang": "de",
   "start_url": "./",
   "scope": "./",
@@ -10,8 +10,8 @@
     "fullscreen",
     "standalone"
   ],
-  "background_color": "#38130d",
-  "theme_color": "#511c13",
+  "background_color": "#06060c",
+  "theme_color": "#080912",
   "categories": [
     "games"
   ],

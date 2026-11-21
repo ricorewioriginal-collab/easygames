@@ -1,10 +1,11 @@
 // Spielablauf: Park laden, Modi (Karriere, Highscore, Freies Fahren, Duell), Ziele, Kamera, Wertung.
-import { Vector3, Color3 } from '@babylonjs/core/Maths/math';
+import { Vector3, Color3, Matrix } from '@babylonjs/core/Maths/math';
 import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera';
 import { createScene, addPipeline } from './gfx.js';
 import { buildWorld } from './world.js';
 import { makeBoard } from './board.js';
 import { makeSkater } from './rig.js';
+import { FX } from './fx.js';
 import { Skater } from './skater.js';
 import { PARKS, SKATERS, BOARDS, customSkater, RIVALS, COMP_BASE } from './parks.js';
 import * as A from './audio.js';
@@ -19,6 +20,7 @@ const NOINPUT = { x: 0, y: 0, rx: 0, ry: 0, down: () => false, pressed: () => fa
 
 export class Game {
   constructor(engine, input, ui) {
+    this.save = save;
     this.engine = engine; this.input = input; this.ui = ui;
     this.settings = save.settings;
     this.scene = null; this.state = 'boot'; this.parkIdx = 0; this.mode = 'career'; this.orbit = 0;
@@ -56,6 +58,7 @@ export class Game {
     const cam = this.cam = new FreeCamera('cam', new Vector3(0, 4, -8), this.scene);
     cam.minZ = 0.08; cam.maxZ = 1200; cam.fov = 1.05; cam.inputs.clear();
     this.post = addPipeline(this.scene, cam, this.Q, park);
+    this.fx = new FX(this.scene, this.Q && this.Q.scale > 1.3);
     await this.spawnSkater();
     if (token !== this._tok) return;
     await Promise.race([this.scene.whenReadyAsync(), new Promise(r => setTimeout(r, 6000))]);
@@ -163,6 +166,7 @@ export class Game {
     }
     // Ton
     A.setRoll(sk.speed, sk.mode === 'ground');
+    if (this.fx) this.fx.update(sk);
     this.updateCamera(dt);
     if (this.rec) this.rec.add(dt);
     this.ui.hud(this, dt);
@@ -190,7 +194,7 @@ export class Game {
     const fx = Math.sin(yaw), fz = Math.cos(yaw);
     const p = sk.holder.position;
     const sp = sk.speed;
-    const back = dist + Math.min(1.2, sp * 0.05), up = 1.75 + Math.min(0.6, sp * 0.02) - this.input.ry * 0.8;
+    const back = dist * 0.92 + Math.min(1.4, sp * 0.07), up = 1.4 + Math.min(0.5, sp * 0.018) + (sk.mode === 'air' ? 0.25 : 0) - this.input.ry * 0.8;
     let tx = p.x - fx * back, tz = p.z - fz * back, ty = p.y + up;
     // Kamera nicht in Geometrie: von der Figur nach hinten tasten
     const steps = 12; let lastOk = 0;
@@ -200,7 +204,7 @@ export class Game {
     }
     if (lastOk < 1) { const t = Math.max(0.25, lastOk); tx = p.x + (tx - p.x) * t; tz = p.z + (tz - p.z) * t; ty = Math.max(ty, L.height(tx, tz) + 0.6, p.y + 1.6); }
     ty = Math.max(ty, L.height(tx, tz) + 0.5);
-    const target = new Vector3(p.x + fx * 1.6, p.y + 0.95 + (sk.mode === 'air' ? 0.2 : 0), p.z + fz * 1.6);
+    const target = new Vector3(p.x + fx * 2.2, p.y + 1.05 + (sk.mode === 'air' ? 0.15 : 0), p.z + fz * 2.2);
     if (!st.pos) { st.pos = new Vector3(tx, ty, tz); st.look = target.clone(); }
     const kp = 1 - Math.exp(-(sk.mode === 'air' ? 5 : 9) * dt);
     st.pos.x += (tx - st.pos.x) * kp; st.pos.z += (tz - st.pos.z) * kp; st.pos.y += (ty - st.pos.y) * (1 - Math.exp(-(sk.mode === 'air' ? 3 : 7) * dt));
@@ -208,13 +212,26 @@ export class Game {
     st.pos.y = Math.max(st.pos.y, L.height(st.pos.x, st.pos.z) + 0.45);
     Vector3.LerpToRef(st.look, target, 1 - Math.exp(-12 * dt), st.look);
     cam.position.copyFrom(st.pos);
-    // kleines Wackeln bei Landung
-    if (sk.landSquash > 0.3) cam.position.y += (Math.random() - 0.5) * 0.04 * sk.landSquash;
+    // Wackeln bei Landung/Sturz, Schwung-Neigung in Kurven, Sichtfeld wächst mit dem Tempo
+    st.shake = Math.max(0, (st.shake || 0) - dt * 2.6);
+    if (st.shake > 0.01) { const a = st.shake * st.shake * 0.09, t = performance.now() / 1000; cam.position.x += Math.sin(t * 61) * a; cam.position.y += Math.sin(t * 73 + 1) * a; cam.position.z += Math.cos(t * 67) * a; }
     cam.setTarget(st.look);
-    st.fov += ((1.0 + Math.min(0.2, sp * 0.012)) - st.fov) * (1 - Math.exp(-3 * dt));
+    const turn = d * k; st.roll = (st.roll || 0) + ((sk.mode === 'ground' ? Math.max(-0.06, Math.min(0.06, -turn * 0.05)) : 0) - (st.roll || 0)) * (1 - Math.exp(-4 * dt));
+    cam.rotation.z = st.roll;
+    st.punch = Math.max(0, (st.punch || 0) - dt * 1.5);
+    const fovT = 0.98 + Math.min(0.3, sp * 0.019) + (sk.special >= 1 ? 0.05 : 0) + st.punch * 0.12;
+    st.fov += (fovT - st.fov) * (1 - Math.exp(-3.5 * dt));
     cam.fov = st.fov;
   }
 
+  // Bildschirmposition eines Punkts über dem Skater (für die Balance-Anzeige)
+  screenPos(sk, h) {
+    const p = sk.holder.position, v = Vector3.Project(new Vector3(p.x, p.y + h, p.z), Matrix.IdentityReadOnly, this.scene.getTransformMatrix(), this.cam.viewport.toGlobal(this.engine.getRenderWidth(), this.engine.getRenderHeight()));
+    const k = innerWidth / this.engine.getRenderWidth();
+    return v.z > 0 && v.z < 1 ? { x: v.x * k, y: v.y * k } : null;
+  }
+  shake(v) { if (this.camState) this.camState.shake = Math.max(this.camState.shake || 0, Math.min(1.2, v)); }
+  punch(v) { if (this.camState) this.camState.punch = Math.max(this.camState.punch || 0, v); }
   // ------------------------------------------------------------ Ereignisse vom Skater
   onTrick(e, special) { this.ui.trick(e, special); if (this.rec) this.rec.event(e.name, special ? 'spec' : ''); if (special) this.skater.special = 0; }
   onBank(v, list) {
@@ -231,7 +248,7 @@ export class Game {
     // Trick über Lücke
     if (this._trickGaps) { for (const tg of this._trickGaps) this.goalCheck('trickgap', tg); this._trickGaps = null; }
   }
-  onBail(why, lost) { if (this.rec) this.rec.event(why, 'fail'); A.sfx('bail'); this.ui.bail(why, lost); this._trickGaps = null; if (this.run) { this.run.bails++; if (this.mode === 'skate' && this.run.turnDone == null) this.run.turnDone = -0.6; } }
+  onBail(why, lost) { this.shake(1); if (this.fx) this.fx.land(1); if (this.rec) this.rec.event(why, 'fail'); A.sfx('bail'); this.ui.bail(why, lost); this._trickGaps = null; if (this.run) { this.run.bails++; if (this.mode === 'skate' && this.run.turnDone == null) this.run.turnDone = -0.6; } }
   onRecover() { }
   sfx(n, k) { A.sfx(n, k); }
   grindSound(on, kind) { A.setGrind(on, kind); }

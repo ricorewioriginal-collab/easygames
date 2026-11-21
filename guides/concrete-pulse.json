@@ -4,20 +4,21 @@
   {
    "t": "Ziel des Spiels",
    "p": [
-    "Concrete Pulse ist ein Skateboard-Spiel in 3D. Du fährst mit deinem Skater durch frei befahrbare Parks und sammelst Punkte mit Tricks. Mehrere Tricks hintereinander ohne Bodenkontakt (oder mit Manuals verbunden) bilden eine Combo: Ihre Punkte werden mit der Anzahl der Tricks multipliziert und erst bei einer sauberen Landung gutgeschrieben.",
+    "Skate Legends ist ein Skateboard-Spiel in 3D. Du fährst mit deinem Skater durch frei befahrbare Parks und sammelst Punkte mit Tricks. Mehrere Tricks hintereinander ohne Bodenkontakt (oder mit Manuals verbunden) bilden eine Combo: Ihre Punkte werden mit der Anzahl der Tricks multipliziert und erst bei einer sauberen Landung gutgeschrieben.",
     "Im Karrieremodus hat jeder der fünf Parks 12 Ziele (60 insgesamt). Mit 5 erfüllten Zielen öffnet sich der nächste Park. Jedes Ziel, jede grüne Marke im Park und jede Medaille gibt einen Stat-Punkt, mit dem du die Werte deines Skaters verbesserst. Weitere Ziele schalten neue Skater und Boards frei."
    ]
   },
   {
    "t": "Hauptmenü und Modi",
    "list": [
+    "Das Hauptmenü ist wie auf einer Spielekonsole aufgebaut: große Kacheln für Karriere, Highscore, Freies Fahren, Park-Editor, Wettbewerb, Mehrspieler und Skater, darunter Brett, Optionen und Steuerung. Mit Stick, Steuerkreuz oder Pfeilen wählen, A oder Enter bestätigt, B oder Esc geht zurück – die Leiste unten zeigt das an.",
     "Karriere: 2-Minuten-Läufe, erfüllte Ziele bleiben gespeichert.",
     "Highscore-Lauf: 2 Minuten, nur die Punkte zählen; dein Bestwert pro Park wird gespeichert.",
     "Freies Fahren: ohne Zeitlimit, ideal zum Üben.",
     "Park-Editor: bis zu 8 eigene Parks aus 16 Bauteilen bauen (Kicker, Quarterpipe, Vert-Rampe, Halfpipe, Funbox, Pyramide, Ledge, Manual-Pad, Rail, Treppe mit Geländer, Plattform, Wallride-Wand, Container, Pool, Pflanzkübel). Eigene Parks befährst du frei oder im 2-Minuten-Highscore-Lauf.",
     "Wettbewerb: 3 Läufe zu je 60 Sekunden, drei Juroren bewerten Punkte, Trickvielfalt und Stürze; die besten 2 Läufe zählen. Platz 1 bis 3 bringt Gold, Silber oder Bronze.",
     "Mehrspieler: Duell (2 bis 4 Spieler, je 60 Sekunden) oder S-K-A-T-E (2 bis 4 Spieler, je ein 20-Sekunden-Versuch pro Runde; die schwächste Combo bekommt einen Buchstaben, bei S-K-A-T-E ist man raus).",
-    "Skater: einen der 6 Skater oder deinen eigenen Skater wählen und Stat-Punkte verteilen (+). Eigener Skater: Figur, Haut, Frisur, Haarfarbe, Kopfbedeckung und Kleidung frei einstellen. Boards: eines der 11 Boards wählen.",
+    "Skater: die Stars Zotik (Fuchs aus „Zotik“), Ricardo (RicoReWi aus „Show Me Your Voice“), Andrew und Marco (aus „AnMaCha“), dazu 6 weitere Skater oder dein eigener Skater. Stat-Punkte verteilst du mit +. Eigener Skater: Figur, Haut, Frisur, Haarfarbe, Kopfbedeckung und Kleidung frei einstellen. Boards: eines der 11 Boards wählen.",
     "Einstellungen: Grafikqualität, Musik- und Effektlautstärke, Musikstück, Kamera, Einfach-Modus, automatisches Anschieben und Google-Spielstand.",
     "Hilfe: kurze Übersicht der Steuerung."
    ]
@@ -57,6 +58,17 @@
    ]
   },
   {
+   "t": "Skater und Skater-Editor",
+   "list": [
+    "Zotik: Fuchs mit grünen Augen, grünem Schal, Lederweste, Bronze-Schienen und buschigem Schwanz. Stil Air, Spezialtricks Fuchsschweif-Flip, Smaragd-Wirbel und Bronzefunken.",
+    "Ricardo: hochgestylte braune Haare, Vollbart, lila Shirt und Ohrringe. Stil Show, Spezialtricks Showtime 900, Bühnen-Flip und Mikrofon-Slide.",
+    "Andrew: kurze rotblonde Haare, dunkles Shirt mit orangem Aufdruck, blaue Hose. Stil Technik, Spezialtricks Podcast-Kick, Sendepause und Endlos-Talk.",
+    "Marco: Vollbart, Kopfhörer, dunkler Hoodie mit orangem Aufdruck und Cargohose, kräftiger gebaut. Stil Power, Spezialtricks Bass-Drop, Studio-Spin und Dauerwelle.",
+    "Eigener Skater: Skater → Eigener Skater → Aussehen. Oben gibst du den Namen ein. Fünf Reiter: Körper (Körperbau, Statur, Hautton, Fahrstil), Kopf (10 Frisuren, Haarfarbe, Bart, Brille, Ohrringe), Kleidung (Shirt, Tanktop, Langarm, Hoodie oder Weste, Aufdruck, Jeans, Cargo oder Shorts, Farben, Schuhe und Sohle), Extras (Kappe, Mütze, Fischerhut, Helm, Kopfhörer, Schal, Kette) und Board.",
+    "Der Fahrstil legt die Grundwerte fest: Allround, Street, Vert, Technik oder Tempo. Mit 🎲 Zufall würfelst du ein komplettes Aussehen. Alles wird sofort gespeichert."
+   ]
+  },
+  {
    "t": "Parks",
    "list": [
     "Hafenkante: Container, Funbox, Treppen, Pool und Pyramide – der Einstiegspark.",
@@ -89,7 +101,7 @@
   {
    "t": "Fortschritt und Speichern",
    "p": [
-    "Ziele, grüne Marken, Medaillen, Stat-Punkte, dein eigener Skater, deine eigenen Parks, Bestwerte, Freischaltungen und Einstellungen werden automatisch auf dem Gerät gespeichert. In den Einstellungen kannst du dich optional mit Google anmelden, dann wird der Stand gesichert und auf anderen Geräten fortgesetzt. Die Bestenliste zeigt deinen besten Lauf."
+    "Ziele, grüne Marken, Medaillen, Stat-Punkte, dein eigener Skater, deine eigenen Parks, Bestwerte, Freischaltungen und Einstellungen werden automatisch auf dem Gerät gespeichert. In den Einstellungen kannst du dich optional mit Google anmelden, dann wird der Stand gesichert und auf anderen Geräten fortgesetzt. Die Bestenliste zeigt deinen besten Lauf. Der Spielname ist jetzt Skate Legends; dein bisheriger Spielstand bleibt erhalten."
    ]
   },
   {
@@ -115,7 +127,8 @@
     "Übe im Freien Fahren die Quarterpipes: gerade anfahren, oben Grab halten, rechtzeitig loslassen.",
     "Lande gerade: Wenn der Skater quer zur Fahrtrichtung aufkommt, stürzt er.",
     "Sammle die grünen Sechseck-Marken in jedem Park (3 pro Park) und verteile die Stat-Punkte im Skater-Menü zuerst auf Tempo und Sprung.",
-    "Bau dir im Park-Editor einen Übungspark: eine Quarterpipe gegenüber einer zweiten oder ein Rail direkt hinter einem Kicker – mit der Testfahrt probierst du jede Linie sofort aus."
+    "Bau dir im Park-Editor einen Übungspark: eine Quarterpipe gegenüber einer zweiten oder ein Rail direkt hinter einem Kicker – mit der Testfahrt probierst du jede Linie sofort aus.",
+    "Achte auf die Balance-Anzeige: Beim Grinden erscheint ein Bogen über dem Skater, beim Manual eine Anzeige daneben. Bleib mit dem Zeiger im grünen Bereich."
    ]
   },
   {
@@ -126,7 +139,8 @@
     "Abwechslung zahlt sich aus: Jeder neue Trick in der Combo erhöht den Multiplikator voll.",
     "Wallrides verbinden Tricks: Ollie seitlich an eine Mauer, Grind halten, dann Wallie zurück in die Luft und weiter in den nächsten Grind.",
     "Im Wettbewerb lohnt Abwechslung: Die Jury belohnt viele verschiedene Tricks und zieht für jeden Sturz Punkte ab.",
-    "Schau dir schwierige Stellen im Replay mit 0,25× und der TV-Kamera an: So siehst du genau, ob ein Flip vor der Landung fertig war."
+    "Schau dir schwierige Stellen im Replay mit 0,25× und der TV-Kamera an: So siehst du genau, ob ein Flip vor der Landung fertig war.",
+    "Zotik hat die besten Air- und Sprungwerte – ideal für Vert-Rampen und hohe Gaps. Marco ist am schnellsten unterwegs, Andrew hat die beste Balance für lange Grinds und Manuals."
    ]
   },
   {
@@ -153,7 +167,7 @@
    "t": "Hafenkante (12 Ziele)",
    "list": [
     "15.000, 40.000 und 90.000 Punkte in einem Lauf.",
-    "P-U-L-S-E: die fünf schwebenden Buchstaben im Park einsammeln.",
+    "S-T-Y-L-E: die fünf schwebenden Buchstaben im Park einsammeln.",
     "Versteckte Kassette: schwebt erhöht am Parkrand und ist nur mit einem Sprung erreichbar.",
     "6.000er-Combo landen.",
     "Gap Container-Hüpfer: von Container zu Container springen.",
@@ -167,7 +181,7 @@
    "t": "Dachgarten (12 Ziele)",
    "list": [
     "30.000, 80.000 und 160.000 Punkte.",
-    "P-U-L-S-E und die versteckte Kassette.",
+    "S-T-Y-L-E und die versteckte Kassette.",
     "15.000er-Combo.",
     "Lichtschacht-Sprung: mit vollem Tempo über die Kante zwischen den Dächern springen.",
     "540er-Drehung landen (am besten aus der Halfpipe).",
@@ -180,7 +194,7 @@
    "t": "Neonbucht (12 Ziele)",
    "list": [
     "50.000, 120.000 und 250.000 Punkte.",
-    "P-U-L-S-E und die versteckte Kassette.",
+    "S-T-Y-L-E und die versteckte Kassette.",
     "30.000er-Combo.",
     "1,4 Sekunden an der Vert-Rampe fliegen: mit hohem Tempo anfahren, oben Ollie.",
     "720er-Drehung landen, einen Spezialtrick landen.",
@@ -193,7 +207,7 @@
    "t": "Gleisdepot (12 Ziele)",
    "list": [
     "60.000, 130.000 und 260.000 Punkte in einem Lauf.",
-    "P-U-L-S-E: die fünf Buchstaben zwischen Waggons, Laderampe und Halfpipe.",
+    "S-T-Y-L-E: die fünf Buchstaben zwischen Waggons, Laderampe und Halfpipe.",
     "Kassette im versteckten Hof: über den Kicker auf die Plattform an der Hofmauer und hinüber springen; heraus geht es über die Rampe.",
     "25.000er-Combo landen.",
     "Waggon-Hüpfer: von einem Güterwagen zum nächsten springen.",
@@ -208,7 +222,7 @@
    "t": "Trockenkanal (12 Ziele)",
    "list": [
     "70.000, 150.000 und 300.000 Punkte in einem Lauf.",
-    "P-U-L-S-E: verteilt in der Rinne, an den Ufern und beim Bowl.",
+    "S-T-Y-L-E: verteilt in der Rinne, an den Ufern und beim Bowl.",
     "Kassette auf dem Pumpenhaus: über den Kicker am Pumpenhaus aufs Dach springen.",
     "40.000er-Combo landen.",
     "Pumpenhaus-Dach: aufs Dach des Pumpenhauses springen.",
@@ -272,6 +286,18 @@
   {
    "q": "Wie sehe ich mir meinen Lauf noch einmal an?",
    "a": "Im Pause-Menü oder nach dem Lauf auf „Replay“ – mit Zeitlupe, Zeitleiste und drei Kameras."
+  },
+  {
+   "q": "Warum heißt das Spiel jetzt Skate Legends?",
+   "a": "Das Spiel wurde komplett überarbeitet und umbenannt. Adresse, Spielstand und Fortschritt bleiben gleich."
+  },
+  {
+   "q": "Wie spiele ich als Zotik, Ricardo, Andrew oder Marco?",
+   "a": "Hauptmenü → Skater. Die vier Stars sind oben mit ★ STAR markiert und sofort spielbar."
+  },
+  {
+   "q": "Wie erstelle ich meinen eigenen Skater?",
+   "a": "Hauptmenü → Skater → Eigener Skater → Aussehen. Name eingeben und in den Reitern Körper, Kopf, Kleidung, Extras und Board alles einstellen."
   }
  ]
 }

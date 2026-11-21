@@ -106,13 +106,13 @@ export class Skater {
     if (s.el && /qp|bowl|ramp/.test(s.el.t) && n.y < 0.98) gT.scaleInPlace(Vector3.Dot(v, gT) < 0 ? 0.52 : 0.95);
     v.addInPlace(gT.scale(dt));
     spd = v.length();
-    const maxPush = 7.6 + st.speed * 0.35;
+    const maxPush = 9.2 + st.speed * 0.42;
     const wantPush = (inp.y > 0.35 || (this.game.settings.autoPush && inp.y > -0.3)) && !this.manual && n.y > 0.85 && this.charge === 0;
-    if (wantPush && spd < maxPush) { v.addInPlace(d.scale((5.5 + st.speed * 0.25) * dt)); this.pushing = Math.min(1, this.pushing + dt * 4); }
+    if (wantPush && spd < maxPush) { v.addInPlace(d.scale((7.2 + st.speed * 0.32) * dt)); this.pushing = Math.min(1, this.pushing + dt * 4); }
     else this.pushing = Math.max(0, this.pushing - dt * 3);
     if (inp.y < -0.5 && !this.manual && this.charge === 0) { const b = Math.min(spd, 9 * dt); if (spd > 1e-3) v.scaleInPlace((spd - b) / spd); this.braking = 1; } else this.braking = 0;
-    const fr = (0.12 + 0.0035 * spd * spd) * dt; spd = v.length(); if (spd > 1e-3) v.scaleInPlace(Math.max(0, spd - fr) / spd);
-    const vmax = 15.5; if (v.length() > vmax) v.scaleInPlace(vmax / v.length());
+    const fr = (0.1 + 0.0026 * spd * spd) * dt; spd = v.length(); if (spd > 1e-3) v.scaleInPlace(Math.max(0, spd - fr) / spd);
+    const vmax = 17.5; if (v.length() > vmax) v.scaleInPlace(vmax / v.length());
     this.vel.copyFrom(v);
 
     // Ollie laden / springen
@@ -383,7 +383,10 @@ export class Skater {
     if (fail && (a.t > 0.12 || a.flip)) return this.doBail(fail);
     // Erfolg
     this.mode = 'ground'; this.air = null;
-    this.landSquash = Math.min(1, impact / 9 + (a.t > 0.3 ? 0.3 : 0));
+    this.landSquash = Math.min(1, impact / 7 + (a.t > 0.3 ? 0.4 : 0.15));
+    if (this.game.fx && (impact > 4 || a.t > 0.3)) this.game.fx.land(this.landSquash);
+    if (this.game.shake && impact > 6) this.game.shake(Math.min(0.8, impact / 18));
+    if (this.game.punch && a.tricks.length) this.game.punch(0.6);
     if (a.t > 0.25 || a.tricks.length) this.game.sfx('land', Math.min(1, 0.4 + impact / 12));
     const spinDeg = Math.round(Math.abs(a.spin) / Math.PI) * 180;
     if (a.tricks.length) {
@@ -681,59 +684,77 @@ export class Skater {
   }
 
   poseRig(dt, lift) {
-    const a = this.air, g = this.grind, c = Math.max(this.crouch, this.landSquash * 0.8);
+    const a = this.air, g = this.grind, c = Math.max(this.crouch, this.landSquash * 0.95);
     const t = performance.now() / 1000;
-    const P = this.pose;
-    const fy = 0.1 + lift + Math.abs(Math.sin(this.boardPitch)) * 0.3;
+    const P = this.pose, sp = this.speed;
     const pitchLift = Math.sin(this.boardPitch);
-    const fL = 0.2, fR = -0.24;
-    // Füße auf dem Brett (Figurraum: +x = Nase)
-    P.footL = [fL, fy - pitchLift * (fL + 0.3) * (this.boardPitch > 0 ? 1 : 0) + (this.boardPitch < 0 ? -pitchLift * 0 : 0), 0.03];
-    P.footR = [fR, fy, 0.0];
-    if (this.boardPitch > 0) { P.footL[1] = fy + Math.sin(this.boardPitch) * (fL + 0.3) - 0.3 * Math.abs(Math.sin(this.boardPitch)); P.footR[1] = fy + Math.sin(this.boardPitch) * (fR + 0.3) - 0.3 * Math.abs(Math.sin(this.boardPitch)); }
-    else if (this.boardPitch < 0) { const s = -Math.sin(this.boardPitch); P.footL[1] = fy + s * (0.3 - fL) - 0.3 * s; P.footR[1] = fy + s * (0.3 - fR) - 0.3 * s; }
-    P.toeL = [-0.25, 1]; P.toeR = [0.15, 1];
-    const pelY = 0.95 - c * 0.3 - this.tuck * 0.06 + lift * 0.85;
-    P.pelvis = [-0.02 + (this.manual ? (this.manual.dir === 'u' ? 0.1 : -0.1) : 0), pelY, 0.02 - c * 0.04];
-    P.lean = 0.12 + c * 0.38 + this.leanS * 0.0; P.side = 0; P.twist = 0.15; P.hipTwist = 0;
-    P.kneeX = 0; P.kneeZ = 0;
-    // Carve: Gewicht auf Zehen-/Fersenkante
-    P.pelvis[2] += -this.leanS * 0.07 * (this.fakie ? -1 : 1);
-    P.lean += -this.leanS * 0.12;
-    // Arme: Gleichgewicht
-    const sway = Math.sin(t * 1.7) * 0.03;
-    P.handL = [0.42 + c * 0.05, 1.02 - c * 0.25 + sway, 0.18 + c * 0.12];
-    P.handR = [-0.42 - c * 0.05, 0.98 - c * 0.25 - sway, 0.12 + c * 0.1];
-    // Anschieben: hinterer Fuß auf den Boden
+    const fy = 0.1 + lift + Math.abs(pitchLift) * 0.3;
+    // Stand: schulterbreit, Vorderfuß leicht schräg, Hinterfuß quer über dem Tail
+    const fL = 0.23, fR = -0.26;
+    P.footL = [fL, fy, 0.04]; P.footR = [fR, fy, -0.02];
+    if (this.boardPitch > 0) { const k = Math.abs(pitchLift); P.footL[1] = fy + pitchLift * (fL + 0.3) - 0.3 * k; P.footR[1] = fy + pitchLift * (fR + 0.3) - 0.3 * k; }
+    else if (this.boardPitch < 0) { const k = -pitchLift; P.footL[1] = fy + k * (0.3 - fL) - 0.3 * k; P.footR[1] = fy + k * (0.3 - fR) - 0.3 * k; }
+    P.toeL = [-0.35, 1]; P.toeR = [0.1, 1];
+    // Becken: in der Luft bleibt es tiefer → Knie ziehen an (Tuck), am Boden federnd in die Knie
+    const bob = this.mode === 'ground' ? Math.sin(t * 2.2) * 0.008 * Math.min(1, sp * 0.15) : 0;
+    const pelY = 0.92 - c * 0.34 - this.tuck * 0.2 + lift * 0.5 + bob;
+    P.pelvis = [0.0 + (this.manual ? (this.manual.dir === 'u' ? 0.12 : -0.12) : 0), pelY, -0.03 - c * 0.07];
+    P.lean = 0.22 + c * 0.5 + Math.min(0.12, sp * 0.008); P.side = 0; P.twist = 0.42; P.hipTwist = 0.16;
+    P.kneeX = 0.02; P.kneeZ = 0.1;
+    // Carve: Gewicht auf Zehen-/Fersenkante, Oberkörper legt sich in die Kurve
+    const carve = this.leanS * (this.fakie ? -1 : 1);
+    P.pelvis[2] += -carve * 0.09; P.lean += -carve * 0.18; P.side += carve * 0.12 * Math.min(1, sp * 0.12);
+    // Arme: locker, leicht vor dem Körper, pendeln mit
+    const sway = Math.sin(t * 1.6) * 0.025;
+    P.handL = [0.34 + c * 0.06, 0.86 - c * 0.22 + sway, 0.24 + c * 0.1];
+    P.handR = [-0.36 - c * 0.04, 0.82 - c * 0.22 - sway, 0.02 + c * 0.12];
+    // Anschieben: hinterer Fuß kickt am Boden, Oberkörper dreht nach vorne
     if (this.pushing > 0.05 && this.mode === 'ground' && !this.manual && this.charge === 0) {
-      this.pushPhase += dt * 4.2;
+      this.pushPhase += dt * (4.6 + Math.min(2, sp * 0.15));
       const ph = this.pushPhase % (Math.PI * 2), w = this.pushing;
       const down = Math.max(0, Math.sin(ph)), sx = Math.cos(ph);
-      P.footR = [lerp(fR, 0.05 - sx * 0.45, w), lerp(fy, -0.02 + (1 - down) * 0.12, w), lerp(0, 0.24, w)];
-      P.toeR = [0.4, 1]; P.toeL = [lerp(-0.25, 0.85, w), 1];
-      P.pelvis[1] -= 0.08 * w; P.pelvis[0] += 0.06 * w; P.lean += 0.1 * w; P.twist = lerp(0.15, 0.7, w); P.hipTwist = 0.35 * w;
-      P.handL = [0.35, 1.0, 0.3]; P.handR = [-0.15 + sx * 0.12, 0.9, 0.32];
+      P.footR = [lerp(fR, 0.02 - sx * 0.5, w), lerp(fy, -0.02 + (1 - down) * 0.14, w), lerp(-0.02, 0.26, w)];
+      P.toeR = [0.45, 1]; P.toeL = [lerp(-0.35, 0.9, w), 1];
+      P.pelvis[1] -= 0.1 * w; P.pelvis[0] += 0.08 * w; P.lean += 0.14 * w; P.twist = lerp(0.42, 0.85, w); P.hipTwist = lerp(0.16, 0.45, w);
+      P.handL = [lerp(P.handL[0], 0.3, w), lerp(P.handL[1], 0.95, w), lerp(P.handL[2], 0.36 - sx * 0.1, w)]; P.handR = [lerp(P.handR[0], -0.18 + sx * 0.14, w), lerp(P.handR[1], 0.86, w), lerp(P.handR[2], 0.3 + sx * 0.1, w)];
     } else this.pushPhase = 0;
+    // Ollie laden: tief in die Knie, Arme holen aus
+    if (this.charge > 0 && this.mode === 'ground') { const k = clamp(this.charge / 0.32, 0, 1); P.handL = [0.3, 0.7, 0.05 - k * 0.1]; P.handR = [-0.32, 0.68, -0.1 - k * 0.12]; P.lean += 0.15 * k; }
     // Luft
     if (a) {
-      P.handL = [0.4, 1.12 - this.tuck * 0.2, 0.25]; P.handR = [-0.45, 1.15 - this.tuck * 0.2, 0.1];
+      const up = clamp(a.t * 6, 0, 1), tk = this.tuck;
+      P.handL = [lerp(0.4, 0.55, up), 1.0 + up * 0.22 - tk * 0.18, 0.18 + tk * 0.1]; P.handR = [lerp(-0.4, -0.58, up), 0.98 + up * 0.25 - tk * 0.18, -0.04];
+      P.lean += tk * 0.25;
+      // Pop: kurz nach dem Absprung schiebt der Vorderfuß das Brett nach vorne-oben
+      if (a.ollied && a.t < 0.22 && !a.flip) { const k = 1 - a.t / 0.22; P.footL[0] += 0.06 * k; P.footL[1] += 0.05 * k; P.footR[1] -= 0.02 * k; }
+      if (a.flip && a.flip.t < a.flip.dur) {
+        // Flip: Füße gehen vom Brett, Vorderfuß kickt seitlich aus, Knie hoch
+        const ft = clamp(a.flip.t / a.flip.dur, 0, 1), kick = Math.sin(ft * Math.PI);
+        P.footL = [fL + 0.08 * kick, fy + 0.14 * kick, 0.04 + 0.18 * kick * (a.flip.def.roll >= 0 ? 1 : -1)];
+        P.footR = [fR - 0.04 * kick, fy + 0.16 * kick, -0.02 - 0.06 * kick];
+        P.pelvis[1] -= 0.04 * kick; P.lean += 0.12 * kick;
+      }
       if (a.grab) {
         const d = a.grab.def, w = clamp(a.grab.t * 6, 0, 1) * (a.grab.done ? 0 : 1);
         const tgt = [d.at[0], fy + 0.02, d.at[1]];
-        if (d.hand === 'r') P.handR = lerpA(P.handR, tgt, w); else P.handL = lerpA(P.handL, tgt, w);
+        if (d.hand === 'r') { P.handR = lerpA(P.handR, tgt, w); P.handL = lerpA(P.handL, [0.62, 1.32, 0.1], w); }
+        else { P.handL = lerpA(P.handL, tgt, w); P.handR = lerpA(P.handR, [-0.62, 1.3, -0.05], w); }
         P.lean += 0.75 * w; P.pelvis[1] -= 0.2 * w; P.pelvis[2] += 0.05 * w;
         if (d.arch) { P.footL[2] -= 0.2 * w; P.footR[2] -= 0.2 * w; P.lean -= 0.5 * w; }
       }
-      if (a.special) { const s = a.special.t; P.handL = [0.6, 1.4 + Math.sin(s * 9) * 0.1, 0]; P.handR = [-0.6, 1.4 + Math.cos(s * 9) * 0.1, 0]; }
+      if (a.special) { const s = a.special.t; P.handL = [0.62, 1.42 + Math.sin(s * 9) * 0.1, 0.05]; P.handR = [-0.62, 1.4 + Math.cos(s * 9) * 0.1, 0]; }
+      // in der Drehung führen die Schultern
+      P.twist += clamp(a.spinV || 0, -6, 6) * -0.04;
     }
     if (g) {
-      P.handL = [0.5, 1.05 + g.bal * 0.2, 0.15]; P.handR = [-0.5, 1.05 - g.bal * 0.2, 0.15];
-      P.side = -g.bal * 0.25; P.pelvis[0] += g.bal * 0.05;
+      const k = clamp(g.time * 5, 0, 1);
+      P.handL = [lerp(P.handL[0], 0.58, k), 1.0 + g.bal * 0.22, 0.16]; P.handR = [lerp(P.handR[0], -0.6, k), 0.98 - g.bal * 0.22, 0.02];
+      P.side = -g.bal * 0.3; P.pelvis[0] += g.bal * 0.05; P.pelvis[1] -= 0.04; P.lean += 0.08;
     }
-    if (this.manual) { const m = this.manual; P.handL = [0.55, 1.15 + m.bal * 0.2, 0.05]; P.handR = [-0.55, 1.15 - m.bal * 0.2, 0.05]; P.side = -m.bal * 0.2; }
-    // Kopf: in Fahrtrichtung
+    if (this.manual) { const m = this.manual; P.handL = [0.52, 1.08 + m.bal * 0.18, 0.22]; P.handR = [-0.52, 1.02 - m.bal * 0.18, -0.06]; P.side = -m.bal * 0.22; P.lean += m.dir === 'u' ? 0.18 : -0.05; }
+    // Kopf: in Fahrtrichtung, in der Luft zur Landung
     const ahead = this.fakie ? -1 : 1;
-    P.look = [ahead * 4, 1.3, 1.2];
+    P.look = [ahead * 4, a ? 0.4 : 1.1, 1.2];
     this.rig.apply(P);
   }
 

@@ -1,4 +1,5 @@
 // Park aufbauen: Boden (mit Pool-Aussparungen), Elemente, Deko, Sammelobjekte, Licht.
+import { buildProps } from './props.js';
 import { Vector3, Color3 } from '@babylonjs/core/Maths/math';
 import { Mesh } from '@babylonjs/core/Meshes/mesh';
 import { VertexData } from '@babylonjs/core/Meshes/mesh.vertexData';
@@ -135,11 +136,12 @@ export function buildWorld(game, park) {
       }
     }
   }
+  buildProps(scene, park, level, shadow, deco, r);
   deco.getChildMeshes().forEach(m => { m.isPickable = false; m.freezeWorldMatrix(); });
 
   // ---------------- Sammelobjekte
   const items = [];
-  const word = 'PULSE', cols = ['#ff5a3c', '#ffd43a', '#2ec4ff', '#2ecc71', '#ff4f8b'];
+  const word = 'STYLE', cols = ['#ff5a3c', '#ffd43a', '#2ec4ff', '#2ecc71', '#ff4f8b'];
   park.letters.forEach((p, i) => {
     const node = new TransformNode('letter' + i, scene); node.position.set(...p);
     const pl = MeshBuilder.CreatePlane('lt', { size: 1.1, sideOrientation: Mesh.DOUBLESIDE }, scene); pl.parent = node; pl.billboardMode = Mesh.BILLBOARDMODE_Y;

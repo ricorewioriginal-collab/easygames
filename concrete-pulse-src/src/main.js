@@ -1,10 +1,13 @@
-// CONCRETE PULSE – Start
+// SKATE LEGENDS – Start (Ordner/ID bleiben concrete-pulse)
 import { createEngine, autoQuality } from './gfx.js';
 import { Input } from './input.js';
 import { UI } from './ui.js';
 import { Game } from './game.js';
 import { save, persist } from './save.js';
 import * as A from './audio.js';
+import { applyBrand } from './brand.js';
+
+applyBrand();
 
 const tv = /SmartTV|SMART-TV|Tizen|Web0S|webOS|BRAVIA|AFT[A-Z]|Android TV|GoogleTV|HbbTV/i.test(navigator.userAgent) || new URLSearchParams(location.search).has('tv');
 if (!save.settings.quality) { save.settings.quality = autoQuality(); if (tv) { save.settings.quality = 'low'; save.settings.easy = true; save.settings.autoPush = true; } persist(); }
