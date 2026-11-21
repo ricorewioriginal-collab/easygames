@@ -31,3 +31,26 @@ export function quietClone(scene: Scene, m: PBRMaterial, name: string, setup?: (
   s._forceBlockMaterialDirtyMechanism(true);
   try { const c = m.clone(name); setup?.(c); return c; } finally { s._forceBlockMaterialDirtyMechanism(was); }
 }
+
+/** Lange Malarbeit in Häppchen: nach gut 4 ms im selben Bild aufs nächste Bild warten. Vorher lief eine ganze Figur
+    (Hunderttausende Texel) am Stück, am Handy ein Hänger von einer Viertelsekunde je Figur, minutenlang nach dem Laden. */
+let sliceT = 0, lastT = 0;
+export async function breathe() {
+  const n = performance.now();
+  if (n - lastT > 40) sliceT = n;   // erster Aufruf seit einer Weile: neues Zeitfenster
+  lastT = n;
+  if (n - sliceT < 4) return;
+  await new Promise<void>((r) => requestAnimationFrame(() => r()));
+  sliceT = lastT = performance.now();
+}
+/** Bemaltes Material je Szene und Schlüssel einmal anlegen und von allen Figuren mit gleichem Look teilen
+    (vorher eine Kopie je Figur: über 1.200 Materialien, jede mit eigener Prüfung und eigenem Uniform-Puffer) */
+const shared = new WeakMap<Scene, Map<string, PBRMaterial>>();
+export function sharedMat(scene: Scene, key: string, make: () => PBRMaterial): PBRMaterial {
+  let m = shared.get(scene); if (!m) shared.set(scene, (m = new Map()));
+  let x = m.get(key);
+  if (!x) { const mm = m, nx = (x = make()); (nx as PBRMaterial & { _pcShared?: boolean })._pcShared = true; mm.set(key, nx); nx.onDisposeObservable.addOnce(() => { if (mm.get(key) === nx) mm.delete(key); }); }
+  return x;
+}
+/** Material wegräumen, außer es wird geteilt */
+export function dropMat(m: PBRMaterial) { if (!(m as PBRMaterial & { _pcShared?: boolean })._pcShared) m.dispose(); }

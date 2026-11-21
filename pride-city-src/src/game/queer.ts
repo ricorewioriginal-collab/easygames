@@ -4,7 +4,8 @@
    Textur-Anordnung), deshalb klappt es bei jeder Figur. Läuft nach dem Outfit (outfit.ts) und baut darauf auf. */
 import { RawTexture, Texture, type Mesh, type PBRMaterial, type Scene, type AbstractMesh } from '../engine/bjs';
 import { palette } from './palettes';
-import { pixels, remember, quietClone } from './texpix';
+import { pixels, remember, quietClone, breathe, sharedMat, dropMat } from './texpix';
+import { fullIndices } from './lod';
 import { sceneCache, alive } from './outfit';
 
 export interface StyleDef {
@@ -53,6 +54,7 @@ const hex = (s: string) => rgb(parseInt(s.slice(1), 16));
 const spark = (x: number, y: number) => { let h = Math.imul(x * 374761393 + y * 668265263, 1274126177); h ^= h >>> 15; return (h >>> 0) / 4294967296; };
 
 const caches = new WeakMap<Scene, Map<string, Promise<Texture | null>>>();
+const smalls = new WeakMap<Uint8Array, Uint8Array>();
 const skins = new Map<string, number[]>();
 type Mat = PBRMaterial & { _orig?: PBRMaterial; _style?: string };
 
@@ -61,7 +63,7 @@ export async function applyStyle(scene: Scene, root: AbstractMesh | { getChildMe
   const def = style ? STYLES[style] : undefined;
   const meshes = root.getChildMeshes().filter((m) => (m as Mesh).skeleton && m.material) as Mesh[];
   // Kopf und Strähnen immer vom Original aus färben (der Körper kommt frisch aus outfit.ts)
-  for (const m of meshes) { const mm = m.material as Mat; if (mm._orig && mm._style && mm._style !== style && !/_body$/.test(mm._orig.name)) { m.material = mm._orig; mm.dispose(); } }
+  for (const m of meshes) { const mm = m.material as Mat; if (mm._orig && mm._style && mm._style !== style && !/_body$/.test(mm._orig.name)) { m.material = mm._orig; dropMat(mm); } }
   if (!def) return;
   const order = (m: Mesh) => (/_body/.test(((m.material as Mat)._orig || m.material!).name) ? 0 : 1);
   for (const m of meshes.sort((a, b) => order(a) - order(b))) {   // Körper zuerst: dort wird die Hautfarbe gemessen
@@ -76,9 +78,9 @@ export async function applyStyle(scene: Scene, root: AbstractMesh | { getChildMe
     let tex = await job;
     if (tex && !alive(tex)) { job = make(); cache.set(key, job); tex = await job; }
     if (!alive(tex) || m.isDisposed()) continue;
-    const nm = quietClone(scene, mm, orig.name + '_' + style, (c) => { c.albedoTexture = tex; if (kind === 'strands') c.opacityTexture = tex; }) as Mat;
+    const nm = sharedMat(scene, 's|' + key + '|' + mm.uniqueId + '|' + tex.uniqueId, () => quietClone(scene, mm, orig.name + '_' + style, (c) => { c.albedoTexture = tex; if (kind === 'strands') c.opacityTexture = tex; })) as Mat;
     nm._orig = orig; nm._style = style;
-    if (mm._orig) mm.dispose();
+    if (mm._orig && mm !== nm) dropMat(mm);
     m.material = nm;
   }
 }
@@ -93,14 +95,23 @@ async function geo(m: Mesh, mat: PBRMaterial): Promise<Geo | null> {
   const px = await pixels(srcTex); if (!px) return null;
   // kleiner malen: spart am Handy sehr viel Grafikspeicher (sonst je Figur mehrere volle Texturen)
   const f = Math.max(1, Math.ceil(Math.max(w0, h0) / MAX)), w = Math.max(1, Math.floor(w0 / f)), h = Math.max(1, Math.floor(h0 / f));
-  const full = new Uint8Array(px.buffer, px.byteOffset, w0 * h0 * 4), data = new Uint8Array(w * h * 4);
-  if (f === 1) data.set(full);
-  else for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-    let r = 0, g = 0, b = 0, al = 0;
-    for (let j = 0; j < f; j++) for (let i = 0; i < f; i++) { const o = ((y * f + j) * w0 + x * f + i) * 4; r += full[o]; g += full[o + 1]; b += full[o + 2]; al += full[o + 3]; }
-    const o = (y * w + x) * 4, n = f * f; data[o] = r / n; data[o + 1] = g / n; data[o + 2] = b / n; data[o + 3] = al / n;
+  // verkleinerte Bildpunkte je Quelltextur nur einmal berechnen (mehrere Looks derselben Figur teilen sie)
+  let small = smalls.get(px);
+  if (!small) {
+    const full = new Uint8Array(px.buffer, px.byteOffset, w0 * h0 * 4), out = new Uint8Array(w * h * 4);
+    if (f === 1) out.set(full);
+    else for (let y = 0; y < h; y++) {
+      if ((y & 15) === 0) await breathe();
+      for (let x = 0; x < w; x++) {
+        let r = 0, g = 0, b = 0, al = 0;
+        for (let j = 0; j < f; j++) for (let i = 0; i < f; i++) { const o = ((y * f + j) * w0 + x * f + i) * 4; r += full[o]; g += full[o + 1]; b += full[o + 2]; al += full[o + 3]; }
+        const o = (y * w + x) * 4, n = f * f; out[o] = r / n; out[o + 1] = g / n; out[o + 2] = b / n; out[o + 3] = al / n;
+      }
+    }
+    smalls.set(px, (small = out));
   }
-  const uv = m.getVerticesData('uv'), idx = m.getIndices(), pos = m.getVerticesData('position'), mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights'), sk = m.skeleton;
+  const data = new Uint8Array(small);
+  const uv = m.getVerticesData('uv'), idx = fullIndices(m), pos = m.getVerticesData('position'), mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights'), sk = m.skeleton;
   if (!uv || !idx || !pos || !mi || !mw || !sk) return null;
   const names: string[] = []; sk.bones.forEach((b) => { names[b.getIndex()] = b.name; });
   const bone = (v: number) => { let best = 0, bw = -1; for (let k = 0; k < 4; k++) if (mw[v * 4 + k] > bw) { bw = mw[v * 4 + k]; best = mi[v * 4 + k]; } return names[best] || ''; };
@@ -145,6 +156,7 @@ async function body(scene: Scene, m: Mesh, mat: PBRMaterial, def: StyleDef, id: 
   const { idx, pos } = g, nv = pos.length / 3, zone: Zone[] = new Array(nv);
   let tLo = 1e9, tHi = -1e9, sMax = 1e-6, sr = 0, sg = 0, sb = 0, sn = 0;
   for (let v = 0; v < nv; v++) {
+    if ((v & 2047) === 0) await breathe();
     const z = (zone[v] = zoneOf(g.bone(v)));
     if (z === 'torso') { const y = pos[v * 3 + g.up]; tLo = Math.min(tLo, y); tHi = Math.max(tHi, y); sMax = Math.max(sMax, Math.abs(pos[v * 3 + g.side])); }
     else if (z === 'hand') { const o = texel(g, v); sr += g.src[o]; sg += g.src[o + 1]; sb += g.src[o + 2]; sn++; }
@@ -176,6 +188,7 @@ async function body(scene: Scene, m: Mesh, mat: PBRMaterial, def: StyleDef, id: 
   const lg = def.legs, legBase = typeof lg === 'number' ? rgb(lg) : lg ? rgb(lg.glitter) : null;
   const leg: Fn = !legBase ? null : typeof lg === 'number' ? (_t, _s, _x, _y, lum) => shade(legBase, lum, .4) : (_t, _s, x, y, lum) => glit(legBase, x, y, lum);
   for (let i = 0; i < idx.length; i += 3) {
+    if ((i & 255) === 0) await breathe();
     const a = idx[i], b = idx[i + 1], c = idx[i + 2], za = zone[a], zb = zone[b], zc = zone[c];
     const z = za === zb || za === zc ? za : zb === zc ? zb : za;
     const fn = z === 'torso' ? torso : z === 'arm' ? arm : z === 'leg' ? leg : null;
@@ -188,7 +201,7 @@ async function body(scene: Scene, m: Mesh, mat: PBRMaterial, def: StyleDef, id: 
 async function head(scene: Scene, m: Mesh, mat: PBRMaterial, color: number, id: string, strands: boolean): Promise<Texture | null> {
   const g = await geo(m, mat); if (!g) return null;
   const c = rgb(color), dye = (o: number) => { const l = Math.max(g.src[o], g.src[o + 1], g.src[o + 2]) / 255, f = .42 + l * .95; g.data[o] = Math.min(255, c[0] * f); g.data[o + 1] = Math.min(255, c[1] * f); g.data[o + 2] = Math.min(255, c[2] * f); };
-  if (strands) { for (let o = 0; o < g.data.length; o += 4) if (g.src[o + 3] > 8) dye(o); return finish(scene, g, true); }
+  if (strands) { for (let o = 0; o < g.data.length; o += 4) { if ((o & 262143) === 0) await breathe(); if (g.src[o + 3] > 8) dye(o); } return finish(scene, g, true); }
   const skin = skins.get(id) || [200, 160, 130];
   const like = (o: number) => { const dr = g.src[o] - skin[0], dg = g.src[o + 1] - skin[1], db = g.src[o + 2] - skin[2]; return Math.sqrt(dr * dr + dg * dg + db * db) < 70 || (g.src[o] > 150 && g.src[o] > g.src[o + 2] * 1.25 && g.src[o] - g.src[o + 1] < 90 && g.src[o + 1] > g.src[o + 2]); };
   const { pos, idx } = g, nv = pos.length / 3;
@@ -204,6 +217,7 @@ async function head(scene: Scene, m: Mesh, mat: PBRMaterial, color: number, id: 
   const val = (v: number): [number, number] => [(pos[v * 3 + g.up] - bottom) / hgt, (pos[v * 3 + g.depth] - mid) / dExt * front];
   const { w, h, uv } = g;
   for (let i = 0; i < idx.length; i += 3) {
+    if ((i & 255) === 0) await breathe();
     const a = idx[i], b = idx[i + 1], c2 = idx[i + 2], va = val(a), vb = val(b), vc = val(c2);
     const t = (va[0] + vb[0] + vc[0]) / 3, z = (va[1] + vb[1] + vc[1]) / 3;
     if (t < .12 || !(t > .64 || z < -.12)) continue;

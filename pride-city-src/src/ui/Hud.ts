@@ -25,9 +25,9 @@ export class Hud {
   onStation: ((i: number) => void) | null = null;
   private needsEl!: HTMLElement;
   constructor() {
-    this.el = el(`<div id="hud" class="hidden"><div class="lcol"><div class="goal"></div><div class="needs"></div></div><div class="stats"></div>
-      <div class="menuBtn"><button data-k="radio" aria-label="Radiosender wechseln" hidden>📻</button><button data-k="phone" aria-label="Handy">📱</button><button data-k="menu" aria-label="Menü">☰</button></div>
-      <div class="markers pass"></div><div class="prompt"></div><div class="toast"></div><canvas class="radar" width="200" height="200"></canvas><div class="gigbar"></div><div class="banner"></div><div class="rwheel"><div class="ring"></div><div class="mid"><em>Radio</em><b></b><small></small></div></div><button class="nowplay" aria-label="Radiosender wählen"><b></b><span></span></button><div class="wanted"></div><button class="weapon" aria-label="Waffe wechseln"></button></div>`);
+    this.el = el(`<div id="hud" class="hidden"><div class="lcol"><div class="goal"></div><div class="needs"></div></div>
+      <div class="rcol"><div class="stats"></div><div class="rrow"><canvas class="radar" width="200" height="200"></canvas><div class="rside"><div class="menuBtn"><button data-k="radio" aria-label="Radiosender wechseln" hidden>📻</button><button data-k="phone" aria-label="Handy">📱</button><button data-k="menu" aria-label="Menü">☰</button></div><button class="weapon" aria-label="Waffe wechseln"></button></div></div></div>
+      <div class="markers pass"></div><div class="prompt"></div><div class="toast"></div><div class="gigbar"></div><div class="banner"></div><div class="rwheel"><div class="ring"></div><div class="mid"><em>Radio</em><b></b><small></small></div></div><button class="nowplay" aria-label="Radiosender wählen"><b></b><span></span></button><div class="wanted"></div></div>`);
     document.body.appendChild(this.el);
     this.goalEl = this.el.querySelector('.goal')!; this.statsEl = this.el.querySelector('.stats')!;
     this.promptEl = this.el.querySelector('.prompt')!; this.markersEl = this.el.querySelector('.markers')!;
@@ -156,21 +156,43 @@ export class Hud {
     this.promptEl.classList.toggle('on', !!text);
     if (text) this.promptEl.innerHTML = (glyph('a') || '<i class="g a">A</i>') + ' ' + esc(text);
   }
+  /** Bereiche, in denen keine Zielmarke liegen darf (Touch-Stick, Touch-Knöpfe, Aktions-Hinweis), alle 0,4 s neu gemessen */
+  private markerSize = new WeakMap<HTMLElement, { html: string; w: number; h: number }>();
+  private zones: Array<{ l: number; t: number; r: number; b: number }> = [];
+  private zoneT = 0;
+  private freeZones() {
+    const now = performance.now(); if (now - this.zoneT < 400) return this.zones;
+    this.zoneT = now;
+    this.zones = [...document.querySelectorAll<HTMLElement>('#touch.on .stick, #touch.on .btns button, #hud .prompt.on, #hud .rcol, #hud .lcol')]
+      .map((e) => e.getBoundingClientRect()).filter((r) => r.width > 0 && r.height > 0)
+      .map((r) => ({ l: r.left - 6, t: r.top - 6, r: r.right + 6, b: r.bottom + 6 }));
+    return this.zones;
+  }
   markers(list: Marker[], project?: Project) {
     const seen = new Set<string>();
-    const w = innerWidth, h = innerHeight;
+    const w = innerWidth, h = innerHeight, zones = list.length ? this.freeZones() : this.zones;
     for (const m of list) {
       if (!project) break;
       seen.add(m.id);
       let e = this.markerEls.get(m.id);
       if (!e) { e = el('<div class="marker"></div>'); this.markersEl.appendChild(e); this.markerEls.set(m.id, e); }
       const html = m.icon + (m.label ? `<small>${esc(m.label)}</small>` : '');
-      if (e.dataset.h !== html) { e.innerHTML = html; e.dataset.h = html; }
+      // Größe nur bei neuem Inhalt messen (einmal Layout), nicht in jedem Bild
+      let sz = this.markerSize.get(e);
+      if (!sz || sz.html !== html) { e.innerHTML = html; this.markerSize.set(e, (sz = { html, w: e.offsetWidth || 40, h: e.offsetHeight || 30 })); }
+      const ew = sz.w, eh = sz.h;
       const v = project(m.pos);
       let x = v.x, y = v.y;
       // Ziele außerhalb des Bildes am Rand anzeigen
       if (v.behind) { x = w - x; y = h - 40; }
-      x = Math.max(28, Math.min(w - 28, x)); y = Math.max(70, Math.min(h - 60, y));
+      // ganz im Bild (auch die Beschriftung) und nie unter Stick, Knöpfen, Hinweis oder den HUD-Spalten
+      x = Math.max(ew / 2 + 4, Math.min(w - ew / 2 - 4, x)); y = Math.max(eh + 8, Math.min(h - 8, y));
+      for (let k = 0; k < 4; k++) {
+        const z = zones.find((q) => x + ew / 2 > q.l && x - ew / 2 < q.r && y > q.t && y - eh < q.b);
+        if (!z) break;
+        // nach oben ausweichen, oben (HUD-Spalten) nach unten
+        if (z.b < h / 2) y = z.b + eh + 6; else y = z.t - 8;
+      }
       e.style.left = x + 'px'; e.style.top = y + 'px';
     }
     for (const [id, e] of this.markerEls) if (!seen.has(id)) { e.remove(); this.markerEls.delete(id); }

@@ -7,6 +7,7 @@ import { AnimationGroup, Node3, Vector3, type Scene, type TransformNode, type Ab
 import { container, skinned } from '../engine/Assets';
 import { avatarFor, type Avatar } from './avatars';
 import { playerDrag } from './dragLook';
+import { lodFor, LOD_DIST, HIDE_DIST, type Lod } from './lod';
 
 export const CHAR_HEIGHT = 1.75;
 /** Schrittweite der Animationen: so schnell (m/s) läuft die Figur bei Tempo 1 */
@@ -138,11 +139,16 @@ export class Actor {
     if (!set) {
       const s = (set = new Set());
       crowds.set(scene, s);
-      scene.onBeforeAnimationsObservable.add(() => { const f = scene.getFrameId(); s.forEach((x) => x.sleep(f - x.tick > 2 || !x.root.isEnabled() || x.offscreen())); });
+      scene.onBeforeAnimationsObservable.add(() => {
+        const f = scene.getFrameId(), cam = scene.activeCamera;
+        s.forEach((x) => { const far = cam ? x.detail(cam.globalPosition) : false; x.sleep(far || f - x.tick > 2 || !x.root.isEnabled() || x.offscreen()); });
+      });
     }
     set.add(a);
     a.root.onDisposeObservable.add(() => { set!.delete(a); made.forEach((g) => g.dispose()); });
     a.tick = scene.getFrameId();
+    // Detailstufen: einmal je Modell vereinfacht, danach wählt jede Figur nach Abstand (lod.ts)
+    root.getChildMeshes().forEach((m) => { if ((m as Mesh).skeleton) a.addLod(m as Mesh); });
     a.play('idle', 0);
     await a.dress();
     return a;
@@ -171,6 +177,7 @@ export class Actor {
       const bare = !!this.look.outfit && BARE_OUTFITS.has(this.look.outfit);
       if (bare && !this.bare) {
         this.bare = await bareBody(this.scene, this.model, this.bones, this.avatar.g);
+        this.bare?.meshes.forEach((m) => this.addLod(m as Mesh));
         const own0 = this.ownBody()[0], sk = own0 && await skinOf(own0), sp = this.bare?.meshes[0] && await skinOf(this.bare.meshes[0]);
         if (sk && sp) this.bare?.tint(sk.map((v, i) => v / Math.max(1, sp[i])));
       }
@@ -207,17 +214,60 @@ export class Actor {
     return false;
   }
 
+  private lods: Array<[Mesh, Lod]> = [];
+  /** Detailstufen für ein Figuren-Mesh anmelden (sobald berechnet, gleich auf die aktuelle Stufe stellen) */
+  private addLod(m: Mesh) {
+    void lodFor(m).then((l) => {
+      if (!l || this.root.isDisposed() || m.isDisposed()) return;
+      this.lods.push([m, l]);
+      const s = m.subMeshes?.[0], r = l.ranges[Math.min(this.lodLevel, l.ranges.length - 1)]; if (s) { s.indexStart = r[0]; s.indexCount = r[1]; }
+    });
+  }
+  private lodLevel = 0;
+  private hidden = false;
+  private mask = 0;
+  /** Detailstufe nach Abstand zur Kamera; true = so weit weg, dass die Figur gar nicht gezeichnet wird */
+  private detail(cam: Vector3) {
+    const p = this.root.absolutePosition, dx = p.x - cam.x, dz = p.z - cam.z, d = Math.sqrt(dx * dx + dz * dz);
+    // Stufe mit etwas Spielraum wechseln, damit eine Figur an der Grenze nicht hin und her springt
+    const cur = this.lodLevel, lv = d > LOD_DIST[1] + (cur >= 2 ? -2 : 2) ? 2 : d > LOD_DIST[0] + (cur >= 1 ? -2 : 2) ? 1 : 0;
+    const hide = d > HIDE_DIST + (this.hidden ? -3 : 3);
+    if (lv !== cur && this.lods.length) {
+      this.lodLevel = lv;
+      for (const [m, l] of this.lods) { const s = m.subMeshes?.[0], r = l.ranges[Math.min(lv, l.ranges.length - 1)]; if (s) { s.indexStart = r[0]; s.indexCount = r[1]; } }
+    }
+    // weit weg: aus der Kamera nehmen (Ebenenmaske statt Sichtbarkeit, die setzt das Spiel selbst); auf der gröbsten
+    // Stufe fallen auch die durchsichtigen Haarsträhnen weg (eigener, sortierter Zeichenaufruf für ein paar Pixel)
+    const mask = hide ? 2 : lv >= 2 ? 1 : 0;
+    if (mask !== this.mask) {
+      this.mask = mask;
+      this.model.getChildMeshes().forEach((m) => { const strands = /_opacity/.test(m.material?.name || ''); m.layerMask = mask === 2 || (mask === 1 && strands) ? 0 : 0x0FFFFFFF; });
+    }
+    this.hidden = hide;
+    return hide;
+  }
+
   private sleep(on: boolean) {
     if (on === this.sleeping) return;
     this.sleeping = on;
-    if (on) { this.curG?.pause(); this.fadeG?.stop(); this.fadeG = null; this.curG?.setWeightForAllAnimatables(1); }
-    else this.curG?.play(this.curG.loopAnimation);
+    // ruhend: anhalten statt pausieren, sonst bleiben die rund 70 Spuren je Figur in jedem Bild in Babylons Liste
+    // (bei 100 Figuren über 7.000). Die Pose bleibt stehen, beim Aufwachen läuft die aktuelle Animation weiter.
+    if (on) { this.fadeG?.stop(); this.fadeG = null; this.curG?.stop(); }
+    else if (this.curG && !this.curG.isPlaying && this.cur) { this.curG.start(!ONCE.includes(this.cur), this.curG.speedRatio, this.curG.from, this.curG.to); this.curG.setWeightForAllAnimatables(1); }
   }
 
   play(a: Anim, fade = .22, speed = 1) {
     if (this.cur === a && !ONCE.includes(a)) { if (this.curG) this.curG.speedRatio = speed; return; }
     const next = this.groups.get(a) || this.groups.get('idle');
     if (!next) return;
+    // ruhende Figur: nur merken, gestartet wird beim Aufwachen (ein einmaliger Gruß ist dann vorbei)
+    if (this.sleeping) {
+      if (ONCE.includes(a)) return;
+      if (this.curG !== next) this.curG?.stop();
+      next.speedRatio = speed; this.curG = next; this.cur = a;
+      if (!DANCE.includes(a)) this.model.position.y = 0;
+      return;
+    }
     const prev = this.curG, once = ONCE.includes(a), blend = !!prev && prev !== next && fade > 0;
     if (blend) { this.fadeG?.stop(); this.fadeG = prev; this.fadeT = 0; this.fadeD = fade; }
     else if (prev && prev !== next) prev.stop();
@@ -227,7 +277,7 @@ export class Actor {
     next.setWeightForAllAnimatables(blend ? 0 : 1);
     this.curG = next; this.cur = a; this.sleeping = false;
     if (!DANCE.includes(a)) this.model.position.y = 0;
-    if (once) next.onAnimationGroupEndObservable.addOnce(() => { if (this.cur === a) this.play('idle'); });
+    if (once) next.onAnimationGroupEndObservable.addOnce(() => { if (this.cur === a && !this.sleeping) this.play('idle'); });
   }
   get anim() { return this.cur; }
   /** Standbild (für Fotos): Animation oder Clip-Name, t in Sekunden */

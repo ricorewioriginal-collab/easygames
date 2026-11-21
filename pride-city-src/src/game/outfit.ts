@@ -3,7 +3,8 @@
    in Hautfarbe bzw. Wäschefarbe um. Das klappt für jede Figur, egal wie ihre Textur angeordnet ist.
    Keine anatomischen Details: Unterwäsche und Bikini bleiben immer an. */
 import { RawTexture, Texture, type Mesh, type PBRMaterial, type Scene, type AbstractMesh } from '../engine/bjs';
-import { pixels, remember, quietClone } from './texpix';
+import { pixels, remember, quietClone, breathe, sharedMat, dropMat } from './texpix';
+import { fullIndices } from './lod';
 import type { Outfit } from './Actor';
 
 type Part = 'chest' | 'belly' | 'arm' | 'hip' | 'leg' | 'foot' | 'other';
@@ -51,7 +52,7 @@ export async function applyOutfit(scene: Scene, root: AbstractMesh | { getChildM
     // nur das Körper-Material (Kopf und Haare bleiben)
     if (!/_body$/.test(orig.name)) continue;
     const p = o ? paint(o, top) : null, bra = o ? braOf(o, top) : null;
-    if (!p) { if (mm._orig) { m.material = orig; mm.dispose(); } continue; }
+    if (!p) { if (mm._orig) { m.material = orig; dropMat(mm); } continue; }
     const key = id + '|' + o + '|' + top;
     const cache = sceneCache(scene, caches);
     let job = cache.get(key);
@@ -60,12 +61,12 @@ export async function applyOutfit(scene: Scene, root: AbstractMesh | { getChildM
     let tex = await job;
     if (tex && !alive(tex)) { job = make(); cache.set(key, job); tex = await job; }
     if (!alive(tex) || m.isDisposed()) continue;
-    const nm = quietClone(scene, orig, orig.name + '_' + o, (c) => { c.albedoTexture = tex; }) as PBRMaterial & { _orig?: PBRMaterial };
+    const nm = sharedMat(scene, 'o|' + key + '|' + orig.uniqueId + '|' + tex.uniqueId, () => quietClone(scene, orig, orig.name + '_' + o, (c) => { c.albedoTexture = tex; })) as PBRMaterial & { _orig?: PBRMaterial };
     nm._orig = orig;
-    if (mm._orig) mm.dispose();
+    if (mm._orig && mm !== nm) dropMat(mm);
     m.material = nm;
     // Sicherheitsnetz: Wird das neue Material nicht fertig (Grafiktreiber, verlorene Textur), lieber angezogen als unsichtbar
-    setTimeout(() => { if (m.material === nm && !m.isDisposed() && !nm.isReady(m)) { m.material = orig; nm.dispose(); } }, 6000);
+    setTimeout(() => { if (m.material === nm && !m.isDisposed() && !nm.isReady(m)) { m.material = orig; dropMat(nm); } }, 6000);
   }
 }
 
@@ -91,7 +92,7 @@ async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<
   const { width: w, height: h } = src.getSize();
   const px = await pixels(src); if (!px) return null;
   const data = new Uint8Array(px);
-  const uv = m.getVerticesData('uv'), idx = m.getIndices(), mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights');
+  const uv = m.getVerticesData('uv'), idx = fullIndices(m), mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights');
   const sk = m.skeleton; if (!uv || !idx || !mi || !mw || !sk) return null;
   // Knochen-Index in den Vertex-Daten = bone.getIndex() (nicht unbedingt die Reihenfolge in skeleton.bones)
   const names: string[] = []; sk.bones.forEach((b) => { names[b.getIndex()] = b.name; });
@@ -103,6 +104,7 @@ async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<
   let sr = 0, sg = 0, sb = 0, sn = 0;
   const tri: Array<[number, number, number, Part]> = [];
   for (let i = 0; i < idx.length; i += 3) {
+    if ((i & 1023) === 0) await breathe();
     const a = idx[i], b = idx[i + 1], c = idx[i + 2];
     const pa = vPart(a), pb = vPart(b), pc = vPart(c);
     let part: Part = pa === pb || pa === pc ? pa : pb === pc ? pb : pa;
@@ -119,7 +121,9 @@ async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<
   // übermalt, sondern nur auf die Hautfarbe des eigenen Kopfes umgefärbt. Die echte Sport-Unterhose bleibt.
   const hands = !!skinRef, own = sn ? [sr / sn, sg / sn, sb / sn] : skin;
   const tint = hands ? own.map((v, i) => Math.max(.35, Math.min(2.4, skin[i] / Math.max(1, v)))) : null;
+  let n = 0;
   for (const [a, b, c, part] of tri) {
+    if ((++n & 63) === 0) await breathe();
     const want = hands && (part === 'other' || part === 'foot') ? 'skin' : hands && part === 'hip' && p.hip === 0x1a1a24 ? 'skin' : p[part]; if (!want) continue;
     const col = want === 'skin' ? skin : [(want >> 16) & 255, (want >> 8) & 255, want & 255];
     fill(data, orig, w, h, [uv[a * 2] * w, uv[a * 2 + 1] * h], [uv[b * 2] * w, uv[b * 2 + 1] * h], [uv[c * 2] * w, uv[c * 2 + 1] * h], col, want === 'skin', want === 'skin' ? tint : null);
