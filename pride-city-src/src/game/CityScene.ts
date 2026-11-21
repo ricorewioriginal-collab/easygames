@@ -14,7 +14,7 @@ import { pcEvents } from './hooks';
 import { NPCS, CHAPTERS, goal, talk, poi as storyPoi, marks, hidden, storyTick, chapterLabel, type NpcDef, type StoryCtx } from './story';
 import type { Game } from './Game';
 import { radio, STATIONS, stationOf } from '../engine/Radio';
-import { FmTalk, FM_ID } from './pridefm';
+import { radioMenu } from './radioui';
 import { RACES, MEDALS, raceGig, finishRace, bestTime, nextParcel, stats, myCar, tuneLevel, GARAGE, type Race } from './vehicles';
 import { sfx, music } from '../engine/Audio';
 import { toast, hints } from '../ui/ui';
@@ -155,9 +155,8 @@ export class CityScene implements GameScene {
       c.fillRect(px(-80), px(-1.8), 20 * 2, 3.6 * 2);                             // Kaistraße
     });
     // Verkehr hält vor geparkten und vom Spieler gefahrenen Autos
-    this.g.hud.onRadio = () => { if (this.drive) this.radio(this.g.hud.wheelOpen ? 1 : 0); };
-    this.g.hud.onStation = (i) => { if (this.drive) this.radio(0, i); };
-    radio.subscribe((r, what) => { if (!this.drive) return; if (what === 'error') toast(`📻 ${r.err}`); this.showRadio(what !== 'song' ? this.g.hud.wheelOpen : true); });
+    this.g.hud.onRadio = () => { if (this.drive) radioMenu(this.g, (i) => this.radio(0, i)); };
+    radio.subscribe((r, what) => { if (!this.drive) return; if (what === 'error') toast(`📻 ${r.err}`); this.showRadio(); });
     this.weather = new Weather(this.scene, this.world); this.life = new CityLife(this.g, this, this.scene); this.buddy = new Companion(this.scene);
     this.friends = new Friends(this.scene, this.world, () => this.g.save.data.settings.adult);
     this.friends.me = () => ({ n: this.g.save.data.name, l: streetLook(playerLook(this.g.save.data)), s: this.g.where === 'inside' && this.g.inside?.netKey ? this.g.inside.netState() : this.netState() });
@@ -477,6 +476,8 @@ export class CityScene implements GameScene {
       const says = ['„Na gut, Schätzchen. Aber bring ihn heil zurück!“', '„Für dich immer. Ich wollte eh zu Fuß zum Café.“', '„Nimm ihn, ich hab heute frei. Tank ist voll!“', '„Okay, aber nur weil du so nett fragst.“'];
       toast(`🙋 ${says[Math.floor(Math.random() * says.length)]}`);
     } else this.drive = this.street.parked[+id];
+    // Radio in jedem Fahrzeug (Auto, Rakete, Einrad, Roller, Boot)
+    this.g.hud.radioBtn(true); this.radio(0);
     if (this.drive.def.fly) {
       this.syncFlyer(); this.alt = .75; this.player.play('sit'); sfx('open');
       this.cam.dist = Math.max(this.cam.dist, 10); this.cam.tYaw = this.drive.o.rotation.y + Math.PI;
@@ -507,8 +508,7 @@ export class CityScene implements GameScene {
     this.cam.dist = Math.max(this.cam.dist, 9);
     this.cam.tYaw = this.drive.o.rotation.y + Math.PI;
     hints([['move', 'Lenken & Gas'], ['a', 'Aussteigen'], ['atk', 'Hupen'], ['cam', 'Kamera'], ['y', 'Menü']]);
-    this.g.hud.radioBtn(true); this.radio(0);
-    toast(`${this.drive.def.icon} ${this.drive.def.name}${this.drive.own ? ' (dein Wagen)' : ''} · Q/R oder LB/RB wechselt den Sender.`);
+    toast(`${this.drive.def.icon} ${this.drive.def.name}${this.drive.own ? ' (dein Wagen)' : ''} · 📻 Sender: Radio-Knopf antippen oder Q/R bzw. LB/RB.`);
     sfx('open');
   }
   /** Wege in die Welten: Tor an der Kaimauer (zu Fuß, im Auto, im Tiefflug) oder Insel vor der Küste (Flug) */
@@ -547,7 +547,7 @@ export class CityScene implements GameScene {
   }
   private moveCar(dt: number) {
     const c = this.drive!, o = c.o, inp = this.g.engine.input, fly = !!c.def.fly;
-    if (!fly && !c.def.toy && rideSeat(c.def) < 0) { if (inp.pressed('tabR')) this.radio(1); else if (inp.pressed('tabL')) this.radio(-1); }
+    if (inp.pressed('tabR')) this.radio(1); else if (inp.pressed('tabL')) this.radio(-1);
     const thr = Math.abs(inp.move.y) > .08 ? inp.move.y : 0, steer = Math.abs(inp.move.x) > .08 ? inp.move.x : 0;
     const st = stats(c.def, c.own ? tuneLevel(this.g.save.data) : 0), max = inp.held('sprint') ? st.turbo : st.max;
     // Flitzer: lenkt wie ein Auto (Stick/WASD = Gas, Bremse, Lenken; Turbo = schneller), dazu Steigen/Sinken.
@@ -793,27 +793,22 @@ export class CityScene implements GameScene {
       { label: 'Gerade nicht', fn: () => { back(); toast(`${g.who}: Okay, ich frag jemand anderen.`); } }] }]);
   }
 
-  /* ---------- Autoradio: 13 echte Sender (laut.fm) und vier Stadt-Sender, Senderrad wie im Open-World-Krimi ---------- */
+  /* ---------- Radio in jedem Fahrzeug: die 13 eigenen Sender (laut.fm) und eine eigene Stream-Adresse; Auswahl als einfache Liste ---------- */
   private radio(dir = 0, to?: number) {
     const s = this.g.save.data, n = STATIONS.length, was = radio.state.st;
     let i = STATIONS.indexOf(stationOf(s.flags.radio));
     i = to ?? ((i + dir) % n + n) % n;
-    const st = STATIONS[i]; s.flags.radio = st.id;
-    if (st !== was) this.fm.reset();
-    if (st !== was || !(radio.state.on || radio.state.loading) && st.id !== 'off') radio.tune(st);
+    const st0 = STATIONS[i]; s.flags.radio = st0.id;
+    const st = st0.id === 'eigen' ? { ...st0, url: String(s.flags.radioUrl || '') } : st0;
+    if (st.id !== was.id || st.url !== was.url || !(radio.state.on || radio.state.loading) && st.id !== 'off') radio.tune(st);
     this.showRadio();
   }
-  private showRadio(wheel = true) {
-    const r = radio.state, st = r.st;
+  private showRadio() {
+    const r = radio.state, st = r.st, live = !!(st.slug || st.url);
     const song = r.title ? (r.artist ? `${r.title} · ${r.artist}` : r.title) : '';
-    const sub = r.err || (st.slug ? (r.loading ? 'Sender wird eingestellt …' : song || 'Live') : st.sub);
-    if (wheel) this.g.hud.radioWheel(STATIONS, STATIONS.indexOf(st), st.name, sub, !!st.slug && !r.err);
-    const talk = st.id === FM_ID ? this.fm.cur : null;
-    this.g.hud.nowPlaying(st.id === 'off' ? null : `${st.icon} ${st.name}`, talk ? `${talk.who}: ${talk.text}` : st.slug ? (r.err || song || (r.loading ? '…' : 'Live')) : st.sub);
-    document.querySelector('#hud .nowplay')?.classList.toggle('talk', !!talk);
+    this.g.hud.nowPlaying(st.id === 'off' ? null : `${st.icon} ${st.name} ▾`, live ? (r.err || song || (r.loading ? 'Sender wird eingestellt …' : 'Live')) : r.err || st.sub);
   }
-  private fm = new FmTalk();
-  private radioOff() { radio.stop(); this.g.hud.nowPlaying(null); this.g.hud.radioWheel(null); this.g.hud.radioBtn(false); }
+  private radioOff() { radio.stop(); this.g.hud.nowPlaying(null); this.g.hud.radioBtn(false); }
 
   /** Laternen, Masten, Bänke und Bäume zwischen Kamera und Figur ausblenden, statt durch sie hindurchzuschauen */
   private hidden = new Set<TransformNode>();
@@ -864,8 +859,6 @@ export class CityScene implements GameScene {
     // Spielzeit läuft nur ohne Dialog und Menü
     const busy = g.dialog.open || g.menuOpen;
     radio.duck(busy);
-    // Pride FM: Moderation, Anrufe und Nachrichten als Untertitel im Senderfeld
-    if (this.drive && radio.state.st.id === FM_ID && !busy && this.fm.tick(dt, s)) this.showRadio(false);
     if (!busy) {
       s.playMs += dt * 1000;
       if (advance(s, dt / DAY_SEC * 1440)) toast(`Tag ${s.day} beginnt.`);
