@@ -17,10 +17,18 @@
       progress(0.02, '3D-Grafik');
       await loadScript('../vendor/three-r128.min.js');
       await Promise.all(['../vendor/three-r128-gltfloader.js', '../figuren/figuren.js'].map(loadScript));
-      // 3D-Technik: Babylon.js zeichnet über eine Übersetzungsschicht und kostet am Handy ein Vielfaches an Rechenzeit (gemessen ~12×) –
-      // Handys und die App nutzen darum automatisch den schnellen klassischen Renderer, PCs Babylon. Einstellbar unter ⚙️ Einstellungen.
-      const eng = (Save.data.settings || {}).engine || 'auto', qs = location.search;
-      W.useBabylon = /[?&]engine=babylon/.test(qs) ? true : /[?&]engine=three/.test(qs) ? false : eng === 'babylon' ? true : eng === 'three' ? false : !U.isTouch();
+      // 3D-Technik: PCs zeichnen mit Babylon.js. Handys/App messen bei „Automatisch“ selbst: ein Start mit Babylon, ein Start klassisch,
+      // danach gewinnt, was auf DIESEM Gerät flüssiger läuft (W.probeTick). Neue Spielversion → neu messen. Einstellbar unter ⚙️ Einstellungen.
+      const st0 = Save.data.settings || (Save.data.settings = {}), eng = st0.engine || 'auto', qs = location.search;
+      let pr = st0.engProbe; if (!pr || pr.v !== root.AMC_BUILD) pr = st0.engProbe = { v: root.AMC_BUILD };
+      W.probe = null;
+      if (/[?&]engine=babylon/.test(qs)) W.useBabylon = true;
+      else if (/[?&]engine=three/.test(qs)) W.useBabylon = false;
+      else if (eng === 'babylon' || eng === 'three') W.useBabylon = eng === 'babylon';
+      else if (!U.isTouch()) W.useBabylon = true;
+      else if (pr.b == null) { W.useBabylon = true; W.probe = 'b'; }
+      else if (pr.t == null) { W.useBabylon = false; W.probe = 't'; }
+      else W.useBabylon = pr.b >= pr.t * 0.95;
       progress(0.05, W.useBabylon ? '3D-Engine (Babylon.js)' : '3D-Engine');
       if (W.useBabylon) await import(new URL('babylon/amc-babylon.js', document.baseURI).href).catch(e => console.warn('Babylon.js', e));
       progress(0.08, '3D-Modelle');
@@ -402,7 +410,8 @@
     const s = UI.open('<div class="panel glass"><header><h2>⚙️ Einstellungen</h2><button class="btn small" data-nav id="eBack">' + AMC.glyph('b') + ' Zurück</button></header>' +
       rng('sMus', '🎵 Spielmusik', st.music) + rng('sSfx', '🔊 Effekte', st.sfx) + rng('sRad', '📻 Radio & Podcast', st.radio) +
       '<label class="set"><span>🖥️ Grafik</span><select data-nav id="sQ"><option value="auto">Automatisch</option><option value="low">Niedrig (schnell)</option><option value="mid">Mittel</option><option value="high">Hoch</option></select></label>' +
-      '<label class="set"><span>🧩 3D-Technik</span><select data-nav id="sEng"><option value="auto">Automatisch (Handy schnell, PC Babylon.js)</option><option value="three">Schnell (klassisch)</option><option value="babylon">Babylon.js</option></select></label>' +
+      '<label class="set"><span>🧩 3D-Technik</span><select data-nav id="sEng"><option value="auto">Automatisch (misst auf diesem Gerät)</option><option value="three">Schnell (klassisch)</option><option value="babylon">Babylon.js</option></select></label>' +
+      (st.engProbe && st.engProbe.b != null && st.engProbe.t != null ? '<p class="set-note">Gemessen auf diesem Gerät: Babylon.js ' + st.engProbe.b + ' · klassisch ' + st.engProbe.t + ' (Bilder/s × Schärfe)</p>' : '') +
       tog('sInv', '🎥 Kamera umkehren (oben/unten)', st.invert) + tog('sShake', '📳 Bildschirm wackeln', st.shake) + tog('sSub', '💬 Sprechblasen in der Aufnahme', st.subtitles !== false) + tog('sVoice', '🗣️ Stimmen (Szenen, Story, Aufnahme)', st.voice !== false) +
       '<label class="set"><span>🎯 Kamera-Empfindlichkeit</span><input type="range" min="0.4" max="2" step="0.1" value="' + st.sens + '" data-nav id="sSens"></label>' +
       '<button type="button" class="btn danger" data-nav id="sReset">🗑️ Spielstand zurücksetzen</button></div>', { back: () => UI.close(s) });
@@ -457,6 +466,17 @@
     b('pMenu').onclick = () => UI.confirm(G.net ? 'Koop-Spiel verlassen? Die Verbindung wird getrennt.' : 'Zurück in die Stadt? Der Fortschritt in diesem Level geht verloren.', () => { if (G.net) AMC.Net.close(); hub(); setTimeout(mainMenu, 400); });
   }
 
+  // Geräte-Messung (siehe boot): 20 s freies Spiel in der Stadt, die ersten 5 s zählen nicht; Wert = Bilder/s × Auflösungsstufe
+  const PR = { t: 0, n: 0, sum: 0 };
+  function probeTick(dt) {
+    if (G.mode !== 'play' || G.paused || document.hidden || !AMC.Play.state() || AMC.Play.state().mode !== 'free') return;
+    if ((PR.t += dt) < 5) return;
+    PR.n++; PR.sum += dt;
+    if (PR.t < 25) return;
+    const k = W.babylon ? 'b' : 't', ps = W.perfState(), pr = Save.data.settings.engProbe;
+    if (pr && pr[k] == null) { pr[k] = Math.round(PR.n / PR.sum * ps.scale * 10) / 10; Save.save(); }
+    W.probe = null;
+  }
   G.pause = () => { if (!G.paused && /^(play|show|quiz|arcade)$/.test(G.mode)) pause(); };
   // ------------------------------------------------------------------ Spielschleife
   let last = performance.now(), slow = 0;
@@ -464,6 +484,7 @@
     requestAnimationFrame(frame);
     let dt = (now - last) / 1000; last = now; if (dt > 0.1) dt = 0.1;
     if (W.perf) W.perf(dt);
+    if (W.probe) probeTick(dt);
     I.update(dt);
     const uiBusy = UI.update();
     if (!uiBusy) {
