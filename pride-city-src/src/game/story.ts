@@ -144,6 +144,7 @@ export function goal(s: SaveData): Goal {
   const dg = s.chapter > 3 ? dragGoal(s) : null;
   if (dg) return { title: dg, sub: 'Mama Vega wartet: erst an den Schminkspiegel, dann auf die Bühne.', poi: 'onelove' };
   if (s.chapter > 5 && !s.flags.wagen) return { title: 'Bau deinen eigenen CSD-Festwagen', sub: 'Handy → Wetter und Termine oder in einer Festwagen-Werkstatt. Samstags fährt er bei der Parade mit, die Jury vergibt Platz 1 bis 3.' };
+  if (s.chapter > 5 && !s.flags.radioShows) return { title: 'Moderiere „Rainbow Talk“ auf Pride FM', sub: 'Handy → Pride FM 88,8. Leute aus der Stadt rufen an, du antwortest live.' };
   if (s.chapter > 1 && s.chapter <= 5) return { title: 'Erkunde Rainbow City', sub: 'Sprich mit deinen Freund*innen – die Geschichte geht gleich weiter.' };
   if (s.chapter > 5) return { title: 'Freies Spiel', sub: 'Die Geschichte ist erzählt. Arbeite, date, feiere – Rainbow City gehört dir.' };
   switch (s.step) {
