@@ -370,7 +370,7 @@ export class Rig {
       const f = s === 'l' ? p.footL : p.footR; if (!f) continue;
       const T = this.W(f[0], f[1] + this.footH, f[2]);
       const kneeOut = s === 'l' ? 1 : -1;
-      const pole = this.W(f[0] * 0.5 + kneeOut * 0.12 + (p.kneeX || 0), 0.6, 0.6 + (p.kneeZ || 0));
+      const pole = this.W(f[0] * 0.8 + kneeOut * (p.kneeOut ?? 0.03) + (p.kneeX || 0), f[1] + 0.5, 0.9 + (p.kneeZ || 0));
       this.twoBone(N['thigh_' + s], N['calf_' + s], N['foot_' + s], this.len['leg' + s], T, pole);
       const toe = s === 'l' ? p.toeL : p.toeR;
       if (toe) {
@@ -384,7 +384,7 @@ export class Rig {
     for (const s of ['l', 'r']) {
       const h = s === 'l' ? p.handL : p.handR; if (!h) continue;
       const T = this.W(h[0], h[1], h[2]);
-      const pole = this.W(h[0] * 1.3 + (s === 'l' ? 0.3 : -0.3), h[1] - 0.5, -0.5);
+      const pole = this.W(h[0] * 1.05 + (s === 'l' ? 0.08 : -0.08), Math.min(h[1], 1.1) - 0.7, h[2] - 0.45);
       this.twoBone(N['upperarm_' + s], N['lowerarm_' + s], N['hand_' + s], this.len['arm' + s], T, pole);
     }
     if (this.tail) this.tail.rotation.set(-(p.lean || 0) * 0.4 + Math.sin(performance.now() / 260) * 0.08, -(p.side || 0) * 1.2 + Math.sin(performance.now() / 410) * 0.22, 0);

@@ -78,7 +78,7 @@ export function buildProps(scene, park, level, shadow, parent, rnd) {
           // Banner: innen an der Mauer (hohe Mauer) oder am Zaun (niedrige Brüstung)
           const onWall = wallH >= 1.6, edge = onWall ? (0.5 + 0.03) : 0.06;
           const ban = MeshBuilder.CreatePlane('ban', { width: 3.6, height: 0.9 }, scene);
-          ban.position.set(nx - nX * edge, onWall ? Math.min(wallH * 0.55, 1.9) : fy + 0.95, nz - nZ * edge); ban.rotation.y = S.ry + Math.PI;
+          ban.position.set(nx - nX * edge, onWall ? Math.min(wallH * 0.55, 1.9) : fy + 0.95, nz - nZ * edge); ban.rotation.y = S.ry;
           ban.material = banMats[bi++ % banMats.length]; ban.parent = parent; ban.isPickable = false;
         }
         if (night) for (let k = 0; k < 4; k++) { const s = MeshBuilder.CreateSphere('p', { diameter: 0.12, segments: 4 }, scene); const u = k / 4; s.position.set(fx + S.dx * (u * 4), fy + 1.8 - Math.sin(u * Math.PI) * 0.25, fz + S.dz * (u * 4)); put(s, 'bulb'); }
