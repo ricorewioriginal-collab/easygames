@@ -82,7 +82,7 @@ export class Skater {
     // Lenken
     const sp = Math.hypot(this.vel.x, this.vel.y, this.vel.z);
     const turn = (2.9 - Math.min(1.2, sp * 0.07)) * (0.85 + st.speed * 0.02);
-    let steer = inp.x;
+    let steer = Math.sign(inp.x) * Math.pow(Math.abs(inp.x), 1.35);   // feinfühlig um die Mitte, voll am Rand
     if (this.manual) steer *= 0.55;
     this.yaw = wrap(this.yaw - steer * turn * dt);
     // Richtung entlang der Fläche
@@ -221,7 +221,7 @@ export class Skater {
   // ------------------------------------------------------------ Manual
   startManual() {
     const dir = this.manualDir === 'u' ? 'u' : 'd', M = MANUALS[dir];
-    this.manual = { dir, t: 0, bal: (Math.random() - 0.5) * 0.1, bv: 0, e: null };
+    this.manual = { dir, t: 0, bal: (Math.random() - 0.5) * 0.1, bv: 0, e: null, armed: false };
     if (!this.combo.active) this.grace = 0;
     this.manual.e = this.combo.add(M.name, M.pts); this.game.onTrick(this.manual.e);
     this.game.sfx('manual');
@@ -231,7 +231,10 @@ export class Skater {
     m.t += dt;
     const diff = 0.9 + m.t * 0.35 - st.balance * 0.06;
     m.bv += (m.bal * 2.6 * diff + (Math.random() - 0.5) * 1.6 * diff) * dt;
-    m.bv += this.inp.y * 4.2 * dt * (m.dir === 'u' ? 1 : -1) * -1;
+    // Die Richtungsfolge endet mit gehaltenem Stick – erst nach dem Loslassen (oder 0,4 s) steuert er die Balance
+    if (!m.armed && (Math.abs(this.inp.y) < 0.3 || m.t > 0.4)) m.armed = true;
+    const by = m.armed ? Math.sign(this.inp.y) * Math.pow(Math.abs(this.inp.y), 1.3) : 0;
+    m.bv += by * 3.4 * dt * (m.dir === 'u' ? 1 : -1) * -1;
     m.bv *= 1 - 1.2 * dt;
     m.bal += m.bv * dt;
     this.combo.live(m.e, M.pps * dt);
