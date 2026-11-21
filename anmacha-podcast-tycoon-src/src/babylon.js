@@ -10,6 +10,7 @@ export { Engine } from '@babylonjs/core/Engines/engine';
 export { Constants } from '@babylonjs/core/Engines/constants';
 export { Scene } from '@babylonjs/core/scene';
 export { Vector3, Matrix, Quaternion } from '@babylonjs/core/Maths/math.vector';
+export { Frustum } from '@babylonjs/core/Maths/math.frustum';
 export { Color3, Color4 } from '@babylonjs/core/Maths/math.color';
 export { Mesh } from '@babylonjs/core/Meshes/mesh';
 export { SubMesh } from '@babylonjs/core/Meshes/subMesh';
