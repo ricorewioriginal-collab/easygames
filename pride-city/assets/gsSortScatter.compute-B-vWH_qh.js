@@ -1,4 +1,4 @@
-import{b2 as a}from"./babylon-CryeMBBY.js";const r="gsSortScatterComputeShader",u=`struct GsSortPassParams {count : u32,
+import{b3 as a}from"./babylon-DutJvY1D.js";const r="gsSortScatterComputeShader",u=`struct GsSortPassParams {count : u32,
 numBlocks : u32,
 shift : u32,
 chunkCount : u32,}

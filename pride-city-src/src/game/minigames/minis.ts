@@ -8,6 +8,10 @@ import { DildoJump } from './DildoJump';
 import { ToastSplash } from './ToastSplash';
 import { ParadeRunner } from './ParadeRunner';
 import { PoolDive } from './PoolDive';
+import { LegDay } from './LegDay';
+import { Karaoke } from './Karaoke';
+import { Sauna } from './Sauna';
+import { GlitterMatch } from './GlitterMatch';
 
 export type { MiniDef, MiniResult } from './arcade';
 
@@ -33,6 +37,26 @@ export const MINIS: MiniDef[] = [
     id: 'pool', icon: '🏊', name: 'Strandbad-Sprung', sub: 'Fünf Sprünge vom Turm: Kraft, Winkel, Saltos – und sauber eintauchen',
     btn: '🤸<small>A</small>', goal: 450, tags: ['pool', 'beach'], gl: 'pool', song: 'title', noPad: true,
     make: (g, d, a, done) => new PoolDive(g, d, a, done, 0xbfe8ff),
+  },
+  {
+    id: 'gym', icon: '🏋️', name: 'Beinetag', sub: 'Mehmet scheucht dich: im grünen Bereich stemmen, jede Wiederholung wird schwerer',
+    btn: '💪<small>Stemmen</small>', goal: 240, tags: ['gym'], gl: 'gym', song: 'neon', noPad: true,
+    make: (g, d, a, done) => new LegDay(g, d, a, done, 0x101820),
+  },
+  {
+    id: 'kara', icon: '🎤', name: 'Karaoke', sub: 'Drei Lieder aus Gay Life!: Silben im Takt singen, das Publikum geht mit',
+    btn: '🎤<small>Singen</small>', goal: 600, tags: ['bar', 'club', 'home'], gl: 'kara', song: 'show',
+    make: (g, d, a, done) => new Karaoke(g, d, a, done, 0x0c0618),
+  },
+  {
+    id: 'sauna', icon: '🧖', name: 'Sauna-Aufguss', sub: 'Hitze im grünen Bereich halten, Aufguss und Kaltdusche – und das Handtuch retten',
+    btn: '🫳<small>Handtuch</small>', goal: 300, tags: ['sauna'], gl: 'sauna', song: 'title',
+    make: (g, d, a, done) => new Sauna(g, d, a, done, 0x6a3a20),
+  },
+  {
+    id: 'match', icon: '✨', name: 'Glitzer-Match', sub: 'Glitzersteine tauschen, Ketten bilden, 25 Züge',
+    btn: '✨<small>Tauschen</small>', goal: 900, tags: ['arcade', 'home'], gl: 'match', song: 'neon', noPad: true,
+    make: (g, d, a, done) => new GlitterMatch(g, d, a, done, 0x120a26),
   },
 ];
 
