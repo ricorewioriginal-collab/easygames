@@ -1,5 +1,6 @@
 /* Stadt-Szene (Babylon.js): Rainbow City zum Herumlaufen (Spielmodus) und als Kulisse fürs Titelmenü (Kameraflug,
    tanzende Leute). Alle Menschen sind Rocketbox-Figuren. */
+import { cullAhead } from '../engine/Cull';
 import type { GameScene } from '../engine/Engine';
 import { Vector3, TransformNode, type Mesh, type FreeCamera, type Scene, clamp, dist, col } from '../engine/bjs';
 import { planeZ, cyl, ring, glow, canvasTex } from '../engine/geo';
@@ -67,6 +68,7 @@ export class CityScene implements GameScene {
 
   constructor(private g: Game) {
     this.scene = g.engine.newScene(0x8fb8e8);
+    cullAhead(this.scene); // Babylon prüft sonst jedes Bild alle 4.000+ Meshes, auch die hinter der Kamera
     this.camera = g.engine.newCamera(this.scene, 55, .1, 400);
   }
 
@@ -152,7 +154,7 @@ export class CityScene implements GameScene {
     this.buildStickers();
     this.world.castShadows();
     // Schatten folgen der Grafikstufe (niedrig = aus)
-    this.g.engine.onQuality((q) => { this.world.sun.shadowEnabled = q > 0; this.world.shadows.mapSize = q === 2 ? 2048 : 1024; this.world.setLow(q === 0); });
+    this.g.engine.onQuality((q) => { this.world.sun.shadowEnabled = q > 0; this.world.setShadowSize(q === 2 ? 2048 : 1024); this.world.setLow(q === 0); });
   }
 
   /* ---------- Sticker zum Sammeln ---------- */

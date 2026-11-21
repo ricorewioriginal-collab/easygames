@@ -67,6 +67,16 @@ export function preloadPeople(scene: Scene, avatars: string[] = []) {
 const crowds = new WeakMap<Scene, Set<Actor>>();
 
 let styleQueue: Promise<unknown> = Promise.resolve();
+/** Aufbau-Warteschlange: höchstens etwa 10 ms Figuren-Aufbau je Bild, dann aufs nächste Bild warten */
+let turnQ: Promise<unknown> = Promise.resolve(), sliceT = 0;
+function turn<T>(fn: () => Promise<T>): Promise<T> {
+  const run = turnQ.then(async () => {
+    if (performance.now() - sliceT > 10) await new Promise<void>((r) => requestAnimationFrame(() => { sliceT = performance.now(); r(); }));
+    return fn();
+  });
+  turnQ = run.catch(() => undefined);
+  return run;
+}
 
 export class Actor {
   readonly root: Node3;
@@ -84,7 +94,13 @@ export class Actor {
 
   private constructor(readonly scene: Scene, look: Look) { this.look = { ...look }; this.root = new Node3('actor', scene); }
 
+  /** Laden läuft parallel, das Aufbauen (Skelett, Meshes, 14 Animationen kopieren) aber der Reihe nach und verteilt
+      auf mehrere Bilder: vorher entstanden beim Annähern an eine Insel bis zu zehn Figuren im selben Bild (Hänger). */
   static async create(scene: Scene, look: Look): Promise<Actor> {
+    await Promise.all([container(scene, 'rb/' + avatarFor(look).id + '.glb'), preloadPeople(scene)]);
+    return turn(() => Actor.build(scene, look));
+  }
+  private static async build(scene: Scene, look: Look): Promise<Actor> {
     const a = new Actor(scene, look);
     const av = (a.avatar = avatarFor(look));
     a.look.body = av.id;
@@ -117,7 +133,7 @@ export class Actor {
     if (!set) {
       const s = (set = new Set());
       crowds.set(scene, s);
-      scene.onBeforeAnimationsObservable.add(() => { const f = scene.getFrameId(); s.forEach((x) => x.sleep(f - x.tick > 2 || !x.root.isEnabled())); });
+      scene.onBeforeAnimationsObservable.add(() => { const f = scene.getFrameId(); s.forEach((x) => x.sleep(f - x.tick > 2 || !x.root.isEnabled() || x.offscreen())); });
     }
     set.add(a);
     a.root.onDisposeObservable.add(() => { set!.delete(a); made.forEach((g) => g.dispose()); });
@@ -153,6 +169,17 @@ export class Actor {
         }).catch((e) => console.warn('style', e));
       }
     } catch (e) { console.warn('outfit', e); }
+  }
+
+  /** Figur liegt ganz außerhalb des Bildes (hinter der Kamera, seitlich): dann muss niemand ihre 81 Knochen bewegen */
+  private probe: AbstractMesh | null | undefined;
+  private offscreen() {
+    const pl = this.scene.frustumPlanes; if (!pl || pl.length < 6) return false;
+    if (this.probe === undefined || this.probe?.isDisposed()) this.probe = this.model.getChildMeshes().find((q) => (q as AbstractMesh & { skeleton?: unknown }).skeleton) || null;
+    const m = this.probe; if (!m) return false;
+    const b = m.getBoundingInfo().boundingSphere, c = b.centerWorld, r = b.radiusWorld + 1.5;
+    for (const p of pl) if (p.dotCoordinate(c) <= -r) return true;
+    return false;
   }
 
   private sleep(on: boolean) {

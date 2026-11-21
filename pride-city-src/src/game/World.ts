@@ -4,7 +4,7 @@
 import { WORLDS, ISLES, cityGate, cityIsle } from './worlds';
 import {
   Node3, Vector3, Color3, HemisphericLight, DirectionalLight, PointLight, ShadowGenerator, ShaderMaterial, Effect, Mesh, VertexData, VertexBuffer,
-  Matrix, Quaternion, Scene, PBRMaterial, Texture, TransformNode, type AbstractMesh, col, smoothstep, v3, HDRCubeTexture, RawTexture, type InstancedMesh,
+  Matrix, Quaternion, Scene, PBRMaterial, Texture, TransformNode, type AbstractMesh, col, smoothstep, v3, setQuiet, HDRCubeTexture, RawTexture, type InstancedMesh,
 } from '../engine/bjs';
 import { instance, preload } from '../engine/Assets';
 import { planeZ, ground, box, cyl, sphere, ring, torus, pbr, glow, canvasTex } from '../engine/geo';
@@ -105,6 +105,7 @@ export class World {
     this.shadows = new ShadowGenerator(2048, sun);
     this.shadows.usePercentageCloserFiltering = true; this.shadows.filteringQuality = ShadowGenerator.QUALITY_MEDIUM;
     this.shadows.bias = .0006; this.shadows.normalBias = .02;
+    this.nearShadows();
 
     // Boden
     const g = ground(sc, 600, 600); g.position.y = -.02; g.material = pbr(sc, 0x6fae5a, 1); g.receiveShadows = true; g.parent = this.root;
@@ -145,6 +146,32 @@ export class World {
     await this.spawnCars();
     this.buildEnv();
     this.setTime(.3);
+  }
+
+  /** Schatten fallen nur im Kasten ±38 m um die Figur: nur Meshes in der Nähe in die Schattenkarte zeichnen
+      (vorher jedes Bild alle ~1.300 angemeldeten Meshes der ganzen Stadt samt Inseln, auch weit entfernte Figuren).
+      Muss nach jedem Neuanlegen der Schattenkarte (andere Kartengröße) wieder gesetzt werden. */
+  setShadowSize(px: number) {
+    if (this.shadows.mapSize !== px) this.shadows.mapSize = px;
+    this.nearShadows();
+  }
+  private nearShadows() {
+    { const sm = this.shadows.getShadowMap()!; let near: AbstractMesh[] = [], at = -99, n0 = -1;
+      sm.getCustomRenderList = (_pass, list, len) => {
+        const f = this.scene.getFrameId();
+        if (f - at >= 6 || len !== n0) {
+          at = f; n0 = len; near = [];
+          // Kastenecke 38·√2 m, dazu die Schattenlänge (Höhe × Sonnenstand, bei tiefer Sonne länger)
+          const c = this.sun.position, R = 38 * 1.42, k = Math.hypot(this._sunDir.x, this._sunDir.z) / Math.max(.2, this._sunDir.y);
+          for (let i = 0; i < len; i++) {
+            const m = list![i] as AbstractMesh; if (!m || m.isDisposed() || !m.isEnabled()) continue;
+            const bi = m.getBoundingInfo(), b = bi.boundingSphere, dx = b.centerWorld.x - (c.x - this._sunDir.x * 60), dz = b.centerWorld.z - (c.z - this._sunDir.z * 60);
+            const r = R + b.radiusWorld + Math.min(45, Math.max(2, bi.boundingBox.maximumWorld.y * k));
+            if (dx * dx + dz * dz < r * r) near.push(m);
+          }
+        }
+        return near;
+      }; }
   }
 
   /** alle Meshes mit Schattenwurf beim Schattengenerator anmelden (nach dem Aufbau und nach neuen Figuren) */
@@ -338,6 +365,8 @@ export class World {
   }
 
   /** Requisite merken (r = Kollisionsradius, solid = Figur stößt dagegen) */
+  /** Bäume und Palmen stehen fest: Weltmatrix einfrieren (spart je Bild die Prüfung, ob sie sich bewegt haben) */
+  private freeze(g: TransformNode) { g.computeWorldMatrix(true); g.getChildMeshes().forEach((m) => { m.computeWorldMatrix(true); m.freezeWorldMatrix(); }); }
   prop(x: number, z: number, r: number, o: TransformNode[], solid = true) { this.props.push({ x, z, r, o, solid }); }
 
   /** Straßenkachel; lo/hi = westlicher und östlicher Rand des Viertels (an der Brücke z = 0 geht es weiter) */
@@ -409,7 +438,7 @@ export class World {
     // Fenster nachts warm, Straßen nachts feucht glänzend
     this.winMats.forEach((m) => m.emissiveColor.set(1 * this.night * .9, .72 * this.night * .9, .4 * this.night * .9));
     this.nightMats.forEach((m) => m.emissiveColor.set(.04 + this.night * 1.1, .04 + this.night * 1.05, .04 + this.night));
-    this.roadMats.forEach((m) => { m.roughness = (.72 - .38 * this.night) * (1 - wx.wet * .62); });
+    { const r = (.72 - .38 * this.night) * (1 - wx.wet * .62); this.roadMats.forEach((m) => setQuiet(m, 'roughness', r)); }
     this.poolLights.forEach((l) => (l.intensity = this.night * 14));
     this.sun.intensity = (.55 + 1.9 * day) * (1 - wx.gloom * .6);
     this.sun.diffuse = Color3.Lerp(Color3.Lerp(col(0x8fa0ff), Color3.White(), day), col(0xffa060), dusk);
@@ -418,8 +447,9 @@ export class World {
     this.hemi.groundColor = Color3.Lerp(col(0x2a2040), col(0x4a3a5a), day);
     this._sunDir.set(Math.cos(ang) * .8, Math.max(.25, Math.abs(up)), .45).normalize();
     this.sun.direction = this._sunDir.scale(-1);
-    this.lamps.albedoColor = new Color3(1, .95, .75).scale(.6 + this.night * 3.2);
-    this.neon.forEach((n) => { n.m.albedoColor = n.base.scale(1 + this.night * 2.4); });
+    // Farben direkt im Material ändern: eine neue Farbe zuweisen markiert jedes Mal alle Meshes der Szene als „schmutzig“ (kostete jedes Bild viel Zeit)
+    this.lamps.albedoColor.set(1, .95, .75).scaleInPlace(.6 + this.night * 3.2);
+    this.neon.forEach((n) => { n.base.scaleToRef(1 + this.night * 2.4, n.m.albedoColor); });
     this.pools.forEach((m) => { m.alpha = this.night * .38; });
     // Lichter, die nichts beitragen, ganz abschalten: jedes aktive Licht kostet in jedem Bildpunkt Rechenzeit
     const lit = this.night > .03 && !this.low;
@@ -521,6 +551,7 @@ export class World {
     const top = this.treeSrc.tops[Math.floor(rnd() * 4)];
     add(this.treeSrc.trunk, 0, .8, 0); add(top, 0, 2.3, 0); add(top, .5, 3.1, .2, .7);
     g.position.set(x, 0, z); g.scaling.setAll(s * 1.6); g.rotation.y = rnd() * 6; g.parent = this.root;
+    this.freeze(g);
     this.colliders.push({ x, z, hx: .5, hz: .5 });
     this.prop(x, z, .5, [g], false);
   }
@@ -557,6 +588,7 @@ export class World {
       f.position.set(.9, 5.9, 0); f.rotation.y = (i / 9) * Math.PI * 2 + rnd() * .3;
     }
     g.position.set(x, .05, z); g.rotation.y = rnd() * 6; g.scaling.setAll(s); g.parent = this.root;
+    this.freeze(g);
     this.prop(x, z, .35 * s, [g]);
   }
 
@@ -592,7 +624,9 @@ export class World {
     const f = this.flagSrc, b = this.flagBase; if (!f || !b) return;
     const p = f.getVerticesData(VertexBuffer.PositionKind) as Float32Array;
     for (let i = 0; i < b.length; i += 3) { const x = b[i], y = b[i + 1], w = x / 2.4; p[i + 2] = Math.sin(x * 2.6 - t * 4 + y) * .22 * w; p[i + 1] = y - w * w * .15; }
-    f.updateVerticesData(VertexBuffer.PositionKind, p, false, false);
+    // direkt in den Puffer schreiben: updateVerticesData markiert sonst jedes Bild alle Flaggen-Materialien neu (Shader-Suche je Bild)
+    const vb = f.geometry?.getVertexBuffer(VertexBuffer.PositionKind);
+    if (vb?.isUpdatable()) vb.update(p); else f.updateVerticesData(VertexBuffer.PositionKind, p, false, false);
   }
 
   private decorate() {

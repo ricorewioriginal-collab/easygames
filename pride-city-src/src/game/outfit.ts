@@ -3,6 +3,7 @@
    in Hautfarbe bzw. Wäschefarbe um. Das klappt für jede Figur, egal wie ihre Textur angeordnet ist.
    Keine anatomischen Details: Unterwäsche und Bikini bleiben immer an. */
 import { RawTexture, Texture, type Mesh, type PBRMaterial, type Scene, type AbstractMesh } from '../engine/bjs';
+import { pixels, remember, quietClone } from './texpix';
 import type { Outfit } from './Actor';
 
 type Part = 'chest' | 'belly' | 'arm' | 'hip' | 'leg' | 'foot' | 'other';
@@ -44,8 +45,8 @@ export async function applyOutfit(scene: Scene, root: AbstractMesh | { getChildM
     let job = cache.get(key);
     if (!job) { job = build(scene, m, orig, p); cache.set(key, job); }
     const tex = await job; if (!tex) continue;
-    const nm = orig.clone(orig.name + '_' + o) as PBRMaterial & { _orig?: PBRMaterial };
-    nm._orig = orig; nm.albedoTexture = tex;
+    const nm = quietClone(scene, orig, orig.name + '_' + o, (c) => { c.albedoTexture = tex; }) as PBRMaterial & { _orig?: PBRMaterial };
+    nm._orig = orig;
     if (mm._orig) mm.dispose();
     m.material = nm;
   }
@@ -54,8 +55,8 @@ export async function applyOutfit(scene: Scene, root: AbstractMesh | { getChildM
 async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<Part, 'skin' | number>>): Promise<Texture | null> {
   const src = mat.albedoTexture as Texture | null; if (!src) return null;
   const { width: w, height: h } = src.getSize();
-  const px = await src.readPixels(); if (!px) return null;
-  const data = new Uint8Array(px.buffer.slice(0));
+  const px = await pixels(src); if (!px) return null;
+  const data = new Uint8Array(px);
   const uv = m.getVerticesData('uv'), idx = m.getIndices(), mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights');
   const sk = m.skeleton; if (!uv || !idx || !mi || !mw || !sk) return null;
   // Knochen-Index in den Vertex-Daten = bone.getIndex() (nicht unbedingt die Reihenfolge in skeleton.bones)
@@ -86,6 +87,7 @@ async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<
     fill(data, orig, w, h, [uv[a * 2] * w, uv[a * 2 + 1] * h], [uv[b * 2] * w, uv[b * 2 + 1] * h], [uv[c * 2] * w, uv[c * 2 + 1] * h], col, want === 'skin');
   }
   const t = RawTexture.CreateRGBATexture(data, w, h, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
+  remember(t, data);
   t.wrapU = src.wrapU; t.wrapV = src.wrapV;
   (t as Texture & { _invertY?: boolean })._invertY = (src as Texture & { _invertY?: boolean })._invertY;
   t.uScale = src.uScale; t.vScale = src.vScale; t.uOffset = src.uOffset; t.vOffset = src.vOffset;

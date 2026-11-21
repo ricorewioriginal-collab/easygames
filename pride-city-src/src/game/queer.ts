@@ -4,6 +4,7 @@
    Textur-Anordnung), deshalb klappt es bei jeder Figur. Läuft nach dem Outfit (outfit.ts) und baut darauf auf. */
 import { RawTexture, Texture, type Mesh, type PBRMaterial, type Scene, type AbstractMesh } from '../engine/bjs';
 import { palette } from './palettes';
+import { pixels, remember, quietClone } from './texpix';
 
 export interface StyleDef {
   name: string;
@@ -69,9 +70,8 @@ export async function applyStyle(scene: Scene, root: AbstractMesh | { getChildMe
     let job = cache.get(key);
     if (!job) { job = (kind === 'body' ? body(scene, m, mm, def, id) : head(scene, m, mm, def.hair!, id, kind === 'strands')).catch(() => null); cache.set(key, job); }
     const tex = await job; if (!tex) continue;
-    const nm = mm.clone(orig.name + '_' + style) as Mat;
-    nm._orig = orig; nm._style = style; nm.albedoTexture = tex;
-    if (kind === 'strands') nm.opacityTexture = tex;
+    const nm = quietClone(scene, mm, orig.name + '_' + style, (c) => { c.albedoTexture = tex; if (kind === 'strands') c.opacityTexture = tex; }) as Mat;
+    nm._orig = orig; nm._style = style;
     if (mm._orig) mm.dispose();
     m.material = nm;
   }
@@ -83,8 +83,8 @@ interface Geo { w: number; h: number; data: Uint8Array; src: Uint8Array; uv: Flo
 async function geo(m: Mesh, mat: PBRMaterial): Promise<Geo | null> {
   const srcTex = mat.albedoTexture as Texture | null; if (!srcTex) return null;
   const { width: w0, height: h0 } = srcTex.getSize();
-  // Auslesen darf nie hängen bleiben (manche Handys antworten nicht): nach 4 s ohne Look weiter
-  const px = await Promise.race([srcTex.readPixels(), new Promise<null>((r) => setTimeout(() => r(null), 4000))]); if (!px) return null;
+  // höchstens einmal je Textur aus dem Grafikspeicher lesen (texpix.ts), nach 4 s ohne Look weiter
+  const px = await pixels(srcTex); if (!px) return null;
   // kleiner malen: spart am Handy sehr viel Grafikspeicher (sonst je Figur mehrere volle Texturen)
   const f = Math.max(1, Math.ceil(Math.max(w0, h0) / MAX)), w = Math.max(1, Math.floor(w0 / f)), h = Math.max(1, Math.floor(h0 / f));
   const full = new Uint8Array(px.buffer, px.byteOffset, w0 * h0 * 4), data = new Uint8Array(w * h * 4);
@@ -106,6 +106,7 @@ async function geo(m: Mesh, mat: PBRMaterial): Promise<Geo | null> {
 }
 function finish(scene: Scene, g: Geo, alpha = false) {
   const t = RawTexture.CreateRGBATexture(g.data, g.w, g.h, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
+  remember(t, g.data);
   const s = g.srcTex;
   t.wrapU = s.wrapU; t.wrapV = s.wrapV; t.hasAlpha = alpha || s.hasAlpha;
   (t as Texture & { _invertY?: boolean })._invertY = (s as Texture & { _invertY?: boolean })._invertY;

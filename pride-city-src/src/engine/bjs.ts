@@ -67,6 +67,9 @@ export class Node3 extends TransformNode {
   set visible(v: boolean) { if (this.isEnabled(false) !== v) this.setEnabled(v); }
 }
 
+/** Zahlenwert eines PBR-Materials ändern, ohne dass Babylon alle Meshes der Szene als „schmutzig“ markiert
+    (der Setter läuft sonst bei jeder Änderung über sämtliche Meshes). Nur für Werte, die keinen Shader-Wechsel brauchen (Rauheit, Metall). */
+export function setQuiet(m: object, key: 'roughness' | 'metallic', v: number) { (m as Record<string, number>)['_' + key] = v; }
 export const v3 = (x = 0, y = 0, z = 0) => new Vector3(x, y, z);
 /** Farbe aus Zahl (0xrrggbb) oder CSS-Hex-String, im linearen Farbraum (wie three mit sRGB-Ausgabe) */
 export function col(c: number | string, k = 1) {

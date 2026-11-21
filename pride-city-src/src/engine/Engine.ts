@@ -50,7 +50,7 @@ export class Engine {
     this.bjs.disableManifestCheck = true;
     this.input = new Input(canvas);
     this.mobile = mobile;
-    this.quality = mobile ? 0 : 2; // Handys starten sparsam und schalten hoch, wenn Luft ist
+    this.quality = Math.min(this.cap, mobile ? 0 : 2) as Quality; // Handys starten sparsam und schalten hoch, wenn Luft ist
     addEventListener('resize', () => this.resize());
     screen.orientation?.addEventListener?.('change', () => setTimeout(() => this.resize(), 120));
   }
@@ -99,6 +99,7 @@ export class Engine {
     prev?.exit?.();
     this.scene = s;
     s.enter?.();
+    this.calmUntil = performance.now() + 3000;
     this.ensurePipe(s);
     this.resize();
     if (prev && prev !== s && prev.transient) { this.pipes.get(prev.scene)?.dispose(); this.pipes.delete(prev.scene); prev.scene.dispose(); }
@@ -199,9 +200,17 @@ export class Engine {
     if (this.sampleT < 2) return;
     this.fps = this.frames / this.sampleT;
     this.frames = 0; this.sampleT = 0;
-    if (this.qualitySetting >= 0 || document.hidden) return;
+    // Kurz nach einem Szenenwechsel (Shader werden gebaut) und im Hintergrund nicht werten
+    if (this.qualitySetting >= 0 || document.hidden || this.paused || performance.now() < this.calmUntil) { this.slow = 0; this.fast = 0; return; }
     if (this.fps < 40) { this.slow++; this.fast = 0; } else if (this.fps > 58) { this.fast++; this.slow = 0; } else { this.slow = 0; this.fast = 0; }
-    if (this.slow >= 2 && this.res <= (this.mobile ? .73 : .71) && this.quality > 0) { this.applyQuality((this.quality - 1) as Quality); this.slow = 0; }
-    if (this.fast >= 8 && this.res >= 1 && this.quality < (this.mobile ? 1 : 2)) { this.applyQuality((this.quality + 1) as Quality); this.fast = 0; }
+    // Jeder Stufenwechsel baut alle Shader neu (am Handy sekundenlanger Hänger). Deshalb nie pendeln: nach einem
+    // Absenken nicht wieder hochschalten, und das Gerät merkt sich die Obergrenze für den nächsten Start.
+    if (this.slow >= 2 && this.res <= (this.mobile ? .73 : .71) && this.quality > 0) { this.applyQuality((this.quality - 1) as Quality); this.slow = 0; this.cap = this.quality; this.store(); }
+    if (this.fast >= 8 && this.res >= 1 && this.quality < Math.min(this.cap, this.mobile ? 1 : 2)) { this.applyQuality((this.quality + 1) as Quality); this.fast = 0; }
   }
+  /** höchste Stufe, die die Automatik wählen darf (sinkt, wenn das Gerät zu langsam war) */
+  private cap: number = Engine.loadCap();
+  private calmUntil = 0;
+  private static loadCap() { try { const v = localStorage.getItem('pc_qcap'); return v === null ? 2 : Math.max(0, Math.min(2, +v || 0)); } catch { return 2; } }
+  private store() { try { localStorage.setItem('pc_qcap', String(this.cap)); } catch { /* privat */ } }
 }
