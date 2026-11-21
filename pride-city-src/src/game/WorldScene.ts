@@ -44,8 +44,8 @@ export class WorldScene implements GameScene {
 
   async build() {
     const sc = this.scene, d = this.def, R = d.r;
-    const h = new HemisphericLight('hemi', new Vector3(0, 1, 0), sc); h.intensity = 1.05; h.diffuse = col(d.light); h.groundColor = col(0x8a7a9a);
-    const sun = new DirectionalLight('sun', new Vector3(.4, -.8, -.45).normalize(), sc); sun.intensity = 1.1; sun.diffuse = col(0xfff4e0);
+    const h = new HemisphericLight('hemi', new Vector3(0, 1, 0), sc); h.intensity = 1.05 * (d.dim ?? 1); h.diffuse = col(d.light); h.groundColor = col(0x8a7a9a);
+    const sun = new DirectionalLight('sun', new Vector3(.4, -.8, -.45).normalize(), sc); sun.intensity = 1.1 * (d.dim ?? 1); sun.diffuse = col(0xfff4e0);
     // Himmel (Verlauf), Meer, Insel
     const sky = sphere(sc, 240, 16); sky.material = glow(sc, 0xffffff, 1, { double: true, tex: canvasTex(sc, 8, 256, (g2) => { const gr = g2.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, d.sky[0]); gr.addColorStop(.36, d.sky[0]); gr.addColorStop(.5, d.sky[1]); gr.addColorStop(.64, d.sky[0]); gr.addColorStop(1, d.sky[0]); g2.fillStyle = gr; g2.fillRect(0, 0, 8, 256); }) }); sky.isPickable = false;
     const sea = ground(sc, 520, 520); sea.material = pbr(sc, d.water, .15, .1); sea.position.y = -.7;
@@ -84,6 +84,8 @@ export class WorldScene implements GameScene {
       try { const merged = Mesh.MergeMeshes(list, true, true); if (merged) { merged.material = mt; merged.isPickable = false; merged.freezeWorldMatrix(); } } catch { /* einzeln lassen */ }
     }
 
+    // Stellen mit Wirkung: Bodenring wie in den Häusern
+    { const ringM = glow(sc, 0xffd23b, 1.2, { alpha: .55 }); for (const sp of d.spots || []) { const o = torus(sc, .5, .06, 24); o.material = ringM; o.position.set(sp.x, .05, sp.z); o.isPickable = false; } }
     // Sammelstücke: zwei am Boden, jedes dritte in der Luft (dafür der Flitzer)
     const im = glow(sc, d.item.color, 1.4), free = (x: number, z: number) => this.solids.every((q) => Math.hypot(q.x - x, q.z - z) > q.r + 1.2);
     for (let i = 0; i < d.item.n; i++) {
@@ -242,6 +244,7 @@ export class WorldScene implements GameScene {
       let label: string | null = null, act: (() => void) | null = null, bd = 9;
       if (!this.riding || this.alt < 1.5) {
         for (const f of this.folk) { const dd = Math.hypot(f.a.root.position.x - p.x, f.a.root.position.z - p.z); if (dd < 2.4 && dd < bd) { bd = dd; label = (f.host ? '⭐ ' : '💬 ') + f.d.name; act = () => this.talk(f); } }
+        if (!label && !this.riding) for (const sp of d.spots || []) { if (Math.hypot(sp.x - p.x, sp.z - p.z) < (sp.r || 2)) { label = sp.label; act = () => g.interiorAct(sp); break; } }
         if (!label && Math.hypot(this.gate.x - p.x, this.gate.z - p.z) < 3.4) { label = '🌈 Weltentor: weiterreisen'; act = () => g.worldMenu(); }
         if (!label && !this.riding && Math.hypot(this.ride.position.x - p.x, this.ride.position.z - p.z) < 2.6) { label = `🚀 Aufsteigen: ${this.adultRide ? 'Glitzer-Dildo' : 'Regenbogen-Rakete'}`; act = () => this.mount(true); }
       }
