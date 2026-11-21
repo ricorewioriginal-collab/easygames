@@ -121,13 +121,23 @@ export function createRenderer(T, canvas, opts) {
         if (e.bt) e.bt.dispose();
         e.bt = new DynamicTexture('t', src, scene, t.generateMipmaps !== false, Texture.TRILINEAR_SAMPLINGMODE);
         e.src = src; e.w = src.width; e.h = src.height;
-      }
+        if (!e.bt.hasAlpha) e.bt.hasAlpha = true;
+        e.bt.update(invertY, false, true);
+      } else { e.bt.__pend = invertY; pendTex.add(e.bt); }   // neuer Inhalt: erst hochladen, wenn etwas mit dieser Textur wirklich im Bild ist
       if (!e.bt.hasAlpha) e.bt.hasAlpha = true;
-      e.bt.update(invertY, false, true);
     }
     const gs = t.encoding === 3001;   // sRGB-Bilder (Farbe) vs. lineare Daten – nur bei Änderung setzen (der Setter markiert sonst alle Materialien neu)
     if (e.bt.gammaSpace !== gs) e.bt.gammaSpace = gs;
   }
+  // Leinwände/Video-Wände nur hochladen, wenn ein sichtbares Mesh sie nutzt (wie der frühere Renderer)
+  const pendTex = new Set();
+  const flushTex = bt => { if (bt && bt.__pend != null && !bt.isDisposed?.()) { const inv = bt.__pend; bt.__pend = null; pendTex.delete(bt); try { bt.update(inv, false, true); } catch (err) { /* weiter */ } } };
+  scene.onAfterActiveMeshesEvaluationObservable.add(() => {
+    if (!pendTex.size) return;
+    const am = scene.getActiveMeshes();
+    for (let i = 0; i < am.length; i++) { const m = am.data[i].material; if (!m) continue; if (m.subMaterials) { for (const x of m.subMaterials) if (x) { flushTex(x.albedoTexture); flushTex(x.emissiveTexture); } } else { flushTex(m.albedoTexture); flushTex(m.emissiveTexture); } }
+    for (const bt of pendTex) if (bt.isDisposed && bt.isDisposed()) pendTex.delete(bt);
+  });
   const WRAP = { 1000: Texture.WRAP_ADDRESSMODE, 1001: Texture.CLAMP_ADDRESSMODE, 1002: Texture.MIRROR_ADDRESSMODE };
   function applySampler(t, b) {
     const wu = WRAP[t.wrapS] ?? Texture.CLAMP_ADDRESSMODE, wv = WRAP[t.wrapT] ?? Texture.CLAMP_ADDRESSMODE;
@@ -166,8 +176,11 @@ export function createRenderer(T, canvas, opts) {
     if (e.f !== frame) {
       e.f = frame;
       if (kind !== 'std') syncMat(m, e);
-      else if (mstate(m, e)) { syncMat(m, e); e.chg = frame; e.chgT = now; }   // nur bei Änderung abgleichen
-      else { if (m.map) texFor(m.map); if (m.emissiveMap) texFor(m.emissiveMap); }   // Leinwände/Videos: neuer Inhalt
+      else if (mstate(m, e)) { if (e.bm.isFrozen) e.bm.unfreeze(); syncMat(m, e); e.chg = frame; e.chgT = now; }   // nur bei Änderung abgleichen
+      else {
+        if (m.map) texFor(m.map); if (m.emissiveMap) texFor(m.emissiveMap);   // Leinwände/Videos: neuer Inhalt
+        if (!e.bm.isFrozen && frame - e.chg > 30 && now - e.chgT > 1000) e.bm.freeze();   // unverändert: Babylon prüft das Material nicht mehr jedes Bild
+      }
     }
     return e.bm;
   }
@@ -213,7 +226,8 @@ export function createRenderer(T, canvas, opts) {
     const useA = !!map && (transp || aTest > 0);
     if (b.useAlphaFromAlbedoTexture !== useA) b.useAlphaFromAlbedoTexture = useA;
     // (Alpha der Textur steuert allein useAlphaFromAlbedoTexture – hasAlpha bleibt an: Umschalten würde alle Materialien neu markieren)
-    const op = transp ? (m.opacity != null ? m.opacity : 1) : 1; if (b.alpha !== op) b.alpha = op;
+    // Durchsichtig bleibt durchsichtig (höchstens 0,999): ein Sprung auf genau 1 ließe Babylon den Shader neu aufbauen (Ein-/Ausblenden jedes Bild)
+    const op = transp ? Math.min(0.999, m.opacity != null ? m.opacity : 1) : 1; if (b.alpha !== op) b.alpha = op;
     const add = m.blending === 2;
     const am = add ? Constants.ALPHA_ADD : Constants.ALPHA_COMBINE; if (b.alphaMode !== am) b.alphaMode = am;
     const side = m.side || 0;   // 0 vorne, 1 hinten, 2 beide
@@ -286,7 +300,8 @@ export function createRenderer(T, canvas, opts) {
     if (c && c.ver === ver) return c;
     const p = g.attributes.position; if (!p) return null;
     const n = p.count;
-    const d = { ver, n, pos: attrArray(p, 3), nor: attrArray(g.attributes.normal, 3), uv: attrArray(g.attributes.uv, 2), uv2: attrArray(g.attributes.uv2, 2), col: null, si: null, sw: null, idx: null, groups: g.groups, refs: c ? c.refs : 0 };
+    const av = {}; for (const k in g.attributes) av[k] = g.attributes[k].version;
+    const d = { ver, av, iv: g.index ? g.index.version : -1, n, pos: attrArray(p, 3), nor: attrArray(g.attributes.normal, 3), uv: attrArray(g.attributes.uv, 2), uv2: attrArray(g.attributes.uv2, 2), col: null, si: null, sw: null, idx: null, groups: g.groups, refs: c ? c.refs : 0 };
     if (g.attributes.color) d.col = attrArray(g.attributes.color, 4);
     if (g.attributes.skinIndex) d.si = attrArray(g.attributes.skinIndex, 4);
     if (g.attributes.skinWeight) d.sw = attrArray(g.attributes.skinWeight, 4);
@@ -314,14 +329,30 @@ export function createRenderer(T, canvas, opts) {
     for (let i = 0; i < nor.length; i += 3) { const l = Math.hypot(nor[i], nor[i + 1], nor[i + 2]) || 1; nor[i] /= l; nor[i + 1] /= l; nor[i + 2] /= l; }
     return nor;
   }
-  function applyGeo(mesh, d, skinned) {
-    mesh.setVerticesData(VertexBuffer.PositionKind, d.pos, false, 3);
-    mesh.setVerticesData(VertexBuffer.NormalKind, d.nor, false, 3);
-    if (d.uv) mesh.setVerticesData(VertexBuffer.UVKind, d.uv, false, 2); else if (mesh.isVerticesDataPresent(VertexBuffer.UVKind)) mesh.removeVerticesData(VertexBuffer.UVKind);
-    if (d.uv2) mesh.setVerticesData(VertexBuffer.UV2Kind, d.uv2, false, 2);
-    if (d.col) mesh.setVerticesData(VertexBuffer.ColorKind, d.col, false, 4);
+  function applyGeo(mesh, d, skinned, upd) {
+    upd = !!upd;
+    mesh.setVerticesData(VertexBuffer.PositionKind, d.pos, upd, 3);
+    mesh.setVerticesData(VertexBuffer.NormalKind, d.nor, upd, 3);
+    if (d.uv) mesh.setVerticesData(VertexBuffer.UVKind, d.uv, upd, 2); else if (mesh.isVerticesDataPresent(VertexBuffer.UVKind)) mesh.removeVerticesData(VertexBuffer.UVKind);
+    if (d.uv2) mesh.setVerticesData(VertexBuffer.UV2Kind, d.uv2, upd, 2);
+    if (d.col) mesh.setVerticesData(VertexBuffer.ColorKind, d.col, upd, 4);
     if (skinned && d.si) { mesh.setVerticesData(VertexBuffer.MatricesIndicesKind, d.si, false, 4); mesh.setVerticesData(VertexBuffer.MatricesWeightsKind, d.sw, false, 4); }
     mesh.setIndices(d.idx, d.n);
+  }
+  // Geometrie hat sich geändert (Mundbewegung, Wellen, Anzeigen …): nur die geänderten Puffer nachladen, ohne Babylon-Shader neu aufzubauen
+  const KIND = { position: VertexBuffer.PositionKind, normal: VertexBuffer.NormalKind, uv: VertexBuffer.UVKind, color: VertexBuffer.ColorKind };
+  function reGeo(mesh, g, skinned) {
+    const old = geoCache.get(g), d = geoData(g); if (!d) return d;
+    const same = old && mesh.__dyn && old.n === d.n && old.idx.length === d.idx.length && old.iv === d.iv && !!old.uv === !!d.uv && !!old.col === !!d.col && Object.keys(old.av).length === Object.keys(d.av).length;
+    if (!same) { applyGeo(mesh, d, skinned, true); mesh.__dyn = true; return d; }
+    for (const k in d.av) {
+      if (old.av[k] === d.av[k] && !(k === 'position' && !g.attributes.normal)) continue;
+      const kind = KIND[k]; if (!kind) continue;
+      const arr = k === 'position' ? d.pos : k === 'normal' ? d.nor : k === 'uv' ? d.uv : d.col;
+      mesh.updateVerticesData(kind, arr, false, false);
+      if (k === 'position' && !g.attributes.normal) mesh.updateVerticesData(VertexBuffer.NormalKind, d.nor, false, false);
+    }
+    return d;
   }
 
   // ------------------------------------------------------------------ Vorlagen (eine je Geometrie + Material), Instanzen je Objekt
@@ -705,7 +736,7 @@ export function createRenderer(T, canvas, opts) {
       const ms = e.ms;
       if (!e.sprite) {
         // Geometrie verändert → Vorlage neu befüllen
-        const v = verOf(o.geometry); if (v !== ms.ver) { const d = geoData(o.geometry); applyGeo(ms.mesh, d, false); ms.ver = v; }
+        const v = verOf(o.geometry); if (v !== ms.ver) { reGeo(ms.mesh, o.geometry, false); ms.ver = v; }
         matFor(o.material, 'std');
         if (Array.isArray(o.material)) o.material.forEach(x => matFor(x, 'std'));
         if (ms.mesh.isVisible) ms.mesh.isVisible = false;
@@ -713,7 +744,7 @@ export function createRenderer(T, canvas, opts) {
     } else if (e.pts) { if (verOf(e.geo) !== e.ver) uploadPoints(e); matFor(o.material, 'points'); }
     else if (e.sky) { matFor(o.material, 'sky'); }
     else {
-      const v = verOf(o.geometry); if (v !== e.ver) { const d = geoData(o.geometry); applyGeo(mesh, d, !!e.skin); e.ver = v; }
+      const v = verOf(o.geometry); if (v !== e.ver) { reGeo(mesh, o.geometry, !!e.skin); e.ver = v; }
       if (Array.isArray(o.material)) o.material.forEach(x => matFor(x, 'std')); else matFor(o.material, 'std');
     }
     // Lage
@@ -729,9 +760,11 @@ export function createRenderer(T, canvas, opts) {
       syncSkin(e, o);
     } else if (!sameM(mw, e.mw)) {
       e.mw.set(mw);
+      if (e.frz) { e.frz = false; mesh.unfreezeWorldMatrix(); }
       setTRS(mesh, mw);
       e.still = 0; e.t0 = now;
-    } else if (BATCH && e.type === 'inst' && !e.sprite && ++e.still >= BATCH_K && e.still % BATCH_K === 0 && now - e.t0 >= BATCH_MS && batchable(o) && matsStill(o)) cands.push(e);
+    } else if (!e.frz && e.still > 30 && !mesh.billboardMode && (e.frz = true)) mesh.freezeWorldMatrix();   // steht still: Babylon rechnet Lage und Box nicht mehr nach
+    else if (BATCH && e.type === 'inst' && !e.sprite && ++e.still >= BATCH_K && e.still % BATCH_K === 0 && now - e.t0 >= BATCH_MS && batchable(o) && matsStill(o)) cands.push(e);
     if (e.thin) syncThin(e, o);
     // Schatten, Reihenfolge
     const cs = !!o.castShadow;

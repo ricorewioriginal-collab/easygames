@@ -651,3 +651,4 @@ body:has(#hud:not([hidden]) #hMap) .ttop { top: calc(178px + var(--safe-t)); fle
   #hud.h-free .h-obj span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   #hud.h-free #hTitle { display: none; }
 }
+.set-note{margin:2px 4px 8px;font-size:.78rem;opacity:.75}
