@@ -187,7 +187,7 @@ export class Street {
     if (this.sirenT < 0) { this.sirenT = 30 + Math.random() * 30; const tr = this.world.cars.at(-1)?.o; if (tr && Vector3.Distance(tr.position, ref) < 40) sfx('siren'); }
     this.t += dt;
     const on = Math.floor(this.t * 4) % 2;
-    for (const [a, b] of this.flash) { a.m.albedoColor = a.c.scale(on ? 1 : .12); b.m.albedoColor = b.c.scale(on ? .12 : 1); }
+    for (const [a, b] of this.flash) { a.c.scaleToRef(on ? 1 : .12, a.m.albedoColor); b.c.scaleToRef(on ? .12 : 1, b.m.albedoColor); } // direkt ändern, ohne Neu-Markieren aller Meshes
     const far = this.world.low ? 50 : 90, anim = this.world.low ? 28 : 60;
     this.people.forEach((n, i) => {
       const show = n.away ? false : n.kind === 'worker' || n.kind === 'curb' ? adult && night > .4 : n.kind === 'walker' ? (night < .5 || i % 2 === 0 || !!n.mate || n.yaw !== undefined) : n.kind === 'security' ? night > .3 : true;
