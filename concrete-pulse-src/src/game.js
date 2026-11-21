@@ -6,11 +6,12 @@ import { buildWorld } from './world.js';
 import { makeBoard } from './board.js';
 import { makeSkater } from './rig.js';
 import { Skater } from './skater.js';
-import { PARKS, SKATERS, BOARDS } from './parks.js';
+import { PARKS, SKATERS, BOARDS, customSkater, RIVALS, COMP_BASE } from './parks.js';
 import * as A from './audio.js';
 import { save, persist } from './save.js';
 
-const RUN_TIME = 120, DUEL_TIME = 60;
+const RUN_TIME = 120, DUEL_TIME = 60, COMP_TIME = 60, SKATE_TIME = 20;
+const STAT_KEYS = ['speed', 'ollie', 'spin', 'balance', 'air'];
 const NOINPUT = { x: 0, y: 0, rx: 0, ry: 0, down: () => false, pressed: () => false, released: () => false };
 
 export class Game {
@@ -23,7 +24,16 @@ export class Game {
     addEventListener('resize', () => engine.resize());
   }
 
-  get skaterDef() { return SKATERS[save.skater] || SKATERS[0]; }
+  get skaterDef() { return save.skater === -1 ? customSkater(save.custom) : (SKATERS[save.skater] || SKATERS[0]); }
+  // Stat-Punkte: je erfülltes Ziel 1, je Marke 1, je Medaille 1–3; pro Skater frei verteilbar
+  statPoints() { let n = this.goalsTotal(); for (const k in save.coins) n += save.coins[k].length; for (const k in save.medals) n += save.medals[k] || 0; return n; }
+  spentFor(id) { const s = save.spent[id] || {}; return STAT_KEYS.reduce((a, k) => a + (s[k] || 0), 0); }
+  statsFor(def) { const s = save.spent[def.id] || {}, o = {}; for (const k of STAT_KEYS) o[k] = Math.min(10, def.stats[k] + (s[k] || 0)); return o; }
+  addStat(def, k) {
+    const cur = this.statsFor(def)[k]; if (cur >= 10 || this.spentFor(def.id) >= this.statPoints()) return false;
+    const s = save.spent[def.id] || (save.spent[def.id] = {}); s[k] = (s[k] || 0) + 1; persist(); if (this.skater) this.skater.st[k] = cur + 1; return true;
+  }
+  resetStats(def) { delete save.spent[def.id]; persist(); if (this.skater) Object.assign(this.skater.st, this.statsFor(def)); }
   get park() { return PARKS[this.parkIdx]; }
 
   // ------------------------------------------------------------ Laden
@@ -55,7 +65,7 @@ export class Game {
     if (this.skater) { this.skater.holder.dispose(false, true); this.skater = null; }
     const board = makeBoard(this.scene, bd, this.shadow);
     const rig = await makeSkater(this.scene, Object.assign({ id: def.id }, def), this.shadow);
-    this.skater = new Skater(this, rig, board, def.stats);
+    this.skater = new Skater(this, rig, board, this.statsFor(def));
     this.skater.apply(0);
   }
 
@@ -69,9 +79,16 @@ export class Game {
   async start(mode, parkIdx, players) {
     this.mode = mode; A.initAudio();
     await this.load(parkIdx);
-    this.run = { t: mode === 'free' ? Infinity : mode === 'duel' ? DUEL_TIME : RUN_TIME, score: 0, best: 0, letters: new Set(), tape: false, gaps: new Set(), done: [], maxGrind: 0, maxManual: 0, ending: 0, bestCombo: 0 };
+    this.run = { t: mode === 'free' ? Infinity : mode === 'duel' ? DUEL_TIME : mode === 'comp' ? COMP_TIME : mode === 'skate' ? SKATE_TIME : RUN_TIME, score: 0, best: 0, letters: new Set(), tape: false, gaps: new Set(), done: [], maxGrind: 0, maxManual: 0, maxLip: 0, ending: 0, bestCombo: 0, tricks: new Set(), bails: 0 };
     if (mode === 'duel') { this.duel = this.duel && this.duel.parkIdx === parkIdx && players == null ? this.duel : { parkIdx, players: players || 2, cur: 0, scores: [] }; }
-    for (const it of this.items) { it.got = false; it.node.setEnabled(mode !== 'score' && mode !== 'duel' || it.kind === 'letter'); }
+    if (mode === 'comp') { if (!this.comp || this.comp.parkIdx !== parkIdx || players === 'new' || this.comp.run >= 3) this.comp = { parkIdx, run: 0, scores: [], rivals: this.makeRivals(parkIdx) }; }
+    if (mode === 'skate') { if (!this.skate || players != null) this.skate = { parkIdx, players: players || 2, letters: Array(players || 2).fill(0), cur: 0, round: [], turn: 0 }; }
+    const coinsGot = save.coins[this.park.id] || [];
+    for (const it of this.items) {
+      it.got = false;
+      const show = it.kind === 'letter' ? mode !== 'skate' : it.kind === 'coin' ? (mode === 'career' || mode === 'free') && !coinsGot.includes(it.i) : (mode === 'career' || mode === 'free');
+      it.node.setEnabled(show);
+    }
     // Bereits erledigte Karriereziele: Sammelobjekte trotzdem zeigen (für Punkte), Kassette nur wenn noch offen
     this.skater.reset(this.park.spawn); this.skater.special = 0;
     this.state = 'play'; this.input.enabled = true; this.input.clear();
@@ -79,7 +96,7 @@ export class Game {
     A.playMusic(this.settings.track >= 0 ? this.settings.track : this.park.music);
     this.paused = false;
   }
-  restart() { this.start(this.mode, this.parkIdx); }
+  restart() { this.start(this.mode, this.parkIdx, this.mode === 'comp' ? 'new' : this.mode === 'skate' && this.skate ? this.skate.players : undefined); }
   pause(on) {
     if (this.state !== 'play' && this.state !== 'ending') return;
     this.paused = on; this.ui.pause(on, this);
@@ -124,9 +141,11 @@ export class Game {
         return this.endRun();
       }
     }
+    if (this.mode === 'skate' && run.turnDone != null && this.state === 'play') { run.turnDone += dt; if (run.turnDone > 1.2) return this.endRun(); }
     // Grind/Manual-Dauer
     if (sk.grind) { run.maxGrind = Math.max(run.maxGrind, sk.grind.time + (sk.grind.carry || 0)); this.goalCheck('grindTime', run.maxGrind); }
     if (sk.manual) { run.maxManual = Math.max(run.maxManual, sk.manual.t); this.goalCheck('manualTime', run.maxManual); }
+    if (sk.grind && sk.grind.lip) { run.maxLip = Math.max(run.maxLip, sk.grind.time); this.goalCheck('lipTime', run.maxLip); }
     // Sammeln
     for (const it of this.items) {
       if (it.got || !it.node.isEnabled()) continue;
@@ -148,7 +167,8 @@ export class Game {
     const vh = Math.hypot(sk.vel.x, sk.vel.z);
     let want = st.yaw;
     if (sk.mode === 'air' && sk.air && sk.air.vert) want = st.yaw;
-    else if (sk.mode === 'grind') want = Math.atan2(sk.vel.x, sk.vel.z);
+    else if (sk.mode === 'grind' && sk.grind && sk.grind.lip) want = st.yaw;
+    else if (sk.mode === 'grind' || sk.mode === 'wall') want = Math.atan2(sk.vel.x, sk.vel.z);
     else if (vh > 1.2 && sk.normal.y > 0.55) want = Math.atan2(sk.vel.x, sk.vel.z);
     else if (vh <= 1.2 && sk.mode === 'ground') want = sk.yaw + (sk.fakie ? Math.PI : 0);
     let d = want - st.yaw; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
@@ -189,16 +209,18 @@ export class Game {
   onTrick(e, special) { this.ui.trick(e, special); if (special) this.skater.special = 0; }
   onBank(v, list) {
     const run = this.run; if (!run) return;
+    if (this.mode === 'skate' && run.turnDone != null) return;
     run.score += v; run.bestCombo = Math.max(run.bestCombo, v);
     this.ui.bank(v, list);
     if (v >= 1000) A.sfx('bank');
     this.goalCheck('score', run.score); this.goalCheck('combo', v);
     // Drehungen
-    for (const e of list) { const m = /^(\d{3,4}) /.exec(e.name); if (m) this.goalCheck('spin', +m[1]); if (e.special) this.goalCheck('special', 1); }
+    for (const e of list) { const m = /^(\d{3,4}) /.exec(e.name); if (m) this.goalCheck('spin', +m[1]); if (e.special) this.goalCheck('special', 1); this.goalCheck('trick', e.name); run.tricks.add(e.name.replace(/^\d{3,4} /, '')); }
+    if (this.mode === 'skate' && run.turnDone == null) run.turnDone = 0;
     // Trick über Lücke
     if (this._trickGaps) { for (const tg of this._trickGaps) this.goalCheck('trickgap', tg); this._trickGaps = null; }
   }
-  onBail(why, lost) { A.sfx('bail'); this.ui.bail(why, lost); this._trickGaps = null; }
+  onBail(why, lost) { A.sfx('bail'); this.ui.bail(why, lost); this._trickGaps = null; if (this.run) { this.run.bails++; if (this.mode === 'skate' && this.run.turnDone == null) this.run.turnDone = -0.6; } }
   onRecover() { }
   sfx(n, k) { A.sfx(n, k); }
   grindSound(on, kind) { A.setGrind(on, kind); }
@@ -226,6 +248,7 @@ export class Game {
     it.got = true; it.node.setEnabled(false); A.sfx('collect');
     const run = this.run;
     if (it.kind === 'letter') { run.letters.add(it.i); this.ui.letters(run.letters); if (run.letters.size === 5) this.goalCheck('letters', 5); this.ui.flash(it.ch + '!'); }
+    else if (it.kind === 'coin') { const c = save.coins[this.park.id] || (save.coins[this.park.id] = []); if (!c.includes(it.i)) c.push(it.i); persist(); this.ui.flash('Stat-Punkt!'); this.ui.feed('+1 Stat-Punkt – im Skater-Menü verteilen', 'goal'); }
     else { run.tape = true; this.goalCheck('tape', 1); this.ui.flash('Kassette gefunden!'); }
   }
   animateItems(dt) {
@@ -247,6 +270,8 @@ export class Game {
         case 'gap': ok = val === g.gap; break;
         case 'trickgap': ok = val.gap === g.gap && val.names.includes(g.trick); break;
         case 'letters': case 'tape': case 'special': ok = true; break;
+        case 'lipTime': ok = val >= g.n; break;
+        case 'trick': ok = val.toLowerCase().includes(g.trick.toLowerCase()); break;
       }
       if (ok) { prog.goals.push(i); this.run.done.push(i); persist(); A.sfx('goal'); this.ui.goalDone(g, this); }
     });
@@ -258,12 +283,54 @@ export class Game {
     this.state = 'results'; this.input.enabled = false; A.setRoll(0, false); A.setGrind(false); A.sfx('end');
     const run = this.run, park = this.park;
     const prog = save.parks[park.id] || (save.parks[park.id] = { goals: [], best: 0 });
-    const newBest = run.score > (prog.best || 0) && this.mode !== 'free';
+    const newBest = run.score > (prog.best || 0) && (this.mode === 'career' || this.mode === 'score');
     if (newBest) prog.best = run.score;
     save.best = Math.max(save.best || 0, run.score);
     save.runs = (save.runs || 0) + 1;
     persist();
     if (this.mode === 'duel') { this.duel.scores[this.duel.cur] = run.score; this.duel.cur++; }
+    if (this.mode === 'comp') this.judge(run);
+    if (this.mode === 'skate') this.skateTurn(run);
     this.ui.results(this, { score: run.score, newBest, done: run.done, bestCombo: run.bestCombo });
+  }
+
+  // ------------------------------------------------------------ Wettbewerb: 3 Läufe, Jury, die besten 2 zählen
+  makeRivals(pi) {
+    const base = COMP_BASE[pi] ?? 80, names = RIVALS.slice().sort(() => Math.random() - 0.5).slice(0, 3);
+    return names.map((n, i) => ({ name: n, score: +(base - i * 5 + (Math.random() * 3 - 1.5)).toFixed(1) }));
+  }
+  judge(run) {
+    const c = this.comp, pts = run.score;
+    const base = 30 + 18 * Math.log10(1 + pts / 2000) + Math.min(15, run.tricks.size * 0.6) - run.bails * 2.5;
+    const j = [0, 1, 2].map(() => Math.max(0, Math.min(99.9, base + (Math.random() * 3 - 1.5))));
+    const avg = +(j.reduce((a, b) => a + b, 0) / 3).toFixed(1);
+    c.scores.push({ pts, judges: j.map(x => +x.toFixed(1)), avg }); c.run++;
+    if (c.run >= 3) {
+      const best2 = c.scores.map(s => s.avg).sort((a, b) => b - a).slice(0, 2);
+      c.final = +((best2[0] + best2[1]) / 2).toFixed(1);
+      const table = [{ name: 'Du', score: c.final, me: true }, ...c.rivals].sort((a, b) => b.score - a.score);
+      c.table = table; c.place = table.findIndex(t => t.me) + 1;
+      const medal = c.place <= 3 ? 4 - c.place : 0, id = this.park.id;
+      c.newMedal = medal > (save.medals[id] || 0);
+      if (c.newMedal) { save.medals[id] = medal; persist(); }
+    }
+  }
+  medalsGold() { return Object.values(save.medals).filter(m => m >= 3).length; }
+
+  // ------------------------------------------------------------ S-K-A-T-E: je Runde ein Combo-Versuch, die schwächste Combo bekommt einen Buchstaben
+  skateTurn(run) {
+    const k = this.skate; k.round[k.cur] = run.turnDone != null && run.turnDone >= 0 ? run.score : 0;
+    const alive = k.letters.map((l, i) => l < 5 ? i : -1).filter(i => i >= 0);
+    let next = alive.find(i => i > k.cur && k.round[i] == null);
+    if (next == null) {
+      // Runde vorbei: schwächste Combo (eindeutig) bekommt einen Buchstaben
+      const sc = alive.map(i => k.round[i] || 0), min = Math.min(...sc), low = alive.filter(i => (k.round[i] || 0) === min);
+      k.last = { scores: alive.map(i => [i, k.round[i] || 0]), loser: low.length === 1 ? low[0] : -1 };
+      if (low.length === 1) k.letters[low[0]]++;
+      const still = k.letters.map((l, i) => l < 5 ? i : -1).filter(i => i >= 0);
+      if (still.length <= 1) { k.winner = still[0]; save.skate.games++; persist(); }
+      k.round = []; k.turn++; next = still[0];
+    }
+    k.cur = next;
   }
 }

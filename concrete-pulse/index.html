@@ -20,7 +20,7 @@ d.append(b,x);document.body.appendChild(d);setTimeout(function(){if(d.parentNode
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#0d0f17">
 <title>Concrete Pulse – Arcade-Skateboarding</title>
-<meta name="description" content="Concrete Pulse: Arcade-Skateboarding in 3D – Flips, Grabs, Grinds, Manuals und Combos in drei Parks. Karriere, Highscore, Freies Fahren und Duell.">
+<meta name="description" content="Concrete Pulse: Arcade-Skateboarding in 3D – Flips, Grabs, Grinds, Lip-Tricks, Wallrides und Combos in fünf Parks. Karriere, Wettbewerb, Highscore, Freies Fahren, Duell und S-K-A-T-E.">
 <style>
 :root{--ink:#f4f6fb;--dim:#9aa3b8;--glass:rgba(14,16,26,.66);--line:rgba(255,255,255,.14);--a1:#ff5a3c;--a2:#ffd43a;--a3:#2ec4ff;--ok:#3ef08a;--bad:#ff4f6d;--r:18px;
   --f:'Segoe UI Variable Display','Segoe UI',system-ui,-apple-system,Roboto,'Helvetica Neue',Arial,sans-serif}
@@ -61,6 +61,9 @@ h2{margin:0;font-style:italic;font-weight:900;font-size:clamp(26px,4vw,38px);tex
 .card.lock{opacity:.45}
 .stat{display:grid;grid-template-columns:72px 1fr;gap:4px 8px;align-items:center;font-size:12px;color:var(--dim)}
 .stat i{display:block;height:7px;border-radius:4px;background:linear-gradient(90deg,var(--a1),var(--a2))}
+.stat.up{grid-template-columns:72px 1fr 34px}.stat.up button{width:34px;height:28px;border-radius:9px;border:1px solid var(--line);background:rgba(46,204,113,.25);font-weight:900;color:#fff}.stat.up button[disabled]{opacity:.3}
+.stat .bar{height:7px;border-radius:4px;background:rgba(255,255,255,.1);overflow:hidden}.stat .bar i{height:100%}
+.edit .set{padding:7px 12px}.edit .opts .opt{min-width:34px}.sw{display:inline-block;width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.6);vertical-align:middle}
 .set{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:rgba(20,22,34,.72)}
 .set .opts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .opt{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-weight:700;font-size:14px}
@@ -150,7 +153,7 @@ html.touch #touch.on{display:block}
 @media (max-width:640px){.side{left:50%;transform:translate(-50%,-50%)}.btn{padding:12px 14px;font-size:16px}#hScore{min-width:150px;padding:8px 12px}#hScore .v{font-size:24px}#hTime{font-size:22px}#feed{top:150px}}
 @media (max-height:480px){.side{gap:6px}.btn{padding:9px 14px}.btn small{display:none}.logo{font-size:40px}.pulse{display:none}}
 </style>
-  <script type="module" crossorigin src="./assets/index-BPTLT1kr.js"></script>
+  <script type="module" crossorigin src="./assets/index-DEMbdaaL.js"></script>
 </head>
 <body>
 <canvas id="cv" tabindex="-1"></canvas>
@@ -181,11 +184,11 @@ html.touch #touch.on{display:block}
 <div class="menu dim" id="mMain"><div class="side">
   <h1 class="logo"><span>Concrete</span><span>Pulse</span></h1>
   <svg class="pulse" viewBox="0 0 300 26" preserveAspectRatio="none"><path d="M0 13h80l10-11 14 22 12-18 8 7h176" fill="none" stroke="url(#pg)" stroke-width="3" stroke-linejoin="round"/><defs><linearGradient id="pg"><stop offset="0" stop-color="#ff5a3c"/><stop offset=".5" stop-color="#ffd43a"/><stop offset="1" stop-color="#2ec4ff"/></linearGradient></defs></svg>
-  <p class="tag">Arcade-Skateboarding · drei Parks · Combos ohne Ende</p>
+  <p class="tag">Arcade-Skateboarding · fünf Parks · Combos ohne Ende</p>
   <button class="btn prim" data-go="career"><span class="ic">🏆</span><span>Karriere<small>Ziele erfüllen, Parks freischalten</small></span></button>
   <button class="btn" data-go="score"><span class="ic">⏱</span><span>Highscore-Lauf<small>2 Minuten, so viele Punkte wie möglich</small></span></button>
   <button class="btn" data-go="free"><span class="ic">🛹</span><span>Freies Fahren<small>Ohne Zeit, zum Üben</small></span></button>
-  <button class="btn" data-go="duel"><span class="ic">⚔️</span><span>Duell<small>2–4 Spieler abwechselnd an einem Gerät</small></span></button>
+  <div class="row"><button class="btn" data-go="comp"><span class="ic">🥇</span><span>Wettbewerb<small>Jury, Medaillen</small></span></button><button class="btn" data-go="duel"><span class="ic">⚔️</span><span>Mehrspieler<small>Duell, S-K-A-T-E</small></span></button></div>
   <div class="row"><button class="btn" data-go="skater"><span class="ic">🧢</span><span>Skater</span></button><button class="btn" data-go="board"><span class="ic">🎨</span><span>Brett</span></button></div>
   <div class="row"><button class="btn" data-go="settings"><span class="ic">⚙️</span><span>Optionen</span></button><button class="btn" data-go="help"><span class="ic">🎮</span><span>Steuerung</span></button></div>
   <div class="foot"><span id="mStats"></span><span>v1.0</span></div>
@@ -198,14 +201,23 @@ html.touch #touch.on{display:block}
 </div></div>
 
 <div class="menu dim" id="mDuel"><div class="center glass">
-  <h2>Duell</h2><p class="sub">Alle fahren nacheinander 60 Sekunden im selben Park. Wer die meisten Punkte holt, gewinnt.</p>
+  <h2>Mehrspieler</h2><p class="sub">Ihr spielt abwechselnd an einem Gerät und gebt nach jedem Zug weiter.</p>
+  <p class="sub"><b>⚔️ Duell</b> – alle fahren nacheinander 60 Sekunden im selben Park, die meisten Punkte gewinnen.</p>
   <div class="row"><button class="btn" data-players="2"><span class="ic">👥</span><span>2 Spieler</span></button><button class="btn" data-players="3"><span class="ic">👥</span><span>3 Spieler</span></button><button class="btn" data-players="4"><span class="ic">👥</span><span>4 Spieler</span></button></div>
+  <p class="sub"><b>🔤 S-K-A-T-E</b> – jede Runde hat jeder einen Combo-Versuch (20 Sekunden). Die schwächste Combo der Runde bekommt einen Buchstaben. Wer S-K-A-T-E voll hat, ist raus.</p>
+  <div class="row"><button class="btn" data-skate="2"><span class="ic">🔤</span><span>2 Spieler</span></button><button class="btn" data-skate="3"><span class="ic">🔤</span><span>3 Spieler</span></button><button class="btn" data-skate="4"><span class="ic">🔤</span><span>4 Spieler</span></button></div>
   <div class="row"><button class="btn" data-back><span class="ic">←</span><span>Zurück</span></button></div>
 </div></div>
 
 <div class="menu" id="mSkater"><div class="side">
-  <div class="glass" style="padding:16px 18px"><h2 id="skName">Skater</h2><p class="sub" id="skStyle"></p><div class="stat" id="skStats" style="margin-top:10px"></div></div>
+  <div class="glass" style="padding:14px 16px"><h2 id="skName">Skater</h2><p class="sub" id="skStyle"></p><p class="sub" id="skPts" style="margin-top:6px"></p><div class="stat up" id="skStats" style="margin-top:8px"></div></div>
   <div class="grid" id="skList" style="grid-template-columns:repeat(3,1fr)"></div>
+  <div class="row"><button class="btn" id="skEdit" data-go="edit"><span class="ic">✏️</span><span>Aussehen</span></button><button class="btn" data-statreset><span class="ic">↺</span><span>Werte zurücksetzen</span></button><button class="btn" data-back><span class="ic">✓</span><span>Fertig</span></button></div>
+</div></div>
+
+<div class="menu" id="mEdit"><div class="side edit" style="width:min(460px,calc(100vw - 32px))">
+  <div class="glass" style="padding:12px 16px"><h2>Eigener Skater</h2><p class="sub">Aussehen frei wählen. Werte verteilst du im Skater-Menü mit Stat-Punkten.</p></div>
+  <div id="edRows" style="display:flex;flex-direction:column;gap:6px;overflow:auto"></div>
   <div class="row"><button class="btn" data-back><span class="ic">✓</span><span>Fertig</span></button></div>
 </div></div>
 
@@ -220,7 +232,7 @@ html.touch #touch.on{display:block}
   <div class="set"><span>Grafik</span><div class="opts" data-set="quality"><button class="opt" data-v="low">Schnell</button><button class="opt" data-v="mid">Ausgewogen</button><button class="opt" data-v="high">Schön</button></div></div>
   <div class="set"><span>Musik</span><div class="opts" data-set="music"><button class="opt" data-v="0">Aus</button><button class="opt" data-v="0.3">Leise</button><button class="opt" data-v="0.55">Mittel</button><button class="opt" data-v="0.85">Laut</button></div></div>
   <div class="set"><span>Effekte</span><div class="opts" data-set="sfx"><button class="opt" data-v="0">Aus</button><button class="opt" data-v="0.5">Leise</button><button class="opt" data-v="0.8">Mittel</button><button class="opt" data-v="1">Laut</button></div></div>
-  <div class="set"><span>Musikstück</span><div class="opts" data-set="track"><button class="opt" data-v="-1">Je Park</button><button class="opt" data-v="0">Asphaltwelle</button><button class="opt" data-v="1">Hafenlichter</button><button class="opt" data-v="2">Neonflut</button><button class="opt" data-v="3">Spätschicht</button></div></div>
+  <div class="set"><span>Musikstück</span><div class="opts" data-set="track"><button class="opt" data-v="-1">Je Park</button><button class="opt" data-v="0">Asphaltwelle</button><button class="opt" data-v="1">Hafenlichter</button><button class="opt" data-v="2">Neonflut</button><button class="opt" data-v="3">Spätschicht</button><button class="opt" data-v="4">Rostlauf</button><button class="opt" data-v="5">Hitzeflimmern</button></div></div>
   <div class="set"><span>Kamera</span><div class="opts" data-set="cam"><button class="opt" data-v="near">Nah</button><button class="opt" data-v="normal">Normal</button><button class="opt" data-v="far">Weit</button></div></div>
   <div class="set"><span>Einfache Steuerung<br><small class="sub">Eine Taste für Ollie, Flip und Grab · automatisches Grinden (gut für TV-Fernbedienung)</small></span><div class="opts" data-set="easy"><button class="opt" data-v="false">Aus</button><button class="opt" data-v="true">An</button></div></div>
   <div class="set"><span>Automatisch anschieben</span><div class="opts" data-set="autoPush"><button class="opt" data-v="false">Aus</button><button class="opt" data-v="true">An</button></div></div>
@@ -238,6 +250,8 @@ html.touch #touch.on{display:block}
     <div><b>Grind</b> + Richtung über Rail, Kante oder Coping<br><kbd>L</kbd> · Controller <b>Y</b> · Touch GRIND<br>Balance mit Links/Rechts</div>
     <div><b>Manual</b>: schnell Hoch, dann Runter (Nose Manual: Runter, dann Hoch) – am Boden oder kurz vor der Landung, hält die Combo<br>Balance mit Hoch/Runter</div>
     <div><b>Revert</b> nach einer Landung in Rampe oder Pool, danach Manual = Combo läuft weiter<br><kbd>R</kbd>/<kbd>Shift</kbd> · Controller <b>LT</b>/<b>RT</b> · Touch REVERT</div>
+    <div><b>Wallride</b>: im Sprung an eine hohe Wand fahren und Grind halten · Ollie an der Wand = <b>Wallie</b></div>
+    <div><b>Lip-Tricks</b>: senkrecht an der Rampenkante Grind + Richtung, halten, Balance mit Hoch/Runter · loslassen = zurück in die Rampe</div>
     <div><b>Spezialtricks</b> bei voller Leiste<br>Flip+Grab zusammen · Grab+Grind in der Luft · Hoch, Runter beim Grinden</div>
     <div><b>Menü</b><br>Pause <kbd>Esc</kbd>/<kbd>P</kbd> · Start · ⏸<br>Ziele <kbd>Tab</kbd>/<kbd>G</kbd> · Select · 🎯<br>TV: Pfeile, OK = Ollie, Zurück = Pause</div>
   </div>

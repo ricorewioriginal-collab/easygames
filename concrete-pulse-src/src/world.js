@@ -177,6 +177,17 @@ export function buildWorld(game, park) {
     const glow = MeshBuilder.CreateTorus('tglow', { diameter: 1.1, thickness: 0.05, tessellation: 24 }, scene); glow.parent = node; glow.rotation.x = Math.PI / 2; glow.material = pbr(scene, 'tglowM', { color: '#ffd43a', emissive: '#ffd43a', emI: 2.5 });
     items.push({ kind: 'tape', node, pos: new Vector3(...park.tape), got: false });
   }
+  // Stat-Punkte: sechseckige Marken, steigern die Werte des Skaters
+  (park.coins || []).forEach((p, i) => {
+    const node = new TransformNode('coin' + i, scene); node.position.set(...p);
+    const c = MeshBuilder.CreateCylinder('coinB', { diameter: 0.62, height: 0.1, tessellation: 6 }, scene); c.parent = node; c.rotation.x = Math.PI / 2;
+    c.material = pbr(scene, 'coinM' + i, { color: '#2ecc71', emissive: '#2ecc71', emI: 1.4, metal: 0.6, rough: 0.3 });
+    const pl = MeshBuilder.CreatePlane('coinT', { size: 0.5, sideOrientation: Mesh.DOUBLESIDE }, scene); pl.parent = node; pl.position.z = -0.06;
+    const m = new StandardMaterial('coinTM' + i, scene); m.diffuseTexture = texLetter(scene, '+', '#ffffff'); m.diffuseTexture.hasAlpha = true; m.useAlphaFromDiffuseTexture = true; m.emissiveColor = new Color3(1, 1, 1); m.disableLighting = true; m.backFaceCulling = false; pl.material = m;
+    const ring = MeshBuilder.CreateTorus('cring', { diameter: 1.0, thickness: 0.04, tessellation: 6 }, scene); ring.parent = node; ring.rotation.x = Math.PI / 2;
+    ring.material = c.material;
+    items.push({ kind: 'coin', i, node, pos: new Vector3(...p), got: false });
+  });
   return { level, items, meshes, lights };
 }
 
