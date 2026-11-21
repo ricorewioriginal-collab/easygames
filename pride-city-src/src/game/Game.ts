@@ -14,6 +14,11 @@ import { World } from './World';
 import { pianoSongs, pianoParts } from './minigames/showSongs';
 import { openGigs, GIGS, fmtTime } from './gigs';
 import { BUSINESSES, owns, owned, income, buy } from './empire';
+import { clubDeal, clubManage } from './clubui';
+import { isClub } from './club';
+import { pcEvents } from './hooks';
+import { houseMenu, useHomeItem } from './houseui';
+import { roomTheme, roomLevel } from './house';
 import { SKY, skyAt, forecast } from './weather';
 import { closeness, levelName, addCloseness, chatOpen, chatOf, replyChat, OUTINGS, outingWhy, doOuting, GIFTS, giveGift, model, partners, jealousy, type Model } from './bond';
 import { STAFF, UPGRADES, UP_MAX, SPECIAL, daily as bizDaily, staffOf, upOf, popOf, issueOf, eventReady, hire, upgrade, workIn, hostEvent, fixIssue, upCost, staffFee, fixCost, eventCost } from './manage';
@@ -53,6 +58,8 @@ function famSub(s: Game['save']['data']) {
 export const PENTHOUSE = 6000;
 export class Game {
   engine: Engine;
+  /** Ereignisse für Story und Minispiele (hooks.ts): clubGekauft, clubNacht, clubEinnahmen, hausAusbau … */
+  events = pcEvents;
   save = new Save();
   loading = new Loading();
   dialog = new Dialog();
@@ -67,6 +74,8 @@ export class Game {
   inside: InteriorScene | null = null;
   private insideBack = { x: 0, z: 0, yaw: 0 };
   private insideWorld = false;
+  /** Innenraum ist ein Anbau des Zuhauses: zurück in die Wohnung */
+  private insideHome = false;
   private interiors = new Map<string, InteriorScene>();
   private photoIdx = 0;
   private photoFor = '';
@@ -117,7 +126,7 @@ export class Game {
   }
 
   /* ---------- Overlay-Menüs ---------- */
-  private openMenu(html: string, items: Item[], onBack: (() => void) | null, cls = 'title') {
+  openMenu(html: string, items: Item[], onBack: (() => void) | null, cls = 'title') {
     this.closeMenu();
     this.overlay = el(`<div class="screen ${cls}">${html}</div>`);
     this.menu = new Menu(items);
@@ -288,12 +297,12 @@ export class Game {
 
   /* ---------- Innenräume aller Häuser ---------- */
   /** Haus betreten: Einrichtung aus interiors.ts, zurück vor die Tür (back) */
-  enterInterior(theme: Theme, back: { x: number; z: number; yaw: number }, placeId = '', fromWorld = false) {
+  enterInterior(theme: Theme, back: { x: number; z: number; yaw: number }, placeId = '', fromWorld = false, toHome = false) {
     const s = this.save.data;
     if (theme.adult && !s.settings.adult) { toast('Nur mit 18+ (Einstellungen).'); sfx('miss'); return; }
     sfx('door'); this.closeMenu();
-    this.insideBack = back; this.insideWorld = fromWorld;
-    if (!fromWorld) s.pos = { ...back };
+    this.insideBack = back; this.insideWorld = fromWorld; this.insideHome = toHome;
+    if (!fromWorld && !toHome) s.pos = { ...back };
     this.fade(async () => {
       const key = theme.id + '|' + placeId + (fromWorld ? '|' + theme.title : '');
       let sc = this.interiors.get(key);
@@ -307,13 +316,23 @@ export class Game {
   leaveInterior() {
     const s = this.save.data;
     sfx('door');
+    if (this.insideHome && this.home) { const h = this.home; this.insideHome = false; this.fade(() => { this.where = 'home'; this.inside = null; h.fromAnnex = true; h.setSky(this.city.world.night); this.engine.setScene(h); this.save.write(); }); return; }
     if (this.insideWorld && this.world) { const w = this.world; this.fade(() => { this.where = 'world'; this.inside = null; w.back = { ...this.insideBack }; this.engine.setScene(w); this.save.write(); }); return; }
     this.fade(() => { this.where = 'city'; this.inside = null; s.pos = { ...this.insideBack }; this.engine.setScene(this.city); this.city.setPlay(); this.save.write(); });
   }
+  /** Anbau betreten (Raum aus house.ts, Stufe im Namen, damit ein Ausbau neu eingerichtet wird) */
+  enterAnnex(room: string) {
+    const lv = roomLevel(this.save.data, room); if (!lv) return;
+    this.enterInterior(roomTheme(room, lv), { x: 0, z: 0, yaw: 0 }, `annex_${room}_${lv}`, false, true);
+  }
+  /** Besondere Stellen im Anbau */
+  annexAct(room: string) { if (room === 'wardrobe') this.fade(() => this.creator(true)); }
   /** Stelle im Innenraum benutzen */
   interiorAct(sp: Spot, sc?: InteriorScene) {
     const s = this.save.data, a = sp.act;
     if (a.k === 'menu') { if (sc?.placeId) this.placeMenu(sc.placeId); return; }
+    if (a.k === 'club' || a.k === 'deal') { if (sc?.business) clubDeal(this, sc.business, sc); return; }
+    if (a.k === 'annex') { this.annexAct(a.room); return; }
     if (a.k === 'gl') { this.roman('gaylife', a.id); return; }
     if (a.k === 'dance') { this.goDance(false); return; }
     if (a.k === 'show') {
@@ -346,6 +365,8 @@ export class Game {
     const s = this.save.data, h = this.home!;
     const busy = (kind: HomeScene['activity'], min: number, fx: () => void, msg: string) => { h.play(kind); if (kind === 'shower') sfx('shower'); else if (kind === 'stove') sfx('cook'); setTimeout(() => { this.pass(min); fx(); toast(msg); this.save.write(); this.city.refreshHud(); }, 900); };
     if (id === 'door') { this.leaveHome(); return; }
+    if (id === 'annex') { houseMenu(this); return; }
+    if (id.startsWith('up_')) { useHomeItem(this, id.slice(3)); return; }
     if (id === 'wardrobe') { this.fade(() => this.creator(true)); return; }
     if (id === 'shower') { busy('shower', 20, () => { change(s, { hygiene: 100, fun: 3 }); this.done(track(s, 'shower')); }, 'Frisch geduscht! 🚿'); return; }
     if (id === 'tv') { busy('tv', 60, () => { change(s, { fun: 25, energy: -2 }); }, 'Eine Folge „Drag Race“. Herrlich. 📺'); return; }
@@ -359,7 +380,7 @@ export class Game {
       const back = () => { this.closeMenu(); this.touch.show(true); };
       this.touch.show(false);
       this.openMenu(`<div class="col"><div class="panel"><h3>Bett</h3><p>Es ist ${clock(s)} Uhr. Schlafen speichert das Spiel.</p><div class="slot"></div></div></div>`, [
-        { icon: '🌙', label: 'Schlafen bis 7 Uhr', sub: 'Energie voll, neuer Tag', fn: () => { back(); this.fade(() => { this.pass(minutesUntil(s, 7), true); change(s, { energy: 100 }); this.save.write(); toast(`Guten Morgen! ${weekday(s)}, Tag ${s.day}.`); }); } },
+        { icon: '🌙', label: 'Schlafen bis 7 Uhr', sub: 'Energie voll, neuer Tag', fn: () => { back(); this.fade(() => { this.pass(minutesUntil(s, 7), true); change(s, { energy: 100, ...(s.flags.h_himmelbett ? { fun: 10 } : {}) }); this.save.write(); toast(`Guten Morgen! ${weekday(s)}, Tag ${s.day}.${s.flags.h_himmelbett ? ' Im Himmelbett geträumt. Spaß +10' : ''}`); }); } },
         ...(s.flags.wild === s.day && s.settings.adult ? [{ icon: '🧺', label: 'Aufräumen', sub: 'Was für eine Nacht …', fn: () => { back(); s.flags.wild = 0; this.pass(15); h.showMess(); toast('Bett frisch bezogen, Verpackungen im Müll. 🧺'); } }] : []),
         { icon: '💤', label: 'Nickerchen (2 Stunden)', sub: '+25 Energie', fn: () => { back(); this.fade(() => { this.pass(120, true); this.save.write(); toast('Ausgeruht.'); }); } },
         { icon: '←', label: 'Zurück', fn: back },
@@ -544,6 +565,7 @@ export class Game {
       const act = (why: string | null, ok: string) => { if (why) { sfx('miss'); toast(why); return; } sfx('win'); toast(ok); this.save.write(); this.city.refreshHud(); again(); };
       const bar = (v: number, c: string) => `<span style="display:inline-block;width:120px;height:8px;border-radius:4px;background:#ffffff22;vertical-align:middle"><span style="display:block;width:${v}%;height:8px;border-radius:4px;background:${c}"></span></span>`;
       this.openMenu(frame(b.name, `<div class="pbody"><p>${b.icon} <b>${d.net} € Gewinn am Tag</b><br><small>Umsatz ${d.gross} € · Lohn ${d.wage} €</small></p><p>💖 Beliebtheit ${bar(pop, pop >= 60 ? '#3ee69a' : '#ffb347')} ${pop}<br>👥 Personal: <b>${STAFF[st].name}</b><br><small>${STAFF[st].text}</small></p>${iss ? `<p>⚠️ <b>${iss.text}</b><br><small>Bis das geklärt ist, kommt nur der halbe Umsatz.</small></p>` : ''}</div>`), [
+        ...(isClub(b.id) ? [{ icon: '📋', label: 'Club: DJ, Preise, Tür, Deko', sub: 'Einstellungen · Clubnacht abends im Club selbst', fn: () => clubManage(this, b, this.where === 'inside' && this.inside?.business?.id === b.id ? this.inside : undefined) }] : []),
         ...(iss ? [{ icon: '🧰', label: iss.fix, sub: `${fixCost(b)} € · Umsatz läuft wieder voll`, fn: () => act(fixIssue(s, b), 'Problem gelöst. Der Laden läuft wieder.') }] : []),
         { icon: '🤝', label: 'Selbst mit anpacken', sub: s.flags[`mg_${b.id}_work`] === s.day ? 'heute schon erledigt' : '2 Stunden · +12 Beliebtheit · −10 Energie', disabled: s.flags[`mg_${b.id}_work`] === s.day, fn: () => { const why = workIn(s, b); if (why) { sfx('miss'); toast(why); return; } this.closeMenu(); this.fade(() => { this.pass(120); change(s, { energy: -10, social: 10, fun: 4 }); toast(`Zwei Stunden im ${b.name}. Die Gäste freuen sich, dich zu sehen. Beliebtheit +12`); this.save.write(); this.city.refreshHud(); this.touch.show(true); }); } },
         { icon: '🎉', label: sp.event, sub: wait ? `wieder in ${wait} ${wait === 1 ? 'Tag' : 'Tagen'}` : `${eventCost(b)} € · Kasse morgen früh · +20 Beliebtheit · +2 Ruf`, disabled: !!wait, fn: () => { const why = hostEvent(s, b); if (!why) this.hud.banner(`🎉 ${sp.event}`, sp.eventText, 'good', 4200); act(why, 'Die Einnahmen kommen morgen früh.'); } },

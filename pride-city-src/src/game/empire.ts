@@ -4,6 +4,8 @@
 import type { SaveData } from '../engine/Save';
 import type { Gig } from './gigs';
 import { daily, dayTick } from './manage';
+import { pcEvents } from './hooks';
+import { isClub } from './club';
 
 export interface Business { id: string; name: string; icon: string; poi: string; price: number; daily: number; rep: number; need: number; pitch: string; /** nicht käuflich: Belohnung aus der Geschichte */ gift?: string }
 
@@ -14,8 +16,32 @@ export const BUSINESSES: Business[] = [
   { id: 'boutique', name: 'Boutique Fabelhaft', icon: '👗', poi: 'boutique', price: 1500, daily: 95, rep: 3, need: 8, pitch: 'Glitzer, Leder, Regenbogen: Die Boutique bekommt eine eigene Drag-Kollektion – mit dir.' },
   { id: 'onelove', name: 'One Love Bar', icon: '💗', poi: 'onelove', price: 2500, daily: 150, rep: 5, need: 12, pitch: 'Lady Luma braucht eine Partnerin für die Bühne und die Bar. Showtime jede Nacht.' },
   { id: 'kaleido', name: 'Theater Kaleidoskop', icon: '🎭', poi: 'kaleido', price: 0, daily: 180, rep: 0, need: 0, gift: 'Belohnung für Akt II in der Hochstadt', pitch: 'Das Revuetheater am Neonplatz. Das Haus Vega spielt, du bist Ehrenmitglied und am Gewinn beteiligt.' },
+  { id: 'komet', name: 'Bar Komet', icon: '🍸', poi: 'komet', price: 3200, daily: 190, rep: 6, need: 14, pitch: 'Jo, die Wirtin, will nach dreißig Jahren in Rente. Kleine Bühne, Spiegelwand, Stammgäste seit 1990. Sie sucht jemanden mit Herz.' },
   { id: 'prisma', name: 'Club Prisma', icon: '🪩', poi: 'club', price: 4000, daily: 240, rep: 8, need: 18, pitch: 'Der größte Club der Stadt. Wer das Prisma hat, macht die Nächte von Rainbow City.' },
+  { id: 'wolke', name: 'Skybar Wolke 7', icon: '🌃', poi: 'wolke', price: 6500, daily: 340, rep: 10, need: 24, pitch: 'Der 40. Stock über der Hochstadt. Investor Valentin verkauft, weil er nach Lissabon zieht. Wer hier oben feiert, sieht die ganze Stadt.' },
 ];
+/** Wer verkauft (für das Gespräch im Laden) */
+export const SELLERS: Record<string, { who: string; color: string; hello: string }> = {
+  spaeti: { who: 'Tariq', color: '#3ee69a', hello: 'Teilhaber*in gesucht! Der Späti läuft, aber ich kann nicht jede Nacht hinter der Kasse stehen.' },
+  cafe: { who: 'Mo', color: '#ffb36b', hello: 'Ich träume von einer Regenbogen-Ecke mit Lesungen. Allein schaffe ich das nicht.' },
+  boutique: { who: 'Coco', color: '#ff6ad5', hello: 'Meine Drag-Kollektion braucht Geld und einen Namen. Bist du dabei?' },
+  onelove: { who: 'Lady Luma', color: '#ff3fb0', hello: 'Schätzchen, die Bühne braucht eine Partnerin. Jemand, der die Bar führt, während ich singe.' },
+  komet: { who: 'Wirtin Jo', color: '#ff6ad5', hello: 'Dreißig Jahre Komet. Hier hat sich halb Rainbow City zum ersten Mal verliebt. Ich will, dass es so bleibt.' },
+  club: { who: 'Clubbesitzer Dario', color: '#b56bff', hello: 'Das Prisma ist mein Baby. Ich gebe es nur an jemanden ab, den die Szene kennt.' },
+  wolke: { who: 'Investor Valentin', color: '#7fd4ff', hello: 'Lissabon ruft. Die Wolke 7 braucht jemanden mit Stil. Und mit Kapital.' },
+};
+/** Preis mit Story-Rabatt (s.flags.deal_<id> in Prozent) und Verhandlungserfolg (s.flags.haggle_<id>) */
+export function priceOf(s: SaveData, b: Business) {
+  const deal = Math.max(0, Math.min(90, Number(s.flags['deal_' + b.id]) || 0)), hag = s.flags['haggle_' + b.id] === 'ok' ? 15 : 0;
+  return Math.round(b.price * (100 - Math.min(90, deal + hag)) / 100);
+}
+/** Verhandeln (einmal am Tag): mit genug Ruf über dem Mindestruf gibt es 15 % Nachlass */
+export function haggle(s: SaveData, b: Business): boolean | string {
+  if (s.flags['haggle_' + b.id] === 'ok') return 'Ihr habt euch schon auf einen Preis geeinigt.';
+  if (s.flags['haggle_' + b.id] === s.day) return 'Heute nicht mehr. Komm morgen wieder.';
+  if (s.rep >= b.need + 5) { s.flags['haggle_' + b.id] = 'ok'; return true; }
+  s.flags['haggle_' + b.id] = s.day; return false;
+}
 
 const key = (id: string) => 'biz_' + id;
 export const owns = (s: SaveData, id: string) => !!s.flags[key(id)];
@@ -28,9 +54,12 @@ export function buy(s: SaveData, b: Business): string | null {
   if (owns(s, b.id)) return 'Gehört dir schon.';
   if (b.gift) return b.gift + '.';
   if (s.rep < b.need) return `Dafür brauchst du ${b.need} Ruf (du hast ${s.rep}).`;
-  if (s.money < b.price) return `Dafür fehlen dir ${b.price - s.money} €.`;
-  s.money -= b.price; s.rep += b.rep; s.flags[key(b.id)] = s.day;
+  const price = priceOf(s, b);
+  if (s.money < price) return `Dafür fehlen dir ${price - s.money} €.`;
+  s.money -= price; s.rep += b.rep; s.flags[key(b.id)] = s.day;
   if (s.flags.bizDay === undefined) s.flags.bizDay = s.day;
+  pcEvents.emit('geschaeftGekauft', { id: b.id, name: b.name, price });
+  if (isClub(b.id)) pcEvents.emit('clubGekauft', { id: b.id, name: b.name, price });
   return null;
 }
 
@@ -46,6 +75,7 @@ export function collect(s: SaveData): number {
   let pay = 0;
   for (let d = Math.max(last + 1, s.day - 6); d <= s.day; d++) for (const b of mine) { const t = dayTick(s, b, roll(b.id, d)); pay += t.pay; collectNotes.push(...t.notes); }
   s.money += pay; s.flags.bizDay = s.day;
+  pcEvents.emit('clubEinnahmen', { pay, notes: [...collectNotes] });
   return pay;
 }
 
