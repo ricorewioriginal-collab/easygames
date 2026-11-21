@@ -22,6 +22,10 @@ export interface MiniDef {
   goal: number;
   /** Orte, an denen das Spiel passt (Club, Bar, Wohnung …) – für Clubs, Story und Innenräume */
   tags: string[];
+  /** ersetzt dieses Gay-Life!-Minispiel (2D-Original bleibt unter Minispiele → Originale erreichbar) */
+  gl?: string;
+  /** ohne ◀ ▶ (nur A-Knopf) */
+  noPad?: boolean;
   /** Musik der Szene */
   song?: 'club' | 'show' | 'neon' | 'title';
   make: (g: Game, def: MiniDef, adult: boolean, done: (r: MiniResult) => void) => Arcade;
@@ -125,6 +129,7 @@ export abstract class Arcade implements GameScene {
       <button class="aBtn" data-a="confirm">${this.def.btn}</button>
     </div>`);
     document.body.appendChild(this.hud);
+    if (this.def.noPad) this.hud.querySelector('.aPad')?.remove();
     const inp = this.g.engine.input;
     this.hud.querySelectorAll<HTMLButtonElement>('[data-a]').forEach((b) => {
       const a = b.dataset.a as 'left' | 'right' | 'confirm';
@@ -148,22 +153,25 @@ export abstract class Arcade implements GameScene {
   shake(k = .35) { this.shakeK = Math.max(this.shakeK, k); }
   slowmo(sec = .6, k = .3) { this.slowT = sec; this.slowK = k; }
   flash(color = '#fff', a = .6) {
+    if (!this.hud) return;
     const f = $('.aFlash', this.hud); f.style.background = color; f.style.opacity = String(a);
     f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
   }
   judge(t: string, color = '#fff') {
+    if (!this.hud) return;
     const j = $('.judge', this.hud); j.textContent = t; j.style.color = color;
     j.classList.remove('pop'); void j.offsetWidth; j.classList.add('pop');
   }
-  combo(t: string) { $('.combo', this.hud).textContent = t; }
+  combo(t: string) { if (this.hud) $('.combo', this.hud).textContent = t; }
   /** Leiste unter den Punkten (0–1), z. B. Druck, Turbo, Kraft */
   meter(v: number | null, color = '#ff5fd0') {
+    if (!this.hud) return;
     const m = $('.aMeter', this.hud); m.style.display = v === null ? 'none' : 'block';
     if (v !== null) { const i = m.firstElementChild as HTMLElement; i.style.width = `${Math.max(0, Math.min(1, v)) * 100}%`; i.style.background = color; }
   }
   /** schwebender Text an einer Stelle der Welt (+10, „Perfekt!“) */
   pop(text: string, at: Vector3, color = '#ffd23b') {
-    if (this.hud.querySelectorAll('.aPop').length > 8) return;
+    if (!this.hud || this.hud.querySelectorAll('.aPop').length > 8) return;
     const p = this.g.engine.project(at); if (p.behind) return;
     const e = el(`<div class="aPop" style="left:${p.x}px;top:${p.y}px;color:${color}">${text}</div>`);
     this.hud.appendChild(e); setTimeout(() => e.remove(), 900);

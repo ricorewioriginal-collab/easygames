@@ -10,7 +10,7 @@ import { CityScene, STICKERS } from './CityScene';
 import { preloadPeople } from './Actor';
 import { CreatorScene } from './CreatorScene';
 import { DanceScene } from './minigames/DanceScene';
-import { MINIS, miniById, miniName, miniIcon, miniSub, type MiniResult } from './minigames/minis';
+import { MINIS, miniById, miniForGl, miniName, miniIcon, miniSub, type MiniResult } from './minigames/minis';
 import { World } from './World';
 import { pianoSongs, pianoParts } from './minigames/showSongs';
 import { openGigs, GIGS, fmtTime } from './gigs';
@@ -339,7 +339,7 @@ export class Game {
     if (a.k === 'menu') { if (sc?.placeId) this.placeMenu(sc.placeId); return; }
     if (a.k === 'club' || a.k === 'deal') { if (sc?.business) clubDeal(this, sc.business, sc); return; }
     if (a.k === 'annex') { this.annexAct(a.room); return; }
-    if (a.k === 'gl') { this.roman('gaylife', a.id); return; }
+    if (a.k === 'gl') { const m = miniForGl(a.id); if (m) this.playMini(m.id); else this.roman('gaylife', a.id); return; }
     if (a.k === 'mini') { this.playMini(a.id); return; }
     if (a.k === 'dance') { this.goDance(false); return; }
     if (a.k === 'show') {
@@ -1116,6 +1116,7 @@ export class Game {
       { icon: '🍸', label: 'Barkeeper-Schicht', sub: `Club Leuchtturm · 75 Sekunden · Rekord ${b.bar || 0} Drinks`, fn: () => this.barShift(() => this.minigames(back), true) },
       { icon: '🎤', label: 'Lady Lumas Drag-Show', sub: 'Buch-Hymne oder Klaviersongs aus Klavierlicht', fn: () => this.showMenu((o) => this.goDance(false, back, o)) },
       ...MINIS.map((m) => { const ad = !!this.save.data.settings.adult; return { icon: miniIcon(m, ad), label: miniName(m, ad), sub: `${miniSub(m, ad)} · Rekord ${b['mini_' + m.id] || 0}`, disabled: !!m.adultOnly && !ad, fn: () => this.playMini(m.id, { back: () => this.minigames(back), title: true }) }; }),
+      { icon: '🕹️', label: 'Gay Life! Originale', sub: 'Alle 14 Minispiele aus Gay Life! in 2D', fn: () => this.roman('gaylife', '', () => this.minigames(back)) },
       { icon: '←', label: 'Zurück', fn: back },
     ], back);
   }
@@ -1424,7 +1425,7 @@ export class Game {
       });
     });
     sc.build().then(() => { this.loading.progress(1, 'Los!'); this.engine.setScene(sc); this.loading.hide(); })
-      .catch((e) => { console.error(e); this.loading.hide(); toast('Das Minispiel konnte nicht starten.'); this.resume(); });
+      .catch((e) => { console.error(e); this.loading.hide(); toast('Das Minispiel konnte nicht starten.'); if (o.back) o.back(); else if (o.title) this.title(); else this.resume(); });
   }
 
   /* ---------- Minispiel ---------- */
