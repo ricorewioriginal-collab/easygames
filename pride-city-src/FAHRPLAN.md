@@ -35,4 +35,6 @@ Funktionen übernehmen, neuer Name und neues Cover. Dazu die Ideen 1–15 aus de
 | 24 | Neon: Rahmen um die Schriftzüge an den Fassaden statt Bändern am Gehweg (wirkten wie Geländer) | erledigt |
 | 25 | Welten jenseits der Stadt: Weltentor am Hafen und Schnellreise, Flitzer zum Fahren und Fliegen, Glitzeria (Einhorn-Welt), Playa Arcoíris (Insel-Pride), je drei Aufgaben mit Geschichte | erledigt |
 | 26 | Drei weitere Welten: Lustwäldchen (Cruising, 18+, nur angedeutet), Lindenhof (Ehemaligentreffen, erste Liebe), Sternwerder Rummel (Riesenrad); Stellen mit Wirkung in den Welten | erledigt |
-| 27 | Fliegen mit dem Flitzer auch über Rainbow City; weitere Welten im Geist queerer Serien und Filme (eigene Namen und Figuren) | offen |
+| 27 | Welten im Stil der Stadt: Ortskern aus dem Stadt-Bausatz (Ringstraße, Häuserzeilen, Autos, Passanten), alle Häuser betretbar, Läden mit Leuchtschrift, Botengang vor dem Finale, Lieferauftrag auf Zeit, mehr Stellen; Flitzer fliegt auch über Rainbow City (steht am Weltentor) | erledigt |
+| 28 | Welten mit der Hauptstadt und untereinander verbunden: Welten-Meile am Kai (je Welt ein Tor zum Durchlaufen und Durchfahren), Inseln vor der Küste zum Hinfliegen, Tore am Ortsrand zu den Nachbarwelten, Südtor zurück nach Rainbow City | erledigt |
+| 29 | Weitere Welten im Geist queerer Serien und Filme (eigene Namen und Figuren); Autos in den Welten selbst fahren | offen |

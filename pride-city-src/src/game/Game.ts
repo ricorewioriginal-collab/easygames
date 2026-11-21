@@ -26,7 +26,7 @@ import { LAWS } from './crime';
 import { RING, WEDDING, ADOPT, KID_NAMES, spouse, fiance, kid, canPropose, propose, canWed, wed, canAdopt, applyAdopt } from './family';
 import { InteriorScene } from './InteriorScene';
 import { WorldScene } from './WorldScene';
-import { WORLDS, worldDef, worldStage } from './worlds';
+import { WORLDS, worldDef, worldStage, cityGate, SIDE_GATE } from './worlds';
 import { ALPHA, QUICK, EMOTES, MAX_GUESTS, normCode, netError } from './online';
 import type { Spot, Theme } from './interiors';
 import type { Sfx } from '../engine/Audio';
@@ -66,6 +66,7 @@ export class Game {
   world: WorldScene | null = null;
   inside: InteriorScene | null = null;
   private insideBack = { x: 0, z: 0, yaw: 0 };
+  private insideWorld = false;
   private interiors = new Map<string, InteriorScene>();
   private photoIdx = 0;
   private photoFor = '';
@@ -253,36 +254,40 @@ export class Game {
         ...(this.where === 'world' ? [{ icon: '🏙️', label: 'Zurück nach Rainbow City', sub: 'zum Weltentor am Hafen', fn: () => { close(); this.leaveWorld(); } }] : []),
         { icon: '←', label: 'Schließen', fn: close }], close);
   }
-  enterWorld(id: string) {
+  /** in eine Welt reisen; arrive: vom Kai der Hauptstadt oder durch das West- oder Osttor einer Nachbarwelt */
+  enterWorld(id: string, arrive: 'city' | 'west' | 'east' = 'city') {
     const def = worldDef(id), s = this.save.data; if (!def) return;
     if (def.adult && !s.settings.adult) { toast('Nur mit 18+ (Einstellungen).'); sfx('miss'); return; }
     if (this.city.driving) this.city.leaveCar();
     sfx('tram'); this.closeMenu();
-    s.pos = { x: -74, z: 13, yaw: Math.PI / 2 }; s.inside = false;
+    { const g = cityGate(id); s.pos = { x: g.x + 3.6, z: g.z, yaw: Math.PI / 2 }; } s.inside = false;
+    const side = arrive === 'city' ? null : { x: (arrive === 'west' ? -1 : 1) * (SIDE_GATE.x - 3.2), z: SIDE_GATE.z + .2, yaw: arrive === 'west' ? Math.PI / 2 : -Math.PI / 2 };
     this.fade(async () => {
       const old = this.world;
       if (old?.def.id !== id) {
         this.loading.show(def.name, 'Weltentor'); const sc = new WorldScene(this, def); await sc.build(); this.loading.hide();
+        sc.back = side; sc.hello = true;
         this.world = sc; this.where = 'world'; this.engine.setScene(sc);
         if (old) this.engine.disposeScene(old);   // nur eine Welt im Speicher (Handy)
-      } else { this.where = 'world'; this.engine.setScene(old); }
+      } else { old.back = side; old.hello = true; this.where = 'world'; this.engine.setScene(old); }
       this.save.write();
     });
   }
   leaveWorld() {
-    sfx('tram');
+    sfx('tram'); this.world?.quit();
     this.fade(() => { this.where = 'city'; this.engine.setScene(this.city); this.city.setPlay(); this.save.write(); });
   }
 
   /* ---------- Innenräume aller Häuser ---------- */
   /** Haus betreten: Einrichtung aus interiors.ts, zurück vor die Tür (back) */
-  enterInterior(theme: Theme, back: { x: number; z: number; yaw: number }, placeId = '') {
+  enterInterior(theme: Theme, back: { x: number; z: number; yaw: number }, placeId = '', fromWorld = false) {
     const s = this.save.data;
     if (theme.adult && !s.settings.adult) { toast('Nur mit 18+ (Einstellungen).'); sfx('miss'); return; }
     sfx('door'); this.closeMenu();
-    this.insideBack = back; s.pos = { ...back };
+    this.insideBack = back; this.insideWorld = fromWorld;
+    if (!fromWorld) s.pos = { ...back };
     this.fade(async () => {
-      const key = theme.id + '|' + placeId;
+      const key = theme.id + '|' + placeId + (fromWorld ? '|' + theme.title : '');
       let sc = this.interiors.get(key);
       if (!sc) { this.loading.show(theme.title, 'Einrichtung'); sc = new InteriorScene(this, theme, placeId); await sc.build(); this.interiors.set(key, sc); this.loading.hide();
         // nur die letzten Räume behalten (Speicher am Handy)
@@ -294,6 +299,7 @@ export class Game {
   leaveInterior() {
     const s = this.save.data;
     sfx('door');
+    if (this.insideWorld && this.world) { const w = this.world; this.fade(() => { this.where = 'world'; this.inside = null; w.back = { ...this.insideBack }; this.engine.setScene(w); this.save.write(); }); return; }
     this.fade(() => { this.where = 'city'; this.inside = null; s.pos = { ...this.insideBack }; this.engine.setScene(this.city); this.city.setPlay(); this.save.write(); });
   }
   /** Stelle im Innenraum benutzen */
