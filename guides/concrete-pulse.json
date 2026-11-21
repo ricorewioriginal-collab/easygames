@@ -14,6 +14,7 @@
     "Karriere: 2-Minuten-Läufe, erfüllte Ziele bleiben gespeichert.",
     "Highscore-Lauf: 2 Minuten, nur die Punkte zählen; dein Bestwert pro Park wird gespeichert.",
     "Freies Fahren: ohne Zeitlimit, ideal zum Üben.",
+    "Park-Editor: bis zu 8 eigene Parks aus 16 Bauteilen bauen (Kicker, Quarterpipe, Vert-Rampe, Halfpipe, Funbox, Pyramide, Ledge, Manual-Pad, Rail, Treppe mit Geländer, Plattform, Wallride-Wand, Container, Pool, Pflanzkübel). Eigene Parks befährst du frei oder im 2-Minuten-Highscore-Lauf.",
     "Wettbewerb: 3 Läufe zu je 60 Sekunden, drei Juroren bewerten Punkte, Trickvielfalt und Stürze; die besten 2 Läufe zählen. Platz 1 bis 3 bringt Gold, Silber oder Bronze.",
     "Mehrspieler: Duell (2 bis 4 Spieler, je 60 Sekunden) oder S-K-A-T-E (2 bis 4 Spieler, je ein 20-Sekunden-Versuch pro Runde; die schwächste Combo bekommt einen Buchstaben, bei S-K-A-T-E ist man raus).",
     "Skater: einen der 6 Skater oder deinen eigenen Skater wählen und Stat-Punkte verteilen (+). Eigener Skater: Figur, Haut, Frisur, Haarfarbe, Kopfbedeckung und Kleidung frei einstellen. Boards: eines der 11 Boards wählen.",
@@ -66,9 +67,29 @@
    ]
   },
   {
+   "t": "Park-Editor",
+   "list": [
+    "Im Hauptmenü „Park-Editor“ wählen, dann „Neuer Park“ oder einen gespeicherten Park. Dort kannst du den Namen ändern, bauen, fahren oder den Park löschen.",
+    "Ein Cursor zeigt das gewählte Bauteil als grüne Vorschau. Rot heißt: Das Teil passt dort nicht (zu nah am Rand oder schon 60 Bauteile).",
+    "Cursor bewegen: Stick, W A S D oder Pfeile, Maus zeigen oder auf das Spielfeld tippen. Bauteil wählen: Leiste unten antippen oder LB/RB bzw. Q/E.",
+    "Setzen: A, Leertaste, Mausklick oder ✚. Drehen um 90°: Y oder R. Löschen (Teil unter dem Cursor, gelb markiert): X, Entf oder Rechtsklick. Rückgängig: B oder Z.",
+    "Kamera drehen: rechter Stick, C oder 🎥; Zoom: Mausrad, V oder 🔍.",
+    "Testfahrt: Select, T oder „Testfahrt“ – du startest am Cursor in Blickrichtung der Kamera. Im Pause-Menü bringt dich „Weiter bauen“ zurück in den Editor.",
+    "Im Editor-Menü (Start, Esc oder ☰) wechselst du die Stimmung (Tag, Abend, Nacht) oder leerst den Park. Alles wird automatisch gespeichert."
+   ]
+  },
+  {
+   "t": "Replays",
+   "list": [
+    "Jeder Lauf wird mitgeschnitten (bis zu 2,5 Minuten). „🎬 Replay“ findest du im Pause-Menü und nach jedem Lauf.",
+    "Abspielen/Pause: A oder Leertaste. 5 Sekunden zurück/vor: LB/RB oder Q/E, Spulen mit Stick links/rechts oder über die Zeitleiste.",
+    "Tempo (1×, 0,5×, 0,25×, 2×): X oder J. Kamera wechseln (Verfolger, TV, Drohne): Y oder L. Beenden: B, Esc oder ✕."
+   ]
+  },
+  {
    "t": "Fortschritt und Speichern",
    "p": [
-    "Ziele, grüne Marken, Medaillen, Stat-Punkte, dein eigener Skater, Bestwerte, Freischaltungen und Einstellungen werden automatisch auf dem Gerät gespeichert. In den Einstellungen kannst du dich optional mit Google anmelden, dann wird der Stand gesichert und auf anderen Geräten fortgesetzt. Die Bestenliste zeigt deinen besten Lauf."
+    "Ziele, grüne Marken, Medaillen, Stat-Punkte, dein eigener Skater, deine eigenen Parks, Bestwerte, Freischaltungen und Einstellungen werden automatisch auf dem Gerät gespeichert. In den Einstellungen kannst du dich optional mit Google anmelden, dann wird der Stand gesichert und auf anderen Geräten fortgesetzt. Die Bestenliste zeigt deinen besten Lauf."
    ]
   },
   {
@@ -93,7 +114,8 @@
     "Schalte im Zweifel den Einfach-Modus ein: Ollie in der Luft tippen ergibt einen Flip, halten einen Grab.",
     "Übe im Freien Fahren die Quarterpipes: gerade anfahren, oben Grab halten, rechtzeitig loslassen.",
     "Lande gerade: Wenn der Skater quer zur Fahrtrichtung aufkommt, stürzt er.",
-    "Sammle die grünen Sechseck-Marken in jedem Park (3 pro Park) und verteile die Stat-Punkte im Skater-Menü zuerst auf Tempo und Sprung."
+    "Sammle die grünen Sechseck-Marken in jedem Park (3 pro Park) und verteile die Stat-Punkte im Skater-Menü zuerst auf Tempo und Sprung.",
+    "Bau dir im Park-Editor einen Übungspark: eine Quarterpipe gegenüber einer zweiten oder ein Rail direkt hinter einem Kicker – mit der Testfahrt probierst du jede Linie sofort aus."
    ]
   },
   {
@@ -103,7 +125,8 @@
     "Rails von oben anspringen und kurz vorher Grind drücken – du rastest automatisch ein.",
     "Abwechslung zahlt sich aus: Jeder neue Trick in der Combo erhöht den Multiplikator voll.",
     "Wallrides verbinden Tricks: Ollie seitlich an eine Mauer, Grind halten, dann Wallie zurück in die Luft und weiter in den nächsten Grind.",
-    "Im Wettbewerb lohnt Abwechslung: Die Jury belohnt viele verschiedene Tricks und zieht für jeden Sturz Punkte ab."
+    "Im Wettbewerb lohnt Abwechslung: Die Jury belohnt viele verschiedene Tricks und zieht für jeden Sturz Punkte ab.",
+    "Schau dir schwierige Stellen im Replay mit 0,25× und der TV-Kamera an: So siehst du genau, ob ein Flip vor der Landung fertig war."
    ]
   },
   {
@@ -241,6 +264,14 @@
   {
    "q": "Wie bekomme ich Medaillen?",
    "a": "Im Wettbewerb: 3 Läufe, die besten 2 Jury-Wertungen zählen. Platz 1 gibt Gold, Platz 2 Silber, Platz 3 Bronze."
+  },
+  {
+   "q": "Wie baue ich einen eigenen Park?",
+   "a": "Hauptmenü → Park-Editor → Neuer Park → Bearbeiten. Bauteil wählen, mit dem Cursor platzieren und setzen. Der Park wird automatisch gespeichert."
+  },
+  {
+   "q": "Wie sehe ich mir meinen Lauf noch einmal an?",
+   "a": "Im Pause-Menü oder nach dem Lauf auf „Replay“ – mit Zeitlupe, Zeitleiste und drei Kameras."
   }
  ]
 }
