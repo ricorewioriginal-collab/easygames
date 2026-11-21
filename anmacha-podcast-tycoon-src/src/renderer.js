@@ -1131,7 +1131,10 @@ export function createRenderer(T, canvas, opts) {
     if (o.visible === false) return;
     const e = o.__be;
     if (!e) { walk(o, true); return; }
-    if (e.on && e.f !== frame && e.type !== 'none') { e.f = frame; syncEnt(e, o); }
+    if (e.on && e.f !== frame && e.type !== 'none') {
+      e.f = frame; const n = syncEnt(e, o) || o.__be;
+      if (n && n !== e) { n.f = frame; setOn(n, n.type !== 'none'); }   // aus festem Block gelöst (Auto fährt los): neuer Eintrag muss eingeschaltet werden
+    }
     if (o.isBone) return;
     const ch = o.children;
     for (let i = 0; i < ch.length; i++) moveTree(ch[i]);
