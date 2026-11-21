@@ -9,7 +9,22 @@ let musicTimer = 0;
 let nextNote = 0;
 let step = 0;
 let song: Song | null = null;
-export const vol = { music: .55, sfx: .8 };
+export const vol = { music: .55, sfx: .8, /** Vibration (Handy und Controller) */ vib: true };
+
+/* Vibration als Rückmeldung: Handy (navigator.vibrate) und Controller (Rumble), kostet nichts im Bild-Takt */
+const BUZZ: Partial<Record<Sfx, number[]>> = { coin: [14], win: [30, 50, 70], hit: [28], slap: [32], boing: [22], miss: [70], phone: [90, 70, 90], door: [10], horn: [40], thunder: [120] };
+let buzzT = 0;
+export function buzz(p: number[]) {
+  if (!vol.vib) return;
+  const now = performance.now(); if (now - buzzT < 90) return; buzzT = now;
+  try { if (matchMedia('(pointer: coarse)').matches) navigator.vibrate?.(p); } catch { /* nicht unterstützt */ }
+  try {
+    for (const g of navigator.getGamepads?.() || []) {
+      const a = (g as Gamepad & { vibrationActuator?: { playEffect?(t: string, o: object): Promise<unknown> } } | null)?.vibrationActuator;
+      a?.playEffect?.('dual-rumble', { duration: p.reduce((x, y) => x + y, 0), strongMagnitude: p.length > 1 ? .6 : .25, weakMagnitude: .5 })?.catch?.(() => {});
+    }
+  } catch { /* kein Controller */ }
+}
 /** weitere Tonquellen (Autoradio), die dem Musikregler folgen */
 export const onVolume: Array<() => void> = [];
 
@@ -65,6 +80,7 @@ function noise(t: number, d: number, g: number, bus: GainNode, hp = 6000, lp = 0
 }
 
 export function sfx(k: Sfx) {
+  const b = BUZZ[k]; if (b) buzz(b);
   if (!ctx) return;
   const t = ctx.currentTime;
   switch (k) {

@@ -42,7 +42,9 @@ describe('Story', () => {
     s.step = 6; expect(goal(s).npc).toBe('nova');
     s.chapter = 2; s.step = 0; expect(goal(s).npc).toBe('mo');
     s.chapter = 6; expect(goal(s).title).toContain('Hochstadt 1/8'); // Akt II übernimmt nach dem Abspann
-    s.flags.saga = 8; expect(goal(s).title).toContain('Insel 1/4'); // Akt III: die Inselkette
+    s.flags.saga = 1; expect(goal(s).title).toContain('Sterling Nights 1/5'); // Akt II wechselt zum Nachtleben
+    s.flags.saga = 8; s.flags.nacht = 5; expect(goal(s).title).toContain('Club Prisma'); // Krönung: eigener großer Club
+    s.flags.biz_prisma = 3; expect(goal(s).title).toContain('Insel 1/4'); // Akt III: die Inselkette
     expect(goal(s).isle).toBe('einhorn');
     s.settings.adult = true; expect(goal(s).title).toContain('Insel 1/5');
     for (const id of ['einhorn', 'canaria', 'lindenhof', 'rummel', 'cruising']) s.flags['w_' + id] = 4;
@@ -75,7 +77,7 @@ describe('Story', () => {
     s.money = 400; poi(c, 'bar'); expect(s.flags.bar).toBe(true); expect(s.chapter).toBe(4);
     // Kapitel 4
     expect(hidden(s, 'nova')).toBe(true);
-    talk(c, 'jules'); expect(marks(s).filter((m) => m[1] !== '🌆').length).toBe(3);
+    talk(c, 'jules'); expect(marks(s).filter((m) => m[1] !== '🌆' && m[1] !== '🥂').length).toBe(3);
     for (const id of ['rex', 'bruno', 'kim']) talk(c, id);
     expect(s.step).toBe(2);
     poi(c, 'studio'); h = 23; poi(c, 'park'); expect(s.step).toBe(4); expect(hidden(s, 'nova')).toBe(false);
@@ -171,8 +173,9 @@ describe('Roter Faden (Akt II und III)', () => {
     };
     const tick = () => { for (let i = 0; i < 6; i++) storyTick(c); };
     tick(); expect(calls).toEqual(['📞 Mama Vega']); expect(cards).toContain('Akt II');
-    s.flags.saga = 8; tick(); expect(calls[1]).toBe('📞 Jules'); expect(cards).toContain('Akt III');
-    s.flags.w_einhorn = 4; tick(); expect(calls[2]).toBe('📞 Stella Sternenstaub'); expect(goal(s).isle).toBe('canaria');
+    s.flags.saga = 1; tick(); expect(calls[1]).toBe('📞 Rocco Sterling');
+    s.flags.saga = 8; s.flags.nacht = 5; s.flags.biz_prisma = 2; tick(); expect(calls[2]).toBe('📞 Jules'); expect(cards).toContain('Akt III');
+    s.flags.w_einhorn = 4; tick(); expect(calls[3]).toBe('📞 Stella Sternenstaub'); expect(goal(s).isle).toBe('canaria');
     for (const id of ['canaria', 'lindenhof', 'rummel']) s.flags['w_' + id] = 4;
     tick(); tick(); expect(s.flags.fadenCall).toBe(true); expect(goal(s).poi).toBe('plaza');
     h = 9; expect(poi(c, 'plaza')).toBe(true); expect(h).toBe(12); // wartet bis 12 Uhr

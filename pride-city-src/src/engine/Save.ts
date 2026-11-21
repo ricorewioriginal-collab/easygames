@@ -6,7 +6,7 @@ export const KEY = 'prideCity.save';
 const OLD = 'anmachaGayLife';
 export const VERSION = 1;
 
-export interface Settings { music: number; sfx: number; quality: number; touch: number; invertY: boolean; camSpeed: number; /** Inhalte ab 18 (Flirts, Erotik angedeutet), Standard aus */ adult: boolean }
+export interface Settings { music: number; sfx: number; quality: number; touch: number; invertY: boolean; camSpeed: number; /** Vibration (fehlt = an) */ vib?: boolean; /** Inhalte ab 18 (Flirts, Erotik angedeutet), Standard aus */ adult: boolean }
 
 export interface SaveData {
   v: number;

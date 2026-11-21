@@ -6,6 +6,7 @@ import type { Line } from '../ui/ui';
 import type { Goal, StoryCtx } from './story';
 import { sagaDone, MISSIONS } from './saga';
 import { WORLDS, worldStage } from './worlds';
+import { nachtOver, nachtFirst, nachtDone } from './nacht';
 
 export const ACTS = [
   { n: 1, title: 'Ein Leben in allen Farben', text: 'Ankommen in Rainbow City, das Regenbogenhaus retten und die größte Pride feiern.' },
@@ -23,7 +24,7 @@ const sagaOver = (s: SaveData) => sagaDone(s) >= MISSIONS.length;
 /** Aktueller Akt (1–3), 4 = alles erzählt */
 export function act(s: SaveData) {
   if (s.chapter <= 5) return 1;
-  if (!sagaOver(s)) return 2;
+  if (!sagaOver(s) || !nachtOver(s)) return 2;
   return s.flags.fadenEnd ? 4 : 3;
 }
 export function actLabel(s: SaveData) { const a = ACTS[act(s) - 1]; return a ? `Akt ${['I', 'II', 'III'][a.n - 1]} · ${a.title}` : 'Rainbow City · Freies Spiel'; }
@@ -65,6 +66,13 @@ export function fadenTick(c: StoryCtx) {
       'Hier ist Vega, Mutter vom Haus Vega drüben in der Hochstadt. Ganz Rainbow City redet von deiner Pride.',
       fresh ? 'Wir haben auch ein Haus, das gerettet werden muss: das Kaleidoskop am Neonplatz. Komm über die Regenbogenbrücke, ich warte auf dich.' : 'Du hast uns schon so geholfen. Bring es mit uns zu Ende, das Kaleidoskop braucht dich noch.',
     ], () => c.card('Akt II', ACTS[1].title, ACTS[1].text).then(() => history(s, 'a2', c.card)));
+    return;
+  }
+  if (a === 2 && f.faden2 && !f.nachtCall && nachtFirst(s) && nachtDone(s) === 0) {
+    ring('nachtCall', 'Rocco Sterling', '#ffcf5a', [
+      'Guten Abend. Rocco Sterling, Sterling Nights. Bar Komet, Skybar Wolke 7, du kennst das.',
+      'Ich habe dich tanzen sehen. Ich brauche jemanden, der Nächte führen kann. Komm nach 21 Uhr zur Skybar in der Hochstadt, dann reden wir.',
+    ]);
     return;
   }
   if (a === 3 && !f.faden3) {
