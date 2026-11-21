@@ -1,18 +1,21 @@
 // Eingabe: Tastatur, Gamecontroller (Standard-Layout) und Touch – ein Satz Aktionen für alle Geräte.
-// Aktionen: ollie, flip, grab, grind, manual, spinL, spinR, pause, goals
+// Konsolen-Schema: 4 Aktionstasten (Ollie unten, Flip links, Grab rechts, Grind oben), Schultertasten drehen,
+// hintere Schultertasten Revert. Manual = Richtungsfolge Hoch→Runter (Nose Manual: Runter→Hoch).
+// Aktionen: ollie, flip, grab, grind, manual (aus der Richtungsfolge), spinL, spinR, revert, pause, goals
 const KEYS = {
   Space: 'ollie', Enter: 'ollie', NumpadEnter: 'ollie',
-  KeyJ: 'flip', KeyK: 'grab', KeyL: 'grind', KeyI: 'manual', ShiftLeft: 'manual', ShiftRight: 'manual',
-  KeyQ: 'spinL', KeyE: 'spinR', Escape: 'pause', KeyP: 'pause', Tab: 'goals', KeyG: 'goals'
+  KeyJ: 'flip', KeyK: 'grab', KeyL: 'grind',
+  KeyQ: 'spinL', KeyE: 'spinR', KeyR: 'revert', ShiftLeft: 'revert', ShiftRight: 'revert', Escape: 'pause', KeyP: 'pause', Tab: 'goals', KeyG: 'goals'
 };
-const PAD = { 0: 'ollie', 2: 'flip', 1: 'grab', 3: 'grind', 5: 'manual', 4: 'manual', 6: 'spinL', 7: 'spinR', 9: 'pause', 8: 'goals' };
-const ACTIONS = ['ollie', 'flip', 'grab', 'grind', 'manual', 'spinL', 'spinR', 'pause', 'goals'];
+const PAD = { 0: 'ollie', 2: 'flip', 1: 'grab', 3: 'grind', 4: 'spinL', 5: 'spinR', 6: 'revert', 7: 'revert', 9: 'pause', 8: 'goals' };
+const ACTIONS = ['ollie', 'flip', 'grab', 'grind', 'manual', 'spinL', 'spinR', 'revert', 'pause', 'goals'];
 
 export class Input {
   constructor() {
     this.keys = new Set(); this.touch = {}; this.touchStick = { x: 0, y: 0, id: null };
     this.prev = {}; this.cur = {}; this.x = 0; this.y = 0; this.rx = 0; this.ry = 0;
     this.lastDevice = 'keys'; this.enabled = false;
+    this.seq = { zone: 0, since: 0, last: 0, lastEnd: -9 }; this.manualDir = 'd'; this.manualPulse = false;
     addEventListener('keydown', e => {
       if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
       this.keys.add(e.code); this.lastDevice = 'keys';
@@ -75,7 +78,17 @@ export class Input {
       for (const i in PAD) if (b(+i)) { c[PAD[i]] = true; this.lastDevice = 'pad'; }
     }
     const m = Math.hypot(x, y); if (m > 1) { x /= m; y /= m; }
-    this.x = x; this.y = y; this.cur = c;
+    this.x = x; this.y = y;
+    // Manual als Richtungsfolge: kurz Hoch, dann Runter (Manual) bzw. kurz Runter, dann Hoch (Nose Manual)
+    const now = performance.now() / 1000, q = this.seq, z = y > 0.6 ? 1 : y < -0.6 ? -1 : 0;
+    this.manualPulse = false;
+    if (z !== q.zone) {
+      if (q.zone !== 0) { q.last = q.zone; q.lastEnd = now; q.lastLen = now - q.since; }
+      if (z !== 0 && q.last === -z && now - q.lastEnd < 0.28 && q.lastLen < 0.4) { this.manualPulse = true; this.manualDir = z < 0 ? 'd' : 'u'; q.last = 0; }
+      q.zone = z; q.since = now;
+    }
+    c.manual = this.manualPulse;
+    this.cur = c;
   }
   down(a) { return !!this.cur[a]; }
   pressed(a) { return !!this.cur[a] && !this.prev[a]; }

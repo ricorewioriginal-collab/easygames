@@ -87,7 +87,7 @@ export function createUI({ SFX, Audio_, touch, onMenu, panel, onPause, custom = 
   }, true);
 
   // ------------------------------------------------------------ Gamepad wie auf der Konsole (Xbox-Anordnung, gamepad.js gleicht andere Pads an)
-  // Lauf: Stick/Steuerkreuz laufen, A/Y springen, B/X oder Stick runter ducken, Start = Pause. Bits wie Tastatur: 1 links, 2 rechts, 4 Sprung, 8 Ducken.
+  // Lauf: Stick/Steuerkreuz laufen, A/Y springen, B oder Stick runter ducken, X/RB/RT greifen, Start = Pause. Bits wie Tastatur: 1 links, 2 rechts, 4 Sprung, 8 Ducken, 16 Greifen.
   let prev = {}, rep = 0, hadPad = false;
   function gamepad(dt, playing) {
     const ps = pads(); if (!!ps.length !== hadPad) { hadPad = !!ps.length; $('cmPad').hidden = !hadPad; } if (!ps.length) { prev = {}; return 0; }

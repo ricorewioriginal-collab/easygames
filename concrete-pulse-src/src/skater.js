@@ -53,15 +53,16 @@ export class Skater {
     this.inp = inp;
     this.dirNow = dirOf(inp.x, inp.y);
     const n = Math.min(10, Math.ceil(dt / STEP)), h = dt / n;
-    this.edges = { ollieUp: inp.released('ollie'), ollieDown: inp.pressed('ollie'), flip: inp.pressed('flip'), grab: inp.pressed('grab'), grabUp: inp.released('grab'), grind: inp.pressed('grind'), manual: inp.pressed('manual') };
+    this.edges = { ollieUp: inp.released('ollie'), ollieDown: inp.pressed('ollie'), flip: inp.pressed('flip'), grab: inp.pressed('grab'), grabUp: inp.released('grab'), grind: inp.pressed('grind'), manual: inp.pressed('manual') && !this.manual, revert: inp.pressed('revert') };
     if (inp.pressed('flip')) this.flipBuf = 0.18;
     if (inp.pressed('grab')) this.grabBuf = 0.18;
     if (inp.pressed('grind')) this.grindBuf = 0.3;
-    if (inp.pressed('manual')) this.manualBuf = 0.3;
+    if (inp.pressed('manual') && !this.manual) { this.manualBuf = 0.3; this.manualDir = inp.manualDir; }
+    if (inp.pressed('revert')) this.revertBuf = 0.25;
     if (inp.pressed('ollie')) this.ollieBuf = 0.15;
     for (let i = 0; i < n; i++) { this.step(h); if (i === 0) for (const k in this.edges) this.edges[k] = false; }
     this.flipBuf = Math.max(0, (this.flipBuf || 0) - dt); this.grabBuf = Math.max(0, (this.grabBuf || 0) - dt);
-    this.grindBuf = Math.max(0, (this.grindBuf || 0) - dt); this.manualBuf = Math.max(0, (this.manualBuf || 0) - dt); this.ollieBuf = Math.max(0, (this.ollieBuf || 0) - dt);
+    this.grindBuf = Math.max(0, (this.grindBuf || 0) - dt); this.manualBuf = Math.max(0, (this.manualBuf || 0) - dt); this.revertBuf = Math.max(0, (this.revertBuf || 0) - dt); this.ollieBuf = Math.max(0, (this.ollieBuf || 0) - dt);
     this.apply(dt);
   }
 
@@ -121,11 +122,11 @@ export class Skater {
     }
     // Manual
     if (this.manual) this.stepManual(dt);
-    else if ((this.manualBuf > 0 || this.edges.manual) && n.y > 0.85 && spd > 1.2) { this.manualBuf = 0; this.startManual(); }
+    else if ((this.manualBuf > 0 || this.edges.manual) && n.y > 0.7 && spd > 1.2) { this.manualBuf = 0; this.startManual(); }
     // Revert (nach Landung aus der Senkrechten)
     if (this.revertT > 0) {
       this.revertT -= dt;
-      if (this.edges.manual || this.manualBuf > 0) { this.manualBuf = 0; this.revertT = 0; this.yaw = wrap(this.yaw + Math.PI); this.fakie = !this.fakie; const e = this.combo.add('Revert', 100); this.game.onTrick(e); this.grace = 0.5; this.game.sfx('revert'); }
+      if (this.revertBuf > 0) { this.revertBuf = 0; this.revertT = 0; this.yaw = wrap(this.yaw + Math.PI); this.fakie = !this.fakie; const e = this.combo.add('Revert', 100); this.game.onTrick(e); this.grace = 0.5; this.game.sfx('revert'); }
     }
     // Combo-Ende nach kurzer Gnadenfrist
     if (this.combo.active && !this.manual) { this.grace -= dt; if (this.grace <= 0) this.bank(); }
@@ -218,7 +219,7 @@ export class Skater {
 
   // ------------------------------------------------------------ Manual
   startManual() {
-    const dir = this.dirNow === 'u' ? 'u' : 'd', M = MANUALS[dir];
+    const dir = this.manualDir === 'u' ? 'u' : 'd', M = MANUALS[dir];
     this.manual = { dir, t: 0, bal: (Math.random() - 0.5) * 0.1, bv: 0, e: null };
     if (!this.combo.active) this.grace = 0;
     this.manual.e = this.combo.add(M.name, M.pts); this.game.onTrick(this.manual.e);
@@ -234,7 +235,6 @@ export class Skater {
     m.bal += m.bv * dt;
     this.combo.live(m.e, M.pps * dt);
     if (Math.abs(m.bal) > 1) return this.doBail(m.bal > 0 ? 'Über die Nase!' : 'Über das Tail!');
-    if (this.edges.manual && m.t > 0.25) this.endManual(false);
   }
   endManual(keep) { if (!this.manual) return; this.manual = null; this.grace = keep ? 0 : 0.25; }
 
@@ -399,7 +399,7 @@ export class Skater {
     if (a.grab) a.grab = null;
     this.grace = this.combo.active ? 0.38 : 0;
     if (a.vert || (n.y < 0.75 && s.el && /qp|bowl/.test(s.el.t))) this.revertT = 0.45;
-    if (this.manualBuf > 0 && n.y > 0.85) { this.manualBuf = 0; this.startManual(); }
+    if (this.manualBuf > 0 && n.y > 0.7) { this.manualBuf = 0; this.startManual(); }
     if (this.game.settings.easy && this.combo.active && n.y > 0.85 && this.inp.y < -0.3) this.startManual();
   }
 
