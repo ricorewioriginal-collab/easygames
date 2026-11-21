@@ -14,7 +14,7 @@
         "Fortsetzen: lädt deinen Spielstand.",
         "Neues Spiel: startet mit dem Charakter-Editor. Findet das Spiel einen alten Gay-Life!-Spielstand, kannst du Name, Erspartes und Glitzer übernehmen.",
         "Story: zeigt die Kapitel und deine bisherigen Entscheidungen.",
-        "Minispiele: Tanz-Battle direkt spielen; weitere Minispiele folgen.",
+        "Minispiele: Tanz-Battle, Barkeeper, Drag-Show und die 3D-Minispiele (Raketen-Hüpfer/Dildo Jump, Toast-Glasur/Toast-Spritzer) direkt spielen.",
         "Optionen: Grafik (automatisch, niedrig, mittel, hoch), Musik, Effekte, Kamera-Tempo, Kamera umkehren, Vollbild und Google-Spielstand.",
         "Mitwirkende: Herkunft und Lizenzen der Grafiken."
       ]
@@ -164,6 +164,18 @@
       "t": "Barkeeper-Minispiel",
       "p": [
         "Im Club Leuchtturm (und unter Minispiele) mischst du 75 Sekunden lang Drinks. Oben steht, wer was bestellt, darunter die Karte mit den Zutaten. Wähle die Zutaten in beliebiger Reihenfolge und drück Servieren. Jeder richtige Drink bringt Trinkgeld, Fehler kosten Zeit. Am Ende gibt es Lohn, Kontakte und etwas Ruf."
+      ]
+    },
+    {
+      "t": "3D-Minispiele: Raketen-Hüpfer / Dildo Jump",
+      "p": [
+        "Unter Minispiele und am Hüpf-Automaten in der Arcade Funkel. Deine Rakete (mit „Inhalte ab 18“: Big Bertha, der Glitzer-Dildo) hüpft von selbst von Plattform zu Plattform. Mit links/rechts lenkst du, über den Rand geht es auf der anderen Seite weiter. Blaue Plattformen wandern, Wattebäusche zerfallen nach einem Sprung, goldene Trampoline bzw. Gleitgel-Pads schießen dich hoch. Drei Herzen füllen den Turbo, A zündet ihn. Graue Gewitterwolken bremsen dich aus. Jeder Meter bringt 10 Punkte, ab 1.500 hast du die Runde geschafft."
+      ]
+    },
+    {
+      "t": "3D-Minispiele: Toast-Glasur / Toast-Spritzer",
+      "p": [
+        "Unter Minispiele und am Toast-Automaten in der Arcade Funkel. Der Toaster schleudert Toastscheiben durch die Küche. Fahr die Spritze mit links/rechts darunter und halte A gedrückt: Regenbogen-Zuckerguss bzw. mit „Inhalte ab 18“ weiße Farbe. Sechs Treffer machen einen Toast fertig, Serien geben Bonus. Goldtoast zählt dreifach und löst eine Zeitlupe aus, verbrannte Toasts kosten Punkte. Der Druck sinkt beim Spritzen und lädt in Pausen nach. 60 Sekunden, Ziel 900 Punkte."
       ]
     },
     {

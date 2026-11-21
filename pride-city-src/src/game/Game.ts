@@ -10,6 +10,7 @@ import { CityScene, STICKERS } from './CityScene';
 import { preloadPeople } from './Actor';
 import { CreatorScene } from './CreatorScene';
 import { DanceScene } from './minigames/DanceScene';
+import { MINIS, miniById, miniName, miniIcon, miniSub, type MiniResult } from './minigames/minis';
 import { World } from './World';
 import { pianoSongs, pianoParts } from './minigames/showSongs';
 import { openGigs, GIGS, fmtTime } from './gigs';
@@ -151,7 +152,7 @@ export class Game {
     if (s.hasGame) items.push({ icon: '▶', label: 'Fortsetzen', sub: `${s.data.name} · ${s.data.chapter > 5 ? actLabel(s.data) : 'Kapitel ' + s.data.chapter} · Tag ${s.data.day}`, big: true, fn: () => this.play() });
     items.push({ icon: '✨', label: 'Neues Spiel', sub: 'Dein Leben in Rainbow City beginnt', big: !s.hasGame, fn: () => this.newGame() });
     items.push({ icon: '📖', label: 'Story', sub: 'Kapitel und roter Faden', fn: () => this.storyMenu(() => this.title()) });
-    items.push({ icon: '🪩', label: 'Minispiele', sub: 'Tanz-Battle, Bar, Drag-Show', fn: () => this.minigames(() => this.title()) });
+    items.push({ icon: '🪩', label: 'Minispiele', sub: 'Tanz-Battle, Bar, Drag-Show, Dildo Jump, Toast & mehr in 3D', fn: () => this.minigames(() => this.title()) });
     items.push({ icon: '🌐', label: 'Online & Freunde', sub: this.city.friends.net.on ? `Verbunden · Stadt ${this.city.friends.net.code}` : 'Zusammen durch Rainbow City, per Link oder Code', fn: () => this.onlineMenu(() => this.title(), () => this.play()) });
     items.push({ icon: '⚙️', label: 'Optionen', sub: 'Grafik, Ton, Steuerung', fn: () => this.options(() => this.title()) });
     items.push({ icon: '💜', label: 'Mitwirkende', sub: 'Assets und Lizenzen', fn: () => this.credits() });
@@ -318,6 +319,7 @@ export class Game {
     const s = this.save.data, a = sp.act;
     if (a.k === 'menu') { if (sc?.placeId) this.placeMenu(sc.placeId); return; }
     if (a.k === 'gl') { this.roman('gaylife', a.id); return; }
+    if (a.k === 'mini') { this.playMini(a.id); return; }
     if (a.k === 'dance') { this.goDance(false); return; }
     if (a.k === 'show') {
       if (!(s.flags.lichtEnd || lichtPart(s) >= 5)) { toast('Lady Luma probt noch. Ihre Show gibt es ab Leons 5. Rückblende.'); sfx('miss'); return; }
@@ -1035,6 +1037,7 @@ export class Game {
       { icon: '🪩', label: 'Tanz-Battle', sub: `Club Prisma gegen Rex · Rekord ${b.dance || 0}`, fn: () => this.goDance(false, back) },
       { icon: '🍸', label: 'Barkeeper-Schicht', sub: `Club Leuchtturm · 75 Sekunden · Rekord ${b.bar || 0} Drinks`, fn: () => this.barShift(() => this.minigames(back), true) },
       { icon: '🎤', label: 'Lady Lumas Drag-Show', sub: 'Buch-Hymne oder Klaviersongs aus Klavierlicht', fn: () => this.showMenu((o) => this.goDance(false, back, o)) },
+      ...MINIS.map((m) => { const ad = !!this.save.data.settings.adult; return { icon: miniIcon(m, ad), label: miniName(m, ad), sub: `${miniSub(m, ad)} · Rekord ${b['mini_' + m.id] || 0}`, disabled: !!m.adultOnly && !ad, fn: () => this.playMini(m.id, { back: () => this.minigames(back), title: true }) }; }),
       { icon: '←', label: 'Zurück', fn: back },
     ], back);
   }
@@ -1321,6 +1324,28 @@ export class Game {
         catch { this.loading.hide(); toast('Das Lied konnte nicht geladen werden.'); }
       } })),
       ...(story ? [] : [{ icon: '←', label: 'Zurück', fn: close }])], story ? null : close);
+  }
+
+  /** 3D-Minispiel starten (Schnittstelle für Clubs, Story, Innenräume): danach zurück an den alten Ort bzw. zu back.
+      title = aus dem Titelmenü (keine Wirkung aufs Leben), onDone bekommt Punkte und ob das Ziel erreicht wurde. */
+  playMini(id: string, o: { back?: () => void; title?: boolean; onDone?: (r: MiniResult) => void } = {}) {
+    const def = miniById(id); if (!def) return;
+    const s0 = this.save.data, adult = !!s0.settings.adult;
+    if (def.adultOnly && !adult) { toast('Nur mit 18+ (Einstellungen).'); sfx('miss'); return; }
+    this.closeMenu();
+    this.loading.show(miniName(def, adult), 'Minispiel in 3D');
+    this.loading.progress(.4, 'Licht und Glitzer');
+    const sc = def.make(this, def, adult, (r) => {
+      const s = this.save.data;
+      if (!o.title && !r.quit) { change(s, { fun: r.won ? 18 : 10, energy: -4 }); this.pass(15); if (r.won) s.rep += 1; }
+      this.save.write();
+      this.fade(() => {
+        if (o.back) o.back(); else if (o.title) this.title(); else { this.resume(); this.city.refreshHud(); }
+        o.onDone?.(r);
+      });
+    });
+    sc.build().then(() => { this.loading.progress(1, 'Los!'); this.engine.setScene(sc); this.loading.hide(); })
+      .catch((e) => { console.error(e); this.loading.hide(); toast('Das Minispiel konnte nicht starten.'); this.resume(); });
   }
 
   /* ---------- Minispiel ---------- */
