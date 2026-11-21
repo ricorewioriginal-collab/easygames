@@ -616,7 +616,7 @@
       setAnim(npc, dancer ? 'dance' : 'idle');
       npc.mark = W.glow(guest ? 0xffd23f : dancer ? 0xff3da8 : hungry ? 0xff8a1e : 0x3dd6ff, 1.4, fig.root, 0, 2.35, 0);
       const tx = W.textTex([guest ? '⭐' : dancer ? '♪' : hungry ? '🍟' : '!'], { w: 128, h: 128, bg: '#14161f', size: 90, accent: guest ? '#ffd23f' : hungry ? '#ff8a1e' : '#3dd6ff' });
-      npc.icon = new T.Sprite(new T.SpriteMaterial({ map: tx, depthTest: false })); npc.icon.scale.set(0.5, 0.5, 1); npc.icon.position.y = 2.35; fig.root.add(npc.icon);
+      npc.icon = W.sprite(new T.SpriteMaterial({ map: tx, depthTest: false }), fig.root); npc.icon.scale.set(0.5, 0.5, 1); npc.icon.position.y = 2.35;
       S.npcs.push(npc);
     }
   }

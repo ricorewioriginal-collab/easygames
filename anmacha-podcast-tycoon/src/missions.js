@@ -206,7 +206,7 @@
     const n = { fig, x, y: 0.16, z, vx: 0, vy: 0, vz: 0, yaw: 0, onGround: true, anim: '', name: o.name };
     const tag = W.textTex([o.name], { w: 512, h: 96, size: 44, bg: '#120e1c', accent: '#ffd23f' }), lab = new T.Sprite(new T.SpriteMaterial({ map: tag, depthTest: false, transparent: true }));
     lab.scale.set(2.4, 0.45, 1); lab.position.y = 2.25; lab.renderOrder = 5; fig.root.add(lab);
-    if (mark) { n.mark = spr(mark, '#2a1206', '#ff8a1e', 0.75); n.mark.position.y = 2.95; fig.root.add(n.mark); }
+    if (mark) { const m = spr(mark, '#2a1206', '#ff8a1e', 0.75); n.mark = W.sprite(m.material, fig.root); n.mark.scale.set(0.75, 0.75, 1); n.mark.renderOrder = 5; n.mark.position.y = 2.95; }
     C.setAnim(n, 'idle'); return n;
   }
   function drop(n) { if (!n) return; if (n.fig) { if (n.fig.root.parent) n.fig.root.parent.remove(n.fig.root); n.fig.dispose(); } n.fig = null; }
