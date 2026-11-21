@@ -254,6 +254,7 @@ export class CityScene implements GameScene {
       card: (k, t, x) => g.chapterCard(k, t, x).then(() => this.wissenTip(k)),
       roman: (id, game, done) => g.roman(id, game, done),
       mission: (gg) => this.startGig(gg),
+      mini: (id, done) => g.playMini(id, { onDone: (r) => done?.(!!r.won && !r.quit) }),
       phone: (lines, done) => {
         sfx('phone'); setTimeout(() => sfx('phone'), 500);
         if (!this.drive) this.player.play('phone');
