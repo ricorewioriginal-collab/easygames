@@ -183,3 +183,29 @@ describe('Roter Faden (Akt II und III)', () => {
     expect(goal(s).title).toBe('Freies Spiel');
   });
 });
+
+describe('3D-Minispiele in der Story', () => {
+  it('Finale: Parade-Runner vor dem Tanz, Strandbad nach Playa', () => {
+    const s = defaults(); s.chapter = 6; s.flags.saga = 8; s.flags.nacht = 5; s.flags.biz_prisma = 1;
+    s.flags.faden2 = true; s.flags.faden3 = true; s.flags.fadenNext = 'canaria';
+    const minis: string[] = [];
+    const c: StoryCtx = {
+      s, toast: () => {}, hour: () => 14, skipToHour: () => {}, enterHome: (a) => a?.(), credits: () => {},
+      say: (lines: Line[], done) => { for (const l of lines) { if (typeof l.text === 'function') l.text(); l.choices?.[0]?.fn?.(); } done?.(); },
+      reward: () => {}, step: () => {}, dance: () => danceResult(c, true), barShift: (d) => d?.(), chapterDone: () => {},
+      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>, mission: () => {},
+      phone: (l, d) => c.say(l, d), mini: (id, d) => { minis.push(id); d?.(true); },
+    };
+    s.flags.w_einhorn = 4; s.flags.w_canaria = 4;
+    return new Promise<void>((res) => {
+      for (let i = 0; i < 6; i++) storyTick(c);
+      setTimeout(() => {
+        expect(minis).toEqual(['pool']);
+        for (const id of ['lindenhof', 'rummel']) s.flags['w_' + id] = 4;
+        for (let i = 0; i < 12; i++) storyTick(c);
+        poi(c, 'plaza'); expect(minis).toEqual(['pool', 'run']); expect(s.flags.fadenEnd).toBeTruthy();
+        res();
+      }, 300);
+    });
+  });
+});
