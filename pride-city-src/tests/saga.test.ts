@@ -4,7 +4,7 @@ import { walkable } from '../src/game/World';
 import { MISSIONS, SAGA_NPCS, sagaTalk, sagaDone, sagaGoal, sagaHidden, sagaMarks } from '../src/game/saga';
 import { goal, talk, type StoryCtx } from '../src/game/story';
 import { owns, income, buy, BUSINESSES } from '../src/game/empire';
-import { NACHT, NACHT_NPCS, nachtTalk, nachtDone, nachtBought } from '../src/game/nacht';
+import { NACHT, NACHT_NPCS, nachtTalk, nachtDone, nachtBought, nachtParty } from '../src/game/nacht';
 import type { Line } from '../src/ui/ui';
 import type { Gig } from '../src/game/gigs';
 
@@ -25,7 +25,7 @@ describe('Akt II – Die Lichter der Hochstadt', () => {
     } as unknown as StoryCtx;
     // vor Kapitel 2 gibt es noch keine Missionen
     sagaTalk(c, 'vega'); expect(gig).toBe(null); expect(sagaMarks(s).length).toBe(0);
-    s.chapter = 6; s.flags.nacht = 5; s.flags.biz_prisma = 1; // Nachtleben schon erledigt
+    s.chapter = 6; s.flags.nacht = 5; s.flags.biz_prisma = 1; s.flags.cl_prisma_nights = 1; // Nachtleben schon erledigt
     expect(sagaHidden(s, 'kron')).toBe(true);
     for (let i = 0; i < MISSIONS.length; i++) {
       const m = MISSIONS[i];
@@ -81,6 +81,8 @@ describe('Sterling Nights – Nachtleben', () => {
     const prisma = BUSINESSES.find((b) => b.id === 'prisma')!;
     expect(buy(s, prisma)).toBe(null); expect(s.money).toBe(2600);
     nachtBought(c, 'prisma'); expect(rang).toBe(1); expect(s.flags.nachtClub).toBe(true); expect(s.flags.deal_prisma).toBeUndefined();
+    expect(goal(s).title).toContain('erste Clubnacht');
+    s.flags.cl_prisma_nights = 1; nachtParty(c, { id: 'prisma', guests: 180, revenue: 900 }); expect(rang).toBe(2); expect(s.flags.nachtParty).toBe(true);
     expect(goal(s).title).toContain('Insel 1/');
     expect(nachtTalk(c, 'rocco')).toBe(true);
   });
