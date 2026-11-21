@@ -2784,7 +2784,12 @@
     "game": "pride-city",
     "prefix": "prideCity."
    },
-   "trailer": null
+   "trailer": {
+    "v16": "promo/pride-city-trailer-16x9.mp4",
+    "v9": "promo/pride-city-trailer-9x16.mp4",
+    "p16": "promo/pride-city-trailer-16x9.jpg",
+    "p9": "promo/pride-city-trailer-9x16.jpg"
+   }
   },
   {
    "id": "anmacha-podcast-tycoon",
