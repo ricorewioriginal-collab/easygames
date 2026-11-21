@@ -272,7 +272,7 @@ export class WorldScene implements GameScene {
   enter() {
     const R = this.def.r, s = this.g.save.data;
     if (!!s.settings.adult !== this.adultRide) this.buildRide();
-    this.riding = false; this.alt = 0; this.ride.position.y = .75; this.leaving = true;
+    this.riding = false; this.g.touch.fly(false); this.alt = 0; this.ride.position.y = .75; this.leaving = true;
     const b = this.back; this.back = null;
     if (b) { this.player.root.position.set(b.x, 0, b.z); this.player.root.rotation.y = b.yaw; this.cam.reset(b.yaw + Math.PI, .3); }
     else { this.player.root.position.set(0, 0, R - 14); this.player.root.rotation.y = Math.PI; this.cam.reset(0, .3); this.quit(); }
@@ -295,10 +295,10 @@ export class WorldScene implements GameScene {
     g.city.refreshHud();
     const told = this.toldCount();
     g.hud.goal(`${d.icon} ${d.name}`, st === 0 ? `Sprich mit ${d.host.name}` : st === 1 ? `${d.item.icon} ${d.item.n - this.left()}/${d.item.n} ${d.item.name} sammeln` : st === 2 ? `🌈 Ring ${this.ringAt + 1}/${this.rings.length} über der Ringstraße` : st === 3 ? (told < n ? `📣 Allen Bescheid sagen (${told}/${n})` : `Zurück zu ${d.host.name}`) : 'Geschafft: Läden, Aufträge und Leute',
-      st === 2 ? 'Flitzer rufen, Turbo halten = steigen' : st >= 4 ? `${d.job.icon} ${d.job.name} am Auftragsbrett auf dem Platz` : '');
+      st === 2 ? 'Flitzer rufen, ▲ Steigen, ▼ Sinken' : st >= 4 ? `${d.job.icon} ${d.job.name} am Auftragsbrett auf dem Platz` : '');
   }
   private toldCount() { let v = Number(this.flags['w_' + this.def.id + '_v']) || 0, c = 0; for (; v; v >>= 1) c += v & 1; return Math.min(c, this.folk.length - 1); }
-  private setHints() { hints(this.riding ? [['move', 'Lenken'], ['a', 'Aktion'], ['wpn', 'Absteigen'], ['cam', 'Kamera'], ['y', 'Menü']] : [['move', 'Laufen'], ['a', 'Aktion'], ['wpn', 'Flitzer rufen'], ['cam', 'Kamera'], ['y', 'Menü']]); }
+  private setHints() { hints(this.riding ? [['move', 'Lenken'], ['rise', 'Steigen'], ['sink', 'Sinken'], ['a', 'Aktion'], ['wpn', 'Absteigen'], ['cam', 'Kamera'], ['y', 'Menü']] : [['move', 'Laufen'], ['a', 'Aktion'], ['wpn', 'Flitzer rufen'], ['cam', 'Kamera'], ['y', 'Menü']]); }
 
   /** Sammelstücke und Ringe passend zum Stand zeigen */
   private showQuest() {
@@ -313,8 +313,8 @@ export class WorldScene implements GameScene {
   private mount(on: boolean) {
     const p = this.player.root.position;
     if (on === this.riding) return;
-    this.riding = on; sfx('open');
-    if (on) { this.ride.position.set(p.x, .75, p.z); this.ride.rotation.y = this.player.root.rotation.y; this.alt = .75; this.player.play('sit'); this.cam.dist = 10; toast(`🚀 ${this.adultRide ? 'Glitzer-Dildo „Big Bertha“' : 'Regenbogen-Rakete'}: Turbo halten = steigen, loslassen = sinken.`); }
+    this.riding = on; this.g.touch.fly(on); sfx('open');
+    if (on) { this.ride.position.set(p.x, .75, p.z); this.ride.rotation.y = this.player.root.rotation.y; this.alt = .75; this.player.play('sit'); this.cam.dist = 10; toast(`🚀 ${this.adultRide ? 'Glitzer-Dildo „Big Bertha“' : 'Regenbogen-Rakete'}: ▲ Steigen, ▼ Sinken (RB/LB, R/Q).`); }
     else { p.y = 0; this.alt = 0; this.ride.position.y = .75; this.player.play('idle'); this.cam.dist = 6.5; }
     this.setHints();
   }
@@ -416,7 +416,7 @@ export class WorldScene implements GameScene {
         this.leaving = !!go;
       }
       if (this.riding) {
-        this.alt = Math.max(.75, Math.min(18, this.alt + (sprint ? 6 : -4.5) * dt));
+        this.alt = Math.max(.75, Math.min(18, this.alt + ((inp.held('rise') ? 7 : 0) - (inp.held('sink') ? 7 : 0)) * dt));
         if (Math.hypot(p.x, p.z) > R - 1) this.alt = Math.max(this.alt, 1.6);   // über dem Wasser nicht eintauchen
       }
       // Häuser: zu Fuß und im Tiefflug kein Durchkommen, darüber hinweg geht es ab 16 m

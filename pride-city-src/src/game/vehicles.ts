@@ -8,7 +8,7 @@ import type { Gig } from './gigs';
 export interface CarDef {
   id: string; /** KayKit-Datei oder „k:<name>“ für Kenney */ file: string; name: string; icon: string;
   /** m/s normal und mit Turbo */ max: number; turbo: number; acc: number; steer: number;
-  /** Preis in der Garage (0 = nicht käuflich) */ price: number; /** Ladefläche: mehr Lohn beim Paketdienst */ cargo?: boolean; /** fliegt (Turbo halten = steigen) */ fly?: boolean;
+  /** Preis in der Garage (0 = nicht käuflich) */ price: number; /** Ladefläche: mehr Lohn beim Paketdienst */ cargo?: boolean; /** fliegt (lenkt wie ein Auto, dazu Steigen/Sinken) */ fly?: boolean;
 }
 
 export const CAR_DEFS: CarDef[] = [
@@ -20,7 +20,7 @@ export const CAR_DEFS: CarDef[] = [
   { id: 'liefer', file: 'k:delivery_van', name: 'Lieferwagen', icon: '🚚', max: 12, turbo: 20, acc: 6.5, steer: 1.6, price: 700, cargo: true },
   { id: 'pickup', file: 'k:truck', name: 'Pick-up „Bärenstark“', icon: '🛻', max: 14, turbo: 23, acc: 8, steer: 1.8, price: 800, cargo: true },
   { id: 'suv', file: 'k:suv', name: 'Geländewagen', icon: '🚙', max: 15, turbo: 24, acc: 8, steer: 1.8, price: 900 },
-  { id: 'rakete', file: 'fly', name: 'Flitzer zum Fliegen', icon: '🚀', max: 15, turbo: 16, acc: 14, steer: 2.3, price: 0, fly: true },
+  { id: 'rakete', file: 'fly', name: 'Flitzer zum Fliegen', icon: '🚀', max: 16, turbo: 26, acc: 12, steer: 2.3, price: 0, fly: true },
   { id: 'flitzer', file: 'k:hatchback_sports', name: 'Flitzer GTI', icon: '🏎️', max: 18, turbo: 29, acc: 12, steer: 2.4, price: 1200 },
   { id: 'sport', file: 'k:sedan_sports', name: 'Sportcoupé „Blitz“', icon: '🏎️', max: 19, turbo: 31, acc: 13, steer: 2.2, price: 1800 },
   { id: 'lux', file: 'k:suv_luxury', name: 'Luxus-SUV „Baroness“', icon: '💎', max: 17, turbo: 27, acc: 10, steer: 1.9, price: 2600 },

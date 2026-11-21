@@ -11,7 +11,9 @@ export class Touch {
       <button class="bB" data-a="back">B<small>Zurück</small></button>
       <button class="bS" data-a="sprint">»<small>Turbo</small></button>
       <button class="bX" data-a="attack">👊<small>Angriff</small></button>
-      <button class="bW" data-a="weapon">🔄<small>Waffe</small></button></div></div>`);
+      <button class="bW" data-a="weapon">🔄<small>Waffe</small></button>
+      <button class="bU" data-a="rise">▲<small>Steigen</small></button>
+      <button class="bD" data-a="sink">▼<small>Sinken</small></button></div></div>`);
     document.body.appendChild(this.el);
     const stick = this.el.querySelector('.stick') as HTMLElement, knob = stick.querySelector('i') as HTMLElement;
     let id = -1, cx = 0, cy = 0;
@@ -41,5 +43,7 @@ export class Touch {
     });
   }
   show(on: boolean) { this.el.classList.toggle('on', on); if (!on) this.input.setStick(0, 0); }
+  /** Flitzer: Knöpfe für Steigen/Sinken einblenden */
+  fly(on: boolean) { this.el.classList.toggle('fly', on); if (!on) { this.input.touchUp('rise'); this.input.touchUp('sink'); } }
   label(a: string) { const b = this.el.querySelector('.bA small'); if (b) b.textContent = a; }
 }

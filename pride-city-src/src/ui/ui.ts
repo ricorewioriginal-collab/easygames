@@ -23,6 +23,9 @@ const GLYPH: Record<string, Record<InputMode, string>> = {
   atk: { pad: '<i class="g">LT</i>', kb: '<i class="g">F</i>', touch: '' },
   wpn: { pad: '<i class="g">L3</i>', kb: '<i class="g">G</i>', touch: '' },
   cam: { pad: '<i class="g">R</i>', kb: '<i class="g">Maus</i>', touch: '' },
+  rise: { pad: '<i class="g">RB</i>', kb: '<i class="g">R</i>', touch: '' },
+  sink: { pad: '<i class="g">LB</i>', kb: '<i class="g">Q</i>', touch: '' },
+  turbo: { pad: '<i class="g">RT</i>', kb: '<i class="g">Shift</i>', touch: '' },
 };
 let hintSpec: Array<[string, string]> = [];
 export function glyph(k: string) { return GLYPH[k]?.[mode] ?? ''; }

@@ -187,7 +187,7 @@ export class CityScene implements GameScene {
   setPlay() {
     const s = this.g.save.data;
     this.mode = 'play';
-    this.drive = null;
+    this.drive = null; this.g.touch.fly(false);
     this.player.root.visible = true;
     this.player.setLook(streetLook(playerLook(s)));
     this.friends.relook();
@@ -414,7 +414,11 @@ export class CityScene implements GameScene {
     if (this.drive) {
       const o = this.drive.o, sx = Math.cos(o.rotation.y), sz = -Math.sin(o.rotation.y);
       if (this.drive.def.fly) {
-        if (this.alt > 1.6 && id !== 'force') { toast('🚀 Erst landen: Turbo loslassen, bis du am Boden bist.'); sfx('miss'); return; }
+        if (this.alt > 1.6 && id !== 'force') {
+          if (!walkable(o.position.x, o.position.z)) { toast('🌊 Über dem Wasser geht das nicht: erst zurück über Land fliegen.'); sfx('miss'); return; }
+          this.landing = true; toast('🛬 Landeanflug …'); return;
+        }
+        this.landing = false; this.g.touch.fly(false); o.rotation.x = o.rotation.z = 0;
         this.alt = 0; o.position.y = .75; o.getChildMeshes().find((m) => m.name === 'flame')?.setEnabled(false); this.player.root.position.y = .1;
         if (!walkable(o.position.x, o.position.z)) { o.position.set(-75, .75, 19); o.rotation.y = 0; }   // über dem Meer verlassen: zurück an den Kai
       }
@@ -437,8 +441,9 @@ export class CityScene implements GameScene {
     if (this.drive.def.fly) {
       this.syncFlyer(); this.alt = .75; this.player.play('sit'); sfx('open');
       this.cam.dist = Math.max(this.cam.dist, 10); this.cam.tYaw = this.drive.o.rotation.y + Math.PI;
-      hints([['move', 'Lenken & Gas'], ['a', 'Absteigen (am Boden)'], ['cam', 'Kamera'], ['y', 'Menü']]);
-      toast(`🚀 ${this.drive.o.metadata?.adult ? 'Glitzer-Dildo „Big Bertha“' : 'Regenbogen-Rakete'}: Turbo halten = steigen, loslassen = sinken. Über die Dächer geht es ab 17 m.`);
+      this.landing = false; this.g.touch.fly(true);
+      hints([['move', 'Lenken & Gas'], ['rise', 'Steigen'], ['sink', 'Sinken'], ['turbo', 'Turbo'], ['a', 'Landen'], ['cam', 'Kamera'], ['y', 'Menü']]);
+      toast(`🚀 ${this.drive.o.metadata?.adult ? 'Glitzer-Dildo „Big Bertha“' : 'Regenbogen-Rakete'}: lenkt wie ein Auto. ▲ Steigen, ▼ Sinken, A landet. Über die Dächer geht es ab 17 m.`, 4200);
       return;
     }
     if (!this.drive.own) this.combat.enterCar(); sfx('door'); setTimeout(() => sfx('engine'), 250);
@@ -472,6 +477,9 @@ export class CityScene implements GameScene {
   }
   /** Flughöhe auf dem Flitzer */
   private alt = 0;
+  /** Steiggeschwindigkeit (geglättet) und automatischer Landeanflug */
+  private climb = 0;
+  private landing = false;
   /** Flitzer am Weltentor: mit 18+ ein Glitzer-Dildo, sonst eine Rakete */
   private syncFlyer() {
     const adult = !!this.g.save.data.settings.adult;
@@ -479,11 +487,19 @@ export class CityScene implements GameScene {
   }
   private moveCar(dt: number) {
     const c = this.drive!, o = c.o, inp = this.g.engine.input, fly = !!c.def.fly;
-    if (inp.pressed('tabR')) this.radio(1); else if (inp.pressed('tabL')) this.radio(-1);
+    if (!fly) { if (inp.pressed('tabR')) this.radio(1); else if (inp.pressed('tabL')) this.radio(-1); }
     const thr = Math.abs(inp.move.y) > .08 ? inp.move.y : 0, steer = Math.abs(inp.move.x) > .08 ? inp.move.x : 0;
     const st = stats(c.def, c.own ? tuneLevel(this.g.save.data) : 0), max = inp.held('sprint') ? st.turbo : st.max;
-    // Flitzer: Turbo steigt, sonst sinkt er; über den Dächern (in der Hochstadt höher) fliegt er frei
-    if (fly) this.alt = clamp(this.alt + (inp.held('sprint') ? 7 : -5) * dt, .75, 55);
+    // Flitzer: lenkt wie ein Auto (Stick/WASD = Gas, Bremse, Lenken; Turbo = schneller), dazu Steigen/Sinken.
+    // Ohne Eingabe hält er die Höhe; über den Dächern (in der Hochstadt höher) fliegt er frei.
+    if (fly) {
+      const up = inp.held('rise'), down = inp.held('sink');
+      if (up || down) this.landing = false;
+      const want = this.landing ? -10 : (up ? 10 : 0) - (down ? 10 : 0);
+      this.climb += (want - this.climb) * Math.min(1, dt * 5);
+      this.alt = clamp(this.alt + this.climb * dt, .75, 55);
+      if (this.alt <= .76 && this.climb < 0) this.climb = 0;
+    }
     // über dem Wasser bleibt er auf mindestens 8 m und fliegt frei, weit draußen ist Schluss
     const sea = fly && !walkable(o.position.x, o.position.z);
     if (sea) this.alt = Math.max(this.alt, 8);
@@ -503,6 +519,12 @@ export class CityScene implements GameScene {
     if (!high && Vector3.Distance(o.position, want) > .02 && Math.abs(c.v) > 4) { c.v *= .4; if (!fly) sfx('miss'); }
     o.position.y = fly ? this.alt + Math.sin(performance.now() / 330) * .08 : .1;
     this.player.root.position.copyFrom(o.position);
+    if (fly) {
+      // in die Kurve legen und die Nase beim Steigen heben, wie ein Flugzeug
+      const roll = -steer * .32 * clamp(c.v / 8, -1, 1), pitch = -clamp(this.climb / 8, -1, 1) * .22;
+      o.rotation.z += (roll - o.rotation.z) * Math.min(1, dt * 6); o.rotation.x += (pitch - o.rotation.x) * Math.min(1, dt * 6);
+      if (this.landing && this.alt <= .8) { this.landing = false; this.toggleCar('force'); return; }
+    }
     if (fly) { this.player.root.position.y -= .35; this.player.root.rotation.y = o.rotation.y; const fl = o.getChildMeshes().find((m) => m.name === 'flame'); if (fl) { fl.setEnabled(true); fl.scaling.y = .8 + Math.sin(performance.now() / 33) * .25; } }
     if (Math.abs(c.v) > 1) this.cam.tYaw += (o.rotation.y + Math.PI - this.cam.tYaw) * Math.min(1, dt * 2.5);
     const s = this.g.save.data; s.pos.x = o.position.x; s.pos.z = o.position.z; s.pos.yaw = o.rotation.y;
@@ -559,8 +581,8 @@ export class CityScene implements GameScene {
   }
 
   private radarT = 0;
-  enter() { this.syncFlyer(); this.g.hud.radarOn(true); if (this.drive) { this.g.hud.radioBtn(true); this.radio(0); } }
-  exit() { this.g.hud.radarOn(false); if (this.drive) this.radioOff(); }
+  enter() { this.syncFlyer(); this.g.touch.fly(!!this.drive?.def.fly); this.g.hud.radarOn(true); if (this.drive) { this.g.hud.radioBtn(true); this.radio(0); } }
+  exit() { this.g.hud.radarOn(false); this.g.touch.fly(false); if (this.drive) this.radioOff(); }
   /** Missionsmarker wie im Open-World-Krimi: leuchtende Lichtsäule über dem Ziel */
   private beam: TransformNode | null = null;
   private beamMat: ReturnType<typeof glow> | null = null;
