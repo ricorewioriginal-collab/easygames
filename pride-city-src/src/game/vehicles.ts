@@ -9,6 +9,7 @@ export interface CarDef {
   id: string; /** KayKit-Datei oder „k:<name>“ für Kenney */ file: string; name: string; icon: string;
   /** m/s normal und mit Turbo */ max: number; turbo: number; acc: number; steer: number;
   /** Preis in der Garage (0 = nicht käuflich) */ price: number; /** Ladefläche: mehr Lohn beim Paketdienst */ cargo?: boolean; /** fliegt (lenkt wie ein Auto, dazu Steigen/Sinken) */ fly?: boolean; /** Einrad-Mobil aus toys.ts (18+ Penisring, sonst Donut), du sitzt sichtbar mittendrin */ toy?: boolean;
+  /** Fahrzeug aus rides.ts: Einhorn-Roller, Pride-Bus, Glitzer-Boot (nur auf dem Wasser) */ ride?: 'scooter' | 'bus' | 'boat';
 }
 
 export const CAR_DEFS: CarDef[] = [
@@ -22,6 +23,9 @@ export const CAR_DEFS: CarDef[] = [
   { id: 'suv', file: 'k:suv', name: 'Geländewagen', icon: '🚙', max: 15, turbo: 24, acc: 8, steer: 1.8, price: 900 },
   { id: 'rakete', file: 'fly', name: 'Flitzer zum Fliegen', icon: '🚀', max: 16, turbo: 26, acc: 12, steer: 2.3, price: 0, fly: true },
   { id: 'ringmobil', file: 'ring', name: 'Penisring-Mobil', icon: '⭕', max: 14, turbo: 23, acc: 11, steer: 2.7, price: 0, toy: true },
+  { id: 'roller', file: 'ride', name: 'Einhorn-Roller', icon: '🦄', max: 11, turbo: 18, acc: 10, steer: 3, price: 0, ride: 'scooter' },
+  { id: 'pridebus', file: 'ride', name: 'Pride-Bus „CSD-Shuttle“', icon: '🚌', max: 11, turbo: 17, acc: 5.5, steer: 1.4, price: 0, ride: 'bus', cargo: true },
+  { id: 'boot', file: 'ride', name: 'Glitzer-Boot', icon: '🚤', max: 13, turbo: 21, acc: 7, steer: 1.8, price: 0, ride: 'boat' },
   { id: 'flitzer', file: 'k:hatchback_sports', name: 'Flitzer GTI', icon: '🏎️', max: 18, turbo: 29, acc: 12, steer: 2.4, price: 1200 },
   { id: 'sport', file: 'k:sedan_sports', name: 'Sportcoupé „Blitz“', icon: '🏎️', max: 19, turbo: 31, acc: 13, steer: 2.2, price: 1800 },
   { id: 'lux', file: 'k:suv_luxury', name: 'Luxus-SUV „Baroness“', icon: '💎', max: 17, turbo: 27, acc: 10, steer: 1.9, price: 2600 },
