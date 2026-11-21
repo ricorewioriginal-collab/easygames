@@ -12,7 +12,8 @@ export type Act =
   | { k: 'talk'; who: string; color: string; lines: string[] }
   | { k: 'club' } | { k: 'deal' }                  // eigenen Club führen bzw. kaufen (clubui.ts)
   | { k: 'annex'; room: string }                   // Anbau des Zuhauses (house.ts)
-  | { k: 'drag'; what: 'look' | 'battle' };        // Drag-Karriere im Haus Vega (drag.ts)
+  | { k: 'drag'; what: 'look' | 'battle' }
+  | { k: 'wagen' };                                // eigener CSD-Festwagen (festwagen.ts)        // Drag-Karriere im Haus Vega (drag.ts)
 
 /** Möbel: KayKit-Modell (gltf) oder Platzhalter-Form (box/screen/neon) */
 export type Item =
@@ -184,7 +185,7 @@ export const HOUSE_THEMES: Theme[] = [
     spots: [gl('pool', '🏊 Strandbad-Sprung (Turm)', 4.6, -2.4), doIt('schwimmen', '🌊 Bahnen schwimmen', -2, 1.2, { min: 40, d: { energy: -10, fun: 10, hygiene: 8 }, msg: 'Zwanzig Bahnen. Spaß +10', sfx: 'splash' })] },
   { id: 'werkstatt', title: 'Festwagen-Werkstatt', icon: '🛠️', floor: 0x5a5a60, wall: 0xb8b8c0, light: 0xfff0d0,
     items: [{ box: [3.4, 1.4, 5], c: C.pink, x: -1.4, z: -1, col: true, e: .2 }, { box: [3.6, .2, 5.2], c: C.gold, x: -1.4, z: -1, y: 1.5 }, { box: [2.4, 1, .8], c: C.steel, x: 4, z: -3.4, col: true }],
-    spots: [gl('run', '🏃 Parade-Runner (Probefahrt)', 2.2, 1.2), doIt('deko', '🎨 Festwagen dekorieren', 4, -2.4, { min: 60, d: { fun: 12, energy: -6 }, msg: 'Glitzer, Federn, Regenbogen. Spaß +12' })] },
+    spots: [gl('run', '🏃 Parade-Runner (Probefahrt)', 2.2, 1.2), { id: 'wagen', label: '🎨 Deinen CSD-Festwagen gestalten', x: 4, z: -2.4, r: 1.8, act: { k: 'wagen' } }] },
   { id: 'ramen', title: 'Ramen Nachteule', icon: '🍜', floor: 0x3a2a22, wall: 0x5a3a2a, light: 0xffb070,
     items: [...counter, ...[-3, -1, 1, 3].map((x) => ({ box: [.5, .8, .5], c: C.red, x, z: -2.4, col: true } as Item)), { neon: 'RAMEN', c: '#ff8a3b', x: 0, z: -4.38, y: 3.1 }],
     spots: [doIt('ramen', '🍜 Ramen essen (11 €)', 0, -1.6, { cost: 11, min: 30, d: { hunger: 50 }, msg: 'Heiße Brühe. Hunger +50', sfx: 'cook' })] },

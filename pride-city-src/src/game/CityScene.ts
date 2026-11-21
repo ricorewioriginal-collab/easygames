@@ -874,7 +874,7 @@ export class CityScene implements GameScene {
       this.crowd.forEach((a) => (a.root.visible = this.world.night > .5));
     }
     this.player.update(dt);
-    if (!busy) { if (this.drive) this.moveCar(dt); else this.movePlayer(dt); this.kerb.update(dt, t); }
+    if (!busy) { if (this.drive) this.moveCar(dt); else if (!this.life.parade.riding) this.movePlayer(dt); this.kerb.update(dt, t); }
     this.updateCam(dt);
     this.world.follow(this.player.root.position);
     this.world.update(dt, t, this.player.root.position);

@@ -25,5 +25,9 @@ export interface PcEvents extends Record<string, unknown> {
   dragKrone: { name: string };
   /** Eine Wissenskarte mit echter queerer Geschichte wurde freigeschaltet (Drag, CSD, Radio …) */
   wissen: { key: string; title: string; topic: string };
+  /** Eigener CSD-Festwagen gebaut oder umgebaut (festwagen.ts) */
+  wagenGestaltet: { flag: string; motto: string; deko: string; sound: string; score: number; first: boolean };
+  /** Jury-Preis für den eigenen Wagen bei der CSD-Parade (Platz 1–3) */
+  paradeWagen: { place: number; score: number; money: number; rep: number; motto: string };
 }
 export const pcEvents = new Emitter<PcEvents>();
