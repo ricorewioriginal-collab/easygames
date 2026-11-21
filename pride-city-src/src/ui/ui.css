@@ -145,6 +145,10 @@ html[data-input=touch] #touch.on { display: block; }
 #touch .bW { right: 160px; bottom: 58px; width: 50px; height: 50px; font-size: 16px; }
 html[data-input=touch] body:has(#dialog) #touch .bX, html[data-input=touch] body:has(#dialog) #touch .bW { display: none; }
 #touch .bS.on { background: rgba(255,79,163,.6); }
+#touch .bU, #touch .bD { display: none !important; right: 6px; width: 60px; height: 60px; font-size: 20px; background: rgba(58,123,255,.5) !important; }
+#touch.fly .bU, #touch.fly .bD { display: grid !important; }
+#touch .bU { bottom: 226px; } #touch .bD { bottom: 158px; }
+@media (max-height: 480px) and (orientation: landscape) { #touch .bU, #touch .bD { right: 220px; width: 54px; height: 54px; } #touch .bU { bottom: 70px; } #touch .bD { bottom: 6px; } }
 @media (orientation: portrait) {
   #touch .stick { width: 120px; height: 120px; bottom: calc(28px + var(--safe-b)); }
   #hud .prompt { bottom: calc(170px + var(--safe-b)); }

@@ -4,7 +4,9 @@
 export type Action =
   | 'confirm' | 'back' | 'menu' | 'phone' | 'map'
   | 'up' | 'down' | 'left' | 'right'
-  | 'tabL' | 'tabR' | 'sprint' | 'camReset' | 'attack' | 'weapon';
+  | 'tabL' | 'tabR' | 'sprint' | 'camReset' | 'attack' | 'weapon'
+  /** Flitzer: steigen / sinken (RB/LB, R/Q, Bild↑/Bild↓, Touch-Knöpfe) */
+  | 'rise' | 'sink';
 
 export type InputMode = 'kb' | 'touch' | 'pad';
 
@@ -14,7 +16,7 @@ const KEYS: Record<string, Action[]> = {
   Enter: ['confirm'], Space: ['confirm'], KeyE: ['confirm'], NumpadEnter: ['confirm'],
   Escape: ['back', 'menu'], Backspace: ['back'],
   KeyP: ['phone'], KeyM: ['map'], ShiftLeft: ['sprint'], ShiftRight: ['sprint'],
-  KeyQ: ['tabL'], KeyR: ['tabR'], KeyC: ['camReset'], KeyF: ['attack'], KeyG: ['weapon'],
+  KeyQ: ['tabL', 'sink'], KeyR: ['tabR', 'rise'], PageUp: ['rise'], PageDown: ['sink'], KeyC: ['camReset'], KeyF: ['attack'], KeyG: ['weapon'],
 };
 /* Standard-Layout (gamepad.js liefert jeden Controller so): A B X Y LB RB LT(Angriff) RT Select Start L3(Waffe) R3 ↑ ↓ ← → */
 const PAD: Array<Action | null> = ['confirm', 'back', 'phone', 'menu', 'tabL', 'tabR', 'attack', 'sprint', 'map', 'menu', 'weapon', 'camReset', 'up', 'down', 'left', 'right'];
@@ -141,6 +143,7 @@ export class Input {
       });
       // Dpad nur für Menüs/Bewegung als Richtung, nicht als zusätzlicher Stick
       if (p.buttons[4]?.pressed && p.buttons[5]?.pressed) this.pad.add('camReset');
+      if (p.buttons[4]?.pressed) this.pad.add('sink'); if (p.buttons[5]?.pressed) this.pad.add('rise');
       if (any) this.setMode('pad');
     }
   }
