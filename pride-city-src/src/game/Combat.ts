@@ -9,6 +9,7 @@ import { toast } from '../ui/ui';
 import { Actor, RUN_MPS } from './Actor';
 import { Wanted, WEAPONS, arsenal, landHit, LAWS, type Weapon, type Law } from './crime';
 import type { StreetNpc } from './Street';
+import { dildoNow, dildoSizes, dildoStats } from './toys';
 import type { CityScene } from './CityScene';
 import type { Game } from './Game';
 
@@ -86,10 +87,13 @@ export class Combat {
   /** Nächste Waffe */
   cycle() {
     const l = this.list(); let i = l.indexOf(this.weapon); if (i < 0) i = 0;
-    this.weapon = l[(i + 1) % l.length];
+    // Dildo-Größen aus der Hinterzimmer-Ecke: erst alle eigenen Größen durchschalten, dann weiter
+    const ds = dildoSizes(this.save), di = ds.indexOf(dildoNow(this.save));
+    if (this.weapon === 'dildo' && di < ds.length - 1) this.save.flags.dildo = ds[di + 1].id;
+    else { this.weapon = l[(i + 1) % l.length]; if (this.weapon === 'dildo') this.save.flags.dildo = ds[0].id; }
     sfx('move');
     const w = WEAPONS[this.weapon];
-    toast(`${w.icon} ${w.name}${this.weapon === 'lube' ? ` · ${this.save.inv.lube || 0} Flaschen` : ''}`);
+    toast(`${w.icon} ${this.wname()}${this.weapon === 'lube' ? ` · ${this.save.inv.lube || 0} Flaschen` : ''}`);
     if (!this.save.settings.adult && !this.hintAdult && this.weapon === 'hand') { this.hintAdult = true; toast('🍆 Den Glitzer-Dildo gibt es mit „Inhalte ab 18“ (Menü → Einstellungen).'); }
     this.showWeapon();
   }
@@ -97,15 +101,18 @@ export class Combat {
   showWeapon() {
     if (!this.list().includes(this.weapon)) this.weapon = 'hand';
     const w = WEAPONS[this.weapon];
-    this.g.hud.weapon(`${w.icon} ${w.name}${this.weapon === 'lube' ? ' ×' + (this.save.inv.lube || 0) : ''}`);
+    this.holdParts.dildo.scaling.setAll(dildoNow(this.save).scale || 1);
+    this.g.hud.weapon(`${w.icon} ${this.wname()}${this.weapon === 'lube' ? ' ×' + (this.save.inv.lube || 0) : ''}`);
   }
 
+  /** Name der Waffe; beim Dildo mit Größe */
+  private wname() { if (this.weapon !== 'dildo') return WEAPONS[this.weapon].name; const d = dildoNow(this.save); return `${d.name.replace('Glitzer-Dildo ', 'Dildo ')} · ${d.size}`; }
   /** Angriff bzw. Wurf: ausholen, zum Ziel drehen, zuschlagen. Erst mehrere Treffer hauen jemanden um. */
   attack() {
     if (this.cool > 0 || this.city.driving) return;
     const s = this.save, me = this.city.player, p = me.root.position;
     if (!this.list().includes(this.weapon)) this.weapon = 'hand';
-    const w = WEAPONS[this.weapon];
+    const w = this.weapon === 'dildo' ? { ...WEAPONS.dildo, ...dildoStats(dildoNow(s)) } : WEAPONS[this.weapon];
     this.cool = .6; this.strike = 1;
     if (w.throw) {
       if ((s.inv.lube || 0) <= 0) { this.strike = 0; toast('Kein Gleitgel mehr – im Späti Lecker gibt es Nachschub (4 €).'); sfx('miss'); return; }
