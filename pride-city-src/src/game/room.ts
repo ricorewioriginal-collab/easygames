@@ -272,7 +272,7 @@ export class RoomCam {
   reset(yaw = .95, pitch = .36) { this.yaw = this.tYaw = yaw; this.pitch = pitch; this.idle = 0; this.snap = true; }
   /** Laufrichtung in der Welt aus dem Stick, relativ zur Kamera */
   dir(mx: number, my: number): [number, number] { const fx = -Math.sin(this.yaw), fz = -Math.cos(this.yaw); return [fx * my - fz * mx, fz * my + fx * mx]; }
-  update(dt: number, camera: FreeCamera, p: Vector3, facing: number, o: { look: { x: number; y: number }; move: { x: number; y: number }; speed: number; invertY: boolean; busy: boolean; portrait: boolean }) {
+  update(dt: number, camera: FreeCamera, p: Vector3, facing: number, o: { look: { x: number; y: number }; move: { x: number; y: number }; speed: number; invertY: boolean; busy: boolean; portrait: boolean; /** Figur schwebt (Flug) */ lift?: number }) {
     const { W, D, H } = this, lk = .005 * o.speed;
     if (!o.busy) {
       this.tYaw -= o.look.x * lk; this.pitch = Math.max(.08, Math.min(.9, this.pitch + o.look.y * lk * (o.invertY ? -1 : 1)));
@@ -280,7 +280,7 @@ export class RoomCam {
       if (this.idle > 1.2 && Math.hypot(o.move.x, o.move.y) > .3) { let d = facing + Math.PI - this.tYaw; d = Math.atan2(Math.sin(d), Math.cos(d)); if (Math.abs(d) < 2.3) this.tYaw += d * Math.min(1, dt * 1.5); }
     }
     this.yaw += (this.tYaw - this.yaw) * Math.min(1, dt * 12);
-    const ty = 1.45, vx = Math.sin(this.yaw) * Math.cos(this.pitch) * this.dist, vy = Math.sin(this.pitch) * this.dist, vz = Math.cos(this.yaw) * Math.cos(this.pitch) * this.dist;
+    const ty = 1.45 + (o.lift || 0), vx = Math.sin(this.yaw) * Math.cos(this.pitch) * this.dist, vy = Math.sin(this.pitch) * this.dist, vz = Math.cos(this.yaw) * Math.cos(this.pitch) * this.dist;
     let f = 1;
     const lim = (v: number, room: number) => { if (v > 1e-4 && room / v < f) f = Math.max(.2, room / v); };
     lim(vx, W / 2 - .3 - p.x); lim(-vx, p.x + W / 2 - .3); lim(vz, D / 2 - .3 - p.z); lim(-vz, p.z + D / 2 - .3); lim(vy, H - .3 - ty);

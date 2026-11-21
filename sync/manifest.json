@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "98b9b634cfa0",
- "generated": "2026-11-20T23:59:45+00:00",
- "commit": "8c2109a4788d99f99b3cce77ee3bee0100607a9e",
+ "version": "f3cb586542cd",
+ "generated": "2026-11-21T00:22:44+00:00",
+ "commit": "650613af732f2c80f425d53a368c6590a099a41b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -1464,7 +1464,7 @@
   {
    "p": "anmacha-funkparcours/bot.js",
    "s": 5966,
-   "h": "2245010317bce143f728061033e195711d6a0c0c4f219bf3c73609dd1b6dec0b"
+   "h": "89ab78371728934cc3d6a41501d1f6b66cb8b73b110a641fd4821dc18f3d4fda"
   },
   {
    "p": "anmacha-funkparcours/card.png",
@@ -1488,8 +1488,8 @@
   },
   {
    "p": "anmacha-funkparcours/engine.js",
-   "s": 41596,
-   "h": "1d1f66408077f580d9bc80a6f9ef2b16d61c44fe2060d19cdea3510b2148136a"
+   "s": 41855,
+   "h": "45a452d31be473ecb5347a4ec8892a6c2f660592fe05958bfe133c42e20754e9"
   },
   {
    "p": "anmacha-funkparcours/host.js",
@@ -1498,8 +1498,8 @@
   },
   {
    "p": "anmacha-funkparcours/index.html",
-   "s": 16002,
-   "h": "3b7d82a5094781aa13fc53be2b1e063a224087202e33362a446b0fd25b532f00"
+   "s": 16038,
+   "h": "6297a7936423c7b5363d7689178c2859a38cfbb56e722b7b62f5a1161397fdd5"
   },
   {
    "p": "anmacha-funkparcours/logo.png",
@@ -1598,8 +1598,8 @@
   },
   {
    "p": "anmacha-funkparcours/menu.js",
-   "s": 12255,
-   "h": "1dfc83a825d325464294e219cb155e6591bca9a1a2c8bbc7b73c1561c25b15a2"
+   "s": 12282,
+   "h": "1ff49c56538abe7ad3cba64d7779ee204a671e751d7e2a7ab7ea3f50daeae692"
   },
   {
    "p": "anmacha-funkparcours/pair.js",
@@ -1613,8 +1613,8 @@
   },
   {
    "p": "anmacha-funkparcours/scene.js",
-   "s": 78234,
-   "h": "ad1c5591c04ab9af1bef7cb9c235eab1e599d7dbbc1218c99e6c5e3426a6b6ca"
+   "s": 81265,
+   "h": "00140f2750a5af92a8e61ef7fe0db2ce8c683ef57790abc0d785986b7d5f2f65"
   },
   {
    "p": "anmacha-funkparcours/stick.js",
@@ -12868,8 +12868,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 54399,
-   "h": "c22be484ffc289c31274b99ae8c24d1baf537cd9a27d6046caf77a9035478f04"
+   "s": 55995,
+   "h": "a11bcbe0e9065d595fde4be13c2011607e909be3f4fe01985de795fbab937a5c"
   },
   {
    "p": "guides/prismrush.json",
@@ -14782,14 +14782,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
+   "p": "pride-city/assets/index-C4JMy5FC.js",
+   "s": 528990,
+   "h": "276c390e089f1b704fa713cc6260dabb6920e1df80d4a9d1d92459f3d4d72295"
+  },
+  {
    "p": "pride-city/assets/index-CfnxkA8u.css",
    "s": 29331,
    "h": "390e81a55682ee59e338f0dc00a05d16747b1a0870476cdb43ddf1bcc597b160"
-  },
-  {
-   "p": "pride-city/assets/index-CmSSlBWT.js",
-   "s": 504694,
-   "h": "7056f798d1de88eece9b1656fac391fa434f7a416e0b6e9708e2411f32aeaa18"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -15449,7 +15449,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5862,
-   "h": "4a09e709a6bb75eb13559b960b4aaf340129e63837b056fbb4b7b78346a6ff25"
+   "h": "5c62ec2663465bf69eb368f9f9cc94b13c67866549f5838d7e8cfc3a2d8a5678"
   },
   {
    "p": "pride-city/logo.svg",
@@ -18224,7 +18224,7 @@
   {
    "p": "sync/catalog.json",
    "s": 240423,
-   "h": "d9190ed5edc9d990f68d4d748d5ca9ac724e3409ab165da88625f2606d202045"
+   "h": "ca2b33991db4403b8c5bd927704d52d290494b6fa917e37cf71ccfd154c275eb"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
