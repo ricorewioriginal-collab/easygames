@@ -917,6 +917,7 @@ export class Game {
     x.fillStyle = '#bdb5a8'; x.fillRect(PX(-92), PZ(-35), 27 * k, 80 * k); x.fillStyle = '#f0d9a0'; x.fillRect(PX(-97), PZ(17), 5 * k, 26 * k);
     x.fillStyle = '#8a5a35'; x.fillRect(PX(-111), PZ(-3.5), 20 * k, 3 * k);
     for (const i of this.city.isles) {   // Inseln der Welten mit Brücken
+      if (i.locked) continue;
       const [, e] = i.bridge(), d = i.def;
       x.strokeStyle = '#bdb5a8'; x.lineWidth = 10 * k; x.beginPath(); x.moveTo(PX(i.ox), PZ(i.oz)); x.lineTo(PX(e[0]), PZ(e[1])); x.stroke();
       x.fillStyle = '#f0d9a0'; x.beginPath(); x.arc(PX(i.ox), PZ(i.oz), (d.r + 6) * k, 0, 7); x.fill();
