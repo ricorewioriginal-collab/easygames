@@ -42,6 +42,7 @@ E2E-Test (Browser, SwiftShader): Server im Repo starten (`python3 -m http.server
 | `src/game/online.ts` | Online-Modus: Code, Sternnetz über `../cloud/fire-peer.js`, Prüfung aller eingehenden Daten, Liste der Anwesenden |
 | `src/game/Friends.ts` | Freund*innen in der Stadt: Figuren und Wagen der anderen, eigene Lage senden, Gesten und Zurufe |
 | `src/game/queer.ts` | Szene-Looks für die Menschen auf der Straße: Flaggenfarben, Harness, Leder, Glitzer, gefärbte Haare, direkt auf die Avatar-Texturen gemalt |
+| `src/game/room.ts` | Raumhülle der Innenräume (Boden, Wände, Decke, Fenster, Lampen, gemalte Oberflächen) und Möbel aus den Maßen der Einrichtungsliste (Theke mit Flaschenregal, Schränke, Hocker, Hantelbank, Laufband) |
 | `src/game/kerb.ts` | Laternenmeile: Hupen im Auto, Einsteigen, ruhige Ecke, Abblende (ab 18) |
 | `src/game/story.ts` | Figuren, fünf Kapitel bis zum Ende, Ziele (`goal`), automatische Fortschritte (`storyTick`), Gespräche, Entscheidungen (`save.flags`), Ende (`ending`) |
 | `src/game/life.ts` | Bedürfnisse, Stimmung, Uhrzeit und Tageswechsel, Tagesziele (aus Gay Life! übernommen) |

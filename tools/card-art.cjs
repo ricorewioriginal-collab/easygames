@@ -71,6 +71,9 @@ const E = {
 <ellipse cx="78" cy="88" rx="12" ry="7" fill="#fff" opacity=".7" transform="rotate(-30 78 88)"/>`,
   'partyverse': () => `<path d="M26 164C26 120 80 150 100 118S150 100 174 60" stroke="#ffffff88" stroke-width="12" stroke-linecap="round" stroke-dasharray="1 20" fill="none"/>${[[34, 160, '#19f0ff'], [64, 146, '#ffc53d'], [94, 124, '#8cf04a'], [126, 106, '#ff3d8b']].map(([x, y, c]) => `<circle cx="${x}" cy="${y}" r="15" fill="${c}" stroke="#fff" stroke-width="5"/>`).join('')}
 ${iso(100, 44, 52, '#ffffff', '#ffd6ea', '#ff9ad0')}${dicePips(100, 44, 52, [[.3, .3], [.7, .7]], [[.25, .25], [.5, .5], [.75, .75]])}
-${star(166, 52, 22, 10, '#ffc53d', 'stroke="#fff" stroke-width="4"')}<path d="M24 56l8-10 8 10zM170 130l8 4-6 8zM36 100a5 5 0 1 0 .1 0" fill="#fff" opacity=".9"/><circle cx="14" cy="30" r="5" fill="#19f0ff"/><circle cx="188" cy="104" r="5" fill="#ff3d8b"/>`
+${star(166, 52, 22, 10, '#ffc53d', 'stroke="#fff" stroke-width="4"')}<path d="M24 56l8-10 8 10zM170 130l8 4-6 8zM36 100a5 5 0 1 0 .1 0" fill="#fff" opacity=".9"/><circle cx="14" cy="30" r="5" fill="#19f0ff"/><circle cx="188" cy="104" r="5" fill="#ff3d8b"/>`,
+  'concrete-pulse': () => `<path d="M14 150H62L76 118L92 176L110 90L126 150H186" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity=".85"/>
+<g transform="rotate(-18 100 84)"><path d="M30 78C30 66 40 62 52 66L148 66C160 62 170 66 170 78C170 90 160 94 148 90L52 90C40 94 30 90 30 78Z" fill="#1b1c22" stroke="#fff" stroke-width="6" stroke-linejoin="round"/><path d="M46 78H154" stroke="#ff5a3c" stroke-width="6" stroke-linecap="round"/>
+<rect x="58" y="92" width="22" height="8" rx="3" fill="#c9ced6"/><rect x="120" y="92" width="22" height="8" rx="3" fill="#c9ced6"/><circle cx="60" cy="108" r="10" fill="#2ec4ff" stroke="#fff" stroke-width="4"/><circle cx="80" cy="108" r="10" fill="#2ec4ff" stroke="#fff" stroke-width="4"/><circle cx="120" cy="108" r="10" fill="#2ec4ff" stroke="#fff" stroke-width="4"/><circle cx="140" cy="108" r="10" fill="#2ec4ff" stroke="#fff" stroke-width="4"/></g>`
 };
 module.exports = E;

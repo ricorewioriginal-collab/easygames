@@ -184,7 +184,7 @@
     }
     R.set(st);
     UL.Audio.music('camp'); UL.Audio.atmo(theme === 'studio' ? 'studio' : 'jungle');
-    UI.hint({ move: 'Laufen', run: 'Rennen', look: 'Kamera', ok: 'Kommando', menu: 'Buschtrommel', start: 'Pause' });
+    UI.hint({ move: 'Laufen', run: 'Rennen', look: 'Kamera', ok: 'Kommando', menu: 'Buschtrommel', menuT: '🥁 Trommel', start: 'Pause' });
     await UI.fade(false, 0.4);
     const me = UL.Show.vit(meO.c);
     // hungrig oder müde: weniger Kraft für Aktionen

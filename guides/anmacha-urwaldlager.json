@@ -63,7 +63,8 @@
     "Der Wissens-Tank: im Glastank Fragen beantworten, bei Fehlern läuft Schleim nach.",
     "Das IBES-Fan-Quiz: Fragen zur deutschen Dschungelshow und zum britischen Original, einzeln unter „Prüfungen spielen“.",
     "Der Schlamm-Parcours: Rundkurs mit Stämmen, Balken, Schlamm, Sandsäcken und Kisten.",
-    "Die Lianen-Rutsche: drei Fahrten an der Seilrutsche, lenken, Beine anziehen, bremsen."
+    "Die Lianen-Rutsche: drei Fahrten an der Seilrutsche, lenken, Beine anziehen, bremsen.",
+    "Fiese Kisten: In der Kiste schaust du von oben hinein, der Stern leuchtet immer sichtbar über Tieren und Schleim. Auf dem Handy tippst du einfach auf den Stern – die Hand fährt hin und greift zu. Mit Stick oder Tasten führst du die Hand selbst und greifst mit der Aktionstaste."
    ]
   },
   {
@@ -161,7 +162,8 @@
    "p": [
     "Im Dschungel zirpen Zikaden, Vögel trillern, Tukane und Papageien rufen und ab und zu brüllt ein Brüllaffe. Nachts hörst du Grillen, Frösche und eine Eule. In der Höhle tropft es mit Echo, beim Floßrennen rauscht der Fluss.",
     "Während jeder Prüfung kommentieren die Moderatoren live: bei Sternen, Fehlern, zur Halbzeit, in den letzten Sekunden und wenn lange nichts passiert. Mit Sprachausgabe sprechen sie die Sprüche auch; abschalten kannst du sie in den Einstellungen.",
-    "Zur Krönung spielt eine eigene Finale-Hymne."
+    "Zur Krönung spielt eine eigene Finale-Hymne.",
+    "Die Stimmen lesen jeden Satz vollständig vor; die Untertitel bleiben stehen, bis der Satz zu Ende gesprochen ist. Live-Sprüche während der Prüfungen fallen nie mehr einer laufenden Moderation ins Wort. Tippen überspringt wie gewohnt."
    ]
   },
   {
@@ -329,6 +331,10 @@
   {
    "q": "Wie renne ich?",
    "a": "Handy: 🏃-Knopf oder Stick ganz nach außen. PC: Shift. Controller: B halten, L3 oder Stick voll durchdrücken."
+  },
+  {
+   "q": "Warum bewegen sich die Figuren so echt?",
+   "a": "Gehen, Rennen, Stehen, Jubeln und Sitzen sind echte Bewegungsaufnahmen (Motion Capture) aus der freien Rocketbox-Bibliothek, getrennt für Frauen und Männer. Beim Tauchen liegt die Figur waagerecht im Wasser und schwimmt im ruhigen Kraul-Rhythmus."
   }
  ]
 }

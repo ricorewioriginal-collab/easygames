@@ -30,3 +30,6 @@ Funktionen übernehmen, neuer Name und neues Cover. Dazu die Ideen 1–15 aus de
 | 19 | Online & Freunde: Stadt öffnen, per Link, QR-Code oder Code beitreten, bis zu fünf Gäste, Gesten und Zurufe | erledigt |
 | 20 | Handy-Grafik und Szene: scharfes Bild auf jeder Stufe, weiter Blick hochkant, Handy-Menü quer, queere Looks und Paare auf der Straße, Regenbogen-Übergänge, Wimpel, Banner, Ballonbögen | erledigt |
 | 21 | Farbige Fassaden und Neon (Leuchtbänder, Leuchtschriften, Lichtflecken), Folgekamera zu Fuß, Turbo auch erschöpft, ruhigere Auflösung am Handy, Szene-Looks ohne Ladehänger | erledigt |
+| 22 | Innenräume neu: Raumhülle mit Decke und Fenstern, gemalte Böden und Wände, Theken mit Flaschenregal, Kamera hinter der Figur wie draußen | erledigt |
+| 23 | Eigene Wohnung im Stil der Innenräume, Boutique mit Kleiderstangen, Autos aus dem Verkehr ausleihen, Kleiderschrank tauscht die Figur überall sofort | erledigt |
+| 24 | Neon: Rahmen um die Schriftzüge an den Fassaden statt Bändern am Gehweg (wirkten wie Geländer) | erledigt |

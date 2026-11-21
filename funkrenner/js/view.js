@@ -7,12 +7,15 @@
   function create(opt) {
     const THREE = root.THREE, canvas = opt.canvas, base = opt.base || '';
     const low = !!opt.low;
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: !low, powerPreference: 'high-performance', alpha: false });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, low ? 1 : 1.75));
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', alpha: false });
+    /* Scharfe Darstellung: volle Gerätedichte (bis 2×, sparsam 1,5×); fällt die Bildrate, regelt die Auflösung in kleinen Schritten nach (nie unter 1×). */
+    const DPR = window.devicePixelRatio || 1, PR_MAX = Math.min(DPR, low ? 1.5 : 2), PR_MIN = Math.min(DPR, 1);
+    const res = { pr: PR_MAX, acc: 0, n: 0, cool: 0 };
+    renderer.setPixelRatio(res.pr);
     renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
     const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 1, 0.1, 600);
     const V = { THREE, renderer, scene, camera, low, mode: 'menu', hero: null, heroId: null, W: null, worldId: null, G: null, t: 0, shake: 0, objs: new Map(), pickObjs: new Map(), gate: null, loading: 0, menuShift: 0, menuSpin: 0, pulse: 0, beat: null };
-    const W = V.W = root.FRWorld.create(THREE, scene, { base, low });
+    const W = V.W = root.FRWorld.create(THREE, scene, { base, low, aniso: Math.min(8, renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 4) });
 
     /* ---------- Held-Schatten, Schild, Rakete ---------- */
     const stage = new THREE.Group(); scene.add(stage); V.stage = stage;
@@ -216,9 +219,17 @@
     /* ---------- Rendern ---------- */
     V.resize = () => {
       const w = canvas.clientWidth || window.innerWidth, h = canvas.clientHeight || window.innerHeight;
-      renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+      renderer.setPixelRatio(res.pr); renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+    };
+    /* dynamische Auflösung: Mittel über ~1 s; unter ~45 fps runter, über ~57 fps langsam wieder hoch */
+    const adapt = raw => {
+      if (!(raw > 0) || raw > .25) return; res.acc += raw; res.n++; if (res.cool > 0) res.cool -= raw;
+      if (res.acc < 1) return; const ms = res.acc / res.n * 1000; res.acc = res.n = 0; if (res.cool > 0) return;
+      let pr = res.pr; if (ms > 22 && pr > PR_MIN) pr = Math.max(PR_MIN, pr - .25); else if (ms < 17.5 && pr < PR_MAX) pr = Math.min(PR_MAX, pr + .25);
+      if (pr !== res.pr) { res.pr = pr; res.cool = 2; renderer.setPixelRatio(pr); V.resize(); }
     };
     V.frame = dt => {
+      if (dt > 0) adapt(dt);
       dt = Math.min(dt, .05); V.t += dt;
       W.update(dt, V.t, V.mode === 'beat' ? V.pulse : 0);
       if (V.mode === 'menu') V.menuSync(dt);

@@ -231,9 +231,9 @@ export class Sim {
     for (let i = 0; i < this.c.o.length; i++) { const o = this.c.o[i]; if (o.k !== 'glide') continue; const hx = this.gx[i] != null ? this.gx[i] : o.x1, hy = railY(o, hx) - 0.35, head = this.y + PH; if (Math.abs(this.x - hx) < 0.8 && head >= hy - 0.8 && head <= hy + 0.5) return i; }
     return -1;
   }
-  /** im Spinnenkamin (in der Luft zwischen den Wänden)? */
+  /** im Spinnenkamin (in der Luft zwischen den Wänden)? Rechts bis an den Ausstiegsturm – wer dort anliegt, steht noch im Kamin */
   nearChim() {
-    for (let i = 0; i < this.c.o.length; i++) { const o = this.c.o[i]; if (o.k === 'chim' && this.x > o.x + 0.2 && this.x < o.x + o.w - 0.2 && this.y > o.y0 + 0.2 && this.y + PH < o.top + 0.3) return i; }
+    for (let i = 0; i < this.c.o.length; i++) { const o = this.c.o[i]; if (o.k === 'chim' && this.x > o.x + 0.1 && this.x < o.x + o.w + 0.2 && this.y > o.y0 + 0.2 && this.y + PH < o.top + 0.3) return i; }
     return -1;
   }
   /** Rechteck des Spielers trifft Kreis (Sandsack = drei Kreise entlang des Seils) */
@@ -301,8 +301,8 @@ export class Sim {
         else { this.prevJ = J; this.dist = Math.max(this.dist, this.x); this.hazards(); this.check(); return; }
       }
       // Am Ende der Stangen festhalten (kein automatisches Abschwingen); Sprung = Absprung nach vorn
-      else { if (this.x > o.x2 + 0.1) this.x = o.x2 + 0.1; this.y = barY(o, this.x) - PH;
-        if (this.x < o.x1 - 0.35) { this.hang = null; this.grabCool = 0.35; } else if (J && !this.prevJ) { this.hang = null; this.grabCool = 0.35; this.vy = 7.2; this.vx = this.face * 5.5; } else { this.prevJ = J; this.dist = Math.max(this.dist, this.x); this.hazards(); this.check(); return; } }
+      else { if (this.x > o.x2) this.x = o.x2; this.y = barY(o, this.x) - PH;   // Hände bleiben auf der Stange
+        if (this.x < o.x1 - 0.12) { this.hang = null; this.grabCool = 0.35; } else if (J && !this.prevJ) { this.hang = null; this.grabCool = 0.35; this.vy = 7.2; this.vx = this.face * 5.5; } else { this.prevJ = J; this.dist = Math.max(this.dist, this.x); this.hazards(); this.check(); return; } }
       this.prevJ = J;
     }
     const ctl = this.stun > 0 ? 0 : 1, dir = (R - L) * ctl;
@@ -326,7 +326,7 @@ export class Sim {
     // Greifen: nur mit der Aktionstaste – in der Luft in Griffweite drücken (Stangen, Leisten, Seil, Ringe, Lachsleiter)
     this.grabCool -= dt;
     if (!this.onGround && ctl && this.grabCool <= 0 && this.gbuf > 0) {
-      const b = this.nearBar(); if (b) { this.gbuf = 0; this.grabs++; this.hang = { bar: b.i }; this.vx = 0; this.vy = 0; this.y = barY(b.o, this.x) - PH; this.duck = false; this.hazards(); return; }
+      const b = this.nearBar(); if (b) { this.gbuf = 0; this.grabs++; this.hang = { bar: b.i }; this.vx = 0; this.vy = 0; this.x = Math.max(b.o.x1 + (b.o.ledge ? 0.05 : 0), Math.min(b.o.x2 - (b.o.ledge ? 0.05 : 0), this.x)); /* knapp neben dem Ende gegriffen: Hände an die Stange */ this.y = barY(b.o, this.x) - PH; this.duck = false; this.hazards(); return; }
       const gi = this.nearGlide(); if (gi >= 0) { this.gbuf = 0; this.grabs++; const o = this.c.o[gi], hx = this.gx[gi] != null ? this.gx[gi] : o.x1; this.glide = { t0: this.t, i: gi, x: hx, v: Math.max(2.4, this.vx * 0.6) }; this.x = hx; this.y = railY(o, hx) - 0.35 - PH; this.vx = this.vy = 0; this.duck = false; return; }
       const ci = this.nearChim(); if (ci >= 0) { this.gbuf = 0; this.grabs++; this.chim = { i: ci, cool: 0.1 }; this.vx = this.vy = 0; this.duck = false; this.boost = false; return; }
       const rp = this.nearRope(); if (rp) { this.gbuf = 0; this.grabs++; this.rope = rp; rp.t0 = this.t; this.boost = false; this.duck = false; return; }

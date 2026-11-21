@@ -9,7 +9,7 @@
   Tags.set = (id, getPos, html, cls = 'tag', ttl = 0) => {
     let t = Tags.list.get(id);
     if (!t) { const el = document.createElement('div'); document.getElementById('labels').appendChild(el); t = { el }; Tags.list.set(id, t); }
-    t.getPos = getPos; t.ttl = ttl; if (t.html !== html || t.cls !== cls) { t.el.className = cls; t.el.innerHTML = html; t.html = html; t.cls = cls; }
+    t.getPos = getPos; t.ttl = ttl; if (t.html !== html || t.cls !== cls) { t.el.className = cls; t.el.innerHTML = html; t.html = html; t.cls = cls; t.w = 0; }
     return t;
   };
   Tags.del = (id) => { const t = Tags.list.get(id); if (t) { t.el.remove(); Tags.list.delete(id); } };
@@ -17,14 +17,23 @@
   Tags.bubble = (id, getPos, text, sec = 3) => Tags.set('b:' + id, getPos, UL.esc(text), 'bubble', sec);
   Tags.update = (dt, cam) => {
     if (!cam) return;
-    const w = innerWidth, h = innerHeight;
+    const w = innerWidth, h = innerHeight, vis = [];
     Tags.list.forEach((t, id) => {
       if (t.ttl) { t.ttl -= dt; if (t.ttl <= 0) { Tags.del(id); return; } }
       t.getPos(v); v.project(cam);
-      const vis = v.z < 1 && v.z > -1 && Math.abs(v.x) < 1.1 && Math.abs(v.y) < 1.1;
-      t.el.style.display = vis ? '' : 'none';
-      if (vis) { const x = (v.x + 1) / 2 * w, m = t.cls === 'bubble' ? Math.min(w / 2, 115) : 0; t.el.style.left = (m ? UL.clamp(x, m, w - m) : x).toFixed(0) + 'px'; t.el.style.top = ((1 - v.y) / 2 * h).toFixed(0) + 'px'; }
+      const on = v.z < 1 && v.z > -1 && Math.abs(v.x) < 1.1 && Math.abs(v.y) < 1.1;
+      t.el.style.display = on ? '' : 'none';
+      if (on) { const x = (v.x + 1) / 2 * w, m = t.cls === 'bubble' ? Math.min(w / 2, 115) : 0; vis.push({ t, x: m ? UL.clamp(x, m, w - m) : x, y: (1 - v.y) / 2 * h, z: v.z }); }
     });
+    // Namensschilder nicht übereinander: nähere zuerst, weiter entfernte rutschen nach oben (Größe nur nach Textänderung messen)
+    vis.sort((a, b) => a.z - b.z);
+    const placed = [];
+    for (const o of vis) {
+      const t = o.t; if (!t.w) { t.w = t.el.offsetWidth || 60; t.h = t.el.offsetHeight || 20; }
+      if (t.cls !== 'bubble') for (let k = 0; k < 6; k++) { const hit = placed.find(p => Math.abs(p.x - o.x) < (p.w + t.w) / 2 + 2 && Math.abs(p.y - o.y) < (p.h + t.h) / 2 + 1); if (!hit) break; o.y = hit.y - (hit.h + t.h) / 2 - 2; }
+      placed.push({ x: o.x, y: o.y, w: t.w, h: t.h });
+      t.el.style.left = o.x.toFixed(0) + 'px'; t.el.style.top = o.y.toFixed(0) + 'px';
+    }
   };
 
   // ---------- Kamerafahrt ----------
