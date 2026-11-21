@@ -961,17 +961,18 @@ export function createRenderer(T, canvas, opts) {
     ms.refs++;
     const mesh = ms.mesh.clone('ns', null, true, false); mesh.isVisible = true; mesh.material = ms.mesh.material; mesh.billboardMode = Mesh.BILLBOARDMODE_ALL; mesh.isPickable = false;
     mesh.renderingGroupId = mat.depthTest === false ? 2 : 1; mesh.__ms = ms; mesh.setEnabled(false);
+    mesh.cullingStrategy = 1; mesh.doNotSyncBoundingInfo = true;   // nur Kugel prüfen (drehungsfrei), Hülle nur bei Ortswechsel nachführen
     let root = nroots.find(r => r.o === parent);
     if (!root) { root = { o: parent, meshes: [], mw: Float64Array.from(parent.matrixWorld.elements), on: null, gone: 0 }; nroots.push(root); }
     root.meshes.push(mesh); mesh.setEnabled(!!root.on); candDirty = true;
     let x = 0, y = 0, z = 0;
-    const upd = mesh.__upd = () => { const e = parent.matrixWorld.elements; mesh.position.copyFromFloats(e[0] * x + e[4] * y + e[8] * z + e[12], e[1] * x + e[5] * y + e[9] * z + e[13], e[2] * x + e[6] * y + e[10] * z + e[14]); };
+    const upd = mesh.__upd = () => { const e = parent.matrixWorld.elements; mesh.position.copyFromFloats(e[0] * x + e[4] * y + e[8] * z + e[12], e[1] * x + e[5] * y + e[9] * z + e[13], e[2] * x + e[6] * y + e[10] * z + e[14]); mesh._boundingInfoIsDirty = true; };
     const position = { get x() { return x; }, set x(v) { if (v !== x) { x = v; upd(); } }, get y() { return y; }, set y(v) { if (v !== y) { y = v; upd(); } }, get z() { return z; }, set z(v) { if (v !== z) { z = v; upd(); } },
       set(a, b, c) { x = a; y = b; z = c; upd(); return position; } };
     position.copy = v => position.set(v.x, v.y, v.z);
     const sc = mesh.scaling;
-    const scale = { get x() { return sc.x; }, set x(v) { sc.x = v; }, get y() { return sc.y; }, set y(v) { sc.y = v; }, get z() { return 1; }, set z(v) { },
-      set(a, b) { sc.copyFromFloats(a, b === undefined ? a : b, 1); return scale; }, setScalar(a) { sc.copyFromFloats(a, a, 1); return scale; } };
+    const scale = { get x() { return sc.x; }, set x(v) { sc.x = v; mesh._boundingInfoIsDirty = true; }, get y() { return sc.y; }, set y(v) { sc.y = v; mesh._boundingInfoIsDirty = true; }, get z() { return 1; }, set z(v) { },
+      set(a, b) { sc.copyFromFloats(a, b === undefined ? a : b, 1); mesh._boundingInfoIsDirty = true; return scale; }, setScalar(a) { sc.copyFromFloats(a, a, 1); mesh._boundingInfoIsDirty = true; return scale; } };
     const sp = { isNative: true, material: mat, position, scale, mesh, parent, userData: {},
       removeFromParent() { const i = root.meshes.indexOf(mesh); if (i >= 0) { root.meshes.splice(i, 1); disposeNative(mesh); candDirty = true; } return sp; } };
     Object.defineProperty(sp, 'visible', { get() { return mesh.isVisible; }, set(v) { v = !!v; if (v !== mesh.isVisible) { mesh.isVisible = v; candDirty = true; } } });
@@ -1086,6 +1087,7 @@ export function createRenderer(T, canvas, opts) {
         continue;
       }
       if (gone.size) gone.delete(o);
+      if ((!vis || o.visible === false) && o.__dv !== ep) continue;   // unsichtbar bewegt (z. B. ferne Passanten): erst beim Einblenden nachrechnen
       updTree(o);
       if (o.__dv === ep) walk(o, vis);   // ein-/ausgeblendet, umgehängt, anderes Material: ganzer Teilbaum
       else if (vis) moveTree(o);         // nur bewegt: Lage der sichtbaren Teile nachführen

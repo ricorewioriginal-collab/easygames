@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c6cac8b60e1c",
- "generated": "2026-11-21T05:34:25+00:00",
- "commit": "04c54ae8c4ca6d7a1569559b63bbd4e6581e1a8f",
+ "version": "82f1871bf7be",
+ "generated": "2026-11-21T13:15:00+01:00",
+ "commit": "9af0c1f2b3b170cb1715bc81feefee6bdd12b98f",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -3013,8 +3013,8 @@
   },
   {
    "p": "anmacha-podcast-tycoon/babylon/amc-babylon.js",
-   "s": 2658744,
-   "h": "9704895aff324f38c6ae9dfeb10100507023497dd09e064e87e6cefd95f2c6ab"
+   "s": 2658963,
+   "h": "b8e7f6ad42e09eabb6409ee9bd47798f522e9740d98dc4c0e88722ffff31d282"
   },
   {
    "p": "anmacha-podcast-tycoon/card.svg",
@@ -3094,7 +3094,7 @@
   {
    "p": "anmacha-podcast-tycoon/index.html",
    "s": 7465,
-   "h": "2f0142da09b442eac3f30cfd16cc1f7b9ba33efe93577017891bba085d6c0172"
+   "h": "07c5723b5883c5bd7ea8131ff5ae3a42089ed5e7c44727777187183ebd9bf28b"
   },
   {
    "p": "anmacha-podcast-tycoon/manifest.webmanifest",
@@ -18224,7 +18224,7 @@
   {
    "p": "sync/catalog.json",
    "s": 240672,
-   "h": "6dffbb539e1f70bead8e56cea3e2ec05aa55a8929fea924fc81fdd96b5e87eff"
+   "h": "715e40cd0c945c48dc219f1e8694ecc22ff76e453348a0dc26237ed550051c72"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
