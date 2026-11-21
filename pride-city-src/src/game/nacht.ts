@@ -8,7 +8,7 @@ import type { NpcDef, StoryCtx, Goal } from './story';
 import type { Mission } from './saga';
 import { sagaDone, MISSIONS as SAGA, isNight } from './saga';
 import type { GigStep } from './gigs';
-import { owns } from './empire';
+import { owns, priceOf, BUSINESSES } from './empire';
 
 export const NACHT_NPCS: NpcDef[] = [
   { id: 'rocco', name: 'Rocco Sterling', pron: 'er/ihn', color: '#ffcf5a', look: { body: 'Man', rb: 'Business_Male_01', palette: 'rainbow', skin: 1, hair: 0 }, x: 130.5, z: 4.3, yaw: Math.PI },
@@ -68,7 +68,7 @@ export const NACHT: Mission[] = [
     outro: (s) => [
       L('Schau dir das an. Feuerwerk über der Hochbahn, Konfetti auf den Taxis, und unten tanzt die Straße mit.'),
       L('Ich mache das seit dreißig Jahren. Und heute Nacht habe ich zum ersten Mal einfach zugeschaut, weil ich wusste: Du hast es im Griff.'),
-      L(`Das Prisma steht zum Verkauf, ${s.name}. Der größte Club von Rainbow City. Ich gebe dir 1500 € als Starthilfe. Kauf ihn dir.`),
+      L(`Das Prisma steht zum Verkauf, ${s.name}. Der größte Club von Rainbow City. Ich habe mit Dario geredet: Für dich gibt es ihn ${DEAL} % günstiger. Kauf ihn dir.`),
       L('Mach ihn zu deinem. Und lass einen alten Mann ab und zu umsonst rein.')] },
 ];
 
@@ -77,14 +77,18 @@ export const nachtOpen = (s: SaveData) => s.chapter >= 3;
 export const nachtNext = (s: SaveData) => (nachtOpen(s) ? NACHT[nachtDone(s)] || null : null);
 /** Krönung der Reihe: dein erster großer Club (Imperium, andockbar an das Club-Management) */
 export const CLUB = 'prisma';
+/** Roccos Starthilfe: Story-Rabatt auf das Prisma (s.flags.deal_prisma, siehe hooks.ts) */
+export const DEAL = 40;
 export const nachtOver = (s: SaveData) => nachtDone(s) >= NACHT.length && owns(s, CLUB);
 /** Akt II wechselt zwischen Hochstadt und Nachtleben: wer weniger weit ist, ist dran */
 export const nachtFirst = (s: SaveData) => !nachtOver(s) && (sagaDone(s) >= SAGA.length || nachtDone(s) / NACHT.length < sagaDone(s) / SAGA.length);
 
+const clubPrice = (s: SaveData) => priceOf(s, BUSINESSES.find((b) => b.id === CLUB)!);
+
 export function nachtGoal(s: SaveData): Goal | null {
   const m = nachtNext(s);
   if (m) return { title: `Sterling Nights ${nachtDone(s) + 1}/${NACHT.length}: ${m.title}`, sub: m.hint, npc: 'rocco' };
-  if (nachtOpen(s) && !owns(s, CLUB)) return { title: s.money >= 4000 ? 'Kauf deinen ersten großen Club: das Prisma' : `Spare für das Club Prisma (${s.money}/4000 €)`, sub: 'Handy → Imperium. Mit Aufträgen, Jobs und deinen Geschäften kommt das Geld schneller.', poi: 'club' };
+  if (nachtOpen(s) && !owns(s, CLUB)) return { title: s.money >= clubPrice(s) ? 'Kauf deinen ersten großen Club: das Prisma' : `Spare für das Club Prisma (${s.money}/${clubPrice(s)} €)`, sub: `Bei Dario im Prisma oder im Handy unter Imperium${s.flags['deal_' + CLUB] ? ` · ${DEAL} % Rabatt von Rocco` : ''}.`, poi: 'club' };
   return null;
 }
 export const nachtMarks = (s: SaveData): Array<[string, string]> => (nachtNext(s) ? [['rocco', '🥂']] : []);
@@ -111,9 +115,9 @@ export function nachtTalk(c: StoryCtx, id: string): boolean {
       after: () => {
         delete s.flags.nachtRun; s.flags.nacht = nachtDone(s) + 1;
         const last = nachtDone(s) >= NACHT.length;
-        if (last) s.money += 1500;
+        if (last && !owns(s, CLUB)) s.flags['deal_' + CLUB] = DEAL;
         c.say(m.outro(s), () => {
-          if (last) c.card('Sterling Nights', 'Dein erster großer Club', owns(s, CLUB) ? 'Das Prisma gehört dir schon. Rocco ist stolz wie nie.' : 'Rocco hat dir 1500 € Starthilfe gegeben. Kauf das Club Prisma im Handy unter Imperium.');
+          if (last) c.card('Sterling Nights', 'Dein erster großer Club', owns(s, CLUB) ? 'Das Prisma gehört dir schon. Rocco ist stolz wie nie.' : `Rocco hat dir ${DEAL} % Rabatt auf das Club Prisma besorgt. Kauf es bei Dario im Club oder im Handy unter Imperium.`);
           else c.toast(`🥂 Nächste Nacht: ${NACHT[nachtDone(s)].title}`);
         });
       },
@@ -123,4 +127,15 @@ export function nachtTalk(c: StoryCtx, id: string): boolean {
   lines.push(L(m.car ? 'Bereit? Mit einem schicken Wagen bist du schneller.' : 'Bereit?', [{ label: `Los geht’s (${m.pay} €)`, fn: start }, { label: 'Noch nicht', fn: () => {} }]));
   c.say(lines);
   return true;
+}
+
+/** Club gekauft (pcEvents clubGekauft): Krönung der Reihe mit Anruf und Karte */
+export function nachtBought(c: StoryCtx, id: string) {
+  const s = c.s;
+  if (id !== CLUB || s.flags.nachtClub || nachtDone(s) < NACHT.length) return;
+  s.flags.nachtClub = true; delete s.flags['deal_' + CLUB];
+  c.phone([
+    { who: `📞 ${R.name}`, color: R.color, text: 'Ich habe es gerade gehört. Das Prisma gehört dir! Dario hat geweint, ich übrigens auch, ein bisschen.' },
+    { who: `📞 ${R.name}`, color: R.color, text: 'Ab heute bist du nicht mehr meine rechte Hand. Du bist die Konkurrenz. Die schönste, die ich je hatte.' },
+  ], () => { c.reward(0, 5, 'Club-Mogul*in'); c.card('Sterling Nights', 'Club-Mogul*in', 'Das Prisma gehört dir. Führ es im Handy unter Imperium: DJs, Preise, Tür und Clubnächte.'); });
 }

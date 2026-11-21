@@ -3,8 +3,8 @@ import { defaults } from '../src/engine/Save';
 import { walkable } from '../src/game/World';
 import { MISSIONS, SAGA_NPCS, sagaTalk, sagaDone, sagaGoal, sagaHidden, sagaMarks } from '../src/game/saga';
 import { goal, talk, type StoryCtx } from '../src/game/story';
-import { owns, income } from '../src/game/empire';
-import { NACHT, NACHT_NPCS, nachtTalk, nachtDone } from '../src/game/nacht';
+import { owns, income, buy, BUSINESSES } from '../src/game/empire';
+import { NACHT, NACHT_NPCS, nachtTalk, nachtDone, nachtBought } from '../src/game/nacht';
 import type { Line } from '../src/ui/ui';
 import type { Gig } from '../src/game/gigs';
 
@@ -75,9 +75,13 @@ describe('Sterling Nights – Nachtleben', () => {
       expect(s.flags.nachtRun).toBe(NACHT[i].id);
       (gig as unknown as Gig).after!(0);
     }
-    expect(nachtDone(s)).toBe(5); expect(s.money).toBeGreaterThanOrEqual(1500);
-    expect(goal(s).poi).toBe('club');
-    s.flags.biz_prisma = 1; expect(goal(s).title).toContain('Insel 1/');
+    expect(nachtDone(s)).toBe(5); expect(s.flags.deal_prisma).toBe(40);
+    expect(goal(s).poi).toBe('club'); expect(goal(s).title).toContain('2400');
+    s.money = 5000; s.rep = 30; let rang = 0; Object.assign(c, { phone: (l: Line[], d?: () => void) => { rang++; c.say(l, d); }, reward: () => {} });
+    const prisma = BUSINESSES.find((b) => b.id === 'prisma')!;
+    expect(buy(s, prisma)).toBe(null); expect(s.money).toBe(2600);
+    nachtBought(c, 'prisma'); expect(rang).toBe(1); expect(s.flags.nachtClub).toBe(true); expect(s.flags.deal_prisma).toBeUndefined();
+    expect(goal(s).title).toContain('Insel 1/');
     expect(nachtTalk(c, 'rocco')).toBe(true);
   });
 });

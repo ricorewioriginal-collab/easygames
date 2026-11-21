@@ -15,6 +15,11 @@ import { World } from './World';
 import { pianoSongs, pianoParts } from './minigames/showSongs';
 import { openGigs, GIGS, fmtTime } from './gigs';
 import { BUSINESSES, owns, owned, income, buy } from './empire';
+import { clubDeal, clubManage } from './clubui';
+import { isClub } from './club';
+import { pcEvents } from './hooks';
+import { houseMenu, useHomeItem } from './houseui';
+import { roomTheme, roomLevel } from './house';
 import { SKY, skyAt, forecast } from './weather';
 import { closeness, levelName, addCloseness, chatOpen, chatOf, replyChat, OUTINGS, outingWhy, doOuting, GIFTS, giveGift, model, partners, jealousy, type Model } from './bond';
 import { STAFF, UPGRADES, UP_MAX, SPECIAL, daily as bizDaily, staffOf, upOf, popOf, issueOf, eventReady, hire, upgrade, workIn, hostEvent, fixIssue, upCost, staffFee, fixCost, eventCost } from './manage';
@@ -37,6 +42,7 @@ import type { Sfx } from '../engine/Audio';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage, level } from './jobs';
 import { photo } from './Photo';
 import { PROFILES, profileShots, profile, dateRec, dateQuestions, finishDate, canStay, DATE_STAGE, testDue, HEALTH_INFO, GLOSSARY, feed, post, bond, TEST_EVERY, FILMS, WORKERS, isLateNight, canMeet, encounter } from './social';
+import { DILDOS, EXTRAS, CONDOMS, ownsToy, buyToy, buyCondoms, condomLabel } from './toys';
 import { NEEDS, mood, moodIcon, moodName, change, advance, minutesUntil, track, dailyState, clock, weekday, hour, type Daily } from './life';
 
 type BookId = 'licht' | 'leuchtfeuer';
@@ -57,6 +63,8 @@ function famSub(s: Game['save']['data']) {
 export const PENTHOUSE = 6000;
 export class Game {
   engine: Engine;
+  /** Ereignisse für Story und Minispiele (hooks.ts): clubGekauft, clubNacht, clubEinnahmen, hausAusbau … */
+  events = pcEvents;
   save = new Save();
   loading = new Loading();
   dialog = new Dialog();
@@ -71,6 +79,8 @@ export class Game {
   inside: InteriorScene | null = null;
   private insideBack = { x: 0, z: 0, yaw: 0 };
   private insideWorld = false;
+  /** Innenraum ist ein Anbau des Zuhauses: zurück in die Wohnung */
+  private insideHome = false;
   private interiors = new Map<string, InteriorScene>();
   private photoIdx = 0;
   private photoFor = '';
@@ -121,7 +131,7 @@ export class Game {
   }
 
   /* ---------- Overlay-Menüs ---------- */
-  private openMenu(html: string, items: Item[], onBack: (() => void) | null, cls = 'title') {
+  openMenu(html: string, items: Item[], onBack: (() => void) | null, cls = 'title') {
     this.closeMenu();
     this.overlay = el(`<div class="screen ${cls}">${html}</div>`);
     this.menu = new Menu(items);
@@ -292,12 +302,12 @@ export class Game {
 
   /* ---------- Innenräume aller Häuser ---------- */
   /** Haus betreten: Einrichtung aus interiors.ts, zurück vor die Tür (back) */
-  enterInterior(theme: Theme, back: { x: number; z: number; yaw: number }, placeId = '', fromWorld = false) {
+  enterInterior(theme: Theme, back: { x: number; z: number; yaw: number }, placeId = '', fromWorld = false, toHome = false) {
     const s = this.save.data;
     if (theme.adult && !s.settings.adult) { toast('Nur mit 18+ (Einstellungen).'); sfx('miss'); return; }
     sfx('door'); this.closeMenu();
-    this.insideBack = back; this.insideWorld = fromWorld;
-    if (!fromWorld) s.pos = { ...back };
+    this.insideBack = back; this.insideWorld = fromWorld; this.insideHome = toHome;
+    if (!fromWorld && !toHome) s.pos = { ...back };
     this.fade(async () => {
       const key = theme.id + '|' + placeId + (fromWorld ? '|' + theme.title : '');
       let sc = this.interiors.get(key);
@@ -311,13 +321,23 @@ export class Game {
   leaveInterior() {
     const s = this.save.data;
     sfx('door');
+    if (this.insideHome && this.home) { const h = this.home; this.insideHome = false; this.fade(() => { this.where = 'home'; this.inside = null; h.fromAnnex = true; h.setSky(this.city.world.night); this.engine.setScene(h); this.save.write(); }); return; }
     if (this.insideWorld && this.world) { const w = this.world; this.fade(() => { this.where = 'world'; this.inside = null; w.back = { ...this.insideBack }; this.engine.setScene(w); this.save.write(); }); return; }
     this.fade(() => { this.where = 'city'; this.inside = null; s.pos = { ...this.insideBack }; this.engine.setScene(this.city); this.city.setPlay(); this.save.write(); });
   }
+  /** Anbau betreten (Raum aus house.ts, Stufe im Namen, damit ein Ausbau neu eingerichtet wird) */
+  enterAnnex(room: string) {
+    const lv = roomLevel(this.save.data, room); if (!lv) return;
+    this.enterInterior(roomTheme(room, lv), { x: 0, z: 0, yaw: 0 }, `annex_${room}_${lv}`, false, true);
+  }
+  /** Besondere Stellen im Anbau */
+  annexAct(room: string) { if (room === 'wardrobe') this.fade(() => this.creator(true)); }
   /** Stelle im Innenraum benutzen */
   interiorAct(sp: Spot, sc?: InteriorScene) {
     const s = this.save.data, a = sp.act;
     if (a.k === 'menu') { if (sc?.placeId) this.placeMenu(sc.placeId); return; }
+    if (a.k === 'club' || a.k === 'deal') { if (sc?.business) clubDeal(this, sc.business, sc); return; }
+    if (a.k === 'annex') { this.annexAct(a.room); return; }
     if (a.k === 'gl') { const m = miniForGl(a.id); if (m) this.playMini(m.id); else this.roman('gaylife', a.id); return; }
     if (a.k === 'mini') { this.playMini(a.id); return; }
     if (a.k === 'dance') { this.goDance(false); return; }
@@ -351,6 +371,8 @@ export class Game {
     const s = this.save.data, h = this.home!;
     const busy = (kind: HomeScene['activity'], min: number, fx: () => void, msg: string) => { h.play(kind); if (kind === 'shower') sfx('shower'); else if (kind === 'stove') sfx('cook'); setTimeout(() => { this.pass(min); fx(); toast(msg); this.save.write(); this.city.refreshHud(); }, 900); };
     if (id === 'door') { this.leaveHome(); return; }
+    if (id === 'annex') { houseMenu(this); return; }
+    if (id.startsWith('up_')) { useHomeItem(this, id.slice(3)); return; }
     if (id === 'wardrobe') { this.fade(() => this.creator(true)); return; }
     if (id === 'shower') { busy('shower', 20, () => { change(s, { hygiene: 100, fun: 3 }); this.done(track(s, 'shower')); }, 'Frisch geduscht! 🚿'); return; }
     if (id === 'tv') { busy('tv', 60, () => { change(s, { fun: 25, energy: -2 }); }, 'Eine Folge „Drag Race“. Herrlich. 📺'); return; }
@@ -364,7 +386,7 @@ export class Game {
       const back = () => { this.closeMenu(); this.touch.show(true); };
       this.touch.show(false);
       this.openMenu(`<div class="col"><div class="panel"><h3>Bett</h3><p>Es ist ${clock(s)} Uhr. Schlafen speichert das Spiel.</p><div class="slot"></div></div></div>`, [
-        { icon: '🌙', label: 'Schlafen bis 7 Uhr', sub: 'Energie voll, neuer Tag', fn: () => { back(); this.fade(() => { this.pass(minutesUntil(s, 7), true); change(s, { energy: 100 }); this.save.write(); toast(`Guten Morgen! ${weekday(s)}, Tag ${s.day}.`); }); } },
+        { icon: '🌙', label: 'Schlafen bis 7 Uhr', sub: 'Energie voll, neuer Tag', fn: () => { back(); this.fade(() => { this.pass(minutesUntil(s, 7), true); change(s, { energy: 100, ...(s.flags.h_himmelbett ? { fun: 10 } : {}) }); this.save.write(); toast(`Guten Morgen! ${weekday(s)}, Tag ${s.day}.${s.flags.h_himmelbett ? ' Im Himmelbett geträumt. Spaß +10' : ''}`); }); } },
         ...(s.flags.wild === s.day && s.settings.adult ? [{ icon: '🧺', label: 'Aufräumen', sub: 'Was für eine Nacht …', fn: () => { back(); s.flags.wild = 0; this.pass(15); h.showMess(); toast('Bett frisch bezogen, Verpackungen im Müll. 🧺'); } }] : []),
         { icon: '💤', label: 'Nickerchen (2 Stunden)', sub: '+25 Energie', fn: () => { back(); this.fade(() => { this.pass(120, true); this.save.write(); toast('Ausgeruht.'); }); } },
         { icon: '←', label: 'Zurück', fn: back },
@@ -549,6 +571,7 @@ export class Game {
       const act = (why: string | null, ok: string) => { if (why) { sfx('miss'); toast(why); return; } sfx('win'); toast(ok); this.save.write(); this.city.refreshHud(); again(); };
       const bar = (v: number, c: string) => `<span style="display:inline-block;width:120px;height:8px;border-radius:4px;background:#ffffff22;vertical-align:middle"><span style="display:block;width:${v}%;height:8px;border-radius:4px;background:${c}"></span></span>`;
       this.openMenu(frame(b.name, `<div class="pbody"><p>${b.icon} <b>${d.net} € Gewinn am Tag</b><br><small>Umsatz ${d.gross} € · Lohn ${d.wage} €</small></p><p>💖 Beliebtheit ${bar(pop, pop >= 60 ? '#3ee69a' : '#ffb347')} ${pop}<br>👥 Personal: <b>${STAFF[st].name}</b><br><small>${STAFF[st].text}</small></p>${iss ? `<p>⚠️ <b>${iss.text}</b><br><small>Bis das geklärt ist, kommt nur der halbe Umsatz.</small></p>` : ''}</div>`), [
+        ...(isClub(b.id) ? [{ icon: '📋', label: 'Club: DJ, Preise, Tür, Deko', sub: 'Einstellungen · Clubnacht abends im Club selbst', fn: () => clubManage(this, b, this.where === 'inside' && this.inside?.business?.id === b.id ? this.inside : undefined) }] : []),
         ...(iss ? [{ icon: '🧰', label: iss.fix, sub: `${fixCost(b)} € · Umsatz läuft wieder voll`, fn: () => act(fixIssue(s, b), 'Problem gelöst. Der Laden läuft wieder.') }] : []),
         { icon: '🤝', label: 'Selbst mit anpacken', sub: s.flags[`mg_${b.id}_work`] === s.day ? 'heute schon erledigt' : '2 Stunden · +12 Beliebtheit · −10 Energie', disabled: s.flags[`mg_${b.id}_work`] === s.day, fn: () => { const why = workIn(s, b); if (why) { sfx('miss'); toast(why); return; } this.closeMenu(); this.fade(() => { this.pass(120); change(s, { energy: -10, social: 10, fun: 4 }); toast(`Zwei Stunden im ${b.name}. Die Gäste freuen sich, dich zu sehen. Beliebtheit +12`); this.save.write(); this.city.refreshHud(); this.touch.show(true); }); } },
         { icon: '🎉', label: sp.event, sub: wait ? `wieder in ${wait} ${wait === 1 ? 'Tag' : 'Tagen'}` : `${eventCost(b)} € · Kasse morgen früh · +20 Beliebtheit · +2 Ruf`, disabled: !!wait, fn: () => { const why = hostEvent(s, b); if (!why) this.hud.banner(`🎉 ${sp.event}`, sp.eventText, 'good', 4200); act(why, 'Die Einnahmen kommen morgen früh.'); } },
@@ -787,7 +810,7 @@ export class Game {
     const s = this.save.data, p = profile(id)!;
     const lube = (s.inv.lube || 0) > 0;
     s.inv.condom--; if (lube) s.inv.lube--;
-    const b = el(`<div class="night"><p>💜 ${p.name} und du …</p><small>Zustimmung: ✔︎ · Kondom: ✔︎${lube ? ' · Gleitgel: ✔︎' : ''}${s.health.prep ? ' · PrEP: ✔︎' : ''}</small></div>`);
+    const b = el(`<div class="night"><p>💜 ${p.name} und du …</p><small>Zustimmung: ✔︎ · ${condomLabel(s)}: ✔︎${lube ? ' · Gleitgel: ✔︎' : ''}${s.health.prep ? ' · PrEP: ✔︎' : ''}</small></div>`);
     document.body.appendChild(b); nightSounds();
     setTimeout(() => {
       this.pass(minutesUntil(s, 8), true);
@@ -859,10 +882,25 @@ export class Game {
       { label: 'Zweimal klopfen – das heißt hier „Lust?“', fn: () => setTimeout(() => {
         if (Math.random() < .3) { this.dialog.say([V('Keine Antwort. Ein Nein ist ein Nein – du lässt es gut sein.')]); return; }
         if (canMeet(s) === 'condom') { this.dialog.say([V('Zwei Klopfer zurück: Ja! … aber du hast kein Kondom dabei.'), V('Am Automaten neben der Kasse gibt es welche für 1 €.')]); return; }
-        this.dialog.say([V('Zwei Klopfer zurück: Ja! 😏')], () => this.fadeNight('🚪 Kabine 3 …', ['Klopfzeichen: Ja ✔︎', 'Kondom ✔︎', s.health.prep ? 'PrEP ✔︎' : ''].filter(Boolean), 25, 'cabin'));
+        this.dialog.say([V('Zwei Klopfer zurück: Ja! 😏')], () => this.fadeNight('🚪 Kabine 3 …', ['Klopfzeichen: Ja ✔︎', `${condomLabel(s)} ✔︎`, s.health.prep ? 'PrEP ✔︎' : ''].filter(Boolean), 25, 'cabin'));
       }, 50) },
       { label: 'Nur gucken und wieder gehen', fn: () => {} },
     ])]);
+  }
+  /** Hinterzimmer-Ecke der Boutique (18+): Toys in Größen, Kondome in deiner Größe, diskret ausprobieren */
+  private toyShop() {
+    const s = this.save.data, again = () => { this.city.refreshHud(); this.toyShop(); };
+    const has = (id: string) => s.inv['t_' + id] || 0;
+    const tried = s.flags.toyTry === s.day, mine = [...DILDOS, ...EXTRAS].filter((t) => ownsToy(s, t.id));
+    this.openMenu(`<div class="col"><div class="panel"><h3>🔞 Hinterzimmer-Ecke</h3><p>Hinter dem Samtvorhang der Boutique: Glitzer-Toys in allen Größen, diskret verpackt. Dildos kannst du auch schwingen (Waffe wechseln schaltet die Größen durch).</p><div class="slot"></div></div></div>`, [
+      ...[...DILDOS, ...EXTRAS].map((t) => ({ icon: t.icon, label: `${t.name}${t.size ? ' · ' + t.size : ''}`, sub: `${t.price} € · ${t.text}${has(t.id) ? ` · du hast ${has(t.id)}` : ''}`,
+        fn: () => { const e = buyToy(s, t); if (e) { toast(e); sfx('miss'); return; } change(s, { fun: t.fun }); sfx('coin'); toast(`${t.icon} ${t.name}: diskret verpackt. Viel Spaß! 😏`); again(); } })),
+      ...CONDOMS.map(([sz, nm]) => ({ icon: '🎈', label: `Kondome ${sz} „${nm}“ (3 Stück)`, sub: `3 € · ${s.flags.condomSize === sz ? 'deine Größe · ' : ''}du hast ${s.inv.condom || 0}`,
+        fn: () => { const e = buyCondoms(s, sz); if (e) { toast(e); sfx('miss'); return; } sfx('coin'); toast(`🎈 Größe ${sz} gemerkt. Passt, sitzt, schützt.`); again(); } })),
+      ...(mine.length ? [{ icon: '😏', label: 'In der Umkleide ausprobieren', sub: tried ? 'heute schon' : `20 Minuten · Spaß +${Math.min(40, mine.reduce((n, t) => n + t.fun, 0))}`, disabled: tried,
+        fn: () => { this.closeMenu(); this.touch.show(true); this.fade(() => { this.pass(20); s.flags.toyTry = s.day; change(s, { fun: Math.min(40, mine.reduce((n, t) => n + t.fun, 0)), energy: -6 }); this.save.write(); this.city.refreshHud(); toast('Vorhang zu, Musik an. Der Rest bleibt in der Umkleide. 😏'); }); } }] : []),
+      { icon: '←', label: 'Zurück', fn: () => this.placeMenu('boutique') },
+    ], () => this.placeMenu('boutique'), '');
   }
   /** Laufhaus: selbstbestimmte Sexarbeiter*innen, Absprache vorab, Haus stellt Kondome */
   private rosa() {
@@ -901,7 +939,7 @@ export class Game {
     this.dialog.say([Q('Im Schatten der Bäume steht jemand. Ein Blick, ein Lächeln, ein Nicken in Richtung der Büsche.', [
       { label: 'Zurücknicken und mitgehen', fn: () => setTimeout(() => {
         if (canMeet(s) === 'condom') { this.dialog.say([Q('„Hast du ein Gummi?“ – Hast du nicht. „Dann ein andermal.“ Er zwinkert und verschwindet.')]); return; }
-        this.fadeNight('🌙 Zwischen den Büschen …', ['Nicken: Ja ✔︎', 'Kondom ✔︎', s.health.prep ? 'PrEP ✔︎' : ''].filter(Boolean), 30, 'cruising', () => this.dialog.say([{ who: 'Du', color: '#ff4fa3', text: 'Die Verpackung kommt in den Mülleimer. Wir sind ja nicht die anderen. 😅' }]));
+        this.fadeNight('🌙 Zwischen den Büschen …', ['Nicken: Ja ✔︎', `${condomLabel(s)} ✔︎`, s.health.prep ? 'PrEP ✔︎' : ''].filter(Boolean), 30, 'cruising', () => this.dialog.say([{ who: 'Du', color: '#ff4fa3', text: 'Die Verpackung kommt in den Mülleimer. Wir sind ja nicht die anderen. 😅' }]));
       }, 50) },
       { label: 'Freundlich den Kopf schütteln und weitergehen', fn: () => setTimeout(() => this.dialog.say([Q('Er nickt verständnisvoll. Kein Ding.')]), 50) },
     ])]);
@@ -1079,6 +1117,7 @@ export class Game {
         { icon: '👗', label: 'Neuer Look', sub: 'Zum Kleiderschrank', fn: () => this.fade(() => this.creator(true)) },
         ...(this.city.combat?.wanted.stars ? [{ icon: '🕶️', label: 'Undercover-Umstyling', sub: `${60 * this.city.combat.wanted.stars} € · Perücke, Sonnenbrille – die Polizei erkennt dich nicht mehr`, fn: buy(60 * this.city.combat.wanted.stars, 'Neuer Look, neues Glück. Die Fahndung ist weg! 🕶️', () => this.city.combat.wanted.clear()) }] : []),
         { icon: '💍', label: 'Verlobungsring', sub: `${RING} € · Regenbogen-Gold · du hast ${s.inv.ring || 0}`, fn: buy(RING, 'Ein Ring mit Regenbogen-Steinen. Jetzt fehlt nur noch die Frage … 💍', () => { s.inv.ring = (s.inv.ring || 0) + 1; }) },
+        ...(s.settings.adult ? [{ icon: '🔞', label: 'Hinterzimmer-Ecke', sub: 'Dildos S bis XXL, Fleshlight, Penisring, Kondome in jeder Größe', fn: () => this.toyShop() }] : []),
         ...(s.settings.adult ? [{ icon: '🍆', label: 'Toy aus der Hinterzimmer-Ecke', sub: `25 € · diskret verpackt · du hast ${s.inv.toy || 0}`, fn: buy(25, 'Diskret verpackt. Viel Spaß! 😏', () => { s.inv.toy = (s.inv.toy || 0) + 1; change(s, { fun: 10 }); }) }] : [])] },
       gym: { t: 'Muckibude Muskelkater', d: 'Bären, Twinks und alle dazwischen – hier schwitzt die ganze Szene.', items: [
         { icon: '🏋️', label: 'Training', sub: '4 € · 1 Stunde · +15 Spaß, −20 Energie, −20 Hygiene', fn: () => { if (s.needs.energy < 20) { toast('Zu erschöpft fürs Training.'); sfx('miss'); return; } buy(4, 'Gepumpt! 💪', () => { this.pass(60); change(s, { fun: 15, energy: -20, hygiene: -20, hunger: -10 }); })(); } },
