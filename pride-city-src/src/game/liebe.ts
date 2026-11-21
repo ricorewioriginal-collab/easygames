@@ -35,11 +35,12 @@ export function embrace(a: Actor, o: Actor, w: number, k: number, sitting = fals
   const me = a.root.position, you = o.root.position;
   const f = you.subtract(me); f.y = 0; const dist = f.length() || 1; f.scaleInPlace(1 / dist);
   const head = B(a, 'Head'), oh = B(o, 'Head');
-  const lip = W(oh).add(f.scale(-.06)); lip.y -= .04;
+  // Kuss-Punkt in der Mitte zwischen beiden Köpfen: so treffen sich die Lippen, statt dass ein Kopf in den anderen taucht
+  const lip = Vector3.Center(W(head), W(oh)); lip.y -= .03;
   // erst vorbeugen (Wirbelsäule, Hals), dann die Arme, zuletzt der Kopf – Schlüsselbeine hängen am Hals
   if (k > 0) {
-    aim(B(a, 'Spine2'), B(a, 'Neck'), lip.add(new Vector3(0, -.25, 0)), .12 * k);
-    aim(B(a, 'Neck'), head, lip.add(new Vector3(0, .12, 0)), .25 * k);
+    aim(B(a, 'Spine2'), B(a, 'Neck'), lip.add(new Vector3(0, -.25, 0)), .1 * k);
+    aim(B(a, 'Neck'), head, lip.add(new Vector3(0, .12, 0)), .2 * k);
   }
   if (w > 0) {
     // feste Seiten: links/rechts aus den Schultern nur fürs Vorzeichen (Tanz-Animation verdreht den Oberkörper)
@@ -56,14 +57,15 @@ export function embrace(a: Actor, o: Actor, w: number, k: number, sitting = fals
         elbow = you.subtract(f.scale(.12)).add(back.scale(.14)); elbow.y = sp.y - .04;
         hand = you.add(f.scale(.16)).add(back.scale(.02)); hand.y = sp.y - .03;
       } else {
-        const low = side === 'L' ? .22 : .02;   // ein Arm tiefer (Taille), einer höher (Schulterblatt)
-        elbow = you.add(lat.scale(.24)).subtract(f.scale(.02)); elbow.y = sp.y - .1 - low * .5;
-        hand = you.add(f.scale(.14)).subtract(lat.scale(.04)); hand.y = sp.y - .14 - low;
+        // Ziele am echten Körper der anderen Person: ein Arm um die Taille, einer ans Schulterblatt
+        const tgt = W(B(o, side === 'L' ? 'Spine1' : 'Spine2') || B(o, 'Spine'));
+        elbow = tgt.add(lat.scale(.24)).subtract(f.scale(.05)); elbow.y = Math.min(elbow.y, sp.y - .06);
+        hand = tgt.add(f.scale(.11)).subtract(lat.scale(.05));
       }
       aim(sh, el, elbow, w); aim(el, ha, hand, w);
     }
   }
-  if (k > 0) aim(head, B(a, 'MNose'), lip, .7 * k);
+  if (k > 0) aim(head, B(a, 'MNose'), lip, .5 * k);
   // Augen schließen: Lider sind nicht animiert, daher feste Grundstellung merken und absolut setzen
   let base = lids.get(a);
   if (!base) { base = ['LEyeBlinkTop', 'REyeBlinkTop'].map((e) => B(a, e)).filter((n): n is TransformNode => !!n).map((n) => [n, n.position.clone()] as const); lids.set(a, base); }
@@ -82,7 +84,7 @@ export async function loveScene(h: CineHost, look: Look, name: string, done: () 
   const partner = existing || await Actor.create(sc, { ...look, outfit: 'clothed' });
   const myLook = { ...me.look };
   // Stellung vor dem Bett (Bett links hinten: x −4.4…−2, z −3.4…−1)
-  const P0 = V(-3.45, 0, -.15), Q0 = V(-2.75, 0, -.15), P1 = V(-3.24, 0, -.15), Q1 = V(-2.96, 0, -.15);
+  const P0 = V(-3.45, 0, -.15), Q0 = V(-2.75, 0, -.15), P1 = V(-3.31, 0, -.15), Q1 = V(-2.89, 0, -.15);   // 42 cm: nah, aber Körper bleiben getrennt
   const SP = V(-3.36, .12, -.95), SQ = V(-2.84, .12, -.95);
   me.root.position.copyFrom(P0); me.root.rotation.y = Math.PI / 2;
   partner.root.position.copyFrom(Q0); partner.root.rotation.y = -Math.PI / 2;

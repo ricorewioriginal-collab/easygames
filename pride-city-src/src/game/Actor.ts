@@ -1,8 +1,9 @@
 /* Animierte Figur: echte Menschen aus Microsoft Rocketbox (MIT) mit geteilten Animationen (Laufen, Rennen, Tanzen,
    Jubeln, Winken, Sitzen, Reden …), weiche Überblendung zwischen Animationen. Läuft in jeder Babylon-Szene. */
-import { applyOutfit } from './outfit';
+import { applyOutfit, skinOf } from './outfit';
 import { applyStyle } from './queer';
-import { AnimationGroup, Node3, Vector3, type Scene, type TransformNode, type AbstractMesh } from '../engine/bjs';
+import { bareBody, bareId, BARE_OUTFITS, type Bare } from './koerper';
+import { AnimationGroup, Node3, Vector3, type Scene, type TransformNode, type AbstractMesh, type Mesh } from '../engine/bjs';
 import { container, skinned } from '../engine/Assets';
 import { avatarFor, type Avatar } from './avatars';
 import { playerDrag } from './dragLook';
@@ -154,21 +155,41 @@ export class Actor {
     if (this.outfitKey() !== before) void this.dress();
   }
   private dressed = 'clothed/';
+  private bare: Bare | null = null;
+  /** Körper-Meshes der eigenen Figur (ohne den angelegten Sport-Körper) */
+  private ownBody() { return this.model.getChildMeshes().filter((m) => (m as Mesh).skeleton && !(this.bare && m.isDescendantOf(this.bare.root)) && /_body/.test(((m.material as { _orig?: { name: string } })?._orig || m.material)?.name || '')) as Mesh[]; }
   private styled = false;
-  private outfitKey() { return (this.look.outfit || 'clothed') + '/' + (this.look.style || ''); }
+  /** Harness ohne eigenen Look: Gurte werden als Look auf die nackte Haut gemalt */
+  private styleNow() { return this.look.style || (this.look.outfit === 'harness' ? 'gurt' : undefined); }
+  private outfitKey() { return (this.look.outfit || 'clothed') + '/' + (this.styleNow() || ''); }
   /** Outfit (oberkörperfrei, Unterwäsche, Badesachen, Harness) auf die Textur malen */
   async dress() {
     const k = this.outfitKey(); if (k === this.dressed || this.avatar.job === 'kid') return;
     this.dressed = k;
     try {
-      await applyOutfit(this.scene, this.model, this.avatar.id, this.look.outfit, this.avatar.g === 'f');
+      // ohne Kleidung: eng anliegender echter Körper statt umgemalter Kleidung (koerper.ts)
+      const bare = !!this.look.outfit && BARE_OUTFITS.has(this.look.outfit);
+      if (bare && !this.bare) {
+        this.bare = await bareBody(this.scene, this.model, this.bones, this.avatar.g);
+        const own0 = this.ownBody()[0], sk = own0 && await skinOf(own0);
+        if (sk) this.bare?.tint(sk);
+      }
+      if (this.dressed !== k || this.root.isDisposed()) return;
+      const own = this.ownBody();
+      const useBare = bare && !!this.bare;
+      own.forEach((m) => m.setEnabled(!useBare));
+      if (this.bare) this.bare.root.setEnabled(useBare);
+      if (useBare) await applyOutfit(this.scene, this.bare!.root, this.avatar.id + '@' + bareId(this.avatar.g), this.look.outfit, this.avatar.g === 'f', own[0]);
+      else await applyOutfit(this.scene, this.model, this.avatar.id, this.look.outfit, this.avatar.g === 'f');
       // Szene-Look der Reihe nach im Hintergrund malen: das Laden wartet nie darauf
-      if (this.look.style || this.styled) {
+      const style = this.styleNow();
+      if (style || this.styled) {
         this.styled = true;
         const base = (this.look.outfit || 'clothed') + (this.avatar.g === 'f' ? 'f' : 'm');
         styleQueue = styleQueue.then(async () => {
           if (this.root.isDisposed() || this.dressed !== k) return;
-          await applyStyle(this.scene, this.model, this.avatar.id, this.look.style, base);
+          const parts = { getChildMeshes: () => this.model.getChildMeshes().filter((m) => m.isEnabled()) };
+          await applyStyle(this.scene, parts, this.avatar.id, style, base);
           await new Promise((r) => setTimeout(r, 40));
         }).catch((e) => console.warn('style', e));
       }
