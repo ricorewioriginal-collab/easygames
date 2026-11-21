@@ -87,7 +87,7 @@ export const PARKS = [
       { type: 'score', n: 15000, text: 'Erreiche 15.000 Punkte' },
       { type: 'score', n: 40000, text: 'Erreiche 40.000 Punkte' },
       { type: 'score', n: 90000, text: 'Erreiche 90.000 Punkte' },
-      { type: 'letters', text: 'Sammle P-U-L-S-E' },
+      { type: 'letters', text: 'Sammle S-T-Y-L-E' },
       { type: 'tape', text: 'Finde die versteckte Kassette' },
       { type: 'combo', n: 6000, text: 'Lande eine 6.000er-Combo' },
       { type: 'gap', gap: 'Container-Hüpfer', text: 'Spring von Container zu Container' },
@@ -147,7 +147,7 @@ export const PARKS = [
       { type: 'score', n: 30000, text: 'Erreiche 30.000 Punkte' },
       { type: 'score', n: 80000, text: 'Erreiche 80.000 Punkte' },
       { type: 'score', n: 160000, text: 'Erreiche 160.000 Punkte' },
-      { type: 'letters', text: 'Sammle P-U-L-S-E' },
+      { type: 'letters', text: 'Sammle S-T-Y-L-E' },
       { type: 'tape', text: 'Finde die versteckte Kassette' },
       { type: 'combo', n: 15000, text: 'Lande eine 15.000er-Combo' },
       { type: 'gap', gap: 'Lichtschacht-Sprung', text: 'Spring über den Lichtschacht' },
@@ -206,7 +206,7 @@ export const PARKS = [
       { type: 'score', n: 50000, text: 'Erreiche 50.000 Punkte' },
       { type: 'score', n: 120000, text: 'Erreiche 120.000 Punkte' },
       { type: 'score', n: 250000, text: 'Erreiche 250.000 Punkte' },
-      { type: 'letters', text: 'Sammle P-U-L-S-E' },
+      { type: 'letters', text: 'Sammle S-T-Y-L-E' },
       { type: 'tape', text: 'Finde die versteckte Kassette' },
       { type: 'combo', n: 30000, text: 'Lande eine 30.000er-Combo' },
       { type: 'gap', gap: 'Vert-Höhenflug', text: 'Flieg 1,4 Sekunden an der Vert-Rampe' },
@@ -269,7 +269,7 @@ export const PARKS = [
       { type: 'score', n: 60000, text: 'Erreiche 60.000 Punkte' },
       { type: 'score', n: 130000, text: 'Erreiche 130.000 Punkte' },
       { type: 'score', n: 260000, text: 'Erreiche 260.000 Punkte' },
-      { type: 'letters', text: 'Sammle P-U-L-S-E' },
+      { type: 'letters', text: 'Sammle S-T-Y-L-E' },
       { type: 'tape', text: 'Finde die Kassette im versteckten Hof' },
       { type: 'combo', n: 25000, text: 'Lande eine 25.000er-Combo' },
       { type: 'gap', gap: 'Waggon-Hüpfer', text: 'Spring von Waggon zu Waggon' },
@@ -326,7 +326,7 @@ export const PARKS = [
       { type: 'score', n: 70000, text: 'Erreiche 70.000 Punkte' },
       { type: 'score', n: 150000, text: 'Erreiche 150.000 Punkte' },
       { type: 'score', n: 300000, text: 'Erreiche 300.000 Punkte' },
-      { type: 'letters', text: 'Sammle P-U-L-S-E' },
+      { type: 'letters', text: 'Sammle S-T-Y-L-E' },
       { type: 'tape', text: 'Finde die Kassette auf dem Pumpenhaus' },
       { type: 'combo', n: 40000, text: 'Lande eine 40.000er-Combo' },
       { type: 'gap', gap: 'Pumpenhaus-Dach', text: 'Spring aufs Dach des Pumpenhauses' },
@@ -343,7 +343,7 @@ export const PARKS = [
 export const SKATERS = [
   { id: 'mika', name: 'Mika Sturm', style: 'Street', body: 'm', skin: '#c9926a', top: '#ff6a2a', bottom: '#26324d', shoes: '#f2f2f2', topStyle: 'tee', bottomStyle: 'pants', hair: '#2b1b12', hairStyle: 'short', hat: { type: 'cap', color: '#1fb6ff', back: true },
     stats: { speed: 6, ollie: 5, spin: 5, balance: 6, air: 5 }, board: 0,
-    specials: [{ name: 'Pulsar-Flip', pts: 1500, dur: 0.85, roll: 3, yaw: 1 }, { name: 'Kometen-Grab', pts: 1400, dur: 0.9, yaw: 1, pitch: 0.5 }, { name: 'Funkenstrich', pts: 1200, pps: 450 }] },
+    specials: [{ name: 'Sternschnuppen-Flip', pts: 1500, dur: 0.85, roll: 3, yaw: 1 }, { name: 'Kometen-Grab', pts: 1400, dur: 0.9, yaw: 1, pitch: 0.5 }, { name: 'Funkenstrich', pts: 1200, pps: 450 }] },
   { id: 'juna', name: 'Juna Kade', style: 'Vert', body: 'f', skin: '#8d5a3b', top: '#7c4dff', bottom: '#1d1f29', shoes: '#ffd43a', topStyle: 'tank', bottomStyle: 'pants', hair: '#120c08', hairStyle: 'pony', hat: { type: 'helmet', color: '#ff3c7a' },
     stats: { speed: 5, ollie: 7, spin: 7, balance: 4, air: 7 }, board: 1,
     specials: [{ name: 'Sternenwirbel 900', pts: 1800, dur: 1.0, yaw: 2.5 }, { name: 'Himmelsleiter', pts: 1500, dur: 0.95, pitch: 1, roll: 1 }, { name: 'Neonfaden', pts: 1300, pps: 480 }] },
@@ -358,11 +358,28 @@ export const SKATERS = [
     specials: [{ name: 'Turbo-Kick', pts: 1500, dur: 0.8, roll: 2, pitch: 0.5 }, { name: 'Raketenstart', pts: 1600, dur: 1.0, yaw: 2 }, { name: 'Blitzleiter', pts: 1400, pps: 560 }] },
   { id: 'lia', name: 'Lia Wirbel', style: 'Show', body: 'f', skin: '#c58c63', top: '#3cf0ff', bottom: '#ff3cf0', shoes: '#ffffff', topStyle: 'tee', bottomStyle: 'shorts', hair: '#6a3dff', hairStyle: 'bob', hat: { type: 'cap', color: '#111111' },
     stats: { speed: 6, ollie: 7, spin: 8, balance: 6, air: 7 }, board: 5, unlock: 20,
-    specials: [{ name: 'Wirbelsturm 1080', pts: 2200, dur: 1.15, yaw: 3 }, { name: 'Schmetterling', pts: 1700, dur: 0.95, roll: 1, pitch: 1 }, { name: 'Regenbogenbahn', pts: 1500, pps: 600 }] }
+    specials: [{ name: 'Wirbelsturm 1080', pts: 2200, dur: 1.15, yaw: 3 }, { name: 'Schmetterling', pts: 1700, dur: 0.95, roll: 1, pitch: 1 }, { name: 'Regenbogenbahn', pts: 1500, pps: 600 }] },
+  // Stars aus anderen easygames-Spielen (Aussehen nach den Vorlagen in zotik, Show Me Your Voice und AnMaCha)
+  { id: 'zotik', name: 'Zotik', style: 'Air', star: true, kind: 'fox', body: 'm', skin: '#ff8a22', belly: '#fff2dc', top: '#7e4e2c', bottom: '#5a4234', shoes: '#3a2418', sole: '#b98a4a', topStyle: 'vest', bottomStyle: 'pants', boots: true,
+    eyes: '#2f9a45', scarf: '#2f9a45', guards: '#b98a4a', tail: '#ff8a22', tailTip: '#fff6ea', hat: null,
+    stats: { speed: 7, ollie: 8, spin: 7, balance: 5, air: 8 }, board: 1,
+    specials: [{ name: 'Fuchsschweif-Flip', pts: 1800, dur: 0.95, roll: 2, yaw: 1.5 }, { name: 'Smaragd-Wirbel', pts: 1700, dur: 1.0, yaw: 2.5 }, { name: 'Bronzefunken', pts: 1500, pps: 560 }] },
+  { id: 'rico', name: 'Ricardo', style: 'Show', star: true, body: 'm', skin: '#f2c6a4', top: '#7a3fd0', bottom: '#2c3554', shoes: '#f4f4f6', topStyle: 'tee', bottomStyle: 'pants', print: '#e8ebf6',
+    hair: '#4b2e1a', hairStyle: 'spiky', beard: 'full', beardColor: '#5e3b22', earring: 'both', septum: '#e8ebf6', hat: null,
+    stats: { speed: 7, ollie: 7, spin: 8, balance: 6, air: 7 }, board: 5,
+    specials: [{ name: 'Showtime 900', pts: 1900, dur: 1.05, yaw: 2.5 }, { name: 'Bühnen-Flip', pts: 1700, dur: 0.95, roll: 2, pitch: 0.5 }, { name: 'Mikrofon-Slide', pts: 1500, pps: 560 }] },
+  { id: 'andrew', name: 'Andrew', style: 'Technik', star: true, body: 'm', skin: '#f3cdb2', top: '#16171c', bottom: '#3a4f78', shoes: '#1b1b1b', sole: '#f2f2f2', topStyle: 'tee', bottomStyle: 'pants', print: '#ff8a1e',
+    hair: '#c9844a', hairStyle: 'short', hat: null,
+    stats: { speed: 6, ollie: 6, spin: 6, balance: 8, air: 6 }, board: 2,
+    specials: [{ name: 'Podcast-Kick', pts: 1650, dur: 0.9, roll: 3 }, { name: 'Sendepause', pts: 1500, dur: 0.95, pitch: 1, yaw: 0.5 }, { name: 'Endlos-Talk', pts: 1500, pps: 540, yawOff: -0.4, pitch: 0.25 }] },
+  { id: 'marco', name: 'Marco', style: 'Power', star: true, body: 'm', bulk: 1.12, skin: '#f0c8a8', top: '#16171c', bottom: '#2b2f3a', shoes: '#1b1b1b', sole: '#f2f2f2', topStyle: 'hoodie', bottomStyle: 'cargo', print: '#ff8a1e',
+    hair: '#6b4528', hairStyle: 'short', beard: 'full', beardColor: '#6b4528', headphones: true, hat: null,
+    stats: { speed: 8, ollie: 6, spin: 5, balance: 7, air: 6 }, board: 4,
+    specials: [{ name: 'Bass-Drop', pts: 1700, dur: 0.95, pitch: 1, roll: 1 }, { name: 'Studio-Spin', pts: 1650, dur: 1.0, yaw: 2 }, { name: 'Dauerwelle', pts: 1500, pps: 560 }] }
 ];
 
 export const BOARDS = [
-  { name: 'Pulse Klassik', c1: '#ff2d6f', c2: '#3a1cff', c3: '#ffd43a', pattern: 'bolt', label: 'PULSE' },
+  { name: 'Legende Klassik', c1: '#ff2d6f', c2: '#3a1cff', c3: '#ffd43a', pattern: 'bolt', label: 'LEGEND' },
   { name: 'Lila Welle', c1: '#7c4dff', c2: '#1b0f3a', c3: '#3cf0ff', pattern: 'wave', label: 'WAVE' },
   { name: 'Grünstreifen', c1: '#2ecc71', c2: '#0b3d2a', c3: '#e8e4d8', pattern: 'stripes', label: 'LINE' },
   { name: 'Nachtpunkte', c1: '#111318', c2: '#2a2d3a', c3: '#ff4f8b', pattern: 'dots', label: 'NOX' },
@@ -376,10 +393,18 @@ export const BOARDS = [
 ];
 
 // Eigener Skater (Editor): Grundwerte 5, eigene Spezialtricks
-export const CUSTOM_SPECIALS = [{ name: 'Pulsschlag-Flip', pts: 1500, dur: 0.9, roll: 2, yaw: 1 }, { name: 'Betonwelle', pts: 1450, dur: 0.95, yaw: 1.5, pitch: 0.5 }, { name: 'Funkenregen', pts: 1350, pps: 500 }];
+export const CUSTOM_SPECIALS = [{ name: 'Legenden-Flip', pts: 1500, dur: 0.9, roll: 2, yaw: 1 }, { name: 'Betonwelle', pts: 1450, dur: 0.95, yaw: 1.5, pitch: 0.5 }, { name: 'Funkenregen', pts: 1350, pps: 500 }];
+export const STYLE_STATS = {
+  Allround: { speed: 6, ollie: 6, spin: 6, balance: 6, air: 6 }, Street: { speed: 7, ollie: 6, spin: 5, balance: 7, air: 5 },
+  Vert: { speed: 5, ollie: 7, spin: 7, balance: 5, air: 8 }, Technik: { speed: 5, ollie: 6, spin: 7, balance: 8, air: 5 }, Tempo: { speed: 9, ollie: 6, spin: 5, balance: 5, air: 5 }
+};
 export function customSkater(c) {
-  return { id: 'eigen', name: c.name || 'Eigener Skater', style: 'Eigenbau', body: c.body, skin: c.skin, top: c.top, bottom: c.bottom, shoes: c.shoes, topStyle: c.topStyle, bottomStyle: c.bottomStyle, hair: c.hair, hairStyle: c.hairStyle,
-    hat: c.hat && c.hat !== 'none' ? { type: c.hat, color: c.hatColor, back: c.hat === 'cap' } : null, stats: { speed: 5, ollie: 5, spin: 5, balance: 5, air: 5 }, board: 0, specials: CUSTOM_SPECIALS };
+  const st = STYLE_STATS[c.style] || STYLE_STATS.Allround;
+  return { id: 'eigen', name: c.name || 'Eigener Skater', style: c.style || 'Allround', body: c.body, bulk: +c.bulk || 1, skin: c.skin, top: c.top, bottom: c.bottom, shoes: c.shoes, sole: c.sole,
+    topStyle: c.topStyle, bottomStyle: c.bottomStyle, print: c.print && c.print !== 'none' ? c.print : null, hair: c.hair, hairStyle: c.hairStyle,
+    beard: c.beard !== 'none' ? c.beard : null, beardColor: c.hair, glasses: c.glasses !== 'none' ? c.glasses : null, earring: c.earring !== 'none' ? c.earring : null,
+    headphones: c.headphones === 'on', scarf: c.scarf && c.scarf !== 'none' ? c.scarf : null, chain: c.chain === 'on' ? '#e0c060' : null,
+    hat: c.hat && c.hat !== 'none' ? { type: c.hat, color: c.hatColor, back: c.hat === 'cap' } : null, stats: Object.assign({}, st), board: +c.board || 0, specials: CUSTOM_SPECIALS };
 }
 // Konkurrenz im Wettbewerb (erfundene Namen); Wertung je Park
 export const RIVALS = ['Kai Blitz', 'Noa Rampe', 'Fynn Kante', 'Mo Asphalt', 'Ela Kurve', 'Ben Drift', 'Lou Beton', 'Ida Funke'];

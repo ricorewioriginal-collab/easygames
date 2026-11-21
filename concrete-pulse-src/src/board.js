@@ -47,8 +47,8 @@ function graphicTexture(scene, design) {
   // Schriftzug
   g.save(); g.translate(64, 256); g.rotate(Math.PI / 2); g.globalAlpha = 1;
   g.font = '900 44px system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.lineWidth = 6; g.strokeStyle = 'rgba(0,0,0,.55)'; g.strokeText(design.label || 'PULSE', 0, 0);
-  g.fillStyle = design.text || '#ffffff'; g.fillText(design.label || 'PULSE', 0, 0); g.restore();
+  g.lineWidth = 6; g.strokeStyle = 'rgba(0,0,0,.55)'; g.strokeText(design.label || 'LEGEND', 0, 0);
+  g.fillStyle = design.text || '#ffffff'; g.fillText(design.label || 'LEGEND', 0, 0); g.restore();
   t.update(); t.wrapU = t.wrapV = 0; return t;
 }
 
