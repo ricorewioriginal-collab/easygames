@@ -5,6 +5,7 @@
 export type Act =
   | { k: 'menu' }                                   // bisheriges Ladenmenü des Ortes (alle Angebote bleiben)
   | { k: 'gl'; id: string }                         // Gay-Life-Minispiel (Original)
+  | { k: 'mini'; id: string }                       // 3D-Minispiel (minigames/minis.ts)
   | { k: 'dance' } | { k: 'show' } | { k: 'bar' }
   | { k: 'book'; id: 'licht' | 'leuchtfeuer' }
   | { k: 'do'; cost?: number; min: number; d: Partial<Record<'energy' | 'hunger' | 'hygiene' | 'social' | 'fun', number>>; msg: string; sfx?: string; adult?: boolean }
@@ -31,6 +32,7 @@ const tables = (n: number, z = 1.4, span = 8): Item[] => Array.from({ length: n 
 const shelves = (z = -4.1): Item[] => [-4.4, -2.2, 2.2, 4.4].map((x, i) => ({ m: i % 2 ? 'home/shelf_B_large_decorated' : 'home/shelf_A_big', x, z, col: true } as Item));
 const dancefloor = (c1: number, c2: number): Item[] => Array.from({ length: 16 }, (_, i) => ({ box: [1.4, .06, 1.4], c: i % 2 ? c1 : c2, x: -2.1 + (i % 4) * 1.4, z: -.6 + Math.floor(i / 4) * 1.4, e: .6 } as Item));
 const gl = (id: string, label: string, x: number, z: number): Spot => ({ id: 'gl_' + id, label, x, z, r: 1.8, act: { k: 'gl', id } });
+const mini = (id: string, label: string, x: number, z: number): Spot => ({ id: 'mini_' + id, label, x, z, r: 1.8, act: { k: 'mini', id } });
 const doIt = (id: string, label: string, x: number, z: number, a: Omit<Extract<Act, { k: 'do' }>, 'k'>): Spot => ({ id, label, x, z, r: 1.8, act: { k: 'do', ...a } });
 
 /** Läden und Treffpunkte mit eigenem Ladenmenü (Schlüssel = POI-ID) */
@@ -163,7 +165,7 @@ export const HOUSE_THEMES: Theme[] = [
     spots: [{ id: 'licht', label: '📖 „Ich bin das Licht“ lesen', x: -2.2, z: -3, r: 1.6, act: { k: 'book', id: 'licht' } }, { id: 'lf', label: '🗼 „Leuchtfeuer“ lesen', x: 2.2, z: -3, r: 1.6, act: { k: 'book', id: 'leuchtfeuer' } }, doIt('lesen', '🛋️ Im Sessel schmökern', -3, 1.2, { min: 60, d: { fun: 10, energy: 4 }, msg: 'Eine Stunde in einer anderen Welt. Spaß +10' }), gl('quiz', '❓ Klischee-Quiz an der Kasse', 3.4, 3)] },
   { id: 'arcade', title: 'Arcade Funkel', icon: '🕹️', floor: 0x14102a, wall: 0x1e1840, light: 0x8a2bff, music: 'club',
     items: [-4.4, -2.2, 0, 2.2, 4.4].flatMap((x, i) => [{ box: [1.2, 2, 1], c: 0x1a1a2a, x, z: -3.8, col: true } as Item, { screen: [.9, .7], c: [0xff2fd2, 0x00f0ff, 0xffe600, 0x5dff7a, 0xff8a3b][i], x, z: -3.28, y: 1.5 } as Item]),
-    spots: [gl('match', '✨ Glitzer-Match', -3.3, -2.6), gl('run', '🏃 Parade-Runner', 0, -2.6), gl('rave', '🌈 Regenbogen-Rave', 3.3, -2.6)] },
+    spots: [gl('match', '✨ Glitzer-Match', -3.3, -2.6), gl('run', '🏃 Parade-Runner', 0, -2.6), gl('rave', '🌈 Regenbogen-Rave', 3.3, -2.6), mini('jump', '🚀 Hüpf-Automat (3D)', -2.2, 1.8), mini('toast', '🍞 Toast-Automat (3D)', 2.2, 1.8)] },
   { id: 'sauna', title: 'Sauna Heißer Stein', icon: '🧖', floor: 0xb08050, wall: 0xc8925a, light: 0xffb070,
     items: [{ box: [10, .6, 1.2], c: 0xa87040, x: 0, z: -3.6, col: true }, { box: [10, .6, 1.2], c: 0xa87040, x: 0, z: -2.2, y: -.3, col: true }, { box: [1, .8, 1], c: 0x5a5a5a, x: 4.6, z: 2.4, col: true }],
     spots: [gl('sauna', '🧖 Aufguss (Sauna-Aufguss)', 0, -1.2), doIt('schwitzen', '♨️ Schwitzen und entspannen', -3, 1, { min: 45, d: { fun: 12, hygiene: 10, energy: -6 }, msg: 'Herrlich durchgeschwitzt. Spaß +12', sfx: 'shower' })] },

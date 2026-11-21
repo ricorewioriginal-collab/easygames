@@ -372,3 +372,29 @@ body:has(#ui .screen) #hud :is(.rwheel, .nowplay) { visibility: hidden; }
 
 /* Querformat am Handy: Das Handy-Menü braucht die ganze Fläche, die Anzeigen dahinter machen Platz */
 @media (max-height: 480px) and (orientation: landscape) { body:has(#ui .screen.phone) #hud > * { visibility: hidden; } }
+
+/* 3D-Minispiele (minigames/arcade.ts): eine Bedienung für Touch hochkant/quer, Gamepad und Tastatur */
+#mg.arc .aQuit { position: absolute; top: calc(12px + var(--safe-t)); left: calc(12px + env(safe-area-inset-left)); width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); color: #fff; font-size: 18px; pointer-events: auto; }
+#mg.arc .score .s { min-width: 84px; padding: 6px 12px; }
+#mg.arc .aTime.low { color: #ff6b6b; }
+#mg.arc .aMeter { position: absolute; top: calc(74px + var(--safe-t)); left: 50%; translate: -50% 0; width: min(260px, 60vw); height: 10px; border-radius: 99px; background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.25); overflow: hidden; display: none; }
+#mg.arc .aMeter i { display: block; height: 100%; width: 0; border-radius: 99px; transition: width .08s linear; box-shadow: 0 0 12px currentColor; }
+#mg.arc .judge { top: 26%; white-space: nowrap; font-size: clamp(24px, 7vw, 50px); }
+#mg.arc .combo { top: calc(26% + 1.3em + 30px); text-shadow: 0 2px 10px rgba(0,0,0,.7); }
+#mg.arc .aHow { position: absolute; left: 50%; top: 42%; translate: -50% 0; width: min(440px, 86vw); padding: 14px 18px; border-radius: 18px; background: rgba(14,8,30,.82); border: 1px solid rgba(255,255,255,.2); text-align: center; transition: opacity .5s, translate .5s; }
+#mg.arc .aHow b { display: block; font-size: 22px; margin-bottom: 6px; background: linear-gradient(90deg, #ff5fd0, #ffd23b, #3bd1ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+#mg.arc .aHow span { font-size: 14px; color: #f2e9ff; }
+#mg.arc .aHow.off { opacity: 0; translate: -50% 20px; }
+#mg.arc .aFlash { position: absolute; inset: 0; opacity: 0; mix-blend-mode: screen; }
+#mg.arc .aFlash.go { animation: aFlash .45s ease-out forwards; }
+@keyframes aFlash { to { opacity: 0; } }
+#mg.arc .aPop { position: absolute; translate: -50% -50%; font-weight: 900; font-size: 20px; text-shadow: 0 2px 8px rgba(0,0,0,.7); animation: aPop .9s ease-out forwards; white-space: nowrap; }
+@keyframes aPop { from { transform: translateY(0) scale(.7); opacity: 1; } 30% { transform: translateY(-14px) scale(1.15); } to { transform: translateY(-60px) scale(1); opacity: 0; } }
+#mg.arc .aPad, #mg.arc .aBtn { display: none; pointer-events: auto; touch-action: none; user-select: none; -webkit-user-select: none; }
+html[data-input=touch] #mg.arc .aPad { display: flex; position: absolute; left: calc(14px + env(safe-area-inset-left)); bottom: calc(18px + var(--safe-b)); gap: 12px; }
+html[data-input=touch] #mg.arc .aBtn { display: flex; flex-direction: column; align-items: center; justify-content: center; position: absolute; right: calc(16px + env(safe-area-inset-right)); bottom: calc(18px + var(--safe-b)); }
+#mg.arc .aPad button { width: min(22vw, 84px); height: min(22vw, 84px); border-radius: 22px; border: 2px solid rgba(255,255,255,.4); background: rgba(20,12,40,.6); color: #fff; font-size: 30px; }
+#mg.arc .aBtn { width: min(28vw, 108px); height: min(28vw, 108px); border-radius: 50%; border: 3px solid rgba(255,210,59,.85); background: radial-gradient(circle at 35% 30%, rgba(255,95,208,.85), rgba(90,20,140,.85)); color: #fff; font-size: 34px; line-height: 1; box-shadow: 0 0 24px rgba(255,95,208,.5); }
+#mg.arc .aBtn small { font-size: 12px; font-weight: 800; margin-top: 4px; letter-spacing: .04em; }
+#mg.arc .aPad button.on, #mg.arc .aBtn.on { background: rgba(255,255,255,.4); transform: scale(.94); }
+@media (orientation: portrait) { #mg.arc .score { gap: 6px; } #mg.arc .score .s { min-width: 70px; padding: 5px 8px; font-size: 15px; } }
