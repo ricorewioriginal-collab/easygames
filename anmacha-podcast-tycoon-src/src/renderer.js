@@ -176,10 +176,10 @@ export function createRenderer(T, canvas, opts) {
     if (e.f !== frame) {
       e.f = frame;
       if (kind !== 'std') syncMat(m, e);
-      else if (mstate(m, e)) { if (e.bm.isFrozen) e.bm.unfreeze(); syncMat(m, e); e.chg = frame; e.chgT = now; }   // nur bei Änderung abgleichen
+      else if (mstate(m, e)) { if (e.bm.checkReadyOnlyOnce) e.bm.checkReadyOnlyOnce = false; syncMat(m, e); e.chg = frame; e.chgT = now; }   // nur bei Änderung abgleichen
       else {
         if (m.map) texFor(m.map); if (m.emissiveMap) texFor(m.emissiveMap);   // Leinwände/Videos: neuer Inhalt
-        if (!e.bm.isFrozen && frame - e.chg > 30 && now - e.chgT > 1000) e.bm.freeze();   // unverändert: Babylon prüft das Material nicht mehr jedes Bild
+        if (!e.bm.checkReadyOnlyOnce && frame - e.chg > 30 && now - e.chgT > 1000) e.bm.checkReadyOnlyOnce = true;   // unverändert: Babylon prüft das Material nicht mehr jedes Bild (direkt gesetzt: freeze() durchsucht sonst alle Meshes)
       }
     }
     return e.bm;
@@ -403,6 +403,7 @@ export function createRenderer(T, canvas, opts) {
     if (!e) e = { type: 'none' };
     e.o = o; e.f = frame; e.on = null; e.scn = null; e.still = 0;
     if (e.type !== 'none') { e.mw = new Float64Array(16); e.mw[0] = NaN; }
+    if (e.type === 'light' || e.sprite || e.skin || e.thin || e.pts || e.sky || (o.__ub && e.type !== 'none')) always.add(e); else if (e.type === 'inst') settle.add(e);
     ents.set(o, e); o.__be = e;
     return e;
   }
@@ -438,6 +439,8 @@ export function createRenderer(T, canvas, opts) {
     const s = { sk, bones: bones.slice(), n, bind, inv, refs: 1, f: -1, o, key: bones[0] };
     // Endmatrix je Knochen (Welt) = Objekt · Bindungsinverse · Knochen · Knocheninverse · Bindung; das Babylon-Mesh liegt im Ursprung
     sk._computeTransformMatrices = target => {
+      if (INC) boneUpd(s);   // Knochen erst rechnen, wenn Babylon die Figur wirklich zeichnet
+      s.act = frame;
       const src = s.o; SKN.multiplyMatrices(src.matrixWorld, src.bindMatrixInverse);
       for (let i = 0; i < s.n; i++) { SKM.fromArray(s.inv, i * 16); SKM.premultiply(s.bones[i].matrixWorld); SKM.premultiply(SKN); SKM.multiply(src.bindMatrix); target.set(SKM.elements, i * 16); }
       target.set(IDENT, s.n * 16);
@@ -519,9 +522,11 @@ export function createRenderer(T, canvas, opts) {
     else if (e.type === 'light') { if (e.sg) { shadowLights.delete(e); look.sgs.delete(e.sg); e.sg.dispose(); } e.light.dispose(); }
     else if (e.type === 'batch') unbatch(e);
     ents.delete(e.o); if (e.o.__be === e) e.o.__be = undefined;
+    always.delete(e); settle.delete(e);
   }
   function setOn(e, on) {
     if (e.on === on) return; e.on = on; candDirty = true;
+    if (on && e.type === 'inst' && !e.sprite) settle.add(e);
     if (e.type === 'light') e.light.setEnabled(on); else if (e.mesh) e.mesh.setEnabled(on);
   }
 
@@ -762,15 +767,15 @@ export function createRenderer(T, canvas, opts) {
       e.mw.set(mw);
       if (e.frz) { e.frz = false; mesh.unfreezeWorldMatrix(); }
       setTRS(mesh, mw);
-      e.still = 0; e.t0 = now;
-    } else if (!e.frz && e.still > 30 && !mesh.billboardMode && (e.frz = true)) mesh.freezeWorldMatrix();   // steht still: Babylon rechnet Lage und Box nicht mehr nach
+      e.still = 0; e.t0 = now; if (e.type === 'inst') settle.add(e);
+    } else if (!e.frz && (e.still > 30 || (e.still > 5 && now - e.t0 > 700)) && !mesh.billboardMode && (e.frz = true)) mesh.freezeWorldMatrix();   // steht still: Babylon rechnet Lage und Box nicht mehr nach
     else if (BATCH && e.type === 'inst' && !e.sprite && ++e.still >= BATCH_K && e.still % BATCH_K === 0 && now - e.t0 >= BATCH_MS && batchable(o) && matsStill(o)) cands.push(e);
     if (e.thin) syncThin(e, o);
     // Schatten, Reihenfolge
     const cs = !!o.castShadow;
     if (e.cs !== cs) { e.cs = cs; for (const l of shadowLights) { if (cs) l.sg.addShadowCaster(mesh, false); else l.sg.removeShadowCaster(mesh, false); } }
     if (e.type === 'own' && !e.pts && !e.sky) { const rs = !!o.receiveShadow; if (mesh.receiveShadows !== rs) mesh.receiveShadows = rs; }
-    if (o.frustumCulled === false && !mesh.alwaysSelectAsActiveMesh) mesh.alwaysSelectAsActiveMesh = true;
+    if (o.frustumCulled === false && !mesh.alwaysSelectAsActiveMesh && !e.skin) mesh.alwaysSelectAsActiveMesh = true;   // Figuren haben eine eigene Sichtbox (syncSkin): nur zeichnen, wenn im Bild
     const mat = Array.isArray(o.material) ? o.material[0] : o.material;
     const grp = e.sky ? 0 : mat && mat.depthTest === false ? 2 : 1;
     if (mesh.renderingGroupId !== grp) mesh.renderingGroupId = grp;
@@ -845,8 +850,125 @@ export function createRenderer(T, canvas, opts) {
     }
   }
 
+  // ------------------------------------------------------------------ Änderungen melden statt suchen
+  // Bisher wurde jedes Bild der GANZE Szenengraph (≈3.500 Objekte) durchgerechnet und mit Babylon verglichen. Jetzt meldet jedes Objekt selbst,
+  // wenn es bewegt, ein-/ausgeblendet, umgehängt oder mit anderem Material/anderer Form versehen wird; Babylon behält alles andere unverändert
+  // (eingefroren bzw. in festen Blöcken). Pro Bild wird nur noch das Gemeldete nachgeführt, dazu wenige Dauerläufer (Figuren-Skelette, Lichter,
+  // Partikel, Sprites). Ein ganzer Abgleich läuft nur noch beim Szenenwechsel. Abschalten zum Vergleich: ?inc=0
+  const INC = opts.incremental !== false && !(typeof location !== 'undefined' && /[?&]inc=0/.test(location.search));
+  let marks = [], mEp = 1;
+  const always = new Set();   // jedes Bild nachführen
+  const settle = new Set();   // gerade bewegt/neu: noch beobachten, bis eingefroren oder im festen Block
+  const gone = new Map();     // aus der Szene genommen → Bild, ab dem freigegeben wird
+  const mark = o => { if (o.__dm !== mEp) { o.__dm = mEp; marks.push(o); } };
+  const markS = o => { o.__dv = mEp; mark(o); };   // Aufbau/Sichtbarkeit geändert
+  R.inc = { on: INC, marks: () => marks, always, settle, gone, n: { marked: 0, synced: 0, full: 0 }, t: { marks: 0, sync: 0, mats: 0 } };
+  if (INC) {
+    T.__bjsMark = markS;
+    if (!T.__bjsHooks) {   // Umhängen melden (einmal je Bibliothek)
+      T.__bjsHooks = true;
+      const P = T.Object3D.prototype, add = P.add, rem = P.remove, clr = P.clear;
+      P.add = function () { const r = add.apply(this, arguments); const mk = T.__bjsMark; if (mk && this.__w) for (let i = 0; i < arguments.length; i++) { const c = arguments[i]; if (c && c.isObject3D) mk(c); } return r; };
+      P.remove = function () { const mk = T.__bjsMark; if (mk) for (let i = 0; i < arguments.length; i++) { const c = arguments[i]; if (c && c.__w && c.parent === this) mk(c); } return rem.apply(this, arguments); };
+      if (clr) P.clear = function () { const mk = T.__bjsMark; if (mk) for (const c of this.children) if (c.__w) mk(c); return clr.apply(this, arguments); };
+    }
+  }
+  function watchVec(v, o) {
+    let x = v.x, y = v.y, z = v.z;
+    Object.defineProperties(v, {
+      x: { get() { return x; }, set(n) { if (n !== x) { x = n; mark(o); } }, enumerable: true, configurable: true },
+      y: { get() { return y; }, set(n) { if (n !== y) { y = n; mark(o); } }, enumerable: true, configurable: true },
+      z: { get() { return z; }, set(n) { if (n !== z) { z = n; mark(o); } }, enumerable: true, configurable: true }
+    });
+  }
+  function watchProp(o, k) {
+    let val = o[k];
+    Object.defineProperty(o, k, { get() { return val; }, set(n) { if (n !== val) { val = n; markS(o); } }, enumerable: true, configurable: true });
+  }
+  function watch(o) {
+    o.__w = true;
+    // Knochen bewegt die Animation ohnehin jedes Bild: nicht einzeln melden, sondern je sichtbarer Figur einmal durchrechnen (boneUpd())
+    if (o.isBone) return;
+    try {
+      if (o.position) watchVec(o.position, o);
+      if (o.scale) watchVec(o.scale, o);
+      const q = o.quaternion, r = o.rotation;
+      if (q && q._onChangeCallback) { const qc = q._onChangeCallback; q._onChangeCallback = function () { qc.call(this); mark(o); }; }
+      if (r && r._onChangeCallback) { const rc = r._onChangeCallback; r._onChangeCallback = function () { rc.call(this); mark(o); }; }
+      watchProp(o, 'visible');
+      if (o.isMesh || o.isSprite || o.isPoints) { watchProp(o, 'material'); watchProp(o, 'geometry'); watchProp(o, 'castShadow'); watchProp(o, 'receiveShadow'); watchProp(o, 'frustumCulled'); }
+    } catch (err) { console.warn('watch', err); }
+  }
+  // Knochen einer sichtbaren Figur einmal je Bild durchrechnen (von den obersten Knochen aus, samt angehängter Requisiten)
+  function boneUpd(sh) {
+    if (sh.bf === frame) return; sh.bf = frame;
+    if (!sh.roots) sh.roots = sh.bones.filter(b => !b.parent || !b.parent.isBone);
+    for (let i = 0; i < sh.roots.length; i++) sh.roots[i].updateWorldMatrix(false, true);
+  }
+  // Nur Gemeldetes abgleichen
+  function incPass(sc) {
+    const list = marks, ep = mEp; marks = []; mEp++;
+    R.inc.n.marked = list.length; const t0 = performance.now();
+    for (let i = 0; i < list.length; i++) {
+      const o = list[i];
+      let vis = true, skip = false, top = o;
+      for (let q = o.parent; q; q = q.parent) { if (q.__dm === ep) { skip = true; break; } if (q.visible === false) vis = false; top = q; }
+      if (skip) continue;
+      if (top !== sc) {   // gehört nicht (mehr) zur gezeigten Szene
+        if (!top.isScene) { walk(o, false); gone.set(o, frame + 600); }
+        continue;
+      }
+      if (gone.size) gone.delete(o);
+      updTree(o);
+      if (o.__dv === ep) walk(o, vis);   // ein-/ausgeblendet, umgehängt, anderes Material: ganzer Teilbaum
+      else if (vis) moveTree(o);         // nur bewegt: Lage der sichtbaren Teile nachführen
+    }
+    const t1 = performance.now(); let n = 0;
+    for (const e of always) if (e.skin && e.on && frame - (e.skin.sh.act | 0) < 3) boneUpd(e.skin.sh);   // eben noch sichtbar: vorab (Requisiten in der Hand)
+    for (const e of always) { if (e.o.__be !== e) { always.delete(e); continue; } if (e.on && (e.f !== frame || e.o.__ub) && e.type !== 'none') { e.f = frame; syncEnt(e, e.o); n++; } }
+    for (const e of settle) {
+      if (e.o.__be !== e || e.type !== 'inst') { settle.delete(e); continue; }
+      if (!e.on) { settle.delete(e); continue; }   // wird beim Einblenden wieder aufgenommen
+      if (e.f !== frame) { e.f = frame; syncEnt(e, e.o); n++; }
+      if (e.o.__be !== e || e.type !== 'inst' || e.still > 240) settle.delete(e);
+    }
+    R.inc.n.synced = n; const t2 = performance.now();
+    // Materialien (Farben, Leuchten, Leinwände, Videos) und Formen ändern sich ohne Meldung:
+    // kürzlich geänderte jedes Bild prüfen, alle übrigen reihum (je Bild ein Achtel)
+    const slot = frame & 7;
+    for (const [m, me] of mats) { if (me.f === frame) continue; if (me.hot > frame || ((me.rr = (me.rr | 0) + 1) & 7) === slot) { const c0 = me.chg; matFor(m, me.kind); if (me.chg !== c0 || me.kind !== 'std') me.hot = frame + 120; } }
+    for (const ms of masters.values()) if (ms.geo && (ms.hot > frame || ((ms.rr = (ms.rr | 0) + 1) & 7) === slot)) { const v = verOf(ms.geo); if (v !== ms.ver) { reGeo(ms.mesh, ms.geo, false); ms.ver = v; ms.hot = frame + 120; } }
+    const t3 = performance.now(), k = 0.05, it = R.inc.t; it.marks += ((t1 - t0) - it.marks) * k; it.sync += ((t2 - t1) - it.sync) * k; it.mats += ((t3 - t2) - it.mats) * k;
+    // Weggenommenes nach 10 s freigeben (falls es nicht zurückkommt)
+    if (gone.size && frame % 30 === 0) for (const [o, f] of gone) {
+      if (f > frame) continue; gone.delete(o);
+      let top = o; while (top.parent) top = top.parent;
+      if (!top.isScene) o.traverse(x => { const e = x.__be; if (e && ents.get(x) === e) disposeEnt(e); });
+    }
+  }
+  // Weltmatrizen eines Teilbaums (ohne Knochen: die rechnet boneUpd() nur für sichtbare Figuren)
+  function updTree(o) {
+    if (o.isCamera) { o.updateWorldMatrix(false, true); return; }
+    if (o.matrixAutoUpdate) o.updateMatrix();
+    if (o.parent === null) o.matrixWorld.copy(o.matrix); else o.matrixWorld.multiplyMatrices(o.parent.matrixWorld, o.matrix);
+    o.matrixWorldNeedsUpdate = false;
+    const ch = o.children;
+    for (let i = 0; i < ch.length; i++) if (!ch[i].isBone) updTree(ch[i]);
+  }
+  // Bewegter Teilbaum: nur sichtbare Einträge nachführen; Knochen rechnet boneUpd() je Figur, Requisiten daran laufen über always
+  function moveTree(o) {
+    if (o.visible === false) return;
+    const e = o.__be;
+    if (!e) { walk(o, true); return; }
+    if (e.on && e.f !== frame && e.type !== 'none') { e.f = frame; syncEnt(e, o); }
+    if (o.isBone) return;
+    const ch = o.children;
+    for (let i = 0; i < ch.length; i++) moveTree(ch[i]);
+  }
+
   // ------------------------------------------------------------------ Durchlauf
   function walk(o, vis) {
+    if (o.__w !== true && INC) { if (o.parent && (o.parent.isBone || o.parent.__ub)) o.__ub = true; watch(o); }
     let e = o.__be;
     const v = vis && o.visible !== false;
     if (!e) { if (!v) { for (let i = 0; i < o.children.length; i++) walk(o.children[i], false); return; } e = makeEnt(o); }
@@ -882,23 +1004,36 @@ export function createRenderer(T, canvas, opts) {
     if (cam.maxZ !== cam3.far) cam.maxZ = cam3.far;
   }
 
+  let incScene = null;
+  R.fullNext = false;
   R.render = function (sc, cam3) {
     if (R._target) return threeR().render(sc, cam3);
     frame++;
     const tA = performance.now();
-    if (sc.autoUpdate !== false) sc.updateMatrixWorld();
-    if (cam3.parent === null) cam3.updateMatrixWorld();
-    now = performance.now(); curScene = sc; lastRender.set(sc, now);
-    walk(sc, true);
-    const tB = performance.now();
-    // Aufräumen: aus der Szene entfernt → weg; gehört zu einer gerade nicht gezeigten Szene → aus
-    for (const e of ents.values()) {
-      if (e.f === frame) continue;
-      if (e.scn === sc || !e.scn || now - (lastRender.get(e.scn) || 0) > KEEP_MS) disposeEnt(e);
-      else if (e.on) setOn(e, false);
+    let tB, tC;
+    if (!INC || sc !== incScene || R.fullNext) {
+      // Ganzer Abgleich (erstes Bild, Szenenwechsel)
+      incScene = sc; R.fullNext = false; marks = []; mEp++; R.inc.n.full++;
+      if (sc.autoUpdate !== false) sc.updateMatrixWorld();
+      if (cam3.parent === null) cam3.updateMatrixWorld();
+      now = performance.now(); curScene = sc; lastRender.set(sc, now);
+      walk(sc, true);
+      tB = performance.now();
+      // Aufräumen: aus der Szene entfernt → weg; gehört zu einer gerade nicht gezeigten Szene → aus
+      for (const e of ents.values()) {
+        if (e.f === frame) continue;
+        if (e.scn === sc || !e.scn || now - (lastRender.get(e.scn) || 0) > KEEP_MS) disposeEnt(e);
+        else if (e.on) setOn(e, false);
+      }
+      for (const [s, t] of lastRender) if (now - t > KEEP_MS) lastRender.delete(s);
+      gone.clear();
+    } else {
+      if (cam3.parent === null) cam3.updateMatrixWorld();
+      now = performance.now(); curScene = sc; lastRender.set(sc, now);
+      incPass(sc);
+      tB = performance.now();
     }
-    for (const [s, t] of lastRender) if (now - t > KEEP_MS) lastRender.delete(s);
-    const tC = performance.now();
+    tC = performance.now();
     if (BATCH) batchStep();
     syncScene(sc, cam3);
     look.beforeRender(sc, frame);

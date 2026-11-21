@@ -1,7 +1,7 @@
 // Skater: Fahrphysik (feste Teilschritte, analytische Oberflächen), Tricks, Grinds, Manuals, Stürze und Pose.
 import { Vector3, Quaternion, Matrix } from '@babylonjs/core/Maths/math';
 import { TransformNode } from '@babylonjs/core/Meshes/transformNode';
-import { FLIPS, GRABS, GRINDS, MANUALS, dirOf } from './tricks.js';
+import { FLIPS, GRABS, GRINDS, MANUALS, LIPS, dirOf } from './tricks.js';
 import { Combo } from './score.js';
 
 const G = 15.5;            // Schwerkraft (arcadig straff)
@@ -38,7 +38,7 @@ export class Skater {
     this.vel = new Vector3(Math.sin(yaw), 0, Math.cos(yaw)).scale(2.5);
     this.yaw = yaw; this.mode = 'ground'; this.normal = UP.clone();
     this.charge = 0; this.air = null; this.grind = null; this.manual = null; this.bail = null;
-    this.grace = 0; this.revertT = 0; this.airTime = 0; this.lastGrindT = 1; this.pushPhase = 0; this.pushing = 0;
+    this.grace = 0; this.revertT = 0; this.airTime = 0; this.lastGrindT = 1; this.wall = null; this.lastWallT = 1; this.pushPhase = 0; this.pushing = 0;
     this.crouch = 0; this.tuck = 0; this.leanS = 0; this.boardPitch = 0; this.landSquash = 0;
     this.combo.reset(); this.fakie = false; this.camYaw = yaw; this.takeoff = null;
     this.vis = { yaw, q: Quaternion.Identity() };
@@ -70,6 +70,7 @@ export class Skater {
     if (this.mode === 'bail') return this.stepBail(dt);
     if (this.mode === 'grind') return this.stepGrind(dt);
     if (this.mode === 'air') return this.stepAir(dt);
+    if (this.mode === 'wall') return this.stepWall(dt);
     return this.stepGround(dt);
   }
 
@@ -241,7 +242,7 @@ export class Skater {
   // ------------------------------------------------------------ Luft
   stepAir(dt) {
     const a = this.air, inp = this.inp, st = this.st, L = this.level;
-    a.t += dt; this.airTime = a.t; this.lastGrindT += dt;
+    a.t += dt; this.airTime = a.t; this.lastGrindT += dt; this.lastWallT += dt;
     // Drehen
     const spinIn = (inp.down('spinL') ? 1 : 0) - (inp.down('spinR') ? 1 : 0) - inp.x;
     const maxS = 6.2 + st.spin * 0.3;
@@ -271,6 +272,7 @@ export class Skater {
       this.bounce(nx, nz, [nx, nz]); return;
     }
     const sb = this.blockedAir(nx, nz, ny);
+    if (sb && (inp.down('grind') || this.grindBuf > 0) && a.t > 0.08 && this.lastWallT > 0.4 && this.startWall(sb, ny)) return;
     if (sb) { this.bounce(nx, nz, sb); nx = p.x + v.x * dt; nz = p.z + v.z * dt; if (this.blockedAir(nx, nz, ny)) { nx = p.x; nz = p.z; } }
     const py = p.y;
     p.set(nx, ny, nz);
@@ -403,6 +405,46 @@ export class Skater {
     if (this.game.settings.easy && this.combo.active && n.y > 0.85 && this.inp.y < -0.3) this.startManual();
   }
 
+
+  // ------------------------------------------------------------ Wallride
+  startWall(hit, y) {
+    const L = this.level, p = this.pos, v = this.vel;
+    if (L.solidTop(hit[0], hit[1]) < y + 1.0 || L.solidTop(hit[0], hit[1]) >= 49) return false;   // Wand hoch genug (nicht Parkgrenze)
+    const [wx, wz] = L.wallNormal(hit[0], hit[1], p.x, p.z);
+    const vn = v.x * wx + v.z * wz; let tx = v.x - wx * vn, tz = v.z - wz * vn; const ts = Math.hypot(tx, tz);
+    if (ts < 3 || -vn > ts * 1.6) return false;                    // zu frontal oder zu langsam
+    tx /= ts; tz /= ts;
+    const a = this.air;
+    if (a && a.flip && a.flip.t < a.flip.dur * 0.8) return false;
+    this.mode = 'wall';
+    this.wall = { n: [wx, wz], d: [tx, tz], s: Math.min(ts, 12), vy: Math.max(v.y, 1.6), time: 0, air: a };
+    this.wall.e = this.combo.add('Wallride', 220); this.game.onTrick(this.wall.e);
+    this.yaw = wrap(Math.atan2(tx, tz) + (this.fakie ? Math.PI : 0));
+    this.grace = 0; this.grindBuf = 0; this.air = null;
+    this.game.sfx('grindStart'); this.game.grindSound(true, 'ledge');
+    return true;
+  }
+  stepWall(dt) {
+    const w = this.wall, L = this.level, p = this.pos;
+    w.time += dt;
+    w.vy -= G * 0.42 * dt; w.s *= 1 - 0.25 * dt;
+    this.combo.live(w.e, 150 * dt);
+    const nx = p.x + w.d[0] * w.s * dt, nz = p.z + w.d[1] * w.s * dt, ny = p.y + w.vy * dt;
+    // Wand noch da? (Punkt knapp hinter dem Körper zur Wand hin)
+    const bx = nx - w.n[0] * (BODY_R + 0.12), bz = nz - w.n[1] * (BODY_R + 0.12);
+    const wallH = L.solidTop(bx, bz);
+    const ahead = L.solidTop(nx + w.d[0] * BODY_R, nz + w.d[1] * BODY_R) > ny + 0.45;
+    const hs = L.height(nx, nz);
+    const out = (vy, push) => { this.game.grindSound(false); this.mode = 'air'; this.wall = null; this.lastWallT = 0; this.vel.set(w.d[0] * w.s + w.n[0] * push, vy, w.d[1] * w.s + w.n[1] * push); this.toAir(false); };
+    if (this.edges.ollieDown || this.ollieBuf > 0) {         // Wallie: von der Wand abspringen
+      this.ollieBuf = 0; out(5.2 + this.st.ollie * 0.08, 2.6);
+      const e = this.combo.add('Wallie', 160); this.air.tricks.push(e); this.game.onTrick(e); this.game.sfx('pop', 0.8); return;
+    }
+    if (ahead) { out(Math.min(w.vy, 0), 1.2); return; }
+    if (wallH < ny + 0.5 || w.time > 1.1 || ny <= hs + 0.02) { if (ny <= hs + 0.02) p.y = hs; out(Math.min(w.vy, 1), 0.9); return; }
+    p.set(nx, ny, nz); this.vel.set(w.d[0] * w.s, w.vy, w.d[1] * w.s);
+  }
+
   // ------------------------------------------------------------ Grind
   findGrind(probe) {
     const p = this.pos, v = this.vel; let best = null, bd = 1e9;
@@ -432,6 +474,8 @@ export class Skater {
     if (Math.abs(s) < 2.2) s = (s >= 0 ? 1 : -1) * Math.max(2.6, vh * 0.7);
     if (this.air && this.air.flip && this.air.flip.t < this.air.flip.dur * 0.7) return false; // mitten im Flip nicht andocken
     const dir = this.game.settings.easy && this.dirNow === 'n' && !keepTrick ? 'n' : this.dirNow;
+    // Lip-Trick: aus der Senkrechten an die Kante der Rampe
+    if (sgm.kind === 'coping' && this.air && this.air.vert && Math.abs(v.x * sgm.dir.x + v.z * sgm.dir.z) < 2.2 && !keepTrick) return this.startLip(sgm, t, dir);
     const def = GRINDS[dir];
     // Luft-Tricks zählen (Drehung als Bonus)
     if (this.air) { const spin = Math.round(Math.abs(this.air.spin) / Math.PI) * 180; if (spin >= 180 && this.air.tricks[0]) this.combo.rename(this.air.tricks[0], spin + ' ' + this.air.tricks[0].name); }
@@ -443,7 +487,38 @@ export class Skater {
     this.manual = null;
     return true;
   }
+
+  startLip(sgm, t, dir) {
+    const def = LIPS[dir], o = sgm.out || [0, 1];
+    this.mode = 'grind';
+    const g = this.grind = { sgm, t, s: 0, def, dir, time: 0, bal: (Math.random() - 0.5) * 0.15, bv: 0, e: null, lip: true };
+    g.e = this.combo.add(def.name, def.pts); this.game.onTrick(g.e);
+    this.yaw = wrap(Math.atan2(-o[0], -o[1]));    // Blick aus der Rampe hinaus
+    this.air = null; this.grace = 0; this.grindBuf = 0; this.manual = null;
+    this.game.sfx('grindStart');
+    return true;
+  }
+  stepLip(dt) {
+    const g = this.grind, sg = g.sgm, o = sg.out || [0, 1];
+    g.time += dt;
+    const diff = 0.7 + g.time * 0.45 - this.st.balance * 0.06;
+    g.bv += (g.bal * 2.4 * diff + (Math.random() - 0.5) * 1.6 * diff) * dt;
+    g.bv -= this.inp.y * 4.2 * dt; g.bv *= 1 - 1.2 * dt; g.bal += g.bv * dt;
+    this.combo.live(g.e, g.def.pps * dt);
+    if (Math.abs(g.bal) > 1) return this.doBail('Von der Kante gekippt!');
+    const P = Vector3.Lerp(sg.a, sg.b, clamp(g.t, 0, 1)); this.pos.copyFrom(P); this.vel.set(0, 0, 0);
+    const hold = this.inp.down('grind') || this.game.settings.easy;
+    if (this.edges.ollieDown || this.ollieBuf > 0 || (!hold && g.time > 0.3) || g.time > 3.5) {
+      // zurück in die Rampe fallen
+      this.ollieBuf = 0; this.grind = null; this.lastGrindT = 0; this.mode = 'air';
+      this.pos.x += o[0] * 0.12; this.pos.z += o[1] * 0.12;
+      this.vel.set(o[0] * 1.2, -0.5, o[1] * 1.2);
+      this.yaw = wrap(Math.atan2(o[0], o[1]) + (this.fakie ? Math.PI : 0));
+      this.toAir(false); this.air.vert = true;
+    }
+  }
   stepGrind(dt) {
+    if (this.grind.lip) return this.stepLip(dt);
     const g = this.grind, sg = g.sgm, st = this.st, inp = this.inp;
     g.time += dt;
     g.s += -G * sg.dir.y * dt;                       // Gefälle beschleunigt
@@ -496,7 +571,7 @@ export class Skater {
     if (this.mode === 'bail') return;
     this.game.grindSound(false);
     const lost = this.combo.active ? this.combo.value : 0;
-    this.combo.reset(); this.manual = null; this.grind = null; this.air = null; this.charge = 0;
+    this.combo.reset(); this.manual = null; this.grind = null; this.air = null; this.wall = null; this.charge = 0;
     this.mode = 'bail';
     const v = this.vel.clone();
     this.bail = { t: 0, why, bp: this.pos.add(new Vector3(0, 0.1, 0)), bv: v.scale(0.9).add(new Vector3((Math.random() - 0.5) * 2, 3.2, (Math.random() - 0.5) * 2)), spin: new Vector3(Math.random() * 9 - 4.5, Math.random() * 6 - 3, Math.random() * 9 - 4.5), rot: new Vector3(), fall: Math.random() < 0.5 ? 1 : -1 };
@@ -552,6 +627,7 @@ export class Skater {
     const fwd = new Vector3(Math.sin(yaw), 0, Math.cos(yaw));
     let up = this.mode === 'ground' ? this.normal : UP;
     if (a) { up = this.visUp ? Vector3.Lerp(this.visUp, UP, 1 - Math.exp(-6 * dt)).normalize() : UP; }
+    if (this.wall) { const tgt = new Vector3(this.wall.n[0] * 0.9, 0.5, this.wall.n[1] * 0.9).normalize(); up = this.visUp ? Vector3.Lerp(this.visUp, tgt, 1 - Math.exp(-14 * dt)).normalize() : tgt; }
     this.visUp = up.clone();
     const right = Vector3.Cross(up, fwd).normalize(); const f2 = Vector3.Cross(right, up).normalize();
     const m = Matrix.Identity();

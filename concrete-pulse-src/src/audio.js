@@ -76,7 +76,9 @@ export const TRACKS = [
   { name: 'Asphaltwelle', bpm: 90, key: 45, prog: [0, 5, 3, 7], swing: 0.12, seed: 3, style: 'boom' },
   { name: 'Hafenlichter', bpm: 98, key: 50, prog: [0, 3, 8, 7], swing: 0.08, seed: 11, style: 'drive' },
   { name: 'Neonflut', bpm: 104, key: 43, prog: [0, 8, 3, 10], swing: 0.04, seed: 21, style: 'synth' },
-  { name: 'Spätschicht', bpm: 86, key: 48, prog: [0, 9, 5, 7], swing: 0.16, seed: 33, style: 'boom' }
+  { name: 'Spätschicht', bpm: 86, key: 48, prog: [0, 9, 5, 7], swing: 0.16, seed: 33, style: 'boom' },
+  { name: 'Rostlauf', bpm: 94, key: 40, prog: [0, 7, 10, 5], swing: 0.1, seed: 47, style: 'drive' },
+  { name: 'Hitzeflimmern', bpm: 110, key: 52, prog: [0, 3, 5, 8], swing: 0.02, seed: 59, style: 'synth' }
 ];
 let mus = null;
 export function playMusic(i) {
