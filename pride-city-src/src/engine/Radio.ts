@@ -1,8 +1,8 @@
-/* Autoradio: die 13 echten RicoReWi-/AnMaCha-Sender live über laut.fm (Stream + „Jetzt läuft“ über api.laut.fm),
-   dazu die vier Stadt-Sender aus dem Synthesizer (laufen auch offline). Nichts wird kopiert, gespielt wird immer das Original. */
+/* Autoradio: die 13 echten RicoReWi-/AnMaCha-Sender live über laut.fm (Stream + „Jetzt läuft“ über api.laut.fm)
+   und optional eine eigene Stream-Adresse (MP3/AAC-Stream, z. B. vom eigenen Webradio). Nichts wird kopiert, gespielt wird immer das Original. */
 import { music, vol, onVolume, SONGS } from './Audio';
 
-export interface Station { id: string; name: string; sub: string; icon: string; color: string; slug?: string; song?: keyof typeof SONGS }
+export interface Station { id: string; name: string; sub: string; icon: string; color: string; slug?: string; song?: keyof typeof SONGS; /** eigene Stream-Adresse (Sender „eigen“) */ url?: string }
 
 export const STATIONS: Station[] = [
   { id: 'ricorewi', slug: 'ricorewi', name: 'RicoReWi Radio', sub: 'Der Sender der Stadt', icon: '📻', color: '#ff3fb0' },
@@ -18,15 +18,11 @@ export const STATIONS: Station[] = [
   { id: 'floh', slug: 'radiofloh', name: 'Radiofloh', sub: 'Für die ganze Familie', icon: '🐞', color: '#ffb347' },
   { id: 'xmas', slug: 'christmasradio24', name: 'Christmasradio 24', sub: 'Weihnachten das ganze Jahr', icon: '🎄', color: '#e23b3b' },
   { id: 'special', slug: 'special-radio', name: 'Special Radio', sub: 'Das Besondere', icon: '✨', color: '#c9a2ff' },
-  { id: 'pridefm', song: 'show', name: 'Pride FM 88,8', sub: 'Queeres Radio: Talk, Anrufe, Wissen', icon: '🎙️', color: '#5ce1ff' },
-  { id: 'regenbogen', song: 'title', name: 'Regenbogen FM', sub: 'Pop für die ganze Stadt', icon: '🌈', color: '#ff6fb5' },
-  { id: 'neon', song: 'neon', name: 'Neon 88', sub: 'Synthwave für Nachtfahrten', icon: '🌴', color: '#ff3fb0' },
-  { id: 'prisma', song: 'club', name: 'Prisma Radio', sub: 'Clubsound live aus dem Prisma', icon: '💎', color: '#9b6bff' },
-  { id: 'hafen', song: 'lounge', name: 'Hafen Lounge', sub: 'Ruhige Töne vom Kai', icon: '🌊', color: '#3db8ff' },
+  { id: 'eigen', name: 'Eigener Stream', sub: 'deine eigene Stream-Adresse', icon: '🔗', color: '#3ddc97' },
   { id: 'off', name: 'Radio aus', sub: '', icon: '🔇', color: '#8a8a9a' },
 ];
 /** alte Speicherstände: Senderplatz 0–4 der ersten Fassung */
-const LEGACY = ['regenbogen', 'neon', 'prisma', 'hafen', 'off'];
+const LEGACY = ['ricorewi', 'ricorewi', 'club', 'ricorewi', 'off'];
 export const stationOf = (v: unknown): Station => STATIONS.find((s) => s.id === v) || STATIONS.find((s) => s.id === LEGACY[Number(v)]) || STATIONS[0];
 
 export interface RadioState { st: Station; on: boolean; loading: boolean; title: string; artist: string; err: string }
@@ -68,14 +64,15 @@ export const radio = {
   tune(st: Station) {
     release(); const t = ++token;
     Object.assign(state, { st, on: false, loading: false, title: '', artist: '', err: '' });
-    if (!st.slug) { music(st.song || null); state.on = !!st.song; emit('station'); return; }
+    const src = st.slug ? 'https://stream.laut.fm/' + st.slug + '?t=' + Date.now() : st.url || '';
+    if (!src) { music(st.song || null); state.on = !!st.song; if (st.id === 'eigen') state.err = 'Noch keine Stream-Adresse eingetragen.'; emit(st.id === 'eigen' ? 'error' : 'station'); return; }
     music(null); state.loading = true; emit('station');
     if (!el) {
       el = new Audio(); el.preload = 'none'; el.setAttribute('playsinline', '');
       el.addEventListener('playing', () => { if (state.loading) { state.loading = false; state.on = true; clearTimeout(startT); fetchSong(token); clearInterval(songT); const k = token; songT = window.setInterval(() => fetchSong(k), 20000); } });
       el.addEventListener('error', () => { if (el!.getAttribute('src')) fail(token, 'Sender nicht erreichbar – Internet prüfen.'); });
     }
-    level(); el.src = 'https://stream.laut.fm/' + st.slug + '?t=' + Date.now();
+    level(); el.src = src;
     startT = window.setTimeout(() => fail(t, 'Keine Antwort vom Sender.'), 15000);
     el.play().catch((e: Error) => { if (e?.name !== 'AbortError') fail(t, e?.name === 'NotAllowedError' ? 'Der Browser blockiert den Ton – bitte Sender neu wählen.' : 'Sender nicht erreichbar – Internet prüfen.'); });
   },
@@ -84,6 +81,6 @@ export const radio = {
   /** leiser bei Dialogen und Menüs */
   duck(on: boolean) { if (on !== ducked) { ducked = on; level(); } },
   /** läuft gerade ein echter Sender (oder lädt)? */
-  get live() { return !!state.st.slug && (state.on || state.loading); },
+  get live() { return !!(state.st.slug || state.st.url) && (state.on || state.loading); },
 };
 if (typeof document !== 'undefined') document.addEventListener('visibilitychange', () => { if (el && radio.live) { if (document.hidden) el.pause(); else el.play().catch(() => {}); } });
