@@ -16,7 +16,9 @@ import { pianoSongs, pianoParts } from './minigames/showSongs';
 import { openGigs, GIGS, fmtTime } from './gigs';
 import { BUSINESSES, owns, owned, income, buy } from './empire';
 import { clubDeal, clubManage } from './clubui';
-import { isClub } from './club';
+import { isClub, QEVENTS } from './club';
+import { CLUB_LAYOUT } from './clubdeco';
+import type { Invite } from './online';
 import { pcEvents } from './hooks';
 import { houseMenu, useHomeItem } from './houseui';
 import { roomTheme, roomLevel } from './house';
@@ -38,7 +40,7 @@ import { InteriorScene } from './InteriorScene';
 import { WorldScene } from './WorldScene';
 import { WORLDS, worldDef, worldStage, cityGate, SIDE_GATE } from './worlds';
 import { ALPHA, QUICK, EMOTES, MAX_GUESTS, normCode, netError } from './online';
-import type { Spot, Theme } from './interiors';
+import { PLACE_THEMES, type Spot, type Theme } from './interiors';
 import type { Sfx } from '../engine/Audio';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage, level } from './jobs';
 import { photo } from './Photo';
@@ -80,6 +82,8 @@ export class Game {
   inside: InteriorScene | null = null;
   private insideBack = { x: 0, z: 0, yaw: 0 };
   private insideWorld = false;
+  /** Online: zu Gast im Club einer Freundin/eines Freundes */
+  clubGuest: (Invite & { from: string }) | null = null;
   /** Innenraum ist ein Anbau des Zuhauses: zurück in die Wohnung */
   private insideHome = false;
   private interiors = new Map<string, InteriorScene>();
@@ -322,9 +326,33 @@ export class Game {
   leaveInterior() {
     const s = this.save.data;
     sfx('door');
+    if (this.clubGuest && this.inside?.netKey === this.clubGuest.p) this.clubGuest = null;
     if (this.insideHome && this.home) { const h = this.home; this.insideHome = false; this.fade(() => { this.where = 'home'; this.inside = null; h.fromAnnex = true; h.setSky(this.city.world.night); this.engine.setScene(h); this.save.write(); }); return; }
     if (this.insideWorld && this.world) { const w = this.world; this.fade(() => { this.where = 'world'; this.inside = null; w.back = { ...this.insideBack }; this.engine.setScene(w); this.save.write(); }); return; }
     this.fade(() => { this.where = 'city'; this.inside = null; s.pos = { ...this.insideBack }; this.engine.setScene(this.city); this.city.setPlay(); this.save.write(); });
+  }
+  /** Online-Einladung in einen Club: hingehen oder später */
+  clubInvite(from: string, inv: Invite) {
+    const theme = PLACE_THEMES[inv.p]; if (!theme || !CLUB_LAYOUT[inv.p]) return;
+    const ev = QEVENTS.find((q) => q.id === inv.e), here = this.where === 'inside' && this.inside?.netKey === inv.p;
+    sfx('win');
+    if (here) { this.clubGuest = { ...inv, from }; this.inside!.refreshClub(); toast(`🎉 ${from} feiert hier${ev ? ': ' + ev.name : ''}!`, 4000); return; }
+    if (this.dialog.open || this.menuOpen) { toast(`🎉 ${from} lädt dich in den ${inv.n} ein${ev ? ' (' + ev.name + ')' : ''}. Öffne „Online & Freunde“, um hinzugehen.`, 5000); this.pendingInvite = { ...inv, from }; return; }
+    this.dialog.say([{ who: `🌐 ${from}`, color: '#ff6ad5', text: `Komm in meinen Club! Im ${inv.n} ist ${ev ? ev.name : 'Clubnacht'}. Wir feiern zusammen.`, choices: [
+      { label: '🪩 Hingehen', fn: () => setTimeout(() => this.joinFriendClub({ ...inv, from }), 50) },
+      { label: 'Später', sub: 'im Online-Menü geht es auch noch', fn: () => { this.pendingInvite = { ...inv, from }; } }] }]);
+  }
+  pendingInvite: (Invite & { from: string }) | null = null;
+  /** In den Club einer Freundin/eines Freundes gehen (aus Stadt, Wohnung oder anderem Raum) */
+  joinFriendClub(inv: Invite & { from: string }) {
+    const s = this.save.data, theme = PLACE_THEMES[inv.p]; if (!theme) return;
+    if (this.where === 'world') { toast('Erst zurück nach Rainbow City, dann in den Club.'); return; }
+    this.pendingInvite = null; this.clubGuest = inv;
+    let back = { ...s.pos };
+    if (this.where === 'city') { const r = this.city.player.root; back = { x: r.position.x, z: r.position.z, yaw: r.rotation.y }; }
+    if (this.where === 'home') { s.inside = false; back = { x: 3.6, z: 40, yaw: Math.PI / 2 }; }
+    if (this.where === 'inside' && this.inside?.netKey === inv.p) { this.inside.refreshClub(); return; }
+    this.enterInterior(theme, back, inv.p);
   }
   /** Anbau betreten (Raum aus house.ts, Stufe im Namen, damit ein Ausbau neu eingerichtet wird) */
   enterAnnex(room: string) {
@@ -745,6 +773,7 @@ export class Game {
       ...(go ? [{ icon: '▶', label: 'In die Stadt', big: true, fn: go }] : []),
       ...(host ? [{ icon: '🔗', label: 'Link kopieren', fn: () => { const ok = () => toast('🔗 Link kopiert.'); try { navigator.clipboard.writeText(link).then(ok, () => toast(link, 6000)); } catch { toast(link, 6000); } } },
         ...(typeof navigator.share === 'function' ? [{ icon: '📤', label: 'Einladung teilen', fn: () => { navigator.share({ title: 'Pride City', text: `Komm in meine Stadt! Code ${net.code}`, url: link }).catch(() => {}); } }] : [])] : []),
+      ...(this.pendingInvite ? [{ icon: '🪩', label: `Zu ${this.pendingInvite.from} in den ${this.pendingInvite.n}`, sub: 'Einladung annehmen', big: true, fn: () => { const inv = this.pendingInvite!; this.closeMenu(); this.touch.show(true); this.joinFriendClub(inv); } }] : []),
       ...(people.length ? [{ icon: '💬', label: 'Etwas zurufen', sub: 'Kurze Sprüche für alle', fn: () => this.quickMenu(again) }] : []),
       { icon: '🔄', label: 'Liste aktualisieren', fn: again },
       { icon: '🚪', label: host ? 'Stadt schließen' : 'Besuch beenden', fn: () => { f.leave(); toast(host ? '🌐 Deine Stadt ist wieder privat.' : '🌐 Besuch beendet.'); again(); } },
@@ -779,7 +808,7 @@ export class Game {
     this.touch.show(false);
     this.openMenu(`<div class="place"><h3>🌐 ${esc(m.name)}</h3><p>Zu Besuch in deiner Runde. Gesten sehen alle, die gerade in der Stadt sind.</p><div class="slot"></div></div>`, [
       ...EMOTES.map(([k, icon, label]) => ({ icon, label, fn: () => {
-        close(); this.city.player.play(k as Parameters<typeof this.city.player.play>[0]); f.emote(k);
+        close(); (this.where === 'inside' && this.inside ? this.inside.player : this.city.player).play(k as Parameters<typeof this.city.player.play>[0]); f.emote(k);
         if (performance.now() - this.emoteT > 60000) { this.emoteT = performance.now(); change(s, { social: 6, fun: 4 }); this.city.refreshHud(); }
       } })),
       { icon: '💬', label: 'Etwas zurufen', fn: () => this.quickMenu(close) },

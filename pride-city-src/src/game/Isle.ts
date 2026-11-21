@@ -9,7 +9,7 @@ import { PLACE_THEMES, HOUSE_THEMES, houseTheme, type Theme } from './interiors'
 import { Actor } from './Actor';
 import type { Game } from './Game';
 import type { World } from './World';
-import { extraWalk } from './World';
+import { extraWalk, landWalk } from './World';
 import { toast } from '../ui/ui';
 import { isleVia } from './faden';
 import type { Marker } from '../ui/Hud';
@@ -198,6 +198,7 @@ export class Isle {
     for (const r of rects) { const [x, z] = this.w(r.x, r.z); this.W.colliders.push({ x, z, hx: swap ? r.hz : r.hx, hz: swap ? r.hx : r.hz }); }
     for (const q of this.solids) { const [x, z] = this.w(q.x, q.z); this.W.prop(x, z, q.r, []); }
     extraWalk.push((x, z) => { if (this.locked) return false; const [lx, lz] = this.l(x, z); return Math.hypot(lx, lz) < R - 1.2 || (Math.abs(lx) < 4.6 && lz > 0 && lz < R + L + 1); });
+    landWalk.push((x, z) => { const [lx, lz] = this.l(x, z); return Math.hypot(lx, lz) < R + 1; });
     this.showQuest();
   }
 
