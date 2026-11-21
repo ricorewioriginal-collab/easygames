@@ -393,6 +393,7 @@ export const ISLES: Record<string, { x: number; z: number; to?: string }> = {
   einhorn: { x: -157, z: -14 },
   canaria: { x: -157, z: -149, to: 'einhorn' },
   lindenhof: { x: -292, z: -14, to: 'einhorn' },
+  rummel: { x: -292, z: -149, to: 'canaria' },
 };
 /** Außengrenze der Inselkette (Flug, Karten) */
 export const ISLE_BOUNDS = (() => { let x0 = -215, z0 = -120, z1 = 120; for (const i of Object.values(ISLES)) { x0 = Math.min(x0, i.x - 70); z0 = Math.min(z0, i.z - 70); z1 = Math.max(z1, i.z + 70); } return { x0, z0, z1 }; })();
