@@ -12,6 +12,12 @@ import { music } from '../engine/Audio';
 import type { Spot, Theme } from './interiors';
 import { roomLights, collectCasters } from './HomeScene';
 import { buildShell, shellTime, furnish, styleOf, RoomCam, type Shell } from './room';
+import { ClubDeco, CLUB_LAYOUT } from './clubdeco';
+import { BUSINESSES, owns, SELLERS } from './empire';
+import { clubOf, nightDone, nightOpen } from './club';
+import { popOf } from './manage';
+import { hour } from './life';
+import type { Color3 } from '../engine/bjs';
 
 interface Box { x: number; z: number; hx: number; hz: number }
 const W = 12, D = 9, K = .9, H = 3.6; // Raum in Metern, KayKit-Möbel 1 Einheit ≈ 1 m (Figur ≈ 1,8 m)
@@ -31,6 +37,12 @@ export class InteriorScene implements GameScene {
   readonly spots: Spot[];
   private hudT = 0;
   private exitPos = new Vector3(W / 2 - .2, 3.4, 3.4);
+  /** Club-Ansicht (Deko, DJ, Menge) und dynamische Stellen (Club führen/kaufen) */
+  private club: ClubDeco | null = null;
+  private clubRing: ReturnType<typeof ring> | null = null;
+  private extra: Spot[] = [];
+  /** läuft gerade eine Clubnacht: Name fürs Banner */
+  party = '';
   constructor(private g: Game, readonly theme: Theme, readonly placeId = '') {
     this.spots = [...theme.spots, DOOR];
     this.scene = g.engine.newScene(0x0e0a1a);
@@ -113,7 +125,25 @@ export class InteriorScene implements GameScene {
       this.folk.push(a); this.boxes.push({ x, z, hx: .25, hz: .25 });
     });
     this.player = await Actor.create(sc, streetLook(playerLook(this.g.save.data)));
+    if (CLUB_LAYOUT[t.id] && !t.own) {
+      this.club = new ClubDeco(sc, t.id, W, D, H, this.glow);
+      const [cx, cz] = CLUB_LAYOUT[t.id].spot, o = ring(sc, .42, .55, 24); o.material = glow(sc, 0x3ee69a, 1.4, { alpha: .6 }); o.position.set(cx, .035, cz); this.clubRing = o;
+    }
     collectCasters(sc, this.sg);
+  }
+
+  /** Geschäft zu diesem Raum (Club, Bar), falls es eins ist */
+  get business() { return this.club ? BUSINESSES.find((b) => b.poi === this.theme.id) || null : null; }
+  /** Club-Zustand neu anwenden (nach Kauf, Einstellungen, Clubnacht) */
+  refreshClub() {
+    const b = this.business; if (!b || !this.club) return;
+    const s = this.g.save.data, mine = owns(s, b.id), sale = !mine && !b.gift;
+    this.club.apply(mine ? clubOf(s, b.id) : null, { sale, event: this.party || undefined, party: !!this.party }, this.folk, popOf(s, b.id));
+    const [x, z] = CLUB_LAYOUT[this.theme.id].spot;
+    const night = mine && nightOpen(hour(s)) && !nightDone(s, b.id);
+    this.extra = mine ? [{ id: 'club', label: night ? '📋 Club führen · 🪩 Türen auf' : '📋 Club führen', x, z, r: 1.6, act: { k: 'club' } }]
+      : sale ? [{ id: 'deal', label: `🤝 ${SELLERS[b.poi]?.who || 'Besitzer*in'}: Club kaufen`, x, z, r: 1.6, act: { k: 'deal' } }] : [];
+    this.clubRing?.setEnabled(this.extra.length > 0);
   }
 
   /** Neue Figur, wenn im Kleiderschrank die Figur gewechselt wurde */
@@ -144,15 +174,19 @@ export class InteriorScene implements GameScene {
     hints([['move', 'Laufen'], ['a', 'Benutzen'], ['x', 'Handy'], ['y', 'Menü']]);
     music(this.theme.music || 'city');
     toast(`${this.theme.icon} ${this.theme.title}`);
+    this.refreshClub();
   }
 
   update(dt: number, t: number) {
     const g = this.g, inp = g.engine.input, p = this.player.root.position;
     this.player.update(dt);
-    for (const a of this.folk) a.update(dt);
+    for (const a of this.folk) if (a.root.isEnabled()) a.update(dt);
+    this.club?.update(dt);
     const busy = g.dialog.open || g.menuOpen;
     this.hudT -= dt;
-    for (const [i, m] of this.glow.entries()) m.emissiveColor = col(m.metadata.c, .35 + Math.sin(t * 3 + i) * .25);
+    // Leuchtfarben pulsieren (ohne Setter, Basisfarbe zwischengespeichert; Tempo steigt in der Clubnacht)
+    const pulse = this.club?.pulse || 3;
+    for (const [i, m] of this.glow.entries()) { const md = m.metadata as { c: number; cc?: Color3 }; (md.cc ||= col(md.c)).scaleToRef(.35 + Math.sin(t * pulse + i) * .25, m.emissiveColor); }
     if (!busy) {
       const sv = g.save.data; sv.playMs += dt * 1000;
       if (advance(sv, dt / DAY_SEC * 1440)) toast(`Tag ${sv.day} beginnt.`);
@@ -171,7 +205,7 @@ export class InteriorScene implements GameScene {
         this.player.play('walk', .18, Math.max(1, 3.6 * Math.min(1, mag) / 1.02 * .55));
       } else if (this.player.anim === 'walk') this.player.play('idle');
       let best: Spot | null = null, bd = 9;
-      for (const s of this.spots) { const d = Math.hypot(s.x - p.x, s.z - p.z); if (d < (s.r || 1.8) && d < bd) { bd = d; best = s; } }
+      for (const s of this.extra.length ? [...this.spots, ...this.extra] : this.spots) { const d = Math.hypot(s.x - p.x, s.z - p.z); if (d < (s.r || 1.8) && d < bd) { bd = d; best = s; } }
       g.hud.prompt(best ? best.label : null);
       g.touch.label(best ? 'Nutzen' : 'Aktion');
       if (inp.pressed('confirm') && best) { inp.consume('confirm'); this.player.play('interact'); if (best === DOOR) g.leaveInterior(); else g.interiorAct(best, this); }

@@ -9,7 +9,9 @@ export type Act =
   | { k: 'dance' } | { k: 'show' } | { k: 'bar' }
   | { k: 'book'; id: 'licht' | 'leuchtfeuer' }
   | { k: 'do'; cost?: number; min: number; d: Partial<Record<'energy' | 'hunger' | 'hygiene' | 'social' | 'fun', number>>; msg: string; sfx?: string; adult?: boolean }
-  | { k: 'talk'; who: string; color: string; lines: string[] };
+  | { k: 'talk'; who: string; color: string; lines: string[] }
+  | { k: 'club' } | { k: 'deal' }                  // eigenen Club führen bzw. kaufen (clubui.ts)
+  | { k: 'annex'; room: string };                  // Anbau des Zuhauses (house.ts)
 
 /** Möbel: KayKit-Modell (gltf) oder Platzhalter-Form (box/screen/neon) */
 export type Item =

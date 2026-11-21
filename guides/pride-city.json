@@ -378,6 +378,22 @@
         "Lieferauftrag: Auf dem Platz jeder Welt leuchtet ein blauer Ring, das Auftragsbrett. Dort startest du einen Auftrag auf Zeit: fünf Türen im Ort, 95 Sekunden, zu Fuß oder mit dem Flitzer (zum Abliefern tief fliegen). Je mehr Zeit übrig bleibt, desto mehr Geld. Der Auftrag lässt sich beliebig oft wiederholen.",
         "Fliegen über Rainbow City: Der Flitzer steht auch in der Stadt, direkt neben dem Weltentor am Hafen. Aufsteigen mit A, dann fliegt er wie ein Auto: Stick oder WASD für Gas, Bremse und Lenkung, Turbo macht schneller, ▲/RB/R steigen, ▼/LB/Q sinken. Ab 17 Metern fliegst du frei über die Dächer der Innenstadt, in der Hochstadt ab 42 Metern, und über dem Wasser bis hinüber zur Hochstadt. A setzt automatisch zur Landung an und lässt dich am Boden absteigen."
       ]
+    },
+    {
+      "t": "🪩 Clubs kaufen und führen",
+      "p": [
+        "Clubs kaufst du jetzt im Club selbst: Geh hinein und zum grünen Ring. Dort wartet die Besitzerin oder der Besitzer (Dario im Club Prisma, Lady Luma in der One Love Bar, Wirtin Jo in der Bar Komet, Valentin in der Skybar Wolke 7). Unterschreiben oder verhandeln: Mit 5 Ruf mehr als nötig gibt es 15 % Nachlass, ein Versuch am Tag. Neu käuflich: Bar Komet und Skybar Wolke 7.",
+        "Am Klemmbrett 📋 (grüner Ring) führst du deinen Club: Resident-DJ (sieben DJs, jede*r mit eigener Gage und Lichtfarbe), Getränkepreise (günstig = voller, Luxus = mehr je Gast), Türpolitik (offen, Dresscode Glitzer, Gästeliste mit Samtkordel), Deko (Neon, Discokugel, Ballroom-Gold, Tropical Pride) und ein Awareness-Team. Alles sieht man sofort im Raum; je beliebter der Club, desto voller die Tanzfläche.",
+        "Ab 20 Uhr: „Türen auf“. Wähl eine normale Nacht oder eine Themennacht zu einem echten Tag der queeren Geschichte (Stonewall 28.6., CSD, IDAHOBIT 17.5., Trans Visibility 31.3., Coming Out Day 11.10., Welt-Aids-Tag 1.12. und mehr). Während der Nacht triffst du drei Entscheidungen, danach kommt die Abrechnung mit Gästen, Umsatz, Kosten und Ruf. Am echten Jahrestag (±3 Tage, Datum deines Geräts) kommen noch mehr Leute."
+      ]
+    },
+    {
+      "t": "🔨 Zuhause ausbauen",
+      "p": [
+        "In der Wohnung führt die pinke Tür „Anbau“ zum Ausbau-Menü. Möbel und Deko (Himmelbett, Musikanlage, Hausbar, Hantelbank, Aquarium, Flaggenwand mit echten Pride-Flaggen, Neon „LOVE IS LOVE“, Discokugel) stehen sofort in der Wohnung, vieles kannst du benutzen.",
+        "Boden (Dielen, Marmor, Regenbogen-Parkett, Flauschteppich) und Lichtstimmung kaufst du einmal und wechselst sie jederzeit.",
+        "Anbau: Partykeller, Wellness-Oase, Ankleide mit Fotostudio und Dachgarten. Jeder Raum hat drei Stufen mit neuer Einrichtung und neuen Dingen zum Tun, zum Beispiel Hausparty, Sauna, Fotoshooting oder Grillen über den Dächern. Betreten über dieselbe Tür."
+      ]
     }
   ],
   "ratgeber": [
@@ -559,6 +575,15 @@
         "Gesten bei Freund*innen füllen Kontakte und Spaß (einmal pro Minute).",
         "Outfit gewechselt? Die anderen sehen es, sobald du wieder auf der Straße stehst."
       ]
+    },
+    {
+      "t": "Club-Management: so läuft der Laden",
+      "list": [
+        "Starte mit Haus-Playlist, Normalpreisen und offener Tür. Erst wenn die Beliebtheit steigt, lohnen Gästeliste und Luxuspreise.",
+        "Teure DJs bringen mehr Umsatz und halten die Beliebtheit oben, kosten aber jeden Abend Gage.",
+        "Das Awareness-Team kostet wenig und hebt Beliebtheit und Ruf. Bei Problemen in der Clubnacht hilft es zusätzlich.",
+        "Themennächte am echten Jahrestag bringen die meisten Gäste: Der Kalender im Klemmbrett zeigt die nächsten Termine."
+      ]
     }
   ],
   "loesung": [
@@ -709,6 +734,12 @@
         "Aufgabe 2: acht Ringe der Reihe nach, einmal über die Ringstraße und zuletzt hoch über den Platz. Der helle Ring ist der nächste. Höhe mit Turbo halten und loslassen einpendeln. Zwischen den Häusern bleibst du über der Straße, über die Dächer kommst du ab 16 Metern Höhe.",
         "Aufgabe 3: Sprich mit allen Leuten im Ort, der Wegweiser 📣 zeigt die nächste Person. Aufgabe 4: zurück zur Gastgeberin, sie zahlt die Schlussprämie und der Ort feiert.",
         "Lieferauftrag: Nimm den Flitzer, bleib über der Ringstraße und sink vor jeder Tür kurz ab. Autos halten vor dir an. Wer alle fünf Türen in unter einer Minute schafft, bekommt rund 150 €."
+      ]
+    },
+    {
+      "t": "🪩 Clubnacht: gute Entscheidungen",
+      "p": [
+        "Gut für die Stimmung: Getränke an die Schlange, ruhig dazwischengehen oder ein Taxi spendieren, die Diva-Hymne, Eis holen lassen, Cherry auf die Bühne lassen, den Nachbarn einladen. Weggucken oder Ignorieren kostet Stimmung und Ruf. Ab 20 Stimmungspunkten wird die Nacht „legendär“ und bringt einen Ruf-Punkt extra."
       ]
     }
   ],
