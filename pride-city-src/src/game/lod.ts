@@ -75,4 +75,4 @@ export function fullIndices(m: Mesh): ArrayLike<number> | null {
 const FAR = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches ? 1 : 1.6;
 export const LOD_DIST = [13 * FAR, 30 * FAR];
 /** ab hier wird eine Figur gar nicht mehr gezeichnet und nicht mehr animiert */
-export const HIDE_DIST = 85 * FAR;
+export const HIDE_DIST = 75 * FAR;

@@ -195,18 +195,25 @@ export class Actor {
   private lods: Array<[Mesh, Lod]> = [];
   private lodLevel = 0;
   private hidden = false;
+  private mask = 0;
   /** Detailstufe nach Abstand zur Kamera; true = so weit weg, dass die Figur gar nicht gezeichnet wird */
   private detail(cam: Vector3) {
     const p = this.root.absolutePosition, dx = p.x - cam.x, dz = p.z - cam.z, d = Math.sqrt(dx * dx + dz * dz);
     // Stufe mit etwas Spielraum wechseln, damit eine Figur an der Grenze nicht hin und her springt
     const cur = this.lodLevel, lv = d > LOD_DIST[1] + (cur >= 2 ? -2 : 2) ? 2 : d > LOD_DIST[0] + (cur >= 1 ? -2 : 2) ? 1 : 0;
+    const hide = d > HIDE_DIST + (this.hidden ? -3 : 3);
     if (lv !== cur && this.lods.length) {
       this.lodLevel = lv;
       for (const [m, l] of this.lods) { const s = m.subMeshes?.[0], r = l.ranges[Math.min(lv, l.ranges.length - 1)]; if (s) { s.indexStart = r[0]; s.indexCount = r[1]; } }
     }
-    // weit weg: aus der Kamera nehmen (Ebenenmaske statt Sichtbarkeit, die setzt das Spiel selbst)
-    const hide = d > HIDE_DIST + (this.hidden ? -3 : 3);
-    if (hide !== this.hidden) { this.hidden = hide; this.model.getChildMeshes().forEach((m) => { m.layerMask = hide ? 0 : 0x0FFFFFFF; }); }
+    // weit weg: aus der Kamera nehmen (Ebenenmaske statt Sichtbarkeit, die setzt das Spiel selbst); auf der gröbsten
+    // Stufe fallen auch die durchsichtigen Haarsträhnen weg (eigener, sortierter Zeichenaufruf für ein paar Pixel)
+    const mask = hide ? 2 : lv >= 2 ? 1 : 0;
+    if (mask !== this.mask) {
+      this.mask = mask;
+      this.model.getChildMeshes().forEach((m) => { const strands = /_opacity/.test(m.material?.name || ''); m.layerMask = mask === 2 || (mask === 1 && strands) ? 0 : 0x0FFFFFFF; });
+    }
+    this.hidden = hide;
     return hide;
   }
 

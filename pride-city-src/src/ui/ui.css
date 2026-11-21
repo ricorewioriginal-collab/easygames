@@ -415,3 +415,41 @@ html[data-input=touch] #mg.arc .aBtn { display: flex; flex-direction: column; al
 .cineBlack { position: fixed; inset: 0; z-index: 44; background: #000; animation: cineBlack 1.1s both; pointer-events: none; }
 @keyframes cineIn { from { height: 0; } }
 @keyframes cineBlack { 0% { opacity: 0; } 35%, 65% { opacity: 1; } 100% { opacity: 0; } }
+
+/* ---------- HUD-Spalten (gegen Überlappung, hochkant und quer) ----------
+   Links: Ziel, darunter Bedürfnisse. Rechts untereinander: Uhr/Geld/Stimmung, Handy/Menü, Radar, Waffe. Alles fließt in
+   Spalten statt mit festen Abständen übereinander zu liegen; Aktions-Hinweis und Auftragsleiste stehen über den Knöpfen. */
+#hud .lcol { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; position: absolute; left: calc(clamp(10px, 2vw, 24px) + env(safe-area-inset-left, 0px)); top: calc(10px + var(--safe-t)); max-width: min(420px, 62vw); }
+#hud .lcol .goal, #hud .lcol .needs { position: static; }
+#hud .lcol .goal { position: relative; max-width: 100%; box-sizing: border-box; }
+#hud .rcol { position: absolute; right: calc(clamp(10px, 2vw, 24px) + env(safe-area-inset-right, 0px)); top: calc(10px + var(--safe-t)); display: flex; flex-direction: column; align-items: flex-end; gap: 8px; max-width: 46vw; }
+#hud .rcol .stats, #hud .rcol .menuBtn { position: static; max-width: none; }
+#hud .rrow, #hud .rside { display: contents; }
+/* PC: Radar und Waffe wie gehabt unten links */
+#hud .rcol .radar, #hud .rcol .weapon { position: fixed; }
+@media (pointer: coarse) {
+  #hud .rcol .radar { position: static; width: 110px; flex-shrink: 0; }
+  #hud .rcol .weapon { position: static; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #hud .rrow { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+  #hud .rcol .menuBtn { order: 1; } #hud .rcol .radar { order: 2; } #hud .rcol .weapon { order: 3; }
+  #hud .gigbar { bottom: calc(240px + var(--safe-b)); max-width: calc(100vw - 32px); }
+}
+@media (pointer: coarse) and (orientation: landscape) {
+  /* quer: Handy/Menü und Waffe links neben dem Radar, damit die Spalte nicht bis zu den Knöpfen reicht */
+  #hud .rrow { flex-direction: row; align-items: flex-start; }
+  #hud .rside { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; order: 1; }
+  #hud .rcol .radar { width: 96px; }
+  #hud .gigbar { bottom: calc(150px + var(--safe-b)); max-width: calc(100vw - 480px); }
+  #hud .prompt { max-width: calc(100vw - 470px); }
+}
+@media (orientation: portrait) {
+  #hud .lcol { max-width: calc(100vw - 168px); }
+  #hud .rcol { max-width: 140px; }
+  /* Aktions-Hinweis über dem höchsten Knopf (Turbo), nie darauf */
+  #hud .prompt { bottom: calc(186px + var(--safe-b)); max-width: calc(100vw - 32px); }
+  #hud .wanted { top: calc(132px + var(--safe-t)); }
+}
+#hud .prompt { box-sizing: border-box; text-align: center; }
+/* Zielmarken wippen um ihren Ankerpunkt (vorher überschrieb „bob“ die Verschiebung, die Marken rutschten bis unter die Knöpfe) */
+#hud .marker { animation-name: mbob; }
+@keyframes mbob { 50% { translate: -50% calc(-100% + 4px); } }
