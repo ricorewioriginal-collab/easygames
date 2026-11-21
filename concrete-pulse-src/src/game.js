@@ -9,9 +9,12 @@ import { Skater } from './skater.js';
 import { PARKS, SKATERS, BOARDS, customSkater, RIVALS, COMP_BASE } from './parks.js';
 import * as A from './audio.js';
 import { save, persist } from './save.js';
+import { Editor } from './editor.js';
+import { Recorder, Player } from './replay.js';
 
 const RUN_TIME = 120, DUEL_TIME = 60, COMP_TIME = 60, SKATE_TIME = 20;
 const STAT_KEYS = ['speed', 'ollie', 'spin', 'balance', 'air'];
+const HZ_MIN = 24;
 const NOINPUT = { x: 0, y: 0, rx: 0, ry: 0, down: () => false, pressed: () => false, released: () => false };
 
 export class Game {
@@ -20,6 +23,7 @@ export class Game {
     this.settings = save.settings;
     this.scene = null; this.state = 'boot'; this.parkIdx = 0; this.mode = 'career'; this.orbit = 0;
     this.camDist = { near: 3.4, normal: 4.3, far: 5.4 };
+    this.custom = null; this.editor = new Editor(this); this.rec = null; this.player = null;
     engine.runRenderLoop(() => this.frame());
     addEventListener('resize', () => engine.resize());
   }
@@ -34,16 +38,16 @@ export class Game {
     const s = save.spent[def.id] || (save.spent[def.id] = {}); s[k] = (s[k] || 0) + 1; persist(); if (this.skater) this.skater.st[k] = cur + 1; return true;
   }
   resetStats(def) { delete save.spent[def.id]; persist(); if (this.skater) Object.assign(this.skater.st, this.statsFor(def)); }
-  get park() { return PARKS[this.parkIdx]; }
+  get park() { return this.custom || PARKS[this.parkIdx]; }
 
   // ------------------------------------------------------------ Laden
-  async load(parkIdx, opts = {}) {
+  async load(parkIdx, def = null) {
     const token = (this._tok = (this._tok || 0) + 1);
-    this.ui.loading(true, PARKS[parkIdx].name);
+    this.ui.loading(true, (def || PARKS[parkIdx]).name);
     await new Promise(r => setTimeout(r, 30));
     if (this.scene) { A.setGrind(false); A.setRoll(0, false); this.scene.dispose(); this.scene = null; this.skater = null; }
-    this.parkIdx = parkIdx;
-    const park = PARKS[parkIdx];
+    this.parkIdx = parkIdx; this.custom = def; this.rec = null;
+    const park = def || PARKS[parkIdx];
     const S = createScene(this.engine, park, this.settings.quality);
     this.scene = S.scene; this.shadow = S.shadow; this.Q = S.Q; this.sun = S.sun;
     const W = buildWorld(this, park);
@@ -71,14 +75,14 @@ export class Game {
 
   // ------------------------------------------------------------ Modi
   async showcase(parkIdx = 0) {           // Hintergrund im Menü
-    this.state = 'menu'; this.input.enabled = false;
-    if (!this.scene || this.parkIdx !== parkIdx) await this.load(parkIdx);
+    this.state = 'menu'; this.input.enabled = false; if (this.editor.active || this.editor.testing) this.editor.leave();
+    if (!this.scene || this.parkIdx !== parkIdx || this.custom) await this.load(parkIdx);
     const sp = this.park.spawn; this.skater.reset(sp);
     this.orbit = 0;
   }
-  async start(mode, parkIdx, players) {
+  async start(mode, parkIdx, players, opts = {}) {
     this.mode = mode; A.initAudio();
-    await this.load(parkIdx);
+    if (!(opts.keep && this.scene)) await this.load(parkIdx, opts.def || null); else this.camState = null;
     this.run = { t: mode === 'free' ? Infinity : mode === 'duel' ? DUEL_TIME : mode === 'comp' ? COMP_TIME : mode === 'skate' ? SKATE_TIME : RUN_TIME, score: 0, best: 0, letters: new Set(), tape: false, gaps: new Set(), done: [], maxGrind: 0, maxManual: 0, maxLip: 0, ending: 0, bestCombo: 0, tricks: new Set(), bails: 0 };
     if (mode === 'duel') { this.duel = this.duel && this.duel.parkIdx === parkIdx && players == null ? this.duel : { parkIdx, players: players || 2, cur: 0, scores: [] }; }
     if (mode === 'comp') { if (!this.comp || this.comp.parkIdx !== parkIdx || players === 'new' || this.comp.run >= 3) this.comp = { parkIdx, run: 0, scores: [], rivals: this.makeRivals(parkIdx) }; }
@@ -90,20 +94,21 @@ export class Game {
       it.node.setEnabled(show);
     }
     // Bereits erledigte Karriereziele: Sammelobjekte trotzdem zeigen (für Punkte), Kassette nur wenn noch offen
-    this.skater.reset(this.park.spawn); this.skater.special = 0;
+    this.skater.reset(opts.spawn || this.park.spawn); this.skater.special = 0; this.skater.holder.setEnabled(true);
+    this.rec = new Recorder(this);
     this.state = 'play'; this.input.enabled = true; this.input.clear();
     this.ui.startRun(this);
     A.playMusic(this.settings.track >= 0 ? this.settings.track : this.park.music);
     this.paused = false;
   }
-  restart() { this.start(this.mode, this.parkIdx, this.mode === 'comp' ? 'new' : this.mode === 'skate' && this.skate ? this.skate.players : undefined); }
+  restart() { this.start(this.mode, this.parkIdx, this.mode === 'comp' ? 'new' : this.mode === 'skate' && this.skate ? this.skate.players : undefined, this.custom ? { def: this.custom, keep: true } : {}); }
   pause(on) {
     if (this.state !== 'play' && this.state !== 'ending') return;
     this.paused = on; this.ui.pause(on, this);
     if (on) { A.setRoll(0, false); A.setGrind(false); }
     this.input.clear();
   }
-  quit() { this.state = 'menu'; this.paused = false; A.stopMusic(); A.setRoll(0, false); A.setGrind(false); this.input.enabled = false; }
+  quit() { if (this.editor.active || this.editor.testing) this.editor.leave(); this.state = 'menu'; this.paused = false; A.stopMusic(); A.setRoll(0, false); A.setGrind(false); this.input.enabled = false; }
 
   // ------------------------------------------------------------ Schleife
   frame() {
@@ -114,6 +119,10 @@ export class Game {
       if (this.input.pressed('pause')) this.pause(!this.paused);
       if (this.input.pressed('goals') && !this.paused) this.ui.toggleGoals(this);
       if (!this.paused) this.tick(dt);
+    } else if (this.state === 'edit') {
+      this.editor.frame(dt);
+    } else if (this.state === 'replay' && this.player) {
+      this.player.frame(dt);
     } else if (this.state === 'menu' && this.skater) {
       this.skater.inp = NOINPUT; this.skater.apply(dt);
       this.orbit += dt * 0.18;
@@ -155,6 +164,7 @@ export class Game {
     // Ton
     A.setRoll(sk.speed, sk.mode === 'ground');
     this.updateCamera(dt);
+    if (this.rec) this.rec.add(dt);
     this.ui.hud(this, dt);
   }
 
@@ -206,9 +216,10 @@ export class Game {
   }
 
   // ------------------------------------------------------------ Ereignisse vom Skater
-  onTrick(e, special) { this.ui.trick(e, special); if (special) this.skater.special = 0; }
+  onTrick(e, special) { this.ui.trick(e, special); if (this.rec) this.rec.event(e.name, special ? 'spec' : ''); if (special) this.skater.special = 0; }
   onBank(v, list) {
     const run = this.run; if (!run) return;
+    if (this.rec && this.state !== 'replay') this.rec.event('+' + Math.round(v).toLocaleString('de-DE'), 'bank');
     if (this.mode === 'skate' && run.turnDone != null) return;
     run.score += v; run.bestCombo = Math.max(run.bestCombo, v);
     this.ui.bank(v, list);
@@ -220,7 +231,7 @@ export class Game {
     // Trick über Lücke
     if (this._trickGaps) { for (const tg of this._trickGaps) this.goalCheck('trickgap', tg); this._trickGaps = null; }
   }
-  onBail(why, lost) { A.sfx('bail'); this.ui.bail(why, lost); this._trickGaps = null; if (this.run) { this.run.bails++; if (this.mode === 'skate' && this.run.turnDone == null) this.run.turnDone = -0.6; } }
+  onBail(why, lost) { if (this.rec) this.rec.event(why, 'fail'); A.sfx('bail'); this.ui.bail(why, lost); this._trickGaps = null; if (this.run) { this.run.bails++; if (this.mode === 'skate' && this.run.turnDone == null) this.run.turnDone = -0.6; } }
   onRecover() { }
   sfx(n, k) { A.sfx(n, k); }
   grindSound(on, kind) { A.setGrind(on, kind); }
@@ -254,6 +265,20 @@ export class Game {
   animateItems(dt) {
     if (!this.items) return; const t = performance.now() / 1000;
     for (const it of this.items) if (it.node.isEnabled()) { it.node.rotation.y = t * 1.6; it.node.position.y = it.pos.y + Math.sin(t * 2 + it.pos.x) * 0.08; }
+  }
+
+  // ------------------------------------------------------------ Replay
+  canReplay() { return !!(this.rec && this.rec.count > HZ_MIN); }
+  openReplay(menu) {
+    if (!this.canReplay()) return false;
+    this.player = new Player(this, this.rec); this.replayFrom = { state: this.state, menu };
+    this.state = 'replay'; this.input.clear(); this.ui.replayHud(true, this.player);
+    return true;
+  }
+  closeReplay() {
+    const p = this.player; if (!p) return; p.restore(); this.player = null; this.ui.replayHud(false);
+    const f = this.replayFrom || { state: 'results', menu: 'mResults' };
+    this.state = f.state; this.input.clear(); this.ui.show(f.menu || null, false);
   }
 
   // ------------------------------------------------------------ Ziele
