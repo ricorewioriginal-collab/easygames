@@ -13,6 +13,7 @@ import { pcEvents } from './hooks';
 import { NPCS, CHAPTERS, goal, talk, poi as storyPoi, marks, hidden, storyTick, chapterLabel, type NpcDef, type StoryCtx } from './story';
 import type { Game } from './Game';
 import { radio, STATIONS, stationOf } from '../engine/Radio';
+import { FmTalk, FM_ID } from './pridefm';
 import { RACES, MEDALS, raceGig, finishRace, bestTime, nextParcel, stats, myCar, tuneLevel, GARAGE, type Race } from './vehicles';
 import { sfx, music } from '../engine/Audio';
 import { toast, hints } from '../ui/ui';
@@ -794,6 +795,7 @@ export class CityScene implements GameScene {
     let i = STATIONS.indexOf(stationOf(s.flags.radio));
     i = to ?? ((i + dir) % n + n) % n;
     const st = STATIONS[i]; s.flags.radio = st.id;
+    if (st !== was) this.fm.reset();
     if (st !== was || !(radio.state.on || radio.state.loading) && st.id !== 'off') radio.tune(st);
     this.showRadio();
   }
@@ -802,8 +804,11 @@ export class CityScene implements GameScene {
     const song = r.title ? (r.artist ? `${r.title} · ${r.artist}` : r.title) : '';
     const sub = r.err || (st.slug ? (r.loading ? 'Sender wird eingestellt …' : song || 'Live') : st.sub);
     if (wheel) this.g.hud.radioWheel(STATIONS, STATIONS.indexOf(st), st.name, sub, !!st.slug && !r.err);
-    this.g.hud.nowPlaying(st.id === 'off' ? null : `${st.icon} ${st.name}`, st.slug ? (r.err || song || (r.loading ? '…' : 'Live')) : st.sub);
+    const talk = st.id === FM_ID ? this.fm.cur : null;
+    this.g.hud.nowPlaying(st.id === 'off' ? null : `${st.icon} ${st.name}`, talk ? `${talk.who}: ${talk.text}` : st.slug ? (r.err || song || (r.loading ? '…' : 'Live')) : st.sub);
+    document.querySelector('#hud .nowplay')?.classList.toggle('talk', !!talk);
   }
+  private fm = new FmTalk();
   private radioOff() { radio.stop(); this.g.hud.nowPlaying(null); this.g.hud.radioWheel(null); this.g.hud.radioBtn(false); }
 
   /** Laternen, Masten, Bänke und Bäume zwischen Kamera und Figur ausblenden, statt durch sie hindurchzuschauen */
@@ -855,6 +860,8 @@ export class CityScene implements GameScene {
     // Spielzeit läuft nur ohne Dialog und Menü
     const busy = g.dialog.open || g.menuOpen;
     radio.duck(busy);
+    // Pride FM: Moderation, Anrufe und Nachrichten als Untertitel im Senderfeld
+    if (this.drive && radio.state.st.id === FM_ID && !busy && this.fm.tick(dt, s)) this.showRadio(false);
     if (!busy) {
       s.playMs += dt * 1000;
       if (advance(s, dt / DAY_SEC * 1440)) toast(`Tag ${s.day} beginnt.`);

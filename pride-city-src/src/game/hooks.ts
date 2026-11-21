@@ -29,5 +29,7 @@ export interface PcEvents extends Record<string, unknown> {
   wagenGestaltet: { flag: string; motto: string; deko: string; sound: string; score: number; first: boolean };
   /** Jury-Preis für den eigenen Wagen bei der CSD-Parade (Platz 1–3) */
   paradeWagen: { place: number; score: number; money: number; rep: number; motto: string };
+  /** Eigene Radiosendung „Rainbow Talk“ auf Pride FM gesendet (pridefm.ts) */
+  radioSendung: { points: number; listeners: number; money: number };
 }
 export const pcEvents = new Emitter<PcEvents>();
