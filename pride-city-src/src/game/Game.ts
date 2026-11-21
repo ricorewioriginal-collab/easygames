@@ -25,6 +25,8 @@ import { HomeScene } from './HomeScene';
 import { LAWS } from './crime';
 import { RING, WEDDING, ADOPT, KID_NAMES, spouse, fiance, kid, canPropose, propose, canWed, wed, canAdopt, applyAdopt } from './family';
 import { InteriorScene } from './InteriorScene';
+import { WorldScene } from './WorldScene';
+import { WORLDS, worldDef, worldStage } from './worlds';
 import { ALPHA, QUICK, EMOTES, MAX_GUESTS, normCode, netError } from './online';
 import type { Spot, Theme } from './interiors';
 import type { Sfx } from '../engine/Audio';
@@ -59,7 +61,9 @@ export class Game {
   city!: CityScene;
   menuOpen = false;
   home: HomeScene | null = null;
-  where: 'city' | 'home' | 'inside' = 'city';
+  where: 'city' | 'home' | 'inside' | 'world' = 'city';
+  /** aktuelle Welt jenseits der Stadt (worlds.ts) */
+  world: WorldScene | null = null;
   inside: InteriorScene | null = null;
   private insideBack = { x: 0, z: 0, yaw: 0 };
   private interiors = new Map<string, InteriorScene>();
@@ -180,7 +184,7 @@ export class Game {
       this.fade(async () => {
         await this.city.rebuildPlayer();
         // auch in der Wohnung und im Laden steht sofort die neue Figur (sonst blieb dort die alte)
-        if (fromGame) { if (this.where === 'home') await this.home?.syncPlayer(); else if (this.where === 'inside') await this.inside?.syncPlayer(); this.resume(); return; }
+        if (fromGame) { if (this.where === 'home') await this.home?.syncPlayer(); else if (this.where === 'inside') await this.inside?.syncPlayer(); else if (this.where === 'world') await this.world?.syncPlayer(); this.resume(); return; }
         this.loadChapter();
       });
     }, () => this.fade(() => (fromGame ? this.resume() : this.title())));
@@ -217,6 +221,7 @@ export class Game {
   resume() {
     if (this.where === 'home' && this.home) { this.engine.setScene(this.home); return; }
     if (this.where === 'inside' && this.inside) { this.engine.setScene(this.inside); return; }
+    if (this.where === 'world' && this.world) { this.engine.setScene(this.world); return; }
     this.engine.setScene(this.city); this.city.setPlay();
   }
 
@@ -239,6 +244,36 @@ export class Game {
     sfx('door');
     this.fade(() => { this.where = 'city'; s.inside = false; s.pos = { x: 3.6, z: 40, yaw: Math.PI / 2 }; this.engine.setScene(this.city); this.city.setPlay(); this.save.write(); });
   }
+  /* ---------- Welten jenseits der Stadt: Weltentor am Hafen oder Schnellreise im Handy ---------- */
+  worldMenu() {
+    const s = this.save.data, close = () => { this.closeMenu(); this.touch.show(true); };
+    const state = (id: string) => { const st = worldStage(s.flags, id); return st >= 4 ? '✅ geschafft' : st > 0 ? `Aufgabe ${Math.min(3, st)} von 3` : 'neu'; };
+    this.openMenu(`<div class="panel"><h3>🌀 Weltentor</h3><p>Reise in andere Welten. Hinlaufen kannst du am Hafen, die Schnellreise geht von überall. In jeder Welt warten eine Geschichte, drei Aufgaben und der Flitzer zum Fahren und Fliegen.</p></div>`,
+      [...WORLDS.map((w) => ({ icon: w.icon, label: w.name, sub: `${w.sub} · ${w.adult && !s.settings.adult ? 'nur mit 18+' : state(w.id)}`, disabled: (!!w.adult && !s.settings.adult) || this.world?.def.id === w.id && this.where === 'world', fn: () => { close(); this.enterWorld(w.id); } })),
+        ...(this.where === 'world' ? [{ icon: '🏙️', label: 'Zurück nach Rainbow City', sub: 'zum Weltentor am Hafen', fn: () => { close(); this.leaveWorld(); } }] : []),
+        { icon: '←', label: 'Schließen', fn: close }], close);
+  }
+  enterWorld(id: string) {
+    const def = worldDef(id), s = this.save.data; if (!def) return;
+    if (def.adult && !s.settings.adult) { toast('Nur mit 18+ (Einstellungen).'); sfx('miss'); return; }
+    if (this.city.driving) this.city.leaveCar();
+    sfx('tram'); this.closeMenu();
+    s.pos = { x: -74, z: 13, yaw: Math.PI / 2 }; s.inside = false;
+    this.fade(async () => {
+      const old = this.world;
+      if (old?.def.id !== id) {
+        this.loading.show(def.name, 'Weltentor'); const sc = new WorldScene(this, def); await sc.build(); this.loading.hide();
+        this.world = sc; this.where = 'world'; this.engine.setScene(sc);
+        if (old) this.engine.disposeScene(old);   // nur eine Welt im Speicher (Handy)
+      } else { this.where = 'world'; this.engine.setScene(old); }
+      this.save.write();
+    });
+  }
+  leaveWorld() {
+    sfx('tram');
+    this.fade(() => { this.where = 'city'; this.engine.setScene(this.city); this.city.setPlay(); this.save.write(); });
+  }
+
   /* ---------- Innenräume aller Häuser ---------- */
   /** Haus betreten: Einrichtung aus interiors.ts, zurück vor die Tür (back) */
   enterInterior(theme: Theme, back: { x: number; z: number; yaw: number }, placeId = '') {
@@ -523,6 +558,7 @@ export class Game {
       this.openMenu(frame('Karte', `<div class="pbody"><canvas id="pmap" width="300" height="300"></canvas><p>Tram: 2 €, 10 Minuten – auch ins Hafenviertel. Oder hinlaufen und ein Auto nehmen.</p></div>`),
         [...pois.map((p) => ({ icon: p.icon, label: p.name, sub: s.pin === p.id ? '⭐ markiert · A: mit der Tram hinfahren' : 'A: mit der Tram hinfahren',
           fn: () => { if (s.money < 2) { toast('Nicht genug Geld für die Tram.'); return; } s.money -= 2; s.pin = ''; close(); this.travel(p.x, p.z); } })),
+          { icon: '🌀', label: 'Weltentor: andere Welten', sub: 'Schnellreise nach Glitzeria, Playa Arcoíris …', fn: () => { close(); this.worldMenu(); } },
           { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
       this.drawMap();
       if (this.menu) this.menu.onMove = () => this.drawMap();

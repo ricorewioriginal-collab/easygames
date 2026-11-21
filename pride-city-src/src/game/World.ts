@@ -174,6 +174,7 @@ export class World {
     P('bar', 'Club Leuchtturm', '🗼', -72.6, -12);
     P('beach', 'Strandbar Sandbank', '🏖️', -80.4, 30);
     P('tramhafen', 'Tram Hafen', '🚋', -70, 8, undefined, undefined, 3.6);
+    P('welten', 'Weltentor', '🌀', -78, 13, undefined, undefined, 3.4);
     P('tram', 'Tram Rainbow City', '🚋', 0, 52, undefined, undefined, 4);
     // Hochstadt östlich der Regenbogenbrücke
     P('samenbank', 'Samenbank Zukunft', '🧪', 96, -11, 'SAMENBANK', '#7fd4ff');
@@ -742,6 +743,9 @@ export class World {
     plane(400, 600, M(0x2f8fd0, .12, .25, { emissive: 0x08243a }), -292, .02, 0); // Wasser
     plane(10, 26, M(0xf0d9a0, 1), -92, .07, 30);                    // Sandstrand
     bx(.5, .5, 80, M(0x8c8579), -91.4, .25, 5);                     // Kaimauer
+    // Weltentor am Kai: Regenbogenbogen mit leuchtendem Wirbel (Reise in andere Welten, worlds.ts)
+    [0xff3b3b, 0xff8a3b, 0xffd23b, 0x3ee69a, 0x3a7bff, 0xb56bff].forEach((c, i) => { const m = glow(sc, c, 1); this.neon.push({ m, base: m.albedoColor.clone() }); const a = torus(sc, 3.3 - i * .22, .13, 28); a.material = m; a.rotation.set(Math.PI / 2, Math.PI / 2, 0); a.position.set(-80, 0, 13); this.still(a, false); });
+    { const m = glow(sc, 0xd9b8ff, 1, { alpha: .45 }); const d = cyl(sc, 2.1, 2.1, .05, 28); d.material = m; d.rotation.z = Math.PI / 2; d.position.set(-80, 1.6, 13); this.still(d, false); this.neonSign('WELTENTOR', '#ffffff', -79.9, 4.3, 13, Math.PI / 2, undefined, 5); }
     // Steg mit Leuchtturm
     const wood = M(0x8a5a35, .9);
     bx(20, .3, 3, wood, -101, .2, -2);
