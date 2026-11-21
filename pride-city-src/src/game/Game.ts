@@ -297,9 +297,9 @@ export class Game {
     this.fade(() => { this.where = 'city'; this.inside = null; s.pos = { ...this.insideBack }; this.engine.setScene(this.city); this.city.setPlay(); this.save.write(); });
   }
   /** Stelle im Innenraum benutzen */
-  interiorAct(sp: Spot, sc: InteriorScene) {
+  interiorAct(sp: Spot, sc?: InteriorScene) {
     const s = this.save.data, a = sp.act;
-    if (a.k === 'menu') { if (sc.placeId) this.placeMenu(sc.placeId); return; }
+    if (a.k === 'menu') { if (sc?.placeId) this.placeMenu(sc.placeId); return; }
     if (a.k === 'gl') { this.roman('gaylife', a.id); return; }
     if (a.k === 'dance') { this.goDance(false); return; }
     if (a.k === 'show') {
@@ -558,7 +558,7 @@ export class Game {
       this.openMenu(frame('Karte', `<div class="pbody"><canvas id="pmap" width="300" height="300"></canvas><p>Tram: 2 €, 10 Minuten – auch ins Hafenviertel. Oder hinlaufen und ein Auto nehmen.</p></div>`),
         [...pois.map((p) => ({ icon: p.icon, label: p.name, sub: s.pin === p.id ? '⭐ markiert · A: mit der Tram hinfahren' : 'A: mit der Tram hinfahren',
           fn: () => { if (s.money < 2) { toast('Nicht genug Geld für die Tram.'); return; } s.money -= 2; s.pin = ''; close(); this.travel(p.x, p.z); } })),
-          { icon: '🌀', label: 'Weltentor: andere Welten', sub: 'Schnellreise nach Glitzeria, Playa Arcoíris …', fn: () => { close(); this.worldMenu(); } },
+          { icon: '🌀', label: 'Weltentor: andere Welten', sub: 'Schnellreise nach Glitzeria, Playa Arcoíris, Lindenhof …', fn: () => { close(); this.worldMenu(); } },
           { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
       this.drawMap();
       if (this.menu) this.menu.onMove = () => this.drawMap();
