@@ -7,6 +7,7 @@ import { LICHT_CHAPTERS, LICHT_PEOPLE, LICHT_START, LICHT_SHOW, LUMA, lichtEndin
 import { SAGA_NPCS, sagaTalk, sagaGoal, sagaMarks, sagaHidden } from './saga';
 import type { Gig } from './gigs';
 import { LF_CHAPTERS, LF_PEOPLE, LF_START, lfEnding } from './leuchtfeuer';
+import { fadenGoal, fadenTick, fadenPoi, fadenDance, actLabel, history } from './faden';
 
 export interface NpcDef {
   id: string; name: string; pron: string; color: string; look: Look;
@@ -74,6 +75,8 @@ export interface StoryCtx {
   card(kick: string, title: string, text: string): Promise<void>;
   /** Mission mit Stationen und Zeit starten (Akt II) */
   mission(g: Gig): void;
+  /** Anruf: Handy klingelt, dann das Gespräch */
+  phone(lines: Line[], done?: () => void): void;
 }
 
 const me = (s: SaveData) => s.name;
@@ -84,12 +87,12 @@ const L = (who: NpcDef | string, text: Line['text'], choices?: Line['choices']):
 const npc = (id: string) => NPCS.find((n) => n.id === id)!;
 const sigs = (s: SaveData) => Object.keys(s.flags).filter((k) => k.startsWith('sig_') && s.flags[k] === true).length;
 
-export interface Goal { title: string; sub?: string; npc?: string; poi?: string }
+export interface Goal { title: string; sub?: string; npc?: string; poi?: string; /** Insel der Kette (Akt III): Lichtsäule bei der Gastgeberin */ isle?: string }
 
 /** Kapitel-Überschrift für HUD und Pause */
 export function chapterLabel(s: SaveData) {
   const c = CHAPTERS[s.chapter - 1];
-  return c ? `Kapitel ${c.n} · ${c.title}` : 'Rainbow City · Freies Spiel';
+  return c ? `Kapitel ${c.n} · ${c.title}` : actLabel(s);
 }
 const shifts = (s: SaveData) => Object.values(s.jobs).reduce((a, j) => a + (j.shifts || 0), 0);
 const known = (s: SaveData) => NPCS.filter((n) => (s.rel[n.id]?.f || 0) > 0).length;
@@ -127,6 +130,7 @@ export function goal(s: SaveData): Goal {
   }
   const sg = sagaGoal(s);
   if (sg && (s.chapter > 5 || s.flags.sagaRun)) return sg;
+  const fg = fadenGoal(s); if (fg) return fg;
   if (s.chapter > 1 && s.chapter <= 5) return { title: 'Erkunde Rainbow City', sub: 'Sprich mit deinen Freund*innen – die Geschichte geht gleich weiter.' };
   if (s.chapter > 5) return { title: 'Freies Spiel', sub: 'Die Geschichte ist erzählt. Arbeite, date, feiere – Rainbow City gehört dir.' };
   switch (s.step) {
@@ -158,6 +162,7 @@ export function storyTick(c: StoryCtx) {
   if (s.chapter === 2 && s.step === 1 && shifts(s) >= 1) { c.step(2); c.reward(0, 3, 'Erste Schicht geschafft'); }
   else if (s.chapter === 2 && s.step === 2 && known(s) >= 6) { c.step(3); c.toast('💌 Hilde: „Heute Abend Essen bei mir auf der Plaza. Keine Widerrede!“'); }
   else if (s.chapter === 3 && s.step === 4 && s.flags.bar) c.chapterDone('Drag-Show, eine ehrliche Aussprache mit Rex und dein eigener Club: Du bist jetzt Teil der Szene.');
+  else fadenTick(c);
 }
 
 /** Gespräch – true, wenn die Geschichte es übernommen hat */
@@ -191,7 +196,8 @@ export function talk(c: StoryCtx, id: string): boolean {
           { label: 'Diplomatisch: Wir reden mit allen.', sub: 'Gespräche, Bündnisse', fn: () => { s.flags.style = 'diplomatic'; } },
         ]),
         L(n, 'Das merke ich mir. Fang klein an: Wir brauchen drei Unterschriften von Leuten aus dem Kiez.'),
-      ], () => c.step(4));
+        L(n, 'Weißt du, warum wir jedes Jahr im Sommer feiern? Wegen einer Nacht in New York, 1969.'),
+      ], () => { c.step(4); void history(s, 'k1', c.card); });
       return true;
     }
     if (id === 'jules' && s.step === 5) {
@@ -412,6 +418,7 @@ function petition(c: StoryCtx, n: NpcDef) {
 /** Ort betreten – true, wenn die Geschichte es übernommen hat */
 export function poi(c: StoryCtx, id: string): boolean {
   const s = c.s;
+  if (fadenPoi(c, id)) return true;
   if (s.chapter === 1 && id === 'home' && s.step === 2) {
     c.enterHome(() => c.say([L('Du', 'Klein, aber meins. Ein Bett, eine Küche, eine Dusche – und von irgendwo kommt Musik.'), L('Du', 'Hier kann ich schlafen, kochen und mich frisch machen. Mit dem Handy behalte ich alles im Blick.'), L('Du', 'Okay. Raus durch die Tür und auf ins Regenbogenhaus.')], () => { c.step(3); c.reward(0, 2, 'Eingezogen'); }));
     return true;
@@ -508,6 +515,7 @@ export function ending(s: SaveData): Line[] {
 /** Nach dem Tanz-Battle */
 export function danceResult(c: StoryCtx, won: boolean) {
   const s = c.s;
+  if (fadenDance(c, won)) return;
   if (s.flags.lichtShow) {
     s.flags.lichtShow = false;
     addLight(s, won ? LICHT_SHOW : 10);

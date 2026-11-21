@@ -42,7 +42,12 @@ describe('Story', () => {
     s.step = 6; expect(goal(s).npc).toBe('nova');
     s.chapter = 2; s.step = 0; expect(goal(s).npc).toBe('mo');
     s.chapter = 6; expect(goal(s).title).toContain('Hochstadt 1/8'); // Akt II übernimmt nach dem Abspann
-    s.flags.saga = 8; expect(goal(s).title).toBe('Freies Spiel');
+    s.flags.saga = 8; expect(goal(s).title).toContain('Insel 1/4'); // Akt III: die Inselkette
+    expect(goal(s).isle).toBe('einhorn');
+    s.settings.adult = true; expect(goal(s).title).toContain('Insel 1/5');
+    for (const id of ['einhorn', 'canaria', 'lindenhof', 'rummel', 'cruising']) s.flags['w_' + id] = 4;
+    s.flags.fadenCall = true; expect(goal(s).poi).toBe('plaza');
+    s.flags.fadenEnd = 9; expect(goal(s).title).toBe('Freies Spiel');
   });
   it('lässt sich von Kapitel 2 bis zum Abspann durchspielen', () => {
     const s = defaults(); s.chapter = 2; s.step = 0;
@@ -53,7 +58,7 @@ describe('Story', () => {
       reward: (m, r) => { s.money += m; s.rep += r; }, step: (n) => { s.step = n; },
       dance: () => danceResult(c, true), barShift: (d) => d?.(),
       chapterDone: () => { s.chapter++; s.step = 0; },
-      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>, mission: () => {},
+      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>, mission: () => {}, phone: (l, d) => c.say(l, d),
     };
     // Kapitel 2
     talk(c, 'mo'); expect(s.step).toBe(1);
@@ -94,7 +99,7 @@ describe('Story', () => {
       say: (lines: Line[], done) => { for (const l of lines) { l.choices?.[l.choices.length > 1 && l.choices[0].label.startsWith('Später') ? 1 : 0]?.fn?.(); if (typeof l.text === 'function') l.text(); } done?.(); },
       reward: (m, r) => { s.money += m; s.rep += r; }, step: () => {}, chapterDone: () => {}, barShift: (d) => d?.(),
       dance: () => { danced++; danceResult(c, true); },
-      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>, mission: () => {},
+      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>, mission: () => {}, phone: (l, d) => c.say(l, d),
     };
     expect(hidden(defaults(), 'leon')).toBe(true);
     for (let k = 0; k < 8; k++) { talk(c, 'leon'); await new Promise((r) => setTimeout(r, 80)); }
@@ -116,7 +121,7 @@ describe('Story', () => {
       s, toast: () => {}, hour: () => 12, skipToHour: () => {}, enterHome: (a) => a?.(), credits: () => {},
       say: (lines: Line[], done) => { for (const l of lines) { l.choices?.[0]?.fn?.(); if (typeof l.text === 'function') l.text(); } done?.(); },
       reward: (m, r) => { s.money += m; s.rep += r; }, step: () => {}, chapterDone: () => {}, barShift: (d) => d?.(), dance: () => {},
-      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>, mission: () => {},
+      card: () => ({ then: (f: () => void) => f() }) as unknown as Promise<void>, mission: () => {}, phone: (l, d) => c.say(l, d),
     };
     expect(hidden(defaults(), 'finn')).toBe(true);
     for (let k = 0; k < 8; k++) { talk(c, 'finn'); await new Promise((r) => setTimeout(r, 70)); }
@@ -148,5 +153,30 @@ describe('Innenräume', () => {
   it('ohne 18+ nie ein 18+-Haus', () => {
     for (let i = 0; i < 300; i++) expect(houseTheme(i, false).adult).toBeFalsy();
     expect(new Set(Array.from({ length: 300 }, (_, i) => houseTheme(i, false).id)).size).toBe(HOUSE_THEMES.filter((t) => !t.adult).length);
+  });
+});
+
+describe('Roter Faden (Akt II und III)', () => {
+  it('ruft zwischen den Akten an und endet mit der Pride der Inseln', () => {
+    const s = defaults(); s.chapter = 6; s.step = 0;
+    const calls: string[] = [], cards: string[] = [];
+    let h = 14;
+    const c: StoryCtx = {
+      s, toast: () => {}, hour: () => h, skipToHour: (x) => { h = x; }, enterHome: (a) => a?.(), credits: () => {},
+      say: (lines: Line[], done) => { for (const l of lines) { if (typeof l.text === 'function') l.text(); l.choices?.[0]?.fn?.(); } done?.(); },
+      reward: (m, r) => { s.money += m; s.rep += r; }, step: (n) => { s.step = n; },
+      dance: () => danceResult(c, true), barShift: (d) => d?.(), chapterDone: () => {},
+      card: (k: string) => { cards.push(k); return ({ then: (f: () => void) => f() }) as unknown as Promise<void>; }, mission: () => {},
+      phone: (l, d) => { calls.push(String(l[0].who)); c.say(l, d); },
+    };
+    const tick = () => { for (let i = 0; i < 6; i++) storyTick(c); };
+    tick(); expect(calls).toEqual(['📞 Mama Vega']); expect(cards).toContain('Akt II');
+    s.flags.saga = 8; tick(); expect(calls[1]).toBe('📞 Jules'); expect(cards).toContain('Akt III');
+    s.flags.w_einhorn = 4; tick(); expect(calls[2]).toBe('📞 Stella Sternenstaub'); expect(goal(s).isle).toBe('canaria');
+    for (const id of ['canaria', 'lindenhof', 'rummel']) s.flags['w_' + id] = 4;
+    tick(); tick(); expect(s.flags.fadenCall).toBe(true); expect(goal(s).poi).toBe('plaza');
+    h = 9; expect(poi(c, 'plaza')).toBe(true); expect(h).toBe(12); // wartet bis 12 Uhr
+    poi(c, 'plaza'); expect(s.flags.fadenEnd).toBeTruthy(); expect(cards).toContain('Akt III abgeschlossen');
+    expect(goal(s).title).toBe('Freies Spiel');
   });
 });

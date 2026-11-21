@@ -18,6 +18,8 @@ import { SKY, skyAt, forecast } from './weather';
 import { closeness, levelName, addCloseness, chatOpen, chatOf, replyChat, OUTINGS, outingWhy, doOuting, GIFTS, giveGift, model, partners, jealousy, type Model } from './bond';
 import { STAFF, UPGRADES, UP_MAX, SPECIAL, daily as bizDaily, staffOf, upOf, popOf, issueOf, eventReady, hire, upgrade, workIn, hostEvent, fixIssue, upCost, staffFee, fixCost, eventCost } from './manage';
 import { SHOP, RACES, PAINTS, PAINT_COST, TUNE_COST, MEDALS, ownsCar, myCar, tuneLevel, buyCar, buyTune, buyPaint, bestTime, medalFor, stats } from './vehicles';
+import { ACTS, act, actLabel, chain, islesLeft, HISTORY, HIST_ORDER } from './faden';
+import { sagaDone, MISSIONS } from './saga';
 import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST, lichtPart, lichtLight, lfPart, lfGlow } from './story';
 import { LF_CHAPTERS, lfEnding, lfPct } from './leuchtfeuer';
 import { LICHT_CHAPTERS, lichtEnding } from './licht';
@@ -145,7 +147,7 @@ export class Game {
     this.city.setTitle();
     const s = this.save;
     const items: Item[] = [];
-    if (s.hasGame) items.push({ icon: '▶', label: 'Fortsetzen', sub: `${s.data.name} · Kapitel ${Math.min(s.data.chapter, 5)} · Tag ${s.data.day}`, big: true, fn: () => this.play() });
+    if (s.hasGame) items.push({ icon: '▶', label: 'Fortsetzen', sub: `${s.data.name} · ${s.data.chapter > 5 ? actLabel(s.data) : 'Kapitel ' + s.data.chapter} · Tag ${s.data.day}`, big: true, fn: () => this.play() });
     items.push({ icon: '✨', label: 'Neues Spiel', sub: 'Dein Leben in Rainbow City beginnt', big: !s.hasGame, fn: () => this.newGame() });
     items.push({ icon: '📖', label: 'Story', sub: 'Kapitel und roter Faden', fn: () => this.storyMenu(() => this.title()) });
     items.push({ icon: '🪩', label: 'Minispiele', sub: 'Tanz-Battle, Bar, Drag-Show', fn: () => this.minigames(() => this.title()) });
@@ -194,7 +196,7 @@ export class Game {
 
   private loadChapter() {
     const s = this.save.data, ch = CHAPTERS[Math.min(4, s.chapter - 1)];
-    this.loading.show(s.chapter > 5 ? 'Rainbow City' : `Kapitel ${ch.n}`, s.chapter > 5 ? 'Freies Spiel' : ch.title);
+    this.loading.show(s.chapter > 5 ? 'Rainbow City' : `Kapitel ${ch.n}`, s.chapter > 5 ? actLabel(s) : ch.title);
     let p = 0;
     const iv = setInterval(() => { p = Math.min(1, p + .2); this.loading.progress(p, p < 1 ? 'Rainbow City erwacht' : 'Bereit'); if (p >= 1) { clearInterval(iv); go(); } }, 160);
     const go = () => {
@@ -987,7 +989,9 @@ export class Game {
     this.openMenu(`<div class="col"><div class="logo" style="font-size:clamp(30px,5vw,52px)"><span class="l1">Story</span><small>Ein Leben in allen Farben</small></div><div class="slot"></div></div>
       <div class="side panel"><h3>Deine Entscheidungen</h3><p>${choices.length ? choices.join('<br>') : 'Noch keine – die Stadt merkt sich alles.'}</p></div>`,
     [...CHAPTERS.map((c) => ({ icon: c.n < s.chapter ? '✅' : c.n === s.chapter ? '⭐' : '🔒', label: `Kapitel ${c.n}: ${c.title}`, sub: c.n <= s.chapter ? c.text : 'Noch nicht freigespielt', disabled: c.n > s.chapter })),
+      ...ACTS.slice(1).map((a) => { const now = act(s), done = now > a.n, open = now >= a.n; return { icon: done ? '✅' : open ? '⭐' : '🔒', label: `Akt ${a.n === 2 ? 'II' : 'III'}: ${a.title}`, sub: !open ? 'Nach der Pride in Rainbow City' : a.n === 2 ? `${a.text} · Mission ${Math.min(sagaDone(s) + 1, MISSIONS.length)}/${MISSIONS.length}${done ? ' · geschafft' : ''}` : `${a.text} · ${chain(s).length - islesLeft(s).length}/${chain(s).length} Inseln${done ? ' · gefeiert' : ''}`, disabled: !open }; }),
       ...(s.chapter > 5 ? [{ icon: '🏁', label: 'Abspann ansehen', fn: () => this.ending(back) }] : []),
+      ...HIST_ORDER.filter((k) => s.flags['hist_' + k]).map((k) => ({ icon: '🏳️‍🌈', label: `Damals · ${HISTORY[k].year}: ${HISTORY[k].title}`, sub: HISTORY[k].text })),
       { icon: '←', label: 'Zurück', fn: back }], back);
   }
 
