@@ -55,7 +55,7 @@
     const g = new T.Group(); g.userData.dyn = true;
     const ring = new T.Mesh(new T.TorusGeometry(2.4, 0.16, 8, 40), W.mat(color, { e: color, ei: 1.6 })); ring.rotation.x = Math.PI / 2; ring.position.y = 0.15; g.add(ring);
     const col = new T.Mesh(new T.CylinderGeometry(2.2, 2.2, h || 6, 24, 1, true), new T.MeshBasicMaterial({ color, transparent: true, opacity: 0.22, depthWrite: false, side: T.DoubleSide })); col.position.y = (h || 6) / 2; g.add(col);
-    if (icon) { const sp = new T.Sprite(new T.SpriteMaterial({ map: W.textTex([icon], { w: 128, h: 128, size: 84, bg: '#14101e', accent: '#' + new T.Color(color).getHexString() }) })); sp.scale.set(1.4, 1.4, 1); sp.position.y = (h || 6) + 0.9; g.add(sp); g.userData.icon = sp; }
+    if (icon) { const sp = W.sprite(new T.SpriteMaterial({ map: W.textTex([icon], { w: 128, h: 128, size: 84, bg: '#14101e', accent: '#' + new T.Color(color).getHexString() }) }), g); sp.scale.set(1.4, 1.4, 1); sp.position.y = (h || 6) + 0.9; g.userData.icon = sp; }
     g.userData.ring = ring; C.S.group.add(g); return g;
   }
   function addOffer() {

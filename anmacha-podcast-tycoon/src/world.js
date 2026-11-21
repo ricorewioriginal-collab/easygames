@@ -385,7 +385,7 @@
   W.bake = (o, parent) => (bakeOn() ? W.renderer.bake(o, parent) : (parent.add(o), o));
   W.box = (w, h, d, mat, x, y, z, parent, shadow) => { const m = new T.Mesh(new T.BoxGeometry(w, h, d), mat); m.position.set(x || 0, y || 0, z || 0); m.castShadow = shadow !== false; m.receiveShadow = true; if (parent) parent.add(m); return m; };
   W.cyl = (rt, rb, h, mat, x, y, z, parent, seg) => { const m = new T.Mesh(new T.CylinderGeometry(rt, rb, h, seg || 16), mat); m.position.set(x || 0, y || 0, z || 0); m.castShadow = true; m.receiveShadow = true; if (parent) parent.add(m); return m; };
-  W.glow = (color, size, parent, x, y, z) => { const s = new T.Sprite(new T.SpriteMaterial({ map: W.glowTex, color, blending: T.AdditiveBlending, depthWrite: false, transparent: true })); s.scale.set(size, size, 1); s.position.set(x || 0, y || 0, z || 0); if (parent) parent.add(s); return s; };
+  W.glow = (color, size, parent, x, y, z) => { const m = new T.SpriteMaterial({ map: W.glowTex, color, blending: T.AdditiveBlending, depthWrite: false, transparent: true }); const s = parent ? W.sprite(m, parent) : new T.Sprite(m); s.scale.set(size, size, 1); s.position.set(x || 0, y || 0, z || 0); return s; };
 
   /** Studio-Mikrofon mit Arm und Pop-Schutz. */
   W.mic = function (parent, x, y, z, rot) {

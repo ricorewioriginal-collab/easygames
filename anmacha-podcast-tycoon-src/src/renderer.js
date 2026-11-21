@@ -968,9 +968,14 @@ export function createRenderer(T, canvas, opts) {
     const upd = mesh.__upd = () => { const e = parent.matrixWorld.elements; mesh.position.copyFromFloats(e[0] * x + e[4] * y + e[8] * z + e[12], e[1] * x + e[5] * y + e[9] * z + e[13], e[2] * x + e[6] * y + e[10] * z + e[14]); };
     const position = { get x() { return x; }, set x(v) { if (v !== x) { x = v; upd(); } }, get y() { return y; }, set y(v) { if (v !== y) { y = v; upd(); } }, get z() { return z; }, set z(v) { if (v !== z) { z = v; upd(); } },
       set(a, b, c) { x = a; y = b; z = c; upd(); return position; } };
-    const scale = { set(a, b) { mesh.scaling.copyFromFloats(a, b, 1); return scale; }, setScalar(a) { mesh.scaling.copyFromFloats(a, a, 1); return scale; } };
-    const sp = { isNative: true, material: mat, position, scale, mesh };
+    position.copy = v => position.set(v.x, v.y, v.z);
+    const sc = mesh.scaling;
+    const scale = { get x() { return sc.x; }, set x(v) { sc.x = v; }, get y() { return sc.y; }, set y(v) { sc.y = v; }, get z() { return 1; }, set z(v) { },
+      set(a, b) { sc.copyFromFloats(a, b === undefined ? a : b, 1); return scale; }, setScalar(a) { sc.copyFromFloats(a, a, 1); return scale; } };
+    const sp = { isNative: true, material: mat, position, scale, mesh, parent, userData: {},
+      removeFromParent() { const i = root.meshes.indexOf(mesh); if (i >= 0) { root.meshes.splice(i, 1); disposeNative(mesh); candDirty = true; } return sp; } };
     Object.defineProperty(sp, 'visible', { get() { return mesh.isVisible; }, set(v) { v = !!v; if (v !== mesh.isVisible) { mesh.isVisible = v; candDirty = true; } } });
+    Object.defineProperty(sp, 'renderOrder', { get() { return mesh.alphaIndex | 0; }, set(v) { if (v) mesh.alphaIndex = v; } });
     upd();
     return sp;
   };
@@ -1028,7 +1033,7 @@ export function createRenderer(T, canvas, opts) {
       T.__bjsHooks = true;
       const P = T.Object3D.prototype, add = P.add, rem = P.remove, clr = P.clear;
       P.add = function () { const r = add.apply(this, arguments); const mk = T.__bjsMark; if (mk && this.__w) for (let i = 0; i < arguments.length; i++) { const c = arguments[i]; if (c && c.isObject3D) mk(c); } return r; };
-      P.remove = function () { const mk = T.__bjsMark; if (mk) for (let i = 0; i < arguments.length; i++) { const c = arguments[i]; if (c && c.__w && c.parent === this) mk(c); } return rem.apply(this, arguments); };
+      P.remove = function () { const mk = T.__bjsMark; for (let i = 0; i < arguments.length; i++) { const c = arguments[i]; if (c && c.isNative && c.parent === this) c.removeFromParent(); else if (mk && c && c.__w && c.parent === this) mk(c); } return rem.apply(this, arguments); };
       if (clr) P.clear = function () { const mk = T.__bjsMark; if (mk) for (const c of this.children) if (c.__w) mk(c); return clr.apply(this, arguments); };
     }
   }

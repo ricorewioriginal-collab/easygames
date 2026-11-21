@@ -94,7 +94,7 @@
       const th = { fig, x, y, z, vx: 0, vy: 0, vz: 0, yaw: 0, onGround: true, anim: '', hp: 3, down: 0, done: false, t: 0, name: U.pick(['Kabel-Kalle', 'Stecker-Steffi', 'Klinken-Klaus', 'Adapter-Anja']) };
       th.mark = W.glow(0xff4040, 1.3, fig.root, 0, 2.35, 0);
       const tx = W.textTex(['🔌'], { w: 128, h: 128, bg: '#2a0f12', size: 84, accent: '#ff4040' });
-      th.icon = new T.Sprite(new T.SpriteMaterial({ map: tx, depthTest: false })); th.icon.scale.set(0.5, 0.5, 1); th.icon.position.y = 2.35; fig.root.add(th.icon);
+      th.icon = W.sprite(new T.SpriteMaterial({ map: tx, depthTest: false }), fig.root); th.icon.scale.set(0.5, 0.5, 1); th.icon.position.y = 2.35;
       C.setAnim(th, 'idle'); S.thieves.push(th);
     }
   }

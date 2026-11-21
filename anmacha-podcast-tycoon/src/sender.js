@@ -294,7 +294,7 @@
       const [x, z] = spots[i % spots.length], f = { fig, x: U.clamp(x, -hw + 1, hw - 1), z, hx: x, hz: z, name: D.FAN_NAMES[(i * 3 + R.slug.length) % D.FAN_NAMES.length], wish: null, danceT: 0, t: Math.random() * 5 };
       fig.root.position.set(f.x, 0, f.z); fig.root.rotation.y = Math.random() * 6; R.g.add(fig.root); fig.play('idle', { fade: 0 });
       f.bub = U.el('div', 'hm-bub'); f.bub.hidden = true; U.$('homeUi') && U.$('homeUi').appendChild(f.bub);
-      f.icon = new T.Sprite(new T.SpriteMaterial({ map: W.textTex(['💬'], { w: 128, h: 128, size: 80, bg: '#14161f', accent: R.st.color }), depthTest: false })); f.icon.scale.set(0.5, 0.5, 1); f.icon.position.y = 2.25; f.icon.visible = false; fig.root.add(f.icon);
+      f.icon = W.sprite(new T.SpriteMaterial({ map: W.textTex(['💬'], { w: 128, h: 128, size: 80, bg: '#14161f', accent: R.st.color }), depthTest: false }), fig.root); f.icon.scale.set(0.5, 0.5, 1); f.icon.position.y = 2.25; f.icon.visible = false;
       R.fans.push(f);
     }
   }
