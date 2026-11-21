@@ -9,6 +9,7 @@ import type { Gig } from './gigs';
 import { LF_CHAPTERS, LF_PEOPLE, LF_START, lfEnding } from './leuchtfeuer';
 import { NACHT_NPCS, nachtTalk, nachtGoal, nachtMarks, nachtFirst } from './nacht';
 import { dragGoal } from './drag';
+import { hour } from './life';
 import { fadenGoal, fadenTick, fadenPoi, fadenDance, actLabel, history } from './faden';
 
 export interface NpcDef {
@@ -138,8 +139,11 @@ export function goal(s: SaveData): Goal {
   const sg = sagaGoal(s);
   if (sg && (s.chapter > 5 || s.flags.sagaRun)) return sg;
   const fg = fadenGoal(s); if (fg) return fg;
+  const sat = (s.day - 1) % 7 === 5, h = hour(s);
+  if (s.chapter > 5 && s.flags.wagen && sat && h >= 12 && h < 18 && s.flags.wagenPrize !== s.day) return { title: 'CSD-Parade: Spring auf deinen Festwagen', sub: 'Bis 18 Uhr auf der Hauptstraße. Bleib oben, bis die Jury deinen Wagen gesehen hat.' };
   const dg = s.chapter > 3 ? dragGoal(s) : null;
   if (dg) return { title: dg, sub: 'Mama Vega wartet: erst an den Schminkspiegel, dann auf die Bühne.', poi: 'onelove' };
+  if (s.chapter > 5 && !s.flags.wagen) return { title: 'Bau deinen eigenen CSD-Festwagen', sub: 'Handy → Wetter und Termine oder in einer Festwagen-Werkstatt. Samstags fährt er bei der Parade mit, die Jury vergibt Platz 1 bis 3.' };
   if (s.chapter > 1 && s.chapter <= 5) return { title: 'Erkunde Rainbow City', sub: 'Sprich mit deinen Freund*innen – die Geschichte geht gleich weiter.' };
   if (s.chapter > 5) return { title: 'Freies Spiel', sub: 'Die Geschichte ist erzählt. Arbeite, date, feiere – Rainbow City gehört dir.' };
   switch (s.step) {
