@@ -214,6 +214,7 @@ export class World {
     // Hafenviertel westlich der Innenstadt (per Tram oder zu Fuß über die Kaistraße)
     P('bar', 'Club Leuchtturm', '🗼', -72.6, -12);
     P('beach', 'Strandbar Sandbank', '🏖️', -80.4, 30);
+    P('sauna', 'Sauna Heißer Stein', '🧖', -77, 40.4);
     P('tramhafen', 'Tram Hafen', '🚋', -70, 8, undefined, undefined, 3.6);
     P('welten', 'Weltentor', '🌀', -78, 13, undefined, undefined, 3.4);
     P('tram', 'Tram Rainbow City', '🚋', 0, 52, undefined, undefined, 4);
@@ -834,6 +835,17 @@ export class World {
       const node = new TransformNode('umbrella', sc); node.parent = this.root; u.parent = node; st.parent = node;
       this.prop(u.position.x, u.position.z, .25, [node]);
     }
+    // Sauna Heißer Stein: Holzhaus mit Schornstein und Dampf, Tür zum Kai (Osten)
+    bx(5.2, 3.2, 4.4, M(0x9a6236, .85), -80.6, 1.6, 40.4, true);
+    for (let i = 0; i < 6; i++) bx(5.25, .05, 4.45, M(0x6e4223, .9), -80.6, .3 + i * .52, 40.4);     // Bohlen-Fugen
+    for (const sd of [-1, 1]) { const r = box(sc, 5.8, .16, 2.75); r.material = M(0x3a2618, .8); r.rotation.x = sd * .52; r.position.set(-80.6, 3.82, 40.4 + sd * 1.17); this.still(r); }   // Satteldach
+    bx(.06, 2.1, 1.1, M(0x2a1a10, .7), -77.97, 1.05, 40.4);                                        // Tür
+    bx(.06, .7, 1.4, glow(sc, 0xffb070, .9), -77.97, 2.2, 38.7);                                  // warmes Fenster
+    { const ch = cyl(sc, .25, .3, 1.6, 10); ch.material = M(0x5a5a5a, .7); ch.position.set(-81.8, 4.6, 39.4); this.still(ch);
+      const st = sphere(sc, .55, 10); st.material = glow(sc, 0xffffff, .8, { alpha: .28 }); st.position.set(-81.8, 5.8, 39.4); st.scaling.set(1, 1.4, 1); this.still(st, false, false); }
+    this.neonSign('SAUNA', '#ff9a3b', -77.92, 3.0, 40.4, Math.PI / 2, undefined, 2.6);
+    bx(.12, 1, 1.6, M(0x8a5a35, .9), -77.2, .5, 42.4);                                              // Handtuch-Bank
+    PALETTES[0].colors.slice(0, 4).forEach((c, i) => bx(.5, .06, .36, M(c, .9), -77.2, 1.03 + i * .06, 41.8 + i * .4));
     // Container in Pride-Farben
     PALETTES[0].colors.forEach((c, i) => bx(6, 2.6, 2.4, M(c, .6), -82, 1.3 + Math.floor(i / 3) * 2.6, -27 + (i % 3) * 2.5));
     this.colliders.push({ x: -82, z: -24.5, hx: 3, hz: 3.7 });

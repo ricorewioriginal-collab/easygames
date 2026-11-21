@@ -17,6 +17,18 @@ export interface PcEvents extends Record<string, unknown> {
   clubEinnahmen: { pay: number; notes: string[] };
   /** Zuhause ausgebaut: Möbel/Deko (kind 'item'), Boden/Licht ('style') oder Anbau-Raum ('room', level 1–3) */
   hausAusbau: { kind: 'item' | 'style' | 'room'; id: string; level: number };
+  /** Rainbow Match: Date gelaufen (stage = neue Stufe 0–3, up = Stufe gestiegen, pts 0–6) */
+  dateGelaufen: { id: string; name: string; stage: number; up: boolean; pts: number };
+  /** Liebesnacht (nur 18+, angedeutet) mit einem Match */
+  liebesnacht: { id: string; name: string };
+  /** Wahlfamilie: jemand zieht ein oder aus */
+  mitbewohner: { id: string; name: string; in: boolean };
+  /** Gemeinsamer Abend zu Hause (Spiele-, Koch-, Film-, Geschichtsabend …) */
+  wgAbend: { id: string; with: string[] };
+  /** Haustier adoptiert */
+  haustier: { kind: string; name: string };
+  /** Auftrag an einem Treffpunkt (Sauna, Strandbar) erledigt */
+  treffAuftrag: { place: string; id: string };
   /** Drag-Look am Schminkspiegel gespeichert (drag.ts, dragLook.ts) */
   dragLook: { look: Record<string, string>; style: string };
   /** Lip-Sync-Battle vorbei (stage 1–5 = Karriere-Stufe, 0 = Kronen-Verteidigung) */

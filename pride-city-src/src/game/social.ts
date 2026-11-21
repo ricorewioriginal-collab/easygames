@@ -7,6 +7,7 @@ export interface Profile {
   id: string; name: string; age: number; pron: string; color: string; body: string; palette: string; skin: number;
   bio: string; likes: string; at: 'cafe' | 'club';
   /** nur mit 18+ sichtbar */ role: string; into: string;
+  /** „Wusstest du?“ im Profil: echtes Wissen passend zur Person */ know?: string;
 }
 
 export const PROFILES: Profile[] = [
@@ -22,6 +23,25 @@ export const PROFILES: Profile[] = [
     bio: 'Gärtnerin mit Hang zu Drama – auf der Bühne.', likes: 'Theater, Wandern, Katzen', role: 'Femme', into: 'Romantik, Kerzen, langsames Kennenlernen' },
   { id: 'jonas', skin: 1, name: 'Jonas', age: 42, pron: 'er', color: '#3ee69a', body: 'Man2', palette: 'gay', at: 'cafe',
     bio: 'Frisch geschieden, frisch geoutet. Lerne gerade alles neu.', likes: 'Joggen, Jazz, Kochkurse', role: 'Side', into: 'Nähe ohne Eile, Händchenhalten, Neues entdecken' },
+  // Rainbow Match, zweite Welle: mehr Vielfalt, jede Person mit einem Stück echtem Wissen
+  { id: 'sami', skin: 3, name: 'Sami', age: 30, pron: 'er', color: '#5bcefa', body: 'Man2', palette: 'trans', at: 'cafe',
+    bio: 'Trans Mann, Bäcker, steht um vier auf und ist trotzdem gut gelaunt.', likes: 'Sauerteig, Fahrrad, Podcasts', role: 'Vers', into: 'Ehrliche Worte, Frühstück im Bett',
+    know: 'Seit November 2024 gilt in Deutschland das Selbstbestimmungsgesetz: Vorname und Geschlechtseintrag ändert man mit einer Erklärung beim Standesamt, ohne Gutachten.' },
+  { id: 'noa', skin: 2, name: 'Noa', age: 26, pron: 'sie', color: '#d60270', body: 'Woman2', palette: 'bi', at: 'club',
+    bio: 'Bi und müde, das ständig erklären zu müssen. Studiert Meeresbiologie.', likes: 'Tauchen, Synthpop, Brettspiele', role: 'Switch', into: 'Neugier, lange Gespräche, Tanzen',
+    know: 'Bisexuelle Menschen sind die größte Gruppe unter queeren Menschen. Der Tag der bisexuellen Sichtbarkeit ist am 23. September.' },
+  { id: 'henri', skin: 0, name: 'Henri', age: 67, pron: 'er', color: '#c9a227', body: 'Man', palette: 'gay', at: 'cafe',
+    bio: 'Witwer, pensionierter Lehrer. War 40 Jahre mit Paul zusammen, durfte ihn erst 2017 heiraten.', likes: 'Oper, Gärtnern, Schach', role: 'Top', into: 'Zärtlichkeit, Zeit, gutes Essen',
+    know: '§ 175 stellte Sex zwischen Männern in Deutschland unter Strafe. Erst 1994 wurde er ganz gestrichen, seit 2017 werden Verurteilte entschädigt.' },
+  { id: 'aylin', skin: 4, name: 'Aylin', age: 33, pron: 'sie', color: '#d362a4', body: 'Woman', palette: 'lesbian', at: 'club',
+    bio: 'Lesbisch, Tischlerin, baut dir ein Regal und ein Herz aus Eiche.', likes: 'Holz, Fußball, Rakı-Abende', role: 'Butch', into: 'Klarheit, Humor, Händchenhalten',
+    know: 'Lesbische Frauen wurden im NS-Staat als „asozial“ verfolgt. 2023 widmete der Bundestag seine Gedenkstunde erstmals den queeren Opfern, auch ihnen.' },
+  { id: 'ash', skin: 1, name: 'Ash', age: 28, pron: 'they', color: '#a3a3a3', body: 'Hero', palette: 'ace', at: 'cafe',
+    bio: 'Ace und romantisch. Ich will Nähe, Kuscheln und Abenteuer, Sex brauche ich nicht.', likes: 'Bouldern, Tee, Videospiele', role: 'Ace', into: 'Kuscheln, Händchenhalten, Pläne schmieden',
+    know: 'Asexuelle Menschen empfinden wenig oder keine sexuelle Anziehung. Romantische Gefühle können trotzdem da sein. Ace ist ein Spektrum.' },
+  { id: 'mateo', skin: 2, name: 'Mateo', age: 36, pron: 'er', color: '#ff9e3d', body: 'Man', palette: 'pan', at: 'club',
+    bio: 'Polyamor, lebt mit seinem Partner Felix und sucht ehrliche Verbindungen. Felix weiß Bescheid.', likes: 'Salsa, Kochen, Wandern', role: 'Vers', into: 'Offenheit, Absprachen, viel Lachen',
+    know: 'Polyamorie heißt: mehrere Liebesbeziehungen gleichzeitig, und alle wissen davon. Das Wichtigste sind Ehrlichkeit und klare Absprachen.' },
 ];
 export const profile = (id: string) => PROFILES.find((p) => p.id === id);
 /** Fotos im Profil: angezogen und locker; mit 18+ zusätzlich sexy Pose (oberkörperfrei) und Unterwäsche */
@@ -75,6 +95,17 @@ export const HEALTH_INFO: Array<[string, string]> = [
   ['Zustimmung', 'Nur Ja heißt Ja. Zustimmung kann man jederzeit zurücknehmen, und ein Nein wird respektiert – ohne Diskussion.'],
 ];
 
+/* ---------- Sicher daten (Rainbow Match, immer sichtbar): echte Tipps ---------- */
+export const SAFE_DATING: Array<[string, string]> = [
+  ['Erstes Treffen', 'Trefft euch beim ersten Mal an einem öffentlichen Ort, zum Beispiel im Café, und kommt selbst hin und zurück.'],
+  ['Jemandem Bescheid geben', 'Sag einer Freundin oder einem Freund, wo du bist und mit wem. Ein kurzes „Alles gut“ per Nachricht beruhigt beide.'],
+  ['Fake-Profile', 'Catfishing: Jemand gibt sich mit fremden Fotos als jemand anderes aus. Ein kurzer Videoanruf vor dem Date klärt das schnell.'],
+  ['Romance-Scam', 'Wer nach wenigen Nachrichten von Notlagen erzählt und um Geld bittet, ist sehr wahrscheinlich ein Betrug. Nie Geld an Matches schicken.'],
+  ['Getränke', 'Lass dein Glas nicht unbeaufsichtigt. Wenn dir plötzlich schwindlig wird, hol dir sofort Hilfe beim Personal. Notruf: 112.'],
+  ['Zustimmung', 'Ein Date ist kein Versprechen. Jede*r darf jederzeit Nein sagen oder gehen, auch mitten im Abend.'],
+  ['Hilfe bei Gewalt', 'Wer queerfeindlich angegriffen wird, kann Anzeige erstatten. Viele Polizeien haben Ansprechpersonen für LSBTIQ*, und Beratungsstellen helfen auch anonym.'],
+];
+
 /* ---------- Glossar ---------- */
 export const GLOSSARY: Array<[string, string, boolean?]> = [
   ['Coming-out', 'Anderen erzählen, wer man ist und wen man liebt – passiert oft nicht nur einmal.'],
@@ -93,6 +124,9 @@ export const GLOSSARY: Array<[string, string, boolean?]> = [
   ['Darkroom', 'Abgedunkelter Raum in Clubs für Begegnungen. Auch hier gilt: Zustimmung.', true],
   ['Kink', 'Vorlieben jenseits des Üblichen, z. B. Leder oder Rollenspiel – immer abgesprochen.', true],
   ['Safeword', 'Vereinbartes Wort, das sofort alles stoppt.', true],
+  ['Ace', 'Asexuell: wenig oder keine sexuelle Anziehung. Romantisch verliebt sein geht trotzdem.'],
+  ['Polyamorie', 'Mehrere Liebesbeziehungen zugleich, offen und mit dem Wissen aller.'],
+  ['Ghosting', 'Wenn sich jemand nach Dates ohne Erklärung nie wieder meldet. Ein kurzes „Passt leider nicht“ ist fairer.'],
   ['Stellungen', 'Missionar, Reiterstellung, Löffelchen, Doggy, 69 – Hauptsache, alle fühlen sich wohl und sagen, was sie mögen.', true],
 ];
 

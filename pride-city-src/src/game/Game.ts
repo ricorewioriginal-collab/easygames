@@ -26,7 +26,7 @@ import { fmMenu } from './pridefm';
 import { houseMenu, useHomeItem } from './houseui';
 import { roomTheme, roomLevel } from './house';
 import { SKY, skyAt, forecast } from './weather';
-import { closeness, levelName, addCloseness, chatOpen, chatOf, replyChat, OUTINGS, outingWhy, doOuting, GIFTS, giveGift, model, partners, jealousy, type Model } from './bond';
+import { closeness, levelName, addCloseness, chatOpen, chatOf, replyChat, OUTINGS, outingWhy, doOuting, GIFTS, giveGift, model, partners, jealousy, dateFolge, type Model } from './bond';
 import { STAFF, UPGRADES, UP_MAX, SPECIAL, daily as bizDaily, staffOf, upOf, popOf, issueOf, eventReady, hire, upgrade, workIn, hostEvent, fixIssue, upCost, staffFee, fixCost, eventCost } from './manage';
 import { SHOP, RACES, PAINTS, PAINT_COST, TUNE_COST, MEDALS, ownsCar, myCar, tuneLevel, buyCar, buyTune, buyPaint, bestTime, medalFor, stats } from './vehicles';
 import { ACTS, act, actLabel, chain, islesLeft, HISTORY, HIST_ORDER } from './faden';
@@ -38,7 +38,9 @@ import { LF_CHAPTERS, lfEnding, lfPct } from './leuchtfeuer';
 import { LICHT_CHAPTERS, lichtEnding } from './licht';
 import { HomeScene } from './HomeScene';
 import { LAWS } from './crime';
-import { RING, WEDDING, ADOPT, KID_NAMES, spouse, fiance, kid, canPropose, propose, canWed, wed, canAdopt, applyAdopt } from './family';
+import { RING, WEDDING, ADOPT, KID_NAMES, spouse, fiance, kid, canPropose, propose, canWed, wed, canAdopt, applyAdopt, spouseLook } from './family';
+import { placeGigs, regular, treffDone, SAUNA_INFO, BEACH_INFO } from './treff';
+import { mates, mateInfo, candidates, moveIn, moveOut, MAX_MATES, pet, petHungry, PETS, SHELTER_INFO, adoptPet, petAct, EVENINGS, eveningWhy, doEvening } from './wahl';
 import { InteriorScene } from './InteriorScene';
 import { WorldScene } from './WorldScene';
 import { WORLDS, worldDef, worldStage, cityGate, SIDE_GATE } from './worlds';
@@ -47,7 +49,7 @@ import { PLACE_THEMES, type Spot, type Theme } from './interiors';
 import type { Sfx } from '../engine/Audio';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage, level } from './jobs';
 import { photo } from './Photo';
-import { PROFILES, profileShots, profile, dateRec, dateQuestions, finishDate, canStay, DATE_STAGE, testDue, HEALTH_INFO, GLOSSARY, feed, post, bond, TEST_EVERY, FILMS, WORKERS, isLateNight, canMeet, encounter } from './social';
+import { PROFILES, profileShots, profile, dateRec, dateQuestions, finishDate, canStay, DATE_STAGE, testDue, HEALTH_INFO, GLOSSARY, feed, post, bond, TEST_EVERY, FILMS, WORKERS, isLateNight, canMeet, encounter, SAFE_DATING } from './social';
 import { DILDOS, EXTRAS, CONDOMS, ownsToy, buyToy, buyCondoms, condomLabel } from './toys';
 import { NEEDS, mood, moodIcon, moodName, change, advance, minutesUntil, track, dailyState, clock, weekday, hour, type Daily } from './life';
 
@@ -62,7 +64,8 @@ const BOOKS: Record<BookId, { title: string; file: string; cover: string; blurb:
 /** Kurzinfo Familie fürs Handy */
 function famSub(s: Game['save']['data']) {
   const sp = spouse(s), fi = fiance(s), k = kid(s);
-  return sp ? `Verheiratet mit ${sp.name}${k ? ' · ' + k.name + ' wohnt bei euch' : s.flags.adopt ? ' · Adoption läuft' : ''}` : fi ? `Verlobt mit ${fi.name}` : 'Heiraten und Adoption';
+  const wg = mates(s).length, pt = pet(s), extra = `${wg ? ` · WG mit ${wg}` : ''}${pt ? ` · ${pt.kind.icon} ${pt.name}` : ''}`;
+  return (sp ? `Verheiratet mit ${sp.name}${k ? ' · ' + k.name + ' wohnt bei euch' : s.flags.adopt ? ' · Adoption läuft' : ''}` : fi ? `Verlobt mit ${fi.name}` : 'Heiraten, Adoption, Wahlfamilie, Haustier') + extra;
 }
 
 /** Kaufpreis des Penthouse in der Hochstadt */
@@ -265,6 +268,7 @@ export class Game {
   leaveHome() {
     const s = this.save.data;
     sfx('door');
+    void this.home?.morning(null);
     this.fade(() => { this.where = 'city'; s.inside = false; s.pos = { x: 3.6, z: 40, yaw: Math.PI / 2 }; this.engine.setScene(this.city); this.city.setPlay(); this.save.write(); });
   }
   /* ---------- Welten jenseits der Stadt: Weltentor am Hafen oder Schnellreise im Handy ---------- */
@@ -415,6 +419,8 @@ export class Game {
       busy('stove', 45, () => { s.food--; change(s, { hunger: 50, fun: 5 }); this.done(track(s, 'eat')); }, `Lecker gekocht! Noch ${s.food - 1 < 0 ? 0 : s.food} Portionen übrig.`); return;
     }
     if (id === 'spouse' || id === 'kid') { this.familyAction(id); return; }
+    if (id.startsWith('wg_')) { this.wgAction(id.slice(3)); return; }
+    if (id === 'pet') { this.petAction(); return; }
     if (id === 'fridge') { toast(s.food ? `Im Kühlschrank: ${s.food} Portionen zum Kochen.` : 'Der Kühlschrank ist leer.'); return; }
     if (id === 'bed') {
       const back = () => { this.closeMenu(); this.touch.show(true); };
@@ -428,6 +434,41 @@ export class Game {
     }
   }
 
+  /** Gemeinsamer Abend zu Hause mit WG und Familie (wahl.ts) */
+  private eveningMenu(back: () => void) {
+    const s = this.save.data, h = this.home!, people = mates(s).length + (spouse(s) ? 1 : 0);
+    this.openMenu(`<div class="col"><div class="panel"><h3>🎉 Gemeinsamer Abend</h3><p>Einmal am Tag, ab 18 Uhr. Was macht ihr heute?</p><div class="slot"></div></div></div>`, [
+      ...EVENINGS.map((e) => { const why = eveningWhy(s, e, hour(s), people); return { icon: e.icon, label: e.name, sub: why || `${Math.round(e.min / 60 * 10) / 10} Std.${e.cost ? ` · ${e.cost} €` : ''}${e.food ? ' · 1 Portion' : ''}${e.facts ? ' · mit Wissen' : ''}`, disabled: !!why, fn: () => {
+        this.closeMenu(); h.wgParty(e.id === 'karaoke' || e.id === 'spiele' ? 'dance1' : 'laugh'); sfx('cheer');
+        setTimeout(() => { this.pass(e.min); const fact = doEvening(s, e); pcEvents.emit('wgAbend', { id: e.id, with: mates(s) }); this.save.write(); this.city.refreshHud();
+          this.dialog.say([{ who: e.icon + ' ' + e.name, color: '#ff9ad5', text: e.text }, ...(fact ? [{ who: '💡 Wusstest du?', color: '#5ce1ff', text: fact }] : [])], () => this.touch.show(true)); }, 1600);
+      } }; }),
+      { icon: '←', label: 'Zurück', fn: back }], back);
+  }
+  private wgAction(id: string) {
+    const s = this.save.data, m = mateInfo(id); if (!m) return;
+    const back = () => { this.closeMenu(); this.touch.show(true); }, h = this.home!;
+    const say = (anim: 'laugh' | 'talk' | 'cheer' | 'dance1' | 'clap', fx: Parameters<typeof change>[1], msg: string) => () => { back(); h.wgPlay(id, anim); setTimeout(() => { this.pass(20); change(s, fx); if (s.rel[id]) s.rel[id].f = Math.min(100, s.rel[id].f + 2); this.save.write(); this.city.refreshHud(); toast(msg); }, 1100); };
+    const lines = [`Na, Mitbewohni? Wer kocht heute? Ich hab gestern!`, 'Ich hab den Kühlschrank beschriftet. Nur Spaß. Oder?', 'Schön, dass wir hier zusammen wohnen. Echt.', 'Hast du meinen Glitzer-Föhn gesehen?'];
+    this.touch.show(false);
+    this.openMenu(`<div class="col"><div class="panel"><h3>🏠 ${esc(m.name)}</h3><p>${lines[(s.day + id.length) % lines.length]}</p><div class="slot"></div></div></div>`, [
+      { icon: '🎉', label: 'Gemeinsamer Abend', sub: s.flags.wgAbend === s.day ? 'heute schon' : 'Spiele, Kochen, Film, Erzählabend, Karaoke', fn: () => this.eveningMenu(back) },
+      { icon: '💬', label: 'Quatschen', sub: '20 Minuten · +10 Kontakte', fn: say('talk', { social: 10, fun: 4 }, `${m.name} erzählt den neuesten Klatsch aus der Stadt.`) },
+      { icon: '💃', label: 'Durchs Wohnzimmer tanzen', sub: '20 Minuten · +14 Spaß', fn: say('dance1', { fun: 14, energy: -4 }, 'Küchendisco! 🪩') },
+      { icon: '←', label: 'Zurück', fn: back }], back);
+  }
+  private petAction() {
+    const s = this.save.data, pt = pet(s); if (!pt) return;
+    const back = () => { this.closeMenu(); this.touch.show(true); };
+    const go = (a: Parameters<typeof petAct>[1], msg: string, min: number) => () => { const e = petAct(s, a); if (e) { sfx('miss'); toast(e); return; } back(); sfx(a === 'feed' ? 'pour' : 'giggle'); this.pass(min); this.save.write(); this.city.refreshHud(); toast(msg); };
+    this.touch.show(false);
+    this.openMenu(`<div class="col"><div class="panel"><h3>${pt.kind.icon} ${esc(pt.name)}</h3><p>${petHungry(s) ? `${esc(pt.name)} guckt dich an, dann den leeren Napf, dann wieder dich.` : `${esc(pt.name)} ${pt.kind.id === 'hund' ? 'wedelt so sehr, dass der ganze Hintern mitwackelt.' : 'schnurrt und tut so, als wäre es dir egal.'}`}</p><div class="slot"></div></div></div>`, [
+      { icon: '🍖', label: 'Füttern', sub: petHungry(s) ? '3 € · einmal am Tag' : 'satt', disabled: !petHungry(s), fn: go('feed', `${pt.name} frisst alles in zehn Sekunden.`, 5) },
+      { icon: '🤲', label: 'Streicheln', sub: s.flags.pet_pet === s.day ? 'heute schon' : '+10 Spaß · +6 Kontakte', fn: go('pet', `${pt.name} ${pt.kind.id === 'hund' ? 'rollt sich auf den Rücken.' : 'schnurrt wie ein kleiner Motor.'} 💕`, 10) },
+      { icon: '🧶', label: 'Spielen', sub: s.flags.pet_play === s.day ? 'heute schon' : '+16 Spaß', fn: go('play', pt.kind.id === 'hund' ? 'Ball, Ball, Ball, Ball! 🎾' : 'Die Wollmaus ist besiegt. 🧶', 20) },
+      ...(pt.kind.id === 'hund' ? [{ icon: '🦮', label: 'Gassi gehen', sub: s.flags.pet_walk === s.day ? 'heute schon' : '40 Minuten · +14 Spaß · +12 Kontakte (andere Hundeleute!)', fn: () => { const e = petAct(s, 'walk'); if (e) { sfx('miss'); toast(e); return; } back(); this.fade(() => { this.pass(40); this.save.write(); this.city.refreshHud(); toast(`Eine Runde durch den Regenbogenpark. ${pt.name} hat drei neue Freunde. 🦮`); }); } }] : []),
+      { icon: '←', label: 'Zurück', fn: back }], back);
+  }
   /** Zu Hause mit Partner*in oder Kind */
   private familyAction(id: 'spouse' | 'kid') {
     const s = this.save.data, h = this.home!, back = () => { this.closeMenu(); this.touch.show(true); };
@@ -442,6 +483,8 @@ export class Game {
         { icon: '🫂', label: 'Kuscheln', sub: '30 Minuten · +25 Kontakte · +10 Spaß', fn: act(30, { social: 25, fun: 10 }, `${sp.name} kuschelt sich an dich. 💞`, 'spouse', 'laugh') },
         { icon: '💃', label: 'Zusammen tanzen', sub: '20 Minuten · +20 Spaß', fn: act(20, { fun: 20, energy: -5 }, 'Wohnzimmer-Disco! 🪩', 'spouse', 'dance1') },
         { icon: '💬', label: 'Über den Tag reden', sub: '15 Minuten · +12 Kontakte', fn: act(15, { social: 12 }, `${sp.name}: „Ich bin stolz auf dich.“`, 'spouse', 'talk') },
+        { icon: '🎉', label: 'Gemeinsamer Abend', sub: s.flags.wgAbend === s.day ? 'heute schon' : 'Spiele, Kochen, Film, Erzählabend, Karaoke', fn: () => this.eveningMenu(back) },
+        ...(s.settings.adult ? [{ icon: '🕯️', label: 'Romantische Nacht (18+)', sub: (s.inv.condom || 0) < 1 && !s.health.prep ? 'Kondome oder PrEP nötig (Späti, Checkpoint)' : hour(s) >= 20 || hour(s) < 3 ? 'Kerzen, Musik, nur ihr zwei' : 'ab 20 Uhr', disabled: !((hour(s) >= 20 || hour(s) < 3) && ((s.inv.condom || 0) > 0 || s.health.prep)), fn: () => { back(); this.spouseNight(); } }] : []),
         { icon: '←', label: 'Zurück', fn: back }], back);
       return;
     }
@@ -577,7 +620,24 @@ export class Game {
       this.openMenu(frame('Familie', `<div class="pbody">${sp ? `<p>💍 Verheiratet mit <b>${esc(sp.name)}</b> (${sp.pron}) seit Tag ${s.flags.wedDay}.</p>` : fi ? `<p>💍 Verlobt mit <b>${esc(fi.name)}</b>. Die Hochzeit feiert ihr im Regenbogenhaus (${WEDDING} €).</p>` : '<p>💘 Noch Single oder frisch verliebt. Wer bei Rainbow Match „Zusammen“ ist, kann mit einem Ring aus der Boutique einen Antrag machen.</p>'}
         ${k ? `<p>${k.g === 'f' ? '👧' : '👦'} <b>${esc(k.name)}</b> wohnt seit Tag ${k.day} bei euch. Spielen und Vorlesen zu Hause macht alle glücklich.</p>` : s.flags.adopt ? `<p>📝 Adoptionsantrag läuft seit Tag ${s.flags.adopt}. Das Jugendamt meldet sich bald.</p>` : sp ? `<p>👶 Ihr könnt im Regenbogenhaus eine Adoption beantragen (${ADOPT} €).</p>` : ''}
         <h4>Gesetze von Rainbow City</h4><p>⭐ Fahndung: ${w?.stars ? '★'.repeat(w.stars) + ' – lauf der Streife davon oder zahl das Bußgeld auf der Wache.' : 'keine. Bleib brav – oder hab Spaß und renn schnell. 😉'}</p></div>`),
-        [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+        [{ icon: '🏠', label: 'Wahlfamilie & WG', sub: mates(s).length ? `${mates(s).map((id) => mateInfo(id)!.name).join(' und ')} wohnen bei dir` : 'Freund*innen oder dein Match einziehen lassen', fn: () => this.phone('wg') },
+          { icon: pet(s)?.kind.icon || '🐾', label: pet(s) ? pet(s)!.name : 'Tierheim Pfötchenglück', sub: pet(s) ? `${pet(s)!.kind.name}${petHungry(s) ? ' · hat Hunger!' : ' · zu Hause'}` : 'Hund oder Katze adoptieren', fn: () => this.phone('pet') },
+          { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'wg') {
+      const back = () => this.phone('family'), list = mates(s), cand = candidates(s);
+      this.openMenu(frame('🏠 Wahlfamilie', `<div class="pbody"><p>Wahlfamilie sind die Menschen, die du dir selbst aussuchst. Bis zu ${MAX_MATES} können bei dir einziehen. Abends ab 18 Uhr sind sie zu Hause, dann könnt ihr gemeinsame Abende verbringen.</p>${list.length ? '' : '<p><small>Gute Freund*innen (ab „befreundet“) und feste Partner*innen können einziehen.</small></p>'}</div>`), [
+        ...list.map((id) => { const m = mateInfo(id)!; return { icon: '🏠', label: `${m.name} ausziehen lassen`, sub: `wohnt seit Tag ${s.flags['wg_' + id]} bei dir`, fn: () => { moveOut(s, id); pcEvents.emit('mitbewohner', { id, name: m.name, in: false }); toast(`${m.name} zieht aus. Ihr bleibt Freund*innen. 💛`); this.save.write(); void this.home?.syncWg(); this.phone('wg'); } }; }),
+        ...cand.map(({ m, why }) => ({ icon: m.match ? '💞' : '🤝', label: `${m.name} einziehen lassen`, sub: why || (m.match ? 'zusammenziehen' : 'neues WG-Zimmer'), disabled: !!why, fn: () => { const e = moveIn(s, m.id); if (e) { sfx('miss'); toast(e); return; } sfx('win'); pcEvents.emit('mitbewohner', { id: m.id, name: m.name, in: true }); this.hud.banner(`🏠 ${m.name} zieht bei dir ein`, 'Ab 18 Uhr seid ihr zusammen zu Hause. Gemeinsame Abende bringen Freundschaft.', 'good', 4600); this.save.write(); void this.home?.syncWg(); this.phone('wg'); } })),
+        { icon: '←', label: 'Zurück', fn: back }], back, 'phone');
+    } else if (app === 'pet') {
+      const back = () => this.phone('family'), pt = pet(s);
+      if (pt) {
+        this.openMenu(frame(`${pt.kind.icon} ${esc(pt.name)}`, `<div class="pbody"><p>${pt.kind.text}</p><p>${petHungry(s) ? '🍖 <b>' + esc(pt.name) + ' hat Hunger.</b> Zu Hause füttern (3 €).' : '💚 Satt und zufrieden.'}</p><p><small>Zu Hause läuft ${esc(pt.name)} dir nach. Geh hin und drück Benutzen.</small></p></div>`), [{ icon: '←', label: 'Zurück', fn: back }], back, 'phone');
+      } else {
+        this.openMenu(frame('🐾 Tierheim Pfötchenglück', `<div class="pbody"><p>Hier warten Hunde und Katzen auf ein Zuhause.</p>${SHELTER_INFO.map((x) => `<p><small>💡 ${x}</small></p>`).join('')}</div>`), [
+          ...PETS.flatMap((k) => k.names.slice(0, 3).map((n, i) => ({ icon: k.icon, label: `${n} (${k.name})`, sub: `${k.fee} € Schutzgebühr · ${['verspielt', 'verschmust', 'neugierig'][i]}`, fn: () => { const e = adoptPet(s, k.id, n); if (e) { sfx('miss'); toast(e); return; } s.flags.petColor = i; sfx('win'); pcEvents.emit('haustier', { kind: k.id, name: n }); this.hud.banner(`${k.icon} ${n} zieht bei dir ein!`, 'Füttern, streicheln, spielen' + (k.id === 'hund' ? ', Gassi gehen.' : '.'), 'good', 4600); this.save.write(); void this.home?.syncWg(); this.phone('pet'); } }))),
+          { icon: '←', label: 'Zurück', fn: back }], back, 'phone');
+      }
     } else if (app === 'feed') {
       this.openMenu(frame('Feed', `<div class="pbody">${feed(s).map((p) => `<p class="post"><b>@${esc(p.who)}</b> <small>Tag ${p.d}</small><br>${esc(p.t)}</p>`).join('')}</div>`),
         [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
@@ -644,6 +704,9 @@ export class Game {
       const g = GLOSSARY.filter(([, , a]) => !a || s.settings.adult);
       this.openMenu(frame('Glossar', `<div class="pbody">${g.map(([t, x]) => `<p><b>${t}</b><br>${x}</p>`).join('')}${s.settings.adult ? '' : '<p><small>Weitere Begriffe mit „Inhalte ab 18“ in den Optionen.</small></p>'}</div>`),
         [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'safedating') {
+      this.openMenu(frame('🛡️ Sicher daten', `<div class="pbody">${SAFE_DATING.map(([h, x]) => `<p><b>${h}</b><br>${x}</p>`).join('')}</div>`),
+        [{ icon: '←', label: 'Zurück', fn: () => this.phone('dating') }], () => this.phone('dating'), 'phone');
     } else if (app === 'dating') {
       this.dating();
       return;
@@ -684,7 +747,7 @@ export class Game {
     const head = `<div class="ph"><span>${clock(s)}</span><b>💘 Rainbow Match</b><span>${PROFILES.filter((p) => s.dates[p.id]).length} ❤️</span></div>`;
     const card = next ? `<div class="swipe" style="--c:${next.color}"><div class="pic"><span>${next.name[0]}</span><img alt=""><b class="dots">${shots.map((_, i) => `<u class="${i === this.photoIdx ? 'on' : ''}"></u>`).join('')}</b><i>${shots[this.photoIdx]?.label || ''}</i></div>
       <h3>${next.name}, ${next.age} <small>${next.pron}</small></h3><p>${esc(next.bio)}</p><p class="tags">${next.likes.split(', ').map((x) => `<em>${esc(x)}</em>`).join('')}</p>
-      ${s.settings.adult ? `<p class="adult">🔞 <b>${next.role}</b> · ${esc(next.into)}</p>` : ''}<div class="stamp no">NOPE</div><div class="stamp yes">LIKE</div></div>`
+      ${next.know ? `<p class="know">💡 ${esc(next.know)}</p>` : ''}${s.settings.adult ? `<p class="adult">🔞 <b>${next.role}</b> · ${esc(next.into)}</p>` : ''}<div class="stamp no">NOPE</div><div class="stamp yes">LIKE</div></div>`
       : '<div class="pbody"><p>Keine neuen Profile in deiner Nähe. Schau morgen wieder rein! 🌈</p></div>';
     const swipe = (yes: boolean) => {
       if (!next) return;
@@ -703,6 +766,7 @@ export class Game {
       ...(next ? [{ icon: '💞', label: 'Wischen', value: () => '← Nein · Ja →', left: () => swipe(false), right: () => swipe(true), fn: () => swipe(true) },
         { icon: '📷', label: 'Fotos', value: () => `${this.photoIdx + 1} / ${shots.length}`, left: () => flip(-1), right: () => flip(1), fn: () => flip(1) }] : []),
       { icon: '💬', label: 'Matches & Dates', sub: 'Date planen', fn: () => this.phone('matches') },
+      { icon: '🛡️', label: 'Sicher daten', sub: 'Tipps: erstes Treffen, Fake-Profile, Betrug, Hilfe', fn: () => this.phone('safedating') },
       { icon: '←', label: 'Zurück', fn: () => this.phone() },
     ], () => this.phone(), 'phone');
     hints([['lr', 'Wischen'], ['a', 'Bestätigen'], ['b', 'Zurück']]);
@@ -738,6 +802,17 @@ export class Game {
       ...(r.st >= 3 && !s.flags.spouse && !s.flags.engaged ? [{ icon: '💍', label: `${p.name} einen Antrag machen`, sub: canPropose(s, id) || 'Ring ist dabei – jetzt oder nie!', disabled: !!canPropose(s, id), fn: () => this.proposal(id) }] : []),
       { icon: '←', label: 'Zurück', fn: () => this.phone('matches') },
     ], () => this.phone('matches'), 'phone');
+  }
+  /** Liebesnacht mit Ehepartner*in zu Hause (18+, angedeutet, Abblende) */
+  private spouseNight() {
+    const s = this.save.data, sp = spouse(s), look = spouseLook(s); if (!sp || !look) return;
+    if ((s.inv.condom || 0) > 0) s.inv.condom--;
+    void this.home!.romance(look, sp.name, () => {
+      const b = el(`<div class="night"><p>💜 ${esc(sp.name)} und du …</p><small>Zustimmung: ✔︎ · ${s.health.prep ? 'PrEP: ✔︎' : condomLabel(s) + ': ✔︎'}</small></div>`);
+      document.body.appendChild(b); nightSounds();
+      setTimeout(() => { this.pass(minutesUntil(s, 8), true); change(s, { energy: 100, social: 40, fun: 40, hygiene: -25 }); s.flags.wild = s.day; this.home!.showMess(); b.remove(); pcEvents.emit('liebesnacht', { id: sp.id, name: sp.name });
+        this.dialog.say([{ who: sp.name, color: sp.color, text: 'Guten Morgen, Schatz. Ich liebe dich. Und du machst heute Frühstück. ☕💞' }]); this.save.write(); this.city.refreshHud(); }, 2600);
+    });
   }
   /** Absprache: exklusiv oder offen. Beides ist gut, solange alle Bescheid wissen. */
   private modelTalk(id: string) {
@@ -847,6 +922,9 @@ export class Game {
       const res = finishDate(s, id, pts);
       const near = addCloseness(s, id, pts >= 4 ? 4 : 1), hurt = res.up ? jealousy(s, id) : null;
       if (near) toast(near);
+      pcEvents.emit('dateGelaufen', { id, name: p.name, stage: dateRec(s, id).st, up: res.up, pts });
+      const fo = dateFolge(s, id, pts, res.up);
+      if (fo) setTimeout(() => this.hud.banner(fo.title, fo.text, fo.good ? 'good' : 'bad', 5200), hurt ? 5600 : 400);
       if (hurt) { sfx('miss'); this.hud.banner('💔 Verletzte Absprache', hurt, 'bad', 5200); }
       if (res.up) post(s, p.name, ['Bestes Date seit Langem. 💕', 'Hab Schmetterlinge im Bauch …', 'Ich glaube, ich bin verliebt. 🌈'][Math.min(2, r.st - 1)] || 'Schöner Abend!');
       const after = () => { this.save.write(); this.city.refreshHud(); };
@@ -864,19 +942,27 @@ export class Game {
     });
   }
   /** Angedeutete Nacht: Zustimmung beider, Kondom, Abblende – am Morgen sieht man die Spuren */
-  private wildNight(id: string) {
+  wildNight(id: string) {
     const s = this.save.data, p = profile(id)!;
     const lube = (s.inv.lube || 0) > 0;
     s.inv.condom--; if (lube) s.inv.lube--;
-    const b = el(`<div class="night"><p>💜 ${p.name} und du …</p><small>Zustimmung: ✔︎ · ${condomLabel(s)}: ✔︎${lube ? ' · Gleitgel: ✔︎' : ''}${s.health.prep ? ' · PrEP: ✔︎' : ''}</small></div>`);
-    document.body.appendChild(b); nightSounds();
-    setTimeout(() => {
-      this.pass(minutesUntil(s, 8), true);
-      change(s, { energy: 100, social: 40, fun: 40, hygiene: -30 });
-      s.flags.wild = s.day; post(s, 'Du', 'Was für eine Nacht. 🔥');
-      const morning = ['Okay … wo ist meine zweite Socke? 😅', 'Das Bett sieht aus wie nach einem Erdbeben. Hat sich gelohnt.', `${p.name} hat Kaffee dagelassen und ein Herz auf den Zettel gemalt. 💌`];
-      this.enterHome(() => { b.remove(); this.home!.showMess(); this.dialog.say([{ who: 'Du', color: '#ff4fa3', text: morning[s.day % 3] }, { who: 'Du', color: '#ff4fa3', text: 'Erst mal duschen. Und aufräumen.' }]); this.save.write(); });
-    }, 2600);
+    const look = { body: p.body, palette: p.palette, skin: p.skin, outfit: 'clothed' as const, top: p.pron !== 'er' };
+    // Abblende nach der Filmszene: Zeit vorspulen, Morgen danach mit Kaffee in der Küche
+    const night = () => {
+      const b = el(`<div class="night"><p>💜 ${p.name} und du …</p><small>Zustimmung: ✔︎ · ${condomLabel(s)}: ✔︎${lube ? ' · Gleitgel: ✔︎' : ''}${s.health.prep ? ' · PrEP: ✔︎' : ''}</small></div>`);
+      document.body.appendChild(b); nightSounds();
+      setTimeout(() => {
+        this.pass(minutesUntil(s, 8), true);
+        change(s, { energy: 100, social: 40, fun: 40, hygiene: -30 });
+        s.flags.wild = s.day; post(s, 'Du', 'Was für eine Nacht. 🔥');
+        pcEvents.emit('liebesnacht', { id, name: p.name });
+        const h = this.home!;
+        h.showMess(); void h.morning(look);
+        const morning = [`Guten Morgen, du. Kaffee ist fertig. Ich muss gleich los, aber … das war schön. ☕`, `Ich hab dir einen Kaffee gemacht. Deine zweite Socke liegt übrigens unterm Bett. 😅`, `Bleib noch liegen. Ich hab Frühstück gemacht und dir ein Herz auf den Zettel gemalt. 💌`];
+        setTimeout(() => { b.remove(); this.dialog.say([{ who: p.name, color: p.color, text: morning[s.day % 3] }, { who: 'Du', color: '#ff4fa3', text: 'Erst mal duschen. Und aufräumen.' }], () => { void h.morning(null); toast(`${p.name} ist los zur Arbeit. 💜`); }); this.save.write(); }, 900);
+      }, 2600);
+    };
+    this.enterHome(() => { void this.home!.romance(look, p.name, night); });
   }
 
   /* ---------- Nachtleben 18+ (Durchgang 3b): angedeutet, Abblende, Zustimmung und Kondom ---------- */
@@ -1167,6 +1253,19 @@ export class Game {
     [{ icon: '←', label: 'Zurück', fn: () => this.title() }], () => this.title());
   }
 
+  /** Aufträge eines Treffpunkts (treff.ts) im Ortsmenü */
+  private treffItems(place: 'sauna' | 'beach', close: () => void): Item[] {
+    const s = this.save.data;
+    if (this.where === 'inside' && this.insideWorld) return [];
+    const night = hour(s) >= 21 || hour(s) < 5, run = this.city.gig;
+    return [...placeGigs(place).map((g) => ({ icon: s.flags['tg_' + g.id] ? '✅' : g.night ? '🌙' : '📞', label: `Auftrag: ${g.title}`, sub: run ? `läuft schon: ${run.g.title}` : g.night && !night ? 'nur nachts (21–5 Uhr)' : s.flags['gig_' + g.id] === s.day ? 'heute schon erledigt' : `${g.pay} € · +${g.rep} Ruf · ${fmtTime(g.time)} Min.${g.car ? ' · mit Auto leichter' : ''}`,
+      disabled: !!run || (g.night && !night) || s.flags['gig_' + g.id] === s.day,
+      fn: () => { close(); this.dialog.say([{ who: g.who, color: g.color, text: g.call }], () => this.city.startGig({ ...g, after: () => {
+        const reg = treffDone(s, g); pcEvents.emit('treffAuftrag', { place, id: g.id });
+        if (reg) setTimeout(() => this.hud.banner(place === 'sauna' ? '🧖 Stammgast im Heißen Stein' : '🏖️ Stammgast in der Sandbank', place === 'sauna' ? 'Massage günstiger, Torsten kennt deinen Namen. Ruf +2' : 'Bruno hat einen Liegestuhl mit deinem Namen. Ruf +2', 'good', 5000), 2500);
+        this.save.write(); } })); } })),
+      { icon: regular(s, place) ? '⭐' : '☆', label: regular(s, place) ? 'Stammgast' : 'Stammgast werden', sub: `${placeGigs(place).filter((g) => s.flags['tg_' + g.id]).length}/${placeGigs(place).length} Aufträge geschafft`, disabled: true, fn: () => undefined }];
+  }
   placeMenu(id: string) {
     const s = this.save.data;
     const close = () => { this.closeMenu(); this.touch.show(true); };
@@ -1266,7 +1365,16 @@ export class Game {
         { icon: '🍹', label: 'Cocktail am Strand', sub: '5 € · +12 Spaß · +6 Kontakte', fn: buy(5, 'Sonne, Sand, Strohhalm. 🍹', eat({ fun: 12, social: 6 })) },
         { icon: '🏊', label: 'Schwimmen gehen', sub: '45 Minuten · +15 Spaß · −10 Energie', fn: () => { close(); this.fade(() => { this.pass(45); change(s, { fun: 15, energy: -10, hygiene: 10 }); this.save.write(); toast('Erfrischend! 🌊'); }); } },
         { icon: '😎', label: 'In der Sonne liegen', sub: '1 Stunde · +12 Energie · Sonnencreme nicht vergessen', fn: () => { close(); this.fade(() => { this.pass(60); change(s, { energy: 12, fun: 5 }); this.save.write(); toast('Schön braun. ☀️'); }); } },
-        { icon: '🏐', label: 'Beachvolleyball', sub: '30 Minuten · +14 Kontakte · −8 Energie', fn: () => { close(); this.fade(() => { this.pass(30); change(s, { social: 14, fun: 8, energy: -8 }); this.save.write(); toast('Punkt für dein Team! 🏐'); }); } }] },
+        { icon: '🏐', label: 'Beachvolleyball', sub: '30 Minuten · +14 Kontakte · −8 Energie', fn: () => { close(); this.fade(() => { this.pass(30); change(s, { social: 14, fun: 8, energy: -8 }); this.save.write(); toast('Punkt für dein Team! 🏐'); }); } },
+        { icon: '🌅', label: 'Sonnenuntergangs-Treff', sub: hour(s) >= 18 && hour(s) < 22 ? '1 Stunde · neue Leute · +20 Kontakte' : 'ab 18 Uhr', disabled: !(hour(s) >= 18 && hour(s) < 22) || s.flags.sunset === s.day, fn: () => { close(); this.fade(() => { s.flags.sunset = s.day; this.pass(60); change(s, { social: 20, fun: 10 }); this.save.write(); this.dialog.say([{ who: 'Bruno', color: '#d56300', text: ['Jeden Abend um diese Zeit kommen alle her. Siehst du den Typen mit dem Hut? Seit zwanzig Jahren jeden Tag.', 'Hier haben sich schon mehr Paare gefunden als bei Rainbow Match. Behaupte ich jetzt einfach.', 'Wenn die Sonne weg ist, wird es leise. Das ist die schönste Minute am ganzen Tag.'][s.day % 3] }]); }); } },
+        ...((s.day - 1) % 7 === 6 && (hour(s) >= 20 || hour(s) < 3) ? [{ icon: '🎉', label: 'Queer Beach Party (Sonntag)', sub: 'Tanz-Battle im Sand', fn: () => { close(); this.goDance(false); } }] : []),
+        ...this.treffItems('beach', close),
+        { icon: '☀️', label: 'Sonne und Strand: gut zu wissen', sub: 'UV, Nachcremen, Trinken', fn: () => { close(); this.dialog.say(BEACH_INFO.map(([h, x]) => ({ who: '☀️ ' + h, color: '#ffd23b', text: x }))); } }] },
+      sauna: { t: 'Sauna Heißer Stein', d: `Holz, Dampf und Ruhe am Hafen. Sauna-Torsten führt den Laden seit 1987.${regular(s, 'sauna') ? ' Du bist hier Stammgast.' : ''}`, items: [
+        { icon: '💆', label: 'Massage', sub: `${regular(s, 'sauna') ? 15 : 25} € · 45 Minuten · +20 Energie · +10 Spaß`, fn: buy(regular(s, 'sauna') ? 15 : 25, 'Torstens Kollegin knetet dir die Woche aus den Schultern. 💆', () => { this.pass(45); change(s, { energy: 20, fun: 10, hygiene: 5 }); }) },
+        { icon: '🥤', label: 'Saftschorle an der Theke', sub: '3 € · +8 Energie · nach dem Schwitzen trinken!', fn: buy(3, 'Kalt und sauer. Genau richtig.', eat({ energy: 8, hunger: 4 })) },
+        ...this.treffItems('sauna', close),
+        { icon: '📜', label: 'Sauna-Knigge und Geschichte', sub: 'Handtuch, Aufguss, Gesundheit, Zustimmung', fn: () => { close(); this.dialog.say(SAUNA_INFO.map(([h, x]) => ({ who: '🧖 ' + h, color: '#ff9a3b', text: x }))); } }] },
       bar: s.flags.bar ? { t: 'Club Leuchtturm', d: `Dein eigener Club am Hafen. ${s.flags.barDeko ? 'Discokugel und Neon funkeln.' : 'Noch etwas kahl – Deko bringt mehr Trinkgeld.'} ${s.flags.rex === 'dj' ? 'Rex legt freitags auf.' : ''}`, items: [
         { icon: '🍸', label: 'Hinter die Bar', sub: `Barkeeper-Minispiel · 75 Sekunden · Rekord ${s.best.bar || 0} Drinks`, fn: () => { close(); this.barShift(); } },
         { icon: '🪩', label: 'Party-Nacht veranstalten', sub: isLateNight(hour(s)) || hour(s) >= 21 ? 'einmal pro Nacht · Eintritt und Ruf' : 'ab 21 Uhr', disabled: !(isLateNight(hour(s)) || hour(s) >= 21) || s.flags.party === s.day, fn: () => { close(); this.party(); } },
