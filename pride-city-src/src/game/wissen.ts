@@ -4,6 +4,7 @@
 import type { SaveData } from '../engine/Save';
 import { HISTORY, HIST_ORDER } from './faden';
 import { PALETTES } from './palettes';
+import { DRAG_HISTORY } from './dragLook';
 
 export interface Entry { year?: string; title: string; text: string }
 
@@ -24,6 +25,8 @@ const yearOf = (y: string) => Number((y.match(/\d{4}/) || ['1920'])[0]);
 export interface TimelineRow extends Entry { story: boolean; seen: boolean }
 export function timeline(s: SaveData): TimelineRow[] {
   const story = HIST_ORDER.map((k) => ({ ...HISTORY[k], at: yearOf(HISTORY[k].year), story: true, seen: !!s.flags['hist_' + k] }));
+  // Drag-Geschichte aus der Drag-Karriere (drag.ts): erscheint nach dem jeweiligen Lip-Sync-Sieg
+  story.push(...Object.entries(DRAG_HISTORY).map(([k, h]) => ({ ...h, at: yearOf(h.year), story: true, seen: !!s.flags['dwiss_' + k] })));
   return [...TIMELINE.map((e) => ({ ...e, story: false, seen: true })), ...story].sort((a, b) => a.at - b.at);
 }
 
