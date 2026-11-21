@@ -441,7 +441,8 @@ export function createRenderer(T, canvas, opts) {
     sk._computeTransformMatrices = target => {
       if (INC) boneUpd(s);   // Knochen erst rechnen, wenn Babylon die Figur wirklich zeichnet
       s.act = frame;
-      const src = s.o; SKN.multiplyMatrices(src.matrixWorld, src.bindMatrixInverse);
+      const src = s.o;   // gebunden (attached): three setzt bindMatrixInverse = matrixWorld⁻¹, also Objekt · Bindungsinverse = Einheit
+      if (src.bindMode === 'detached') SKN.multiplyMatrices(src.matrixWorld, src.bindMatrixInverse); else SKN.identity();
       for (let i = 0; i < s.n; i++) { SKM.fromArray(s.inv, i * 16); SKM.premultiply(s.bones[i].matrixWorld); SKM.premultiply(SKN); SKM.multiply(src.bindMatrix); target.set(SKM.elements, i * 16); }
       target.set(IDENT, s.n * 16);
     };
@@ -946,6 +947,34 @@ export function createRenderer(T, canvas, opts) {
     R.stats.baked = (R.stats.baked || 0) + n;
     return n;
   };
+  // Schild/Symbol (Sprite) direkt in Babylon: das Spiel bekommt ein kleines Objekt mit position/scale/visible, dessen Änderungen sofort
+  // im Babylon-Mesh landen – ohne Szenengraph, Meldung oder Abgleich (z. B. die wippenden Orts-Symbole der Stadt).
+  R.sprite = function (mat, parent) {
+    parent.updateMatrixWorld(true);
+    const key = 'sprite|' + mat.uuid;
+    let ms = masters.get(key);
+    if (!ms) {
+      if (!spriteQuad) { spriteQuad = CreatePlane('sq', { size: 1, sideOrientation: Mesh.DOUBLESIDE }, scene); spriteQuad.isVisible = false; spriteQuad.isPickable = false; }
+      const mm = spriteQuad.clone('sp'); mm.isVisible = false; mm.material = matFor(mat, 'std'); mm.billboardMode = Mesh.BILLBOARDMODE_ALL;
+      ms = { key, mesh: mm, refs: 0 }; masters.set(key, ms);
+    }
+    ms.refs++;
+    const mesh = ms.mesh.clone('ns', null, true, false); mesh.isVisible = true; mesh.material = ms.mesh.material; mesh.billboardMode = Mesh.BILLBOARDMODE_ALL; mesh.isPickable = false;
+    mesh.renderingGroupId = mat.depthTest === false ? 2 : 1; mesh.__ms = ms; mesh.setEnabled(false);
+    let root = nroots.find(r => r.o === parent);
+    if (!root) { root = { o: parent, meshes: [], mw: Float64Array.from(parent.matrixWorld.elements), on: null, gone: 0 }; nroots.push(root); }
+    root.meshes.push(mesh); mesh.setEnabled(!!root.on); candDirty = true;
+    let x = 0, y = 0, z = 0;
+    const upd = mesh.__upd = () => { const e = parent.matrixWorld.elements; mesh.position.copyFromFloats(e[0] * x + e[4] * y + e[8] * z + e[12], e[1] * x + e[5] * y + e[9] * z + e[13], e[2] * x + e[6] * y + e[10] * z + e[14]); };
+    const position = { get x() { return x; }, set x(v) { if (v !== x) { x = v; upd(); } }, get y() { return y; }, set y(v) { if (v !== y) { y = v; upd(); } }, get z() { return z; }, set z(v) { if (v !== z) { z = v; upd(); } },
+      set(a, b, c) { x = a; y = b; z = c; upd(); return position; } };
+    const scale = { set(a, b) { mesh.scaling.copyFromFloats(a, b, 1); return scale; }, setScalar(a) { mesh.scaling.copyFromFloats(a, a, 1); return scale; } };
+    const sp = { isNative: true, material: mat, position, scale, mesh };
+    Object.defineProperty(sp, 'visible', { get() { return mesh.isVisible; }, set(v) { v = !!v; if (v !== mesh.isVisible) { mesh.isVisible = v; candDirty = true; } } });
+    upd();
+    return sp;
+  };
+
   // Farbe/Leuchten/Metall/Rauheit eines Materials in die Ecken eines gemeinsamen Meshes schreiben
   const vRanges = new Map();   // Material → [[Mesh, Start, Anzahl]]
   function paintV(m, col, ve, vr, off, n) {
@@ -961,6 +990,7 @@ export function createRenderer(T, canvas, opts) {
   function disposeNative(m) {
     natives.delete(m); for (const l of shadowLights) l.sg.removeShadowCaster(m, false);
     if (m.__cm) releaseChunkMat(m.__cm);
+    if (m.__ms) releaseMaster(m.__ms);
     if (m.__v) for (const [mat, l] of vRanges) { const k = l.filter(r => r[0] !== m); if (!k.length) vRanges.delete(mat); else if (k.length !== l.length) vRanges.set(mat, k); }
     m.dispose(false, false);
   }
@@ -974,7 +1004,7 @@ export function createRenderer(T, canvas, opts) {
       if (on !== r.on) { r.on = on; for (const m of r.meshes) m.setEnabled(on); candDirty = true; }
       if (on && !sameM(r.o.matrixWorld.elements, r.mw)) {
         r.mw.set(r.o.matrixWorld.elements);
-        for (const m of r.meshes) { m.unfreezeWorldMatrix(); setTRS(m, r.o.matrixWorld.elements); m.freezeWorldMatrix(); }
+        for (const m of r.meshes) { if (m.__upd) { m.__upd(); continue; } m.unfreezeWorldMatrix(); setTRS(m, r.o.matrixWorld.elements); m.freezeWorldMatrix(); }
       }
     }
   }
@@ -1031,7 +1061,10 @@ export function createRenderer(T, canvas, opts) {
   // Knochen einer sichtbaren Figur einmal je Bild durchrechnen (von den obersten Knochen aus, samt angehängter Requisiten)
   function boneUpd(sh) {
     if (sh.bf === frame) return; sh.bf = frame;
-    if (!sh.roots) sh.roots = sh.bones.filter(b => !b.parent || !b.parent.isBone);
+    if (!sh.roots) {   // oberste Knochen-Vorfahren (auch Knochen, die nicht zur Haut gehören, z. B. ein Wurzelgelenk darüber)
+    const rs = new Set(); for (const b of sh.bones) { let t = b; while (t.parent && t.parent.isBone) t = t.parent; rs.add(t); }
+    sh.roots = [...rs];
+  }
     for (let i = 0; i < sh.roots.length; i++) sh.roots[i].updateWorldMatrix(false, true);
   }
   // Nur Gemeldetes abgleichen
@@ -1081,6 +1114,7 @@ export function createRenderer(T, canvas, opts) {
     if (o.matrixAutoUpdate) o.updateMatrix();
     if (o.parent === null) o.matrixWorld.copy(o.matrix); else o.matrixWorld.multiplyMatrices(o.parent.matrixWorld, o.matrix);
     o.matrixWorldNeedsUpdate = false;
+    if (o.isSkinnedMesh && o.bindMode !== 'detached') o.bindMatrixInverse.copy(o.matrixWorld).invert();   // wie SkinnedMesh.updateMatrixWorld
     const ch = o.children;
     for (let i = 0; i < ch.length; i++) if (!ch[i].isBone) updTree(ch[i]);
   }

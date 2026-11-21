@@ -269,7 +269,7 @@
   function addStation(id, label, x, z, r) {
     S.stations = S.stations || [];
     const icon = label.split(' ')[0], tx = W.textTex([icon], { w: 128, h: 128, bg: '#14161f', size: 80, accent: '#ff8a1e' });
-    const sp = new T.Sprite(new T.SpriteMaterial({ map: tx, toneMapped: false })); sp.scale.set(0.8, 0.8, 1); sp.position.set(x, 2.35, z); S.group.add(sp);
+    const sp = W.sprite(new T.SpriteMaterial({ map: tx, toneMapped: false }), S.group); sp.scale.set(0.8, 0.8, 1); sp.position.set(x, 2.35, z);
     S.stations.push({ id, label, x, z, r: r || 2, sp });
   }
   // Eigene Gebäude in der Stadt: Spielhalle, Musikladen, Andrews Wohnung, Marcos Haus

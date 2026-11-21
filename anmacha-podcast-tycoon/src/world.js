@@ -380,6 +380,8 @@
     matCache.set(k, m); return m;
   };
   /** Fest stehendes Spielteil einhängen: mit Babylon direkt als feste Meshes gebaut (kein Abgleich pro Bild), sonst normal. */
+  /** Schild/Symbol, das nur wippt oder ein-/ausgeblendet wird: mit Babylon direkt gebaut (position/scale/visible wirken sofort), sonst normales Sprite. */
+  W.sprite = (mat, parent) => { if (bakeOn() && W.renderer.sprite) return W.renderer.sprite(mat, parent); const s = new T.Sprite(mat); parent.add(s); return s; };
   W.bake = (o, parent) => (bakeOn() ? W.renderer.bake(o, parent) : (parent.add(o), o));
   W.box = (w, h, d, mat, x, y, z, parent, shadow) => { const m = new T.Mesh(new T.BoxGeometry(w, h, d), mat); m.position.set(x || 0, y || 0, z || 0); m.castShadow = shadow !== false; m.receiveShadow = true; if (parent) parent.add(m); return m; };
   W.cyl = (rt, rb, h, mat, x, y, z, parent, seg) => { const m = new T.Mesh(new T.CylinderGeometry(rt, rb, h, seg || 16), mat); m.position.set(x || 0, y || 0, z || 0); m.castShadow = true; m.receiveShadow = true; if (parent) parent.add(m); return m; };
