@@ -6,6 +6,7 @@ import { OUTFITS, CLIPS, type Look, type Outfit } from './Actor';
 import { PALETTES, BODIES } from './palettes';
 import { AVATARS } from './avatars';
 import { CAR_DEFS } from './vehicles';
+import { DJS, DECOS, DOORS, QEVENTS } from './club';
 
 export const ALPHA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
 export const PRE = 'pridecity-';
@@ -19,7 +20,10 @@ export const QUICK = ['👋 Hallo!', '💃 Lass uns tanzen!', '🚗 Steig ein, i
 export const EMOTES: Array<[string, string, string]> = [['wave', '👋', 'Winken'], ['dance1', '💃', 'Tanzen'], ['dance2', '🕺', 'Tanzen (wild)'], ['cheer', '🎉', 'Jubeln'], ['clap', '👏', 'Klatschen'], ['laugh', '😂', 'Lachen']];
 
 /** Lage einer Figur: Ort, Blickrichtung, Bewegung, Wagen ('' = zu Fuß), Lackfarbe */
-export interface PState { x: number; z: number; r: number; a: string; c: string; h: number }
+/** w = Innenraum (Ort-ID), leer/fehlt = draußen in der Stadt; x/z sind dann Raumkoordinaten */
+export interface PState { x: number; z: number; r: number; a: string; c: string; h: number; w?: string }
+/** Einladung in den eigenen Club mit dessen Einstellungen (damit alle denselben Club sehen) */
+export interface Invite { p: string; n: string; e: string; dj: string; deco: string; door: number; aw: boolean }
 export interface Member { id: string; name: string; look: Look; st: PState }
 export type Msg =
   | { t: 'hi'; id?: string; n: string; l: Look; s: PState }
@@ -27,6 +31,7 @@ export type Msg =
   | { t: 's'; id?: string; s: PState }
   | { t: 'e'; id?: string; k: string }
   | { t: 'q'; id?: string; i: number }
+  | ({ t: 'club'; id?: string } & Invite)
   | { t: 'bye'; id: string }
   | { t: 'full' };
 
@@ -44,7 +49,16 @@ export function cleanLook(v: unknown, adult: boolean): Look {
 }
 export function cleanState(v: unknown): PState {
   const o = (v && typeof v === 'object' ? v : {}) as Record<string, unknown>;
-  return { x: num(o.x, -400, 400), z: num(o.z, -400, 400), r: num(o.r, -100, 100), a: CLIPS.includes(String(o.a)) ? String(o.a) : 'idle', c: CAR_DEFS.some((c) => c.id === o.c) ? String(o.c) : '', h: Math.round(num(o.h, -1, 360, -1)) };
+  const w = typeof o.w === 'string' && /^[a-z0-9_]{1,24}$/.test(o.w) ? o.w : '';
+  return { x: num(o.x, -400, 400), z: num(o.z, -400, 400), r: num(o.r, -100, 100), a: CLIPS.includes(String(o.a)) ? String(o.a) : 'idle', c: CAR_DEFS.some((c) => c.id === o.c) ? String(o.c) : '', h: Math.round(num(o.h, -1, 360, -1)), ...(w ? { w } : {}) };
+}
+/** Club-Einladung aus dem Netz: nur bekannte DJs, Deko, Themennächte; Ort nur als einfache ID */
+export function cleanInvite(v: unknown): Invite | null {
+  const o = (v && typeof v === 'object' ? v : {}) as Record<string, unknown>;
+  if (typeof o.p !== 'string' || !/^[a-z0-9_]{1,24}$/.test(o.p)) return null;
+  return { p: o.p, n: (String(o.n ?? '').replace(/[\u0000-\u001f<>]/g, '').trim().slice(0, 28)) || 'Club',
+    e: QEVENTS.some((q) => q.id === o.e) ? String(o.e) : '', dj: DJS.some((d) => d.id === o.dj) ? String(o.dj) : 'haus',
+    deco: DECOS.some((d) => d.id === o.deco) ? String(o.deco) : '', door: Math.round(num(o.door, 0, DOORS.length - 1)), aw: !!o.aw };
 }
 
 /** Wer gerade da ist. Rein, damit es sich prüfen lässt. */
@@ -52,7 +66,7 @@ export class Roster {
   readonly members = new Map<string, Member>();
   constructor(private adult: () => boolean) {}
   /** liefert, was sich getan hat (oder null) */
-  apply(m: unknown): { ev: 'join' | 'leave' | 'look' | 'state' | 'emote' | 'quick' | 'full'; who?: Member; k?: string; text?: string } | null {
+  apply(m: unknown): { ev: 'join' | 'leave' | 'look' | 'state' | 'emote' | 'quick' | 'full' | 'invite'; who?: Member; k?: string; text?: string; inv?: Invite } | null {
     if (!m || typeof m !== 'object') return null;
     const o = m as Record<string, unknown>, id = typeof o.id === 'string' ? o.id.slice(0, 80) : '';
     if (o.t === 'full') return { ev: 'full' };
@@ -63,6 +77,7 @@ export class Roster {
     if (o.t === 'bye') { this.members.delete(id); return { ev: 'leave', who }; }
     if (o.t === 's') { who.st = cleanState(o.s); return { ev: 'state', who }; }
     if (o.t === 'e') { const e = EMOTES.find((x) => x[0] === o.k); return e ? { ev: 'emote', who, k: e[0], text: `${e[1]} ${who.name}` } : null; }
+    if (o.t === 'club') { const inv = cleanInvite(o); return inv ? { ev: 'invite', who, inv } : null; }
     if (o.t === 'q') { const q = QUICK[Math.round(num(o.i, 0, QUICK.length - 1))]; return { ev: 'quick', who, text: `${who.name}: ${q}` }; }
     return null;
   }

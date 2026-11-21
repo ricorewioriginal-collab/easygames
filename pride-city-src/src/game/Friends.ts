@@ -2,7 +2,7 @@
    und meldet, wer kommt, geht, winkt oder etwas ruft. Regeln und Verbindung: online.ts. */
 import { Vector3, type Scene, type TransformNode } from '../engine/bjs';
 import { Actor, type Anim, type Look } from './Actor';
-import { Net, Roster, SEND_MS, QUICK, EMOTES, type Member, type PState } from './online';
+import { Net, Roster, SEND_MS, QUICK, EMOTES, type Member, type PState, type Invite } from './online';
 import { carDef } from './vehicles';
 import type { World } from './World';
 
@@ -18,6 +18,8 @@ export class Friends {
   private idleT = 0;
   /** Meldung für die Anzeige (Toast) */
   onNote: (text: string, kind: 'join' | 'leave' | 'say') => void = () => {};
+  /** Einladung in einen Club (online.ts Invite) */
+  onInvite: (who: Member, inv: Invite) => void = () => {};
   /** eigenes Aussehen und Name, wenn jemand dazukommt */
   me: () => { n: string; l: Look; s: PState } = () => ({ n: 'Gast', l: { body: '', palette: '', skin: 0 }, s: { x: 0, z: 0, r: 0, a: 'idle', c: '', h: -1 } });
 
@@ -37,6 +39,7 @@ export class Friends {
     else if (r.ev === 'look') this.drop(who.id);   // neu eingekleidet: Figur wird frisch geladen
     else if (r.ev === 'leave') { this.drop(who.id); this.onNote(`👋 ${who.name} hat die Stadt verlassen.`, 'leave'); }
     else if (r.ev === 'quick' || r.ev === 'emote') this.onNote(r.text!, 'say');
+    else if (r.ev === 'invite') this.onInvite(who, r.inv!);
   }
   private drop(id: string) { const f = this.figs.get(id); if (!f) return; f.a?.root.dispose(); f.car?.dispose(); this.figs.delete(id); }
   private clear() { for (const id of [...this.figs.keys()]) this.drop(id); this.roster.clear(); this.sent = ''; }
@@ -49,6 +52,16 @@ export class Friends {
   emote(k: string) { if (EMOTES.some((e) => e[0] === k)) this.say({ t: 'e', k }); }
   quick(i: number) { if (QUICK[i]) this.say({ t: 'q', i }); }
   leave() { this.net.close(); this.clear(); }
+  /** In den eigenen Club einladen (alle in der Runde bekommen die Einladung) */
+  invite(inv: Invite) { this.say({ t: 'club', ...inv }); }
+  /** Eigene Lage schicken (auch aus Innenräumen, dann mit w = Ort) */
+  send(dt: number, own: PState) {
+    if (!this.net.on || (this.sendT -= dt * 1000) > 0) return;
+    const s = { x: Math.round(own.x * 100) / 100, z: Math.round(own.z * 100) / 100, r: Math.round(own.r * 100) / 100, a: own.a, c: own.c, h: own.h, ...(own.w ? { w: own.w } : {}) }, k = JSON.stringify(s);
+    this.idleT += SEND_MS;
+    if (k !== this.sent || this.idleT > 4000) { this.sent = k; this.idleT = 0; this.say({ t: 's', s }); }
+    this.sendT = SEND_MS;
+  }
 
   /** Figur oder Wagen für eine Person bereitstellen (lädt im Hintergrund) */
   private async ensure(m: Member, f: Fig) {
@@ -69,15 +82,12 @@ export class Friends {
   /** own = eigene Lage (null, wenn du gerade nicht draußen bist) */
   update(dt: number, own: PState | null) {
     if (!this.net.on) return;
-    if (own && (this.sendT -= dt * 1000) <= 0) {
-      const s = { x: Math.round(own.x * 100) / 100, z: Math.round(own.z * 100) / 100, r: Math.round(own.r * 100) / 100, a: own.a, c: own.c, h: own.h }, k = JSON.stringify(s);
-      this.idleT += SEND_MS;
-      if (k !== this.sent || this.idleT > 4000) { this.sent = k; this.idleT = 0; this.say({ t: 's', s }); }
-      this.sendT = SEND_MS;
-    }
+    if (own) this.send(dt, own);
     const f1 = 1 - Math.exp(-dt * 9);
     for (const m of this.roster.members.values()) {
       let f = this.figs.get(m.id);
+      if (m.st.w) { if (f) { f.a?.root.setEnabled(false); f.car?.setEnabled(false); f.seen = false; } continue; }   // drinnen: hier nicht zeigen
+      f?.a?.root.setEnabled(true);
       if (!f) { f = { a: null, car: null, carKey: '', busy: false, seen: false, pos: new Vector3(m.st.x, .1, m.st.z), rot: m.st.r }; this.figs.set(m.id, f); }
       void this.ensure(m, f);
       const far = Math.hypot(m.st.x - f.pos.x, m.st.z - f.pos.z) > 30;
@@ -92,12 +102,41 @@ export class Friends {
     }
   }
 
-  /** Ort einer Person (für Markierung und Ansprechen) */
-  posOf(id: string) { return this.figs.get(id)?.pos || null; }
+  /** Ort einer Person (für Markierung und Ansprechen), null wenn drinnen */
+  posOf(id: string) { return this.roster.members.get(id)?.st.w ? null : this.figs.get(id)?.pos || null; }
   /** nächste Person zu Fuß in Reichweite */
   nearest(p: Vector3, r: number): Member | null {
     let best: Member | null = null, bd = r;
-    for (const m of this.roster.members.values()) { const f = this.figs.get(m.id); if (!f || m.st.c) continue; const d = Math.hypot(f.pos.x - p.x, f.pos.z - p.z); if (d < bd) { bd = d; best = m; } }
+    for (const m of this.roster.members.values()) { const f = this.figs.get(m.id); if (!f || m.st.c || m.st.w) continue; const d = Math.hypot(f.pos.x - p.x, f.pos.z - p.z); if (d < bd) { bd = d; best = m; } }
     return best;
   }
+}
+
+/** Freund*innen im selben Innenraum (Club, Laden): eigene Figuren in der Raumszene, nur wer dort ist (st.w = key) */
+export class RoomFriends {
+  private figs = new Map<string, { a: Actor | null; busy: boolean; pos: Vector3; rot: number; look: string }>();
+  constructor(private scene: Scene, private friends: Friends, readonly key: string) {}
+  update(dt: number) {
+    const f1 = 1 - Math.exp(-dt * 9), here = new Set<string>();
+    if (this.friends.net.on) for (const m of this.friends.roster.members.values()) {
+      if (m.st.w !== this.key) continue;
+      here.add(m.id);
+      let f = this.figs.get(m.id); const lk = JSON.stringify(m.look);
+      if (f && f.look !== lk) { f.a?.root.dispose(); this.figs.delete(m.id); f = undefined; }
+      if (!f) { f = { a: null, busy: false, pos: new Vector3(m.st.x, 0, m.st.z), rot: m.st.r, look: lk }; this.figs.set(m.id, f); }
+      if (!f.a && !f.busy) { const ff = f; ff.busy = true; Actor.create(this.scene, m.look).then((a) => { if (this.figs.get(m.id) === ff) ff.a = a; else a.root.dispose(); }).catch(() => { /* ohne Figur */ }).finally(() => { ff.busy = false; }); }
+      f.pos.x += (m.st.x - f.pos.x) * f1; f.pos.z += (m.st.z - f.pos.z) * f1; f.rot = turn(f.rot, m.st.r, f1);
+      if (f.a) { f.a.root.position.copyFrom(f.pos); f.a.root.rotation.y = f.rot; if (f.a.anim !== m.st.a) f.a.play(m.st.a as Anim, .2); f.a.update(dt); }
+    }
+    for (const [id, f] of this.figs) if (!here.has(id)) { f.a?.root.dispose(); this.figs.delete(id); }
+  }
+  /** nächste Person in Reichweite (zum Ansprechen) */
+  nearest(x: number, z: number, r: number): { id: string; name: string; x: number; z: number } | null {
+    let best: { id: string; name: string; x: number; z: number } | null = null, bd = r;
+    for (const [id, f] of this.figs) { const d = Math.hypot(f.pos.x - x, f.pos.z - z), m = this.friends.roster.members.get(id); if (m && d < bd) { bd = d; best = { id, name: m.name, x: f.pos.x, z: f.pos.z }; } }
+    return best;
+  }
+  get count() { return this.figs.size; }
+  /** Namensschilder für die Anzeige */
+  marks() { const out: Array<{ id: string; icon: string; label: string; pos: Vector3 }> = []; for (const [id, f] of this.figs) { const m = this.friends.roster.members.get(id); if (m) out.push({ id: 'fr' + id, icon: '🌐', label: m.name, pos: new Vector3(f.pos.x, 2.3, f.pos.z) }); } return out; }
 }
