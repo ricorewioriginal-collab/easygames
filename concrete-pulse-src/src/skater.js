@@ -684,6 +684,7 @@ export class Skater {
   }
 
   poseRig(dt, lift) {
+    const R = this.rig.root; if (R.rotation.x || R.position.y) { R.rotation.x = 0; R.rotation.z = 0; R.position.y = 0; }
     const a = this.air, g = this.grind, c = Math.max(this.crouch, this.landSquash * 0.95);
     const t = performance.now() / 1000;
     const P = this.pose, sp = this.speed;
@@ -706,8 +707,8 @@ export class Skater {
     P.pelvis[2] += -carve * 0.09; P.lean += -carve * 0.18; P.side += carve * 0.12 * Math.min(1, sp * 0.12);
     // Arme: locker, leicht vor dem Körper, pendeln mit
     const sway = Math.sin(t * 1.6) * 0.025;
-    P.handL = [0.34 + c * 0.06, 0.86 - c * 0.22 + sway, 0.24 + c * 0.1];
-    P.handR = [-0.36 - c * 0.04, 0.82 - c * 0.22 - sway, 0.02 + c * 0.12];
+    P.handL = [0.32 + c * 0.06, 0.94 - c * 0.24 + sway, 0.16 + c * 0.12];
+    P.handR = [-0.3 - c * 0.04, 0.9 - c * 0.24 - sway, 0.04 + c * 0.12];
     // Anschieben: hinterer Fuß kickt am Boden, Oberkörper dreht nach vorne
     if (this.pushing > 0.05 && this.mode === 'ground' && !this.manual && this.charge === 0) {
       this.pushPhase += dt * (4.6 + Math.min(2, sp * 0.15));
@@ -759,21 +760,38 @@ export class Skater {
   }
 
   applyBail(dt) {
-    const b = this.bail, P = this.pose, k = clamp(b.t / 0.45, 0, 1);
+    const b = this.bail, P = this.pose, t = b.t;
     // Brett in der Welt: vom Halter lösen
     const bs = this.boardSpin;
     const inv = Matrix.Invert(this.holder.getWorldMatrix());
     bs.position = Vector3.TransformCoordinates(b.bp, inv);
     bs.rotationQuaternion = Quaternion.RotationYawPitchRoll(b.rot.y, b.rot.x, b.rot.z);
-    // Figur fällt zur Seite und rappelt sich auf
-    const up = b.t > 1.15 ? clamp((b.t - 1.15) / 0.5, 0, 1) : 0, fall = k * (1 - up);
-    P.pelvis = [0, lerp(0.95, 0.22, fall), lerp(0, -0.35 * b.fall, fall)];
-    P.lean = lerp(0.2, 1.2 * b.fall, fall); P.side = lerp(0, 0.6, fall); P.twist = 0.2; P.hipTwist = 0;
-    P.footL = [0.25, lerp(0.0, 0.05, fall), lerp(0.05, 0.4 * b.fall, fall)]; P.footR = [-0.25, 0, lerp(0, 0.3 * b.fall, fall)];
+    // Sturz wie ein Mensch: Körper kippt (Fersen- oder Zehenseite), Arme fangen ab, kurz liegen und rutschen, dann aufstehen
+    const ease = x => x * x * (3 - 2 * x);
+    const fall = ease(clamp(t / 0.42, 0, 1)), getUp = ease(clamp((t - 1.05) / 0.6, 0, 1)), lie = fall * (1 - getUp);
+    const dir = b.fall;                                  // +1 auf den Rücken, −1 nach vorne auf die Hände
+    const R = this.rig.root;
+    R.rotation.x = -dir * lie * (dir > 0 ? 1.35 : 1.15); R.rotation.z = Math.sin(t * 3) * 0.06 * lie;
+    R.position.y = lie * (dir > 0 ? 0.16 : 0.2);
+    const roll = Math.sin(clamp(t / 0.42, 0, 1) * Math.PI);       // Arme rudern beim Fallen
+    // Beine: beim Liegen angewinkelt, beim Aufstehen erst in die Hocke
+    const crouch = getUp > 0 ? Math.sin(getUp * Math.PI) : 0;
+    P.pelvis = [0, lerp(0.88, 0.62, lie) - crouch * 0.32, lerp(0, dir > 0 ? -0.05 : 0.08, lie)];
+    P.lean = lerp(0.25, dir > 0 ? 0.55 : 0.1, lie) + crouch * 0.5; P.side = Math.sin(t * 2.3) * 0.15 * lie; P.twist = 0.15 * lie; P.hipTwist = 0;
+    P.kneeX = 0; P.kneeZ = 0.2; P.kneeOut = 0.06;
+    P.footL = [0.22, lerp(0.02, 0.22, lie), lerp(0.03, 0.36, lie)]; P.footR = [-0.22, lerp(0.02, 0.08, lie), lerp(-0.02, 0.22, lie)];
     P.toeL = [0, 1]; P.toeR = [0, 1];
-    P.handL = [0.35, lerp(1.0, 0.05, fall), lerp(0.2, 0.45 * b.fall, fall)]; P.handR = [-0.35, lerp(1.0, 0.05, fall), lerp(0.2, 0.45 * b.fall, fall)];
-    P.look = [0, 0.6, 2];
+    if (dir > 0) {   // nach hinten: Hände stützen hinter dem Körper ab
+      P.handL = [lerp(0.35, 0.42, lie), lerp(0.95, 0.42, lie) + roll * 0.35, lerp(0.15, -0.38, lie)];
+      P.handR = [lerp(-0.35, -0.42, lie), lerp(0.95, 0.4, lie) + roll * 0.3, lerp(0.15, -0.36, lie)];
+    } else {        // nach vorne: Arme gestreckt nach vorne
+      P.handL = [lerp(0.35, 0.3, lie), lerp(0.95, 0.75, lie) + roll * 0.2, lerp(0.15, 0.62, lie)];
+      P.handR = [lerp(-0.35, -0.3, lie), lerp(0.95, 0.72, lie) + roll * 0.2, lerp(0.15, 0.6, lie)];
+    }
+    if (getUp > 0) { P.handL = lerpA(P.handL, [0.34, 0.9, 0.18], getUp); P.handR = lerpA(P.handR, [-0.32, 0.88, 0.06], getUp); }
+    P.look = [dir > 0 ? 0 : 0, lerp(1.2, dir > 0 ? 2.2 : 0.3, lie), 2];
     this.rig.apply(P);
+    P.kneeOut = undefined;
   }
 }
 const lerpA = (a, b, t) => a.map((v, i) => lerp(v, b[i], t));
