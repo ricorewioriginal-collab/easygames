@@ -43,6 +43,7 @@ E2E-Test (Browser, SwiftShader): Server im Repo starten (`python3 -m http.server
 | `src/game/Friends.ts` | Freund*innen in der Stadt: Figuren und Wagen der anderen, eigene Lage senden, Gesten und Zurufe |
 | `src/game/queer.ts` | Szene-Looks für die Menschen auf der Straße: Flaggenfarben, Harness, Leder, Glitzer, gefärbte Haare, direkt auf die Avatar-Texturen gemalt |
 | `src/game/room.ts` | Raumhülle der Innenräume (Boden, Wände, Decke, Fenster, Lampen, gemalte Oberflächen) und Möbel aus den Maßen der Einrichtungsliste (Theke mit Flaschenregal, Schränke, Hocker, Hantelbank, Laufband) |
+| `src/game/Isle.ts` | Welt als echte Insel in der Stadtszene (nahtlos): Lage in `ISLES` (worlds.ts), Brücke vom Kai, rechnet in Inselkoordinaten (`w`/`l`), meldet Kollision und begehbare Fläche in `World` an (`extraWalk`), Leute laden erst in der Nähe; `CityScene.isles` |
 | `src/game/worlds.ts`, `WorldScene.ts`, `flitzer.ts` | Welten jenseits der Stadt: Ortskern aus dem Stadt-Bausatz (`SLOTS`, `townFree`), betretbare Häuser, Gastgeber*in, vier Aufgaben, Lieferauftrag, Leute; dazu der Flitzer zum Fahren und Fliegen (auch in der Stadt, `CarDef.fly`); neue Welt = ein Eintrag in `WORLDS` |
 | `src/game/kerb.ts` | Laternenmeile: Hupen im Auto, Einsteigen, ruhige Ecke, Abblende (ab 18) |
 | `src/game/story.ts` | Figuren, fünf Kapitel bis zum Ende, Ziele (`goal`), automatische Fortschritte (`storyTick`), Gespräche, Entscheidungen (`save.flags`), Ende (`ending`) |

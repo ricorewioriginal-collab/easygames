@@ -258,6 +258,14 @@ export class Game {
   enterWorld(id: string, arrive: 'city' | 'west' | 'east' = 'city') {
     const def = worldDef(id), s = this.save.data; if (!def) return;
     if (def.adult && !s.settings.adult) { toast('Nur mit 18+ (Einstellungen).'); sfx('miss'); return; }
+    // Welt liegt als Insel in der Stadt: kein Szenenwechsel, nur hinstellen
+    const isle = this.city.isles.find((i) => i.def.id === id);
+    if (isle) {
+      const at = isle.arrival(arrive); sfx('tram'); this.closeMenu();
+      if (this.where !== 'world' && arrive === 'city' && this.city.driving) this.city.leaveCar();
+      this.fade(() => { if (this.where === 'world') { this.world?.quit(); this.where = 'city'; this.engine.setScene(this.city); s.pos = at; this.city.setPlay(); } else this.city.warp(at.x, at.z, at.yaw); this.save.write(); });
+      return;
+    }
     if (this.city.driving) this.city.leaveCar();
     sfx('tram'); this.closeMenu();
     { const g = cityGate(id); s.pos = { x: g.x + 3.6, z: g.z, yaw: Math.PI / 2 }; } s.inside = false;

@@ -386,7 +386,10 @@ export const worldDef = (id: string) => WORLDS.find((w) => w.id === id);
 /* Wege zwischen Hauptstadt und Welten: am Kai von Rainbow City steht je Welt ein Tor (durchlaufen, durchfahren),
    draußen vor der Küste liegt je Welt eine Insel mit Leuchtsäule (hinfliegen). Die Welten selbst bilden einen Ring. */
 export const cityGate = (id: string) => ({ x: -88.6, z: 2 + Math.max(0, WORLDS.findIndex((w) => w.id === id)) * 4.5 });
-export const cityIsle = (id: string) => ({ x: -152, z: -56 + Math.max(0, WORLDS.findIndex((w) => w.id === id)) * 28 });
+/** Welten, die als echte Insel nahtlos in der Stadt liegen (Isle.ts): Mittelpunkt in Stadtkoordinaten; die Brücke setzt am Kai (QUAY_X) an */
+export const QUAY_X = -91;
+export const ISLES: Record<string, { x: number; z: number }> = { einhorn: { x: -157, z: -14 } };
+export const cityIsle = (id: string) => { const i = Math.max(1, WORLDS.findIndex((w) => w.id === id)) - 1; return { x: i % 2 ? -150 : -122, z: 72 + Math.floor(i / 2) * 28 }; };
 /** Nachbarwelt im Ring (dir −1 Westen, +1 Osten); ohne 18+ wird die Cruising-Welt übersprungen */
 export function neighbour(id: string, dir: 1 | -1, adult: boolean) {
   const l = WORLDS.filter((w) => adult || !w.adult || w.id === id), i = l.findIndex((w) => w.id === id);
