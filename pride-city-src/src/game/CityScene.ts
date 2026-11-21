@@ -22,6 +22,7 @@ import { Street, type Parked } from './Street';
 import { WORLDS, ISLES, ISLE_BOUNDS, worldDef, cityGate, cityIsle } from './worlds';
 import { Isle } from './Isle';
 import { buildFlitzer } from './flitzer';
+import { buildRingMobil, buildSilhouettes } from './toys';
 import { PLACE_THEMES, houseTheme } from './interiors';
 import { Weather, SKY } from './weather';
 import { CityLife } from './citylife';
@@ -107,6 +108,8 @@ export class CityScene implements GameScene {
     }));
     this.street = new Street(sc, this.world);
     await this.street.build();
+    // Penis-Silhouetten (18+) bzw. Herzen in Park, Himmel, Neon und Graffiti
+    this.sil = buildSilhouettes(sc, this.world.root, this.world.low);
     // Welten als echte Inseln vor dem Kai (nahtlos, Isle.ts), je mit einem Flitzer am Brückentor
     for (const [id, at] of Object.entries(ISLES)) {
       const def = worldDef(id); if (!def) continue;
@@ -297,7 +300,7 @@ export class CityScene implements GameScene {
     let best: typeof this.near = null, bd = 1e9;
     if (this.drive) {
       const curb = this.kerb.nearCurb();
-      this.near = { kind: 'car', id: 'exit', label: this.drive.def.fly ? '🚀 Absteigen' : this.kerb.rider ? `🚗 Aussteigen · ${this.kerb.rider.name} fährt mit` : curb ? `🚗 Aussteigen · 📯 Hupen: ${curb.name} steigt vielleicht ein` : '🚗 Aussteigen' };
+      this.near = { kind: 'car', id: 'exit', label: this.drive.def.fly ? '🚀 Absteigen' : this.drive.def.toy ? '⭕ Absteigen' : this.kerb.rider ? `🚗 Aussteigen · ${this.kerb.rider.name} fährt mit` : curb ? `🚗 Aussteigen · 📯 Hupen: ${curb.name} steigt vielleicht ein` : '🚗 Aussteigen' };
       // im Flug keine Einblendung (verdeckt die Sicht): erst am Boden steht „Absteigen“ da
       const air = !!this.drive.def.fly && this.alt > 1.6;
       this.g.hud.prompt(air ? null : this.near.label); this.g.touch.label(air ? 'Landen' : 'Raus');
@@ -433,6 +436,7 @@ export class CityScene implements GameScene {
       }
       for (const k of [2.2, -2.2, 3.4, -3.4]) { const x = o.position.x + sx * k, z = o.position.z + sz * k; if (walkable(x, z) && !this.world.colliders.some((c) => Math.abs(x - c.x) < c.hx + .4 && Math.abs(z - c.z) < c.hz + .4)) { p.set(x, .1, z); break; } }
       if (this.drive.own) { const sv = this.g.save.data; sv.flags.ownX = Math.round(o.position.x * 10) / 10; sv.flags.ownZ = Math.round(o.position.z * 10) / 10; sv.flags.ownYaw = Math.round(o.rotation.y * 100) / 100; }
+      if (this.drive.def.toy) { this.player.root.position.y = .1; o.rotation.x = o.rotation.z = 0; }
       this.drive.v = 0; this.drive = null; this.parcel = -1;
       this.radioOff(); music('city');
       this.player.root.visible = true; this.player.play('idle');
@@ -453,6 +457,14 @@ export class CityScene implements GameScene {
       this.landing = false; this.g.touch.fly(true);
       hints([['move', 'Lenken & Gas'], ['rise', 'Steigen'], ['sink', 'Sinken'], ['turbo', 'Turbo'], ['a', 'Landen'], ['cam', 'Kamera'], ['y', 'Menü']]);
       toast(`🚀 ${this.drive.o.metadata?.adult ? 'Glitzer-Dildo „Big Bertha“' : 'Regenbogen-Rakete'}: lenkt wie ein Auto. ▲ Steigen, ▼ Sinken, A landet. Über die Dächer geht es ab 17 m.`, 4200);
+      return;
+    }
+    if (this.drive.def.toy) {
+      // Einrad-Mobil: du sitzt sichtbar im Ring, fährt sich wie ein Auto (ohne Radio, kein Diebstahl)
+      this.syncFlyer(); this.player.play('sit'); sfx('boing');
+      this.cam.dist = Math.max(this.cam.dist, 8); this.cam.tYaw = this.drive.o.rotation.y + Math.PI;
+      hints([['move', 'Lenken & Gas'], ['turbo', 'Turbo'], ['a', 'Aussteigen'], ['cam', 'Kamera'], ['y', 'Menü']]);
+      toast(this.drive.o.metadata?.adult ? '⭕ Penisring-Mobil: Ein Rad, viel Glitzer, das Vibro-Ei brummt mit. Lenkt wie ein Auto.' : '🍩 Donut-Mobil: Ein Rad, viel Zuckerguss. Lenkt wie ein Auto.', 4200);
       return;
     }
     if (!this.drive.own) this.combat.enterCar(); sfx('door'); setTimeout(() => sfx('engine'), 250);
@@ -486,6 +498,8 @@ export class CityScene implements GameScene {
   }
   /** Flughöhe auf dem Flitzer */
   private alt = 0;
+  /** Silhouetten-Deko: eine Fassung je 18+ sichtbar */
+  private sil: { adult: TransformNode; safe: TransformNode } | null = null;
   /** Steiggeschwindigkeit (geglättet) und automatischer Landeanflug */
   private climb = 0;
   private landing = false;
@@ -493,10 +507,12 @@ export class CityScene implements GameScene {
   private syncFlyer() {
     const adult = !!this.g.save.data.settings.adult;
     for (const f of this.street.parked) if (f.def.fly && f.o.metadata?.adult !== adult) { buildFlitzer(this.scene, f.o, adult); f.o.getChildMeshes().find((m) => m.name === 'flame')?.setEnabled(false); }
+    for (const f of this.street.parked) if (f.def.toy && f.o.metadata?.adult !== adult) { buildRingMobil(this.scene, f.o, adult); f.name = adult ? 'Penisring-Mobil' : 'Donut-Mobil'; }
+    if (this.sil) { this.sil.adult.setEnabled(adult); this.sil.safe.setEnabled(!adult); }
   }
   private moveCar(dt: number) {
     const c = this.drive!, o = c.o, inp = this.g.engine.input, fly = !!c.def.fly;
-    if (!fly) { if (inp.pressed('tabR')) this.radio(1); else if (inp.pressed('tabL')) this.radio(-1); }
+    if (!fly && !c.def.toy) { if (inp.pressed('tabR')) this.radio(1); else if (inp.pressed('tabL')) this.radio(-1); }
     const thr = Math.abs(inp.move.y) > .08 ? inp.move.y : 0, steer = Math.abs(inp.move.x) > .08 ? inp.move.x : 0;
     const st = stats(c.def, c.own ? tuneLevel(this.g.save.data) : 0), max = inp.held('sprint') ? st.turbo : st.max;
     // Flitzer: lenkt wie ein Auto (Stick/WASD = Gas, Bremse, Lenken; Turbo = schneller), dazu Steigen/Sinken.
@@ -533,6 +549,13 @@ export class CityScene implements GameScene {
       const roll = -steer * .32 * clamp(c.v / 8, -1, 1), pitch = -clamp(this.climb / 8, -1, 1) * .22;
       o.rotation.z += (roll - o.rotation.z) * Math.min(1, dt * 6); o.rotation.x += (pitch - o.rotation.x) * Math.min(1, dt * 6);
       if (this.landing && this.alt <= .8) { this.landing = false; this.toggleCar('force'); return; }
+    }
+    if (c.def.toy) {
+      // das Rad rollt mit dem Tempo, das Mobil legt sich in die Kurve, das Vibro-Ei brummt
+      const wh = o.getChildTransformNodes(true).find((n) => n.name === 'wheel'); if (wh) wh.rotation.x += c.v * dt / 1.25;
+      o.rotation.z += (-steer * .18 * clamp(c.v / 8, -1, 1) - o.rotation.z) * Math.min(1, dt * 6);
+      const egg = o.getChildMeshes(true).find((m) => m.name === 'egg'); if (egg) egg.position.x = Math.abs(c.v) > .5 ? Math.sin(performance.now() / 18) * .03 : 0;
+      this.player.root.position.y = .55; this.player.root.rotation.y = o.rotation.y;
     }
     if (fly) { this.player.root.position.y -= .35; this.player.root.rotation.y = o.rotation.y; const fl = o.getChildMeshes().find((m) => m.name === 'flame'); if (fl) { fl.setEnabled(true); fl.scaling.y = .8 + Math.sin(performance.now() / 33) * .25; } }
     if (Math.abs(c.v) > 1) this.cam.tYaw += (o.rotation.y + Math.PI - this.cam.tYaw) * Math.min(1, dt * 2.5);
