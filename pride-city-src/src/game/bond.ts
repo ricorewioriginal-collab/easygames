@@ -41,6 +41,7 @@ export const GIFTS: Gift[] = [
 /** Was wer besonders mag (passt zu den Profilen in social.ts) */
 export const LOVES: Record<string, string[]> = {
   kai: ['kochbuch', 'vinyl'], luca: ['vinyl', 'karten'], malik: ['buch', 'schoko'], robin: ['pflanze', 'buch'], ella: ['pflanze', 'karten', 'blumen'], jonas: ['kochbuch', 'laufschuhe', 'vinyl'],
+  sami: ['kochbuch', 'buch'], noa: ['karten', 'vinyl'], henri: ['pflanze', 'buch', 'blumen'], aylin: ['schoko', 'karten'], ash: ['pflanze', 'schoko'], mateo: ['kochbuch', 'karten'],
 };
 export function giveGift(s: SaveData, p: Profile, g: Gift): { why?: string; text?: string; up?: string | null } {
   if (s.flags[k(p.id, 'gift')] === s.day) return { why: `${p.name} hat heute schon etwas von dir bekommen.` };
@@ -139,4 +140,25 @@ export function bondTick(s: SaveData): string[] {
     }
   }
   return out;
+}
+
+/* ---------- Folgen eines Dates (Rainbow Match) ---------- */
+/** Was nach einem Date passiert: Gerede im Feed, offiziell zusammen, ehrliche Absage. Liefert eine Meldung für das HUD. */
+export function dateFolge(s: SaveData, id: string, pts: number, up: boolean): { title: string; text: string; good: boolean } | null {
+  const p = PROFILES.find((x) => x.id === id); if (!p) return null;
+  const st = dateRec(s, id).st;
+  if (!up && pts <= 1) {
+    // ehrlich statt Ghosting: Absage per Nachricht, Match bleibt als Kontakt
+    post(s, p.name, 'Ich glaube, zwischen uns passt es nicht. Danke für den Abend und alles Gute! 🌈');
+    return { title: `💬 ${p.name} schreibt ehrlich ab`, text: 'Kein Ghosting: Eine kurze, freundliche Absage ist fairer als Schweigen. Das gilt auch für dich.', good: false };
+  }
+  if (!up) return null;
+  if (st === 1) { post(s, 'Mo', `Hab dich mit ${p.name} gesehen. 👀 Ich sag nix! (Ich sag es allen.)`); return { title: '👀 Die Stadt redet', text: `Mo hat euch gesehen. Im Feed wird schon über dich und ${p.name} getuschelt.`, good: true }; }
+  if (st === 2) { touch(s, id); return { title: `💌 ${p.name} denkt an dich`, text: `${p.name} schickt dir ab jetzt jeden Tag Nachrichten. Antworten bringt Nähe.`, good: true }; }
+  if (st === 3) {
+    if (!s.flags['bd_' + id + '_official']) { s.flags['bd_' + id + '_official'] = s.day; s.rep += 1; }
+    post(s, p.name, 'Offiziell: Wir sind zusammen. 💞'); 
+    return { title: `💞 ${p.name} und du: offiziell zusammen`, text: 'Ihr könnt jetzt zusammenziehen (Handy, Familie) oder euch mit einem Ring verloben.', good: true };
+  }
+  return null;
 }

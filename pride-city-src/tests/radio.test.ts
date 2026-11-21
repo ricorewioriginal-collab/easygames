@@ -4,7 +4,7 @@ import { STATIONS, stationOf } from '../src/engine/Radio';
 describe('Autoradio', () => {
   it('hat die 13 echten Sender, vier Stadt-Sender und „aus“', () => {
     expect(STATIONS.filter((s) => s.slug).length).toBe(13);
-    expect(STATIONS.filter((s) => s.song).length).toBe(4);
+    expect(STATIONS.filter((s) => s.song).length).toBe(5);
     expect(new Set(STATIONS.map((s) => s.id)).size).toBe(STATIONS.length);
     expect(STATIONS[STATIONS.length - 1].id).toBe('off');
   });
