@@ -726,6 +726,7 @@ export function createRenderer(T, canvas, opts) {
     tmpM.decompose(mesh.scaling, mesh.rotationQuaternion, mesh.position);
   }
   function sameM(a, b) { for (let i = 0; i < 16; i++) if (a[i] !== b[i]) return false; return true; }
+  const matNew = m => matFor(m, 'std');
   function syncEnt(e, o) {
     if (e.type === 'none') return e;
     if (e.type === 'light') { syncLight(e, o); return e; }
@@ -743,15 +744,14 @@ export function createRenderer(T, canvas, opts) {
       if (!e.sprite) {
         // Geometrie verändert → Vorlage neu befüllen
         const v = verOf(o.geometry); if (v !== ms.ver) { reGeo(ms.mesh, o.geometry, false); ms.ver = v; }
-        matFor(o.material, 'std');
-        if (Array.isArray(o.material)) o.material.forEach(x => matFor(x, 'std'));
+        if (Array.isArray(o.material)) o.material.forEach(matNew); else matNew(o.material);
         if (ms.mesh.isVisible) ms.mesh.isVisible = false;
-      } else matFor(o.material, 'std');
+      } else matNew(o.material);
     } else if (e.pts) { if (verOf(e.geo) !== e.ver) uploadPoints(e); matFor(o.material, 'points'); }
     else if (e.sky) { matFor(o.material, 'sky'); }
     else {
       const v = verOf(o.geometry); if (v !== e.ver) { reGeo(mesh, o.geometry, !!e.skin); e.ver = v; }
-      if (Array.isArray(o.material)) o.material.forEach(x => matFor(x, 'std')); else matFor(o.material, 'std');
+      if (Array.isArray(o.material)) o.material.forEach(matNew); else matNew(o.material);
     }
     // Lage
     if (e.sprite) {
@@ -766,8 +766,9 @@ export function createRenderer(T, canvas, opts) {
       syncSkin(e, o);
     } else if (!sameM(mw, e.mw)) {
       e.mw.set(mw);
-      if (e.frz) { e.frz = false; mesh.unfreezeWorldMatrix(); }
-      setTRS(mesh, mw);
+      // Weltmatrix direkt übernehmen und festhalten: kein Zerlegen hier und kein Zusammensetzen in Babylon
+      const wm = e.wm || (e.wm = new Matrix()); Matrix.FromArrayToRef(mw, 0, wm);
+      mesh.freezeWorldMatrix(wm); mesh._worldMatrixDeterminantIsDirty = true; e.frz = true;
       e.still = 0; e.t0 = now; if (e.type === 'inst') settle.add(e);
     } else if (!e.frz && (e.still > 30 || (e.still > 5 && now - e.t0 > 700)) && !mesh.billboardMode && (e.frz = true)) mesh.freezeWorldMatrix();   // steht still: Babylon rechnet Lage und Box nicht mehr nach
     else if (BATCH && e.type === 'inst' && !e.sprite && ++e.still >= BATCH_K && e.still % BATCH_K === 0 && now - e.t0 >= BATCH_MS && batchable(o) && matsStill(o)) cands.push(e);
