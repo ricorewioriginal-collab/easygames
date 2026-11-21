@@ -1,5 +1,6 @@
 /* HUD in der Stadt: Kapitel-Ziel, Geld/Ruf/Uhrzeit, Aktions-Hinweis, Markierungen über Zielen. */
 import { el, esc, glyph } from './ui';
+import { sfx, buzz } from '../engine/Audio';
 
 const NEED_ICONS: Array<[string, string]> = [['energy', '⚡'], ['hunger', '🍝'], ['hygiene', '🚿'], ['social', '💬'], ['fun', '🎉']];
 
@@ -129,7 +130,14 @@ export class Hud {
   }
   radarOn(on: boolean) { this.el.querySelector<HTMLElement>('.radar')!.style.display = on ? '' : 'none'; }
   show(on: boolean) { this.el.classList.toggle('hidden', !on); }
+  private lastGoal = '';
   goal(ch: string, title: string, sub = '') {
+    // neues Ziel: kurz aufleuchten lassen, Ton und Vibration (nicht beim ersten Anzeigen)
+    const key = ch.includes('Drinnen') || ch === 'Zuhause' ? sub.replace(/^Ziel: /, '') : title;
+    if (key !== this.lastGoal) {
+      if (this.lastGoal && key && key !== 'Schau dich um.') { this.goalEl.classList.remove('new'); void this.goalEl.offsetWidth; this.goalEl.classList.add('new'); sfx('ok'); buzz([18, 40, 18]); }
+      this.lastGoal = key;
+    }
     this.goalEl.innerHTML = `<div class="ch">${esc(ch)}</div><b>${esc(title)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}`;
   }
   stats(items: string[]) { this.statsEl.innerHTML = items.map((s) => `<span class="chip">${esc(s)}</span>`).join(''); }
