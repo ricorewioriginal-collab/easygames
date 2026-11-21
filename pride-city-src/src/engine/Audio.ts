@@ -161,6 +161,30 @@ export function nightSounds() {
   seq.forEach(([k, d]) => setTimeout(() => sfx(k), d * 1000));
 }
 
+/** Darkroom-Atmo (18+, nur Andeutung): gedämpfter Bass von nebenan, Flüstern, Seufzen und Atmen als gefilterte
+    Rausch-Wellen, ab und zu ein Kichern. Läuft, solange alive() stimmt. */
+export function darkAtmo(alive: () => boolean) {
+  const tick = () => {
+    if (!alive()) return;
+    if (ctx) {
+      const t = ctx.currentTime;
+      tone(33, t, .35, 'sine', .22, sfxBus, -4); tone(33, t + .5, .35, 'sine', .18, sfxBus, -4);
+      const r = Math.random();
+      if (r < .45) { // tiefes Ausatmen/Seufzen: weich anschwellendes Rauschen um 500–900 Hz
+        const d = .7 + Math.random() * .6, f = 500 + Math.random() * 400, n0 = Math.ceil(ctx.sampleRate * d), b = ctx.createBuffer(1, n0, ctx.sampleRate), a = b.getChannelData(0);
+        for (let i = 0; i < n0; i++) a[i] = Math.random() * 2 - 1;
+        const s = ctx.createBufferSource(), fl = ctx.createBiquadFilter(), v = ctx.createGain(); s.buffer = b; fl.type = 'bandpass'; fl.frequency.setValueAtTime(f, t + .9); fl.frequency.linearRampToValueAtTime(f * .7, t + .9 + d); fl.Q.value = 4;
+        v.gain.setValueAtTime(0, t + .9); v.gain.linearRampToValueAtTime(.09, t + .9 + d * .35); v.gain.linearRampToValueAtTime(0, t + .9 + d);
+        s.connect(fl); fl.connect(v); v.connect(sfxBus); s.start(t + .9);
+        tone(57 + Math.floor(Math.random() * 5), t + .9, d * .8, 'sine', .018, sfxBus, -3);   // leiser Stimmton darunter
+      } else if (r < .6) sfx('giggle');
+      else if (r < .72) sfx('kiss');
+    }
+    setTimeout(tick, 1000 + Math.random() * 700);
+  };
+  tick();
+}
+
 /* ---------- Klavier: Noten aus Klavierlicht abspielen (Melodie + Begleitung), zeitgenau im Voraus geplant ---------- */
 function piano(n: number, t: number, d: number, g: number, bus: GainNode) {
   if (!ctx) return;

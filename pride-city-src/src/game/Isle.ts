@@ -2,6 +2,7 @@
    und Aufträge wie in WorldScene, aber gebaut in die Stadtszene und über eine Brücke vom Kai aus erreichbar. Gelaufen,
    gefahren und geflogen wird mit der Figur und den Fahrzeugen der Stadt; hier liegen nur Aufbau und Geschichte.
    Alles rechnet in Inselkoordinaten (Tor im Süden = +z); die Insel ist gedreht, ihr Süden zeigt zur Stadt. */
+import { stranger } from './flirt';
 import { Vector3, Mesh, Node3, type Scene, type PBRMaterial } from '../engine/bjs';
 import { box, cyl, sphere, torus, planeZ, pbr, glow, canvasTex } from '../engine/geo';
 import { instance } from '../engine/Assets';
@@ -398,6 +399,13 @@ export class Isle {
     if (!ref.driving) {
       let bd = 9;
       for (const f of this.folk) { const dd = Math.hypot(f.a.root.position.x - px, f.a.root.position.z - pz); if (dd < 2.4 && dd < bd) { bd = dd; this.label = (f.host ? '⭐ ' : '💬 ') + f.d.name; this.act = () => this.talk(f); } }
+      if (!this.label) for (const w of this.walkers) {
+        if (Math.hypot(w.a.root.position.x - px, w.a.root.position.z - pz) > 1.7) continue;
+        const st = stranger('isle:' + d.id + ':' + this.walkers.indexOf(w), w.a.avatar.id);
+        this.label = '💬 ' + st.name;
+        this.act = () => { w.halt = true; w.a.play('talk'); w.a.root.rotation.y = Math.atan2(px - w.a.root.position.x, pz - w.a.root.position.z); g.strangerTalk(st, { actor: w.a, look: { ...w.a.look, outfit: 'clothed' } }, () => { w.halt = false; w.a.play('walk', .2, .72); }); };
+        break;
+      }
       if (!this.label) for (const sp of d.spots || []) { if (Math.hypot(sp.x - px, sp.z - pz) < (sp.r || 2)) { this.label = sp.label; this.act = () => g.interiorAct(sp); break; } }
       if (!this.label) for (const dr of this.doors) if (Math.hypot(dr.x - px, dr.z - pz) < 1.7) {
         this.label = dr.label;

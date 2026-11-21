@@ -13,7 +13,8 @@ export type Act =
   | { k: 'club' } | { k: 'deal' }                  // eigenen Club führen bzw. kaufen (clubui.ts)
   | { k: 'annex'; room: string }                   // Anbau des Zuhauses (house.ts)
   | { k: 'drag'; what: 'look' | 'battle' }
-  | { k: 'wagen' };                                // eigener CSD-Festwagen (festwagen.ts)        // Drag-Karriere im Haus Vega (drag.ts)
+  | { k: 'wagen' }
+  | { k: 'darkroom' };                             // Darkroom hinter dem Club (18+, flirt.ts)                                // eigener CSD-Festwagen (festwagen.ts)        // Drag-Karriere im Haus Vega (drag.ts)
 
 /** Möbel: KayKit-Modell (gltf) oder Platzhalter-Form (box/screen/neon) */
 export type Item =
@@ -46,7 +47,8 @@ export const PLACE_THEMES: Record<string, Theme> = {
     spots: [menu('☕ Bestellen'), doIt('coffee', '☕ Kaffee am Tisch', -3, 1.4, { cost: 3, min: 20, d: { energy: 12, social: 6 }, msg: 'Cappuccino mit Herz-Schaum. Energie +12', sfx: 'pour' }), gl('dates', '🎲 Date-Roulette', 3, 1.4)] },
   club: { id: 'club', title: 'Club Prisma', icon: '🪩', floor: 0x120c22, wall: 0x241640, light: 0xb56bff, music: 'club',
     items: [...dancefloor(0xff3b8d, 0x3bd1ff), { box: [3, 1.1, .9], c: 0x2a1650, x: 0, z: -3.6, col: true, e: .3 }, { box: [2.4, 1.1, .8], c: C.dark, x: 4.4, z: 1.6, col: true }, { neon: 'PRISMA', c: '#b56bff', x: 0, z: -4.38, y: 3 }],
-    spots: [{ id: 'dance', label: '🪩 Tanz-Battle', x: 0, z: .8, r: 2, act: { k: 'dance' } }, { id: 'menu', label: '🍸 Bar und Club', x: 4.4, z: .6, r: 1.8, act: { k: 'menu' } }, gl('rave', '🌈 Regenbogen-Rave', -4, 1), gl('club', '🎛️ Clubnacht-Manager (DJ-Pult)', 0, -2.6)] },
+    spots: [{ id: 'dance', label: '🪩 Tanz-Battle', x: 0, z: .8, r: 2, act: { k: 'dance' } }, { id: 'menu', label: '🍸 Bar und Club', x: 4.4, z: .6, r: 1.8, act: { k: 'menu' } }, gl('rave', '🌈 Regenbogen-Rave', -4, 1), gl('club', '🎛️ Clubnacht-Manager (DJ-Pult)', 0, -2.6),
+      { id: 'darkroom', label: '🖤 Darkroom (18+)', x: 5, z: -3.3, r: 1.4, act: { k: 'darkroom' } }] },
   center: { id: 'center', title: 'Regenbogenhaus', icon: '🌈', floor: 0xd9c7a6, wall: 0xfff0fb, light: 0xffd6f4,
     items: [{ m: 'home/couch_pillows', x: -3, z: 2.6, r: Math.PI, col: true }, { m: 'home/armchair_pillows', x: -.6, z: 1.6, r: -Math.PI / 2, col: true }, { m: 'home/rug_oval_A', x: -2.4, z: 1.6 }, ...shelves().slice(0, 2), { box: [2.6, 1, .8], c: C.wood, x: 3.4, z: -3.4, col: true }, { neon: 'REGENBOGENHAUS', c: '#ff6ad5', x: 0, z: -4.38, y: 3.1 }],
     spots: [{ id: 'menu', label: '🌈 Info und Angebote', x: 3.4, z: -2.6, r: 2, act: { k: 'menu' } }, doIt('kreis', '💬 Gesprächskreis', -3, 1.4, { min: 60, d: { social: 18, fun: 6 }, msg: 'Eine Stunde reden, lachen, zuhören. Kontakte +18' }), gl('quiz', '❓ Klischee-Quiz', 0, -2)] },
@@ -160,6 +162,11 @@ Object.assign(PLACE_THEMES, {
     spots: [doIt('bagel', '🥯 Bagel mit allem (5 €)', -3.4, 2.8, { cost: 5, min: 10, d: { hunger: 30, fun: 3 }, msg: 'Rund um die Uhr frisch belegt. Hunger +30', sfx: 'pour' }),
       doIt('kaffee', '☕ Kaffee zum Mitnehmen (2 €)', 4.2, -.6, { cost: 2, min: 5, d: { energy: 14 }, msg: 'Schwarz wie die Nacht über der Hochstadt. Energie +14', sfx: 'pour' })] },
 } as Record<string, Theme>);
+
+/** Darkroom hinter Club Prisma (18+): rotes Licht, Nebel, Silhouetten, Flüstern – alles nur angedeutet */
+export const DARKROOM: Theme = { id: 'darkroom', title: 'Darkroom im Prisma', icon: '🖤', floor: 0x080406, wall: 0x0e0608, light: 0xff1030, music: 'club', adult: true,
+  items: [{ box: [1.2, .5, 2.2], c: 0x14080a, x: -4.6, z: -2.4, col: true }, { box: [2.2, .5, 1], c: 0x14080a, x: 3.8, z: 3.2, col: true }, { neon: 'SAFER SEX IST SEXY', c: '#ff2040', x: 0, z: -4.38, y: 2.9, w: 4.6 }],
+  spots: [{ id: 'automat', label: '🎈 Kondomautomat (1 €)', x: 4.9, z: 1.6, r: 1.3, act: { k: 'menu' } }] };
 
 /** Weitere Häuser der Stadt: Orte und Bewohner aus Gay Life! (jedes Wohnhaus bekommt fest einen davon) */
 const R = (who: string, color: string, lines: string[], extra: Spot[] = []): Theme => ({

@@ -8,6 +8,7 @@ import { Actor, streetLook, playerLook, WALK_MPS, RUN_MPS, type Look } from './A
 import { World, walkable, isLand } from './World';
 import type { CarDef } from './vehicles';
 import { history } from './faden';
+import { stranger } from './flirt';
 import { nachtBought, nachtParty } from './nacht';
 import { pcEvents } from './hooks';
 import { NPCS, CHAPTERS, goal, talk, poi as storyPoi, marks, hidden, storyTick, chapterLabel, type NpcDef, type StoryCtx } from './story';
@@ -277,6 +278,7 @@ export class CityScene implements GameScene {
   refreshHud() {
     if (this.mode !== 'play' && this.g.where === 'city') return;
     const s = this.g.save.data, gl = goal(s);
+    this.g.stiCheck();
     const paid = collect(s);
     if (paid) { sfx('coin'); this.g.hud.banner('💼 Einnahmen deines Imperiums', `+${paid} € aus deinen Geschäften`, 'good', 3600); collectNotes.slice(0, 3).forEach((n, i) => setTimeout(() => toast(n), 3800 + i * 2600)); this.g.save.write(); }
     for (const [i, n] of bondTick(s).entries()) setTimeout(() => toast(n), 1200 + i * 2600);
@@ -342,7 +344,7 @@ export class CityScene implements GameScene {
       const d = Vector3.Distance(n.a.root.position, p);
       if (d < 2.6 && d < bd) { bd = d; best = { kind: 'npc', id: n.def.id, label: 'Sprechen mit ' + n.def.name }; }
     }
-    const icon: Record<string, string> = { worker: '🏮 ', police: '🚓 ', fire: '🚒 ', medic: '🚑 ', security: '🛡️ ', chef: '👩‍🍳 ', courier: '📦 ' };
+    const icon: Record<string, string> = { worker: '🏮 Escort · ', curb: '💋 Laternenmeile · ', police: '🚓 ', fire: '🚒 ', medic: '🚑 ', security: '🛡️ ', chef: '👩‍🍳 ', courier: '📦 ' };
     if (!best) { const st = this.street.near(p); if (st) best = { kind: 'street', id: String(this.street.people.indexOf(st)), label: (icon[st.kind] || '💬 ') + st.name }; }
     if (!best) { const car = this.street.nearCar(p); if (car) best = { kind: 'car', id: String(this.street.parked.indexOf(car)), label: `${car.def.icon} Einsteigen: ${car.name}${car.own ? ' (dein Wagen)' : ''}` }; }
     if (!best) { const tc = this.street.nearTraffic(p); if (tc) best = { kind: 'car', id: 't' + this.world.cars.indexOf(tc), label: `🚗 Ausleihen: ${this.street.trafficDef(tc).name}` }; }
@@ -411,7 +413,9 @@ export class CityScene implements GameScene {
       this.player.play('idle');
       const end = () => { n.talking = false; n.a.play(n.anim || 'idle'); };
       if (n.kind === 'worker') { this.g.booking(n.id!); setTimeout(end, 4000); return; }
-      this.g.dialog.say([{ who: n.name, color: n.color, text: this.street.line(n, s.day) }], end);
+      // alle Erwachsenen sind ansprechbar: Plaudern, mit 18+ auch Flirten und mehr (flirtui.ts)
+      const rb = n.a.avatar.id, generic = /^(Szene-Mensch|Verliebte?r?|Passant|Spaziergänger|Nachbar|Tourist|Studentin|Geschäftsmann)/.test(n.name);
+      this.g.strangerTalk(stranger('street:' + this.near.id + ':' + rb, rb, generic ? undefined : n.name), { actor: n.a, look: { ...n.a.look, outfit: 'clothed' }, opening: this.street.line(n, s.day), kid: n.a.avatar.job === 'kid' }, end);
       change(s, { social: 3 });
       return;
     }

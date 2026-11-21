@@ -43,5 +43,9 @@ export interface PcEvents extends Record<string, unknown> {
   paradeWagen: { place: number; score: number; money: number; rep: number; motto: string };
   /** Eigene Radiosendung „Rainbow Talk“ auf Pride FM gesendet (pridefm.ts) */
   radioSendung: { points: number; listeners: number; money: number };
+  /** One-Night-Stand mit einer fremden Person (flirtui.ts, 18+): Bewertung 1–5, ohne Kondom (abgesprochen), im Darkroom */
+  oneNight: { name: string; stars: number; bare: boolean; dark: boolean };
+  /** Hausparty gefeiert (adult = mit geschlossener Tür, nur angedeutet) */
+  hausparty: { host: string; adult: boolean };
 }
 export const pcEvents = new Emitter<PcEvents>();
