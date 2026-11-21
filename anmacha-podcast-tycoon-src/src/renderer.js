@@ -885,13 +885,27 @@ export function createRenderer(T, canvas, opts) {
     IM.copy(parent.matrixWorld).invert();
     const root = { o: parent, meshes: [], mw: new Float64Array(16).fill(NaN), on: null, gone: 0 };
     let n = 0;
+    // Schlicht lackierte Teile (ohne Bild, wenig Leuchten) einer Gegend teilen sich EIN Mesh: Farbe, Leuchten, Metall/Rauheit je Ecke (BlockVertexPlugin)
+    const out = [], vg = new Map();
+    for (const list of lists) {
+      if (!list.length) continue;
+      const m = list[0].material, o0 = list[0];
+      if (!BASIC[m.type] && perVertex(m) && !m.vertexColors && !m.map && m.opacity >= 1 && !m.transparent && m.depthTest !== false && !o0.renderOrder) {
+        RM.multiplyMatrices(IM, o0.matrixWorld); const e = RM.elements;
+        const k = msig(m) + '|' + (o0.castShadow ? 1 : 0) + (o0.receiveShadow ? 1 : 0) + '|' + Math.floor(e[12] / 48) + ',' + Math.floor(e[14] / 48);
+        let g = vg.get(k); if (!g) { g = []; g.__pv = msig(m); vg.set(k, g); out.push(g); }
+        for (const o of list) g.push(o);
+      } else out.push(list);
+    }
+    lists = out;
     for (const list of lists) {
       if (!list.length) continue; n += list.length;
       let nv = 0, ni = 0; const ds = [];
       for (const o of list) { const d = geoData(o.geometry); if (!d) continue; ds.push([o, d]); nv += d.n; ni += d.idx.length; }
       if (!ds.length) continue;
-      const m = list[0].material, vc = !!m.vertexColors;
+      const m = list[0].material, pv = list.__pv, vc = !!m.vertexColors || !!pv;
       const pos = new Float32Array(nv * 3), nor = new Float32Array(nv * 3), uvA = ds.some(([, d]) => d.uv) ? new Float32Array(nv * 2) : null, col = vc ? new Float32Array(nv * 4) : null;
+      const ve = pv ? new Float32Array(nv * 3) : null, vr = pv ? new Float32Array(nv * 2) : null, ranges = pv ? [] : null;
       const idx = nv > 65535 ? new Uint32Array(ni) : new Uint16Array(ni);
       let vo = 0, io = 0;
       for (const [o, d] of ds) {
@@ -907,17 +921,20 @@ export function createRenderer(T, canvas, opts) {
           if (uvA) { uvA[(vo + i) * 2] = d.uv ? d.uv[i * 2] : 0; uvA[(vo + i) * 2 + 1] = d.uv ? d.uv[i * 2 + 1] : 0; }
           if (col) { const k = (vo + i) * 4; if (d.col) { col[k] = d.col[i * 4]; col[k + 1] = d.col[i * 4 + 1]; col[k + 2] = d.col[i * 4 + 2]; col[k + 3] = d.col[i * 4 + 3]; } else col[k] = col[k + 1] = col[k + 2] = col[k + 3] = 1; }
         }
+        if (pv) { ranges.push([o.material, vo, d.n]); paintV(o.material, col, ve, vr, vo, d.n); }
         const I = d.idx;
         if (det < 0) for (let t = 0; t + 2 < I.length; t += 3) { idx[io + t] = I[t] + vo; idx[io + t + 1] = I[t + 2] + vo; idx[io + t + 2] = I[t + 1] + vo; }
         else for (let t = 0; t < I.length; t++) idx[io + t] = I[t] + vo;
         vo += d.n; io += I.length;
       }
       const mesh = new Mesh('bau', scene); mesh.isPickable = false;
+      if (pv) { mesh.setVerticesData('blkE', ve, true, 3); mesh.setVerticesData('blkR', vr, true, 2); mesh.__v = { col, ve, vr }; for (const r of ranges) { let l = vRanges.get(r[0]); if (!l) vRanges.set(r[0], l = []); l.push([mesh, r[1], r[2]]); } }
       mesh.setVerticesData(VertexBuffer.PositionKind, pos, false, 3); mesh.setVerticesData(VertexBuffer.NormalKind, nor, false, 3);
       if (uvA) mesh.setVerticesData(VertexBuffer.UVKind, uvA, false, 2);
-      if (col) { mesh.setVerticesData(VertexBuffer.ColorKind, col, false, 4); mesh.useVertexColors = true; mesh.hasVertexAlpha = false; }
+      if (col) { mesh.setVerticesData(VertexBuffer.ColorKind, col, !!pv, 4); mesh.useVertexColors = true; mesh.hasVertexAlpha = false; }
       mesh.setIndices(idx, nv);
-      mesh.material = matFor(m, 'std'); mesh.receiveShadows = !!list[0].receiveShadow;
+      if (pv) { mesh.__cm = chunkMat(pv, m); mesh.material = mesh.__cm.bm; for (const r of ranges) matFor(r[0], 'std'); } else mesh.material = matFor(m, 'std');
+      mesh.receiveShadows = !!list[0].receiveShadow;
       const grp = m.depthTest === false ? 2 : 1; mesh.renderingGroupId = grp; if (list[0].renderOrder) mesh.alphaIndex = list[0].renderOrder;
       mesh.rotationQuaternion = new Quaternion(); mesh.__cs = !!list[0].castShadow; mesh.__m = m;
       if (mesh.__cs) for (const l of shadowLights) l.sg.addShadowCaster(mesh, false);
@@ -929,11 +946,29 @@ export function createRenderer(T, canvas, opts) {
     R.stats.baked = (R.stats.baked || 0) + n;
     return n;
   };
+  // Farbe/Leuchten/Metall/Rauheit eines Materials in die Ecken eines gemeinsamen Meshes schreiben
+  const vRanges = new Map();   // Material → [[Mesh, Start, Anzahl]]
+  function paintV(m, col, ve, vr, off, n) {
+    const c = m.color || WHITE, em = m.emissive || BLACK, ei = m.emissiveIntensity != null ? m.emissiveIntensity : 1, met = m.metalness || 0, ro = roughOf(m);
+    for (let i = off; i < off + n; i++) { col[i * 4] = c.r; col[i * 4 + 1] = c.g; col[i * 4 + 2] = c.b; col[i * 4 + 3] = 1; ve[i * 3] = em.r * ei; ve[i * 3 + 1] = em.g * ei; ve[i * 3 + 2] = em.b * ei; vr[i * 2] = met; vr[i * 2 + 1] = ro; }
+  }
+  function repaintV(m) {
+    const l = vRanges.get(m); if (!l) return;
+    const done = new Set();
+    for (const [mesh, off, n] of l) { if (mesh.isDisposed()) continue; const v = mesh.__v; paintV(m, v.col, v.ve, v.vr, off, n); done.add(mesh); }
+    for (const mesh of done) { const v = mesh.__v; mesh.updateVerticesData(VertexBuffer.ColorKind, v.col); mesh.updateVerticesData('blkE', v.ve); mesh.updateVerticesData('blkR', v.vr); }
+  }
+  function disposeNative(m) {
+    natives.delete(m); for (const l of shadowLights) l.sg.removeShadowCaster(m, false);
+    if (m.__cm) releaseChunkMat(m.__cm);
+    if (m.__v) for (const [mat, l] of vRanges) { const k = l.filter(r => r[0] !== m); if (!k.length) vRanges.delete(mat); else if (k.length !== l.length) vRanges.set(mat, k); }
+    m.dispose(false, false);
+  }
   // pro Bild: nur die (wenigen) Wurzeln prüfen – gezeigt, wenn ihre Szene gerade gezeichnet wird
   function syncNative(sc) {
     for (let i = nroots.length - 1; i >= 0; i--) {
       const r = nroots[i]; let top = r.o, vis = true; while (top.parent) { if (top.visible === false) vis = false; top = top.parent; } if (top.visible === false) vis = false;
-      if (!top.isScene) { if (++r.gone > 600) { for (const m of r.meshes) { natives.delete(m); for (const l of shadowLights) l.sg.removeShadowCaster(m, false); m.dispose(false, false); } nroots.splice(i, 1); } else if (r.on) { r.on = false; for (const m of r.meshes) m.setEnabled(false); candDirty = true; } continue; }
+      if (!top.isScene) { if (++r.gone > 600) { for (const m of r.meshes) disposeNative(m); nroots.splice(i, 1); } else if (r.on) { r.on = false; for (const m of r.meshes) m.setEnabled(false); candDirty = true; } continue; }
       r.gone = 0;
       const on = vis && top === sc;
       if (on !== r.on) { r.on = on; for (const m of r.meshes) m.setEnabled(on); candDirty = true; }
@@ -1030,7 +1065,7 @@ export function createRenderer(T, canvas, opts) {
     // Materialien (Farben, Leuchten, Leinwände, Videos) und Formen ändern sich ohne Meldung:
     // kürzlich geänderte jedes Bild prüfen, alle übrigen reihum (je Bild ein Achtel)
     const slot = frame & 7;
-    for (const [m, me] of mats) { if (me.f === frame) continue; if (me.hot > frame || ((me.rr = (me.rr | 0) + 1) & 7) === slot) { const c0 = me.chg; matFor(m, me.kind); if (me.chg !== c0 || me.kind !== 'std') me.hot = frame + 120; } }
+    for (const [m, me] of mats) { if (me.f === frame) continue; if (me.hot > frame || ((me.rr = (me.rr | 0) + 1) & 7) === slot) { const c0 = me.chg; matFor(m, me.kind); if (me.chg !== c0 || me.kind !== 'std') me.hot = frame + 120; if (me.chg !== c0 && vRanges.size) repaintV(m); } }
     for (const ms of masters.values()) if (ms.geo && (ms.hot > frame || ((ms.rr = (ms.rr | 0) + 1) & 7) === slot)) { const v = verOf(ms.geo); if (v !== ms.ver) { reGeo(ms.mesh, ms.geo, false); ms.ver = v; ms.hot = frame + 120; } }
     const t3 = performance.now(), k = 0.05, it = R.inc.t; it.marks += ((t1 - t0) - it.marks) * k; it.sync += ((t2 - t1) - it.sync) * k; it.mats += ((t3 - t2) - it.mats) * k;
     // Weggenommenes nach 10 s freigeben (falls es nicht zurückkommt)
