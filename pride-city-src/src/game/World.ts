@@ -25,8 +25,18 @@ export interface Poi { id: string; name: string; icon: string; x: number; z: num
 /** Begehbar: Innenstadt, Kai, Strand und Steg (nicht ins Wasser) */
 /** zusätzliche begehbare Flächen (Inseln und Brücken, Isle.ts) */
 export const extraWalk: Array<(x: number, z: number) => boolean> = [];
+/** Land ohne Brücken (Inselflächen), fürs Boot: unter Brücken hindurch darf es fahren */
+export const landWalk: Array<(x: number, z: number) => boolean> = [];
 export function walkable(x: number, z: number) {
   for (const f of extraWalk) if (f(x, z)) return true;
+  return cityWalk(x, z);
+}
+/** Festes Land fürs Glitzer-Boot: Stadt, Kai, Strand und Inseln, aber keine Inselbrücken */
+export function isLand(x: number, z: number) {
+  for (const f of landWalk) if (f(x, z)) return true;
+  return cityWalk(x, z);
+}
+function cityWalk(x: number, z: number) {
   const lim = HALF - 1;
   if (x > lim) { // Regenbogenbrücke und Hochstadt
     if (x < BRIDGE.x1 - .5) return Math.abs(z) < BRIDGE.hz;
