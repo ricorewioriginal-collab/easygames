@@ -6,6 +6,7 @@ import { Vector3, TransformNode, type Mesh, type FreeCamera, type Scene, clamp, 
 import { planeZ, cyl, ring, glow, canvasTex } from '../engine/geo';
 import { Actor, streetLook, playerLook, WALK_MPS, RUN_MPS, type Look } from './Actor';
 import { World, walkable } from './World';
+import { history } from './faden';
 import { NPCS, CHAPTERS, goal, talk, poi as storyPoi, marks, hidden, storyTick, chapterLabel, type NpcDef, type StoryCtx } from './story';
 import type { Game } from './Game';
 import { radio, STATIONS, stationOf } from '../engine/Radio';
@@ -238,7 +239,7 @@ export class CityScene implements GameScene {
         const done = CHAPTERS[s.chapter - 1], next = CHAPTERS[s.chapter];
         s.chapter++; s.step = 0; g.save.write(); this.refreshHud();
         if (!done) return;
-        g.chapterCard(`Kapitel ${done.n} abgeschlossen`, done.title, sum).then(() => { if (next) g.chapterCard(`Kapitel ${next.n}`, next.title, next.text); });
+        g.chapterCard(`Kapitel ${done.n} abgeschlossen`, done.title, sum).then(() => { if (next) g.chapterCard(`Kapitel ${next.n}`, next.title, next.text).then(() => history(s, 'k' + next.n, (k, x, y) => g.chapterCard(k, x, y))); });
       },
       enterHome: (after) => g.enterHome(after),
       barShift: (done) => g.barShift(done),
@@ -246,6 +247,11 @@ export class CityScene implements GameScene {
       card: (k, t, x) => g.chapterCard(k, t, x),
       roman: (id, game, done) => g.roman(id, game, done),
       mission: (gg) => this.startGig(gg),
+      phone: (lines, done) => {
+        sfx('phone'); setTimeout(() => sfx('phone'), 500);
+        if (!this.drive) this.player.play('phone');
+        g.dialog.say(lines, () => { if (this.player.anim === 'phone') this.player.play('idle'); done?.(); this.refreshHud(); g.save.write(); });
+      },
     };
   }
 
@@ -273,6 +279,7 @@ export class CityScene implements GameScene {
     const at = (p: Vector3, y: number) => new Vector3(p.x, y, p.z);
     if (gl.npc) { const n = this.npcs.find((x) => x.def.id === gl.npc); if (n) out.push({ id: 'g', icon: '⭐', label: n.def.name, pos: at(n.a.root.position, 2.6) }); }
     if (gl.poi) { const p = this.world.pois.find((x) => x.id === gl.poi); if (p) out.push({ id: 'g', icon: '⭐', label: p.name, pos: new Vector3(p.x, 4, p.z) }); }
+    if (gl.isle) { const i = this.isles.find((x) => x.def.id === gl.isle); if (i && !this.isles.some((x) => x.active)) { const [x, z] = i.w(i.def.host.x, i.def.host.z); out.push({ id: 'g', icon: i.def.icon, label: i.def.name, pos: new Vector3(x, 3, z) }); } }
     if (this.gig) { const st = this.gig.g.steps[this.gig.i]; out.push({ id: 'gig', icon: st.icon, label: st.label, pos: new Vector3(st.x, 3, st.z) }); }
     if (this.drive && !this.gig) { const p = this.drive.o.position; for (const r of RACES) if (Math.hypot(r.start[0] - p.x, r.start[1] - p.z) < 90) out.push({ id: 'race' + r.id, icon: '🏁', label: r.name, pos: new Vector3(r.start[0], 3, r.start[1]) }); }
     if (this.kerb?.spot) out.push({ id: 'kerb', icon: '🌙', label: this.kerb.spot.name, pos: new Vector3(this.kerb.spot.x, 3, this.kerb.spot.z) });

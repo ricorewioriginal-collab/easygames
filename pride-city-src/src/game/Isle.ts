@@ -11,6 +11,7 @@ import type { Game } from './Game';
 import type { World } from './World';
 import { extraWalk } from './World';
 import { toast } from '../ui/ui';
+import { isleVia } from './faden';
 import type { Marker } from '../ui/Hud';
 import { change } from './life';
 import { sfx } from '../engine/Audio';
@@ -315,7 +316,7 @@ export class Isle {
       const k = 'visit_' + f.d.name; if (s.flags[k] !== s.day) { s.flags[k] = s.day; change(s, { social: 8, fun: 4 }); hud(); }
       return;
     }
-    if (st === 0) say([...d.host.intro, d.host.ask1], () => { this.setStage(1); hud(); toast(`${d.item.icon} Aufgabe: ${d.item.n} ${d.item.name} sammeln`); });
+    if (st === 0) say([...(isleVia(s, d.id) ? [isleVia(s, d.id)!] : []), ...d.host.intro, d.host.ask1], () => { this.setStage(1); hud(); toast(`${d.item.icon} Aufgabe: ${d.item.n} ${d.item.name} sammeln`); });
     else if (st === 1) say([d.host.ask1, `Es fehlen noch ${this.left()}.`]);
     else if (st === 2) say([d.host.ask2, 'Der Flitzer steht am Brückentor bereit.']);
     else if (st === 3 && this.toldCount() < n) say([d.host.ask3, `Es fehlen noch ${n - this.toldCount()}.`]);
