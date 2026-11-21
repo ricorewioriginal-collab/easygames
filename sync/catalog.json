@@ -8,7 +8,7 @@
   {
    "id": "concrete-pulse",
    "title": "Concrete Pulse – Skate 3D",
-   "desc": "Skateboard-Action in modernem 3D: Fahre durch drei Parks (Hafenkante, Dachgarten, Neonbucht) mit Rampen, Pools, Rails, Ledges und Treppen. Über 30 Flip-, Grab-, Grind- und Manual-Tricks, Drehungen bis 1080, Combos mit Manual-Verbindungen, Gaps und Spezialtricks. Karriere mit 30 Zielen (Punkte, P-U-L-S-E-Buchstaben, versteckte Kassette, Combos, Gaps), Highscore-Lauf, Freies Fahren und Duell für 2 bis 4 Spieler an einem Gerät. 6 eigene Skater mit Werten und Spezialtricks, 8 Boards, eigene Musik. Einfach-Modus, Touch, Maus, Tastatur und Gamecontroller; Offline-PWA und Google-Spielstand.",
+   "desc": "Skateboard-Action in modernem 3D: Fahre durch fünf Parks (Hafenkante, Dachgarten, Neonbucht, Gleisdepot, Trockenkanal) mit Rampen, Pools, Rails, Ledges, Treppen und versteckten Bereichen. Über 40 Flip-, Grab-, Grind-, Lip- und Manual-Tricks, Wallrides und Wallies, Drehungen bis 1080, Combos, Gaps und Spezialtricks. Karriere mit 60 Zielen, Stat-Punkte aus Zielen, grünen Marken und Medaillen, Wettbewerb mit Jury und Medaillen, Highscore-Lauf, Freies Fahren, Duell und S-K-A-T-E für 2 bis 4 Spieler an einem Gerät. Park-Editor mit 16 Bauteilen für bis zu 8 eigene Parks, Replays mit Zeitlupe und drei Kameras. 6 Skater plus eigener Skater im Editor, 11 Boards, eigene Musik. Einfach-Modus, Touch, Maus, Tastatur und Gamecontroller; Offline-PWA und Google-Spielstand.",
    "icon": "🛹",
    "img": "concrete-pulse/card.jpg",
    "bg": "linear-gradient(145deg,#ff5a3c,#7b2cff 55%,#2ec4ff)",
@@ -19,12 +19,13 @@
    },
    "multiplayer": true,
    "guide": {
-    "anleitung": "Concrete Pulse ist ein Skateboard-Spiel in 3D. Du fährst durch drei Parks (Hafenkante, Dachgarten, Neonbucht) und reihst Flips, Grabs, Grinds, Manuals und Drehungen zu Combos aneinander. Eine Combo zählt erst, wenn du sauber landest; Manuals verbinden Tricks über den Boden. In der Karriere erfüllst du in 2-Minuten-Läufen je Park 10 Ziele (Punkte, die Buchstaben P-U-L-S-E, die versteckte Kassette, Combos, Gaps und Sonderaufgaben). 5 Ziele schalten den nächsten Park frei, weitere Ziele neue Skater und Boards. Dazu kommen Highscore-Lauf, Freies Fahren ohne Zeit und das Duell für 2 bis 4 Spieler an einem Gerät. Ist die Spezialleiste voll, kannst du die Spezialtricks deines Skaters zeigen.",
+    "anleitung": "Concrete Pulse ist ein Skateboard-Spiel in 3D. Du fährst durch fünf Parks (Hafenkante, Dachgarten, Neonbucht, Gleisdepot, Trockenkanal) und reihst Flips, Grabs, Grinds, Manuals und Drehungen zu Combos aneinander. Eine Combo zählt erst, wenn du sauber landest; Manuals verbinden Tricks über den Boden. Wallrides, Wallies und Lip-Tricks an den Rampenkanten verlängern deine Combos. In der Karriere erfüllst du in 2-Minuten-Läufen je Park 12 Ziele (Punkte, die Buchstaben P-U-L-S-E, die versteckte Kassette, Combos, Gaps und Sonderaufgaben). 5 Ziele schalten den nächsten Park frei, weitere Ziele neue Skater und Boards. Ziele, grüne Marken und Medaillen geben Stat-Punkte für die Werte deines Skaters; im Editor baust du dir einen eigenen Skater. Im Park-Editor baust du eigene Parks aus 16 Bauteilen und fährst sie sofort; jeden Lauf kannst du dir als Replay mit Zeitlupe und drei Kameras ansehen. Dazu kommen der Wettbewerb mit Jury und Medaillen, Highscore-Lauf, Freies Fahren ohne Zeit sowie Duell und S-K-A-T-E für 2 bis 4 Spieler an einem Gerät. Ist die Spezialleiste voll, kannst du die Spezialtricks deines Skaters zeigen.",
     "steuerung": [
      "Touch wie ein Konsolen-Controller: links der Stick (lenken, anschieben, Trick-Richtung), rechts vier Aktionstasten in Rautenform – unten Ollie, links Flip, rechts Grab, oben Grind. Darüber die Schultertasten L/R (drehen) und Revert.",
      "Tastatur: W A S D oder Pfeile lenken, Leertaste/Enter Ollie (halten zum Laden), J Flip, K Grab, L Grind, Q/E drehen, R oder Shift Revert, Esc/P Pause, Tab/G Ziele.",
      "Gamecontroller: linker Stick oder Steuerkreuz lenkt, A Ollie, X Flip, B Grab, Y Grind, LB/RB drehen, LT/RT Revert, Start Pause, Select Ziele.",
      "Manual wie an der Konsole: schnell Hoch, dann Runter (Nose Manual: Runter, dann Hoch) – am Boden oder kurz vor der Landung. Balance mit Hoch/Runter.",
+     "Wallride: in der Luft seitlich an eine Wand und Grind halten, Ollie für einen Wallie. Lip-Trick: senkrecht an die Rampenkante und Grind drücken.",
      "Spezialtrick bei voller Leiste: in der Luft Flip und Grab zusammen oder Grab mit Grind; beim Grinden Hoch, dann Runter."
     ],
     "tipps": [
@@ -36,7 +37,7 @@
      "In der Rampe gelandet? Revert drücken und direkt Hoch, Runter: Revert plus Manual hält die Combo am Leben."
     ]
    },
-   "size": 9156014,
+   "size": 9212484,
    "files": 331,
    "offline": true,
    "cloud": {

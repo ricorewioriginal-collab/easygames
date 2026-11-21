@@ -43,7 +43,6 @@ export function buildWorld(game, park) {
   const [bx0, bz0, bx1, bz1] = park.bounds;
   const inside = d => d.x > bx0 && d.x < bx1 && d.z > bz0 && d.z < bz1;
   for (const d of park.deco) if (d.x != null && inside(d) && /lamp|tree|palm|neonLamp/.test(d.t)) def.elements.push({ t: 'cyl', x: d.x, z: d.z, r: d.t === 'tree' || d.t === 'palm' ? 0.35 : 0.2, h: 4, mat: 'metalDark', invisible: true });
-  const level = new Level(def);
 
   // ---------------- Materialien
   const conc = texConcrete(scene, '#9c9a94', 7, 1), concDark = texConcrete(scene, '#77767a', 9, 1);
@@ -73,26 +72,8 @@ export function buildWorld(game, park) {
   M.neonRail = pbr(scene, 'neonRail', { color: '#3cf0ff', emissive: '#3cf0ff', emI: 2.4, metal: 0.2, rough: 0.3 });
   for (const k in M) { const t = M[k].albedoTexture; if (t && t.uScale === 1) { t.uScale = t.vScale = 1; } }
 
-  // ---------------- Elemente
-  const meshes = buildMeshes(level, scene, M);
-  for (const m of meshes) if (shadow && !/lvl_(wall|graffiti|neonWall|parapet)/.test(m.name)) shadow.addShadowCaster(m);
-  for (const e of level.els) if (e.invisible) { /* nur Kollision für Deko */ }
-  // unsichtbare Deko-Kollisionen: Meshes ausblenden
-  scene.meshes.filter(m => m.name === 'cyl').forEach(m => { const e = level.els.find(el => el.t === 'cyl' && Math.abs(el.x - m.position.x) < 0.01 && Math.abs(el.z - m.position.z) < 0.01); if (e && e.invisible) m.setEnabled(false); });
-
-  // ---------------- Boden mit Aussparungen für Pools
-  const gTex = park.ground === 'tiles' ? texTiles(scene, park.groundC, '#2a2c3a') : park.ground === 'roof' ? texTiles(scene, park.groundC, '#6a6c72') : texConcrete(scene, park.groundC, 3, 1);
-  const gMat = pbr(scene, 'groundM', { tex: gTex, rough: park.ground === 'tiles' ? 0.45 : 0.9, clear: night ? 0.35 : 0 });
-  gTex.uScale = gTex.vScale = 1;
-  const ground = groundMesh(scene, level, park.bounds, park.ground === 'concrete' ? 4 : 2);
-  ground.material = gMat; ground.receiveShadows = true; ground.freezeWorldMatrix();
-  // Außenboden
-  const outer = MeshBuilder.CreateGround('outer', { width: 420, height: 420 }, scene);
-  outer.position.y = -0.05; const oMat = pbr(scene, 'outerM', { tex: texConcrete(scene, night ? '#22232c' : '#6f6e6a', 13, 1), rough: 0.95 }); oMat.albedoTexture.uScale = oMat.albedoTexture.vScale = 60; outer.material = oMat; outer.receiveShadows = true;
-  // innerhalb der Grenzen verdeckt der Spielboden; Außenboden liegt darunter (keine Überschneidung mit Pools, weil tiefer als 0 nur dort sichtbar wo kein Pool)
-  outer.setEnabled(true);
-  // Pool-Inneres verdecken wir nicht – der Außenboden bei y=-0.05 würde durch Pools schneiden: Loch durch Ausschnitt vermeiden
-  if (level.bowls.length) { outer.dispose(); outerRing(scene, park.bounds, oMat); }
+  const LV = buildLevel(game, def, M, park), level = LV.level;
+  game.worldM = M; game.levelMeshes = LV.meshes;
 
   // ---------------- Deko
   const deco = new TransformNode('deco', scene);
@@ -177,7 +158,48 @@ export function buildWorld(game, park) {
     const glow = MeshBuilder.CreateTorus('tglow', { diameter: 1.1, thickness: 0.05, tessellation: 24 }, scene); glow.parent = node; glow.rotation.x = Math.PI / 2; glow.material = pbr(scene, 'tglowM', { color: '#ffd43a', emissive: '#ffd43a', emI: 2.5 });
     items.push({ kind: 'tape', node, pos: new Vector3(...park.tape), got: false });
   }
-  return { level, items, meshes, lights };
+  // Stat-Punkte: sechseckige Marken, steigern die Werte des Skaters
+  (park.coins || []).forEach((p, i) => {
+    const node = new TransformNode('coin' + i, scene); node.position.set(...p);
+    const c = MeshBuilder.CreateCylinder('coinB', { diameter: 0.62, height: 0.1, tessellation: 6 }, scene); c.parent = node; c.rotation.x = Math.PI / 2;
+    c.material = pbr(scene, 'coinM' + i, { color: '#2ecc71', emissive: '#2ecc71', emI: 1.4, metal: 0.6, rough: 0.3 });
+    const pl = MeshBuilder.CreatePlane('coinT', { size: 0.5, sideOrientation: Mesh.DOUBLESIDE }, scene); pl.parent = node; pl.position.z = -0.06;
+    const m = new StandardMaterial('coinTM' + i, scene); m.diffuseTexture = texLetter(scene, '+', '#ffffff'); m.diffuseTexture.hasAlpha = true; m.useAlphaFromDiffuseTexture = true; m.emissiveColor = new Color3(1, 1, 1); m.disableLighting = true; m.backFaceCulling = false; pl.material = m;
+    const ring = MeshBuilder.CreateTorus('cring', { diameter: 1.0, thickness: 0.04, tessellation: 6 }, scene); ring.parent = node; ring.rotation.x = Math.PI / 2;
+    ring.material = c.material;
+    items.push({ kind: 'coin', i, node, pos: new Vector3(...p), got: false });
+  });
+  return { level, items, meshes: LV.meshes, lights };
+}
+
+// Spielfeld (Elemente + Boden) bauen – auch für den Park-Editor, der nur diesen Teil neu aufbaut
+export function buildLevel(game, def, M, park) {
+  const { scene, shadow } = game, night = !!park.neon;
+  const level = new Level(def);
+  const meshes = buildMeshes(level, scene, M);
+  for (const m of meshes) if (shadow && !/lvl_(wall|graffiti|neonWall|parapet)/.test(m.name)) shadow.addShadowCaster(m);
+  // unsichtbare Deko-Kollisionen: Meshes ausblenden
+  meshes.filter(m => m.name === 'cyl').forEach(m => { const e = level.els.find(el => el.t === 'cyl' && Math.abs(el.x - m.position.x) < 0.01 && Math.abs(el.z - m.position.z) < 0.01); if (e && e.invisible) m.setEnabled(false); });
+  // Boden mit Aussparungen für Pools
+  if (!M._ground) {
+    const gTex = park.ground === 'tiles' ? texTiles(scene, park.groundC, '#2a2c3a') : park.ground === 'roof' ? texTiles(scene, park.groundC, '#6a6c72') : texConcrete(scene, park.groundC, 3, 1);
+    M._ground = pbr(scene, 'groundM', { tex: gTex, rough: park.ground === 'tiles' ? 0.45 : 0.9, clear: night ? 0.35 : 0 }); gTex.uScale = gTex.vScale = 1;
+    M._outer = pbr(scene, 'outerM', { tex: texConcrete(scene, night ? '#22232c' : '#6f6e6a', 13, 1), rough: 0.95 }); M._outer.albedoTexture.uScale = M._outer.albedoTexture.vScale = 60;
+  }
+  const ground = groundMesh(scene, level, park.bounds, park.ground === 'concrete' ? 4 : 2);
+  ground.material = M._ground; ground.receiveShadows = true; ground.freezeWorldMatrix(); meshes.push(ground);
+  // Außenboden; bei Pools als Ring um das Spielfeld, damit er die Pools nicht schneidet
+  let outer;
+  if (level.bowls.length) outer = outerRing(scene, park.bounds, M._outer);
+  else { outer = MeshBuilder.CreateGround('outer', { width: 420, height: 420 }, scene); outer.position.y = -0.05; outer.material = M._outer; outer.receiveShadows = true; }
+  meshes.push(outer);
+  return { level, meshes };
+}
+export function rebuildLevel(game, park) {
+  for (const m of game.levelMeshes || []) { if (game.shadow) game.shadow.removeShadowCaster(m); m.dispose(false, false); }
+  const r = buildLevel(game, Object.assign({}, park, { elements: park.elements.slice() }), game.worldM, park);
+  game.level = r.level; game.levelMeshes = r.meshes; if (game.skater) game.skater.level = r.level;
+  return r.level;
 }
 
 function groundMesh(scene, level, bounds, tile) {
