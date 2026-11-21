@@ -56,13 +56,14 @@ export class Skater {
     this.edges = { ollieUp: inp.released('ollie'), ollieDown: inp.pressed('ollie'), flip: inp.pressed('flip'), grab: inp.pressed('grab'), grabUp: inp.released('grab'), grind: inp.pressed('grind'), manual: inp.pressed('manual') && !this.manual, revert: inp.pressed('revert') };
     if (inp.pressed('flip')) this.flipBuf = 0.18;
     if (inp.pressed('grab')) this.grabBuf = 0.18;
-    if (inp.pressed('grind')) this.grindBuf = 0.3;
+    if (inp.pressed('grind')) this.grindBuf = 0.4;
     if (inp.pressed('manual') && !this.manual) { this.manualBuf = 0.3; this.manualDir = inp.manualDir; }
     if (inp.pressed('revert')) this.revertBuf = 0.25;
-    if (inp.pressed('ollie')) this.ollieBuf = 0.15;
+    if (inp.pressed('ollie')) { this.ollieBuf = 0.15; this.olliePress = this.mode; }
+    if (inp.released('ollie') && (this.olliePress === 'ground' || this.olliePress === 'air') && this.mode === 'air' && !(this.air && this.air.ollied && this.air.t < 0.25)) this.ollieRelBuf = 0.16;
     for (let i = 0; i < n; i++) { this.step(h); if (i === 0) for (const k in this.edges) this.edges[k] = false; }
     this.flipBuf = Math.max(0, (this.flipBuf || 0) - dt); this.grabBuf = Math.max(0, (this.grabBuf || 0) - dt);
-    this.grindBuf = Math.max(0, (this.grindBuf || 0) - dt); this.manualBuf = Math.max(0, (this.manualBuf || 0) - dt); this.revertBuf = Math.max(0, (this.revertBuf || 0) - dt); this.ollieBuf = Math.max(0, (this.ollieBuf || 0) - dt);
+    this.grindBuf = Math.max(0, (this.grindBuf || 0) - dt); this.manualBuf = Math.max(0, (this.manualBuf || 0) - dt); this.revertBuf = Math.max(0, (this.revertBuf || 0) - dt); this.ollieBuf = Math.max(0, (this.ollieBuf || 0) - dt); this.ollieRelBuf = Math.max(0, (this.ollieRelBuf || 0) - dt);
     this.apply(dt);
   }
 
@@ -115,12 +116,15 @@ export class Skater {
     const vmax = 17.5; if (v.length() > vmax) v.scaleInPlace(vmax / v.length());
     this.vel.copyFrom(v);
 
+    this.lastGrindT += dt;
     // Ollie laden / springen
     if (this.inp.down('ollie')) { this.charge = Math.min(0.32, this.charge + dt); }
-    if (this.edges.ollieUp || (this.charge > 0 && !this.inp.down('ollie'))) {
+    if (this.edges.ollieUp || this.ollieRelBuf > 0 || (this.charge > 0 && !this.inp.down('ollie'))) {
       const c = this.charge / 0.32; this.charge = 0;
       return this.ollie(c, n);
     }
+    // Grind-Taste am Boden: kurzer Pop auf die nahe Kante/Rail
+    if (this.grindBuf > 0 && this.lastGrindT >= 0.25 && !this.manual && this.popToGrind()) return;
     // Manual
     if (this.manual) this.stepManual(dt);
     else if ((this.manualBuf > 0 || this.edges.manual) && n.y > 0.7 && spd > 1.2) { this.manualBuf = 0; this.startManual(); }
@@ -189,7 +193,8 @@ export class Skater {
   }
 
   ollie(c, n) {
-    const st = this.st, jv = 5.0 + c * 1.5 + st.ollie * 0.09;
+    this.ollieRelBuf = 0; this.ollieBuf = 0;
+    const st = this.st, jv = 5.5 + c * 1.9 + st.ollie * 0.1;
     const up = n.y > 0.7 ? UP : n.add(UP).normalize();
     this.vel.addInPlace(up.scale(jv));
     if (this.manual) this.endManual(true);
@@ -258,6 +263,13 @@ export class Skater {
     } else a.spinV = 0;
     if (a.spinV) { const dy = a.spinV * dt; a.spin += dy; this.yaw = wrap(this.yaw + dy); }
 
+    // Kurz nach dem Abrollen über eine Kante zählt der Ollie noch (sonst „verschluckt“ jede Bodenwelle den Sprung)
+    if (!a.ollied && !a.vert && a.t < 0.2 && this.vel.y > -4 && this.olliePress !== 'grind' && this.olliePress !== 'wall') {
+      if (inp.down('ollie')) this.charge = Math.min(0.32, this.charge + dt);
+      if (this.edges.ollieUp || (this.charge > 0 && !inp.down('ollie'))) {
+        const c = this.charge / 0.32; this.charge = 0; this.vel.y = Math.max(this.vel.y, 0); return this.ollie(c, UP);
+      }
+    } else if (!a.ollied && this.charge > 0) this.charge = 0;
     // Tricks
     this.airTricks(dt);
 
@@ -459,15 +471,36 @@ export class Skater {
       let t = ((p.x - sgm.a.x) * ab.x + (p.z - sgm.a.z) * ab.z) / (ab.x * ab.x + ab.z * ab.z || 1); t = clamp(t, 0, 1);
       const q = sgm.a.add(ab.scale(t));
       const dx = p.x - q.x, dz = p.z - q.z, dh = Math.hypot(dx, dz), dy = p.y - q.y;
-      const reach = sgm.kind === 'rail' ? 0.55 : 0.5;
-      if (dh > reach || dy < -0.28 || dy > 0.85) continue;
+      const reach = sgm.kind === 'rail' ? 0.8 : 0.72;
+      if (dh > reach || dy < -0.38 || dy > 0.95) continue;
       if (v.y > 2.5 && dy < 0.1) continue;
-      if (t <= 0.001 && dh > 0.1 || t >= 0.999 && dh > 0.1) continue;
+      if (t <= 0.001 && dh > 0.25 || t >= 0.999 && dh > 0.25) continue;
       const vh = Math.hypot(v.x, v.z), al = (v.x * sgm.dir.x + v.z * sgm.dir.z);
-      if (vh > 1.5 && Math.abs(al) < vh * 0.32 && sgm.kind !== 'coping') continue;
+      if (vh > 1.5 && Math.abs(al) < vh * 0.24 && sgm.kind !== 'coping') continue;
       const score = dh + Math.abs(dy) * 0.5; if (score < bd) { bd = score; best = { sgm, t, q }; }
     }
     return best;
+  }
+  // Am Boden: Kante/Rail bis ~1,1 m über den Füßen in Reichweite → Pop mit Schub zur Kante, das Andocken übernimmt die Luft
+  popToGrind() {
+    const p = this.pos, v = this.vel, vh = Math.hypot(v.x, v.z); if (vh < 1.2) return false;
+    let best = null, bd = 1e9;
+    for (const sgm of this.level.segs) {
+      if (sgm.kind === 'coping') continue;
+      const ab = sgm.b.subtract(sgm.a), l2 = ab.x * ab.x + ab.z * ab.z || 1;
+      const t = clamp(((p.x - sgm.a.x) * ab.x + (p.z - sgm.a.z) * ab.z) / l2, 0.03, 0.97);
+      const q = sgm.a.add(ab.scale(t)), dh = Math.hypot(p.x - q.x, p.z - q.z), rise = q.y - p.y;
+      if (dh > 1.3 || rise < -0.3 || rise > 1.15) continue;
+      const al = Math.abs(v.x * sgm.dir.x + v.z * sgm.dir.z); if (al < vh * 0.4) continue;
+      const sc = dh + Math.max(0, rise) * 0.3; if (sc < bd) { bd = sc; best = { q, rise }; }
+    }
+    if (!best) return false;
+    const h = Math.max(0.25, best.rise + 0.22), vy = Math.sqrt(2 * G * h), T = vy / G;
+    const dx = best.q.x - p.x, dz = best.q.z - p.z;
+    this.vel.x += dx / T * 0.9; this.vel.z += dz / T * 0.9; this.vel.y = vy;
+    this.grindBuf = Math.max(this.grindBuf, T + 0.35); this.charge = 0;
+    this.toAir(true); this.game.sfx('pop', 0.7);
+    return true;
   }
   tryGrind() {
     if (this.lastGrindT < 0.25) return;
