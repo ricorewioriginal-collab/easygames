@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9e73533ca073",
- "generated": "2026-11-21T20:47:56+00:00",
- "commit": "e27353c451d3189f28090d35d28f72b28af9c3e1",
+ "version": "b074dae4a3db",
+ "generated": "2026-11-21T20:53:04+00:00",
+ "commit": "12443587ac9325dc778dd04ea941c8f82036d9c3",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -14837,9 +14837,9 @@
    "h": "316fc782a1583b0ba2fe41642a3bc6f855a04037eb178f2d3f1f2647954c6c46"
   },
   {
-   "p": "pride-city/assets/index-DguNIsIF.js",
-   "s": 815595,
-   "h": "f261aeed4e80b7a70dee7391c4dfaafedabceea1256f4e710297559dddbac7f3"
+   "p": "pride-city/assets/index-DDVjKk4V.js",
+   "s": 816810,
+   "h": "55623a8fee8395871110838cde6dba3ccb4ea341eaf9654c016dc3dc78c1a94a"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -15499,7 +15499,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5862,
-   "h": "ac1766fa2b78a9b4793fb5e814264b9413d4ad7c16b1fc652dbc6763d24da347"
+   "h": "359bef45ecd5fe0d3dbd20891e86b6828e07b24625deb218b604e7c97b091c75"
   },
   {
    "p": "pride-city/logo.svg",
@@ -18274,7 +18274,7 @@
   {
    "p": "sync/catalog.json",
    "s": 241235,
-   "h": "4a2c198363313beeb05a2db67d4ff936ee79647663a79020584b25345dc64ed7"
+   "h": "364586d8cdaee55fdddb03847d25e6d41ca58324555277cbdfb37be92be14984"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
