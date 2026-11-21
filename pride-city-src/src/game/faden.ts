@@ -83,6 +83,15 @@ export function fadenTick(c: StoryCtx) {
     calm = 0; fadenKrone(c, String(f.drag || s.name));
     return;
   }
+  // Erster Platz 1 mit dem eigenen CSD-Wagen (festwagen.ts/citylife.ts zählen wagenWins): Jules ist stolz
+  if (Number(f.wagenWins) > 0 && !f.wagenWinCall) {
+    if (++calm < 6) return;
+    ring('wagenWinCall', 'Jules', '#9c59d1', [
+      'Platz 1 bei der CSD-Parade! Hilde hat geweint, Mo hat Konfetti geworfen, ich habe beides gemacht.',
+      'Vor ein paar Monaten hast du noch Unterschriften für das Regenbogenhaus gesammelt. Heute jubelt dir die ganze Hauptstraße zu.',
+    ]);
+    return;
+  }
   if (a === 1 || a === 4) return;
   if (++calm < 6) return; // drei ruhige Sekunden, bevor es klingelt
   if (a === 2 && !f.faden2) {
@@ -98,6 +107,14 @@ export function fadenTick(c: StoryCtx) {
     ring('nachtCall', 'Rocco Sterling', '#ffcf5a', [
       'Guten Abend. Rocco Sterling, Sterling Nights. Bar Komet, Skybar Wolke 7, du kennst das.',
       'Ich habe dich tanzen sehen. Ich brauche jemanden, der Nächte führen kann. Komm nach 21 Uhr zur Skybar in der Hochstadt, dann reden wir.',
+    ]);
+    return;
+  }
+  // Pride-Saison: jeden Samstag CSD-Parade, Jules lädt zum eigenen Festwagen ein (festwagen.ts)
+  if (f.faden2 && (a === 2 || f.faden3) && !f.wagen && !f.wagenCall) {
+    ring('wagenCall', 'Jules', '#9c59d1', [
+      'Seit unserer Pride fährt jeden Samstag von 12 bis 18 Uhr die CSD-Parade über die Hauptstraße. Und dieses Jahr gibt es eine Jury!',
+      'Bau dir deinen eigenen Festwagen: im Handy unter „Wetter und Termine“ oder in einer Festwagen-Werkstatt. Flagge, Motto, Deko, Musik. Ich will dich da oben tanzen sehen.',
     ]);
     return;
   }
