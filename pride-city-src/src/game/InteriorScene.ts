@@ -162,7 +162,7 @@ export class InteriorScene implements GameScene {
   /** Neue Figur, wenn im Kleiderschrank die Figur gewechselt wurde */
   async syncPlayer() {
     const look = streetLook(playerLook(this.g.save.data));
-    if (this.player.look.body === look.body) return;
+    if (this.player.look.body === look.body) { this.player.setLook(look); return; }
     const old = this.player;
     this.player = await Actor.create(this.scene, look);
     this.player.root.position.copyFrom(old.root.position); this.player.root.rotation.y = old.root.rotation.y;

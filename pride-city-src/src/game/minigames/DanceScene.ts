@@ -4,7 +4,7 @@ import type { GameScene } from '../../engine/Engine';
 import { Vector3, TransformNode, HemisphericLight, SpotLight, ShadowGenerator, Mesh, VertexData, Scene, type FreeCamera, type PBRMaterial, col } from '../../engine/bjs';
 import { box, cyl, ground, ring, pbr, glow } from '../../engine/geo';
 import type { Action } from '../../engine/Input';
-import { Actor, playerLook, ROLE_LOOKS } from '../Actor';
+import { Actor, playerLook, ROLE_LOOKS, type Look } from '../Actor';
 import type { Game } from '../Game';
 import { el, $, hints } from '../../ui/ui';
 import { music, sfx, SONGS, playScore } from '../../engine/Audio';
@@ -48,7 +48,7 @@ export class DanceScene implements GameScene {
   private stopAudio: (() => void) | null = null;
   private clock: (() => number | null) | null = null;
   private show = false;
-  constructor(private g: Game, private finish: (won: boolean, score: number) => void, private opt: { song?: ShowSong; parts?: PianoParts; show?: boolean } = {}) {
+  constructor(private g: Game, private finish: (won: boolean, score: number) => void, private opt: { song?: ShowSong; parts?: PianoParts; show?: boolean; /** eigenes Aussehen (z. B. Drag-Look) */ look?: Look; /** Gegner*in statt Rex (Lip-Sync-Battle): Trefferquote und Punkte je Treffer */ rival?: { name: string; look: Look; skill: number; pts: number } } = {}) {
     const so = opt.song;
     this.show = !!opt.show;
     this.scene = g.engine.newScene(0x07040f);
@@ -83,7 +83,7 @@ export class DanceScene implements GameScene {
     const crowd = ['Female_Party_01', 'Male_Adult_07', 'Female_Adult_09', 'Male_Adult_04', 'Female_Party_02', 'Male_Adult_02', 'Female_Adult_04', 'Male_Adult_10'];
     // alle Figuren gleichzeitig laden (deutlich schneller als nacheinander)
     const [dj, me, rex, ...folk] = await Promise.all([
-      Actor.create(sc, nova.look), Actor.create(sc, this.show ? { ...ROLE_LOOKS.luma } : playerLook(s)), Actor.create(sc, rx.look),
+      Actor.create(sc, nova.look), Actor.create(sc, this.opt.look || (this.show ? { ...ROLE_LOOKS.luma } : playerLook(s))), Actor.create(sc, this.opt.rival?.look || rx.look),
       ...crowd.map((id) => Actor.create(sc, { body: id, rb: id, palette: 'rainbow', skin: 0 })),
     ]);
     dj.root.position.set(0, 0, -16.2); dj.play('dance1', 0); this.crowd.push(dj);
@@ -143,7 +143,7 @@ export class DanceScene implements GameScene {
   }
 
   enter() {
-    this.hud = el(`<div id="mg"><div class="score"><div class="s"><small>Du</small><span id="sMe">0</span></div><div class="s" style="min-width:70px"><small>Runde</small><span id="sR">1/3</span></div><div class="s"><small>${this.show ? 'Ziel' : 'Rex'}</small><span id="sRx">0</span></div></div>
+    this.hud = el(`<div id="mg"><div class="score"><div class="s"><small>Du</small><span id="sMe">0</span></div><div class="s" style="min-width:70px"><small>Runde</small><span id="sR">1/3</span></div><div class="s"><small>${this.show ? 'Ziel' : this.opt.rival?.name || 'Rex'}</small><span id="sRx">0</span></div></div>
       <div class="judge"></div>${this.opt.song?.kind === 'yt' ? '<div class="ytBox"></div>' : ''}${this.opt.song?.kind === 'piano' ? `<div class="songTag">🎹 ${this.opt.song.title}${this.opt.song.lic ? ` · <small>${this.opt.song.lic}</small>` : ''}</div>` : ''}<div class="combo"></div><div class="lanes">${ARROW.map((a, i) => `<button data-l="${i}">${a}</button>`).join('')}</div></div>`);
     document.body.appendChild(this.hud);
     this.hud.querySelectorAll<HTMLButtonElement>('.lanes button').forEach((b) => {
@@ -215,7 +215,8 @@ export class DanceScene implements GameScene {
     for (const n of this.notes) if (!n.rx && this.t >= n.t) {
       n.rx = true;
       const h = Math.sin(n.t * 12.9898 + n.lane * 78.233) * 43758.5453; const frac = h - Math.floor(h);
-      if (frac < (this.show ? .7 : .8 + .04 * this.round)) { this.rival += 85; if (this.rex.anim === 'idle') this.rex.play('dance1'); }
+      const rv = this.opt.rival;
+      if (frac < (rv ? rv.skill + .03 * this.round : this.show ? .7 : .8 + .04 * this.round)) { this.rival += rv ? rv.pts : 85; if (this.rex.anim === 'idle') this.rex.play('dance1'); }
     }
     $('#sMe', this.hud).textContent = String(this.score);
     $('#sRx', this.hud).textContent = String(this.rival);
@@ -241,7 +242,7 @@ export class DanceScene implements GameScene {
     const won = !quit && this.score >= this.rival;
     const s = this.g.save.data;
     s.best.dance = Math.max(s.best.dance || 0, this.score);
-    this.judge(quit ? 'Aufgegeben' : this.show ? (won ? 'STANDING OVATIONS!' : 'Applaus!') : won ? 'GEWONNEN!' : 'Rex gewinnt', won ? '#ffd84a' : '#ff8ad8');
+    this.judge(quit ? 'Aufgegeben' : this.show ? (won ? 'STANDING OVATIONS!' : 'Applaus!') : won ? 'GEWONNEN!' : `${this.opt.rival?.name || 'Rex'} gewinnt`, won ? '#ffd84a' : '#ff8ad8');
     if (won) { sfx('win'); sfx('cheer'); this.me.play('cheer'); this.rex.play('hit'); } else { this.rex.play('cheer'); }
     $('.combo', this.hud).textContent = quit ? '' : `Beste Combo: ${this.best} · Rekord: ${s.best.dance}`;
     setTimeout(() => this.finish(won, this.score), quit ? 300 : 2600);
