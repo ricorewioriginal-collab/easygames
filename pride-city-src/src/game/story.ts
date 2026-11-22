@@ -10,8 +10,10 @@ import { LF_CHAPTERS, LF_PEOPLE, LF_START, lfEnding } from './leuchtfeuer';
 import { NACHT_NPCS, nachtTalk, nachtGoal, nachtMarks, nachtFirst } from './nacht';
 import { dragGoal } from './drag';
 import { hour } from './life';
-import { fadenGoal, fadenTick, fadenPoi, fadenDance, actLabel, history } from './faden';
+import { fadenGoal, fadenTick, fadenPoi, fadenDance, actLabel, history, extraTick, extraHush } from './faden';
 import { FLUT_NPCS, flutTalk, flutGoal, flutMarks, flutHidden, flutTick, flutHush } from './flut';
+import { LUFT_NPCS, luftTalk } from './luft';
+import { lineup, doneThisWeek, isOpen, KINDS } from './live';
 import { crewTalk, crewGoal, crewMarks, crewTick } from './crew';
 
 export interface NpcDef {
@@ -49,6 +51,7 @@ export const NPCS: NpcDef[] = [
   ...SAGA_NPCS,
   ...NACHT_NPCS,
   ...FLUT_NPCS,
+  ...LUFT_NPCS,
   { id: 'kim', name: 'Kim', pron: 'they/them', color: '#3da542', look: { body: 'Woman', palette: 'aro', skin: 4, hair: 2 }, x: -26, z: -20, walk: [[-26, -20], [-26, -4], [-14, -4], [-14, -20]], petition: true },
 ];
 
@@ -153,6 +156,10 @@ export function goal(s: SaveData): Goal {
   const dg = s.chapter > 3 ? dragGoal(s) : null;
   if (dg) return { title: dg, sub: 'Mama Vega wartet: erst an den Schminkspiegel, dann auf die Bühne.', poi: 'onelove' };
   if (s.chapter > 5 && !s.flags.wagen) return { title: 'Bau deinen eigenen CSD-Festwagen', sub: 'Handy → Wetter und Termine oder in einer Festwagen-Werkstatt. Samstags fährt er bei der Parade mit, die Jury vergibt Platz 1 bis 3.' };
+  // Flugschule Möwenflug (luft.ts): nach Sunnys Anruf erst der Schnupperflug
+  if (s.flags.luftCall && !s.flags.luftSchein) return { title: 'Schnupperflug bei Captain Sunny', sub: 'Flugschule Möwenflug am Südende vom Kai. Wasserflugzeug oder Helikopter, fünf Ringe, eine Landung.', npc: 'sunny' };
+  // Live-Event der Woche (live.ts), sobald Kiki davon erzählt hat und gerade eines läuft
+  if (s.flags.liveCall) { const e = lineup().find((x) => !doneThisWeek(s, x.kind) && isOpen(s, x.kind)); if (e) return { title: `LIVE: ${e.name}`, sub: `${KINDS[e.kind].icon} ${KINDS[e.kind].name} der Woche mit ${e.host}${e.kind === 'boot' ? ' · Im Glitzer-Boot am Steg der Strandbar anhalten' : ' · Folge dem Symbol auf dem Radar'}. Handy → Live-Events.` }; }
   if (s.chapter > 5 && !s.flags.radioShows) return { title: 'Moderiere „Rainbow Talk“ auf Pride FM', sub: 'Handy → Pride FM 88,8. Leute aus der Stadt rufen an, du antwortest live.' };
   if (s.chapter > 1 && s.chapter <= 5) return { title: 'Erkunde Rainbow City', sub: 'Sprich mit deinen Freund*innen – die Geschichte geht gleich weiter.' };
   if (s.chapter > 5) return { title: 'Freies Spiel', sub: 'Die Geschichte ist erzählt. Arbeite, date, feiere – Rainbow City gehört dir.' };
@@ -189,13 +196,18 @@ export function storyTick(c: StoryCtx) {
     // Akt IV (flut.ts) klingelt nur, wenn der rote Faden in diesem Takt nicht schon angerufen hat
     let rang = false;
     fadenTick({ ...c, phone: (l, d) => { rang = true; c.phone(l, d); } });
-    if (rang) flutHush(); else { flutTick(c); crewTick(c); }
+    if (rang) { flutHush(); extraHush(); return; }
+    // Flugschule, Live-Events und Festtage (faden.ts) erst, wenn auch Akt IV/V gerade nichts zu sagen haben
+    let rang4 = false;
+    const quiet = { ...c, phone: (l: Parameters<typeof c.phone>[0], d?: Parameters<typeof c.phone>[1]) => { rang4 = true; c.phone(l, d); } };
+    flutTick(quiet); crewTick(quiet);
+    if (rang4) extraHush(); else extraTick(c);
   }
 }
 
 /** Gespräch – true, wenn die Geschichte es übernommen hat */
 export function talk(c: StoryCtx, id: string): boolean {
-  if (crewTalk(c, id) || sagaTalk(c, id) || nachtTalk(c, id) || flutTalk(c, id)) return true;
+  if (crewTalk(c, id) || sagaTalk(c, id) || nachtTalk(c, id) || flutTalk(c, id) || luftTalk(c, id)) return true;
   const s = c.s, n = npc(id);
   if (!n) return false;
   if (s.chapter === 1) {

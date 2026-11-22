@@ -538,6 +538,30 @@
       ]
     },
     {
+      "t": "🍂 Jahreszeiten, Schnee und Feuerwerk",
+      "p": [
+        "Das Wetter folgt der echten Jahreszeit: Im Sommer viel Sonne und Gewitter, im Herbst mehr Regen und Nebel, im Winter Schnee. In der Weihnachtswoche (20. bis 26. Dezember) schneit es abends und nachts, auf der Pride Plaza steht im Dezember ein großer Weihnachtsbaum.",
+        "Feuerwerk gibt es an Silvester um Mitternacht über der Hochstadt und dem Hafen, jeden Samstag um 22 Uhr nach der CSD-Parade über dem Hafen und als Finale der Live-Partys.",
+        "In den Optionen unter „Jahreszeit“ kannst du statt des Kalenders Frühling, Sommer, Herbst, Winter, Weihnachten oder Silvester festlegen."
+      ]
+    },
+    {
+      "t": "🎉 Live-Events der Woche",
+      "p": [
+        "Jede echte Kalenderwoche (montags neu, für alle gleich) gibt es drei Termine: eine Party (21 bis 3 Uhr), ein Konzert (19 bis 23 Uhr) und ein Bootsrennen (10 bis 18 Uhr). Was gerade läuft, zeigen Radar, Leuchtring mit Schild und das Handy unter „🎉 Live-Events“.",
+        "Party und Konzert: am Leuchtring A drücken und mitmachen (DJ-Pult, Karaoke, Outfit-Check oder Blackout-Party). Bootsrennen: im Glitzer-Boot am Steg der Strandbar anhalten, dann die Bojen in der Zeit abfahren.",
+        "Alle drei in einer Woche geschafft = Wochenpass: 300 € extra und eine 👑 Event-Krone."
+      ]
+    },
+    {
+      "t": "🚁 Flugschule Möwenflug",
+      "p": [
+        "Am Südende vom Kai, hinter der Fischbude, wartet Captain Sunny Okafor mit dem Helikopter „Libelle“ (Landeplatz) und dem Wasserflugzeug „Möwe“ (am Kai beim Steg).",
+        "Steuerung wie beim Flitzer: Stick/WASD lenkt und gibt Gas, ▲/▼ (RB/LB, R/Q) steigt und sinkt, A landet. Die Libelle kann schweben, die Möwe bleibt in der Luft immer in Fahrt.",
+        "Erst der Schnupperflug durch fünf Ringe über dem Hafen, dann gibt es Rundflüge (Skyline-Runde, Inselhüpfer, Abendrot zu zweit ab 17 Uhr) und Lieferflüge zu den Inseln. Ringe in ihrer Höhe durchfliegen, bei Lieferungen und am Ende über dem Ziel unter 6 m sinken."
+      ]
+    },
+    {
       "t": "🚨 Fahndung und Flucht",
       "p": [
         "Wer haut, Autos klaut oder Gleitgel verschüttet, bekommt Fahndungssterne. Fußstreifen laufen dir nach, ab zwei Sternen jagen dich Streifenwagen mit Blaulicht (rot und blau blinkend auf dem Radar). Stehst du neben einem Streifenwagen still, wirst du festgenommen: Bußgeld und zwei Stunden auf der Wache.",
@@ -769,6 +793,16 @@
         "Getroffene taumeln kurz zurück und können dann nicht schubsen. Zweimal schnell hintereinander treffen.",
         "Bei Verfolgungen im Auto Turbo sparen, bis das Ziel in einer langen Geraden ist."
       ]
+    },
+    {
+      "t": "Fliegen und Bootsrennen",
+      "list": [
+        "Die gelben Ringe hängen in einer festen Höhe. Die Einblendung sagt dir, ob du steigen oder sinken musst.",
+        "Für Lieferflüge die Libelle nehmen: Sie bremst bis zum Schweben ab und sinkt punktgenau.",
+        "Für Rundflüge die Möwe nehmen: Sie ist mit Turbo fast doppelt so schnell.",
+        "Beim Bootsrennen Turbo halten und die Bojen nur knapp innen anfahren; der Radius ist großzügig.",
+        "Party und Konzert laufen jeden Spieltag. Verpasst? Bis zum nächsten Abend schlafen oder warten."
+      ]
     }
   ],
   "loesung": [
@@ -947,6 +981,14 @@
       ]
     },
     {
+      "t": "🚁 Flugschule und 🎉 Live-Events komplett",
+      "p": [
+        "Captain Sunny ruft nach dem Start von Akt II an. Schnupperflug: Ring 1 tief über dem Wasser (10 m), dann 16, 22, 14 und 26 m, zum Schluss am Landeplatz unter 6 m sinken. Danach sind Rundflüge und Lieferflüge frei.",
+        "Inselhüpfer: Glitzeria 26 m, Playa 22 m, Riesenrad 30 m, Lindenhof 22 m, (mit 18+ Lustwäldchen 20 m), Rostwerk 26 m, Kap Zuflucht 22 m, Landung.",
+        "Live-Events: Kiki Kaleido ruft an, sobald Pride FM oder die Flugschule bekannt ist. Bootsrennen-Gold: Hafen-Regatta unter 36 s, Inselkanal-Sprint unter 29 s, Kap-Zuflucht-Rallye unter 54 s."
+      ]
+    },
+    {
       "t": "✊ Akt V: Die Lichterkette komplett",
       "p": [
         "1. Die Gründung (Toms Anruf am Tag nach Krals Festnahme): drei Leute in die Crew holen.",
@@ -1006,6 +1048,14 @@
     {
       "q": "Ich habe einen Mann gewählt und spiele trotzdem eine Frau, oder das Umkleiden klappt nicht. Was tun?",
       "a": "Das war ein Fehler und ist behoben: Der Kleiderschrank in der Wohnung und „Neuer Look“ in der Boutique tauschen jetzt sofort die Figur, und alte Spielstände bekommen nicht mehr ungefragt eine Frauenfigur. Öffne einmal den Kleiderschrank (Menü oder Wohnung), tippe bei „Figur“ rechts für die nächste und links für die vorige Figur und bestätige mit „Los geht’s!“."
+    },
+    {
+      "q": "Warum schneit es nicht, obwohl Winter ist?",
+      "a": "Schnee fällt im Winter an manchen Tagen, sicher aber erst in der Weihnachtswoche abends und nachts. Wer nicht warten will, stellt in den Optionen unter „Jahreszeit“ Winter oder Weihnachten ein."
+    },
+    {
+      "q": "Wann wechseln die Live-Events?",
+      "a": "Jeden Montag nach dem echten Kalender. Party und Konzert laufen in dieser Woche jeden Spieltag in ihrem Zeitfenster, das Bootsrennen tagsüber. Jeder Termin zahlt einmal pro Woche."
     }
   ]
 }

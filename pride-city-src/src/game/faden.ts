@@ -8,6 +8,7 @@ import type { Goal, StoryCtx } from './story';
 import { sagaDone, MISSIONS } from './saga';
 import { WORLDS, worldStage } from './worlds';
 import { nachtOver, nachtFirst, nachtDone } from './nacht';
+import { isXmas, isSilvester } from './weather';
 
 export const ACTS = [
   { n: 1, title: 'Ein Leben in allen Farben', text: 'Ankommen in Rainbow City, das Regenbogenhaus retten und die größte Pride feiern.' },
@@ -194,6 +195,47 @@ export function fadenTick(c: StoryCtx) {
       'Alle Inseln haben zugesagt! Stella, Lola, Frau Ahmadi und Mika kommen mit ihren Leuten nach Rainbow City.',
       'Die Pride der Inseln steigt auf der Pride Plaza, ab 12 Uhr. Und du läufst ganz vorne.',
     ]);
+  }
+}
+
+/* Anrufe zu Flugschule, Live-Events und Festtagen: leiser als die Hauptgeschichte. Sie klingeln erst nach sechs ruhigen
+   Sekunden, in denen weder der rote Faden noch Akt IV angerufen hat (story.ts ruft das nur dann auf). */
+let hush = 0;
+export function extraHush() { hush = 0; }
+export function extraTick(c: StoryCtx) {
+  const s = c.s, f = s.flags;
+  const ring = (key: string, who: string, color: string, text: string[]) => { hush = 0; f[key] = true; c.phone(call(who, color, text)); };
+  // Flugschule Möwenflug (luft.ts): Captain Sunny meldet sich, sobald die Hochstadt offen ist
+  if (f.faden2 && !f.luftCall) {
+    if (++hush < 12) return;
+    ring('luftCall', 'Captain Sunny Okafor', '#ffb347', [
+      'Hallo, hier ist Sunny Okafor von der Flugschule Möwenflug, ganz unten am Kai. Jules hat mir erzählt, dass du überall gleichzeitig sein willst.',
+      'Ich hätte da ein Wasserflugzeug und einen Helikopter. Komm vorbei, wir machen einen Schnupperflug. Danach fliegst du Gäste über die Skyline und Pakete zu den Inseln.',
+    ]);
+    return;
+  }
+  // Live-Events (live.ts): Kiki Kaleido kündigt die Wochentermine an
+  if ((f.fmCall || f.luftCall) && !f.liveCall && s.chapter > 3) {
+    if (++hush < 12) return;
+    ring('liveCall', 'Kiki Kaleido', '#ff9ad5', [
+      'Kiki hier, Pride FM! Ab sofort gibt es jede Woche Live-Events in der ganzen Stadt: eine Party, ein Konzert und ein Bootsrennen.',
+      'Montags wechseln die Termine. Wer alle drei schafft, bekommt den Wochenpass und eine Event-Krone. Im Handy unter Live-Events steht, was gerade läuft.',
+    ]);
+    return;
+  }
+  // Jahreszeiten (weather.ts): in der Weihnachtswoche lädt Hilde ein, an Silvester ruft Jules an
+  const y = new Date().getFullYear();
+  if (s.chapter > 2 && isXmas() && f.xmasCall !== y) {
+    if (++hush < 12) return;
+    hush = 0; f.xmasCall = y;
+    c.phone(call('Hilde', '#a3a3a3', ['Es schneit in Rainbow City! Auf der Plaza steht der große Baum, und abends gibt es Glühwein, auch alkoholfrei.', 'Wer an Weihnachten nicht nach Hause kann oder will: Bei mir ist Platz. Familie ist, wer bleibt.']));
+    return;
+  }
+  if (s.chapter > 2 && isSilvester() && f.nyCall !== y) {
+    if (++hush < 12) return;
+    hush = 0; f.nyCall = y;
+    c.phone(call('Jules', '#9c59d1', ['Heute ist Silvester! Um Mitternacht gibt es Feuerwerk über der Hochstadt und dem Hafen.', 'Die schönste Sicht hast du von der Regenbogenbrücke oder ganz oben aus dem Helikopter. Wir sehen uns im neuen Jahr!']));
+    return;
   }
 }
 

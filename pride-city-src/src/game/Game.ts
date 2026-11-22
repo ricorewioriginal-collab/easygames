@@ -25,7 +25,8 @@ import { wagenMenu, wagenOf } from './festwagen';
 import { fmMenu } from './pridefm';
 import { houseMenu, useHomeItem } from './houseui';
 import { roomTheme, roomLevel } from './house';
-import { SKY, skyAt, forecast } from './weather';
+import { SKY, skyAt, forecast, SEASONS, season, seasonPick, useSeason, isXmas, isSilvester, type Season } from './weather';
+import { lineup, KINDS, doneThisWeek, isOpen, daysLeft, crowns, weekKey } from './live';
 import { closeness, levelName, addCloseness, chatOpen, chatOf, replyChat, OUTINGS, outingWhy, doOuting, GIFTS, giveGift, model, partners, jealousy, dateFolge, type Model } from './bond';
 import { STAFF, UPGRADES, UP_MAX, SPECIAL, daily as bizDaily, staffOf, upOf, popOf, issueOf, eventReady, hire, upgrade, workIn, hostEvent, fixIssue, upCost, staffFee, fixCost, eventCost } from './manage';
 import { SLOTS, part, readPimp, buyPart, clientFor, episode, type Slot } from './tuning';
@@ -619,6 +620,7 @@ export class Game {
         { icon: '💼', label: 'Jobbörse', sub: meinBeruf(s) ? `Hauptberuf: ${meinBeruf(s)!.icon} ${meinBeruf(s)!.name}` : `${karrieren(s).length} Berufe · Stellenanzeigen`, fn: () => this.phone('jobs') },
         { icon: '📞', label: 'Aufträge', sub: this.city.gig ? `Läuft: ${this.city.gig.g.title}` : `${openGigs(s).length} Leute brauchen Hilfe · ${Number(s.flags.gigs) || 0} erledigt`, fn: () => this.phone('gigs') },
         { icon: SKY[skyAt(s.day, s.time)].icon, label: 'Wetter und Termine', sub: `${SKY[skyAt(s.day, s.time)].name}${(s.day - 1) % 7 === 5 ? ' · heute CSD-Parade, 12–18 Uhr' : ' · CSD-Parade am Samstag'}`, fn: () => this.phone('wetter') },
+        { icon: '🎉', label: 'Live-Events', sub: (() => { const l = lineup(), n = l.filter((e) => !doneThisWeek(s, e.kind)).length; return n ? `Diese Woche: ${l.map((e) => e.icon).join(' ')} · noch ${n} offen` : `👑 Wochenpass voll · neue Termine in ${daysLeft()} ${daysLeft() === 1 ? 'Tag' : 'Tagen'}`; })(), fn: () => this.phone('live') },
         { icon: '🏙️', label: 'Imperium', sub: owned(s).length ? `${owned(s).length} Geschäfte · +${income(s)} € am Tag` : 'Läden, Bars und Clubs übernehmen', fn: () => this.phone('empire') },
         ...(s.flags.crewCall ? [{ icon: '✊', label: 'Crew', sub: `Die Lichterkette · ${crewOf(s).length} Leute${s.flags.crewWatch ? ` · ${VIERTEL.filter((v) => schutz(s, v.id)).length}/${VIERTEL.length} Viertel` : ''}`, fn: () => this.phone('crew') }] : []),
         { icon: '👨‍👩‍👧', label: 'Familie', sub: famSub(s), fn: () => this.phone('family') },
@@ -727,9 +729,14 @@ export class Game {
         { icon: '←', label: 'Zurück', fn: back }], back, 'phone');
     } else if (app === 'fm') {
       fmMenu(this, frame, home);
+    } else if (app === 'live') {
+      const l = lineup(), win = (k: keyof typeof KINDS) => { const w = KINDS[k]; return `${w.from}–${w.to} Uhr`; };
+      const rows = l.map((e) => `<p>${e.icon} <b>${esc(e.name)}</b><br><small>${KINDS[e.kind].icon} ${KINDS[e.kind].name} · jeden Spieltag ${win(e.kind)} · mit ${esc(e.host)}${e.kind === 'boot' ? ' · Start im Glitzer-Boot am Steg der Strandbar' : ''}<br>${doneThisWeek(s, e.kind) ? '✅ diese Woche geschafft' : isOpen(s, e.kind) ? '🔴 läuft gerade! Folge dem Symbol auf dem Radar' : '⏳ noch nicht offen'}${e.kind === 'boot' && s.flags['liveBest_' + e.id] ? ` · Bestzeit ${s.flags['liveBest_' + e.id]} s` : ''}</small></p>`).join('');
+      this.openMenu(frame('Live-Events', `<div class="pbody"><p>Jede Woche neue Termine, für alle gleich: eine Party, ein Konzert, ein Bootsrennen. Alle drei geschafft = Wochenpass: +300 € und eine 👑 Event-Krone.</p>${rows}<p><small>📅 Woche ${weekKey() % 100} · neue Termine in ${daysLeft()} ${daysLeft() === 1 ? 'Tag' : 'Tagen'} (montags) · 👑 ${crowns(s)} Kronen · 🎆 Feuerwerk samstags um 22 Uhr über dem Hafen</small></p></div>`),
+        [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'wetter') {
-      const fc = forecast(s.day, s.time), toSat = (5 - (s.day - 1) % 7 + 7) % 7;
-      this.openMenu(frame('Wetter und Termine', `<div class="pbody">${fc.map((f) => `<p>${SKY[f.sky].icon} <b>${f.label}</b>: ${SKY[f.sky].name}${f.parade ? ' · 🏳️‍🌈 CSD-Parade' : ''}</p>`).join('')}<p>🏳️‍🌈 <b>CSD-Parade</b><br><small>Jeden Samstag von 12 bis 18 Uhr auf der Hauptstraße: Festwagen, Tanzgruppen, Konfetti. ${toSat ? `Die nächste ist in ${toSat} ${toSat === 1 ? 'Tag' : 'Tagen'}.` : 'Heute ist es so weit!'} Lauf mit oder spring auf einen Wagen.</small></p><p><small>Nach Regen am Tag zeigt sich oft ein Regenbogen. Bei Regen glänzen die Straßen, bei Gewitter blitzt es über der Skyline.</small></p></div>`),
+      const fc = forecast(s.day, s.time), toSat = (5 - (s.day - 1) % 7 + 7) % 7, se = SEASONS[season()];
+      this.openMenu(frame('Wetter und Termine', `<div class="pbody"><p>${se.icon} <b>${se.name}</b>${seasonPick() === 'auto' ? ' (nach Kalender)' : ' (in den Optionen festgelegt)'}<br><small>${se.text}${isXmas() ? ' 🎄 Weihnachtswoche: abends Schnee, Weihnachtsbaum auf der Plaza.' : ''}${isSilvester() ? ' 🎆 Silvester: um Mitternacht Feuerwerk über Skyline und Hafen!' : ''}</small></p>${fc.map((f) => `<p>${SKY[f.sky].icon} <b>${f.label}</b>: ${SKY[f.sky].name}${f.parade ? ' · 🏳️‍🌈 CSD-Parade' : ''}</p>`).join('')}<p>🏳️‍🌈 <b>CSD-Parade</b><br><small>Jeden Samstag von 12 bis 18 Uhr auf der Hauptstraße: Festwagen, Tanzgruppen, Konfetti. ${toSat ? `Die nächste ist in ${toSat} ${toSat === 1 ? 'Tag' : 'Tagen'}.` : 'Heute ist es so weit!'} Lauf mit oder spring auf einen Wagen.</small></p><p><small>Nach Regen am Tag zeigt sich oft ein Regenbogen. Bei Regen glänzen die Straßen, bei Gewitter blitzt es über der Skyline.</small></p></div>`),
         [{ icon: '🎨', label: wagenOf(s) ? 'Deinen Festwagen umbauen' : 'Eigenen Festwagen bauen', sub: 'Flagge, Motto, Deko, Musik · Jury-Preis bei der Parade', fn: () => wagenMenu(this, () => this.phone('wetter')) }, { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'wissen') {
       const tl = timeline(s), seen = tl.filter((r) => r.seen).length;
@@ -1268,6 +1275,8 @@ export class Game {
       { icon: '📳', label: 'Vibration', sub: 'Handy und Controller', value: () => (st.vib !== false ? 'An' : 'Aus'), left: () => { st.vib = st.vib === false; set(); }, right: () => { st.vib = st.vib === false; set(); } },
       { icon: '🎥', label: 'Kamera-Tempo', value: () => st.camSpeed.toFixed(1) + '×', left: () => { st.camSpeed = Math.max(.4, +(st.camSpeed - .2).toFixed(1)); set(); }, right: () => { st.camSpeed = Math.min(2.4, +(st.camSpeed + .2).toFixed(1)); set(); } },
       { icon: '↕️', label: 'Kamera umkehren', value: () => (st.invertY ? 'An' : 'Aus'), left: () => { st.invertY = !st.invertY; set(); }, right: () => { st.invertY = !st.invertY; set(); } },
+      { icon: '🍂', label: 'Jahreszeit', sub: 'Kalender = echte Jahreszeit, Weihnachten und Silvester zu ihrer Zeit', value: () => { const p = seasonPick(); return p === 'auto' ? `Kalender (${SEASONS[season()].name})` : p === 'xmas' ? 'Weihnachten' : p === 'silvester' ? 'Silvester' : SEASONS[p as Season].name; },
+        left: () => this.cycleSeason(-1), right: () => this.cycleSeason(1) },
       { icon: '🔞', label: 'Inhalte ab 18', sub: 'Flirts, Vorlieben, angedeutete Nächte – Gesundheitsinfos sind immer an', value: () => (st.adult ? 'An' : 'Aus'), left: () => this.toggleAdult(back), right: () => this.toggleAdult(back), fn: () => this.toggleAdult(back) },
       { icon: '⛶', label: 'Vollbild', sub: 'Ein- oder ausschalten', fn: () => { if (document.fullscreenElement) document.exitFullscreen?.(); else document.documentElement.requestFullscreen?.().catch(() => {}); } },
       { icon: '←', label: 'Zurück', fn: back },
@@ -1275,6 +1284,13 @@ export class Game {
     const slot = this.overlay?.querySelector('#cloudSlot'), cm = document.getElementById('cloudMount');
     if (slot && cm) { cm.classList.remove('hidden'); slot.appendChild(cm); }
     hints([['dpad', 'Wählen'], ['lr', 'Ändern'], ['b', 'Zurück']]);
+  }
+
+  /** Jahreszeit in den Optionen: Kalender, die vier Jahreszeiten, Weihnachten oder Silvester */
+  private cycleSeason(d: number) {
+    const o = ['auto', 'fruehling', 'sommer', 'herbst', 'winter', 'xmas', 'silvester'], f = this.save.data.flags;
+    const i = Math.max(0, o.indexOf(String(f.season || 'auto')));
+    f.season = o[(i + d + o.length) % o.length]; useSeason(f.season); this.save.write();
   }
 
   /** 18+ einschalten nur mit Bestätigung, ausschalten jederzeit */
@@ -1336,6 +1352,7 @@ export class Game {
   }
   placeMenu(id: string) {
     const s = this.save.data;
+    if (id === 'flug') { this.city.talkTo('sunny'); return; }
     const close = () => { this.closeMenu(); this.touch.show(true); };
     const buy = (cost: number, msg: string, fx: () => void) => () => { if (s.money < cost) { toast('Nicht genug Geld.'); sfx('miss'); return; } s.money -= cost; fx(); toast(msg); sfx('coin'); this.city.refreshHud(); close(); };
     const eat = (fx: Parameters<typeof change>[1], goal?: string) => () => { change(s, fx); if (goal) this.done(track(s, goal)); };
