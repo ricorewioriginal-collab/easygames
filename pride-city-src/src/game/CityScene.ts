@@ -34,6 +34,7 @@ import { Weather, SKY, useSeason, isXmas, season } from './weather';
 import { Fireworks, XmasTree } from './feuerwerk';
 import { LiveCity } from './live';
 import { buildPad } from './luft';
+import { Trouble } from './trouble';
 import { CityLife } from './citylife';
 import { Friends } from './Friends';
 import { Companion } from './Companion';
@@ -78,6 +79,8 @@ export class CityScene implements GameScene {
   /** leuchtender Ring für Flug-Stationen in der Luft (luft.ts) */
   private airRing: Mesh | null = null;
   life!: CityLife;
+  /** Ärger auf der Straße: Taschendiebe, Autoklau, Schlägereien, Rennen (trouble.ts) */
+  trouble!: Trouble;
   buddy!: Companion;
   /** Online: Freund*innen in deiner Stadt */
   friends!: Friends;
@@ -200,7 +203,7 @@ export class CityScene implements GameScene {
     radio.subscribe((r, what) => { if (!this.drive) return; if (what === 'error') toast(`📻 ${r.err}`); this.showRadio(); });
     this.weather = new Weather(this.scene, this.world); this.fw = new Fireworks(this.scene, this.world); this.live = new LiveCity(this.g, this, this.scene, this.fw);
     this.xmas = new XmasTree(this.scene, -22, 9); buildPad(this.scene, this.world.root);
-    this.life = new CityLife(this.g, this, this.scene); this.buddy = new Companion(this.scene);
+    this.life = new CityLife(this.g, this, this.scene); this.trouble = new Trouble(this.g, this); this.buddy = new Companion(this.scene);
     this.friends = new Friends(this.scene, this.world, () => this.g.save.data.settings.adult);
     this.friends.me = () => ({ n: this.g.save.data.name, l: streetLook(playerLook(this.g.save.data)), s: this.g.where === 'inside' && this.g.inside?.netKey ? this.g.inside.netState() : this.netState() });
     this.friends.onInvite = (who, inv) => this.g.clubInvite(who.name, inv);
@@ -353,6 +356,7 @@ export class CityScene implements GameScene {
     if (this.kerb?.spot) out.push({ id: 'kerb', icon: '🌙', label: this.kerb.spot.name, pos: new Vector3(this.kerb.spot.x, 3, this.kerb.spot.z) });
     for (const [id, icon] of marks(s)) { const n = this.npcs.find((x) => x.def.id === id); if (n?.a.root.visible) out.push({ id: 'p' + id, icon, pos: at(n.a.root.position, 2.5) }); }
     const lm = this.life?.marker(); if (lm && !this.drive) out.push(lm);
+    const tm = this.trouble?.marker(); if (tm) out.push(tm);
     if (this.friends?.net.on) for (const m of this.friends.list) { const q = this.friends.posOf(m.id); if (q) out.push({ id: 'fr' + m.id, icon: m.st.c ? '🚗' : '🌐', label: m.name, pos: new Vector3(q.x, m.st.c ? 2.6 : 2.35, q.z) }); }
     for (const i of this.isles) out.push(...i.markers());
     const ph = this.life?.parade.head(); if (ph && Vector3.Distance(ph, this.player.root.position) > 26) out.push({ id: 'parade', icon: '🏳️‍🌈', label: 'CSD-Parade', pos: ph });
@@ -1030,7 +1034,9 @@ export class CityScene implements GameScene {
       }
       if (b.left <= 0) this.byeBuddy('Ich muss langsam los. Das war ein richtig schöner Tag mit dir. 💜');
     }
-    this.life.update(dt, t, this.player.root.position, { busy: busy || !!this.gig || !!this.kerb.rider || this.combat.wanted.stars > 0, night: this.world.night > .5, rain: this.weather.rain > .2, onFoot: !this.drive });
+    { const free = !busy && !this.gig && !this.kerb.rider && this.combat.wanted.stars === 0 && !this.life.ev && !this.life.parade.riding && !this.isles.some((i) => i.active);
+      this.trouble.update(dt, { free, night: this.world.night > .5, ref: this.player.root.position }); }
+    this.life.update(dt, t, this.player.root.position, { busy: busy || !!this.gig || !!this.trouble.cur || !!this.kerb.rider || this.combat.wanted.stars > 0, night: this.world.night > .5, rain: this.weather.rain > .2, onFoot: !this.drive });
 
     this.hudT -= dt;
     if (this.hudT <= 0) { this.hudT = .5; if (!busy && !this.photo) storyTick(this.ctx()); this.refreshHud(); if (mood(s) >= 75 && !busy) g.done(track(s, 'mood')); }
@@ -1042,7 +1048,7 @@ export class CityScene implements GameScene {
       g.hud.radar(pp.x, pp.z, this.cam.yaw, [
         ...this.world.pois.filter((q) => Math.hypot(q.x - pp.x, q.z - pp.z) < 60).map((q) => ({ x: q.x, z: q.z, icon: q.icon })),
         ...this.combat.flucht.blips(this.combat.wanted.stars, pp),
-        ...mk.map((m) => ({ x: m.pos.x, z: m.pos.z, color: m.id === 'g' ? '#ff3fb0' : m.id === 'gig' ? '#ffd23b' : m.id === 'kerb' ? '#ff6ad5' : '#ffffff', goal: m.id === 'g' || m.id === 'gig' || m.id === 'kerb' })),
+        ...mk.map((m) => ({ x: m.pos.x, z: m.pos.z, color: m.id === 'g' ? '#ff3fb0' : m.id === 'gig' ? '#ffd23b' : m.id === 'kerb' ? '#ff6ad5' : m.id === 'trouble' ? '#ff4b3b' : '#ffffff', goal: m.id === 'g' || m.id === 'gig' || m.id === 'kerb' || m.id === 'trouble' })),
       ]);
     }
     // Lichtsäule: laufender Auftrag hat Vorrang (gelb), sonst das Story-Ziel (pink)
