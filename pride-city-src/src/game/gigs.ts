@@ -3,7 +3,13 @@
    Eigene Figuren und Orte von Pride City. Nachtaufträge gibt es nur zwischen 21 und 5 Uhr. */
 import type { SaveData } from '../engine/Save';
 
-export interface GigStep { x: number; z: number; label: string; icon: string }
+export interface GigStep {
+  x: number; z: number; label: string; icon: string;
+  /** Schlägerei an dieser Station (Brawl.ts): Namen der Leute vom Ordnungsbund; erst zu Fuß, dann alle umhauen */
+  fight?: string[];
+  /** Verfolgung (Brawl.ts): Wagen über das Straßennetz (car = Modell) oder zu Fuß über einen festen Weg (path); die Station wandert mit */
+  chase?: { car?: string; path?: Array<[number, number]> };
+}
 export interface Gig {
   id: string; who: string; color: string; title: string;
   /** was die Person am Telefon sagt */ call: string;

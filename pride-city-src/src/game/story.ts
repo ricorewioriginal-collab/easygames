@@ -11,6 +11,7 @@ import { NACHT_NPCS, nachtTalk, nachtGoal, nachtMarks, nachtFirst } from './nach
 import { dragGoal } from './drag';
 import { hour } from './life';
 import { fadenGoal, fadenTick, fadenPoi, fadenDance, actLabel, history } from './faden';
+import { FLUT_NPCS, flutTalk, flutGoal, flutMarks, flutHidden, flutTick, flutHush } from './flut';
 
 export interface NpcDef {
   id: string; name: string; pron: string; color: string; look: Look;
@@ -46,6 +47,7 @@ export const NPCS: NpcDef[] = [
   { id: 'tobi', name: 'Tobi', pron: 'er/ihn', color: '#c9a26a', look: { body: 'Man2', palette: 'rainbow', skin: 0, hair: 3 }, x: -70, z: 30, walk: [[-70, 30], [-70, 40], [-76, 40], [-76, 30]] },
   ...SAGA_NPCS,
   ...NACHT_NPCS,
+  ...FLUT_NPCS,
   { id: 'kim', name: 'Kim', pron: 'they/them', color: '#3da542', look: { body: 'Woman', palette: 'aro', skin: 4, hair: 2 }, x: -26, z: -20, walk: [[-26, -20], [-26, -4], [-14, -4], [-14, -20]], petition: true },
 ];
 
@@ -139,6 +141,7 @@ export function goal(s: SaveData): Goal {
   const sg = sagaGoal(s);
   if (sg && (s.chapter > 5 || s.flags.sagaRun)) return sg;
   const fg = fadenGoal(s); if (fg) return fg;
+  const flg = flutGoal(s); if (flg) return flg;
   const sat = (s.day - 1) % 7 === 5, h = hour(s);
   if (s.chapter > 5 && s.flags.wagen && sat && h >= 12 && h < 18 && s.flags.wagenPrize !== s.day) return { title: 'CSD-Parade: Spring auf deinen Festwagen', sub: 'Bis 18 Uhr auf der Hauptstraße. Bleib oben, bis die Jury deinen Wagen gesehen hat.' };
   const dg = s.chapter > 3 ? dragGoal(s) : null;
@@ -159,7 +162,7 @@ export function goal(s: SaveData): Goal {
 }
 
 /** Figuren, die gerade ein Symbol über dem Kopf brauchen */
-export function marks(s: SaveData): Array<[string, string]> { return [...mainMarks(s), ...sagaMarks(s), ...nachtMarks(s)]; }
+export function marks(s: SaveData): Array<[string, string]> { return [...mainMarks(s), ...sagaMarks(s), ...nachtMarks(s), ...flutMarks(s)]; }
 function mainMarks(s: SaveData): Array<[string, string]> {
   if (s.chapter === 1 && s.step === 4) return NPCS.filter((n) => n.petition && s.flags['sig_' + n.id] === undefined).map((n) => [n.id, '✍️']);
   if (s.chapter === 4 && s.step === 1) return CLUES.filter((id) => !s.flags['clue_' + id]).map((id) => [id, '🔎']);
@@ -168,7 +171,7 @@ function mainMarks(s: SaveData): Array<[string, string]> {
 }
 
 /** Nova ist in Kapitel 4 verschwunden */
-export function hidden(s: SaveData, id: string) { return sagaHidden(s, id) || (id === 'nova' && s.chapter === 4 && s.step < 4) || (id === 'leon' && s.chapter < 2) || (['finn', 'ben', 'lotte', 'pia', 'joerg', 'anke', 'samira', 'tobi'].includes(id) && s.chapter < 2); }
+export function hidden(s: SaveData, id: string) { return sagaHidden(s, id) || flutHidden(s, id) || (id === 'nova' && s.chapter === 4 && s.step < 4) || (id === 'leon' && s.chapter < 2) || (['finn', 'ben', 'lotte', 'pia', 'joerg', 'anke', 'samira', 'tobi'].includes(id) && s.chapter < 2); }
 
 /** Ziele, die sich von selbst erfüllen (Schicht gearbeitet, Leute kennengelernt) – zweimal pro Sekunde */
 export function storyTick(c: StoryCtx) {
@@ -176,12 +179,17 @@ export function storyTick(c: StoryCtx) {
   if (s.chapter === 2 && s.step === 1 && shifts(s) >= 1) { c.step(2); c.reward(0, 3, 'Erste Schicht geschafft'); }
   else if (s.chapter === 2 && s.step === 2 && known(s) >= 6) { c.step(3); c.toast('💌 Hilde: „Heute Abend Essen bei mir auf der Plaza. Keine Widerrede!“'); }
   else if (s.chapter === 3 && s.step === 4 && s.flags.bar) c.chapterDone('Drag-Show, eine ehrliche Aussprache mit Rex und dein eigener Club: Du bist jetzt Teil der Szene.');
-  else fadenTick(c);
+  else {
+    // Akt IV (flut.ts) klingelt nur, wenn der rote Faden in diesem Takt nicht schon angerufen hat
+    let rang = false;
+    fadenTick({ ...c, phone: (l, d) => { rang = true; c.phone(l, d); } });
+    if (rang) flutHush(); else flutTick(c);
+  }
 }
 
 /** Gespräch – true, wenn die Geschichte es übernommen hat */
 export function talk(c: StoryCtx, id: string): boolean {
-  if (sagaTalk(c, id) || nachtTalk(c, id)) return true;
+  if (sagaTalk(c, id) || nachtTalk(c, id) || flutTalk(c, id)) return true;
   const s = c.s, n = npc(id);
   if (!n) return false;
   if (s.chapter === 1) {

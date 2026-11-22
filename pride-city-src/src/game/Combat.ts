@@ -135,6 +135,7 @@ export class Combat {
     for (const n of this.city.street.people) if (n.a.root.visible) consider(n.a, n.kind, n.name, n.kind === 'police');
     for (const c of this.extra) if (c.a.root.isEnabled()) consider(c.a, 'police', 'Polizei', true);
     for (const n of this.city.storyActors()) consider(n.a, 'story', n.name, false, n.id);
+    for (const f of this.city.brawl.targets()) consider(f.a, 'foe', f.name);
     this.impact = null;
     setTimeout(() => sfx('whoosh'), 150);
     if (!best) return;
@@ -148,6 +149,13 @@ export class Combat {
       sfx(this.weapon === 'hand' ? 'slap' : this.weapon === 'noodle' ? 'boing' : 'squeak');
       this.wob = 1; this.city.shake = this.weapon === 'hand' ? .12 : .2;
       this.burst(tp.x - dx / d * .25, 1.25, tp.z - dz / d * .25);
+      // Schlägerei (Brawl.ts): Notwehr gegen den Ordnungsbund, keine Fahndung
+      if (t.kind === 'foe') {
+        let h = this.chain.get(t.a); if (!h) this.chain.set(t.a, (h = { n: 0, t: -9 }));
+        if (landHit(h, this.now, Math.min(2, w.hits))) { sfx('hit'); this.knock(t.a, 'foe', t.name, 'Uff!', yaw, dx / d * w.push * 4, dz / d * w.push * 4); this.city.brawl.knocked(t.a); }
+        else { this.push(t.a, dx / d, dz / d, w.push * 1.4); toast(`${t.name}: „${AU[Math.floor(Math.random() * AU.length)]}“`); }
+        return;
+      }
       if (t.kind === 'story') { t.a.play('laugh'); toast(`${t.name}: „Hey! Lass das!“`); this.city.annoy(t.id!); this.push(t.a, dx / d, dz / d, w.push * .5); this.crime('assault', p); return; }
       let h = this.chain.get(t.a); if (!h) this.chain.set(t.a, (h = { n: 0, t: -9 }));
       const first = h.n === 0 || this.now - h.t > 4;
@@ -157,6 +165,8 @@ export class Combat {
     };
   }
 
+  /** liegt oder taumelt gerade (dann führt Combat die Figur) */
+  holds(a: Actor) { return this.bodies.has(a) || this.stagger.has(a); }
   /** Taumeln: ein Stück zurück, kurz nach hinten kippen, dann wieder fangen */
   private push(a: Actor, nx: number, nz: number, force: number) {
     this.stagger.set(a, { t: .38, vx: nx * force / .38, vz: nz * force / .38 });

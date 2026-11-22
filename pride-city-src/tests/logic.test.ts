@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { migrate, fromGayLife, defaults } from '../src/engine/Save';
 import { goal, talk, poi, danceResult, storyTick, hidden, marks, lichtPart, lfPart, lfGlow, lichtLight, type StoryCtx } from '../src/game/story';
-import { fadenKrone } from '../src/game/faden';
+import { fadenKrone, actLabel } from '../src/game/faden';
 import { LICHT_CHAPTERS, lichtMax } from '../src/game/licht';
 import { LF_CHAPTERS, lfMax } from '../src/game/leuchtfeuer';
 import type { Line } from '../src/ui/ui';
@@ -187,6 +187,12 @@ describe('Roter Faden (Akt II und III)', () => {
     expect(goal(s).title).toBe('Freies Spiel');
     s.day = 6; s.time = 7 / 24; expect(goal(s).title).toMatch(/^CSD-Parade/); s.flags.wagenPrize = 6; expect(goal(s).title).toBe('Freies Spiel');
     s.flags.wagenWins = 1; tick(); expect(calls.at(-1)).toBe('📞 Nova'); tick(); expect(calls.at(-1)).toBe('📞 Jules'); expect(s.flags.wagenWinCall).toBe(true);
+    // Akt IV „Die graue Flut“: Mo ruft an, dann Tom, Inseln Rostwerk und Kap Zuflucht, Kral, Ayla
+    tick(); tick(); expect(calls.at(-1)).toBe('📞 Mo'); expect(cards).toContain('Akt IV'); expect(actLabel(s)).toMatch(/^Akt IV/);
+    expect(goal(s).npc).toBe('tom'); expect(goal(s).title).toMatch(/1\/5: Farbe gegen Grau/);
+    s.flags.flut = 2; expect(goal(s).isle).toBe('rostwerk'); s.flags.w_rostwerk = 4; tick(); tick(); expect(calls.at(-1)).toBe('📞 Viktor Kral'); expect(goal(s).npc).toBe('kral');
+    s.flags.flut = 3; expect(goal(s).isle).toBe('zuflucht'); expect(hidden(s, 'kral')).toBe(true); s.flags.w_zuflucht = 4;
+    h = 23; tick(); tick(); expect(calls.at(-1)).toBe('📞 Ayla Demir'); expect(s.flags.flutRun).toBe('moewe');
   });
   it('Wahlfamilie: Hilde ruft beim ersten festen Paar an', () => {
     const s = defaults(); s.chapter = 4; s.step = 1;
