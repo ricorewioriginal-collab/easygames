@@ -37,6 +37,12 @@ export interface PcEvents extends Record<string, unknown> {
   dragKrone: { name: string };
   /** Hauptberuf in der Jobbörse angenommen (beruf.ts) */
   beruf: { id: string; name: string };
+  /** Training in der Muckibude (figur.ts): neue Muskelwerte 0–100 */
+  training: { kind: string; mus: number };
+  /** Neues Tattoo gestochen */
+  tattoo: { id: string };
+  /** Foto auf Glitzergram gepostet (gram.ts) */
+  glitzergram: { likes: number; followers: number; spot: string; brief: string | null };
   /** Dreh als Erwachsenen-Darsteller*in abgeschlossen (dreh.ts, nur 18+) */
   drehTag: { title: string; stars: number; fans: number; pay: number };
   /** Eine Wissenskarte mit echter queerer Geschichte wurde freigeschaltet (Drag, CSD, Radio …) */

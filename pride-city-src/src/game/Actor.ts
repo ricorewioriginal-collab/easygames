@@ -10,6 +10,8 @@ import { playerDrag } from './dragLook';
 import { lodFor, LOD_DIST, HIDE_DIST, type Lod } from './lod';
 import { wearGear } from './gear';
 import type { Gear } from './szene';
+import { figOf, type Fig } from './figur';
+import { muscles, figMeshes, dropFig } from './figur3d';
 
 export const CHAR_HEIGHT = 1.75;
 const GEAR = /_(helmet|equipment|machinegun|shotgun|pistol|mask|flashlight)$/;
@@ -23,7 +25,7 @@ export const OUTFITS: Array<{ id: Outfit; name: string; adult?: boolean }> = [
   { id: 'swim', name: 'Badehose / Bikini' }, { id: 'harness', name: 'Harness', adult: true },
 ];
 /** rb = feste Rocketbox-Figur (sonst passend zu body/palette/skin gewählt) */
-export interface Look { body: string; palette: string; skin: number; hair?: number; rb?: string; cape?: boolean; hat?: boolean; mug?: boolean; outfit?: Outfit; top?: boolean; /** Szene-Look aus queer.ts (Flaggen-Shirt, Leder, Glitzer, gefärbte Haare) */ style?: string; /** 18+ */ hot?: boolean; /** Szene-Zubehör (gear.ts): Pup-Maske, Ledermütze, Halsband, Krone */ gear?: Gear }
+export interface Look { body: string; palette: string; skin: number; hair?: number; rb?: string; cape?: boolean; hat?: boolean; mug?: boolean; outfit?: Outfit; top?: boolean; /** Szene-Look aus queer.ts (Flaggen-Shirt, Leder, Glitzer, gefärbte Haare) */ style?: string; /** 18+ */ hot?: boolean; /** Szene-Zubehör (gear.ts): Pup-Maske, Ledermütze, Halsband, Krone */ gear?: Gear; /** Spielfigur: Muskeln, Tattoos, Piercings, Bart (figur.ts) */ fig?: Fig }
 
 /** Spielbare Romanfigur aus „Ich bin das Licht“: Leon Sommer als Mann oder als Lady Luma in Drag */
 export const ROLE_LOOKS: Record<string, Look> = {
@@ -31,7 +33,7 @@ export const ROLE_LOOKS: Record<string, Look> = {
   luma: { body: 'Woman2', rb: 'Female_Party_02', palette: 'neon', skin: 2, hair: 1, cape: true, outfit: 'clothed', top: true },
 };
 /** Aussehen der Spielfigur aus dem Spielstand */
-export function playerLook(s: { body: string; palette: string; skin: number; pronouns: string; flags: Record<string, unknown>; settings: { adult: boolean } }): Look {
+export function playerLook(s: { body: string; palette: string; skin: number; pronouns: string; flags: Record<string, unknown>; settings: { adult: boolean }; day?: number }): Look {
   const role = ROLE_LOOKS[String(s.flags.playAs || '')];
   if (role) return { ...role };
   let outfit = (s.flags.outfit as Outfit) || 'clothed';
@@ -39,7 +41,7 @@ export function playerLook(s: { body: string; palette: string; skin: number; pro
   const hair = typeof s.flags.hair === 'number' && (s.flags.hair as number) >= 0 ? s.flags.hair as number : undefined;
   // alte Spielstände (Körper „Hero“): nur mit „sie“ eine Frau, sonst ein Mann – nie ungefragt das andere Geschlecht
   const av = avatarFor({ body: s.body, palette: s.palette, skin: s.skin, hair, top: s.pronouns === 'she' });
-  return { body: av.id, rb: av.id, palette: s.palette, skin: s.skin, hair, outfit, top: s.pronouns !== 'he', hot: s.settings.adult, style: playerDrag(s.flags) };
+  return { body: av.id, rb: av.id, palette: s.palette, skin: s.skin, hair, outfit, top: s.pronouns !== 'he', hot: s.settings.adult, style: playerDrag(s.flags), fig: figOf(s as Parameters<typeof figOf>[0]) };
 }
 
 /** Auf der Straße: Unterwäsche nur zuhause, draußen ist die Figur angezogen */
@@ -155,6 +157,8 @@ export class Actor {
     a.play('idle', 0);
     await a.dress();
     if (look.gear) wearGear(a, look.gear, look.body.length + look.skin);
+    await a.figure();
+    a.root.onDisposeObservable.add(() => dropFig(a.figParts));
     return a;
   }
 
@@ -162,7 +166,21 @@ export class Actor {
   setLook(look: Partial<Look>) {
     const before = this.dressed;
     Object.assign(this.look, look); this.look.body = this.avatar.id;
-    if (this.outfitKey() !== before) void this.dress();
+    if (this.outfitKey() !== before) void this.dress(); else void this.figure();
+  }
+  /* Körper der Spielfigur (figur3d.ts): Muskeln an den Knochen, Tattoos auf der Haut, Bart, Piercings */
+  private figK = '';
+  private figParts: Mesh[] = [];
+  private async figure() {
+    const f = this.look.fig, k = this.dressed + '|' + (this.bare?.root.isEnabled() ? 1 : 0) + '|' + JSON.stringify(f || null);
+    if (k === this.figK || this.avatar.job === 'kid') return;
+    this.figK = k;
+    dropFig(this.figParts); this.figParts = [];
+    muscles(this.bones, f?.m ?? .2);
+    if (!f || this.root.isDisposed()) return;
+    const bodies = this.bare && this.bare.root.isEnabled() ? this.bare.meshes : [];
+    const head = this.model.getChildMeshes().find((m) => (m as Mesh).skeleton && /_head/.test((((m.material as { _orig?: { name: string } } | null)?._orig) || m.material)?.name || '') && !(this.bare && m.isDescendantOf(this.bare.root))) as Mesh | undefined;
+    try { this.figParts = figMeshes(this.scene, bodies, head || null, f); } catch (e) { console.warn('figur', e); }
   }
   private dressed = 'clothed/';
   private bare: Bare | null = null;
@@ -208,6 +226,7 @@ export class Actor {
           await new Promise((r) => setTimeout(r, 40));
         }).catch((e) => console.warn('style', e));
       }
+      void this.figure();
     } catch (e) { console.warn('outfit', e); }
   }
 
@@ -215,7 +234,8 @@ export class Actor {
   private probe: AbstractMesh | null | undefined;
   private offscreen() {
     const pl = this.scene.frustumPlanes; if (!pl || pl.length < 6) return false;
-    if (this.probe === undefined || this.probe?.isDisposed()) this.probe = this.model.getChildMeshes().find((q) => (q as AbstractMesh & { skeleton?: unknown }).skeleton) || null;
+    // Prüfkörper muss sichtbar sein: ein ausgeblendeter Körper (z. B. unter dem Oberkörper-frei-Outfit) hat eine veraltete Box, die Figur schliefe dann in der T-Pose ein
+    if (this.probe === undefined || this.probe?.isDisposed() || (this.probe && !this.probe.isEnabled())) { const sk = this.model.getChildMeshes().filter((q) => (q as AbstractMesh & { skeleton?: unknown }).skeleton); this.probe = sk.find((q) => q.isEnabled()) || sk[0] || null; }
     const m = this.probe; if (!m) return false;
     const b = m.getBoundingInfo().boundingSphere, c = b.centerWorld, r = b.radiusWorld + 1.5;
     for (const p of pl) if (p.dotCoordinate(c) <= -r) return true;

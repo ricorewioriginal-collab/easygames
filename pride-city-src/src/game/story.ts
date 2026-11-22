@@ -11,6 +11,7 @@ import { NACHT_NPCS, nachtTalk, nachtGoal, nachtMarks, nachtFirst } from './nach
 import { dragGoal } from './drag';
 import { hour } from './life';
 import { fadenGoal, fadenTick, fadenPoi, fadenDance, actLabel, history, extraTick, extraHush } from './faden';
+import { aufTick, aufHush } from './aufstieg';
 import { FLUT_NPCS, flutTalk, flutGoal, flutMarks, flutHidden, flutTick, flutHush } from './flut';
 import { LUFT_NPCS, luftTalk } from './luft';
 import { lineup, doneThisWeek, isOpen, KINDS } from './live';
@@ -196,12 +197,14 @@ export function storyTick(c: StoryCtx) {
     // Akt IV (flut.ts) klingelt nur, wenn der rote Faden in diesem Takt nicht schon angerufen hat
     let rang = false;
     fadenTick({ ...c, phone: (l, d) => { rang = true; c.phone(l, d); } });
-    if (rang) { flutHush(); extraHush(); return; }
-    // Flugschule, Live-Events und Festtage (faden.ts) erst, wenn auch Akt IV/V gerade nichts zu sagen haben
+    if (rang) { flutHush(); extraHush(); aufHush(); return; }
+    // Flugschule, Live-Events und Festtage (faden.ts) erst, wenn auch Akt IV/V gerade nichts zu sagen haben; der Aufstieg (aufstieg.ts) ganz zuletzt
     let rang4 = false;
     const quiet = { ...c, phone: (l: Parameters<typeof c.phone>[0], d?: Parameters<typeof c.phone>[1]) => { rang4 = true; c.phone(l, d); } };
     flutTick(quiet); crewTick(quiet);
-    if (rang4) extraHush(); else extraTick(c);
+    if (rang4) { extraHush(); aufHush(); return; }
+    extraTick(quiet);
+    if (rang4) aufHush(); else aufTick(c);
   }
 }
 

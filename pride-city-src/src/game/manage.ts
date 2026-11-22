@@ -29,7 +29,20 @@ export const SPECIAL: Record<string, { extra: string; event: string; eventText: 
   komet: { extra: 'Spiegelbühne mit Klavierbar', event: 'Karaoke-Nacht der Stammgäste', eventText: 'Jo singt „I Will Survive“, der ganze Komet singt mit.' },
   wolke: { extra: 'Glasboden über der Stadt', event: 'Sunset-Session über den Dächern', eventText: 'Sonnenuntergang im 40. Stock, Saxofon und Glitzer-Cocktails.' },
   prisma: { extra: 'Lasershow und zweiter Floor', event: 'Prisma-Nacht mit Star-DJ', eventText: 'Die Schlange reicht bis zum Pride Plaza.' },
+  wasch: { extra: 'Bar zwischen den Trocknern', event: 'Schaumparty', eventText: 'Schaum bis zu den Knien, DJ auf der Waschmaschine, das Viertel tanzt im Schleudergang.' },
+  deli: { extra: 'Fensterplätze mit Blick auf die Avenue', event: 'Mitternachts-Bagel-Battle', eventText: 'Wer belegt den verrücktesten Bagel? Die Jury: drei Taxifahrer und eine Drag-Queen.' },
+  pizza: { extra: 'Zweiter Steinofen und Terrasse', event: 'Pizza-Abend mit Nonna', eventText: 'Nonna Rosaria zeigt, wie der Teig fliegt. Alle dürfen mitkneten, keiner darf Ananas sagen.' },
+  diner: { extra: 'Neue Jukebox mit Disco-Klassikern', event: 'Drag-Brunch', eventText: 'Pancakes, Mimosas und eine Show auf dem Tresen. Ausverkauft bis Weihnachten.' },
+  galerie: { extra: 'Lichtsaal für Fotografie', event: 'Vernissage „Stolz in Öl“', eventText: 'Sekt, Häppchen und vierzig Porträts aus hundert Jahren queerer Stadtgeschichte.' },
+  gym: { extra: 'Neue Geräte und Spiegelwand', event: 'Kurs „Bauch, Beine, Pride“', eventText: 'Coach Mehmet brüllt, alle schwitzen, am Ende tanzt der ganze Kurs zu Kylie.' },
+  sauna: { extra: 'Panorama-Aufgusssauna', event: 'Mitternachts-Aufguss', eventText: 'Torsten wedelt mit dem Handtuch zu Opernmusik. Der heißeste Aufguss am Hafen.' },
+  astra: { extra: 'Restaurierte Samtsessel und Leinwand', event: 'Queere Filmnacht', eventText: 'Drei Klassiker, Popcorn mit Glitzer und ein Saal, der bei jedem Kuss jubelt.' },
+  flamingo: { extra: 'Pool mit Regenbogen-Licht', event: 'Pool-Party unter Palmen', eventText: 'Luftmatratzen in Flamingo-Form, DJ am Beckenrand, Sonnenuntergang über der Playa.' },
+  aurora: { extra: 'Fünfter Stern und Ballsaal', event: 'Großer Ball in der Aurora', eventText: 'Smoking, Pailletten und ein Walzer unter dem Kronleuchter. Die ganze Stadt will dabei sein.' },
+  kranhaus: { extra: 'Dachbar oben im Kran', event: 'Hafenfest im Kranhaus', eventText: 'Lichterketten am Kranarm, Musik vom Kai. Wo Kral Grau wollte, ist es jetzt bunt.' },
 };
+/** Hotels füllen sich am Wochenende, zur CSD-Parade ist alles ausgebucht (Wochentag: (Tag − 1) % 7, 4 = Freitag, 5 = Samstag) */
+export const hotelFactor = (s: SaveData, b: Business) => { if (b.kind !== 'hotel') return 1; const wd = (s.day - 1) % 7; return wd === 5 ? 1.6 : wd === 4 || wd === 6 ? 1.3 : 1; };
 export const ISSUES = [
   { id: 'kuehlung', text: 'Die Kühlung ist ausgefallen.', fix: 'Techniker rufen' },
   { id: 'amt', text: 'Das Ordnungsamt hat eine Beschwerde wegen Lärm.', fix: 'Mit den Nachbarn reden und Dämmung einbauen' },
@@ -57,7 +70,7 @@ export const eventCost = (b: Business) => Math.round(b.daily * 1.5);
 export function daily(s: SaveData, b: Business) {
   const st = STAFF[staffOf(s, b.id)], ups = UPGRADES.reduce((n, u) => n + upOf(s, b.id, u.id), 0);
   const cf = clubFactor(s, b.id);   // Nachtclubs: DJ, Preise, Tür, Deko (club.ts), sonst Faktor 1
-  const gross = Math.round(b.daily * st.mult * (1 + ups * UP_GAIN) * popFactor(popOf(s, b.id)) * (issueOf(s, b.id) ? .5 : 1) * cf.mult);
+  const gross = Math.round(b.daily * st.mult * (1 + ups * UP_GAIN) * popFactor(popOf(s, b.id)) * (issueOf(s, b.id) ? .5 : 1) * cf.mult * hotelFactor(s, b));
   const wage = Math.round(b.daily * st.wage) + cf.cost;
   return { gross, wage, net: gross - wage };
 }
