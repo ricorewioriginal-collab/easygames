@@ -223,6 +223,8 @@ export class Combat {
     if (this.puddles.length > 6) this.puddles.shift()!.m.dispose();
   }
 
+  /** Zu Boden gehen ohne Fahndung (Rangelei bei einer Anfeindung, Nothilfe) */
+  floor(a: Actor, name: string, line: string, from: Vector3) { this.knock(a, 'walker', name, line, Math.atan2(a.root.position.x - from.x, a.root.position.z - from.z)); }
   /** Umfallen (ausgerutscht oder umgehauen), steht nach ein paar Sekunden wieder auf */
   private knock(a: Actor, kind: string, name: string, line: string, dir: number, vx = 0, vz = 0) {
     this.stagger.delete(a);

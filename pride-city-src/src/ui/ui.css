@@ -453,6 +453,10 @@ html[data-input=touch] #mg.arc .aBtn { display: flex; flex-direction: column; al
 /* Zielmarken wippen um ihren Ankerpunkt (vorher überschrieb „bob“ die Verschiebung, die Marken rutschten bis unter die Knöpfe) */
 #hud .marker { animation-name: mbob; }
 @keyframes mbob { 50% { translate: -50% calc(-100% + 4px); } }
+/* Show „Aufgemotzt!“: Menü seitlich bzw. unten, das Auto bleibt sichtbar */
+body:has(#hud:not(.hidden)) .screen.title.tune { background: linear-gradient(90deg, rgba(9,6,20,.8) 0%, rgba(9,6,20,.35) 34%, rgba(9,6,20,0) 50%); backdrop-filter: none; -webkit-backdrop-filter: none; }
+body:has(#hud:not(.hidden)) .screen.title.tune .panel p { margin: .25em 0; }
+@media (orientation: portrait) { body:has(#hud:not(.hidden)) .screen.title.tune { background: linear-gradient(0deg, rgba(9,6,20,.88) 0%, rgba(9,6,20,.5) 42%, rgba(9,6,20,0) 58%); } }
 /* Liebesszene als Sextape (Handy-Kamera) oder Dreh am Set (18+, angedeutet) */
 .cine .rec { position: absolute; left: 16px; top: calc(11vh + 12px); color: #ff3b3b; font: 800 14px/1 ui-monospace, monospace; letter-spacing: .08em; text-shadow: 0 0 6px #000; }
 .cine .rec span { color: #fff; margin-left: 6px; }
