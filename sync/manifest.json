@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "cc4011841d19",
- "generated": "2026-11-22T05:53:27+00:00",
- "commit": "7759a569ee2b1b492a74116ce005938d08b0001f",
+ "version": "03ee0b6c0d4f",
+ "generated": "2026-11-22T12:41:07+00:00",
+ "commit": "acf1ba9376159fd3c72fbac3ec368322db5ffd2d",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -13138,8 +13138,8 @@
   },
   {
    "p": "index.html",
-   "s": 103068,
-   "h": "af6de030886aa614aa8a368e9364c0139768ea1362e3a35b620932e5d26382c6"
+   "s": 103485,
+   "h": "9c8e144b5c451bfe8b84847d42c2d9c4bb43aebf71f10063b27863047d80c5b7"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -19105,6 +19105,11 @@
    "p": "taschi/vite.config.mjs",
    "s": 929,
    "h": "722bcf0e7eabd6475f355575a277281e7e06f4b502f56bec7941107073f113e2"
+  },
+  {
+   "p": "telegram.js",
+   "s": 3199,
+   "h": "98ce5d67aac1aba70dff9b9d6d2c24c2561b075ed17599a7895b99fa7551e26e"
   },
   {
    "p": "thumbs/FunkhausReality.webp",

@@ -7,6 +7,7 @@
 (function () { try { if (window.parent !== window && !/[?&]embed(=|&|$)/.test(location.search)) { window.parent.postMessage({ type: 'easygames:close' }, '*'); setTimeout(function () { location.replace(location.pathname + '?embed=1'); }, 400); } } catch (e) {} })();
 </script>
 <meta charset="utf-8">
+<script src="telegram.js"></script><!-- Telegram-Mini-App: tut außerhalb von Telegram nichts -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080B12">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1170,6 +1171,8 @@ if (isTv) { const f = heroOn ? $('hero').querySelector('.primary') : tiles[0] &&
 // Direktlink zur Spieleliste: ...#anmacha-flipper öffnet das Spiel gleich
 const start = GAMES.findIndex(g => '#' + g.id === location.hash);
 if (start >= 0) openGame(start, true);
+// Telegram-Mini-App mit Startlink t.me/<bot>?startapp=<spiel-id>: Spiel öffnen, sobald Telegram bereit ist (liest vorher noch die Adresse)
+else if (window.EG_TG && window.EG_TG.start) window.EG_TG.ready.then(() => { const i = GAMES.findIndex(g => g.id === window.EG_TG.start); if (i >= 0 && cur < 0) openGame(i); });
 </script>
 <script>
 // Ein Login für alles (Google): Anmelden-Knopf oben, danach Menü mit allen persönlichen Funktionen
