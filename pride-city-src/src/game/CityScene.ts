@@ -422,7 +422,7 @@ export class CityScene implements GameScene {
       if (n.kind === 'worker') { this.g.booking(n.id!); setTimeout(end, 4000); return; }
       // alle Erwachsenen sind ansprechbar: Plaudern, mit 18+ auch Flirten und mehr (flirtui.ts)
       const rb = n.a.avatar.id, generic = /^(Szene-Mensch|Verliebte?r?|Passant|Spaziergänger|Nachbar|Tourist|Studentin|Geschäftsmann)/.test(n.name);
-      this.g.strangerTalk(stranger('street:' + this.near.id + ':' + rb, rb, generic ? undefined : n.name), { actor: n.a, look: { ...n.a.look, outfit: 'clothed' }, opening: this.street.line(n, s.day), kid: n.a.avatar.job === 'kid' }, end);
+      this.g.strangerTalk(stranger('street:' + this.near.id + ':' + rb, rb, generic ? undefined : n.name), { actor: n.a, look: { ...n.a.look, outfit: 'clothed' }, opening: this.street.line(n, s.day), kid: n.a.avatar.job === 'kid', kind: n.kind }, end);
       change(s, { social: 3 });
       return;
     }

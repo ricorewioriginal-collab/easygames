@@ -1,6 +1,7 @@
 /* Roter Faden: verbindet Akt I (Rainbow City, Kapitel 1–5), Akt II (Hochstadt, saga.ts) und Akt III (die Inselkette, worlds.ts)
    zu einer Geschichte. Anrufe leiten von Akt zu Akt und von Insel zu Insel, das Finale „Pride der Inseln“ schließt alles ab.
    Nur Verbindung und Führung: Die Aufgaben selbst bleiben in story.ts, saga.ts und Isle.ts. */
+import { karriere } from './beruf';
 import type { SaveData } from '../engine/Save';
 import type { Line } from '../ui/ui';
 import type { Goal, StoryCtx } from './story';
@@ -81,6 +82,25 @@ export function fadenTick(c: StoryCtx) {
   if (f.dragKrone && !f.dragKroneCall) {
     if (++calm < 6) return;
     calm = 0; fadenKrone(c, String(f.drag || s.name));
+    return;
+  }
+  // Neuer Hauptberuf aus der Jobbörse (beruf.ts): Mo gratuliert – Kapitel 2 heißt nicht umsonst „Wurzeln schlagen“
+  if (f.beruf && !f.berufCall) {
+    if (++calm < 6) return;
+    const k = karriere(String(f.beruf));
+    ring('berufCall', 'Mo', '#ff7a3d', [
+      `Ich hab's im Feed gesehen: ${k ? k.name : 'neuer Job'}! Glückwunsch! Erst die Wohnung, jetzt der Job – du schlägst richtig Wurzeln in Rainbow City.`,
+      'Komm nach Feierabend ins Café, der erste Cappu geht aufs Haus. Und wenn der Job nervt: In der Jobbörse findest du jederzeit was Neues.',
+    ]);
+    return;
+  }
+  // Erster Dreh als Erwachsenen-Darsteller*in (dreh.ts, nur 18+): Jules ist stolz und passt auf dich auf
+  if (s.settings.adult && Number(f.drehN) > 0 && !f.drehCall) {
+    if (++calm < 6) return;
+    ring('drehCall', 'Jules', '#9c59d1', [
+      'Ich hab gehört, du drehst jetzt in der Nachtschicht von Klappe Auf. Kein Urteil von mir – Sexarbeit ist Arbeit, und Pornos sind es auch.',
+      'Nur eins, als Freund*in: Lies jeden Vertrag, lass dich alle zwei Wochen testen, und dein Nein gilt immer, auch am Set. Wenn was schiefläuft, das Regenbogenhaus hilft dir.',
+    ]);
     return;
   }
   // Erster Platz 1 mit dem eigenen CSD-Wagen (festwagen.ts/citylife.ts zählen wagenWins): Jules ist stolz

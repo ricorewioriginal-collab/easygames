@@ -6,7 +6,7 @@ import { Vector3, Matrix, HemisphericLight, DirectionalLight, PointLight, Shadow
 import { instance, preload } from '../engine/Assets';
 import { planeZ, ground, box, cyl, sphere, torus, pbr, glow, canvasTex } from '../engine/geo';
 import { Actor, playerLook, type Look } from './Actor';
-import { loveScene, morningAfter } from './liebe';
+import { loveScene, morningAfter, type LoveOpts } from './liebe';
 import { mates, mateInfo, homeNow, pet, petHungry } from './wahl';
 import { Pet3D } from './pet3d';
 import type { Game } from './Game';
@@ -411,11 +411,11 @@ export class HomeScene implements GameScene {
   /** Gemeinsamer Abend: alle tanzen/lachen kurz zusammen */
   wgParty(anim: 'laugh' | 'dance1' | 'clap' | 'cheer') { for (const a of this.wg.actors.values()) a.play(anim); this.fam.spouse?.play(anim); this.player.play(anim === 'dance1' ? 'dance1' : 'laugh'); setTimeout(() => { for (const a of this.wg.actors.values()) a.play('talk'); this.fam.spouse?.play('idle'); this.player.play('idle'); }, 3600); }
   /** Liebesszene (18+) mit Gast oder Partner*in zu Hause */
-  romance(look: Look, name: string, done: () => void) {
+  romance(look: Look, name: string, done: () => void, opts?: LoveOpts) {
     const sp = spouseLook(this.g.save.data), mine = sp && this.fam.spouse && sp.body === look.body && sp.palette === look.palette ? this.fam.spouse : undefined;
     this.fam.kid?.root.setEnabled(false); this.setSky(1);
     this.g.hud.show(false); this.g.touch.show(false); this.g.hud.prompt(null); this.g.hud.markers([]);
-    return loveScene(this, look, name, () => { if (mine) { mine.root.position.set(2.5, 0, 1.3); mine.root.rotation.y = -Math.PI / 2 - .5; } this.player.root.position.set(-2.4, 0, .6); this.cam.reset(.5, .4); this.g.hud.show(true); this.g.touch.show(true); done(); }, mine);
+    return loveScene(this, look, name, () => { if (mine) { mine.root.position.set(2.5, 0, 1.3); mine.root.rotation.y = -Math.PI / 2 - .5; } this.player.root.position.set(-2.4, 0, .6); this.cam.reset(.5, .4); this.g.hud.show(true); this.g.touch.show(true); done(); }, mine, opts);
   }
   /** Morgen danach: Gast mit Kaffee in der Küche, geht beim Verlassen der Wohnung */
   async morning(look: Look | null) {

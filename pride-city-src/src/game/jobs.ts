@@ -73,7 +73,8 @@ export function situations(s: SaveData, j: Job) {
 /** Schicht abrechnen. points 0..6. Liefert Lohn und ob es eine Beförderung gab. */
 export function finish(s: SaveData, j: Job, points: number) {
   const r = rec(s, j.id), before = level(s, j.id);
-  const pay = Math.round((wage(s, j) * 4 + points * 4) * moodFactor(s));
+  // Hauptberuf aus der Jobbörse (beruf.ts): +20 % Lohn
+  const pay = Math.round((wage(s, j) * 4 + points * 4) * moodFactor(s) * (s.flags.beruf === j.id ? 1.2 : 1));
   r.shifts++; r.xp += 1 + points; r.earned += pay;
   s.money += pay;
   s.jobDay = s.jobDay.d === s.day ? { d: s.day, n: s.jobDay.n + 1 } : { d: s.day, n: 1 };
