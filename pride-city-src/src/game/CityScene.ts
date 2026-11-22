@@ -40,6 +40,7 @@ import { Companion } from './Companion';
 import { together, bondTick } from './bond';
 import type { Profile } from './social';
 import { Combat } from './Combat';
+import { payKasse } from './crew';
 import { arrive } from './family';
 import { Kerb } from './kerb';
 import { TuneShow, rigOf, dress } from './pimp';
@@ -146,7 +147,7 @@ export class CityScene implements GameScene {
       await i.build(); this.isles.push(i); if (!def.adult) this.street.addFlyer(i.pad[0], i.pad[1], i.yawW(Math.PI));
     }
     this.combat = new Combat(this.g, this, sc); this.combat.init();
-    this.brawl = new Brawl(this, sc, this.g.hud);
+    this.brawl = new Brawl(this, sc, this.g.hud, () => this.g.save.data);
     this.kerb = new Kerb(this.g, this);
     this.g.hud.onWeapon = () => { if (this.mode === 'play') this.combat.cycle(); };
     this.g.hud.setRadarMap((c, px) => {
@@ -282,6 +283,8 @@ export class CityScene implements GameScene {
       roman: (id, game, done) => g.roman(id, game, done),
       mission: (gg) => this.startGig(gg),
       mini: (id, done) => g.playMini(id, { onDone: (r) => done?.(!!r.won && !r.quit) }),
+      gigOn: () => !!this.gig,
+      wanted: (n) => { if (n !== undefined) this.combat.force(n, 'verdacht'); return this.combat.wanted.stars; },
       phone: (lines, done) => {
         sfx('phone'); setTimeout(() => sfx('phone'), 500);
         if (!this.drive) this.player.play('phone');
@@ -303,6 +306,8 @@ export class CityScene implements GameScene {
     this.g.stiCheck();
     const paid = collect(s);
     if (paid) { sfx('coin'); this.g.hud.banner('💼 Einnahmen deines Imperiums', `+${paid} € aus deinen Geschäften`, 'good', 3600); collectNotes.slice(0, 3).forEach((n, i) => setTimeout(() => toast(n), 3800 + i * 2600)); this.g.save.write(); }
+    const kasse = payKasse(s);
+    if (kasse) { sfx('coin'); setTimeout(() => this.g.hud.banner('🪙 Kiezkasse der Lichterkette', `+${kasse} € aus den geschützten Vierteln`, 'good', 3600), paid ? 4200 : 0); this.g.save.write(); }
     for (const [i, n] of bondTick(s).entries()) setTimeout(() => toast(n), 1200 + i * 2600);
     const nk = arrive(s);
     if (nk) { sfx('win'); this.g.hud.banner('👶 Willkommen zu Hause!', `${nk.name} ist bei euch eingezogen. Schau in deiner Wohnung vorbei.`, 'good', 5000); this.g.save.write(); void this.g.home?.syncFamily(); }
@@ -765,6 +770,8 @@ export class CityScene implements GameScene {
   taxi = -1;
   get driving() { return !!this.drive; }
   /** Tempo des gefahrenen Autos (0 zu Fuß) */
+  /** gefahrener Wagen (Flucht: Umlackieren) */
+  get ride() { return this.drive; }
   get carSpeed() { return Math.abs(this.drive?.v || 0); }
   /** gefahrenes Auto (oder null) */
   get carNode() { return this.drive?.o || null; }
@@ -1015,6 +1022,7 @@ export class CityScene implements GameScene {
       const pp = this.player.root.position;
       g.hud.radar(pp.x, pp.z, this.cam.yaw, [
         ...this.world.pois.filter((q) => Math.hypot(q.x - pp.x, q.z - pp.z) < 60).map((q) => ({ x: q.x, z: q.z, icon: q.icon })),
+        ...this.combat.flucht.blips(this.combat.wanted.stars, pp),
         ...mk.map((m) => ({ x: m.pos.x, z: m.pos.z, color: m.id === 'g' ? '#ff3fb0' : m.id === 'gig' ? '#ffd23b' : m.id === 'kerb' ? '#ff6ad5' : '#ffffff', goal: m.id === 'g' || m.id === 'gig' || m.id === 'kerb' })),
       ]);
     }

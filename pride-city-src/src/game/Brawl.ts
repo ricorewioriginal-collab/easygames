@@ -11,6 +11,9 @@ import { Actor, RUN_MPS } from './Actor';
 import type { GigStep } from './gigs';
 import type { CityScene } from './CityScene';
 import type { Hud } from '../ui/Hud';
+import type { SaveData } from '../engine/Save';
+import { crewFighters, crewHas } from './crew';
+import { NPCS } from './story';
 
 /** Jemand vom Ordnungsbund in einer Schlägerei */
 interface Foe { a: Actor; name: string; out: boolean; cd: number; flee: number; yell: number }
@@ -22,6 +25,9 @@ const GX = [-60, -30, 0, 30, 60, 90, 120, 150, 180, 210], GZ = [-60, -30, 0, 30,
 const FOE_LOOKS = ['Security_Male_01', 'Male_Adult_02', 'Male_Adult_07', 'Male_Adult_09', 'Male_Adult_03', 'Male_Adult_10'];
 const TAUNT = ['Verschwinde hier!', 'Euch will hier keiner!', 'Geh doch zurück in deinen Glitzerclub!', 'Hier gilt Ordnung!', 'Nimm die Fahne runter!', 'Das ist unsere Straße!'];
 const BACK = ['Nicht mit uns.', 'Wir bleiben.', 'Ihr seid weniger als ihr denkt.', 'Liebe ist keine Unordnung.'];
+/** Crew (Akt V) in der Schlägerei: läuft zu einem Gegner, schubst, haut beim zweiten Mal um */
+interface Helper { a: Actor; name: string; cd: number; hits: number; t: Foe | null; bye: number }
+const CREW_CALL = ['Wir sind da!', 'Lichterkette, zu mir!', 'Nicht mit uns!', 'Zusammen!'];
 /** Mut: so oft darfst du geschubst werden, bevor dich deine Leute aus der Schlägerei ziehen */
 const BRAVE = 8;
 
@@ -34,7 +40,10 @@ export class Brawl {
   /** Station, an der die Schlägerei läuft (gegen Doppelstart) */
   at: GigStep | null = null;
 
-  constructor(private city: CityScene, private sc: Scene, private hud: Hud) {}
+  private helpers: Helper[] = [];
+  /** Fluchtfahrer in der Crew: Verfolgte fahren langsamer */
+  private slow = 1;
+  constructor(private city: CityScene, private sc: Scene, private hud: Hud, private save: () => SaveData) {}
 
   get fighting() { return !!this.fightDone; }
   get chasing() { return !!this.run || this.starting; }
@@ -64,9 +73,30 @@ export class Brawl {
     }));
     if (this.fightDone !== done) { list.forEach((f) => f.a.root.dispose()); return; }
     this.foes = list;
+    this.brave += await this.crew(st);
     sfx('hit');
     this.hud.banner('👊 Stell dich ihnen!', `${names.length} vom Ordnungsbund · Schlagen: F / LT / 👊 · Wer am Boden war, rennt weg`, 'bad', 3200);
   }
+
+  /** Crew dazuholen (höchstens drei, die mitkämpfen); liefert Bonus-Mut */
+  private async crew(st: GigStep) {
+    const list = crewFighters(this.save()); if (!list.length) return 0;
+    const p = this.city.player.root.position;
+    const made = await Promise.all(list.map(async (m, i) => {
+      const def = NPCS.find((n) => n.id === m.id); if (!def) return null;
+      const a = await Actor.create(this.sc, def.look);
+      const w = Math.PI + (i - 1) * .7 + Math.atan2(st.x - p.x, st.z - p.z);
+      a.root.position.set(p.x + Math.sin(w) * 3, .1, p.z + Math.cos(w) * 3); this.city.world.collide(a.root.position, .4);
+      a.play('run');
+      return { a, name: m.name, cd: 2.5 + i * 1.3, hits: 0, t: null, bye: 0 } as Helper;
+    }));
+    this.helpers = made.filter((h): h is Helper => !!h);
+    if (this.helpers.length) setTimeout(() => toast(`✊ ${this.helpers.map((h) => h.name).join(', ')}: „${CREW_CALL[Math.floor(Math.random() * CREW_CALL.length)]}“`), 900);
+    return this.helpers.length * 2;
+  }
+  /** Crew nach der Schlägerei: jubeln, dann gehen */
+  private crewBye() { for (const h of this.helpers) { h.bye = 3; h.t = null; h.a.play('cheer'); } }
+  private dropHelpers() { for (const h of this.helpers) h.a.root.dispose(); this.helpers = []; }
 
   /** Combat meldet: diese Person liegt am Boden */
   knocked(a: Actor) {
@@ -76,6 +106,7 @@ export class Brawl {
     if (this.foes.every((q) => q.out)) {
       const d = this.fightDone; this.fightDone = null; this.at = null;
       sfx('win'); this.hud.banner('✊ Ihr habt euch gewehrt', 'Der Ordnungsbund zieht ab.', 'good', 2600);
+      this.crewBye();
       setTimeout(() => d?.(true), 1400);
     }
   }
@@ -83,6 +114,7 @@ export class Brawl {
   /** Verfolgung: Wagen (Straßennetz der Stadt) oder zu Fuß (eigener Weg, z. B. über eine Insel) */
   async chase(st: GigStep, opt: { car?: string; path?: Array<[number, number]>; trap?: boolean }, done: () => void, lost: () => void) {
     this.stopRun(); this.starting = true;
+    this.slow = crewHas(this.save(), 'fahrer') ? .88 : 1;
     const car = !!opt.car || !opt.path;
     const path = opt.path ? opt.path.slice() : this.route(st.x, st.z, 14);
     let o: Node3 | Actor;
@@ -133,6 +165,35 @@ export class Brawl {
     for (const o of this.left) o.dispose(); this.left = [];
     for (const f of this.foes) f.a.root.dispose();
     this.foes = []; this.fightDone = null; this.at = null;
+    this.dropHelpers();
+  }
+
+  /** Crew: zum nächsten Gegner, der noch steht, schubsen und beim zweiten Mal umhauen. Nur, solange du selbst in der Nähe bist. */
+  private helpersTick(dt: number) {
+    if (!this.helpers.length) return;
+    const p = this.city.player.root.position, combat = this.city.combat;
+    for (const h of this.helpers) {
+      const r = h.a.root; h.a.update(dt);
+      if (h.bye > 0) { h.bye -= dt; if (h.bye <= 0) r.setEnabled(false); continue; }
+      if (!this.fightDone) { if (h.bye <= 0 && r.isEnabled()) this.crewBye(); continue; }
+      if (!h.t || h.t.out || !h.t.a.root.isEnabled()) { h.t = this.foes.filter((f) => !f.out && f.a.root.isEnabled() && !this.helpers.some((o) => o !== h && o.t === f))[0] || this.foes.find((f) => !f.out) || null; h.hits = 0; }
+      const f = h.t; if (!f) continue;
+      const q = f.a.root.position, dx = q.x - r.position.x, dz = q.z - r.position.z, d = Math.hypot(dx, dz) || 1;
+      r.rotation.y = Math.atan2(dx, dz);
+      if (d > 1.2) {
+        const v = d > 2.4 ? RUN_MPS * .8 : 1.3;
+        if (h.a.anim !== (d > 2.4 ? 'run' : 'walk')) h.a.play(d > 2.4 ? 'run' : 'walk');
+        r.position.x += dx / d * v * dt; r.position.z += dz / d * v * dt; this.city.world.collide(r.position, .4);
+        continue;
+      }
+      if (h.a.anim !== 'talk' && h.a.anim !== 'clap') h.a.play('talk');
+      h.cd -= dt;
+      if (h.cd > 0 || combat.holds(f.a) || Math.hypot(p.x - q.x, p.z - q.z) > 16) continue;
+      h.cd = 3.2 + Math.random() * 1.6; h.a.play('clap'); sfx('slap');
+      if (++h.hits < 2) { q.x += dx / d * .7; q.z += dz / d * .7; this.city.world.collide(q, .4); toast(`✊ ${h.name} schubst ${f.name} zurück.`); continue; }
+      h.hits = 0; combat.floor(f.a, f.name, 'Uff!', r.position); this.knocked(f.a);
+    }
+    if (this.helpers.every((h) => !h.a.root.isEnabled())) this.dropHelpers();
   }
 
   update(dt: number) {
@@ -167,18 +228,19 @@ export class Brawl {
         if (this.brave <= 0) {
           const done = this.fightDone; this.fightDone = null; this.at = null;
           sfx('miss'); this.hud.banner('Du gehst zu Boden', 'Deine Leute ziehen dich raus. Atme durch und versuch es noch einmal.', 'bad', 3200);
-          for (const q of this.foes) { q.out = true; q.flee = 3; }
+          for (const q of this.foes) { q.out = true; q.flee = 3; } this.crewBye();
           setTimeout(() => done?.(false), 1200);
         }
       } else if (f.a.anim !== 'idle' && f.a.anim !== 'talk') f.a.play('idle');
     }
+    this.helpersTick(dt);
     if (!this.fightDone && this.foes.length && this.foes.every((f) => !f.a.root.isEnabled())) { for (const f of this.foes) f.a.root.dispose(); this.foes = []; }
     if (this.left.length && !this.city.gig && (this.leftT += dt) > 25) { for (const o of this.left) o.dispose(); this.left = []; this.leftT = 0; }
     // Verfolgung: Ziel fährt bzw. rennt die Route ab; nah dran wird es schneller, weit weg langsamer (immer einholbar, nie geschenkt)
     const r = this.run; if (!r) return;
     const node = r.o instanceof Actor ? r.o.root : r.o, q = node.position;
     const dist = Math.hypot(p.x - q.x, p.z - q.z);
-    const v = r.car ? Math.min(14.5, Math.max(6, 6 + (60 - dist) * .16)) : Math.min(3.3, Math.max(2.2, 2.2 + (30 - dist) * .05));
+    const v = (r.car ? Math.min(14.5, Math.max(6, 6 + (60 - dist) * .16)) : Math.min(3.3, Math.max(2.2, 2.2 + (30 - dist) * .05))) * this.slow;
     const t = r.path[r.i];
     if (!t) { if (r.trap) { this.caught(r); return; } this.stopRun(); r.lost(); return; }
     const tx = t[0] - q.x, tz = t[1] - q.z, td = Math.hypot(tx, tz);

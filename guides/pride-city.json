@@ -560,6 +560,22 @@
         "Steuerung wie beim Flitzer: Stick/WASD lenkt und gibt Gas, ▲/▼ (RB/LB, R/Q) steigt und sinkt, A landet. Die Libelle kann schweben, die Möwe bleibt in der Luft immer in Fahrt.",
         "Erst der Schnupperflug durch fünf Ringe über dem Hafen, dann gibt es Rundflüge (Skyline-Runde, Inselhüpfer, Abendrot zu zweit ab 17 Uhr) und Lieferflüge zu den Inseln. Ringe in ihrer Höhe durchfliegen, bei Lieferungen und am Ende über dem Ziel unter 6 m sinken."
       ]
+    },
+    {
+      "t": "🚨 Fahndung und Flucht",
+      "p": [
+        "Wer haut, Autos klaut oder Gleitgel verschüttet, bekommt Fahndungssterne. Fußstreifen laufen dir nach, ab zwei Sternen jagen dich Streifenwagen mit Blaulicht (rot und blau blinkend auf dem Radar). Stehst du neben einem Streifenwagen still, wirst du festgenommen: Bußgeld und zwei Stunden auf der Wache.",
+        "Zu Fuß: Ab dem ersten Stern stehen 🫥 Verstecke auf dem Radar, zum Beispiel der Hauseingang von Haus Rosa, die Garderobe der One Love Bar, das Gebüsch im Regenbogenpark, der Hof am Checkpoint, das Lager hinter dem Späti, der Steg der Strandbar und die Leuchtschilder der Laternenmeile. Dort sieht dich die Streife nur aus der Nähe, und du hängst sie mehr als doppelt so schnell ab.",
+        "Im Auto: Fahr bei Rosi in der Hochstadt vor die Garage (🎨 auf dem Radar) und halt an. Sie lackiert um und schraubt neue Kennzeichen dran, dann ist die Fahndung weg. Das klappt nur, wenn dich gerade keine Streife sieht. Kosten: 60 € plus 40 € pro Stern."
+      ]
+    },
+    {
+      "t": "✊ Akt V: Die Lichterkette und deine Crew",
+      "p": [
+        "Nach Krals Festnahme ruft Tom an: Dennis Haller ist auf Kaution draußen und sammelt die Reste des Ordnungsbunds. Ihr gründet eine eigene Crew, die Lichterkette. Sprich Bruno, Jules, Kim, Rex, Lena, Sam und Tariq an: Wer genug Ruf von dir kennt, macht mit.",
+        "Jede Person kann etwas: 👊 Bruno, Sam und Tariq kämpfen in Schlägereien mit (dazu zwei Herzen Mut mehr), 📻 Kim hört den Polizeifunk (schneller abhängen), 🚗 Rex lässt Streifen- und Fluchtwagen langsamer wirken, ⚖️ Lena halbiert Bußgelder, 🏘️ Jules bringt mehr Geld in die Kiezkasse, 🔧 Tom macht das Umlackieren billiger.",
+        "Handy → ✊ Crew zeigt die Crew und die sechs Viertel. Mit „Streife gehen“ fährst du hin und vertreibst die grauen Jacken, das bringt bis zu drei Sterne Schutz. Ab und zu ruft die Crew an, weil irgendwo Alarm ist: selbst hinfahren, die Crew allein schicken (Erfolgschance steht dabei) oder ablehnen (Schutz sinkt). Jeder Schutzstern legt jeden Morgen Geld in die Kiezkasse."
+      ]
     }
   ],
   "ratgeber": [
@@ -970,6 +986,17 @@
         "Captain Sunny ruft nach dem Start von Akt II an. Schnupperflug: Ring 1 tief über dem Wasser (10 m), dann 16, 22, 14 und 26 m, zum Schluss am Landeplatz unter 6 m sinken. Danach sind Rundflüge und Lieferflüge frei.",
         "Inselhüpfer: Glitzeria 26 m, Playa 22 m, Riesenrad 30 m, Lindenhof 22 m, (mit 18+ Lustwäldchen 20 m), Rostwerk 26 m, Kap Zuflucht 22 m, Landung.",
         "Live-Events: Kiki Kaleido ruft an, sobald Pride FM oder die Flugschule bekannt ist. Bootsrennen-Gold: Hafen-Regatta unter 36 s, Inselkanal-Sprint unter 29 s, Kap-Zuflucht-Rallye unter 54 s."
+      ]
+    },
+    {
+      "t": "✊ Akt V: Die Lichterkette komplett",
+      "p": [
+        "1. Die Gründung (Toms Anruf am Tag nach Krals Festnahme): drei Leute in die Crew holen.",
+        "2. Falscher Verdacht: Kommissarin Sander ruft an, Haller hat dich angezeigt. Du hast drei Sterne. Häng die Polizei ab: zu Fuß in ein 🫥 Versteck oder im Auto bei Rosi umlackieren.",
+        "3. Das Video: Kim ruft an. Hol Nele an der Pride Plaza ab, wehr drei von Hallers Leuten ab und bring das Video zu Sander an die Wache. Die Fahndung ist damit erledigt.",
+        "4. Revierwache (Tom am Kai, ab 21 Uhr): mit der Crew im Regenbogenpark vier graue Jacken vertreiben. Danach gibt es Alarm-Anrufe und die Kiezkasse.",
+        "5. Alle Viertel schützen: Pride Plaza, Regenbogenpark, Hafen, Laternenmeile, Rostwerk und Kap Zuflucht je mindestens einmal per Streife sichern (Handy → ✊ Crew).",
+        "6. Hallers letzte Fahrt (Tom am Kai, ab 21 Uhr): zu Hallers Lager am Hafen, den grauen Wagen einholen, Haller und zwei Kumpel stellen, Haller zur Wache bringen."
       ]
     }
   ],

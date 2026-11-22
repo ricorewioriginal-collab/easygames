@@ -2,13 +2,15 @@
    Wer Leute haut, Gleitgel-Fallen legt oder Autos klaut, bekommt Sterne. Die Polizei verfolgt dich,
    bei Festnahme gibt es ein Bußgeld und eine Nacht Papierkram auf der Wache. Abhängen klappt, wenn dich lange niemand sieht. */
 
-export type Law = 'assault' | 'police' | 'slip' | 'indecent' | 'theft';
+export type Law = 'assault' | 'police' | 'slip' | 'indecent' | 'theft' | 'verdacht';
 export const LAWS: Record<Law, { name: string; stars: number; fine: number }> = {
   assault: { name: '§ 1 Hauen verboten – auch mit Glitzer', stars: 1, fine: 40 },
   police: { name: '§ 2 Keine Hand (und kein Toy) an die Polizei', stars: 2, fine: 80 },
   slip: { name: '§ 3 Gleitgel gehört nicht auf den Gehweg', stars: 1, fine: 30 },
   indecent: { name: '§ 4 Erregung öffentlichen Ärgernisses', stars: 1, fine: 25 },
   theft: { name: '§ 5 Fremde Autos bleiben fremde Autos', stars: 1, fine: 50 },
+  /** Akt V: falsche Anzeige des Ordnungsbunds, kein eigenes Vergehen (kein Bußgeld) */
+  verdacht: { name: 'Haftbefehl nach falscher Anzeige', stars: 3, fine: 0 },
 };
 export const MAX_STARS = 5;
 
@@ -28,13 +30,16 @@ export class Wanted {
     this.fines += LAWS[law].fine; this.last = law; this.unseen = 0;
     return this.stars > before;
   }
+  /** Fahndung direkt setzen (Story), Sterne nie weniger als jetzt */
+  force(n: number, law: Law) { this.stars = Math.min(MAX_STARS, Math.max(this.stars, n)); this.last = law; this.unseen = 0; }
   /** Zeit bis zum Abhängen: mehr Sterne = länger untertauchen */
   get escapeTime() { return 8 + this.stars * 5; }
-  /** Pro Bild: gesehen = eine Streife ist in Sichtweite. Liefert 'lost', wenn du sie abgehängt hast. */
-  tick(dt: number, seen: boolean): 'lost' | null {
+  /** Pro Bild: gesehen = eine Streife ist in Sichtweite. Liefert 'lost', wenn du sie abgehängt hast.
+      fast: schneller abhängen (Versteck, Polizeifunk der Crew) */
+  tick(dt: number, seen: boolean, fast = 1): 'lost' | null {
     if (!this.stars) return null;
     if (seen) { this.unseen = 0; return null; }
-    this.unseen += dt;
+    this.unseen += dt * fast;
     if (this.unseen >= this.escapeTime) { this.clear(); return 'lost'; }
     return null;
   }

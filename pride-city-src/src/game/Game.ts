@@ -34,6 +34,7 @@ import { workshopItems } from './pimp';
 import { SHOP, RACES, PAINTS, PAINT_COST, TUNE_COST, MEDALS, ownsCar, myCar, tuneLevel, buyCar, buyTune, buyPaint, bestTime, medalFor, stats } from './vehicles';
 import { ACTS, act, actLabel, chain, islesLeft, HISTORY, HIST_ORDER, ROMAN } from './faden';
 import { FLUT, flutDone } from './flut';
+import { crewStep, CREW_STEPS, crewOf, crewApp, VIERTEL, schutz, patrol } from './crew';
 import { sagaDone, MISSIONS } from './saga';
 import { nachtDone, NACHT } from './nacht';
 import { timeline, PEOPLE, RIGHTS, flags, todaysQuiz, quizDoneToday, quizReward, type Q } from './wissen';
@@ -621,6 +622,7 @@ export class Game {
         { icon: SKY[skyAt(s.day, s.time)].icon, label: 'Wetter und Termine', sub: `${SKY[skyAt(s.day, s.time)].name}${(s.day - 1) % 7 === 5 ? ' · heute CSD-Parade, 12–18 Uhr' : ' · CSD-Parade am Samstag'}`, fn: () => this.phone('wetter') },
         { icon: '🎉', label: 'Live-Events', sub: (() => { const l = lineup(), n = l.filter((e) => !doneThisWeek(s, e.kind)).length; return n ? `Diese Woche: ${l.map((e) => e.icon).join(' ')} · noch ${n} offen` : `👑 Wochenpass voll · neue Termine in ${daysLeft()} ${daysLeft() === 1 ? 'Tag' : 'Tagen'}`; })(), fn: () => this.phone('live') },
         { icon: '🏙️', label: 'Imperium', sub: owned(s).length ? `${owned(s).length} Geschäfte · +${income(s)} € am Tag` : 'Läden, Bars und Clubs übernehmen', fn: () => this.phone('empire') },
+        ...(s.flags.crewCall ? [{ icon: '✊', label: 'Crew', sub: `Die Lichterkette · ${crewOf(s).length} Leute${s.flags.crewWatch ? ` · ${VIERTEL.filter((v) => schutz(s, v.id)).length}/${VIERTEL.length} Viertel` : ''}`, fn: () => this.phone('crew') }] : []),
         { icon: '👨‍👩‍👧', label: 'Familie', sub: famSub(s), fn: () => this.phone('family') },
         { icon: '👥', label: 'Kontakte', sub: `${Object.keys(s.rel).length} Leute kennengelernt`, fn: () => this.phone('contacts') },
         { icon: '💘', label: 'Rainbow Match', sub: `Dating · ${PROFILES.filter((p) => s.dates[p.id]).length} Matches`, fn: () => this.phone('dating') },
@@ -698,6 +700,11 @@ export class Game {
         { icon: '📦', label: 'Paketdienst Eilbote', sub: this.city.driving ? `Pakete ab der Garage in der Hochstadt · mit Ladefläche +25 % · Rekord ${Number(s.flags.parcelBest) || 0}` : 'Erst in ein Auto steigen', disabled: !!run || !this.city.driving, fn: () => { close(); this.city.startParcel(); } },
         { icon: '🏁', label: 'Straßenrennen', sub: `${RACES.filter((r) => bestTime(s, r.id)).length}/${RACES.length} gefahren · im Auto an einer 🏁 anhalten`, fn: () => { close(); this.dialog.say([{ who: '🏁 Rennleitung', color: '#ffd23b', text: RACES.map((r) => { const b = bestTime(s, r.id), m = b ? medalFor(r, b) : -1; return `${r.name}: ${b ? b.toFixed(1) + ' s' + (m >= 0 ? ' ' + MEDALS[m] : '') : 'noch nicht gefahren'}`; }).join(' · ') + '. Die Startflaggen siehst du im Auto als 🏁: Altstadtring an der Querstraße beim Plaza, Brückensprint vor der Regenbogenbrücke, Grand Prix unter der Hochbahn, Stadtmarathon an der Kaistraße.' }]); } },
         ...GIGS.map((g) => ({ icon: g.night ? '🌙' : g.car ? '🚗' : '🚶', label: `${g.title} · ${g.who}`, sub: !open.includes(g) ? 'nur nachts (21–5 Uhr)' : `${g.pay} € · +${g.rep} Ruf · ${fmtTime(g.time)} Min. · ${g.steps.length} Stationen${s.flags['gig_' + g.id] === s.day ? ' · heute erledigt' : ''}`, disabled: !!run || !open.includes(g), fn: () => { close(); this.city.startGig(g); } })),
+        { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'crew') {
+      const c = crewApp(s), run = this.city.gig;
+      this.openMenu(frame('Die Lichterkette', c.html), [
+        ...(c.canPatrol ? VIERTEL.map((v) => ({ icon: v.icon, label: `Streife: ${v.name}`, sub: run ? `Läuft gerade: ${run.g.title}` : `Schutz ${'★'.repeat(schutz(s, v.id))}${'☆'.repeat(3 - schutz(s, v.id))} · 60 € · mit der Crew`, disabled: !!run || this.where !== 'city', fn: () => { close(); patrol(this.city.ctx(), v.id); } })) : []),
         { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'empire') {
       const list = BUSINESSES.map((b) => `<p>${b.icon} <b>${b.name}</b>${owns(s, b.id) ? ' · <b style="color:#3ee69a">gehört dir</b>' : ''}<br><small>${b.pitch}</small></p>`).join('');
@@ -1248,7 +1255,7 @@ export class Game {
     this.openMenu(`<div class="col"><div class="logo" style="font-size:clamp(30px,5vw,52px)"><span class="l1">Story</span><small>Ein Leben in allen Farben</small></div><div class="slot"></div></div>
       <div class="side panel"><h3>Deine Entscheidungen</h3><p>${choices.length ? choices.join('<br>') : 'Noch keine – die Stadt merkt sich alles.'}</p></div>`,
     [...CHAPTERS.map((c) => ({ icon: c.n < s.chapter ? '✅' : c.n === s.chapter ? '⭐' : '🔒', label: `Kapitel ${c.n}: ${c.title}`, sub: c.n <= s.chapter ? c.text : 'Noch nicht freigespielt', disabled: c.n > s.chapter })),
-      ...ACTS.slice(1).map((a) => { const now = act(s), done = now > a.n, open = now >= a.n; return { icon: done ? '✅' : open ? '⭐' : '🔒', label: `Akt ${ROMAN[a.n - 1]}: ${a.title}`, sub: !open ? (a.n === 4 ? 'Nach der Pride der Inseln' : 'Nach der Pride in Rainbow City') : a.n === 4 ? `${a.text} · ${flutDone(s)}/${FLUT.length} Missionen${done ? ' · Kral festgenommen' : ''}` : a.n === 2 ? `${a.text} · Hochstadt ${sagaDone(s)}/${MISSIONS.length} · Sterling Nights ${nachtDone(s)}/${NACHT.length}${owns(s, 'prisma') ? ' · Club Prisma gehört dir' : ''}` : `${a.text} · ${chain(s).length - islesLeft(s).length}/${chain(s).length} Inseln${done ? ' · gefeiert' : ''}`, disabled: !open }; }),
+      ...ACTS.slice(1).map((a) => { const now = act(s), done = now > a.n, open = now >= a.n; return { icon: done ? '✅' : open ? '⭐' : '🔒', label: `Akt ${ROMAN[a.n - 1]}: ${a.title}`, sub: !open ? (a.n === 5 ? 'Nach Akt IV' : a.n === 4 ? 'Nach der Pride der Inseln' : 'Nach der Pride in Rainbow City') : a.n === 5 ? `${a.text} · ${Math.min(crewStep(s), CREW_STEPS)}/${CREW_STEPS} · Crew ${crewOf(s).length}${done ? ' · Haller gefasst' : ''}` : a.n === 4 ? `${a.text} · ${flutDone(s)}/${FLUT.length} Missionen${done ? ' · Kral festgenommen' : ''}` : a.n === 2 ? `${a.text} · Hochstadt ${sagaDone(s)}/${MISSIONS.length} · Sterling Nights ${nachtDone(s)}/${NACHT.length}${owns(s, 'prisma') ? ' · Club Prisma gehört dir' : ''}` : `${a.text} · ${chain(s).length - islesLeft(s).length}/${chain(s).length} Inseln${done ? ' · gefeiert' : ''}`, disabled: !open }; }),
       ...(s.chapter > 5 ? [{ icon: '🏁', label: 'Abspann ansehen', fn: () => this.ending(back) }] : []),
       ...HIST_ORDER.filter((k) => s.flags['hist_' + k]).map((k) => ({ icon: '🏳️‍🌈', label: `Damals · ${HISTORY[k].year}: ${HISTORY[k].title}`, sub: HISTORY[k].text })),
       { icon: '←', label: 'Zurück', fn: back }], back);

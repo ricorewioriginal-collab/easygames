@@ -12,6 +12,8 @@ import type { StreetNpc } from './Street';
 import { dildoNow, dildoSizes, dildoStats } from './toys';
 import type { CityScene } from './CityScene';
 import type { Game } from './Game';
+import { Flucht } from './flucht';
+import { crewHas } from './crew';
 
 interface Body { a: Actor; down: number; up: number; kind: string; name: string; vx: number; vz: number }
 interface Spark { m: Mesh; vx: number; vy: number; vz: number; t: number }
@@ -26,6 +28,8 @@ const SLIP = ['Huch – glitschig!', 'Uiii!', 'Wer hat hier Gleitgel verschütte
 
 export class Combat {
   readonly wanted = new Wanted();
+  /** Streifenwagen, Verstecke, Umlackieren */
+  readonly flucht: Flucht;
   weapon: Weapon = 'hand';
   private bodies = new Map<Actor, Body>();
   private puddles: Puddle[] = [];
@@ -51,6 +55,7 @@ export class Combat {
 
   constructor(private g: Game, private city: CityScene, private scene: Scene) {
     const sc = scene;
+    this.flucht = new Flucht(g, city, scene);
     this.held = new TransformNode('held', sc);
     const mk = (name: string) => { const n = new TransformNode(name, sc); n.parent = this.held; n.setEnabled(false); return n; };
     // Poolnudel: lange Schaumstoff-Nudel in Regenbogenfarben
@@ -249,8 +254,13 @@ export class Combat {
     const seen = this.copNear(at, SEE) || this.wanted.stars > 0;
     if (!seen) { if (Math.random() < .45) toast('📞 Jemand hat die Polizei gerufen!'); else return; }
     const more = this.wanted.add(law);
-    if (more) { sfx('siren'); this.g.hud.banner(`${'★'.repeat(this.wanted.stars)} Fahndung`, LAWS[law].name, 'bad', 2600); }
+    if (more) { sfx('siren'); this.g.hud.banner(`${'★'.repeat(this.wanted.stars)} Fahndung`, LAWS[law].name, 'bad', 2600); this.tip(); }
   }
+
+  /** Story: Fahndung setzen (Akt V, falsche Anzeige) */
+  force(n: number, law: Law) { this.wanted.force(n, law); sfx('siren'); this.g.hud.banner(`${'★'.repeat(this.wanted.stars)} Fahndung`, LAWS[law].name, 'bad', 3200); this.tip(); }
+  /** einmal erklären, wie man entkommt */
+  private tip() { const f = this.save.flags; if (f.fluchtTip) return; f.fluchtTip = true; setTimeout(() => toast('🫥 Zu Fuß: in ein Versteck (Radar) · 🎨 Im Auto: bei Rosi in der Hochstadt umlackieren · Oder lange außer Sicht bleiben'), 2800); }
 
   copNear(p: Vector3, r: number) {
     for (const c of [...this.cops, ...this.extra]) { if (!c.a.root.isEnabled() || this.bodies.get(c.a)?.down) continue; if (Vector3.Distance(c.a.root.position, p) < r) return true; }
@@ -333,7 +343,10 @@ export class Combat {
         const ang = Math.random() * Math.PI * 2; c.a.root.position.set(p.x + Math.sin(ang) * 28, .1, p.z + Math.cos(ang) * 28); c.a.root.setEnabled(true);
       } else if (stars < 3 && c.a.root.isEnabled()) c.a.root.setEnabled(false);
     }
-    let seen = false;
+    const fl = this.flucht.update(dt, stars, p);
+    if (fl.caught && this.arrestT <= 0) { this.arrest(); return; }
+    const see = this.flucht.see(SEE);
+    let seen = fl.seen;
     for (const c of [...this.cops, ...this.extra]) {
       const a = c.a, r = a.root;
       if (!r.isEnabled() || (c.n && !r.visible && !stars)) { if (c.n) c.n.chase = false; continue; }
@@ -341,8 +354,10 @@ export class Combat {
       if (this.bodies.get(a)) continue;
       if (!stars) { if (c.n) c.n.chase = false; continue; }
       const dx = p.x - r.position.x, dz = p.z - r.position.z, d = Math.hypot(dx, dz);
-      if (d < SEE) seen = true;
+      if (d < see) seen = true;
       if (d > 60 && !c.extra) { if (c.n) c.n.chase = false; continue; }
+      // im Versteck: die Streife sucht, statt dir nachzulaufen
+      if (this.flucht.hidden && d > see) { if (a.anim !== 'idle') a.play('idle'); continue; }
       if (c.n) { c.n.chase = true; r.visible = true; }
       if (d > CATCH * .9) {
         const sp = COP_SPEED * (1 + (stars - 1) * .06);
@@ -355,19 +370,20 @@ export class Combat {
       if (d < CATCH + (this.city.driving ? 1.4 : 0) && slow && this.arrestT <= 0) { this.arrest(); return; }
     }
     if (stars) {
-      const r = this.wanted.tick(dt, seen);
+      const r = this.wanted.tick(dt, seen, this.flucht.fast());
       if (r === 'lost') { sfx('win'); this.g.hud.banner('Abgehängt! ✨', 'Die Polizei hat deine Spur verloren.', 'good', 3000); this.home(); }
     }
     this.g.hud.wanted(this.wanted.stars, !seen && this.wanted.stars > 0 && Math.floor(t * 3) % 2 === 0);
   }
 
   /** Streife zurück auf ihre Runde */
-  private home() { for (const c of this.cops) { if (c.n) c.n.chase = false; } for (const c of this.extra) c.a.root.setEnabled(false); }
+  home() { this.flucht.clear(); for (const c of this.cops) { if (c.n) c.n.chase = false; } for (const c of this.extra) c.a.root.setEnabled(false); }
 
   private arrest() {
     const s = this.save;
     this.arrestT = 5;
-    const fine = this.wanted.arrest(s.money);
+    const fine = Math.round(this.wanted.arrest(s.money) * (crewHas(s, 'recht') ? .5 : 1));
+    this.flucht.clear();
     this.city.leaveCar();
     sfx('siren');
     this.g.fade(() => {
@@ -377,7 +393,7 @@ export class Combat {
       for (const c of this.cops) { if (c.n) { c.n.chase = false; c.a.root.position.set(c.home[0], .1, c.home[1]); } }
       for (const c of this.extra) c.a.root.setEnabled(false);
       this.g.save.write(); this.city.refreshHud();
-      this.g.hud.banner('🚓 Festgenommen', `${fine} € Bußgeld und zwei Stunden Papierkram auf der Wache.`, 'bad', 4200);
+      this.g.hud.banner('🚓 Festgenommen', `${fine} € Bußgeld und zwei Stunden Papierkram auf der Wache.${crewHas(s, 'recht') ? ' Lena hat geredet: halbes Bußgeld.' : ''}`, 'bad', 4200);
     });
   }
 }
