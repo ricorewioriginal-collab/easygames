@@ -380,6 +380,126 @@ export const WORLDS: WorldDef[] = [
       for (let i = 0; i < 40; i++) { const [x, z] = any(k, 28, 49); if (!k.free(x, z, 2) || (z < -14 && Math.abs(x) < 15) || (Math.abs(x) < 24 && z > 26)) continue; k.cyl(.2, .3, 3.6, k.M(0x4a3222, .9), x, 1.8, z, 7); k.ball(2.2, k.M(0x2f6f4a, .95), x, 4.6, z, 1, .9, 1); k.solid(x, z, .5); }
     },
   },
+  {
+    id: 'rostwerk', name: 'Rostwerk', icon: '🏗️', sub: 'Hafeninsel aus Stahl und Rost: Kräne, Container, Werkstatt Funkenflug und Viktor Krals Club Monolith',
+    sky: ['#2f3a55', '#ff9a5a'], ground: 0x77736d, water: 0x2b4a5a, light: 0xffd9b8, r: 52, music: 'club', dim: .85,
+    town: { tint: [[1.25, .85, .7], [.8, .9, 1.05], [1.1, 1, .85], [1.35, .75, .6], [.9, 1.05, 1.15], [1.2, 1.1, .95]], plaza: 0x8c867e,
+      shops: [['IMBISS KRANICH', '#ffb347', 'diner'], ['HAFENKNEIPE', '#ff7a3b', 'bar'], ['KIOSK', '#ffd23b', 'spaeti'], ['BOXCLUB', '#ff4f4f', 'gym'], ['WASCHSALON', '#7fd4ff', 'wasch'], ['PIZZA DOCK', '#ffb347', 'pizza'], ['ATELIER', '#ff9ad5', 'galerie'], ['DELI', '#9af0c0', 'deli']] },
+    job: { icon: '⚙️', name: 'Ersatzteile', text: 'Die Werften warten auf Teile aus der Werkstatt Funkenflug. Bring sie aus, bevor die Schicht endet.' },
+    host: { name: 'Tom Wierzbicki', rb: 'Male_Adult_08', x: 0, z: 9, yaw: 0, anim: 'idle', color: '#ff7a1a',
+      intro: ['Da bist du. Tom, aus der Werkstatt Funkenflug. Wir haben am Kai gesprochen.', 'Letzte Nacht waren die grauen Jacken hier. Fahne runtergerissen, Scheiben eingeschlagen, mein Werkzeug über das ganze Hafengelände verteilt.', 'Seit Viktor Kral seinen Club Monolith aufgemacht hat, werden die jeden Tag mutiger. Aber Rostwerk gehört nicht denen.'],
+      ask1: 'Hilf mir, meine acht Werkzeugkoffer einzusammeln. Zwischen den Containern, am Kai, und ein paar haben die Idioten oben auf die Kräne geworfen.',
+      ask2: 'Die Hafenleute sollen sehen, dass wir nicht verschwinden. Flieg mit dem Flitzer durch die Ringe über der Ringstraße. Regenbogen am Himmel, mitten in Rostwerk.',
+      ask3: 'Heute Abend ist Hafenfest, zum ersten Mal mit Regenbogenfahne. Sag allen Bescheid. Auch denen, die Angst haben.',
+      finale: ['Schau dir das an. Kranführerinnen, Dragqueens, die Leute vom Fischmarkt. Alle unter einer Fahne.', 'Die grauen Jacken stehen drüben am Zaun vom Monolith und trauen sich nicht her. So sieht es aus, wenn wir zusammenhalten.', 'Das ist für dich. Und wenn dein Wagen mal Liebe braucht: Funkenflug hat für dich immer offen.'],
+      after: ['Die Fahne hängt wieder. Diesmal mit Stahlseil.', 'Kral schaut jeden Abend aus seinem Fenster herüber. Soll er.'] },
+    item: { icon: '🧰', name: 'Werkzeugkoffer', color: 0xff7a1a, n: 8 }, pay: [180, 260, 560],
+    spots: [
+      { id: 'boxsack', label: '🥊 Am Boxsack trainieren', x: 9, z: 4.2, r: 2, act: { k: 'do', min: 30, d: { fun: 12, energy: -12, hygiene: -10 }, msg: 'Links, rechts, Deckung. Tom nickt: „Nicht um anzugreifen. Um stehen zu bleiben.“ Spaß +12' } },
+      { id: 'fischbude', label: '🐟 Fischbrötchen am Kai', x: -9, z: 4.2, r: 2, act: { k: 'do', cost: 4, min: 15, d: { hunger: 26 }, msg: 'Matjes, Zwiebeln, Möwen im Nacken. Hunger gestillt.' } },
+      { id: 'kaimauer', label: '🌅 Auf der Kaimauer sitzen', x: -16, z: 40, r: 2.4, act: { k: 'do', min: 30, d: { energy: 14, fun: 8 }, msg: 'Die Kräne glühen im Abendlicht. Drüben blinkt Rainbow City. Energie +14' } },
+    ],
+    folk: [
+      { name: 'Gül', rb: 'Female_Adult_07', x: -6, z: -2, anim: 'talk', color: '#ffd23b', lines: ['Ich fahre seit zwanzig Jahren Kran. Da oben sieht man alles. Auch, wer nachts Farbe an die Wände sprüht.', 'Meine Frau sagt, ich soll vorsichtig sein. Ich sage: Vorsichtig waren wir lange genug.'] },
+      { name: 'Hein', rb: 'Male_Adult_06', x: 6, z: -2.4, anim: 'idle', color: '#8fa0aa', lines: ['1979 bin ich beim ersten CSD mitgelaufen. Damals haben sie uns mit Eiern beworfen.', 'Heute sind es graue Jacken. Die Jacken ändern sich, die Angst dahinter nicht.'] },
+      { name: 'Miss Rostrose', rb: 'Female_Party_01', x: 7.5, z: 13, anim: 'dance2', color: '#ff4fd8', lines: ['Ich trete im Hafenkeller auf, seit es den gibt. Kral will, dass ich aufhöre. Ich will, dass er zuschaut.', 'Wimpern aus Stahlwolle, Absätze aus Schiffsnägeln. Mich haut so schnell nichts um.'] },
+      { name: 'Nico', rb: 'Male_Adult_04', x: -7.5, z: 13.5, yaw: .6, anim: 'idle', color: '#b9c0c8', lines: ['Ich war beim Ordnungsbund. Zwei Jahre. Ich habe die Jacke weggeworfen, als ich gemerkt habe, dass ich selbst gemeint bin.', 'Tom hat mir eine Lehrstelle gegeben. Ohne Fragen. Das vergesse ich ihm nie.'] },
+    ],
+    build(k) {
+      const steel = k.M(0x9aa0aa, .4, .7), rust = k.M(0xa0522d, .85, .2), orange = k.M(0xff7a1a, .55, .2), black = k.M(0x14141a, .35, .3), concrete = k.M(0xb8b2a8, .9);
+      const CONT = [0xa0522d, 0x2f6fa0, 0x2f8f5a, 0xd8a52a, 0x8a3a4a, 0x5a6470];
+      // Club Monolith im Nordwesten: schwarzer Block, kaltes weißes Licht, Zaun davor (Mitte bleibt frei für die Brücke von Kap Zuflucht)
+      const MX = -14;
+      k.box(14, 15, 10, black, MX, 7.5, -36); k.box(14.4, .3, 10.4, k.G(0xeaf2ff, 1.6), MX, 15.1, -36);
+      for (const sx of [-1, 1]) k.box(.18, 13, .18, k.G(0xeaf2ff, 1.4), MX + sx * 7.05, 7.5, -30.95);
+      k.box(3, 3.6, .2, k.M(0x2a2a34, .3, .6), MX, 1.8, -30.9); k.sign('MONOLITH', '#eaf2ff', MX, 10, -30.85, 0, 9);
+      for (let x = MX - 10; x <= MX + 10; x += 1.5) { if (Math.abs(x - MX) < 2.5) continue; k.cyl(.04, .04, 2, steel, x, 1, -28.4, 5); } k.box(21, .06, .06, steel, MX, 1.9, -28.4); k.box(21, .06, .06, steel, MX, 1, -28.4);
+      for (let x = MX - 9; x <= MX + 9; x += 3) if (Math.abs(x - MX) > 2.5) k.solid(x, -28.4, 1.2);
+      for (let x = MX - 5; x <= MX + 5; x += 5) k.solid(x, -36, 5.4);
+      // zwei Containerkräne im Nordosten
+      for (const cx of [12, 25]) {
+        for (const lx of [-3, 3]) for (const lz of [-4, 4]) { k.box(.6, 16, .6, orange, cx + lx, 8, -40 + lz); k.solid(cx + lx, -40 + lz, .6); }
+        k.box(7, 1, 9, orange, cx, 16.2, -40); k.box(1.2, 1, 30, orange, cx, 17.2, -36); k.box(2.4, 2, 2.4, k.M(0xf4f4f4, .5), cx, 15, -29);
+        k.box(.08, 6, .08, steel, cx, 13.6, -25); k.box(2.6, .3, 6, steel, cx, 10.5, -25);
+      }
+      // Containerstapel im äußersten Nordwesten und Nordosten
+      for (const sx of [-1, 1]) for (let i = 0; i < 6; i++) {
+        const x = sx * (34 + (i % 2) * 7), z = -30 - Math.floor(i / 2) * 6.5;
+        for (let h = 0; h < 1 + (i % 3); h++) k.box(6, 2.6, 2.5, k.M(CONT[(i + h + (sx > 0 ? 3 : 0)) % 6], .7, .2), x, 1.3 + h * 2.62, z);
+        k.solid(x - 2, z, 1.5); k.solid(x + 2, z, 1.5);
+      }
+      k.sign('LIEBE BLEIBT', '#ff4fd8', -34, 2, -28.7, 0, 5); k.sign('ROSTWERK', '#ffb347', 34, 4.6, -28.7, 0, 5);
+      // Werkstatt Funkenflug im Südosten: Halle, Hebebühne, Reifenstapel, Regenbogenfahne
+      k.box(12, 5.5, .3, concrete, 18, 2.75, 30); k.box(.3, 5.5, 9, concrete, 24, 2.75, 34.5); k.box(12.4, .4, 9.4, rust, 18, 5.6, 34.5);
+      k.sign('FUNKENFLUG', '#ffd23b', 18, 4.4, 30.2, Math.PI, 7); k.sign('WERKSTATT', '#ff7a1a', 18, 4.4, 29.8, 0, 6);
+      for (const sx of [-1, 1]) k.box(.3, 3, .3, k.M(0xd8261e, .5), 16 + sx * 1.6, 1.5, 34); k.box(3.6, .15, 4.6, steel, 16, 1.4, 34.5);
+      for (let i = 0; i < 4; i++) { const t = k.cyl(.45, .45, .3, black, 21.6, .15 + i * .3, 37.6, 14); t.rotation.y = i; }
+      k.solid(18, 30, 6.2); k.solid(24, 34.5, 4.6); k.solid(16, 34, 2.4); k.solid(21.6, 37.6, .6);
+      k.cyl(.07, .07, 9, k.M(0xd8d8e0, .3, .7), 12, 4.5, 30.5, 6); RAINBOW.forEach((c, i) => k.box(2.4, .3, .04, k.M(c, .6), 13.25, 8.6 - i * .3, 30.5)); k.solid(12, 30.5, .3);
+      // Kai im Südwesten: Poller, Frachter, Kisten
+      for (let z = 30; z <= 44; z += 3.5) { k.cyl(.25, .3, .7, black, -26, .35, z, 10); k.solid(-26, z, .4); }
+      k.box(5, 3.2, 18, rust, -33, 1.2, 37, .1); k.box(4, 3, 4, k.M(0xf4f4f4, .5), -33.6, 3.8, 31, .1); k.box(.4, 5, .4, steel, -33.4, 5.5, 31, .1);
+      for (let i = 0; i < 6; i++) k.box(1.2, 1.2, 1.2, k.M(0x8a5a35, .9), -18 + (i % 3) * 1.3, .6 + Math.floor(i / 3) * 1.2, 44 + (i % 2) * .4);
+      k.solid(-17, 44, 2.2);
+      // Natriumlampen an der Ringstraße und auf dem Gelände
+      for (const [x, z] of [[-24, -14], [24, -14], [-24, 24], [24, 24], [-8, 30], [8, 40], [-4, -26], [5, -26]]) { k.cyl(.08, .1, 6, steel, x, 3, z, 6); k.ball(.3, k.G(0xffa040, 1.8), x, 6.1, z); k.solid(x, z, .25); }
+      // Birken und Gestrüpp an den Rändern
+      for (let i = 0; i < 26; i++) { const [x, z] = any(k, 34, 49); if (!k.free(x, z, 2) || z < -24 || (x > 10 && z > 26) || (x < -14 && z > 26)) continue; k.cyl(.12, .16, 4.4, k.M(0xe8e4dc, .7), x, 2.2, z, 7); k.ball(1.5, k.M(0x6f8a3a, .95), x, 4.8, z, 1, 1.2, 1); k.solid(x, z, .4); }
+    },
+  },
+  {
+    id: 'zuflucht', name: 'Kap Zuflucht', icon: '⚓', sub: 'Windiges Fischerkap mit Leuchtturm, Dünen und dem Haus Möwe, einer Zuflucht für junge Queers',
+    sky: ['#6f9fd8', '#f2e2c8'], ground: 0x8fa66a, water: 0x2f6f8f, light: 0xfff0dc, r: 52, music: 'city',
+    town: { tint: [[1.9, 1.9, 1.85], [1.1, 1.5, 1.9], [1.9, 1.2, 1.1], [1.2, 1.7, 1.3], [1.9, 1.7, 1.1], [1.5, 1.3, 1.8]], plaza: 0xd8d0c0,
+      shops: [['BÄCKEREI FRIEDA', '#ffd9a0', 'cafe'], ['FISCHHALLE', '#7fd4ff', 'deli'], ['DORFKNEIPE ANKER', '#ffb347', 'bar'], ['KIOSK', '#ffd23b', 'spaeti'], ['STRANDKORB-VERLEIH', '#ff9ad5', 'boutique'], ['PIZZA KAP', '#ff7a3b', 'pizza'], ['DORFGALERIE', '#ffffff', 'galerie'], ['GYM AM DEICH', '#9af0c0', 'gym']] },
+    job: { icon: '🧺', name: 'Spendenrunde', text: 'Das Dorf hat für Haus Möwe gesammelt. Bring die Körbe zu den Häusern, bevor der Abendwind kommt.' },
+    host: { name: 'Ayla Demir', rb: 'Female_Adult_10', x: 0, z: 9, yaw: 0, anim: 'idle', color: '#3ddc97',
+      intro: ['Willkommen auf Kap Zuflucht. Ich bin Ayla. Das große Haus da drüben ist Haus Möwe, eine Zuflucht für junge queere Leute, die zu Hause rausgeflogen sind.', 'Gestern Nacht war Sturm. Und dann kamen Steine durchs Fenster, mit Zetteln dran. Ich lese sie dir nicht vor.', 'Die Kids haben Angst. Aber wir machen nicht zu. Niemals.'],
+      ask1: 'Der Sturm hat unsere Spendenpakete über das ganze Kap geweht. Acht Stück: Decken, Medikamente, Briefe. Hilf mir, sie zu finden.',
+      ask2: 'Die Kids wollen ein Zeichen setzen: Flieg durch die Ringe über dem Dorf. Sie filmen es und schicken es allen, die sich noch nicht trauen.',
+      ask3: 'Morgen ist Tag der offenen Tür. Sag im Dorf Bescheid. Die Leute sollen sehen, wer hier wohnt: keine Gefahr, sondern Nachbarn.',
+      finale: ['Das ganze Dorf ist gekommen. Jannes hat neues Fensterglas mitgebracht, Frieda drei Bleche Butterkuchen.', 'Rafi hat zum ersten Mal seit Wochen gelacht. Laut. Mitten auf dem Platz.', 'Das ist für dich. Haus Möwe bleibt offen. Für alle, die ein Zuhause brauchen.'],
+      after: ['Wir haben jetzt eine Warteliste. Traurig und schön zugleich.', 'Wenn du jemanden kennst, der nicht weiß, wohin: Hier ist ein Bett frei.'] },
+    item: { icon: '📦', name: 'Spendenpakete', color: 0x3ddc97, n: 8 }, pay: [180, 260, 560],
+    spots: [
+      { id: 'strandkorb', label: '🏖️ Im Strandkorb dösen', x: -9, z: 31, r: 2.2, act: { k: 'do', min: 60, d: { energy: 24, fun: 6 }, msg: 'Wind, Möwen, das Rauschen der Brandung. Energie +24' } },
+      { id: 'butterkuchen', label: '🍰 Butterkuchen bei Frieda', x: 9, z: 4.4, r: 2, act: { k: 'do', cost: 3, min: 15, d: { hunger: 24, social: 6 }, msg: 'Noch warm. Frieda legt dir ein zweites Stück hin, ohne zu fragen. Hunger gestillt.' } },
+      { id: 'moewe', label: '🎲 Spieleabend im Haus Möwe', x: -17, z: 26, r: 2.4, act: { k: 'do', min: 45, d: { social: 20, fun: 16 }, msg: 'Uno mit sechs Kids, die alle schummeln. Rafi gewinnt dreimal. Kontakte +20' } },
+    ],
+    folk: [
+      { name: 'Rafi', rb: 'Male_Adult_01', x: -6, z: -2, anim: 'idle', color: '#5bcefa', lines: ['Ich bin neunzehn. Meine Eltern haben meine Sachen in Müllsäcke gepackt, als ich ihnen meinen Namen gesagt habe.', 'Hier sagt jeder meinen Namen richtig. Du hast keine Ahnung, wie viel das ist.'] },
+      { name: 'Juno', rb: 'Female_Adult_03', x: 6, z: -2.4, anim: 'talk', color: '#ffd23b', lines: ['Ich mache hier Sozialarbeit. Pronomen? They. Danke, dass du fragst.', 'Die Steine machen mir weniger Angst als das Schweigen danach. Darum reden wir hier so viel.'] },
+      { name: 'Jannes', rb: 'Male_Adult_05', x: 9, z: 14, anim: 'idle', color: '#7fd4ff', lines: ['Ich fahre seit vierzig Jahren raus. Mein Bruder war schwul, das durfte damals keiner wissen.', 'Wenn hier noch einmal ein Stein fliegt, steht das ganze Dorf vor der Tür. Das schwöre ich.'] },
+      { name: 'Frieda', rb: 'Female_Adult_06', x: -8.5, z: 13, anim: 'cheer', color: '#ffb347', lines: ['Butterkuchen hilft gegen fast alles. Gegen Dummheit leider nicht.', 'Die Kids helfen mir morgens in der Backstube. Pünktlicher als mein Mann je war.'] },
+    ],
+    build(k) {
+      const white = k.M(0xf4f4f4, .6), red = k.M(0xd8261e, .55), rock = k.M(0x7a7a80, .95), wood = k.M(0x8a5a35, .85), sand = k.M(0xe8d6a8, 1);
+      // Leuchtturm auf den Klippen im Norden
+      for (let i = 0; i < 5; i++) k.cyl(2.2 - i * .25, 2.45 - i * .25, 3.2, i % 2 ? white : red, 0, 1.6 + i * 3.2, -38, 18);
+      k.cyl(1.4, 1.4, .3, k.M(0x33333a, .4, .6), 0, 16.2, -38, 18); k.cyl(1, 1, 1.8, k.G(0xfff4b0, 1.8, .85), 0, 17.3, -38, 14); k.cyl(0, 1.3, 1.2, red, 0, 18.8, -38, 14);
+      k.solid(0, -38, 2.6);
+      for (let i = 0; i < 34; i++) { const a = -Math.PI / 2 + (k.rnd() - .5) * 2.6, d = 40 + k.rnd() * 10, x = Math.cos(a) * d, z = Math.sin(a) * d; const s = 1.2 + k.rnd() * 2.2; k.ball(s, rock, x, s * .45, z, 1.2, .8, 1); if (d < 48) k.solid(x, z, s); }
+      for (let i = 0; i < 8; i++) { const x = -7 + i * 2, z = -32 + Math.abs(i - 3.5) * .5; k.ball(1.1, rock, x, .4, z, 1.3, .6, 1); }
+      // Haus Möwe im Südwesten: großes Haus, Regenbogenfahne, vernageltes Fenster, Garten
+      const hx = -19, hz = 34;
+      k.box(13, 6, 8, k.M(0xf2e6d0, .8), hx, 3, hz); const roof = k.cyl(0, 6.6, 3.2, k.M(0x3a5f8a, .7), hx, 7.6, hz, 4); roof.rotation.y = Math.PI / 4; roof.scaling.set(1.45, 1, .9);
+      for (const wx of [-4.5, -1.5, 1.5, 4.5]) for (const wy of [1.8, 4.4]) k.box(1.4, 1.4, .1, k.G(0xffe9b0, .9), hx + wx, wy, hz - 4.05);
+      for (let i = 0; i < 3; i++) k.box(1.8, .22, .06, wood, hx + 1.5, 4.1 + i * .3, hz - 4.12, (i - 1) * .25);
+      k.box(1.8, 2.6, .12, k.M(0x2f8f5a, .5), hx - 6.4, 1.3, hz + .5, Math.PI / 2); k.sign('HAUS MÖWE', '#3ddc97', hx, 5.6, hz - 4.1, Math.PI, 6);
+      k.solid(hx - 4, hz, 4.4); k.solid(hx + 1, hz, 4.4); k.solid(hx + 5, hz, 3.6);
+      k.cyl(.07, .07, 9, k.M(0xd8d8e0, .3, .7), hx + 8, 4.5, hz - 5, 6); RAINBOW.forEach((c, i) => k.box(2.4, .3, .04, k.M(c, .6), hx + 9.25, 8.6 - i * .3, hz - 5)); k.box(2.4, .3, .04, k.M(0x5bcefa, .6), hx + 9.25, 6.8, hz - 5); k.box(2.4, .3, .04, k.M(0xf5a9b8, .6), hx + 9.25, 6.5, hz - 5); k.solid(hx + 8, hz - 5, .3);
+      for (const [x, z] of [[-13, 25], [-21, 25]]) { k.box(2.4, .1, 1, wood, x, .75, z); for (const sx of [-1, 1]) k.box(.1, .7, .9, wood, x + sx, .38, z); k.solid(x, z, 1.3); }
+      // Fischerhafen im Südosten: Steg, zwei Kutter, Netze, Kisten
+      k.box(3, .3, 14, wood, 22, .25, 40); for (let z = 34; z <= 46; z += 3) for (const sx of [-1, 1]) k.cyl(.15, .15, 1.2, wood, 22 + sx * 1.4, .1, z, 6);
+      for (const [x, z, c] of [[27, 38, 0x2f6fa0], [27, 45, 0xd8261e]] as Array<[number, number, number]>) { k.box(3, 1.6, 7, k.M(c, .6), x, .6, z); k.box(2, 1.6, 2.4, white, x, 2.2, z - 1); k.cyl(.08, .08, 5, wood, x, 3.6, z + 1.4, 6); k.solid(x, z - 2, 1.8); k.solid(x, z + 2, 1.8); }
+      for (let i = 0; i < 5; i++) k.box(1, .8, 1, k.M(0x6a8aa0, .9), 18 + (i % 3) * 1.1, .4 + Math.floor(i / 3) * .8, 32); k.solid(19, 32, 1.8);
+      k.box(4, 2.4, .04, k.M(0x3a6a5a, .9), 16, 1.6, 28.5); for (const sx of [-1, 1]) { k.cyl(.06, .06, 2.8, wood, 16 + sx * 2, 1.4, 28.5, 6); k.solid(16 + sx * 2, 28.5, .2); }
+      // windschiefe Kiefern, Dünen, Strandkörbe
+      for (let i = 0; i < 34; i++) { const [x, z] = any(k, 28, 48); if (!k.free(x, z, 2) || z < -28 || (x < -9 && z > 22 && x > -30) || (x > 12 && z > 24)) continue; const h = 3 + k.rnd() * 2; const t = k.cyl(.14, .22, h, k.M(0x5a3d28, .9), x, h / 2, z, 7); t.rotation.z = .18; k.cyl(0, 1.6, 3, k.M(0x2f5a3a, .95), x + h * .18, h + .9, z, 8); k.solid(x, z, .5); }
+      for (let i = 0; i < 10; i++) { const [x, z] = any(k, 38, 50); if (z < 20 || !k.free(x, z, 1)) continue; k.ball(3, sand, x, -.6, z, 1.6, .5, 1); }
+      for (const [x, z] of [[-9, 31.4], [-5, 33]]) { k.box(1.4, 1.5, 1.1, k.M(0xffffff, .7), x, .75, z); k.box(1.5, .5, .4, k.M(0x3a7bff, .6), x, 1.6, z - .4); k.solid(x, z, .9); }
+    },
+  },
 ];
 
 export const worldDef = (id: string) => WORLDS.find((w) => w.id === id);
@@ -395,7 +515,18 @@ export const ISLES: Record<string, { x: number; z: number; to?: string }> = {
   lindenhof: { x: -292, z: -14, to: 'einhorn' },
   rummel: { x: -292, z: -149, to: 'canaria' },
   cruising: { x: -292, z: 121, to: 'lindenhof' },   // nur mit 18+ sichtbar und begehbar
+  rostwerk: { x: -157, z: 121, to: 'einhorn' },     // Akt IV: Hafeninsel südlich von Glitzeria
+  zuflucht: { x: -157, z: 256, to: 'rostwerk' },    // Akt IV: Kap Zuflucht hinter Rostwerk
 };
+/** Inselkoordinaten → Stadt (wie Isle.w; die Insel ist in 90°-Schritten gedreht, ihr Süden zeigt zur Nachbarinsel bzw. zur Stadt) */
+export function isleXZ(id: string, lx: number, lz: number): [number, number] {
+  const i = ISLES[id], t = i.to ? ISLES[i.to] : undefined, dx = t ? t.x - i.x : 1, dz = t ? t.z - i.z : 0;
+  let a = Math.round(Math.atan2(dx, dz) / (Math.PI / 2)) * (Math.PI / 2);
+  const ez = () => [Math.round(Math.sin(a)), Math.round(Math.cos(a))];
+  if (ez()[0] * dx + ez()[1] * dz < 0) a += Math.PI;
+  const c = Math.round(Math.cos(a)), sn = Math.round(Math.sin(a));
+  return [i.x + lx * c + lz * sn, i.z - lx * sn + lz * c];
+}
 /** Außengrenze der Inselkette (Flug, Karten) */
 export const ISLE_BOUNDS = (() => { let x0 = -215, z0 = -120, z1 = 120; for (const i of Object.values(ISLES)) { x0 = Math.min(x0, i.x - 70); z0 = Math.min(z0, i.z - 70); z1 = Math.max(z1, i.z + 70); } return { x0, z0, z1 }; })();
 export const cityIsle = (id: string) => { const i = Math.max(1, WORLDS.findIndex((w) => w.id === id)) - 1; return { x: i % 2 ? -150 : -122, z: 72 + Math.floor(i / 2) * 28 }; };

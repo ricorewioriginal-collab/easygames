@@ -22,6 +22,7 @@ import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
 import type { Marker } from '../ui/Hud';
 import { type Gig, pickCall, fmtTime } from './gigs';
+import { Brawl } from './Brawl';
 import { collect, collectNotes, nextFare } from './empire';
 import { Street, type Parked } from './Street';
 import { WORLDS, ISLES, ISLE_BOUNDS, worldDef, cityGate, cityIsle } from './worlds';
@@ -61,6 +62,8 @@ export class CityScene implements GameScene {
   private near: { kind: 'npc' | 'poi' | 'street' | 'car' | 'house' | 'life' | 'buddy' | 'friend' | 'isle'; id: string; label: string } | null = null;
   street!: Street;
   combat!: Combat;
+  /** Schlägereien und Verfolgungen der Missionen (Akt IV) */
+  brawl!: Brawl;
   kerb!: Kerb;
   weather!: Weather;
   life!: CityLife;
@@ -134,6 +137,7 @@ export class CityScene implements GameScene {
       await i.build(); this.isles.push(i); if (!def.adult) this.street.addFlyer(i.pad[0], i.pad[1], i.yawW(Math.PI));
     }
     this.combat = new Combat(this.g, this, sc); this.combat.init();
+    this.brawl = new Brawl(this, sc, this.g.hud);
     this.kerb = new Kerb(this.g, this);
     this.g.hud.onWeapon = () => { if (this.mode === 'play') this.combat.cycle(); };
     this.g.hud.setRadarMap((c, px) => {
@@ -776,12 +780,14 @@ export class CityScene implements GameScene {
     this.g.hud.banner(g.title, `Auftrag von ${g.who}${g.car ? ' · Tipp: Mit dem Auto geht es schneller' : ''}`, 'info', 2600);
     sfx('open');
   }
+  private nagT = 0;
   private gigTick(dt: number) {
     const s = this.g.save.data;
     if (!this.gig) {
       this.g.hud.gig(null);
       if (s.flags.sagaRun) delete s.flags.sagaRun; // Mission lief beim letzten Speichern noch
       if (s.flags.nachtRun) delete s.flags.nachtRun;
+      if (s.flags.flutRun) delete s.flags.flutRun;
       this.raceCheck(dt);
       // ab und zu klingelt das Handy (erst nach der Einführung)
       if (s.step >= 2 || s.chapter > 1) this.callT -= dt;
@@ -789,8 +795,27 @@ export class CityScene implements GameScene {
       return;
     }
     const q = this.gig, st = q.g.steps[q.i], p = this.player.root.position;
+    // Schlägerei läuft: Uhr steht, Anzeige zeigt Mut und wer schon am Boden liegt
+    if (this.brawl.fighting) { this.g.hud.gig(this.brawl.label(), this.brawl.brave <= 2); return; }
     q.t -= dt;
     this.g.hud.gig(`⏱ ${fmtTime(q.t)} · ${q.g.title} ${q.i + 1}/${q.g.steps.length}: ${st.label}`, q.t < 15);
+    // Verfolgung: Ziel losschicken, eingeholt = Station geschafft, entwischt = Mission gescheitert
+    if (st.chase) {
+      if (!this.brawl.chasing) {
+        const opt = st.chase;
+        st.chase = undefined;
+        this.brawl.chase(st, opt, () => { st.x = p.x; st.z = p.z; const nx = q.g.steps[q.i + 1]; if (nx?.fight && nx.x === 0 && nx.z === 0) { nx.x = p.x; nx.z = p.z; } toast('🚨 Eingeholt!'); }, () => { if (this.gig === q) q.t = 0; });
+        (st as GigStepRun).run = true;
+      }
+      return;
+    }
+    if ((st as GigStepRun).run && this.brawl.chasing) return;
+    if (st.fight && Math.hypot(p.x - st.x, p.z - st.z) < 12) {
+      if (this.drive) { if ((this.nagT -= dt) <= 0) { this.nagT = 4; toast('🚗 Steig aus und stell dich ihnen!'); } return; }
+      const names = st.fight; st.fight = undefined;
+      this.brawl.fight(st, names, (won) => { if (this.gig !== q) return; if (won) { st.x = this.player.root.position.x; st.z = this.player.root.position.z; } else { st.fight = names; q.t = 0; } });
+      return;
+    }
     if (Math.hypot(p.x - st.x, p.z - st.z) < (this.drive ? 4.5 : 3)) {
       q.i++; sfx('coin');
       if (q.i < q.g.steps.length) { toast(`✓ ${st.label}`); return; }
@@ -948,6 +973,8 @@ export class CityScene implements GameScene {
     this.goalBeam((gm || mk.find((m) => m.id === 'g'))?.pos as Vector3 | undefined, t, gm ? 0xffd23b : 0xff3fb0);
     if (!busy) this.gigTick(dt);
     if (!busy) this.combat.update(dt, t);
+    if (!this.gig && (this.brawl.fighting || this.brawl.chasing)) this.brawl.clear();
+    if (!busy) this.brawl.update(dt);
     if (!busy) {
       this.findNear();
       const inp = g.engine.input;
@@ -1020,6 +1047,7 @@ export class CityScene implements GameScene {
   }
 }
 
+type GigStepRun = import('./gigs').GigStep & { run?: boolean };
 const glowCol = { gig: col(0xffd23b), story: col(0xff3fb0) };
 
 /** Sitzhöhe der sichtbaren Fahrerin auf Roller bzw. Boot (−1: Figur im Wagen versteckt) */

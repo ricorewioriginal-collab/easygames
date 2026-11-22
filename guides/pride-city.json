@@ -521,6 +521,21 @@
       "p": [
         "Die Sexarbeiter*innen vor Haus Rosa und auf der Laternenmeile tragen nachts ein rotes Leuchtschild mit Name, Alter und Preis und stehen in einem roten Lichtkreis. Alle sind erwachsen und arbeiten selbstbestimmt."
       ]
+    },
+    {
+      "t": "✊ Akt IV: Die graue Flut",
+      "p": [
+        "Nach der Pride der Inseln schlägt der Hass zurück: Der Ordnungsbund (graue Jacken) beschmiert die Hauptstraße, greift Leute an und wirft Steine auf Haus Möwe. Dahinter steckt Viktor Kral, Besitzer des Club Monolith auf Rostwerk. Tom Wierzbicki wartet am Kai im Hafen.",
+        "Zwei neue Inseln hängen an der Kette: 🏗️ Rostwerk (Hafen mit Kränen, Containern, Werkstatt Funkenflug) südlich von Glitzeria und dahinter ⚓ Kap Zuflucht (Leuchtturm, Fischerhafen, Haus Möwe)."
+      ]
+    },
+    {
+      "t": "👊 Schlägereien und Verfolgungen",
+      "p": [
+        "In Akt IV stellen sich dir Leute vom Ordnungsbund in den Weg. Steig aus dem Auto, dann schlägst du wie sonst auch (F / LT / 👊). Wer zweimal getroffen wird, geht zu Boden und rennt danach weg. Das ist Notwehr: Es gibt keine Fahndungssterne.",
+        "Oben steht dein Mut. Jeder Schubser kostet ein Herz. Sind alle weg, ziehen dich deine Leute raus und du versuchst die Mission noch einmal.",
+        "Bei Verfolgungen wandert die Lichtsäule mit dem Ziel mit. Bleib dran, bis du nah genug bist. Wer zu weit zurückfällt, verliert die Spur."
+      ]
     }
   ],
   "ratgeber": [
@@ -730,6 +745,14 @@
         "Immer ein paar Kondome einstecken (Späti, Checkpoint gratis, Automat im Darkroom).",
         "Nach einem ungeschützten Mal ohne PrEP innerhalb von drei Tagen in den Checkpoint: PEP und Test."
       ]
+    },
+    {
+      "t": "Schlägereien gewinnen",
+      "list": [
+        "Nicht mitten in die Gruppe laufen: Lass sie einzeln kommen und schlag die Person zuerst, die am nächsten steht.",
+        "Getroffene taumeln kurz zurück und können dann nicht schubsen. Zweimal schnell hintereinander treffen.",
+        "Bei Verfolgungen im Auto Turbo sparen, bis das Ziel in einer langen Geraden ist."
+      ]
     }
   ],
   "loesung": [
@@ -893,6 +916,18 @@
       "p": [
         "Stammgast im Heißen Stein: Kräuter (Späti, Regenbogenhaus, Sauna), Handtücher (Muckibude, Sauna) und nachts die Plakate (One Love Bar, Prisma, Leuchtturm, Sauna). Stammgast in der Sandbank: Liegestühle am Kai, Sonnencreme aus dem Checkpoint und nachts Boxen (Prisma) und Lichterketten (Studio).",
         "Zusammenziehen mit einem Match: drei gute Dates bis „Zusammen“, dann im Handy unter Familie, „Wahlfamilie & WG“."
+      ]
+    },
+    {
+      "t": "✊ Akt IV: Die graue Flut komplett",
+      "p": [
+        "1. Farbe gegen Grau (Tom am Kai): Farbe an der One Love Bar holen, Café und Regenbogenhaus übermalen, dann drei graue Jacken umhauen.",
+        "2. Jagd durch die Nacht (ab 21 Uhr, Auto): zur Laternenmeile, dem grauen Wagen folgen, die drei Insassen festhalten.",
+        "3. Rostwerk retten (Tom auf der Insel): acht Werkzeugkoffer, Ringe fliegen, alle zum Hafenfest einladen.",
+        "4. Der Mann im Monolith (Kral vor dem Club, ab 21 Uhr): vier Türsteher abwehren, Marvin mit der Spenderliste zu Fuß einholen, Liste zur Polizeiwache.",
+        "5. Kap Zuflucht (Ayla vor Haus Möwe): acht Spendenpakete, Ringe fliegen, Tag der offenen Tür ankündigen.",
+        "6. Die Nacht vor Haus Möwe: Ayla ruft nachts an. Zum Haus Möwe fahren und fünf Angreifer vor der Tür stoppen.",
+        "7. Die Lichterkette (Tom am Kai, ab 21 Uhr): Lady Luma und Mama Vega, dann Rocco abholen, zum Monolith, Krals Wagen auf der Ringstraße stellen (die Lichterkette sperrt die Brücke), zwei Leibwächter abwehren. Kral wird festgenommen."
       ]
     }
   ],

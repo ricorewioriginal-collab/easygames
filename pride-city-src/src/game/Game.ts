@@ -31,7 +31,8 @@ import { STAFF, UPGRADES, UP_MAX, SPECIAL, daily as bizDaily, staffOf, upOf, pop
 import { SLOTS, part, readPimp, buyPart, clientFor, episode, type Slot } from './tuning';
 import { workshopItems } from './pimp';
 import { SHOP, RACES, PAINTS, PAINT_COST, TUNE_COST, MEDALS, ownsCar, myCar, tuneLevel, buyCar, buyTune, buyPaint, bestTime, medalFor, stats } from './vehicles';
-import { ACTS, act, actLabel, chain, islesLeft, HISTORY, HIST_ORDER } from './faden';
+import { ACTS, act, actLabel, chain, islesLeft, HISTORY, HIST_ORDER, ROMAN } from './faden';
+import { FLUT, flutDone } from './flut';
 import { sagaDone, MISSIONS } from './saga';
 import { nachtDone, NACHT } from './nacht';
 import { timeline, PEOPLE, RIGHTS, flags, todaysQuiz, quizDoneToday, quizReward, type Q } from './wissen';
@@ -1138,8 +1139,8 @@ export class Game {
 
   private drawMap() {
     const c = document.getElementById('pmap') as HTMLCanvasElement | null; if (!c) return;
-    // Ausschnitt x −365…215 (Inselkette bis Hochstadt), z −290…290
-    const x = c.getContext('2d')!, k = 300 / 580, PX = (v: number) => (v + 365) * k, PZ = (v: number) => (v + 290) * k;
+    // Ausschnitt x −385…235 (Inselkette bis Hochstadt), z −290…330 (bis Kap Zuflucht)
+    const x = c.getContext('2d')!, k = 300 / 620, PX = (v: number) => (v + 385) * k, PZ = (v: number) => (v + 290) * k;
     x.fillStyle = '#2f8fd0'; x.fillRect(0, 0, 300, 300);
     x.fillStyle = '#4a4a52'; x.fillRect(PX(-66), PZ(-165), 400 * k, 99 * k); x.fillRect(PX(-66), PZ(66), 400 * k, 99 * k);
     x.fillStyle = '#2f8fd0'; x.fillRect(PX(64), 0, 26 * k, 300);
@@ -1240,7 +1241,7 @@ export class Game {
     this.openMenu(`<div class="col"><div class="logo" style="font-size:clamp(30px,5vw,52px)"><span class="l1">Story</span><small>Ein Leben in allen Farben</small></div><div class="slot"></div></div>
       <div class="side panel"><h3>Deine Entscheidungen</h3><p>${choices.length ? choices.join('<br>') : 'Noch keine – die Stadt merkt sich alles.'}</p></div>`,
     [...CHAPTERS.map((c) => ({ icon: c.n < s.chapter ? '✅' : c.n === s.chapter ? '⭐' : '🔒', label: `Kapitel ${c.n}: ${c.title}`, sub: c.n <= s.chapter ? c.text : 'Noch nicht freigespielt', disabled: c.n > s.chapter })),
-      ...ACTS.slice(1).map((a) => { const now = act(s), done = now > a.n, open = now >= a.n; return { icon: done ? '✅' : open ? '⭐' : '🔒', label: `Akt ${a.n === 2 ? 'II' : 'III'}: ${a.title}`, sub: !open ? 'Nach der Pride in Rainbow City' : a.n === 2 ? `${a.text} · Hochstadt ${sagaDone(s)}/${MISSIONS.length} · Sterling Nights ${nachtDone(s)}/${NACHT.length}${owns(s, 'prisma') ? ' · Club Prisma gehört dir' : ''}` : `${a.text} · ${chain(s).length - islesLeft(s).length}/${chain(s).length} Inseln${done ? ' · gefeiert' : ''}`, disabled: !open }; }),
+      ...ACTS.slice(1).map((a) => { const now = act(s), done = now > a.n, open = now >= a.n; return { icon: done ? '✅' : open ? '⭐' : '🔒', label: `Akt ${ROMAN[a.n - 1]}: ${a.title}`, sub: !open ? (a.n === 4 ? 'Nach der Pride der Inseln' : 'Nach der Pride in Rainbow City') : a.n === 4 ? `${a.text} · ${flutDone(s)}/${FLUT.length} Missionen${done ? ' · Kral festgenommen' : ''}` : a.n === 2 ? `${a.text} · Hochstadt ${sagaDone(s)}/${MISSIONS.length} · Sterling Nights ${nachtDone(s)}/${NACHT.length}${owns(s, 'prisma') ? ' · Club Prisma gehört dir' : ''}` : `${a.text} · ${chain(s).length - islesLeft(s).length}/${chain(s).length} Inseln${done ? ' · gefeiert' : ''}`, disabled: !open }; }),
       ...(s.chapter > 5 ? [{ icon: '🏁', label: 'Abspann ansehen', fn: () => this.ending(back) }] : []),
       ...HIST_ORDER.filter((k) => s.flags['hist_' + k]).map((k) => ({ icon: '🏳️‍🌈', label: `Damals · ${HISTORY[k].year}: ${HISTORY[k].title}`, sub: HISTORY[k].text })),
       { icon: '←', label: 'Zurück', fn: back }], back);

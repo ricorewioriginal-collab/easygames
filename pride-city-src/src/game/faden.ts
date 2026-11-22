@@ -13,6 +13,7 @@ export const ACTS = [
   { n: 1, title: 'Ein Leben in allen Farben', text: 'Ankommen in Rainbow City, das Regenbogenhaus retten und die größte Pride feiern.' },
   { n: 2, title: 'Die Lichter der Hochstadt', text: 'Das Revuetheater Kaleidoskop soll einem Glasturm weichen. Das Haus Vega braucht dich.' },
   { n: 3, title: 'Die Inseln der Farben', text: 'Fünf Inseln vor der Küste wollen ihre eigene Pride. Hilf allen, dann feiert ihr gemeinsam.' },
+  { n: 4, title: 'Die graue Flut', text: 'Nach der Pride schlägt der Hass zurück: der Ordnungsbund und Club-Mogul Viktor Kral. Rainbow City hält zusammen, auf Rostwerk und Kap Zuflucht.' },
 ];
 
 /** Reihenfolge der Inselkette entlang der Brücken (Lustwäldchen nur mit 18+) */
@@ -22,13 +23,15 @@ const isleDone = (s: SaveData, id: string) => worldStage(s.flags, id) >= 4;
 export const islesLeft = (s: SaveData) => chain(s).filter((w) => !isleDone(s, w.id));
 const sagaOver = (s: SaveData) => sagaDone(s) >= MISSIONS.length;
 
-/** Aktueller Akt (1–3), 4 = alles erzählt */
+/** Aktueller Akt (1–4, Akt IV in flut.ts), 5 = alles erzählt */
 export function act(s: SaveData) {
   if (s.chapter <= 5) return 1;
   if (!sagaOver(s) || !nachtOver(s)) return 2;
-  return s.flags.fadenEnd ? 4 : 3;
+  if (!s.flags.fadenEnd) return 3;
+  return s.flags.flutEnd ? 5 : 4;
 }
-export function actLabel(s: SaveData) { const a = ACTS[act(s) - 1]; return a ? `Akt ${['I', 'II', 'III'][a.n - 1]} · ${a.title}` : 'Rainbow City · Freies Spiel'; }
+export const ROMAN = ['I', 'II', 'III', 'IV'];
+export function actLabel(s: SaveData) { const a = ACTS[act(s) - 1]; return a ? `Akt ${ROMAN[a.n - 1]} · ${a.title}` : 'Rainbow City · Freies Spiel'; }
 
 /** Ziel in Akt III: nächste Insel der Kette, dann das Finale */
 export function fadenGoal(s: SaveData): Goal | null {
@@ -123,7 +126,7 @@ export function fadenTick(c: StoryCtx) {
     ]);
     return;
   }
-  if (a === 1 || a === 4) return;
+  if (a === 1 || a >= 4) return;
   if (++calm < 6) return; // drei ruhige Sekunden, bevor es klingelt
   if (a === 2 && !f.faden2) {
     const fresh = sagaDone(s) === 0;
@@ -248,6 +251,8 @@ export const HISTORY: Record<string, { year: string; title: string; text: string
   k5: { year: '30. Juni 2017', title: 'Ehe für alle', text: 'Der Bundestag beschließt die Ehe für alle, seit dem 1. Oktober 2017 dürfen gleichgeschlechtliche Paare in Deutschland heiraten und gemeinsam adoptieren. Vor dem Reichstag wird mit Konfetti gefeiert.' },
   a2: { year: '1920er Jahre', title: 'Das Eldorado', text: 'Im Berlin der Zwanzigerjahre treten im Eldorado und vielen anderen Lokalen Travestie-Stars auf, queere Menschen feiern offen. Anfang der Dreißigerjahre werden die Lokale geschlossen, unter den Nazis folgt die Verfolgung. Darum ist jedes gerettete Revuetheater mehr als ein Gebäude.' },
   a3: { year: '17. Mai 1990', title: 'Gesund, nicht krank', text: 'Am 17. Mai 1990 streicht die Weltgesundheitsorganisation Homosexualität von ihrer Liste der Krankheiten. Der 17. Mai ist seitdem der Internationale Tag gegen Homo-, Bi-, Inter- und Transfeindlichkeit (IDAHOBIT), überall auf der Welt.' },
+  a4: { year: 'August 1966', title: 'Compton’s Cafeteria', text: 'In San Francisco wehren sich trans Frauen und Drag Queens in Compton’s Cafeteria gegen ständige Polizeischikane: Kaffee fliegt, Scheiben gehen zu Bruch. Drei Jahre vor Stonewall zeigt sich: Wer immer wieder angefeindet wird, steht irgendwann gemeinsam auf.' },
+  flut: { year: '27. August 2022', title: 'Zivilcourage beim CSD Münster', text: 'Beim CSD in Münster stellt sich der 25-jährige trans Mann Malte C. vor Frauen, die queerfeindlich beleidigt werden. Er wird niedergeschlagen und stirbt wenige Tage später. Viele CSDs erinnern seitdem an ihn. Queerfeindliche Gewalt ist real, und die Antwort darauf ist Zusammenhalt.' },
   end: { year: '1. November 2024', title: 'Selbstbestimmt', text: 'In Deutschland tritt das Selbstbestimmungsgesetz in Kraft: Trans, inter und nichtbinäre Menschen können Vornamen und Geschlechtseintrag beim Standesamt selbst ändern lassen, ohne Gutachten und Gericht. Jeder 31. März ist Trans Day of Visibility.' },
 };
 /** „Damals“-Karte zeigen und merken (Story-Menü listet alle gesehenen) */
@@ -256,4 +261,4 @@ export function history(s: SaveData, key: string, card: StoryCtx['card']): Promi
   s.flags['hist_' + key] = true;
   return card(`Damals · ${h.year}`, h.title, h.text);
 }
-export const HIST_ORDER = ['k1', 'k2', 'k3', 'a2', 'k4', 'a3', 'k5', 'end'];
+export const HIST_ORDER = ['k1', 'k2', 'k3', 'a2', 'k4', 'a3', 'k5', 'end', 'a4', 'flut'];
