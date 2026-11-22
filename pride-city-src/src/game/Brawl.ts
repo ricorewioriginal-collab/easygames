@@ -40,6 +40,8 @@ export class Brawl {
   /** Station, an der die Schlägerei läuft (gegen Doppelstart) */
   at: GigStep | null = null;
 
+  /** Gegner-Gruppe der laufenden Schlägerei (null = Ordnungsbund) */
+  private gang: GigStep['gang'] | null = null;
   private helpers: Helper[] = [];
   /** Fluchtfahrer in der Crew: Verfolgte fahren langsamer */
   private slow = 1;
@@ -60,7 +62,7 @@ export class Brawl {
   /** Schlägerei an (x, z) mit diesen Leuten; done(true), wenn alle am Boden waren */
   async fight(st: GigStep, names: string[], done: (won: boolean) => void) {
     this.clear();
-    this.at = st; this.brave = BRAVE; this.fightDone = done;
+    this.at = st; this.brave = BRAVE; this.fightDone = done; this.gang = st.gang || null;
     const p = this.city.player.root.position;
     const list = await Promise.all(names.map(async (name, i) => {
       const rb = FOE_LOOKS[(i + name.length) % FOE_LOOKS.length];
@@ -75,7 +77,7 @@ export class Brawl {
     this.foes = list;
     this.brave += await this.crew(st);
     sfx('hit');
-    this.hud.banner('👊 Stell dich ihnen!', `${names.length} vom Ordnungsbund · Schlagen: F / LT / 👊 · Wer am Boden war, rennt weg`, 'bad', 3200);
+    this.hud.banner('👊 Stell dich ihnen!', `${names.length} ${this.gang?.who ?? 'vom Ordnungsbund'} · Schlagen: F / LT / 👊 · Wer am Boden war, rennt weg`, 'bad', 3200);
   }
 
   /** Crew dazuholen (höchstens drei, die mitkämpfen); liefert Bonus-Mut */
@@ -105,7 +107,7 @@ export class Brawl {
     toast(`✊ ${f.name} liegt am Boden. „${BACK[Math.floor(Math.random() * BACK.length)]}“`);
     if (this.foes.every((q) => q.out)) {
       const d = this.fightDone; this.fightDone = null; this.at = null;
-      sfx('win'); this.hud.banner('✊ Ihr habt euch gewehrt', 'Der Ordnungsbund zieht ab.', 'good', 2600);
+      sfx('win'); this.hud.banner('✊ Ihr habt euch gewehrt', this.gang ? 'Sie ziehen ab.' : 'Der Ordnungsbund zieht ab.', 'good', 2600);
       this.crewBye();
       setTimeout(() => d?.(true), 1400);
     }
@@ -129,7 +131,7 @@ export class Brawl {
     sfx(car ? 'horn' : 'whoosh');
   }
   /** zufällige Route über die Kreuzungen, beginnt an der nächsten Kreuzung, nie direkt zurück */
-  private route(x: number, z: number, n: number): Array<[number, number]> {
+  route(x: number, z: number, n: number): Array<[number, number]> {
     let ix = 0, iz = 0, b = 1e9;
     GX.forEach((gx, i) => GZ.forEach((gz, j) => { const d = Math.hypot(gx - x, gz - z); if (d < b) { b = d; ix = i; iz = j; } }));
     const out: Array<[number, number]> = [[GX[ix], GZ[iz]]];
@@ -214,7 +216,7 @@ export class Brawl {
       if (!this.fightDone) continue;
       r.rotation.y = Math.atan2(dx, dz);
       f.cd -= dt; f.yell -= dt;
-      if (f.yell <= 0) { f.yell = 5 + Math.random() * 4; if (d < 12) toast(`${f.name}: „${TAUNT[Math.floor(Math.random() * TAUNT.length)]}“`); }
+      if (f.yell <= 0) { f.yell = 5 + Math.random() * 4; if (d < 12) { const tl = this.gang?.taunt || TAUNT; toast(`${f.name}: „${tl[Math.floor(Math.random() * tl.length)]}“`); }; }
       if (d > 1.15) {
         if (f.a.anim !== 'run' && d > 2.2) f.a.play('run'); else if (d <= 2.2 && f.a.anim !== 'walk') f.a.play('walk');
         const v = d > 2.2 ? RUN_MPS * .78 : 1.2;

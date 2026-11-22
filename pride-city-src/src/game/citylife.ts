@@ -75,6 +75,17 @@ export const LIFE_EVENTS: LifeEvent[] = [
     choices: [{ label: 'Bei ihr bleiben, ihn anbrüllen', out: { text: '„Verpiss dich!“ Er will dich packen, stolpert über den Bordstein und geht zu Boden. Danach ist er ganz schnell weg. Selin atmet aus: „Ich heiße Selin. Danke.“', fight: 1, rep: 3, need: { energy: -6, social: 10 } } },
       { label: 'Sie nach Hause begleiten', out: { text: 'Zwanzig Minuten Fußweg. Selin erzählt von ihrem ersten Jahr in der Stadt und von der Selbsthilfegruppe im Regenbogenhaus. An der Haustür umarmt sie dich.', rep: 2, need: { social: 16, energy: -4 }, min: 20 } },
       { label: 'Taxi rufen und zahlen (15 €)', out: { text: 'Das Taxi ist in drei Minuten da. Selin schickt dir ein Herz: „Gut angekommen.“', money: -15, rep: 2, need: { social: 6 } } }] },
+  /* Mehr Trouble im Alltag: Blechschaden mit Streit und ein Streit, der zu kippen droht */
+  { id: 'unfall', icon: '💥', title: 'Blechschaden', prompt: '💥 Zwischen die beiden gehen', who: 'Taxifahrer Volker', color: '#ffd23b', cast: ['talk', 'talk'],
+    hello: 'Ein Taxi ist einem Lieferwagen hinten draufgefahren. Volker und die Fahrerin brüllen sich an: „Du bist bei Rot gefahren!“ – „Du hast aufs Handy geguckt!“',
+    choices: [{ label: 'Schlichten und Fotos für die Versicherung machen', out: { text: 'Zehn Minuten später tauschen die beiden Nummern statt Beleidigungen. Volker drückt dir einen Taxigutschein in die Hand.', money: 10, rep: 2, need: { social: 8 }, min: 10 } },
+      { label: 'Nach Verletzten schauen und den Notruf wählen', out: { text: 'Nur ein Schreck und ein steifer Nacken. Die Sanitäterin nickt dir zu: „Gut gemacht.“', rep: 2, need: { social: 6 } } },
+      { label: 'Popcorn holen und zugucken', out: { text: 'Großes Kino, aber irgendwann wird es dir peinlich.', need: { fun: 6 } } }] },
+  { id: 'streit', icon: '😤', title: 'Streit eskaliert', prompt: '😤 Dazwischengehen', who: 'Ein Typ mit Bierflasche', color: '#ff7a3d', cast: ['talk', 'pose', 'idle'], when: 'night',
+    hello: 'Ein Betrunkener hat einer Dragqueen die Perücke vom Kopf gerissen und lacht. „Na, was bist du denn jetzt?“ Er baut sich vor ihr auf.',
+    choices: [{ label: 'Ihn wegschubsen', out: { text: 'Er schwankt, holt aus und verfehlt dich um einen Meter. Ein Schubser, und er sitzt auf dem Bordstein. Die Queen setzt die Perücke wieder auf: „Darling, du hast was gut bei mir.“', fight: 1, rep: 3, need: { energy: -6, fun: 6 } } },
+      { label: 'Die Security vom Club holen', out: { text: 'Zwei Türsteher sind sofort da und begleiten ihn freundlich, aber bestimmt um die Ecke. Applaus von der Schlange.', rep: 2, need: { social: 8 }, min: 5 } },
+      { label: 'Wegsehen', out: { text: 'Hinter dir lacht er weiter. Das Gefühl bleibt.', rep: -2, need: { fun: -8 } } }] },
 ];
 /** Passt das Ereignis zu Tageszeit und Wetter? */
 export const eventFits = (e: LifeEvent, night: boolean, rain: boolean) => !(e.dry && rain) && !(e.when === 'day' && night) && !(e.when === 'night' && !night);
@@ -119,7 +130,7 @@ export class CityLife {
       const free = this.city.street.people.filter((n) => n.kind === 'walker' && !n.talking && !n.away && !n.down && Math.hypot(n.a.root.position.x - ref.x, n.a.root.position.z - ref.z) > 40);
       if (free.length < def.cast.length) return;
       const cast = free.slice(0, def.cast.length), rx = Math.round(q.x / 30) * 30, face = Math.atan2(rx - q.x, 0);
-      cast.forEach((n, k) => { n.talking = true; n.a.root.position.set(q.x, .1, q.z + (k - (cast.length - 1) / 2) * 1.1); n.a.root.rotation.y = def.id === 'antrag' ? (k ? Math.PI : 0) : face; n.a.play(def.cast[k], 0); });
+      cast.forEach((n, k) => { n.talking = true; n.a.root.position.set(q.x, .1, q.z + (k - (cast.length - 1) / 2) * 1.1); n.a.root.rotation.y = def.id === 'antrag' || def.id === 'unfall' ? (k ? Math.PI : 0) : face; n.a.play(def.cast[k], 0); });
       if (def.prop) {
         if (!this.prop) { this.prop = box(this.city.scene, .24, .06, .16); this.prop.material = pbr(this.city.scene, 0x7a3a22, .6); this.prop.isPickable = false; }
         this.prop.setEnabled(true); this.prop.position.set(q.x, .16, q.z); this.prop.rotation.y = a;
