@@ -29,7 +29,17 @@ export function aim(node: TransformNode | undefined, child: TransformNode | unde
   Quaternion.FromUnitVectorsToRef(a1, a2, tq);
   if (w < 1) Quaternion.SlerpToRef(id, tq, w, tq);
   if (!node.rotationQuaternion) node.rotationQuaternion = Quaternion.FromEulerVector(node.rotation);
+  const rec = posed.get(node); if (!rec) posed.set(node, { base: node.rotationQuaternion.clone(), aimed: new Quaternion() });
   tq.multiplyToRef(node.rotationQuaternion, node.rotationQuaternion);
+  posed.get(node)!.aimed.copyFrom(node.rotationQuaternion);
+}
+/* Posen dürfen sich nicht aufaddieren: Steht die Animation einer Figur still (außerhalb des Bildes, weit weg oder
+   pausiert), setzt sie die Knochen nicht neu, und jedes Bild drehte Kopf und Wirbelsäule weiter – bis der Kopf im
+   Körper verschwand. Darum vor jeder neuen Pose zurück auf die Grundstellung, wenn die Animation nichts geändert hat. */
+const posed = new Map<TransformNode, { base: Quaternion; aimed: Quaternion }>();
+export function unpose() {
+  for (const [n, r] of posed) { const q = n.rotationQuaternion; if (q && q.equalsWithEpsilon(r.aimed, 1e-5)) q.copyFrom(r.base); }
+  posed.clear();
 }
 /** Weltmatrizen der ganzen Kette von oben nach unten neu rechnen (Animation hat gerade die lokalen Werte gesetzt) */
 function fresh(n: TransformNode) { const chain: TransformNode[] = []; for (let x: TransformNode | null = n; x; x = x.parent as TransformNode | null) chain.push(x); for (let i = chain.length - 1; i >= 0; i--) chain[i].computeWorldMatrix(true); }
@@ -132,6 +142,10 @@ export async function loveScene(h: CineHost, look: Look, name: string, done: () 
   const second = civ ? await Actor.create(sc, { ...civ, outfit: 'underwear' }) : null;
   second?.root.setEnabled(false);
   let partner = first;
+  // Nahaufnahmen: manche Rocketbox-Köpfe haben einen falschen Begrenzungsrahmen und würden weggeschnitten
+  const cast = [me, first, second].filter((a): a is Actor => !!a).flatMap((a) => a.root.getChildMeshes());
+  const sel = cast.map((m) => m.alwaysSelectAsActiveMesh);
+  cast.forEach((m) => { m.alwaysSelectAsActiveMesh = true; });
   const myLook = { ...me.look };
   // Stellung vor dem Bett (Bett links hinten: x −4.4…−2, z −3.4…−1, Matratze 0,6 m hoch)
   const P0 = V(-3.45, 0, -.15), Q0 = V(-2.75, 0, -.15), P1 = V(-3.27, 0, -.15), Q1 = V(-2.93, 0, -.15);   // 34 cm: Brust an Brust
@@ -174,10 +188,11 @@ export async function loveScene(h: CineHost, look: Look, name: string, done: () 
   const [vMe, vYou] = [me.avatar.g === 'f' ? 215 : 120, (second || first).avatar.g === 'f' ? 230 : 130];
   const finish = () => {
     if (ended) return; ended = true;
-    sc.onAfterAnimationsObservable.remove(obs); embrace(me, partner, 0, 0); embrace(partner, me, 0, 0);
+    sc.onAfterAnimationsObservable.remove(obs); unpose(); embrace(me, partner, 0, 0); embrace(partner, me, 0, 0); unpose();
     h.cine = null; bars.remove(); blink.remove();
     for (const [l, i] of saved) l.intensity = i; sc.environmentIntensity = env;
     props.forEach((p) => p.dispose());
+    cast.forEach((m, i) => { if (!m.isDisposed()) m.alwaysSelectAsActiveMesh = sel[i]; });
     place(me, me.root.position, 0); me.root.position.y = 0;
     me.setLook({ outfit: myLook.outfit || 'clothed' }); me.play('idle');
     second?.dispose();
@@ -187,6 +202,7 @@ export async function loveScene(h: CineHost, look: Look, name: string, done: () 
   (bars.querySelector('button') as HTMLButtonElement).onclick = finish;
   // Knochen-Posen nach der Animation, jedes Bild
   const obs = sc.onAfterAnimationsObservable.add(() => {
+    unpose();
     if (ew <= 0 && kw <= 0 && nk <= 0) return;
     const slide = .5 + .5 * Math.sin(T * 1.3);
     if (hold === 'side' || lying) { embrace(me, partner, lying ? 0 : ew, kw, lying ? 'none' : 'side'); embrace(partner, me, 0, kw * .9, 'none'); return; }
@@ -195,8 +211,8 @@ export async function loveScene(h: CineHost, look: Look, name: string, done: () 
   const tmp = V(0, 0, 0);
   // Liegen: Körperachse zeigt zum Kopfteil (−z), Gesicht nach oben, leicht zueinander gedreht
   const lie = (a: Actor, x: number, roll: number) => {
-    a.root.position.set(x, .66, -1.12);
-    a.root.rotationQuaternion = Quaternion.RotationAxis(new Vector3(0, 0, 1), roll).multiply(Quaternion.RotationAxis(new Vector3(1, 0, 0), -Math.PI / 2 + .13));   // Kopf leicht erhöht aufs Kissen
+    a.root.position.set(x, .7, -.9);
+    a.root.rotationQuaternion = Quaternion.RotationAxis(new Vector3(0, 0, 1), roll).multiply(Quaternion.RotationAxis(new Vector3(1, 0, 0), -Math.PI / 2 + .2));   // Kopf erhöht auf dem Kissen, nicht darin
   };
   const dir = (t: string) => { if (!dirEl) return; dirEl.textContent = t; dirEl.classList.remove('on'); void dirEl.offsetWidth; dirEl.classList.add('on'); };
   h.cine = (dt: number) => {
@@ -286,7 +302,7 @@ function blanket(sc: Scene) {
     pos[i + 1] = .09 * bodies + .03 * Math.sin(x * 9 + z * 5) + .015 * Math.sin(z * 13) - edge * edge * .9;
   }
   g.updateVerticesData('position', pos); g.createNormals(true);
-  g.position.set(-3.14, .76, -1.58);
+  g.position.set(-3.14, .93, -1.45);
   const m = new StandardMaterial('deckeMat', sc); m.diffuseColor = new Color3(.82, .7, .95); m.specularColor = new Color3(.05, .05, .05); m.emissiveColor = new Color3(.1, .07, .13); m.backFaceCulling = false; m.twoSidedLighting = true;
   g.material = m;
   g.onDisposeObservable.addOnce(() => m.dispose());
