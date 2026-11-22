@@ -387,7 +387,7 @@ export class Game {
     if (a.k === 'gl') {
       // Gay-Life!-Spots: 3D-Fassung, sonst das bestehende Pride-City-Gegenstück (nichts doppelt), sonst das 2D-Original
       const m = miniForGl(a.id); if (m) { this.playMini(m.id); return; }
-      if (a.id === 'dance' || a.id === 'rave') { this.goDance(false); return; }
+      if (a.id === 'dance') { this.goDance(false); return; }
       if (a.id === 'quiz') { this.quiz(todaysQuiz(s), 0, 0); return; }
       if (a.id === 'dates') { this.phone('dating'); return; }
       this.roman('gaylife', a.id); return;
@@ -1268,7 +1268,6 @@ export class Game {
     const b = this.save.data.best;
     this.openMenu(`<div class="col"><div class="logo" style="font-size:clamp(30px,5vw,52px)"><span class="l1">Minispiele</span><small>In 3D, mit Rekorden</small></div><div class="slot"></div></div>`, [
       { icon: '🪩', label: 'Tanz-Battle', sub: `Club Prisma gegen Rex · Rekord ${b.dance || 0}`, fn: () => this.goDance(false, back) },
-      { icon: '🍸', label: 'Barkeeper-Schicht', sub: `Club Leuchtturm · 75 Sekunden · Rekord ${b.bar || 0} Drinks`, fn: () => this.barShift(() => this.minigames(back), true) },
       { icon: '🎤', label: 'Lady Lumas Drag-Show', sub: 'Buch-Hymne oder Klaviersongs aus Klavierlicht', fn: () => this.showMenu((o) => this.goDance(false, back, o)) },
       ...MINIS.map((m) => { const ad = !!this.save.data.settings.adult; return { icon: miniIcon(m, ad), label: miniName(m, ad), sub: `${miniSub(m, ad)} · Rekord ${b['mini_' + m.id] || 0}`, disabled: !!m.adultOnly && !ad, fn: () => this.playMini(m.id, { back: () => this.minigames(back), title: true }) }; }),
       { icon: '🕹️', label: 'Gay Life! Originale', sub: 'Alle 14 Minispiele aus Gay Life! in 2D', fn: () => this.roman('gaylife', '', () => this.minigames(back)) },
@@ -1435,46 +1434,19 @@ export class Game {
   }
 
   /* ---------- Barkeeper-Minispiel: Zutaten wählen, servieren, gegen die Uhr ---------- */
+  /** Barkeeper-Schicht im Club Leuchtturm: 3D-Minispiel „bar“ (Cocktails mixen), Lohn und Trinkgeld wie bisher */
   barShift(done?: () => void, practice = false) {
-    const s = this.save.data;
-    const ING: Array<[string, string]> = [['🍊', 'Orange'], ['🍋', 'Zitrone'], ['🍓', 'Erdbeere'], ['🫐', 'Blaubeere'], ['🧉', 'Mate'], ['🍺', 'Bier'], ['🧊', 'Eis'], ['🫧', 'Soda'], ['✨', 'Glitzer']];
-    const MENU: Array<[string, string]> = [['Pride-Spritz', '🍊🫧🍓'], ['Glitzer-Mate', '🧉🧊✨'], ['Leuchtturm-Tonic', '🍋🧊🫧'], ['Bärenbier', '🍺'], ['Nova Nights', '🫐🍋✨'], ['Hildes Mocktail', '🍓🍋🫧']];
-    const GUESTS = ['Mo', 'Bruno', 'Lena', 'Tariq', 'Sam', 'Kim', 'Hilde', 'Nova', 'Jules', 'ein Gast in Leder', 'zwei Drag Queens', 'eine Touristin'];
-    const split = (r: string) => [...r.matchAll(/\p{Extended_Pictographic}|✨/gu)].map((m) => m[0]);
-    let left = 75, served = 0, tips = 0, glass: string[] = [], order = 0, guest = '';
-    const next = () => { order = Math.floor(Math.random() * MENU.length); guest = GUESTS[Math.floor(Math.random() * GUESTS.length)]; glass = []; };
-    next();
-    const render = () => {
-      const box = this.overlay?.querySelector('#barBox'); if (!box) return;
-      box.innerHTML = `<p><b style="color:#fff">${esc(guest)}</b> möchte: <b style="color:#ffd23b">${MENU[order][0]}</b></p>
-        <p style="font-size:28px;letter-spacing:4px;min-height:36px">${glass.join('') || '<small>leeres Glas</small>'}</p>
-        <div class="bar"><i style="width:${left / 75 * 100}%"></i></div><p>⏱ ${left} s · 🍸 ${served} · 💶 ${tips} €</p>
-        <p><small>${MENU.map(([n, r]) => `${n}: ${r}`).join(' · ')}</small></p>`;
-    };
-    const serve = () => {
-      const want = split(MENU[order][1]).sort().join(''), got = glass.slice().sort().join('');
-      sfx('pour'); setTimeout(() => sfx('glass'), 500);
-      if (want === got) { served++; const t = 3 + Math.floor(Math.random() * 4) + (s.flags.barDeko ? 2 : 0); tips += t; sfx('coin'); toast(`${guest}: „Perfekt!“ +${t} €`); }
-      else { sfx('miss'); toast(`${guest}: „Das hab ich nicht bestellt …“`); }
-      next(); render();
-    };
-    const end = () => {
-      clearInterval(iv); this.closeMenu();
-      s.best.bar = Math.max(s.best.bar || 0, served);
-      if (!practice) { const pay = tips + served * 4; s.money += pay; change(s, { social: 15, fun: 8, energy: -12 }); this.pass(120); s.rep += Math.floor(served / 3); toast(`Schicht im Leuchtturm: ${served} Drinks, +${pay} €`); this.city.refreshHud(); }
-      else toast(`${served} Drinks in 75 Sekunden!`);
-      this.save.write();
-      this.dialog.say([{ who: 'Club Leuchtturm', color: '#ffd23b', text: served >= 10 ? 'Legendär! Die Gäste wollen dich jeden Abend hinter der Bar.' : served >= 5 ? 'Gute Schicht! Die Leute kommen wieder.' : 'Das wird noch. Merk dir die Karte!' }], () => { if (done) done(); else this.touch.show(true); });
-    };
-    this.touch.show(false);
-    this.openMenu(`<div class="col"><div class="panel barPanel"><h3>🍸 Hinter der Bar</h3><div id="barBox"></div><div class="slot"></div></div></div>`,
-      [...ING.map(([i, n]) => ({ icon: i, label: n, fn: () => { if (glass.length < 4) { glass.push(i); sfx('move'); render(); } } })),
-        { icon: '🛎️', label: 'Servieren', fn: serve },
-        { icon: '🗑️', label: 'Leeren', fn: () => { glass = []; render(); } },
-        { icon: '⏹', label: 'Feierabend', fn: () => { left = 0; } }], null, '');
-    hints([['dpad', 'Zutat'], ['a', 'Rein ins Glas']]);
-    const iv = setInterval(() => { if (!this.overlay?.querySelector('#barBox')) { clearInterval(iv); return; } left = Math.max(0, left - 1); render(); if (left <= 0) end(); }, 1000);
-    render();
+    this.playMini('bar', {
+      back: practice ? done : undefined,
+      onDone: (r) => {
+        const s = this.save.data, served = r.extra?.served || 0, tips = r.extra?.tips || 0;
+        s.best.bar = Math.max(s.best.bar || 0, served);
+        if (practice) { this.save.write(); return; }
+        const pay = tips + served * 4; s.money += pay; change(s, { social: 15, fun: 8, energy: -12 }); this.pass(120); s.rep += Math.floor(served / 3);
+        toast(`Schicht im Leuchtturm: ${served} Drinks, +${pay} €`); this.city.refreshHud(); this.save.write();
+        this.dialog.say([{ who: 'Club Leuchtturm', color: '#ffd23b', text: served >= 10 ? 'Legendär! Die Gäste wollen dich jeden Abend hinter der Bar.' : served >= 5 ? 'Gute Schicht! Die Leute kommen wieder.' : 'Das wird noch. Merk dir die Karte!' }], () => done?.());
+      },
+    });
   }
 
   private party() {

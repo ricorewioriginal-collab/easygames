@@ -15,6 +15,8 @@ import { GlitterMatch } from './GlitterMatch';
 import { CastingDay } from './CastingDay';
 import { DarkRoom } from './DarkRoom';
 import { OutfitCheck } from './OutfitCheck';
+import { BarShift } from './BarShift';
+import { DjBooth } from './DjBooth';
 
 export type { MiniDef, MiniResult } from './arcade';
 
@@ -76,6 +78,16 @@ export const MINIS: MiniDef[] = [
     id: 'style', icon: '🪞', name: 'Outfit-Check', sub: 'Fünf Anlässe, eine strenge Jury: den passenden Look wählen und über den Laufsteg',
     btn: '👠<small>Laufen</small>', goal: 900, tags: ['shop', 'home'], gl: 'style', song: 'show',
     make: (g, d, a, done) => new OutfitCheck(g, d, a, done, 0x120818),
+  },
+  {
+    id: 'bar', icon: '🍸', name: 'Barkeeper-Schicht', sub: 'Club Leuchtturm: Cocktails nach Karte mixen, servieren, Trinkgeld kassieren – 75 Sekunden',
+    btn: '🍸<small>Mixen</small>', goal: 800, tags: ['bar', 'club', 'home'], song: 'club',
+    make: (g, d, a, done) => new BarShift(g, d, a, done, 0x0c1420),
+  },
+  {
+    id: 'dj', icon: '🎧', name: 'DJ-Pult', sub: 'Pride Rave: Crossfader zur Wunschmusik der Menge schieben und den Drop treffen',
+    btn: '💥<small>Drop</small>', goal: 1000, tags: ['club', 'home', 'arcade'], gl: 'rave', song: 'club',
+    make: (g, d, a, done) => new DjBooth(g, d, a, done, 0x0a0614),
   },
 ];
 
