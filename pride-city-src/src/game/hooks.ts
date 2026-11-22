@@ -35,6 +35,10 @@ export interface PcEvents extends Record<string, unknown> {
   dragBattle: { rival: string; name: string; won: boolean; score: number; stage: number; defend: boolean };
   /** Alle fünf Queens geschlagen: Krone von Rainbow City (Flag dragKrone) */
   dragKrone: { name: string };
+  /** Hauptberuf in der Jobbörse angenommen (beruf.ts) */
+  beruf: { id: string; name: string };
+  /** Dreh als Erwachsenen-Darsteller*in abgeschlossen (dreh.ts, nur 18+) */
+  drehTag: { title: string; stars: number; fans: number; pay: number };
   /** Eine Wissenskarte mit echter queerer Geschichte wurde freigeschaltet (Drag, CSD, Radio …) */
   wissen: { key: string; title: string; topic: string };
   /** Eigener CSD-Festwagen gebaut oder umgebaut (festwagen.ts) */
