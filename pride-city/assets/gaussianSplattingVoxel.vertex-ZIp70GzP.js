@@ -1,4 +1,4 @@
-import{b4 as t,bh as i,bi as s,bm as o,bn as n}from"./babylon-BPMooWru.js";const a="gaussianSplattingVoxelVertexShader",r=`#include<sceneUboDeclaration>
+import{b4 as t,bh as i,bi as s,bm as o,bn as n}from"./babylon-BLKLNp92.js";const a="gaussianSplattingVoxelVertexShader",r=`#include<sceneUboDeclaration>
 #include<meshUboDeclaration>
 attribute splatIndex0: vec4f;attribute splatIndex1: vec4f;attribute splatIndex2: vec4f;attribute splatIndex3: vec4f;attribute position: vec3f;uniform dataTextureSize: vec2f;uniform alpha: f32;uniform invWorldScale: mat4x4f;uniform viewMatrix: mat4x4f;
 #if IS_COMPOUND

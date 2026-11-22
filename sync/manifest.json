@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "4efbb19c466a",
- "generated": "2026-11-22T04:26:22+01:00",
- "commit": "589db49bdc7cd6ae57719a6f6119f834c76fb17b",
+ "version": "cd1660c3006f",
+ "generated": "2026-11-22T04:23:45+00:00",
+ "commit": "d00dd57b5cb6f607f466c11dd0aaf95325038b30",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -12918,8 +12918,8 @@
   },
   {
    "p": "guides/pride-city.json",
-   "s": 82832,
-   "h": "88e7f0b1fd6358f621e0f0fedb129d02af3d68b03f59c8ce7bfadcb4d06f35fa"
+   "s": 86752,
+   "h": "77298bd70de90174b61d68ae7e2f97131f8efdfca3aac8026c4997c24f562f4d"
   },
   {
    "p": "guides/prismrush.json",
@@ -14087,9 +14087,9 @@
    "h": "62759995b42672bed9d17515b2145b873d408dddcedeb55dbe93b6918e99047b"
   },
   {
-   "p": "pride-city/assets/babylon-BPMooWru.js",
+   "p": "pride-city/assets/babylon-BLKLNp92.js",
    "s": 3981244,
-   "h": "5266b5c3a3d0656793273f63cb466210beda5b0e7eda2952eec27727b4fb6a0f"
+   "h": "b5b43a0007e30747a433e736e04e12f07ef25fc8ca195f3fafe5f5cd5a606177"
   },
   {
    "p": "pride-city/assets/cars/delivery_van.glb",
@@ -14487,94 +14487,94 @@
    "h": "8e2c01f21c7ffd2e9bd3fafd50d9d8090d69991a9dad79b3ca36171b70ffb1c3"
   },
   {
-   "p": "pride-city/assets/flowGraphDebugBlock.pure-DVfzee-y.js",
+   "p": "pride-city/assets/flowGraphDebugBlock.pure-ArQmARvb.js",
    "s": 1451,
-   "h": "eb3487ea2c48dfdb757b638c510b1b0363af859d201a81c6e40c62898cfe127e"
+   "h": "88a71b3c1950c00bc53b9ab89f148a9e2ca3b6f0469d3de6c6c1eb8711d35201"
   },
   {
-   "p": "pride-city/assets/flowGraphPointerDownEventBlock.pure-DQ4pkeHS.js",
+   "p": "pride-city/assets/flowGraphPointerDownEventBlock.pure-CtPd_WOG.js",
    "s": 943,
-   "h": "c629769b46a2023b790a684a428749bbf41ced4d63da412962fbbcd50d0c6710"
+   "h": "8e8ec89ae9ed9654c87b766239dc55ad0eb8bcbab45f80a5149d6951866beb2d"
   },
   {
-   "p": "pride-city/assets/flowGraphPointerMoveEventBlock.pure-B4sJXf3A.js",
+   "p": "pride-city/assets/flowGraphPointerMoveEventBlock.pure-hhR8YCiT.js",
    "s": 961,
-   "h": "1d5eb88562ee1db9aced29f3dc34a5a1ec6e70bbbf61031e6c33c3ed34532fb9"
+   "h": "672741df1de4a6c67b962bda4d5eea5550308b89566774ee8a332679e239e0b3"
   },
   {
-   "p": "pride-city/assets/flowGraphPointerUpEventBlock.pure-DoBliqO5.js",
+   "p": "pride-city/assets/flowGraphPointerUpEventBlock.pure-CFGIHHfg.js",
    "s": 933,
-   "h": "32f8e767a6250fb4c9cb5a310769deca2045206d5ab9e83689d89503bc6ca96d"
+   "h": "39fb0444f9214a17a1fff6c8b14803c17d2650cd236e1deb7a9f2c18289b9a92"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.fragment-7Tdgepe_.js",
-   "s": 3059,
-   "h": "80bcff5a54d250167fe46a7232e9662ce71e59d1576c64fe19eb78b5b49363c6"
-  },
-  {
-   "p": "pride-city/assets/gaussianSplatting.fragment-BbaLQC-P.js",
+   "p": "pride-city/assets/gaussianSplatting.fragment-CQIM5WZz.js",
    "s": 2928,
-   "h": "30c6f0036d6f9601185aa59431be6bae2319b12cc3a98b79056f9b8ac79a3cdc"
+   "h": "8981b5e8f974ac20c2a5c23ad4bc940f2628c1c1010e15dc0633f7524d784673"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.vertex-BsoT4R9B.js",
+   "p": "pride-city/assets/gaussianSplatting.fragment-CcZCJfM4.js",
+   "s": 3059,
+   "h": "eb2ef11de22eb9b374ad1f7869b103f076227e2509e317df13d119db2a9f6ec4"
+  },
+  {
+   "p": "pride-city/assets/gaussianSplatting.vertex-CDHhL-wN.js",
    "s": 6846,
-   "h": "566e9f642b668d2d40ec60846268f5ca6f1a0cb41967df38d92e1f3dc7d4935d"
+   "h": "ef1751ee0c33b61777bcc39deb4d82a8a97c03fc0cf243d81c8ddf3b4ace89c1"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.vertex-CZEGQ9kQ.js",
+   "p": "pride-city/assets/gaussianSplatting.vertex-LBCwc8t8.js",
    "s": 8147,
-   "h": "d73fa4f9c2dedd8be2be52f4a2773be82c27dd2762ed8538fde225d139dacefb"
+   "h": "445e2995a452eccf61704a09ed5fbd74401333eaf2218aa0ad22cb1580aeca26"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-BK9HEWzk.js",
-   "s": 1760,
-   "h": "5818777a2bd858132aac4fd8957ef3e7d75deb003bf413894c32565d88298bbf"
-  },
-  {
-   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-BToXu0C2.js",
+   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-Bg9qDTkl.js",
    "s": 1435,
-   "h": "aacc70b473c1b712583791227e9a8a08a5e3109ac81c20078d1f64bcfbb486d3"
+   "h": "8548abe1aeaa7309fa80f68d55081f76f210313276a16867f951a071bc973df6"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-D8Ru7mx2.js",
-   "s": 2489,
-   "h": "801e16a28db2ee8cb391b6011abca4b44038e6c7fa60214a7430b364483a8ac3"
+   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-DrLIPQDh.js",
+   "s": 1760,
+   "h": "f97a14592a549c7529ba1f4191df658f48b59f205d242e282d5fde4e3fd38fdf"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-HYRm8B73.js",
+   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-BGzC90Wx.js",
    "s": 1765,
-   "h": "789dab4acf45ee5097930529ef24ef6a3c1cecba4096849cd9b6c8391029c81b"
+   "h": "d9a5bf3ff4459c5e996b5a0740b9e274c735859bd235bb92d8431486b3cd6df9"
   },
   {
-   "p": "pride-city/assets/gsSortCount.compute-Czu46YVk.js",
+   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-ZIp70GzP.js",
+   "s": 2489,
+   "h": "ec389ab9e953a7c2f6b2efc66955d855f87b708b1fb5ab78eb87966aa66902d4"
+  },
+  {
+   "p": "pride-city/assets/gsSortCount.compute-DJBr5HtL.js",
    "s": 1013,
-   "h": "1aa0af6b1a0807c453d53abfb93e115b363d300c641176fa8226e9fea7726d67"
+   "h": "92249f79b0b88209b2781e981204d9dd30488b1686362c1bfefbb3d7fce66171"
   },
   {
-   "p": "pride-city/assets/gsSortKeys.compute-CSRRa2n4.js",
+   "p": "pride-city/assets/gsSortKeys.compute-D8oKLYId.js",
    "s": 2155,
-   "h": "9bf325fd5935de6de6c0142a1357c7c91e3b3348b0f67f43be8f9b4d5e29a59d"
+   "h": "054b4eb74172c01eb616952f391ead2243a2319e2424f6b82bf5e299662b7fa0"
   },
   {
-   "p": "pride-city/assets/gsSortOutput.compute-zK6iNKz2.js",
+   "p": "pride-city/assets/gsSortOutput.compute-DnMdV9r6.js",
    "s": 922,
-   "h": "be1b4a3c9ab1abdf75810e88d963067fa96efd95aba032ea59ba6757941d712b"
+   "h": "2e0dd362953570a7620cf586949df00dd66469cbc40619557b58f260734152e8"
   },
   {
-   "p": "pride-city/assets/gsSortScanLocal.compute-eCdAp65W.js",
+   "p": "pride-city/assets/gsSortScanLocal.compute-CvomDVFg.js",
    "s": 1260,
-   "h": "fc04d1a0a8da8a4fbfe5ce32b542da02e51d44eae9a74bc3ca24ee5a5b194fc1"
+   "h": "7a7ad83bb10193cf62c8c54d1706543dd7cad46f6d6241f4e5a62edf4dd6fc5b"
   },
   {
-   "p": "pride-city/assets/gsSortScanSums.compute-DTfv21_8.js",
+   "p": "pride-city/assets/gsSortScanSums.compute-CE51LziV.js",
    "s": 831,
-   "h": "fa930d86041b2a932de1d03530e44c66e69ed08fdb999296ca29d7473722260d"
+   "h": "9625854b9f064667cd2ce24e20af2ac3dfb6a06ba4dea63fed6d211f1efc6ed6"
   },
   {
-   "p": "pride-city/assets/gsSortScatter.compute-BWyJkvuS.js",
+   "p": "pride-city/assets/gsSortScatter.compute-CS_WFHC3.js",
    "s": 2525,
-   "h": "8455b0420afee7ba10812d9efcf0523cf39045613335f88783738037b796c64b"
+   "h": "d3674ef360f2eab7a4e59a1653a81713b030c02ae301a75483d9af9be9c0d636"
   },
   {
    "p": "pride-city/assets/home/armchair_pillows.bin",
@@ -14837,9 +14837,9 @@
    "h": "e7ef143528f2798e945777d9dd9ac705b27fb7b9d67e5da5d1f9063269db4327"
   },
   {
-   "p": "pride-city/assets/index-BTGvTDh7.js",
-   "s": 1082047,
-   "h": "a6a8a47339a81b810dc31b98b6b9955eca43a6aa98496be2fe2e7eec6f23321c"
+   "p": "pride-city/assets/index-DlIIXIoJ.js",
+   "s": 1114538,
+   "h": "dae54e8b5e3336c24b72697e36f18f054b3bedaeb74462b1dcb0cecfbff02ea9"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -14927,9 +14927,9 @@
    "h": "e7ec4792ff25dd495aa9ccc485b771a762f1aa052382a973b8253ddc82b91199"
   },
   {
-   "p": "pride-city/assets/loaders-CB5BCmnj.js",
+   "p": "pride-city/assets/loaders-DPcSokXz.js",
    "s": 323809,
-   "h": "f511c36d501039f8a71d8b0ade4b4f1129122ac5f36212379b9a7f2ce36ce3c8"
+   "h": "749c861b5fac14b7e584177930d089f70d8d86dc2e6f225ef926443fec8c8d61"
   },
   {
    "p": "pride-city/assets/rb/Business_Male_01.glb",
@@ -15247,14 +15247,14 @@
    "h": "bb54b03536a540d6ae76784cffb63967936dc4caa18917a339908ba5fa5b828c"
   },
   {
-   "p": "pride-city/assets/textureProcessor.fragment-Cudr4qvS.js",
-   "s": 6031,
-   "h": "f68e6ca7ba1e1bd1775b58d0057df3167e7de592861bfac349e21fadd97221d8"
+   "p": "pride-city/assets/textureProcessor.fragment-BvfaKu7U.js",
+   "s": 5008,
+   "h": "40d00d75307b2b517a1c36b2756e31b5a2eac4d673e35c3b08a109feb8da3fff"
   },
   {
-   "p": "pride-city/assets/textureProcessor.fragment-DZqtt4yb.js",
-   "s": 5008,
-   "h": "d41f3c6b8fe3423cfef32a2e55f0b4f02a72a041156ee34374bb5195087aeaa6"
+   "p": "pride-city/assets/textureProcessor.fragment-DJHUmhNk.js",
+   "s": 6031,
+   "h": "08abda8adec51dceef02dffd67f954837b0f9b137690cdca6af325a0c10d67c0"
   },
   {
    "p": "pride-city/book/cover.jpg",
@@ -15499,7 +15499,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5862,
-   "h": "746e85d3eead2840234214bf782da1bfe65f63d964c51dc6da576f73d859dfc6"
+   "h": "fb6a3508b3829fc36e40b8e2ff1e87493ea8af15cf69c067f3848ad12ec831f9"
   },
   {
    "p": "pride-city/logo.svg",
@@ -18274,7 +18274,7 @@
   {
    "p": "sync/catalog.json",
    "s": 241235,
-   "h": "57e22db2f24874eaf5c5047f447f4d3ea665d613bd7700e645a30cc397b4f82a"
+   "h": "f090949323f78fcaafb558b83c1ebf20dde78d12f59b61c5620a40b9332b8dc4"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
