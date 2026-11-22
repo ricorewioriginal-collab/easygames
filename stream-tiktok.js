@@ -48,7 +48,7 @@
     ['fx:gray:10', '⚫', 'Schwarz-Weiß', 'fx'], ['fx:party:10', '🎉', 'Party-Farben', 'fx'], ['fx:zoom:8', '🔍', 'Zoom', 'fx'], ['fx:small:8', '🐜', 'Winzig', 'fx'], ['fx:black:3', '⬛', 'Schwarzbild', 'fx'],
     ['fx:rain:🌹', '🌹', 'Rosen-Regen', 'fx'], ['fx:rain:💩', '💩', 'Kacki-Regen', 'fx'], ['fx:rain:💸', '💸', 'Geld-Regen (nur Bild)', 'fx'],
     ['say:Danke {user}! ❤️', '💬', 'Danke einblenden', 'text'], ['banner:{user} rettet das Spiel!', '📣', 'Großes Banner', 'text']];
-  var GROUPS = { pad: '🎮 Steuern', troll: '😈 Streiche', fx: '✨ Effekte', game: '⭐ Highlights dieses Spiels', text: '💬 Text' };
+  var GROUPS = { pad: '🎮 Steuern', troll: '😈 Streiche', fx: '✨ Effekte', game: '⭐ Highlights dieses Spiels', snd: '🔊 Meine Sounds', text: '💬 Text' };
   var TROLL_STRIP = ACTS.filter(function (a) { return a[3] === 'troll'; });
   // Bekannte TikTok-Geschenke (inoffiziell, Namen können je Land abweichen); die Brücke liefert zusätzlich die aktuelle Liste mit Bildern
   var GIFTS = [['Rose', '🌹', 1], ['TikTok', '🎵', 1], ['GG', '🎮', 1], ['Ice Cream Cone', '🍦', 1], ['Heart Me', '💗', 1], ['Finger Heart', '🫰', 5], ['Friendship Necklace', '📿', 10],
@@ -80,6 +80,8 @@
       { gift: 'Galaxy', icon: '🌌', action: 'banner:{user} startet neu!+restart', label: 'Neustart!' }, { gift: 'Universe', icon: '🪐', action: 'chaos:10+fx:party:10', label: 'Chaos-Modus' }],
     likes: { every: 100, action: 'pad:A', label: 'A drücken' },
     follow: 'say:Danke für den Follow, {user}! ❤️', share: 'say:{user} teilt den LIVE! 🔁', sub: 'banner:⭐ {user} ist jetzt Abonnent!+fx:party:5', join: '',
+    // Sounds (Aktion snd:<Datei>): an/aus, Lautstärke 0–100, höchstens gleichzeitig, längstens Sekunden; soundLib = „Meine Sounds“
+    sound: { on: true, vol: 80, max: 3, len: 8 }, soundLib: [],
     games: {}
   };
   var cfg = load(), ws = null, online = false, votes = {}, likeSum = 0, fans = {}, lastCmd = {}, joinT = 0;
@@ -87,6 +89,28 @@
   function load() { try { return Object.assign(clone(DEFAULT), JSON.parse(localStorage.getItem('eg-tiktok') || 'null') || {}); } catch (e) { return clone(DEFAULT); } }
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   // Belegung für dieses Spiel: eigene Einträge des Spiels ersetzen die allgemeinen
+  // Sounds von myinstants.com (Auswahl unter „🔊 Sounds“) – snd:<Pfad unter /media/sounds/, URL-kodiert> oder snd:<https-Adresse, kodiert>
+  var MI = 'https://www.myinstants.com', sndPlaying = [], sndWarned = false;
+  function sndUrl(arg) {
+    var a = ''; try { a = decodeURIComponent(String(arg || '')); } catch (e) { a = String(arg || ''); }
+    if (/^https:\/\/[^\s"'<>]+$/.test(a)) return a;
+    return /^[\w.%()\-~!']+\.(mp3|ogg|wav|m4a)$/i.test(a) ? MI + '/media/sounds/' + a : '';
+  }
+  function sndArg(mp3) { var u = String(mp3 || ''), pre = MI + '/media/sounds/'; return encodeURIComponent(u.indexOf(pre) === 0 ? u.slice(pre.length) : u); }
+  function sndTitle(arg) {
+    var hit = (cfg.soundLib || []).find(function (x) { return x.f === arg; }); if (hit) return hit.t;
+    var u = sndUrl(arg); try { return decodeURIComponent(u.split('/').pop().replace(/\.\w+$/, '')).replace(/[-_]+/g, ' '); } catch (e) { return u; }
+  }
+  function sndOpt() { var o = cfg.sound || {}, d = DEFAULT.sound; return { on: o.on !== false, vol: o.vol === undefined ? d.vol : +o.vol, max: +o.max || d.max, len: +o.len || d.len }; }
+  function playSound(arg, opt) {
+    var o = opt || sndOpt(), url = sndUrl(arg); if (!url || (!opt && !o.on)) return null;
+    sndPlaying = sndPlaying.filter(function (a) { return !a.ended && !a.paused; });
+    while (sndPlaying.length >= Math.max(1, o.max)) { var old = sndPlaying.shift(); try { old.pause(); } catch (e) { } }
+    var a = new Audio(url); a.preload = 'auto'; a.volume = Math.max(0, Math.min(1, o.vol / 100));
+    var p = a.play(); if (p && p.catch) p.catch(function () { if (!sndWarned) { sndWarned = true; toast('🔇 Sound blockiert – einmal ins Fenster klicken bzw. in OBS „Audio über OBS steuern“ aktivieren'); } });
+    sndPlaying.push(a); setTimeout(function () { try { a.pause(); } catch (e) { } }, Math.max(1, o.len) * 1000);
+    return a;
+  }
   function eff() { var g = (cfg.games || {})[GID] || gameDefaults(), o = {}; for (var k in cfg) if (k !== 'games') o[k] = g[k] !== undefined ? g[k] : cfg[k]; return o; }
   // Empfohlene Belegung, die ein Spiel selbst mitbringt (window.EasyGamesStream.defaults) – gilt, bis eine eigene gespeichert ist
   function gameDefaults() { try { var w = gameWin(), d = w && w.EasyGamesStream && w.EasyGamesStream.defaults; return d && typeof d === 'object' ? d : {}; } catch (e) { return {}; } }
@@ -410,6 +434,7 @@
     if (BAN[kind]) banner(BAN[kind]);
     if (kind === 'restart') { try { S.frame.contentWindow.location.reload(); } catch (e) { S.restart(); } return; }
     if (kind === 'say') { toast(txt); return; }
+    if (kind === 'snd') { playSound(arg); return; }   // einmal je Ereignis, auch bei ×N-Geschenken
     if (kind === 'banner') { banner(txt); return; }
     if (kind === 'fx') { var a = arg.split(':'); fx(a[0], a[1]); return; }
     if (kind === 'drunk' || kind === 'dance' || kind === 'tilt' || kind === 'ghost' || kind === 'blur') { fx(kind, sec(10)); return; }
@@ -520,6 +545,7 @@
       if (d.type === 'event' && d.ev) onEvent(d.ev);
       else if (d.type === 'config' && d.config) { cfg = Object.assign(clone(DEFAULT), d.config); try { localStorage.setItem('eg-tiktok', JSON.stringify(cfg)); } catch (e) { } drawLegend(); applySave(); if (SETUP && P2 && !editing) panelFill(); }
       else if (d.type === 'gifts' && Array.isArray(d.list)) { liveGifts = d.list; drawLegend(); if (SETUP && P2) drawGifts(); }
+      else if (d.type === 'sounds' && d.rid && sndPend && sndPend[d.rid]) { var cb = sndPend[d.rid]; delete sndPend[d.rid]; cb(d); }
       else if (d.type === 'status') { state.title = d.msg || ''; if (SETUP && P2) panelState(d.msg); }
     };
   }
@@ -557,12 +583,14 @@
     '#ttSet .srcs{display:grid;gap:8px;margin-top:8px}#ttSet .src{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}#ttSet .src .url{margin-top:5px}#ttSet .src .url input{font-size:11.5px}' +
     '#ttSet .strip{display:flex;flex-wrap:wrap;gap:5px}#ttSet .strip button{padding:5px 9px;font-size:12.5px;border-radius:999px}' +
     '#ttSet .acts{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}#ttSet .act{display:flex;gap:8px;align-items:center;padding:8px 10px;border-radius:12px;background:#111a2e;border:1px solid #233150}' +
+    '#ttSet .snds{display:grid;gap:5px;margin:8px 0}#ttSet .snd{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)}#ttSet .snd.on{border-color:#25f4ee}' +
+    '#ttSet .snd .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#ttSet .snd button{padding:4px 8px;font-size:12px}#ttSet .snd .info{flex-basis:100%;font-size:12px;color:#9aa7c2}#ttSet .snd{flex-wrap:wrap}#ttSet .snd .info a{color:#25f4ee;cursor:pointer}' +
     '#ttSet .act .e{font-size:22px}#ttSet .act div{flex:1;min-width:0}#ttSet .act code{font-size:11px;color:#9aa7c2}#ttSet .act button{padding:5px 8px;font-size:12px}' +
     '#ttSet .ft{position:fixed;left:0;right:0;bottom:0;z-index:3;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;padding:10px 16px;background:rgba(7,10,18,.94);border-top:1px solid #223050;backdrop-filter:blur(6px)}' +
     '#ttSet .ok{color:#34d399}#ttSet .bad{color:#f87171}#ttSet code{background:#0a0f1a;padding:1px 5px;border-radius:5px}#ttSet .url{display:flex;gap:6px}#ttSet .url input{font-family:ui-monospace,monospace;font-size:12px}';
   document.head.appendChild(pc);
   var P2 = document.createElement('div'); P2.id = 'ttSet'; document.body.appendChild(P2);
-  var TABS = [['g', '🎁 Geschenke'], ['c', '💬 Chat'], ['l', '❤️ Likes & Fans'], ['t', '😈 Streiche & Effekte']].concat(EMB ? [] : [['o', '📺 Overlay & Ansichten']]).concat([['a', '⚙️ Allgemein']]);
+  var TABS = [['g', '🎁 Geschenke'], ['c', '💬 Chat'], ['l', '❤️ Likes & Fans'], ['t', '😈 Streiche & Effekte'], ['s', '🔊 Sounds']].concat(EMB ? [] : [['o', '📺 Overlay & Ansichten']]).concat([['a', '⚙️ Allgemein']]);
   var sel = function (id, opts) { return '<select id="' + id + '">' + opts.map(function (o) { return '<option value="' + o[0] + '">' + o[1] + '</option>'; }).join('') + '</select>'; };
   P2.innerHTML = '<div class="wrap"><div class="hd"><div><h2>🎁 TikTok-Steuerung</h2><div class="s">' + esc(S.game.title) + ' · Kommentare, Geschenke und Likes steuern das Spiel – Speichern gilt sofort im Stream' + (EMB ? ' und in der App' : ' (OBS, TikTok LIVE Studio)') + '.</div></div><span id="ttConn" class="pill"></span></div>' +
     '<div class="scope"><label>Belegung für ' + sel('ttScope', [['all', '🌍 alle Spiele'], ['game', '🎮 nur ' + esc(S.game.title)]]) + '</label><span id="ttOwn" class="s"></span></div>' +
@@ -586,6 +614,17 @@
       '<h3>Vorlagen</h3><div class="strip">' + [['9x16', 'all', 'frame', 0, '📱 TikTok LIVE Studio hochkant'], ['16x9', 'all', 'frame', 0, '🖥️ TikTok LIVE Studio quer'], ['9x16', 'all', 'full', 0, '📱 OBS hochkant (randlos)'], ['16x9', 'all', 'full', 0, '🖥️ OBS quer (randlos)'],
         ['9x16', 'game', 'full', 0, '🎮 Quelle 1: nur Spiel'], ['9x16', 'info', 'full', 1, '✨ Quelle 2: nur Einblendungen']].map(function (v) { return '<button data-preset="' + v.slice(0, 4).join(',') + '">' + v[4] + '</button>'; }).join('') + '</div>' +
       '<div class="s" style="margin-top:10px"><b>Eine Quelle</b> („Alles“): am einfachsten. <b>Zwei Quellen</b>: „Nur Spiel“ unten (zum Spielen „Interagieren“), „Nur Einblendungen“ durchsichtig darüber – dann kannst du Legende und Ereignisse frei verschieben/skalieren; beide mit gleichem Format und Rahmen. Einzelne Teile (Legende, Ereignisse, Top-Fans) gehen auch als eigene Quellen.</div></div></section>') +
+    '<section data-sec="s"><div class="cols"><div><div class="card"><h3 style="margin-top:0">🔊 Sounds im LIVE</h3><div class="s">Ein Sound ist eine Aktion wie jede andere (<code>snd:…</code>) – für Geschenke, Chat-Befehle, Like-Ziel, Follow, Teilen, Abo und Beitritt, auch kombiniert (z. B. <code>pad:A+snd:…</code>). In der Windows-App spielt er direkt; in OBS bei der Browserquelle „Audio über OBS steuern“ einschalten.</div>' +
+      '<div class="row"><label><input type="checkbox" id="ttSndOn" style="width:auto"> Sounds abspielen</label><label>Lautstärke <input id="ttSndVol" type="range" min="0" max="100" style="width:140px;vertical-align:middle"> <span id="ttSndVolV"></span></label></div>' +
+      '<div class="row"><label>höchstens <input id="ttSndMax" type="number" min="1" max="8" style="width:60px"> gleichzeitig</label><label>jeder längstens <input id="ttSndLen" type="number" min="1" max="60" style="width:60px"> s</label></div></div>' +
+      '<div class="card"><h3 style="margin-top:0">⭐ Meine Sounds</h3><div class="s">Stehen auch in jeder Aktions-Auswahl (▾) unter „🔊 Meine Sounds“.</div><div id="ttSndMine" class="snds"></div></div></div>' +
+      '<div class="card"><h3 style="margin-top:0">🎵 Sound-Bibliothek <span class="s">myinstants.com</span></h3>' +
+      '<div class="row"><label>' + sel('ttSndReq', [['search', '🔍 Suche'], ['trending', '🔥 Trends'], ['best', '⭐ Beste aller Zeiten'], ['recent', '🆕 Neu hochgeladen'], ['uploaded', '👤 Hochgeladen von …'], ['favorites', '❤️ Favoriten von …']]) + '</label>' +
+      '<input id="ttSndQ" placeholder="z. B. airhorn, applaus, bruh" style="flex:1;min-width:150px">' + sel('ttSndReg', [['de', '🇩🇪 Deutschland'], ['us', '🇺🇸 USA'], ['gb', '🇬🇧 Großbritannien'], ['at', '🇦🇹 Österreich'], ['ch', '🇨🇭 Schweiz'], ['fr', '🇫🇷 Frankreich'], ['es', '🇪🇸 Spanien'], ['it', '🇮🇹 Italien'], ['nl', '🇳🇱 Niederlande'], ['pl', '🇵🇱 Polen'], ['tr', '🇹🇷 Türkei'], ['br', '🇧🇷 Brasilien'], ['mx', '🇲🇽 Mexiko'], ['ar', '🇦🇷 Argentinien'], ['pt', '🇵🇹 Portugal'], ['ru', '🇷🇺 Russland'], ['id', '🇮🇩 Indonesien'], ['in', '🇮🇳 Indien'], ['jp', '🇯🇵 Japan'], ['', '🌍 weltweit']]) + '<button class="p" id="ttSndGo">Laden</button></div>' +
+      '<div class="row"><label>Zuweisen an ' + '<select id="ttSndTo" style="min-width:220px"></select></label></div>' +
+      '<div class="s" id="ttSndMsg"></div><div id="ttSndList" class="snds"></div>' +
+      '<div class="row" id="ttSndPager" style="justify-content:center"></div>' +
+      '<div class="s">Sounds und Abfrage: <a href="https://www.myinstants.com" target="_blank" rel="noopener">myinstants.com</a>, Schnittstelle nach <a href="https://github.com/abdipr/myinstants-api" target="_blank" rel="noopener">myinstants-api</a> (abdipr, MIT) – über die Brücke direkt, sonst über den öffentlichen Dienst. ▶ hört vor, ℹ zeigt Details, ⭐ merkt, ➕ weist zu.</div></div></div></section>' +
     '<section data-sec="a"><div class="card"><h3 style="margin-top:0">⚙️ Ablauf</h3><div class="row"><label>Modus ' + sel('ttMode', [['chaos', 'Chaos – jeder Befehl sofort'], ['vote', 'Abstimmung']]) + '</label><label>alle <input id="ttVote" type="number" min="1" max="30" style="width:60px"> s</label>' +
     '<label>Pause je Zuschauer <input id="ttCool" type="number" min="0" max="60" style="width:60px"> s</label><label>Legende ' + sel('ttLeg', [['tr', 'oben rechts'], ['tl', 'oben links'], ['br', 'unten rechts'], ['bl', 'unten links'], ['off', 'aus']]) + '</label></div>' +
     '<div class="row"><label>💣 Bombe entschärfen mit <input id="ttBombW" style="width:120px"></label><label>von <input id="ttBombN" type="number" min="1" max="50" style="width:60px"> Zuschauern</label></div></div>' +
@@ -594,7 +633,7 @@
     '<div class="ft"><button class="p" id="ttSave">💾 Speichern</button><button id="ttReset">Standard</button><button id="ttClose">👁 Vorschau</button><span id="ttMsg" class="s"></span></div><datalist id="ttAct"></datalist></div>';
   var $ = function (s) { return P2.querySelector(s); };
   function buildPick(ga) {
-    var all = ACTS.concat(ga.map(function (a) { return ['game:' + a.id, a.icon || '⭐', a.label, 'game']; }));
+    var all = ACTS.concat(ga.map(function (a) { return ['game:' + a.id, a.icon || '⭐', a.label, 'game']; }), (cfg.soundLib || []).map(function (x) { return ['snd:' + x.f, '🔊', x.t, 'snd']; }));
     return '<option value="">▾</option>' + Object.keys(GROUPS).map(function (gr) { var o = all.filter(function (a) { return a[3] === gr; }); return o.length ? '<optgroup label="' + GROUPS[gr] + '">' + o.map(function (a) { var m = padMean(a[0]); return '<option value="' + esc(a[0]) + '" data-l="' + esc(a[2]) + '">' + esc(a[1] + ' ' + a[2] + (m ? ' – hier: ' + m : '')) + '</option>'; }).join('') + '</optgroup>' : ''; }).join('');
   }
   function giftRow(g) {
@@ -619,14 +658,88 @@
       return o.length ? '<div class="card"><h3 style="margin-top:0">' + GROUPS[gr] + '</h3><div class="acts">' + o.map(function (a) { return '<div class="act"><span class="e">' + esc(a[1]) + '</span><div>' + esc(a[2]) + (padMean(a[0]) ? ' <span class="mean">🎮 ' + esc(padMean(a[0])) + '</span>' : '') + '<br><code>' + esc(a[0]) + '</code></div><button data-run="' + esc(a[0]) + '" title="Testen">▶</button><button data-assign="' + esc(a[0]) + '" data-label="' + esc(a[2]) + '" title="Einem Geschenk zuweisen">🎁+</button></div>'; }).join('') + '</div></div>' : '';
     }).join('') + (ga.length ? '' : '<div class="s">Dieses Spiel hat keine eigenen Highlights – alle Streiche oben gehen trotzdem.</div>');
     var own = cfg.games && cfg.games[GID]; $('#ttOwn').innerHTML = scope === 'game' ? (own ? '✅ ' + esc(S.game.title) + ' hat eine eigene Belegung · „Standard“ entfernt sie' : (Object.keys(gameDefaults()).length ? 'Zeigt die empfohlene Belegung von ' + esc(S.game.title) + '; Speichern legt eine eigene an.' : 'Noch keine eigene Belegung – zeigt die allgemeine; Speichern legt eine eigene an.')) : (own ? 'ℹ️ ' + esc(S.game.title) + ' nutzt eine eigene Belegung' : 'Gilt für alle Spiele ohne eigene Belegung.');
-    drawGifts(); urlDraw(); fillMeans();
+    var so = sndOpt(); $('#ttSndOn').checked = so.on; $('#ttSndVol').value = so.vol; $('#ttSndVolV').textContent = so.vol + ' %'; $('#ttSndMax').value = so.max; $('#ttSndLen').value = so.len;
+    drawMine(); sndTargets(); sndForm(); drawGifts(); urlDraw(); fillMeans();
+  }
+  // ---- 🔊 Sounds: Bibliothek (myinstants), Meine Sounds, Zuweisen ----
+  var sndRes = [], sndQ = { req: 'search', q: '', page: 1 }, sndPend = {}, sndPrev = null, sndPrevF = '';
+  function sndRow(x, mine) {
+    var f = x.f || sndArg(x.mp3), t = x.t || x.title || sndTitle(f), fav = (cfg.soundLib || []).some(function (y) { return y.f === f; });
+    return '<div class="snd' + (sndPrevF === f ? ' on' : '') + '" data-f="' + esc(f) + '" data-t="' + esc(t) + '"' + (x.id ? ' data-id="' + esc(x.id) + '"' : '') + '><button data-sp title="Vorhören">' + (sndPrevF === f ? '⏹' : '▶') + '</button><span class="t" title="' + esc(t) + '">' + esc(t) + '</span>' +
+      (x.id ? '<button data-si title="Details">ℹ</button>' : '') + (mine ? '<button data-sx title="Aus Meine Sounds entfernen">✕</button>' : '<button data-sf title="Zu Meine Sounds"' + (fav ? ' disabled' : '') + '>' + (fav ? '✅' : '⭐') + '</button>') + '<button class="p" data-sa title="Zuweisen">➕</button></div>';
+  }
+  function sndPicks() { PICK = buildPick(gameActions()); [].forEach.call(P2.querySelectorAll('[data-pick]'), function (x) { x.innerHTML = PICK; }); }   // ▾-Auswahl kennt neue „Meine Sounds“ sofort
+  function drawMine() { var b = $('#ttSndMine'); if (b) b.innerHTML = (cfg.soundLib || []).map(function (x) { return sndRow(x, 1); }).join('') || '<div class="s">Noch leer – in der Bibliothek ⭐ antippen.</div>'; }
+  function drawSnd() {
+    $('#ttSndList').innerHTML = sndRes.map(function (x) { return sndRow(x); }).join('');
+    $('#ttSndPager').innerHTML = (sndQ.page > 1 ? '<button data-pg="-1">◀ zurück</button>' : '') + (sndRes.length ? '<span class="s">Seite ' + sndQ.page + (sndQ.total ? ' von ' + sndQ.total : '') + '</span>' : '') + (sndQ.next ? '<button data-pg="1">weiter ▶</button>' : '');
+  }
+  function sndForm() { var r = $('#ttSndReq').value; $('#ttSndReg').style.display = r === 'trending' || r === 'best' ? '' : 'none'; $('#ttSndQ').style.display = r === 'search' || r === 'uploaded' || r === 'favorites' ? '' : 'none';
+    $('#ttSndQ').placeholder = r === 'search' ? 'z. B. airhorn, applaus, bruh' : 'myinstants-Nutzername'; }
+  // Abfrage: über die Brücke (liest myinstants.com direkt), sonst über den öffentlichen Dienst myinstants-api
+  function sndAsk(o, cb) {
+    var done = false, fin = function (r) { if (!done) { done = true; cb(r || { error: 'keine Antwort' }); } };
+    var pub = function () {
+      var u = 'https://myinstants-api.vercel.app/' + o.req + '?' + new URLSearchParams(o.req === 'detail' ? { id: o.id } : o.req === 'uploaded' || o.req === 'favorites' ? { username: o.q, page: o.page || 1 } : o.req === 'recent' ? { page: o.page || 1 } : { q: o.q || '', page: o.page || 1 });
+      fetch(u).then(function (r) { return r.json(); }).then(function (j) { fin(j && j.data ? { data: j.data, page: j.page, total_pages: j.total_pages, has_next: j.has_next } : { error: (j && j.message) || 'keine Daten' }); })
+        .catch(function () { fin({ error: online ? 'myinstants gerade nicht erreichbar' : 'Ohne Brücke nicht erreichbar – TikTok-Brücke starten (Windows-App: „🎁 TikTok LIVE“ → Verbinden)' }); });
+    };
+    if (!online) return pub();
+    var rid = 'r' + Date.now() + Math.random().toString(36).slice(2, 6); sndPend[rid] = function (r) { if (r.error && /nicht erreichbar|HTTP 5/.test(r.error)) pub(); else fin(r); };
+    send(Object.assign({ type: 'sounds', rid: rid }, o)); setTimeout(function () { if (sndPend[rid]) { delete sndPend[rid]; pub(); } }, 25000);
+  }
+  function sndLoad(page) {
+    sndQ = { req: $('#ttSndReq').value, q: ($('#ttSndReq').value === 'trending' || $('#ttSndReq').value === 'best') ? $('#ttSndReg').value : $('#ttSndQ').value.trim(), page: Math.max(1, page || 1) };
+    if (!sndQ.q && /search|uploaded|favorites/.test(sndQ.req)) { $('#ttSndMsg').textContent = sndQ.req === 'search' ? 'Suchwort eingeben.' : 'Nutzernamen eingeben.'; return; }
+    $('#ttSndMsg').textContent = '⏳ Lade …';
+    sndAsk(sndQ, function (r) {
+      if (r.error) { $('#ttSndMsg').textContent = '⚠️ ' + r.error; return; }
+      sndRes = (r.data || []).filter(function (x) { return x && x.mp3; }); sndQ.total = r.total_pages || 0; sndQ.next = r.has_next === undefined ? sndRes.length >= 30 : !!r.has_next;
+      $('#ttSndMsg').textContent = sndRes.length ? sndRes.length + ' Sounds' : 'Nichts gefunden.'; drawSnd();
+    });
+  }
+  // Ziele für ➕: zuletzt angetipptes Aktionsfeld, Zuschauer-Aktionen, Like-Ziel, jede Geschenk-Zeile und jeder Chat-Befehl
+  var lastAct = null;
+  function sndTargets() {
+    var t = $('#ttSndTo'); if (!t) return; var v = t.value;
+    var o = [['last', '👆 zuletzt angetipptes Aktionsfeld'], ['newgift', '🎁 neue Geschenk-Zeile'], ['#ttFollow', '➕ Follow'], ['#ttShare', '🔁 Teilen'], ['#ttSub', '⭐ Abo'], ['#ttJoin', '👋 Beitritt'], ['#ttLikeA', '❤️ Like-Ziel']];
+    [].forEach.call(P2.querySelectorAll('#ttGifts tr'), function (r, i) { var g = r.querySelector('[data-k="gift"]').value; if (g) o.push(['g' + i, '🎁 ' + g]); });
+    [].forEach.call(P2.querySelectorAll('#ttCmds tr'), function (r, i) { var c = r.querySelector('[data-k="0"]').value; if (c) o.push(['c' + i, '💬 ' + c]); });
+    t.innerHTML = o.map(function (x) { return '<option value="' + esc(x[0]) + '">' + esc(x[1]) + '</option>'; }).join(''); if (v && o.some(function (x) { return x[0] === v; })) t.value = v;
+  }
+  function sndAssign(f, title) {
+    var to = $('#ttSndTo').value, a = 'snd:' + f, inp = null, lab = null;
+    if (to === 'last') inp = lastAct && P2.contains(lastAct) ? lastAct : null;
+    else if (to === 'newgift') { addGiftRow('', '🎁', a, '🔊 ' + title); $('#ttMsg').textContent = 'Neue Zeile mit „' + title + '“ – rechts ein Geschenk antippen, dann Speichern.'; tab('g'); return; }
+    else if (to[0] === '#') inp = $(to);
+    else { var r = P2.querySelectorAll(to[0] === 'g' ? '#ttGifts tr' : '#ttCmds tr')[+to.slice(1)]; if (r) { inp = r.querySelector('[data-k="action"],[data-k="1"]'); lab = r.querySelector('[data-k="label"]'); } }
+    if (!inp) { $('#ttSndMsg').textContent = 'Erst ein Aktionsfeld antippen oder oben ein Ziel wählen.'; return; }
+    if (inp.value.indexOf(a) < 0) inp.value = inp.value.trim() ? inp.value.trim() + '+' + a : a;
+    if (lab && !lab.value) lab.value = '🔊 ' + title;
+    editing = true; fillMeans(); $('#ttSndMsg').textContent = '✅ „' + title + '“ zugewiesen – Speichern nicht vergessen.'; $('#ttMsg').textContent = 'Sound zugewiesen – Speichern nicht vergessen.';
+  }
+  function sndPreview(f) {
+    if (sndPrev) { try { sndPrev.pause(); } catch (e) { } }
+    if (sndPrevF === f) { sndPrev = null; sndPrevF = ''; } else { var o = sndOpt(); sndPrev = playSound(f, { vol: +$('#ttSndVol').value, max: 8, len: Math.max(o.len, 15) }); sndPrevF = sndPrev ? f : ''; if (sndPrev) sndPrev.onended = function () { sndPrevF = ''; drawSnd(); drawMine(); }; }
+    drawSnd(); drawMine();
+  }
+  function sndInfo(row) {
+    var old = row.querySelector('.info'); if (old) { old.remove(); return; }
+    var box = document.createElement('div'); box.className = 'info'; box.textContent = '⏳ Lade Details …'; row.appendChild(box);
+    sndAsk({ req: 'detail', id: row.dataset.id }, function (r) {
+      var d = r.data; if (r.error || !d) { box.textContent = '⚠️ ' + (r.error || 'keine Details'); return; }
+      box.innerHTML = (d.description ? esc(d.description) + '<br>' : '') + '❤️ ' + (+d.favorites || 0).toLocaleString('de-DE') + ' · 👁 ' + (+d.views || 0).toLocaleString('de-DE') +
+        (d.uploader && d.uploader.username ? ' · 👤 <a data-su="' + esc(d.uploader.username) + '">' + esc(d.uploader.text || d.uploader.username) + '</a>' : '') +
+        ((d.tags || []).length ? '<br>🏷 ' + d.tags.map(function (t) { return '<a data-st="' + esc(t) + '">' + esc(t) + '</a>'; }).join(' ') : '') + ' · <a href="' + esc(d.url) + '" target="_blank" rel="noopener">myinstants ↗</a>';
+    });
   }
   // Unter jeder Aktion: was sie in diesem Spiel bewirkt (z. B. A drücken → Springen)
   function fillMeans() {
     [].forEach.call(P2.querySelectorAll('input[list="ttAct"]'), function (inp) {
       var box = inp.parentNode, m = box.querySelector(':scope > .mean');
       if (!m) { m = document.createElement('span'); m.className = 'mean'; box.appendChild(m); }
-      var t = padMean(inp.value); m.textContent = t ? '🎮 in ' + S.game.title + ': ' + t : '';
+      var t = padMean(inp.value), sn = (inp.value.match(/snd:[^+*\s]+/g) || []).map(function (x) { return sndTitle(x.slice(4)); });
+      m.textContent = (t ? '🎮 in ' + S.game.title + ': ' + t : '') + (sn.length ? (t ? ' · ' : '') + '🔊 ' + sn.join(', ') : '');
     });
   }
   function read() {
@@ -678,17 +791,33 @@
     }).join('');
   }
   P2.addEventListener('input', function (e) { editing = true; if (e.target.id === 'ttGiftQ' || e.target.dataset.k === 'gift') drawGifts(); if (/^tt(Fmt|View|Lay|Clear|Theme|Size)$/.test(e.target.id)) urlDraw(); });
-  P2.addEventListener('input', function (e) { if (e.target.matches('input[list="ttAct"]')) fillMeans(); });
+  P2.addEventListener('input', function (e) { if (e.target.matches('input[list="ttAct"]')) fillMeans(); if (e.target.id === 'ttSndVol') $('#ttSndVolV').textContent = e.target.value + ' %'; });
+  P2.addEventListener('focusin', function (e) { if (e.target.matches && e.target.matches('input[list="ttAct"]')) { lastAct = e.target; var to = $('#ttSndTo'); if (to) to.value = 'last'; } });
+  P2.addEventListener('keydown', function (e) { if (e.target.id === 'ttSndQ' && e.key === 'Enter') sndLoad(1); });
   P2.addEventListener('change', function (e) {
     var s = e.target; if (/^tt(Fmt|View|Lay|Clear|Theme|Size)$/.test(s.id)) urlDraw();
+    if (s.id === 'ttSndReq') { sndForm(); if (!/search|uploaded|favorites/.test(s.value)) sndLoad(1); }
+    if (s.id === 'ttSndReg') sndLoad(1);
     if (!s.matches('[data-pick]') || !s.value) return;
     var r = s.closest('tr'), inp = r.querySelector('[data-k="action"],[data-k="1"]'), lab = r.querySelector('[data-k="label"]'), o = s.options[s.selectedIndex];
-    inp.value = s.value; if (lab && (!lab.value || lab.dataset.auto)) { lab.value = o.dataset.l || ''; lab.dataset.auto = 1; }
+    if (/^snd:/.test(s.value) && inp.value.trim() && inp.value.indexOf(s.value) < 0) inp.value = inp.value.trim() + '+' + s.value;   // Sound kommt zur Aktion dazu
+    else inp.value = s.value;
+    if (lab && (!lab.value || lab.dataset.auto)) { lab.value = (/^snd:/.test(s.value) ? '🔊 ' : '') + (o.dataset.l || ''); lab.dataset.auto = 1; }
     s.selectedIndex = 0; editing = true; fillMeans();
   });
   P2.addEventListener('click', function (e) {
+    var ln = e.target.closest ? e.target.closest('a[data-su],a[data-st]') : null;   // Details: Uploader bzw. Schlagwort anklicken
+    if (ln) { if (ln.dataset.su) { $('#ttSndReq').value = 'uploaded'; $('#ttSndQ').value = ln.dataset.su; } else { $('#ttSndReq').value = 'search'; $('#ttSndQ').value = ln.dataset.st; } sndForm(); sndLoad(1); return; }
     var t = e.target.closest ? e.target.closest('button') : null; if (!t) return;
-    if (t.dataset.tab) { tab(t.dataset.tab); return; }
+    if (t.dataset.tab) { tab(t.dataset.tab); if (t.dataset.tab === 's') { sndTargets(); if (!sndRes.length && !$('#ttSndList').innerHTML) { $('#ttSndReq').value = 'best'; sndForm(); sndLoad(1); } } return; }
+    var sr = t.closest('.snd');
+    if (t.id === 'ttSndGo') { sndLoad(1); return; }
+    if (t.dataset.pg) { sndLoad(sndQ.page + +t.dataset.pg); return; }
+    if (sr && t.hasAttribute('data-sp')) { sndPreview(sr.dataset.f); return; }
+    if (sr && t.hasAttribute('data-si')) { sndInfo(sr); return; }
+    if (sr && t.hasAttribute('data-sa')) { sndAssign(sr.dataset.f, sr.dataset.t); return; }
+    if (sr && t.hasAttribute('data-sf')) { cfg.soundLib = (cfg.soundLib || []).filter(function (x) { return x.f !== sr.dataset.f; }).concat([{ f: sr.dataset.f, t: sr.dataset.t }]).slice(-200); editing = true; sndPicks(); drawMine(); drawSnd(); $('#ttMsg').textContent = '⭐ gemerkt – Speichern nicht vergessen.'; return; }
+    if (sr && t.hasAttribute('data-sx')) { cfg.soundLib = (cfg.soundLib || []).filter(function (x) { return x.f !== sr.dataset.f; }); editing = true; sndPicks(); drawMine(); drawSnd(); return; }
     if (t.dataset.gift) {
       var ex = [].find.call(P2.querySelectorAll('#ttGifts tr'), function (r) { return r.querySelector('[data-k="gift"]').value.trim().toLowerCase() === t.dataset.gift.toLowerCase(); });
       if (ex) { ex.scrollIntoView({ block: 'nearest' }); ex.querySelector('[data-k="action"]').focus(); $('#ttMsg').textContent = t.dataset.gift + ' ist schon belegt – hier ändern.'; return; }
@@ -703,7 +832,9 @@
     else if (t.hasAttribute('data-test')) test(t.closest('tr').querySelector('[list="ttAct"]').value);
     else if (t.id === 'ttSave') {
       var v2 = read();
+      var keepSnd = { sound: { on: $('#ttSndOn').checked, vol: +$('#ttSndVol').value, max: Math.max(1, Math.min(8, +$('#ttSndMax').value || 3)), len: Math.max(1, Math.min(60, +$('#ttSndLen').value || 8)) }, soundLib: cfg.soundLib || [] };
       if (scope === 'game') { cfg.games = cfg.games || {}; cfg.games[GID] = v2; } else { var games = cfg.games || {}; cfg = Object.assign(v2, { games: games }); }
+      Object.assign(cfg, keepSnd);   // Sounds gelten für alle Spiele
       editing = false; try { localStorage.setItem('eg-tiktok', JSON.stringify(cfg)); } catch (x) { }
       send({ type: 'setConfig', config: cfg }); drawLegend(); panelFill(); $('#ttMsg').textContent = online ? '✅ Gespeichert – gilt sofort auch im Stream.' : 'Gespeichert (nur in diesem Browser, Brücke fehlt).';
     }

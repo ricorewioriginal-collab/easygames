@@ -40,6 +40,58 @@ function onMessage(sock, text) {
     fs.writeFileSync(CONFIG, JSON.stringify(m.config, null, 1)); broadcast({ type: 'config', config: m.config }); log('Belegung gespeichert: ' + CONFIG);
   }
   else if (m.type === 'inject' && m.ev) emit(m.ev);
+  else if (m.type === 'sounds') sounds(m).then(r => send(sock, { type: 'sounds', rid: m.rid, ...r }), e => send(sock, { type: 'sounds', rid: m.rid, error: String(e.message || e) }));
+}
+
+// Sound-Bibliothek von myinstants.com für die TikTok-Einstellungen (🔊 Sounds) – gleiche Abfragen und Felder wie
+// github.com/abdipr/myinstants-api (MIT): search, trending, best, recent, detail, uploaded, favorites; direkt von myinstants.com,
+// weil der öffentliche Dienst nicht immer läuft. Antworten 1 Stunde zwischengespeichert.
+const MI = 'https://www.myinstants.com', miCache = new Map();
+const miText = s => String(s || '').replace(/<[^>]*>/g, '').replace(/&amp;/g, '&').replace(/&#0?39;|&apos;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/\s+/g, ' ').trim();
+async function miGet(url) {
+  const hit = miCache.get(url); if (hit && Date.now() - hit.t < 36e5) return hit.html;
+  const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', 'Accept-Language': 'en' } });
+  if (r.status === 404) return '';   // Seite hinter der letzten → leere Liste
+  if (r.status === 403) throw new Error('myinstants lässt diese Seite gerade nicht zu (403) – Profile gehen teils nur im Browser');
+  if (!r.ok) throw new Error('myinstants: HTTP ' + r.status);
+  const html = await r.text(); if (miCache.size > 200) miCache.clear(); miCache.set(url, { t: Date.now(), html }); return html;
+}
+function miList(html) {
+  const out = [], seen = new Set();
+  for (const b of html.split('<div class="instant"').slice(1)) {
+    const a = /<a[^>]*href="(\/[a-z-]+\/instant\/[^"]+)"[^>]*class="instant-link[^"]*"[^>]*>([\s\S]*?)<\/a>|<a[^>]*class="instant-link[^"]*"[^>]*href="(\/[a-z-]+\/instant\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/.exec(b);
+    const p = /play\('([^']+)'/.exec(b); if (!a || !p) continue;
+    const href = a[1] || a[3], id = href.replace(/^\/[a-z-]+\/instant\//, '').replace(/\/$/, '');
+    if (seen.has(id)) continue; seen.add(id);
+    out.push({ id, title: miText(a[2] || a[4]), url: MI + href, mp3: MI + p[1] });
+  }
+  const t = /Page\s+\d+\s+of\s+(\d+)/i.exec(html);
+  return { data: out, total_pages: t ? +t[1] : null };
+}
+async function sounds(m) {
+  const page = Math.max(1, Math.min(500, parseInt(m.page, 10) || 1)), q = String(m.q || '').trim().slice(0, 80), pg = u => page > 1 ? u + (u.includes('?') ? '&' : '?') + 'page=' + page : u;
+  const enc = encodeURIComponent, reg = /^[a-z]{2}$/i.test(q) ? q.toLowerCase() : '';
+  if (m.req === 'detail') {
+    const id = String(m.id || '').replace(/[^\w-]/g, ''); if (!id) throw new Error('id fehlt');
+    const h = await miGet(MI + '/en/instant/' + id + '/'), g = rx => (rx.exec(h) || [])[1] || '';
+    const up = /<a[^>]*href="(\/[a-z-]+\/profile\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/.exec(h.slice(h.indexOf('instant-page-likes')) || '');
+    return { data: { id, title: miText(g(/<h1[^>]*id="instant-page-title"[^>]*>([\s\S]*?)<\/h1>/)), url: MI + '/en/instant/' + id + '/',
+      mp3: (u => u ? (u.startsWith('http') ? u : MI + u) : '')(g(/id="instant-page-button-element"[^>]*data-url="([^"]+)"/) || g(/data-url="([^"]+)"[^>]*id="instant-page-button-element"/) || g(/play\('([^']+)'/)),
+      description: miText(g(/<div[^>]*id="instant-page-description"[^>]*>\s*<p[^>]*>([\s\S]*?)<\/p>/)),
+      tags: [...(g(/<div[^>]*id="instant-page-tags"[^>]*>([\s\S]*?)<\/div>/).matchAll(/<a[^>]*>([\s\S]*?)<\/a>/g))].map(x => miText(x[1])).filter(Boolean),
+      favorites: parseInt(miText(g(/<div[^>]*id="instant-page-likes"[^>]*>[\s\S]*?<b>([\s\S]*?)<\/b>/)).replace(/\D/g, ''), 10) || 0,
+      views: parseInt(miText(g(/([\d.,]+)\s*views/i)).replace(/\D/g, ''), 10) || 0,
+      uploader: up ? { text: miText(up[2]), url: MI + up[1], username: up[1].replace(/^\/[a-z-]+\/profile\//, '').replace(/\/.*$/, '') } : null } };
+  }
+  const url = m.req === 'search' ? (q ? MI + '/en/search/?name=' + enc(q) : null)
+    : m.req === 'trending' ? MI + '/en/index/' + (reg ? reg + '/' : '')
+    : m.req === 'best' ? MI + '/en/best_of_all_time/' + (reg ? reg + '/' : '')
+    : m.req === 'recent' ? MI + '/en/recent/'
+    : m.req === 'uploaded' ? (q ? MI + '/en/profile/' + enc(q) + '/uploaded/' : null)
+    : m.req === 'favorites' ? (q ? MI + '/en/profile/' + enc(q) + '/' : null) : undefined;
+  if (url === undefined) throw new Error('unbekannte Abfrage'); if (!url) throw new Error('Suchwort bzw. Nutzername fehlt');
+  const r = miList(await miGet(pg(url)));
+  return { req: m.req, q, page, count: r.data.length, total_pages: r.total_pages, has_next: r.total_pages ? page < r.total_pages : r.data.length >= 30, data: r.data };
 }
 const server = http.createServer((q, r) => { r.setHeader('Content-Type', 'text/plain; charset=utf-8'); r.end('easygames TikTok-Brücke läuft. ' + status + '\n'); });
 server.on('upgrade', (req, sock) => {
