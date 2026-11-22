@@ -536,6 +536,28 @@
         "Oben steht dein Mut. Jeder Schubser kostet ein Herz. Sind alle weg, ziehen dich deine Leute raus und du versuchst die Mission noch einmal.",
         "Bei Verfolgungen wandert die Lichtsäule mit dem Ziel mit. Bleib dran, bis du nah genug bist. Wer zu weit zurückfällt, verliert die Spur."
       ]
+    },
+    {
+      "t": "Glitzergram und Fotomodus",
+      "p": [
+        "Im Handy unter „📸 Glitzergram“ startest du den Fotomodus. Wähle Drohne (frei bewegliche Kamera bis 25 m um dich herum) oder Selfie, blättere mit ◀ ▶ durch die Filter (Regenbogen, Neon, Goldene Stunde, Vintage, Schwarz-Weiß, Glitzer) und wechsle die Pose. Auslösen mit 📸, Enter, A oder Antippen.",
+        "Jedes gepostete Foto bringt Likes und Follower. Mehr gibt es für berühmte Orte, die goldene Stunde, Neon in der Nacht, Leute im Bild, die Parade, einen Regenbogen, einen passenden Filter und neue Motive. Ab 1.000 Followern zahlt der Creator-Fonds pro Like.",
+        "Unter „Kooperationen“ bieten Läden und Marken Aufträge an: ein bestimmtes Motiv zur richtigen Zeit am richtigen Ort. Erfüllt das Foto den Auftrag, gibt es Geld und Extra-Follower."
+      ]
+    },
+    {
+      "t": "Imperium und Mogul-Ranking",
+      "p": [
+        "Unter „Imperium“ kaufst du Läden, Bars, Kinos, die Galerie und Hotels. Jedes Geschäft zahlt jeden Morgen aus und bringt Ruf. Hotels sind am Wochenende voll und zur Parade ausgebucht.",
+        "Das Mogul-Ranking des Rainbow-Kuriers vergleicht dein Vermögen (Geld, Geschäfte, Penthouse, Club) mit Glanz Immobilien, Viktor Krals Holding, Hildes Genossenschaft und anderen. Nach Akt IV wird Krals Hotel Kranhaus auf Rostwerk versteigert."
+      ]
+    },
+    {
+      "t": "Figur: Training, Tattoos, Piercings, Bart",
+      "p": [
+        "Training in der Muckibude (Hantelbank, Coach Mehmet, Beinetag) und Joggen bauen Muskeln auf, die man an Armen, Brust und Beinen sieht. Höchstens zwei Einheiten am Tag zählen. Nach drei Tagen ohne Training baut die Figur langsam wieder ab.",
+        "In der Boutique sticht Ink-Ines Tattoos (Nacken, Brust, Oberarm, Unterarm, Rücken), setzt Piercings (Ohren, Nase, Augenbraue, Lippe) und trimmt Bärte in sechs Farben. Tattoos zeigen sich, wenn die Figur oberkörperfrei, in Badesachen oder im Harness unterwegs ist. Weglasern kostet 120 €."
+      ]
     }
   ],
   "ratgeber": [
@@ -753,6 +775,23 @@
         "Getroffene taumeln kurz zurück und können dann nicht schubsen. Zweimal schnell hintereinander treffen.",
         "Bei Verfolgungen im Auto Turbo sparen, bis das Ziel in einer langen Geraden ist."
       ]
+    },
+    {
+      "t": "Mehr Likes auf Glitzergram",
+      "list": [
+        "Fotografiere kurz nach Sonnenaufgang oder vor Sonnenuntergang: Die goldene Stunde wirkt immer.",
+        "Nachts lohnen sich Neon-Orte wie das Prisma, die Wolke 7 oder das Diner 66, am besten mit dem Neon-Filter.",
+        "Leute im Bild und du selbst darauf bringen deutlich mehr Likes. Dasselbe Motiv zweimal hintereinander langweilt die Follower.",
+        "Samstagnachmittag zur Parade und bei Regenbogen nach dem Regen sind die besten Momente."
+      ]
+    },
+    {
+      "t": "Schnell aufs Siegertreppchen im Mogul-Ranking",
+      "list": [
+        "Kauf zuerst günstige Läden (Waschsalon, Deli 24, Pizza Nonna): Sie zahlen sich in rund zwei Wochen ab.",
+        "Hotels bringen am meisten, besonders an Wochenenden.",
+        "Mit 60 Muskelpunkten bietet Coach Mehmet die Muckibude mit einem Drittel Nachlass an. Nach Akt IV gibt es das Hotel Kranhaus mit einem Viertel Nachlass."
+      ]
     }
   ],
   "loesung": [
@@ -928,6 +967,16 @@
         "5. Kap Zuflucht (Ayla vor Haus Möwe): acht Spendenpakete, Ringe fliegen, Tag der offenen Tür ankündigen.",
         "6. Die Nacht vor Haus Möwe: Ayla ruft nachts an. Zum Haus Möwe fahren und fünf Angreifer vor der Tür stoppen.",
         "7. Die Lichterkette (Tom am Kai, ab 21 Uhr): Lady Luma und Mama Vega, dann Rocco abholen, zum Monolith, Krals Wagen auf der Ringstraße stellen (die Lichterkette sperrt die Brücke), zwei Leibwächter abwehren. Kral wird festgenommen."
+      ]
+    },
+    {
+      "t": "Nebenstrang: Aufstieg",
+      "steps": [
+        "Ab Kapitel 2 ruft Influencerin Zoe Funkel an: Starte Glitzergram im Handy und poste dein erstes Foto.",
+        "Bei 1.000 Followern startet der Creator-Fonds, bei 10.000 lädt Zoe dich zur Glitzergram-Gala ins Grand Hotel Aurora ein.",
+        "Coach Mehmet meldet sich, sobald du trainierst. Bei 60 Muskelpunkten bietet er dir die Muckibude mit 33 % Nachlass an.",
+        "Kauf ein Geschäft: Sanne Kowalski vom Rainbow-Kurier nimmt dich ins Mogul-Ranking auf. Erreiche die Top 3 und dann Platz 1 für die Titelseite.",
+        "Nach Akt IV ruft Tom an: Kauf das Hotel Kranhaus mit 25 % Nachlass, bevor Glanz Immobilien es bekommt."
       ]
     }
   ],

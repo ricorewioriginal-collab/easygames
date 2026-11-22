@@ -14,6 +14,7 @@ export type Act =
   | { k: 'annex'; room: string }                   // Anbau des Zuhauses (house.ts)
   | { k: 'drag'; what: 'look' | 'battle' }
   | { k: 'wagen' }
+  | { k: 'body'; what: 'studio' | 'gym' }          // Tattoo, Piercing, Barbier bzw. Hantelbank (figur.ts)
   | { k: 'darkroom' };                             // Darkroom hinter dem Club (18+, flirt.ts)                                // eigener CSD-Festwagen (festwagen.ts)        // Drag-Karriere im Haus Vega (drag.ts)
 
 /** Möbel: KayKit-Modell (gltf) oder Platzhalter-Form (box/screen/neon) */
@@ -57,10 +58,11 @@ export const PLACE_THEMES: Record<string, Theme> = {
     spots: [{ id: 'menu', label: '🛒 Kasse', x: -3.6, z: 2.8, r: 1.8, act: { k: 'menu' } }, doIt('drink', '🧃 Kalte Mate aus dem Kühlschrank', 4.2, -.3, { cost: 2, min: 5, d: { energy: 8, fun: 3 }, msg: 'Kalt und klebrig. Energie +8', sfx: 'glass' })] },
   boutique: { id: 'boutique', title: 'Boutique Fabelhaft', icon: '👗', floor: 0xf4d6e6, wall: 0xfff6fb, light: 0xffc0e8,
     items: [...[-4, -1.6, 1.6, 4].map((x, i) => ({ box: [1.8, 1.8, .5], c: [C.pink, 0x9b5cff, 0x5ce1ff, C.gold][i], x, z: -3.9, col: true } as Item)), { box: [1.4, 2.6, .1], c: 0xbfe8ff, x: 5.6, z: 1, e: .2 }, { box: [2.4, 1, .8], c: C.white, x: -3.6, z: 2, col: true }, { neon: 'FABELHAFT', c: '#ff9ad5', x: 0, z: -4.38, y: 3.2 }],
-    spots: [{ id: 'menu', label: '👗 Kollektion und Kasse', x: -3.6, z: 3, r: 1.8, act: { k: 'menu' } }, gl('style', '🪞 Outfit-Check am Spiegel', 4.6, 1), gl('match', '✨ Glitzer-Match', 0, -2.6)] },
+    spots: [{ id: 'menu', label: '👗 Kollektion und Kasse', x: -3.6, z: 3, r: 1.8, act: { k: 'menu' } }, gl('style', '🪞 Outfit-Check am Spiegel', 4.6, 1), gl('match', '✨ Glitzer-Match', 0, -2.6),
+      { id: 'tinte', label: '🖋️ Tinte & Stolz: Tattoo, Piercing, Barbier', x: 3.4, z: 3.2, r: 1.6, act: { k: 'body', what: 'studio' } }] },
   gym: { id: 'gym', title: 'Muckibude Muskelkater', icon: '🏋️', floor: 0x3a3a44, wall: 0xdcdce6, light: 0xffffff,
     items: [...[-4, -1.3, 1.4].map((x) => ({ box: [1.2, 1.4, 2], c: C.steel, x, z: -3, col: true } as Item)), { box: [1, 1.2, 2.4], c: C.black, x: 4.4, z: -2.8, col: true }, { box: [3, .1, 2], c: 0x2b6cff, x: -2, z: 2 }, { neon: 'MUCKIBUDE', c: '#ffd23b', x: 0, z: -4.38, y: 3.2 }],
-    spots: [gl('gym', '🏋️ Beinetag (Kniebeugen)', -1.3, -1.6), doIt('lauf', '🏃 Laufband', 4.4, -1.2, { min: 30, d: { energy: -14, fun: 8, hygiene: -10 }, msg: '5 km gelaufen. Spaß +8', sfx: 'step' }), { id: 'menu', label: '💳 Theke und Kurse', x: -2, z: 2.6, r: 1.8, act: { k: 'menu' } }] },
+    spots: [gl('gym', '🏋️ Beinetag (Kniebeugen)', -1.3, -1.6), doIt('lauf', '🏃 Laufband', 4.4, -1.2, { min: 30, d: { energy: -14, fun: 8, hygiene: -10 }, msg: '5 km gelaufen. Spaß +8', sfx: 'step' }), { id: 'menu', label: '💳 Theke und Kurse', x: -2, z: 2.6, r: 1.8, act: { k: 'menu' } }, { id: 'hantel', label: '💪 Hantelbank und Coach Mehmet', x: 2.4, z: 2.6, r: 1.6, act: { k: 'body', what: 'gym' } }] },
   studio: { id: 'studio', title: 'Studio Klappe Auf', icon: '📸', floor: 0x2a2a2a, wall: 0x3a3a3a, light: 0xffffff,
     items: [{ box: [6, 3.4, .1], c: 0x5ce1ff, x: 0, z: -4.2, e: .25 }, { box: [.3, 2.4, .3], c: C.black, x: -3.6, z: 1.6, col: true }, { box: [.3, 2.4, .3], c: C.black, x: 3.6, z: 1.6, col: true }, { screen: [.6, .6], c: 0xffffff, x: -3.6, z: 1.6, y: 2.5 }, { screen: [.6, .6], c: 0xffffff, x: 3.6, z: 1.6, y: 2.5 }, { box: [.5, 1.4, .5], c: C.black, x: 0, z: 2.6, col: true }],
     spots: [gl('cast', '🎬 Casting-Tag', 0, -2.4), { id: 'menu', label: '📸 Fotoshooting und Studio', x: 0, z: 1.6, r: 1.8, act: { k: 'menu' } }] },

@@ -11,6 +11,7 @@ import { NACHT_NPCS, nachtTalk, nachtGoal, nachtMarks, nachtFirst } from './nach
 import { dragGoal } from './drag';
 import { hour } from './life';
 import { fadenGoal, fadenTick, fadenPoi, fadenDance, actLabel, history } from './faden';
+import { aufTick, aufHush } from './aufstieg';
 import { FLUT_NPCS, flutTalk, flutGoal, flutMarks, flutHidden, flutTick, flutHush } from './flut';
 
 export interface NpcDef {
@@ -183,7 +184,9 @@ export function storyTick(c: StoryCtx) {
     // Akt IV (flut.ts) klingelt nur, wenn der rote Faden in diesem Takt nicht schon angerufen hat
     let rang = false;
     fadenTick({ ...c, phone: (l, d) => { rang = true; c.phone(l, d); } });
-    if (rang) flutHush(); else flutTick(c);
+    if (rang) { flutHush(); aufHush(); return; }
+    flutTick({ ...c, phone: (l, d) => { rang = true; c.phone(l, d); } });
+    if (rang) aufHush(); else aufTick(c);
   }
 }
 
