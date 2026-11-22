@@ -28,6 +28,8 @@ import { roomTheme, roomLevel } from './house';
 import { SKY, skyAt, forecast } from './weather';
 import { closeness, levelName, addCloseness, chatOpen, chatOf, replyChat, OUTINGS, outingWhy, doOuting, GIFTS, giveGift, model, partners, jealousy, dateFolge, type Model } from './bond';
 import { STAFF, UPGRADES, UP_MAX, SPECIAL, daily as bizDaily, staffOf, upOf, popOf, issueOf, eventReady, hire, upgrade, workIn, hostEvent, fixIssue, upCost, staffFee, fixCost, eventCost } from './manage';
+import { SLOTS, part, readPimp, buyPart, clientFor, episode, type Slot } from './tuning';
+import { workshopItems } from './pimp';
 import { SHOP, RACES, PAINTS, PAINT_COST, TUNE_COST, MEDALS, ownsCar, myCar, tuneLevel, buyCar, buyTune, buyPaint, bestTime, medalFor, stats } from './vehicles';
 import { ACTS, act, actLabel, chain, islesLeft, HISTORY, HIST_ORDER } from './faden';
 import { sagaDone, MISSIONS } from './saga';
@@ -1297,6 +1299,20 @@ export class Game {
         this.save.write(); } })); } })),
       { icon: regular(s, place) ? '⭐' : '☆', label: regular(s, place) ? 'Stammgast' : 'Stammgast werden', sub: `${placeGigs(place).filter((g) => s.flags['tg_' + g.id]).length}/${placeGigs(place).length} Aufträge geschafft`, disabled: true, fn: () => undefined }];
   }
+  /** Tuning-Werkstatt für den eigenen Wagen: erst Bereich wählen, dann Teil (sichtbar in der Stadt) */
+  workshop(slot?: Slot) {
+    const s = this.save.data, cur = readPimp(s), close = () => { this.closeMenu(); this.touch.show(true); };
+    this.touch.show(false);
+    if (!slot) {
+      this.openMenu(`<div class="col"><div class="panel"><h3>🛠️ Tuning-Werkstatt</h3><p>Rosi schraubt alles an deinen Wagen, was die Stadt zum Staunen bringt. Hydraulik hüpft beim Hupen, Neon leuchtet nachts am schönsten.</p><div class="slot"></div></div></div>`,
+        SLOTS.map((q) => { const p = part(q.id, cur[q.id]); return { icon: p.icon, label: q.title, sub: p.name, fn: () => this.workshop(q.id) }; }), () => { close(); this.placeMenu('garage'); });
+      return;
+    }
+    const sl = SLOTS.find((q) => q.id === slot)!;
+    this.openMenu(`<div class="col"><div class="panel"><h3>🛠️ ${sl.title}</h3><p>${sl.ask} Du hast ${s.money} €.</p><div class="slot"></div></div></div>`,
+      workshopItems(cur, slot, s.money, (id) => { const why = buyPart(s, slot, id); if (why) { sfx('miss'); toast(why); return; } sfx('win'); toast(`🛠️ Eingebaut: ${part(slot, id).name}`); this.save.write(); this.city.refreshHud(); void this.city.placeOwnCar(true); this.workshop(); }),
+      () => this.workshop());
+  }
   placeMenu(id: string) {
     const s = this.save.data;
     const close = () => { this.closeMenu(); this.touch.show(true); };
@@ -1376,6 +1392,8 @@ export class Game {
         const mine = myCar(s), tl = tuneLevel(s), hue = s.flags.carHue === undefined ? -1 : Number(s.flags.carHue), pi = Math.max(0, PAINTS.findIndex((q) => q[2] === hue)), np = PAINTS[(pi + 1) % PAINTS.length];
         const done = (why: string | null, ok: string, after?: () => void) => { if (why) { sfx('miss'); toast(why); return; } sfx('win'); toast(ok); after?.(); this.save.write(); this.city.refreshHud(); close(); this.placeMenu('garage'); };
         return { t: 'Garage Schraubenschlüssel', d: `Meisterin Rosi schraubt an allem, was Räder hat. ${mine ? `Dein Wagen: ${mine.icon} ${mine.name}${tl ? ` · Turbo-Stufe ${tl}` : ''}. Er wartet dort, wo du ihn abgestellt hast.` : 'Kauf dir deinen ersten eigenen Wagen: Niemand hält dich dann mehr für einen Autodieb.'}`, items: [
+          { icon: '🎬', label: 'TV-Show „Aufgemotzt!“', sub: `Folge ${episode(s) + 1} · ${clientFor(s).name} bringt eine Rostlaube · Honorar + Ruf`, fn: () => { close(); void this.city.show.start(); } },
+          ...(mine && !mine.fly ? [{ icon: '🛠️', label: 'Tuning-Werkstatt', sub: 'Felgen, Neon, Hydraulik, Bass, Extras für deinen Wagen', fn: () => { close(); this.workshop(); } }] : []),
           ...(mine ? [
             { icon: '🅿️', label: 'Wagen vor die Garage holen', sub: 'Rosi fährt ihn dir vor', fn: () => { close(); void this.city.placeOwnCar(true).then(() => toast(`${mine.icon} ${mine.name} steht vor der Garage.`)); } },
             { icon: np[1], label: `Umlackieren: ${np[0]}`, sub: `${PAINT_COST} € · jetzt ${PAINTS[pi][0]}`, fn: () => done(buyPaint(s, np[2]), `Frisch lackiert: ${np[0]}!`, () => void this.city.placeOwnCar(true)) },

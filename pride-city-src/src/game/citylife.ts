@@ -16,7 +16,7 @@ import { pcEvents } from './hooks';
 import { wagenOf, wagenKey, wagenColors, mottoText, score as wagenScore, place, PRIZE } from './festwagen';
 
 /* ---------- Zufallsereignisse ---------- */
-interface Out { text: string; money?: number; rep?: number; need?: Parameters<typeof change>[1]; min?: number }
+interface Out { text: string; money?: number; rep?: number; need?: Parameters<typeof change>[1]; min?: number; /** Rangelei: so viele aus der Besetzung (von vorn) gehen zu Boden */ fight?: number }
 export interface LifeEvent {
   id: string; icon: string; title: string; prompt: string; who: string; color: string;
   /** Haltung der geliehenen Passant*innen */ cast: Anim[]; when?: 'day' | 'night'; /** nicht bei Regen */ dry?: boolean; /** Gegenstand statt Person */ prop?: boolean;
@@ -58,6 +58,23 @@ export const LIFE_EVENTS: LifeEvent[] = [
     hello: 'Ach du liebe Zeit. Schlüssel drinnen, ich draußen, und mein Mann hat Nachtschicht.',
     choices: [{ label: 'Zusammen warten und quatschen', out: { text: 'Herbert erzählt von der ersten Demo 1979. Um zwei kommt sein Mann und bringt euch beiden Tee.', rep: 1, need: { social: 18, energy: -6 }, min: 45 } },
       { label: 'Schlüsseldienst rufen (20 €)', out: { text: 'Zehn Minuten später ist die Tür auf. Herbert steckt dir trotzdem Kekse zu.', money: -20, rep: 2, need: { hunger: 8 } } }] },
+  /* Anfeindungen: Queerfeindlichkeit gibt es auch in Rainbow City. Du entscheidest, ob du eingreifst. */
+  { id: 'poebel', icon: '⚠️', title: 'Anfeindung', prompt: '⚠️ Dazwischengehen', who: 'Zwei Typen', color: '#ff4b3b', cast: ['talk', 'pose', 'idle', 'idle'], when: 'night',
+    hello: 'Zwei Typen haben ein Paar umstellt, das gerade Händchen gehalten hat. „Ey, küsst euch woanders, ihr Freaks!“ Einer schubst den Kleineren gegen die Hauswand.',
+    choices: [{ label: 'Dazwischengehen', out: { text: 'Du stellst dich davor. Der Größere holt aus, die Faust trifft deine Schulter. Du stößt ihn zurück, er reißt seinen Kumpel mit, beide liegen auf dem Asphalt und hauen dann ab. Das Paar zittert, bedankt sich aber.', fight: 2, rep: 3, need: { energy: -12, fun: -4, social: 8 } } },
+      { label: '110 rufen und alles filmen', out: { text: 'Kommissarin Yıldız ist in vier Minuten da. Dein Video landet in der Anzeige, die Typen bekommen einen Platzverweis. „Danke, dass du nicht weggeschaut hast.“', rep: 2, need: { social: 6 }, min: 15 } },
+      { label: 'Das Paar in Sicherheit bringen', out: { text: 'Ihr geht zu dritt in die nächste Bar. Nach dem zweiten Drink lachen die beiden wieder. Sie heißen Tarek und Lino und wollen nächste Woche mit dir zum Stammtisch.', rep: 2, need: { social: 14, fun: 2 }, min: 25 } },
+      { label: 'Wegsehen', out: { text: 'Du gehst weiter. Hinter dir lachen die Typen. Das Gefühl bleibt den ganzen Abend.', rep: -2, need: { fun: -10 } } }] },
+  { id: 'parole', icon: '🖍️', title: 'Hass-Parole', prompt: '🖍️ Den Sprayer ansprechen', who: 'Sprayer', color: '#ff7a3d', cast: ['interact'], when: 'night',
+    hello: 'Einer sprüht gerade „Queers raus!“ an eine Hauswand. Als er dich sieht, grinst er: „Was guckst du? Willst du auch was abhaben?“',
+    choices: [{ label: 'Ihm die Dose abnehmen', out: { text: 'Er schlägt nach dir, du weichst aus und er landet auf dem Hintern. Die Dose rollt dir vor die Füße. Er rennt weg. Am nächsten Morgen übermalen Nachbar*innen die Wand mit einem Regenbogen.', fight: 1, rep: 3, need: { energy: -8, fun: 4 } } },
+      { label: 'Foto machen und melden', out: { text: 'Das Ordnungsamt schickt am Morgen jemanden. Das Regenbogenhaus postet dein Foto mit „Nicht mit uns!“ und bekommt hundert Herzen.', rep: 2, need: { social: 6 } } },
+      { label: 'Morgen mit Farbe zurückkommen', out: { text: 'Du kaufst zwei Dosen Regenbogenlack. Aus „Queers raus“ wird „Queers bleiben“. Fotos davon gehen durch die ganze Stadt.', money: -12, rep: 3, need: { fun: 12 }, min: 40 } }] },
+  { id: 'verfolgt', icon: '🚨', title: 'Verfolgt', prompt: '🚨 Fragen, ob alles okay ist', who: 'Selin', color: '#c9a2ff', cast: ['talk', 'idle'], when: 'night',
+    hello: 'Eine junge trans Frau läuft schnell, ein Mann folgt ihr seit zwei Straßen und ruft ihr Dinge hinterher. Sie dreht sich zu dir: „Bitte bleib kurz hier, ja?“',
+    choices: [{ label: 'Bei ihr bleiben, ihn anbrüllen', out: { text: '„Verpiss dich!“ Er will dich packen, stolpert über den Bordstein und geht zu Boden. Danach ist er ganz schnell weg. Selin atmet aus: „Ich heiße Selin. Danke.“', fight: 1, rep: 3, need: { energy: -6, social: 10 } } },
+      { label: 'Sie nach Hause begleiten', out: { text: 'Zwanzig Minuten Fußweg. Selin erzählt von ihrem ersten Jahr in der Stadt und von der Selbsthilfegruppe im Regenbogenhaus. An der Haustür umarmt sie dich.', rep: 2, need: { social: 16, energy: -4 }, min: 20 } },
+      { label: 'Taxi rufen und zahlen (15 €)', out: { text: 'Das Taxi ist in drei Minuten da. Selin schickt dir ein Herz: „Gut angekommen.“', money: -15, rep: 2, need: { social: 6 } } }] },
 ];
 /** Passt das Ereignis zu Tageszeit und Wetter? */
 export const eventFits = (e: LifeEvent, night: boolean, rain: boolean) => !(e.dry && rain) && !(e.when === 'day' && night) && !(e.when === 'night' && !night);
@@ -137,7 +154,14 @@ export class CityLife {
       const bits = [o.money ? `${o.money > 0 ? '+' : ''}${o.money} €` : '', o.rep ? `${o.rep > 0 ? '+' : ''}${o.rep} Ruf` : ''].filter(Boolean);
       if (bits.length) toast(`${d.icon} ${d.title}: ${bits.join(' · ')}`);
       sfx(o.rep && o.rep < 0 ? 'miss' : 'win');
-      for (const n of e.cast) n.a.play(d.id === 'flashmob' ? 'cheer' : 'wave');
+      if (o.fight) {
+        // Rangelei: die Angreifenden gehen zu Boden, das Bild wackelt (keine Fahndung: Nothilfe)
+        const p = this.city.player; p.play('hit', 0); this.city.shake = .45; sfx('hit'); setTimeout(() => sfx('slap'), 180);
+        e.cast.slice(0, o.fight).forEach((n, k) => setTimeout(() => this.city.combat.floor(n.a, k ? 'Kumpel' : d.who, ['Uff!', 'Aua, mein Rücken!', 'Okay, okay!'][k % 3], p.root.position), 200 + k * 260));
+        e.cast.slice(o.fight).forEach((n) => n.a.play('clap'));
+        e.t = 7;
+      } else if (d.id === 'poebel' || d.id === 'verfolgt' || d.id === 'parole') e.cast.forEach((n, k) => n.a.play(k ? 'clap' : 'idle'));
+      else for (const n of e.cast) n.a.play(d.id === 'flashmob' ? 'cheer' : 'wave');
       s.flags.lifeEvents = (Number(s.flags.lifeEvents) || 0) + 1;
       this.g.save.write(); this.city.refreshHud();
     });

@@ -38,6 +38,8 @@ import type { Profile } from './social';
 import { Combat } from './Combat';
 import { arrive } from './family';
 import { Kerb } from './kerb';
+import { TuneShow, rigOf, dress } from './pimp';
+import { readPimp, isStock } from './tuning';
 
 interface Npc { def: NpcDef; a: Actor; wp: number; wait: number; talking: boolean }
 
@@ -67,6 +69,12 @@ export class CityScene implements GameScene {
   friends!: Friends;
   /** Auto, in dem die Spielfigur gerade sitzt */
   private drive: Parked | null = null;
+  /** Wagen, in dem du gerade sitzt (für Aufträge von außen) */
+  get car() { return this.drive; }
+  /** Filmkamera (Show „Aufgemotzt!“): ersetzt die Folgekamera, solange gesetzt */
+  cine: ((dt: number) => void) | null = null;
+  private showRef: TuneShow | null = null;
+  get show() { return (this.showRef ||= new TuneShow(this.g, this)); }
   private stepT = 0;
   private warnT = 30;
   private evT = 90;
@@ -585,6 +593,7 @@ export class CityScene implements GameScene {
     if (!high && !boat && Vector3.Distance(o.position, want) > .02 && Math.abs(c.v) > 4) { c.v *= .4; if (!fly) sfx('miss'); }
     o.position.y = fly ? this.alt + Math.sin(performance.now() / 330) * .08 : boat ? .05 + Math.sin(performance.now() / 420) * .05 : .1;
     this.player.root.position.copyFrom(o.position);
+    rigOf.get(o)?.update(dt, performance.now() / 1000, c.v);
     if (fly) {
       // in die Kurve legen und die Nase beim Steigen heben, wie ein Flugzeug
       const roll = -steer * .32 * clamp(c.v / 8, -1, 1), pitch = -clamp(this.climb / 8, -1, 1) * .22;
@@ -607,7 +616,6 @@ export class CityScene implements GameScene {
       const seat = rideSeat(c.def); if (seat >= 0) { this.player.root.position.y = o.position.y + seat; this.player.root.rotation.y = o.rotation.y; }
     }
     if (fly) { this.player.root.position.y -= .35; this.player.root.rotation.y = o.rotation.y; const fl = o.getChildMeshes().find((m) => m.name === 'flame'); if (fl) { fl.setEnabled(true); fl.scaling.y = .8 + Math.sin(performance.now() / 33) * .25; } }
-    if (Math.abs(c.v) > 1) this.cam.tYaw += (o.rotation.y + Math.PI - this.cam.tYaw) * Math.min(1, dt * 2.5);
     if (boat) return;   // auf dem Wasser nicht speichern: beim Laden stehst du am letzten Ufer
     const s = this.g.save.data; s.pos.x = o.position.x; s.pos.z = o.position.z; s.pos.yaw = o.rotation.y;
   }
@@ -623,39 +631,64 @@ export class CityScene implements GameScene {
   private tiredTold = false;
   /** Sekunden seit dem letzten Wischen an der Kamera */
   private lookIdle = 9;
+  /** Fahrkamera: Vorausschau in Fahrtrichtung, Tempo-Abstand und Tempo-Blickwinkel (weich nachgeführt) */
+  private ahead = new Vector3();
+  private camExtra = 0;
+  private camFov = 0;
+  private near3: World['colliders'] = [];
   private updateCam(dt: number, snap = false) {
-    const inp = this.g.engine.input, st = this.g.save.data.settings;
-    const k = .005 * st.camSpeed;
+    const inp = this.g.engine.input, st = this.g.save.data.settings, d = this.drive;
+    const k = .005 * st.camSpeed, sp = d ? Math.abs(d.v) : 0, fast = clamp(sp / 26, 0, 1);
     this.cam.tYaw -= inp.look.x * k;
     this.cam.pitch = clamp(this.cam.pitch + inp.look.y * k * (st.invertY ? -1 : 1), .08, 1.1);
     this.cam.dist = clamp(this.cam.dist + inp.zoom * .8, 3.5, 14);
-    if (!this.drive && inp.held('tabL')) this.cam.tYaw += dt * 2.2;
-    if (!this.drive && inp.held('tabR')) this.cam.tYaw -= dt * 2.2;
-    if (inp.pressed('camReset')) this.cam.tYaw = this.player.root.rotation.y + Math.PI;
-    // Folgekamera zu Fuß: dreht sich sanft hinter die Figur, solange du läufst und nicht selbst an der Kamera wischst
+    if (!d && inp.held('tabL')) this.cam.tYaw += dt * 2.2;
+    if (!d && inp.held('tabR')) this.cam.tYaw -= dt * 2.2;
+    const face = d ? d.o.rotation.y : this.player.root.rotation.y;
+    if (inp.pressed('camReset')) this.cam.tYaw = face + Math.PI;
     this.lookIdle = inp.look.x || inp.look.y || inp.held('tabL') || inp.held('tabR') ? 0 : this.lookIdle + dt;
-    if (!this.drive && !snap && this.lookIdle > 1.2 && Math.hypot(inp.move.x, inp.move.y) > .3) {
-      let d = this.player.root.rotation.y + Math.PI - this.cam.tYaw; d = Math.atan2(Math.sin(d), Math.cos(d));
-      if (Math.abs(d) < 2.3) this.cam.tYaw += d * Math.min(1, dt * 1.5);   // wer auf die Kamera zuläuft, wird nicht herumgerissen
+    let behind = face + Math.PI - this.cam.tYaw; behind = Math.atan2(Math.sin(behind), Math.cos(behind));
+    if (d && !snap) {
+      // wie im Open-World-Krimi: Kamera schwenkt nach kurzer Pause hinter den Wagen, je schneller, desto straffer;
+      // beim Rückwärtsfahren bleibt sie stehen, damit das Bild nicht herumschleudert
+      if (this.lookIdle > .8 && d.v > .8) this.cam.tYaw += behind * Math.min(1, dt * (1.6 + fast * 3.2));
+      if (this.lookIdle > 1.5) this.cam.pitch += ((d.def.fly ? .3 : .2) - this.cam.pitch) * Math.min(1, dt * 1.5);
+    } else if (!d && !snap && this.lookIdle > 1.2 && Math.hypot(inp.move.x, inp.move.y) > .3 && Math.abs(behind) < 2.3) {
+      // Folgekamera zu Fuß: dreht sich sanft hinter die Figur (wer auf die Kamera zuläuft, wird nicht herumgerissen)
+      this.cam.tYaw += behind * Math.min(1, dt * 1.5);
     }
-    this.cam.yaw += (this.cam.tYaw - this.cam.yaw) * Math.min(1, dt * 12);
+    // Winkel nicht endlos aufaddieren lassen (sonst dreht die Kamera nach vielen Runden durch)
+    if (Math.abs(this.cam.tYaw) > 20) { const w = Math.round(this.cam.tYaw / (Math.PI * 2)) * Math.PI * 2; this.cam.tYaw -= w; this.cam.yaw -= w; }
+    this.cam.yaw += (this.cam.tYaw - this.cam.yaw) * Math.min(1, dt * (d ? 8 : 12));
     const p = this.player.root.position;
-    const tgt = this.tgt.set(p.x, p.y + 1.5, p.z);
+    // beim Fahren etwas tiefer und in Fahrtrichtung vorausschauen, mit Tempo weiter weg
+    const la = d ? Math.min(sp, 30) * .14 * Math.sign(d.v) : 0;
+    const ax = Math.sin(face) * la, az = Math.cos(face) * la;
+    if (snap) this.ahead.set(ax, 0, az); else { this.ahead.x += (ax - this.ahead.x) * Math.min(1, dt * 3); this.ahead.z += (az - this.ahead.z) * Math.min(1, dt * 3); }
+    this.camExtra += ((d ? fast * 3.2 : 0) - this.camExtra) * (snap ? 1 : Math.min(1, dt * 2));
+    const tgt = this.tgt.set(p.x + this.ahead.x, p.y + (d && !d.def.fly ? 1.25 : 1.5), p.z + this.ahead.z);
+    const dist = this.cam.dist + this.camExtra;
     const want = new Vector3(
-      tgt.x + Math.sin(this.cam.yaw) * Math.cos(this.cam.pitch) * this.cam.dist,
-      tgt.y + Math.sin(this.cam.pitch) * this.cam.dist,
-      tgt.z + Math.cos(this.cam.yaw) * Math.cos(this.cam.pitch) * this.cam.dist);
-    // Kamera-Kollision: nicht in Häusern oder Autos stecken, sondern davor heranrücken
-    const dir = want.subtract(tgt);
+      tgt.x + Math.sin(this.cam.yaw) * Math.cos(this.cam.pitch) * dist,
+      tgt.y + Math.sin(this.cam.pitch) * dist,
+      tgt.z + Math.cos(this.cam.yaw) * Math.cos(this.cam.pitch) * dist);
+    // Kamera-Kollision: nicht in Häusern oder Autos stecken, sondern davor heranrücken (nur Hindernisse in Reichweite prüfen)
+    const dir = want.subtract(tgt), r = dist + 4, nb = this.near3; nb.length = 0;
+    for (const c of this.world.colliders) if (Math.abs(c.x - p.x) < c.hx + r && Math.abs(c.z - p.z) < c.hz + r) nb.push(c);
     let f = 1;
-    for (let i = 1; i <= 14 && f === 1; i++) {
-      const u = i / 14, x = tgt.x + dir.x * u, y = tgt.y + dir.y * u, z = tgt.z + dir.z * u;
-      if (y < 7 && this.world.colliders.some((c) => Math.abs(x - c.x) < c.hx + .35 && Math.abs(z - c.z) < c.hz + .35)) f = Math.max(.18, (i - 1) / 14);
+    for (let i = 1; i <= 16 && f === 1 && nb.length; i++) {
+      const u = i / 16, x = tgt.x + dir.x * u, y = tgt.y + dir.y * u, z = tgt.z + dir.z * u;
+      if (y < 7 && nb.some((c) => Math.abs(x - c.x) < c.hx + .35 && Math.abs(z - c.z) < c.hz + .35)) f = Math.max(.18, (i - 1) / 16);
     }
     if (f < 1) want.copyFrom(tgt).addInPlace(dir.scale(f));
-    Vector3.LerpToRef(this.camPos, want, snap ? 1 : Math.min(1, dt * (f < 1 ? 14 : 5)), this.camPos);
+    if (want.y < .4) want.y = .4;   // nie unter den Asphalt
+    // im Auto straffer nachführen (sonst hängt das Bild bei Tempo meterweit hinterher), an Wänden sofort heranrücken
+    Vector3.LerpToRef(this.camPos, want, snap ? 1 : Math.min(1, dt * (f < 1 ? 14 : d ? 7 + fast * 6 : 5)), this.camPos);
     this.camera.position.copyFrom(this.camPos);
     if (this.shake > 0) { this.shake = Math.max(0, this.shake - dt); const k = this.shake * .5; this.camera.position.x += (Math.random() - .5) * k; this.camera.position.y += (Math.random() - .5) * k; }
+    // Tempo-Gefühl: Blickwinkel weitet sich mit der Geschwindigkeit (Turbo am meisten)
+    this.camFov += ((d ? fast * .13 : 0) - this.camFov) * (snap ? 1 : Math.min(1, dt * 2.5));
+    this.camera.fov = this.g.engine.fovFor(this.camera) * (1 + this.camFov);
     // Hochkant: etwas über die Figur hinweg schauen, damit die Stadt das Bild füllt und nicht der Asphalt
     const up = this.g.engine.aspect < 1 ? 1.2 : 0;
     if (up) { this.aim.copyFrom(tgt); this.aim.y += up; this.camera.setTarget(this.aim); } else this.camera.setTarget(tgt);
@@ -733,7 +766,8 @@ export class CityScene implements GameScene {
     const s = this.g.save.data, def = myCar(s); if (!def) return;
     if (this.drive?.own) this.leaveCar();
     const [gx, gz, gy] = GARAGE.spawn, has = !atGarage && s.flags.ownX !== undefined;
-    await this.street.spawnOwn(def, has ? Number(s.flags.ownX) : gx, has ? Number(s.flags.ownZ) : gz, has ? Number(s.flags.ownYaw) || 0 : gy, s.flags.carHue === undefined ? -1 : Number(s.flags.carHue));
+    const own = await this.street.spawnOwn(def, has ? Number(s.flags.ownX) : gx, has ? Number(s.flags.ownZ) : gz, has ? Number(s.flags.ownYaw) || 0 : gy, s.flags.carHue === undefined ? -1 : Number(s.flags.carHue));
+    const pm = readPimp(s); if (!isStock(pm) && !def.fly && !def.toy && !def.ride) dress(this.scene, own.o, pm);
     if (atGarage) { delete s.flags.ownX; delete s.flags.ownZ; delete s.flags.ownYaw; }
   }
   /** Auftrag annehmen (aus Anruf oder Handy-App) */
@@ -879,7 +913,7 @@ export class CityScene implements GameScene {
     }
     this.player.update(dt);
     if (!busy) { if (this.drive) this.moveCar(dt); else if (!this.life.parade.riding) this.movePlayer(dt); this.kerb.update(dt, t); }
-    this.updateCam(dt);
+    if (this.cine) this.cine(dt); else this.updateCam(dt);
     this.world.follow(this.player.root.position);
     this.world.update(dt, t, this.player.root.position);
     { const pp = this.player.root.position; for (const i of this.isles) i.update(dt, t, { x: pp.x, z: pp.z, driving: !!this.drive, alt: this.drive?.def.fly ? this.alt : 0, busy, gig: !!this.gig }); }
@@ -920,7 +954,7 @@ export class CityScene implements GameScene {
       if (inp.pressed('confirm')) { inp.consume('confirm'); this.interact(); }
       else if (inp.pressed('phone')) { inp.consume('phone'); g.phone(); }
       else if (inp.pressed('map')) { inp.consume('map'); g.phone('map'); }
-      else if (inp.pressed('attack')) { inp.consume('attack'); if (this.drive) this.kerb.honk(); else this.combat.attack(); }
+      else if (inp.pressed('attack')) { inp.consume('attack'); if (this.drive) { rigOf.get(this.drive.o)?.hop(); this.kerb.honk(); } else this.combat.attack(); }
       else if (inp.pressed('weapon')) { inp.consume('weapon'); this.combat.cycle(); }
       else if (inp.pressed('menu') || inp.pressed('back')) { inp.consume('menu'); inp.consume('back'); g.pauseMenu(); }
       this.checkStickers(); this.worldGates();

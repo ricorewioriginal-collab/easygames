@@ -118,7 +118,12 @@ export class Engine {
     if (key !== this.lastKey) { this.lastKey = key; this.bjs.setHardwareScalingLevel(1 / scale); this.bjs.resize(); }
     // Hochkant: Blickwinkel weiten, damit man die Stadt sieht und nicht nur einen schmalen Streifen Straße
     const c = this.scene?.camera as (FreeCamera & { _pcFov?: number }) | undefined;
-    if (c && c._pcFov) { const a = this.aspect; c.fov = a >= 1.2 ? c._pcFov : Math.min(1.2, 2 * Math.atan(Math.tan(c._pcFov / 2) * 1.2 / a)); }
+    if (c && c._pcFov) c.fov = this.fovFor(c);
+  }
+  /** Blickwinkel einer Kamera für das aktuelle Seitenverhältnis (hochkant weiter) */
+  fovFor(c: FreeCamera & { _pcFov?: number }) {
+    const f = c._pcFov || c.fov, a = this.aspect;
+    return a >= 1.2 ? f : Math.min(1.2, 2 * Math.atan(Math.tan(f / 2) * 1.2 / a));
   }
 
   /* Filmischer Look: ACES, Kontrast, mehr Sättigung, kühle Schatten / warme Lichter, Vignette, Bloom auf hoher Stufe */
