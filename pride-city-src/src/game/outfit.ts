@@ -121,14 +121,18 @@ async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<
   // übermalt, sondern nur auf die Hautfarbe des eigenen Kopfes umgefärbt. Die echte Sport-Unterhose bleibt.
   const hands = !!skinRef, own = sn ? [sr / sn, sg / sn, sb / sn] : skin;
   const tint = hands ? own.map((v, i) => Math.max(.35, Math.min(2.4, skin[i] / Math.max(1, v)))) : null;
+  // Sport-Körper: Nur Haut wird umgefärbt. Stoff bleibt Pixel für Pixel, wie er ist: die echte Sport-Unterhose bzw. das
+  // geblümte Bikini-Set der Sportlerin (Oberteil sitzt als eigene Schale über der Brust). Vorher wurden Höschen und BH als
+  // ganze Dreiecke bzw. nach Körperhöhe darübergemalt und das echte Oberteil mit umgefärbt: Zacken und dunkle Flecken.
+  const fab = hands ? fabric(own) : null;
   let n = 0;
   for (const [a, b, c, part] of tri) {
     if ((++n & 63) === 0) await breathe();
-    const want = hands && (part === 'other' || part === 'foot') ? 'skin' : hands && part === 'hip' && p.hip === 0x1a1a24 ? 'skin' : p[part]; if (!want) continue;
+    const want = hands && (part === 'other' || part === 'foot' || part === 'hip') ? 'skin' : p[part]; if (!want) continue;
     const col = want === 'skin' ? skin : [(want >> 16) & 255, (want >> 8) & 255, want & 255];
-    fill(data, orig, w, h, [uv[a * 2] * w, uv[a * 2 + 1] * h], [uv[b * 2] * w, uv[b * 2 + 1] * h], [uv[c * 2] * w, uv[c * 2 + 1] * h], col, want === 'skin', want === 'skin' ? tint : null);
+    fill(data, orig, w, h, [uv[a * 2] * w, uv[a * 2 + 1] * h], [uv[b * 2] * w, uv[b * 2 + 1] * h], [uv[c * 2] * w, uv[c * 2 + 1] * h], col, want === 'skin', want === 'skin' ? tint : null, fab);
   }
-  if (p.chest === 'skin' && (!hands || bra !== null)) details(m, data, w, h, uv, tri, skin, bra, !hands);
+  if (p.chest === 'skin' && !hands) details(m, data, w, h, uv, tri, skin, bra, true);
   for (let o = 3; o < data.length; o += 4) data[o] = 255;   // deckend: Körper nie durchsichtig
   const t = RawTexture.CreateRGBATexture(data, w, h, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
   t.hasAlpha = false;
@@ -141,7 +145,18 @@ async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<
 }
 
 /** Dreieck in der Textur füllen (mit 1,5 px Rand gegen Nähte); Haut behält etwas Schattierung der Kleidung */
-function fill(d: Uint8Array, src: Uint8Array, w: number, h: number, A: number[], B: number[], C: number[], col: number[], shade: boolean, tint: number[] | null = null) {
+/** Stoff statt Haut? Haut hat etwa den Farbton der eigenen Hände (Schatten, Falten und Brustwarzen auch) und etwas
+    Sättigung. Sehr dunkle, graue/weiße oder andersfarbige Stellen (Bündchen, Schrift, Blumenmuster) sind Stoff. */
+const hueOf = (r: number, g: number, b: number) => { const hi = Math.max(r, g, b), d = Math.max(1e-6, hi - Math.min(r, g, b)); return (hi === r ? ((g - b) / d + 6) % 6 : hi === g ? (b - r) / d + 2 : (r - g) / d + 4) * 60; };
+function fabric(own: number[]) {
+  const h0 = hueOf(own[0], own[1], own[2]);
+  return (r: number, g: number, b: number) => {
+    if (r + g + b < 75) return true;
+    const hi = Math.max(r, g, b); if ((hi - Math.min(r, g, b)) / hi < .12) return true;
+    return Math.abs(((hueOf(r, g, b) - h0 + 540) % 360) - 180) > 28;
+  };
+}
+function fill(d: Uint8Array, src: Uint8Array, w: number, h: number, A: number[], B: number[], C: number[], col: number[], shade: boolean, tint: number[] | null = null, fab: ((r: number, g: number, b: number) => boolean) | null = null) {
   const minX = Math.max(0, Math.floor(Math.min(A[0], B[0], C[0]) - 2)), maxX = Math.min(w - 1, Math.ceil(Math.max(A[0], B[0], C[0]) + 2));
   const minY = Math.max(0, Math.floor(Math.min(A[1], B[1], C[1]) - 2)), maxY = Math.min(h - 1, Math.ceil(Math.max(A[1], B[1], C[1]) + 2));
   const area = (B[0] - A[0]) * (C[1] - A[1]) - (C[0] - A[0]) * (B[1] - A[1]); if (Math.abs(area) < 1e-6) return;
@@ -151,6 +166,7 @@ function fill(d: Uint8Array, src: Uint8Array, w: number, h: number, A: number[],
     const cx = x + .5, cy = y + .5;
     if (edge(A, B, cx, cy) > e || edge(B, C, cx, cy) > e || edge(C, A, cx, cy) > e) continue;
     const o = (y * w + x) * 4;
+    if (fab && fab(src[o], src[o + 1], src[o + 2])) continue;
     if (tint) { d[o] = Math.min(255, src[o] * tint[0]); d[o + 1] = Math.min(255, src[o + 1] * tint[1]); d[o + 2] = Math.min(255, src[o + 2] * tint[2]); continue; }
     const lum = shade ? .85 + .25 * ((src[o] + src[o + 1] + src[o + 2]) / 765) : 1;
     d[o] = Math.min(255, col[0] * lum); d[o + 1] = Math.min(255, col[1] * lum); d[o + 2] = Math.min(255, col[2] * lum);
