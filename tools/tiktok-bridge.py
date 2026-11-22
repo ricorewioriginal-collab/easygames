@@ -53,6 +53,82 @@ def set_status(s):
     global status
     status = s; log(s); broadcast({'type': 'status', 'msg': s})
 
+# Sound-Bibliothek von myinstants.com für die TikTok-Einstellungen (🔊 Sounds) – wie sounds() in tiktok-bridge.mjs und
+# github.com/abdipr/myinstants-api (MIT): search, trending, best, recent, detail, uploaded, favorites; Antworten 1 Stunde zwischengespeichert.
+import re, html as _html, urllib.request, urllib.parse, urllib.error
+MI = 'https://www.myinstants.com'
+_mi_cache = {}
+
+def _mi_text(s):
+    return re.sub(r'\s+', ' ', _html.unescape(re.sub(r'<[^>]*>', '', str(s or '')))).strip()
+
+def _mi_get(url):
+    hit = _mi_cache.get(url)
+    if hit and time.time() - hit[0] < 3600: return hit[1]
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', 'Accept-Language': 'en'})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r: h = r.read().decode('utf-8', 'replace')
+    except urllib.error.HTTPError as e:
+        if e.code == 404: return ''
+        if e.code == 403: raise Exception('myinstants lässt diese Seite gerade nicht zu (403) – Profile gehen teils nur im Browser')
+        raise Exception('myinstants: HTTP ' + str(e.code))
+    if len(_mi_cache) > 200: _mi_cache.clear()
+    _mi_cache[url] = (time.time(), h)
+    return h
+
+def _mi_list(h):
+    out, seen = [], set()
+    for b in h.split('<div class="instant"')[1:]:
+        a = re.search(r'<a[^>]*href="(/[a-z-]+/instant/[^"]+)"[^>]*class="instant-link[^"]*"[^>]*>([\s\S]*?)</a>|<a[^>]*class="instant-link[^"]*"[^>]*href="(/[a-z-]+/instant/[^"]+)"[^>]*>([\s\S]*?)</a>', b)
+        p = re.search(r"play\('([^']+)'", b)
+        if not a or not p: continue
+        href = a.group(1) or a.group(3)
+        sid = re.sub(r'/$', '', re.sub(r'^/[a-z-]+/instant/', '', href))
+        if sid in seen: continue
+        seen.add(sid)
+        out.append({'id': sid, 'title': _mi_text(a.group(2) or a.group(4)), 'url': MI + href, 'mp3': MI + p.group(1)})
+    t = re.search(r'Page\s+\d+\s+of\s+(\d+)', h, re.I)
+    return out, (int(t.group(1)) if t else None)
+
+def sounds(m):
+    try: page = max(1, min(500, int(m.get('page') or 1)))
+    except Exception: page = 1
+    q = str(m.get('q') or '').strip()[:80]
+    reg = q.lower() if re.fullmatch(r'[a-zA-Z]{2}', q) else ''
+    enc = lambda x: urllib.parse.quote(x, safe='')
+    req = m.get('req')
+    if req == 'detail':
+        sid = re.sub(r'[^\w-]', '', str(m.get('id') or ''))
+        if not sid: raise Exception('id fehlt')
+        h = _mi_get(MI + '/en/instant/' + sid + '/')
+        g = lambda rx: (re.search(rx, h) or [None, ''])[1] or ''
+        mp3 = g(r'id="instant-page-button-element"[^>]*data-url="([^"]+)"') or g(r"play\('([^']+)'")
+        likes = h[h.find('instant-page-likes'):] if 'instant-page-likes' in h else ''
+        up = re.search(r'<a[^>]*href="(/[a-z-]+/profile/[^"]+)"[^>]*>([\s\S]*?)</a>', likes)
+        tags = g(r'<div[^>]*id="instant-page-tags"[^>]*>([\s\S]*?)</div>')
+        num = lambda x: int(re.sub(r'\D', '', x) or 0)
+        return {'data': {'id': sid, 'title': _mi_text(g(r'<h1[^>]*id="instant-page-title"[^>]*>([\s\S]*?)</h1>')), 'url': MI + '/en/instant/' + sid + '/',
+                         'mp3': (mp3 if mp3.startswith('http') else MI + mp3) if mp3 else '',
+                         'description': _mi_text(g(r'<div[^>]*id="instant-page-description"[^>]*>\s*<p[^>]*>([\s\S]*?)</p>')),
+                         'tags': [t for t in (_mi_text(x) for x in re.findall(r'<a[^>]*>([\s\S]*?)</a>', tags)) if t],
+                         'favorites': num(_mi_text(g(r'<div[^>]*id="instant-page-likes"[^>]*>[\s\S]*?<b>([\s\S]*?)</b>'))),
+                         'views': num(g(r'([\d.,]+)\s*views')),
+                         'uploader': {'text': _mi_text(up.group(2)), 'url': MI + up.group(1), 'username': re.sub(r'/.*$', '', re.sub(r'^/[a-z-]+/profile/', '', up.group(1)))} if up else None}}
+    urls = {'search': MI + '/en/search/?name=' + enc(q) if q else None, 'trending': MI + '/en/index/' + (reg + '/' if reg else ''),
+            'best': MI + '/en/best_of_all_time/' + (reg + '/' if reg else ''), 'recent': MI + '/en/recent/',
+            'uploaded': MI + '/en/profile/' + enc(q) + '/uploaded/' if q else None, 'favorites': MI + '/en/profile/' + enc(q) + '/' if q else None}
+    if req not in urls: raise Exception('unbekannte Abfrage')
+    url = urls[req]
+    if not url: raise Exception('Suchwort bzw. Nutzername fehlt')
+    if page > 1: url += ('&' if '?' in url else '?') + 'page=' + str(page)
+    data, total = _mi_list(_mi_get(url))
+    return {'req': req, 'q': q, 'page': page, 'count': len(data), 'total_pages': total, 'has_next': page < total if total else len(data) >= 30, 'data': data}
+
+async def answer_sounds(ws, m):
+    try: r = await asyncio.get_running_loop().run_in_executor(None, sounds, m)
+    except Exception as e: r = {'error': str(e)}
+    await send(ws, {'type': 'sounds', 'rid': m.get('rid'), **r})
+
 async def handler(ws, *_):   # websockets < 13 übergibt zusätzlich den Pfad
     clients.add(ws)
     try:
@@ -70,6 +146,8 @@ async def handler(ws, *_):   # websockets < 13 übergibt zusätzlich den Pfad
                 broadcast({'type': 'config', 'config': m['config']}); log('Belegung gespeichert: ' + CONFIG)
             elif t == 'inject' and isinstance(m.get('ev'), dict):
                 emit(m['ev'])
+            elif t == 'sounds':
+                asyncio.ensure_future(answer_sounds(ws, m))
     except Exception: pass
     finally: clients.discard(ws)
 

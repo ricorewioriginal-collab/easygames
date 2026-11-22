@@ -70,7 +70,8 @@ Einbinden in `<spiel>/index.html` **nach** dem Spielcode: `<script src="tiktok.j
   sein), `handle` der @Name. Bild mit `referrerpolicy="no-referrer"` laden und bei Fehler auf den Anfangsbuchstaben zurückfallen.
 - **Aktions-Texte in `defaults`:** `game:<id>` (eigene Aktion), `pad:A|B|X|Y|UP|DOWN|LEFT|RIGHT|START|SELECT|LB|RB`,
   allgemeine Streiche/Effekte (`fx:shake`, `fx:rain:🌹`, `fx:party:10`, `slow:10`, `invert:10`, `bomb:20` … – Liste im Reiter
-  „Streiche & Effekte“). Mehrere mit `+` verbinden, wiederholen mit `*5`.
+  „Streiche & Effekte“), Sounds `snd:<datei>.mp3` (Auswahl im Reiter „🔊 Sounds“ aus myinstants.com). Mehrere mit `+` verbinden,
+  wiederholen mit `*5` (Sounds spielen je Ereignis nur einmal).
 - **Geschenknamen** englisch wie bei TikTok (`Rose`, `Finger Heart`, `Money Gun`, `Galaxy`, `TikTok Universe` …) – maßgeblich ist
   `tiktok-gifts.json` (täglich aktualisiert, mit Bildern). Nicht mehr existierende Namen (z. B. „Universe“) lösen nie aus.
 - **Cooldown je Aktion** und nur auslösen, wenn das Spiel in einem passenden Zustand ist (sonst `false` zurückgeben).
