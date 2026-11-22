@@ -14,7 +14,7 @@ import { MINIS, miniById, miniForGl, miniName, miniIcon, miniSub, type MiniResul
 import { World } from './World';
 import { pianoSongs, pianoParts } from './minigames/showSongs';
 import { openGigs, GIGS, fmtTime } from './gigs';
-import { BUSINESSES, owns, owned, income, buy } from './empire';
+import { BUSINESSES, owns, owned, income } from './empire';
 import { clubDeal, clubManage } from './clubui';
 import { isClub, QEVENTS } from './club';
 import { CLUB_LAYOUT } from './clubdeco';
@@ -60,6 +60,10 @@ import type { Stranger } from './flirt';
 import type { Sfx } from '../engine/Audio';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage } from './jobs';
 import { photo } from './Photo';
+import { gramMenu, empireMenu, gymItems, bodyItems, bodyMenu, muskelLine } from './aufstiegui';
+import { followers, fmtNum } from './gram';
+import { myRank } from './mogul';
+import { train } from './figur';
 import { PROFILES, profileShots, profile, dateRec, dateQuestions, finishDate, canStay, DATE_STAGE, testDue, HEALTH_INFO, GLOSSARY, feed, post, bond, TEST_EVERY, FILMS, WORKERS, isLateNight, canMeet, encounter, SAFE_DATING } from './social';
 import { DILDOS, EXTRAS, CONDOMS, ownsToy, buyToy, buyCondoms, condomLabel } from './toys';
 import { NEEDS, mood, moodIcon, moodName, change, advance, minutesUntil, track, dailyState, clock, weekday, hour, type Daily } from './life';
@@ -388,6 +392,7 @@ export class Game {
     if (a.k === 'menu') { if (sc?.placeId) this.placeMenu(sc.placeId); return; }
     if (a.k === 'club' || a.k === 'deal') { if (sc?.business) clubDeal(this, sc.business, sc); return; }
     if (a.k === 'annex') { this.annexAct(a.room); return; }
+    if (a.k === 'body') { bodyMenu(this, a.what); return; }
     if (a.k === 'drag') { dragAct(this, a.what); return; }
     if (a.k === 'wagen') { wagenMenu(this); return; }
     if (a.k === 'darkroom') { if (sc) enterDarkroom(this, sc); return; }
@@ -621,12 +626,13 @@ export class Game {
         { icon: '📞', label: 'Aufträge', sub: this.city.gig ? `Läuft: ${this.city.gig.g.title}` : `${openGigs(s).length} Leute brauchen Hilfe · ${Number(s.flags.gigs) || 0} erledigt`, fn: () => this.phone('gigs') },
         { icon: SKY[skyAt(s.day, s.time)].icon, label: 'Wetter und Termine', sub: `${SKY[skyAt(s.day, s.time)].name}${(s.day - 1) % 7 === 5 ? ' · heute CSD-Parade, 12–18 Uhr' : ' · CSD-Parade am Samstag'}`, fn: () => this.phone('wetter') },
         { icon: '🎉', label: 'Live-Events', sub: (() => { const l = lineup(), n = l.filter((e) => !doneThisWeek(s, e.kind)).length; return n ? `Diese Woche: ${l.map((e) => e.icon).join(' ')} · noch ${n} offen` : `👑 Wochenpass voll · neue Termine in ${daysLeft()} ${daysLeft() === 1 ? 'Tag' : 'Tagen'}`; })(), fn: () => this.phone('live') },
-        { icon: '🏙️', label: 'Imperium', sub: owned(s).length ? `${owned(s).length} Geschäfte · +${income(s)} € am Tag` : 'Läden, Bars und Clubs übernehmen', fn: () => this.phone('empire') },
+        { icon: '🏙️', label: 'Imperium', sub: owned(s).length ? `${owned(s).length} Geschäfte · +${income(s)} € am Tag · Platz ${myRank(s)} im Mogul-Ranking` : 'Läden, Bars, Clubs und Hotels übernehmen', fn: () => this.phone('empire') },
         ...(s.flags.crewCall ? [{ icon: '✊', label: 'Crew', sub: `Die Lichterkette · ${crewOf(s).length} Leute${s.flags.crewWatch ? ` · ${VIERTEL.filter((v) => schutz(s, v.id)).length}/${VIERTEL.length} Viertel` : ''}`, fn: () => this.phone('crew') }] : []),
         { icon: '👨‍👩‍👧', label: 'Familie', sub: famSub(s), fn: () => this.phone('family') },
         { icon: '👥', label: 'Kontakte', sub: `${Object.keys(s.rel).length} Leute kennengelernt`, fn: () => this.phone('contacts') },
         { icon: '💘', label: 'Rainbow Match', sub: `Dating · ${PROFILES.filter((p) => s.dates[p.id]).length} Matches`, fn: () => this.phone('dating') },
         { icon: '📻', label: 'Pride FM 88,8', sub: s.flags.radioShowDay === s.day ? 'Deine Sendung lief heute' : 'Eigene Sendung „Rainbow Talk“ moderieren', fn: () => this.phone('fm') },
+        { icon: '📸', label: 'Glitzergram', sub: `${fmtNum(followers(s))} Follower · Fotomodus, Likes, Kooperationen`, fn: () => this.phone('gram') },
         { icon: '📣', label: 'Feed', sub: 'Was in der Szene los ist', fn: () => this.phone('feed') },
         { icon: '🩺', label: 'Gesundheit', sub: testDue(s) ? '⚠️ Test fällig!' : s.health.prep ? 'PrEP aktiv' : 'Tests, PrEP, U=U', fn: () => this.phone('health') },
         { icon: '📚', label: 'Glossar', sub: 'Begriffe aus der Szene', fn: () => this.phone('glossary') },
@@ -637,7 +643,7 @@ export class Game {
       ], close, 'phone');
     } else if (app === 'status') {
       const bars = NEEDS.map((n) => `<div class="nd"><span>${n.icon} ${n.name}</span><i><b style="width:${Math.round(s.needs[n.k])}%;background:${s.needs[n.k] < 25 ? '#ff5d6c' : s.needs[n.k] < 50 ? '#ffc53d' : '#3ee69a'}"></b></i><small>${n.tip}</small></div>`).join('');
-      this.openMenu(frame('Status', `<div class="pbody"><p><b>${moodIcon(mood(s))} ${moodName(mood(s))}</b> · ${weekday(s)}, Tag ${s.day} · ${clock(s)} Uhr</p>${bars}<p>💶 ${s.money} € · 🌈 ${s.rep} Ruf · ✨ ${s.glitter} Glitzer · 🥕 ${s.food} Portionen</p></div>`),
+      this.openMenu(frame('Status', `<div class="pbody"><p><b>${moodIcon(mood(s))} ${moodName(mood(s))}</b> · ${weekday(s)}, Tag ${s.day} · ${clock(s)} Uhr</p>${bars}<p>💶 ${s.money} € · 🌈 ${s.rep} Ruf · ✨ ${s.glitter} Glitzer · 🥕 ${s.food} Portionen</p><p>${muskelLine(this)}</p></div>`),
         [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'goals') {
       const g = goal(s), d = dailyState(s), st = s.goals.filter((x) => x.startsWith('sticker')).length;
@@ -707,11 +713,9 @@ export class Game {
         ...(c.canPatrol ? VIERTEL.map((v) => ({ icon: v.icon, label: `Streife: ${v.name}`, sub: run ? `Läuft gerade: ${run.g.title}` : `Schutz ${'★'.repeat(schutz(s, v.id))}${'☆'.repeat(3 - schutz(s, v.id))} · 60 € · mit der Crew`, disabled: !!run || this.where !== 'city', fn: () => { close(); patrol(this.city.ctx(), v.id); } })) : []),
         { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'empire') {
-      const list = BUSINESSES.map((b) => `<p>${b.icon} <b>${b.name}</b>${owns(s, b.id) ? ' · <b style="color:#3ee69a">gehört dir</b>' : ''}<br><small>${b.pitch}</small></p>`).join('');
-      this.openMenu(frame('Imperium', `<div class="pbody"><p>Steig bei Läden, Bars und Clubs ein. Jedes Geschäft zahlt jeden Morgen aus und bringt Ruf.<br>💼 Einnahmen: <b>${income(s)} €</b> am Tag · 🌈 Ruf ${s.rep}</p>${list}</div>`), [
-        ...BUSINESSES.map((b) => ({ icon: b.icon, label: owns(s, b.id) ? `${b.name} ✓` : b.gift ? b.name : `${b.name} kaufen`, sub: owns(s, b.id) ? `${issueOf(s, b.id) ? '⚠️ Problem · ' : ''}+${bizDaily(s, b).net} € am Tag · führen: Personal, Ausbau, Events` : b.gift || `${b.price} € · +${b.daily} €/Tag · ab ${b.need} Ruf`, disabled: !owns(s, b.id) && !!b.gift,
-          fn: () => { if (owns(s, b.id)) { this.phone('biz_' + b.id); return; } const why = buy(s, b); if (why) { sfx('miss'); toast(why); return; } sfx('win'); this.hud.banner(`${b.icon} ${b.name} gehört jetzt dir!`, `+${b.daily} € jeden Tag · +${b.rep} Ruf`, 'good', 4000); this.save.write(); this.city.refreshHud(); this.phone('empire'); } })),
-        { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+      empireMenu(this, frame, home);
+    } else if (app === 'gram') {
+      gramMenu(this, frame, home);
     } else if (app.startsWith('biz_')) {
       // Geschäft führen: Personal, Ausbauten, Veranstaltung, Probleme (Regeln in manage.ts)
       const b = BUSINESSES.find((x) => 'biz_' + x.id === app)!, sp = SPECIAL[b.id], d = bizDaily(s, b), st = staffOf(s, b.id), pop = popOf(s, b.id), iss = issueOf(s, b.id), wait = eventReady(s, b.id);
@@ -1376,12 +1380,13 @@ export class Game {
         ...(s.flags.spouse ? [{ icon: '👶', label: s.flags.kid ? `${s.flags.kid} geht es gut` : 'Adoption beantragen', sub: canAdopt(s) || `${ADOPT} € · Beratung, Kurs, Hausbesuch · Kind kommt nach ein paar Tagen`, disabled: !!canAdopt(s), fn: () => this.adoption(close) }] : [])] },
       boutique: { t: 'Boutique Fabelhaft', d: 'Glitzer, Leder, Regenbogen – hier findest du deinen Look.', items: [
         { icon: '👗', label: 'Neuer Look', sub: 'Zum Kleiderschrank', fn: () => this.fade(() => this.creator(true)) },
+        ...bodyItems(this, () => this.placeMenu('boutique')),
         ...(this.city.combat?.wanted.stars ? [{ icon: '🕶️', label: 'Undercover-Umstyling', sub: `${60 * this.city.combat.wanted.stars} € · Perücke, Sonnenbrille – die Polizei erkennt dich nicht mehr`, fn: buy(60 * this.city.combat.wanted.stars, 'Neuer Look, neues Glück. Die Fahndung ist weg! 🕶️', () => this.city.combat.wanted.clear()) }] : []),
         { icon: '💍', label: 'Verlobungsring', sub: `${RING} € · Regenbogen-Gold · du hast ${s.inv.ring || 0}`, fn: buy(RING, 'Ein Ring mit Regenbogen-Steinen. Jetzt fehlt nur noch die Frage … 💍', () => { s.inv.ring = (s.inv.ring || 0) + 1; }) },
         ...(s.settings.adult ? [{ icon: '🔞', label: 'Hinterzimmer-Ecke', sub: 'Dildos S bis XXL, Fleshlight, Penisring, Kondome in jeder Größe', fn: () => this.toyShop() }] : []),
         ...(s.settings.adult ? [{ icon: '🍆', label: 'Toy aus der Hinterzimmer-Ecke', sub: `25 € · diskret verpackt · du hast ${s.inv.toy || 0}`, fn: buy(25, 'Diskret verpackt. Viel Spaß! 😏', () => { s.inv.toy = (s.inv.toy || 0) + 1; change(s, { fun: 10 }); }) }] : [])] },
       gym: { t: 'Muckibude Muskelkater', d: 'Bären, Twinks und alle dazwischen – hier schwitzt die ganze Szene.', items: [
-        { icon: '🏋️', label: 'Training', sub: '4 € · 1 Stunde · +15 Spaß, −20 Energie, −20 Hygiene', fn: () => { if (s.needs.energy < 20) { toast('Zu erschöpft fürs Training.'); sfx('miss'); return; } buy(4, 'Gepumpt! 💪', () => { this.pass(60); change(s, { fun: 15, energy: -20, hygiene: -20, hunger: -10 }); })(); } },
+        ...gymItems(this, close),
         { icon: '🚿', label: 'Duschen', sub: '1 € · Hygiene voll', fn: buy(1, 'Frisch!', () => { this.pass(15); change(s, { hygiene: 100 }); this.done(track(s, 'shower')); }) }] },
       checkpoint: { t: 'Checkpoint Regenbogen', d: 'Beratung, Tests und PrEP – anonym, ohne Urteil, mit Gummibärchen.', items: [
         { icon: '🧪', label: 'HIV- und STI-Test', sub: `kostenlos · 30 Minuten · ${s.health.test ? 'letzter Test: Tag ' + s.health.test : 'noch nie getestet'}${symptoms(s).length ? ' · ⚠️ Beschwerden' : ''}`, fn: () => { close(); this.fade(() => { this.pass(30); s.health.test = s.day; change(s, { fun: 3 }); const r = testAndTreat(s); this.save.write(); this.city.refreshHud(); const C = (text: string) => ({ who: 'Checkpoint', color: '#3ee69a', text });
@@ -1630,6 +1635,7 @@ export class Game {
     const sc = def.make(this, def, adult, (r) => {
       const s = this.save.data;
       if (!o.title && !r.quit) { change(s, { fun: r.won ? 18 : 10, energy: -4 }); this.pass(15); if (r.won) s.rep += 1; }
+      if (!o.title && !r.quit && id === 'gym') { const gain = train(s, 'beine'); if (gain) setTimeout(() => this.hud.banner(`🦵 Beinetag: Muskeln +${gain}`, 'Kniebeugen zahlen sich aus.', 'good', 3400), 1200); }
       this.save.write();
       this.fade(() => {
         if (o.back) o.back(); else if (o.title) this.title(); else { this.resume(); this.city.refreshHud(); }

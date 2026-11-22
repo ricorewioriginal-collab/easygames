@@ -7,7 +7,10 @@ import { daily, dayTick } from './manage';
 import { pcEvents } from './hooks';
 import { isClub } from './club';
 
-export interface Business { id: string; name: string; icon: string; poi: string; price: number; daily: number; rep: number; need: number; pitch: string; /** nicht käuflich: Belohnung aus der Geschichte */ gift?: string }
+export type BizKind = 'laden' | 'bar' | 'club' | 'hotel' | 'kultur';
+export interface Business { id: string; name: string; icon: string; poi: string; price: number; daily: number; rep: number; need: number; pitch: string; /** nicht käuflich: Belohnung aus der Geschichte */ gift?: string;
+  /** Art (Immobilien-Übersicht, Hotels füllen sich am Wochenende) */ kind?: BizKind; /** Viertel/Insel für die Übersicht */ area?: string;
+  /** erst später käuflich: liefert den Grund, solange es gesperrt ist */ lock?: (s: SaveData) => string | null }
 
 export const BUSINESSES: Business[] = [
   { id: 'spaeti', name: 'Späti Lecker', icon: '🛒', poi: 'spaeti', price: 400, daily: 30, rep: 1, need: 0, pitch: 'Tariq sucht eine Teilhaberschaft. Kalte Mate, warme Worte, offen bis spät.' },
@@ -19,9 +22,24 @@ export const BUSINESSES: Business[] = [
   { id: 'komet', name: 'Bar Komet', icon: '🍸', poi: 'komet', price: 3200, daily: 190, rep: 6, need: 14, pitch: 'Jo, die Wirtin, will nach dreißig Jahren in Rente. Kleine Bühne, Spiegelwand, Stammgäste seit 1990. Sie sucht jemanden mit Herz.' },
   { id: 'prisma', name: 'Club Prisma', icon: '🪩', poi: 'club', price: 4000, daily: 240, rep: 8, need: 18, pitch: 'Der größte Club der Stadt. Wer das Prisma hat, macht die Nächte von Rainbow City.' },
   { id: 'wolke', name: 'Skybar Wolke 7', icon: '🌃', poi: 'wolke', price: 6500, daily: 340, rep: 10, need: 24, pitch: 'Der 40. Stock über der Hochstadt. Investor Valentin verkauft, weil er nach Lissabon zieht. Wer hier oben feiert, sieht die ganze Stadt.' },
+  // Immobilien-Imperium: weitere Läden, Kultur und Hotels in der Hochstadt, am Hafen und auf den Inseln (immo.ts)
+  { id: 'wasch', name: 'Waschsalon Schaumparty', icon: '🧺', poi: 'wasch', price: 900, daily: 55, rep: 1, need: 2, kind: 'laden', area: 'Hochstadt', pitch: 'Fünf Maschinen, eine Bank und jede Geschichte aus dem Viertel. Freitags Schaumparty für alle, die nicht nur Wäsche waschen.' },
+  { id: 'deli', name: 'Deli 24', icon: '🥯', poi: 'deli', price: 1100, daily: 70, rep: 1, need: 4, kind: 'laden', area: 'Hochstadt', pitch: 'Bagels rund um die Uhr. Der Besitzer will in Rente und sucht jemanden, der nachts das Licht anlässt.' },
+  { id: 'pizza', name: 'Pizza Nonna', icon: '🍕', poi: 'pizza', price: 1400, daily: 90, rep: 2, need: 5, kind: 'laden', area: 'Hochstadt', pitch: 'Nonna Rosaria backt seit 1979. Ihre Enkelin Giulia will den Laden übernehmen, mit dir als Partner*in.' },
+  { id: 'diner', name: 'Diner 66', icon: '🍔', poi: 'diner', price: 1800, daily: 110, rep: 2, need: 7, kind: 'laden', area: 'Hochstadt', pitch: 'Jukebox, Milchshakes, rote Bänke. Sonntags Drag-Brunch, wenn es nach dir geht.' },
+  { id: 'galerie', name: 'Galerie Farbrausch', icon: '🖼️', poi: 'galerie', price: 2600, daily: 150, rep: 4, need: 10, kind: 'kultur', area: 'Hochstadt', pitch: 'Odette stellt queere Kunst aus und braucht Geld für die nächste Ausstellung. Dafür hängt sie deine besten Fotos auf.' },
+  { id: 'gym', name: 'Muckibude Muskelkater', icon: '🏋️', poi: 'gym', price: 3000, daily: 170, rep: 4, need: 11, kind: 'laden', area: 'Innenstadt', pitch: 'Bären, Twinks und alle dazwischen. Coach Mehmet will neue Geräte und einen Kurs „Bauch, Beine, Pride“.' },
+  { id: 'sauna', name: 'Sauna Heißer Stein', icon: '🧖', poi: 'sauna', price: 3500, daily: 190, rep: 4, need: 13, kind: 'laden', area: 'Hafen', pitch: 'Sauna-Torsten führt den Laden seit 1987. Er will kürzertreten, aber nur an jemanden, der den Stein heiß hält.' },
+  { id: 'astra', name: 'Kino Astra', icon: '🎬', poi: 'astra', price: 3800, daily: 200, rep: 5, need: 15, kind: 'kultur', area: 'Hochstadt', pitch: 'Samtsitze, Popcorn, queere Filmnächte. Das alte Kino steht kurz vor dem Aus, außer jemand rettet es.' },
+  { id: 'flamingo', name: 'Hotel Flamingo', icon: '🦩', poi: 'flamingo', price: 7200, daily: 360, rep: 8, need: 20, kind: 'hotel', area: 'Playa Arcoíris', pitch: 'Rosa Fassade, Pool, Blick aufs Meer. Das Strandhotel der Playa sucht neue Besitzer*innen. Am Wochenende ausgebucht.' },
+  { id: 'aurora', name: 'Grand Hotel Aurora', icon: '🏨', poi: 'hotel', price: 9500, daily: 460, rep: 12, need: 28, kind: 'hotel', area: 'Hochstadt', pitch: 'Kronleuchter, Flügel, Spa im Keller. Das erste Haus der Hochstadt. Wer die Aurora hat, gehört zur Stadt.' },
+  { id: 'kranhaus', name: 'Hotel Kranhaus', icon: '🏗️', poi: 'kranhaus', price: 8000, daily: 400, rep: 10, need: 22, kind: 'hotel', area: 'Rostwerk', pitch: 'Viktor Krals Hotel im alten Hafenkran wird versteigert. Aus seinem Haus kann ein Hotel für alle werden.',
+    lock: (s) => (s.flags.flutEnd ? null : 'Gehört noch Viktor Kral (Akt IV „Die graue Flut“).') },
 ];
 /** Wer verkauft (für das Gespräch im Laden) */
 export const SELLERS: Record<string, { who: string; color: string; hello: string }> = {
+  wasch: { who: 'Frau Yilmaz', color: '#5ce1ff', hello: 'Zwanzig Jahre Schaum und Klatsch. Ich will endlich ans Meer, aber der Salon soll bleiben.' },
+  hotel: { who: 'Direktor Albrecht von Rhein', color: '#ffd9a0', hello: 'Die Aurora hat Könige beherbergt und Drag-Queens. Ich verkaufe nur an jemanden, der beides zu schätzen weiß.' },
   spaeti: { who: 'Tariq', color: '#3ee69a', hello: 'Teilhaber*in gesucht! Der Späti läuft, aber ich kann nicht jede Nacht hinter der Kasse stehen.' },
   cafe: { who: 'Mo', color: '#ffb36b', hello: 'Ich träume von einer Regenbogen-Ecke mit Lesungen. Allein schaffe ich das nicht.' },
   boutique: { who: 'Coco', color: '#ff6ad5', hello: 'Meine Drag-Kollektion braucht Geld und einen Namen. Bist du dabei?' },
@@ -53,6 +71,7 @@ export const income = (s: SaveData) => owned(s).reduce((n, b) => n + daily(s, b)
 export function buy(s: SaveData, b: Business): string | null {
   if (owns(s, b.id)) return 'Gehört dir schon.';
   if (b.gift) return b.gift + '.';
+  { const why = b.lock?.(s); if (why) return why; }
   if (s.rep < b.need) return `Dafür brauchst du ${b.need} Ruf (du hast ${s.rep}).`;
   const price = priceOf(s, b);
   if (s.money < price) return `Dafür fehlen dir ${price - s.money} €.`;

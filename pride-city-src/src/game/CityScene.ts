@@ -45,6 +45,7 @@ import { arrive } from './family';
 import { Kerb } from './kerb';
 import { TuneShow, rigOf, dress } from './pimp';
 import { readPimp, isStock } from './tuning';
+import { PhotoMode } from './fotomodus';
 
 interface Npc { def: NpcDef; a: Actor; wp: number; wait: number; talking: boolean }
 
@@ -87,6 +88,24 @@ export class CityScene implements GameScene {
   /** Filmkamera (Show „Aufgemotzt!“): ersetzt die Folgekamera, solange gesetzt */
   cine: ((dt: number) => void) | null = null;
   private showRef: TuneShow | null = null;
+  /** Fotomodus (fotomodus.ts): Figur bleibt stehen, Kamera frei */
+  photo = false;
+  private photoRef: PhotoMode | null = null;
+  get photos() { return (this.photoRef ||= new PhotoMode(this.g, this)); }
+  /** Leute im Bild (für Glitzergram): Figuren der Geschichte, Passant*innen, Partyvolk, bis 25 m vor der Kamera */
+  peopleInView() {
+    const cam = this.camera.position, list: Vector3[] = [];
+    for (const n of this.npcs) if (n.a.root.visible) list.push(n.a.root.position);
+    for (const n of this.street.people) if (n.a.root.visible) list.push(n.a.root.position);
+    for (const a of this.crowd) if (a.root.visible) list.push(a.root.position);
+    let k = 0;
+    for (const p of list) {
+      if (Vector3.Distance(p, cam) > 25) continue;
+      const q = this.g.engine.project({ x: p.x, y: p.y + 1.2, z: p.z });
+      if (!q.behind && q.x > 0 && q.x < innerWidth && q.y > 0 && q.y < innerHeight) k++;
+    }
+    return k;
+  }
   get show() { return (this.showRef ||= new TuneShow(this.g, this)); }
   private stepT = 0;
   private warnT = 30;
@@ -745,7 +764,7 @@ export class CityScene implements GameScene {
 
   private radarT = 0;
   enter() { this.syncFlyer(); this.g.touch.fly(!!this.drive?.def.fly); this.g.hud.radarOn(true); if (this.drive) { this.g.hud.radioBtn(true); this.radio(0); } }
-  exit() { this.g.hud.radarOn(false); this.g.touch.fly(false); if (this.drive) this.radioOff(); }
+  exit() { this.photoRef?.stop(); this.g.hud.radarOn(false); this.g.touch.fly(false); if (this.drive) this.radioOff(); }
   /** Missionsmarker wie im Open-World-Krimi: leuchtende Lichtsäule über dem Ziel */
   private beam: TransformNode | null = null;
   private beamMat: ReturnType<typeof glow> | null = null;
@@ -992,7 +1011,7 @@ export class CityScene implements GameScene {
       this.crowd.forEach((a) => (a.root.visible = this.world.night > .5));
     }
     this.player.update(dt);
-    if (!busy) { if (this.drive) this.moveCar(dt); else if (!this.life.parade.riding) this.movePlayer(dt); this.kerb.update(dt, t); }
+    if (!busy && !this.photo) { if (this.drive) this.moveCar(dt); else if (!this.life.parade.riding) this.movePlayer(dt); this.kerb.update(dt, t); }
     if (this.cine) this.cine(dt); else this.updateCam(dt);
     this.world.follow(this.player.root.position);
     this.world.update(dt, t, this.player.root.position);
@@ -1014,7 +1033,7 @@ export class CityScene implements GameScene {
     this.life.update(dt, t, this.player.root.position, { busy: busy || !!this.gig || !!this.kerb.rider || this.combat.wanted.stars > 0, night: this.world.night > .5, rain: this.weather.rain > .2, onFoot: !this.drive });
 
     this.hudT -= dt;
-    if (this.hudT <= 0) { this.hudT = .5; if (!busy) storyTick(this.ctx()); this.refreshHud(); if (mood(s) >= 75 && !busy) g.done(track(s, 'mood')); }
+    if (this.hudT <= 0) { this.hudT = .5; if (!busy && !this.photo) storyTick(this.ctx()); this.refreshHud(); if (mood(s) >= 75 && !busy) g.done(track(s, 'mood')); }
     const mk = busy ? [] : this.markers();
     g.hud.markers(mk, (q) => g.engine.project(q));
     if ((this.radarT -= dt) <= 0) {
@@ -1033,7 +1052,8 @@ export class CityScene implements GameScene {
     if (!busy) this.combat.update(dt, t);
     if (!this.gig && (this.brawl.fighting || this.brawl.chasing)) this.brawl.clear();
     if (!busy) this.brawl.update(dt);
-    if (!busy) {
+    if (this.photo) g.hud.prompt(null);
+    else if (!busy) {
       this.findNear();
       const inp = g.engine.input;
       if (inp.pressed('confirm')) { inp.consume('confirm'); this.interact(); }
