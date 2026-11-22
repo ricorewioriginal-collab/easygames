@@ -536,6 +536,22 @@
         "Oben steht dein Mut. Jeder Schubser kostet ein Herz. Sind alle weg, ziehen dich deine Leute raus und du versuchst die Mission noch einmal.",
         "Bei Verfolgungen wandert die Lichtsäule mit dem Ziel mit. Bleib dran, bis du nah genug bist. Wer zu weit zurückfällt, verliert die Spur."
       ]
+    },
+    {
+      "t": "🚨 Fahndung und Flucht",
+      "p": [
+        "Wer haut, Autos klaut oder Gleitgel verschüttet, bekommt Fahndungssterne. Fußstreifen laufen dir nach, ab zwei Sternen jagen dich Streifenwagen mit Blaulicht (rot und blau blinkend auf dem Radar). Stehst du neben einem Streifenwagen still, wirst du festgenommen: Bußgeld und zwei Stunden auf der Wache.",
+        "Zu Fuß: Ab dem ersten Stern stehen 🫥 Verstecke auf dem Radar, zum Beispiel der Hauseingang von Haus Rosa, die Garderobe der One Love Bar, das Gebüsch im Regenbogenpark, der Hof am Checkpoint, das Lager hinter dem Späti, der Steg der Strandbar und die Leuchtschilder der Laternenmeile. Dort sieht dich die Streife nur aus der Nähe, und du hängst sie mehr als doppelt so schnell ab.",
+        "Im Auto: Fahr bei Rosi in der Hochstadt vor die Garage (🎨 auf dem Radar) und halt an. Sie lackiert um und schraubt neue Kennzeichen dran, dann ist die Fahndung weg. Das klappt nur, wenn dich gerade keine Streife sieht. Kosten: 60 € plus 40 € pro Stern."
+      ]
+    },
+    {
+      "t": "✊ Akt V: Die Lichterkette und deine Crew",
+      "p": [
+        "Nach Krals Festnahme ruft Tom an: Dennis Haller ist auf Kaution draußen und sammelt die Reste des Ordnungsbunds. Ihr gründet eine eigene Crew, die Lichterkette. Sprich Bruno, Jules, Kim, Rex, Lena, Sam und Tariq an: Wer genug Ruf von dir kennt, macht mit.",
+        "Jede Person kann etwas: 👊 Bruno, Sam und Tariq kämpfen in Schlägereien mit (dazu zwei Herzen Mut mehr), 📻 Kim hört den Polizeifunk (schneller abhängen), 🚗 Rex lässt Streifen- und Fluchtwagen langsamer wirken, ⚖️ Lena halbiert Bußgelder, 🏘️ Jules bringt mehr Geld in die Kiezkasse, 🔧 Tom macht das Umlackieren billiger.",
+        "Handy → ✊ Crew zeigt die Crew und die sechs Viertel. Mit „Streife gehen“ fährst du hin und vertreibst die grauen Jacken, das bringt bis zu drei Sterne Schutz. Ab und zu ruft die Crew an, weil irgendwo Alarm ist: selbst hinfahren, die Crew allein schicken (Erfolgschance steht dabei) oder ablehnen (Schutz sinkt). Jeder Schutzstern legt jeden Morgen Geld in die Kiezkasse."
+      ]
     }
   ],
   "ratgeber": [
@@ -928,6 +944,17 @@
         "5. Kap Zuflucht (Ayla vor Haus Möwe): acht Spendenpakete, Ringe fliegen, Tag der offenen Tür ankündigen.",
         "6. Die Nacht vor Haus Möwe: Ayla ruft nachts an. Zum Haus Möwe fahren und fünf Angreifer vor der Tür stoppen.",
         "7. Die Lichterkette (Tom am Kai, ab 21 Uhr): Lady Luma und Mama Vega, dann Rocco abholen, zum Monolith, Krals Wagen auf der Ringstraße stellen (die Lichterkette sperrt die Brücke), zwei Leibwächter abwehren. Kral wird festgenommen."
+      ]
+    },
+    {
+      "t": "✊ Akt V: Die Lichterkette komplett",
+      "p": [
+        "1. Die Gründung (Toms Anruf am Tag nach Krals Festnahme): drei Leute in die Crew holen.",
+        "2. Falscher Verdacht: Kommissarin Sander ruft an, Haller hat dich angezeigt. Du hast drei Sterne. Häng die Polizei ab: zu Fuß in ein 🫥 Versteck oder im Auto bei Rosi umlackieren.",
+        "3. Das Video: Kim ruft an. Hol Nele an der Pride Plaza ab, wehr drei von Hallers Leuten ab und bring das Video zu Sander an die Wache. Die Fahndung ist damit erledigt.",
+        "4. Revierwache (Tom am Kai, ab 21 Uhr): mit der Crew im Regenbogenpark vier graue Jacken vertreiben. Danach gibt es Alarm-Anrufe und die Kiezkasse.",
+        "5. Alle Viertel schützen: Pride Plaza, Regenbogenpark, Hafen, Laternenmeile, Rostwerk und Kap Zuflucht je mindestens einmal per Streife sichern (Handy → ✊ Crew).",
+        "6. Hallers letzte Fahrt (Tom am Kai, ab 21 Uhr): zu Hallers Lager am Hafen, den grauen Wagen einholen, Haller und zwei Kumpel stellen, Haller zur Wache bringen."
       ]
     }
   ],
