@@ -154,11 +154,62 @@ export function beatClock(): { t: number; bpm: number } | null {
   return { t: ctx.currentTime, bpm: song.bpm };
 }
 
-/** Angedeutete Nacht: nur Stimmung (leise Musik, Küsse, Lachen, Laken, Herzschlag) – nichts Explizites */
-export function nightSounds() {
+/* Stimmen der Nacht (18+, Abblende): Atmen, Seufzen und Stöhnen als echte Stimmlaute aus dem Synthesizer –
+   ein Sägezahn mit leichtem Vibrato läuft durch zwei Formant-Filter (Vokal „ah“, „oh“ oder gesummtes „mmh“),
+   darüber Atemrauschen. Tiefe und hohe Stimme wechseln sich ab, das Tempo steigt, das Bett knarzt im Takt. */
+const VOWEL: Record<'a' | 'o' | 'm', [number, number, number]> = { a: [820, 1250, 2600], o: [520, 900, 2400], m: [260, 900, 2200] };
+/** ein Seufzer/Stöhner: f0 Grundton (Hz), d Dauer, g Lautstärke, v Vokal */
+export function moan(t: number, f0: number, d: number, g: number, v: 'a' | 'o' | 'm' = 'a') {
   if (!ctx) return;
-  const seq: Array<[Sfx, number]> = [['kiss', 0], ['giggle', .5], ['kiss', 1.1], ['sheets', 1.5], ['heart', 1.9]];
-  seq.forEach(([k, d]) => setTimeout(() => sfx(k), d * 1000));
+  const o = ctx.createOscillator(), lfo = ctx.createOscillator(), lg = ctx.createGain(), out = ctx.createGain();
+  o.type = 'sawtooth';
+  // Tonhöhe: kurz steigen, dann weich fallen (wie ein „Aah…“)
+  o.frequency.setValueAtTime(f0 * .92, t); o.frequency.linearRampToValueAtTime(f0 * 1.12, t + d * .25); o.frequency.exponentialRampToValueAtTime(f0 * .78, t + d);
+  lfo.frequency.value = 5.2 + Math.random(); lg.gain.value = f0 * .025; lfo.connect(lg); lg.connect(o.frequency);
+  const [f1, f2, f3] = VOWEL[v];
+  for (const [f, q, k] of [[f1, 6, 1], [f2, 8, v === 'm' ? .15 : .55], [f3, 10, .18]] as Array<[number, number, number]>) {
+    const bp = ctx.createBiquadFilter(), bg = ctx.createGain(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = q; bg.gain.value = k;
+    o.connect(bp); bp.connect(bg); bg.connect(out);
+  }
+  out.gain.setValueAtTime(0, t); out.gain.linearRampToValueAtTime(g, t + d * .3); out.gain.setValueAtTime(g, t + d * .5); out.gain.exponentialRampToValueAtTime(.0005, t + d);
+  out.connect(sfxBus);
+  o.start(t); lfo.start(t); o.stop(t + d + .05); lfo.stop(t + d + .05);
+  breath(t, d * .9, g * .5, v === 'm' ? 900 : 1600);
+}
+/** hörbares Atmen (gefiltertes Rauschen, an- und abschwellend) */
+export function breath(t: number, d: number, g: number, f = 1400) {
+  if (!ctx) return;
+  const n0 = Math.ceil(ctx.sampleRate * d), b = ctx.createBuffer(1, n0, ctx.sampleRate), a = b.getChannelData(0);
+  for (let i = 0; i < n0; i++) a[i] = Math.random() * 2 - 1;
+  const s = ctx.createBufferSource(), fl = ctx.createBiquadFilter(), v = ctx.createGain(); s.buffer = b; fl.type = 'bandpass'; fl.frequency.value = f; fl.Q.value = 1.2;
+  v.gain.setValueAtTime(0, t); v.gain.linearRampToValueAtTime(g, t + d * .4); v.gain.linearRampToValueAtTime(0, t + d);
+  s.connect(fl); fl.connect(v); v.connect(sfxBus); s.start(t);
+}
+/** Bettgestell knarzt einmal */
+function creak(t: number, g: number) {
+  if (!ctx) return;
+  tone(46 + Math.random() * 2, t, .16, 'sawtooth', g, sfxBus, 2); noise(t, .1, g * .8, sfxBus, 0, 700);
+}
+
+/** Angedeutete Nacht hinter der Abblende: Küsse, Atmen, Stöhnen zweier Stimmen mit steigendem Tempo,
+    Bett im Takt, Höhepunkt, Ausatmen, Kichern und Herzschlag. dur = Länge in Sekunden; voices = Grundtöne der beiden. */
+export function nightSounds(dur = 2.6, voices: [number, number] = [120, 205]) {
+  if (!ctx) return;
+  const t0 = ctx.currentTime + .05;
+  sfx('kiss'); setTimeout(() => sfx('sheets'), 250);
+  let t = .45, i = 0;
+  while (t < dur - 1.6) {
+    const p = t / dur, gap = .95 - .5 * p, hi = i % 2 === 1, f = voices[hi ? 1 : 0] * (1 + p * .18 + Math.random() * .06);
+    if (p < .25) breath(t0 + t, .6, .05 + .04 * p);
+    else moan(t0 + t, f, .5 + .25 * (1 - p), .06 + .1 * p, p < .5 ? 'm' : i % 3 ? 'a' : 'o');
+    if (p > .2) { creak(t0 + t + gap * .5, .025 + .045 * p); if (p > .55) creak(t0 + t + gap * .02, .03 + .04 * p); }
+    if (i % 4 === 2) setTimeout(() => sfx('kiss'), t * 1000);
+    t += gap; i++;
+  }
+  const top = Math.max(.8, dur - 1.6);
+  moan(t0 + top, voices[0] * 1.25, 1.15, .2, 'a'); moan(t0 + top + .12, voices[1] * 1.2, 1.1, .17, 'o');
+  breath(t0 + top + 1.2, 1, .08, 1100);
+  setTimeout(() => { sfx('giggle'); sfx('heart'); }, (top + 1.6) * 1000);
 }
 
 /** Darkroom-Atmo (18+, nur Andeutung): gedämpfter Bass von nebenan, Flüstern, Seufzen und Atmen als gefilterte
@@ -203,3 +254,5 @@ export function playScore(mel: Array<[number, number, number]>, acc: Array<[numb
   for (const [t, p, d, v] of acc) piano(p, t0 + t, d, .1 * (v ?? .7), bus);
   return () => { try { bus.gain.setTargetAtTime(0, ctx!.currentTime, .05); setTimeout(() => bus.disconnect(), 300); } catch { /* schon weg */ } };
 }
+/** aktuelle Zeit der Tonausgabe (0 ohne Ton) */
+export function now() { return ctx ? ctx.currentTime : 0; }

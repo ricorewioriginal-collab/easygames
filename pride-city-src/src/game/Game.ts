@@ -46,11 +46,14 @@ import { WorldScene } from './WorldScene';
 import { WORLDS, worldDef, worldStage, cityGate, SIDE_GATE } from './worlds';
 import { ALPHA, QUICK, EMOTES, MAX_GUESTS, normCode, netError } from './online';
 import { PLACE_THEMES, type Spot, type Theme } from './interiors';
+import { NIGHT_S } from './liebe';
+import { karrieren, karriere, meinBeruf, annehmen, stand, ANZEIGEN, NPC_BERUF } from './beruf';
+import { dreh } from './dreh';
 import { strangerTalk, enterDarkroom, leaveDarkroom, darkVend, type TalkOpts } from './flirtui';
 import { stiTick, testAndTreat, symptoms, inTreatment, STI_INFO, hivUU, exposure } from './sti';
 import type { Stranger } from './flirt';
 import type { Sfx } from '../engine/Audio';
-import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage, level } from './jobs';
+import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage } from './jobs';
 import { photo } from './Photo';
 import { PROFILES, profileShots, profile, dateRec, dateQuestions, finishDate, canStay, DATE_STAGE, testDue, HEALTH_INFO, GLOSSARY, feed, post, bond, TEST_EVERY, FILMS, WORKERS, isLateNight, canMeet, encounter, SAFE_DATING } from './social';
 import { DILDOS, EXTRAS, CONDOMS, ownsToy, buyToy, buyCondoms, condomLabel } from './toys';
@@ -609,7 +612,7 @@ export class Game {
         { icon: '❤️', label: 'Status', sub: `Stimmung: ${moodName(mood(s))}`, fn: () => this.phone('status') },
         { icon: '🎯', label: 'Ziele', sub: open ? `${open} Tagesziele offen` : 'Alle Tagesziele erledigt', fn: () => this.phone('goals') },
         { icon: '🗺️', label: 'Karte & Tram', sub: 'Orte, Ziel markieren, hinfahren', fn: () => this.phone('map') },
-        { icon: '💼', label: 'Jobs', sub: `${JOBS.length} Jobs in der Stadt`, fn: () => this.phone('jobs') },
+        { icon: '💼', label: 'Jobbörse', sub: meinBeruf(s) ? `Hauptberuf: ${meinBeruf(s)!.icon} ${meinBeruf(s)!.name}` : `${karrieren(s).length} Berufe · Stellenanzeigen`, fn: () => this.phone('jobs') },
         { icon: '📞', label: 'Aufträge', sub: this.city.gig ? `Läuft: ${this.city.gig.g.title}` : `${openGigs(s).length} Leute brauchen Hilfe · ${Number(s.flags.gigs) || 0} erledigt`, fn: () => this.phone('gigs') },
         { icon: SKY[skyAt(s.day, s.time)].icon, label: 'Wetter und Termine', sub: `${SKY[skyAt(s.day, s.time)].name}${(s.day - 1) % 7 === 5 ? ' · heute CSD-Parade, 12–18 Uhr' : ' · CSD-Parade am Samstag'}`, fn: () => this.phone('wetter') },
         { icon: '🏙️', label: 'Imperium', sub: owned(s).length ? `${owned(s).length} Geschäfte · +${income(s)} € am Tag` : 'Läden, Bars und Clubs übernehmen', fn: () => this.phone('empire') },
@@ -634,12 +637,22 @@ export class Game {
       this.openMenu(frame('Ziele', `<div class="pbody"><p><b>⭐ ${g.title}</b><br>${g.sub || ''}</p><h4>Heute</h4>${d.map((x) => `<p>${x.done ? '✅' : '⬜'} ${x.text} (${x.have}/${x.n}) · +${x.glitter} ✨</p>`).join('')}<h4>Sammeln</h4><p>🌈 Pride-Sticker ${st}/8 · 🪩 Tanz-Rekord ${s.best.dance || 0}</p></div>`),
         [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'jobs') {
-      this.openMenu(frame('Jobs', '<div class="pbody"><p>Wähle einen Job, um ihn auf der Karte zu markieren. Arbeiten kannst du vor Ort.</p></div>'),
-        [...JOBS.map((j) => ({ icon: '💼', label: `${j.name} · ${jobTitle(s, j)}`, sub: `${j.place} · ${j.from}–${j.to} Uhr · ${wage(s, j)} €/h · Stufe ${level(s, j.id) + 1}`, fn: () => { s.pin = j.poi; toast(`${j.place} auf der Karte markiert.`); close(); } })),
+      // Jobbörse (beruf.ts): alle Karrieren an einem Ort, Hauptberuf annehmen oder wechseln (+20 % Lohn)
+      const mine = meinBeruf(s), ad = ANZEIGEN[s.day % ANZEIGEN.length];
+      this.openMenu(frame('Jobbörse', `<div class="pbody"><p>${mine ? `⭐ <b>Hauptberuf: ${mine.icon} ${mine.name}</b> seit Tag ${s.flags.berufSeit || s.day} · +20 % Lohn` : 'Noch kein Hauptberuf. Such dir einen aus – er bringt +20 % Lohn. Nebenbei kannst du alles andere trotzdem machen.'}</p><p><small>📌 Anzeige des Tages: ${ad}</small></p></div>`),
+        [...karrieren(s).map((k) => ({ icon: k.icon, label: `${k.name}${mine?.id === k.id ? ' ⭐' : ''}`, sub: `${k.place} · ${stand(s, k)}`, fn: () => this.phone('job_' + k.id) })),
           { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app.startsWith('job_')) {
+      const k = karriere(app.slice(4)); if (!k) { home(); return; }
+      const back = () => this.phone('jobs'), mine = meinBeruf(s)?.id === k.id;
+      const go = k.app ? { icon: '📱', label: 'App öffnen', sub: k.place, fn: () => this.phone(k.app!) } : { icon: '📍', label: 'Hingehen', sub: `${k.place} auf der Karte markieren`, fn: () => { s.pin = k.poi!; toast(`${k.place} auf der Karte markiert.`); close(); } };
+      this.openMenu(frame(`${k.icon} ${k.name}`, `<div class="pbody"><p>${k.text}</p><p><small>${stand(s, k)}</small></p></div>`), [
+        mine ? { icon: '✋', label: 'Kündigen', sub: 'ohne Hauptberuf weiter', fn: () => { annehmen(s, null); sfx('back'); toast(`Du hast als ${k.name} gekündigt.`); this.save.write(); back(); } }
+          : { icon: '⭐', label: 'Als Hauptberuf annehmen', sub: meinBeruf(s) ? `statt ${meinBeruf(s)!.name} · +20 % Lohn` : '+20 % Lohn', fn: () => { annehmen(s, k.id); sfx('win'); pcEvents.emit('beruf', { id: k.id, name: k.name }); post(s, 'Du', `Neuer Job: ${k.name} ${k.icon}`); this.hud.banner(`${k.icon} Neuer Hauptberuf: ${k.name}`, `${k.place} · +20 % Lohn`, 'good', 4000); this.save.write(); back(); } },
+        go, { icon: '←', label: 'Zurück', fn: back }], back, 'phone');
     } else if (app === 'contacts') {
       const met = NPCS.filter((n) => s.rel[n.id]);
-      this.openMenu(frame('Kontakte', `<div class="pbody">${met.length ? met.map((n) => { const f = Number(s.rel[n.id].f) || 0; return `<p><b style="color:${n.color}">●</b> <b>${n.name}</b> <small>(${n.pron})</small><br>${'❤️'.repeat(Math.min(5, Math.ceil(f / 20)))}${'🤍'.repeat(5 - Math.min(5, Math.ceil(f / 20)))} ${bond(f)}</p>`; }).join('') : '<p>Noch niemand. Sprich Leute in der Stadt an!</p>'}</div>`),
+      this.openMenu(frame('Kontakte', `<div class="pbody">${met.length ? met.map((n) => { const f = Number(s.rel[n.id].f) || 0; return `<p><b style="color:${n.color}">●</b> <b>${n.name}</b> <small>(${n.pron})${NPC_BERUF[n.id] ? ' · ' + NPC_BERUF[n.id].join(' ') : ''}</small><br>${'❤️'.repeat(Math.min(5, Math.ceil(f / 20)))}${'🤍'.repeat(5 - Math.min(5, Math.ceil(f / 20)))} ${bond(f)}</p>`; }).join('') : '<p>Noch niemand. Sprich Leute in der Stadt an!</p>'}</div>`),
         [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'family') {
       const sp = spouse(s), fi = fiance(s), k = kid(s);
@@ -836,9 +849,9 @@ export class Game {
     if ((s.inv.condom || 0) > 0) s.inv.condom--;
     void this.home!.romance(look, sp.name, () => {
       const b = el(`<div class="night"><p>💜 ${esc(sp.name)} und du …</p><small>Zustimmung: ✔︎ · ${s.health.prep ? 'PrEP: ✔︎' : condomLabel(s) + ': ✔︎'}</small></div>`);
-      document.body.appendChild(b); nightSounds();
+      document.body.appendChild(b); nightSounds(NIGHT_S);
       setTimeout(() => { this.pass(minutesUntil(s, 8), true); change(s, { energy: 100, social: 40, fun: 40, hygiene: -25 }); s.flags.wild = s.day; this.home!.showMess(); b.remove(); pcEvents.emit('liebesnacht', { id: sp.id, name: sp.name });
-        this.dialog.say([{ who: sp.name, color: sp.color, text: 'Guten Morgen, Schatz. Ich liebe dich. Und du machst heute Frühstück. ☕💞' }]); this.save.write(); this.city.refreshHud(); }, 2600);
+        this.dialog.say([{ who: sp.name, color: sp.color, text: 'Guten Morgen, Schatz. Ich liebe dich. Und du machst heute Frühstück. ☕💞' }]); this.save.write(); this.city.refreshHud(); }, NIGHT_S * 1000);
     });
   }
   /** Absprache: exklusiv oder offen. Beides ist gut, solange alle Bescheid wissen. */
@@ -977,7 +990,7 @@ export class Game {
     // Abblende nach der Filmszene: Zeit vorspulen, Morgen danach mit Kaffee in der Küche
     const night = () => {
       const b = el(`<div class="night"><p>💜 ${p.name} und du …</p><small>Zustimmung: ✔︎ · ${condomLabel(s)}: ✔︎${lube ? ' · Gleitgel: ✔︎' : ''}${s.health.prep ? ' · PrEP: ✔︎' : ''}</small></div>`);
-      document.body.appendChild(b); nightSounds();
+      document.body.appendChild(b); nightSounds(NIGHT_S);
       setTimeout(() => {
         this.pass(minutesUntil(s, 8), true);
         change(s, { energy: 100, social: 40, fun: 40, hygiene: -30 });
@@ -987,7 +1000,7 @@ export class Game {
         h.showMess(); void h.morning(look);
         const morning = [`Guten Morgen, du. Kaffee ist fertig. Ich muss gleich los, aber … das war schön. ☕`, `Ich hab dir einen Kaffee gemacht. Deine zweite Socke liegt übrigens unterm Bett. 😅`, `Bleib noch liegen. Ich hab Frühstück gemacht und dir ein Herz auf den Zettel gemalt. 💌`];
         setTimeout(() => { b.remove(); this.dialog.say([{ who: p.name, color: p.color, text: morning[s.day % 3] }, { who: 'Du', color: '#ff4fa3', text: 'Erst mal duschen. Und aufräumen.' }], () => { void h.morning(null); toast(`${p.name} ist los zur Arbeit. 💜`); }); this.save.write(); }, 900);
-      }, 2600);
+      }, NIGHT_S * 1000);
     };
     this.enterHome(() => { void this.home!.romance(look, p.name, night); });
   }
@@ -1340,7 +1353,8 @@ export class Game {
         { icon: '💊', label: s.health.prep ? 'PrEP beenden' : 'PrEP beginnen', sub: 'Tablette, die vor HIV schützt · Beratung gratis', fn: () => { s.health.prep = !s.health.prep; if (s.health.prep && s.health.test !== s.day) toast('Vor dem Start gehört ein HIV-Test dazu – mach ihn gleich mit!'); else toast(s.health.prep ? 'PrEP läuft. Regelmäßig testen nicht vergessen! 💊' : 'PrEP beendet.'); this.save.write(); close(); } },
         { icon: '🎈', label: 'Gratis Kondome', sub: '3 Stück, einmal am Tag', fn: () => { if (s.flags.freeCondoms === s.day) { toast('Für heute hast du schon welche.'); return; } s.flags.freeCondoms = s.day; s.inv.condom = (s.inv.condom || 0) + 3; toast('Drei Kondome eingesteckt. 🎈'); sfx('coin'); close(); } },
         { icon: 'ℹ️', label: 'Infos: U=U, PrEP, PEP, Safer Sex', fn: () => { close(); this.dialog.say(HEALTH_INFO.map(([t, x]) => ({ who: t, color: '#3ee69a', text: x }))); } }] },
-      studio: { t: 'Studio Klappe Auf', d: 'Fotostudio für Pässe, Paare und Pride-Plakate.', items: [] },
+      studio: { t: 'Studio Klappe Auf', d: s.settings.adult ? 'Fotostudio für Pässe, Paare und Pride-Plakate. Hinten, hinter der roten Tür: die Nachtschicht für Filme ab 18.' : 'Fotostudio für Pässe, Paare und Pride-Plakate.', items: s.settings.adult ? [
+        { icon: '🎬', label: s.flags.drehCast ? 'Nachtschicht: Dreh am Set' : 'Nachtschicht: Casting', sub: s.flags.drehCast ? `${s.flags.drehDay === s.day ? 'heute schon gedreht' : 'ein Dreh pro Tag · Test nicht älter als 14 Tage'} · ${stand(s, karriere('dreh')!)}` : 'Erwachsenen-Darsteller*in werden · Regeln, Tests, Absprachen', fn: () => dreh(this) }] : [] },
       kopfkino: { t: 'Videothek Kopfkino', d: s.settings.adult ? 'Neonlicht, Samtvorhang und ein Regal für Erwachsene. Hinten die Kabinen.' : 'Filme für jeden Geschmack. Der hintere Bereich ist nur ab 18.', items: s.settings.adult ? [
         { icon: '📼', label: 'Film ausleihen', sub: '5 € · Titel und Cover nur als Text', fn: () => this.rentFilm() },
         { icon: '🚪', label: 'Kabinen', sub: '3 € · Klopfzeichen gilt als Frage, Antwort abwarten', fn: () => this.cabin() },
