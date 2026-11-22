@@ -6,7 +6,7 @@ import type { Actor, Look } from './Actor';
 import type { InteriorScene } from './InteriorScene';
 import type { Line } from '../ui/ui';
 import { toast } from '../ui/ui';
-import { sfx, nightSounds, loveNight } from '../engine/Audio';
+import { sfx, nightSounds } from '../engine/Audio';
 import { change, hour, minutesUntil } from './life';
 import { post, canMeet } from './social';
 import { condomLabel } from './toys';
@@ -14,8 +14,11 @@ import { pcEvents } from './hooks';
 import { CHAT, TEASE, PICKUP, DARK, hash, flirted, flirtTry, nightAnswer, nightReview, starLine, partySummary, type Stranger } from './flirt';
 import { exposure, untreated, inTreatment, hivUU } from './sti';
 import { DARKROOM, PLACE_THEMES } from './interiors';
+import { NIGHT_S, pairVoices } from './liebe';
+import { berufOf, meinBeruf } from './beruf';
+import { tapeAsk, tapeAfter } from './dreh';
 
-export interface TalkOpts { actor?: Actor; room?: InteriorScene; look?: Look; opening?: string; kid?: boolean }
+export interface TalkOpts { actor?: Actor; room?: InteriorScene; look?: Look; opening?: string; kid?: boolean; /** Art der Straßenfigur (Street.ts), z. B. für den Beruf */ kind?: string }
 
 const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 const night = (title: string, tags: string[]) => { const b = document.createElement('div'); b.className = 'night'; b.innerHTML = `<p>${esc(title)}</p><small>${tags.map(esc).join(' · ')}</small>`; document.body.appendChild(b); return b; };
@@ -24,7 +27,9 @@ const evening = (h: number) => h >= 19 || h < 5;
 /** Gespräch mit einer fremden Person; end() läuft, wenn das Gespräch vorbei ist */
 export function strangerTalk(g: Game, st: Stranger, o: TalkOpts, end?: () => void) {
   const s = g.save.data, adult = s.settings.adult && !o.kid, dark = o.room?.theme.id === 'darkroom';
-  const N = (text: string, choices?: Line['choices']): Line => ({ who: st.name, color: st.color, text, choices });
+  // jede Figur hat einen Beruf (beruf.ts): steht neben dem Namen
+  const job = berufOf(st.key, st.rb, adult, o.kind), mine = meinBeruf(s);
+  const N = (text: string, choices?: Line['choices']): Line => ({ who: st.name.includes(job.name.slice(0, 5)) ? st.name : `${st.name} · ${job.icon} ${job.name}`, color: st.color, text, choices });
   const h = hash(st.key + s.day);
   let then: (() => void) | null = null;
   const run = (lines: Line[]) => g.dialog.say(lines, () => { const f = then; then = null; if (f) f(); else end?.(); });
@@ -35,6 +40,7 @@ export function strangerTalk(g: Game, st: Stranger, o: TalkOpts, end?: () => voi
   const menu = (text: string): Line => {
     const c: NonNullable<Line['choices']> = [];
     c.push({ label: '💬 Plaudern', fn: () => { then = () => run([N(CHAT[(h + Math.floor(Math.random() * 99)) % CHAT.length]), menu('Sonst noch was?')]); } });
+    c.push({ label: '💼 Was machst du beruflich?', fn: () => { then = () => run([N(job.talk), { who: 'Du', color: '#ff4fa3', text: mine ? `Ich bin ${mine.name}. ${mine.icon}` : 'Ich suche gerade. Die Jobbörse im Handy hat ein paar Angebote.' }, menu(mine && mine.id === 'dreh' && adult && Number(s.flags.drehN) > 0 ? 'Moment … dich kenn ich doch aus einem Film! 😳 Sonst noch was?' : 'Spannend! Sonst noch was?')]); } });
     if (adult) c.push({ label: flirted(s, st.key) ? '😏 Weiterflirten' : '😏 Anflirten', fn: () => { then = () => pickup(); } });
     if (adult && flirted(s, st.key)) c.push({ label: dark ? '🖤 Weiter nach hinten?' : '🔥 Kommst du mit zu mir?', sub: 'nur wenn ihr beide wollt', fn: () => { then = () => ask(); } });
     if (o.room?.partyPlace && evening(hour(s)) && !dark) c.push({ label: adult ? '🎉 Hausparty, Tür zu …' : '🎉 Hausparty steigen lassen', sub: s.flags.party === s.day ? 'heute schon gefeiert' : '3 Stunden · alle machen mit', fn: () => { if (s.flags.party === s.day) { toast('Heute wurde schon gefeiert. Morgen wieder! 🎉'); return; } then = () => houseParty(g, st, o.room!, adult, end); } });
@@ -79,7 +85,7 @@ function oneNight(g: Game, st: Stranger, o: TalkOpts, bare: boolean, end?: () =>
   const lube = (s.inv.lube || 0) > 0;
   if (!bare && canMeet(s) === 'condom') return;
   const tags = ['Zustimmung ✔︎', bare ? 'Ohne Kondom (abgesprochen)' : `${condomLabel(s)} ✔︎`, lube ? 'Gleitgel ✔︎' : '', s.health.prep ? 'PrEP ✔︎' : ''].filter(Boolean);
-  const after = (stay: boolean) => {
+  const after = (stay: boolean, tape = false) => {
     if (!bare) s.inv.condom = Math.max(0, (s.inv.condom || 0) - 1);
     s.flags.lastNight = s.day;
     if (lube) s.inv.lube--;
@@ -90,25 +96,27 @@ function oneNight(g: Game, st: Stranger, o: TalkOpts, bare: boolean, end?: () =>
     g.save.write(); g.city.refreshHud();
     const lines: Line[] = [{ who: st.name, color: st.color, text: r.text }];
     if (bare) lines.push({ who: 'Du', color: '#ff4fa3', text: x.hiv || !s.health.prep ? 'Ohne Gummi und ohne PrEP … Wenn du unsicher bist: PEP gibt es bis 72 Stunden danach, und ein Test im Checkpoint schadet nie.' : 'PrEP schützt vor HIV, aber nicht vor allem anderen. In ein paar Tagen mal testen lassen.' });
-    g.dialog.say(lines, () => { g.hud.banner(`${starLine(r.stars)} Nacht mit ${st.name}`, `Spaß +${r.fun}${r.rep ? ` · Ruf +${r.rep}` : ''}${s.flags.ons ? ` · Nummer ${s.flags.ons}` : ''}`, 'good', 4200); end?.(); });
+    g.dialog.say(lines, () => { g.hud.banner(`${starLine(r.stars)} Nacht mit ${st.name}`, `Spaß +${r.fun}${r.rep ? ` · Ruf +${r.rep}` : ''}${s.flags.ons ? ` · Nummer ${s.flags.ons}` : ''}`, 'good', 4200); if (tape) tapeAfter(g, st.name, st.color, st.key, () => end?.()); else end?.(); });
   };
   if (dark) {
     // Darkroom: keine Filmszene, nur Nebel, Herzschlag und Abblende
-    const b = night('🖤 Hinten im Darkroom …', tags); nightSounds();
-    setTimeout(() => { g.pass(40); b.remove(); after(false); }, 2800);
+    const b = night('🖤 Hinten im Darkroom …', tags); nightSounds(4.5, pairVoices(s, st.pron));
+    setTimeout(() => { g.pass(40); b.remove(); after(false); }, 4500);
     return;
   }
   const look: Look = { ...(o.look || { body: st.rb || 'Male_Adult_01', rb: st.rb, palette: 'rainbow', skin: 0 }), outfit: 'clothed', style: undefined };   // ohne Szene-Shirt, sonst malt es über die Unterwäsche
-  g.enterHome(() => {
+  // vorher fragen: mit dem Handy filmen? (Sextape nur, wenn beide Ja sagen, dreh.ts)
+  const go = (tape: boolean) => g.enterHome(() => {
     void g.home!.romance(look, st.name, () => {
-      const b = night(`💜 ${st.name} und du …`, tags); const wait = loveNight();
+      const b = night(`${tape ? '📹' : '💜'} ${st.name} und du …`, tape ? [...tags, 'Kamera läuft ✔︎'] : tags); nightSounds(NIGHT_S, pairVoices(s, st.pron));
       setTimeout(() => {
         g.pass(minutesUntil(s, 8), true); s.flags.wild = s.day;
         const h = g.home!; h.showMess(); void h.morning(look);
-        setTimeout(() => { b.remove(); after(true); }, 900);
-      }, wait);
-    });
+        setTimeout(() => { b.remove(); after(true, tape); }, 900);
+      }, NIGHT_S * 1000);
+    }, tape ? { mode: 'tape', title: `📹 ${st.name} und du` } : undefined);
   });
+  g.dialog.say([tapeAsk(g, st.name, st.color, st.key, go)]);
 }
 
 /** Hausparty: Musik und Licht, mit 18+ geht danach eine Tür zu. Abblende, witzige Zusammenfassung */
