@@ -12,6 +12,9 @@ import { LegDay } from './LegDay';
 import { Karaoke } from './Karaoke';
 import { Sauna } from './Sauna';
 import { GlitterMatch } from './GlitterMatch';
+import { CastingDay } from './CastingDay';
+import { DarkRoom } from './DarkRoom';
+import { OutfitCheck } from './OutfitCheck';
 
 export type { MiniDef, MiniResult } from './arcade';
 
@@ -57,6 +60,22 @@ export const MINIS: MiniDef[] = [
     id: 'match', icon: '✨', name: 'Glitzer-Match', sub: 'Glitzersteine tauschen, Ketten bilden, 25 Züge',
     btn: '✨<small>Tauschen</small>', goal: 900, tags: ['arcade', 'home'], gl: 'match', song: 'neon', noPad: true,
     make: (g, d, a, done) => new GlitterMatch(g, d, a, done, 0x120a26),
+  },
+  {
+    id: 'cast', icon: '🎬', name: 'Casting-Tag', sub: 'Regisseur Rüdiger ruft Szenen, du spielst blitzschnell die passende Reaktion',
+    btn: '🎬<small>Action</small>', goal: 600, tags: ['studio', 'home'], gl: 'cast', song: 'title',
+    make: (g, d, a, done) => new CastingDay(g, d, a, done, 0x140f0a),
+  },
+  {
+    id: 'dark', icon: '🔦', name: 'Blackout-Party', sub: 'Stockfinster: mit der Taschenlampe verlorene Sachen finden, niemanden anrempeln',
+    adultIcon: '🌑', adultName: 'Dunkelkammer', adultSub: 'Stockfinster: Unterhose, Gleitgel und Handy wiederfinden, ohne jemanden anzurempeln',
+    btn: '✋<small>Greifen</small>', goal: 600, tags: ['club', 'dark'], gl: 'dark', song: 'club',
+    make: (g, d, a, done) => new DarkRoom(g, d, a, done, 0x05030a),
+  },
+  {
+    id: 'style', icon: '🪞', name: 'Outfit-Check', sub: 'Fünf Anlässe, eine strenge Jury: den passenden Look wählen und über den Laufsteg',
+    btn: '👠<small>Laufen</small>', goal: 900, tags: ['shop', 'home'], gl: 'style', song: 'show',
+    make: (g, d, a, done) => new OutfitCheck(g, d, a, done, 0x120818),
   },
 ];
 
