@@ -21,6 +21,7 @@ import { popOf } from './manage';
 import { hour } from './life';
 import type { Color3, Mesh } from '../engine/bjs';
 import { guestCast, type Guest } from './flirt';
+import { SZENE } from './szene';
 import { bedMess, darkroom } from './spuren';
 import { darkAtmo } from '../engine/Audio';
 
@@ -124,7 +125,7 @@ if (t.id !== 'darkroom') {     deco('home/pictureframe_large_B', -W / 2 + .06, 1
     // Leben im Raum: verschiedene Menschen je Raum (Figur, Hautton, Haare, Szene-Look, Outfit), alle ansprechbar
     const party = t.music === 'club' || t.music === 'show', darkRoom = t.id === 'darkroom', adult = this.g.save.data.settings.adult;
     const cast = t.own ? [] : guestCast(t.id + '|' + this.placeId, darkRoom ? 5 : party ? 6 : 3, { adult, party, swim: t.id === 'bad' || t.id === 'sauna', dark: darkRoom });
-    const folk = await Promise.all(cast.map((c) => Actor.create(sc, { body: c.rb, rb: c.rb, palette: 'rainbow', skin: 0, style: c.style, outfit: c.outfit, hot: adult })));
+    const folk = await Promise.all(cast.map((c) => Actor.create(sc, { body: c.rb, rb: c.rb, palette: 'rainbow', skin: 0, style: c.style, outfit: c.outfit, hot: adult, gear: c.typ ? SZENE[c.typ].gear : undefined })));
     // freie Stelle: nicht in Möbeln, nicht auf einer benutzbaren Stelle, nicht vor der Tür
     const free = (x: number, z: number) => Math.abs(x) < W / 2 - .8 && Math.abs(z) < D / 2 - .8 && x < W / 2 - 2.2
       && this.boxes.every((b) => Math.abs(x - b.x) > b.hx + .5 || Math.abs(z - b.z) > b.hz + .5)
@@ -137,7 +138,8 @@ if (t.id !== 'darkroom') {     deco('home/pictureframe_large_B', -W / 2 + .06, 1
       for (const oz of order) { for (const ox of party ? [-2.4, -.2, 2, -1.3, 1.1] : [-1.6, -.5, 2.4, 3.5]) { if (free(ox + (i % 2) * .3, oz)) { x = ox + (i % 2) * .3; z = oz; ok = true; break; } } if (ok) break; }
       if (!ok) { const c = cand.find(([cx, cz]) => free(cx, cz)); if (!c) { a.root.visible = false; return; } [x, z] = c; }
       a.root.position.set(x, 0, z); a.root.rotation.y = party ? (i * 1.7) % (Math.PI * 2) : (i ? -Math.PI / 2 : Math.PI / 2);
-      a.play(party && !darkRoom ? (['dance1', 'dance2', 'dance3'] as const)[i % 3] : darkRoom ? 'idle' : (['talk', 'idle', 'drink'] as const)[i % 3], 0, .9 + (i % 3) * .08);
+      const ty = cast[i].typ ? SZENE[cast[i].typ!] : null;
+      a.play(ty ? ty.anim[i % ty.anim.length] : party && !darkRoom ? (['dance1', 'dance2', 'dance3'] as const)[i % 3] : darkRoom ? 'idle' : (['talk', 'idle', 'drink'] as const)[i % 3], 0, .9 + (i % 3) * .08);
       this.folk.push(a); this.guests.push({ a, g: cast[i] }); this.boxes.push({ x, z, hx: .25, hz: .25 });
     });
     // fremde Schlafzimmer: Spuren der letzten Nacht (nur mit 18+ sichtbar)
@@ -180,7 +182,7 @@ if (t.id !== 'darkroom') {     deco('home/pictureframe_large_B', -W / 2 + .06, 1
     a.root.rotation.y = Math.atan2(p.x - a.root.position.x, p.z - a.root.position.z);
     this.player.root.rotation.y = Math.atan2(a.root.position.x - p.x, a.root.position.z - p.z);
     if (!this.partyOn) a.play('talk');
-    this.g.strangerTalk(q.g.st, { actor: a, room: this, look: { body: q.g.rb, rb: q.g.rb, palette: 'rainbow', skin: 0, style: q.g.style, outfit: 'clothed' } }, () => { if (!this.partyOn && prev) a.play(prev); });
+    this.g.strangerTalk(q.g.st, { actor: a, room: this, look: { body: q.g.rb, rb: q.g.rb, palette: 'rainbow', skin: 0, style: q.g.style, outfit: 'clothed', gear: q.g.typ ? SZENE[q.g.typ].gear : undefined }, szene: q.g.typ }, () => { if (!this.partyOn && prev) a.play(prev); });
   }
   /** Ist der Raum eine Wohnung oder Partylocation (für Hauspartys)? */
   get partyPlace() { return this.theme.id.startsWith('res_') || this.theme.music === 'club' || this.theme.music === 'show'; }

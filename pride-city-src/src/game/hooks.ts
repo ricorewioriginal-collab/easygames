@@ -56,6 +56,7 @@ export interface PcEvents extends Record<string, unknown> {
   /** One-Night-Stand mit einer fremden Person (flirtui.ts, 18+): Bewertung 1–5, ohne Kondom (abgesprochen), im Darkroom */
   oneNight: { name: string; stars: number; bare: boolean; dark: boolean };
   /** Hausparty gefeiert (adult = mit geschlossener Tür, nur angedeutet) */
-  hausparty: { host: string; adult: boolean };
+  camShow: { tips: number; fans: number };
+  hausparty: { host: string; adult: boolean; group?: boolean; bare?: boolean; caught?: number };
 }
 export const pcEvents = new Emitter<PcEvents>();

@@ -1,4 +1,5 @@
 /* Spielablauf: Ladebildschirm → Titel (Stadt als Kulisse) → Editor → Stadt ↔ Minispiele. Menüs im Konsolen-Stil. */
+import { fans, fanItems, sellFan, camShow } from './fanshop';
 import { Engine } from '../engine/Engine';
 import { Save } from '../engine/Save';
 import { trackProgress } from '../engine/Assets';
@@ -54,7 +55,7 @@ import { PLACE_THEMES, type Spot, type Theme } from './interiors';
 import { NIGHT_S } from './liebe';
 import { karrieren, karriere, meinBeruf, annehmen, stand, ANZEIGEN, NPC_BERUF } from './beruf';
 import { dreh } from './dreh';
-import { strangerTalk, enterDarkroom, leaveDarkroom, darkVend, type TalkOpts } from './flirtui';
+import { strangerTalk, enterDarkroom, leaveDarkroom, darkVend, soloNight, type TalkOpts } from './flirtui';
 import { stiTick, testAndTreat, symptoms, inTreatment, STI_INFO, hivUU, exposure } from './sti';
 import type { Stranger } from './flirt';
 import type { Sfx } from '../engine/Audio';
@@ -468,6 +469,8 @@ export class Game {
       this.openMenu(`<div class="col"><div class="panel"><h3>Bett</h3><p>Es ist ${clock(s)} Uhr. Schlafen speichert das Spiel.</p><div class="slot"></div></div></div>`, [
         { icon: '🌙', label: 'Schlafen bis 7 Uhr', sub: 'Energie voll, neuer Tag', fn: () => { back(); this.fade(() => { this.pass(minutesUntil(s, 7), true); change(s, { energy: 100, ...(s.flags.h_himmelbett ? { fun: 10 } : {}) }); this.save.write(); toast(`Guten Morgen! ${weekday(s)}, Tag ${s.day}.${s.flags.h_himmelbett ? ' Im Himmelbett geträumt. Spaß +10' : ''}`); }); } },
         ...(s.flags.wild === s.day && s.settings.adult ? [{ icon: '🧺', label: 'Aufräumen', sub: 'Was für eine Nacht …', fn: () => { back(); s.flags.wild = 0; this.pass(15); h.showMess(); toast('Bett frisch bezogen, Verpackungen im Müll. 🧺'); } }] : []),
+        ...(s.settings.adult ? [{ icon: '🫦', label: 'Zeit für dich', sub: 'allein unter der Decke · Abblende', fn: () => { back(); soloNight(this, false); } },
+          { icon: '📹', label: 'Zeit für dich – mit Aufnahme', sub: 'das Video gehört nur dir', fn: () => { back(); soloNight(this, true); } }] : []),
         { icon: '💤', label: 'Nickerchen (2 Stunden)', sub: '+25 Energie', fn: () => { back(); this.fade(() => { this.pass(120, true); this.save.write(); toast('Ausgeruht.'); }); } },
         { icon: '←', label: 'Zurück', fn: back },
       ], back, '');
@@ -634,6 +637,7 @@ export class Game {
         { icon: '📻', label: 'Pride FM 88,8', sub: s.flags.radioShowDay === s.day ? 'Deine Sendung lief heute' : 'Eigene Sendung „Rainbow Talk“ moderieren', fn: () => this.phone('fm') },
         { icon: '📸', label: 'Glitzergram', sub: `${fmtNum(followers(s))} Follower · Fotomodus, Likes, Kooperationen`, fn: () => this.phone('gram') },
         { icon: '📣', label: 'Feed', sub: 'Was in der Szene los ist', fn: () => this.phone('feed') },
+        ...(s.settings.adult ? [{ icon: '💋', label: 'Fanshop & Cam', sub: `${fans(s)} Fans · Getragenes verkaufen, live gehen`, fn: () => this.phone('fans') }] : []),
         { icon: '🩺', label: 'Gesundheit', sub: testDue(s) ? '⚠️ Test fällig!' : s.health.prep ? 'PrEP aktiv' : 'Tests, PrEP, U=U', fn: () => this.phone('health') },
         { icon: '📚', label: 'Glossar', sub: 'Begriffe aus der Szene', fn: () => this.phone('glossary') },
         { icon: '🧠', label: 'Wissen', sub: quizDoneToday(s) ? 'Geschichte, Persönlichkeiten, Flaggen, Rechte' : '🎯 Heute neues Quiz mit Hilde · Glitzer zu gewinnen', fn: () => this.phone('wissen') },
@@ -649,6 +653,13 @@ export class Game {
       const g = goal(s), d = dailyState(s), st = s.goals.filter((x) => x.startsWith('sticker')).length;
       this.openMenu(frame('Ziele', `<div class="pbody"><p><b>⭐ ${g.title}</b><br>${g.sub || ''}</p><h4>Heute</h4>${d.map((x) => `<p>${x.done ? '✅' : '⬜'} ${x.text} (${x.have}/${x.n}) · +${x.glitter} ✨</p>`).join('')}<h4>Sammeln</h4><p>🌈 Pride-Sticker ${st}/8 · 🪩 Tanz-Rekord ${s.best.dance || 0}</p></div>`),
         [{ icon: '←', label: 'Zurück', fn: home }], home, 'phone');
+    } else if (app === 'fans') {
+      // Fanshop & Cam (fanshop.ts, 18+): Getragenes verkaufen, Cam-Show zu Hause
+      const again = () => this.phone('fans');
+      this.openMenu(frame('💋 Fanshop & Cam', `<div class="pbody"><p><b>${fans(s)} Fans</b> · ${Number(s.flags.fanSold) || 0} Pakete verschickt · ${Number(s.flags.camN) || 0} Streams</p><p><small>Selbstbestimmt und anonym: Du entscheidest, was du verkaufst und zeigst. Pakete gehen diskret raus, bezahlt wird vorab. Mehr Fans = bessere Preise.</small></p></div>`), [
+        { icon: '📷', label: 'Cam-Show starten', sub: s.flags.camDay === s.day ? 'heute schon live gewesen' : s.inside ? 'jetzt live vor dem Laptop' : 'nur zu Hause', disabled: s.flags.camDay === s.day, fn: () => { this.closeMenu(); camShow(this); } },
+        ...fanItems(s).map((it) => ({ icon: it.icon, label: `${it.name} · ${it.price} €`, sub: it.can ? it.sub : it.why || '', disabled: !it.can, fn: () => { const r = sellFan(s, it.id); if (!r) return; sfx('coin'); toast(`📦 Verkauft: ${r.it.name} für ${r.it.price} € · +${r.add} Fans`); this.save.write(); this.city.refreshHud(); again(); } })),
+        { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'jobs') {
       // Jobbörse (beruf.ts): alle Karrieren an einem Ort, Hauptberuf annehmen oder wechseln (+20 % Lohn)
       const mine = meinBeruf(s), ad = ANZEIGEN[s.day % ANZEIGEN.length];

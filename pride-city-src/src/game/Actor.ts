@@ -8,6 +8,8 @@ import { container, skinned } from '../engine/Assets';
 import { avatarFor, type Avatar } from './avatars';
 import { playerDrag } from './dragLook';
 import { lodFor, LOD_DIST, HIDE_DIST, type Lod } from './lod';
+import { wearGear } from './gear';
+import type { Gear } from './szene';
 import { figOf, type Fig } from './figur';
 import { muscles, figMeshes, dropFig } from './figur3d';
 
@@ -23,7 +25,7 @@ export const OUTFITS: Array<{ id: Outfit; name: string; adult?: boolean }> = [
   { id: 'swim', name: 'Badehose / Bikini' }, { id: 'harness', name: 'Harness', adult: true },
 ];
 /** rb = feste Rocketbox-Figur (sonst passend zu body/palette/skin gewählt) */
-export interface Look { body: string; palette: string; skin: number; hair?: number; rb?: string; cape?: boolean; hat?: boolean; mug?: boolean; outfit?: Outfit; top?: boolean; /** Szene-Look aus queer.ts (Flaggen-Shirt, Leder, Glitzer, gefärbte Haare) */ style?: string; /** 18+ */ hot?: boolean; /** Spielfigur: Muskeln, Tattoos, Piercings, Bart (figur.ts) */ fig?: Fig }
+export interface Look { body: string; palette: string; skin: number; hair?: number; rb?: string; cape?: boolean; hat?: boolean; mug?: boolean; outfit?: Outfit; top?: boolean; /** Szene-Look aus queer.ts (Flaggen-Shirt, Leder, Glitzer, gefärbte Haare) */ style?: string; /** 18+ */ hot?: boolean; /** Szene-Zubehör (gear.ts): Pup-Maske, Ledermütze, Halsband, Krone */ gear?: Gear; /** Spielfigur: Muskeln, Tattoos, Piercings, Bart (figur.ts) */ fig?: Fig }
 
 /** Spielbare Romanfigur aus „Ich bin das Licht“: Leon Sommer als Mann oder als Lady Luma in Drag */
 export const ROLE_LOOKS: Record<string, Look> = {
@@ -154,6 +156,7 @@ export class Actor {
     root.getChildMeshes().forEach((m) => { if ((m as Mesh).skeleton) a.addLod(m as Mesh); });
     a.play('idle', 0);
     await a.dress();
+    if (look.gear) wearGear(a, look.gear, look.body.length + look.skin);
     await a.figure();
     a.root.onDisposeObservable.add(() => dropFig(a.figParts));
     return a;
