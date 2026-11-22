@@ -6,7 +6,7 @@ import type { Actor, Look } from './Actor';
 import type { InteriorScene } from './InteriorScene';
 import type { Line } from '../ui/ui';
 import { toast } from '../ui/ui';
-import { sfx, nightSounds } from '../engine/Audio';
+import { sfx, nightSounds, loveNight } from '../engine/Audio';
 import { change, hour, minutesUntil } from './life';
 import { post, canMeet } from './social';
 import { condomLabel } from './toys';
@@ -101,12 +101,12 @@ function oneNight(g: Game, st: Stranger, o: TalkOpts, bare: boolean, end?: () =>
   const look: Look = { ...(o.look || { body: st.rb || 'Male_Adult_01', rb: st.rb, palette: 'rainbow', skin: 0 }), outfit: 'clothed', style: undefined };   // ohne Szene-Shirt, sonst malt es über die Unterwäsche
   g.enterHome(() => {
     void g.home!.romance(look, st.name, () => {
-      const b = night(`💜 ${st.name} und du …`, tags); nightSounds();
+      const b = night(`💜 ${st.name} und du …`, tags); const wait = loveNight();
       setTimeout(() => {
         g.pass(minutesUntil(s, 8), true); s.flags.wild = s.day;
         const h = g.home!; h.showMess(); void h.morning(look);
         setTimeout(() => { b.remove(); after(true); }, 900);
-      }, 2600);
+      }, wait);
     });
   });
 }

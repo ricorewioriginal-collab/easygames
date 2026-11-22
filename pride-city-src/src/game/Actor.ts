@@ -10,6 +10,7 @@ import { playerDrag } from './dragLook';
 import { lodFor, LOD_DIST, HIDE_DIST, type Lod } from './lod';
 
 export const CHAR_HEIGHT = 1.75;
+const GEAR = /_(helmet|equipment|machinegun|shotgun|pistol|mask|flashlight)$/;
 /** Schrittweite der Animationen: so schnell (m/s) läuft die Figur bei Tempo 1 */
 export const WALK_MPS = 1.02, RUN_MPS = 3.6;
 
@@ -164,6 +165,8 @@ export class Actor {
   private bare: Bare | null = null;
   /** Körper-Meshes der eigenen Figur (ohne den angelegten Sport-Körper) */
   private ownBody() { return this.model.getChildMeshes().filter((m) => (m as Mesh).skeleton && !(this.bare && m.isDescendantOf(this.bare.root)) && /_body/.test(((m.material as { _orig?: { name: string } })?._orig || m.material)?.name || '')) as Mesh[]; }
+  /** Einsatz-Ausrüstung der Berufsfiguren (Polizei, Feuerwehr, Security): eigene Meshes mit eigenem Material */
+  private gear() { return this.model.getChildMeshes().filter((m) => !(this.bare && m.isDescendantOf(this.bare.root)) && GEAR.test(((m.material as { _orig?: { name: string } } | null)?._orig || m.material)?.name || '')); }
   private styled = false;
   /** Harness ohne eigenen Look: Gurte werden als Look auf die nackte Haut gemalt */
   private styleNow() { return this.look.style || (this.look.outfit === 'harness' ? 'gurt' : undefined); }
@@ -185,6 +188,8 @@ export class Actor {
       const own = this.ownBody();
       const useBare = bare && !!this.bare;
       own.forEach((m) => m.setEnabled(!useBare));
+      // Ausrüstung (Helm, Weste, Holster, Waffen, Atemmaske) liegt ohne Kleidung nicht mehr am Körper
+      this.gear().forEach((m) => m.setEnabled(!useBare));
       if (this.bare) this.bare.root.setEnabled(useBare);
       if (useBare) await applyOutfit(this.scene, this.bare!.root, this.avatar.id + '@' + bareId(this.avatar.g), this.look.outfit, this.avatar.g === 'f', own[0]);
       else await applyOutfit(this.scene, this.model, this.avatar.id, this.look.outfit, this.avatar.g === 'f');

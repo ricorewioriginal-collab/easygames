@@ -2,7 +2,7 @@
 import { Engine } from '../engine/Engine';
 import { Save } from '../engine/Save';
 import { trackProgress } from '../engine/Assets';
-import { unlock, music, vol, applyVolume, sfx, nightSounds } from '../engine/Audio';
+import { unlock, music, vol, applyVolume, sfx, nightSounds, loveNight } from '../engine/Audio';
 import { Loading, Dialog, Menu, el, $, esc, hints, toast, chapterCard, bindInputMode, type Item, type Line } from '../ui/ui';
 import { Hud } from '../ui/Hud';
 import { Touch } from '../ui/Touch';
@@ -836,9 +836,9 @@ export class Game {
     if ((s.inv.condom || 0) > 0) s.inv.condom--;
     void this.home!.romance(look, sp.name, () => {
       const b = el(`<div class="night"><p>💜 ${esc(sp.name)} und du …</p><small>Zustimmung: ✔︎ · ${s.health.prep ? 'PrEP: ✔︎' : condomLabel(s) + ': ✔︎'}</small></div>`);
-      document.body.appendChild(b); nightSounds();
+      document.body.appendChild(b); const wait = loveNight();
       setTimeout(() => { this.pass(minutesUntil(s, 8), true); change(s, { energy: 100, social: 40, fun: 40, hygiene: -25 }); s.flags.wild = s.day; this.home!.showMess(); b.remove(); pcEvents.emit('liebesnacht', { id: sp.id, name: sp.name });
-        this.dialog.say([{ who: sp.name, color: sp.color, text: 'Guten Morgen, Schatz. Ich liebe dich. Und du machst heute Frühstück. ☕💞' }]); this.save.write(); this.city.refreshHud(); }, 2600);
+        this.dialog.say([{ who: sp.name, color: sp.color, text: 'Guten Morgen, Schatz. Ich liebe dich. Und du machst heute Frühstück. ☕💞' }]); this.save.write(); this.city.refreshHud(); }, wait);
     });
   }
   /** Absprache: exklusiv oder offen. Beides ist gut, solange alle Bescheid wissen. */
@@ -977,7 +977,7 @@ export class Game {
     // Abblende nach der Filmszene: Zeit vorspulen, Morgen danach mit Kaffee in der Küche
     const night = () => {
       const b = el(`<div class="night"><p>💜 ${p.name} und du …</p><small>Zustimmung: ✔︎ · ${condomLabel(s)}: ✔︎${lube ? ' · Gleitgel: ✔︎' : ''}${s.health.prep ? ' · PrEP: ✔︎' : ''}</small></div>`);
-      document.body.appendChild(b); nightSounds();
+      document.body.appendChild(b); const wait = loveNight();
       setTimeout(() => {
         this.pass(minutesUntil(s, 8), true);
         change(s, { energy: 100, social: 40, fun: 40, hygiene: -30 });
@@ -987,7 +987,7 @@ export class Game {
         h.showMess(); void h.morning(look);
         const morning = [`Guten Morgen, du. Kaffee ist fertig. Ich muss gleich los, aber … das war schön. ☕`, `Ich hab dir einen Kaffee gemacht. Deine zweite Socke liegt übrigens unterm Bett. 😅`, `Bleib noch liegen. Ich hab Frühstück gemacht und dir ein Herz auf den Zettel gemalt. 💌`];
         setTimeout(() => { b.remove(); this.dialog.say([{ who: p.name, color: p.color, text: morning[s.day % 3] }, { who: 'Du', color: '#ff4fa3', text: 'Erst mal duschen. Und aufräumen.' }], () => { void h.morning(null); toast(`${p.name} ist los zur Arbeit. 💜`); }); this.save.write(); }, 900);
-      }, 2600);
+      }, wait);
     };
     this.enterHome(() => { void this.home!.romance(look, p.name, night); });
   }

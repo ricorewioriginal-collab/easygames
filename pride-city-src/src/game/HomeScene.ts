@@ -77,7 +77,7 @@ export class HomeScene implements GameScene {
   private floorPlane: Mesh | null = null;
   private floorMats = new Map<string, PBRMaterial>();
   private discoBall: TransformNode | null = null;
-  private bedB = { x0: -4.4, x1: -2, z0: -3.4, z1: -1, top: .6 };
+  bedB = { x0: -4.4, x1: -2, z0: -3.4, z1: -1, top: .6 };
   /** Wohin nach dem Anbau: an die Anbau-Tür statt an die Wohnungstür */
   fromAnnex = false;
   private window!: PBRMaterial;
