@@ -799,7 +799,7 @@ $('vFs').addEventListener('click', () => {
 // ----- Teilen -----
 let shareI = -1;
 // Teilen-Adresse: die Vorschauseite share/<id>.html (Bild und Beschreibung für Chats und soziale Netze, leitet sofort zum Spiel weiter)
-const shareLink = g => g.external || /^https?:/.test(g.path) ? abs(g.path) : EMBED_SHARE ? embedLink(g) : abs('share/' + g.id + '.html');
+const shareLink = g => g.external || /^https?:/.test(g.path) ? abs(g.path) : window.EG_TG ? EG_TG.link(g.id) : EMBED_SHARE ? embedLink(g) : abs('share/' + g.id + '.html');   // in Telegram: Startlink, öffnet das Spiel direkt im Bot
 function openShare(i) {
   shareI = i === undefined ? cur : i;
   const g = GAMES[shareI], url = abs(g.path), shareUrl = shareLink(g);

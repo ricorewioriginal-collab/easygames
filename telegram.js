@@ -6,7 +6,8 @@
  * Tut außerhalb von Telegram nichts. In Telegram: lädt telegram-web-app.js, öffnet die Mini-App groß, verhindert, dass ein Wischen
  * nach unten mitten im Spiel die App schließt, färbt Kopf- und Hintergrund wie easygames und zeigt Telegrams Zurück-Knopf, solange
  * ein Spiel offen ist (schließt das Spiel). Startlink mit Spiel: t.me/<bot>?startapp=<spiel-id> bzw. t.me/<bot>/<app>?startapp=<spiel-id>.
- * Für index.html: window.EG_TG = { start: '<spiel-id>' | '', ready: Promise }.
+ * Für index.html: window.EG_TG = { start: '<spiel-id>' | '', ready: Promise, link(id) }  – link() = Startlink zum Teilen in Telegram.
+ * Bot: @easygames_ricorewiBot (anderer Bot: window.EASYGAMES_TG_BOT vor diesem Skript setzen).
  */
 (function (W) {
   'use strict';
@@ -21,7 +22,8 @@
     s.src = 'https://telegram.org/js/telegram-web-app.js'; s.onload = fin; s.onerror = fin; setTimeout(fin, 4000);   // ohne Netz zu telegram.org trotzdem weiter
     D.head.appendChild(s);
   });
-  W.EG_TG = { start: start, ready: ready };
+  var bot = W.EASYGAMES_TG_BOT || 'easygames_ricorewiBot';
+  W.EG_TG = { start: start, ready: ready, bot: bot, link: function (id) { return 'https://t.me/' + bot + '?startapp=' + encodeURIComponent(id); } };
   D.documentElement.classList.add('in-telegram');
   ready.then(function (tg) {
     if (!tg) return;

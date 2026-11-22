@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "03ee0b6c0d4f",
- "generated": "2026-11-22T12:41:07+00:00",
- "commit": "acf1ba9376159fd3c72fbac3ec368322db5ffd2d",
+ "version": "d7b195fec7d6",
+ "generated": "2026-11-22T21:16:52+01:00",
+ "commit": "f21e8159e0758421b02340366b058cdb06c80d38",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -13138,8 +13138,8 @@
   },
   {
    "p": "index.html",
-   "s": 103485,
-   "h": "9c8e144b5c451bfe8b84847d42c2d9c4bb43aebf71f10063b27863047d80c5b7"
+   "s": 103580,
+   "h": "d7a31af204da3efb94c54c4c98b419e19e4b249594bc0d1e6d07f92717401fc5"
   },
   {
    "p": "kiko-sterneninseln/card.svg",
@@ -19108,8 +19108,8 @@
   },
   {
    "p": "telegram.js",
-   "s": 3199,
-   "h": "98ce5d67aac1aba70dff9b9d6d2c24c2561b075ed17599a7895b99fa7551e26e"
+   "s": 3516,
+   "h": "ac292247841e2349ff29560f06ec60f759b93ebdf6932379c40ac73c334a1bae"
   },
   {
    "p": "thumbs/FunkhausReality.webp",

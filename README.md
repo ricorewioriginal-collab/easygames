@@ -203,7 +203,8 @@ Alle Spiele laufen in Telegram als Mini-App – ohne eigenen Server, gehostet wi
 1. In Telegram **@BotFather** öffnen → `/newbot` (Name und Benutzername, z. B. `easygames_bot`).
 2. `/mybots` → Bot wählen → **Bot Settings → Configure Mini App → Enable Mini App** → Adresse `https://ricorewioriginal-collab.github.io/easygames/`
    (Haupt-Mini-App: Knopf „Open“ im Bot-Profil und `t.me/<bot>?startapp`). Zusätzlich unter **Bot Settings → Menu Button** dieselbe Adresse mit dem Text „🎮 Spielen“.
-3. Fertig: Spieleliste im Bot öffnen. Direkt zu einem Spiel: `https://t.me/<bot>?startapp=<spiel-id>` (z. B. `?startapp=deluxe-2048`).
+3. Fertig: Spieleliste im Bot öffnen. Direkt zu einem Spiel: `https://t.me/<bot>?startapp=<spiel-id>` (z. B. `https://t.me/easygames_ricorewiBot?startapp=deluxe-2048`).
+   Bot: **@easygames_ricorewiBot** (in `telegram.js`; „Spiel teilen“ in Telegram gibt diesen Startlink weiter).
 
 `telegram.js` (nur in `index.html`) tut außerhalb von Telegram nichts. In Telegram öffnet es die Mini-App groß, sperrt das Schließen per Wischen
 während des Spiels, nimmt die easygames-Farben und zeigt Telegrams Zurück-Knopf, solange ein Spiel offen ist. Test: `tools/test-telegram.cjs`.

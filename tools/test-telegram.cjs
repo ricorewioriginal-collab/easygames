@@ -37,6 +37,8 @@ const FAKE = `window.__tg=[];window.Telegram={WebApp:{version:'8.0',isVersionAtL
     await t.p.evaluate(() => window.__tgBack()); await t.p.waitForTimeout(600);
     ok(await t.p.evaluate(() => document.getElementById('viewer').classList.contains('hidden') && !Telegram.WebApp.BackButton.isVisible), 'Zurück-Knopf schließt das Spiel und verschwindet');
     if (SHOTS) await t.p.screenshot({ path: path.join(SHOTS, 'telegram-liste.png') });
+    ok(await t.p.evaluate(() => shareLink(GAMES.find(g => g.id === 'deluxe-2048'))) === 'https://t.me/easygames_ricorewiBot?startapp=deluxe-2048', '„Spiel teilen“ in Telegram = Startlink des Bots');
+    ok(!/t\.me/.test(await n.p.evaluate(() => shareLink(GAMES.find(g => g.id === 'deluxe-2048')))), 'außerhalb von Telegram bleibt der Teilen-Link wie bisher');
     // 3) in Telegram ohne Startlink: Liste, Spiel per Tipp, Zurück
     const u = await page(); await u.p.goto(base + '#tgWebAppData=x&tgWebAppVersion=8.0&tgWebAppPlatform=tdesktop'); await u.p.waitForTimeout(1500);
     ok(await u.p.evaluate(() => document.getElementById('viewer').classList.contains('hidden')), 'ohne Startlink: Spieleliste');
