@@ -12,6 +12,7 @@ import { dragGoal } from './drag';
 import { hour } from './life';
 import { fadenGoal, fadenTick, fadenPoi, fadenDance, actLabel, history } from './faden';
 import { FLUT_NPCS, flutTalk, flutGoal, flutMarks, flutHidden, flutTick, flutHush } from './flut';
+import { crewTalk, crewGoal, crewMarks, crewTick } from './crew';
 
 export interface NpcDef {
   id: string; name: string; pron: string; color: string; look: Look;
@@ -85,6 +86,10 @@ export interface StoryCtx {
   mini?(id: string, done?: (won: boolean) => void): void;
   /** Anruf: Handy klingelt, dann das Gespräch */
   phone(lines: Line[], done?: () => void): void;
+  /** läuft gerade ein Auftrag oder eine Mission */
+  gigOn?(): boolean;
+  /** Fahndung (Akt V): mit n Sterne setzen; liefert die aktuellen Sterne */
+  wanted?(n?: number): number;
 }
 
 const me = (s: SaveData) => s.name;
@@ -142,6 +147,7 @@ export function goal(s: SaveData): Goal {
   if (sg && (s.chapter > 5 || s.flags.sagaRun)) return sg;
   const fg = fadenGoal(s); if (fg) return fg;
   const flg = flutGoal(s); if (flg) return flg;
+  const crg = crewGoal(s); if (crg) return crg;
   const sat = (s.day - 1) % 7 === 5, h = hour(s);
   if (s.chapter > 5 && s.flags.wagen && sat && h >= 12 && h < 18 && s.flags.wagenPrize !== s.day) return { title: 'CSD-Parade: Spring auf deinen Festwagen', sub: 'Bis 18 Uhr auf der Hauptstraße. Bleib oben, bis die Jury deinen Wagen gesehen hat.' };
   const dg = s.chapter > 3 ? dragGoal(s) : null;
@@ -162,7 +168,7 @@ export function goal(s: SaveData): Goal {
 }
 
 /** Figuren, die gerade ein Symbol über dem Kopf brauchen */
-export function marks(s: SaveData): Array<[string, string]> { return [...mainMarks(s), ...sagaMarks(s), ...nachtMarks(s), ...flutMarks(s)]; }
+export function marks(s: SaveData): Array<[string, string]> { return [...mainMarks(s), ...sagaMarks(s), ...nachtMarks(s), ...flutMarks(s), ...crewMarks(s)]; }
 function mainMarks(s: SaveData): Array<[string, string]> {
   if (s.chapter === 1 && s.step === 4) return NPCS.filter((n) => n.petition && s.flags['sig_' + n.id] === undefined).map((n) => [n.id, '✍️']);
   if (s.chapter === 4 && s.step === 1) return CLUES.filter((id) => !s.flags['clue_' + id]).map((id) => [id, '🔎']);
@@ -183,13 +189,13 @@ export function storyTick(c: StoryCtx) {
     // Akt IV (flut.ts) klingelt nur, wenn der rote Faden in diesem Takt nicht schon angerufen hat
     let rang = false;
     fadenTick({ ...c, phone: (l, d) => { rang = true; c.phone(l, d); } });
-    if (rang) flutHush(); else flutTick(c);
+    if (rang) flutHush(); else { flutTick(c); crewTick(c); }
   }
 }
 
 /** Gespräch – true, wenn die Geschichte es übernommen hat */
 export function talk(c: StoryCtx, id: string): boolean {
-  if (sagaTalk(c, id) || nachtTalk(c, id) || flutTalk(c, id)) return true;
+  if (crewTalk(c, id) || sagaTalk(c, id) || nachtTalk(c, id) || flutTalk(c, id)) return true;
   const s = c.s, n = npc(id);
   if (!n) return false;
   if (s.chapter === 1) {
