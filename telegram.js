@@ -16,7 +16,9 @@
   try { if (inTg) W.sessionStorage.setItem('eg-tg', '1'); else inTg = W.sessionStorage.getItem('eg-tg') === '1'; } catch (e) { }
   if (!inTg || W.parent !== W) return;
   var p = {}; h.replace(/^#/, '').split('&').forEach(function (kv) { var i = kv.indexOf('='); if (i > 0) { try { p[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1)); } catch (e) { } } });
-  var start = String(p.tgWebAppStartParam || '').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 48);
+  // Startspiel: Startlink (?startapp=<id> → tgWebAppStartParam) oder Knopf des Bots (…/easygames/?spiel=<id>)
+  var q = /[?&]spiel=([^&#]+)/.exec(W.location.search);
+  var start = String(p.tgWebAppStartParam || (q ? decodeURIComponent(q[1]) : '')).replace(/[^A-Za-z0-9-]/g, '').slice(0, 48);
   var ready = new Promise(function (res) {
     var s = D.createElement('script'), done = false, fin = function () { if (!done) { done = true; res(W.Telegram && W.Telegram.WebApp || null); } };
     s.src = 'https://telegram.org/js/telegram-web-app.js'; s.onload = fin; s.onerror = fin; setTimeout(fin, 4000);   // ohne Netz zu telegram.org trotzdem weiter

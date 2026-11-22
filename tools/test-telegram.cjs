@@ -39,6 +39,10 @@ const FAKE = `window.__tg=[];window.Telegram={WebApp:{version:'8.0',isVersionAtL
     if (SHOTS) await t.p.screenshot({ path: path.join(SHOTS, 'telegram-liste.png') });
     ok(await t.p.evaluate(() => shareLink(GAMES.find(g => g.id === 'deluxe-2048'))) === 'https://t.me/easygames_ricorewiBot?startapp=deluxe-2048', '„Spiel teilen“ in Telegram = Startlink des Bots');
     ok(!/t\.me/.test(await n.p.evaluate(() => shareLink(GAMES.find(g => g.id === 'deluxe-2048')))), 'außerhalb von Telegram bleibt der Teilen-Link wie bisher');
+    // Knopf des Bots: …/easygames/?spiel=<id> (Groß-/Kleinschreibung egal)
+    const k = await page(); await k.p.goto(base + '?spiel=FunkhausReality#tgWebAppData=x&tgWebAppVersion=8.0&tgWebAppPlatform=android');
+    await k.p.waitForFunction(() => !document.getElementById('viewer').classList.contains('hidden'), null, { timeout: 8000 }).catch(() => {});
+    ok(/FunkhausReality/i.test(await k.p.$eval('#frame', f => f.src)), 'Bot-Knopf ?spiel=FunkhausReality öffnet das Spiel');
     // 3) in Telegram ohne Startlink: Liste, Spiel per Tipp, Zurück
     const u = await page(); await u.p.goto(base + '#tgWebAppData=x&tgWebAppVersion=8.0&tgWebAppPlatform=tdesktop'); await u.p.waitForTimeout(1500);
     ok(await u.p.evaluate(() => document.getElementById('viewer').classList.contains('hidden')), 'ohne Startlink: Spieleliste');

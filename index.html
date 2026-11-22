@@ -1177,7 +1177,7 @@ if (isTv) { const f = heroOn ? $('hero').querySelector('.primary') : tiles[0] &&
 const start = GAMES.findIndex(g => '#' + g.id === location.hash);
 if (start >= 0) openGame(start, true);
 // Telegram-Mini-App mit Startlink t.me/<bot>?startapp=<spiel-id>: Spiel öffnen, sobald Telegram bereit ist (liest vorher noch die Adresse)
-else if (window.EG_TG && window.EG_TG.start) window.EG_TG.ready.then(() => { const i = GAMES.findIndex(g => g.id === window.EG_TG.start); if (i >= 0 && cur < 0) openGame(i); });
+else if (window.EG_TG && window.EG_TG.start) window.EG_TG.ready.then(() => { const i = GAMES.findIndex(g => g.id.toLowerCase() === window.EG_TG.start.toLowerCase()); if (i >= 0 && cur < 0) openGame(i); });
 </script>
 <script>
 // Ein Login für alles (Google): Anmelden-Knopf oben, danach Menü mit allen persönlichen Funktionen
