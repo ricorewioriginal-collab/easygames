@@ -8,7 +8,7 @@ import { el, $, hints } from '../../ui/ui';
 import { music, sfx, type Sfx } from '../../engine/Audio';
 import type { Game } from '../Game';
 
-export interface MiniResult { id: string; score: number; won: boolean; quit: boolean; best: number }
+export interface MiniResult { id: string; score: number; won: boolean; quit: boolean; best: number; /** spielspezifische Zahlen (z. B. Drinks, Trinkgeld) */ extra?: Record<string, number> }
 export interface MiniDef {
   id: string;
   icon: string; name: string; sub: string;
@@ -95,6 +95,8 @@ export abstract class Arcade implements GameScene {
   protected ended = false;
   /** Restzeit in Sekunden (Infinity = ohne Uhr) */
   protected left = Infinity;
+  /** spielspezifische Zahlen fürs Ergebnis */
+  protected extra: Record<string, number> = {};
   protected camPos = new Vector3(0, 3, 10);
   protected camAt = new Vector3(0, 1, 0);
   private shakeK = 0;
@@ -216,7 +218,7 @@ export abstract class Arcade implements GameScene {
     this.combo(quit ? '' : `${this.points} Punkte · Ziel ${this.def.goal} · Rekord ${s.best[key]}`);
     if (!quit) { sfx(won ? 'win' : 'miss'); if (won) { sfx('cheer'); this.fx.burst('confetti', this.camAt.add(new Vector3(0, 2, 0)), 0xff3b8d, 0x3bd1ff, 120, 7, .22, 1.4); this.flash('#ffd23b', .35); } }
     this.hud.querySelector('.aBtn')?.remove(); this.hud.querySelector('.aPad')?.remove();
-    setTimeout(() => this.done({ id: this.def.id, score: this.points, won, quit, best: s.best[key] }), quit ? 250 : 2800);
+    setTimeout(() => this.done({ id: this.def.id, score: this.points, won, quit, best: s.best[key], extra: this.extra }), quit ? 250 : 2800);
   }
 }
 

@@ -227,9 +227,21 @@
       ]
     },
     {
+      "t": "3D-Minispiele: Barkeeper-Schicht",
+      "p": [
+        "Hinter der Theke im Club Leuchtturm (früher ein Menü-Spiel, jetzt in 3D, gleiche Karte und gleicher Lohn). Ein Gast bestellt, zum Beispiel Pride-Spritz = 🍊🫧🍓. ◀ ▶ dreht das Zutaten-Karussell, A gibt die Zutat ins Glas; auf „🛎️ Servieren“ drehen und A schiebt den Drink rüber, „🗑️ Leeren“ kippt ihn weg. Die Reihenfolge ist egal. Richtig gibt 100 Punkte plus Tempo-Bonus und Trinkgeld. 75 Sekunden, Ziel 800 Punkte. Bei der echten Schicht gibt es Trinkgeld plus 4 € je Drink. Die Cocktails sind Teil dieses Spiels."
+      ]
+    },
+    {
+      "t": "3D-Minispiele: DJ-Pult",
+      "p": [
+        "Ersetzt den Regenbogen-Rave aus Gay Life!. Du legst auf der Pride-Party auf: links 💗 House, rechts 💙 Techno. Die Menge ruft, was sie hören will; ◀ ▶ schiebt den Crossfader dorthin, dann steigt die Stimmung und bringt laufend Punkte. Läuft der Spannungsbalken voll, erscheint DROP!: genau dann A drücken (bis 200 Punkte). A zur falschen Zeit kratzt auf der Platte. 60 Sekunden, Ziel 1000 Punkte."
+      ]
+    },
+    {
       "t": "Gay-Life!-Spiele ohne eigene 3D-Fassung",
       "p": [
-        "Nichts doppelt: Tanzbattle (Tanzschule) und Regenbogen-Rave öffnen das 3D-Tanz-Battle, das Klischee-Quiz das Quiz mit Hilde (Wissen), das Date-Roulette Rainbow Match. Alle 2D-Originale bleiben unter Minispiele → Gay Life! Originale."
+        "Nichts doppelt: Tanzbattle (Tanzschule) öffnet das 3D-Tanz-Battle, das Klischee-Quiz das Quiz mit Hilde (Wissen), das Date-Roulette Rainbow Match. Der Regenbogen-Rave ist jetzt das DJ-Pult. Alle 2D-Originale bleiben unter Minispiele → Gay Life! Originale."
       ]
     },
     {
