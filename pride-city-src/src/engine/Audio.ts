@@ -1,7 +1,7 @@
 /* Klang ohne Audiodateien: Effekte und Musik werden live mit WebAudio erzeugt (spart Download, läuft offline). */
 
 export type Sfx = 'rain' | 'thunder' | 'move' | 'ok' | 'back' | 'coin' | 'win' | 'miss' | 'hit' | 'open' | 'step' | 'cheer'
-  | 'door' | 'engine' | 'horn' | 'siren' | 'glass' | 'pour' | 'phone' | 'shower' | 'cook' | 'kiss' | 'giggle' | 'sheets' | 'heart' | 'splash' | 'tram' | 'camera' | 'applause' | 'whoosh' | 'slap' | 'boing' | 'squeak';
+  | 'door' | 'engine' | 'horn' | 'siren' | 'glass' | 'pour' | 'phone' | 'shower' | 'cook' | 'kiss' | 'giggle' | 'sheets' | 'heart' | 'splash' | 'tram' | 'camera' | 'applause' | 'whoosh' | 'slap' | 'boing' | 'squeak' | 'boom' | 'rotor';
 
 let ctx: AudioContext | null = null;
 let master: GainNode, sfxBus: GainNode, musicBus: GainNode;
@@ -116,6 +116,8 @@ export function sfx(k: Sfx) {
     case 'slap': noise(t, .05, .32, sfxBus, 0, 2600); noise(t, .09, .16, sfxBus, 0, 900); break;
     case 'boing': tone(52, t, .22, 'sine', .3, sfxBus, 9); tone(64, t + .04, .18, 'triangle', .12, sfxBus, -7); noise(t, .05, .12, sfxBus, 0, 700); break;
     case 'squeak': tone(86, t, .09, 'sine', .16, sfxBus, 7); tone(79, t + .09, .14, 'sine', .14, sfxBus, -9); noise(t, .05, .14, sfxBus, 0, 1200); break;
+    case 'boom': noise(t, .9, .2, sfxBus, 0, 160); noise(t + .02, .5, .08, sfxBus, 0, 900); for (let i = 0; i < 10; i++) noise(t + .25 + Math.random() * .7, .03, .03, sfxBus, 4000); break;
+    case 'rotor': for (let i = 0; i < 8; i++) noise(t + i * .09, .06, .07, sfxBus, 0, 220); break;
     case 'camera': noise(t, .05, .15, sfxBus, 3000); noise(t + .09, .07, .1, sfxBus, 2000); break;
   }
 }

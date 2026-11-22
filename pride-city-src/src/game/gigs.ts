@@ -9,6 +9,8 @@ export interface GigStep {
   fight?: string[];
   /** Verfolgung (Brawl.ts): Wagen über das Straßennetz (car = Modell) oder zu Fuß über einen festen Weg (path); die Station wandert mit */
   chase?: { car?: string; path?: Array<[number, number]> };
+  /** Flug (luft.ts): nur mit Fluggerät; y = Ring in dieser Höhe, low = über dem Ziel unter 6 m sinken; r = Radius */
+  air?: boolean; y?: number; low?: boolean; r?: number;
 }
 export interface Gig {
   id: string; who: string; color: string; title: string;

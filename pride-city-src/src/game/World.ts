@@ -215,6 +215,7 @@ export class World {
     P('bar', 'Club Leuchtturm', '🗼', -72.6, -12);
     P('beach', 'Strandbar Sandbank', '🏖️', -80.4, 30);
     P('sauna', 'Sauna Heißer Stein', '🧖', -77, 40.4);
+    P('flug', 'Flugschule Möwenflug', '🛩️', -70, -26, undefined, undefined, 2.4);
     P('tramhafen', 'Tram Hafen', '🚋', -70, 8, undefined, undefined, 3.6);
     P('welten', 'Weltentor', '🌀', -78, 13, undefined, undefined, 3.4);
     P('tram', 'Tram Rainbow City', '🚋', 0, 52, undefined, undefined, 4);
@@ -437,6 +438,8 @@ export class World {
     // Wetter: Wolken machen den Himmel grau und das Licht flacher, Nebel und Regen verdichten den Dunst
     const wx = this.wx;
     if (wx.gloom > .01) { const grey = col(0x77808f).scale(.25 + .75 * day); Color3.LerpToRef(top, grey.scale(.8), wx.gloom * .8, top); Color3.LerpToRef(bot, grey, wx.gloom * .8, bot); }
+    // Schnee: heller, kühler Dunst am Horizont
+    if (wx.snow > .01) Color3.LerpToRef(bot, col(0xdfe8f5).scale(.3 + .7 * day), wx.snow * .55, bot);
     const sm = this.skyMat;
     sm.setColor3('top', top); sm.setColor3('bot', bot); sm.setFloat('stars', this.night * (1 - wx.gloom));
     sm.setVector3('sunDir', new Vector3(Math.cos(ang) * .8, up, .45).normalize());
@@ -455,7 +458,7 @@ export class World {
     this.sun.diffuse = Color3.Lerp(Color3.Lerp(col(0x8fa0ff), Color3.White(), day), col(0xffa060), dusk);
     this.hemi.intensity = (.55 + .45 * day) * (1 - wx.gloom * .18) + wx.flash * 2.4;
     this.hemi.diffuse = Color3.Lerp(col(0x7a6cff), col(0xbfd8ff), day);
-    this.hemi.groundColor = Color3.Lerp(col(0x2a2040), col(0x4a3a5a), day);
+    this.hemi.groundColor = Color3.Lerp(Color3.Lerp(col(0x2a2040), col(0x4a3a5a), day), col(0xb8c4d8), wx.snow * .5);
     this._sunDir.set(Math.cos(ang) * .8, Math.max(.25, Math.abs(up)), .45).normalize();
     this.sun.direction = this._sunDir.scale(-1);
     // Farben direkt im Material ändern: eine neue Farbe zuweisen markiert jedes Mal alle Meshes der Szene als „schmutzig“ (kostete jedes Bild viel Zeit)
@@ -469,7 +472,7 @@ export class World {
   }
   private _sunDir = new Vector3(.5, .8, .4);
   /** Wetter (weather.ts): Bewölkung, nasse Straßen, zusätzlicher Dunst, Blitz */
-  readonly wx = { gloom: 0, wet: 0, fog: 0, flash: 0 };
+  readonly wx = { gloom: 0, wet: 0, fog: 0, flash: 0, /** Schneefall 0–1 */ snow: 0, /** Lichtblitz vom Feuerwerk */ boom: 0 };
   /** niedrige Grafikstufe (Handy): keine Punktlichter, kein Klarlack, keine Feinstruktur */
   low = false;
   setLow(on: boolean) {

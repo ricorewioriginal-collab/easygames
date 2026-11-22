@@ -1,12 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { defaults } from '../src/engine/Save';
-import { skyAt, rainbowAt, forecast, slotOf, SKY } from '../src/game/weather';
+import { skyAt, rainbowAt, forecast, slotOf, SKY, useSeason } from '../src/game/weather';
 import { LIFE_EVENTS, eventFits, kerbSpot, applyOut, paradeOn } from '../src/game/citylife';
 import { walkable } from '../src/game/World';
 
 describe('Wetter', () => {
   it('steht je Tag und Abschnitt fest und kennt alle Arten', () => {
     const seen = new Set<string>();
+    useSeason('winter'); for (let d = 2; d < 120; d++) seen.add(skyAt(d, .3));   // Schnee gibt es nur im Winter
+    useSeason('fruehling');
     for (let d = 2; d < 120; d++) for (let sl = 0; sl < 4; sl++) { const k = skyAt(d, sl / 4 + .1); expect(skyAt(d, sl / 4 + .2)).toBe(k); seen.add(k); }
     expect(seen.size).toBe(Object.keys(SKY).length);
     expect(slotOf(0)).toBe(0); expect(slotOf(.26)).toBe(1); expect(slotOf(.99)).toBe(3);

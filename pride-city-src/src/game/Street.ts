@@ -6,6 +6,7 @@ import { box, cyl, pbr, glow } from '../engine/geo';
 import { Actor, WALK_MPS, RUN_MPS, type Anim, type Look } from './Actor';
 import { WORKERS, CURB } from './social';
 import { buildFlitzer } from './flitzer';
+import { buildAircraft, BASE } from './luft';
 import { buildRingMobil } from './toys';
 import { buildRide } from './rides';
 import { CURB_SPOTS } from './uptown';
@@ -157,7 +158,7 @@ export class Street {
     const spots: Array<[string, number, number, number]> = [
       ['hatch', 11, 32.7, -Math.PI / 2], ['sedan', -11, 27.3, Math.PI / 2], ['taxi', -20, 27.3, Math.PI / 2], ['kombi', -66, 14, 0],
       ['flitzer', 24, 32.7, -Math.PI / 2], ['suv', -66, 22, 0],
-      ['rakete', -75, 19, 0],
+      ['rakete', -75, 19, 0], ['heli', ...BASE.heli], ['flieger', ...BASE.plane],
       ['ringmobil', -22, 32.7, -Math.PI / 2], ['ringmobil', -66, 30, 0],
       ['roller', -6, 32.7, -Math.PI / 2], ['roller', -66, 37, 0], ['pridebus', -15, -27.3, Math.PI / 2], ['boot', -98.4, 30, -Math.PI / 2],
       ['sport', 157.2, -51, Math.PI], ['bulli', 162.4, -51, Math.PI], ['pickup', 159.8, -38.5, 0], ['lux', 130, 62.7, -Math.PI / 2], ['liefer', 196, -62.7, Math.PI / 2],
@@ -166,6 +167,7 @@ export class Street {
       const def = carDef(id);
       let o: Node3;
       // der Flitzer zum Fliegen steht neben dem Weltentor (Form je nach 18+ setzt CityScene)
+      if (def.air) { o = new Node3(def.id, this.scene); buildAircraft(this.scene, o, def.air); o.parent = this.world.root; o.position.set(x, .75, z); o.rotation.y = yaw; this.parked.push({ o, name: def.name, yaw, v: 0, def }); continue; }
       if (def.fly) { this.addFlyer(x, z, yaw); continue; }
       // Penisring- bzw. Donut-Mobil (Form je nach 18+ setzt CityScene)
       if (def.ride) { o = new Node3(def.id, this.scene); buildRide(this.scene, o, def.ride); o.parent = this.world.root; o.position.set(x, def.ride === 'boat' ? .05 : .1, z); o.rotation.y = yaw; this.parked.push({ o, name: def.name, yaw, v: 0, def }); continue; }
