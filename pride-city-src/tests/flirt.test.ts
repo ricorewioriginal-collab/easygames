@@ -55,3 +55,25 @@ describe('STI', () => {
     setRoll(Math.random);
   });
 });
+
+describe('STI realistisch', () => {
+  it('Risiko je Kontakt niedrig: unter 10 % ohne Kondom, frisch getestet deutlich weniger', async () => {
+    const { STIS, PARTNER_STATUS } = await import('../src/game/sti');
+    const any = 1 - STIS.reduce((p, d) => p * (1 - d.risk), 1);
+    expect(any).toBeLessThan(.1);
+    const fresh = PARTNER_STATUS.find((p) => p.id === 'frisch')!;
+    expect(1 - STIS.reduce((p, d) => p * (1 - d.risk * fresh.f), 1)).toBeLessThan(.025);
+  });
+  it('PrEP-Partner*in ohne HIV-Risiko: kein PEP-Fenster', () => {
+    const s = fresh(); s.settings.adult = true; setRoll(() => .5);
+    const prep = { id: 'prep' as const, label: '', f: .6, hiv: 0 };
+    const x = exposure(s, true, { partners: [{ status: prep }] });
+    expect(x.hiv).toBe(false); expect(s.flags.pepBy).toBeUndefined(); expect(x.caught).toEqual([]);
+    setRoll(Math.random);
+  });
+  it('in 100 ungeschützten Nächten nicht jedes Mal krank', () => {
+    const s = fresh(); s.settings.adult = true; let n = 0;
+    for (let i = 0; i < 100; i++) { s.flags.sti = '{}'; if (exposure(s, true).caught.length) n++; }
+    expect(n).toBeLessThan(25);
+  });
+});

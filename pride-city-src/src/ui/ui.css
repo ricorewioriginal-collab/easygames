@@ -468,3 +468,8 @@ body:has(#hud:not(.hidden)) .screen.title.tune .panel p { margin: .25em 0; }
 @keyframes dirIn { 0% { opacity: 0; transform: translate(-50%, 8px); } 10%, 80% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; } }
 .cine .slate { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%) rotate(-4deg); padding: 14px 22px; background: repeating-linear-gradient(135deg, #111 0 18px, #eee 18px 36px) top / 100% 14px no-repeat, #1a1a1a; color: #fff; font: 900 clamp(18px, 3vw, 28px)/1.2 system-ui; border-radius: 8px; padding-top: 26px; transition: opacity .5s, transform .5s; }
 .cine .slate.off { opacity: 0; transform: translate(-50%, -60%) rotate(-12deg); }
+/* Cam-Show (fanshop.ts): Live-Chat und Trinkgeld */
+.cine.cam { pointer-events: none; }
+.cine.cam .camchat { position: absolute; left: 16px; bottom: calc(11vh + 14px); margin: 0; padding: 0; list-style: none; max-width: min(70vw, 340px); font: 600 13px/1.35 system-ui, sans-serif; color: #fff; text-shadow: 0 1px 3px #000; }
+.cine.cam .camchat li { background: #0008; border-radius: 10px; padding: 3px 9px; margin-top: 4px; width: fit-content; }
+.cine.cam .camtip { position: absolute; right: 16px; top: calc(11vh + 10px); font: 800 15px/1 system-ui, sans-serif; color: #3ee69a; font-style: normal; text-shadow: 0 0 6px #000; }

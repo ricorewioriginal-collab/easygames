@@ -1,5 +1,6 @@
 /* Stadt-Szene (Babylon.js): Rainbow City zum Herumlaufen (Spielmodus) und als Kulisse fürs Titelmenü (Kameraflug,
    tanzende Leute). Alle Menschen sind Rocketbox-Figuren. */
+import { SZENE } from './szene';
 import { cullAhead } from '../engine/Cull';
 import type { GameScene } from '../engine/Engine';
 import { Vector3, TransformNode, type Mesh, type FreeCamera, type Scene, clamp, dist, col } from '../engine/bjs';
@@ -374,7 +375,7 @@ export class CityScene implements GameScene {
       if (d < 2.6 && d < bd) { bd = d; best = { kind: 'npc', id: n.def.id, label: 'Sprechen mit ' + n.def.name }; }
     }
     const icon: Record<string, string> = { worker: '🏮 Escort · ', curb: '💋 Laternenmeile · ', police: '🚓 ', fire: '🚒 ', medic: '🚑 ', security: '🛡️ ', chef: '👩‍🍳 ', courier: '📦 ' };
-    if (!best) { const st = this.street.near(p); if (st) best = { kind: 'street', id: String(this.street.people.indexOf(st)), label: (icon[st.kind] || '💬 ') + st.name }; }
+    if (!best) { const st = this.street.near(p); if (st) best = { kind: 'street', id: String(this.street.people.indexOf(st)), label: (st.kind === 'szene' ? (SZENE[st.id!]?.icon || '💬') + ' ' : icon[st.kind] || '💬 ') + st.name }; }
     if (!best) { const car = this.street.nearCar(p); if (car) best = { kind: 'car', id: String(this.street.parked.indexOf(car)), label: `${car.def.icon} Einsteigen: ${car.name}${car.own ? ' (dein Wagen)' : ''}` }; }
     if (!best) { const tc = this.street.nearTraffic(p); if (tc) best = { kind: 'car', id: 't' + this.world.cars.indexOf(tc), label: `🚗 Ausleihen: ${this.street.trafficDef(tc).name}` }; }
     const want = goal(this.g.save.data).poi;
@@ -444,8 +445,8 @@ export class CityScene implements GameScene {
       const end = () => { n.talking = false; n.a.play(n.anim || 'idle'); };
       if (n.kind === 'worker') { this.g.booking(n.id!); setTimeout(end, 4000); return; }
       // alle Erwachsenen sind ansprechbar: Plaudern, mit 18+ auch Flirten und mehr (flirtui.ts)
-      const rb = n.a.avatar.id, generic = /^(Szene-Mensch|Verliebte?r?|Passant|Spaziergänger|Nachbar|Tourist|Studentin|Geschäftsmann)/.test(n.name);
-      this.g.strangerTalk(stranger('street:' + this.near.id + ':' + rb, rb, generic ? undefined : n.name), { actor: n.a, look: { ...n.a.look, outfit: 'clothed' }, opening: this.street.line(n, s.day), kid: n.a.avatar.job === 'kid', kind: n.kind }, end);
+      const rb = n.a.avatar.id, generic = n.kind === 'szene' || /^(Szene-Mensch|Verliebte?r?|Passant|Spaziergänger|Nachbar|Tourist|Studentin|Geschäftsmann)/.test(n.name);
+      this.g.strangerTalk(stranger('street:' + this.near.id + ':' + rb, rb, generic ? undefined : n.name), { actor: n.a, look: { ...n.a.look, outfit: 'clothed' }, opening: this.street.line(n, s.day), kid: n.a.avatar.job === 'kid', kind: n.kind, szene: n.kind === 'szene' ? n.id : undefined }, end);
       change(s, { social: 3 });
       return;
     }

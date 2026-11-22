@@ -131,11 +131,19 @@ export function civilFor(look: Look, name: string): Look | null {
 
 /** 'love' = Kinoszene, 'tape' = Sextape mit dem Handy (beide einverstanden), 'set' = Dreh im Studio mit Regie */
 export type LoveMode = 'love' | 'tape' | 'set';
-export interface LoveOpts { mode?: LoveMode; /** Regie-Zeilen [Sekunde, Text] */ lines?: Array<[number, string]>; title?: string }
+/** Wie es laufen soll (vorher abgesprochen): verändert Lage im Bett, Kamera und Stimmen – nie explizit */
+export type Vibe = 'zart' | 'wild' | 'loeffel' | 'oben';
+export const VIBES: Record<Vibe, { icon: string; label: string; sub: string; ask: string }> = {
+  zart: { icon: '🕯️', label: 'Zärtlich und langsam', sub: 'viel küssen, viel Zeit', ask: 'Ganz langsam. Ich will jede Sekunde spüren.' },
+  wild: { icon: '🔥', label: 'Wild und leidenschaftlich', sub: 'laut, schnell, verschwitzt', ask: 'Heute will ich es wild. Die Nachbarn sollen was zu erzählen haben.' },
+  loeffel: { icon: '🥄', label: 'Löffelchen, du hinter mir', sub: 'eng aneinander, Arme um mich', ask: 'Leg dich hinter mich. Ich mag es, wenn du mich ganz festhältst.' },
+  oben: { icon: '👑', label: 'Ich oben, du lässt mich machen', sub: 'die andere Person führt', ask: 'Leg dich hin. Heute bestimme ich das Tempo.' },
+};
+export interface LoveOpts { /** Variante (Absprache vorher) */ vibe?: Vibe; mode?: LoveMode; /** Regie-Zeilen [Sekunde, Text] */ lines?: Array<[number, string]>; title?: string }
 
 /** Szene spielen: Partner*in (look) kommt dazu; skip() bricht ab. Am Ende done() – danach blendet das Spiel ab. */
 export async function loveScene(h: CineHost, look: Look, name: string, done: () => void, existing?: Actor, opts: LoveOpts = {}) {
-  const sc = h.scene, me = h.player, pr = h.portrait(), mode = opts.mode || 'love';
+  const sc = h.scene, me = h.player, pr = h.portrait(), mode = opts.mode || 'love', vibe = opts.vibe || 'zart', loud = vibe === 'wild' ? 1.4 : vibe === 'zart' ? .75 : 1;
   const first = existing || await Actor.create(sc, { ...look, outfit: 'clothed' });
   // Uniform kann man nicht umfärben: beim Ausziehen übernimmt eine zivile Figur (Helm ab, Weste weg)
   const civ = !existing && civilFor(look, name);
@@ -205,7 +213,7 @@ export async function loveScene(h: CineHost, look: Look, name: string, done: () 
     unpose();
     if (ew <= 0 && kw <= 0 && nk <= 0) return;
     const slide = .5 + .5 * Math.sin(T * 1.3);
-    if (hold === 'side' || lying) { embrace(me, partner, lying ? 0 : ew, kw, lying ? 'none' : 'side'); embrace(partner, me, 0, kw * .9, 'none'); return; }
+    if (hold === 'side' || lying) { embrace(me, partner, lying ? 0 : ew, kw, lying ? 'none' : 'side'); embrace(partner, me, 0, lying && vibe === 'loeffel' ? 0 : kw * .9, 'none'); return; }
     embrace(me, partner, ew, kw, 'waist', slide, nk); embrace(partner, me, ew, kw * .9, 'neck', slide, nk * .4);
   });
   const tmp = V(0, 0, 0);
@@ -242,11 +250,18 @@ export async function loveScene(h: CineHost, look: Look, name: string, done: () 
     cue(15, () => sfx('kiss'));
     cue(16.2, () => { sfx('sheets'); breath(.8, .06); });
     cue(17.1, () => { document.body.appendChild(blink); });
-    cue(17.6, () => { lying = true; me.play('idle', 0, .5); partner.play('idle', 0, .5); lie(me, -3.42, -.55); lie(partner, -2.86, .55); sheet.setEnabled(true); blink.remove(); });
+    cue(17.6, () => {
+      lying = true; me.play('idle', 0, .5); partner.play('idle', 0, .5); sheet.setEnabled(true); blink.remove();
+      if (vibe === 'loeffel') { lie(me, -3.36, -.6); lie(partner, -2.98, -.6); }      // beide zur gleichen Seite: du hinter der anderen Person
+      else if (vibe === 'oben') { lie(me, -3.3, -.35); lie(partner, -3.0, 1.05); partner.root.position.y = .8; }   // halb über dir
+      else { lie(me, -3.42, -.55); lie(partner, -2.86, .55); }
+    });
     cue(18.4, () => sfx('sheets'));
-    cue(19.2, () => moan(vYou, .8, .07, 'a'));
+    cue(19.2, () => moan(vYou, .8, .07 * loud, 'a'));
+    if (vibe === 'wild') { cue(19.7, () => { sfx('sheets'); moan(vMe, .5, .08, 'a'); }); cue(20.8, () => moan(vYou, .6, .09, 'o')); cue(21.7, () => { sfx('heart'); moan(vYou * 1.04, .7, .1, 'a'); }); }
+    if (vibe === 'zart') { cue(19.8, () => breath(1.2, .04)); cue(21.6, () => sfx('kiss')); }
     cue(20.3, () => { sfx('kiss'); breath(.7, .07); });
-    cue(21.2, () => moan(vMe, .8, .07, 'o'));
+    cue(21.2, () => moan(vMe, .8, .07 * loud, 'o'));
     cue(22.2, () => sfx('heart'));
     // Annäherung und Posen
     const near = ease((T - 4.2) / 1.4);
@@ -266,6 +281,7 @@ export async function loveScene(h: CineHost, look: Look, name: string, done: () 
       Vector3.LerpToRef(s.from, s.to, u, h.camera.position);
       if (s.look2) { Vector3.LerpToRef(s.look, s.look2, u, tmp); h.camera.setTarget(tmp); } else h.camera.setTarget(s.look);
     }
+    if (vibe === 'wild' && T > 17.6) { h.camera.position.x += Math.sin(T * 5.3) * .015; h.camera.position.y += Math.sin(T * 7.1) * .01; }
     if (mode === 'tape') { h.camera.position.x += Math.sin(T * 2.3) * .025; h.camera.position.y += Math.sin(T * 3.1) * .018; }
     if (T >= END) finish();
   };
@@ -292,17 +308,17 @@ function setProps(sc: Scene) {
   return out;
 }
 /** Bettdecke als weich gewelltes Tuch über beiden (Kopf und Schultern bleiben frei) */
-function blanket(sc: Scene) {
-  const g = CreateGround('decke', { width: 1.75, height: 1.2, subdivisions: 18, updatable: true }, sc);
+export function blanket(sc: Scene, width = 1.75, at = [-.28, .28], cx = -3.14) {
+  const g = CreateGround('decke', { width, height: 1.2, subdivisions: 18, updatable: true }, sc);
   const pos = g.getVerticesData('position')!;
   for (let i = 0; i < pos.length; i += 3) {
     const x = pos[i], z = pos[i + 2];
-    const bodies = Math.exp(-((x + .28) ** 2) / .03) + Math.exp(-((x - .28) ** 2) / .03);
-    const edge = Math.max(0, Math.abs(x) - .62) * 2.2;
+    const bodies = at.reduce((n, b) => n + Math.exp(-((x - b) ** 2) / .03), 0);
+    const edge = Math.max(0, Math.abs(x) - (width / 2 - .25)) * 2.2;
     pos[i + 1] = .09 * bodies + .03 * Math.sin(x * 9 + z * 5) + .015 * Math.sin(z * 13) - edge * edge * .9;
   }
   g.updateVerticesData('position', pos); g.createNormals(true);
-  g.position.set(-3.14, .93, -1.45);
+  g.position.set(cx, .93, -1.45);
   const m = new StandardMaterial('deckeMat', sc); m.diffuseColor = new Color3(.82, .7, .95); m.specularColor = new Color3(.05, .05, .05); m.emissiveColor = new Color3(.1, .07, .13); m.backFaceCulling = false; m.twoSidedLighting = true;
   g.material = m;
   g.onDisposeObservable.addOnce(() => m.dispose());

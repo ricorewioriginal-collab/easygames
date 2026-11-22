@@ -5,6 +5,7 @@
 import type { SaveData } from '../engine/Save';
 import { STYLE_IDS } from './queer';
 import type { Outfit } from './Actor';
+import { szeneFor, szeneRb, szeneOutfit } from './szene';
 
 /** Erwachsene Rocketbox-Figuren für Gäste: verschiedene Gesichter, Hauttöne, Frisuren und Kleidung */
 export const GUEST_POOL = [
@@ -28,7 +29,7 @@ export function stranger(key: string, rb?: string, name?: string): Stranger {
 }
 
 /** Gäste eines Raums: feste, aber je Raum andere Figuren mit Szene-Look und passendem Outfit */
-export interface Guest { rb: string; style?: string; outfit: Outfit; st: Stranger }
+export interface Guest { rb: string; style?: string; outfit: Outfit; st: Stranger; /** Szene-Art (szene.ts) */ typ?: string }
 export function guestCast(roomId: string, n: number, o: { adult: boolean; party: boolean; swim?: boolean; dark?: boolean }): Guest[] {
   const out: Guest[] = [], used = new Set<string>();
   const h0 = hash(roomId);
@@ -41,6 +42,12 @@ export function guestCast(roomId: string, n: number, o: { adult: boolean; party:
     else if (o.dark) outfit = h % 3 === 0 ? 'harness' : 'shirtless';
     else if (o.adult && o.party) outfit = (['clothed', 'shirtless', 'clothed', 'harness'] as Outfit[])[h % 4];
     if (!o.adult && outfit === 'harness') outfit = 'shirtless';
+    // in Clubs und im Darkroom ist jede zweite Person eine Szene-Figur (Pup, Leder, Bear, Twink, Drag …)
+    const kinds = !o.swim && (o.party || o.dark) && i % 2 === 0 ? szeneFor(o.dark ? 'dark' : 'club', o.adult) : [];
+    if (kinds.length) {
+      const t = kinds[(h >>> 6) % kinds.length], trb = szeneRb(t, roomId + ':' + i);
+      if (!out.some((g) => g.rb === trb)) { used.add(trb); out.push({ rb: trb, style: t.style, outfit: szeneOutfit(t, o.adult), st: stranger(roomId + '#' + i, trb), typ: t.id }); continue; }
+    }
     out.push({ rb, style: o.dark ? undefined : style, outfit, st: stranger(roomId + '#' + i, rb) });
   }
   return out;
@@ -134,19 +141,19 @@ const today = (s: SaveData, k: string) => s.flags[k] === s.day;
 /** Heute schon erfolgreich geflirtet? */
 export const flirted = (s: SaveData, key: string) => today(s, 'fl_' + hash(key).toString(36));
 /** Flirtversuch: Erfolg hängt an Ruf, Spaß und Glück (feste Zahl je Person und Tag, damit Neuladen nichts ändert) */
-export function flirtTry(s: SaveData, key: string, line: number) {
+export function flirtTry(s: SaveData, key: string, line: number, bonus = 0) {
   const k = 'fl_' + hash(key).toString(36);
   if (s.flags[k] === s.day) return true;
   const roll = hash(key + ':' + s.day + ':' + line) % 100;
-  const chance = 45 + Math.min(25, Math.round((s.rep || 0) / 4)) + Math.round((s.needs.fun - 50) / 5);
+  const chance = 45 + bonus + Math.min(25, Math.round((s.rep || 0) / 4)) + Math.round((s.needs.fun - 50) / 5);
   const ok = roll < chance;
   if (ok) s.flags[k] = s.day;
   return ok;
 }
 /** Sagt die Person Ja zur Nacht? Nur nach geglücktem Flirt am selben Tag, sonst meist Nein (feste Antwort je Tag) */
-export function nightAnswer(s: SaveData, key: string): { yes: boolean; text: string } {
+export function nightAnswer(s: SaveData, key: string, bonus = 0): { yes: boolean; text: string } {
   const h = hash(key + ':night:' + s.day);
-  const yes = flirted(s, key) && h % 100 < 78;
+  const yes = flirted(s, key) && h % 100 < 78 + bonus;
   return { yes, text: yes ? pick(YES, h >> 3) : pick(NO, h >> 3) };
 }
 /** Rückmeldung zur Nacht: Bewertung 1–5 aus Stimmung (Spaß, Energie, Hygiene) und Ruf, Wirkung auf Ruf und Laune */

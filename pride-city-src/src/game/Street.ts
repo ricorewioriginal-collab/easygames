@@ -11,16 +11,17 @@ import { buildRingMobil } from './toys';
 import { buildRide } from './rides';
 import { CURB_SPOTS } from './uptown';
 import { escortSign } from './spuren';
+import { SZENE, STREET_SZENE, szeneRb, szeneOutfit, szeneLine } from './szene';
 import { carDef, CAR_DEFS, type CarDef } from './vehicles';
 import type { World, Car } from './World';
 import { sfx } from '../engine/Audio';
 import type { PBRMaterial, Scene } from '../engine/bjs';
 
-export type StreetKind = 'walker' | 'police' | 'fire' | 'worker' | 'curb' | 'medic' | 'security' | 'chef' | 'courier';
+export type StreetKind = 'walker' | 'police' | 'fire' | 'worker' | 'curb' | 'medic' | 'security' | 'chef' | 'courier' | 'szene';
 export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean; down?: boolean; chase?: boolean; away?: boolean; /** läuft Hand in Hand neben dieser Person */ mate?: StreetNpc; /** feste Blickrichtung */ yaw?: number }
 export interface Parked { o: Node3; name: string; yaw: number; v: number; def: CarDef; /** dein eigener Wagen aus der Garage */ own?: boolean; /** geliehen aus dem Verkehr: fährt später seine Runde weiter */ route?: Car }
 
-const LINES: Record<Exclude<StreetKind, 'worker' | 'curb'>, string[]> = {
+const LINES: Record<Exclude<StreetKind, 'worker' | 'curb' | 'szene'>, string[]> = {
   walker: ['Schönen Tag noch!', 'Hast du schon alle Pride-Sticker gefunden?', 'Der Späti hat die besten Brezeln der Stadt.', 'Ich bin auf dem Weg ins Prisma!', 'Kennst du schon den Club Leuchtturm am Hafen?', 'Rainbow City ist einfach die beste Stadt.', 'Die Strandbar am Hafen macht die besten Cocktails.', 'Heute ist so ein schöner Tag zum Rumlaufen.'],
   police: ['Alles ruhig heute. Wenn dich jemand belästigt, sprich uns an – wir haben eine Ansprechperson für queere Menschen.', 'Bitte nicht bei Rot über die Straße. Auch nicht mit Glitzer.', 'Wir begleiten die Pride-Parade. Wird wieder schön!', 'Hassgewalt bitte immer anzeigen. Wir nehmen das ernst.'],
   fire: ['Rauchmelder schon getestet? Einmal im Monat kurz drücken!', 'Bei der Pride fahren wir mit Regenbogen-Fontäne mit.', 'Notruf 112 – auch wenn es nur nach Rauch riecht.', 'Kalender-Shooting? Erst nach Dienstschluss. 😄'],
@@ -114,6 +115,11 @@ export class Street {
       return [x, z];
     };
     SCENE.map(([rb, st, x0, z0, yaw, anim]) => [rb, st, ...clear(x0, z0), yaw, anim] as const).forEach(([rb, st, x, z, yaw, anim]) => jobs.push(mk(L(rb, st), 'walker', 'Szene-Mensch', '#ffb347', [[x, z]], undefined, anim).then((n) => { n.yaw = yaw; })));
+    // Szene-Figuren vor Clubs und Bars (Pup, Leder, Kinky, Bear, Twink, Drag, Trans-Diva …), kinky Arten nur nachts mit 18+
+    STREET_SZENE.forEach(([id, x0, z0, yaw], i) => {
+      const ty = SZENE[id], rb = szeneRb(ty, 'street' + i), [x, z] = clear(x0, z0);
+      jobs.push(mk({ ...L(rb, ty.style), outfit: szeneOutfit(ty, !!ty.adult), gear: ty.gear, hot: !!ty.adult }, 'szene', ty.name, ty.color, [[x, z]], id, ty.anim[i % ty.anim.length]).then((n) => { n.yaw = yaw; }));
+    });
     await Promise.all(jobs);
     // Sexarbeiter*innen klar erkennbar: Leuchtschild mit Name und Angebot, roter Kreis (sichtbar nur mit 18+ und nachts, wie die Figur)
     for (const n of this.people) {
@@ -205,7 +211,7 @@ export class Street {
     for (const [a, b] of this.flash) { a.c.scaleToRef(on ? 1 : .12, a.m.albedoColor); b.c.scaleToRef(on ? .12 : 1, b.m.albedoColor); } // direkt ändern, ohne Neu-Markieren aller Meshes
     const far = this.world.low ? 50 : 90, anim = this.world.low ? 28 : 60;
     this.people.forEach((n, i) => {
-      const show = n.away ? false : n.kind === 'worker' || n.kind === 'curb' ? adult && night > .4 : n.kind === 'walker' ? (night < .5 || i % 2 === 0 || !!n.mate || n.yaw !== undefined) : n.kind === 'security' ? night > .3 : true;
+      const show = n.away ? false : n.kind === 'worker' || n.kind === 'curb' ? adult && night > .4 : n.kind === 'walker' ? (night < .5 || i % 2 === 0 || !!n.mate || n.yaw !== undefined) : n.kind === 'security' ? night > .3 : n.kind === 'szene' ? !SZENE[n.id!]?.adult || (adult && night > .3) : true;
       const d2 = Vector3.DistanceSquared(n.a.root.position, ref);
       n.a.root.visible = !n.away && (n.chase || n.talking || (show && d2 < far * far));
       if (!n.a.root.visible) return;
@@ -239,7 +245,7 @@ export class Street {
     for (const n of this.people) { if (!n.a.root.visible) continue; const d = Vector3.Distance(n.a.root.position, p); if (d < bd) { bd = d; best = n; } }
     return best;
   }
-  line(n: StreetNpc, day: number) { const pool = LINES[n.kind as Exclude<StreetKind, 'worker' | 'curb'>] || LINES.walker; return pool[(day + n.name.length + Math.floor(this.t / 20)) % pool.length]; }
+  line(n: StreetNpc, day: number) { if (n.kind === 'szene' && SZENE[n.id!]) return szeneLine(SZENE[n.id!], false, day + Math.floor(this.t / 20)); const pool = LINES[n.kind as Exclude<StreetKind, 'worker' | 'curb' | 'szene'>] || LINES.walker; return pool[(day + n.name.length + Math.floor(this.t / 20)) % pool.length]; }
   nearCar(p: Vector3, r = 3.2) { return this.parked.find((c) => Vector3.Distance(c.o.position, p) < r) || null; }
   /** Auto im Verkehr in Reichweite (hält an, wenn du davorstehst): lässt sich ausleihen. Streife und Löschzug bleiben im Dienst. */
   nearTraffic(p: Vector3, r = 5.5) { return this.world.cars.find((c) => !c.off && c.kind !== 'truck' && c.kind !== 'car_police' && Vector3.Distance(c.o.position, p) < r) || null; }

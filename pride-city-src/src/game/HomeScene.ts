@@ -1,6 +1,7 @@
 /* Deine Wohnung (begehbar, aus Gay Life! übernommen, Babylon.js): KayKit-Möbel, benutzbar – Bett, Dusche, Herd,
    Kühlschrank, Sofa mit TV, Kleiderschrank, Tür. Pride-Wandbild, Lichterkette, Fenster mit Tag-/Nachthimmel.
    Raumhülle (room.ts) und Kamera hinter der Figur wie in allen anderen Häusern. */
+import { groupScene, soloScene, type GroupGuest } from './gruppe';
 import type { GameScene } from '../engine/Engine';
 import { Vector3, Matrix, HemisphericLight, DirectionalLight, PointLight, ShadowGenerator, TransformNode, Color3, type FreeCamera, type Scene, type PBRMaterial, type Mesh, type AbstractMesh, col } from '../engine/bjs';
 import { instance, preload } from '../engine/Assets';
@@ -417,6 +418,11 @@ export class HomeScene implements GameScene {
     this.g.hud.show(false); this.g.touch.show(false); this.g.hud.prompt(null); this.g.hud.markers([]);
     return loveScene(this, look, name, () => { if (mine) { mine.root.position.set(2.5, 0, 1.3); mine.root.rotation.y = -Math.PI / 2 - .5; } this.player.root.position.set(-2.4, 0, .6); this.cam.reset(.5, .4); this.g.hud.show(true); this.g.touch.show(true); done(); }, mine, opts);
   }
+  /** Gruppenszene (18+, gruppe.ts) bzw. Zeit für dich allein; gleiche Vorbereitung wie romance() */
+  cineStart() { this.fam.kid?.root.setEnabled(false); this.fam.spouse?.root.setEnabled(false); this.setSky(1); this.g.hud.show(false); this.g.touch.show(false); this.g.hud.prompt(null); this.g.hud.markers([]); }
+  cineEnd(done: () => void) { return () => { this.fam.spouse?.root.setEnabled(true); this.player.root.position.set(-2.4, 0, .6); this.cam.reset(.5, .4); this.g.hud.show(true); this.g.touch.show(true); done(); }; }
+  group(guests: GroupGuest[], done: () => void, title?: string) { this.cineStart(); return groupScene(this, guests, this.cineEnd(done), title); }
+  solo(tape: boolean, done: () => void) { this.cineStart(); return soloScene(this, this.cineEnd(done), tape); }
   /** Morgen danach: Gast mit Kaffee in der Küche, geht beim Verlassen der Wohnung */
   async morning(look: Look | null) {
     this.guest?.dispose(); this.guest = null;
@@ -427,7 +433,7 @@ export class HomeScene implements GameScene {
     const g = this.g, inp = g.engine.input, p = this.player.root.position;
     if (this.cine) {
       this.cine(dt); this.fam.spouse?.update(dt);
-      if (inp.pressed('confirm') || inp.pressed('back')) { inp.consume('confirm'); inp.consume('back'); (document.querySelector('.cine button') as HTMLButtonElement | null)?.click(); }
+      if (!g.dialog.open && !g.menuOpen && (inp.pressed('confirm') || inp.pressed('back'))) { inp.consume('confirm'); inp.consume('back'); (document.querySelector('.cine button') as HTMLButtonElement | null)?.click(); }
       shellTime(this.shell, 1, t);
       return;
     }
