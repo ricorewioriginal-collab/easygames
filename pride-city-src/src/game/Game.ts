@@ -384,7 +384,14 @@ export class Game {
     if (a.k === 'wagen') { wagenMenu(this); return; }
     if (a.k === 'darkroom') { if (sc) enterDarkroom(this, sc); return; }
     if (sc?.theme.id === 'darkroom' && sp.id === 'automat') { darkVend(this); return; }
-    if (a.k === 'gl') { const m = miniForGl(a.id); if (m) this.playMini(m.id); else this.roman('gaylife', a.id); return; }
+    if (a.k === 'gl') {
+      // Gay-Life!-Spots: 3D-Fassung, sonst das bestehende Pride-City-Gegenstück (nichts doppelt), sonst das 2D-Original
+      const m = miniForGl(a.id); if (m) { this.playMini(m.id); return; }
+      if (a.id === 'dance' || a.id === 'rave') { this.goDance(false); return; }
+      if (a.id === 'quiz') { this.quiz(todaysQuiz(s), 0, 0); return; }
+      if (a.id === 'dates') { this.phone('dating'); return; }
+      this.roman('gaylife', a.id); return;
+    }
     if (a.k === 'mini') { this.playMini(a.id); return; }
     if (a.k === 'dance') { this.goDance(false); return; }
     if (a.k === 'show') {
