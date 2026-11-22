@@ -3,7 +3,7 @@
 import { cullAhead } from '../engine/Cull';
 import type { GameScene } from '../engine/Engine';
 import { Vector3, TransformNode, type Mesh, type FreeCamera, type Scene, clamp, dist, col } from '../engine/bjs';
-import { planeZ, cyl, ring, glow, canvasTex } from '../engine/geo';
+import { planeZ, cyl, ring, glow, canvasTex, torus } from '../engine/geo';
 import { Actor, streetLook, playerLook, WALK_MPS, RUN_MPS, type Look } from './Actor';
 import { World, walkable, isLand } from './World';
 import type { CarDef } from './vehicles';
@@ -30,13 +30,17 @@ import { Isle } from './Isle';
 import { buildFlitzer } from './flitzer';
 import { buildRingMobil, buildSilhouettes } from './toys';
 import { PLACE_THEMES, houseTheme } from './interiors';
-import { Weather, SKY } from './weather';
+import { Weather, SKY, useSeason, isXmas, season } from './weather';
+import { Fireworks, XmasTree } from './feuerwerk';
+import { LiveCity } from './live';
+import { buildPad } from './luft';
 import { CityLife } from './citylife';
 import { Friends } from './Friends';
 import { Companion } from './Companion';
 import { together, bondTick } from './bond';
 import type { Profile } from './social';
 import { Combat } from './Combat';
+import { payKasse } from './crew';
 import { arrive } from './family';
 import { Kerb } from './kerb';
 import { TuneShow, rigOf, dress } from './pimp';
@@ -60,13 +64,19 @@ export class CityScene implements GameScene {
   private cam = { yaw: Math.PI, pitch: .38, dist: 7.5, tYaw: Math.PI };
   private camPos = new Vector3();
   private stickerMeshes: Mesh[] = [];
-  private near: { kind: 'npc' | 'poi' | 'street' | 'car' | 'house' | 'life' | 'buddy' | 'friend' | 'isle'; id: string; label: string } | null = null;
+  private near: { kind: 'npc' | 'poi' | 'street' | 'car' | 'house' | 'life' | 'live' | 'buddy' | 'friend' | 'isle'; id: string; label: string } | null = null;
   street!: Street;
   combat!: Combat;
   /** Schlägereien und Verfolgungen der Missionen (Akt IV) */
   brawl!: Brawl;
   kerb!: Kerb;
   weather!: Weather;
+  /** Feuerwerk (Silvester, Samstagnacht, Live-Events) und Live-Events der Woche */
+  fw!: Fireworks;
+  live!: LiveCity;
+  private xmas!: XmasTree;
+  /** leuchtender Ring für Flug-Stationen in der Luft (luft.ts) */
+  private airRing: Mesh | null = null;
   life!: CityLife;
   buddy!: Companion;
   /** Online: Freund*innen in deiner Stadt */
@@ -156,7 +166,7 @@ export class CityScene implements GameScene {
       await i.build(); this.isles.push(i); if (!def.adult) this.street.addFlyer(i.pad[0], i.pad[1], i.yawW(Math.PI));
     }
     this.combat = new Combat(this.g, this, sc); this.combat.init();
-    this.brawl = new Brawl(this, sc, this.g.hud);
+    this.brawl = new Brawl(this, sc, this.g.hud, () => this.g.save.data);
     this.kerb = new Kerb(this.g, this);
     this.g.hud.onWeapon = () => { if (this.mode === 'play') this.combat.cycle(); };
     this.g.hud.setRadarMap((c, px) => {
@@ -188,7 +198,9 @@ export class CityScene implements GameScene {
     // Verkehr hält vor geparkten und vom Spieler gefahrenen Autos
     this.g.hud.onRadio = () => { if (this.drive) radioMenu(this.g, (i) => this.radio(0, i)); };
     radio.subscribe((r, what) => { if (!this.drive) return; if (what === 'error') toast(`📻 ${r.err}`); this.showRadio(); });
-    this.weather = new Weather(this.scene, this.world); this.life = new CityLife(this.g, this, this.scene); this.buddy = new Companion(this.scene);
+    this.weather = new Weather(this.scene, this.world); this.fw = new Fireworks(this.scene, this.world); this.live = new LiveCity(this.g, this, this.scene, this.fw);
+    this.xmas = new XmasTree(this.scene, -22, 9); buildPad(this.scene, this.world.root);
+    this.life = new CityLife(this.g, this, this.scene); this.buddy = new Companion(this.scene);
     this.friends = new Friends(this.scene, this.world, () => this.g.save.data.settings.adult);
     this.friends.me = () => ({ n: this.g.save.data.name, l: streetLook(playerLook(this.g.save.data)), s: this.g.where === 'inside' && this.g.inside?.netKey ? this.g.inside.netState() : this.netState() });
     this.friends.onInvite = (who, inv) => this.g.clubInvite(who.name, inv);
@@ -290,6 +302,8 @@ export class CityScene implements GameScene {
       roman: (id, game, done) => g.roman(id, game, done),
       mission: (gg) => this.startGig(gg),
       mini: (id, done) => g.playMini(id, { onDone: (r) => done?.(!!r.won && !r.quit) }),
+      gigOn: () => !!this.gig,
+      wanted: (n) => { if (n !== undefined) this.combat.force(n, 'verdacht'); return this.combat.wanted.stars; },
       phone: (lines, done) => {
         sfx('phone'); setTimeout(() => sfx('phone'), 500);
         if (!this.drive) this.player.play('phone');
@@ -311,6 +325,8 @@ export class CityScene implements GameScene {
     this.g.stiCheck();
     const paid = collect(s);
     if (paid) { sfx('coin'); this.g.hud.banner('💼 Einnahmen deines Imperiums', `+${paid} € aus deinen Geschäften`, 'good', 3600); collectNotes.slice(0, 3).forEach((n, i) => setTimeout(() => toast(n), 3800 + i * 2600)); this.g.save.write(); }
+    const kasse = payKasse(s);
+    if (kasse) { sfx('coin'); setTimeout(() => this.g.hud.banner('🪙 Kiezkasse der Lichterkette', `+${kasse} € aus den geschützten Vierteln`, 'good', 3600), paid ? 4200 : 0); this.g.save.write(); }
     for (const [i, n] of bondTick(s).entries()) setTimeout(() => toast(n), 1200 + i * 2600);
     const nk = arrive(s);
     if (nk) { sfx('win'); this.g.hud.banner('👶 Willkommen zu Hause!', `${nk.name} ist bei euch eingezogen. Schau in deiner Wohnung vorbei.`, 'good', 5000); this.g.save.write(); void this.g.home?.syncFamily(); }
@@ -331,7 +347,8 @@ export class CityScene implements GameScene {
     if (gl.npc) { const n = this.npcs.find((x) => x.def.id === gl.npc); if (n) out.push({ id: 'g', icon: '⭐', label: n.def.name, pos: at(n.a.root.position, 2.6) }); }
     if (gl.poi) { const p = this.world.pois.find((x) => x.id === gl.poi); if (p) out.push({ id: 'g', icon: '⭐', label: p.name, pos: new Vector3(p.x, 4, p.z) }); }
     if (gl.isle) { const i = this.isles.find((x) => x.def.id === gl.isle); if (i && !this.isles.some((x) => x.active)) { const [x, z] = i.w(i.def.host.x, i.def.host.z); out.push({ id: 'g', icon: i.def.icon, label: i.def.name, pos: new Vector3(x, 3, z) }); } }
-    if (this.gig) { const st = this.gig.g.steps[this.gig.i]; out.push({ id: 'gig', icon: st.icon, label: st.label, pos: new Vector3(st.x, 3, st.z) }); }
+    if (this.gig) { const st = this.gig.g.steps[this.gig.i]; out.push({ id: 'gig', icon: st.icon, label: st.label, pos: new Vector3(st.x, st.y ?? 3, st.z) }); }
+    out.push(...this.live.markers());
     if (this.drive && !this.gig) { const p = this.drive.o.position; for (const r of RACES) if (Math.hypot(r.start[0] - p.x, r.start[1] - p.z) < 90) out.push({ id: 'race' + r.id, icon: '🏁', label: r.name, pos: new Vector3(r.start[0], 3, r.start[1]) }); }
     if (this.kerb?.spot) out.push({ id: 'kerb', icon: '🌙', label: this.kerb.spot.name, pos: new Vector3(this.kerb.spot.x, 3, this.kerb.spot.z) });
     for (const [id, icon] of marks(s)) { const n = this.npcs.find((x) => x.def.id === id); if (n?.a.root.visible) out.push({ id: 'p' + id, icon, pos: at(n.a.root.position, 2.5) }); }
@@ -348,7 +365,7 @@ export class CityScene implements GameScene {
     let best: typeof this.near = null, bd = 1e9;
     if (this.drive) {
       const curb = this.kerb.nearCurb();
-      this.near = { kind: 'car', id: 'exit', label: this.drive.def.fly ? '🚀 Absteigen' : this.drive.def.toy ? '⭕ Absteigen' : rideSeat(this.drive.def) >= 0 ? `${this.drive.def.icon} Absteigen` : this.kerb.rider ? `🚗 Aussteigen · ${this.kerb.rider.name} fährt mit` : curb ? `🚗 Aussteigen · 📯 Hupen: ${curb.name} steigt vielleicht ein` : '🚗 Aussteigen' };
+      this.near = { kind: 'car', id: 'exit', label: this.drive.def.air ? `${this.drive.def.icon} Aussteigen` : this.drive.def.fly ? '🚀 Absteigen' : this.drive.def.toy ? '⭕ Absteigen' : rideSeat(this.drive.def) >= 0 ? `${this.drive.def.icon} Absteigen` : this.kerb.rider ? `🚗 Aussteigen · ${this.kerb.rider.name} fährt mit` : curb ? `🚗 Aussteigen · 📯 Hupen: ${curb.name} steigt vielleicht ein` : '🚗 Aussteigen' };
       // im Flug keine Einblendung (verdeckt die Sicht): erst am Boden steht „Absteigen“ da
       const air = !!this.drive.def.fly && this.alt > 1.6;
       this.g.hud.prompt(air ? null : this.near.label); this.g.touch.label(air ? 'Landen' : 'Raus');
@@ -366,6 +383,7 @@ export class CityScene implements GameScene {
       if (d < 1.2 && d < bd) { bd = d; const t = houseTheme(h.i, this.g.save.data.settings.adult); best = { kind: 'house', id: String(h.i), label: '🚪 ' + t.icon + ' ' + t.title }; }
     }
     { const lf = this.life.near(p); if (lf && !best) best = { kind: 'life', id: 'life', label: lf }; }
+    { const lv = best ? null : this.live.near(p); if (lv) best = { kind: 'live', id: 'live', label: lv }; }
     { const fr = this.friends.net.on && !best ? this.friends.nearest(p, 2.2) : null; if (fr) best = { kind: 'friend', id: fr.id, label: '🌐 ' + fr.name }; }
     { const bp = this.buddy.pos; if (bp && !best && Vector3.Distance(bp, p) < 2.1) best = { kind: 'buddy', id: 'buddy', label: '💬 ' + this.buddy.who!.name }; }
     if (!best) for (const i of this.isles) if (i.label) best = { kind: 'isle', id: i.def.id, label: i.label };
@@ -390,7 +408,7 @@ export class CityScene implements GameScene {
     }
     this.near = best;
     this.g.hud.prompt(best ? best.label : null);
-    this.g.touch.label(best ? (best.kind === 'npc' || best.kind === 'street' || best.kind === 'buddy' || best.kind === 'friend' ? 'Reden' : best.kind === 'car' ? 'Fahren' : best.kind === 'life' ? 'Los' : 'Rein') : 'Aktion');
+    this.g.touch.label(best ? (best.kind === 'npc' || best.kind === 'street' || best.kind === 'buddy' || best.kind === 'friend' ? 'Reden' : best.kind === 'car' ? 'Fahren' : best.kind === 'life' || best.kind === 'live' ? 'Los' : 'Rein') : 'Aktion');
   }
 
   /** Match kommt vorbei und begleitet dich */
@@ -417,6 +435,7 @@ export class CityScene implements GameScene {
   interact() {
     if (!this.near || this.g.dialog.open) return;
     if (this.near.kind === 'life') { this.life.interact(this.player.root.position); return; }
+    if (this.near.kind === 'live') { this.live.interact(this.player.root.position); return; }
     if (this.near.kind === 'isle') { this.isles.find((i) => i.def.id === this.near!.id)?.use(); return; }
     if (this.near.kind === 'buddy') { this.g.buddyMenu(); return; }
     if (this.near.kind === 'friend') { this.g.friendMenu(this.near.id); return; }
@@ -509,6 +528,16 @@ export class CityScene implements GameScene {
     } else this.drive = this.street.parked[+id];
     // Radio in jedem Fahrzeug (Auto, Rakete, Einrad, Roller, Boot)
     this.g.hud.radioBtn(true); this.radio(0);
+    if (this.drive.def.air) {
+      // Möwe und Libelle: du sitzt in der Kabine (unsichtbar), Rotor bzw. Propeller drehen
+      const heli = this.drive.def.air === 'heli';
+      this.alt = .75; this.player.play('sit'); this.player.root.visible = false; sfx('engine'); setTimeout(() => sfx(heli ? 'rotor' : 'engine'), 300);
+      this.cam.dist = Math.max(this.cam.dist, heli ? 12 : 14); this.cam.tYaw = this.drive.o.rotation.y + Math.PI;
+      this.landing = false; this.g.touch.fly(true);
+      hints([['move', 'Lenken & Gas'], ['rise', 'Steigen'], ['sink', 'Sinken'], ['turbo', 'Turbo'], ['a', 'Landen'], ['cam', 'Kamera'], ['y', 'Menü']]);
+      toast(heli ? '🚁 Libelle: ▲ Steigen, ▼ Sinken, ohne Gas schwebst du auf der Stelle. A landet.' : '🛩️ Möwe: Gas geben, ▲ zieht hoch. In der Luft bleibt sie in Fahrt, A setzt zur Landung an.', 4200);
+      return;
+    }
     if (this.drive.def.fly) {
       this.syncFlyer(); this.alt = .75; this.player.play('sit'); sfx('open');
       this.cam.dist = Math.max(this.cam.dist, 10); this.cam.tYaw = this.drive.o.rotation.y + Math.PI;
@@ -572,9 +601,20 @@ export class CityScene implements GameScene {
   /** Flitzer am Weltentor: mit 18+ ein Glitzer-Dildo, sonst eine Rakete */
   private syncFlyer() {
     const adult = !!this.g.save.data.settings.adult;
-    for (const f of this.street.parked) if (f.def.fly && f.o.metadata?.adult !== adult) { buildFlitzer(this.scene, f.o, adult); f.o.getChildMeshes().find((m) => m.name === 'flame')?.setEnabled(false); }
+    for (const f of this.street.parked) if (f.def.fly && !f.def.air && f.o.metadata?.adult !== adult) { buildFlitzer(this.scene, f.o, adult); f.o.getChildMeshes().find((m) => m.name === 'flame')?.setEnabled(false); }
     for (const f of this.street.parked) if (f.def.toy && f.o.metadata?.adult !== adult) { buildRingMobil(this.scene, f.o, adult); f.name = adult ? 'Penisring-Mobil' : 'Donut-Mobil'; }
     if (this.sil) { this.sil.adult.setEnabled(adult); this.sil.safe.setEnabled(!adult); }
+  }
+  /** Leuchtring an der aktuellen Flug-Station (nur, wenn sie in der Luft hängt) */
+  private airRingTick(t: number) {
+    const st = this.gig?.g.steps[this.gig.i], show = !!st && st.y !== undefined;
+    if (show && !this.airRing) { const r = this.airRing = torus(this.scene, 1, .06, 40); r.material = glow(this.scene, 0xffd23b, 2, { alpha: .85 }); r.isPickable = false; r.applyFog = false; }
+    if (!this.airRing) return;
+    if (this.airRing.isEnabled() !== show) this.airRing.setEnabled(show);
+    if (!show) return;
+    const r = this.airRing, pv = this.gig!.g.steps[this.gig!.i - 1] || this.drive?.o.position || this.player.root.position;
+    r.position.set(st!.x, st!.y!, st!.z); r.scaling.setAll(st!.r || 8);
+    r.rotation.x = Math.PI / 2; r.rotation.y = Math.atan2(st!.x - pv.x, st!.z - pv.z) || 0; r.rotation.z = Math.sin(t * 2) * .05;
   }
   private moveCar(dt: number) {
     const c = this.drive!, o = c.o, inp = this.g.engine.input, fly = !!c.def.fly;
@@ -593,13 +633,15 @@ export class CityScene implements GameScene {
     }
     // über dem Wasser bleibt er auf mindestens 8 m und fliegt frei, weit draußen ist Schluss
     const sea = fly && !walkable(o.position.x, o.position.z);
-    if (sea) this.alt = Math.max(this.alt, 8);
+    if (sea && this.alt < 8) this.alt = Math.min(8, this.alt + dt * 9);   // über dem Wasser sanft auf 8 m steigen (Start vom Kai)
     const high = sea || (fly && this.alt > (o.position.x > 86 ? 42 : 17));
     if (thr > 0) c.v = Math.min(max, c.v + thr * (c.v < 0 ? 22 : st.acc) * dt);
     else if (c.v > max) c.v = Math.max(max, c.v - 14 * dt);
     else if (thr < 0) c.v = Math.max(-6, c.v + thr * (c.v > 0 ? 22 : 6) * dt);
     else c.v *= Math.max(0, 1 - dt * 1.2);
     if (Math.abs(c.v) < .05) c.v = 0;
+    // das Wasserflugzeug bleibt in der Luft in Fahrt (kein Schweben), beim Landen gleitet es aus
+    if (c.def.air === 'plane' && this.alt > 2.5) c.v = Math.max(c.v, this.landing ? 7 : 10);
     o.rotation.y -= steer * dt * st.steer * clamp(c.v / 5, -1, 1);
     const before = o.position.clone();
     o.position.x += Math.sin(o.rotation.y) * c.v * dt; o.position.z += Math.cos(o.rotation.y) * c.v * dt;
@@ -630,9 +672,9 @@ export class CityScene implements GameScene {
       const egg = o.getChildMeshes(true).find((m) => m.name === 'egg'); if (egg) egg.position.x = Math.abs(c.v) > .5 ? Math.sin(performance.now() / 18) * .03 : 0;
       this.player.root.position.y = .55; this.player.root.rotation.y = o.rotation.y;
     }
-    if (c.def.ride) {
-      // Räder bzw. Schraube drehen, Roller legt sich in die Kurve, Boot schaukelt
-      for (const n of o.getChildTransformNodes(true)) if (n.name === 'spin') { const md = n.metadata as { r: number; axis?: string }; if (md.axis === 'z') n.rotation.z += (6 + Math.abs(c.v)) * dt * 3; else n.rotation.x += c.v * dt / md.r; }
+    if (c.def.ride || c.def.air) {
+      // Räder bzw. Schraube drehen (Rotor und Propeller laufen immer), Roller legt sich in die Kurve, Boot schaukelt
+      for (const n of o.getChildTransformNodes(true)) if (n.name === 'spin') { const md = n.metadata as { r: number; axis?: string }; if (md.axis === 'z') n.rotation.z += (c.def.air ? 14 : 6 + Math.abs(c.v)) * dt * 3; else if (md.axis === 'y') n.rotation.y += 24 * dt; else if (md.axis === 'x') n.rotation.x += 40 * dt; else n.rotation.x += c.v * dt / md.r; }
       const t = performance.now();
       if (c.def.ride === 'scooter') o.rotation.z += (-steer * .25 * clamp(c.v / 6, -1, 1) - o.rotation.z) * Math.min(1, dt * 6);
       if (boat) { o.rotation.z = Math.sin(t / 610) * .04 - steer * .08 * clamp(c.v / 8, -1, 1); o.rotation.x = -clamp(c.v / 13, -1, 1) * .06 + Math.sin(t / 530) * .02; }
@@ -651,6 +693,8 @@ export class CityScene implements GameScene {
   private aim = new Vector3();
   /** Einrichtung aller Orte (auch für Tests erreichbar) */
   readonly themes = PLACE_THEMES;
+  /** Land oder Wasser (fürs Glitzer-Boot; auch für Tests erreichbar) */
+  readonly landAt = isLand;
   private tiredTold = false;
   /** Sekunden seit dem letzten Wischen an der Kamera */
   private lookIdle = 9;
@@ -745,6 +789,8 @@ export class CityScene implements GameScene {
   taxi = -1;
   get driving() { return !!this.drive; }
   /** Tempo des gefahrenen Autos (0 zu Fuß) */
+  /** gefahrener Wagen (Flucht: Umlackieren) */
+  get ride() { return this.drive; }
   get carSpeed() { return Math.abs(this.drive?.v || 0); }
   /** gefahrenes Auto (oder null) */
   get carNode() { return this.drive?.o || null; }
@@ -766,7 +812,7 @@ export class CityScene implements GameScene {
   private raceAsk = 0;
   private raceCheck(dt: number) {
     this.raceAsk -= dt;
-    if (!this.drive || this.raceAsk > 0 || Math.abs(this.drive.v) > 2.5) return;
+    if (!this.drive || this.drive.def.fly || this.raceAsk > 0 || Math.abs(this.drive.v) > 2.5) return;
     const p = this.drive.o.position, r = RACES.find((q) => Math.hypot(q.start[0] - p.x, q.start[1] - p.z) < 5);
     if (!r) return;
     this.raceAsk = 12; this.drive.v = 0;
@@ -835,7 +881,16 @@ export class CityScene implements GameScene {
       this.brawl.fight(st, names, (won) => { if (this.gig !== q) return; if (won) { st.x = this.player.root.position.x; st.z = this.player.root.position.z; } else { st.fight = names; q.t = 0; } });
       return;
     }
-    if (Math.hypot(p.x - st.x, p.z - st.z) < (this.drive ? 4.5 : 3)) {
+    // Flug-Stationen: nur mit Fluggerät, Ringe in ihrer Höhe durchfliegen, Abwurf/Landung unter 6 m
+    const air = !!this.drive?.def.fly, alt = air ? this.alt : 0, rr = st.r ?? (this.drive ? 4.5 : 3);
+    const flat = Math.hypot(p.x - st.x, p.z - st.z);
+    if (st.air && flat < rr * 2.5 && (this.nagT -= dt) <= 0) {
+      if (!air) { this.nagT = 5; toast('🛩️ Dafür brauchst du die Möwe, die Libelle oder den Flitzer.'); }
+      else if (st.low && alt > 6) { this.nagT = 4; toast(`🛬 Tiefer! Unter 6 m sinken (jetzt ${Math.round(alt)} m).`); }
+      else if (st.y !== undefined && Math.abs(alt - st.y) > rr) { this.nagT = 4; toast(alt < st.y ? `⬆️ Höher! Der Ring hängt auf ${st.y} m.` : `⬇️ Tiefer! Der Ring hängt auf ${st.y} m.`); }
+    }
+    const reached = st.air ? air && flat < rr && (st.low ? alt <= 6 : st.y === undefined || Math.abs(alt - st.y) <= rr) : flat < rr;
+    if (reached) {
       q.i++; sfx('coin');
       if (q.i < q.g.steps.length) { toast(`✓ ${st.label}`); return; }
       this.gig = null; this.g.hud.gig(null);
@@ -962,6 +1017,8 @@ export class CityScene implements GameScene {
     this.world.update(dt, t, this.player.root.position);
     { const pp = this.player.root.position; for (const i of this.isles) i.update(dt, t, { x: pp.x, z: pp.z, driving: !!this.drive, alt: this.drive?.def.fly ? this.alt : 0, busy, gig: !!this.gig }); }
     // Wetter und Stadtleben (Zufallsereignisse, samstags die Parade)
+    useSeason(s.flags.season); this.xmas.set(isXmas() || (season() === 'winter' && new Date().getMonth() === 11));
+    this.fw.update(dt, this.player.root.position, busy); this.live.update(dt, busy); this.airRingTick(t);
     if (this.weather.update(dt, s.day, s.time, this.player.root.position) && !busy) { change(s, { fun: 8 }); sfx('win'); g.hud.banner('🌈 Ein Regenbogen über Rainbow City', 'Nach dem Regen. Spaß +8', 'good', 4200); }
     this.friends.update(dt, this.netState());
     // Begleitung: läuft mit, bringt Nähe, verabschiedet sich nach ein paar Stunden
@@ -984,6 +1041,7 @@ export class CityScene implements GameScene {
       const pp = this.player.root.position;
       g.hud.radar(pp.x, pp.z, this.cam.yaw, [
         ...this.world.pois.filter((q) => Math.hypot(q.x - pp.x, q.z - pp.z) < 60).map((q) => ({ x: q.x, z: q.z, icon: q.icon })),
+        ...this.combat.flucht.blips(this.combat.wanted.stars, pp),
         ...mk.map((m) => ({ x: m.pos.x, z: m.pos.z, color: m.id === 'g' ? '#ff3fb0' : m.id === 'gig' ? '#ffd23b' : m.id === 'kerb' ? '#ff6ad5' : '#ffffff', goal: m.id === 'g' || m.id === 'gig' || m.id === 'kerb' })),
       ]);
     }

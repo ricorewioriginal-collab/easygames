@@ -10,6 +10,7 @@ export interface CarDef {
   /** m/s normal und mit Turbo */ max: number; turbo: number; acc: number; steer: number;
   /** Preis in der Garage (0 = nicht käuflich) */ price: number; /** Ladefläche: mehr Lohn beim Paketdienst */ cargo?: boolean; /** fliegt (lenkt wie ein Auto, dazu Steigen/Sinken) */ fly?: boolean; /** Einrad-Mobil aus toys.ts (18+ Penisring, sonst Donut), du sitzt sichtbar mittendrin */ toy?: boolean;
   /** Fahrzeug aus rides.ts: Einhorn-Roller, Pride-Bus, Glitzer-Boot (nur auf dem Wasser) */ ride?: 'scooter' | 'bus' | 'boat';
+  /** Fluggerät der Flugschule (luft.ts): Wasserflugzeug oder Helikopter, dazu fly = true */ air?: 'plane' | 'heli';
 }
 
 export const CAR_DEFS: CarDef[] = [
@@ -22,6 +23,8 @@ export const CAR_DEFS: CarDef[] = [
   { id: 'pickup', file: 'k:truck', name: 'Pick-up „Bärenstark“', icon: '🛻', max: 14, turbo: 23, acc: 8, steer: 1.8, price: 800, cargo: true },
   { id: 'suv', file: 'k:suv', name: 'Geländewagen', icon: '🚙', max: 15, turbo: 24, acc: 8, steer: 1.8, price: 900 },
   { id: 'rakete', file: 'fly', name: 'Flitzer zum Fliegen', icon: '🚀', max: 16, turbo: 26, acc: 12, steer: 2.3, price: 0, fly: true },
+  { id: 'heli', file: 'air', name: 'Helikopter „Libelle“', icon: '🚁', max: 16, turbo: 24, acc: 10, steer: 2.6, price: 0, fly: true, air: 'heli' },
+  { id: 'flieger', file: 'air', name: 'Wasserflugzeug „Möwe“', icon: '🛩️', max: 22, turbo: 34, acc: 9, steer: 1.8, price: 0, fly: true, air: 'plane' },
   { id: 'ringmobil', file: 'ring', name: 'Penisring-Mobil', icon: '⭕', max: 14, turbo: 23, acc: 11, steer: 2.7, price: 0, toy: true },
   { id: 'roller', file: 'ride', name: 'Einhorn-Roller', icon: '🦄', max: 11, turbo: 18, acc: 10, steer: 3, price: 0, ride: 'scooter' },
   { id: 'pridebus', file: 'ride', name: 'Pride-Bus „CSD-Shuttle“', icon: '🚌', max: 11, turbo: 17, acc: 5.5, steer: 1.4, price: 0, ride: 'bus', cargo: true },

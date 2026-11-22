@@ -8,12 +8,14 @@ import type { Goal, StoryCtx } from './story';
 import { sagaDone, MISSIONS } from './saga';
 import { WORLDS, worldStage } from './worlds';
 import { nachtOver, nachtFirst, nachtDone } from './nacht';
+import { isXmas, isSilvester } from './weather';
 
 export const ACTS = [
   { n: 1, title: 'Ein Leben in allen Farben', text: 'Ankommen in Rainbow City, das Regenbogenhaus retten und die größte Pride feiern.' },
   { n: 2, title: 'Die Lichter der Hochstadt', text: 'Das Revuetheater Kaleidoskop soll einem Glasturm weichen. Das Haus Vega braucht dich.' },
   { n: 3, title: 'Die Inseln der Farben', text: 'Fünf Inseln vor der Küste wollen ihre eigene Pride. Hilf allen, dann feiert ihr gemeinsam.' },
   { n: 4, title: 'Die graue Flut', text: 'Nach der Pride schlägt der Hass zurück: der Ordnungsbund und Club-Mogul Viktor Kral. Rainbow City hält zusammen, auf Rostwerk und Kap Zuflucht.' },
+  { n: 5, title: 'Die Lichterkette', text: 'Dennis Haller sammelt die Reste des Ordnungsbunds. Gründe mit Tom eine eigene Crew, überstehe eine falsche Anzeige und schütze alle Viertel.' },
 ];
 
 /** Reihenfolge der Inselkette entlang der Brücken (Lustwäldchen nur mit 18+) */
@@ -23,14 +25,15 @@ const isleDone = (s: SaveData, id: string) => worldStage(s.flags, id) >= 4;
 export const islesLeft = (s: SaveData) => chain(s).filter((w) => !isleDone(s, w.id));
 const sagaOver = (s: SaveData) => sagaDone(s) >= MISSIONS.length;
 
-/** Aktueller Akt (1–4, Akt IV in flut.ts), 5 = alles erzählt */
+/** Aktueller Akt (1–5, Akt IV in flut.ts, Akt V in crew.ts), 6 = alles erzählt */
 export function act(s: SaveData) {
   if (s.chapter <= 5) return 1;
   if (!sagaOver(s) || !nachtOver(s)) return 2;
   if (!s.flags.fadenEnd) return 3;
-  return s.flags.flutEnd ? 5 : 4;
+  if (!s.flags.flutEnd) return 4;
+  return s.flags.crewEnd ? 6 : 5;
 }
-export const ROMAN = ['I', 'II', 'III', 'IV'];
+export const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
 export function actLabel(s: SaveData) { const a = ACTS[act(s) - 1]; return a ? `Akt ${ROMAN[a.n - 1]} · ${a.title}` : 'Rainbow City · Freies Spiel'; }
 
 /** Ziel in Akt III: nächste Insel der Kette, dann das Finale */
@@ -195,6 +198,47 @@ export function fadenTick(c: StoryCtx) {
   }
 }
 
+/* Anrufe zu Flugschule, Live-Events und Festtagen: leiser als die Hauptgeschichte. Sie klingeln erst nach sechs ruhigen
+   Sekunden, in denen weder der rote Faden noch Akt IV angerufen hat (story.ts ruft das nur dann auf). */
+let hush = 0;
+export function extraHush() { hush = 0; }
+export function extraTick(c: StoryCtx) {
+  const s = c.s, f = s.flags;
+  const ring = (key: string, who: string, color: string, text: string[]) => { hush = 0; f[key] = true; c.phone(call(who, color, text)); };
+  // Flugschule Möwenflug (luft.ts): Captain Sunny meldet sich, sobald die Hochstadt offen ist
+  if (f.faden2 && !f.luftCall) {
+    if (++hush < 12) return;
+    ring('luftCall', 'Captain Sunny Okafor', '#ffb347', [
+      'Hallo, hier ist Sunny Okafor von der Flugschule Möwenflug, ganz unten am Kai. Jules hat mir erzählt, dass du überall gleichzeitig sein willst.',
+      'Ich hätte da ein Wasserflugzeug und einen Helikopter. Komm vorbei, wir machen einen Schnupperflug. Danach fliegst du Gäste über die Skyline und Pakete zu den Inseln.',
+    ]);
+    return;
+  }
+  // Live-Events (live.ts): Kiki Kaleido kündigt die Wochentermine an
+  if ((f.fmCall || f.luftCall) && !f.liveCall && s.chapter > 3) {
+    if (++hush < 12) return;
+    ring('liveCall', 'Kiki Kaleido', '#ff9ad5', [
+      'Kiki hier, Pride FM! Ab sofort gibt es jede Woche Live-Events in der ganzen Stadt: eine Party, ein Konzert und ein Bootsrennen.',
+      'Montags wechseln die Termine. Wer alle drei schafft, bekommt den Wochenpass und eine Event-Krone. Im Handy unter Live-Events steht, was gerade läuft.',
+    ]);
+    return;
+  }
+  // Jahreszeiten (weather.ts): in der Weihnachtswoche lädt Hilde ein, an Silvester ruft Jules an
+  const y = new Date().getFullYear();
+  if (s.chapter > 2 && isXmas() && f.xmasCall !== y) {
+    if (++hush < 12) return;
+    hush = 0; f.xmasCall = y;
+    c.phone(call('Hilde', '#a3a3a3', ['Es schneit in Rainbow City! Auf der Plaza steht der große Baum, und abends gibt es Glühwein, auch alkoholfrei.', 'Wer an Weihnachten nicht nach Hause kann oder will: Bei mir ist Platz. Familie ist, wer bleibt.']));
+    return;
+  }
+  if (s.chapter > 2 && isSilvester() && f.nyCall !== y) {
+    if (++hush < 12) return;
+    hush = 0; f.nyCall = y;
+    c.phone(call('Jules', '#9c59d1', ['Heute ist Silvester! Um Mitternacht gibt es Feuerwerk über der Hochstadt und dem Hafen.', 'Die schönste Sicht hast du von der Regenbogenbrücke oder ganz oben aus dem Helikopter. Wir sehen uns im neuen Jahr!']));
+    return;
+  }
+}
+
 /** Finale an der Plaza – true, wenn der rote Faden das übernommen hat */
 export function fadenPoi(c: StoryCtx, id: string): boolean {
   const s = c.s;
@@ -253,6 +297,7 @@ export const HISTORY: Record<string, { year: string; title: string; text: string
   a3: { year: '17. Mai 1990', title: 'Gesund, nicht krank', text: 'Am 17. Mai 1990 streicht die Weltgesundheitsorganisation Homosexualität von ihrer Liste der Krankheiten. Der 17. Mai ist seitdem der Internationale Tag gegen Homo-, Bi-, Inter- und Transfeindlichkeit (IDAHOBIT), überall auf der Welt.' },
   a4: { year: 'August 1966', title: 'Compton’s Cafeteria', text: 'In San Francisco wehren sich trans Frauen und Drag Queens in Compton’s Cafeteria gegen ständige Polizeischikane: Kaffee fliegt, Scheiben gehen zu Bruch. Drei Jahre vor Stonewall zeigt sich: Wer immer wieder angefeindet wird, steht irgendwann gemeinsam auf.' },
   flut: { year: '27. August 2022', title: 'Zivilcourage beim CSD Münster', text: 'Beim CSD in Münster stellt sich der 25-jährige trans Mann Malte C. vor Frauen, die queerfeindlich beleidigt werden. Er wird niedergeschlagen und stirbt wenige Tage später. Viele CSDs erinnern seitdem an ihn. Queerfeindliche Gewalt ist real, und die Antwort darauf ist Zusammenhalt.' },
+  a5: { year: 'Sommer 1990', title: 'Die Pink Panthers', text: 'Nach einer Welle von Angriffen auf Schwule und Lesben im New Yorker West Village gründen Aktivist*innen aus dem Umfeld von Queer Nation die Pink Panthers. Unbewaffnet und in Gruppen gehen sie nachts Streife, mit Trillerpfeifen und Funkgeräten, und rufen Hilfe, wenn jemand angegriffen wird. Ähnliche Streifen entstehen bald in anderen Städten.' },
   end: { year: '1. November 2024', title: 'Selbstbestimmt', text: 'In Deutschland tritt das Selbstbestimmungsgesetz in Kraft: Trans, inter und nichtbinäre Menschen können Vornamen und Geschlechtseintrag beim Standesamt selbst ändern lassen, ohne Gutachten und Gericht. Jeder 31. März ist Trans Day of Visibility.' },
 };
 /** „Damals“-Karte zeigen und merken (Story-Menü listet alle gesehenen) */
@@ -261,4 +306,4 @@ export function history(s: SaveData, key: string, card: StoryCtx['card']): Promi
   s.flags['hist_' + key] = true;
   return card(`Damals · ${h.year}`, h.title, h.text);
 }
-export const HIST_ORDER = ['k1', 'k2', 'k3', 'a2', 'k4', 'a3', 'k5', 'end', 'a4', 'flut'];
+export const HIST_ORDER = ['k1', 'k2', 'k3', 'a2', 'k4', 'a3', 'k5', 'end', 'a4', 'flut', 'a5'];

@@ -35,7 +35,10 @@ E2E-Test (Browser, SwiftShader): Server im Repo starten (`python3 -m http.server
 | `src/game/saga.ts` | Akt II „Die Lichter der Hochstadt“: acht Missionen, sechs Figuren, baut auf den Aufträgen (`gigs.ts`) auf |
 | `src/game/vehicles.ts` | Fuhrpark (Fahrwerte je Auto), Garage (Kauf, Lack, Turbo), Rennen mit Medaillen, Paketdienst |
 | `src/game/manage.ts` | Geschäft führen: Personal, Ausbauten, Beliebtheit, Veranstaltungen, Probleme (Auszahlung in `empire.ts`) |
-| `src/game/weather.ts` | Wetter je Tagesabschnitt, Regen als mitlaufendes Gitter, Blitz, Regenbogen, Vorhersage |
+| `src/game/weather.ts` | Wetter je Tagesabschnitt, Regen und Schnee als mitlaufende Gitter, Blitz, Regenbogen, Vorhersage, Jahreszeiten nach echtem Kalender (Weihnachtswoche, Silvester, Option „Jahreszeit“) |
+| `src/game/feuerwerk.ts` | Feuerwerk aus festem Raketen-Vorrat (Silvester, Samstag 22 Uhr, Live-Partys), Weihnachtsbaum auf der Plaza |
+| `src/game/live.ts` | Live-Events je echter Kalenderwoche: Party, Konzert, Bootsrennen, Wochenpass und Event-Kronen, Bühnen und Marker in der Stadt |
+| `src/game/luft.ts` | Flugschule Möwenflug: Helikopter „Libelle“, Wasserflugzeug „Möwe“, Captain Sunny, Schnupperflug, Rundflüge, Lieferflüge (Ringe mit Höhe, Landung unter 6 m) |
 | `src/game/citylife.ts` | Zufallsereignisse am Straßenrand (leihen sich Passant*innen) und die CSD-Parade am Samstag |
 | `src/game/bond.ts` | Nähe zu Matches in fünf Stufen: Nachrichten, Unternehmungen, Geschenke, Absprache exklusiv/offen, Eifersucht, Pflege |
 | `src/game/Companion.ts` | Begleitung: Das Match läuft deiner Spur nach, steigt mit ins Auto und verabschiedet sich nach drei Spielstunden |
