@@ -196,6 +196,20 @@ Kommentare, Geschenke, Likes, Follows, Teilen und Abos steuern jedes Spiel über
 
 Anleitung `einbinden.html#tiktok`, Test `node tools/test-stream-tiktok.cjs`.
 
+## Telegram (Mini-App über einen kostenlosen Bot)
+
+Alle Spiele laufen in Telegram als Mini-App – ohne eigenen Server, gehostet wie immer über GitHub Pages.
+
+1. In Telegram **@BotFather** öffnen → `/newbot` (Name und Benutzername, z. B. `easygames_bot`).
+2. `/mybots` → Bot wählen → **Bot Settings → Configure Mini App → Enable Mini App** → Adresse `https://ricorewioriginal-collab.github.io/easygames/`
+   (Haupt-Mini-App: Knopf „Open“ im Bot-Profil und `t.me/<bot>?startapp`). Zusätzlich unter **Bot Settings → Menu Button** dieselbe Adresse mit dem Text „🎮 Spielen“.
+3. Fertig: Spieleliste im Bot öffnen. Direkt zu einem Spiel: `https://t.me/<bot>?startapp=<spiel-id>` (z. B. `https://t.me/easygames_ricorewiBot?startapp=deluxe-2048`).
+   Bot: **@easygames_ricorewiBot** (in `telegram.js`; „Spiel teilen“ in Telegram gibt diesen Startlink weiter).
+
+`telegram.js` (nur in `index.html`) tut außerhalb von Telegram nichts. In Telegram öffnet es die Mini-App groß, sperrt das Schließen per Wischen
+während des Spiels, nimmt die easygames-Farben und zeigt Telegrams Zurück-Knopf, solange ein Spiel offen ist. Test: `tools/test-telegram.cjs`.
+Grenzen: Google-Anmeldung lässt Google in eingebetteten Browsern meist nicht zu (Spielen geht ohne), Gamecontroller in Telegram am Handy meist nicht.
+
 ## Xbox
 
 Alle Spiele laufen im Microsoft Edge der Xbox (Series X|S, One): Seite öffnen, im Spiel die Menü-Taste gedrückt halten, dann steuert der Controller das Spiel (Gamepad-API, `gamepad.js`). Hinweise auf der Startseite (`index.html#xbox`) und in `einbinden.html#xbox`.
