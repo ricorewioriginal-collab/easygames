@@ -21,7 +21,7 @@ import { NIGHT_S, pairVoices, VIBES, type Vibe } from './liebe';
 import { berufOf, meinBeruf } from './beruf';
 import { tapeAsk, tapeAfter } from './dreh';
 import { keepCondom } from './fanshop';
-import { memOf, remember, greet, nextPart, heardPart, finish } from './leben';
+import { memOf, remember, greet, nextPart, heardPart, finish, QUICK, quick } from './leben';
 
 export interface TalkOpts { actor?: Actor; room?: InteriorScene; look?: Look; opening?: string; kid?: boolean; /** Art der Straßenfigur (Street.ts), z. B. für den Beruf */ kind?: string; /** Szene-Art (szene.ts): Pup, Leder, Bear … */ szene?: string; /** Gedächtnis und eigene Geschichte (leben.ts) */ life?: { wanted: number; rain: boolean } }
 
@@ -51,6 +51,12 @@ export function strangerTalk(g: Game, st: Stranger, o: TalkOpts, end?: () => voi
     const c: NonNullable<Line['choices']> = [];
     c.push({ label: '💬 Plaudern', fn: () => { then = () => run([N(CHAT[(h + Math.floor(Math.random() * 99)) % CHAT.length]), menu('Sonst noch was?')]); } });
     if (ty) c.push({ label: ty.act.label, fn: () => { sfx(ty.id === 'pup' ? 'squeak' : 'giggle'); change(s, { fun: ty.act.fun || 0, social: ty.act.social || 0 }); ty.anim[0] && o.actor?.play(ty.anim[0]); then = () => run([...ty.act.lines.map((x) => N(x)), menu('Und sonst?')]); } });
+    // schnelle Gesten: kurz etwas sagen, die Person merkt es sich
+    if (o.life) c.push({ label: '⚡ Kurz was sagen', sub: 'Grüßen, Kompliment, Necken, Beruhigen, Provozieren', fn: () => { then = () => run([{ who: 'Du', color: '#ff4fa3', text: 'Ich sag einfach …', choices: QUICK.map((q) => ({ label: q.label, fn: () => {
+      const r = quick(s, st.key, q.id, h + Math.floor(Math.random() * 9)); sfx(r.mood >= 0 ? 'ok' : 'miss');
+      if (q.id === 'lob' && r.mood > 0) o.actor?.play('laugh'); if (q.id === 'stress' && r.mood < 0) o.actor?.play('talk');
+      then = () => run([{ who: 'Du', color: '#ff4fa3', text: q.you }, N(r.text)]);
+    } })) }]); } });
     // eigene Geschichte: ein Teil pro Tag, am Ende entscheidest du mit
     const part = o.life ? nextPart(s, st.key) : null, done = o.life ? memOf(s, st.key).done : undefined;
     if (part) c.push({ label: part.i === 0 ? '💭 Wie geht\'s dir so?' : `${part.story.icon} ${part.story.title} (${part.i + 1}/4)`, sub: part.i === 0 ? 'Jede Person hat ihre eigene Geschichte' : 'Wie geht es weiter?', fn: () => {

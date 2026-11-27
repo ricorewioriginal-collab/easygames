@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { STORIES, memOf, remember, greet, nextPart, heardPart, finish, phaseAt, storyOf } from '../src/game/leben';
+import { quick, outfitLine, STORIES, memOf, remember, greet, nextPart, heardPart, finish, phaseAt, storyOf } from '../src/game/leben';
 
 const save = () => ({ day: 1, money: 100, rep: 0, name: 'Kim', flags: {} as Record<string, string | number | boolean> }) as never as import('../src/engine/Save').SaveData;
 
@@ -32,5 +32,16 @@ describe('Leben der Straßenleute', () => {
     expect(phaseAt(8, 0)).toBe('weg');
     expect(phaseAt(22, 0)).toBe('abend');
     expect(['schlaf', 'abend']).toContain(phaseAt(3, 1));
+  });
+  it('schnelle Gesten ändern die Stimmung', () => {
+    const s = save(), k = 'street:2:y';
+    expect(quick(s, k, 'stress', 0).mood).toBe(-3);
+    expect(quick(s, k, 'gruss', 0).text).toMatch(/Hm|hallo/i);
+    expect(quick(s, k, 'ruhe', 0).mood).toBeGreaterThanOrEqual(0);
+    expect(quick(s, k, 'lob', 1).mood).toBeGreaterThan(0);
+  });
+  it('Outfit-Kommentare', () => {
+    expect(outfitLine('swim', false, false, 1)).toMatch(/Strand|Bade|Hafen/);
+    expect(outfitLine('shirtless', false, true, 1)).toMatch(/Regen|Wetter/);
   });
 });
