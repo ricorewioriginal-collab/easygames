@@ -4,6 +4,7 @@
    (Donut-Mobil, Herz-Hecken, Herz-Neon, Herz-Wolke). */
 import { Mesh, Node3, type Scene, type PBRMaterial } from '../engine/bjs';
 import { box, cyl, sphere, torus, pbr, glow, planeZ, canvasTex } from '../engine/geo';
+import { worldTex } from '../engine/surfaces';
 import type { SaveData } from '../engine/Save';
 
 /* ---------- Katalog ---------- */
@@ -156,7 +157,10 @@ export function buildSilhouettes(sc: Scene, parent: Node3, low: boolean) {
     const P = putter(root), byMat = new Map<PBRMaterial, Mesh[]>();
     const before = new Set(root.getChildMeshes());
     // Hecken-Figuren im Regenbogenpark
-    const leaf = pbr(sc, 0x2f8a3c, .95), pot = pbr(sc, 0xb8613a, .8);
+    // Foto-Laub (Hecke) und Beton-Kübel statt glatter Farben
+    const leaf = pbr(sc, 0xffffff, .95), pot = pbr(sc, 0xc9c4bc, .85);
+    { const t = worldTex(sc, 'hedge_col.jpg').clone(); t.uScale = t.vScale = 3; leaf.albedoTexture = t;
+      const c = worldTex(sc, 'asphalt_col.jpg').clone(); c.uScale = c.vScale = .5; pot.albedoTexture = c; pot.albedoColor.set(2.2, 2.15, 2.05); }
     for (const [x, z] of SPOTS.hedges) {
       P(box(sc, 1.6, .5, 1.6), pot, x, .35, z);
       if (adult) comic(sc, P, leaf, x, .6, z, 2.6, seg); else heart(sc, P, leaf, x, 2.1, z, 2.2, seg);

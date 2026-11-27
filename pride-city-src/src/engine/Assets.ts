@@ -33,8 +33,29 @@ export function container(scene: Scene, path: string): Promise<AssetContainer> {
   return p;
 }
 
+/** Straßenmöbel: KayKit-Spielzeug durch echte Poly-Haven-Modelle (CC0, verkleinert, scratch prep.mjs) ersetzen.
+    Aufrufer skalieren KayKit-Teile mit 5 (2 Einheiten = 10 m); die Ersatzteile sind in Metern, daher innen 1/5. */
+const KAY = 5;
+export const PROP_SWAP: Record<string, { file: string; scale: number; rot: number; extra?: string }> = {
+  'city/streetlight.gltf': { file: 'props/street_lamp_01.glb', scale: 1.25, rot: 0 },
+  'city/bench.gltf': { file: 'props/modular_street_seating.glb', scale: .9, rot: Math.PI },
+  'city/firehydrant.gltf': { file: 'props/fire_hydrant.glb', scale: 1.15, rot: 0 },
+  'city/trash_A.gltf': { file: 'props/metal_trash_can.glb', scale: 1, rot: 0 },
+  'city/bush.gltf': { file: 'props/planter_box_02.glb', scale: 1.3, rot: 0, extra: 'shrub' },
+};
+
+/** Zusatzteile je Szene (z. B. Busch aus Laubkarten im Pflanzkübel), von der Welt angemeldet */
+export const EXTRAS = new WeakMap<Scene, Record<string, (parent: TransformNode) => void>>();
+
 /** Statische Kopie (Gebäude, Requisiten): Instanzen teilen Geometrie und Material */
 export async function instance(scene: Scene, path: string, opts: { shadows?: boolean; clone?: boolean } = {}): Promise<TransformNode> {
+  const sw = PROP_SWAP[path];
+  if (sw) {
+    const inner = await instance(scene, sw.file, opts), root = new TransformNode(path, scene);
+    inner.parent = root; inner.scaling.setAll(sw.scale / KAY); inner.rotation.y = sw.rot; root.metadata = { swapped: true };
+    if (sw.extra) EXTRAS.get(scene)?.[sw.extra]?.(inner);
+    return root;
+  }
   const c = await container(scene, path);
   if (!opts.clone && !added.has(c)) {
     // Quellen in die Szene holen (sonst bekommen Instanzen keine Lichter zugewiesen), selbst aber unsichtbar
