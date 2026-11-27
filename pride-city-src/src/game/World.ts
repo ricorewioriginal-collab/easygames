@@ -9,6 +9,7 @@ import {
 import { instance, preload } from '../engine/Assets';
 import { planeZ, ground, box, cyl, sphere, ring, torus, pbr, glow, canvasTex } from '../engine/geo';
 import { PALETTES } from './palettes';
+import { Townhouses } from './townhouse';
 import { roadSurface, grassSurface, photoSurface, waterSurface, worldTex } from '../engine/surfaces';
 import { buildUptown, EAST, BRIDGE, UPTOWN_PLACES, doorStep } from './uptown';
 import { NODES, LANE, lane, nearestEdge } from './traffic';
@@ -19,9 +20,8 @@ const N = 6;        // Kacheln von der Mitte bis zum Rand
 export const HALF = N * TILE + TILE / 2;
 
 const C = (n: string) => 'city/' + n + '.gltf';
-const BUILD = ['building_A', 'building_B', 'building_C', 'building_D', 'building_E', 'building_F', 'building_G', 'building_H'];
 const CARS = ['car_hatchback', 'car_sedan', 'car_stationwagon', 'car_taxi', 'car_police'];
-export const CITY_FILES = [...BUILD, ...CARS, 'base', 'road_straight', 'road_junction', 'road_tsplit', 'road_corner', 'streetlight', 'bench', 'bush', 'firehydrant', 'trash_A', 'dumpster', 'watertower', 'box_A'].map(C);
+export const CITY_FILES = [...CARS, 'base', 'road_straight', 'road_junction', 'road_tsplit', 'road_corner', 'streetlight', 'bench', 'bush', 'firehydrant', 'trash_A', 'dumpster', 'watertower', 'box_A'].map(C);
 
 export interface Poi { id: string; name: string; icon: string; x: number; z: number; r: number; sign?: string; color?: string }
 /** Begehbar: Innenstadt, Kai, Strand und Steg (nicht ins Wasser) */
@@ -134,6 +134,7 @@ export class World {
     for (const p of this.pois) special.set(this.blockOf(p.x, p.z), p);
 
     const tasks: Promise<unknown>[] = [];
+    const town = new Townhouses(this);
     for (let ix = -N; ix <= N; ix++) for (let iz = -N; iz <= N; iz++) {
       const x = ix * TILE, z = iz * TILE;
       if (isRoad(ix) || isRoad(iz)) { tasks.push(this.road(ix, iz, x, z)); continue; }
@@ -148,18 +149,16 @@ export class World {
       // Läden mit Tür zur Hauptstraße (x = 0)
       const door = this.pois.find((q) => q.sign && Math.round(q.x / TILE) === ix && Math.round(q.z / TILE) === iz);
       if (door) rot = door.x > 0 ? -Math.PI / 2 : Math.PI / 2;
-      let kind = BUILD[Math.floor(rnd() * BUILD.length)];
-      if (door) kind = door.id === 'club' ? 'building_H' : door.id === 'center' ? 'building_G' : door.id === 'home' ? 'building_E' : door.id === 'cafe' ? 'building_B' : door.id === 'boutique' ? 'building_F' : door.id === 'gym' ? 'building_D' : door.id === 'studio' ? 'building_A' : door.id === 'checkpoint' ? 'building_E' : door.id === 'onelove' ? 'building_H' : door.id === 'police' ? 'building_A' : door.id === 'fire' ? 'building_G' : 'building_C';
-      const house = door ? null : { i: this.houses.length, x: x + Math.sin(rot) * (TILE * .4 + .5), z: z + Math.cos(rot) * (TILE * .4 + .5), yaw: rot };
+      // Stadthaus mit Foto-Fassade (townhouse.ts) statt KayKit-Klotz; Läden bekommen feste Höhe und Markise
+      rnd();
+      const house = door ? null : { i: this.houses.length, x, z, yaw: rot };
       if (house) this.houses.push(house);
-      tasks.push(this.place(C(kind), x, .1, z, rot).then((o) => {
-        const r = this.footprint(o, x, z);
-        this.blocks.push({ r, o });
-        // Haustür direkt vor die echte Fassade legen (keine Klingel mitten auf dem Gehweg)
-        if (house) { const sx = Math.round(Math.sin(rot)), sz = Math.round(Math.cos(rot)), d = sx ? r.hx + (r.x - x) * sx : r.hz + (r.z - z) * sz; house.x = x + Math.sin(rot) * (d + .7); house.z = z + Math.cos(rot) * (d + .7); }
-      }));
+      const th = town.add(x, z, rot, door ? { floors: door.id === 'club' || door.id === 'onelove' ? 3 : 4 } : {});
+      if (house) { house.x = x + Math.sin(rot) * (th.front + .7); house.z = z + Math.cos(rot) * (th.front + .7); }
+      this.blocks.push({ r: th.r, o: new TransformNode('house', sc) });
     }
     await Promise.all(tasks);
+    town.build(sc);
     this.plaza(); this.park(); this.decorate(); this.signs(); this.paintHouses(); this.neonCity(); await this.harbour();
     await buildUptown(this);
     await this.spawnCars();
@@ -244,35 +243,6 @@ export class World {
     o.parent = this.root;
     o.getChildMeshes().forEach((m) => { m.freezeWorldMatrix(); m.doNotSyncBoundingInfo = true; });
     return o;
-  }
-  /** Kollision eines Hauses aus seinem echten Grundriss: nur Teile, die bis zum Boden reichen (Markisen und Schilder oben zählen nicht) */
-  private foot = new Map<string, number[] | null>();
-  private footprint(o: TransformNode, x: number, z: number) {
-    const b = this.bounds(o, .5, 2.2, this.foot);
-    const r: Rect = b ? { x: (b[0] + b[1]) / 2, z: (b[2] + b[3]) / 2, hx: Math.max(1, (b[1] - b[0]) / 2 - .1), hz: Math.max(1, (b[3] - b[2]) / 2 - .1) } : { x, z, hx: TILE * .4, hz: TILE * .4 };
-    this.colliders.push(r); return r;
-  }
-  /** Ausdehnung eines Hauses in einer Höhenschicht (Weltkoordinaten: x0, x1, z0, z1) */
-  private bounds(o: TransformNode, lo: number, hi: number, cache: Map<string, number[] | null>) {
-    let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
-    for (const m of o.getChildMeshes()) {
-      // Grundriss aus den Wänden im Erdgeschoss (0,5–2,2 m), ohne Gehweg-Platte, Markisen und Schilder
-      let f = cache.get(m.name);
-      if (f === undefined) {
-        const pos = m.getVerticesData('position'); f = null;
-        if (pos) { const sy = m.absoluteScaling.y || 1, oy = m.absolutePosition.y; let a = Infinity, b = -Infinity, c = Infinity, d = -Infinity;
-          for (let i = 0; i < pos.length; i += 3) { const y = pos[i + 1] * sy + oy; if (y < lo || y > hi) continue; a = Math.min(a, pos[i]); b = Math.max(b, pos[i]); c = Math.min(c, pos[i + 2]); d = Math.max(d, pos[i + 2]); }
-          if (isFinite(a)) f = [a, b, c, d]; }
-        cache.set(m.name, f);
-      }
-      if (!f) continue;
-      const wm = m.getWorldMatrix();
-      for (const [lx, lz] of [[f[0], f[2]], [f[1], f[2]], [f[0], f[3]], [f[1], f[3]]]) {
-        const q = Vector3.TransformCoordinates(new Vector3(lx, 0, lz), wm);
-        x0 = Math.min(x0, q.x); x1 = Math.max(x1, q.x); z0 = Math.min(z0, q.z); z1 = Math.max(z1, q.z);
-      }
-    }
-    return isFinite(x0) ? [x0, x1, z0, z1] : null;
   }
   /** feste Teile: Weltmatrix einfrieren (spart Rechenzeit) */
   still(m: AbstractMesh, cast = true, receive = true) {
