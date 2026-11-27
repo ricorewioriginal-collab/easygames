@@ -4,7 +4,8 @@ import type { GameScene } from '../engine/Engine';
 import { Vector3, TransformNode, HemisphericLight, SpotLight, PointLight, ShadowGenerator, Scene, type FreeCamera, type Mesh, col } from '../engine/bjs';
 import { ground, cyl, torus, pbr, glow, canvasTex } from '../engine/geo';
 import { Actor, playerLook, OUTFITS } from './Actor';
-import { EDITOR_AVATARS } from './avatars';
+import { EDITOR_AVATARS, avatar } from './avatars';
+import { washChoices } from './waesche';
 import { PRONOUNS } from './palettes';
 import type { Game } from './Game';
 import { Menu, el, hints, $ } from '../ui/ui';
@@ -59,6 +60,7 @@ export class CreatorScene implements GameScene {
       { icon: '🧍', label: 'Figur', value: () => { const a = EDITOR_AVATARS[ai()]; return `${a.name} · ${a.desc}`; }, left: () => pick(-1), right: () => pick(1) },
       { icon: '💬', label: 'Pronomen', value: () => PRONOUNS[ni()].label, left: () => { s.pronouns = PRONOUNS[cyc(PRONOUNS, ni(), -1)].id; this.apply(); }, right: () => { s.pronouns = PRONOUNS[cyc(PRONOUNS, ni(), 1)].id; this.apply(); } },
       { icon: '👕', label: 'Outfit', value: () => OUTFITS.find((o) => o.id === playerLook(s).outfit)?.name || 'Angezogen', left: () => this.outfit(-1), right: () => this.outfit(1) },
+      { icon: '🩲', label: 'Unterwäsche', value: () => this.wash(0), left: () => this.wash(-1), right: () => this.wash(1) },
       { icon: '✨', label: 'Los geht’s!', sub: 'Ab nach Rainbow City', big: true, fn: () => { if (!s.name.trim()) s.name = 'Alex'; this.done(); } },
     ]);
     this.menu.onBack = () => this.cancel();
@@ -83,6 +85,17 @@ export class CreatorScene implements GameScene {
     this.actor = a;
     this.apply(); a.play('wave');
     if (s.body !== id) this.setBody(s.body);
+  }
+  /** Unterwäsche wählen (Slip, Jockstrap, Boxer, String, Hipster …); d = 0 liefert nur den Namen */
+  private wash(d: number) {
+    const s = this.g.save.data, look = playerLook(s), list = washChoices(avatar(look.rb || '')?.g === 'f' ? 'f' : 'm');
+    let i = list.findIndex((w) => w.id === s.flags.wash);
+    if (d) {
+      i = i < 0 ? (d > 0 ? 0 : list.length - 1) : (i + d + list.length) % list.length; s.flags.wash = list[i].id;
+      if (look.outfit !== 'underwear') s.flags.outfit = 'underwear';   // gleich zeigen
+      this.apply();
+    }
+    return i < 0 ? 'Passend zur Figur' : list[i].name;
   }
   private outfit(d: number) {
     const s = this.g.save.data, list = OUTFITS.filter((o) => !o.adult || s.settings.adult);
