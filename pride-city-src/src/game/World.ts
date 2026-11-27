@@ -9,6 +9,7 @@ import {
 import { instance, preload } from '../engine/Assets';
 import { planeZ, ground, box, cyl, sphere, ring, torus, pbr, glow, canvasTex } from '../engine/geo';
 import { PALETTES } from './palettes';
+import { roadSurface, grassSurface, photoSurface, waterSurface, worldTex } from '../engine/surfaces';
 import { buildUptown, EAST, BRIDGE, UPTOWN_PLACES, doorStep } from './uptown';
 import { NODES, LANE, lane, nearestEdge } from './traffic';
 
@@ -126,7 +127,7 @@ export class World {
     this.nearShadows();
 
     // Boden
-    const g = ground(sc, 600, 600); g.position.y = -.02; g.material = pbr(sc, 0x6fae5a, 1); g.receiveShadows = true; g.parent = this.root;
+    const g = ground(sc, 600, 600); g.position.y = -.02; g.material = pbr(sc, 0x6fae5a, 1); grassSurface(g.material as PBRMaterial, sc, 600); g.receiveShadows = true; g.parent = this.root;
 
     this.definePois();
     const special = new Map<string, Poi>();
@@ -301,7 +302,7 @@ export class World {
         m.detailMap.texture.coordinatesIndex = 1;
         for (const ms of o.getChildMeshes()) if ((ms as Mesh).material === m || (ms as InstancedMesh).sourceMesh?.material === m) this.boxUv(ms);
       }
-      else if (/road|base/.test(path)) { m.roughness = .72; m.metallic = 0; this.roadMats.push(m); }
+      else if (/road|base/.test(path)) { m.roughness = .72; m.metallic = 0; this.roadMats.push(m); roadSurface(m, this.scene); }
       else if (/car_/.test(path)) {
         // Autolack mit Klarlack, getönte Scheiben, Gummi und Chrom (je Farbfeld im Atlas)
         m.roughness = 1; m.metallic = 1; this.surface(m, 'car');
@@ -348,26 +349,8 @@ export class World {
   /** Detail-Textur (R = Helligkeit, G = Normal Y, B = Rauheit, A = Normal X): Putz mit feinen Fugen */
   private detail: Texture | null = null;
   detailTex() {
-    if (this.detail) return this.detail;
-    const N2 = 256, d = new Uint8Array(N2 * N2 * 4), h = new Float32Array(N2 * N2);
-    let seed = 7; const rn = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-    const noise = new Float32Array(64 * 64).map(() => rn());
-    const smooth = (x: number, y: number) => { const xi = Math.floor(x) & 63, yi = Math.floor(y) & 63, fx = x - Math.floor(x), fy = y - Math.floor(y), a = noise[yi * 64 + xi], b = noise[yi * 64 + ((xi + 1) & 63)], c = noise[((yi + 1) & 63) * 64 + xi], e = noise[((yi + 1) & 63) * 64 + ((xi + 1) & 63)]; return (a * (1 - fx) + b * fx) * (1 - fy) + (c * (1 - fx) + e * fx) * fy; };
-    for (let y = 0; y < N2; y++) for (let x = 0; x < N2; x++) {
-      // Steinreihen (Fugen alle 32 px, versetzt) + Putz-Rauschen
-      const row = Math.floor(y / 32), bx = (x + (row % 2) * 32) % 64, joint = (y % 32 < 2 || bx < 2) ? 1 : 0;
-      h[y * N2 + x] = .5 + (smooth(x / 8, y / 8) - .5) * .5 + (smooth(x / 2.5, y / 2.5) - .5) * .25 - joint * .45;
-    }
-    for (let y = 0; y < N2; y++) for (let x = 0; x < N2; x++) {
-      const i = y * N2 + x, hx = h[y * N2 + ((x + 1) % N2)] - h[y * N2 + ((x + N2 - 1) % N2)], hy = h[((y + 1) % N2) * N2 + x] - h[((y + N2 - 1) % N2) * N2 + x];
-      d[i * 4] = Math.max(0, Math.min(255, 128 + (h[i] - .5) * 150));
-      d[i * 4 + 1] = Math.max(0, Math.min(255, 128 - hy * 180));
-      d[i * 4 + 2] = Math.max(0, Math.min(255, 128 + (.5 - h[i]) * 120));
-      d[i * 4 + 3] = Math.max(0, Math.min(255, 128 - hx * 180));
-    }
-    const t = (this.detail = RawTexture.CreateRGBATexture(d, N2, N2, this.scene, true, false, Texture.TRILINEAR_SAMPLINGMODE));
-    t.wrapU = t.wrapV = Texture.WRAP_ADDRESSMODE;
-    return t;
+    // Echte Backstein-Fassade (Poly Haven „brick_4“, CC0), gepackt: R = Helligkeit, G = Normal Y, B = Rauheit, A = Normal X
+    return (this.detail ??= worldTex(this.scene, 'brick_detail.webp'));
   }
   /** Zweite UV aus der Lage im Modell (Würfel-Projektion), einmal je Geometrie */
   private uvDone = new Set<unknown>();
@@ -799,9 +782,9 @@ export class World {
     const M = (c: number | string, r = .8, m = 0, extra: Parameters<typeof pbr>[4] = {}) => pbr(sc, c, r, m, extra);
     const plane = (w: number, l: number, mt: PBRMaterial, x: number, y: number, z: number) => { const o = ground(sc, w, l); o.material = mt; o.position.set(x, y, z); return this.still(o, false); };
     const bx = (w: number, h: number, l: number, mt: PBRMaterial, x: number, y: number, z: number, cl = false) => { const o = box(sc, w, h, l); o.material = mt; o.position.set(x, y, z); this.still(o); if (cl) this.colliders.push({ x, z, hx: w / 2, hz: l / 2 }); return o; };
-    plane(27, 80, M(0x948c80, .9), -78.5, .06, 5);                      // Kai-Pflaster
-    plane(400, 600, M(0x2f8fd0, .12, .25, { emissive: 0x08243a }), -292, .02, 0); // Wasser
-    plane(10, 26, M(0xf0d9a0, 1), -92, .07, 30);                    // Sandstrand
+    plane(27, 80, photoSurface(M(0x948c80, .9), sc, 'paving', 27, 80), -78.5, .06, 5);                      // Kai-Pflaster
+    { const wm = M(0x0f3f5c, .12, 0, { emissive: 0x031522 }), wave = waterSurface(wm, sc, 400, 600); plane(400, 600, wm, -292, .02, 0); this.extras.push((_dt, t) => wave(t)); } // Wasser
+    plane(10, 26, photoSurface(M(0xf0d9a0, 1), sc, 'sand', 10, 26), -92, .07, 30);                    // Sandstrand
     bx(.5, .5, 15.5, M(0x8c8579), -91.4, .25, -27.25); bx(.5, .5, 53.5, M(0x8c8579), -91.4, .25, 18.25);   // Kaimauer, offen an der Brücke nach Glitzeria (z −14)
     // Weltentor am Kai: Regenbogenbogen mit leuchtendem Wirbel (Reise in andere Welten, worlds.ts)
     [0xff3b3b, 0xff8a3b, 0xffd23b, 0x3ee69a, 0x3a7bff, 0xb56bff].forEach((c, i) => { const m = glow(sc, c, 1); this.neon.push({ m, base: m.albedoColor.clone() }); const a = torus(sc, 3.3 - i * .22, .13, 28); a.material = m; a.rotation.set(Math.PI / 2, Math.PI / 2, 0); a.position.set(-80, 0, 13); this.still(a, false); });
