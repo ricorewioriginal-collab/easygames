@@ -13,6 +13,8 @@ Alle eingebundenen Modelle sind kostenlos und frei nutzbar (CC0 / Public Domain)
 | Hausfassaden der Innenstadt (Farbe, Normalen, Nachtfenster aus den beleuchteten Varianten B/C abgeleitet) | `assets/world/fac018_*.jpg`, `fac019_*`, `fac020_*` | ambientCG – „Facade018A–C“, „Facade019A–C“, „Facade020A–C“ (ambientcg.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
 | Bäume und Palmen: Rinde, Laubkronen und Palmwedel (aus einzelnen Foto-Blättern zu Alpha-Karten zusammengesetzt) | `assets/world/palm_bark_*`, `tree_bark_*`, `leaves.png`, `palm_frond.png` | ambientCG – „Bark003“, „Bark014“, „LeafSet024“, „Foliage005“ (ambientcg.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
 | Straßenmöbel: Laterne, Parkbank, Hydrant, Mülleimer (Polygone reduziert, Texturen 256–512 px) | `assets/props/street_lamp_01.glb`, `modular_street_seating.glb`, `fire_hydrant.glb`, `metal_trash_can.glb`, `planter_box_02.glb` | Poly Haven – „street_lamp_01“, „modular_street_seating“, „fire_hydrant“, „metal_trash_can“, „planter_box_02“ (polyhaven.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
+| Müllsäcke und Kartons (Müllecken, Kisten; Polygone reduziert, Texturen 256 px) | `assets/props/trashbag.glb`, `cardboard_box_01.glb` | Poly Haven – „Trash Bag“, „Cardboard Box 01“ – https://polyhaven.com/models | CC0 1.0 |
+| Holzdauben des Wasserturms | `assets/world/tank_wood_*.jpg` | Poly Haven – „Dark Wooden Planks“ – https://polyhaven.com/a/dark_wooden_planks | CC0 1.0 |
 | Wasserwellen (Normalenkarte) | `assets/world/water_nor.jpg` | selbst erzeugt (Summe von Sinuswellen) | CC0 1.0 |
 | 3D-Grafik | im Build gebündelt | three.js – https://threejs.org | MIT |
 

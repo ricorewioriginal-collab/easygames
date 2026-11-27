@@ -27,6 +27,7 @@ export { CreateCylinder } from '@babylonjs/core/Meshes/Builders/cylinderBuilder'
 export { CreateSphere } from '@babylonjs/core/Meshes/Builders/sphereBuilder';
 export { CreateTorus } from '@babylonjs/core/Meshes/Builders/torusBuilder';
 export { CreateDisc } from '@babylonjs/core/Meshes/Builders/discBuilder';
+export { CreateLathe } from '@babylonjs/core/Meshes/Builders/latheBuilder';
 export { CreateIcoSphere } from '@babylonjs/core/Meshes/Builders/icoSphereBuilder';
 export { ExtrudePolygon } from '@babylonjs/core/Meshes/Builders/polygonBuilder';
 export { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
