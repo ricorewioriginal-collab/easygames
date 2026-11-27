@@ -15,6 +15,7 @@ import { music, sfx } from '../engine/Audio';
 import { RoomCam } from './room';
 import { buildFlitzer } from './flitzer';
 import { worldStage, townFree, neighbour, SLOTS, SHOP_SLOTS, SIDE_GATE, type Kit, type WorldDef, type WorldNpc } from './worlds';
+import { CAR_FILE } from './World';
 
 interface Folk { a: Actor; d: WorldNpc; host: boolean }
 const RAINBOW = [0xff3b3b, 0xff8a3b, 0xffd23b, 0x3ee69a, 0x3a7bff, 0xb56bff];
@@ -221,8 +222,8 @@ export class WorldScene implements GameScene {
     });
     // Autos auf der Ringstraße (zwei Richtungen), dazu geparkte
     const car = async (kind: string) => {
-      const inner = await instance(sc, 'city/' + kind + '.gltf', { shadows: false }); W.tune('car_', inner);
-      const o = new Node3(kind, sc); inner.parent = o; inner.scaling.setAll(S); inner.position.y = .061 * S - .025; o.position.y = .1;
+      const inner = await instance(sc, 'cars/' + (CAR_FILE[kind] || 'sedan') + (this.g.engine.mobile ? '_lo' : '') + '.glb', { shadows: false });
+      const o = new Node3(kind, sc); inner.parent = o; inner.position.y = -.027; o.position.y = .1;
       return o;
     };
     ['car_taxi', 'car_sedan', 'car_hatchback', 'car_stationwagon'].slice(0, this.g.engine.mobile ? 3 : 4).forEach((kind, i) => jobs.push(car(kind).then((o) => { this.cars.push({ o, path: LANES[i % 2], seg: i % 4, u: .2 + i * .15, v: 6 + (i % 3) }); })));

@@ -23,6 +23,7 @@ import { memOf, remember, saveMem, outfitLine, FIG_STORIES, figKey, nextPart, he
 import { toast, hints, type Line } from '../ui/ui';
 import { sprintSpeed, tiredAt, gainAus, ausdauer, buffOf } from './fit';
 import { TANK, tankOf, burn } from './tank';
+import { TANKE } from './uptown';
 import { Jagd } from './jagd';
 import { BusRide } from './busfahrt';
 import { rollEvent, testDue, post } from './social';
@@ -792,8 +793,17 @@ export class CityScene implements GameScene {
     // Tacho und Tank
     if (tanked) {
       const r = burn(sv, Math.abs(c.v) * dt);
-      if (r === 'low') { sfx('miss'); toast('⛽ Tank fast leer! Volltanken in der Garage Schraubenschlüssel oder Reservekanister aus dem Späti.'); }
-      else if (r === 'empty') { sfx('miss'); sv.pin = 'garage'; toast('⛽ Tank leer! Der Wagen rollt nur noch im Schritttempo. Wegpunkt zur Garage ist gesetzt.'); }
+      if (r === 'low') { sfx('miss'); toast('⛽ Tank fast leer! Ab zur Regenbogen-Tanke neben der Garage in der Hochstadt oder Reservekanister aus dem Späti.'); }
+      else if (r === 'empty') { sfx('miss'); sv.pin = 'tanke'; toast('⛽ Tank leer! Der Wagen rollt nur noch im Schritttempo. Wegpunkt zur Regenbogen-Tanke ist gesetzt.'); }
+      // unter dem Dach der Regenbogen-Tanke: stehen bleiben, dann tankt er von selbst
+      if (Math.abs(c.v) < 1.5 && Math.hypot(o.position.x - TANKE[0], o.position.z - TANKE[1]) < 5 && tankOf(sv) < 100) {
+        const add = Math.min(100 - (Number(sv.flags.tank) || 0), dt * 14), cost = add * .4;
+        if (sv.money >= cost) {
+          if (!this.fueling) { this.fueling = true; sfx('pour'); toast('⛽ Tankt … (bleib kurz stehen)'); }
+          sv.flags.tank = Math.min(100, (Number(sv.flags.tank) || 0) + add); this.fuelCost += cost;
+          if (tankOf(sv) >= 100) { const p = Math.ceil(this.fuelCost); sv.money -= p; this.fuelCost = 0; this.fueling = false; sfx('coin'); toast(`⛽ Vollgetankt! ${p} € bezahlt.`); this.refreshHud(); }
+        } else if (!this.fueling) { this.fueling = true; toast('⛽ Nicht genug Geld zum Tanken.'); }
+      } else if (this.fueling) { const p = Math.ceil(this.fuelCost); if (p) { sv.money -= p; sfx('coin'); toast(`⛽ ${p} € fürs Tanken bezahlt.`); this.refreshHud(); } this.fuelCost = 0; this.fueling = false; }
     }
     this.g.hud.speedo(`${c.def.icon} ${Math.round(Math.abs(c.v) * 3.6)} km/h${tanked ? ` · ⛽ ${tankOf(sv)} %` : ''}`, tanked && tankOf(sv) < 15);
     rigOf.get(o)?.update(dt, performance.now() / 1000, c.v);
@@ -835,6 +845,8 @@ export class CityScene implements GameScene {
   readonly landAt = isLand;
   private tiredTold = false;
   private sprintT = 0;
+  private fueling = false;
+  private fuelCost = 0;
   /** Sekunden seit dem letzten Wischen an der Kamera */
   private lookIdle = 9;
   /** Fahrkamera: Vorausschau in Fahrtrichtung, Tempo-Abstand und Tempo-Blickwinkel (weich nachgeführt) */

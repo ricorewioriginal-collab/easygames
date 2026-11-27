@@ -1381,8 +1381,13 @@ export class Game {
     this.openMenu(`<div class="col"><div class="panel" style="max-height:70dvh;overflow:auto"><h3>Mitwirkende</h3>
       <p><b style="color:#fff">Pride City</b> – Relaunch von Gay Life! für easygames.</p>
       <p>Menschen (CC BY 4.0, creativecommons.org/licenses/by/4.0, von Sketchfab, für Pride City mit Skelett versehen, verkleinert und teils umgefärbt): <b style="color:#fff">„Citizen NPC Pack 1 Character Lowpoly Mobile“</b> von 00amza · <b style="color:#fff">„Gangster Rigged“</b> von PropShop · <b style="color:#fff">„Street Gangster | Realistic 3D Character Model“</b> von PropShop · <b style="color:#fff">„Yakuza“</b> von Abrazafarolas.</p>
+      <p>Autos (CC BY 4.0, Sketchfab, geteilt, verkleinert und teils umgefärbt): <b style="color:#fff">„Generic passenger car pack“</b> von Comrade1280 · <b style="color:#fff">„Fairheaven LT '80 Cop Cruiser“</b> und <b style="color:#fff">„Saba V12 '95 Interceptor“</b> von Daniel Zhabotinsky.</p>
       <p>Animationen, Uniformen, Kinder und Sport-Körper: <b style="color:#fff">Microsoft Rocketbox</b> – MIT-Lizenz (© 2020 Microsoft Corporation, github.com/microsoft/Microsoft-Rocketbox). Stadt und Wohnung: <b style="color:#fff">KayKit</b> von Kay Lousberg (City Builder Bits, Furniture Bits, Restaurant Bits) – CC0 1.0. In Pride-Farben umgefärbt.</p>
+<<<<<<< HEAD
       <p>Oberflächen (Asphalt, Gehwegplatten, Backstein, Sand, Rasen; CC0 1.0): <b style="color:#fff">Poly Haven</b> (asphalt_02, brick_4, coast_sand_01) und <b style="color:#fff">ambientCG</b> (PavingStones038, Grass001, Hausfassaden Facade018–020, Rinde Bark003/Bark014, Blätter LeafSet024 und Foliage005 für Bäume und Palmen), verkleinert; Nachtfenster daraus abgeleitet. Wasserwellen selbst erzeugt. Straßenmöbel (CC0): <b style="color:#fff">Poly Haven</b> street_lamp_01, modular_street_seating, fire_hydrant, metal_trash_can, verkleinert.</p>
+=======
+      <p>Oberflächen (Asphalt, Gehwegplatten, Backstein, Sand, Rasen; CC0 1.0): <b style="color:#fff">Poly Haven</b> (asphalt_02, brick_4, coast_sand_01) und <b style="color:#fff">ambientCG</b> (PavingStones038, Grass001, Hausfassaden Facade018–020, Rinde Bark003/Bark014, Blätter LeafSet024 und Foliage005 für Bäume und Palmen), verkleinert; Nachtfenster daraus abgeleitet. Wasserwellen selbst erzeugt.</p>
+>>>>>>> origin/main
       <p>3D: Babylon.js (Apache 2.0). Musik und Klänge werden live im Spiel erzeugt.</p>
       <p>Alle Figuren sind frei erfunden. Wer flirtet oder datet, ist erwachsen; Kinder gibt es nur als Familienmitglieder. Zustimmung zählt.</p><div class="slot"></div></div></div>`,
     [{ icon: '←', label: 'Zurück', fn: () => this.title() }], () => this.title());
@@ -1498,6 +1503,11 @@ export class Game {
         { icon: '👑', label: s.flags.playAs === 'luma' ? 'Abschminken – wieder du selbst' : 'Als Lady Luma spielen', sub: 'Leon in Drag: Glitzer, Perücke, Lichtumhang', disabled: !(s.flags.lichtEnd || lichtPart(s) >= 5), fn: () => { close(); this.playAs(s.flags.playAs === 'luma' ? '' : 'luma'); } },
         { icon: '🍸', label: 'Drink an der Bar', sub: '5 € · +8 Spaß · +6 Kontakte', fn: buy(5, 'Velvet schiebt dir das Glas rüber. 🍸', eat({ fun: 8, social: 6 })) },
         { icon: '📖', label: 'Den Roman lesen', sub: '„Ich bin das Licht“ von RicoReWi', fn: () => { close(); this.book(); } }] },
+      tanke: { t: 'Regenbogen-Tanke', d: 'Zwei Zapfsäulen, ein Regenbogendach und Kaffee rund um die Uhr. Fahr deinen eigenen Wagen unters Dach, dann tankt er von selbst.', items: [
+        ...(myCar(s) && !myCar(s)!.fly ? [{ icon: '⛽', label: tankOf(s) >= 100 ? 'Tank ist voll' : 'Volltanken', sub: `${TANK.price(s)} € · Tank jetzt ${tankOf(s)} % · auch einfach unters Dach fahren`, disabled: tankOf(s) >= 100, fn: buy(TANK.price(s), '⛽ Vollgetankt!', () => { s.flags.tank = 100; }) }] : []),
+        { icon: '☕', label: 'Kaffee to go', sub: '2 € · +10 Energie · ☕ 2 Std. hellwach', fn: buy(2, 'Heiß und stark. ☕ Hellwach für 2 Stunden.', () => { eat({ energy: 10 })(); giveBuff(s, 'kaffee'); }) },
+        { icon: '🌭', label: 'Tofu-Wurst im Brötchen', sub: '3 € · +25 Hunger', fn: buy(3, 'Mit Röstzwiebeln. 🌭', eat({ hunger: 25 }, 'eat')) },
+        { icon: '🧽', label: 'Waschanlage', sub: '5 € · Regenbogenschaum · +8 Spaß', fn: buy(5, 'Schaum in allen Farben, du singst laut mit. 🧽🌈', eat({ fun: 8 })) }] },
       garage: (() => {
         const mine = myCar(s), tl = tuneLevel(s), hue = s.flags.carHue === undefined ? -1 : Number(s.flags.carHue), pi = Math.max(0, PAINTS.findIndex((q) => q[2] === hue)), np = PAINTS[(pi + 1) % PAINTS.length];
         const done = (why: string | null, ok: string, after?: () => void) => { if (why) { sfx('miss'); toast(why); return; } sfx('win'); toast(ok); after?.(); this.save.write(); this.city.refreshHud(); close(); this.placeMenu('garage'); };

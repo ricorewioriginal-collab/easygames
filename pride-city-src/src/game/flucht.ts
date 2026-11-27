@@ -64,7 +64,7 @@ export class Flucht {
   private async make() {
     if (this.making) return; this.making = true;
     for (let i = 0; i < 3; i++) {
-      const o = await this.city.world.car('car_police');
+      const o = await this.city.world.car(i === 2 ? 'k:interceptor' : 'car_police');
       const bb = o.getHierarchyBoundingVectors(true), h = bb.max.y - bb.min.y;
       const lamps = [0x2a5bff, 0xff2a2a].map((c, k) => { const b = box(this.sc, .45, .25, .25); b.material = glow(this.sc, c, 2.2); b.position.set((k ? 1 : -1) * .3, h + .1, -.1); b.parent = o; b.isPickable = false; return b; }) as [Mesh, Mesh];
       o.setEnabled(false);

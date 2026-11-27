@@ -5,7 +5,7 @@
    Alles wird aus wenigen zusammengefassten Meshes gebaut (ein Zeichenaufruf je Material), Fassaden sind Canvas-Texturen
    mit Fenstern, die nachts zufällig leuchten. Keine fremden Grafiken nötig. */
 import { Vector3, Color3, Matrix, Quaternion, Mesh, VertexData, PBRMaterial, TransformNode, PointLight, type AbstractMesh, type Scene, col } from '../engine/bjs';
-import { ground, box, sphere, planeZ, pbr, glow, canvasTex } from '../engine/geo';
+import { ground, box, sphere, cyl, planeZ, pbr, glow, canvasTex } from '../engine/geo';
 import { PALETTES } from './palettes';
 import type { World } from './World';
 
@@ -148,6 +148,9 @@ const ADS: Array<[string, string, string, string]> = [
   ['FLAMINGO TAXI', 'Ruf an: 6969', '#ff9ad5', '#2a0a20'], ['SKYLINE BURGER', 'Doppelt. Dreifach. Queer.', '#ffb347', '#2a1408'],
 ];
 
+/** Regenbogen-Tanke (unter dem Dach tankt dein eigener Wagen) */
+export const TANKE: [number, number] = [165, -42.7];
+const RAINBOW6 = [0xe40303, 0xff8c00, 0xffed00, 0x008026, 0x004dff, 0x750787];
 export async function buildUptown(w: World) {
   const sc = w.scene, still = (m: AbstractMesh, cast = true, rec = true) => w.still(m, cast, rec);
   const B = {
@@ -285,6 +288,21 @@ export async function buildUptown(w: World) {
     for (let i = 0; i < 4; i++) { const t = box(sc, .75, .22, .75); t.material = tyre; t.position.set(gx + 3.1, .22 + i * .23, gz + 3.2); t.rotation.y = i * .5; still(t); }
     w.neonSign('GARAGE', '#ffd23b', gx, 4.6, gz + 2.6, 0, undefined, 5);
     w.colliders.push({ x: gx, z: gz, hx: 3.5, hz: 2.5 }, { x: gx + 3.1, z: gz + 3.2, hx: .45, hz: .45 });
+    // Regenbogen-Tanke neben der Garage: Dach auf vier Stützen, zwei Zapfsäulen, Preisschild (tank.ts, CityScene: unters Dach fahren)
+    const [tx, tz] = TANKE, steel = pbr(sc, 0xd9dde3, .35, .8), canopy = pbr(sc, 0xf4f4f6, .5, .1);
+    const deck = box(sc, 8.4, .35, 5.6); deck.material = canopy; deck.position.set(tx, 4.3, tz); still(deck);
+    RAINBOW6.forEach((c, i) => { const b = box(sc, 8.42, .06, .95); b.material = glow(sc, c, .9); b.position.set(tx, 4.1, tz - 2.35 + i * .94); still(b, false, false); });
+    for (const [x, z] of [[tx - 3.8, tz - 2.4], [tx + 3.8, tz - 2.4], [tx - 3.8, tz + 2.4], [tx + 3.8, tz + 2.4]]) { const p = cyl(sc, .14, .14, 4.1, 10); p.material = steel; p.position.set(x, 2.15, z); still(p); w.colliders.push({ x, z, hx: .2, hz: .2 }); }
+    const isle = box(sc, 6.2, .18, 1); isle.material = pbr(sc, 0x8a8f98, .8); isle.position.set(tx, .2, tz); still(isle, false);
+    const pumpBody = pbr(sc, 0xff3fa4, .4, .2), screen = glow(sc, 0x7dfcff, 1.2);
+    for (const x of [tx - 1.6, tx + 1.6]) {
+      const p = box(sc, .8, 1.7, .55); p.material = pumpBody; p.position.set(x, 1.15, tz); still(p);
+      const sc1 = box(sc, .5, .3, .02); sc1.material = screen; sc1.position.set(x, 1.6, tz + .29); still(sc1, false, false);
+      const sc2 = sc1.clone('ps'); sc2.position.z = tz - .29; still(sc2, false, false);
+      const hose = cyl(sc, .03, .03, .9, 6); hose.material = pbr(sc, 0x18181c, .9); hose.position.set(x + .45, .9, tz + .1); hose.rotation.z = .25; still(hose, false);
+      w.colliders.push({ x, z: tz, hx: .45, hz: .35 });
+    }
+    w.neonSign('TANKE', '#3ee69a', tx, 5.05, tz + 2.85, 0, undefined, 4);
   }
   /* ----- Kleiner Park mit Basketballplatz ----- */
   function pocketPark(cx: number, cz: number) {
