@@ -63,6 +63,7 @@ import type { Sfx } from '../engine/Audio';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage } from './jobs';
 import { photo } from './Photo';
 import { gramMenu, empireMenu, gymItems, bodyItems, bodyMenu, muskelLine } from './aufstiegui';
+import { giveBuff, trainBoost } from './fit';
 import { followers, fmtNum } from './gram';
 import { myRank } from './mogul';
 import { train } from './figur';
@@ -1393,12 +1394,14 @@ export class Game {
     const eat = (fx: Parameters<typeof change>[1], goal?: string) => () => { change(s, fx); if (goal) this.done(track(s, goal)); };
     const P: Record<string, { t: string; d: string; items: Item[] }> = {
       cafe: { t: 'Café Kaffeeklatsch', d: 'Mo macht den besten Hafer-Cappuccino der Stadt.', items: [
-        { icon: '☕', label: 'Cappuccino', sub: '3 € · +12 Energie · +1 Ruf beim ersten Mal am Tag', fn: buy(3, 'Lecker! Mo zwinkert dir zu.', () => { eat({ energy: 12, fun: 2 }, 'coffee')(); if (s.flags.coffee !== s.day) { s.rep++; s.flags.coffee = s.day; } }) },
+        { icon: '☕', label: 'Cappuccino', sub: '3 € · +12 Energie · ☕ 2 Std. hellwach · +1 Ruf beim ersten Mal am Tag', fn: buy(3, 'Lecker! Mo zwinkert dir zu. ☕ Hellwach: 2 Stunden rennen ohne Müdigkeit.', () => { eat({ energy: 12, fun: 2 }, 'coffee')(); giveBuff(s, 'kaffee'); if (s.flags.coffee !== s.day) { s.rep++; s.flags.coffee = s.day; } }) },
+        { icon: '🥗', label: 'Power-Bowl', sub: '7 € · +30 Hunger · 🥗 4 Std. mehr Puste beim Rennen', fn: buy(7, 'Quinoa, Avocado, Kichererbsen. 🥗 Power-Bowl: 4 Stunden mehr Puste.', () => { eat({ hunger: 30 }, 'eat')(); giveBuff(s, 'bowl'); }) },
         { icon: '🍰', label: 'Regenbogenkuchen', sub: '5 € · +20 Hunger · +6 Spaß', fn: buy(5, 'Sechs Schichten Glück.', eat({ hunger: 20, fun: 6 }, 'eat')) },
         { icon: '💬', label: 'Mit Gästen plaudern', sub: '30 Minuten · +14 Kontakte', fn: () => { close(); this.fade(() => { this.pass(30); change(s, { social: 14, fun: 4 }); this.save.write(); toast('Nette Leute hier. ☕'); }); } }] },
       spaeti: { t: 'Späti Lecker', d: 'Bruno hat alles, was man nachts braucht.', items: [
         { icon: '🥨', label: 'Brezel', sub: '2 € · +15 Hunger', fn: buy(2, 'Frisch und warm.', eat({ hunger: 15 }, 'eat')) },
-        { icon: '🧃', label: 'Mate', sub: '3 € · +15 Energie', fn: buy(3, 'Energie für die Nacht!', eat({ energy: 15 })) },
+        { icon: '🧃', label: 'Mate', sub: '3 € · +15 Energie · ⚡ 90 Min. schneller sprinten', fn: buy(3, 'Energie für die Nacht! ⚡ Mate-Kick: 90 Minuten schneller sprinten.', () => { eat({ energy: 15 })(); giveBuff(s, 'mate'); }) },
+        { icon: '🥙', label: 'Falafel-Dürüm', sub: '5 € · +35 Hunger · 🥙 3 Std. satt & stark (kräftigere Schläge)', fn: buy(5, 'Bruno legt extra Soße drauf. 🥙 Satt & stark für 3 Stunden.', () => { eat({ hunger: 35 }, 'eat')(); giveBuff(s, 'doener'); }) },
         { icon: '🎈', label: 'Kondome (3 Stück)', sub: `3 € · du hast ${s.inv.condom || 0}`, fn: buy(3, 'Safer Sex ist sexy. 🎈', () => { s.inv.condom = (s.inv.condom || 0) + 3; }) },
         { icon: '💧', label: 'Gleitgel', sub: `4 € · du hast ${s.inv.lube || 0}`, fn: buy(4, 'Gleitgel eingepackt. 💧', () => { s.inv.lube = (s.inv.lube || 0) + 1; }) },
         { icon: '🦴', label: 'Hundeleckerli (5 Stück)', sub: `2 € · für die Hunde in der Stadt (du hast ${s.inv.treat || 0})`, fn: buy(2, 'Die Hunde der Stadt werden dich lieben. 🐶', () => { s.inv.treat = (s.inv.treat || 0) + 5; }) },
@@ -1419,6 +1422,7 @@ export class Game {
         ...(s.settings.adult ? [{ icon: '🍆', label: 'Toy aus der Hinterzimmer-Ecke', sub: `25 € · diskret verpackt · du hast ${s.inv.toy || 0}`, fn: buy(25, 'Diskret verpackt. Viel Spaß! 😏', () => { s.inv.toy = (s.inv.toy || 0) + 1; change(s, { fun: 10 }); }) }] : [])] },
       gym: { t: 'Muckibude Muskelkater', d: 'Bären, Twinks und alle dazwischen – hier schwitzt die ganze Szene.', items: [
         ...gymItems(this, close),
+        { icon: '🥤', label: 'Protein-Shake', sub: '4 € · +15 Hunger · 🥤 3 Std. Training wirkt 50 % stärker', fn: buy(4, 'Vanille-Erdnuss. 🥤 Protein-Boost: 3 Stunden.', () => { eat({ hunger: 15 })(); giveBuff(s, 'shake'); }) },
         { icon: '🚿', label: 'Duschen', sub: '1 € · Hygiene voll', fn: buy(1, 'Frisch!', () => { this.pass(15); change(s, { hygiene: 100 }); this.done(track(s, 'shower')); }) }] },
       checkpoint: { t: 'Checkpoint Regenbogen', d: 'Beratung, Tests und PrEP – anonym, ohne Urteil, mit Gummibärchen.', items: [
         { icon: '🧪', label: 'HIV- und STI-Test', sub: `kostenlos · 30 Minuten · ${s.health.test ? 'letzter Test: Tag ' + s.health.test : 'noch nie getestet'}${symptoms(s).length ? ' · ⚠️ Beschwerden' : ''}`, fn: () => { close(); this.fade(() => { this.pass(30); s.health.test = s.day; change(s, { fun: 3 }); const r = testAndTreat(s); this.save.write(); this.city.refreshHud(); const C = (text: string) => ({ who: 'Checkpoint', color: '#3ee69a', text });
@@ -1667,7 +1671,7 @@ export class Game {
     const sc = def.make(this, def, adult, (r) => {
       const s = this.save.data;
       if (!o.title && !r.quit) { change(s, { fun: r.won ? 18 : 10, energy: -4 }); this.pass(15); if (r.won) s.rep += 1; }
-      if (!o.title && !r.quit && id === 'gym') { const gain = train(s, 'beine'); if (gain) setTimeout(() => this.hud.banner(`🦵 Beinetag: Muskeln +${gain}`, 'Kniebeugen zahlen sich aus.', 'good', 3400), 1200); }
+      if (!o.title && !r.quit && id === 'gym') { const gain = train(s, 'beine', trainBoost(s)); if (gain) setTimeout(() => this.hud.banner(`🦵 Beinetag: Muskeln +${gain}`, 'Kniebeugen zahlen sich aus.', 'good', 3400), 1200); }
       this.save.write();
       this.fade(() => {
         if (o.back) o.back(); else if (o.title) this.title(); else { this.resume(); this.city.refreshHud(); }

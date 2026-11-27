@@ -9,6 +9,7 @@ import { BRIEFS, briefOpen, activeBrief, takeBrief, followers, photos, fmtNum } 
 import { ranking, myRank, worth, mogulTitle, KINDS, rankUp } from './mogul';
 import { BUSINESSES, owns, buy, priceOf } from './empire';
 import { daily as bizDaily, issueOf } from './manage';
+import { ausdauer, ausName, gainAus, buffLine, trainBoost } from './fit';
 import { TRAININGS, train, muskel, musName, TATTOOS, PIERCINGS, BEARDS, BEARD_COLORS, LASER, tattoos, piercings, beardOf, setTattoo, setPiercing, setBeard, SESSIONS, type Train } from './figur';
 
 type Frame = (title: string, body: string) => string;
@@ -81,13 +82,20 @@ export function gymItems(g: Game, close: () => void): Item[] {
     s.money -= t.cost; close();
     g.fade(() => {
       g.pass(t.min); change(s, t.d);
-      const gain = train(s, kind);
+      const gain = train(s, kind, trainBoost(s));
       g.save.write(); g.city.refreshHud(); void g.city.rebuildPlayer(); if (g.where === 'inside') void g.inside?.syncPlayer();
       if (gain) g.hud.banner(`💪 Muskeln +${gain}`, `${muskel(s)}/100 · ${musName(muskel(s))}`, 'good', 3600); else toast('Gut geschwitzt! Für heute wachsen keine Muskeln mehr, der Körper braucht Pause.');
     });
   };
   return [
     { icon: TRAININGS.kraft.icon, label: TRAININGS.kraft.name, sub: `${TRAININGS.kraft.cost} € · 1 Stunde · Muskeln ${m}/100 · heute noch ${left}× wirksam`, fn: run('kraft') },
+    { icon: '🏃', label: 'Laufband & Spinning', sub: `3 € · 45 Minuten · Ausdauer ${ausdauer(s)}/100 (${ausName(ausdauer(s))})`, fn: () => {
+      if (s.needs.energy < 15) { toast('Zu erschöpft fürs Laufband.'); sfx('miss'); return; }
+      if (s.money < 3) { toast('Nicht genug Geld.'); sfx('miss'); return; }
+      s.money -= 3; close();
+      g.fade(() => { g.pass(45); change(s, { fun: 8, energy: -14, hygiene: -16, hunger: -8 }); const n = gainAus(s, 3); g.save.write(); g.city.refreshHud();
+        if (n) g.hud.banner(`🏃 Ausdauer +${n}`, `${ausdauer(s)}/100 · ${ausName(ausdauer(s))} · du sprintest schneller und länger`, 'good', 3600); else toast('Gut geschwitzt! Mehr Ausdauer gibt es heute nicht, morgen weiter.'); });
+    } },
     { icon: TRAININGS.coach.icon, label: TRAININGS.coach.name, sub: `${TRAININGS.coach.cost} € · 90 Minuten · doppelt so viel Muskeln`, fn: run('coach') },
   ];
 }
@@ -125,7 +133,7 @@ function barberMenu(g: Game, back: () => void, color = '') {
     ...BEARDS.map((b) => ({ icon: (cur[0] || '') === b.id ? '✅' : b.icon, label: b.name, sub: `${b.price} €`, fn: () => after(g, setBeard(s, b.id, col), b.id ? `${b.icon} Frisch gestutzt!` : '🪒 Glatt wie ein Babypopo.', again) } as Item)),
     { icon: '←', label: 'Zurück', fn: back }], back, '');
 }
-export const muskelLine = (g: Game) => { const m = muskel(g.save.data); return `💪 Muskeln ${m}/100 (${musName(m)}) · 🖋️ ${tattoos(g.save.data).length} Tattoos · 💍 ${piercings(g.save.data).length} Piercings`; };
+export const muskelLine = (g: Game) => { const m = muskel(g.save.data); const b = buffLine(g.save.data), a = ausdauer(g.save.data); return `💪 Muskeln ${m}/100 (${musName(m)}) · 🏃 Ausdauer ${a}/100 (${ausName(a)})${b ? ' · ' + b : ''} · 🖋️ ${tattoos(g.save.data).length} Tattoos · 💍 ${piercings(g.save.data).length} Piercings`; };
 /** Stelle im Laden: Studio (Boutique) oder Hantelbank (Muckibude) */
 export function bodyMenu(g: Game, what: 'studio' | 'gym') {
   const close = () => { g.closeMenu(); g.touch.show(true); }, again = () => bodyMenu(g, what);

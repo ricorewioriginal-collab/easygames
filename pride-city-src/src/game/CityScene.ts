@@ -21,6 +21,7 @@ import { sfx, music, buzz, engineHum } from '../engine/Audio';
 import { route, onGrid } from './traffic';
 import { memOf, remember, saveMem, outfitLine } from './leben';
 import { toast, hints, type Line } from '../ui/ui';
+import { sprintSpeed, tiredAt, gainAus, ausdauer, buffOf } from './fit';
 import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
 import type { Marker } from '../ui/Hud';
@@ -361,8 +362,8 @@ export class CityScene implements GameScene {
     else if (this.g.where === 'home') this.g.hud.goal('Zuhause', 'Deine Wohnung', s.chapter === 1 && s.step === 2 ? 'Schau dich um.' : `Ziel: ${gl.title}`);
     else if (this.isles.some((i) => i.active)) this.g.hud.goal(...this.isles.find((i) => i.active)!.goal());
     else this.g.hud.goal(chapterLabel(s), gl.title, gl.sub);
-    const days = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-    this.g.hud.stats([`${days[(s.day - 1) % 7]} ${this.clock()} ${this.world.night > .5 && (this.weather?.sky || 'klar') === 'klar' ? '🌙' : SKY[this.weather?.sky || 'klar'].icon}`, `💶 ${s.money} €`, `${moodIcon(mood(s))} ${Math.round(mood(s))}`]);
+    const days = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'], bf = buffOf(s);
+    this.g.hud.stats([`${days[(s.day - 1) % 7]} ${this.clock()} ${this.world.night > .5 && (this.weather?.sky || 'klar') === 'klar' ? '🌙' : SKY[this.weather?.sky || 'klar'].icon}`, `💶 ${s.money} €`, `${moodIcon(mood(s))} ${Math.round(mood(s))}`, ...(bf ? [`${bf.icon} ${bf.name} ${Math.max(1, Math.round(bf.left * 60))}′`] : [])]);
     this.g.hud.needs(s.needs);
   }
 
@@ -795,6 +796,7 @@ export class CityScene implements GameScene {
   /** Land oder Wasser (fürs Glitzer-Boot; auch für Tests erreichbar) */
   readonly landAt = isLand;
   private tiredTold = false;
+  private sprintT = 0;
   /** Sekunden seit dem letzten Wischen an der Kamera */
   private lookIdle = 9;
   /** Fahrkamera: Vorausschau in Fahrtrichtung, Tempo-Abstand und Tempo-Blickwinkel (weich nachgeführt) */
@@ -1195,9 +1197,11 @@ export class CityScene implements GameScene {
       const fx = -Math.sin(yaw), fz = -Math.cos(yaw), rx = -fz, rz = fx;
       const dx = fx * my + rx * mx, dz = fz * my + rz * mx;
       // Turbo geht immer; wer erschöpft ist, rennt nur langsamer (und bekommt einmal den Hinweis)
-      const run = inp.held('sprint'), tired = this.g.save.data.needs.energy < 10;
+      const sv = this.g.save.data, run = inp.held('sprint'), tired = sv.needs.energy < tiredAt(sv);
       if (run && tired && !this.tiredTold) { this.tiredTold = true; toast('⚡ Du bist müde und rennst langsamer. Schlaf dich aus oder trink einen Kaffee.'); }
-      const sp = (run ? (tired ? 6.3 : 7.8) : 4.4) * Math.min(1, mag);
+      const sp = (run ? sprintSpeed(sv, tired) : 4.4) * Math.min(1, mag);
+      // Wer viel rennt, bekommt mehr Puste: alle 40 Sekunden Sprint ein Punkt Ausdauer
+      if (run && mag > .5 && (this.sprintT += dt) > 40) { this.sprintT = 0; const n = gainAus(sv, 1); if (n) toast(`🏃 Ausdauer +1 · ${ausdauer(sv)}/100`); }
       p.x += (dx / mag) * sp * dt * Math.min(1, mag); p.z += (dz / mag) * sp * dt * Math.min(1, mag);
       this.world.collide(p, .45);
       // Figuren schieben sich sanft auseinander, statt ineinander zu laufen
