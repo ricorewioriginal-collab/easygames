@@ -21,6 +21,7 @@ export interface Gig {
   night?: boolean; /** Tipp: mit dem Auto schneller */ car?: boolean;
   done: string;
   /** nach dem Abschluss (Missionsreihe) */ after?: (left?: number) => void; /** ohne Lohn-Meldung (Rennen) */ quiet?: boolean; /** Zeit abgelaufen */ failed?: () => void;
+  /** ohne Zeitdruck (Story-Modus, tarek.ts): keine Uhr, scheitern nur durch Entwischen */ free?: boolean;
 }
 
 const S = (x: number, z: number, label: string, icon = '📦'): GigStep => ({ x, z, label, icon });

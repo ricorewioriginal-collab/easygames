@@ -15,6 +15,7 @@ export type Act =
   | { k: 'drag'; what: 'look' | 'battle' }
   | { k: 'wagen' }
   | { k: 'body'; what: 'studio' | 'gym' }          // Tattoo, Piercing, Barbier bzw. Hantelbank (figur.ts)
+  | { k: 'story'; id: string }                    // Figur aus der Geschichte ansprechen (story.ts talk), z. B. Tarek im Besuchsraum
   | { k: 'darkroom' };                             // Darkroom hinter dem Club (18+, flirt.ts)                                // eigener CSD-Festwagen (festwagen.ts)        // Drag-Karriere im Haus Vega (drag.ts)
 
 /** Möbel: KayKit-Modell (gltf) oder Platzhalter-Form (box/screen/neon) */

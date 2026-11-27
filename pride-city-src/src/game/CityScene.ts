@@ -847,7 +847,7 @@ export class CityScene implements GameScene {
   /** Auftrag annehmen (aus Anruf oder Handy-App) */
   startGig(g: Gig) {
     this.gig = { g, i: 0, t: g.time };
-    this.g.hud.banner(g.title, `Auftrag von ${g.who}${g.car ? ' · Tipp: Mit dem Auto geht es schneller' : ''}`, 'info', 2600);
+    this.g.hud.banner(g.title, `Auftrag von ${g.who}${g.free ? ' · ohne Zeitdruck' : g.car ? ' · Tipp: Mit dem Auto geht es schneller' : ''}`, 'info', 2600);
     sfx('open');
   }
   private nagT = 0;
@@ -858,6 +858,7 @@ export class CityScene implements GameScene {
       if (s.flags.sagaRun) delete s.flags.sagaRun; // Mission lief beim letzten Speichern noch
       if (s.flags.nachtRun) delete s.flags.nachtRun;
       if (s.flags.flutRun) delete s.flags.flutRun;
+      if (s.flags.tarekRun) delete s.flags.tarekRun;
       this.raceCheck(dt);
       // ab und zu klingelt das Handy (erst nach der Einführung)
       if (s.step >= 2 || s.chapter > 1) this.callT -= dt;
@@ -867,8 +868,8 @@ export class CityScene implements GameScene {
     const q = this.gig, st = q.g.steps[q.i], p = this.player.root.position;
     // Schlägerei läuft: Uhr steht, Anzeige zeigt Mut und wer schon am Boden liegt
     if (this.brawl.fighting) { this.g.hud.gig(this.brawl.label(), this.brawl.brave <= 2); return; }
-    q.t -= dt;
-    this.g.hud.gig(`⏱ ${fmtTime(q.t)} · ${q.g.title} ${q.i + 1}/${q.g.steps.length}: ${st.label}`, q.t < 15);
+    if (!q.g.free) q.t -= dt;
+    this.g.hud.gig(`${q.g.free ? '🕊️ ohne Zeitdruck' : '⏱ ' + fmtTime(q.t)} · ${q.g.title} ${q.i + 1}/${q.g.steps.length}: ${st.label}`, !q.g.free && q.t < 15);
     // Verfolgung: Ziel losschicken, eingeholt = Station geschafft, entwischt = Mission gescheitert
     if (st.chase) {
       if (!this.brawl.chasing) {

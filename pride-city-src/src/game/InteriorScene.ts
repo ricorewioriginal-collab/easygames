@@ -24,6 +24,7 @@ import { guestCast, type Guest } from './flirt';
 import { SZENE } from './szene';
 import { bedMess, darkroom } from './spuren';
 import { darkAtmo } from '../engine/Audio';
+import { TAREK_LOOK, tarekInside } from './tarek';
 
 interface Box { x: number; z: number; hx: number; hz: number }
 const W = 12, D = 9, K = .9, H = 3.6; // Raum in Metern, KayKit-Möbel 1 Einheit ≈ 1 m (Figur ≈ 1,8 m)
@@ -55,6 +56,8 @@ export class InteriorScene implements GameScene {
   private club: ClubDeco | null = null;
   private clubRing: ReturnType<typeof ring> | null = null;
   private extra: Spot[] = [];
+  /** Story-Modus: Tarek in U-Haft im Besuchsraum der Wache (tarek.ts), nur sichtbar, solange er sitzt */
+  private cameo: { a: Actor; spot: Spot; ring: Mesh } | null = null;
   /** läuft gerade eine Clubnacht: Name fürs Banner */
   party = '';
   /** Online: Ort-ID für Freund*innen im selben Raum (leer = privat, z. B. Wohnung, Anbau, Wohnhäuser) */
@@ -124,6 +127,14 @@ if (t.id !== 'darkroom') {     deco('home/pictureframe_large_B', -W / 2 + .06, 1
     for (const s of this.theme.spots) { if (s.act.k === 'darkroom' && !this.g.save.data.settings.adult) continue; const o = ring(sc, .42, .55, 24); o.material = ringM; o.position.set(s.x, .03, s.z); }
     // Leben im Raum: verschiedene Menschen je Raum (Figur, Hautton, Haare, Szene-Look, Outfit), alle ansprechbar
     const party = t.music === 'club' || t.music === 'show', darkRoom = t.id === 'darkroom', adult = this.g.save.data.settings.adult;
+    if (t.id === 'police') {
+      const a = await Actor.create(sc, TAREK_LOOK), cx = -3.4, cz = -1.6;
+      a.root.position.set(cx, 0, cz); a.root.rotation.y = 0; a.play('idle');
+      const o = ring(sc, .42, .55, 24); o.material = ringM; o.position.set(cx, .03, cz + 1.2);
+      this.cameo = { a, ring: o, spot: { id: 'tarek', label: '🔒 Besuchsraum: Tarek', x: cx, z: cz + 1.2, r: 1.4, act: { k: 'story', id: 'tarek' } } };
+      this.boxes.push({ x: cx, z: cz, hx: .25, hz: .25 });
+      this.showCameo();
+    }
     const cast = t.own ? [] : guestCast(t.id + '|' + this.placeId, darkRoom ? 5 : party ? 6 : 3, { adult, party, swim: t.id === 'bad' || t.id === 'sauna', dark: darkRoom });
     const folk = await Promise.all(cast.map((c) => Actor.create(sc, { body: c.rb, rb: c.rb, palette: 'rainbow', skin: 0, style: c.style, outfit: c.outfit, hot: adult, gear: c.typ ? SZENE[c.typ].gear : undefined })));
     // freie Stelle: nicht in Möbeln, nicht auf einer benutzbaren Stelle, nicht vor der Tür
@@ -227,10 +238,12 @@ if (t.id !== 'darkroom') {     deco('home/pictureframe_large_B', -W / 2 + .06, 1
     if (this.darkTick) darkAtmo(() => this.g.inside === this && this.g.where === 'inside' && !this.scene.isDisposed);
   }
 
+  private showCameo() { if (!this.cameo) return; const on = tarekInside(this.g.save.data); this.cameo.a.root.setEnabled(on); this.cameo.ring.setEnabled(on); return on; }
   update(dt: number, t: number) {
     const g = this.g, inp = g.engine.input, p = this.player.root.position;
     this.player.update(dt);
     for (const a of this.folk) if (a.root.isEnabled()) a.update(dt);
+    if (this.cameo?.a.root.isEnabled()) this.cameo.a.update(dt);
     this.club?.update(dt);
     if (this.netKey && this.g.city.friends.net.on) { this.g.city.friends.send(dt, this.netState()); this.roomFriends?.update(dt); }
     const busy = g.dialog.open || g.menuOpen;
@@ -264,7 +277,7 @@ if (t.id !== 'darkroom') {     deco('home/pictureframe_large_B', -W / 2 + .06, 1
       this.guests.forEach((q, i) => { if (!q.a.root.visible) return; const d = Math.hypot(q.a.root.position.x - p.x, q.a.root.position.z - p.z); if (d < gd) { gd = d; gi = i; } });
       this.guestSpot = gi >= 0 ? { id: 'guest:' + gi, label: '💬 ' + this.guests[gi].g.st.name, x: this.guests[gi].a.root.position.x, z: this.guests[gi].a.root.position.z, r: 1.5, act: { k: 'menu' } } : null;
       const adult = g.save.data.settings.adult;
-      const list = [...this.spots.filter((q) => adult || q.act.k !== 'darkroom'), ...this.extra, ...(this.friendSpot ? [this.friendSpot] : []), ...(this.guestSpot ? [this.guestSpot] : [])];
+      const list = [...this.spots.filter((q) => adult || q.act.k !== 'darkroom'), ...this.extra, ...(this.cameo && this.showCameo() ? [this.cameo.spot] : []), ...(this.friendSpot ? [this.friendSpot] : []), ...(this.guestSpot ? [this.guestSpot] : [])];
       for (const s of list) { const d = Math.hypot(s.x - p.x, s.z - p.z); if (d < (s.r || 1.8) && d < bd) { bd = d; best = s; } }
       g.hud.prompt(best ? best.label : null);
       g.touch.label(best ? 'Nutzen' : 'Aktion');
