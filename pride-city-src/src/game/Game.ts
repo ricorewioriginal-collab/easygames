@@ -1224,6 +1224,8 @@ export class Game {
     sfx('tram');
     const go = () => { this.where = 'city'; s.inside = false; s.pos = { x: x > 0 ? x - 2.2 : x + 2.2, z, yaw: x > 0 ? Math.PI / 2 : -Math.PI / 2 }; this.pass(bus ? BUS_MIN : 10); this.done(track(s, 'tram')); this.engine.setScene(this.city); this.city.setPlay(); if (!bus) toast('🚋 Angekommen.'); };
     if (!bus) { this.fade(go); return; }
+    // in der Stadt: Linie 69 in 3D, sonst (aus der Wohnung, von drinnen) als Gespräch mit Überblendung
+    if (this.where === 'city' && this.city.bus) { this.city.bus.start(x, z, () => { s.pos = { x: x > 0 ? x - 2.2 : x + 2.2, z, yaw: x > 0 ? Math.PI / 2 : -Math.PI / 2 }; this.city.player.root.position.set(s.pos.x, .1, z); this.city.player.root.rotation.y = s.pos.yaw; this.pass(15); this.done(track(s, 'tram')); this.save.write(); }); return; }
     // Bus: unterwegs erzählt dir jemand etwas, danach steigst du am Ziel aus
     const seed = Math.random();
     this.dialog.say(busTalk(seed, (nice) => { change(s, nice ? { social: 12, fun: 6 } : { energy: 4 }); setTimeout(() => this.dialog.say([busAfter(seed, nice)], () => { this.fade(go); setTimeout(() => toast('🚌 Endstation für dich, du steigst aus.'), 900); }), 60); }));
@@ -1371,7 +1373,7 @@ export class Game {
       <p>Menschen (CC BY 4.0, creativecommons.org/licenses/by/4.0, von Sketchfab, für Pride City mit Skelett versehen, verkleinert und teils umgefärbt): <b style="color:#fff">„Citizen NPC Pack 1 Character Lowpoly Mobile“</b> von 00amza · <b style="color:#fff">„Gangster Rigged“</b> von PropShop · <b style="color:#fff">„Street Gangster | Realistic 3D Character Model“</b> von PropShop · <b style="color:#fff">„Yakuza“</b> von Abrazafarolas.</p>
       <p>Autos (CC BY 4.0, Sketchfab, geteilt, verkleinert und teils umgefärbt): <b style="color:#fff">„Generic passenger car pack“</b> von Comrade1280 · <b style="color:#fff">„Fairheaven LT '80 Cop Cruiser“</b> und <b style="color:#fff">„Saba V12 '95 Interceptor“</b> von Daniel Zhabotinsky.</p>
       <p>Animationen, Uniformen, Kinder und Sport-Körper: <b style="color:#fff">Microsoft Rocketbox</b> – MIT-Lizenz (© 2020 Microsoft Corporation, github.com/microsoft/Microsoft-Rocketbox). Stadt und Wohnung: <b style="color:#fff">KayKit</b> von Kay Lousberg (City Builder Bits, Furniture Bits, Restaurant Bits) – CC0 1.0. In Pride-Farben umgefärbt.</p>
-      <p>Oberflächen (Asphalt, Gehwegplatten, Backstein, Sand, Rasen; CC0 1.0): <b style="color:#fff">Poly Haven</b> (asphalt_02, brick_4, coast_sand_01) und <b style="color:#fff">ambientCG</b> (PavingStones038, Grass001), verkleinert. Wasserwellen selbst erzeugt.</p>
+      <p>Oberflächen (Asphalt, Gehwegplatten, Backstein, Sand, Rasen; CC0 1.0): <b style="color:#fff">Poly Haven</b> (asphalt_02, brick_4, coast_sand_01) und <b style="color:#fff">ambientCG</b> (PavingStones038, Grass001, Hausfassaden Facade018–020), verkleinert; Nachtfenster daraus abgeleitet. Wasserwellen selbst erzeugt.</p>
       <p>3D: Babylon.js (Apache 2.0). Musik und Klänge werden live im Spiel erzeugt.</p>
       <p>Alle Figuren sind frei erfunden. Wer flirtet oder datet, ist erwachsen; Kinder gibt es nur als Familienmitglieder. Zustimmung zählt.</p><div class="slot"></div></div></div>`,
     [{ icon: '←', label: 'Zurück', fn: () => this.title() }], () => this.title());

@@ -24,6 +24,7 @@ import { toast, hints, type Line } from '../ui/ui';
 import { sprintSpeed, tiredAt, gainAus, ausdauer, buffOf } from './fit';
 import { TANK, tankOf, burn } from './tank';
 import { Jagd } from './jagd';
+import { BusRide } from './busfahrt';
 import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
 import type { Marker } from '../ui/Hud';
@@ -66,6 +67,8 @@ export class CityScene implements GameScene {
   world!: World;
   /** Polizei jagt selbst Verdächtige (jagd.ts) */
   jagd!: Jagd;
+  /** Linie 69 in 3D (busfahrt.ts) */
+  bus!: BusRide;
   player!: Actor;
   mode: 'title' | 'play' = 'title';
   private npcs: Npc[] = [];
@@ -211,12 +214,12 @@ export class CityScene implements GameScene {
     radio.subscribe((r, what) => { if (!this.drive) return; if (what === 'error') toast(`📻 ${r.err}`); this.showRadio(); });
     this.weather = new Weather(this.scene, this.world); this.fw = new Fireworks(this.scene, this.world); this.live = new LiveCity(this.g, this, this.scene, this.fw);
     this.xmas = new XmasTree(this.scene, -22, 9); buildPad(this.scene, this.world.root);
-    this.life = new CityLife(this.g, this, this.scene); this.trouble = new Trouble(this.g, this); this.jagd = new Jagd(this); this.buddy = new Companion(this.scene);
+    this.life = new CityLife(this.g, this, this.scene); this.trouble = new Trouble(this.g, this); this.jagd = new Jagd(this); this.bus = new BusRide(this.g, this); this.buddy = new Companion(this.scene);
     this.friends = new Friends(this.scene, this.world, () => this.g.save.data.settings.adult);
     this.friends.me = () => ({ n: this.g.save.data.name, l: streetLook(playerLook(this.g.save.data)), s: this.g.where === 'inside' && this.g.inside?.netKey ? this.g.inside.netState() : this.netState() });
     this.friends.onInvite = (who, inv) => this.g.clubInvite(who.name, inv);
     this.friends.onNote = (text, kind) => { toast(text, 3600); sfx(kind === 'join' ? 'win' : kind === 'leave' ? 'back' : 'move'); };
-    this.world.extraBlock = (x, z) => this.street.parked.some((c) => Math.hypot(c.o.position.x - x, c.o.position.z - z) < 2.6);
+    this.world.extraBlock = (x, z) => this.bus?.blocks(x, z) || this.street.parked.some((c) => Math.hypot(c.o.position.x - x, c.o.position.z - z) < 2.6);
     // Leute auf der Straße: richtiger Name statt „Passant“, Gedächtnis für dich (leben.ts)
     const pkey = (n: StreetNpc) => 'street:' + this.street.people.indexOf(n) + ':' + n.a.avatar.id;
     this.street.people.forEach((n) => { if (/^(Passant|Spaziergänger|Nachbar|Tourist|Studentin|Geschäftsmann)/.test(n.name)) n.name = stranger(pkey(n), n.a.avatar.id).name; });
@@ -497,7 +500,7 @@ export class CityScene implements GameScene {
   private face(a: Actor, to: Vector3) { a.root.rotation.y = Math.atan2(to.x - a.root.position.x, to.z - a.root.position.z); }
 
   interact() {
-    if (!this.near || this.g.dialog.open) return;
+    if (!this.near || this.g.dialog.open || this.bus?.on) return;
     if (this.near.kind === 'life') { this.life.interact(this.player.root.position); return; }
     if (this.near.kind === 'live') { this.live.interact(this.player.root.position); return; }
     if (this.near.kind === 'isle') { this.isles.find((i) => i.def.id === this.near!.id)?.use(); return; }
@@ -1139,7 +1142,7 @@ export class CityScene implements GameScene {
     // Stadtleben: Tagesablauf, Regen, Ärger (Schlägerei, Fahndung) und du
     { const trouble = this.combat.wanted.stars > 0 || this.brawl.fighting || this.brawl.chasing; this.street.life = { hour: this.hour(), rain: this.weather.rain > .2, alarm: trouble ? this.player.root.position : null, player: this.player.root.position, onFoot: !this.drive }; }
     if (this.drive && !this.drive.def.fly && !this.drive.def.air) this.street.danger = { x: this.drive.o.position.x, z: this.drive.o.position.z, yaw: this.mv, v: this.drive.v }; else this.street.danger = null;
-    if (!busy && !this.photo) { if (this.drive) this.moveCar(dt); else if (!this.life.parade.riding) this.movePlayer(dt); this.kerb.update(dt, t); }
+    if (!busy && !this.photo) { if (this.drive) this.moveCar(dt); else if (!this.life.parade.riding && !this.bus.on) this.movePlayer(dt); this.kerb.update(dt, t); }
     if (this.cine) this.cine(dt); else this.updateCam(dt);
     this.world.follow(this.player.root.position);
     this.world.update(dt, t, this.player.root.position);
@@ -1160,7 +1163,7 @@ export class CityScene implements GameScene {
     }
     { const free = !busy && !this.gig && !this.kerb.rider && this.combat.wanted.stars === 0 && !this.life.ev && !this.life.parade.riding && !this.isles.some((i) => i.active);
       this.trouble.update(dt, { free, night: this.world.night > .5, ref: this.player.root.position });
-      this.jagd.update(dt, free && !this.trouble.cur, s); }
+      this.jagd.update(dt, free && !this.trouble.cur && !this.bus.on, s); }
     this.life.update(dt, t, this.player.root.position, { busy: busy || !!this.gig || !!this.trouble.cur || !!this.kerb.rider || this.combat.wanted.stars > 0, night: this.world.night > .5, rain: this.weather.rain > .2, onFoot: !this.drive });
 
     this.hudT -= dt;
