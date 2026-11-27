@@ -19,6 +19,7 @@ import { radioMenu } from './radioui';
 import { RACES, MEDALS, raceGig, finishRace, bestTime, nextParcel, stats, myCar, tuneLevel, GARAGE, type Race } from './vehicles';
 import { sfx, music, buzz, engineHum } from '../engine/Audio';
 import { route, onGrid } from './traffic';
+import { memOf, remember } from './leben';
 import { toast, hints } from '../ui/ui';
 import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
@@ -26,7 +27,7 @@ import type { Marker } from '../ui/Hud';
 import { type Gig, pickCall, fmtTime } from './gigs';
 import { Brawl } from './Brawl';
 import { collect, collectNotes, nextFare } from './empire';
-import { Street, type Parked } from './Street';
+import { Street, type Parked, type StreetNpc } from './Street';
 import { WORLDS, ISLES, ISLE_BOUNDS, worldDef, cityGate, cityIsle } from './worlds';
 import { Isle } from './Isle';
 import { buildFlitzer } from './flitzer';
@@ -211,6 +212,15 @@ export class CityScene implements GameScene {
     this.friends.onInvite = (who, inv) => this.g.clubInvite(who.name, inv);
     this.friends.onNote = (text, kind) => { toast(text, 3600); sfx(kind === 'join' ? 'win' : kind === 'leave' ? 'back' : 'move'); };
     this.world.extraBlock = (x, z) => this.street.parked.some((c) => Math.hypot(c.o.position.x - x, c.o.position.z - z) < 2.6);
+    // Leute auf der Straße: richtiger Name statt „Passant“, Gedächtnis für dich (leben.ts)
+    const pkey = (n: StreetNpc) => 'street:' + this.street.people.indexOf(n) + ':' + n.a.avatar.id;
+    this.street.people.forEach((n) => { if (/^(Passant|Spaziergänger|Nachbar|Tourist|Studentin|Geschäftsmann)/.test(n.name)) n.name = stranger(pkey(n), n.a.avatar.id).name; });
+    this.street.onDodge = (n) => remember(this.g.save.data, pkey(n), 'near');
+    this.street.onPass = (n) => {
+      const s = this.g.save.data, m = memOf(s, pkey(n));
+      if (m.near > 0 && m.mood < 0) { toast(`😒 ${n.name}: „Ach, du schon wieder. Heute zu Fuß, ja?“`, 2200); return; }
+      if (m.met > 0 && this.passT < this.time - 12) { this.passT = this.time; n.a.play('wave'); setTimeout(() => n.a.anim === 'wave' && n.a.play('idle'), 1600); toast(`👋 ${n.name}: „${m.mood >= 3 ? 'Hey ' + s.name + '! 🥰' : 'Hi ' + s.name + '!'}“`, 2000); }
+    };
     // Verkehr: lenkt an geparkten Autos vorbei, hupt, wenn du im Weg stehst
     this.world.statics = () => this.street.parked.filter((c) => c !== this.drive).map((c) => c.o.position);
     this.world.onHonk = (c) => { if (Vector3.Distance(c.o.position, this.player.root.position) < 26) { sfx('horn'); if (!this.drive && Math.random() < .5) toast(HONK[Math.floor(Math.random() * HONK.length)], 2000); } };
@@ -473,7 +483,7 @@ export class CityScene implements GameScene {
       if (n.kind === 'worker') { this.g.booking(n.id!); setTimeout(end, 4000); return; }
       // alle Erwachsenen sind ansprechbar: Plaudern, mit 18+ auch Flirten und mehr (flirtui.ts)
       const rb = n.a.avatar.id, generic = n.kind === 'szene' || /^(Szene-Mensch|Verliebte?r?|Passant|Spaziergänger|Nachbar|Tourist|Studentin|Geschäftsmann)/.test(n.name);
-      this.g.strangerTalk(stranger('street:' + this.near.id + ':' + rb, rb, generic ? undefined : n.name), { actor: n.a, look: { ...n.a.look, outfit: 'clothed' }, opening: this.street.line(n, s.day), kid: n.a.avatar.job === 'kid', kind: n.kind, szene: n.kind === 'szene' ? n.id : undefined }, end);
+      this.g.strangerTalk(stranger('street:' + this.near.id + ':' + rb, rb, generic ? undefined : n.name), { actor: n.a, look: { ...n.a.look, outfit: 'clothed' }, opening: this.street.line(n, s.day), kid: n.a.avatar.job === 'kid', kind: n.kind, szene: n.kind === 'szene' ? n.id : undefined, life: { wanted: this.combat.wanted.stars, rain: this.weather.rain > .2 } }, end);
       change(s, { social: 3 });
       return;
     }
@@ -813,6 +823,8 @@ export class CityScene implements GameScene {
   }
 
   private radarT = 0;
+  private passT = -99;
+  private time = 0;
   private routeT = 0;
   private gps: { pts: Array<[number, number]>; color: string } | null = null;
   enter() { this.syncFlyer(); this.g.touch.fly(!!this.drive?.def.fly); this.g.hud.radarOn(true); if (this.drive) { this.g.hud.radioBtn(true); this.radio(0); } }
@@ -1018,6 +1030,7 @@ export class CityScene implements GameScene {
   private plazaRef = new Vector3(-15, 0, 15);
   update(dt: number, t: number) {
     const g = this.g, s = g.save.data;
+    this.time = t;
     this.bloom = .35 + this.world.night * .5;
     // Figuren nur in der Nähe animieren (Leistung)
     const ref = this.mode === 'play' ? this.player.root.position : this.plazaRef;
@@ -1066,6 +1079,8 @@ export class CityScene implements GameScene {
     this.player.update(dt);
     if (busy && this.drive) engineHum(null);
     { const cp = this.camera.position, pp = this.player.root.position, l = Math.hypot(pp.x - cp.x, pp.z - cp.z) || 1; this.world.view = { x: pp.x, z: pp.z, fx: (pp.x - cp.x) / l, fz: (pp.z - cp.z) / l }; }
+    // Stadtleben: Tagesablauf, Regen, Ärger (Schlägerei, Fahndung) und du
+    { const trouble = this.combat.wanted.stars > 0 || this.brawl.fighting || this.brawl.chasing; this.street.life = { hour: this.hour(), rain: this.weather.rain > .2, alarm: trouble ? this.player.root.position : null, player: this.player.root.position, onFoot: !this.drive }; }
     if (this.drive && !this.drive.def.fly && !this.drive.def.air) this.street.danger = { x: this.drive.o.position.x, z: this.drive.o.position.z, yaw: this.mv, v: this.drive.v }; else this.street.danger = null;
     if (!busy && !this.photo) { if (this.drive) this.moveCar(dt); else if (!this.life.parade.riding) this.movePlayer(dt); this.kerb.update(dt, t); }
     if (this.cine) this.cine(dt); else this.updateCam(dt);
