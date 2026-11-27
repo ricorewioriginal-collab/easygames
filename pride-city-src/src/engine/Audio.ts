@@ -1,7 +1,7 @@
 /* Klang ohne Audiodateien: Effekte und Musik werden live mit WebAudio erzeugt (spart Download, läuft offline). */
 
 export type Sfx = 'rain' | 'thunder' | 'move' | 'ok' | 'back' | 'coin' | 'win' | 'miss' | 'hit' | 'open' | 'step' | 'cheer'
-  | 'door' | 'engine' | 'horn' | 'siren' | 'glass' | 'pour' | 'phone' | 'shower' | 'cook' | 'kiss' | 'giggle' | 'sheets' | 'heart' | 'splash' | 'tram' | 'camera' | 'applause' | 'whoosh' | 'slap' | 'boing' | 'squeak' | 'boom' | 'rotor';
+  | 'door' | 'engine' | 'horn' | 'siren' | 'glass' | 'pour' | 'phone' | 'shower' | 'cook' | 'kiss' | 'giggle' | 'sheets' | 'heart' | 'splash' | 'tram' | 'camera' | 'applause' | 'whoosh' | 'slap' | 'boing' | 'squeak' | 'boom' | 'rotor' | 'crash' | 'skid';
 
 let ctx: AudioContext | null = null;
 let master: GainNode, sfxBus: GainNode, musicBus: GainNode;
@@ -117,6 +117,8 @@ export function sfx(k: Sfx) {
     case 'boing': tone(52, t, .22, 'sine', .3, sfxBus, 9); tone(64, t + .04, .18, 'triangle', .12, sfxBus, -7); noise(t, .05, .12, sfxBus, 0, 700); break;
     case 'squeak': tone(86, t, .09, 'sine', .16, sfxBus, 7); tone(79, t + .09, .14, 'sine', .14, sfxBus, -9); noise(t, .05, .14, sfxBus, 0, 1200); break;
     case 'boom': noise(t, .9, .2, sfxBus, 0, 160); noise(t + .02, .5, .08, sfxBus, 0, 900); for (let i = 0; i < 10; i++) noise(t + .25 + Math.random() * .7, .03, .03, sfxBus, 4000); break;
+    case 'crash': noise(t, .35, .3, sfxBus, 0, 500); noise(t, .2, .14, sfxBus, 3500); tone(33, t, .3, 'square', .1, sfxBus, -8); for (let i = 0; i < 5; i++) noise(t + .08 + Math.random() * .25, .05, .05, sfxBus, 6000); break;
+    case 'skid': noise(t, .45, .05, sfxBus, 0, 2900); noise(t + .05, .35, .03, sfxBus, 0, 3600); break;
     case 'rotor': for (let i = 0; i < 8; i++) noise(t + i * .09, .06, .07, sfxBus, 0, 220); break;
     case 'camera': noise(t, .05, .15, sfxBus, 3000); noise(t + .09, .07, .1, sfxBus, 2000); break;
   }
@@ -257,4 +259,19 @@ export function playScore(mel: Array<[number, number, number]>, acc: Array<[numb
   return () => { try { bus.gain.setTargetAtTime(0, ctx!.currentTime, .05); setTimeout(() => bus.disconnect(), 300); } catch { /* schon weg */ } };
 }
 /** aktuelle Zeit der Tonausgabe (0 ohne Ton) */
+/** Motor als Dauerton: Drehzahl 0–1 (null = aus). Zwei verstimmte Sägezähne hinter einem Tiefpass, leise unter dem Radio. */
+let eng: { o: OscillatorNode; o2: OscillatorNode; f: BiquadFilterNode; g: GainNode } | null = null;
+export function engineHum(rpm: number | null) {
+  if (!ctx || !sfxBus) return;
+  if (rpm === null) { if (eng) { const e = eng; eng = null; e.g.gain.setTargetAtTime(0, ctx.currentTime, .08); setTimeout(() => { try { e.o.stop(); e.o2.stop(); } catch { /* schon aus */ } }, 400); } return; }
+  if (!eng) {
+    const o = ctx.createOscillator(), o2 = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    o.type = 'sawtooth'; o2.type = 'square'; f.type = 'lowpass'; f.Q.value = 2; g.gain.value = 0;
+    o.connect(f); o2.connect(f); f.connect(g); g.connect(sfxBus); o.start(); o2.start();
+    eng = { o, o2, f, g };
+  }
+  const t = ctx.currentTime, r = Math.max(0, Math.min(1.2, rpm));
+  eng.o.frequency.setTargetAtTime(38 + r * 95, t, .08); eng.o2.frequency.setTargetAtTime(19 + r * 47.5, t, .08);
+  eng.f.frequency.setTargetAtTime(260 + r * 900, t, .1); eng.g.gain.setTargetAtTime(.022 + r * .03, t, .1);
+}
 export function now() { return ctx ? ctx.currentTime : 0; }

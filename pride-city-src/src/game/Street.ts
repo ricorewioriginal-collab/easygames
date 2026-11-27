@@ -15,10 +15,11 @@ import { SZENE, STREET_SZENE, szeneRb, szeneOutfit, szeneLine } from './szene';
 import { carDef, CAR_DEFS, type CarDef } from './vehicles';
 import type { World, Car } from './World';
 import { sfx } from '../engine/Audio';
+import { toast } from '../ui/ui';
 import type { PBRMaterial, Scene } from '../engine/bjs';
 
 export type StreetKind = 'walker' | 'police' | 'fire' | 'worker' | 'curb' | 'medic' | 'security' | 'chef' | 'courier' | 'szene';
-export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean; down?: boolean; chase?: boolean; away?: boolean; /** läuft Hand in Hand neben dieser Person */ mate?: StreetNpc; /** feste Blickrichtung */ yaw?: number }
+export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean; down?: boolean; chase?: boolean; away?: boolean; /** läuft Hand in Hand neben dieser Person */ mate?: StreetNpc; /** feste Blickrichtung */ yaw?: number; /** springt gerade vor einem Auto zur Seite */ dodge?: { vx: number; vz: number; t: number } }
 export interface Parked { o: Node3; name: string; yaw: number; v: number; def: CarDef; /** dein eigener Wagen aus der Garage */ own?: boolean; /** geliehen aus dem Verkehr: fährt später seine Runde weiter */ route?: Car }
 
 const LINES: Record<Exclude<StreetKind, 'worker' | 'curb' | 'szene'>, string[]> = {
@@ -202,6 +203,9 @@ export class Street {
 
   /** dt, Nacht (0–1), 18+ an, Bezugspunkt (Spieler) */
   private sirenT = 20;
+  /** dein Auto (Lage, Fahrtrichtung, Tempo): Passant*innen springen zur Seite */
+  danger: { x: number; z: number; yaw: number; v: number } | null = null;
+  private yellT = -9;
   update(dt: number, night: number, adult: boolean, ref: Vector3) {
     // Löschzug mit Martinshorn, wenn er in der Nähe vorbeifährt
     this.sirenT -= dt;
@@ -217,6 +221,23 @@ export class Street {
       if (!n.a.root.visible) return;
       if (d2 < anim * anim || n.chase) n.a.update(dt);
       if (n.talking || n.down || n.chase) return;
+      // Auto rast heran: zur Seite springen (und schimpfen), danach weiter des Weges
+      const dg = this.danger;
+      if (dg && !n.dodge && Math.abs(dg.v) > 4.5) {
+        const sg = Math.sign(dg.v), fx = Math.sin(dg.yaw) * sg, fz = Math.cos(dg.yaw) * sg, q = n.a.root.position;
+        const dx = q.x - dg.x, dz = q.z - dg.z, along = dx * fx + dz * fz, side = dx * fz - dz * fx;
+        if (along > -1 && along < 3 + Math.abs(dg.v) * .5 && Math.abs(side) < 2) {
+          const k = side >= 0 ? 1 : -1, sp = Math.abs(side) < 1.1 && along < 2 ? 7 : 5.5;
+          n.dodge = { vx: fz * k * sp, vz: -fx * k * sp, t: .6 };
+          n.a.root.rotation.y = Math.atan2(n.dodge.vx, n.dodge.vz); n.a.play('run', .1, 1.5);
+          if (this.t - this.yellT > 3) { this.yellT = this.t; sfx('squeak'); toast(`🙀 ${n.name}: ${DODGE[Math.floor(Math.random() * DODGE.length)]}`, 1800); }
+        }
+      }
+      if (n.dodge) {
+        const d = n.dodge, q = n.a.root.position; q.x += d.vx * dt; q.z += d.vz * dt; d.t -= dt;
+        if (d.t <= 0) { n.dodge = undefined; n.wait = 1.2; n.a.play('idle'); }
+        return;
+      }
       // Hand in Hand: neben der Partnerperson herlaufen, gleiche Richtung, gleicher Schritt
       const m = n.mate;
       if (m) {
@@ -266,3 +287,4 @@ export class Street {
   }
 }
 export { TransformNode };
+const DODGE = ['„Hey! Das ist ein Gehweg!“', '„Huch! Fast meine Frisur ruiniert!“', '„Fahr doch nicht wie eine Furie!“', '„Mein Kaffee! Ach, egal.“', '„Kein Führerschein, aber Glitzer, oder?“'];

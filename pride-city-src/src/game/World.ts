@@ -10,6 +10,7 @@ import { instance, preload } from '../engine/Assets';
 import { planeZ, ground, box, cyl, sphere, ring, torus, pbr, glow, canvasTex } from '../engine/geo';
 import { PALETTES } from './palettes';
 import { buildUptown, EAST, BRIDGE, UPTOWN_PLACES, doorStep } from './uptown';
+import { NODES, LANE, lane, nearestEdge } from './traffic';
 
 export const TILE = 10;
 const S = TILE / 2; // KayKit-Kacheln sind 2 Einheiten breit
@@ -51,7 +52,14 @@ function cityWalk(x: number, z: number) {
 export interface Rect { x: number; z: number; hx: number; hz: number }
 /** Schlanke Requisiten (Laternen, Masten, Bänke, Bäume): runde Kollision und Ausblenden, wenn sie der Kamera im Weg stehen */
 export interface Prop { x: number; z: number; r: number; o: TransformNode[]; solid: boolean }
-export interface Car { o: Node3; path: Vector3[]; seg: number; u: number; v: number; kind?: string; /** vorübergehend aus dem Verkehr (Parade) */ off?: boolean }
+export interface Car {
+  o: Node3; path: Vector3[]; seg: number; u: number; v: number; kind?: string; /** vorübergehend aus dem Verkehr (Parade) */ off?: boolean;
+  /** Straßennetz: von Kreuzung a nach b, aktuelles Tempo, Abbiegebogen, Spurabstand zur Mitte */
+  a?: number; b?: number; cur?: number; lat?: number; jam?: number; wait?: number;
+  turn?: { p0: Vector3; p1: Vector3; p2: Vector3; u: number; len: number; to: number };
+  /** angestoßen: Versatz und Schwung, kurz stehen bleiben */
+  knock?: { x: number; z: number; r: number; vx: number; vz: number; vr: number }; bump?: { t: number };
+}
 
 const isRoad = (i: number) => i % 3 === 0;
 const rnd = (() => { let s = 7; return () => ((s = (s * 16807) % 2147483647) / 2147483647); })();
@@ -866,22 +874,66 @@ export class World {
   }
 
   /* ---------- Verkehr ---------- */
+  /** Verkehr wie in einer echten Großstadt: Autos fahren das Straßennetz (traffic.ts), biegen an Kreuzungen ab und
+      werden rund um dich verteilt (wer weit weg ist, taucht außer Sicht in deiner Nähe wieder auf). */
   private async spawnCars() {
-    const loops: number[][][] = [
-      [[-3, -57], [-3, 57]], [[3, 57], [3, -57]],
-      [[-57, 3], [207, 3]], [[207, -3], [-57, -3]],
-      [[27, -57], [27, 57]], [[-33, 57], [-33, -57]],
-      // Hochstadt: viel gelbes Taxi, wie es sich für eine Großstadt gehört
-      [[117, -57], [117, 57]], [[123, 57], [123, -57]], [[177, -57], [177, 57]], [[183, 57], [183, -57]], [[147, 57], [147, -57]],
-      [[93, -27], [207, -27]], [[207, -33], [93, -33]], [[93, 33], [207, 33]], [[207, 27], [93, 27]], [[93, -57], [93, 57]],
-    ];
-    const UP = ['car_taxi', 'car_taxi', 'car_sedan', 'car_taxi', 'car_hatchback', 'car_taxi', 'car_stationwagon', 'car_taxi', 'car_taxi', 'car_sedan'];
-    for (let i = 0; i < loops.length; i++) {
-      const kind = i < 6 ? CARS[i % CARS.length] : UP[i - 6];
+    const n = matchMedia('(pointer: coarse)').matches ? 22 : 32;
+    // Hochstadt: viel gelbes Taxi, wie es sich für eine Großstadt gehört
+    const UP = ['car_taxi', 'car_sedan', 'car_taxi', 'car_hatchback', 'car_taxi', 'car_stationwagon'];
+    for (let i = 0; i < n; i++) {
+      const kind = i === 0 ? 'car_police' : i % 2 ? UP[i % UP.length] : CARS[i % (CARS.length - 1)];
       const o = await this.car(kind);
-      const path = loops[i].map(([x, z]) => new Vector3(x, .1, z));
-      this.cars.push({ o, path, seg: 0, u: rnd(), v: 7 + rnd() * 4, kind });
+      const c: Car = { o, path: [new Vector3(), new Vector3()], seg: 0, u: 0, v: 8 + rnd() * 4, kind };
+      this.placeCar(c, 0, 0, 0, 160);
+      this.cars.push(c);
     }
+  }
+  /** Auto auf ein zufälliges Straßenstück setzen, mindestens rMin und höchstens rMax vom Punkt entfernt (bevorzugt hinter der Kamera) */
+  placeCar(c: Car, x: number, z: number, rMin: number, rMax: number, back?: { x: number; z: number }) {
+    for (let k = 0; k < 24; k++) {
+      const a = Math.floor(rnd() * NODES.length), nb = NODES[a].nb, b = nb[Math.floor(rnd() * nb.length)];
+      if (this.roadClosed?.(a, b)) continue;
+      const [x0, z0, x1, z1] = lane(a, b), u = .1 + rnd() * .8, px = x0 + (x1 - x0) * u, pz = z0 + (z1 - z0) * u, d = Math.hypot(px - x, pz - z);
+      if (d < rMin || d > rMax) continue;
+      if (back && k < 16 && (px - x) * back.x + (pz - z) * back.z > d * .35) continue;   // nicht vor deinen Augen auftauchen
+      if (this.cars.some((o) => o !== c && Math.abs(o.o.position.x - px) + Math.abs(o.o.position.z - pz) < 12)) continue;
+      this.setLane(c, a, b, u); c.cur = c.v * .7; c.turn = undefined; c.lat = LANE; c.bump = undefined;
+      return true;
+    }
+    return false;
+  }
+  private setLane(c: Car, a: number, b: number, u = 0) {
+    const [x0, z0, x1, z1] = lane(a, b);
+    c.a = a; c.b = b; c.u = u; c.path[0].set(x0, .1, z0); c.path[1].set(x1, .1, z1);
+  }
+  /** Straßenstück gesperrt (z. B. Hauptstraße während der Parade) */
+  roadClosed?: (a: number, b: number) => boolean;
+  /** Abbiegen: nächste Straße an der Kreuzung wählen (kein Wenden, außer in der Sackgasse) und den Bogen dorthin anlegen */
+  private nextLane(c: Car) {
+    const a = c.a!, b = c.b!, nb = NODES[b].nb.filter((x) => x !== a && !this.roadClosed?.(b, x));
+    const pick = nb.length ? nb[Math.floor(rnd() * nb.length)] : a;
+    const [, , ex, ez] = lane(a, b), [sx, sz] = lane(b, pick);
+    const B = NODES[b];
+    // Bogen über die Kreuzung: Kontrollpunkt dort, wo sich alte und neue Spur kreuzen
+    const d0x = Math.sign(B.x - NODES[a].x), d0z = Math.sign(B.z - NODES[a].z);
+    const cx = d0x ? sx : ex, cz = d0x ? ez : sz;
+    const straight = (d0x && sz === ez) || (d0z && sx === ex);
+    const p0 = new Vector3(ex, .1, ez), p2 = new Vector3(sx, .1, sz), p1 = straight || pick === a ? p0.add(p2).scale(.5) : new Vector3(cx, .1, cz);
+    if (pick === a) p1.set(B.x + d0x * 2, .1, B.z + d0z * 2);
+    c.turn = { p0, p1, p2, u: 0, len: Math.max(4, Vector3.Distance(p0, p1) + Vector3.Distance(p1, p2)), to: pick };
+  }
+  /** Wo soll das Auto gerade sein (Spur oder Abbiegebogen), und in welche Richtung zeigt es? */
+  private carPose(c: Car, out: Vector3) {
+    if (c.turn) {
+      const t = c.turn, u = t.u, k = 1 - u;
+      out.set(k * k * t.p0.x + 2 * k * u * t.p1.x + u * u * t.p2.x, .1, k * k * t.p0.z + 2 * k * u * t.p1.z + u * u * t.p2.z);
+      const dx = 2 * k * (t.p1.x - t.p0.x) + 2 * u * (t.p2.x - t.p1.x), dz = 2 * k * (t.p1.z - t.p0.z) + 2 * u * (t.p2.z - t.p1.z);
+      return Math.atan2(dx, dz);
+    }
+    const a = c.path[0], b = c.path[1], len = Vector3.Distance(a, b) || 1, ax = (b.x - a.x) / len, az = (b.z - a.z) / len;
+    const sh = LANE - (c.lat ?? LANE);   // zur Mitte ausweichen (an geparkten Autos vorbei)
+    out.set(a.x + (b.x - a.x) * c.u + az * sh, .1, a.z + (b.z - a.z) * c.u - ax * sh);
+    return Math.atan2(ax, az);
   }
   /** Auto als bewegliche Kopie (Wurzel mit visible) */
   async car(kind: string) {
@@ -957,29 +1009,93 @@ export class World {
       const near = this.lampSpots.map((q) => [Vector3.DistanceSquared(q, player), q] as const).sort((a, b) => a[0] - b[0]);
       this.poolLights.forEach((l, i) => { const q = near[i]?.[1]; if (q) l.position.set(q.x, q.y - .5, q.z); });
     }
-    for (const c of this.cars) {
+    this.traffic(dt, player);
+  }
+
+  private tmp = new Vector3();
+  /** Bezugspunkt und Blickrichtung für das Verteilen (setzt CityScene), Hupen an dich */
+  view?: { x: number; z: number; fx: number; fz: number };
+  onHonk?: (c: Car) => void;
+  /** Hindernisse auf der Fahrbahn, an denen der Verkehr vorbeilenkt (geparkte Autos) */
+  statics?: () => Array<{ x: number; z: number }>;
+  private respawnI = 0;
+  private traffic(dt: number, player?: Vector3) {
+    const cars = this.cars, low = this.low, far = low ? 95 : 125, statics = this.statics?.() || [];
+    // ein Auto je Bild prüfen: zu weit weg → außer Sicht in deiner Nähe wieder einsetzen
+    if (player && cars.length) {
+      const c = cars[this.respawnI++ % cars.length];
+      if (!c.off && Math.hypot(c.o.position.x - player.x, c.o.position.z - player.z) > far) {
+        const v = this.view; this.placeCar(c, player.x, player.z, 42, far * .8, v ? { x: v.fx, z: v.fz } : undefined);
+      }
+    }
+    for (let i = 0; i < cars.length; i++) {
+      const c = cars[i];
       if (c.off) { c.o.position.set(0, -40, -500); continue; }
-      const a = c.path[0], b = c.path[1];
-      const len = Vector3.Distance(a, b);
-      let speed = c.v;
-      const p = c.o.position, ax = (b.x - a.x) / len, az = (b.z - a.z) / len;
-      const blocked = (qx: number, qz: number, reach: number, wide: number) => {
-        const dx = qx - p.x, dz = qz - p.z, along = dx * ax + dz * az, side = Math.abs(dx * az - dz * ax);
+      if (c.a === undefined) { const e = nearestEdge(c.path[0].x, c.path[0].z); this.setLane(c, e.a, e.b, 0); c.cur = 0; c.lat = LANE; }
+      const p = c.o.position, yaw = c.turn ? c.o.rotation.y : Math.atan2(c.path[1].x - c.path[0].x, c.path[1].z - c.path[0].z);
+      const fx = Math.sin(yaw), fz = Math.cos(yaw), cur = c.cur ?? 0;
+      const ahead = (qx: number, qz: number, reach: number, wide: number) => {
+        const dx = qx - p.x, dz = qz - p.z, along = dx * fx + dz * fz, side = Math.abs(dx * fz - dz * fx);
         return along > 0 && along < reach && side < wide;
       };
-      if (player && blocked(player.x, player.z, 9, 2.2)) speed = 0;
-      // anderen Autos nicht hinten auffahren und an Kreuzungen Vorfahrt lassen (feste Reihenfolge, damit sich nichts verklemmt)
-      const me = this.cars.indexOf(c);
-      for (let j = 0; j < this.cars.length && speed > 0; j++) {
-        const o = this.cars[j]; if (o === c || o.off) continue;
-        if (blocked(o.o.position.x, o.o.position.z, 7, 1.6) || (j < me && blocked(o.o.position.x, o.o.position.z, 6, 3.6))) speed = 0;
+      let want = c.turn ? Math.min(c.v, 6) : c.v;
+      const reach = 6.5 + cur * .55;
+      // an Kreuzungen langsamer werden
+      if (!c.turn) { const left = (1 - c.u) * Vector3.Distance(c.path[0], c.path[1]); if (left < 10) want = Math.min(want, 6 + left * .5); }
+      let block = false, byPlayer = false;
+      if (player && ahead(player.x, player.z, reach + 2.5, 2.3)) { block = true; byPlayer = true; }
+      if ((c.jam ?? 0) < 4) for (let j = 0; j < cars.length && !block; j++) {
+        const o = cars[j]; if (o === c || o.off) continue;
+        if (ahead(o.o.position.x, o.o.position.z, reach, 1.7)) block = true;
+        // Vorfahrt: wer schon in der Kreuzung abbiegt, fährt zuerst
+        else if (!c.turn && o.turn && c.u > .8 && Math.abs(o.o.position.x - NODES[c.b!].x) < 9 && Math.abs(o.o.position.z - NODES[c.b!].z) < 9) block = true;
       }
-      if (this.extraBlock && this.extraBlock(p.x + ax * 3.5, p.z + az * 3.5)) speed = 0;
-      c.u += (speed * dt) / len;
-      if (c.u > 1) c.u = 0;
-      Vector3.LerpToRef(a, b, c.u, p);
-      c.o.rotation.y = Math.atan2(b.x - a.x, b.z - a.z);
+      // an geparkten Autos auf der Spur vorbeilenken
+      let dodge = false;
+      if (!c.turn) for (const q of statics) if (ahead(q.x, q.z, 14, 2.4)) { dodge = true; break; }
+      c.lat = (c.lat ?? LANE) + ((dodge ? .7 : LANE) - (c.lat ?? LANE)) * Math.min(1, dt * 2.2);
+      if (this.extraBlock && !dodge && this.extraBlock(p.x + fx * 3.5, p.z + fz * 3.5)) block = true;
+      if (block) want = 0;
+      // nach einem Stoß: kurz stehen bleiben und schimpfen
+      if (c.bump) { c.bump.t -= dt; want = 0; if (c.bump.t <= 0) c.bump = undefined; }
+      // Stau-Auflösung: wer lange steht, schiebt sich langsam weiter (nie für immer verkeilt)
+      c.jam = want === 0 && !byPlayer && !c.bump ? (c.jam ?? 0) + dt : Math.max(0, (c.jam ?? 0) - dt * 2);
+      if ((c.jam ?? 0) > 6) c.jam = 0;
+      // hupen, wenn du im Weg stehst
+      if (byPlayer) { c.wait = (c.wait ?? 0) + dt; if (c.wait > 2.2) { c.wait = -4; this.onHonk?.(c); } } else c.wait = 0;
+      const nv = cur + Math.max(-14 * dt, Math.min(4.5 * dt, want - cur));
+      c.cur = Math.max(0, nv);
+      const step = c.cur * dt;
+      if (c.turn) {
+        c.turn.u += step / c.turn.len;
+        if (c.turn.u >= 1) { const t = c.turn; this.setLane(c, c.b!, t.to, 0); c.turn = undefined; }
+      } else {
+        const len = Vector3.Distance(c.path[0], c.path[1]) || 1;
+        c.u += step / len;
+        if (c.u >= 1) { c.u = 1; this.nextLane(c); }
+      }
+      const ry = this.carPose(c, this.tmp);
+      // Stoß von deinem Auto: weggeschoben und gedreht, rollt dann auf die Spur zurück
+      const k = c.knock;
+      if (k) {
+        k.x += k.vx * dt; k.z += k.vz * dt; k.r += k.vr * dt;
+        const damp = Math.max(0, 1 - dt * 3); k.vx *= damp; k.vz *= damp; k.vr *= damp;
+        if (Math.hypot(k.vx, k.vz) < .4) { const back = Math.min(1, dt * 1.4); k.x -= k.x * back; k.z -= k.z * back; k.r -= k.r * back; }
+        if (Math.abs(k.x) + Math.abs(k.z) + Math.abs(k.r) < .05 && Math.hypot(k.vx, k.vz) < .1) c.knock = undefined;
+        this.tmp.x += k.x; this.tmp.z += k.z;
+      }
+      p.copyFrom(this.tmp);
+      let dy = ry + (k ? k.r : 0) - c.o.rotation.y; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+      c.o.rotation.y += dy * Math.min(1, dt * 10);
+      // Karosserie neigt sich beim Bremsen leicht nach vorn
+      c.o.rotation.x += ((nv < cur - .05 ? .035 : 0) - c.o.rotation.x) * Math.min(1, dt * 6);
     }
+  }
+  /** Auto aus dem Verkehr von dir angestoßen: Wucht (m/s) in Richtung dx/dz */
+  knock(c: Car, dx: number, dz: number, force: number) {
+    const k = (c.knock ||= { x: 0, z: 0, r: 0, vx: 0, vz: 0, vr: 0 });
+    k.vx += dx * force; k.vz += dz * force; k.vr += (rnd() - .5) * force * .25;
+    c.bump = { t: 2.5 }; c.cur = 0;
   }
 
   /** Kreis gegen Rechtecke, verschiebt p aus Hindernissen heraus */

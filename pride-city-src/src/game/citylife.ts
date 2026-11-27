@@ -7,6 +7,7 @@ import { sfx } from '../engine/Audio';
 import { toast, type Line } from '../ui/ui';
 import { Actor, WALK_MPS, type Anim, type Look } from './Actor';
 import { walkable } from './World';
+import { NODES } from './traffic';
 import { change, hour } from './life';
 import type { SaveData } from '../engine/Save';
 import type { Game } from './Game';
@@ -281,8 +282,10 @@ export class Parade {
     if (!on) this.confetti.forEach((m) => m.setEnabled(false));
     // Autos von der Hauptstraße nehmen, solange die Parade läuft
     const cars = this.city.world.cars as Array<{ off?: boolean; path: Vector3[] }>;
-    if (on) { this.parked = cars.filter((c) => c.path.every((p) => Math.abs(p.x) < 6)); this.parked.forEach((c) => (c.off = true)); }
-    else { this.parked.forEach((c) => (c.off = false)); this.parked = []; }
+    // und die Hauptstraße für den übrigen Verkehr sperren (er biegt vorher ab)
+    const w = this.city.world;
+    if (on) { w.roadClosed = (a, b) => NODES[a].x === 0 && NODES[b].x === 0 && Math.abs(NODES[a].z) <= 60; this.parked = cars.filter((c) => c.path.every((p) => Math.abs(p.x) < 6)); this.parked.forEach((c) => (c.off = true)); }
+    else { w.roadClosed = undefined; this.parked.forEach((c) => (c.off = false)); this.parked = []; }
   }
 
   update(dt: number, t: number, ref: Vector3, canJoin: boolean) {
