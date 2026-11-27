@@ -26,7 +26,7 @@ export const OUTFITS: Array<{ id: Outfit; name: string; adult?: boolean }> = [
   { id: 'swim', name: 'Badehose / Bikini' }, { id: 'harness', name: 'Harness', adult: true },
 ];
 /** rb = feste Rocketbox-Figur (sonst passend zu body/palette/skin gewählt) */
-export interface Look { body: string; palette: string; skin: number; hair?: number; rb?: string; cape?: boolean; hat?: boolean; mug?: boolean; outfit?: Outfit; top?: boolean; /** Szene-Look aus queer.ts (Flaggen-Shirt, Leder, Glitzer, gefärbte Haare) */ style?: string; /** 18+ */ hot?: boolean; /** Szene-Zubehör (gear.ts): Pup-Maske, Ledermütze, Halsband, Krone */ gear?: Gear; /** Spielfigur: Muskeln, Tattoos, Piercings, Bart (figur.ts) */ fig?: Fig }
+export interface Look { body: string; palette: string; skin: number; hair?: number; rb?: string; cape?: boolean; hat?: boolean; mug?: boolean; outfit?: Outfit; /** Unterwäsche/Badesachen-Wahl (waesche.ts), sonst fest aus der Figur */ wash?: string; top?: boolean; /** Szene-Look aus queer.ts (Flaggen-Shirt, Leder, Glitzer, gefärbte Haare) */ style?: string; /** 18+ */ hot?: boolean; /** Szene-Zubehör (gear.ts): Pup-Maske, Ledermütze, Halsband, Krone */ gear?: Gear; /** Spielfigur: Muskeln, Tattoos, Piercings, Bart (figur.ts) */ fig?: Fig }
 
 /** Spielbare Romanfigur aus „Ich bin das Licht“: Leon Sommer als Mann oder als Lady Luma in Drag */
 export const ROLE_LOOKS: Record<string, Look> = {
@@ -44,7 +44,7 @@ export function playerLook(s: { body: string; palette: string; skin: number; pro
   let av = avatarFor({ body: s.body, palette: s.palette, skin: s.skin, hair, top: s.pronouns === 'she' });
   // Hauptfigur ist Rico oder eine der Frauen: frühere Figuren werden umgestellt (Frau bleibt Frau, sonst Rico)
   if (!av.editor) av = av.g === 'f' ? EDITOR_AVATARS.filter((a) => a.g === 'f')[[...s.body].reduce((h, c) => h + c.charCodeAt(0), 0) % EDITOR_AVATARS.filter((a) => a.g === 'f').length] : avatar('pc_rico')!;
-  return { body: av.id, rb: av.id, palette: s.palette, skin: s.skin, hair, outfit, top: s.pronouns !== 'he', hot: s.settings.adult, style: playerDrag(s.flags), fig: figOf(s as Parameters<typeof figOf>[0]) };
+  return { body: av.id, rb: av.id, palette: s.palette, skin: s.skin, hair, outfit, top: s.pronouns !== 'he', hot: s.settings.adult, wash: typeof s.flags.wash === 'string' ? s.flags.wash : undefined, style: playerDrag(s.flags), fig: figOf(s as Parameters<typeof figOf>[0]) };
 }
 
 /** Auf der Straße: Unterwäsche nur zuhause, draußen ist die Figur angezogen */
@@ -194,7 +194,7 @@ export class Actor {
   private styled = false;
   /** Harness ohne eigenen Look: Gurte werden als Look auf die nackte Haut gemalt */
   private styleNow() { return this.look.style || (this.look.outfit === 'harness' ? 'gurt' : undefined); }
-  private outfitKey() { return (this.look.outfit || 'clothed') + '/' + (this.styleNow() || ''); }
+  private outfitKey() { return (this.look.outfit || 'clothed') + '/' + (this.styleNow() || '') + '/' + (this.look.wash || ''); }
   /** Outfit (oberkörperfrei, Unterwäsche, Badesachen, Harness) auf die Textur malen */
   async dress() {
     const k = this.outfitKey(); if (k === this.dressed || this.avatar.job === 'kid') return;
@@ -212,10 +212,12 @@ export class Actor {
       const own = this.ownBody();
       const useBare = bare && !!this.bare;
       own.forEach((m) => m.setEnabled(!useBare));
+      // Kopf-Teile der neuen Figuren reichen mit Kragen/Trägern bis auf die Schultern: ohne Kleidung einklappen
+      this.model.getChildMeshes().forEach((m) => { if ((m as Mesh).skeleton && /^pc_.*_head$/.test(((m.material as { _orig?: { name: string } } | null)?._orig || m.material)?.name || '') && !(this.bare && m.isDescendantOf(this.bare.root))) collar(m as Mesh, useBare); });
       // Ausrüstung (Helm, Weste, Holster, Waffen, Atemmaske) liegt ohne Kleidung nicht mehr am Körper
       this.gear().forEach((m) => m.setEnabled(!useBare));
       if (this.bare) this.bare.root.setEnabled(useBare);
-      if (useBare) await applyOutfit(this.scene, this.bare!.root, this.avatar.id + '@' + bareId(this.avatar.g), this.look.outfit, this.avatar.g === 'f', own[0]);
+      if (useBare) await applyOutfit(this.scene, this.bare!.root, this.avatar.id + '@' + bareId(this.avatar.g), this.look.outfit, this.avatar.g === 'f', own[0], this.look.wash);
       else await applyOutfit(this.scene, this.model, this.avatar.id, this.look.outfit, this.avatar.g === 'f');
       // Szene-Look der Reihe nach im Hintergrund malen: das Laden wartet nie darauf
       const style = this.styleNow();
@@ -341,4 +343,29 @@ export class Actor {
   head(out = new Vector3()) { out.copyFrom(this.root.position); out.y += CHAR_HEIGHT * .95; return out; }
   /** Figur wegräumen */
   dispose() { this.root.dispose(false, false); }
+}
+
+/** Kragen am Kopf-Mesh (Vertices, die an Rumpf, Schlüsselbein oder Arm hängen) in den Hals ziehen bzw. zurückholen */
+function collar(m: Mesh & { _pcCollar?: Float32Array }, hide: boolean) {
+  if (!hide) { if (m._pcCollar) { m.setVerticesData('position', m._pcCollar, false); m._pcCollar = undefined; } return; }
+  if (m._pcCollar) return;
+  const pos = m.getVerticesData('position'), mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights'), sk = m.skeleton;
+  if (!pos || !mi || !mw || !sk) return;
+  const names: string[] = []; sk.bones.forEach((b) => { names[b.getIndex()] = b.name; });
+  const nv = pos.length / 3, low: number[] = []; let cx = 0, cy = 0, cz = 0, cn = 0;
+  const dom = (v: number) => { let best = 0, bw = -1; for (let k = 0; k < 4; k++) if (mw[v * 4 + k] > bw) { bw = mw[v * 4 + k]; best = mi[v * 4 + k]; } return names[best] || ''; };
+  // Kinn: tiefster Punkt am Kopf-Knochen; Kragen liegt deutlich darunter (neue Figuren: Mesh-Raum = Meter, y oben)
+  let chin = 1e9; for (let v = 0; v < nv; v++) if (/Head/.test(dom(v))) chin = Math.min(chin, pos[v * 3 + 1]);
+  for (let v = 0; v < nv; v++) {
+    const b = dom(v);
+    if (/Spine|Clavicle|UpperArm|Pelvis/.test(b) || pos[v * 3 + 1] < chin - .085) low.push(v);
+    else if (/Neck/.test(b)) { cx += pos[v * 3]; cy += pos[v * 3 + 1]; cz += pos[v * 3 + 2]; cn++; }
+  }
+  if (!cn) { const lowS = new Set(low); for (let v = 0; v < nv; v++) if (!lowS.has(v) && pos[v * 3 + 1] < chin + .04) { cx += pos[v * 3]; cy += pos[v * 3 + 1]; cz += pos[v * 3 + 2]; cn++; } }
+  if (!low.length || !cn) return;
+  const out = Float32Array.from(pos); cx /= cn; cy /= cn; cz /= cn;
+  for (const v of low) { out[v * 3] = cx; out[v * 3 + 1] = cy; out[v * 3 + 2] = cz; }
+  m.makeGeometryUnique();
+  m._pcCollar = Float32Array.from(pos);
+  m.setVerticesData('position', out, false);
 }
