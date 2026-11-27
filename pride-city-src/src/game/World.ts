@@ -6,7 +6,7 @@ import {
   Node3, Vector3, Color3, HemisphericLight, DirectionalLight, PointLight, ShadowGenerator, ShaderMaterial, Effect, Mesh, VertexData, VertexBuffer,
   Matrix, Quaternion, Scene, PBRMaterial, Texture, TransformNode, type AbstractMesh, col, smoothstep, v3, setQuiet, HDRCubeTexture, RawTexture, type InstancedMesh,
 } from '../engine/bjs';
-import { instance, preload } from '../engine/Assets';
+import { instance, preload, EXTRAS } from '../engine/Assets';
 import { planeZ, ground, box, cyl, sphere, ring, torus, pbr, glow, canvasTex } from '../engine/geo';
 import { PALETTES } from './palettes';
 import { Townhouses } from './townhouse';
@@ -122,6 +122,8 @@ export class World {
     this.root = new Node3('world', scene);
     this.traces = new Node3('traces', scene); this.traces.parent = this.root;
     this.lamps = glow(scene, 0xfff2c0, 1);
+    // Pflanzkübel (statt KayKit-Busch): Busch aus Foto-Laubkarten obendrauf
+    EXTRAS.set(scene, { shrub: (p) => { const src = this.leafSrc(); for (const [x, y, k] of [[-.3, .62, .42], [.3, .66, .46]] as const) { const m = src.tops[(Math.abs(Math.round(p.absolutePosition?.x ?? 0)) + (x > 0 ? 1 : 0)) % 3].createInstance('shrub'); m.parent = p; m.position.set(x, y, 0); m.scaling.set(k, k * .8, k * .7); (m as AbstractMesh & { _pcCast?: boolean })._pcCast = true; } } });
     this.hemi = new HemisphericLight('hemi', new Vector3(0, 1, 0), scene);
     this.sun = new DirectionalLight('sun', new Vector3(-.5, -.8, -.4), scene);
   }
@@ -273,6 +275,7 @@ export class World {
     return (this.winTex = canvasTex(this.scene, 8, 4, (g) => { g.fillStyle = '#000'; g.fillRect(0, 0, 8, 4); g.fillStyle = '#fff'; g.fillRect(2, 1, 1, 1); }, false, true));
   }
   tune(path: string, o: TransformNode) {
+    if (o.metadata?.swapped) return; // echtes Modell mit eigenen PBR-Texturen
     for (const mesh of o.getChildMeshes()) {
       const m = (mesh as Mesh).material as PBRMaterial | null;
       if (!m || !(m instanceof PBRMaterial) || this.tuned.has(m)) continue;
@@ -372,7 +375,7 @@ export class World {
       const side = rx ? [x + TILE * .44, z] : [x, z + TILE * .44];
       const lamp = await this.place(C('streetlight'), side[0], .1, side[1], rx ? Math.PI : -Math.PI / 2);
       const bulb = this.bulb();
-      bulb.position.set(side[0] + (rx ? -1.05 : 0), 4.55, side[1] + (rx ? 0 : -1.05));
+      bulb.position.set(side[0], 4.28, side[1]); bulb.scaling.setAll(.55);
       this.still(bulb, false, false);
       const bn = new TransformNode('lampbulb', this.scene); bulb.parent = bn; bn.parent = this.root;
       this.prop(side[0], side[1], .3, [lamp, bn]);
@@ -526,13 +529,15 @@ export class World {
   }
 
   private treeSrc: { trunk: Mesh; tops: Mesh[] } | null = null;
-  tree(x: number, z: number, s: number) {
+  private leafSrc() { if (!this.treeSrc) this.tree(0, 0, 0, true); return this.treeSrc!; }
+  tree(x: number, z: number, s: number, onlySrc = false) {
     const sc = this.scene;
     if (!this.treeSrc) {
       const { trunk, tops } = treeParts(sc);
       [trunk, ...tops].forEach((m) => { m.setEnabled(false); m.receiveShadows = true; m.parent = this.root; });
       this.treeSrc = { trunk, tops };
     }
+    if (onlySrc) return;
     const g = new TransformNode('tree', sc);
     const add = (src: Mesh, px: number, py: number, pz: number, k = 1) => { const m = src.createInstance('t'); m.position.set(px, py, pz); m.scaling.setAll(k); m.parent = g; (m as AbstractMesh & { _pcCast?: boolean })._pcCast = true; return m; };
     const top = this.treeSrc.tops[Math.floor(rnd() * 4)];

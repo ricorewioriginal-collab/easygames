@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "59b32c3f0277",
- "generated": "2026-11-27T22:47:33+00:00",
- "commit": "c546010bc06302ec0edb0491a0b789d6a260dce9",
+ "version": "1a05b3a272f2",
+ "generated": "2026-11-27T23:25:32+00:00",
+ "commit": "183bfad069754889806f4bc0c05d8ce3a04f6adb",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -14987,14 +14987,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
-   "p": "pride-city/assets/index-B6I45HLu.js",
-   "s": 1345811,
-   "h": "039bc016c007b0b6900363c40629166e36d2cf395ef73d6638e6e14219ab8bee"
-  },
-  {
    "p": "pride-city/assets/index-BIR2h5rN.css",
    "s": 43782,
    "h": "211fbca1e4ad52987f24abf0084d3f0b3547afbc18046a32bdb7212f49c7689f"
+  },
+  {
+   "p": "pride-city/assets/index-CEtF8VMH.js",
+   "s": 1347117,
+   "h": "fbdc89498a6d5344df5f005cb86be740050192e057bc2602994903917f871dc7"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -15085,6 +15085,31 @@
    "p": "pride-city/assets/loaders-jAIV-Vws.js",
    "s": 323809,
    "h": "2b72fed0a7173a4c678eaff0345db3e193b4efd762b2f6b4c857ab6e59efcddf"
+  },
+  {
+   "p": "pride-city/assets/props/fire_hydrant.glb",
+   "s": 97320,
+   "h": "6a319c636b6012b816dec94d3ebee90802c13b968febebf3606fd48eea8ea7bb"
+  },
+  {
+   "p": "pride-city/assets/props/metal_trash_can.glb",
+   "s": 90136,
+   "h": "a36a41b7a2c6dbf5f80fd139773336f1a279d6365171ac82ba804af5d66b914c"
+  },
+  {
+   "p": "pride-city/assets/props/modular_street_seating.glb",
+   "s": 493776,
+   "h": "9522e7b74b3553d9a56d4cb2bcdb0f4fcfbab5c924dcff41d3631e43dd81ffb7"
+  },
+  {
+   "p": "pride-city/assets/props/planter_box_02.glb",
+   "s": 90552,
+   "h": "2d9164c676e5e8253d33f2a201ec8e3ce93360c0c94b3a06772fb25d6f2c33b3"
+  },
+  {
+   "p": "pride-city/assets/props/street_lamp_01.glb",
+   "s": 151856,
+   "h": "0e99c50569ea70a52dbcd84eea701a440122b5f8815ab25766af44e7a055f370"
   },
   {
    "p": "pride-city/assets/rb/Chef_Female_01.glb",
@@ -15492,6 +15517,11 @@
    "h": "6a6d6077cfe76ca4cc9676f400cd333048538873a11920cfa17b122f81aef8aa"
   },
   {
+   "p": "pride-city/assets/world/hedge_col.jpg",
+   "s": 51384,
+   "h": "c19243385dcdf2f2d81a2f6b9851888673a24a6de3bbfcb3dabc7b6b5e4ec834"
+  },
+  {
    "p": "pride-city/assets/world/leaves.png",
    "s": 251797,
    "h": "0adcf2914eced0aff1ac55969730cded3341359abc423a1d67dbc82c63250228"
@@ -15794,7 +15824,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5862,
-   "h": "6c822807d2910f15f09d3c53cb2d52817b236dba7abac9c67631bee69fda2578"
+   "h": "f2baf03b148c68fcee3e3cbc3f26873fa247df1dbfc3bf06cbfec0affe4a7f8f"
   },
   {
    "p": "pride-city/logo.svg",
@@ -18569,7 +18599,7 @@
   {
    "p": "sync/catalog.json",
    "s": 241235,
-   "h": "42379f445c332aaa7add01b1ad094b620fe94b08c9d1c81813e56f697b6082a8"
+   "h": "0c66b2bf9a9a4fe27a18b6d1be87b902ee68e015cbde35396efb9e0d58750cee"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
