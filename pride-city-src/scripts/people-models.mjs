@@ -11,6 +11,8 @@ export const MODELS = [
   { id: 'pc_gangster', g: 'm', file: 'gangster_rigged.glb', arm: 5, tris: 9000 },
   { id: 'pc_streetg', g: 'm', file: 'street_gangster__realistic_3d_character_model.glb', arm: 5, tris: 9000 },
   { id: 'pc_yakuza', g: 'm', file: 'yakuza.glb', arm: 78, yaw: -90, tris: 9000 },
+  // nackte Körper unter der Kleidung (MakeHuman, CC0): erst `node scripts/mh-body.mjs <ordner>`, dann diesen Ordner angeben.
+  ...['m1', 'm2', 'm3', 'm4', 'f1', 'f2', 'f3', 'f4'].map((n) => ({ id: 'mh_' + n, g: n[0], file: 'mh_' + n + '.glb', tris: 12000, headPart: () => false, normals: false, neckToHead: true, cut: .875 })),
 ];
 
 /* ---------------- Rico (Cover-Figur): Basis Citizen 12 (kurz rasiert, Bart) ---------------- */

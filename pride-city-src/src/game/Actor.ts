@@ -203,7 +203,7 @@ export class Actor {
       // ohne Kleidung: eng anliegender echter Körper statt umgemalter Kleidung (koerper.ts)
       const bare = !!this.look.outfit && BARE_OUTFITS.has(this.look.outfit);
       if (bare && !this.bare) {
-        this.bare = await bareBody(this.scene, this.model, this.bones, this.avatar.g);
+        this.bare = await bareBody(this.scene, this.model, this.bones, this.avatar.g, this.avatar.id);
         this.bare?.meshes.forEach((m) => this.addLod(m as Mesh));
         const own0 = this.ownBody()[0], sk = own0 && await skinOf(own0), sp = this.bare?.meshes[0] && await skinOf(this.bare.meshes[0]);
         if (sk && sp) this.bare?.tint(sk.map((v, i) => v / Math.max(1, sp[i])));
@@ -214,10 +214,12 @@ export class Actor {
       own.forEach((m) => m.setEnabled(!useBare));
       // Kopf-Teile der neuen Figuren reichen mit Kragen/Trägern bis auf die Schultern: ohne Kleidung einklappen
       this.model.getChildMeshes().forEach((m) => { if ((m as Mesh).skeleton && /^pc_.*_head$/.test(((m.material as { _orig?: { name: string } } | null)?._orig || m.material)?.name || '') && !(this.bare && m.isDescendantOf(this.bare.root))) collar(m as Mesh, useBare); });
+      // Ketten, die auf der Jacke lagen (Rico), schweben ohne Kleidung vor der Brust: ausblenden. Ohrring und Septum bleiben.
+      this.model.getChildMeshes().forEach((m) => { if ((m as Mesh).skeleton && /^pc_.*_silber$/.test(m.material?.name || '') && !onHead(m as Mesh)) m.setEnabled(!useBare); });
       // Ausrüstung (Helm, Weste, Holster, Waffen, Atemmaske) liegt ohne Kleidung nicht mehr am Körper
       this.gear().forEach((m) => m.setEnabled(!useBare));
       if (this.bare) this.bare.root.setEnabled(useBare);
-      if (useBare) await applyOutfit(this.scene, this.bare!.root, this.avatar.id + '@' + bareId(this.avatar.g), this.look.outfit, this.avatar.g === 'f', own[0], this.look.wash);
+      if (useBare) await applyOutfit(this.scene, this.bare!.root, this.avatar.id + '@' + bareId(this.avatar.g, this.avatar.id), this.look.outfit, this.avatar.g === 'f', own[0], this.look.wash);
       else await applyOutfit(this.scene, this.model, this.avatar.id, this.look.outfit, this.avatar.g === 'f');
       // Szene-Look der Reihe nach im Hintergrund malen: das Laden wartet nie darauf
       const style = this.styleNow();
@@ -346,6 +348,15 @@ export class Actor {
 }
 
 /** Kragen am Kopf-Mesh (Vertices, die an Rumpf, Schlüsselbein oder Arm hängen) in den Hals ziehen bzw. zurückholen */
+/** Schmuck am Kopf (Ohrring, Septum)? Mehrheit der Punkte hängt am Kopf-Knochen */
+function onHead(m: Mesh & { _pcHead?: boolean }) {
+  if (m._pcHead !== undefined) return m._pcHead;
+  const mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights'), sk = m.skeleton; if (!mi || !mw || !sk) return (m._pcHead = true);
+  const names: string[] = []; sk.bones.forEach((b) => { names[b.getIndex()] = b.name; });
+  let head = 0; const nv = mw.length / 4;
+  for (let v = 0; v < nv; v++) { let best = 0, bw = -1; for (let k = 0; k < 4; k++) if (mw[v * 4 + k] > bw) { bw = mw[v * 4 + k]; best = mi[v * 4 + k]; } if (/Head/.test(names[best] || '')) head++; }
+  return (m._pcHead = head > nv / 2);
+}
 function collar(m: Mesh & { _pcCollar?: Float32Array }, hide: boolean) {
   if (!hide) { if (m._pcCollar) { m.setVerticesData('position', m._pcCollar, false); m._pcCollar = undefined; } return; }
   if (m._pcCollar) return;
@@ -358,7 +369,7 @@ function collar(m: Mesh & { _pcCollar?: Float32Array }, hide: boolean) {
   let chin = 1e9; for (let v = 0; v < nv; v++) if (/Head/.test(dom(v))) chin = Math.min(chin, pos[v * 3 + 1]);
   for (let v = 0; v < nv; v++) {
     const b = dom(v);
-    if (/Spine|Clavicle|UpperArm|Pelvis/.test(b) || pos[v * 3 + 1] < chin - .085) low.push(v);
+    if (/Spine|Clavicle|UpperArm|Pelvis/.test(b) || pos[v * 3 + 1] < chin - .12) low.push(v);
     else if (/Neck/.test(b)) { cx += pos[v * 3]; cy += pos[v * 3 + 1]; cz += pos[v * 3 + 2]; cn++; }
   }
   if (!cn) { const lowS = new Set(low); for (let v = 0; v < nv; v++) if (!lowS.has(v) && pos[v * 3 + 1] < chin + .04) { cx += pos[v * 3]; cy += pos[v * 3 + 1]; cz += pos[v * 3 + 2]; cn++; } }

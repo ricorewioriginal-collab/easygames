@@ -29,5 +29,9 @@ Die Figuren der Stadt, die Hauptfigur Rico und Tarek stammen von Sketchfab und s
 in Geometrie und Texturen verkleinert (`pride-city-src/scripts/people.mjs`). Rico (`pc_rico`) ist umgefärbt (schwarze Trainingsjacke
 mit weißen Streifen, schwarze Hose) und hat Kette, Ohrring und Septum-Ring bekommen. Ein zweites Modell „Yakuza“ von SpatialNeglect ist nicht enthalten.
 
-Animationen, Uniform-Figuren (Polizei, Feuerwehr, Sanitäterin, Köchin, Kurier), Kinder und die Sport-Körper unter Oberkörperfrei/Badesachen:
+Nackte Körper unter der Kleidung (Oberkörperfrei, Unterwäsche, Badesachen, Akt-Ansicht 18+): `assets/rb/mh_m1.glb` … `mh_m4.glb`,
+`mh_f1.glb` … `mh_f4.glb`, erzeugt aus **MakeHuman** (makehumancommunity/makehuman, Grundkörper `base.obj` und Form-Ziele) –
+CC0 1.0 seit 2020. Geformt, ohne Kopf, mit eigener Haut-Textur und Rocketbox-Skelett (`scripts/mh-body.mjs`, `scripts/people.mjs`).
+
+Animationen, Uniform-Figuren (Polizei, Feuerwehr, Sanitäterin, Köchin, Kurier), Kinder und die Sport-Figuren:
 Microsoft Rocketbox Avatar Library, MIT-Lizenz, siehe `assets/rb/LICENSE.md`.

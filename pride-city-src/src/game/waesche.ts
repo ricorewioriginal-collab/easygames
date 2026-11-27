@@ -1,9 +1,9 @@
 /* Unterwäsche und Badesachen: verschiedene Schnitte, Farben und Muster. Gemalt wird auf den nackten Sport-Körper
    (outfit.ts garment), deshalb sitzt jeder Schnitt an der richtigen Körperstelle. NPCs bekommen ihre Wäsche fest aus der
    Figuren-ID, die Spielfigur wählt im Kleiderschrank (flags.wash). */
-export type Cut = 'slip' | 'boxer' | 'jock' | 'string' | 'hipster' | 'trunks' | 'tanga';
+export type Cut = 'slip' | 'boxer' | 'jock' | 'string' | 'hipster' | 'trunks' | 'tanga' | 'jeans';
 export type Pat = 'uni' | 'streifen' | 'punkte' | 'spitze' | 'bund';
-export interface Wash { id: string; name: string; g: 'm' | 'f'; cut: Cut; bra?: boolean; col: number; acc: number; pat: Pat; swim?: boolean }
+export interface Wash { id: string; name: string; g: 'm' | 'f'; cut: Cut; bra?: boolean; col: number; acc: number; pat: Pat; swim?: boolean; /** BH in eigener Farbe (zur Hose) */ braCol?: number }
 
 const W = (id: string, name: string, g: 'm' | 'f', cut: Cut, col: number, acc: number, pat: Pat, extra: Partial<Wash> = {}): Wash => ({ id, name, g, cut, col, acc, pat, bra: g === 'f', ...extra });
 export const WASH: Wash[] = [
