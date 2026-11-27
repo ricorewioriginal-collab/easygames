@@ -68,7 +68,7 @@ export class CityScene implements GameScene {
   private cam = { yaw: Math.PI, pitch: .38, dist: 7.5, tYaw: Math.PI };
   private camPos = new Vector3();
   private stickerMeshes: Mesh[] = [];
-  private near: { kind: 'npc' | 'poi' | 'street' | 'car' | 'house' | 'life' | 'live' | 'buddy' | 'friend' | 'isle'; id: string; label: string } | null = null;
+  private near: { kind: 'npc' | 'poi' | 'street' | 'car' | 'house' | 'life' | 'live' | 'buddy' | 'friend' | 'isle' | 'trunk'; id: string; label: string } | null = null;
   street!: Street;
   combat!: Combat;
   /** Schlägereien und Verfolgungen der Missionen (Akt IV) */
@@ -413,6 +413,12 @@ export class CityScene implements GameScene {
     }
     const icon: Record<string, string> = { worker: '🏮 Escort · ', curb: '💋 Laternenmeile · ', police: '🚓 ', fire: '🚒 ', medic: '🚑 ', security: '🛡️ ', chef: '👩‍🍳 ', courier: '📦 ' };
     if (!best) { const st = this.street.near(p); if (st) best = { kind: 'street', id: String(this.street.people.indexOf(st)), label: (st.kind === 'szene' ? (SZENE[st.id!]?.icon || '💬') + ' ' : icon[st.kind] || '💬 ') + st.name }; }
+    // auf der Flucht: am Kofferraum eines Wagens umziehen und die Polizei austricksen
+    if (!best && this.combat.wanted.stars > 0) {
+      const pc = this.street.parked.find((c) => !c.def.fly && !c.def.air && !c.def.ride && !c.def.toy && Vector3.Distance(c.o.position, p) < 3.4), tc = pc ? null : this.street.nearTraffic(p, 4.2);
+      const o = pc?.o || tc?.o;
+      if (o) best = { kind: 'trunk', id: pc ? String(this.street.parked.indexOf(pc)) : 't' + this.world.cars.indexOf(tc!), label: '🧳 Kofferraum: umziehen und Polizei austricksen' };
+    }
     if (!best) { const car = this.street.nearCar(p); if (car) best = { kind: 'car', id: String(this.street.parked.indexOf(car)), label: `${car.def.icon} Einsteigen: ${car.name}${car.own ? ' (dein Wagen)' : ''}` }; }
     if (!best) { const tc = this.street.nearTraffic(p); if (tc) best = { kind: 'car', id: 't' + this.world.cars.indexOf(tc), label: `🚗 Ausleihen: ${this.street.trafficDef(tc).name}` }; }
     const want = goal(this.g.save.data).poi;
@@ -427,7 +433,7 @@ export class CityScene implements GameScene {
     }
     this.near = best;
     this.g.hud.prompt(best ? best.label : null);
-    this.g.touch.label(best ? (best.kind === 'npc' || best.kind === 'street' || best.kind === 'buddy' || best.kind === 'friend' ? 'Reden' : best.kind === 'car' ? 'Fahren' : best.kind === 'life' || best.kind === 'live' ? 'Los' : 'Rein') : 'Aktion');
+    this.g.touch.label(best ? (best.kind === 'npc' || best.kind === 'street' || best.kind === 'buddy' || best.kind === 'friend' ? 'Reden' : best.kind === 'car' ? 'Fahren' : best.kind === 'trunk' ? 'Umziehen' : best.kind === 'life' || best.kind === 'live' ? 'Los' : 'Rein') : 'Aktion');
   }
 
   /** Match kommt vorbei und begleitet dich */
@@ -474,6 +480,7 @@ export class CityScene implements GameScene {
       return;
     }
     if (this.near.kind === 'car') { this.toggleCar(this.near.id); return; }
+    if (this.near.kind === 'trunk') { const id = this.near.id, o = id[0] === 't' ? this.world.cars[+id.slice(1)]?.o : this.street.parked[+id]?.o; if (o) { this.player.play('interact'); this.combat.flucht.trunk(o); } return; }
     if (this.near.kind === 'street') {
       const n = this.street.people[+this.near.id], s = this.g.save.data;
       n.talking = true; n.a.play('talk');

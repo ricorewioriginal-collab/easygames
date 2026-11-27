@@ -150,6 +150,28 @@ export class Flucht {
     return { seen, caught };
   }
 
+  /** Umziehen am Kofferraum: neues Outfit, die Streife sucht jemand anderen. Nur ohne Streife in Sichtweite,
+      bis 2 Sterne ist die Fahndung weg, darüber fallen 2 Sterne. Jeder Wagen nur einmal, kurze Pause dazwischen. */
+  private trunkT = -999;
+  private trunkCars = new WeakSet<object>();
+  trunk(car: object) {
+    const s = this.s, w = this.city.combat.wanted, p = this.city.player.root.position, now = performance.now() / 1000;
+    if (this.city.combat.copNear(p, 18) || this.units.some((u) => u.on && Math.hypot(u.o.position.x - p.x, u.o.position.z - p.z) < 26)) { sfx('miss'); toast('🧳 Nicht vor den Augen der Streife! Erst um die Ecke, dann umziehen.'); return; }
+    if (this.trunkCars.has(car)) { sfx('miss'); toast('🧳 In diesem Kofferraum ist nichts mehr, das passt. Such dir einen anderen Wagen.'); return; }
+    if (now - this.trunkT < 45) { sfx('miss'); toast('🧳 Gerade erst umgezogen. Noch mal so schnell fällt auf.'); return; }
+    this.trunkT = now; this.trunkCars.add(car);
+    const cur = String(s.flags.outfit || 'clothed'), pool = ['clothed', 'shirtless', 'swim', ...(s.settings.adult ? ['harness'] : [])].filter((o) => o !== cur);
+    const next = pool[Math.floor(Math.random() * pool.length)], names: Record<string, string> = { clothed: 'Jeans und Hoodie', shirtless: 'oberkörperfrei mit Sonnenbrille', swim: 'Badesachen und Handtuch', harness: 'Harness und Lederjacke' };
+    sfx('door');
+    this.g.fade(async () => {
+      s.flags.outfit = next; await this.city.rebuildPlayer();
+      const before = w.stars;
+      if (before <= 2) { w.clear(); this.clear(); this.city.combat.home(); } else { w.stars = before - 2; w.unseen = 0; }
+      sfx('sheets'); setTimeout(() => sfx(w.stars ? 'move' : 'win'), 400); this.g.save.write(); this.city.refreshHud();
+      this.g.hud.banner('🧳 Am Kofferraum umgezogen', w.stars ? `Jetzt in ${names[next]}. Die Streife sucht jemand anderen: noch ${'★'.repeat(w.stars)}.` : `Jetzt in ${names[next]}. Die Polizei sucht jemand ganz anderen. Fahndung weg!`, 'good', 3800);
+    });
+  }
+
   /** Rosi lackiert um: Fahndung weg, wenn keine Streife zusieht */
   private paintShop() {
     const s = this.s, w = this.city.combat.wanted, p = this.city.player.root.position;

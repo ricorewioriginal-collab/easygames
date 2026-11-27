@@ -249,12 +249,38 @@ export class Combat {
     toast(`${name}: „${line}“`);
   }
 
-  /** Vergehen: gemeldet, wenn eine Streife es sieht – sonst ruft manchmal jemand die Polizei */
+  /** Vergehen: sofort gemeldet, wenn eine Streife es sieht (oder schon gefahndet wird). Sonst zählt nur, wer es gesehen hat:
+      die nächste Person in der Nähe greift zum Handy – wer sie rechtzeitig beruhigt, kommt davon. Ohne Zeug*innen keine Fahndung. */
   crime(law: Law, at: Vector3) {
-    const seen = this.copNear(at, SEE) || this.wanted.stars > 0;
-    if (!seen) { if (Math.random() < .45) toast('📞 Jemand hat die Polizei gerufen!'); else return; }
-    const more = this.wanted.add(law);
+    if (this.copNear(at, SEE) || this.wanted.stars > 0) { this.report(law); return; }
+    if (this.call) return;
+    const w = this.city.street.witness(at, 22);
+    if (!w) return;
+    this.call = { n: w, t: 4.5, law }; w.wait = 8; w.a.play('phone');
+    toast(`👀 ${w.name} hat alles gesehen und greift zum Handy … schnell hin und beruhigen!`, 3000);
+  }
+  /** laufender Anruf bei der Polizei */
+  private call: { n: StreetNpc; t: number; law: Law } | null = null;
+  /** Täterbeschreibung, die die Polizei hat: Outfit und Fahrzeug (null = zu Fuß) */
+  desc: { outfit: string; car: object | null; carName: string } | null = null;
+  private report(law: Law) {
+    const first = this.wanted.stars === 0, more = this.wanted.add(law);
+    if (first || !this.desc) this.describe();
     if (more) { sfx('siren'); this.g.hud.banner(`${'★'.repeat(this.wanted.stars)} Fahndung`, LAWS[law].name, 'bad', 2600); this.tip(); }
+  }
+  /** Beschreibung auf den aktuellen Stand bringen (Streife sieht dich gerade) */
+  private describe() { const r = this.city.ride; this.desc = { outfit: String(this.save.flags.outfit || 'clothed'), car: r?.o || null, carName: r ? r.name : '' }; }
+  /** Wie viel passt nicht mehr zur Beschreibung (0–2): anderes Outfit, anderes Fahrzeug */
+  disguise() {
+    const d = this.desc; if (!d) return 0;
+    const r = this.city.ride;
+    return (String(this.save.flags.outfit || 'clothed') !== d.outfit ? 1 : 0) + ((r?.o || null) !== d.car ? 1 : 0);
+  }
+  /** Text fürs HUD: was die Polizei über dich weiß */
+  descText() {
+    const d = this.desc; if (!d) return '';
+    const o: Record<string, string> = { clothed: 'Alltagskleidung', shirtless: 'oberkörperfrei', swim: 'Badesachen', harness: 'Harness', underwear: 'Unterwäsche' };
+    return `Gesucht: Person in ${o[d.outfit] || d.outfit}${d.car ? ' · im ' + d.carName : ' · zu Fuß'}`;
   }
 
   /** Story: Fahndung setzen (Akt V, falsche Anzeige) */
@@ -343,10 +369,19 @@ export class Combat {
         const ang = Math.random() * Math.PI * 2; c.a.root.position.set(p.x + Math.sin(ang) * 28, .1, p.z + Math.cos(ang) * 28); c.a.root.setEnabled(true);
       } else if (stars < 3 && c.a.root.isEnabled()) c.a.root.setEnabled(false);
     }
+    // Zeug*in am Telefon: hingehen beruhigt, sonst ist die Polizei informiert
+    if (this.call) {
+      const c = this.call, q = c.n.a.root.position; c.t -= dt;
+      c.n.a.root.rotation.y = Math.atan2(p.x - q.x, p.z - q.z); if (c.n.a.anim !== 'phone') c.n.a.play('phone');
+      if (!this.city.driving && Vector3.Distance(q, p) < 2.8) { this.call = null; c.n.wait = 1; c.n.a.play('idle'); sfx('ok'); toast(`🤫 ${c.n.name}: „Na gut … ich leg auf. War ja nichts Schlimmes.“`, 2600); }
+      else if (c.t <= 0 || c.n.flee) { this.call = null; c.n.a.play('idle'); toast(`📱 ${c.n.name} hat dich bei der Polizei gemeldet!`, 2600); this.report(c.law); }
+    }
     const fl = this.flucht.update(dt, stars, p);
     if (fl.caught && this.arrestT <= 0) { this.arrest(); return; }
-    const see = this.flucht.see(SEE);
-    let seen = fl.seen;
+    // passt nicht mehr zur Beschreibung (umgezogen, anderer Wagen): Streifen erkennen dich erst aus der Nähe
+    const dis = stars ? this.disguise() : 0;
+    const see = this.flucht.see(SEE) * (1 - dis * .35);
+    let seen = fl.seen && dis < 2;
     for (const c of [...this.cops, ...this.extra]) {
       const a = c.a, r = a.root;
       if (!r.isEnabled() || (c.n && !r.visible && !stars)) { if (c.n) c.n.chase = false; continue; }
@@ -354,7 +389,7 @@ export class Combat {
       if (this.bodies.get(a)) continue;
       if (!stars) { if (c.n) c.n.chase = false; continue; }
       const dx = p.x - r.position.x, dz = p.z - r.position.z, d = Math.hypot(dx, dz);
-      if (d < see) seen = true;
+      if (d < see) { seen = true; if (dis) this.describe(); }
       if (d > 60 && !c.extra) { if (c.n) c.n.chase = false; continue; }
       // im Versteck: die Streife sucht, statt dir nachzulaufen
       if (this.flucht.hidden && d > see) { if (a.anim !== 'idle') a.play('idle'); continue; }
@@ -370,10 +405,12 @@ export class Combat {
       if (d < CATCH + (this.city.driving ? 1.4 : 0) && slow && this.arrestT <= 0) { this.arrest(); return; }
     }
     if (stars) {
-      const r = this.wanted.tick(dt, seen, this.flucht.fast());
+      const r = this.wanted.tick(dt, seen, this.flucht.fast() * (1 + dis));
       if (r === 'lost') { sfx('win'); this.g.hud.banner('Abgehängt! ✨', 'Die Polizei hat deine Spur verloren.', 'good', 3000); this.home(); }
     }
-    this.g.hud.wanted(this.wanted.stars, !seen && this.wanted.stars > 0 && Math.floor(t * 3) % 2 === 0);
+    if (!this.wanted.stars) this.desc = null;
+    this.g.hud.wanted(this.wanted.stars, !seen && this.wanted.stars > 0, this.wanted.stars ? this.descText() + (dis ? ' · 🕶️ passt nicht mehr' : '') : '');
+    void t;
   }
 
   /** Streife zurück auf ihre Runde */
