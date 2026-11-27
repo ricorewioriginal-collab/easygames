@@ -2,6 +2,7 @@
    umhauen, Gleitgel auf den Boden werfen und zusehen, wie alle ausrutschen. Wer erwischt wird, bekommt Sterne,
    die Streife rennt hinterher – mit genug Abstand und Zeit hängst du sie ab, sonst gibt es Bußgeld auf der Wache.
    Ein Bedienkonzept: Angriff (F / LT / 👊), Waffe wechseln (G / L3 / Waffen-Knopf im HUD). */
+import { punch } from './fit';
 import { Vector3, Quaternion, Matrix, Mesh, TransformNode, type Scene, type PBRMaterial } from '../engine/bjs';
 import { cyl, sphere, ring, pbr } from '../engine/geo';
 import { sfx } from '../engine/Audio';
@@ -119,6 +120,7 @@ export class Combat {
     if (!this.list().includes(this.weapon)) this.weapon = 'hand';
     const w = this.weapon === 'dildo' ? { ...WEAPONS.dildo, ...dildoStats(dildoNow(s)) } : WEAPONS[this.weapon];
     this.cool = .6; this.strike = 1;
+    const pw = punch(s);
     if (w.throw) {
       if ((s.inv.lube || 0) <= 0) { this.strike = 0; toast('Kein Gleitgel mehr – im Späti Lecker gibt es Nachschub (4 €).'); sfx('miss'); return; }
       s.inv.lube--; this.showWeapon();
@@ -157,14 +159,14 @@ export class Combat {
       // Schlägerei (Brawl.ts): Notwehr gegen den Ordnungsbund, keine Fahndung
       if (t.kind === 'foe') {
         let h = this.chain.get(t.a); if (!h) this.chain.set(t.a, (h = { n: 0, t: -9 }));
-        if (landHit(h, this.now, Math.min(2, w.hits))) { sfx('hit'); this.knock(t.a, 'foe', t.name, 'Uff!', yaw, dx / d * w.push * 4, dz / d * w.push * 4); this.city.brawl.knocked(t.a); }
+        if (landHit(h, this.now, Math.max(1, Math.min(2, w.hits) - pw.hits))) { sfx('hit'); this.knock(t.a, 'foe', t.name, 'Uff!', yaw, dx / d * w.push * 4 * pw.push, dz / d * w.push * 4 * pw.push); this.city.brawl.knocked(t.a); }
         else { this.push(t.a, dx / d, dz / d, w.push * 1.4); toast(`${t.name}: „${AU[Math.floor(Math.random() * AU.length)]}“`); }
         return;
       }
       if (t.kind === 'story') { t.a.play('laugh'); toast(`${t.name}: „Hey! Lass das!“`); this.city.annoy(t.id!); this.push(t.a, dx / d, dz / d, w.push * .5); this.crime('assault', p); return; }
       let h = this.chain.get(t.a); if (!h) this.chain.set(t.a, (h = { n: 0, t: -9 }));
       const first = h.n === 0 || this.now - h.t > 4;
-      if (landHit(h, this.now, w.hits)) { sfx('hit'); setTimeout(() => sfx('applause'), 200); this.knock(t.a, t.kind, t.name, OUCH[Math.floor(Math.random() * OUCH.length)], yaw, dx / d * w.push * 4, dz / d * w.push * 4); }
+      if (landHit(h, this.now, Math.max(1, w.hits - pw.hits))) { sfx('hit'); setTimeout(() => sfx('applause'), 200); this.knock(t.a, t.kind, t.name, OUCH[Math.floor(Math.random() * OUCH.length)], yaw, dx / d * w.push * 4 * pw.push, dz / d * w.push * 4 * pw.push); }
       else { this.push(t.a, dx / d, dz / d, w.push); toast(`${t.name}: „${AU[Math.floor(Math.random() * AU.length)]}“`); }
       if (first) this.crime(t.cop ? 'police' : 'assault', p);
     };

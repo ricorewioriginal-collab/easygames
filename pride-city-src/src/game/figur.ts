@@ -27,12 +27,12 @@ export type Train = keyof typeof TRAININGS;
 /** Zwei Einheiten am Tag zählen, danach braucht der Körper Pause */
 export const SESSIONS = 2;
 /** Training: liefert den Muskel-Zuwachs (0 = heute genug) */
-export function train(s: SaveData, kind: Train): number {
+export function train(s: SaveData, kind: Train, boost = 1): number {
   const t = TRAININGS[kind], m = muskel(s);
   const today = s.flags.musToday === s.day ? num(s.flags.musN) : 0;
   s.flags.mus = m; s.flags.musDay = s.day;
   if (today >= SESSIONS) return 0;
-  const g = Math.max(1, Math.round(t.gain * (1 - m / 125)));
+  const g = Math.max(1, Math.round(t.gain * (1 - m / 125) * boost));
   s.flags.mus = Math.min(100, m + g); s.flags.musToday = s.day; s.flags.musN = today + 1;
   s.flags.workouts = num(s.flags.workouts) + 1;
   pcEvents.emit('training', { kind, mus: s.flags.mus as number });
