@@ -65,7 +65,7 @@ export async function applyOutfit(scene: Scene, root: AbstractMesh | { getChildM
     const key = id + '|' + o + '|' + top + (cloth ? '|' + cloth.id + cloth.col : '');
     const cache = sceneCache(scene, caches);
     let job = cache.get(key);
-    const make = async () => build(scene, m, orig, p, skinFrom ? await skinOf(skinFrom) : null, bra, top, akt(id), cloth).catch((e) => { console.warn('outfit', e); return null; });
+    const make = async () => build(scene, m, orig, p, skinFrom ? (clean(orig) && await faceSkin(skinFrom)) || await skinOf(skinFrom) : null, bra, top, akt(id), cloth).catch((e) => { console.warn('outfit', e); return null; });
     if (!job) { job = make(); cache.set(key, job); }
     let tex = await job;
     if (tex && !alive(tex)) { job = make(); cache.set(key, job); tex = await job; }
@@ -84,7 +84,31 @@ export async function applyOutfit(scene: Scene, root: AbstractMesh | { getChildM
 }
 
 const JEANS = 0x2b3a55;
+/** Halsschnitt der MakeHuman-Körper in Körperhöhe (scripts/mh-body.mjs CUT) */
+const MH_CUT = .875;
 const boneNames = (m: Mesh) => { const names: string[] = []; m.skeleton?.bones.forEach((b) => { names[b.getIndex()] = b.name; }); return names; };
+const clean = (mat: { name: string }) => /^mh_/.test(mat.name);
+/** Hautton des Gesichts (MakeHuman-Körper grenzen am Hals direkt an den eigenen Kopf): Median der hautfarbenen Texel am
+    Kopf-Knochen. Haare, Bart, Augen und Lippen fallen durch den Farbton-Filter heraus. */
+export async function faceSkin(body: Mesh): Promise<number[] | null> {
+  const head = body.parent?.getChildMeshes(true).find((x) => (x as Mesh).skeleton && /_head$/.test(((x.material as PBRMaterial & { _orig?: PBRMaterial })?._orig || x.material)?.name || '')) as Mesh | undefined;
+  if (!head) return null;
+  const mat = head.material as PBRMaterial & { _orig?: PBRMaterial }, src = (mat._orig || mat).albedoTexture as Texture | null; if (!src) return null;
+  const { width: w, height: h } = src.getSize(), px = await pixels(src); if (!px) return null;
+  const uv = head.getVerticesData('uv'), mi = head.getVerticesData('matricesIndices'), mw = head.getVerticesData('matricesWeights'); if (!uv || !mi || !mw) return null;
+  const names = boneNames(head), R: number[] = [], G: number[] = [], B: number[] = [];
+  for (let v = 0; v < uv.length / 2; v++) {
+    let best = 0, bw = -1; for (let k = 0; k < 4; k++) if (mw[v * 4 + k] > bw) { bw = mw[v * 4 + k]; best = mi[v * 4 + k]; }
+    if (!/Head|Neck/.test(names[best] || '')) continue;
+    const x = Math.min(w - 1, Math.max(0, Math.round(uv[v * 2] * w))), y = Math.min(h - 1, Math.max(0, Math.round(uv[v * 2 + 1] * h))), o = (y * w + x) * 4;
+    const r = px[o], g = px[o + 1], b = px[o + 2], sat = (r - b) / Math.max(1, r);
+    if (r < 55 || !(r >= g && g >= b) || sat < .12 || sat > .68) continue;
+    R.push(r); G.push(g); B.push(b);
+  }
+  if (R.length < 20) return null;
+  const med = (a: number[]) => a.sort((x, y) => x - y)[a.length >> 1];
+  return [med(R), med(G), med(B)];
+}
 /** Hautfarbe einer Figur: Mittelwert der Texel an den Händen (die sind bei allen Figuren nackt) */
 export async function skinOf(m: Mesh): Promise<number[] | null> {
   const mat = (m.material as PBRMaterial & { _orig?: PBRMaterial }); const src = ((mat._orig || mat).albedoTexture) as Texture | null; if (!src) return null;
@@ -137,18 +161,27 @@ async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<
   // Sport-Körper: Nur Haut wird umgefärbt. Stoff bleibt Pixel für Pixel, wie er ist: die echte Sport-Unterhose bzw. das
   // geblümte Bikini-Set der Sportlerin (Oberteil sitzt als eigene Schale über der Brust). Vorher wurden Höschen und BH als
   // ganze Dreiecke bzw. nach Körperhöhe darübergemalt und das echte Oberteil mit umgefärbt: Zacken und dunkle Flecken.
-  const fab = hands ? fabric(own) : null;
+  // MakeHuman-Körper (koerper.ts, Material mh_*): die Textur ist reine Haut ohne Stoff, alles wird umgefärbt
+  const mhBody = clean(mat);
+  const fab = hands && !mhBody ? fabric(own) : null;
+  // MakeHuman-Körper mit Hose (Oberkörperfrei: Jeans, Harness: schwarz): als glatter Schnitt gemalt statt nach Knochen-Dreiecken
+  const pants = mhBody && typeof p.hip === 'number' && !cloth ? p.hip : null;
   let n = 0;
   for (const [a, b, c, part] of tri) {
     if ((++n & 63) === 0) await breathe();
-    const want = hands && (part === 'other' || part === 'foot' || part === 'hip') ? 'skin' : p[part]; if (!want) continue;
+    // Becken: beim Sport-Körper bleibt die echte Sport-Unterhose; der MakeHuman-Körper bekommt die Hose (Jeans, Harness) gemalt
+    const want = hands && (part === 'other' || part === 'foot' || part === 'hip' || (pants !== null && part === 'leg')) ? 'skin' : p[part]; if (!want) continue;
     const col = want === 'skin' ? skin : [(want >> 16) & 255, (want >> 8) & 255, want & 255];
     fill(data, orig, w, h, [uv[a * 2] * w, uv[a * 2 + 1] * h], [uv[b * 2] * w, uv[b * 2 + 1] * h], [uv[c * 2] * w, uv[c * 2 + 1] * h], col, want === 'skin', want === 'skin' ? tint : null, fab);
   }
-  if (hands && fab && (p.hip === 'skin' || cloth)) {
-    const u = await undress(m, data, orig, w, h, uv, tri, fab, skin, top, own);
-    if (u) shells.set(src, u);
+  if (hands && (fab || mhBody) && (p.hip === 'skin' || cloth)) {
+    const u = mhBody ? { shell: [], tips: top ? breastTips(m) : [] } : fab && await undress(m, data, orig, w, h, uv, tri, fab, skin, top, own);
+    if (u && !mhBody) shells.set(src, u);
     if (cloth) garment(m, data, w, h, uv, tri, cloth, u?.tips || []); else pubic(m, data, w, h, uv, tri, skin, top, look);
+  } else if (pants !== null) {
+    // Hose (und bei Frauen BH bzw. Bikini-Oberteil) auf den nackten Körper malen
+    const dk = (c: number) => ((((c >> 16) & 255) * .55) << 16) | ((((c >> 8) & 255) * .55) << 8) | ((c & 255) * .55);
+    garment(m, data, w, h, uv, tri, { id: 'hose', name: 'Hose', g: top ? 'f' : 'm', cut: 'jeans', col: pants, acc: dk(pants), pat: 'uni', bra: top && bra !== null, braCol: bra ?? undefined }, top ? breastTips(m) : []);
   }
   if (p.chest === 'skin' && !hands) details(m, data, w, h, uv, tri, skin, bra, true);
   for (let o = 3; o < data.length; o += 4) data[o] = 255;   // deckend: Körper nie durchsichtig
@@ -240,7 +273,7 @@ function frame(m: Mesh) {
   for (let i = 0; i < pos.length; i += 3) for (let k = 0; k < 3; k++) { lo[k] = Math.min(lo[k], pos[i + k]); hi[k] = Math.max(hi[k], pos[i + k]); }
   const ext = [0, 1, 2].map((k) => hi[k] - lo[k]), ax = [0, 1, 2].sort((a, b) => ext[b] - ext[a]), up = ax[0], side = ax[1], dep = ax[2];
   // der Körper-Mesh endet am Halsansatz (Kopf ist ein eigenes Teil): Körpergröße ≈ Mesh-Höhe / 0,82
-  const H = ext[up] / .82; if (H <= 0) return null;
+  const H = ext[up] / (clean(((m.material as PBRMaterial & { _orig?: PBRMaterial } | null)?._orig || m.material || { name: '' })) ? MH_CUT : .82); if (H <= 0) return null;
   // Füße stehen unten, vorne ist die Richtung der Zehen
   let footY = 0, footN = 0, toe = 0, toeN = 0, heel = 0, heelN = 0, cs = 0, cn = 0;
   for (let v = 0; v < nv; v++) {
@@ -250,8 +283,18 @@ function frame(m: Mesh) {
     else if (/Foot/.test(b)) { heel += pos[v * 3 + dep]; heelN++; footY += pos[v * 3 + up]; footN++; }
     if (/Spine/.test(b)) { cs += pos[v * 3 + side]; cn++; }
   }
-  if (!toeN || !heelN || !cn) return null;
+  if (!heelN || !cn) return null;
   const down = footY / footN < (lo[up] + hi[up]) / 2, base = down ? lo[up] : hi[up], dirY = down ? 1 : -1;
+  // ohne Zehen-Knochen (MakeHuman-Körper): der Knöchel (obere Fuß-Punkte) sitzt hinten, die Fußmitte liegt davor
+  if (!toeN) {
+    const fy = footY / footN; let ax = 0, an = 0;
+    for (let v = 0; v < nv; v++) {
+      let best = 0, bw = -1; for (let k = 0; k < 4; k++) if (mw[v * 4 + k] > bw) { bw = mw[v * 4 + k]; best = mi[v * 4 + k]; }
+      if (/Foot/.test(names[best] || '') && (pos[v * 3 + up] - fy) * (down ? 1 : -1) > 0) { ax += pos[v * 3 + dep]; an++; }
+    }
+    if (!an) return null;
+    toe = heel / heelN + (heel / heelN - ax / an); toeN = 1;
+  }
   const fwd = Math.sign(toe / toeN - heel / heelN) || 1, mid = cs / cn;
   const T = (v: number) => (pos[v * 3 + up] - base) * dirY / H, S = (v: number) => (pos[v * 3 + side] - mid) / H, F = (v: number) => pos[v * 3 + dep] * fwd;
   return { T, S, F, H, pos, up, side, dep, base, dirY, mid, fwd };
@@ -366,6 +409,17 @@ export async function undress(m: Mesh, d: Uint8Array, src: Uint8Array, w: number
   return { shell: [...inShell], tips: tip };
 }
 
+/** Brustwarzen eines MakeHuman-Körpers: vorderster Punkt je Seite auf Brusthöhe (wie in scripts/mh-body.mjs) */
+function breastTips(m: Mesh): Array<[number, number, number]> {
+  const fr = frame(m); if (!fr) return [];
+  const out: Array<[number, number, number]> = [], nv = fr.pos.length / 3;
+  for (const sd of [-1, 1]) {
+    let best = -1, bf = -1e9;
+    for (let v = 0; v < nv; v++) { const t = fr.T(v), s2 = fr.S(v) * sd; if (t > .68 && t < .765 && s2 > .035 && s2 < .12 && fr.F(v) > bf) { bf = fr.F(v); best = v; } }
+    if (best >= 0) out.push([fr.T(best), fr.S(best), fr.F(best)]);
+  }
+  return out;
+}
 /** Schalen-Vertices je Quelltextur (alle Sportlerinnen teilen sie) */
 const shells = new WeakMap<object, { shell: number[]; tips: Array<[number, number, number]> }>();
 /** Bikini-Schale flach unter die Haut legen (on) oder zurückholen (off). Nur dieses Mesh: Geometrie wird eigen. */
@@ -419,6 +473,7 @@ function garment(m: Mesh, d: Uint8Array, w: number, h: number, uv: ArrayLike<num
   const cut = (t: number, a: number, front: boolean, n: number): number => {
     switch (c.cut) {
       case 'slip': return t > lowSlip(a, front) && t < .085 ? (t > .072 ? 2 : 1) : 0;
+      case 'jeans': return t < .088 && t + tc > .055 ? (t > .074 ? 2 : 1) : 0;   // lange Hose bis zum Knöchel, Bund oben
       case 'boxer': return t > -.11 && t < .09 ? (t > .075 || t < -.1 ? 2 : 1) : 0;
       case 'trunks': return t > -.065 && t < .085 ? (t > .074 ? 2 : 1) : 0;
       case 'hipster': return t > lowHip(a, front) && t < .06 ? (t > .052 ? 2 : 1) : 0;
@@ -426,7 +481,7 @@ function garment(m: Mesh, d: Uint8Array, w: number, h: number, uv: ArrayLike<num
         if (t > .068 && t < .092) return 2;                                                // breiter Bund
         if (front && t > -.012 && t <= .068 && a < Math.min(.045, .018 + .3 * (t + .012))) return 1;   // Beutel vorne
         if (!front && t > -.035 && t <= .068 && Math.abs(a - (.032 + .32 * (t + .01))) < .007) return 2; // Bänder unter dem Po
-        if (t > -.035 && t < -.005 && a > .02 && a < .05 && n < .3 && Math.abs(a - .035) < .008) return 2;
+        if (!front && t > -.035 && t < -.005 && a > .02 && a < .05 && n < .3 && Math.abs(a - .035) < .008) return 2;
         return 0;
       }
       case 'string': case 'tanga': {
@@ -452,7 +507,7 @@ function garment(m: Mesh, d: Uint8Array, w: number, h: number, uv: ArrayLike<num
     if (part === 'arm' || part === 'other' || part === 'foot') continue;
     const ts = [T(a0) - tc, T(b0) - tc, T(c0) - tc];
     const chest = part === 'chest' || (part === 'belly' && c.bra);
-    if (!chest && (Math.min(...ts) > .1 || Math.max(...ts) < -.13)) continue;
+    if (!chest && (Math.min(...ts) > .1 || (c.cut !== 'jeans' && Math.max(...ts) < -.13))) continue;
     const A = [uv[a0 * 2] * w, uv[a0 * 2 + 1] * h], B = [uv[b0 * 2] * w, uv[b0 * 2 + 1] * h], C = [uv[c0 * 2] * w, uv[c0 * 2 + 1] * h];
     const area = (B[0] - A[0]) * (C[1] - A[1]) - (C[0] - A[0]) * (B[1] - A[1]); if (Math.abs(area) < 1e-6) continue;
     const minX = Math.max(0, Math.floor(Math.min(A[0], B[0], C[0]) - 1)), maxX = Math.min(w - 1, Math.ceil(Math.max(A[0], B[0], C[0]) + 1));
@@ -464,9 +519,11 @@ function garment(m: Mesh, d: Uint8Array, w: number, h: number, uv: ArrayLike<num
       if (u < -.03 || v < -.03 || q < -.03) continue;
       const t = u * ts[0] + v * ts[1] + q * ts[2], s2 = u * ss[0] + v * ss[1] + q * ss[2], a = Math.abs(s2), front = u * fs[0] + v * fs[1] + q * fs[2] > 0, n = u * us[0] + v * us[1] + q * us[2];
       let k = part === 'leg' || part === 'hip' || part === 'belly' ? cut(t, a, front, n) : 0;
-      if (!k && c.bra && (part === 'chest' || part === 'belly')) k = bra(t + tc, s2, a, front);
+      let isBra = false;
+      if (!k && c.bra && (part === 'chest' || part === 'belly')) { k = bra(t + tc, s2, a, front); isBra = true; }
       if (!k) continue;
       let cc = k === 2 ? acc : col, alpha = 1;
+      if (isBra && c.braCol !== undefined) cc = k === 2 ? [10, 10, 14] : [(c.braCol >> 16) & 255, (c.braCol >> 8) & 255, c.braCol & 255];
       if (k === 1) {
         if (c.pat === 'streifen' && Math.floor((t + 1) / .012) % 2) cc = acc;
         else if (c.pat === 'punkte' && ((x % 12) - 6) ** 2 + ((y % 12) - 6) ** 2 < 7) cc = acc;

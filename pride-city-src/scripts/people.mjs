@@ -308,7 +308,7 @@ const hasAlpha = (img) => { for (let i = 3; i < img.px.length; i += 4) if (img.p
 
 export async function build(io, m, refs) {
   const tgt = await loadTarget(io, SRC + '/' + m.file, m.pick);
-  const ref = refs[m.g];
+  const ref = refs[m.ref || m.g], hRef = refs[m.g];
   // Punkte sammeln (Welt, Y oben), Ausrichtung: Gesicht nach +Z, links bei +X
   const yaw = (m.yaw || 0) * Math.PI / 180, cy = Math.cos(yaw), sy = Math.sin(yaw);
   const T = [], TN = [], parts = [];
@@ -329,13 +329,22 @@ export async function build(io, m, refs) {
   // auf Vorlagen-Größe: Füße auf 0, Mitte über dem Ursprung
   let mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
   for (const p of T) for (let i = 0; i < 3; i++) { mn[i] = Math.min(mn[i], p[i]); mx[i] = Math.max(mx[i], p[i]); }
-  let rmn = 1e9, rmx = -1e9; for (const p of ref.V) { rmn = Math.min(rmn, p[1]); rmx = Math.max(rmx, p[1]); }
+  let rmn = 1e9, rmx = -1e9; for (const p of hRef.V) { rmn = Math.min(rmn, p[1]); rmx = Math.max(rmx, p[1]); }
   const k = (rmx - rmn) / (mx[1] - mn[1]) * (m.height || 1);
   // Tiefe: Rumpfmitte (Hüfte bis Brust) wie bei der Vorlage
   const zmid = (P, lo, hi) => { let s = 0, c = 0; for (const p of P) if (p[1] > lo && p[1] < hi) { s += p[2]; c++; } return s / (c || 1); };
   for (const p of T) { p[0] = (p[0] - (mn[0] + mx[0]) / 2) * k; p[1] = (p[1] - mn[1]) * k; p[2] = p[2] * k; }
   const dz = zmid(ref.V, .95, 1.35) - zmid(T, .95, 1.35);
   for (const p of T) p[2] += dz;
+  // kopflose Körper: Haltung wie die Vorlage (Hals über dem Kopf-Gelenk), sonst sitzt der Hals hinter den Köpfen der Figuren.
+  // Oberkörper ab der Hüfte so neigen, dass die Halsmitte auf Kinnhöhe dort liegt, wo sie bei der Vorlage liegt.
+  if (m.neckToHead) {
+    const yN = ref.world[ref.idx.get('Bip01 Neck')][13], y0 = 1.15 * (rmx - rmn) / 1.8, near = (P, y) => Math.max(...P.filter((q) => Math.abs(q[0]) < .03 && Math.abs(q[1] - y) < .02).map((q) => q[2]));   // Kehle (Haare hinten stören nicht)
+    const shift = near(ref.V, yN) - near(T, yN);
+    for (const p of T) if (p[1] > y0) p[2] += shift * Math.min(1.2, (p[1] - y0) / (yN - y0));
+    console.error(m.id, 'Neigung', shift.toFixed(3));
+  }
+
 
   // Armhaltung: Winkel von der Schulter (Vorlage) zum äußersten Punkt (Hand) unter der Waagerechten
   let arm = m.arm;
@@ -356,6 +365,17 @@ export async function build(io, m, refs) {
     if (best >= 0) W[v] = new Map(W[best]);
   }
 
+  // Hals der kopflosen Körper (MakeHuman): oberer Rand folgt ganz dem Kopf, damit er bei jeder Figur bis unters Kinn reicht
+  if (m.neckToHead) {
+    let top = -1e9; for (const p of T) top = Math.max(top, p[1]);
+    top *= m.cut || 1;
+    T.forEach((p, v) => {
+      if (p[1] <= neckY) return;
+      const k = Math.min(1, (p[1] - neckY) / Math.max(.01, top - neckY)) ** 1.5, w = new Map();
+      for (const [n, x] of W[v]) w.set(n, x * (1 - k));
+      w.set('Bip01 Head', (w.get('Bip01 Head') || 0) + k); W[v] = w;
+    });
+  }
   // Ausgabe-Dokument
   const doc = new Document(), root = doc.getRoot(), buf = doc.createBuffer();
   doc.createScene('Scene');
@@ -416,10 +436,13 @@ export async function build(io, m, refs) {
   const mesh = doc.createMesh(m.id);
   const dominant = (w) => { let b = '', x = -1; for (const [n, v] of w) if (v > x) { x = v; b = n; } return b; };
   const totalTris = parts.reduce((s, p) => s + p.ind.length / 3, 0), ratio = Math.min(1, (m.tris || 9000) / totalTris);
+  // kopflose Körper (MakeHuman): nach dem Einpassen alles über dem Hals weglassen (Rand bleibt im Hals des eigenen Kopfes)
+  const cutY = m.cut ? m.cut * Math.max(...T.map((q) => q[1])) : Infinity;
   for (const p of parts) {
     const split = { body: [], head: [] };
     for (let i = 0; i < p.ind.length; i += 3) {
       const tri = [p.ind[i], p.ind[i + 1], p.ind[i + 2]];
+      if (tri.every((v) => T[p.start + v][1] > cutY)) continue;
       let isHead;
       if (p.head !== null) isHead = p.head;
       else isHead = tri.every((v) => /Head/.test(dominant(W[p.start + v])));
