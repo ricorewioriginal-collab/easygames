@@ -1401,6 +1401,7 @@ export class Game {
         { icon: '🧃', label: 'Mate', sub: '3 € · +15 Energie', fn: buy(3, 'Energie für die Nacht!', eat({ energy: 15 })) },
         { icon: '🎈', label: 'Kondome (3 Stück)', sub: `3 € · du hast ${s.inv.condom || 0}`, fn: buy(3, 'Safer Sex ist sexy. 🎈', () => { s.inv.condom = (s.inv.condom || 0) + 3; }) },
         { icon: '💧', label: 'Gleitgel', sub: `4 € · du hast ${s.inv.lube || 0}`, fn: buy(4, 'Gleitgel eingepackt. 💧', () => { s.inv.lube = (s.inv.lube || 0) + 1; }) },
+        { icon: '🦴', label: 'Hundeleckerli (5 Stück)', sub: `2 € · für die Hunde in der Stadt (du hast ${s.inv.treat || 0})`, fn: buy(2, 'Die Hunde der Stadt werden dich lieben. 🐶', () => { s.inv.treat = (s.inv.treat || 0) + 5; }) },
         { icon: '🥕', label: 'Lebensmittel', sub: `6 € · 3 Portionen zum Kochen (du hast ${s.food})`, fn: buy(6, 'Ab in den Kühlschrank damit.', () => { s.food += 3; }) }] },
       club: { t: 'Club Prisma', d: 'Neon, Bass und die beste Tanzfläche der Stadt.', items: [
         { icon: '🪩', label: 'Tanz-Battle', sub: `Rekord ${s.best.dance || 0}`, fn: () => this.goDance(false) },
