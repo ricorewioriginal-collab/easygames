@@ -17,7 +17,8 @@ import type { Game } from './Game';
 import { radio, STATIONS, stationOf } from '../engine/Radio';
 import { radioMenu } from './radioui';
 import { RACES, MEDALS, raceGig, finishRace, bestTime, nextParcel, stats, myCar, tuneLevel, GARAGE, type Race } from './vehicles';
-import { sfx, music } from '../engine/Audio';
+import { sfx, music, buzz, engineHum } from '../engine/Audio';
+import { route, onGrid } from './traffic';
 import { toast, hints } from '../ui/ui';
 import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
@@ -210,6 +211,9 @@ export class CityScene implements GameScene {
     this.friends.onInvite = (who, inv) => this.g.clubInvite(who.name, inv);
     this.friends.onNote = (text, kind) => { toast(text, 3600); sfx(kind === 'join' ? 'win' : kind === 'leave' ? 'back' : 'move'); };
     this.world.extraBlock = (x, z) => this.street.parked.some((c) => Math.hypot(c.o.position.x - x, c.o.position.z - z) < 2.6);
+    // Verkehr: lenkt an geparkten Autos vorbei, hupt, wenn du im Weg stehst
+    this.world.statics = () => this.street.parked.filter((c) => c !== this.drive).map((c) => c.o.position);
+    this.world.onHonk = (c) => { if (Vector3.Distance(c.o.position, this.player.root.position) < 26) { sfx('horn'); if (!this.drive && Math.random() < .5) toast(HONK[Math.floor(Math.random() * HONK.length)], 2000); } };
     this.buildStickers();
     this.world.castShadows();
     // Schatten folgen der Grafikstufe (niedrig = aus)
@@ -517,6 +521,7 @@ export class CityScene implements GameScene {
       } else for (const k of [2.2, -2.2, 3.4, -3.4]) { const x = o.position.x + sx * k, z = o.position.z + sz * k; if (walkable(x, z) && !this.world.colliders.some((c) => Math.abs(x - c.x) < c.hx + .4 && Math.abs(z - c.z) < c.hz + .4)) { p.set(x, .1, z); break; } }
       if (this.drive.own) { const sv = this.g.save.data; sv.flags.ownX = Math.round(o.position.x * 10) / 10; sv.flags.ownZ = Math.round(o.position.z * 10) / 10; sv.flags.ownYaw = Math.round(o.rotation.y * 100) / 100; }
       if (this.drive.def.toy || rideSeat(this.drive.def) >= 0) { if (this.drive.def.ride !== 'boat') this.player.root.position.y = .1; o.rotation.x = o.rotation.z = 0; }
+      o.rotation.x = o.rotation.z = 0; engineHum(null);
       this.drive.v = 0; this.drive = null; this.parcel = -1;
       this.radioOff(); music('city');
       this.player.root.visible = true; this.player.play('idle');
@@ -531,6 +536,7 @@ export class CityScene implements GameScene {
       const says = ['„Na gut, Schätzchen. Aber bring ihn heil zurück!“', '„Für dich immer. Ich wollte eh zu Fuß zum Café.“', '„Nimm ihn, ich hab heute frei. Tank ist voll!“', '„Okay, aber nur weil du so nett fragst.“'];
       toast(`🙋 ${says[Math.floor(Math.random() * says.length)]}`);
     } else this.drive = this.street.parked[+id];
+    this.mv = this.drive.o.rotation.y; this.lastV = 0;
     // Radio in jedem Fahrzeug (Auto, Rakete, Einrad, Roller, Boot)
     this.g.hud.radioBtn(true); this.radio(0);
     if (this.drive.def.air) {
@@ -621,6 +627,10 @@ export class CityScene implements GameScene {
     r.position.set(st!.x, st!.y!, st!.z); r.scaling.setAll(st!.r || 8);
     r.rotation.x = Math.PI / 2; r.rotation.y = Math.atan2(st!.x - pv.x, st!.z - pv.z) || 0; r.rotation.z = Math.sin(t * 2) * .05;
   }
+  /** Fahrtrichtung (für Driften), Quietsch-Takt, letztes Tempo (für die Neigung) */
+  private mv = 0;
+  private skidT = 0;
+  private lastV = 0;
   private moveCar(dt: number) {
     const c = this.drive!, o = c.o, inp = this.g.engine.input, fly = !!c.def.fly;
     if (inp.pressed('tabR')) this.radio(1); else if (inp.pressed('tabL')) this.radio(-1);
@@ -640,16 +650,28 @@ export class CityScene implements GameScene {
     const sea = fly && !walkable(o.position.x, o.position.z);
     if (sea && this.alt < 8) this.alt = Math.min(8, this.alt + dt * 9);   // über dem Wasser sanft auf 8 m steigen (Start vom Kai)
     const high = sea || (fly && this.alt > (o.position.x > 86 ? 42 : 17));
+    // Driften wie im Open-World-Krimi: in voller Fahrt bremsen und einlenken (oder mit Turbo scharf einlenken) – das Heck bricht aus
+    const plain = !fly && !c.def.ride && !c.def.toy && !c.def.air;
+    const drift = plain && Math.abs(steer) > .3 && ((thr < -.3 && c.v > 9) || (inp.held('sprint') && c.v > 15 && Math.abs(steer) > .7));
     if (thr > 0) c.v = Math.min(max, c.v + thr * (c.v < 0 ? 22 : st.acc) * dt);
     else if (c.v > max) c.v = Math.max(max, c.v - 14 * dt);
-    else if (thr < 0) c.v = Math.max(-6, c.v + thr * (c.v > 0 ? 22 : 6) * dt);
+    else if (thr < 0) c.v = Math.max(-6, c.v + thr * (c.v > 0 ? (drift ? 6 : 22) : 6) * dt);
     else c.v *= Math.max(0, 1 - dt * 1.2);
     if (Math.abs(c.v) < .05) c.v = 0;
     // das Wasserflugzeug bleibt in der Luft in Fahrt (kein Schweben), beim Landen gleitet es aus
     if (c.def.air === 'plane' && this.alt > 2.5) c.v = Math.max(c.v, this.landing ? 7 : 10);
-    o.rotation.y -= steer * dt * st.steer * clamp(c.v / 5, -1, 1);
+    o.rotation.y -= steer * dt * st.steer * clamp(c.v / 5, -1, 1) * (drift ? 1.5 : 1);
+    // Fahrtrichtung folgt der Schnauze mit Haftung: normal straff, beim Driften rutscht der Wagen quer
+    if (!plain || Math.abs(c.v) < 1) this.mv = o.rotation.y;
+    let slip = o.rotation.y - this.mv; slip = Math.atan2(Math.sin(slip), Math.cos(slip));
+    slip = clamp(slip, -.95, .95);
+    this.mv = o.rotation.y - slip * (1 - Math.min(1, dt * (drift ? 1.4 : 9)));
+    if (plain && Math.abs(slip) > .2 && Math.abs(c.v) > 6) {
+      c.v *= 1 - dt * .55 * Math.abs(Math.sin(slip));
+      if ((this.skidT -= dt) <= 0) { this.skidT = .32; sfx('skid'); }
+    }
     const before = o.position.clone();
-    o.position.x += Math.sin(o.rotation.y) * c.v * dt; o.position.z += Math.cos(o.rotation.y) * c.v * dt;
+    o.position.x += Math.sin(this.mv) * c.v * dt; o.position.z += Math.cos(this.mv) * c.v * dt;
     const want = o.position.clone();
     const boat = c.def.ride === 'boat';
     if (boat) {
@@ -659,8 +681,31 @@ export class CityScene implements GameScene {
       o.position.x = clamp(o.position.x, ISLE_BOUNDS.x0, -60); o.position.z = clamp(o.position.z, ISLE_BOUNDS.z0, ISLE_BOUNDS.z1);
     } else if (!high) this.world.collide(o.position, c.def.ride === 'bus' ? 1.5 : 1.2);
     else { o.position.x = clamp(o.position.x, ISLE_BOUNDS.x0, 260); o.position.z = clamp(o.position.z, ISLE_BOUNDS.z0, ISLE_BOUNDS.z1); }
-    if (!boat && (!fly || this.alt < 2.5)) for (const t of this.world.cars) if (Vector3.Distance(t.o.position, o.position) < 3.2) { o.position.copyFrom(before); c.v *= -.25; }
-    if (!high && !boat && Vector3.Distance(o.position, want) > .02 && Math.abs(c.v) > 4) { c.v *= .4; if (!fly) sfx('miss'); }
+    // Zusammenstoß mit dem Verkehr: der andere Wagen wird mit Wucht weggeschoben, du verlierst Tempo (kein Kleben mehr)
+    if (!boat && (!fly || this.alt < 2.5)) for (const t of this.world.cars) {
+      if (t.off) continue;
+      const dx = t.o.position.x - o.position.x, dz = t.o.position.z - o.position.z, d = Math.hypot(dx, dz);
+      if (d >= 3 || d < .01) continue;
+      const nx = dx / d, nz = dz / d, hit = Math.abs(c.v) * Math.max(.25, Math.abs(Math.sin(this.mv) * nx + Math.cos(this.mv) * nz));
+      o.position.x -= nx * (3 - d) * .5; o.position.z -= nz * (3 - d) * .5;
+      if (hit > 2.5 && !t.bump) {
+        this.world.knock(t, nx, nz, hit * .8); c.v *= .45;
+        this.shake = Math.min(.6, hit / 30); sfx(hit > 9 ? 'crash' : 'hit');
+        if (hit > 9) { buzz([40, 30, 60]); if (Math.random() < .6) toast(CRASH[Math.floor(Math.random() * CRASH.length)], 2200); }
+      } else c.v *= .9;
+    }
+    if (!high && !boat && Vector3.Distance(o.position, want) > .02 && Math.abs(c.v) > 4) {
+      const hard = Math.abs(c.v) > 11;
+      if (!fly) { sfx(hard ? 'crash' : 'miss'); this.shake = Math.min(.6, Math.abs(c.v) / 35); if (hard) buzz([50, 30, 50]); }
+      c.v *= hard ? .3 : .55;
+    }
+    // Karosserie: neigt sich in Kurven nach außen und beim Bremsen/Beschleunigen nach vorn bzw. hinten
+    if (plain) {
+      const acc = (c.v - this.lastV) / Math.max(dt, .001); this.lastV = c.v;
+      const roll = clamp(steer * clamp(c.v / 18, -1, 1) * .07 + slip * .05, -.09, .09), pitch = clamp(-acc * .004, -.05, .05);
+      o.rotation.z += (roll - o.rotation.z) * Math.min(1, dt * 5); o.rotation.x += (pitch - o.rotation.x) * Math.min(1, dt * 5);
+      engineHum(clamp(Math.abs(c.v) / Math.max(10, st.max) * .9 + (thr > 0 ? .15 : 0), 0, 1.1));
+    }
     o.position.y = fly ? this.alt + Math.sin(performance.now() / 330) * .08 : boat ? .05 + Math.sin(performance.now() / 420) * .05 : .1;
     this.player.root.position.copyFrom(o.position);
     rigOf.get(o)?.update(dt, performance.now() / 1000, c.v);
@@ -768,6 +813,8 @@ export class CityScene implements GameScene {
   }
 
   private radarT = 0;
+  private routeT = 0;
+  private gps: { pts: Array<[number, number]>; color: string } | null = null;
   enter() { this.syncFlyer(); this.g.touch.fly(!!this.drive?.def.fly); this.g.hud.radarOn(true); if (this.drive) { this.g.hud.radioBtn(true); this.radio(0); } }
   exit() { this.photoRef?.stop(); this.g.hud.radarOn(false); this.g.touch.fly(false); if (this.drive) this.radioOff(); }
   /** Missionsmarker wie im Open-World-Krimi: leuchtende Lichtsäule über dem Ziel */
@@ -946,7 +993,7 @@ export class CityScene implements GameScene {
     const song = r.title ? (r.artist ? `${r.title} · ${r.artist}` : r.title) : '';
     this.g.hud.nowPlaying(st.id === 'off' ? null : `${st.icon} ${st.name} ▾`, live ? (r.err || song || (r.loading ? 'Sender wird eingestellt …' : 'Live')) : r.err || st.sub);
   }
-  private radioOff() { radio.stop(); this.g.hud.nowPlaying(null); this.g.hud.radioBtn(false); }
+  private radioOff() { engineHum(null); radio.stop(); this.g.hud.nowPlaying(null); this.g.hud.radioBtn(false); }
 
   /** Laternen, Masten, Bänke und Bäume zwischen Kamera und Figur ausblenden, statt durch sie hindurchzuschauen */
   private hidden = new Set<TransformNode>();
@@ -1016,6 +1063,9 @@ export class CityScene implements GameScene {
       this.crowd.forEach((a) => (a.root.visible = this.world.night > .5));
     }
     this.player.update(dt);
+    if (busy && this.drive) engineHum(null);
+    { const cp = this.camera.position, pp = this.player.root.position, l = Math.hypot(pp.x - cp.x, pp.z - cp.z) || 1; this.world.view = { x: pp.x, z: pp.z, fx: (pp.x - cp.x) / l, fz: (pp.z - cp.z) / l }; }
+    if (this.drive && !this.drive.def.fly && !this.drive.def.air) this.street.danger = { x: this.drive.o.position.x, z: this.drive.o.position.z, yaw: this.mv, v: this.drive.v }; else this.street.danger = null;
     if (!busy && !this.photo) { if (this.drive) this.moveCar(dt); else if (!this.life.parade.riding) this.movePlayer(dt); this.kerb.update(dt, t); }
     if (this.cine) this.cine(dt); else this.updateCam(dt);
     this.world.follow(this.player.root.position);
@@ -1046,11 +1096,19 @@ export class CityScene implements GameScene {
     if ((this.radarT -= dt) <= 0) {
       this.radarT = 1 / 20;
       const pp = this.player.root.position;
+      // GPS: Weg über die Straßen zum Ziel (laufender Auftrag zuerst), alle halbe Sekunde neu berechnet
+      if ((this.routeT -= 1 / 20) <= 0) {
+        this.routeT = .5;
+        const gp = (mk.find((m) => m.id === 'gig' || m.id === 'kerb' || m.id === 'trouble') || mk.find((m) => m.id === 'g'))?.pos;
+        const flying = !!this.drive && (!!this.drive.def.air || (!!this.drive.def.fly && this.alt > 3));
+        this.gps = gp && !flying && onGrid(pp.x, pp.z) && Math.hypot(gp.x - pp.x, gp.z - pp.z) > 14 ? { pts: route(pp.x, pp.z, gp.x, gp.z), color: mk.find((m) => m.pos === gp)?.id === 'g' ? '#ff3fb0' : '#ffd23b' } : null;
+      }
+      if (this.gps) this.gps.pts[0] = [pp.x, pp.z];
       g.hud.radar(pp.x, pp.z, this.cam.yaw, [
         ...this.world.pois.filter((q) => Math.hypot(q.x - pp.x, q.z - pp.z) < 60).map((q) => ({ x: q.x, z: q.z, icon: q.icon })),
         ...this.combat.flucht.blips(this.combat.wanted.stars, pp),
         ...mk.map((m) => ({ x: m.pos.x, z: m.pos.z, color: m.id === 'g' ? '#ff3fb0' : m.id === 'gig' ? '#ffd23b' : m.id === 'kerb' ? '#ff6ad5' : m.id === 'trouble' ? '#ff4b3b' : '#ffffff', goal: m.id === 'g' || m.id === 'gig' || m.id === 'kerb' || m.id === 'trouble' })),
-      ]);
+      ], this.gps);
     }
     // Lichtsäule: laufender Auftrag hat Vorrang (gelb), sonst das Story-Ziel (pink)
     const gm = mk.find((m) => m.id === 'gig' || m.id === 'kerb');
@@ -1133,6 +1191,8 @@ export class CityScene implements GameScene {
 }
 
 type GigStepRun = import('./gigs').GigStep & { run?: boolean };
+const HONK = ['📯 „Hallo? Das ist eine Straße, kein Laufsteg!“', '📯 „Schätzchen, geh mal zur Seite!“', '📯 Tüüüt! „Ich hab ein Date!“', '📯 „Zebrastreifen ist da drüben, Darling!“'];
+const CRASH = ['🚗💥 „Hey! Hast du deinen Führerschein im Lotto gewonnen?“', '🚗💥 „Mein frisch polierter Lack, Schätzchen!“', '🚗💥 „Augen auf, Darling!“', '🚗💥 „Das zahlt deine Versicherung!“', '🚗💥 „Na super. Jetzt komm ich zu spät zum Brunch.“'];
 const glowCol = { gig: col(0xffd23b), story: col(0xff3fb0) };
 
 /** Sitzhöhe der sichtbaren Fahrerin auf Roller bzw. Boot (−1: Figur im Wagen versteckt) */

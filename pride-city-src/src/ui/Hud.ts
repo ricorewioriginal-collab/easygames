@@ -49,7 +49,7 @@ export class Hud {
     draw(g, (v) => 768 + v * 2); // 2 px je Meter, Mitte = Weltursprung (±384 m, reicht bis zur Inselkette)
     this.radarBase = c;
   }
-  radar(x: number, z: number, yaw: number, blips: Blip[]) {
+  radar(x: number, z: number, yaw: number, blips: Blip[], gps?: { pts: Array<[number, number]>; color: string } | null) {
     const cv = this.el.querySelector<HTMLCanvasElement>('.radar')!, g = cv.getContext('2d')!, R = 100;
     if (!this.radarBase) return;
     g.clearRect(0, 0, 200, 200);
@@ -57,6 +57,13 @@ export class Hud {
     g.fillStyle = '#123a52'; g.fillRect(0, 0, 200, 200);
     g.translate(R, R); g.rotate(yaw); g.scale(1.4, 1.4); g.translate(-(768 + x * 2), -(768 + z * 2));
     g.drawImage(this.radarBase, 0, 0);
+    // GPS-Route wie im Open-World-Krimi: dicke Linie über die Straßen bis zum Ziel
+    if (gps && gps.pts.length > 1) {
+      g.lineJoin = g.lineCap = 'round';
+      g.beginPath(); gps.pts.forEach(([px, pz], i) => (i ? g.lineTo(768 + px * 2, 768 + pz * 2) : g.moveTo(768 + px * 2, 768 + pz * 2)));
+      g.strokeStyle = 'rgba(0,0,0,.55)'; g.lineWidth = 7; g.stroke();
+      g.strokeStyle = gps.color; g.lineWidth = 4.5; g.stroke();
+    }
     g.restore();
     // Blips (Ziel am Rand festhalten wie im Radar üblich)
     const cs = Math.cos(yaw), sn = Math.sin(yaw);
