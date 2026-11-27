@@ -19,7 +19,7 @@ import { radioMenu } from './radioui';
 import { RACES, MEDALS, raceGig, finishRace, bestTime, nextParcel, stats, myCar, tuneLevel, GARAGE, type Race } from './vehicles';
 import { sfx, music, buzz, engineHum } from '../engine/Audio';
 import { route, onGrid } from './traffic';
-import { memOf, remember, saveMem, outfitLine } from './leben';
+import { memOf, remember, saveMem, outfitLine, FIG_STORIES, figKey, nextPart, heardPart, finish } from './leben';
 import { toast, hints, type Line } from '../ui/ui';
 import { sprintSpeed, tiredAt, gainAus, ausdauer, buffOf } from './fit';
 import { TANK, tankOf, burn } from './tank';
@@ -483,7 +483,7 @@ export class CityScene implements GameScene {
     const treats = s.inv.treat || 0;
     let then: (() => void) | null = null;
     const pet = (treat: boolean) => {
-      this.player.play('interact'); this.street.cheer(n, treat ? 9 : 4); sfx(treat ? 'win' : 'boing'); remember(s, k, 'talk');
+      this.player.play('interact'); this.street.cheer(n, treat ? 9 : 4); sfx(treat ? 'win' : 'boing'); remember(s, k, 'talk', n.name);
       if (treat) { s.inv.treat = treats - 1; const mm = memOf(s, k); mm.mood = Math.min(5, mm.mood + 1); saveMem(s, k, mm); change(s, { fun: 8, social: 4 }); }
       else change(s, { fun: 5 });
       this.refreshHud();
@@ -497,6 +497,25 @@ export class CityScene implements GameScene {
   }
   /** Banner im HUD (für Ereignisse ohne Zugriff auf das Spiel) */
   banner(title: string, sub: string, kind: 'good' | 'bad' | 'info' = 'good', ms = 3200) { this.g.hud.banner(title, sub, kind, ms); }
+  /** Feste Figuren erzählen nach dem Gespräch ihre eigene Nebengeschichte weiter (leben.ts FIG_STORIES, ein Teil am Tag) */
+  private figurPart(n: (typeof this.npcs)[number]) {
+    const s = this.g.save.data, d = n.def, k = figKey(d.id);
+    if (!FIG_STORIES[d.id] || this.g.dialog.open || this.mode !== 'play' || this.cine || this.gig) return;
+    const part = nextPart(s, k); if (!part) return;
+    remember(s, k, 'talk', d.name); heardPart(s, k); change(s, { social: 4 });
+    const N = (text: string, choices?: Line['choices']): Line => ({ who: `${d.name} · ${part.story.icon}`, color: d.color, pron: d.pron, text, choices });
+    n.talking = true; if (d.anim !== 'sit') { n.a.play('talk'); this.face(n.a, this.player.root.position); }
+    let then: (() => void) | null = null;
+    const stop = () => { const f = then; then = null; if (f) { f(); return; } n.talking = false; if (d.anim !== 'sit') n.a.play(d.anim || 'idle'); this.refreshHud(); this.g.save.write(); };
+    const intro = part.i === 0 ? 'Sag mal, hast du kurz Zeit? Ich muss dir was erzählen.' : 'Du, es gibt Neuigkeiten. Weißt du noch, was ich dir erzählt hab?';
+    if (part.i < 3) { this.g.dialog.say([N(intro), N(part.text), N(part.i === 2 ? 'Morgen erzähl ich dir, wie es weitergeht.' : 'Danke fürs Zuhören. 💜')], stop); return; }
+    this.g.dialog.say([N(part.text), { who: 'Du', color: '#ff4fa3', text: 'Ich an deiner Stelle …', choices: part.story.end.map((e) => ({ label: e.label, fn: () => {
+      finish(s, k, e); change(s, { social: e.social || 0, fun: e.fun || 0 }); sfx('win');
+      post(s, d.name, `${part.story.icon} ${part.story.title}: ${e.reply}`);
+      this.g.hud.banner(`${part.story.icon} Geschichte erlebt: ${part.story.title}`, [e.money ? `+${e.money} €` : '', e.rep ? `Ruf +${e.rep}` : '', `${d.name} vergisst dir das nie`].filter(Boolean).join(' · '), 'good', 4200);
+      then = () => this.g.dialog.say([N(e.reply)], stop);
+    } })) }], stop);
+  }
   private face(a: Actor, to: Vector3) { a.root.rotation.y = Math.atan2(to.x - a.root.position.x, to.z - a.root.position.z); }
 
   interact() {
@@ -513,7 +532,7 @@ export class CityScene implements GameScene {
       if (n.def.anim !== 'sit') { n.a.play('talk'); this.face(n.a, this.player.root.position); }
       this.face(this.player, n.a.root.position);
       this.player.play('idle');
-      const end = () => { n.talking = false; if (n.def.anim !== 'sit') n.a.play(n.def.anim || 'idle'); };
+      const end = () => { n.talking = false; if (n.def.anim !== 'sit') n.a.play(n.def.anim || 'idle'); setTimeout(() => this.figurPart(n), 150); };
       const prevSay = c.say; c.say = (l, d) => prevSay(l, () => { end(); d?.(); });
       talk(c, n.def.id);
       if (!this.g.dialog.open) end();

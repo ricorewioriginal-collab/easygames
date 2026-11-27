@@ -64,6 +64,7 @@ import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage } fr
 import { photo } from './Photo';
 import { gramMenu, empireMenu, gymItems, bodyItems, bodyMenu, muskelLine } from './aufstiegui';
 import { giveBuff, trainBoost } from './fit';
+import { known, moodWord, heard } from './leben';
 import { busTalk, busAfter, BUS_COST, BUS_MIN } from './bus';
 import { TANK, tankOf } from './tank';
 import { followers, fmtNum } from './gram';
@@ -652,6 +653,7 @@ export class Game {
         ...(s.flags.crewCall ? [{ icon: '✊', label: 'Crew', sub: `Die Lichterkette · ${crewOf(s).length} Leute${s.flags.crewWatch ? ` · ${VIERTEL.filter((v) => schutz(s, v.id)).length}/${VIERTEL.length} Viertel` : ''}`, fn: () => this.phone('crew') }] : []),
         { icon: '👨‍👩‍👧', label: 'Familie', sub: famSub(s), fn: () => this.phone('family') },
         { icon: '👥', label: 'Kontakte', sub: `${Object.keys(s.rel).length} Leute kennengelernt`, fn: () => this.phone('contacts') },
+        { icon: '🫂', label: 'Bekannte und ihre Geschichten', sub: (() => { const k = known(s); return k.length ? `${k.length} Leute · ${k.filter((x) => x.m.done).length} Geschichten zu Ende gehört` : 'Sprich Leute an, jede Person hat eine Geschichte'; })(), fn: () => this.phone('known') },
         { icon: '💘', label: 'Rainbow Match', sub: `Dating · ${PROFILES.filter((p) => s.dates[p.id]).length} Matches`, fn: () => this.phone('dating') },
         { icon: '📻', label: 'Pride FM 88,8', sub: s.flags.radioShowDay === s.day ? 'Deine Sendung lief heute' : 'Eigene Sendung „Rainbow Talk“ moderieren', fn: () => this.phone('fm') },
         { icon: '📸', label: 'Glitzergram', sub: `${fmtNum(followers(s))} Follower · Fotomodus, Likes, Kooperationen`, fn: () => this.phone('gram') },
@@ -693,6 +695,14 @@ export class Game {
         mine ? { icon: '✋', label: 'Kündigen', sub: 'ohne Hauptberuf weiter', fn: () => { annehmen(s, null); sfx('back'); toast(`Du hast als ${k.name} gekündigt.`); this.save.write(); back(); } }
           : { icon: '⭐', label: 'Als Hauptberuf annehmen', sub: meinBeruf(s) ? `statt ${meinBeruf(s)!.name} · +20 % Lohn` : '+20 % Lohn', fn: () => { annehmen(s, k.id); sfx('win'); pcEvents.emit('beruf', { id: k.id, name: k.name }); post(s, 'Du', `Neuer Job: ${k.name} ${k.icon}`); this.hud.banner(`${k.icon} Neuer Hauptberuf: ${k.name}`, `${k.place} · +20 % Lohn`, 'good', 4000); this.save.write(); back(); } },
         go, { icon: '←', label: 'Zurück', fn: back }], back, 'phone');
+    } else if (app === 'known') {
+      const list = known(s);
+      this.openMenu(frame('🫂 Bekannte', `<div class="pbody"><p>Alle, mit denen du geredet hast, von der Straße und aus der Szene. Jede Person hat eine eigene Geschichte, ein Teil pro Tag.</p></div>`),
+        [...list.map((x) => ({ icon: x.story.icon, label: x.name, sub: `${moodWord(x.m.mood)} · ${x.m.met}× getroffen · ${x.m.done ? '✅ ' + x.story.title : `${x.story.title} ${Math.min(4, x.m.ch)}/4`}`,
+          fn: () => { const who = { who: `${x.story.icon} ${x.name}`, color: '#ffb347' }; close();
+            this.dialog.say([...(heard(x).length ? heard(x).map((t) => ({ ...who, text: t })) : [{ ...who, text: 'Ihr habt euch erst kurz unterhalten. Sprich die Person wieder an, dann erzählt sie mehr.' }]),
+              ...(x.m.done ? [{ who: 'Du', color: '#ff4fa3', text: `Dein Rat: ${x.m.done}` }] : [])]); } })),
+          { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'contacts') {
       const met = NPCS.filter((n) => s.rel[n.id]);
       this.openMenu(frame('Kontakte', `<div class="pbody">${met.length ? met.map((n) => { const f = Number(s.rel[n.id].f) || 0; return `<p><b style="color:${n.color}">●</b> <b>${n.name}</b> <small>(${n.pron})${NPC_BERUF[n.id] ? ' · ' + NPC_BERUF[n.id].join(' ') : ''}</small><br>${'❤️'.repeat(Math.min(5, Math.ceil(f / 20)))}${'🤍'.repeat(5 - Math.min(5, Math.ceil(f / 20)))} ${bond(f)}</p>`; }).join('') : '<p>Noch niemand. Sprich Leute in der Stadt an!</p>'}</div>`),
