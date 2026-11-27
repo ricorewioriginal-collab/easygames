@@ -51,4 +51,15 @@ Alle Autos (eigene Wagen, Verkehr, Taxi, Streifenwagen, Show- und Rennautos) sta
 
 Änderungen: Die Pakete wurden in einzelne Autos geteilt, ausgerichtet, auf Straßenmaß gebracht, Innenraum und Kleinteile entfernt,
 Geometrie vereinfacht (`_lo` für den Verkehr am Handy) und Texturen auf 512 px verkleinert (`pride-city-src/scripts/cars.mjs`).
+
+### Luftfahrzeuge der Flugschule am Kai
+
+| Modell | Urheber*in | Lizenz | Verwendet als |
+|---|---|---|---|
+| Wasserflugzeug-Grundlage `c208b` aus „free-game-assets-aircraft“ – https://github.com/zuujis-cc0/free-game-assets-aircraft | zuujis-cc0 | CC0 1.0 | `assets/air/plane.glb` (Wasserflugzeug „Möwe“) |
+| „MH-6 Little Bird“ – https://sketchfab.com/3d-models/mh-6-little-bird-d6ec6eeb84b240789f54923bdedafc86 | AnirudhRao (Sketchfab) | CC BY 4.0 | `assets/air/heli.glb` (Hubschrauber „Libelle“) |
+
+Änderungen: Flugzeug ohne Fahrwerk und Frachtbehälter, Schwimmer im Spiel ergänzt, Zierstreifen pink. Hubschrauber aus der vereinfachten
+Geometrie von https://github.com/jdubba1/warbird (gleiche Lizenz), ausgerichtet, verkleinert, weiter vereinfacht und pink lackiert
+(`pride-city-src/scripts/air.mjs`).
 Taxi (gelb) und Lieferwagen (hell) sind umgefärbte Fassungen der Limousine bzw. des Vans.
