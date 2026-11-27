@@ -63,6 +63,9 @@ import type { Sfx } from '../engine/Audio';
 import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage } from './jobs';
 import { photo } from './Photo';
 import { gramMenu, empireMenu, gymItems, bodyItems, bodyMenu, muskelLine } from './aufstiegui';
+import { giveBuff, trainBoost } from './fit';
+import { busTalk, busAfter, BUS_COST, BUS_MIN } from './bus';
+import { TANK, tankOf } from './tank';
 import { followers, fmtNum } from './gram';
 import { myRank } from './mogul';
 import { train } from './figur';
@@ -805,9 +808,9 @@ export class Game {
           { icon: '←', label: 'Zurück', fn: () => this.phone('dating') }], () => this.phone('dating'), 'phone');
     } else if (app === 'map') {
       const pois = this.city.world.pois.filter((p) => !p.id.startsWith('tram'));
-      this.openMenu(frame('Karte', `<div class="pbody"><canvas id="pmap" width="300" height="300"></canvas><p>Tram: 2 €, 10 Minuten – auch ins Hafenviertel. Oder hinlaufen und ein Auto nehmen.</p></div>`),
-        [...pois.map((p) => ({ icon: p.icon, label: p.name, sub: s.pin === p.id ? '⭐ markiert · A: mit der Tram hinfahren' : 'A: mit der Tram hinfahren',
-          fn: () => { if (s.money < 2) { toast('Nicht genug Geld für die Tram.'); return; } s.money -= 2; s.pin = ''; close(); this.travel(p.x, p.z); } })),
+      this.openMenu(frame('Karte', `<div class="pbody"><canvas id="pmap" width="300" height="300"></canvas><p>Ort wählen: 📍 Wegpunkt setzen (GPS zeigt den Weg), Tram (2 €, 10 Minuten) oder Bus Linie 69 (1 €, 25 Minuten, mit Gesprächen).</p></div>`),
+        [...(s.pin ? [{ icon: '❌', label: 'Wegpunkt entfernen', sub: `📍 ${pois.find((p) => p.id === s.pin)?.name || ''}`, fn: () => { s.pin = ''; this.save.write(); toast('Wegpunkt entfernt.'); this.phone('map'); } }] : []),
+          ...pois.map((p) => ({ icon: p.icon, label: p.name, sub: s.pin === p.id ? '📍 Wegpunkt gesetzt · Wegpunkt, Tram oder Bus' : 'Wegpunkt setzen, Tram oder Bus', fn: () => this.mapPlace(p) })),
           { icon: '🌀', label: 'Weltentor: andere Welten', sub: 'Schnellreise nach Glitzeria, Playa Arcoíris, Lindenhof …', fn: () => { close(); this.worldMenu(); } },
           { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
       this.drawMap();
@@ -1216,11 +1219,25 @@ export class Game {
     const pl = this.city.player.root.position;
     x.fillStyle = '#fff'; x.strokeStyle = '#ff4fa3'; x.lineWidth = 3; x.beginPath(); x.arc(P(pl.x), PZ(pl.z), 6, 0, 7); x.fill(); x.stroke();
   }
-  travel(x: number, z: number) {
+  travel(x: number, z: number, bus = false) {
     const s = this.save.data;
     sfx('tram');
-    const go = () => { this.where = 'city'; s.inside = false; s.pos = { x: x > 0 ? x - 2.2 : x + 2.2, z, yaw: x > 0 ? Math.PI / 2 : -Math.PI / 2 }; this.pass(10); this.done(track(s, 'tram')); this.engine.setScene(this.city); this.city.setPlay(); toast('🚋 Angekommen.'); };
-    this.fade(go);
+    const go = () => { this.where = 'city'; s.inside = false; s.pos = { x: x > 0 ? x - 2.2 : x + 2.2, z, yaw: x > 0 ? Math.PI / 2 : -Math.PI / 2 }; this.pass(bus ? BUS_MIN : 10); this.done(track(s, 'tram')); this.engine.setScene(this.city); this.city.setPlay(); if (!bus) toast('🚋 Angekommen.'); };
+    if (!bus) { this.fade(go); return; }
+    // Bus: unterwegs erzählt dir jemand etwas, danach steigst du am Ziel aus
+    const seed = Math.random();
+    this.dialog.say(busTalk(seed, (nice) => { change(s, nice ? { social: 12, fun: 6 } : { energy: 4 }); setTimeout(() => this.dialog.say([busAfter(seed, nice)], () => { this.fade(go); setTimeout(() => toast('🚌 Endstation für dich, du steigst aus.'), 900); }), 60); }));
+  }
+  /** Ort auf der Karte: Wegpunkt setzen, Tram oder Bus */
+  private mapPlace(p: { id: string; name: string; icon: string; x: number; z: number }) {
+    const s = this.save.data, back = () => this.phone('map'), close = () => { this.closeMenu(); this.touch.show(true); };
+    const ride = (cost: number, bus: boolean) => () => { if (s.money < cost) { toast(`Nicht genug Geld für ${bus ? 'den Bus' : 'die Tram'}.`); sfx('miss'); return; } s.money -= cost; if (s.pin === p.id) s.pin = ''; close(); this.travel(p.x, p.z, bus); };
+    this.openMenu(`<div class="phoneBox"><div class="ph"><span>${clock(s)}</span><b>${p.icon} ${p.name}</b><span>${s.money} €</span></div><div class="slot"></div></div>`, [
+      s.pin === p.id ? { icon: '❌', label: 'Wegpunkt entfernen', fn: () => { s.pin = ''; this.save.write(); toast('Wegpunkt entfernt.'); back(); } }
+        : { icon: '📍', label: 'Wegpunkt setzen', sub: 'Das GPS zeigt dir den Weg, auf dem Radar und in der Stadt', fn: () => { s.pin = p.id; this.save.write(); sfx('coin'); toast(`📍 Wegpunkt: ${p.name}. Folge der blauen Linie!`); close(); } },
+      { icon: '🚋', label: 'Mit der Tram hin', sub: '2 € · 10 Minuten', fn: ride(2, false) },
+      { icon: '🚌', label: 'Mit dem Bus hin (Linie 69)', sub: `${BUS_COST} € · ${BUS_MIN} Minuten · unterwegs erzählt dir jemand was`, fn: ride(BUS_COST, true) },
+      { icon: '←', label: 'Zurück', fn: back }], back, 'phone');
   }
 
   /** Quiz im Handy: Hilde fragt, Antwort wählen, danach Auflösung; Belohnung einmal am Tag */
@@ -1393,14 +1410,18 @@ export class Game {
     const eat = (fx: Parameters<typeof change>[1], goal?: string) => () => { change(s, fx); if (goal) this.done(track(s, goal)); };
     const P: Record<string, { t: string; d: string; items: Item[] }> = {
       cafe: { t: 'Café Kaffeeklatsch', d: 'Mo macht den besten Hafer-Cappuccino der Stadt.', items: [
-        { icon: '☕', label: 'Cappuccino', sub: '3 € · +12 Energie · +1 Ruf beim ersten Mal am Tag', fn: buy(3, 'Lecker! Mo zwinkert dir zu.', () => { eat({ energy: 12, fun: 2 }, 'coffee')(); if (s.flags.coffee !== s.day) { s.rep++; s.flags.coffee = s.day; } }) },
+        { icon: '☕', label: 'Cappuccino', sub: '3 € · +12 Energie · ☕ 2 Std. hellwach · +1 Ruf beim ersten Mal am Tag', fn: buy(3, 'Lecker! Mo zwinkert dir zu. ☕ Hellwach: 2 Stunden rennen ohne Müdigkeit.', () => { eat({ energy: 12, fun: 2 }, 'coffee')(); giveBuff(s, 'kaffee'); if (s.flags.coffee !== s.day) { s.rep++; s.flags.coffee = s.day; } }) },
+        { icon: '🥗', label: 'Power-Bowl', sub: '7 € · +30 Hunger · 🥗 4 Std. mehr Puste beim Rennen', fn: buy(7, 'Quinoa, Avocado, Kichererbsen. 🥗 Power-Bowl: 4 Stunden mehr Puste.', () => { eat({ hunger: 30 }, 'eat')(); giveBuff(s, 'bowl'); }) },
         { icon: '🍰', label: 'Regenbogenkuchen', sub: '5 € · +20 Hunger · +6 Spaß', fn: buy(5, 'Sechs Schichten Glück.', eat({ hunger: 20, fun: 6 }, 'eat')) },
         { icon: '💬', label: 'Mit Gästen plaudern', sub: '30 Minuten · +14 Kontakte', fn: () => { close(); this.fade(() => { this.pass(30); change(s, { social: 14, fun: 4 }); this.save.write(); toast('Nette Leute hier. ☕'); }); } }] },
       spaeti: { t: 'Späti Lecker', d: 'Bruno hat alles, was man nachts braucht.', items: [
         { icon: '🥨', label: 'Brezel', sub: '2 € · +15 Hunger', fn: buy(2, 'Frisch und warm.', eat({ hunger: 15 }, 'eat')) },
-        { icon: '🧃', label: 'Mate', sub: '3 € · +15 Energie', fn: buy(3, 'Energie für die Nacht!', eat({ energy: 15 })) },
+        { icon: '🧃', label: 'Mate', sub: '3 € · +15 Energie · ⚡ 90 Min. schneller sprinten', fn: buy(3, 'Energie für die Nacht! ⚡ Mate-Kick: 90 Minuten schneller sprinten.', () => { eat({ energy: 15 })(); giveBuff(s, 'mate'); }) },
+        { icon: '🥙', label: 'Falafel-Dürüm', sub: '5 € · +35 Hunger · 🥙 3 Std. satt & stark (kräftigere Schläge)', fn: buy(5, 'Bruno legt extra Soße drauf. 🥙 Satt & stark für 3 Stunden.', () => { eat({ hunger: 35 }, 'eat')(); giveBuff(s, 'doener'); }) },
         { icon: '🎈', label: 'Kondome (3 Stück)', sub: `3 € · du hast ${s.inv.condom || 0}`, fn: buy(3, 'Safer Sex ist sexy. 🎈', () => { s.inv.condom = (s.inv.condom || 0) + 3; }) },
         { icon: '💧', label: 'Gleitgel', sub: `4 € · du hast ${s.inv.lube || 0}`, fn: buy(4, 'Gleitgel eingepackt. 💧', () => { s.inv.lube = (s.inv.lube || 0) + 1; }) },
+        { icon: '🦴', label: 'Hundeleckerli (5 Stück)', sub: `2 € · für die Hunde in der Stadt (du hast ${s.inv.treat || 0})`, fn: buy(2, 'Die Hunde der Stadt werden dich lieben. 🐶', () => { s.inv.treat = (s.inv.treat || 0) + 5; }) },
+        ...(myCar(s) && !myCar(s)!.fly ? [{ icon: '⛽', label: 'Reservekanister für deinen Wagen', sub: `8 € · +${TANK.can} % · jetzt ${tankOf(s)} %`, disabled: tankOf(s) >= 100, fn: buy(8, `⛽ Kanister eingefüllt. Tank: ${Math.min(100, tankOf(s) + TANK.can)} %`, () => { s.flags.tank = Math.min(100, tankOf(s) + TANK.can); }) }] : []),
         { icon: '🥕', label: 'Lebensmittel', sub: `6 € · 3 Portionen zum Kochen (du hast ${s.food})`, fn: buy(6, 'Ab in den Kühlschrank damit.', () => { s.food += 3; }) }] },
       club: { t: 'Club Prisma', d: 'Neon, Bass und die beste Tanzfläche der Stadt.', items: [
         { icon: '🪩', label: 'Tanz-Battle', sub: `Rekord ${s.best.dance || 0}`, fn: () => this.goDance(false) },
@@ -1418,6 +1439,7 @@ export class Game {
         ...(s.settings.adult ? [{ icon: '🍆', label: 'Toy aus der Hinterzimmer-Ecke', sub: `25 € · diskret verpackt · du hast ${s.inv.toy || 0}`, fn: buy(25, 'Diskret verpackt. Viel Spaß! 😏', () => { s.inv.toy = (s.inv.toy || 0) + 1; change(s, { fun: 10 }); }) }] : [])] },
       gym: { t: 'Muckibude Muskelkater', d: 'Bären, Twinks und alle dazwischen – hier schwitzt die ganze Szene.', items: [
         ...gymItems(this, close),
+        { icon: '🥤', label: 'Protein-Shake', sub: '4 € · +15 Hunger · 🥤 3 Std. Training wirkt 50 % stärker', fn: buy(4, 'Vanille-Erdnuss. 🥤 Protein-Boost: 3 Stunden.', () => { eat({ hunger: 15 })(); giveBuff(s, 'shake'); }) },
         { icon: '🚿', label: 'Duschen', sub: '1 € · Hygiene voll', fn: buy(1, 'Frisch!', () => { this.pass(15); change(s, { hygiene: 100 }); this.done(track(s, 'shower')); }) }] },
       checkpoint: { t: 'Checkpoint Regenbogen', d: 'Beratung, Tests und PrEP – anonym, ohne Urteil, mit Gummibärchen.', items: [
         { icon: '🧪', label: 'HIV- und STI-Test', sub: `kostenlos · 30 Minuten · ${s.health.test ? 'letzter Test: Tag ' + s.health.test : 'noch nie getestet'}${symptoms(s).length ? ' · ⚠️ Beschwerden' : ''}`, fn: () => { close(); this.fade(() => { this.pass(30); s.health.test = s.day; change(s, { fun: 3 }); const r = testAndTreat(s); this.save.write(); this.city.refreshHud(); const C = (text: string) => ({ who: 'Checkpoint', color: '#3ee69a', text });
@@ -1470,6 +1492,7 @@ export class Game {
           { icon: '🎬', label: 'TV-Show „Aufgemotzt!“', sub: `Folge ${episode(s) + 1} · ${clientFor(s).name} bringt eine Rostlaube · Honorar + Ruf`, fn: () => { close(); void this.city.show.start(); } },
           ...(mine && !mine.fly ? [{ icon: '🛠️', label: 'Tuning-Werkstatt', sub: 'Felgen, Neon, Hydraulik, Bass, Extras für deinen Wagen', fn: () => { close(); this.workshop(); } }] : []),
           ...(mine ? [
+            ...(!mine.fly ? [{ icon: '⛽', label: tankOf(s) >= 100 ? 'Tank ist voll' : 'Volltanken und Ölwechsel', sub: `${TANK.price(s)} € · Tank jetzt ${tankOf(s)} %`, disabled: tankOf(s) >= 100, fn: () => done(s.money < TANK.price(s) ? 'Nicht genug Geld.' : null, '⛽ Vollgetankt! Rosi poliert noch schnell die Scheibe.', () => { s.money -= TANK.price(s); s.flags.tank = 100; }) }] : []),
             { icon: '🅿️', label: 'Wagen vor die Garage holen', sub: 'Rosi fährt ihn dir vor', fn: () => { close(); void this.city.placeOwnCar(true).then(() => toast(`${mine.icon} ${mine.name} steht vor der Garage.`)); } },
             { icon: np[1], label: `Umlackieren: ${np[0]}`, sub: `${PAINT_COST} € · jetzt ${PAINTS[pi][0]}`, fn: () => done(buyPaint(s, np[2]), `Frisch lackiert: ${np[0]}!`, () => void this.city.placeOwnCar(true)) },
             { icon: '🚀', label: tl >= TUNE_COST.length ? 'Turbo voll ausgebaut' : `Turbo-Stufe ${tl + 1} einbauen`, sub: tl >= TUNE_COST.length ? `Spitze ${Math.round(stats(mine, tl).turbo * 3.6)} km/h` : `${TUNE_COST[tl]} € · +7 % Tempo, besserer Antritt`, disabled: tl >= TUNE_COST.length, fn: () => done(buyTune(s), 'Der Turbo pfeift! 🚀') }] : []),
@@ -1666,7 +1689,7 @@ export class Game {
     const sc = def.make(this, def, adult, (r) => {
       const s = this.save.data;
       if (!o.title && !r.quit) { change(s, { fun: r.won ? 18 : 10, energy: -4 }); this.pass(15); if (r.won) s.rep += 1; }
-      if (!o.title && !r.quit && id === 'gym') { const gain = train(s, 'beine'); if (gain) setTimeout(() => this.hud.banner(`🦵 Beinetag: Muskeln +${gain}`, 'Kniebeugen zahlen sich aus.', 'good', 3400), 1200); }
+      if (!o.title && !r.quit && id === 'gym') { const gain = train(s, 'beine', trainBoost(s)); if (gain) setTimeout(() => this.hud.banner(`🦵 Beinetag: Muskeln +${gain}`, 'Kniebeugen zahlen sich aus.', 'good', 3400), 1200); }
       this.save.write();
       this.fade(() => {
         if (o.back) o.back(); else if (o.title) this.title(); else { this.resume(); this.city.refreshHud(); }

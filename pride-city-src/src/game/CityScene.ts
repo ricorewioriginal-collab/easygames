@@ -19,8 +19,10 @@ import { radioMenu } from './radioui';
 import { RACES, MEDALS, raceGig, finishRace, bestTime, nextParcel, stats, myCar, tuneLevel, GARAGE, type Race } from './vehicles';
 import { sfx, music, buzz, engineHum } from '../engine/Audio';
 import { route, onGrid } from './traffic';
-import { memOf, remember } from './leben';
-import { toast, hints } from '../ui/ui';
+import { memOf, remember, saveMem, outfitLine } from './leben';
+import { toast, hints, type Line } from '../ui/ui';
+import { sprintSpeed, tiredAt, gainAus, ausdauer, buffOf } from './fit';
+import { TANK, tankOf, burn } from './tank';
 import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
 import type { Marker } from '../ui/Hud';
@@ -68,7 +70,7 @@ export class CityScene implements GameScene {
   private cam = { yaw: Math.PI, pitch: .38, dist: 7.5, tYaw: Math.PI };
   private camPos = new Vector3();
   private stickerMeshes: Mesh[] = [];
-  private near: { kind: 'npc' | 'poi' | 'street' | 'car' | 'house' | 'life' | 'live' | 'buddy' | 'friend' | 'isle' | 'trunk'; id: string; label: string } | null = null;
+  private near: { kind: 'npc' | 'poi' | 'street' | 'car' | 'house' | 'life' | 'live' | 'buddy' | 'friend' | 'isle' | 'trunk' | 'dog'; id: string; label: string } | null = null;
   street!: Street;
   combat!: Combat;
   /** Schlägereien und Verfolgungen der Missionen (Akt IV) */
@@ -216,9 +218,16 @@ export class CityScene implements GameScene {
     const pkey = (n: StreetNpc) => 'street:' + this.street.people.indexOf(n) + ':' + n.a.avatar.id;
     this.street.people.forEach((n) => { if (/^(Passant|Spaziergänger|Nachbar|Tourist|Studentin|Geschäftsmann)/.test(n.name)) n.name = stranger(pkey(n), n.a.avatar.id).name; });
     this.street.onDodge = (n) => remember(this.g.save.data, pkey(n), 'near');
+    this.street.onCrowd = (n, stalk) => {
+      const s = this.g.save.data, k = pkey(n), m = memOf(s, k); m.mood = Math.max(-5, m.mood - 1); saveMem(s, k, m);
+      const L = stalk ? ['Verfolgst du mich etwa?!', 'Okay, das wird mir jetzt zu gruselig.', 'Läufst du mir nach? Ich ruf gleich meine Freundin an!'] : ['Äh, geht\'s noch? Etwas Abstand bitte!', 'Personal Space, Schätzchen!', 'Du stehst mir auf den Füßen!'];
+      toast(`${stalk ? '😨' : '😒'} ${n.name}: „${L[Math.floor(Math.random() * L.length)]}“`, 2200);
+    };
     this.street.onPass = (n) => {
       const s = this.g.save.data, m = memOf(s, pkey(n));
       if (m.near > 0 && m.mood < 0) { toast(`😒 ${n.name}: „Ach, du schon wieder. Heute zu Fuß, ja?“`, 2200); return; }
+      // Fremde kommentieren manchmal dein Outfit
+      if (m.met === 0 && this.passT < this.time - 15) { const line = outfitLine(String(s.flags.outfit || 'clothed'), s.settings.adult, this.weather.rain > .2, Math.floor(this.time * 7) + n.name.length); if (line) { this.passT = this.time; toast(`💬 ${n.name}: „${line}“`, 2400); } return; }
       if (m.met > 0 && this.passT < this.time - 12) { this.passT = this.time; n.a.play('wave'); setTimeout(() => n.a.anim === 'wave' && n.a.play('idle'), 1600); toast(`👋 ${n.name}: „${m.mood >= 3 ? 'Hey ' + s.name + '! 🥰' : 'Hi ' + s.name + '!'}“`, 2000); }
     };
     // Verkehr: lenkt an geparkten Autos vorbei, hupt, wenn du im Weg stehst
@@ -262,7 +271,7 @@ export class CityScene implements GameScene {
   setPlay() {
     const s = this.g.save.data;
     this.mode = 'play';
-    this.drive = null; this.g.touch.fly(false);
+    this.drive = null; this.g.touch.fly(false); this.g.hud.speedo(null);
     this.player.root.visible = true;
     this.player.setLook(streetLook(playerLook(s)));
     this.friends.relook();
@@ -354,8 +363,8 @@ export class CityScene implements GameScene {
     else if (this.g.where === 'home') this.g.hud.goal('Zuhause', 'Deine Wohnung', s.chapter === 1 && s.step === 2 ? 'Schau dich um.' : `Ziel: ${gl.title}`);
     else if (this.isles.some((i) => i.active)) this.g.hud.goal(...this.isles.find((i) => i.active)!.goal());
     else this.g.hud.goal(chapterLabel(s), gl.title, gl.sub);
-    const days = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-    this.g.hud.stats([`${days[(s.day - 1) % 7]} ${this.clock()} ${this.world.night > .5 && (this.weather?.sky || 'klar') === 'klar' ? '🌙' : SKY[this.weather?.sky || 'klar'].icon}`, `💶 ${s.money} €`, `${moodIcon(mood(s))} ${Math.round(mood(s))}`]);
+    const days = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'], bf = buffOf(s);
+    this.g.hud.stats([`${days[(s.day - 1) % 7]} ${this.clock()} ${this.world.night > .5 && (this.weather?.sky || 'klar') === 'klar' ? '🌙' : SKY[this.weather?.sky || 'klar'].icon}`, `💶 ${s.money} €`, `${moodIcon(mood(s))} ${Math.round(mood(s))}`, ...(bf ? [`${bf.icon} ${bf.name} ${Math.max(1, Math.round(bf.left * 60))}′`] : [])]);
     this.g.hud.needs(s.needs);
   }
 
@@ -374,6 +383,7 @@ export class CityScene implements GameScene {
     const tm = this.trouble?.marker(); if (tm) out.push(tm);
     if (this.friends?.net.on) for (const m of this.friends.list) { const q = this.friends.posOf(m.id); if (q) out.push({ id: 'fr' + m.id, icon: m.st.c ? '🚗' : '🌐', label: m.name, pos: new Vector3(q.x, m.st.c ? 2.6 : 2.35, q.z) }); }
     for (const i of this.isles) out.push(...i.markers());
+    if (s.pin) { const p = this.world.pois.find((x) => x.id === s.pin); if (p) out.push({ id: 'pin', icon: '📍', label: p.name, pos: new Vector3(p.x, 4, p.z) }); }
     const ph = this.life?.parade.head(); if (ph && Vector3.Distance(ph, this.player.root.position) > 26) out.push({ id: 'parade', icon: '🏳️‍🌈', label: 'CSD-Parade', pos: ph });
     return out;
   }
@@ -412,6 +422,7 @@ export class CityScene implements GameScene {
       if (d < 2.6 && d < bd) { bd = d; best = { kind: 'npc', id: n.def.id, label: 'Sprechen mit ' + n.def.name }; }
     }
     const icon: Record<string, string> = { worker: '🏮 Escort · ', curb: '💋 Laternenmeile · ', police: '🚓 ', fire: '🚒 ', medic: '🚑 ', security: '🛡️ ', chef: '👩‍🍳 ', courier: '📦 ' };
+    if (!best) { const dn = this.street.nearDog(p, 1.8); if (dn) best = { kind: 'dog', id: String(this.street.people.indexOf(dn)), label: `🐶 ${dn.dogName} · ${dn.name} fragen` }; }
     if (!best) { const st = this.street.near(p); if (st) best = { kind: 'street', id: String(this.street.people.indexOf(st)), label: (st.kind === 'szene' ? (SZENE[st.id!]?.icon || '💬') + ' ' : icon[st.kind] || '💬 ') + st.name }; }
     // auf der Flucht: am Kofferraum eines Wagens umziehen und die Polizei austricksen
     if (!best && this.combat.wanted.stars > 0) {
@@ -433,7 +444,7 @@ export class CityScene implements GameScene {
     }
     this.near = best;
     this.g.hud.prompt(best ? best.label : null);
-    this.g.touch.label(best ? (best.kind === 'npc' || best.kind === 'street' || best.kind === 'buddy' || best.kind === 'friend' ? 'Reden' : best.kind === 'car' ? 'Fahren' : best.kind === 'trunk' ? 'Umziehen' : best.kind === 'life' || best.kind === 'live' ? 'Los' : 'Rein') : 'Aktion');
+    this.g.touch.label(best ? (best.kind === 'npc' || best.kind === 'street' || best.kind === 'buddy' || best.kind === 'friend' ? 'Reden' : best.kind === 'car' ? 'Fahren' : best.kind === 'trunk' ? 'Umziehen' : best.kind === 'dog' ? 'Fragen' : best.kind === 'life' || best.kind === 'live' ? 'Los' : 'Rein') : 'Aktion');
   }
 
   /** Match kommt vorbei und begleitet dich */
@@ -455,6 +466,29 @@ export class CityScene implements GameScene {
     return { x: o.position.x, z: o.position.z, r: o.rotation.y, a: d ? 'idle' : String(this.player.anim), c: d ? d.def.id : '', h: hue };
   }
 
+  /** Hund in der Stadt: erst fragen, dann streicheln oder ein Leckerli geben (Besitzer*in merkt sich, wie du warst) */
+  private dogTalk(n: StreetNpc) {
+    const s = this.g.save.data, k = 'street:' + this.street.people.indexOf(n) + ':' + n.a.avatar.id, m = memOf(s, k), dog = n.dogName!;
+    n.talking = true; n.a.play('talk'); this.face(n.a, this.player.root.position); this.face(this.player, n.dog!.root.position); this.player.play('idle');
+    const end = () => { n.talking = false; n.a.play('idle'); };
+    const W = (text: string, choices?: Line['choices']): Line => ({ who: `${n.name} · 🐶 ${dog}`, color: '#ffb347', text, choices });
+    const yes = m.mood >= 0 && (m.mood > 1 || (Math.floor(this.time) + n.name.length) % 4 !== 0);
+    if (!yes) { this.g.dialog.say([{ who: 'Du', color: '#ff4fa3', text: `Hi! Darf ich ${dog} mal streicheln?` }, W(m.mood < 0 ? 'Nach dem, was du dir geleistet hast? Lieber nicht.' : `Sorry, ${dog} ist heute etwas scheu. Ein andermal!`)], end); return; }
+    const treats = s.inv.treat || 0;
+    let then: (() => void) | null = null;
+    const pet = (treat: boolean) => {
+      this.player.play('interact'); this.street.cheer(n, treat ? 9 : 4); sfx(treat ? 'win' : 'boing'); remember(s, k, 'talk');
+      if (treat) { s.inv.treat = treats - 1; const mm = memOf(s, k); mm.mood = Math.min(5, mm.mood + 1); saveMem(s, k, mm); change(s, { fun: 8, social: 4 }); }
+      else change(s, { fun: 5 });
+      this.refreshHud();
+      then = () => this.g.dialog.say([W(treat ? `Oh, jetzt hast du einen Fan fürs Leben. ${dog} läuft dir gleich hinterher! 😄` : `${dog} liebt dich jetzt schon. Guck, wie der Schwanz wedelt!`)], end);
+    };
+    this.g.dialog.say([{ who: 'Du', color: '#ff4fa3', text: `Hi! Darf ich ${dog} mal streicheln?` }, W(m.met > 0 ? `Für dich doch immer, ${s.name}!` : `Klar! ${dog} freut sich über jede Streicheleinheit.`, [
+      { label: `🤲 ${dog} streicheln`, fn: () => pet(false) },
+      { label: treats ? `🦴 Leckerli geben (du hast ${treats})` : '🦴 Leckerli geben', sub: treats ? 'darf ich?' : 'Hundeleckerli gibt es im Späti', fn: () => { if (treats) pet(true); else then = () => this.g.dialog.say([W('Kein Leckerli dabei? Der Späti hat welche. Nächstes Mal! 🦴')], end); } },
+      { label: '👋 Tschüss', fn: () => {} },
+    ])], () => { const f = then; then = null; if (f) f(); else end(); });
+  }
   private face(a: Actor, to: Vector3) { a.root.rotation.y = Math.atan2(to.x - a.root.position.x, to.z - a.root.position.z); }
 
   interact() {
@@ -480,6 +514,7 @@ export class CityScene implements GameScene {
       return;
     }
     if (this.near.kind === 'car') { this.toggleCar(this.near.id); return; }
+    if (this.near.kind === 'dog') { this.dogTalk(this.street.people[+this.near.id]); return; }
     if (this.near.kind === 'trunk') { const id = this.near.id, o = id[0] === 't' ? this.world.cars[+id.slice(1)]?.o : this.street.parked[+id]?.o; if (o) { this.player.play('interact'); this.combat.flucht.trunk(o); } return; }
     if (this.near.kind === 'street') {
       const n = this.street.people[+this.near.id], s = this.g.save.data;
@@ -539,7 +574,7 @@ export class CityScene implements GameScene {
       if (this.drive.own) { const sv = this.g.save.data; sv.flags.ownX = Math.round(o.position.x * 10) / 10; sv.flags.ownZ = Math.round(o.position.z * 10) / 10; sv.flags.ownYaw = Math.round(o.rotation.y * 100) / 100; }
       if (this.drive.def.toy || rideSeat(this.drive.def) >= 0) { if (this.drive.def.ride !== 'boat') this.player.root.position.y = .1; o.rotation.x = o.rotation.z = 0; }
       o.rotation.x = o.rotation.z = 0; engineHum(null);
-      this.drive.v = 0; this.drive = null; this.parcel = -1;
+      this.drive.v = 0; this.drive = null; this.parcel = -1; this.g.hud.speedo(null);
       this.radioOff(); music('city');
       this.player.root.visible = true; this.player.play('idle');
       hints([['move', 'Laufen'], ['a', 'Aktion'], ['atk', 'Angriff'], ['wpn', 'Waffe'], ['cam', 'Kamera'], ['y', 'Menü']]);
@@ -652,7 +687,9 @@ export class CityScene implements GameScene {
     const c = this.drive!, o = c.o, inp = this.g.engine.input, fly = !!c.def.fly;
     if (inp.pressed('tabR')) this.radio(1); else if (inp.pressed('tabL')) this.radio(-1);
     const thr = Math.abs(inp.move.y) > .08 ? inp.move.y : 0, steer = Math.abs(inp.move.x) > .08 ? inp.move.x : 0;
-    const st = stats(c.def, c.own ? tuneLevel(this.g.save.data) : 0), max = inp.held('sprint') ? st.turbo : st.max;
+    const st = stats(c.def, c.own ? tuneLevel(this.g.save.data) : 0), sv = this.g.save.data, tanked = c.own && !fly && !c.def.ride && !c.def.toy;
+    // leerer Tank (nur der eigene Wagen): nur noch Schritttempo
+    const max = tanked && tankOf(sv) <= 0 ? TANK.crawl : inp.held('sprint') ? st.turbo : st.max;
     // Flitzer: lenkt wie ein Auto (Stick/WASD = Gas, Bremse, Lenken; Turbo = schneller), dazu Steigen/Sinken.
     // Ohne Eingabe hält er die Höhe; über den Dächern (in der Hochstadt höher) fliegt er frei.
     if (fly) {
@@ -725,6 +762,13 @@ export class CityScene implements GameScene {
     }
     o.position.y = fly ? this.alt + Math.sin(performance.now() / 330) * .08 : boat ? .05 + Math.sin(performance.now() / 420) * .05 : .1;
     this.player.root.position.copyFrom(o.position);
+    // Tacho und Tank
+    if (tanked) {
+      const r = burn(sv, Math.abs(c.v) * dt);
+      if (r === 'low') { sfx('miss'); toast('⛽ Tank fast leer! Volltanken in der Garage Schraubenschlüssel oder Reservekanister aus dem Späti.'); }
+      else if (r === 'empty') { sfx('miss'); sv.pin = 'garage'; toast('⛽ Tank leer! Der Wagen rollt nur noch im Schritttempo. Wegpunkt zur Garage ist gesetzt.'); }
+    }
+    this.g.hud.speedo(`${c.def.icon} ${Math.round(Math.abs(c.v) * 3.6)} km/h${tanked ? ` · ⛽ ${tankOf(sv)} %` : ''}`, tanked && tankOf(sv) < 15);
     rigOf.get(o)?.update(dt, performance.now() / 1000, c.v);
     if (fly) {
       // in die Kurve legen und die Nase beim Steigen heben, wie ein Flugzeug
@@ -763,6 +807,7 @@ export class CityScene implements GameScene {
   /** Land oder Wasser (fürs Glitzer-Boot; auch für Tests erreichbar) */
   readonly landAt = isLand;
   private tiredTold = false;
+  private sprintT = 0;
   /** Sekunden seit dem letzten Wischen an der Kamera */
   private lookIdle = 9;
   /** Fahrkamera: Vorausschau in Fahrtrichtung, Tempo-Abstand und Tempo-Blickwinkel (weich nachgeführt) */
@@ -1122,15 +1167,17 @@ export class CityScene implements GameScene {
       // GPS: Weg über die Straßen zum Ziel (laufender Auftrag zuerst), alle halbe Sekunde neu berechnet
       if ((this.routeT -= 1 / 20) <= 0) {
         this.routeT = .5;
-        const gp = (mk.find((m) => m.id === 'gig' || m.id === 'kerb' || m.id === 'trouble') || mk.find((m) => m.id === 'g'))?.pos;
+        const gp = (mk.find((m) => m.id === 'gig' || m.id === 'kerb' || m.id === 'trouble') || mk.find((m) => m.id === 'pin') || mk.find((m) => m.id === 'g'))?.pos;
+        // eigener Wegpunkt erreicht: weg damit
+        const pin = mk.find((m) => m.id === 'pin'); if (pin && Math.hypot(pin.pos.x - pp.x, pin.pos.z - pp.z) < 12) { s.pin = ''; sfx('coin'); toast(`📍 Ziel erreicht: ${pin.label}`); }
         const flying = !!this.drive && (!!this.drive.def.air || (!!this.drive.def.fly && this.alt > 3));
-        this.gps = gp && !flying && onGrid(pp.x, pp.z) && Math.hypot(gp.x - pp.x, gp.z - pp.z) > 14 ? { pts: route(pp.x, pp.z, gp.x, gp.z), color: mk.find((m) => m.pos === gp)?.id === 'g' ? '#ff3fb0' : '#ffd23b' } : null;
+        this.gps = gp && !flying && onGrid(pp.x, pp.z) && Math.hypot(gp.x - pp.x, gp.z - pp.z) > 14 ? { pts: route(pp.x, pp.z, gp.x, gp.z), color: ({ g: '#ff3fb0', pin: '#3ec8ff' } as Record<string, string>)[mk.find((m) => m.pos === gp)?.id || ''] || '#ffd23b' } : null;
       }
       if (this.gps) this.gps.pts[0] = [pp.x, pp.z];
       g.hud.radar(pp.x, pp.z, this.cam.yaw, [
         ...this.world.pois.filter((q) => Math.hypot(q.x - pp.x, q.z - pp.z) < 60).map((q) => ({ x: q.x, z: q.z, icon: q.icon })),
         ...this.combat.flucht.blips(this.combat.wanted.stars, pp),
-        ...mk.map((m) => ({ x: m.pos.x, z: m.pos.z, color: m.id === 'g' ? '#ff3fb0' : m.id === 'gig' ? '#ffd23b' : m.id === 'kerb' ? '#ff6ad5' : m.id === 'trouble' ? '#ff4b3b' : '#ffffff', goal: m.id === 'g' || m.id === 'gig' || m.id === 'kerb' || m.id === 'trouble' })),
+        ...mk.map((m) => ({ x: m.pos.x, z: m.pos.z, color: m.id === 'g' ? '#ff3fb0' : m.id === 'gig' ? '#ffd23b' : m.id === 'kerb' ? '#ff6ad5' : m.id === 'trouble' ? '#ff4b3b' : m.id === 'pin' ? '#3ec8ff' : '#ffffff', goal: m.id === 'g' || m.id === 'gig' || m.id === 'kerb' || m.id === 'trouble' || m.id === 'pin' })),
       ], this.gps);
     }
     // Lichtsäule: laufender Auftrag hat Vorrang (gelb), sonst das Story-Ziel (pink)
@@ -1163,9 +1210,11 @@ export class CityScene implements GameScene {
       const fx = -Math.sin(yaw), fz = -Math.cos(yaw), rx = -fz, rz = fx;
       const dx = fx * my + rx * mx, dz = fz * my + rz * mx;
       // Turbo geht immer; wer erschöpft ist, rennt nur langsamer (und bekommt einmal den Hinweis)
-      const run = inp.held('sprint'), tired = this.g.save.data.needs.energy < 10;
+      const sv = this.g.save.data, run = inp.held('sprint'), tired = sv.needs.energy < tiredAt(sv);
       if (run && tired && !this.tiredTold) { this.tiredTold = true; toast('⚡ Du bist müde und rennst langsamer. Schlaf dich aus oder trink einen Kaffee.'); }
-      const sp = (run ? (tired ? 6.3 : 7.8) : 4.4) * Math.min(1, mag);
+      const sp = (run ? sprintSpeed(sv, tired) : 4.4) * Math.min(1, mag);
+      // Wer viel rennt, bekommt mehr Puste: alle 40 Sekunden Sprint ein Punkt Ausdauer
+      if (run && mag > .5 && (this.sprintT += dt) > 40) { this.sprintT = 0; const n = gainAus(sv, 1); if (n) toast(`🏃 Ausdauer +1 · ${ausdauer(sv)}/100`); }
       p.x += (dx / mag) * sp * dt * Math.min(1, mag); p.z += (dz / mag) * sp * dt * Math.min(1, mag);
       this.world.collide(p, .45);
       // Figuren schieben sich sanft auseinander, statt ineinander zu laufen
