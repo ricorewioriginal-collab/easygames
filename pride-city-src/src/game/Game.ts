@@ -1224,6 +1224,8 @@ export class Game {
     sfx('tram');
     const go = () => { this.where = 'city'; s.inside = false; s.pos = { x: x > 0 ? x - 2.2 : x + 2.2, z, yaw: x > 0 ? Math.PI / 2 : -Math.PI / 2 }; this.pass(bus ? BUS_MIN : 10); this.done(track(s, 'tram')); this.engine.setScene(this.city); this.city.setPlay(); if (!bus) toast('🚋 Angekommen.'); };
     if (!bus) { this.fade(go); return; }
+    // in der Stadt: Linie 69 in 3D, sonst (aus der Wohnung, von drinnen) als Gespräch mit Überblendung
+    if (this.where === 'city' && this.city.bus) { this.city.bus.start(x, z, () => { s.pos = { x: x > 0 ? x - 2.2 : x + 2.2, z, yaw: x > 0 ? Math.PI / 2 : -Math.PI / 2 }; this.city.player.root.position.set(s.pos.x, .1, z); this.city.player.root.rotation.y = s.pos.yaw; this.pass(15); this.done(track(s, 'tram')); this.save.write(); }); return; }
     // Bus: unterwegs erzählt dir jemand etwas, danach steigst du am Ziel aus
     const seed = Math.random();
     this.dialog.say(busTalk(seed, (nice) => { change(s, nice ? { social: 12, fun: 6 } : { energy: 4 }); setTimeout(() => this.dialog.say([busAfter(seed, nice)], () => { this.fade(go); setTimeout(() => toast('🚌 Endstation für dich, du steigst aus.'), 900); }), 60); }));
