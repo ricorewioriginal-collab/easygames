@@ -55,7 +55,7 @@ export interface Prop { x: number; z: number; r: number; o: TransformNode[]; sol
 export interface Car {
   o: Node3; path: Vector3[]; seg: number; u: number; v: number; kind?: string; /** vorübergehend aus dem Verkehr (Parade) */ off?: boolean;
   /** Straßennetz: von Kreuzung a nach b, aktuelles Tempo, Abbiegebogen, Spurabstand zur Mitte */
-  a?: number; b?: number; cur?: number; lat?: number; jam?: number; wait?: number;
+  a?: number; b?: number; cur?: number; lat?: number; jam?: number; wait?: number; /** wartet an der Ampel (oder hinter jemandem, der wartet) */ held?: boolean;
   turn?: { p0: Vector3; p1: Vector3; p2: Vector3; u: number; len: number; to: number };
   /** angestoßen: Versatz und Schwung, kurz stehen bleiben */
   knock?: { x: number; z: number; r: number; vx: number; vz: number; vr: number }; bump?: { t: number };
@@ -162,6 +162,7 @@ export class World {
     this.plaza(); this.park(); this.decorate(); this.signs(); this.paintHouses(); this.neonCity(); await this.harbour();
     await buildUptown(this);
     await this.spawnCars();
+    this.signals();
     this.buildEnv();
     this.setTime(.3);
   }
@@ -1019,7 +1020,46 @@ export class World {
   /** Hindernisse auf der Fahrbahn, an denen der Verkehr vorbeilenkt (geparkte Autos) */
   statics?: () => Array<{ x: number; z: number }>;
   private respawnI = 0;
+  /* ---------- Ampeln: an allen Kreuzungen mit vier Straßen, eine Phase für die ganze Stadt ---------- */
+  private sigT = 0;
+  private sigLamps: Record<'x' | 'z', PBRMaterial[]> = { x: [], z: [] };
+  private sigShown = '';
+  /** Ampelkreuzungen (vier Abzweige) */
+  static isSignal(i: number) { return NODES[i].nb.length === 4; }
+  /** Farbe für Verkehr entlang der x- bzw. z-Achse: 0 rot, 1 gelb, 2 grün (Umlauf 26 s) */
+  signal(axis: 'x' | 'z') {
+    const t = (this.sigT % 26) - (axis === 'x' ? 0 : 13);
+    return t >= 0 && t < 10 ? 2 : t >= 10 && t < 12 ? 1 : 0;
+  }
+  private signals() {
+    const sc = this.scene, pole = cyl(sc, .09, .11, 4.2, 8), head = box(sc, .5, 1.4, .5);
+    pole.material = pbr(sc, 0x2a2d36, .5, .6); head.material = pbr(sc, 0x1c1e24, .6, .3);
+    const COL = [0xff3b3b, 0xffc83b, 0x3bff7a];
+    const lamps = { x: COL.map(() => sphere(sc, .2, 8)), z: COL.map(() => sphere(sc, .2, 8)) };
+    for (const ax of ['x', 'z'] as const) lamps[ax].forEach((m, i) => { const g = glow(sc, COL[i], .25); m.material = g; this.sigLamps[ax].push(g); m.setEnabled(false); m.parent = this.root; });
+    for (const m of [pole, head]) { m.setEnabled(false); m.parent = this.root; }
+    const C = 7.3;
+    NODES.forEach((n, i) => {
+      if (!World.isSignal(i)) return;
+      for (const [sx, sz] of [[1, 1], [-1, -1], [1, -1], [-1, 1]] as const) {
+        const ax = sx === sz ? 'x' : 'z', x = n.x + sx * C, z = n.z + sz * C;
+        const p = pole.createInstance('sp'); p.position.set(x, 2.1, z); p.parent = this.root;
+        const h = head.createInstance('sh'); h.position.set(x, 4.52, z); h.parent = this.root;
+        lamps[ax].forEach((m, k) => { const l = m.createInstance('sl'); l.position.set(x, 4.95 - k * .44, z); l.scaling.set(1.35, 1, 1.35); l.parent = this.root; });
+        for (const q of [p, h]) q.freezeWorldMatrix();
+        this.props.push({ x, z, r: .25, o: [p], solid: true });
+      }
+    });
+  }
+  private sigUpdate(dt: number) {
+    this.sigT += dt;
+    const key = this.signal('x') + '' + this.signal('z');
+    if (key === this.sigShown) return; this.sigShown = key;
+    const COL = [0xff3b3b, 0xffc83b, 0x3bff7a];
+    for (const ax of ['x', 'z'] as const) { const s = this.signal(ax); this.sigLamps[ax].forEach((m, i) => { m.albedoColor = col(COL[i]).scale(i === s ? 1.6 : .18); }); }
+  }
   private traffic(dt: number, player?: Vector3) {
+    this.sigUpdate(dt);
     const cars = this.cars, low = this.low, far = low ? 95 : 125, statics = this.statics?.() || [];
     // ein Auto je Bild prüfen: zu weit weg → außer Sicht in deiner Nähe wieder einsetzen
     if (player && cars.length) {
@@ -1041,12 +1081,20 @@ export class World {
       let want = c.turn ? Math.min(c.v, 6) : c.v;
       const reach = 6.5 + cur * .55;
       // an Kreuzungen langsamer werden
-      if (!c.turn) { const left = (1 - c.u) * Vector3.Distance(c.path[0], c.path[1]); if (left < 10) want = Math.min(want, 6 + left * .5); }
-      let block = false, byPlayer = false;
+      let red = false;
+      if (!c.turn) {
+        const left = (1 - c.u) * Vector3.Distance(c.path[0], c.path[1]); if (left < 10) want = Math.min(want, 6 + left * .5);
+        // Ampel: bei Rot vor der Haltelinie stehen bleiben, bei Gelb nur, wenn es noch reicht
+        if (World.isSignal(c.b!) && left < 18 && left > .3) {
+          const s = this.signal(c.path[1].x !== c.path[0].x ? 'x' : 'z');
+          if (s === 0 || (s === 1 && left > 7)) { red = true; want = Math.min(want, Math.max(0, left - .8) * .9); }
+        }
+      }
+      let block = false, byPlayer = false, heldBy = false;
       if (player && ahead(player.x, player.z, reach + 2.5, 2.3)) { block = true; byPlayer = true; }
       if ((c.jam ?? 0) < 4) for (let j = 0; j < cars.length && !block; j++) {
         const o = cars[j]; if (o === c || o.off) continue;
-        if (ahead(o.o.position.x, o.o.position.z, reach, 1.7)) block = true;
+        if (ahead(o.o.position.x, o.o.position.z, reach, 1.7)) { block = true; heldBy = !!o.held; }
         // Vorfahrt: wer schon in der Kreuzung abbiegt, fährt zuerst
         else if (!c.turn && o.turn && c.u > .8 && Math.abs(o.o.position.x - NODES[c.b!].x) < 9 && Math.abs(o.o.position.z - NODES[c.b!].z) < 9) block = true;
       }
@@ -1059,7 +1107,9 @@ export class World {
       // nach einem Stoß: kurz stehen bleiben und schimpfen
       if (c.bump) { c.bump.t -= dt; want = 0; if (c.bump.t <= 0) c.bump = undefined; }
       // Stau-Auflösung: wer lange steht, schiebt sich langsam weiter (nie für immer verkeilt)
-      c.jam = want === 0 && !byPlayer && !c.bump ? (c.jam ?? 0) + dt : Math.max(0, (c.jam ?? 0) - dt * 2);
+      // (wer an der Ampel wartet oder dahinter in der Schlange steht, ist kein Stau)
+      c.held = red || (block && heldBy);
+      c.jam = want === 0 && !byPlayer && !c.bump && !c.held ? (c.jam ?? 0) + dt : Math.max(0, (c.jam ?? 0) - dt * 2);
       if ((c.jam ?? 0) > 6) c.jam = 0;
       // hupen, wenn du im Weg stehst
       if (byPlayer) { c.wait = (c.wait ?? 0) + dt; if (c.wait > 2.2) { c.wait = -4; this.onHonk?.(c); } } else c.wait = 0;
