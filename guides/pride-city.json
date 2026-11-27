@@ -20,6 +20,13 @@
       ]
     },
     {
+      "t": "Story-Modus oder freie Welt",
+      "p": [
+        "Beim neuen Spiel wählst du, wie du spielen willst. Im 📖 Story-Modus bist du Rico (oder deine eigene Figur, auch eine Frau) und lebst mit Tarek in einer offenen Beziehung. Tarek ist der mit den krummen Dingern, du setzt auf Frieden und Spaß. In der Nacht vor eurem Umzug landet er unschuldig in U-Haft, und du holst ihn raus: „Gitter und Glitzer“ läuft neben allen Kapiteln und Akten, ganz ohne Zeitdruck. Keine Uhr läuft ab, jede Etappe öffnet sich mit einem neuen Kapitel.",
+        "In der 🌆 freien Welt ist alles sofort offen: keine Kapitel, keine Story-Anrufe, nur die Stadt, Jobs, Dates, Clubs, Autos, Inseln und Minispiele. Unter Menü → Story schaltest du den Story-Modus jederzeit ein, dein Fortschritt bleibt. Auch ältere Spielstände können dort „Story-Modus mit Tarek starten“."
+      ]
+    },
+    {
       "t": "Deine Figur",
       "p": [
         "Im Editor wählst du eine von über 20 echten Menschen-Figuren (Microsoft Rocketbox, jede mit eigener Kleidung und eigenem Stil), dazu deinen Namen und deine Pronomen. Über das Pausenmenü (Kleiderschrank) oder den Kleiderschrank in deiner Wohnung wechselst du die Figur jederzeit. Alle Menschen in Rainbow City sind solche Figuren: Passant*innen, Polizei, Feuerwehr, Sanitäterin, Türsteher, Köchin und Kurier."
@@ -610,6 +617,15 @@
       ]
     },
     {
+      "t": "Tarek rausholen: Ricos Weg oder Tareks Weg",
+      "list": [
+        "Es gibt keine Frist: Spar die 500 € Kaution in deinem Tempo mit Schichten, Aufträgen und deinem Club.",
+        "Bei jeder Hürde schlägt Tarek eine Abkürzung vor (🕶️). Ricos Weg (💜/💃) bringt mehr Ruf, Tareks Weg kostet Geld oder bringt einen Fahndungsstern. Beides führt ans Ziel, das Ende erzählt, wie ihr es gemacht habt.",
+        "Graf Classics ist nur nachts zu knacken: Sprich Mira nach 21 Uhr an oder lass bis 21 Uhr warten.",
+        "Die letzte Fahrt ist eine Verfolgung: Steig vorher ins Auto. Entwischt Orlando, versuchst du es einfach noch einmal."
+      ]
+    },
+    {
       "t": "Unterschriften",
       "list": [
         "Frag freundlich und erkläre, worum es geht – dann unterschreiben die meisten.",
@@ -894,6 +910,17 @@
         "Hol Lena, Bruno und Tariq ins Team (Regenbogen-Symbol über dem Kopf).",
         "Geh ab 12 Uhr auf die Pride Plaza. Nach dem Parade-Tanz zeigt das Spiel dein Ende: Was Jules, Rex, Hilde und Mo sagen, hängt von deinen Entscheidungen und deinem Ruf ab (ab 80 Ruf gibt es ein besonderes Lob).",
         "Danach läuft der Abspann, und du spielst frei weiter."
+      ]
+    },
+    {
+      "t": "Gitter und Glitzer (Story-Modus mit Tarek)",
+      "steps": [
+        "Kapitel 1, nach dem Koffer: Tarek ruft aus der U-Haft an. Geh in die Polizeiwache Mitte und sprich ihn im Besuchsraum an. Er erzählt von Orlando Graf, seinem alten Boss, der ihn mit einem gestohlenen Cabrio hingehängt hat.",
+        "Ab Kapitel 2: Anwältin Mira Lindqvist steht zwischen Regenbogenhaus und Feuerwache (⚖️). Frag am Kai bei der Fischbude und dann bei Taxifahrerin Dörte an der Tram Rainbow City. Lade Dörte zum Kiezabend ein (Ricos Weg) oder gib ihr 100 € (Tareks Weg).",
+        "Ab Kapitel 3: Bring Mira 500 € Kaution.",
+        "Ab Kapitel 4, nachts: Mira erzählt vom Fahrtenbuch bei Graf Classics in der Hochstadt (bei der Garage). Ricos Weg: Lady Luma an der One Love Bar abholen, vor dem Laden eine Show starten, durchs Bürofenster fotografieren. Tareks Weg: Flos Schlüssel am Späti, reinschleichen (ein Fahndungsstern). Fotos zu Mira.",
+        "Ab Kapitel 5: Hol Tarek in der Polizeiwache ab. Er ist frei und wartet vor der One Love Bar.",
+        "Nach der Pride, nachts: Sprich Tarek an, fahr zur Laternenmeile und folge Orlandos Wagen, bis Kommissarin Sander ihn stellt. Zurück an der One Love Bar entscheidet ihr: offen bleiben oder ab jetzt exklusiv."
       ]
     },
     {
