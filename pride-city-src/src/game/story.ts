@@ -16,6 +16,7 @@ import { FLUT_NPCS, flutTalk, flutGoal, flutMarks, flutHidden, flutTick, flutHus
 import { LUFT_NPCS, luftTalk } from './luft';
 import { lineup, doneThisWeek, isOpen, KINDS } from './live';
 import { crewTalk, crewGoal, crewMarks, crewTick } from './crew';
+import { TAREK_NPCS, tarekTalk, tarekGoal, tarekMarks, tarekHidden, tarekTick } from './tarek';
 
 export interface NpcDef {
   id: string; name: string; pron: string; color: string; look: Look;
@@ -53,6 +54,7 @@ export const NPCS: NpcDef[] = [
   ...NACHT_NPCS,
   ...FLUT_NPCS,
   ...LUFT_NPCS,
+  ...TAREK_NPCS,
   { id: 'kim', name: 'Kim', pron: 'they/them', color: '#3da542', look: { body: 'Woman', palette: 'aro', skin: 4, hair: 2 }, x: -26, z: -20, walk: [[-26, -20], [-26, -4], [-14, -4], [-14, -20]], petition: true },
 ];
 
@@ -108,6 +110,7 @@ export interface Goal { title: string; sub?: string; npc?: string; poi?: string;
 
 /** Kapitel-Überschrift für HUD und Pause */
 export function chapterLabel(s: SaveData) {
+  if (s.flags.mode === 'frei') return 'Freie Welt';
   const c = CHAPTERS[s.chapter - 1];
   return c ? `Kapitel ${c.n} · ${c.title}` : actLabel(s);
 }
@@ -145,13 +148,16 @@ export function goal(s: SaveData): Goal {
     case 1: return { title: `Hol Leute ins Pride-Team (${count(s, 'help_', HELPERS)}/3)`, sub: 'Lena, Bruno und Tariq. 🏳️‍🌈 zeigt, wer fehlt.' };
     case 2: return { title: 'Die Parade beginnt auf der Pride Plaza', sub: 'Ab 12 Uhr. Alle warten auf dich! Der Pride-Bus „CSD-Shuttle“ steht an der Polizeiwache.', poi: 'plaza' };
   }
-  const ng = nachtGoal(s);
+  const frei = s.flags.mode === 'frei';
+  // Story-Modus „Gitter und Glitzer“ (tarek.ts): nach den Kapiteln vor allen anderen Strängen
+  const tg = !frei && s.chapter > 5 ? tarekGoal(s) : null; if (tg) return tg;
+  const ng = frei ? null : nachtGoal(s);
   if (ng && (s.flags.nachtRun || (s.chapter > 5 && !s.flags.sagaRun && nachtFirst(s)))) return ng;
-  const sg = sagaGoal(s);
+  const sg = frei ? null : sagaGoal(s);
   if (sg && (s.chapter > 5 || s.flags.sagaRun)) return sg;
-  const fg = fadenGoal(s); if (fg) return fg;
-  const flg = flutGoal(s); if (flg) return flg;
-  const crg = crewGoal(s); if (crg) return crg;
+  const fg = frei ? null : fadenGoal(s); if (fg) return fg;
+  const flg = frei ? null : flutGoal(s); if (flg) return flg;
+  const crg = frei ? null : crewGoal(s); if (crg) return crg;
   const sat = (s.day - 1) % 7 === 5, h = hour(s);
   if (s.chapter > 5 && s.flags.wagen && sat && h >= 12 && h < 18 && s.flags.wagenPrize !== s.day) return { title: 'CSD-Parade: Spring auf deinen Festwagen', sub: 'Bis 18 Uhr auf der Hauptstraße. Bleib oben, bis die Jury deinen Wagen gesehen hat.' };
   const dg = s.chapter > 3 ? dragGoal(s) : null;
@@ -162,7 +168,9 @@ export function goal(s: SaveData): Goal {
   // Live-Event der Woche (live.ts), sobald Kiki davon erzählt hat und gerade eines läuft
   if (s.flags.liveCall) { const e = lineup().find((x) => !doneThisWeek(s, x.kind) && isOpen(s, x.kind)); if (e) return { title: `LIVE: ${e.name}`, sub: `${KINDS[e.kind].icon} ${KINDS[e.kind].name} der Woche mit ${e.host}${e.kind === 'boot' ? ' · Im Glitzer-Boot am Steg der Strandbar anhalten' : ' · Folge dem Symbol auf dem Radar'}. Handy → Live-Events.` }; }
   if (s.chapter > 5 && !s.flags.radioShows) return { title: 'Moderiere „Rainbow Talk“ auf Pride FM', sub: 'Handy → Pride FM 88,8. Leute aus der Stadt rufen an, du antwortest live.' };
+  const tg2 = !frei && s.chapter <= 5 ? tarekGoal(s) : null; if (tg2) return tg2;
   if (s.chapter > 1 && s.chapter <= 5) return { title: 'Erkunde Rainbow City', sub: 'Sprich mit deinen Freund*innen – die Geschichte geht gleich weiter.' };
+  if (frei) return { title: 'Freie Welt', sub: 'Ohne Geschichte: Arbeite, date, feiere, fahr und flieg. Story-Modus jederzeit im Menü → Story.' };
   if (s.chapter > 5) return { title: 'Freies Spiel', sub: 'Die Geschichte ist erzählt. Arbeite, date, feiere – Rainbow City gehört dir.' };
   switch (s.step) {
     case 0: case 1: return { title: 'Triff Mo im Café Kaffeeklatsch', sub: 'Mo wartet vor dem Café an der Hauptstraße.', npc: 'mo' };
@@ -176,7 +184,7 @@ export function goal(s: SaveData): Goal {
 }
 
 /** Figuren, die gerade ein Symbol über dem Kopf brauchen */
-export function marks(s: SaveData): Array<[string, string]> { return [...mainMarks(s), ...sagaMarks(s), ...nachtMarks(s), ...flutMarks(s), ...crewMarks(s)]; }
+export function marks(s: SaveData): Array<[string, string]> { return [...mainMarks(s), ...sagaMarks(s), ...nachtMarks(s), ...flutMarks(s), ...crewMarks(s), ...tarekMarks(s)]; }
 function mainMarks(s: SaveData): Array<[string, string]> {
   if (s.chapter === 1 && s.step === 4) return NPCS.filter((n) => n.petition && s.flags['sig_' + n.id] === undefined).map((n) => [n.id, '✍️']);
   if (s.chapter === 4 && s.step === 1) return CLUES.filter((id) => !s.flags['clue_' + id]).map((id) => [id, '🔎']);
@@ -185,7 +193,7 @@ function mainMarks(s: SaveData): Array<[string, string]> {
 }
 
 /** Nova ist in Kapitel 4 verschwunden */
-export function hidden(s: SaveData, id: string) { return sagaHidden(s, id) || flutHidden(s, id) || (id === 'nova' && s.chapter === 4 && s.step < 4) || (id === 'leon' && s.chapter < 2) || (['finn', 'ben', 'lotte', 'pia', 'joerg', 'anke', 'samira', 'tobi'].includes(id) && s.chapter < 2); }
+export function hidden(s: SaveData, id: string) { return sagaHidden(s, id) || flutHidden(s, id) || tarekHidden(s, id) || (id === 'nova' && s.chapter === 4 && s.step < 4) || (id === 'leon' && s.chapter < 2) || (['finn', 'ben', 'lotte', 'pia', 'joerg', 'anke', 'samira', 'tobi'].includes(id) && s.chapter < 2); }
 
 /** Ziele, die sich von selbst erfüllen (Schicht gearbeitet, Leute kennengelernt) – zweimal pro Sekunde */
 export function storyTick(c: StoryCtx) {
@@ -196,11 +204,15 @@ export function storyTick(c: StoryCtx) {
   else {
     // Akt IV (flut.ts) klingelt nur, wenn der rote Faden in diesem Takt nicht schon angerufen hat
     let rang = false;
+    // Freie Welt: keine Story-Anrufe, nur Hinweise auf Angebote (Flugschule, Live-Events, Aufstieg)
+    if (s.flags.mode === 'frei') { let r = false; extraTick({ ...c, phone: (l, d) => { r = true; c.phone(l, d); } }); if (!r) aufTick(c); return; }
     fadenTick({ ...c, phone: (l, d) => { rang = true; c.phone(l, d); } });
     if (rang) { flutHush(); extraHush(); aufHush(); return; }
     // Flugschule, Live-Events und Festtage (faden.ts) erst, wenn auch Akt IV/V gerade nichts zu sagen haben; der Aufstieg (aufstieg.ts) ganz zuletzt
     let rang4 = false;
     const quiet = { ...c, phone: (l: Parameters<typeof c.phone>[0], d?: Parameters<typeof c.phone>[1]) => { rang4 = true; c.phone(l, d); } };
+    tarekTick(quiet);
+    if (rang4) { flutHush(); extraHush(); aufHush(); return; }
     flutTick(quiet); crewTick(quiet);
     if (rang4) { extraHush(); aufHush(); return; }
     extraTick(quiet);
@@ -210,7 +222,7 @@ export function storyTick(c: StoryCtx) {
 
 /** Gespräch – true, wenn die Geschichte es übernommen hat */
 export function talk(c: StoryCtx, id: string): boolean {
-  if (crewTalk(c, id) || sagaTalk(c, id) || nachtTalk(c, id) || flutTalk(c, id) || luftTalk(c, id)) return true;
+  if (tarekTalk(c, id) || crewTalk(c, id) || sagaTalk(c, id) || nachtTalk(c, id) || flutTalk(c, id) || luftTalk(c, id)) return true;
   const s = c.s, n = npc(id);
   if (!n) return false;
   if (s.chapter === 1) {
