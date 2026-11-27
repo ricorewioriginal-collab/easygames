@@ -36,3 +36,18 @@ mit weißen Streifen, schwarze Hose) und hat Kette, Ohrring und Septum-Ring beko
 
 Animationen, Uniform-Figuren (Polizei, Feuerwehr, Sanitäterin, Köchin, Kurier), Kinder und die Sport-Körper unter Oberkörperfrei/Badesachen:
 Microsoft Rocketbox Avatar Library, MIT-Lizenz, siehe `assets/rb/LICENSE.md`.
+
+## Fahrzeuge (seit 27.11.2026)
+
+Alle Autos (eigene Wagen, Verkehr, Taxi, Streifenwagen, Show- und Rennautos) stammen von Sketchfab und stehen unter
+**Creative Commons Attribution 4.0 (CC BY 4.0)** – https://creativecommons.org/licenses/by/4.0/. Erfundene Modelle ohne echte Marken.
+
+| Modell | Urheber*in | Lizenz | Verwendet als |
+|---|---|---|---|
+| „Generic passenger car pack“ – https://sketchfab.com/3d-models/generic-passenger-car-pack-20f9af9b8a404d5cb022ac6fe87f21f5 | Comrade1280 (Sketchfab) | CC BY 4.0 | `assets/cars/sedan`, `taxi`, `hatchback`, `stationwagon`, `compact`, `coupe`, `minivan`, `delivery`, `pickup`, `sport`, `suv`, `offroad` (je `.glb` und `_lo.glb`) |
+| „Fairheaven LT '80 Cop Cruiser – Low poly model“ – https://sketchfab.com/3d-models/fairheaven-lt-80-cop-cruiser-low-poly-model-61766c1e6e1e4b2b803c174f33433a74 | Daniel Zhabotinsky (Sketchfab) | CC BY 4.0 | `assets/cars/police.glb` (Streifenwagen) |
+| „Saba V12 '95 Interceptor – Low poly model“ – https://sketchfab.com/3d-models/saba-v12-95-interceptor-low-poly-model-63aa215521334cef9c4d8c4c391252ad | Daniel Zhabotinsky (Sketchfab) | CC BY 4.0 | `assets/cars/interceptor.glb` (Verfolgungswagen) |
+
+Änderungen: Die Pakete wurden in einzelne Autos geteilt, ausgerichtet, auf Straßenmaß gebracht, Innenraum und Kleinteile entfernt,
+Geometrie vereinfacht (`_lo` für den Verkehr am Handy) und Texturen auf 512 px verkleinert (`pride-city-src/scripts/cars.mjs`).
+Taxi (gelb) und Lieferwagen (hell) sind umgefärbte Fassungen der Limousine bzw. des Vans.

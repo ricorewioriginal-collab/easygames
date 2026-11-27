@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 const R = 'https://raw.githubusercontent.com/KayKit-Game-Assets/';
 const SRC = {
   city: [R + 'KayKit-City-Builder-Bits-1.0/main/addons/kaykit_city_builder_bits/Assets/gltf/', ['base', 'bench', 'box_A', 'box_B', 'building_A', 'building_B', 'building_C', 'building_D', 'building_E', 'building_F', 'building_G', 'building_H', 'bush',
-    'car_hatchback', 'car_police', 'car_sedan', 'car_stationwagon', 'car_taxi', 'dumpster', 'firehydrant', 'road_corner', 'road_corner_curved', 'road_junction', 'road_straight',
+    'dumpster', 'firehydrant', 'road_corner', 'road_corner_curved', 'road_junction', 'road_straight',
     'road_straight_crossing', 'road_tsplit', 'streetlight', 'trafficlight_A', 'trafficlight_B', 'trafficlight_C', 'trash_A', 'trash_B', 'watertower'], '.gltf'],
   home: [R + 'KayKit-Furniture-Bits-1.0/main/addons/kaykit_furniture_bits/Assets/gltf/', ['armchair_pillows', 'bed_double_A', 'book_set', 'cabinet_medium_decorated', 'cabinet_small', 'cactus_medium_A', 'cactus_small_A',
     'chair_A', 'couch_pillows', 'lamp_standing', 'lamp_table', 'pictureframe_large_A', 'rug_rectangle_stripes_A', 'rug_oval_A', 'shelf_A_big', 'table_low', 'table_medium',

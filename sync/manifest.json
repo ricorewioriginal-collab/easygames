@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "b002aab5dd6f",
- "generated": "2026-11-27T22:36:39+00:00",
- "commit": "d59961ddefd0d596133c8594f523de562979a6d0",
+ "version": "afe251de25ea",
+ "generated": "2026-11-27T22:40:33+00:00",
+ "commit": "c687f65001200ad788fc4c556e2e08274fe9f6c7",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -14092,49 +14092,204 @@
    "h": "13cee1eee66a9d8841c7950b9ca86a11d4f534951789385f2d63938158bdf5c1"
   },
   {
-   "p": "pride-city/assets/cars/delivery_van.glb",
-   "s": 57460,
-   "h": "1446041c65c2308195e5ec22521fbb0d9d6fe655a604b7de80b8796029bb0545"
+   "p": "pride-city/assets/cars/compact.glb",
+   "s": 244572,
+   "h": "d1fedda9e8680e045cb21652c9f63cbdb23bcf357259c94f0cd84c12bc114d5d"
   },
   {
-   "p": "pride-city/assets/cars/hatchback_sports.glb",
-   "s": 53876,
-   "h": "3416f1d25bf084dadd981cc175bfdc901b644c6ab7c2f620f7522420789f9a28"
+   "p": "pride-city/assets/cars/compact_far.glb",
+   "s": 104668,
+   "h": "74f5a4ab54670c7e3142b7a79a20ed8b0a95370feb53c4e9a9716372394de1d2"
   },
   {
-   "p": "pride-city/assets/cars/kart_a.glb",
-   "s": 65508,
-   "h": "dabf27d47d85aa4dd057e432a04ae5bfb630cc087ba9809101f2116fc320d288"
+   "p": "pride-city/assets/cars/compact_lo.glb",
+   "s": 110764,
+   "h": "b2132acdaca57a082fc4841712f0a1ab33b49d49c3bbdf882f64df50231da1f5"
   },
   {
-   "p": "pride-city/assets/cars/race_car.glb",
-   "s": 46168,
-   "h": "05d7a2c8c6faf02522cc26d114f8fe974e651894c71f5df5f01e776e20aeaece"
+   "p": "pride-city/assets/cars/coupe.glb",
+   "s": 238604,
+   "h": "7c9cb4564e4f7ded9f5019954c571050380a836372ea6b5df49ed4ef59b01e51"
   },
   {
-   "p": "pride-city/assets/cars/sedan_sports.glb",
-   "s": 54728,
-   "h": "d0201e3a78c8163ed2970d85efc7933d4c8dd17df2812b0a65e22fa5eb13c94d"
+   "p": "pride-city/assets/cars/coupe_far.glb",
+   "s": 31104,
+   "h": "264d84fa79cc9d0347e5734d4431dbc6ffc8f99a1d47e9c0183d34ecc0f55692"
+  },
+  {
+   "p": "pride-city/assets/cars/coupe_lo.glb",
+   "s": 113784,
+   "h": "37128b32771a0b3c06d41efb393aadaa4adbdec644722aa6369cc58aa2ae2882"
+  },
+  {
+   "p": "pride-city/assets/cars/delivery.glb",
+   "s": 253564,
+   "h": "f7fa8bb2147f3a1310ee81971cdd0c38cca71efe9af46a620f19e98aa0e22679"
+  },
+  {
+   "p": "pride-city/assets/cars/delivery_far.glb",
+   "s": 45072,
+   "h": "c71c295c1631937960c3e4e2504919640eb84332fa231023c4b7845ca4e6e6bd"
+  },
+  {
+   "p": "pride-city/assets/cars/delivery_lo.glb",
+   "s": 119212,
+   "h": "e0975d621da0dd39f815e5cb3fc32bccf94f07872287ff9bdee672819cea41ee"
+  },
+  {
+   "p": "pride-city/assets/cars/hatchback.glb",
+   "s": 232812,
+   "h": "2f048d39451dfbb511e03bb09378bb7a021dd0274fff29d729a3ee0f8eb16ce2"
+  },
+  {
+   "p": "pride-city/assets/cars/hatchback_far.glb",
+   "s": 38828,
+   "h": "ae767b7bf46fd6f80df61f8cbf93ce261fe797d9be384778c28ce51363d3222a"
+  },
+  {
+   "p": "pride-city/assets/cars/hatchback_lo.glb",
+   "s": 106412,
+   "h": "34f4d1449930afd9107812462d787d673f9229c01dbc8d1a815b4b75a94b7750"
+  },
+  {
+   "p": "pride-city/assets/cars/interceptor.glb",
+   "s": 633484,
+   "h": "05a7ac1cc7e2572b8bb96ca20e8770b37298759fc6ce28f39d667c32fb47e3de"
+  },
+  {
+   "p": "pride-city/assets/cars/interceptor_lo.glb",
+   "s": 374504,
+   "h": "b46307303d8edc7155a67926273258fdcb51dd23e9a8c3058f7c8e48110d0536"
+  },
+  {
+   "p": "pride-city/assets/cars/minivan.glb",
+   "s": 247996,
+   "h": "bb82bd0110cef72f80c970acd5502fcb07965780119d38e25f05511ce9e94a1b"
+  },
+  {
+   "p": "pride-city/assets/cars/minivan_far.glb",
+   "s": 44248,
+   "h": "a06b75b00e8af9ade37a9e0a05573942741bb32757a56bdb974401af86a77de2"
+  },
+  {
+   "p": "pride-city/assets/cars/minivan_lo.glb",
+   "s": 116540,
+   "h": "a25d2ffcfb1b869692aeb74f3977d6aa29d83dfd9dbf8aaf82c8732f3dda86f0"
+  },
+  {
+   "p": "pride-city/assets/cars/offroad.glb",
+   "s": 215776,
+   "h": "0441eee4c22f9f4e6519851419bb851942446988c7a0d572afcdd1e8656c1a40"
+  },
+  {
+   "p": "pride-city/assets/cars/offroad_far.glb",
+   "s": 27124,
+   "h": "48f8efea37bac4023a073546d2bc863b6e4bc05d04c65cf728042c922575723b"
+  },
+  {
+   "p": "pride-city/assets/cars/offroad_lo.glb",
+   "s": 99200,
+   "h": "d6385e2ce0124e7f726d23129065d40d52dd37396a5483264a8a62b782e4fc8c"
+  },
+  {
+   "p": "pride-city/assets/cars/pickup.glb",
+   "s": 234756,
+   "h": "496500e6073428ad2a64626bc50460762ff7506b67f4b201c8fd7366807f5dfc"
+  },
+  {
+   "p": "pride-city/assets/cars/pickup_far.glb",
+   "s": 28476,
+   "h": "c5b21b28b6905342b8bc2e295fc4d668289a3e5adcae3b0a3c037d307f6d70c3"
+  },
+  {
+   "p": "pride-city/assets/cars/pickup_lo.glb",
+   "s": 113172,
+   "h": "10ee17c09b133170dcd4f88bc76f42637e9c31301084e47fc63224dcb4186be5"
+  },
+  {
+   "p": "pride-city/assets/cars/police.glb",
+   "s": 235596,
+   "h": "114d081eaca0e01214ba1c36edd4422d015373d60dbf8374f0b31cfccb3fcf26"
+  },
+  {
+   "p": "pride-city/assets/cars/police_lo.glb",
+   "s": 128776,
+   "h": "ffb2d315587a9a338f84fd21feed92772699ea1253d5a537537b953b5418a48c"
+  },
+  {
+   "p": "pride-city/assets/cars/sedan.glb",
+   "s": 269280,
+   "h": "f6ec3037811ed171c9aa630f01e357abef3072bec17b1847a71f0a9c1e1ef111"
+  },
+  {
+   "p": "pride-city/assets/cars/sedan_far.glb",
+   "s": 29652,
+   "h": "a381113e216ca8ede24f6e97de3d053eaf453ec0e3291f9dfb308846834871eb"
+  },
+  {
+   "p": "pride-city/assets/cars/sedan_lo.glb",
+   "s": 149768,
+   "h": "4fb7988aacadeec5b5982f2587429bedb0540683041b308e806e5db848929ad4"
+  },
+  {
+   "p": "pride-city/assets/cars/sport.glb",
+   "s": 239320,
+   "h": "4792790d68aae0019768f86a9fafc399de57ba42fa720fc79c9b250cc353abe5"
+  },
+  {
+   "p": "pride-city/assets/cars/sport_far.glb",
+   "s": 104292,
+   "h": "36c8b4883c291ca48aedef5cb6e1d2ebc21d20fc5c68ed46612b7fcb6721eb24"
+  },
+  {
+   "p": "pride-city/assets/cars/sport_lo.glb",
+   "s": 112040,
+   "h": "0dc4e11132bf3df33cf8f77464cee7e108ddcf0c511d31ef4d3a7d51759c4488"
+  },
+  {
+   "p": "pride-city/assets/cars/stationwagon.glb",
+   "s": 251496,
+   "h": "40d67d1a7c08f163ec3b5f33deccf3108b3ca78df0380d100155041348d81559"
+  },
+  {
+   "p": "pride-city/assets/cars/stationwagon_far.glb",
+   "s": 30860,
+   "h": "7567d612c4ec2b1d6dacd66c7ed71b64383f9675da84d04c33cf8bc1efaf0f3c"
+  },
+  {
+   "p": "pride-city/assets/cars/stationwagon_lo.glb",
+   "s": 127400,
+   "h": "c5eeec7de0547de612ccd56fd1350086405767fd90755fca539b349724fb45ff"
   },
   {
    "p": "pride-city/assets/cars/suv.glb",
-   "s": 60408,
-   "h": "e434cfe5c66b5e61e447a34a3175ca055ae9d8757c4ea779919c3ade7f6b47d1"
+   "s": 254416,
+   "h": "4a354d38f2fd4d9a09a0e2838c8833246ebd431d34ee5ddf83cf144e06d9d4ae"
   },
   {
-   "p": "pride-city/assets/cars/suv_luxury.glb",
-   "s": 53484,
-   "h": "529f66a752821040a9bbccba227cf11c091d97560a44dcc32bed4b502660f721"
+   "p": "pride-city/assets/cars/suv_far.glb",
+   "s": 36888,
+   "h": "76c8ee764087620c8b2b184a9ea4ddd6c9ff334139bb72972c94892763891aab"
   },
   {
-   "p": "pride-city/assets/cars/truck.glb",
-   "s": 53196,
-   "h": "973734d34528bc8a7211917384b3fb1e89ec8cf793d05784737ce854673a4d4e"
+   "p": "pride-city/assets/cars/suv_lo.glb",
+   "s": 119612,
+   "h": "8a4b78f1974875560b41302f36d528c28c5d1988ecb43a75fd2885bbb96211b7"
   },
   {
-   "p": "pride-city/assets/cars/van.glb",
-   "s": 53248,
-   "h": "89f1d1d4cb16bcd93bd7d758a5615053d1e31d005cb37c21c9f13adf23893bb5"
+   "p": "pride-city/assets/cars/taxi.glb",
+   "s": 270640,
+   "h": "5c5d36fe5f184f7217ce119820eee465a22de6bcf29df4b52951b5f7b16c552a"
+  },
+  {
+   "p": "pride-city/assets/cars/taxi_far.glb",
+   "s": 29396,
+   "h": "65e2bb429aadbcb844ac77db48f2f9f2f937c0b68cfa4affd54396267ec79939"
+  },
+  {
+   "p": "pride-city/assets/cars/taxi_lo.glb",
+   "s": 149784,
+   "h": "06b23bf8ab78e6012796547933a8c5a033756b17e86243e126b91b9e24074eda"
   },
   {
    "p": "pride-city/assets/city/base.bin",
@@ -14265,56 +14420,6 @@
    "p": "pride-city/assets/city/bush.gltf",
    "s": 3022,
    "h": "b1de478b23e6bcfd08d6c070440582195839f66dfd3afc123118fb6298483183"
-  },
-  {
-   "p": "pride-city/assets/city/car_hatchback.bin",
-   "s": 53564,
-   "h": "e7756d8a44553ef75091bb4baa41388bcb1a1b44388008a3e670d05cb12f4c5f"
-  },
-  {
-   "p": "pride-city/assets/city/car_hatchback.gltf",
-   "s": 10952,
-   "h": "e38be3dbdfbc95b0e794fc5c8164b2ff658b2dc5049b51d38179d16a9432b4f3"
-  },
-  {
-   "p": "pride-city/assets/city/car_police.bin",
-   "s": 62168,
-   "h": "07bf3160554753cb6365e85c1c99dd9bf9ca4e8ffabeab5f15ff03ac18640d87"
-  },
-  {
-   "p": "pride-city/assets/city/car_police.gltf",
-   "s": 10937,
-   "h": "c6f1f85c2a8f56ec0abb76deac13486d42399c6d23868e5e524a090fce652d12"
-  },
-  {
-   "p": "pride-city/assets/city/car_sedan.bin",
-   "s": 55332,
-   "h": "1d69e7f098a5456a8c6891c4fd718ad1c71397045c8931817550a8801f00338d"
-  },
-  {
-   "p": "pride-city/assets/city/car_sedan.gltf",
-   "s": 10928,
-   "h": "96c9d38e682bc2c77470af09d1a7450208559ca652bf2cf6fd2bc20b8646ef59"
-  },
-  {
-   "p": "pride-city/assets/city/car_stationwagon.bin",
-   "s": 56172,
-   "h": "46d28202e738f62ba6aae5caae5d56852334ca53ac0628d88d03a5e5e3042c4b"
-  },
-  {
-   "p": "pride-city/assets/city/car_stationwagon.gltf",
-   "s": 10970,
-   "h": "49f7e2bdb70183214a3e8d8576e420ebb69520b21db81dddfc6a04e1ed8994fd"
-  },
-  {
-   "p": "pride-city/assets/city/car_taxi.bin",
-   "s": 58704,
-   "h": "28abb85c4eb0d38be9b4b0beebe0a55038565b1f9545fea65f59cb56672c1d11"
-  },
-  {
-   "p": "pride-city/assets/city/car_taxi.gltf",
-   "s": 10924,
-   "h": "781b3265473dab6f7e054f06c23abeba9b811516b19b61a7a88b0aa8d33e1323"
   },
   {
    "p": "pride-city/assets/city/citybits_texture.png",
@@ -14837,9 +14942,9 @@
    "h": "211fbca1e4ad52987f24abf0084d3f0b3547afbc18046a32bdb7212f49c7689f"
   },
   {
-   "p": "pride-city/assets/index-yxAtPrW8.js",
-   "s": 1339107,
-   "h": "7b662a3149c1351920d7e8702dbf57bb7c402f99e2f777fa45d386f3bd6a13b3"
+   "p": "pride-city/assets/index-Dn7tGJ8x.js",
+   "s": 1340452,
+   "h": "dda11399e6c41a757aadc85eeb5ca6ae3fc810827451f0348d527ee77228220d"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -15599,7 +15704,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5862,
-   "h": "2ef573b29c4e8c3ef79e167dfc85080345b8fc69be927612d1f656109398b224"
+   "h": "1814ae79e79bccade3e04450554d6a98143b2fb1e0354ef92e223f81feb1d14e"
   },
   {
    "p": "pride-city/logo.svg",
@@ -18374,7 +18479,7 @@
   {
    "p": "sync/catalog.json",
    "s": 241235,
-   "h": "3e55dfbfafc7e836bb84a55159f6a324d4076e937b421af8acac0745f87992b0"
+   "h": "dbd53dd41b32c5737ec5a0f8e8c9579553172cf1495a72fa5be2d0b7e77227e6"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

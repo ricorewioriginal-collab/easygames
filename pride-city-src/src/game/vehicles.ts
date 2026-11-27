@@ -1,12 +1,12 @@
 /* Fuhrpark, Garage und Rennen: Jedes Auto fährt sich anders (Tempo, Turbo, Antritt, Lenkung). In der Garage
    Schraubenschlüssel in der Hochstadt kaufst du eigene Wagen, lackierst sie um und baust Turbo-Stufen ein.
    Straßenrennen gegen die Uhr mit Gold, Silber und Bronze; der Paketdienst ist die zweite Schicht neben dem Taxi.
-   Modelle: KayKit City Builder Bits und Kenney Car Kit (beide CC0). */
+   Modelle: Sketchfab, CC BY 4.0 (World.CAR_FILE, scripts/cars.mjs, Credits in public/CREDITS.md). */
 import type { SaveData } from '../engine/Save';
 import type { Gig } from './gigs';
 
 export interface CarDef {
-  id: string; /** KayKit-Datei oder „k:<name>“ für Kenney */ file: string; name: string; icon: string;
+  id: string; /** Fahrzeug-Art, World.CAR_FILE ordnet die Modell-Datei zu */ file: string; name: string; icon: string;
   /** m/s normal und mit Turbo */ max: number; turbo: number; acc: number; steer: number;
   /** Preis in der Garage (0 = nicht käuflich) */ price: number; /** Ladefläche: mehr Lohn beim Paketdienst */ cargo?: boolean; /** fliegt (lenkt wie ein Auto, dazu Steigen/Sinken) */ fly?: boolean; /** Einrad-Mobil aus toys.ts (18+ Penisring, sonst Donut), du sitzt sichtbar mittendrin */ toy?: boolean;
   /** Fahrzeug aus rides.ts: Einhorn-Roller, Pride-Bus, Glitzer-Boot (nur auf dem Wasser) */ ride?: 'scooter' | 'bus' | 'boat';

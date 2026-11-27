@@ -14,6 +14,7 @@ import { palmParts, treeParts } from './plants';
 import { roadSurface, grassSurface, photoSurface, waterSurface, worldTex } from '../engine/surfaces';
 import { buildUptown, EAST, BRIDGE, UPTOWN_PLACES, doorStep, TANKE } from './uptown';
 import { NODES, LANE, lane, nearestEdge } from './traffic';
+import { pixels, remember, breathe } from './texpix';
 
 export const TILE = 10;
 const S = TILE / 2; // KayKit-Kacheln sind 2 Einheiten breit
@@ -21,8 +22,17 @@ const N = 6;        // Kacheln von der Mitte bis zum Rand
 export const HALF = N * TILE + TILE / 2;
 
 const C = (n: string) => 'city/' + n + '.gltf';
-const CARS = ['car_hatchback', 'car_sedan', 'car_stationwagon', 'car_taxi', 'car_police'];
-export const CITY_FILES = [...CARS, 'base', 'road_straight', 'road_junction', 'road_tsplit', 'road_corner', 'streetlight', 'bench', 'bush', 'firehydrant', 'trash_A', 'dumpster', 'watertower', 'box_A'].map(C);
+/** Fahrzeug-Arten (Namen aus der Zeit der KayKit-/Kenney-Autos, im Spiel überall so benutzt) → Datei in assets/cars (scripts/cars.mjs, CC BY 4.0) */
+export const CAR_FILE: Record<string, string> = {
+  car_hatchback: 'compact', car_sedan: 'sedan', car_stationwagon: 'stationwagon', car_taxi: 'taxi', car_police: 'police',
+  'k:van': 'minivan', 'k:delivery_van': 'delivery', 'k:truck': 'pickup', 'k:suv': 'offroad', 'k:hatchback_sports': 'hatchback',
+  'k:sedan_sports': 'coupe', 'k:suv_luxury': 'suv', 'k:race_car': 'sport', 'k:interceptor': 'interceptor',
+};
+/** Verkehrsauto mit naher und ferner Fassung (World.car) */
+type CarLod = TransformNode & { _pcLod?: [TransformNode, TransformNode, boolean] };
+/** Gemischter Verkehr: Alltagsautos, dazu ab und zu Van, Pick-up und Geländewagen */
+const MIX = ['car_hatchback', 'car_sedan', 'k:van', 'car_stationwagon', 'k:truck', 'car_sedan', 'k:suv', 'car_hatchback', 'k:delivery_van', 'k:suv_luxury', 'k:sedan_sports'];
+export const CITY_FILES = ['base', 'road_straight', 'road_junction', 'road_tsplit', 'road_corner', 'streetlight', 'bench', 'bush', 'firehydrant', 'trash_A', 'dumpster', 'watertower', 'box_A'].map(C);
 
 export interface Poi { id: string; name: string; icon: string; x: number; z: number; r: number; sign?: string; color?: string }
 /** Begehbar: Innenstadt, Kai, Strand und Steg (nicht ins Wasser) */
@@ -820,8 +830,8 @@ export class World {
     // Hochstadt: viel gelbes Taxi, wie es sich für eine Großstadt gehört
     const UP = ['car_taxi', 'car_sedan', 'car_taxi', 'car_hatchback', 'car_taxi', 'car_stationwagon'];
     for (let i = 0; i < n; i++) {
-      const kind = i === 0 ? 'car_police' : i % 2 ? UP[i % UP.length] : CARS[i % (CARS.length - 1)];
-      const o = await this.car(kind);
+      const kind = i === 0 ? 'car_police' : i % 2 ? UP[i % UP.length] : MIX[(i >> 1) % MIX.length];
+      const o = await this.car(kind, true);
       const c: Car = { o, path: [new Vector3(), new Vector3()], seg: 0, u: 0, v: 8 + rnd() * 4, kind };
       this.placeCar(c, 0, 0, 0, 160);
       this.cars.push(c);
@@ -874,67 +884,76 @@ export class World {
     out.set(a.x + (b.x - a.x) * c.u + az * sh, .1, a.z + (b.z - a.z) * c.u - ax * sh);
     return Math.atan2(ax, az);
   }
-  /** Auto als bewegliche Kopie (Wurzel mit visible) */
-  async car(kind: string) {
-    if (kind.startsWith('k:')) return this.kenneyCar(kind);
-    const inner = await instance(this.scene, C(kind));
-    this.tune('car_', inner);
-    // KayKit-Räder reichen 0,061 Einheiten unter den Ursprung: anheben, damit die Reifen auf dem Asphalt (y 0,073) stehen
-    const o = new Node3(kind, this.scene); inner.parent = o; inner.scaling.setAll(S); inner.position.y = .061 * S - .025; o.parent = this.root;
-    return o;
-  }
-
-  /** Kenney Car Kit (CC0): eigene Kopie mit eigenem Lack-Material, Räder stehen bei y 0 */
-  private async kenneyCar(kind: string) {
-    const inner = await instance(this.scene, 'cars/' + kind.slice(2) + '.glb', { clone: true });
-    const mats = new Map<PBRMaterial, PBRMaterial>();
-    for (const ms of inner.getChildMeshes()) {
+  /** Auto als bewegliche Kopie (Wurzel mit visible). Verkehr (traffic) nutzt Instanzen (ein Zeichenaufruf je Modell)
+      und am Handy die vereinfachte Fassung; eigene Wagen sind Kopien mit Lack, den paintCar umfärben kann. */
+  async car(kind: string, traffic = false) {
+    const file = CAR_FILE[kind] || 'sedan', lo = traffic && (this.low || matchMedia('(pointer: coarse)').matches);
+    const inner = await instance(this.scene, 'cars/' + file + (lo ? '_lo' : '') + '.glb', { clone: !traffic, shadows: !lo });
+    // Verkehr: in der Ferne eine grobe Fassung (traffic() schaltet um), Streifenwagen nutzen dafür ihre Handy-Fassung
+    let far: TransformNode | null = null;
+    if (traffic) { far = await instance(this.scene, 'cars/' + file + (/^(police|interceptor)$/.test(file) ? '_lo' : '_far') + '.glb', { shadows: false }); far.setEnabled(false); }
+    if (!traffic) for (const ms of inner.getChildMeshes()) {
       const m = ms.material as PBRMaterial | null; if (!(m instanceof PBRMaterial)) continue;
-      const body = !/wheel/.test(ms.name);
-      let c = body ? mats.get(m) : this.wheelMat.get(m);
+      const wheel = /wheel/i.test(ms.name), key = file + '|' + m.name + (wheel ? '|r' : ''); let c = this.carMat.get(key);
       if (!c) {
-        c = m.clone(m.name + (body ? '_lack' : '_rad'));
-        if (body) { c.roughness = .3; c.metallic = .25; c.clearCoat.isEnabled = !this.low; c.clearCoat.intensity = .6; c.clearCoat.roughness = .08; (c as PBRMaterial & { _pcFx?: [boolean, boolean] })._pcFx = [false, true]; mats.set(m, c); }
-        else { c.roughness = .85; c.metallic = 0; this.wheelMat.set(m, c); }
+        // Karosserie bekommt Klarlack und heißt „…_lack“ (paintCar), alles andere bleibt, wie es ist
+        if (/body/i.test(m.name) && !wheel) { c = m.clone(m.name + '_lack'); c.clearCoat.isEnabled = !this.low; c.clearCoat.intensity = .55; c.clearCoat.roughness = .08; (c as PBRMaterial & { _pcFx?: [boolean, boolean] })._pcFx = [false, true]; }
+        else c = m;
+        this.carMat.set(key, c);
       }
       ms.material = c;
     }
-    const o = new Node3(kind, this.scene); inner.parent = o; inner.scaling.setAll(1.5); inner.position.y = -.027; o.parent = this.root;
+    const o = new Node3(kind, this.scene); inner.parent = o; inner.position.y = -.027; o.parent = this.root;
+    if (far) { far.parent = o; far.position.y = -.027; (o as CarLod)._pcLod = [inner, far, false]; }
+    if (kind === 'car_taxi') this.taxiSign(o);
     return o;
   }
-  private wheelMat = new Map<PBRMaterial, PBRMaterial>();
-  private paintSrc = new WeakMap<Texture, Promise<{ px: Uint8Array; w: number; h: number }>>();
+  private carMat = new Map<string, PBRMaterial>();
+  private signMat?: PBRMaterial;
+  /** Taxischild auf dem Dach (leuchtet) */
+  private taxiSign(o: TransformNode) {
+    const m = (this.signMat ||= glow(this.scene, 0xffe066, 1.2));
+    const b = box(this.scene, .62, .2, .26); b.material = m; b.parent = o; b.position.set(0, 1.5, -.15); b.isPickable = false;
+  }
   /** Eigenen Wagen umlackieren: Die Lackfarbe (häufigster kräftiger Farbton der Karosserie) wird auf den Wunsch-Farbton gedreht. hue < 0 = Original. */
   async paintCar(o: TransformNode, hue: number) {
     for (const ms of o.getChildMeshes()) {
       const m = ms.material as (PBRMaterial & { _pcOrig?: Texture }) | null;
       if (!(m instanceof PBRMaterial) || !/_lack$/.test(m.name)) continue;
       const src = (m._pcOrig ||= m.albedoTexture as Texture); if (!src) continue;
-      if (hue < 0) { m.albedoTexture = src; continue; }
-      let pr = this.paintSrc.get(src);
-      if (!pr) { pr = (async () => { const sz = src.getSize(); const px = new Uint8Array(((await src.readPixels()) as ArrayBufferView).buffer.slice(0)); return { px, w: sz.width, h: sz.height }; })(); this.paintSrc.set(src, pr); }
-      const { px, w, h } = await pr;
-      // Lackfarbe aus den UVs der Karosserie bestimmen
-      const uv = ms.getVerticesData(VertexBuffer.UVKind) || [], hist = new Float32Array(36);
-      const hsv = (r: number, g: number, b: number) => { const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn; let hh = 0; if (d) hh = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; return [(hh * 60 + 360) % 360, mx ? d / mx : 0, mx / 255]; };
-      for (let i = 0; i < uv.length; i += 2) {
-        const u = uv[i] * src.uScale + src.uOffset, v = uv[i + 1] * src.vScale + src.vOffset;
-        const x = Math.min(w - 1, Math.max(0, Math.floor((u - Math.floor(u)) * w))), y = Math.min(h - 1, Math.max(0, Math.floor((v - Math.floor(v)) * h))), k = (y * w + x) * 4;
-        const [hh, ss, vv] = hsv(px[k], px[k + 1], px[k + 2]); if (ss > .35 && vv > .25) hist[Math.floor(hh / 10) % 36]++;
-      }
-      let top = 0; for (let i = 1; i < 36; i++) if (hist[i] > hist[top]) top = i;
-      if (!hist[top]) continue;
-      const h0 = top * 10 + 5, out = new Uint8Array(px.length);
-      for (let k = 0; k < px.length; k += 4) {
-        const [hh, ss, vv] = hsv(px[k], px[k + 1], px[k + 2]); let d = Math.abs(hh - h0); if (d > 180) d = 360 - d;
-        if (ss > .3 && d < 28) { const c = Color3.FromHSV((hue + hh - h0 + 360) % 360, ss, vv); out[k] = c.r * 255; out[k + 1] = c.g * 255; out[k + 2] = c.b * 255; }
-        else { out[k] = px[k]; out[k + 1] = px[k + 1]; out[k + 2] = px[k + 2]; }
-        out[k + 3] = px[k + 3];
-      }
-      const t = RawTexture.CreateRGBATexture(out, w, h, this.scene, false, false, Texture.NEAREST_SAMPLINGMODE);
-      t.uScale = src.uScale; t.vScale = src.vScale; t.uOffset = src.uOffset; t.vOffset = src.vOffset; t.wrapU = src.wrapU; t.wrapV = src.wrapV; t.coordinatesIndex = src.coordinatesIndex; t.gammaSpace = src.gammaSpace;
-      m.albedoTexture = t;
+      // Lack wird zwischen gleichen Modellen geteilt: vor dem Umfärben eine eigene Kopie für dieses Auto
+      if (!(m as PBRMaterial & { _pcOwn?: boolean })._pcOwn) { const own = m.clone(m.name) as PBRMaterial & { _pcOrig?: Texture; _pcOwn?: boolean; _pcFx?: unknown }; own._pcOrig = src; own._pcOwn = true; own._pcFx = (m as PBRMaterial & { _pcFx?: unknown })._pcFx; ms.material = own; await this.paintOne(ms, own, src, hue); continue; }
+      await this.paintOne(ms, m, src, hue);
     }
+  }
+  private async paintOne(ms: AbstractMesh, m: PBRMaterial, src: Texture, hue: number) {
+    if (hue < 0) { m.albedoTexture = src; return; }
+    const px = await pixels(src); if (!px) return;
+    const { width: w, height: h } = src.getSize();
+    // Lackfarbe aus den UVs der Karosserie bestimmen: kräftigster häufiger Farbton, sonst (schwarz, grau, weiß) die häufigste Helligkeit
+    const uv = ms.getVerticesData(VertexBuffer.UVKind) || [], hist = new Float32Array(36), vh = new Float32Array(20);
+    const hsv = (r: number, g: number, b: number) => { const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn; let hh = 0; if (d) hh = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; return [(hh * 60 + 360) % 360, mx ? d / mx : 0, mx / 255]; };
+    for (let i = 0; i < uv.length; i += 2) {
+      const u = uv[i] * src.uScale + src.uOffset, v = uv[i + 1] * src.vScale + src.vOffset;
+      const x = Math.min(w - 1, Math.max(0, Math.floor((u - Math.floor(u)) * w))), y = Math.min(h - 1, Math.max(0, Math.floor((v - Math.floor(v)) * h))), k = (y * w + x) * 4;
+      const [hh, ss, vv] = hsv(px[k], px[k + 1], px[k + 2]); if (ss > .35 && vv > .25) hist[Math.floor(hh / 10) % 36]++; else if (ss < .25 || vv < .2) vh[Math.min(19, Math.floor(vv * 20))]++;
+    }
+    let top = 0; for (let i = 1; i < 36; i++) if (hist[i] > hist[top]) top = i;
+    let vt = 0; for (let i = 1; i < 20; i++) if (vh[i] > vh[vt]) vt = i;
+    const grey = hist[top] < vh[vt] * .5, h0 = top * 10 + 5, v0 = (vt + .5) / 20, out = new Uint8Array(px.length);
+    for (let k = 0; k < px.length; k += 4) {
+      const [hh, ss, vv] = hsv(px[k], px[k + 1], px[k + 2]); let d = Math.abs(hh - h0); if (d > 180) d = 360 - d;
+      let c: Color3 | null = null;
+      if (!grey && ss > .3 && d < 28) c = Color3.FromHSV((hue + hh - h0 + 360) % 360, ss, vv);
+      else if (grey && (ss < .25 || vv < .2) && Math.abs(vv - v0) < .12) c = Color3.FromHSV(hue, .75, Math.min(1, .55 + (vv - v0) * 1.5));
+      if (c) { out[k] = c.r * 255; out[k + 1] = c.g * 255; out[k + 2] = c.b * 255; } else { out[k] = px[k]; out[k + 1] = px[k + 1]; out[k + 2] = px[k + 2]; }
+      out[k + 3] = px[k + 3];
+      if ((k & 0x3ffff) === 0) await breathe();
+    }
+    const t = RawTexture.CreateRGBATexture(out, w, h, this.scene, true, src.invertY, Texture.TRILINEAR_SAMPLINGMODE);
+    remember(t, out);
+    t.uScale = src.uScale; t.vScale = src.vScale; t.uOffset = src.uOffset; t.vOffset = src.vOffset; t.wrapU = src.wrapU; t.wrapV = src.wrapV; t.coordinatesIndex = src.coordinatesIndex; t.gammaSpace = src.gammaSpace;
+    m.albedoTexture = t;
   }
 
   /** Weitere Hindernisse für den Verkehr (geparkte/gefahrene Autos des Spielers) */
@@ -1011,6 +1030,9 @@ export class World {
       if (c.off) { c.o.position.set(0, -40, -500); continue; }
       if (c.a === undefined) { const e = nearestEdge(c.path[0].x, c.path[0].z); this.setLane(c, e.a, e.b, 0); c.cur = 0; c.lat = LANE; }
       const p = c.o.position, yaw = c.turn ? c.o.rotation.y : Math.atan2(c.path[1].x - c.path[0].x, c.path[1].z - c.path[0].z);
+      // Nah volle, fern grobe Fassung (mit etwas Spiel, damit es nicht flackert)
+      const lod = (c.o as CarLod)._pcLod;
+      if (lod && player) { const d = Math.abs(p.x - player.x) + Math.abs(p.z - player.z), lim = low ? 34 : 50, f = lod[2] ? d > lim - 6 : d > lim; if (f !== lod[2]) { lod[2] = f; lod[0].setEnabled(!f); lod[1].setEnabled(f); } }
       const fx = Math.sin(yaw), fz = Math.cos(yaw), cur = c.cur ?? 0;
       const ahead = (qx: number, qz: number, reach: number, wide: number) => {
         const dx = qx - p.x, dz = qz - p.z, along = dx * fx + dz * fz, side = Math.abs(dx * fz - dz * fx);
