@@ -6,7 +6,7 @@
 import { Quaternion, Color3, type Mesh, type Scene, type TransformNode, type AbstractMesh, type PBRMaterial } from '../engine/bjs';
 import { skinned } from '../engine/Assets';
 
-export const BARE_OUTFITS = new Set(['shirtless', 'harness', 'underwear', 'swim']);
+export const BARE_OUTFITS = new Set(['shirtless', 'harness', 'underwear', 'swim', 'nude']);
 export const bareId = (g: 'm' | 'f') => (g === 'f' ? 'Sports_Female_01' : 'Sports_Male_01');
 
 export interface Bare { root: TransformNode; meshes: Mesh[]; /** Faktor je Farbkanal (eigene Haut / Sport-Haut) */ tint(ratio: number[]): void; dispose(): void }

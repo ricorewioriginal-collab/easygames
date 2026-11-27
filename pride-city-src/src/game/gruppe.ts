@@ -1,11 +1,11 @@
 /* Gruppenszene (nur mit „Inhalte ab 18“): Afterparty zu viert in der eigenen Wohnung, gefilmt wie die Liebesszene
-   (liebe.ts). Zwei Paare kommen sich näher, Küsse, Ausziehen bis zur Unterwäsche, Partnertausch, alle zusammen aufs Bett
-   unter eine große Decke – dann Schwenk zum Fenster und Abblende. Nichts Explizites: keine Nacktheit, kein Sex im Bild.
+   (liebe.ts). Zwei Paare kommen sich näher, Küsse, Ausziehen (nackter Po und nackte Brust, keine Genitalien), Partnertausch,
+   alle zusammen aufs Bett unter eine große Decke – dann Schwenk zum Fenster und Abblende. Kein Sex im Bild.
    Zustimmung aller und Kondome bzw. die Absprache ohne sind vorher geklärt (flirtui.ts). */
 import { Quaternion, Vector3, PointLight, Color3, type Light } from '../engine/bjs';
 import { Actor, type Look } from './Actor';
 import { music, sfx, moan as moanAt, breath as breathAt, now } from '../engine/Audio';
-import { embrace, unpose, civilFor, blanket, type CineHost, type Hold } from './liebe';
+import { embrace, unpose, civilFor, blanket, bareOf, type CineHost, type Hold } from './liebe';
 
 const moan = (f: number, d: number, g: number, v: 'a' | 'o' | 'm') => moanAt(now() + .02, f, d, g, v);
 const breath = (d: number, g: number) => breathAt(now() + .02, d, g);
@@ -106,7 +106,7 @@ export async function groupScene(h: CineHost, guests: GroupGuest[], done: () => 
     cue(5.8, () => sfx('kiss'));
     cue(6.9, () => { sfx('kiss'); breath(.6, .05); });
     cue(8.4, () => { document.body.appendChild(blink); });
-    cue(8.9, () => { all.forEach((a) => a.setLook({ outfit: 'underwear' })); });
+    cue(8.9, () => { all.forEach((a) => a.setLook({ outfit: bareOf(h) })); });
     cue(9.5, () => { blink.remove(); });
     cue(10.2, () => { sfx('kiss'); moan(voice(A, 1), .6, .05, 'm'); });
     cue(11.4, () => { breath(.7, .06); sfx('kiss'); });
@@ -204,7 +204,7 @@ export function soloScene(h: CineHost, done: () => void, tape = false) {
     cue(1.2, () => { me.play('laugh'); });
     cue(3.4, () => document.body.appendChild(blink));
     cue(4, () => {
-      me.setLook({ outfit: 'underwear' }); me.play('idle', 0, .5);
+      me.setLook({ outfit: bareOf(h) }); me.play('idle', 0, .5);
       me.root.position.set(-3.14, .7, -.9);
       me.root.rotationQuaternion = Quaternion.RotationAxis(new Vector3(1, 0, 0), -Math.PI / 2 + .2);
       sheet.setEnabled(true); blink.remove(); sfx('sheets');

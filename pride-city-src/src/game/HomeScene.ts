@@ -402,6 +402,7 @@ export class HomeScene implements GameScene {
   }
 
   portrait() { return this.g.engine.aspect < 1; }
+  adult() { return !!this.g.save.data.settings.adult; }
   private petSpot(): Spot[] { const p = this.wg.pet, pt = pet(this.g.save.data); return p && pt ? [{ id: 'pet', label: `${pt.kind.icon} ${pt.name}${petHungry(this.g.save.data) ? ' (hat Hunger)' : ''}`, x: p.root.position.x, z: p.root.position.z, r: .9 }] : []; }
   /** Mitbewohner*in reagiert (Animation zum Spieler hin) */
   wgPlay(id: string, anim: 'laugh' | 'talk' | 'cheer' | 'dance1' | 'clap') {

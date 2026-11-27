@@ -11,7 +11,7 @@ import type { Gig, GigStep } from './gigs';
 import type { Look } from './Actor';
 import { isNight } from './saga';
 
-export const TAREK_LOOK: Look = { body: 'Man', rb: 'Male_Adult_04', palette: 'rainbow', skin: 3, hair: 0 };
+export const TAREK_LOOK: Look = { body: 'pc_yakuza', rb: 'pc_yakuza', palette: 'rainbow', skin: 3, hair: 0 };
 export const TAREK_NPCS: NpcDef[] = [
   { id: 'tarek', name: 'Tarek', pron: 'er/ihn', color: '#ff9f1c', look: TAREK_LOOK, x: 33.9, z: 17.6, yaw: -Math.PI / 2 },
   { id: 'mira', name: 'Mira Lindqvist', pron: 'sie/ihr', color: '#7fb2ff', look: { body: 'Woman', rb: 'Female_Adult_08', palette: 'progress', skin: 0, hair: 2 }, x: -6.3, z: -15.4, yaw: Math.PI / 2 },
