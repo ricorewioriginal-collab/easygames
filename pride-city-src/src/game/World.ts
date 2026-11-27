@@ -12,7 +12,7 @@ import { PALETTES } from './palettes';
 import { Townhouses } from './townhouse';
 import { palmParts, treeParts } from './plants';
 import { roadSurface, grassSurface, photoSurface, waterSurface, worldTex } from '../engine/surfaces';
-import { buildUptown, EAST, BRIDGE, UPTOWN_PLACES, doorStep } from './uptown';
+import { buildUptown, EAST, BRIDGE, UPTOWN_PLACES, doorStep, TANKE } from './uptown';
 import { NODES, LANE, lane, nearestEdge } from './traffic';
 
 export const TILE = 10;
@@ -234,6 +234,7 @@ export class World {
     P('tramhoch', 'Hochbahn Hochstadt', '🚇', 157, 22, undefined, undefined, 3.6);
     P('laterne', 'Laternenmeile', '🏮', 105, -27, undefined, undefined, 2);
     P('garage', 'Garage Schraubenschlüssel', '🔧', 170.5, -47.4, undefined, undefined, 2.6);
+    P('tanke', 'Regenbogen-Tanke', '⛽', TANKE[0] - 3.2, TANKE[1] + 1.6, undefined, undefined, 1.8);
     for (const u of UPTOWN_PLACES) { const d = doorStep(u); P(u.id, u.name, u.icon, d.x, d.z, undefined, undefined, 2.2); }
   }
 
