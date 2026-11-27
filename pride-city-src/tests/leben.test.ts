@@ -45,3 +45,27 @@ describe('Leben der Straßenleute', () => {
     expect(outfitLine('shirtless', false, true, 1)).toMatch(/Regen|Wetter/);
   });
 });
+
+import { known as knownList, moodWord } from '../src/game/leben';
+describe('Bekanntenliste', () => {
+  it('merkt sich Namen und Reihenfolge', () => {
+    const s = save();
+    remember(s, 'street:1:a', 'talk', 'Kalle');
+    remember(s, 'street:2:b', 'talk', 'Mia');
+    remember(s, 'street:1:a', 'talk');
+    const l = knownList(s);
+    expect(l.map((x) => x.name)).toEqual(['Kalle', 'Mia']);
+    expect(l[0].m.met).toBe(2);
+    expect(moodWord(5)).toContain('sehr');
+  });
+});
+
+import { FIG_STORIES, figKey } from '../src/game/leben';
+describe('Geschichten der festen Figuren', () => {
+  it('jede hat vier Teile und zwei Enden, storyOf findet sie', () => {
+    for (const [id, st] of Object.entries(FIG_STORIES)) {
+      expect(st.parts.length).toBe(4); expect(st.end.length).toBe(2);
+      expect(storyOf(figKey(id))).toBe(st);
+    }
+  });
+});
