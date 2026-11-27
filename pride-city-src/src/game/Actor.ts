@@ -19,11 +19,11 @@ const GEAR = /_(helmet|equipment|machinegun|shotgun|pistol|mask|flashlight)$/;
 export const WALK_MPS = 1.02, RUN_MPS = 3.6;
 
 /** Outfits aus dem alten Spiel: bleiben im Spielstand (Rocketbox-Figuren tragen ihre eigene Kleidung) */
-/** 'nude' nur in Szenen ab 18 (liebe.ts, gruppe.ts), nicht wählbar und nie auf der Straße */
+/** 'nude' nur ab 18: in Szenen (liebe.ts, gruppe.ts) und als wählbares FKK-Outfit, mit dem man auch durch die Stadt läuft */
 export type Outfit = 'clothed' | 'shirtless' | 'underwear' | 'swim' | 'harness' | 'nude';
 export const OUTFITS: Array<{ id: Outfit; name: string; adult?: boolean }> = [
   { id: 'clothed', name: 'Angezogen' }, { id: 'shirtless', name: 'Oberkörperfrei' }, { id: 'underwear', name: 'Unterwäsche' },
-  { id: 'swim', name: 'Badehose / Bikini' }, { id: 'harness', name: 'Harness', adult: true },
+  { id: 'swim', name: 'Badehose / Bikini' }, { id: 'harness', name: 'Harness', adult: true }, { id: 'nude', name: 'Nackt (FKK)', adult: true },
 ];
 /** rb = feste Rocketbox-Figur (sonst passend zu body/palette/skin gewählt) */
 export interface Look { body: string; palette: string; skin: number; hair?: number; rb?: string; cape?: boolean; hat?: boolean; mug?: boolean; outfit?: Outfit; /** Unterwäsche/Badesachen-Wahl (waesche.ts), sonst fest aus der Figur */ wash?: string; top?: boolean; /** Szene-Look aus queer.ts (Flaggen-Shirt, Leder, Glitzer, gefärbte Haare) */ style?: string; /** 18+ */ hot?: boolean; /** Szene-Zubehör (gear.ts): Pup-Maske, Ledermütze, Halsband, Krone */ gear?: Gear; /** Spielfigur: Muskeln, Tattoos, Piercings, Bart (figur.ts) */ fig?: Fig }
@@ -48,7 +48,8 @@ export function playerLook(s: { body: string; palette: string; skin: number; pro
 }
 
 /** Auf der Straße: Unterwäsche nur zuhause, draußen ist die Figur angezogen */
-export function streetLook(l: Look): Look { return l.outfit === 'underwear' || l.outfit === 'nude' ? { ...l, outfit: 'clothed' } : l; }
+/** Auf der Straße: Unterwäsche wird zu Kleidung. Nackt bleibt nackt (nur ab 18 wählbar, playerLook prüft das; online sehen es nur Erwachsene) */
+export function streetLook(l: Look): Look { return l.outfit === 'underwear' ? { ...l, outfit: 'clothed' } : l; }
 
 export type Anim = 'idle' | 'walk' | 'run' | 'cheer' | 'interact' | 'sit' | 'wave' | 'dance1' | 'dance2' | 'dance3' | 'jump' | 'hit' | 'pose' | 'talk' | 'clap' | 'phone' | 'drink' | 'laugh';
 /** Spiel-Animation → Rocketbox-Animation (Datei rb/anim/<m|f>_<name>.glb) */
@@ -360,7 +361,7 @@ function onHead(m: Mesh & { _pcHead?: boolean }) {
 function collar(m: Mesh & { _pcCollar?: Float32Array }, hide: boolean) {
   if (!hide) { if (m._pcCollar) { m.setVerticesData('position', m._pcCollar, false); m._pcCollar = undefined; } return; }
   if (m._pcCollar) return;
-  const pos = m.getVerticesData('position'), mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights'), sk = m.skeleton;
+  const pos = m.getVerticesData('position'), mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights'), sk = m.skeleton, nor = m.getVerticesData('normal');
   if (!pos || !mi || !mw || !sk) return;
   const names: string[] = []; sk.bones.forEach((b) => { names[b.getIndex()] = b.name; });
   const nv = pos.length / 3, low: number[] = []; let cx = 0, cy = 0, cz = 0, cn = 0;
@@ -369,13 +370,23 @@ function collar(m: Mesh & { _pcCollar?: Float32Array }, hide: boolean) {
   let chin = 1e9; for (let v = 0; v < nv; v++) if (/Head/.test(dom(v))) chin = Math.min(chin, pos[v * 3 + 1]);
   for (let v = 0; v < nv; v++) {
     const b = dom(v);
-    if (/Spine|Clavicle|UpperArm|Pelvis/.test(b) || pos[v * 3 + 1] < chin - .12) low.push(v);
+    // der nackte Körper bringt seinen Hals bis unters Kinn mit: Kragen und Hals des Kopf-Meshes (bis knapp unters Kinn) weg
+    // Unterseite des Kiefers (Normale nach unten, knapp über dem Kinn): dort ist in den Texturen oft dunkler Schatten oder Kragen
+    const under = !!nor && nor[v * 3 + 1] < -.55 && pos[v * 3 + 1] < chin + .035;
+    if (/Spine|Clavicle|UpperArm|Pelvis/.test(b) || pos[v * 3 + 1] < chin - .12 || (/Neck/.test(b) && pos[v * 3 + 1] < chin + .01) || under) low.push(v);
     else if (/Neck/.test(b)) { cx += pos[v * 3]; cy += pos[v * 3 + 1]; cz += pos[v * 3 + 2]; cn++; }
   }
   if (!cn) { const lowS = new Set(low); for (let v = 0; v < nv; v++) if (!lowS.has(v) && pos[v * 3 + 1] < chin + .04) { cx += pos[v * 3]; cy += pos[v * 3 + 1]; cz += pos[v * 3 + 2]; cn++; } }
   if (!low.length || !cn) return;
   const out = Float32Array.from(pos); cx /= cn; cy /= cn; cz /= cn;
-  for (const v of low) { out[v * 3] = cx; out[v * 3 + 1] = cy; out[v * 3 + 2] = cz; }
+  // jeden weggeklappten Punkt auf den nächsten bleibenden legen: die Randdreiecke werden zu Linien statt zu dunklen Häuten
+  const lowS = new Set(low), keep: number[] = []; for (let v = 0; v < nv; v++) if (!lowS.has(v)) keep.push(v);
+  for (const v of low) {
+    let best = -1, bd = 1e9;
+    for (const u of keep) { const dx = pos[u * 3] - pos[v * 3], dy = pos[u * 3 + 1] - pos[v * 3 + 1], dz = pos[u * 3 + 2] - pos[v * 3 + 2], d = dx * dx + dy * dy + dz * dz; if (d < bd) { bd = d; best = u; } }
+    if (best < 0) { out[v * 3] = cx; out[v * 3 + 1] = cy; out[v * 3 + 2] = cz; continue; }
+    out[v * 3] = pos[best * 3]; out[v * 3 + 1] = pos[best * 3 + 1]; out[v * 3 + 2] = pos[best * 3 + 2];
+  }
   m.makeGeometryUnique();
   m._pcCollar = Float32Array.from(pos);
   m.setVerticesData('position', out, false);

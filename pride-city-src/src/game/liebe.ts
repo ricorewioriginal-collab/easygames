@@ -100,6 +100,10 @@ export function embrace(a: Actor, o: Actor, w: number, k: number, hold: Hold | b
         pole = ro.scale(sgn).add(UP.scale(-.45)).add(fo.scale(.15));
       }
       ik2(sh, el, ha, hand, pole, w);
+      // Hand flach anlegen: Finger zeigen am Rücken bzw. Nacken entlang zur Mitte (sonst stand die Hand gespreizt in der Luft)
+      const fin = B(a, `${side} Finger2`) || B(a, `${side} Finger1`);
+      const along = hold === 'side' ? fo.scale(.6).add(UP.scale(-.4)) : hold === 'neck' ? ro.scale(-sgn * .6).add(UP.scale(-.8)) : ro.scale(-sgn).add(UP.scale(-.25));
+      aim(ha, fin, W(ha).add(along.normalize().scale(.12)), w);
     }
   }
   if (kiss > 0) aim(head, B(a, 'MNose'), spot, (.5 - .15 * nk) * kiss);

@@ -129,6 +129,8 @@ function make(base, b) {
     let k = 1 + noise(p, 9) * .035 + noise(p, 40) * .02 + noise(p, 160) * .018;
     k -= Math.max(0, cs) * .55 + Math.max(0, cl) * 1.1;          // Falten und Mulden dunkler
     k += Math.max(0, -cs) * .12;                                   // Kanten (Knöchel, Schlüsselbein) etwas heller
+    // Schatten unter dem Kinn: oben am Hals dunkler, so geht der Hals weich in die Kiefer-Schatten der Köpfe über
+    const tn = p[1] / H; if (tn > .835) k *= 1 - .38 * Math.min(1, (tn - .835) / .04) * (n[2] > -.2 ? 1 : .5);
     let r = SK[0] * k, g = SK[1] * k, bl = SK[2] * k;
     // Durchblutung: Wangen fehlen, aber Knie, Ellbogen, Hände und Füße etwas röter
     const red = Math.max(0, noise(p, 3.5)) * .06 + (p[1] < .12 || p[1] / H > .78 ? .03 : 0);
