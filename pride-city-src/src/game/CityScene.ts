@@ -22,6 +22,7 @@ import { route, onGrid } from './traffic';
 import { memOf, remember, saveMem, outfitLine } from './leben';
 import { toast, hints, type Line } from '../ui/ui';
 import { sprintSpeed, tiredAt, gainAus, ausdauer, buffOf } from './fit';
+import { TANK, tankOf, burn } from './tank';
 import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
 import type { Marker } from '../ui/Hud';
@@ -270,7 +271,7 @@ export class CityScene implements GameScene {
   setPlay() {
     const s = this.g.save.data;
     this.mode = 'play';
-    this.drive = null; this.g.touch.fly(false);
+    this.drive = null; this.g.touch.fly(false); this.g.hud.speedo(null);
     this.player.root.visible = true;
     this.player.setLook(streetLook(playerLook(s)));
     this.friends.relook();
@@ -382,6 +383,7 @@ export class CityScene implements GameScene {
     const tm = this.trouble?.marker(); if (tm) out.push(tm);
     if (this.friends?.net.on) for (const m of this.friends.list) { const q = this.friends.posOf(m.id); if (q) out.push({ id: 'fr' + m.id, icon: m.st.c ? '🚗' : '🌐', label: m.name, pos: new Vector3(q.x, m.st.c ? 2.6 : 2.35, q.z) }); }
     for (const i of this.isles) out.push(...i.markers());
+    if (s.pin) { const p = this.world.pois.find((x) => x.id === s.pin); if (p) out.push({ id: 'pin', icon: '📍', label: p.name, pos: new Vector3(p.x, 4, p.z) }); }
     const ph = this.life?.parade.head(); if (ph && Vector3.Distance(ph, this.player.root.position) > 26) out.push({ id: 'parade', icon: '🏳️‍🌈', label: 'CSD-Parade', pos: ph });
     return out;
   }
@@ -572,7 +574,7 @@ export class CityScene implements GameScene {
       if (this.drive.own) { const sv = this.g.save.data; sv.flags.ownX = Math.round(o.position.x * 10) / 10; sv.flags.ownZ = Math.round(o.position.z * 10) / 10; sv.flags.ownYaw = Math.round(o.rotation.y * 100) / 100; }
       if (this.drive.def.toy || rideSeat(this.drive.def) >= 0) { if (this.drive.def.ride !== 'boat') this.player.root.position.y = .1; o.rotation.x = o.rotation.z = 0; }
       o.rotation.x = o.rotation.z = 0; engineHum(null);
-      this.drive.v = 0; this.drive = null; this.parcel = -1;
+      this.drive.v = 0; this.drive = null; this.parcel = -1; this.g.hud.speedo(null);
       this.radioOff(); music('city');
       this.player.root.visible = true; this.player.play('idle');
       hints([['move', 'Laufen'], ['a', 'Aktion'], ['atk', 'Angriff'], ['wpn', 'Waffe'], ['cam', 'Kamera'], ['y', 'Menü']]);
@@ -685,7 +687,9 @@ export class CityScene implements GameScene {
     const c = this.drive!, o = c.o, inp = this.g.engine.input, fly = !!c.def.fly;
     if (inp.pressed('tabR')) this.radio(1); else if (inp.pressed('tabL')) this.radio(-1);
     const thr = Math.abs(inp.move.y) > .08 ? inp.move.y : 0, steer = Math.abs(inp.move.x) > .08 ? inp.move.x : 0;
-    const st = stats(c.def, c.own ? tuneLevel(this.g.save.data) : 0), max = inp.held('sprint') ? st.turbo : st.max;
+    const st = stats(c.def, c.own ? tuneLevel(this.g.save.data) : 0), sv = this.g.save.data, tanked = c.own && !fly && !c.def.ride && !c.def.toy;
+    // leerer Tank (nur der eigene Wagen): nur noch Schritttempo
+    const max = tanked && tankOf(sv) <= 0 ? TANK.crawl : inp.held('sprint') ? st.turbo : st.max;
     // Flitzer: lenkt wie ein Auto (Stick/WASD = Gas, Bremse, Lenken; Turbo = schneller), dazu Steigen/Sinken.
     // Ohne Eingabe hält er die Höhe; über den Dächern (in der Hochstadt höher) fliegt er frei.
     if (fly) {
@@ -758,6 +762,13 @@ export class CityScene implements GameScene {
     }
     o.position.y = fly ? this.alt + Math.sin(performance.now() / 330) * .08 : boat ? .05 + Math.sin(performance.now() / 420) * .05 : .1;
     this.player.root.position.copyFrom(o.position);
+    // Tacho und Tank
+    if (tanked) {
+      const r = burn(sv, Math.abs(c.v) * dt);
+      if (r === 'low') { sfx('miss'); toast('⛽ Tank fast leer! Volltanken in der Garage Schraubenschlüssel oder Reservekanister aus dem Späti.'); }
+      else if (r === 'empty') { sfx('miss'); sv.pin = 'garage'; toast('⛽ Tank leer! Der Wagen rollt nur noch im Schritttempo. Wegpunkt zur Garage ist gesetzt.'); }
+    }
+    this.g.hud.speedo(`${c.def.icon} ${Math.round(Math.abs(c.v) * 3.6)} km/h${tanked ? ` · ⛽ ${tankOf(sv)} %` : ''}`, tanked && tankOf(sv) < 15);
     rigOf.get(o)?.update(dt, performance.now() / 1000, c.v);
     if (fly) {
       // in die Kurve legen und die Nase beim Steigen heben, wie ein Flugzeug
@@ -1156,15 +1167,17 @@ export class CityScene implements GameScene {
       // GPS: Weg über die Straßen zum Ziel (laufender Auftrag zuerst), alle halbe Sekunde neu berechnet
       if ((this.routeT -= 1 / 20) <= 0) {
         this.routeT = .5;
-        const gp = (mk.find((m) => m.id === 'gig' || m.id === 'kerb' || m.id === 'trouble') || mk.find((m) => m.id === 'g'))?.pos;
+        const gp = (mk.find((m) => m.id === 'gig' || m.id === 'kerb' || m.id === 'trouble') || mk.find((m) => m.id === 'pin') || mk.find((m) => m.id === 'g'))?.pos;
+        // eigener Wegpunkt erreicht: weg damit
+        const pin = mk.find((m) => m.id === 'pin'); if (pin && Math.hypot(pin.pos.x - pp.x, pin.pos.z - pp.z) < 12) { s.pin = ''; sfx('coin'); toast(`📍 Ziel erreicht: ${pin.label}`); }
         const flying = !!this.drive && (!!this.drive.def.air || (!!this.drive.def.fly && this.alt > 3));
-        this.gps = gp && !flying && onGrid(pp.x, pp.z) && Math.hypot(gp.x - pp.x, gp.z - pp.z) > 14 ? { pts: route(pp.x, pp.z, gp.x, gp.z), color: mk.find((m) => m.pos === gp)?.id === 'g' ? '#ff3fb0' : '#ffd23b' } : null;
+        this.gps = gp && !flying && onGrid(pp.x, pp.z) && Math.hypot(gp.x - pp.x, gp.z - pp.z) > 14 ? { pts: route(pp.x, pp.z, gp.x, gp.z), color: ({ g: '#ff3fb0', pin: '#3ec8ff' } as Record<string, string>)[mk.find((m) => m.pos === gp)?.id || ''] || '#ffd23b' } : null;
       }
       if (this.gps) this.gps.pts[0] = [pp.x, pp.z];
       g.hud.radar(pp.x, pp.z, this.cam.yaw, [
         ...this.world.pois.filter((q) => Math.hypot(q.x - pp.x, q.z - pp.z) < 60).map((q) => ({ x: q.x, z: q.z, icon: q.icon })),
         ...this.combat.flucht.blips(this.combat.wanted.stars, pp),
-        ...mk.map((m) => ({ x: m.pos.x, z: m.pos.z, color: m.id === 'g' ? '#ff3fb0' : m.id === 'gig' ? '#ffd23b' : m.id === 'kerb' ? '#ff6ad5' : m.id === 'trouble' ? '#ff4b3b' : '#ffffff', goal: m.id === 'g' || m.id === 'gig' || m.id === 'kerb' || m.id === 'trouble' })),
+        ...mk.map((m) => ({ x: m.pos.x, z: m.pos.z, color: m.id === 'g' ? '#ff3fb0' : m.id === 'gig' ? '#ffd23b' : m.id === 'kerb' ? '#ff6ad5' : m.id === 'trouble' ? '#ff4b3b' : m.id === 'pin' ? '#3ec8ff' : '#ffffff', goal: m.id === 'g' || m.id === 'gig' || m.id === 'kerb' || m.id === 'trouble' || m.id === 'pin' })),
       ], this.gps);
     }
     // Lichtsäule: laufender Auftrag hat Vorrang (gelb), sonst das Story-Ziel (pink)

@@ -513,3 +513,9 @@ body:has(#hud:not(.hidden)) .screen.title.tune .panel p { margin: .25em 0; }
 .gramGrid figure { margin: 0; position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 8px; background: #000; }
 .gramGrid img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .gramGrid figcaption { position: absolute; inset: auto 0 0 0; padding: 3px 5px; font-size: .62em; line-height: 1.25; background: linear-gradient(transparent, rgba(0,0,0,.85)); color: #fff; }
+
+/* Tacho beim Fahren (Tempo, Tank) */
+#hud .speedo { position: absolute; left: clamp(10px, 2vw, 24px); bottom: calc(14px + var(--safe-b) + clamp(120px, 16vw, 180px) + 52px); padding: 5px 14px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); font-weight: 900; font-size: .9em; white-space: nowrap; display: none; pointer-events: none; }
+#hud .speedo.on { display: block; }
+#hud .speedo.low { color: #ff8a5d; animation: pulse 1.2s infinite; }
+@media (pointer: coarse) { #hud .speedo { left: auto; right: 10px; bottom: auto; top: calc(300px + var(--safe-t)); font-size: .78em; } }

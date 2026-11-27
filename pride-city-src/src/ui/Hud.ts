@@ -25,7 +25,7 @@ export class Hud {
   onStation: ((i: number) => void) | null = null;
   private needsEl!: HTMLElement;
   constructor() {
-    this.el = el(`<div id="hud" class="hidden"><div class="lcol"><div class="goal"></div><div class="needs"></div></div>
+    this.el = el(`<div id="hud" class="hidden"><div class="speedo"></div><div class="lcol"><div class="goal"></div><div class="needs"></div></div>
       <div class="rcol"><div class="stats"></div><div class="rrow"><canvas class="radar" width="200" height="200"></canvas><div class="rside"><div class="menuBtn"><button data-k="radio" aria-label="Radiosender wechseln" hidden>📻</button><button data-k="phone" aria-label="Handy">📱</button><button data-k="menu" aria-label="Menü">☰</button></div><button class="weapon" aria-label="Waffe wechseln"></button></div></div></div>
       <div class="markers pass"></div><div class="prompt"></div><div class="toast"></div><div class="gigbar"></div><div class="banner"></div><div class="rwheel"><div class="ring"></div><div class="mid"><em>Radio</em><b></b><small></small></div></div><button class="nowplay" aria-label="Radiosender wählen"><b></b><span></span></button><div class="wanted"></div></div>`);
     document.body.appendChild(this.el);
@@ -126,6 +126,8 @@ export class Hud {
   }
   private bannerT = 0;
   /** Aktuelle Spaßwaffe (null = ausblenden) */
+  /** Tacho beim Fahren (Tempo, beim eigenen Wagen auch der Tank) */
+  speedo(text: string | null, low = false) { const e = this.el.querySelector<HTMLElement>('.speedo')!; e.classList.toggle('on', !!text); e.classList.toggle('low', low); if (text && e.textContent !== text) e.textContent = text; }
   weapon(text: string | null) { const e = this.el.querySelector<HTMLElement>('.weapon')!; e.classList.toggle('on', !!text); if (text && e.textContent !== text) e.textContent = text; }
   private lastWanted = '';
   /** Fahndungssterne oben in der Mitte: hohl, wenn dich gerade keine Streife sieht (sie suchen, aber nicht dich direkt),
