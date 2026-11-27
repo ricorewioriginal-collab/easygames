@@ -64,6 +64,7 @@ import { JOBS, jobsAt, blocked, situations, finish, title as jobTitle, wage } fr
 import { photo } from './Photo';
 import { gramMenu, empireMenu, gymItems, bodyItems, bodyMenu, muskelLine } from './aufstiegui';
 import { giveBuff, trainBoost } from './fit';
+import { known, moodWord, heard } from './leben';
 import { busTalk, busAfter, BUS_COST, BUS_MIN } from './bus';
 import { TANK, tankOf } from './tank';
 import { followers, fmtNum } from './gram';
@@ -652,6 +653,7 @@ export class Game {
         ...(s.flags.crewCall ? [{ icon: '✊', label: 'Crew', sub: `Die Lichterkette · ${crewOf(s).length} Leute${s.flags.crewWatch ? ` · ${VIERTEL.filter((v) => schutz(s, v.id)).length}/${VIERTEL.length} Viertel` : ''}`, fn: () => this.phone('crew') }] : []),
         { icon: '👨‍👩‍👧', label: 'Familie', sub: famSub(s), fn: () => this.phone('family') },
         { icon: '👥', label: 'Kontakte', sub: `${Object.keys(s.rel).length} Leute kennengelernt`, fn: () => this.phone('contacts') },
+        { icon: '🫂', label: 'Bekannte und ihre Geschichten', sub: (() => { const k = known(s); return k.length ? `${k.length} Leute · ${k.filter((x) => x.m.done).length} Geschichten zu Ende gehört` : 'Sprich Leute an, jede Person hat eine Geschichte'; })(), fn: () => this.phone('known') },
         { icon: '💘', label: 'Rainbow Match', sub: `Dating · ${PROFILES.filter((p) => s.dates[p.id]).length} Matches`, fn: () => this.phone('dating') },
         { icon: '📻', label: 'Pride FM 88,8', sub: s.flags.radioShowDay === s.day ? 'Deine Sendung lief heute' : 'Eigene Sendung „Rainbow Talk“ moderieren', fn: () => this.phone('fm') },
         { icon: '📸', label: 'Glitzergram', sub: `${fmtNum(followers(s))} Follower · Fotomodus, Likes, Kooperationen`, fn: () => this.phone('gram') },
@@ -693,6 +695,14 @@ export class Game {
         mine ? { icon: '✋', label: 'Kündigen', sub: 'ohne Hauptberuf weiter', fn: () => { annehmen(s, null); sfx('back'); toast(`Du hast als ${k.name} gekündigt.`); this.save.write(); back(); } }
           : { icon: '⭐', label: 'Als Hauptberuf annehmen', sub: meinBeruf(s) ? `statt ${meinBeruf(s)!.name} · +20 % Lohn` : '+20 % Lohn', fn: () => { annehmen(s, k.id); sfx('win'); pcEvents.emit('beruf', { id: k.id, name: k.name }); post(s, 'Du', `Neuer Job: ${k.name} ${k.icon}`); this.hud.banner(`${k.icon} Neuer Hauptberuf: ${k.name}`, `${k.place} · +20 % Lohn`, 'good', 4000); this.save.write(); back(); } },
         go, { icon: '←', label: 'Zurück', fn: back }], back, 'phone');
+    } else if (app === 'known') {
+      const list = known(s);
+      this.openMenu(frame('🫂 Bekannte', `<div class="pbody"><p>Alle, mit denen du geredet hast, von der Straße und aus der Szene. Jede Person hat eine eigene Geschichte, ein Teil pro Tag.</p></div>`),
+        [...list.map((x) => ({ icon: x.story.icon, label: x.name, sub: `${moodWord(x.m.mood)} · ${x.m.met}× getroffen · ${x.m.done ? '✅ ' + x.story.title : `${x.story.title} ${Math.min(4, x.m.ch)}/4`}`,
+          fn: () => { const who = { who: `${x.story.icon} ${x.name}`, color: '#ffb347' }; close();
+            this.dialog.say([...(heard(x).length ? heard(x).map((t) => ({ ...who, text: t })) : [{ ...who, text: 'Ihr habt euch erst kurz unterhalten. Sprich die Person wieder an, dann erzählt sie mehr.' }]),
+              ...(x.m.done ? [{ who: 'Du', color: '#ff4fa3', text: `Dein Rat: ${x.m.done}` }] : [])]); } })),
+          { icon: '←', label: 'Zurück', fn: home }], home, 'phone');
     } else if (app === 'contacts') {
       const met = NPCS.filter((n) => s.rel[n.id]);
       this.openMenu(frame('Kontakte', `<div class="pbody">${met.length ? met.map((n) => { const f = Number(s.rel[n.id].f) || 0; return `<p><b style="color:${n.color}">●</b> <b>${n.name}</b> <small>(${n.pron})${NPC_BERUF[n.id] ? ' · ' + NPC_BERUF[n.id].join(' ') : ''}</small><br>${'❤️'.repeat(Math.min(5, Math.ceil(f / 20)))}${'🤍'.repeat(5 - Math.min(5, Math.ceil(f / 20)))} ${bond(f)}</p>`; }).join('') : '<p>Noch niemand. Sprich Leute in der Stadt an!</p>'}</div>`),
@@ -1224,6 +1234,8 @@ export class Game {
     sfx('tram');
     const go = () => { this.where = 'city'; s.inside = false; s.pos = { x: x > 0 ? x - 2.2 : x + 2.2, z, yaw: x > 0 ? Math.PI / 2 : -Math.PI / 2 }; this.pass(bus ? BUS_MIN : 10); this.done(track(s, 'tram')); this.engine.setScene(this.city); this.city.setPlay(); if (!bus) toast('🚋 Angekommen.'); };
     if (!bus) { this.fade(go); return; }
+    // in der Stadt: Linie 69 in 3D, sonst (aus der Wohnung, von drinnen) als Gespräch mit Überblendung
+    if (this.where === 'city' && this.city.bus) { this.city.bus.start(x, z, () => { s.pos = { x: x > 0 ? x - 2.2 : x + 2.2, z, yaw: x > 0 ? Math.PI / 2 : -Math.PI / 2 }; this.city.player.root.position.set(s.pos.x, .1, z); this.city.player.root.rotation.y = s.pos.yaw; this.pass(15); this.done(track(s, 'tram')); this.save.write(); }); return; }
     // Bus: unterwegs erzählt dir jemand etwas, danach steigst du am Ziel aus
     const seed = Math.random();
     this.dialog.say(busTalk(seed, (nice) => { change(s, nice ? { social: 12, fun: 6 } : { energy: 4 }); setTimeout(() => this.dialog.say([busAfter(seed, nice)], () => { this.fade(go); setTimeout(() => toast('🚌 Endstation für dich, du steigst aus.'), 900); }), 60); }));
@@ -1370,7 +1382,9 @@ export class Game {
       <p><b style="color:#fff">Pride City</b> – Relaunch von Gay Life! für easygames.</p>
       <p>Menschen (CC BY 4.0, creativecommons.org/licenses/by/4.0, von Sketchfab, für Pride City mit Skelett versehen, verkleinert und teils umgefärbt): <b style="color:#fff">„Citizen NPC Pack 1 Character Lowpoly Mobile“</b> von 00amza · <b style="color:#fff">„Gangster Rigged“</b> von PropShop · <b style="color:#fff">„Street Gangster | Realistic 3D Character Model“</b> von PropShop · <b style="color:#fff">„Yakuza“</b> von Abrazafarolas.</p>
       <p>Nackte Körper unter der Kleidung: <b style="color:#fff">MakeHuman</b> (makehumancommunity.org) – CC0 1.0, für Pride City geformt und mit Haut und Skelett versehen.</p>
+      <p>Autos (CC BY 4.0, Sketchfab, geteilt, verkleinert und teils umgefärbt): <b style="color:#fff">„Generic passenger car pack“</b> von Comrade1280 · <b style="color:#fff">„Fairheaven LT '80 Cop Cruiser“</b> und <b style="color:#fff">„Saba V12 '95 Interceptor“</b> von Daniel Zhabotinsky.</p>
       <p>Animationen, Uniformen, Kinder und Sport-Figuren: <b style="color:#fff">Microsoft Rocketbox</b> – MIT-Lizenz (© 2020 Microsoft Corporation, github.com/microsoft/Microsoft-Rocketbox). Stadt und Wohnung: <b style="color:#fff">KayKit</b> von Kay Lousberg (City Builder Bits, Furniture Bits, Restaurant Bits) – CC0 1.0. In Pride-Farben umgefärbt.</p>
+      <p>Oberflächen (Asphalt, Gehwegplatten, Backstein, Sand, Rasen; CC0 1.0): <b style="color:#fff">Poly Haven</b> (asphalt_02, brick_4, coast_sand_01) und <b style="color:#fff">ambientCG</b> (PavingStones038, Grass001, Hausfassaden Facade018–020, Rinde Bark003/Bark014, Blätter LeafSet024 und Foliage005 für Bäume und Palmen), verkleinert; Nachtfenster daraus abgeleitet. Wasserwellen selbst erzeugt.</p>
       <p>3D: Babylon.js (Apache 2.0). Musik und Klänge werden live im Spiel erzeugt.</p>
       <p>Alle Figuren sind frei erfunden. Wer flirtet oder datet, ist erwachsen; Kinder gibt es nur als Familienmitglieder. Zustimmung zählt.</p><div class="slot"></div></div></div>`,
     [{ icon: '←', label: 'Zurück', fn: () => this.title() }], () => this.title());
@@ -1486,6 +1500,11 @@ export class Game {
         { icon: '👑', label: s.flags.playAs === 'luma' ? 'Abschminken – wieder du selbst' : 'Als Lady Luma spielen', sub: 'Leon in Drag: Glitzer, Perücke, Lichtumhang', disabled: !(s.flags.lichtEnd || lichtPart(s) >= 5), fn: () => { close(); this.playAs(s.flags.playAs === 'luma' ? '' : 'luma'); } },
         { icon: '🍸', label: 'Drink an der Bar', sub: '5 € · +8 Spaß · +6 Kontakte', fn: buy(5, 'Velvet schiebt dir das Glas rüber. 🍸', eat({ fun: 8, social: 6 })) },
         { icon: '📖', label: 'Den Roman lesen', sub: '„Ich bin das Licht“ von RicoReWi', fn: () => { close(); this.book(); } }] },
+      tanke: { t: 'Regenbogen-Tanke', d: 'Zwei Zapfsäulen, ein Regenbogendach und Kaffee rund um die Uhr. Fahr deinen eigenen Wagen unters Dach, dann tankt er von selbst.', items: [
+        ...(myCar(s) && !myCar(s)!.fly ? [{ icon: '⛽', label: tankOf(s) >= 100 ? 'Tank ist voll' : 'Volltanken', sub: `${TANK.price(s)} € · Tank jetzt ${tankOf(s)} % · auch einfach unters Dach fahren`, disabled: tankOf(s) >= 100, fn: buy(TANK.price(s), '⛽ Vollgetankt!', () => { s.flags.tank = 100; }) }] : []),
+        { icon: '☕', label: 'Kaffee to go', sub: '2 € · +10 Energie · ☕ 2 Std. hellwach', fn: buy(2, 'Heiß und stark. ☕ Hellwach für 2 Stunden.', () => { eat({ energy: 10 })(); giveBuff(s, 'kaffee'); }) },
+        { icon: '🌭', label: 'Tofu-Wurst im Brötchen', sub: '3 € · +25 Hunger', fn: buy(3, 'Mit Röstzwiebeln. 🌭', eat({ hunger: 25 }, 'eat')) },
+        { icon: '🧽', label: 'Waschanlage', sub: '5 € · Regenbogenschaum · +8 Spaß', fn: buy(5, 'Schaum in allen Farben, du singst laut mit. 🧽🌈', eat({ fun: 8 })) }] },
       garage: (() => {
         const mine = myCar(s), tl = tuneLevel(s), hue = s.flags.carHue === undefined ? -1 : Number(s.flags.carHue), pi = Math.max(0, PAINTS.findIndex((q) => q[2] === hue)), np = PAINTS[(pi + 1) % PAINTS.length];
         const done = (why: string | null, ok: string, after?: () => void) => { if (why) { sfx('miss'); toast(why); return; } sfx('win'); toast(ok); after?.(); this.save.write(); this.city.refreshHud(); close(); this.placeMenu('garage'); };

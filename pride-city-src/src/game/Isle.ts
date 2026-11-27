@@ -10,7 +10,7 @@ import { PLACE_THEMES, HOUSE_THEMES, houseTheme, type Theme } from './interiors'
 import { Actor } from './Actor';
 import type { Game } from './Game';
 import type { World } from './World';
-import { extraWalk, landWalk } from './World';
+import { extraWalk, landWalk, CAR_FILE } from './World';
 import { toast } from '../ui/ui';
 import { isleVia } from './faden';
 import type { Marker } from '../ui/Hud';
@@ -234,8 +234,8 @@ export class Isle {
       rects.push({ x, z, hx: 4.2, hz: 4.2 });
     });
     const car = async (kind: string) => {
-      const inner = await instance(sc, 'city/' + kind + '.gltf', { shadows: false }); W.tune('car_', inner);
-      const o = new Node3(kind, sc); inner.parent = o; inner.scaling.setAll(S); inner.position.y = .061 * S - .025; o.parent = root; o.position.y = .1;
+      const inner = await instance(sc, 'cars/' + (CAR_FILE[kind] || 'sedan') + (this.g.engine.mobile ? '_lo' : '') + '.glb', { shadows: false });
+      const o = new Node3(kind, sc); inner.parent = o; inner.position.y = -.027; o.parent = root; o.position.y = .1;
       return o;
     };
     ['car_taxi', 'car_sedan', 'car_hatchback'].slice(0, this.g.engine.mobile ? 2 : 3).forEach((kind, i) => jobs.push(car(kind).then((o) => { this.cars.push({ o, path: LANES[i % 2], seg: i % 4, u: .2 + i * .15, v: 6 + (i % 3) }); })));

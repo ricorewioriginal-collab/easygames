@@ -8,6 +8,11 @@ Alle eingebundenen Modelle sind kostenlos und frei nutzbar (CC0 / Public Domain)
 | Stadt: Häuser, Straßen, Autos, Laternen, Bänke, Büsche | `assets/city/*.gltf`, `*.bin`, `citybits_texture.png` | Kay Lousberg, „KayKit City Builder Bits 1.0“ – https://github.com/KayKit-Game-Assets/KayKit-City-Builder-Bits-1.0 | CC0 1.0 |
 | Wohnung: Bett, Sofa, Sessel, Regale, Lampen, Teppiche, Pflanzen | `assets/home/*.gltf` | Kay Lousberg, „KayKit Furniture Bits 1.0“ – https://github.com/KayKit-Game-Assets/KayKit-Furniture-Bits-1.0 | CC0 1.0 |
 | Küche: Herd, Spüle, Kühlschrank, Topf, Teller | `assets/kitchen/*.gltf` | Kay Lousberg, „KayKit Restaurant Bits 1.0“ – https://github.com/KayKit-Game-Assets/KayKit-Restaurant-Bits-1.0 | CC0 1.0 |
+| Oberflächen der Welt: Asphalt, Backstein (Detailkarte), Strandsand | `assets/world/asphalt_*.jpg`, `brick_detail.webp`, `sand_*.jpg` | Poly Haven – „asphalt_02“, „brick_4“, „coast_sand_01“ (polyhaven.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
+| Oberflächen der Welt: Gehwegplatten, Rasen | `assets/world/paving_*.jpg`, `grass_*.jpg` | ambientCG – „PavingStones038“, „Grass001“ (ambientcg.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
+| Hausfassaden der Innenstadt (Farbe, Normalen, Nachtfenster aus den beleuchteten Varianten B/C abgeleitet) | `assets/world/fac018_*.jpg`, `fac019_*`, `fac020_*` | ambientCG – „Facade018A–C“, „Facade019A–C“, „Facade020A–C“ (ambientcg.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
+| Bäume und Palmen: Rinde, Laubkronen und Palmwedel (aus einzelnen Foto-Blättern zu Alpha-Karten zusammengesetzt) | `assets/world/palm_bark_*`, `tree_bark_*`, `leaves.png`, `palm_frond.png` | ambientCG – „Bark003“, „Bark014“, „LeafSet024“, „Foliage005“ (ambientcg.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
+| Wasserwellen (Normalenkarte) | `assets/world/water_nor.jpg` | selbst erzeugt (Summe von Sinuswellen) | CC0 1.0 |
 | 3D-Grafik | im Build gebündelt | three.js – https://threejs.org | MIT |
 
 Lizenztext: `assets/LICENSE-KayKit.txt`. Die Modelle sind unverändert; Kleidung, Haut und Haare werden zur Laufzeit per Shader in Pride-Farben und Outfits umgefärbt (`src/game/Actor.ts`).
@@ -35,3 +40,18 @@ CC0 1.0 seit 2020. Geformt, ohne Kopf, mit eigener Haut-Textur und Rocketbox-Ske
 
 Animationen, Uniform-Figuren (Polizei, Feuerwehr, Sanitäterin, Köchin, Kurier), Kinder und die Sport-Figuren:
 Microsoft Rocketbox Avatar Library, MIT-Lizenz, siehe `assets/rb/LICENSE.md`.
+
+## Fahrzeuge (seit 27.11.2026)
+
+Alle Autos (eigene Wagen, Verkehr, Taxi, Streifenwagen, Show- und Rennautos) stammen von Sketchfab und stehen unter
+**Creative Commons Attribution 4.0 (CC BY 4.0)** – https://creativecommons.org/licenses/by/4.0/. Erfundene Modelle ohne echte Marken.
+
+| Modell | Urheber*in | Lizenz | Verwendet als |
+|---|---|---|---|
+| „Generic passenger car pack“ – https://sketchfab.com/3d-models/generic-passenger-car-pack-20f9af9b8a404d5cb022ac6fe87f21f5 | Comrade1280 (Sketchfab) | CC BY 4.0 | `assets/cars/sedan`, `taxi`, `hatchback`, `stationwagon`, `compact`, `coupe`, `minivan`, `delivery`, `pickup`, `sport`, `suv`, `offroad` (je `.glb` und `_lo.glb`) |
+| „Fairheaven LT '80 Cop Cruiser – Low poly model“ – https://sketchfab.com/3d-models/fairheaven-lt-80-cop-cruiser-low-poly-model-61766c1e6e1e4b2b803c174f33433a74 | Daniel Zhabotinsky (Sketchfab) | CC BY 4.0 | `assets/cars/police.glb` (Streifenwagen) |
+| „Saba V12 '95 Interceptor – Low poly model“ – https://sketchfab.com/3d-models/saba-v12-95-interceptor-low-poly-model-63aa215521334cef9c4d8c4c391252ad | Daniel Zhabotinsky (Sketchfab) | CC BY 4.0 | `assets/cars/interceptor.glb` (Verfolgungswagen) |
+
+Änderungen: Die Pakete wurden in einzelne Autos geteilt, ausgerichtet, auf Straßenmaß gebracht, Innenraum und Kleinteile entfernt,
+Geometrie vereinfacht (`_lo` für den Verkehr am Handy) und Texturen auf 512 px verkleinert (`pride-city-src/scripts/cars.mjs`).
+Taxi (gelb) und Lieferwagen (hell) sind umgefärbte Fassungen der Limousine bzw. des Vans.

@@ -1,2 +1,5 @@
-Fahrzeugmodelle: Kenney Car Kit (https://kenney.nl/assets/car-kit), Creative Commons Zero (CC0 1.0).
-Bezogen über das npm-Paket @netforge/asset-library-files (optimierte Kopien), hier ohne Meshopt-Kompression gespeichert.
+Fahrzeugmodelle: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/), Namensnennung Pflicht.
+- "Generic passenger car pack" von Comrade1280 (Sketchfab): sedan, taxi, hatchback, stationwagon, compact, coupe, minivan, delivery, pickup, sport, suv, offroad
+- "Fairheaven LT 80 Cop Cruiser" von Daniel Zhabotinsky (Sketchfab): police
+- "Saba V12 95 Interceptor" von Daniel Zhabotinsky (Sketchfab): interceptor
+Geteilt, ausgerichtet, vereinfacht und verkleinert mit scripts/cars.mjs. Details: ../../CREDITS.md

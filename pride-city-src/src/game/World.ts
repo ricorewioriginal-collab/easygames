@@ -9,8 +9,12 @@ import {
 import { instance, preload } from '../engine/Assets';
 import { planeZ, ground, box, cyl, sphere, ring, torus, pbr, glow, canvasTex } from '../engine/geo';
 import { PALETTES } from './palettes';
-import { buildUptown, EAST, BRIDGE, UPTOWN_PLACES, doorStep } from './uptown';
+import { Townhouses } from './townhouse';
+import { palmParts, treeParts } from './plants';
+import { roadSurface, grassSurface, photoSurface, waterSurface, worldTex } from '../engine/surfaces';
+import { buildUptown, EAST, BRIDGE, UPTOWN_PLACES, doorStep, TANKE } from './uptown';
 import { NODES, LANE, lane, nearestEdge } from './traffic';
+import { pixels, remember, breathe } from './texpix';
 
 export const TILE = 10;
 const S = TILE / 2; // KayKit-Kacheln sind 2 Einheiten breit
@@ -18,9 +22,17 @@ const N = 6;        // Kacheln von der Mitte bis zum Rand
 export const HALF = N * TILE + TILE / 2;
 
 const C = (n: string) => 'city/' + n + '.gltf';
-const BUILD = ['building_A', 'building_B', 'building_C', 'building_D', 'building_E', 'building_F', 'building_G', 'building_H'];
-const CARS = ['car_hatchback', 'car_sedan', 'car_stationwagon', 'car_taxi', 'car_police'];
-export const CITY_FILES = [...BUILD, ...CARS, 'base', 'road_straight', 'road_junction', 'road_tsplit', 'road_corner', 'streetlight', 'bench', 'bush', 'firehydrant', 'trash_A', 'dumpster', 'watertower', 'box_A'].map(C);
+/** Fahrzeug-Arten (Namen aus der Zeit der KayKit-/Kenney-Autos, im Spiel überall so benutzt) → Datei in assets/cars (scripts/cars.mjs, CC BY 4.0) */
+export const CAR_FILE: Record<string, string> = {
+  car_hatchback: 'compact', car_sedan: 'sedan', car_stationwagon: 'stationwagon', car_taxi: 'taxi', car_police: 'police',
+  'k:van': 'minivan', 'k:delivery_van': 'delivery', 'k:truck': 'pickup', 'k:suv': 'offroad', 'k:hatchback_sports': 'hatchback',
+  'k:sedan_sports': 'coupe', 'k:suv_luxury': 'suv', 'k:race_car': 'sport', 'k:interceptor': 'interceptor',
+};
+/** Verkehrsauto mit naher und ferner Fassung (World.car) */
+type CarLod = TransformNode & { _pcLod?: [TransformNode, TransformNode, boolean] };
+/** Gemischter Verkehr: Alltagsautos, dazu ab und zu Van, Pick-up und Geländewagen */
+const MIX = ['car_hatchback', 'car_sedan', 'k:van', 'car_stationwagon', 'k:truck', 'car_sedan', 'k:suv', 'car_hatchback', 'k:delivery_van', 'k:suv_luxury', 'k:sedan_sports'];
+export const CITY_FILES = ['base', 'road_straight', 'road_junction', 'road_tsplit', 'road_corner', 'streetlight', 'bench', 'bush', 'firehydrant', 'trash_A', 'dumpster', 'watertower', 'box_A'].map(C);
 
 export interface Poi { id: string; name: string; icon: string; x: number; z: number; r: number; sign?: string; color?: string }
 /** Begehbar: Innenstadt, Kai, Strand und Steg (nicht ins Wasser) */
@@ -55,7 +67,7 @@ export interface Prop { x: number; z: number; r: number; o: TransformNode[]; sol
 export interface Car {
   o: Node3; path: Vector3[]; seg: number; u: number; v: number; kind?: string; /** vorübergehend aus dem Verkehr (Parade) */ off?: boolean;
   /** Straßennetz: von Kreuzung a nach b, aktuelles Tempo, Abbiegebogen, Spurabstand zur Mitte */
-  a?: number; b?: number; cur?: number; lat?: number; jam?: number; wait?: number;
+  a?: number; b?: number; cur?: number; lat?: number; jam?: number; wait?: number; /** wartet an der Ampel (oder hinter jemandem, der wartet) */ held?: boolean;
   turn?: { p0: Vector3; p1: Vector3; p2: Vector3; u: number; len: number; to: number };
   /** angestoßen: Versatz und Schwung, kurz stehen bleiben */
   knock?: { x: number; z: number; r: number; vx: number; vz: number; vr: number }; bump?: { t: number };
@@ -126,13 +138,14 @@ export class World {
     this.nearShadows();
 
     // Boden
-    const g = ground(sc, 600, 600); g.position.y = -.02; g.material = pbr(sc, 0x6fae5a, 1); g.receiveShadows = true; g.parent = this.root;
+    const g = ground(sc, 600, 600); g.position.y = -.02; g.material = pbr(sc, 0x6fae5a, 1); grassSurface(g.material as PBRMaterial, sc, 600); g.receiveShadows = true; g.parent = this.root;
 
     this.definePois();
     const special = new Map<string, Poi>();
     for (const p of this.pois) special.set(this.blockOf(p.x, p.z), p);
 
     const tasks: Promise<unknown>[] = [];
+    const town = new Townhouses(this);
     for (let ix = -N; ix <= N; ix++) for (let iz = -N; iz <= N; iz++) {
       const x = ix * TILE, z = iz * TILE;
       if (isRoad(ix) || isRoad(iz)) { tasks.push(this.road(ix, iz, x, z)); continue; }
@@ -147,21 +160,20 @@ export class World {
       // Läden mit Tür zur Hauptstraße (x = 0)
       const door = this.pois.find((q) => q.sign && Math.round(q.x / TILE) === ix && Math.round(q.z / TILE) === iz);
       if (door) rot = door.x > 0 ? -Math.PI / 2 : Math.PI / 2;
-      let kind = BUILD[Math.floor(rnd() * BUILD.length)];
-      if (door) kind = door.id === 'club' ? 'building_H' : door.id === 'center' ? 'building_G' : door.id === 'home' ? 'building_E' : door.id === 'cafe' ? 'building_B' : door.id === 'boutique' ? 'building_F' : door.id === 'gym' ? 'building_D' : door.id === 'studio' ? 'building_A' : door.id === 'checkpoint' ? 'building_E' : door.id === 'onelove' ? 'building_H' : door.id === 'police' ? 'building_A' : door.id === 'fire' ? 'building_G' : 'building_C';
-      const house = door ? null : { i: this.houses.length, x: x + Math.sin(rot) * (TILE * .4 + .5), z: z + Math.cos(rot) * (TILE * .4 + .5), yaw: rot };
+      // Stadthaus mit Foto-Fassade (townhouse.ts) statt KayKit-Klotz; Läden bekommen feste Höhe und Markise
+      rnd();
+      const house = door ? null : { i: this.houses.length, x, z, yaw: rot };
       if (house) this.houses.push(house);
-      tasks.push(this.place(C(kind), x, .1, z, rot).then((o) => {
-        const r = this.footprint(o, x, z);
-        this.blocks.push({ r, o });
-        // Haustür direkt vor die echte Fassade legen (keine Klingel mitten auf dem Gehweg)
-        if (house) { const sx = Math.round(Math.sin(rot)), sz = Math.round(Math.cos(rot)), d = sx ? r.hx + (r.x - x) * sx : r.hz + (r.z - z) * sz; house.x = x + Math.sin(rot) * (d + .7); house.z = z + Math.cos(rot) * (d + .7); }
-      }));
+      const th = town.add(x, z, rot, door ? { floors: door.id === 'club' || door.id === 'onelove' ? 3 : 4 } : {});
+      if (house) { house.x = x + Math.sin(rot) * (th.front + .7); house.z = z + Math.cos(rot) * (th.front + .7); }
+      this.blocks.push({ r: th.r, o: new TransformNode('house', sc) });
     }
     await Promise.all(tasks);
+    town.build(sc);
     this.plaza(); this.park(); this.decorate(); this.signs(); this.paintHouses(); this.neonCity(); await this.harbour();
     await buildUptown(this);
     await this.spawnCars();
+    this.signals();
     this.buildEnv();
     this.setTime(.3);
   }
@@ -232,6 +244,7 @@ export class World {
     P('tramhoch', 'Hochbahn Hochstadt', '🚇', 157, 22, undefined, undefined, 3.6);
     P('laterne', 'Laternenmeile', '🏮', 105, -27, undefined, undefined, 2);
     P('garage', 'Garage Schraubenschlüssel', '🔧', 170.5, -47.4, undefined, undefined, 2.6);
+    P('tanke', 'Regenbogen-Tanke', '⛽', TANKE[0] - 3.2, TANKE[1] + 1.6, undefined, undefined, 1.8);
     for (const u of UPTOWN_PLACES) { const d = doorStep(u); P(u.id, u.name, u.icon, d.x, d.z, undefined, undefined, 2.2); }
   }
 
@@ -242,35 +255,6 @@ export class World {
     o.parent = this.root;
     o.getChildMeshes().forEach((m) => { m.freezeWorldMatrix(); m.doNotSyncBoundingInfo = true; });
     return o;
-  }
-  /** Kollision eines Hauses aus seinem echten Grundriss: nur Teile, die bis zum Boden reichen (Markisen und Schilder oben zählen nicht) */
-  private foot = new Map<string, number[] | null>();
-  private footprint(o: TransformNode, x: number, z: number) {
-    const b = this.bounds(o, .5, 2.2, this.foot);
-    const r: Rect = b ? { x: (b[0] + b[1]) / 2, z: (b[2] + b[3]) / 2, hx: Math.max(1, (b[1] - b[0]) / 2 - .1), hz: Math.max(1, (b[3] - b[2]) / 2 - .1) } : { x, z, hx: TILE * .4, hz: TILE * .4 };
-    this.colliders.push(r); return r;
-  }
-  /** Ausdehnung eines Hauses in einer Höhenschicht (Weltkoordinaten: x0, x1, z0, z1) */
-  private bounds(o: TransformNode, lo: number, hi: number, cache: Map<string, number[] | null>) {
-    let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
-    for (const m of o.getChildMeshes()) {
-      // Grundriss aus den Wänden im Erdgeschoss (0,5–2,2 m), ohne Gehweg-Platte, Markisen und Schilder
-      let f = cache.get(m.name);
-      if (f === undefined) {
-        const pos = m.getVerticesData('position'); f = null;
-        if (pos) { const sy = m.absoluteScaling.y || 1, oy = m.absolutePosition.y; let a = Infinity, b = -Infinity, c = Infinity, d = -Infinity;
-          for (let i = 0; i < pos.length; i += 3) { const y = pos[i + 1] * sy + oy; if (y < lo || y > hi) continue; a = Math.min(a, pos[i]); b = Math.max(b, pos[i]); c = Math.min(c, pos[i + 2]); d = Math.max(d, pos[i + 2]); }
-          if (isFinite(a)) f = [a, b, c, d]; }
-        cache.set(m.name, f);
-      }
-      if (!f) continue;
-      const wm = m.getWorldMatrix();
-      for (const [lx, lz] of [[f[0], f[2]], [f[1], f[2]], [f[0], f[3]], [f[1], f[3]]]) {
-        const q = Vector3.TransformCoordinates(new Vector3(lx, 0, lz), wm);
-        x0 = Math.min(x0, q.x); x1 = Math.max(x1, q.x); z0 = Math.min(z0, q.z); z1 = Math.max(z1, q.z);
-      }
-    }
-    return isFinite(x0) ? [x0, x1, z0, z1] : null;
   }
   /** feste Teile: Weltmatrix einfrieren (spart Rechenzeit) */
   still(m: AbstractMesh, cast = true, receive = true) {
@@ -301,7 +285,7 @@ export class World {
         m.detailMap.texture.coordinatesIndex = 1;
         for (const ms of o.getChildMeshes()) if ((ms as Mesh).material === m || (ms as InstancedMesh).sourceMesh?.material === m) this.boxUv(ms);
       }
-      else if (/road|base/.test(path)) { m.roughness = .72; m.metallic = 0; this.roadMats.push(m); }
+      else if (/road|base/.test(path)) { m.roughness = .72; m.metallic = 0; this.roadMats.push(m); roadSurface(m, this.scene); }
       else if (/car_/.test(path)) {
         // Autolack mit Klarlack, getönte Scheiben, Gummi und Chrom (je Farbfeld im Atlas)
         m.roughness = 1; m.metallic = 1; this.surface(m, 'car');
@@ -348,26 +332,8 @@ export class World {
   /** Detail-Textur (R = Helligkeit, G = Normal Y, B = Rauheit, A = Normal X): Putz mit feinen Fugen */
   private detail: Texture | null = null;
   detailTex() {
-    if (this.detail) return this.detail;
-    const N2 = 256, d = new Uint8Array(N2 * N2 * 4), h = new Float32Array(N2 * N2);
-    let seed = 7; const rn = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-    const noise = new Float32Array(64 * 64).map(() => rn());
-    const smooth = (x: number, y: number) => { const xi = Math.floor(x) & 63, yi = Math.floor(y) & 63, fx = x - Math.floor(x), fy = y - Math.floor(y), a = noise[yi * 64 + xi], b = noise[yi * 64 + ((xi + 1) & 63)], c = noise[((yi + 1) & 63) * 64 + xi], e = noise[((yi + 1) & 63) * 64 + ((xi + 1) & 63)]; return (a * (1 - fx) + b * fx) * (1 - fy) + (c * (1 - fx) + e * fx) * fy; };
-    for (let y = 0; y < N2; y++) for (let x = 0; x < N2; x++) {
-      // Steinreihen (Fugen alle 32 px, versetzt) + Putz-Rauschen
-      const row = Math.floor(y / 32), bx = (x + (row % 2) * 32) % 64, joint = (y % 32 < 2 || bx < 2) ? 1 : 0;
-      h[y * N2 + x] = .5 + (smooth(x / 8, y / 8) - .5) * .5 + (smooth(x / 2.5, y / 2.5) - .5) * .25 - joint * .45;
-    }
-    for (let y = 0; y < N2; y++) for (let x = 0; x < N2; x++) {
-      const i = y * N2 + x, hx = h[y * N2 + ((x + 1) % N2)] - h[y * N2 + ((x + N2 - 1) % N2)], hy = h[((y + 1) % N2) * N2 + x] - h[((y + N2 - 1) % N2) * N2 + x];
-      d[i * 4] = Math.max(0, Math.min(255, 128 + (h[i] - .5) * 150));
-      d[i * 4 + 1] = Math.max(0, Math.min(255, 128 - hy * 180));
-      d[i * 4 + 2] = Math.max(0, Math.min(255, 128 + (.5 - h[i]) * 120));
-      d[i * 4 + 3] = Math.max(0, Math.min(255, 128 - hx * 180));
-    }
-    const t = (this.detail = RawTexture.CreateRGBATexture(d, N2, N2, this.scene, true, false, Texture.TRILINEAR_SAMPLINGMODE));
-    t.wrapU = t.wrapV = Texture.WRAP_ADDRESSMODE;
-    return t;
+    // Echte Backstein-Fassade (Poly Haven „brick_4“, CC0), gepackt: R = Helligkeit, G = Normal Y, B = Rauheit, A = Normal X
+    return (this.detail ??= worldTex(this.scene, 'brick_detail.webp'));
   }
   /** Zweite UV aus der Lage im Modell (Würfel-Projektion), einmal je Geometrie */
   private uvDone = new Set<unknown>();
@@ -563,8 +529,7 @@ export class World {
   tree(x: number, z: number, s: number) {
     const sc = this.scene;
     if (!this.treeSrc) {
-      const trunk = cyl(sc, .18, .26, 1.6, 6); trunk.material = pbr(sc, 0x7a4a2a, .9); trunk.convertToFlatShadedMesh();
-      const tops = [0x4caf50, 0x66bb6a, 0x9ccc65, 0xff8fb1].map((c) => { const t = sphere(sc, 1.3, 2); t.material = pbr(sc, c, .9); t.convertToFlatShadedMesh(); return t; });
+      const { trunk, tops } = treeParts(sc);
       [trunk, ...tops].forEach((m) => { m.setEnabled(false); m.receiveShadows = true; m.parent = this.root; });
       this.treeSrc = { trunk, tops };
     }
@@ -583,31 +548,15 @@ export class World {
   palm(x: number, z: number, s = 1) {
     const sc = this.scene;
     if (!this.palmSrc) {
-      const trunk = cyl(sc, .16, .26, 6, 7, false);
-      const tp = trunk.getVerticesData(VertexBuffer.PositionKind)!;
-      for (let i = 0; i < tp.length; i += 3) { const y = tp[i + 1] + 3; tp[i + 1] = y; tp[i] += (y / 6) ** 2 * .9; }
-      trunk.setVerticesData(VertexBuffer.PositionKind, tp); trunk.createNormals(false);
-      trunk.material = pbr(sc, 0x8a6a48, .95, 0, { double: true });
-      // Palmwedel: gebogene, spitz zulaufende Fläche
-      const pos: number[] = [], idx: number[] = [], uv: number[] = [];
-      const cols = 3, rows = 7;
-      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
-        const d = (r / (rows - 1)) * 3.4, xx = (c / (cols - 1) - .5) * 1.25 * (1 - d / 3.8);
-        pos.push(xx, -d * d * .12 + d * .25 - Math.abs(xx) * .35, d); uv.push(c / (cols - 1), r / (rows - 1));
-        if (r < rows - 1 && c < cols - 1) { const k = r * cols + c; idx.push(k, k + cols, k + 1, k + 1, k + cols, k + cols + 1); }
-      }
-      const frond = new Mesh('frond', sc), vd = new VertexData(), nor: number[] = [];
-      VertexData.ComputeNormals(pos, idx, nor);
-      vd.positions = pos; vd.indices = idx; vd.normals = nor; vd.uvs = uv; vd.applyToMesh(frond);
-      frond.material = pbr(sc, 0x2f8a45, .8, 0, { double: true });
+      const { trunk, frond } = palmParts(sc);
       [trunk, frond].forEach((m) => { m.setEnabled(false); m.receiveShadows = true; m.parent = this.root; });
       this.palmSrc = { trunk, frond };
     }
     const g = new TransformNode('palm', sc);
     const t = this.palmSrc.trunk.createInstance('pt'); t.parent = g; (t as AbstractMesh & { _pcCast?: boolean })._pcCast = true;
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 13; i++) {
       const f = this.palmSrc.frond.createInstance('pf'); f.parent = g; (f as AbstractMesh & { _pcCast?: boolean })._pcCast = true;
-      f.position.set(.9, 5.9, 0); f.rotation.y = (i / 9) * Math.PI * 2 + rnd() * .3;
+      f.position.set(.9, 5.9, 0); f.rotation.y = (i / 13) * Math.PI * 2 + rnd() * .3; f.rotation.x = (i % 3 - 1) * .32 + (rnd() - .5) * .15;
     }
     g.position.set(x, .05, z); g.rotation.y = rnd() * 6; g.scaling.setAll(s); g.parent = this.root;
     this.freeze(g);
@@ -799,9 +748,9 @@ export class World {
     const M = (c: number | string, r = .8, m = 0, extra: Parameters<typeof pbr>[4] = {}) => pbr(sc, c, r, m, extra);
     const plane = (w: number, l: number, mt: PBRMaterial, x: number, y: number, z: number) => { const o = ground(sc, w, l); o.material = mt; o.position.set(x, y, z); return this.still(o, false); };
     const bx = (w: number, h: number, l: number, mt: PBRMaterial, x: number, y: number, z: number, cl = false) => { const o = box(sc, w, h, l); o.material = mt; o.position.set(x, y, z); this.still(o); if (cl) this.colliders.push({ x, z, hx: w / 2, hz: l / 2 }); return o; };
-    plane(27, 80, M(0x948c80, .9), -78.5, .06, 5);                      // Kai-Pflaster
-    plane(400, 600, M(0x2f8fd0, .12, .25, { emissive: 0x08243a }), -292, .02, 0); // Wasser
-    plane(10, 26, M(0xf0d9a0, 1), -92, .07, 30);                    // Sandstrand
+    plane(27, 80, photoSurface(M(0x948c80, .9), sc, 'paving', 27, 80), -78.5, .06, 5);                      // Kai-Pflaster
+    { const wm = M(0x0f3f5c, .12, 0, { emissive: 0x031522 }), wave = waterSurface(wm, sc, 400, 600); plane(400, 600, wm, -292, .02, 0); this.extras.push((_dt, t) => wave(t)); } // Wasser
+    plane(10, 26, photoSurface(M(0xf0d9a0, 1), sc, 'sand', 10, 26), -92, .07, 30);                    // Sandstrand
     bx(.5, .5, 15.5, M(0x8c8579), -91.4, .25, -27.25); bx(.5, .5, 53.5, M(0x8c8579), -91.4, .25, 18.25);   // Kaimauer, offen an der Brücke nach Glitzeria (z −14)
     // Weltentor am Kai: Regenbogenbogen mit leuchtendem Wirbel (Reise in andere Welten, worlds.ts)
     [0xff3b3b, 0xff8a3b, 0xffd23b, 0x3ee69a, 0x3a7bff, 0xb56bff].forEach((c, i) => { const m = glow(sc, c, 1); this.neon.push({ m, base: m.albedoColor.clone() }); const a = torus(sc, 3.3 - i * .22, .13, 28); a.material = m; a.rotation.set(Math.PI / 2, Math.PI / 2, 0); a.position.set(-80, 0, 13); this.still(a, false); });
@@ -881,8 +830,8 @@ export class World {
     // Hochstadt: viel gelbes Taxi, wie es sich für eine Großstadt gehört
     const UP = ['car_taxi', 'car_sedan', 'car_taxi', 'car_hatchback', 'car_taxi', 'car_stationwagon'];
     for (let i = 0; i < n; i++) {
-      const kind = i === 0 ? 'car_police' : i % 2 ? UP[i % UP.length] : CARS[i % (CARS.length - 1)];
-      const o = await this.car(kind);
+      const kind = i === 0 ? 'car_police' : i % 2 ? UP[i % UP.length] : MIX[(i >> 1) % MIX.length];
+      const o = await this.car(kind, true);
       const c: Car = { o, path: [new Vector3(), new Vector3()], seg: 0, u: 0, v: 8 + rnd() * 4, kind };
       this.placeCar(c, 0, 0, 0, 160);
       this.cars.push(c);
@@ -935,67 +884,76 @@ export class World {
     out.set(a.x + (b.x - a.x) * c.u + az * sh, .1, a.z + (b.z - a.z) * c.u - ax * sh);
     return Math.atan2(ax, az);
   }
-  /** Auto als bewegliche Kopie (Wurzel mit visible) */
-  async car(kind: string) {
-    if (kind.startsWith('k:')) return this.kenneyCar(kind);
-    const inner = await instance(this.scene, C(kind));
-    this.tune('car_', inner);
-    // KayKit-Räder reichen 0,061 Einheiten unter den Ursprung: anheben, damit die Reifen auf dem Asphalt (y 0,073) stehen
-    const o = new Node3(kind, this.scene); inner.parent = o; inner.scaling.setAll(S); inner.position.y = .061 * S - .025; o.parent = this.root;
-    return o;
-  }
-
-  /** Kenney Car Kit (CC0): eigene Kopie mit eigenem Lack-Material, Räder stehen bei y 0 */
-  private async kenneyCar(kind: string) {
-    const inner = await instance(this.scene, 'cars/' + kind.slice(2) + '.glb', { clone: true });
-    const mats = new Map<PBRMaterial, PBRMaterial>();
-    for (const ms of inner.getChildMeshes()) {
+  /** Auto als bewegliche Kopie (Wurzel mit visible). Verkehr (traffic) nutzt Instanzen (ein Zeichenaufruf je Modell)
+      und am Handy die vereinfachte Fassung; eigene Wagen sind Kopien mit Lack, den paintCar umfärben kann. */
+  async car(kind: string, traffic = false) {
+    const file = CAR_FILE[kind] || 'sedan', lo = traffic && (this.low || matchMedia('(pointer: coarse)').matches);
+    const inner = await instance(this.scene, 'cars/' + file + (lo ? '_lo' : '') + '.glb', { clone: !traffic, shadows: !lo });
+    // Verkehr: in der Ferne eine grobe Fassung (traffic() schaltet um), Streifenwagen nutzen dafür ihre Handy-Fassung
+    let far: TransformNode | null = null;
+    if (traffic) { far = await instance(this.scene, 'cars/' + file + (/^(police|interceptor)$/.test(file) ? '_lo' : '_far') + '.glb', { shadows: false }); far.setEnabled(false); }
+    if (!traffic) for (const ms of inner.getChildMeshes()) {
       const m = ms.material as PBRMaterial | null; if (!(m instanceof PBRMaterial)) continue;
-      const body = !/wheel/.test(ms.name);
-      let c = body ? mats.get(m) : this.wheelMat.get(m);
+      const wheel = /wheel/i.test(ms.name), key = file + '|' + m.name + (wheel ? '|r' : ''); let c = this.carMat.get(key);
       if (!c) {
-        c = m.clone(m.name + (body ? '_lack' : '_rad'));
-        if (body) { c.roughness = .3; c.metallic = .25; c.clearCoat.isEnabled = !this.low; c.clearCoat.intensity = .6; c.clearCoat.roughness = .08; (c as PBRMaterial & { _pcFx?: [boolean, boolean] })._pcFx = [false, true]; mats.set(m, c); }
-        else { c.roughness = .85; c.metallic = 0; this.wheelMat.set(m, c); }
+        // Karosserie bekommt Klarlack und heißt „…_lack“ (paintCar), alles andere bleibt, wie es ist
+        if (/body/i.test(m.name) && !wheel) { c = m.clone(m.name + '_lack'); c.clearCoat.isEnabled = !this.low; c.clearCoat.intensity = .55; c.clearCoat.roughness = .08; (c as PBRMaterial & { _pcFx?: [boolean, boolean] })._pcFx = [false, true]; }
+        else c = m;
+        this.carMat.set(key, c);
       }
       ms.material = c;
     }
-    const o = new Node3(kind, this.scene); inner.parent = o; inner.scaling.setAll(1.5); inner.position.y = -.027; o.parent = this.root;
+    const o = new Node3(kind, this.scene); inner.parent = o; inner.position.y = -.027; o.parent = this.root;
+    if (far) { far.parent = o; far.position.y = -.027; (o as CarLod)._pcLod = [inner, far, false]; }
+    if (kind === 'car_taxi') this.taxiSign(o);
     return o;
   }
-  private wheelMat = new Map<PBRMaterial, PBRMaterial>();
-  private paintSrc = new WeakMap<Texture, Promise<{ px: Uint8Array; w: number; h: number }>>();
+  private carMat = new Map<string, PBRMaterial>();
+  private signMat?: PBRMaterial;
+  /** Taxischild auf dem Dach (leuchtet) */
+  private taxiSign(o: TransformNode) {
+    const m = (this.signMat ||= glow(this.scene, 0xffe066, 1.2));
+    const b = box(this.scene, .62, .2, .26); b.material = m; b.parent = o; b.position.set(0, 1.5, -.15); b.isPickable = false;
+  }
   /** Eigenen Wagen umlackieren: Die Lackfarbe (häufigster kräftiger Farbton der Karosserie) wird auf den Wunsch-Farbton gedreht. hue < 0 = Original. */
   async paintCar(o: TransformNode, hue: number) {
     for (const ms of o.getChildMeshes()) {
       const m = ms.material as (PBRMaterial & { _pcOrig?: Texture }) | null;
       if (!(m instanceof PBRMaterial) || !/_lack$/.test(m.name)) continue;
       const src = (m._pcOrig ||= m.albedoTexture as Texture); if (!src) continue;
-      if (hue < 0) { m.albedoTexture = src; continue; }
-      let pr = this.paintSrc.get(src);
-      if (!pr) { pr = (async () => { const sz = src.getSize(); const px = new Uint8Array(((await src.readPixels()) as ArrayBufferView).buffer.slice(0)); return { px, w: sz.width, h: sz.height }; })(); this.paintSrc.set(src, pr); }
-      const { px, w, h } = await pr;
-      // Lackfarbe aus den UVs der Karosserie bestimmen
-      const uv = ms.getVerticesData(VertexBuffer.UVKind) || [], hist = new Float32Array(36);
-      const hsv = (r: number, g: number, b: number) => { const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn; let hh = 0; if (d) hh = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; return [(hh * 60 + 360) % 360, mx ? d / mx : 0, mx / 255]; };
-      for (let i = 0; i < uv.length; i += 2) {
-        const u = uv[i] * src.uScale + src.uOffset, v = uv[i + 1] * src.vScale + src.vOffset;
-        const x = Math.min(w - 1, Math.max(0, Math.floor((u - Math.floor(u)) * w))), y = Math.min(h - 1, Math.max(0, Math.floor((v - Math.floor(v)) * h))), k = (y * w + x) * 4;
-        const [hh, ss, vv] = hsv(px[k], px[k + 1], px[k + 2]); if (ss > .35 && vv > .25) hist[Math.floor(hh / 10) % 36]++;
-      }
-      let top = 0; for (let i = 1; i < 36; i++) if (hist[i] > hist[top]) top = i;
-      if (!hist[top]) continue;
-      const h0 = top * 10 + 5, out = new Uint8Array(px.length);
-      for (let k = 0; k < px.length; k += 4) {
-        const [hh, ss, vv] = hsv(px[k], px[k + 1], px[k + 2]); let d = Math.abs(hh - h0); if (d > 180) d = 360 - d;
-        if (ss > .3 && d < 28) { const c = Color3.FromHSV((hue + hh - h0 + 360) % 360, ss, vv); out[k] = c.r * 255; out[k + 1] = c.g * 255; out[k + 2] = c.b * 255; }
-        else { out[k] = px[k]; out[k + 1] = px[k + 1]; out[k + 2] = px[k + 2]; }
-        out[k + 3] = px[k + 3];
-      }
-      const t = RawTexture.CreateRGBATexture(out, w, h, this.scene, false, false, Texture.NEAREST_SAMPLINGMODE);
-      t.uScale = src.uScale; t.vScale = src.vScale; t.uOffset = src.uOffset; t.vOffset = src.vOffset; t.wrapU = src.wrapU; t.wrapV = src.wrapV; t.coordinatesIndex = src.coordinatesIndex; t.gammaSpace = src.gammaSpace;
-      m.albedoTexture = t;
+      // Lack wird zwischen gleichen Modellen geteilt: vor dem Umfärben eine eigene Kopie für dieses Auto
+      if (!(m as PBRMaterial & { _pcOwn?: boolean })._pcOwn) { const own = m.clone(m.name) as PBRMaterial & { _pcOrig?: Texture; _pcOwn?: boolean; _pcFx?: unknown }; own._pcOrig = src; own._pcOwn = true; own._pcFx = (m as PBRMaterial & { _pcFx?: unknown })._pcFx; ms.material = own; await this.paintOne(ms, own, src, hue); continue; }
+      await this.paintOne(ms, m, src, hue);
     }
+  }
+  private async paintOne(ms: AbstractMesh, m: PBRMaterial, src: Texture, hue: number) {
+    if (hue < 0) { m.albedoTexture = src; return; }
+    const px = await pixels(src); if (!px) return;
+    const { width: w, height: h } = src.getSize();
+    // Lackfarbe aus den UVs der Karosserie bestimmen: kräftigster häufiger Farbton, sonst (schwarz, grau, weiß) die häufigste Helligkeit
+    const uv = ms.getVerticesData(VertexBuffer.UVKind) || [], hist = new Float32Array(36), vh = new Float32Array(20);
+    const hsv = (r: number, g: number, b: number) => { const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn; let hh = 0; if (d) hh = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; return [(hh * 60 + 360) % 360, mx ? d / mx : 0, mx / 255]; };
+    for (let i = 0; i < uv.length; i += 2) {
+      const u = uv[i] * src.uScale + src.uOffset, v = uv[i + 1] * src.vScale + src.vOffset;
+      const x = Math.min(w - 1, Math.max(0, Math.floor((u - Math.floor(u)) * w))), y = Math.min(h - 1, Math.max(0, Math.floor((v - Math.floor(v)) * h))), k = (y * w + x) * 4;
+      const [hh, ss, vv] = hsv(px[k], px[k + 1], px[k + 2]); if (ss > .35 && vv > .25) hist[Math.floor(hh / 10) % 36]++; else if (ss < .25 || vv < .2) vh[Math.min(19, Math.floor(vv * 20))]++;
+    }
+    let top = 0; for (let i = 1; i < 36; i++) if (hist[i] > hist[top]) top = i;
+    let vt = 0; for (let i = 1; i < 20; i++) if (vh[i] > vh[vt]) vt = i;
+    const grey = hist[top] < vh[vt] * .5, h0 = top * 10 + 5, v0 = (vt + .5) / 20, out = new Uint8Array(px.length);
+    for (let k = 0; k < px.length; k += 4) {
+      const [hh, ss, vv] = hsv(px[k], px[k + 1], px[k + 2]); let d = Math.abs(hh - h0); if (d > 180) d = 360 - d;
+      let c: Color3 | null = null;
+      if (!grey && ss > .3 && d < 28) c = Color3.FromHSV((hue + hh - h0 + 360) % 360, ss, vv);
+      else if (grey && (ss < .25 || vv < .2) && Math.abs(vv - v0) < .12) c = Color3.FromHSV(hue, .75, Math.min(1, .55 + (vv - v0) * 1.5));
+      if (c) { out[k] = c.r * 255; out[k + 1] = c.g * 255; out[k + 2] = c.b * 255; } else { out[k] = px[k]; out[k + 1] = px[k + 1]; out[k + 2] = px[k + 2]; }
+      out[k + 3] = px[k + 3];
+      if ((k & 0x3ffff) === 0) await breathe();
+    }
+    const t = RawTexture.CreateRGBATexture(out, w, h, this.scene, true, src.invertY, Texture.TRILINEAR_SAMPLINGMODE);
+    remember(t, out);
+    t.uScale = src.uScale; t.vScale = src.vScale; t.uOffset = src.uOffset; t.vOffset = src.vOffset; t.wrapU = src.wrapU; t.wrapV = src.wrapV; t.coordinatesIndex = src.coordinatesIndex; t.gammaSpace = src.gammaSpace;
+    m.albedoTexture = t;
   }
 
   /** Weitere Hindernisse für den Verkehr (geparkte/gefahrene Autos des Spielers) */
@@ -1019,7 +977,46 @@ export class World {
   /** Hindernisse auf der Fahrbahn, an denen der Verkehr vorbeilenkt (geparkte Autos) */
   statics?: () => Array<{ x: number; z: number }>;
   private respawnI = 0;
+  /* ---------- Ampeln: an allen Kreuzungen mit vier Straßen, eine Phase für die ganze Stadt ---------- */
+  private sigT = 0;
+  private sigLamps: Record<'x' | 'z', PBRMaterial[]> = { x: [], z: [] };
+  private sigShown = '';
+  /** Ampelkreuzungen (vier Abzweige) */
+  static isSignal(i: number) { return NODES[i].nb.length === 4; }
+  /** Farbe für Verkehr entlang der x- bzw. z-Achse: 0 rot, 1 gelb, 2 grün (Umlauf 26 s) */
+  signal(axis: 'x' | 'z') {
+    const t = (this.sigT % 26) - (axis === 'x' ? 0 : 13);
+    return t >= 0 && t < 10 ? 2 : t >= 10 && t < 12 ? 1 : 0;
+  }
+  private signals() {
+    const sc = this.scene, pole = cyl(sc, .09, .11, 4.2, 8), head = box(sc, .5, 1.4, .5);
+    pole.material = pbr(sc, 0x2a2d36, .5, .6); head.material = pbr(sc, 0x1c1e24, .6, .3);
+    const COL = [0xff3b3b, 0xffc83b, 0x3bff7a];
+    const lamps = { x: COL.map(() => sphere(sc, .2, 8)), z: COL.map(() => sphere(sc, .2, 8)) };
+    for (const ax of ['x', 'z'] as const) lamps[ax].forEach((m, i) => { const g = glow(sc, COL[i], .25); m.material = g; this.sigLamps[ax].push(g); m.setEnabled(false); m.parent = this.root; });
+    for (const m of [pole, head]) { m.setEnabled(false); m.parent = this.root; }
+    const C = 7.3;
+    NODES.forEach((n, i) => {
+      if (!World.isSignal(i)) return;
+      for (const [sx, sz] of [[1, 1], [-1, -1], [1, -1], [-1, 1]] as const) {
+        const ax = sx === sz ? 'x' : 'z', x = n.x + sx * C, z = n.z + sz * C;
+        const p = pole.createInstance('sp'); p.position.set(x, 2.1, z); p.parent = this.root;
+        const h = head.createInstance('sh'); h.position.set(x, 4.52, z); h.parent = this.root;
+        lamps[ax].forEach((m, k) => { const l = m.createInstance('sl'); l.position.set(x, 4.95 - k * .44, z); l.scaling.set(1.35, 1, 1.35); l.parent = this.root; });
+        for (const q of [p, h]) q.freezeWorldMatrix();
+        this.props.push({ x, z, r: .25, o: [p], solid: true });
+      }
+    });
+  }
+  private sigUpdate(dt: number) {
+    this.sigT += dt;
+    const key = this.signal('x') + '' + this.signal('z');
+    if (key === this.sigShown) return; this.sigShown = key;
+    const COL = [0xff3b3b, 0xffc83b, 0x3bff7a];
+    for (const ax of ['x', 'z'] as const) { const s = this.signal(ax); this.sigLamps[ax].forEach((m, i) => { m.albedoColor = col(COL[i]).scale(i === s ? 1.6 : .18); }); }
+  }
   private traffic(dt: number, player?: Vector3) {
+    this.sigUpdate(dt);
     const cars = this.cars, low = this.low, far = low ? 95 : 125, statics = this.statics?.() || [];
     // ein Auto je Bild prüfen: zu weit weg → außer Sicht in deiner Nähe wieder einsetzen
     if (player && cars.length) {
@@ -1033,6 +1030,9 @@ export class World {
       if (c.off) { c.o.position.set(0, -40, -500); continue; }
       if (c.a === undefined) { const e = nearestEdge(c.path[0].x, c.path[0].z); this.setLane(c, e.a, e.b, 0); c.cur = 0; c.lat = LANE; }
       const p = c.o.position, yaw = c.turn ? c.o.rotation.y : Math.atan2(c.path[1].x - c.path[0].x, c.path[1].z - c.path[0].z);
+      // Nah volle, fern grobe Fassung (mit etwas Spiel, damit es nicht flackert)
+      const lod = (c.o as CarLod)._pcLod;
+      if (lod && player) { const d = Math.abs(p.x - player.x) + Math.abs(p.z - player.z), lim = low ? 34 : 50, f = lod[2] ? d > lim - 6 : d > lim; if (f !== lod[2]) { lod[2] = f; lod[0].setEnabled(!f); lod[1].setEnabled(f); } }
       const fx = Math.sin(yaw), fz = Math.cos(yaw), cur = c.cur ?? 0;
       const ahead = (qx: number, qz: number, reach: number, wide: number) => {
         const dx = qx - p.x, dz = qz - p.z, along = dx * fx + dz * fz, side = Math.abs(dx * fz - dz * fx);
@@ -1041,12 +1041,20 @@ export class World {
       let want = c.turn ? Math.min(c.v, 6) : c.v;
       const reach = 6.5 + cur * .55;
       // an Kreuzungen langsamer werden
-      if (!c.turn) { const left = (1 - c.u) * Vector3.Distance(c.path[0], c.path[1]); if (left < 10) want = Math.min(want, 6 + left * .5); }
-      let block = false, byPlayer = false;
+      let red = false;
+      if (!c.turn) {
+        const left = (1 - c.u) * Vector3.Distance(c.path[0], c.path[1]); if (left < 10) want = Math.min(want, 6 + left * .5);
+        // Ampel: bei Rot vor der Haltelinie stehen bleiben, bei Gelb nur, wenn es noch reicht
+        if (World.isSignal(c.b!) && left < 18 && left > .3) {
+          const s = this.signal(c.path[1].x !== c.path[0].x ? 'x' : 'z');
+          if (s === 0 || (s === 1 && left > 7)) { red = true; want = Math.min(want, Math.max(0, left - .8) * .9); }
+        }
+      }
+      let block = false, byPlayer = false, heldBy = false;
       if (player && ahead(player.x, player.z, reach + 2.5, 2.3)) { block = true; byPlayer = true; }
       if ((c.jam ?? 0) < 4) for (let j = 0; j < cars.length && !block; j++) {
         const o = cars[j]; if (o === c || o.off) continue;
-        if (ahead(o.o.position.x, o.o.position.z, reach, 1.7)) block = true;
+        if (ahead(o.o.position.x, o.o.position.z, reach, 1.7)) { block = true; heldBy = !!o.held; }
         // Vorfahrt: wer schon in der Kreuzung abbiegt, fährt zuerst
         else if (!c.turn && o.turn && c.u > .8 && Math.abs(o.o.position.x - NODES[c.b!].x) < 9 && Math.abs(o.o.position.z - NODES[c.b!].z) < 9) block = true;
       }
@@ -1059,7 +1067,9 @@ export class World {
       // nach einem Stoß: kurz stehen bleiben und schimpfen
       if (c.bump) { c.bump.t -= dt; want = 0; if (c.bump.t <= 0) c.bump = undefined; }
       // Stau-Auflösung: wer lange steht, schiebt sich langsam weiter (nie für immer verkeilt)
-      c.jam = want === 0 && !byPlayer && !c.bump ? (c.jam ?? 0) + dt : Math.max(0, (c.jam ?? 0) - dt * 2);
+      // (wer an der Ampel wartet oder dahinter in der Schlange steht, ist kein Stau)
+      c.held = red || (block && heldBy);
+      c.jam = want === 0 && !byPlayer && !c.bump && !c.held ? (c.jam ?? 0) + dt : Math.max(0, (c.jam ?? 0) - dt * 2);
       if ((c.jam ?? 0) > 6) c.jam = 0;
       // hupen, wenn du im Weg stehst
       if (byPlayer) { c.wait = (c.wait ?? 0) + dt; if (c.wait > 2.2) { c.wait = -4; this.onHonk?.(c); } } else c.wait = 0;

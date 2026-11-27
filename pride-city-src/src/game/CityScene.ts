@@ -19,10 +19,13 @@ import { radioMenu } from './radioui';
 import { RACES, MEDALS, raceGig, finishRace, bestTime, nextParcel, stats, myCar, tuneLevel, GARAGE, type Race } from './vehicles';
 import { sfx, music, buzz, engineHum } from '../engine/Audio';
 import { route, onGrid } from './traffic';
-import { memOf, remember, saveMem, outfitLine } from './leben';
+import { memOf, remember, saveMem, outfitLine, FIG_STORIES, figKey, nextPart, heardPart, finish } from './leben';
 import { toast, hints, type Line } from '../ui/ui';
 import { sprintSpeed, tiredAt, gainAus, ausdauer, buffOf } from './fit';
 import { TANK, tankOf, burn } from './tank';
+import { TANKE } from './uptown';
+import { Jagd } from './jagd';
+import { BusRide } from './busfahrt';
 import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
 import type { Marker } from '../ui/Hud';
@@ -63,6 +66,10 @@ export class CityScene implements GameScene {
   camera: FreeCamera;
   bloom = 0;
   world!: World;
+  /** Polizei jagt selbst Verdächtige (jagd.ts) */
+  jagd!: Jagd;
+  /** Linie 69 in 3D (busfahrt.ts) */
+  bus!: BusRide;
   player!: Actor;
   mode: 'title' | 'play' = 'title';
   private npcs: Npc[] = [];
@@ -208,12 +215,12 @@ export class CityScene implements GameScene {
     radio.subscribe((r, what) => { if (!this.drive) return; if (what === 'error') toast(`📻 ${r.err}`); this.showRadio(); });
     this.weather = new Weather(this.scene, this.world); this.fw = new Fireworks(this.scene, this.world); this.live = new LiveCity(this.g, this, this.scene, this.fw);
     this.xmas = new XmasTree(this.scene, -22, 9); buildPad(this.scene, this.world.root);
-    this.life = new CityLife(this.g, this, this.scene); this.trouble = new Trouble(this.g, this); this.buddy = new Companion(this.scene);
+    this.life = new CityLife(this.g, this, this.scene); this.trouble = new Trouble(this.g, this); this.jagd = new Jagd(this); this.bus = new BusRide(this.g, this); this.buddy = new Companion(this.scene);
     this.friends = new Friends(this.scene, this.world, () => this.g.save.data.settings.adult);
     this.friends.me = () => ({ n: this.g.save.data.name, l: streetLook(playerLook(this.g.save.data)), s: this.g.where === 'inside' && this.g.inside?.netKey ? this.g.inside.netState() : this.netState() });
     this.friends.onInvite = (who, inv) => this.g.clubInvite(who.name, inv);
     this.friends.onNote = (text, kind) => { toast(text, 3600); sfx(kind === 'join' ? 'win' : kind === 'leave' ? 'back' : 'move'); };
-    this.world.extraBlock = (x, z) => this.street.parked.some((c) => Math.hypot(c.o.position.x - x, c.o.position.z - z) < 2.6);
+    this.world.extraBlock = (x, z) => this.bus?.blocks(x, z) || this.street.parked.some((c) => Math.hypot(c.o.position.x - x, c.o.position.z - z) < 2.6);
     // Leute auf der Straße: richtiger Name statt „Passant“, Gedächtnis für dich (leben.ts)
     const pkey = (n: StreetNpc) => 'street:' + this.street.people.indexOf(n) + ':' + n.a.avatar.id;
     this.street.people.forEach((n) => { if (/^(Passant|Spaziergänger|Nachbar|Tourist|Studentin|Geschäftsmann)/.test(n.name)) n.name = stranger(pkey(n), n.a.avatar.id).name; });
@@ -477,7 +484,7 @@ export class CityScene implements GameScene {
     const treats = s.inv.treat || 0;
     let then: (() => void) | null = null;
     const pet = (treat: boolean) => {
-      this.player.play('interact'); this.street.cheer(n, treat ? 9 : 4); sfx(treat ? 'win' : 'boing'); remember(s, k, 'talk');
+      this.player.play('interact'); this.street.cheer(n, treat ? 9 : 4); sfx(treat ? 'win' : 'boing'); remember(s, k, 'talk', n.name);
       if (treat) { s.inv.treat = treats - 1; const mm = memOf(s, k); mm.mood = Math.min(5, mm.mood + 1); saveMem(s, k, mm); change(s, { fun: 8, social: 4 }); }
       else change(s, { fun: 5 });
       this.refreshHud();
@@ -489,10 +496,31 @@ export class CityScene implements GameScene {
       { label: '👋 Tschüss', fn: () => {} },
     ])], () => { const f = then; then = null; if (f) f(); else end(); });
   }
+  /** Banner im HUD (für Ereignisse ohne Zugriff auf das Spiel) */
+  banner(title: string, sub: string, kind: 'good' | 'bad' | 'info' = 'good', ms = 3200) { this.g.hud.banner(title, sub, kind, ms); }
+  /** Feste Figuren erzählen nach dem Gespräch ihre eigene Nebengeschichte weiter (leben.ts FIG_STORIES, ein Teil am Tag) */
+  private figurPart(n: (typeof this.npcs)[number]) {
+    const s = this.g.save.data, d = n.def, k = figKey(d.id);
+    if (!FIG_STORIES[d.id] || this.g.dialog.open || this.mode !== 'play' || this.cine || this.gig) return;
+    const part = nextPart(s, k); if (!part) return;
+    remember(s, k, 'talk', d.name); heardPart(s, k); change(s, { social: 4 });
+    const N = (text: string, choices?: Line['choices']): Line => ({ who: `${d.name} · ${part.story.icon}`, color: d.color, pron: d.pron, text, choices });
+    n.talking = true; if (d.anim !== 'sit') { n.a.play('talk'); this.face(n.a, this.player.root.position); }
+    let then: (() => void) | null = null;
+    const stop = () => { const f = then; then = null; if (f) { f(); return; } n.talking = false; if (d.anim !== 'sit') n.a.play(d.anim || 'idle'); this.refreshHud(); this.g.save.write(); };
+    const intro = part.i === 0 ? 'Sag mal, hast du kurz Zeit? Ich muss dir was erzählen.' : 'Du, es gibt Neuigkeiten. Weißt du noch, was ich dir erzählt hab?';
+    if (part.i < 3) { this.g.dialog.say([N(intro), N(part.text), N(part.i === 2 ? 'Morgen erzähl ich dir, wie es weitergeht.' : 'Danke fürs Zuhören. 💜')], stop); return; }
+    this.g.dialog.say([N(part.text), { who: 'Du', color: '#ff4fa3', text: 'Ich an deiner Stelle …', choices: part.story.end.map((e) => ({ label: e.label, fn: () => {
+      finish(s, k, e); change(s, { social: e.social || 0, fun: e.fun || 0 }); sfx('win');
+      post(s, d.name, `${part.story.icon} ${part.story.title}: ${e.reply}`);
+      this.g.hud.banner(`${part.story.icon} Geschichte erlebt: ${part.story.title}`, [e.money ? `+${e.money} €` : '', e.rep ? `Ruf +${e.rep}` : '', `${d.name} vergisst dir das nie`].filter(Boolean).join(' · '), 'good', 4200);
+      then = () => this.g.dialog.say([N(e.reply)], stop);
+    } })) }], stop);
+  }
   private face(a: Actor, to: Vector3) { a.root.rotation.y = Math.atan2(to.x - a.root.position.x, to.z - a.root.position.z); }
 
   interact() {
-    if (!this.near || this.g.dialog.open) return;
+    if (!this.near || this.g.dialog.open || this.bus?.on) return;
     if (this.near.kind === 'life') { this.life.interact(this.player.root.position); return; }
     if (this.near.kind === 'live') { this.live.interact(this.player.root.position); return; }
     if (this.near.kind === 'isle') { this.isles.find((i) => i.def.id === this.near!.id)?.use(); return; }
@@ -505,7 +533,7 @@ export class CityScene implements GameScene {
       if (n.def.anim !== 'sit') { n.a.play('talk'); this.face(n.a, this.player.root.position); }
       this.face(this.player, n.a.root.position);
       this.player.play('idle');
-      const end = () => { n.talking = false; if (n.def.anim !== 'sit') n.a.play(n.def.anim || 'idle'); };
+      const end = () => { n.talking = false; if (n.def.anim !== 'sit') n.a.play(n.def.anim || 'idle'); setTimeout(() => this.figurPart(n), 150); };
       const prevSay = c.say; c.say = (l, d) => prevSay(l, () => { end(); d?.(); });
       talk(c, n.def.id);
       if (!this.g.dialog.open) end();
@@ -765,8 +793,17 @@ export class CityScene implements GameScene {
     // Tacho und Tank
     if (tanked) {
       const r = burn(sv, Math.abs(c.v) * dt);
-      if (r === 'low') { sfx('miss'); toast('⛽ Tank fast leer! Volltanken in der Garage Schraubenschlüssel oder Reservekanister aus dem Späti.'); }
-      else if (r === 'empty') { sfx('miss'); sv.pin = 'garage'; toast('⛽ Tank leer! Der Wagen rollt nur noch im Schritttempo. Wegpunkt zur Garage ist gesetzt.'); }
+      if (r === 'low') { sfx('miss'); toast('⛽ Tank fast leer! Ab zur Regenbogen-Tanke neben der Garage in der Hochstadt oder Reservekanister aus dem Späti.'); }
+      else if (r === 'empty') { sfx('miss'); sv.pin = 'tanke'; toast('⛽ Tank leer! Der Wagen rollt nur noch im Schritttempo. Wegpunkt zur Regenbogen-Tanke ist gesetzt.'); }
+      // unter dem Dach der Regenbogen-Tanke: stehen bleiben, dann tankt er von selbst
+      if (Math.abs(c.v) < 1.5 && Math.hypot(o.position.x - TANKE[0], o.position.z - TANKE[1]) < 5 && tankOf(sv) < 100) {
+        const add = Math.min(100 - (Number(sv.flags.tank) || 0), dt * 14), cost = add * .4;
+        if (sv.money >= cost) {
+          if (!this.fueling) { this.fueling = true; sfx('pour'); toast('⛽ Tankt … (bleib kurz stehen)'); }
+          sv.flags.tank = Math.min(100, (Number(sv.flags.tank) || 0) + add); this.fuelCost += cost;
+          if (tankOf(sv) >= 100) { const p = Math.ceil(this.fuelCost); sv.money -= p; this.fuelCost = 0; this.fueling = false; sfx('coin'); toast(`⛽ Vollgetankt! ${p} € bezahlt.`); this.refreshHud(); }
+        } else if (!this.fueling) { this.fueling = true; toast('⛽ Nicht genug Geld zum Tanken.'); }
+      } else if (this.fueling) { const p = Math.ceil(this.fuelCost); if (p) { sv.money -= p; sfx('coin'); toast(`⛽ ${p} € fürs Tanken bezahlt.`); this.refreshHud(); } this.fuelCost = 0; this.fueling = false; }
     }
     this.g.hud.speedo(`${c.def.icon} ${Math.round(Math.abs(c.v) * 3.6)} km/h${tanked ? ` · ⛽ ${tankOf(sv)} %` : ''}`, tanked && tankOf(sv) < 15);
     rigOf.get(o)?.update(dt, performance.now() / 1000, c.v);
@@ -808,6 +845,8 @@ export class CityScene implements GameScene {
   readonly landAt = isLand;
   private tiredTold = false;
   private sprintT = 0;
+  private fueling = false;
+  private fuelCost = 0;
   /** Sekunden seit dem letzten Wischen an der Kamera */
   private lookIdle = 9;
   /** Fahrkamera: Vorausschau in Fahrtrichtung, Tempo-Abstand und Tempo-Blickwinkel (weich nachgeführt) */
@@ -1134,7 +1173,7 @@ export class CityScene implements GameScene {
     // Stadtleben: Tagesablauf, Regen, Ärger (Schlägerei, Fahndung) und du
     { const trouble = this.combat.wanted.stars > 0 || this.brawl.fighting || this.brawl.chasing; this.street.life = { hour: this.hour(), rain: this.weather.rain > .2, alarm: trouble ? this.player.root.position : null, player: this.player.root.position, onFoot: !this.drive }; }
     if (this.drive && !this.drive.def.fly && !this.drive.def.air) this.street.danger = { x: this.drive.o.position.x, z: this.drive.o.position.z, yaw: this.mv, v: this.drive.v }; else this.street.danger = null;
-    if (!busy && !this.photo) { if (this.drive) this.moveCar(dt); else if (!this.life.parade.riding) this.movePlayer(dt); this.kerb.update(dt, t); }
+    if (!busy && !this.photo) { if (this.drive) this.moveCar(dt); else if (!this.life.parade.riding && !this.bus.on) this.movePlayer(dt); this.kerb.update(dt, t); }
     if (this.cine) this.cine(dt); else this.updateCam(dt);
     this.world.follow(this.player.root.position);
     this.world.update(dt, t, this.player.root.position);
@@ -1154,7 +1193,8 @@ export class CityScene implements GameScene {
       if (b.left <= 0) this.byeBuddy('Ich muss langsam los. Das war ein richtig schöner Tag mit dir. 💜');
     }
     { const free = !busy && !this.gig && !this.kerb.rider && this.combat.wanted.stars === 0 && !this.life.ev && !this.life.parade.riding && !this.isles.some((i) => i.active);
-      this.trouble.update(dt, { free, night: this.world.night > .5, ref: this.player.root.position }); }
+      this.trouble.update(dt, { free, night: this.world.night > .5, ref: this.player.root.position });
+      this.jagd.update(dt, free && !this.trouble.cur && !this.bus.on, s); }
     this.life.update(dt, t, this.player.root.position, { busy: busy || !!this.gig || !!this.trouble.cur || !!this.kerb.rider || this.combat.wanted.stars > 0, night: this.world.night > .5, rain: this.weather.rain > .2, onFoot: !this.drive });
 
     this.hudT -= dt;

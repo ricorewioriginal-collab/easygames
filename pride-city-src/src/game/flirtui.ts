@@ -43,7 +43,7 @@ export function strangerTalk(g: Game, st: Stranger, o: TalkOpts, end?: () => voi
   const mem0 = o.life ? memOf(s, st.key) : null;
   const first = mem0 && (mem0.met > 0 || mem0.near > 0 || o.life!.wanted >= 2 || !ty) ? greet(mem0, { hour: hour(s), rain: o.life!.rain, wanted: o.life!.wanted, name: s.name }, h)
     : ty ? szeneLine(ty, adult, h) : dark ? DARK[h % DARK.length] : adult && h % 3 !== 0 ? TEASE[h % TEASE.length] : o.opening || CHAT[h % CHAT.length];
-  if (o.life) remember(s, st.key, 'talk');
+  if (o.life) remember(s, st.key, 'talk', st.name);
   const k = 'tk_' + hash(st.key).toString(36);
   if (s.flags[k] !== s.day) { s.flags[k] = s.day; change(s, { social: 6, fun: 2 }); g.city.refreshHud(); }
 

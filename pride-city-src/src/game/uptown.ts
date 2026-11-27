@@ -5,7 +5,7 @@
    Alles wird aus wenigen zusammengefassten Meshes gebaut (ein Zeichenaufruf je Material), Fassaden sind Canvas-Texturen
    mit Fenstern, die nachts zufällig leuchten. Keine fremden Grafiken nötig. */
 import { Vector3, Color3, Matrix, Quaternion, Mesh, VertexData, PBRMaterial, TransformNode, PointLight, type AbstractMesh, type Scene, col } from '../engine/bjs';
-import { ground, box, sphere, planeZ, pbr, glow, canvasTex } from '../engine/geo';
+import { ground, box, sphere, cyl, planeZ, pbr, glow, canvasTex } from '../engine/geo';
 import { PALETTES } from './palettes';
 import type { World } from './World';
 
@@ -53,12 +53,12 @@ const CUBE: Array<[number[], number[][]]> = [
   [[0, 1, 0], [[-.5, .5, .5], [.5, .5, .5], [.5, .5, -.5], [-.5, .5, -.5]]],
   [[0, -1, 0], [[-.5, -.5, -.5], [.5, -.5, -.5], [.5, -.5, .5], [-.5, -.5, .5]]],
 ];
-class Batch {
-  p: number[] = []; n: number[] = []; u: number[] = []; u2: number[] = []; i: number[] = [];
+export class Batch {
+  p: number[] = []; n: number[] = []; u: number[] = []; u2: number[] = []; i: number[] = []; c: number[] = [];
   /** uw/vh: Meter je Textur (Breite/Höhe), z. B. 8 Fensterachsen à 3 m */
   constructor(readonly uw = 24, readonly vh = 27.2) {}
   /** Quader mit Mitte und Größe; rot = Drehung um die Achse (x/y/z), roof = Deckel in einen anderen Sammler */
-  box(cx: number, cy: number, cz: number, sx: number, sy: number, sz: number, o: { roof?: Batch | null; off?: [number, number]; rot?: [number, number, number]; bottom?: boolean } = {}) {
+  box(cx: number, cy: number, cz: number, sx: number, sy: number, sz: number, o: { roof?: Batch | null; off?: [number, number]; rot?: [number, number, number]; bottom?: boolean; tint?: [number, number, number] } = {}) {
     const q = o.rot ? Quaternion.FromEulerAngles(o.rot[0], o.rot[1], o.rot[2]) : Quaternion.Identity();
     const m = Matrix.Compose(new Vector3(sx, sy, sz), q, new Vector3(cx, cy, cz));
     const rm = Matrix.Compose(Vector3.One(), q, Vector3.Zero());
@@ -76,6 +76,7 @@ class Batch {
         tgt.p.push(v.x, v.y, v.z); tgt.n.push(nv.x, nv.y, nv.z);
         tgt.u.push((raw[k][0] - u0) / tgt.uw + off[0], (raw[k][1] - v0) / tgt.vh + off[1]);
         tgt.u2.push(raw[k][0] * 1.2, raw[k][1] * 1.2);
+        if (o.tint) tgt.c.push(o.tint[0], o.tint[1], o.tint[2], 1);
       });
       tgt.i.push(b, b + 2, b + 1, b, b + 3, b + 2);
     }
@@ -83,7 +84,7 @@ class Batch {
   mesh(sc: Scene, name: string, mat: PBRMaterial) {
     if (!this.i.length) return null;
     const m = new Mesh(name, sc), vd = new VertexData();
-    vd.positions = this.p; vd.normals = this.n; vd.uvs = this.u; vd.uvs2 = this.u2; vd.indices = this.i; vd.applyToMesh(m);
+    vd.positions = this.p; vd.normals = this.n; vd.uvs = this.u; vd.uvs2 = this.u2; vd.indices = this.i; if (this.c.length === this.p.length / 3 * 4) vd.colors = this.c; vd.applyToMesh(m);
     m.material = mat;
     return m;
   }
@@ -147,6 +148,9 @@ const ADS: Array<[string, string, string, string]> = [
   ['FLAMINGO TAXI', 'Ruf an: 6969', '#ff9ad5', '#2a0a20'], ['SKYLINE BURGER', 'Doppelt. Dreifach. Queer.', '#ffb347', '#2a1408'],
 ];
 
+/** Regenbogen-Tanke (unter dem Dach tankt dein eigener Wagen) */
+export const TANKE: [number, number] = [165, -42.7];
+const RAINBOW6 = [0xe40303, 0xff8c00, 0xffed00, 0x008026, 0x004dff, 0x750787];
 export async function buildUptown(w: World) {
   const sc = w.scene, still = (m: AbstractMesh, cast = true, rec = true) => w.still(m, cast, rec);
   const B = {
@@ -284,6 +288,21 @@ export async function buildUptown(w: World) {
     for (let i = 0; i < 4; i++) { const t = box(sc, .75, .22, .75); t.material = tyre; t.position.set(gx + 3.1, .22 + i * .23, gz + 3.2); t.rotation.y = i * .5; still(t); }
     w.neonSign('GARAGE', '#ffd23b', gx, 4.6, gz + 2.6, 0, undefined, 5);
     w.colliders.push({ x: gx, z: gz, hx: 3.5, hz: 2.5 }, { x: gx + 3.1, z: gz + 3.2, hx: .45, hz: .45 });
+    // Regenbogen-Tanke neben der Garage: Dach auf vier Stützen, zwei Zapfsäulen, Preisschild (tank.ts, CityScene: unters Dach fahren)
+    const [tx, tz] = TANKE, steel = pbr(sc, 0xd9dde3, .35, .8), canopy = pbr(sc, 0xf4f4f6, .5, .1);
+    const deck = box(sc, 8.4, .35, 5.6); deck.material = canopy; deck.position.set(tx, 4.3, tz); still(deck);
+    RAINBOW6.forEach((c, i) => { const b = box(sc, 8.42, .06, .95); b.material = glow(sc, c, .9); b.position.set(tx, 4.1, tz - 2.35 + i * .94); still(b, false, false); });
+    for (const [x, z] of [[tx - 3.8, tz - 2.4], [tx + 3.8, tz - 2.4], [tx - 3.8, tz + 2.4], [tx + 3.8, tz + 2.4]]) { const p = cyl(sc, .14, .14, 4.1, 10); p.material = steel; p.position.set(x, 2.15, z); still(p); w.colliders.push({ x, z, hx: .2, hz: .2 }); }
+    const isle = box(sc, 6.2, .18, 1); isle.material = pbr(sc, 0x8a8f98, .8); isle.position.set(tx, .2, tz); still(isle, false);
+    const pumpBody = pbr(sc, 0xff3fa4, .4, .2), screen = glow(sc, 0x7dfcff, 1.2);
+    for (const x of [tx - 1.6, tx + 1.6]) {
+      const p = box(sc, .8, 1.7, .55); p.material = pumpBody; p.position.set(x, 1.15, tz); still(p);
+      const sc1 = box(sc, .5, .3, .02); sc1.material = screen; sc1.position.set(x, 1.6, tz + .29); still(sc1, false, false);
+      const sc2 = sc1.clone('ps'); sc2.position.z = tz - .29; still(sc2, false, false);
+      const hose = cyl(sc, .03, .03, .9, 6); hose.material = pbr(sc, 0x18181c, .9); hose.position.set(x + .45, .9, tz + .1); hose.rotation.z = .25; still(hose, false);
+      w.colliders.push({ x, z: tz, hx: .45, hz: .35 });
+    }
+    w.neonSign('TANKE', '#3ee69a', tx, 5.05, tz + 2.85, 0, undefined, 4);
   }
   /* ----- Kleiner Park mit Basketballplatz ----- */
   function pocketPark(cx: number, cz: number) {
