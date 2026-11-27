@@ -7,6 +7,7 @@ import { RawTexture, Texture, Mesh, VertexData, type PBRMaterial, type Scene, ty
 import { pixels, remember, quietClone, breathe, sharedMat, dropMat } from './texpix';
 import { fullIndices } from './lod';
 import type { Outfit } from './Actor';
+import { washFor, type Wash } from './waesche';
 
 type Part = 'chest' | 'belly' | 'arm' | 'hip' | 'leg' | 'foot' | 'other';
 const partOf = (bone: string): Part => {
@@ -47,7 +48,9 @@ export function sceneCache(scene: Scene, store: WeakMap<Scene, Map<string, Promi
 export const alive = (t: Texture | null): t is Texture => !!t && !!t.getInternalTexture();
 
 /** Outfit auf die Figur anwenden (async; ändert nur das Material dieser Figur) */
-export async function applyOutfit(scene: Scene, root: AbstractMesh | { getChildMeshes(): AbstractMesh[] }, id: string, o: Outfit | undefined, top: boolean, skinFrom?: Mesh) {
+export async function applyOutfit(scene: Scene, root: AbstractMesh | { getChildMeshes(): AbstractMesh[] }, id: string, o: Outfit | undefined, top: boolean, skinFrom?: Mesh, wash?: string) {
+  // Unterwäsche und Badesachen auf dem nackten Sport-Körper: eigener Schnitt, Farbe und Muster (waesche.ts)
+  const cloth = skinFrom && (o === 'underwear' || o === 'swim') ? washFor(top ? 'f' : 'm', o === 'swim', id.split('@')[0], wash) : null;
   const meshes = root.getChildMeshes().filter((m) => (m as Mesh).skeleton && m.material && !(m as Akt)._pcAktPart) as Mesh[];
   for (const m of meshes) {
     if (o !== 'nude') { (m as Akt)._pcAkt?.dispose(); (m as Akt)._pcAkt = undefined; }
@@ -56,11 +59,13 @@ export async function applyOutfit(scene: Scene, root: AbstractMesh | { getChildM
     // nur das Körper-Material (Kopf und Haare bleiben)
     if (!/_body$/.test(orig.name)) continue;
     const p = o ? paint(o, top) : null, bra = o ? braOf(o, top) : null;
+    // Bikini-Schale der Sportlerin: nackt und mit eigener Wäsche flach in den Körper legen (echte Brustform darunter)
+    flatShell(m, !!skinFrom && top && (o === 'nude' || !!cloth), orig.albedoTexture as Texture | null);
     if (!p) { if (mm._orig) { m.material = orig; dropMat(mm); } continue; }
-    const key = id + '|' + o + '|' + top;
+    const key = id + '|' + o + '|' + top + (cloth ? '|' + cloth.id + cloth.col : '');
     const cache = sceneCache(scene, caches);
     let job = cache.get(key);
-    const make = async () => build(scene, m, orig, p, skinFrom ? await skinOf(skinFrom) : null, bra, top, akt(id)).catch((e) => { console.warn('outfit', e); return null; });
+    const make = async () => build(scene, m, orig, p, skinFrom ? await skinOf(skinFrom) : null, bra, top, akt(id), cloth).catch((e) => { console.warn('outfit', e); return null; });
     if (!job) { job = make(); cache.set(key, job); }
     let tex = await job;
     if (tex && !alive(tex)) { job = make(); cache.set(key, job); tex = await job; }
@@ -69,6 +74,7 @@ export async function applyOutfit(scene: Scene, root: AbstractMesh | { getChildM
     nm._orig = orig;
     if (mm._orig && mm !== nm) dropMat(mm);
     m.material = nm;
+    flatShell(m, !!skinFrom && top && (o === 'nude' || !!cloth), orig.albedoTexture as Texture | null);
     // Akt-Ansicht (nur 'nude' auf dem Sport-Körper eines Mannes): Penis und Hoden als schlichte, hängende Form
     if (o === 'nude' && skinFrom && !top && !(m as Akt)._pcAkt) { try { (m as Akt)._pcAkt = maleParts(scene, m, nm, akt(id)) || undefined; } catch (e) { console.warn('akt', e); } }
     else if ((m as Akt)._pcAkt) (m as Akt)._pcAkt!.material = nm;
@@ -94,7 +100,7 @@ export async function skinOf(m: Mesh): Promise<number[] | null> {
   return n ? [r / n, g / n, b / n] : null;
 }
 
-async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<Part, 'skin' | number>>, skinRef: number[] | null = null, bra: number | null = null, top = false, look: AktLook = akt('')): Promise<Texture | null> {
+async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<Part, 'skin' | number>>, skinRef: number[] | null = null, bra: number | null = null, top = false, look: AktLook = akt(''), cloth: Wash | null = null): Promise<Texture | null> {
   const src = mat.albedoTexture as Texture | null; if (!src) return null;
   const { width: w, height: h } = src.getSize();
   const px = await pixels(src); if (!px) return null;
@@ -139,7 +145,11 @@ async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<
     const col = want === 'skin' ? skin : [(want >> 16) & 255, (want >> 8) & 255, want & 255];
     fill(data, orig, w, h, [uv[a * 2] * w, uv[a * 2 + 1] * h], [uv[b * 2] * w, uv[b * 2 + 1] * h], [uv[c * 2] * w, uv[c * 2 + 1] * h], col, want === 'skin', want === 'skin' ? tint : null, fab);
   }
-  if (hands && fab && p.hip === 'skin') { await undress(m, data, orig, w, h, uv, tri, fab, skin, bra === null && top, own); pubic(m, data, w, h, uv, tri, skin, top, look); }
+  if (hands && fab && (p.hip === 'skin' || cloth)) {
+    const u = await undress(m, data, orig, w, h, uv, tri, fab, skin, top, own);
+    if (u) shells.set(src, u);
+    if (cloth) garment(m, data, w, h, uv, tri, cloth, u?.tips || []); else pubic(m, data, w, h, uv, tri, skin, top, look);
+  }
   if (p.chest === 'skin' && !hands) details(m, data, w, h, uv, tri, skin, bra, true);
   for (let o = 3; o < data.length; o += 4) data[o] = 255;   // deckend: Körper nie durchsichtig
   const t = RawTexture.CreateRGBATexture(data, w, h, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
@@ -250,11 +260,10 @@ function frame(m: Mesh) {
 /** „Nackt“ auf dem Sport-Körper: Stoff (Sport-Unterhose, Bikinihose) wird von der umliegenden Haut her zugemalt, so bleiben
     Schattierung und Hautton stimmig. Das Bikini-Oberteil der Sportlerin ist eine eigene Schale über der Brust: sie wird zu
     Haut mit Brustwarzen an der vordersten Stelle jeder Seite. Keine Genitalien, das Becken bleibt glatte Haut. */
-export async function undress(m: Mesh, d: Uint8Array, src: Uint8Array, w: number, h: number, uv: ArrayLike<number>, tri: Array<[number, number, number, Part]>, fab: (r: number, g: number, b: number) => boolean, skin: number[], breasts: boolean, own: number[] = skin) {
+export async function undress(m: Mesh, d: Uint8Array, src: Uint8Array, w: number, h: number, uv: ArrayLike<number>, tri: Array<[number, number, number, Part]>, fab: (r: number, g: number, b: number) => boolean, skin: number[], breasts: boolean, own: number[] = skin): Promise<{ shell: number[]; tips: Array<[number, number, number]> } | null> {
   // strenger als beim Umfärben: auch dunkle Stellen (Unterhose mit JPEG-Rauschen) sind Stoff
   const dark = (own[0] + own[1] + own[2]) * .5, bad = (r: number, g: number, b: number) => r + g + b < dark || fab(r, g, b);
   const inTri = new Uint8Array(w * h), hole = new Uint8Array(w * h);
-  const isFab = (v: number) => { const x = Math.min(w - 1, Math.max(0, Math.floor(uv[v * 2] * w))), y = Math.min(h - 1, Math.max(0, Math.floor(uv[v * 2 + 1] * h))), o = (y * w + x) * 4; return bad(src[o], src[o + 1], src[o + 2]); };
   const shell: Array<[number, number, number]> = [];
   const raster = (a: number, b: number, c: number, fn: (o: number, u: number, v: number, q: number) => void) => {
     const A = [uv[a * 2] * w, uv[a * 2 + 1] * h], B = [uv[b * 2] * w, uv[b * 2 + 1] * h], C = [uv[c * 2] * w, uv[c * 2 + 1] * h];
@@ -269,12 +278,25 @@ export async function undress(m: Mesh, d: Uint8Array, src: Uint8Array, w: number
     }
   };
   let n = 0;
-  for (const [a, b, c, part] of tri) {
+  const isShell = new Uint8Array(tri.length);
+  // Oberteil-Schale: Brust/Bauch, mindestens zwei Ecken auf Stoff
+  // Schale = Dreiecke ganz auf Stoff, nur auf Brusthöhe (der Bund der Bikinihose zählt nicht mit)
+  const inIsle = (v: number) => { const x = Math.min(w - 1, Math.max(0, Math.floor(uv[v * 2] * w))), y = Math.min(h - 1, Math.max(0, Math.floor(uv[v * 2 + 1] * h))), o = (y * w + x) * 4; return fab(src[o], src[o + 1], src[o + 2]); };
+  const fr0 = breasts ? frame(m) : null, tip: Array<[number, number, number]> = [];
+  if (fr0) tri.forEach(([a, b, c, part], k) => { if ((part === 'chest' || part === 'belly') && Math.min(fr0.T(a), fr0.T(b), fr0.T(c)) > .62 && inIsle(a) && inIsle(b) && inIsle(c)) { shell.push([a, b, c]); isShell[k] = 1; } });
+  if (fr0) for (const sd of [-1, 1]) {
+    let best = -1, bf = -1e9;
+    for (const t of shell) for (const v of t) if (fr0.S(v) * sd > .015 && fr0.F(v) > bf) { bf = fr0.F(v); best = v; }
+    if (best >= 0) tip.push([fr0.T(best), fr0.S(best), fr0.F(best)]);
+  }
+  for (let k = 0; k < tri.length; k++) {
     if ((++n & 127) === 0) await breathe();
-    if (part === 'other') continue;
-    // Oberteil-Schale: Brust/Bauch, alle drei Ecken auf Stoff
-    if (breasts && (part === 'chest' || part === 'belly') && isFab(a) && isFab(b) && isFab(c)) { shell.push([a, b, c]); continue; }
-    raster(a, b, c, (i) => { inTri[i] = 1; const o = i * 4; if (bad(src[o], src[o + 1], src[o + 2])) hole[i] = 1; });
+    const [a, b, c, part] = tri[k];
+    if (part === 'other' || isShell[k]) continue;
+    // Brust unter der Schale: Ränder und Linien des Oberteils ganz neu aus der Haut ringsum malen
+    let cup = false;
+    if (fr0 && tip.length && (part === 'chest' || part === 'belly')) { const ta = fr0.T(a), sa = fr0.S(a), fa = fr0.F(a); cup = tip.some(([tt, ss, ff]) => Math.hypot(ta - tt, sa - ss) < .055 && fa > ff - .07 * fr0.H); }
+    raster(a, b, c, (i) => { inTri[i] = 1; const o = i * 4; if (cup || bad(src[o], src[o + 1], src[o + 2])) hole[i] = 1; });
   }
   // Stoffränder (Mischfarben aus dem JPEG) mitnehmen: Loch um 3 Pixel wachsen lassen
   const nb = (i: number, fn: (j: number) => void) => { const x = i % w, y = (i - x) / w; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = x + dx, yy = y + dy; if ((dx || dy) && xx >= 0 && yy >= 0 && xx < w && yy < h) fn(yy * w + xx); } };
@@ -310,15 +332,10 @@ export async function undress(m: Mesh, d: Uint8Array, src: Uint8Array, w: number
     filled.forEach((i, n2) => { let r = d[i * 4], g = d[i * 4 + 1], b = d[i * 4 + 2], k = 1; nb(i, (j) => { if (inTri[j]) { r += d[j * 4]; g += d[j * 4 + 1]; b += d[j * 4 + 2]; k++; } }); out[n2 * 3] = r / k; out[n2 * 3 + 1] = g / k; out[n2 * 3 + 2] = b / k; });
     filled.forEach((i, n2) => { d[i * 4] = out[n2 * 3]; d[i * 4 + 1] = out[n2 * 3 + 1]; d[i * 4 + 2] = out[n2 * 3 + 2]; });
   }
-  if (!shell.length) return;
+  if (!shell.length) return { shell: [], tips: [] };
   // Schale: Haut mit leichter Schattierung, Brustwarze an der vordersten Stelle jeder Seite
-  const fr = frame(m); if (!fr) return;
-  const { T, S, F, H } = fr, tip: Array<[number, number, number]> = [];
-  for (const sd of [-1, 1]) {
-    let best = -1, bf = -1e9;
-    for (const t of shell) for (const v of t) if (S(v) * sd > .015 && F(v) > bf) { bf = F(v); best = v; }
-    if (best >= 0) tip.push([T(best), S(best), F(best)]);
-  }
+  const fr = frame(m); if (!fr) return null;
+  const { T, S, F, H } = fr;
   const areola = [skin[0] * .74, skin[1] * .56, skin[2] * .55], nip = [skin[0] * .58, skin[1] * .42, skin[2] * .42], r0 = .0085;
   for (const [a, b, c] of shell) {
     if ((++n & 127) === 0) await breathe();
@@ -331,6 +348,135 @@ export async function undress(m: Mesh, d: Uint8Array, src: Uint8Array, w: number
       for (let ch = 0; ch < 3; ch++) { const base = Math.min(255, skin[ch] * shade); d[o + ch] = base * (1 - mix) + Math.min(255, col[ch] * shade) * mix; }
     });
   }
+  // Brustwarzen auch auf die echte Brust darunter (die Schale wird in flatShell in den Körper gelegt)
+  const inShell = new Set<number>(); for (const t of shell) for (const v of t) inShell.add(v);
+  for (const [a, b, c, part] of tri) {
+    if ((part !== 'chest' && part !== 'belly') || (inShell.has(a) && inShell.has(b) && inShell.has(c))) continue;
+    const ta = T(a), sa = S(a);
+    if (!tip.some(([tt, ss]) => Math.abs(ta - tt) < .05 && Math.abs(sa - ss) < .05)) continue;
+    const fa = (F(a) + F(b) + F(c)) / 3; if (!tip.some(([, , ff]) => fa > ff - .06 * H)) continue;
+    raster(a, b, c, (i, u, v, q) => {
+      const t = u * T(a) + v * T(b) + q * T(c), s2 = u * S(a) + v * S(b) + q * S(c);
+      let near = 9; for (const [tt, ss] of tip) near = Math.min(near, Math.hypot(t - tt, s2 - ss) / r0);
+      if (near >= 1.2) return;
+      const col = near < .38 ? nip : areola, mix = near > .8 ? (1.2 - near) / .4 : 1, o = i * 4;
+      for (let ch = 0; ch < 3; ch++) d[o + ch] = d[o + ch] * (1 - mix) + Math.min(255, col[ch] * (.88 + .24 * (d[o + ch] / 255))) * mix;
+    });
+  }
+  return { shell: [...inShell], tips: tip };
+}
+
+/** Schalen-Vertices je Quelltextur (alle Sportlerinnen teilen sie) */
+const shells = new WeakMap<object, { shell: number[]; tips: Array<[number, number, number]> }>();
+/** Bikini-Schale flach unter die Haut legen (on) oder zurückholen (off). Nur dieses Mesh: Geometrie wird eigen. */
+function flatShell(m: Mesh & { _pcShell?: Float32Array }, on: boolean, src: Texture | null) {
+  if (!on) { if (m._pcShell) { m.setVerticesData('position', m._pcShell, false); m._pcShell = undefined; } return; }
+  const sh = src && shells.get(src), sv = sh?.shell; if (!sh || !sv || !sv.length || m._pcShell) return;
+  const pos = m.getVerticesData('position'), nor = m.getVerticesData('normal'); if (!pos || !nor) return;
+  const inS = new Set(sv), out = Float32Array.from(pos), nv = pos.length / 3;
+  for (const v of sv) {
+    let best = -1, bd = 1e9;
+    for (let j = 0; j < nv; j++) { if (inS.has(j)) continue; const dx = pos[j * 3] - pos[v * 3], dy = pos[j * 3 + 1] - pos[v * 3 + 1], dz = pos[j * 3 + 2] - pos[v * 3 + 2], dd = dx * dx + dy * dy + dz * dz; if (dd < bd) { bd = dd; best = j; } }
+    if (best < 0) continue;
+    for (let k = 0; k < 3; k++) out[v * 3 + k] = pos[best * 3 + k] - nor[best * 3 + k] * .012;
+  }
+  // Brust darunter glätten: die Körperform hat die Kanten des Bikini-Oberteils eingebaut (sah aus wie Kleidung)
+  const fr = frame(m), idx = fullIndices(m);
+  if (fr && idx && sh.tips.length) {
+    const key = (v: number) => Math.round(pos[v * 3] * 2000) + ',' + Math.round(pos[v * 3 + 1] * 2000) + ',' + Math.round(pos[v * 3 + 2] * 2000);
+    const rep = new Map<string, number>(), of = new Int32Array(nv);
+    for (let v = 0; v < nv; v++) { const k = key(v); if (!rep.has(k)) rep.set(k, v); of[v] = rep.get(k)!; }
+    const nb = new Map<number, Set<number>>();
+    for (let i = 0; i < idx.length; i += 3) for (let e = 0; e < 3; e++) { const a = of[idx[i + e]], b = of[idx[i + (e + 1) % 3]]; if (a === b) continue; (nb.get(a) || nb.set(a, new Set()).get(a)!).add(b); (nb.get(b) || nb.set(b, new Set()).get(b)!).add(a); }
+    const sel: Array<[number, number]> = [];   // [rep, Gewicht]
+    for (const r of new Set(of)) {
+      if (inS.has(r)) continue;
+      let wgt = 0; for (const [tt, ss, ff] of sh.tips) { const dd = Math.hypot(fr.T(r) - tt, fr.S(r) - ss); if (dd < .075 && fr.F(r) > ff - .08 * fr.H) wgt = Math.max(wgt, Math.min(1, (.075 - dd) / .03)); }
+      if (wgt > 0) sel.push([r, wgt]);
+    }
+    for (let it = 0; it < 6; it++) {
+      const upd: Array<[number, number, number, number]> = [];
+      for (const [r, wgt] of sel) { const ns = nb.get(r); if (!ns || !ns.size) continue; let x = 0, y = 0, z = 0; for (const q of ns) { x += out[q * 3]; y += out[q * 3 + 1]; z += out[q * 3 + 2]; } const k = .5 * wgt; upd.push([r, out[r * 3] + (x / ns.size - out[r * 3]) * k, out[r * 3 + 1] + (y / ns.size - out[r * 3 + 1]) * k, out[r * 3 + 2] + (z / ns.size - out[r * 3 + 2]) * k]); }
+      for (const [r, x, y, z] of upd) { out[r * 3] = x; out[r * 3 + 1] = y; out[r * 3 + 2] = z; }
+    }
+    for (let v = 0; v < nv; v++) if (of[v] !== v && !inS.has(v)) for (let k = 0; k < 3; k++) out[v * 3 + k] = out[of[v] * 3 + k];
+  }
+  m.makeGeometryUnique();
+  m._pcShell = Float32Array.from(pos);
+  m.setVerticesData('position', out, false);
+}
+
+/** Unterwäsche/Badesachen auf die nackte Haut malen: Schnitt nach Körperstelle (Höhe über dem Schritt, Seite, vorne/hinten) */
+function garment(m: Mesh, d: Uint8Array, w: number, h: number, uv: ArrayLike<number>, tri: Array<[number, number, number, Part]>, c: Wash, tips: Array<[number, number, number]>) {
+  const fr = frame(m); if (!fr) return; const cr = crotch(fr); if (!cr) return;
+  const { T, S, H, up, dep, dirY, fwd } = fr, { tc } = cr, nor = m.getVerticesData('normal'); if (!nor) return;
+  const Fn = (v: number) => nor[v * 3 + dep] * fwd, Un = (v: number) => nor[v * 3 + up] * dirY;
+  const col = [(c.col >> 16) & 255, (c.col >> 8) & 255, c.col & 255], acc = [(c.acc >> 16) & 255, (c.acc >> 8) & 255, c.acc & 255];
+  const tipT = tips.length ? tips.reduce((a, t) => a + t[0], 0) / tips.length : 0;
+  // Maske: 0 = Haut, 1 = Stoff, 2 = Bund/Kante (Akzentfarbe)
+  const lowSlip = (a: number, front: boolean) => Math.min(front ? .055 : .045, (front ? -.005 : -.028) + (front ? 1.1 : .7) * Math.max(0, a - .02));
+  const lowHip = (a: number, front: boolean) => Math.min(front ? .035 : .022, (front ? -.004 : -.03) + (front ? .8 : .5) * Math.max(0, a - .02));
+  const cut = (t: number, a: number, front: boolean, n: number): number => {
+    switch (c.cut) {
+      case 'slip': return t > lowSlip(a, front) && t < .085 ? (t > .072 ? 2 : 1) : 0;
+      case 'boxer': return t > -.11 && t < .09 ? (t > .075 || t < -.1 ? 2 : 1) : 0;
+      case 'trunks': return t > -.065 && t < .085 ? (t > .074 ? 2 : 1) : 0;
+      case 'hipster': return t > lowHip(a, front) && t < .06 ? (t > .052 ? 2 : 1) : 0;
+      case 'jock': {
+        if (t > .068 && t < .092) return 2;                                                // breiter Bund
+        if (front && t > -.012 && t <= .068 && a < Math.min(.045, .018 + .3 * (t + .012))) return 1;   // Beutel vorne
+        if (!front && t > -.035 && t <= .068 && Math.abs(a - (.032 + .32 * (t + .01))) < .007) return 2; // Bänder unter dem Po
+        if (t > -.035 && t < -.005 && a > .02 && a < .05 && n < .3 && Math.abs(a - .035) < .008) return 2;
+        return 0;
+      }
+      case 'string': case 'tanga': {
+        const wide = c.cut === 'tanga' ? 1.6 : 1;
+        if (t > .052 && t < .062) return 2;                                                // dünner Bund
+        if (front && t > -.006 && t <= .052 && a < (.006 + .42 * (t + .006)) * wide) return 1;
+        if (!front && t > -.035 && t <= .052 && a < (c.cut === 'tanga' ? .004 + .25 * Math.max(0, t) : .0045)) return 1;
+        return 0;
+      }
+    }
+    return 0;
+  };
+  const bra = (t: number, s2: number, a: number, front: boolean): number => {
+    if (!c.bra || !tips.length) return 0;
+    const cupR = c.swim ? .04 : .046;
+    if (front) for (const [tt, ss] of tips) { const dd = Math.hypot((t - tt) * .9, s2 - ss); if (dd < cupR && t > tt - .042) return dd > cupR - .005 ? 2 : 1; }
+    if (t > tipT - .05 && t < tipT - .036) return 2;                                      // Unterbrustband rundum
+    if (t > tipT - .01 && t < tipT + .11 && Math.abs(a - .05) < .005) return 2;          // Träger
+    return 0;
+  };
+  const shadeOf = (o: number) => .7 + .45 * ((d[o] + d[o + 1] + d[o + 2]) / 600);
+  for (const [a0, b0, c0, part] of tri) {
+    if (part === 'arm' || part === 'other' || part === 'foot') continue;
+    const ts = [T(a0) - tc, T(b0) - tc, T(c0) - tc];
+    const chest = part === 'chest' || (part === 'belly' && c.bra);
+    if (!chest && (Math.min(...ts) > .1 || Math.max(...ts) < -.13)) continue;
+    const A = [uv[a0 * 2] * w, uv[a0 * 2 + 1] * h], B = [uv[b0 * 2] * w, uv[b0 * 2 + 1] * h], C = [uv[c0 * 2] * w, uv[c0 * 2 + 1] * h];
+    const area = (B[0] - A[0]) * (C[1] - A[1]) - (C[0] - A[0]) * (B[1] - A[1]); if (Math.abs(area) < 1e-6) continue;
+    const minX = Math.max(0, Math.floor(Math.min(A[0], B[0], C[0]) - 1)), maxX = Math.min(w - 1, Math.ceil(Math.max(A[0], B[0], C[0]) + 1));
+    const minY = Math.max(0, Math.floor(Math.min(A[1], B[1], C[1]) - 1)), maxY = Math.min(h - 1, Math.ceil(Math.max(A[1], B[1], C[1]) + 1));
+    const ss = [S(a0), S(b0), S(c0)], fs = [Fn(a0), Fn(b0), Fn(c0)], us = [Un(a0), Un(b0), Un(c0)];
+    for (let y = minY; y <= maxY; y++) for (let x = minX; x <= maxX; x++) {
+      const px = x + .5, py = y + .5;
+      const u = ((B[0] - px) * (C[1] - py) - (C[0] - px) * (B[1] - py)) / area, v = ((C[0] - px) * (A[1] - py) - (A[0] - px) * (C[1] - py)) / area, q = 1 - u - v;
+      if (u < -.03 || v < -.03 || q < -.03) continue;
+      const t = u * ts[0] + v * ts[1] + q * ts[2], s2 = u * ss[0] + v * ss[1] + q * ss[2], a = Math.abs(s2), front = u * fs[0] + v * fs[1] + q * fs[2] > 0, n = u * us[0] + v * us[1] + q * us[2];
+      let k = part === 'leg' || part === 'hip' || part === 'belly' ? cut(t, a, front, n) : 0;
+      if (!k && c.bra && (part === 'chest' || part === 'belly')) k = bra(t + tc, s2, a, front);
+      if (!k) continue;
+      let cc = k === 2 ? acc : col, alpha = 1;
+      if (k === 1) {
+        if (c.pat === 'streifen' && Math.floor((t + 1) / .012) % 2) cc = acc;
+        else if (c.pat === 'punkte' && ((x % 12) - 6) ** 2 + ((y % 12) - 6) ** 2 < 7) cc = acc;
+        else if (c.pat === 'spitze') { const n2 = Math.sin(x * .9) * Math.sin(y * .9) + Math.sin((x + y) * .45); alpha = n2 > .9 ? .45 : .95; }
+      }
+      const o = (y * w + x) * 4, sh = shadeOf(o);
+      for (let ch = 0; ch < 3; ch++) d[o + ch] = d[o + ch] * (1 - alpha) + Math.min(255, cc[ch] * sh) * alpha;
+    }
+  }
+  void H;
 }
 
 type Akt = Mesh & { _pcAkt?: Mesh; _pcAktPart?: boolean };
@@ -438,3 +584,4 @@ function maleParts(scene: Scene, m: Mesh, mat: PBRMaterial, look: AktLook): Mesh
   m.onDisposeObservable.addOnce(() => out.dispose());
   return out;
 }
+
