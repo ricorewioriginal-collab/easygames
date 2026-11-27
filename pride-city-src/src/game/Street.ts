@@ -17,13 +17,14 @@ import type { World, Car } from './World';
 import { sfx } from '../engine/Audio';
 import { toast } from '../ui/ui';
 import { phaseAt } from './leben';
+import { Pet3D } from './pet3d';
 import { walkable } from './World';
 import type { PBRMaterial, Scene } from '../engine/bjs';
 
 export type StreetKind = 'walker' | 'police' | 'fire' | 'worker' | 'curb' | 'medic' | 'security' | 'chef' | 'courier' | 'szene';
 export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean; down?: boolean; chase?: boolean; away?: boolean; /** läuft Hand in Hand neben dieser Person */ mate?: StreetNpc; /** feste Blickrichtung */ yaw?: number; /** springt gerade vor einem Auto zur Seite */ dodge?: { vx: number; vz: number; t: number };
   /** Tagesablauf (leben.ts): Runde tagsüber und abends, eigener Rhythmus; Flucht vor Ärger, schon die Polizei gerufen */
-  home?: Array<[number, number]>; out?: Array<[number, number]>; h?: number; flee?: number; called?: boolean; seen?: number; /** wie lange du schon zu dicht dran bist bzw. hinterherläufst */ close?: number; follow?: number }
+  home?: Array<[number, number]>; out?: Array<[number, number]>; h?: number; flee?: number; called?: boolean; seen?: number; /** wie lange du schon zu dicht dran bist bzw. hinterherläufst */ close?: number; follow?: number; /** geht mit Hund Gassi */ dog?: Pet3D; dogName?: string }
 export interface Parked { o: Node3; name: string; yaw: number; v: number; def: CarDef; /** dein eigener Wagen aus der Garage */ own?: boolean; /** geliehen aus dem Verkehr: fährt später seine Runde weiter */ route?: Car }
 
 const LINES: Record<Exclude<StreetKind, 'worker' | 'curb' | 'szene'>, string[]> = {
@@ -134,8 +135,19 @@ export class Street {
       if (n.kind === 'curb') { const w = CURB.find((x) => x.id === n.id); if (w) escortSign(this.world.scene, n.a.root, `💋 ${w.name.toUpperCase()}`, `Laternenmeile · ${w.price} € · hupen`, '#ff2a55'); }
     }
     this.people.filter((p) => p.path.length === 1).forEach((p) => (p.a.root.rotation.y = p.yaw !== undefined ? p.yaw : p.kind === 'curb' ? Math.PI : p.path[0][0] > 0 ? -Math.PI / 2 : Math.PI / 2));
+    // ein paar Leute gehen mit ihrem Hund Gassi (streicheln nur nach Fragen, Leckerli aus dem Späti)
+    const DOGS: Array<[string, number]> = [['Bello', 0x8a5a2b], ['Krümel', 0xe8d2a6], ['Luna', 0x2a2522], ['Pixel', 0xb9b2a8], ['Toffee', 0xc7823b], ['Gizmo', 0xf2efe9]];
+    this.people.filter((n) => n.home && !n.mate).filter((_, i) => i % 3 === 1).slice(0, DOGS.length).forEach((n, i) => {
+      const d = new Pet3D(this.scene, 'hund', DOGS[i][1]); d.root.parent = this.world.root; d.place(n.a.root.position.x - .8, n.a.root.position.z, 0);
+      n.dog = d; n.dogName = DOGS[i][0];
+    });
     await this.cars();
   }
+  /** Hund in der Nähe (mit Besitzer*in) */
+  nearDog(p: Vector3, r = 2.4) { return this.people.find((n) => n.dog && n.a.root.visible && Vector3.Distance(n.dog.root.position, p) < r) || null; }
+  /** Hund freut sich (Streicheln, Leckerli): wedelt ein paar Sekunden wild */
+  private happy = new Map<StreetNpc, number>();
+  cheer(n: StreetNpc, s = 4) { this.happy.set(n, s); }
 
   private async cars() {
     const sc = this.scene;
@@ -227,6 +239,15 @@ export class Street {
     const on = Math.floor(this.t * 4) % 2;
     for (const [a, b] of this.flash) { a.c.scaleToRef(on ? 1 : .12, a.m.albedoColor); b.c.scaleToRef(on ? .12 : 1, b.m.albedoColor); } // direkt ändern, ohne Neu-Markieren aller Meshes
     const far = this.world.low ? 50 : 90, anim = this.world.low ? 28 : 60;
+    // Hunde laufen ihren Menschen hinterher (nur in der Nähe animiert)
+    for (const n of this.people) {
+      const d = n.dog; if (!d) continue;
+      const vis = n.a.root.visible; if (d.root.isEnabled() !== vis) d.root.setEnabled(vis);
+      if (!vis) { d.place(n.a.root.position.x, n.a.root.position.z, 0); continue; }
+      let h = this.happy.get(n) || 0; if (h > 0) { h -= dt; this.happy.set(n, h); }
+      if (Vector3.DistanceSquared(d.root.position, ref) < anim * anim) d.update(dt, h > 0 && this.life ? this.life.player : n.a.root.position, h > 0 || n.talking === true, [-999, 999, -999, 999]);
+      if (Vector3.Distance(d.root.position, n.a.root.position) > 8) d.place(n.a.root.position.x - .8, n.a.root.position.z, n.a.root.rotation.y);
+    }
     this.people.forEach((n, i) => {
       const life = this.life, ph = n.home && life ? phaseAt(life.hour, n.h!) : null;
       const show = n.away ? false : n.kind === 'worker' || n.kind === 'curb' ? adult && night > .4 : ph ? ph !== 'schlaf' : n.kind === 'walker' ? (night < .5 || i % 2 === 0 || !!n.mate || n.yaw !== undefined) : n.kind === 'security' ? night > .3 : n.kind === 'szene' ? !SZENE[n.id!]?.adult || (adult && night > .3) : true;
