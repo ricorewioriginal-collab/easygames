@@ -1,6 +1,6 @@
 /* Liebesszene (nur mit „Inhalte ab 18“): gefilmt wie im Kino in der eigenen Wohnung.
-   Annäherung, Umarmung, Kuss, Ausziehen bis zur Unterwäsche, zusammen aufs Bett – dann Schwenk zum Fenster und Abblende.
-   Nichts Explizites: keine Nacktheit, kein Geschlechtsverkehr im Bild. Zustimmung und Kondom sind vorher geklärt (Game.runDate).
+   Annäherung, Umarmung, Kuss, Ausziehen (nackter Po und nackte Brust wie in Filmen ab 18, keine Genitalien), zusammen aufs
+   Bett – dann Schwenk zum Fenster und Abblende. Kein Geschlechtsverkehr im Bild. Zustimmung und Kondom sind vorher geklärt (Game.runDate).
    Die Figuren sind Rocketbox-Menschen; Umarmen, Kuss und geschlossene Augen sind Knochen-Posen über der Animation. */
 import { Quaternion, Vector3, Matrix, PointLight, Color3, TransformNode, StandardMaterial, CreateBox, CreateCylinder, CreatePlane, CreateGround, type Scene, type FreeCamera, type Light } from '../engine/bjs';
 import { Actor, playerLook, type Look } from './Actor';
@@ -10,7 +10,9 @@ import { music, sfx, moan as moanAt, breath as breathAt, now } from '../engine/A
 const moan = (f: number, d: number, g: number, v: 'a' | 'o' | 'm') => moanAt(now() + .02, f, d, g, v);
 const breath = (d: number, g: number) => breathAt(now() + .02, d, g);
 
-export interface CineHost { scene: Scene; camera: FreeCamera; player: Actor; cine: ((dt: number) => void) | null; portrait(): boolean }
+export interface CineHost { scene: Scene; camera: FreeCamera; player: Actor; cine: ((dt: number) => void) | null; portrait(): boolean; /** „Inhalte ab 18“ an: Ausziehen bis ganz nackt (Po, Brust), sonst bis zur Unterwäsche */ adult?(): boolean }
+/** Wie weit ausgezogen wird: nackt nur mit „Inhalte ab 18“ */
+export const bareOf = (h: CineHost): 'nude' | 'underwear' => (h.adult?.() ? 'nude' : 'underwear');
 
 /* Posen über der Animation: Knochen werden im Raum auf Ziele ausgerichtet (kleine IK), damit Arme wirklich um
    den anderen Körper greifen und Köpfe sich zum Kuss zueinander neigen – unabhängig von den Knochenachsen. */
@@ -147,7 +149,7 @@ export async function loveScene(h: CineHost, look: Look, name: string, done: () 
   const first = existing || await Actor.create(sc, { ...look, outfit: 'clothed' });
   // Uniform kann man nicht umfärben: beim Ausziehen übernimmt eine zivile Figur (Helm ab, Weste weg)
   const civ = !existing && civilFor(look, name);
-  const second = civ ? await Actor.create(sc, { ...civ, outfit: 'underwear' }) : null;
+  const second = civ ? await Actor.create(sc, { ...civ, outfit: bareOf(h) }) : null;
   second?.root.setEnabled(false);
   let partner = first;
   // Nahaufnahmen: manche Rocketbox-Köpfe haben einen falschen Begrenzungsrahmen und würden weggeschnitten
@@ -238,8 +240,8 @@ export async function loveScene(h: CineHost, look: Look, name: string, done: () 
     cue(7.2, () => breath(.6, .05));
     cue(8.8, () => { document.body.appendChild(blink); });
     cue(9.35, () => {
-      me.setLook({ outfit: 'underwear' });
-      if (second) { first.root.setEnabled(false); second.root.setEnabled(true); second.play('dance2', 0, .2); partner = second; } else partner.setLook({ outfit: 'underwear' });
+      me.setLook({ outfit: bareOf(h) });
+      if (second) { first.root.setEnabled(false); second.root.setEnabled(true); second.play('dance2', 0, .2); partner = second; } else partner.setLook({ outfit: bareOf(h) });
     });
     cue(9.9, () => { blink.remove(); });
     cue(10.6, () => sfx('kiss'));

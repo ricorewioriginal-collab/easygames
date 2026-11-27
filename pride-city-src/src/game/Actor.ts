@@ -19,7 +19,8 @@ const GEAR = /_(helmet|equipment|machinegun|shotgun|pistol|mask|flashlight)$/;
 export const WALK_MPS = 1.02, RUN_MPS = 3.6;
 
 /** Outfits aus dem alten Spiel: bleiben im Spielstand (Rocketbox-Figuren tragen ihre eigene Kleidung) */
-export type Outfit = 'clothed' | 'shirtless' | 'underwear' | 'swim' | 'harness';
+/** 'nude' nur in Szenen ab 18 (liebe.ts, gruppe.ts), nicht wählbar und nie auf der Straße */
+export type Outfit = 'clothed' | 'shirtless' | 'underwear' | 'swim' | 'harness' | 'nude';
 export const OUTFITS: Array<{ id: Outfit; name: string; adult?: boolean }> = [
   { id: 'clothed', name: 'Angezogen' }, { id: 'shirtless', name: 'Oberkörperfrei' }, { id: 'underwear', name: 'Unterwäsche' },
   { id: 'swim', name: 'Badehose / Bikini' }, { id: 'harness', name: 'Harness', adult: true },
@@ -47,7 +48,7 @@ export function playerLook(s: { body: string; palette: string; skin: number; pro
 }
 
 /** Auf der Straße: Unterwäsche nur zuhause, draußen ist die Figur angezogen */
-export function streetLook(l: Look): Look { return l.outfit === 'underwear' ? { ...l, outfit: 'clothed' } : l; }
+export function streetLook(l: Look): Look { return l.outfit === 'underwear' || l.outfit === 'nude' ? { ...l, outfit: 'clothed' } : l; }
 
 export type Anim = 'idle' | 'walk' | 'run' | 'cheer' | 'interact' | 'sit' | 'wave' | 'dance1' | 'dance2' | 'dance3' | 'jump' | 'hit' | 'pose' | 'talk' | 'clap' | 'phone' | 'drink' | 'laugh';
 /** Spiel-Animation → Rocketbox-Animation (Datei rb/anim/<m|f>_<name>.glb) */

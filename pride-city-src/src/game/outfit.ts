@@ -1,7 +1,8 @@
 /* Outfits für Rocketbox-Figuren: Die Figuren tragen ihre Kleidung als Textur. Für „Oberkörperfrei“, „Unterwäsche“,
    „Badehose/Bikini“ und „Harness“ malen wir die Kleidung je nach Knochen (Rumpf, Arme, Beine, Becken) auf der Textur
    in Hautfarbe bzw. Wäschefarbe um. Das klappt für jede Figur, egal wie ihre Textur angeordnet ist.
-   Keine anatomischen Details: Unterwäsche und Bikini bleiben immer an. */
+   Unterwäsche und Bikini bleiben an. Einzige Ausnahme „Nackt“ (nur mit „Inhalte ab 18“, nur in Liebes- und Gruppenszenen):
+   nackter Po und nackte Brust wie in Kinofilmen ab 18, Becken als glatte Haut ohne Genitalien. */
 import { RawTexture, Texture, type Mesh, type PBRMaterial, type Scene, type AbstractMesh } from '../engine/bjs';
 import { pixels, remember, quietClone, breathe, sharedMat, dropMat } from './texpix';
 import { fullIndices } from './lod';
@@ -26,6 +27,8 @@ function paint(o: Outfit, top: boolean): Partial<Record<Part, 'skin' | number>> 
     case 'harness': return { chest: 'skin', belly: 'skin', arm: 'skin', hip: 0x15151a, leg: 0x15151a };
     case 'underwear': return { chest: 'skin', belly: 'skin', arm: 'skin', hip: top ? 0xff4fa3 : 0x1a1a24, leg: 'skin', foot: 'skin' };
     case 'swim': return { chest: 'skin', belly: 'skin', arm: 'skin', hip: 0x2a8fff, leg: 'skin', foot: 'skin' };
+    // nur 18+ und nur in Szenen: nackter Po und nackte Brust, ohne Genitalien (glatte Haut, siehe undress)
+    case 'nude': return { chest: 'skin', belly: 'skin', arm: 'skin', hip: 'skin', leg: 'skin', foot: 'skin' };
     default: return null;
   }
 }
@@ -56,7 +59,7 @@ export async function applyOutfit(scene: Scene, root: AbstractMesh | { getChildM
     const key = id + '|' + o + '|' + top;
     const cache = sceneCache(scene, caches);
     let job = cache.get(key);
-    const make = async () => build(scene, m, orig, p, skinFrom ? await skinOf(skinFrom) : null, bra).catch(() => null);
+    const make = async () => build(scene, m, orig, p, skinFrom ? await skinOf(skinFrom) : null, bra, top).catch((e) => { console.warn('outfit', e); return null; });
     if (!job) { job = make(); cache.set(key, job); }
     let tex = await job;
     if (tex && !alive(tex)) { job = make(); cache.set(key, job); tex = await job; }
@@ -87,7 +90,7 @@ export async function skinOf(m: Mesh): Promise<number[] | null> {
   return n ? [r / n, g / n, b / n] : null;
 }
 
-async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<Part, 'skin' | number>>, skinRef: number[] | null = null, bra: number | null = null): Promise<Texture | null> {
+async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<Part, 'skin' | number>>, skinRef: number[] | null = null, bra: number | null = null, top = false): Promise<Texture | null> {
   const src = mat.albedoTexture as Texture | null; if (!src) return null;
   const { width: w, height: h } = src.getSize();
   const px = await pixels(src); if (!px) return null;
@@ -132,6 +135,7 @@ async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<
     const col = want === 'skin' ? skin : [(want >> 16) & 255, (want >> 8) & 255, want & 255];
     fill(data, orig, w, h, [uv[a * 2] * w, uv[a * 2 + 1] * h], [uv[b * 2] * w, uv[b * 2 + 1] * h], [uv[c * 2] * w, uv[c * 2 + 1] * h], col, want === 'skin', want === 'skin' ? tint : null, fab);
   }
+  if (hands && fab && p.hip === 'skin') await undress(m, data, orig, w, h, uv, tri, fab, skin, bra === null && top, own);
   if (p.chest === 'skin' && !hands) details(m, data, w, h, uv, tri, skin, bra, true);
   for (let o = 3; o < data.length; o += 4) data[o] = 255;   // deckend: Körper nie durchsichtig
   const t = RawTexture.CreateRGBATexture(data, w, h, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
@@ -178,26 +182,8 @@ function fill(d: Uint8Array, src: Uint8Array, w: number, h: number, A: number[],
 function details(m: Mesh, d: Uint8Array, w: number, h: number, uv: ArrayLike<number>, tri: Array<[number, number, number, Part]>, skin: number[], bra: number | null, marks = true) {
   const chest = bra === null && marks, braC = bra === null ? null : [(bra >> 16) & 255, (bra >> 8) & 255, bra & 255];
   const inBra = (t: number, s: number) => (t > .665 && t < .79) || (t >= .79 && t < .835 && Math.abs(Math.abs(s) - .062) < .011);
-  const pos = m.getVerticesData('position'), mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights'); if (!pos || !mi || !mw) return;
-  const names = boneNames(m), nv = pos.length / 3;
-  const lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
-  for (let i = 0; i < pos.length; i += 3) for (let k = 0; k < 3; k++) { lo[k] = Math.min(lo[k], pos[i + k]); hi[k] = Math.max(hi[k], pos[i + k]); }
-  const ext = [0, 1, 2].map((k) => hi[k] - lo[k]), ax = [0, 1, 2].sort((a, b) => ext[b] - ext[a]), up = ax[0], side = ax[1], dep = ax[2];
-  // der Körper-Mesh endet am Halsansatz (Kopf ist ein eigenes Teil): Körpergröße ≈ Mesh-Höhe / 0,82
-  const H = ext[up] / .82; if (H <= 0) return;
-  // Füße stehen unten, vorne ist die Richtung der Zehen
-  let footY = 0, footN = 0, toe = 0, toeN = 0, heel = 0, heelN = 0, cs = 0, cn = 0;
-  for (let v = 0; v < nv; v++) {
-    let best = 0, bw = -1; for (let k = 0; k < 4; k++) if (mw[v * 4 + k] > bw) { bw = mw[v * 4 + k]; best = mi[v * 4 + k]; }
-    const b = names[best] || '';
-    if (/Toe/.test(b)) { toe += pos[v * 3 + dep]; toeN++; footY += pos[v * 3 + up]; footN++; }
-    else if (/Foot/.test(b)) { heel += pos[v * 3 + dep]; heelN++; footY += pos[v * 3 + up]; footN++; }
-    if (/Spine/.test(b)) { cs += pos[v * 3 + side]; cn++; }
-  }
-  if (!toeN || !heelN || !cn) return;
-  const down = footY / footN < (lo[up] + hi[up]) / 2, base = down ? lo[up] : hi[up], dirY = down ? 1 : -1;
-  const fwd = Math.sign(toe / toeN - heel / heelN) || 1, mid = cs / cn;
-  const T = (v: number) => (pos[v * 3 + up] - base) * dirY / H, S = (v: number) => (pos[v * 3 + side] - mid) / H, F = (v: number) => pos[v * 3 + dep] * fwd;
+  const fr = frame(m); if (!fr) return;
+  const { T, S, F } = fr;
   let fMax = -1e9, fMin = 1e9;
   for (const [a, , , part] of tri) if (part === 'chest' || part === 'belly') { fMax = Math.max(fMax, F(a)); fMin = Math.min(fMin, F(a)); }
   const front = fMin + (fMax - fMin) * .5;
@@ -229,5 +215,116 @@ function details(m: Mesh, d: Uint8Array, w: number, h: number, uv: ArrayLike<num
         for (let ch = 0; ch < 3; ch++) d[o + ch] = d[o + ch] * (1 - f) + Math.min(255, k[ch] * (.88 + .24 * (d[o + ch] / 255))) * f;
       }
     }
+  }
+}
+
+/** Körper-Koordinaten je Vertex: T = Höhe, S = Seite (beide relativ zur Körpergröße), F = nach vorne (Richtung Zehen) */
+function frame(m: Mesh) {
+  const pos = m.getVerticesData('position'), mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights'); if (!pos || !mi || !mw) return null;
+  const names = boneNames(m), nv = pos.length / 3;
+  const lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
+  for (let i = 0; i < pos.length; i += 3) for (let k = 0; k < 3; k++) { lo[k] = Math.min(lo[k], pos[i + k]); hi[k] = Math.max(hi[k], pos[i + k]); }
+  const ext = [0, 1, 2].map((k) => hi[k] - lo[k]), ax = [0, 1, 2].sort((a, b) => ext[b] - ext[a]), up = ax[0], side = ax[1], dep = ax[2];
+  // der Körper-Mesh endet am Halsansatz (Kopf ist ein eigenes Teil): Körpergröße ≈ Mesh-Höhe / 0,82
+  const H = ext[up] / .82; if (H <= 0) return null;
+  // Füße stehen unten, vorne ist die Richtung der Zehen
+  let footY = 0, footN = 0, toe = 0, toeN = 0, heel = 0, heelN = 0, cs = 0, cn = 0;
+  for (let v = 0; v < nv; v++) {
+    let best = 0, bw = -1; for (let k = 0; k < 4; k++) if (mw[v * 4 + k] > bw) { bw = mw[v * 4 + k]; best = mi[v * 4 + k]; }
+    const b = names[best] || '';
+    if (/Toe/.test(b)) { toe += pos[v * 3 + dep]; toeN++; footY += pos[v * 3 + up]; footN++; }
+    else if (/Foot/.test(b)) { heel += pos[v * 3 + dep]; heelN++; footY += pos[v * 3 + up]; footN++; }
+    if (/Spine/.test(b)) { cs += pos[v * 3 + side]; cn++; }
+  }
+  if (!toeN || !heelN || !cn) return null;
+  const down = footY / footN < (lo[up] + hi[up]) / 2, base = down ? lo[up] : hi[up], dirY = down ? 1 : -1;
+  const fwd = Math.sign(toe / toeN - heel / heelN) || 1, mid = cs / cn;
+  const T = (v: number) => (pos[v * 3 + up] - base) * dirY / H, S = (v: number) => (pos[v * 3 + side] - mid) / H, F = (v: number) => pos[v * 3 + dep] * fwd;
+  return { T, S, F, H, pos, up, side, dep, base, dirY, mid, fwd };
+}
+
+/** „Nackt“ auf dem Sport-Körper: Stoff (Sport-Unterhose, Bikinihose) wird von der umliegenden Haut her zugemalt, so bleiben
+    Schattierung und Hautton stimmig. Das Bikini-Oberteil der Sportlerin ist eine eigene Schale über der Brust: sie wird zu
+    Haut mit Brustwarzen an der vordersten Stelle jeder Seite. Keine Genitalien, das Becken bleibt glatte Haut. */
+export async function undress(m: Mesh, d: Uint8Array, src: Uint8Array, w: number, h: number, uv: ArrayLike<number>, tri: Array<[number, number, number, Part]>, fab: (r: number, g: number, b: number) => boolean, skin: number[], breasts: boolean, own: number[] = skin) {
+  // strenger als beim Umfärben: auch dunkle Stellen (Unterhose mit JPEG-Rauschen) sind Stoff
+  const dark = (own[0] + own[1] + own[2]) * .5, bad = (r: number, g: number, b: number) => r + g + b < dark || fab(r, g, b);
+  const inTri = new Uint8Array(w * h), hole = new Uint8Array(w * h);
+  const isFab = (v: number) => { const x = Math.min(w - 1, Math.max(0, Math.floor(uv[v * 2] * w))), y = Math.min(h - 1, Math.max(0, Math.floor(uv[v * 2 + 1] * h))), o = (y * w + x) * 4; return bad(src[o], src[o + 1], src[o + 2]); };
+  const shell: Array<[number, number, number]> = [];
+  const raster = (a: number, b: number, c: number, fn: (o: number, u: number, v: number, q: number) => void) => {
+    const A = [uv[a * 2] * w, uv[a * 2 + 1] * h], B = [uv[b * 2] * w, uv[b * 2 + 1] * h], C = [uv[c * 2] * w, uv[c * 2 + 1] * h];
+    const area = (B[0] - A[0]) * (C[1] - A[1]) - (C[0] - A[0]) * (B[1] - A[1]); if (Math.abs(area) < 1e-6) return;
+    const minX = Math.max(0, Math.floor(Math.min(A[0], B[0], C[0]) - 1)), maxX = Math.min(w - 1, Math.ceil(Math.max(A[0], B[0], C[0]) + 1));
+    const minY = Math.max(0, Math.floor(Math.min(A[1], B[1], C[1]) - 1)), maxY = Math.min(h - 1, Math.ceil(Math.max(A[1], B[1], C[1]) + 1));
+    for (let y = minY; y <= maxY; y++) for (let x = minX; x <= maxX; x++) {
+      const px = x + .5, py = y + .5;
+      const u = ((B[0] - px) * (C[1] - py) - (C[0] - px) * (B[1] - py)) / area, v = ((C[0] - px) * (A[1] - py) - (A[0] - px) * (C[1] - py)) / area, q = 1 - u - v;
+      if (u < -.03 || v < -.03 || q < -.03) continue;
+      fn(y * w + x, u, v, q);
+    }
+  };
+  let n = 0;
+  for (const [a, b, c, part] of tri) {
+    if ((++n & 127) === 0) await breathe();
+    if (part === 'other') continue;
+    // Oberteil-Schale: Brust/Bauch, alle drei Ecken auf Stoff
+    if (breasts && (part === 'chest' || part === 'belly') && isFab(a) && isFab(b) && isFab(c)) { shell.push([a, b, c]); continue; }
+    raster(a, b, c, (i) => { inTri[i] = 1; const o = i * 4; if (bad(src[o], src[o + 1], src[o + 2])) hole[i] = 1; });
+  }
+  // Stoffränder (Mischfarben aus dem JPEG) mitnehmen: Loch um 3 Pixel wachsen lassen
+  const nb = (i: number, fn: (j: number) => void) => { const x = i % w, y = (i - x) / w; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const xx = x + dx, yy = y + dy; if ((dx || dy) && xx >= 0 && yy >= 0 && xx < w && yy < h) fn(yy * w + xx); } };
+  for (let g = 0; g < 3; g++) {
+    const grow: number[] = [];
+    for (let i = 0; i < hole.length; i++) if (hole[i] === 1) nb(i, (j) => { if (inTri[j] && !hole[j]) grow.push(j); });
+    for (const j of grow) hole[j] = 1;
+  }
+  // Löcher von außen nach innen mit dem Mittel der fertigen Nachbarn füllen
+  let todo: number[] = []; for (let i = 0; i < hole.length; i++) if (hole[i]) todo.push(i);
+  const filled = todo.slice();
+  for (let pass = 0; pass < 160 && todo.length; pass++) {
+    if ((pass & 7) === 0) await breathe();
+    const done: Array<[number, number, number, number]> = [], rest: number[] = [];
+    for (const i of todo) {
+      const x = i % w, y = (i - x) / w; let r = 0, g = 0, b = 0, k = 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const xx = x + dx, yy = y + dy; if ((!dx && !dy) || xx < 0 || yy < 0 || xx >= w || yy >= h) continue;
+        const j = yy * w + xx; if (!inTri[j] || hole[j]) continue;
+        r += d[j * 4]; g += d[j * 4 + 1]; b += d[j * 4 + 2]; k++;
+      }
+      if (k) done.push([i, r / k, g / k, b / k]); else rest.push(i);
+    }
+    for (const [i, r, g, b] of done) { d[i * 4] = r; d[i * 4 + 1] = g; d[i * 4 + 2] = b; hole[i] = 0; }
+    todo = rest;
+    if (!done.length) break;
+  }
+  for (const i of todo) { d[i * 4] = skin[0] * .92; d[i * 4 + 1] = skin[1] * .92; d[i * 4 + 2] = skin[2] * .92; }
+  // weichzeichnen, damit keine Schlieren vom Zuwachsen bleiben
+  for (let pass = 0; pass < 3; pass++) {
+    await breathe();
+    const out = new Float32Array(filled.length * 3);
+    filled.forEach((i, n2) => { let r = d[i * 4], g = d[i * 4 + 1], b = d[i * 4 + 2], k = 1; nb(i, (j) => { if (inTri[j]) { r += d[j * 4]; g += d[j * 4 + 1]; b += d[j * 4 + 2]; k++; } }); out[n2 * 3] = r / k; out[n2 * 3 + 1] = g / k; out[n2 * 3 + 2] = b / k; });
+    filled.forEach((i, n2) => { d[i * 4] = out[n2 * 3]; d[i * 4 + 1] = out[n2 * 3 + 1]; d[i * 4 + 2] = out[n2 * 3 + 2]; });
+  }
+  if (!shell.length) return;
+  // Schale: Haut mit leichter Schattierung, Brustwarze an der vordersten Stelle jeder Seite
+  const fr = frame(m); if (!fr) return;
+  const { T, S, F, H } = fr, tip: Array<[number, number, number]> = [];
+  for (const sd of [-1, 1]) {
+    let best = -1, bf = -1e9;
+    for (const t of shell) for (const v of t) if (S(v) * sd > .015 && F(v) > bf) { bf = F(v); best = v; }
+    if (best >= 0) tip.push([T(best), S(best), F(best)]);
+  }
+  const areola = [skin[0] * .74, skin[1] * .56, skin[2] * .55], nip = [skin[0] * .58, skin[1] * .42, skin[2] * .42], r0 = .0085;
+  for (const [a, b, c] of shell) {
+    if ((++n & 127) === 0) await breathe();
+    raster(a, b, c, (i, u, v, q) => {
+      const t = u * T(a) + v * T(b) + q * T(c), s2 = u * S(a) + v * S(b) + q * S(c), f = (u * F(a) + v * F(b) + q * F(c)) / H;
+      let col = skin, mix = 0, near = 9;
+      for (const [tt, ss, ff] of tip) near = Math.min(near, Math.hypot(t - tt, s2 - ss) / r0 + Math.max(0, (ff / H - f) * 40));
+      if (near < 1.2) { col = near < .38 ? nip : areola; mix = near > .8 ? (1.2 - near) / .4 : 1; }
+      const shade = .86 + .14 * Math.max(0, Math.min(1, (f - (tip[0]?.[2] ?? 0) / H) * 25 + 1)), o = i * 4;
+      for (let ch = 0; ch < 3; ch++) { const base = Math.min(255, skin[ch] * shade); d[o + ch] = base * (1 - mix) + Math.min(255, col[ch] * shade) * mix; }
+    });
   }
 }
