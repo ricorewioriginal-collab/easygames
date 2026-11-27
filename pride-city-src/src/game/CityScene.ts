@@ -23,6 +23,7 @@ import { memOf, remember, saveMem, outfitLine } from './leben';
 import { toast, hints, type Line } from '../ui/ui';
 import { sprintSpeed, tiredAt, gainAus, ausdauer, buffOf } from './fit';
 import { TANK, tankOf, burn } from './tank';
+import { Jagd } from './jagd';
 import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
 import type { Marker } from '../ui/Hud';
@@ -63,6 +64,8 @@ export class CityScene implements GameScene {
   camera: FreeCamera;
   bloom = 0;
   world!: World;
+  /** Polizei jagt selbst Verdächtige (jagd.ts) */
+  jagd!: Jagd;
   player!: Actor;
   mode: 'title' | 'play' = 'title';
   private npcs: Npc[] = [];
@@ -208,7 +211,7 @@ export class CityScene implements GameScene {
     radio.subscribe((r, what) => { if (!this.drive) return; if (what === 'error') toast(`📻 ${r.err}`); this.showRadio(); });
     this.weather = new Weather(this.scene, this.world); this.fw = new Fireworks(this.scene, this.world); this.live = new LiveCity(this.g, this, this.scene, this.fw);
     this.xmas = new XmasTree(this.scene, -22, 9); buildPad(this.scene, this.world.root);
-    this.life = new CityLife(this.g, this, this.scene); this.trouble = new Trouble(this.g, this); this.buddy = new Companion(this.scene);
+    this.life = new CityLife(this.g, this, this.scene); this.trouble = new Trouble(this.g, this); this.jagd = new Jagd(this); this.buddy = new Companion(this.scene);
     this.friends = new Friends(this.scene, this.world, () => this.g.save.data.settings.adult);
     this.friends.me = () => ({ n: this.g.save.data.name, l: streetLook(playerLook(this.g.save.data)), s: this.g.where === 'inside' && this.g.inside?.netKey ? this.g.inside.netState() : this.netState() });
     this.friends.onInvite = (who, inv) => this.g.clubInvite(who.name, inv);
@@ -489,6 +492,8 @@ export class CityScene implements GameScene {
       { label: '👋 Tschüss', fn: () => {} },
     ])], () => { const f = then; then = null; if (f) f(); else end(); });
   }
+  /** Banner im HUD (für Ereignisse ohne Zugriff auf das Spiel) */
+  banner(title: string, sub: string, kind: 'good' | 'bad' | 'info' = 'good', ms = 3200) { this.g.hud.banner(title, sub, kind, ms); }
   private face(a: Actor, to: Vector3) { a.root.rotation.y = Math.atan2(to.x - a.root.position.x, to.z - a.root.position.z); }
 
   interact() {
@@ -1154,7 +1159,8 @@ export class CityScene implements GameScene {
       if (b.left <= 0) this.byeBuddy('Ich muss langsam los. Das war ein richtig schöner Tag mit dir. 💜');
     }
     { const free = !busy && !this.gig && !this.kerb.rider && this.combat.wanted.stars === 0 && !this.life.ev && !this.life.parade.riding && !this.isles.some((i) => i.active);
-      this.trouble.update(dt, { free, night: this.world.night > .5, ref: this.player.root.position }); }
+      this.trouble.update(dt, { free, night: this.world.night > .5, ref: this.player.root.position });
+      this.jagd.update(dt, free && !this.trouble.cur, s); }
     this.life.update(dt, t, this.player.root.position, { busy: busy || !!this.gig || !!this.trouble.cur || !!this.kerb.rider || this.combat.wanted.stars > 0, night: this.world.night > .5, rain: this.weather.rain > .2, onFoot: !this.drive });
 
     this.hudT -= dt;
