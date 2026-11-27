@@ -40,6 +40,7 @@ import { sagaDone, MISSIONS } from './saga';
 import { nachtDone, NACHT } from './nacht';
 import { timeline, PEOPLE, RIGHTS, flags, todaysQuiz, quizDoneToday, quizReward, type Q } from './wissen';
 import { CHAPTERS, goal, danceResult, NPCS, chapterLabel, BAR_COST, lichtPart, lichtLight, lfPart, lfGlow } from './story';
+import { TAREK_STEPS, tarekDone, ways } from './tarek';
 import { LF_CHAPTERS, lfEnding, lfPct } from './leuchtfeuer';
 import { LICHT_CHAPTERS, lichtEnding } from './licht';
 import { HomeScene } from './HomeScene';
@@ -188,7 +189,7 @@ export class Game {
     this.city.setTitle();
     const s = this.save;
     const items: Item[] = [];
-    if (s.hasGame) items.push({ icon: '▶', label: 'Fortsetzen', sub: `${s.data.name} · ${s.data.chapter > 5 ? actLabel(s.data) : 'Kapitel ' + s.data.chapter} · Tag ${s.data.day}`, big: true, fn: () => this.play() });
+    if (s.hasGame) items.push({ icon: '▶', label: 'Fortsetzen', sub: `${s.data.name} · ${s.data.flags.mode === 'frei' ? 'Freie Welt' : s.data.chapter > 5 ? actLabel(s.data) : 'Kapitel ' + s.data.chapter} · Tag ${s.data.day}`, big: true, fn: () => this.play() });
     items.push({ icon: '✨', label: 'Neues Spiel', sub: 'Dein Leben in Rainbow City beginnt', big: !s.hasGame, fn: () => this.newGame() });
     items.push({ icon: '📖', label: 'Story', sub: 'Kapitel und roter Faden', fn: () => this.storyMenu(() => this.title()) });
     items.push({ icon: '🪩', label: 'Minispiele', sub: 'Tanz-Battle, Bar, Drag-Show, Dildo Jump, Toast & mehr in 3D', fn: () => this.minigames(() => this.title()) });
@@ -201,9 +202,17 @@ export class Game {
   }
 
   private newGame() {
-    const start = () => {
+    // Story-Modus (Kapitel, Akte und „Gitter und Glitzer“ mit Rico und Tarek) oder freie Welt ohne Geschichte
+    const start = () => this.openMenu(`<div class="col"><div class="panel"><h3>Wie willst du spielen?</h3><p>Im Story-Modus lebst du als Rico (oder deine eigene Figur) mit Tarek in einer offenen Beziehung. Tarek sitzt unschuldig in U-Haft, du holst ihn raus, ohne Zeitdruck, neben allen Kapiteln und Akten. In der freien Welt ist alles offen, ohne Geschichte und ohne Story-Anrufe.</p><div class="slot"></div></div></div>`, [
+      { icon: '📖', label: 'Story-Modus', sub: 'Rico, Tarek und die ganze Geschichte von Pride City', big: true, fn: () => go('story') },
+      { icon: '🌆', label: 'Freie Welt', sub: 'Alles offen, keine Geschichte. Story später jederzeit im Menü → Story', fn: () => go('frei') },
+      { icon: '←', label: 'Abbrechen', fn: () => this.title() }], () => this.title());
+    const go = (mode: 'story' | 'frei') => {
       this.save.newGame();
       if (this.save.oldFound && importOld) this.save.importOld();
+      const d = this.save.data;
+      d.flags.mode = mode;
+      if (mode === 'story') { d.flags.tarekIntro = true; if (!importOld) { d.name = 'Rico'; d.pronouns = 'he'; } }
       this.closeMenu();
       this.fade(() => this.creator());
     };
@@ -236,18 +245,24 @@ export class Game {
   }
 
   private loadChapter() {
-    const s = this.save.data, ch = CHAPTERS[Math.min(4, s.chapter - 1)];
-    this.loading.show(s.chapter > 5 ? 'Rainbow City' : `Kapitel ${ch.n}`, s.chapter > 5 ? actLabel(s) : ch.title);
+    const s = this.save.data;
+    // Freie Welt: Kapitel überspringen, alles ist offen
+    if (s.flags.mode === 'frei' && s.chapter === 1 && s.step === 0) { s.chapter = 6; s.flags.freiStart = s.day; this.save.write(); }
+    const ch = CHAPTERS[Math.min(4, s.chapter - 1)];
+    this.loading.show(s.chapter > 5 ? 'Rainbow City' : `Kapitel ${ch.n}`, s.chapter > 5 ? chapterLabel(s) : ch.title);
     let p = 0;
     const iv = setInterval(() => { p = Math.min(1, p + .2); this.loading.progress(p, p < 1 ? 'Rainbow City erwacht' : 'Bereit'); if (p >= 1) { clearInterval(iv); go(); } }, 160);
     const go = () => {
       this.engine.setScene(this.city);
       this.city.setPlay();
       this.loading.hide();
+      if (s.flags.freiStart === s.day && s.chapter > 5 && !s.flags.freiCard) { s.flags.freiCard = true; void chapterCard('Freie Welt', 'Rainbow City gehört dir', 'Keine Geschichte, keine Anrufe, alles offen: Jobs, Dates, Clubs, Autos, Inseln und Minispiele. Den Story-Modus kannst du jederzeit im Menü unter Story einschalten.'); }
       if (s.chapter === 1 && s.step === 0) {
         chapterCard(`Kapitel ${ch.n}`, ch.title, ch.text).then(() => {
           this.dialog.say([
             { who: 'Du', color: '#444', text: 'Rainbow City. Endlich. Die Tram ist weg, der Koffer ist schwer – und überall wehen Flaggen.' },
+            ...(s.flags.tarekIntro ? [{ who: 'Du', color: '#444', text: 'Eigentlich wollten Tarek und ich heute zusammen ankommen. Neue Stadt, offene Beziehung, ein Balkon. Stattdessen hat er gestern Nacht angerufen: aus der Polizeiwache.' },
+              { who: 'Du', color: '#444', text: 'Erst mal ankommen. Dann hole ich ihn da raus. Schritt für Schritt.' }] : []),
             { who: 'Du', color: '#444', text: 'Mo wollte vor ihrem Café warten. Das Kaffeeklatsch liegt die Hauptstraße runter, am Platz.' },
           ], () => { s.step = 1; this.save.write(); this.city.refreshHud(); });
         });
@@ -414,6 +429,7 @@ export class Game {
     }
     if (a.k === 'bar') { this.barShift(); return; }
     if (a.k === 'book') { this.book(-1, a.id); return; }
+    if (a.k === 'story') { this.city.talkTo(a.id); return; }
     if (a.k === 'talk') {
       const day = s.day % a.lines.length;
       this.dialog.say([...a.lines.slice(day), ...a.lines.slice(0, day)].map((text) => ({ who: a.who, color: a.color, text })));
@@ -1265,12 +1281,15 @@ export class Game {
       pick(f.proof, { press: 'Presse', city: 'Bezirksamt', face: 'direkte Konfrontation' }, 'Beweise gegen Glanz'),
       pick(f.role, { speech: 'Rede', float: 'Club-Wagen', dance: 'Vortanzen' }, 'Rolle bei der Pride'),
       f.lfIntro ? `Leuchtfeuer: ${Math.min(lfPart(s), LF_CHAPTERS.length)}/${LF_CHAPTERS.length} Rückblenden · Leuchtkraft ${lfPct(lfGlow(s))} %${f.lfEnd ? ' · Ende „' + lfEnding(lfGlow(s)).title + '“' : ''}` : '',
+      f.tarekCall ? `Tarek: ${f.tarekEnd ? 'frei, Fall abgeschlossen' : f.tarekFrei ? 'frei bis zum Prozess' : 'in U-Haft'}${(() => { const w = ways(s); return w.t + w.r ? ` · Ricos Weg ${w.r}× · Tareks Weg ${w.t}×` : ''; })()}${f.tarekOpen === true ? ' · offene Beziehung' : f.tarekOpen === false ? ' · exklusiv' : ''}` : '',
       f.lichtIntro ? `Ich bin das Licht: ${Math.min(lichtPart(s), LICHT_CHAPTERS.length)}/${LICHT_CHAPTERS.length} Rückblenden · Licht ${lichtLight(s)}${f.lichtEnd ? ' · Ende „' + lichtEnding(lichtLight(s)).title + '“' : ''}` : '',
     ].filter(Boolean);
     this.openMenu(`<div class="col"><div class="logo" style="font-size:clamp(30px,5vw,52px)"><span class="l1">Story</span><small>Ein Leben in allen Farben</small></div><div class="slot"></div></div>
       <div class="side panel"><h3>Deine Entscheidungen</h3><p>${choices.length ? choices.join('<br>') : 'Noch keine – die Stadt merkt sich alles.'}</p></div>`,
     [...CHAPTERS.map((c) => ({ icon: c.n < s.chapter ? '✅' : c.n === s.chapter ? '⭐' : '🔒', label: `Kapitel ${c.n}: ${c.title}`, sub: c.n <= s.chapter ? c.text : 'Noch nicht freigespielt', disabled: c.n > s.chapter })),
       ...ACTS.slice(1).map((a) => { const now = act(s), done = now > a.n, open = now >= a.n; return { icon: done ? '✅' : open ? '⭐' : '🔒', label: `Akt ${ROMAN[a.n - 1]}: ${a.title}`, sub: !open ? (a.n === 5 ? 'Nach Akt IV' : a.n === 4 ? 'Nach der Pride der Inseln' : 'Nach der Pride in Rainbow City') : a.n === 5 ? `${a.text} · ${Math.min(crewStep(s), CREW_STEPS)}/${CREW_STEPS} · Crew ${crewOf(s).length}${done ? ' · Haller gefasst' : ''}` : a.n === 4 ? `${a.text} · ${flutDone(s)}/${FLUT.length} Missionen${done ? ' · Kral festgenommen' : ''}` : a.n === 2 ? `${a.text} · Hochstadt ${sagaDone(s)}/${MISSIONS.length} · Sterling Nights ${nachtDone(s)}/${NACHT.length}${owns(s, 'prisma') ? ' · Club Prisma gehört dir' : ''}` : `${a.text} · ${chain(s).length - islesLeft(s).length}/${chain(s).length} Inseln${done ? ' · gefeiert' : ''}`, disabled: !open }; }),
+      ...(f.mode !== 'story' ? [{ icon: '📖', label: f.mode === 'frei' ? 'Story-Modus einschalten' : 'Story-Modus mit Tarek starten', sub: f.mode === 'frei' ? 'Tarek ruft an, Akte und Anrufe laufen ab hier weiter. Dein Fortschritt bleibt.' : 'Neu: Tarek sitzt unschuldig in U-Haft. Er ruft an, du holst ihn raus, ohne Zeitdruck. Dein Fortschritt bleibt.', fn: () => { f.mode = 'story'; this.save.write(); this.city.refreshHud(); toast('📖 Story-Modus an. Halt dein Handy bereit.'); this.storyMenu(back); } }]
+        : TAREK_STEPS.map((st) => { const n = tarekDone(s), done = n > st.n, open = !!f.tarekCall && n >= st.n; return { icon: done ? '✅' : open ? '💞' : '🔒', label: `Gitter und Glitzer ${st.n + 1}: ${st.title}`, sub: open || done ? st.text : st.ch > s.chapter ? (st.ch > 5 ? 'Nach der Pride' : `Ab Kapitel ${st.ch}`) : 'Noch nicht freigespielt', disabled: !open && !done }; })),
       ...(s.chapter > 5 ? [{ icon: '🏁', label: 'Abspann ansehen', fn: () => this.ending(back) }] : []),
       ...HIST_ORDER.filter((k) => s.flags['hist_' + k]).map((k) => ({ icon: '🏳️‍🌈', label: `Damals · ${HISTORY[k].year}: ${HISTORY[k].title}`, sub: HISTORY[k].text })),
       { icon: '←', label: 'Zurück', fn: back }], back);
