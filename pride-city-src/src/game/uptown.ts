@@ -53,12 +53,12 @@ const CUBE: Array<[number[], number[][]]> = [
   [[0, 1, 0], [[-.5, .5, .5], [.5, .5, .5], [.5, .5, -.5], [-.5, .5, -.5]]],
   [[0, -1, 0], [[-.5, -.5, -.5], [.5, -.5, -.5], [.5, -.5, .5], [-.5, -.5, .5]]],
 ];
-class Batch {
-  p: number[] = []; n: number[] = []; u: number[] = []; u2: number[] = []; i: number[] = [];
+export class Batch {
+  p: number[] = []; n: number[] = []; u: number[] = []; u2: number[] = []; i: number[] = []; c: number[] = [];
   /** uw/vh: Meter je Textur (Breite/Höhe), z. B. 8 Fensterachsen à 3 m */
   constructor(readonly uw = 24, readonly vh = 27.2) {}
   /** Quader mit Mitte und Größe; rot = Drehung um die Achse (x/y/z), roof = Deckel in einen anderen Sammler */
-  box(cx: number, cy: number, cz: number, sx: number, sy: number, sz: number, o: { roof?: Batch | null; off?: [number, number]; rot?: [number, number, number]; bottom?: boolean } = {}) {
+  box(cx: number, cy: number, cz: number, sx: number, sy: number, sz: number, o: { roof?: Batch | null; off?: [number, number]; rot?: [number, number, number]; bottom?: boolean; tint?: [number, number, number] } = {}) {
     const q = o.rot ? Quaternion.FromEulerAngles(o.rot[0], o.rot[1], o.rot[2]) : Quaternion.Identity();
     const m = Matrix.Compose(new Vector3(sx, sy, sz), q, new Vector3(cx, cy, cz));
     const rm = Matrix.Compose(Vector3.One(), q, Vector3.Zero());
@@ -76,6 +76,7 @@ class Batch {
         tgt.p.push(v.x, v.y, v.z); tgt.n.push(nv.x, nv.y, nv.z);
         tgt.u.push((raw[k][0] - u0) / tgt.uw + off[0], (raw[k][1] - v0) / tgt.vh + off[1]);
         tgt.u2.push(raw[k][0] * 1.2, raw[k][1] * 1.2);
+        if (o.tint) tgt.c.push(o.tint[0], o.tint[1], o.tint[2], 1);
       });
       tgt.i.push(b, b + 2, b + 1, b, b + 3, b + 2);
     }
@@ -83,7 +84,7 @@ class Batch {
   mesh(sc: Scene, name: string, mat: PBRMaterial) {
     if (!this.i.length) return null;
     const m = new Mesh(name, sc), vd = new VertexData();
-    vd.positions = this.p; vd.normals = this.n; vd.uvs = this.u; vd.uvs2 = this.u2; vd.indices = this.i; vd.applyToMesh(m);
+    vd.positions = this.p; vd.normals = this.n; vd.uvs = this.u; vd.uvs2 = this.u2; vd.indices = this.i; if (this.c.length === this.p.length / 3 * 4) vd.colors = this.c; vd.applyToMesh(m);
     m.material = mat;
     return m;
   }
