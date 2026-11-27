@@ -10,8 +10,9 @@ import { instance, preload } from '../engine/Assets';
 import { planeZ, ground, box, cyl, sphere, ring, torus, pbr, glow, canvasTex } from '../engine/geo';
 import { PALETTES } from './palettes';
 import { Townhouses } from './townhouse';
+import { palmParts, treeParts } from './plants';
 import { roadSurface, grassSurface, photoSurface, waterSurface, worldTex } from '../engine/surfaces';
-import { buildUptown, EAST, BRIDGE, UPTOWN_PLACES, doorStep } from './uptown';
+import { buildUptown, EAST, BRIDGE, UPTOWN_PLACES, doorStep, TANKE } from './uptown';
 import { NODES, LANE, lane, nearestEdge } from './traffic';
 import { pixels, remember, breathe } from './texpix';
 
@@ -243,6 +244,7 @@ export class World {
     P('tramhoch', 'Hochbahn Hochstadt', '🚇', 157, 22, undefined, undefined, 3.6);
     P('laterne', 'Laternenmeile', '🏮', 105, -27, undefined, undefined, 2);
     P('garage', 'Garage Schraubenschlüssel', '🔧', 170.5, -47.4, undefined, undefined, 2.6);
+    P('tanke', 'Regenbogen-Tanke', '⛽', TANKE[0] - 3.2, TANKE[1] + 1.6, undefined, undefined, 1.8);
     for (const u of UPTOWN_PLACES) { const d = doorStep(u); P(u.id, u.name, u.icon, d.x, d.z, undefined, undefined, 2.2); }
   }
 
@@ -527,8 +529,7 @@ export class World {
   tree(x: number, z: number, s: number) {
     const sc = this.scene;
     if (!this.treeSrc) {
-      const trunk = cyl(sc, .18, .26, 1.6, 6); trunk.material = pbr(sc, 0x7a4a2a, .9); trunk.convertToFlatShadedMesh();
-      const tops = [0x4caf50, 0x66bb6a, 0x9ccc65, 0xff8fb1].map((c) => { const t = sphere(sc, 1.3, 2); t.material = pbr(sc, c, .9); t.convertToFlatShadedMesh(); return t; });
+      const { trunk, tops } = treeParts(sc);
       [trunk, ...tops].forEach((m) => { m.setEnabled(false); m.receiveShadows = true; m.parent = this.root; });
       this.treeSrc = { trunk, tops };
     }
@@ -547,31 +548,15 @@ export class World {
   palm(x: number, z: number, s = 1) {
     const sc = this.scene;
     if (!this.palmSrc) {
-      const trunk = cyl(sc, .16, .26, 6, 7, false);
-      const tp = trunk.getVerticesData(VertexBuffer.PositionKind)!;
-      for (let i = 0; i < tp.length; i += 3) { const y = tp[i + 1] + 3; tp[i + 1] = y; tp[i] += (y / 6) ** 2 * .9; }
-      trunk.setVerticesData(VertexBuffer.PositionKind, tp); trunk.createNormals(false);
-      trunk.material = pbr(sc, 0x8a6a48, .95, 0, { double: true });
-      // Palmwedel: gebogene, spitz zulaufende Fläche
-      const pos: number[] = [], idx: number[] = [], uv: number[] = [];
-      const cols = 3, rows = 7;
-      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
-        const d = (r / (rows - 1)) * 3.4, xx = (c / (cols - 1) - .5) * 1.25 * (1 - d / 3.8);
-        pos.push(xx, -d * d * .12 + d * .25 - Math.abs(xx) * .35, d); uv.push(c / (cols - 1), r / (rows - 1));
-        if (r < rows - 1 && c < cols - 1) { const k = r * cols + c; idx.push(k, k + cols, k + 1, k + 1, k + cols, k + cols + 1); }
-      }
-      const frond = new Mesh('frond', sc), vd = new VertexData(), nor: number[] = [];
-      VertexData.ComputeNormals(pos, idx, nor);
-      vd.positions = pos; vd.indices = idx; vd.normals = nor; vd.uvs = uv; vd.applyToMesh(frond);
-      frond.material = pbr(sc, 0x2f8a45, .8, 0, { double: true });
+      const { trunk, frond } = palmParts(sc);
       [trunk, frond].forEach((m) => { m.setEnabled(false); m.receiveShadows = true; m.parent = this.root; });
       this.palmSrc = { trunk, frond };
     }
     const g = new TransformNode('palm', sc);
     const t = this.palmSrc.trunk.createInstance('pt'); t.parent = g; (t as AbstractMesh & { _pcCast?: boolean })._pcCast = true;
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 13; i++) {
       const f = this.palmSrc.frond.createInstance('pf'); f.parent = g; (f as AbstractMesh & { _pcCast?: boolean })._pcCast = true;
-      f.position.set(.9, 5.9, 0); f.rotation.y = (i / 9) * Math.PI * 2 + rnd() * .3;
+      f.position.set(.9, 5.9, 0); f.rotation.y = (i / 13) * Math.PI * 2 + rnd() * .3; f.rotation.x = (i % 3 - 1) * .32 + (rnd() - .5) * .15;
     }
     g.position.set(x, .05, z); g.rotation.y = rnd() * 6; g.scaling.setAll(s); g.parent = this.root;
     this.freeze(g);

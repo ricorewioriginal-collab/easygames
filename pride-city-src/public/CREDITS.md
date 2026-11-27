@@ -11,6 +11,7 @@ Alle eingebundenen Modelle sind kostenlos und frei nutzbar (CC0 / Public Domain)
 | Oberflächen der Welt: Asphalt, Backstein (Detailkarte), Strandsand | `assets/world/asphalt_*.jpg`, `brick_detail.webp`, `sand_*.jpg` | Poly Haven – „asphalt_02“, „brick_4“, „coast_sand_01“ (polyhaven.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
 | Oberflächen der Welt: Gehwegplatten, Rasen | `assets/world/paving_*.jpg`, `grass_*.jpg` | ambientCG – „PavingStones038“, „Grass001“ (ambientcg.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
 | Hausfassaden der Innenstadt (Farbe, Normalen, Nachtfenster aus den beleuchteten Varianten B/C abgeleitet) | `assets/world/fac018_*.jpg`, `fac019_*`, `fac020_*` | ambientCG – „Facade018A–C“, „Facade019A–C“, „Facade020A–C“ (ambientcg.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
+| Bäume und Palmen: Rinde, Laubkronen und Palmwedel (aus einzelnen Foto-Blättern zu Alpha-Karten zusammengesetzt) | `assets/world/palm_bark_*`, `tree_bark_*`, `leaves.png`, `palm_frond.png` | ambientCG – „Bark003“, „Bark014“, „LeafSet024“, „Foliage005“ (ambientcg.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
 | Wasserwellen (Normalenkarte) | `assets/world/water_nor.jpg` | selbst erzeugt (Summe von Sinuswellen) | CC0 1.0 |
 | 3D-Grafik | im Build gebündelt | three.js – https://threejs.org | MIT |
 
