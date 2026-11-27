@@ -3,7 +3,7 @@
    in Hautfarbe bzw. Wäschefarbe um. Das klappt für jede Figur, egal wie ihre Textur angeordnet ist.
    Unterwäsche und Bikini bleiben an. Einzige Ausnahme „Nackt“ (nur mit „Inhalte ab 18“, nur in Liebes- und Gruppenszenen):
    nackter Po und nackte Brust wie in Kinofilmen ab 18, Becken als glatte Haut ohne Genitalien. */
-import { RawTexture, Texture, type Mesh, type PBRMaterial, type Scene, type AbstractMesh } from '../engine/bjs';
+import { RawTexture, Texture, Mesh, VertexData, type PBRMaterial, type Scene, type AbstractMesh } from '../engine/bjs';
 import { pixels, remember, quietClone, breathe, sharedMat, dropMat } from './texpix';
 import { fullIndices } from './lod';
 import type { Outfit } from './Actor';
@@ -48,8 +48,9 @@ export const alive = (t: Texture | null): t is Texture => !!t && !!t.getInternal
 
 /** Outfit auf die Figur anwenden (async; ändert nur das Material dieser Figur) */
 export async function applyOutfit(scene: Scene, root: AbstractMesh | { getChildMeshes(): AbstractMesh[] }, id: string, o: Outfit | undefined, top: boolean, skinFrom?: Mesh) {
-  const meshes = root.getChildMeshes().filter((m) => (m as Mesh).skeleton && m.material) as Mesh[];
+  const meshes = root.getChildMeshes().filter((m) => (m as Mesh).skeleton && m.material && !(m as Akt)._pcAktPart) as Mesh[];
   for (const m of meshes) {
+    if (o !== 'nude') { (m as Akt)._pcAkt?.dispose(); (m as Akt)._pcAkt = undefined; }
     const mm = m.material as PBRMaterial & { _orig?: PBRMaterial };
     const orig = mm._orig || mm;
     // nur das Körper-Material (Kopf und Haare bleiben)
@@ -59,7 +60,7 @@ export async function applyOutfit(scene: Scene, root: AbstractMesh | { getChildM
     const key = id + '|' + o + '|' + top;
     const cache = sceneCache(scene, caches);
     let job = cache.get(key);
-    const make = async () => build(scene, m, orig, p, skinFrom ? await skinOf(skinFrom) : null, bra, top).catch((e) => { console.warn('outfit', e); return null; });
+    const make = async () => build(scene, m, orig, p, skinFrom ? await skinOf(skinFrom) : null, bra, top, akt(id)).catch((e) => { console.warn('outfit', e); return null; });
     if (!job) { job = make(); cache.set(key, job); }
     let tex = await job;
     if (tex && !alive(tex)) { job = make(); cache.set(key, job); tex = await job; }
@@ -68,6 +69,9 @@ export async function applyOutfit(scene: Scene, root: AbstractMesh | { getChildM
     nm._orig = orig;
     if (mm._orig && mm !== nm) dropMat(mm);
     m.material = nm;
+    // Akt-Ansicht (nur 'nude' auf dem Sport-Körper eines Mannes): Penis und Hoden als schlichte, hängende Form
+    if (o === 'nude' && skinFrom && !top && !(m as Akt)._pcAkt) { try { (m as Akt)._pcAkt = maleParts(scene, m, nm, akt(id)) || undefined; } catch (e) { console.warn('akt', e); } }
+    else if ((m as Akt)._pcAkt) (m as Akt)._pcAkt!.material = nm;
     // Sicherheitsnetz: Wird das neue Material nicht fertig (Grafiktreiber, verlorene Textur), lieber angezogen als unsichtbar
     setTimeout(() => { if (m.material === nm && !m.isDisposed() && !nm.isReady(m)) { m.material = orig; dropMat(nm); } }, 6000);
   }
@@ -90,7 +94,7 @@ export async function skinOf(m: Mesh): Promise<number[] | null> {
   return n ? [r / n, g / n, b / n] : null;
 }
 
-async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<Part, 'skin' | number>>, skinRef: number[] | null = null, bra: number | null = null, top = false): Promise<Texture | null> {
+async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<Part, 'skin' | number>>, skinRef: number[] | null = null, bra: number | null = null, top = false, look: AktLook = akt('')): Promise<Texture | null> {
   const src = mat.albedoTexture as Texture | null; if (!src) return null;
   const { width: w, height: h } = src.getSize();
   const px = await pixels(src); if (!px) return null;
@@ -135,7 +139,7 @@ async function build(scene: Scene, m: Mesh, mat: PBRMaterial, p: Partial<Record<
     const col = want === 'skin' ? skin : [(want >> 16) & 255, (want >> 8) & 255, want & 255];
     fill(data, orig, w, h, [uv[a * 2] * w, uv[a * 2 + 1] * h], [uv[b * 2] * w, uv[b * 2 + 1] * h], [uv[c * 2] * w, uv[c * 2 + 1] * h], col, want === 'skin', want === 'skin' ? tint : null, fab);
   }
-  if (hands && fab && p.hip === 'skin') await undress(m, data, orig, w, h, uv, tri, fab, skin, bra === null && top, own);
+  if (hands && fab && p.hip === 'skin') { await undress(m, data, orig, w, h, uv, tri, fab, skin, bra === null && top, own); pubic(m, data, w, h, uv, tri, skin, top, look); }
   if (p.chest === 'skin' && !hands) details(m, data, w, h, uv, tri, skin, bra, true);
   for (let o = 3; o < data.length; o += 4) data[o] = 255;   // deckend: Körper nie durchsichtig
   const t = RawTexture.CreateRGBATexture(data, w, h, scene, true, false, Texture.TRILINEAR_SAMPLINGMODE);
@@ -327,4 +331,110 @@ export async function undress(m: Mesh, d: Uint8Array, src: Uint8Array, w: number
       for (let ch = 0; ch < 3; ch++) { const base = Math.min(255, skin[ch] * shade); d[o + ch] = base * (1 - mix) + Math.min(255, col[ch] * shade) * mix; }
     });
   }
+}
+
+type Akt = Mesh & { _pcAkt?: Mesh; _pcAktPart?: boolean };
+/** Körpermerkmale je Figur, fest aus der Figuren-ID: jede*r sieht anders aus, aber immer gleich.
+    Maße im natürlichen Bereich Erwachsener (schlaff): Penis 7–11 cm lang, 2,6–3,4 cm dick, Hoden verschieden groß und
+    leicht ungleich hoch; Schamhaar von gestutzt bis voll, Farbe von Blond bis Schwarz; Schamlippen verschieden lang. */
+interface AktLook { len: number; rad: number; tipR: number; hang: number; sack: number; tilt: number; hair: number; shape: number; col: number[]; lip: number; fore: number }
+function akt(id: string): AktLook {
+  let h = 2166136261; for (let i = 0; i < id.length; i++) { h ^= id.charCodeAt(i); h = Math.imul(h, 16777619); }
+  const r = () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 10007) / 10007; };
+  const cols = [[58, 42, 32], [34, 26, 22], [20, 17, 16], [92, 66, 44], [120, 88, 60], [70, 40, 28]];
+  return { len: .07 + .04 * r(), rad: .013 + .004 * r(), tipR: 1.02 + .08 * r(), hang: .2 + .5 * r(), sack: .85 + .35 * r(), tilt: (r() - .5) * .5, hair: r() < .15 ? 0 : .35 + .65 * r(), shape: r(), col: cols[Math.floor(r() * cols.length)], lip: .015 + .015 * r(), fore: r() };
+}
+/** Schritt der Figur in Körper-Koordinaten: tiefster Punkt der Mittellinie (zwischen den Beinen) und Vorderseite darüber */
+function crotch(fr: NonNullable<ReturnType<typeof frame>>) {
+  const { T, S, F, pos } = fr, nv = pos.length / 3;
+  let tc = 9; for (let v = 0; v < nv; v++) { const t = T(v); if (t > .3 && t < .6 && Math.abs(S(v)) < .006) tc = Math.min(tc, t); }
+  if (tc > 1) return null;
+  let fb = -1e9; for (let v = 0; v < nv; v++) { const t = T(v); if (Math.abs(S(v)) < .02 && t > tc + .015 && t < tc + .045) fb = Math.max(fb, F(v)); }
+  return fb > -1e8 ? { tc, fb } : null;
+}
+/** Schamhaar (Mann breiter, Frau als Dreieck) und bei Frauen eine angedeutete Schamlippen-Linie, nur vorne am Becken */
+function pubic(m: Mesh, d: Uint8Array, w: number, h: number, uv: ArrayLike<number>, tri: Array<[number, number, number, Part]>, skin: number[], female: boolean, look: AktLook) {
+  const fr = frame(m); if (!fr) return; const c = crotch(fr); if (!c) return;
+  const { T, S, F, H } = fr, { tc, fb } = c, hair = look.col, lip = [skin[0] * .62, skin[1] * .46, skin[2] * .44], lipLen = look.lip / H;
+  for (const [a, b, cc, part] of tri) {
+    if (part !== 'hip' && part !== 'belly' && part !== 'leg') continue;
+    const ts = [T(a), T(b), T(cc)], ss = [S(a), S(b), S(cc)];
+    if (Math.max(...ts) < tc - .01 || Math.min(...ts) > tc + .075 || Math.min(...ss.map(Math.abs)) > .06) continue;
+    if ((F(a) + F(b) + F(cc)) / 3 < fb - .05 * H) continue;   // nur vorne
+    const A = [uv[a * 2] * w, uv[a * 2 + 1] * h], B = [uv[b * 2] * w, uv[b * 2 + 1] * h], C = [uv[cc * 2] * w, uv[cc * 2 + 1] * h];
+    const area = (B[0] - A[0]) * (C[1] - A[1]) - (C[0] - A[0]) * (B[1] - A[1]); if (Math.abs(area) < 1e-6) continue;
+    const minX = Math.max(0, Math.floor(Math.min(A[0], B[0], C[0]))), maxX = Math.min(w - 1, Math.ceil(Math.max(A[0], B[0], C[0])));
+    const minY = Math.max(0, Math.floor(Math.min(A[1], B[1], C[1]))), maxY = Math.min(h - 1, Math.ceil(Math.max(A[1], B[1], C[1])));
+    for (let y = minY; y <= maxY; y++) for (let x = minX; x <= maxX; x++) {
+      const px = x + .5, py = y + .5;
+      const u = ((B[0] - px) * (C[1] - py) - (C[0] - px) * (B[1] - py)) / area, v = ((C[0] - px) * (A[1] - py) - (A[0] - px) * (C[1] - py)) / area, q = 1 - u - v;
+      if (u < -.02 || v < -.02 || q < -.02) continue;
+      const t = u * ts[0] + v * ts[1] + q * ts[2] - tc, s2 = Math.abs(u * ss[0] + v * ss[1] + q * ss[2]), o = (y * w + x) * 4;
+      // Haarfeld: Frau umgedrehtes Dreieck, Mann breiter mit weichem Rand nach oben
+      const wide = .7 + .6 * look.shape, half = (female ? Math.max(0, .006 + .5 * t) : .02 + .45 * Math.max(0, t)) * wide, top = (female ? .055 : .07) * (.7 + .5 * look.hair);
+      if (look.hair > 0 && t > lipLen * .4 && t < top && s2 < half) {
+        const edge = Math.min(1, (half - s2) / .008, (top - t) / .012), n = ((x * 73856093) ^ (y * 19349663)) >>> 0, grain = .55 + .45 * ((n % 97) / 97);
+        const k = Math.max(0, edge) * grain * (.45 + .45 * look.hair);
+        for (let ch = 0; ch < 3; ch++) d[o + ch] = d[o + ch] * (1 - k) + hair[ch] * k;
+      }
+      if (female && t > -.006 && t <= lipLen && s2 < .0045 * (1 - Math.max(0, t) / lipLen * .5)) {
+        // äußere Schamlippen als weiche Schattierung, Spalt in der Mitte dunkler
+        const k = s2 < .0011 ? .8 : .35 * (1 - s2 / .0045);
+        for (let ch = 0; ch < 3; ch++) d[o + ch] = d[o + ch] * (1 - k) + lip[ch] * k;
+      }
+    }
+  }
+}
+/** Penis und Hoden, schlaff hängend (keine Erektion): eigene kleine Form am Becken-Knochen, mit der Haut des Körpers */
+function maleParts(scene: Scene, m: Mesh, mat: PBRMaterial, look: AktLook): Mesh | null {
+  const fr = frame(m), sk = m.skeleton, uv0 = m.getVerticesData('uv'); if (!fr || !sk || !uv0) return null;
+  const c = crotch(fr); if (!c) return null;
+  const pelvis = sk.bones.find((b) => /Pelvis$/.test(b.name)); if (!pelvis) return null;
+  const { H, up, side, dep, base, dirY, mid, fwd, T, S, F, pos } = fr, { tc, fb } = c;
+  // Körper-Koordinaten (t, s, f relativ zur Größe) → Mesh-Raum
+  const toLocal = (t: number, s2: number, f: number) => { const o = [0, 0, 0]; o[up] = base + t * H * dirY; o[side] = mid + s2 * H; o[dep] = f * H * fwd; return o; };
+  // Hautfarbe: UV des Körper-Vertex vorne über dem Schritt (dort ist nach dem Ausziehen Haut)
+  let best = 0, bd = 1e9; for (let v = 0; v < pos.length / 3; v++) { const dd = Math.abs(T(v) - (tc + .09)) + Math.abs(S(v)) * 2 - F(v) / H * .2; if (dd < bd) { bd = dd; best = v; } }
+  const su = uv0[best * 2], sv = uv0[best * 2 + 1];
+  const P: number[] = [], N: number[] = [], I: number[] = [];
+  const f0 = fb / H;
+  // Rohr entlang einer Kurve: Ansatz am Schambein, hängt nach unten und leicht nach vorne
+  // echte Maße (Meter) → relativ zur Körpergröße
+  const ring = 14, segs = 10, len = look.len / H, r0 = look.rad / H, r1 = r0 * .94;
+  const path = (k: number) => { const a = k / segs; return [tc + .028 - len * a * .97, look.tilt * .01 * a * a, f0 - .004 + (.008 + .01 * look.hang) * a + .006 * a * a]; };
+  const C: number[] = [], glans = [.9, .72, .72], sackC = [.9, .8, .78];
+  const add = (t: number, s2: number, f: number, nt: number, ns: number, nf: number) => { const l = toLocal(t, s2, f); P.push(l[0], l[1], l[2]); const n = [0, 0, 0]; n[up] = nt * dirY; n[side] = ns; n[dep] = nf * fwd; N.push(n[0], n[1], n[2]); return P.length / 3 - 1; };
+  for (let k = 0; k <= segs; k++) {
+    const [t, s0k, f] = path(k), a = k / segs;
+    // Eichel: letzte 22 %, etwas breiter mit Kranz; mit Vorhaut bleibt sie halb bedeckt
+    const gl = a > .78 ? Math.sin((a - .78) / .22 * Math.PI) * (look.tipR - 1) : 0, r = (r0 + (r1 - r0) * a) * (1 + gl) * (k === segs ? .9 : 1);
+    const tone = a > (look.fore > .5 ? .9 : .76) ? glans : [1, 1, 1];
+    for (let i = 0; i < ring; i++) { const an = i / ring * Math.PI * 2, cs = Math.cos(an), sn = Math.sin(an); add(t, s0k + cs * r * 1.04, f + sn * r * .96, 0, cs, sn); C.push(tone[0], tone[1], tone[2], 1); }
+  }
+  for (let k = 0; k < segs; k++) for (let i = 0; i < ring; i++) { const a = k * ring + i, b = k * ring + (i + 1) % ring, c2 = a + ring, d2 = b + ring; I.push(a, c2, b, b, c2, d2); }
+  // runde Spitze
+  const [te, se, fe] = path(segs), tip = add(te - r1 * .85, se, fe + .002, -1, 0, .3), last = segs * ring; C.push(glans[0] * .92, glans[1] * .9, glans[2] * .9, 1);
+  for (let i = 0; i < ring; i++) I.push(last + i, tip, last + (i + 1) % ring);
+  // Hoden: abgeflachte Kugel hinter dem Ansatz
+  const sz = look.sack / H, ctr = [tc + .004 - .01 * look.hang, 0, f0 - .016], rad = [.03 * sz, .034 * sz, .024 * sz], lat = 10, lon = 14, s0 = P.length / 3;
+  for (let i = 0; i <= lat; i++) for (let j = 0; j < lon; j++) {
+    const th = i / lat * Math.PI, ph = j / lon * Math.PI * 2, nt = Math.cos(th), ns = Math.sin(th) * Math.cos(ph), nf = Math.sin(th) * Math.sin(ph);
+    // zwei Hoden: Mittelnaht etwas eingezogen, eine Seite hängt tiefer
+    const lob = 1 - .12 * Math.exp(-((ns * 6) ** 2)), low = ns < 0 ? .006 * look.hang : 0;
+    add(ctr[0] + nt * rad[0] * (nt < 0 ? 1.1 : .9) - low * Math.max(0, -nt), ctr[1] + ns * rad[1] * lob, ctr[2] + nf * rad[2] * lob, nt, ns, nf); C.push(sackC[0], sackC[1], sackC[2], 1);
+  }
+  for (let i = 0; i < lat; i++) for (let j = 0; j < lon; j++) { const a = s0 + i * lon + j, b = s0 + i * lon + (j + 1) % lon, c2 = a + lon, d2 = b + lon; I.push(a, b, c2, b, d2, c2); }
+  const nv = P.length / 3, vd = new VertexData();
+  vd.positions = P; vd.normals = N; vd.indices = I; vd.colors = C; vd.uvs = new Array(nv * 2).fill(0).map((_, i) => (i & 1 ? sv : su));
+  vd.matricesIndices = new Array(nv * 4).fill(0).map((_, i) => (i % 4 === 0 ? pelvis.getIndex() : 0));
+  vd.matricesWeights = new Array(nv * 4).fill(0).map((_, i) => (i % 4 === 0 ? 1 : 0));
+  // Wicklung je nach Spiegelung des Mesh-Raums richtig herum (Babylon: links­händig, Körper rechtshändig importiert)
+  const out = new Mesh('akt', scene) as Akt;
+  vd.applyToMesh(out);
+  out._pcAktPart = true; out.parent = m.parent; out.position.copyFrom(m.position); out.scaling.copyFrom(m.scaling);
+  if (m.rotationQuaternion) out.rotationQuaternion = m.rotationQuaternion.clone(); else out.rotation.copyFrom(m.rotation);
+  out.skeleton = sk; out.numBoneInfluencers = 1; out.material = mat; out.isPickable = false; out.receiveShadows = true;
+  out.sideOrientation = m.sideOrientation;
+  m.onDisposeObservable.addOnce(() => out.dispose());
+  return out;
 }
