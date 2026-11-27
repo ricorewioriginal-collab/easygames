@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "9da99cef7843",
- "generated": "2026-11-27T23:13:02+01:00",
- "commit": "ad5288a048881149669772841e92d90ffe67b84f",
+ "version": "bf9d4822dcb4",
+ "generated": "2026-11-27T22:20:13+00:00",
+ "commit": "fc84d6249b1aa76b2e0e7363a638ca25474bb82b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -14837,9 +14837,9 @@
    "h": "211fbca1e4ad52987f24abf0084d3f0b3547afbc18046a32bdb7212f49c7689f"
   },
   {
-   "p": "pride-city/assets/index-cd2Sc0Kj.js",
-   "s": 1325862,
-   "h": "ac1af7fbab8258ccd2bed0573399ce9e6604ad791994a26f00d647c733975215"
+   "p": "pride-city/assets/index-D0ik5WQt.js",
+   "s": 1334544,
+   "h": "ab14dab2dd403062cbb9b5844e28aaf4b9e85ad078e1d209a47c31efe4e6ffb4"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -15297,26 +15297,6 @@
    "h": "6a6d6077cfe76ca4cc9676f400cd333048538873a11920cfa17b122f81aef8aa"
   },
   {
-   "p": "pride-city/assets/world/leaves.png",
-   "s": 251797,
-   "h": "0adcf2914eced0aff1ac55969730cded3341359abc423a1d67dbc82c63250228"
-  },
-  {
-   "p": "pride-city/assets/world/palm_bark_col.jpg",
-   "s": 56839,
-   "h": "17e9f8bf5229ea7797f62c903c5a6990da810d1fbb210aefb0d50060f8563fe9"
-  },
-  {
-   "p": "pride-city/assets/world/palm_bark_nor.jpg",
-   "s": 40197,
-   "h": "97743b07e7871390d637ace4bc35b51f69ec99ab5c77a22162bf1118ac598976"
-  },
-  {
-   "p": "pride-city/assets/world/palm_frond.png",
-   "s": 248501,
-   "h": "d5b4217628e71379d27e5d800bf9754b34a27fc767a25873fd36c333e2a5c77b"
-  },
-  {
    "p": "pride-city/assets/world/paving_col.jpg",
    "s": 184721,
    "h": "861d3da7dce61548577f9f88b7411c6ba7c10d010b225045576174eae77c1ed9"
@@ -15335,16 +15315,6 @@
    "p": "pride-city/assets/world/sand_nor.jpg",
    "s": 73142,
    "h": "f08daf31536f70ef64719209318e7402a97844da9c812259227e0498362cc6ba"
-  },
-  {
-   "p": "pride-city/assets/world/tree_bark_col.jpg",
-   "s": 81440,
-   "h": "1c6f11d0de46dc798d030874fcbe69621d7923b80ce09c17c447b4ae96d26b37"
-  },
-  {
-   "p": "pride-city/assets/world/tree_bark_nor.jpg",
-   "s": 13364,
-   "h": "82ebb5c88a204f80366c16faca48d6144687f0fb52550b413fd2b757fe45624e"
   },
   {
    "p": "pride-city/assets/world/water_nor.jpg",
@@ -15599,7 +15569,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5862,
-   "h": "35d8f539037846406db75d7854b1b4ddf1e578c9fd139751905433860eceb9cc"
+   "h": "170099f32593c1e637876e8e38e1ecb38ca80099449df0454c8f9b7364133132"
   },
   {
    "p": "pride-city/logo.svg",
@@ -18374,7 +18344,7 @@
   {
    "p": "sync/catalog.json",
    "s": 241235,
-   "h": "65b1dbb5c97f287b38ca73c014dc91accc1a3bcc8881562d3f9154b84827ac0f"
+   "h": "5210e67d14979674da90d3a8512fb89a06b71fe3f12901cf3caff6edf301920c"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
