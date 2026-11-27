@@ -128,12 +128,13 @@ export class Hud {
   /** Aktuelle Spaßwaffe (null = ausblenden) */
   weapon(text: string | null) { const e = this.el.querySelector<HTMLElement>('.weapon')!; e.classList.toggle('on', !!text); if (text && e.textContent !== text) e.textContent = text; }
   private lastWanted = '';
-  /** Fahndungssterne oben in der Mitte, blinken, wenn dich gerade keine Streife sieht */
-  wanted(n: number, flash = false) {
-    const k = n + (flash ? 'f' : ''); if (k === this.lastWanted) return; this.lastWanted = k;
+  /** Fahndungssterne oben in der Mitte: hohl, wenn dich gerade keine Streife sieht (sie suchen, aber nicht dich direkt),
+      darunter die Täterbeschreibung */
+  wanted(n: number, hollow = false, desc = '') {
+    const k = n + (hollow ? 'h' : '') + desc; if (k === this.lastWanted) return; this.lastWanted = k;
     const e = this.el.querySelector<HTMLElement>('.wanted')!;
-    e.className = 'wanted' + (n ? ' on' : '') + (flash ? ' flash' : '');
-    e.innerHTML = '★'.repeat(n) + '<i>' + '★'.repeat(Math.max(0, 5 - n)) + '</i>';
+    e.className = 'wanted' + (n ? ' on' : '') + (hollow ? ' hollow' : '');
+    e.innerHTML = (hollow ? '☆' : '★').repeat(n) + '<i>' + '★'.repeat(Math.max(0, 5 - n)) + '</i>' + (desc ? `<small>${desc.replace(/[<>&]/g, '')}</small>` : '');
   }
   radarOn(on: boolean) { this.el.querySelector<HTMLElement>('.radar')!.style.display = on ? '' : 'none'; }
   show(on: boolean) { this.el.classList.toggle('hidden', !on); }

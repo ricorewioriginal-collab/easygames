@@ -308,6 +308,15 @@ export class Street {
     });
   }
 
+  /** Zeug*in: nächste sichtbare Person (keine Uniform), die gerade frei ist */
+  witness(p: Vector3, r: number) {
+    let best: StreetNpc | null = null, bd = r;
+    for (const n of this.people) {
+      if (!n.a.root.visible || n.talking || n.down || n.chase || n.mate || !(n.kind === 'walker' || n.kind === 'szene' || n.kind === 'chef' || n.kind === 'courier')) continue;
+      const d = Vector3.Distance(n.a.root.position, p); if (d < bd) { bd = d; best = n; }
+    }
+    return best;
+  }
   /** Nächste sichtbare Person in Reichweite */
   near(p: Vector3, r = 2.2) {
     let best: StreetNpc | null = null, bd = r;
