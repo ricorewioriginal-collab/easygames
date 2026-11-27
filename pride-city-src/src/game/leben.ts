@@ -5,7 +5,7 @@
 import type { SaveData } from '../engine/Save';
 import { hash } from './flirt';
 
-export interface Mem { met: number; last: number; mood: number; ch: number; chDay: number; near: number; done?: string }
+export interface Mem { met: number; last: number; mood: number; ch: number; chDay: number; near: number; done?: string; /** Name (für die Bekanntenliste) */ nm?: string }
 export interface Ending { label: string; reply: string; money?: number; rep?: number; social?: number; fun?: number }
 export interface Story { id: string; icon: string; title: string; parts: [string, string, string, string]; end: [Ending, Ending] }
 
@@ -125,6 +125,80 @@ export const STORIES: Story[] = [
       { label: '🏳️‍🌈 Nimm sie mit zur Parade', reply: 'Frau Kowalski auf der Parade, mit Sonnenhut und Fähnchen. Bester Tag des Jahres!', fun: 12, rep: 2 }] },
 ];
 
+/** Eigene Nebengeschichten der festen Figuren (Schlüssel 'npc:<id>'), ein Teil pro Tag nach dem Gespräch */
+export const FIG_STORIES: Record<string, Story> = {
+  mo: { id: 'mo', icon: '☕', title: 'Mos Rezeptheft', parts: [
+    'Weißt du, woher mein Hafer-Cappuccino kommt? Aus einem Heft meiner ersten Freundin. Wir hatten zusammen einen Kaffeewagen.',
+    'Sie ist vor zehn Jahren nach Lissabon gezogen. Das Heft hat sie mir dagelassen, mit einer Widmung: „Für die bessere Barista.“',
+    'Gestern kam eine Postkarte. Sie macht ein Café in Lissabon auf und fragt, ob ich eine Woche helfen komme.',
+    'Soll ich fahren? Das Café hier läuft nicht ohne mich … oder doch?'],
+    end: [{ label: '✈️ Fahr hin, ich helfe hier aus', reply: 'Du würdest das Café eine Woche schmeißen? Dann fahre ich! Und bringe dir Pastéis de Nata mit.', social: 10, rep: 3 },
+      { label: '📮 Schick ihr dein bestes Rezept', reply: 'Ein Rezept zurück ins Heft … das ist schön. Dann reisen wir eben auf Papier.', fun: 8, money: 20 }] },
+  jules: { id: 'jules', icon: '🏠', title: 'Jules’ Schlüsselbund', parts: [
+    'Siehst du den Schlüsselbund? Zwölf Schlüssel. Für jede Tür im Regenbogenhaus. Ich schließe jeden Abend als Letztes ab.',
+    'Mit siebzehn stand ich selbst vor dieser Tür. Mit einem Rucksack und nirgends zum Schlafen. Hilde hat aufgemacht.',
+    'Ich gebe nie Schlüssel ab. Aber ich bin müde. Ich hab seit zwei Jahren keinen Urlaub gemacht.',
+    'Die Jugendgruppe will mehr Verantwortung. Soll ich einen Schlüssel abgeben?'],
+    end: [{ label: '🔑 Gib einen Schlüssel ab', reply: 'Okay. Einer. Für die Küche. … Fühlt sich komisch an. Und gut. Ich glaube, ich fahre ans Meer.', social: 12, rep: 2 },
+      { label: '🫂 Mach einen Schlüsseldienst-Plan zu zweit', reply: 'Immer zu zweit abschließen. So bin ich nie allein damit. Danke, dass du mitdenkst.', social: 14 }] },
+  nova: { id: 'nova', icon: '🎧', title: 'Novas erstes Set', parts: [
+    'Mein erstes Set hab ich auf einer Geburtstagsparty gespielt. Zwei Lautsprecher, ein geliehener Laptop, zwölf Gäste.',
+    'Einer davon war ein Junge, der sich nicht getraut hat zu tanzen. Bis ich Kylie gespielt hab. Dann gab es kein Halten mehr.',
+    'Er hat mir letzte Woche geschrieben. Er ist jetzt Choreograf und will mit mir eine Show machen.',
+    'Was meinst du: große Bühne oder kleine Party wie damals?'],
+    end: [{ label: '🏟️ Große Bühne!', reply: 'Lichter, Nebel, Tänzer*innen … Ich hab Gänsehaut. Du stehst auf der Gästeliste!', fun: 12, rep: 3 },
+      { label: '🎈 Kleine Party wie damals', reply: 'Zwölf Gäste, zwei Boxen. Genau so. Und du bist Nummer dreizehn.', social: 12, fun: 6 }] },
+  rex: { id: 'rex', icon: '🥋', title: 'Rex trainiert', parts: [
+    'Ich hab früher geboxt. Nicht gut, aber laut. Mein Trainer hat gesagt: „Wer nur schlägt, lernt nie tanzen.“',
+    'Damals hab ich gelacht. Heute tanze ich jeden Abend. Ironie, oder?',
+    'Die Jungs aus dem Boxverein wollen, dass ich ihnen Tanzen beibringe. Für eine Hochzeit. Ich weiß nicht, ob die mich ernst nehmen.',
+    'Soll ich den Kurs machen?'],
+    end: [{ label: '💃 Mach den Kurs', reply: 'Zwölf Boxer im Tutu, das wird legendär. Du kommst zur Generalprobe.', fun: 14, rep: 2 },
+      { label: '🥊 Erst eine Runde Boxen, dann tanzen', reply: 'Erst Respekt, dann Rhythmus. Das verstehen die. Gute Idee.', social: 8, money: 25 }] },
+  bruno: { id: 'bruno', icon: '🥨', title: 'Brunos Nachtschicht', parts: [
+    'Weißt du, warum der Späti die ganze Nacht offen hat? Weil ich nachts nicht schlafen konnte, als mein Mann gestorben ist.',
+    'Also hab ich Licht angelassen. Und Leute kamen. Nachtschwärmer, Pflegekräfte, Teenies, die nicht nach Hause wollten.',
+    'Jetzt hat mich ein Kiez-Café gefragt, ob wir zusammen eine Nachtküche aufmachen. Warmes Essen statt nur Brezeln.',
+    'Ich bin sechzig. Soll ich das noch wagen?'],
+    end: [{ label: '🍲 Wag die Nachtküche', reply: 'Linsensuppe um drei Uhr nachts für alle, die sie brauchen. Mein Mann hätte gelacht und mitgekocht.', social: 12, rep: 4 },
+      { label: '🕯️ Bleib beim Späti, aber mit Suppe', reply: 'Ein Topf Suppe neben der Kasse. Klein, aber warm. Das kann ich.', fun: 6, money: 20 }] },
+  lena: { id: 'lena', icon: '🎨', title: 'Lenas Wand', parts: [
+    'Das Mural am Platz? Das ist meine Oma, als junge Frau. Sie hat sich in den 60ern in eine Nachbarin verliebt. Niemand durfte es wissen.',
+    'Ich hab ihre Briefe gefunden. Sie hat sie nie abgeschickt. Fünfzig Briefe.',
+    'Die Stadt will das Bild für eine Ausstellung. Mit den Briefen daneben.',
+    'Darf ich das zeigen? Oma lebt ja nicht mehr. Was meinst du?'],
+    end: [{ label: '💌 Zeig die Briefe', reply: 'Dann bekommt ihre Liebe doch noch Leser*innen. Fünfzig Briefe, endlich angekommen.', rep: 4, social: 8 },
+      { label: '🎨 Nur das Bild, die Briefe bleiben privat', reply: 'Ja. Das Bild erzählt genug. Die Briefe gehören ihr. Danke.', fun: 10 }] },
+  tariq: { id: 'tariq', icon: '🏃', title: 'Tariqs Lauf', parts: [
+    'Ich laufe jeden Morgen durch den Park. Seit der Therapie. Laufen hilft, wenn der Kopf zu laut ist.',
+    'Ich bin bi. Meine Familie weiß es. Meine Laufgruppe nicht. Die reden manchmal Mist, ohne es böse zu meinen.',
+    'Nächste Woche ist der Stadtlauf. Ich könnte im Regenbogen-Shirt laufen.',
+    'Mach ich es?'],
+    end: [{ label: '🌈 Lauf im Regenbogen-Shirt', reply: 'Zwei aus der Gruppe haben gefragt, wo es die Shirts gibt. Zwei! Ich lauf den Rest meines Lebens so.', rep: 3, fun: 10 },
+      { label: '🗣️ Erst mit der Gruppe reden', reply: 'Beim Kaffee danach erzählt. Einer hat nur gesagt: „Cool. Und jetzt Intervalle.“', social: 14 }] },
+  hilde: { id: 'hilde', icon: '📷', title: 'Hildes Fotoalbum', parts: [
+    'Ich hab beim ersten CSD 1979 fotografiert, Kindchen. Mit einer Kamera, die mir mein Vater zur Konfirmation geschenkt hat.',
+    'Die Filme lagen vierzig Jahre in einer Keksdose. Ich hab sie nie entwickeln lassen. Ich hatte Angst, was drauf ist. Oder wer fehlt.',
+    'Jules sagt, ein Labor im Hafen macht das umsonst, für das Stadtarchiv.',
+    'Soll ich die Filme entwickeln lassen?'],
+    end: [{ label: '🎞️ Entwickeln lassen', reply: 'Siebzig Bilder. Lachen, Plakate, meine Inge mit Sonnenbrille. Alle da. Ich hab geweint, aber gut.', social: 12, rep: 4 },
+      { label: '🍪 Gemeinsam die Dose öffnen', reply: 'Mit dir am Tisch traue ich mich. Wir machen das bei Kaffee und Kuchen, ja?', social: 14, fun: 4 }] },
+  sam: { id: 'sam', icon: '🪪', title: 'Sams neuer Ausweis', parts: [
+    'Heute ist mein neuer Ausweis gekommen. Richtiger Name, richtiger Eintrag. Ich hab ihn zwanzigmal angeschaut.',
+    'In meiner alten Stadt musste ich bei jeder Kontrolle erklären, warum das Foto nicht passt.',
+    'Meine Schwester will eine Party machen. Mit Torte und Namensschild. Mir ist das ein bisschen viel.',
+    'Party oder still feiern?'],
+    end: [{ label: '🎂 Feier die Party', reply: 'Mit Torte, auf der „Sam“ steht, in Riesenbuchstaben. Ich glaube, ich freue mich doch.', fun: 12, social: 8 },
+      { label: '🌅 Ein ruhiger Moment am Kai', reply: 'Sonnenuntergang, ein Eis, der Ausweis in der Tasche. Genau richtig.', fun: 8, rep: 2 }] },
+  kim: { id: 'kim', icon: '🌱', title: 'Kims Gemeinschaftsgarten', parts: [
+    'Ich bin aro. Für mich sind Freundschaften das Größte. Deshalb hab ich mit Freund*innen einen Garten angelegt.',
+    'Tomaten, Sonnenblumen und eine Bank, auf der man stundenlang reden kann.',
+    'Ein Bauträger will die Fläche. Wir könnten sie kaufen, aber dafür brauchen wir Hilfe aus dem ganzen Viertel.',
+    'Spendenaktion oder Unterschriften?'],
+    end: [{ label: '💰 Spendenaktion starten', reply: 'Hundert Leute haben gespendet, die Bank gehört jetzt allen. Setz dich mal drauf!', rep: 4, social: 8 },
+      { label: '✍️ Unterschriften sammeln', reply: 'Die Stadt hat den Garten unter Schutz gestellt. Weil so viele unterschrieben haben, auch du.', rep: 3, fun: 8 }] },
+};
+export const figKey = (id: string) => 'npc:' + id;
 const key = (k: string) => 'mem_' + hash(k).toString(36);
 /** Gedächtnis einer Person (neu angelegt, falls noch unbekannt) */
 export function memOf(s: SaveData, k: string): Mem {
@@ -133,15 +207,28 @@ export function memOf(s: SaveData, k: string): Mem {
   return { met: 0, last: 0, mood: 0, ch: 0, chDay: 0, near: 0 };
 }
 export function saveMem(s: SaveData, k: string, m: Mem) { s.flags[key(k)] = JSON.stringify(m); }
-export function storyOf(k: string) { return STORIES[hash('st' + k) % STORIES.length]; }
+export function storyOf(k: string) { return k.startsWith('npc:') && FIG_STORIES[k.slice(4)] ? FIG_STORIES[k.slice(4)] : STORIES[hash('st' + k) % STORIES.length]; }
 
 /** Begegnung merken: Stimmung −5 … +5 */
-export function remember(s: SaveData, k: string, ev: 'talk' | 'near' | 'greet') {
+export function remember(s: SaveData, k: string, ev: 'talk' | 'near' | 'greet', name?: string) {
   const m = memOf(s, k);
-  if (ev === 'talk') { if (m.last !== s.day) m.mood = Math.min(5, m.mood + 1); m.met++; m.last = s.day; }
+  if (ev === 'talk') { if (m.last !== s.day) m.mood = Math.min(5, m.mood + 1); m.met++; m.last = s.day; if (name) m.nm = name; addKnown(s, k); }
   if (ev === 'near') { m.near++; m.mood = Math.max(-5, m.mood - 2); }
   saveMem(s, k, m); return m;
 }
+
+/** Bekanntenliste im Handy: Schlüssel aller Leute, mit denen du geredet hast (die letzten 60) */
+const KNOWN = 60;
+function knownKeys(s: SaveData): string[] { try { const v = JSON.parse(String(s.flags.known || '[]')); return Array.isArray(v) ? v.filter((x) => typeof x === 'string') : []; } catch { return []; } }
+function addKnown(s: SaveData, k: string) { const l = knownKeys(s).filter((x) => x !== k); l.unshift(k); s.flags.known = JSON.stringify(l.slice(0, KNOWN)); }
+export interface Known { k: string; name: string; m: Mem; story: Story }
+/** Bekannte, zuletzt getroffene zuerst */
+export function known(s: SaveData): Known[] {
+  return knownKeys(s).map((k) => { const m = memOf(s, k); return { k, m, name: m.nm || 'Jemand von der Straße', story: storyOf(k) }; }).filter((x) => x.m.met > 0);
+}
+export const moodWord = (m: number) => (m >= 4 ? '🥰 mag dich sehr' : m >= 2 ? '😊 mag dich' : m >= 0 ? '🙂 freundlich' : m >= -2 ? '😒 genervt' : '😠 sauer auf dich');
+/** Was du von der Geschichte schon weißt (Teile, die erzählt wurden) */
+export const heard = (x: Known) => x.story.parts.slice(0, Math.min(4, x.m.ch));
 
 export interface Ctx { hour: number; rain: boolean; wanted: number; name: string }
 /** Begrüßung je nach Gedächtnis, Tageszeit, Wetter und deinem Ruf */
