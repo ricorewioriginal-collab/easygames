@@ -168,7 +168,8 @@ export class Combat {
       const first = h.n === 0 || this.now - h.t > 4;
       if (landHit(h, this.now, Math.max(1, w.hits - pw.hits))) { sfx('hit'); setTimeout(() => sfx('applause'), 200); this.knock(t.a, t.kind, t.name, OUCH[Math.floor(Math.random() * OUCH.length)], yaw, dx / d * w.push * 4 * pw.push, dz / d * w.push * 4 * pw.push); }
       else { this.push(t.a, dx / d, dz / d, w.push); toast(`${t.name}: „${AU[Math.floor(Math.random() * AU.length)]}“`); }
-      if (first) this.crime(t.cop ? 'police' : 'assault', p);
+      // wer der Polizei bei einer Verfolgung hilft (jagd.ts), begeht keine Straftat
+      if (first && !this.city.jagd?.isSuspect(t.a)) this.crime(t.cop ? 'police' : 'assault', p);
     };
   }
 
@@ -386,6 +387,7 @@ export class Combat {
     let seen = fl.seen && dis < 2;
     for (const c of [...this.cops, ...this.extra]) {
       const a = c.a, r = a.root;
+      if (!stars && c.n && c.n === this.city.jagd?.cop) continue;   // Streife jagt gerade jemand anderen (jagd.ts)
       if (!r.isEnabled() || (c.n && !r.visible && !stars)) { if (c.n) c.n.chase = false; continue; }
       if (c.extra) a.update(dt);
       if (this.bodies.get(a)) continue;
