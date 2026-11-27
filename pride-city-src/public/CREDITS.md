@@ -12,3 +12,22 @@ Alle eingebundenen Modelle sind kostenlos und frei nutzbar (CC0 / Public Domain)
 
 Lizenztext: `assets/LICENSE-KayKit.txt`. Die Modelle sind unverändert; Kleidung, Haut und Haare werden zur Laufzeit per Shader in Pride-Farben und Outfits umgefärbt (`src/game/Actor.ts`).
 Alles Übrige (Pride-Deko, Flaggen, Neon-Schilder, Bäume, Himmel, Club, Oberfläche, Musik- und Klang-Generator, Texte) ist für Pride City selbst gebaut.
+
+## Menschen (seit 27.11.2026)
+
+Die Figuren der Stadt, die Hauptfigur Rico und Tarek stammen von Sketchfab und stehen unter
+**Creative Commons Attribution 4.0 (CC BY 4.0)** – https://creativecommons.org/licenses/by/4.0/ (kommerzielle Nutzung erlaubt, Namensnennung Pflicht).
+
+| Modell | Urheber*in | Lizenz | Verwendet als |
+|---|---|---|---|
+| „Citizen NPC Pack 1 Character Lowpoly Mobile“ | 00amza (Sketchfab) | CC BY 4.0 | `assets/rb/pc_c01.glb` … `pc_c14.glb` (14 Menschen der Stadt), `pc_rico.glb` (Rico) |
+| „Gangster Rigged“ | PropShop (Sketchfab) | CC BY 4.0 | `assets/rb/pc_gangster.glb` |
+| „Street Gangster \| Realistic 3D Character Model“ | PropShop (Sketchfab) | CC BY 4.0 | `assets/rb/pc_streetg.glb` |
+| „Yakuza“ | Abrazafarolas (Sketchfab) | CC BY 4.0 | `assets/rb/pc_yakuza.glb` (Tarek) |
+
+Änderungen: Die Modelle wurden für Pride City mit dem Rocketbox-Skelett und Hautgewichten versehen, in Körper und Kopf geteilt,
+in Geometrie und Texturen verkleinert (`pride-city-src/scripts/people.mjs`). Rico (`pc_rico`) ist umgefärbt (schwarze Trainingsjacke
+mit weißen Streifen, schwarze Hose) und hat Kette, Ohrring und Septum-Ring bekommen. Ein zweites Modell „Yakuza“ von SpatialNeglect ist nicht enthalten.
+
+Animationen, Uniform-Figuren (Polizei, Feuerwehr, Sanitäterin, Köchin, Kurier), Kinder und die Sport-Körper unter Oberkörperfrei/Badesachen:
+Microsoft Rocketbox Avatar Library, MIT-Lizenz, siehe `assets/rb/LICENSE.md`.

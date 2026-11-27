@@ -1332,7 +1332,8 @@ export class Game {
   credits() {
     this.openMenu(`<div class="col"><div class="panel" style="max-height:70dvh;overflow:auto"><h3>Mitwirkende</h3>
       <p><b style="color:#fff">Pride City</b> – Relaunch von Gay Life! für easygames.</p>
-      <p>Menschen: <b style="color:#fff">Microsoft Rocketbox</b> – 115 Figuren mit Animationen, MIT-Lizenz (© 2020 Microsoft Corporation, github.com/microsoft/Microsoft-Rocketbox). Stadt und Wohnung: <b style="color:#fff">KayKit</b> von Kay Lousberg (City Builder Bits, Furniture Bits, Restaurant Bits) – CC0 1.0. In Pride-Farben umgefärbt.</p>
+      <p>Menschen (CC BY 4.0, creativecommons.org/licenses/by/4.0, von Sketchfab, für Pride City mit Skelett versehen, verkleinert und teils umgefärbt): <b style="color:#fff">„Citizen NPC Pack 1 Character Lowpoly Mobile“</b> von 00amza · <b style="color:#fff">„Gangster Rigged“</b> von PropShop · <b style="color:#fff">„Street Gangster | Realistic 3D Character Model“</b> von PropShop · <b style="color:#fff">„Yakuza“</b> von Abrazafarolas.</p>
+      <p>Animationen, Uniformen, Kinder und Sport-Körper: <b style="color:#fff">Microsoft Rocketbox</b> – MIT-Lizenz (© 2020 Microsoft Corporation, github.com/microsoft/Microsoft-Rocketbox). Stadt und Wohnung: <b style="color:#fff">KayKit</b> von Kay Lousberg (City Builder Bits, Furniture Bits, Restaurant Bits) – CC0 1.0. In Pride-Farben umgefärbt.</p>
       <p>3D: Babylon.js (Apache 2.0). Musik und Klänge werden live im Spiel erzeugt.</p>
       <p>Alle Figuren sind frei erfunden. Wer flirtet oder datet, ist erwachsen; Kinder gibt es nur als Familienmitglieder. Zustimmung zählt.</p><div class="slot"></div></div></div>`,
     [{ icon: '←', label: 'Zurück', fn: () => this.title() }], () => this.title());

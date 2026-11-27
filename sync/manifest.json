@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "c1f50538e293",
- "generated": "2026-11-27T18:49:42+01:00",
- "commit": "443662517a93765faf50e3a1fc00b281785960fe",
+ "version": "331851d98e3d",
+ "generated": "2026-11-27T19:29:01+01:00",
+ "commit": "35b591ae67c3bbbfa945fabc94df7ebcd3535c3b",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -14832,14 +14832,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
+   "p": "pride-city/assets/index-BtwmK59T.js",
+   "s": 1232403,
+   "h": "030891ae0f61be0450128a399bfa55dcb9d84f5b4431aa4949a011d0b5d72ec0"
+  },
+  {
    "p": "pride-city/assets/index-CUETCSYH.css",
    "s": 42994,
    "h": "e492106366fc71fe87cba0af3f28d42b7ef920c56d5de7cc28d93c89e2c2a67c"
-  },
-  {
-   "p": "pride-city/assets/index-D6PBhrbT.js",
-   "s": 1231509,
-   "h": "d83692bf73f8cd0d7223ed38c9dab26ce20f1f6e032e29f76a0e3d66c58f4412"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -14932,11 +14932,6 @@
    "h": "749c861b5fac14b7e584177930d089f70d8d86dc2e6f225ef926443fec8c8d61"
   },
   {
-   "p": "pride-city/assets/rb/Business_Male_01.glb",
-   "s": 1098644,
-   "h": "d4ecdb2d22140c2a708618fe73ed93b200fcef23d38c06ad74acd64c49915db3"
-  },
-  {
    "p": "pride-city/assets/rb/Chef_Female_01.glb",
    "s": 620608,
    "h": "3fa748705c262c2d65fae8d96d440a2f1f2a1c4152f03833b2aba85b5341e362"
@@ -14947,69 +14942,9 @@
    "h": "39ebf93122b31686225d5d55f348a8b77781e03a2a92e923f2c444be6fafeca6"
   },
   {
-   "p": "pride-city/assets/rb/Female_Adult_01.glb",
-   "s": 1303200,
-   "h": "eb599587660dee468588dbb48507b330d448de5ad8aa38aaaa376665ae9c0889"
-  },
-  {
-   "p": "pride-city/assets/rb/Female_Adult_02.glb",
-   "s": 1153624,
-   "h": "7d403e79407af13ee030b18d9e64e9eb52fefbfa09dc6080496261207b8cffa3"
-  },
-  {
-   "p": "pride-city/assets/rb/Female_Adult_03.glb",
-   "s": 1366848,
-   "h": "5303c668df9006eebd3721244ebef268bec1ba6dd0911874e8ad993bd9c5d454"
-  },
-  {
-   "p": "pride-city/assets/rb/Female_Adult_04.glb",
-   "s": 1388548,
-   "h": "2acdeb01b524bf20abfa3672c4efd05a195ad8c09ad1f147fd19ca1b68a2dc06"
-  },
-  {
-   "p": "pride-city/assets/rb/Female_Adult_05.glb",
-   "s": 1371328,
-   "h": "d3f24a5fc9ec5d601e9507095d2c1c9edc7b5663acec26dd3829dcf4444bae59"
-  },
-  {
-   "p": "pride-city/assets/rb/Female_Adult_06.glb",
-   "s": 851732,
-   "h": "7e94dfeeb003f91a824e5ba827bc6f9b59d432a2541d2cd1b34dc58c28f5430b"
-  },
-  {
-   "p": "pride-city/assets/rb/Female_Adult_07.glb",
-   "s": 1251208,
-   "h": "c1af8a404367b1f8eddbcad227a74ab2ecb2caf5bc925b9575ed6147b9c0bbb6"
-  },
-  {
-   "p": "pride-city/assets/rb/Female_Adult_08.glb",
-   "s": 1218372,
-   "h": "7f48a4ba35fb28d17530c5f7c86566c39b0a7647897579e05c926d09b5e2f772"
-  },
-  {
-   "p": "pride-city/assets/rb/Female_Adult_09.glb",
-   "s": 1305440,
-   "h": "c2a006160a388ec70eb28eb3832ffc0afd5f6457cfbd579895d3bab2666fe661"
-  },
-  {
-   "p": "pride-city/assets/rb/Female_Adult_10.glb",
-   "s": 646484,
-   "h": "56ce512b3d5ca652545c7a817aa064f78fc9293b0139f7f466eab0e6ab4ec515"
-  },
-  {
    "p": "pride-city/assets/rb/Female_Child_01.glb",
    "s": 710172,
    "h": "9162e9b1871ea591a52a37d70ff8cf740495b4edd2010539c1103c3866565a2a"
-  },
-  {
-   "p": "pride-city/assets/rb/Female_Party_01.glb",
-   "s": 1542480,
-   "h": "1eea2e49a562deff475fc12c9abe853fe69a8654a595c360f52680f10bcf1aba"
-  },
-  {
-   "p": "pride-city/assets/rb/Female_Party_02.glb",
-   "s": 1462536,
-   "h": "2b78afc8c61e804626d150e3fc8603778ac352e7330717b72090b56cb2baad53"
   },
   {
    "p": "pride-city/assets/rb/Fire_Female_01.glb",
@@ -15020,56 +14955,6 @@
    "p": "pride-city/assets/rb/Fire_Male_01.glb",
    "s": 1080184,
    "h": "6e82f41d4ed3a9287f9505d36c636da3c7adab40f894c4a00b96a470ff822735"
-  },
-  {
-   "p": "pride-city/assets/rb/Male_Adult_01.glb",
-   "s": 1140952,
-   "h": "66e5cee4d220afc6f2ced128a1012fe1a2ffa1a3e9a295c3a1adcbb0dbc6c352"
-  },
-  {
-   "p": "pride-city/assets/rb/Male_Adult_02.glb",
-   "s": 1137132,
-   "h": "62e52a7ca68e4fe8c0748a65d74bf6003d641757db6d1e6a7eedf1cb2d969a03"
-  },
-  {
-   "p": "pride-city/assets/rb/Male_Adult_03.glb",
-   "s": 1104128,
-   "h": "dcfd906bed145d2431e3b0932da6954d676cb8b8cc9c1d4eb4c3869b8dec3c48"
-  },
-  {
-   "p": "pride-city/assets/rb/Male_Adult_04.glb",
-   "s": 1184392,
-   "h": "f130d3f11fd3d60435d6f33cdc1158aa9ccd2df54f486bff3c05ef17627577c2"
-  },
-  {
-   "p": "pride-city/assets/rb/Male_Adult_05.glb",
-   "s": 1225680,
-   "h": "df340bb8fd863bed65a5866362b8ab3dc7e91bba7579222f25eac7c10831661e"
-  },
-  {
-   "p": "pride-city/assets/rb/Male_Adult_06.glb",
-   "s": 1275884,
-   "h": "7eee0cdc1121e0abcceae159a02579d17e56172ed02e6c60411211545781c120"
-  },
-  {
-   "p": "pride-city/assets/rb/Male_Adult_07.glb",
-   "s": 972200,
-   "h": "130196c80673f3386f6400131b0ce88f84b3a4c1abd893198329a10e28766cc6"
-  },
-  {
-   "p": "pride-city/assets/rb/Male_Adult_08.glb",
-   "s": 1083576,
-   "h": "1d3311cd637d103d3ea8b5c61db06c750ff169d03187999e6574b44250d687de"
-  },
-  {
-   "p": "pride-city/assets/rb/Male_Adult_09.glb",
-   "s": 910560,
-   "h": "3ad8319718e2ae802591c022f1ce052d2ed1c214f3d516ca72b8293f1c749c83"
-  },
-  {
-   "p": "pride-city/assets/rb/Male_Adult_10.glb",
-   "s": 1017188,
-   "h": "e258cd646fa9bdcfe4fd33d1d22198a7ba276be90064d96ff816449ede8152c4"
   },
   {
    "p": "pride-city/assets/rb/Male_Child_01.glb",
@@ -15090,11 +14975,6 @@
    "p": "pride-city/assets/rb/Police_Male_01.glb",
    "s": 1140052,
    "h": "69cdcc2aff6bf4399e599c035f1f3b9e0d5a514793fa9ca10c289eb4d577fb23"
-  },
-  {
-   "p": "pride-city/assets/rb/Security_Male_01.glb",
-   "s": 991256,
-   "h": "f28601ba6cee7548e18bbbb21c8811a60292783c097d6e1614f6c19b10028eec"
   },
   {
    "p": "pride-city/assets/rb/Sports_Female_01.glb",
@@ -15245,6 +15125,96 @@
    "p": "pride-city/assets/rb/anim/m_wave.glb",
    "s": 70588,
    "h": "bb54b03536a540d6ae76784cffb63967936dc4caa18917a339908ba5fa5b828c"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_c01.glb",
+   "s": 381748,
+   "h": "20d7696ff003cea21c3b5ebb12a5f7a17a63fd30f7d369ac5a5fb2364adfb454"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_c02.glb",
+   "s": 350896,
+   "h": "cde960dcd9a7f19eec667fdee25fb4031e69e4c0128a35b680d002da217bb2cc"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_c03.glb",
+   "s": 312012,
+   "h": "384e7f3a5d92f4edf7bfe4fa32f55f90adaa680d9089763c52616a6dc0f58c86"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_c04.glb",
+   "s": 350176,
+   "h": "9ffad810df0aa9c192ad094bad58a28ba75ce2c36b50b595a2e202c748ccb2c9"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_c05.glb",
+   "s": 394400,
+   "h": "a343b370fa08594e1dd4e4ccc6d46ac7b10591c96ac48130ade0795130f9a53a"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_c06.glb",
+   "s": 351788,
+   "h": "6a18a6cacdc62e491cd81fdb639e265c83b373f30011cd6382445fa0a7564c05"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_c07.glb",
+   "s": 437328,
+   "h": "d5980bbc9777a06cd29431f65e26a5a3189d3451f153063892ca027e051ece24"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_c08.glb",
+   "s": 368264,
+   "h": "23770aaddcf1d187cd312bed7c5eab706b536063c23e0bec8e2228bfa0c236c7"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_c09.glb",
+   "s": 317212,
+   "h": "0d535cd3a847b866aca589a2a633bdd7107db556faa21d165cecb33bf82943eb"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_c10.glb",
+   "s": 337452,
+   "h": "d08c4323e1c38034d494b0b54af98a43ddd6f21bb103856bccd49325ea9d56ae"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_c11.glb",
+   "s": 358036,
+   "h": "ca7dbd8010c216131e3799f0c1b481ba3baf96e010859010ea3d782695b71549"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_c12.glb",
+   "s": 391676,
+   "h": "3d1fb6c117d33076e007e78e4a792d00df8a995a1529b00b477632499119502c"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_c13.glb",
+   "s": 347784,
+   "h": "64134927feff2572279cb7081fa89a20ecfa177723351bc999f5adcd9ffded39"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_c14.glb",
+   "s": 355644,
+   "h": "b844a1c0a822bea672a592ee315283bce2c8546175d56eda2292e768496fdf98"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_gangster.glb",
+   "s": 758368,
+   "h": "ea456320cf9db6df84fabea292dda6b5b82c3684292df543186172312b3a06a9"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_rico.glb",
+   "s": 463148,
+   "h": "5e9a8e5b4b77a892ddc0f94be4d8f803a2412e384b2e01253dbb0c37ed149e06"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_streetg.glb",
+   "s": 777764,
+   "h": "695b9d23b947fb9636cb2d74362e883e48ea7e5b5924e3777ae22ec98d281ec0"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_yakuza.glb",
+   "s": 620120,
+   "h": "6846aa6f9b494f26b67ae4dc24d999f06ba2433ee1cabb2144ef025c6423bac0"
   },
   {
    "p": "pride-city/assets/textureProcessor.fragment-BvfaKu7U.js",
@@ -15504,7 +15474,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5862,
-   "h": "5a037ea3f57a8efb98203f05245bbbe0784ae355d5b2ad7cd686fe968c107199"
+   "h": "e8820aa629a14343e1e54f50dfd35019de01d6cab1c68cbe3af47dcfb7639351"
   },
   {
    "p": "pride-city/logo.svg",
@@ -18279,7 +18249,7 @@
   {
    "p": "sync/catalog.json",
    "s": 241235,
-   "h": "50f6615fffac3f45531442e070738b81ae5c6b038bb8aa90b573f8e798d3c8f7"
+   "h": "90530b9610ed5e1e018674cc2a8af6cb59c12f60fe48c1f5ea4b8812f0e1836e"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

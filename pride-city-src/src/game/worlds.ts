@@ -170,7 +170,7 @@ export const WORLDS: WorldDef[] = [
       { name: 'Javi', rb: 'Male_Adult_05', x: -8, z: 1.2, yaw: 0, anim: 'talk', color: '#5ce1ff', lines: ['Ich mache die besten Mojitos im Centro. Sagt meine Mutter, und die trinkt nicht mal.', 'Mittags Düne, abends Bühne. So geht Insel.'] },
       { name: 'Bärbel und ihr Mann', rb: 'Female_Adult_06', x: 10, z: 10, anim: 'cheer', color: '#ffd23b', lines: ['Wir kommen seit 1998 jedes Jahr her. Früher wegen der Sonne, heute wegen der Show.', 'Die jungen Leute sind so nett. Einer hat mir Glitzer geschenkt.'] },
       { name: 'Milo', rb: 'Male_Adult_02', x: -5, z: -18, yaw: Math.PI, anim: 'dance1', color: '#b56bff', lines: ['Erste Pride meines Lebens. Ich wusste nicht, dass man so viel grinsen kann.', 'In den Dünen verläuft man sich. Manche mit Absicht.'] },
-      { name: 'Rico', rb: 'Sports_Male_01', x: 5, z: -18.2, yaw: Math.PI, anim: 'dance2', color: '#ff3fb0', lines: ['Ich tanze seit gestern Mittag. Meine Füße haben gekündigt.', 'Der Flitzer ist das beste Strandfahrzeug aller Zeiten.'] },
+      { name: 'Remo', rb: 'Sports_Male_01', x: 5, z: -18.2, yaw: Math.PI, anim: 'dance2', color: '#ff3fb0', lines: ['Ich tanze seit gestern Mittag. Meine Füße haben gekündigt.', 'Der Flitzer ist das beste Strandfahrzeug aller Zeiten.'] },
       { name: 'Dana', rb: 'Sports_Female_01', x: 7, z: 33, anim: 'dance3', color: '#3ee69a', lines: ['Sonnencreme, Wasser, Glitzer. In der Reihenfolge.', 'Heute Abend singen alle mit, auch die, die den Text nicht können.'] },
     ],
     build(k) {

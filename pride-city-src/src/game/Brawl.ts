@@ -22,7 +22,7 @@ interface Runner { o: Node3 | Actor; path: Array<[number, number]>; i: number; s
 
 /** Straßennetz: Innenstadt x −60…60, Hochstadt x 90…210, verbunden über die Regenbogenbrücke (z 0) */
 const GX = [-60, -30, 0, 30, 60, 90, 120, 150, 180, 210], GZ = [-60, -30, 0, 30, 60];
-const FOE_LOOKS = ['Security_Male_01', 'Male_Adult_02', 'Male_Adult_07', 'Male_Adult_09', 'Male_Adult_03', 'Male_Adult_10'];
+const FOE_LOOKS = ['pc_gangster', 'Male_Adult_02', 'pc_streetg', 'Male_Adult_09', 'Security_Male_01', 'Male_Adult_10'];
 const TAUNT = ['Verschwinde hier!', 'Euch will hier keiner!', 'Geh doch zurück in deinen Glitzerclub!', 'Hier gilt Ordnung!', 'Nimm die Fahne runter!', 'Das ist unsere Straße!'];
 const BACK = ['Nicht mit uns.', 'Wir bleiben.', 'Ihr seid weniger als ihr denkt.', 'Liebe ist keine Unordnung.'];
 /** Crew (Akt V) in der Schlägerei: läuft zu einem Gegner, schubst, haut beim zweiten Mal um */

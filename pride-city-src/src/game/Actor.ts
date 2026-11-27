@@ -1,11 +1,11 @@
-/* Animierte Figur: echte Menschen aus Microsoft Rocketbox (MIT) mit geteilten Animationen (Laufen, Rennen, Tanzen,
+/* Animierte Figur: realistische Menschen (avatars.ts, Rocketbox-Skelett) mit geteilten Rocketbox-Animationen (MIT) (Laufen, Rennen, Tanzen,
    Jubeln, Winken, Sitzen, Reden …), weiche Überblendung zwischen Animationen. Läuft in jeder Babylon-Szene. */
 import { applyOutfit, skinOf } from './outfit';
 import { applyStyle } from './queer';
 import { bareBody, bareId, BARE_OUTFITS, type Bare } from './koerper';
 import { AnimationGroup, Node3, Vector3, type Scene, type TransformNode, type AbstractMesh, type Mesh } from '../engine/bjs';
 import { container, skinned } from '../engine/Assets';
-import { avatarFor, type Avatar } from './avatars';
+import { avatarFor, avatar, EDITOR_AVATARS, type Avatar } from './avatars';
 import { playerDrag } from './dragLook';
 import { lodFor, LOD_DIST, HIDE_DIST, type Lod } from './lod';
 import { wearGear } from './gear';
@@ -40,7 +40,9 @@ export function playerLook(s: { body: string; palette: string; skin: number; pro
   if (!OUTFITS.some((o) => o.id === outfit) || (OUTFITS.find((o) => o.id === outfit)!.adult && !s.settings.adult)) outfit = 'clothed';
   const hair = typeof s.flags.hair === 'number' && (s.flags.hair as number) >= 0 ? s.flags.hair as number : undefined;
   // alte Spielstände (Körper „Hero“): nur mit „sie“ eine Frau, sonst ein Mann – nie ungefragt das andere Geschlecht
-  const av = avatarFor({ body: s.body, palette: s.palette, skin: s.skin, hair, top: s.pronouns === 'she' });
+  let av = avatarFor({ body: s.body, palette: s.palette, skin: s.skin, hair, top: s.pronouns === 'she' });
+  // Hauptfigur ist Rico oder eine der Frauen: frühere Figuren werden umgestellt (Frau bleibt Frau, sonst Rico)
+  if (!av.editor) av = av.g === 'f' ? EDITOR_AVATARS.filter((a) => a.g === 'f')[[...s.body].reduce((h, c) => h + c.charCodeAt(0), 0) % EDITOR_AVATARS.filter((a) => a.g === 'f').length] : avatar('pc_rico')!;
   return { body: av.id, rb: av.id, palette: s.palette, skin: s.skin, hair, outfit, top: s.pronouns !== 'he', hot: s.settings.adult, style: playerDrag(s.flags), fig: figOf(s as Parameters<typeof figOf>[0]) };
 }
 
@@ -68,7 +70,7 @@ function clip(scene: Scene, g: 'm' | 'f', name: string) {
 }
 /** Vorladen (Ladebildschirm): alle Animationen beider Geschlechter und die genannten Figuren */
 export function preloadPeople(scene: Scene, avatars: string[] = []) {
-  return Promise.all([...(['m', 'f'] as const).flatMap((g) => CLIPS.map((c) => clip(scene, g, c))), ...avatars.map((a) => container(scene, 'rb/' + a + '.glb'))]);
+  return Promise.all([...(['m', 'f'] as const).flatMap((g) => CLIPS.map((c) => clip(scene, g, c))), ...avatars.map((a) => container(scene, 'rb/' + (avatar(a)?.file || a) + '.glb'))]);
 }
 
 /** alle Figuren je Szene (weit entfernte oder unsichtbare Figuren werden nicht animiert) */
@@ -107,14 +109,14 @@ export class Actor {
   /** Laden läuft parallel, das Aufbauen (Skelett, Meshes, 14 Animationen kopieren) aber der Reihe nach und verteilt
       auf mehrere Bilder: vorher entstanden beim Annähern an eine Insel bis zu zehn Figuren im selben Bild (Hänger). */
   static async create(scene: Scene, look: Look): Promise<Actor> {
-    await Promise.all([container(scene, 'rb/' + avatarFor(look).id + '.glb'), preloadPeople(scene)]);
+    await Promise.all([container(scene, 'rb/' + avatarFor(look).file + '.glb'), preloadPeople(scene)]);
     return turn(() => Actor.build(scene, look));
   }
   private static async build(scene: Scene, look: Look): Promise<Actor> {
     const a = new Actor(scene, look);
     const av = (a.avatar = avatarFor(look));
     a.look.body = av.id;
-    const [{ root, groups }] = await Promise.all([skinned(scene, 'rb/' + av.id + '.glb'), preloadPeople(scene)]);
+    const [{ root, groups }] = await Promise.all([skinned(scene, 'rb/' + av.file + '.glb'), preloadPeople(scene)]);
     groups.forEach((g) => g.dispose());
     a.model = root; root.parent = a.root;
     root.getChildMeshes().forEach((m: AbstractMesh) => { m.receiveShadows = true; (m as AbstractMesh & { _pcCast?: boolean })._pcCast = true; });
