@@ -1498,6 +1498,11 @@ export class Game {
         { icon: '👑', label: s.flags.playAs === 'luma' ? 'Abschminken – wieder du selbst' : 'Als Lady Luma spielen', sub: 'Leon in Drag: Glitzer, Perücke, Lichtumhang', disabled: !(s.flags.lichtEnd || lichtPart(s) >= 5), fn: () => { close(); this.playAs(s.flags.playAs === 'luma' ? '' : 'luma'); } },
         { icon: '🍸', label: 'Drink an der Bar', sub: '5 € · +8 Spaß · +6 Kontakte', fn: buy(5, 'Velvet schiebt dir das Glas rüber. 🍸', eat({ fun: 8, social: 6 })) },
         { icon: '📖', label: 'Den Roman lesen', sub: '„Ich bin das Licht“ von RicoReWi', fn: () => { close(); this.book(); } }] },
+      tanke: { t: 'Regenbogen-Tanke', d: 'Zwei Zapfsäulen, ein Regenbogendach und Kaffee rund um die Uhr. Fahr deinen eigenen Wagen unters Dach, dann tankt er von selbst.', items: [
+        ...(myCar(s) && !myCar(s)!.fly ? [{ icon: '⛽', label: tankOf(s) >= 100 ? 'Tank ist voll' : 'Volltanken', sub: `${TANK.price(s)} € · Tank jetzt ${tankOf(s)} % · auch einfach unters Dach fahren`, disabled: tankOf(s) >= 100, fn: buy(TANK.price(s), '⛽ Vollgetankt!', () => { s.flags.tank = 100; }) }] : []),
+        { icon: '☕', label: 'Kaffee to go', sub: '2 € · +10 Energie · ☕ 2 Std. hellwach', fn: buy(2, 'Heiß und stark. ☕ Hellwach für 2 Stunden.', () => { eat({ energy: 10 })(); giveBuff(s, 'kaffee'); }) },
+        { icon: '🌭', label: 'Tofu-Wurst im Brötchen', sub: '3 € · +25 Hunger', fn: buy(3, 'Mit Röstzwiebeln. 🌭', eat({ hunger: 25 }, 'eat')) },
+        { icon: '🧽', label: 'Waschanlage', sub: '5 € · Regenbogenschaum · +8 Spaß', fn: buy(5, 'Schaum in allen Farben, du singst laut mit. 🧽🌈', eat({ fun: 8 })) }] },
       garage: (() => {
         const mine = myCar(s), tl = tuneLevel(s), hue = s.flags.carHue === undefined ? -1 : Number(s.flags.carHue), pi = Math.max(0, PAINTS.findIndex((q) => q[2] === hue)), np = PAINTS[(pi + 1) % PAINTS.length];
         const done = (why: string | null, ok: string, after?: () => void) => { if (why) { sfx('miss'); toast(why); return; } sfx('win'); toast(ok); after?.(); this.save.write(); this.city.refreshHud(); close(); this.placeMenu('garage'); };
