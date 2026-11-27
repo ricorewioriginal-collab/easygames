@@ -6,6 +6,7 @@ import type { GameScene } from '../engine/Engine';
 import { Vector3, HemisphericLight, DirectionalLight, Mesh, Node3, type FreeCamera, type Scene, type PBRMaterial, col } from '../engine/bjs';
 import { ground, box, cyl, sphere, torus, planeZ, pbr, glow, canvasTex } from '../engine/geo';
 import { instance } from '../engine/Assets';
+import { Townhouses, facadeTint } from './townhouse';
 import { PLACE_THEMES, HOUSE_THEMES, houseTheme, type Theme } from './interiors';
 import { Actor, playerLook, streetLook } from './Actor';
 import type { Game } from './Game';
@@ -38,6 +39,8 @@ export class WorldScene implements GameScene {
   scene: Scene;
   camera: FreeCamera;
   bloom = .5;
+  /** Fassaden und Schaufenster der Häuser, leuchten nachts wie in der Stadt */
+  private nightM: PBRMaterial[] = [];
   private player!: Actor;
   private folk: Folk[] = [];
   private solids: Array<{ x: number; z: number; r: number }> = [];
@@ -214,11 +217,11 @@ export class WorldScene implements GameScene {
       jobs.push(put(n, x, .1, z, r)); kit.solid(x, z, n === 'bench' || n === 'dumpster' ? .9 : .4);
     }
     // Häuser: Pflaster darunter, Fassade in der Farbe der Welt
-    const houses: Array<{ o: Awaited<ReturnType<typeof instance>>; i: number }> = [];
+    const town = new Townhouses(W, { collide: false, night: this.nightM });
     SLOTS.forEach(([x, z, rot], i) => {
       jobs.push(put('base', x, 0, z, 0, true));
-      jobs.push(put('building_' + 'ABCDEFGH'[(i * 5 + d.id.length) % 8], x, .1, z, rot).then((o) => { houses.push({ o, i }); }));
-      this.rects.push({ x, z, hx: 4.2, hz: 4.2 });
+      town.add(x, z, rot, { floors: 2 + ((i * 7 + d.id.length) % 3), tint: facadeTint(d.town.tint[i % d.town.tint.length]) });
+      this.rects.push({ x, z, hx: 4.3, hz: 4.3 });
     });
     // Autos auf der Ringstraße (zwei Richtungen), dazu geparkte
     const car = async (kind: string) => {
@@ -229,11 +232,7 @@ export class WorldScene implements GameScene {
     ['car_taxi', 'car_sedan', 'car_hatchback', 'car_stationwagon'].slice(0, this.g.engine.mobile ? 3 : 4).forEach((kind, i) => jobs.push(car(kind).then((o) => { this.cars.push({ o, path: LANES[i % 2], seg: i % 4, u: .2 + i * .15, v: 6 + (i % 3) }); })));
     (d.town.parked || []).forEach(([x, z, yaw], i) => jobs.push(car(['car_sedan', 'car_hatchback', 'car_stationwagon'][i % 3]).then((o) => { o.position.set(x, .1, z); o.rotation.y = yaw; this.parked[i] = o; this.solids.push({ x, z, r: 1.7 }); })));
     await Promise.all(jobs);
-    // Fassadenfarbe je Haus (Farbe je Instanz, die Bauteile bleiben geteilt)
-    const C4 = sc.clearColor.constructor as new (r: number, g: number, b: number, a: number) => never;
-    const srcs = new Set<Mesh>(), mine = new Map<unknown, number[]>();
-    for (const { o, i } of houses) for (const m of o.getChildMeshes()) { const sm = (m as unknown as { sourceMesh?: Mesh }).sourceMesh; if (sm) { srcs.add(sm); mine.set(m, d.town.tint[i % d.town.tint.length]); } }
-    for (const sm of srcs) { sm.registerInstancedBuffer('color', 4); sm.instancedBuffers.color = new C4(1, 1, 1, 1); for (const im of sm.instances) { const t = mine.get(im) || [1, 1, 1]; im.instancedBuffers.color = new C4(t[0], t[1], t[2], 1); } }
+    town.build(sc);
     // Türen: Läden der Welt mit Leuchtschrift, die übrigen Häuser wie in der Stadt
     const adult = !!this.g.save.data.settings.adult, dark = kit.M(0x0a0618, .6);
     SLOTS.forEach(([x, z, rot], i) => {
@@ -242,8 +241,8 @@ export class WorldScene implements GameScene {
       if (shop) {
         const th = PLACE_THEMES[shop[2]] || HOUSE_THEMES.find((t) => t.id === shop[2]);
         if (th) { theme = { ...th, title: nice(shop[0]) }; place = PLACE_THEMES[shop[2]] ? shop[2] : ''; }
-        kit.box(5.6, 1.25, .1, dark, x + fx * 4.12, 5.6, z + fz * 4.12, rot); kit.sign(shop[0], shop[1], x + fx * 4.2, 5.6, z + fz * 4.2, rot, 5.2);
-        for (const sy of [-.68, .68]) kit.box(5.7, .07, .12, kit.G(parseInt(shop[1].slice(1), 16), 1.3), x + fx * 4.16, 5.6 + sy, z + fz * 4.16, rot);
+        kit.box(5.6, 1.25, .1, dark, x + fx * 4.5, 5.6, z + fz * 4.5, rot); kit.sign(shop[0], shop[1], x + fx * 4.58, 5.6, z + fz * 4.58, rot, 5.2);
+        for (const sy of [-.68, .68]) kit.box(5.7, .07, .12, kit.G(parseInt(shop[1].slice(1), 16), 1.3), x + fx * 4.54, 5.6 + sy, z + fz * 4.54, rot);
       }
       this.doors.push({ x: x + fx * 5, z: z + fz * 5, yaw: rot, label: `🚪 ${theme.icon} ${theme.title}`, theme, place });
     });
@@ -289,7 +288,10 @@ export class WorldScene implements GameScene {
   /** Welt verlassen: laufenden Auftrag beenden */
   quit() { if (this.job) { this.job = null; this.g.hud.gig(null); } }
   /** Spiegelungen wie in der Stadt (Lack, Fenster) */
-  private light() { const c = this.g.city.scene; this.scene.environmentTexture = c.environmentTexture; this.scene.environmentIntensity = c.environmentIntensity * .5 * (this.def.dim ?? 1); }
+  private light() {
+    const c = this.g.city.scene, n = this.g.city.world.night; this.scene.environmentTexture = c.environmentTexture; this.scene.environmentIntensity = c.environmentIntensity * .5 * (this.def.dim ?? 1);
+    for (const m of this.nightM) m.emissiveColor.set(.04 + n * 1.1, .04 + n * 1.05, .04 + n);
+  }
   /** Anzeige oben: Werte aus der Stadt, Ziel aus dieser Welt */
   private hud() {
     const g = this.g, d = this.def, st = this.stage, n = this.folk.length - 1;

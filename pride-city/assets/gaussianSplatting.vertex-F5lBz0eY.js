@@ -1,4 +1,4 @@
-import{b5 as e,bD as n,bE as r,bF as a,bG as f,bH as l,bI as d,bt as s,bJ as S,bK as P,bL as _,bM as m,bN as E}from"./babylon-CEi31Ju4.js";const o="gaussianSplattingVertexShader",t=`#include<__decl__gaussianSplattingVertex>
+import{b6 as e,bE as t,bF as r,bG as a,bH as f,bI as l,bJ as d,bu as s,bK as S,bL as P,bM as _,bN as m,bO as E}from"./babylon-BhuB3rBR.js";const o="gaussianSplattingVertexShader",n=`#include<__decl__gaussianSplattingVertex>
 #ifdef LOGARITHMICDEPTH
 #extension GL_EXT_frag_depth : enable
 #endif
@@ -163,4 +163,4 @@ vGeometryPreviousPosition=previousViewProjection*previousWorld*vec4(geometryPlan
 #include<logDepthVertex>
 #define CUSTOM_VERTEX_MAIN_END
 }
-`;e.ShadersStore[o]||(e.ShadersStore[o]=t);const c=[n,r,a,f,l,d,s,S,P,_,m,E];for(const i of c)e.IncludesShadersStore[i.name]||(e.IncludesShadersStore[i.name]=i.shader);const v={name:o,shader:t};export{v as gaussianSplattingVertexShader};
+`;e.ShadersStore[o]||(e.ShadersStore[o]=n);const c=[t,r,a,f,l,d,s,S,P,_,m,E];for(const i of c)e.IncludesShadersStore[i.name]||(e.IncludesShadersStore[i.name]=i.shader);const v={name:o,shader:n};export{v as gaussianSplattingVertexShader};

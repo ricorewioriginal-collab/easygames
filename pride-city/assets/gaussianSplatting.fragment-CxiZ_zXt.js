@@ -1,4 +1,4 @@
-import{b5 as e,b6 as o,b7 as r,b8 as a,b9 as f,ba as d,bb as S,bc as P,bd as l,be as s,bf as m,bg as g,bh as E}from"./babylon-CEi31Ju4.js";const n="gaussianSplattingPixelShader",t=`#include<clipPlaneFragmentDeclaration>
+import{b6 as e,b7 as o,b8 as r,b9 as a,ba as f,bb as d,bc as S,bd as P,be as l,bf as s,bg as m,bh as g,bi as E}from"./babylon-BhuB3rBR.js";const n="gaussianSplattingPixelShader",t=`#include<clipPlaneFragmentDeclaration>
 #include<logDepthDeclaration>
 #include<fogFragmentDeclaration>
 #define PREPASS_CUSTOM_VARYINGS
