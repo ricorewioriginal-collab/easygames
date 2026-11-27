@@ -16,10 +16,14 @@ import { carDef, CAR_DEFS, type CarDef } from './vehicles';
 import type { World, Car } from './World';
 import { sfx } from '../engine/Audio';
 import { toast } from '../ui/ui';
+import { phaseAt } from './leben';
+import { walkable } from './World';
 import type { PBRMaterial, Scene } from '../engine/bjs';
 
 export type StreetKind = 'walker' | 'police' | 'fire' | 'worker' | 'curb' | 'medic' | 'security' | 'chef' | 'courier' | 'szene';
-export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean; down?: boolean; chase?: boolean; away?: boolean; /** läuft Hand in Hand neben dieser Person */ mate?: StreetNpc; /** feste Blickrichtung */ yaw?: number; /** springt gerade vor einem Auto zur Seite */ dodge?: { vx: number; vz: number; t: number } }
+export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean; down?: boolean; chase?: boolean; away?: boolean; /** läuft Hand in Hand neben dieser Person */ mate?: StreetNpc; /** feste Blickrichtung */ yaw?: number; /** springt gerade vor einem Auto zur Seite */ dodge?: { vx: number; vz: number; t: number };
+  /** Tagesablauf (leben.ts): Runde tagsüber und abends, eigener Rhythmus; Flucht vor Ärger, schon die Polizei gerufen */
+  home?: Array<[number, number]>; out?: Array<[number, number]>; h?: number; flee?: number; called?: boolean; seen?: number }
 export interface Parked { o: Node3; name: string; yaw: number; v: number; def: CarDef; /** dein eigener Wagen aus der Garage */ own?: boolean; /** geliehen aus dem Verkehr: fährt später seine Runde weiter */ route?: Car }
 
 const LINES: Record<Exclude<StreetKind, 'worker' | 'curb' | 'szene'>, string[]> = {
@@ -73,7 +77,9 @@ export class Street {
     };
     const blocks: Array<[number, number]> = [[0, 0], [-30, -30], [0, -30], [30, -30], [30, 0], [-60, 0], [0, 30], [-30, 30], [-60, -30], [30, 30], [-60, 30], [0, -60]];
     const jobs: Promise<unknown>[] = [];
-    blocks.forEach(([a, b], i) => jobs.push(mk(L(WALKERS[i], WALK_STYLE[i]), 'walker', NAMES[i], '#8fa3c8', block(a, b, i % 2 === 0))));
+    // abends ziehen die Leute ins Nachtleben: rund um Prisma, Neonplatz und Hochstadt
+    const OUT: Array<[number, number]> = [[0, -30], [-30, 0], [0, 0], [120, 30], [150, 0], [0, 30]];
+    blocks.forEach(([a, b], i) => jobs.push(mk(L(WALKERS[i], WALK_STYLE[i]), 'walker', NAMES[i], '#8fa3c8', block(a, b, i % 2 === 0)).then((n) => { n.home = n.path; n.out = block(...OUT[i % OUT.length], i % 2 === 1); n.h = i * 7 + 3; })));
     // Streife auf der Hauptstraße, Feuerwehr vor der Wache
     jobs.push(mk(L('Police_Male_01'), 'police', 'Polizist Okafor', '#5b86d6', [[4.6, -16], [4.6, 26], [-4.6, 26], [-4.6, -16]]));
     jobs.push(mk(L('Police_Female_01'), 'police', 'Polizistin Brandt', '#5b86d6', [[4.6, -16], [4.6, 26], [-4.6, 26], [-4.6, -16]].reverse() as Array<[number, number]>));
@@ -100,7 +106,7 @@ export class Street {
     CURB.forEach((w, i) => jobs.push(mk(cl[w.id], 'curb', w.name, w.color, [CURB_SPOTS[i]], w.id, i % 2 ? 'pose' : 'idle')));
     // Passant*innen in der Hochstadt
     const up: Array<[number, number]> = [[90, -30], [120, 0], [150, 30], [180, -30], [90, 30], [180, 0]];
-    up.forEach(([a, b], i) => jobs.push(mk(L(WALKERS[(i + 5) % WALKERS.length], WALK_STYLE[(i + 3) % WALK_STYLE.length]), 'walker', NAMES[(i + 5) % NAMES.length], '#8fa3c8', block(a, b, i % 2 === 1))));
+    up.forEach(([a, b], i) => jobs.push(mk(L(WALKERS[(i + 5) % WALKERS.length], WALK_STYLE[(i + 3) % WALK_STYLE.length]), 'walker', NAMES[(i + 5) % NAMES.length], '#8fa3c8', block(a, b, i % 2 === 1)).then((n) => { n.home = n.path; n.out = block(...([[120, 30], [150, 0], [0, -30]] as Array<[number, number]>)[i % 3], i % 2 === 0); n.h = i * 5 + 1; })));
     // Paare Hand in Hand (die zweite Person läuft neben der ersten her) und Szene-Leute an festen Plätzen
     COUPLES.forEach(([ra, sa, rb, sb, bx, bz], i) => jobs.push((async () => {
       const path = block(bx, bz, i % 2 === 1).map(([x, z]) => [x + (x > bx + 15 ? .5 : -.5), z + (z > bz + 15 ? .5 : -.5)] as [number, number]);
@@ -205,6 +211,11 @@ export class Street {
   private sirenT = 20;
   /** dein Auto (Lage, Fahrtrichtung, Tempo): Passant*innen springen zur Seite */
   danger: { x: number; z: number; yaw: number; v: number } | null = null;
+  /** Lage der Stadt für den Tagesablauf (setzt CityScene): Stunde, Regen, Ärger, du */
+  life: { hour: number; rain: boolean; alarm: { x: number; z: number } | null; player: Vector3; onFoot: boolean } | null = null;
+  /** du gehst an jemandem vorbei (Grüßen, Gedächtnis) bzw. jemand musste vor deinem Auto zur Seite springen */
+  onPass?: (n: StreetNpc) => void;
+  onDodge?: (n: StreetNpc) => void;
   private yellT = -9;
   update(dt: number, night: number, adult: boolean, ref: Vector3) {
     // Löschzug mit Martinshorn, wenn er in der Nähe vorbeifährt
@@ -215,8 +226,14 @@ export class Street {
     for (const [a, b] of this.flash) { a.c.scaleToRef(on ? 1 : .12, a.m.albedoColor); b.c.scaleToRef(on ? .12 : 1, b.m.albedoColor); } // direkt ändern, ohne Neu-Markieren aller Meshes
     const far = this.world.low ? 50 : 90, anim = this.world.low ? 28 : 60;
     this.people.forEach((n, i) => {
-      const show = n.away ? false : n.kind === 'worker' || n.kind === 'curb' ? adult && night > .4 : n.kind === 'walker' ? (night < .5 || i % 2 === 0 || !!n.mate || n.yaw !== undefined) : n.kind === 'security' ? night > .3 : n.kind === 'szene' ? !SZENE[n.id!]?.adult || (adult && night > .3) : true;
+      const life = this.life, ph = n.home && life ? phaseAt(life.hour, n.h!) : null;
+      const show = n.away ? false : n.kind === 'worker' || n.kind === 'curb' ? adult && night > .4 : ph ? ph !== 'schlaf' : n.kind === 'walker' ? (night < .5 || i % 2 === 0 || !!n.mate || n.yaw !== undefined) : n.kind === 'security' ? night > .3 : n.kind === 'szene' ? !SZENE[n.id!]?.adult || (adult && night > .3) : true;
       const d2 = Vector3.DistanceSquared(n.a.root.position, ref);
+      // Tagesablauf: abends auf der Ausgeh-Runde, sonst zu Hause; gewechselt wird außer Sicht
+      if (ph && n.out && !n.talking) {
+        const want = ph === 'abend' ? n.out : n.home!;
+        if (n.path !== want && (d2 > 45 * 45 || !show)) { n.path = want; n.wp = 1; n.a.root.position.set(want[0][0], .1, want[0][1]); }
+      }
       n.a.root.visible = !n.away && (n.chase || n.talking || (show && d2 < far * far));
       if (!n.a.root.visible) return;
       if (d2 < anim * anim || n.chase) n.a.update(dt);
@@ -230,11 +247,35 @@ export class Street {
           const k = side >= 0 ? 1 : -1, sp = Math.abs(side) < 1.1 && along < 2 ? 7 : 5.5;
           n.dodge = { vx: fz * k * sp, vz: -fx * k * sp, t: .6 };
           n.a.root.rotation.y = Math.atan2(n.dodge.vx, n.dodge.vz); n.a.play('run', .1, 1.5);
+          this.onDodge?.(n);
           if (this.t - this.yellT > 3) { this.yellT = this.t; sfx('squeak'); toast(`🙀 ${n.name}: ${DODGE[Math.floor(Math.random() * DODGE.length)]}`, 1800); }
         }
       }
+      // Ärger in der Nähe (Schlägerei, Fahndung): weglaufen, manche rufen danach die Polizei
+      const al = life?.alarm, civil = n.kind === 'walker' || n.kind === 'szene' || n.kind === 'chef' || n.kind === 'courier';
+      if (al && civil && n.yaw === undefined) {
+        const q = n.a.root.position, dx = q.x - al.x, dz = q.z - al.z, d = Math.hypot(dx, dz) || 1;
+        if (d < 16 && !n.flee) { n.flee = 2.5 + (n.h ?? i) % 3; n.called = false; }
+        if (n.flee && n.flee > 0) {
+          n.flee -= dt; const nx = q.x + dx / d * 4.2 * dt, nz = q.z + dz / d * 4.2 * dt; if (walkable(nx, nz) && !this.world.colliders.some((c) => Math.abs(nx - c.x) < c.hx + .3 && Math.abs(nz - c.z) < c.hz + .3)) { q.x = nx; q.z = nz; }
+          n.a.root.rotation.y = Math.atan2(dx, dz); n.a.play('run', .12, 1.4);
+          if (n.flee <= 0 && !n.called && ((n.h ?? i) + Math.floor(this.t)) % 4 === 0 && this.t - this.yellT > 5) {
+            n.called = true; this.yellT = this.t; n.a.root.rotation.y = Math.atan2(-dx, -dz); n.a.play('phone');
+            toast(`📱 ${n.name} ruft die Polizei!`, 2200);
+          }
+          return;
+        }
+        if (n.called) { if (n.a.anim !== 'phone') n.a.play('phone'); return; }
+      } else if (n.flee !== undefined) { n.flee = undefined; n.called = false; }
+      // dich bemerken: stehende Leute drehen sich zu dir um, Bekannte grüßen
+      if (life?.player && !n.mate) {
+        const q = n.a.root.position, pp = life.player, dx = pp.x - q.x, dz = pp.z - q.z, d2p = dx * dx + dz * dz;
+        if (d2p < 16 && (n.wait > 0 || n.path.length < 2)) { let dy = Math.atan2(dx, dz) - n.a.root.rotation.y; dy = Math.atan2(Math.sin(dy), Math.cos(dy)); n.a.root.rotation.y += dy * Math.min(1, dt * 4); }
+        if (d2p < 9 && life.onFoot && this.t - (n.seen ?? -99) > 40) { n.seen = this.t; this.onPass?.(n); }
+      }
       if (n.dodge) {
-        const d = n.dodge, q = n.a.root.position; q.x += d.vx * dt; q.z += d.vz * dt; d.t -= dt;
+        const d = n.dodge, q = n.a.root.position, nx = q.x + d.vx * dt, nz = q.z + d.vz * dt; d.t -= dt;
+        if (walkable(nx, nz) && !this.world.colliders.some((c) => Math.abs(nx - c.x) < c.hx + .3 && Math.abs(nz - c.z) < c.hz + .3)) { q.x = nx; q.z = nz; }
         if (d.t <= 0) { n.dodge = undefined; n.wait = 1.2; n.a.play('idle'); }
         return;
       }
@@ -249,11 +290,18 @@ export class Street {
         return;
       }
       if (n.path.length < 2) return;
-      if (n.wait > 0) { n.wait -= dt; if (n.a.anim !== 'idle') n.a.play('idle'); return; }
+      if (n.wait > 0) { n.wait -= dt; if (n.a.anim === 'walk' || n.a.anim === 'run') n.a.play('idle'); return; }
       const [tx, tz] = n.path[n.wp], p = n.a.root.position, dx = tx - p.x, dz = tz - p.z, d = Math.hypot(dx, dz);
-      if (d < .3) { n.wp = (n.wp + 1) % n.path.length; if (Math.random() < .35 && n.kind !== 'courier') n.wait = 1 + Math.random() * 3; return; }
-      const run = n.kind === 'courier';
-      const sp = run ? 3.4 : n.kind === 'police' ? 1.3 : 1.4;
+      if (d < .3) {
+        n.wp = (n.wp + 1) % n.path.length;
+        // Mittagspause: länger stehen, trinken oder aufs Handy schauen; bei Regen keine Pause
+        if (ph === 'mittag' && !life?.rain && Math.random() < .7) { n.wait = 6 + Math.random() * 8; n.a.play(Math.random() < .5 ? 'drink' : 'phone'); return; }
+        if (Math.random() < .35 && n.kind !== 'courier' && !life?.rain) n.wait = 1 + Math.random() * 3;
+        return;
+      }
+      // bei Regen eilig, morgens zügig zur Arbeit
+      const run = n.kind === 'courier' || (!!life?.rain && n.kind !== 'police');
+      const sp = run ? (n.kind === 'courier' ? 3.4 : 2.7) : n.kind === 'police' ? 1.3 : ph === 'weg' ? 1.8 : 1.4;
       p.x += (dx / d) * sp * dt; p.z += (dz / d) * sp * dt;
       n.a.root.rotation.y = Math.atan2(dx, dz);
       n.a.play(run ? 'run' : 'walk', .25, sp / (run ? RUN_MPS : WALK_MPS));

@@ -21,8 +21,9 @@ import { NIGHT_S, pairVoices, VIBES, type Vibe } from './liebe';
 import { berufOf, meinBeruf } from './beruf';
 import { tapeAsk, tapeAfter } from './dreh';
 import { keepCondom } from './fanshop';
+import { memOf, remember, greet, nextPart, heardPart, finish } from './leben';
 
-export interface TalkOpts { actor?: Actor; room?: InteriorScene; look?: Look; opening?: string; kid?: boolean; /** Art der Straßenfigur (Street.ts), z. B. für den Beruf */ kind?: string; /** Szene-Art (szene.ts): Pup, Leder, Bear … */ szene?: string }
+export interface TalkOpts { actor?: Actor; room?: InteriorScene; look?: Look; opening?: string; kid?: boolean; /** Art der Straßenfigur (Street.ts), z. B. für den Beruf */ kind?: string; /** Szene-Art (szene.ts): Pup, Leder, Bear … */ szene?: string; /** Gedächtnis und eigene Geschichte (leben.ts) */ life?: { wanted: number; rain: boolean } }
 
 const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
 const night = (title: string, tags: string[]) => { const b = document.createElement('div'); b.className = 'night'; b.innerHTML = `<p>${esc(title)}</p><small>${tags.map(esc).join(' · ')}</small>`; document.body.appendChild(b); return b; };
@@ -38,7 +39,11 @@ export function strangerTalk(g: Game, st: Stranger, o: TalkOpts, end?: () => voi
   const h = hash(st.key + s.day);
   let then: (() => void) | null = null;
   const run = (lines: Line[]) => g.dialog.say(lines, () => { const f = then; then = null; if (f) f(); else end?.(); });
-  const first = ty ? szeneLine(ty, adult, h) : dark ? DARK[h % DARK.length] : adult && h % 3 !== 0 ? TEASE[h % TEASE.length] : o.opening || CHAT[h % CHAT.length];
+  // Straßenleute erinnern sich an dich (leben.ts): Begrüßung nach Gedächtnis, Tageszeit, Wetter und Fahndung
+  const mem0 = o.life ? memOf(s, st.key) : null;
+  const first = mem0 && (mem0.met > 0 || mem0.near > 0 || o.life!.wanted >= 2 || !ty) ? greet(mem0, { hour: hour(s), rain: o.life!.rain, wanted: o.life!.wanted, name: s.name }, h)
+    : ty ? szeneLine(ty, adult, h) : dark ? DARK[h % DARK.length] : adult && h % 3 !== 0 ? TEASE[h % TEASE.length] : o.opening || CHAT[h % CHAT.length];
+  if (o.life) remember(s, st.key, 'talk');
   const k = 'tk_' + hash(st.key).toString(36);
   if (s.flags[k] !== s.day) { s.flags[k] = s.day; change(s, { social: 6, fun: 2 }); g.city.refreshHud(); }
 
@@ -46,6 +51,19 @@ export function strangerTalk(g: Game, st: Stranger, o: TalkOpts, end?: () => voi
     const c: NonNullable<Line['choices']> = [];
     c.push({ label: '💬 Plaudern', fn: () => { then = () => run([N(CHAT[(h + Math.floor(Math.random() * 99)) % CHAT.length]), menu('Sonst noch was?')]); } });
     if (ty) c.push({ label: ty.act.label, fn: () => { sfx(ty.id === 'pup' ? 'squeak' : 'giggle'); change(s, { fun: ty.act.fun || 0, social: ty.act.social || 0 }); ty.anim[0] && o.actor?.play(ty.anim[0]); then = () => run([...ty.act.lines.map((x) => N(x)), menu('Und sonst?')]); } });
+    // eigene Geschichte: ein Teil pro Tag, am Ende entscheidest du mit
+    const part = o.life ? nextPart(s, st.key) : null, done = o.life ? memOf(s, st.key).done : undefined;
+    if (part) c.push({ label: part.i === 0 ? '💭 Wie geht\'s dir so?' : `${part.story.icon} ${part.story.title} (${part.i + 1}/4)`, sub: part.i === 0 ? 'Jede Person hat ihre eigene Geschichte' : 'Wie geht es weiter?', fn: () => {
+      heardPart(s, st.key); change(s, { social: 4 });
+      if (part.i < 3) { then = () => run([N(part.text), menu(part.i === 2 ? 'Morgen weiß ich mehr. Sonst noch was?' : 'Erzähl ich dir ein andermal weiter. Sonst noch was?')]); return; }
+      then = () => run([N(part.text), { who: 'Du', color: '#ff4fa3', text: 'Ich an deiner Stelle …', choices: part.story.end.map((e) => ({ label: e.label, fn: () => {
+        finish(s, st.key, e); change(s, { social: e.social || 0, fun: e.fun || 0 }); sfx('win');
+        post(s, st.name, `${part.story.icon} ${part.story.title}: ${e.reply}`);
+        g.hud.banner(`${part.story.icon} Geschichte erlebt: ${part.story.title}`, [e.money ? `+${e.money} €` : '', e.rep ? `Ruf +${e.rep}` : '', `${st.name} vergisst dir das nie`].filter(Boolean).join(' · '), 'good', 4200);
+        then = () => run([N(e.reply), menu('Danke für alles. Sonst noch was?')]);
+      } })) }]);
+    } });
+    else if (done) c.push({ label: '💜 Wie ist es ausgegangen?', fn: () => { then = () => run([N(`Weißt du noch, du hast gesagt: „${done.replace(/^\S+\s/, '')}“. Das war genau richtig. Danke dir!`), menu('Sonst noch was?')]); } });
     c.push({ label: '💼 Was machst du beruflich?', fn: () => { then = () => run([N(job.talk), { who: 'Du', color: '#ff4fa3', text: mine ? `Ich bin ${mine.name}. ${mine.icon}` : 'Ich suche gerade. Die Jobbörse im Handy hat ein paar Angebote.' }, menu(mine && mine.id === 'dreh' && adult && Number(s.flags.drehN) > 0 ? 'Moment … dich kenn ich doch aus einem Film! 😳 Sonst noch was?' : 'Spannend! Sonst noch was?')]); } });
     if (adult) c.push({ label: flirted(s, st.key) ? '😏 Weiterflirten' : '😏 Anflirten', fn: () => { then = () => pickup(); } });
     if (adult && flirted(s, st.key)) c.push({ label: dark ? '🖤 Weiter nach hinten?' : '🔥 Kommst du mit zu mir?', sub: 'nur wenn ihr beide wollt', fn: () => { then = () => ask(); } });
