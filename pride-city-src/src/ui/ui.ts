@@ -129,7 +129,7 @@ export class Loading {
   private tipT = 0;
   constructor() {
     this.el = el(`<div id="loading" class="off"><div class="art">${['#e40303', '#ff8c00', '#ffed00', '#008026', '#004dff', '#750787'].map((c, i) =>
-      `<i style="top:${18 + i * 7}vh;background:${c};animation-delay:-${i * .7}s"></i>`).join('')}</div><div class="ring"></div>
+      `<i style="top:${18 + i * 7}vh;background:${c};animation-delay:-${i * .7}s"></i>`).join('')}</div><img class="key" src="cover.jpg" alt="Pride City – Ein Leben in allen Farben" decoding="async"><div class="ring"></div>
       <div class="cap"><div class="kick"></div><h2></h2><div class="tip"></div><div class="bar"><b></b></div><div class="pct"><span class="st">Lädt …</span><span class="n">0 %</span></div></div></div>`);
     document.body.appendChild(this.el);
   }
