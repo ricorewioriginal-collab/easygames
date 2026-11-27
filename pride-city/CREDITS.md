@@ -8,6 +8,9 @@ Alle eingebundenen Modelle sind kostenlos und frei nutzbar (CC0 / Public Domain)
 | Stadt: Häuser, Straßen, Autos, Laternen, Bänke, Büsche | `assets/city/*.gltf`, `*.bin`, `citybits_texture.png` | Kay Lousberg, „KayKit City Builder Bits 1.0“ – https://github.com/KayKit-Game-Assets/KayKit-City-Builder-Bits-1.0 | CC0 1.0 |
 | Wohnung: Bett, Sofa, Sessel, Regale, Lampen, Teppiche, Pflanzen | `assets/home/*.gltf` | Kay Lousberg, „KayKit Furniture Bits 1.0“ – https://github.com/KayKit-Game-Assets/KayKit-Furniture-Bits-1.0 | CC0 1.0 |
 | Küche: Herd, Spüle, Kühlschrank, Topf, Teller | `assets/kitchen/*.gltf` | Kay Lousberg, „KayKit Restaurant Bits 1.0“ – https://github.com/KayKit-Game-Assets/KayKit-Restaurant-Bits-1.0 | CC0 1.0 |
+| Oberflächen der Welt: Asphalt, Backstein (Detailkarte), Strandsand | `assets/world/asphalt_*.jpg`, `brick_detail.webp`, `sand_*.jpg` | Poly Haven – „asphalt_02“, „brick_4“, „coast_sand_01“ (polyhaven.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
+| Oberflächen der Welt: Gehwegplatten, Rasen | `assets/world/paving_*.jpg`, `grass_*.jpg` | ambientCG – „PavingStones038“, „Grass001“ (ambientcg.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
+| Wasserwellen (Normalenkarte) | `assets/world/water_nor.jpg` | selbst erzeugt (Summe von Sinuswellen) | CC0 1.0 |
 | 3D-Grafik | im Build gebündelt | three.js – https://threejs.org | MIT |
 
 Lizenztext: `assets/LICENSE-KayKit.txt`. Die Modelle sind unverändert; Kleidung, Haut und Haare werden zur Laufzeit per Shader in Pride-Farben und Outfits umgefärbt (`src/game/Actor.ts`).

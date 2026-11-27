@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "cce0841108d9",
- "generated": "2026-11-27T21:22:27+00:00",
- "commit": "c5cad150590688b74b2493f341a837ad3da2c074",
+ "version": "e275f0dc4abc",
+ "generated": "2026-11-27T21:47:32+00:00",
+ "commit": "83104ba03de1d65a37a940175cc33af1b7194f68",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -14087,9 +14087,9 @@
    "h": "62759995b42672bed9d17515b2145b873d408dddcedeb55dbe93b6918e99047b"
   },
   {
-   "p": "pride-city/assets/babylon-BLKLNp92.js",
-   "s": 3981244,
-   "h": "b5b43a0007e30747a433e736e04e12f07ef25fc8ca195f3fafe5f5cd5a606177"
+   "p": "pride-city/assets/babylon-CEi31Ju4.js",
+   "s": 3981330,
+   "h": "13cee1eee66a9d8841c7950b9ca86a11d4f534951789385f2d63938158bdf5c1"
   },
   {
    "p": "pride-city/assets/cars/delivery_van.glb",
@@ -14487,94 +14487,94 @@
    "h": "8e2c01f21c7ffd2e9bd3fafd50d9d8090d69991a9dad79b3ca36171b70ffb1c3"
   },
   {
-   "p": "pride-city/assets/flowGraphDebugBlock.pure-ArQmARvb.js",
+   "p": "pride-city/assets/flowGraphDebugBlock.pure-BwJw3nmS.js",
    "s": 1451,
-   "h": "88a71b3c1950c00bc53b9ab89f148a9e2ca3b6f0469d3de6c6c1eb8711d35201"
+   "h": "e3d017a015114092cd563e6c0e7dbf7f15bf560d7d56fcc1d9a4cb962c92359d"
   },
   {
-   "p": "pride-city/assets/flowGraphPointerDownEventBlock.pure-CtPd_WOG.js",
+   "p": "pride-city/assets/flowGraphPointerDownEventBlock.pure-BBCpoNLQ.js",
    "s": 943,
-   "h": "8e8ec89ae9ed9654c87b766239dc55ad0eb8bcbab45f80a5149d6951866beb2d"
+   "h": "b7cd49bd711944bec394974cc91584d4e8bc765d32e582337078181877478d08"
   },
   {
-   "p": "pride-city/assets/flowGraphPointerMoveEventBlock.pure-hhR8YCiT.js",
+   "p": "pride-city/assets/flowGraphPointerMoveEventBlock.pure-CGQZTIFe.js",
    "s": 961,
-   "h": "672741df1de4a6c67b962bda4d5eea5550308b89566774ee8a332679e239e0b3"
+   "h": "4abb0b9284727cd6d09ea61aa40b3c582911998d73600630cf736be486a46e70"
   },
   {
-   "p": "pride-city/assets/flowGraphPointerUpEventBlock.pure-CFGIHHfg.js",
+   "p": "pride-city/assets/flowGraphPointerUpEventBlock.pure-Cbbj7li0.js",
    "s": 933,
-   "h": "39fb0444f9214a17a1fff6c8b14803c17d2650cd236e1deb7a9f2c18289b9a92"
+   "h": "6090f19b4d87781184466801027a2d6d2121736c2085495fb50587f5ed7e2a03"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.fragment-CQIM5WZz.js",
+   "p": "pride-city/assets/gaussianSplatting.fragment-DoTc9dnH.js",
    "s": 2928,
-   "h": "8981b5e8f974ac20c2a5c23ad4bc940f2628c1c1010e15dc0633f7524d784673"
+   "h": "fb53de434cc2874f6332362ffc805435544b8d0e878f9f5d80518d986d7861d7"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.fragment-CcZCJfM4.js",
+   "p": "pride-city/assets/gaussianSplatting.fragment-Dum_YPuZ.js",
    "s": 3059,
-   "h": "eb2ef11de22eb9b374ad1f7869b103f076227e2509e317df13d119db2a9f6ec4"
+   "h": "f3d21429e79f5b7099a1a75730a7a6097f452ba88b4b97d6e553447c9ab46b0b"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.vertex-CDHhL-wN.js",
-   "s": 6846,
-   "h": "ef1751ee0c33b61777bcc39deb4d82a8a97c03fc0cf243d81c8ddf3b4ace89c1"
-  },
-  {
-   "p": "pride-city/assets/gaussianSplatting.vertex-LBCwc8t8.js",
+   "p": "pride-city/assets/gaussianSplatting.vertex-BcSMteVn.js",
    "s": 8147,
-   "h": "445e2995a452eccf61704a09ed5fbd74401333eaf2218aa0ad22cb1580aeca26"
+   "h": "dc17e8663c241a4f2dfbf0f2170e05329dc8acf6b72427f661830d568f7e7b64"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-Bg9qDTkl.js",
-   "s": 1435,
-   "h": "8548abe1aeaa7309fa80f68d55081f76f210313276a16867f951a071bc973df6"
+   "p": "pride-city/assets/gaussianSplatting.vertex-r6NISYYr.js",
+   "s": 6846,
+   "h": "e24615d632de578172f7b687156a41f3ee7e33221f3bec57a08347ad3b6806b1"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-DrLIPQDh.js",
+   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-DKs8uNGT.js",
    "s": 1760,
-   "h": "f97a14592a549c7529ba1f4191df658f48b59f205d242e282d5fde4e3fd38fdf"
+   "h": "9ef6ca1099a267920db9a7b533ca94a5de9f56fc48dc695ecd7e80b7a5666136"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-BGzC90Wx.js",
+   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-DfBqb-DF.js",
+   "s": 1435,
+   "h": "0975993f55409614c87e180e100a88e9827b28a064f1529787120317b0975733"
+  },
+  {
+   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-DU6VZKQe.js",
    "s": 1765,
-   "h": "d9a5bf3ff4459c5e996b5a0740b9e274c735859bd235bb92d8431486b3cd6df9"
+   "h": "af49a438aaf56e50e23ba80081a5ed8ec13600436737d660c3711c7f62fb7f77"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-ZIp70GzP.js",
+   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-llGS9DHH.js",
    "s": 2489,
-   "h": "ec389ab9e953a7c2f6b2efc66955d855f87b708b1fb5ab78eb87966aa66902d4"
+   "h": "c53a98fc47ba8b403142ea31365bdc674c808cd285219369ae92813fe9a09df5"
   },
   {
-   "p": "pride-city/assets/gsSortCount.compute-DJBr5HtL.js",
+   "p": "pride-city/assets/gsSortCount.compute-BEgSUEml.js",
    "s": 1013,
-   "h": "92249f79b0b88209b2781e981204d9dd30488b1686362c1bfefbb3d7fce66171"
+   "h": "6064e9c7b09287246054b680ce4ec6ca0726bd3b8b516fc38fbc27c430a6a0f2"
   },
   {
-   "p": "pride-city/assets/gsSortKeys.compute-D8oKLYId.js",
+   "p": "pride-city/assets/gsSortKeys.compute-CdZKLD-0.js",
    "s": 2155,
-   "h": "054b4eb74172c01eb616952f391ead2243a2319e2424f6b82bf5e299662b7fa0"
+   "h": "1a413194d707e5fb5372264a971a02801a8c47ddd3f4ada638841aac6710c4de"
   },
   {
-   "p": "pride-city/assets/gsSortOutput.compute-DnMdV9r6.js",
+   "p": "pride-city/assets/gsSortOutput.compute-BrqUy2eY.js",
    "s": 922,
-   "h": "2e0dd362953570a7620cf586949df00dd66469cbc40619557b58f260734152e8"
+   "h": "68f2df7f5efe76abd05bbe502991960d0da2997ff184c658ddd1d6e657365e14"
   },
   {
-   "p": "pride-city/assets/gsSortScanLocal.compute-CvomDVFg.js",
+   "p": "pride-city/assets/gsSortScanLocal.compute-T7VE2Rjd.js",
    "s": 1260,
-   "h": "7a7ad83bb10193cf62c8c54d1706543dd7cad46f6d6241f4e5a62edf4dd6fc5b"
+   "h": "9a43dcaf96757b1616e65ce7c73798f93a52e2cd4b2a2c62247c4761b011608e"
   },
   {
-   "p": "pride-city/assets/gsSortScanSums.compute-CE51LziV.js",
+   "p": "pride-city/assets/gsSortScanSums.compute-DU0EG0Sw.js",
    "s": 831,
-   "h": "9625854b9f064667cd2ce24e20af2ac3dfb6a06ba4dea63fed6d211f1efc6ed6"
+   "h": "67fe8bd760d595a8314c56064f55d51264fbb9ad1ae0d3315a59802342511fd8"
   },
   {
-   "p": "pride-city/assets/gsSortScatter.compute-CS_WFHC3.js",
+   "p": "pride-city/assets/gsSortScatter.compute-0b5m0zPr.js",
    "s": 2525,
-   "h": "d3674ef360f2eab7a4e59a1653a81713b030c02ae301a75483d9af9be9c0d636"
+   "h": "92114c0ff62986b09b3d9fa77ec085cec56aff3c44d4cc67edea4feb0c62ba18"
   },
   {
    "p": "pride-city/assets/home/armchair_pillows.bin",
@@ -14837,9 +14837,9 @@
    "h": "211fbca1e4ad52987f24abf0084d3f0b3547afbc18046a32bdb7212f49c7689f"
   },
   {
-   "p": "pride-city/assets/index-BhJAfHDg.js",
-   "s": 1312747,
-   "h": "f2140b29718ee610e80b276411ae81b3f56322d7758c0a8cf664a0c7d50fb768"
+   "p": "pride-city/assets/index-DJ9OuG12.js",
+   "s": 1315118,
+   "h": "f7153b342956be963a4cfb646ee1b506c6221220b4f0d5efb678b832f5e8c56a"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -14927,9 +14927,9 @@
    "h": "e7ec4792ff25dd495aa9ccc485b771a762f1aa052382a973b8253ddc82b91199"
   },
   {
-   "p": "pride-city/assets/loaders-DPcSokXz.js",
+   "p": "pride-city/assets/loaders-jAIV-Vws.js",
    "s": 323809,
-   "h": "749c861b5fac14b7e584177930d089f70d8d86dc2e6f225ef926443fec8c8d61"
+   "h": "2b72fed0a7173a4c678eaff0345db3e193b4efd762b2f6b4c857ab6e59efcddf"
   },
   {
    "p": "pride-city/assets/rb/Chef_Female_01.glb",
@@ -15217,14 +15217,64 @@
    "h": "6846aa6f9b494f26b67ae4dc24d999f06ba2433ee1cabb2144ef025c6423bac0"
   },
   {
-   "p": "pride-city/assets/textureProcessor.fragment-BvfaKu7U.js",
+   "p": "pride-city/assets/textureProcessor.fragment-DZubqJpO.js",
    "s": 5008,
-   "h": "40d00d75307b2b517a1c36b2756e31b5a2eac4d673e35c3b08a109feb8da3fff"
+   "h": "1d87673f800dfee06c872246f1693aa77de01d9c3c69cdf0101cb6d725ef19ca"
   },
   {
-   "p": "pride-city/assets/textureProcessor.fragment-DJHUmhNk.js",
+   "p": "pride-city/assets/textureProcessor.fragment-TW3YsnyK.js",
    "s": 6031,
-   "h": "08abda8adec51dceef02dffd67f954837b0f9b137690cdca6af325a0c10d67c0"
+   "h": "5974a8ccea5a8f357c3c685aad94f9ca8672475a44ae35c2d672a9abfd142d38"
+  },
+  {
+   "p": "pride-city/assets/world/asphalt_col.jpg",
+   "s": 392439,
+   "h": "28ccf0254044f83e096db02989d3fb3e2f3c2302024ee973bb23a30d07103d28"
+  },
+  {
+   "p": "pride-city/assets/world/asphalt_nor.jpg",
+   "s": 70714,
+   "h": "fcf34ba83486d60ceba48167ae5392aa2ad61d20ccbc09dcbb359dc6fcf4ecf9"
+  },
+  {
+   "p": "pride-city/assets/world/brick_detail.webp",
+   "s": 263892,
+   "h": "355945b6f525060877348aab8b847b777b8eeac9de9608470b9c236507a44a87"
+  },
+  {
+   "p": "pride-city/assets/world/grass_col.jpg",
+   "s": 241656,
+   "h": "ff8fbf3670738bbd5f4f4524e0f8051e49a628203046dd7ad93f000ef9ca5a22"
+  },
+  {
+   "p": "pride-city/assets/world/grass_nor.jpg",
+   "s": 108401,
+   "h": "6a6d6077cfe76ca4cc9676f400cd333048538873a11920cfa17b122f81aef8aa"
+  },
+  {
+   "p": "pride-city/assets/world/paving_col.jpg",
+   "s": 184721,
+   "h": "861d3da7dce61548577f9f88b7411c6ba7c10d010b225045576174eae77c1ed9"
+  },
+  {
+   "p": "pride-city/assets/world/paving_nor.jpg",
+   "s": 52743,
+   "h": "44bb01f99c5c13153cd7abc5d8c072d1640ebb5caddb352e6d819a46f5a192db"
+  },
+  {
+   "p": "pride-city/assets/world/sand_col.jpg",
+   "s": 298775,
+   "h": "081ab5f70b340e4fbc3a9875723a9e0a926e88ee60dd085cb515dca022eda287"
+  },
+  {
+   "p": "pride-city/assets/world/sand_nor.jpg",
+   "s": 73142,
+   "h": "f08daf31536f70ef64719209318e7402a97844da9c812259227e0498362cc6ba"
+  },
+  {
+   "p": "pride-city/assets/world/water_nor.jpg",
+   "s": 35098,
+   "h": "7d07b35a61b07b965d9ff23d224d74fad033acfcf8c924cb068863ea9984b417"
   },
   {
    "p": "pride-city/book/cover.jpg",
@@ -15474,7 +15524,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5862,
-   "h": "7fac5b5d343f95e296ea0c0a1ae3e348ed7e07c8654787b2a3dd84869ee49437"
+   "h": "f56e6acdf61262789179cc26f7cdea575976bb45ba944adb213704e392eadb22"
   },
   {
    "p": "pride-city/logo.svg",
@@ -18249,7 +18299,7 @@
   {
    "p": "sync/catalog.json",
    "s": 241235,
-   "h": "bc8e683d7700f54082fce346435a57ebc7d94c51d915e5d5060367e6c158c183"
+   "h": "2d97f32789e3c1570143566e8fa56932140173f3185652db29cb9eb9de98e342"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",
