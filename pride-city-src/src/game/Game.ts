@@ -212,7 +212,7 @@ export class Game {
       if (this.save.oldFound && importOld) this.save.importOld();
       const d = this.save.data;
       d.flags.mode = mode;
-      if (mode === 'story') { d.flags.tarekIntro = true; if (!importOld) { d.name = 'Rico'; d.pronouns = 'he'; } }
+      if (mode === 'story') { d.flags.tarekIntro = true; if (!importOld) { d.name = 'Rico'; d.pronouns = 'he'; d.body = 'pc_rico'; } }
       this.closeMenu();
       this.fade(() => this.creator());
     };
