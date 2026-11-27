@@ -23,7 +23,7 @@ import type { PBRMaterial, Scene } from '../engine/bjs';
 export type StreetKind = 'walker' | 'police' | 'fire' | 'worker' | 'curb' | 'medic' | 'security' | 'chef' | 'courier' | 'szene';
 export interface StreetNpc { a: Actor; kind: StreetKind; name: string; color: string; path: Array<[number, number]>; wp: number; wait: number; id?: string; anim?: Anim; talking?: boolean; down?: boolean; chase?: boolean; away?: boolean; /** läuft Hand in Hand neben dieser Person */ mate?: StreetNpc; /** feste Blickrichtung */ yaw?: number; /** springt gerade vor einem Auto zur Seite */ dodge?: { vx: number; vz: number; t: number };
   /** Tagesablauf (leben.ts): Runde tagsüber und abends, eigener Rhythmus; Flucht vor Ärger, schon die Polizei gerufen */
-  home?: Array<[number, number]>; out?: Array<[number, number]>; h?: number; flee?: number; called?: boolean; seen?: number }
+  home?: Array<[number, number]>; out?: Array<[number, number]>; h?: number; flee?: number; called?: boolean; seen?: number; /** wie lange du schon zu dicht dran bist bzw. hinterherläufst */ close?: number; follow?: number }
 export interface Parked { o: Node3; name: string; yaw: number; v: number; def: CarDef; /** dein eigener Wagen aus der Garage */ own?: boolean; /** geliehen aus dem Verkehr: fährt später seine Runde weiter */ route?: Car }
 
 const LINES: Record<Exclude<StreetKind, 'worker' | 'curb' | 'szene'>, string[]> = {
@@ -216,6 +216,8 @@ export class Street {
   /** du gehst an jemandem vorbei (Grüßen, Gedächtnis) bzw. jemand musste vor deinem Auto zur Seite springen */
   onPass?: (n: StreetNpc) => void;
   onDodge?: (n: StreetNpc) => void;
+  /** du bist jemandem zu nah gekommen bzw. läufst hinterher */
+  onCrowd?: (n: StreetNpc, stalk: boolean) => void;
   private yellT = -9;
   update(dt: number, night: number, adult: boolean, ref: Vector3) {
     // Löschzug mit Martinshorn, wenn er in der Nähe vorbeifährt
@@ -272,6 +274,17 @@ export class Street {
         const q = n.a.root.position, pp = life.player, dx = pp.x - q.x, dz = pp.z - q.z, d2p = dx * dx + dz * dz;
         if (d2p < 16 && (n.wait > 0 || n.path.length < 2)) { let dy = Math.atan2(dx, dz) - n.a.root.rotation.y; dy = Math.atan2(Math.sin(dy), Math.cos(dy)); n.a.root.rotation.y += dy * Math.min(1, dt * 4); }
         if (d2p < 9 && life.onFoot && this.t - (n.seen ?? -99) > 40) { n.seen = this.t; this.onPass?.(n); }
+        // zu dicht dran oder hinterherlaufen: die Person merkt es, sagt etwas und geht auf Abstand
+        if (life.onFoot && civil && !n.talking) {
+          n.close = d2p < 2.6 ? (n.close || 0) + dt : Math.max(0, (n.close || 0) - dt * 2);
+          n.follow = d2p < 36 && n.path.length > 1 && n.wait <= 0 ? (n.follow || 0) + dt : Math.max(0, (n.follow || 0) - dt);
+          const crowd = (n.close || 0) > 2.5, stalk = (n.follow || 0) > 12;
+          if (crowd || stalk) {
+            n.close = 0; n.follow = 0; this.onCrowd?.(n, stalk);
+            const d = Math.sqrt(d2p) || 1; n.dodge = { vx: -dx / d * 3, vz: -dz / d * 3, t: stalk ? 1.6 : .8 };
+            n.a.root.rotation.y = Math.atan2(n.dodge.vx, n.dodge.vz); n.a.play(stalk ? 'run' : 'walk', .15, 1.2);
+          }
+        }
       }
       if (n.dodge) {
         const d = n.dodge, q = n.a.root.position, nx = q.x + d.vx * dt, nz = q.z + d.vz * dt; d.t -= dt;

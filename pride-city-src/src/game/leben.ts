@@ -185,3 +185,40 @@ export function phaseAt(hour: number, h: number): Phase {
   if (hour >= 18 + early) return 'abend';
   return 'tag';
 }
+
+/** Schnelle Gesten wie im Open-World-Krimi, nur netter: Grüßen, Kompliment, Necken, Beruhigen, Provozieren */
+export type Quick = 'gruss' | 'lob' | 'necken' | 'ruhe' | 'stress';
+export const QUICK: Array<{ id: Quick; label: string; you: string }> = [
+  { id: 'gruss', label: '👋 Grüßen', you: 'Hey du! Schönen Tag noch!' },
+  { id: 'lob', label: '💖 Kompliment', you: 'Du siehst heute echt umwerfend aus!' },
+  { id: 'necken', label: '😜 Necken', you: 'Na, wieder zu spät aufgestanden?' },
+  { id: 'ruhe', label: '🕊️ Beruhigen', you: 'Hey, alles gut. Tut mir leid, wenn ich dir zu nahe gekommen bin.' },
+  { id: 'stress', label: '😤 Provozieren', you: 'Was guckst du so?' },
+];
+const QR: Record<Quick, [string[], string[], number]> = {   // [freundliche Antworten, schlechte Laune, Stimmung]
+  gruss: [['Hey! Dir auch einen schönen Tag! 😊', 'Hallo! Wie lieb, dass du grüßt.', 'Na du! Schön, dich zu sehen.'], ['Hm. Hallo.', 'Ja, ja, hallo.'], 1],
+  lob: [['Oh! Danke, du machst meinen Tag! 🥰', 'Hihi, danke! Du aber auch.', 'Stop, ich werd ja rot!'], ['Schleimen hilft dir auch nicht.', 'Danke … glaub ich.'], 2],
+  necken: [['Haha, frech! Aber ja, stimmt leider. 😅', 'Pass bloß auf, sonst necke ich zurück!', 'Ertappt! Kaffee war heute Pflicht.'], ['Sehr witzig. Nicht.', 'Heute nicht, okay?'], 0],
+  ruhe: [['Schon gut. Ist vergessen. 💜', 'Okay, danke, dass du das sagst.', 'Alles gut, Schwamm drüber.'], ['Na gut … dieses eine Mal.', 'Hm. Okay. Aber nur weil du so nett fragst.'], 2],
+  stress: [['Äh … gar nichts? Chill mal.', 'Bist du heute mit dem falschen Fuß aufgestanden?', 'Ich guck, wie ich will, Schätzchen.'], ['Lass mich einfach in Ruhe!', 'Weißt du was? Such dir jemand anderen für deinen Stress.'], -3],
+};
+/** Antwort auf eine schnelle Geste (je nach Stimmung) und neue Stimmung */
+export function quick(s: SaveData, k: string, q: Quick, h: number) {
+  const m = memOf(s, k), [good, bad, d] = QR[q];
+  const sour = m.mood < 0 && q !== 'ruhe';
+  m.mood = Math.max(-5, Math.min(5, m.mood + (q === 'ruhe' ? Math.max(d, -m.mood) : d)));
+  saveMem(s, k, m);
+  return { text: (sour ? bad : good)[h % (sour ? bad : good).length], mood: m.mood };
+}
+
+/** Kommentar zu deinem Outfit (Passant*innen beim Vorbeigehen) */
+export function outfitLine(outfit: string, adult: boolean, rain: boolean, h: number): string | null {
+  const L: Record<string, string[]> = {
+    clothed: ['Schicke Jacke! Wo hast du die her?', 'Cooler Look, ehrlich.', 'Die Schuhe! Ich will die auch!'],
+    shirtless: rain ? ['Oberkörperfrei im Regen? Du wirst dich erkälten!', 'Mutig bei dem Wetter!'] : ['Na, da hat aber jemand trainiert! 💪', 'Sonnencreme nicht vergessen!', adult ? 'Wow. Einfach nur wow. 😳' : 'Sommer-Feeling, was?'],
+    swim: ['Strand ist da lang, Schätzchen! 🏖️', 'Badesachen mitten in der Stadt? Ich lieb\'s!', 'Kommst du vom Hafen? Ist das Wasser warm?'],
+    harness: ['Oh là là, heute in den Club? 😏', 'Der Harness steht dir verdammt gut.', 'Mutig! Ich feier das.'],
+  };
+  const pool = L[outfit] || L.clothed;
+  return h % 3 === 0 ? null : pool[h % pool.length];
+}

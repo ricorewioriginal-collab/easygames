@@ -19,7 +19,7 @@ import { radioMenu } from './radioui';
 import { RACES, MEDALS, raceGig, finishRace, bestTime, nextParcel, stats, myCar, tuneLevel, GARAGE, type Race } from './vehicles';
 import { sfx, music, buzz, engineHum } from '../engine/Audio';
 import { route, onGrid } from './traffic';
-import { memOf, remember } from './leben';
+import { memOf, remember, saveMem, outfitLine } from './leben';
 import { toast, hints } from '../ui/ui';
 import { rollEvent, testDue, post } from './social';
 import { advance, minutesUntil, change, track, mood, moodIcon, NEEDS, clock as lifeClock, hour as lifeHour, DAY_SEC } from './life';
@@ -216,9 +216,16 @@ export class CityScene implements GameScene {
     const pkey = (n: StreetNpc) => 'street:' + this.street.people.indexOf(n) + ':' + n.a.avatar.id;
     this.street.people.forEach((n) => { if (/^(Passant|Spaziergänger|Nachbar|Tourist|Studentin|Geschäftsmann)/.test(n.name)) n.name = stranger(pkey(n), n.a.avatar.id).name; });
     this.street.onDodge = (n) => remember(this.g.save.data, pkey(n), 'near');
+    this.street.onCrowd = (n, stalk) => {
+      const s = this.g.save.data, k = pkey(n), m = memOf(s, k); m.mood = Math.max(-5, m.mood - 1); saveMem(s, k, m);
+      const L = stalk ? ['Verfolgst du mich etwa?!', 'Okay, das wird mir jetzt zu gruselig.', 'Läufst du mir nach? Ich ruf gleich meine Freundin an!'] : ['Äh, geht\'s noch? Etwas Abstand bitte!', 'Personal Space, Schätzchen!', 'Du stehst mir auf den Füßen!'];
+      toast(`${stalk ? '😨' : '😒'} ${n.name}: „${L[Math.floor(Math.random() * L.length)]}“`, 2200);
+    };
     this.street.onPass = (n) => {
       const s = this.g.save.data, m = memOf(s, pkey(n));
       if (m.near > 0 && m.mood < 0) { toast(`😒 ${n.name}: „Ach, du schon wieder. Heute zu Fuß, ja?“`, 2200); return; }
+      // Fremde kommentieren manchmal dein Outfit
+      if (m.met === 0 && this.passT < this.time - 15) { const line = outfitLine(String(s.flags.outfit || 'clothed'), s.settings.adult, this.weather.rain > .2, Math.floor(this.time * 7) + n.name.length); if (line) { this.passT = this.time; toast(`💬 ${n.name}: „${line}“`, 2400); } return; }
       if (m.met > 0 && this.passT < this.time - 12) { this.passT = this.time; n.a.play('wave'); setTimeout(() => n.a.anim === 'wave' && n.a.play('idle'), 1600); toast(`👋 ${n.name}: „${m.mood >= 3 ? 'Hey ' + s.name + '! 🥰' : 'Hi ' + s.name + '!'}“`, 2000); }
     };
     // Verkehr: lenkt an geparkten Autos vorbei, hupt, wenn du im Weg stehst
