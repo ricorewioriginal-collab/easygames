@@ -1,0 +1,7 @@
+Fahrzeugmodelle: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/), Namensnennung Pflicht.
+- "City Bus - rigged | RoAZ-5236" von Yo.Ri (Sketchfab): bus
+- "Firetruck" von OzerGokmen (Sketchfab): firetruck
+- "Riva aquarama lamborghini" von Anton Kovalev (Sketchfab): boat
+- "OKAI ES600 e-scooter" von Photogrammetry_Guest0 (Sketchfab): escooter
+- "Hover bike - The Rocket" von TuppsM (Sketchfab): hoverbike
+Ausgerichtet, vereinfacht und verkleinert mit scripts/rides.mjs. Details: ../../CREDITS.md
