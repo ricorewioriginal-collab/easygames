@@ -275,3 +275,44 @@ export function engineHum(rpm: number | null) {
   eng.f.frequency.setTargetAtTime(260 + r * 900, t, .1); eng.g.gain.setTargetAtTime(.022 + r * .03, t, .1);
 }
 export function now() { return ctx ? ctx.currentTime : 0; }
+
+/* ---------- Stadt-Atmo: Dauerschichten (Verkehrsrauschen, Meer, Stimmengewirr, Wind) aus einem geschleiften Rauschpuffer
+   plus kleine Einzelgeräusche (Vögel, Grillen, Möwen, ferne Hupe/Sirene, Hund). Pegel 0–1 je Schicht, null = aus. ---------- */
+export interface AmbLevels { traffic: number; sea: number; crowd: number; wind: number }
+let amb: { src: AudioBufferSourceNode; layers: Record<keyof AmbLevels, { f: BiquadFilterNode; g: GainNode; lfo?: OscillatorNode }> } | null = null;
+const AMB_GAIN: AmbLevels = { traffic: .05, sea: .07, crowd: .035, wind: .03 };
+export function ambience(l: AmbLevels | null) {
+  if (!ctx || !sfxBus) return;
+  const t = ctx.currentTime;
+  if (!l) { if (amb) for (const k of Object.keys(amb.layers) as Array<keyof AmbLevels>) amb.layers[k].g.gain.setTargetAtTime(0, t, .3); return; }
+  if (!amb) {
+    const n = ctx.sampleRate * 3, b = ctx.createBuffer(1, n, ctx.sampleRate), a = b.getChannelData(0);
+    // rosa-ähnliches Rauschen: weicher als weißes
+    let x = 0; for (let i = 0; i < n; i++) { x = x * .96 + (Math.random() * 2 - 1) * .2; a[i] = x; }
+    const src = ctx.createBufferSource(); src.buffer = b; src.loop = true;
+    const mk = (type: BiquadFilterType, fq: number, q = .7, lfoHz = 0) => {
+      const f = ctx!.createBiquadFilter(), g = ctx!.createGain(); f.type = type; f.frequency.value = fq; f.Q.value = q; g.gain.value = 0;
+      src.connect(f); f.connect(g); g.connect(sfxBus);
+      let lfo: OscillatorNode | undefined;
+      if (lfoHz) { lfo = ctx!.createOscillator(); const d = ctx!.createGain(); lfo.frequency.value = lfoHz; d.gain.value = fq * .6; lfo.connect(d); d.connect(f.frequency); lfo.start(); }
+      return { f, g, lfo };
+    };
+    amb = { src, layers: { traffic: mk('lowpass', 260, .9), sea: mk('lowpass', 520, .8, .11), crowd: mk('bandpass', 900, 1.4, .7), wind: mk('bandpass', 380, 2.5, .05) } };
+    src.start();
+  }
+  for (const k of Object.keys(AMB_GAIN) as Array<keyof AmbLevels>) amb.layers[k].g.gain.setTargetAtTime(Math.max(0, Math.min(1, l[k])) * AMB_GAIN[k], t, .6);
+}
+export type AmbFx = 'bird' | 'cricket' | 'gull' | 'hornfar' | 'sirenfar' | 'dog';
+/** Einzelgeräusch der Stadt, g = Lautstärke 0–1 (Entfernung) */
+export function ambFx(k: AmbFx, g = 1) {
+  if (!ctx || !sfxBus) return;
+  const t = ctx.currentTime + .02, v = Math.max(0, Math.min(1, g));
+  switch (k) {
+    case 'bird': { const b = 88 + Math.floor(Math.random() * 8); for (let i = 0; i < 2 + Math.floor(Math.random() * 3); i++) tone(b + (i % 2) * 3, t + i * .11, .08, 'sine', .035 * v, sfxBus, i % 2 ? -4 : 5); break; }
+    case 'cricket': for (let i = 0; i < 3; i++) tone(100, t + i * .07, .04, 'square', .006 * v, sfxBus); break;
+    case 'gull': tone(83, t, .28, 'sawtooth', .02 * v, sfxBus, -6); tone(81, t + .32, .22, 'sawtooth', .016 * v, sfxBus, -5); break;
+    case 'hornfar': tone(57, t, .35, 'square', .018 * v, sfxBus); tone(61, t, .35, 'square', .012 * v, sfxBus); break;
+    case 'sirenfar': for (let i = 0; i < 4; i++) tone(i % 2 ? 76 : 72, t + i * .55, .5, 'sine', .02 * v, sfxBus); break;
+    case 'dog': for (let i = 0; i < 2; i++) { tone(55, t + i * .22, .09, 'sawtooth', .05 * v, sfxBus, -5); noise(t + i * .22, .07, .04 * v, sfxBus, 0, 700); } break;
+  }
+}
