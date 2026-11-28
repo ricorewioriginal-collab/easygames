@@ -2590,7 +2590,7 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
   /* Gebäude-Skyline (Valdoria) */
   if(C.trees.includes('tower')){const twr=new T.Group();let t=0;tries=0;while(t<46&&tries++<2000){const x=rr(-120,120),z=rr(-220,60);if(!(AM?!CA.void&&AM.E(x,z)>12&&Math.abs(x)<118&&z>-226&&z<64&&h(x,z)<8:free(x,z,42))||Math.hypot(x,z)<42)continue;const w=rr(5,10),d=rr(5,10),hb=rr(8,24),bg=new T.Group();bg.position.set(x,h(x,z),z);bg.rotation.y=R()*3;
     skyTower(bg,t%5,w,d,hb,C);twr.add(bg);addCol(x,z,Math.hypot(w,d)/2);t++}scene.add(mergeStatic(twr))}
-  if(AM){const ag=new T.Group();scene.add(ag);const wl=[],bA={house:(...a)=>house(...a),box(x,y,z,w,hh,d,col){ag.add(mk(G.box,M(col),x,y+hh/2,z,w,hh,d))},cyl(x,y,z,r,hh,col){ag.add(mk(G.cyl0,M(col),x,y+hh/2,z,r,hh,r))},sph(x,y,z,sx,sy,sz,col,op){ag.add(mk(G.sph0,M(col,(op&&op.mat)||{}),x,y,z,sx,sy,sz,false))},glow(c,sz,x,y,z,a){ag.add(glow(c,sz,x,y,z,a))},addCol};
+  if(AM){const ag=new T.Group();scene.add(ag);const wl=[],bA={house:(...a)=>house(...a),box(x,y,z,w,hh,d,col,o){ag.add(mk(G.box,o&&o.tex?TX.tri(o.tex,col,Object.assign({s:.5,gain:1.7},o.to)):M(col),x,y+hh/2,z,w,hh,d))},cyl(x,y,z,r,hh,col){ag.add(mk(G.cyl0,M(col),x,y+hh/2,z,r,hh,r))},sph(x,y,z,sx,sy,sz,col,op){ag.add(mk(G.sph0,M(col,(op&&op.mat)||{}),x,y,z,sx,sy,sz,false))},glow(c,sz,x,y,z,a){ag.add(glow(c,sz,x,y,z,a))},addCol};
     arealDress({C:{KK,TX,T,PLAT,addCol,colFree,inHouse:(x,z,r)=>inHouseR(x,z,r),climb:o=>clbAdd(o),NAT,natTint:C.leaf,natOpt:{mix:NMIX,glow:emi?.2:0,gain:n===6?1.9:1.35}},w:CW,b:bA,g:ag,h,M:AM,R2:R,blk,busy:[],roadD:(x,z)=>Math.abs(x-pathx(z)),wallList:wl,TOUCH,mk,G,MAT:M});
     TNC=1;for(const [x,z,k] of wl)tree(k,x,z);TNC=0}
   for(const im of ims){im.count=im.userData.n;im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true}
@@ -2607,8 +2607,8 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
   for(const [x,z] of [[-5,10],[5,10],[-6,-5],[6,-6],[-4,-30],[4,-33],[-6,-70]])lantern(x+pathx(z)*(z<-20?1:0),z);
   portalAt(0,-18,C.rift);
   /* Tore: Waldrand & Siegel */
-  {const z=-46,x=pathx(z),gg=new T.Group();gg.position.set(x,h(x,z),z);for(const s of [-1,1]){gg.add(mk(G.cyl0,M(0x8e93ae),s*4,3,0,.9,6,.9));gg.add(mk(G.oct,M(C.glowc[0],{e:C.glowc[0],ei:1.6}),s*4,6.6,0,.5,.8,.5));addCol(x+s*4,z,1)}
-    gg.add(mk(G.box,M(0x8e93ae),0,6.2,0,9.4,.8,1.1));gg.add(mk(G.tor,M(0xc8e4ff,{e:C.glowc[0],ei:1.5}),0,7.4,0,1.3,1.3,1.3,false));gg.add(glow(C.glowc[0],9,0,7.4,0,.55));scene.add(gg)}
+  {const z=-46,x=pathx(z),gg=new T.Group();gg.position.set(x,h(x,z),z);for(const s of [-1,1]){gg.add(mk(G.cyl0,TX.tri('stone',0xb4b8d0,{s:.5,gain:1.9,n:.9}),s*4,3,0,.9,6,.9));gg.add(mk(G.oct,M(C.glowc[0],{e:C.glowc[0],ei:1.6}),s*4,6.6,0,.5,.8,.5));addCol(x+s*4,z,1)}
+    gg.add(mk(G.box,TX.tri('stone',0xb4b8d0,{s:.5,gain:1.9,n:.9}),0,6.2,0,9.4,.8,1.1));gg.add(mk(G.tor,M(0xc8e4ff,{e:C.glowc[0],ei:1.5}),0,7.4,0,1.3,1.3,1.3,false));gg.add(glow(C.glowc[0],9,0,7.4,0,.55));scene.add(gg)}
   {const z=-150,gg=new T.Group();gg.position.set(0,h(0,z),z);for(const s of [-1,1]){const p=mk(G.cone0,M(P.rock,{f:1}),s*6.5,5,0,2.6,10,2.6);p.rotation.z=-s*.12;gg.add(p);addCol(s*6.5,z,1.5)}
     const ring=mk(G.tor,M(C.rift,{e:C.rift,ei:2}),0,5.4,0,5.2,5.6,5.2,false);gg.add(ring);
     const sw=mk(new T.CircleGeometry(1,28),new T.MeshBasicMaterial({color:C.rift,transparent:true,opacity:.45,blending:T.AdditiveBlending,depthWrite:false,side:T.DoubleSide}),0,5.4,-.4,4.6,5,1,false);gg.add(sw);gg.add(glow(C.rift,12,0,5.4,-1.5,.4));
@@ -4161,7 +4161,7 @@ function lunAreal(extra){
     p.needsUpdate=true;ca.needsUpdate=true;g.computeVertexNormals();g.computeBoundingSphere()}
   /* Gegner, die jetzt in einer Wand stünden, auf den nächsten freien Platz */
   for(const e of E){if(e.boss||!blocked(e.hx,e.hz))continue;let ok=0;for(let r=2;r<40&&!ok;r+=2)for(let a=0;a<12&&!ok;a++){const x=e.hx+Math.cos(a*.524)*r,z=e.hz+Math.sin(a*.524)*r;if(!blocked(x,z)){e.x=e.hx=x;e.z=e.hz=z;ok=1}}e.m.root.position.set(e.x,hgt(e.x,e.z),e.z)}
-  const ag=new T.Group();scene.add(ag);const wl=[],R=mul32(9917),bA={box(x,y,z,w,hh,d,col){ag.add(mk(G.box,M(col),x,y+hh/2,z,w,hh,d))},cyl(x,y,z,r,hh,col){ag.add(mk(G.cyl0,M(col),x,y+hh/2,z,r,hh,r))},sph(x,y,z,sx,sy,sz,col,op){ag.add(mk(G.sph0,M(col,(op&&op.mat)||{}),x,y,z,sx,sy,sz,false))},glow(c,sz,x,y,z,a){ag.add(glow(c,sz,x,y,z,a))},addCol};
+  const ag=new T.Group();scene.add(ag);const wl=[],R=mul32(9917),bA={box(x,y,z,w,hh,d,col,o){ag.add(mk(G.box,o&&o.tex?TX.tri(o.tex,col,Object.assign({s:.5,gain:1.7},o.to)):M(col),x,y+hh/2,z,w,hh,d))},cyl(x,y,z,r,hh,col){ag.add(mk(G.cyl0,M(col),x,y+hh/2,z,r,hh,r))},sph(x,y,z,sx,sy,sz,col,op){ag.add(mk(G.sph0,M(col,(op&&op.mat)||{}),x,y,z,sx,sy,sz,false))},glow(c,sz,x,y,z,a){ag.add(glow(c,sz,x,y,z,a))},addCol};
   arealDress({C:{KK,TX,T,PLAT,addCol,colFree,inHouse:(x,z,r)=>inHouseR(x,z,r),climb:o=>clbAdd(o),NAT,natTint:LEAF,natOpt:{mix:.7,glow:.7,gain:1.5}},w:LCW,b:bA,g:ag,h:hgt,M:LAM,R2:R,blk:blocked,busy:[],roadD:(x,z)=>Math.abs(x-PATHX(z)),wallList:wl,TOUCH,mk,G,MAT:M});
   /* Waldwand im Lunaris-Stil: Mondbäume, Tannen mit leuchtenden Spitzen, Rissscherben */
   const n=wl.length,tr=inst(TRUNK,iTrunk.material,n,true),cn=inst(CAN,iCan.material,n*4,true),pn=inst(PINE,iPine.material,n*3,true),cy=inst(PG.crystal,iCrys.material,n,false);
