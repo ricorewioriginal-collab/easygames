@@ -363,7 +363,7 @@ function nqSpot(k){const px=z=>WLD?WLD.path(z):PATHX(z);for(let t=0;t<80;t++){co
 const WRN={2:['🍄 Sporenwolken','Die grünen Wolken machen dich langsam. Ein Funkenwirbel brennt sie weg.'],3:['♨️ Dampfschächte','Aus den Gittern schießt im Takt heißer Dampf. Warte den Stoß ab und lauf dann hinüber.'],4:['🌬️ Sandböen','Alle paar Sekunden schiebt dich eine Böe zur Seite. Halte dagegen oder weich aus.'],5:['🫧 Luftblasen','Die Blasen am Boden schleudern dich hoch – zu Korallenplatten mit Truhen.'],6:['🧊 Glatteis','Auf den blanken Flächen rutschst du nach. Bremse früh.'],7:['🌋 Lavabecken','Die glühenden Becken verbrennen dich, solange du darin stehst. Spring hinüber.'],8:['🕳️ Erinnerungsfallen','Verborgene Fallen zeigen sich erst aus der Nähe. Betrittst du eine, schlägt sie zu.'],9:['🌌 Leichte Welt','Zwischen den Schwebeinseln ist die Schwerkraft schwach: Du springst fast doppelt so hoch und schwebst langsam hinab.'],10:['🔁 Echo','Im Weltenkern hallt jeder Zauber nach und trifft kurz darauf noch einmal.']};
 let WRU=null;
 function worldRule(n){WRU=null;if(!WRN[n])return;const W={n,sp:[],t:0,slow:false,ice:false,g:1,gust:0,gd:1,hot:0},col=CHP[n].glowc[0],hz=n<9&&n!==4?5:0;
-  for(let i=0;i<hz;i++){const q=nqSpot(40+i*3);if(!q||W.sp.some(o=>Math.hypot(o.x-q[0],o.z-q[1])<9)||(WLD&&WLD.jp&&(()=>{const j=WLD.jp,sx=Math.sin(j.dir),sz=Math.cos(j.dir),t=Math.max(0,Math.min(22,(q[0]-j.q[0])*sx+(q[1]-j.q[1])*sz));return Math.hypot(q[0]-j.q[0]-sx*t,q[1]-j.q[1]-sz*t)<7})()))continue;   /* keine Weltregel-Falle auf dem Sprungpfad */const y=hgt(q[0],q[1]),g=new T.Group();g.position.set(q[0],y,q[1]);const o={x:q[0],z:q[1],y,g,on:true,t:i*1.3};
+  for(let i=0;i<hz+8&&(i<hz||W.sp.length<3);i++){const q=nqSpot(40+i*3);   /* mindestens 3 Stellen, auch wenn Bäume und Felsen einzelne Plätze belegen */if(!q||W.sp.some(o=>Math.hypot(o.x-q[0],o.z-q[1])<9)||(WLD&&WLD.jp&&(()=>{const j=WLD.jp,sx=Math.sin(j.dir),sz=Math.cos(j.dir),t=Math.max(0,Math.min(22,(q[0]-j.q[0])*sx+(q[1]-j.q[1])*sz));return Math.hypot(q[0]-j.q[0]-sx*t,q[1]-j.q[1]-sz*t)<7})()))continue;   /* keine Weltregel-Falle auf dem Sprungpfad */const y=hgt(q[0],q[1]),g=new T.Group();g.position.set(q[0],y,q[1]);const o={x:q[0],z:q[1],y,g,on:true,t:i*1.3};
     if(n===2){g.add(mk(G.cyl,M(0x4adf6a,{e:0x2aaf4a,ei:.8,t:1}),0,.05,0,4,.04,4,false));for(let k=0;k<5;k++)g.add(glow(0x6aff8a,3.2,Math.cos(k*1.26)*2,1+k%2*.6,Math.sin(k*1.26)*2,.35))}
     else if(n===3){g.add(mk(G.cyl,M(0x3a3a48,{m:.6,r:.5}),0,.05,0,2.4,.08,2.4,false));for(let k=-2;k<=2;k++)g.add(mk(G.box,M(0x15151c),k*.8,.1,0,.25,.04,4,false))}
     else if(n===5){g.add(mk(G.sph,M(0x9ae8ff,{e:0x6ad0ff,ei:1.2,t:1,r:.1}),0,.45,0,1.1,.5,1.1,false));g.add(glow(0x9ae8ff,3.5,0,.8,0,.5));const px=q[0],pz=q[1]-3.2,top=y+5.2,m=new T.Group();m.position.set(px,top,pz);m.add(mk(G.cyl,M(0xff8a9a,{r:.6}),0,-.15,0,1.9,.3,1.9));m.add(mk(G.cyl,M(col,{e:col,ei:1.2}),0,-.31,0,1.5,.05,1.5,false));scene.add(m);PLAT.unshift({x:px,z:pz,hx:1.65,hz:1.65,top,th:.34});
@@ -2615,7 +2615,7 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
     const L=new T.PointLight(C.rift,1.1,30,1.6);L.position.set(0,5,3);gg.add(L);scene.add(gg);
     animObjs.push({fn(t){ring.rotation.z=t*.4;sw.visible=sealed();sw.material.opacity=.4+Math.sin(t*2)*.12}})}
   {const L=new T.PointLight(C.glowc[1],1.8,60,1.3);L.position.set(0,6,-182);scene.add(L)}
-  landmark(C.land,C);
+  landmark(C.land,C);scene.add(vista(n===6?0xdfe8f4:C.pal.rock,n));
   worldDeco();
   function worldDeco(){   // Kulissen je Welt
     const spots=k=>{const o=[];let t=0;while(o.length<k&&t++<900){const x=rr(-112,112),z=rr(-150,40);if(np(x,z,12)||Math.hypot(x,z)<44||Math.hypot(x,z+182)<44||blk(x,z)||TWR.some(q=>Math.hypot(q.x-x,q.z-z)<9))continue;o.push([x,z])}return o};
@@ -2837,6 +2837,15 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
   refresh();
 }
 /* ---- Wahrzeichen am Horizont ---- */
+/* Weitblick: zwei Bergketten hinter dem Weltrand (215 m und 300 m), der Nebel der Welt färbt sie ein. Richtung Wahrzeichen (−z) bleiben sie flach. Nur Kulisse, keine Kollision. */
+function vista(col,n){const g=new T.Group();g.position.set(TCX,0,TCZ);const R=mul32(n*131+7);
+  for(const [rad,h0,h1,gain] of [[215,16,50,1.3],[300,38,104,1.05]]){const N=240,P=[],I=[],a0=R()*6,a1=R()*6,a2=R()*6,a3=R()*6;
+    for(let i=0;i<=N;i++){const a=i/N*6.2832,c=Math.cos(a),sn=Math.sin(a),low=Math.abs(Math.atan2(Math.sin(a-4.7124),Math.cos(a-4.7124)))<.42?.3:1,
+        H=(h0+(h1-h0)*Math.max(0,.5*(1-Math.abs(Math.sin(a*2.5+a0)))+.3*(1-Math.abs(Math.sin(a*7+a1)))+.16*(1-Math.abs(Math.sin(a*17+a2)))+.07*Math.sin(a*43+a3)))*low;
+      P.push(c*rad,-14,sn*rad,c*(rad+H*.8),H,sn*(rad+H*.8));if(i<N)I.push(2*i,2*i+1,2*i+2,2*i+1,2*i+3,2*i+2)}
+    const ge=new T.BufferGeometry();ge.setAttribute('position',new T.Float32BufferAttribute(P,3));ge.setIndex(I);ge.computeVertexNormals();
+    const m=TX.tri(n===6?'snow':'rock',col,{s:.03,gain,vista:1});m.side=T.DoubleSide;const me=new T.Mesh(ge,m);me.frustumCulled=false;me.name='vista';g.add(me)}
+  return g}
 function landmark(k,C){const g=new T.Group(),c0=C.glowc[0],c1=C.glowc[1],st=M(C.pal.rock,{r:.8});g.position.set(0,0,-360);
   const L=(m)=>{g.add(m);return m};
   switch(k){
@@ -4161,7 +4170,7 @@ function lunAreal(extra){
     if(k==='crys'){put(cy,x,h+s*1.2,z,s*.5,s*1.8,s*.5,R()*6,pick([0x6ab0ff,0x9a7aff,0x58e6ff]),(R()-.5)*.4,(R()-.5)*.4);continue}
     if(k==='pine'){for(let q=0;q<3;q++)NOP(R()*6);wF.push({k:'tanne',x,y:h-.1,z,ry:x*1.7+z,h:s*6.3})}
     else{NOP(R()*6,R()*6,pick(LEAF));wN.push({k:['laub2','laub1','laub4','laub5'][wN.length%4],x,y:h-.1,z,ry:x*1.7+z,h:s*5.8,w:s*6,tint:col})}}
-  NAT.place(scene,wN,{mix:.7,glow:.7,gain:1.5});if(wF.length)KK.place(scene,wF,'sf');
+  NAT.place(scene,wN,{mix:.7,glow:.7,gain:1.5});if(wF.length)KK.place(scene,wF,'sf');scene.add(vista(0x4a5a80,1));
   for(const im of [tr,cn,pn,cy]){im.count=im.userData.n;im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true}
   chunkInst([tr,cn,pn,cy]);
   TI.forEach(([tx,tz,r,ty],i)=>{const id='1t'+i,x=tx+1,z=tz+1,o={id,x,z,m:makeChest(),reward:{shards:43,potions:1},pr:'Truhe öffnen',py:ty};o.m.position.set(x,ty,z);o.m.rotation.y=wr(0,6);if(S.chests[id])o.m.visible=false;scene.add(o.m);chests.push(o);addCol(x,z,.7)});
