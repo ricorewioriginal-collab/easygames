@@ -646,12 +646,12 @@ export class CityScene implements GameScene {
       return;
     }
     if (rideSeat(this.drive.def) >= 0) {
-      // Einhorn-Roller und Glitzer-Boot: du bist sichtbar drauf, lenkt wie ein Auto
+      // E-Roller und Glitzer-Boot: du bist sichtbar drauf, lenkt wie ein Auto
       const boat = this.drive.def.ride === 'boat';
       this.player.play(boat ? 'sit' : 'idle'); sfx(boat ? 'whoosh' : 'boing');
       this.cam.dist = Math.max(this.cam.dist, boat ? 9 : 7); this.cam.tYaw = this.drive.o.rotation.y + Math.PI;
       hints([['move', 'Lenken & Gas'], ['turbo', 'Turbo'], ['a', 'Absteigen'], ['cam', 'Kamera'], ['y', 'Menü']]);
-      toast(boat ? '🚤 Glitzer-Boot: fährt nur auf dem Wasser, unter den Brücken durch bis zu den Inseln. Absteigen am Ufer.' : '🦄 Einhorn-Roller: klein, wendig, glitzert. Lenkt wie ein Auto.', 4200);
+      toast(boat ? '🚤 Glitzer-Boot: fährt nur auf dem Wasser, unter den Brücken durch bis zu den Inseln. Absteigen am Ufer.' : '🛴 E-Roller „Einhorn“: klein, wendig, leise. Lenkt wie ein Auto.', 4200);
       return;
     }
     if (!this.drive.own && !this.drive.def.ride) this.combat.enterCar(); sfx('door'); setTimeout(() => sfx('engine'), 250);
@@ -1308,4 +1308,4 @@ const CRASH = ['🚗💥 „Hey! Hast du deinen Führerschein im Lotto gewonnen?
 const glowCol = { gig: col(0xffd23b), story: col(0xff3fb0) };
 
 /** Sitzhöhe der sichtbaren Fahrerin auf Roller bzw. Boot (−1: Figur im Wagen versteckt) */
-function rideSeat(d: CarDef) { return d.ride === 'scooter' ? .3 : d.ride === 'boat' ? .38 : -1; }
+function rideSeat(d: CarDef) { return d.ride === 'scooter' ? .2 : d.ride === 'boat' ? .38 : -1; }

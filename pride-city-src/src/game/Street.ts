@@ -1,14 +1,15 @@
 /* Belebte Straßen: Passant*innen auf den Gehwegen, Polizeistreife, Feuerwehr mit Löschzug, Sanitäterin, Türsteher,
    Köchin und Kurier, Sexarbeiter*innen vor dem Haus Rosa (nur nachts und nur mit 18+) und geparkte Autos zum Einsteigen.
    Alle Menschen sind Rocketbox-Figuren. Leichtgewichtig: Figuren weit weg werden weder animiert noch gezeichnet. */
-import { Vector3, Color3, Node3, TransformNode, type Mesh } from '../engine/bjs';
-import { box, cyl, pbr, glow } from '../engine/geo';
+import { Vector3, Color3, Node3, TransformNode } from '../engine/bjs';
+import { box, glow } from '../engine/geo';
 import { Actor, WALK_MPS, RUN_MPS, type Anim, type Look } from './Actor';
 import { WORKERS, CURB } from './social';
 import { buildFlitzer } from './flitzer';
 import { buildAircraft, BASE } from './luft';
 import { buildRingMobil } from './toys';
 import { buildRide } from './rides';
+import { instance } from '../engine/Assets';
 import { CURB_SPOTS } from './uptown';
 import { escortSign } from './spuren';
 import { SZENE, STREET_SZENE, szeneRb, szeneOutfit, szeneLine } from './szene';
@@ -161,20 +162,12 @@ export class Street {
       [-1, 1].forEach((sx, i) => { const b = box(sc, .45, .25, .25); b.material = m[i].m; b.position.set(sx * .3, h + .1, -.1); b.parent = police.o; });
       this.flash.push([m[0], m[1]]);
     }
-    // Löschzug (aus Grundformen, im KayKit-Stil): fährt eine eigene Runde
+    // Löschzug (Sketchfab „Firetruck“ von OzerGokmen, CC BY 4.0, scripts/rides.mjs): fährt eine eigene Runde, Blaulicht auf dem Dach
     const truck = new Node3('truck', sc);
-    const M = (c: number, r = .6, m = 0) => pbr(sc, c, r, m);
-    const B = (w: number, h: number, l: number, mt: PBRMaterial, x: number, y: number, z: number) => { const o = box(sc, w, h, l); o.material = mt; o.position.set(x, y, z); o.parent = truck; o.receiveShadows = true; (o as Mesh & { _pcCast?: boolean })._pcCast = true; return o; };
-    const redM = M(0xd8261e, .45, .2), white = M(0xf4f4f4), grey = M(0x9aa0aa, .4, .6), black = M(0x1b1b22, .9), glass = M(0x7fc8ff, .1, .3);
-    B(2.4, 1.9, 4.6, redM, 0, 1.45, -.9);
-    B(2.4, 1.7, 1.9, redM, 0, 1.35, 2.4);
-    B(2.25, .8, .05, glass, 0, 1.75, 3.36);
-    B(2.42, .18, 6.4, white, 0, 1.05, 0);
-    B(.12, .12, 5, grey, -.5, 2.55, -.6); B(.12, .12, 5, grey, .5, 2.55, -.6);
-    for (let i = 0; i < 9; i++) B(1, .06, .08, grey, 0, 2.55, -2.9 + i * .58);
-    for (const [x, z] of [[-1.15, 2.2], [1.15, 2.2], [-1.15, -1.4], [1.15, -1.4], [-1.15, -2.5], [1.15, -2.5]]) { const w = cyl(sc, .5, .5, .35, 14); w.rotation.z = Math.PI / 2; w.material = black; w.position.set(x, .5, z); w.parent = truck; }
+    const ft = await instance(sc, 'rides/firetruck.glb', { shadows: !this.world.low });
+    ft.parent = truck; ft.scaling.setAll(8 / 9);
     const fm = [blue(), blue()] as const;
-    [-1, 1].forEach((sx, i) => { const b = box(sc, .45, .2, .3); b.material = fm[i].m; b.position.set(sx * .5, 2.3, 2.6); b.parent = truck; });
+    [-1, 1].forEach((sx, i) => { const b = box(sc, .4, .16, .26); b.material = fm[i].m; b.position.set(sx * .55, 3.12, 3.05); b.parent = truck; b.isPickable = false; });
     this.flash.push([fm[0], fm[1]]);
     truck.parent = this.world.root;
     this.world.cars.push({ o: truck, path: [new Vector3(57, .1, -33), new Vector3(-57, .1, -33)], seg: 0, u: .3, v: 6, kind: 'truck' });
