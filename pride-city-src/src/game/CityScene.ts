@@ -59,6 +59,7 @@ import { PhotoMode } from './fotomodus';
 import { Stunts, goViral, canGoViral, type Stunt } from './viral';
 import { bulletin } from './news';
 import { pickChat } from './chatter';
+import { areaAt, AreaWatch } from './area';
 import { isParade } from './gram';
 
 interface Npc { def: NpcDef; a: Actor; wp: number; wait: number; talking: boolean }
@@ -794,6 +795,18 @@ export class CityScene implements GameScene {
     const pool = r.nice ? NICE : RUDE;
     toast(`${r.nice ? '👋' : '😤'} ${r.n.name}: ${pool[Math.floor(Math.random() * pool.length)]}`, 2200);
   }
+  /** Ortsschild beim Wechsel ins nächste Viertel (area.ts) */
+  private areaW = new AreaWatch();
+  private areaEl: HTMLElement | null = null;
+  private areaTick(dt: number, busy: boolean) {
+    if (busy) return;
+    const p = this.player.root.position, isle = this.isles.find((i) => i.active);
+    const a = isle ? { id: 'isle:' + isle.def.id, name: isle.def.name, sub: 'Insel vor Rainbow City' } : areaAt(p.x, p.z);
+    const hit = this.areaW.update(dt, a); if (!hit) return;
+    if (!this.areaEl) { this.areaEl = document.createElement('div'); this.areaEl.className = 'areacard'; document.body.appendChild(this.areaEl); }
+    const el = this.areaEl; el.innerHTML = `<b></b><small></small>`; el.querySelector('b')!.textContent = hit.name; el.querySelector('small')!.textContent = hit.sub;
+    el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+  }
   /** Rainbow News im Autoradio */
   private newsT = 150;
   private newsTick(dt: number, busy: boolean) {
@@ -1060,7 +1073,7 @@ export class CityScene implements GameScene {
   private routeT = 0;
   private gps: { pts: Array<[number, number]>; color: string } | null = null;
   enter() { this.syncFlyer(); this.g.touch.fly(!!this.drive?.def.fly); this.g.hud.radarOn(true); if (this.drive) { this.g.hud.radioBtn(true); this.radio(0); } }
-  exit() { this.photoRef?.stop(); ambience(null); this.ambT = -1; if (this.bubble) this.bubble.style.display = 'none'; this.idleT = 0; if (this.idleOn) { this.cam.dist = this.idleOn.dist; this.cam.pitch = this.idleOn.pitch; this.idleOn.el.remove(); document.body.classList.remove('pc-idle'); this.idleOn = null; } this.endStunt(); this.g.hud.radarOn(false); this.g.touch.fly(false); if (this.drive) this.radioOff(); }
+  exit() { this.photoRef?.stop(); this.areaEl?.classList.remove('on'); ambience(null); this.ambT = -1; if (this.bubble) this.bubble.style.display = 'none'; this.idleT = 0; if (this.idleOn) { this.cam.dist = this.idleOn.dist; this.cam.pitch = this.idleOn.pitch; this.idleOn.el.remove(); document.body.classList.remove('pc-idle'); this.idleOn = null; } this.endStunt(); this.g.hud.radarOn(false); this.g.touch.fly(false); if (this.drive) this.radioOff(); }
   /** Missionsmarker wie im Open-World-Krimi: leuchtende Lichtsäule über dem Ziel */
   private beam: TransformNode | null = null;
   private beamMat: ReturnType<typeof glow> | null = null;
@@ -1340,7 +1353,7 @@ export class CityScene implements GameScene {
     { const free = !busy && !this.gig && !this.kerb.rider && this.combat.wanted.stars === 0 && !this.life.ev && !this.life.parade.riding && !this.isles.some((i) => i.active);
       this.trouble.update(dt, { free, night: this.world.night > .5, ref: this.player.root.position });
       this.jagd.update(dt, free && !this.trouble.cur && !this.bus.on, s); }
-    this.viralTick(dt, busy); this.newsTick(dt, busy); this.chatterTick(dt, busy || this.mode !== 'play'); this.soundTick(dt, busy || this.mode !== 'play');
+    this.viralTick(dt, busy); this.newsTick(dt, busy); this.chatterTick(dt, busy || this.mode !== 'play'); this.soundTick(dt, busy || this.mode !== 'play'); this.areaTick(dt, busy || this.mode !== 'play' || !!this.cine);
     this.life.update(dt, t, this.player.root.position, { busy: busy || !!this.gig || !!this.trouble.cur || !!this.kerb.rider || this.combat.wanted.stars > 0, night: this.world.night > .5, rain: this.weather.rain > .2, onFoot: !this.drive });
 
     this.hudT -= dt;

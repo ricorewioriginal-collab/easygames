@@ -532,3 +532,13 @@ body.pc-idle #hud, body.pc-idle #touch, body.pc-idle #hints { opacity: 0; }
 .chatbub { position: fixed; left: 0; top: 0; z-index: 11; display: none; max-width: min(62vw, 260px); padding: 6px 11px; border-radius: 14px; background: rgba(255,255,255,.92); color: #1a0d2e; font: 700 13px/1.3 system-ui, sans-serif; text-align: center; pointer-events: none; box-shadow: 0 3px 12px rgba(0,0,0,.35); }
 .chatbub::after { content: ''; position: absolute; left: 50%; bottom: -6px; margin-left: -6px; border: 6px solid transparent; border-bottom: 0; border-top-color: rgba(255,255,255,.92); }
 body.pc-idle .chatbub { display: none !important; }
+/* Ortsschild beim Viertelwechsel */
+.areacard { position: fixed; right: calc(18px + env(safe-area-inset-right, 0px)); bottom: calc(120px + var(--safe-b)); z-index: 11; text-align: right; pointer-events: none; opacity: 0; }
+.areacard b { display: block; font: italic 900 clamp(26px, 5.4vw, 46px)/1 system-ui, sans-serif; color: #fff; letter-spacing: .01em; -webkit-text-stroke: 1.5px #1a0d2e; text-shadow: 0 3px 0 #1a0d2e, 0 0 22px rgba(255,63,176,.55); }
+.areacard small { display: block; margin-top: 4px; font: 800 clamp(11px, 1.6vw, 14px)/1 system-ui, sans-serif; letter-spacing: .22em; text-transform: uppercase; color: #ffd23b; text-shadow: 0 1px 4px #000; }
+.areacard.on { animation: areaIn 4.2s ease both; }
+@keyframes areaIn { 0% { opacity: 0; transform: translateX(30px); } 12%, 80% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateX(10px); } }
+body.pc-idle .areacard { display: none; }
+html[data-input=touch] .areacard { bottom: calc(34vh + var(--safe-b)); }
+@media (orientation: landscape) { html[data-input=touch] .areacard { bottom: auto; top: 26%; right: auto; left: 50%; transform: translateX(-50%); text-align: center; } html[data-input=touch] .areacard.on { animation-name: areaInC; } }
+@keyframes areaInC { 0% { opacity: 0; } 12%, 80% { opacity: 1; } 100% { opacity: 0; } }
