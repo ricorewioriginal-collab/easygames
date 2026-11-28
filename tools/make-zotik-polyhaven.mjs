@@ -66,7 +66,10 @@ const ASSETS = [
   { n: 'wuestenfels2', a: 'namaqualand_boulders_01', node: 'rocks_01_b', t: 'mesh', tt: 480, tx: 1024 },
   { n: 'mondfels1', a: 'moon_rock_01', t: 'mesh', tt: 300, tx: 512 },
   { n: 'mondfels2', a: 'moon_rock_03', t: 'mesh', tt: 300, tx: 512 },
-  { n: 'felswand', a: 'rock_face_01', t: 'mesh', tt: 700, tx: 1024 }
+  { n: 'felswand', a: 'rock_face_01', t: 'mesh', tt: 700, tx: 1024 },
+  /* Requisiten: ersetzen im Spiel die Spielzeug-Fässer und -Kisten (nat.js swapProps) */
+  { n: 'fass', a: 'wine_barrel_01', t: 'mesh', tt: 1300, tx: 512 },
+  { n: 'kiste', a: 'wooden_crate_02', t: 'mesh', tt: 900, tx: 512 }
 ];
 const only = process.argv.slice(2), LIST = ASSETS.filter(q => !only.length || only.includes(n => n === q.n) || only.includes(q.n));
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
