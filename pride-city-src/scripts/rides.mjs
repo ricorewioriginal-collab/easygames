@@ -10,6 +10,7 @@
      boat.glb       „Riva aquarama lamborghini“ von Anton Kovalev
      escooter.glb   „OKAI ES600 e-scooter“ von Photogrammetry_Guest0
      hoverbike.glb  „Hover bike - "The Rocket"“ von TuppsM
+     flatbed.glb    „Lightbody '90 MD Flatbed - Low poly model“ von Daniel Zhabotinsky (Zugmaschine der CSD-Festwagen, ohne Ladefläche) */
 import { NodeIO, getBounds } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { prune, dedup, join, weld, simplify, textureCompress, quantize, transformMesh } from '@gltf-transform/functions';
@@ -31,6 +32,7 @@ const RIDES = [
   { id: 'firetruck', src: 'firetruck', len: 9, yaw: 0, drop: /shadow/i, wheels: null, simp: .35, tex: 256 },
   { id: 'boat', src: 'boat', len: 8.2, yaw: -90, glass: /^Glass_Low$/, tex: 1024 },
   { id: 'escooter', src: 'escooter', len: 1.15, yaw: -90, simp: .45, tex: 512 },
+  { id: 'flatbed', src: 'flatbed', len: 5.7, yaw: -90, drop: /interior|steering|flatbed_trim|numberplate|badges/i, simp: .5, tex: 512 },
   { id: 'hoverbike', src: 'hoverbike', len: 3.6, yaw: -90, drop: /camera/i, simp: .45, tex: 1024 },
 ];
 const ENV = (k) => (process.env[k] || '').split(',').filter(Boolean);

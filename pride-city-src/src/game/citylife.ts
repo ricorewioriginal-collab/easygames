@@ -3,6 +3,7 @@
    Sparsam: Ereignisse leihen sich Passant*innen, die gerade weit weg sind. Die Parade entsteht erst, wenn sie beginnt. */
 import { Vector3, Mesh, VertexData, Node3, type Scene } from '../engine/bjs';
 import { box, cyl, sphere, planeZ, pbr, glow, canvasTex } from '../engine/geo';
+import { instance } from '../engine/Assets';
 import { sfx } from '../engine/Audio';
 import { toast, type Line } from '../ui/ui';
 import { Actor, WALK_MPS, type Anim, type Look } from './Actor';
@@ -223,9 +224,9 @@ export class Parade {
       const u = unit(off, true), bm = pbr(sc, body, .5, .1), dark = pbr(sc, 0x1a1a22, .8);
       add(u, box(sc, 2.7, .7, 6.2), 0, .75, 0).material = stripe ? stripeOf(stripe) : stripeM;
       add(u, box(sc, 2.8, .12, 6.3), 0, 1.16, 0).material = bm;
-      add(u, box(sc, 2.5, 1.7, 1.7), 0, 1.25, 3.9).material = bm;
-      add(u, box(sc, 2.3, .7, .1), 0, 1.6, 4.76).material = pbr(sc, 0x9ad8ff, .15, .6);
-      for (const [x, z] of [[-1.3, 2.2], [1.3, 2.2], [-1.3, -2.2], [1.3, -2.2], [-1.3, 3.9], [1.3, 3.9]]) { const c = add(u, cyl(sc, .42, .42, .3, 14), x, .42, z); c.rotation.z = Math.PI / 2; c.material = dark; }
+      // Zugmaschine: echter Lkw (Sketchfab „Lightbody '90 MD Flatbed“, Daniel Zhabotinsky, CC BY 4.0), Ladefläche unter dem Wagen
+      void instance(sc, 'rides/flatbed.glb', { shadows: !low }).then((t) => { if (u.node.isDisposed()) { t.dispose(); return; } t.parent = u.node; t.position.z = 3.04; });
+      for (const [x, z] of [[-1.3, 2.2], [1.3, 2.2], [-1.3, -2.2], [1.3, -2.2]]) { const c = add(u, cyl(sc, .42, .42, .3, 14), x, .42, z); c.rotation.z = Math.PI / 2; c.material = dark; }
       for (const s of [-1, 1]) { add(u, box(sc, .7, 1.3, .7), s * .85, 1.87, -2.5).material = dark; const cone = add(u, cyl(sc, .22, .22, .05, 14), s * .85, 2, -2.13); cone.rotation.x = Math.PI / 2; cone.material = glow(sc, 0xff6ad5, 1.2); }
       const cols = (stripe || hexes).map((h) => parseInt(h.slice(1), 16));
       if (deco === 'kugel') { const k = add(u, sphere(sc, .75, 16), 0, 2.65, 1.2); k.material = pbr(sc, 0xdfe6ff, .05, 1, { emissive: 0x8a7bff, ei: .35 }); add(u, cyl(sc, .06, .06, 1.1, 8), 0, 1.75, 1.2).material = dark; }
