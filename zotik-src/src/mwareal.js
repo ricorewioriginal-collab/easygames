@@ -166,6 +166,13 @@ export function arealDress({ C, w, b, g, h, M, R2, blk, busy, roadD, wallList, T
         if (placed.some(p => Math.hypot(p[0] - x, p[1] - z) < p[2] + rad + 1)) continue; if (Math.abs(h(x + rad, z) - h(x - rad, z)) > 1 || Math.abs(h(x, z + rad) - h(x, z - rad)) > 1) continue;
         const it = { k, x, y: h(x, z) - .03, z, ry: Math.atan2(zx - x, zz - z) + (R2() - .5) * .8 }; if (sz > 0) it.h = sz; else it.s = -sz;
         (f === 'wz' ? wz : f === 'kb' ? kb : kk).push(it); placed.push([x, z, rad]); if (sz > .9 || sz < 0) C.addCol(x, z, rad); c++; } } }
+  /* Bäume und Felsen der Waldwand als echte Modelle (models/ph) statt Zeichentrick-Bäumen */
+  if (C.NAT) { const TR = { ancient_tree_1: ['laub1', 'laub2'], garden_tree_green: ['laub4', 'laub5'], garden_tree_pink: ['laub2', 'laub5', 0xf0a0c0], ancient_tree_pink_1: ['laub1', 'laub2', 0xf0a0c0], garden_tree_yellow: ['laub5', 'laub2', 0xecb42e], ancient_tree_yellow_1: ['laub1', 'laub4', 0xecb42e],
+      creepy_tree1: ['kahl1', 'kahl2'], creepy_tree2: ['kahl2', 'kahl1'], birch1: ['laub5', 'laub4'], rock_big_1: ['fels1', 'fels2'], rock_big_2: ['fels2', 'moosfels1'], rock_big_3: ['fels1', 'moosfels1'], rock_big_B_gray_1: ['fels2', 'fels1'] }, nat = [], lt = C.natTint;
+    for (let i = wz.length - 1; i >= 0; i--) { const q = wz[i], m = TR[q.k]; if (!m) continue; wz.splice(i, 1); const rock = /^rock/.test(q.k), o = { k: m[i % 2], x: q.x, y: q.y, z: q.z, ry: q.ry };
+      if (rock) { o.box = [q.h * 1.4, q.h]; o.mix = 0; } else { o.h = q.h; o.w = q.h * 1.05; if (m[2]) { o.tint = m[2]; o.mix = .9; } else if (/^kahl/.test(o.k)) o.mix = 0; else if (lt) o.tint = lt[i % lt.length]; }
+      nat.push(o); }
+    if (nat.length) C.NAT.place(g, nat, C.natOpt || { glow: .06 }); }
   if (KK) { KK.place(g, wz, 'wz'); KK.place(g, kb, 'kb'); KK.place(g, kk); }
   return wz.length + kb.length + kk.length;
 }
