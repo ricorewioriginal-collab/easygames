@@ -2588,7 +2588,7 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
   if(C.trees.includes('tower')){const twr=new T.Group();let t=0;tries=0;while(t<46&&tries++<2000){const x=rr(-120,120),z=rr(-220,60);if(!(AM?!CA.void&&AM.E(x,z)>12&&Math.abs(x)<118&&z>-226&&z<64&&h(x,z)<8:free(x,z,42))||Math.hypot(x,z)<42)continue;const w=rr(5,10),d=rr(5,10),hb=rr(8,24),bg=new T.Group();bg.position.set(x,h(x,z),z);bg.rotation.y=R()*3;
     skyTower(bg,t%5,w,d,hb,C);twr.add(bg);addCol(x,z,Math.hypot(w,d)/2);t++}scene.add(mergeStatic(twr))}
   if(AM){const ag=new T.Group();scene.add(ag);const wl=[],bA={house:(...a)=>house(...a),box(x,y,z,w,hh,d,col){ag.add(mk(G.box,M(col),x,y+hh/2,z,w,hh,d))},cyl(x,y,z,r,hh,col){ag.add(mk(G.cyl0,M(col),x,y+hh/2,z,r,hh,r))},sph(x,y,z,sx,sy,sz,col,op){ag.add(mk(G.sph0,M(col,(op&&op.mat)||{}),x,y,z,sx,sy,sz,false))},glow(c,sz,x,y,z,a){ag.add(glow(c,sz,x,y,z,a))},addCol};
-    arealDress({C:{KK,TX,T,PLAT,addCol,colFree,inHouse:(x,z,r)=>inHouseR(x,z,r),climb:o=>clbAdd(o)},w:CW,b:bA,g:ag,h,M:AM,R2:R,blk,busy:[],roadD:(x,z)=>Math.abs(x-pathx(z)),wallList:wl,TOUCH,mk,G,MAT:M});
+    arealDress({C:{KK,TX,T,PLAT,addCol,colFree,inHouse:(x,z,r)=>inHouseR(x,z,r),climb:o=>clbAdd(o),NAT,natTint:C.leaf,natOpt:{mix:NMIX,glow:emi?.2:0,gain:n===6?1.9:1.35}},w:CW,b:bA,g:ag,h,M:AM,R2:R,blk,busy:[],roadD:(x,z)=>Math.abs(x-pathx(z)),wallList:wl,TOUCH,mk,G,MAT:M});
     TNC=1;for(const [x,z,k] of wl)tree(k,x,z);TNC=0}
   for(const im of ims){im.count=im.userData.n;im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true}
   NAT.place(scene,NLW,{mix:NMIX,glow:emi?.2:0,gain:n===6?1.9:1.35});if(PALMS.length)KK.place(scene,PALMS,'sf');
@@ -4150,14 +4150,15 @@ function lunAreal(extra){
   /* Gegner, die jetzt in einer Wand stünden, auf den nächsten freien Platz */
   for(const e of E){if(e.boss||!blocked(e.hx,e.hz))continue;let ok=0;for(let r=2;r<40&&!ok;r+=2)for(let a=0;a<12&&!ok;a++){const x=e.hx+Math.cos(a*.524)*r,z=e.hz+Math.sin(a*.524)*r;if(!blocked(x,z)){e.x=e.hx=x;e.z=e.hz=z;ok=1}}e.m.root.position.set(e.x,hgt(e.x,e.z),e.z)}
   const ag=new T.Group();scene.add(ag);const wl=[],R=mul32(9917),bA={box(x,y,z,w,hh,d,col){ag.add(mk(G.box,M(col),x,y+hh/2,z,w,hh,d))},cyl(x,y,z,r,hh,col){ag.add(mk(G.cyl0,M(col),x,y+hh/2,z,r,hh,r))},sph(x,y,z,sx,sy,sz,col,op){ag.add(mk(G.sph0,M(col,(op&&op.mat)||{}),x,y,z,sx,sy,sz,false))},glow(c,sz,x,y,z,a){ag.add(glow(c,sz,x,y,z,a))},addCol};
-  arealDress({C:{KK,TX,T,PLAT,addCol,colFree,inHouse:(x,z,r)=>inHouseR(x,z,r),climb:o=>clbAdd(o)},w:LCW,b:bA,g:ag,h:hgt,M:LAM,R2:R,blk:blocked,busy:[],roadD:(x,z)=>Math.abs(x-PATHX(z)),wallList:wl,TOUCH,mk,G,MAT:M});
+  arealDress({C:{KK,TX,T,PLAT,addCol,colFree,inHouse:(x,z,r)=>inHouseR(x,z,r),climb:o=>clbAdd(o),NAT,natTint:LEAF,natOpt:{mix:.7,glow:.7,gain:1.5}},w:LCW,b:bA,g:ag,h:hgt,M:LAM,R2:R,blk:blocked,busy:[],roadD:(x,z)=>Math.abs(x-PATHX(z)),wallList:wl,TOUCH,mk,G,MAT:M});
   /* Waldwand im Lunaris-Stil: Mondbäume, Tannen mit leuchtenden Spitzen, Rissscherben */
   const n=wl.length,tr=inst(TRUNK,iTrunk.material,n,true),cn=inst(CAN,iCan.material,n*4,true),pn=inst(PINE,iPine.material,n*3,true),cy=inst(PG.crystal,iCrys.material,n,false);
+  const wN=[],wF=[];
   for(const [x,z,k,sc] of wl){const h=hgt(x,z),s=(sc||1.3)*1.15,col=pick(LEAF);
     if(k==='crys'){put(cy,x,h+s*1.2,z,s*.5,s*1.8,s*.5,R()*6,pick([0x6ab0ff,0x9a7aff,0x58e6ff]),(R()-.5)*.4,(R()-.5)*.4);continue}
-    put(tr,x,h+s*1.1,z,.55*s,s*2.4,.55*s,0,0x4a3328);
-    if(k==='pine'){for(let q=0;q<3;q++)put(pn,x,h+s*(2.3+q*1.35),z,s*(2.2-q*.55),s*2.2,s*(2.2-q*.55),R()*6,q===2?0x7be0d0:col)}
-    else{put(cn,x,h+s*3.6,z,s*2.4,s*1.9,s*2.4,R()*6,col);put(cn,x+s*.9,h+s*2.8,z+s*.4,s*1.5,s*1.2,s*1.5,R()*6,pick(LEAF))}}
+    if(k==='pine'){for(let q=0;q<3;q++)NOP(R()*6);wF.push({k:'tanne',x,y:h-.1,z,ry:x*1.7+z,h:s*6.3})}
+    else{NOP(R()*6,R()*6,pick(LEAF));wN.push({k:['laub2','laub1','laub4','laub5'][wN.length%4],x,y:h-.1,z,ry:x*1.7+z,h:s*5.8,w:s*6,tint:col})}}
+  NAT.place(scene,wN,{mix:.7,glow:.7,gain:1.5});if(wF.length)KK.place(scene,wF,'sf');
   for(const im of [tr,cn,pn,cy]){im.count=im.userData.n;im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true}
   chunkInst([tr,cn,pn,cy]);
   TI.forEach(([tx,tz,r,ty],i)=>{const id='1t'+i,x=tx+1,z=tz+1,o={id,x,z,m:makeChest(),reward:{shards:43,potions:1},pr:'Truhe öffnen',py:ty};o.m.position.set(x,ty,z);o.m.rotation.y=wr(0,6);if(S.chests[id])o.m.visible=false;scene.add(o.m);chests.push(o);addCol(x,z,.7)});
