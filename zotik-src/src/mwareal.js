@@ -95,10 +95,10 @@ export function arealDress({ C, w, b, g, h, M, R2, blk, busy, roadD, wallList, T
         b.house(x, z, W, D, 4, A.city.walls[k % A.city.walls.length], A.city.roofs[(k >> 1) % A.city.roofs.length], ry, { ar: 1, sty: A.city.sty || (A.city.flat ? 4 : A.city.slate ? 3 : 1), chest: k % 6 === 1 ? { id: 'ah' + (w.n || 0) + '_' + k, reward: { shards: 20 + (w.n || 1) * 2, potions: 1 } } : null }); continue; }
       const wc = A.city.walls[k % A.city.walls.length], rc = A.city.roofs[(k >> 1) % A.city.roofs.length], hg = new T.Group(); hg.position.set(x, y, z); hg.rotation.y = ry; g.add(hg);
       if (C.climb) { const fl = A.city.flat, rh = D * .44; C.climb({ x, z, c: Math.cos(ry), s: Math.sin(ry), hx: W / 2 + .1, hz: D / 2 + .1, y: y + H, f: fl ? null : (lx, lz) => Math.max(0, rh * (1 - Math.abs(lz) / (D / 2 + .1))) }); }   // Dach begehbar
-      hg.add(mk(G.box, A.city.flat ? tx('plaster', wc, { s: .5, gain: 2.2, n: .45, e: 0x6a4a2a, ei: 1 }) : tx('plaster', wc, { s: .45, gain: 1.7, n: .6, e: 0x3a3026, ei: 1 }), 0, H / 2, 0, W, H, D));
+      hg.add(mk(G.box, A.city.flat ? tx('plaster', wc, { s: .4, gain: 2.5, n: 1, e: 0x6a4a2a, ei: .6 }) : tx('plaster', wc, { s: .45, gain: 1.7, n: .6, e: 0x3a3026, ei: 1 }), 0, H / 2, 0, W, H, D));
       if (A.city.beam) for (const bx of [-W / 2 + .15, 0, W / 2 - .15]) hg.add(mk(G.box, tx('wood', A.city.beam), bx, H / 2, D / 2 + .03, .24, H, .08, false));
       if (A.city.flat) {   // Lehmhaus: Flachdach mit Brüstung, manche mit Kuppel
-        const pm = tx('plaster', wc, { s: .5, gain: 2.2, n: .45, e: 0x6a4a2a, ei: 1 }); for (const [px, pz, lx, lz] of [[0, D / 2, W + .3, .3], [0, -D / 2, W + .3, .3], [W / 2, 0, .3, D], [-W / 2, 0, .3, D]]) hg.add(mk(G.box, pm, px, H + .3, pz, lx, .6, lz, false));
+        const pm = tx('plaster', wc, { s: .4, gain: 2.5, n: 1, e: 0x6a4a2a, ei: .6 }); for (const [px, pz, lx, lz] of [[0, D / 2, W + .3, .3], [0, -D / 2, W + .3, .3], [W / 2, 0, .3, D], [-W / 2, 0, .3, D]]) hg.add(mk(G.box, pm, px, H + .3, pz, lx, .6, lz, false));
         if (k % 3 === 0) { hg.add(mk(G.cyl, pm, 0, H + .35, 0, 1.9, .7, 1.9, false)); hg.add(mk(G.sph, MAT(rc, { m: .5, r: .35 }), 0, H + .7, 0, 1.9, 1.7, 1.9, false)); }
         else if (k % 3 === 1) for (const sx of [-1.6, 1.6]) hg.add(mk(G.box, MAT(rc, { r: .9 }), sx, H + 1.1, 0, 1.4, .06, 1.6, false));   // Sonnentuch
       } else {
