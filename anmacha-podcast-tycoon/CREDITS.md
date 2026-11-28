@@ -3,9 +3,7 @@
 - Code, Musik (prozedural per WebAudio), Soundeffekte (synthetisch), Texte: easygames / RicoReWi.
 - Figuren: Quaternius „Ultimate Animated Character Pack“ / Universal Animation Library – CC0 (`../figuren/`).
 - Katze (`models/cat.glb`): Quaternius „Ultimate Monsters“ – CC0.
-- Bäume, Brunnen, Felsen (`models/tree*.glb`, `fountain-round.glb`, `rock-large.glb`, `models/Textures/colormap.png`): Kenney – CC0.
-- Welt-Upgrade (`models/cc0/*.glb`: Hochhäuser, Häuser, Autos, Frachtschiff, Satellitenschüssel, Palmen, Laub- und Nadelbäume, Blumen, Zelte, Büsche, Lagerfeuer, Kisten, Fässer, SUV, Sportwagen, Müllwagen, Krankenwagen, Feuerwehr): Kenney City Kit (Commercial), Car Kit, Nature Kit, Space Kit – CC0, über `@netforge/asset-library-files` (Details `models/cc0/CREDITS.txt`).
-- Stadtdeko, Autos und Möbel (`models/kaykit/kk_*.glb`, `kf_*.glb`, `city.png`, `furniture.png`): Kay Lousberg „KayKit City Builder Bits“ und „KayKit Furniture Bits“ – CC0 (Lizenzen in `models/kaykit/`).
+- Häuser, Hochhäuser, Autos, Straßendeko, Bäume, Brunnen, Felsen und Möbel (`models/sf/*.glb`): Sketchfab-Modelle unter CC BY 4.0 – Urheber und Links je Modell in `models/sf/LIZENZ.md` (u. a. Daniel Zhabotinsky, evolveduk, Melon Polygons, YJ_). Aufbereitet mit `../tools/make-anmacha-sketchfab.mjs`.
 - Senderlogos (`img/sender/*.jpg`): RicoReWi Radio (ricorewi-radio.de), mit Erlaubnis des Rechteinhabers.
 - Sounds `sounds/coins.mp3`, `enter.mp3`, `buy.mp3`: Kenney – CC0.
 - Schrift Fredoka: SIL Open Font License (`../vendor/fonts/`).

@@ -37,7 +37,7 @@
       const car = { g, x, z, h, v: 0, name: ['Kombi', 'Kleinwagen', 'Sportflitzer', 'Lieferwagen'][i], max: [20, 18, 26, 16][i], len: 2.1, wid: 1.0 };
       car.box = C.addBox(x - 1.4, x + 1.4, z - 1.4, z + 1.4, 1.4); car.box = S.col[S.col.length - 1]; S.cars.push(car);
     });
-    // KayKit-Autos parken am Straßenrand – alle fahrbar
+    // Autos (Sketchfab) parken am Straßenrand – alle fahrbar
     if (W.models && W.models.kk_car_sedan) {
       const KK = [['kk_car_hatchback', 'Kompaktwagen', 19], ['kk_car_stationwagon', 'Kombi', 20], ['kk_car_sedan', 'Limousine', 22], ['kk_car_taxi', 'Taxi', 21], ['kk_car_police', 'Polizeiauto', 25]];
       let n = 0;

@@ -71,7 +71,7 @@
       if (worlds) continue;   // rundherum liegen Hafen, Insel, Berg und das RicoReWi-Universum
       const b = W.box(w, h, w, skyMat, Math.cos(a) * rr, h / 2, Math.sin(a) * rr, g, false); b.rotation.y = -a;
     }
-    // Gebäude je Block: bunte KayKit-Stadthäuser (Läden mit Markisen, Wassertürme) und Kenney-Geschäftshäuser, als Instanzen
+    // Gebäude je Block: Brownstone-Stadthäuser und Downtown-Geschäftshäuser (Sketchfab, models/sf/stadt.glb), als Instanzen
     const types = ['kk_building_a', 'kk_building_b', 'kk_building_c', 'kk_building_d', 'kk_building_e', 'kk_building_f', 'kk_building_g', 'kk_building_h', 'building_c', 'building_f', 'building_g', 'building_h'].filter(t => W.models[t]);
     const place = {}; types.forEach(t => (place[t] = []));
     const trees = [], treesB = [], flat = [], flowers = [], hedges = [];
@@ -143,9 +143,9 @@
       }
     });
     buildVenues(g, flat);
-    // Bäume (Kenney)
+    // Bäume (Sketchfab, models/sf/natur.glb)
     if (!snow) {
-      // Laubbäume, Eichen, Kiefern und ein paar Herbstbäume gemischt (Kenney Nature Kit)
+      // Laubbäume, Eichen, Kiefern und ein paar Buchen gemischt
       const kinds = ['tree_oak', 'tree', 'tree_oak', 'tree_pine', 'tree-high-round', 'tree_autumn'].filter(k => W.models[k]), byK = {};
       trees.concat(treesB).forEach((t, i) => { const k = kinds[(i * 7 + Math.abs(Math.floor(t.x * 3 + t.z))) % kinds.length] || 'tree'; (byK[k] = byK[k] || []).push(k === 'tree_pine' ? Object.assign({}, t, { s: t.s * 1.25 }) : t); });
       for (const k in byK) W.instances(g, k, byK[k], { byHeight: true });
