@@ -17,7 +17,7 @@ import type { Game } from './Game';
 import { radio, STATIONS, stationOf } from '../engine/Radio';
 import { radioMenu } from './radioui';
 import { RACES, MEDALS, raceGig, finishRace, bestTime, nextParcel, stats, myCar, tuneLevel, GARAGE, type Race } from './vehicles';
-import { sfx, music, buzz, engineHum } from '../engine/Audio';
+import { sfx, music, buzz, engineHum, vol } from '../engine/Audio';
 import { route, onGrid } from './traffic';
 import { memOf, remember, saveMem, outfitLine, FIG_STORIES, figKey, nextPart, heardPart, finish } from './leben';
 import { toast, hints, type Line } from '../ui/ui';
@@ -56,6 +56,8 @@ import { TuneShow, rigOf, dress } from './pimp';
 import { readPimp, isStock } from './tuning';
 import { PhotoMode } from './fotomodus';
 import { Stunts, goViral, canGoViral, type Stunt } from './viral';
+import { bulletin } from './news';
+import { isParade } from './gram';
 
 interface Npc { def: NpcDef; a: Actor; wp: number; wait: number; talking: boolean }
 
@@ -716,7 +718,47 @@ export class CityScene implements GameScene {
   private stunts = new Stunts();
   private viralT = 0;
   private viralWait: { kind: Stunt; power: number; by: string; t: number } | null = null;
+  /** Stunt-Kamera: kurze Zeitlupe mit Kinobalken und Seitenansicht nach einem großen Crash oder Drift */
+  private slowT = 0;
+  private stuntCd = 0;
+  private stuntCam: { t: number; side: number; el: HTMLElement } | null = null;
+  private stuntShot(st: { kind: Stunt; power: number }) {
+    if (this.stuntCam || this.stuntCd > 0 || !this.drive || this.idleOn) return;
+    if (st.kind === 'tempo' || (st.kind === 'drift' && st.power < .35) || (st.kind === 'crash' && st.power < .2)) return;
+    this.stuntCd = 25; this.slowT = 1.6;
+    const el = document.createElement('div'); el.className = 'cine stuntcine';
+    el.innerHTML = `<i></i><i></i><b>${st.kind === 'crash' ? '💥 CRASH' : '🔥 DRIFT'}</b>`;
+    document.body.appendChild(el);
+    this.stuntCam = { t: 0, side: Math.random() < .5 ? -1 : 1, el };
+  }
+  private stuntView(dt: number) {
+    const c = this.stuntCam!, o = this.drive?.o; c.t += dt;
+    const p = o ? o.position : this.player.root.position, yaw = (o ? o.rotation.y : this.player.root.rotation.y) + c.side * (1.25 - c.t * .5);
+    this.camera.position.set(p.x + Math.sin(yaw) * 6.5, p.y + 1.1 + c.t * .4, p.z + Math.cos(yaw) * 6.5);
+    this.aim.set(p.x, p.y + .8, p.z); this.camera.setTarget(this.aim);
+  }
+  private endStunt() { this.stuntCam?.el.remove(); this.stuntCam = null; this.slowT = 0; }
+  /** Rainbow News im Autoradio */
+  private newsT = 150;
+  private newsTick(dt: number, busy: boolean) {
+    if (!this.drive || busy || !(radio.state.on || radio.state.loading) || radio.state.st.id === 'off') return;
+    if ((this.newsT -= dt) > 0) return;
+    this.newsT = 240;
+    const s = this.g.save.data, h = this.hour();
+    const lines = bulletin(s, { hour: h, sky: this.weather.sky || 'klar', stars: this.combat.wanted.stars, parade: isParade(s, h), name: s.name });
+    sfx('phone'); this.g.hud.banner('📻 Rainbow News', lines[1], 'info', 7000);
+    const sy = typeof speechSynthesis !== 'undefined' ? speechSynthesis : null;
+    if (!sy) return;
+    try {
+      const u = new SpeechSynthesisUtterance(lines.join(' ')); u.lang = 'de-DE'; u.rate = 1.05;
+      const v = sy.getVoices().find((x) => x.lang.startsWith('de')); if (v) u.voice = v;
+      u.volume = Math.min(1, vol.sfx + .1);
+      radio.duck(true); u.onend = u.onerror = () => radio.duck(false);
+      sy.cancel(); sy.speak(u);
+    } catch { radio.duck(false); }
+  }
   private stunt(st: { kind: Stunt; power: number } | null) {
+    if (st) this.stuntShot(st);
     if (!st || this.viralT > 0 || this.viralWait || !canGoViral(this.g.save.data) || this.combat.wanted.stars > 0) return;
     const f = this.street.film(this.player.root.position, 24, 2);
     if (!f.length) return;
@@ -1164,6 +1206,9 @@ export class CityScene implements GameScene {
   private plazaRef = new Vector3(-15, 0, 15);
   update(dt: number, t: number) {
     const g = this.g, s = g.save.data;
+    // Zeitlupe der Stunt-Kamera (läuft in echter Zeit ab)
+    this.stuntCd -= dt;
+    if (this.slowT > 0) { this.slowT -= dt; dt *= .35; if (this.slowT <= 0 || !this.drive) this.endStunt(); }
     this.time = t;
     this.bloom = .35 + this.world.night * .5;
     // Figuren nur in der Nähe animieren (Leistung)
@@ -1218,7 +1263,7 @@ export class CityScene implements GameScene {
     if (this.drive && !this.drive.def.fly && !this.drive.def.air) this.street.danger = { x: this.drive.o.position.x, z: this.drive.o.position.z, yaw: this.mv, v: this.drive.v }; else this.street.danger = null;
     if (!busy && !this.photo) { if (this.drive) this.moveCar(dt); else if (!this.life.parade.riding && !this.bus.on) this.movePlayer(dt); this.kerb.update(dt, t); }
     this.idleCam(dt, !busy && !this.cine && !this.photo && this.mode === 'play');
-    if (this.cine) this.cine(dt); else this.updateCam(dt);
+    if (this.cine) this.cine(dt); else if (this.stuntCam) this.stuntView(dt); else this.updateCam(dt);
     this.world.follow(this.player.root.position);
     this.world.update(dt, t, this.player.root.position);
     { const pp = this.player.root.position; for (const i of this.isles) i.update(dt, t, { x: pp.x, z: pp.z, driving: !!this.drive, alt: this.drive?.def.fly ? this.alt : 0, busy, gig: !!this.gig }); }
@@ -1239,7 +1284,7 @@ export class CityScene implements GameScene {
     { const free = !busy && !this.gig && !this.kerb.rider && this.combat.wanted.stars === 0 && !this.life.ev && !this.life.parade.riding && !this.isles.some((i) => i.active);
       this.trouble.update(dt, { free, night: this.world.night > .5, ref: this.player.root.position });
       this.jagd.update(dt, free && !this.trouble.cur && !this.bus.on, s); }
-    this.viralTick(dt, busy);
+    this.viralTick(dt, busy); this.newsTick(dt, busy);
     this.life.update(dt, t, this.player.root.position, { busy: busy || !!this.gig || !!this.trouble.cur || !!this.kerb.rider || this.combat.wanted.stars > 0, night: this.world.night > .5, rain: this.weather.rain > .2, onFoot: !this.drive });
 
     this.hudT -= dt;

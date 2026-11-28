@@ -29,6 +29,7 @@ export function goViral(s: SaveData, kind: Stunt, power: number, by: string, r =
   s.flags.fol = fol + gain;
   s.flags.viralAll = (Number(s.flags.viralAll) || 0) + 1;
   const t = TITLES[kind], title = t[Math.floor(r * t.length) % t.length];
+  s.flags.viralLast = title; s.flags.viralViews = views; s.flags.viralDayLast = s.day;
   const comment = COMMENTS[Math.floor(r * 97) % COMMENTS.length];
   const text = `🎥 „${title}“ · ${views.toLocaleString('de-DE')} Aufrufe · „${comment}“`;
   post(s, `@${by.toLowerCase().replace(/[^a-zäöüß0-9]/g, '')}_filmt`, text);
