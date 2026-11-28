@@ -17,7 +17,8 @@ import type { Game } from './Game';
 import { radio, STATIONS, stationOf } from '../engine/Radio';
 import { radioMenu } from './radioui';
 import { RACES, MEDALS, raceGig, finishRace, bestTime, nextParcel, stats, myCar, tuneLevel, GARAGE, type Race } from './vehicles';
-import { sfx, music, buzz, engineHum, vol } from '../engine/Audio';
+import { sfx, music, buzz, engineHum, vol, ambience, ambFx } from '../engine/Audio';
+import { levels as ambLevels, nextFx, type Around } from './soundscape';
 import { route, onGrid } from './traffic';
 import { memOf, remember, saveMem, outfitLine, FIG_STORIES, figKey, nextPart, heardPart, finish } from './leben';
 import { toast, hints, type Line } from '../ui/ui';
@@ -762,6 +763,25 @@ export class CityScene implements GameScene {
     b.style.display = 'block'; const hw = b.offsetWidth / 2 + 8, x = Math.max(hw, Math.min(innerWidth - hw, pr.x)), y = Math.max(b.offsetHeight + 60, pr.y);
     b.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px) translate(-50%, -100%)`;
   }
+  /** Stadt-Atmo (soundscape.ts): Verkehr, Meer, Stimmen, Wind, dazu Vögel, Grillen, Möwen, ferne Hupen */
+  private ambT = 0;
+  private ambFxT = 3;
+  private around: Around = { sea: 0, cars: 0, people: 0, night: false, rain: false, inCar: false, high: false, dogs: 0 };
+  private soundTick(dt: number, busy: boolean) {
+    if (busy) { if (this.ambT > -1) { ambience(null); this.ambT = -1; } return; }
+    if ((this.ambT -= dt) <= 0) {
+      this.ambT = .5;
+      const p = this.player.root.position, a = this.around;
+      let sea = 0; for (let i = 0; i < 8; i++) { const an = i / 8 * Math.PI * 2; if (!walkable(p.x + Math.sin(an) * 22, p.z + Math.cos(an) * 22)) sea++; }
+      a.sea = sea / 8;
+      a.cars = this.world.cars.reduce((n, c) => n + (!c.off && Math.abs(c.o.position.x - p.x) < 45 && Math.abs(c.o.position.z - p.z) < 45 ? 1 : 0), 0);
+      let ppl = 0, dogs = 0; for (const n of this.street.people) { if (!n.a.root.visible) continue; const d = Vector3.DistanceSquared(n.a.root.position, p); if (d < 400) { ppl++; if (n.dog) dogs++; } }
+      a.people = ppl; a.dogs = dogs; a.night = this.world.night > .5; a.rain = this.weather.rain > .2;
+      a.inCar = !!this.drive && !this.drive.def.ride && !this.drive.def.toy; a.high = !!this.drive?.def.fly && this.alt > 8;
+      ambience(ambLevels(a));
+    }
+    if ((this.ambFxT -= dt) <= 0) { const n = nextFx(this.around, Math.random(), Math.random()); this.ambFxT = n.wait; if (n.fx) ambFx(n.fx[0], n.fx[1]); }
+  }
   /** Rainbow News im Autoradio */
   private newsT = 150;
   private newsTick(dt: number, busy: boolean) {
@@ -1028,7 +1048,7 @@ export class CityScene implements GameScene {
   private routeT = 0;
   private gps: { pts: Array<[number, number]>; color: string } | null = null;
   enter() { this.syncFlyer(); this.g.touch.fly(!!this.drive?.def.fly); this.g.hud.radarOn(true); if (this.drive) { this.g.hud.radioBtn(true); this.radio(0); } }
-  exit() { this.photoRef?.stop(); if (this.bubble) this.bubble.style.display = 'none'; this.idleT = 0; if (this.idleOn) { this.cam.dist = this.idleOn.dist; this.cam.pitch = this.idleOn.pitch; this.idleOn.el.remove(); document.body.classList.remove('pc-idle'); this.idleOn = null; } this.endStunt(); this.g.hud.radarOn(false); this.g.touch.fly(false); if (this.drive) this.radioOff(); }
+  exit() { this.photoRef?.stop(); ambience(null); this.ambT = -1; if (this.bubble) this.bubble.style.display = 'none'; this.idleT = 0; if (this.idleOn) { this.cam.dist = this.idleOn.dist; this.cam.pitch = this.idleOn.pitch; this.idleOn.el.remove(); document.body.classList.remove('pc-idle'); this.idleOn = null; } this.endStunt(); this.g.hud.radarOn(false); this.g.touch.fly(false); if (this.drive) this.radioOff(); }
   /** Missionsmarker wie im Open-World-Krimi: leuchtende Lichtsäule über dem Ziel */
   private beam: TransformNode | null = null;
   private beamMat: ReturnType<typeof glow> | null = null;
@@ -1308,7 +1328,7 @@ export class CityScene implements GameScene {
     { const free = !busy && !this.gig && !this.kerb.rider && this.combat.wanted.stars === 0 && !this.life.ev && !this.life.parade.riding && !this.isles.some((i) => i.active);
       this.trouble.update(dt, { free, night: this.world.night > .5, ref: this.player.root.position });
       this.jagd.update(dt, free && !this.trouble.cur && !this.bus.on, s); }
-    this.viralTick(dt, busy); this.newsTick(dt, busy); this.chatterTick(dt, busy || this.mode !== 'play');
+    this.viralTick(dt, busy); this.newsTick(dt, busy); this.chatterTick(dt, busy || this.mode !== 'play'); this.soundTick(dt, busy || this.mode !== 'play');
     this.life.update(dt, t, this.player.root.position, { busy: busy || !!this.gig || !!this.trouble.cur || !!this.kerb.rider || this.combat.wanted.stars > 0, night: this.world.night > .5, rain: this.weather.rain > .2, onFoot: !this.drive });
 
     this.hudT -= dt;
