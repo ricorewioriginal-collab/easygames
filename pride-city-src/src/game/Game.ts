@@ -19,6 +19,7 @@ import { openGigs, GIGS, fmtTime } from './gigs';
 import { BUSINESSES, owns, owned, income } from './empire';
 import { clubDeal, clubManage } from './clubui';
 import { isClub, QEVENTS } from './club';
+import { FKK, fkkOn, fkkWhen } from './fkk';
 import { CLUB_LAYOUT } from './clubdeco';
 import type { Invite } from './online';
 import { pcEvents } from './hooks';
@@ -364,6 +365,8 @@ export class Game {
       if (!sc) { this.loading.show(theme.title, 'Einrichtung'); sc = new InteriorScene(this, theme, placeId); await sc.build(); this.interiors.set(key, sc); this.loading.hide();
         // nur die letzten Räume behalten (Speicher am Handy)
         for (const [k, old] of this.interiors) { if (this.interiors.size <= 3) break; if (old !== sc) { this.engine.disposeScene(old); this.interiors.delete(k); } } }
+      // FKK-Abend: gespeicherte Räume an den heutigen Tag anpassen
+      if (!theme.own && sc.fkk !== fkkOn(s, theme.id)) sc.setFkk(!sc.fkk);
       this.inside = sc; this.where = 'inside';
       this.engine.setScene(sc);
     });
@@ -1563,6 +1566,13 @@ export class Game {
     if (P[id]) for (const j of jobsAt(id)) {
       const why = blocked(s, j);
       P[id].items.unshift({ icon: '💼', label: `Schicht als ${j.name}`, sub: why || `${jobTitle(s, j)} · ${wage(s, j)} €/h · 4 Stunden`, disabled: !!why && !why.startsWith('Du bist'), fn: () => this.runShift(j.id) });
+    }
+    // FKK-Abend (nur 18+): an festen Tagen sind alle nackt, sonst für Geld ausrufen; die eigene Figur macht freiwillig mit
+    const room = this.where === 'inside' && this.inside?.theme.id === id ? this.inside : null;
+    if (FKK[id] && s.settings.adult && room) {
+      const f = FKK[id], e = P[id] ||= { t: room.theme.title, d: f.text, items: [] };
+      if (room.fkk) e.items.unshift({ icon: '🌴', label: room.fkkMe ? `${f.name}: wieder anziehen` : `${f.name}: ausziehen und mitmachen`, sub: room.fkkMe ? 'Kleidung von der Garderobe holen' : 'Heute sind alle nackt · Kleidung an die Garderobe', fn: () => { close(); room.setFkkMe(!room.fkkMe); toast(room.fkkMe ? `🌴 ${f.name}: Kleidung abgegeben.` : 'Wieder angezogen.'); } });
+      else e.items.unshift({ icon: '🌴', label: `${f.name} heute ausrufen`, sub: `${f.cost} € · sonst ${fkkWhen(id)} · alle Gäste ziehen sich aus`, fn: buy(f.cost, `🌴 ${f.name}! ${f.text}`, () => { s.flags['fkk_' + id] = s.day; room.setFkk(true); }) });
     }
     const p = P[id]; if (!p) return;
     this.touch.show(false);
