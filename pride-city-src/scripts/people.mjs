@@ -453,7 +453,7 @@ export async function build(io, m, refs) {
       // Geometrie verkleinern
       if (ratio < .98) {
         const posArr = new Float32Array(p.count * 3); for (let v = 0; v < p.count; v++) posArr.set(T[p.start + v], v * 3);
-        const target = Math.max(300, Math.floor(ind.length * ratio / 3) * 3);
+        const target = Math.min(ind.length, Math.max(300, Math.floor(ind.length * ratio / 3) * 3));
         const [res] = MeshoptSimplifier.simplify(ind, posArr, 3, target, .02, ['LockBorder']);
         ind = res;
       }
