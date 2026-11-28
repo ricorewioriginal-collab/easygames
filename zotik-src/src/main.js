@@ -834,8 +834,10 @@ function makeHerb(){const g=new T.Group();for(let i=0;i<5;i++){const l=mk(G.cone
 /* Truhen: KayKit-Truhe (CC0) mit beweglichem Deckel, goldene Variante für besondere Funde; Lichtsäule und Funkeln zeigen sie von Weitem. Bis das Modell geladen ist, steht eine einfache Truhe da. */
 function makeChest(gold){const g=new T.Group(),tmp=new T.Group();tmp.add(mk(G.box,M(0x6a4428),0,.3,0,.9,.6,.6));tmp.add(mk(G.box,M(0xe8c060,{m:.8,r:.3}),0,.62,0,.92,.08,.62,false));g.add(tmp);
   const c=gold?0xffd060:0x9ad8ff;g.add(glow(c,2.6,0,.6,0,.55));const ring=mk(G.cyl0,BAS(c),0,.03,0,.85,.02,.85,false);ring.material=ring.material.clone();ring.material.transparent=true;ring.material.opacity=.35;ring.material.blending=T.AdditiveBlending;ring.material.depthWrite=false;g.add(ring);
-  const pr=KK.prop(gold?'chest_gold':'chest');g.add(pr);g.userData.chest={lid:null,ring,t:0};
-  const fit=()=>{const b=new T.Box3().setFromObject(pr);if(b.isEmpty())return setTimeout(fit,250);const sz=b.getSize(new T.Vector3()),k=1.05/Math.max(.1,sz.x,sz.z);pr.scale.setScalar(k);tmp.visible=false;pr.traverse(o=>{if(/lid/i.test(o.name)&&!g.userData.chest.lid)g.userData.chest.lid=o})};setTimeout(fit,60);
+  g.userData.chest={lid:null,ring,t:0};let pr=null;
+  const fit=()=>{if(!pr){pr=KK.prop(gold?'chest_gold':'chest');g.add(pr)}const b=new T.Box3().setFromObject(pr);if(b.isEmpty())return setTimeout(fit,250);const sz=b.getSize(new T.Vector3()),k=1.05/Math.max(.1,sz.x,sz.z);pr.scale.setScalar(k);tmp.visible=false;pr.traverse(o=>{if(/lid/i.test(o.name)&&!g.userData.chest.lid)g.userData.chest.lid=o})};
+  /* echte Holztruhe (Poly Haven); fehlt sie, bleibt die KayKit-Truhe */
+  NAT.chest(gold).then(c=>{if(!c)return fit();c.scale.setScalar(1.05/c.userData.w);g.add(c);tmp.visible=false;g.userData.chest.lid=c.getObjectByName('lid')}).catch(()=>fit());
   animObjs.push({fn(t){if(!g.parent||!g.visible)return;ring.scale.setScalar(1+Math.sin(t*2.4)*.08);ring.material.opacity=.25+Math.sin(t*2.4)*.12}});return g}
 /* Deckel klappt auf, Licht strömt heraus, dann verschwindet die Truhe */
 function chestOpen(m){const C=m.userData.chest;if(!C){m.visible=false;return}let t=0;const L=C.lid,r0=L?L.rotation.x:0;animObjs.push({fn(_,dt){if(t>1.6)return;t+=dt||.016;const k=Math.min(1,t/.5);if(L)L.rotation.x=r0-k*k*(3-2*k)*1.9;if(t>.25&&t<.9&&Math.random()<.5)emit(m.position.x,m.position.y+.7,m.position.z,0xffe08a,2,1.5,.6,.25,-3);if(t>1.6)m.visible=false}})}
