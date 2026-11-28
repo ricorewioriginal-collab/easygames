@@ -55,6 +55,7 @@ import { Kerb } from './kerb';
 import { TuneShow, rigOf, dress } from './pimp';
 import { readPimp, isStock } from './tuning';
 import { PhotoMode } from './fotomodus';
+import { Stunts, goViral, canGoViral, type Stunt } from './viral';
 
 interface Npc { def: NpcDef; a: Actor; wp: number; wait: number; talking: boolean }
 
@@ -711,6 +712,25 @@ export class CityScene implements GameScene {
   private mv = 0;
   private skidT = 0;
   private lastV = 0;
+  /** Stunts beim Fahren: Leute filmen, der Clip geht auf Glitzergram viral (viral.ts) */
+  private stunts = new Stunts();
+  private viralT = 0;
+  private viralWait: { kind: Stunt; power: number; by: string; t: number } | null = null;
+  private stunt(st: { kind: Stunt; power: number } | null) {
+    if (!st || this.viralT > 0 || this.viralWait || !canGoViral(this.g.save.data) || this.combat.wanted.stars > 0) return;
+    const f = this.street.film(this.player.root.position, 24, 2);
+    if (!f.length) return;
+    this.viralT = 50; this.viralWait = { ...st, by: f[0].name, t: 5 };
+    toast(`📱 ${f[0].name}${f[1] ? ' und ' + f[1].name : ''} ${f[1] ? 'filmen' : 'filmt'} dich!`, 2400);
+  }
+  private viralTick(dt: number, busy: boolean) {
+    this.viralT -= dt;
+    const w = this.viralWait; if (!w || busy || (w.t -= dt) > 0) return;
+    this.viralWait = null;
+    const c = goViral(this.g.save.data, w.kind, w.power, w.by); if (!c) return;
+    sfx('win'); this.g.hud.banner(`🔥 Viral: ${c.title}`, `Glitzergram · ${c.views.toLocaleString('de-DE')} Aufrufe · +${c.gain} Follower`, 'good', 4600);
+    this.g.save.write();
+  }
   private moveCar(dt: number) {
     const c = this.drive!, o = c.o, inp = this.g.engine.input, fly = !!c.def.fly;
     if (inp.pressed('tabR')) this.radio(1); else if (inp.pressed('tabL')) this.radio(-1);
@@ -748,6 +768,7 @@ export class CityScene implements GameScene {
     let slip = o.rotation.y - this.mv; slip = Math.atan2(Math.sin(slip), Math.cos(slip));
     slip = clamp(slip, -.95, .95);
     this.mv = o.rotation.y - slip * (1 - Math.min(1, dt * (drift ? 1.4 : 9)));
+    this.stunt(this.stunts.update(dt, { slip, v: c.v, max, plain }));
     if (plain && Math.abs(slip) > .2 && Math.abs(c.v) > 6) {
       c.v *= 1 - dt * .55 * Math.abs(Math.sin(slip));
       if ((this.skidT -= dt) <= 0) { this.skidT = .32; sfx('skid'); }
@@ -774,6 +795,7 @@ export class CityScene implements GameScene {
         this.world.knock(t, nx, nz, hit * .8); c.v *= .45;
         this.shake = Math.min(.6, hit / 30); sfx(hit > 9 ? 'crash' : 'hit');
         if (hit > 9) { buzz([40, 30, 60]); if (Math.random() < .6) toast(CRASH[Math.floor(Math.random() * CRASH.length)], 2200); }
+        this.stunt(this.stunts.crash(hit));
       } else c.v *= .9;
     }
     if (!high && !boat && Vector3.Distance(o.position, want) > .02 && Math.abs(c.v) > 4) {
@@ -853,6 +875,27 @@ export class CityScene implements GameScene {
   private ahead = new Vector3();
   private camExtra = 0;
   private camFov = 0;
+  /** Leerlauf-Kamera wie im Open-World-Krimi: nach einer Weile ohne Eingabe filmische Einstellungen mit Kinobalken */
+  private idleT = 0;
+  private idleOn: { el: HTMLElement; dist: number; pitch: number; t: number } | null = null;
+  private idleCam(dt: number, calm: boolean) {
+    const inp = this.g.engine.input;
+    this.idleT = calm && !this.drive && !inp.active() ? this.idleT + dt : 0;
+    const want = this.idleT > 25;
+    if (want && !this.idleOn) {
+      const el = document.createElement('div'); el.className = 'cine idlecine'; el.innerHTML = '<i></i><i></i>';
+      document.body.appendChild(el); document.body.classList.add('pc-idle');
+      this.idleOn = { el, dist: this.cam.dist, pitch: this.cam.pitch, t: 0 };
+    } else if (!want && this.idleOn) {
+      this.cam.dist = this.idleOn.dist; this.cam.pitch = this.idleOn.pitch;
+      this.idleOn.el.remove(); document.body.classList.remove('pc-idle'); this.idleOn = null;
+    }
+    const o = this.idleOn; if (!o) return;
+    // alle 9 Sekunden eine neue Einstellung: tiefe Fahrt um die Figur, weite Totale über die Stadt, nahes Profil
+    o.t += dt; const shot = Math.floor(o.t / 9) % 3, k = Math.min(1, dt * .8);
+    const [dist, pitch, spin] = shot === 0 ? [5.5, .1, .16] : shot === 1 ? [13, .55, .07] : [3.8, .2, -.11];
+    this.cam.dist += (dist - this.cam.dist) * k; this.cam.pitch += (pitch - this.cam.pitch) * k; this.cam.tYaw += spin * dt;
+  }
   private near3: World['colliders'] = [];
   private updateCam(dt: number, snap = false) {
     const inp = this.g.engine.input, st = this.g.save.data.settings, d = this.drive;
@@ -1174,6 +1217,7 @@ export class CityScene implements GameScene {
     { const trouble = this.combat.wanted.stars > 0 || this.brawl.fighting || this.brawl.chasing; this.street.life = { hour: this.hour(), rain: this.weather.rain > .2, alarm: trouble ? this.player.root.position : null, player: this.player.root.position, onFoot: !this.drive }; }
     if (this.drive && !this.drive.def.fly && !this.drive.def.air) this.street.danger = { x: this.drive.o.position.x, z: this.drive.o.position.z, yaw: this.mv, v: this.drive.v }; else this.street.danger = null;
     if (!busy && !this.photo) { if (this.drive) this.moveCar(dt); else if (!this.life.parade.riding && !this.bus.on) this.movePlayer(dt); this.kerb.update(dt, t); }
+    this.idleCam(dt, !busy && !this.cine && !this.photo && this.mode === 'play');
     if (this.cine) this.cine(dt); else this.updateCam(dt);
     this.world.follow(this.player.root.position);
     this.world.update(dt, t, this.player.root.position);
@@ -1195,6 +1239,7 @@ export class CityScene implements GameScene {
     { const free = !busy && !this.gig && !this.kerb.rider && this.combat.wanted.stars === 0 && !this.life.ev && !this.life.parade.riding && !this.isles.some((i) => i.active);
       this.trouble.update(dt, { free, night: this.world.night > .5, ref: this.player.root.position });
       this.jagd.update(dt, free && !this.trouble.cur && !this.bus.on, s); }
+    this.viralTick(dt, busy);
     this.life.update(dt, t, this.player.root.position, { busy: busy || !!this.gig || !!this.trouble.cur || !!this.kerb.rider || this.combat.wanted.stars > 0, night: this.world.night > .5, rain: this.weather.rain > .2, onFoot: !this.drive });
 
     this.hudT -= dt;

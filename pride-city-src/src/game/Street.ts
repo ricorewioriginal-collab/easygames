@@ -149,6 +149,18 @@ export class Street {
   /** Hund freut sich (Streicheln, Leckerli): wedelt ein paar Sekunden wild */
   private happy = new Map<StreetNpc, number>();
   cheer(n: StreetNpc, s = 4) { this.happy.set(n, s); }
+  /** Leute, die dich gerade mit dem Handy filmen (viral.ts): Restzeit in Sekunden */
+  private filming = new Map<StreetNpc, number>();
+  /** Bis zu max Leute in Reichweite zücken das Handy und filmen dich ein paar Sekunden */
+  film(p: Vector3, r = 22, max = 2, secs = 6) {
+    const got: StreetNpc[] = [];
+    for (const n of this.people) {
+      if (got.length >= max) break;
+      if (!n.a.root.visible || n.talking || n.down || n.chase || n.flee || !(n.kind === 'walker' || n.kind === 'szene' || n.kind === 'chef' || n.kind === 'courier')) continue;
+      if (Vector3.Distance(n.a.root.position, p) < r) { this.filming.set(n, secs); got.push(n); }
+    }
+    return got;
+  }
 
   private async cars() {
     const sc = this.scene;
@@ -283,6 +295,12 @@ export class Street {
         }
         if (n.called) { if (n.a.anim !== 'phone') n.a.play('phone'); return; }
       } else if (n.flee !== undefined) { n.flee = undefined; n.called = false; }
+      // filmt dich gerade: bleibt stehen, dreht sich mit und hält das Handy hoch
+      { const fm = this.filming.get(n);
+        if (fm !== undefined) {
+          if (fm <= 0 || !life) this.filming.delete(n);
+          else { this.filming.set(n, fm - dt); const q = n.a.root.position, pp = life.player; let dy = Math.atan2(pp.x - q.x, pp.z - q.z) - n.a.root.rotation.y; dy = Math.atan2(Math.sin(dy), Math.cos(dy)); n.a.root.rotation.y += dy * Math.min(1, dt * 5); if (n.a.anim !== 'phone') n.a.play('phone', .2); return; }
+        } }
       // dich bemerken: stehende Leute drehen sich zu dir um, Bekannte grüßen
       if (life?.player && !n.mate) {
         const q = n.a.root.position, pp = life.player, dx = pp.x - q.x, dz = pp.z - q.z, d2p = dx * dx + dz * dz;

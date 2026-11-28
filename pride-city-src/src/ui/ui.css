@@ -519,3 +519,7 @@ body:has(#hud:not(.hidden)) .screen.title.tune .panel p { margin: .25em 0; }
 #hud .speedo.on { display: block; }
 #hud .speedo.low { color: #ff8a5d; animation: pulse 1.2s infinite; }
 @media (pointer: coarse) { #hud .speedo { left: auto; right: 10px; bottom: auto; top: calc(300px + var(--safe-t)); font-size: .78em; } }
+/* Leerlauf-Kamera: Kinobalken, HUD und Touch-Knöpfe blenden aus (bleiben bedienbar) */
+#hud, #touch, #hints { transition: opacity .8s; }
+body.pc-idle #hud, body.pc-idle #touch, body.pc-idle #hints { opacity: 0; }
+.idlecine { z-index: 9; }
