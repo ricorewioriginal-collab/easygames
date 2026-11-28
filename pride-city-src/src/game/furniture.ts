@@ -2,17 +2,34 @@
    (weiße Lackfronten, Arbeitsplatte aus Marmor ambientCG Marble016, Edelstahl, Bettwäsche aus Leinen Fabric001,
    Polster aus Samt Fabric003; CC0). Maße in Metern, Front zeigt nach +z, Mitte auf dem Ursprung, Fuß bei y = 0.
    Je Szene einmal gebaut (ein Netz je Material) und als Instanzen verteilt. */
-import { Color3, type Mesh, type Scene, type TransformNode, type AbstractMesh } from '../engine/bjs';
-import { box, cyl, pbr } from '../engine/geo';
+import { Color3, PBRMaterial, type Mesh, type Scene, type TransformNode, type AbstractMesh } from '../engine/bjs';
+import { box, cyl, pbr, canvasTex } from '../engine/geo';
+import { PALETTES } from './palettes';
 import { PROCS } from '../engine/Assets';
 import { photo, merge } from './streetprops';
 
 type Parts = Array<[Mesh, string]>;   // Teil + Materialschlüssel
 const cache = new WeakMap<Scene, Map<string, Mesh[]>>();
-const mats = new WeakMap<Scene, Record<string, ReturnType<typeof pbr>>>();
+const mats = new WeakMap<Scene, Record<string, PBRMaterial>>();
+
+/** Abstraktes Gemälde (Pinselstriche in Pride-Farben auf Leinwand), aspect = Breite/Höhe */
+function art(sc: Scene, seed: number, aspect: number) {
+  const W = 256 * aspect, H = 256; let r = seed * 9301 + 49297; const rnd = () => ((r = (r * 16807) % 2147483647) / 2147483647);
+  const t = canvasTex(sc, W, H, (g) => {
+    g.fillStyle = '#efe9df'; g.fillRect(0, 0, W, H);
+    const cs = PALETTES[0].colors;
+    for (let i = 0; i < 26; i++) {
+      g.globalAlpha = .35 + rnd() * .5; g.strokeStyle = cs[Math.floor(rnd() * cs.length)]; g.lineWidth = 6 + rnd() * 28; g.lineCap = 'round';
+      g.beginPath(); const x = rnd() * W, y = rnd() * H; g.moveTo(x, y); g.bezierCurveTo(x + (rnd() - .5) * W, y + (rnd() - .5) * H, x + (rnd() - .5) * W, y + (rnd() - .5) * H, rnd() * W, rnd() * H); g.stroke();
+    }
+    g.globalAlpha = .06; for (let i = 0; i < 1500; i++) { g.fillStyle = rnd() < .5 ? '#000' : '#fff'; g.fillRect(rnd() * W, rnd() * H, 1, 1); }
+  });
+  const m = new PBRMaterial('art' + seed, sc); m.albedoTexture = t; m.roughness = .85; m.metallic = 0;
+  return m;
+}
 
 function M(sc: Scene) {
-  let m = mats.get(sc);
+  let m = mats.get(sc) as Record<string, PBRMaterial> | undefined;
   if (!m) {
     m = {
       lack: pbr(sc, 0xf1efea, .32), plinth: pbr(sc, 0x2b2b2e, .7), steel: pbr(sc, 0xd9dcdf, .3, .55), dark: pbr(sc, 0x3a3c40, .3, .8),
@@ -20,6 +37,11 @@ function M(sc: Scene) {
       linen: photo(sc, 'linen', 'linen', 2, 2, new Color3(1, 1, 1), .95), duvet: photo(sc, 'duvet', 'linen', 2.5, 2, new Color3(.86, .88, .95), .95),
       velvet: photo(sc, 'velvet', 'velvet', 2, 2, new Color3(1.05, 1.05, 1.1), .85), shade: photo(sc, 'shade', 'linen', 2, 1, new Color3(1.05, 1, .9), .9),
     };
+    m.frame = pbr(sc, 0x1c1714, .45); m.mat = pbr(sc, 0xf4f1ea, .9); m.wool = photo(sc, 'wool', 'linen', 6, 4, new Color3(.62, .58, .55), .95);
+    PALETTES[0].colors.forEach((c, i) => { const t = photo(sc, 'woolP' + i, 'linen', 6, 1, Color3.FromHexString(c).toLinearSpace().scale(1.1), .95); m!['stripe' + i] = t; });
+    for (const [k, seed] of [['artA', 3], ['artB', 7], ['artM', 11]] as const) m[k] = art(sc, seed, k === 'artB' ? 2 : 1);
+    ['#7a2e3a', '#1f3b5c', '#2f5d3a', '#c9b27c', '#3b3b3b', '#8a5a2b'].forEach((c, i) => { m!['book' + i] = pbr(sc, c, .6); });
+    m.paper = pbr(sc, 0xefe8d8, .9);
     m.shade.backFaceCulling = false; m.shade.emissiveColor = new Color3(.25, .2, .12);
     mats.set(sc, m);
   }
@@ -71,7 +93,31 @@ function floorLamp(sc: Scene): Parts {
     [at(cyl(sc, .17, .23, .3, 28, false), 0, 1.5, 0), 'shade'],
   ];
 }
-const BUILD: Record<string, (sc: Scene) => Parts> = { counter: (s) => counter(s, 'counter'), sink: (s) => counter(s, 'sink'), stove: (s) => counter(s, 'stove'), fridge, bed, floorLamp };
+/** Teppich 2,7 × 1,8 m: schlicht, gestreift (Regenbogen) oder oval */
+function rug(sc: Scene, kind: 'plain' | 'stripes' | 'oval'): Parts {
+  if (kind === 'oval') { const o = cyl(sc, .9, .9, .012, 40); o.scaling.x = 1.5; o.position.y = .006; o.bakeCurrentTransformIntoVertices(); return [[o, 'wool']]; }
+  if (kind === 'plain') return [[at(box(sc, 2.7, .012, 1.8), 0, .006, 0), 'wool']];
+  return PALETTES[0].colors.map((_c, i, a) => [at(box(sc, 2.7, .012, 1.8 / a.length), 0, .006, -.9 + (i + .5) * 1.8 / a.length), 'stripe' + i] as [Mesh, string]);
+}
+/** Bilderrahmen (Rückseite bei z = 0, Mitte in y) mit Passepartout und Gemälde */
+function frame(sc: Scene, w: number, h: number, art: string): Parts {
+  const p: Parts = [[at(box(sc, w, h, .04), 0, 0, .02), 'frame'], [at(box(sc, w - .08, h - .08, .006), 0, 0, .043), 'mat']];
+  const a = box(sc, w - .22, h - .22, .004); at(a, 0, 0, .047); p.push([a, art]);
+  return p;
+}
+/** Bücherreihe (Mitte in y wie beim Bausatz) */
+function books(sc: Scene): Parts {
+  const p: Parts = []; let x = -.33, i = 0;
+  while (x < .31) {
+    const t = .03 + ((i * 7) % 5) * .008, h = .3 + ((i * 5) % 4) * .035, d = .2 + ((i * 3) % 3) * .02, y = -.2 + h / 2;
+    p.push([at(box(sc, t, h, d), x + t / 2, y, 0), 'book' + (i % 6)], [at(box(sc, t - .006, h - .012, .004), x + t / 2, y, -d / 2 - .001), 'paper']);
+    x += t + .002; i++;
+  }
+  return p;
+}
+const BUILD: Record<string, (sc: Scene) => Parts> = {
+  rug: (s) => rug(s, 'plain'), rugStripes: (s) => rug(s, 'stripes'), rugOval: (s) => rug(s, 'oval'), books,
+  frameA: (s) => frame(s, .91, 1.08, 'artA'), frameB: (s) => frame(s, 1.8, 1.08, 'artB'), frameM: (s) => frame(s, .63, .81, 'artM'), counter: (s) => counter(s, 'counter'), sink: (s) => counter(s, 'sink'), stove: (s) => counter(s, 'stove'), fridge, bed, floorLamp };
 
 function sources(sc: Scene, kind: string) {
   let c = cache.get(sc); if (!c) cache.set(sc, (c = new Map()));

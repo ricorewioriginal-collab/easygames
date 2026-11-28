@@ -171,9 +171,13 @@ export class HomeScene implements GameScene {
     if (stoveAt) { const b = stoveAt as { min: Vector3; max: Vector3 }; plate.position.set((b.min.x + b.max.x) / 2 - .15, b.max.y + .003, (b.min.z + b.max.z) / 2 + .12); plate.scaling.set(.4, 1, .4); }
     // Fernseher gegenüber dem Sofa
     this.tvScreen = glow(sc, 0x111122, 1);
-    const tv = box(sc, 1.5, .88, .08); tv.material = pbr(sc, 0x18181f, .4); tv.position.set(.9, 1.0, -.25); cast(tv);
-    const scr = planeZ(sc, 1.4, .78); scr.material = this.tvScreen; scr.position.set(.9, 1.0, -.2);
-    const tvStand = box(sc, 1.7, .55, .45); tvStand.material = pbr(sc, 0x5b3b8c, .6); tvStand.position.set(.9, .275, -.25); cast(tvStand);
+    // Flachbildschirm mit schmalem Rahmen auf Standfuß, darunter ein Sideboard aus Holz (Poly Haven, wie im Wohnzimmer)
+    const tvBlack = pbr(sc, 0x0c0c0e, .18, .3);
+    const tv = box(sc, 1.46, .84, .035); tv.material = tvBlack; tv.position.set(.9, 1.0, -.25); cast(tv);
+    const neck = box(sc, .1, .14, .05); neck.material = tvBlack; neck.position.set(.9, .55, -.27); cast(neck);
+    const foot = box(sc, .46, .015, .22); foot.material = tvBlack; foot.position.set(.9, .49, -.27);
+    const scr = planeZ(sc, 1.4, .78); scr.material = this.tvScreen; scr.position.set(.9, 1.0, -.231);
+    void instance(sc, 'home/cabinet_medium_decorated.gltf').then((o) => { o.scaling.setAll(K * .78); o.position.set(.9, 0, -.27); o.getChildMeshes().forEach((m) => cast(m as Mesh)); });
     this.boxes.push({ x: .9, z: -.25, hx: .85, hz: .23 });
     // Dusche mit Glaswand in der Ecke
     const tray = box(sc, 1.3, .1, 1.3); tray.material = pbr(sc, 0xffffff, .3); tray.position.set(-3.8, .05, 2.8);
