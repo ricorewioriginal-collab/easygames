@@ -53,3 +53,25 @@ export function fountain(sc: Scene, x: number, z: number, add: (m: Mesh, cast?: 
   const vt = worldTex(sc, 'water_nor.jpg').clone(); vt.uScale = 6; vt.vScale = 1.5; vm.bumpTexture = vt; veil.material = vm; add(veil, false);
   return (t: number) => { wave(t); vt.vOffset = -t * .9; };
 }
+
+/** Bühne 7 × 3,4 m: Holzdielen (Poly Haven dark_wooden_planks) auf schwarzem Bühnenstoff, zwei Stufen vorn links */
+export function stage(sc: Scene, x: number, z: number, add: (m: Mesh, cast?: boolean) => void) {
+  const deck = photo(sc, 'stageDeck', 'tank_wood', 3.5, 1.7, new Color3(1.15, 1.05, .95), .7);
+  const skirt = photo(sc, 'stageSkirt', 'velvet', 10, 1, new Color3(.07, .07, .08), .95);
+  const d = box(sc, 7.1, .05, 3.5); d.material = deck; d.position.set(x, .675, z); add(d);
+  const sk = box(sc, 7, .6, 3.4); sk.material = skirt; sk.position.set(x, .38, z); add(sk);
+  for (const [k, h] of [[0, .22], [1, .44]] as const) { const st = box(sc, 1.1, h, .32); st.material = skirt; st.position.set(x - 2.6, .1 + h / 2, z + 1.7 + .32 * (1.5 - k)); add(st); const t = box(sc, 1.12, .025, .34); t.material = deck; t.position.set(x - 2.6, .1 + h + .012, z + 1.7 + .32 * (1.5 - k)); add(t); }
+}
+/** Traverse aus Aluminium: zwei Gitterstützen und ein Gitterträger (je vier Rohre mit Querstreben) */
+export function truss(sc: Scene, x: number, z: number, add: (m: Mesh) => void) {
+  const alu = new PBRMaterial('truss', sc); alu.albedoColor = new Color3(.75, .77, .8); alu.metallic = .9; alu.roughness = .32;
+  const ps: Mesh[] = [], q = .14;
+  const tube = (len: number, px: number, py: number, pz: number, rx: number, rz: number) => { const c = cyl(sc, .022, .022, len, 6); c.position.set(px, py, pz); c.rotation.set(rx, 0, rz); ps.push(c); };
+  for (const sx of [-3.3, 3.3]) {
+    for (const [a, b] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) tube(4.2, x + sx + a * q, 2.8, z + b * q, 0, 0);
+    for (let y = .9; y < 4.9; y += .5) for (const b of [-1, 1]) tube(.4, x + sx, y, z + b * q, 0, Math.PI / 2 - .6);
+  }
+  for (const [a, b] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) tube(6.8, x, 4.9 + a * q, z + b * q, 0, Math.PI / 2);
+  for (let u = -3; u <= 3; u += .5) for (const b of [-1, 1]) tube(.4, x + u, 4.9, z + b * q, 0, .6);
+  const m = merge(ps, 'truss'); m.material = alu; add(m);
+}

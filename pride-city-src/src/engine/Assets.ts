@@ -60,6 +60,13 @@ export const PROP_SWAP: Record<string, { file: string; scale: number; rot: numbe
   // Küche, Bett und Stehlampe: maßstäblich nachgebaut (furniture.ts), Mitte wie beim Bausatz
   'home/bed_double_A.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'bed' },
   'home/lamp_standing.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'floorLamp' },
+  'home/rug_rectangle_A.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'rug' },
+  'home/rug_rectangle_stripes_A.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'rugStripes' },
+  'home/rug_oval_A.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'rugOval' },
+  'home/pictureframe_large_A.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'frameA' },
+  'home/pictureframe_large_B.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'frameB' },
+  'home/pictureframe_medium.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'frameM' },
+  'home/book_set.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'books' },
   'kitchen/fridge_A.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'fridge' },
   'kitchen/kitchencounter_straight_A.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'counter' },
   'kitchen/kitchencounter_sink.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'sink' },

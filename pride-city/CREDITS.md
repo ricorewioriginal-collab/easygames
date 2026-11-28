@@ -16,7 +16,7 @@ Alle eingebundenen Modelle sind kostenlos und frei nutzbar (CC0 / Public Domain)
 | Müllsäcke und Kartons (Müllecken, Kisten; Polygone reduziert, Texturen 256 px) | `assets/props/trashbag.glb`, `cardboard_box_01.glb` | Poly Haven – „Trash Bag“, „Cardboard Box 01“ – https://polyhaven.com/models | CC0 1.0 |
 | Holzdauben des Wasserturms | `assets/world/tank_wood_*.jpg` | Poly Haven – „Dark Wooden Planks“ – https://polyhaven.com/a/dark_wooden_planks | CC0 1.0 |
 | Möbel: Sofa, Sessel, Couchtisch, Stuhl, Sideboard, Beistelltisch, Tischlampe, Zimmerpflanzen (Polygone reduziert, Texturen 512 px) | `assets/furniture/*.glb` | Poly Haven – „sofa_02“, „modern_arm_chair_01“, „modern_coffee_table_01“, „dining_chair_02“, „modern_wooden_cabinet“, „side_table_01“, „industrial_pipe_lamp“, „potted_plant_01/02/04“ (polyhaven.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
-| Bettwäsche, Polster, Arbeitsplatte (Küche, Bett und Stehlampe selbst modelliert) | `assets/world/linen_*`, `velvet_*`, `marble_*` | ambientCG – „Fabric001“, „Fabric003“, „Marble016“ – https://ambientcg.com | CC0 1.0 |
+| Bettwäsche, Polster, Arbeitsplatte, Teppiche, Bühnenstoff (Küche, Bett, Stehlampe, Fernseher, Bilderrahmen mit selbst gemalten Bildern, Bücher und Bühne selbst modelliert) | `assets/world/linen_*`, `velvet_*`, `marble_*` | ambientCG – „Fabric001“, „Fabric003“, „Marble016“ – https://ambientcg.com | CC0 1.0 |
 | Wasserwellen (Normalenkarte) | `assets/world/water_nor.jpg` | selbst erzeugt (Summe von Sinuswellen) | CC0 1.0 |
 | 3D-Grafik | im Build gebündelt | three.js – https://threejs.org | MIT |
 

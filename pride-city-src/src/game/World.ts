@@ -11,7 +11,7 @@ import { planeZ, ground, box, cyl, sphere, ring, torus, pbr, glow, canvasTex } f
 import { PALETTES } from './palettes';
 import { Townhouses } from './townhouse';
 import { palmParts, treeParts } from './plants';
-import { waterTowerParts, fountain } from './streetprops';
+import { waterTowerParts, fountain, stage, truss } from './streetprops';
 import { roadSurface, grassSurface, photoSurface, waterSurface, worldTex } from '../engine/surfaces';
 import { buildUptown, EAST, BRIDGE, UPTOWN_PLACES, doorStep, TANKE } from './uptown';
 import { NODES, LANE, lane, nearestEdge } from './traffic';
@@ -497,15 +497,13 @@ export class World {
     }
     for (const [x, z] of [[-24, 6], [-6, 6], [-24, 24], [-6, 24]]) this.palm(x, z, 1.1);
     // Bühne für Events
-    const stage = box(sc, 7, .6, 3.4); stage.material = pbr(sc, 0x6b4a32, .55); stage.position.set(cx, .4, cz - 7.6); this.still(stage);
+    stage(sc, cx, cz - 7.6, (m, cast = true) => { this.still(m, cast); });
     // LED-Kante in Regenbogenfarben und Traversen mit Scheinwerfern
     PALETTES[0].colors.forEach((c, i) => {
       const led = glow(sc, c, 1); this.neon.push({ m: led, base: col(c, .7) });
       const e = box(sc, 7 / 6, .1, .04); e.material = led; e.position.set(cx - 3.5 + (i + .5) * 7 / 6, .62, cz - 5.88); this.still(e, false, false);
     });
-    const truss = pbr(sc, 0x2b2b30, .35, .8);
-    for (const sx of [-3.3, 3.3]) { const t = box(sc, .18, 4.2, .18); t.material = truss; t.position.set(cx + sx, 2.8, cz - 9.1); this.still(t); }
-    const beam = box(sc, 6.8, .18, .18); beam.material = truss; beam.position.set(cx, 4.9, cz - 9.1); this.still(beam);
+    truss(sc, cx, cz - 9.1, (m) => { this.still(m); });
     const spot = glow(sc, 0xfff1d0, 1); this.neon.push({ m: spot, base: new Color3(.8, .75, .6) });
     for (let i = 0; i < 4; i++) { const sp = cyl(sc, .16, .22, .35, 10); sp.material = spot; sp.position.set(cx - 2.4 + i * 1.6, 4.65, cz - 9.1); sp.rotation.x = .5; this.still(sp, false, false); }
     this.colliders.push({ x: cx, z: cz - 7.6, hx: 3.5, hz: 1.7 });
