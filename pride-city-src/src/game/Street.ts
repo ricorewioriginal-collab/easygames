@@ -149,6 +149,24 @@ export class Street {
   /** Hund freut sich (Streicheln, Leckerli): wedelt ein paar Sekunden wild */
   private happy = new Map<StreetNpc, number>();
   cheer(n: StreetNpc, s = 4) { this.happy.set(n, s); }
+  /** Hupe: Leute vor dem Wagen springen zur Seite, andere drehen sich um und winken oder meckern.
+      Liefert die Reaktion für den Spruch (nett = winkt) oder null, wenn niemand in der Nähe ist. */
+  honked(p: Vector3, yaw: number): { n: StreetNpc; nice: boolean } | null {
+    const fx = Math.sin(yaw), fz = Math.cos(yaw); let pick: { n: StreetNpc; nice: boolean } | null = null, bd = 99;
+    for (const n of this.people) {
+      if (!n.a.root.visible || n.talking || n.down || n.chase || n.mate || !(n.kind === 'walker' || n.kind === 'szene' || n.kind === 'chef' || n.kind === 'courier')) continue;
+      const q = n.a.root.position, dx = q.x - p.x, dz = q.z - p.z, d = Math.hypot(dx, dz); if (d > 14) continue;
+      const along = dx * fx + dz * fz, side = dx * fz - dz * fx;
+      if (along > 0 && along < 10 && Math.abs(side) < 2.2 && !n.dodge) {
+        const k = side >= 0 ? 1 : -1; n.dodge = { vx: fz * k * 4.5, vz: -fx * k * 4.5, t: .5 }; n.a.root.rotation.y = Math.atan2(n.dodge.vx, n.dodge.vz); n.a.play('run', .1, 1.4);
+      } else if (!n.dodge) {
+        n.a.root.rotation.y = Math.atan2(-dx, -dz); n.wait = Math.max(n.wait, 1.6);
+        n.a.play(((n.h ?? n.name.length) % 3) ? 'wave' : 'laugh', .15);
+      }
+      if (d < bd) { bd = d; pick = { n, nice: ((n.h ?? n.name.length) + Math.floor(this.t / 7)) % 3 !== 0 }; }
+    }
+    return pick;
+  }
   /** Stadtgeflüster (chatter.ts): zwei Leute bleiben stehen und unterhalten sich */
   chat: { a: StreetNpc; b: StreetNpc; lines: string[]; i: number; t: number } | null = null;
   private chatCd = 4;

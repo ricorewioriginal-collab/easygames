@@ -33,6 +33,7 @@ export class Kerb {
   /** Hupe (Angriffstaste im Auto) */
   honk() {
     sfx('horn');
+    this.city.honkCrowd();
     const n = this.nearCurb(); if (!n) return;
     if (this.city.carSpeed > 4) { toast('Langsamer! Bei dem Tempo steigt niemand ein.'); return; }
     this.walk = n; n.talking = true; this.home.copyFrom(n.a.root.position);

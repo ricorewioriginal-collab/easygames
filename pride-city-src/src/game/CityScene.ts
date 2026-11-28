@@ -782,6 +782,18 @@ export class CityScene implements GameScene {
     }
     if ((this.ambFxT -= dt) <= 0) { const n = nextFx(this.around, Math.random(), Math.random()); this.ambFxT = n.wait; if (n.fx) ambFx(n.fx[0], n.fx[1]); }
   }
+  /** Hupen: Leute reagieren (zur Seite springen, winken, meckern), Hunde bellen */
+  private honkT = 0;
+  honkCrowd() {
+    const o = this.drive?.o; if (!o) return;
+    const r = this.street.honked(o.position, o.rotation.y); if (!r) return;
+    if (r.n.dog) ambFx('dog', .9);
+    if (this.time - this.honkT < 6) return; this.honkT = this.time;
+    const NICE = ['Hey, Süße*r! 👋', 'Na, schicke Karre! 😍', 'Huhu! Fahr vorsichtig! 💜', 'Hup mich ruhig nochmal an 😏'];
+    const RUDE = ['Ja, ja, ich seh dich ja!', 'Hallo?! Ich hätte fast meinen Kaffee verschüttet!', 'Hup doch deine Ex an! 🙄', 'Geht’s noch lauter?!'];
+    const pool = r.nice ? NICE : RUDE;
+    toast(`${r.nice ? '👋' : '😤'} ${r.n.name}: ${pool[Math.floor(Math.random() * pool.length)]}`, 2200);
+  }
   /** Rainbow News im Autoradio */
   private newsT = 150;
   private newsTick(dt: number, busy: boolean) {
