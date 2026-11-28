@@ -1,0 +1,77 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:#888"><script type="importmap">{"imports":{"three":"/three/build/three.module.js"}}</script><script type="module">
+import * as T from '/three/build/three.module.js';
+import { GLTFLoader } from '/three/examples/jsm/loaders/GLTFLoader.js';
+const jacobi = (a) => { // symmetrische 3x3 → Eigenvektoren (Spalten), absteigend sortiert
+  const v = [[1,0,0],[0,1,0],[0,0,1]]; a = a.map(r => r.slice());
+  for (let it = 0; it < 40; it++) { let p = 0, q = 1, m = Math.abs(a[0][1]); if (Math.abs(a[0][2]) > m) { m = Math.abs(a[0][2]); p = 0; q = 2; } if (Math.abs(a[1][2]) > m) { m = Math.abs(a[1][2]); p = 1; q = 2; } if (m < 1e-12) break;
+    const th = .5 * Math.atan2(2 * a[p][q], a[q][q] - a[p][p]), c = Math.cos(th), s = Math.sin(th);
+    for (let k = 0; k < 3; k++) { const x = a[k][p], y = a[k][q]; a[k][p] = c * x - s * y; a[k][q] = s * x + c * y; }
+    for (let k = 0; k < 3; k++) { const x = a[p][k], y = a[q][k]; a[p][k] = c * x - s * y; a[q][k] = s * x + c * y; }
+    for (let k = 0; k < 3; k++) { const x = v[k][p], y = v[k][q]; v[k][p] = c * x - s * y; v[k][q] = s * x + c * y; } }
+  const e = [0,1,2].map(i => ({ l: a[i][i], v: [v[0][i], v[1][i], v[2][i]] })).sort((x, y) => y.l - x.l); return e; };
+window.bake = async (cfg) => {
+  const AT = cfg.atlas || 2048, SS = cfg.ss || 2, RT = AT * SS;
+  const renderer = new T.WebGLRenderer({ antialias: false, alpha: true, preserveDrawingBuffer: true }); renderer.setSize(64, 64); renderer.outputEncoding = T.sRGBEncoding; document.body.appendChild(renderer.domElement);
+  const gl = await new Promise((res, rej) => new GLTFLoader().load(cfg.url, res, null, rej));
+  gl.scene.updateMatrixWorld(true);
+  const leafRe = new RegExp(cfg.leaf, 'i'), trunkRe = cfg.trunk ? new RegExp(cfg.trunk, 'i') : null, lodRe = cfg.lod ? new RegExp(cfg.lod, 'i') : null, skipRe = cfg.skip ? new RegExp(cfg.skip, 'i') : null;
+  const leaves = [], trunks = [], names = [];
+  gl.scene.traverse(o => { if (!o.isMesh) return; let nm = o.name, p = o.parent; while (p) { nm = p.name + '/' + nm; p = p.parent; } names.push(nm + ' [' + o.material.name + '] ' + (o.geometry.index ? o.geometry.index.count / 3 : o.geometry.attributes.position.count / 3));
+    if (lodRe && !lodRe.test(nm)) return; if (skipRe && skipRe.test(nm + o.material.name)) return;
+    if (trunkRe && trunkRe.test(o.material.name)) trunks.push(o); else if (leafRe.test(o.material.name)) leaves.push(o); });
+  if (cfg.list) return { names };
+  const basic = m => { const b = new T.MeshBasicMaterial({ map: m.map, side: T.DoubleSide, alphaTest: (m.transparent || m.alphaTest > 0) ? .35 : 0, color: m.map ? 0xffffff : m.color }); if (m.alphaMap) b.alphaMap = m.alphaMap; return b; };
+  // Dreiecksschwerpunkte (Welt)
+  const src = leaves.map(o => { const g = o.geometry, pos = g.attributes.position, idx = g.index ? g.index.array : null, nt = (idx ? idx.length : pos.count) / 3, cen = new Float32Array(nt * 3), M = o.matrixWorld, v = new T.Vector3();
+    const wp = new Float32Array(pos.count * 3); for (let i = 0; i < pos.count; i++) { v.fromBufferAttribute(pos, i).applyMatrix4(M); wp[i * 3] = v.x; wp[i * 3 + 1] = v.y; wp[i * 3 + 2] = v.z; }
+    for (let t = 0; t < nt; t++) { const a = idx ? idx[t * 3] : t * 3, b = idx ? idx[t * 3 + 1] : t * 3 + 1, c = idx ? idx[t * 3 + 2] : t * 3 + 2; for (let k = 0; k < 3; k++) cen[t * 3 + k] = (wp[a * 3 + k] + wp[b * 3 + k] + wp[c * 3 + k]) / 3; }
+    return { o, g, idx, nt, cen, wp }; });
+  const NT = src.reduce((s, q) => s + q.nt, 0);
+  // Stichprobe + k-means (Start: weitester Punkt)
+  const SN = Math.min(NT, 60000), smp = new Float32Array(SN * 3); { let k = 0; const step = NT / SN; let acc = 0, gi = 0; for (const q of src) for (let t = 0; t < q.nt; t++, gi++) { if (gi >= acc && k < SN) { smp.set(q.cen.subarray(t * 3, t * 3 + 3), k * 3); k++; acc += step; } } }
+  let K = cfg.K || 36; const cx = new Float32Array(K * 3), dmin = new Float32Array(SN).fill(1e30); let cur = 0;
+  for (let k = 0; k < K; k++) { cx.set(smp.subarray(cur * 3, cur * 3 + 3), k * 3); let best = 0, bd = -1; for (let i = 0; i < SN; i++) { const d = (smp[i*3]-cx[k*3])**2 + (smp[i*3+1]-cx[k*3+1])**2 + (smp[i*3+2]-cx[k*3+2])**2; if (d < dmin[i]) dmin[i] = d; if (dmin[i] > bd) { bd = dmin[i]; best = i; } } cur = best; }
+  const near = (x, y, z) => { let b = 0, bd = 1e30; for (let k = 0; k < K; k++) { const d = (x-cx[k*3])**2 + (y-cx[k*3+1])**2 + (z-cx[k*3+2])**2; if (d < bd) { bd = d; b = k; } } return b; };
+  for (let it = 0; it < 14; it++) { const sum = new Float64Array(K * 4); for (let i = 0; i < SN; i++) { const k = near(smp[i*3], smp[i*3+1], smp[i*3+2]); sum[k*4] += smp[i*3]; sum[k*4+1] += smp[i*3+1]; sum[k*4+2] += smp[i*3+2]; sum[k*4+3]++; } for (let k = 0; k < K; k++) if (sum[k*4+3]) { cx[k*3] = sum[k*4] / sum[k*4+3]; cx[k*3+1] = sum[k*4+1] / sum[k*4+3]; cx[k*3+2] = sum[k*4+2] / sum[k*4+3]; } }
+  // Zuordnung aller Dreiecke, Kovarianz je Gruppe
+  const cl = Array.from({ length: K }, () => ({ n: 0, s: new Float64Array(3), ss: new Float64Array(6), idx: src.map(() => []) }));
+  src.forEach((q, qi) => { for (let t = 0; t < q.nt; t++) { const x = q.cen[t*3], y = q.cen[t*3+1], z = q.cen[t*3+2], c = cl[near(x, y, z)]; c.n++; c.s[0] += x; c.s[1] += y; c.s[2] += z; c.ss[0] += x*x; c.ss[1] += x*y; c.ss[2] += x*z; c.ss[3] += y*y; c.ss[4] += y*z; c.ss[5] += z*z;
+    const a = q.idx ? q.idx[t*3] : t*3, b = q.idx ? q.idx[t*3+1] : t*3+1, d = q.idx ? q.idx[t*3+2] : t*3+2; c.idx[qi].push(a, b, d); } });
+  const cards = [];
+  for (const c of cl) { if (c.n < 8) continue; const m = [c.s[0]/c.n, c.s[1]/c.n, c.s[2]/c.n], cov = [[c.ss[0]/c.n-m[0]*m[0], c.ss[1]/c.n-m[0]*m[1], c.ss[2]/c.n-m[0]*m[2]], [0, c.ss[3]/c.n-m[1]*m[1], c.ss[4]/c.n-m[1]*m[2]], [0, 0, c.ss[5]/c.n-m[2]*m[2]]]; cov[1][0] = cov[0][1]; cov[2][0] = cov[0][2]; cov[2][1] = cov[1][2];
+    const E = jacobi(cov).map(e => e.v);
+    // Ausdehnung entlang der Achsen (alle Ecken)
+    const mn = [1e30, 1e30, 1e30], mx = [-1e30, -1e30, -1e30];
+    src.forEach((q, qi) => { const L = c.idx[qi]; for (let i = 0; i < L.length; i++) { const p = L[i] * 3, x = q.wp[p] - m[0], y = q.wp[p+1] - m[1], z = q.wp[p+2] - m[2]; for (let k = 0; k < 3; k++) { const d = x * E[k][0] + y * E[k][1] + z * E[k][2]; if (d < mn[k]) mn[k] = d; if (d > mx[k]) mx[k] = d; } } });
+    const ctr = [0, 1, 2].map(j => m[j] + [0, 1, 2].reduce((s, k) => s + E[k][j] * (mn[k] + mx[k]) / 2, 0)), half = [0, 1, 2].map(k => (mx[k] - mn[k]) / 2 + .02);
+    const meshes = src.map((q, qi) => { if (!c.idx[qi].length) return null; const g = new T.BufferGeometry(); for (const n in q.g.attributes) g.setAttribute(n, q.g.attributes[n]); g.setIndex(new T.BufferAttribute(new Uint32Array(c.idx[qi]), 1)); const me = new T.Mesh(g, basic(q.o.material)); me.matrixAutoUpdate = false; me.matrix.copy(q.o.matrixWorld); me.frustumCulled = false; return me; }).filter(Boolean);
+    // Karte A: Ebene (e1,e2), Blick entlang e3; Karte B: Ebene (e1,e3), Blick entlang e2
+    for (const [iu, iv, iw] of (cfg.one ? [[0, 1, 2]] : [[0, 1, 2], [0, 2, 1], [1, 2, 0]])) { if (half[iv] < .12 * half[iu] || half[iu] * half[iv] < 1e-4) continue; cards.push({ c: ctr, u: E[iu], v: E[iv], w: E[iw], hu: half[iu], hv: half[iv], hw: half[iw], meshes, n: c.n }); } }
+  // Packen
+  const pack = s => { const L = cards.map((q, i) => ({ i, w: Math.ceil(q.hu * 2 * s) + 4, h: Math.ceil(q.hv * 2 * s) + 4 })).sort((a, b) => b.h - a.h); let x = 0, y = 0, rh = 0; for (const q of L) { if (q.w > RT) return null; if (x + q.w > RT) { x = 0; y += rh; rh = 0; } q.x = x; q.y = y; x += q.w; rh = Math.max(rh, q.h); if (y + q.h > RT) return null; } return L; };
+  let lo = 1, hi = 4000, P = null; for (let it = 0; it < 24; it++) { const mid = (lo + hi) / 2, r = pack(mid); if (r) { lo = mid; P = r; } else hi = mid; }
+  const rt = new T.WebGLRenderTarget(RT, RT, { format: T.RGBAFormat, encoding: T.sRGBEncoding, depthBuffer: true }); renderer.setRenderTarget(rt); renderer.setClearColor(0x000000, 0); renderer.clear();
+  const sc = new T.Scene(), cam = new T.OrthographicCamera(-1, 1, 1, -1, 0, 10); rt.scissorTest = true;
+  for (const r of P) { const q = cards[r.i]; sc.clear(); for (const m of q.meshes) sc.add(m);
+    const pw = (r.w - 4) / (2 * q.hu), W = r.w / pw / 2, H = r.h / pw / 2; cam.left = -W; cam.right = W; cam.top = H; cam.bottom = -H; cam.near = 0; cam.far = q.hw * 2 + 1; cam.updateProjectionMatrix();
+    const C = new T.Vector3(...q.c), w = new T.Vector3(...q.w), u = new T.Vector3(...q.u), v = new T.Vector3(...q.v); cam.position.copy(C).addScaledVector(w, q.hw + .5);
+    cam.matrix.makeBasis(u, v, w).setPosition(cam.position); cam.matrixAutoUpdate = false; cam.matrixWorld.copy(cam.matrix); cam.matrixWorldInverse.copy(cam.matrix).invert();
+    rt.viewport.set(r.x, r.y, r.w, r.h); rt.scissor.set(r.x, r.y, r.w, r.h); renderer.setRenderTarget(rt); renderer.render(sc, cam);
+    q.uv = [(r.x) / RT, (r.y) / RT, (r.x + r.w) / RT, (r.y + r.h) / RT]; q.W = W; q.H = H; }
+  const out = { names, cards: cards.map(q => ({ c: q.c, u: q.u, v: q.v, W: q.W, H: q.H, uv: q.uv, n: q.n })), tris: NT };
+  const read = (rt, w, h) => { const px = new Uint8Array(w * h * 4); renderer.readRenderTargetPixels(rt, 0, 0, w, h, px); const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const x = cv.getContext('2d'), im = x.createImageData(w, h); im.data.set(px); x.putImageData(im, 0, 0); return cv.toDataURL('image/png'); };
+  out.atlas = read(rt, RT, RT);   // Zeile 0 = unten (v=0) → passt zu flipY=false? Nein: glTF-UV hat v nach unten; wird in Node gespiegelt
+  // Fernansicht: ganzer Baum aus zwei Richtungen
+  const all = new T.Scene(); for (const q of src) { const me = new T.Mesh(q.g, basic(q.o.material)); me.matrixAutoUpdate = false; me.matrix.copy(q.o.matrixWorld); me.frustumCulled = false; all.add(me); }
+  for (const o of trunks) { const me = new T.Mesh(o.geometry, basic(o.material)); me.matrixAutoUpdate = false; me.matrix.copy(o.matrixWorld); me.frustumCulled = false; all.add(me); }
+  const bb = new T.Box3().setFromObject(all); out.box = [bb.min.toArray(), bb.max.toArray()];
+  const tb = new T.Box3(); for (const o of trunks) tb.expandByObject(o); out.tbox = trunks.length ? [tb.min.toArray(), tb.max.toArray()] : null;
+  const IW = 512 * SS, rt2 = new T.WebGLRenderTarget(IW * 2, IW, { format: T.RGBAFormat, encoding: T.sRGBEncoding }); renderer.setRenderTarget(rt2); renderer.clear(); rt2.scissorTest = true;
+  const cy = (bb.min.y + bb.max.y) / 2, hy = (bb.max.y - bb.min.y) / 2, ax = cfg.axis || [(bb.min.x + bb.max.x) / 2, (bb.min.z + bb.max.z) / 2], hr = Math.max(bb.max.x - ax[0], ax[0] - bb.min.x, bb.max.z - ax[1], ax[1] - bb.min.z), HS = Math.max(hy, hr); out.imp = { ax, cy, hs: HS };
+  [[1, 0, 0], [0, 0, 1]].forEach((d, i) => { const w = new T.Vector3(...d), v = new T.Vector3(0, 1, 0), u = new T.Vector3().crossVectors(v, w); cam.left = -HS; cam.right = HS; cam.top = HS; cam.bottom = -HS; cam.near = 0; cam.far = HS * 4; cam.updateProjectionMatrix(); cam.position.set(ax[0], cy, ax[1]).addScaledVector(w, HS * 2);
+    cam.matrix.makeBasis(u, v, w).setPosition(cam.position); cam.matrixWorld.copy(cam.matrix); cam.matrixWorldInverse.copy(cam.matrix).invert(); rt2.viewport.set(i * IW, 0, IW, IW); rt2.scissor.set(i * IW, 0, IW, IW); renderer.setRenderTarget(rt2); renderer.render(all, cam); });
+  out.impAtlas = read(rt2, IW * 2, IW);
+  return out;
+};
+window.ready = true;
+</script>
