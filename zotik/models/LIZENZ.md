@@ -65,6 +65,7 @@ boulder_01, rock_07, rock_09, stone_01, rock_moss_set_01/02, namaqualand_boulder
 Aufbereitung: `tools/make-zotik-polyhaven.mjs` (Stamm stark vereinfacht, Krone als Astkarten aus dem Original gezeichnet, Fernansicht), Einbindung: `zotik-src/src/nat.js`.
 
 Requisiten (Poly Haven, CC0): wine_barrel_01 (Holzfass), wooden_crate_02 (Holzkiste) – in models/ph/ph.glb als `fass` und `kiste`, ersetzen die Spielzeug-Fässer und -Kisten.
+treasure_chest (Schatztruhe, Poly Haven, CC0) – als `truhe` und `truhedeckel` (Deckel klappt auf), ersetzt die Spielzeug-Truhen.
 
 Palme, Kakteen und Fliegenpilz in `ph/ph.glb` stammen von Sketchfab, Lizenz **CC-BY 4.0** (https://creativecommons.org/licenses/by/4.0/), für das Spiel vereinfacht:
 - „Realistic Palm Tree 4 Free“ von **Next Spring** – https://sketchfab.com/3d-models/realistic-palm-tree-4-free-917c18d6b2d04d33950dea6e20bc074f (`palme1`)

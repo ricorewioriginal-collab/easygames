@@ -83,6 +83,14 @@ export function createNat({ T, TOUCH, hi }) {
       if (!p.isScene) { if (chk && (G.gone = (G.gone || 0) + 1) > 2) GR.delete(G); continue; } G.gone = 0; if (vis) fill(G, cam); } }
   const stat = () => { let groups = 0, items = 0, near = 0, far = 0, draws = 0; for (const G of GR) { let p = G.grp, vis = true; while (p.parent) { vis = vis && p.visible; p = p.parent; } if (!p.isScene || !vis) continue; groups++;
       for (const K of G.keys) { items += K.items.length; const n = K.meshes[0].count; near += n; if (n) draws += K.meshes.length; } if (G.far && G.far.count) { far += G.far.count; draws++; } } return { groups, items, near, far, draws }; };
+  /* Schatztruhe mit beweglichem Deckel (Knoten 'lid', Scharnier hinten oben); gold = goldene Variante */
+  const chest = gold => load().then(M => { const B = M.truhe, L = M.truhedeckel; if (!B || !L) return null;
+    const g = new T.Group(), lid = new T.Group(), mats = new Map(), mat = m => { if (!gold) return m; let c = mats.get(m); if (!c) { c = m.clone(); c.color.set(0xffd27a); c.metalness = .55; c.roughness = .4; mats.set(m, c); } return c; };
+    const add = (par, A, off) => { for (const p of A.parts) { const me = new T.Mesh(p.geo, mat(p.mat)); me.matrixAutoUpdate = false; me.matrix.copy(off).multiply(p.loc); me.castShadow = !TOUCH; me.receiveShadow = true; par.add(me); } };
+    const box = A => { const b = new T.Box3(); for (const p of A.parts) { p.geo.computeBoundingBox(); const pa = p.geo.attributes.position, k = pa.normalized ? 1 / (pa.array instanceof Int16Array ? 32767 : pa.array instanceof Uint16Array ? 65535 : pa.array instanceof Int8Array ? 127 : 255) : 1, q = p.geo.boundingBox.clone(); q.min.multiplyScalar(k); q.max.multiplyScalar(k); b.union(q.applyMatrix4(p.loc)); } return b; };
+    const bb = box(B), bl = box(L); lid.name = 'lid'; add(g, B, new T.Matrix4());
+    lid.position.set((bb.min.x + bb.max.x) / 2, bb.max.y * .985, bb.min.z + .004); add(lid, L, new T.Matrix4().makeTranslation(-(bl.min.x + bl.max.x) / 2, -bl.min.y, -bl.min.z)); g.add(lid);
+    g.userData.w = Math.max(bb.max.x - bb.min.x, bb.max.z - bb.min.z); return g; });
   /* Spielzeug-Fässer und -Kisten (KayKit) durch echte Holzfässer und Holzkisten ersetzen: gleiche Namen, gleiche Grundfläche und Höhe,
      damit Zerschlagen, Kollision und Platzierung unverändert bleiben. m = Requisiten-Tabelle aus kaykit.js */
   const swapProps = m => load().then(M => {
@@ -95,5 +103,5 @@ export function createNat({ T, TOUCH, hi }) {
       else if (kind === 'f3') { const s = sy * .54 / F.h, r = F.w * s * .5; put(g, F, cx - r, y0, cz, s, .4); put(g, F, cx + r, y0, cz, s, 2.1); put(g, F, cx, y0 + F.h * s * .98, cz, s, 1.1); }
       else { const lx = sx >= sz, s = Math.max(sx, sz) / K.w * .96, n = Math.max(1, Math.round(sy / (K.h * s))), ry = lx ? Math.PI / 2 : 0; for (let i = 0; i < n; i++) put(g, K, cx, y0 + i * K.h * s, cz, s, ry + (i % 2 ? .22 : -.08) * (i ? 1 : 0)); }
       g.updateMatrixWorld(true); m[name] = g; } });
-  return { swapProps, place, update, load, stat, setRange: f => { range = f; for (const G of GR) G.cx = 1e9; } };
+  return { swapProps, chest, place, update, load, stat, setRange: f => { range = f; for (const G of GR) G.cx = 1e9; } };
 }

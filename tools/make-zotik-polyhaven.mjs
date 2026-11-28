@@ -70,6 +70,8 @@ const ASSETS = [
   /* Requisiten: ersetzen im Spiel die Spielzeug-Fässer und -Kisten (nat.js swapProps) */
   { n: 'fass', a: 'wine_barrel_01', t: 'mesh', tt: 1300, tx: 512 },
   { n: 'kiste', a: 'wooden_crate_02', t: 'mesh', tt: 900, tx: 512 },
+  { n: 'truhe', a: 'treasure_chest', node: 'bottom|handle|lock', t: 'mesh', tt: 1400, tx: 512, sink: 0 },
+  { n: 'truhedeckel', a: 'treasure_chest', node: '_lid', t: 'mesh', tt: 900, tx: 512, sink: 0 },
   /* Sketchfab (CC-BY bzw. CC0, siehe zotik-src/public/models/LIZENZ.md): Ordner sk_<name> mit sk_<name>.gltf aus dem glTF-Download */
   { n: 'palme1', a: 'sk_palme', t: 'tree', leaf: 'Leaf', trunk: 'Trunk', K: 30, tt: 500 },
   { n: 'kaktus1', a: 'sk_kaktus1', t: 'mesh', mat: 'bark', tt: 900, tx: 1024 },
