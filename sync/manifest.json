@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "8eb3b373e93d",
- "generated": "2026-11-28T04:42:15+01:00",
- "commit": "7f1b36500e6ae21f6178aac94a472aa728972e0b",
+ "version": "3c9dae6ce67a",
+ "generated": "2026-11-28T06:53:04+01:00",
+ "commit": "0b83908a9d070515aa4b04ad602357970dbb74b9",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -14987,14 +14987,14 @@
    "h": "fd5e5fe8bbf1d3729b6bd725165d58490e9cbd8dd46ce42314b01f20951a302b"
   },
   {
-   "p": "pride-city/assets/index-BGEfayjc.js",
-   "s": 1359889,
-   "h": "d21871c4c4fd44a2e482b6b14374be7925ee2051bff7f3fef0d51de5c560a170"
-  },
-  {
    "p": "pride-city/assets/index-BIR2h5rN.css",
    "s": 43782,
    "h": "211fbca1e4ad52987f24abf0084d3f0b3547afbc18046a32bdb7212f49c7689f"
+  },
+  {
+   "p": "pride-city/assets/index-Daod23Ef.js",
+   "s": 1360295,
+   "h": "56c9d48146067016074eff7f101084beb0f1afd6ade52afe389ad48945e85600"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -15137,34 +15137,9 @@
    "h": "9162e9b1871ea591a52a37d70ff8cf740495b4edd2010539c1103c3866565a2a"
   },
   {
-   "p": "pride-city/assets/rb/Fire_Female_01.glb",
-   "s": 2172616,
-   "h": "9ec32df48eb9c04574563268da017084e251fb1d01563768e06c89f483878077"
-  },
-  {
-   "p": "pride-city/assets/rb/Fire_Male_01.glb",
-   "s": 1080184,
-   "h": "6e82f41d4ed3a9287f9505d36c636da3c7adab40f894c4a00b96a470ff822735"
-  },
-  {
    "p": "pride-city/assets/rb/Male_Child_01.glb",
    "s": 740932,
    "h": "1b97100252bd1254a1b1293f1a39a3d334a10f407bf2b078c53884f7561d3c6e"
-  },
-  {
-   "p": "pride-city/assets/rb/Medical_Female_01.glb",
-   "s": 1123996,
-   "h": "b6e9085b688bfb52a979036ea7964bd7704467e9a359c1e5fb9738b2955841e0"
-  },
-  {
-   "p": "pride-city/assets/rb/Police_Female_01.glb",
-   "s": 2632396,
-   "h": "2077e24f1389ecb408487807abaef37ec54390a30aa8501fb66edc7d8ec3131c"
-  },
-  {
-   "p": "pride-city/assets/rb/Police_Male_01.glb",
-   "s": 1140052,
-   "h": "69cdcc2aff6bf4399e599c035f1f3b9e0d5a514793fa9ca10c289eb4d577fb23"
   },
   {
    "p": "pride-city/assets/rb/Sports_Female_01.glb",
@@ -15427,9 +15402,34 @@
    "h": "b844a1c0a822bea672a592ee315283bce2c8546175d56eda2292e768496fdf98"
   },
   {
+   "p": "pride-city/assets/rb/pc_fire_f.glb",
+   "s": 842904,
+   "h": "7da5227051a0803b58133f9a1906dea5b6c382ebff8a2edab1cd05813b3502e9"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_fire_m.glb",
+   "s": 839444,
+   "h": "f11a20513436bbe8449e536b23db9a1c56e7d3f64ece5353246d7f66244966e2"
+  },
+  {
    "p": "pride-city/assets/rb/pc_gangster.glb",
    "s": 758368,
    "h": "ea456320cf9db6df84fabea292dda6b5b82c3684292df543186172312b3a06a9"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_medic_f.glb",
+   "s": 633156,
+   "h": "3f68a5fd24d06da141f1f1eef0c9a8de104b15dcd200ae2fc4f8c7a19c1fd390"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_police_f.glb",
+   "s": 638848,
+   "h": "644ac4e78bb9286f48f09edd88efebe7487dddda539c566de49c48f716f0b7cf"
+  },
+  {
+   "p": "pride-city/assets/rb/pc_police_m.glb",
+   "s": 814320,
+   "h": "2860e29f387efe7b0b1f97a8e8044ec12c5d75fc6eb191d2611b9a2aec9761e8"
   },
   {
    "p": "pride-city/assets/rb/pc_rico.glb",
@@ -15899,7 +15899,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5862,
-   "h": "c4adf3678acdedfd8a330761d535ce5a5acb9f465a7bf3abca4e2ed999235aa1"
+   "h": "37483ae15f236d6653bb8fd9545a807c23013d2a722c53cb0da1c2033788514f"
   },
   {
    "p": "pride-city/logo.svg",
@@ -18674,7 +18674,7 @@
   {
    "p": "sync/catalog.json",
    "s": 241235,
-   "h": "01e3a54b87c021ea25b844a838bfe4c11ca688573fe5b67c687646736e331350"
+   "h": "96c2c906d55613893985bf5e90bab6f15a1ae42e96c2ce34e5d989cea75530dc"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

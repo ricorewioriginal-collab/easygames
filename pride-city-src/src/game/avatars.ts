@@ -1,7 +1,7 @@
 /* Menschen von Pride City: realistische Figuren von Sketchfab (CC BY, Namensnennung in public/CREDITS.md), mit dem
    Rocketbox-Skelett „Bip01 …“ ausgestattet (scripts/people.mjs). So teilen sich alle Figuren die vorhandenen Animationen
-   (Laufen, Tanzen, Jubeln …), Muskeln, Outfits und Umarmungen. Berufe mit Uniform (Polizei, Feuerwehr, Sanitäter, Küche,
-   Kurier), Kinder und die Sport-Körper unter Oberkörperfrei/Badesachen bleiben Microsoft-Rocketbox-Figuren (MIT).
+   (Laufen, Tanzen, Jubeln …), Muskeln, Outfits und Umarmungen. Polizei, Feuerwehr und Sanitäterin sind seit 28.11.2026 ebenfalls
+   neue Figuren; Küche, Kurier, Kinder und die Sport-Körper unter Oberkörperfrei/Badesachen bleiben Microsoft-Rocketbox-Figuren (MIT).
    Alte Spielstände und Figuren mit früheren IDs (Male_Adult_03, Female_Party_02 …) bekommen über LEGACY die neue Figur. */
 
 /** file = Modell unter assets/rb/ (sonst wie id) */
@@ -26,9 +26,10 @@ export const AVATARS: Avatar[] = [
   // Sport-Figuren auf der Straße: neue Figuren (die Rocketbox-Sportkörper bleiben nur unter Oberkörperfrei/Badesachen, koerper.ts)
   { ...A('Sports_Male_01', 'm', 'Rex', 'Sportlich', 'sport'), file: 'pc_c03' }, { ...A('Sports_Female_01', 'f', 'Jo', 'Sportlich', 'sport'), file: 'pc_c14' },
   { ...A('Business_Male_01', 'm', 'Jörg', 'Anzug', 'business'), file: 'pc_c01' },
-  A('Police_Male_01', 'm', 'Polizist', 'Uniform', 'police'), A('Police_Female_01', 'f', 'Polizistin', 'Uniform', 'police'),
-  A('Fire_Male_01', 'm', 'Feuerwehrmann', 'Einsatzkleidung', 'fire'), A('Fire_Female_01', 'f', 'Feuerwehrfrau', 'Einsatzkleidung', 'fire'),
-  A('Medical_Female_01', 'f', 'Sanitäterin', 'Kittel', 'medical'), { ...A('Security_Male_01', 'm', 'Security', 'Türsteher', 'security'), file: 'pc_c04' },
+  // Uniformen: neue Figuren (Sketchfab, CC BY), alte IDs bleiben für Spielstände und Story
+  { ...A('Police_Male_01', 'm', 'Polizist', 'Uniform', 'police'), file: 'pc_police_m' }, { ...A('Police_Female_01', 'f', 'Polizistin', 'Uniform', 'police'), file: 'pc_police_f' },
+  { ...A('Fire_Male_01', 'm', 'Feuerwehrmann', 'Einsatzkleidung', 'fire'), file: 'pc_fire_m' }, { ...A('Fire_Female_01', 'f', 'Feuerwehrfrau', 'Einsatzkleidung', 'fire'), file: 'pc_fire_f' },
+  { ...A('Medical_Female_01', 'f', 'Sanitäterin', 'Kittel', 'medical'), file: 'pc_medic_f' }, { ...A('Security_Male_01', 'm', 'Security', 'Türsteher', 'security'), file: 'pc_c04' },
   A('Chef_Female_01', 'f', 'Köchin', 'Kochjacke', 'chef'), A('Delivery_Male_01', 'm', 'Kurier', 'Lieferdienst', 'delivery'),
   A('Male_Child_01', 'm', 'Kind', 'Shirt, Jeans', 'kid'), A('Female_Child_01', 'f', 'Kind', 'Kleid, bunt', 'kid'),
 ];
