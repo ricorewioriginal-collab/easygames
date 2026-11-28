@@ -57,6 +57,7 @@ import { readPimp, isStock } from './tuning';
 import { PhotoMode } from './fotomodus';
 import { Stunts, goViral, canGoViral, type Stunt } from './viral';
 import { bulletin } from './news';
+import { pickChat } from './chatter';
 import { isParade } from './gram';
 
 interface Npc { def: NpcDef; a: Actor; wp: number; wait: number; talking: boolean }
@@ -738,6 +739,29 @@ export class CityScene implements GameScene {
     this.aim.set(p.x, p.y + .8, p.z); this.camera.setTarget(this.aim);
   }
   private endStunt() { this.stuntCam?.el.remove(); this.stuntCam = null; this.slowT = 0; }
+  /** Stadtgeflüster: Sprechblase über der Person, die gerade redet */
+  private chatT = 2;
+  private bubble: HTMLElement | null = null;
+  private chatterTick(dt: number, busy: boolean) {
+    const st = this.street, s = this.g.save.data;
+    if (!busy && (this.chatT -= dt) <= 0) {
+      this.chatT = 2;
+      const h = this.hour();
+      st.startChat(this.player.root.position, () => pickChat({ night: this.world.night > .5, rain: this.weather.rain > .2, viral: Number(s.flags.viralDayLast) >= s.day - 1 ? String(s.flags.viralLast || '') : '', wanted: this.combat.wanted.stars > 0, parade: isParade(s, h) }));
+    }
+    st.chatTick(dt);
+    const c = st.chat;
+    if (!c || busy || this.idleOn || this.stuntCam) { if (this.bubble) this.bubble.style.display = 'none'; return; }
+    const sp = c.i % 2 ? c.b : c.a, q = sp.a.root.position;
+    const pr = this.g.engine.project({ x: q.x, y: q.y + 2.15, z: q.z });
+    const far = Vector3.Distance(q, this.camera.position) > 24;
+    if (!this.bubble) { this.bubble = document.createElement('div'); this.bubble.className = 'chatbub'; document.body.appendChild(this.bubble); }
+    const b = this.bubble;
+    if (pr.behind || far) { b.style.display = 'none'; return; }
+    const txt = c.lines[c.i]; if (b.textContent !== txt) b.textContent = txt;
+    b.style.display = 'block'; const hw = b.offsetWidth / 2 + 8, x = Math.max(hw, Math.min(innerWidth - hw, pr.x)), y = Math.max(b.offsetHeight + 60, pr.y);
+    b.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px) translate(-50%, -100%)`;
+  }
   /** Rainbow News im Autoradio */
   private newsT = 150;
   private newsTick(dt: number, busy: boolean) {
@@ -1004,7 +1028,7 @@ export class CityScene implements GameScene {
   private routeT = 0;
   private gps: { pts: Array<[number, number]>; color: string } | null = null;
   enter() { this.syncFlyer(); this.g.touch.fly(!!this.drive?.def.fly); this.g.hud.radarOn(true); if (this.drive) { this.g.hud.radioBtn(true); this.radio(0); } }
-  exit() { this.photoRef?.stop(); this.g.hud.radarOn(false); this.g.touch.fly(false); if (this.drive) this.radioOff(); }
+  exit() { this.photoRef?.stop(); if (this.bubble) this.bubble.style.display = 'none'; this.idleT = 0; if (this.idleOn) { this.cam.dist = this.idleOn.dist; this.cam.pitch = this.idleOn.pitch; this.idleOn.el.remove(); document.body.classList.remove('pc-idle'); this.idleOn = null; } this.endStunt(); this.g.hud.radarOn(false); this.g.touch.fly(false); if (this.drive) this.radioOff(); }
   /** Missionsmarker wie im Open-World-Krimi: leuchtende Lichtsäule über dem Ziel */
   private beam: TransformNode | null = null;
   private beamMat: ReturnType<typeof glow> | null = null;
@@ -1284,7 +1308,7 @@ export class CityScene implements GameScene {
     { const free = !busy && !this.gig && !this.kerb.rider && this.combat.wanted.stars === 0 && !this.life.ev && !this.life.parade.riding && !this.isles.some((i) => i.active);
       this.trouble.update(dt, { free, night: this.world.night > .5, ref: this.player.root.position });
       this.jagd.update(dt, free && !this.trouble.cur && !this.bus.on, s); }
-    this.viralTick(dt, busy); this.newsTick(dt, busy);
+    this.viralTick(dt, busy); this.newsTick(dt, busy); this.chatterTick(dt, busy || this.mode !== 'play');
     this.life.update(dt, t, this.player.root.position, { busy: busy || !!this.gig || !!this.trouble.cur || !!this.kerb.rider || this.combat.wanted.stars > 0, night: this.world.night > .5, rain: this.weather.rain > .2, onFoot: !this.drive });
 
     this.hudT -= dt;

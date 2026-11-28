@@ -149,6 +149,39 @@ export class Street {
   /** Hund freut sich (Streicheln, Leckerli): wedelt ein paar Sekunden wild */
   private happy = new Map<StreetNpc, number>();
   cheer(n: StreetNpc, s = 4) { this.happy.set(n, s); }
+  /** Stadtgeflüster (chatter.ts): zwei Leute bleiben stehen und unterhalten sich */
+  chat: { a: StreetNpc; b: StreetNpc; lines: string[]; i: number; t: number } | null = null;
+  private chatCd = 4;
+  /** Gespräch zwischen zwei Leuten in deiner Nähe beginnen (lines vom Aufrufer) */
+  startChat(ref: Vector3, lines: () => string[]) {
+    if (this.chat || (this.chatCd -= 1) > 0) return false;
+    this.chatCd = 3;
+    const ok = (n: StreetNpc) => n.a.root.visible && !n.talking && !n.down && !n.chase && !n.flee && !n.dodge && !n.mate && !this.filming.has(n) && n.path.length > 1 && (n.kind === 'walker' || n.kind === 'szene' || n.kind === 'chef' || n.kind === 'courier');
+    for (const a of this.people) {
+      if (!ok(a) || Vector3.Distance(a.a.root.position, ref) > 18) continue;
+      for (const b of this.people) {
+        if (b === a || b.mate === a || a.mate === b || !ok(b)) continue;
+        const d = Vector3.Distance(a.a.root.position, b.a.root.position);
+        if (d < .9 || d > 4.5) continue;
+        const pa = a.a.root.position, pb = b.a.root.position;
+        a.a.root.rotation.y = Math.atan2(pb.x - pa.x, pb.z - pa.z); b.a.root.rotation.y = Math.atan2(pa.x - pb.x, pa.z - pb.z);
+        const ls = lines(); a.wait = b.wait = ls.length * 3 + 1.5;
+        a.a.play('talk', .2); b.a.play('idle', .2);
+        this.chat = { a, b, lines: ls, i: 0, t: 0 };
+        return true;
+      }
+    }
+    return false;
+  }
+  /** Gespräch weiterführen: alle 3 s spricht die andere Person; endet bei Störung */
+  chatTick(dt: number) {
+    const c = this.chat; if (!c) return;
+    c.t += dt;
+    const broken = [c.a, c.b].some((n) => !n.a.root.visible || n.talking || n.flee || n.dodge || n.chase || this.filming.has(n));
+    if (broken || c.t > c.lines.length * 3) { this.chat = null; for (const n of [c.a, c.b]) { if (n.a.anim === 'talk' || n.a.anim === 'laugh') n.a.play('idle', .2); n.wait = Math.min(n.wait, .5); } return; }
+    const i = Math.min(c.lines.length - 1, Math.floor(c.t / 3));
+    if (i !== c.i) { c.i = i; const sp = i % 2 ? c.b : c.a, ls = i % 2 ? c.a : c.b; sp.a.play('talk', .2); ls.a.play(i === c.lines.length - 1 && Math.random() < .5 ? 'laugh' : 'idle', .2); }
+  }
   /** Leute, die dich gerade mit dem Handy filmen (viral.ts): Restzeit in Sekunden */
   private filming = new Map<StreetNpc, number>();
   /** Bis zu max Leute in Reichweite zücken das Handy und filmen dich ein paar Sekunden */
