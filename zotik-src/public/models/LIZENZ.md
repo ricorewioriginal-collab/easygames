@@ -65,3 +65,9 @@ boulder_01, rock_07, rock_09, stone_01, rock_moss_set_01/02, namaqualand_boulder
 Aufbereitung: `tools/make-zotik-polyhaven.mjs` (Stamm stark vereinfacht, Krone als Astkarten aus dem Original gezeichnet, Fernansicht), Einbindung: `zotik-src/src/nat.js`.
 
 Requisiten (Poly Haven, CC0): wine_barrel_01 (Holzfass), wooden_crate_02 (Holzkiste) – in models/ph/ph.glb als `fass` und `kiste`, ersetzen die Spielzeug-Fässer und -Kisten.
+
+Palme, Kakteen und Fliegenpilz in `ph/ph.glb` stammen von Sketchfab, Lizenz **CC-BY 4.0** (https://creativecommons.org/licenses/by/4.0/), für das Spiel vereinfacht:
+- „Realistic Palm Tree 4 Free“ von **Next Spring** – https://sketchfab.com/3d-models/realistic-palm-tree-4-free-917c18d6b2d04d33950dea6e20bc074f (`palme1`)
+- „Realistic HD Saguaro cactus (28/30)“ von **PlantCatalog** – https://sketchfab.com/3d-models/386db8a965c443c390b91e2cc2528c7c (`kaktus1`)
+- „Realistic HD Saguaro cactus (9/30)“ von **PlantCatalog** – https://sketchfab.com/3d-models/98c0ece0c70b40e09c9c69446047cab5 (`kaktus2`)
+- „Fly Agaric Mushroom“ von **Timothy Hsu** – https://sketchfab.com/3d-models/d6c3876f091b4de49a38553a177bab0f (`pilz2`)

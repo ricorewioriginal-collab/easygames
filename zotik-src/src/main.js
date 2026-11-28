@@ -2563,14 +2563,14 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
     iFl=mkI(PG.flower,new T.MeshBasicMaterial({color:0xffffff}),700,false),iPa=mkI(PG.pave,TX.tri('cobble',0xffffff,{s:.5,gain:1.8,r:1}),220,false);
   const free=(x,z,d)=>!(AM&&AM.E(x,z)>-6)&&!(LAKE&&Math.hypot(x-LAKE.x,z-LAKE.z)<LAKE.r*1.35+6)&&Math.hypot(x,z)>=(z>-10?30:36)&&bflat(x,z,BPADS)<.5&&Math.hypot(x,z+182)>=d&&!np(x,z,6.5)&&h(x,z)<6.5&&Math.abs(x)<122&&z>-228&&z<66;
   let TNC=0;const tc=(...a)=>{if(!TNC)addCol(...a)};
-  let nI=0;const NLW=[],PALMS=[],NK=Object.assign({broad:['laub2','laub1','laub4','laub5'],pine:['tanne1','tanne2'],dead:['kahl1','kahl2','totbaum3'],cactus:['koecher1','koecher2','strauchbaum']},NATW[n]||{}),NMIX={2:.25,3:.15,4:0,6:.6,7:.5,8:.75,9:.85,10:.8,11:.8}[n]??.4;
+  let nI=0;const NLW=[],PALMS=[],NK=Object.assign({broad:['laub2','laub1','laub4','laub5'],pine:['tanne1','tanne2'],dead:['kahl1','kahl2','totbaum3'],cactus:['kaktus1','kaktus2','kaktus1','koecher1']},NATW[n]||{}),NMIX={2:.25,3:.15,4:0,6:.6,7:.5,8:.75,9:.85,10:.8,11:.8}[n]??.4;
   const tree=(k,x,z)=>{nI++;const y=h(x,z),s=rr(.9,1.7),lc=()=>rp(C.leaf);
     switch(k){
       case'broad':NOP(R()*6,lc(),R()*6,lc(),R()*6,lc());NLW.push({k:NK.broad[nI%NK.broad.length],x,y:y-.1,z,ry:nI*2.4,h:s*5.8,w:s*6,tint:C.leaf[nI%C.leaf.length]});tc(x,z,.75*s,y+s*2.6);if(!TNC){clbDome(x+s*.9,z+s*.4,y+s*2.8,s*1.5,s*1.2);clbDome(x-s*.7,z-s*.6,y+s*3,s*1.4,s*1.1);clbDome(x,z,y+s*3.6,s*2.4,s*1.9)}break;
       case'pine':for(let i=0;i<3;i++)NOP(R()*6,i===2?0xffffff:lc());PALMS.push({k:'tanne',x,y:y-.1,z,ry:nI*2.4,h:s*6.3});tc(x,z,.7*s,y+s*2.4);if(!TNC){clbDisc(x,z,y+s*2.9,s*.95);clbDisc(x,z,y+s*4.2,s*.6);clbDisc(x,z,y+s*5.5,s*.3)}break;
       case'dead':for(let i=0;i<3;i++)NOP(R());NLW.push({k:NK.dead[nI%NK.dead.length],x,y:y-.1,z,ry:nI*2.4,h:s*4.6,w:s*4.4,mix:0});tc(x,z,.55*s);break;
       case'cactus':{NOP(lc());NLW.push({k:NK.cactus[nI%NK.cactus.length],x,y:y-.08,z,ry:nI*2.4,h:s*3.4,w:s*3.4,mix:0});tc(x,z,.6*s);break}
-      case'palm':{for(let i=0;i<4;i++)NOP(lc());PALMS.push({k:'palme',x,y:y-.05,z,ry:nI*2.4,h:s*4.7});tc(x,z,.5*s,y+s*3.6);if(!TNC)clbDisc(x,z,y+s*4.2,s*1.9);break}
+      case'palm':{for(let i=0;i<4;i++)NOP(lc());NLW.push({k:'palme1',x,y:y-.05,z,ry:nI*2.4,h:s*5.2,w:s*3.8,mix:0});tc(x,z,.5*s,y+s*3.6);if(!TNC)clbDisc(x,z,y+s*4.2,s*1.9);break}
       case'crystal':{const col=rp(C.glowc);for(let i=0;i<3;i++){const sz=s*rr(.9,1.8);put2(iCr,x+rr(-.8,.8),y+sz*.9,z+rr(-.8,.8),sz*.45,sz*1.8,sz*.45,R()*6,col,(R()-.5)*.4,(R()-.5)*.4)}tc(x,z,.9*s);break}
       case'coral':{const col=lc();for(let i=0;i<4;i++){const sz=s*rr(.8,1.6);put2(iPi,x+rr(-.7,.7),y+sz*1.2,z+rr(-.7,.7),.35*sz,sz*2.4,.35*sz,R()*6,col,(R()-.5)*.3,(R()-.5)*.3)}tc(x,z,.7*s);break}
       case'mush':{const col=lc();put2(iSt,x,y+s*1.2,z,s*2,s*2.4,s*2,0,0xcfd8ee);put2(iSh,x,y+s*2.4,z,s*3,s*2.2,s*3,0,col);tc(x,z,.6*s,y+s*2.4);if(!TNC)clbDome(x,z,y+s*2.4,s*3,s*2.2);break}
@@ -3867,10 +3867,10 @@ function kbDress(n){const L0=KBW[n];if(!L0||!WLD)return;const R=mul32(n*4513+11)
   KK.place(scene,out,'kb')}
 /* Landschaft aus dem Wizp-Pack (CC0): Bäume, Felsen und Friedhöfe je Klimazone, als Instanzen in der Wildnis verteilt (mit Kollision) */
 /* Einträge [Teil, Höhe] aus models/wz (Wizp, CC0); [Teil, Höhe, 'sf'] aus models/sf (Sketchfab, CC BY – stilisierte, handgemalte Bäume, Büsche, Felsen, Blumen) */
-const WZ={2:[['laub4',9,'ph'],['laub2',7.5,'ph'],['tanne',9,'sf'],['laub5',7,'ph'],['busch1',1.6,'ph'],['busch2',1.3,'ph'],['farn1',.9,'ph'],['stumpf1',.9,'ph'],['moosfels1',2.2,'ph'],['moosfels3',1.3,'ph'],['blume2',.5,'ph'],['blume3',.45,'ph'],['gras1',.7,'ph']],
+const WZ={2:[['laub4',9,'ph'],['laub2',7.5,'ph'],['tanne',9,'sf'],['laub5',7,'ph'],['busch1',1.6,'ph'],['busch2',1.3,'ph'],['farn1',.9,'ph'],['stumpf1',.9,'ph'],['moosfels1',2.2,'ph'],['moosfels3',1.3,'ph'],['blume2',.5,'ph'],['blume3',.45,'ph'],['gras1',.7,'ph'],['pilz2',.42,'ph']],
   3:[['laub5',7,'ph'],['laub2',6.5,'ph'],['busch4',1.5,'ph'],['busch1',1.4,'ph'],['nessel',.9,'ph'],['blume2',.5,'ph'],['blume3',.45,'ph'],['fels3',1.2,'ph'],['fels1',2.2,'ph']],
-  4:[['palme',8,'sf'],['koecher1',5.5,'ph'],['koecher2',4.5,'ph'],['strauchbaum',3.6,'ph'],['busch3',1.4,'ph'],['totbaum3',3,'ph'],['wuestenfels1',2.4,'ph'],['wuestenfels2',1.3,'ph'],['fels4',1.6,'ph'],['blume1',.4,'ph']],
-  5:[['palme',8.5,'sf'],['tropen1',2.6,'ph'],['tropen2',1,'ph'],['waterlily_pink_group',.4],['fels1',2.2,'ph'],['fels4',1.3,'ph'],['farn1',.8,'ph']],
+  4:[['palme1',8,'ph'],['koecher1',5.5,'ph'],['koecher2',4.5,'ph'],['strauchbaum',3.6,'ph'],['busch3',1.4,'ph'],['totbaum3',3,'ph'],['wuestenfels1',2.4,'ph'],['wuestenfels2',1.3,'ph'],['fels4',1.6,'ph'],['blume1',.4,'ph']],
+  5:[['palme1',8.5,'ph'],['tropen1',2.6,'ph'],['tropen2',1,'ph'],['waterlily_pink_group',.4],['fels1',2.2,'ph'],['fels4',1.3,'ph'],['farn1',.8,'ph']],
   6:[['tanne',9,'sf'],['tanne',7.5,'sf'],['kiefer1',5,'ph'],['kahl2',5,'ph'],['totbaum1',.9,'ph'],['stumpf2',.9,'ph'],['mondfels1',2.6,'ph'],['moosfels4',1.4,'ph']],
   7:[['kahl1',6.5,'ph'],['kahl2',5.5,'ph'],['totbaum3',3.4,'ph'],['totbaum2',1.4,'ph'],['stumpf1',1.1,'ph'],['mondfels1',2.8,'ph'],['mondfels2',1.6,'ph'],['bones_group',.6]],
   8:[['kahl1',6.5,'ph'],['kahl2',6,'ph'],['totbaum1',1,'ph'],['stumpf2',1.1,'ph'],['busch3',1.2,'ph'],['fels2',2.4,'ph']],
@@ -3882,7 +3882,7 @@ const WZG={8:1,7:1};   /* Welten mit kleinem Friedhof am Wegrand */
 function natFree(x,z,m=0){for(const p of PLAT)if(Math.abs(x-p.x)<p.hx+4+m&&Math.abs(z-p.z)<p.hz+4+m)return false;
   for(const p of (WLD&&WLD._jp)||[])if(Math.hypot(x-p[0],z-p[1])<9+m)return false;
   for(const o of [...chests,...INT,...OB])if(o&&o.x!=null&&Math.hypot(x-o.x,z-o.z)<4+m)return false;return true}
-function wzDress(n){const L0=WZ[n];if(!L0||!WLD)return;const R=mul32(n*7919+3),out=[],N=TOUCH?60:110,big=k=>/tree|birch|pine|coconut|palm|cactus1|cactus2|eiche|tanne|palme|laub|kahl|koecher|strauchbaum|kiefer/.test(k);
+function wzDress(n){const L0=WZ[n];if(!L0||!WLD)return;const R=mul32(n*7919+3),out=[],N=TOUCH?60:110,big=k=>/tree|birch|pine|coconut|palm|cactus1|cactus2|eiche|tanne|palme|laub|kahl|koecher|strauchbaum|kiefer|kaktus/.test(k);
   for(let t=0,c=0;c<N&&t<N*12;t++){const z=-30-R()*125,px=WLD.path?WLD.path(z):0,sd=R()<.5?-1:1,x=px+sd*(9+R()*36);
     if(blocked(x,z)||(WLD.reach&&!WLD.reach(x,z))||!natFree(x,z))continue;const q=L0[R()*L0.length|0],r=big(q[0])?.7:q[1]>1.5?q[1]*.35:0;if(r&&!colFree(x,z,r+.6))continue;
     out.push({k:q[0],x,y:hgt(x,z)-.05,z,ry:R()*6.28,h:q[1]*(.85+R()*.3),f:q[2]||'wz'});if(r)addCol(x,z,r);c++}
