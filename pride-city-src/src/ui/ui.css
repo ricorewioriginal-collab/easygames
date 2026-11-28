@@ -523,3 +523,8 @@ body:has(#hud:not(.hidden)) .screen.title.tune .panel p { margin: .25em 0; }
 #hud, #touch, #hints { transition: opacity .8s; }
 body.pc-idle #hud, body.pc-idle #touch, body.pc-idle #hints { opacity: 0; }
 .idlecine { z-index: 9; }
+/* Stunt-Kamera: Zeitlupe mit Kinobalken und Schriftzug */
+.stuntcine { z-index: 9; }
+.stuntcine i { animation: none; height: 8vh; }
+.stuntcine b { position: absolute; left: 0; right: 0; top: 30%; text-align: center; color: #fff; font: 900 clamp(34px, 8vw, 64px)/1 system-ui, sans-serif; font-style: italic; letter-spacing: .06em; text-shadow: 0 0 18px #ff3fb0, 0 4px 0 #0008; animation: stuntIn .35s both; }
+@keyframes stuntIn { from { transform: scale(1.8) skewX(-12deg); opacity: 0; } to { transform: scale(1) skewX(-8deg); opacity: 1; } }
