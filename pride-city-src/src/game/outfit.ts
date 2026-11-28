@@ -538,14 +538,14 @@ function garment(m: Mesh, d: Uint8Array, w: number, h: number, uv: ArrayLike<num
 
 type Akt = Mesh & { _pcAkt?: Mesh; _pcAktPart?: boolean };
 /** Körpermerkmale je Figur, fest aus der Figuren-ID: jede*r sieht anders aus, aber immer gleich.
-    Maße im natürlichen Bereich Erwachsener (schlaff): Penis 7–11 cm lang, 2,6–3,4 cm dick, Hoden verschieden groß und
+    Maße im natürlichen Bereich Erwachsener (schlaff): Penis 6–13 cm lang, 2,4–3,6 cm dick, Hoden verschieden groß und
     leicht ungleich hoch; Schamhaar von gestutzt bis voll, Farbe von Blond bis Schwarz; Schamlippen verschieden lang. */
 interface AktLook { len: number; rad: number; tipR: number; hang: number; sack: number; tilt: number; hair: number; shape: number; col: number[]; lip: number; fore: number }
 function akt(id: string): AktLook {
   let h = 2166136261; for (let i = 0; i < id.length; i++) { h ^= id.charCodeAt(i); h = Math.imul(h, 16777619); }
   const r = () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 10007) / 10007; };
   const cols = [[58, 42, 32], [34, 26, 22], [20, 17, 16], [92, 66, 44], [120, 88, 60], [70, 40, 28]];
-  return { len: .07 + .04 * r(), rad: .013 + .004 * r(), tipR: 1.02 + .08 * r(), hang: .2 + .5 * r(), sack: .85 + .35 * r(), tilt: (r() - .5) * .5, hair: r() < .15 ? 0 : .35 + .65 * r(), shape: r(), col: cols[Math.floor(r() * cols.length)], lip: .015 + .015 * r(), fore: r() };
+  return { len: .06 + .07 * r(), rad: .012 + .006 * r(), tipR: 1.02 + .08 * r(), hang: .2 + .5 * r(), sack: .85 + .35 * r(), tilt: (r() - .5) * .5, hair: r() < .15 ? 0 : .35 + .65 * r(), shape: r(), col: cols[Math.floor(r() * cols.length)], lip: .015 + .015 * r(), fore: r() };
 }
 /** Schritt der Figur in Körper-Koordinaten: tiefster Punkt der Mittellinie (zwischen den Beinen) und Vorderseite darüber */
 function crotch(fr: NonNullable<ReturnType<typeof frame>>) {
