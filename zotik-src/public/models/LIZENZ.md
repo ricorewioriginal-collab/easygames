@@ -63,3 +63,5 @@ island_tree_01/02/03, jacaranda_tree, tree_small_02, fir_sapling_medium, pine_sa
 shrub_01–04, wild_rooibos_bush, fern_02, nettle_plant, grass_medium_01, flower_gazania, periwinkle_plant, dandelion_01, pachira_aquatica_01, calathea_orbifolia_01, tree_stump_01/02,
 boulder_01, rock_07, rock_09, stone_01, rock_moss_set_01/02, namaqualand_boulder_02, namaqualand_boulders_01, moon_rock_01/03, rock_face_01.
 Aufbereitung: `tools/make-zotik-polyhaven.mjs` (Stamm stark vereinfacht, Krone als Astkarten aus dem Original gezeichnet, Fernansicht), Einbindung: `zotik-src/src/nat.js`.
+
+Requisiten (Poly Haven, CC0): wine_barrel_01 (Holzfass), wooden_crate_02 (Holzkiste) – in models/ph/ph.glb als `fass` und `kiste`, ersetzen die Spielzeug-Fässer und -Kisten.

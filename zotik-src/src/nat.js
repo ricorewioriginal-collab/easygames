@@ -83,5 +83,17 @@ export function createNat({ T, TOUCH, hi }) {
       if (!p.isScene) { if (chk && (G.gone = (G.gone || 0) + 1) > 2) GR.delete(G); continue; } G.gone = 0; if (vis) fill(G, cam); } }
   const stat = () => { let groups = 0, items = 0, near = 0, far = 0, draws = 0; for (const G of GR) { let p = G.grp, vis = true; while (p.parent) { vis = vis && p.visible; p = p.parent; } if (!p.isScene || !vis) continue; groups++;
       for (const K of G.keys) { items += K.items.length; const n = K.meshes[0].count; near += n; if (n) draws += K.meshes.length; } if (G.far && G.far.count) { far += G.far.count; draws++; } } return { groups, items, near, far, draws }; };
-  return { place, update, load, stat, setRange: f => { range = f; for (const G of GR) G.cx = 1e9; } };
+  /* Spielzeug-Fässer und -Kisten (KayKit) durch echte Holzfässer und Holzkisten ersetzen: gleiche Namen, gleiche Grundfläche und Höhe,
+     damit Zerschlagen, Kollision und Platzierung unverändert bleiben. m = Requisiten-Tabelle aus kaykit.js */
+  const swapProps = m => load().then(M => {
+    const F = M.fass, K = M.kiste; if (!F || !K) return;
+    const put = (g, A, x, y, z, s, ry) => { _o.position.set(x, y, z); _o.rotation.set(0, ry, 0); _o.scale.setScalar(s); _o.updateMatrix(); for (const p of A.parts) { const me = new T.Mesh(p.geo, p.mat); me.matrixAutoUpdate = false; me.matrix.multiplyMatrices(_o.matrix, p.loc); me.castShadow = !TOUCH; me.receiveShadow = true; g.add(me); } };
+    for (const [name, kind] of [['barrel_large', 'f1'], ['barrel_small_stack', 'f3'], ['box_large', 'k'], ['box_stacked', 'k'], ['crates_stacked', 'k']]) { const src = m[name]; if (!src) continue;
+      src.updateMatrixWorld(true); const b = new T.Box3().setFromObject(src), o = src.position, x0 = b.min.x - o.x, x1 = b.max.x - o.x, z0 = b.min.z - o.z, z1 = b.max.z - o.z, y0 = b.min.y - o.y, sy = b.max.y - b.min.y, cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, sx = x1 - x0, sz = z1 - z0;
+      const g = new T.Group(); g.name = src.name; g.position.copy(o);
+      if (kind === 'f1') put(g, F, cx, y0, cz, sy / F.h, 0);
+      else if (kind === 'f3') { const s = sy * .54 / F.h, r = F.w * s * .5; put(g, F, cx - r, y0, cz, s, .4); put(g, F, cx + r, y0, cz, s, 2.1); put(g, F, cx, y0 + F.h * s * .98, cz, s, 1.1); }
+      else { const lx = sx >= sz, s = Math.max(sx, sz) / K.w * .96, n = Math.max(1, Math.round(sy / (K.h * s))), ry = lx ? Math.PI / 2 : 0; for (let i = 0; i < n; i++) put(g, K, cx, y0 + i * K.h * s, cz, s, ry + (i % 2 ? .22 : -.08) * (i ? 1 : 0)); }
+      g.updateMatrixWorld(true); m[name] = g; } });
+  return { swapProps, place, update, load, stat, setRange: f => { range = f; for (const G of GR) G.cx = 1e9; } };
 }

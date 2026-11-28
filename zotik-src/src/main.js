@@ -196,7 +196,7 @@ const OUTM=(()=>{const m=new T.MeshBasicMaterial({color:0x1c1622,side:T.BackSide
 const AF=createAniFig({T,G:TOONG,TOUCH});
 const KK=createKayKit({T,G:TOONG,TOUCH});
 /* Echte Bäume, Felsen und Pflanzen (Poly Haven, CC0): ersetzen die Kegel- und Kugelbäume; NOP verbraucht dieselben Zufallszahlen wie vorher, damit jede Welt gleich bleibt */
-const NAT=createNat({T,TOUCH,hi:!TOUCH}),NOP=()=>{};
+const NAT=createNat({T,TOUCH,hi:!TOUCH}),NOP=()=>{};KK.setSwap(m=>NAT.swapProps(m));
 function anime(root){const add=[];root.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||o.material===OUTM)return;if(o.material&&o.material.isMeshStandardMaterial){o.material=toonOf(o.material);if(!o.material.transparent&&o.geometry.attributes.normal&&o.geometry.attributes.position.count>40)add.push(o)}});
   for(const o of add){const l=new T.Mesh(o.geometry,OUTM);l.raycast=()=>{};o.add(l)}return root}
 /* Glow-Sprites */
