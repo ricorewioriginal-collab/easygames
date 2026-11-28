@@ -34,6 +34,10 @@ Die Figuren der Stadt, die Hauptfigur Rico und Tarek stammen von Sketchfab und s
 | „Gangster Rigged“ | PropShop (Sketchfab) | CC BY 4.0 | `assets/rb/pc_gangster.glb` |
 | „Street Gangster \| Realistic 3D Character Model“ | PropShop (Sketchfab) | CC BY 4.0 | `assets/rb/pc_streetg.glb` |
 | „Yakuza“ | Abrazafarolas (Sketchfab) | CC BY 4.0 | `assets/rb/pc_yakuza.glb` (Tarek) |
+| „Police 3D Model“ – https://sketchfab.com/3d-models/police-3d-model-c02d07f380f74bd485a4820f0f5f7541 | Aayush.Bhattarai (Sketchfab) | CC BY 4.0 | `assets/rb/pc_police_m.glb` (Polizist) |
+| „policewoman“ – https://sketchfab.com/3d-models/policewoman-4008b8b5f44e40578f856ad8071cc868 | benhimarthi18 (Sketchfab) | CC BY 4.0 | `assets/rb/pc_police_f.glb` (Polizistin) |
+| „Fire Fighter - 3D Generated Model“ – https://sketchfab.com/3d-models/fire-fighter-3d-generated-model-99a77e6d862844608ccf9decbdeb97b2 | ArtIsInFormation (Sketchfab) | CC BY 4.0 | `assets/rb/pc_fire_m.glb`, `pc_fire_f.glb` (Feuerwehr) |
+| „female doctor 2“ – https://sketchfab.com/3d-models/female-doctor-2-5482dc9976ec45b7ae0d25cbc7bd9680 | UMassDML (Sketchfab) | CC BY 4.0 | `assets/rb/pc_medic_f.glb` (Sanitäterin) |
 
 Änderungen: Die Modelle wurden für Pride City mit dem Rocketbox-Skelett und Hautgewichten versehen, in Körper und Kopf geteilt,
 in Geometrie und Texturen verkleinert (`pride-city-src/scripts/people.mjs`). Rico (`pc_rico`) ist umgefärbt (schwarze Trainingsjacke
@@ -56,6 +60,12 @@ Alle Autos (eigene Wagen, Verkehr, Taxi, Streifenwagen, Show- und Rennautos) sta
 | „Generic passenger car pack“ – https://sketchfab.com/3d-models/generic-passenger-car-pack-20f9af9b8a404d5cb022ac6fe87f21f5 | Comrade1280 (Sketchfab) | CC BY 4.0 | `assets/cars/sedan`, `taxi`, `hatchback`, `stationwagon`, `compact`, `coupe`, `minivan`, `delivery`, `pickup`, `sport`, `suv`, `offroad` (je `.glb` und `_lo.glb`) |
 | „Fairheaven LT '80 Cop Cruiser – Low poly model“ – https://sketchfab.com/3d-models/fairheaven-lt-80-cop-cruiser-low-poly-model-61766c1e6e1e4b2b803c174f33433a74 | Daniel Zhabotinsky (Sketchfab) | CC BY 4.0 | `assets/cars/police.glb` (Streifenwagen) |
 | „Saba V12 '95 Interceptor – Low poly model“ – https://sketchfab.com/3d-models/saba-v12-95-interceptor-low-poly-model-63aa215521334cef9c4d8c4c391252ad | Daniel Zhabotinsky (Sketchfab) | CC BY 4.0 | `assets/cars/interceptor.glb` (Verfolgungswagen) |
+| „City Bus - rigged \| РоАЗ-5236“ – https://sketchfab.com/3d-models/city-bus-rigged-5236-36646fcf41da498ca24a02f4b6fb1d95 | Yo.Ri (Sketchfab) | CC BY 4.0 | `assets/rides/bus.glb` (Pride-Bus, Pose eingebacken, verkleinert) |
+| „Firetruck“ – https://sketchfab.com/3d-models/firetruck-27a6b95f768d415282e2f5de48ba6d99 | OzerGokmen (Sketchfab) | CC BY 4.0 | `assets/rides/firetruck.glb` (Löschzug, vereinfacht) |
+| „Riva aquarama lamborghini“ – https://sketchfab.com/3d-models/riva-aquarama-lamborghini-9d5716a2ab6645b9a1452f1d6b0372ef | Anton Kovalev (Sketchfab) | CC BY 4.0 | `assets/rides/boat.glb` (Glitzer-Boot) |
+| „OKAI ES600 e-scooter“ – https://sketchfab.com/3d-models/okai-es600-e-scooter-0337709c625b419ca5265bca6626ff02 | Photogrammetry_Guest0 (Sketchfab) | CC BY 4.0 | `assets/rides/escooter.glb` (E-Roller, vereinfacht) |
+| „Hover bike - "The Rocket"“ – https://sketchfab.com/3d-models/hover-bike-the-rocket-8b2e5bfca78e41c791b4e5b5e8c04512 | TuppsM (Sketchfab) | CC BY 4.0 | `assets/rides/hoverbike.glb` (Flitzer, Pose eingebacken, vereinfacht) |
+| „Lightbody '90 MD Flatbed – Low poly model“ – https://sketchfab.com/3d-models/lightbody-90-md-flatbed-low-poly-model-39195e554c7a41a2884186c10d5079c0 | Daniel Zhabotinsky (Sketchfab) | CC BY 4.0 | `assets/rides/flatbed.glb` (Zugmaschine der CSD-Festwagen, ohne Ladefläche) |
 
 Änderungen: Die Pakete wurden in einzelne Autos geteilt, ausgerichtet, auf Straßenmaß gebracht, Innenraum und Kleinteile entfernt,
 Geometrie vereinfacht (`_lo` für den Verkehr am Handy) und Texturen auf 512 px verkleinert (`pride-city-src/scripts/cars.mjs`).
