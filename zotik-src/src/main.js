@@ -197,6 +197,9 @@ const AF=createAniFig({T,G:TOONG,TOUCH});
 const KK=createKayKit({T,G:TOONG,TOUCH});
 /* Echte Bäume, Felsen und Pflanzen (Poly Haven, CC0): ersetzen die Kegel- und Kugelbäume; NOP verbraucht dieselben Zufallszahlen wie vorher, damit jede Welt gleich bleibt */
 const NAT=createNat({T,TOUCH,hi:!TOUCH}),NOP=()=>{};KK.setSwap(m=>NAT.swapProps(m));
+/* Gebäude-Bausatz (models/kb: Burgen, Mühlen, Türme, Mauern) hatte nur Farbflächen – jetzt echte Stein-, Holz-, Putz- und Dachtexturen (Dreiseiten-Projektion) */
+{const KBM={Stone:['stone',0xb6b2aa,.45,1.7],StoneDark:['stone',0x86848a,.45,1.6],White:['plaster',0xe6e0d4,.5,1.4],Beige:['plaster',0xd8b888,.5,1.4],Brown:['wood',0x9a6844,.7,1.5],BrownDark:['wood',0x6e4630,.7,1.5],WoodDark:['wood',0x4a3c34,.7,1.5],Red:['roof',0xb4483a,.45,1.5]};
+  KK.setMat((nm,mat,f)=>{const d=f==='kb'&&KBM[nm];return d?TX.tri(d[0],d[1],{s:d[2],gain:d[3]}):null})}
 function anime(root){const add=[];root.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||o.material===OUTM)return;if(o.material&&o.material.isMeshStandardMaterial){o.material=toonOf(o.material);if(!o.material.transparent&&o.geometry.attributes.normal&&o.geometry.attributes.position.count>40)add.push(o)}});
   for(const o of add){const l=new T.Mesh(o.geometry,OUTM);l.raycast=()=>{};o.add(l)}return root}
 /* Glow-Sprites */
