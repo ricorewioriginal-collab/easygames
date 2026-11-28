@@ -25,6 +25,7 @@ import { SZENE } from './szene';
 import { bedMess, darkroom } from './spuren';
 import { darkAtmo } from '../engine/Audio';
 import { TAREK_LOOK, tarekInside } from './tarek';
+import { fkkOn } from './fkk';
 
 interface Box { x: number; z: number; hx: number; hz: number }
 const W = 12, D = 9, K = .9, H = 3.6; // Raum in Metern, KayKit-Möbel 1 Einheit ≈ 1 m (Figur ≈ 1,8 m)
@@ -44,6 +45,10 @@ export class InteriorScene implements GameScene {
   private darkTick: ((t: number) => void) | null = null;
   /** Hausparty läuft: Gäste tanzen, Licht pulsiert schnell */
   partyOn = false;
+  /** FKK-Abend: alle Gäste nackt (fkk.ts) */
+  fkk = false;
+  /** Spielfigur macht beim FKK-Abend mit */
+  fkkMe = false;
   private boxes: Box[] = [];
   private glow: PBRMaterial[] = [];
   private sg!: ShadowGenerator;
@@ -135,8 +140,9 @@ if (t.id !== 'darkroom') {     deco('home/pictureframe_large_B', -W / 2 + .06, 1
       this.boxes.push({ x: cx, z: cz, hx: .25, hz: .25 });
       this.showCameo();
     }
-    const cast = t.own ? [] : guestCast(t.id + '|' + this.placeId, darkRoom ? 5 : party ? 6 : 3, { adult, party, swim: t.id === 'bad' || t.id === 'sauna', dark: darkRoom });
-    const folk = await Promise.all(cast.map((c) => Actor.create(sc, { body: c.rb, rb: c.rb, palette: 'rainbow', skin: 0, style: c.style, outfit: c.outfit, hot: adult, gear: c.typ ? SZENE[c.typ].gear : undefined })));
+    this.fkk = !t.own && fkkOn(this.g.save.data, t.id);
+    const cast = t.own ? [] : guestCast(t.id + '|' + this.placeId, darkRoom ? 5 : party ? 6 : this.fkk ? 5 : 3, { adult, party, swim: t.id === 'bad' || t.id === 'sauna', dark: darkRoom });
+    const folk = await Promise.all(cast.map((c) => Actor.create(sc, this.fkk ? { body: c.rb, rb: c.rb, palette: 'rainbow', skin: 0, outfit: 'nude', hot: adult } : { body: c.rb, rb: c.rb, palette: 'rainbow', skin: 0, style: c.style, outfit: c.outfit, hot: adult, gear: c.typ ? SZENE[c.typ].gear : undefined })));
     // freie Stelle: nicht in Möbeln, nicht auf einer benutzbaren Stelle, nicht vor der Tür
     const free = (x: number, z: number) => Math.abs(x) < W / 2 - .8 && Math.abs(z) < D / 2 - .8 && x < W / 2 - 2.2
       && this.boxes.every((b) => Math.abs(x - b.x) > b.hx + .5 || Math.abs(z - b.z) > b.hz + .5)
@@ -193,7 +199,19 @@ if (t.id !== 'darkroom') {     deco('home/pictureframe_large_B', -W / 2 + .06, 1
     a.root.rotation.y = Math.atan2(p.x - a.root.position.x, p.z - a.root.position.z);
     this.player.root.rotation.y = Math.atan2(a.root.position.x - p.x, a.root.position.z - p.z);
     if (!this.partyOn) a.play('talk');
-    this.g.strangerTalk(q.g.st, { actor: a, room: this, look: { body: q.g.rb, rb: q.g.rb, palette: 'rainbow', skin: 0, style: q.g.style, outfit: 'clothed', gear: q.g.typ ? SZENE[q.g.typ].gear : undefined }, szene: q.g.typ }, () => { if (!this.partyOn && prev) a.play(prev); });
+    this.g.strangerTalk(q.g.st, { actor: a, room: this, look: this.fkk ? { body: q.g.rb, rb: q.g.rb, palette: 'rainbow', skin: 0, outfit: 'nude' } : { body: q.g.rb, rb: q.g.rb, palette: 'rainbow', skin: 0, style: q.g.style, outfit: 'clothed', gear: q.g.typ ? SZENE[q.g.typ].gear : undefined }, szene: q.g.typ }, () => { if (!this.partyOn && prev) a.play(prev); });
+  }
+  /** FKK-Abend an- oder ausschalten: Gäste ziehen sich aus bzw. wieder an */
+  setFkk(on: boolean) {
+    this.fkk = on;
+    this.guests.forEach((q) => q.a.setLook(on ? { outfit: 'nude', style: undefined, gear: undefined } : { outfit: q.g.outfit, style: q.g.style, gear: q.g.typ ? SZENE[q.g.typ].gear : undefined }));
+    if (!on) this.setFkkMe(false);
+  }
+  /** Spielfigur zieht sich beim FKK-Abend aus oder wieder an (gilt nur in diesem Raum) */
+  setFkkMe(on: boolean) {
+    this.fkkMe = on;
+    const look = streetLook(playerLook(this.g.save.data));
+    this.player.setLook(on ? { ...look, outfit: 'nude', style: undefined } : look);
   }
   /** Ist der Raum eine Wohnung oder Partylocation (für Hauspartys)? */
   get partyPlace() { return this.theme.id.startsWith('res_') || this.theme.music === 'club' || this.theme.music === 'show'; }
@@ -207,7 +225,7 @@ if (t.id !== 'darkroom') {     deco('home/pictureframe_large_B', -W / 2 + .06, 1
 
   /** Neue Figur, wenn im Kleiderschrank die Figur gewechselt wurde */
   async syncPlayer() {
-    const look = streetLook(playerLook(this.g.save.data));
+    const street = streetLook(playerLook(this.g.save.data)), look = this.fkkMe ? { ...street, outfit: 'nude' as const, style: undefined } : street;
     if (this.player.look.body === look.body) { this.player.setLook(look); return; }
     const old = this.player;
     this.player = await Actor.create(this.scene, look);
