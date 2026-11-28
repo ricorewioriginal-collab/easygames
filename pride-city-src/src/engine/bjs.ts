@@ -83,3 +83,7 @@ export const dist = (a: { x: number; z: number }, b: { x: number; z: number }) =
 export const dist3 = (a: Vector3, b: Vector3) => Vector3.Distance(a, b);
 export const smoothstep = (x: number, a: number, b: number) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 export const clamp = (x: number, a: number, b: number) => Math.max(a, Math.min(b, x));
+export { LensFlareSystem } from '@babylonjs/core/LensFlares/lensFlareSystem';
+export { LensFlare } from '@babylonjs/core/LensFlares/lensFlare';
+import '@babylonjs/core/LensFlares/lensFlareSystemSceneComponent';
+export { Ray } from '@babylonjs/core/Culling/ray';

@@ -60,6 +60,7 @@ import { Stunts, goViral, canGoViral, type Stunt } from './viral';
 import { bulletin } from './news';
 import { pickChat } from './chatter';
 import { areaAt, AreaWatch } from './area';
+import { SunFlare } from './flare';
 import { isParade } from './gram';
 
 interface Npc { def: NpcDef; a: Actor; wp: number; wait: number; talking: boolean }
@@ -146,6 +147,7 @@ export class CityScene implements GameScene {
   async build() {
     const sc = this.scene;
     this.world = new World(sc);
+    this.flare = new SunFlare(sc, this.world.sun);
     await this.world.build();
     const s = this.g.save.data;
     this.player = await Actor.create(sc, streetLook(playerLook(s)));
@@ -795,6 +797,8 @@ export class CityScene implements GameScene {
     const pool = r.nice ? NICE : RUDE;
     toast(`${r.nice ? '👋' : '😤'} ${r.n.name}: ${pool[Math.floor(Math.random() * pool.length)]}`, 2200);
   }
+  /** Sonnen-Linsenreflexe (flare.ts), nicht auf der sparsamen Grafikstufe */
+  private flare!: SunFlare;
   /** Ortsschild beim Wechsel ins nächste Viertel (area.ts) */
   private areaW = new AreaWatch();
   private areaEl: HTMLElement | null = null;
@@ -1354,6 +1358,7 @@ export class CityScene implements GameScene {
       this.trouble.update(dt, { free, night: this.world.night > .5, ref: this.player.root.position });
       this.jagd.update(dt, free && !this.trouble.cur && !this.bus.on, s); }
     this.viralTick(dt, busy); this.newsTick(dt, busy); this.chatterTick(dt, busy || this.mode !== 'play'); this.soundTick(dt, busy || this.mode !== 'play'); this.areaTick(dt, busy || this.mode !== 'play' || !!this.cine);
+    this.flare.on = this.g.engine.quality > 0; this.flare.update(dt, this.camera, (1 - this.world.night) * (1 - this.world.wx.gloom) * (this.drive?.def.fly && this.alt > 8 ? .6 : 1));
     this.life.update(dt, t, this.player.root.position, { busy: busy || !!this.gig || !!this.trouble.cur || !!this.kerb.rider || this.combat.wanted.stars > 0, night: this.world.night > .5, rain: this.weather.rain > .2, onFoot: !this.drive });
 
     this.hudT -= dt;

@@ -1,4 +1,4 @@
-import{b6 as t,bj as i,bk as s,bo as o,bp as n}from"./babylon-D2d0brRr.js";const a="gaussianSplattingVoxelVertexShader",r=`#include<sceneUboDeclaration>
+import{b9 as t,bm as i,bn as s,br as o,bs as n}from"./babylon-C4qW1fZ1.js";const a="gaussianSplattingVoxelVertexShader",r=`#include<sceneUboDeclaration>
 #include<meshUboDeclaration>
 attribute splatIndex0: vec4f;attribute splatIndex1: vec4f;attribute splatIndex2: vec4f;attribute splatIndex3: vec4f;attribute position: vec3f;uniform dataTextureSize: vec2f;uniform alpha: f32;uniform invWorldScale: mat4x4f;uniform viewMatrix: mat4x4f;
 #if IS_COMPOUND
@@ -27,4 +27,4 @@ let quadPos: vec2f=vertexInputs.position.xy;let worldPos: vec4f=computeVoxelSpla
 vertexOutputs.vAlpha*=uniforms.partVisibility[splat.partIndex];
 #endif
 vertexOutputs.vPatchPosition=quadPos;}
-`;t.ShadersStoreWGSL[a]||(t.ShadersStoreWGSL[a]=r);const l=[i,s,o,n];for(const e of l)t.IncludesShadersStoreWGSL[e.name]||(t.IncludesShadersStoreWGSL[e.name]=e.shader);const u={name:a,shader:r};export{u as gaussianSplattingVoxelVertexShaderWGSL};
+`;t.ShadersStoreWGSL[a]||(t.ShadersStoreWGSL[a]=r);const l=[i,s,o,n];for(const e of l)t.IncludesShadersStoreWGSL[e.name]||(t.IncludesShadersStoreWGSL[e.name]=e.shader);const p={name:a,shader:r};export{p as gaussianSplattingVoxelVertexShaderWGSL};
