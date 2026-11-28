@@ -278,7 +278,8 @@ export function createKayKit({ T, G, TOUCH }) {
   /* Requisiten */
   const PR = {};
   /* Requisiten-Dateien: 'props' (KayKit), 'wz' (Wizp, models/wz/) oder 'sf' (Sketchfab CC BY, models/sf/); three entfernt ':' aus Knotennamen (p:chest → pchest) */
-  const props = (f = 'props') => PR[f] || (PR[f] = (f === 'props' ? load('props') : new Promise((res, rej) => new GLTFLoader().load('models/' + f + '/' + f + '.glb', res, null, rej))).then(g => { const m = {}; for (const c of g.scene.children) if (/^p/.test(c.name)) { dress(c, false, f === 'sf'); m[c.name.replace(/^p[:_]?/, '')] = c; } return f === 'props' && swap ? swap(m).then(() => m, () => m) : m; }));
+  const props = (f = 'props') => PR[f] || (PR[f] = (f === 'props' ? load('props') : new Promise((res, rej) => new GLTFLoader().load('models/' + f + '/' + f + '.glb', res, null, rej))).then(g => { const m = {}; for (const c of g.scene.children) if (/^p/.test(c.name)) { if (matHook) c.traverse(o => { if (o.isMesh) o.userData.mn = o.material.name; }); dress(c, false, f === 'sf'); if (matHook) c.traverse(o => { if (o.isMesh) { const r = matHook(o.userData.mn, o.material, f); if (r) o.material = r; } }); m[c.name.replace(/^p[:_]?/, '')] = c; } return f === 'props' && swap ? swap(m).then(() => m, () => m) : m; }));
+  let matHook = null;   /* setMat(fn): fn(name, material, pack) darf ein Material ersetzen (Stein/Holz/Putz mit echter Textur statt Farbfläche) */
   let swap = null;   /* setSwap(fn): fn(m) darf Requisiten durch andere Modelle ersetzen (echte Fässer/Kisten aus nat.js) */
   function prop(name, s = 1) {
     const g = new T.Group(); g.scale.setScalar(s);
@@ -310,5 +311,5 @@ export function createKayKit({ T, G, TOUCH }) {
   function hideQ(q) { for (const [im, i] of q._h || []) { im.setMatrixAt(i, Z4); im.instanceMatrix.needsUpdate = true; } }
   const warm = () => { load('anim'); props(); };
   const heightOf = k => PH[k];
-  return { setSwap: fn => { swap = fn; }, char, beast, sfig, heightOf, play, once, loop, drive, walk, ko, update, prop, place, hideQ, warm, load, get live() { return LIVE.size; } };
+  return { setSwap: fn => { swap = fn; }, setMat: fn => { matHook = fn; }, char, beast, sfig, heightOf, play, once, loop, drive, walk, ko, update, prop, place, hideQ, warm, load, get live() { return LIVE.size; } };
 }
