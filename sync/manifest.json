@@ -1,8 +1,8 @@
 {
  "schema": 1,
- "version": "d45248f48d61",
- "generated": "2026-11-27T23:39:44+00:00",
- "commit": "5a1694aeaa83707fc09ec685e831670f861d7c3a",
+ "version": "51dbc8fdfa0f",
+ "generated": "2026-11-28T00:00:26+00:00",
+ "commit": "f9b6bf457a8b93b0eca4cc3cd0067ba9cb7c23da",
  "entry": "index.html",
  "catalog": "sync/catalog.json",
  "files": [
@@ -14087,9 +14087,9 @@
    "h": "62759995b42672bed9d17515b2145b873d408dddcedeb55dbe93b6918e99047b"
   },
   {
-   "p": "pride-city/assets/babylon-BhuB3rBR.js",
+   "p": "pride-city/assets/babylon-D2d0brRr.js",
    "s": 3986838,
-   "h": "5531b7d0c3a8c1fd7a419675363f76d83b0abbd496976f50fcd2218c3e8e0dfe"
+   "h": "e66acfb398bad7e42ebbe7f9e6e52872ffb332f213f5036efaf1cbbb9bea3cff"
   },
   {
    "p": "pride-city/assets/cars/compact.glb",
@@ -14642,94 +14642,144 @@
    "h": "8e2c01f21c7ffd2e9bd3fafd50d9d8090d69991a9dad79b3ca36171b70ffb1c3"
   },
   {
-   "p": "pride-city/assets/flowGraphDebugBlock.pure-BUZSZm5H.js",
+   "p": "pride-city/assets/flowGraphDebugBlock.pure-DBFxOEJO.js",
    "s": 1451,
-   "h": "c3de2dff575eb4dcd59c75fa4286259cb6b34373b2fe688d420fa6c8f53fb9c7"
+   "h": "bc4d7621a1b5d747311335d6380e4de849f9dec8159e3d43c1983f74e8a20044"
   },
   {
-   "p": "pride-city/assets/flowGraphPointerDownEventBlock.pure-DJF0nTnw.js",
+   "p": "pride-city/assets/flowGraphPointerDownEventBlock.pure-CogFlki9.js",
    "s": 943,
-   "h": "2217882192bcdc0e8aa405c5fa8edf7023300f4ae434d10254f90442cb086f3d"
+   "h": "58b5a0d64113af748461979029e20a4d8ecc69a900d3c0f8541510745fd10952"
   },
   {
-   "p": "pride-city/assets/flowGraphPointerMoveEventBlock.pure-CIII0iPv.js",
+   "p": "pride-city/assets/flowGraphPointerMoveEventBlock.pure-DB9ICcGH.js",
    "s": 961,
-   "h": "66a200e1cc5b3a22c381f422eb854e35530f2db32ff51cdac86285732fe8a976"
+   "h": "5b7fe905b1e5ce5b6fe6f926e2a73d4fccd18abd5f3635c46261b2e0ebaaae82"
   },
   {
-   "p": "pride-city/assets/flowGraphPointerUpEventBlock.pure-BUH9j_Lg.js",
+   "p": "pride-city/assets/flowGraphPointerUpEventBlock.pure-BPI5cZc6.js",
    "s": 933,
-   "h": "2ae1e181dc62acf6a5fdaebd7b77e1d2b9585ae8d053282752abf83cb4ad382d"
+   "h": "8565ea17874a3b8ecc42755716703cdb78ca19af135c8f6018b85992aedab8f4"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.fragment-CmJcOP64.js",
+   "p": "pride-city/assets/furniture/dining_chair_02.glb",
+   "s": 196708,
+   "h": "c1cdad9dbe91906b106e1062e25c4ecd94a58d73624bd08fa791b0f4c31e5596"
+  },
+  {
+   "p": "pride-city/assets/furniture/industrial_pipe_lamp.glb",
+   "s": 235552,
+   "h": "e235545867d9d748938305b142308f6a6283395dea8edb0edee841d6632f703f"
+  },
+  {
+   "p": "pride-city/assets/furniture/modern_arm_chair_01.glb",
+   "s": 269400,
+   "h": "c2a73185fd662a86ab333717714dfeb9c17251f4410179e6622db18292696ca6"
+  },
+  {
+   "p": "pride-city/assets/furniture/modern_coffee_table_01.glb",
+   "s": 150260,
+   "h": "093207f0d785e34a369e47a1ee06c120c687771a7283f4e0d9ab897c460afff2"
+  },
+  {
+   "p": "pride-city/assets/furniture/modern_wooden_cabinet.glb",
+   "s": 835488,
+   "h": "2d5796572f86a428b6db94c1813353c13134f4cc723374fb1258880d722aeb00"
+  },
+  {
+   "p": "pride-city/assets/furniture/potted_plant_01.glb",
+   "s": 571804,
+   "h": "c061bb53cd057288c0a1e56971ca2565a451431ce1afb3716b04939bedbe38bc"
+  },
+  {
+   "p": "pride-city/assets/furniture/potted_plant_02.glb",
+   "s": 343760,
+   "h": "4194b8d6d0c2d4f928ec061fa82139b1f00bdcd620159e4fec08f791218abe57"
+  },
+  {
+   "p": "pride-city/assets/furniture/potted_plant_04.glb",
+   "s": 270856,
+   "h": "ff408adb4400aa0de54f0c4d88a0f2580110050fc16f6ee826b4c2eef43d957f"
+  },
+  {
+   "p": "pride-city/assets/furniture/side_table_01.glb",
+   "s": 212060,
+   "h": "075a3c538af90a55ff0021cf3fd6329b9eb9f3a94c2b1a024c808d89fcfce17b"
+  },
+  {
+   "p": "pride-city/assets/furniture/sofa_02.glb",
+   "s": 191076,
+   "h": "c29ed9854bb6b7b0de46c06779a69e753f877ed896387ca24d7a51b2f9d374b0"
+  },
+  {
+   "p": "pride-city/assets/gaussianSplatting.fragment-BGvy1WKQ.js",
    "s": 2928,
-   "h": "6ba35d5f8f7ae3eca71933a45ae544df5eb878d9d1dfb3ac09a183633f602261"
+   "h": "919faf740816f2bdd7d22fa0ce65307f3b0b2e71090208a17ba7f22dfb72c6b6"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.fragment-CxiZ_zXt.js",
+   "p": "pride-city/assets/gaussianSplatting.fragment-DXiTI9Ym.js",
    "s": 3059,
-   "h": "32305d62faa7732b0e11d617fbe920ae6397b2940089a6aaae94994699f843b4"
+   "h": "68040e9639ab7c2eefbd3649dcd198833d048eaf36a7d448ea6fc494c0506e14"
   },
   {
-   "p": "pride-city/assets/gaussianSplatting.vertex-CsoYZKam.js",
-   "s": 8147,
-   "h": "9ed6324018818ec590391261ac4884dcc7499cb54ab70ec0c110320393ff9c87"
-  },
-  {
-   "p": "pride-city/assets/gaussianSplatting.vertex-F5lBz0eY.js",
+   "p": "pride-city/assets/gaussianSplatting.vertex-CudC4uHm.js",
    "s": 6846,
-   "h": "259d1e2f607e2955b3d600027dfe1940af8f41655f06152afbcfadbfdec74f32"
+   "h": "80685564c83af5256e3b21de3baad4ee83dd8163c1c7ff2be61eae707c1f170f"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-CQKL8wtb.js",
+   "p": "pride-city/assets/gaussianSplatting.vertex-DlJZOlpb.js",
+   "s": 8147,
+   "h": "ee0f6ae2b235417646b0f856089b76268c2820ee4398920ba62a014d9745fc57"
+  },
+  {
+   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-BgwrE6GW.js",
    "s": 1760,
-   "h": "d536be88d7334678ba8a454a43b2cd982ecce324a6478470da1cc7ae118d0053"
+   "h": "9d2507b5f0cdbf0a51fa946753fcb7253c8aab44fa0ecc8414e6f3565e4d2b74"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-Zr_hEd6-.js",
+   "p": "pride-city/assets/gaussianSplattingVoxel.fragment-CmobDTL-.js",
    "s": 1435,
-   "h": "ea041b1b8ed935dae6da62ea174a271d8776c97a6e12a7127ce7b4f062931e19"
+   "h": "345b46ec451889621afd90b61cc4151c8fc4dd4bd48dc67750138934770d6071"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-DwRT1vPh.js",
+   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-92W5XoW2.js",
    "s": 2489,
-   "h": "46ae0f9a9561bb758dec19dcb2890171c91d89ed35dea71e3da4ec90e3beec7e"
+   "h": "4ee20dc128716eb2999b91f71c0c9e5e699d5d68fda8c9746b531551bf98c130"
   },
   {
-   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-jbiO_LkO.js",
+   "p": "pride-city/assets/gaussianSplattingVoxel.vertex-_OYeDH_L.js",
    "s": 1765,
-   "h": "70289d55e33d3361c388c135fecdaad769b69610472a588ebf3871610a29a7a7"
+   "h": "a5f6a6d46b329e3b35e80eb345075b213ff0c1782d254f5afdf5e841102cc562"
   },
   {
-   "p": "pride-city/assets/gsSortCount.compute-6TDbqE_I.js",
+   "p": "pride-city/assets/gsSortCount.compute-hcm-3tgj.js",
    "s": 1013,
-   "h": "cfeef8958ea74d33f4eceff32e730e574e0c0a40b2a9b0783cebf0eb45ad819d"
+   "h": "b3134060bd28731443432b60e775babcf2e4b8f517691fef889649ef6c7769a2"
   },
   {
-   "p": "pride-city/assets/gsSortKeys.compute-DhtbgBLc.js",
+   "p": "pride-city/assets/gsSortKeys.compute-2NV_76zi.js",
    "s": 2155,
-   "h": "3dcdf7279ad96a5dd58d464e4dc1a1fc9538985e947df51da62f6f0339dbbb78"
+   "h": "808d3d0f4b3129bac1f2168b5f87f1d61549094de4151f03f0eeb69d41ec74b2"
   },
   {
-   "p": "pride-city/assets/gsSortOutput.compute-C8ZjEPAC.js",
+   "p": "pride-city/assets/gsSortOutput.compute-bs7bajcU.js",
    "s": 922,
-   "h": "7d55b22c2e3dc5e8f8d004803350d011681a11f9a2e451c0265331b5f4b9b382"
+   "h": "2e60a7f2c3fdbd81271c9a1e8ec43639cb37ca80d52252871555177feb5811aa"
   },
   {
-   "p": "pride-city/assets/gsSortScanLocal.compute-CA378WTZ.js",
+   "p": "pride-city/assets/gsSortScanLocal.compute-cRGhvFTB.js",
    "s": 1260,
-   "h": "3fa16e8277f4e061f8f431cf352728f9705c1801bc4c53d8aed364dc09d7396d"
+   "h": "3235137045de6f9701b6301fd61aaac393687bed87a947eeb44c041441628f3b"
   },
   {
-   "p": "pride-city/assets/gsSortScanSums.compute-4we8ckvt.js",
+   "p": "pride-city/assets/gsSortScanSums.compute-CB7r4iTQ.js",
    "s": 831,
-   "h": "1d56739bee9e1d67817870f8eb1eaa1bf91f6bc869c076f81ac9e1ec485c1315"
+   "h": "db2944ee2f72b1fb165b2d24ad04a4dad4603f1a99f71aa80e83da7bd8ab9161"
   },
   {
-   "p": "pride-city/assets/gsSortScatter.compute-DLVqM6c4.js",
+   "p": "pride-city/assets/gsSortScatter.compute-ChrN1iau.js",
    "s": 2525,
-   "h": "1094db49b35817b2d8cf6615ea218dc39bd5687673ae98911b5a42bff119bc8c"
+   "h": "5e71006e801dc860a4955b64f1b9309f8a3ae5e8b31b85fcf82b26c6d7122aa7"
   },
   {
    "p": "pride-city/assets/home/armchair_pillows.bin",
@@ -14992,9 +15042,9 @@
    "h": "211fbca1e4ad52987f24abf0084d3f0b3547afbc18046a32bdb7212f49c7689f"
   },
   {
-   "p": "pride-city/assets/index-wfZJcwvB.js",
-   "s": 1350183,
-   "h": "3e1fd326e46a3394ec62d54375ce4c802a102630890355da68765dfb6bae9b2c"
+   "p": "pride-city/assets/index-D0zLbmp1.js",
+   "s": 1355115,
+   "h": "76dec3fdee563b3b25c9e0059e5f911f4970ec8d057fb58e767206a3d1f6209b"
   },
   {
    "p": "pride-city/assets/kitchen/fridge_A.bin",
@@ -15082,9 +15132,9 @@
    "h": "e7ec4792ff25dd495aa9ccc485b771a762f1aa052382a973b8253ddc82b91199"
   },
   {
-   "p": "pride-city/assets/loaders-3VqvfPDb.js",
+   "p": "pride-city/assets/loaders-DfdsTmoz.js",
    "s": 323809,
-   "h": "c6503f2a3646e7ad103912b791db02e5746d8ac0589c0bd8d632b355c0d7fb72"
+   "h": "221af1a21ae231c9b79ee46a76aed2fd600c84fcb0df4df2aa6b04184d7577ee"
   },
   {
    "p": "pride-city/assets/props/cardboard_box_01.glb",
@@ -15447,14 +15497,14 @@
    "h": "6846aa6f9b494f26b67ae4dc24d999f06ba2433ee1cabb2144ef025c6423bac0"
   },
   {
-   "p": "pride-city/assets/textureProcessor.fragment-CboMnibA.js",
-   "s": 6031,
-   "h": "4451db4c9a945048e56c64e9478ae7e089be9e93c2bf61c99019c19bcf9c4209"
+   "p": "pride-city/assets/textureProcessor.fragment-BE5XLpE3.js",
+   "s": 5008,
+   "h": "5eb90d574613632d88cbe72af9b2f99dab912677152d267f73ca0f41fdfa25c1"
   },
   {
-   "p": "pride-city/assets/textureProcessor.fragment-DVgfJPOE.js",
-   "s": 5008,
-   "h": "347c0b343917bbd83a935bbab2bb8dde97c439555ab01e8bfcfe23eb3dabf4ee"
+   "p": "pride-city/assets/textureProcessor.fragment-DMIitQeE.js",
+   "s": 6031,
+   "h": "05c2863b0b440271a0f486fbeefcd748f02b7e9fd9488222601d7c8da2682382"
   },
   {
    "p": "pride-city/assets/world/asphalt_col.jpg",
@@ -15537,6 +15587,26 @@
    "h": "0adcf2914eced0aff1ac55969730cded3341359abc423a1d67dbc82c63250228"
   },
   {
+   "p": "pride-city/assets/world/linen_col.jpg",
+   "s": 38311,
+   "h": "aa3d662b8fa94231f036c1ef2eaabce94d36bcc9f44bb37ea5698ae74f36efaa"
+  },
+  {
+   "p": "pride-city/assets/world/linen_nor.jpg",
+   "s": 18660,
+   "h": "c901c1e1a781401cbbefd91cf9bda16e6663a00b1f300a6c274206c6551bbad2"
+  },
+  {
+   "p": "pride-city/assets/world/marble_col.jpg",
+   "s": 78612,
+   "h": "19b672cd864263f7e2b66b00bef82b35c5388ed72fc20584e8ba45393bf806bf"
+  },
+  {
+   "p": "pride-city/assets/world/marble_nor.jpg",
+   "s": 4784,
+   "h": "3de6732b6939f55661d00f86f237c0010bcb76e8ad8cfe515493b2af6ac3be3c"
+  },
+  {
    "p": "pride-city/assets/world/palm_bark_col.jpg",
    "s": 56839,
    "h": "17e9f8bf5229ea7797f62c903c5a6990da810d1fbb210aefb0d50060f8563fe9"
@@ -15590,6 +15660,16 @@
    "p": "pride-city/assets/world/tree_bark_nor.jpg",
    "s": 13364,
    "h": "82ebb5c88a204f80366c16faca48d6144687f0fb52550b413fd2b757fe45624e"
+  },
+  {
+   "p": "pride-city/assets/world/velvet_col.jpg",
+   "s": 67079,
+   "h": "62b24bbacc3c62bdb1e975e0427bcbc0b0208b4c91f4a8b14cc69717422d124f"
+  },
+  {
+   "p": "pride-city/assets/world/velvet_nor.jpg",
+   "s": 27365,
+   "h": "45d1f457bfd1a81139c097dbe19b67ee68d058a57eae65f8fe2d56a9fac9b3bb"
   },
   {
    "p": "pride-city/assets/world/water_nor.jpg",
@@ -15844,7 +15924,7 @@
   {
    "p": "pride-city/index.html",
    "s": 5862,
-   "h": "b14ea98b70a1a71265f9d3e68ef680828bb3bf46b43f7e27583626659429a063"
+   "h": "363655a308edd503a65e57cb714b036d8339345ddfba23d6921ca1e2b06c6eae"
   },
   {
    "p": "pride-city/logo.svg",
@@ -18619,7 +18699,7 @@
   {
    "p": "sync/catalog.json",
    "s": 241235,
-   "h": "f6becd04fdc91df56bb3dc57600186777f2e83f412e8ea8d9e484975986bd46e"
+   "h": "51fe8dd05aa8a0a458564592e2a580f62f4a8e0ddf92785c7fcfe744492bfc98"
   },
   {
    "p": "taschi/assets/kaykit/axe_A.bin",

@@ -38,7 +38,7 @@ export function container(scene: Scene, path: string): Promise<AssetContainer> {
 const KAY = 5;
 /** Teil eines Ersatzes: Datei, Versatz x/y/z in Metern, Drehung, Maßstab */
 type Part = [string, number, number, number, number, number];
-export const PROP_SWAP: Record<string, { file: string; scale: number; rot: number; extra?: string; parts?: Part[] }> = {
+export const PROP_SWAP: Record<string, { file: string; scale: number; rot: number; extra?: string; parts?: Part[]; kay?: number }> = {
   'city/streetlight.gltf': { file: 'props/street_lamp_01.glb', scale: 1.25, rot: 0 },
   'city/bench.gltf': { file: 'props/modular_street_seating.glb', scale: .9, rot: Math.PI },
   'city/firehydrant.gltf': { file: 'props/fire_hydrant.glb', scale: 1.15, rot: 0 },
@@ -46,6 +46,24 @@ export const PROP_SWAP: Record<string, { file: string; scale: number; rot: numbe
   'city/bush.gltf': { file: 'props/planter_box_02.glb', scale: 1.3, rot: 0, extra: 'shrub' },
   // Wasserturm: Holztank auf Stahlbeinen, von der Welt gebaut (Teile als Instanzen)
   'city/watertower.gltf': { file: '', scale: 1, rot: 0, extra: 'tower' },
+  // Möbel (Aufrufer skalieren mit 0,9): scale ist hier der echte Maßstab des Poly-Haven-Modells
+  'home/couch_pillows.gltf': { file: 'furniture/sofa_02.glb', scale: 1.3, rot: 0, kay: .9 },
+  'home/armchair_pillows.gltf': { file: 'furniture/modern_arm_chair_01.glb', scale: 1.2, rot: 0, kay: .9 },
+  'home/table_low.gltf': { file: 'furniture/modern_coffee_table_01.glb', scale: 1.3, rot: Math.PI / 2, kay: .9 },
+  'home/chair_A.gltf': { file: 'furniture/dining_chair_02.glb', scale: 1.1, rot: 0, kay: .9 },
+  'home/cabinet_medium_decorated.gltf': { file: 'furniture/modern_wooden_cabinet.glb', scale: .9, rot: 0, kay: .9 },
+  'home/cabinet_small.gltf': { file: 'furniture/side_table_01.glb', scale: 1.63, rot: 0, kay: .9 },
+  'home/cactus_medium_A.gltf': { file: 'furniture/potted_plant_02.glb', scale: 1.4, rot: 0, kay: .9 },
+  'home/cactus_medium_B.gltf': { file: 'furniture/potted_plant_01.glb', scale: 1, rot: 0, kay: .9 },
+  'home/cactus_small_A.gltf': { file: 'furniture/potted_plant_04.glb', scale: 1.8, rot: 0, kay: .9 },
+  'home/lamp_table.gltf': { file: 'furniture/industrial_pipe_lamp.glb', scale: 1.4, rot: 0, kay: .9 },
+  // Küche, Bett und Stehlampe: maßstäblich nachgebaut (furniture.ts), Mitte wie beim Bausatz
+  'home/bed_double_A.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'bed' },
+  'home/lamp_standing.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'floorLamp' },
+  'kitchen/fridge_A.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'fridge' },
+  'kitchen/kitchencounter_straight_A.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'counter' },
+  'kitchen/kitchencounter_sink.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'sink' },
+  'kitchen/stove_single.gltf': { file: '', scale: 1, rot: 0, kay: .9, extra: 'stove' },
   'city/box_A.gltf': { file: 'props/cardboard_box_01.glb', scale: 1.6, rot: .2 },
   // Müllcontainer-Platz: Haufen aus Müllsäcken und Kartons statt Spielzeug-Container
   'city/dumpster.gltf': { file: 'props/trashbag.glb', scale: 1.5, rot: 0, parts: [
@@ -55,14 +73,16 @@ export const PROP_SWAP: Record<string, { file: string; scale: number; rot: numbe
 
 /** Zusatzteile je Szene (z. B. Busch aus Laubkarten im Pflanzkübel), von der Welt angemeldet */
 export const EXTRAS = new WeakMap<Scene, Record<string, (parent: TransformNode) => void>>();
+/** Zusatzteile für alle Szenen (z. B. Möbel aus furniture.ts), beim Start angemeldet */
+export const PROCS: Record<string, (parent: TransformNode) => void> = {};
 
 /** Statische Kopie (Gebäude, Requisiten): Instanzen teilen Geometrie und Material */
 export async function instance(scene: Scene, path: string, opts: { shadows?: boolean; clone?: boolean } = {}): Promise<TransformNode> {
   const sw = PROP_SWAP[path];
   if (sw) {
     const inner = sw.file ? await instance(scene, sw.file, opts) : new TransformNode(path + '_in', scene), root = new TransformNode(path, scene);
-    inner.parent = root; inner.scaling.setAll(sw.scale / KAY); inner.rotation.y = sw.rot; root.metadata = { swapped: true };
-    if (sw.extra) EXTRAS.get(scene)?.[sw.extra]?.(inner);
+    inner.parent = root; inner.scaling.setAll(sw.scale / (sw.kay ?? KAY)); inner.rotation.y = sw.rot; root.metadata = { swapped: true };
+    if (sw.extra) (EXTRAS.get(scene)?.[sw.extra] ?? PROCS[sw.extra])?.(inner);
     for (const [f, x, y, z, r, k] of sw.parts || []) {
       const q = await instance(scene, f, opts); q.parent = root; q.position.set(x / KAY, y / KAY, z / KAY); q.rotation.y = r; q.scaling.setAll(k / KAY);
     }

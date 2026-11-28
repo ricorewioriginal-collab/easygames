@@ -4,13 +4,14 @@ import { Mesh, PBRMaterial, Color3, Vector3, CreateLathe, type Scene } from '../
 import { box, cyl } from '../engine/geo';
 import { worldTex, waterSurface } from '../engine/surfaces';
 
-function photo(sc: Scene, name: string, file: string, u: number, v: number, tint: Color3, rough: number, rot = 0) {
+/** PBR-Material aus einer Foto-Textur in assets/world (Farbe + Normalen), u/v Wiederholungen */
+export function photo(sc: Scene, name: string, file: string, u: number, v: number, tint: Color3, rough: number, rot = 0) {
   const m = new PBRMaterial(name, sc), c = worldTex(sc, file + '_col.jpg').clone(), n = worldTex(sc, file + '_nor.jpg').clone();
   for (const t of [c, n]) { t.uScale = u; t.vScale = v; t.wAng = rot; }
   m.albedoTexture = c; m.bumpTexture = n; m.invertNormalMapY = true; m.albedoColor = tint; m.roughness = rough; m.metallic = 0;
   return m;
 }
-const merge = (ms: Mesh[], name: string) => { const m = Mesh.MergeMeshes(ms, true, true)!; m.name = name; return m; };
+export const merge = (ms: Mesh[], name: string) => { const m = Mesh.MergeMeshes(ms, true, true)!; m.name = name; return m; };
 
 /** Wassertank auf Stahlbeinen wie auf den Dächern von New York (Maße in Metern, Fuß bei y = 0): Quellen zum Instanzieren */
 export function waterTowerParts(sc: Scene) {
