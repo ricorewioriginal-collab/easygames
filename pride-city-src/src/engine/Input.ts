@@ -124,6 +124,8 @@ export class Input {
     return this.queued.has(a) || (this.now.has(a) && !this.prev.has(a));
   }
   held(a: Action): boolean { return this.now.has(a); }
+  /** Irgendeine Eingabe in diesem Bild (Taste, Knopf, Stick, Wischen, Zoom) */
+  active(): boolean { return this.now.size > 0 || this.queued.size > 0 || !!(this.move.x || this.move.y || this.look.x || this.look.y || this.zoom); }
   /** Aktion verbrauchen, damit sie nicht doppelt wirkt (z. B. Menü schließt und Spiel springt) */
   consume(a: Action) { this.queued.delete(a); this.prev.add(a); }
 

@@ -80,12 +80,26 @@ const rnd = (() => { let s = 7; return () => ((s = (s * 16807) % 2147483647) / 2
 /* Himmel: Verlauf, Sonne mit Hof, Sterne bei Nacht */
 Effect.ShadersStore.pcSkyVertexShader = `precision highp float; attribute vec3 position; uniform mat4 worldViewProjection; varying vec3 vp;
   void main(){ vp = normalize(position); gl_Position = worldViewProjection * vec4(position, 1.0); }`;
-Effect.ShadersStore.pcSkyFragmentShader = `precision highp float; uniform vec3 top; uniform vec3 bot; uniform float stars; uniform vec3 sunDir; uniform vec3 sunCol; varying vec3 vp;
+Effect.ShadersStore.pcSkyFragmentShader = `precision highp float; uniform vec3 top; uniform vec3 bot; uniform float stars; uniform vec3 sunDir; uniform vec3 sunCol;
+  uniform float time; uniform float cover; uniform vec3 cloudCol; varying vec3 vp;
   float h(vec3 p){ return fract(sin(dot(p, vec3(12.9898,78.233,37.719)))*43758.5453); }
-  void main(){ float y = max(vp.y, 0.0); vec3 c = mix(bot, top, pow(y, .55));
+  float h2(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453); }
+  float n2(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
+    return mix(mix(h2(i), h2(i+vec2(1.0,0.0)), f.x), mix(h2(i+vec2(0.0,1.0)), h2(i+vec2(1.0,1.0)), f.x), f.y); }
+  float fbm(vec2 p){ return n2(p)*.55 + n2(p*2.03+7.1)*.28 + n2(p*4.11+3.7)*.17; }
+  void main(){ vec3 d = normalize(vp); float y = max(d.y, 0.0); vec3 c = mix(bot, top, pow(y, .55));
     vec3 q = floor(vp*220.0); float s = step(.997, h(q)) * stars * smoothstep(.05,.4,y);
-    float sd = max(dot(normalize(vp), sunDir), 0.0);
+    float sd = max(dot(d, sunDir), 0.0);
     c += sunCol * (pow(sd, 900.0) * 6.0 + pow(sd, 12.0) * .35);
+    // Quellwolken: Strahl auf eine Wolkenebene projiziert, ziehen langsam übers Meer; Unterseite dunkler, zur Sonne hin hell gesäumt
+    if (d.y > .02) {
+      vec2 uv = d.xz / (d.y + .12) * 2.4 + vec2(time * .012, time * .004);
+      float f = fbm(uv), lo = .6 - cover * .3;
+      float a = smoothstep(lo, lo + .22, f) * smoothstep(.02, .2, d.y);
+      float sh = clamp((fbm(uv + sunDir.xz * .18) - f) * 3.0 + .6, 0.0, 1.0);
+      vec3 cc = mix(cloudCol * .58 + top * .12, cloudCol, sh) + sunCol * pow(sd, 6.0) * .5 * a;
+      c = mix(c, cc, a * .92); s *= 1.0 - a;
+    }
     c = mix(c, bot * 1.08, exp(-y * 7.0) * .45);
     gl_FragColor = vec4(c + s, 1.0); }`;
 
@@ -396,7 +410,9 @@ export class World {
   /* ---------- Himmel ---------- */
   private buildSky() {
     const sc = this.scene;
-    this.skyMat = new ShaderMaterial('sky', sc, { vertex: 'pcSky', fragment: 'pcSky' }, { attributes: ['position'], uniforms: ['worldViewProjection', 'top', 'bot', 'stars', 'sunDir', 'sunCol'] });
+    this.skyMat = new ShaderMaterial('sky', sc, { vertex: 'pcSky', fragment: 'pcSky' }, { attributes: ['position'], uniforms: ['worldViewProjection', 'top', 'bot', 'stars', 'sunDir', 'sunCol', 'time', 'cover', 'cloudCol'] });
+    this.skyMat.setFloat('time', 0); this.skyMat.setFloat('cover', .25); this.skyMat.setColor3('cloudCol', Color3.White());
+    this.extras.push((_dt, t) => this.skyMat.setFloat('time', t));
     this.skyMat.backFaceCulling = false; this.skyMat.disableDepthWrite = true;
     this.sky = sphere(sc, 280, 24); this.sky.material = this.skyMat; this.sky.infiniteDistance = false; this.sky.isPickable = false;
     this.sky.applyFog = false; this.sky.renderingGroupId = 0; this.sky.alwaysSelectAsActiveMesh = true;
@@ -423,6 +439,10 @@ export class World {
     sm.setColor3('top', top); sm.setColor3('bot', bot); sm.setFloat('stars', this.night * (1 - wx.gloom));
     sm.setVector3('sunDir', new Vector3(Math.cos(ang) * .8, up, .45).normalize());
     sm.setColor3('sunCol', new Color3(1, .82, .6).scale(smoothstep(up, -.08, .1) * (1 - wx.gloom)));
+    // Wolken: tagsüber weiß, abends rosa-orange angeleuchtet, nachts dunkles Violett; bei schlechtem Wetter dichter und grauer
+    { const cc = Color3.Lerp(Color3.Lerp(col(0x1e1a36), col(0xfdfcff), day), col(0xffa38a), dusk * .8);
+      if (wx.gloom > .01) Color3.LerpToRef(cc, col(0x9aa2ae).scale(.3 + .7 * day), wx.gloom * .6, cc);
+      sm.setColor3('cloudCol', cc); sm.setFloat('cover', .25 + wx.gloom * .75); }
     this.scene.fogColor = bot;
     // tagsüber Dunst, abends und nachts klarer, damit die Skyline mit ihren Fenstern zu sehen ist
     this.scene.fogDensity = .0022 + .0012 * day * (1 - dusk) + wx.fog;
