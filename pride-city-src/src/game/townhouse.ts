@@ -25,6 +25,41 @@ export function facadeTint(t: number[]): [number, number, number] {
   return [0, 1, 2].map((i) => Math.min(1.35, Math.max(.55, 1 + (t[i] - m) / m * .55)) * k) as [number, number, number];
 }
 
+/** Materialien einmal je Szene (Stadt und alle Inseln teilen sie: weniger Materialien, Texturen und Shader) */
+const MATS = new WeakMap<Scene, ReturnType<typeof makeMats>>();
+function makeMats(sc: Scene, night: PBRMaterial[]) {
+  const fac = FACADES.map((id) => {
+    const m = new PBRMaterial('facade' + id, sc);
+    m.albedoTexture = worldTex(sc, `fac${id}_col.jpg`); m.bumpTexture = worldTex(sc, `fac${id}_nor.jpg`); m.invertNormalMapY = true;
+    m.emissiveTexture = worldTex(sc, `fac${id}_emi.jpg`); m.emissiveColor = new Color3(0, 0, 0);
+    m.roughness = .82; m.metallic = 0;
+    night.push(m);
+    return m;
+  });
+  const roof = pbr(sc, 0x55575c, .95); roof.albedoTexture = worldTex(sc, 'asphalt_col.jpg');
+  // Schaufenster: Alurahmen, Glastür in der Mitte, Spiegelungen; nachts warmes Licht von innen
+  const W = 512, Hh = 216, frame = (g: CanvasRenderingContext2D, fill: string) => {
+    g.fillStyle = fill; g.fillRect(0, 0, W, 10); g.fillRect(0, Hh - 14, W, 14); g.fillRect(0, 0, 10, Hh); g.fillRect(W - 10, 0, 10, Hh);
+    for (const x of [150, 206, 306, 362]) g.fillRect(x - 4, 0, 8, Hh); g.fillRect(0, 52, W, 6);
+  };
+  const shopTex = canvasTex(sc, W, Hh, (g) => {
+    const gr = g.createLinearGradient(0, 0, W, Hh); gr.addColorStop(0, '#3d5468'); gr.addColorStop(.5, '#1a2530'); gr.addColorStop(1, '#2c3c4a');
+    g.fillStyle = gr; g.fillRect(0, 0, W, Hh);
+    g.fillStyle = 'rgba(255,255,255,.08)'; for (let i = 0; i < 6; i++) { g.beginPath(); g.moveTo(i * 110, Hh); g.lineTo(i * 110 + 60, 0); g.lineTo(i * 110 + 85, 0); g.lineTo(i * 110 + 25, Hh); g.fill(); }
+    g.fillStyle = '#5a3d2a'; g.fillRect(212, 62, 88, Hh - 76); g.fillStyle = '#1f2a33'; g.fillRect(220, 70, 72, Hh - 90); // Tür
+    g.fillStyle = '#c9c9c4'; g.fillRect(284, 130, 4, 26);
+    frame(g, '#8d9196');
+  });
+  const shopGlow = canvasTex(sc, W, Hh, (g) => {
+    const gr = g.createLinearGradient(0, 0, 0, Hh); gr.addColorStop(0, '#fff1c8'); gr.addColorStop(1, '#c8823a');
+    g.fillStyle = gr; g.fillRect(0, 0, W, Hh); frame(g, '#000');
+  });
+  const glass = pbr(sc, 0xffffff, .12, .2); glass.albedoTexture = shopTex; glass.emissiveTexture = shopGlow; glass.emissiveColor = new Color3(0, 0, 0); night.push(glass);
+  const trim = pbr(sc, 0xd8d0c2, .7); trim.detailMap.texture = worldTex(sc, 'brick_detail.webp'); trim.detailMap.isEnabled = true; trim.detailMap.diffuseBlendLevel = .25; trim.detailMap.bumpLevel = .5;
+  const aw = PALETTES[0].colors.map((cl) => pbr(sc, cl, .85));
+  return { fac, roof, glass, trim, aw };
+}
+
 export class Townhouses {
   private fac = FACADES.map(() => new Batch(AX * AXES, FLOOR * 6));
   private roof = new Batch(6, 6);
@@ -71,35 +106,10 @@ export class Townhouses {
       m.parent = par; m.isPickable = false; m.receiveShadows = true; m.computeWorldMatrix(true); m.freezeWorldMatrix();
       return m;
     };
-    FACADES.forEach((id, k) => {
-      const m = new PBRMaterial('facade' + id, sc);
-      m.albedoTexture = worldTex(sc, `fac${id}_col.jpg`); m.bumpTexture = worldTex(sc, `fac${id}_nor.jpg`); m.invertNormalMapY = true;
-      m.emissiveTexture = worldTex(sc, `fac${id}_emi.jpg`); m.emissiveColor = new Color3(0, 0, 0);
-      m.roughness = .82; m.metallic = 0;
-      night.push(m);
-      const me = this.fac[k].mesh(sc, 'houses' + id, m); if (me) still(me);
-    });
-    const roof = pbr(sc, 0x55575c, .95); roof.albedoTexture = worldTex(sc, 'asphalt_col.jpg');
-    // Schaufenster: Alurahmen, Glastür in der Mitte, Spiegelungen; nachts warmes Licht von innen
-    const W = 512, Hh = 216, frame = (g: CanvasRenderingContext2D, fill: string) => {
-      g.fillStyle = fill; g.fillRect(0, 0, W, 10); g.fillRect(0, Hh - 14, W, 14); g.fillRect(0, 0, 10, Hh); g.fillRect(W - 10, 0, 10, Hh);
-      for (const x of [150, 206, 306, 362]) g.fillRect(x - 4, 0, 8, Hh); g.fillRect(0, 52, W, 6);
-    };
-    const shopTex = canvasTex(sc, W, Hh, (g) => {
-      const gr = g.createLinearGradient(0, 0, W, Hh); gr.addColorStop(0, '#3d5468'); gr.addColorStop(.5, '#1a2530'); gr.addColorStop(1, '#2c3c4a');
-      g.fillStyle = gr; g.fillRect(0, 0, W, Hh);
-      g.fillStyle = 'rgba(255,255,255,.08)'; for (let i = 0; i < 6; i++) { g.beginPath(); g.moveTo(i * 110, Hh); g.lineTo(i * 110 + 60, 0); g.lineTo(i * 110 + 85, 0); g.lineTo(i * 110 + 25, Hh); g.fill(); }
-      g.fillStyle = '#5a3d2a'; g.fillRect(212, 62, 88, Hh - 76); g.fillStyle = '#1f2a33'; g.fillRect(220, 70, 72, Hh - 90); // Tür
-      g.fillStyle = '#c9c9c4'; g.fillRect(284, 130, 4, 26);
-      frame(g, '#8d9196');
-    });
-    const shopGlow = canvasTex(sc, W, Hh, (g) => {
-      const gr = g.createLinearGradient(0, 0, 0, Hh); gr.addColorStop(0, '#fff1c8'); gr.addColorStop(1, '#c8823a');
-      g.fillStyle = gr; g.fillRect(0, 0, W, Hh); frame(g, '#000');
-    });
-    const glass = pbr(sc, 0xffffff, .12, .2); glass.albedoTexture = shopTex; glass.emissiveTexture = shopGlow; glass.emissiveColor = new Color3(0, 0, 0); night.push(glass);
-    const trim = pbr(sc, 0xd8d0c2, .7); trim.detailMap.texture = worldTex(sc, 'brick_detail.webp'); trim.detailMap.isEnabled = true; trim.detailMap.diffuseBlendLevel = .25; trim.detailMap.bumpLevel = .5;
+    let M = MATS.get(sc); if (!M) MATS.set(sc, (M = makeMats(sc, night)));
+    FACADES.forEach((id, k) => { const me = this.fac[k].mesh(sc, 'houses' + id, M.fac[k]); if (me) still(me); });
+    const { roof, glass, trim } = M;
     for (const [b, m, n] of [[this.roof, roof, 'roofs'], [this.glass, glass, 'shopglass'], [this.trim, trim, 'trim']] as const) { const me = b.mesh(sc, n, m); if (me) still(me); }
-    PALETTES[0].colors.forEach((cl, k) => { const me = this.aw[k].mesh(sc, 'awning' + k, pbr(sc, cl, .85)); if (me) still(me); });
+    PALETTES[0].colors.forEach((_cl, k) => { const me = this.aw[k].mesh(sc, 'awning' + k, M!.aw[k]); if (me) still(me); });
   }
 }
