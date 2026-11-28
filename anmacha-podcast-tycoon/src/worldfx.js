@@ -1,4 +1,4 @@
-/* AnMaCha – Der Podcast · Welt-Upgrade: echte CC0-Modelle (Kenney City-, Car-, Nature- und Space-Kit),
+/* AnMaCha – Der Podcast · Welt-Upgrade: echte Modelle (Sketchfab-Pakete in models/sf),
    Menschenmengen (easygames-Figuren), Verkehr, Frachtschiffe, Video-Wände mit wechselndem Programm, Neon, Scheinwerfer, Feuerwerk und Umgebungsgeräusche.
    Nur in der freien Stadt (nicht online). Alles rein optisch – am Gameplay ändert sich nichts. */
 (function (root) {

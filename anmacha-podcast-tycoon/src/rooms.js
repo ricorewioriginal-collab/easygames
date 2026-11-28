@@ -1,6 +1,6 @@
 /* AnMaCha – Der Podcast: Jedes Stadtgebäude ist begehbar.
    Café, Bäckerei, Tonstudio, Fan-WG, Werbeagentur, Bücherei, Fitnessstudio, Friseur, Kiosk, Plattenbörse –
-   eingerichtet mit KayKit-Möbeln (CC0), mit Leuten zum Reden und einer Aktion, die Bedürfnisse, Ideen oder Fan-Punkte bringt.
+   eingerichtet mit Sketchfab-Möbeln (CC BY 4.0, models/sf/moebel.glb), mit Leuten zum Reden und einer Aktion, die Bedürfnisse, Ideen oder Fan-Punkte bringt.
    Läuft mit den Werkzeugen aus home.js (Laufen, Oberfläche, Bedürfnisse). */
 (function (root) {
   'use strict';
@@ -152,7 +152,7 @@
     const sm = new T.Mesh(new T.PlaneGeometry(4.2, 0.7), new T.MeshBasicMaterial({ map: sign, toneMapped: false })); sm.position.set(-hw + 2.6, 3.15, -hd + 0.02); g.add(sm);
     // Senderlogo als Poster an der Seitenwand (jede Location hört einen anderen Sender)
     const st = D.STATIONS[k % D.STATIONS.length], lg = W.logoPlane(st.slug, 1.4); lg.position.set(hw - 0.03, 2.1, -hd + 2.2); lg.rotation.y = -Math.PI / 2; g.add(lg);
-    // KayKit-Möbel
+    // Möbel (models/sf/moebel.glb)
     const solids = [];
     t.f.forEach(([n, x, z, ry, s]) => {
       const m = W.prop(n, s * 0.8); if (!m) return; m.position.set(x, 0, z); m.rotation.y = ry || 0; g.add(m);

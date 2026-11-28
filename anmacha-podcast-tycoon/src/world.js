@@ -1,4 +1,4 @@
-/* AnMaCha – Der Podcast – 3D-Welt: Renderer, echte 3D-Modelle (Quaternius-Gebäude + Menschen, Kenney-Bäume, CC0),
+/* AnMaCha – Der Podcast – 3D-Welt: Renderer, echte 3D-Modelle (Sketchfab-Pakete in models/sf, Quaternius-Menschen),
    Himmel je Tageszeit, Stadt mit Funkhaus und Sendemast, Partikel, Kamera. Spiellogik der Stadt steht in play.js. */
 (function (root) {
   'use strict';
@@ -62,17 +62,16 @@
     W.glowTex = canvasTex(64, 64, (g, w) => { const gr = g.createRadialGradient(w / 2, w / 2, 0, w / 2, w / 2, w / 2); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.35, 'rgba(255,255,255,.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, w); });
     W.glowTex.encoding = T.LinearEncoding;
 
-    // Modelle (alle CC0): Kenney-Bäume/Brunnen/Felsen, easygames-Figuren (Stadthäuser: KayKit + Kenney, siehe W.KK/W.CC0)
-    const files = ['tree', 'tree-high-round', 'fountain-round', 'rock-large'];
-    let done = 0; const total = files.length + 5, tick = l => { done++; progress && progress(done / total, l); };
+    // Modelle: Sketchfab-Pakete (CC BY 4.0, Namensnennung in models/sf/LIZENZ.md; Aufbereitung tools/make-anmacha-sketchfab.mjs).
+    // Je Paket eine Datei mit Knoten "sf_<name>" – Namen wie die früheren Low-Poly-Modelle (W.SF), gleiche Texturen werden geteilt.
     const loader = new T.GLTFLoader();
+    let done = 0; const total = W.SF.length + 3, tick = l => { done++; progress && progress(done / total, l); };
     W.models = {};
-    await Promise.all(files.map(f => new Promise(res => loader.load('models/' + f + '.glb', g => { W.models[f] = bake(g.scene); tick('3D-Modelle'); res(); }, null, () => { tick('3D-Modelle'); res(); }))));
-    // CC0-Modelle (Kenney via @netforge/asset-library-files): Hochhäuser, Autos, Schiffe, Natur
-    await Promise.all(W.CC0.map(f => new Promise(res => loader.load('models/cc0/' + f + '.glb', g => { W.models[f] = bake(g.scene); res(); }, null, () => res())))); tick('Stadt & Welten');
-    // KayKit (Kay Lousberg, CC0): City Builder Bits + Furniture Bits – ein gemeinsames Material je Paket (eine Textur statt vieler)
-    const kkMat = {}; ['city', 'furniture'].forEach(k => { const t = new T.TextureLoader().load('models/kaykit/' + k + '.png'); t.encoding = T.sRGBEncoding; t.flipY = false; kkMat[k] = new T.MeshStandardMaterial({ map: t, roughness: 0.75, metalness: 0.05 }); });
-    await Promise.all(W.KK.map(f => new Promise(res => loader.load('models/kaykit/' + f + '.glb', g => { const m = kkMat[f.startsWith('kf_') ? 'furniture' : 'city']; g.scene.traverse(o => { if (o.isMesh) { if (o.material && o.material.dispose) o.material.dispose(); o.material = m; } }); W.models[f] = bake(g.scene); res(); }, null, () => res())))); tick('Möbel & Straßen');
+    await Promise.all(W.SF.map(([f, label]) => new Promise(res => loader.load('models/sf/' + f + '.glb', g => {
+      g.scene.updateMatrixWorld(true);
+      g.scene.children.forEach(c => { if (c.name.startsWith('sf_')) W.models[c.name.slice(3)] = bake(c); });
+      tick(label); res();
+    }, null, () => { tick(label); res(); }))));
     W.kit = root.EasyFiguren ? root.EasyFiguren.create({ THREE: T, base: '../figuren/', srgb: true }) : null;
     if (W.kit) {
       await W.kit.load().catch(() => {}); tick('Menschen & Bewegungen');
@@ -119,10 +118,21 @@
   };
 
   // GLB → Teile (Geometrie in Modellraum gebacken, je Material) für Instanzen; Maße normiert
+  // Quantisierte glTF-Daten (KHR_mesh_quantization, z. B. Int16 normiert) in Float32 umrechnen – Three r128 rechnet sonst mit Rohwerten
+  const NORM = { Int8Array: 127, Uint8Array: 255, Int16Array: 32767, Uint16Array: 65535 };
+  function floatGeo(g) {
+    Object.keys(g.attributes).forEach(n => {
+      const a = g.attributes[n]; if (a.array instanceof Float32Array && !a.isInterleavedBufferAttribute) return;
+      const sz = a.itemSize, f = new Float32Array(a.count * sz), d = a.normalized ? NORM[a.array.constructor.name] || 1 : 1, src = a.isInterleavedBufferAttribute ? null : a.array;
+      for (let i = 0; i < a.count; i++) for (let c = 0; c < sz; c++) { const v = src ? src[i * sz + c] : [a.getX(i), a.getY(i), a.getZ(i), a.getW(i)][c]; f[i * sz + c] = d > 1 ? Math.max(v / d, -1) : v; }
+      g.setAttribute(n, new T.BufferAttribute(f, sz));
+    });
+    return g;
+  }
   function bake(scene) {
     scene.updateMatrixWorld(true);
     const parts = [], box = new T.Box3();
-    scene.traverse(o => { if (o.isMesh) { const g = o.geometry.clone(); g.applyMatrix4(o.matrixWorld); if (!g.attributes.normal) g.computeVertexNormals(); parts.push({ g, m: o.material }); g.computeBoundingBox(); box.union(g.boundingBox); } });
+    scene.traverse(o => { if (o.isMesh) { const g = floatGeo(o.geometry.clone()); g.applyMatrix4(o.matrixWorld); if (!g.attributes.normal) g.computeVertexNormals(); parts.push({ g, m: o.material }); g.computeBoundingBox(); box.union(g.boundingBox); } });
     const size = box.getSize(new T.Vector3());
     return { parts: joinParts(parts), box, size };
   }
@@ -141,10 +151,8 @@
     });
     return out;
   }
-  W.KK = ['kk_bench', 'kk_box_a', 'kk_box_b', 'kk_building_a', 'kk_building_b', 'kk_building_c', 'kk_building_d', 'kk_building_e', 'kk_building_f', 'kk_building_g', 'kk_building_h', 'kk_bush', 'kk_car_hatchback', 'kk_car_police', 'kk_car_sedan', 'kk_car_stationwagon', 'kk_car_taxi', 'kk_dumpster', 'kk_firehydrant', 'kk_streetlight', 'kk_trafficlight_a', 'kk_trafficlight_b', 'kk_trafficlight_c', 'kk_trash_a', 'kk_trash_b', 'kk_watertower',
-    'kf_armchair', 'kf_armchair_pillows', 'kf_bed_double_a', 'kf_bed_single_a', 'kf_book_set', 'kf_cabinet_medium_decorated', 'kf_cabinet_small', 'kf_chair_a', 'kf_chair_a_wood', 'kf_chair_b', 'kf_chair_stool', 'kf_couch', 'kf_couch_pillows', 'kf_lamp_standing', 'kf_lamp_table', 'kf_pictureframe_large_a', 'kf_pictureframe_medium', 'kf_pillow_a', 'kf_rug_oval_a', 'kf_rug_rectangle_a', 'kf_rug_rectangle_stripes_a', 'kf_shelf_a_big', 'kf_shelf_b_large_decorated', 'kf_table_low', 'kf_table_medium', 'kf_table_medium_long', 'kf_table_small'];
-  W.CC0 = ['skyscraper_a', 'skyscraper_b', 'skyscraper_c', 'building_a', 'building_b', 'building_c', 'building_d', 'building_e', 'sedan', 'taxi', 'van', 'police_car', 'delivery_van', 'cargo_ship', 'satellite_dish', 'tree_palm', 'tent', 'bush', 'campfire', 'crate', 'barrels',
-    'building_f', 'building_g', 'building_h', 'tree_oak', 'tree_autumn', 'tree_pine', 'bush_large', 'flower_red', 'suv', 'hatchback_sports', 'garbage_truck', 'ambulance', 'firetruck'];
+  /** Sketchfab-Pakete und ihr Ladetext */
+  W.SF = [['stadt', 'Stadt & Welten'], ['autos', 'Autos'], ['strasse', 'Straßen'], ['natur', 'Bäume & Natur'], ['moebel', 'Möbel']];
   /** Einzelnes Modell als Gruppe (geteilte Geometrie), Boden-Mitte im Ursprung; s = Zielgröße (Breite/Länge oder mit byHeight Höhe). */
   W.prop = function (name, s, opts) {
     const M = W.models[name]; if (!M) return null; opts = opts || {};
