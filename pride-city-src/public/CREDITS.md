@@ -65,6 +65,7 @@ Alle Autos (eigene Wagen, Verkehr, Taxi, Streifenwagen, Show- und Rennautos) sta
 | „Riva aquarama lamborghini“ – https://sketchfab.com/3d-models/riva-aquarama-lamborghini-9d5716a2ab6645b9a1452f1d6b0372ef | Anton Kovalev (Sketchfab) | CC BY 4.0 | `assets/rides/boat.glb` (Glitzer-Boot) |
 | „OKAI ES600 e-scooter“ – https://sketchfab.com/3d-models/okai-es600-e-scooter-0337709c625b419ca5265bca6626ff02 | Photogrammetry_Guest0 (Sketchfab) | CC BY 4.0 | `assets/rides/escooter.glb` (E-Roller, vereinfacht) |
 | „Hover bike - "The Rocket"“ – https://sketchfab.com/3d-models/hover-bike-the-rocket-8b2e5bfca78e41c791b4e5b5e8c04512 | TuppsM (Sketchfab) | CC BY 4.0 | `assets/rides/hoverbike.glb` (Flitzer, Pose eingebacken, vereinfacht) |
+| „Lightbody '90 MD Flatbed – Low poly model“ – https://sketchfab.com/3d-models/lightbody-90-md-flatbed-low-poly-model-39195e554c7a41a2884186c10d5079c0 | Daniel Zhabotinsky (Sketchfab) | CC BY 4.0 | `assets/rides/flatbed.glb` (Zugmaschine der CSD-Festwagen, ohne Ladefläche) |
 
 Änderungen: Die Pakete wurden in einzelne Autos geteilt, ausgerichtet, auf Straßenmaß gebracht, Innenraum und Kleinteile entfernt,
 Geometrie vereinfacht (`_lo` für den Verkehr am Handy) und Texturen auf 512 px verkleinert (`pride-city-src/scripts/cars.mjs`).
