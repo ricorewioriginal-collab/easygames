@@ -53,7 +53,7 @@ export function createNat({ T, TOUCH, hi }) {
       for (const q of list) { const A = M[q.k]; if (!A) continue; const mix = q.mix ?? o.mix ?? 0, id = q.k + '|' + mix; let K = keys.get(id); if (!K) keys.set(id, K = { A, mix, items: [] });
         let sx, sy; if (q.box) { sx = q.box[0] / A.w; sy = q.box[1] / A.h; } else sx = sy = (q.h || q.w) ? Math.min(q.h ? q.h / A.h : 1e9, q.w ? q.w / A.w : 1e9) * (q.s || 1) : q.s || 1;
         _o.position.set(q.x, q.y || 0, q.z); _o.rotation.set(0, q.ry || 0, 0); _o.scale.set(sx, sy, sx); _o.updateMatrix();
-        const it = { K, x: q.x, z: q.z, m: _o.matrix.clone(), col: q.tint ?? 0xffffff, all: q.tintAll, near: false, r: A.far ? RN : A.h * sy > 1.8 ? RB : RS, mix };
+        const it = { K, x: q.x, z: q.z, m: _o.matrix.clone(), col: q.tint ?? (q.k === 'palme1' ? 0x8cc46e : 0xffffff), all: q.tintAll, near: false, r: A.far ? RN : A.h * sy > 1.8 ? RB : RS, mix };
         if (A.far) { const F = A.far; it.fm = new T.Matrix4().multiplyMatrices(it.m, _f.makeTranslation(F.ax[0], F.cy, F.ax[1]).multiply(new T.Matrix4().makeScale(F.hs, F.hs, F.hs))); it.uv = F.uv; }
         K.items.push(it); items.push(it); }
       for (const K of keys.values()) { const A = K.A, oo = Object.assign({}, o, { mix: K.mix });

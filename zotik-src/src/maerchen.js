@@ -154,7 +154,7 @@ export function createMaerchen(C) {
   const NATK = { oak: { k: ['laub2', 'laub1', 'laub4', 'laub5'], h: 5.7, w: 5.6 }, pine: { k: ['tanne1', 'tanne2'], h: 6.2, w: 4.2, snow: 1 }, jungle: { k: ['laub4', 'laub3', 'laub1'], h: 6.8, w: 6.8 }, fern: { k: ['farn1', 'tropen2'], h: 1.05, w: 2 },
     rock: { k: ['fels2', 'fels3', 'fels4'], box: [2.3, 1.35] }, rockbig: { k: ['fels1', 'moosfels1', 'fels2'], box: [8.2, 6], snow: 1 }, bush: { k: ['busch1', 'busch2', 'busch4'], h: 1.5, w: 2.4 }, olive: { k: ['laub3', 'strauchbaum'], h: 4, w: 4.2 },
     cypress: { k: ['tanne2'], box: [2, 6.3] }, maple: { k: ['laub2', 'laub5'], h: 5.7, w: 5.6, tint: 0xe0701c, mix: .9 }, maple2: { k: ['laub5', 'laub2'], h: 5.7, w: 5.6, tint: 0xecb42e, mix: .9 }, maple3: { k: ['laub2', 'laub1'], h: 5.7, w: 5.6, tint: 0xb4301c, mix: .9 },
-    deadtree: { k: ['kahl1', 'kahl2'], h: 6, w: 4.6 } };
+    deadtree: { k: ['kahl1', 'kahl2'], h: 6, w: 4.6 }, palm: { k: ['palme1'], h: 5.6, w: 4.2 } };
   function scatter(g, list, keep, snow, wall) {
     const by = {}, nat = [], firs = []; for (const it of list) (by[it[2]] = by[it[2]] || []).push(it);
     for (const k in by) { const D = DECOR[k], L = by[k], N = C.NAT && NATK[k];
