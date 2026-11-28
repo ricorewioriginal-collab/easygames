@@ -6,6 +6,7 @@ import { stranger } from './flirt';
 import { Vector3, Mesh, Node3, type Scene, type PBRMaterial } from '../engine/bjs';
 import { box, cyl, sphere, torus, planeZ, pbr, glow, canvasTex } from '../engine/geo';
 import { instance } from '../engine/Assets';
+import { Townhouses, facadeTint } from './townhouse';
 import { PLACE_THEMES, HOUSE_THEMES, houseTheme, type Theme } from './interiors';
 import { Actor } from './Actor';
 import type { Game } from './Game';
@@ -227,11 +228,11 @@ export class Isle {
     for (const [n, x, z, r] of [['bench', -14, 10, Math.PI / 2], ['bench', 14, 0, -Math.PI / 2], ['firehydrant', 24.3, 5, 0], ['firehydrant', -24.3, -5, 0], ['trash_A', 24.4, 15, 0], ['trash_A', -24.4, 5, 0], ['trash_A', 8, 24.6, 0], ['bush', -24.4, 15, 0], ['bush', 24.4, -5, 0], ['bush', -8, 24.6, 0], ['dumpster', -25.6, -25.6, 0], ['dumpster', 25.6, 35.4, 0], ['bush', -6.4, 30, 0], ['bush', 6.4, 30, 0], ['bench', -6.4, 36, Math.PI / 2], ['bench', 6.4, 36, -Math.PI / 2]] as Array<[string, number, number, number]>) {
       jobs.push(put(n, x, .1, z, r)); kit.solid(x, z, n === 'bench' || n === 'dumpster' ? .9 : .4);
     }
-    const houses: Array<{ o: Awaited<ReturnType<typeof instance>>; i: number }> = [];
+    const town = new Townhouses(W, { collide: false, parent: root });
     SLOTS.forEach(([x, z, rot], i) => {
       jobs.push(put('base', x, 0, z, 0, true));
-      jobs.push(put('building_' + 'ABCDEFGH'[(i * 5 + d.id.length) % 8], x, .1, z, rot).then((o) => { houses.push({ o, i }); }));
-      rects.push({ x, z, hx: 4.2, hz: 4.2 });
+      town.add(x, z, rot, { floors: 2 + ((i * 7 + d.id.length) % 3), tint: facadeTint(d.town.tint[i % d.town.tint.length]) });
+      rects.push({ x, z, hx: 4.3, hz: 4.3 });
     });
     const car = async (kind: string) => {
       const inner = await instance(sc, 'cars/' + (CAR_FILE[kind] || 'sedan') + (this.g.engine.mobile ? '_lo' : '') + '.glb', { shadows: false });
@@ -241,13 +242,7 @@ export class Isle {
     ['car_taxi', 'car_sedan', 'car_hatchback'].slice(0, this.g.engine.mobile ? 2 : 3).forEach((kind, i) => jobs.push(car(kind).then((o) => { this.cars.push({ o, path: LANES[i % 2], seg: i % 4, u: .2 + i * .15, v: 6 + (i % 3) }); })));
     (d.town.parked || []).forEach(([x, z, yaw], i) => jobs.push(car(['car_sedan', 'car_hatchback', 'car_stationwagon'][i % 3]).then((o) => { o.position.set(x, .1, z); o.rotation.y = yaw; this.parked[i] = o; this.solids.push({ x, z, r: 1.7 }); })));
     await Promise.all(jobs);
-    // Fassadenfarbe je Haus (Farbe je Instanz, wie World.paintHouses)
-    const C4 = sc.clearColor.constructor as new (r: number, g: number, b: number, a: number) => never;
-    for (const { o, i } of houses) for (const m of o.getChildMeshes()) {
-      const sm = (m as unknown as { sourceMesh?: Mesh }).sourceMesh; if (!sm) continue;
-      if (!sm.instancedBuffers?.color) { sm.registerInstancedBuffer('color', 4); sm.instancedBuffers.color = new C4(1, 1, 1, 1); for (const im of sm.instances) if (!im.instancedBuffers.color) im.instancedBuffers.color = new C4(1, 1, 1, 1); }
-      const t = d.town.tint[i % d.town.tint.length]; (m as unknown as { instancedBuffers: Record<string, unknown> }).instancedBuffers.color = new C4(t[0], t[1], t[2], 1);
-    }
+    town.build(sc);
     const dark = kit.M(0x0a0618, .6);
     SLOTS.forEach(([x, z, rot], i) => {
       const fx = Math.round(Math.sin(rot)), fz = Math.round(Math.cos(rot)), si = SHOP_SLOTS.indexOf(i), shop = si >= 0 ? d.town.shops[si] : undefined;
@@ -255,8 +250,8 @@ export class Isle {
       if (shop) {
         const th = PLACE_THEMES[shop[2]] || HOUSE_THEMES.find((t) => t.id === shop[2]);
         if (th) { theme = { ...th, title: nice(shop[0]) }; place = PLACE_THEMES[shop[2]] ? shop[2] : ''; }
-        kit.box(5.6, 1.25, .1, dark, x + fx * 4.12, 5.6, z + fz * 4.12, rot); kit.sign(shop[0], shop[1], x + fx * 4.2, 5.6, z + fz * 4.2, rot, 5.2);
-        for (const sy of [-.68, .68]) kit.box(5.7, .07, .12, kit.G(parseInt(shop[1].slice(1), 16), 1.3), x + fx * 4.16, 5.6 + sy, z + fz * 4.16, rot);
+        kit.box(5.6, 1.25, .1, dark, x + fx * 4.5, 5.6, z + fz * 4.5, rot); kit.sign(shop[0], shop[1], x + fx * 4.58, 5.6, z + fz * 4.58, rot, 5.2);
+        for (const sy of [-.68, .68]) kit.box(5.7, .07, .12, kit.G(parseInt(shop[1].slice(1), 16), 1.3), x + fx * 4.54, 5.6 + sy, z + fz * 4.54, rot);
       }
       this.doors.push({ x: x + fx * 5, z: z + fz * 5, yaw: rot, label: `🚪 ${theme.icon} ${theme.title}`, theme, place });
     });

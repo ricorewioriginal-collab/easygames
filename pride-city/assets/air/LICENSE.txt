@@ -1,0 +1,10 @@
+plane.glb – auf Grundlage von „c208b“ aus https://github.com/zuujis-cc0/free-game-assets-aircraft
+            von zuujis-cc0, CC0 1.0 (gemeinfrei). Geändert: Fahrwerk/Frachtbehälter entfernt, Farben, Maßstab.
+
+heli.glb  – „MH-6 Little Bird“ von AnirudhRao
+            https://sketchfab.com/3d-models/mh-6-little-bird-d6ec6eeb84b240789f54923bdedafc86
+            Lizenz: Creative Commons Attribution 4.0 (CC BY 4.0) – https://creativecommons.org/licenses/by/4.0/
+            Geändert: vereinfachte Geometrie aus https://github.com/jdubba1/warbird, ausgerichtet, verkleinert,
+            weiter vereinfacht, neue Materialien (pink).
+
+Erzeugt mit pride-city-src/scripts/air.mjs.

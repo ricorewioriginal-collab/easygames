@@ -19,11 +19,11 @@ const GEAR = /_(helmet|equipment|machinegun|shotgun|pistol|mask|flashlight)$/;
 export const WALK_MPS = 1.02, RUN_MPS = 3.6;
 
 /** Outfits aus dem alten Spiel: bleiben im Spielstand (Rocketbox-Figuren tragen ihre eigene Kleidung) */
-/** 'nude' nur in Szenen ab 18 (liebe.ts, gruppe.ts), nicht wählbar und nie auf der Straße */
+/** 'nude' nur ab 18: in Szenen (liebe.ts, gruppe.ts) und als wählbares FKK-Outfit, mit dem man auch durch die Stadt läuft */
 export type Outfit = 'clothed' | 'shirtless' | 'underwear' | 'swim' | 'harness' | 'nude';
 export const OUTFITS: Array<{ id: Outfit; name: string; adult?: boolean }> = [
   { id: 'clothed', name: 'Angezogen' }, { id: 'shirtless', name: 'Oberkörperfrei' }, { id: 'underwear', name: 'Unterwäsche' },
-  { id: 'swim', name: 'Badehose / Bikini' }, { id: 'harness', name: 'Harness', adult: true },
+  { id: 'swim', name: 'Badehose / Bikini' }, { id: 'harness', name: 'Harness', adult: true }, { id: 'nude', name: 'Nackt (FKK)', adult: true },
 ];
 /** rb = feste Rocketbox-Figur (sonst passend zu body/palette/skin gewählt) */
 export interface Look { body: string; palette: string; skin: number; hair?: number; rb?: string; cape?: boolean; hat?: boolean; mug?: boolean; outfit?: Outfit; /** Unterwäsche/Badesachen-Wahl (waesche.ts), sonst fest aus der Figur */ wash?: string; top?: boolean; /** Szene-Look aus queer.ts (Flaggen-Shirt, Leder, Glitzer, gefärbte Haare) */ style?: string; /** 18+ */ hot?: boolean; /** Szene-Zubehör (gear.ts): Pup-Maske, Ledermütze, Halsband, Krone */ gear?: Gear; /** Spielfigur: Muskeln, Tattoos, Piercings, Bart (figur.ts) */ fig?: Fig }
@@ -48,7 +48,8 @@ export function playerLook(s: { body: string; palette: string; skin: number; pro
 }
 
 /** Auf der Straße: Unterwäsche nur zuhause, draußen ist die Figur angezogen */
-export function streetLook(l: Look): Look { return l.outfit === 'underwear' || l.outfit === 'nude' ? { ...l, outfit: 'clothed' } : l; }
+/** Auf der Straße: Unterwäsche wird zu Kleidung. Nackt bleibt nackt (nur ab 18 wählbar, playerLook prüft das; online sehen es nur Erwachsene) */
+export function streetLook(l: Look): Look { return l.outfit === 'underwear' ? { ...l, outfit: 'clothed' } : l; }
 
 export type Anim = 'idle' | 'walk' | 'run' | 'cheer' | 'interact' | 'sit' | 'wave' | 'dance1' | 'dance2' | 'dance3' | 'jump' | 'hit' | 'pose' | 'talk' | 'clap' | 'phone' | 'drink' | 'laugh';
 /** Spiel-Animation → Rocketbox-Animation (Datei rb/anim/<m|f>_<name>.glb) */
@@ -203,7 +204,7 @@ export class Actor {
       // ohne Kleidung: eng anliegender echter Körper statt umgemalter Kleidung (koerper.ts)
       const bare = !!this.look.outfit && BARE_OUTFITS.has(this.look.outfit);
       if (bare && !this.bare) {
-        this.bare = await bareBody(this.scene, this.model, this.bones, this.avatar.g);
+        this.bare = await bareBody(this.scene, this.model, this.bones, this.avatar.g, this.avatar.id);
         this.bare?.meshes.forEach((m) => this.addLod(m as Mesh));
         const own0 = this.ownBody()[0], sk = own0 && await skinOf(own0), sp = this.bare?.meshes[0] && await skinOf(this.bare.meshes[0]);
         if (sk && sp) this.bare?.tint(sk.map((v, i) => v / Math.max(1, sp[i])));
@@ -214,10 +215,12 @@ export class Actor {
       own.forEach((m) => m.setEnabled(!useBare));
       // Kopf-Teile der neuen Figuren reichen mit Kragen/Trägern bis auf die Schultern: ohne Kleidung einklappen
       this.model.getChildMeshes().forEach((m) => { if ((m as Mesh).skeleton && /^pc_.*_head$/.test(((m.material as { _orig?: { name: string } } | null)?._orig || m.material)?.name || '') && !(this.bare && m.isDescendantOf(this.bare.root))) collar(m as Mesh, useBare); });
+      // Ketten, die auf der Jacke lagen (Rico), schweben ohne Kleidung vor der Brust: ausblenden. Ohrring und Septum bleiben.
+      this.model.getChildMeshes().forEach((m) => { if ((m as Mesh).skeleton && /^pc_.*_silber$/.test(m.material?.name || '') && !onHead(m as Mesh)) m.setEnabled(!useBare); });
       // Ausrüstung (Helm, Weste, Holster, Waffen, Atemmaske) liegt ohne Kleidung nicht mehr am Körper
       this.gear().forEach((m) => m.setEnabled(!useBare));
       if (this.bare) this.bare.root.setEnabled(useBare);
-      if (useBare) await applyOutfit(this.scene, this.bare!.root, this.avatar.id + '@' + bareId(this.avatar.g), this.look.outfit, this.avatar.g === 'f', own[0], this.look.wash);
+      if (useBare) await applyOutfit(this.scene, this.bare!.root, this.avatar.id + '@' + bareId(this.avatar.g, this.avatar.id), this.look.outfit, this.avatar.g === 'f', own[0], this.look.wash);
       else await applyOutfit(this.scene, this.model, this.avatar.id, this.look.outfit, this.avatar.g === 'f');
       // Szene-Look der Reihe nach im Hintergrund malen: das Laden wartet nie darauf
       const style = this.styleNow();
@@ -346,10 +349,19 @@ export class Actor {
 }
 
 /** Kragen am Kopf-Mesh (Vertices, die an Rumpf, Schlüsselbein oder Arm hängen) in den Hals ziehen bzw. zurückholen */
+/** Schmuck am Kopf (Ohrring, Septum)? Mehrheit der Punkte hängt am Kopf-Knochen */
+function onHead(m: Mesh & { _pcHead?: boolean }) {
+  if (m._pcHead !== undefined) return m._pcHead;
+  const mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights'), sk = m.skeleton; if (!mi || !mw || !sk) return (m._pcHead = true);
+  const names: string[] = []; sk.bones.forEach((b) => { names[b.getIndex()] = b.name; });
+  let head = 0; const nv = mw.length / 4;
+  for (let v = 0; v < nv; v++) { let best = 0, bw = -1; for (let k = 0; k < 4; k++) if (mw[v * 4 + k] > bw) { bw = mw[v * 4 + k]; best = mi[v * 4 + k]; } if (/Head/.test(names[best] || '')) head++; }
+  return (m._pcHead = head > nv / 2);
+}
 function collar(m: Mesh & { _pcCollar?: Float32Array }, hide: boolean) {
   if (!hide) { if (m._pcCollar) { m.setVerticesData('position', m._pcCollar, false); m._pcCollar = undefined; } return; }
   if (m._pcCollar) return;
-  const pos = m.getVerticesData('position'), mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights'), sk = m.skeleton;
+  const pos = m.getVerticesData('position'), mi = m.getVerticesData('matricesIndices'), mw = m.getVerticesData('matricesWeights'), sk = m.skeleton, nor = m.getVerticesData('normal');
   if (!pos || !mi || !mw || !sk) return;
   const names: string[] = []; sk.bones.forEach((b) => { names[b.getIndex()] = b.name; });
   const nv = pos.length / 3, low: number[] = []; let cx = 0, cy = 0, cz = 0, cn = 0;
@@ -358,13 +370,23 @@ function collar(m: Mesh & { _pcCollar?: Float32Array }, hide: boolean) {
   let chin = 1e9; for (let v = 0; v < nv; v++) if (/Head/.test(dom(v))) chin = Math.min(chin, pos[v * 3 + 1]);
   for (let v = 0; v < nv; v++) {
     const b = dom(v);
-    if (/Spine|Clavicle|UpperArm|Pelvis/.test(b) || pos[v * 3 + 1] < chin - .085) low.push(v);
+    // der nackte Körper bringt seinen Hals bis unters Kinn mit: Kragen und Hals des Kopf-Meshes (bis knapp unters Kinn) weg
+    // Unterseite des Kiefers (Normale nach unten, knapp über dem Kinn): dort ist in den Texturen oft dunkler Schatten oder Kragen
+    const under = !!nor && nor[v * 3 + 1] < -.55 && pos[v * 3 + 1] < chin + .035;
+    if (/Spine|Clavicle|UpperArm|Pelvis/.test(b) || pos[v * 3 + 1] < chin - .12 || (/Neck/.test(b) && pos[v * 3 + 1] < chin + .01) || under) low.push(v);
     else if (/Neck/.test(b)) { cx += pos[v * 3]; cy += pos[v * 3 + 1]; cz += pos[v * 3 + 2]; cn++; }
   }
   if (!cn) { const lowS = new Set(low); for (let v = 0; v < nv; v++) if (!lowS.has(v) && pos[v * 3 + 1] < chin + .04) { cx += pos[v * 3]; cy += pos[v * 3 + 1]; cz += pos[v * 3 + 2]; cn++; } }
   if (!low.length || !cn) return;
   const out = Float32Array.from(pos); cx /= cn; cy /= cn; cz /= cn;
-  for (const v of low) { out[v * 3] = cx; out[v * 3 + 1] = cy; out[v * 3 + 2] = cz; }
+  // jeden weggeklappten Punkt auf den nächsten bleibenden legen: die Randdreiecke werden zu Linien statt zu dunklen Häuten
+  const lowS = new Set(low), keep: number[] = []; for (let v = 0; v < nv; v++) if (!lowS.has(v)) keep.push(v);
+  for (const v of low) {
+    let best = -1, bd = 1e9;
+    for (const u of keep) { const dx = pos[u * 3] - pos[v * 3], dy = pos[u * 3 + 1] - pos[v * 3 + 1], dz = pos[u * 3 + 2] - pos[v * 3 + 2], d = dx * dx + dy * dy + dz * dz; if (d < bd) { bd = d; best = u; } }
+    if (best < 0) { out[v * 3] = cx; out[v * 3 + 1] = cy; out[v * 3 + 2] = cz; continue; }
+    out[v * 3] = pos[best * 3]; out[v * 3 + 1] = pos[best * 3 + 1]; out[v * 3 + 2] = pos[best * 3 + 2];
+  }
   m.makeGeometryUnique();
   m._pcCollar = Float32Array.from(pos);
   m.setVerticesData('position', out, false);

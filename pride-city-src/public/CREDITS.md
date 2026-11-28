@@ -13,6 +13,10 @@ Alle eingebundenen Modelle sind kostenlos und frei nutzbar (CC0 / Public Domain)
 | Hausfassaden der Innenstadt (Farbe, Normalen, Nachtfenster aus den beleuchteten Varianten B/C abgeleitet) | `assets/world/fac018_*.jpg`, `fac019_*`, `fac020_*` | ambientCG – „Facade018A–C“, „Facade019A–C“, „Facade020A–C“ (ambientcg.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
 | Bäume und Palmen: Rinde, Laubkronen und Palmwedel (aus einzelnen Foto-Blättern zu Alpha-Karten zusammengesetzt) | `assets/world/palm_bark_*`, `tree_bark_*`, `leaves.png`, `palm_frond.png` | ambientCG – „Bark003“, „Bark014“, „LeafSet024“, „Foliage005“ (ambientcg.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
 | Straßenmöbel: Laterne, Parkbank, Hydrant, Mülleimer (Polygone reduziert, Texturen 256–512 px) | `assets/props/street_lamp_01.glb`, `modular_street_seating.glb`, `fire_hydrant.glb`, `metal_trash_can.glb`, `planter_box_02.glb` | Poly Haven – „street_lamp_01“, „modular_street_seating“, „fire_hydrant“, „metal_trash_can“, „planter_box_02“ (polyhaven.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
+| Müllsäcke und Kartons (Müllecken, Kisten; Polygone reduziert, Texturen 256 px) | `assets/props/trashbag.glb`, `cardboard_box_01.glb` | Poly Haven – „Trash Bag“, „Cardboard Box 01“ – https://polyhaven.com/models | CC0 1.0 |
+| Holzdauben des Wasserturms | `assets/world/tank_wood_*.jpg` | Poly Haven – „Dark Wooden Planks“ – https://polyhaven.com/a/dark_wooden_planks | CC0 1.0 |
+| Möbel: Sofa, Sessel, Couchtisch, Stuhl, Sideboard, Beistelltisch, Tischlampe, Zimmerpflanzen (Polygone reduziert, Texturen 512 px) | `assets/furniture/*.glb` | Poly Haven – „sofa_02“, „modern_arm_chair_01“, „modern_coffee_table_01“, „dining_chair_02“, „modern_wooden_cabinet“, „side_table_01“, „industrial_pipe_lamp“, „potted_plant_01/02/04“ (polyhaven.com, Spiegel github.com/zuujis-cc0) | CC0 1.0 |
+| Bettwäsche, Polster, Arbeitsplatte, Teppiche, Bühnenstoff (Küche, Bett, Stehlampe, Fernseher, Bilderrahmen mit selbst gemalten Bildern, Bücher und Bühne selbst modelliert) | `assets/world/linen_*`, `velvet_*`, `marble_*` | ambientCG – „Fabric001“, „Fabric003“, „Marble016“ – https://ambientcg.com | CC0 1.0 |
 | Wasserwellen (Normalenkarte) | `assets/world/water_nor.jpg` | selbst erzeugt (Summe von Sinuswellen) | CC0 1.0 |
 | 3D-Grafik | im Build gebündelt | three.js – https://threejs.org | MIT |
 
@@ -35,7 +39,11 @@ Die Figuren der Stadt, die Hauptfigur Rico und Tarek stammen von Sketchfab und s
 in Geometrie und Texturen verkleinert (`pride-city-src/scripts/people.mjs`). Rico (`pc_rico`) ist umgefärbt (schwarze Trainingsjacke
 mit weißen Streifen, schwarze Hose) und hat Kette, Ohrring und Septum-Ring bekommen. Ein zweites Modell „Yakuza“ von SpatialNeglect ist nicht enthalten.
 
-Animationen, Uniform-Figuren (Polizei, Feuerwehr, Sanitäterin, Köchin, Kurier), Kinder und die Sport-Körper unter Oberkörperfrei/Badesachen:
+Nackte Körper unter der Kleidung (Oberkörperfrei, Unterwäsche, Badesachen, Akt-Ansicht 18+): `assets/rb/mh_m1.glb` … `mh_m4.glb`,
+`mh_f1.glb` … `mh_f4.glb`, erzeugt aus **MakeHuman** (makehumancommunity/makehuman, Grundkörper `base.obj` und Form-Ziele) –
+CC0 1.0 seit 2020. Geformt, ohne Kopf, mit eigener Haut-Textur und Rocketbox-Skelett (`scripts/mh-body.mjs`, `scripts/people.mjs`).
+
+Animationen, Uniform-Figuren (Polizei, Feuerwehr, Sanitäterin, Köchin, Kurier), Kinder und die Sport-Figuren:
 Microsoft Rocketbox Avatar Library, MIT-Lizenz, siehe `assets/rb/LICENSE.md`.
 
 ## Fahrzeuge (seit 27.11.2026)

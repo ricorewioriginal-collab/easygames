@@ -11,6 +11,7 @@ import { planeZ, ground, box, cyl, sphere, ring, torus, pbr, glow, canvasTex } f
 import { PALETTES } from './palettes';
 import { Townhouses } from './townhouse';
 import { palmParts, treeParts } from './plants';
+import { waterTowerParts, fountain, stage, truss } from './streetprops';
 import { roadSurface, grassSurface, photoSurface, waterSurface, worldTex } from '../engine/surfaces';
 import { buildUptown, EAST, BRIDGE, UPTOWN_PLACES, doorStep, TANKE } from './uptown';
 import { NODES, LANE, lane, nearestEdge } from './traffic';
@@ -123,7 +124,8 @@ export class World {
     this.traces = new Node3('traces', scene); this.traces.parent = this.root;
     this.lamps = glow(scene, 0xfff2c0, 1);
     // Pflanzkübel (statt KayKit-Busch): Busch aus Foto-Laubkarten obendrauf
-    EXTRAS.set(scene, { shrub: (p) => { const src = this.leafSrc(); for (const [x, y, k] of [[-.3, .62, .42], [.3, .66, .46]] as const) { const m = src.tops[(Math.abs(Math.round(p.absolutePosition?.x ?? 0)) + (x > 0 ? 1 : 0)) % 3].createInstance('shrub'); m.parent = p; m.position.set(x, y, 0); m.scaling.set(k, k * .8, k * .7); (m as AbstractMesh & { _pcCast?: boolean })._pcCast = true; } } });
+    let tower: Mesh[] | null = null;
+    EXTRAS.set(scene, { tower: (p) => { tower ??= waterTowerParts(scene).map((m) => { m.isVisible = false; m.isPickable = false; return m; }); for (const s of tower) { const m = s.createInstance('tower'); m.parent = p; (m as AbstractMesh & { _pcCast?: boolean })._pcCast = true; } }, shrub: (p) => { const src = this.leafSrc(); for (const [x, y, k] of [[-.3, .62, .42], [.3, .66, .46]] as const) { const m = src.tops[(Math.abs(Math.round(p.absolutePosition?.x ?? 0)) + (x > 0 ? 1 : 0)) % 3].createInstance('shrub'); m.parent = p; m.position.set(x, y, 0); m.scaling.set(k, k * .8, k * .7); (m as AbstractMesh & { _pcCast?: boolean })._pcCast = true; } } });
     this.hemi = new HemisphericLight('hemi', new Vector3(0, 1, 0), scene);
     this.sun = new DirectionalLight('sun', new Vector3(-.5, -.8, -.4), scene);
   }
@@ -479,11 +481,8 @@ export class World {
       const m = ring(sc, 3.2 + i * .7, 3.9 + i * .7, 48); m.material = pbr(sc, c, .8); m.position.set(cx, .13 + i * .001, cz); this.still(m, false);
     });
     // Brunnen in der Mitte
-    const stone = pbr(sc, 0xe9e2f5, .6);
-    const f1 = cyl(sc, 2.6, 2.9, .8, 24); f1.material = stone; f1.position.set(cx, .5, cz); this.still(f1);
-    const water = cyl(sc, 2.3, 2.3, .1, 24); water.material = pbr(sc, 0x4fc3ff, .1, .2, { emissive: 0x0a3050 }); water.position.set(cx, .88, cz); this.still(water, false);
-    const f2 = cyl(sc, .35, .5, 2.4, 12); f2.material = stone; f2.position.set(cx, 1.6, cz); this.still(f2);
-    this.colliders.push({ x: cx, z: cz, hx: 2.8, hz: 2.8 });
+    { const wave = fountain(sc, cx, cz, (m, cast = true) => { this.still(m, cast); }); this.extras.push((_dt, t) => wave(t)); }
+    this.colliders.push({ x: cx, z: cz, hx: 3, hz: 3 });
     // Flaggenmasten rund um den Platz – jede Pride-Flagge einmal
     const flags = PALETTES.filter((p) => p.id !== 'neon');
     flags.forEach((p, i) => {
@@ -498,15 +497,13 @@ export class World {
     }
     for (const [x, z] of [[-24, 6], [-6, 6], [-24, 24], [-6, 24]]) this.palm(x, z, 1.1);
     // Bühne für Events
-    const stage = box(sc, 7, .6, 3.4); stage.material = pbr(sc, 0x6b4a32, .55); stage.position.set(cx, .4, cz - 7.6); this.still(stage);
+    stage(sc, cx, cz - 7.6, (m, cast = true) => { this.still(m, cast); });
     // LED-Kante in Regenbogenfarben und Traversen mit Scheinwerfern
     PALETTES[0].colors.forEach((c, i) => {
       const led = glow(sc, c, 1); this.neon.push({ m: led, base: col(c, .7) });
       const e = box(sc, 7 / 6, .1, .04); e.material = led; e.position.set(cx - 3.5 + (i + .5) * 7 / 6, .62, cz - 5.88); this.still(e, false, false);
     });
-    const truss = pbr(sc, 0x2b2b30, .35, .8);
-    for (const sx of [-3.3, 3.3]) { const t = box(sc, .18, 4.2, .18); t.material = truss; t.position.set(cx + sx, 2.8, cz - 9.1); this.still(t); }
-    const beam = box(sc, 6.8, .18, .18); beam.material = truss; beam.position.set(cx, 4.9, cz - 9.1); this.still(beam);
+    truss(sc, cx, cz - 9.1, (m) => { this.still(m); });
     const spot = glow(sc, 0xfff1d0, 1); this.neon.push({ m: spot, base: new Color3(.8, .75, .6) });
     for (let i = 0; i < 4; i++) { const sp = cyl(sc, .16, .22, .35, 10); sp.material = spot; sp.position.set(cx - 2.4 + i * 1.6, 4.65, cz - 9.1); sp.rotation.x = .5; this.still(sp, false, false); }
     this.colliders.push({ x: cx, z: cz - 7.6, hx: 3.5, hz: 1.7 });

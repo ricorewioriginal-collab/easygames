@@ -3,18 +3,24 @@
    und Badesachen bekommt die Figur deshalb den eng anliegenden Körper der Sport-Figur (gleiches Skelett „Bip01 …“),
    behält aber Kopf, Haare und Hautfarbe. Jedes Bild übernimmt der Körper Stellung und Knochenlängen der Figur:
    so sitzt der Hals genau unter dem eigenen Kopf und alle Animationen bleiben gleich. */
-import { Quaternion, Color3, type Mesh, type Scene, type TransformNode, type AbstractMesh, type PBRMaterial } from '../engine/bjs';
+import { Quaternion, Color3, Vector3, type Mesh, type Scene, type TransformNode, type AbstractMesh, type PBRMaterial } from '../engine/bjs';
 import { skinned } from '../engine/Assets';
 
 export const BARE_OUTFITS = new Set(['shirtless', 'harness', 'underwear', 'swim', 'nude']);
-export const bareId = (g: 'm' | 'f') => (g === 'f' ? 'Sports_Female_01' : 'Sports_Male_01');
+/** Nackter Körper je Figur: realistische MakeHuman-Körper (CC0, scripts/mh-body.mjs) in je vier Formen.
+    1 schlank, 2 normal, 3 sportlich, 4 kräftig (Frauen: 3 kurvig, 4 sportlich). Hauptfiguren fest, sonst aus der ID. */
+const BODY: Record<string, number> = { pc_rico: 3, pc_c12: 3, pc_yakuza: 3, pc_gangster: 2, pc_streetg: 1 };
+export const bareId = (g: 'm' | 'f', id = '') => {
+  let h = 2166136261; for (let i = 0; i < id.length; i++) { h ^= id.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return 'mh_' + g + (BODY[id] || 1 + ((h >>> 0) % 4));
+};
 
 export interface Bare { root: TransformNode; meshes: Mesh[]; /** Faktor je Farbkanal (eigene Haut / Sport-Haut) */ tint(ratio: number[]): void; dispose(): void }
 const isBody = (m: AbstractMesh) => !!(m as Mesh).skeleton && /_body/.test((((m.material as { _orig?: { name: string } } | null)?._orig) || m.material)?.name || '');
 
 /** Körper anlegen: hängt unter model, folgt den Knochen (Name → Knoten) der Figur */
-export async function bareBody(scene: Scene, model: TransformNode, bones: Map<string, TransformNode>, g: 'm' | 'f'): Promise<Bare | null> {
-  const { root, groups } = await skinned(scene, 'rb/' + bareId(g) + '.glb');
+export async function bareBody(scene: Scene, model: TransformNode, bones: Map<string, TransformNode>, g: 'm' | 'f', id = ''): Promise<Bare | null> {
+  const { root, groups } = await skinned(scene, 'rb/' + bareId(g, id) + '.glb');
   groups.forEach((x) => x.dispose());
   if (model.isDisposed()) { root.dispose(); return null; }
   // nur den Körper behalten. Der Kopf der Sport-Figur reicht bis auf die Brust (der Körper hat dort ein Loch):
@@ -27,6 +33,9 @@ export async function bareBody(scene: Scene, model: TransformNode, bones: Map<st
   }
   const meshes = root.getChildMeshes().filter(isBody) as Mesh[];
   if (!meshes.length) { root.dispose(); return null; }
+  // MakeHuman-Körper: Halsrand unter den eigenen Kopf der Figur rücken (die Köpfe sitzen je Modell etwas anders am Gelenk)
+  const head = model.getChildMeshes().find((x) => (x as Mesh).skeleton && !x.isDescendantOf(root) && /_head$/.test((((x.material as { _orig?: { name: string } } | null)?._orig) || x.material)?.name || '')) as Mesh | undefined;
+  if (head && /^mh_/.test(bareId(g, id))) meshes.forEach((m) => fitNeck(m, head));
   root.parent = model;
   meshes.forEach((m) => { m.receiveShadows = true; (m as AbstractMesh & { _pcCast?: boolean })._pcCast = true; m.isPickable = false; });
   // Knotenpaare (eigene Figur → Sport-Körper), oberste Knoten mit gleichem Namen (glTF-Wurzel) mitnehmen
@@ -77,4 +86,46 @@ function shrinkHead(m: Mesh) {
   m.refreshBoundingInfo();
   m.isPickable = false; m.receiveShadows = true;
   return true;
+}
+
+const boneOf = (m: Mesh) => { const names: string[] = []; m.skeleton?.bones.forEach((b) => { names[b.getIndex()] = b.name; }); return names; };
+/** Kopf-Gelenk in Ruhelage (Mesh-Raum) */
+function headJoint(m: Mesh) {
+  const b = m.skeleton?.bones.find((x) => /Head$/.test(x.name)); if (!b) return null;
+  const t = b.getAbsoluteInverseBindMatrix().clone().invert().getTranslation();
+  return t;
+}
+/** Halsrand des MakeHuman-Körpers unter den Kopf der Figur schieben: Mitte des oberen Halsrands (Körper) auf die Mitte
+    des unteren Kopfrands (Figur, ohne eingeklappten Kragen), beides relativ zum Kopf-Gelenk. Bewegt wird nach Kopf-Gewicht. */
+function fitNeck(body: Mesh, head: Mesh) {
+  const hp = head.getVerticesData('position'), hi = head.getVerticesData('matricesIndices'), hw = head.getVerticesData('matricesWeights');
+  const bp = body.getVerticesData('position'), bi = body.getVerticesData('matricesIndices'), bw = body.getVerticesData('matricesWeights');
+  const hj = headJoint(head), bj = headJoint(body); if (!hp || !hi || !hw || !bp || !bi || !bw || !hj || !bj) return;
+  const hn = boneOf(head), bn = boneOf(body);
+  const dom = (mi: ArrayLike<number>, mw: ArrayLike<number>, names: string[], v: number) => { let best = 0, x = -1; for (let k = 0; k < 4; k++) if (mw[v * 4 + k] > x) { x = mw[v * 4 + k]; best = mi[v * 4 + k]; } return names[best] || ''; };
+  // Kopf der Figur: was nach Actor.collar sichtbar bleibt (nicht Rumpf, nicht weit unter dem Kinn)
+  let chin = 1e9; const nh = hp.length / 3; for (let v = 0; v < nh; v++) if (/Head/.test(dom(hi, hw, hn, v))) chin = Math.min(chin, hp[v * 3 + 1]);
+  const keep: number[] = []; for (let v = 0; v < nh; v++) if (!/Spine|Clavicle|UpperArm|Pelvis/.test(dom(hi, hw, hn, v)) && hp[v * 3 + 1] >= chin - .12) keep.push(v);
+  if (keep.length < 20) return;
+  const ring = (P: ArrayLike<number>, vs: number[], top: boolean) => {
+    let e = top ? -1e9 : 1e9; for (const v of vs) e = top ? Math.max(e, P[v * 3 + 1]) : Math.min(e, P[v * 3 + 1]);
+    const c = new Vector3(); let n = 0;
+    for (const v of vs) if (Math.abs(P[v * 3 + 1] - e) < .02) { c.x += P[v * 3]; c.y += P[v * 3 + 1]; c.z += P[v * 3 + 2]; n++; }
+    return n ? c.scaleInPlace(1 / n) : null;
+  };
+  const nb = bp.length / 3, all: number[] = []; for (let v = 0; v < nb; v++) all.push(v);
+  const want = ring(hp, keep, false), have = ring(bp, all, true); if (!want || !have) return;
+  const d = want.subtract(hj).subtract(have.subtract(bj));
+  // Feinkorrektur: seitlich und nach vorne/hinten bis 3 cm, nach oben bis 4 cm (Lücke schließen), nie nach unten
+  d.y = Math.max(0, Math.min(.04, d.y)); d.x = Math.max(-.03, Math.min(.03, d.x)); d.z = Math.max(-.03, Math.min(.03, d.z));
+  if (d.lengthSquared() < 1e-6) return;
+  const out = Float32Array.from(bp);
+  for (let v = 0; v < nb; v++) {
+    let w = 0; for (let k = 0; k < 4; k++) if (/Head$/.test(bn[bi[v * 4 + k]] || '')) w += bw[v * 4 + k];
+    if (w <= 0) continue;
+    out[v * 3] += d.x * w; out[v * 3 + 1] += d.y * w; out[v * 3 + 2] += d.z * w;
+  }
+  body.makeGeometryUnique();
+  body.setVerticesData('position', out, false);
+  body.refreshBoundingInfo();
 }
