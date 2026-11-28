@@ -296,6 +296,8 @@ export function createMaerchen(C) {
       if (blk(x, z) || C.inHouse(x, z, 1.2) || (w.river && riverDist(w.river, x, z) < w.river.w * .5 + 1.5)) continue; if (list.some(q => DECOR[q[2]].col && Math.hypot(q[0] - x, q[1] - z) < 2.6)) continue;
       list.push([x, z, kind, .8 + R2() * .5, R2() * 6.3]); n2++; } }
     if (AM) { const wl = []; arealDress({ C, w, b, g, h, M: AM, R2, blk, busy, roadD: (x, z) => Math.min(roadD(w, x, z), z < 16 && z > -88 ? Math.abs(x - PATHX(z)) : 1e9), wallList: wl, TOUCH: C.TOUCH, mk, G, MAT: M }); scatter(g, wl, WD.ims, w.snow, 1); }
+    /* Weitblick: ferne Bergketten hinter dem Weltrand (nicht unter Wasser) */
+    if (C.vista && !w.under) g.add(C.vista(w.snow ? 0xdfe8f4 : (w.ridge || 0x5a6a5a), 50 + (w.id ? w.id.length * 7 + w.id.charCodeAt(0) : 0), !!w.snow, CX, CZ));
     scatter(g, list, WD.ims, w.snow);
     C.mergeStatic(g, keepSet);
     // Figuren

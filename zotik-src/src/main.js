@@ -1101,7 +1101,7 @@ function ensureBoss(){if(S.boss||boss)return;boss=spawnEnemy('boss',ARENA.x,AREN
 /* ---- Kampf-Verfeinerung: Schwächen & Bruch (Lufia/FF), Treffergefühl & Kombo (KH), Perfektes Ausweichen ---- */
 const EL={fire:['🔥','Feuer'],light:['✨','Licht'],nature:['🌿','Natur'],ice:['❄️','Eis'],storm:['⚡','Sturm']};
 const weakOf=e=>e.d.weak||(e.d.base==='rift'?'light':'fire');
-let _mw=null;const MWX=()=>_mw||(_mw=createMaerchen({sfPlace:(g,l)=>KK.place(g,l,'sf'),sfMon:k=>sfMon(k),kkCast:id=>kkCast(id),onSeal:w=>{if(w.id==='ricorewi')recruit('rico')},jumpPath:(n,o)=>jumpPath(n,o),bounce:v=>{pl.vy=v;pl.air=true;pl.dj=false},tint:(m,c,k)=>tintModel(m,c,k),house:(...a)=>house(...a),inHouse:(x,z,r)=>inHouseR(x,z,r),climb:o=>clbAdd(o),climbDome:(...a)=>clbDome(...a),climbDisc:(...a)=>clbDisc(...a),folk:(n,o,w)=>folkNpc(n,o,w),NAT,T,G,PG,M,mk,glow,mergeStatic,scene,keyHint:KH,inMode:()=>INP.mode(),S:()=>S,MP:()=>MP,CHP,setWLD:w=>{WLD=w},W:()=>WLD,setAtmos,tooSteep,addCol,colFree,rng:mul32,animObjs,emit,pl,addNpc,CR:()=>CR(),makeVillager,ED,spawnEnemy,INT,say:(...a)=>say(...a),travel:n=>travel(n),$,sfx:n=>sfx(n),banner:(...a)=>banner(...a),toast:(...a)=>toast(...a),saveGame:q=>saveGame(q),
+let _mw=null;const MWX=()=>_mw||(_mw=createMaerchen({vista:(col,n,snow,cx,cz)=>vista(col,n,snow,cx,cz),sfPlace:(g,l)=>KK.place(g,l,'sf'),sfMon:k=>sfMon(k),kkCast:id=>kkCast(id),onSeal:w=>{if(w.id==='ricorewi')recruit('rico')},jumpPath:(n,o)=>jumpPath(n,o),bounce:v=>{pl.vy=v;pl.air=true;pl.dj=false},tint:(m,c,k)=>tintModel(m,c,k),house:(...a)=>house(...a),inHouse:(x,z,r)=>inHouseR(x,z,r),climb:o=>clbAdd(o),climbDome:(...a)=>clbDome(...a),climbDisc:(...a)=>clbDisc(...a),folk:(n,o,w)=>folkNpc(n,o,w),NAT,T,G,PG,M,mk,glow,mergeStatic,scene,keyHint:KH,inMode:()=>INP.mode(),S:()=>S,MP:()=>MP,CHP,setWLD:w=>{WLD=w},W:()=>WLD,setAtmos,tooSteep,addCol,colFree,rng:mul32,animObjs,emit,pl,addNpc,CR:()=>CR(),makeVillager,ED,spawnEnemy,INT,say:(...a)=>say(...a),travel:n=>travel(n),$,sfx:n=>sfx(n),banner:(...a)=>banner(...a),toast:(...a)=>toast(...a),saveGame:q=>saveGame(q),
   setBoss:e=>{boss=e},clearBoss:()=>{$('boss').hidden=true;boss=null},FX:()=>FXH,gainXp:x=>gainXp(x),giveGear:id=>giveGear(id),time:()=>time,setMBG:c=>{MBG=c},
   TX,PLAT,TOUCH,KK,makeChest:g=>makeChest(g),chests,CMP,PARTY,PORT,setCam:o=>setCam(o),snapCam:()=>snapCam(),hurtE:(...a)=>hurtE(...a),shake:v=>{camShake=Math.max(camShake,v)},makeNaut:()=>makeNaut(),chDone:n=>chDone(n),openTravel:()=>toggleMenu(true,'travel'),E:()=>E,dlgOn:()=>dlg.on}));
 /* Kampfsystem einheitlich im ganzen Spiel: auto (Welten Echtzeit, Weltkarte/Meer rundenbasiert), real (überall Echtzeit), turn (überall rundenbasiert) */
@@ -2838,13 +2838,13 @@ function buildWorld(n){HST=HSTY[n]||HSTY[1];
 }
 /* ---- Wahrzeichen am Horizont ---- */
 /* Weitblick: zwei Bergketten hinter dem Weltrand (215 m und 300 m), der Nebel der Welt färbt sie ein. Richtung Wahrzeichen (−z) bleiben sie flach. Nur Kulisse, keine Kollision. */
-function vista(col,n){const g=new T.Group();g.position.set(TCX,0,TCZ);const R=mul32(n*131+7);
+function vista(col,n,snow=n===6,cx=TCX,cz=TCZ){const g=new T.Group();g.position.set(cx,0,cz);const R=mul32(n*131+7);
   for(const [rad,h0,h1,gain] of [[215,16,50,1.3],[300,38,104,1.05]]){const N=240,P=[],I=[],a0=R()*6,a1=R()*6,a2=R()*6,a3=R()*6;
     for(let i=0;i<=N;i++){const a=i/N*6.2832,c=Math.cos(a),sn=Math.sin(a),low=Math.abs(Math.atan2(Math.sin(a-4.7124),Math.cos(a-4.7124)))<.42?.3:1,
         H=(h0+(h1-h0)*Math.max(0,.5*(1-Math.abs(Math.sin(a*2.5+a0)))+.3*(1-Math.abs(Math.sin(a*7+a1)))+.16*(1-Math.abs(Math.sin(a*17+a2)))+.07*Math.sin(a*43+a3)))*low;
       P.push(c*rad,-14,sn*rad,c*(rad+H*.8),H,sn*(rad+H*.8));if(i<N)I.push(2*i,2*i+1,2*i+2,2*i+1,2*i+3,2*i+2)}
     const ge=new T.BufferGeometry();ge.setAttribute('position',new T.Float32BufferAttribute(P,3));ge.setIndex(I);ge.computeVertexNormals();
-    const m=TX.tri(n===6?'snow':'rock',col,{s:.03,gain,vista:1});m.side=T.DoubleSide;const me=new T.Mesh(ge,m);me.frustumCulled=false;me.name='vista';g.add(me)}
+    const m=TX.tri(snow?'snow':'rock',col,{s:.03,gain,vista:1});m.side=T.DoubleSide;const me=new T.Mesh(ge,m);me.frustumCulled=false;me.name='vista';g.add(me)}
   return g}
 function landmark(k,C){const g=new T.Group(),c0=C.glowc[0],c1=C.glowc[1],st=M(C.pal.rock,{r:.8});g.position.set(0,0,-360);
   const L=(m)=>{g.add(m);return m};
