@@ -55,3 +55,11 @@ Geändert: zu einer Datei zusammengefasst, Texturen verkleinert, Normal-/ORM-Kar
 - „Free Pack - Rocks Stylized“ von **PolyOne Studio** – https://sketchfab.com/3d-models/free-pack-rocks-stylized-7c60b4d1b8ab4187965f30c5e0212fc0
 - „Stylized tree stump“ von **Aartee** – https://sketchfab.com/3d-models/stylized-tree-stump-04d51f5c2fb643aab3b93b451d1b77c9
 - „Stylized Flowers and Dandelions“ von **Botanical_Blacksmith** – https://sketchfab.com/3d-models/stylized-flowers-and-dandelions-bffdeb9b066c43ac9456d9899e37d509
+
+## Poly Haven – echte Bäume, Büsche, Felsen und Pflanzen (Ordner `ph/`)
+
+`ph/ph.glb` (Handy) und `ph/ph-hi.glb` (PC/TV, größere Texturen) stammen aus 3D-Scans und Modellen von **Poly Haven** (https://polyhaven.com), Lizenz **CC0** (gemeinfrei):
+island_tree_01/02/03, jacaranda_tree, tree_small_02, fir_sapling_medium, pine_sapling_small, quiver_tree_01/02, searsia_lucida, dead_tree_trunk, dead_tree_trunk_02, dead_quiver_trunk,
+shrub_01–04, wild_rooibos_bush, fern_02, nettle_plant, grass_medium_01, flower_gazania, periwinkle_plant, dandelion_01, pachira_aquatica_01, calathea_orbifolia_01, tree_stump_01/02,
+boulder_01, rock_07, rock_09, stone_01, rock_moss_set_01/02, namaqualand_boulder_02, namaqualand_boulders_01, moon_rock_01/03, rock_face_01.
+Aufbereitung: `tools/make-zotik-polyhaven.mjs` (Stamm stark vereinfacht, Krone als Astkarten aus dem Original gezeichnet, Fernansicht), Einbindung: `zotik-src/src/nat.js`.
